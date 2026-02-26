@@ -169,9 +169,9 @@ object ClientMouseHandler {
         freeCameraPitch += 0.15f * times * lerpSpeedY
 
         val vehicle = player.vehicle
-        val hanging = vehicle is VehicleEntity && vehicle.vehicleType == VehicleType.HELICOPTER && vehicle.hangingMode
+        val hover = vehicle is VehicleEntity && vehicle.vehicleType == VehicleType.HELICOPTER && vehicle.hoverMode
 
-        if (!ClientEventHandler.isFreeCam(player) && !hanging) {
+        if (!ClientEventHandler.isFreeCam(player) && !hover) {
             freeCameraYaw = Mth.lerp(0.6 * times, freeCameraYaw, 0.0)
             freeCameraPitch = Mth.lerp(0.6 * times, freeCameraPitch, 0.0)
         }

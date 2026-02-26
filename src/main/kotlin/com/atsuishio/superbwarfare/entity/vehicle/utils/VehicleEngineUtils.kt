@@ -3,12 +3,9 @@ package com.atsuishio.superbwarfare.entity.vehicle.utils
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
-import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.wheelEngine
 import com.atsuishio.superbwarfare.init.ModDamageTypes
-import com.atsuishio.superbwarfare.init.ModParticleTypes
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.ModTags
-import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.VectorTool.calculateY
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.ParticleTypes
@@ -628,7 +625,7 @@ object VehicleEngineUtils {
                     power *= 0.995f
                 }
             } else {
-                if (hangingMode) {
+                if (hoverMode) {
                     setZRot(roll * 0.9f)
                     xRot *= 0.9f
                     rightInputDown = false
@@ -656,7 +653,7 @@ object VehicleEngineUtils {
                 )
 
                 if (onGround()) {
-                    hangingMode = false
+                    hoverMode = false
                     setZRot(roll * 0.98f)
                     xRot *= 0.98f
                 }
@@ -674,7 +671,7 @@ object VehicleEngineUtils {
 
                 if (upInputDown) {
                     upInputDown = false
-                    hangingMode = !hangingMode
+                    hoverMode = !hoverMode
                 }
 
                 if (!engineStart && up) {
@@ -708,7 +705,7 @@ object VehicleEngineUtils {
                 }
 
                 if (!(up || down || backInputDown) && engineStartOver) {
-                    val force = (if (hangingMode) 0.01f else 0.002f) * deltaMovement.y().toFloat()
+                    val force = (if (hoverMode) 0.01f else 0.002f) * deltaMovement.y().toFloat()
                     power = if (deltaMovement.y() < 0) {
                         Math.min(power - force, 0.12f)
                     } else {

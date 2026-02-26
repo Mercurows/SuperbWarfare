@@ -820,7 +820,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             define(IS_WRECK, false)
             define(SYMPATHETIC_DETONATED, false)
             define(TURRET_BURNED, false)
-            define(HANGING_MODE, false)
+            define(HOVER_MODE, false)
             define(TURRET_BURN_TIMER, 0)
         }
     }
@@ -4120,7 +4120,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open var sympatheticDetonated by SYMPATHETIC_DETONATED
     open var turretBurned by TURRET_BURNED
     open var turretBurnTimer by TURRET_BURN_TIMER
-    open var hangingMode by HANGING_MODE
+    open var hoverMode by HOVER_MODE
 
     open val hornSound: SoundEvent
         get() = this.computed().hornSound
@@ -4474,7 +4474,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.INT)
 
         @JvmField
-        val HANGING_MODE: EntityDataAccessor<Boolean> =
+        val HOVER_MODE: EntityDataAccessor<Boolean> =
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.BOOLEAN)
 
         // Map SeatIndex -> GunData

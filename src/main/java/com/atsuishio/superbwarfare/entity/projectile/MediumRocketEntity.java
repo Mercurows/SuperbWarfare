@@ -144,7 +144,7 @@ public class MediumRocketEntity extends FastThrowableProjectile implements GeoEn
                 } else {
                     ParticleTool.cannonHitParticles(serverLevel, blockHitResult.getLocation());
                     MediumRocketEntity mediumRocket = new MediumRocketEntity(ModEntities.MEDIUM_ROCKET.get(), serverLevel);
-                    mediumRocket.setPos(blockHitResult.getLocation());
+                    mediumRocket.setPos(blockHitResult.getLocation().add(getDeltaMovement().normalize().scale(0.99)));
                     mediumRocket.shoot(getDeltaMovement().x, getDeltaMovement().y - gravity, getDeltaMovement().z, (float) (getDeltaMovement().length() * resistance), 0);
                     mediumRocket.setOwner(getOwner());
                     mediumRocket.durability(durability);

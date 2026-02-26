@@ -138,8 +138,8 @@ public class CannonShellEntity extends FastThrowableProjectile implements GeoEnt
                     } else {
                         ParticleTool.cannonHitParticles(serverLevel, blockHitResult.getLocation());
                         CannonShellEntity cannonShell = new CannonShellEntity(ModEntities.CANNON_SHELL.get(), serverLevel);
-                        cannonShell.setPos(blockHitResult.getLocation());
-                        cannonShell.shoot(getDeltaMovement().x, getDeltaMovement().y - gravity, getDeltaMovement().z, (float) (getDeltaMovement().length() * resistance), 0);
+                        cannonShell.setPos(blockHitResult.getLocation().add(getDeltaMovement().normalize().scale(0.99)));
+                        cannonShell.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) (getDeltaMovement().length() * resistance), 0);
                         cannonShell.setOwner(getOwner());
                         cannonShell.durability(durability);
                         cannonShell.setType(Type.AP);
