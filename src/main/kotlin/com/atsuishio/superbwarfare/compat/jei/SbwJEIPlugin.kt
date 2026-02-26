@@ -35,6 +35,7 @@ class SbwJEIPlugin : IModPlugin {
     override fun registerCategories(registration: IRecipeCategoryRegistration) {
         registration.addRecipeCategories(GunPerksCategory(registration.jeiHelpers.guiHelper))
         registration.addRecipeCategories(VehicleAssemblingCategory(registration.jeiHelpers.guiHelper))
+        registration.addRecipeCategories(ResearchingCategory(registration.jeiHelpers.guiHelper))
     }
 
     override fun registerRecipeCatalysts(registration: IRecipeCatalystRegistration) {
@@ -42,6 +43,10 @@ class SbwJEIPlugin : IModPlugin {
         registration.addRecipeCatalyst(
             ItemStack(ModItems.VEHICLE_ASSEMBLING_TABLE.get()),
             VehicleAssemblingCategory.TYPE
+        )
+        registration.addRecipeCatalyst(
+            ItemStack(ModItems.BLUEPRINT_RESEARCH_TABLE.get()),
+            ResearchingCategory.TYPE
         )
     }
 
@@ -55,6 +60,10 @@ class SbwJEIPlugin : IModPlugin {
         registration.addRecipes(
             VehicleAssemblingCategory.TYPE,
             recipeManager.getAllRecipesFor(ModRecipes.VEHICLE_ASSEMBLING_TYPE.get())
+        )
+        registration.addRecipes(
+            ResearchingCategory.TYPE,
+            recipeManager.getAllRecipesFor(ModRecipes.RESEARCHING_TYPE.get())
         )
 
         registration.addItemStackInfo(

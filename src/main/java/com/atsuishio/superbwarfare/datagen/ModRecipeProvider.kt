@@ -2439,6 +2439,61 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                     has(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get())
                 )
                 .save(writer, getItemName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()) + "_researching")
+            ResearchingRecipeBuilder.tag(
+                ModTags.Items.LEGENDARY_BLUEPRINT,
+                3,
+                ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()
+            )
+                .base(Items.PAPER)
+                .addition(Items.LAPIS_LAZULI)
+                .special(ModItems.BOOST_RESEARCH_MODULE.get())
+                .color(1)
+                .unlockedBy(
+                    getHasName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()),
+                    has(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get())
+                )
+                .save(writer, getItemName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()) + "_researching_boost")
+            ResearchingRecipeBuilder.tag(
+                ModTags.Items.LEGENDARY_BLUEPRINT,
+                input = ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()
+            )
+                .base(Items.PAPER)
+                .addition(Items.LAPIS_LAZULI)
+                .special(ModItems.DIRECTIONAL_RESEARCH_MODULE.get())
+                .color(2)
+                .selectable()
+                .unlockedBy(
+                    getHasName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()),
+                    has(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get())
+                )
+                .save(writer, getItemName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()) + "_researching_directional")
+            ResearchingRecipeBuilder.tag(
+                ModTags.Items.LEGENDARY_BLUEPRINT,
+                input = ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()
+            )
+                .base(Items.PAPER)
+                .addition(Items.LAPIS_LAZULI)
+                .special(ModItems.EFFECTIVE_RESEARCH_MODULE.get())
+                .time(200)
+                .color(3)
+                .unlockedBy(
+                    getHasName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()),
+                    has(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get())
+                )
+                .save(writer, getItemName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()) + "_researching_effective")
+            ResearchingRecipeBuilder.tag(
+                ModTags.Items.ENLARGED_LEGENDARY_BLUEPRINT,
+                input = ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()
+            )
+                .base(Items.PAPER)
+                .addition(Items.LAPIS_LAZULI)
+                .special(ModItems.ENLARGEMENT_RESEARCH_MODULE.get())
+                .color(4)
+                .unlockedBy(
+                    getHasName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()),
+                    has(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get())
+                )
+                .save(writer, getItemName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()) + "_researching_enlargement")
         }
 
         fun copyBlueprint(writer: Consumer<FinishedRecipe>, result: ItemLike) {

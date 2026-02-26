@@ -950,6 +950,8 @@
   "jei.superbwarfare.charging_station": "使用燃料或食物进行发电，也可以接收主动输入的FE能量。能够为相邻的方块提供FE能量，为周围一定范围内的可充能载具充能。",
   "jei.superbwarfare.gun_perks": "武器可用模组",
   "jei.superbwarfare.vehicle_assembling": "载具装配",
+  "jei.superbwarfare.researching": "蓝图研究",
+  "jei.superbwarfare.researching.selectable": "[可自选]",
 
   "config.jade.plugin_superbwarfare.vehicle_energy": "载具能量",
   "config.jade.plugin_superbwarfare.vehicle_health": "载具血量",
