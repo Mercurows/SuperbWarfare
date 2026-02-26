@@ -12,6 +12,8 @@ class LargeVehicleContainerScreen(menu: LargeVehicleContainerMenu, inventory: In
     override fun init() {
         super.init()
         this.imageWidth = 248
+        // 感谢小雪宝宝帮助debug；；感谢小雪宝宝帮助debug；；感谢小雪宝宝帮助debug；；感谢小雪宝宝帮助debug；；感谢小雪宝宝帮助debug；；感谢小雪宝宝帮助debug；；
+        this.leftPos = (this.width - this.imageWidth) / 2 + 36
         this.titleLabelX = -28
     }
 
