@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.datagen
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.datagen.builder.NBTShapedRecipeBuilder
+import com.atsuishio.superbwarfare.datagen.builder.ResearchingRecipeBuilder
 import com.atsuishio.superbwarfare.datagen.builder.VehicleAssemblingRecipeBuilder
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.init.ModItems.Materials
@@ -41,6 +42,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
         buildPerkRecipes(writer)
         buildMiscRecipes(writer)
         buildSpecialRecipes(writer)
+        buildResearchRecipes(writer)
     }
 
     enum class GunRarity {
@@ -1631,13 +1633,13 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
                 .save(writer, loc(getEntityTypeName(ModEntities.BMP_2.get())))
             VehicleAssemblingRecipeBuilder.entity(ModEntities.BRADLEY.get(), VehicleAssemblingRecipe.Category.LAND)
-                    .require(ModTags.Items.STORAGE_BLOCK_STEEL, 8)
-                    .require(ModItems.MEDIUM_ARMAMENT_MODULE.get())
-                    .require(ModItems.MEDIUM_BATTERY_PACK.get())
-                    .require(ModItems.TRACK.get(), 2)
-                    .require(ModItems.LARGE_MOTOR.get())
-                    .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
-                    .save(writer, loc(getEntityTypeName(ModEntities.BRADLEY.get())))
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 8)
+                .require(ModItems.MEDIUM_ARMAMENT_MODULE.get())
+                .require(ModItems.MEDIUM_BATTERY_PACK.get())
+                .require(ModItems.TRACK.get(), 2)
+                .require(ModItems.LARGE_MOTOR.get())
+                .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
+                .save(writer, loc(getEntityTypeName(ModEntities.BRADLEY.get())))
             VehicleAssemblingRecipeBuilder.entity(ModEntities.PRISM_TANK.get(), VehicleAssemblingRecipe.Category.LAND)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 9)
                 .require(ModItems.LASER_UNIT.get(), 16)
@@ -1656,14 +1658,14 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
                 .save(writer, loc(getEntityTypeName(ModEntities.T_90A.get())))
             VehicleAssemblingRecipeBuilder.entity(ModEntities.M_1A_2.get(), VehicleAssemblingRecipe.Category.LAND)
-                    .require(ModTags.Items.STORAGE_BLOCK_STEEL, 10)
-                    .require(ModItems.HEAVY_ARMAMENT_MODULE.get())
-                    .require(ModItems.MEDIUM_BATTERY_PACK.get(), 2)
-                    .require(ModItems.TRACK.get(), 2)
-                    .require(ModItems.LARGE_MOTOR.get())
-                    .require(Items.SAND)
-                    .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
-                    .save(writer, loc(getEntityTypeName(ModEntities.M_1A_2.get())))
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 10)
+                .require(ModItems.HEAVY_ARMAMENT_MODULE.get())
+                .require(ModItems.MEDIUM_BATTERY_PACK.get(), 2)
+                .require(ModItems.TRACK.get(), 2)
+                .require(ModItems.LARGE_MOTOR.get())
+                .require(Items.SAND)
+                .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
+                .save(writer, loc(getEntityTypeName(ModEntities.M_1A_2.get())))
             VehicleAssemblingRecipeBuilder.entity(ModEntities.YX_100.get(), VehicleAssemblingRecipe.Category.LAND)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 8)
                 .require(ModItems.CEMENTED_CARBIDE_BLOCK.get(), 24)
@@ -2423,6 +2425,20 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .save(writer, "ammo_box_extract_ammo")
             SpecialRecipeBuilder.special(ModRecipes.SMOKE_DYE_SERIALIZER.get()).save(writer, "smoke_dye")
             SpecialRecipeBuilder.special(ModRecipes.VEHICLE_RESET_SERIALIZER.get()).save(writer, "vehicle_reset")
+        }
+
+        private fun buildResearchRecipes(writer: Consumer<FinishedRecipe>) {
+            ResearchingRecipeBuilder.tag(
+                ModTags.Items.LEGENDARY_BLUEPRINT,
+                input = ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()
+            )
+                .base(Items.PAPER)
+                .addition(Items.LAPIS_LAZULI)
+                .unlockedBy(
+                    getHasName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()),
+                    has(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get())
+                )
+                .save(writer, getItemName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()) + "_researching")
         }
 
         fun copyBlueprint(writer: Consumer<FinishedRecipe>, result: ItemLike) {
