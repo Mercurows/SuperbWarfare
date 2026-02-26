@@ -199,7 +199,7 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
         renderWeaponInfo(guiGraphics, entity, screenWidth, screenHeight)
         renderPassengerInfo(guiGraphics, entity, screenWidth, screenHeight)
         renderGearInfo(guiGraphics, entity, screenWidth, screenHeight, partialTick)
-        renderHangingInfo(guiGraphics, entity, screenWidth, screenHeight, partialTick, compatHeight)
+        renderHoverInfo(guiGraphics, entity, screenWidth, screenHeight, partialTick, compatHeight)
 
         poseStack.popPose()
     }
@@ -366,7 +366,7 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
         poseStack.popPose()
     }
 
-    private fun renderHangingInfo(
+    private fun renderHoverInfo(
         guiGraphics: GuiGraphics,
         vehicle: VehicleEntity,
         w: Int,
@@ -379,14 +379,14 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
         val engineInfo = vehicle.engineInfo ?: return
         if (engineInfo !is Helicopter) return
 
-        var componentReady = Component.translatable("tips.superbwarfare.hanging_mode_off").append(
+        var componentReady = Component.translatable("tips.superbwarfare.hover_mode_off").append(
             Component.literal(
                 " [" + options.keyJump.defaultKey.displayName.string + "]"
             )
         )
 
-        if (vehicle.hangingMode) {
-            componentReady = Component.translatable("tips.superbwarfare.hanging_mode_on").append(
+        if (vehicle.hoverMode) {
+            componentReady = Component.translatable("tips.superbwarfare.hover_mode_on").append(
                 Component.literal(
                     " [" + options.keyJump.defaultKey.displayName.string + "]"
                 )
