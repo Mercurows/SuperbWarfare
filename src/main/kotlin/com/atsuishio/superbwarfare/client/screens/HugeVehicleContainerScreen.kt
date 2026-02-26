@@ -13,6 +13,7 @@ class HugeVehicleContainerScreen(menu: HugeVehicleContainerMenu, inventory: Inve
         super.init()
         this.imageWidth = 320
         this.imageHeight = 222
+        this.leftPos = (this.width - this.imageWidth) / 2 + 72
         this.titleLabelX = -64
     }
 
