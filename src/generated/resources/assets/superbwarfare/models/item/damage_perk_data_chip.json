@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "superbwarfare:item/damage_perk_data_chip"
+  }
+}

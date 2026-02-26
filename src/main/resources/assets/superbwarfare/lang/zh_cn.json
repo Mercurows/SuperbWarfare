@@ -327,6 +327,9 @@
   "item.superbwarfare.enlargement_research_module": "增广研发模块",
   "item.superbwarfare.effective_research_module": "高效研发模块",
   "item.superbwarfare.boost_research_module": "倍率研发模块",
+  "item.superbwarfare.ammo_perk_data_chip": "子弹模组数据芯片",
+  "item.superbwarfare.functional_perk_data_chip": "功能模组数据芯片",
+  "item.superbwarfare.damage_perk_data_chip": "伤害模组数据芯片",
 
   "attribute.superbwarfare.bullet_resistance": "子弹防护",
 

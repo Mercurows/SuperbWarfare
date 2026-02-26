@@ -76,6 +76,11 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.VEHICLE_GUN);
         simpleItem(ModItems.EMPTY_PERK, "perk/");
         simpleItem(ModItems.MORTAR_SHELL);
+        simpleItem(ModItems.LARGE_SHELL_AP);
+        simpleItem(ModItems.LARGE_SHELL_HE);
+        simpleItem(ModItems.LARGE_SHELL_CM);
+        simpleItem(ModItems.LARGE_SHELL_WP);
+        simpleItem(ModItems.LARGE_SHELL_GS);
 
         // misc
         simpleItem(ModItems.ANCIENT_CPU);
@@ -188,6 +193,10 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP);
         simpleItem(ModItems.SUPERB_BLUEPRINT_DATA_CHIP);
         simpleItem(ModItems.VIRTUAL_BLUEPRINT_DATA_CHIP);
+
+        simpleItem(ModItems.AMMO_PERK_DATA_CHIP);
+        simpleItem(ModItems.FUNCTIONAL_PERK_DATA_CHIP);
+        simpleItem(ModItems.DAMAGE_PERK_DATA_CHIP);
 
         simpleItem(ModItems.DIRECTIONAL_RESEARCH_MODULE);
         simpleItem(ModItems.ENLARGEMENT_RESEARCH_MODULE);
