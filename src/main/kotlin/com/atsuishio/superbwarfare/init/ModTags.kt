@@ -67,7 +67,19 @@ object ModTags {
         @JvmField val CANNON_BLUEPRINT = modItemTag("blueprint/cannon")
 
         // 用于研究台跨级配方的 tag
-        @JvmField val ENLARGED_EPIC_BLUEPRINT = modItemTag("enlarged/epic_blueprint")
+        @JvmField val ENLARGED_COMMON_BLUEPRINT = modItemTag("blueprint/enlarged/common")
+        @JvmField val ENLARGED_RARE_BLUEPRINT = modItemTag("blueprint/enlarged/rare")
+        @JvmField val ENLARGED_EPIC_BLUEPRINT = modItemTag("blueprint/enlarged/epic")
+        @JvmField val ENLARGED_LEGENDARY_BLUEPRINT = modItemTag("blueprint/enlarged/legendary")
+
+        // Perk tag
+        @JvmField val AMMO_PERK = modItemTag("perk/ammo")
+        @JvmField val FUNCTIONAL_PERK = modItemTag("perk/functional")
+        @JvmField val DAMAGE_PERK = modItemTag("perk/damage")
+
+        @JvmField val RESEARCHABLE_AMMO_PERK = modItemTag("perk/researchable/ammo")
+        @JvmField val RESEARCHABLE_FUNCTIONAL_PERK = modItemTag("perk/researchable/functional")
+        @JvmField val RESEARCHABLE_DAMAGE_PERK = modItemTag("perk/researchable/damage")
 
         @JvmField val HAMMER = modItemTag("hammer")
         @JvmField val WRENCHES = commonItemTag("wrenches")
