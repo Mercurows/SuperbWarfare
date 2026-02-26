@@ -51,6 +51,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
         buildPerkRecipes(writer)
         buildMiscRecipes(writer)
         buildSpecialRecipes(writer)
+        buildResearchRecipes(writer)
     }
 
     enum class GunRarity {
@@ -1781,13 +1782,13 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
                 .save(writer, loc(getEntityTypeName(ModEntities.BMP_2.get())))
             VehicleAssemblingRecipeBuilder.entity(ModEntities.BRADLEY.get(), VehicleAssemblingRecipe.Category.LAND)
-                    .require(ModTags.Items.STORAGE_BLOCK_STEEL, 8)
-                    .require(ModItems.MEDIUM_ARMAMENT_MODULE.get())
-                    .require(ModItems.MEDIUM_BATTERY_PACK.get())
-                    .require(ModItems.TRACK.get(), 2)
-                    .require(ModItems.LARGE_MOTOR.get())
-                    .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
-                    .save(writer, loc(getEntityTypeName(ModEntities.BRADLEY.get())))
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 8)
+                .require(ModItems.MEDIUM_ARMAMENT_MODULE.get())
+                .require(ModItems.MEDIUM_BATTERY_PACK.get())
+                .require(ModItems.TRACK.get(), 2)
+                .require(ModItems.LARGE_MOTOR.get())
+                .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
+                .save(writer, loc(getEntityTypeName(ModEntities.BRADLEY.get())))
             VehicleAssemblingRecipeBuilder.entity(ModEntities.PRISM_TANK.get(), VehicleAssemblingRecipe.Category.LAND)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 9)
                 .require(ModItems.LASER_UNIT.get(), 16)
@@ -1806,14 +1807,14 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
                 .save(writer, loc(getEntityTypeName(ModEntities.T_90A.get())))
             VehicleAssemblingRecipeBuilder.entity(ModEntities.M_1A_2.get(), VehicleAssemblingRecipe.Category.LAND)
-                    .require(ModTags.Items.STORAGE_BLOCK_STEEL, 10)
-                    .require(ModItems.HEAVY_ARMAMENT_MODULE.get())
-                    .require(ModItems.MEDIUM_BATTERY_PACK.get(), 2)
-                    .require(ModItems.TRACK.get(), 2)
-                    .require(ModItems.LARGE_MOTOR.get())
-                    .require(Items.SAND)
-                    .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
-                    .save(writer, loc(getEntityTypeName(ModEntities.M_1A_2.get())))
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 10)
+                .require(ModItems.HEAVY_ARMAMENT_MODULE.get())
+                .require(ModItems.MEDIUM_BATTERY_PACK.get(), 2)
+                .require(ModItems.TRACK.get(), 2)
+                .require(ModItems.LARGE_MOTOR.get())
+                .require(Items.SAND)
+                .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
+                .save(writer, loc(getEntityTypeName(ModEntities.M_1A_2.get())))
             VehicleAssemblingRecipeBuilder.entity(ModEntities.YX_100.get(), VehicleAssemblingRecipe.Category.LAND)
                 .require(ModTags.Items.STORAGE_BLOCK_STEEL, 8)
                 .require(ModItems.CEMENTED_CARBIDE_BLOCK.get(), 24)
@@ -2579,6 +2580,21 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
 
         fun copyBlueprint(writer: RecipeOutput, result: ItemLike) {
             copySmithingTemplate(writer, result, Items.LAPIS_LAZULI)
+        }
+
+        // TODO researchRecipes
+        private fun buildResearchRecipes(writer: RecipeOutput) {
+//            ResearchingRecipeBuilder.tag(
+//                ModTags.Items.LEGENDARY_BLUEPRINT,
+//                input = ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()
+//            )
+//                .base(Items.PAPER)
+//                .addition(Items.LAPIS_LAZULI)
+//                .unlockedBy(
+//                    getHasName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()),
+//                    has(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get())
+//                )
+//                .save(writer, getItemName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()) + "_researching")
         }
 
         fun gunSmithing(

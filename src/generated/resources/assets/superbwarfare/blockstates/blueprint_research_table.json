@@ -1,32 +1,62 @@
 {
   "variants": {
-    "facing=east,part=foot": {
+    "enabled=false,facing=east,part=foot": {
       "model": "superbwarfare:block/blueprint_research_table",
       "y": 90
     },
-    "facing=east,part=head": {
+    "enabled=false,facing=east,part=head": {
       "model": "superbwarfare:block/blueprint_research_table",
       "y": 90
     },
-    "facing=north,part=foot": {
+    "enabled=false,facing=north,part=foot": {
       "model": "superbwarfare:block/blueprint_research_table"
     },
-    "facing=north,part=head": {
+    "enabled=false,facing=north,part=head": {
       "model": "superbwarfare:block/blueprint_research_table"
     },
-    "facing=south,part=foot": {
+    "enabled=false,facing=south,part=foot": {
       "model": "superbwarfare:block/blueprint_research_table",
       "y": 180
     },
-    "facing=south,part=head": {
+    "enabled=false,facing=south,part=head": {
       "model": "superbwarfare:block/blueprint_research_table",
       "y": 180
     },
-    "facing=west,part=foot": {
+    "enabled=false,facing=west,part=foot": {
       "model": "superbwarfare:block/blueprint_research_table",
       "y": 270
     },
-    "facing=west,part=head": {
+    "enabled=false,facing=west,part=head": {
+      "model": "superbwarfare:block/blueprint_research_table",
+      "y": 270
+    },
+    "enabled=true,facing=east,part=foot": {
+      "model": "superbwarfare:block/blueprint_research_table",
+      "y": 90
+    },
+    "enabled=true,facing=east,part=head": {
+      "model": "superbwarfare:block/blueprint_research_table",
+      "y": 90
+    },
+    "enabled=true,facing=north,part=foot": {
+      "model": "superbwarfare:block/blueprint_research_table"
+    },
+    "enabled=true,facing=north,part=head": {
+      "model": "superbwarfare:block/blueprint_research_table"
+    },
+    "enabled=true,facing=south,part=foot": {
+      "model": "superbwarfare:block/blueprint_research_table",
+      "y": 180
+    },
+    "enabled=true,facing=south,part=head": {
+      "model": "superbwarfare:block/blueprint_research_table",
+      "y": 180
+    },
+    "enabled=true,facing=west,part=foot": {
+      "model": "superbwarfare:block/blueprint_research_table",
+      "y": 270
+    },
+    "enabled=true,facing=west,part=head": {
       "model": "superbwarfare:block/blueprint_research_table",
       "y": 270
     }
