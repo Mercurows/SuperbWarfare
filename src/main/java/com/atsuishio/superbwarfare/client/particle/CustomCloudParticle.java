@@ -2,6 +2,8 @@ package com.atsuishio.superbwarfare.client.particle;
 
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.core.BlockPos;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
@@ -48,7 +50,9 @@ public class CustomCloudParticle extends TextureSheetParticle {
 
     @Override
     public int getLightColor(float partialTick) {
-        return 15728880;
+        BlockPos blockpos = BlockPos.containing(this.x, this.y + 1, this.z);
+        int lightLevel = this.level.hasChunkAt(blockpos) ? LevelRenderer.getLightColor(this.level, blockpos) : 0;
+        return light ? 15728880 : lightLevel;
     }
 
     @Override
