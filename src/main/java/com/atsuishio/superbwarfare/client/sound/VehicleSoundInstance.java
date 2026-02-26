@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.client.sound;
 
+import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo;
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -201,7 +202,7 @@ public abstract class VehicleSoundInstance extends AbstractTickableSoundInstance
     public static class SkipSound extends VehicleSoundInstance {
 
         public SkipSound(VehicleEntity mobileVehicle) {
-            super(ModSounds.WHEEL_VEHICLE_SKIP.get(), Minecraft.getInstance(), mobileVehicle);
+            super(mobileVehicle.getEngineInfo() instanceof EngineInfo.Track? ModSounds.TRACK_VEHICLE_SKIP.get() : ModSounds.WHEEL_VEHICLE_SKIP.get(), Minecraft.getInstance(), mobileVehicle);
         }
 
         @Override

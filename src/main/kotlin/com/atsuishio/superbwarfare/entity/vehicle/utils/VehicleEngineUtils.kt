@@ -35,25 +35,32 @@ object VehicleEngineUtils {
         val maxBackwardSpeedRate = engineInfo.maxBackwardSpeedRate
         var powerAdd = engineInfo.increment
         var powerReduce = engineInfo.decrement
-        val steeringSpeed = engineInfo.steeringSpeed
+        var steeringSpeed = engineInfo.steeringSpeed
 
         if (buoyancy != 0.0) {
             val fluidFloat = buoyancy * VehicleVecUtils.getSubmergedHeight(this)
             deltaMovement = deltaMovement.add(0.0, fluidFloat, 0.0)
         }
 
+        val rightDrift = if (drift() && rightInputDown) 0f else 1f
+        val leftDrift = if (drift() && leftInputDown) 0f else 1f
+
         if (onGround()) {
-            var f0 = 0.54f + 0.25f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat())
+
+            var f0 = (if (drift()) 0.95f
+            else 0.54f + 0.25f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat()))
 
             if (isInFluidType) {
-                f0 -= 2f * VehicleVecUtils.getSubmergedHeight(this).toFloat() * deltaMovement.lengthSqr().toFloat()
+                f0 -= 3f * VehicleVecUtils.getSubmergedHeight(this).toFloat() * deltaMovement.lengthSqr().toFloat()
             }
 
             deltaMovement = deltaMovement.add(
                 getViewVector(1f).normalize()
-                    .scale(0.05 * deltaMovement.dot(getViewVector(1f)))
+                    .scale((if (drift()) 0.001 else 0.05) * deltaMovement.dot(getViewVector(1f)))
             )
+
             deltaMovement = deltaMovement.multiply(f0.toDouble(), 0.99, f0.toDouble())
+
         } else if (isInFluidType) {
 
             powerAdd *= 0.1f
@@ -148,33 +155,37 @@ object VehicleEngineUtils {
         }
 
         if (upInputDown) {
-            power *= if (isInFluidType) 0.97f else 0.6f
+            power *= if (isInFluidType) 0.97f else (if (drift()) 0.96f else 0.6f)
         }
 
         if (rightInputDown || leftInputDown) {
-            power *= 0.99f
+            power *= 0.995f
         }
 
         if (level() is ServerLevel) {
             consumeEnergy(energyCost)
         }
 
+        if (drift()) {
+            steeringSpeed *= 3.4f
+        }
+
         deltaRot *= Math.max(0.76f - 0.1f * deltaMovement.horizontalDistance(), 0.3).toFloat()
 
         val s0 = deltaMovement.dot(getViewVector(1f))
 
-        leftWheelRot = ((leftWheelRot - wheelRotSpeed * s0) + Mth.clamp(
-            wheelDifferential * deltaRot, -5.0, 5.0
+        leftWheelRot = ((leftWheelRot - wheelRotSpeed * s0 * leftDrift) + Mth.clamp(
+            wheelDifferential * deltaRot * leftDrift, -5.0, 5.0
         )).toFloat()
-        rightWheelRot = ((rightWheelRot - wheelRotSpeed * s0) - Mth.clamp(
-            wheelDifferential * deltaRot, -5.0, 5.0
+        rightWheelRot = ((rightWheelRot - wheelRotSpeed * s0 * rightDrift) - Mth.clamp(
+            wheelDifferential * deltaRot * rightDrift, -5.0, 5.0
         )).toFloat()
 
-        leftTrack = ((leftTrack - trackSpeed * java.lang.Math.PI * s0) + Mth.clamp(
-            trackDifferential * java.lang.Math.PI * deltaRot, -5.0, 5.0
+        leftTrack = ((leftTrack - trackSpeed * java.lang.Math.PI * s0 * leftDrift) + Mth.clamp(
+            trackDifferential * java.lang.Math.PI * deltaRot * leftDrift, -5.0, 5.0
         )).toFloat()
-        rightTrack = ((rightTrack - trackSpeed * java.lang.Math.PI * s0) - Mth.clamp(
-            trackDifferential * java.lang.Math.PI * deltaRot, -5.0, 5.0
+        rightTrack = ((rightTrack - trackSpeed * java.lang.Math.PI * s0 * rightDrift) - Mth.clamp(
+            trackDifferential * java.lang.Math.PI * deltaRot * rightDrift, -5.0, 5.0
         )).toFloat()
 
         val i: Int
@@ -195,7 +206,7 @@ object VehicleEngineUtils {
             power *= 0.96f
         }
 
-        yRot = (yRot - (if (isInFluidType && !onGround()) 2.5 else 6.0) * deltaRot - i * s0).toFloat()
+        yRot = (yRot - (if (isInFluidType && !onGround()) 2.5 else 8.0) * deltaRot - i * s0).toFloat()
 
         val direct = (90 - VehicleVecUtils.calculateAngle(deltaMovement, getViewVector(1f)).toFloat()) / 90
         setZRot(
@@ -203,7 +214,7 @@ object VehicleEngineUtils {
         )
 
         if (isInFluidType || onGround()) {
-            deltaMovement = deltaMovement.add(getViewVector(1f).scale(0.15 * targetSpeed * power))
+            deltaMovement = deltaMovement.add(getViewVector(1f).scale((if (drift()) 0.03 else 0.15) * targetSpeed * power))
         }
     }
 
@@ -221,15 +232,13 @@ object VehicleEngineUtils {
 
         val level = level()
 
-        val drift = upInputDown && (rightInputDown || leftInputDown)
-
         if (buoyancy != 0.0) {
             val fluidFloat = buoyancy * VehicleVecUtils.getSubmergedHeight(this)
             deltaMovement = deltaMovement.add(0.0, fluidFloat, 0.0)
         }
 
         if (onGround()) {
-            var f0 = (if (drift) 0.96f
+            var f0 = (if (drift()) 0.96f
             else 0.54f + 0.25f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat()))
 
             if (isInFluidType) {
@@ -238,8 +247,9 @@ object VehicleEngineUtils {
 
             deltaMovement = deltaMovement.add(
                 getViewVector(1f).normalize()
-                    .scale((if (drift) 0.001 else 0.05) * deltaMovement.dot(getViewVector(1f)))
+                    .scale((if (drift()) 0.001 else 0.05) * deltaMovement.dot(getViewVector(1f)))
             )
+
             deltaMovement = deltaMovement.multiply(f0.toDouble(), 0.99, f0.toDouble())
         } else if (isInFluidType) {
 
@@ -342,7 +352,7 @@ object VehicleEngineUtils {
         }
 
         if (upInputDown) {
-            power *= if (isInFluidType) 0.97f else (if (drift) 0.93f else 0.6f)
+            power *= if (isInFluidType) 0.97f else (if (drift()) 0.93f else 0.6f)
         }
 
         if (rightInputDown || leftInputDown) {
@@ -371,7 +381,7 @@ object VehicleEngineUtils {
             power *= 0.875f
         }
 
-        if (drift) {
+        if (drift()) {
             steeringSpeed *= 1.5f
         }
 
@@ -413,7 +423,7 @@ object VehicleEngineUtils {
         )
 
         if ((isInFluidType || onGround())) {
-            deltaMovement = deltaMovement.add(getViewVector(1f).scale((if (drift) 0.02 else 0.15) * targetSpeed * power))
+            deltaMovement = deltaMovement.add(getViewVector(1f).scale((if (drift()) 0.02 else 0.15) * targetSpeed * power))
         }
     }
 

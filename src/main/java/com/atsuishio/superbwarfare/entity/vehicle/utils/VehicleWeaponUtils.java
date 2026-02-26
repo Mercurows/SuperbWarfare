@@ -32,14 +32,7 @@ public final class VehicleWeaponUtils {
      */
     public static void adjustTurretAngle(VehicleEntity vehicle) {
         Entity driver = vehicle.getNthEntity(vehicle.getTurretControllerIndex());
-        if (driver == null) {
-            vehicle.setTurretYRotLock(0);
-        } else {
-//            Vec3 viewPos = driver.getEyePosition().add(driver.getViewVector(1).scale(128));
-//            if (vehicle.getBarrelPosition() != null) {
-//                Vec3 aimVec = vehicle.getBarrelPosition().vectorTo(viewPos);
-//                turretAutoAimFromVector(vehicle, driver.getViewVector(1));
-//            }
+        if (driver != null) {
             turretAutoAimFromVector(vehicle, driver.getViewVector(1));
         }
     }
@@ -69,7 +62,7 @@ public final class VehicleWeaponUtils {
 
         vehicle.setTurretXRot(Mth.clamp(vehicle.getTurretXRot() + Mth.clamp(0.5f * diffX, -xSpeed, xSpeed), -vehicle.getTurretMaxPitch(), -vehicle.getTurretMinPitch()));
         vehicle.setTurretYRot(Mth.clamp(vehicle.getTurretYRot() - Mth.clamp(0.5f * diffY, min, max), -vehicle.getTurretMaxYaw(), -vehicle.getTurretMinYaw()));
-        vehicle.setTurretYRotLock(Mth.clamp(0.5f * diffY, min, max));
+        vehicle.setTurretYRotLock(Mth.clamp(-0.5f * diffY, min, max));
     }
 
     /**

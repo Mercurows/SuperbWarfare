@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.entity.vehicle.utils
 
+import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
+import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo
 import com.atsuishio.superbwarfare.entity.TargetEntity
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity
 import com.atsuishio.superbwarfare.entity.vehicle.TurretWreckEntity
@@ -10,13 +12,19 @@ import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.lerpA
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.transformPosition
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.tools.OBB
+import com.atsuishio.superbwarfare.tools.SpritePixelHelper
 import com.atsuishio.superbwarfare.tools.angleTo
 import com.atsuishio.superbwarfare.tools.forceHurt
 import com.mojang.math.Axis
+import net.minecraft.client.Minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
+import net.minecraft.core.particles.BlockParticleOption
+import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.tags.BlockTags
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
@@ -32,10 +40,12 @@ import org.joml.Math
 import org.joml.Matrix4d
 import org.joml.Vector3d
 
+
 /**
  * 处理载具运动相关方法的工具类
  */
 object VehicleMotionUtils {
+
     /**
      * 防止载具堆叠
      *
@@ -501,6 +511,25 @@ object VehicleMotionUtils {
                 }
                 val state = level.getBlockState(blockPos)
                 val shape = state.getCollisionShape(level, blockPos)
+
+                if (vehicle.level().isClientSide && vehicle.deltaMovement.horizontalDistanceSqr() > 0.01) {
+                    if (state.`is`(BlockTags.SAND) || state.`is`(BlockTags.SNOW)) {
+                        val model = Minecraft.getInstance().modelManager.blockModelShaper.getBlockModel(state)
+                        val sprite = model.particleIcon
+                        val color = SpritePixelHelper.getRandomPixelARGB(sprite, 0)
+                        val speed = vehicle.deltaMovement.length().toFloat()
+
+                        val particleOption = CustomCloudOption(color, 60, 1f + 6f * speed + Math.random().toFloat() * 2, Math.random().toFloat() * -0.12f, false, false)
+                        vehicle.addRandomParticle(particleOption, p.add(0.0, 0.5, 0.0), speed, vehicle.level(), 0.005f, 1)
+                    } else {
+                        val particleData = BlockParticleOption(ParticleTypes.BLOCK, state)
+                        vehicle.addRandomParticle(particleData, p.add(0.0, 0.1, 0.0), 0.2f, vehicle.level(), 0f, 1)
+
+                        if (vehicle.engineInfo is EngineInfo.Track && vehicle.drift() && vehicle.deltaMovement.horizontalDistanceSqr() > 0.0004 && state.`is`(BlockTags.MINEABLE_WITH_PICKAXE)) {
+                            vehicle.addRandomParticle(ModParticleTypes.FIRE_STAR.get(), p.add(0.0, 0.1, 0.0), 0.25f, vehicle.level(), 0.08f, 1)
+                        }
+                    }
+                }
 
                 heightY = if (!shape.isEmpty) {
                     p.y - (shape.max(Direction.Axis.Y) + blockPos.y)

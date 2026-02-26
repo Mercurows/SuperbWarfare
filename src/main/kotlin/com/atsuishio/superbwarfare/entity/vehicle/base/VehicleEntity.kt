@@ -1868,6 +1868,10 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             } else if (turretController is Mob) {
                 this.turretAutoAimFromUuid(aiTurretTargetUUID, turretController)
             }
+
+            if (turretController == null) {
+                turretYRotLock = 0f
+            }
         }
 
         if (hasPassengerWeaponStation()) {
@@ -4204,7 +4208,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     open fun stuka() = xRot > 5 && xRot < 175 && deltaMovement.y < -0.4 && !onGround()
     open fun heliCrash() = vehicleType == VehicleType.HELICOPTER && health < getMaxHealth() * 0.1f && !onGround()
-    open fun vehicleSkip() = engineInfo is Wheel && engineInfo !is Track && engineInfo !is WheelChair && upInputDown && onGround() && deltaMovement.horizontalDistanceSqr() > 0.01
+    open fun vehicleSkip() = engineInfo is Wheel && engineInfo !is WheelChair && (if (engineInfo is Track) drift() else upInputDown) && onGround() && deltaMovement.horizontalDistanceSqr() > (if (engineInfo is Track) 0.0004 else 0.01)
+    open fun drift() = upInputDown && (rightInputDown || leftInputDown)
 
     open val vehicleType: VehicleType?
         get() = computed().type
