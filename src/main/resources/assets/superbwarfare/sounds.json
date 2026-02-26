@@ -2920,6 +2920,15 @@
       }
     ]
   },
+  "wheel_vehicle_skip": {
+    "sounds": [
+      {
+        "attenuation_distance": 32,
+        "stream": true,
+        "name": "superbwarfare:vehicle/common/wheel_vehicle_skip"
+      }
+    ]
+  },
   "laser_tower_shoot": {
     "sounds": [
       {

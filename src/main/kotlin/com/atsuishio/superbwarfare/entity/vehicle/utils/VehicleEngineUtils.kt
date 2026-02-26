@@ -1,8 +1,11 @@
 package com.atsuishio.superbwarfare.entity.vehicle.utils
 
+import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.wheelEngine
 import com.atsuishio.superbwarfare.init.ModDamageTypes
+import com.atsuishio.superbwarfare.init.ModParticleTypes
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.tools.ParticleTool
@@ -30,8 +33,8 @@ object VehicleEngineUtils {
         val trackDifferential = engineInfo.trackDifferential
         val maxForwardSpeedRate = engineInfo.maxForwardSpeedRate
         val maxBackwardSpeedRate = engineInfo.maxBackwardSpeedRate
-        val powerAdd = engineInfo.increment
-        val powerReduce = engineInfo.decrement
+        var powerAdd = engineInfo.increment
+        var powerReduce = engineInfo.decrement
         val steeringSpeed = engineInfo.steeringSpeed
 
         if (buoyancy != 0.0) {
@@ -40,14 +43,28 @@ object VehicleEngineUtils {
         }
 
         if (onGround()) {
-            val f0 = 0.54f + 0.25f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat())
+            var f0 = 0.54f + 0.25f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat())
+
+            if (isInFluidType) {
+                f0 -= 2f * VehicleVecUtils.getSubmergedHeight(this).toFloat() * deltaMovement.lengthSqr().toFloat()
+            }
+
             deltaMovement = deltaMovement.add(
                 getViewVector(1f).normalize()
                     .scale(0.05 * deltaMovement.dot(getViewVector(1f)))
             )
             deltaMovement = deltaMovement.multiply(f0.toDouble(), 0.99, f0.toDouble())
         } else if (isInFluidType) {
-            val f1 = 0.74f + 0.09f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat())
+
+            powerAdd *= 0.1f
+            powerReduce *= 0.1f
+
+            val f1 = Mth.clamp(0.9f
+                    + 0.09f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat())
+                    - 4f * deltaMovement.lengthSqr().toFloat()
+                - VehicleVecUtils.getSubmergedHeight(this).toFloat() * 0.02f
+                , 0f, 0.99f)
+
             deltaMovement = deltaMovement.add(
                 getViewVector(1f).normalize()
                     .scale(0.04 * deltaMovement.dot(getViewVector(1f)))
@@ -55,6 +72,22 @@ object VehicleEngineUtils {
             deltaMovement = deltaMovement.multiply(f1.toDouble(), 0.85, f1.toDouble())
         } else {
             deltaMovement = deltaMovement.multiply(0.99, 0.99, 0.99)
+        }
+
+        if (level().isClientSide) {
+            if (isInFluidType && deltaMovement.horizontalDistanceSqr() > 0.3162) {
+                addRandomParticle(ParticleTypes.CLOUD, position().add(
+                    0.0,
+                    VehicleVecUtils.getSubmergedHeight(this) - 0.2,
+                    0.0),
+                    1f, level(), 0f, (2 + 4 * deltaMovement.length()).toInt())
+
+                addRandomParticle(ParticleTypes.BUBBLE_COLUMN_UP, position().add(
+                    0.0,
+                    VehicleVecUtils.getSubmergedHeight(this) - 0.2,
+                    0.0), 1f, level(), 0f, (2 + 10 * deltaMovement.length()).toInt())
+
+            }
         }
 
         val passenger0 = getFirstPassenger()
@@ -118,11 +151,11 @@ object VehicleEngineUtils {
         }
 
         if (upInputDown) {
-            power *= 0.6f
+            power *= if (isInFluidType) 0.97f else 0.6f
         }
 
         if (rightInputDown || leftInputDown) {
-            power *= 0.97f
+            power *= 0.99f
         }
 
         if (level() is ServerLevel) {
@@ -173,11 +206,7 @@ object VehicleEngineUtils {
         )
 
         if (isInFluidType || onGround()) {
-            val water =
-                (if (!isInFluidType && !onGround()) 0.05f else (if (isInFluidType && !onGround()) 0.3f else 1f)).toDouble()
-            deltaMovement = deltaMovement.add(
-                getViewVector(1f).scale(0.15 * water * targetSpeed * power)
-            )
+            deltaMovement = deltaMovement.add(getViewVector(1f).scale(0.15 * targetSpeed * power))
         }
     }
 
@@ -189,9 +218,13 @@ object VehicleEngineUtils {
         val wheelDifferential = engineInfo.wheelDifferential
         val maxForwardSpeedRate = engineInfo.maxForwardSpeedRate
         val maxBackwardSpeedRate = engineInfo.maxBackwardSpeedRate
-        val powerAdd = engineInfo.increment
-        val powerReduce = engineInfo.decrement
-        val steeringSpeed = engineInfo.steeringSpeed
+        var powerAdd = engineInfo.increment
+        var powerReduce = engineInfo.decrement
+        var steeringSpeed = engineInfo.steeringSpeed
+
+        val level = level()
+
+        val drift = upInputDown && (rightInputDown || leftInputDown)
 
         if (buoyancy != 0.0) {
             val fluidFloat = buoyancy * VehicleVecUtils.getSubmergedHeight(this)
@@ -199,51 +232,75 @@ object VehicleEngineUtils {
         }
 
         if (onGround()) {
-            val f0 = 0.54f + 0.25f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat())
+            var f0 = (if (drift) 0.96f
+            else 0.54f + 0.25f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat()))
+
+            if (isInFluidType) {
+                f0 -= 3f * VehicleVecUtils.getSubmergedHeight(this).toFloat() * deltaMovement.lengthSqr().toFloat()
+            }
+
             deltaMovement = deltaMovement.add(
                 getViewVector(1f).normalize()
-                    .scale(0.05 * deltaMovement.dot(getViewVector(1f)))
+                    .scale((if (drift) 0.001 else 0.05) * deltaMovement.dot(getViewVector(1f)))
             )
             deltaMovement = deltaMovement.multiply(f0.toDouble(), 0.99, f0.toDouble())
         } else if (isInFluidType) {
-            val f1 = 0.74f + 0.09f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat())
+
+            powerAdd *= 0.1f
+            powerReduce *= 0.1f
+
+            val f1 = Mth.clamp(0.9f
+                    + 0.09f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat())
+                    - 4f * deltaMovement.lengthSqr().toFloat()
+                    - VehicleVecUtils.getSubmergedHeight(this).toFloat() * 0.02f
+                , 0f, 0.99f)
+
             deltaMovement = deltaMovement.add(
                 getViewVector(1f).normalize()
                     .scale(0.04 * deltaMovement.dot(getViewVector(1f)))
             )
             deltaMovement = deltaMovement.multiply(f1.toDouble(), 0.85, f1.toDouble())
+
         } else {
             deltaMovement = deltaMovement.multiply(0.99, 0.99, 0.99)
         }
 
-        val level = level()
-        if (level is ServerLevel && isInFluidType && deltaMovement.length() > 0.1) {
-            ParticleTool.sendParticle(
-                level,
-                ParticleTypes.CLOUD,
-                x + 0.5 * deltaMovement.x,
-                y + VehicleVecUtils.getSubmergedHeight(this) - 0.2,
-                z + 0.5 * deltaMovement.z,
-                (2 + 4 * deltaMovement.length()).toInt(),
-                0.65,
-                0.0,
-                0.65,
-                0.0,
-                true
-            )
-            ParticleTool.sendParticle(
-                level,
-                ParticleTypes.BUBBLE_COLUMN_UP,
-                x + 0.5 * deltaMovement.x,
-                y + VehicleVecUtils.getSubmergedHeight(this) - 0.2,
-                z + 0.5 * deltaMovement.z,
-                (2 + 10 * deltaMovement.length()).toInt(),
-                0.65,
-                0.0,
-                0.65,
-                0.0,
-                true
-            )
+
+        if (level.isClientSide) {
+            if (isInFluidType && deltaMovement.horizontalDistanceSqr() > 0.3162) {
+
+                addRandomParticle(ParticleTypes.CLOUD, position().add(
+                    0.0,
+                    VehicleVecUtils.getSubmergedHeight(this) - 0.2,
+                    0.0),
+                    1f, level(), 0f, (2 + 4 * deltaMovement.length()).toInt())
+
+                addRandomParticle(ParticleTypes.BUBBLE_COLUMN_UP, position().add(
+                    0.0,
+                    VehicleVecUtils.getSubmergedHeight(this) - 0.2,
+                    0.0), 1f, level(), 0f, (2 + 10 * deltaMovement.length()).toInt())
+
+            }
+
+            if (upInputDown && onGround() && deltaMovement.horizontalDistanceSqr() > 0.01) {
+                for (pos in computed().terrainCompat) {
+                    if (pos != null) {
+                        val worldPosition = transformPosition(
+                            getVehicleTransform(1f),
+                            pos.x, pos.y, pos.z
+                        )
+
+                        val option = CustomCloudOption(0x000000, 200, 1.5f, 0f, false, false)
+
+                        level().addParticle(option,
+                            worldPosition.x,
+                            worldPosition.y,
+                            worldPosition.z,
+                            0.0, 0.0, 0.0
+                        )
+                    }
+                }
+            }
         }
 
         val passenger0 = getFirstPassenger()
@@ -291,11 +348,11 @@ object VehicleEngineUtils {
         }
 
         if (upInputDown) {
-            power *= 0.6f
+            power *= if (isInFluidType) 0.97f else (if (drift) 0.93f else 0.6f)
         }
 
         if (rightInputDown || leftInputDown) {
-            power *= 0.98f
+            power *= 0.995f
         }
 
         if (level is ServerLevel) {
@@ -318,6 +375,10 @@ object VehicleEngineUtils {
 
         if (mainEngineDamaged) {
             power *= 0.875f
+        }
+
+        if (drift) {
+            steeringSpeed *= 1.5f
         }
 
         if (rightInputDown) {
@@ -354,15 +415,11 @@ object VehicleEngineUtils {
 
         val direct = (90 - VehicleVecUtils.calculateAngle(deltaMovement, getViewVector(1f)).toFloat()) / 90
         setZRot(
-            (roll - direct * deltaRot * 5 * deltaMovement.horizontalDistance()).toFloat()
+            (roll - direct * deltaRot * 8 * deltaMovement.horizontalDistance()).toFloat()
         )
 
-        if (isInFluidType || onGround()) {
-            val water =
-                (if (!isInFluidType && !onGround()) 0.05f else (if (isInFluidType && !onGround()) 0.3f else 1f)).toDouble()
-            deltaMovement = deltaMovement.add(
-                getViewVector(1f).scale(0.15 * water * targetSpeed * power)
-            )
+        if ((isInFluidType || onGround())) {
+            deltaMovement = deltaMovement.add(getViewVector(1f).scale((if (drift) 0.02 else 0.15) * targetSpeed * power))
         }
     }
 
@@ -391,53 +448,29 @@ object VehicleEngineUtils {
                 getViewVector(1f).normalize()
                     .scale(0.04 * deltaMovement.dot(getViewVector(1f)))
             )
-            deltaMovement = deltaMovement.multiply(f.toDouble(), 0.85, f.toDouble())
+            deltaMovement = deltaMovement.multiply(f, 0.85, f)
         } else {
             deltaMovement = deltaMovement.multiply(0.99, 0.99, 0.99)
         }
 
-        val level = level()
-        if (level is ServerLevel && isInFluidType && deltaMovement.length() > 0.1) {
+        if (level().isClientSide && isInFluidType && deltaMovement.horizontalDistanceSqr() > 0.3162) {
             val y = y + VehicleVecUtils.getSubmergedHeight(this) - 0.2
-            ParticleTool.sendParticle(
-                level,
-                ParticleTypes.CLOUD,
-                x + 0.5 * deltaMovement.x,
+            addRandomParticle(ParticleTypes.CLOUD, position().add(
+                0.0,
                 y,
-                z + 0.5 * deltaMovement.z,
-                (2 + 4 * deltaMovement.length()).toInt(),
-                0.65,
+                0.0),
+                1.2f, level(), 0f, (2 + 4 * deltaMovement.length()).toInt())
+
+            addRandomParticle(ParticleTypes.BUBBLE_COLUMN_UP, position().add(
                 0.0,
-                0.65,
-                0.0,
-                true
-            )
-            ParticleTool.sendParticle(
-                level,
-                ParticleTypes.BUBBLE_COLUMN_UP,
-                x + 0.5 * deltaMovement.x,
                 y,
-                z + 0.5 * deltaMovement.z,
-                (2 + 10 * deltaMovement.length()).toInt(),
-                0.65,
-                0.0,
-                0.65,
-                0.0,
-                true
-            )
-            ParticleTool.sendParticle(
-                level,
-                ParticleTypes.BUBBLE_COLUMN_UP,
-                x - 4.5 * lookAngle.x,
-                y - 0.25,
-                z - 4.5 * lookAngle.z,
-                (40 * Mth.abs(power)).toInt(),
-                0.15,
-                0.15,
-                0.15,
-                0.02,
-                true
-            )
+                0.0), 1.2f, level(), 0f, (2 + 10 * deltaMovement.length()).toInt())
+
+            addRandomParticle(ParticleTypes.BUBBLE_COLUMN_UP, position().add(
+                -4.5 * lookAngle.x,
+                -0.25,
+                -4.5 * lookAngle.z), 0.3f, level(), 0f, (40 * Mth.abs(power)).toInt())
+
         }
 
         val passenger0 = getFirstPassenger()
@@ -488,7 +521,7 @@ object VehicleEngineUtils {
             power *= 0.875f
         }
 
-        if (level is ServerLevel) {
+        if (level() is ServerLevel) {
             consumeEnergy(energyCost)
         }
 
