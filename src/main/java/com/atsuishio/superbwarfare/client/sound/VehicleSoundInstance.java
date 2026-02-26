@@ -197,4 +197,26 @@ public abstract class VehicleSoundInstance extends AbstractTickableSoundInstance
             return (float) Mth.clamp((mobileVehicle.getDeltaMovement().y + 0.3) * -0.25f, 0F, 5F);
         }
     }
+
+    public static class SkipSound extends VehicleSoundInstance {
+
+        public SkipSound(VehicleEntity mobileVehicle) {
+            super(ModSounds.WHEEL_VEHICLE_SKIP.get(), Minecraft.getInstance(), mobileVehicle);
+        }
+
+        @Override
+        protected boolean canPlay(VehicleEntity mobileVehicle) {
+            return mobileVehicle.engineRunning() && mobileVehicle.vehicleSkip();
+        }
+
+        @Override
+        protected float getPitch(VehicleEntity mobileVehicle) {
+            return 1;
+        }
+
+        @Override
+        protected float getVolume(VehicleEntity mobileVehicle) {
+            return (float) Mth.clamp(mobileVehicle.getDeltaMovement().length(), 0F, 1F);
+        }
+    }
 }
