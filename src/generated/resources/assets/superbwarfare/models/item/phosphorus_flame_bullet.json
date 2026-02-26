@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "superbwarfare:item/empty_perk"
+    "layer0": "superbwarfare:item/phosphorus_flame_bullet"
   }
 }
