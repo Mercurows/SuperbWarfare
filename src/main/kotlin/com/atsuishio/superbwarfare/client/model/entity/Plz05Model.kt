@@ -16,31 +16,14 @@ class Plz05Model : VehicleModel<Plz05Entity>() {
 
             "barrel" -> {
                 return TransformContext { bone, vehicle, _ ->
-                    val a = turretYaw
-                    val r = (Mth.abs(a) - 90f) / 90f
-
-                    val r2 = if (Mth.abs(a) <= 90f) {
-                        a / 90f
-                    } else {
-                        if (a < 0) {
-                            -(180f + a) / 90f
-                        } else {
-                            (180f - a) / 90f
-                        }
-                    }
 
                     bone.rotX = if (!vehicle.lockTurret) {
-                        Mth.clamp(
-                            -turretXRot - r * pitch - r2 * roll,
-                            vehicle.turretMinPitch,
-                            vehicle.turretMaxPitch
-                    ) * Mth.DEG_TO_RAD
+                        Mth.clamp(-turretXRot, vehicle.turretMinPitch, vehicle.turretMaxPitch) * Mth.DEG_TO_RAD
                     } else {
                         1.2f * Mth.DEG_TO_RAD
                     }
                 }
             }
-
             else -> super.collectTransform(boneName)
         }
     }

@@ -191,21 +191,8 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
 
             "barrel" -> {
                 return TransformContext { bone, vehicle, _ ->
-                    val a = turretYaw
-                    val r = (Mth.abs(a) - 90f) / 90f
-
-                    val r2 = if (Mth.abs(a) <= 90f) {
-                        a / 90f
-                    } else {
-                        if (a < 0) {
-                            -(180f + a) / 90f
-                        } else {
-                            (180f - a) / 90f
-                        }
-                    }
-
                     bone.rotX = Mth.clamp(
-                        -turretXRot - r * pitch - r2 * roll,
+                        -turretXRot,
                         vehicle.turretMinPitch,
                         vehicle.turretMaxPitch
                     ) * Mth.DEG_TO_RAD
@@ -227,24 +214,13 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
 
             "passengerWeaponStationPitch" -> {
                 return TransformContext { bone, vehicle, state ->
-                    val a = vehicle.getTurretYaw(state.partialTick)
-                    val r = (Mth.abs(a) - 90f) / 90f
 
-                    val r2 = if (Mth.abs(a) <= 90f) {
-                        a / 90f
-                    } else {
-                        if (a < 0) {
-                            -(180f + a) / 90f
-                        } else {
-                            (180f - a) / 90f
-                        }
-                    }
                     bone.rotX = Mth.clamp(
                         -Mth.lerp(
                             state.partialTick,
                             vehicle.gunXRotO,
                             vehicle.gunXRot
-                        ) * Mth.DEG_TO_RAD - r * pitch * Mth.DEG_TO_RAD - r2 * roll * Mth.DEG_TO_RAD,
+                        ) * Mth.DEG_TO_RAD,
                         vehicle.passengerWeaponMinPitch * Mth.DEG_TO_RAD,
                         vehicle.passengerWeaponMaxPitch * Mth.DEG_TO_RAD
                     )

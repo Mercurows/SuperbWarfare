@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.mixins;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModMobEffects;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
@@ -19,11 +20,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
+import net.minecraft.world.phys.Vec3;
+import org.joml.*;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -70,26 +72,14 @@ public class GameRendererMixin {
             var seats = VehicleData.compute(vehicle).seats();
             int index = vehicle.getSeatIndex(entity);
             if (index < 0 || index >= seats.size()) return;
-
             var seat = seats.get(index);
 
-            if (seat.transform.equals("VehicleFlat")) {
-                a = 0;
-            }
+            var transform = vehicle.getTransformFromString(seat.transform, tickDelta).rotate(Axis.YP.rotationDegrees(a));
+            var force0 = superbWarfare$transformPosition(transform, 0.0, 0.0, 0.0);
+            var force1 = superbWarfare$transformPosition(transform, -1.0, 0.0, 0.0);
+            var zVec = new Vec3(force0.x, force0.y, force0.z).vectorTo(new Vec3(force1.x, force1.y, force1.z));
 
-            float r = (Mth.abs(a) - 90f) / 90f;
-            float r2;
-            if (Mth.abs(a) <= 90f) {
-                r2 = a / 90f;
-            } else {
-                if (a < 0) {
-                    r2 = -(180f + a) / 90f;
-                } else {
-                    r2 = (180f - a) / 90f;
-                }
-            }
-
-            matrices.mulPose(Axis.ZP.rotationDegrees(-r * vehicle.getRoll(tickDelta) - r2 * vehicle.getViewXRot(tickDelta)));
+            matrices.mulPose(Axis.ZP.rotationDegrees((float) VehicleVecUtils.getXRotFromVector(zVec)));
 
             if (!vehicle.useFixedCameraPos(entity)) {
                 // fetch eye offset
@@ -111,6 +101,11 @@ public class GameRendererMixin {
                 matrices.mulPose(Axis.XP.rotationDegrees(-mainCamera.getXRot()));
             }
         }
+    }
+
+    @Unique
+    private Vector4d superbWarfare$transformPosition(Matrix4d transform, double x, double y, double z) {
+        return transform.transform(new Vector4d(x, y, z, 1.0));
     }
 
     @Inject(method = "getNightVisionScale(Lnet/minecraft/world/entity/LivingEntity;F)F",
