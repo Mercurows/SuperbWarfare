@@ -27,7 +27,6 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent
 import net.neoforged.fml.loading.FMLEnvironment
 import net.neoforged.neoforge.client.event.ClientTickEvent
 import net.neoforged.neoforge.common.NeoForge
-import net.neoforged.neoforge.event.tick.PlayerTickEvent
 import net.neoforged.neoforge.event.tick.ServerTickEvent
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent
 import org.apache.logging.log4j.LogManager
@@ -82,7 +81,7 @@ class Mod(bus: IEventBus, container: ModContainer) {
         }
 
         if (ColdSweatCompatHandler.hasMod()) {
-            NeoForge.EVENT_BUS.addListener<PlayerTickEvent.Pre> { ColdSweatCompatHandler.onPlayerInVehicle(it) }
+            NeoForge.EVENT_BUS.addListener(ColdSweatCompatHandler::onPlayerInVehicle)
         }
 
         NeoForge.EVENT_BUS.register(this)
