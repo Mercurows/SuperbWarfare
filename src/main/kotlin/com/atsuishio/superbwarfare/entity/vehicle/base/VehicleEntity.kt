@@ -94,7 +94,6 @@ import net.minecraft.world.entity.projectile.ProjectileUtil
 import net.minecraft.world.entity.vehicle.DismountHelper
 import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.gameevent.GameEvent
@@ -4024,7 +4023,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
 
         this.setOnGroundWithKnownMovement(this.verticalCollisionBelow, vec3)
-        val blockpos = this.onPosLegacy
+        val blockpos = this.getOnPos(0.2f)
         val blockstate = level().getBlockState(blockpos)
         if (this.isRemoved) {
             level().profiler.pop()
