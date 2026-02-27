@@ -95,9 +95,11 @@ import net.minecraft.world.entity.projectile.ProjectileUtil
 import net.minecraft.world.entity.vehicle.DismountHelper
 import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.gameevent.GameEvent
+import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec2
 import net.minecraft.world.phys.Vec3
@@ -246,6 +248,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     private var obbCache: MutableList<OBB>? = null
     open var obb = listOf<OBBInfo>()
         protected set
+
+    open var aabbV = listOf<AABB>()
+
     open var engineInfo: EngineInfo? = null
 
     protected var interpolationSteps = 0
@@ -2574,8 +2579,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             vec3 = getTransformDirectionFromString(1f, entity, "Turret")
         }
 
-        val minPitch = -seat.maxPitch + customTurretMaxPitch
-        val maxPitch = -seat.minPitch - customTurretMinPitch
+        val minPitch = -seat.maxPitch
+        val maxPitch = -seat.minPitch
         val f = Mth.wrapDegrees(entity.xRot - -getXRotFromVector(vec3)).toFloat()
         val f1 = Mth.clamp(f, minPitch, maxPitch)
         entity.xRotO += f1 - f
@@ -3996,12 +4001,112 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open val lastAttacker: Entity?
         get() = EntityFindUtil.findEntity(level(), lastAttackerUUID)
 
+    private var sbwCacheOnGround = false
+
+    fun vCollide(pVec: Vec3): Vec3 {
+        if (ignoreEntityGroundCheckStepping) {
+            sbwCacheOnGround = this.onGround()
+            this.setOnGround(true)
+        }
+
+        val aabb = this.boundingBox
+
+        val list = level().getEntityCollisions(this, aabb.expandTowards(pVec))
+        val vec3 = if (pVec.lengthSqr() == 0.0) pVec else collideBoundingBox(this, pVec, aabb, this.level(), list)
+        val flag = pVec.x != vec3.x
+        val flag1 = pVec.y != vec3.y
+        val flag2 = pVec.z != vec3.z
+        val flag3 = this.onGround() || flag1 && pVec.y < 0.0
+        val stepHeight = stepHeight
+
+        if (stepHeight > 0.0f && flag3 && (flag || flag2)) {
+
+            var vec31 = collideBoundingBox(
+                this, Vec3(pVec.x, stepHeight.toDouble(), pVec.z), aabb,
+                this.level(), list
+            )
+            val vec32 = collideBoundingBox(
+                this, Vec3(0.0, stepHeight.toDouble(), 0.0), aabb.expandTowards(pVec.x, 0.0, pVec.z),
+                this.level(), list
+            )
+            if (vec32.y < stepHeight.toDouble()) {
+                val vec33 = collideBoundingBox(
+                    this, Vec3(pVec.x, 0.0, pVec.z), aabb.move(vec32),
+                    this.level(), list
+                ).add(vec32)
+                if (vec33.horizontalDistanceSqr() > vec31.horizontalDistanceSqr()) {
+                    vec31 = vec33
+                }
+            }
+
+            if (vec31.horizontalDistanceSqr() > vec3.horizontalDistanceSqr()) {
+                return vec31.add(collideBoundingBox(this, Vec3(0.0, -vec31.y + pVec.y, 0.0), aabb.move(vec31), this.level(), list))
+            }
+        }
+
+        if (ignoreEntityGroundCheckStepping) {
+            this.setOnGround(sbwCacheOnGround)
+            ignoreEntityGroundCheckStepping = false
+        }
+
+        return vec3
+    }
+
+    fun vMove(pType: MoverType, pPos: Vec3) {
+        var pPos = pPos
+
+        level().profiler.push("move")
+
+        pPos = this.maybeBackOffFromEdge(pPos, pType)
+        val vec3 = this.vCollide(pPos)
+        val d0 = vec3.lengthSqr()
+        if (d0 > 1.0E-7) {
+            this.setPos(this.x + vec3.x, this.y + vec3.y, this.z + vec3.z)
+        }
+
+        level().profiler.pop()
+        level().profiler.push("rest")
+        val flag4 = !Mth.equal(pPos.x, vec3.x)
+        val flag = !Mth.equal(pPos.z, vec3.z)
+        this.horizontalCollision = flag4 || flag
+        this.verticalCollision = pPos.y != vec3.y
+        this.verticalCollisionBelow = this.verticalCollision && pPos.y < 0.0
+        if (this.horizontalCollision) {
+            this.minorHorizontalCollision = this.isHorizontalCollisionMinor(vec3)
+        } else {
+            this.minorHorizontalCollision = false
+        }
+
+        this.setOnGroundWithKnownMovement(this.verticalCollisionBelow, vec3)
+        val blockpos = this.onPosLegacy
+        val blockstate = level().getBlockState(blockpos)
+        if (this.isRemoved) {
+            level().profiler.pop()
+        } else {
+            if (this.horizontalCollision) {
+                val vec31 = this.deltaMovement
+                this.setDeltaMovement(if (flag4) 0.0 else vec31.x, vec31.y, if (flag) 0.0 else vec31.z)
+            }
+
+            val block = blockstate.block
+            if (pPos.y != vec3.y) {
+                block.updateEntityAfterFallOn(this.level(), this)
+            }
+
+            if (this.onGround()) {
+                block.stepOn(this.level(), blockpos, blockstate, this)
+            }
+
+            level().profiler.pop()
+        }
+    }
+
     override fun move(movementType: MoverType, movement: Vec3) {
         if (!this.level().isClientSide()) {
             ignoreEntityGroundCheckStepping = true
         }
 
-        super.move(movementType, movement)
+        vMove(movementType, movement)
 
         if (lastTickSpeed < 0.2 || collisionCoolDown > 0 || this is DroneEntity) return
         val driver = this.lastDriver
@@ -4016,7 +4121,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                         this,
                         driver ?: this
                     ),
-                    if (isWreck) 0f else ((4 + Mth.abs(this.roll * 0.2f)) * (lastTickSpeed - 0.2) * (lastTickSpeed - 0.2)).toFloat()
+                    if (isWreck) 0f else ((8 + Mth.abs(this.roll * 0.2f)) * (lastTickSpeed - 0.4) * (lastTickSpeed - 0.4)).toFloat()
                 )
                 this.bounceVertical(
                     Direction.getNearest(
@@ -4031,7 +4136,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                         this.level().registryAccess(),
                         this,
                         driver ?: this
-                    ), if (isWreck) 0f else (6 * ((lastTickSpeed - 0.2) * (lastTickSpeed - 0.2))).toFloat()
+                    ), if (isWreck) 0f else (10 * ((lastTickSpeed - 0.4) * (lastTickSpeed - 0.4))).toFloat()
                 )
                 this.bounceVertical(
                     Direction.getNearest(
@@ -4040,14 +4145,14 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                         this.deltaMovement.z()
                     ).opposite
                 )
-            } else if (Mth.abs(lastTickVerticalSpeed.toFloat()) > 0.2) {
+            } else if (Mth.abs(lastTickVerticalSpeed.toFloat()) > 0.4) {
                 this.hurt(
                     ModDamageTypes.causeVehicleStrikeDamage(
                         this.level().registryAccess(),
                         this,
                         driver ?: this
                     ),
-                    if (isWreck) 0f else (24 * ((Mth.abs(lastTickVerticalSpeed.toFloat()) - 0.4) * (lastTickSpeed - 0.2) * (lastTickSpeed - 0.2))).toFloat()
+                    if (isWreck) 0f else (24 * ((Mth.abs(lastTickVerticalSpeed.toFloat()) - 0.4) * (lastTickSpeed - 0.4) * (lastTickSpeed - 0.4))).toFloat()
                 )
                 if (!this.level().isClientSide) {
                     this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.soundSource, 1f, 1f)
