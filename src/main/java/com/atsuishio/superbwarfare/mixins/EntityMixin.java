@@ -25,46 +25,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Entity.class)
 public abstract class EntityMixin implements OBBHitter {
 
-    /**
-     * From Automobility
-     */
-    @Unique
-    private boolean sbw$cacheOnGround;
-
-    @Shadow
-    private boolean onGround;
-
-    @Shadow
-    public abstract Level level();
-
-    @Shadow
-    public abstract AABB getBoundingBox();
-
-    @Shadow
-    public abstract Vec3 position();
-
-    @Shadow
-    public abstract void setDeltaMovement(Vec3 pDeltaMovement);
-
-    @Shadow
-    public abstract Vec3 getDeltaMovement();
-
-    @Inject(method = "collide", at = @At("HEAD"))
-    private void sbw$spoofGroundStart(Vec3 movement, CallbackInfoReturnable<Vec3> cir) {
-        if (VehicleEntity.ignoreEntityGroundCheckStepping) {
-            this.sbw$cacheOnGround = this.onGround;
-            this.onGround = true;
-        }
-    }
-
-    @Inject(method = "collide", at = @At("TAIL"))
-    private void sbw$spoofGroundEnd(Vec3 movement, CallbackInfoReturnable<Vec3> cir) {
-        if (VehicleEntity.ignoreEntityGroundCheckStepping) {
-            this.onGround = this.sbw$cacheOnGround;
-            VehicleEntity.ignoreEntityGroundCheckStepping = false;
-        }
-    }
-
     @Unique
     public OBB.Part sbw$currentHitPart;
 
