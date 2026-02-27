@@ -496,7 +496,7 @@ object VehicleMotionUtils {
                 val level = vehicle.level()
                 val res = level.clip(
                     ClipContext(
-                        p, p.add(0.0, -512.0, 0.0),
+                        p, p.add(0.0, -128.0, 0.0),
                         ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, vehicle
                     )
                 )
@@ -588,7 +588,7 @@ object VehicleMotionUtils {
         val horizontalDirection = if (horizontalDistance > 0) horizontalOffset.normalize() else Vec3.ZERO
 
 
-        val tiltSmoothingFactor = 0.03f
+        val tiltSmoothingFactor = 0.01f
 
         val targetTilt =
             Math.min(heightY * 9 * entity.data().compute().terrainCompatRotateRate * horizontalDistance, 45.0).toFloat()

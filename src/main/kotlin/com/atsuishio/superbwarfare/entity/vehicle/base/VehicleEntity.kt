@@ -1879,6 +1879,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             }
         }
 
+
+
         for (i in data().getDefault().seats().indices) {
             val mob = getNthEntity(i)
             if (mob is Mob && canShoot(mob) && mob.target != null && getGunData(mob) != null && mob.level() is ServerLevel) {
@@ -1952,6 +1954,16 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         while (this.turretYRot <= -180f) {
             this.turretYRot += 360f
             turretYRotO = deltaT + this.turretYRot
+        }
+
+        val deltaG = abs(this.gunYRot - gunYRotO)
+        while (this.gunYRot > 180f) {
+            this.gunYRot -= 360f
+            gunYRotO = this.gunYRot - deltaT
+        }
+        while (this.gunYRot <= -180f) {
+            this.gunYRot += 360f
+            gunYRotO = deltaG + this.gunYRot
         }
 
         if (decoyReloadCoolDown > 0) {
@@ -2569,7 +2581,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             if (Minecraft.getInstance().options.cameraType != CameraType.FIRST_PERSON) return
 
             val f4 = Mth.wrapDegrees(entity.yRot - -getYRotFromVector(vec3)).toFloat()
-            val f5 = Mth.clamp(f2, -20f, 20f)
+            val f5 = Mth.clamp(f2, -10f, 10f)
             entity.yRotO += f5 - f4
             entity.yRot = entity.yRot + f5 - f4
         }
@@ -3062,37 +3074,33 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         this.turretTurnSound(diffX, diffY, 0.95f)
 
         this.gunXRot = Mth.clamp(
-            this.gunXRot + Mth.clamp(0.5f * diffX, -xSpeed, xSpeed),
+            this.gunXRot + Mth.clamp(diffX, -xSpeed, xSpeed),
             -this.passengerWeaponMaxPitch,
             -this.passengerWeaponMinPitch
         )
         this.gunYRot = Mth.clamp(
-            this.gunYRot - Mth.clamp(0.5f * diffY, -ySpeed, ySpeed),
+            this.gunYRot - Mth.clamp(diffY, -ySpeed, ySpeed),
             -this.passengerWeaponMaxYaw,
             -this.passengerWeaponMinYaw
         )
     }
 
     open fun adjustWeaponControllerAngle() {
-        val ySpeed = this.passengerWeaponYSpeed
-        val xSpeed = this.passengerWeaponXSpeed
+        val entity = getNthEntity(this.passengerWeaponStationControllerIndex)
+        val pos: Vec3? = passengerWeaponStationBarrelPosition
+        if (entity != null && pos != null) {
+            val aimPos = boundingBox.center.add(entity.getViewVector(1f).scale(512.0))
 
-        val entity = this.getNthEntity(this.passengerWeaponStationControllerIndex)
+            val transform: Matrix4d = getGunTransform(1f)
+            val worldPosition = transformPosition(transform, pos.x, pos.y, pos.z)
 
-        var diffY = 0f
-        var diffX = 0f
-        var speed = 1f
-
-        if (entity is Player) {
-            val gunAngle = -Mth.wrapDegrees(entity.getYHeadRot() - this.yRot)
-            diffY = Mth.wrapDegrees(gunAngle - this.gunYRot)
-            diffX = Mth.wrapDegrees(entity.xRot - this.gunXRot)
-            turretTurnSound(diffX, diffY, 0.95f)
-            speed = 0f
+            val aimVec = Vec3(worldPosition.x, worldPosition.y, worldPosition.z).vectorTo(aimPos)
+            passengerWeaponAutoAimFormVector(aimVec)
         }
 
-        this.gunXRot += Mth.clamp(0.95f * diffX, -xSpeed, xSpeed)
-        this.gunYRot += Mth.clamp(0.9f * diffY, -ySpeed, ySpeed) + speed * turretYRotLock
+        if (entity == null) {
+            gunYRot += turretYRotLock
+        }
     }
 
     open fun destroy() {

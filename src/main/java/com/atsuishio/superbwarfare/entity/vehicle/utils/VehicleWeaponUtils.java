@@ -32,8 +32,15 @@ public final class VehicleWeaponUtils {
      */
     public static void adjustTurretAngle(VehicleEntity vehicle) {
         Entity driver = vehicle.getNthEntity(vehicle.getTurretControllerIndex());
-        if (driver != null) {
-            turretAutoAimFromVector(vehicle, driver.getViewVector(1));
+        var pos = vehicle.getBarrelPosition();
+        if (driver != null && pos != null) {
+            Vec3 aimPos = vehicle.getBoundingBox().getCenter().add(driver.getViewVector(1).scale(512));
+
+            var transform = vehicle.getTurretTransform(1);
+            var worldPosition = transformPosition(transform, pos.x, pos.y, pos.z);
+
+            Vec3 aimVec = new Vec3(worldPosition.x, worldPosition.y, worldPosition.z).vectorTo(aimPos);
+            turretAutoAimFromVector(vehicle, aimVec);
         }
     }
 
@@ -60,9 +67,9 @@ public final class VehicleWeaponUtils {
         float min = -ySpeed;
         float max = ySpeed;
 
-        vehicle.setTurretXRot(Mth.clamp(vehicle.getTurretXRot() + Mth.clamp(0.5f * diffX, -xSpeed, xSpeed), -vehicle.getTurretMaxPitch(), -vehicle.getTurretMinPitch()));
-        vehicle.setTurretYRot(Mth.clamp(vehicle.getTurretYRot() - Mth.clamp(0.5f * diffY, min, max), -vehicle.getTurretMaxYaw(), -vehicle.getTurretMinYaw()));
-        vehicle.setTurretYRotLock(Mth.clamp(-0.5f * diffY, min, max));
+        vehicle.setTurretXRot(Mth.clamp(vehicle.getTurretXRot() + Mth.clamp(1f * diffX, -xSpeed, xSpeed), -vehicle.getTurretMaxPitch(), -vehicle.getTurretMinPitch()));
+        vehicle.setTurretYRot(Mth.clamp(vehicle.getTurretYRot() - Mth.clamp(1f * diffY, min, max), -vehicle.getTurretMaxYaw(), -vehicle.getTurretMinYaw()));
+        vehicle.setTurretYRotLock(Mth.clamp(-1f * diffY, min, max));
     }
 
     /**

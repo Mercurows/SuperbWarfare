@@ -564,25 +564,9 @@ object VehicleVecUtils {
         )
 
         transformT.translate(worldPosition.x, worldPosition.y, worldPosition.z)
-
-        val a = vehicle.getTurretYaw(partialTicks)
-        val r = (Mth.abs(a) - 90f) / 90f
-
-        val r2 = if (Mth.abs(a) <= 90f) {
-            a / 90f
-        } else {
-            if (a < 0) {
-                -(180f + a) / 90f
-            } else {
-                (180f - a) / 90f
-            }
-        }
-
         val x = Mth.lerp(partialTicks, vehicle.turretXRotO, vehicle.turretXRot)
-        val xV = Mth.lerp(partialTicks, vehicle.xRotO, vehicle.xRot) + vehicle.turretCustomPitch
-        val z = Mth.lerp(partialTicks, vehicle.prevRoll, vehicle.roll)
 
-        transformT.rotate(Axis.XP.rotationDegrees(x + r * xV + r2 * z))
+        transformT.rotate(Axis.XP.rotationDegrees(x))
         return transformT
     }
 
@@ -625,24 +609,9 @@ object VehicleVecUtils {
 
         transformG.translate(worldPosition.x, worldPosition.y, worldPosition.z)
 
-        val a = vehicle.getTurretYaw(partialTicks)
-        val r = (Mth.abs(a) - 90f) / 90f
-
-        val r2 = if (Mth.abs(a) <= 90f) {
-            a / 90f
-        } else {
-            if (a < 0) {
-                -(180f + a) / 90f
-            } else {
-                (180f - a) / 90f
-            }
-        }
-
         val x = Mth.lerp(partialTicks, vehicle.gunXRotO, vehicle.gunXRot)
-        val xV = Mth.lerp(partialTicks, vehicle.xRotO, vehicle.xRot) + vehicle.turretCustomPitch
-        val z = Mth.lerp(partialTicks, vehicle.prevRoll, vehicle.roll)
 
-        transformG.rotate(Axis.XP.rotationDegrees(x + r * xV + r2 * z))
+        transformG.rotate(Axis.XP.rotationDegrees(x))
         return transformG
     }
 

@@ -167,27 +167,7 @@ object VectorTool {
 
     @JvmStatic
     fun combineRotationsPassengerWeaponStationBarrel(partialTicks: Float, entity: VehicleEntity): Quaterniond {
-        val a = entity.getTurretYaw(partialTicks)
-        val r = (Mth.abs(a) - 90f) / 90f
-
-        val r2 = if (Mth.abs(a) <= 90f) {
-            a / 90f
-        } else {
-            if (a < 0) {
-                -(180f + a) / 90f
-            } else {
-                (180f - a) / 90f
-            }
-        }
-
-        val pitch = entity.getPitch(partialTicks)
-        val roll = entity.getRoll(partialTicks)
-
-        val barrelPitch = Mth.clamp(
-            -Mth.lerp(partialTicks, entity.gunXRotO, entity.gunXRot) - r * pitch - r2 * roll,
-            entity.passengerWeaponMinPitch, entity.passengerWeaponMaxPitch
-        )
-
+        val barrelPitch = Mth.clamp(-Mth.lerp(partialTicks, entity.gunXRotO, entity.gunXRot), entity.passengerWeaponMinPitch, entity.passengerWeaponMaxPitch)
         val passengerWeaponStationPitchRot = Axis.XP.rotationDegrees(-barrelPitch)
         return combineRotationsPassengerWeaponStation(partialTicks, entity)
             .mul(Quaterniond(passengerWeaponStationPitchRot))
