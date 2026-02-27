@@ -8,13 +8,13 @@
   },
   "color": 3,
   "input": {
-    "item": "superbwarfare:legendary_blueprint_data_chip"
+    "item": "superbwarfare:epic_blueprint_data_chip"
   },
   "result": {
-    "tag": "superbwarfare:blueprint/legendary"
+    "tag": "superbwarfare:blueprint/epic"
   },
   "special": {
     "item": "superbwarfare:effective_research_module"
   },
-  "time": 2400
+  "time": 1200
 }

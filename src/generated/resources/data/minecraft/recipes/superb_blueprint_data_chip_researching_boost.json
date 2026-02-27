@@ -6,15 +6,16 @@
   "base": {
     "item": "minecraft:paper"
   },
-  "color": 3,
+  "color": 1,
   "input": {
-    "item": "superbwarfare:legendary_blueprint_data_chip"
+    "item": "superbwarfare:superb_blueprint_data_chip"
   },
   "result": {
-    "tag": "superbwarfare:blueprint/legendary"
+    "count": 3,
+    "tag": "superbwarfare:blueprint/superb"
   },
   "special": {
-    "item": "superbwarfare:effective_research_module"
+    "item": "superbwarfare:boost_research_module"
   },
-  "time": 2400
+  "time": 24000
 }

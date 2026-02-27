@@ -1,24 +1,24 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_effective_research_module": {
+    "has_common_blueprint_data_chip": {
       "conditions": {
         "items": [
           {
             "items": [
-              "superbwarfare:effective_research_module"
+              "superbwarfare:common_blueprint_data_chip"
             ]
           }
         ]
       },
       "trigger": "minecraft:inventory_changed"
     },
-    "has_legendary_blueprint_data_chip": {
+    "has_directional_research_module": {
       "conditions": {
         "items": [
           {
             "items": [
-              "superbwarfare:legendary_blueprint_data_chip"
+              "superbwarfare:directional_research_module"
             ]
           }
         ]
@@ -27,21 +27,21 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:legendary_blueprint_data_chip_researching_effective"
+        "recipe": "minecraft:common_blueprint_data_chip_researching_directional"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_legendary_blueprint_data_chip",
-      "has_effective_research_module",
+      "has_common_blueprint_data_chip",
+      "has_directional_research_module",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "minecraft:legendary_blueprint_data_chip_researching_effective"
+      "minecraft:common_blueprint_data_chip_researching_directional"
     ]
   },
   "sends_telemetry_event": false

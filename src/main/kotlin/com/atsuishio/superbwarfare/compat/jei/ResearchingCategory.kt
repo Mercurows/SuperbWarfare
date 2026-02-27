@@ -103,7 +103,8 @@ class ResearchingCategory(helper: IGuiHelper) : IRecipeCategory<ResearchingRecip
             builder.addSlot(RecipeIngredientRole.OUTPUT, 109, 32).addItemStack(resItem)
         } else {
             val resItems = result.getResultList()
-            val list = resItems.map { it.defaultInstance }.toMutableList()
+            val count = result.count
+            val list = resItems.map { ItemStack(it, count) }.toMutableList()
             builder.addSlot(RecipeIngredientRole.OUTPUT, 109, 32).addItemStacks(list)
         }
 
