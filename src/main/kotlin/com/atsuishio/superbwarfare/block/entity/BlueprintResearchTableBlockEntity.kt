@@ -24,6 +24,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.BedPart
+import net.minecraft.world.phys.AABB
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.capabilities.ForgeCapabilities
 import net.minecraftforge.common.util.LazyOptional
@@ -360,5 +361,18 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
                 }
             }
         }
+    }
+
+    override fun getRenderBoundingBox(): AABB {
+        // 创建一个更大的边界框（示例：覆盖从方块底部到顶部上方2格的范围）
+        val expansion = 2.0 // 根据模型实际大小调整
+        return AABB(
+            (worldPosition.x - 1).toDouble(),
+            worldPosition.y.toDouble(),
+            (worldPosition.z - 1).toDouble(),
+            (worldPosition.x + 2).toDouble(),
+            worldPosition.y + expansion,
+            (worldPosition.z + 2).toDouble()
+        )
     }
 }

@@ -2,6 +2,8 @@ package com.atsuishio.superbwarfare.client.renderer.block
 
 import com.atsuishio.superbwarfare.block.BlueprintResearchTableBlock
 import com.atsuishio.superbwarfare.block.entity.BlueprintResearchTableBlockEntity
+import com.atsuishio.superbwarfare.client.layer.block.BlueprintResearchTableBlockLayer
+import com.atsuishio.superbwarfare.client.layer.block.VehicleAssemblingTableBlockLayer
 import com.atsuishio.superbwarfare.client.model.block.BlueprintResearchTableBlockModel
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
@@ -13,6 +15,9 @@ import software.bernie.geckolib.renderer.GeoBlockRenderer
 class BlueprintResearchTableBlockEntityRenderer : GeoBlockRenderer<BlueprintResearchTableBlockEntity>(
     BlueprintResearchTableBlockModel()
 ) {
+    init {
+        this.addRenderLayer(BlueprintResearchTableBlockLayer(this))
+    }
     override fun getRenderType(
         animatable: BlueprintResearchTableBlockEntity,
         texture: ResourceLocation?,

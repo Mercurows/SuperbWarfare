@@ -68,17 +68,17 @@ open class BlueprintResearchTableBlock :
     ): VoxelShape {
         return if (state.getValue(PART) == BedPart.FOOT) {
             when (state.getValue(FACING)) {
-                Direction.SOUTH -> box(0.0, 0.0, 1.0, 16.0, 16.0, 16.0)
-                Direction.EAST -> box(1.0, 0.0, 0.0, 16.0, 16.0, 16.0)
-                Direction.WEST -> box(0.0, 0.0, 0.0, 15.0, 16.0, 16.0)
-                else -> box(0.0, 0.0, 0.0, 16.0, 16.0, 15.0)
+                Direction.SOUTH -> box(0.0, 0.0, 1.0, 16.0, 30.0, 16.0)
+                Direction.EAST -> box(1.0, 0.0, 0.0, 16.0, 30.0, 16.0)
+                Direction.WEST -> box(0.0, 0.0, 0.0, 15.0, 30.0, 16.0)
+                else -> box(0.0, 0.0, 0.0, 16.0, 30.0, 15.0)
             }
         } else {
             when (state.getValue(FACING)) {
-                Direction.SOUTH -> box(0.0, 0.0, 0.0, 16.0, 16.0, 15.0)
-                Direction.EAST -> box(0.0, 0.0, 0.0, 15.0, 16.0, 16.0)
-                Direction.WEST -> box(1.0, 0.0, 0.0, 16.0, 16.0, 16.0)
-                else -> box(0.0, 0.0, 1.0, 16.0, 16.0, 16.0)
+                Direction.SOUTH -> box(0.0, 0.0, 0.0, 16.0, 30.0, 15.0)
+                Direction.EAST -> box(0.0, 0.0, 0.0, 15.0, 30.0, 16.0)
+                Direction.WEST -> box(1.0, 0.0, 0.0, 16.0, 30.0, 16.0)
+                else -> box(0.0, 0.0, 1.0, 16.0, 30.0, 16.0)
             }
         }
     }
