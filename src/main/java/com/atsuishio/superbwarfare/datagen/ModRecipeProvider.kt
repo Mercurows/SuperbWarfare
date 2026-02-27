@@ -2584,6 +2584,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
 //            )
 //                .base(Items.PAPER)
 //                .addition(Items.LAPIS_LAZULI)
+//                .time(12000)
 //                .unlockedBy(
 //                    getHasName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()),
 //                    has(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get())
@@ -2597,6 +2598,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
 //                .base(Items.PAPER)
 //                .addition(Items.LAPIS_LAZULI)
 //                .special(ModItems.BOOST_RESEARCH_MODULE.get())
+//                .time(12000)
 //                .color(1)
 //                .unlockedBy(
 //                    getHasName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()),
@@ -2610,6 +2612,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
 //                .base(Items.PAPER)
 //                .addition(Items.LAPIS_LAZULI)
 //                .special(ModItems.DIRECTIONAL_RESEARCH_MODULE.get())
+//                .time(12000)
 //                .color(2)
 //                .selectable()
 //                .unlockedBy(
@@ -2624,7 +2627,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
 //                .base(Items.PAPER)
 //                .addition(Items.LAPIS_LAZULI)
 //                .special(ModItems.EFFECTIVE_RESEARCH_MODULE.get())
-//                .time(200)
+//                .time(1200)
 //                .color(3)
 //                .unlockedBy(
 //                    getHasName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()),
@@ -2638,12 +2641,47 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
 //                .base(Items.PAPER)
 //                .addition(Items.LAPIS_LAZULI)
 //                .special(ModItems.ENLARGEMENT_RESEARCH_MODULE.get())
+//                .time(24000)
 //                .color(4)
 //                .unlockedBy(
 //                    getHasName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()),
 //                    has(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get())
 //                )
 //                .save(writer, getItemName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()) + "_researching_enlargement")
+//
+//            ResearchingRecipeBuilder.tag(
+//                ModTags.Items.RESEARCHABLE_AMMO_PERK,
+//                input = ModItems.AMMO_PERK_DATA_CHIP.get()
+//            )
+//                .base(ModItems.EMPTY_PERK.get())
+//                .time(600)
+//                .unlockedBy(
+//                    getHasName(ModItems.AMMO_PERK_DATA_CHIP.get()),
+//                    has(ModItems.AMMO_PERK_DATA_CHIP.get())
+//                )
+//                .save(writer, getItemName(ModItems.AMMO_PERK_DATA_CHIP.get()) + "_researching")
+//            ResearchingRecipeBuilder.tag(
+//                ModTags.Items.RESEARCHABLE_FUNCTIONAL_PERK,
+//                input = ModItems.FUNCTIONAL_PERK_DATA_CHIP.get()
+//            )
+//                .base(ModItems.EMPTY_PERK.get())
+//                .time(600)
+//                .unlockedBy(
+//                    getHasName(ModItems.FUNCTIONAL_PERK_DATA_CHIP.get()),
+//                    has(ModItems.FUNCTIONAL_PERK_DATA_CHIP.get())
+//                )
+//                .save(writer, getItemName(ModItems.FUNCTIONAL_PERK_DATA_CHIP.get()) + "_researching")
+//            ResearchingRecipeBuilder.tag(
+//                ModTags.Items.RESEARCHABLE_DAMAGE_PERK,
+//                input = ModItems.DAMAGE_PERK_DATA_CHIP.get()
+//            )
+//                .base(ModItems.EMPTY_PERK.get())
+//                .time(600)
+//                .unlockedBy(
+//                    getHasName(ModItems.DAMAGE_PERK_DATA_CHIP.get()),
+//                    has(ModItems.DAMAGE_PERK_DATA_CHIP.get())
+//                )
+//                .save(writer, getItemName(ModItems.DAMAGE_PERK_DATA_CHIP.get()) + "_researching")
         }
 
         fun copyBlueprint(writer: RecipeOutput, result: ItemLike) {
