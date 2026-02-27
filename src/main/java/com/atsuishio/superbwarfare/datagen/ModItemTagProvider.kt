@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.datagen
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.init.ModPerks
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.init.ModTags.commonItemTag
 import com.atsuishio.superbwarfare.item.PerkItem
@@ -295,9 +296,22 @@ class ModItemTagProvider(
             val item = it.get()
             if (item is PerkItem) {
                 when (item.perk.type) {
-                    Perk.Type.AMMO -> this.tag(ModTags.Items.AMMO_PERK).add(item)
-                    Perk.Type.FUNCTIONAL -> this.tag(ModTags.Items.FUNCTIONAL_PERK).add(item)
-                    Perk.Type.DAMAGE -> this.tag(ModTags.Items.DAMAGE_PERK).add(item)
+                    Perk.Type.AMMO -> {
+                        this.tag(ModTags.Items.AMMO_PERK).add(item)
+                        if (item.perk != ModPerks.BEAST_BULLET.get()) {
+                            this.tag(ModTags.Items.RESEARCHABLE_AMMO_PERK).add(item)
+                        }
+                    }
+
+                    Perk.Type.FUNCTIONAL -> {
+                        this.tag(ModTags.Items.FUNCTIONAL_PERK).add(item)
+                        this.tag(ModTags.Items.RESEARCHABLE_FUNCTIONAL_PERK).add(item)
+                    }
+
+                    Perk.Type.DAMAGE -> {
+                        this.tag(ModTags.Items.DAMAGE_PERK).add(item)
+                        this.tag(ModTags.Items.RESEARCHABLE_DAMAGE_PERK).add(item)
+                    }
                 }
             }
         }
