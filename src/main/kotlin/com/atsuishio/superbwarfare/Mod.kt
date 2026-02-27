@@ -16,7 +16,6 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.event.TickEvent.ClientTickEvent
-import net.minecraftforge.event.TickEvent.PlayerTickEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.ModLoadingContext
 import net.minecraftforge.fml.common.Mod
@@ -70,7 +69,7 @@ class Mod {
             MinecraftForge.EVENT_BUS.addListener(TACZGunEventHandler::entityHurtByTACZGun)
         }
         if (ColdSweatCompatHandler.hasMod()) {
-            MinecraftForge.EVENT_BUS.addListener<PlayerTickEvent> { ColdSweatCompatHandler.onPlayerInVehicle(it) }
+            MinecraftForge.EVENT_BUS.addListener(ColdSweatCompatHandler::onPlayerInVehicle)
         }
 
         MinecraftForge.EVENT_BUS.register(this)
