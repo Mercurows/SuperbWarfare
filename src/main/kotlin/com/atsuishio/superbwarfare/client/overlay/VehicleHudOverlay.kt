@@ -342,6 +342,7 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
         if (engineType != EngineType.AIRCRAFT) return
         val engineInfo = vehicle.engineInfo ?: return
         if (engineInfo !is Aircraft || !engineInfo.hasGear) return
+        if (localPlayer != vehicle.firstPassenger) return
 
         val poseStack = guiGraphics.pose()
 
@@ -378,6 +379,7 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
         if (engineType != EngineType.HELICOPTER) return
         val engineInfo = vehicle.engineInfo ?: return
         if (engineInfo !is Helicopter) return
+        if (localPlayer != vehicle.firstPassenger) return
 
         var componentReady = Component.translatable("tips.superbwarfare.hover_mode_off").append(
             Component.literal(
@@ -572,46 +574,27 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
             // 这里不知道为什么不能合并，会导致上面那个渲染出错
             val size = data.get(GunProp.AMMO_CONSUMER).size
             if (selected && size > 1) {
-                RenderHelper.preciseBlit(
-                    guiGraphics,
-                    SWITCH_AMMO,
-                    w - 13 + xOffset,
-                    (h - frameIndex * 18 - 20).toFloat(),
-                    0f,
-                    0f,
-                    0f,
-                    16f,
-                    16f,
-                    16f,
-                    16f
-                )
 
-                val string = "[" + ModKeyMappings.FIRE_MODE.key.displayName.string + "]"
-                val width = Minecraft.getInstance().font.width(string)
+                val component = Component.literal("[" + ModKeyMappings.FIRE_MODE.key.displayName.string + "] ")
+                    .append(Component.translatable("tips.superbwarfare.switch_ammo"))
 
                 pose.pushPose()
                 pose.scale(0.6f, 0.6f, 1.0f)
-                val xPos = w - 6f + xOffset
 
-                if (width >= 7 / 0.6f) {
-                    RenderHelper.renderScrollingString(
-                        guiGraphics, Minecraft.getInstance().font,
-                        Component.literal(string),
-                        0.6f,
-                        ((xPos - 3f) / 0.6f).toInt(), ((h - frameIndex * 18 - 14f) / 0.6f).toInt(),
-                        ((xPos + 5f) / 0.6f).toInt(), ((h - frameIndex * 18 - 4f) / 0.6f).toInt(),
-                        0xFFFFFF
-                    )
-                } else {
-                    guiGraphics.drawString(
-                        Minecraft.getInstance().font,
-                        string,
-                        (xPos + 3f - width / 2f) / 0.6f,
-                        (h - frameIndex * 18 - 14f) / 0.6f,
-                        0xFFFFFF,
-                        false
-                    )
+                var height = -2f
+
+                if (weaponIndex == weapons.size - 1) {
+                    height = -27f
                 }
+
+                guiGraphics.drawString(
+                    Minecraft.getInstance().font,
+                    component.string,
+                    (w - 85 + xOffset) / 0.6f,
+                    (h - frameIndex * 18 + height) / 0.6f,
+                    0xFFFFFF,
+                    false
+                )
 
                 pose.popPose()
             }

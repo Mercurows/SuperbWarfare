@@ -3,7 +3,7 @@
   "MaxEnergy": 10000000,
   "TurretPos": [0, 0.83, 3.16],
   "TurretTurnSpeed": [15, 15],
-  "TurretPitchRange": [-40, 10],
+  "TurretPitchRange": [-60, 10],
   "BarrelPos": [0, -0.413, -0.038],
   "TurretControllerIndex": 1,
   "OBB": [
@@ -72,10 +72,6 @@
         "AircraftCameraPos": [-2.85, 2.625, -11.25]
       },
       "CanRotateHead": false,
-      "MinPitch": -80,
-      "MaxPitch": 80,
-      "MinYaw": -80,
-      "MaxYaw": 80,
       "Weapons": ["Rocket", "DriverMissile", "DriverAAMissile"],
       "DismountInfo": {
         "Transform": "Vehicle",
