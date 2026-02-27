@@ -8,7 +8,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent
 
 object ColdSweatCompatHandler {
     @JvmStatic
-    fun onPlayerInVehicle(event: PlayerTickEvent) {
+    fun onPlayerInVehicle(event: PlayerTickEvent.Pre) {
         val player = event.entity ?: return
         val vehicle = player.vehicle
         if (vehicle is VehicleEntity
