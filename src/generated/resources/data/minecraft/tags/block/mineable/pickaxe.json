@@ -24,6 +24,7 @@
     "superbwarfare:creative_superb_item_interface",
     "superbwarfare:lucky_container",
     "superbwarfare:vehicle_assembling_table",
-    "superbwarfare:biogas_generator"
+    "superbwarfare:biogas_generator",
+    "superbwarfare:blueprint_research_table"
   ]
 }

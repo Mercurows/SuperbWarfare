@@ -53,7 +53,8 @@ class ModBlockTagProvider(
             ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE.get(),
             ModBlocks.LUCKY_CONTAINER.get(),
             ModBlocks.VEHICLE_ASSEMBLING_TABLE.get(),
-            ModBlocks.BIOGAS_GENERATOR.get()
+            ModBlocks.BIOGAS_GENERATOR.get(),
+            ModBlocks.BLUEPRINT_RESEARCH_TABLE.get()
         )
         this.tag(BlockTags.MINEABLE_WITH_SHOVEL).add(ModBlocks.SANDBAG.get())
 
