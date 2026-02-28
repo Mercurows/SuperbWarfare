@@ -187,6 +187,7 @@ dependencies {
     implementation(fg.deobf("curse.maven:create-328085:6255513"))
     implementation(fg.deobf("curse.maven:mmmmmmmmmmmm-225738:6237015"))
     implementation(fg.deobf("curse.maven:selene-499980:6249659"))
+    implementation(fg.deobf("curse.maven:limitless-vehicle-1446269:7675116"))
     // better combat相关
     implementation(fg.deobf("curse.maven:better-combat-by-daedelus-639842:5625757"))
     implementation(fg.deobf("curse.maven:playeranimator-658587:4587214"))
