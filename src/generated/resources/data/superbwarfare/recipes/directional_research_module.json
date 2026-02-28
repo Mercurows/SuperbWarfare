@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "tag": "superbwarfare:ingots/cemented_carbide"
+    },
+    "b": {
+      "tag": "forge:ingots/gold"
+    },
+    "c": {
+      "item": "superbwarfare:ancient_cpu"
+    },
+    "d": {
+      "tag": "forge:gems/diamond"
+    }
+  },
+  "pattern": [
+    "ada",
+    "bcb",
+    "ada"
+  ],
+  "result": {
+    "item": "superbwarfare:directional_research_module"
+  },
+  "show_notification": true
+}
