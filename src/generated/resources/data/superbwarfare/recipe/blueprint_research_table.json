@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "a": {
+      "item": "minecraft:iron_ingot"
+    },
+    "b": {
+      "item": "superbwarfare:battery"
+    },
+    "c": {
+      "item": "minecraft:cartography_table"
+    },
+    "d": {
+      "tag": "c:storage_blocks/redstone"
+    },
+    "e": {
+      "tag": "superbwarfare:ingots/steel"
+    }
+  },
+  "pattern": [
+    "aaa",
+    "dcb",
+    "eee"
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:blueprint_research_table"
+  }
+}

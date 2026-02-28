@@ -1662,6 +1662,17 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 .define('f', Items.BLAST_FURNACE)
                 .unlockedBy(getHasName(ModItems.CELL.get()), has(ModItems.CELL.get()))
                 .save(writer, loc(getItemName(ModItems.BIOGAS_GENERATOR.get())))
+            ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModItems.BLUEPRINT_RESEARCH_TABLE.get())
+                .pattern("aaa")
+                .pattern("dcb")
+                .pattern("eee")
+                .define('a', Items.IRON_INGOT)
+                .define('b', ModItems.BATTERY.get())
+                .define('c', Items.CARTOGRAPHY_TABLE)
+                .define('d', Tags.Items.STORAGE_BLOCKS_REDSTONE)
+                .define('e', ModTags.Items.INGOTS_STEEL)
+                .unlockedBy(getHasName(Items.CARTOGRAPHY_TABLE), has(Items.CARTOGRAPHY_TABLE))
+                .save(writer, loc(getItemName(ModItems.BLUEPRINT_RESEARCH_TABLE.get())))
         }
 
         private fun buildVehicleRecipes(writer: RecipeOutput) {
