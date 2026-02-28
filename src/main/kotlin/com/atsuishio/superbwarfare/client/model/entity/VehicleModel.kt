@@ -301,7 +301,7 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
 
         val partialTick = animationState.partialTick
 
-        pitch = vehicle.getPitch(partialTick) + vehicle.turretCustomPitch
+        pitch = vehicle.getPitch(partialTick)
         yaw = vehicle.getYaw(partialTick)
         roll = vehicle.getRoll(partialTick)
 

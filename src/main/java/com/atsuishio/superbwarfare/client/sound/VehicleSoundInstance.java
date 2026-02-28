@@ -127,7 +127,7 @@ public abstract class VehicleSoundInstance extends AbstractTickableSoundInstance
 
         @Override
         protected float getVolume(VehicleEntity mobileVehicle) {
-            return (float) Mth.lerp(Mth.clamp(mobileVehicle.getDeltaMovement().length(), 0F, 0.3F), 0, 0.3F) * (mobileVehicle.onGround() ? 1 : 0.5f);
+            return (float) Mth.lerp(Mth.clamp(mobileVehicle.getDeltaMovement().horizontalDistance(), 0F, 0.3F), 0F, 0.3F) * 1.4f;
         }
     }
 

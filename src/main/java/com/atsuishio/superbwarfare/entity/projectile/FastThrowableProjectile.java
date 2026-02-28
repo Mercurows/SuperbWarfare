@@ -150,7 +150,9 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
 
         if (tickCount > getLife()) {
             if (level() instanceof ServerLevel) {
-                causeExplode(position());
+                if (explosionRadius > 0) {
+                    causeExplode(position());
+                }
                 if (this instanceof MortarShellEntity mortarShell) {
                     mortarShell.createAreaCloud(this.level(), position());
                 }

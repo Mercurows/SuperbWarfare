@@ -514,7 +514,7 @@ object VehicleVecUtils {
      * @return 旋转矩阵
      */
     fun getTurretTransform(vehicle: VehicleEntity, partialTicks: Float): Matrix4d {
-        val transformV = vehicle.getVehicleTransform(partialTicks)
+        val transformV = vehicle.getVehicleTransformWithCustomPitch(partialTicks)
 
         val transform = Matrix4d()
         val pos = vehicle.turretPos ?: return transformV
@@ -526,7 +526,6 @@ object VehicleVecUtils {
         )
 
         transformV.translate(worldPosition.x, worldPosition.y, worldPosition.z)
-        transformV.rotate(Axis.XP.rotationDegrees(vehicle.turretCustomPitch))
         transformV.rotate(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, vehicle.turretYRotO, vehicle.turretYRot)))
         return transformV
     }

@@ -644,6 +644,7 @@
   "entity.superbwarfare.bradley": "M2 “布拉德利”履带式步兵战车",
   "entity.superbwarfare.steel_coil": "钢卷",
   "entity.superbwarfare.turret_wreck": "炮塔残骸",
+  "entity.superbwarfare.ztz_99a": "ZTZ-99A主战坦克",
 
   "key.categories.superbwarfare": "卓越前线",
   "key.superbwarfare.hold_zoom": "瞄准(按住)",
@@ -820,6 +821,7 @@
   "info.superbwarfare.m_1a_2": "M1A2“艾布拉姆斯”是美军现役主战坦克。主武器为120毫米滑膛炮，配备先进的数字化火控系统与贫铀装甲，专为高强度地面对抗设计，以精准的火力、卓越的防护和机动性著称",
   "info.superbwarfare.bradley": "M2“布拉德利”是美军现役步兵战车。主要武器为一门25毫米链式机炮和“陶”式反坦克导弹发射器，设计用于运载步兵并为其提供强大的直接火力支援，兼具一定的反装甲能力，以均衡的机动性与防护性著称",
   "info.superbwarfare.lav_25": "LAV-25是美军的轮式步兵战车。主要武器为一门25毫米链式机炮，设计用于执行侦察、快速突击和步兵输送任务，具备两栖能力和优异的公路机动性，以高战术灵活性著称",
+  "info.superbwarfare.ztz_99a": "ZTZ-99A是中国陆军王牌主战坦克。主武器为一门125毫米滑膛炮，可发射多种弹药，配备先进复合装甲，专为高强度地面突击设计，以强大的火力、防护力和战场生存能力著称",
 
   "weapon.superbwarfare.20mm_cannon": "20毫米机炮 %1$s",
   "weapon.superbwarfare.20mm_cannon_ap": "20毫米机炮 穿甲弹 %1$s",

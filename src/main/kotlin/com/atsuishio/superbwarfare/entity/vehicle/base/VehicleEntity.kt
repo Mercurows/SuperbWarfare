@@ -2566,8 +2566,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             vec3 = getTransformDirectionFromString(1f, entity, "Turret")
         }
 
-        val minPitch = -seat.maxPitch
-        val maxPitch = -seat.minPitch
+        val minPitch = -seat.maxPitch + customTurretMaxPitch
+        val maxPitch = -seat.minPitch - customTurretMinPitch
         val f = Mth.wrapDegrees(entity.xRot - -getXRotFromVector(vec3)).toFloat()
         val f1 = Mth.clamp(f, minPitch, maxPitch)
         entity.xRotO += f1 - f
@@ -2585,7 +2585,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             if (Minecraft.getInstance().options.cameraType != CameraType.FIRST_PERSON) return
 
             val f4 = Mth.wrapDegrees(entity.yRot - -getYRotFromVector(vec3)).toFloat()
-            val f5 = Mth.clamp(f2, -10f, 10f)
+            val f5 = Mth.clamp(f2, -16f, 16f)
             entity.yRotO += f5 - f4
             entity.yRot = entity.yRot + f5 - f4
         }
@@ -3268,6 +3268,15 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         return transformV
     }
 
+    open fun getVehicleTransformWithCustomPitch(ticks: Float): Matrix4d {
+        val transformV = this.getVehicleYOffsetTransform(ticks)
+        val transform = Matrix4d()
+        val worldPosition = transformPosition(transform, 0.0, -this.rotateOffsetHeight, 0.0)
+        transformV.translate(worldPosition.x, worldPosition.y, worldPosition.z)
+        transformV.rotate(Axis.XP.rotationDegrees(turretCustomPitch))
+        return transformV
+    }
+
     // From Immersive_Aircraft
     open fun getVehicleYOffsetTransform(partialTicks: Float): Matrix4d {
         return VehicleVecUtils.getVehicleYOffsetTransform(this, partialTicks)
@@ -3383,7 +3392,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     open val turretCustomPitch: Float
         /**
-         * @return 炮塔最小俯角
+         * @return 炮塔自定义俯仰
          */
         get() = computed().turretCustomPitch
 
@@ -3962,7 +3971,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         val flag1 = pVec.y != vec3.y
         val flag2 = pVec.z != vec3.z
         val flag3 = this.onGround() || flag1 && pVec.y < 0.0
-        val stepHeight = stepHeight
+        val stepHeight = maxUpStep()
 
         if (stepHeight > 0.0f && flag3 && (flag || flag2)) {
 
@@ -4022,7 +4031,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             this.minorHorizontalCollision = false
         }
 
-        this.setOnGroundWithKnownMovement(this.verticalCollisionBelow, vec3)
+        this.setOnGroundWithMovement(this.verticalCollisionBelow, vec3)
         val blockpos = this.getOnPos(0.2f)
         val blockstate = level().getBlockState(blockpos)
         if (this.isRemoved) {
