@@ -136,8 +136,8 @@
       "ShootShake": [8, 10, 60],
       "Spread": 0.02,
       "ShootAnimationTime": 20,
-      "Crosshair": "@VehicleRuApc",
-      "CrosshairColor": "0xFFC700",
+      "Crosshair": "@VehicleCnTank",
+      "CrosshairColor": "0x66FF00",
       "Name": "weapon.superbwarfare.cannon_ap",
       "AmmoType": [
         "superbwarfare:large_shell_ap",
@@ -192,7 +192,6 @@
       "DefaultZoom": 3,
       "HeatPerShoot": 4,
       "NaturalCooldown": 1,
-      "CrosshairColor": "0xFFC700",
       "AmmoType": "@RifleAmmo",
       "Projectile": "superbwarfare:projectile",
       "RPM": 600,
@@ -209,6 +208,7 @@
         "Directions": ["Barrel"]
       },
       "Crosshair": "@VehicleCommonGun",
+      "CrosshairColor": "0x66FF00",
       "Name": "weapon.superbwarfare.7_62mm_coax",
       "SoundInfo": {
         "Fire1P": "superbwarfare:coax_fire_1p",
@@ -255,7 +255,6 @@
       "SoundRadius": 16
     }
   },
-  "HUDColor": "0xFFC700",
   "InertiaRotateRate": 1.2,
   "EngineType": "Track",
   "EngineInfo": {
