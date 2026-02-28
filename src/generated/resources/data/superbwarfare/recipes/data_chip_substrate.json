@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "tag": "forge:plates/copper"
+    },
+    "b": {
+      "item": "minecraft:amethyst_shard"
+    },
+    "d": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "pattern": [
+    "dad",
+    "aba",
+    "dad"
+  ],
+  "result": {
+    "count": 4,
+    "item": "superbwarfare:data_chip_substrate"
+  },
+  "show_notification": true
+}
