@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "tag": "c:glass_blocks"
+    },
+    "b": {
+      "item": "superbwarfare:data_chip_substrate"
+    },
+    "c": {
+      "tag": "superbwarfare:ingots/cemented_carbide"
+    },
+    "d": {
+      "tag": "c:nuggets/gold"
+    }
+  },
+  "pattern": [
+    " a ",
+    "cbc",
+    " d "
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:epic_blueprint_data_chip"
+  }
+}

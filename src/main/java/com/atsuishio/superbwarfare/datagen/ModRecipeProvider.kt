@@ -2,11 +2,8 @@ package com.atsuishio.superbwarfare.datagen
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.datagen.builder.VehicleAssemblingRecipeBuilder
-import com.atsuishio.superbwarfare.init.ModEntities
-import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.init.ModItems.Materials
-import com.atsuishio.superbwarfare.init.ModPerks
-import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.recipe.*
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe
@@ -24,6 +21,7 @@ import net.minecraft.tags.TagKey
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.Items
+import net.minecraft.world.item.Rarity
 import net.minecraft.world.item.alchemy.Potion
 import net.minecraft.world.item.alchemy.PotionContents
 import net.minecraft.world.item.alchemy.Potions
@@ -2572,6 +2570,55 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 .define('c', ItemTags.PLANKS)
                 .unlockedBy(getHasName(Items.PAPER), has(Items.PAPER))
                 .save(writer, loc(getItemName(ModItems.TRANSCRIPT.get())))
+            ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.DATA_CHIP_SUBSTRATE.get(), 4)
+                .pattern("dad")
+                .pattern("aba")
+                .pattern("dad")
+                .define('a', PLATES_COPPER)
+                .define('b', Items.AMETHYST_SHARD)
+                .define('d', Items.IRON_INGOT)
+                .unlockedBy(getHasName(Items.IRON_INGOT), has(Items.IRON_INGOT))
+                .save(writer, loc(getItemName(ModItems.DATA_CHIP_SUBSTRATE.get())))
+            ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.COMMON_BLUEPRINT_DATA_CHIP.get())
+                .pattern(" a ")
+                .pattern("cbc")
+                .pattern(" d ")
+                .define('a', Tags.Items.GLASS_BLOCKS)
+                .define('b', ModItems.DATA_CHIP_SUBSTRATE.get())
+                .define('c', Items.IRON_INGOT)
+                .define('d', Tags.Items.NUGGETS_GOLD)
+                .unlockedBy(getHasName(ModItems.DATA_CHIP_SUBSTRATE.get()), has(ModItems.DATA_CHIP_SUBSTRATE.get()))
+                .save(writer, loc(getItemName(ModItems.COMMON_BLUEPRINT_DATA_CHIP.get())))
+            ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.RARE_BLUEPRINT_DATA_CHIP.get())
+                .pattern(" a ")
+                .pattern("cbc")
+                .pattern(" d ")
+                .define('a', Tags.Items.GLASS_BLOCKS)
+                .define('b', ModItems.DATA_CHIP_SUBSTRATE.get())
+                .define('c', ModTags.Items.INGOTS_STEEL)
+                .define('d', Tags.Items.NUGGETS_GOLD)
+                .unlockedBy(getHasName(ModItems.DATA_CHIP_SUBSTRATE.get()), has(ModItems.DATA_CHIP_SUBSTRATE.get()))
+                .save(writer, loc(getItemName(ModItems.RARE_BLUEPRINT_DATA_CHIP.get())))
+            ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.EPIC_BLUEPRINT_DATA_CHIP.get())
+                .pattern(" a ")
+                .pattern("cbc")
+                .pattern(" d ")
+                .define('a', Tags.Items.GLASS_BLOCKS)
+                .define('b', ModItems.DATA_CHIP_SUBSTRATE.get())
+                .define('c', ModTags.Items.INGOTS_CEMENTED_CARBIDE)
+                .define('d', Tags.Items.NUGGETS_GOLD)
+                .unlockedBy(getHasName(ModItems.DATA_CHIP_SUBSTRATE.get()), has(ModItems.DATA_CHIP_SUBSTRATE.get()))
+                .save(writer, loc(getItemName(ModItems.EPIC_BLUEPRINT_DATA_CHIP.get())))
+            ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get())
+                .pattern(" a ")
+                .pattern("cbc")
+                .pattern(" d ")
+                .define('a', Tags.Items.GLASS_BLOCKS)
+                .define('b', ModItems.DATA_CHIP_SUBSTRATE.get())
+                .define('c', Items.NETHERITE_SCRAP)
+                .define('d', Tags.Items.NUGGETS_GOLD)
+                .unlockedBy(getHasName(ModItems.DATA_CHIP_SUBSTRATE.get()), has(ModItems.DATA_CHIP_SUBSTRATE.get()))
+                .save(writer, loc(getItemName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get())))
         }
 
         private fun buildSpecialRecipes(writer: RecipeOutput) {
@@ -2884,6 +2931,128 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 DataComponentMap.builder().set(DataComponents.POTION_CONTENTS, PotionContents(potion)).build(),
                 Items.POTION
             )
+        }
+
+        fun generateBlueprintResearchingRecipe(writer: RecipeOutput, rarity: Rarity) {
+            val tag: TagKey<Item>
+            val enlargedTag: TagKey<Item>?
+            val input: Item
+            val time: Int
+            when (rarity) {
+                Rarity.RARE -> {
+                    tag = ModTags.Items.RARE_BLUEPRINT
+                    enlargedTag = ModTags.Items.ENLARGED_RARE_BLUEPRINT
+                    input = ModItems.RARE_BLUEPRINT_DATA_CHIP.get()
+                    time = 2400
+                }
+
+                Rarity.EPIC -> {
+                    tag = ModTags.Items.EPIC_BLUEPRINT
+                    enlargedTag = ModTags.Items.ENLARGED_EPIC_BLUEPRINT
+                    input = ModItems.EPIC_BLUEPRINT_DATA_CHIP.get()
+                    time = 6000
+                }
+
+                ModRarities.LEGENDARY -> {
+                    tag = ModTags.Items.LEGENDARY_BLUEPRINT
+                    enlargedTag = ModTags.Items.ENLARGED_LEGENDARY_BLUEPRINT
+                    input = ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()
+                    time = 12000
+                }
+
+                ModRarities.SUPERB -> {
+                    tag = ModTags.Items.SUPERB_BLUEPRINT
+                    enlargedTag = null
+                    input = ModItems.SUPERB_BLUEPRINT_DATA_CHIP.get()
+                    time = 24000
+                }
+
+                ModRarities.VIRTUAL -> {
+                    tag = ModTags.Items.VIRTUAL_BLUEPRINT
+                    enlargedTag = null
+                    input = ModItems.VIRTUAL_BLUEPRINT_DATA_CHIP.get()
+                    time = 9600
+                }
+
+                else -> {
+                    tag = ModTags.Items.COMMON_BLUEPRINT
+                    enlargedTag = ModTags.Items.ENLARGED_COMMON_BLUEPRINT
+                    input = ModItems.COMMON_BLUEPRINT_DATA_CHIP.get()
+                    time = 1200
+                }
+            }
+
+            // TODO ResearchingRecipeBuilder
+//            ResearchingRecipeBuilder.tag(tag, input = input)
+//                .base(Items.PAPER)
+//                .addition(Items.LAPIS_LAZULI)
+//                .time(time)
+//                .unlockedBy(getHasName(input), has(input))
+//                .save(writer, getItemName(input) + "_researching")
+//            ResearchingRecipeBuilder.tag(tag, 2, input)
+//                .base(Items.PAPER)
+//                .addition(Items.LAPIS_LAZULI)
+//                .special(ModItems.BOOST_RESEARCH_MODULE.get())
+//                .time(time)
+//                .color(1)
+//                .unlockedBy(getHasName(input), has(input))
+//                .unlockedBy(getHasName(ModItems.BOOST_RESEARCH_MODULE.get()), has(ModItems.BOOST_RESEARCH_MODULE.get()))
+//                .save(writer, getItemName(input) + "_researching_boost")
+//            ResearchingRecipeBuilder.tag(tag, input = input)
+//                .base(Items.PAPER)
+//                .addition(Items.LAPIS_LAZULI)
+//                .special(ModItems.DIRECTIONAL_RESEARCH_MODULE.get())
+//                .time(time)
+//                .color(2)
+//                .selectable()
+//                .unlockedBy(getHasName(input), has(input))
+//                .unlockedBy(
+//                    getHasName(ModItems.DIRECTIONAL_RESEARCH_MODULE.get()),
+//                    has(ModItems.DIRECTIONAL_RESEARCH_MODULE.get())
+//                )
+//                .save(writer, getItemName(input) + "_researching_directional")
+//            ResearchingRecipeBuilder.tag(tag, input = input)
+//                .base(Items.PAPER)
+//                .addition(Items.LAPIS_LAZULI)
+//                .special(ModItems.EFFECTIVE_RESEARCH_MODULE.get())
+//                .time(time / 5)
+//                .color(3)
+//                .unlockedBy(getHasName(input), has(input))
+//                .unlockedBy(
+//                    getHasName(ModItems.EFFECTIVE_RESEARCH_MODULE.get()),
+//                    has(ModItems.EFFECTIVE_RESEARCH_MODULE.get())
+//                )
+//                .save(writer, getItemName(input) + "_researching_effective")
+//            if (enlargedTag != null) {
+//                ResearchingRecipeBuilder.tag(enlargedTag, input = input)
+//                    .base(Items.PAPER)
+//                    .addition(Items.LAPIS_LAZULI)
+//                    .special(ModItems.ENLARGEMENT_RESEARCH_MODULE.get())
+//                    .time(time * 2)
+//                    .color(4)
+//                    .unlockedBy(getHasName(input), has(input))
+//                    .unlockedBy(
+//                        getHasName(ModItems.ENLARGEMENT_RESEARCH_MODULE.get()),
+//                        has(ModItems.ENLARGEMENT_RESEARCH_MODULE.get())
+//                    )
+//                    .save(writer, getItemName(input) + "_researching_enlargement")
+//            }
+//
+//            ResearchingRecipeBuilder.item(input, input = tag)
+//                .base(ModItems.DATA_CHIP_SUBSTRATE.get())
+//                .addition(Items.AMETHYST_SHARD)
+//                .time(600)
+//                .unlockedBy("has_${tag.location.path}", has(tag))
+//                .save(writer, getItemName(input) + "_from_blueprint")
+//            ResearchingRecipeBuilder.item(input, 2, tag)
+//                .base(ModItems.DATA_CHIP_SUBSTRATE.get())
+//                .addition(Items.AMETHYST_SHARD)
+//                .time(600)
+//                .special(ModItems.BOOST_RESEARCH_MODULE.get())
+//                .color(1)
+//                .unlockedBy("has_${tag.location.path}", has(tag))
+//                .unlockedBy(getHasName(ModItems.BOOST_RESEARCH_MODULE.get()), has(ModItems.BOOST_RESEARCH_MODULE.get()))
+//                .save(writer, getItemName(input) + "_from_blueprint_boost")
         }
     }
 }
