@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.compat.jei
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
+import com.atsuishio.superbwarfare.client.screens.BlueprintResearchTableScreen
 import com.atsuishio.superbwarfare.compat.jei.PotionMortarShellRecipeMaker.createRecipes
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModRecipes
@@ -12,10 +13,7 @@ import mezz.jei.api.constants.RecipeTypes
 import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter
 import mezz.jei.api.ingredients.subtypes.UidContext
 import mezz.jei.api.recipe.RecipeIngredientRole
-import mezz.jei.api.registration.IRecipeCatalystRegistration
-import mezz.jei.api.registration.IRecipeCategoryRegistration
-import mezz.jei.api.registration.IRecipeRegistration
-import mezz.jei.api.registration.ISubtypeRegistration
+import mezz.jei.api.registration.*
 import mezz.jei.api.runtime.IJeiRuntime
 import net.minecraft.client.Minecraft
 import net.minecraft.core.Holder
@@ -149,6 +147,13 @@ class SbwJEIPlugin : IModPlugin {
                 return getSubtypeData(ingredient, context).toString()
             }
         })
+    }
+
+    override fun registerGuiHandlers(registration: IGuiHandlerRegistration) {
+        registration.addRecipeClickArea(
+            BlueprintResearchTableScreen::class.java,
+            64, 23, 48, 12, ResearchingCategory.TYPE
+        )
     }
 
     companion object {
