@@ -38,6 +38,7 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
         "@VehicleUsApc" to loc("textures/overlay/vehicle/crosshair/us_apc.png"),
         "@VehicleUsTank" to loc("textures/overlay/vehicle/crosshair/us_tank.png"),
         "@VehicleRuApc" to loc("textures/overlay/vehicle/crosshair/ru_apc.png"),
+        "@VehicleCnTank" to loc("textures/overlay/vehicle/crosshair/cn_tank.png"),
         "@VehicleCommonMissile" to loc("textures/overlay/vehicle/crosshair/common_missile.png"),
         "@VehicleCommonSeekMissile" to loc("textures/overlay/vehicle/crosshair/common_seek_missile.png"),
         "@VehicleCommonGun" to loc("textures/overlay/vehicle/crosshair/common_gun.png"),
