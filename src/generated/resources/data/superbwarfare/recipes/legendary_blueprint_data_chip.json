@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "tag": "forge:glass"
+    },
+    "b": {
+      "item": "superbwarfare:data_chip_substrate"
+    },
+    "c": {
+      "item": "minecraft:netherite_scrap"
+    },
+    "d": {
+      "tag": "forge:nuggets/gold"
+    }
+  },
+  "pattern": [
+    " a ",
+    "cbc",
+    " d "
+  ],
+  "result": {
+    "item": "superbwarfare:legendary_blueprint_data_chip"
+  },
+  "show_notification": true
+}
