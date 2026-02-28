@@ -35,7 +35,7 @@ import java.util.function.Consumer
 
 open class MilitaryShovelItem :
     AxeItem(
-        ModItemTier.STEEL, 5f, -2.6f,
+        ModItemTier.CEMENTED_CARBIDE, 2f, -2.6f,
         Properties().rarity(Rarity.RARE).durability(810)
     ), GeoItem {
     private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)

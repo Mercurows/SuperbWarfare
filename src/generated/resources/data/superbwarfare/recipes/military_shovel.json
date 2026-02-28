@@ -6,13 +6,13 @@
       "tag": "superbwarfare:ingots/steel"
     },
     "b": {
-      "tag": "forge:ingots/iron"
+      "tag": "superbwarfare:ingots/cemented_carbide"
     }
   },
   "pattern": [
     " aa",
-    " b ",
-    "b  "
+    " ba",
+    "a  "
   ],
   "result": {
     "item": "superbwarfare:military_shovel"
