@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "tag": "superbwarfare:ingots/cemented_carbide"
+    },
+    "b": {
+      "tag": "c:ingots/gold"
+    },
+    "c": {
+      "item": "superbwarfare:data_chip_substrate"
+    },
+    "d": {
+      "tag": "c:gems/emerald"
+    }
+  },
+  "pattern": [
+    "ada",
+    "bcb",
+    "ada"
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:boost_research_module"
+  }
+}
