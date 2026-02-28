@@ -298,7 +298,7 @@
     "WheelRotSpeed": 1.75,
     "WheelDifferential": 0.3,
     "MaxForwardSpeedRate": 0.95,
-    "MaxBackwardSpeedRate": 0.5,
+    "MaxBackwardSpeedRate": 0.6,
     "Increment": 0.027,
     "Decrement": 0.017,
     "SteeringSpeed": 0.065
