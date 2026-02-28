@@ -270,7 +270,7 @@
     "TrackRotSpeed": 1.9,
     "TrackDifferential": 0.6,
     "MaxForwardSpeedRate": 0.78,
-    "MaxBackwardSpeedRate": 0.25,
+    "MaxBackwardSpeedRate": 0.5,
     "Increment": 0.02,
     "Decrement": 0.01,
     "SteeringSpeed": 0.1,
