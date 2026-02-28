@@ -644,6 +644,7 @@
   "entity.superbwarfare.bradley": "M2 Bradley",
   "entity.superbwarfare.steel_coil": "Steel Coil",
   "entity.superbwarfare.turret_wreck": "Turret Wreck",
+  "entity.superbwarfare.ztz_99a": "ZTZ-99A MBT",
 
   "key.categories.superbwarfare": "Superb Warfare",
   "key.superbwarfare.hold_zoom": "Zoom (Hold)",
@@ -822,6 +823,7 @@
   "info.superbwarfare.m_1a_2": "The M1A2 Abrams is the main battle tank in active U.S. military service. Armed with a 120mm smoothbore gun and equipped with advanced digital fire control systems and depleted uranium armor, it is designed for high-intensity ground combat, renowned for its accurate firepower, superior protection, and mobility",
   "info.superbwarfare.bradley": "The M2 Bradley is the current U.S. infantry fighting vehicle. Its primary armament consists of a 25mm chain gun and a TOW anti-tank missile launcher. Designed to transport infantry and provide them with potent direct fire support, it also possesses anti-armor capability, and is known for its balanced mobility and protection",
   "info.superbwarfare.lav_25": "The LAV-25 is a U.S. wheeled infantry fighting vehicle. Its primary armament consists of a 25mm chain gun. Designed for reconnaissance, rapid assault, and infantry transport missions, it features amphibious capability and excellent on-road mobility, renowned for its high tactical flexibility",
+  "info.superbwarfare.ztz_99a": "The ZTZ-99A is the Chinese army's premier main battle tank. Its primary armament is a 125mm smoothbore gun capable of firing multiple types of ammunition. Equipped with advanced composite armor, it is designed for high-intensity ground assault, renowned for its powerful firepower, protection, and battlefield survivability",
 
   "weapon.superbwarfare.20mm_cannon": "20MM CANNON %1$s",
   "weapon.superbwarfare.20mm_cannon_ap": "20MM CANNON AP %1$s",

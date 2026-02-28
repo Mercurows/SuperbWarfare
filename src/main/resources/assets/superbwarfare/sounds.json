@@ -4371,5 +4371,54 @@
         "name": "superbwarfare:vehicle/common/heli_crash"
       }
     ]
+  },
+  "ztz_99a_reload": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/ztz_99a/ztz_99a_reload",
+        "stream": false
+      }
+    ]
+  },
+  "ztz_99a_fire_1p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/ztz_99a/ztz_99a_fire_1p",
+        "stream": false
+      }
+    ]
+  },
+  "ztz_99a_fire_3p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/ztz_99a/ztz_99a_fire_3p",
+        "stream": false
+      }
+    ]
+  },
+  "ztz_99a_far": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/ztz_99a/ztz_99a_far",
+        "stream": false
+      }
+    ]
+  },
+  "ztz_99a_veryfar": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/ztz_99a/ztz_99a_veryfar",
+        "stream": false
+      }
+    ]
+  },
+  "ztz_99a_engine": {
+    "sounds": [
+      {
+        "attenuation_distance": 64,
+        "stream": true,
+        "name": "superbwarfare:vehicle/ztz_99a/ztz_99a_engine"
+      }
+    ]
   }
 }

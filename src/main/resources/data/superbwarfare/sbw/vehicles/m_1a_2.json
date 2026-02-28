@@ -93,8 +93,7 @@
         "Transform": "Vehicle",
         "Position": [3.3, 0.375, -1.1]
       }
-    }
-  ,
+    },
     {
       "BanHand": true,
       "Transform": "Vehicle",
@@ -166,6 +165,8 @@
             "Projectile": "superbwarfare:grapeshot",
             "Spread": 5,
             "Damage": 18,
+            "ExplosionDamage": 0,
+            "ExplosionRadius": 0,
             "ProjectileAmount": 36,
             "Velocity": 15,
             "Name": "weapon.superbwarfare.cannon_gs"

@@ -164,6 +164,8 @@
             "Projectile": "superbwarfare:grapeshot",
             "Spread": 6,
             "Damage": 30,
+            "ExplosionDamage": 0,
+            "ExplosionRadius": 0,
             "ProjectileAmount": 48,
             "Velocity": 18,
             "Name": "weapon.superbwarfare.cannon_gs"

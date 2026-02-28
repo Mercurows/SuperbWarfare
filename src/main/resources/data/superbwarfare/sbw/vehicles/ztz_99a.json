@@ -3,28 +3,32 @@
   "MaxEnergy": 10000000,
   "OBB": [
     {
-      "Size": [2.2, 0.6875, 4.5716],
-      "Position": [0, 1.2375, 0.2409]
+      "Size": [2.25, 0.813, 1.531],
+      "Position": [0, 1.438, -2.906]
+    },
+    {
+      "Size": [2.25, 0.689, 2.844],
+      "Position": [0, 1.313, 1.469]
     },
     {
       "Part": "WheelLeft",
-      "Size": [0.4466, 0.7909, 4.2284],
-      "Position": [1.8909, 0.7909, 0.3091]
+      "Size": [0.344, 0.531, 3.906],
+      "Position": [1.844, 0.531, 0.031]
     },
     {
       "Part": "WheelRight",
-      "Size": [0.4466, 0.7909, 4.2284],
-      "Position": [-1.8909, 0.7909, 0.3091]
+      "Size": [0.344, 0.531, 3.906],
+      "Position": [-1.844, 0.531, 0.031]
     },
     {
       "Part": "MainEngine",
-      "Size": [1.375, 0.6193, 0.7216],
-      "Position": [0, 1.375, -3.6784]
+      "Size": [1.375, 0.531, 0.75],
+      "Position": [0, 1.781, -3.813]
     },
     {
       "Part": "Turret",
-      "Size": [1.8568, 0.4466, 2.0966],
-      "Position": [0, 0.5676, -0.1716],
+      "Size": [1.813, 0.594, 2.313],
+      "Position": [0, 0.656, -0.5],
       "Transform": "Turret",
       "Rotation": "Turret"
     }
@@ -34,12 +38,12 @@
       "HidePassenger": true,
       "CameraPos": {
         "Transform": "Barrel",
-        "ZoomPosition": [0, 0.22, 1.32],
+        "ZoomPosition": [0, 0.25, 0.25],
         "Direction": "Barrel"
       },
       "Transform": "Turret",
       "Position": [
-        0.653125, -0.5451, 1.16875
+        0.625, -0.413, 1.063
       ],
       "Weapons": ["Cannon", "MachineGun"],
       "CanRotateHead": false,
@@ -56,11 +60,13 @@
       "HidePassenger": true,
       "Transform": "Turret",
       "CameraPos": {
+        "UseFixedCameraPos": true,
         "Transform": "WeaponStationBarrel",
-        "ZoomPosition": [0, 0.055, 2.2473],
+        "Position": [0, 0.25, 0.75],
+        "ZoomPosition": [0, 0.124, 1.523],
         "Direction": "WeaponStationBarrel"
       },
-      "Position": [-0.7788, 0.15, -0.3157],
+      "Position": [-0.918, 0, -0.9],
       "Weapons": ["PassengerMachineGun"],
       "CanRotateHead": false,
       "MinPitch": -10,
@@ -74,13 +80,37 @@
     },
     {
       "Transform": "Turret",
-      "Position": [0.5863, -0.1, -0.426],
+      "Position": [0.75, 0.15, -0.5],
       "CanRotateBody": true,
       "MinPitch": -45,
       "MaxPitch": 90,
       "DismountInfo": {
         "Transform": "Vehicle",
         "Position": [3.3, 0.375, -1.1]
+      }
+    },
+    {
+      "BanHand": true,
+      "Transform": "Vehicle",
+      "Position": [1.75, 0.6, -4.98],
+      "MinYaw": -95,
+      "MaxYaw": 95,
+      "Pose": "Climb",
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [1.75, 0.375, -5.063]
+      }
+    },
+    {
+      "BanHand": true,
+      "Transform": "Vehicle",
+      "Position": [-1.75, 0.6, -4.98],
+      "MinYaw": -95,
+      "MaxYaw": 95,
+      "Pose": "Climb",
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [-1.75, 0.375, -5.063]
       }
     }
   ],
@@ -139,14 +169,14 @@
         }
       ],
       "SoundInfo": {
-        "Fire1P": "superbwarfare:t_90a_fire_1p",
-        "Fire3P": "superbwarfare:t_90a_fire_3p",
-        "Fire3PFar": "superbwarfare:t_90a_far",
-        "Fire3PVeryFar": "superbwarfare:t_90a_veryfar",
-        "VehicleReload": "superbwarfare:t_90a_reload",
+        "Fire1P": "superbwarfare:ztz_99a_fire_1p",
+        "Fire3P": "superbwarfare:ztz_99a_fire_3p",
+        "Fire3PFar": "superbwarfare:ztz_99a_far",
+        "Fire3PVeryFar": "superbwarfare:ztz_99a_veryfar",
+        "VehicleReload": "superbwarfare:ztz_99a_reload",
         "Change": "superbwarfare:into_cannon",
         "CancellableSounds": [
-          "superbwarfare:t_90a_reload"
+          "superbwarfare:ztz_99a_reload"
         ]
       },
       "SoundRadius": 32,
@@ -210,7 +240,7 @@
       "AmmoType": "@HeavyAmmo",
       "ShootPos": {
         "Transform": "WeaponStationBarrel",
-        "Positions": [[0, 0.055, 2.2473]],
+        "Positions": [[0, 0.124, 1.523]],
         "Directions": ["WeaponStationBarrel"]
       },
       "Crosshair": "@VehicleCommonGun",
@@ -233,8 +263,8 @@
     "EnergyCostRate": 128,
     "WheelRotSpeed": 1.25,
     "WheelDifferential": 0.75,
-    "TrackRotSpeed": 1.9,
-    "TrackDifferential": 0.6,
+    "TrackRotSpeed": 3.6,
+    "TrackDifferential": 1.7,
     "MaxForwardSpeedRate": 0.78,
     "MaxBackwardSpeedRate": 0.25,
     "Increment": 0.02,
@@ -242,18 +272,19 @@
     "SteeringSpeed": 0.1,
     "EngineSoundVolume" : 0.6
   },
-  "TurretPos": [0, 1.8051, 0],
-  "BarrelPos": [0, 0.4125, 1.16875],
+  "TurretPos": [0, 1.875, 0.25],
+  "BarrelPos": [0, 0.47, 1.35],
   "TurretTurnSpeed": [3.3, 3.3],
   "TurretPitchRange": [-5, 20],
-  "PassengerWeaponStationPos": [-0.7788, 1.0483, -0.3157],
-  "PassengerWeaponStationBarrelPos": [-0.01683, 0.3366, 0.3025],
+  "TurretCustomPitch": 3,
+  "PassengerWeaponStationPos": [-0.918, 1.816, -1.336],
+  "PassengerWeaponStationBarrelPos": [0, 0, 0],
   "PassengerWeaponStationTurnSpeed": [15, 15],
   "PassengerWeaponStationPitchRange": [-10, 66],
   "HasDecoy": true,
   "UpStep": 2.25,
   "RotateOffsetHeight": 2.75,
-  "Mass": 47,
+  "Mass": 55,
   "DamageModifiers": [
     "minecraft:arrow 0",
     "minecraft:trident 0",
@@ -295,7 +326,7 @@
     "SympatheticDetonationChance": 0.6
   },
   "ThirdPersonCameraPos": [-0.8669625, 1.5, 5],
-  "VehicleIcon": "superbwarfare:textures/vehicle_icon/t_90a_icon.png",
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/ztz_99a_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/land.png",
   "VehicleContainerType": "Medium",
   "Type": "Tank",
@@ -308,14 +339,14 @@
       [1, 0.3, false]
     ]
   },
-  "EngineSound": "superbwarfare:t_90a_engine",
+  "EngineSound": "superbwarfare:ztz_99a_engine",
   "HudType": "@Land",
   "TerrainCompat": [
-    [1.87, 0, 3.2406], [-1.87, 0, 3.2406],
-    [1.87, 0, 2.0746], [-1.87, 0, 2.0746],
-    [1.87, 0, 0.9636], [-1.87, 0, 0.9636],
-    [1.87, 0, 0.1507], [-1.87, 0, 0.1507],
-    [1.87, 0, -1.3024], [-1.87, 0, -1.3024],
-    [1.87, 0, -2.431], [-1.87, 0, -2.431]
+    [2.05, 0, 2.856], [-2.05, 0, 2.856],
+    [2.05, 0, 1.726], [-2.05, 0, 1.726],
+    [2.05, 0, 0.593], [-2.05, 0, 0.593],
+    [2.05, 0, -0.52], [-2.05, 0, -0.52],
+    [2.05, 0, -1.653], [-2.05, 0, -1.653],
+    [2.05, 0, -2.786], [-2.05, 0, -2.786]
   ]
 }

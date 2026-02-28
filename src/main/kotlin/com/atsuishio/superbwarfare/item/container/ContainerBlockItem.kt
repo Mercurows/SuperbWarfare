@@ -132,6 +132,7 @@ class ContainerBlockItem : BlockItem(ModBlocks.CONTAINER.get(), Properties().sta
             event.add(ModEntities.BRADLEY)
             event.add(ModEntities.LAV_AD)
             event.add(ModEntities.PRISM_TANK)
+            event.add(ModEntities.ZTZ_99A)
             event.add(ModEntities.T_90A)
             event.add(ModEntities.M_1A_2)
             event.add(ModEntities.YX_100)
