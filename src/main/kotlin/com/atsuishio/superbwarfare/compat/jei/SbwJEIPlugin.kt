@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.compat.jei
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
+import com.atsuishio.superbwarfare.client.screens.BlueprintResearchTableScreen
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModRecipes
 import com.atsuishio.superbwarfare.item.gun.GunItem
@@ -10,10 +11,7 @@ import mezz.jei.api.JeiPlugin
 import mezz.jei.api.constants.RecipeTypes
 import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter
 import mezz.jei.api.recipe.RecipeIngredientRole
-import mezz.jei.api.registration.IRecipeCatalystRegistration
-import mezz.jei.api.registration.IRecipeCategoryRegistration
-import mezz.jei.api.registration.IRecipeRegistration
-import mezz.jei.api.registration.ISubtypeRegistration
+import mezz.jei.api.registration.*
 import mezz.jei.api.runtime.IJeiRuntime
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
@@ -103,6 +101,13 @@ class SbwJEIPlugin : IModPlugin {
             if (ingredient.tag == null) return@registerSubtypeInterpreter IIngredientSubtypeInterpreter.NONE
             ingredient.tag!!.getBoolean("Control").toString()
         }
+    }
+
+    override fun registerGuiHandlers(registration: IGuiHandlerRegistration) {
+        registration.addRecipeClickArea(
+            BlueprintResearchTableScreen::class.java,
+            64, 23, 48, 12, ResearchingCategory.TYPE
+        )
     }
 
     companion object {
