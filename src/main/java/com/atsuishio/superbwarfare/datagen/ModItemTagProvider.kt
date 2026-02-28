@@ -11,6 +11,7 @@ import net.minecraft.core.HolderLookup
 import net.minecraft.data.PackOutput
 import net.minecraft.data.tags.ItemTagsProvider
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.tags.ItemTags
 import net.minecraft.world.item.Items
 import net.minecraft.world.level.block.Block
 import net.minecraftforge.common.Tags
@@ -291,6 +292,11 @@ class ModItemTagProvider(
             .addTags(ModTags.Items.EPIC_BLUEPRINT, ModTags.Items.LEGENDARY_BLUEPRINT)
         this.tag(ModTags.Items.ENLARGED_LEGENDARY_BLUEPRINT)
             .addTags(ModTags.Items.LEGENDARY_BLUEPRINT, ModTags.Items.SUPERB_BLUEPRINT)
+
+        this.tag(ItemTags.SWORDS).add(ModItems.MILITARY_SHOVEL.get())
+        this.tag(ItemTags.AXES).add(ModItems.MILITARY_SHOVEL.get())
+        this.tag(ItemTags.SHOVELS).add(ModItems.MILITARY_SHOVEL.get())
+        this.tag(ItemTags.HOES).add(ModItems.MILITARY_SHOVEL.get())
 
         ModItems.PERKS.entries.forEach {
             val item = it.get()
