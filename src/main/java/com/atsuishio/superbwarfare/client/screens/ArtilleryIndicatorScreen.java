@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.screens;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.item.FiringParametersItemKt;
+import com.atsuishio.superbwarfare.item.misc.FiringParametersItemKt;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.send.FiringParametersEditMessage;
 import net.minecraft.ChatFormatting;

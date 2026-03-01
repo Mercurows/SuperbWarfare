@@ -12,7 +12,7 @@ import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.Beast;
-import com.atsuishio.superbwarfare.item.Transcript;
+import com.atsuishio.superbwarfare.item.misc.TranscriptItem;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage;
@@ -467,7 +467,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
         if (stack.is(ModItems.TRANSCRIPT.get())) {
             final int size = 10;
 
-            ListTag tags = stack.getOrCreateTag().getList(Transcript.TAG_SCORES, Tag.TAG_COMPOUND);
+            ListTag tags = stack.getOrCreateTag().getList(TranscriptItem.TAG_SCORES, Tag.TAG_COMPOUND);
 
             Queue<CompoundTag> queue = new ArrayDeque<>();
             for (int i = 0; i < tags.size(); i++) {
@@ -486,7 +486,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             ListTag newTags = new ListTag();
             newTags.addAll(queue);
 
-            stack.getOrCreateTag().put(Transcript.TAG_SCORES, newTags);
+            stack.getOrCreateTag().put(TranscriptItem.TAG_SCORES, newTags);
         }
     }
 

@@ -1,7 +1,8 @@
-package com.atsuishio.superbwarfare.item
+package com.atsuishio.superbwarfare.item.misc
 
 import com.atsuishio.superbwarfare.client.TooltipTool
 import com.atsuishio.superbwarfare.client.screens.FiringParametersScreen
+import com.atsuishio.superbwarfare.item.ItemScreenProvider
 import com.atsuishio.superbwarfare.tools.component1
 import com.atsuishio.superbwarfare.tools.component2
 import com.atsuishio.superbwarfare.tools.component3

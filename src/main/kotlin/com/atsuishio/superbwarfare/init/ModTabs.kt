@@ -1,10 +1,10 @@
 package com.atsuishio.superbwarfare.init
 
 import com.atsuishio.superbwarfare.api.event.RegisterContainersEvent
-import com.atsuishio.superbwarfare.item.ArmorPlate
 import com.atsuishio.superbwarfare.item.container.LuckyContainerBlockItem
 import com.atsuishio.superbwarfare.item.container.SmallContainerBlockItem
 import com.atsuishio.superbwarfare.item.material.BatteryItem
+import com.atsuishio.superbwarfare.item.misc.ArmorPlateItem
 import com.atsuishio.superbwarfare.item.projectile.C4BombItem
 import com.atsuishio.superbwarfare.item.weapon.ElectricBatonItem
 import net.minecraft.core.HolderLookup
@@ -100,7 +100,7 @@ object ModTabs {
                     val item = it.get()
                     output.accept(item)
                     if (item === ModItems.ARMOR_PLATE.get()) {
-                        output.accept(ArmorPlate.getInfiniteInstance())
+                        output.accept(ArmorPlateItem.getInfiniteInstance())
                     }
                     if (item is BatteryItem) {
                         output.accept(item.makeFullEnergyStack())

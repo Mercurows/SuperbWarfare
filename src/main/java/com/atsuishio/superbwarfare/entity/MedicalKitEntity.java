@@ -25,7 +25,7 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-import static com.atsuishio.superbwarfare.item.MedicalKitItem.treat;
+import static com.atsuishio.superbwarfare.item.misc.MedicalKitItem.treat;
 
 public class MedicalKitEntity extends Entity implements GeoEntity {
 

@@ -2,8 +2,8 @@ package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator
-import com.atsuishio.superbwarfare.item.FiringParametersItem
-import com.atsuishio.superbwarfare.item.firingParameters
+import com.atsuishio.superbwarfare.item.misc.FiringParametersItem
+import com.atsuishio.superbwarfare.item.misc.firingParameters
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.tools.`is`

@@ -32,9 +32,8 @@ import com.atsuishio.superbwarfare.item.gun.special.BocekItem
 import com.atsuishio.superbwarfare.item.gun.special.RepairToolItem
 import com.atsuishio.superbwarfare.item.gun.special.TaserItem
 import com.atsuishio.superbwarfare.item.gun.vehicle.VehicleGun
-import com.atsuishio.superbwarfare.item.material.BatteryItem
-import com.atsuishio.superbwarfare.item.material.BlueprintItem
-import com.atsuishio.superbwarfare.item.material.MaterialPackItem
+import com.atsuishio.superbwarfare.item.material.*
+import com.atsuishio.superbwarfare.item.misc.*
 import com.atsuishio.superbwarfare.item.projectile.*
 import com.atsuishio.superbwarfare.item.weapon.*
 import com.atsuishio.superbwarfare.perk.Perk
@@ -144,7 +143,7 @@ object ModItems {
     @JvmField val RPG_ROCKET_STANDARD = registerAmmo("rpg_rocket_standard") { RpgRocketStandardItem() }
     @JvmField val RPG_ROCKET_TBG = registerAmmo("rpg_rocket_tbg") { RpgRocketTBGItem() }
     @JvmField val JAVELIN_MISSILE = registerAmmo("javelin_missile") { Item(Properties().stacksTo(4)) }
-    @JvmField val LUNGE_MINE = registerAmmo("lunge_mine") { LungeMine() }
+    @JvmField val LUNGE_MINE = registerAmmo("lunge_mine") { LungeMineItem() }
     @JvmField val SMALL_SHELL_AP = registerAmmo("small_shell_ap")
     @JvmField val SMALL_SHELL_HE = registerAmmo("small_shell_he")
     @JvmField val SMALL_SHELL_GS = registerAmmo("small_shell_gs")
@@ -203,7 +202,7 @@ object ModItems {
     @JvmField val MONITOR = registerItem("monitor") { Monitor() }
     @JvmField val ARTILLERY_INDICATOR = registerItem("artillery_indicator") { ArtilleryIndicator() }
 
-    @JvmField val DETONATOR = registerItem("detonator") { Detonator() }
+    @JvmField val DETONATOR = registerItem("detonator") { DetonatorItem() }
     @JvmField val TARGET_DEPLOYER = registerItem("target_deployer") { TargetDeployer() }
     @JvmField val DPS_GENERATOR_DEPLOYER = registerItem("dps_generator_deployer") { DPSGeneratorDeployer() }
     @JvmField val KNIFE = registerItem("knife") {
@@ -221,8 +220,8 @@ object ModItems {
     @JvmField val STEEL_PIPE = registerItem("steel_pipe") { SteelPipeItem() }
     @JvmField val CROWBAR = registerItem("crowbar") { CrowbarItem() }
     @JvmField val MILITARY_SHOVEL = registerItem("military_shovel") { MilitaryShovelItem() }
-    @JvmField val DEFUSER = registerItem("defuser") { Defuser() }
-    @JvmField val ARMOR_PLATE = registerItem("armor_plate") { ArmorPlate() }
+    @JvmField val DEFUSER = registerItem("defuser") { DefuserItem() }
+    @JvmField val ARMOR_PLATE = registerItem("armor_plate") { ArmorPlateItem() }
 
     @JvmField val RU_HELMET_6B47 = registerItem("ru_helmet_6b47") { RuHelmet6b47Item() }
     @JvmField val RU_CHEST_6B43 = registerItem("ru_chest_6b43") { RuChest6b43Item() }
@@ -272,11 +271,11 @@ object ModItems {
     @JvmField val LARGE_BATTERY_PACK = registerItem("large_battery_pack") { BatteryItem(20000000, Properties()) }
     @JvmField val LASER_UNIT = registerItem("laser_unit")
     @JvmField val BEAST = registerItem("beast") { Beast() }
-    @JvmField val TRANSCRIPT = registerItem("transcript") { Transcript() }
+    @JvmField val TRANSCRIPT = registerItem("transcript") { TranscriptItem() }
     @JvmField val FIRING_PARAMETERS = registerItem("firing_parameters") { FiringParametersItem() }
     @JvmField val MEDICAL_KIT = registerItem("medical_kit") { MedicalKitItem() }
-    @JvmField val VEHICLE_DAMAGE_ANALYZER = registerItem("vehicle_damage_analyzer") { VehicleDamageAnalyzer() }
-    @JvmField val VEHICLE_RESET_KIT = registerItem("vehicle_reset_kit") { VehicleResetKit() }
+    @JvmField val VEHICLE_DAMAGE_ANALYZER = registerItem("vehicle_damage_analyzer") { VehicleDamageAnalyzerItem() }
+    @JvmField val VEHICLE_RESET_KIT = registerItem("vehicle_reset_kit") { VehicleResetKitItem() }
 
     @JvmField val TUNGSTEN_ROD = registerItem("tungsten_rod")
 
@@ -476,7 +475,7 @@ object ModItems {
     }
 
     // @formatter:off
-    @JvmField val SHORTCUT_PACK = registerPerkItem("shortcut_pack") { ShortcutPack() }
+    @JvmField val SHORTCUT_PACK = registerPerkItem("shortcut_pack") { ShortcutPackItem() }
     @JvmField val EMPTY_PERK = registerPerkItem("empty_perk") { Item(Properties()) }
     // @formatter:on
 
