@@ -4,20 +4,12 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.entity.projectile.MediumRocketEntity
 import com.atsuishio.superbwarfare.item.*
-import com.atsuishio.superbwarfare.item.C4BombItem.C4DispenseItemBehavior
-import com.atsuishio.superbwarfare.item.ClaymoreMine.ClaymoreDispenseBehavior
-import com.atsuishio.superbwarfare.item.M18SmokeGrenade.SmokeGrenadeDispenserBehavior
-import com.atsuishio.superbwarfare.item.RgoGrenade.RgoGrenadeDispenserBehavior
-import com.atsuishio.superbwarfare.item.Tm62Item.Tm62DispenseBehavior
 import com.atsuishio.superbwarfare.item.ammo.*
 import com.atsuishio.superbwarfare.item.armor.*
 import com.atsuishio.superbwarfare.item.blockitem.BlueprintResearchTableBlockItem
 import com.atsuishio.superbwarfare.item.blockitem.ChargingStationBlockItem
 import com.atsuishio.superbwarfare.item.blockitem.CreativeChargingStationBlockItem
 import com.atsuishio.superbwarfare.item.blockitem.VehicleAssemblingTableBlockItem
-import com.atsuishio.superbwarfare.item.common.ammo.*
-import com.atsuishio.superbwarfare.item.common.ammo.MediumRocketItem.MediumRocketDispenseBehavior
-import com.atsuishio.superbwarfare.item.common.ammo.MortarShell.MortarShellDispenseBehavior
 import com.atsuishio.superbwarfare.item.container.ContainerBlockItem
 import com.atsuishio.superbwarfare.item.container.LuckyContainerBlockItem
 import com.atsuishio.superbwarfare.item.container.SmallContainerBlockItem
@@ -43,7 +35,7 @@ import com.atsuishio.superbwarfare.item.gun.vehicle.VehicleGun
 import com.atsuishio.superbwarfare.item.material.BatteryItem
 import com.atsuishio.superbwarfare.item.material.BlueprintItem
 import com.atsuishio.superbwarfare.item.material.MaterialPackItem
-import com.atsuishio.superbwarfare.item.projectile.Blu43MineItem
+import com.atsuishio.superbwarfare.item.projectile.*
 import com.atsuishio.superbwarfare.item.weapon.*
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.tiers.ModItemTier
@@ -147,11 +139,11 @@ object ModItems {
     @JvmField val TASER_ELECTRODE = registerAmmo("taser_electrode")
     @JvmField val GRENADE_40MM = registerAmmo("grenade_40mm")
 
-    @JvmField val MORTAR_SHELL = registerAmmo("mortar_shell") { MortarShell() }
-    @JvmField val MORTAR_SHELL_WP = registerAmmo("mortar_shell_wp") { MortarShell() }
-    @JvmField val POTION_MORTAR_SHELL = registerAmmo("potion_mortar_shell") { PotionMortarShell() }
-    @JvmField val RPG_ROCKET_STANDARD = registerAmmo("rpg_rocket_standard") { RpgRocketStandard() }
-    @JvmField val RPG_ROCKET_TBG = registerAmmo("rpg_rocket_tbg") { RpgRocketTBG() }
+    @JvmField val MORTAR_SHELL = registerAmmo("mortar_shell") { MortarShellItem() }
+    @JvmField val MORTAR_SHELL_WP = registerAmmo("mortar_shell_wp") { MortarShellItem() }
+    @JvmField val POTION_MORTAR_SHELL = registerAmmo("potion_mortar_shell") { PotionMortarShellItem() }
+    @JvmField val RPG_ROCKET_STANDARD = registerAmmo("rpg_rocket_standard") { RpgRocketStandardItem() }
+    @JvmField val RPG_ROCKET_TBG = registerAmmo("rpg_rocket_tbg") { RpgRocketTBGItem() }
     @JvmField val JAVELIN_MISSILE = registerAmmo("javelin_missile") { Item(Properties().stacksTo(4)) }
     @JvmField val LUNGE_MINE = registerAmmo("lunge_mine") { LungeMine() }
     @JvmField val SMALL_SHELL_AP = registerAmmo("small_shell_ap")
@@ -163,10 +155,10 @@ object ModItems {
     @JvmField val LARGE_SHELL_CM = registerAmmo("large_shell_cm") { Item(Properties().rarity(Rarity.RARE)) }
     @JvmField val LARGE_SHELL_GS = registerAmmo("large_shell_gs") { Item(Properties().rarity(Rarity.RARE)) }
     @JvmField val LARGE_SHELL_WP = registerAmmo("large_shell_wp") { Item(Properties().rarity(Rarity.RARE)) }
-    @JvmField val HAND_GRENADE = registerAmmo("hand_grenade") { HandGrenade() }
-    @JvmField val RGO_GRENADE = registerAmmo("rgo_grenade") { RgoGrenade() }
-    @JvmField val M18_SMOKE_GRENADE = registerAmmo("m18_smoke_grenade") { M18SmokeGrenade() }
-    @JvmField val CLAYMORE_MINE = registerAmmo("claymore_mine") { ClaymoreMine() }
+    @JvmField val HAND_GRENADE = registerAmmo("hand_grenade") { HandGrenadeItem() }
+    @JvmField val RGO_GRENADE = registerAmmo("rgo_grenade") { RgoGrenadeItem() }
+    @JvmField val M18_SMOKE_GRENADE = registerAmmo("m18_smoke_grenade") { M18SmokeGrenadeItem() }
+    @JvmField val CLAYMORE_MINE = registerAmmo("claymore_mine") { ClaymoreMineItem() }
     @JvmField val TM_62 = registerAmmo("tm_62") { Tm62Item() }
     @JvmField val PTKM_1R = registerAmmo("ptkm_1r") { Ptkm1rItem() }
     @JvmField val C4_BOMB = registerAmmo("c4_bomb") { C4BombItem() }
@@ -499,44 +491,19 @@ object ModItems {
     // @formatter:on
 
     fun registerDispenserBehavior() {
-        val list: MutableList<DeferredHolder<Item, out Item>> = mutableListOf()
+        val list = mutableListOf<DeferredHolder<Item, out Item>>()
         list.addAll(AMMO.entries)
         list.addAll(ITEMS.entries)
 
-        for (item in list) {
-            if (item.get() is ProjectileItem) {
-                DispenserBlock.registerProjectileBehavior(item.get())
+        for (i in list) {
+            val item = i.get()
+            if (item is ProjectileItem) {
+                DispenserBlock.registerProjectileBehavior(item)
+            }
+            if (item is DispenserLaunchable) {
+                DispenserBlock.registerBehavior(item, item.getLaunchBehavior())
             }
         }
-
-        //        DispenserBlock.registerBehavior(SWARM_DRONE.get(), new SwarmDroneItem.SwarmDroneDispenseBehavior());
-        DispenserBlock.registerBehavior(C4_BOMB.get(), C4DispenseItemBehavior())
-        DispenserBlock.registerBehavior(CLAYMORE_MINE.get(), ClaymoreDispenseBehavior())
-        DispenserBlock.registerBehavior(BLU_43_MINE.get(), Blu43MineItem.Blu43MineDispenseBehavior)
-        DispenserBlock.registerBehavior(RPG_ROCKET_STANDARD.get(), RpgRocketStandard.RocketDispenseBehavior())
-        DispenserBlock.registerBehavior(RPG_ROCKET_TBG.get(), RpgRocketTBG.RocketDispenseBehavior())
-        //        DispenserBlock.registerBehavior(SMALL_ROCKET.get(), new SmallRocketItem.SmallRocketDispenseBehavior());
-//        DispenserBlock.registerBehavior(MEDIUM_AERIAL_BOMB.get(), new MediumAerialBombItem.MediumAerialBombDispenseBehavior());
-        DispenserBlock.registerBehavior(RGO_GRENADE.get(), RgoGrenadeDispenserBehavior())
-        DispenserBlock.registerBehavior(M18_SMOKE_GRENADE.get(), SmokeGrenadeDispenserBehavior())
-        DispenserBlock.registerBehavior(TM_62.get(), Tm62DispenseBehavior())
-        DispenserBlock.registerBehavior(
-            MEDIUM_ROCKET_AP.get(),
-            MediumRocketDispenseBehavior(MEDIUM_ROCKET_AP.get())
-        )
-        DispenserBlock.registerBehavior(
-            MEDIUM_ROCKET_CM.get(),
-            MediumRocketDispenseBehavior(MEDIUM_ROCKET_CM.get())
-        )
-        DispenserBlock.registerBehavior(
-            MEDIUM_ROCKET_HE.get(),
-            MediumRocketDispenseBehavior(MEDIUM_ROCKET_HE.get())
-        )
-        DispenserBlock.registerBehavior(MORTAR_SHELL.get(), MortarShellDispenseBehavior(MORTAR_SHELL.get()))
-        DispenserBlock.registerBehavior(
-            POTION_MORTAR_SHELL.get(),
-            MortarShellDispenseBehavior(POTION_MORTAR_SHELL.get())
-        )
     }
 
     fun register(bus: IEventBus) {

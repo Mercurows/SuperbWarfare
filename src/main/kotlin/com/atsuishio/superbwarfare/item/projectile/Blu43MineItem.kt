@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.item.projectile
 
 import com.atsuishio.superbwarfare.entity.Blu43Entity
 import com.atsuishio.superbwarfare.init.ModEntities
+import com.atsuishio.superbwarfare.item.DispenserLaunchable
 import net.minecraft.core.dispenser.BlockSource
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior
 import net.minecraft.util.Mth
@@ -13,10 +14,9 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.DispenserBlock
 import org.joml.Math
-import javax.annotation.ParametersAreNonnullByDefault
 import kotlin.random.Random
 
-class Blu43MineItem : Item(Properties()) {
+class Blu43MineItem : Item(Properties()), DispenserLaunchable {
     override fun use(level: Level, player: Player, hand: InteractionHand): InteractionResultHolder<ItemStack> {
         val stack = player.getItemInHand(hand)
 
@@ -44,12 +44,11 @@ class Blu43MineItem : Item(Properties()) {
         return InteractionResultHolder.success(stack)
     }
 
-    companion object Blu43MineDispenseBehavior : DefaultDispenseItemBehavior() {
-        @ParametersAreNonnullByDefault
-        override fun execute(blockSource: BlockSource, stack: ItemStack): ItemStack {
-            val level: Level = blockSource.level()
-            val position = DispenserBlock.getDispensePosition(blockSource)
-            val direction = blockSource.state().getValue(DispenserBlock.FACING)
+    override fun getLaunchBehavior() = object : DefaultDispenseItemBehavior() {
+        public override fun execute(pSource: BlockSource, pStack: ItemStack): ItemStack {
+            val level: Level = pSource.level
+            val position = DispenserBlock.getDispensePosition(pSource)
+            val direction = pSource.state.getValue(DispenserBlock.FACING)
 
             val blu43 = Blu43Entity(ModEntities.BLU_43.get(), level)
             blu43.setPos(position.x(), position.y(), position.z())
@@ -63,8 +62,8 @@ class Blu43MineItem : Item(Properties()) {
             blu43.yRotO = blu43.yRot
 
             level.addFreshEntity(blu43)
-            stack.shrink(1)
-            return stack
+            pStack.shrink(1)
+            return pStack
         }
     }
 }
