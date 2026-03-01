@@ -33,8 +33,10 @@ import com.atsuishio.superbwarfare.item.gun.special.BocekItem
 import com.atsuishio.superbwarfare.item.gun.special.RepairToolItem
 import com.atsuishio.superbwarfare.item.gun.special.TaserItem
 import com.atsuishio.superbwarfare.item.gun.vehicle.VehicleGun
+import com.atsuishio.superbwarfare.item.material.BatteryItem
 import com.atsuishio.superbwarfare.item.material.BlueprintItem
 import com.atsuishio.superbwarfare.item.material.MaterialPackItem
+import com.atsuishio.superbwarfare.item.projectile.Blu43MineItem
 import com.atsuishio.superbwarfare.item.weapon.*
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.tiers.ModItemTier
@@ -272,7 +274,7 @@ object ModItems {
     @JvmField val LASER_UNIT = registerItem("laser_unit")
     @JvmField val BEAST = registerItem("beast") { Beast() }
     @JvmField val TRANSCRIPT = registerItem("transcript") { Transcript() }
-    @JvmField val FIRING_PARAMETERS = registerItem("firing_parameters") { FiringParameters() }
+    @JvmField val FIRING_PARAMETERS = registerItem("firing_parameters") { FiringParametersItem() }
     @JvmField val MEDICAL_KIT = registerItem("medical_kit") { MedicalKitItem() }
     @JvmField val VEHICLE_DAMAGE_ANALYZER = registerItem("vehicle_damage_analyzer") { VehicleDamageAnalyzer() }
     @JvmField val VEHICLE_RESET_KIT = registerItem("vehicle_reset_kit") { VehicleResetKit() }
@@ -487,7 +489,7 @@ object ModItems {
         for (i in list) {
             val item = i.get()
             if (item is DispenserLaunchable) {
-                DispenserBlock.registerBehavior(item, item.launchBehavior)
+                DispenserBlock.registerBehavior(item, item.getLaunchBehavior())
             }
         }
     }

@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.screens;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.item.FiringParametersKt;
+import com.atsuishio.superbwarfare.item.FiringParametersItemKt;
 import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.send.FiringParametersEditMessage;
 import com.mojang.math.Axis;
@@ -45,7 +45,7 @@ public class FiringParametersScreen extends Screen {
         this.stack = stack;
         this.hand = hand;
         if (!stack.isEmpty()) {
-            this.isDepressed = FiringParametersKt.getFiringParameters(stack).isDepressed();
+            this.isDepressed = FiringParametersItemKt.getFiringParameters(stack).isDepressed();
         }
     }
 
@@ -59,7 +59,7 @@ public class FiringParametersScreen extends Screen {
         super.tick();
         if (!this.init) {
             if (!this.stack.isEmpty()) {
-                var parameters = FiringParametersKt.getFiringParameters(stack);
+                var parameters = FiringParametersItemKt.getFiringParameters(stack);
                 var pos = parameters.pos();
 
                 this.posX.setValue("" + pos.getX());

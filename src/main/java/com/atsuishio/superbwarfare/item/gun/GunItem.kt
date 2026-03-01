@@ -1214,7 +1214,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     }
 
     @OnlyIn(Dist.CLIENT)
-    override fun getItemScreen(stack: ItemStack, player: Player, hand: InteractionHand?): Screen? {
+    override fun getItemScreen(stack: ItemStack, player: Player, hand: InteractionHand): Screen? {
         if (ClientEventHandler.canOpenEditScreen(stack, hand)
             && stack.item is GunItem
             && canEditAttachments(from(stack))

@@ -9,7 +9,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.FiringParametersKt;
+import com.atsuishio.superbwarfare.item.FiringParametersItemKt;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.TraceTool;
@@ -87,7 +87,7 @@ public class AnnihilatorEntity extends ArtilleryEntity {
     }
 
     public void setTarget(ItemStack stack) {
-        var parameters = FiringParametersKt.getFiringParameters(stack);
+        var parameters = FiringParametersItemKt.getFiringParameters(stack);
         var pos = parameters.pos();
         setTargetPos(pos);
     }

@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.client.overlay
 import com.atsuishio.superbwarfare.entity.vehicle.Type63Entity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getXRotFromVector
 import com.atsuishio.superbwarfare.init.ModItems
-import com.atsuishio.superbwarfare.item.FiringParameters
+import com.atsuishio.superbwarfare.item.FiringParametersItem
 import com.atsuishio.superbwarfare.item.firingParameters
 import com.atsuishio.superbwarfare.tools.FormatTool.format0D
 import com.atsuishio.superbwarfare.tools.FormatTool.format1D
@@ -121,11 +121,11 @@ object Type63InfoOverlay : CommonOverlay("type_63_info") {
 
         var stack = player.offhandItem
 
-        if (player.mainHandItem.item is FiringParameters) {
+        if (player.mainHandItem.item is FiringParametersItem) {
             stack = player.mainHandItem
         }
 
-        if (stack.item is FiringParameters) {
+        if (stack.item is FiringParametersItem) {
             val parameters = stack.firingParameters
             val targetX = parameters.pos.x.toDouble()
             val targetY = (parameters.pos.y - 1).toDouble()

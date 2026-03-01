@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.network.message.send
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator
-import com.atsuishio.superbwarfare.item.FiringParameters
+import com.atsuishio.superbwarfare.item.FiringParametersItem
 import com.atsuishio.superbwarfare.item.firingParameters
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
@@ -40,9 +40,9 @@ object SetFiringParametersMessage : ServerPacketPayload() {
             val radius = parameters.radius
 
             if (lookAtEntity) {
-                stack.firingParameters = FiringParameters.Parameters(lookingEntity.blockPosition(), radius, isDepressed)
+                stack.firingParameters = FiringParametersItem.Parameters(lookingEntity.blockPosition(), radius, isDepressed)
             } else {
-                stack.firingParameters = FiringParameters.Parameters(hitPos, radius, isDepressed)
+                stack.firingParameters = FiringParametersItem.Parameters(hitPos, radius, isDepressed)
             }
 
             val pos = stack.firingParameters.pos
@@ -67,7 +67,7 @@ object SetFiringParametersMessage : ServerPacketPayload() {
             val isDepressed = parameters.isDepressed
             val radius = parameters.radius
 
-            mainStack.firingParameters = FiringParameters.Parameters(pos, radius, isDepressed)
+            mainStack.firingParameters = FiringParametersItem.Parameters(pos, radius, isDepressed)
 
             player.displayClientMessage(
                 Component.translatable("tips.superbwarfare.mortar.target_pos")

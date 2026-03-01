@@ -20,15 +20,15 @@ import net.minecraft.world.level.Level
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 
-var ItemStack.firingParameters: FiringParameters.Parameters
+var ItemStack.firingParameters: FiringParametersItem.Parameters
     get() {
-        val tag = tag ?: return FiringParameters.Parameters()
+        val tag = tag ?: return FiringParametersItem.Parameters()
         val x = tag.getInt("TargetX")
         val y = tag.getInt("TargetY")
         val z = tag.getInt("TargetZ")
         val radius = tag.getInt("Radius")
         val isDepressed = tag.getBoolean("IsDepressed")
-        return FiringParameters.Parameters(BlockPos(x, y, z), radius, isDepressed)
+        return FiringParametersItem.Parameters(BlockPos(x, y, z), radius, isDepressed)
     }
     set(value) {
         val tag = orCreateTag
@@ -39,8 +39,7 @@ var ItemStack.firingParameters: FiringParameters.Parameters
         tag.putBoolean("IsDepressed", value.isDepressed)
     }
 
-class FiringParameters : Item(Properties().stacksTo(1)), ItemScreenProvider {
-
+class FiringParametersItem : Item(Properties().stacksTo(1)), ItemScreenProvider {
     @JvmRecord
     data class Parameters(val pos: BlockPos, val radius: Int, val isDepressed: Boolean) {
         constructor(pos: BlockPos, isDepressed: Boolean) : this(pos, 0, isDepressed)
@@ -91,7 +90,7 @@ class FiringParameters : Item(Properties().stacksTo(1)), ItemScreenProvider {
     }
 
     @OnlyIn(Dist.CLIENT)
-    override fun getItemScreen(stack: ItemStack, player: Player?, hand: InteractionHand?): Screen {
+    override fun getItemScreen(stack: ItemStack, player: Player, hand: InteractionHand): Screen {
         return FiringParametersScreen(stack, hand)
     }
 }
