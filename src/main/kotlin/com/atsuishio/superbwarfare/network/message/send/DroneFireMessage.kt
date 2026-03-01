@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.network.message.send
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator
-import com.atsuishio.superbwarfare.item.FiringParameters
+import com.atsuishio.superbwarfare.item.FiringParametersItem
 import com.atsuishio.superbwarfare.item.firingParameters
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.SerializedVector3f
@@ -31,7 +31,7 @@ data class DroneFireMessage(val pos: SerializedVector3f) : ServerPacketPayload()
 
                 val (_, radius, isDepressed) = offStack.firingParameters
 
-                offStack.firingParameters = FiringParameters.Parameters(
+                offStack.firingParameters = FiringParametersItem.Parameters(
                     BlockPos(
                         pos.x.toInt(),
                         pos.y.toInt(),

@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator
-import com.atsuishio.superbwarfare.item.FiringParameters
+import com.atsuishio.superbwarfare.item.FiringParametersItem
 import com.atsuishio.superbwarfare.item.firingParameters
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
@@ -21,7 +21,7 @@ data class FiringParametersEditMessage(
         val stack = if (mainHand) player.mainHandItem else player.offhandItem
         if (!stack.`is`(ModItems.FIRING_PARAMETERS, ModItems.ARTILLERY_INDICATOR)) return
 
-        stack.firingParameters = FiringParameters.Parameters(
+        stack.firingParameters = FiringParametersItem.Parameters(
             BlockPos(x, y, z),
             radius,
             isDepressed

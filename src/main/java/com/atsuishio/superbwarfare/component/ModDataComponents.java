@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.component;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.gun.Ammo;
-import com.atsuishio.superbwarfare.item.FiringParameters;
+import com.atsuishio.superbwarfare.item.FiringParametersItem;
 import com.atsuishio.superbwarfare.item.common.ammo.box.AmmoBoxInfo;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
@@ -21,14 +21,14 @@ public class ModDataComponents {
     public static final DeferredRegister<DataComponentType<?>> DATA_COMPONENT_TYPES =
             DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, Mod.MODID);
 
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<FiringParameters.Parameters>> FIRING_PARAMETERS = register(
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<FiringParametersItem.Parameters>> FIRING_PARAMETERS = register(
             "firing_parameters",
             builder -> builder.persistent(RecordCodecBuilder.create(instance ->
                     instance.group(
-                            BlockPos.CODEC.fieldOf("pos").forGetter(FiringParameters.Parameters::pos),
-                            Codec.INT.fieldOf("radius").forGetter(FiringParameters.Parameters::radius),
-                            Codec.BOOL.fieldOf("is_depressed").forGetter(FiringParameters.Parameters::isDepressed)
-                    ).apply(instance, FiringParameters.Parameters::new)
+                            BlockPos.CODEC.fieldOf("pos").forGetter(FiringParametersItem.Parameters::pos),
+                            Codec.INT.fieldOf("radius").forGetter(FiringParametersItem.Parameters::radius),
+                            Codec.BOOL.fieldOf("is_depressed").forGetter(FiringParametersItem.Parameters::isDepressed)
+                    ).apply(instance, FiringParametersItem.Parameters::new)
             ))
     );
 

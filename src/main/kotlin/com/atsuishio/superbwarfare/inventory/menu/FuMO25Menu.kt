@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.block.entity.FuMO25BlockEntity
 import com.atsuishio.superbwarfare.init.ModBlocks
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModMenuTypes
-import com.atsuishio.superbwarfare.item.FiringParameters
+import com.atsuishio.superbwarfare.item.FiringParametersItem
 import com.atsuishio.superbwarfare.item.firingParameters
 import com.atsuishio.superbwarfare.network.dataslot.ContainerEnergyData
 import com.atsuishio.superbwarfare.network.dataslot.SimpleEnergyData
@@ -90,7 +90,7 @@ open class FuMO25Menu(
             val radius = parameters.radius
 
             stack.firingParameters =
-                FiringParameters.Parameters(BlockPos(this.posX, this.posY, this.posZ), radius, isDepressed)
+                FiringParametersItem.Parameters(BlockPos(this.posX, this.posY, this.posZ), radius, isDepressed)
 
             this.resetPos()
             this.container.setChanged()

@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.entity.projectile.MediumRocketEntity
 import com.atsuishio.superbwarfare.item.*
-import com.atsuishio.superbwarfare.item.Blu43MineItem.Blu43MineDispenseBehavior
 import com.atsuishio.superbwarfare.item.C4BombItem.C4DispenseItemBehavior
 import com.atsuishio.superbwarfare.item.ClaymoreMine.ClaymoreDispenseBehavior
 import com.atsuishio.superbwarfare.item.M18SmokeGrenade.SmokeGrenadeDispenserBehavior
@@ -41,8 +40,10 @@ import com.atsuishio.superbwarfare.item.gun.special.BocekItem
 import com.atsuishio.superbwarfare.item.gun.special.RepairToolItem
 import com.atsuishio.superbwarfare.item.gun.special.TaserItem
 import com.atsuishio.superbwarfare.item.gun.vehicle.VehicleGun
+import com.atsuishio.superbwarfare.item.material.BatteryItem
 import com.atsuishio.superbwarfare.item.material.BlueprintItem
 import com.atsuishio.superbwarfare.item.material.MaterialPackItem
+import com.atsuishio.superbwarfare.item.projectile.Blu43MineItem
 import com.atsuishio.superbwarfare.item.weapon.*
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.tiers.ModItemTier
@@ -289,7 +290,7 @@ object ModItems {
     @JvmField val LASER_UNIT = registerItem("laser_unit")
     @JvmField val BEAST = registerItem("beast") { Beast() }
     @JvmField val TRANSCRIPT = registerItem("transcript") { Transcript() }
-    @JvmField val FIRING_PARAMETERS = registerItem("firing_parameters") { FiringParameters() }
+    @JvmField val FIRING_PARAMETERS = registerItem("firing_parameters") { FiringParametersItem() }
     @JvmField val MEDICAL_KIT = registerItem("medical_kit") { MedicalKitItem() }
     @JvmField val VEHICLE_DAMAGE_ANALYZER = registerItem("vehicle_damage_analyzer") { VehicleDamageAnalyzer() }
     @JvmField val VEHICLE_RESET_KIT = registerItem("vehicle_reset_kit") { VehicleResetKit() }
@@ -511,7 +512,7 @@ object ModItems {
         //        DispenserBlock.registerBehavior(SWARM_DRONE.get(), new SwarmDroneItem.SwarmDroneDispenseBehavior());
         DispenserBlock.registerBehavior(C4_BOMB.get(), C4DispenseItemBehavior())
         DispenserBlock.registerBehavior(CLAYMORE_MINE.get(), ClaymoreDispenseBehavior())
-        DispenserBlock.registerBehavior(BLU_43_MINE.get(), Blu43MineDispenseBehavior())
+        DispenserBlock.registerBehavior(BLU_43_MINE.get(), Blu43MineItem.Blu43MineDispenseBehavior)
         DispenserBlock.registerBehavior(RPG_ROCKET_STANDARD.get(), RpgRocketStandard.RocketDispenseBehavior())
         DispenserBlock.registerBehavior(RPG_ROCKET_TBG.get(), RpgRocketTBG.RocketDispenseBehavior())
         //        DispenserBlock.registerBehavior(SMALL_ROCKET.get(), new SmallRocketItem.SmallRocketDispenseBehavior());

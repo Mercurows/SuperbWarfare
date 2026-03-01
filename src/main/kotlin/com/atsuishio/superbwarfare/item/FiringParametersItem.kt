@@ -20,14 +20,13 @@ import net.minecraft.world.item.context.UseOnContext
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
 
-var ItemStack.firingParameters: FiringParameters.Parameters
-    get() = this.getOrDefault(ModDataComponents.FIRING_PARAMETERS, FiringParameters.Parameters())
+var ItemStack.firingParameters: FiringParametersItem.Parameters
+    get() = this.getOrDefault(ModDataComponents.FIRING_PARAMETERS, FiringParametersItem.Parameters())
     set(value) {
         set(ModDataComponents.FIRING_PARAMETERS, value)
     }
 
-class FiringParameters : Item(Properties().stacksTo(1)), ItemScreenProvider {
-
+class FiringParametersItem : Item(Properties().stacksTo(1)), ItemScreenProvider {
     @JvmRecord
     data class Parameters(val pos: BlockPos, val radius: Int, val isDepressed: Boolean) {
         constructor(pos: BlockPos, isDepressed: Boolean) : this(pos, 0, isDepressed)
@@ -78,7 +77,7 @@ class FiringParameters : Item(Properties().stacksTo(1)), ItemScreenProvider {
     }
 
     @OnlyIn(Dist.CLIENT)
-    override fun getItemScreen(stack: ItemStack, player: Player?, hand: InteractionHand?): Screen {
+    override fun getItemScreen(stack: ItemStack, player: Player, hand: InteractionHand): Screen {
         return FiringParametersScreen(stack, hand)
     }
 }

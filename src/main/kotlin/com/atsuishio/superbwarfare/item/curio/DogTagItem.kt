@@ -43,7 +43,7 @@ class DogTagItem : Item(Properties().stacksTo(1)), ICurioItem, ItemScreenProvide
     }
 
     @OnlyIn(Dist.CLIENT)
-    override fun getItemScreen(stack: ItemStack?, player: Player?, hand: InteractionHand?): Screen {
+    override fun getItemScreen(stack: ItemStack, player: Player, hand: InteractionHand): Screen {
         return DogTagEditorScreen(stack, hand)
     }
 
