@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.init
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.entity.projectile.MediumRocketEntity
-import com.atsuishio.superbwarfare.item.Beast
 import com.atsuishio.superbwarfare.item.CustomDamageProperty
 import com.atsuishio.superbwarfare.item.DispenserLaunchable
 import com.atsuishio.superbwarfare.item.ammo.*
@@ -281,7 +280,7 @@ object ModItems {
     @JvmField val MEDIUM_BATTERY_PACK = registerItem("medium_battery_pack") { BatteryItem(5000000, Properties()) }
     @JvmField val LARGE_BATTERY_PACK = registerItem("large_battery_pack") { BatteryItem(20000000, Properties()) }
     @JvmField val LASER_UNIT = registerItem("laser_unit")
-    @JvmField val BEAST = registerItem("beast") { Beast() }
+    @JvmField val BEAST = registerItem("beast") { BeastItem() }
     @JvmField val TRANSCRIPT = registerItem("transcript") { TranscriptItem() }
     @JvmField val FIRING_PARAMETERS = registerItem("firing_parameters") { FiringParametersItem() }
     @JvmField val MEDICAL_KIT = registerItem("medical_kit") { MedicalKitItem() }

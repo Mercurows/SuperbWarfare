@@ -12,7 +12,7 @@ import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback;
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.*;
-import com.atsuishio.superbwarfare.item.Beast;
+import com.atsuishio.superbwarfare.item.weapon.BeastItem;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage;
 import com.atsuishio.superbwarfare.tools.*;
@@ -161,7 +161,6 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             if (result == null) continue;
 
             Vec3 hitPos = result.getHitPos();
-            if (hitPos == null) continue;
 
             double distanceToHit = startVec.distanceTo(hitPos);
             if (distanceToHit < closestDistance) {
@@ -601,7 +600,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             living.level().playSound(null, living.getOnPos(), ModSounds.MELEE_HIT.get(), SoundSource.PLAYERS, 1, (float) (2 * Math.random() - 1) * 0.1f + 1.0f);
 
             if (beast) {
-                Beast.beastKill(this.shooter, living);
+                BeastItem.beastKill(this.shooter, living);
                 return;
             }
         }
