@@ -520,6 +520,7 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
         }
     }
 
+    @Suppress("DEPRECATION")
     fun crushEntities() {
         if (this.isRemoved) return
         val vec3 = this.deltaMovement

@@ -106,6 +106,7 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mo
         val rpt = 360f / t
         wheelRot += Mth.PI * rpt
 
+        val target = target
         if (tickCount % 10 == 0 && target == null) {
             val player = seekNearLivingEntity(attributes.getValue(Attributes.FOLLOW_RANGE))
             if (player != null) {
@@ -114,9 +115,9 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mo
         }
 
         if (target != null) {
-            val targetPos = target!!.position().add(
-                position().vectorTo(target!!.position()).normalize()
-                    .scale(Math.max(position().distanceTo(target!!.position()), 12.0))
+            val targetPos = target.position().add(
+                position().vectorTo(target.position()).normalize()
+                    .scale(position().distanceTo(target.position()).coerceAtLeast(12.0))
             )
 
             if (!startCrush) {
@@ -129,10 +130,10 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mo
             if (startCrush) {
                 restartCrushTimer++
 
-                val d0: Double = target!!.position().x - this.x
-                val d1: Double = target!!.position().z - this.z
+                val d0: Double = target.position().x - this.x
+                val d1: Double = target.position().z - this.z
 
-                if (attackableEntity(target!!)) {
+                if (attackableEntity(target)) {
                     val f9 = (Mth.atan2(d1, d0) * (180f / Math.PI.toFloat()).toDouble()).toFloat() - 90.0f
                     this.yRot = rotlerp(this.yRot, f9, 3.0f)
                 }
@@ -146,7 +147,7 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mo
                     5 * Mth.clamp(Mth.sin(Mth.PI * s.toFloat()).toDouble(), 0.4, 1.0)
                 )
                 if (position().distanceToSqr(targetPosition) < 2 || restartCrushTimer > 100) {
-                    if (!attackableEntity(target!!)) {
+                    if (!attackableEntity(target)) {
                         setTarget(null as LivingEntity?)
                     }
                     startCrush = false
@@ -214,6 +215,7 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mo
         }
     }
 
+    @Suppress("DEPRECATION")
     fun crushEntities() {
         if (this.isRemoved) return
         val vec3 = this.deltaMovement

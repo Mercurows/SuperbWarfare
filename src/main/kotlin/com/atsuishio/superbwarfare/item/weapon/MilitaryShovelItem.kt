@@ -69,6 +69,7 @@ open class MilitaryShovelItem :
 //                && TierSortingRegistry.isCorrectTierForDrops(tier, state)
     }
 
+    @Suppress("DEPRECATION")
     override fun isCorrectToolForDrops(stack: ItemStack, state: BlockState): Boolean {
         return this.isCorrectToolForDrops(state)
     }

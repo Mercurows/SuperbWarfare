@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.network.message.receive.ResetCameraTypeMessag
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.FormatTool.format1D
 import com.atsuishio.superbwarfare.tools.NBTTool
+import com.atsuishio.superbwarfare.tools.mc
 import net.minecraft.ChatFormatting
 import net.minecraft.client.CameraType
 import net.minecraft.client.Minecraft
@@ -154,7 +155,7 @@ open class MonitorItem : Item(Properties().stacksTo(1)) {
                 NBTTool.saveTag(stack, tag)
                 if (entity.level().isClientSide) {
                     if (lastCameraType != null) {
-                        Minecraft.getInstance().options.cameraType = lastCameraType
+                        mc.options.cameraType = lastCameraType
                     }
                 }
             }
@@ -165,7 +166,7 @@ open class MonitorItem : Item(Properties().stacksTo(1)) {
                 NBTTool.saveTag(stack, tag)
                 if (entity.level().isClientSide) {
                     if (lastCameraType != null) {
-                        Minecraft.getInstance().options.cameraType = lastCameraType
+                        mc.options.cameraType = lastCameraType
                     }
                 }
             }

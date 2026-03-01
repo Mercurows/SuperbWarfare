@@ -28,8 +28,9 @@ class SnapshotWarningScreen(val lastScreen: Screen) : Screen(
     private var button: AbstractButton? = null
 
     fun initButtons(yOffset: Int) {
-        this.button = this.createProceedButton(yOffset)
-        this.addRenderableWidget(this.button)
+        val button = this.createProceedButton(yOffset)
+        this.button = button
+        this.addRenderableWidget(button)
         this.button?.active = false
     }
 
