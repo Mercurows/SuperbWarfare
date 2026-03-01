@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.network.NetworkRegistry;
 import com.atsuishio.superbwarfare.network.message.receive.ResetCameraTypeMessage;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.atsuishio.superbwarfare.tools.FormatTool;
-import com.atsuishio.superbwarfare.tools.ItemNBTTool;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.ChatFormatting;
@@ -37,19 +36,19 @@ public class Monitor extends Item {
 
     public static final String LINKED = "Linked";
     public static final String LINKED_DRONE = "LinkedDrone";
-//    public static final String DRONE_UUID = "DroneUUID";
+    public static final String USING = "Using";
 
     public Monitor() {
         super(new Properties().stacksTo(1));
     }
 
     public static void link(ItemStack itemstack, String id) {
-        ItemNBTTool.setBoolean(itemstack, LINKED, true);
+        itemstack.getOrCreateTag().putBoolean(LINKED, true);
         itemstack.getOrCreateTag().putString(LINKED_DRONE, id);
     }
 
     public static void disLink(ItemStack itemstack, Player player) {
-        ItemNBTTool.setBoolean(itemstack, LINKED, false);
+        itemstack.getOrCreateTag().putBoolean(LINKED, false);
         itemstack.getOrCreateTag().putString(LINKED_DRONE, "none");
         if (player instanceof ServerPlayer serverPlayer) {
             NetworkRegistry.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> serverPlayer), ResetCameraTypeMessage.INSTANCE);
@@ -71,19 +70,19 @@ public class Monitor extends Item {
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getMainHandItem();
 
-        if (!ItemNBTTool.getBoolean(stack, LINKED, false)) {
+        if (stack.getTag() == null || !stack.getTag().getBoolean(LINKED)) {
             return super.use(level, player, hand);
         }
 
-        if (stack.getOrCreateTag().getBoolean("Using")) {
-            stack.getOrCreateTag().putBoolean("Using", false);
+        if (stack.getOrCreateTag().getBoolean(USING)) {
+            stack.getOrCreateTag().putBoolean(USING, false);
             if (level.isClientSide) {
                 if (ClientEventHandler.lastCameraType != null) {
                     Minecraft.getInstance().options.setCameraType(ClientEventHandler.lastCameraType);
                 }
             }
         } else {
-            stack.getOrCreateTag().putBoolean("Using", true);
+            stack.getOrCreateTag().putBoolean(USING, true);
             if (level.isClientSide) {
                 ClientEventHandler.lastCameraType = Minecraft.getInstance().options.getCameraType();
                 Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK);
@@ -94,14 +93,6 @@ public class Monitor extends Item {
         this.resetDroneData(drone);
 
         return super.use(level, player, hand);
-//        ItemStack stack = player.getItemInHand(hand);
-//        if (!player.isShiftKeyDown()) {
-//            CompoundTag tag = stack.getOrCreateTag();
-//            if (DronesTool.hasInstanceOf(player)) return InteractionResultHolder.fail(stack);
-//            if (!tag.contains(DRONE_UUID)) return InteractionResultHolder.fail(stack);
-//            player.startUsingItem(hand);
-//        }
-//        return InteractionResultHolder.fail(stack);
     }
 
     @Override
@@ -116,11 +107,6 @@ public class Monitor extends Item {
 
         return super.getAttributeModifiers(slot, stack);
     }
-
-//    @Override
-//    public int getUseDuration(ItemStack stack) {
-//        return 72000;
-//    }
 
     public static void getDronePos(ItemStack itemstack, Vec3 vec3) {
         itemstack.getOrCreateTag().putDouble("PosX", vec3.x);
@@ -161,8 +147,8 @@ public class Monitor extends Item {
         DroneEntity drone = EntityFindUtil.findDrone(entity.level(), itemstack.getOrCreateTag().getString(LINKED_DRONE));
 
         if (!selected) {
-            if (itemstack.getOrCreateTag().getBoolean("Using")) {
-                itemstack.getOrCreateTag().putBoolean("Using", false);
+            if (itemstack.getOrCreateTag().getBoolean(USING)) {
+                itemstack.getOrCreateTag().putBoolean(USING, false);
                 if (entity.level().isClientSide) {
                     if (ClientEventHandler.lastCameraType != null) {
                         Minecraft.getInstance().options.setCameraType(ClientEventHandler.lastCameraType);
@@ -171,8 +157,8 @@ public class Monitor extends Item {
             }
             this.resetDroneData(drone);
         } else if (drone == null) {
-            if (itemstack.getOrCreateTag().getBoolean("Using")) {
-                itemstack.getOrCreateTag().putBoolean("Using", false);
+            if (itemstack.getOrCreateTag().getBoolean(USING)) {
+                itemstack.getOrCreateTag().putBoolean(USING, false);
                 if (entity.level().isClientSide) {
                     if (ClientEventHandler.lastCameraType != null) {
                         Minecraft.getInstance().options.setCameraType(ClientEventHandler.lastCameraType);
@@ -181,16 +167,4 @@ public class Monitor extends Item {
             }
         }
     }
-
-//    @Nullable
-//    public static UUID getDroneUUID(Player player) {
-//        if (player == null) return null;
-//        if (player.getMainHandItem().is(ModItems.MONITOR.get())) {
-//            CompoundTag tag = player.getMainHandItem().getOrCreateTag();
-//            if (tag.contains(DRONE_UUID)) {
-//                return tag.getUUID(DRONE_UUID);
-//            }
-//        }
-//        return null;
-//    }
 }

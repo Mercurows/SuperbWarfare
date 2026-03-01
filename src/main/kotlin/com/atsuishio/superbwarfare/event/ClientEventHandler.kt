@@ -11,6 +11,7 @@ import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.*
+import com.atsuishio.superbwarfare.item.Monitor
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.item.gun.launcher.SuperStarShooterItem
 import com.atsuishio.superbwarfare.network.message.send.*
@@ -616,9 +617,10 @@ object ClientEventHandler {
         val vehicle = player.vehicle
 
         // 正在游戏内控制载具或无人机
-        if (!notInGame && (vehicle is VehicleEntity && vehicle.firstPassenger == player)
-            || (stack.`is`(ModItems.MONITOR.get()) && ItemNBTTool.getBoolean(stack, "Using", false)
-                    && ItemNBTTool.getBoolean(stack, "Linked", false))
+        if (!notInGame && (vehicle is VehicleEntity && vehicle.firstPassenger == player) ||
+            (stack.`is`(ModItems.MONITOR.get()) && stack.tag != null
+                    && stack.tag!!.getBoolean(Monitor.USING)
+                    && stack.tag!!.getBoolean(Monitor.LINKED))
         ) {
 
             // TODO 把这些都设置成自定义按键
@@ -2444,23 +2446,23 @@ object ClientEventHandler {
 
         val lookingEntity = SeekTool.seekEntity(player, 520.0, 5.0)
         val range: Double =
-                if (lookingEntity != null) {
-                    player.distanceTo(lookingEntity).coerceAtLeast(0.01f).toDouble()
-                } else {
-                    player.position().distanceTo(
-                            (Vec3.atLowerCornerOf(
-                                    player.level().clip(
-                                            ClipContext(
-                                                    player.eyePosition,
-                                                    player.eyePosition.add(player.lookAngle.scale(520.0)),
-                                                    ClipContext.Block.OUTLINE,
-                                                    ClipContext.Fluid.NONE,
-                                                    player
-                                            )
-                                    ).blockPos
-                            ))
-                    ).coerceAtLeast(0.01)
-                }
+            if (lookingEntity != null) {
+                player.distanceTo(lookingEntity).coerceAtLeast(0.01f).toDouble()
+            } else {
+                player.position().distanceTo(
+                    (Vec3.atLowerCornerOf(
+                        player.level().clip(
+                            ClipContext(
+                                player.eyePosition,
+                                player.eyePosition.add(player.lookAngle.scale(520.0)),
+                                ClipContext.Block.OUTLINE,
+                                ClipContext.Fluid.NONE,
+                                player
+                            )
+                        ).blockPos
+                    ))
+                ).coerceAtLeast(0.01)
+            }
 
         lookDistance = Mth.lerp(0.2 * times, lookDistance, range)
 
@@ -2482,7 +2484,8 @@ object ClientEventHandler {
         event.pitch = (pitch + cameraRot[0] + (if (DisplayConfig.CAMERA_ROTATE.get()) 0.2 else 0.0) * turnRot[0] * r
                 + 3 * velocityY).toFloat()
         if (mc.options.cameraType == CameraType.THIRD_PERSON_BACK) {
-            event.yaw = (yaw + cameraRot[1] + (if (DisplayConfig.CAMERA_ROTATE.get()) 0.8 else 0.0) * turnRot[1] * r - angle * zoomPos).toFloat()
+            event.yaw =
+                (yaw + cameraRot[1] + (if (DisplayConfig.CAMERA_ROTATE.get()) 0.8 else 0.0) * turnRot[1] * r - angle * zoomPos).toFloat()
         } else {
             event.yaw =
                 (yaw + cameraRot[1] + (if (DisplayConfig.CAMERA_ROTATE.get()) 0.8 else 0.0) * turnRot[1] * r).toFloat()
