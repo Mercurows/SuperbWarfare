@@ -16,7 +16,6 @@
     "MobMixin",
     "PlayerMixin",
     "ProjectileUtilMixin",
-    "ReloadableServerResourcesMixin",
     "SteelPipeFallMixin",
     "VillagerMixin"
   ],

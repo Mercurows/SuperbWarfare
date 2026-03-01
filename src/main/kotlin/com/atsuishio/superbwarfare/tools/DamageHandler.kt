@@ -30,7 +30,7 @@ object DamageHandler {
         if (entity.hurt(source, damage)) {
             return true
         } else if (entity is LivingEntity) {
-            if (!MiscConfig.FORCE_DAMAGE.get()) {
+            if (!MiscConfig.FORCE_DAMAGE_MODE.get()) {
                 return false
             }
             if (entity.isInvulnerableTo(source)) {

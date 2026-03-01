@@ -56,7 +56,6 @@ object ClickEventHandler {
             handleWeaponFireRelease()
         }
 
-        // TODO 这里被我加了一个else，需要测试功能是否正常
         if (button == ModKeyMappings.HOLD_ZOOM.key.value) {
             handleWeaponZoomRelease()
         } else if (button == ModKeyMappings.SWITCH_ZOOM.key.value && !switchZoom) {

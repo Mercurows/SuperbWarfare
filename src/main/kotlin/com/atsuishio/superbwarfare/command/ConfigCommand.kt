@@ -27,7 +27,7 @@ val CONFIG_COMMAND = buildCommand("config") {
     booleanConfig(VehicleConfig::COLLISION_DESTROY_HARD_BLOCKS)
     booleanConfig(VehicleConfig::COLLISION_DESTROY_BLOCKS_BEASTLY)
 
-    booleanConfig(MiscConfig::FORCE_DAMAGE)
+    booleanConfig(MiscConfig::FORCE_DAMAGE_MODE)
     booleanConfig(MiscConfig::DROP_AMMO_BOX)
     booleanConfig(MiscConfig::SEND_KILL_FEEDBACK)
     booleanConfig(MiscConfig::MINE_HITBOX_INVISIBLE)

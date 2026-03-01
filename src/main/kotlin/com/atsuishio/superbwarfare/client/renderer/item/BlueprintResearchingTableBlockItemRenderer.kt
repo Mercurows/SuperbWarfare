@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.RenderType
 import net.minecraft.resources.ResourceLocation
 import software.bernie.geckolib.renderer.GeoItemRenderer
 
-// TODO 把手持模型的位置和大小调一下
 class BlueprintResearchingTableBlockItemRenderer : GeoItemRenderer<BlueprintResearchTableBlockItem>(
     BlueprintResearchTableBlockItemModel()
 ) {
