@@ -7,9 +7,9 @@ import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
-import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
-import com.atsuishio.superbwarfare.item.Monitor;
+import com.atsuishio.superbwarfare.item.misc.ArtilleryIndicatorItem;
 import com.atsuishio.superbwarfare.item.misc.FiringParametersItemKt;
+import com.atsuishio.superbwarfare.item.misc.MonitorItem;
 import com.atsuishio.superbwarfare.item.projectile.MortarShellItem;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
@@ -125,11 +125,11 @@ public class MortarEntity extends ArtilleryEntity {
 
         ItemStack mainHandItem = player.getMainHandItem();
 
-        if (mainHandItem.getItem() instanceof ArtilleryIndicator indicator && this.entityData.get(INTELLIGENT)) {
+        if (mainHandItem.getItem() instanceof ArtilleryIndicatorItem indicator && this.entityData.get(INTELLIGENT)) {
             return indicator.bind(mainHandItem, player, this);
         }
 
-        if (mainHandItem.getItem() instanceof Monitor && !this.entityData.get(INTELLIGENT)) {
+        if (mainHandItem.getItem() instanceof MonitorItem && !this.entityData.get(INTELLIGENT)) {
             entityData.set(INTELLIGENT, true);
             if (player instanceof ServerPlayer serverPlayer) {
                 serverPlayer.level().playSound(null, serverPlayer.getOnPos(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5F, 1);

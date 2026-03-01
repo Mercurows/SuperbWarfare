@@ -3,7 +3,8 @@ package com.atsuishio.superbwarfare.init
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.entity.projectile.MediumRocketEntity
-import com.atsuishio.superbwarfare.item.*
+import com.atsuishio.superbwarfare.item.Beast
+import com.atsuishio.superbwarfare.item.DispenserLaunchable
 import com.atsuishio.superbwarfare.item.ammo.*
 import com.atsuishio.superbwarfare.item.armor.*
 import com.atsuishio.superbwarfare.item.blockitem.BlueprintResearchTableBlockItem
@@ -197,14 +198,14 @@ object ModItems {
     @JvmField val LARGE_MOTOR = registerItem("large_motor")
     @JvmField val WHEEL = registerItem("wheel")
     @JvmField val TRACK = registerItem("track")
-    @JvmField val DRONE = registerItem("drone") { Drone() }
+    @JvmField val DRONE = registerItem("drone") { DroneItem() }
 
-    @JvmField val MONITOR = registerItem("monitor") { Monitor() }
-    @JvmField val ARTILLERY_INDICATOR = registerItem("artillery_indicator") { ArtilleryIndicator() }
+    @JvmField val MONITOR = registerItem("monitor") { MonitorItem() }
+    @JvmField val ARTILLERY_INDICATOR = registerItem("artillery_indicator") { ArtilleryIndicatorItem() }
 
     @JvmField val DETONATOR = registerItem("detonator") { DetonatorItem() }
-    @JvmField val TARGET_DEPLOYER = registerItem("target_deployer") { TargetDeployer() }
-    @JvmField val DPS_GENERATOR_DEPLOYER = registerItem("dps_generator_deployer") { DPSGeneratorDeployer() }
+    @JvmField val TARGET_DEPLOYER = registerItem("target_deployer") { TargetDeployerItem() }
+    @JvmField val DPS_GENERATOR_DEPLOYER = registerItem("dps_generator_deployer") { DPSGeneratorDeployerItem() }
     @JvmField val KNIFE = registerItem("knife") {
         SwordItem(ModItemTier.STEEL, 0, -1.8F, Properties().durability(1200))
     }
@@ -231,11 +232,11 @@ object ModItems {
     @JvmField val PARACHUTE = registerItem("parachute") { ParachuteItem() }
     @JvmField val THERMAL_IMAGING_GOGGLES = registerItem("thermal_imaging_goggles") { ThermalImagingGogglesItem() }
 
-    @JvmField val MORTAR_DEPLOYER = registerItem("mortar_deployer") { MortarDeployer() }
+    @JvmField val MORTAR_DEPLOYER = registerItem("mortar_deployer") { MortarDeployerItem() }
     @JvmField val MORTAR_BARREL = registerItem("mortar_barrel")
     @JvmField val MORTAR_BASE_PLATE = registerItem("mortar_base_plate")
     @JvmField val MORTAR_BIPOD = registerItem("mortar_bipod")
-    @JvmField val TOW_DEPLOYER = registerItem("tow_deployer") { TowDeployer() }
+    @JvmField val TOW_DEPLOYER = registerItem("tow_deployer") { TowDeployerItem() }
     @JvmField val SEEKER = registerItem("seeker")
     @JvmField val MISSILE_ENGINE = registerItem("missile_engine")
     @JvmField val FUSEE = registerItem("fusee")

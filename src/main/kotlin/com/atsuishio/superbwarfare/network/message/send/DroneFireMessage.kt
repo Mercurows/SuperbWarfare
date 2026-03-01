@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.item.ArtilleryIndicator
+import com.atsuishio.superbwarfare.item.misc.ArtilleryIndicatorItem
 import com.atsuishio.superbwarfare.item.misc.FiringParametersItem
 import com.atsuishio.superbwarfare.item.misc.firingParameters
 import com.atsuishio.superbwarfare.network.PayloadContext
@@ -49,7 +49,7 @@ data class DroneFireMessage(val pos: SerializedVector3f) : ServerPacketPayload()
                 SoundTool.playLocalSound(player, ModSounds.CANNON_ZOOM_IN.get(), 2f, 1f)
 
                 val item = offStack.item
-                if (item is ArtilleryIndicator) {
+                if (item is ArtilleryIndicatorItem) {
                     item.setTarget(offStack, player)
                 }
             } else {

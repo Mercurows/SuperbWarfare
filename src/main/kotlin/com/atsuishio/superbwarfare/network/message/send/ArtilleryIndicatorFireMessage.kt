@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity
 import com.atsuishio.superbwarfare.entity.vehicle.SodayoPickUpRocketEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
 import com.atsuishio.superbwarfare.init.ModItems
-import com.atsuishio.superbwarfare.item.ArtilleryIndicator
+import com.atsuishio.superbwarfare.item.misc.ArtilleryIndicatorItem
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
@@ -23,9 +23,9 @@ object ArtilleryIndicatorFireMessage : ServerPacketPayload() {
         if (!stack.`is`(ModItems.ARTILLERY_INDICATOR.get())) return
 
         val mainTag = stack.getOrCreateTag()
-        val tags = mainTag.getList(ArtilleryIndicator.TAG_CANNON, Tag.TAG_COMPOUND.toInt())
+        val tags = mainTag.getList(ArtilleryIndicatorItem.TAG_CANNON, Tag.TAG_COMPOUND.toInt())
         if (tags.isEmpty()) {
-            mainTag.remove(ArtilleryIndicator.TAG_TYPE)
+            mainTag.remove(ArtilleryIndicatorItem.TAG_TYPE)
             return
         }
 

@@ -7,7 +7,7 @@ import com.atsuishio.superbwarfare.client.overlay.IFFOverlay.FRIENDLY_INDICATOR
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.init.ModItems
-import com.atsuishio.superbwarfare.item.ArtilleryIndicator
+import com.atsuishio.superbwarfare.item.misc.ArtilleryIndicatorItem
 import com.atsuishio.superbwarfare.item.misc.firingParameters
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.FormatTool.format1D
@@ -267,7 +267,7 @@ object DroneHudOverlay : CommonOverlay("drone_hud") {
                     // 火炮位置
                     if (offStack.`is`(ModItems.ARTILLERY_INDICATOR.get())) {
                         val tags =
-                            offStack.getOrCreateTag().getList(ArtilleryIndicator.TAG_CANNON, Tag.TAG_COMPOUND.toInt())
+                            offStack.getOrCreateTag().getList(ArtilleryIndicatorItem.TAG_CANNON, Tag.TAG_COMPOUND.toInt())
                         for (m in tags.indices) {
                             val tag = tags.getCompound(m)
                             val e = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"))
