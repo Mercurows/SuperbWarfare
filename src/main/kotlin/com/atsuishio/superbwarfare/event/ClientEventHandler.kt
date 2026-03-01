@@ -709,7 +709,7 @@ object ClientEventHandler {
                         //锁定失败
                         if (lockingPos != null &&
                             (player.lookAngle.angleTo(
-                                player.eyePosition.vectorTo(lockingPos)
+                                player.eyePosition.vectorTo(lockingPos!!)
                             ) > seekAngle || !noClip(player, lockingPos!!))
                         ) {
                             seekingTime = 0
@@ -929,7 +929,7 @@ object ClientEventHandler {
             }
 
             // 锁定失败
-            if (lockingPosVehicle != null && (seekVec.angleTo(cameraPos.vectorTo(lockingPosVehicle)) > seekAngle
+            if (lockingPosVehicle != null && (seekVec.angleTo(cameraPos.vectorTo(lockingPosVehicle!!)) > seekAngle
                         || !noClip(player, lockingPosVehicle!!))
             ) {
                 seekFailure(player)
@@ -1216,6 +1216,7 @@ object ClientEventHandler {
             attackList += list
         }
 
+        player.swing(InteractionHand.MAIN_HAND)
         for (entity in attackList) {
             sendPacketToServer(MeleeAttackMessage(entity.uuid))
         }
@@ -2628,7 +2629,7 @@ object ClientEventHandler {
 
                             look(player, toVec)
 
-                            if (player.distanceTo(lockedEntity) > seekRange) {
+                            if (player.distanceTo(lockedEntity!!) > seekRange) {
                                 lockedEntity = null
                             }
                         }
