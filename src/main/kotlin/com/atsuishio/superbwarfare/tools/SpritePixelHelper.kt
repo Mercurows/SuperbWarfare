@@ -7,13 +7,13 @@ object SpritePixelHelper {
     private val RANDOM = Random
 
     /**
-     * 从 TextureAtlasSprite 中随机抽取一个像素，返回 ARGB 颜色值
+     * 从 TextureAtlasSprite 中随机抽取一个像素，返回 RGB 颜色值
      * 
      * @param sprite 纹理精灵
      * @param frame  帧索引（动画纹理时使用，通常为 0）
-     * @return ARGB 颜色值，格式为 0xAARRGGBB
+     * @return RGB 颜色值，格式为 0xRRGGBB
      */
-    fun getRandomPixelARGB(sprite: TextureAtlasSprite, frame: Int): Int {
+    fun getRandomPixelRGB(sprite: TextureAtlasSprite, frame: Int): Int {
         // 获取纹理尺寸
         val width = sprite.contents().width()
         val height = sprite.contents().height()

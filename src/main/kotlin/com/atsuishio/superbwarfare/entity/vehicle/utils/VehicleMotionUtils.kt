@@ -515,7 +515,7 @@ object VehicleMotionUtils {
                     if (state.`is`(BlockTags.SAND) || state.`is`(BlockTags.SNOW)) {
                         val model = Minecraft.getInstance().modelManager.blockModelShaper.getBlockModel(state)
                         val sprite = model.particleIcon
-                        val color = SpritePixelHelper.getRandomPixelARGB(sprite, 0)
+                        val color = SpritePixelHelper.getRandomPixelRGB(sprite, 0)
                         val speed = vehicle.deltaMovement.length().toFloat()
 
                         val particleOption = CustomCloudOption(
