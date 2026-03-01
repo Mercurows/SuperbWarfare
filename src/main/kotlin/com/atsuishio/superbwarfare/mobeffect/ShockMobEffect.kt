@@ -38,8 +38,7 @@ object ShockMobEffect : MobEffect(MobEffectCategory.HARMFUL, -256) {
         )
     }
 
-    override fun applyEffectTick(entity: LivingEntity?, amplifier: Int) {
-        if (entity == null) return
+    override fun applyEffectTick(entity: LivingEntity, amplifier: Int) {
         val attacker = if (!entity.persistentData.contains(TAG_ATTACKER)) {
             null
         } else {

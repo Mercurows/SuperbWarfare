@@ -20,8 +20,7 @@ object PhosphorusFireMobEffect : MobEffect(MobEffectCategory.HARMFUL, 0xB1C1F2) 
     const val TAG_PHOSPHORUS_FIRE_COUNT = "SbwPhosphorusFireCount"
     const val TAG_PHOSPHORUS_FIRE_ATTACKER = "SbwPhosphorusFireAttacker"
 
-    override fun applyEffectTick(entity: LivingEntity?, amplifier: Int) {
-        if (entity == null) return
+    override fun applyEffectTick(entity: LivingEntity, amplifier: Int) {
         val attacker = if (!entity.persistentData.contains(TAG_PHOSPHORUS_FIRE_ATTACKER)) {
             null
         } else {

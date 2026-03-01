@@ -38,7 +38,7 @@ open class VehicleDeployerBlockEntity(pPos: BlockPos, pBlockState: BlockState) :
         if (this.entityData.contains("EntityType")) {
             val entityType = EntityType.byString(entityData.getString("EntityType")).orElse(null) ?: return
 
-            val entity = entityType.create(this.level) ?: return
+            val entity = entityType.create(this.level!!) ?: return
 
             if (entityData.contains("Entity")) {
                 val entityTag = entityData.getCompound("Entity").copy()

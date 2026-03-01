@@ -74,10 +74,10 @@ open class ContainerBlockEntity(pos: BlockPos, state: BlockState) :
     public override fun saveAdditional(compound: CompoundTag) {
         super.saveAdditional(compound)
         if (this.entityTag != null) {
-            compound.put("Entity", this.entityTag)
+            compound.put("Entity", this.entityTag!!)
         }
         if (this.entityType != null) {
-            compound.putString("EntityType", EntityType.getKey(this.entityType).toString())
+            compound.putString("EntityType", EntityType.getKey(this.entityType!!).toString())
         }
         compound.putInt("Tick", this.tick)
     }
@@ -93,7 +93,7 @@ open class ContainerBlockEntity(pos: BlockPos, state: BlockState) :
     override fun saveToItem(pStack: ItemStack) {
         val tag = CompoundTag()
         if (this.entityType != null) {
-            tag.putString("EntityType", EntityType.getKey(this.entityType).toString())
+            tag.putString("EntityType", EntityType.getKey(this.entityType!!).toString())
         }
         BlockItem.setBlockEntityData(pStack, this.type, tag)
     }
@@ -137,7 +137,7 @@ open class ContainerBlockEntity(pos: BlockPos, state: BlockState) :
                 val entity = blockEntity.entityType!!.create(pLevel) ?: return
 
                 if (blockEntity.entityTag != null) {
-                    entity.load(blockEntity.entityTag)
+                    entity.load(blockEntity.entityTag!!)
                 }
 
                 entity.setPos(

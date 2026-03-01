@@ -80,7 +80,7 @@ abstract class AbstractVehicleContainerMenu(type: MenuType<*>?, id: Int, invento
 
     class VehicleSlot(private val vehicle: VehicleEntity?, val index: Int, x: Int, y: Int) :
         SlotItemHandler(vehicle?.inventory, index, x, y) {
-        override fun mayPickup(playerIn: Player?): Boolean {
+        override fun mayPickup(playerIn: Player): Boolean {
             return this.vehicle?.canTakeItem(index) ?: false
         }
     }

@@ -84,10 +84,10 @@ open class BlueprintResearchTableBlock :
     }
 
     override fun isPathfindable(
-        pState: BlockState?,
-        pLevel: BlockGetter?,
-        pPos: BlockPos?,
-        pType: PathComputationType?
+        pState: BlockState,
+        pLevel: BlockGetter,
+        pPos: BlockPos,
+        pType: PathComputationType
     ): Boolean = false
 
     override fun createBlockStateDefinition(pBuilder: StateDefinition.Builder<Block, BlockState>) {
@@ -111,10 +111,10 @@ open class BlueprintResearchTableBlock :
     }
 
     override fun appendHoverText(
-        pStack: ItemStack?,
+        pStack: ItemStack,
         pLevel: BlockGetter?,
         pTooltip: MutableList<Component>,
-        pFlag: TooltipFlag?
+        pFlag: TooltipFlag
     ) {
         pTooltip.add(
             Component.translatable("des.superbwarfare.blueprint_research_table_1").withStyle(ChatFormatting.GRAY)

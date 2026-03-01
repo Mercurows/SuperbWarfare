@@ -235,7 +235,7 @@ class BlueprintResearchTableScreen(
             sendPacketToServer(BlueprintCraftMessage)
         }
 
-        override fun updateWidgetNarration(pNarrationElementOutput: NarrationElementOutput?) {
+        override fun updateWidgetNarration(pNarrationElementOutput: NarrationElementOutput) {
         }
 
         override fun renderWidget(
@@ -267,7 +267,7 @@ class BlueprintResearchTableScreen(
             }
         }
 
-        override fun updateWidgetNarration(pNarrationElementOutput: NarrationElementOutput?) {
+        override fun updateWidgetNarration(pNarrationElementOutput: NarrationElementOutput) {
         }
 
         override fun renderWidget(

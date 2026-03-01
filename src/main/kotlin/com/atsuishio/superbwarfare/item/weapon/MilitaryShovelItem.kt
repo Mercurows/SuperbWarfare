@@ -41,10 +41,10 @@ open class MilitaryShovelItem :
     private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
 
     override fun appendHoverText(
-        pStack: ItemStack?,
+        pStack: ItemStack,
         pLevel: Level?,
         pTooltipComponents: MutableList<Component>,
-        pIsAdvanced: TooltipFlag?
+        pIsAdvanced: TooltipFlag
     ) {
         pTooltipComponents.add(
             Component.translatable("des.superbwarfare.military_shovel").withStyle(ChatFormatting.GRAY)
@@ -66,6 +66,7 @@ open class MilitaryShovelItem :
                 && TierSortingRegistry.isCorrectTierForDrops(tier, state)
     }
 
+    @Suppress("DEPRECATION")
     override fun isCorrectToolForDrops(stack: ItemStack, state: BlockState): Boolean {
         return this.isCorrectToolForDrops(state)
     }

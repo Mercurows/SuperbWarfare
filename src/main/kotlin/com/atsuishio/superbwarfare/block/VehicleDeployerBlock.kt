@@ -35,10 +35,10 @@ open class VehicleDeployerBlock :
     }
 
     override fun appendHoverText(
-        pStack: ItemStack?,
+        pStack: ItemStack,
         pLevel: BlockGetter?,
         pTooltip: MutableList<Component>,
-        pFlag: TooltipFlag?
+        pFlag: TooltipFlag
     ) {
         pTooltip.add(Component.translatable("des.superbwarfare.vehicle_deployer").withStyle(ChatFormatting.GRAY))
     }

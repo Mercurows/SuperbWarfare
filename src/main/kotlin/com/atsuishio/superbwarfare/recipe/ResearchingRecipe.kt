@@ -45,15 +45,15 @@ class ResearchingRecipe(
     }
 
     override fun assemble(
-        pContainer: SimpleContainer?,
-        pRegistryAccess: RegistryAccess?
-    ): ItemStack? = this.result.getResult().copy()
+        pContainer: SimpleContainer,
+        pRegistryAccess: RegistryAccess
+    ): ItemStack = this.result.getResult().copy()
 
     override fun isSpecial() = true
 
     override fun canCraftInDimensions(pWidth: Int, pHeight: Int) = true
 
-    override fun getResultItem(pRegistryAccess: RegistryAccess?): ItemStack = this.result.getResult().copy()
+    override fun getResultItem(pRegistryAccess: RegistryAccess): ItemStack = this.result.getResult().copy()
 
     override fun getId() = this.recipeId
 

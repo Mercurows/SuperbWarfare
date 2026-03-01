@@ -125,7 +125,7 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mo
         if (target != null) {
             val targetPos = target!!.position().add(
                 position().vectorTo(target!!.position()).normalize()
-                    .scale(Math.max(position().distanceTo(target!!.position()), 12.0))
+                    .scale(position().distanceTo(target!!.position()).coerceAtLeast(12.0))
             )
 
             if (!startCrush) {
@@ -223,6 +223,7 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mo
         }
     }
 
+    @Suppress("DEPRECATION")
     fun crushEntities() {
         if (this.isRemoved) return
         val vec3 = this.deltaMovement

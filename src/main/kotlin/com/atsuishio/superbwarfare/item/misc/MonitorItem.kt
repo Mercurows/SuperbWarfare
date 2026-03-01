@@ -53,7 +53,7 @@ open class MonitorItem : Item(Properties().stacksTo(1)) {
             stack.getOrCreateTag().putBoolean(USING, false)
             if (level.isClientSide) {
                 if (ClientEventHandler.lastCameraType != null) {
-                    mc.options.cameraType = ClientEventHandler.lastCameraType
+                    mc.options.cameraType = ClientEventHandler.lastCameraType!!
                 }
             }
         } else {
@@ -135,7 +135,7 @@ open class MonitorItem : Item(Properties().stacksTo(1)) {
                 itemstack.getOrCreateTag().putBoolean(USING, false)
                 if (entity.level().isClientSide) {
                     if (ClientEventHandler.lastCameraType != null) {
-                        mc.options.cameraType = ClientEventHandler.lastCameraType
+                        mc.options.cameraType = ClientEventHandler.lastCameraType!!
                     }
                 }
             }
@@ -145,7 +145,7 @@ open class MonitorItem : Item(Properties().stacksTo(1)) {
                 itemstack.getOrCreateTag().putBoolean(USING, false)
                 if (entity.level().isClientSide) {
                     if (ClientEventHandler.lastCameraType != null) {
-                        mc.options.cameraType = ClientEventHandler.lastCameraType
+                        mc.options.cameraType = ClientEventHandler.lastCameraType!!
                     }
                 }
             }

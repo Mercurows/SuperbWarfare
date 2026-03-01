@@ -136,8 +136,8 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
 
     override fun canTakeItemThroughFace(
         pIndex: Int,
-        pStack: ItemStack?,
-        pDirection: Direction?
+        pStack: ItemStack,
+        pDirection: Direction
     ): Boolean {
         if (this.blockState.getValue(BlueprintResearchTableBlock.PART) == BedPart.HEAD) return false
         return pIndex == SLOT_OUTPUT && pDirection == Direction.DOWN
@@ -214,7 +214,7 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
         return this.level!!.recipeManager.getRecipeFor(
             ModRecipes.RESEARCHING_TYPE.get(),
             inventory,
-            level
+            level!!
         )
     }
 

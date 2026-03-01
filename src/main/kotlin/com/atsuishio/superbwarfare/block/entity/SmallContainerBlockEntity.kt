@@ -111,13 +111,13 @@ open class SmallContainerBlockEntity(pos: BlockPos, state: BlockState) :
 
     fun unpackLootTable(pPlayer: Player?): MutableList<ItemStack> {
         if (this.lootTable != null && this.level != null && this.level!!.server != null) {
-            val table = this.level!!.server!!.lootData.getLootTable(this.lootTable)
+            val table = this.level!!.server!!.lootData.getLootTable(this.lootTable!!)
             if (pPlayer is ServerPlayer) {
-                CriteriaTriggers.GENERATE_LOOT.trigger(pPlayer, this.lootTable)
+                CriteriaTriggers.GENERATE_LOOT.trigger(pPlayer, this.lootTable!!)
             }
 
             this.lootTable = null
-            val builder = (LootParams.Builder(this.level as ServerLevel?))
+            val builder = (LootParams.Builder(this.level as ServerLevel))
                 .withParameter<Vec3?>(LootContextParams.ORIGIN, Vec3.atCenterOf(this.worldPosition))
             if (pPlayer != null) {
                 builder.withLuck(pPlayer.luck).withParameter(LootContextParams.THIS_ENTITY, pPlayer)

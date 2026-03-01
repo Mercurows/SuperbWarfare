@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.client.renderer.block
 import com.atsuishio.superbwarfare.block.BlueprintResearchTableBlock
 import com.atsuishio.superbwarfare.block.entity.BlueprintResearchTableBlockEntity
 import com.atsuishio.superbwarfare.client.layer.block.BlueprintResearchTableBlockLayer
-import com.atsuishio.superbwarfare.client.layer.block.VehicleAssemblingTableBlockLayer
 import com.atsuishio.superbwarfare.client.model.block.BlueprintResearchTableBlockModel
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
@@ -27,7 +26,7 @@ class BlueprintResearchTableBlockEntityRenderer : GeoBlockRenderer<BlueprintRese
 
     override fun shouldRender(
         pBlockEntity: BlueprintResearchTableBlockEntity,
-        pCameraPos: Vec3?
+        pCameraPos: Vec3
     ): Boolean {
         return pBlockEntity.blockState.getValue(BlueprintResearchTableBlock.PART) == BedPart.FOOT
     }

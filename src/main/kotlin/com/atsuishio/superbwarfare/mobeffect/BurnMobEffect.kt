@@ -24,8 +24,7 @@ import net.minecraftforge.fml.common.Mod
 object BurnMobEffect : MobEffect(MobEffectCategory.HARMFUL, -12708330) {
     const val TAG_ATTACKER = "BurnAttacker"
 
-    override fun applyEffectTick(entity: LivingEntity?, amplifier: Int) {
-        if (entity == null) return
+    override fun applyEffectTick(entity: LivingEntity, amplifier: Int) {
         val attacker = if (!entity.persistentData.contains(TAG_ATTACKER)) {
             null
         } else {

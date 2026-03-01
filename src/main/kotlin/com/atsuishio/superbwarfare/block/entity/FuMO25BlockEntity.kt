@@ -133,7 +133,7 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
         return FuMO25Menu(
             pContainerId,
             pPlayerInventory,
-            ContainerLevelAccess.create(this.level, this.blockPos),
+            ContainerLevelAccess.create(this.level!!, this.blockPos),
             this.dataAccess
         )
     }

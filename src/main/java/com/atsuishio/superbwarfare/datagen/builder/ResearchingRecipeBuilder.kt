@@ -190,6 +190,7 @@ open class ResearchingRecipeBuilder private constructor(
         val advancement: Advancement.Builder,
         val advancementLocation: ResourceLocation
     ) : FinishedRecipe {
+        @Suppress("DEPRECATION")
         override fun serializeRecipeData(json: JsonObject) {
             json.add("input", input.toJson())
             if (base != null) {

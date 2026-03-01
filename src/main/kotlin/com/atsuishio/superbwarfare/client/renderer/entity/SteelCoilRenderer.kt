@@ -19,7 +19,7 @@ class SteelCoilRenderer(renderManager: EntityRendererProvider.Context) : GeoEnti
     }
 
     override fun getRenderType(
-        animatable: SteelCoilEntity?,
+        animatable: SteelCoilEntity,
         texture: ResourceLocation?,
         bufferSource: MultiBufferSource?,
         partialTick: Float
@@ -33,6 +33,7 @@ class SteelCoilRenderer(renderManager: EntityRendererProvider.Context) : GeoEnti
         return animatable.hasCustomName()
     }
 
+    @Suppress("removal")
     override fun getPackedOverlay(animatable: SteelCoilEntity?, u: Float): Int {
         return OverlayTexture.pack(OverlayTexture.u(u), OverlayTexture.v(false))
     }
