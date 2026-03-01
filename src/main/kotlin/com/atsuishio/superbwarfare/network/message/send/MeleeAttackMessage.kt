@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import kotlinx.serialization.Serializable
 import net.minecraft.sounds.SoundSource
+import net.minecraft.world.InteractionHand
 import org.joml.Math
 
 @Serializable
@@ -25,6 +26,7 @@ data class MeleeAttackMessage(val uuid: SerializedUUID) : ServerPacketPayload() 
                 ((2 * Math.random() - 1) * 0.1f + 1.0f).toFloat()
             )
             player.attack(lookingEntity)
+            player.swing(InteractionHand.MAIN_HAND)
         }
     }
 }
