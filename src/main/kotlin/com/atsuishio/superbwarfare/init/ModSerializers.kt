@@ -13,7 +13,7 @@ object ModSerializers {
         DeferredRegister.create(ForgeRegistries.Keys.ENTITY_DATA_SERIALIZERS, Mod.MODID)
 
     @JvmField
-    val INT_LIST_SERIALIZER: RegistryObject<EntityDataSerializer<MutableList<Int>>> =
+    val INT_LIST_SERIALIZER: RegistryObject<EntityDataSerializer<List<Int>>> =
         REGISTRY.register("int_list_serializer") {
             EntityDataSerializer.simple({ buf, list ->
                 buf.writeVarInt(list.size)
@@ -31,7 +31,7 @@ object ModSerializers {
         }
 
     @JvmField
-    val FLOAT_LIST_SERIALIZER: RegistryObject<EntityDataSerializer<MutableList<Float>>> =
+    val FLOAT_LIST_SERIALIZER: RegistryObject<EntityDataSerializer<List<Float>>> =
         REGISTRY.register("float_list_serializer") {
             EntityDataSerializer.simple({ buf, list ->
                 buf.writeVarInt(list.size)
@@ -49,7 +49,7 @@ object ModSerializers {
         }
 
     @JvmField
-    val VEHICLE_GUN_DATA_MAP_SERIALIZER: RegistryObject<EntityDataSerializer<MutableMap<String, GunData>>> =
+    val VEHICLE_GUN_DATA_MAP_SERIALIZER: RegistryObject<EntityDataSerializer<Map<String, GunData>>> =
         REGISTRY.register("vehicle_gun_data_map_serializer") {
             EntityDataSerializer.simple({ buf, map ->
                 buf.writeVarInt(map.size)
