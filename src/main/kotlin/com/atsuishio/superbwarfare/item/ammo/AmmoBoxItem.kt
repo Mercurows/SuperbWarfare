@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.item.common.ammo
+package com.atsuishio.superbwarfare.item.ammo
 
 import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.init.ModSounds

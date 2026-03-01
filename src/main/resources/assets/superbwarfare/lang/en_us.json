@@ -189,6 +189,7 @@
   "item.superbwarfare.creative_ammo_box": "Creative Ammo Box",
   "des.superbwarfare.creative_ammo_box": "Provide infinite ammo when placed in inventory",
   "item.superbwarfare.ammo_supplier.supply": "%1$s +%2$s",
+  "item.superbwarfare.ammo_supplier.fail": "The current ammo is full, failed to use this item",
   "item.superbwarfare.large_shell_he": "Large Caliber High Explosive Shell",
   "item.superbwarfare.large_shell_ap": "Large Caliber Armor Piercing Shell",
   "item.superbwarfare.large_shell_cm": "Large Caliber Cluster Munitions Shell",

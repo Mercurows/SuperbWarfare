@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.item.common.ammo
+package com.atsuishio.superbwarfare.item.ammo
 
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable
 import com.atsuishio.superbwarfare.data.gun.Ammo
@@ -39,8 +39,12 @@ open class AmmoSupplierItem(val type: Ammo, val ammoToAdd: Int, properties: Prop
         val addedCount = if (offhandItem.`is`(ModItems.AMMO_BOX.get())) {
             val canAddAmount = type.ammoBoxLimit - type.get(offhandItem)
             val toAddCount = (canAddAmount / ammoToAdd).coerceAtMost(count)
-            // TODO 添加失败提示？
-            if (toAddCount <= 0) return InteractionResultHolder.fail(stack)
+            if (toAddCount <= 0) {
+                player.displayClientMessage(
+                    Component.translatable("item.superbwarfare.ammo_supplier.fail").withStyle(ChatFormatting.RED), true
+                )
+                return InteractionResultHolder.fail(stack)
+            }
 
             this.type.add(offhandItem, ammoToAdd * toAddCount)
 
@@ -50,8 +54,12 @@ open class AmmoSupplierItem(val type: Ammo, val ammoToAdd: Int, properties: Prop
 
             val canAddAmount = type.limit - type.get(capability)
             val toAddCount = (canAddAmount / ammoToAdd).coerceAtMost(count)
-            // TODO 添加失败提示？
-            if (toAddCount <= 0) return InteractionResultHolder.fail(stack)
+            if (toAddCount <= 0) {
+                player.displayClientMessage(
+                    Component.translatable("item.superbwarfare.ammo_supplier.fail").withStyle(ChatFormatting.RED), true
+                )
+                return InteractionResultHolder.fail(stack)
+            }
 
             PlayerVariable.modify(player) { this.type.add(it, ammoToAdd * toAddCount) }
 
@@ -62,7 +70,6 @@ open class AmmoSupplierItem(val type: Ammo, val ammoToAdd: Int, properties: Prop
 
         if (!player.isCreative) {
             InventoryTool.consumeItem(player, stack.item, addedCount)
-//            stack.shrink(addedCount)
         }
 
         if (!level.isClientSide()) {
