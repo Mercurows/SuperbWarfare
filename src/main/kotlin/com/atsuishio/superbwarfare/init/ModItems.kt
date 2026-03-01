@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.item.blockitem.BlueprintResearchTableBlockIte
 import com.atsuishio.superbwarfare.item.blockitem.ChargingStationBlockItem
 import com.atsuishio.superbwarfare.item.blockitem.CreativeChargingStationBlockItem
 import com.atsuishio.superbwarfare.item.blockitem.VehicleAssemblingTableBlockItem
-import com.atsuishio.superbwarfare.item.common.ammo.*
 import com.atsuishio.superbwarfare.item.container.ContainerBlockItem
 import com.atsuishio.superbwarfare.item.container.LuckyContainerBlockItem
 import com.atsuishio.superbwarfare.item.container.SmallContainerBlockItem
@@ -36,7 +35,7 @@ import com.atsuishio.superbwarfare.item.gun.vehicle.VehicleGun
 import com.atsuishio.superbwarfare.item.material.BatteryItem
 import com.atsuishio.superbwarfare.item.material.BlueprintItem
 import com.atsuishio.superbwarfare.item.material.MaterialPackItem
-import com.atsuishio.superbwarfare.item.projectile.Blu43MineItem
+import com.atsuishio.superbwarfare.item.projectile.*
 import com.atsuishio.superbwarfare.item.weapon.*
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.tiers.ModItemTier
@@ -139,11 +138,11 @@ object ModItems {
     @JvmField val TASER_ELECTRODE = registerAmmo("taser_electrode")
     @JvmField val GRENADE_40MM = registerAmmo("grenade_40mm")
 
-    @JvmField val MORTAR_SHELL = registerAmmo("mortar_shell") { MortarShell() }
-    @JvmField val MORTAR_SHELL_WP = registerAmmo("mortar_shell_wp") { MortarShell() }
-    @JvmField val POTION_MORTAR_SHELL = registerAmmo("potion_mortar_shell") { PotionMortarShell() }
-    @JvmField val RPG_ROCKET_STANDARD = registerAmmo("rpg_rocket_standard") { RpgRocketStandard() }
-    @JvmField val RPG_ROCKET_TBG = registerAmmo("rpg_rocket_tbg") { RpgRocketTBG() }
+    @JvmField val MORTAR_SHELL = registerAmmo("mortar_shell") { MortarShellItem() }
+    @JvmField val MORTAR_SHELL_WP = registerAmmo("mortar_shell_wp") { MortarShellItem() }
+    @JvmField val POTION_MORTAR_SHELL = registerAmmo("potion_mortar_shell") { PotionMortarShellItem() }
+    @JvmField val RPG_ROCKET_STANDARD = registerAmmo("rpg_rocket_standard") { RpgRocketStandardItem() }
+    @JvmField val RPG_ROCKET_TBG = registerAmmo("rpg_rocket_tbg") { RpgRocketTBGItem() }
     @JvmField val JAVELIN_MISSILE = registerAmmo("javelin_missile") { Item(Properties().stacksTo(4)) }
     @JvmField val LUNGE_MINE = registerAmmo("lunge_mine") { LungeMine() }
     @JvmField val SMALL_SHELL_AP = registerAmmo("small_shell_ap")
@@ -155,10 +154,10 @@ object ModItems {
     @JvmField val LARGE_SHELL_CM = registerAmmo("large_shell_cm") { Item(Properties().rarity(Rarity.RARE)) }
     @JvmField val LARGE_SHELL_GS = registerAmmo("large_shell_gs") { Item(Properties().rarity(Rarity.RARE)) }
     @JvmField val LARGE_SHELL_WP = registerAmmo("large_shell_wp") { Item(Properties().rarity(Rarity.RARE)) }
-    @JvmField val HAND_GRENADE = registerAmmo("hand_grenade") { HandGrenade() }
-    @JvmField val RGO_GRENADE = registerAmmo("rgo_grenade") { RgoGrenade() }
-    @JvmField val M18_SMOKE_GRENADE = registerAmmo("m18_smoke_grenade") { M18SmokeGrenade() }
-    @JvmField val CLAYMORE_MINE = registerAmmo("claymore_mine") { ClaymoreMine() }
+    @JvmField val HAND_GRENADE = registerAmmo("hand_grenade") { HandGrenadeItem() }
+    @JvmField val RGO_GRENADE = registerAmmo("rgo_grenade") { RgoGrenadeItem() }
+    @JvmField val M18_SMOKE_GRENADE = registerAmmo("m18_smoke_grenade") { M18SmokeGrenadeItem() }
+    @JvmField val CLAYMORE_MINE = registerAmmo("claymore_mine") { ClaymoreMineItem() }
     @JvmField val TM_62 = registerAmmo("tm_62") { Tm62Item() }
     @JvmField val PTKM_1R = registerAmmo("ptkm_1r") { Ptkm1rItem() }
     @JvmField val C4_BOMB = registerAmmo("c4_bomb") { C4BombItem() }

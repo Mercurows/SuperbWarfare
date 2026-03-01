@@ -2,10 +2,10 @@ package com.atsuishio.superbwarfare.init
 
 import com.atsuishio.superbwarfare.api.event.RegisterContainersEvent
 import com.atsuishio.superbwarfare.item.ArmorPlate
-import com.atsuishio.superbwarfare.item.C4BombItem
 import com.atsuishio.superbwarfare.item.container.LuckyContainerBlockItem
 import com.atsuishio.superbwarfare.item.container.SmallContainerBlockItem
 import com.atsuishio.superbwarfare.item.material.BatteryItem
+import com.atsuishio.superbwarfare.item.projectile.C4BombItem
 import com.atsuishio.superbwarfare.item.weapon.ElectricBatonItem
 import net.minecraft.core.HolderLookup
 import net.minecraft.core.registries.Registries

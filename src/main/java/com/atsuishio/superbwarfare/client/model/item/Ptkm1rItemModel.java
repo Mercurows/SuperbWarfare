@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.item.Ptkm1rItem;
+import com.atsuishio.superbwarfare.item.projectile.Ptkm1rItem;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.GeoModel;
 

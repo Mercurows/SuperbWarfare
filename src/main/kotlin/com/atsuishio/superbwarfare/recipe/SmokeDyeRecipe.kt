@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.recipe
 
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModRecipes
-import com.atsuishio.superbwarfare.item.M18SmokeGrenade
+import com.atsuishio.superbwarfare.item.projectile.M18SmokeGrenadeItem
 import net.minecraft.core.RegistryAccess
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.inventory.CraftingContainer
@@ -80,7 +80,7 @@ class SmokeDyeRecipe(pId: ResourceLocation, pCategory: CraftingBookCategory) : C
             var i = 0
             var j = 0
             val item = pStack.item
-            if (item is M18SmokeGrenade) {
+            if (item is M18SmokeGrenadeItem) {
                 itemstack = pStack.copyWithCount(1)
                 val color: Int = item.getColor(pStack)
                 if (color != 0xFFFFFF) {

@@ -10,7 +10,7 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.ArtilleryIndicator;
 import com.atsuishio.superbwarfare.item.FiringParametersItemKt;
 import com.atsuishio.superbwarfare.item.Monitor;
-import com.atsuishio.superbwarfare.item.common.ammo.MortarShell;
+import com.atsuishio.superbwarfare.item.projectile.MortarShellItem;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
@@ -99,7 +99,7 @@ public class MortarEntity extends ArtilleryEntity {
 
     @Override
     public void vehicleShoot(LivingEntity living, @NotNull String weaponName) {
-        if (!(this.getItems().get(0).getItem() instanceof MortarShell)) return;
+        if (!(this.getItems().get(0).getItem() instanceof MortarShellItem)) return;
         var gunData = getGunData(weaponName);
         if (gunData == null) return;
         if (entityData.get(FIRE_TIME) != 0) return;
@@ -141,13 +141,13 @@ public class MortarEntity extends ArtilleryEntity {
         }
 
         if (mainHandItem.is(ModTags.Items.TOOLS_CROWBAR)) {
-            if (this.getItems().get(0).getItem() instanceof MortarShell && this.entityData.get(FIRE_TIME) == 0 && level() instanceof ServerLevel) {
+            if (this.getItems().get(0).getItem() instanceof MortarShellItem && this.entityData.get(FIRE_TIME) == 0 && level() instanceof ServerLevel) {
                 vehicleShoot(player, "Main");
             }
             return InteractionResult.SUCCESS;
         }
 
-        if (mainHandItem.getItem() instanceof MortarShell && !player.isShiftKeyDown() && this.entityData.get(FIRE_TIME) == 0 && this.getItems().get(0).isEmpty()) {
+        if (mainHandItem.getItem() instanceof MortarShellItem && !player.isShiftKeyDown() && this.entityData.get(FIRE_TIME) == 0 && this.getItems().get(0).isEmpty()) {
             this.getItems().set(0, mainHandItem.copyWithCount(1));
             if (!player.isCreative()) {
                 mainHandItem.shrink(1);
@@ -200,11 +200,11 @@ public class MortarEntity extends ArtilleryEntity {
             entityData.set(FIRE_TIME, entityData.get(FIRE_TIME) - 1);
         }
 
-        if (entityData.get(FIRE_TIME) == 5 && this.getItems().get(0).getItem() instanceof MortarShell) {
+        if (entityData.get(FIRE_TIME) == 5 && this.getItems().get(0).getItem() instanceof MortarShellItem) {
             Level level = this.level();
             var gunData = getGunData("Main");
             if (level instanceof ServerLevel server && gunData != null) {
-                MortarShellEntity entityToSpawn = MortarShell.createShell(shooter, level, this.getItems().get(0), getProjectileGravity("Main"), gunData.get(GunProp.DAMAGE).floatValue(), gunData.get(GunProp.EXPLOSION_DAMAGE).floatValue(), gunData.get(GunProp.EXPLOSION_RADIUS).floatValue());
+                MortarShellEntity entityToSpawn = MortarShellItem.createShell(shooter, level, this.getItems().get(0), getProjectileGravity("Main"), gunData.get(GunProp.DAMAGE).floatValue(), gunData.get(GunProp.EXPLOSION_DAMAGE).floatValue(), gunData.get(GunProp.EXPLOSION_RADIUS).floatValue());
                 entityToSpawn.setPos(this.getX(), this.getEyeY(), this.getZ());
                 entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, getProjectileVelocity("Main"), getProjectileSpread("Main"));
                 level.addFreshEntity(entityToSpawn);
@@ -355,7 +355,7 @@ public class MortarEntity extends ArtilleryEntity {
 
     @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
-        return super.canPlaceItem(slot, stack) && this.entityData.get(FIRE_TIME) == 0 && stack.getItem() instanceof MortarShell;
+        return super.canPlaceItem(slot, stack) && this.entityData.get(FIRE_TIME) == 0 && stack.getItem() instanceof MortarShellItem;
     }
 
     @Override

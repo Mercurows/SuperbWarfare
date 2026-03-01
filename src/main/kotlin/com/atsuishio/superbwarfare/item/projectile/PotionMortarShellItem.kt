@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.item.common.ammo
+package com.atsuishio.superbwarfare.item.projectile
 
 import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity
 import com.atsuishio.superbwarfare.init.ModEntities
@@ -21,18 +21,16 @@ import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.client.event.RegisterColorHandlersEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber
-import javax.annotation.ParametersAreNonnullByDefault
 
-class PotionMortarShell : MortarShell(), DispenserLaunchable {
+class PotionMortarShellItem : MortarShellItem(), DispenserLaunchable {
     override fun getDefaultInstance(): ItemStack {
         return PotionUtils.setPotion(super.getDefaultInstance(), Potions.POISON)
     }
 
-    @ParametersAreNonnullByDefault
     override fun appendHoverText(
         pStack: ItemStack,
         pLevel: Level?,
-        pTooltip: MutableList<Component?>,
+        pTooltip: MutableList<Component>,
         pFlag: TooltipFlag
     ) {
         PotionUtils.addPotionTooltip(pStack, pTooltip, 0.125f)
@@ -44,7 +42,6 @@ class PotionMortarShell : MortarShell(), DispenserLaunchable {
                 return 0.5f
             }
 
-            @ParametersAreNonnullByDefault
             override fun getProjectile(pLevel: Level, pPosition: Position, pStack: ItemStack): Projectile {
                 val shell = MortarShellEntity(
                     ModEntities.MORTAR_SHELL.get(),
@@ -70,7 +67,7 @@ class PotionMortarShell : MortarShell(), DispenserLaunchable {
         @SubscribeEvent
         fun onRegisterColorHandlers(event: RegisterColorHandlersEvent.Item) {
             event.register(
-                { stack: ItemStack?, layer: Int -> if (layer == 1) PotionUtils.getColor(stack) else -1 },
+                { stack, layer -> if (layer == 1) PotionUtils.getColor(stack) else -1 },
                 ModItems.POTION_MORTAR_SHELL.get()
             )
         }
