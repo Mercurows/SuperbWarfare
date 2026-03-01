@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.item.common.ammo
+package com.atsuishio.superbwarfare.item.ammo
 
 import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.init.ModAttachments
@@ -20,13 +20,13 @@ open class AmmoSupplierItem(val type: Ammo, val ammoToAdd: Int, properties: Prop
     override fun appendHoverText(
         stack: ItemStack,
         context: TooltipContext,
-        tooltipComponents: MutableList<Component?>,
+        tooltipComponents: MutableList<Component>,
         tooltipFlag: TooltipFlag
     ) {
         tooltipComponents.add(Component.translatable("des.superbwarfare.ammo_supplier").withStyle(ChatFormatting.AQUA))
     }
 
-    override fun use(level: Level, player: Player, hand: InteractionHand): InteractionResultHolder<ItemStack?> {
+    override fun use(level: Level, player: Player, hand: InteractionHand): InteractionResultHolder<ItemStack> {
         val stack = player.getItemInHand(hand)
         var count = stack.count
 
@@ -39,8 +39,12 @@ open class AmmoSupplierItem(val type: Ammo, val ammoToAdd: Int, properties: Prop
         val addedCount = if (offhandItem.`is`(ModItems.AMMO_BOX.get())) {
             val canAddAmount = type.ammoBoxLimit - type.get(offhandItem)
             val toAddCount = (canAddAmount / ammoToAdd).coerceAtMost(count)
-            // TODO 添加失败提示？
-            if (toAddCount <= 0) return InteractionResultHolder.fail(stack)
+            if (toAddCount <= 0) {
+                player.displayClientMessage(
+                    Component.translatable("item.superbwarfare.ammo_supplier.fail").withStyle(ChatFormatting.RED), true
+                )
+                return InteractionResultHolder.fail(stack)
+            }
 
             this.type.add(offhandItem, ammoToAdd * toAddCount)
 
@@ -50,8 +54,12 @@ open class AmmoSupplierItem(val type: Ammo, val ammoToAdd: Int, properties: Prop
 
             val canAddAmount = type.limit - type.get(capability)
             val toAddCount = (canAddAmount / ammoToAdd).coerceAtMost(count)
-            // TODO 添加失败提示？
-            if (toAddCount <= 0) return InteractionResultHolder.fail(stack)
+            if (toAddCount <= 0) {
+                player.displayClientMessage(
+                    Component.translatable("item.superbwarfare.ammo_supplier.fail").withStyle(ChatFormatting.RED), true
+                )
+                return InteractionResultHolder.fail(stack)
+            }
 
             this.type.add(capability, ammoToAdd * toAddCount)
             player.setData(ModAttachments.PLAYER_VARIABLE, capability)
@@ -64,7 +72,6 @@ open class AmmoSupplierItem(val type: Ammo, val ammoToAdd: Int, properties: Prop
 
         if (!player.isCreative) {
             InventoryTool.consumeItem(player, stack.item, addedCount)
-//            stack.shrink(addedCount)
         }
 
         if (!level.isClientSide()) {
@@ -78,6 +85,6 @@ open class AmmoSupplierItem(val type: Ammo, val ammoToAdd: Int, properties: Prop
             level.playSound(null, player.blockPosition(), ModSounds.BULLET_SUPPLY.get(), SoundSource.PLAYERS, 1f, 1f)
         }
 
-        return InteractionResultHolder.success<ItemStack?>(stack)
+        return InteractionResultHolder.success(stack)
     }
 }

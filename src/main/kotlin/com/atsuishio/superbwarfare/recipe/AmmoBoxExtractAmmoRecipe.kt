@@ -2,8 +2,8 @@ package com.atsuishio.superbwarfare.recipe
 
 import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.init.ModRecipes
-import com.atsuishio.superbwarfare.item.common.ammo.AmmoBoxItem
-import com.atsuishio.superbwarfare.item.common.ammo.ammoBoxData
+import com.atsuishio.superbwarfare.item.ammo.AmmoBoxItem
+import com.atsuishio.superbwarfare.item.ammo.ammoBoxData
 import net.minecraft.core.HolderLookup
 import net.minecraft.core.NonNullList
 import net.minecraft.world.item.ItemStack
