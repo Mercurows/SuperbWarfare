@@ -107,7 +107,7 @@ open class SmallContainerBlock :
     override fun appendHoverText(
         stack: ItemStack,
         context: TooltipContext,
-        tooltipComponents: MutableList<Component?>,
+        tooltipComponents: MutableList<Component>,
         tooltipFlag: TooltipFlag
     ) {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag)

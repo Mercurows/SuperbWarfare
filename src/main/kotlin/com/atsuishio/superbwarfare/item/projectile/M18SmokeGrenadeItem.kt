@@ -40,7 +40,7 @@ open class M18SmokeGrenadeItem : Item(Properties().rarity(Rarity.UNCOMMON)), Dis
     override fun appendHoverText(
         stack: ItemStack,
         context: TooltipContext,
-        tooltipComponents: MutableList<Component?>,
+        tooltipComponents: MutableList<Component>,
         tooltipFlag: TooltipFlag
     ) {
         tooltipComponents.add(

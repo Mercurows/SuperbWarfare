@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModPerks
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.init.ModTags.commonItemTag
-import com.atsuishio.superbwarfare.item.PerkItem
+import com.atsuishio.superbwarfare.item.misc.PerkItem
 import com.atsuishio.superbwarfare.perk.Perk
 import net.minecraft.core.HolderLookup
 import net.minecraft.data.PackOutput

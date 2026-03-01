@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.item.ammo
+package com.atsuishio.superbwarfare.item.material
 
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
@@ -7,7 +7,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Rarity
 import net.minecraft.world.item.TooltipFlag
 
-class CreativeAmmoBoxItem : Item(Properties().rarity(Rarity.EPIC).stacksTo(1)) {
+class ShortcutPackItem : Item(Properties().rarity(Rarity.EPIC)) {
     override fun appendHoverText(
         stack: ItemStack,
         context: TooltipContext,
@@ -15,7 +15,10 @@ class CreativeAmmoBoxItem : Item(Properties().rarity(Rarity.EPIC).stacksTo(1)) {
         tooltipFlag: TooltipFlag
     ) {
         tooltipComponents.add(
-            Component.translatable("des.superbwarfare.creative_ammo_box").withStyle(ChatFormatting.GRAY)
+            Component.translatable("des.superbwarfare.shortcut_pack_2").withStyle(ChatFormatting.AQUA)
+        )
+        tooltipComponents.add(
+            Component.translatable("des.superbwarfare.shortcut_pack_1").withStyle(ChatFormatting.GRAY)
         )
     }
 }

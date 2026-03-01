@@ -67,7 +67,7 @@ open class C4BombItem : Item(Properties()), DispenserLaunchable {
     override fun appendHoverText(
         stack: ItemStack,
         context: TooltipContext,
-        tooltipComponents: MutableList<Component?>,
+        tooltipComponents: MutableList<Component>,
         tooltipFlag: TooltipFlag
     ) {
         val tag = NBTTool.getTag(stack)

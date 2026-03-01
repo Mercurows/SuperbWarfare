@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunPropertyModifier
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModPerks
-import com.atsuishio.superbwarfare.item.PerkItem
+import com.atsuishio.superbwarfare.item.misc.PerkItem
 import net.minecraft.ChatFormatting
 import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation

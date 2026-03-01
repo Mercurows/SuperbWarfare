@@ -4,8 +4,8 @@ import com.atsuishio.superbwarfare.block.entity.FuMO25BlockEntity
 import com.atsuishio.superbwarfare.init.ModBlocks
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModMenuTypes
-import com.atsuishio.superbwarfare.item.FiringParametersItem
-import com.atsuishio.superbwarfare.item.firingParameters
+import com.atsuishio.superbwarfare.item.misc.FiringParametersItem
+import com.atsuishio.superbwarfare.item.misc.firingParameters
 import com.atsuishio.superbwarfare.network.dataslot.ContainerEnergyData
 import com.atsuishio.superbwarfare.network.dataslot.SimpleEnergyData
 import net.minecraft.core.BlockPos

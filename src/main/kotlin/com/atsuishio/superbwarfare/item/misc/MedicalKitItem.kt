@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.item
+package com.atsuishio.superbwarfare.item.misc
 
 import com.atsuishio.superbwarfare.entity.MedicalKitEntity
 import com.atsuishio.superbwarfare.init.ModEntities
@@ -21,7 +21,7 @@ import net.minecraft.world.item.UseAnim
 import net.minecraft.world.level.Level
 import org.joml.Math
 
-class MedicalKitItem : Item(Properties().stacksTo(16)) {
+open class MedicalKitItem : Item(Properties().stacksTo(16)) {
     override fun appendHoverText(
         stack: ItemStack,
         context: TooltipContext,

@@ -3,8 +3,8 @@ package com.atsuishio.superbwarfare.client.overlay
 import com.atsuishio.superbwarfare.entity.vehicle.Type63Entity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getXRotFromVector
 import com.atsuishio.superbwarfare.init.ModItems
-import com.atsuishio.superbwarfare.item.FiringParametersItem
-import com.atsuishio.superbwarfare.item.firingParameters
+import com.atsuishio.superbwarfare.item.misc.FiringParametersItem
+import com.atsuishio.superbwarfare.item.misc.firingParameters
 import com.atsuishio.superbwarfare.tools.FormatTool.format0D
 import com.atsuishio.superbwarfare.tools.FormatTool.format1D
 import com.atsuishio.superbwarfare.tools.FormatTool.format2D
