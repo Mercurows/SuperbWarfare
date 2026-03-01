@@ -22,6 +22,7 @@ import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.component.CustomData
 import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
@@ -132,6 +133,16 @@ fun ItemStack.`is`(vararg items: Item): Boolean {
 // 1.20 compat
 
 fun ItemStack.getOrCreateTag(): CompoundTag = NBTTool.getTag(this)
+var ItemStack.tag
+    get() = get(DataComponents.CUSTOM_DATA)?.copyTag()
+    set(value) {
+        if (value == null) {
+            remove(DataComponents.CUSTOM_DATA)
+        } else {
+            set(DataComponents.CUSTOM_DATA, CustomData.of(value))
+        }
+    }
+
 fun LivingEntity.hasEffect(effect: MobEffect) = hasEffect(Holder.direct(effect))
 val ItemStack.isEdible get() = this.get(DataComponents.FOOD) != null
 fun Player.getEntityReach() = entityInteractionRange()

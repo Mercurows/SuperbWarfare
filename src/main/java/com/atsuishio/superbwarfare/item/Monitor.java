@@ -38,7 +38,7 @@ public class Monitor extends Item {
 
     public static final String LINKED = "Linked";
     public static final String LINKED_DRONE = "LinkedDrone";
-//    public static final String DRONE_UUID = "DroneUUID";
+    public static final String USING = "Using";
 
     public Monitor() {
         super(new Properties().stacksTo(1));
@@ -98,14 +98,6 @@ public class Monitor extends Item {
         this.resetDroneData(drone);
 
         return super.use(level, player, hand);
-//        ItemStack stack = player.getItemInHand(hand);
-//        if (!player.isShiftKeyDown()) {
-//            CompoundTag tag = stack.getOrCreateTag();
-//            if (DronesTool.hasInstanceOf(player)) return InteractionResultHolder.fail(stack);
-//            if (!tag.contains(DRONE_UUID)) return InteractionResultHolder.fail(stack);
-//            player.startUsingItem(hand);
-//        }
-//        return InteractionResultHolder.fail(stack);
     }
 
     @Override
@@ -195,16 +187,4 @@ public class Monitor extends Item {
             }
         }
     }
-
-//    @Nullable
-//    public static UUID getDroneUUID(Player player) {
-//        if (player == null) return null;
-//        if (player.getMainHandItem().is(ModItems.MONITOR.get())) {
-//            CompoundTag tag = player.getMainHandItem().getOrCreateTag();
-//            if (tag.contains(DRONE_UUID)) {
-//                return tag.getUUID(DRONE_UUID);
-//            }
-//        }
-//        return null;
-//    }
 }

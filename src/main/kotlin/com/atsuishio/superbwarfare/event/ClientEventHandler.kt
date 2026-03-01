@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.*
+import com.atsuishio.superbwarfare.item.Monitor
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.item.gun.launcher.SuperStarShooterItem
 import com.atsuishio.superbwarfare.network.message.send.*
@@ -610,8 +611,10 @@ object ClientEventHandler {
         val vehicle = player.vehicle
 
         // 正在游戏内控制载具或无人机
-        if (!notInGame && (vehicle is VehicleEntity && vehicle.firstPassenger == player)
-            || (stack.`is`(ModItems.MONITOR.get()) && tag.getBoolean("Using") && tag.getBoolean("Linked"))
+        if (!notInGame && (vehicle is VehicleEntity && vehicle.firstPassenger == player) ||
+            (stack.`is`(ModItems.MONITOR.get()) && tag != null
+                    && tag.getBoolean(Monitor.USING)
+                    && tag.getBoolean(Monitor.LINKED))
         ) {
 
             // TODO 把这些都设置成自定义按键
@@ -2467,11 +2470,17 @@ object ClientEventHandler {
                 0.0
             }
 
+        var r = 1
+
+        if (mc.options.cameraType != CameraType.FIRST_PERSON) {
+            r = 0
+        }
+
         event.pitch = (pitch + cameraRot[0] + (if (DisplayConfig.CAMERA_ROTATE.get()) 0.2 else 0.0) * turnRot[0]
                 + 3 * velocityY).toFloat()
         if (mc.options.cameraType == CameraType.THIRD_PERSON_BACK) {
-            event.yaw = (yaw + cameraRot[1] + (if (DisplayConfig.CAMERA_ROTATE.get()) 0.8 else 0.0) * turnRot[1]
-                    - (if (cameraLocation > 0.0) 1.0 else -1.0) * angle * zoomPos).toFloat()
+            event.yaw =
+                (yaw + cameraRot[1] + (if (DisplayConfig.CAMERA_ROTATE.get()) 0.8 else 0.0) * turnRot[1] * r - angle * zoomPos).toFloat()
         } else {
             event.yaw =
                 (yaw + cameraRot[1] + (if (DisplayConfig.CAMERA_ROTATE.get()) 0.8 else 0.0) * turnRot[1]).toFloat()
