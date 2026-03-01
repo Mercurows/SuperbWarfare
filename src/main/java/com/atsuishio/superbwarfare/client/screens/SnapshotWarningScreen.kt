@@ -19,10 +19,9 @@ import net.minecraftforge.fml.loading.FMLEnvironment
 import net.minecraftforge.fml.loading.LoadingModList
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 
-// TODO 把翻译文本加了
 @OnlyIn(Dist.CLIENT)
 class SnapshotWarningScreen(val lastScreen: Screen) : Screen(
-    Component.literal("【卓越前线】游玩警告").withStyle(ChatFormatting.BOLD)
+    Component.translatable("warning.superbwarfare.title.snapshot").withStyle(ChatFormatting.BOLD)
 ) {
     private var message: MultiLineLabel = MultiLineLabel.EMPTY
     private var freezeTicks = 100
@@ -38,7 +37,7 @@ class SnapshotWarningScreen(val lastScreen: Screen) : Screen(
         super.init()
         this.message = MultiLineLabel.create(
             this.font,
-            Component.literal("检测到Minecraft加载了测试版本的卓越前线模组，该版本可能会不兼容部分附属模组，或出现未知的BUG，甚至对已有的存档产生不可逆的影响。如果你希望继续游玩此版本，请创建新的存档进行游玩！"),
+            Component.translatable("warning.superbwarfare.content.snapshot"),
             this.width - 100
         )
         val i: Int = (this.message.lineCount + 1) * 18
