@@ -56,9 +56,8 @@ object ModRecipes {
         SimpleCraftingRecipeSerializer(::VehicleResetRecipe)
     }
 
-    // TODO 怎么序列化这一坨
-//    @JvmField
-//    val RESEARCHING_SERIALIZER = register("researching") { ResearchingRecipe.Serializer() }
+    @JvmField
+    val RESEARCHING_SERIALIZER = register("researching") { ResearchingRecipe.Serializer }
 
     @JvmField
     val VEHICLE_ASSEMBLING_TYPE: DeferredHolder<RecipeType<*>, out RecipeType<VehicleAssemblingRecipe>> =

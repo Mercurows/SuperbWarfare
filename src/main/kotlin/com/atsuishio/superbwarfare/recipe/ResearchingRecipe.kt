@@ -3,8 +3,14 @@ package com.atsuishio.superbwarfare.recipe
 import com.atsuishio.superbwarfare.init.ModRecipes
 import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
+import com.mojang.serialization.Codec
+import com.mojang.serialization.MapCodec
+import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.core.HolderLookup
 import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.network.RegistryFriendlyByteBuf
+import net.minecraft.network.codec.ByteBufCodecs
+import net.minecraft.network.codec.StreamCodec
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.ItemTags
 import net.minecraft.world.item.Item
@@ -19,7 +25,6 @@ import kotlin.jvm.optionals.getOrNull
 
 // TODO 怎么实现这玩意
 class ResearchingRecipe(
-    val recipeId: ResourceLocation,
     val input: Ingredient,
     val base: Ingredient,
     val addition: Ingredient,
@@ -49,8 +54,7 @@ class ResearchingRecipe(
 
     override fun getResultItem(registries: HolderLookup.Provider): ItemStack = this.result.getResult().copy()
 
-    override fun getSerializer(): RecipeSerializer<*> = TODO("RESEARCHING_SERIALIZER")
-//        ModRecipes.RESEARCHING_SERIALIZER.get()
+    override fun getSerializer(): RecipeSerializer<*> = ModRecipes.RESEARCHING_SERIALIZER.get()
 
     override fun getType(): RecipeType<*> = ModRecipes.RESEARCHING_TYPE.get()
 
@@ -60,6 +64,26 @@ class ResearchingRecipe(
         @SerializedName("count") var count: Int = 1,
         @SerializedName("nbt") var nbt: JsonObject? = null,
     ) {
+        companion object {
+            val CODEC: Codec<Result> = RecordCodecBuilder.mapCodec<Result> { builder ->
+                builder.group(
+                    Codec.STRING.optionalFieldOf("item", "")
+                        .forGetter { it.item },
+                    Codec.STRING.optionalFieldOf("tag", "")
+                        .forGetter { it.tag },
+                    Codec.INT.optionalFieldOf("count", 1)
+                        .forGetter { it.count }
+                ).apply(builder) { item, tag, count -> Result(item, tag, count) }
+            }.codec()
+
+            val STREAM_CODEC: StreamCodec<RegistryFriendlyByteBuf, Result> = StreamCodec.composite(
+                ByteBufCodecs.STRING_UTF8, { r: Result -> r.item },
+                ByteBufCodecs.STRING_UTF8, { r: Result -> r.tag },
+                ByteBufCodecs.VAR_INT, { r: Result -> r.count },
+                { item, tag, count -> Result(item, tag, count) }
+            )
+        }
+
         @Transient
         var resultStack: ItemStack? = null
 
@@ -106,60 +130,54 @@ class ResearchingRecipe(
     }
 
     // TODO 怎么序列化这一坨
-//    class Serializer : RecipeSerializer<ResearchingRecipe> {
-//        val CODEC = Codec.of<ResearchingRecipe>(Encoder { a, b, c ->
-//            return@Encoder ResearchingRecipe()
-//        }, Decoder { a, b ->
-//            return@Decoder ResearchingRecipe()
-//        })
-//
-//        private fun ingredientOf(json: JsonObject, name: String): Ingredient {
-//            return Ingredient.fromJson(
-//                if (GsonHelper.isArrayNode(json, name))
-//                    GsonHelper.getAsJsonArray(json, name)
-//                else GsonHelper.getAsJsonObject(json, name)
-//            )
-//        }
-//
-//        override fun fromJson(
-//            id: ResourceLocation,
-//            json: JsonObject
-//        ): ResearchingRecipe {
-//            val input = ingredientOf(json, "input")
-//            val base = ingredientOf(json, "base")
-//            val addition = ingredientOf(json, "addition")
-//            val special = ingredientOf(json, "special")
-//            val time = GsonHelper.getAsInt(json, "time")
-//            val result = DataLoader.GSON.fromJson(json.get("result"), Result::class.java)
-//            return ResearchingRecipe(id, input, base, addition, special, time, result)
-//        }
-//
-//        override fun fromNetwork(
-//            id: ResourceLocation,
-//            buffer: FriendlyByteBuf
-//        ): ResearchingRecipe {
-//            val input = Ingredient.fromNetwork(buffer)
-//            val base = Ingredient.fromNetwork(buffer)
-//            val addition = Ingredient.fromNetwork(buffer)
-//            val special = Ingredient.fromNetwork(buffer)
-//            val time = buffer.readInt()
-//            val result = buffer.readItem()
-//
-//            val res = Result()
-//            res.resultStack = result
-//            return ResearchingRecipe(id, input, base, addition, special, time, res)
-//        }
-//
-//        override fun toNetwork(
-//            buffer: FriendlyByteBuf,
-//            recipe: ResearchingRecipe
-//        ) {
-//            recipe.input.toNetwork(buffer)
-//            recipe.base.toNetwork(buffer)
-//            recipe.addition.toNetwork(buffer)
-//            recipe.special.toNetwork(buffer)
-//            buffer.writeInt(recipe.time)
-//            buffer.writeItem(recipe.result.getResult())
-//        }
-//    }
+    object Serializer : RecipeSerializer<ResearchingRecipe> {
+        val CODEC: MapCodec<ResearchingRecipe> = RecordCodecBuilder.mapCodec { builder ->
+            builder.group(
+                Ingredient.CODEC.fieldOf("input").forGetter { it.input },
+                Ingredient.CODEC.optionalFieldOf("base", Ingredient.EMPTY).forGetter { it.base },
+                Ingredient.CODEC.optionalFieldOf("addition", Ingredient.EMPTY).forGetter { it.addition },
+                Ingredient.CODEC.optionalFieldOf("special", Ingredient.EMPTY).forGetter { it.special },
+                Codec.INT.optionalFieldOf("time", 1200).forGetter { it.time },
+                Result.CODEC.fieldOf("result").forGetter { it.result }
+            ).apply(builder, ::ResearchingRecipe)
+        }
+
+        val STREAM_CODEC: StreamCodec<RegistryFriendlyByteBuf, ResearchingRecipe> =
+            StreamCodec.of(this::toNetwork, this::fromNetwork)
+
+        fun fromNetwork(
+            buffer: RegistryFriendlyByteBuf
+        ): ResearchingRecipe {
+            val input = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer)
+            val base = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer)
+            val addition = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer)
+            val special = Ingredient.CONTENTS_STREAM_CODEC.decode(buffer)
+            val time = buffer.readInt()
+            val result = ItemStack.STREAM_CODEC.decode(buffer)
+
+            val res = Result()
+            res.resultStack = result
+            return ResearchingRecipe(input, base, addition, special, time, res)
+        }
+
+        fun toNetwork(
+            buffer: RegistryFriendlyByteBuf,
+            recipe: ResearchingRecipe
+        ) {
+            Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.input)
+            Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.base)
+            Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.addition)
+            Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.special)
+            buffer.writeInt(recipe.time)
+            ItemStack.STREAM_CODEC.encode(buffer, recipe.result.getResult())
+        }
+
+        override fun codec(): MapCodec<ResearchingRecipe> {
+            return CODEC
+        }
+
+        override fun streamCodec(): StreamCodec<RegistryFriendlyByteBuf, ResearchingRecipe> {
+            return STREAM_CODEC
+        }
+    }
 }
