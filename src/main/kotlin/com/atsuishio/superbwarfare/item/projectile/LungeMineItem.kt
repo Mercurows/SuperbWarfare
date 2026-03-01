@@ -137,10 +137,10 @@ class LungeMineItem : Item(Properties().stacksTo(4)), GeoItem {
                     entityLiving: LivingEntity,
                     hand: InteractionHand,
                     itemStack: ItemStack
-                ): ArmPose? {
+                ): ArmPose {
                     if (!itemStack.isEmpty) {
                         if (entityLiving.usedItemHand == hand) {
-                            return ModEnumExtensions.Client.getLungeMinePose()
+                            return ModEnumExtensions.Client.lungeMinePose
                         }
                     }
                     return ArmPose.EMPTY

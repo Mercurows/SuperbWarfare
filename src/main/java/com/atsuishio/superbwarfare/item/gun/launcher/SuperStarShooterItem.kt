@@ -36,9 +36,9 @@ class SuperStarShooterItem : GunGeoItem(Properties().rarity(ModRarities.SUPERB))
         }
     }
 
-    override fun getArmPose(entityLiving: LivingEntity, hand: InteractionHand, stack: ItemStack): ArmPose? {
+    override fun getArmPose(entityLiving: LivingEntity, hand: InteractionHand, stack: ItemStack): ArmPose {
         if (!stack.isEmpty && entityLiving.usedItemHand == hand) {
-            return ModEnumExtensions.Client.getSuperStarShooterPose()
+            return ModEnumExtensions.Client.superStarShooterPose
         }
         return ArmPose.EMPTY
     }
