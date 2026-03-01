@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
-import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.item.gun.launcher.SuperStarShooterItem
@@ -717,7 +716,7 @@ object ClientEventHandler {
                         //锁定失败
                         if (lockingPos != null &&
                             (player.lookAngle.angleTo(
-                                player.eyePosition.vectorTo(lockingPos)
+                                player.eyePosition.vectorTo(lockingPos!!)
                             ) > seekAngle || !noClip(player, lockingPos!!))
                         ) {
                             seekingTime = 0
@@ -937,7 +936,7 @@ object ClientEventHandler {
             }
 
             // 锁定失败
-            if (lockingPosVehicle != null && (seekVec.angleTo(cameraPos.vectorTo(lockingPosVehicle)) > seekAngle
+            if (lockingPosVehicle != null && (seekVec.angleTo(cameraPos.vectorTo(lockingPosVehicle!!)) > seekAngle
                         || !noClip(player, lockingPosVehicle!!))
             ) {
                 seekFailure(player)
@@ -1223,6 +1222,7 @@ object ClientEventHandler {
             attackList += list
         }
 
+        player.swing(InteractionHand.MAIN_HAND)
         for (entity in attackList) {
             sendPacketToServer(MeleeAttackMessage(entity.uuid))
         }
@@ -2640,7 +2640,7 @@ object ClientEventHandler {
 
                             look(player, toVec)
 
-                            if (player.distanceTo(lockedEntity) > seekRange) {
+                            if (player.distanceTo(lockedEntity!!) > seekRange) {
                                 lockedEntity = null
                             }
                         }
