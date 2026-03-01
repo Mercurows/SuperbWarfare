@@ -7,7 +7,7 @@ import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.*;
-import com.atsuishio.superbwarfare.item.Monitor;
+import com.atsuishio.superbwarfare.item.misc.MonitorItem;
 import com.atsuishio.superbwarfare.tools.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.Registries;
@@ -223,8 +223,8 @@ public class DroneEntity extends GeoVehicleEntity {
                 if (tickCount % 5 == 0) {
                     controller.getInventory().items.stream().filter(pStack -> pStack.getItem() == ModItems.MONITOR.get())
                             .forEach(pStack -> {
-                                if (tag.getString(Monitor.LINKED_DRONE).equals(this.getStringUUID())) {
-                                    Monitor.getDronePos(pStack, this.position());
+                                if (tag.getString(MonitorItem.LINKED_DRONE).equals(this.getStringUUID())) {
+                                    MonitorItem.getDronePos(pStack, this.position());
                                 }
                             });
                 }
@@ -246,7 +246,7 @@ public class DroneEntity extends GeoVehicleEntity {
                     var stack = controller.getMainHandItem();
                     if (stack.is(ModItems.MONITOR.get())) {
                         var tag = NBTTool.getTag(stack);
-                        Monitor.disLink(tag, controller);
+                        MonitorItem.disLink(tag, controller);
                         NBTTool.saveTag(stack, tag);
                     }
                     this.hurt(new DamageSource(level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.EXPLOSION), controller), 10000);
@@ -314,7 +314,7 @@ public class DroneEntity extends GeoVehicleEntity {
                     this.entityData.set(LINKED, true);
                     this.entityData.set(CONTROLLER, player.getStringUUID());
 
-                    Monitor.link(tag, this.getStringUUID());
+                    MonitorItem.link(tag, this.getStringUUID());
                     NBTTool.saveTag(stack, tag);
                     player.displayClientMessage(Component.translatable("tips.superbwarfare.monitor.linked").withStyle(ChatFormatting.GREEN), true);
 
@@ -334,7 +334,7 @@ public class DroneEntity extends GeoVehicleEntity {
                     this.entityData.set(CONTROLLER, "none");
                     this.entityData.set(LINKED, false);
 
-                    Monitor.disLink(tag, player);
+                    MonitorItem.disLink(tag, player);
                     player.displayClientMessage(Component.translatable("tips.superbwarfare.monitor.unlinked").withStyle(ChatFormatting.RED), true);
 
                     if (player instanceof ServerPlayer serverPlayer) {
@@ -355,8 +355,8 @@ public class DroneEntity extends GeoVehicleEntity {
                 player.getInventory().items.stream().filter(stack_ -> stack_.getItem() == ModItems.MONITOR.get())
                         .forEach(itemStack -> {
                             var tag = NBTTool.getTag(itemStack);
-                            if (tag.getString(Monitor.LINKED_DRONE).equals(this.getStringUUID())) {
-                                Monitor.disLink(tag, player);
+                            if (tag.getString(MonitorItem.LINKED_DRONE).equals(this.getStringUUID())) {
+                                MonitorItem.disLink(tag, player);
                             }
                         });
 
@@ -562,7 +562,7 @@ public class DroneEntity extends GeoVehicleEntity {
                 if (player != null && player.getMainHandItem().is(ModItems.MONITOR.get())) {
                     var stack = player.getMainHandItem();
                     var tag = NBTTool.getTag(stack);
-                    Monitor.disLink(tag, player);
+                    MonitorItem.disLink(tag, player);
                     NBTTool.saveTag(stack, tag);
                 }
             }
@@ -627,7 +627,7 @@ public class DroneEntity extends GeoVehicleEntity {
             if (controller.getMainHandItem().is(ModItems.MONITOR.get())) {
                 var item = controller.getMainHandItem();
                 var tag = NBTTool.getTag(item);
-                Monitor.disLink(tag, controller);
+                MonitorItem.disLink(tag, controller);
                 NBTTool.saveTag(item, tag);
             }
         }
@@ -665,8 +665,8 @@ public class DroneEntity extends GeoVehicleEntity {
             player.getInventory().items.stream().filter(stack -> stack.getItem() == ModItems.MONITOR.get())
                     .forEach(stack -> {
                         var tag = NBTTool.getTag(stack);
-                        if (tag.getString(Monitor.LINKED_DRONE).equals(this.getStringUUID())) {
-                            Monitor.disLink(tag, player);
+                        if (tag.getString(MonitorItem.LINKED_DRONE).equals(this.getStringUUID())) {
+                            MonitorItem.disLink(tag, player);
                             NBTTool.saveTag(stack, tag);
                         }
                     });

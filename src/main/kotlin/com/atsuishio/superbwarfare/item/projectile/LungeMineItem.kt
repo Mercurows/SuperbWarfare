@@ -107,7 +107,7 @@ class LungeMineItem : Item(Properties().stacksTo(4)), GeoItem {
             ClientEventHandler.lungeSprint = 180
         }
         playerIn.cooldowns.addCooldown(stack.item, 300)
-        return InteractionResultHolder.consume<ItemStack?>(stack)
+        return InteractionResultHolder.consume(stack)
     }
 
     override fun canAttackBlock(

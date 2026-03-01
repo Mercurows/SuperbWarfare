@@ -1,0 +1,120 @@
+package com.atsuishio.superbwarfare.item.misc
+
+import com.atsuishio.superbwarfare.entity.TargetEntity
+import com.atsuishio.superbwarfare.init.ModEntities
+import net.minecraft.core.BlockPos
+import net.minecraft.core.Direction
+import net.minecraft.server.level.ServerLevel
+import net.minecraft.stats.Stats
+import net.minecraft.world.InteractionHand
+import net.minecraft.world.InteractionResult
+import net.minecraft.world.InteractionResultHolder
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.MobSpawnType
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.context.UseOnContext
+import net.minecraft.world.level.ClipContext
+import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.LiquidBlock
+import net.minecraft.world.level.gameevent.GameEvent
+import net.minecraft.world.phys.HitResult
+import java.util.function.Predicate
+
+class TargetDeployerItem : Item(Properties()) {
+    override fun useOn(pContext: UseOnContext): InteractionResult {
+        val level = pContext.level
+        if (level !is ServerLevel) {
+            return InteractionResult.SUCCESS
+        } else {
+            val itemstack = pContext.itemInHand
+            val blockpos = pContext.clickedPos
+            val direction = pContext.clickedFace
+            val blockstate = level.getBlockState(blockpos)
+            val pos: BlockPos?
+            if (blockstate.getCollisionShape(level, blockpos).isEmpty) {
+                pos = blockpos
+            } else {
+                pos = blockpos.relative(direction)
+            }
+
+            // 禁止堆叠
+            if (!level.getEntities(
+                    null as Entity?,
+                    ModEntities.TARGET.get().getSpawnAABB(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5),
+                    IS_TARGET
+                ).isEmpty()
+            ) {
+                return InteractionResult.FAIL
+            }
+
+            if (ModEntities.TARGET.get().spawn(
+                    level,
+                    itemstack,
+                    pContext.player,
+                    pos,
+                    MobSpawnType.SPAWN_EGG,
+                    true,
+                    blockpos != pos && direction == Direction.UP
+                ) != null
+            ) {
+                itemstack.shrink(1)
+                level.gameEvent(pContext.player, GameEvent.ENTITY_PLACE, blockpos)
+            }
+
+            return InteractionResult.CONSUME
+        }
+    }
+
+    override fun use(pLevel: Level, pPlayer: Player, pHand: InteractionHand): InteractionResultHolder<ItemStack?> {
+        val itemstack = pPlayer.getItemInHand(pHand)
+        val blockhitresult = getPlayerPOVHitResult(pLevel, pPlayer, ClipContext.Fluid.SOURCE_ONLY)
+        if (blockhitresult.type != HitResult.Type.BLOCK) {
+            return InteractionResultHolder.pass<ItemStack?>(itemstack)
+        } else if (pLevel !is ServerLevel) {
+            return InteractionResultHolder.success<ItemStack?>(itemstack)
+        } else {
+            val blockpos = blockhitresult.blockPos
+            if (pLevel.getBlockState(blockpos).block !is LiquidBlock) {
+                return InteractionResultHolder.pass<ItemStack?>(itemstack)
+            } else if (pLevel.mayInteract(pPlayer, blockpos) && pPlayer.mayUseItemAt(
+                    blockpos,
+                    blockhitresult.direction,
+                    itemstack
+                )
+            ) {
+                // 禁止堆叠
+                if (!pLevel.getEntities(
+                        null as Entity?,
+                        ModEntities.TARGET.get()
+                            .getSpawnAABB(blockpos.x + 0.5, blockpos.y + 0.5, blockpos.z + 0.5),
+                        IS_TARGET
+                    ).isEmpty()
+                ) {
+                    return InteractionResultHolder.fail(itemstack)
+                }
+
+                val entity = ModEntities.TARGET.get()
+                    .spawn(pLevel, itemstack, pPlayer, blockpos, MobSpawnType.SPAWN_EGG, false, false)
+                if (entity == null) {
+                    return InteractionResultHolder.pass<ItemStack?>(itemstack)
+                } else {
+                    if (!pPlayer.abilities.instabuild) {
+                        itemstack.shrink(1)
+                    }
+
+                    pPlayer.awardStat(Stats.ITEM_USED.get(this))
+                    pLevel.gameEvent(pPlayer, GameEvent.ENTITY_PLACE, entity.position())
+                    return InteractionResultHolder.consume(itemstack)
+                }
+            } else {
+                return InteractionResultHolder.fail(itemstack)
+            }
+        }
+    }
+
+    companion object {
+        private val IS_TARGET = Predicate { e: Entity? -> e is TargetEntity }
+    }
+}

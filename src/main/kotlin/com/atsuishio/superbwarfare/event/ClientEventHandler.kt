@@ -10,9 +10,9 @@ import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.*
-import com.atsuishio.superbwarfare.item.Monitor
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.item.gun.launcher.SuperStarShooterItem
+import com.atsuishio.superbwarfare.item.misc.MonitorItem
 import com.atsuishio.superbwarfare.network.message.send.*
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.resource.gun.GunResource
@@ -613,8 +613,8 @@ object ClientEventHandler {
         // 正在游戏内控制载具或无人机
         if (!notInGame && (vehicle is VehicleEntity && vehicle.firstPassenger == player) ||
             (stack.`is`(ModItems.MONITOR.get()) && tag != null
-                    && tag.getBoolean(Monitor.USING)
-                    && tag.getBoolean(Monitor.LINKED))
+                    && tag.getBoolean(MonitorItem.USING)
+                    && tag.getBoolean(MonitorItem.LINKED))
         ) {
 
             // TODO 把这些都设置成自定义按键

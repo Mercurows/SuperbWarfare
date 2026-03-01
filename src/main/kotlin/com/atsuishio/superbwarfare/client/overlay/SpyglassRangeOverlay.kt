@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.init.ModItems
-import com.atsuishio.superbwarfare.item.ArtilleryIndicator
+import com.atsuishio.superbwarfare.item.misc.ArtilleryIndicatorItem
 import com.atsuishio.superbwarfare.item.misc.firingParameters
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.FormatTool.format1D
@@ -88,7 +88,7 @@ object SpyglassRangeOverlay : CommonOverlay("spyglass_range") {
                 }
 
                 // 火炮位置
-                val tags = NBTTool.getTag(stack).getList(ArtilleryIndicator.TAG_CANNON, Tag.TAG_COMPOUND.toInt())
+                val tags = NBTTool.getTag(stack).getList(ArtilleryIndicatorItem.TAG_CANNON, Tag.TAG_COMPOUND.toInt())
                 for (m in tags.indices) {
                     val tag = tags.getCompound(m)
                     val entity = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"))

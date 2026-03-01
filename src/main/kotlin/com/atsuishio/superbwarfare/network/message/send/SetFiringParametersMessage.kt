@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.item.ArtilleryIndicator
+import com.atsuishio.superbwarfare.item.misc.ArtilleryIndicatorItem
 import com.atsuishio.superbwarfare.item.misc.FiringParametersItem
 import com.atsuishio.superbwarfare.item.misc.firingParameters
 import com.atsuishio.superbwarfare.network.PayloadContext
@@ -58,7 +58,7 @@ object SetFiringParametersMessage : ServerPacketPayload() {
         }
 
         val item = mainStack.item
-        if (item is ArtilleryIndicator) {
+        if (item is ArtilleryIndicatorItem) {
             val pos = if (lookAtEntity) {
                 BlockPos.containing(lookingEntity!!.boundingBox.center)
             } else {

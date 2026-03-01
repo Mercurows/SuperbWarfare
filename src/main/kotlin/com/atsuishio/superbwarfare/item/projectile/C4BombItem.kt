@@ -60,7 +60,7 @@ open class C4BombItem : Item(Properties()), DispenserLaunchable {
             stack.shrink(1)
         }
 
-        return InteractionResultHolder.consume<ItemStack?>(stack)
+        return InteractionResultHolder.consume(stack)
     }
 
     @ParametersAreNonnullByDefault
