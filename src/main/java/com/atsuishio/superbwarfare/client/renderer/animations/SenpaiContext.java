@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.animations;
 
+import com.atsuishio.superbwarfare.client.BedrockModelLoader;
 import com.atsuishio.superbwarfare.entity.SenpaiEntity;
-import com.atsuishio.superbwarfare.resource.BedrockModelLoader;
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.BedrockAnimation;
 import com.maydaymemory.mae.basic.DummyPose;
 import com.maydaymemory.mae.basic.Keyframe;

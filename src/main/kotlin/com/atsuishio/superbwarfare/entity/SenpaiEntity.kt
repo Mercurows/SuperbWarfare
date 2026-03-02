@@ -29,17 +29,8 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.ServerLevelAccessor
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraftforge.network.NetworkHooks
-import software.bernie.geckolib.animatable.GeoEntity
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
-import software.bernie.geckolib.core.animation.AnimatableManager
-import software.bernie.geckolib.core.animation.AnimationController
-import software.bernie.geckolib.core.animation.AnimationState
-import software.bernie.geckolib.core.animation.RawAnimation
-import software.bernie.geckolib.core.`object`.PlayState
-import software.bernie.geckolib.util.GeckoLibUtil
 
-open class SenpaiEntity(type: EntityType<SenpaiEntity>, level: Level) : Monster(type, level), GeoEntity {
-    private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
+open class SenpaiEntity(type: EntityType<SenpaiEntity>, level: Level) : Monster(type, level) {
     open val animationInstance: SenpaiAnimationInstance = SenpaiAnimationInstance(this)
     open var runner by RUNNER
 
@@ -143,23 +134,6 @@ open class SenpaiEntity(type: EntityType<SenpaiEntity>, level: Level) : Monster(
         this.updateSwingTime()
     }
 
-    private fun movementPredicate(event: AnimationState<SenpaiEntity?>): PlayState? {
-        if ((event.isMoving || !(event.limbSwingAmount > -0.15f && event.limbSwingAmount < 0.15f)) && !this.isAggressive) {
-            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.senpai.walk"))
-        }
-        if (this.isDeadOrDying) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.senpai.die"))
-        }
-        if (this.isAggressive && event.isMoving) {
-            return if (this.runner) {
-                event.setAndContinue(RawAnimation.begin().thenLoop("animation.senpai.run2"))
-            } else {
-                event.setAndContinue(RawAnimation.begin().thenLoop("animation.senpai.run"))
-            }
-        }
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.senpai.idle"))
-    }
-
     override fun tickDeath() {
         ++this.deathTime
         if (this.deathTime == 540) {
@@ -167,18 +141,6 @@ open class SenpaiEntity(type: EntityType<SenpaiEntity>, level: Level) : Monster(
             this.dropExperience()
         }
     }
-
-    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) {
-        data.add(
-            AnimationController<SenpaiEntity>(
-                this,
-                "movement",
-                4
-            ) { this.movementPredicate(it) }
-        )
-    }
-
-    override fun getAnimatableInstanceCache(): AnimatableInstanceCache = this.cache
 
     companion object {
         val RUNNER: EntityDataAccessor<Boolean> =
