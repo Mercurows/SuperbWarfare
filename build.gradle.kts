@@ -23,7 +23,7 @@ fun getGitCommitHash(): String {
 }
 
 version = "${project.property("minecraft_version")}-${project.property("mod_version")}-${getGitCommitHash()}"
-group = "com.atsushio.superbwarfare"
+group = "com.atsuishio.superbwarfare"
 
 base {
     archivesName.set(project.property("mod_id").toString())
