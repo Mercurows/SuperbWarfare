@@ -14,16 +14,18 @@ import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModKeyMappings
+import com.atsuishio.superbwarfare.tools.FormatTool
 import com.atsuishio.superbwarfare.tools.NBTTool
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.options
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.math.Axis
+import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.MutableComponent
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.EquipmentSlot
@@ -198,8 +200,9 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
 
         renderWeaponInfo(guiGraphics, entity, screenWidth, screenHeight)
         renderPassengerInfo(guiGraphics, entity, screenWidth, screenHeight)
-        renderGearInfo(guiGraphics, entity, screenWidth, screenHeight, partialTick)
+        renderGearInfo(guiGraphics, entity, screenWidth, screenHeight, partialTick, compatHeight)
         renderHoverInfo(guiGraphics, entity, screenWidth, screenHeight, partialTick, compatHeight)
+        renderSpeedInfo(guiGraphics, entity, screenWidth, screenHeight, partialTick, compatHeight)
 
         poseStack.popPose()
     }
@@ -336,7 +339,8 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
         vehicle: VehicleEntity,
         w: Int,
         h: Int,
-        partialTick: Float
+        partialTick: Float,
+        compatHeight: Int
     ) {
         val engineType = vehicle.computed().engineType
         if (engineType != EngineType.AIRCRAFT) return
@@ -344,27 +348,43 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
         if (engineInfo !is Aircraft || !engineInfo.hasGear) return
         if (localPlayer != vehicle.firstPassenger) return
 
-        val poseStack = guiGraphics.pose()
+        var componentReady: MutableComponent
 
-        RenderSystem.disableDepthTest()
-        RenderSystem.depthMask(false)
-        RenderSystem.enableBlend()
-        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
-        RenderSystem.blendFuncSeparate(
-            GlStateManager.SourceFactor.SRC_ALPHA,
-            GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
-            GlStateManager.SourceFactor.ONE,
-            GlStateManager.DestFactor.ZERO
+        if (vehicle.gearUp) {
+            if (vehicle.synchedGearRot == 1f) {
+                componentReady = Component.translatable("tips.superbwarfare.gear_retracted").append(
+                    Component.literal(
+                        " [" + options.keyJump.defaultKey.displayName.string + "]"
+                    )
+                )
+            } else {
+                componentReady =
+                    Component.translatable("tips.superbwarfare.gear_retracting").withStyle(ChatFormatting.RED)
+
+            }
+        } else {
+            if (vehicle.synchedGearRot == 0f) {
+                componentReady = Component.translatable("tips.superbwarfare.gear_extended").append(
+                    Component.literal(
+                        " [" + options.keyJump.defaultKey.displayName.string + "]"
+                    )
+                )
+            } else {
+                componentReady =
+                    Component.translatable("tips.superbwarfare.gear_extending").withStyle(ChatFormatting.RED)
+            }
+        }
+
+
+
+        guiGraphics.drawString(
+            Minecraft.getInstance().font,
+            componentReady,
+            85,
+            (h - 13 - compatHeight),
+            -1,
+            false
         )
-        RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
-
-        poseStack.pushPose()
-        val angle = vehicle.gearRot(partialTick)
-        poseStack.rotateAround(Axis.ZP.rotationDegrees(-90 + angle), 102f, (h - 20).toFloat(), 0f)
-
-        RenderHelper.preciseBlit(guiGraphics, GEAR, 86f, (h - 36).toFloat(), 0f, 0f, 32f, 32f, 32f, 32f)
-
-        poseStack.popPose()
     }
 
     private fun renderHoverInfo(
@@ -401,6 +421,33 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
             componentReady,
             85,
             (h - 13 - compatHeight),
+            -1,
+            false
+        )
+    }
+
+    private fun renderSpeedInfo(
+        guiGraphics: GuiGraphics,
+        vehicle: VehicleEntity,
+        w: Int,
+        h: Int,
+        partialTick: Float,
+        compatHeight: Int
+    ) {
+        if (localPlayer != vehicle.firstPassenger) return
+
+        val componentReady = Component.literal(
+            FormatTool.format0D(
+                vehicle.deltaMovement.dot(vehicle.getViewVector(partialTick)) * 72,
+                " KM/H"
+            )
+        )
+
+        guiGraphics.drawString(
+            Minecraft.getInstance().font,
+            componentReady,
+            85,
+            (h - 22 - compatHeight),
             -1,
             false
         )
