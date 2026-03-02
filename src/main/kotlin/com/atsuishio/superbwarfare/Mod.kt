@@ -71,6 +71,8 @@ class Mod(bus: IEventBus, container: ModContainer) {
         bus.addListener<FMLClientSetupEvent> { onClientSetup(it) }
         bus.addListener<FMLCommonSetupEvent> { onCommonSetup(bus, it) }
         bus.addListener<FMLCommonSetupEvent> { ModItems.registerDispenserBehavior() }
+        bus.addListener(com.atsuishio.superbwarfare.resource.BedrockModelLoader::onRegisterBedrockModels)
+        bus.addListener(com.atsuishio.superbwarfare.resource.BedrockModelLoader::onRegisterBedrockAnimations)
 
         bus.addListener<RegisterPayloadHandlersEvent> { initializeNetwork(it) }
 
