@@ -209,16 +209,16 @@
       },
       "Crosshair": "@VehicleCommonGun",
       "CrosshairColor": "0x66FF00",
-      "Name": "weapon.superbwarfare.7_62mm_coax",
+      "Name": "weapon.superbwarfare.5_8mm_coax",
       "SoundInfo": {
         "Fire1P": "superbwarfare:coax_fire_1p",
-        "Fire3P": "superbwarfare:m_60_fire_3p",
-        "Fire3PFar": "superbwarfare:m_60_far",
-        "Fire3PVeryFar": "superbwarfare:m_60_veryfar",
+        "Fire3P": "superbwarfare:qbz_95_fire_3p",
+        "Fire3PFar": "superbwarfare:qbz_95_far",
+        "Fire3PVeryFar": "superbwarfare:qbz_95_veryfar",
         "Change": "superbwarfare:into_cannon"
       },
       "SoundRadius": 12,
-      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/gun_7_62mm.png"
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/gun_5_8mm.png"
     },
     "PassengerMachineGun": {
       "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/gun_12_7mm.png",

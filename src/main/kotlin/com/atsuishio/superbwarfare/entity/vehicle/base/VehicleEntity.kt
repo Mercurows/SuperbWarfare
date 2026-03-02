@@ -2299,6 +2299,31 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
     }
 
+    open fun addRandomParticle(
+        particleOptions: ParticleOptions,
+        pos: Vec3,
+        randomPos: Float,
+        level: Level,
+        count: Int,
+        vec3: Vec3
+    ) {
+        val randomX = 2 * (this.random.nextFloat() - 0.5f)
+        val randomY = 2 * (this.random.nextFloat() - 0.5f)
+        val randomZ = 2 * (this.random.nextFloat() - 0.5f)
+        repeat(count) {
+            level.addAlwaysVisibleParticle(
+                particleOptions,
+                true,
+                pos.x + randomPos * randomX,
+                pos.y + randomPos * randomY,
+                pos.z + randomPos * randomZ,
+                vec3.x,
+                vec3.y,
+                vec3.z
+            )
+        }
+    }
+
     open fun defaultPartDamageEffect(pos: Vec3) {
         if (level().isClientSide) {
             addRandomParticle(ModParticleTypes.FIRE_STAR.get(), pos, 0f, level(), 0.25f, 1)

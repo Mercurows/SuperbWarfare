@@ -516,10 +516,10 @@ object VehicleMotionUtils {
                         val model = Minecraft.getInstance().modelManager.blockModelShaper.getBlockModel(state)
                         val sprite = model.particleIcon
                         val color = SpritePixelHelper.getRandomPixelRGB(sprite, 0)
-                        val speed = vehicle.deltaMovement.length().toFloat()
+                        val speed = Math.min(vehicle.deltaMovement.length(), 0.5).toFloat()
 
-                        val particleOption = CustomCloudOption(color, 60, 1f + 6f * speed + Math.random().toFloat() * 2, Math.random().toFloat() * -0.12f, false, false)
-                        vehicle.addRandomParticle(particleOption, p.add(0.0, 0.5, 0.0), speed, vehicle.level(), 0.005f, 1)
+                        val particleOption = CustomCloudOption(color, 70, 1f + 7f * speed + Math.random().toFloat() * 2, Math.random().toFloat() * -0.12f, false, false)
+                        vehicle.addRandomParticle(particleOption, p.add(0.0, 0.2, 0.0).subtract(vehicle.deltaMovement.scale(1.5)), speed, vehicle.level(), 1, vehicle.deltaMovement.scale(60.0))
                     } else {
                         val particleData = BlockParticleOption(ParticleTypes.BLOCK, state)
                         vehicle.addRandomParticle(particleData, p.add(0.0, 0.1, 0.0), 0.2f, vehicle.level(), 0f, 1)
