@@ -18,10 +18,10 @@ import java.io.InputStreamReader
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 object BedrockModelLoader {
-    @JvmField
+    // models
     val SENPAI_MODEL = loc("entity/senpai.geo")
 
-    @JvmField
+    // animations
     val SENPAI_ANI = loc("senpai.animation")
 
     val COMMON_LOADER: RawResourceLoader = object : RawResourceLoader {
