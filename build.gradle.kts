@@ -89,6 +89,12 @@ sourceSets.main.get().resources {
 repositories {
     mavenLocal()
     maven {
+        url = uri("https://api.modrinth.com/maven")
+        content {
+            includeGroup("maven.modrinth")
+        }
+    }
+    maven {
         url = uri("https://maven.theillusivec4.top/")
         content {
             includeGroup("top.theillusivec4.curios")
@@ -122,7 +128,6 @@ repositories {
             includeGroup("curse.maven")
         }
     }
-
     maven {
         name = "Kotlin for Forge"
         url = uri("https://thedarkcolour.github.io/KotlinForForge/")
@@ -147,6 +152,13 @@ dependencies {
 
     implementation(fg.deobf("software.bernie.geckolib:geckolib-forge-1.20.1:4.4.6"))
     implementation(fg.deobf("com.eliotlash.mclib:mclib:20"))
+
+    // SBM
+    val sbm = implementation(fg.deobf("maven.modrinth:simplebedrockmodel:2.0.0-forge+mc1.20.1"))
+    jarJar(sbm) {
+        jarJar.ranged(sbm, "[2.0.0,)")
+    }
+    compileOnly("com.maydaymemory:mae:1.1.0")
 
     // 可选 mod 依赖
 
