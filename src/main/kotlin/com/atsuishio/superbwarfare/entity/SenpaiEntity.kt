@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.client.renderer.animations.SenpaiAnimationInstance
 import com.atsuishio.superbwarfare.init.ModSounds
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
@@ -39,6 +40,7 @@ import software.bernie.geckolib.util.GeckoLibUtil
 
 open class SenpaiEntity(type: EntityType<SenpaiEntity>, level: Level) : Monster(type, level), GeoEntity {
     private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
+    open val animationInstance: SenpaiAnimationInstance = SenpaiAnimationInstance(this)
     open var runner by RUNNER
 
     init {

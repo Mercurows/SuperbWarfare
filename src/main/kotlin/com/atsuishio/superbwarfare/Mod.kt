@@ -62,6 +62,8 @@ class Mod {
         bus.addListener<FMLCommonSetupEvent> { onCommonSetup(it) }
         bus.addListener<FMLClientSetupEvent> { onClientSetup(it) }
         bus.addListener<FMLCommonSetupEvent> { ModItems.registerDispenserBehavior() }
+        bus.addListener(com.atsuishio.superbwarfare.resource.BedrockModelLoader::onRegisterBedrockModels)
+        bus.addListener(com.atsuishio.superbwarfare.resource.BedrockModelLoader::onRegisterBedrockAnimations)
 
         registerDataTickets()
 
