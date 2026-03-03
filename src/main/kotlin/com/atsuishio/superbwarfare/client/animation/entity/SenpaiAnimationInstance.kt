@@ -6,11 +6,7 @@ import com.maydaymemory.mae.control.statemachine.AnimationStateMachine
 
 class SenpaiAnimationInstance(entity: SenpaiEntity) {
     val context: SenpaiContext = SenpaiContext(entity)
-    private val stateMachine = AnimationStateMachine(SenpaiStates.IDLE, context) { System.nanoTime() }
-
-    init {
-        SenpaiStates.IDLE.onEnter(this.context, SenpaiStates.IDLE)
-    }
+    private val stateMachine = AnimationStateMachine(SenpaiStates.INIT, context) { System.nanoTime() }
 
     fun tick() {
         stateMachine.tick()
