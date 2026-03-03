@@ -31,7 +31,8 @@ import net.minecraft.world.level.block.state.BlockState
 import net.minecraftforge.network.NetworkHooks
 
 open class SenpaiEntity(type: EntityType<SenpaiEntity>, level: Level) : Monster(type, level) {
-    open val animationInstance: SenpaiAnimationInstance = SenpaiAnimationInstance(this)
+    open val animationInstance: SenpaiAnimationInstance? =
+        if (this.level().isClientSide) SenpaiAnimationInstance(this) else null
     open var runner by RUNNER
 
     init {

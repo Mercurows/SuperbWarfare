@@ -36,6 +36,8 @@ class SenpaiRenderer(renderManager: EntityRendererProvider.Context) : EntityRend
     ) {
         val model = getModel(BedrockModelLoader.SENPAI_MODEL)
         if (model != null) {
+            val ani = pEntity.animationInstance ?: return
+
             pPoseStack.pushPose()
             pPoseStack.mulPose(Axis.YP.rotationDegrees(180f))
             pPoseStack.mulPose(Axis.YP.rotationDegrees(-pEntity.getViewYRot(pPartialTick)))
@@ -43,10 +45,9 @@ class SenpaiRenderer(renderManager: EntityRendererProvider.Context) : EntityRend
             val renderType = RenderType.entityCutout(getTextureLocation(pEntity))
             val vertexConsumer = pBuffer.getBuffer(renderType)
 
-            val ani = pEntity.animationInstance
             ani.context.partialTick = pPartialTick
             ani.tick()
-            model.applyPose(BLENDER.blend(model.getBindPose(), ani.getPose()))
+            model.applyPose(BLENDER.blend(model.bindPose, ani.getPose()))
 
             model.renderToBuffer(
                 pPoseStack,

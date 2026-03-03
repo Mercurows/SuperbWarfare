@@ -10,13 +10,14 @@ import com.github.mcmodderanchor.simplebedrockmodel.v1.resource.BedrockAnimation
 import com.github.mcmodderanchor.simplebedrockmodel.v1.resource.BedrockModelResourceSet
 import com.github.mcmodderanchor.simplebedrockmodel.v1.resource.RawResourceLoader
 import net.minecraft.resources.ResourceLocation
+import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, value = [Dist.CLIENT])
 object BedrockModelLoader {
     // models
     val SENPAI_MODEL = loc("entity/senpai.geo")
