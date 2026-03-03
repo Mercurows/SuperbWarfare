@@ -1,0 +1,17 @@
+{
+  "type": "superbwarfare:researching",
+  "addition": {
+    "item": "minecraft:lapis_lazuli"
+  },
+  "base": {
+    "item": "minecraft:paper"
+  },
+  "input": {
+    "item": "superbwarfare:mosin_nagant_blueprint"
+  },
+  "result": {
+    "count": 2,
+    "item": "superbwarfare:mosin_nagant_blueprint"
+  },
+  "time": 600
+}

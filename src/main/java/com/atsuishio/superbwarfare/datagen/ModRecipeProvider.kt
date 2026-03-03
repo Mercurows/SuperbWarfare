@@ -2582,7 +2582,21 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
         }
 
         fun copyBlueprint(writer: Consumer<FinishedRecipe>, result: ItemLike) {
-            copySmithingTemplate(writer, result, Items.LAPIS_LAZULI)
+            ShapedRecipeBuilder.shaped(RecipeCategory.MISC, result, 2)
+                .pattern("ABA")
+                .pattern("ACA")
+                .pattern("AAA")
+                .define('A', Items.LAPIS_LAZULI)
+                .define('B', Items.PAPER)
+                .define('C', result)
+                .unlockedBy(getHasName(result), has(result))
+                .save(writer, "${getItemName(result)}_copy")
+            ResearchingRecipeBuilder.item(result.asItem(), 2, result)
+                .base(Items.PAPER)
+                .addition(Items.LAPIS_LAZULI)
+                .time(600)
+                .unlockedBy(getHasName(result), has(result))
+                .save(writer, "${getItemName(result)}_copy_researching")
         }
 
         fun gunSmithing(

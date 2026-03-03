@@ -1,0 +1,17 @@
+{
+  "type": "superbwarfare:researching",
+  "addition": {
+    "item": "minecraft:lapis_lazuli"
+  },
+  "base": {
+    "item": "minecraft:paper"
+  },
+  "input": {
+    "item": "superbwarfare:ql_1031_blueprint"
+  },
+  "result": {
+    "count": 2,
+    "item": "superbwarfare:ql_1031_blueprint"
+  },
+  "time": 600
+}
