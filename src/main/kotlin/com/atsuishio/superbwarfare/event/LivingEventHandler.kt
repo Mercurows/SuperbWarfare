@@ -116,19 +116,20 @@ object LivingEventHandler {
         giveKillExpToWeapon(event)
     }
 
-    private fun handleVehicleHurt(event: LivingIncomingDamageEvent) {
-        val entity = event.entity.vehicle
-        if (entity is VehicleEntity) {
+    fun handleVehicleHurt(event: LivingIncomingDamageEvent) {
+        val entity = event.entity
+        val vehicle = entity.vehicle
+        if (vehicle is VehicleEntity) {
             val source = event.source
             if (source.`is`(ModTags.DamageTypes.VEHICLE_IGNORE)) return
 
-            if (entity.isEnclosed(event.entity)) {
+            if (vehicle.isEnclosed(entity)) {
                 if (!source.`is`(ModDamageTypes.VEHICLE_EXPLOSION) && !source.`is`(ModDamageTypes.AIR_CRASH)) {
-                    event.setCanceled(true)
+                    event.isCanceled = true
                 }
             } else {
                 if (!source.`is`(ModTags.DamageTypes.VEHICLE_NOT_ABSORB)) {
-                    entity.hurt(event.source, 0.7f * event.amount)
+                    vehicle.hurt(source, 0.7f * event.amount)
                 }
 
                 event.amount *= 0.3f
