@@ -125,7 +125,7 @@ object LivingEventHandler {
                 }
             } else {
                 if (!source.`is`(ModTags.DamageTypes.VEHICLE_NOT_ABSORB)) {
-                    entity.hurt(source, 0.7f * event.amount)
+                    vehicle.hurt(source, 0.7f * event.amount)
                 }
 
                 event.amount *= 0.3f
