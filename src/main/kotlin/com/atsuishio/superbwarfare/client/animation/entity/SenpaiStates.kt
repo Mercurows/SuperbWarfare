@@ -5,37 +5,38 @@ import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.SimpleAn
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.SimpleTransition
 
 object SenpaiStates {
+    val INIT: SimpleAnimationState<SenpaiContext> = SimpleAnimationState.Builder<SenpaiContext>()
+        .evaluatePose { it.getPose() }
+        .build()
+
     val IDLE: SimpleAnimationState<SenpaiContext> = SimpleAnimationState.Builder<SenpaiContext>()
-        .onEnter { ctx, _ -> ctx.playAnimation("animation.senpai.idle", AnimationPlayType.LOOP) }
         .evaluatePose { it.getPose() }
         .build()
 
     val WALK: SimpleAnimationState<SenpaiContext> = SimpleAnimationState.Builder<SenpaiContext>()
-        .onEnter { ctx, _ -> ctx.playAnimation("animation.senpai.walk", AnimationPlayType.LOOP) }
         .evaluatePose { it.getPose() }
         .build()
 
     val RUN: SimpleAnimationState<SenpaiContext> = SimpleAnimationState.Builder<SenpaiContext>()
-        .onEnter { ctx, _ ->
-            if (ctx.isRunner()) {
-                ctx.playAnimation("animation.senpai.run2", AnimationPlayType.LOOP)
-            } else {
-                ctx.playAnimation("animation.senpai.run", AnimationPlayType.LOOP)
-            }
-        }
         .evaluatePose { it.getPose() }
         .build()
 
     val DIE: SimpleAnimationState<SenpaiContext> = SimpleAnimationState.Builder<SenpaiContext>()
-        .onEnter { ctx, _ -> ctx.playAnimation("animation.senpai.die", AnimationPlayType.PLAY_ONCE_HOLD) }
         .evaluatePose { it.getPose() }
+        .build()
+
+    val INIT_TRANS: SimpleTransition<SenpaiContext> = SimpleTransition.Builder<SenpaiContext>()
+        .predicate { true }
+        .target(IDLE)
+        .from(INIT)
+        .afterTrigger { it.playAnimation("animation.senpai.idle", AnimationPlayType.LOOP) }
         .build()
 
     val TO_IDLE: SimpleTransition<SenpaiContext> = SimpleTransition.Builder<SenpaiContext>()
         .predicate { !it.isMoving() }
         .target(IDLE)
         .from(WALK, RUN)
-        .duration(0.6f)
+        .afterTrigger { it.playAnimation("animation.senpai.idle", AnimationPlayType.LOOP) }
         .build()
 
     val TO_WALK: SimpleTransition<SenpaiContext> = SimpleTransition.Builder<SenpaiContext>()
@@ -46,6 +47,7 @@ object SenpaiStates {
         }
         .target(WALK)
         .from(RUN, IDLE)
+        .afterTrigger { it.playAnimation("animation.senpai.walk", AnimationPlayType.LOOP) }
         .build()
 
     val TO_RUN: SimpleTransition<SenpaiContext> = SimpleTransition.Builder<SenpaiContext>()
@@ -55,11 +57,19 @@ object SenpaiStates {
         }
         .target(RUN)
         .from(WALK, IDLE)
+        .afterTrigger {
+            if (it.isRunner()) {
+                it.playAnimation("animation.senpai.run2", AnimationPlayType.LOOP)
+            } else {
+                it.playAnimation("animation.senpai.run", AnimationPlayType.LOOP)
+            }
+        }
         .build()
 
     val TO_DIE: SimpleTransition<SenpaiContext> = SimpleTransition.Builder<SenpaiContext>()
         .predicate { it.entity.isDeadOrDying }
         .target(DIE)
         .from(RUN, WALK, IDLE)
+        .afterTrigger { it.playAnimation("animation.senpai.die", AnimationPlayType.PLAY_ONCE_HOLD) }
         .build()
 }

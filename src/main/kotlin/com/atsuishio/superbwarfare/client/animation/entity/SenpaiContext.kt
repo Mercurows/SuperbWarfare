@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.BedrockModelLoader.getAnimations
 import com.atsuishio.superbwarfare.client.animation.AnimationPlayType
 import com.atsuishio.superbwarfare.entity.SenpaiEntity
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.BedrockAnimation
+import com.maydaymemory.mae.basic.DummyPose
 import com.maydaymemory.mae.basic.Keyframe
 import com.maydaymemory.mae.basic.Pose
 import com.maydaymemory.mae.control.runner.AnimationContext
@@ -74,6 +75,6 @@ class SenpaiContext(@JvmField var entity: SenpaiEntity) {
     }
 
     fun getPose(): Pose {
-        return animationRunner!!.evaluate()
+        return animationRunner?.evaluate() ?: DummyPose.INSTANCE
     }
 }
