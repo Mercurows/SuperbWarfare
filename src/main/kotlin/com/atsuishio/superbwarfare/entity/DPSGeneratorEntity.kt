@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity
 
 import com.atsuishio.superbwarfare.capability.energy.SyncedEntityEnergyStorage
+import com.atsuishio.superbwarfare.client.animation.entity.DPSGeneratorAnimationInstance
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -37,22 +38,13 @@ import net.minecraftforge.energy.IEnergyStorage
 import net.minecraftforge.event.entity.living.LivingDeathEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
-import software.bernie.geckolib.animatable.GeoEntity
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
-import software.bernie.geckolib.core.animation.AnimatableManager
-import software.bernie.geckolib.core.animation.AnimationController
-import software.bernie.geckolib.core.animation.AnimationState
-import software.bernie.geckolib.core.animation.RawAnimation
-import software.bernie.geckolib.core.`object`.PlayState
-import software.bernie.geckolib.util.GeckoLibUtil
 import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
-open class DPSGeneratorEntity(type: EntityType<DPSGeneratorEntity>, level: Level) : LivingEntity(type, level),
-    GeoEntity {
-    private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
-
+open class DPSGeneratorEntity(type: EntityType<DPSGeneratorEntity>, level: Level) : LivingEntity(type, level){
+    val animationInstance: DPSGeneratorAnimationInstance? =
+        if (this.level().isClientSide) DPSGeneratorAnimationInstance(this) else null
     protected val energyStorage: SyncedEntityEnergyStorage =
         SyncedEntityEnergyStorage(5120, 0, 2560, this.entityData, ENERGY)
     val energyCap: LazyOptional<IEnergyStorage> = LazyOptional.of { energyStorage }
@@ -311,27 +303,6 @@ open class DPSGeneratorEntity(type: EntityType<DPSGeneratorEntity>, level: Level
             this.spawnAtLocation(ItemStack(ModItems.DPS_GENERATOR_DEPLOYER.get()))
             this.remove(RemovalReason.KILLED)
         }
-    }
-
-    private fun movementPredicate(event: AnimationState<DPSGeneratorEntity?>): PlayState? {
-        if (this.downTime > 0) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.target.down"))
-        }
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.target.idle"))
-    }
-
-    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) {
-        data.add(
-            AnimationController<DPSGeneratorEntity>(
-                this,
-                "movement",
-                0
-            ) { this.movementPredicate(it) }
-        )
-    }
-
-    override fun getAnimatableInstanceCache(): AnimatableInstanceCache? {
-        return this.cache
     }
 
     protected fun chargeBlockBelow() {
