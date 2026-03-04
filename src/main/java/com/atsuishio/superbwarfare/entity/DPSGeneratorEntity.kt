@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity
 
 import com.atsuishio.superbwarfare.capability.energy.SyncedEntityEnergyStorage
+import com.atsuishio.superbwarfare.client.animation.entity.DPSGeneratorAnimationInstance
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -31,22 +32,14 @@ import net.minecraft.world.phys.Vec3
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.neoforge.capabilities.Capabilities
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent
-import software.bernie.geckolib.animatable.GeoEntity
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache
-import software.bernie.geckolib.animation.AnimatableManager.ControllerRegistrar
-import software.bernie.geckolib.animation.AnimationController
-import software.bernie.geckolib.animation.AnimationState
-import software.bernie.geckolib.animation.PlayState
-import software.bernie.geckolib.animation.RawAnimation
-import software.bernie.geckolib.util.GeckoLibUtil
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
-open class DPSGeneratorEntity(type: EntityType<DPSGeneratorEntity>, world: Level) : LivingEntity(type, world),
-    GeoEntity {
-    private val cache = GeckoLibUtil.createInstanceCache(this)
+open class DPSGeneratorEntity(type: EntityType<DPSGeneratorEntity>, level: Level) : LivingEntity(type, level){
+    val animationInstance: DPSGeneratorAnimationInstance? =
+        if (this.level().isClientSide) DPSGeneratorAnimationInstance(this) else null
 
     private var damageDealt = 0f
     open var downTime by DOWN_TIME
@@ -259,23 +252,6 @@ open class DPSGeneratorEntity(type: EntityType<DPSGeneratorEntity>, world: Level
         }
     }
 
-    private fun movementPredicate(event: AnimationState<DPSGeneratorEntity?>): PlayState? {
-        if (downTime > 0) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.target.down"))
-        }
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.target.idle"))
-    }
-
-    override fun registerControllers(data: ControllerRegistrar) {
-        data.add(
-            AnimationController<DPSGeneratorEntity?>(
-                this,
-                "movement",
-                0
-            ) { event -> this.movementPredicate(event!!) }
-        )
-    }
-
     protected fun chargeBlockBelow() {
         val entityCap = this.getCapability(Capabilities.EnergyStorage.ENTITY, Direction.DOWN) ?: return
 
@@ -290,10 +266,6 @@ open class DPSGeneratorEntity(type: EntityType<DPSGeneratorEntity>, world: Level
 
         this.level().blockEntityChanged(blockPos)
         entityCap.extractEnergy(extracted, false)
-    }
-
-    override fun getAnimatableInstanceCache(): AnimatableInstanceCache {
-        return this.cache
     }
 
     val energyStorage =

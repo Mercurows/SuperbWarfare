@@ -21,10 +21,12 @@ object BedrockModelLoader {
     // models
     val SENPAI_MODEL = loc("entity/senpai.geo")
     val TARGET_MODEL = loc("entity/target.geo")
+    val DPS_GENERATOR_MODEL = loc("entity/dps_generator.geo")
 
     // animations
     val SENPAI_ANI = loc("senpai.animation")
     val TARGET_ANI = loc("target.animation")
+    val DPS_GENERATOR_ANI = loc("dps_generator.animation")
 
     val COMMON_LOADER: RawResourceLoader = object : RawResourceLoader {
         override fun <T> load(inputStream: InputStream, clazz: Class<T>): T {
@@ -43,6 +45,7 @@ object BedrockModelLoader {
         with(event) {
             register(SENPAI_MODEL, COMMON_LOADER)
             register(TARGET_MODEL, COMMON_LOADER)
+            register(DPS_GENERATOR_MODEL, COMMON_LOADER)
         }
     }
 
@@ -51,6 +54,7 @@ object BedrockModelLoader {
         with(event) {
             register(SENPAI_ANI, SENPAI_MODEL, COMMON_LOADER)
             register(TARGET_ANI, TARGET_MODEL, COMMON_LOADER)
+            register(DPS_GENERATOR_ANI, DPS_GENERATOR_MODEL, COMMON_LOADER)
         }
     }
 
