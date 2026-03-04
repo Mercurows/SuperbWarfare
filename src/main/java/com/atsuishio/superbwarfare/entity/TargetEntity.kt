@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity
 
+import com.atsuishio.superbwarfare.client.animation.entity.TargetAnimationInstance
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier.Companion.createDefaultModifier
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -28,16 +29,11 @@ import net.minecraft.world.phys.Vec3
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent
-import software.bernie.geckolib.animatable.GeoEntity
-import software.bernie.geckolib.animation.AnimatableManager.ControllerRegistrar
-import software.bernie.geckolib.animation.AnimationController
-import software.bernie.geckolib.animation.AnimationState
-import software.bernie.geckolib.animation.PlayState
-import software.bernie.geckolib.animation.RawAnimation
-import software.bernie.geckolib.util.GeckoLibUtil
 
-open class TargetEntity(type: EntityType<TargetEntity>, world: Level) : LivingEntity(type, world), GeoEntity {
-    private val cache = GeckoLibUtil.createInstanceCache(this)
+open class TargetEntity(type: EntityType<TargetEntity>, level: Level) : LivingEntity(type, level) {
+    open val animationInstance: TargetAnimationInstance? =
+        if (this.level().isClientSide) TargetAnimationInstance(this) else null
+
     open var downTime by DOWN_TIME
 
     override fun defineSynchedData(builder: SynchedEntityData.Builder) {
@@ -158,26 +154,9 @@ open class TargetEntity(type: EntityType<TargetEntity>, world: Level) : LivingEn
         }
     }
 
-    private fun movementPredicate(event: AnimationState<TargetEntity>): PlayState {
-        if (downTime > 0) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.target.down"))
-        }
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.target.idle"))
+    override fun getPickResult(): ItemStack? {
+        return ItemStack(ModItems.TARGET_DEPLOYER.get())
     }
-
-    override fun registerControllers(data: ControllerRegistrar) {
-        data.add(
-            AnimationController<TargetEntity>(
-                this,
-                "movement",
-                0
-            ) { event -> this.movementPredicate(event) }
-        )
-    }
-
-    override fun getAnimatableInstanceCache() = this.cache
-
-    override fun getPickResult() = ItemStack(ModItems.TARGET_DEPLOYER.get())
 
     @EventBusSubscriber
     companion object {
