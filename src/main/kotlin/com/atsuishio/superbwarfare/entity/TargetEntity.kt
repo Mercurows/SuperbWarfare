@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity
 
+import com.atsuishio.superbwarfare.client.animation.entity.TargetAnimationInstance
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -28,17 +29,11 @@ import net.minecraft.world.phys.Vec3
 import net.minecraftforge.event.entity.living.LivingDeathEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
-import software.bernie.geckolib.animatable.GeoEntity
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
-import software.bernie.geckolib.core.animation.AnimatableManager
-import software.bernie.geckolib.core.animation.AnimationController
-import software.bernie.geckolib.core.animation.AnimationState
-import software.bernie.geckolib.core.animation.RawAnimation
-import software.bernie.geckolib.core.`object`.PlayState
-import software.bernie.geckolib.util.GeckoLibUtil
 
-open class TargetEntity(type: EntityType<TargetEntity>, level: Level) : LivingEntity(type, level), GeoEntity {
-    private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
+open class TargetEntity(type: EntityType<TargetEntity>, level: Level) : LivingEntity(type, level) {
+    open val animationInstance: TargetAnimationInstance? =
+        if (this.level().isClientSide) TargetAnimationInstance(this) else null
+
     open var downTime by DOWN_TIME
 
     override fun defineSynchedData() {
@@ -178,27 +173,6 @@ open class TargetEntity(type: EntityType<TargetEntity>, level: Level) : LivingEn
             this.spawnAtLocation(ItemStack(ModItems.TARGET_DEPLOYER.get()))
             this.remove(RemovalReason.KILLED)
         }
-    }
-
-    private fun movementPredicate(event: AnimationState<TargetEntity?>): PlayState? {
-        if (this.downTime > 0) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.target.down"))
-        }
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.target.idle"))
-    }
-
-    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) {
-        data.add(
-            AnimationController<TargetEntity>(
-                this,
-                "movement",
-                0
-            ) { this.movementPredicate(it) }
-        )
-    }
-
-    override fun getAnimatableInstanceCache(): AnimatableInstanceCache? {
-        return this.cache
     }
 
     override fun getPickResult(): ItemStack? {

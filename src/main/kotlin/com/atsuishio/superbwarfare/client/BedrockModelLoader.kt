@@ -21,9 +21,11 @@ import java.io.InputStreamReader
 object BedrockModelLoader {
     // models
     val SENPAI_MODEL = loc("entity/senpai.geo")
+    val TARGET_MODEL = loc("entity/target.geo")
 
     // animations
     val SENPAI_ANI = loc("senpai.animation")
+    val TARGET_ANI = loc("target.animation")
 
     val COMMON_LOADER: RawResourceLoader = object : RawResourceLoader {
         override fun <T> load(inputStream: InputStream, clazz: Class<T>): T {
@@ -39,12 +41,18 @@ object BedrockModelLoader {
 
     @SubscribeEvent
     fun onRegisterBedrockModels(event: RegisterBedrockModelEvent) {
-        event.register(SENPAI_MODEL, COMMON_LOADER)
+        with(event) {
+            register(SENPAI_MODEL, COMMON_LOADER)
+            register(TARGET_MODEL, COMMON_LOADER)
+        }
     }
 
     @SubscribeEvent
     fun onRegisterBedrockAnimations(event: RegisterBedrockAnimationEvent) {
-        event.register(SENPAI_ANI, SENPAI_MODEL, COMMON_LOADER)
+        with(event) {
+            register(SENPAI_ANI, SENPAI_MODEL, COMMON_LOADER)
+            register(TARGET_ANI, TARGET_MODEL, COMMON_LOADER)
+        }
     }
 
     @JvmStatic
