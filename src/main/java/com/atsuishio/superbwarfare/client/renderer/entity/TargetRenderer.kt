@@ -23,39 +23,46 @@ class TargetRenderer(renderManager: EntityRendererProvider.Context) : EntityRend
     }
 
     override fun render(
-        pEntity: TargetEntity,
-        pEntityYaw: Float,
-        pPartialTick: Float,
-        pPoseStack: PoseStack,
-        pBuffer: MultiBufferSource,
-        pPackedLight: Int
+        entity: TargetEntity,
+        entityYaw: Float,
+        partialTick: Float,
+        poseStack: PoseStack,
+        buffer: MultiBufferSource,
+        packedLight: Int
     ) {
         val model = getModel(BedrockModelLoader.TARGET_MODEL) ?: return
-        val ani = pEntity.animationInstance ?: return
+        val ani = entity.animationInstance ?: return
 
-        pPoseStack.pushPose()
-        pPoseStack.mulPose(Axis.YP.rotationDegrees(180f))
-        pPoseStack.mulPose(Axis.YP.rotationDegrees(-pEntity.getViewYRot(pPartialTick)))
+        poseStack.pushPose()
+        poseStack.mulPose(Axis.YP.rotationDegrees(180f))
+        poseStack.mulPose(Axis.YP.rotationDegrees(-entity.getViewYRot(partialTick)))
 
-        val renderType = RenderType.entityTranslucent(getTextureLocation(pEntity))
-        val vertexConsumer = pBuffer.getBuffer(renderType)
+        val renderType = RenderType.entityTranslucent(getTextureLocation(entity))
+        val vertexConsumer = buffer.getBuffer(renderType)
 
-        ani.context.partialTick = pPartialTick
+        ani.context.partialTick = partialTick
         ani.tick()
         model.applyPose(BLENDER.blend(model.bindPose, ani.getPose()))
 
         model.renderToBuffer(
-            pPoseStack,
+            poseStack,
             vertexConsumer,
-            pPackedLight,
-            OverlayTexture.pack(0f, pEntity.hurtTime > 0 || pEntity.deathTime > 0)
+            packedLight,
+            OverlayTexture.pack(0f, entity.hurtTime > 0 || entity.deathTime > 0)
         )
 
-        pPoseStack.popPose()
+        poseStack.pushPose()
+        val bone = model.getBone("ba")
+        val boneConsumer = buffer.getBuffer(RenderType.eyes(TEXTURE_E))
+        bone.render(poseStack, boneConsumer, packedLight, OverlayTexture.NO_OVERLAY)
+        poseStack.popPose()
+
+        poseStack.popPose()
     }
 
     companion object {
-        var TEXTURE = loc("textures/entity/target.png")
+        val TEXTURE = loc("textures/entity/target.png")
+        val TEXTURE_E = loc("textures/entity/target_e.png")
         val BLENDER: EulerAdditiveBlender = SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }
     }
 }
