@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.inventory.menu
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
-import com.github.tartaricacid.touhoulittlemaid.api.backpack.ITriggerSlotChange
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.AbstractContainerMenu
@@ -61,10 +60,6 @@ abstract class AbstractVehicleContainerMenu(type: MenuType<*>?, id: Int, invento
             }
 
             slot.onTake(player, stack2)
-            if (slot is ITriggerSlotChange) {
-                val slotChange = slot as ITriggerSlotChange
-                slotChange.onShiftTakeoff(player, stack1)
-            }
         }
         return stack1
     }
