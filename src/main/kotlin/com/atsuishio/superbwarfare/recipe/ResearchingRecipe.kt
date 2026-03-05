@@ -181,6 +181,8 @@ class ResearchingRecipe(
             Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.base)
             Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.addition)
             Ingredient.CONTENTS_STREAM_CODEC.encode(buffer, recipe.special)
+            buffer.writeBoolean(recipe.selectable)
+            buffer.writeInt(recipe.color)
             buffer.writeInt(recipe.time)
             ItemStack.STREAM_CODEC.encode(buffer, recipe.result.getResult())
         }
