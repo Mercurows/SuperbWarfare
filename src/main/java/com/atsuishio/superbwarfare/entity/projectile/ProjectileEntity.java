@@ -53,6 +53,7 @@ import net.minecraft.world.phys.*;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.entity.PartEntity;
+import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -319,7 +320,9 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
                     }
                 }
                 if (result != null) {
-                    this.onHit(result);
+                    if (!EventHooks.onProjectileImpact(this, result))
+                        this.onHit(result);
+                    else continue; // 命中事件被取消则检查下一个命中结果
                 }
 
                 if (!this.beast) {
@@ -406,7 +409,7 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
             }
         }
 
-        if (result instanceof ExtendedEntityRayTraceResult entityHitResult) {
+        if (result instanceof EntityHitResult entityHitResult) {
             Entity entity = entityHitResult.getEntity();
             if (entity.getId() == this.shooterId) {
                 return;
@@ -417,8 +420,11 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
                     return;
                 }
             }
-
-            this.onHitEntity(entity, entityHitResult);
+            if (entityHitResult instanceof ExtendedEntityRayTraceResult extendedResult)
+                this.onHitEntity(entity, extendedResult);
+            else { // 若不是带命中部位信息的结果，则构造一个用于触发命中事件，这种情况在外部手动调用onHit时出现
+                this.onHitEntity(entity, new ExtendedEntityRayTraceResult(entityHitResult));
+            }
             entity.invulnerableTime = 0;
         }
     }
