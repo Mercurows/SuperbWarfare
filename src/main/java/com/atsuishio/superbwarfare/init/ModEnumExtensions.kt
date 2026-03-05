@@ -1,16 +1,15 @@
 package com.atsuishio.superbwarfare.init
 
 import net.minecraft.ChatFormatting
-import net.minecraft.client.model.HumanoidModel
 import net.minecraft.client.model.HumanoidModel.ArmPose
 import net.minecraft.network.chat.Style
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.HumanoidArm
-import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.Rarity
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
 import net.neoforged.fml.common.asm.enumextension.EnumProxy
+import net.neoforged.neoforge.client.IArmPoseTransformer
 import java.util.function.UnaryOperator
 
 object ModEnumExtensions {
@@ -53,7 +52,7 @@ object ModEnumExtensions {
         val SUPERBWARFARE_LUNGE_MINE_POSE: EnumProxy<ArmPose> = EnumProxy(
             ArmPose::class.java,
             false,
-            { model: HumanoidModel<*>, _: LivingEntity, arm: HumanoidArm ->
+            IArmPoseTransformer { model, _, arm ->
                 if (arm != HumanoidArm.LEFT) {
                     model.rightArm.xRot = 20f * Mth.DEG_TO_RAD + model.head.xRot
                     model.rightArm.yRot = -12f * Mth.DEG_TO_RAD
@@ -70,7 +69,7 @@ object ModEnumExtensions {
         val SUPERBWARFARE_AURELIA_SCEPTRE_POSE: EnumProxy<ArmPose> = EnumProxy(
             ArmPose::class.java,
             false,
-            { model: HumanoidModel<*>, _: LivingEntity, arm: HumanoidArm ->
+            IArmPoseTransformer { model, _, arm ->
                 if (arm != HumanoidArm.LEFT) {
                     model.rightArm.xRot = -67.5f * Mth.DEG_TO_RAD + model.head.xRot + 0.05f * model.rightArm.xRot
                     model.rightArm.yRot = 5f * Mth.DEG_TO_RAD + model.head.yRot
@@ -86,7 +85,7 @@ object ModEnumExtensions {
         val SUPERBWARFARE_MINIGUN_POSE: EnumProxy<ArmPose> = EnumProxy(
             ArmPose::class.java,
             false,
-            { model: HumanoidModel<*>, _: LivingEntity, arm: HumanoidArm ->
+            IArmPoseTransformer { model, _, arm ->
                 if (arm != HumanoidArm.LEFT) {
                     model.rightArm.xRot = 22.5f * Mth.DEG_TO_RAD + model.head.xRot
                     model.rightArm.yRot = model.head.yRot
@@ -109,7 +108,7 @@ object ModEnumExtensions {
         val SUPERBWARFARE_M2_POSE: EnumProxy<ArmPose> = EnumProxy(
             ArmPose::class.java,
             false,
-            { model: HumanoidModel<*>, _: LivingEntity, arm: HumanoidArm ->
+            IArmPoseTransformer { model, _, arm ->
                 if (arm != HumanoidArm.LEFT) {
                     model.rightArm.xRot = 45f * Mth.DEG_TO_RAD + model.head.xRot
                     model.rightArm.yRot = model.head.yRot
@@ -132,7 +131,7 @@ object ModEnumExtensions {
         val SUPERBWARFARE_SUPER_STAR_SHOOTER_POSE: EnumProxy<ArmPose> = EnumProxy(
             ArmPose::class.java,
             false,
-            { model: HumanoidModel<*>, _: LivingEntity, arm: HumanoidArm ->
+            IArmPoseTransformer { model, _, arm ->
                 if (arm != HumanoidArm.LEFT) {
                     model.rightArm.xRot = -70f * Mth.DEG_TO_RAD + model.head.xRot
                     model.rightArm.yRot = 0f
