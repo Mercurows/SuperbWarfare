@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.entity.projectile;
+package com.atsuishio.superbwarfare.entity;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
