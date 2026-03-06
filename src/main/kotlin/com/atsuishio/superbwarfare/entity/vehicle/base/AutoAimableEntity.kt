@@ -46,6 +46,8 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
+import net.minecraft.world.scores.PlayerTeam
+import net.minecraft.world.scores.Scoreboard
 import org.joml.Math
 import java.util.*
 
@@ -157,6 +159,12 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
     override fun baseTick() {
         super.baseTick()
         autoAim()
+
+        val pTeam = owner?.team
+
+        if (pTeam != null && pTeam is PlayerTeam && level() is ServerLevel) {
+            level().scoreboard.addPlayerToTeam(this.getStringUUID(), pTeam)
+        }
     }
 
     open fun autoAim() {
@@ -280,7 +288,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
         val owner = owner ?: return false
         entity.team ?: return false
 
-        return !entity.isAlliedTo(owner) || TDMSavedData.enabledTDM(entity)
+        return (!entity.isAlliedTo(owner) && !entity.isAlliedTo(this)) || TDMSavedData.enabledTDM(entity)
     }
 
     open fun basicEnemyProjectileFilter(projectile: Projectile): Boolean {
@@ -312,8 +320,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
                     && !(target is Player && (target.isSpectator || target.isCreative))
                     && ((target is LivingEntity && target is Enemy && target.health > 0)
                     || isThreateningEntity(target, size, pos)
-                    || basicEnemyFilter(target)
-                    || (target is LivingEntity && (target.lastAttacker == this.owner || this.owner?.lastAttacker == target) && target != this.owner))
+                    || basicEnemyFilter(target))
                     && SeekTool.NOT_IN_SMOKE.test(target)
                     && !SeekTool.IN_BLACKLIST.test(target)
         }
