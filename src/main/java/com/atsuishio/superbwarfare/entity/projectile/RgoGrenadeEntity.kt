@@ -48,6 +48,10 @@ class RgoGrenadeEntity : FastThrowableProjectile, GeoEntity {
         this.explosionRadius = ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get().toFloat()
     }
 
+    constructor(entity: LivingEntity?, level: Level?, life: Int): this(entity, level) {
+        this.life = life
+    }
+
     override fun getDefaultItem(): Item {
         return ModItems.RGO_GRENADE.get()
     }

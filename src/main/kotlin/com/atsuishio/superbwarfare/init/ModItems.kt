@@ -5,6 +5,8 @@ import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.entity.projectile.MediumRocketEntity
 import com.atsuishio.superbwarfare.item.CustomDamageProperty
 import com.atsuishio.superbwarfare.item.DispenserLaunchable
+import com.atsuishio.superbwarfare.item.HandGrenade
+import com.atsuishio.superbwarfare.item.RgoGrenade
 import com.atsuishio.superbwarfare.item.ammo.*
 import com.atsuishio.superbwarfare.item.armor.*
 import com.atsuishio.superbwarfare.item.blockitem.BlueprintResearchTableBlockItem
@@ -155,8 +157,8 @@ object ModItems {
     @JvmField val LARGE_SHELL_CM = registerAmmo("large_shell_cm") { Item(Properties().rarity(Rarity.RARE)) }
     @JvmField val LARGE_SHELL_GS = registerAmmo("large_shell_gs") { Item(Properties().rarity(Rarity.RARE)) }
     @JvmField val LARGE_SHELL_WP = registerAmmo("large_shell_wp") { Item(Properties().rarity(Rarity.RARE)) }
-    @JvmField val HAND_GRENADE = registerAmmo("hand_grenade") { HandGrenadeItem() }
-    @JvmField val RGO_GRENADE = registerAmmo("rgo_grenade") { RgoGrenadeItem() }
+    @JvmField val HAND_GRENADE = registerAmmo("hand_grenade") { HandGrenade() }
+    @JvmField val RGO_GRENADE = registerAmmo("rgo_grenade") { RgoGrenade() }
     @JvmField val M18_SMOKE_GRENADE = registerAmmo("m18_smoke_grenade") { M18SmokeGrenadeItem() }
     @JvmField val CLAYMORE_MINE = registerAmmo("claymore_mine") { ClaymoreMineItem() }
     @JvmField val TM_62 = registerAmmo("tm_62") { Tm62Item() }
