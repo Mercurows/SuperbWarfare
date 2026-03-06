@@ -1,10 +1,9 @@
-package com.atsuishio.superbwarfare.item.projectile
+package com.atsuishio.superbwarfare.item
 
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.entity.projectile.HandGrenadeEntity
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.item.DispenserLaunchable
 import com.atsuishio.superbwarfare.tools.CustomExplosion
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import net.minecraft.core.BlockSource
@@ -26,7 +25,7 @@ import net.minecraft.world.item.UseAnim
 import net.minecraft.world.level.Level
 import kotlin.math.min
 
-open class HandGrenadeItem : Item(Properties().rarity(Rarity.UNCOMMON)), DispenserLaunchable {
+open class HandGrenade : Item(Properties().rarity(Rarity.UNCOMMON)), DispenserLaunchable {
     override fun use(worldIn: Level, playerIn: Player, handIn: InteractionHand): InteractionResultHolder<ItemStack> {
         val stack = playerIn.getItemInHand(handIn)
         playerIn.startUsingItem(handIn)
@@ -125,4 +124,3 @@ open class HandGrenadeItem : Item(Properties().rarity(Rarity.UNCOMMON)), Dispens
         }
     }
 }
-
