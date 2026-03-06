@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.culling.Frustum
 import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.texture.OverlayTexture
+import net.minecraft.core.BlockPos
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 import kotlin.math.min
@@ -73,6 +74,8 @@ class ProjectileEntityRenderer(manager: EntityRendererProvider.Context) : Entity
 
         poseStack.popPose()
     }
+
+    override fun getBlockLightLevel(pEntity: ProjectileEntity, pPos: BlockPos): Int = 15
 
     companion object {
         val TEXTURE = loc("textures/entity/projectile.png")
