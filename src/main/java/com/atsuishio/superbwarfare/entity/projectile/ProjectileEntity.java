@@ -56,10 +56,6 @@ import net.neoforged.neoforge.entity.PartEntity;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -70,12 +66,10 @@ import java.util.function.Predicate;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
 @SuppressWarnings({"unused", "UnusedReturnValue", "SuspiciousNameCombination"})
-public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyncMotionEntity, ExplosiveProjectile {
-
+public class ProjectileEntity extends Projectile implements CustomSyncMotionEntity, ExplosiveProjectile {
     public static final EntityDataAccessor<Float> COLOR_R = SynchedEntityData.defineId(ProjectileEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> COLOR_G = SynchedEntityData.defineId(ProjectileEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> COLOR_B = SynchedEntityData.defineId(ProjectileEntity.class, EntityDataSerializers.FLOAT);
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     private static final Predicate<Entity> PROJECTILE_TARGETS = input -> input != null && input.isPickable() && !input.isSpectator() && input.isAlive();
     private static final Predicate<BlockState> IGNORE_LIST = input -> input != null && input.is(ModTags.Blocks.BULLET_IGNORE) && !(input.is(Blocks.IRON_DOOR) || input.is(Blocks.IRON_TRAPDOOR));
@@ -836,15 +830,6 @@ public class ProjectileEntity extends Projectile implements GeoEntity, CustomSyn
     @Override
     public void setExplosionRadius(float radius) {
         this.explosionRadius = radius;
-    }
-
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 
     public boolean isZoom() {
