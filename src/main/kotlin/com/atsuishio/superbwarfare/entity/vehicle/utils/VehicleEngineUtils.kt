@@ -114,7 +114,7 @@ object VehicleEngineUtils {
 
         val maxPower = if (sprintInputDown) 1.25f else (if (power > 1) power - 0.002f else 1f)
 
-        if (forwardInputDown) {
+        if (forwardInputDown && !backInputDown) {
             power = Math.min(
                 power + (if (power < 0) powerAdd * 2f else powerAdd) * (maxPower - (Mth.abs(power) / 1.02f)),
                 maxPower
@@ -122,7 +122,10 @@ object VehicleEngineUtils {
         }
 
         if (backInputDown) {
-            power = Math.max(power - (if (power > 0) powerReduce * 2f else powerReduce) * (1 - (Mth.abs(power) / 1.02f)), -1f)
+            power = Math.max(
+                power - (if (power > 0) powerReduce * 4f else powerReduce) * (maxPower - (Mth.abs(power) / 1.02f)),
+                -1f
+            )
             if (rightInputDown) {
                 holdTick++
                 deltaRot += steeringSpeed * 0.12f * Math.min(holdTick, 10)
@@ -332,7 +335,7 @@ object VehicleEngineUtils {
 
         val maxPower = if (sprintInputDown) 1.3f else (if (power > 1) power - 0.002f else 1f)
 
-        if (forwardInputDown) {
+        if (forwardInputDown && !backInputDown) {
             power = Math.min(
                 power + (if (power < 0) powerAdd * 2f else powerAdd) * (maxPower - (Mth.abs(power) / 1.02f)),
                 maxPower
@@ -341,7 +344,7 @@ object VehicleEngineUtils {
 
         if (backInputDown) {
             power = Math.max(
-                power - (if (power > 0) powerReduce * 2f else powerReduce) * (1 - (Mth.abs(power) / 1.02f)), -1f
+                power - (if (power > 0) powerReduce * 4f else powerReduce) * (maxPower - (Mth.abs(power) / 1.02f)), -1f
             )
         }
 
@@ -499,7 +502,7 @@ object VehicleEngineUtils {
 
         val maxPower = if (sprintInputDown) 1.3f else (if (power > 1) power - 0.002f else 1f)
 
-        if (forwardInputDown) {
+        if (forwardInputDown && !backInputDown) {
             power = Math.min(
                 power + (if (power < 0) powerAdd * 2f else powerAdd) * (maxPower - (Mth.abs(power) / 1.02f)),
                 maxPower
@@ -508,7 +511,7 @@ object VehicleEngineUtils {
 
         if (backInputDown) {
             power = Math.max(
-                    power - (if (power > 0) powerReduce * 2f else powerReduce) * (1 - (Mth.abs(power) / 1.02f)), -1f
+                power - (if (power > 0) powerReduce * 4f else powerReduce) * (maxPower - (Mth.abs(power) / 1.02f)), -1f
             )
         }
 
@@ -1115,7 +1118,7 @@ object VehicleEngineUtils {
                 if (onGround()) {
                     deltaMovement = deltaMovement.scale(0.97)
                 }
-                power = Math.max(power - 0.01f * powerReduce, if (onGround()) -0.1f else 0.2f)
+                power = Math.max(power - 0.01f * powerReduce, if (onGround()) -0.1f else 0.05f)
             }
 
             val diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(passenger.getYHeadRot() - yRot))
