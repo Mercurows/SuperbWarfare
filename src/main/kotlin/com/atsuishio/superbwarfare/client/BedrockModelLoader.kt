@@ -23,6 +23,7 @@ object BedrockModelLoader {
     val SENPAI_MODEL = loc("entity/senpai.geo")
     val TARGET_MODEL = loc("entity/target.geo")
     val DPS_GENERATOR_MODEL = loc("entity/dps_generator.geo")
+    val PROJECTILE_MODEL = loc("entity/projectile.geo")
 
     // animations
     val SENPAI_ANI = loc("senpai.animation")
@@ -47,6 +48,7 @@ object BedrockModelLoader {
             register(SENPAI_MODEL, COMMON_LOADER)
             register(TARGET_MODEL, COMMON_LOADER)
             register(DPS_GENERATOR_MODEL, COMMON_LOADER)
+            register(PROJECTILE_MODEL, COMMON_LOADER)
         }
     }
 

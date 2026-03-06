@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.init
 
 import com.atsuishio.superbwarfare.client.renderer.entity.*
+import com.atsuishio.superbwarfare.client.renderer.projectile.ProjectileEntityRenderer
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.client.event.EntityRenderersEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent

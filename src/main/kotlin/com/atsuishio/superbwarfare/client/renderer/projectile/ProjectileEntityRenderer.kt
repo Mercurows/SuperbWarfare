@@ -1,0 +1,80 @@
+package com.atsuishio.superbwarfare.client.renderer.projectile
+
+import com.atsuishio.superbwarfare.Mod.Companion.loc
+import com.atsuishio.superbwarfare.client.BedrockModelLoader
+import com.atsuishio.superbwarfare.client.ClientRenderHandler
+import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity
+import com.atsuishio.superbwarfare.tools.localPlayer
+import com.mojang.blaze3d.vertex.PoseStack
+import com.mojang.math.Axis
+import net.minecraft.client.renderer.MultiBufferSource
+import net.minecraft.client.renderer.RenderType
+import net.minecraft.client.renderer.culling.Frustum
+import net.minecraft.client.renderer.entity.EntityRenderer
+import net.minecraft.client.renderer.entity.EntityRendererProvider
+import net.minecraft.client.renderer.texture.OverlayTexture
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.util.Mth
+import kotlin.math.min
+
+class ProjectileEntityRenderer(manager: EntityRendererProvider.Context) : EntityRenderer<ProjectileEntity>(manager) {
+    override fun getTextureLocation(pEntity: ProjectileEntity): ResourceLocation? = null
+
+    override fun shouldRender(
+        pLivingEntity: ProjectileEntity,
+        pCamera: Frustum,
+        pCamX: Double,
+        pCamY: Double,
+        pCamZ: Double
+    ): Boolean {
+        return true
+    }
+
+    // 渲染方式参考 ywzj_vehicle
+    // 非常的永无，非常的止境（嗯OC）
+    override fun render(
+        entity: ProjectileEntity,
+        entityYaw: Float,
+        partialTick: Float,
+        poseStack: PoseStack,
+        buffer: MultiBufferSource,
+        packedLight: Int
+    ) {
+        val model = BedrockModelLoader.getModel(BedrockModelLoader.PROJECTILE_MODEL) ?: return
+        val eyePos = localPlayer?.eyePosition ?: return
+
+        poseStack.pushPose()
+
+        ClientRenderHandler.transformVirtualRenderPosition(poseStack, entity, partialTick)
+
+        val width = 0.6f
+        val position = entity.getPosition(partialTick)
+        val distance = position.distanceTo(eyePos)
+        val length = min(2.25 * entity.deltaMovement.length(), distance * 0.8)
+
+        poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTick, entity.yRotO, entity.yRot) - 180f))
+        poseStack.mulPose(Axis.XP.rotationDegrees(Mth.lerp(partialTick, entity.xRotO, entity.xRot)))
+        poseStack.translate(0.0, 0.0, length / 2.0)
+        poseStack.scale(width, width, length.toFloat())
+
+        if (entity.tickCount >= 5 || distance > 2.0) {
+            val type = RenderType.energySwirl(TEXTURE, 15.0f, 15.0f)
+            model.renderToBuffer(
+                poseStack,
+                buffer.getBuffer(type),
+                packedLight,
+                OverlayTexture.NO_OVERLAY,
+                entity.getEntityData().get(ProjectileEntity.COLOR_R),
+                entity.getEntityData().get(ProjectileEntity.COLOR_G),
+                entity.getEntityData().get(ProjectileEntity.COLOR_B),
+                1.0f
+            )
+        }
+
+        poseStack.popPose()
+    }
+
+    companion object {
+        val TEXTURE = loc("textures/entity/projectile.png")
+    }
+}
