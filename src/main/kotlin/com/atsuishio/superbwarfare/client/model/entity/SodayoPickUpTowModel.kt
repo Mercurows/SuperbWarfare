@@ -24,7 +24,7 @@ class SodayoPickUpTowModel : VehicleModel<SodayoPickUpTowEntity>() {
                     vehicle.rudderRot
                 ) * vehicle.deltaMovement.horizontalDistance()).toFloat()
                 bone.rotZ *= 0.8f
-                bone.rotX += -0.1f * vehicle.getAcceleration().toFloat()
+                bone.rotX += -2f * vehicle.getAcceleration().toFloat()
                 bone.rotX *= 0.8f
             }
         }

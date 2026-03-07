@@ -789,21 +789,28 @@ object VehicleEngineUtils {
         val gearRotateAngle = engineInfo.gearRotateAngle
         val energyCost = (engineInfo.energyCostRate * Mth.abs(power)).toInt()
 
-        val f = Mth.clamp(
-            Math.max(
-                (if (onGround()) 0.8600f else 0.8609f) + (0.05 * 1 / resistance) - 0.0015 * deltaMovement.lengthSqr(), 0.5
+        var f = Mth.clamp(
+            Math.max(0.943 + (0.05 * 1 / resistance) - 0.0015 * deltaMovement.lengthSqr(), 0.5
             ) + 0.0001f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat()), 0.01, 0.99
         ).toFloat()
 
-        if (isWreck && onGround()) {
-            deltaMovement = deltaMovement.multiply(0.9, 1.0, 0.9)
+        if (onGround()) {
+            if (isWreck) {
+                deltaMovement = deltaMovement.multiply(0.9, 1.0, 0.9)
+            }
+            f = 0.7f + 0.25f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat())
+            deltaMovement = deltaMovement.add(
+                getViewVector(1f).normalize()
+                    .scale(0.05 * deltaMovement.dot(getViewVector(1f)))
+            )
+        } else {
+            val forward = deltaMovement.dot(getViewVector(1f)) > 0
+            deltaMovement = deltaMovement.add(
+                getViewVector(1f)
+                    .scale((if (forward) 0.01 else -0.01) * deltaMovement.dot(getViewVector(1f)))
+            )
         }
 
-        val forward = deltaMovement.dot(getViewVector(1f)) > 0
-        deltaMovement = deltaMovement.add(
-            getViewVector(1f)
-                .scale((if (forward) 0.1 else -0.03) * deltaMovement.dot(getViewVector(1f)))
-        )
         deltaMovement = deltaMovement.multiply(f.toDouble(), f.toDouble(), f.toDouble())
 
         if (isInFluidType && tickCount % 4 == 0) {
@@ -869,11 +876,6 @@ object VehicleEngineUtils {
                     }
                 }
 
-//                if (!forwardInputDown && !backInputDown) {
-//                    power *= 0.996f
-//                    deltaMovement = deltaMovement.multiply(0.996, 1.0, 0.996)
-//                }
-
                 if (!onGround()) {
                     if (rightInputDown) {
                         holdTick++
@@ -902,9 +904,9 @@ object VehicleEngineUtils {
                 }
             }
 
-            val rotSpeed = 1.5f + 1.2f * Mth.abs(calculateY(roll))
+            val rotSpeed = 0.25f + 3f * Mth.abs(calculateY(roll))
 
-            val addY = Mth.clamp(
+            var addY = Mth.clamp(
                 Math.max(
                     (if (onGround()) 0.6f else 0.2f) * deltaMovement.length().toFloat(), 0f
                 ) * mouseMoveSpeedX, -rotSpeed, rotSpeed
@@ -914,8 +916,11 @@ object VehicleEngineUtils {
                     Math.max(deltaMovement.dot(getViewVector(1f)) - 0.24, 0.15).toFloat(), 0.15f
                 ) * mouseMoveSpeedY, -3.5f, 3.5f
             )
-            val addZ = deltaRot - (if (onGround()) 0f else 0.01f) * mouseMoveSpeedX * deltaMovement
-                .dot(getViewVector(1f)).toFloat()
+            val addZ = deltaRot - (if (onGround() || Mth.abs(roll) > 60) 0f else 0.02f * (60 - Mth.abs(roll)) / 60) * mouseMoveSpeedX * deltaMovement.dot(getViewVector(1f)).toFloat()
+
+            if ((roll > 0 && addY < 0) || (roll < 0 && addY > 0)) {
+                addY *= Mth.clamp(1f - Mth.abs(roll) / 45, 0f, 1f)
+            }
 
             yRot += yawSpeed * addY * (if (onGround()) 0.25f else 0.95f)
             if (!onGround()) {
@@ -925,14 +930,16 @@ object VehicleEngineUtils {
 
             // 自动回正
             if (!onGround()) {
-                val xSpeed = 1 + 20 * Mth.abs(xRot / 180)
-                val speed = Mth.clamp(Mth.abs(roll) / (90 / xSpeed), 0f, 1f)
+                val xSpeed = 1 - Mth.clamp((Mth.abs(xRot) - 60) / 90, 0f, 1f)
+                val speed = Mth.clamp(Mth.abs(roll) / 90, 0f, 1f)
 
                 if (roll > 0) {
                     setZRot(roll - Math.min(speed, roll))
                 } else if (roll < 0) {
                     setZRot(roll + Math.min(speed, -roll))
                 }
+
+                roll *= xSpeed
             }
 
             propellerRot += 30 * power
@@ -1024,12 +1031,13 @@ object VehicleEngineUtils {
             power *= 0.96f
         }
 
+        val speed = deltaMovement.length()
+
         val flapAngle =
             ((flap1LRot + flap1RRot + flap1L2Rot + flap1R2Rot) / 4).toDouble()
         deltaMovement = deltaMovement.add(
             getUpVec(1f).scale(
-                deltaMovement
-                    .dot(getViewVector(1f)) * 0.022 * lift * (1 + Math.sin((if (onGround()) 25.0 else flapAngle + 25) * Mth.DEG_TO_RAD))
+                (1 - deltaMovement.normalize().dot(getUpVec(1f))) * speed * 0.025 * lift * (0.85 + Math.sin((if (onGround()) 25.0 else flapAngle) * Mth.DEG_TO_RAD))
             )
         )
         deltaMovement = deltaMovement.add(

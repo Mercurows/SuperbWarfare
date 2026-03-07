@@ -107,9 +107,11 @@ object ClientMouseHandler {
                 y = -1
             }
 
-            speedX = vehicle.mouseSensitivity * (posN.x - posO.x) * (if (ClientEventHandler.zoomVehicle) 0.3 else 1.0)
+            val sensitivity = vehicle.mouseSensitivity
+
+            speedX = sensitivity * (posN.x - posO.x) * (if (ClientEventHandler.zoomVehicle) 0.3 else 1.0)
             speedY =
-                y * vehicle.mouseSensitivity * (posN.y - posO.y) * (if (ClientEventHandler.zoomVehicle) 0.4 else 1.0)
+                y * sensitivity * (posN.y - posO.y) * (if (ClientEventHandler.zoomVehicle) 0.4 else 1.0)
 
             mouseXMoveTick = Mth.lerp(0.1, mouseXMoveTick, speedX)
             mouseYMoveTick = Mth.lerp(0.1, mouseYMoveTick, speedY)
@@ -172,8 +174,9 @@ object ClientMouseHandler {
         val hover = vehicle is VehicleEntity && vehicle.vehicleType == VehicleType.HELICOPTER && vehicle.hoverMode
 
         if (!ClientEventHandler.isFreeCam(player) && !hover) {
-            freeCameraYaw = Mth.lerp(0.6 * times, freeCameraYaw, 0.0)
-            freeCameraPitch = Mth.lerp(0.6 * times, freeCameraPitch, 0.0)
+            val s = if (mc.options.cameraType == CameraType.FIRST_PERSON) 0.6 else 0.2
+            freeCameraYaw = Mth.lerp(s * times, freeCameraYaw, 0.0)
+            freeCameraPitch = Mth.lerp(s * times, freeCameraPitch, 0.0)
         }
 
         while (freeCameraYaw > 180F) {
