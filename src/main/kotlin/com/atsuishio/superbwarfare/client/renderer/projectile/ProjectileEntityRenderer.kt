@@ -7,6 +7,8 @@ import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
+import net.minecraft.client.CameraType
+import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.culling.Frustum
@@ -48,17 +50,17 @@ class ProjectileEntityRenderer(manager: EntityRendererProvider.Context) : Entity
 
         ClientRenderHandler.transformVirtualRenderPosition(poseStack, entity, partialTick)
 
-        val width = 0.6f
+        val width = 0.3f
         val position = entity.getPosition(partialTick)
         val distance = position.distanceTo(eyePos)
-        val length = min(2.25 * entity.deltaMovement.length(), distance * 0.8)
+        val length = 0.5 * entity.deltaMovement.length()
 
         poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTick, entity.yRotO, entity.yRot) - 180f))
         poseStack.mulPose(Axis.XP.rotationDegrees(Mth.lerp(partialTick, entity.xRotO, entity.xRot)))
-        poseStack.translate(0.0, 0.0, length / 2.0)
+//        poseStack.translate(0.0, 0.0, length / 2.0)
         poseStack.scale(width, width, length.toFloat())
 
-        if (entity.tickCount >= 5 || distance > 2.0) {
+        if (entity.tickCount >= 5 || distance > 6.0) {
             val type = RenderType.energySwirl(TEXTURE, 15.0f, 15.0f)
             model.renderToBuffer(
                 poseStack,
