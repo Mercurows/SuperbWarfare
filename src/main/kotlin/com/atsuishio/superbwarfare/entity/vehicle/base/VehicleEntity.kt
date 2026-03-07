@@ -315,9 +315,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open var recoilShake = 0.0
     open var recoilShakeO = 0.0
 
-    open var velocityO = 0.0
-    open var velocity = 0.0
-
     open var flap1LRot = 0f
     open var flap1LRotO = 0f
     open var flap1RRot = 0f
@@ -344,7 +341,11 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open var destroyRot = 0f
 
     open var jumpCoolDown = 0
-    open var deltaMovementO = Vec3(0.0, 0.0, 0.0)
+    open var deltaMovementO: Vec3 = deltaMovement
+    open var positionO: Vec3 = Vec3.ZERO
+
+    open var absoluteSpeed = 0.0
+    open var absoluteSpeedO = 0.0
 
     open var lastDamageSource: DamageSource? = null
         get() {
@@ -1723,7 +1724,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         recoilShakeO = this.recoilShake
 
-        velocityO = this.velocity
         if (jumpCoolDown > 0 && onGround()) {
             jumpCoolDown--
         }
@@ -1746,6 +1746,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         flap3RotO = this.flap3Rot
         gearRotO = this.gearRot
         deltaMovementO = deltaMovement
+        positionO = position()
+        absoluteSpeedO = absoluteSpeed
 
         super.baseTick()
 
@@ -1941,21 +1943,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             }
         }
 
-        // 获取当前速度（deltaMovement 是当前速度向量）
-        val currentVelocity = this.deltaMovement
-
-        // 计算加速度向量（时间间隔 Δt = 0.05秒）
-        currentVelocity.subtract(previousVelocity).scale(20.0) // scale(1/0.05) = scale(20)
-
-//         计算加速度的绝对值
-//        acceleration = accelerationVec.length() * 20
-
-        // 更新前一时刻的速度
-        previousVelocity = currentVelocity
-
-        val direct = (90 - VehicleVecUtils.calculateAngle(this.deltaMovement, this.getViewVector(1f))) / 90
-        this.velocity = Mth.lerp(0.4, this.velocity, deltaMovement.horizontalDistance() * direct * 20)
-
         val deltaT = abs(this.turretYRot - turretYRotO)
         while (this.turretYRot > 180f) {
             this.turretYRot -= 360f
@@ -2039,7 +2026,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 this.terrainCompact(terrainCompat)
             }
         }
-        this.inertiaRotate(this.computed().inertiaRotateRate)
 
         if (this.leftTrack < 0) {
             this.leftTrackO = this.getTrackAnimationLength().toFloat()
@@ -2064,6 +2050,10 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         if (turretBurnTimer > 0) {
             turretBurnTimer--
         }
+
+        absoluteSpeed = positionO.vectorTo(position()).length()
+
+        this.inertiaRotate(this.computed().inertiaRotateRate)
 
         lowHealthWarning()
         this.refreshDimensions()
@@ -4011,7 +4001,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     // 惯性倾斜
     open fun inertiaRotate(multiplier: Float) {
-        this.xRot -= 0.5f * (this.getAcceleration() * multiplier).toFloat()
+        this.xRot -= 5f * (this.getAcceleration() * multiplier).toFloat()
     }
 
     open fun terrainCompact(positions: MutableList<Vec3>) {
@@ -4262,7 +4252,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     open fun getEngineSound(): SoundEvent? = this.computed().engineSound
 
-    open fun getAcceleration() = this.velocity - velocityO
+    open fun getAcceleration() = absoluteSpeed - absoluteSpeedO
 
     open fun getTrackAnimationLength() = 100
 

@@ -437,7 +437,7 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
 
         val componentReady = Component.literal(
             FormatTool.format0D(
-                vehicle.deltaMovement.dot(vehicle.getViewVector(partialTick)) * 72,
+                vehicle.absoluteSpeed * 72,
                 " KM/H"
             )
         )

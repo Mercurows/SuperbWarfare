@@ -158,7 +158,7 @@ object HelicopterHud {
                     mc.font,
                     Component.literal(
                         format0D(
-                            vehicle.deltaMovement.length() * 72,
+                            vehicle.absoluteSpeed * 72,
                             " km/h"
                         )
                     ),

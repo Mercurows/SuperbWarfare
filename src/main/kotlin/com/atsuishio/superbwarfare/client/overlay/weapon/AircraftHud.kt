@@ -105,7 +105,7 @@ object AircraftHud {
             .toFloat()
         diffY = Mth.lerp(partialTick.toDouble(), diffY.toDouble(), ClientMouseHandler.lerpSpeedX).toFloat()
         diffX = Mth.lerp(partialTick.toDouble(), diffX.toDouble(), ClientMouseHandler.lerpSpeedY).toFloat()
-        val speed = vehicle.deltaMovement.length() * 72
+        val speed = vehicle.absoluteSpeed * 72
 
         val shootPos = vehicle.getShootPosForHud(player, partialTick)
 
@@ -309,7 +309,7 @@ object AircraftHud {
             )
             //加速度
             lerpG =
-                Mth.lerp((0.1f * partialTick).toDouble(), lerpG.toDouble(), vehicle.getAcceleration() / 9.8).toFloat()
+                Mth.lerp((0.25f * partialTick).toDouble(), lerpG.toDouble(), (400 * vehicle.getAcceleration()) / 9.8).toFloat()
             guiGraphics.drawString(mc.font, Component.literal("M"), -105, 70, color, false)
             guiGraphics.drawString(mc.font, Component.literal("0.2"), -96, 70, color, false)
             guiGraphics.drawString(mc.font, Component.literal("G"), -105, 78, color, false)

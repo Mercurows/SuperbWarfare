@@ -13,6 +13,10 @@ import software.bernie.geckolib.core.animation.AnimatableManager
 import java.util.*
 
 class Ju87Entity(type: EntityType<Ju87Entity>, world: Level) : GeoVehicleEntity(type, world) {
+
+    override var turretYRot = 180f
+    override var turretYRotO = 180f
+
     override fun vehicleShoot(living: LivingEntity?, uuid: UUID?, targetPos: Vec3?) {
         val level = living?.level()
         if (level is ServerLevel && living == firstPassenger && getWeaponIndex(0) == 0) {
