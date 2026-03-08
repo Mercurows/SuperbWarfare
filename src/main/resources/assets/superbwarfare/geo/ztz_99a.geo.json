@@ -21,6 +21,36 @@
 					"pivot": [0, 12.5, 5.67]
 				},
 				{
+					"name": "body_left_dogTag",
+					"parent": "base",
+					"pivot": [36.79869, 19.61428, 34.67389],
+					"rotation": [0, -90, 0],
+					"cubes": [
+						{
+							"origin": [30.79869, 13.61428, 34.67389],
+							"size": [12, 12, 0],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [0, 0]}
+							}
+						}
+					]
+				},
+				{
+					"name": "body_right_dogTag",
+					"parent": "base",
+					"pivot": [-36.79869, 19.61428, 34.67389],
+					"rotation": [0, 90, 0],
+					"cubes": [
+						{
+							"origin": [-42.79869, 13.61428, 34.67389],
+							"size": [12, 12, 0],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [0, 0]}
+							}
+						}
+					]
+				},
+				{
 					"name": "main",
 					"parent": "base",
 					"pivot": [0, 0, -25.58],

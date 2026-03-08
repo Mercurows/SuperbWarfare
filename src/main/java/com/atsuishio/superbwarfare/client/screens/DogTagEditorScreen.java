@@ -299,6 +299,28 @@ public class DogTagEditorScreen extends Screen {
         }
     }
 
+    public static int getColorByNum(short num) {
+        return switch (num) {
+            case 0 -> 0xFF000000;
+            case 1 -> 0xFFFFFFFF;
+            case 2 -> 0xFF808080;
+            case 3 -> 0xFFD42424;
+            case 4 -> 0xFFFFAA00;
+            case 5 -> 0xFFFFFF00;
+            case 6 -> 0xFF3CE03C;
+            case 7 -> 0xFF66CCFF;
+            case 8 -> 0xFF3A4FFF;
+            case 9 -> 0xFFB654FF;
+            case 10 -> 0xFF7D5841;
+            case 11 -> 0xFFFF97A7;
+            case 12 -> 0xFF76945E;
+            case 13 -> 0xFFFFC400;
+            case 14 -> 0xFF4C425B;
+            case 15 -> 0xFFF8E4D0;
+            default -> -1;
+        };
+    }
+
     public static int getColorFromFormatting(ChatFormatting chatFormatting) {
         if (chatFormatting == null) {
             return -1;

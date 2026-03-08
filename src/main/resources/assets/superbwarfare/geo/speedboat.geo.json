@@ -16,6 +16,21 @@
 					"pivot": [0, 0, 0]
 				},
 				{
+					"name": "body_dogTag",
+					"parent": "root",
+					"pivot": [0, 23.79116, -32.68718],
+					"rotation": [-77.5, 0, 0],
+					"cubes": [
+						{
+							"origin": [-7.5, 16.29116, -32.68718],
+							"size": [15, 15, 0],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [0, 0]}
+							}
+						}
+					]
+				},
+				{
 					"name": "waterMask",
 					"parent": "root",
 					"pivot": [0, 0, 0],

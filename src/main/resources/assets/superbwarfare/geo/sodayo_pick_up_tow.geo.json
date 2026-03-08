@@ -4540,6 +4540,21 @@
 					]
 				},
 				{
+					"name": "body_dogTag",
+					"parent": "body",
+					"pivot": [-18.27394, 33.38138, -32.09631],
+					"rotation": [0, -90, 0],
+					"cubes": [
+						{
+							"origin": [-22.77394, 28.88138, -32.09631],
+							"size": [9, 9, 0],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [0, 0]}
+							}
+						}
+					]
+				},
+				{
 					"name": "Wheel",
 					"parent": "root",
 					"pivot": [0, 1.96875, 0]

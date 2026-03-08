@@ -16,13 +16,8 @@
 					"pivot": [0, 0, 0]
 				},
 				{
-					"name": "bradley",
-					"parent": "root",
-					"pivot": [0.172, 8.4796, 0]
-				},
-				{
 					"name": "base",
-					"parent": "bradley",
+					"parent": "root",
 					"pivot": [0, 12, 0]
 				},
 				{
@@ -4660,8 +4655,38 @@
 					]
 				},
 				{
+					"name": "body_left_dogTag",
+					"parent": "base",
+					"pivot": [27.2183, 27.66387, 15.22464],
+					"rotation": [0, -90, 0],
+					"cubes": [
+						{
+							"origin": [21.7183, 22.16387, 15.22464],
+							"size": [11, 11, 0],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [0, 0]}
+							}
+						}
+					]
+				},
+				{
+					"name": "body_right_dogTag",
+					"parent": "base",
+					"pivot": [-27.2183, 27.66387, 15.22464],
+					"rotation": [0, 90, 0],
+					"cubes": [
+						{
+							"origin": [-32.7183, 22.16387, 15.22464],
+							"size": [11, 11, 0],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [0, 0]}
+							}
+						}
+					]
+				},
+				{
 					"name": "Track",
-					"parent": "bradley",
+					"parent": "root",
 					"pivot": [0, 0, 0]
 				},
 				{

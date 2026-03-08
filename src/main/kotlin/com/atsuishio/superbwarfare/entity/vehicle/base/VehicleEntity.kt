@@ -772,6 +772,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             define(HEALTH, getMaxHealth())
             define(LAST_ATTACKER_UUID, "undefined")
             define(LAST_DRIVER_UUID, "undefined")
+            define(LAST_DOGTAG_UUID, "none")
             define(GUN_DATA_MAP, mapOf())
 
             define(AI_TURRET_TARGET_UUID, "undefined")
@@ -1245,6 +1246,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         chargeProgress = compound.getFloat("ChargeProgress")
         lastAttackerUUID = compound.getString("LastAttacker")
         lastDriverUUID = compound.getString("LastDriver")
+        lastDogTag = compound.getString("LastDogTag")
 
         serverYaw = compound.getFloat("ServerYaw")
         serverPitch = compound.getFloat("ServerPitch")
@@ -1295,6 +1297,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         compound.putString("LastAttacker", lastAttackerUUID)
         compound.putString("LastDriver", lastDriverUUID)
+        compound.putString("LastDogTag", lastDogTag)
 
         val tag = CompoundTag()
         for (kv in gunDataMap.entries) {
@@ -1450,6 +1453,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     open val lastDriver: Entity?
         get() = EntityFindUtil.findEntity(level(), lastDriverUUID)
+
+    open val lastDogTagOwner: Entity?
+        get() = EntityFindUtil.findEntity(level(), lastDogTag)
 
     @Deprecated("")
     open fun setDriverAngle(player: Player) {
@@ -1858,6 +1864,10 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             }
         } else {
             noPassengerTime = 0
+        }
+
+        if (lastDriverUUID != "undefined" && lastDriverUUID != lastDogTag) {
+            lastDogTag = lastDriverUUID
         }
 
         mouseMoveSpeedX *= 0.95f
@@ -4250,6 +4260,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open var override by OVERRIDE
     open var lastAttackerUUID by LAST_ATTACKER_UUID
     open var lastDriverUUID by LAST_DRIVER_UUID
+    open var lastDogTag by LAST_DOGTAG_UUID
     open var aiTurretTargetUUID by AI_TURRET_TARGET_UUID
     open var aiPassengerWeaponTargetUUID by AI_PASSENGER_WEAPON_TARGET_UUID
 
@@ -4399,6 +4410,10 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         @JvmField
         val LAST_DRIVER_UUID: EntityDataAccessor<String> =
+            SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.STRING)
+
+        @JvmField
+        val LAST_DOGTAG_UUID: EntityDataAccessor<String> =
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.STRING)
 
         @JvmField
