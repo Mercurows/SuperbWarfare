@@ -119,6 +119,36 @@
 					"pivot": [0, 6, 0]
 				},
 				{
+					"name": "body_left_dogTag",
+					"parent": "turret",
+					"pivot": [58.04575, 40.27981, -3.70425],
+					"rotation": [0, -90, 0],
+					"cubes": [
+						{
+							"origin": [47.54575, 29.77981, -3.70425],
+							"size": [21, 21, 0],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [0, 0]}
+							}
+						}
+					]
+				},
+				{
+					"name": "body_right_dogTag",
+					"parent": "turret",
+					"pivot": [-58.04575, 40.27981, -3.70425],
+					"rotation": [0, 90, 0],
+					"cubes": [
+						{
+							"origin": [-68.54575, 29.77981, -3.70425],
+							"size": [21, 21, 0],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [0, 0]}
+							}
+						}
+					]
+				},
+				{
 					"name": "barrel",
 					"parent": "turret",
 					"pivot": [0.009, 42, 6.3]

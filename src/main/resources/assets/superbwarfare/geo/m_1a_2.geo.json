@@ -6036,6 +6036,36 @@
 					]
 				},
 				{
+					"name": "turret_left_dogTag",
+					"parent": "turret",
+					"pivot": [18.02603, 39.25444, -32.77949],
+					"rotation": [-27.6811, -27.4857, -3.1296],
+					"cubes": [
+						{
+							"origin": [14.02603, 35.25444, -32.77949],
+							"size": [8, 8, 0],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [0, 0]}
+							}
+						}
+					]
+				},
+				{
+					"name": "turret_right_dogTag",
+					"parent": "turret",
+					"pivot": [-18.02603, 39.25444, -32.77949],
+					"rotation": [-27.6811, 27.4857, 3.1296],
+					"cubes": [
+						{
+							"origin": [-22.02603, 35.25444, -32.77949],
+							"size": [8, 8, 0],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [0, 0]}
+							}
+						}
+					]
+				},
+				{
 					"name": "Track",
 					"parent": "root",
 					"pivot": [0, 0, 4.41]

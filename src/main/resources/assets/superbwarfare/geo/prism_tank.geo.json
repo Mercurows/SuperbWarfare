@@ -7806,6 +7806,36 @@
 					]
 				},
 				{
+					"name": "body_left_dogTag",
+					"parent": "base",
+					"pivot": [42.54869, 24.76428, -33.82611],
+					"rotation": [0, -90, 0],
+					"cubes": [
+						{
+							"origin": [40.04869, 14.26428, -33.82611],
+							"size": [13, 13, 0],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [0, 0]}
+							}
+						}
+					]
+				},
+				{
+					"name": "body_right_dogTag",
+					"parent": "base",
+					"pivot": [-42.54869, 24.76428, -33.82611],
+					"rotation": [0, 90, 0],
+					"cubes": [
+						{
+							"origin": [-53.04869, 14.26428, -33.82611],
+							"size": [13, 13, 0],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [0, 0]}
+							}
+						}
+					]
+				},
+				{
 					"name": "TrackL",
 					"parent": "root",
 					"pivot": [30, 24.43117, 54.91481]

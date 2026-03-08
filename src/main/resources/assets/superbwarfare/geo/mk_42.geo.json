@@ -313,6 +313,36 @@
 					"pivot": [0, 6.61, 0]
 				},
 				{
+					"name": "body_left_dogTag",
+					"parent": "turret",
+					"pivot": [30.89, 29.71599, 4.83],
+					"rotation": [0, -90, 0],
+					"cubes": [
+						{
+							"origin": [20.39, 19.21599, 4.83],
+							"size": [21, 21, 0],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [0, 0]}
+							}
+						}
+					]
+				},
+				{
+					"name": "body_right_dogTag",
+					"parent": "turret",
+					"pivot": [-30.89, 29.71599, 4.83],
+					"rotation": [0, 90, 0],
+					"cubes": [
+						{
+							"origin": [-41.39, 19.21599, 4.83],
+							"size": [21, 21, 0],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [0, 0]}
+							}
+						}
+					]
+				},
+				{
 					"name": "barrel",
 					"parent": "turret",
 					"pivot": [0, 34.56, -8.28]

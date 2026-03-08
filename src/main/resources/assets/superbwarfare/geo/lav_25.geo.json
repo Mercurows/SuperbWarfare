@@ -12,10 +12,6 @@
 			},
 			"bones": [
 				{
-					"name": "bb_main",
-					"pivot": [0, 0, 0]
-				},
-				{
 					"name": "root",
 					"pivot": [0, 0, 0]
 				},
@@ -7567,6 +7563,36 @@
 								"east": {"uv": [13, 242], "uv_size": [1, 4]},
 								"up": {"uv": [246, 79], "uv_size": [1, 1]},
 								"down": {"uv": [80, 247], "uv_size": [1, -1]}
+							}
+						}
+					]
+				},
+				{
+					"name": "body_right_dogTag",
+					"parent": "base",
+					"pivot": [-21.34363, 32.02848, 30.92389],
+					"rotation": [0, 90, 35],
+					"cubes": [
+						{
+							"origin": [-26.34363, 27.02848, 30.92389],
+							"size": [10, 10, 0],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [0, 0]}
+							}
+						}
+					]
+				},
+				{
+					"name": "body_left_dogTag",
+					"parent": "base",
+					"pivot": [21.34362, 32.02848, -4.07611],
+					"rotation": [0, -90, -35],
+					"cubes": [
+						{
+							"origin": [17.34362, 28.02848, -4.07611],
+							"size": [8, 8, 0],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [0, 0]}
 							}
 						}
 					]

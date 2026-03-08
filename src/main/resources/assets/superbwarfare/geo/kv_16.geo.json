@@ -3094,6 +3094,36 @@
 							}
 						}
 					]
+				},
+				{
+					"name": "body_left_dogTag",
+					"parent": "root",
+					"pivot": [6.79869, 11.26428, 0.17389],
+					"rotation": [0, -90, 0],
+					"cubes": [
+						{
+							"origin": [4.29869, 8.76428, 0.17389],
+							"size": [5, 5, 0],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [0, 0]}
+							}
+						}
+					]
+				},
+				{
+					"name": "body_right_dogTag",
+					"parent": "root",
+					"pivot": [-6.79869, 11.26428, 0.17389],
+					"rotation": [0, 90, 0],
+					"cubes": [
+						{
+							"origin": [-9.29869, 8.76428, 0.17389],
+							"size": [5, 5, 0],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [0, 0]}
+							}
+						}
+					]
 				}
 			]
 		}
