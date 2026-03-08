@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.tools
 
-import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.screens.DogTagEditorScreen
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.item.curio.DogTagItem
@@ -8,8 +8,7 @@ import com.mojang.blaze3d.platform.NativeImage
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.world.entity.LivingEntity
-import top.theillusivec4.curios.api.CuriosApi
+import net.minecraft.world.item.ItemStack
 import kotlin.random.Random
 
 object SpritePixelHelper {
@@ -42,10 +41,10 @@ object SpritePixelHelper {
         // 组合为 RGB
         return (red shl 16) or (green shl 8) or blue
     }
-    fun getDogTagIcon(livingEntity: LivingEntity): ResourceLocation {
-        val newDogTagIcon = createDogTagImage(livingEntity)
 
-        val newTextureLoc = Mod.loc(livingEntity.name.string.lowercase() + "_dog_tag.png")
+    fun getDogTagIcon(stack: ItemStack): ResourceLocation {
+        val newDogTagIcon = createDogTagImage(stack)
+        val newTextureLoc = loc("${stack.hashCode()}_dog_tag.png")
 
         mc.textureManager.register(
             newTextureLoc,
@@ -55,21 +54,17 @@ object SpritePixelHelper {
         return newTextureLoc
     }
 
-    private fun createDogTagImage(living: LivingEntity): NativeImage {
+    private fun createDogTagImage(stack: ItemStack): NativeImage {
         val dogTag = NativeImage(16, 16, false)
-        CuriosApi.getCuriosInventory(living).ifPresent { c ->
-            c.findFirstCurio(ModItems.DOG_TAG.get()).ifPresent { s ->
-                val stack = s.stack()
-                val icon = DogTagItem.getColors(stack)
-                for (x in 0..<16) {
-                    for (y in 0..<16) {
-                        if (icon[x][y].toInt() == -1) {
-                            dogTag.setPixelRGBA(x, y, 0x00000000)
-                        } else {
-                            val color = DogTagEditorScreen.getColorByNum(icon[x][y])
-                            dogTag.setPixelRGBA(x, y, argbToAbgr(color))
-                        }
-                    }
+        if (!stack.`is`(ModItems.DOG_TAG)) return dogTag
+        val icon = DogTagItem.getColors(stack)
+        for (x in 0..<16) {
+            for (y in 0..<16) {
+                if (icon[x][y].toInt() == -1) {
+                    dogTag.setPixelRGBA(x, y, 0x00000000)
+                } else {
+                    val color = DogTagEditorScreen.getColorByNum(icon[x][y])
+                    dogTag.setPixelRGBA(x, y, argbToAbgr(color))
                 }
             }
         }
