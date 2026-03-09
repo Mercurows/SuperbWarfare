@@ -1297,7 +1297,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         compound.putString("LastAttacker", lastAttackerUUID)
         compound.putString("LastDriver", lastDriverUUID)
-        compound.put("LastDogTag", lastDogTag.save(level().registryAccess()))
+        if (!lastDogTag.isEmpty) {
+            compound.put("LastDogTag", lastDogTag.save(level().registryAccess()))
+        }
 
         val tag = CompoundTag()
         for (kv in gunDataMap.entries) {
