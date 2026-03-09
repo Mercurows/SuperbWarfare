@@ -3,8 +3,8 @@ package com.atsuishio.superbwarfare.network.message.receive
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.network.ClientPacketPayload
 import com.atsuishio.superbwarfare.network.PayloadContext
-import com.atsuishio.superbwarfare.network.SerializedResourceLocation
-import com.atsuishio.superbwarfare.network.SerializedUUID
+import com.atsuishio.superbwarfare.serialization.kserializer.SerializedResourceLocation
+import com.atsuishio.superbwarfare.serialization.kserializer.SerializedUUID
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.options
 import com.atsuishio.superbwarfare.tools.queueClientWorkIfDelayed

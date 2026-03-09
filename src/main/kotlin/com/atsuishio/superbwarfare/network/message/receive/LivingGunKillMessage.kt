@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.config.client.KillMessageConfig
 import com.atsuishio.superbwarfare.event.KillMessageHandler
 import com.atsuishio.superbwarfare.network.ClientPacketPayload
 import com.atsuishio.superbwarfare.network.PayloadContext
-import com.atsuishio.superbwarfare.network.ResourceLocationSerializer
+import com.atsuishio.superbwarfare.serialization.kserializer.ResourceLocationSerializer
 import com.atsuishio.superbwarfare.tools.LivingKillRecord
 import com.atsuishio.superbwarfare.tools.clientLevel
 import kotlinx.serialization.KSerializer

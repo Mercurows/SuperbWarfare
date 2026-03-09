@@ -2,8 +2,8 @@ package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.inventory.menu.VehicleAssemblingMenu
 import com.atsuishio.superbwarfare.network.PayloadContext
-import com.atsuishio.superbwarfare.network.SerializedResourceLocation
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
+import com.atsuishio.superbwarfare.serialization.kserializer.SerializedResourceLocation
 import kotlinx.serialization.Serializable
 
 @Serializable

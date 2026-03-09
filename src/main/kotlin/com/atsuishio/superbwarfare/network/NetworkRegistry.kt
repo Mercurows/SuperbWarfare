@@ -3,6 +3,8 @@ package com.atsuishio.superbwarfare.network
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.network.message.receive.*
 import com.atsuishio.superbwarfare.network.message.send.*
+import com.atsuishio.superbwarfare.serialization.ByteBufDecoder
+import com.atsuishio.superbwarfare.serialization.ByteBufEncoder
 import kotlinx.serialization.serializer
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.RegistryFriendlyByteBuf
