@@ -23,7 +23,7 @@ class TinySpeedboatEntity(type: EntityType<TinySpeedboatEntity>, world: Level) :
     }
     override fun defineSynchedData() {
         super.defineSynchedData()
-        entityData.define(COLOR_ID, random.nextInt(17))
+        entityData.define(COLOR_ID, 0)
     }
 
     var colorId by COLOR_ID
