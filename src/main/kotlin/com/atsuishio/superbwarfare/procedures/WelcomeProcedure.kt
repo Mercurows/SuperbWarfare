@@ -42,7 +42,7 @@ object WelcomeProcedure {
 | (___   | |__) | \ \  /\  / /  
  \___ \  |  __ (   \ \/  \/ /   
  ____) | | |__) |   \  /\  /    
-|_____/  |_|___/     \/  \/
+|_____/  |_____/     \/  \/
 * Superb Warfare - Version: ${DefaultArtifactVersion(LoadingModList.get().getModFileById(Mod.MODID)?.versionString())} *
                 """.trimIndent()
                 _lgr.info(_str)
