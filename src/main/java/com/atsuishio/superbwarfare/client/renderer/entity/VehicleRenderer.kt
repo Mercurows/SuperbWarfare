@@ -56,7 +56,7 @@ abstract class VehicleRenderer<T>(renderManager: EntityRendererProvider.Context,
     override fun renderRecursively(
         poseStack: PoseStack,
         animatable: T,
-        bone: GeoBone?,
+        bone: GeoBone,
         renderType: RenderType?,
         bufferSource: MultiBufferSource,
         bufferIn: VertexConsumer?,
@@ -69,12 +69,11 @@ abstract class VehicleRenderer<T>(renderManager: EntityRendererProvider.Context,
         blue: Float,
         alpha: Float
     ) {
-        val name = bone!!.name
-        //TODO 能不能优化成用狗牌右键载具，让载具缓存一个图案，这样就能拥有多辆不同图章的载具了
+        val name = bone.name
         if (name.endsWith("_dogTag")) {
             bone.isHidden = true
-            val stack = animatable.lastDogTag
-            if (!stack.isEmpty && DisplayConfig.DOG_TAG_ICON_VISIBLE.get()) {
+            val list = animatable.dogTagIcon
+            if (DisplayConfig.DOG_TAG_ICON_VISIBLE.get()) {
                 poseStack.pushPose()
                 RenderUtils.translateMatrixToBone(poseStack, bone)
                 RenderUtils.translateToPivotPoint(poseStack, bone)
@@ -88,7 +87,8 @@ abstract class VehicleRenderer<T>(renderManager: EntityRendererProvider.Context,
                 val pose = poseStack.last()
                 val lastMatrix = pose.pose()
                 val lastMatrix3f = pose.normal()
-                val vertexConsumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(SpritePixelHelper.getDogTagIcon(stack)))
+                val vertexConsumer =
+                    bufferSource.getBuffer(RenderType.entityCutoutNoCull(SpritePixelHelper.getDogTagIcon(list)))
 
                 val scale = bone.cubes[0].size
                 val xSize = scale.x.toFloat() / 16

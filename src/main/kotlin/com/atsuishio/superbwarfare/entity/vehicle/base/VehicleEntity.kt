@@ -63,6 +63,7 @@ import net.minecraft.core.registries.Registries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.IntArrayTag
 import net.minecraft.nbt.IntTag
+import net.minecraft.nbt.ListTag
 import net.minecraft.network.chat.Component
 import net.minecraft.network.protocol.game.ClientboundSetPassengersPacket
 import net.minecraft.network.protocol.game.ClientboundSoundPacket
@@ -781,7 +782,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             define(HEALTH, getMaxHealth())
             define(LAST_ATTACKER_UUID, "undefined")
             define(LAST_DRIVER_UUID, "undefined")
-            define(DOG_TAG, List(16) { 0 })
+            define(DOG_TAG_ICON, List(16) { List(16) { 0 } })
             define(GUN_DATA_MAP, mapOf())
 
             define(AI_TURRET_TARGET_UUID, "undefined")
@@ -1254,14 +1255,18 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         lastAttackerUUID = compound.getString("LastAttacker")
         lastDriverUUID = compound.getString("LastDriver")
 
-        val dogTagArray = compound.get("DogTag")
-        val dogTagData = if (dogTagArray is IntArrayTag) {
-            dogTagArray.asIntArray
-        } else {
-            IntArray(16)
+        val dogTagTag = compound.get("DogTagIcon")
+        val list = mutableListOf<List<Short>>()
+        if (dogTagTag is ListTag) {
+            dogTagTag.forEach {
+                val sl = mutableListOf<Short>()
+                if (it is IntArrayTag) {
+                    sl.addAll(it.asIntArray.map { num -> num.toShort() })
+                }
+                list.add(sl)
+            }
         }
-
-        dogTag = dogTagData.toMutableList()
+        dogTagIcon = list
 
         serverYaw = compound.getFloat("ServerYaw")
         serverPitch = compound.getFloat("ServerPitch")
@@ -1312,7 +1317,12 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         compound.putString("LastAttacker", lastAttackerUUID)
         compound.putString("LastDriver", lastDriverUUID)
-        compound.putIntArray("DogTag", dogTag)
+
+        val listTag = ListTag()
+        dogTagIcon.forEach {
+            listTag.add(IntArrayTag(it.toShortArray().map { num -> num.toInt() }))
+        }
+        compound.put("DogTagIcon", listTag)
 
         val tag = CompoundTag()
         for (kv in gunDataMap.entries) {
@@ -1376,8 +1386,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         val stack = player.mainHandItem
         if (player.isShiftKeyDown && stack.`is`(ModItems.DOG_TAG.get())) {
-            // TODO 试试用<list>int保存颜色？
-            this.dogTag = DogTagItem.getColors(stack)
+            this.dogTagIcon = DogTagItem.getColors(stack).map { it.toList() }.toList()
             return InteractionResult.SUCCESS
         }
 
@@ -4080,7 +4089,15 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             }
 
             if (vec31.horizontalDistanceSqr() > vec3.horizontalDistanceSqr()) {
-                return vec31.add(collideBoundingBox(this, Vec3(0.0, -vec31.y + pVec.y, 0.0), aabb.move(vec31), this.level(), list))
+                return vec31.add(
+                    collideBoundingBox(
+                        this,
+                        Vec3(0.0, -vec31.y + pVec.y, 0.0),
+                        aabb.move(vec31),
+                        this.level(),
+                        list
+                    )
+                )
             }
         }
 
@@ -4321,7 +4338,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open var override by OVERRIDE
     open var lastAttackerUUID by LAST_ATTACKER_UUID
     open var lastDriverUUID by LAST_DRIVER_UUID
-    open var dogTag by DOG_TAG
+    open var dogTagIcon by DOG_TAG_ICON
     open var aiTurretTargetUUID by AI_TURRET_TARGET_UUID
     open var aiPassengerWeaponTargetUUID by AI_PASSENGER_WEAPON_TARGET_UUID
 
@@ -4362,7 +4379,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     open fun stuka() = xRot > 5 && xRot < 175 && deltaMovement.y < -0.4 && !onGround()
     open fun heliCrash() = vehicleType == VehicleType.HELICOPTER && health < getMaxHealth() * 0.1f && !onGround()
-    open fun vehicleSkip() = engineInfo is Wheel && engineInfo !is WheelChair && (if (engineInfo is Track) drift() else upInputDown) && onGround() && deltaMovement.horizontalDistanceSqr() > (if (engineInfo is Track) 0.0004 else 0.01)
+    open fun vehicleSkip() =
+        engineInfo is Wheel && engineInfo !is WheelChair && (if (engineInfo is Track) drift() else upInputDown) && onGround() && deltaMovement.horizontalDistanceSqr() > (if (engineInfo is Track) 0.0004 else 0.01)
+
     open fun drift() = upInputDown && (rightInputDown || leftInputDown)
 
     open val vehicleType: VehicleType?
@@ -4472,8 +4491,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.STRING)
 
         @JvmField
-        val DOG_TAG: EntityDataAccessor<List<Int>> = SynchedEntityData.defineId(
-            VehicleEntity::class.java, ModSerializers.INT_LIST_SERIALIZER.get())
+        val DOG_TAG_ICON: EntityDataAccessor<List<List<Short>>> =
+            SynchedEntityData.defineId(VehicleEntity::class.java, ModSerializers.SHORT_LIST_LIST_SERIALIZER.get())
 
         @JvmField
         val AI_TURRET_TARGET_UUID: EntityDataAccessor<String> =
@@ -4566,8 +4585,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         @JvmField
         var playVehicleSkipSound: Consumer<VehicleEntity?> = Consumer { }
 
-        //    public static Consumer<VehicleEntity> playInCarMusic = vehicle -> {
-        //    };
         @JvmField
         var playFireSound: Consumer<VehicleEntity>? = Consumer { }
 

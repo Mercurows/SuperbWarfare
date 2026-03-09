@@ -72,4 +72,28 @@ object ModSerializers {
                 map
             })
         }
+
+    @JvmField
+    val SHORT_LIST_LIST_SERIALIZER: RegistryObject<EntityDataSerializer<List<List<Short>>>> =
+        REGISTRY.register("short_list_list_serializer") {
+            EntityDataSerializer.simple({ buf, list ->
+                buf.writeVarInt(list.size)
+                for (sl in list) {
+                    buf.writeVarInt(sl.size)
+                    sl.forEach { buf.writeShort(it.toInt()) }
+                }
+            }, { buf ->
+                val size = buf.readVarInt()
+                val list = mutableListOf<List<Short>>()
+                repeat(size) {
+                    val slSize = buf.readVarInt()
+                    val sl = mutableListOf<Short>()
+                    repeat(slSize) {
+                        sl.add(buf.readShort())
+                    }
+                    list.add(sl)
+                }
+                list
+            })
+        }
 }
