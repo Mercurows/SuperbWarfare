@@ -774,7 +774,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             define(HEALTH, getMaxHealth())
             define(LAST_ATTACKER_UUID, "undefined")
             define(LAST_DRIVER_UUID, "undefined")
-            define(DOG_TAG_ICON, List(16) { List(16) { 0 } })
+            define(DOG_TAG_ICON, List(16) { List(16) { -1 } })
             define(GUN_DATA_MAP, mapOf())
 
             define(AI_TURRET_TARGET_UUID, "undefined")
