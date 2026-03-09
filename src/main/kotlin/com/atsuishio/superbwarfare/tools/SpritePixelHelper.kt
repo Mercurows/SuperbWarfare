@@ -6,6 +6,7 @@ import com.mojang.blaze3d.platform.NativeImage
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.resources.ResourceLocation
+import java.util.*
 import kotlin.random.Random
 
 object SpritePixelHelper {
@@ -39,9 +40,9 @@ object SpritePixelHelper {
         return (red shl 16) or (green shl 8) or blue
     }
 
-    fun getDogTagIcon(list: List<List<Short>>): ResourceLocation {
+    fun getDogTagIcon(list: List<List<Short>>, path: String): ResourceLocation {
         val newDogTagIcon = createDogTagImage(list)
-        val newTextureLoc = loc("${list.hashCode()}_dog_tag.png")
+        val newTextureLoc = loc("${path.lowercase(Locale.ROOT)}_dog_tag.png")
 
         mc.textureManager.register(
             newTextureLoc,
