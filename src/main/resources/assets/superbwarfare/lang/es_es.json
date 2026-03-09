@@ -550,7 +550,6 @@
     "config.superbwarfare.client.display.dog_tag_icon_visible": "Visibilidad de Icono en Placa de Identificación",
     "config.superbwarfare.client.display.dog_tag_icon_visible.des": "Mostrar el icono en la placa de identificación en mensajes de muerte",
     "des.superbwarfare.secondary_cataclysm_1": "\"Como los restos después de una lluvia de estrellas\"",
-    "item.superbwarfare.aurelia_sceptre_blueprint": "Plano de Cetro Aurelia",
     "item.superbwarfare.t_baton": "Bastón-T",
     "item.superbwarfare.electric_baton": "Bastón Eléctrico",
     "des.superbwarfare.electric_baton": "Clic derecho mientras te agachas para cambiar el modo de electrochoque",

@@ -497,7 +497,7 @@ object ClickEventHandler {
                     }
                 }
             } else {
-                // 波塞克、海月权杖特殊处理
+                // 波塞克特殊处理
                 ClientEventHandler.bowPower = 0.0
                 ClientEventHandler.holdingFireKey = true
                 player.setSprinting(false)

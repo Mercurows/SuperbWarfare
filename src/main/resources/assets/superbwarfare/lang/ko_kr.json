@@ -565,7 +565,6 @@
   "config.superbwarfare.client.display.dog_tag_icon_visible": "인식표 아이콘 가시성",
   "config.superbwarfare.client.display.dog_tag_icon_visible.des": "킬 메시지에 인식표 아이콘을 표시할지 여부",
   "des.superbwarfare.secondary_cataclysm_1": "\"별똥비가 쏟아진 뒤의 잔재처럼\"",
-  "item.superbwarfare.aurelia_sceptre_blueprint": "아우렐리아 셉터 설계도",
   "item.superbwarfare.t_baton": "T자형 진압봉",
   "item.superbwarfare.electric_baton": "전기 진압봉",
   "des.superbwarfare.electric_baton": "웅크린 상태에서 오른쪽 클릭으로 전격 모드 전환",
