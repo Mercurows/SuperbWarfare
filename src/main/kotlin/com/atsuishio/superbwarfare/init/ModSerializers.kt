@@ -58,4 +58,15 @@ object ModSerializers {
                     }
                 }
             })
+
+    @JvmField
+    val SHORT_LIST_LIST_SERIALIZER: DeferredHolder<EntityDataSerializer<*>, EntityDataSerializer<List<List<Short>>>> =
+        REGISTRY.register(
+            "short_list_serializer",
+            Supplier {
+                EntityDataSerializer.forValueType(
+                    ByteBufCodecs.SHORT.apply(ByteBufCodecs.list()).apply(ByteBufCodecs.list())
+                )
+            }
+        )
 }
