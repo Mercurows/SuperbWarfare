@@ -88,7 +88,7 @@ abstract class VehicleRenderer<T>(renderManager: EntityRendererProvider.Context,
                 val lastMatrix = pose.pose()
                 val lastMatrix3f = pose.normal()
                 val vertexConsumer =
-                    bufferSource.getBuffer(RenderType.entityCutoutNoCull(SpritePixelHelper.getDogTagIcon(list)))
+                    bufferSource.getBuffer(RenderType.entityCutoutNoCull(SpritePixelHelper.getDogTagIcon(list, animatable.uuid.toString())))
 
                 val scale = bone.cubes[0].size
                 val xSize = scale.x.toFloat() / 16
