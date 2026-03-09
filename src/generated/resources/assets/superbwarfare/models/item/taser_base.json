@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:displaysettings/taser.item",
+  "textures": {
+    "layer0": "superbwarfare:item/taser"
+  }
+}

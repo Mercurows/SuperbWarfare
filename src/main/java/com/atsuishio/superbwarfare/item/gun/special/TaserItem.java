@@ -1,54 +1,34 @@
 package com.atsuishio.superbwarfare.item.gun.special;
 
-import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.client.renderer.gun.TaserItemRendererAlter;
+import com.atsuishio.superbwarfare.client.renderer.gun.TaserItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.ShootParameters;
-import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModPerks;
-import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.material.BatteryItem;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.function.Supplier;
 
-@EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
-public class TaserItem extends GunItem {
+public class TaserItem extends GunGeoItem {
 
     public TaserItem() {
         super(new Properties().rarity(Rarity.COMMON));
     }
 
-//    @Override
-//    public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
-//        return TaserItemRenderer::new;
-//    }
-
-    @SubscribeEvent
-    public static void registerItemExtension(RegisterClientExtensionsEvent event) {
-        event.registerItem(new IClientItemExtensions() {
-            private TaserItemRendererAlter rendererAlter;
-
-            @Override
-            public @NotNull BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                if (rendererAlter == null) {
-                    rendererAlter = new TaserItemRendererAlter();
-                }
-                return rendererAlter;
-            }
-        }, ModItems.TASER);
+    @Override
+    public Supplier<? extends GeoItemRenderer<? extends Item>> getRenderer() {
+        return TaserItemRenderer::new;
     }
 
     @Override
