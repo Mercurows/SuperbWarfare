@@ -38,6 +38,7 @@ import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.inventory.handler.VehicleContainerHandler
 import com.atsuishio.superbwarfare.inventory.menu.*
 import com.atsuishio.superbwarfare.item.container.ContainerBlockItem
+import com.atsuishio.superbwarfare.item.curio.DogTagItem
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.OBB.Part.*
@@ -772,7 +773,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             define(HEALTH, getMaxHealth())
             define(LAST_ATTACKER_UUID, "undefined")
             define(LAST_DRIVER_UUID, "undefined")
-            define(LAST_DOG_TAG, ItemStack.EMPTY)
+            define(DOG_TAG, List(16) { 0 })
             define(GUN_DATA_MAP, mapOf())
 
             define(AI_TURRET_TARGET_UUID, "undefined")
@@ -1246,7 +1247,15 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         chargeProgress = compound.getFloat("ChargeProgress")
         lastAttackerUUID = compound.getString("LastAttacker")
         lastDriverUUID = compound.getString("LastDriver")
-        lastDogTag = ItemStack.parseOptional(level().registryAccess(), compound.getCompound("LastDogTag"))
+
+        val dogTagArray = compound.get("DogTag")
+        val dogTagData = if (dogTagArray is IntArrayTag) {
+            dogTagArray.asIntArray
+        } else {
+            IntArray(16)
+        }
+
+        dogTag = dogTagData.toMutableList()
 
         serverYaw = compound.getFloat("ServerYaw")
         serverPitch = compound.getFloat("ServerPitch")
@@ -1297,9 +1306,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         compound.putString("LastAttacker", lastAttackerUUID)
         compound.putString("LastDriver", lastDriverUUID)
-        if (!lastDogTag.isEmpty) {
-            compound.put("LastDogTag", lastDogTag.save(level().registryAccess()))
-        }
+        compound.putIntArray("DogTag", dogTag)
 
         val tag = CompoundTag()
         for (kv in gunDataMap.entries) {
@@ -1365,7 +1372,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         val stack = player.mainHandItem
         if (player.isShiftKeyDown && stack.`is`(ModItems.DOG_TAG.get())) {
-            this.lastDogTag = stack.copy()
+            // TODO 试试用<list>int保存颜色？
+            this.dogTag = DogTagItem.getColors(stack)
             return InteractionResult.SUCCESS
         }
 
@@ -4267,7 +4275,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open var override by OVERRIDE
     open var lastAttackerUUID by LAST_ATTACKER_UUID
     open var lastDriverUUID by LAST_DRIVER_UUID
-    open var lastDogTag by LAST_DOG_TAG
+    open var dogTag by DOG_TAG
     open var aiTurretTargetUUID by AI_TURRET_TARGET_UUID
     open var aiPassengerWeaponTargetUUID by AI_PASSENGER_WEAPON_TARGET_UUID
 
@@ -4420,8 +4428,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.STRING)
 
         @JvmField
-        val LAST_DOG_TAG: EntityDataAccessor<ItemStack> =
-            SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.ITEM_STACK)
+        val DOG_TAG: EntityDataAccessor<List<Int>> = SynchedEntityData.defineId(
+            VehicleEntity::class.java, ModSerializers.INT_LIST_SERIALIZER.get()
+        )
 
         @JvmField
         val AI_TURRET_TARGET_UUID: EntityDataAccessor<String> =
