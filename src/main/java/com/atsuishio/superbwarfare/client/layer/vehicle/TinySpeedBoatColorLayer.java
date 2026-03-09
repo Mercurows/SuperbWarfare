@@ -30,11 +30,11 @@ public class TinySpeedBoatColorLayer extends GeoRenderLayer<TinySpeedboatEntity>
 
         float[] color;
 
-        if (id == 16) {
+        if (animatable.getCustomName() != null && animatable.getCustomName().getString().equals("jeb_")) {
             color = getRainbowColorHSL(animatable.tickCount);
             glowRenderType = RenderType.entityTranslucentEmissive(LAYER);
         } else {
-            float[] afloat = DyeColor.byId(animatable.getColorId()).getTextureDiffuseColors();
+            float[] afloat = DyeColor.byId(id).getTextureDiffuseColors();
             color = new float[]{afloat[0], afloat[1], afloat[2]};
         }
 

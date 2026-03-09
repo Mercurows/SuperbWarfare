@@ -13,6 +13,7 @@ import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.DyeItem
+import net.minecraft.world.item.NameTagItem
 import net.minecraft.world.level.Level
 
 class TinySpeedboatEntity(type: EntityType<TinySpeedboatEntity>, world: Level) : GeoVehicleEntity(type, world) {
@@ -41,6 +42,7 @@ class TinySpeedboatEntity(type: EntityType<TinySpeedboatEntity>, world: Level) :
     override fun interact(player: Player, hand: InteractionHand): InteractionResult {
         val stack = player.mainHandItem
         if (stack.item is DyeItem) {
+            if (customName != null && customName!!.string == "jeb_") return InteractionResult.PASS
             val stackColor = (stack.item as DyeItem).dyeColor.id
 
             if (colorId == stackColor) {
