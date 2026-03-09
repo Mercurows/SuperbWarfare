@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun.handgun;
 
 import com.atsuishio.superbwarfare.client.GunRendererBuilder;
-import com.atsuishio.superbwarfare.client.TooltipTool;
 import com.atsuishio.superbwarfare.client.model.item.AureliaSceptreItemModel;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -14,7 +13,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
@@ -106,12 +104,7 @@ public class AureliaSceptreItem extends GunGeoItem {
     @ParametersAreNonnullByDefault
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         tooltipComponents.add(Component.empty());
-        tooltipComponents.add(Component.translatable("des.superbwarfare.aurelia_sceptre_1").withStyle(ChatFormatting.GRAY));
-        tooltipComponents.add(Component.translatable("des.superbwarfare.aurelia_sceptre_2").withStyle(ChatFormatting.GRAY).withStyle(ChatFormatting.ITALIC));
-
-        TooltipTool.addHideText(tooltipComponents, Component.empty());
-        TooltipTool.addHideText(tooltipComponents, Component.translatable("des.superbwarfare.trachelium_3").withStyle(ChatFormatting.WHITE));
-        TooltipTool.addHideText(tooltipComponents, Component.translatable("des.superbwarfare.aurelia_sceptre_3").withStyle(Style.EMPTY.withColor(0xABCDEF)));
+        tooltipComponents.add(Component.translatable("des.superbwarfare.aurelia_sceptre").withStyle(ChatFormatting.GRAY).withStyle(ChatFormatting.ITALIC));
     }
 
     @Override
