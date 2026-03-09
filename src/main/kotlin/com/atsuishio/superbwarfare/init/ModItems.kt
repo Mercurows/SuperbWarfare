@@ -110,7 +110,6 @@ object ModItems {
     @JvmField val RPG = registerGun("rpg") { RpgItem() }
     @JvmField val JAVELIN = registerGun("javelin") { JavelinItem() }
     @JvmField val IGLA_9K38 = registerGun("igla_9k38") { IglaItem() }
-    @JvmField val AURELIA_SCEPTRE = registerGun("aurelia_sceptre") { AureliaSceptreItem() }
     @JvmField val BOCEK = registerGun("bocek") { BocekItem() }
     @JvmField val SUPER_STAR_SHOOTER = registerGun("super_star_shooter") { SuperStarShooterItem() }
 
@@ -361,7 +360,6 @@ object ModItems {
     @JvmField val M_2_HB_BLUEPRINT = registerBlueprint("m_2_hb_blueprint", Rarity.RARE)
     @JvmField val SECONDARY_CATACLYSM_BLUEPRINT = registerBlueprint("secondary_cataclysm_blueprint", virtual)
     @JvmField val INSIDIOUS_BLUEPRINT = registerBlueprint("insidious_blueprint", Rarity.EPIC)
-    @JvmField val AURELIA_SCEPTRE_BLUEPRINT = registerBlueprint("aurelia_sceptre_blueprint", virtual)
     @JvmField val QL_1031_BLUEPRINT = registerBlueprint("ql_1031_blueprint", virtual)
     @JvmField val SUPER_STAR_SHOOTER_BLUEPRINT = registerBlueprint("super_star_shooter_blueprint", superb)
 

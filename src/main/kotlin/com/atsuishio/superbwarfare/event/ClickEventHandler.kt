@@ -479,7 +479,7 @@ object ClickEventHandler {
             val resource = GunResource.compute(stack)
 
             // TODO 整合特殊处理
-            if (!(stack.`is`(ModItems.BOCEK.get()) || stack.`is`(ModItems.AURELIA_SCEPTRE.get()))) {
+            if (!(stack.`is`(ModItems.BOCEK.get()))) {
                 if (!data.meleeOnly()) {
                     // 普通枪（？）
                     if (stack.`is`(ModItems.QL_1031.get()) && data.selectedFireModeInfo().name.equals("Hold")

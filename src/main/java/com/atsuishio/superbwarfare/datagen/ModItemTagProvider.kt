@@ -275,8 +275,9 @@ class ModItemTagProvider(
         this.tag(ModTags.Items.SUPERB_BLUEPRINT).add(ModItems.SUPER_STAR_SHOOTER_BLUEPRINT.get())
 
         this.tag(ModTags.Items.VIRTUAL_BLUEPRINT).add(
-            ModItems.TRACHELIUM_BLUEPRINT.get(), ModItems.SECONDARY_CATACLYSM_BLUEPRINT.get(),
-            ModItems.AURELIA_SCEPTRE_BLUEPRINT.get(), ModItems.QL_1031_BLUEPRINT.get()
+            ModItems.TRACHELIUM_BLUEPRINT.get(),
+            ModItems.SECONDARY_CATACLYSM_BLUEPRINT.get(),
+            ModItems.QL_1031_BLUEPRINT.get()
         )
 
         this.tag(ModTags.Items.CANNON_BLUEPRINT).add(
