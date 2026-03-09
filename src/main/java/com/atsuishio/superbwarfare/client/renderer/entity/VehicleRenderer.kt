@@ -73,7 +73,8 @@ abstract class VehicleRenderer<T>(renderManager: EntityRendererProvider.Context,
         if (name.endsWith("_dogTag")) {
             bone.isHidden = true
             val list = animatable.dogTagIcon
-            if (DisplayConfig.DOG_TAG_ICON_VISIBLE.get()) {
+            val flag = list.all { row -> row.all { it == (-1).toShort() } }
+            if (DisplayConfig.DOG_TAG_ICON_VISIBLE.get() && !flag) {
                 poseStack.pushPose()
                 RenderUtils.translateMatrixToBone(poseStack, bone)
                 RenderUtils.translateToPivotPoint(poseStack, bone)
