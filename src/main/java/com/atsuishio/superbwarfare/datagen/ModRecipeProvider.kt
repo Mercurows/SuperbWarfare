@@ -2081,13 +2081,6 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
             )
             gunSmithing(
                 writer,
-                ModItems.AURELIA_SCEPTRE_BLUEPRINT.get(),
-                GunRarity.LEGENDARY,
-                Items.END_CRYSTAL,
-                ModItems.AURELIA_SCEPTRE.get()
-            )
-            gunSmithing(
-                writer,
                 ModItems.QL_1031_BLUEPRINT.get(),
                 GunRarity.LEGENDARY,
                 ModItems.BATTERY.get(),
@@ -2146,7 +2139,6 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
             copyBlueprint(writer, ModItems.M_2_HB_BLUEPRINT.get())
             copyBlueprint(writer, ModItems.SECONDARY_CATACLYSM_BLUEPRINT.get())
             copyBlueprint(writer, ModItems.INSIDIOUS_BLUEPRINT.get())
-            copyBlueprint(writer, ModItems.AURELIA_SCEPTRE_BLUEPRINT.get())
             copyBlueprint(writer, ModItems.MK_42_BLUEPRINT.get())
             copyBlueprint(writer, ModItems.MLE_1934_BLUEPRINT.get())
             copyBlueprint(writer, ModItems.BL_132_BLUEPRINT.get())

@@ -260,7 +260,6 @@ class ModCustomLootProvider() : LootTableSubProvider {
 
                 ModItems.TRACHELIUM_BLUEPRINT weighted 5
                 ModItems.SECONDARY_CATACLYSM_BLUEPRINT weighted 5
-                ModItems.AURELIA_SCEPTRE_BLUEPRINT weighted 5
                 ModItems.QL_1031_BLUEPRINT weighted 5
 
                 ModItems.AA_12_BLUEPRINT weighted 3
@@ -306,7 +305,6 @@ class ModCustomLootProvider() : LootTableSubProvider {
 
                 ModItems.TRACHELIUM_BLUEPRINT weighted 15
                 ModItems.SECONDARY_CATACLYSM_BLUEPRINT weighted 15
-                ModItems.AURELIA_SCEPTRE_BLUEPRINT weighted 15
                 ModItems.QL_1031_BLUEPRINT weighted 15
 
                 ModItems.AA_12_BLUEPRINT weighted 20
@@ -375,7 +373,6 @@ class ModCustomLootProvider() : LootTableSubProvider {
 
                 ModItems.TRACHELIUM_BLUEPRINT weighted 8
                 ModItems.SECONDARY_CATACLYSM_BLUEPRINT weighted 8
-                ModItems.AURELIA_SCEPTRE_BLUEPRINT weighted 8
                 ModItems.QL_1031_BLUEPRINT weighted 8
 
                 ModItems.AA_12_BLUEPRINT weighted 5

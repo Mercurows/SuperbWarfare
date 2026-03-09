@@ -738,6 +738,7 @@ object GunEventHandler {
                     "us_helmet_pastg" -> mapping.remap(ModItems.US_HELMET_PASGT.get())
                     "agm" -> mapping.remap(ModItems.LARGE_ANTI_GROUND_MISSILE.get())
                     "wire_guide_missile" -> mapping.remap(ModItems.MEDIUM_ANTI_GROUND_MISSILE.get())
+                    "aurelia_sceptre" -> mapping.remap(ModItems.SUPER_STAR_SHOOTER.get())
                 }
             }
         }
