@@ -43,6 +43,7 @@ class TinySpeedboatEntity(type: EntityType<TinySpeedboatEntity>, world: Level) :
     override fun interact(player: Player, hand: InteractionHand): InteractionResult {
         val stack = player.mainHandItem
         if (stack.item is DyeItem) {
+            if (customName != null && customName!!.string == "jeb_") return InteractionResult.PASS
             val stackColor = (stack.item as DyeItem).dyeColor.id
 
             if (colorId == stackColor) {

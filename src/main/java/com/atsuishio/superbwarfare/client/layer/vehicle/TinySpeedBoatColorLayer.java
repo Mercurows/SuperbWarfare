@@ -30,21 +30,21 @@ public class TinySpeedBoatColorLayer extends GeoRenderLayer<TinySpeedboatEntity>
         int id = animatable.getColorId();
 
         float[] color;
+        int intColor;
 
-        if (id == 16) {
+        if (animatable.getCustomName() != null && animatable.getCustomName().getString().equals("jeb_")) {
             color = getRainbowColorHSL(animatable.tickCount);
+            intColor = FastColor.ARGB32.colorFromFloat(color[0], color[1], color[2], color[3]);
             glowRenderType = RenderType.entityTranslucentEmissive(LAYER);
         } else {
-            getRenderer().reRender(getDefaultBakedModel(animatable), poseStack, bufferSource, animatable, glowRenderType, bufferSource.getBuffer(glowRenderType), partialTick, packedLight, OverlayTexture.NO_OVERLAY, DyeColor.byId(animatable.getColorId()).getTextureDiffuseColor());
-            return;
+            intColor = DyeColor.byId(id).getTextureDiffuseColor();
         }
 
         if (ClientEventHandler.activeThermalImaging) {
             color = new float[]{1, 1, 1, 1.0f};
+            intColor = FastColor.ARGB32.colorFromFloat(color[0], color[1], color[2], color[3]);
             glowRenderType = RenderType.entityTranslucentEmissive(LAYER);
         }
-
-        var intColor = FastColor.ARGB32.colorFromFloat(color[0], color[1], color[2], color[3]);
 
         getRenderer().reRender(getDefaultBakedModel(animatable), poseStack, bufferSource, animatable, glowRenderType, bufferSource.getBuffer(glowRenderType), partialTick, packedLight, OverlayTexture.NO_OVERLAY, intColor);
     }

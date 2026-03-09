@@ -148,3 +148,5 @@ val ItemStack.isEdible get() = this.get(DataComponents.FOOD) != null
 fun Player.getEntityReach() = entityInteractionRange()
 fun Player.getBlockReach() = blockInteractionRange()
 val Minecraft.deltaFrameTime get() = timer.gameTimeDeltaTicks
+
+fun ItemStack.hasCustomHoverName() = this.has(DataComponents.CUSTOM_NAME)

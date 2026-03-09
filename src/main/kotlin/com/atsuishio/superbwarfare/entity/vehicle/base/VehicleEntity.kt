@@ -96,6 +96,7 @@ import net.minecraft.world.entity.projectile.ProjectileUtil
 import net.minecraft.world.entity.vehicle.DismountHelper
 import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.NameTagItem
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.gameevent.GameEvent
@@ -1384,6 +1385,12 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         if (player.isShiftKeyDown && stack.`is`(ModItems.DOG_TAG.get())) {
             this.dogTagIcon = DogTagItem.getColors(stack).map { it.toList() }.toList()
             return InteractionResult.SUCCESS
+        }
+
+        if (stack.item is NameTagItem && stack.hasCustomHoverName()) {
+            this.customName = stack.getHoverName()
+            stack.shrink(1)
+            return InteractionResult.sidedSuccess(this.level().isClientSide())
         }
 
         if (this.hasMenu() && player.isShiftKeyDown && !stack.`is`(ModTags.Items.TOOLS_CROWBAR)) {
