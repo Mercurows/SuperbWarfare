@@ -21,6 +21,9 @@ group = "com.atsuishio.superbwarfare"
 
 repositories {
     mavenLocal()
+    flatDir {
+        dir("libs")
+    }
     maven {
         url = uri("https://maven.theillusivec4.top/")
         content {
@@ -185,6 +188,24 @@ dependencies {
 
     runtimeOnly("top.theillusivec4.curios:curios-neoforge:9.2.0+1.21.1")
     compileOnly("top.theillusivec4.curios:curios-neoforge:9.2.0+1.21.1:api")
+
+    // SBM
+    val sbm = implementation(
+        group = "com.github.mcmodderanchor",
+        name = "simplebedrockmodel",
+        version = "2.1.3-forge+mc1.21.1",
+    )
+    jarJar(sbm) {
+        version {
+            strictly("[2.0,3.0)")
+            prefer("2.1.3")
+        }
+    }
+    compileOnly("com.maydaymemory:mae:1.1.0") {
+        exclude("com.google.code.findbugs", "jsr305")
+        exclude("it.unimi.dsi", "fastutil")
+        exclude("org.joml", "joml")
+    }
 
     // 可选mod依赖
     compileOnly("mezz.jei:jei-1.21.1-common-api:${project.property("jei_version")}")
