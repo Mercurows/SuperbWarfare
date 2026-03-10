@@ -15,7 +15,7 @@ val AMMO_COMMAND = buildCommand("ammo") {
                     // 权限不足时，只允许玩家查询自己的弹药数量
                     if (source.isPlayer && !source.hasPermission(2)) {
                         if (source.player != null && source.player?.getUUID() != player.getUUID()) {
-                            fail(Component.translatable("commands.ammo.no_permission"))
+                            fail(Component.translatable("commands.superbwarfare.ammo.no_permission"))
                             return@execute 0
                         }
                     }
@@ -24,7 +24,7 @@ val AMMO_COMMAND = buildCommand("ammo") {
                     val value = type.get(player)
                     success {
                         Component.translatable(
-                            "commands.ammo.get",
+                            "commands.superbwarfare.ammo.get",
                             Component.translatable(type.translationKey),
                             value
                         )
@@ -50,7 +50,7 @@ val AMMO_COMMAND = buildCommand("ammo") {
 
                         success {
                             Component.translatable(
-                                "commands.ammo.set",
+                                "commands.superbwarfare.ammo.set",
                                 Component.translatable(type.translationKey),
                                 intArg,
                                 players.size
@@ -78,7 +78,7 @@ val AMMO_COMMAND = buildCommand("ammo") {
 
                         success {
                             Component.translatable(
-                                "commands.ammo.add",
+                                "commands.superbwarfare.ammo.add",
                                 Component.translatable(type.translationKey),
                                 intArg,
                                 players.size
@@ -109,8 +109,7 @@ private fun SingleCommand.buildAmmoLimitCommand(isAmmoBox: Boolean) {
                 val limit = if (isAmmoBox) type.ammoBoxLimit else type.limit
 
                 success {
-                    // TODO 翻译字段
-                    Component.literal("limit for ${type.serializationName}: $limit")
+                    Component.translatable("commands.superbwarfare.ammo.limit.get", Component.translatable(type.translationKey), limit)
                 }
                 return@execute 0
             }
@@ -129,8 +128,7 @@ private fun SingleCommand.buildAmmoLimitCommand(isAmmoBox: Boolean) {
                     config.save()
 
                     success {
-                        // TODO 翻译字段
-                        Component.literal("success")
+                        Component.translatable("commands.superbwarfare.ammo.limit.set", Component.translatable(type.translationKey), intArg)
                     }
 
                     return@execute 0

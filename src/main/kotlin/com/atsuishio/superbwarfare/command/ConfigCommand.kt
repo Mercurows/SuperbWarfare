@@ -10,8 +10,6 @@ val CONFIG_COMMAND = buildCommand("config") {
 
     buildDestroyTypesCommand()
 
-    // TODO 干掉这些翻译字段
-
     booleanConfig(SpawnConfig::SPAWN_SENPAI)
     booleanConfig(SpawnConfig::SPAWN_MOB_WITH_GUNS)
 
@@ -31,7 +29,6 @@ val CONFIG_COMMAND = buildCommand("config") {
     booleanConfig(MiscConfig::DROP_AMMO_BOX)
     booleanConfig(MiscConfig::SEND_KILL_FEEDBACK)
     booleanConfig(MiscConfig::MINE_HITBOX_INVISIBLE)
-    booleanConfig(MiscConfig::DROP_AMMO_BOX)
     booleanConfig(MiscConfig::SMOKE_HIDE_TARGET)
 }
 
@@ -63,7 +60,7 @@ private fun SingleCommand.buildDestroyTypesCommand() {
 
                     saveCollisionConfigs()
 
-                    success { Component.translatable("commands.config.collision_destroy.${type.commandName}") }
+                    success { Component.translatable("commands.superbwarfare.config.collision_destroy.${type.commandName}") }
 
                     return@execute 0
                 }
@@ -105,7 +102,7 @@ private fun SingleCommand.booleanConfig(
         }
     }
 
-    booleanConfig(name, prop.get(), msg ?: "commands.config.${prop.name.lowercase()}", effect)
+    booleanConfig(name, prop.get(), msg ?: "commands.superbwarfare.config.${prop.name.lowercase()}", effect)
 }
 
 private fun SingleCommand.booleanConfig(
