@@ -18,15 +18,14 @@ val TDM_COMMAND = buildCommand("tdm") {
                 entities.forEach { entity -> tdm.addEntity(entity.getStringUUID()) }
                 tdm.sync()
 
-                // TODO 解决显示问题
                 success {
                     if (entities.size == 1) {
                         Component.translatable(
-                            "commands.tdm.add.single",
+                            "commands.superbwarfare.tdm.add.single",
                             entities.iterator().next().displayName
                         )
                     } else {
-                        Component.translatable("commands.tdm.add.multiple", entities.size)
+                        Component.translatable("commands.superbwarfare.tdm.add.multiple", entities.size)
                     }
                 }
 
@@ -49,10 +48,10 @@ val TDM_COMMAND = buildCommand("tdm") {
 
                 if (entities.size == 1) {
                     success {
-                        Component.translatable("commands.tdm.remove.single", entities.iterator().next())
+                        Component.translatable("commands.superbwarfare.tdm.remove.single", entities.iterator().next())
                     }
                 } else {
-                    success { Component.translatable("commands.tdm.remove.multiple", entities.size) }
+                    success { Component.translatable("commands.superbwarfare.tdm.remove.multiple", entities.size) }
                 }
 
                 return@execute 0
