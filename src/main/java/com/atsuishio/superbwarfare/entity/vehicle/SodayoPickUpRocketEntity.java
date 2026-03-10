@@ -200,6 +200,7 @@ public class SodayoPickUpRocketEntity extends ArtilleryEntity {
 
     @Override
     public void vehicleShoot(@Nullable LivingEntity living, @NotNull String name) {
+        if (this.isWreck()) return;
         // 顺序发射
         for (int i = 0; i < 12; i++) {
             if (getItems().get(i).getItem() instanceof MediumRocketItem && living instanceof Player player && cooldown == 0) {

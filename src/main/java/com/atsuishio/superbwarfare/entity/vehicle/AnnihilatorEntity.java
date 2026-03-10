@@ -196,12 +196,14 @@ public class AnnihilatorEntity extends ArtilleryEntity {
 
     @Override
     public void vehicleShoot(LivingEntity living, @NotNull String weaponName) {
+        if (this.isWreck()) return;
         var data = getGunData(weaponName);
         shoot(living, data);
     }
 
     @Override
     public void vehicleShoot(LivingEntity living, UUID uuid, Vec3 targetPos) {
+        if (this.isWreck()) return;
         var data = getGunData(living);
         shoot(living, data);
     }
