@@ -349,6 +349,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     open var absoluteSpeed = 0.0
     open var absoluteSpeedO = 0.0
+    open var absoluteSpeedLerp = 0.0
 
     open var lastDamageSource: DamageSource? = null
         get() {
@@ -2084,7 +2085,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             turretBurnTimer--
         }
 
-        absoluteSpeed = positionO.vectorTo(position()).length()
+        absoluteSpeedLerp = Mth.lerp(0.2, absoluteSpeedLerp, positionO.vectorTo(position()).length())
+        absoluteSpeed = absoluteSpeedLerp
 
         this.inertiaRotate(this.computed().inertiaRotateRate)
 
