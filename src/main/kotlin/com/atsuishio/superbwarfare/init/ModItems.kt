@@ -3,10 +3,7 @@ package com.atsuishio.superbwarfare.init
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.entity.projectile.MediumRocketEntity
-import com.atsuishio.superbwarfare.item.CustomDamageProperty
-import com.atsuishio.superbwarfare.item.DispenserLaunchable
-import com.atsuishio.superbwarfare.item.HandGrenade
-import com.atsuishio.superbwarfare.item.RgoGrenade
+import com.atsuishio.superbwarfare.item.*
 import com.atsuishio.superbwarfare.item.ammo.*
 import com.atsuishio.superbwarfare.item.armor.*
 import com.atsuishio.superbwarfare.item.blockitem.BlueprintResearchTableBlockItem
@@ -146,7 +143,7 @@ object ModItems {
     @JvmField val RPG_ROCKET_STANDARD = registerAmmo("rpg_rocket_standard") { RpgRocketStandardItem() }
     @JvmField val RPG_ROCKET_TBG = registerAmmo("rpg_rocket_tbg") { RpgRocketTBGItem() }
     @JvmField val JAVELIN_MISSILE = registerAmmo("javelin_missile") { Item(Properties().stacksTo(4)) }
-    @JvmField val LUNGE_MINE = registerAmmo("lunge_mine") { LungeMineItem() }
+    @JvmField val LUNGE_MINE = registerAmmo("lunge_mine") { LungeMine() }
     @JvmField val SMALL_SHELL_AP = registerAmmo("small_shell_ap")
     @JvmField val SMALL_SHELL_HE = registerAmmo("small_shell_he")
     @JvmField val SMALL_SHELL_GS = registerAmmo("small_shell_gs")

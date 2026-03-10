@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.client.renderer.item
 
 import com.atsuishio.superbwarfare.client.animation.AnimationHelper
 import com.atsuishio.superbwarfare.client.model.item.LungeMineModel
-import com.atsuishio.superbwarfare.item.projectile.LungeMineItem
+import com.atsuishio.superbwarfare.item.LungeMine
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
 import net.minecraft.client.Minecraft
@@ -15,9 +15,9 @@ import software.bernie.geckolib.cache.`object`.BakedGeoModel
 import software.bernie.geckolib.cache.`object`.GeoBone
 import software.bernie.geckolib.renderer.GeoItemRenderer
 
-open class LungeMineRenderer : GeoItemRenderer<LungeMineItem>(LungeMineModel()) {
+open class LungeMineRenderer : GeoItemRenderer<LungeMine>(LungeMineModel()) {
     override fun getRenderType(
-        animatable: LungeMineItem?,
+        animatable: LungeMine?,
         texture: ResourceLocation?,
         bufferSource: MultiBufferSource?,
         partialTick: Float
@@ -29,7 +29,7 @@ open class LungeMineRenderer : GeoItemRenderer<LungeMineItem>(LungeMineModel()) 
     protected var currentBuffer: MultiBufferSource? = null
     protected var renderType: RenderType? = null
     var transformType: ItemDisplayContext? = null
-    protected var animatable: LungeMineItem? = null
+    protected var animatable: LungeMine? = null
 
     override fun renderByItem(
         stack: ItemStack,
@@ -46,7 +46,7 @@ open class LungeMineRenderer : GeoItemRenderer<LungeMineItem>(LungeMineModel()) 
 
     override fun actuallyRender(
         matrixStackIn: PoseStack?,
-        animatable: LungeMineItem?,
+        animatable: LungeMine?,
         model: BakedGeoModel?,
         type: RenderType?,
         renderTypeBuffer: MultiBufferSource?,
@@ -80,7 +80,7 @@ open class LungeMineRenderer : GeoItemRenderer<LungeMineItem>(LungeMineModel()) 
 
     override fun renderRecursively(
         stack: PoseStack?,
-        animatable: LungeMineItem?,
+        animatable: LungeMine?,
         bone: GeoBone,
         type: RenderType?,
         buffer: MultiBufferSource?,
