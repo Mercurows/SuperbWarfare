@@ -71,7 +71,7 @@ object ClientMouseHandler {
         }
 
         posO = posN
-        posN = MouseMovementHandler.getMousePos()
+        posN = if (notInGame) Vec2(0f, 0f) else MouseMovementHandler.getMousePos()
 
         val stack = player.mainHandItem
         val tag = NBTTool.getTag(stack)
