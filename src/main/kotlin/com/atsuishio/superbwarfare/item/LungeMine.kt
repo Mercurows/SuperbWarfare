@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.item.projectile
+package com.atsuishio.superbwarfare.item
 
 import com.atsuishio.superbwarfare.client.renderer.item.LungeMineRenderer
 import com.atsuishio.superbwarfare.event.ClientEventHandler
@@ -33,7 +33,8 @@ import software.bernie.geckolib.core.`object`.PlayState
 import software.bernie.geckolib.util.GeckoLibUtil
 import java.util.function.Consumer
 
-open class LungeMineItem : Item(Properties().stacksTo(4)), GeoItem {
+// 不要改这个东西，会肘击 YSM
+open class LungeMine : Item(Properties().stacksTo(4)), GeoItem {
     private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
 
     override fun initializeClient(consumer: Consumer<IClientItemExtensions>) {
@@ -75,7 +76,7 @@ open class LungeMineItem : Item(Properties().stacksTo(4)), GeoItem {
         transformType = type
     }
 
-    private fun idlePredicate(event: AnimationState<LungeMineItem?>): PlayState? {
+    private fun idlePredicate(event: AnimationState<LungeMine?>): PlayState? {
         val player = localPlayer ?: return PlayState.STOP
         if (ClientEventHandler.lungeSprint > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.lunge_mine.sprint"))
@@ -97,7 +98,7 @@ open class LungeMineItem : Item(Properties().stacksTo(4)), GeoItem {
     }
 
     override fun registerControllers(data: AnimatableManager.ControllerRegistrar) {
-        val idleController = AnimationController<LungeMineItem>(
+        val idleController = AnimationController<LungeMine>(
             this,
             "idleController",
             2
