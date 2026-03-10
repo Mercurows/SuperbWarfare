@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod.Companion.queueServerWork
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity
 import com.atsuishio.superbwarfare.entity.vehicle.SodayoPickUpRocketEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.item.misc.ArtilleryIndicatorItem
 import com.atsuishio.superbwarfare.network.PayloadContext
@@ -32,6 +33,8 @@ object ArtilleryIndicatorFireMessage : ServerPacketPayload() {
         for (i in tags.indices) {
             val tag = tags.getCompound(i)
             val entity = EntityFindUtil.findEntity(player.level(), tag.getString("UUID"))
+
+            if (entity is VehicleEntity && entity.isWreck) continue
 
             if (entity is ArtilleryEntity) {
                 val gunData = entity.getGunData("Main")
