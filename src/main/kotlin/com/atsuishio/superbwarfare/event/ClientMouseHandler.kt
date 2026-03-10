@@ -72,7 +72,7 @@ object ClientMouseHandler {
         }
 
         posO = posN
-        posN = MouseMovementHandler.getMousePos()
+        posN = if (notInGame) Vec2(0f, 0f) else MouseMovementHandler.getMousePos()
 
         val stack = player.mainHandItem
 
@@ -175,7 +175,7 @@ object ClientMouseHandler {
 
         val vehicle = player.vehicle
         val hover = vehicle is VehicleEntity && vehicle.vehicleType == VehicleType.HELICOPTER && vehicle.hoverMode
-        
+
         if (!ClientEventHandler.isFreeCam(player) && !hover) {
             val s = if (mc.options.cameraType == CameraType.FIRST_PERSON) 0.6 else 0.2
             freeCameraYaw = Mth.lerp(s * times, freeCameraYaw, 0.0)
