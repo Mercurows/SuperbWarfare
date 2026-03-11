@@ -159,10 +159,14 @@ class ResearchingRecipe(
             val selectable = buffer.readBoolean()
             val color = buffer.readInt()
             val time = buffer.readInt()
-            val result = buffer.readItem()
 
             val res = Result()
-            res.resultStack = result
+            val flag = buffer.readBoolean()
+            if (flag) {
+                res.tag = buffer.readUtf()
+            } else {
+                res.resultStack = buffer.readItem()
+            }
             return ResearchingRecipe(id, input, base, addition, special, selectable, color, time, res)
         }
 
@@ -177,7 +181,15 @@ class ResearchingRecipe(
             buffer.writeBoolean(recipe.selectable)
             buffer.writeInt(recipe.color)
             buffer.writeInt(recipe.time)
-            buffer.writeItem(recipe.result.getResult())
+
+            val res = recipe.result
+            val flag = res.tag.isNotEmpty()
+            buffer.writeBoolean(flag)
+            if (flag) {
+                buffer.writeUtf(res.tag)
+            } else {
+                buffer.writeItem(res.getResult())
+            }
         }
     }
 }
