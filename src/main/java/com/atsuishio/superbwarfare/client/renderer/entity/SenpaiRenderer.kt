@@ -1,9 +1,9 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
-import com.atsuishio.superbwarfare.client.BedrockModelLoader
-import com.atsuishio.superbwarfare.client.BedrockModelLoader.getModel
 import com.atsuishio.superbwarfare.entity.SenpaiEntity
+import com.atsuishio.superbwarfare.resource.BedrockModelLoader
+import com.atsuishio.superbwarfare.resource.BedrockModelLoader.getModel
 import com.maydaymemory.mae.basic.ArrayPoseBuilder
 import com.maydaymemory.mae.basic.ZYXBoneTransformFactory
 import com.maydaymemory.mae.blend.EulerAdditiveBlender
