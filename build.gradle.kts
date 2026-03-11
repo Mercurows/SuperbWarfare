@@ -157,9 +157,9 @@ dependencies {
     implementation(fg.deobf("com.eliotlash.mclib:mclib:20"))
 
     // SBM
-    val sbm = implementation(fg.deobf("com.github.mcmodderanchor:simplebedrockmodel:2.1.6-forge+mc1.20.1"))
+    val sbm = implementation(fg.deobf("com.github.mcmodderanchor:simplebedrockmodel:2.2.0-forge+mc1.20.1"))
     jarJar(sbm) {
-        jarJar.ranged(sbm, "[2.1.6,)")
+        jarJar.ranged(sbm, "[2.2.0,)")
     }
     compileOnly("com.maydaymemory:mae:1.1.0") {
         exclude("com.google.code.findbugs", "jsr305")
