@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.animation.entity
 
-import com.atsuishio.superbwarfare.client.BedrockModelLoader
 import com.atsuishio.superbwarfare.entity.SenpaiEntity
+import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import kotlin.math.abs
 
 class SenpaiContext(entity: SenpaiEntity) : AbstractContext<SenpaiEntity>(entity, BedrockModelLoader.SENPAI_ANI) {

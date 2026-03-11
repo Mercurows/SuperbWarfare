@@ -1,9 +1,10 @@
 package com.atsuishio.superbwarfare.item.armor
 
 import com.atsuishio.superbwarfare.Mod
-import com.atsuishio.superbwarfare.client.renderer.armor.UsChestIotvArmorRenderer
 import com.atsuishio.superbwarfare.init.ModAttributes
+import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.atsuishio.superbwarfare.tiers.ModArmorMaterial
+import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.GeoArmorRenderer
 import com.google.common.collect.HashMultimap
 import com.google.common.collect.Multimap
 import net.minecraft.client.model.HumanoidModel
@@ -11,17 +12,17 @@ import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.ai.attributes.Attribute
 import net.minecraft.world.entity.ai.attributes.AttributeModifier
+import net.minecraft.world.item.ArmorItem
 import net.minecraft.world.item.ItemStack
 import net.minecraftforge.client.extensions.common.IClientItemExtensions
-import software.bernie.geckolib.renderer.GeoArmorRenderer
 import java.util.*
 import java.util.function.Consumer
 import kotlin.math.max
 
-class UsChestIotvItem : GeoArmorItem(ModArmorMaterial.CEMENTED_CARBIDE, Type.CHESTPLATE, Properties()) {
+class UsChestIotvItem : ArmorItem(ModArmorMaterial.CEMENTED_CARBIDE, Type.CHESTPLATE, Properties()) {
     override fun initializeClient(consumer: Consumer<IClientItemExtensions?>) {
         consumer.accept(object : IClientItemExtensions {
-            private var renderer: GeoArmorRenderer<*>? = null
+            private var renderer: GeoArmorRenderer? = null
 
             override fun getHumanoidArmorModel(
                 livingEntity: LivingEntity?,
@@ -29,8 +30,14 @@ class UsChestIotvItem : GeoArmorItem(ModArmorMaterial.CEMENTED_CARBIDE, Type.CHE
                 equipmentSlot: EquipmentSlot?,
                 original: HumanoidModel<*>?
             ): HumanoidModel<*> {
-                if (this.renderer == null) this.renderer = UsChestIotvArmorRenderer()
-                this.renderer!!.prepForRender(livingEntity, itemStack, equipmentSlot, original)
+                if (this.renderer == null) {
+                    this.renderer = GeoArmorRenderer(
+                        BedrockModelLoader.usChestIotvModel,
+                        BedrockModelLoader.US_CHEST_IOTV_TEXTURE
+                    )
+                }
+
+                this.renderer!!.preparePose(livingEntity, itemStack, equipmentSlot, original)
                 return this.renderer!!
             }
         })
