@@ -2793,42 +2793,42 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                     tag = ModTags.Items.RARE_BLUEPRINT
                     enlargedTag = ModTags.Items.ENLARGED_RARE_BLUEPRINT
                     input = ModItems.RARE_BLUEPRINT_DATA_CHIP.get()
-                    time = 2400
+                    time = 600
                 }
 
                 Rarity.EPIC -> {
                     tag = ModTags.Items.EPIC_BLUEPRINT
                     enlargedTag = ModTags.Items.ENLARGED_EPIC_BLUEPRINT
                     input = ModItems.EPIC_BLUEPRINT_DATA_CHIP.get()
-                    time = 6000
+                    time = 1500
                 }
 
                 ModRarities.LEGENDARY -> {
                     tag = ModTags.Items.LEGENDARY_BLUEPRINT
                     enlargedTag = ModTags.Items.ENLARGED_LEGENDARY_BLUEPRINT
                     input = ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()
-                    time = 12000
+                    time = 3000
                 }
 
                 ModRarities.SUPERB -> {
                     tag = ModTags.Items.SUPERB_BLUEPRINT
                     enlargedTag = null
                     input = ModItems.SUPERB_BLUEPRINT_DATA_CHIP.get()
-                    time = 24000
+                    time = 6000
                 }
 
                 ModRarities.VIRTUAL -> {
                     tag = ModTags.Items.VIRTUAL_BLUEPRINT
                     enlargedTag = null
                     input = ModItems.VIRTUAL_BLUEPRINT_DATA_CHIP.get()
-                    time = 9600
+                    time = 2400
                 }
 
                 else -> {
                     tag = ModTags.Items.COMMON_BLUEPRINT
                     enlargedTag = ModTags.Items.ENLARGED_COMMON_BLUEPRINT
                     input = ModItems.COMMON_BLUEPRINT_DATA_CHIP.get()
-                    time = 1200
+                    time = 300
                 }
             }
 
@@ -2890,13 +2890,13 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
             ResearchingRecipeBuilder.item(input, input = tag)
                 .base(ModItems.DATA_CHIP_SUBSTRATE.get())
                 .addition(Items.AMETHYST_SHARD)
-                .time(600)
+                .time(200)
                 .unlockedBy("has_${tag.location.path}", has(tag))
                 .save(writer, getItemName(input) + "_from_blueprint")
             ResearchingRecipeBuilder.item(input, 2, tag)
                 .base(ModItems.DATA_CHIP_SUBSTRATE.get())
                 .addition(Items.AMETHYST_SHARD)
-                .time(600)
+                .time(200)
                 .special(ModItems.BOOST_RESEARCH_MODULE.get())
                 .color(1)
                 .unlockedBy("has_${tag.location.path}", has(tag))
