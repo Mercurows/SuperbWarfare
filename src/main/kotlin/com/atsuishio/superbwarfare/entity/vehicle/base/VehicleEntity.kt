@@ -982,6 +982,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     }
 
     open fun vehicleShoot(living: LivingEntity?, weaponName: String) {
+        if (isWreck) return
         modifyGunData(weaponName) { data ->
             if (!data.canShoot(this.ammoSupplier)) return@modifyGunData
             data.shoot(
@@ -1006,6 +1007,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     }
 
     open fun vehicleShoot(living: LivingEntity?, uuid: UUID?, targetPos: Vec3?) {
+        if (isWreck) return
         val seatIndex = getSeatIndex(living)
         modifyGunData(seatIndex) { data ->
             if (!data.canShoot(this.ammoSupplier)) return@modifyGunData
@@ -1710,7 +1712,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 playVehicleSkipSound.accept(this)
             }
 
-
             //            if (!this.wasInCarMusicPlaying && this.inCarMusicPlaying()) {
 //                playInCarMusic.accept(this);
 //            }
@@ -1922,8 +1923,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 this.passengerWeaponAutoAimFormUuid(aiPassengerWeaponTargetUUID, passengerWeaponStationController)
             }
         }
-
-
 
         for (i in data().getDefault().seats().indices) {
             val mob = getNthEntity(i)

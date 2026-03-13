@@ -87,6 +87,7 @@ public class AnnihilatorEntity extends ArtilleryEntity {
     }
 
     public void setTarget(ItemStack stack) {
+        if (this.isWreck()) return;
         var parameters = FiringParametersItemKt.getFiringParameters(stack);
         var pos = parameters.pos();
         setTargetPos(pos);
@@ -101,7 +102,7 @@ public class AnnihilatorEntity extends ArtilleryEntity {
     @Override
     public void baseTick() {
         super.baseTick();
-
+        if (this.isWreck()) return;
         String weaponName = "Main";
         var data = getGunData(weaponName);
         if (data != null) {
@@ -250,7 +251,7 @@ public class AnnihilatorEntity extends ArtilleryEntity {
     @Override
     public boolean canShoot(LivingEntity living) {
         var gunData = getGunData(getSeatIndex(living));
-        return gunData != null && gunData.canShoot(getAmmoSupplier()) && this.canConsume(gunData.get(GunProp.AMMO_COST_PER_SHOOT));
+        return gunData != null && gunData.canShoot(getAmmoSupplier()) && this.canConsume(gunData.get(GunProp.AMMO_COST_PER_SHOOT)) && !isWreck();
     }
 
     private PlayState movementPredicate(AnimationState<AnnihilatorEntity> event) {
