@@ -3,9 +3,11 @@ package com.atsuishio.superbwarfare.recipe
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.DataLoader
 import com.atsuishio.superbwarfare.init.ModRecipes
+import com.atsuishio.superbwarfare.tools.TagDataParser
 import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 import net.minecraft.core.RegistryAccess
+import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.ItemTags
@@ -81,7 +83,21 @@ class ResearchingRecipe(
                     Mod.LOGGER.warn("invalid item: $item")
                     this.resultStack = ItemStack.EMPTY
                 } else {
-                    this.resultStack = ItemStack(item, count)
+                    if (nbt != null) {
+                        val tag = TagDataParser.parse(nbt)
+                        val tmp = CompoundTag()
+                        if (tag.contains("ForgeCaps")) {
+                            tmp.put("ForgeCaps", tag.get("ForgeCaps"))
+                            tag.remove("ForgeCaps")
+                        }
+
+                        tmp.put("tag", tag)
+                        tmp.putString("id", this.item)
+                        tmp.putInt("Count", count)
+                        this.resultStack = ItemStack.of(tmp)
+                    } else {
+                        this.resultStack = ItemStack(item, count)
+                    }
                 }
             } else if (!this.getResultList().isEmpty()) {
                 this.resultStack = ItemStack(this.getResultList().random(), count)
