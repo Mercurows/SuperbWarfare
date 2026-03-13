@@ -2,12 +2,14 @@ package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.launcher.SuperStarShooterItem;
 import com.atsuishio.superbwarfare.tools.OBB;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -22,9 +24,19 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import javax.annotation.Nullable;
+
 @Mixin(Entity.class)
 public abstract class EntityMixin implements OBBHitter {
 
+    @Shadow @Nullable public abstract Entity getVehicle();
+
+    @Shadow private AABB bb;
+    @Shadow private float eyeHeight;
+
+    @Shadow public abstract Vec3 position();
+
+    @Shadow private Vec3 position;
     @Unique
     public OBB.Part sbw$currentHitPart;
 
@@ -79,6 +91,49 @@ public abstract class EntityMixin implements OBBHitter {
             }
             float diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(player.getYHeadRot() - player.yBodyRot));
             player.setYBodyRot(player.yBodyRot + 0.5f * diffY);
+        }
+    }
+
+    @Inject(method = "getBoundingBox()Lnet/minecraft/world/phys/AABB;",
+            at = @At("RETURN"), cancellable = true)
+    private void getBoundingBox(CallbackInfoReturnable<AABB> cir) {
+        if (this.getVehicle() instanceof VehicleEntity vehicle) {
+            cir.cancel();
+            var s = vehicle.getPassengerRenderScale();
+            var x = bb.getXsize() - bb.getXsize() * s;
+            var y = bb.getYsize() - bb.getYsize() * s;
+            var z = bb.getZsize() - bb.getZsize() * s;
+            cir.setReturnValue(bb.deflate(x, y, z));
+        }
+    }
+
+    @Inject(method = "getEyeY()D",
+            at = @At("RETURN"), cancellable = true)
+    private void getEyeY(CallbackInfoReturnable<Double> cir) {
+        if (this.getVehicle() instanceof VehicleEntity vehicle) {
+            cir.cancel();
+            var s = vehicle.getPassengerRenderScale();
+            cir.setReturnValue(this.position.y + (double)this.eyeHeight * s);
+        }
+    }
+
+    @Inject(method = "getEyeHeight()F",
+            at = @At("RETURN"), cancellable = true)
+    private void getEyeHeight(CallbackInfoReturnable<Float> cir) {
+        if (this.getVehicle() instanceof VehicleEntity vehicle) {
+            cir.cancel();
+            var s = vehicle.getPassengerRenderScale();
+            cir.setReturnValue(this.eyeHeight * s);
+        }
+    }
+
+    @Inject(method = "getEyeHeight(Lnet/minecraft/world/entity/Pose;Lnet/minecraft/world/entity/EntityDimensions;)F",
+            at = @At("RETURN"), cancellable = true)
+    private void getEyeHeightDimensions(Pose pPose, EntityDimensions pDimensions, CallbackInfoReturnable<Float> cir) {
+        if (this.getVehicle() instanceof VehicleEntity vehicle) {
+            cir.cancel();
+            var s = vehicle.getPassengerRenderScale();
+            cir.setReturnValue(pDimensions.height * 0.85f * s);
         }
     }
 }
