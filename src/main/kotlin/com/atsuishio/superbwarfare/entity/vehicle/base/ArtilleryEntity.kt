@@ -55,13 +55,12 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
         val stack = player.mainHandItem
         val item = stack.item
 
-        if (this.canBind() && item is ArtilleryIndicatorItem) {
+        if (this.canBind() && item is ArtilleryIndicatorItem && !isWreck) {
             if (player.rootVehicle === this) return InteractionResult.FAIL
-
             return item.bind(stack, player, this)
         }
 
-        if (stack.`is`(ModTags.Items.TOOLS_CROWBAR) && !player.isShiftKeyDown) {
+        if (stack.`is`(ModTags.Items.TOOLS_CROWBAR) && !player.isShiftKeyDown && !isWreck) {
             if (gunData.ammo.get() > 0 && player.level() is ServerLevel) {
                 vehicleShoot(player, "Main")
             }
@@ -130,6 +129,7 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
     }
 
     open fun setTarget(stack: ItemStack, entity: Entity?, weaponName: String) {
+        if (this.isWreck) return
         val parameters = stack.firingParameters
         var canAim = true
 
@@ -194,6 +194,7 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
     }
 
     open fun resetTarget(weaponName: String) {
+        if (this.isWreck) return
         val distance = targetPos.center.distanceTo(getShootPos(weaponName, 1f))
         val randomPos = targetPos.center.randomPos(radius).add(0.0, -1.0 - 0.0023 * distance, 0.0)
         val launchVector = calculateLaunchVector(
@@ -215,6 +216,8 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
 
     override fun baseTick() {
         super.baseTick()
+
+        if (this.isWreck) return
         for (i in 0..<this.maxBarrel) {
             val animCounters = barrelAnim.toMutableList()
             if (i < animCounters.size && animCounters[i] > 0) {

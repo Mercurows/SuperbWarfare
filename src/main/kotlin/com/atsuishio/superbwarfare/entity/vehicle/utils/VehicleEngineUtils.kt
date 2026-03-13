@@ -15,6 +15,7 @@ import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.entity.projectile.Projectile
 import net.minecraft.world.phys.Vec3
 import org.joml.Math
 import kotlin.math.min
@@ -785,29 +786,31 @@ object VehicleEngineUtils {
         val rollSpeed = engineInfo.rollSpeed
         val lift = engineInfo.liftSpeed
         val speedRate = engineInfo.speedRate
-        val resistance = engineInfo.resistance
+        val resistance = engineInfo.resistance * if (downInputDown) 1.5 else 1.0
         val gearRotateAngle = engineInfo.gearRotateAngle
         val energyCost = (engineInfo.energyCostRate * Mth.abs(power)).toInt()
 
-        var f = Mth.clamp(
-            Math.max(0.926 + (0.05 * 1 / resistance) - 0.0015 * deltaMovement.lengthSqr(), 0.5
-            ) + 0.0001f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat()), 0.01, 0.99
-        ).toFloat()
+        val speedSqr = deltaMovement.lengthSqr()
+        val speed = deltaMovement.length()
+        val dotViewVector = deltaMovement.dot(getViewVector(1f))
+        val normalizeDotViewVector = deltaMovement.normalize().dot(getViewVector(1f))
+
+        var f = Mth.clamp(0.985 - 0.0017 * resistance * speedSqr - 0.00001 * (1 - Mth.abs(normalizeDotViewVector.toFloat())), 0.01, 0.99).toFloat()
 
         if (onGround()) {
             if (isWreck) {
                 deltaMovement = deltaMovement.multiply(0.9, 1.0, 0.9)
             }
-            f = 0.497f + 0.45f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat())
+            f = 0.497f + 0.45f * Mth.abs(normalizeDotViewVector.toFloat())
             deltaMovement = deltaMovement.add(
                 getViewVector(1f).normalize()
-                    .scale(0.05 * deltaMovement.dot(getViewVector(1f)))
+                    .scale(0.05 * dotViewVector)
             )
         } else {
-            val forward = deltaMovement.dot(getViewVector(1f)) > 0
+            val forward = dotViewVector > 0
             deltaMovement = deltaMovement.add(
                 getViewVector(1f)
-                    .scale((if (forward) 0.025 else -0.025) * deltaMovement.dot(getViewVector(1f)))
+                    .scale((if (forward) 0.015 else -0.015) * dotViewVector)
             )
         }
 
@@ -853,7 +856,7 @@ object VehicleEngineUtils {
                 }
             }
 
-            if (firstPassenger is Player) {
+            if (firstPassenger != null) {
                 if (!engineStart && forwardInputDown && power > 0.01f) {
                     engineStart = true
                     level().playSound(null, this, engineInfo.engineStartSound, soundSource, 3f, 1f)
@@ -871,7 +874,7 @@ object VehicleEngineUtils {
 
                     if (backInputDown) {
                         power = Math.max(
-                                power - 0.006f * powerReduce, if (onGround()) -0.2f else 0.1f
+                                power - 0.006f * powerReduce, if (onGround()) -0.2f else 0.025f
                         )
                     }
                 }
@@ -896,49 +899,47 @@ object VehicleEngineUtils {
                         power *= 0.92f
                         deltaMovement = deltaMovement.multiply(0.97, 1.0, 0.97)
                     } else {
-                        power = Math.max(power * 0.97f, if (onGround()) -0.3f else 0.1f)
-                        deltaMovement = deltaMovement.multiply(0.996, 1.0, 0.996)
+                        power = Math.max(power * 0.97f, if (onGround()) -0.3f else 0.025f)
                     }
 
                     planeBreak = Math.min(planeBreak + 10, 60f)
                 }
             }
 
-            val rotSpeed = 0.25f + 3f * Mth.abs(calculateY(roll))
+            val rotSpeed = 0.3f + 3.2f * Mth.abs(calculateY(roll))
 
-            var addY = Mth.clamp(Math.max(0.2f * deltaMovement.length().toFloat(), 0f) * mouseMoveSpeedX, -rotSpeed, rotSpeed)
+            var addY = Mth.clamp(Math.max(0.24f * speed.toFloat(), 0f) * mouseMoveSpeedX, -rotSpeed, rotSpeed)
             if (onGround()) {
-                addY = Mth.clamp(Mth.clamp(0.6f * deltaMovement.length().toFloat(), 0f, 0.75f) * mouseMoveSpeedX, -1f, 1f)
+                addY = Mth.clamp(Mth.clamp(0.6f * speed.toFloat(), 0f, 0.75f) * mouseMoveSpeedX, -1f, 1f)
             }
 
-            val addX = Mth.clamp(
-                Math.min(
-                    Math.max(deltaMovement.dot(getViewVector(1f)) - 0.24, 0.15).toFloat(), 0.15f
-                ) * mouseMoveSpeedY, -3.5f, 3.5f
-            )
-            val addZ = deltaRot - (if (onGround() || Mth.abs(roll) > 60) 0f else 0.02f * (60 - Mth.abs(roll)) / 60) * mouseMoveSpeedX * deltaMovement.dot(getViewVector(1f)).toFloat()
-
-            if (!onGround()) {
-                if ((roll > 0 && addY < 0) || (roll < 0 && addY > 0)) {
-                    addY *= Mth.clamp(1f - Mth.abs(roll) / 45, 0f, 1f)
-                }
-            }
+            val addX = Mth.clamp(Mth.clamp(dotViewVector - 0.24, 0.1, 0.2).toFloat() * mouseMoveSpeedY, -3.5f, 3.5f)
+            val addZ = deltaRot - (if (onGround() || Mth.abs(roll) > 60) 0f else 0.02f * (60 - Mth.abs(roll)) / 60) * mouseMoveSpeedX * dotViewVector.toFloat()
 
             yRot += yawSpeed * addY
             if (!onGround()) {
                 xRot += pitchSpeed * addX
+
+                if (tickCount > 5) {
+                    updateRotation(this)
+                }
+
+                if ((roll > 0 && addY < 0) || (roll < 0 && addY > 0)) {
+                    addY *= Mth.clamp(1f - Mth.abs(roll) / 45, 0f, 1f)
+                }
+
                 setZRot(roll - rollSpeed * addZ)
             }
 
             // 自动回正
             if (!onGround()) {
                 val xSpeed = 1 - Mth.clamp((Mth.abs(xRot) - 60) / 90, 0f, 1f)
-                val speed = Mth.clamp(Mth.abs(roll) / 90, 0f, 1f)
+                val zSpeed = Mth.clamp(Mth.abs(roll) / 90, 0f, 1f)
 
                 if (roll > 0) {
-                    setZRot(roll - Math.min(speed, roll))
+                    setZRot(roll - Math.min(zSpeed, roll))
                 } else if (roll < 0) {
-                    setZRot(roll + Math.min(speed, -roll))
+                    setZRot(roll + Math.min(zSpeed, -roll))
                 }
 
                 roll *= xSpeed
@@ -1033,21 +1034,21 @@ object VehicleEngineUtils {
             power *= 0.96f
         }
 
-        val speed = deltaMovement.length()
-
-        val flapAngle =
-            ((flap1LRot + flap1RRot + flap1L2Rot + flap1R2Rot) / 4).toDouble()
+        val flapAngle = ((flap1LRot + flap1RRot + flap1L2Rot + flap1R2Rot) / 50).toDouble()
 
         deltaMovement = deltaMovement.add(
             getUpVec(1f).scale(
-                (1 - Mth.abs(deltaMovement.normalize().dot(getUpVec(1f)).toFloat())) * speed * 0.025 * lift * (1 + Math.sin((if (onGround()) 25.0 else flapAngle + 15) * Mth.DEG_TO_RAD))
+                (1 - Mth.abs(deltaMovement.normalize().dot(getUpVec(1f)).toFloat())) * speed * 0.008 * lift * (flapAngle + Mth.clamp(4 - 0.25 * Mth.abs(dotViewVector.toFloat()), 1.0, 4.0))
             )
         )
-        deltaMovement = deltaMovement.add(
-            getViewVector(1f).scale(
-                0.03 * speedRate * power
-            )
-        )
+
+        val force = if (power <= 1) 0.05 * power else 0.05 + (power - 1) * 0.025
+
+        deltaMovement = deltaMovement.add(getViewVector(1f).scale(force * speedRate))
+        val vd = 0.25 * deltaMovement.dot(getUpVec(1f).scale(-1.0))
+        if (!onGround() && tickCount > 10 && vd > 0.05 && Mth.abs(xRot) < 25) {
+            deltaMovement = deltaMovement.add(getViewVector(1f).scale(vd))
+        }
 
         if (power > 0.2f) {
             engineStartOver = true
@@ -1056,6 +1057,18 @@ object VehicleEngineUtils {
         if (power < 0.0004f) {
             engineStart = false
             engineStartOver = false
+        }
+    }
+
+    private fun updateRotation(entity: VehicleEntity) {
+        val d0 = entity.deltaMovement.add(0.0, -0.36, 0.0)
+        if (Mth.abs(entity.xRot) < 60) {
+            val diffY = Mth.wrapDegrees(-VehicleVecUtils.getYRotFromVector(d0) - entity.yRot).toFloat()
+            entity.yRot += 0.01f * diffY
+        }
+        if (Mth.abs(entity.xRot) < 90) {
+            val diffX = Mth.wrapDegrees(-VehicleVecUtils.getXRotFromVector(d0) - entity.xRot).toFloat()
+            entity.xRot += 0.01f * diffX
         }
     }
 

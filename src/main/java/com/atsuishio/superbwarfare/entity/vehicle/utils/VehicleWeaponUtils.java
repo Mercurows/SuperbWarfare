@@ -31,6 +31,7 @@ public final class VehicleWeaponUtils {
      * @param vehicle 载具
      */
     public static void adjustTurretAngle(VehicleEntity vehicle) {
+        if (vehicle.isWreck()) return;
         Entity driver = vehicle.getNthEntity(vehicle.getTurretControllerIndex());
         var pos = vehicle.getBarrelPosition();
         if (driver != null && pos != null) {
@@ -50,6 +51,7 @@ public final class VehicleWeaponUtils {
      * @param shootVec 需要让炮塔以这个角度发射的向量
      */
     public static void turretAutoAimFromVector(VehicleEntity vehicle, Vec3 shootVec) {
+        if (vehicle.isWreck()) return;
         float ySpeed = vehicle.getTurretTurnYSpeed();
         float xSpeed = vehicle.getTurretTurnXSpeed();
 
@@ -79,6 +81,7 @@ public final class VehicleWeaponUtils {
      * @param pLiving 操控载具的实体
      */
     public static void turretAutoAimFromUuid(VehicleEntity vehicle, String uuid, LivingEntity pLiving) {
+        if (vehicle.isWreck()) return;
         Entity target = EntityFindUtil.findEntity(vehicle.level(), uuid);
         if (target == null) return;
 

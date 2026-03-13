@@ -60,7 +60,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
     override fun interact(player: Player, hand: InteractionHand): InteractionResult {
         val stack = player.mainHandItem
 
-        if (player.isCrouching) {
+        if (player.isCrouching && !isWreck) {
             if (stack.`is`(ModTags.Items.TOOLS_CROWBAR) && (owner == null || player === owner)) {
                 val container = ContainerBlockItem.createInstance(this)
                 if (!player.addItem(container)) {
@@ -167,6 +167,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
     }
 
     open fun autoAim() {
+        if (isWreck) return
         if (this.getFirstPassenger() != null || !active) {
             return
         }
