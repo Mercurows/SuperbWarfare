@@ -1,13 +1,16 @@
 package com.atsuishio.superbwarfare.recipe
 
 import com.atsuishio.superbwarfare.init.ModRecipes
+import com.atsuishio.superbwarfare.tools.TagDataParser
 import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 import com.mojang.serialization.Codec
 import com.mojang.serialization.MapCodec
 import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.core.HolderLookup
+import net.minecraft.core.RegistryAccess
 import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.network.codec.ByteBufCodecs
 import net.minecraft.network.codec.StreamCodec
@@ -96,7 +99,17 @@ class ResearchingRecipe(
             if (this.resultStack != null) return this.resultStack!!
             if (!item.isEmpty()) {
                 val item = BuiltInRegistries.ITEM.get(ResourceLocation.withDefaultNamespace(item))
-                this.resultStack = ItemStack(item, count)
+                if (nbt != null) {
+                    val tag = TagDataParser.parse(nbt)
+                    val tmp = CompoundTag()
+
+                    tmp.put("components", tag)
+                    tmp.putString("id", this.item)
+                    tmp.putInt("count", count)
+                    this.resultStack = ItemStack.parseOptional(RegistryAccess.EMPTY, tmp)
+                } else {
+                    this.resultStack = ItemStack(item, count)
+                }
             } else if (!this.getResultList().isEmpty()) {
                 this.resultStack = ItemStack(this.getResultList().random(), count)
             } else {
