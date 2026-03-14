@@ -97,7 +97,7 @@ private class LootTableBuilder(val key: ResourceKey<LootTable>, val builder: Loo
         )
     }
 
-    class MultiItemsBuilder() {
+    class MultiItemsBuilder {
         val entries = mutableSetOf<ItemEntry>()
 
         fun withWeight(weight: Int, vararg items: ItemRegistryType) {
