@@ -96,7 +96,7 @@ private class LootTableBuilder(val key: ResourceLocation, val builder: LootTable
         )
     }
 
-    class MultiItemsBuilder() {
+    class MultiItemsBuilder {
         val entries = mutableSetOf<ItemEntry>()
 
         fun withWeight(weight: Int, vararg items: ItemRegistryType) {
@@ -150,7 +150,7 @@ private fun buildLootTable(key: ResourceLocation, block: LootTableBuilder.() -> 
     return LootTableBuilder(key, LootTable.lootTable()).apply(block)
 }
 
-class ModCustomLootProvider() : LootTableSubProvider {
+class ModCustomLootProvider : LootTableSubProvider {
     override fun generate(output: BiConsumer<ResourceLocation, LootTable.Builder>) {
 
         output += buildLootTable(chests("ancient_cpu")) {
