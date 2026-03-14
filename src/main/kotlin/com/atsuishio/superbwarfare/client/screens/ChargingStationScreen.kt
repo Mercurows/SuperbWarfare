@@ -28,9 +28,9 @@ class ChargingStationScreen(pMenu: ChargingStationMenu, pPlayerInventory: Invent
         val j = (this.height - this.imageHeight) / 2
         pGuiGraphics.blit(TEXTURE, i, j, 0, 0, this.imageWidth, this.imageHeight)
 
-        val fuelTick = this@ChargingStationScreen.menu.fuelTick
-        var maxFuelTick = this@ChargingStationScreen.menu.maxFuelTick
-        val energy = this@ChargingStationScreen.menu.energy
+        val fuelTick = this.menu.fuelTick
+        var maxFuelTick = this.menu.maxFuelTick
+        val energy = this.menu.energy
 
         if (maxFuelTick == 0L) {
             maxFuelTick = ChargingStationBlockEntity.DEFAULT_FUEL_TIME.toLong()
@@ -71,7 +71,7 @@ class ChargingStationScreen(pMenu: ChargingStationMenu, pPlayerInventory: Invent
         val tooltip: MutableList<Component> = arrayListOf()
         tooltip.add(
             Component.translatable(
-                "des.superbwarfare.charging_station.energy", this@ChargingStationScreen.menu.energy,
+                "des.superbwarfare.charging_station.energy", this.menu.energy,
                 ChargingStationBlockEntity.MAX_ENERGY
             )
         )
