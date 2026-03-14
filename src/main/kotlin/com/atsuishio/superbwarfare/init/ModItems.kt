@@ -285,6 +285,7 @@ object ModItems {
     @JvmField val STEEL_MATERIALS = registerMaterials("steel")
     @JvmField val CEMENTED_CARBIDE_MATERIALS = registerMaterials("cemented_carbide")
     @JvmField val NETHERITE_MATERIALS = registerMaterials("netherite")
+    @JvmField val CRYSTAL_MATERIALS = registerMaterials("crystal")
 
     @JvmField val COMMON_MATERIAL_PACK = registerItem("common_material_pack") { MaterialPackItem(Rarity.COMMON) }
     @JvmField val RARE_MATERIAL_PACK = registerItem("rare_material_pack") { MaterialPackItem(Rarity.RARE) }

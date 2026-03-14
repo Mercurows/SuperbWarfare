@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "superbwarfare:crystal_barrel"
+    },
+    {
+      "item": "superbwarfare:crystal_action"
+    },
+    {
+      "item": "superbwarfare:crystal_spring"
+    },
+    {
+      "item": "superbwarfare:crystal_trigger"
+    }
+  ],
+  "result": {
+    "item": "superbwarfare:virtual_material_pack"
+  }
+}

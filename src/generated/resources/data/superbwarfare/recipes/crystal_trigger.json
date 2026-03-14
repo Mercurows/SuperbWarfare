@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "tag": "forge:gems/amethyst"
+    },
+    "B": {
+      "item": "superbwarfare:cemented_carbide_trigger"
+    },
+    "C": {
+      "tag": "forge:gems/diamond"
+    }
+  },
+  "pattern": [
+    " C ",
+    "ABA",
+    " C "
+  ],
+  "result": {
+    "item": "superbwarfare:crystal_trigger"
+  },
+  "show_notification": true
+}

@@ -1,0 +1,74 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_crystal_action": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:crystal_action"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_crystal_barrel": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:crystal_barrel"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_crystal_spring": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:crystal_spring"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_crystal_trigger": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:crystal_trigger"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:virtual_material_pack"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_crystal_barrel",
+      "has_crystal_action",
+      "has_crystal_spring",
+      "has_crystal_trigger",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:virtual_material_pack"
+    ]
+  },
+  "sends_telemetry_event": false
+}

@@ -170,6 +170,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleMaterials(ModItems.STEEL_MATERIALS)
         simpleMaterials(ModItems.CEMENTED_CARBIDE_MATERIALS)
         simpleMaterials(ModItems.NETHERITE_MATERIALS)
+        simpleMaterials(ModItems.CRYSTAL_MATERIALS)
 
         simpleItem(ModItems.COMMON_MATERIAL_PACK)
         simpleItem(ModItems.RARE_MATERIAL_PACK)
