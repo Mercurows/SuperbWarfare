@@ -1,0 +1,166 @@
+package com.atsuishio.superbwarfare.datagen
+
+import com.atsuishio.superbwarfare.Mod.Companion.loc
+import com.atsuishio.superbwarfare.advancement.criteria.OttoSprintTrigger
+import com.atsuishio.superbwarfare.advancement.criteria.RPGMeleeExplosionTrigger
+import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.init.ModTags
+import net.minecraft.advancements.Advancement
+import net.minecraft.data.CachedOutput
+import net.minecraft.data.DataProvider
+import net.minecraft.data.PackOutput
+import net.minecraft.server.packs.PackType
+import net.minecraftforge.common.data.ExistingFileHelper
+import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
+import java.util.function.UnaryOperator
+
+class ModAdvancementProvider(private val packOutput: PackOutput, private val existingFileHelper: ExistingFileHelper) :
+    DataProvider {
+    val advancements: MutableList<ModAdvancement> = arrayListOf()
+
+    @Suppress("UnusedVariable", "unused")
+    fun generate() {
+        val mainRoot = advancement("root") {
+            it.icon(ModItems.TASER.get()).type(ModAdvancement.Type.SILENT)
+                .awardedForFree()
+                .rewardLootTable(loc("grant_manual"))
+        }
+        val bestFriend = advancement("best_friend") {
+            it.icon(ModItems.CLAYMORE_MINE.get())
+                .whenIconCollected()
+                .type(ModAdvancement.Type.SECRET)
+                .parent(mainRoot)
+        }
+        val banzai = advancement("banzai") {
+            it.icon(ModItems.LUNGE_MINE.get())
+                .whenIconCollected()
+                .parent(mainRoot)
+        }
+        val hammer = advancement("hammer") {
+            it.icon(ModItems.HAMMER.get())
+                .whenItemCollected(ModTags.Items.HAMMER)
+                .parent(mainRoot)
+        }
+        val physicsExcalibur = advancement("physics_excalibur") {
+            it.icon(ModItems.CROWBAR.get())
+                .whenIconCollected()
+                .parent(mainRoot)
+        }
+        val cleanEnergy = advancement("clean_energy") {
+            it.icon(ModItems.CHARGING_STATION.get())
+                .whenIconCollected()
+                .parent(physicsExcalibur)
+        }
+        val superContainer = advancement("super_container") {
+            it.icon(ModItems.CONTAINER.get())
+                .whenIconCollected()
+                .parent(cleanEnergy)
+        }
+
+        // 蓝图
+        val blueprint = advancement("blueprint") {
+            it.icon(ModItems.TRACHELIUM_BLUEPRINT.get())
+                .whenItemCollected(ModTags.Items.BLUEPRINT)
+                .parent(mainRoot)
+        }
+        val commonBlueprint = advancement("common_blueprint") {
+            it.icon(ModItems.TRACHELIUM_BLUEPRINT.get())
+                .whenItemCollected(ModTags.Items.COMMON_BLUEPRINT)
+                .parent(blueprint)
+        }
+        val rareBlueprint = advancement("rare_blueprint") {
+            it.icon(ModItems.TRACHELIUM_BLUEPRINT.get())
+                .whenItemCollected(ModTags.Items.RARE_BLUEPRINT)
+                .parent(commonBlueprint)
+        }
+        val epicBlueprint = advancement("epic_blueprint") {
+            it.icon(ModItems.TRACHELIUM_BLUEPRINT.get())
+                .whenItemCollected(ModTags.Items.EPIC_BLUEPRINT)
+                .parent(rareBlueprint)
+        }
+        val legendaryBlueprint = advancement("legendary_blueprint") {
+            it.icon(ModItems.TRACHELIUM_BLUEPRINT.get())
+                .whenItemCollected(ModTags.Items.LEGENDARY_BLUEPRINT)
+                .parent(epicBlueprint)
+        }
+        val cannonBlueprint = advancement("cannon_blueprint") {
+            it.icon(ModItems.MK_42_BLUEPRINT.get())
+                .whenItemCollected(ModTags.Items.CANNON_BLUEPRINT)
+                .parent(blueprint)
+        }
+
+        // 古代芯片
+        val ancientTechnology = advancement("ancient_technology") {
+            it.icon(ModItems.ANCIENT_CPU.get())
+                .whenIconCollected()
+                .type(ModAdvancement.Type.GOAL)
+                .parent(mainRoot)
+        }
+        val enclave = advancement("enclave") {
+            it.icon(ModItems.REFORGING_TABLE.get())
+                .whenIconCollected()
+                .type(ModAdvancement.Type.GOAL)
+                .parent(ancientTechnology)
+        }
+
+        val handsomeFrame = advancement("handsome_frame") {
+            it.icon(ModItems.INTELLIGENT_CHIP!!.get())
+                .whenIconCollected()
+                .type(ModAdvancement.Type.GOAL)
+                .parent(enclave)
+        }
+
+        // 哑弹棒（？）
+        val boomstickMelee = advancement("boomstick_melee") {
+            it.icon(ModItems.RPG_ROCKET_TBG.get())
+                .externalTrigger(RPGMeleeExplosionTrigger.TriggerInstance.get())
+                .type(ModAdvancement.Type.SECRET_CHALLENGE)
+                .parent(mainRoot)
+        }
+
+        val rushRushRun = advancement("rush_rush_run") {
+            it.icon(ModItems.ELECTRIC_BATON.get())
+                .externalTrigger(OttoSprintTrigger.TriggerInstance.get())
+                .type(ModAdvancement.Type.SECRET_CHALLENGE)
+                .parent(mainRoot)
+        }
+    }
+
+    private fun advancement(id: String, b: UnaryOperator<ModAdvancement.Builder>): ModAdvancement {
+        val advancement = ModAdvancement(id, b)
+        this.advancements.add(advancement)
+        return advancement
+    }
+
+    override fun run(pOutput: CachedOutput): CompletableFuture<*> {
+        this.generate()
+
+        val futures = arrayListOf<CompletableFuture<*>>()
+        val pathProvider = packOutput.createPathProvider(PackOutput.Target.DATA_PACK, "advancements")
+
+        val mainConsumer = Consumer { advancement: Advancement ->
+            val id = advancement.id
+            check(
+                !existingFileHelper.exists(
+                    id,
+                    PackType.SERVER_DATA,
+                    ".json",
+                    "advancements"
+                )
+            ) { "Duplicate advancement $id" }
+            val path = pathProvider.json(id)
+            futures.add(DataProvider.saveStable(pOutput, advancement.deconstruct().serializeToJson(), path))
+        }
+
+        for (advancement in this.advancements) {
+            advancement.save(mainConsumer)
+        }
+
+        return CompletableFuture.allOf(*futures.toTypedArray())
+    }
+
+    override fun getName(): String {
+        return "Superb Warfare Advancements"
+    }
+}
