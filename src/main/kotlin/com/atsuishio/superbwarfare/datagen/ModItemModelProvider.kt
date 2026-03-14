@@ -175,6 +175,8 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.RARE_MATERIAL_PACK)
         simpleItem(ModItems.EPIC_MATERIAL_PACK)
         simpleItem(ModItems.LEGENDARY_MATERIAL_PACK)
+        simpleItem(ModItems.SUPERB_MATERIAL_PACK)
+        simpleItem(ModItems.VIRTUAL_MATERIAL_PACK)
 
         simpleItem(ModItems.DATA_CHIP_SUBSTRATE)
         simpleItem(ModItems.COMMON_BLUEPRINT_DATA_CHIP)
