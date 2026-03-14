@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.network.message.receive.*
 import com.atsuishio.superbwarfare.network.message.send.*
 import com.atsuishio.superbwarfare.serialization.ByteBufDecoder
 import com.atsuishio.superbwarfare.serialization.ByteBufEncoder
+import com.atsuishio.superbwarfare.tools.createStreamCodec
 import kotlinx.serialization.serializer
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.RegistryFriendlyByteBuf
@@ -16,27 +17,17 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar
 
 val payloadTypeMap = mutableMapOf<Class<*>, CustomPacketPayload.Type<*>>()
 
-private inline fun <reified T> encodeTo(output: FriendlyByteBuf, value: T) {
+inline fun <reified T> encodeTo(output: FriendlyByteBuf, value: T) {
     ByteBufEncoder(output).encodeSerializableValue(serializer(), value)
 }
 
-private inline fun <reified T> decodeFrom(input: FriendlyByteBuf): T {
+inline fun <reified T> decodeFrom(input: FriendlyByteBuf): T {
     return ByteBufDecoder(input).decodeSerializableValue(serializer())
 }
 
 private inline fun <reified T : PacketPayload> playTo(reg: (CustomPacketPayload.Type<T>, StreamCodec<in RegistryFriendlyByteBuf, T>, IPayloadHandler<T>) -> Unit) {
 
-    val instance = T::class.objectInstance
-
-    val codec: StreamCodec<FriendlyByteBuf, T> = if (instance != null) {
-        StreamCodec.unit(instance)
-    } else {
-        StreamCodec.of(
-            { buf, value -> encodeTo(buf, value) },
-            { buf -> decodeFrom(buf) },
-        )
-    }
-
+    val codec = createStreamCodec<T>()
     val className = T::class.java.simpleName.substringBefore("Message")
 
     val name = buildString {

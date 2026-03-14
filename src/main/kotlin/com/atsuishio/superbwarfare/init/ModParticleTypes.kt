@@ -33,37 +33,29 @@ object ModParticleTypes {
     val BULLET_DECAL: DeferredHolder<ParticleType<*>, ParticleType<BulletDecalOption>> =
         REGISTRY.register(
             "bullet_decal",
-            Supplier {
-                createOptions<BulletDecalOption>(
-                    BulletDecalOption.CODEC,
-                    true,
-                    BulletDecalOption.STREAM_CODEC
-                )
-            })
+            Supplier { createOptions(BulletDecalOption.CODEC, true, BulletDecalOption.STREAM_CODEC) }
+        )
 
     @JvmField
     val CUSTOM_SMOKE: DeferredHolder<ParticleType<*>, ParticleType<CustomSmokeOption>> =
         REGISTRY.register(
             "custom_smoke",
-            Supplier {
-                createOptions(CustomSmokeOption.CODEC, true, CustomSmokeOption.STREAM_CODEC)
-            })
+            Supplier { createOptions(CustomSmokeOption.CODEC, true, CustomSmokeOption.STREAM_CODEC) }
+        )
 
     @JvmField
     val CANNON_MUZZLE_FLARE: DeferredHolder<ParticleType<*>, ParticleType<CannonMuzzleFlareOption>> =
         REGISTRY.register(
             "cannon_muzzle_flare",
-            Supplier {
-                createOptions(CannonMuzzleFlareOption.CODEC, true, CannonMuzzleFlareOption.STREAM_CODEC)
-            })
+            Supplier { createOptions(CannonMuzzleFlareOption.CODEC, true, CannonMuzzleFlareOption.STREAM_CODEC) }
+        )
 
     @JvmField
     val CUSTOM_CLOUD: DeferredHolder<ParticleType<*>, ParticleType<CustomCloudOption>> =
         REGISTRY.register(
             "custom_cloud",
-            Supplier {
-                createOptions(CustomCloudOption.CODEC, true, CustomCloudOption.STREAM_CODEC)
-            })
+            Supplier { createOptions(CustomCloudOption.CODEC, true, CustomCloudOption.STREAM_CODEC) }
+        )
 
     fun <T : ParticleOptions> createOptions(
         codec: MapCodec<T>,
@@ -71,13 +63,9 @@ object ModParticleTypes {
         streamCodec: StreamCodec<in RegistryFriendlyByteBuf, T>
     ): ParticleType<T> {
         return object : ParticleType<T>(overrideLimiter) {
-            override fun codec(): MapCodec<T> {
-                return codec
-            }
+            override fun codec() = codec
 
-            override fun streamCodec(): StreamCodec<in RegistryFriendlyByteBuf, T> {
-                return streamCodec
-            }
+            override fun streamCodec() = streamCodec
         }
     }
 
