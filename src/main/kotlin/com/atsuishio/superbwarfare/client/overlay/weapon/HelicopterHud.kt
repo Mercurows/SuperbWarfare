@@ -39,7 +39,6 @@ object HelicopterHud {
 
     private val HELI_BASE = loc("textures/overlay/vehicle/helicopter/heli_base.png")
     private val ROLL_IND = loc("textures/overlay/vehicle/helicopter/roll_ind.png")
-    private val HELI_LINE = loc("textures/overlay/vehicle/helicopter/heli_line.png")
     val HELI_POWER_RULER = loc("textures/overlay/vehicle/helicopter/heli_power_ruler.png")
     val HELI_POWER = loc("textures/overlay/vehicle/helicopter/heli_power.png")
     private val HELI_VY_MOVE = loc("textures/overlay/vehicle/helicopter/heli_vy_move.png")
@@ -324,15 +323,15 @@ object HelicopterHud {
                 val pitch = vehicle.getPitch(partialTick)
                 RenderHelper.blit(
                     poseStack,
-                    HELI_LINE,
-                    screenWidth.toFloat() / 2 - 128,
-                    screenHeight.toFloat() / 2 - 512 - 5.475f * pitch,
+                    AircraftHud.HUD_LINE,
+                    screenWidth / 2f - 72,
+                    screenHeight / 2f - 128,
                     0f,
-                    0f,
+                    722.5f + 4.725f * pitch,
+                    144f,
                     256f,
-                    1024f,
-                    256f,
-                    1024f,
+                    144f,
+                    1701f,
                     color
                 )
                 poseStack.popPose()
@@ -510,11 +509,11 @@ object HelicopterHud {
                     x - 96,
                     y - 48,
                     0f,
-                    144 + 1.36f * pitch,
+                    195 + 1.36f * pitch,
                     192f,
                     96f,
                     192f,
-                    384f,
+                    486f,
                     -1
                 )
 
