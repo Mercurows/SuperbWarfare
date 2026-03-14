@@ -456,11 +456,11 @@ object KillMessageOverlay : CommonOverlay("kill_message") {
 
                 for (i in 0..15) {
                     for (j in 0..15) {
-                        if (icon[i]!![j].toInt() == -1) continue
+                        if (icon[i][j].toInt() == -1) continue
                         RenderHelper.fill(
                             guiGraphics, RenderType.gui(),
                             x + i * 0.6f, y + j * 0.6f, x + (i + 1) * 0.6f, y + (j + 1) * 0.6f,
-                            0f, DogTagEditorScreen.getColorByNum(icon[i]!![j])
+                            0f, DogTagEditorScreen.getColorByNum(icon[i][j])
                         )
                     }
                 }
