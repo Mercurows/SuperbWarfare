@@ -4,7 +4,7 @@
     "tag": "superbwarfare:ingots/cemented_carbide"
   },
   "base": {
-    "item": "superbwarfare:epic_material_pack"
+    "item": "superbwarfare:virtual_material_pack"
   },
   "result": {
     "item": "superbwarfare:trachelium"

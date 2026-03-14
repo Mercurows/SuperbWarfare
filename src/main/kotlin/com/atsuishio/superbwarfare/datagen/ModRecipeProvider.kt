@@ -51,6 +51,8 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
         RARE,
         EPIC,
         LEGENDARY,
+        SUPERB,
+        VIRTUAL
     }
 
     companion object {
@@ -1904,7 +1906,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
             gunSmithing(
                 writer,
                 ModItems.TRACHELIUM_BLUEPRINT.get(),
-                GunRarity.EPIC,
+                GunRarity.VIRTUAL,
                 ModTags.Items.INGOTS_CEMENTED_CARBIDE,
                 ModItems.TRACHELIUM.get()
             )
@@ -2097,7 +2099,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
             gunSmithing(
                 writer,
                 ModItems.SECONDARY_CATACLYSM_BLUEPRINT.get(),
-                GunRarity.LEGENDARY,
+                GunRarity.VIRTUAL,
                 ModItems.KNIFE.get(),
                 ModItems.SECONDARY_CATACLYSM.get()
             )
@@ -2111,9 +2113,16 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
             gunSmithing(
                 writer,
                 ModItems.QL_1031_BLUEPRINT.get(),
-                GunRarity.LEGENDARY,
+                GunRarity.VIRTUAL,
                 ModItems.BATTERY.get(),
                 ModItems.QL_1031.get()
+            )
+            gunSmithing(
+                writer,
+                ModItems.SUPER_STAR_SHOOTER_BLUEPRINT.get(),
+                GunRarity.SUPERB,
+                ModItems.MEDIUM_ARMAMENT_MODULE.get(),
+                ModItems.SUPER_STAR_SHOOTER.get()
             )
 
             ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.HOMEMADE_SHOTGUN.get())
@@ -2652,6 +2661,8 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 GunRarity.RARE -> ModItems.RARE_MATERIAL_PACK.get()
                 GunRarity.EPIC -> ModItems.EPIC_MATERIAL_PACK.get()
                 GunRarity.LEGENDARY -> ModItems.LEGENDARY_MATERIAL_PACK.get()
+                GunRarity.SUPERB -> ModItems.SUPERB_MATERIAL_PACK.get()
+                GunRarity.VIRTUAL -> ModItems.VIRTUAL_MATERIAL_PACK.get()
             }
 
             SmithingTransformRecipeBuilder.smithing(

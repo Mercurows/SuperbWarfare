@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "item": "superbwarfare:medium_armament_module"
+  },
+  "base": {
+    "item": "superbwarfare:superb_material_pack"
+  },
+  "result": {
+    "item": "superbwarfare:super_star_shooter"
+  },
+  "template": {
+    "item": "superbwarfare:super_star_shooter_blueprint"
+  }
+}
