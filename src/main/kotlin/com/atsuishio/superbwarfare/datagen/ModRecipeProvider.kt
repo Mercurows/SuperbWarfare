@@ -824,11 +824,40 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE,
                 Items.NETHERITE_INGOT
             )
+            mapOf(
+                ModItems.CRYSTAL_MATERIALS.action to ModItems.CEMENTED_CARBIDE_MATERIALS.action,
+                ModItems.CRYSTAL_MATERIALS.barrel to ModItems.CEMENTED_CARBIDE_MATERIALS.barrel,
+                ModItems.CRYSTAL_MATERIALS.trigger to ModItems.CEMENTED_CARBIDE_MATERIALS.trigger,
+                ModItems.CRYSTAL_MATERIALS.spring to ModItems.CEMENTED_CARBIDE_MATERIALS.spring
+            ).forEach { (cry, cem) ->
+                ShapedRecipeBuilder.shaped(RecipeCategory.MISC, cry.get())
+                    .pattern(" C ")
+                    .pattern("ABA")
+                    .pattern(" C ")
+                    .define('A', Tags.Items.GEMS_AMETHYST)
+                    .define('B', cem.get())
+                    .define('C', Tags.Items.GEMS_DIAMOND)
+                    .unlockedBy(getHasName(cem.get()), has(cem.get()))
+                    .unlockedBy(getHasName(Items.AMETHYST_SHARD), has(Tags.Items.GEMS_AMETHYST))
+                    .save(writer, loc(getItemName(cry.get())))
+            }
 
             generateMaterialPackRecipe(writer, ModItems.IRON_MATERIALS, ModItems.COMMON_MATERIAL_PACK.get())
             generateMaterialPackRecipe(writer, ModItems.STEEL_MATERIALS, ModItems.RARE_MATERIAL_PACK.get())
             generateMaterialPackRecipe(writer, ModItems.CEMENTED_CARBIDE_MATERIALS, ModItems.EPIC_MATERIAL_PACK.get())
             generateMaterialPackRecipe(writer, ModItems.NETHERITE_MATERIALS, ModItems.LEGENDARY_MATERIAL_PACK.get())
+            generateMaterialPackRecipe(writer, ModItems.CRYSTAL_MATERIALS, ModItems.VIRTUAL_MATERIAL_PACK.get())
+            ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.SUPERB_MATERIAL_PACK.get())
+                .pattern(" A ")
+                .pattern("BEC")
+                .pattern(" D ")
+                .define('A', ModItems.COMMON_MATERIAL_PACK.get())
+                .define('B', ModItems.RARE_MATERIAL_PACK.get())
+                .define('C', ModItems.EPIC_MATERIAL_PACK.get())
+                .define('D', ModItems.LEGENDARY_MATERIAL_PACK.get())
+                .define('E', Items.NETHER_STAR)
+                .unlockedBy(getHasName(Items.NETHER_STAR), has(Items.NETHER_STAR))
+                .save(writer, loc(getItemName(ModItems.SUPERB_MATERIAL_PACK.get())))
 
             ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.ANCIENT_CPU.get())
                 .pattern("bcb")
