@@ -53,7 +53,7 @@ object VehicleConfig {
     @JvmField
     val VEHICLE_INFO_DISPLAY_DISTANCE = buildServerConfig {
         comment("Within this distance, the vehicle info will be displayed at client side")
-        defineInRange("vehicle_info_display_distance", 512, 0, 1024)
+        defineInRange("vehicle_info_display_distance", 196, 0, 1024)
     }
 
     @JvmField

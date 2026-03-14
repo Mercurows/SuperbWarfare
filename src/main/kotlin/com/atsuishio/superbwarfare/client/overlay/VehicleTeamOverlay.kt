@@ -19,7 +19,6 @@ import com.atsuishio.superbwarfare.tools.worldToScreen
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.network.chat.Component
-import net.minecraft.util.Mth
 import net.minecraft.world.entity.OwnableEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec3
@@ -30,52 +29,44 @@ import kotlin.math.max
 
 @OnlyIn(Dist.CLIENT)
 object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
-
     override fun shouldRender() = super.shouldRender() && DisplayConfig.VEHICLE_INFO.get()
 
     override fun RenderContext.render() {
         var viewVec = Vec3(camera.lookVector)
-        val poseStack = guiGraphics.pose()
-
-        val stack = player.mainHandItem
-
-        var lookAtEntity = false
-
         var entityRange = 0.0
+        val distance = VehicleConfig.VEHICLE_INFO_DISPLAY_DISTANCE.get().toDouble()
         var lookingEntity = TraceTool.camerafFindLookingEntity(
             player,
             cameraPos,
             viewVec,
-
-            512.0
-            // TODO 为什么读不了配置项？？？
-//            VehicleConfig.VEHICLE_INFO_DISPLAY_DISTANCE.get().toDouble()
+            distance
         )
+        if (lookingEntity is SmokeDecoyEntity) return
 
         (player.vehicle as? VehicleEntity)?.let { vehicle ->
             if (vehicle.hasWeapon(vehicle.getSeatIndex(player))) {
-                lookingEntity = vehicle.getPlayerLookAtEntityOnVehicle(player, 512.0, partialTick)
+                lookingEntity = vehicle.getPlayerLookAtEntityOnVehicle(player, distance, partialTick)
                 viewVec = vehicle.getViewVec(player, partialTick)
             }
         }
 
-        val decoy = TraceTool.findLookDecoy(player, cameraPos, viewVec, 512.0)
-
+        val decoy = TraceTool.findLookDecoy(player, cameraPos, viewVec, distance)
         if (decoy != null && decoy.type.`is`(ModTags.EntityTypes.DECOY)) return
 
-        if (lookingEntity is SmokeDecoyEntity) return
-
+        var lookAtEntity = false
         if (lookingEntity != null) {
             lookAtEntity = true
             entityRange = player.distanceTo(lookingEntity).toDouble()
         }
 
-        val usingDrone =
-            stack.`is`(ModItems.MONITOR.get()) && stack.getOrCreateTag().getBoolean("Using") && stack.getOrCreateTag()
-                .getBoolean("Linked")
-        val outOfRange = entityRange > VehicleConfig.VEHICLE_INFO_DISPLAY_DISTANCE.get()
+        val stack = player.mainHandItem
+        val usingDrone = stack.`is`(ModItems.MONITOR.get())
+                && stack.getOrCreateTag().getBoolean("Using")
+                && stack.getOrCreateTag().getBoolean("Linked")
+        if (entityRange > distance) return
 
-        if (lookAtEntity && lookingEntity is VehicleEntity && !usingDrone && !outOfRange) {
+        val poseStack = guiGraphics.pose()
+        if (lookAtEntity && lookingEntity is VehicleEntity && !usingDrone) {
             val vehicle = lookingEntity
             if (entityRange > VehicleConfig.VEHICLE_INFO_DISPLAY_DISTANCE.get()) return
 
@@ -93,9 +84,8 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                 poseStack.pushPose()
                 poseStack.translate(x, y - 12, 0f)
 
-                val size =
-                    Mth.clamp((50 / ClientEventHandler.fov) * 0.9f * max((512 - entityRange) / 512, 0.1), 0.4, 1.0)
-                        .toFloat()
+                val size = ((50 / ClientEventHandler.fov) * 0.9f * max((512 - entityRange) / 512, 0.1)
+                    .coerceIn(0.4, 1.0)).toFloat()
                 poseStack.scale(size, size, size)
                 val font = gui.getMinecraft().font
 
@@ -112,9 +102,7 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                         val team = player.team
                         if (team is PlayerTeam) {
                             val info =
-                                lookingEntity.displayName!!.string + " " + controller.displayName!!
-                                    .string + (if (controller.team == null) "" else " <" + team.displayName
-                                    .string + ">")
+                                "${lookingEntity.displayName!!.string} ${controller.displayName!!.string}${if (controller.team == null) "" else " <${team.displayName.string}>"}"
                             guiGraphics.drawString(
                                 font,
                                 Component.literal(info),
@@ -134,9 +122,8 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                         color = player1.teamColor
                         val team = player.team
                         if (team is PlayerTeam) {
-                            val info = lookingEntity.displayName!!.string + " " + player1.displayName
-                                ?.string + (if (player1.team == null) "" else " <" + team.displayName
-                                .string + ">")
+                            val info =
+                                "${lookingEntity.displayName!!.string} ${player1.displayName?.string}${if (player1.team == null) "" else " <${team.displayName.string}>"}"
                             guiGraphics.drawString(
                                 font,
                                 Component.literal(info),
@@ -152,13 +139,12 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                     }
                 } else {
                     val player1 = lookingEntity.getFirstPassenger()
-                    if ((lookingEntity as VehicleEntity).maxPassengers > 0 && player1 is Player) {
+                    if (lookingEntity.maxPassengers > 0 && player1 is Player) {
                         color = player1.teamColor
                         val team = player.team
                         if (team is PlayerTeam) {
-                            val info = lookingEntity.displayName!!.string + " " + player1.displayName
-                                ?.string + (if (player1.team == null) "" else " <" + team.displayName
-                                .string + ">")
+                            val info =
+                                "${lookingEntity.displayName!!.string} ${player1.displayName?.string}${if (player1.team == null) "" else " <${team.displayName.string}>"}"
                             guiGraphics.drawString(
                                 font,
                                 Component.literal(info),
@@ -184,14 +170,14 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                 RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), -40.5f, -3f, 40.5f, -2f, 0f, argb)
                 RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), -40.5f, 2f, 40.5f, 3f, 0f, argb)
                 RenderHelper.fill(guiGraphics, RenderType.guiOverlay(), 40.5f, -3f, 41.5f, 3f, 0f, argb)
-                val health = (lookingEntity as VehicleEntity).health
-                val maxHealth = (lookingEntity as VehicleEntity).getMaxHealth()
+                val health = lookingEntity.health
+                val maxHealth = lookingEntity.getMaxHealth()
                 RenderHelper.fill(
                     guiGraphics,
                     RenderType.guiOverlay(),
                     -40f,
                     -1.5f,
-                    -40 + 80 * ((if ((lookingEntity as VehicleEntity).isWreck) (health + maxHealth) else health) / maxHealth),
+                    -40 + 80 * ((if (lookingEntity.isWreck) (health + maxHealth) else health) / maxHealth),
                     1.5f,
                     0f,
                     argb
@@ -221,7 +207,7 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                     val component: Component = Component.translatable(info)
                     guiGraphics.drawString(font, component, -font.width(component) / 2, -5, color, false)
 
-                    val ownerInfo: Component = Component.literal("[" + owner.displayName.string + "]")
+                    val ownerInfo: Component = Component.literal("[${owner.displayName.string}]")
                     guiGraphics.drawString(font, ownerInfo, -font.width(ownerInfo) / 2, 5, color, false)
                 }
 
