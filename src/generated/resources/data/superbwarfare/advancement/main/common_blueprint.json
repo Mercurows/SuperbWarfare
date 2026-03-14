@@ -5,7 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": "#superbwarfare:blueprint/common"
+            "tag": "superbwarfare:blueprint/common"
           }
         ]
       },
@@ -13,13 +13,16 @@
     }
   },
   "display": {
+    "announce_to_chat": true,
     "description": {
       "translate": "superbwarfare.advancement.main.common_blueprint.des"
     },
+    "frame": "task",
+    "hidden": false,
     "icon": {
-      "count": 1,
-      "id": "superbwarfare:trachelium_blueprint"
+      "item": "superbwarfare:m_1911_blueprint"
     },
+    "show_toast": true,
     "title": {
       "translate": "superbwarfare.advancement.main.common_blueprint"
     }

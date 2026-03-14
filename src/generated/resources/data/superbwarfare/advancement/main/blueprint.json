@@ -5,7 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": "#superbwarfare:blueprint"
+            "tag": "superbwarfare:blueprint"
           }
         ]
       },
@@ -13,13 +13,16 @@
     }
   },
   "display": {
+    "announce_to_chat": true,
     "description": {
       "translate": "superbwarfare.advancement.main.blueprint.des"
     },
+    "frame": "task",
+    "hidden": false,
     "icon": {
-      "count": 1,
-      "id": "superbwarfare:trachelium_blueprint"
+      "item": "superbwarfare:ak_47_blueprint"
     },
+    "show_toast": true,
     "title": {
       "translate": "superbwarfare.advancement.main.blueprint"
     }

@@ -51,7 +51,7 @@ class VehicleAssemblingRecipeBuilder : RecipeBuilder {
     }
 
     @JvmOverloads
-    fun require(tag: TagKey<Item?>, count: Int = 1): VehicleAssemblingRecipeBuilder {
+    fun require(tag: TagKey<Item>, count: Int = 1): VehicleAssemblingRecipeBuilder {
         this.ingredients.merge("#" + tag.location(), count) { _, v -> count + v }
         return this
     }

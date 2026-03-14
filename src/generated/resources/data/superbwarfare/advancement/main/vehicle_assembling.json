@@ -1,11 +1,13 @@
 {
-  "parent": "superbwarfare:main/common_blueprint",
+  "parent": "superbwarfare:main/physics_excalibur",
   "criteria": {
     "0": {
       "conditions": {
         "items": [
           {
-            "tag": "superbwarfare:blueprint/rare"
+            "items": [
+              "superbwarfare:vehicle_assembling_table"
+            ]
           }
         ]
       },
@@ -15,16 +17,16 @@
   "display": {
     "announce_to_chat": true,
     "description": {
-      "translate": "superbwarfare.advancement.main.rare_blueprint.des"
+      "translate": "superbwarfare.advancement.main.vehicle_assembling.des"
     },
     "frame": "task",
     "hidden": false,
     "icon": {
-      "item": "superbwarfare:mp_5_blueprint"
+      "item": "superbwarfare:vehicle_assembling_table"
     },
     "show_toast": true,
     "title": {
-      "translate": "superbwarfare.advancement.main.rare_blueprint"
+      "translate": "superbwarfare.advancement.main.vehicle_assembling"
     }
   },
   "requirements": [
