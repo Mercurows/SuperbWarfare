@@ -223,7 +223,7 @@ object VehicleMotionUtils {
 
         val entities: MutableList<Entity>?
         if (!vehicle.enableAABB()) {
-            val frontBox = vehicle.boundingBox.move(vec3).inflate(6.0)
+            val frontBox = calculateCombinedAABBOptimized(vehicle)
             entities = vehicle.level().getEntities(
                 EntityTypeTest.forClass(Entity::class.java), frontBox
             ) { entity -> entity !== vehicle && entity !== vehicle.getFirstPassenger() && entity!!.vehicle == null }
@@ -421,7 +421,7 @@ object VehicleMotionUtils {
         }
 
         if (!vehicle.enableAABB()) {
-            val aabb = vehicle.boundingBox.move(vehicle.deltaMovement).inflate(5.0)
+            val aabb = calculateCombinedAABBOptimized(vehicle)
             BlockPos.betweenClosedStream(aabb).forEach { pos ->
                 val state = vehicle.level().getBlockState(pos)
                 if (vehicle.isInObb(pos, vehicle.deltaMovement)) {

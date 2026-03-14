@@ -482,16 +482,18 @@ object AircraftHud {
             RenderHelper.preciseBlitWithColor(
                 guiGraphics,
                 HUD_LINE,
-                x - 96 + diffY,
+                x - 72 + diffY,
                 y - 128,
                 0f,
-                448 + 4.10625f * pitch,
-                192f,
+                722.5f + 4.725f * pitch,
+                144f,
                 256f,
-                192f,
-                1152f,
+                144f,
+                1701f,
                 color
             )
+
+            player.displayClientMessage(Component.literal(pitch.toString()), true)
 
             if (bomb) {
                 RenderHelper.preciseBlitWithColor(
@@ -619,11 +621,11 @@ object AircraftHud {
                     x - 96,
                     y - 48,
                     0f,
-                    144 + 1.36f * pitch,
+                    195 + 1.36f * pitch,
                     192f,
                     96f,
                     192f,
-                    384f,
+                    486f,
                     -1
                 )
 
