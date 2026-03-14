@@ -50,9 +50,9 @@ public class ModDataComponents {
             builder -> builder.persistent(AmmoBoxInfo.CODEC)
     );
 
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<Short>>> DOG_TAG_IMAGE = register(
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<List<Short>>>> DOG_TAG_IMAGE = register(
             "dog_tag_image",
-            builder -> builder.persistent(Codec.SHORT.listOf())
+            builder -> builder.persistent(Codec.SHORT.listOf().listOf())
     );
 
     private static <T> DeferredHolder<DataComponentType<?>, DataComponentType<T>> register(String name, UnaryOperator<DataComponentType.Builder<T>> builderOperator) {

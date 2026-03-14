@@ -57,11 +57,10 @@ class DogTagItem : Item(Properties().stacksTo(1)), ICurioItem, ItemScreenProvide
 
             val data = stack.get(ModDataComponents.DOG_TAG_IMAGE) ?: return colors
 
-            var index = 0
             for (i in 0..15) {
-                for (j in 0..15) {
-                    colors[i][j] = data[index]!!
-                    index++
+                val color = data[i]
+                for (j in color.indices) {
+                    colors[i][j] = color[j].toShort()
                 }
             }
 

@@ -10,7 +10,7 @@ import net.minecraft.network.chat.Component
 
 @Serializable
 data class DogTagFinishEditMessage(
-    val colors: MutableList<Short>,
+    val colors: Array<ShortArray>,
     val name: String,
     val mainHand: Boolean,
 ) : ServerPacketPayload() {
@@ -21,6 +21,7 @@ data class DogTagFinishEditMessage(
         val stack = if (mainHand) serverPlayer.mainHandItem else serverPlayer.offhandItem
         if (!stack.`is`(ModItems.DOG_TAG.get())) return
 
+        val colors = colors.map { it.toList() }
         stack.set(ModDataComponents.DOG_TAG_IMAGE, colors)
 
         if (!name.isEmpty()) {

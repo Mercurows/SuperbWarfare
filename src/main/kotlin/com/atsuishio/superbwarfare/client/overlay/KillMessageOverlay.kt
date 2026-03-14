@@ -17,7 +17,6 @@ import com.atsuishio.superbwarfare.tools.DamageTypeTool
 import com.atsuishio.superbwarfare.tools.LivingKillRecord
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
-import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.RenderType
@@ -452,13 +451,11 @@ object KillMessageOverlay : CommonOverlay("kill_message") {
 
             for (i in 0..15) {
                 for (j in 0..15) {
-                    if (icon[i]!![j].toInt() == -1) continue
-
-                    val color = ChatFormatting.getById(icon[i]!![j].toInt())
+                    if (icon[i][j].toInt() == -1) continue
                     RenderHelper.fill(
                         guiGraphics, RenderType.gui(),
                         x + i * 0.6f, y + j * 0.6f, x + (i + 1) * 0.6f, y + (j + 1) * 0.6f,
-                        0f, DogTagEditorScreen.getColorFromFormatting(color)
+                        0f, DogTagEditorScreen.getColorByNum(icon[i][j])
                     )
                 }
             }
