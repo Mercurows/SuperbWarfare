@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.client.tooltip
 import com.atsuishio.superbwarfare.client.screens.DogTagEditorScreen
 import com.atsuishio.superbwarfare.client.tooltip.component.DogTagImageComponent
 import com.atsuishio.superbwarfare.item.curio.DogTagItem.Companion.getColors
-import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
@@ -23,10 +22,9 @@ open class ClientDogTagImageTooltip(tooltip: DogTagImageComponent) : ClientToolt
         for (i in 0..15) {
             for (j in 0..15) {
                 if (colors[i][j].toInt() == -1) continue
-                val color = ChatFormatting.getById(colors[i][j].toInt())
                 pGuiGraphics.fill(
                     5 + pX + i * 4 + 4, 5 + pY + j * 4 + 4, 5 + pX + i * 4, 5 + pY + j * 4,
-                    DogTagEditorScreen.getColorFromFormatting(color)
+                    DogTagEditorScreen.getColorByNum(colors[i][j])
                 )
             }
         }

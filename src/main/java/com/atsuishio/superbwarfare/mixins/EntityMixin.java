@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.launcher.SuperStarShooterItem;
 import com.atsuishio.superbwarfare.tools.OBB;
@@ -12,7 +11,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Math;
@@ -39,6 +37,9 @@ public abstract class EntityMixin implements OBBHitter {
     @Shadow private Vec3 position;
     @Unique
     public OBB.Part sbw$currentHitPart;
+
+    @Shadow
+    public abstract EntityDimensions getDimensions(Pose pose);
 
     @Override
     public OBB.Part sbw$getCurrentHitPart() {
@@ -127,13 +128,13 @@ public abstract class EntityMixin implements OBBHitter {
         }
     }
 
-    @Inject(method = "getEyeHeight(Lnet/minecraft/world/entity/Pose;Lnet/minecraft/world/entity/EntityDimensions;)F",
+    @Inject(method = "getEyeHeight(Lnet/minecraft/world/entity/Pose;)F",
             at = @At("RETURN"), cancellable = true)
-    private void getEyeHeightDimensions(Pose pPose, EntityDimensions pDimensions, CallbackInfoReturnable<Float> cir) {
+    private void getEyeHeightDimensions(Pose pose, CallbackInfoReturnable<Float> cir) {
         if (this.getVehicle() instanceof VehicleEntity vehicle) {
             cir.cancel();
             var s = vehicle.getPassengerRenderScale();
-            cir.setReturnValue(pDimensions.height * 0.85f * s);
+            cir.setReturnValue(getDimensions(pose).height() * 0.85f * s);
         }
     }
 }

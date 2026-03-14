@@ -37,7 +37,7 @@ object ClothConfigHelper {
         ) { IConfigScreenFactory { _, parent -> getConfigScreen(parent) } }
     }
 
-    fun getConfigScreen(parent: Screen): Screen {
+    fun getConfigScreen(parent: Screen?): Screen {
         return configBuilder.setParentScreen(parent).build()
     }
 
