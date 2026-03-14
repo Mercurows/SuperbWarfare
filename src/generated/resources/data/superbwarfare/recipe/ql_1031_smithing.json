@@ -4,7 +4,7 @@
     "item": "superbwarfare:battery"
   },
   "base": {
-    "item": "superbwarfare:legendary_material_pack"
+    "item": "superbwarfare:virtual_material_pack"
   },
   "result": {
     "count": 1,
