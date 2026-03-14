@@ -47,6 +47,11 @@ class ModAdvancementProvider(private val packOutput: PackOutput, private val exi
                 .whenIconCollected()
                 .parent(mainRoot)
         }
+        val vehicleAssembling = advancement("vehicle_assembling") {
+            it.icon(ModItems.VEHICLE_ASSEMBLING_TABLE.get())
+                .whenIconCollected()
+                .parent(physicsExcalibur)
+        }
         val cleanEnergy = advancement("clean_energy") {
             it.icon(ModItems.CHARGING_STATION.get())
                 .whenIconCollected()
@@ -55,38 +60,53 @@ class ModAdvancementProvider(private val packOutput: PackOutput, private val exi
         val superContainer = advancement("super_container") {
             it.icon(ModItems.CONTAINER.get())
                 .whenIconCollected()
-                .parent(cleanEnergy)
+                .parent(vehicleAssembling)
         }
 
         // 蓝图
         val blueprint = advancement("blueprint") {
-            it.icon(ModItems.TRACHELIUM_BLUEPRINT.get())
+            it.icon(ModItems.AK_47_BLUEPRINT.get())
                 .whenItemCollected(ModTags.Items.BLUEPRINT)
                 .parent(mainRoot)
         }
         val commonBlueprint = advancement("common_blueprint") {
-            it.icon(ModItems.TRACHELIUM_BLUEPRINT.get())
+            it.icon(ModItems.M_1911_BLUEPRINT.get())
                 .whenItemCollected(ModTags.Items.COMMON_BLUEPRINT)
                 .parent(blueprint)
         }
         val rareBlueprint = advancement("rare_blueprint") {
-            it.icon(ModItems.TRACHELIUM_BLUEPRINT.get())
+            it.icon(ModItems.MP_5_BLUEPRINT.get())
                 .whenItemCollected(ModTags.Items.RARE_BLUEPRINT)
                 .parent(commonBlueprint)
         }
         val epicBlueprint = advancement("epic_blueprint") {
-            it.icon(ModItems.TRACHELIUM_BLUEPRINT.get())
+            it.icon(ModItems.QBZ_191_BLUEPRINT.get())
                 .whenItemCollected(ModTags.Items.EPIC_BLUEPRINT)
                 .parent(rareBlueprint)
         }
         val legendaryBlueprint = advancement("legendary_blueprint") {
-            it.icon(ModItems.TRACHELIUM_BLUEPRINT.get())
+            it.icon(ModItems.AA_12_BLUEPRINT.get())
                 .whenItemCollected(ModTags.Items.LEGENDARY_BLUEPRINT)
                 .parent(epicBlueprint)
+        }
+        val superbBlueprint = advancement("superb_blueprint") {
+            it.icon(ModItems.SUPER_STAR_SHOOTER_BLUEPRINT.get())
+                .whenItemCollected(ModTags.Items.SUPERB_BLUEPRINT)
+                .parent(legendaryBlueprint)
+        }
+        val virtualBlueprint = advancement("virtual_blueprint") {
+            it.icon(ModItems.TRACHELIUM_BLUEPRINT.get())
+                .whenItemCollected(ModTags.Items.VIRTUAL_BLUEPRINT)
+                .parent(superbBlueprint)
         }
         val cannonBlueprint = advancement("cannon_blueprint") {
             it.icon(ModItems.MK_42_BLUEPRINT.get())
                 .whenItemCollected(ModTags.Items.CANNON_BLUEPRINT)
+                .parent(blueprint)
+        }
+        val blueprintResearching = advancement("blueprint_researching") {
+            it.icon(ModItems.BLUEPRINT_RESEARCH_TABLE.get())
+                .whenIconCollected()
                 .parent(blueprint)
         }
 

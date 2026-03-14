@@ -1,11 +1,13 @@
 {
-  "parent": "superbwarfare:main/common_blueprint",
+  "parent": "superbwarfare:main/blueprint",
   "criteria": {
     "0": {
       "conditions": {
         "items": [
           {
-            "tag": "superbwarfare:blueprint/rare"
+            "items": [
+              "superbwarfare:blueprint_research_table"
+            ]
           }
         ]
       },
@@ -15,16 +17,16 @@
   "display": {
     "announce_to_chat": true,
     "description": {
-      "translate": "superbwarfare.advancement.main.rare_blueprint.des"
+      "translate": "superbwarfare.advancement.main.blueprint_researching.des"
     },
     "frame": "task",
     "hidden": false,
     "icon": {
-      "item": "superbwarfare:mp_5_blueprint"
+      "item": "superbwarfare:blueprint_research_table"
     },
     "show_toast": true,
     "title": {
-      "translate": "superbwarfare.advancement.main.rare_blueprint"
+      "translate": "superbwarfare.advancement.main.blueprint_researching"
     }
   },
   "requirements": [

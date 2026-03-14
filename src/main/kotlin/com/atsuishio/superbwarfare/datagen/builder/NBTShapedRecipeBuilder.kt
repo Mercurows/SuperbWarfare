@@ -29,7 +29,7 @@ import java.util.function.Consumer
  */
 class NBTShapedRecipeBuilder(val category: RecipeCategory, pResult: ItemLike, val count: Int) : CraftingRecipeBuilder(),
     RecipeBuilder {
-    val result: Item = pResult.asItem()
+    val itemResult: Item = pResult.asItem()
     val rows: MutableList<String> = arrayListOf()
     val key: MutableMap<Char?, Ingredient?> = linkedMapOf()
     val advancement: Advancement.Builder = Advancement.Builder.recipeAdvancement()
@@ -89,7 +89,7 @@ class NBTShapedRecipeBuilder(val category: RecipeCategory, pResult: ItemLike, va
     }
 
     override fun getResult(): Item {
-        return this.result
+        return this.itemResult
     }
 
     override fun save(pFinishedRecipeConsumer: Consumer<FinishedRecipe>, pRecipeId: ResourceLocation) {
@@ -99,7 +99,7 @@ class NBTShapedRecipeBuilder(val category: RecipeCategory, pResult: ItemLike, va
             .rewards(AdvancementRewards.Builder.recipe(pRecipeId)).requirements(RequirementsStrategy.OR)
         pFinishedRecipeConsumer.accept(
             Result(
-                pRecipeId, this.result, this.count, (if (this.group == null) "" else this.group)!!,
+                pRecipeId, this.itemResult, this.count, (if (this.group == null) "" else this.group)!!,
                 determineBookCategory(this.category), this.rows, this.key, this.advancement,
                 pRecipeId.withPrefix("recipes/" + this.category.folderName + "/"), this.showNotification,
                 this.nbt

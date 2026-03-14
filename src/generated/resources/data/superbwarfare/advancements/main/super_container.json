@@ -1,5 +1,5 @@
 {
-  "parent": "superbwarfare:main/clean_energy",
+  "parent": "superbwarfare:main/vehicle_assembling",
   "criteria": {
     "0": {
       "conditions": {
