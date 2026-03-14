@@ -10,24 +10,14 @@ import net.minecraftforge.fml.common.Mod
 object ModParticles {
     @SubscribeEvent
     fun registerParticles(event: RegisterParticleProvidersEvent) {
-        event.registerSpriteSet(
-            ModParticleTypes.FIRE_STAR.get()
-        ) { FireStarParticle.provider(it) }
-        event.registerSpriteSet(
-            ModParticleTypes.WHITE_STAR.get()
-        ) { WhiteStarParticle.provider(it) }
-        event.registerSpriteSet(
-            ModParticleTypes.RISING_SMOKE.get()
-        ) { RisingSmokeParticle.provider(it) }
-        event.registerSpecial(ModParticleTypes.BULLET_DECAL.get(), BulletDecalParticle.Provider())
-        event.registerSpriteSet(
-            ModParticleTypes.CUSTOM_CLOUD.get()
-        ) { CustomCloudParticle.Provider(it) }
-        event.registerSpriteSet(
-            ModParticleTypes.CUSTOM_SMOKE.get()
-        ) { CustomSmokeParticle.Provider(it) }
-        event.registerSpriteSet(
-            ModParticleTypes.CANNON_MUZZLE_FLARE.get()
-        ) { CannonMuzzleFlareParticle.Provider(it) }
+        with(event) {
+            registerSpriteSet(ModParticleTypes.FIRE_STAR.get()) { FireStarParticle.provider(it) }
+            registerSpriteSet(ModParticleTypes.WHITE_STAR.get()) { WhiteStarParticle.provider(it) }
+            registerSpriteSet(ModParticleTypes.RISING_SMOKE.get()) { RisingSmokeParticle.provider(it) }
+            registerSpecial(ModParticleTypes.BULLET_DECAL.get(), BulletDecalParticle.Provider())
+            registerSpriteSet(ModParticleTypes.CUSTOM_CLOUD.get()) { CustomCloudParticle.Provider(it) }
+            registerSpriteSet(ModParticleTypes.CUSTOM_SMOKE.get()) { CustomSmokeParticle.Provider(it) }
+            registerSpriteSet(ModParticleTypes.CANNON_MUZZLE_FLARE.get()) { CannonMuzzleFlareParticle.Provider(it) }
+        }
     }
 }
