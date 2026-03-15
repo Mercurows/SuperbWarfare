@@ -21,12 +21,14 @@ import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import org.joml.Matrix3f
 import org.joml.Matrix4f
+import org.joml.Quaternionf
 import software.bernie.geckolib.cache.`object`.GeoBone
 import software.bernie.geckolib.core.animatable.GeoAnimatable
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone
 import software.bernie.geckolib.model.GeoModel
 import software.bernie.geckolib.renderer.GeoEntityRenderer
 import software.bernie.geckolib.util.RenderUtils
+
 
 abstract class VehicleRenderer<T>(renderManager: EntityRendererProvider.Context, model: GeoModel<T>) :
     GeoEntityRenderer<T>(renderManager, model) where T : VehicleEntity, T : GeoAnimatable {
@@ -78,7 +80,7 @@ abstract class VehicleRenderer<T>(renderManager: EntityRendererProvider.Context,
                 poseStack.pushPose()
                 RenderUtils.translateMatrixToBone(poseStack, bone)
                 RenderUtils.translateToPivotPoint(poseStack, bone)
-                RenderUtils.rotateMatrixAroundBone(poseStack, bone)
+                rotateMatrixAroundBone(poseStack, bone)
                 RenderUtils.scaleMatrixForBone(poseStack, bone)
                 RenderUtils.translateAwayFromPivotPoint(poseStack, bone)
                 poseStack.translate(bone.pivotX / 16, bone.pivotY / 16, bone.pivotZ / 16)
@@ -123,10 +125,10 @@ abstract class VehicleRenderer<T>(renderManager: EntityRendererProvider.Context,
         )
     }
 
-    fun rotateMatrixAroundBone(poseStack: PoseStack, bone: CoreGeoBone) {
-        if (bone.rotZ != 0f) poseStack.mulPose(Axis.ZP.rotation(bone.rotZ))
-        if (bone.rotY != 0f) poseStack.mulPose(Axis.YP.rotation(bone.rotY))
-        if (bone.rotX != 0f) poseStack.mulPose(Axis.XP.rotation(bone.rotX))
+    private fun rotateMatrixAroundBone(poseStack: PoseStack, bone: CoreGeoBone) {
+        if (bone.rotZ != 0f || bone.rotY != 0f || bone.rotX != 0f) {
+            poseStack.mulPose(Quaternionf().rotationZYX(bone.rotZ, bone.rotY, bone.rotX))
+        }
     }
 
     private fun vertex(
