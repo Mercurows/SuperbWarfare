@@ -20,11 +20,13 @@ import net.minecraft.util.Mth
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import org.joml.Matrix4f
+import org.joml.Quaternionf
 import software.bernie.geckolib.animatable.GeoAnimatable
 import software.bernie.geckolib.cache.`object`.GeoBone
 import software.bernie.geckolib.model.GeoModel
 import software.bernie.geckolib.renderer.GeoEntityRenderer
 import software.bernie.geckolib.util.RenderUtil
+
 
 abstract class VehicleRenderer<T>(renderManager: EntityRendererProvider.Context, model: GeoModel<T>) :
     GeoEntityRenderer<T>(renderManager, model) where T : VehicleEntity, T : GeoAnimatable {
@@ -115,10 +117,10 @@ abstract class VehicleRenderer<T>(renderManager: EntityRendererProvider.Context,
         )
     }
 
-    fun rotateMatrixAroundBone(poseStack: PoseStack, bone: GeoBone) {
-        if (bone.rotZ != 0f) poseStack.mulPose(Axis.ZP.rotation(bone.rotZ))
-        if (bone.rotY != 0f) poseStack.mulPose(Axis.YP.rotation(bone.rotY))
-        if (bone.rotX != 0f) poseStack.mulPose(Axis.XP.rotation(bone.rotX))
+    private fun rotateMatrixAroundBone(poseStack: PoseStack, bone: GeoBone) {
+        if (bone.rotZ != 0f || bone.rotY != 0f || bone.rotX != 0f) {
+            poseStack.mulPose(Quaternionf().rotationZYX(bone.rotZ, bone.rotY, bone.rotX))
+        }
     }
 
     private fun vertex(

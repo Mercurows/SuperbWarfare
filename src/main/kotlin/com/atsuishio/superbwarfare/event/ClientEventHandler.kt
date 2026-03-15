@@ -298,6 +298,9 @@ object ClientEventHandler {
     var shakeType: Double = 0.0
 
     @JvmField
+    var lerpShake: Double = 0.0
+
+    @JvmField
     var usingLunge: Boolean = false
 
     @JvmField
@@ -2129,25 +2132,22 @@ object ClientEventHandler {
 
         if (entity is Player && entity.isSpectator) return
 
-        if (0.0 < fireRotTimer) {
-            val shake = (
-                    MathTool.decayingOscillation(
-                        0.5f,
-                        2f,
-                        0.75f,
-                        fireRotTimer.toFloat()
-                    ) * (1 + amplitude) * (DisplayConfig.WEAPON_SCREEN_SHAKE.get() / 100.0).toFloat()
-                    ).toFloat()
-            if (recoilY > 0) {
-                event.yaw -= 0.5f * shake
-                event.pitch += shake
-                cameraRot[2] = shake.toDouble()
-            } else if (recoilY <= 0) {
-                event.yaw += 0.5f * shake
-                event.pitch -= shake
-                cameraRot[2] = shake.toDouble()
-            }
+        var shake = (
+                MathTool.decayingOscillation(
+                    0.6f,
+                    2f,
+                    2f,
+                    firePosTimer.toFloat()
+                ) * (1 + amplitude) * (DisplayConfig.WEAPON_SCREEN_SHAKE.get() / 100.0).toFloat()
+                )
+
+        if (recoilY > 0) {
+            shake = -shake
         }
+
+        lerpShake = Mth.lerp(event.partialTick * 0.5, lerpShake, shake)
+
+        cameraRot[2] = lerpShake
     }
 
     @JvmStatic
@@ -2390,9 +2390,7 @@ object ClientEventHandler {
                 rotateX *= 1.8f
             }
 
-            val newPitch = player.xRot - rotateX
-
-            player.xRot = newPitch
+            player.xRot -= rotateX
             player.xRotO = player.xRot
         }
     }
