@@ -9,8 +9,8 @@ import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedVector3f
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
-import com.atsuishio.superbwarfare.tools.SoundTool
 import com.atsuishio.superbwarfare.tools.`is`
+import com.atsuishio.superbwarfare.tools.playLocalSound
 import kotlinx.serialization.Serializable
 import net.minecraft.ChatFormatting
 import net.minecraft.core.BlockPos
@@ -42,11 +42,11 @@ data class DroneFireMessage(val pos: SerializedVector3f) : ServerPacketPayload()
                     Component.translatable("tips.superbwarfare.mortar.target_pos")
                         .withStyle(ChatFormatting.GRAY)
                         .append(
-                            Component.literal(("[" + pos.x() + "," + pos.y() + "," + pos.z() + "]"))
+                            Component.literal(("[${pos.x()}, ${pos.y() }, ${pos.z()}]"))
                         ), true
                 )
 
-                SoundTool.playLocalSound(player, ModSounds.CANNON_ZOOM_IN.get(), 2f, 1f)
+                player.playLocalSound(ModSounds.CANNON_ZOOM_IN.get(), 2f, 1f)
 
                 val item = offStack.item
                 if (item is ArtilleryIndicatorItem) {

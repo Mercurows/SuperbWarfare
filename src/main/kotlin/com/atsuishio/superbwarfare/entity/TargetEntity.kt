@@ -6,7 +6,7 @@ import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.tools.FormatTool
-import com.atsuishio.superbwarfare.tools.SoundTool
+import com.atsuishio.superbwarfare.tools.playLocalSound
 import net.minecraft.commands.arguments.EntityAnchorArgument
 import net.minecraft.core.BlockPos
 import net.minecraft.core.NonNullList
@@ -207,7 +207,7 @@ open class TargetEntity(type: EntityType<TargetEntity>, level: Level) : LivingEn
                         FormatTool.format1D((entity.position()).distanceTo((sourceEntity.position())), "m")
                     ), true
                 )
-                SoundTool.playLocalSound(sourceEntity, ModSounds.TARGET_DOWN.get(), 1f, 1f)
+                sourceEntity.playLocalSound(ModSounds.TARGET_DOWN.get(), 1f, 1f)
                 entity.downTime = 40
             }
         }

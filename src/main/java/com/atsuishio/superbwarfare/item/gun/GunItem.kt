@@ -622,7 +622,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         if (data.heat.get() >= 100 && !data.overHeat.get()) {
             data.overHeat.set(true)
             if (shooter is ServerPlayer) {
-                SoundTool.playLocalSound(shooter, ModSounds.OVERHEAT.get(), 2f, 1f)
+                shooter.playLocalSound(ModSounds.OVERHEAT.get(), 2f, 1f)
             }
         }
 
