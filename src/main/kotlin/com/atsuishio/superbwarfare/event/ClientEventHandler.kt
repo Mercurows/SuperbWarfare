@@ -1228,9 +1228,7 @@ object ClientEventHandler {
         }
 
         player.swing(InteractionHand.MAIN_HAND)
-        for (entity in attackList) {
-            sendPacketToServer(MeleeAttackMessage(entity.uuid))
-        }
+        sendPacketToServer(MeleeAttackMessage(attackList.map { it.uuid }))
     }
 
     fun handleLungeAttack(player: Player, stack: ItemStack) {
@@ -2094,10 +2092,10 @@ object ClientEventHandler {
 
         if (fireRecoilTime > 0.0) {
             firePosTimer = 0.001
-            if (fireRotTimer > 0) {
-                fireRotTimer = 0.12
+            fireRotTimer = if (fireRotTimer > 0) {
+                0.12
             } else {
-                fireRotTimer = 0.001
+                0.001
             }
             fireRecoilTime -= 7 * times
             fireSpread += 0.1 * times
@@ -2520,7 +2518,7 @@ object ClientEventHandler {
     }
 
     @SubscribeEvent
-    fun onFovUpdate(event: ViewportEvent.ComputeFov) {
+    fun onFovUpdate(event: ComputeFov) {
         val player = localPlayer ?: return
         val times = getDelta().coerceAtMost(1.6f)
 
