@@ -91,17 +91,17 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         addBoltTimeBehavior(this.boltTimeBehaviors)
     }
 
-    override fun computeProperties(gunData: GunData, rawData: DefaultGunData): DefaultGunData {
-        rawData.damage += getCustomDamage(gunData)
-        rawData.headshot += getCustomHeadshot(gunData)
-        rawData.bypassesArmor += getCustomBypassArmor(gunData)
-        rawData.magazine += getCustomMagazine(gunData)
-        rawData.defaultZoom += getCustomZoom(gunData)
-        rawData.rpm += getCustomRPM(gunData)
-        rawData.weight += getCustomWeight(gunData)
-        rawData.velocity += getCustomVelocity(gunData)
-        rawData.soundRadius += getCustomSoundRadius(gunData)
-        rawData.boltActionTime += getCustomBoltActionTime(gunData)
+    override fun computeProperties(data: GunData, rawData: DefaultGunData): DefaultGunData {
+        rawData.damage += getCustomDamage(data)
+        rawData.headshot += getCustomHeadshot(data)
+        rawData.bypassesArmor += getCustomBypassArmor(data)
+        rawData.magazine += getCustomMagazine(data)
+        rawData.defaultZoom += getCustomZoom(data)
+        rawData.rpm += getCustomRPM(data)
+        rawData.weight += getCustomWeight(data)
+        rawData.velocity += getCustomVelocity(data)
+        rawData.soundRadius += getCustomSoundRadius(data)
+        rawData.boltActionTime += getCustomBoltActionTime(data)
 
         return rawData
     }
@@ -613,7 +613,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         if (data.heat.get() >= 100 && !data.overHeat.get()) {
             data.overHeat.set(true)
             if (shooter is ServerPlayer) {
-                SoundTool.playLocalSound(shooter, ModSounds.OVERHEAT.get(), 2f, 1f)
+                shooter.playLocalSound(ModSounds.OVERHEAT.get(), 2f, 1f)
             }
         }
 

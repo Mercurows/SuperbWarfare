@@ -8,7 +8,7 @@ import com.atsuishio.superbwarfare.init.ModEnumExtensions
 import com.atsuishio.superbwarfare.init.ModRarities
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem
-import com.atsuishio.superbwarfare.tools.SoundTool
+import com.atsuishio.superbwarfare.tools.playLocalSound
 import net.minecraft.client.model.HumanoidModel.ArmPose
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundSource
@@ -31,7 +31,7 @@ class SuperStarShooterItem : GunGeoItem(Properties().rarity(ModRarities.SUPERB))
             data.ammo.add(1)
 
             if (inMainHand && shooter is ServerPlayer) {
-                SoundTool.playLocalSound(shooter, ModSounds.STAR_RECOVER.get(), SoundSource.PLAYERS, 0.5f, 1f)
+                shooter.playLocalSound(ModSounds.STAR_RECOVER.get(), SoundSource.PLAYERS, 0.5f, 1f)
             }
         }
     }

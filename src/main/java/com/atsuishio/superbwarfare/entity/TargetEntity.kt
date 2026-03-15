@@ -179,17 +179,15 @@ open class TargetEntity(type: EntityType<TargetEntity>, level: Level) : LivingEn
                 event.setCanceled(true)
                 entity.health = entity.maxHealth
 
-                if (sourceEntity == null) return
-
                 if (sourceEntity is Player) {
                     sourceEntity.displayClientMessage(
                         Component.translatable(
                             "tips.superbwarfare.target.down",
-                            format1D(entity.position().distanceTo(sourceEntity.position()), "m")
+                            format1D((entity.position()).distanceTo((sourceEntity.position())), "m")
                         ), true
                     )
                     SoundTool.playLocalSound(sourceEntity, ModSounds.TARGET_DOWN.get(), 1f, 1f)
-                    entity.entityData.set(DOWN_TIME, 40)
+                    entity.downTime = 40
                 }
             }
         }

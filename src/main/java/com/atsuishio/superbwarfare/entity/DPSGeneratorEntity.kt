@@ -7,7 +7,7 @@ import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.tools.FormatTool.format1DZ
-import com.atsuishio.superbwarfare.tools.SoundTool
+import com.atsuishio.superbwarfare.tools.playLocalSound
 import net.minecraft.commands.arguments.EntityAnchorArgument
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
@@ -324,7 +324,7 @@ open class DPSGeneratorEntity(type: EntityType<DPSGeneratorEntity>, level: Level
             entity.health = 0.00001f
 
             if (sourceEntity is Player) {
-                SoundTool.playLocalSound(sourceEntity, ModSounds.TARGET_DOWN.get(), 1f, 1f)
+                sourceEntity.playLocalSound(ModSounds.TARGET_DOWN.get(), 1f, 1f)
                 entity.downTime = 40
             }
         }

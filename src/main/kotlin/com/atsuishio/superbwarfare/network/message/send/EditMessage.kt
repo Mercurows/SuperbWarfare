@@ -9,7 +9,7 @@ import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
-import com.atsuishio.superbwarfare.tools.SoundTool
+import com.atsuishio.superbwarfare.tools.playLocalSound
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -30,7 +30,7 @@ data class EditMessage(val type: Int, val add: Boolean, val isVehicle: Boolean) 
                 )
 
                 val sound = data.get(GunProp.SOUND_INFO).change ?: return@modifyGunData
-                SoundTool.playLocalSound(player, sound, 4f, 1f)
+                player.playLocalSound(sound, 4f, 1f)
             }
         } else {
             val stack = player.mainHandItem
@@ -79,7 +79,7 @@ data class EditMessage(val type: Int, val add: Boolean, val isVehicle: Boolean) 
                 }
             }
             data.save()
-            SoundTool.playLocalSound(player, ModSounds.EDIT.get(), 1f, 1f)
+            player.playLocalSound(ModSounds.EDIT.get(), 1f, 1f)
         }
     }
 
