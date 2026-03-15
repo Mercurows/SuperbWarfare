@@ -1,18 +1,24 @@
 package com.atsuishio.superbwarfare.item.armor
 
+import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.init.ModAttributes
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.atsuishio.superbwarfare.tiers.ModArmorMaterial
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.GeoArmorRenderer
 import net.minecraft.client.model.HumanoidModel
 import net.minecraft.world.entity.EquipmentSlot
+import net.minecraft.world.entity.EquipmentSlotGroup
 import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.ai.attributes.AttributeModifier
 import net.minecraft.world.item.ArmorItem
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.component.ItemAttributeModifiers
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent
+import kotlin.math.max
 
 class RuChest6b43Item : ArmorItem(ModArmorMaterial.CEMENTED_CARBIDE, Type.CHESTPLATE, Properties()) {
     @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
@@ -23,10 +29,10 @@ class RuChest6b43Item : ArmorItem(ModArmorMaterial.CEMENTED_CARBIDE, Type.CHESTP
                 private var renderer: GeoArmorRenderer? = null
 
                 override fun getHumanoidArmorModel(
-                    livingEntity: LivingEntity?,
-                    itemStack: ItemStack?,
-                    equipmentSlot: EquipmentSlot?,
-                    original: HumanoidModel<*>?
+                    livingEntity: LivingEntity,
+                    itemStack: ItemStack,
+                    equipmentSlot: EquipmentSlot,
+                    original: HumanoidModel<*>
                 ): HumanoidModel<*> {
                     if (this.renderer == null) {
                         this.renderer = GeoArmorRenderer(
@@ -42,24 +48,19 @@ class RuChest6b43Item : ArmorItem(ModArmorMaterial.CEMENTED_CARBIDE, Type.CHESTP
         }
     }
 
-    // TODO attributeModifiers
-//    override fun getAttributeModifiers(
-//        slot: EquipmentSlot,
-//        stack: ItemStack
-//    ): Multimap<Attribute, AttributeModifier> {
-//        var map = super.getDefaultAttributeModifiers(slot)
-//        val uuid = UUID(slot.toString().hashCode().toLong(), 0)
-//        if (slot == EquipmentSlot.CHEST) {
-//            map = HashMultimap.create<Attribute, AttributeModifier>(map)
-//            map.put(
-//                ModAttributes.BULLET_RESISTANCE.get(), AttributeModifier(
-//                    uuid,
-//                    Mod.ATTRIBUTE_MODIFIER,
-//                    0.5 * max(0.0, 1 - stack.damageValue.toDouble() / stack.maxDamage),
-//                    AttributeModifier.Operation.ADDITION
-//                )
-//            )
-//        }
-//        return map
-//    }
+    override fun getDefaultAttributeModifiers(stack: ItemStack): ItemAttributeModifiers {
+        val modifiers = super.getDefaultAttributeModifiers(stack)
+        val list = ArrayList<ItemAttributeModifiers.Entry>(modifiers.modifiers())
+        list.add(
+            ItemAttributeModifiers.Entry(
+                ModAttributes.BULLET_RESISTANCE, AttributeModifier(
+                    Mod.ATTRIBUTE_MODIFIER,
+                    0.5 * max(0.0, 1 - stack.damageValue.toDouble() / stack.maxDamage),
+                    AttributeModifier.Operation.ADD_VALUE
+                ),
+                EquipmentSlotGroup.bySlot(this.type.slot)
+            )
+        )
+        return ItemAttributeModifiers(list, true)
+    }
 }
