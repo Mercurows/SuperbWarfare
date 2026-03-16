@@ -60,8 +60,8 @@ object ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.HPJ_11.get()) { Hpj11Renderer(it) }
         event.registerEntityRenderer(ModEntities.A_10A.get()) { A10Renderer(it) }
         event.registerEntityRenderer(ModEntities.MK_82.get()) { Mk82Renderer(it) }
-        event.registerEntityRenderer(ModEntities.SC_50.get()) { Sc50Renderer(it) }
-        event.registerEntityRenderer(ModEntities.SC_250.get()) { Sc250Renderer(it) }
+        event.registerEntityRenderer(ModEntities.SC_50.get()) { BasicProjectileRenderer(it) }
+        event.registerEntityRenderer(ModEntities.SC_250.get()) { BasicProjectileRenderer(it) }
         event.registerEntityRenderer(ModEntities.AGM_65.get()) { Agm65Renderer(it) }
         event.registerEntityRenderer(ModEntities.BLU_43.get()) { Blu43Renderer(it) }
         event.registerEntityRenderer(ModEntities.TM_62.get()) { Tm62Renderer(it) }

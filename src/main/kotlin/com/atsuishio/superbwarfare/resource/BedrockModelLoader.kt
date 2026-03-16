@@ -35,6 +35,8 @@ object BedrockModelLoader {
     val HAND_GRENADE_MODEL = loc("projectile/hand_grenade.geo")
     val RGO_GRENADE_MODEL = loc("projectile/rgo_grenade.geo")
     val M18_SMOKE_GRENADE_MODEL = loc("projectile/m18_smoke_grenade.geo")
+    val SC_50_MODEL = loc("projectile/sc_50.geo")
+    val SC_250_MODEL = loc("projectile/sc_250.geo")
 
     // animations
     val SENPAI_ANI = loc("senpai.animation")
@@ -81,6 +83,8 @@ object BedrockModelLoader {
             register(HAND_GRENADE_MODEL, COMMON_LOADER)
             register(RGO_GRENADE_MODEL, COMMON_LOADER)
             register(M18_SMOKE_GRENADE_MODEL, COMMON_LOADER)
+            register(SC_50_MODEL, COMMON_LOADER)
+            register(SC_250_MODEL, COMMON_LOADER)
         }
     }
 
