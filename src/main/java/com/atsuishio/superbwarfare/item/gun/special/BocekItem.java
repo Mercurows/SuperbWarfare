@@ -198,7 +198,7 @@ public class BocekItem extends GunGeoItem {
         }
 
         projectile.setPos(player.getX() - 0.1 * player.getLookAngle().x, player.getEyeY() - 0.1 - 0.1 * player.getLookAngle().y, player.getZ() + -0.1 * player.getLookAngle().z);
-        projectile.shoot(player, player.getLookAngle().x, player.getLookAngle().y, player.getLookAngle().z, velocity, spread);
+        projectile.shoot(player.getLookAngle().x, player.getLookAngle().y, player.getLookAngle().z, velocity, spread);
         projectile.damage((float) damage);
 
         player.level().addFreshEntity(projectile);

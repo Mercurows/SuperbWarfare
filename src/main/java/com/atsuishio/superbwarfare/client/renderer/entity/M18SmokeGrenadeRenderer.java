@@ -26,17 +26,10 @@ public class M18SmokeGrenadeRenderer extends GeoEntityRenderer<M18SmokeGrenadeEn
     @Override
     public void defaultRender(PoseStack poseStack, M18SmokeGrenadeEntity entityIn, MultiBufferSource bufferSource, @Nullable RenderType renderType, @Nullable VertexConsumer buffer, float yaw, float partialTicks, int packedLight) {
         poseStack.pushPose();
-
-        poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entityIn.yRotO, entityIn.getYRot()) - 90));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(90 + Mth.lerp(partialTicks, entityIn.xRotO, entityIn.getXRot())));
-
+        poseStack.translate(0, entityIn.getBbHeight() / 2, 0);
+        poseStack.mulPose(Axis.YP.rotationDegrees(-yaw));
+        poseStack.mulPose(Axis.XP.rotationDegrees(Mth.lerp(partialTicks, entityIn.xRotO, entityIn.getXRot())));
         super.defaultRender(poseStack, entityIn, bufferSource, renderType, buffer, yaw, partialTicks, packedLight);
-
         poseStack.popPose();
-    }
-
-    @Override
-    protected float getDeathMaxRotation(M18SmokeGrenadeEntity entityLivingBaseIn) {
-        return 0;
     }
 }
