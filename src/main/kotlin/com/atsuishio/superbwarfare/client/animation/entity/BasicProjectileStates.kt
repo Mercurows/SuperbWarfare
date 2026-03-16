@@ -3,20 +3,19 @@ package com.atsuishio.superbwarfare.client.animation.entity
 import com.atsuishio.superbwarfare.client.animation.AnimationPlayType
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.SimpleAnimationState
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.SimpleTransition
-import net.minecraft.world.entity.Entity
 
 object BasicProjectileStates {
-    val INIT: SimpleAnimationState<BasicEntityContext<Entity>> =
-        SimpleAnimationState.Builder<BasicEntityContext<Entity>>()
+    val INIT: SimpleAnimationState<BasicProjectileContext<*>> =
+        SimpleAnimationState.Builder<BasicProjectileContext<*>>()
             .evaluatePose { it.getPose() }
             .build()
 
-    val IDLE: SimpleAnimationState<BasicEntityContext<Entity>> =
-        SimpleAnimationState.Builder<BasicEntityContext<Entity>>()
+    val IDLE: SimpleAnimationState<BasicProjectileContext<*>> =
+        SimpleAnimationState.Builder<BasicProjectileContext<*>>()
             .evaluatePose { it.getPose() }
             .build()
 
-    val TO_IDLE: SimpleTransition<BasicEntityContext<Entity>> = SimpleTransition.Builder<BasicEntityContext<Entity>>()
+    val INIT_TRANS: SimpleTransition<BasicProjectileContext<*>> = SimpleTransition.Builder<BasicProjectileContext<*>>()
         .predicate { true }
         .target(IDLE)
         .from(INIT)

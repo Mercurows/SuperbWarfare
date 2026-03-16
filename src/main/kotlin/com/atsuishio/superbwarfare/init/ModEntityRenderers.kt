@@ -59,7 +59,7 @@ object ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.SWARM_DRONE.get()) { SwarmDroneRenderer(it) }
         event.registerEntityRenderer(ModEntities.HPJ_11.get()) { Hpj11Renderer(it) }
         event.registerEntityRenderer(ModEntities.A_10A.get()) { A10Renderer(it) }
-        event.registerEntityRenderer(ModEntities.MK_82.get()) { Mk82Renderer(it) }
+        event.registerEntityRenderer(ModEntities.MK_82.get()) { BasicProjectileRenderer(it) }
         event.registerEntityRenderer(ModEntities.SC_50.get()) { BasicProjectileRenderer(it) }
         event.registerEntityRenderer(ModEntities.SC_250.get()) { BasicProjectileRenderer(it) }
         event.registerEntityRenderer(ModEntities.AGM_65.get()) { Agm65Renderer(it) }

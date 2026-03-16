@@ -38,7 +38,7 @@ open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context) :
 
         poseStack.translate(0f, entity.bbHeight / 2, 0f)
         poseStack.mulPose(Axis.YP.rotationDegrees(-yaw))
-        poseStack.mulPose(Axis.XP.rotationDegrees(Mth.lerp(partialTick, entity.xRotO, entity.xRot)))
+        poseStack.mulPose(Axis.XP.rotationDegrees(Mth.lerp(partialTick, entity.xRotO, entity.xRot) + 180f))
 
         val renderType = RenderType.entityTranslucent(getTextureLocation(entity))
         val vertexConsumer = buffer.getBuffer(renderType)
