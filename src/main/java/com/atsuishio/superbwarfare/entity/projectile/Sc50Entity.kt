@@ -1,13 +1,12 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.resource.BedrockModelLoader
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.level.Level
 
-class Sc50Entity(type: EntityType<out Sc50Entity>, level: Level) : AerialBombEntity(type, level), BasicGeoProjectileEntity {
-    override val model: ResourceLocation
-        get() = BedrockModelLoader.SC_50_MODEL
+class Sc50Entity(type: EntityType<out Sc50Entity>, level: Level) : AerialBombEntity(type, level),
+    BasicGeoProjectileEntity {
+    override fun getModel() = BedrockModelLoader.SC_50_MODEL
 
     init {
         this.noCulling = true

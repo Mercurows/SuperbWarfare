@@ -11,7 +11,6 @@ import com.atsuishio.superbwarfare.tools.sendPacketTo
 import net.minecraft.core.Direction
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundSource
@@ -242,6 +241,5 @@ open class M18SmokeGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEn
         return false
     }
 
-    override val model: ResourceLocation
-        get() = BedrockModelLoader.M18_SMOKE_GRENADE_MODEL
+    override fun getModel() = BedrockModelLoader.M18_SMOKE_GRENADE_MODEL
 }

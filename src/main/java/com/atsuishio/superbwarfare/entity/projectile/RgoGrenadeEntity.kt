@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.customExplode
 import net.minecraft.core.particles.ParticleTypes
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
@@ -90,6 +89,5 @@ open class RgoGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity 
         )
     }
 
-    override val model: ResourceLocation
-        get() = BedrockModelLoader.RGO_GRENADE_MODEL
+    override fun getModel() = BedrockModelLoader.RGO_GRENADE_MODEL
 }

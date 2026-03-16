@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.sendPacketTo
 import net.minecraft.core.Direction
 import net.minecraft.core.particles.ParticleTypes
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundSource
@@ -25,8 +24,7 @@ import net.minecraft.world.phys.HitResult
 import kotlin.math.min
 
 open class HandGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity {
-    override val model: ResourceLocation
-        get() = BedrockModelLoader.HAND_GRENADE_MODEL
+    override fun getModel() = BedrockModelLoader.HAND_GRENADE_MODEL
 
     constructor(type: EntityType<out HandGrenadeEntity>, level: Level?) : super(type, level) {
         this.noCulling = true
