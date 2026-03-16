@@ -38,14 +38,9 @@ public class ClaymoreRenderer extends GeoEntityRenderer<ClaymoreEntity> {
     @Override
     public void render(ClaymoreEntity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
         poseStack.pushPose();
-        poseStack.mulPose(Axis.YP.rotationDegrees(-Mth.lerp(partialTicks, entityIn.yRotO, entityIn.getYRot())));
+        poseStack.mulPose(Axis.YP.rotationDegrees(-entityYaw));
         super.render(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
         poseStack.popPose();
-    }
-
-    @Override
-    protected float getDeathMaxRotation(ClaymoreEntity entityLivingBaseIn) {
-        return 0;
     }
 
     @Override

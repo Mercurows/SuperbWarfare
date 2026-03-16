@@ -26,7 +26,7 @@ public class Blu43Renderer extends GeoEntityRenderer<Blu43Entity> {
     @Override
     public void render(Blu43Entity entityIn, float entityYaw, float partialTicks, PoseStack poseStack, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
         poseStack.pushPose();
-        poseStack.mulPose(Axis.YP.rotationDegrees(-Mth.lerp(partialTicks, entityIn.yRotO, entityIn.getYRot())));
+        poseStack.mulPose(Axis.YP.rotationDegrees(-entityYaw));
         super.render(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
         poseStack.popPose();
     }

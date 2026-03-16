@@ -18,6 +18,7 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
@@ -163,6 +164,14 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
             }
             this.discard();
         }
+    }
+
+    @Override
+    protected void updateRotation() {
+        Vec3 vec3 = this.getDeltaMovement();
+        double d0 = vec3.horizontalDistance();
+        this.setXRot(lerpRotation(this.xRotO, -(float)(Mth.atan2(vec3.y, d0) * (double)(180F / (float)Math.PI))));
+        this.setYRot(lerpRotation(this.yRotO, -(float)(Mth.atan2(vec3.x, vec3.z) * (double)(180F / (float)Math.PI))));
     }
 
     @Override
@@ -432,5 +441,16 @@ public abstract class FastThrowableProjectile extends ThrowableItemProjectile im
                         ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, this
                 )
         ).getType() != HitResult.Type.BLOCK;
+    }
+
+    @Override
+    public void shoot(double pX, double pY, double pZ, float pVelocity, float pInaccuracy) {
+        Vec3 vec3 = (new Vec3(pX, pY, pZ)).normalize().add(this.random.triangle(0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0, 0.0172275 * (double) pInaccuracy), this.random.triangle(0, 0.0172275 * (double) pInaccuracy)).scale((double) pVelocity);
+        this.setDeltaMovement(vec3);
+        double d0 = vec3.horizontalDistance();
+        this.setYRot((float) (-Mth.atan2(vec3.x, vec3.z) * (double) (180F / (float) java.lang.Math.PI)));
+        this.setXRot((float) (-Mth.atan2(vec3.y, d0) * (double) (180F / (float) java.lang.Math.PI)));
+        this.yRotO = this.getYRot();
+        this.xRotO = this.getXRot();
     }
 }

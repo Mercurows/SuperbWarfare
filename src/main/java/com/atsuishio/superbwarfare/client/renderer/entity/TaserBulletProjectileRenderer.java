@@ -30,9 +30,4 @@ public class TaserBulletProjectileRenderer extends GeoEntityRenderer<TaserBullet
         super.render(entityIn, entityYaw, partialTicks, poseStack, bufferIn, packedLightIn);
         poseStack.popPose();
     }
-
-    @Override
-    protected float getDeathMaxRotation(TaserBulletEntity entityLivingBaseIn) {
-        return 0;
-    }
 }

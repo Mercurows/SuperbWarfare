@@ -13,12 +13,13 @@
 			"bones": [
 				{
 					"name": "bone",
-					"pivot": [0, 0, 0],
+					"pivot": [0, 0, 1],
+					"rotation": [-90, 0, 0],
 					"cubes": [
 						{
-							"origin": [-1, -2, -1],
+							"origin": [-1, -2, 0],
 							"size": [2, 2, 2],
-							"pivot": [0, 0, 0],
+							"pivot": [0, 0, 1],
 							"rotation": [0, -45, 0],
 							"uv": {
 								"north": {"uv": [0, 0], "uv_size": [1, 1]},
