@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.init
 
 import com.atsuishio.superbwarfare.client.renderer.entity.*
+import com.atsuishio.superbwarfare.client.renderer.projectile.BasicProjectileRenderer
 import com.atsuishio.superbwarfare.client.renderer.projectile.ProjectileEntityRenderer
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.client.event.EntityRenderersEvent
@@ -29,7 +30,7 @@ object ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.MK_42.get()) { Mk42Renderer(it) }
         event.registerEntityRenderer(ModEntities.DRONE.get()) { DroneRenderer(it) }
         event.registerEntityRenderer(ModEntities.HAND_GRENADE.get()) { BasicProjectileRenderer(it) }
-        event.registerEntityRenderer(ModEntities.RGO_GRENADE.get()) { RgoGrenadeRenderer(it) }
+        event.registerEntityRenderer(ModEntities.RGO_GRENADE.get()) { BasicProjectileRenderer(it) }
         event.registerEntityRenderer(ModEntities.M18_SMOKE_GRENADE.get()) { BasicProjectileRenderer(it) }
         event.registerEntityRenderer(ModEntities.MLE_1934.get()) { Mle1934Renderer(it) }
         event.registerEntityRenderer(ModEntities.JAVELIN_MISSILE.get()) { JavelinMissileRenderer(it) }
