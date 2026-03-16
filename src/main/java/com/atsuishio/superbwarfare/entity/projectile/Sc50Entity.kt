@@ -1,0 +1,24 @@
+package com.atsuishio.superbwarfare.entity.projectile
+
+import com.atsuishio.superbwarfare.resource.BedrockModelLoader
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.entity.EntityType
+import net.minecraft.world.level.Level
+
+class Sc50Entity(type: EntityType<out Sc50Entity>, level: Level) : AerialBombEntity(type, level), BasicGeoProjectileEntity {
+    override val model: ResourceLocation
+        get() = BedrockModelLoader.SC_50_MODEL
+
+    init {
+        this.noCulling = true
+        this.explosionRadius = 11f
+        this.explosionDamage = 120f
+    }
+
+    override fun getVolume(): Float {
+        return 0.4f
+    }
+
+    override val maxHealth: Float
+        get() = 25f
+}
