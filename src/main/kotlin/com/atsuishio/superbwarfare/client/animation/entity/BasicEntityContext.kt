@@ -12,8 +12,8 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.world.entity.Entity
 
-abstract class AbstractContext<T : Entity>(var entity: T, location: ResourceLocation) {
-    var animations = hashMapOf<String, BedrockAnimation>()
+open class BasicEntityContext<T : Entity>(val entity: T, location: ResourceLocation) {
+    val animations = hashMapOf<String, BedrockAnimation>()
     var partialTick: Float = 0f
 
     private var animationRunner: AnimationRunner? = null

@@ -32,6 +32,8 @@ object BedrockModelLoader {
     val US_CHEST_IOTV_MODEL = loc("armor/us_chest_iotv.geo")
     val US_HELMET_PASGT_MODEL = loc("armor/us_helmet_pasgt.geo")
 
+    val HAND_GRENADE_MODEL = loc("projectile/hand_grenade.geo")
+
     // animations
     val SENPAI_ANI = loc("senpai.animation")
     val TARGET_ANI = loc("target.animation")
@@ -74,6 +76,7 @@ object BedrockModelLoader {
             register(RU_HELMET_6B47_MODEL, COMMON_LOADER, ::BedrockArmorModel)
             register(US_CHEST_IOTV_MODEL, COMMON_LOADER, ::BedrockArmorModel)
             register(US_HELMET_PASGT_MODEL, COMMON_LOADER, ::BedrockArmorModel)
+            register(HAND_GRENADE_MODEL, COMMON_LOADER)
         }
     }
 
