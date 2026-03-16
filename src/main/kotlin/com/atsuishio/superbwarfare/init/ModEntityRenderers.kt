@@ -28,7 +28,7 @@ object ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.PROJECTILE.get()) { ProjectileEntityRenderer(it) }
         event.registerEntityRenderer(ModEntities.MK_42.get()) { Mk42Renderer(it) }
         event.registerEntityRenderer(ModEntities.DRONE.get()) { DroneRenderer(it) }
-        event.registerEntityRenderer(ModEntities.HAND_GRENADE.get()) { HandGrenadeRenderer(it) }
+        event.registerEntityRenderer(ModEntities.HAND_GRENADE.get()) { BasicProjectileRenderer(it) }
         event.registerEntityRenderer(ModEntities.RGO_GRENADE.get()) { RgoGrenadeRenderer(it) }
         event.registerEntityRenderer(ModEntities.M18_SMOKE_GRENADE.get()) { M18SmokeGrenadeRenderer(it) }
         event.registerEntityRenderer(ModEntities.MLE_1934.get()) { Mle1934Renderer(it) }
