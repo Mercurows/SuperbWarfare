@@ -38,11 +38,14 @@ object BedrockModelLoader {
     val M18_SMOKE_GRENADE_MODEL = loc("projectile/m18_smoke_grenade.geo")
     val SC_50_MODEL = loc("projectile/sc_50.geo")
     val SC_250_MODEL = loc("projectile/sc_250.geo")
+    val MK_82_MODEL = loc("projectile/mk_82.geo")
 
     // animations
     val SENPAI_ANI = loc("senpai.animation")
     val TARGET_ANI = loc("target.animation")
     val DPS_GENERATOR_ANI = loc("dps_generator.animation")
+
+    val MK_82_ANI = loc("mk_82.animation")
 
     // textures
     val GE_HELMET_M_35_TEXTURE = loc("textures/armor/ge_helmet_m_35.png")
@@ -86,6 +89,7 @@ object BedrockModelLoader {
             register(M18_SMOKE_GRENADE_MODEL, COMMON_LOADER)
             register(SC_50_MODEL, COMMON_LOADER)
             register(SC_250_MODEL, COMMON_LOADER)
+            register(MK_82_MODEL, COMMON_LOADER)
         }
     }
 
@@ -95,6 +99,7 @@ object BedrockModelLoader {
             register(SENPAI_ANI, SENPAI_MODEL, COMMON_LOADER)
             register(TARGET_ANI, TARGET_MODEL, COMMON_LOADER)
             register(DPS_GENERATOR_ANI, DPS_GENERATOR_MODEL, COMMON_LOADER)
+            register(MK_82_ANI, MK_82_MODEL, COMMON_LOADER)
         }
     }
 

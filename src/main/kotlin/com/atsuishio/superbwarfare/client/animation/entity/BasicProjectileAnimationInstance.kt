@@ -6,8 +6,9 @@ import com.maydaymemory.mae.control.statemachine.AnimationStateMachine
 import net.minecraft.world.entity.Entity
 
 class BasicProjectileAnimationInstance<T>(entity: T) where T : Entity, T : BasicGeoProjectileEntity {
-    val context: BasicEntityContext<Entity> = BasicEntityContext(entity, entity.animation!!)
-    private val stateMachine: AnimationStateMachine<BasicEntityContext<Entity>> = AnimationStateMachine(BasicProjectileStates.INIT, context) { System.nanoTime() }
+    val context = BasicProjectileContext(entity, entity.animation!!)
+    private val stateMachine: AnimationStateMachine<BasicProjectileContext<*>> =
+        AnimationStateMachine(BasicProjectileStates.INIT, context) { System.nanoTime() }
 
     fun tick() {
         context.tick()
