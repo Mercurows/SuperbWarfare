@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
-import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
@@ -28,10 +27,6 @@ import kotlin.math.min
 open class HandGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity {
     override val model: ResourceLocation
         get() = BedrockModelLoader.HAND_GRENADE_MODEL
-    override val animation: ResourceLocation?
-        get() = null
-    override val animationInstance: BasicProjectileAnimationInstance<*>?
-        get() = null
 
     constructor(type: EntityType<out HandGrenadeEntity>, level: Level?) : super(type, level) {
         this.noCulling = true

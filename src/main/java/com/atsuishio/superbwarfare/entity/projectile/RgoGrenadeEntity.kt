@@ -4,9 +4,11 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.customExplode
 import net.minecraft.core.particles.ParticleTypes
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
@@ -16,14 +18,8 @@ import net.minecraft.world.level.block.BellBlock
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.HitResult
-import software.bernie.geckolib.animatable.GeoEntity
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache
-import software.bernie.geckolib.animation.AnimatableManager
-import software.bernie.geckolib.util.GeckoLibUtil
 
-class RgoGrenadeEntity : FastThrowableProjectile, GeoEntity {
-    private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
-
+open class RgoGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity {
     constructor(type: EntityType<out RgoGrenadeEntity>, level: Level?) : super(type, level) {
         this.noCulling = true
         this.explosionDamage = ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get().toFloat()
@@ -48,7 +44,7 @@ class RgoGrenadeEntity : FastThrowableProjectile, GeoEntity {
         this.explosionRadius = ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get().toFloat()
     }
 
-    constructor(entity: LivingEntity?, level: Level?, life: Int): this(entity, level) {
+    constructor(entity: LivingEntity?, level: Level?, life: Int) : this(entity, level) {
         this.life = life
     }
 
@@ -94,9 +90,6 @@ class RgoGrenadeEntity : FastThrowableProjectile, GeoEntity {
         )
     }
 
-    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) {}
-
-    override fun getAnimatableInstanceCache(): AnimatableInstanceCache {
-        return this.cache
-    }
+    override val model: ResourceLocation
+        get() = BedrockModelLoader.RGO_GRENADE_MODEL
 }

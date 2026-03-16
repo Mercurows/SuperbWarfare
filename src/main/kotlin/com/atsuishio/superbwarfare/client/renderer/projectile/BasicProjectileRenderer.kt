@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.client.renderer.entity
+package com.atsuishio.superbwarfare.client.renderer.projectile
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.entity.projectile.BasicGeoProjectileEntity
@@ -56,6 +56,17 @@ open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context) :
             packedLight,
             OverlayTexture.NO_OVERLAY
         )
+
+        // TODO 这个对吗
+        val texture = entity.emissiveTexture
+        if (texture != null) {
+            model.renderToBuffer(
+                poseStack,
+                buffer.getBuffer(RenderType.eyes(texture)),
+                packedLight,
+                OverlayTexture.NO_OVERLAY
+            )
+        }
 
         poseStack.popPose()
     }

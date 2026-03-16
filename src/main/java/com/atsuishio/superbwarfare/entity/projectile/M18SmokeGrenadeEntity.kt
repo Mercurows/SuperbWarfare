@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
-import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
 import com.atsuishio.superbwarfare.client.particle.CustomSmokeOption
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
@@ -243,8 +242,4 @@ open class M18SmokeGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEn
 
     override val model: ResourceLocation
         get() = BedrockModelLoader.M18_SMOKE_GRENADE_MODEL
-    override val animation: ResourceLocation?
-        get() = null
-    override val animationInstance: BasicProjectileAnimationInstance<*>?
-        get() = null
 }
