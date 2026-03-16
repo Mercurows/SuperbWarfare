@@ -171,14 +171,17 @@ public class BocekItem extends GunGeoItem {
         float bypassArmorRate = data.get(GunProp.BYPASSES_ARMOR).floatValue();
         float explosionRadius = data.get(GunProp.EXPLOSION_RADIUS).floatValue();
         float explosionDamage = data.get(GunProp.EXPLOSION_DAMAGE).floatValue();
-        int projectileAmount = data.get(GunProp.PROJECTILE_AMOUNT);
+//        int projectileAmount = data.get(GunProp.PROJECTILE_AMOUNT);
+        int projectileAmount = 10;
 
         double damage = data.get(GunProp.DAMAGE) * power;
         float spread = 0.01f;
 
         if (!zoom) {
-            spread = projectileAmount <= 1 ? 0.5f : 2.5f;
-            damage /= Math.max(1, projectileAmount);
+//            spread = projectileAmount <= 1 ? 0.5f : 2.5f;
+//            damage /= Math.max(1, projectileAmount);
+            spread = 2.5f;
+            damage /= projectileAmount;
         }
 
         ProjectileEntity projectile = new ProjectileEntity(player.level())
