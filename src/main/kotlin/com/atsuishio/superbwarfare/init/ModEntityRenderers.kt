@@ -13,13 +13,13 @@ object ModEntityRenderers {
     @SubscribeEvent
     fun registerEntityRenderers(event: EntityRenderersEvent.RegisterRenderers) {
         event.registerEntityRenderer(ModEntities.MORTAR.get()) { MortarRenderer(it) }
-        event.registerEntityRenderer(ModEntities.SENPAI.get()) { SenpaiRenderer(it) }
+        event.registerEntityRenderer(ModEntities.SENPAI.get(), ::SenpaiRenderer)
         event.registerEntityRenderer(ModEntities.CLAYMORE.get()) { ClaymoreRenderer(it) }
         event.registerEntityRenderer(ModEntities.C4.get()) { C4Renderer(it) }
         event.registerEntityRenderer(ModEntities.TASER_BULLET.get()) { TaserBulletProjectileRenderer(it) }
         event.registerEntityRenderer(ModEntities.GUN_GRENADE.get()) { GunGrenadeRenderer(it) }
-        event.registerEntityRenderer(ModEntities.TARGET.get()) { TargetRenderer(it) }
-        event.registerEntityRenderer(ModEntities.DPS_GENERATOR.get()) { DPSGeneratorRenderer(it) }
+        event.registerEntityRenderer(ModEntities.TARGET.get(), ::TargetRenderer)
+        event.registerEntityRenderer(ModEntities.DPS_GENERATOR.get(), ::DPSGeneratorRenderer)
         event.registerEntityRenderer(ModEntities.RPG_ROCKET_TBG.get()) { RpgRocketTBGRenderer(it) }
         event.registerEntityRenderer(ModEntities.RPG_ROCKET_STANDARD.get()) { RpgRocketStandardRenderer(it) }
         event.registerEntityRenderer(ModEntities.SMALL_ROCKET.get()) { SmallRocketRenderer(it) }
@@ -40,13 +40,12 @@ object ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.WHEEL_CHAIR.get()) { WheelChairRenderer(it) }
         event.registerEntityRenderer(ModEntities.AH_6.get()) { Ah6Renderer(it) }
         event.registerEntityRenderer(ModEntities.FLARE_DECOY.get()) { FlareDecoyEntityRenderer(it) }
-        event.registerEntityRenderer(ModEntities.WHITE_PHOSPHORUS_PROJECTILE.get()) {
-            WhitePhosphorusProjectileEntityRenderer(
-                it
-            )
-        }
+        event.registerEntityRenderer(
+            ModEntities.WHITE_PHOSPHORUS_PROJECTILE.get(),
+            ::WhitePhosphorusProjectileEntityRenderer
+        )
         event.registerEntityRenderer(ModEntities.PRISMATIC_BOLT.get()) { PrismaticBoltEntityRenderer(it) }
-        event.registerEntityRenderer(ModEntities.SMOKE_DECOY.get()) { SmokeDecoyEntityRenderer(it) }
+        event.registerEntityRenderer(ModEntities.SMOKE_DECOY.get(), ::SmokeDecoyEntityRenderer)
         event.registerEntityRenderer(ModEntities.LAV_150.get()) { Lav150Renderer(it) }
         event.registerEntityRenderer(ModEntities.SMALL_CANNON_SHELL.get()) { SmallCannonShellRenderer(it) }
         event.registerEntityRenderer(ModEntities.TOM_6.get()) { Tom6Renderer(it) }
@@ -70,8 +69,8 @@ object ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.TYPE_63.get()) { Type63Renderer(it) }
         event.registerEntityRenderer(ModEntities.MEDICAL_KIT.get()) { MedicalKitEntityRenderer(it) }
         event.registerEntityRenderer(ModEntities.BL_132.get()) { Bl132Renderer(it) }
-        event.registerEntityRenderer(ModEntities.GRAPESHOT.get()) { GrapeshotRenderer(it) }
-        event.registerEntityRenderer(ModEntities.SUPER_STAR_PROJECTILE.get()) { SuperStarProjectileRenderer(it) }
+        event.registerEntityRenderer(ModEntities.GRAPESHOT.get(), ::GrapeshotRenderer)
+        event.registerEntityRenderer(ModEntities.SUPER_STAR_PROJECTILE.get(), ::SuperStarProjectileRenderer)
         event.registerEntityRenderer(ModEntities.VEHICLE_ASSEMBLING_TABLE.get()) {
             VehicleAssemblingTableVehicleRenderer(
                 it
