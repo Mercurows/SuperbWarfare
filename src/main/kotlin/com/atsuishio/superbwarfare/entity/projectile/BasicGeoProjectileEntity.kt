@@ -4,11 +4,11 @@ import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimat
 import net.minecraft.resources.ResourceLocation
 
 interface BasicGeoProjectileEntity {
-    val model: ResourceLocation
-    val animation: ResourceLocation?
-        get() = null
-    val animationInstance: BasicProjectileAnimationInstance<*>?
-        get() = null
-    val emissiveTexture: ResourceLocation?
-        get() = null
+    fun getModel(): ResourceLocation
+
+    fun getAnimation(): ResourceLocation? = null
+
+    fun getAnimationInstance(): BasicProjectileAnimationInstance<*>? = null
+
+    fun getEmissiveTexture(): ResourceLocation? = null
 }

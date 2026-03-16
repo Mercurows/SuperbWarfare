@@ -32,7 +32,7 @@ open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context) :
         buffer: MultiBufferSource,
         packedLight: Int
     ) {
-        val model = BedrockModelLoader.getModel(entity.model) ?: return
+        val model = BedrockModelLoader.getModel(entity.getModel()) ?: return
 
         poseStack.pushPose()
 
@@ -43,8 +43,8 @@ open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context) :
         val renderType = RenderType.entityTranslucent(getTextureLocation(entity))
         val vertexConsumer = buffer.getBuffer(renderType)
 
-        if (entity.animationInstance != null) {
-            val ani = entity.animationInstance!!
+        if (entity.getAnimationInstance() != null) {
+            val ani = entity.getAnimationInstance()!!
             ani.context.partialTick = partialTick
             ani.tick()
             model.applyPose(BLENDER.blend(model.bindPose, ani.getPose()))
@@ -58,7 +58,7 @@ open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context) :
         )
 
         // TODO 这个对吗
-        val texture = entity.emissiveTexture
+        val texture = entity.getEmissiveTexture()
         if (texture != null) {
             model.renderToBuffer(
                 poseStack,
