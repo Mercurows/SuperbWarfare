@@ -1044,7 +1044,7 @@ object VehicleEngineUtils {
         val force = 0.047 * power
 
         deltaMovement = deltaMovement.add(getViewVector(1f).scale(force * speedRate))
-        val vd = 0.1 * deltaMovement.dot(getUpVec(1f).scale(-1.0))
+        val vd = 0.05 * deltaMovement.dot(getUpVec(1f).scale(-1.0))
         if (!onGround() && tickCount > 10 && vd > 0.05 && Mth.abs(xRot) < 25) {
             deltaMovement = deltaMovement.add(getViewVector(1f).scale(vd))
         }

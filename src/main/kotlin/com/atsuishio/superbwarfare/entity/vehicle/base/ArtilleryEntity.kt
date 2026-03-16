@@ -162,7 +162,7 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
             component = Component.translatable("tips.superbwarfare.mortar.out_of_range")
         } else {
             val angle = -getXRotFromVector(launchVector).toFloat()
-            val angle2 = -getXRotFromVector(launchVector2).toFloat()
+            val angle2 = -launchVector2?.let { getXRotFromVector(it).toFloat() }!!
             if (angle < -turretMaxPitch || angle > -turretMinPitch) {
                 if (angle2 > -turretMaxPitch && angle2 < -turretMinPitch) {
                     component = Component.translatable("tips.superbwarfare.ballistics.warn2")

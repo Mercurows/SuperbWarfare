@@ -493,8 +493,6 @@ object AircraftHud {
                 color
             )
 
-            player.displayClientMessage(Component.literal(pitch.toString()), true)
-
             if (bomb) {
                 RenderHelper.preciseBlitWithColor(
                     guiGraphics,
