@@ -29,9 +29,9 @@ object ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.PROJECTILE.get()) { ProjectileEntityRenderer(it) }
         event.registerEntityRenderer(ModEntities.MK_42.get()) { Mk42Renderer(it) }
         event.registerEntityRenderer(ModEntities.DRONE.get()) { DroneRenderer(it) }
-        event.registerEntityRenderer(ModEntities.HAND_GRENADE.get()) { BasicProjectileRenderer(it) }
-        event.registerEntityRenderer(ModEntities.RGO_GRENADE.get()) { BasicProjectileRenderer(it) }
-        event.registerEntityRenderer(ModEntities.M18_SMOKE_GRENADE.get()) { BasicProjectileRenderer(it) }
+        event.registerEntityRenderer(ModEntities.HAND_GRENADE.get(), ::BasicProjectileRenderer)
+        event.registerEntityRenderer(ModEntities.RGO_GRENADE.get(), ::BasicProjectileRenderer)
+        event.registerEntityRenderer(ModEntities.M18_SMOKE_GRENADE.get(), ::BasicProjectileRenderer)
         event.registerEntityRenderer(ModEntities.MLE_1934.get()) { Mle1934Renderer(it) }
         event.registerEntityRenderer(ModEntities.JAVELIN_MISSILE.get()) { JavelinMissileRenderer(it) }
         event.registerEntityRenderer(ModEntities.ANNIHILATOR.get()) { AnnihilatorRenderer(it) }
@@ -56,12 +56,12 @@ object ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.LASER_TOWER.get()) { LaserTowerRenderer(it) }
         event.registerEntityRenderer(ModEntities.YX_100.get()) { Yx100Renderer(it) }
         event.registerEntityRenderer(ModEntities.PRISM_TANK.get()) { PrismTankRenderer(it) }
-        event.registerEntityRenderer(ModEntities.SWARM_DRONE.get()) { SwarmDroneRenderer(it) }
+        event.registerEntityRenderer(ModEntities.SWARM_DRONE.get(), ::BasicProjectileRenderer)
         event.registerEntityRenderer(ModEntities.HPJ_11.get()) { Hpj11Renderer(it) }
         event.registerEntityRenderer(ModEntities.A_10A.get()) { A10Renderer(it) }
-        event.registerEntityRenderer(ModEntities.MK_82.get()) { BasicProjectileRenderer(it) }
-        event.registerEntityRenderer(ModEntities.SC_50.get()) { BasicProjectileRenderer(it) }
-        event.registerEntityRenderer(ModEntities.SC_250.get()) { BasicProjectileRenderer(it) }
+        event.registerEntityRenderer(ModEntities.MK_82.get(), ::BasicProjectileRenderer)
+        event.registerEntityRenderer(ModEntities.SC_50.get(), ::BasicProjectileRenderer)
+        event.registerEntityRenderer(ModEntities.SC_250.get(), ::BasicProjectileRenderer)
         event.registerEntityRenderer(ModEntities.AGM_65.get()) { Agm65Renderer(it) }
         event.registerEntityRenderer(ModEntities.BLU_43.get()) { Blu43Renderer(it) }
         event.registerEntityRenderer(ModEntities.TM_62.get()) { Tm62Renderer(it) }

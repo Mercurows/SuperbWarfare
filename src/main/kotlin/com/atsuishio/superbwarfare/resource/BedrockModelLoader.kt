@@ -39,6 +39,7 @@ object BedrockModelLoader {
     val SC_50_MODEL = loc("projectile/sc_50.geo")
     val SC_250_MODEL = loc("projectile/sc_250.geo")
     val MK_82_MODEL = loc("projectile/mk_82.geo")
+    val SWARM_DRONE_MODEL = loc("projectile/swarm_drone.geo")
 
     // animations
     val SENPAI_ANI = loc("senpai.animation")
@@ -46,6 +47,7 @@ object BedrockModelLoader {
     val DPS_GENERATOR_ANI = loc("dps_generator.animation")
 
     val MK_82_ANI = loc("mk_82.animation")
+    val SWARM_DRONE_ANI = loc("swarm_drone.animation")
 
     // textures
     val GE_HELMET_M_35_TEXTURE = loc("textures/armor/ge_helmet_m_35.png")
@@ -90,6 +92,7 @@ object BedrockModelLoader {
             register(SC_50_MODEL, COMMON_LOADER)
             register(SC_250_MODEL, COMMON_LOADER)
             register(MK_82_MODEL, COMMON_LOADER)
+            register(SWARM_DRONE_MODEL, COMMON_LOADER)
         }
     }
 
@@ -100,6 +103,7 @@ object BedrockModelLoader {
             register(TARGET_ANI, TARGET_MODEL, COMMON_LOADER)
             register(DPS_GENERATOR_ANI, DPS_GENERATOR_MODEL, COMMON_LOADER)
             register(MK_82_ANI, MK_82_MODEL, COMMON_LOADER)
+            register(SWARM_DRONE_ANI, SWARM_DRONE_MODEL, COMMON_LOADER)
         }
     }
 
