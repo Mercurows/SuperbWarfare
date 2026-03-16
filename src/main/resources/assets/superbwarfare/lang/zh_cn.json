@@ -62,6 +62,7 @@
   "des.superbwarfare.ql_1031_1": "“樱色覆铳，一脉芳华执手；镜瞳锁敌，千里落英无声”",
   "des.superbwarfare.ql_1031_2": "倾澜Chiram",
   "item.superbwarfare.super_star_shooter": "超级星星炮",
+  "item.superbwarfare.reforging": "重塑",
 
   "item.superbwarfare.vehicle_gun": "载具武器",
   "des.superbwarfare.vehicle_gun": "你不应该拿到这个的",
@@ -345,7 +346,7 @@
   "block.superbwarfare.silver_ore": "银矿石",
   "block.superbwarfare.deepslate_silver_ore": "深层银矿石",
   "block.superbwarfare.dragon_teeth": "龙牙",
-  "block.superbwarfare.reforging_table": "枪械重铸台",
+  "block.superbwarfare.reforging_table": "枪械重塑台",
   "block.superbwarfare.lead_block": "铅块",
   "block.superbwarfare.tungsten_block": "钨块",
   "block.superbwarfare.steel_block": "钢块",
@@ -801,7 +802,7 @@
   "tips.superbwarfare.vehicle_reset_kit_2": "你可以在取出旧版本载具的所有物品后，使用%1$s与装有载具的集装箱进行合成，以完成重置",
   "tips.superbwarfare.vehicle_reset_kit_3": "如果你不想看到此警告，可以在客户端配置中关闭",
 
-  "container.superbwarfare.reforging_table": "枪械重铸台",
+  "container.superbwarfare.reforging_table": "枪械重塑台",
   "container.superbwarfare.charging_station": "充电站",
   "container.superbwarfare.charging_station.show_range": "显示范围",
   "container.superbwarfare.charging_station.hide_range": "隐藏范围",
@@ -1120,8 +1121,8 @@
   "superbwarfare.page.vehicle.wheel_chair.2": "$(l)基础属性：$()$(p)耐久值 - 10$(br)最大乘员数 - 1$(br)爬坡高度 - 1.1m$(br)最大能量 - 24,000FE$(br)能耗 - 1FE/tick$(br)",
   "superbwarfare.page.vehicle.wheel_chair.3": "$(o)“冲刺！冲刺！冲！”$()",
 
-  "superbwarfare.entry.perk.reforging_table": "枪械重铸台",
-  "superbwarfare.page.perk.reforging_table.1": "$(item)枪械重铸台$()可以为卓越前线的枪械安装模组，提升枪械的强度。$(p)每个枪械可以安装三种不同的模组，分别为$(thing)子弹模组$()、$(thing)功能模组$()和$(thing)伤害模组$()。",
+  "superbwarfare.entry.perk.reforging_table": "枪械重塑台",
+  "superbwarfare.page.perk.reforging_table.1": "$(item)枪械重塑台$()可以为卓越前线的枪械安装模组，提升枪械的强度。$(p)每个枪械可以安装三种不同的模组，分别为$(thing)子弹模组$()、$(thing)功能模组$()和$(thing)伤害模组$()。",
   "superbwarfare.page.perk.reforging_table.2": "枪械拥有$(thing)等级$()和$(thing)升级点数$()属性，射击生物或击杀生物时会获得经验值，每提升2级可以获得1点升级点数。升级点数用于提升$(thing)枪械模组$()的等级，最高提升至20级。",
   "superbwarfare.page.perk.reforging_table.3": "将$(thing)枪械$()和$(item)捷径包$()在铁砧上合成，可获得1点升级点数。$(p)$(o)贵死了！$()",
   "superbwarfare.entry.perk.ap_bullet": "穿甲弹",
