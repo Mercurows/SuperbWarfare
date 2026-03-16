@@ -423,8 +423,6 @@ object AircraftHud {
                 color
             )
 
-            player.displayClientMessage(Component.literal(pitch.toString()), true)
-
             if (bomb) {
                 RenderHelper.blit(poseStack, HUD_BOMB, x - 64 + diffY, y - 64, 0f, 0f, 128f, 128f, 128f, 128f, color)
             } else {

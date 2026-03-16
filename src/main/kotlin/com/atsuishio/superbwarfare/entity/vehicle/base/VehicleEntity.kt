@@ -1098,36 +1098,42 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         val soundRadius = gunData.get(GunProp.SOUND_RADIUS)
         if (soundInfo.fire3P != null) {
-            SoundTool.playDistantSound(
-                serverLevel,
-                soundInfo.fire3P,
-                pos,
-                (soundRadius * 0.4f).toFloat(),
-                pitch,
-                listener
-            )
+            pos?.let {
+                SoundTool.playDistantSound(
+                    serverLevel,
+                    soundInfo.fire3P,
+                    it,
+                    (soundRadius * 0.4f).toFloat(),
+                    pitch,
+                    listener
+                )
+            }
         }
 
         if (soundInfo.fire3PFar != null) {
-            SoundTool.playDistantSound(
-                serverLevel,
-                soundInfo.fire3PFar,
-                pos,
-                (soundRadius * 0.7f).toFloat(),
-                pitch,
-                listener
-            )
+            pos?.let {
+                SoundTool.playDistantSound(
+                    serverLevel,
+                    soundInfo.fire3PFar,
+                    it,
+                    (soundRadius * 0.7f).toFloat(),
+                    pitch,
+                    listener
+                )
+            }
         }
 
         if (soundInfo.fire3PVeryFar != null) {
-            SoundTool.playDistantSound(
-                serverLevel,
-                soundInfo.fire3PVeryFar,
-                pos,
-                soundRadius.toFloat(),
-                pitch,
-                listener
-            )
+            pos?.let {
+                SoundTool.playDistantSound(
+                    serverLevel,
+                    soundInfo.fire3PVeryFar,
+                    it,
+                    soundRadius.toFloat(),
+                    pitch,
+                    listener
+                )
+            }
         }
     }
 
@@ -1147,7 +1153,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
      */
     open fun hasWeapon(): Boolean {
         return this.computed().seats().stream()
-            .filter { seat: SeatInfo? -> !seat!!.weapons().isEmpty() }
+            .filter { seat: SeatInfo? -> seat!!.weapons().isNotEmpty() }
             .flatMap { seat: SeatInfo? -> seat!!.weapons().stream() }
             .filter { name: String? -> !name.isNullOrEmpty() }
             .anyMatch { name -> this.getGunData(name) != null }
