@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.block.entity.BlueprintResearchTableBlockEntit
 import com.atsuishio.superbwarfare.block.entity.BlueprintResearchTableBlockEntity.Companion.SLOT_BASE
 import com.atsuishio.superbwarfare.block.entity.BlueprintResearchTableBlockEntity.Companion.SLOT_INPUT
 import com.atsuishio.superbwarfare.block.entity.BlueprintResearchTableBlockEntity.Companion.SLOT_SPECIAL
+import com.atsuishio.superbwarfare.init.ModRecipes
 import com.atsuishio.superbwarfare.inventory.menu.BlueprintResearchTableMenu
 import com.atsuishio.superbwarfare.network.message.send.BlueprintCraftMessage
 import com.atsuishio.superbwarfare.network.message.send.BlueprintSetIndexMessage
@@ -18,11 +19,14 @@ import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.world.SimpleContainer
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.item.Item
+import net.minecraft.world.item.crafting.RecipeHolder
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
+import net.neoforged.neoforge.items.ItemStackHandler
+import net.neoforged.neoforge.items.wrapper.RecipeWrapper
+import kotlin.jvm.optionals.getOrNull
 
 @OnlyIn(Dist.CLIENT)
 class BlueprintResearchTableScreen(
@@ -116,7 +120,8 @@ class BlueprintResearchTableScreen(
 
         // 模块指示灯
         val recipe = this.getRecipe() ?: return
-        val color = recipe.color
+        val value = recipe.value ?: return
+        val color = value.color
         if (color == 0 || color > 4) return
         val colorU = when (color) {
             1, 3 -> 129
@@ -144,35 +149,42 @@ class BlueprintResearchTableScreen(
             this.currentResultList = mutableListOf()
             return
         } else {
-            val result = recipe.result
+            val value = recipe.value
+            if (value == null) {
+                this.currentPage = 0
+                this.currentResultList = mutableListOf()
+                return
+            }
+
+            val result = value.result
             if (!result.isRandom()) return
             this.currentResultList = result.getResultList()
-        }
 
-        if (!this.currentResultList.isEmpty()) {
-            for (ix in 0 until PAGE_SIZE) {
-                val index = this.currentPage * PAGE_SIZE + ix
-                if (index >= this.currentResultList.size) break
+            if (!this.currentResultList.isEmpty()) {
+                for (ix in 0 until PAGE_SIZE) {
+                    val index = this.currentPage * PAGE_SIZE + ix
+                    if (index >= this.currentResultList.size) break
 
-                val itemX = i + 182 + ix % 3 * 17
-                val itemY = j + 8 + (ix / 3) % 9 * 17
-                val stack = this.currentResultList[index].defaultInstance
+                    val itemX = i + 182 + ix % 3 * 17
+                    val itemY = j + 8 + (ix / 3) % 9 * 17
+                    val stack = this.currentResultList[index].defaultInstance
 
-                guiGraphics.renderFakeItem(stack, itemX, itemY)
+                    guiGraphics.renderFakeItem(stack, itemX, itemY)
 
-                if (recipe.selectable) {
-                    val selectedIndex = this.menu.getLastSelectedIndex()
-                    if (selectedIndex == index) {
-                        guiGraphics.blit(TEXTURE, itemX - 1, itemY - 1, 207, 215, 18, 18)
-                    }
-                }
-
-                if (mouseX in itemX..itemX + 16 && mouseY in itemY..itemY + 16) {
-                    if (recipe.selectable) {
-                        guiGraphics.blit(TEXTURE, itemX - 1, itemY - 1, 207, 196, 18, 18)
+                    if (value.selectable) {
+                        val selectedIndex = this.menu.getLastSelectedIndex()
+                        if (selectedIndex == index) {
+                            guiGraphics.blit(TEXTURE, itemX - 1, itemY - 1, 207, 215, 18, 18)
+                        }
                     }
 
-                    guiGraphics.renderTooltip(this.font, stack, mouseX, mouseY)
+                    if (mouseX in itemX..itemX + 16 && mouseY in itemY..itemY + 16) {
+                        if (value.selectable) {
+                            guiGraphics.blit(TEXTURE, itemX - 1, itemY - 1, 207, 196, 18, 18)
+                        }
+
+                        guiGraphics.renderTooltip(this.font, stack, mouseX, mouseY)
+                    }
                 }
             }
         }
@@ -180,11 +192,10 @@ class BlueprintResearchTableScreen(
 
     override fun mouseClicked(mouseX: Double, mouseY: Double, pButton: Int): Boolean {
         if (!this.currentResultList.isEmpty()) {
-            if (this.getRecipe()?.selectable == false || this.menu.isActivated()) return super.mouseClicked(
-                mouseX,
-                mouseY,
-                pButton
-            )
+            val recipe = this.getRecipe() ?: return super.mouseClicked(mouseX, mouseY, pButton)
+            val value = recipe.value ?: return super.mouseClicked(mouseX, mouseY, pButton)
+
+            if (!value.selectable || this.menu.isActivated()) return super.mouseClicked(mouseX, mouseY, pButton)
 
             val i = (this.width - this.imageWidth) / 2
             val j = (this.height - this.imageHeight) / 2
@@ -205,24 +216,22 @@ class BlueprintResearchTableScreen(
         return super.mouseClicked(mouseX, mouseY, pButton)
     }
 
-    fun getRecipe(): ResearchingRecipe? {
+    fun getRecipe(): RecipeHolder<ResearchingRecipe>? {
         val level = clientLevel ?: return null
         val manager = level.recipeManager
 
-        val inventory = SimpleContainer(4)
-        inventory.setItem(0, this.menu.getSlot(SLOT_INPUT).item)
-        inventory.setItem(1, this.menu.getSlot(SLOT_BASE).item)
-        inventory.setItem(2, this.menu.getSlot(SLOT_ADDITION).item)
-        inventory.setItem(3, this.menu.getSlot(SLOT_SPECIAL).item)
+        val inventory = ItemStackHandler(4)
+        inventory.setStackInSlot(0, this.menu.getSlot(SLOT_INPUT).item)
+        inventory.setStackInSlot(1, this.menu.getSlot(SLOT_BASE).item)
+        inventory.setStackInSlot(2, this.menu.getSlot(SLOT_ADDITION).item)
+        inventory.setStackInSlot(3, this.menu.getSlot(SLOT_SPECIAL).item)
 
-        // TODO 怎么实现这玩意
-        return null
-//        val optionalRecipe = manager.getRecipeFor(
-//            ModRecipes.RESEARCHING_TYPE.get(),
-//            inventory,
-//            level
-//        )
-//        return optionalRecipe.getOrNull()
+        val optionalRecipe = manager.getRecipeFor(
+            ModRecipes.RESEARCHING_TYPE.get(),
+            RecipeWrapper(inventory),
+            level
+        )
+        return optionalRecipe.getOrNull()
     }
 
     companion object {
@@ -254,8 +263,9 @@ class BlueprintResearchTableScreen(
         AbstractButton(x, y, 25, 8, Component.empty()) {
         override fun onPress() {
             val recipe = this@BlueprintResearchTableScreen.getRecipe() ?: return
-            if (!recipe.result.isRandom()) return
-            val size = recipe.result.getResultList().size
+            val value = recipe.value ?: return
+            if (!value.result.isRandom()) return
+            val size = value.result.getResultList().size
             if (size < PAGE_SIZE) return
             val pages = size / PAGE_SIZE
             if (forward) {
@@ -279,8 +289,9 @@ class BlueprintResearchTableScreen(
             if (!this.isHovered) return
 
             val recipe = this@BlueprintResearchTableScreen.getRecipe() ?: return
-            if (!recipe.result.isRandom()) return
-            val size = recipe.result.getResultList().size
+            val value = recipe.value ?: return
+            if (!value.result.isRandom()) return
+            val size = value.result.getResultList().size
             val pages = size / PAGE_SIZE
             if (this.forward) {
                 if (this@BlueprintResearchTableScreen.currentPage < pages) {

@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.block.entity
 import com.atsuishio.superbwarfare.block.BlueprintResearchTableBlock
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.init.ModBlockEntities
+import com.atsuishio.superbwarfare.init.ModRecipes
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.inventory.menu.BlueprintResearchTableMenu
 import com.atsuishio.superbwarfare.recipe.ResearchingRecipe
@@ -23,10 +24,13 @@ import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.inventory.ContainerData
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.crafting.RecipeHolder
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.BedPart
+import net.neoforged.neoforge.items.ItemStackHandler
+import net.neoforged.neoforge.items.wrapper.RecipeWrapper
 import software.bernie.geckolib.animatable.GeoBlockEntity
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.animation.AnimatableManager
@@ -194,24 +198,21 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
         return BlueprintResearchTableMenu(pContainerId, pPlayerInventory, this, this.dataAccess)
     }
 
-    private fun getCurrentRecipe(): Optional<ResearchingRecipe> {
+    private fun getCurrentRecipe(): Optional<RecipeHolder<ResearchingRecipe>> {
         val level = this.level ?: return Optional.empty()
 
-        return Optional.empty()
+        val inventory = ItemStackHandler(4)
+        inventory.setStackInSlot(0, this.items[SLOT_INPUT])
+        inventory.setStackInSlot(1, this.items[SLOT_BASE])
+        inventory.setStackInSlot(2, this.items[SLOT_ADDITION])
+        inventory.setStackInSlot(3, this.items[SLOT_SPECIAL])
 
-        // TODO
-//        val inventory = SimpleContainer(4)
-//        inventory.setItem(0, this.items[SLOT_INPUT])
-//        inventory.setItem(1, this.items[SLOT_BASE])
-//        inventory.setItem(2, this.items[SLOT_ADDITION])
-//        inventory.setItem(3, this.items[SLOT_SPECIAL])
-//
-//        val recipeFor = level.recipeManager.getRecipeFor(
-//            ModRecipes.RESEARCHING_TYPE.get(),
-//            inventory,
-//            level
-//        )
-//        return recipeFor
+        val recipe = level.recipeManager.getRecipeFor(
+            ModRecipes.RESEARCHING_TYPE.get(),
+            RecipeWrapper(inventory),
+            level
+        )
+        return recipe
     }
 
     private fun hasRecipe(): Boolean {
@@ -222,11 +223,14 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
             return false
         }
 
-        if (recipe.get().result.isRandom() && !this.items[SLOT_OUTPUT].isEmpty) {
+        val holder = recipe.get()
+        val value = holder.value ?: return false
+
+        if (value.result.isRandom() && !this.items[SLOT_OUTPUT].isEmpty) {
             return false
         }
 
-        val result = recipe.get().result.getResult()
+        val result = value.result.getResult()
         return canInsertAmountIntoOutputSlot(result.count) && canInsertItemIntoOutputSlot(result.item)
     }
 
@@ -244,8 +248,11 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
             return
         }
 
-        val result = recipe.get().result
-        val item = if (recipe.get().selectable) {
+        val holder = recipe.get()
+        val value = holder.value ?: return
+
+        val result = value.result
+        val item = if (value.selectable) {
             result.getItemByIndex(this.lastSelectedIndex)
         } else if (result.isRandom()) {
             result.rollItem()
@@ -307,7 +314,14 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
                     entity.activated = false
                     return
                 }
-                entity.maxProcessTick = recipe.get().time
+                val holder = recipe.get()
+                val value = holder.value
+                if (value == null) {
+                    entity.activated = false
+                    return
+                }
+
+                entity.maxProcessTick = value.time
 
                 if (entity.tick < entity.maxProcessTick) {
                     entity.tick++
