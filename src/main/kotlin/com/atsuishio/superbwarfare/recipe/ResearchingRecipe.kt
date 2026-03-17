@@ -46,6 +46,7 @@ class ResearchingRecipe(
             selectable: Boolean,
             color: Int,
             time: Int,
+            count: Int,
             result: Item
         ): ResearchingRecipe {
             return ResearchingRecipe(
@@ -56,7 +57,7 @@ class ResearchingRecipe(
                 selectable,
                 color,
                 time,
-                Result(item = BuiltInRegistries.ITEM.getKey(result).toString())
+                Result(item = BuiltInRegistries.ITEM.getKey(result).toString(), count = count)
             )
         }
 
@@ -68,6 +69,7 @@ class ResearchingRecipe(
             selectable: Boolean,
             color: Int,
             time: Int,
+            count: Int,
             tag: TagKey<Item>
         ): ResearchingRecipe {
             return ResearchingRecipe(
@@ -78,7 +80,7 @@ class ResearchingRecipe(
                 selectable,
                 color,
                 time,
-                Result(tag = tag.location.toString())
+                Result(tag = tag.location.toString(), count = count)
             )
         }
     }
@@ -124,14 +126,14 @@ class ResearchingRecipe(
                         .forGetter { it.tag },
                     Codec.INT.optionalFieldOf("count", 1)
                         .forGetter { it.count }
-                ).apply(builder) { item, tag, count -> Result(item, tag, count) }
+                ).apply(builder, ::Result)
             }.codec()
 
             val STREAM_CODEC: StreamCodec<RegistryFriendlyByteBuf, Result> = StreamCodec.composite(
                 ByteBufCodecs.STRING_UTF8, { r: Result -> r.item },
                 ByteBufCodecs.STRING_UTF8, { r: Result -> r.tag },
                 ByteBufCodecs.VAR_INT, { r: Result -> r.count },
-                { item, tag, count -> Result(item, tag, count) }
+                ::Result
             )
         }
 
@@ -144,7 +146,7 @@ class ResearchingRecipe(
         fun getResult(): ItemStack {
             if (this.resultStack != null) return this.resultStack!!
             if (!item.isEmpty()) {
-                val item = BuiltInRegistries.ITEM.get(ResourceLocation.withDefaultNamespace(item))
+                val item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(item))
                 if (nbt != null) {
                     val tag = TagDataParser.parse(nbt)
                     val tmp = CompoundTag()

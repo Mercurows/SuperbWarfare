@@ -71,9 +71,9 @@ open class ResearchingRecipeBuilder private constructor(
         this.criteria.forEach { (key, criterion) -> builder.addCriterion(key, criterion) }
 
         val recipe = if (this.resultTag != null) {
-            ResearchingRecipe.create(input, base, addition, special, selectable, color, time, resultTag)
+            ResearchingRecipe.create(input, base, addition, special, selectable, color, time, count, resultTag)
         } else {
-            ResearchingRecipe.create(input, base, addition, special, selectable, color, time, resultItem!!)
+            ResearchingRecipe.create(input, base, addition, special, selectable, color, time, count, resultItem!!)
         }
 
         recipeOutput.accept(

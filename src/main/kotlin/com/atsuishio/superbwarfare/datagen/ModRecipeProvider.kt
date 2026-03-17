@@ -2733,7 +2733,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                     getHasName(ModItems.AMMO_PERK_DATA_CHIP.get()),
                     has(ModItems.AMMO_PERK_DATA_CHIP.get())
                 )
-                .save(writer, getItemName(ModItems.AMMO_PERK_DATA_CHIP.get()) + "_researching")
+                .save(writer, loc(getItemName(ModItems.AMMO_PERK_DATA_CHIP.get()) + "_researching"))
             ResearchingRecipeBuilder.tag(
                 ModTags.Items.RESEARCHABLE_FUNCTIONAL_PERK,
                 input = ModItems.FUNCTIONAL_PERK_DATA_CHIP.get()
@@ -2744,7 +2744,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                     getHasName(ModItems.FUNCTIONAL_PERK_DATA_CHIP.get()),
                     has(ModItems.FUNCTIONAL_PERK_DATA_CHIP.get())
                 )
-                .save(writer, getItemName(ModItems.FUNCTIONAL_PERK_DATA_CHIP.get()) + "_researching")
+                .save(writer, loc(getItemName(ModItems.FUNCTIONAL_PERK_DATA_CHIP.get()) + "_researching"))
             ResearchingRecipeBuilder.tag(
                 ModTags.Items.RESEARCHABLE_DAMAGE_PERK,
                 input = ModItems.DAMAGE_PERK_DATA_CHIP.get()
@@ -2755,7 +2755,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                     getHasName(ModItems.DAMAGE_PERK_DATA_CHIP.get()),
                     has(ModItems.DAMAGE_PERK_DATA_CHIP.get())
                 )
-                .save(writer, getItemName(ModItems.DAMAGE_PERK_DATA_CHIP.get()) + "_researching")
+                .save(writer, loc(getItemName(ModItems.DAMAGE_PERK_DATA_CHIP.get()) + "_researching"))
         }
 
         fun copyBlueprint(writer: RecipeOutput, result: ItemLike) {
@@ -2769,13 +2769,13 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 .define('B', Items.PAPER)
                 .define('C', result)
                 .unlockedBy(getHasName(result), has(result))
-                .save(writer, "${getItemName(result)}_copy")
+                .save(writer, loc("${getItemName(result)}_copy"))
             ResearchingRecipeBuilder.item(result.asItem(), 2, result)
                 .base(Items.PAPER)
                 .addition(Items.LAPIS_LAZULI)
                 .time(600)
                 .unlockedBy(getHasName(result), has(result))
-                .save(writer, "${getItemName(result)}_copy_researching")
+                .save(writer, loc("${getItemName(result)}_copy_researching"))
         }
 
         fun gunSmithing(
@@ -3023,7 +3023,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 .addition(Items.LAPIS_LAZULI)
                 .time(time)
                 .unlockedBy(getHasName(input), has(input))
-                .save(writer, getItemName(input) + "_researching")
+                .save(writer, loc(getItemName(input) + "_researching"))
             ResearchingRecipeBuilder.tag(tag, 2, input)
                 .base(Items.PAPER)
                 .addition(Items.LAPIS_LAZULI)
@@ -3032,7 +3032,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 .color(1)
                 .unlockedBy(getHasName(input), has(input))
                 .unlockedBy(getHasName(ModItems.BOOST_RESEARCH_MODULE.get()), has(ModItems.BOOST_RESEARCH_MODULE.get()))
-                .save(writer, getItemName(input) + "_researching_boost")
+                .save(writer, loc(getItemName(input) + "_researching_boost"))
             ResearchingRecipeBuilder.tag(tag, input = input)
                 .base(Items.PAPER)
                 .addition(Items.LAPIS_LAZULI)
@@ -3045,7 +3045,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                     getHasName(ModItems.DIRECTIONAL_RESEARCH_MODULE.get()),
                     has(ModItems.DIRECTIONAL_RESEARCH_MODULE.get())
                 )
-                .save(writer, getItemName(input) + "_researching_directional")
+                .save(writer, loc(getItemName(input) + "_researching_directional"))
             ResearchingRecipeBuilder.tag(tag, input = input)
                 .base(Items.PAPER)
                 .addition(Items.LAPIS_LAZULI)
@@ -3057,7 +3057,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                     getHasName(ModItems.EFFECTIVE_RESEARCH_MODULE.get()),
                     has(ModItems.EFFECTIVE_RESEARCH_MODULE.get())
                 )
-                .save(writer, getItemName(input) + "_researching_effective")
+                .save(writer, loc(getItemName(input) + "_researching_effective"))
             if (enlargedTag != null) {
                 ResearchingRecipeBuilder.tag(enlargedTag, input = input)
                     .base(Items.PAPER)
@@ -3070,7 +3070,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                         getHasName(ModItems.ENLARGEMENT_RESEARCH_MODULE.get()),
                         has(ModItems.ENLARGEMENT_RESEARCH_MODULE.get())
                     )
-                    .save(writer, getItemName(input) + "_researching_enlargement")
+                    .save(writer, loc(getItemName(input) + "_researching_enlargement"))
             }
 
             ResearchingRecipeBuilder.item(input, input = tag)
@@ -3078,7 +3078,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 .addition(Items.AMETHYST_SHARD)
                 .time(200)
                 .unlockedBy("has_${tag.location.path}", has(tag))
-                .save(writer, getItemName(input) + "_from_blueprint")
+                .save(writer, loc(getItemName(input) + "_from_blueprint"))
             ResearchingRecipeBuilder.item(input, 2, tag)
                 .base(ModItems.DATA_CHIP_SUBSTRATE.get())
                 .addition(Items.AMETHYST_SHARD)
@@ -3087,7 +3087,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 .color(1)
                 .unlockedBy("has_${tag.location.path}", has(tag))
                 .unlockedBy(getHasName(ModItems.BOOST_RESEARCH_MODULE.get()), has(ModItems.BOOST_RESEARCH_MODULE.get()))
-                .save(writer, getItemName(input) + "_from_blueprint_boost")
+                .save(writer, loc(getItemName(input) + "_from_blueprint_boost"))
         }
     }
 }

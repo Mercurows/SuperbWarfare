@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_blueprint/superb": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#superbwarfare:blueprint/superb"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:superb_blueprint_data_chip_from_blueprint"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_blueprint/superb"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:superb_blueprint_data_chip_from_blueprint"
+    ]
+  }
+}
