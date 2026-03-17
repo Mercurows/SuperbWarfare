@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModRarities;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.item.material.BatteryItem;
 import com.atsuishio.superbwarfare.tools.GunsTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.ChatFormatting;
@@ -18,17 +17,13 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animation.*;
 import software.bernie.geckolib.constant.DataTickets;
@@ -116,34 +111,6 @@ public class Ql1031Item extends GunGeoItem {
         var chargeController = new AnimationController<>(this, "chargeController", 1, this::chargePredicate);
         data.add(editController);
         data.add(chargeController);
-    }
-
-    @Override
-    @ParametersAreNonnullByDefault
-    public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
-        super.inventoryTick(stack, world, entity, slot, selected);
-
-        if (entity instanceof Player player) {
-            for (var cell : player.getInventory().items) {
-                if (cell.getItem() instanceof BatteryItem) {
-                    var stackCap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
-                    int stackMaxEnergy = stackCap != null ? stackCap.getMaxEnergyStored() : 0;
-                    int stackEnergy = stackCap != null ? stackCap.getEnergyStored() : 0;
-
-                    var cellStorage = cell.getCapability(Capabilities.EnergyStorage.ITEM);
-                    int cellEnergy = cellStorage != null ? cellStorage.getEnergyStored() : 0;
-
-                    int stackEnergyNeed = Math.min(cellEnergy, stackMaxEnergy - stackEnergy);
-
-                    if (cellEnergy > 0 && stackCap != null) {
-                        stackCap.receiveEnergy(stackEnergyNeed, false);
-                    }
-                    if (cellStorage != null) {
-                        cellStorage.extractEnergy(stackEnergyNeed, false);
-                    }
-                }
-            }
-        }
     }
 
     @Override

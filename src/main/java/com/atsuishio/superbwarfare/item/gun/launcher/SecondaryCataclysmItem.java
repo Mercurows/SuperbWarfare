@@ -11,7 +11,6 @@ import com.atsuishio.superbwarfare.init.ModRarities;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
-import com.atsuishio.superbwarfare.item.material.BatteryItem;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -20,12 +19,10 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animation.*;
@@ -104,34 +101,6 @@ public class SecondaryCataclysmItem extends GunGeoItem {
         data.add(reloadAnimController);
         var meleeController = new AnimationController<>(this, "meleeController", 0, this::meleePredicate);
         data.add(meleeController);
-    }
-
-    @Override
-    @ParametersAreNonnullByDefault
-    public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
-        super.inventoryTick(stack, world, entity, slot, selected);
-
-        if (entity instanceof Player player) {
-            for (var cell : player.getInventory().items) {
-                if (cell.getItem() instanceof BatteryItem) {
-                    var stackStorage = stack.getCapability(Capabilities.EnergyStorage.ITEM);
-                    if (stackStorage == null) continue;
-                    int stackMaxEnergy = stackStorage.getMaxEnergyStored();
-                    int stackEnergy = stackStorage.getEnergyStored();
-
-                    var cellStorage = cell.getCapability(Capabilities.EnergyStorage.ITEM);
-                    if (cellStorage == null) continue;
-                    int cellEnergy = cellStorage.getEnergyStored();
-
-                    int stackEnergyNeed = Math.min(cellEnergy, stackMaxEnergy - stackEnergy);
-
-                    if (cellEnergy > 0) {
-                        stackStorage.receiveEnergy(stackEnergyNeed, false);
-                    }
-                    cellStorage.extractEnergy(stackEnergyNeed, false);
-                }
-            }
-        }
     }
 
     @Override

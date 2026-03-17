@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.init.ModParticleTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
-import com.atsuishio.superbwarfare.item.material.BatteryItem;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
@@ -25,21 +24,16 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.function.Supplier;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
@@ -61,34 +55,6 @@ public class RepairToolItem extends GunGeoItem {
         BlockPos blockPos = result.getBlockPos();
         BlockState state = level.getBlockState(blockPos);
         this.summonRayHitParticle(level, state, pos, shootDirection.scale(-1).normalize());
-    }
-
-    @Override
-    @ParametersAreNonnullByDefault
-    public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean selected) {
-        super.inventoryTick(stack, world, entity, slot, selected);
-
-        if (entity instanceof Player player) {
-            for (var cell : player.getInventory().items) {
-                if (cell.getItem() instanceof BatteryItem) {
-                    var stackStorage = stack.getCapability(Capabilities.EnergyStorage.ITEM);
-                    if (stackStorage == null) continue;
-                    int stackMaxEnergy = stackStorage.getMaxEnergyStored();
-                    int stackEnergy = stackStorage.getEnergyStored();
-
-                    var cellStorage = cell.getCapability(Capabilities.EnergyStorage.ITEM);
-                    if (cellStorage == null) continue;
-                    int cellEnergy = cellStorage.getEnergyStored();
-
-                    int stackEnergyNeed = Math.min(cellEnergy, stackMaxEnergy - stackEnergy);
-
-                    if (cellEnergy > 0) {
-                        stackStorage.receiveEnergy(stackEnergyNeed, false);
-                    }
-                    cellStorage.extractEnergy(stackEnergyNeed, false);
-                }
-            }
-        }
     }
 
     @Override
