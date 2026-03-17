@@ -59,7 +59,7 @@ class AmmoBoxItem : Item(Properties().stacksTo(1)) {
         val selectedTypes get() = if (type == null) Ammo.entries.toTypedArray() else arrayOf(type)
 
         val selectedAmmoCount get() = storedAmmo[type] ?: 0
-        val restCount = if (type == null) 0 else type.ammoBoxLimit - selectedAmmoCount
+        fun restCount(type: Ammo) = type.ammoBoxLimit - (storedAmmo[type] ?: 0)
 
         fun switchToNextType(): AmmoBoxData {
             if (isDrop) return this
@@ -191,7 +191,7 @@ class AmmoBoxItem : Item(Properties().stacksTo(1)) {
         // 左键收弹药
         if (!info.isDrop && action == ClickAction.PRIMARY && slotItem is AmmoSupplierItem) {
             val type = slotItem.type
-            val addCount = (info.restCount / slotItem.ammoToAdd).coerceAtMost(slotStack.count)
+            val addCount = (info.restCount(type) / slotItem.ammoToAdd).coerceAtMost(slotStack.count)
             if (addCount < 0) return true
 
             type.add(stack, addCount * slotItem.ammoToAdd)
