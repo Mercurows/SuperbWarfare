@@ -1,0 +1,19 @@
+{
+  "type": "superbwarfare:researching",
+  "addition": {
+    "item": "minecraft:lapis_lazuli"
+  },
+  "base": {
+    "item": "minecraft:paper"
+  },
+  "color": 4,
+  "input": {
+    "item": "superbwarfare:rare_blueprint_data_chip"
+  },
+  "result": {
+    "tag": "superbwarfare:blueprint/enlarged/rare"
+  },
+  "special": {
+    "item": "superbwarfare:enlargement_research_module"
+  }
+}

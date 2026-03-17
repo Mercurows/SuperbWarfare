@@ -1,160 +1,156 @@
 package com.atsuishio.superbwarfare.datagen.builder
 
-// TODO ResearchingRecipeBuilder
-//open class ResearchingRecipeBuilder private constructor(
-//    var resultItem: Item? = null,
-//    val resultTag: TagKey<Item>? = null,
-//    val count: Int = 1,
-//    val input: Ingredient
-//) : RecipeBuilder {
-//    private val advancement: Advancement.Builder = Advancement.Builder.recipeAdvancement()
-//    private var base: Ingredient? = null
-//    private var addition: Ingredient? = null
-//    private var special: Ingredient? = null
-//    private var color: Int = 0
-//    private var selectable: Boolean = false
-//    private var time: Int = 1200
-//
-//    init {
-//        if (this.resultItem == null && this.resultTag != null) {
-//            val tags = ForgeRegistries.ITEMS.tags()
-//            val list = tags?.getTag(this.resultTag)
-//            if (list != null && !list.isEmpty) {
-//                this.resultItem = list.first()
-//            }
-//        }
-//    }
-//
-//    override fun unlockedBy(
-//        pCriterionName: String,
-//        pCriterionTrigger: CriterionTriggerInstance
-//    ): RecipeBuilder {
-//        this.advancement.addCriterion(pCriterionName, pCriterionTrigger)
-//        return this
-//    }
-//
-//    override fun group(pGroupName: String?): RecipeBuilder {
-//        return this
-//    }
-//
-//    override fun getResult(): Item {
-//        return this.resultItem ?: Items.AIR
-//    }
-//
-//    override fun save(
-//        consumer: Consumer<FinishedRecipe>,
-//        id: ResourceLocation
-//    ) {
-//        this.ensureValid(id)
-//        this.advancement.parent(RecipeBuilder.ROOT_RECIPE_ADVANCEMENT)
-//            .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
-//            .rewards(AdvancementRewards.Builder.recipe(id))
-//            .requirements(RequirementsStrategy.OR)
-//        if (this.resultTag != null) {
-//            consumer.accept(
-//                Result(
-//                    id,
-//                    input,
-//                    base,
-//                    addition,
-//                    special,
-//                    resultTag = resultTag,
-//                    color = color,
-//                    count = count,
-//                    selectable = selectable,
-//                    time = time,
-//                    advancement = advancement,
-//                    advancementLocation = id.withPrefix("recipes/" + RecipeCategory.MISC.folderName + "/")
-//                )
-//            )
-//        } else if (this.resultItem != null) {
-//            consumer.accept(
-//                Result(
-//                    id,
-//                    input,
-//                    base,
-//                    addition,
-//                    special,
-//                    resultItem,
-//                    color = color,
-//                    count = count,
-//                    selectable = selectable,
-//                    time = time,
-//                    advancement = advancement,
-//                    advancementLocation = id.withPrefix("recipes/" + RecipeCategory.MISC.folderName + "/")
-//                )
-//            )
-//        }
-//    }
-//
-//    private fun ensureValid(pId: ResourceLocation) {
-//        check(!this.advancement.criteria.isEmpty()) { "No way of obtaining recipe $pId" }
-//    }
-//
-//    fun base(ingredient: Ingredient): ResearchingRecipeBuilder {
-//        this.base = ingredient
-//        return this
-//    }
-//
-//    fun base(item: ItemLike) = this.base(Ingredient.of(item))
-//
-//    fun base(tag: TagKey<Item>) = this.base(Ingredient.of(tag))
-//
-//    fun addition(ingredient: Ingredient): ResearchingRecipeBuilder {
-//        this.addition = ingredient
-//        return this
-//    }
-//
-//    fun addition(item: ItemLike) = this.addition(Ingredient.of(item))
-//
-//    fun addition(tag: TagKey<Item>) = this.addition(Ingredient.of(tag))
-//
-//    fun special(ingredient: Ingredient): ResearchingRecipeBuilder {
-//        this.special = ingredient
-//        return this
-//    }
-//
-//    fun special(item: ItemLike) = this.special(Ingredient.of(item))
-//
-//    fun special(tag: TagKey<Item>) = this.special(Ingredient.of(tag))
-//
-//    fun color(color: Int): ResearchingRecipeBuilder {
-//        this.color = color.coerceIn(0, 4)
-//        return this
-//    }
-//
-//    fun time(time: Int): ResearchingRecipeBuilder {
-//        this.time = time
-//        return this
-//    }
-//
-//    fun selectable(): ResearchingRecipeBuilder {
-//        this.selectable = true
-//        return this
-//    }
-//
-//    companion object {
-//        @JvmStatic
-//        @JvmOverloads
-//        fun item(result: Item, count: Int = 1, input: ItemLike) =
-//            ResearchingRecipeBuilder(resultItem = result, count = count, input = Ingredient.of(input))
-//
-//        @JvmStatic
-//        @JvmOverloads
-//        fun item(result: Item, count: Int = 1, input: TagKey<Item>) =
-//            ResearchingRecipeBuilder(resultItem = result, count = count, input = Ingredient.of(input))
-//
-//        @JvmStatic
-//        @JvmOverloads
-//        fun tag(resultTag: TagKey<Item>, count: Int = 1, input: ItemLike) =
-//            ResearchingRecipeBuilder(resultTag = resultTag, count = count, input = Ingredient.of(input))
-//
-//        @JvmStatic
-//        @JvmOverloads
-//        fun tag(resultTag: TagKey<Item>, count: Int = 1, input: TagKey<Item>) =
-//            ResearchingRecipeBuilder(resultTag = resultTag, count = count, input = Ingredient.of(input))
-//    }
-//
+import com.atsuishio.superbwarfare.recipe.ResearchingRecipe
+import net.minecraft.advancements.AdvancementRequirements
+import net.minecraft.advancements.AdvancementRewards
+import net.minecraft.advancements.Criterion
+import net.minecraft.advancements.critereon.RecipeUnlockedTrigger
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.data.recipes.RecipeBuilder
+import net.minecraft.data.recipes.RecipeCategory
+import net.minecraft.data.recipes.RecipeOutput
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.tags.TagKey
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.Items
+import net.minecraft.world.item.crafting.Ingredient
+import net.minecraft.world.level.ItemLike
+import java.util.*
+import kotlin.jvm.optionals.getOrNull
+
+open class ResearchingRecipeBuilder private constructor(
+    var resultItem: Item? = null,
+    val resultTag: TagKey<Item>? = null,
+    val count: Int = 1,
+    val input: Ingredient
+) : RecipeBuilder {
+    private val criteria: MutableMap<String, Criterion<*>> = LinkedHashMap()
+    private var base = Ingredient.EMPTY
+    private var addition = Ingredient.EMPTY
+    private var special = Ingredient.EMPTY
+    private var color: Int = 0
+    private var selectable: Boolean = false
+    private var time: Int = 1200
+
+    init {
+        if (this.resultItem == null && this.resultTag != null) {
+            val itemTag = BuiltInRegistries.ITEM.getTag(this.resultTag)
+                .map { items -> items.map { it.value() } }.getOrNull() ?: mutableListOf()
+
+            val list = mutableListOf<Item>()
+            itemTag.forEach { list.add(it) }
+            list.sortBy { it.descriptionId }
+            if (!list.isEmpty()) {
+                this.resultItem = list.first()
+            }
+        }
+    }
+
+    override fun unlockedBy(s: String, criterion: Criterion<*>): RecipeBuilder {
+        this.criteria[s] = criterion
+        return this
+    }
+
+    override fun group(pGroupName: String?): RecipeBuilder {
+        return this
+    }
+
+    override fun getResult(): Item {
+        return this.resultItem ?: Items.AIR
+    }
+
+    override fun save(
+        recipeOutput: RecipeOutput,
+        id: ResourceLocation
+    ) {
+        this.ensureValid(id)
+        val builder =
+            recipeOutput.advancement().addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
+                .rewards(AdvancementRewards.Builder.recipe(id)).requirements(AdvancementRequirements.Strategy.OR)
+        Objects.requireNonNull(builder)
+        this.criteria.forEach { (key, criterion) -> builder.addCriterion(key, criterion) }
+
+        val recipe = if (this.resultTag != null) {
+            ResearchingRecipe.create(input, base, addition, special, selectable, color, time, resultTag)
+        } else {
+            ResearchingRecipe.create(input, base, addition, special, selectable, color, time, resultItem!!)
+        }
+
+        recipeOutput.accept(
+            id,
+            recipe,
+            builder.build(id.withPrefix("recipes/" + RecipeCategory.MISC.folderName + "/"))
+        )
+    }
+
+    private fun ensureValid(id: ResourceLocation?) {
+        check(!this.criteria.isEmpty()) { "No way of obtaining recipe $id" }
+    }
+
+    fun base(ingredient: Ingredient): ResearchingRecipeBuilder {
+        this.base = ingredient
+        return this
+    }
+
+    fun base(item: ItemLike) = this.base(Ingredient.of(item))
+
+    fun base(tag: TagKey<Item>) = this.base(Ingredient.of(tag))
+
+    fun addition(ingredient: Ingredient): ResearchingRecipeBuilder {
+        this.addition = ingredient
+        return this
+    }
+
+    fun addition(item: ItemLike) = this.addition(Ingredient.of(item))
+
+    fun addition(tag: TagKey<Item>) = this.addition(Ingredient.of(tag))
+
+    fun special(ingredient: Ingredient): ResearchingRecipeBuilder {
+        this.special = ingredient
+        return this
+    }
+
+    fun special(item: ItemLike) = this.special(Ingredient.of(item))
+
+    fun special(tag: TagKey<Item>) = this.special(Ingredient.of(tag))
+
+    fun color(color: Int): ResearchingRecipeBuilder {
+        this.color = color.coerceIn(0, 4)
+        return this
+    }
+
+    fun time(time: Int): ResearchingRecipeBuilder {
+        this.time = time
+        return this
+    }
+
+    fun selectable(): ResearchingRecipeBuilder {
+        this.selectable = true
+        return this
+    }
+
+    companion object {
+        @JvmStatic
+        @JvmOverloads
+        fun item(result: Item, count: Int = 1, input: ItemLike) =
+            ResearchingRecipeBuilder(resultItem = result, count = count, input = Ingredient.of(input))
+
+        @JvmStatic
+        @JvmOverloads
+        fun item(result: Item, count: Int = 1, input: TagKey<Item>) =
+            ResearchingRecipeBuilder(resultItem = result, count = count, input = Ingredient.of(input))
+
+        @JvmStatic
+        @JvmOverloads
+        fun tag(resultTag: TagKey<Item>, count: Int = 1, input: ItemLike) =
+            ResearchingRecipeBuilder(resultTag = resultTag, count = count, input = Ingredient.of(input))
+
+        @JvmStatic
+        @JvmOverloads
+        fun tag(resultTag: TagKey<Item>, count: Int = 1, input: TagKey<Item>) =
+            ResearchingRecipeBuilder(resultTag = resultTag, count = count, input = Ingredient.of(input))
+    }
+
 //    class Result(
 //        val recipeId: ResourceLocation,
 //        val input: Ingredient,
@@ -208,4 +204,4 @@ package com.atsuishio.superbwarfare.datagen.builder
 //
 //        override fun getAdvancementId(): ResourceLocation = this.advancementLocation
 //    }
-//}
+}

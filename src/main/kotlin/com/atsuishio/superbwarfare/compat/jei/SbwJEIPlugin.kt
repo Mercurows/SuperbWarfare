@@ -69,15 +69,14 @@ class SbwJEIPlugin : IModPlugin {
         registration.addRecipes(
             VehicleAssemblingCategory.TYPE,
             recipeManager.getAllRecipesFor(ModRecipes.VEHICLE_ASSEMBLING_TYPE.get())
-                .map { it.value() }
-                .toList()
+                .map { it.value }
         )
 
-        // TODO researching type
-//        registration.addRecipes(
-//            ResearchingCategory.TYPE,
-//            recipeManager.getAllRecipesFor(ModRecipes.RESEARCHING_TYPE.get())
-//        )
+        registration.addRecipes(
+            ResearchingCategory.TYPE,
+            recipeManager.getAllRecipesFor(ModRecipes.RESEARCHING_TYPE.get())
+                .map { it.value }
+        )
 
         registration.addItemStackInfo(
             ItemStack(ModItems.ANCIENT_CPU.get()),

@@ -1,0 +1,21 @@
+{
+  "type": "superbwarfare:researching",
+  "addition": {
+    "item": "minecraft:lapis_lazuli"
+  },
+  "base": {
+    "item": "minecraft:paper"
+  },
+  "color": 2,
+  "input": {
+    "item": "superbwarfare:epic_blueprint_data_chip"
+  },
+  "result": {
+    "tag": "superbwarfare:blueprint/epic"
+  },
+  "selectable": true,
+  "special": {
+    "item": "superbwarfare:directional_research_module"
+  },
+  "time": 1500
+}

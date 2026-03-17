@@ -17,7 +17,6 @@ import net.minecraft.world.entity.EntityType
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.ItemLike
 import java.util.*
-import javax.annotation.ParametersAreNonnullByDefault
 
 class VehicleAssemblingRecipeBuilder : RecipeBuilder {
     private val result: Item
@@ -56,7 +55,6 @@ class VehicleAssemblingRecipeBuilder : RecipeBuilder {
         return this
     }
 
-    @ParametersAreNonnullByDefault
     override fun unlockedBy(s: String, criterion: Criterion<*>): RecipeBuilder {
         this.criteria[s] = criterion
         return this

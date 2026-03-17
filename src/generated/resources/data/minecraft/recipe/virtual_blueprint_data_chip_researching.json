@@ -1,0 +1,16 @@
+{
+  "type": "superbwarfare:researching",
+  "addition": {
+    "item": "minecraft:lapis_lazuli"
+  },
+  "base": {
+    "item": "minecraft:paper"
+  },
+  "input": {
+    "item": "superbwarfare:virtual_blueprint_data_chip"
+  },
+  "result": {
+    "tag": "superbwarfare:blueprint/virtual"
+  },
+  "time": 2400
+}

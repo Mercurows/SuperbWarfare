@@ -1,0 +1,16 @@
+{
+  "type": "superbwarfare:researching",
+  "addition": {
+    "item": "minecraft:amethyst_shard"
+  },
+  "base": {
+    "item": "superbwarfare:data_chip_substrate"
+  },
+  "input": {
+    "tag": "superbwarfare:blueprint/common"
+  },
+  "result": {
+    "item": "superbwarfare:common_blueprint_data_chip"
+  },
+  "time": 200
+}

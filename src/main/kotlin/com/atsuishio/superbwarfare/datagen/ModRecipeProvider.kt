@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.datagen
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
+import com.atsuishio.superbwarfare.datagen.builder.ResearchingRecipeBuilder
 import com.atsuishio.superbwarfare.datagen.builder.VehicleAssemblingRecipeBuilder
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.init.ModItems.Materials
@@ -2519,7 +2520,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                     has(ModItems.PERK_ITEMS[ModPerks.SUBSISTENCE]!!.get())
                 )
                 .save(writer, perkLoc(ModPerks.BACKPACK_LINKED_MAGAZINE))
-            ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.POWERFUL_COOLER)!!.get())
+            ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS[ModPerks.POWERFUL_COOLER]!!.get())
                 .pattern("cdc")
                 .pattern("bab")
                 .pattern("cdc")
@@ -2530,7 +2531,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .unlockedBy(getHasName(Items.POWDER_SNOW_BUCKET), has(Items.POWDER_SNOW_BUCKET))
                 .save(writer, perkLoc(ModPerks.POWERFUL_COOLER))
-            ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS.get(ModPerks.BLADE_BULLET)!!.get())
+            ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.PERK_ITEMS[ModPerks.BLADE_BULLET]!!.get())
                 .pattern("dbd")
                 .pattern("cac")
                 .pattern("ebe")
@@ -2713,133 +2714,68 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
             SpecialRecipeBuilder.special(::VehicleResetRecipe)
         }
 
-        // TODO researchRecipes
         private fun buildResearchRecipes(writer: RecipeOutput) {
-//            ResearchingRecipeBuilder.tag(
-//                ModTags.Items.LEGENDARY_BLUEPRINT,
-//                input = ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()
-//            )
-//                .base(Items.PAPER)
-//                .addition(Items.LAPIS_LAZULI)
-//                .time(12000)
-//                .unlockedBy(
-//                    getHasName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()),
-//                    has(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get())
-//                )
-//                .save(writer, getItemName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()) + "_researching")
-//            ResearchingRecipeBuilder.tag(
-//                ModTags.Items.LEGENDARY_BLUEPRINT,
-//                3,
-//                ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()
-//            )
-//                .base(Items.PAPER)
-//                .addition(Items.LAPIS_LAZULI)
-//                .special(ModItems.BOOST_RESEARCH_MODULE.get())
-//                .time(12000)
-//                .color(1)
-//                .unlockedBy(
-//                    getHasName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()),
-//                    has(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get())
-//                )
-//                .save(writer, getItemName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()) + "_researching_boost")
-//            ResearchingRecipeBuilder.tag(
-//                ModTags.Items.LEGENDARY_BLUEPRINT,
-//                input = ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()
-//            )
-//                .base(Items.PAPER)
-//                .addition(Items.LAPIS_LAZULI)
-//                .special(ModItems.DIRECTIONAL_RESEARCH_MODULE.get())
-//                .time(12000)
-//                .color(2)
-//                .selectable()
-//                .unlockedBy(
-//                    getHasName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()),
-//                    has(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get())
-//                )
-//                .save(writer, getItemName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()) + "_researching_directional")
-//            ResearchingRecipeBuilder.tag(
-//                ModTags.Items.LEGENDARY_BLUEPRINT,
-//                input = ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()
-//            )
-//                .base(Items.PAPER)
-//                .addition(Items.LAPIS_LAZULI)
-//                .special(ModItems.EFFECTIVE_RESEARCH_MODULE.get())
-//                .time(1200)
-//                .color(3)
-//                .unlockedBy(
-//                    getHasName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()),
-//                    has(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get())
-//                )
-//                .save(writer, getItemName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()) + "_researching_effective")
-//            ResearchingRecipeBuilder.tag(
-//                ModTags.Items.ENLARGED_LEGENDARY_BLUEPRINT,
-//                input = ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()
-//            )
-//                .base(Items.PAPER)
-//                .addition(Items.LAPIS_LAZULI)
-//                .special(ModItems.ENLARGEMENT_RESEARCH_MODULE.get())
-//                .time(24000)
-//                .color(4)
-//                .unlockedBy(
-//                    getHasName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()),
-//                    has(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get())
-//                )
-//                .save(writer, getItemName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()) + "_researching_enlargement")
-//
-//            ResearchingRecipeBuilder.tag(
-//                ModTags.Items.RESEARCHABLE_AMMO_PERK,
-//                input = ModItems.AMMO_PERK_DATA_CHIP.get()
-//            )
-//                .base(ModItems.EMPTY_PERK.get())
-//                .time(600)
-//                .unlockedBy(
-//                    getHasName(ModItems.AMMO_PERK_DATA_CHIP.get()),
-//                    has(ModItems.AMMO_PERK_DATA_CHIP.get())
-//                )
-//                .save(writer, getItemName(ModItems.AMMO_PERK_DATA_CHIP.get()) + "_researching")
-//            ResearchingRecipeBuilder.tag(
-//                ModTags.Items.RESEARCHABLE_FUNCTIONAL_PERK,
-//                input = ModItems.FUNCTIONAL_PERK_DATA_CHIP.get()
-//            )
-//                .base(ModItems.EMPTY_PERK.get())
-//                .time(600)
-//                .unlockedBy(
-//                    getHasName(ModItems.FUNCTIONAL_PERK_DATA_CHIP.get()),
-//                    has(ModItems.FUNCTIONAL_PERK_DATA_CHIP.get())
-//                )
-//                .save(writer, getItemName(ModItems.FUNCTIONAL_PERK_DATA_CHIP.get()) + "_researching")
-//            ResearchingRecipeBuilder.tag(
-//                ModTags.Items.RESEARCHABLE_DAMAGE_PERK,
-//                input = ModItems.DAMAGE_PERK_DATA_CHIP.get()
-//            )
-//                .base(ModItems.EMPTY_PERK.get())
-//                .time(600)
-//                .unlockedBy(
-//                    getHasName(ModItems.DAMAGE_PERK_DATA_CHIP.get()),
-//                    has(ModItems.DAMAGE_PERK_DATA_CHIP.get())
-//                )
-//                .save(writer, getItemName(ModItems.DAMAGE_PERK_DATA_CHIP.get()) + "_researching")
+            this.generateBlueprintResearchingRecipe(writer, Rarity.COMMON)
+            this.generateBlueprintResearchingRecipe(writer, Rarity.RARE)
+            this.generateBlueprintResearchingRecipe(writer, Rarity.EPIC)
+            this.generateBlueprintResearchingRecipe(writer, ModRarities.LEGENDARY)
+            this.generateBlueprintResearchingRecipe(writer, ModRarities.SUPERB)
+            this.generateBlueprintResearchingRecipe(writer, ModRarities.VIRTUAL)
+
+            // Perk
+            ResearchingRecipeBuilder.tag(
+                ModTags.Items.RESEARCHABLE_AMMO_PERK,
+                input = ModItems.AMMO_PERK_DATA_CHIP.get()
+            )
+                .base(ModItems.EMPTY_PERK.get())
+                .time(600)
+                .unlockedBy(
+                    getHasName(ModItems.AMMO_PERK_DATA_CHIP.get()),
+                    has(ModItems.AMMO_PERK_DATA_CHIP.get())
+                )
+                .save(writer, getItemName(ModItems.AMMO_PERK_DATA_CHIP.get()) + "_researching")
+            ResearchingRecipeBuilder.tag(
+                ModTags.Items.RESEARCHABLE_FUNCTIONAL_PERK,
+                input = ModItems.FUNCTIONAL_PERK_DATA_CHIP.get()
+            )
+                .base(ModItems.EMPTY_PERK.get())
+                .time(600)
+                .unlockedBy(
+                    getHasName(ModItems.FUNCTIONAL_PERK_DATA_CHIP.get()),
+                    has(ModItems.FUNCTIONAL_PERK_DATA_CHIP.get())
+                )
+                .save(writer, getItemName(ModItems.FUNCTIONAL_PERK_DATA_CHIP.get()) + "_researching")
+            ResearchingRecipeBuilder.tag(
+                ModTags.Items.RESEARCHABLE_DAMAGE_PERK,
+                input = ModItems.DAMAGE_PERK_DATA_CHIP.get()
+            )
+                .base(ModItems.EMPTY_PERK.get())
+                .time(600)
+                .unlockedBy(
+                    getHasName(ModItems.DAMAGE_PERK_DATA_CHIP.get()),
+                    has(ModItems.DAMAGE_PERK_DATA_CHIP.get())
+                )
+                .save(writer, getItemName(ModItems.DAMAGE_PERK_DATA_CHIP.get()) + "_researching")
         }
 
         fun copyBlueprint(writer: RecipeOutput, result: ItemLike) {
             copySmithingTemplate(writer, result, Items.LAPIS_LAZULI)
 
-            // TODO 正确实现新配方
-//            ShapedRecipeBuilder.shaped(RecipeCategory.MISC, result, 2)
-//                .pattern("ABA")
-//                .pattern("ACA")
-//                .pattern("AAA")
-//                .define('A', Items.LAPIS_LAZULI)
-//                .define('B', Items.PAPER)
-//                .define('C', result)
-//                .unlockedBy(getHasName(result), has(result))
-//                .save(writer, "${getItemName(result)}_copy")
-//            ResearchingRecipeBuilder.item(result.asItem(), 2, result)
-//                .base(Items.PAPER)
-//                .addition(Items.LAPIS_LAZULI)
-//                .time(600)
-//                .unlockedBy(getHasName(result), has(result))
-//                .save(writer, "${getItemName(result)}_copy_researching")
+            ShapedRecipeBuilder.shaped(RecipeCategory.MISC, result, 2)
+                .pattern("ABA")
+                .pattern("ACA")
+                .pattern("AAA")
+                .define('A', Items.LAPIS_LAZULI)
+                .define('B', Items.PAPER)
+                .define('C', result)
+                .unlockedBy(getHasName(result), has(result))
+                .save(writer, "${getItemName(result)}_copy")
+            ResearchingRecipeBuilder.item(result.asItem(), 2, result)
+                .base(Items.PAPER)
+                .addition(Items.LAPIS_LAZULI)
+                .time(600)
+                .unlockedBy(getHasName(result), has(result))
+                .save(writer, "${getItemName(result)}_copy_researching")
         }
 
         fun gunSmithing(
@@ -3043,116 +2979,115 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                     tag = ModTags.Items.RARE_BLUEPRINT
                     enlargedTag = ModTags.Items.ENLARGED_RARE_BLUEPRINT
                     input = ModItems.RARE_BLUEPRINT_DATA_CHIP.get()
-                    time = 2400
+                    time = 600
                 }
 
                 Rarity.EPIC -> {
                     tag = ModTags.Items.EPIC_BLUEPRINT
                     enlargedTag = ModTags.Items.ENLARGED_EPIC_BLUEPRINT
                     input = ModItems.EPIC_BLUEPRINT_DATA_CHIP.get()
-                    time = 6000
+                    time = 1500
                 }
 
                 ModRarities.LEGENDARY -> {
                     tag = ModTags.Items.LEGENDARY_BLUEPRINT
                     enlargedTag = ModTags.Items.ENLARGED_LEGENDARY_BLUEPRINT
                     input = ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get()
-                    time = 12000
+                    time = 3000
                 }
 
                 ModRarities.SUPERB -> {
                     tag = ModTags.Items.SUPERB_BLUEPRINT
                     enlargedTag = null
                     input = ModItems.SUPERB_BLUEPRINT_DATA_CHIP.get()
-                    time = 24000
+                    time = 6000
                 }
 
                 ModRarities.VIRTUAL -> {
                     tag = ModTags.Items.VIRTUAL_BLUEPRINT
                     enlargedTag = null
                     input = ModItems.VIRTUAL_BLUEPRINT_DATA_CHIP.get()
-                    time = 9600
+                    time = 2400
                 }
 
                 else -> {
                     tag = ModTags.Items.COMMON_BLUEPRINT
                     enlargedTag = ModTags.Items.ENLARGED_COMMON_BLUEPRINT
                     input = ModItems.COMMON_BLUEPRINT_DATA_CHIP.get()
-                    time = 1200
+                    time = 300
                 }
             }
 
-            // TODO ResearchingRecipeBuilder
-//            ResearchingRecipeBuilder.tag(tag, input = input)
-//                .base(Items.PAPER)
-//                .addition(Items.LAPIS_LAZULI)
-//                .time(time)
-//                .unlockedBy(getHasName(input), has(input))
-//                .save(writer, getItemName(input) + "_researching")
-//            ResearchingRecipeBuilder.tag(tag, 2, input)
-//                .base(Items.PAPER)
-//                .addition(Items.LAPIS_LAZULI)
-//                .special(ModItems.BOOST_RESEARCH_MODULE.get())
-//                .time(time)
-//                .color(1)
-//                .unlockedBy(getHasName(input), has(input))
-//                .unlockedBy(getHasName(ModItems.BOOST_RESEARCH_MODULE.get()), has(ModItems.BOOST_RESEARCH_MODULE.get()))
-//                .save(writer, getItemName(input) + "_researching_boost")
-//            ResearchingRecipeBuilder.tag(tag, input = input)
-//                .base(Items.PAPER)
-//                .addition(Items.LAPIS_LAZULI)
-//                .special(ModItems.DIRECTIONAL_RESEARCH_MODULE.get())
-//                .time(time)
-//                .color(2)
-//                .selectable()
-//                .unlockedBy(getHasName(input), has(input))
-//                .unlockedBy(
-//                    getHasName(ModItems.DIRECTIONAL_RESEARCH_MODULE.get()),
-//                    has(ModItems.DIRECTIONAL_RESEARCH_MODULE.get())
-//                )
-//                .save(writer, getItemName(input) + "_researching_directional")
-//            ResearchingRecipeBuilder.tag(tag, input = input)
-//                .base(Items.PAPER)
-//                .addition(Items.LAPIS_LAZULI)
-//                .special(ModItems.EFFECTIVE_RESEARCH_MODULE.get())
-//                .time(time / 5)
-//                .color(3)
-//                .unlockedBy(getHasName(input), has(input))
-//                .unlockedBy(
-//                    getHasName(ModItems.EFFECTIVE_RESEARCH_MODULE.get()),
-//                    has(ModItems.EFFECTIVE_RESEARCH_MODULE.get())
-//                )
-//                .save(writer, getItemName(input) + "_researching_effective")
-//            if (enlargedTag != null) {
-//                ResearchingRecipeBuilder.tag(enlargedTag, input = input)
-//                    .base(Items.PAPER)
-//                    .addition(Items.LAPIS_LAZULI)
-//                    .special(ModItems.ENLARGEMENT_RESEARCH_MODULE.get())
-//                    .time(time * 2)
-//                    .color(4)
-//                    .unlockedBy(getHasName(input), has(input))
-//                    .unlockedBy(
-//                        getHasName(ModItems.ENLARGEMENT_RESEARCH_MODULE.get()),
-//                        has(ModItems.ENLARGEMENT_RESEARCH_MODULE.get())
-//                    )
-//                    .save(writer, getItemName(input) + "_researching_enlargement")
-//            }
-//
-//            ResearchingRecipeBuilder.item(input, input = tag)
-//                .base(ModItems.DATA_CHIP_SUBSTRATE.get())
-//                .addition(Items.AMETHYST_SHARD)
-//                .time(600)
-//                .unlockedBy("has_${tag.location.path}", has(tag))
-//                .save(writer, getItemName(input) + "_from_blueprint")
-//            ResearchingRecipeBuilder.item(input, 2, tag)
-//                .base(ModItems.DATA_CHIP_SUBSTRATE.get())
-//                .addition(Items.AMETHYST_SHARD)
-//                .time(600)
-//                .special(ModItems.BOOST_RESEARCH_MODULE.get())
-//                .color(1)
-//                .unlockedBy("has_${tag.location.path}", has(tag))
-//                .unlockedBy(getHasName(ModItems.BOOST_RESEARCH_MODULE.get()), has(ModItems.BOOST_RESEARCH_MODULE.get()))
-//                .save(writer, getItemName(input) + "_from_blueprint_boost")
+            ResearchingRecipeBuilder.tag(tag, input = input)
+                .base(Items.PAPER)
+                .addition(Items.LAPIS_LAZULI)
+                .time(time)
+                .unlockedBy(getHasName(input), has(input))
+                .save(writer, getItemName(input) + "_researching")
+            ResearchingRecipeBuilder.tag(tag, 2, input)
+                .base(Items.PAPER)
+                .addition(Items.LAPIS_LAZULI)
+                .special(ModItems.BOOST_RESEARCH_MODULE.get())
+                .time(time)
+                .color(1)
+                .unlockedBy(getHasName(input), has(input))
+                .unlockedBy(getHasName(ModItems.BOOST_RESEARCH_MODULE.get()), has(ModItems.BOOST_RESEARCH_MODULE.get()))
+                .save(writer, getItemName(input) + "_researching_boost")
+            ResearchingRecipeBuilder.tag(tag, input = input)
+                .base(Items.PAPER)
+                .addition(Items.LAPIS_LAZULI)
+                .special(ModItems.DIRECTIONAL_RESEARCH_MODULE.get())
+                .time(time)
+                .color(2)
+                .selectable()
+                .unlockedBy(getHasName(input), has(input))
+                .unlockedBy(
+                    getHasName(ModItems.DIRECTIONAL_RESEARCH_MODULE.get()),
+                    has(ModItems.DIRECTIONAL_RESEARCH_MODULE.get())
+                )
+                .save(writer, getItemName(input) + "_researching_directional")
+            ResearchingRecipeBuilder.tag(tag, input = input)
+                .base(Items.PAPER)
+                .addition(Items.LAPIS_LAZULI)
+                .special(ModItems.EFFECTIVE_RESEARCH_MODULE.get())
+                .time(time / 5)
+                .color(3)
+                .unlockedBy(getHasName(input), has(input))
+                .unlockedBy(
+                    getHasName(ModItems.EFFECTIVE_RESEARCH_MODULE.get()),
+                    has(ModItems.EFFECTIVE_RESEARCH_MODULE.get())
+                )
+                .save(writer, getItemName(input) + "_researching_effective")
+            if (enlargedTag != null) {
+                ResearchingRecipeBuilder.tag(enlargedTag, input = input)
+                    .base(Items.PAPER)
+                    .addition(Items.LAPIS_LAZULI)
+                    .special(ModItems.ENLARGEMENT_RESEARCH_MODULE.get())
+                    .time(time * 2)
+                    .color(4)
+                    .unlockedBy(getHasName(input), has(input))
+                    .unlockedBy(
+                        getHasName(ModItems.ENLARGEMENT_RESEARCH_MODULE.get()),
+                        has(ModItems.ENLARGEMENT_RESEARCH_MODULE.get())
+                    )
+                    .save(writer, getItemName(input) + "_researching_enlargement")
+            }
+
+            ResearchingRecipeBuilder.item(input, input = tag)
+                .base(ModItems.DATA_CHIP_SUBSTRATE.get())
+                .addition(Items.AMETHYST_SHARD)
+                .time(200)
+                .unlockedBy("has_${tag.location.path}", has(tag))
+                .save(writer, getItemName(input) + "_from_blueprint")
+            ResearchingRecipeBuilder.item(input, 2, tag)
+                .base(ModItems.DATA_CHIP_SUBSTRATE.get())
+                .addition(Items.AMETHYST_SHARD)
+                .time(200)
+                .special(ModItems.BOOST_RESEARCH_MODULE.get())
+                .color(1)
+                .unlockedBy("has_${tag.location.path}", has(tag))
+                .unlockedBy(getHasName(ModItems.BOOST_RESEARCH_MODULE.get()), has(ModItems.BOOST_RESEARCH_MODULE.get()))
+                .save(writer, getItemName(input) + "_from_blueprint_boost")
         }
     }
 }

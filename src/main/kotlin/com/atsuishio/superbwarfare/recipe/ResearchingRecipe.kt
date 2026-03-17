@@ -16,6 +16,7 @@ import net.minecraft.network.codec.ByteBufCodecs
 import net.minecraft.network.codec.StreamCodec
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.ItemTags
+import net.minecraft.tags.TagKey
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.crafting.Ingredient
@@ -26,7 +27,6 @@ import net.minecraft.world.level.Level
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper
 import kotlin.jvm.optionals.getOrNull
 
-// TODO 怎么实现这玩意
 class ResearchingRecipe(
     val input: Ingredient,
     val base: Ingredient,
@@ -37,6 +37,52 @@ class ResearchingRecipe(
     val time: Int,
     val result: Result
 ) : Recipe<RecipeWrapper> {
+    companion object {
+        fun create(
+            input: Ingredient,
+            base: Ingredient,
+            addition: Ingredient,
+            special: Ingredient,
+            selectable: Boolean,
+            color: Int,
+            time: Int,
+            result: Item
+        ): ResearchingRecipe {
+            return ResearchingRecipe(
+                input,
+                base,
+                addition,
+                special,
+                selectable,
+                color,
+                time,
+                Result(item = BuiltInRegistries.ITEM.getKey(result).toString())
+            )
+        }
+
+        fun create(
+            input: Ingredient,
+            base: Ingredient,
+            addition: Ingredient,
+            special: Ingredient,
+            selectable: Boolean,
+            color: Int,
+            time: Int,
+            tag: TagKey<Item>
+        ): ResearchingRecipe {
+            return ResearchingRecipe(
+                input,
+                base,
+                addition,
+                special,
+                selectable,
+                color,
+                time,
+                Result(tag = tag.location.toString())
+            )
+        }
+    }
+
     override fun matches(
         container: RecipeWrapper,
         level: Level
@@ -123,7 +169,7 @@ class ResearchingRecipe(
             if (this.list != null) return this.list!!
             if (this.tag.isEmpty()) return mutableListOf()
 
-            val tagKey = ItemTags.create(ResourceLocation.withDefaultNamespace(this.tag))
+            val tagKey = ItemTags.create(ResourceLocation.parse(this.tag))
             val itemTag = BuiltInRegistries.ITEM.getTag(tagKey)
                 .map { items -> items.map { it.value() } }.getOrNull() ?: return mutableListOf()
 
@@ -151,7 +197,6 @@ class ResearchingRecipe(
         }
     }
 
-    // TODO 怎么序列化这一坨
     object Serializer : RecipeSerializer<ResearchingRecipe> {
         val CODEC: MapCodec<ResearchingRecipe> = RecordCodecBuilder.mapCodec { builder ->
             builder.group(
@@ -179,10 +224,15 @@ class ResearchingRecipe(
             val selectable = buffer.readBoolean()
             val color = buffer.readInt()
             val time = buffer.readInt()
-            val result = ItemStack.STREAM_CODEC.decode(buffer)
 
             val res = Result()
-            res.resultStack = result
+            val flag = buffer.readBoolean()
+            if (flag) {
+                res.tag = buffer.readUtf()
+            } else {
+                res.resultStack = ItemStack.STREAM_CODEC.decode(buffer)
+            }
+
             return ResearchingRecipe(input, base, addition, special, selectable, color, time, res)
         }
 
@@ -197,7 +247,15 @@ class ResearchingRecipe(
             buffer.writeBoolean(recipe.selectable)
             buffer.writeInt(recipe.color)
             buffer.writeInt(recipe.time)
-            ItemStack.STREAM_CODEC.encode(buffer, recipe.result.getResult())
+
+            val res = recipe.result
+            val flag = res.isRandom()
+            buffer.writeBoolean(flag)
+            if (flag) {
+                buffer.writeUtf(res.tag)
+            } else {
+                ItemStack.STREAM_CODEC.encode(buffer, res.getResult())
+            }
         }
 
         override fun codec(): MapCodec<ResearchingRecipe> {

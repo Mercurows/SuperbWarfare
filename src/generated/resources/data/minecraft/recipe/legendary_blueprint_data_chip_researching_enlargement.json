@@ -1,0 +1,20 @@
+{
+  "type": "superbwarfare:researching",
+  "addition": {
+    "item": "minecraft:lapis_lazuli"
+  },
+  "base": {
+    "item": "minecraft:paper"
+  },
+  "color": 4,
+  "input": {
+    "item": "superbwarfare:legendary_blueprint_data_chip"
+  },
+  "result": {
+    "tag": "superbwarfare:blueprint/enlarged/legendary"
+  },
+  "special": {
+    "item": "superbwarfare:enlargement_research_module"
+  },
+  "time": 6000
+}
