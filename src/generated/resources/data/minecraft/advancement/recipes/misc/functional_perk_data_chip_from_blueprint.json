@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_perk/researchable/functional": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#superbwarfare:perk/researchable/functional"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "minecraft:functional_perk_data_chip_from_blueprint"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_perk/researchable/functional"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "minecraft:functional_perk_data_chip_from_blueprint"
+    ]
+  }
+}

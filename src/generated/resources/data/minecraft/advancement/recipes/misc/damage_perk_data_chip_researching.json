@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_functional_perk_data_chip": {
+    "has_damage_perk_data_chip": {
       "conditions": {
         "items": [
           {
-            "items": "superbwarfare:functional_perk_data_chip"
+            "items": "superbwarfare:damage_perk_data_chip"
           }
         ]
       },
@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:functional_perk_data_chip_researching"
+        "recipe": "minecraft:damage_perk_data_chip_researching"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -21,12 +21,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_functional_perk_data_chip"
+      "has_damage_perk_data_chip"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:functional_perk_data_chip_researching"
+      "minecraft:damage_perk_data_chip_researching"
     ]
   }
 }

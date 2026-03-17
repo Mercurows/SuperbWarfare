@@ -1,0 +1,17 @@
+{
+  "type": "superbwarfare:researching",
+  "base": {
+    "item": "superbwarfare:empty_perk"
+  },
+  "color": 3,
+  "input": {
+    "item": "superbwarfare:ammo_perk_data_chip"
+  },
+  "result": {
+    "tag": "superbwarfare:perk/researchable/ammo"
+  },
+  "special": {
+    "item": "superbwarfare:effective_research_module"
+  },
+  "time": 120
+}
