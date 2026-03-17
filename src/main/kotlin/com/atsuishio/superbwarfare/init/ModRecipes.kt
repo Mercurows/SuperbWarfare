@@ -1,7 +1,10 @@
 package com.atsuishio.superbwarfare.init
 
 import com.atsuishio.superbwarfare.Mod
-import com.atsuishio.superbwarfare.recipe.*
+import com.atsuishio.superbwarfare.recipe.PotionMortarShellRecipe
+import com.atsuishio.superbwarfare.recipe.ResearchingRecipe
+import com.atsuishio.superbwarfare.recipe.SmokeDyeRecipe
+import com.atsuishio.superbwarfare.recipe.VehicleResetRecipe
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipeSerializer
 import com.google.common.base.Supplier
@@ -32,16 +35,6 @@ object ModRecipes {
         register("potion_mortar_shell") {
             SimpleCraftingRecipeSerializer(::PotionMortarShellRecipe)
         }
-
-    @JvmField
-    val AMMO_BOX_ADD_AMMO_SERIALIZER = register("ammo_box_add_ammo") {
-        SimpleCraftingRecipeSerializer(::AmmoBoxAddAmmoRecipe)
-    }
-
-    @JvmField
-    val AMMO_BOX_EXTRACT_AMMO_SERIALIZER = register("ammo_box_extract_ammo") {
-        SimpleCraftingRecipeSerializer(::AmmoBoxExtractAmmoRecipe)
-    }
 
     @JvmField
     val SMOKE_DYE_SERIALIZER = register("smoke_dye") {

@@ -6,7 +6,9 @@ import com.atsuishio.superbwarfare.datagen.builder.VehicleAssemblingRecipeBuilde
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.init.ModItems.Materials
 import com.atsuishio.superbwarfare.perk.Perk
-import com.atsuishio.superbwarfare.recipe.*
+import com.atsuishio.superbwarfare.recipe.PotionMortarShellRecipe
+import com.atsuishio.superbwarfare.recipe.SmokeDyeRecipe
+import com.atsuishio.superbwarfare.recipe.VehicleResetRecipe
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe
 import com.atsuishio.superbwarfare.tools.NBTTool
 import net.minecraft.core.Holder
@@ -2706,10 +2708,6 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
         private fun buildSpecialRecipes(writer: RecipeOutput) {
             SpecialRecipeBuilder.special(::PotionMortarShellRecipe)
                 .save(writer, "potion_mortar_shell")
-            SpecialRecipeBuilder.special(::AmmoBoxAddAmmoRecipe)
-                .save(writer, "ammo_box_add_ammo")
-            SpecialRecipeBuilder.special(::AmmoBoxExtractAmmoRecipe)
-                .save(writer, "ammo_box_extract_ammo")
             SpecialRecipeBuilder.special(::SmokeDyeRecipe)
             SpecialRecipeBuilder.special(::VehicleResetRecipe)
         }
