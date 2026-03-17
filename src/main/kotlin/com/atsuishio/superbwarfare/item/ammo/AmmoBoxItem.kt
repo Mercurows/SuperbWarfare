@@ -13,6 +13,7 @@ import net.minecraft.sounds.SoundSource
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResultHolder
 import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.SlotAccess
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.ClickAction
 import net.minecraft.world.inventory.Slot
@@ -20,7 +21,6 @@ import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.TooltipFlag
 import net.minecraft.world.level.Level
-import javax.annotation.ParametersAreNonnullByDefault
 import kotlin.math.min
 
 var ItemStack.ammoBoxData: AmmoBoxItem.AmmoBoxData
@@ -41,8 +41,7 @@ var ItemStack.ammoBoxData: AmmoBoxItem.AmmoBoxData
         }
     }
 
-class AmmoBoxItem : Item(Properties().stacksTo(1)) {
-
+open class AmmoBoxItem : Item(Properties().stacksTo(1)) {
     data class AmmoBoxData(
         val selectedType: Ammo? = null,
         val isDrop: Boolean = false,
@@ -110,7 +109,6 @@ class AmmoBoxItem : Item(Properties().stacksTo(1)) {
         return InteractionResultHolder.consume(stack)
     }
 
-    @ParametersAreNonnullByDefault
     override fun onEntitySwing(stack: ItemStack, entity: LivingEntity): Boolean {
         if (entity.isCrouching && entity is ServerPlayer) {
             stack.ammoBoxData = stack.ammoBoxData.switchToNextType()
@@ -147,10 +145,28 @@ class AmmoBoxItem : Item(Properties().stacksTo(1)) {
             tooltipComponents.add(
                 Component.translatable("des.superbwarfare.ammo_box." + ammo.name).withStyle(ammo.color)
                         + Component.empty().withStyle(ChatFormatting.RESET)
-                        + Component.literal(format0D(ammo.get(stack).toDouble()) + (if (type != ammo) " " else " ←-"))
+                        + Component.literal(format0D(ammo.get(stack).toDouble()) + (if (type != null && type != ammo) " " else " ←-"))
                     .withStyle(ChatFormatting.BOLD)
             )
         }
+    }
+
+    // 直接在物品栏右键时切换选中的弹种
+    override fun overrideOtherStackedOnMe(
+        stack: ItemStack,
+        other: ItemStack,
+        slot: Slot,
+        action: ClickAction,
+        player: Player,
+        access: SlotAccess
+    ): Boolean {
+        val info = stack.ammoBoxData
+        if (!info.isDrop && other.isEmpty && action == ClickAction.SECONDARY) {
+            stack.ammoBoxData = stack.ammoBoxData.switchToNextType()
+            player.playSound(ModSounds.FIRE_RATE.get())
+            return true
+        }
+        return super.overrideOtherStackedOnMe(stack, other, slot, action, player, access)
     }
 
     override fun overrideStackedOnOther(stack: ItemStack, slot: Slot, action: ClickAction, player: Player): Boolean {
