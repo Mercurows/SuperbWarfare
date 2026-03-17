@@ -2513,7 +2513,7 @@ object ClientEventHandler {
     }
 
     @SubscribeEvent
-    fun onFovUpdate(event: ComputeFov) {
+    fun onFovUpdate(event: ViewportEvent.ComputeFov) {
         val player = localPlayer ?: return
         val times = getDelta().coerceAtMost(1.6f)
 
