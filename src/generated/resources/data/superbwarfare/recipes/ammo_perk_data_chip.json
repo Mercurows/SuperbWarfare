@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "tag": "forge:glass"
+    },
+    "b": {
+      "item": "superbwarfare:data_chip_substrate"
+    },
+    "c": {
+      "tag": "forge:ingots/lead"
+    },
+    "d": {
+      "tag": "forge:nuggets/gold"
+    }
+  },
+  "pattern": [
+    " a ",
+    "cbc",
+    " d "
+  ],
+  "result": {
+    "item": "superbwarfare:ammo_perk_data_chip"
+  },
+  "show_notification": true
+}

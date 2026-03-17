@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_data_chip_substrate": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:data_chip_substrate"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:functional_perk_data_chip"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_data_chip_substrate",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:functional_perk_data_chip"
+    ]
+  },
+  "sends_telemetry_event": false
+}

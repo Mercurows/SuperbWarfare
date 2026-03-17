@@ -1,0 +1,18 @@
+{
+  "type": "superbwarfare:researching",
+  "base": {
+    "item": "superbwarfare:empty_perk"
+  },
+  "color": 2,
+  "input": {
+    "item": "superbwarfare:functional_perk_data_chip"
+  },
+  "result": {
+    "tag": "superbwarfare:perk/researchable/functional"
+  },
+  "selectable": true,
+  "special": {
+    "item": "superbwarfare:directional_research_module"
+  },
+  "time": 600
+}

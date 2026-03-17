@@ -2554,6 +2554,37 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .define('d', Tags.Items.STORAGE_BLOCKS_IRON)
                 .unlockedBy(getHasName(ModItems.ANCIENT_CPU.get()), has(ModItems.ANCIENT_CPU.get()))
                 .save(writer, loc(getItemName(ModItems.ENLARGEMENT_RESEARCH_MODULE.get())))
+
+            ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.AMMO_PERK_DATA_CHIP.get())
+                .pattern(" a ")
+                .pattern("cbc")
+                .pattern(" d ")
+                .define('a', Tags.Items.GLASS)
+                .define('b', ModItems.DATA_CHIP_SUBSTRATE.get())
+                .define('c', INGOTS_LEAD)
+                .define('d', Tags.Items.NUGGETS_GOLD)
+                .unlockedBy(getHasName(ModItems.DATA_CHIP_SUBSTRATE.get()), has(ModItems.DATA_CHIP_SUBSTRATE.get()))
+                .save(writer, loc(getItemName(ModItems.AMMO_PERK_DATA_CHIP.get())))
+            ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.FUNCTIONAL_PERK_DATA_CHIP.get())
+                .pattern(" a ")
+                .pattern("cbc")
+                .pattern(" d ")
+                .define('a', Tags.Items.GLASS)
+                .define('b', ModItems.DATA_CHIP_SUBSTRATE.get())
+                .define('c', INGOTS_SILVER)
+                .define('d', Tags.Items.NUGGETS_GOLD)
+                .unlockedBy(getHasName(ModItems.DATA_CHIP_SUBSTRATE.get()), has(ModItems.DATA_CHIP_SUBSTRATE.get()))
+                .save(writer, loc(getItemName(ModItems.FUNCTIONAL_PERK_DATA_CHIP.get())))
+            ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.DAMAGE_PERK_DATA_CHIP.get())
+                .pattern(" a ")
+                .pattern("cbc")
+                .pattern(" d ")
+                .define('a', Tags.Items.GLASS)
+                .define('b', ModItems.DATA_CHIP_SUBSTRATE.get())
+                .define('c', INGOTS_TUNGSTEN)
+                .define('d', Tags.Items.NUGGETS_GOLD)
+                .unlockedBy(getHasName(ModItems.DATA_CHIP_SUBSTRATE.get()), has(ModItems.DATA_CHIP_SUBSTRATE.get()))
+                .save(writer, loc(getItemName(ModItems.DAMAGE_PERK_DATA_CHIP.get())))
         }
 
         private fun buildSpecialRecipes(writer: Consumer<FinishedRecipe>) {
@@ -2571,40 +2602,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
             this.generateBlueprintResearchingRecipe(writer, ModRarities.SUPERB)
             this.generateBlueprintResearchingRecipe(writer, ModRarities.VIRTUAL)
 
-            // Perk
-            ResearchingRecipeBuilder.tag(
-                ModTags.Items.RESEARCHABLE_AMMO_PERK,
-                input = ModItems.AMMO_PERK_DATA_CHIP.get()
-            )
-                .base(ModItems.EMPTY_PERK.get())
-                .time(600)
-                .unlockedBy(
-                    getHasName(ModItems.AMMO_PERK_DATA_CHIP.get()),
-                    has(ModItems.AMMO_PERK_DATA_CHIP.get())
-                )
-                .save(writer, getItemName(ModItems.AMMO_PERK_DATA_CHIP.get()) + "_researching")
-            ResearchingRecipeBuilder.tag(
-                ModTags.Items.RESEARCHABLE_FUNCTIONAL_PERK,
-                input = ModItems.FUNCTIONAL_PERK_DATA_CHIP.get()
-            )
-                .base(ModItems.EMPTY_PERK.get())
-                .time(600)
-                .unlockedBy(
-                    getHasName(ModItems.FUNCTIONAL_PERK_DATA_CHIP.get()),
-                    has(ModItems.FUNCTIONAL_PERK_DATA_CHIP.get())
-                )
-                .save(writer, getItemName(ModItems.FUNCTIONAL_PERK_DATA_CHIP.get()) + "_researching")
-            ResearchingRecipeBuilder.tag(
-                ModTags.Items.RESEARCHABLE_DAMAGE_PERK,
-                input = ModItems.DAMAGE_PERK_DATA_CHIP.get()
-            )
-                .base(ModItems.EMPTY_PERK.get())
-                .time(600)
-                .unlockedBy(
-                    getHasName(ModItems.DAMAGE_PERK_DATA_CHIP.get()),
-                    has(ModItems.DAMAGE_PERK_DATA_CHIP.get())
-                )
-                .save(writer, getItemName(ModItems.DAMAGE_PERK_DATA_CHIP.get()) + "_researching")
+            Perk.Type.entries.forEach { this.generatePerkResearchingRecipe(writer, it) }
         }
 
         fun copyBlueprint(writer: Consumer<FinishedRecipe>, result: ItemLike) {
@@ -2938,6 +2936,80 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .unlockedBy("has_${tag.location.path}", has(tag))
                 .unlockedBy(getHasName(ModItems.BOOST_RESEARCH_MODULE.get()), has(ModItems.BOOST_RESEARCH_MODULE.get()))
                 .save(writer, getItemName(input) + "_from_blueprint_boost")
+        }
+
+        fun generatePerkResearchingRecipe(writer: Consumer<FinishedRecipe>, type: Perk.Type) {
+            val inputPerk: Item
+            val resTag: TagKey<Item>
+            when (type) {
+                Perk.Type.AMMO -> {
+                    inputPerk = ModItems.AMMO_PERK_DATA_CHIP.get()
+                    resTag = ModTags.Items.RESEARCHABLE_AMMO_PERK
+                }
+
+                Perk.Type.FUNCTIONAL -> {
+                    inputPerk = ModItems.FUNCTIONAL_PERK_DATA_CHIP.get()
+                    resTag = ModTags.Items.RESEARCHABLE_FUNCTIONAL_PERK
+                }
+
+                Perk.Type.DAMAGE -> {
+                    inputPerk = ModItems.DAMAGE_PERK_DATA_CHIP.get()
+                    resTag = ModTags.Items.RESEARCHABLE_DAMAGE_PERK
+                }
+            }
+
+            ResearchingRecipeBuilder.tag(resTag, 1, inputPerk)
+                .base(ModItems.EMPTY_PERK.get())
+                .time(600)
+                .unlockedBy(getHasName(inputPerk), has(inputPerk))
+                .save(writer, getItemName(inputPerk) + "_researching")
+            ResearchingRecipeBuilder.tag(resTag, 2, inputPerk)
+                .base(ModItems.EMPTY_PERK.get())
+                .special(ModItems.BOOST_RESEARCH_MODULE.get())
+                .time(600)
+                .color(1)
+                .unlockedBy(getHasName(inputPerk), has(inputPerk))
+                .unlockedBy(getHasName(ModItems.BOOST_RESEARCH_MODULE.get()), has(ModItems.BOOST_RESEARCH_MODULE.get()))
+                .save(writer, getItemName(inputPerk) + "_researching_boost")
+            ResearchingRecipeBuilder.tag(resTag, 1, inputPerk)
+                .base(ModItems.EMPTY_PERK.get())
+                .special(ModItems.DIRECTIONAL_RESEARCH_MODULE.get())
+                .time(600)
+                .color(2)
+                .selectable()
+                .unlockedBy(getHasName(inputPerk), has(inputPerk))
+                .unlockedBy(
+                    getHasName(ModItems.DIRECTIONAL_RESEARCH_MODULE.get()),
+                    has(ModItems.DIRECTIONAL_RESEARCH_MODULE.get())
+                )
+                .save(writer, getItemName(inputPerk) + "_researching_directional")
+            ResearchingRecipeBuilder.tag(resTag, 1, inputPerk)
+                .base(ModItems.EMPTY_PERK.get())
+                .special(ModItems.EFFECTIVE_RESEARCH_MODULE.get())
+                .time(120)
+                .color(3)
+                .unlockedBy(getHasName(inputPerk), has(inputPerk))
+                .unlockedBy(
+                    getHasName(ModItems.EFFECTIVE_RESEARCH_MODULE.get()),
+                    has(ModItems.EFFECTIVE_RESEARCH_MODULE.get())
+                )
+                .save(writer, getItemName(inputPerk) + "_researching_effective")
+
+            ResearchingRecipeBuilder.item(inputPerk, 1, resTag)
+                .base(ModItems.DATA_CHIP_SUBSTRATE.get())
+                .addition(Items.AMETHYST_SHARD)
+                .time(200)
+                .unlockedBy("has_${resTag.location.path}", has(resTag))
+                .save(writer, getItemName(inputPerk) + "_from_blueprint")
+            ResearchingRecipeBuilder.item(inputPerk, 2, resTag)
+                .base(ModItems.DATA_CHIP_SUBSTRATE.get())
+                .addition(Items.AMETHYST_SHARD)
+                .time(200)
+                .special(ModItems.BOOST_RESEARCH_MODULE.get())
+                .color(1)
+                .unlockedBy("has_${resTag.location.path}", has(resTag))
+                .unlockedBy(getHasName(ModItems.BOOST_RESEARCH_MODULE.get()), has(ModItems.BOOST_RESEARCH_MODULE.get()))
+                .save(writer, getItemName(inputPerk) + "_from_blueprint_boost")
         }
     }
 }

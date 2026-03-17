@@ -1,0 +1,16 @@
+{
+  "type": "superbwarfare:researching",
+  "addition": {
+    "item": "minecraft:amethyst_shard"
+  },
+  "base": {
+    "item": "superbwarfare:data_chip_substrate"
+  },
+  "input": {
+    "tag": "superbwarfare:perk/researchable/damage"
+  },
+  "result": {
+    "item": "superbwarfare:damage_perk_data_chip"
+  },
+  "time": 200
+}

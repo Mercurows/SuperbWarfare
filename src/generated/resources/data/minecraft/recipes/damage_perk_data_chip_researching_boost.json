@@ -1,0 +1,18 @@
+{
+  "type": "superbwarfare:researching",
+  "base": {
+    "item": "superbwarfare:empty_perk"
+  },
+  "color": 1,
+  "input": {
+    "item": "superbwarfare:damage_perk_data_chip"
+  },
+  "result": {
+    "count": 2,
+    "tag": "superbwarfare:perk/researchable/damage"
+  },
+  "special": {
+    "item": "superbwarfare:boost_research_module"
+  },
+  "time": 600
+}
