@@ -109,7 +109,7 @@ class ResearchingRecipe(
         }
 
         fun getResultList(): MutableList<Item> {
-            if (this.list != null) return this.list!!
+            if (this.list != null && !this.list!!.isEmpty()) return this.list!!
             if (this.tag.isEmpty()) return mutableListOf()
 
             val tags = ForgeRegistries.ITEMS.tags() ?: return mutableListOf()
