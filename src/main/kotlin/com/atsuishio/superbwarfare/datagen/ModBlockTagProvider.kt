@@ -58,6 +58,12 @@ class ModBlockTagProvider(
         )
         this.tag(BlockTags.MINEABLE_WITH_SHOVEL).add(ModBlocks.SANDBAG.get())
 
+        this.tag(ModTags.Blocks.MINEABLE_WITH_MILITARY_SHOVEL)
+            .add(Blocks.COBWEB)
+            .addTag(BlockTags.MINEABLE_WITH_SHOVEL)
+            .addTag(BlockTags.MINEABLE_WITH_AXE)
+            .addTag(BlockTags.MINEABLE_WITH_HOE)
+
         this.tag(ModTags.Blocks.SOFT_COLLISION)
             .addTag(BlockTags.LEAVES)
             .add(Blocks.LILY_PAD, Blocks.COBWEB, Blocks.CACTUS, Blocks.MANGROVE_ROOTS)

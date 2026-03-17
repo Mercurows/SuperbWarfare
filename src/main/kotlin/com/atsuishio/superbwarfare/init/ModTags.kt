@@ -126,6 +126,10 @@ object ModTags {
         // 辅助降落可识别的方块
         @JvmField
         val AUTO_LANDING = modBlockTag("auto_landing")
+
+        // 工兵铲可以挖掘的方块
+        @JvmField
+        val MINEABLE_WITH_MILITARY_SHOVEL = modBlockTag("mineable/military_shovel")
     }
 
     object DamageTypes {
