@@ -104,7 +104,9 @@ $RECYCLE.BIN/
 *.lnk
 
 .gradle
-build/
+build/*
+!build/generated/ksp/main
+!build/generated/ksp/main/**
 
 # Ignore Gradle GUI config
 gradle-app.setting
