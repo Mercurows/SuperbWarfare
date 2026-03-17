@@ -55,11 +55,11 @@ class DogTagItem : Item(Properties().stacksTo(1)), ICurioItem, ItemScreenProvide
                 Arrays.fill(el, (-1).toShort())
             }
 
-            val data = stack.get(ModDataComponents.DOG_TAG_IMAGE) ?: return colors
+            val data = stack.get(ModDataComponents.DOG_TAG_IMAGE).takeIf { !it.isNullOrEmpty() } ?: return colors
 
-            for (i in 0..15) {
-                val color = data[i]
-                for (j in color.indices) {
+            for (i in data.indices union colors.indices) {
+                val color = data[i].takeIf { !it.isNullOrEmpty() } ?: continue
+                for (j in color.indices union colors[i].indices) {
                     colors[i][j] = color[j].toShort()
                 }
             }
