@@ -268,6 +268,8 @@
   "item.superbwarfare.small_battery_pack": "Small Battery Pack",
   "item.superbwarfare.medium_battery_pack": "Medium Battery Pack",
   "item.superbwarfare.large_battery_pack": "Large Battery Pack",
+  "des.superbwarfare.battery.disable": "[Disabled] Charge items in inventory (Right-click to toggle)",
+  "des.superbwarfare.battery.enable": "[Enabled] Charge items in inventory (Right-click to toggle)",
   "item.superbwarfare.drone": "Drone",
   "item.superbwarfare.monitor": "Monitor",
   "item.superbwarfare.detonator": "Detonator",
