@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.sendPacketTo
 import kotlinx.serialization.Serializable
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
@@ -18,7 +19,7 @@ import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.ai.attributes.Attributes
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.enchantment.EnchantmentHelper
-import net.minecraftforge.common.ForgeHooks
+import net.neoforged.neoforge.common.CommonHooks
 import kotlin.math.*
 import kotlin.random.Random
 
@@ -38,7 +39,7 @@ data class MeleeAttackMessage(val uuidList: List<SerializedUUID>) : ServerPacket
     fun attack(attacker: Player, targets: List<Entity>) {
         var hurtCount = 0
         targets.forEachIndexed { index, target ->
-            if (!ForgeHooks.onPlayerAttackTarget(attacker, target)) return@forEachIndexed
+            if (!CommonHooks.onPlayerAttackTarget(attacker, target)) return@forEachIndexed
             if (!target.isAttackable) return@forEachIndexed
             if (target.skipAttackInteraction(attacker)) return@forEachIndexed
 
@@ -58,7 +59,8 @@ data class MeleeAttackMessage(val uuidList: List<SerializedUUID>) : ServerPacket
             )
 
             val currentHealth = (target as? LivingEntity)?.health ?: 0.0F
-            val canHurt = target.hurt(attacker.damageSources().playerAttack(attacker), damage.toFloat())
+            val source = attacker.damageSources().playerAttack(attacker)
+            val canHurt = target.hurt(source, damage.toFloat())
             if (!canHurt) {
                 attacker.level().playSound(
                     null,
@@ -115,10 +117,10 @@ data class MeleeAttackMessage(val uuidList: List<SerializedUUID>) : ServerPacket
                 }
 
                 attacker.setLastHurtMob(target)
-                if (target is LivingEntity) {
-                    EnchantmentHelper.doPostHurtEffects(target, attacker)
+                val level = attacker.level()
+                if (target is LivingEntity && level is ServerLevel) {
+                    EnchantmentHelper.doPostAttackEffects(level, target, source)
                 }
-                EnchantmentHelper.doPostDamageEffects(attacker, target)
 
                 if (target is LivingEntity) {
                     attacker.awardStat(Stats.DAMAGE_DEALT, ((currentHealth - target.health) * 10.0F).roundToInt())
