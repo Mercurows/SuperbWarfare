@@ -1,7 +1,10 @@
 package com.atsuishio.superbwarfare.init
 
 import com.atsuishio.superbwarfare.Mod
-import com.atsuishio.superbwarfare.recipe.*
+import com.atsuishio.superbwarfare.recipe.PotionMortarShellRecipe
+import com.atsuishio.superbwarfare.recipe.ResearchingRecipe
+import com.atsuishio.superbwarfare.recipe.SmokeDyeRecipe
+import com.atsuishio.superbwarfare.recipe.VehicleResetRecipe
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipeSerializer
 import net.minecraft.world.item.crafting.RecipeSerializer
@@ -26,22 +29,6 @@ object ModRecipes {
         RECIPE_SERIALIZERS.register("potion_mortar_shell") {
             SimpleCraftingRecipeSerializer { id, category ->
                 PotionMortarShellRecipe(id, category)
-            }
-        }
-
-    @JvmField
-    val AMMO_BOX_ADD_AMMO_SERIALIZER: RegistryObject<RecipeSerializer<AmmoBoxAddAmmoRecipe>> =
-        RECIPE_SERIALIZERS.register("ammo_box_add_ammo") {
-            SimpleCraftingRecipeSerializer { id, category ->
-                AmmoBoxAddAmmoRecipe(id, category)
-            }
-        }
-
-    @JvmField
-    val AMMO_BOX_EXTRACT_AMMO_SERIALIZER: RegistryObject<RecipeSerializer<AmmoBoxExtractAmmoRecipe>> =
-        RECIPE_SERIALIZERS.register("ammo_box_extract_ammo") {
-            SimpleCraftingRecipeSerializer { id, category ->
-                AmmoBoxExtractAmmoRecipe(id, category)
             }
         }
 

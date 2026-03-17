@@ -2559,10 +2559,6 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
         private fun buildSpecialRecipes(writer: Consumer<FinishedRecipe>) {
             SpecialRecipeBuilder.special(ModRecipes.POTION_MORTAR_SHELL_SERIALIZER.get())
                 .save(writer, "potion_mortar_shell")
-            SpecialRecipeBuilder.special(ModRecipes.AMMO_BOX_ADD_AMMO_SERIALIZER.get())
-                .save(writer, "ammo_box_add_ammo")
-            SpecialRecipeBuilder.special(ModRecipes.AMMO_BOX_EXTRACT_AMMO_SERIALIZER.get())
-                .save(writer, "ammo_box_extract_ammo")
             SpecialRecipeBuilder.special(ModRecipes.SMOKE_DYE_SERIALIZER.get()).save(writer, "smoke_dye")
             SpecialRecipeBuilder.special(ModRecipes.VEHICLE_RESET_SERIALIZER.get()).save(writer, "vehicle_reset")
         }
