@@ -5,7 +5,7 @@
       "conditions": {
         "items": [
           {
-            "tag": "superbwarfare:blueprint/superb"
+            "items": "#superbwarfare:blueprint/superb"
           }
         ]
       },
@@ -13,16 +13,13 @@
     }
   },
   "display": {
-    "announce_to_chat": true,
     "description": {
       "translate": "superbwarfare.advancement.main.superb_blueprint.des"
     },
-    "frame": "task",
-    "hidden": false,
     "icon": {
-      "item": "superbwarfare:super_star_shooter_blueprint"
+      "count": 1,
+      "id": "superbwarfare:super_star_shooter_blueprint"
     },
-    "show_toast": true,
     "title": {
       "translate": "superbwarfare.advancement.main.superb_blueprint"
     }

@@ -5,7 +5,7 @@
       "conditions": {
         "items": [
           {
-            "tag": "superbwarfare:blueprint/rare"
+            "items": "#superbwarfare:blueprint/rare"
           }
         ]
       },
@@ -13,16 +13,13 @@
     }
   },
   "display": {
-    "announce_to_chat": true,
     "description": {
       "translate": "superbwarfare.advancement.main.rare_blueprint.des"
     },
-    "frame": "task",
-    "hidden": false,
     "icon": {
-      "item": "superbwarfare:mp_5_blueprint"
+      "count": 1,
+      "id": "superbwarfare:mp_5_blueprint"
     },
-    "show_toast": true,
     "title": {
       "translate": "superbwarfare.advancement.main.rare_blueprint"
     }

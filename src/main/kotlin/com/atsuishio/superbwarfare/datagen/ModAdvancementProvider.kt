@@ -158,8 +158,9 @@ class ModAdvancementProvider(
         return advancement
     }
 
-    // TODO 如何正确生成成就
     override fun run(output: CachedOutput): CompletableFuture<*> {
+        this.generate()
+
         val futures: MutableList<CompletableFuture<*>> = ArrayList()
         val pathProvider = packOutput.createPathProvider(PackOutput.Target.DATA_PACK, "advancement")
 

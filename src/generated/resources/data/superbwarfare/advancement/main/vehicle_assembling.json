@@ -5,9 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "superbwarfare:vehicle_assembling_table"
-            ]
+            "items": "superbwarfare:vehicle_assembling_table"
           }
         ]
       },
@@ -15,16 +13,13 @@
     }
   },
   "display": {
-    "announce_to_chat": true,
     "description": {
       "translate": "superbwarfare.advancement.main.vehicle_assembling.des"
     },
-    "frame": "task",
-    "hidden": false,
     "icon": {
-      "item": "superbwarfare:vehicle_assembling_table"
+      "count": 1,
+      "id": "superbwarfare:vehicle_assembling_table"
     },
-    "show_toast": true,
     "title": {
       "translate": "superbwarfare.advancement.main.vehicle_assembling"
     }

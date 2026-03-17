@@ -5,7 +5,7 @@
       "conditions": {
         "items": [
           {
-            "tag": "superbwarfare:blueprint/virtual"
+            "items": "#superbwarfare:blueprint/virtual"
           }
         ]
       },
@@ -13,16 +13,13 @@
     }
   },
   "display": {
-    "announce_to_chat": true,
     "description": {
       "translate": "superbwarfare.advancement.main.virtual_blueprint.des"
     },
-    "frame": "task",
-    "hidden": false,
     "icon": {
-      "item": "superbwarfare:trachelium_blueprint"
+      "count": 1,
+      "id": "superbwarfare:trachelium_blueprint"
     },
-    "show_toast": true,
     "title": {
       "translate": "superbwarfare.advancement.main.virtual_blueprint"
     }
