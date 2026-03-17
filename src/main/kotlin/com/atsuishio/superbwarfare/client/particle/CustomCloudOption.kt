@@ -1,15 +1,14 @@
 package com.atsuishio.superbwarfare.client.particle
 
 import com.atsuishio.superbwarfare.init.ModParticleTypes
-import com.atsuishio.superbwarfare.tools.asCodecField
+import com.atsuishio.superbwarfare.ksp.annotation.GenerateMapCodec
 import com.atsuishio.superbwarfare.tools.createStreamCodec
-import com.mojang.serialization.MapCodec
-import com.mojang.serialization.codecs.RecordCodecBuilder
 import kotlinx.serialization.Serializable
 import net.minecraft.core.particles.ParticleOptions
 import net.minecraft.core.particles.ParticleType
 import kotlin.math.roundToInt
 
+@GenerateMapCodec
 @Serializable
 class CustomCloudOption(
     val color: Int,
@@ -51,17 +50,6 @@ class CustomCloudOption(
     }
 
     companion object {
-        val CODEC: MapCodec<CustomCloudOption> = RecordCodecBuilder.mapCodec { builder ->
-            builder.group(
-                CustomCloudOption::color.asCodecField(),
-                CustomCloudOption::life.asCodecField(),
-                CustomCloudOption::size.asCodecField(),
-                CustomCloudOption::gravity.asCodecField(),
-                CustomCloudOption::cooldown.asCodecField(),
-                CustomCloudOption::light.asCodecField(),
-            ).apply(builder, ::CustomCloudOption)
-        }
-
         val STREAM_CODEC = createStreamCodec<CustomCloudOption>()
     }
 }

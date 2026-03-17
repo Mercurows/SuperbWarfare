@@ -1,10 +1,7 @@
 package com.atsuishio.superbwarfare.init
 
 import com.atsuishio.superbwarfare.Mod
-import com.atsuishio.superbwarfare.client.particle.BulletDecalOption
-import com.atsuishio.superbwarfare.client.particle.CannonMuzzleFlareOption
-import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
-import com.atsuishio.superbwarfare.client.particle.CustomSmokeOption
+import com.atsuishio.superbwarfare.client.particle.*
 import com.mojang.serialization.MapCodec
 import net.minecraft.core.particles.ParticleOptions
 import net.minecraft.core.particles.ParticleType
