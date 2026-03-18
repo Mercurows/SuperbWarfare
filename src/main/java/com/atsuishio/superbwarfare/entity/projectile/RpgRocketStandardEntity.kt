@@ -19,9 +19,6 @@ import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 
 open class RpgRocketStandardEntity : FastThrowableProjectile, BasicGeoProjectileEntity {
-    val anim: BasicProjectileAnimationInstance<*>? =
-        if (this.level().isClientSide) BasicProjectileAnimationInstance(this, true) else null
-
     constructor(type: EntityType<out RpgRocketStandardEntity>, level: Level?) : super(type, level) {
         this.noCulling = true
         this.durability = 50
@@ -128,11 +125,6 @@ open class RpgRocketStandardEntity : FastThrowableProjectile, BasicGeoProjectile
         return 0.2f
     }
 
-    override fun getModel() = BedrockModelLoader.RPG_ROCKET_STANDARD_MA.first
-
-    override fun getAnimation() = BedrockModelLoader.RPG_ROCKET_STANDARD_MA.second
-
-    override fun getAnimationInstance() = this.anim
-
+    override fun getModel() = BedrockModelLoader.RPG_ROCKET_STANDARD
     override fun getHiddenTicks() = 1
 }

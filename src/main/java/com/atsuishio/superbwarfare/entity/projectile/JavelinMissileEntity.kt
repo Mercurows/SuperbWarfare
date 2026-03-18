@@ -37,8 +37,6 @@ import net.minecraftforge.common.MinecraftForge
 import kotlin.math.max
 
 open class JavelinMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
-    val anim: BasicProjectileAnimationInstance<*>? =
-        if (this.level().isClientSide) BasicProjectileAnimationInstance(this) else null
 
     var isTop by TOP
 
@@ -222,11 +220,7 @@ open class JavelinMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
         return 0.4f
     }
 
-    override fun getModel() = BedrockModelLoader.JAVELIN_MISSILE_MA.first
-
-    override fun getAnimation() = BedrockModelLoader.JAVELIN_MISSILE_MA.second
-
-    override fun getAnimationInstance() = this.anim
+    override fun getModel() = BedrockModelLoader.JAVELIN_MISSILE
 
     companion object {
         @JvmField

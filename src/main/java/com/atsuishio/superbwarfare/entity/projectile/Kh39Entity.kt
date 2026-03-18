@@ -27,8 +27,6 @@ import kotlin.math.max
 
 open class Kh39Entity(type: EntityType<out Kh39Entity>, level: Level) : MissileProjectile(type, level),
     BasicGeoProjectileEntity {
-    val anim: BasicProjectileAnimationInstance<*>? =
-        if (this.level().isClientSide) BasicProjectileAnimationInstance(this) else null
 
     init {
         this.noCulling = true
@@ -171,9 +169,5 @@ open class Kh39Entity(type: EntityType<out Kh39Entity>, level: Level) : MissileP
     override val maxHealth: Float
         get() = 70f
 
-    override fun getModel() = BedrockModelLoader.KH_39_MA.first
-
-    override fun getAnimation() = BedrockModelLoader.KH_39_MA.second
-
-    override fun getAnimationInstance() = this.anim
+    override fun getModel() = BedrockModelLoader.KH_39
 }

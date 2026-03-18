@@ -24,8 +24,6 @@ import kotlin.math.max
 open class Ru9m336MissileEntity(type: EntityType<out Ru9m336MissileEntity>, level: Level) :
     MissileProjectile(type, level),
     BasicGeoProjectileEntity {
-    val anim: BasicProjectileAnimationInstance<*>? =
-        if (this.level().isClientSide) BasicProjectileAnimationInstance(this) else null
 
     init {
         this.noCulling = true
@@ -101,9 +99,5 @@ open class Ru9m336MissileEntity(type: EntityType<out Ru9m336MissileEntity>, leve
         return 0.4f
     }
 
-    override fun getModel() = BedrockModelLoader.RU_9M336_MISSILE_MA.first
-
-    override fun getAnimation() = BedrockModelLoader.RU_9M336_MISSILE_MA.second
-
-    override fun getAnimationInstance() = this.anim
+    override fun getModel() = BedrockModelLoader.RU_9M336_MISSILE
 }

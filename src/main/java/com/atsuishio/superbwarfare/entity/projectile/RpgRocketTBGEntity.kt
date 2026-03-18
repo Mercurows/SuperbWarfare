@@ -19,8 +19,6 @@ import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 
 open class RpgRocketTBGEntity : FastThrowableProjectile, BasicGeoProjectileEntity {
-    val anim: BasicProjectileAnimationInstance<*>? =
-        if (this.level().isClientSide) BasicProjectileAnimationInstance(this, true) else null
 
     constructor(type: EntityType<out RpgRocketTBGEntity>, level: Level?) : super(type, level) {
         this.noCulling = true
@@ -124,11 +122,7 @@ open class RpgRocketTBGEntity : FastThrowableProjectile, BasicGeoProjectileEntit
         return ModSounds.ROCKET_FLY.get()
     }
 
-    override fun getModel() = BedrockModelLoader.RPG_ROCKET_TBG_MA.first
-
-    override fun getAnimation() = BedrockModelLoader.RPG_ROCKET_TBG_MA.second
-
-    override fun getAnimationInstance() = this.anim
+    override fun getModel() = BedrockModelLoader.RPG_ROCKET_TBG
 
     override fun getHiddenTicks() = 1
 }

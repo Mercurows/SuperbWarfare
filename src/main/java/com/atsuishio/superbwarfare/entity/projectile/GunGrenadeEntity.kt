@@ -17,9 +17,6 @@ import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 
 open class GunGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity {
-    val anim: BasicProjectileAnimationInstance<*>? =
-        if (this.level().isClientSide) BasicProjectileAnimationInstance(this, true) else null
-
     constructor(type: EntityType<out GunGrenadeEntity>, world: Level?) : super(type, world) {
         this.noCulling = true
     }
@@ -82,11 +79,7 @@ open class GunGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity 
         return false
     }
 
-    override fun getModel() = BedrockModelLoader.GUN_GRENADE_MA.first
-
-    override fun getAnimation() = BedrockModelLoader.GUN_GRENADE_MA.second
-
-    override fun getAnimationInstance() = this.anim
+    override fun getModel() = BedrockModelLoader.GUN_GRENADE
 
     override fun getHiddenTicks() = 1
 }

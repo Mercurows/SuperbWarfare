@@ -34,8 +34,6 @@ import kotlin.math.max
 
 open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Level?) :
     FastThrowableProjectile(type, level), BasicGeoProjectileEntity {
-    val anim: BasicProjectileAnimationInstance<*>? =
-        if (this.level().isClientSide) BasicProjectileAnimationInstance(this, true) else null
 
     private var fireProbability = 0f
     private var fireTime = 0
@@ -357,11 +355,7 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
         this.spreadAngle = spreadAngle
     }
 
-    override fun getModel() = BedrockModelLoader.CANNON_SHELL_MA.first
-
-    override fun getAnimation() = BedrockModelLoader.CANNON_SHELL_MA.second
-
-    override fun getAnimationInstance() = this.anim
+    override fun getModel() = BedrockModelLoader.CANNON_SHELL
 
     override fun getHiddenTicks() = 1
 }
