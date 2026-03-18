@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
-import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -27,8 +26,6 @@ import kotlin.math.max
 
 open class Kh39Entity(type: EntityType<out Kh39Entity>, level: Level) : MissileProjectile(type, level),
     BasicGeoProjectileEntity {
-    val anim: BasicProjectileAnimationInstance<*>? =
-        if (this.level().isClientSide) BasicProjectileAnimationInstance(this) else null
 
     init {
         this.noCulling = true
@@ -171,9 +168,5 @@ open class Kh39Entity(type: EntityType<out Kh39Entity>, level: Level) : MissileP
     override val maxHealth: Float
         get() = 70f
 
-    override fun getModel() = BedrockModelLoader.KH_39_MA.first
-
-    override fun getAnimation() = BedrockModelLoader.KH_39_MA.second
-
-    override fun getAnimationInstance() = this.anim
+    override fun getModel() = BedrockModelLoader.KH_39
 }

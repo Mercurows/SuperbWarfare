@@ -32,18 +32,6 @@ object BedrockModelLoader {
     val DPS_GENERATOR_MA = registerCommonModelAndAnimation("entity/dps_generator")
     val MK_82_MA = registerCommonModelAndAnimation("projectile/mk_82")
     val SWARM_DRONE_MA = registerCommonModelAndAnimation("projectile/swarm_drone")
-    val AGM_65_MA = registerCommonModelAndAnimation("projectile/agm_65")
-    val GUN_GRENADE_MA = registerCommonModelAndAnimation("projectile/gun_grenade")
-    val CANNON_SHELL_MA = registerCommonModelAndAnimation("projectile/cannon_shell")
-    val RPG_ROCKET_STANDARD_MA = registerCommonModelAndAnimation("projectile/rpg_rocket_standard")
-    val RPG_ROCKET_TBG_MA = registerCommonModelAndAnimation("projectile/rpg_rocket_tbg")
-    val IGLA_9K38_MISSILE_MA = registerCommonModelAndAnimation("projectile/igla_9k38_missile")
-    val RU_9M336_MISSILE_MA = registerCommonModelAndAnimation("projectile/ru_9m336_missile")
-    val WIRE_GUIDE_MISSILE_MA = registerCommonModelAndAnimation("projectile/wire_guide_missile")
-    val KH_39_MA = registerCommonModelAndAnimation("projectile/kh_39")
-    val JAVELIN_MISSILE_MA = registerCommonModelAndAnimation("projectile/javelin_missile")
-    val SMALL_ROCKET_MA = registerCommonModelAndAnimation("projectile/small_rocket")
-    val MEDIUM_ROCKET_MA = registerCommonModelAndAnimation("projectile/medium_rocket")
 
     // armor models
     val GE_HELMET_M_35_MODEL = registerArmorModel("armor/ge_helmet_m_35")
@@ -61,6 +49,18 @@ object BedrockModelLoader {
     val SC_250_MODEL = registerCommonModel("projectile/sc_250")
     val SMALL_CANNON_SHELL_MODEL = registerCommonModel("projectile/small_cannon_shell")
     val PTKM_PROJECTILE_MODEL = registerCommonModel("projectile/ptkm_projectile")
+    val AGM_65 = registerCommonModel("projectile/agm_65")
+    val GUN_GRENADE = registerCommonModel("projectile/gun_grenade")
+    val CANNON_SHELL = registerCommonModel("projectile/cannon_shell")
+    val RPG_ROCKET_STANDARD = registerCommonModel("projectile/rpg_rocket_standard")
+    val RPG_ROCKET_TBG = registerCommonModel("projectile/rpg_rocket_tbg")
+    val IGLA_9K38_MISSILE = registerCommonModel("projectile/igla_9k38_missile")
+    val RU_9M336_MISSILE = registerCommonModel("projectile/ru_9m336_missile")
+    val WIRE_GUIDE_MISSILE = registerCommonModel("projectile/wire_guide_missile")
+    val KH_39 = registerCommonModel("projectile/kh_39")
+    val JAVELIN_MISSILE = registerCommonModel("projectile/javelin_missile")
+    val SMALL_ROCKET = registerCommonModel("projectile/small_rocket")
+    val MEDIUM_ROCKET = registerCommonModel("projectile/medium_rocket")
 
     val COMMON_LOADER: RawResourceLoader = object : RawResourceLoader {
         override fun <T> load(inputStream: InputStream, clazz: Class<T>): T {

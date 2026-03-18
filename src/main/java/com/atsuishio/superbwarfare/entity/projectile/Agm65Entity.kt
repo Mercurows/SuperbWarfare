@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
-import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -27,8 +26,6 @@ import kotlin.math.max
 
 open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level) : MissileProjectile(type, level),
     BasicGeoProjectileEntity {
-    val anim: BasicProjectileAnimationInstance<*>? =
-        if (this.level().isClientSide) BasicProjectileAnimationInstance(this) else null
 
     init {
         this.noCulling = true
@@ -171,9 +168,5 @@ open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level) : Missil
     override val maxHealth: Float
         get() = 70f
 
-    override fun getModel() = BedrockModelLoader.AGM_65_MA.first
-
-    override fun getAnimationInstance() = this.anim
-
-    override fun getAnimation() = BedrockModelLoader.AGM_65_MA.second
+    override fun getModel() = BedrockModelLoader.AGM_65
 }

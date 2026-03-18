@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
-import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
@@ -14,8 +13,6 @@ import java.util.*
 
 open class WireGuideMissileEntity(type: EntityType<out WireGuideMissileEntity>, level: Level) :
     MissileProjectile(type, level), BasicGeoProjectileEntity {
-    val anim: BasicProjectileAnimationInstance<*>? =
-        if (this.level().isClientSide) BasicProjectileAnimationInstance(this) else null
 
     var launcherVehicleUUID: UUID? = null
 
@@ -69,9 +66,5 @@ open class WireGuideMissileEntity(type: EntityType<out WireGuideMissileEntity>, 
     override val maxHealth: Float
         get() = 20f
 
-    override fun getModel() = BedrockModelLoader.WIRE_GUIDE_MISSILE_MA.first
-
-    override fun getAnimationInstance() = this.anim
-
-    override fun getAnimation() = BedrockModelLoader.WIRE_GUIDE_MISSILE_MA.second
+    override fun getModel() = BedrockModelLoader.WIRE_GUIDE_MISSILE
 }

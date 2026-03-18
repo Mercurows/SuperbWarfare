@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.api.event.ProjectileHitEvent.HitEntity
-import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
 import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -33,8 +32,6 @@ import net.minecraft.world.phys.Vec3
 import kotlin.math.max
 
 open class JavelinMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
-    val anim: BasicProjectileAnimationInstance<*>? =
-        if (this.level().isClientSide) BasicProjectileAnimationInstance(this) else null
 
     var isTop by TOP
 
@@ -218,11 +215,7 @@ open class JavelinMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
         return 0.4f
     }
 
-    override fun getModel() = BedrockModelLoader.JAVELIN_MISSILE_MA.first
-
-    override fun getAnimation() = BedrockModelLoader.JAVELIN_MISSILE_MA.second
-
-    override fun getAnimationInstance() = this.anim
+    override fun getModel() = BedrockModelLoader.JAVELIN_MISSILE
 
     companion object {
         @JvmField

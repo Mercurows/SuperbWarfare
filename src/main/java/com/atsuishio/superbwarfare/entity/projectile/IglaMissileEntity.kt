@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
-import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModEntities
@@ -27,8 +26,6 @@ import net.minecraft.world.phys.Vec3
 import kotlin.math.max
 
 open class IglaMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
-    val anim: BasicProjectileAnimationInstance<*>? =
-        if (this.level().isClientSide) BasicProjectileAnimationInstance(this) else null
 
     constructor(type: EntityType<out IglaMissileEntity>, level: Level) : super(type, level) {
         this.noCulling = true
@@ -126,9 +123,5 @@ open class IglaMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
         return 0.4f
     }
 
-    override fun getModel() = BedrockModelLoader.IGLA_9K38_MISSILE_MA.first
-
-    override fun getAnimation() = BedrockModelLoader.IGLA_9K38_MISSILE_MA.second
-
-    override fun getAnimationInstance() = this.anim
+    override fun getModel() = BedrockModelLoader.IGLA_9K38_MISSILE
 }

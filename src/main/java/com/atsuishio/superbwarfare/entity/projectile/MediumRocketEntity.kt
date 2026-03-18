@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
-import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
@@ -34,9 +33,6 @@ open class MediumRocketEntity : FastThrowableProjectile, BasicGeoProjectileEntit
     enum class Type {
         AP, HE, CM
     }
-
-    val anim: BasicProjectileAnimationInstance<*>? =
-        if (this.level().isClientSide) BasicProjectileAnimationInstance(this, true) else null
 
     private var type: Type? = Type.AP
     private var fireProbability = 0f
@@ -299,9 +295,5 @@ open class MediumRocketEntity : FastThrowableProjectile, BasicGeoProjectileEntit
         this.spreadAngle = spreadAngle
     }
 
-    override fun getModel() = BedrockModelLoader.MEDIUM_ROCKET_MA.first
-
-    override fun getAnimation() = BedrockModelLoader.MEDIUM_ROCKET_MA.second
-
-    override fun getAnimationInstance() = this.anim
+    override fun getModel() = BedrockModelLoader.MEDIUM_ROCKET
 }
