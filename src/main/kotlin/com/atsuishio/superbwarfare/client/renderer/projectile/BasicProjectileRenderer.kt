@@ -51,6 +51,12 @@ open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context) :
             model.applyPose(BLENDER.blend(model.bindPose, ani.getPose()))
         }
 
+        val flare = model.getBone("flare")
+        val flag = flare != null
+        if (flag) {
+            flare.visible = false
+        }
+
         model.renderToBuffer(
             poseStack,
             vertexConsumer,
@@ -69,10 +75,21 @@ open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context) :
             )
         }
 
+        if (flag && entity.tickCount > entity.getFlareHiddenTicks()) {
+            flare.visible = true
+            flare.render(
+                poseStack,
+                buffer.getBuffer(RenderType.eyes(FLARE_TEXTURE)),
+                packedLight,
+                OverlayTexture.NO_OVERLAY
+            )
+        }
+
         poseStack.popPose()
     }
 
     companion object {
         val BLENDER: EulerAdditiveBlender = SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }
+        val FLARE_TEXTURE = loc("textures/bedrock/projectile/flare.png")
     }
 }
