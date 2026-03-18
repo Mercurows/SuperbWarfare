@@ -3,7 +3,7 @@
 	"minecraft:geometry": [
 		{
 			"description": {
-				"identifier": "geometry.rpg",
+              "identifier": "geometry.igla_9k38_missile",
 				"texture_width": 64,
 				"texture_height": 64,
 				"visible_bounds_width": 91,

@@ -165,7 +165,7 @@ object ModEntities {
     val IGLA_MISSILE = register("igla_9k38_missile", fastProjectile(::IglaMissileEntity).sized(0.5f, 0.5f))
 
     @JvmField
-    val RU_9K33_MISSILE = register("ru_9m336_missile", fastProjectile(::Ru9m336MissileEntity).sized(0.5f, 0.5f))
+    val RU_9M336_MISSILE = register("ru_9m336_missile", fastProjectile(::Ru9m336MissileEntity).sized(0.5f, 0.5f))
 
     @JvmField
     val AGM_65 = register("agm_65", fastProjectile(::Agm65Entity).sized(0.75f, 0.75f))

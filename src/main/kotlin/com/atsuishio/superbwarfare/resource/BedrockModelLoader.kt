@@ -37,6 +37,9 @@ object BedrockModelLoader {
     val CANNON_SHELL_MA = registerCommonModelAndAnimation("projectile/cannon_shell")
     val RPG_ROCKET_STANDARD_MA = registerCommonModelAndAnimation("projectile/rpg_rocket_standard")
     val RPG_ROCKET_TBG_MA = registerCommonModelAndAnimation("projectile/rpg_rocket_tbg")
+    val IGLA_9K38_MISSILE_MA = registerCommonModelAndAnimation("projectile/igla_9k38_missile")
+    val RU_9M336_MISSILE_MA = registerCommonModelAndAnimation("projectile/ru_9m336_missile")
+    val WIRE_GUIDE_MISSILE_MA = registerCommonModelAndAnimation("projectile/wire_guide_missile")
 
     // armor models
     val GE_HELMET_M_35_MODEL = registerArmorModel("armor/ge_helmet_m_35")

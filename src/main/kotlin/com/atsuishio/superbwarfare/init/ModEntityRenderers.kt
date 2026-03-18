@@ -39,7 +39,7 @@ object ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.TINY_SPEEDBOAT.get()) { TinySpeedboatRenderer(it) }
         event.registerEntityRenderer(ModEntities.WHEEL_CHAIR.get()) { WheelChairRenderer(it) }
         event.registerEntityRenderer(ModEntities.AH_6.get()) { Ah6Renderer(it) }
-        event.registerEntityRenderer(ModEntities.FLARE_DECOY.get()) { FlareDecoyEntityRenderer(it) }
+        event.registerEntityRenderer(ModEntities.FLARE_DECOY.get(), ::FlareDecoyEntityRenderer)
         event.registerEntityRenderer(
             ModEntities.WHITE_PHOSPHORUS_PROJECTILE.get(),
             ::WhitePhosphorusProjectileEntityRenderer
@@ -51,7 +51,7 @@ object ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.TOM_6.get()) { Tom6Renderer(it) }
         event.registerEntityRenderer(ModEntities.MELON_BOMB.get()) { MelonBombEntityRenderer(it) }
         event.registerEntityRenderer(ModEntities.BMP_2.get()) { Bmp2Renderer(it) }
-        event.registerEntityRenderer(ModEntities.WIRE_GUIDE_MISSILE.get()) { WireGuideMissileRenderer(it) }
+        event.registerEntityRenderer(ModEntities.WIRE_GUIDE_MISSILE.get(), ::BasicProjectileRenderer)
         event.registerEntityRenderer(ModEntities.LASER_TOWER.get()) { LaserTowerRenderer(it) }
         event.registerEntityRenderer(ModEntities.YX_100.get()) { Yx100Renderer(it) }
         event.registerEntityRenderer(ModEntities.PRISM_TANK.get()) { PrismTankRenderer(it) }
@@ -77,8 +77,8 @@ object ModEntityRenderers {
             )
         }
         event.registerEntityRenderer(ModEntities.WAVEFORCE_TOWER.get()) { WaveforceTowerRenderer(it) }
-        event.registerEntityRenderer(ModEntities.IGLA_MISSILE.get()) { IglaMissileRenderer(it) }
-        event.registerEntityRenderer(ModEntities.RU_9K33_MISSILE.get()) { Ru9m336MissileRenderer(it) }
+        event.registerEntityRenderer(ModEntities.IGLA_MISSILE.get(), ::BasicProjectileRenderer)
+        event.registerEntityRenderer(ModEntities.RU_9M336_MISSILE.get(), ::BasicProjectileRenderer)
         event.registerEntityRenderer(ModEntities.TRUCK.get()) { TruckRenderer(it) }
         event.registerEntityRenderer(ModEntities.SODAYO_PICK_UP.get()) { SodayoPickUpRenderer(it) }
         event.registerEntityRenderer(ModEntities.SODAYO_PICK_UP_HMG.get()) { SodayoPickUpHmgRenderer(it) }
