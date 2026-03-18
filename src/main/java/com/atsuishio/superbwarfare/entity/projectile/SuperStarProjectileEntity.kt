@@ -31,7 +31,7 @@ import net.minecraft.world.phys.Vec3
 import net.neoforged.neoforge.entity.PartEntity
 import kotlin.math.min
 
-class SuperStarProjectileEntity(type: EntityType<out SuperStarProjectileEntity>, world: Level) :
+open class SuperStarProjectileEntity(type: EntityType<out SuperStarProjectileEntity>, world: Level) :
     FastThrowableProjectile(type, world) {
 
     private var currentTarget: Entity? = null
