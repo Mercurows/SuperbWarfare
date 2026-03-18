@@ -6,12 +6,10 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.resource.BedrockModelLoader
-import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
-import net.minecraft.world.phys.BlockHitResult
 import java.util.*
 
 open class WireGuideMissileEntity(type: EntityType<out WireGuideMissileEntity>, level: Level) :
@@ -27,13 +25,6 @@ open class WireGuideMissileEntity(type: EntityType<out WireGuideMissileEntity>, 
 
     override fun getDefaultItem(): Item {
         return ModItems.MEDIUM_ANTI_GROUND_MISSILE.get()
-    }
-
-    public override fun onHitBlock(blockHitResult: BlockHitResult) {
-        super.onHitBlock(blockHitResult)
-        if (this.level() is ServerLevel) {
-            destroyBlock(blockHitResult)
-        }
     }
 
     override fun tick() {

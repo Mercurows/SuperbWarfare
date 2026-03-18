@@ -33,7 +33,7 @@ object ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.RGO_GRENADE.get(), ::BasicProjectileRenderer)
         event.registerEntityRenderer(ModEntities.M18_SMOKE_GRENADE.get(), ::BasicProjectileRenderer)
         event.registerEntityRenderer(ModEntities.MLE_1934.get()) { Mle1934Renderer(it) }
-        event.registerEntityRenderer(ModEntities.JAVELIN_MISSILE.get()) { JavelinMissileRenderer(it) }
+        event.registerEntityRenderer(ModEntities.JAVELIN_MISSILE.get(), ::BasicProjectileRenderer)
         event.registerEntityRenderer(ModEntities.ANNIHILATOR.get()) { AnnihilatorRenderer(it) }
         event.registerEntityRenderer(ModEntities.SPEEDBOAT.get()) { SpeedboatRenderer(it) }
         event.registerEntityRenderer(ModEntities.TINY_SPEEDBOAT.get()) { TinySpeedboatRenderer(it) }
@@ -87,7 +87,7 @@ object ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.TOW.get()) { TowRenderer(it) }
         event.registerEntityRenderer(ModEntities.STEEL_COIL.get()) { SteelCoilRenderer(it) }
         event.registerEntityRenderer(ModEntities.MI_28.get()) { Mi28Renderer(it) }
-        event.registerEntityRenderer(ModEntities.KH_39.get()) { Kh39Renderer(it) }
+        event.registerEntityRenderer(ModEntities.KH_39.get(), ::BasicProjectileRenderer)
         event.registerEntityRenderer(ModEntities.PLZ_05.get()) { Plz05Renderer(it) }
         event.registerEntityRenderer(ModEntities.LAV_AD.get()) { LavAdRenderer(it) }
         event.registerEntityRenderer(ModEntities.KV_16.get()) { Kv16Renderer(it) }

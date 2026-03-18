@@ -11,9 +11,8 @@ import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
 import com.atsuishio.superbwarfare.tools.SeekTool
-import com.atsuishio.superbwarfare.tools.VectorTool.calculateAngle
 import com.atsuishio.superbwarfare.tools.VectorTool.checkNoClip
-import net.minecraft.server.level.ServerLevel
+import com.atsuishio.superbwarfare.tools.angleTo
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
@@ -24,7 +23,6 @@ import net.minecraft.world.entity.boss.enderdragon.EnderDragon
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
-import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.Vec3
 import kotlin.math.max
 
@@ -48,13 +46,6 @@ open class IglaMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
 
     override fun getDefaultItem(): Item {
         return ModItems.MEDIUM_ANTI_AIR_MISSILE.get()
-    }
-
-    public override fun onHitBlock(blockHitResult: BlockHitResult) {
-        super.onHitBlock(blockHitResult)
-        if (this.level() is ServerLevel) {
-            destroyBlock(blockHitResult)
-        }
     }
 
     override fun tick() {
@@ -101,7 +92,7 @@ open class IglaMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
             )
 
             if (this.tickCount > 1) {
-                lostTarget = calculateAngle(deltaMovement, toVec) > 120 && !lostTarget
+                lostTarget = deltaMovement.angleTo(toVec) > 120 && !lostTarget
 
                 val owner = this.owner
                 if (owner is Player && owner.mainHandItem.`is`(ModItems.IGLA_9K38.get()) && !lost) {
