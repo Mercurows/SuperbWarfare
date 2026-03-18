@@ -1,0 +1,67 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.wire_guide_missile",
+				"texture_width": 64,
+				"texture_height": 64,
+				"visible_bounds_width": 91,
+				"visible_bounds_height": 10,
+				"visible_bounds_offset": [0, 1, 0]
+			},
+			"bones": [
+				{
+					"name": "bone",
+					"pivot": [0, 0, 0],
+					"rotation": [-90, 0, 0]
+				},
+				{
+					"name": "body",
+					"parent": "bone",
+					"pivot": [0, -37.91, 0],
+					"cubes": [
+						{
+							"origin": [-3, -16.1186, -3],
+							"size": [6, 29.2372, 6],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [6, 29]},
+								"east": {"uv": [6, 0], "uv_size": [6, 29]},
+								"south": {"uv": [12, 0], "uv_size": [6, 29]},
+								"west": {"uv": [18, 0], "uv_size": [6, 29]},
+								"up": {"uv": [11, 29], "uv_size": [6, 6]},
+								"down": {"uv": [17, 35], "uv_size": [6, -6]}
+							}
+						},
+						{
+							"origin": [-0.75, 2.8814, -5.5],
+							"size": [1.5, 10.2372, 11],
+							"uv": {
+								"north": {"uv": [31, 30], "uv_size": [2, 10]},
+								"east": {"uv": [24, 0], "uv_size": [11, 10]},
+								"south": {"uv": [33, 30], "uv_size": [2, 10]},
+								"west": {"uv": [24, 10], "uv_size": [11, 10]},
+								"up": {"uv": [23, 30], "uv_size": [2, 11]},
+								"down": {"uv": [25, 41], "uv_size": [2, -11]}
+							}
+						},
+						{
+							"origin": [-0.75, 2.8814, -5.5],
+							"size": [1.5, 10.2372, 11],
+							"pivot": [0, 8, 0],
+							"rotation": [0, -90, 0],
+							"uv": {
+								"north": {"uv": [35, 0], "uv_size": [2, 10]},
+								"east": {"uv": [24, 20], "uv_size": [11, 10]},
+								"south": {"uv": [35, 10], "uv_size": [2, 10]},
+								"west": {"uv": [0, 29], "uv_size": [11, 10]},
+								"up": {"uv": [27, 30], "uv_size": [2, 11]},
+								"down": {"uv": [29, 41], "uv_size": [2, -11]}
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}

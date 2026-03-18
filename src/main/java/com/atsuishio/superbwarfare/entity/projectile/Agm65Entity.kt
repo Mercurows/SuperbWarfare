@@ -2,32 +2,31 @@ package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
-import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.resource.BedrockModelLoader
-import com.atsuishio.superbwarfare.tools.*
+import com.atsuishio.superbwarfare.tools.EntityFindUtil
+import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
+import com.atsuishio.superbwarfare.tools.SeekTool
+import com.atsuishio.superbwarfare.tools.angleTo
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
-import net.minecraft.util.Mth
 import net.minecraft.world.entity.EntityType
-import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.animal.Pig
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.BlockHitResult
-import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.Vec3
 import kotlin.math.max
 
-open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level?) : MissileProjectile(type, level),
+open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level) : MissileProjectile(type, level),
     BasicGeoProjectileEntity {
     val anim: BasicProjectileAnimationInstance<*>? =
         if (this.level().isClientSide) BasicProjectileAnimationInstance(this) else null
@@ -45,26 +44,6 @@ open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level?) : Missi
         return ModItems.LARGE_ANTI_GROUND_MISSILE.get()
     }
 
-    override fun onHitEntity(result: EntityHitResult) {
-        super.onHitEntity(result)
-        val entity = result.entity
-        val owner = this.owner
-        if (entity == owner || (owner != null && entity == owner.vehicle) || entity is Agm65Entity) return
-        if (this.level() is ServerLevel) {
-            entity.forceHurt(
-                causeProjectileHitDamage(this.level().registryAccess(), this, owner),
-                this.damage
-            )
-
-            if (entity is LivingEntity) {
-                entity.invulnerableTime = 0
-            }
-
-            causeExplode(result.getLocation())
-            discard()
-        }
-    }
-
     public override fun onHitBlock(blockHitResult: BlockHitResult) {
         super.onHitBlock(blockHitResult)
         if (this.level() is ServerLevel) {
@@ -77,12 +56,12 @@ open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level?) : Missi
 
         largeTrail()
 
-        val entity = EntityFindUtil.findEntity(this.level(), entityData.get(TARGET_UUID))
+        val entity = EntityFindUtil.findEntity(this.level(), this.targetUUID)
         val decoy = SeekTool.seekLivingEntities(this, 32.0, 90.0)
 
         for (e in decoy) {
             if (e.type.`is`(ModTags.EntityTypes.DECOY) && !this.distracted) {
-                this.entityData.set(TARGET_UUID, e.getStringUUID())
+                this.targetUUID = e.getStringUUID()
                 this.distracted = true
                 break
             }
@@ -92,7 +71,7 @@ open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level?) : Missi
         val level = this.level()
 
         if (guideType == 0) {
-            if (entityData.get(TARGET_UUID) != "none") {
+            if (this.targetUUID != "none") {
                 if (entity != null) {
                     if (level is ServerLevel) {
                         if ((!entity.getPassengers().isEmpty() || entity is VehicleEntity)
@@ -125,10 +104,10 @@ open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level?) : Missi
                 }
             }
         } else {
-            if (level is ServerLevel) {
-                val dis = targetPos.vectorTo(position()).horizontalDistance()
+            if (level is ServerLevel && targetPos != null) {
+                val dis = targetPos!!.vectorTo(position()).horizontalDistance()
                 val height = if (dis > 30) 0.4 * (dis - 30) else 0.0
-                val targetPos = this.targetPos.add(0.0, height, 0.0)
+                val targetPos = this.targetPos!!.add(0.0, height, 0.0)
                 toVec = calculateFiringSolution(position(), targetPos, Vec3.ZERO, deltaMovement.length(), 0.0)
             }
         }
@@ -138,7 +117,7 @@ open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level?) : Missi
             this.deltaMovement = this.deltaMovement.multiply(0.85, 0.85, 0.85)
             val lostTarget = lookAngle.angleTo(toVec) > 170
             if (!lostTarget) {
-                turn(toVec, Mth.clamp((tickCount - 8) * 0.5f, 0f, 15f))
+                turn(toVec, ((tickCount - 8) * 0.5f).coerceIn(0f, 15f))
             }
         } else {
             this.deltaMovement = this.deltaMovement.add(0.0, -0.06, 0.0)
