@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.entity.SenpaiEntity
 import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import kotlin.math.abs
 
-class SenpaiContext(entity: SenpaiEntity) : BasicEntityContext<SenpaiEntity>(entity, BedrockModelLoader.SENPAI_ANI) {
+class SenpaiContext(entity: SenpaiEntity) : BasicEntityContext<SenpaiEntity>(entity, BedrockModelLoader.SENPAI_MA.second) {
     fun isRunner(): Boolean {
         return entity.runner
     }

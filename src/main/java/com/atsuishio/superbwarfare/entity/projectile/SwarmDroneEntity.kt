@@ -199,9 +199,9 @@ open class SwarmDroneEntity(type: EntityType<out SwarmDroneEntity>, level: Level
         this.deltaMovement = vec3
     }
 
-    override fun getModel() = BedrockModelLoader.SWARM_DRONE_MODEL
+    override fun getModel() = BedrockModelLoader.SWARM_DRONE_MA.first
 
     override fun getAnimationInstance() = this.anim
 
-    override fun getAnimation() = BedrockModelLoader.SWARM_DRONE_ANI
+    override fun getAnimation() = BedrockModelLoader.SWARM_DRONE_MA.second
 }

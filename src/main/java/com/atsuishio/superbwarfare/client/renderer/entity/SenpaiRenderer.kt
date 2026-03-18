@@ -34,7 +34,7 @@ class SenpaiRenderer(renderManager: EntityRendererProvider.Context) : EntityRend
         pBuffer: MultiBufferSource,
         pPackedLight: Int
     ) {
-        val model = getModel(BedrockModelLoader.SENPAI_MODEL) ?: return
+        val model = getModel(BedrockModelLoader.SENPAI_MA.first) ?: return
         val ani = pEntity.animationInstance ?: return
 
         pPoseStack.pushPose()
@@ -58,7 +58,7 @@ class SenpaiRenderer(renderManager: EntityRendererProvider.Context) : EntityRend
     }
 
     companion object {
-        var TEXTURE = loc("textures/entity/senpai.png")
+        var TEXTURE = loc("textures/bedrock/entity/senpai.png")
         val BLENDER: EulerAdditiveBlender = SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }
     }
 }

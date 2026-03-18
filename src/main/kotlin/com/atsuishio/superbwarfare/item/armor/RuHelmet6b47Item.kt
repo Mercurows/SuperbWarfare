@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.item.armor
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.init.ModAttributes
 import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.atsuishio.superbwarfare.tiers.ModArmorMaterial
@@ -20,6 +21,10 @@ import java.util.function.Consumer
 import kotlin.math.max
 
 class RuHelmet6b47Item : ArmorItem(ModArmorMaterial.CEMENTED_CARBIDE, Type.HELMET, Properties()) {
+    companion object {
+        val TEXTURE = loc("textures/bedrock/armor/ru_helmet_6b47.png")
+    }
+
     override fun initializeClient(consumer: Consumer<IClientItemExtensions>) {
         consumer.accept(object : IClientItemExtensions {
             private var renderer: GeoArmorRenderer? = null
@@ -32,8 +37,8 @@ class RuHelmet6b47Item : ArmorItem(ModArmorMaterial.CEMENTED_CARBIDE, Type.HELME
             ): HumanoidModel<*> {
                 if (this.renderer == null) {
                     this.renderer = GeoArmorRenderer(
-                        BedrockModelLoader.ruHelmet6b47Model,
-                        BedrockModelLoader.RU_HELMET_6B47_TEXTURE
+                        BedrockModelLoader.getArmorModel(BedrockModelLoader.RU_HELMET_6B47_MODEL),
+                        TEXTURE
                     )
                 }
 

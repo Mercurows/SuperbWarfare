@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.item.armor
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.init.ModAttributes
 import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.atsuishio.superbwarfare.tiers.ModArmorMaterial
@@ -20,6 +21,10 @@ import java.util.function.Consumer
 import kotlin.math.max
 
 class UsChestIotvItem : ArmorItem(ModArmorMaterial.CEMENTED_CARBIDE, Type.CHESTPLATE, Properties()) {
+    companion object {
+        val TEXTURE = loc("textures/bedrock/armor/us_chest_iotv.png")
+    }
+
     override fun initializeClient(consumer: Consumer<IClientItemExtensions?>) {
         consumer.accept(object : IClientItemExtensions {
             private var renderer: GeoArmorRenderer? = null
@@ -32,8 +37,8 @@ class UsChestIotvItem : ArmorItem(ModArmorMaterial.CEMENTED_CARBIDE, Type.CHESTP
             ): HumanoidModel<*> {
                 if (this.renderer == null) {
                     this.renderer = GeoArmorRenderer(
-                        BedrockModelLoader.usChestIotvModel,
-                        BedrockModelLoader.US_CHEST_IOTV_TEXTURE
+                        BedrockModelLoader.getArmorModel(BedrockModelLoader.US_CHEST_IOTV_MODEL),
+                        TEXTURE
                     )
                 }
 

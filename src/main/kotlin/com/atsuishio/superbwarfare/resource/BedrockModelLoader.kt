@@ -13,6 +13,7 @@ import com.github.mcmodderanchor.simplebedrockmodel.v1.resource.BedrockModelReso
 import com.github.mcmodderanchor.simplebedrockmodel.v1.resource.RawResourceLoader
 import net.minecraft.resources.ResourceLocation
 import net.minecraftforge.api.distmarker.Dist
+import net.minecraftforge.eventbus.api.EventPriority
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
 import java.io.IOException
@@ -21,46 +22,33 @@ import java.io.InputStreamReader
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, value = [Dist.CLIENT])
 object BedrockModelLoader {
+    private val COMMON_MODELS = mutableListOf<ResourceLocation>()
+    private val COMMON_MODELS_AND_ANIMATIONS = hashMapOf<ResourceLocation, ResourceLocation>()
+    private val ARMOR_MODELS = mutableListOf<ResourceLocation>()
+    private val ARMOR_MODELS_POJO = hashMapOf<ResourceLocation, BedrockArmorModel>()
+
+    // models and animations
+    val SENPAI_MA = registerCommonModelAndAnimation("entity/senpai")
+    val TARGET_MA = registerCommonModelAndAnimation("entity/target")
+    val DPS_GENERATOR_MA = registerCommonModelAndAnimation("entity/dps_generator")
+    val MK_82_MA = registerCommonModelAndAnimation("projectile/mk_82")
+    val SWARM_DRONE_MA = registerCommonModelAndAnimation("projectile/swarm_drone")
+    val AGM_65_MA = registerCommonModelAndAnimation("projectile/agm_65")
+
+    // armor models
+    val GE_HELMET_M_35_MODEL = registerArmorModel("armor/ge_helmet_m_35")
+    val RU_CHEST_6B43_MODEL = registerArmorModel("armor/ru_chest_6b43")
+    val RU_HELMET_6B47_MODEL = registerArmorModel("armor/ru_helmet_6b47")
+    val US_CHEST_IOTV_MODEL = registerArmorModel("armor/us_chest_iotv")
+    val US_HELMET_PASGT_MODEL = registerArmorModel("armor/us_helmet_pasgt")
+
     // models
-    val SENPAI_MODEL = loc("entity/senpai.geo")
-    val TARGET_MODEL = loc("entity/target.geo")
-    val DPS_GENERATOR_MODEL = loc("entity/dps_generator.geo")
-    val PROJECTILE_MODEL = loc("entity/projectile.geo")
-
-    val GE_HELMET_M_35_MODEL = loc("armor/ge_helmet_m_35.geo")
-    val RU_CHEST_6B43_MODEL = loc("armor/ru_chest_6b43.geo")
-    val RU_HELMET_6B47_MODEL = loc("armor/ru_helmet_6b47.geo")
-    val US_CHEST_IOTV_MODEL = loc("armor/us_chest_iotv.geo")
-    val US_HELMET_PASGT_MODEL = loc("armor/us_helmet_pasgt.geo")
-
-    val HAND_GRENADE_MODEL = loc("projectile/hand_grenade.geo")
-    val RGO_GRENADE_MODEL = loc("projectile/rgo_grenade.geo")
-    val M18_SMOKE_GRENADE_MODEL = loc("projectile/m18_smoke_grenade.geo")
-    val SC_50_MODEL = loc("projectile/sc_50.geo")
-    val SC_250_MODEL = loc("projectile/sc_250.geo")
-    val MK_82_MODEL = loc("projectile/mk_82.geo")
-    val SWARM_DRONE_MODEL = loc("projectile/swarm_drone.geo")
-
-    // animations
-    val SENPAI_ANI = loc("senpai.animation")
-    val TARGET_ANI = loc("target.animation")
-    val DPS_GENERATOR_ANI = loc("dps_generator.animation")
-
-    val MK_82_ANI = loc("mk_82.animation")
-    val SWARM_DRONE_ANI = loc("swarm_drone.animation")
-
-    // textures
-    val GE_HELMET_M_35_TEXTURE = loc("textures/armor/ge_helmet_m_35.png")
-    val RU_CHEST_6B43_TEXTURE = loc("textures/armor/ru_chest_6b43.png")
-    val RU_HELMET_6B47_TEXTURE = loc("textures/armor/ru_helmet_6b47.png")
-    val US_CHEST_IOTV_TEXTURE = loc("textures/armor/us_chest_iotv.png")
-    val US_HELMET_PASGT_TEXTURE = loc("textures/armor/us_helmet_pasgt.png")
-
-    lateinit var geHelmetM35Model: BedrockArmorModel
-    lateinit var ruChest6b43Model: BedrockArmorModel
-    lateinit var ruHelmet6b47Model: BedrockArmorModel
-    lateinit var usChestIotvModel: BedrockArmorModel
-    lateinit var usHelmetPasgtModel: BedrockArmorModel
+    val PROJECTILE_MODEL = registerCommonModel("entity/projectile")
+    val HAND_GRENADE_MODEL = registerCommonModel("projectile/hand_grenade")
+    val RGO_GRENADE_MODEL = registerCommonModel("projectile/rgo_grenade")
+    val M18_SMOKE_GRENADE_MODEL = registerCommonModel("projectile/m18_smoke_grenade")
+    val SC_50_MODEL = registerCommonModel("projectile/sc_50")
+    val SC_250_MODEL = registerCommonModel("projectile/sc_250")
 
     val COMMON_LOADER: RawResourceLoader = object : RawResourceLoader {
         override fun <T> load(inputStream: InputStream, clazz: Class<T>): T {
@@ -74,53 +62,59 @@ object BedrockModelLoader {
         }
     }
 
+    fun registerCommonModel(path: String): ResourceLocation {
+        val rl = loc("$path.geo")
+        COMMON_MODELS.add(rl)
+        return rl
+    }
+
+    fun registerCommonModelAndAnimation(path: String): Pair<ResourceLocation, ResourceLocation> {
+        val modelRl = loc("$path.geo")
+        val aniRl = loc("$path.animation")
+        COMMON_MODELS_AND_ANIMATIONS[modelRl] = aniRl
+        return Pair(modelRl, aniRl)
+    }
+
+    fun registerArmorModel(path: String): ResourceLocation {
+        val rl = loc("$path.geo")
+        ARMOR_MODELS.add(rl)
+        return rl
+    }
+
     @SubscribeEvent
     fun onRegisterBedrockModels(event: RegisterBedrockModelEvent) {
         with(event) {
-            register(SENPAI_MODEL, COMMON_LOADER)
-            register(TARGET_MODEL, COMMON_LOADER)
-            register(DPS_GENERATOR_MODEL, COMMON_LOADER)
-            register(PROJECTILE_MODEL, COMMON_LOADER)
-            register(GE_HELMET_M_35_MODEL, COMMON_LOADER, ::BedrockArmorModel)
-            register(RU_CHEST_6B43_MODEL, COMMON_LOADER, ::BedrockArmorModel)
-            register(RU_HELMET_6B47_MODEL, COMMON_LOADER, ::BedrockArmorModel)
-            register(US_CHEST_IOTV_MODEL, COMMON_LOADER, ::BedrockArmorModel)
-            register(US_HELMET_PASGT_MODEL, COMMON_LOADER, ::BedrockArmorModel)
-            register(HAND_GRENADE_MODEL, COMMON_LOADER)
-            register(RGO_GRENADE_MODEL, COMMON_LOADER)
-            register(M18_SMOKE_GRENADE_MODEL, COMMON_LOADER)
-            register(SC_50_MODEL, COMMON_LOADER)
-            register(SC_250_MODEL, COMMON_LOADER)
-            register(MK_82_MODEL, COMMON_LOADER)
-            register(SWARM_DRONE_MODEL, COMMON_LOADER)
+            COMMON_MODELS.forEach { register(it, COMMON_LOADER) }
+            COMMON_MODELS_AND_ANIMATIONS.forEach { register(it.key, COMMON_LOADER) }
+            ARMOR_MODELS.forEach { register(it, COMMON_LOADER, ::BedrockArmorModel) }
         }
     }
 
     @SubscribeEvent
     fun onRegisterBedrockAnimations(event: RegisterBedrockAnimationEvent) {
         with(event) {
-            register(SENPAI_ANI, SENPAI_MODEL, COMMON_LOADER)
-            register(TARGET_ANI, TARGET_MODEL, COMMON_LOADER)
-            register(DPS_GENERATOR_ANI, DPS_GENERATOR_MODEL, COMMON_LOADER)
-            register(MK_82_ANI, MK_82_MODEL, COMMON_LOADER)
-            register(SWARM_DRONE_ANI, SWARM_DRONE_MODEL, COMMON_LOADER)
+            COMMON_MODELS_AND_ANIMATIONS.forEach { register(it.value, it.key, COMMON_LOADER) }
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOW)
     fun onModelLoaded(event: RegisterBedrockModelReloadListenerEvent) {
         event.register {
-            geHelmetM35Model = it[GE_HELMET_M_35_MODEL] as BedrockArmorModel
-            ruChest6b43Model = it[RU_CHEST_6B43_MODEL] as BedrockArmorModel
-            ruHelmet6b47Model = it[RU_HELMET_6B47_MODEL] as BedrockArmorModel
-            usChestIotvModel = it[US_CHEST_IOTV_MODEL] as BedrockArmorModel
-            usHelmetPasgtModel = it[US_HELMET_PASGT_MODEL] as BedrockArmorModel
+            ARMOR_MODELS.forEach { path ->
+                val model = it[path] as? BedrockArmorModel ?: return@forEach
+                ARMOR_MODELS_POJO[path] = model
+            }
         }
     }
 
     @JvmStatic
     fun getModel(location: ResourceLocation): BedrockModel? {
         return BedrockModelResourceSet.getInstance().getModel(location)
+    }
+
+    @JvmStatic
+    fun getArmorModel(location: ResourceLocation): BedrockArmorModel? {
+        return ARMOR_MODELS_POJO[location]
     }
 
     @JvmStatic

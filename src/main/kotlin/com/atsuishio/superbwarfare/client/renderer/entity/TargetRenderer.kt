@@ -30,7 +30,7 @@ class TargetRenderer(renderManager: EntityRendererProvider.Context) : EntityRend
         buffer: MultiBufferSource,
         packedLight: Int
     ) {
-        val model = getModel(BedrockModelLoader.TARGET_MODEL) ?: return
+        val model = getModel(BedrockModelLoader.TARGET_MA.first) ?: return
         val ani = entity.animationInstance ?: return
 
         poseStack.pushPose()
@@ -61,8 +61,8 @@ class TargetRenderer(renderManager: EntityRendererProvider.Context) : EntityRend
     }
 
     companion object {
-        val TEXTURE = loc("textures/entity/target.png")
-        val TEXTURE_E = loc("textures/entity/target_e.png")
+        val TEXTURE = loc("textures/bedrock/entity/target.png")
+        val TEXTURE_E = loc("textures/bedrock/entity/target_e.png")
         val BLENDER: EulerAdditiveBlender = SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }
     }
 }
