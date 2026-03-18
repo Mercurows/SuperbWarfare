@@ -205,11 +205,6 @@ object VehicleEngineUtils {
 
         yRot = (yRot - (if (isInFluidType && !onGround()) 2.5 else 8.0) * deltaRot - i * s0).toFloat()
 
-        val direct = (90 - VehicleVecUtils.calculateAngle(deltaMovement, getViewVector(1f)).toFloat()) / 90
-        setZRot(
-            (roll + direct * deltaRot * 3 * deltaMovement.horizontalDistance()).toFloat()
-        )
-
         if (isInFluidType || onGround()) {
             deltaMovement = deltaMovement.add(getViewVector(1f).scale((if (drift()) 0.03 else 0.15) * targetSpeed * power))
         }
@@ -414,11 +409,6 @@ object VehicleEngineUtils {
                 .horizontalDistance(), 0.0
         ) * rudderRot * (if (power > 0) 1 else -1) - i * s0).toFloat()
 
-        val direct = (90 - VehicleVecUtils.calculateAngle(deltaMovement, getViewVector(1f)).toFloat()) / 90
-        setZRot(
-            (roll - direct * deltaRot * 5 * deltaMovement.horizontalDistance()).toFloat()
-        )
-
         if ((isInFluidType || onGround())) {
             deltaMovement = deltaMovement.add(getViewVector(1f).scale((if (drift()) 0.02 else 0.15) * targetSpeed * power))
         }
@@ -548,17 +538,18 @@ object VehicleEngineUtils {
             xRot =
                 (xRot - direct * (if (onGround()) 0 else 1) * bodyPitchRate * deltaMovement.horizontalDistance()).toFloat()
             yRot = (yRot - 20 * deltaMovement.horizontalDistance() * deltaRot * (if (power > 0) 1 else -1)).toFloat()
-            setZRot(
-                (roll - direct * deltaRot * (if (onGround()) 0 else 1) * bodyRollRate * 10 * deltaMovement.horizontalDistance()).toFloat()
-            )
             deltaMovement = deltaMovement.add(
-                getViewVector(1f).scale(0.15 * targetSpeed * power)
+                getViewVector(1f).scale(0.11 * targetSpeed * power)
+            )
+
+            deltaMovement = deltaMovement.add(
+                getUpVec(1f).scale(deltaMovement.length() * 0.015 * VehicleVecUtils.getSubmergedHeight(this) * Mth.abs(xRot))
             )
         } else {
             xRot *= 0.99f
         }
 
-        setZRot(roll * 0.85f)
+        setZRot(roll * 0.95f)
     }
 
     @JvmStatic
@@ -1220,7 +1211,6 @@ object VehicleEngineUtils {
         val powerAdd = engineInfo.increment
         val powerReduce = engineInfo.decrement
         val steeringSpeed = engineInfo.steeringSpeed
-        val bodyRollRate = engineInfo.bodyRollRate.toFloat()
         val jumpEnergyCost = engineInfo.jumpEnergyCost
 
         if (buoyancy != 0.0) {
@@ -1259,12 +1249,6 @@ object VehicleEngineUtils {
         } else {
             diffY = Math.clamp(-90f, 90f, Mth.wrapDegrees(passenger0.yHeadRot - yRot))
             yRot += Mth.clamp(0.4f * diffY, -5f * steeringSpeed, 5f * steeringSpeed)
-
-            val direct = (90 - VehicleVecUtils.calculateAngle(deltaMovement, getViewVector(1f))
-                .toFloat()) / 90
-            setZRot(
-                (roll + direct * diffY * 0.1 * bodyRollRate * deltaMovement.length()).toFloat()
-            )
         }
 
         if (forwardInputDown) {
@@ -1341,7 +1325,7 @@ object VehicleEngineUtils {
             val water =
                 (if (!isInFluidType && !onGround()) 0.05f else (if (isInFluidType && !onGround()) 0.3f else 1f)).toDouble()
             deltaMovement = deltaMovement.add(
-                getViewVector(1f).scale(0.08 * water * targetSpeed * power)
+                getViewVector(1f).scale(0.15 * water * targetSpeed * power)
             )
         }
     }

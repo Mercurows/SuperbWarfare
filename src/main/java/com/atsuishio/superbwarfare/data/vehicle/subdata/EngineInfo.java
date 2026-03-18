@@ -59,8 +59,6 @@ public abstract class EngineInfo {
     }
 
     public static class WheelChair extends Wheel {
-        @SerializedName("BodyRollRate")
-        public double bodyRollRate = 1;
         @SerializedName("CanJump")
         public boolean canJump = false;
         @SerializedName("JumpEnergyCost")
