@@ -32,6 +32,7 @@ open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context) :
         buffer: MultiBufferSource,
         packedLight: Int
     ) {
+        if (entity.tickCount <= entity.getHiddenTicks()) return
         val model = BedrockModelLoader.getModel(entity.getModel()) ?: return
 
         poseStack.pushPose()

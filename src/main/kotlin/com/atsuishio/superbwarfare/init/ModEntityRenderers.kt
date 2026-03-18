@@ -17,15 +17,15 @@ object ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.CLAYMORE.get()) { ClaymoreRenderer(it) }
         event.registerEntityRenderer(ModEntities.C4.get()) { C4Renderer(it) }
         event.registerEntityRenderer(ModEntities.TASER_BULLET.get()) { TaserBulletProjectileRenderer(it) }
-        event.registerEntityRenderer(ModEntities.GUN_GRENADE.get()) { GunGrenadeRenderer(it) }
+        event.registerEntityRenderer(ModEntities.GUN_GRENADE.get(), ::BasicProjectileRenderer)
         event.registerEntityRenderer(ModEntities.TARGET.get(), ::TargetRenderer)
         event.registerEntityRenderer(ModEntities.DPS_GENERATOR.get(), ::DPSGeneratorRenderer)
-        event.registerEntityRenderer(ModEntities.RPG_ROCKET_TBG.get()) { RpgRocketTBGRenderer(it) }
-        event.registerEntityRenderer(ModEntities.RPG_ROCKET_STANDARD.get()) { RpgRocketStandardRenderer(it) }
+        event.registerEntityRenderer(ModEntities.RPG_ROCKET_TBG.get(), ::BasicProjectileRenderer)
+        event.registerEntityRenderer(ModEntities.RPG_ROCKET_STANDARD.get(), ::BasicProjectileRenderer)
         event.registerEntityRenderer(ModEntities.SMALL_ROCKET.get()) { SmallRocketRenderer(it) }
         event.registerEntityRenderer(ModEntities.MEDIUM_ROCKET.get()) { MediumRocketRenderer(it) }
         event.registerEntityRenderer(ModEntities.MORTAR_SHELL.get()) { MortarShellRenderer(it) }
-        event.registerEntityRenderer(ModEntities.CANNON_SHELL.get()) { CannonShellRenderer(it) }
+        event.registerEntityRenderer(ModEntities.CANNON_SHELL.get(), ::BasicProjectileRenderer)
         event.registerEntityRenderer(ModEntities.PROJECTILE.get()) { ProjectileEntityRenderer(it) }
         event.registerEntityRenderer(ModEntities.MK_42.get()) { Mk42Renderer(it) }
         event.registerEntityRenderer(ModEntities.DRONE.get()) { DroneRenderer(it) }

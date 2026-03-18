@@ -11,4 +11,6 @@ interface BasicGeoProjectileEntity {
     fun getAnimationInstance(): BasicProjectileAnimationInstance<*>? = null
 
     fun getEmissiveTexture(): ResourceLocation? = null
+
+    fun getHiddenTicks(): Int = 0
 }
