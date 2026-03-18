@@ -19,9 +19,9 @@ open class Mk82Entity(type: EntityType<out Mk82Entity>, level: Level) : AerialBo
     override val maxHealth: Float
         get() = 50f
 
-    override fun getModel() = BedrockModelLoader.MK_82_MODEL
+    override fun getModel() = BedrockModelLoader.MK_82_MA.first
 
-    override fun getAnimation() = BedrockModelLoader.MK_82_ANI
+    override fun getAnimation() = BedrockModelLoader.MK_82_MA.second
 
     override fun getAnimationInstance(): BasicProjectileAnimationInstance<*>? {
         return this.anim

@@ -21,7 +21,7 @@ import net.minecraft.world.entity.Entity
 open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context) :
     EntityRenderer<T>(manager) where T : Entity, T : BasicGeoProjectileEntity {
     override fun getTextureLocation(entity: T): ResourceLocation {
-        return loc("textures/entity/${entity.type.descriptionId.split(".")[2]}.png")
+        return loc("textures/bedrock/projectile/${entity.type.descriptionId.split(".")[2]}.png")
     }
 
     override fun render(

@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.item.armor
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.init.ModAttributes
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.resource.BedrockModelLoader
@@ -23,6 +24,8 @@ import kotlin.math.max
 class RuChest6b43Item : ArmorItem(ModArmorMaterial.CEMENTED_CARBIDE, Type.CHESTPLATE, Properties()) {
     @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
     companion object {
+        val TEXTURE = loc("textures/bedrock/armor/ru_chest_6b43.png")
+
         @SubscribeEvent
         fun registerRender(event: RegisterClientExtensionsEvent) {
             event.registerItem(object : IClientItemExtensions {
@@ -36,8 +39,8 @@ class RuChest6b43Item : ArmorItem(ModArmorMaterial.CEMENTED_CARBIDE, Type.CHESTP
                 ): HumanoidModel<*> {
                     if (this.renderer == null) {
                         this.renderer = GeoArmorRenderer(
-                            BedrockModelLoader.ruChest6b43Model,
-                            BedrockModelLoader.RU_CHEST_6B43_TEXTURE
+                            BedrockModelLoader.getArmorModel(BedrockModelLoader.RU_CHEST_6B43_MODEL),
+                            TEXTURE
                         )
                     }
 

@@ -61,7 +61,7 @@ object ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.MK_82.get(), ::BasicProjectileRenderer)
         event.registerEntityRenderer(ModEntities.SC_50.get(), ::BasicProjectileRenderer)
         event.registerEntityRenderer(ModEntities.SC_250.get(), ::BasicProjectileRenderer)
-        event.registerEntityRenderer(ModEntities.AGM_65.get()) { Agm65Renderer(it) }
+        event.registerEntityRenderer(ModEntities.AGM_65.get(), ::BasicProjectileRenderer)
         event.registerEntityRenderer(ModEntities.BLU_43.get()) { Blu43Renderer(it) }
         event.registerEntityRenderer(ModEntities.TM_62.get()) { Tm62Renderer(it) }
         event.registerEntityRenderer(ModEntities.PTKM_1R.get()) { Ptkm1rRenderer(it) }

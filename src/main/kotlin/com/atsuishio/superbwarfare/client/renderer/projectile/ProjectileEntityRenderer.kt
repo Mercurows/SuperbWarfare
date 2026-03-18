@@ -77,6 +77,6 @@ class ProjectileEntityRenderer(manager: EntityRendererProvider.Context) : Entity
     override fun getBlockLightLevel(pEntity: ProjectileEntity, pPos: BlockPos): Int = 15
 
     companion object {
-        val TEXTURE = loc("textures/entity/projectile.png")
+        val TEXTURE = loc("textures/bedrock/projectile/projectile.png")
     }
 }

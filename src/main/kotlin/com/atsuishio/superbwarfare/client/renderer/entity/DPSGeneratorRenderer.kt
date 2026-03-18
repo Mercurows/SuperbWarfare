@@ -31,7 +31,7 @@ class DPSGeneratorRenderer(renderManager: EntityRendererProvider.Context) :
         buffer: MultiBufferSource,
         packedLight: Int
     ) {
-        val model = getModel(BedrockModelLoader.DPS_GENERATOR_MODEL) ?: return
+        val model = getModel(BedrockModelLoader.DPS_GENERATOR_MA.first) ?: return
         val ani = entity.animationInstance ?: return
 
         poseStack.pushPose()
@@ -62,8 +62,9 @@ class DPSGeneratorRenderer(renderManager: EntityRendererProvider.Context) :
     }
 
     companion object {
-        val TEXTURES = ArrayList<ResourceLocation>((0..7).map { loc("textures/entity/dps_generator_tier_${it}.png") })
-        val TEXTURE_E = loc("textures/entity/dps_generator_e.png")
+        val TEXTURES =
+            ArrayList<ResourceLocation>((0..7).map { loc("textures/bedrock/entity/dps_generator_tier_${it}.png") })
+        val TEXTURE_E = loc("textures/bedrock/entity/dps_generator_e.png")
         val BLENDER: EulerAdditiveBlender = SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }
     }
 }
