@@ -13,4 +13,6 @@ interface BasicGeoProjectileEntity {
     fun getEmissiveTexture(): ResourceLocation? = null
 
     fun getHiddenTicks(): Int = 0
+
+    fun getFlareHiddenTicks(): Int = 3
 }
