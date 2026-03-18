@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity;
 import com.atsuishio.superbwarfare.init.ModCriteriaTriggers;
 import com.atsuishio.superbwarfare.init.ModItems;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -77,7 +78,7 @@ public class WheelChairEntity extends GeoVehicleEntity {
     @Override
     public void bounceHorizontal(@NotNull Direction direction) {
         for (Entity entity : getPassengers()) {
-            if (entity != null) {
+            if (entity != null && level() instanceof ServerLevel) {
                 entity.stopRiding();
                 double speed = getDeltaMovementO().length();
                 if (speed > 0.4) {

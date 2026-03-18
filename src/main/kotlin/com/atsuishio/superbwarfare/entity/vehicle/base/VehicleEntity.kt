@@ -345,6 +345,14 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open var absoluteSpeedO = 0.0
     open var absoluteSpeedLerp = 0.0
 
+    var pitchAngle = 0f
+    var pitchVelocity = 0f
+    var prevPitchAngle = 0f
+    var rollAngle = 0f
+    var rollVelocity = 0f
+    var prevRollAngle = 0f
+    var prevMotion: Vec3? = null
+
     open var lastDamageSource: DamageSource? = null
         get() {
             if (this.level().gameTime - this.lastDamageStamp > 40L) {
@@ -1688,6 +1696,14 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     }
 
     override fun baseTick() {
+        if (prevMotion == null) {
+            prevMotion = this.deltaMovement
+        }
+
+        this.prevPitchAngle = this.pitchAngle
+        this.prevRollAngle = this.rollAngle
+
+
         val computed = computed()
         if (this.level().isClientSide) {
             if (!this.wasEngineRunning && this.engineRunning()) {
@@ -1722,10 +1738,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             }
 
             this.wasFiring = this.isFiring
-        }
 
-        // 枪数据处理
-        if (!this.level().isClientSide) {
+        } else {
+            // 枪数据处理
             val newMap = mutableMapOf<String, GunData>()
 
             for (kv in gunDataMap.entries) {
@@ -1756,9 +1771,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         rightTrackO = this.rightTrack
 
         rudderRotO = this.rudderRot
-
         propellerRotO = this.propellerRot
-
         recoilShakeO = this.recoilShake
 
         if (jumpCoolDown > 0 && onGround()) {
@@ -2082,10 +2095,48 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             turretBurnTimer--
         }
 
-        absoluteSpeedLerp = Mth.lerp(0.2, absoluteSpeedLerp, positionO.vectorTo(position()).length())
-        absoluteSpeed = absoluteSpeedLerp
+        if (level().isClientSide) {
+            absoluteSpeedLerp = Mth.lerp(0.2, absoluteSpeedLerp, positionO.vectorTo(position()).length())
+            absoluteSpeed = absoluteSpeedLerp
+        }
 
-        this.inertiaRotate(this.computed().inertiaRotateRate)
+        if (prevMotion != null) {
+            val motion = this.deltaMovement
+            var acceleration = prevMotion?.let { motion.subtract(it) }
+
+            if (acceleration != null && acceleration.length() > 0.02) {
+                acceleration = acceleration.normalize().scale(0.02)
+            }
+
+            val yaw = this.yRot
+            val sinYaw = Mth.sin(yaw * Mth.DEG_TO_RAD)
+            val cosYaw = Mth.cos(yaw * Mth.DEG_TO_RAD)
+
+            val forward = Vec3(-sinYaw.toDouble(), 0.0, cosYaw.toDouble())
+            val right = Vec3(-cosYaw.toDouble(), 0.0, -sinYaw.toDouble())
+
+            val accelForward: Double = acceleration!!.multiply(1.0, 0.0, 1.0).dot(forward)
+            val accelRight: Double = acceleration.multiply(1.0, 0.0, 1.0).dot(right)
+
+            val targetPitch = (25 * accelForward).toFloat()
+            val omegaP = 2.0f * java.lang.Math.PI.toFloat() * 2f
+            val zetaP = 0.6f
+            val angularAccelP: Float = omegaP * omegaP * (targetPitch - pitchAngle) - 2 * zetaP * omegaP * pitchVelocity
+            pitchVelocity += angularAccelP * 0.05f // dt = 0.05s
+            pitchAngle += pitchVelocity * 0.05f
+
+            val targetRoll = (40 * accelRight).toFloat()
+            val omegaR = 2.0f * java.lang.Math.PI.toFloat() * 2f
+            val zetaR = 0.6f
+            val angularAccelR: Float = omegaR * omegaR * (targetRoll - rollAngle) - 2 * zetaR * omegaR * rollVelocity
+            rollVelocity += angularAccelR * 0.05f
+            rollAngle += rollVelocity * 0.05f
+
+            prevMotion = motion
+
+            xRot -= pitchAngle * computed().inertiaRotateRate
+            roll -= rollAngle * computed().inertiaRotateRate
+        }
 
         lowHealthWarning()
         this.refreshDimensions()
@@ -3984,11 +4035,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open fun releaseSmokeDecoy(vec3: Vec3) = VehicleWeaponUtils.releaseSmokeDecoy(this, vec3)
 
     open fun releaseDecoy() = VehicleWeaponUtils.releaseDecoy(this)
-
-    // 惯性倾斜
-    open fun inertiaRotate(multiplier: Float) {
-        this.xRot -= 5f * (this.getAcceleration() * multiplier).toFloat()
-    }
 
     open fun terrainCompact(positions: MutableList<Vec3>) {
         VehicleMotionUtils.terrainCompact(this, positions)

@@ -50,7 +50,6 @@
     "Increment": 0.025,
     "Decrement": 0.015,
     "SteeringSpeed": 1,
-    "BodyRollRate": 1,
     "CanJump": true,
     "JumpEnergyCost": 400,
     "JumpCoolDown": 3,
@@ -58,5 +57,5 @@
   },
   "TerrainCompat": [[0.4375, 0, 0.5625], [-0.4375, 0, 0.5625], [0.5156, 0, -0.3125], [-0.5156, 0, -0.3125]],
   "TerrainCompatRotateRate": 6,
-  "InertiaRotateRate": 10
+  "InertiaRotateRate": 0.75
 }
