@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.init
 import com.atsuishio.superbwarfare.client.renderer.entity.*
 import com.atsuishio.superbwarfare.client.renderer.projectile.BasicProjectileRenderer
 import com.atsuishio.superbwarfare.client.renderer.projectile.ProjectileEntityRenderer
+import com.atsuishio.superbwarfare.client.renderer.projectile.SmallCannonShellEntityRenderer
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
@@ -22,8 +23,8 @@ object ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.DPS_GENERATOR.get(), ::DPSGeneratorRenderer)
         event.registerEntityRenderer(ModEntities.RPG_ROCKET_TBG.get(), ::BasicProjectileRenderer)
         event.registerEntityRenderer(ModEntities.RPG_ROCKET_STANDARD.get(), ::BasicProjectileRenderer)
-        event.registerEntityRenderer(ModEntities.SMALL_ROCKET.get()) { SmallRocketRenderer(it) }
-        event.registerEntityRenderer(ModEntities.MEDIUM_ROCKET.get()) { MediumRocketRenderer(it) }
+        event.registerEntityRenderer(ModEntities.SMALL_ROCKET.get(), ::BasicProjectileRenderer)
+        event.registerEntityRenderer(ModEntities.MEDIUM_ROCKET.get(), ::BasicProjectileRenderer)
         event.registerEntityRenderer(ModEntities.MORTAR_SHELL.get()) { MortarShellRenderer(it) }
         event.registerEntityRenderer(ModEntities.CANNON_SHELL.get(), ::BasicProjectileRenderer)
         event.registerEntityRenderer(ModEntities.PROJECTILE.get()) { ProjectileEntityRenderer(it) }
@@ -47,7 +48,7 @@ object ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.PRISMATIC_BOLT.get()) { PrismaticBoltEntityRenderer(it) }
         event.registerEntityRenderer(ModEntities.SMOKE_DECOY.get(), ::SmokeDecoyEntityRenderer)
         event.registerEntityRenderer(ModEntities.LAV_150.get()) { Lav150Renderer(it) }
-        event.registerEntityRenderer(ModEntities.SMALL_CANNON_SHELL.get()) { SmallCannonShellRenderer(it) }
+        event.registerEntityRenderer(ModEntities.SMALL_CANNON_SHELL.get(), ::SmallCannonShellEntityRenderer)
         event.registerEntityRenderer(ModEntities.TOM_6.get()) { Tom6Renderer(it) }
         event.registerEntityRenderer(ModEntities.MELON_BOMB.get()) { MelonBombEntityRenderer(it) }
         event.registerEntityRenderer(ModEntities.BMP_2.get()) { Bmp2Renderer(it) }
