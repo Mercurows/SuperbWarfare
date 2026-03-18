@@ -1,7 +1,7 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.jvm.idle": {
+		"animation.projectile.start": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 10.1,
 			"bones": {

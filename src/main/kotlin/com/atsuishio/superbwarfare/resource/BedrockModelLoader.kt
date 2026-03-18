@@ -41,6 +41,8 @@ object BedrockModelLoader {
     val IGLA_9K38_MISSILE_MA = registerCommonModelAndAnimation("projectile/igla_9k38_missile")
     val RU_9M336_MISSILE_MA = registerCommonModelAndAnimation("projectile/ru_9m336_missile")
     val WIRE_GUIDE_MISSILE_MA = registerCommonModelAndAnimation("projectile/wire_guide_missile")
+    val KH_39_MA = registerCommonModelAndAnimation("projectile/kh_39")
+    val JAVELIN_MISSILE_MA = registerCommonModelAndAnimation("projectile/javelin_missile")
 
     // armor models
     val GE_HELMET_M_35_MODEL = registerArmorModel("armor/ge_helmet_m_35")

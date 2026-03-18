@@ -10,7 +10,7 @@ import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
 import com.atsuishio.superbwarfare.tools.SeekTool
-import com.atsuishio.superbwarfare.tools.angleTo
+import com.atsuishio.superbwarfare.tools.VectorTool.calculateAngle
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.server.level.ServerLevel
@@ -25,7 +25,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 import kotlin.math.max
 
-open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level) : MissileProjectile(type, level),
+open class Kh39Entity(type: EntityType<out Kh39Entity>, level: Level) : MissileProjectile(type, level),
     BasicGeoProjectileEntity {
     val anim: BasicProjectileAnimationInstance<*>? =
         if (this.level().isClientSide) BasicProjectileAnimationInstance(this) else null
@@ -60,8 +60,8 @@ open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level) : Missil
         }
 
         var toVec = lookAngle
-        val level = this.level()
 
+        val level = this.level()
         if (guideType == 0) {
             if (this.targetUUID != "none") {
                 if (entity != null) {
@@ -96,7 +96,7 @@ open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level) : Missil
                 }
             }
         } else {
-            if (level is ServerLevel && targetPos != null) {
+            if (level() is ServerLevel && targetPos != null) {
                 val dis = targetPos!!.vectorTo(position()).horizontalDistance()
                 val height = if (dis > 30) 0.4 * (dis - 30) else 0.0
                 val targetPos = this.targetPos!!.add(0.0, height, 0.0)
@@ -107,7 +107,7 @@ open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level) : Missil
         if (this.tickCount > 8) {
             this.deltaMovement = this.deltaMovement.scale(0.05).add(lookAngle.scale(8.0))
             this.deltaMovement = this.deltaMovement.multiply(0.85, 0.85, 0.85)
-            val lostTarget = lookAngle.angleTo(toVec) > 170
+            val lostTarget = (calculateAngle(lookAngle, toVec) > 170)
             if (!lostTarget) {
                 turn(toVec, ((tickCount - 8) * 0.5f).coerceIn(0f, 15f))
             }
@@ -171,9 +171,9 @@ open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level) : Missil
     override val maxHealth: Float
         get() = 70f
 
-    override fun getModel() = BedrockModelLoader.AGM_65_MA.first
+    override fun getModel() = BedrockModelLoader.KH_39_MA.first
+
+    override fun getAnimation() = BedrockModelLoader.KH_39_MA.second
 
     override fun getAnimationInstance() = this.anim
-
-    override fun getAnimation() = BedrockModelLoader.AGM_65_MA.second
 }

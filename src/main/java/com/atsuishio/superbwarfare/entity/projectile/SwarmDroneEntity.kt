@@ -17,7 +17,6 @@ import net.minecraft.world.entity.EntityType
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
-import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.Vec3
 import kotlin.math.abs
@@ -60,13 +59,6 @@ open class SwarmDroneEntity(type: EntityType<out SwarmDroneEntity>, level: Level
         if (owner != null && owner.vehicle != null && entity == owner.vehicle) return
         if (this.level() is ServerLevel) {
             causeExplode(result.getLocation())
-        }
-    }
-
-    public override fun onHitBlock(blockHitResult: BlockHitResult) {
-        super.onHitBlock(blockHitResult)
-        if (this.level() is ServerLevel) {
-            causeExplode(blockHitResult.getLocation())
         }
     }
 
