@@ -43,6 +43,8 @@ object BedrockModelLoader {
     val WIRE_GUIDE_MISSILE_MA = registerCommonModelAndAnimation("projectile/wire_guide_missile")
     val KH_39_MA = registerCommonModelAndAnimation("projectile/kh_39")
     val JAVELIN_MISSILE_MA = registerCommonModelAndAnimation("projectile/javelin_missile")
+    val SMALL_ROCKET_MA = registerCommonModelAndAnimation("projectile/small_rocket")
+    val MEDIUM_ROCKET_MA = registerCommonModelAndAnimation("projectile/medium_rocket")
 
     // armor models
     val GE_HELMET_M_35_MODEL = registerArmorModel("armor/ge_helmet_m_35")
@@ -52,12 +54,13 @@ object BedrockModelLoader {
     val US_HELMET_PASGT_MODEL = registerArmorModel("armor/us_helmet_pasgt")
 
     // models
-    val PROJECTILE_MODEL = registerCommonModel("entity/projectile")
+    val PROJECTILE_MODEL = registerCommonModel("projectile/projectile")
     val HAND_GRENADE_MODEL = registerCommonModel("projectile/hand_grenade")
     val RGO_GRENADE_MODEL = registerCommonModel("projectile/rgo_grenade")
     val M18_SMOKE_GRENADE_MODEL = registerCommonModel("projectile/m18_smoke_grenade")
     val SC_50_MODEL = registerCommonModel("projectile/sc_50")
     val SC_250_MODEL = registerCommonModel("projectile/sc_250")
+    val SMALL_CANNON_SHELL_MODEL = registerCommonModel("projectile/small_cannon_shell")
 
     val COMMON_LOADER: RawResourceLoader = object : RawResourceLoader {
         override fun <T> load(inputStream: InputStream, clazz: Class<T>): T {
