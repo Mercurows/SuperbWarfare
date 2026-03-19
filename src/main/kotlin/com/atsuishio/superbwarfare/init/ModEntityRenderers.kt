@@ -17,7 +17,7 @@ object ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.SENPAI.get(), ::SenpaiRenderer)
         event.registerEntityRenderer(ModEntities.CLAYMORE.get(), ::ClaymoreRenderer)
         event.registerEntityRenderer(ModEntities.C4.get(), ::C4Renderer)
-        event.registerEntityRenderer(ModEntities.TASER_BULLET.get(), ::TaserBulletProjectileRenderer)
+        event.registerEntityRenderer(ModEntities.TASER_BULLET.get(), ::BasicProjectileRenderer)
         event.registerEntityRenderer(ModEntities.GUN_GRENADE.get(), ::BasicProjectileRenderer)
         event.registerEntityRenderer(ModEntities.TARGET.get(), ::TargetRenderer)
         event.registerEntityRenderer(ModEntities.DPS_GENERATOR.get(), ::DPSGeneratorRenderer)
