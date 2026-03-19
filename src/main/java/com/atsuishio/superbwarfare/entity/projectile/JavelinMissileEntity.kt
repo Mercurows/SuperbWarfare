@@ -164,7 +164,7 @@ open class JavelinMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
                         } else {
                             val lostTarget = this.y < entity.y
                             if (!lostTarget) {
-                                turn(toVec, 90f)
+                                turn(toVec, 180f)
                                 this.deltaMovement = this.deltaMovement.scale(0.1).add(lookAngle.scale(8.0))
                             }
                         }
@@ -192,7 +192,7 @@ open class JavelinMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
                     } else {
                         val lostTarget = this.y < targetPos!!.y
                         if (!lostTarget) {
-                            turn(toVec, 90f)
+                            turn(toVec, 180f)
                             this.deltaMovement = this.deltaMovement.scale(0.1).add(lookAngle.scale(8.0))
                         }
                     }

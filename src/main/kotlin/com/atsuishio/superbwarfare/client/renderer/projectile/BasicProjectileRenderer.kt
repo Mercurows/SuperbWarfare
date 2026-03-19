@@ -77,6 +77,10 @@ open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context) :
 
         if (flag && entity.tickCount > entity.getFlareHiddenTicks()) {
             flare.visible = true
+            flare.rotation.rotationZ(2.5f * (Math.random().toFloat() - 0.5f))
+            flare.xScale = ((2 * Math.random() - 1) * 0.4f + 0.8).toFloat()
+            flare.yScale = ((2 * Math.random() - 1) * 0.4f + 0.8).toFloat()
+            flare.zScale = ((2 * Math.random() - 1) * 0.4f + 1).toFloat()
             flare.render(
                 poseStack,
                 buffer.getBuffer(RenderType.eyes(FLARE_TEXTURE)),
