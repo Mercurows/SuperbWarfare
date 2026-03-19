@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
-import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -23,7 +22,7 @@ import net.minecraft.world.phys.EntityHitResult
 
 open class SmallRocketEntity(type: EntityType<out SmallRocketEntity>, level: Level) :
     FastThrowableProjectile(type, level), BasicGeoProjectileEntity {
-    override fun getModel() = BedrockModelLoader.SMALL_ROCKET
+    override fun getModel() = BedrockModelLoader.SMALL_ROCKET_MODEL
 
     init {
         this.noCulling = true

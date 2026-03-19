@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
-import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
@@ -297,5 +296,5 @@ open class MediumRocketEntity : FastThrowableProjectile, BasicGeoProjectileEntit
         this.spreadAngle = spreadAngle
     }
 
-    override fun getModel() = BedrockModelLoader.MEDIUM_ROCKET
+    override fun getModel() = BedrockModelLoader.MEDIUM_ROCKET_MODEL
 }

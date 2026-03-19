@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.api.event.ProjectileHitEvent.HitEntity
-import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
 import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -220,7 +219,7 @@ open class JavelinMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
         return 0.4f
     }
 
-    override fun getModel() = BedrockModelLoader.JAVELIN_MISSILE
+    override fun getModel() = BedrockModelLoader.JAVELIN_MISSILE_MODEL
 
     companion object {
         @JvmField

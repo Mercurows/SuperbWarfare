@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
-import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
@@ -355,7 +354,7 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
         this.spreadAngle = spreadAngle
     }
 
-    override fun getModel() = BedrockModelLoader.CANNON_SHELL
+    override fun getModel() = BedrockModelLoader.CANNON_SHELL_MODEL
 
     override fun getHiddenTicks() = 1
 }

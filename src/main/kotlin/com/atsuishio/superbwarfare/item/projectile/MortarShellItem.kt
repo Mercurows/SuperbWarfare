@@ -44,7 +44,7 @@ open class MortarShellItem : Item(Properties().stacksTo(8)), DispenserLaunchable
         @JvmStatic
         fun createShell(
             entity: LivingEntity?,
-            level: Level?,
+            level: Level,
             stack: ItemStack,
             gravity: Float,
             damage: Float,

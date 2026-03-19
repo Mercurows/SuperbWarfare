@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
-import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -169,5 +168,5 @@ open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level) : Missil
     override val maxHealth: Float
         get() = 70f
 
-    override fun getModel() = BedrockModelLoader.AGM_65
+    override fun getModel() = BedrockModelLoader.AGM_65_MODEL
 }

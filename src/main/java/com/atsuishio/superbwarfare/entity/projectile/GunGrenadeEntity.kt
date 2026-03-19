@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
-import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
@@ -79,7 +78,7 @@ open class GunGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity 
         return false
     }
 
-    override fun getModel() = BedrockModelLoader.GUN_GRENADE
+    override fun getModel() = BedrockModelLoader.GUN_GRENADE_MODEL
 
     override fun getHiddenTicks() = 1
 }

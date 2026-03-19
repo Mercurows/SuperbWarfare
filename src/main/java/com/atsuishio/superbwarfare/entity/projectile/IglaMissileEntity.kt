@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
-import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModEntities
@@ -124,5 +123,5 @@ open class IglaMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
         return 0.4f
     }
 
-    override fun getModel() = BedrockModelLoader.IGLA_9K38_MISSILE
+    override fun getModel() = BedrockModelLoader.IGLA_9K38_MISSILE_MODEL
 }
