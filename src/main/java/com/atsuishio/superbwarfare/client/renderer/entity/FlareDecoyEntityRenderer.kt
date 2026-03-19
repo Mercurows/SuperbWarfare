@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
-import com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
 import com.mojang.math.Axis
@@ -15,13 +14,13 @@ import net.minecraft.resources.ResourceLocation
 import org.joml.Matrix3f
 import org.joml.Matrix4f
 
-class FlareDecoyEntityRenderer(pContext: EntityRendererProvider.Context) : EntityRenderer<FlareDecoyEntity>(pContext) {
-    override fun getBlockLightLevel(pEntity: FlareDecoyEntity, pPos: BlockPos): Int {
+class FlareDecoyEntityRenderer(pContext: EntityRendererProvider.Context) : EntityRenderer<com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity>(pContext) {
+    override fun getBlockLightLevel(pEntity: com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity, pPos: BlockPos): Int {
         return 15
     }
 
     override fun render(
-        pEntity: FlareDecoyEntity,
+        pEntity: com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity,
         pEntityYaw: Float,
         pPartialTicks: Float,
         pMatrixStack: PoseStack,
@@ -43,7 +42,7 @@ class FlareDecoyEntityRenderer(pContext: EntityRendererProvider.Context) : Entit
         super.render(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight)
     }
 
-    override fun getTextureLocation(entity: FlareDecoyEntity): ResourceLocation {
+    override fun getTextureLocation(entity: com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity): ResourceLocation {
         return TEXTURES[(entity.tickCount % 8 + 1)]
     }
 

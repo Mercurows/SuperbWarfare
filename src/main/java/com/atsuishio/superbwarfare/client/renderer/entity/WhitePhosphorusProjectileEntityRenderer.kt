@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
-import com.atsuishio.superbwarfare.entity.projectile.WhitePhosphorusProjectileEntity
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
 import com.mojang.math.Axis
@@ -16,13 +15,13 @@ import org.joml.Matrix3f
 import org.joml.Matrix4f
 
 class WhitePhosphorusProjectileEntityRenderer(pContext: EntityRendererProvider.Context) :
-    EntityRenderer<WhitePhosphorusProjectileEntity>(pContext) {
-    override fun getBlockLightLevel(pEntity: WhitePhosphorusProjectileEntity, pPos: BlockPos): Int {
+    EntityRenderer<com.atsuishio.superbwarfare.entity.projectile.WhitePhosphorusProjectileEntity>(pContext) {
+    override fun getBlockLightLevel(pEntity: com.atsuishio.superbwarfare.entity.projectile.WhitePhosphorusProjectileEntity, pPos: BlockPos): Int {
         return 15
     }
 
     override fun render(
-        pEntity: WhitePhosphorusProjectileEntity,
+        pEntity: com.atsuishio.superbwarfare.entity.projectile.WhitePhosphorusProjectileEntity,
         pEntityYaw: Float,
         pPartialTicks: Float,
         pMatrixStack: PoseStack,
@@ -44,7 +43,7 @@ class WhitePhosphorusProjectileEntityRenderer(pContext: EntityRendererProvider.C
         super.render(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight)
     }
 
-    override fun getTextureLocation(entity: WhitePhosphorusProjectileEntity): ResourceLocation {
+    override fun getTextureLocation(entity: com.atsuishio.superbwarfare.entity.projectile.WhitePhosphorusProjectileEntity): ResourceLocation {
         return TEXTURES[(entity.tickCount % 8 + 1)]
     }
 

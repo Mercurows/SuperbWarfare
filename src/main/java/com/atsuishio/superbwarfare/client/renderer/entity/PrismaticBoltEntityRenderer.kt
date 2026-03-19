@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
-import com.atsuishio.superbwarfare.entity.projectile.PrismaticBoltEntity
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
 import com.mojang.math.Axis
@@ -17,13 +16,13 @@ import org.joml.Matrix3f
 import org.joml.Matrix4f
 
 class PrismaticBoltEntityRenderer(pContext: EntityRendererProvider.Context) :
-    EntityRenderer<PrismaticBoltEntity>(pContext) {
-    override fun getBlockLightLevel(pEntity: PrismaticBoltEntity, pPos: BlockPos): Int {
+    EntityRenderer<com.atsuishio.superbwarfare.entity.projectile.PrismaticBoltEntity>(pContext) {
+    override fun getBlockLightLevel(pEntity: com.atsuishio.superbwarfare.entity.projectile.PrismaticBoltEntity, pPos: BlockPos): Int {
         return 15
     }
 
     override fun render(
-        pEntity: PrismaticBoltEntity,
+        pEntity: com.atsuishio.superbwarfare.entity.projectile.PrismaticBoltEntity,
         pEntityYaw: Float,
         pPartialTicks: Float,
         pMatrixStack: PoseStack,
@@ -49,7 +48,7 @@ class PrismaticBoltEntityRenderer(pContext: EntityRendererProvider.Context) :
     }
 
     override fun shouldRender(
-        pLivingEntity: PrismaticBoltEntity,
+        pLivingEntity: com.atsuishio.superbwarfare.entity.projectile.PrismaticBoltEntity,
         pCamera: Frustum,
         pCamX: Double,
         pCamY: Double,
@@ -58,7 +57,7 @@ class PrismaticBoltEntityRenderer(pContext: EntityRendererProvider.Context) :
         return true
     }
 
-    override fun getTextureLocation(pEntity: PrismaticBoltEntity): ResourceLocation {
+    override fun getTextureLocation(pEntity: com.atsuishio.superbwarfare.entity.projectile.PrismaticBoltEntity): ResourceLocation {
         return TEXTURE
     }
 

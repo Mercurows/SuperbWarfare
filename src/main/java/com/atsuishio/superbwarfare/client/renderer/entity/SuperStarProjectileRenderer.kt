@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
-import com.atsuishio.superbwarfare.entity.projectile.SuperStarProjectileEntity
 import com.atsuishio.superbwarfare.tools.mc
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
@@ -18,13 +17,13 @@ import org.joml.Matrix4f
 import kotlin.math.min
 
 class SuperStarProjectileRenderer(pContext: EntityRendererProvider.Context) :
-    EntityRenderer<SuperStarProjectileEntity>(pContext) {
-    override fun getBlockLightLevel(pEntity: SuperStarProjectileEntity, pPos: BlockPos): Int {
+    EntityRenderer<com.atsuishio.superbwarfare.entity.projectile.SuperStarProjectileEntity>(pContext) {
+    override fun getBlockLightLevel(pEntity: com.atsuishio.superbwarfare.entity.projectile.SuperStarProjectileEntity, pPos: BlockPos): Int {
         return 15
     }
 
     override fun render(
-        pEntity: SuperStarProjectileEntity,
+        pEntity: com.atsuishio.superbwarfare.entity.projectile.SuperStarProjectileEntity,
         pEntityYaw: Float,
         pPartialTicks: Float,
         pMatrixStack: PoseStack,
@@ -50,7 +49,7 @@ class SuperStarProjectileRenderer(pContext: EntityRendererProvider.Context) :
         super.render(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight)
     }
 
-    override fun getTextureLocation(pEntity: SuperStarProjectileEntity): ResourceLocation {
+    override fun getTextureLocation(pEntity: com.atsuishio.superbwarfare.entity.projectile.SuperStarProjectileEntity): ResourceLocation {
         return TEXTURE
     }
 
