@@ -10,7 +10,7 @@ class Sc250Entity(type: EntityType<out Sc250Entity>, level: Level) : AerialBombE
 
     init {
         this.noCulling = true
-        this.explosionRadius = 20f
-        this.explosionDamage = 500f
+        this.explosionRadiusValue = 20f
+        this.explosionDamageValue = 500f
     }
 }

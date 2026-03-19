@@ -31,7 +31,7 @@ import net.minecraft.world.phys.Vec3
 import net.minecraftforge.network.PacketDistributor
 import kotlin.math.max
 
-open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Level?) :
+open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Level) :
     FastThrowableProjectile(type, level), BasicGeoProjectileEntity {
 
     private var fireProbability = 0f
@@ -58,22 +58,22 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
         return true
     }
 
-    override fun addAdditionalSaveData(pCompound: CompoundTag) {
-        super.addAdditionalSaveData(pCompound)
+    override fun addAdditionalSaveData(compound: CompoundTag) {
+        super.addAdditionalSaveData(compound)
 
-        pCompound.putFloat("FireProbability", this.fireProbability)
-        pCompound.putInt("FireTime", this.fireTime)
+        compound.putFloat("FireProbability", this.fireProbability)
+        compound.putInt("FireTime", this.fireTime)
     }
 
-    override fun readAdditionalSaveData(pCompound: CompoundTag) {
-        super.readAdditionalSaveData(pCompound)
+    override fun readAdditionalSaveData(compound: CompoundTag) {
+        super.readAdditionalSaveData(compound)
 
-        if (pCompound.contains("FireProbability")) {
-            this.fireProbability = pCompound.getFloat("FireProbability")
+        if (compound.contains("FireProbability")) {
+            this.fireProbability = compound.getFloat("FireProbability")
         }
 
-        if (pCompound.contains("FireTime")) {
-            this.fireTime = pCompound.getInt("FireTime")
+        if (compound.contains("FireTime")) {
+            this.fireTime = compound.getInt("FireTime")
         }
     }
 
@@ -81,20 +81,20 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
         return ModItems.LARGE_SHELL_HE.get()
     }
 
-    override fun onHitBlock(blockHitResult: BlockHitResult) {
-        super.onHitBlock(blockHitResult)
+    override fun onHitBlock(result: BlockHitResult) {
+        super.onHitBlock(result)
         val level = this.level()
         if (level is ServerLevel) {
-            val pos = blockHitResult.blockPos
+            val pos = result.blockPos
             val blockState = level().getBlockState(pos)
 
             if (type == Type.WP) {
-                findNearEntity(blockHitResult.getLocation(), owner!!)
-                causeExplode(blockHitResult.getLocation())
+                findNearEntity(result.getLocation(), owner!!)
+                causeExplode(result.getLocation())
                 this.discard()
             }
             if (type != Type.AP) {
-                causeExplode(blockHitResult.getLocation())
+                causeExplode(result.getLocation())
                 this.discard()
             } else {
                 if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
@@ -122,9 +122,9 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
                         causeExplode(pos.center)
                         discard()
                     } else {
-                        ParticleTool.cannonHitParticles(level, blockHitResult.getLocation())
+                        ParticleTool.cannonHitParticles(level, result.getLocation())
                         val cannonShell = CannonShellEntity(ModEntities.CANNON_SHELL.get(), level)
-                        cannonShell.setPos(blockHitResult.getLocation().add(deltaMovement.normalize().scale(0.99)))
+                        cannonShell.setPos(result.getLocation().add(deltaMovement.normalize().scale(0.99)))
                         cannonShell.shoot(
                             deltaMovement.x,
                             deltaMovement.y,
@@ -135,32 +135,32 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
                         cannonShell.owner = owner
                         cannonShell.durability(durability)
                         cannonShell.setType(Type.AP)
-                        cannonShell.setGravity(gravity)
-                        cannonShell.setLife(life - tickCount)
-                        cannonShell.setDamage((damage * resistance).toFloat())
-                        cannonShell.setExplosionDamage((explosionDamage * resistance).toFloat())
-                        cannonShell.setExplosionRadius((explosionRadius * resistance).toFloat())
+                        cannonShell.setGravity(gravityValue)
+                        cannonShell.setLife(lifeValue - tickCount)
+                        cannonShell.setDamage((damageValue * resistance).toFloat())
+                        cannonShell.setExplosionDamage((explosionDamageValue * resistance).toFloat())
+                        cannonShell.setExplosionRadius((explosionRadiusValue * resistance).toFloat())
                         level.addFreshEntity(cannonShell)
 
                         this.discard()
                     }
                 } else {
-                    destroyBlock(blockHitResult)
+                    destroyBlock(result)
                 }
             }
         }
     }
 
-    override fun onHitEntity(entityHitResult: EntityHitResult) {
-        super.onHitEntity(entityHitResult)
+    override fun onHitEntity(result: EntityHitResult) {
+        super.onHitEntity(result)
         val level = this.level()
         if (level is ServerLevel) {
-            val entity = entityHitResult.entity
+            val entity = result.entity
             if (this.owner != null && entity == this.owner!!.vehicle) return
 
             entity.forceHurt(
                 causeProjectileHitDamage(this.level().registryAccess(), this, this.owner),
-                this.damage
+                this.damageValue
             )
 
             if (entity is LivingEntity) {
@@ -168,12 +168,12 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
             }
 
             if (type == Type.WP) {
-                findNearEntity(entityHitResult.getLocation(), owner!!)
+                findNearEntity(result.getLocation(), owner!!)
             }
 
 
             if (entity is VehicleEntity) {
-                causeExplode(entityHitResult.getLocation())
+                causeExplode(result.getLocation())
                 this.discard()
             }
 
@@ -189,7 +189,7 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
                         if (rayTraceResultEntity.entity !== entity) {
                             target.forceHurt(
                                 causeProjectileHitDamage(this.level().registryAccess(), this, this.owner),
-                                (this.damage * resistance).toFloat()
+                                (this.damageValue * resistance).toFloat()
                             )
                             if (target is LivingEntity) {
                                 target.invulnerableTime = 0
@@ -199,7 +199,7 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
                 }
 
                 deltaMovement = deltaMovement.scale(resistance)
-                setDamage((this.damage * resistance).toFloat())
+                setDamage((this.damageValue * resistance).toFloat())
             }
         }
     }
@@ -210,7 +210,7 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
         }
 
         val entities = SeekTool.Builder(shooter)
-            .withinRange(pos, explosionRadius.toDouble())
+            .withinRange(pos, explosionRadiusValue.toDouble())
             .notItsVehicle()
             .baseFilter()
             .noVehicle()
@@ -228,7 +228,7 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
                         MobEffectInstance(
                             ModMobEffects.PHOSPHORUS_FIRE.get(),
                             (300 - 30 * dis).toInt(),
-                            max(explosionRadius - dis, 0.0).toInt()
+                            max(explosionRadiusValue - dis, 0.0).toInt()
                         ), this.owner
                     )
                 }
@@ -280,9 +280,9 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
             repeat(spreadAmount) {
                 val gunGrenadeEntity = GunGrenadeEntity(
                     shooter, level,
-                    6 * damage / spreadAmount,
-                    5 * explosionDamage / spreadAmount,
-                    explosionRadius / 2
+                    6 * damageValue / spreadAmount,
+                    5 * explosionDamageValue / spreadAmount,
+                    explosionRadiusValue / 2
                 )
 
                 gunGrenadeEntity.setPos(position().x, position().y, position().z)

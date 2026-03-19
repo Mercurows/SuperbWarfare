@@ -35,9 +35,9 @@ open class IglaMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
         ModEntities.IGLA_MISSILE.get(), entity, level
     ) {
         this.noCulling = true
-        this.damage = damage
-        this.explosionDamage = explosionDamage
-        this.explosionRadius = explosionRadius
+        this.damageValue = damage
+        this.explosionDamageValue = explosionDamage
+        this.explosionRadiusValue = explosionRadius
         this.durability = 0
     }
 

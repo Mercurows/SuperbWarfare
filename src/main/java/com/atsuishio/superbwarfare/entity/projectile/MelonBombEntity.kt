@@ -17,8 +17,8 @@ import net.minecraft.world.phys.Vec3
 open class MelonBombEntity(type: EntityType<out MelonBombEntity>, level: Level) : DestroyableProjectile(type, level) {
     init {
         this.noCulling = true
-        this.explosionRadius = 10f
-        this.explosionDamage = 500f
+        this.explosionRadiusValue = 10f
+        this.explosionDamageValue = 500f
     }
 
     override fun getDefaultItem(): Item {

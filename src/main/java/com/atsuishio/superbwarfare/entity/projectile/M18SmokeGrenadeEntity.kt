@@ -40,7 +40,7 @@ open class M18SmokeGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEn
         this.noCulling = true
     }
 
-    constructor(type: EntityType<out M18SmokeGrenadeEntity>, x: Double, y: Double, z: Double, world: Level?) : super(
+    constructor(type: EntityType<out M18SmokeGrenadeEntity>, x: Double, y: Double, z: Double, world: Level) : super(
         type,
         x,
         y,
@@ -50,7 +50,7 @@ open class M18SmokeGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEn
         this.noCulling = true
     }
 
-    constructor(entity: LivingEntity?, level: Level?, fuse: Int) : super(
+    constructor(entity: LivingEntity?, level: Level, fuse: Int) : super(
         ModEntities.M18_SMOKE_GRENADE.get(),
         entity,
         level
@@ -59,31 +59,31 @@ open class M18SmokeGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEn
         this.fuse = fuse
     }
 
-    override fun addAdditionalSaveData(pCompound: CompoundTag) {
-        super.addAdditionalSaveData(pCompound)
-        pCompound.putFloat("Fuse", this.fuse.toFloat())
-        pCompound.putInt("Count", this.count)
-        pCompound.putFloat("RColor", this.red)
-        pCompound.putFloat("GColor", this.green)
-        pCompound.putFloat("BColor", this.blue)
+    override fun addAdditionalSaveData(compound: CompoundTag) {
+        super.addAdditionalSaveData(compound)
+        compound.putFloat("Fuse", this.fuse.toFloat())
+        compound.putInt("Count", this.count)
+        compound.putFloat("RColor", this.red)
+        compound.putFloat("GColor", this.green)
+        compound.putFloat("BColor", this.blue)
     }
 
-    override fun readAdditionalSaveData(pCompound: CompoundTag) {
-        super.readAdditionalSaveData(pCompound)
-        if (pCompound.contains("Fuse")) {
-            this.fuse = pCompound.getInt("Fuse")
+    override fun readAdditionalSaveData(compound: CompoundTag) {
+        super.readAdditionalSaveData(compound)
+        if (compound.contains("Fuse")) {
+            this.fuse = compound.getInt("Fuse")
         }
-        if (pCompound.contains("Count")) {
-            this.count = Mth.clamp(pCompound.getInt("Count"), 1, 64)
+        if (compound.contains("Count")) {
+            this.count = Mth.clamp(compound.getInt("Count"), 1, 64)
         }
-        if (pCompound.contains("RColor")) {
-            this.red = pCompound.getFloat("RColor")
+        if (compound.contains("RColor")) {
+            this.red = compound.getFloat("RColor")
         }
-        if (pCompound.contains("GColor")) {
-            this.green = pCompound.getFloat("GColor")
+        if (compound.contains("GColor")) {
+            this.green = compound.getFloat("GColor")
         }
-        if (pCompound.contains("BColor")) {
-            this.blue = pCompound.getFloat("BColor")
+        if (compound.contains("BColor")) {
+            this.blue = compound.getFloat("BColor")
         }
     }
 

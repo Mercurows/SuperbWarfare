@@ -18,13 +18,13 @@ import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 
 open class RpgRocketStandardEntity : FastThrowableProjectile, BasicGeoProjectileEntity {
-    constructor(type: EntityType<out RpgRocketStandardEntity>, level: Level?) : super(type, level) {
+    constructor(type: EntityType<out RpgRocketStandardEntity>, level: Level) : super(type, level) {
         this.noCulling = true
         this.durability = 50
-        this.damage = 340f
-        this.explosionDamage = 80f
-        this.explosionRadius = 5f
-        this.gravity = 0.015f
+        this.damageValue = 340f
+        this.explosionDamageValue = 80f
+        this.explosionRadiusValue = 5f
+        this.gravityValue = 0.015f
     }
 
     constructor(
@@ -32,27 +32,27 @@ open class RpgRocketStandardEntity : FastThrowableProjectile, BasicGeoProjectile
         pX: Double,
         pY: Double,
         pZ: Double,
-        pLevel: Level?,
+        pLevel: Level,
         damage: Float,
         explosionDamage: Float,
         explosionRadius: Float
     ) : super(pEntityType, pX, pY, pZ, pLevel) {
         this.noCulling = true
         this.durability = 50
-        this.damage = damage
-        this.explosionDamage = explosionDamage
-        this.explosionRadius = explosionRadius
-        this.gravity = 0.015f
+        this.damageValue = damage
+        this.explosionDamageValue = explosionDamage
+        this.explosionRadiusValue = explosionRadius
+        this.gravityValue = 0.015f
     }
 
     override fun getDefaultItem(): Item {
         return ModItems.RPG_ROCKET_STANDARD.get()
     }
 
-    public override fun onHitBlock(blockHitResult: BlockHitResult) {
-        super.onHitBlock(blockHitResult)
+    public override fun onHitBlock(result: BlockHitResult) {
+        super.onHitBlock(result)
         if (this.level() is ServerLevel) {
-            destroyBlock(blockHitResult)
+            destroyBlock(result)
         }
     }
 
@@ -64,7 +64,7 @@ open class RpgRocketStandardEntity : FastThrowableProjectile, BasicGeoProjectile
         if (this.level() is ServerLevel) {
             entity.forceHurt(
                 causeProjectileHitDamage(this.level().registryAccess(), this, owner),
-                this.damage
+                this.damageValue
             )
 
             if (entity is LivingEntity) {

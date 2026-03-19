@@ -94,7 +94,7 @@ abstract class MissileProjectile : DestroyableProjectile, CustomSyncMotionEntity
         if (this.level() is ServerLevel) {
             entity.forceHurt(
                 causeProjectileHitDamage(this.level().registryAccess(), this, owner),
-                this.damage
+                this.damageValue
             )
 
             if (entity is LivingEntity) {

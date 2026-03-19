@@ -47,9 +47,9 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
 
     constructor(type: EntityType<out MortarShellEntity>, level: Level) : super(type, level) {
         this.noCulling = true
-        this.damage = 60f
-        this.explosionDamage = 100f
-        this.explosionRadius = 8f
+        this.damageValue = 60f
+        this.explosionDamageValue = 100f
+        this.explosionRadiusValue = 8f
     }
 
     constructor(
@@ -61,10 +61,10 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
         gravity: Float
     ) : super(type, x, y, z, level) {
         this.noCulling = true
-        this.damage = 60f
-        this.explosionDamage = 100f
-        this.explosionRadius = 8f
-        this.gravity = gravity
+        this.damageValue = 60f
+        this.explosionDamageValue = 100f
+        this.explosionRadiusValue = 8f
+        this.gravityValue = gravity
     }
 
     constructor(
@@ -77,9 +77,9 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
         ModEntities.MORTAR_SHELL.get(), entity, level
     ) {
         this.noCulling = true
-        this.damage = damage
-        this.explosionDamage = explosionDamage
-        this.explosionRadius = explosionRadius
+        this.damageValue = damage
+        this.explosionDamageValue = explosionDamage
+        this.explosionRadiusValue = explosionRadius
     }
 
     fun setEffectsFromItem(pStack: ItemStack) {
@@ -101,11 +101,11 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
         this.type = type
     }
 
-    override fun addAdditionalSaveData(pCompound: CompoundTag) {
-        super.addAdditionalSaveData(pCompound)
+    override fun addAdditionalSaveData(compound: CompoundTag) {
+        super.addAdditionalSaveData(compound)
 
         if (this.potion !== Potions.EMPTY) {
-            pCompound.putString(
+            compound.putString(
                 "Potion",
                 Objects.requireNonNullElse<Comparable<out Comparable<*>?>?>(
                     ForgeRegistries.POTIONS.getKey(this.potion),
@@ -119,27 +119,27 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
             for (instance in this.effects) {
                 list.add(instance.save(CompoundTag()))
             }
-            pCompound.put("CustomPotionEffects", list)
+            compound.put("CustomPotionEffects", list)
         }
     }
 
-    override fun readAdditionalSaveData(pCompound: CompoundTag) {
-        super.readAdditionalSaveData(pCompound)
+    override fun readAdditionalSaveData(compound: CompoundTag) {
+        super.readAdditionalSaveData(compound)
 
-        if (pCompound.contains("Potion", 8)) {
-            this.potion = PotionUtils.getPotion(pCompound)
+        if (compound.contains("Potion", 8)) {
+            this.potion = PotionUtils.getPotion(compound)
         }
 
-        this.effects.addAll(PotionUtils.getCustomEffects(pCompound))
+        this.effects.addAll(PotionUtils.getCustomEffects(compound))
     }
 
     override fun getDefaultItem(): Item {
         return ModItems.MORTAR_SHELL.get()
     }
 
-    public override fun onHitEntity(entityHitResult: EntityHitResult) {
-        super.onHitEntity(entityHitResult)
-        val entity = entityHitResult.entity
+    public override fun onHitEntity(result: EntityHitResult) {
+        super.onHitEntity(result)
+        val entity = result.entity
         val owner = this.owner
         if (owner != null && owner.vehicle != null && entity == owner.vehicle) return
         if (this.level() is ServerLevel && this.tickCount > 1) {
@@ -151,39 +151,39 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
 
             entity.forceHurt(
                 causeProjectileHitDamage(this.level().registryAccess(), this, owner),
-                this.damage
+                this.damageValue
             )
 
             if (type == Type.WP) {
-                findNearEntity(entityHitResult.getLocation(), getOwner()!!)
+                findNearEntity(result.getLocation(), getOwner()!!)
             }
 
             if (this.level() is ServerLevel) {
-                causeExplode(entityHitResult.getLocation())
-                this.createAreaCloud(this.level(), entityHitResult.getLocation())
+                causeExplode(result.getLocation())
+                this.createAreaCloud(this.level(), result.getLocation())
             }
             this.discard()
         }
     }
 
-    public override fun onHitBlock(blockHitResult: BlockHitResult) {
-        super.onHitBlock(blockHitResult)
-        val resultPos = blockHitResult.blockPos
+    public override fun onHitBlock(result: BlockHitResult) {
+        super.onHitBlock(result)
+        val resultPos = result.blockPos
         val state = this.level().getBlockState(resultPos)
         val block = state.block
 
         if (block is BellBlock) {
-            block.attemptToRing(this.level(), resultPos, blockHitResult.direction)
+            block.attemptToRing(this.level(), resultPos, result.direction)
         }
 
         if (type == Type.WP && this.owner != null) {
-            findNearEntity(blockHitResult.getLocation(), this.owner!!)
+            findNearEntity(result.getLocation(), this.owner!!)
         }
 
         if (!this.level().isClientSide()) {
             if (this.tickCount > 1) {
-                causeExplode(blockHitResult.getLocation())
-                this.createAreaCloud(this.level(), blockHitResult.getLocation())
+                causeExplode(result.getLocation())
+                this.createAreaCloud(this.level(), result.getLocation())
             }
         }
         this.discard()
@@ -192,7 +192,7 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
     fun findNearEntity(pos: Vec3, shooter: Entity) {
         if (this.level() is ServerLevel) {
             val entities = SeekTool.Builder(shooter)
-                .withinRange(pos, explosionRadius.toDouble())
+                .withinRange(pos, explosionRadiusValue.toDouble())
                 .notItsVehicle()
                 .baseFilter()
                 .noVehicle()
@@ -210,7 +210,7 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
                             MobEffectInstance(
                                 ModMobEffects.PHOSPHORUS_FIRE.get(),
                                 (300 - 30 * dis).toInt(),
-                                max(explosionRadius - dis, 0.0).toInt()
+                                max(explosionRadiusValue - dis, 0.0).toInt()
                             ), this.owner
                         )
                     }
@@ -220,6 +220,13 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
     }
 
     override fun tick() {
+        val level = this.level()
+        if (tickCount > getLife()) {
+            if (level is ServerLevel) {
+                this.createAreaCloud(level, position())
+            }
+        }
+
         super.tick()
         if (deltaMovement.lengthSqr() > 25) {
             mediumTrail()
@@ -263,7 +270,7 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
         }
     }
 
-    override fun buildExplosion(vec3: Vec3?): CustomExplosion.Builder {
+    override fun buildExplosion(vec3: Vec3): CustomExplosion.Builder {
         return super.buildExplosion(vec3).damageMultiplier(1.25f)
     }
 
@@ -272,8 +279,8 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
 
         val cloud = AreaEffectCloud(level, pos.x, pos.y, pos.z)
         cloud.setPotion(this.potion)
-        cloud.duration = this.explosionDamage.toInt()
-        cloud.radius = this.explosionRadius
+        cloud.duration = this.explosionDamageValue.toInt()
+        cloud.radius = this.explosionRadiusValue
         val owner = this.owner
         if (owner is LivingEntity) {
             cloud.setOwner(owner)

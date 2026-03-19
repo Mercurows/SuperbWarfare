@@ -9,8 +9,6 @@ import com.atsuishio.superbwarfare.tools.SeekTool
 import com.atsuishio.superbwarfare.tools.forceHurt
 import com.atsuishio.superbwarfare.tools.sendPacketTo
 import net.minecraft.core.particles.ParticleTypes
-import net.minecraft.network.protocol.Packet
-import net.minecraft.network.protocol.game.ClientGamePacketListener
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundSource
@@ -26,18 +24,13 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.Vec3
-import net.minecraftforge.network.NetworkHooks
 import kotlin.math.max
 
 open class WhitePhosphorusProjectileEntity : FastThrowableProjectile {
     constructor(type: EntityType<out WhitePhosphorusProjectileEntity>, world: Level) : super(type, world)
 
-    constructor(entity: Entity?, level: Level?) : super(ModEntities.WHITE_PHOSPHORUS_PROJECTILE.get(), entity, level) {
+    constructor(entity: Entity?, level: Level) : super(ModEntities.WHITE_PHOSPHORUS_PROJECTILE.get(), entity, level) {
         this.noCulling = true
-    }
-
-    override fun getAddEntityPacket(): Packet<ClientGamePacketListener> {
-        return NetworkHooks.getEntitySpawningPacket(this)
     }
 
     override fun getDefaultItem(): Item {
@@ -70,11 +63,11 @@ open class WhitePhosphorusProjectileEntity : FastThrowableProjectile {
         this.discard()
     }
 
-    override fun onHitBlock(blockHitResult: BlockHitResult) {
-        super.onHitBlock(blockHitResult)
+    override fun onHitBlock(result: BlockHitResult) {
+        super.onHitBlock(result)
         val owner = this.owner
         if (owner != null) {
-            findNearEntity(blockHitResult.getLocation(), owner)
+            findNearEntity(result.getLocation(), owner)
         }
         this.discard()
     }

@@ -76,7 +76,7 @@ open class SuperStarProjectileEntity(type: EntityType<out SuperStarProjectileEnt
         // 命中伤害
         entity.forceHurt(
             ModDamageTypes.causeSuperStarHitDamage(level.registryAccess(), this, this.owner),
-            damage
+            damageValue
         )
         entity.invulnerableTime = 0
 
@@ -84,7 +84,7 @@ open class SuperStarProjectileEntity(type: EntityType<out SuperStarProjectileEnt
         queueServerWork(2) {
             entity.forceHurt(
                 ModDamageTypes.causeSuperStarSlashDamage(level.registryAccess(), this, this.owner),
-                explosionDamage
+                explosionDamageValue
             )
             level.playSound(null, entity.onPos, ModSounds.KNIFE_FLESH.get(), SoundSource.PLAYERS, 2f, 1f)
 

@@ -10,8 +10,8 @@ class Sc50Entity(type: EntityType<out Sc50Entity>, level: Level) : AerialBombEnt
 
     init {
         this.noCulling = true
-        this.explosionRadius = 11f
-        this.explosionDamage = 120f
+        this.explosionRadiusValue = 11f
+        this.explosionDamageValue = 120f
     }
 
     override fun getVolume(): Float {

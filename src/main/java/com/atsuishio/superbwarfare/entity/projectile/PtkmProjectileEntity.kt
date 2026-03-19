@@ -31,15 +31,15 @@ open class PtkmProjectileEntity : FastThrowableProjectile, BasicGeoProjectileEnt
     private var target: Entity? = null
 
     constructor(type: EntityType<out PtkmProjectileEntity>, level: Level) : super(type, level) {
-        this.damage = 500f
-        this.explosionDamage = 80f
-        this.explosionRadius = 7f
+        this.damageValue = 500f
+        this.explosionDamageValue = 80f
+        this.explosionRadiusValue = 7f
     }
 
     constructor(entity: LivingEntity?, level: Level) : super(ModEntities.PTKM_PROJECTILE.get(), entity, level) {
-        this.damage = 500f
-        this.explosionDamage = 80f
-        this.explosionRadius = 7f
+        this.damageValue = 500f
+        this.explosionDamageValue = 80f
+        this.explosionRadiusValue = 7f
     }
 
     override fun getDefaultItem(): Item {
@@ -58,9 +58,9 @@ open class PtkmProjectileEntity : FastThrowableProjectile, BasicGeoProjectileEnt
             if (owner != null && entity == owner.vehicle) return
 
             if (target != null && tickCount > shootTime) {
-                entity.forceHurt(causeProjectileHitDamage(this.level().registryAccess(), this, owner), damage)
+                entity.forceHurt(causeProjectileHitDamage(this.level().registryAccess(), this, owner), damageValue)
             } else {
-                entity.forceHurt(causeProjectileHitDamage(this.level().registryAccess(), this, owner), damage / 25f)
+                entity.forceHurt(causeProjectileHitDamage(this.level().registryAccess(), this, owner), damageValue / 25f)
             }
 
             if (entity is LivingEntity) {
@@ -160,8 +160,8 @@ open class PtkmProjectileEntity : FastThrowableProjectile, BasicGeoProjectileEnt
     fun explode(pos: Vec3) {
         CustomExplosion.Builder(this)
             .damageSource(causeCustomExplosionDamage(level().registryAccess(), this, this.owner))
-            .damage(explosionDamage)
-            .radius(explosionRadius)
+            .damage(explosionDamageValue)
+            .radius(explosionRadiusValue)
             .position(pos)
             .withParticleType(ParticleTool.ParticleType.MEDIUM)
             .particlePosition(pos)

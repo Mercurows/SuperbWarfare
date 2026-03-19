@@ -12,8 +12,8 @@ open class Mk82Entity(type: EntityType<out Mk82Entity>, level: Level) : AerialBo
 
     init {
         this.noCulling = true
-        this.explosionRadius = 22f
-        this.explosionDamage = 650f
+        this.explosionRadiusValue = 22f
+        this.explosionDamageValue = 650f
     }
 
     override val maxHealth: Float

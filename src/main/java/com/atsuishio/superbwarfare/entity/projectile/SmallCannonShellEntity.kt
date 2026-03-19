@@ -29,9 +29,9 @@ open class SmallCannonShellEntity(type: EntityType<out SmallCannonShellEntity>, 
 
     init {
         this.noCulling = true
-        this.damage = 40f
-        this.explosionDamage = 80f
-        this.explosionRadius = 5f
+        this.damageValue = 40f
+        this.explosionDamageValue = 80f
+        this.explosionRadiusValue = 5f
     }
 
     override fun getDefaultItem(): Item {
@@ -44,7 +44,7 @@ open class SmallCannonShellEntity(type: EntityType<out SmallCannonShellEntity>, 
         val owner = this.owner
         if (owner != null && owner.vehicle != null && entity == owner.vehicle) return
         if (this.level() is ServerLevel) {
-            entity.forceHurt(causeProjectileHitDamage(this.level().registryAccess(), this, owner), damage)
+            entity.forceHurt(causeProjectileHitDamage(this.level().registryAccess(), this, owner), damageValue)
 
             if (entity is LivingEntity) {
                 entity.invulnerableTime = 0
@@ -87,10 +87,10 @@ open class SmallCannonShellEntity(type: EntityType<out SmallCannonShellEntity>, 
     private fun causeExplode(vec3: Vec3, hitEntity: Boolean) {
         CustomExplosion.Builder(this)
             .attacker(this.owner)
-            .damage(explosionDamage)
-            .radius(explosionRadius)
+            .damage(explosionDamageValue)
+            .radius(explosionRadiusValue)
             .position(vec3)
-            .withParticleType(explosionParticleType(explosionRadius))
+            .withParticleType(explosionParticleType(explosionRadiusValue))
             .destroyBlock { if (hitEntity) Explosion.BlockInteraction.KEEP else (if (ExplosionConfig.EXPLOSION_DESTROY.get()) Explosion.BlockInteraction.DESTROY else Explosion.BlockInteraction.KEEP) }
             .damageMultiplier(1.25f)
             .explode()
@@ -139,7 +139,7 @@ open class SmallCannonShellEntity(type: EntityType<out SmallCannonShellEntity>, 
                     }
                     target.forceHurt(
                         causeProjectileHitDamage(this.level().registryAccess(), this, owner),
-                        damage
+                        damageValue
                     )
                 } else {
                     target.discard()

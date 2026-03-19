@@ -38,7 +38,7 @@ open class GrapeshotEntity : FastThrowableProjectile {
 
     constructor(entity: Entity?, level: Level, damage: Float) : super(ModEntities.GRAPESHOT.get(), entity, level) {
         this.noCulling = true
-        this.damage = damage
+        this.damageValue = damage
     }
 
     override fun getDefaultItem(): Item {
@@ -58,7 +58,7 @@ open class GrapeshotEntity : FastThrowableProjectile {
                 sendPacketTo(owner, ClientIndicatorMessage(0, 5))
             }
 
-            entity.forceHurt(causeGrapeShotHitDamage(this.level().registryAccess(), this, owner), this.damage)
+            entity.forceHurt(causeGrapeShotHitDamage(this.level().registryAccess(), this, owner), this.damageValue)
 
             if (entity is LivingEntity) {
                 entity.invulnerableTime = 0
