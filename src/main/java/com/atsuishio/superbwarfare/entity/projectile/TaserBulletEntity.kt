@@ -1,158 +1,123 @@
-package com.atsuishio.superbwarfare.entity.projectile;
+package com.atsuishio.superbwarfare.entity.projectile
 
-import com.atsuishio.superbwarfare.init.ModDamageTypes;
-import com.atsuishio.superbwarfare.init.ModMobEffects;
-import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
-import com.atsuishio.superbwarfare.tools.DamageHandler;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LightningBolt;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.Creeper;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.ItemSupplier;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BellBlock;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.Vec3;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.PacketDistributor;
-import org.jetbrains.annotations.NotNull;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
+import com.atsuishio.superbwarfare.init.ModDamageTypes.causeShockDamage
+import com.atsuishio.superbwarfare.init.ModMobEffects
+import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
+import com.atsuishio.superbwarfare.resource.BedrockModelLoader
+import com.atsuishio.superbwarfare.tools.forceHurt
+import com.atsuishio.superbwarfare.tools.sendPacketTo
+import net.minecraft.server.level.ServerLevel
+import net.minecraft.server.level.ServerPlayer
+import net.minecraft.sounds.SoundSource
+import net.minecraft.world.effect.MobEffectInstance
+import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.LightningBolt
+import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.monster.Creeper
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.entity.projectile.AbstractArrow
+import net.minecraft.world.entity.projectile.ItemSupplier
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.BellBlock
+import net.minecraft.world.phys.BlockHitResult
+import net.minecraft.world.phys.EntityHitResult
+import net.minecraft.world.phys.Vec3
+import net.neoforged.api.distmarker.Dist
+import net.neoforged.api.distmarker.OnlyIn
 
-@OnlyIn(value = Dist.CLIENT, _interface = ItemSupplier.class)
-public class TaserBulletEntity extends AbstractArrow implements GeoEntity, CustomDamageProjectile {
+@OnlyIn(value = Dist.CLIENT, _interface = ItemSupplier::class)
+open class TaserBulletEntity(type: EntityType<out TaserBulletEntity>, level: Level) : AbstractArrow(type, level),
+    BasicGeoProjectileEntity, CustomDamageProjectile {
 
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private var initialPos: Vec3? = null
+    private var damage = 1f
+    var volt: Int = 0
+    var wireLength: Int = 0
+    private var stopped = false
 
-    private Vec3 initialPos;
-    private float damage = 1f;
-    private int volt = 0;
-    private int wireLength = 0;
-    private boolean stopped = false;
-
-    public TaserBulletEntity(EntityType<? extends TaserBulletEntity> type, Level level) {
-        super(type, level);
-        this.noCulling = true;
-        this.pickup = AbstractArrow.Pickup.DISALLOWED;
+    init {
+        this.noCulling = true
     }
 
-    public float getDamage() {
-        return damage;
+    fun getDamage(): Float {
+        return damage
     }
 
-    public void setDamage(float damage) {
-        this.damage = damage;
+    override fun setDamage(damage: Float) {
+        this.damage = damage
     }
 
-    public int getVolt() {
-        return volt;
+    override fun playerTouch(pEntity: Player) {
     }
 
-    public void setVolt(int volt) {
-        this.volt = volt;
+    override fun getPickupItem(): ItemStack {
+        return ItemStack.EMPTY
     }
 
-    public int getWireLength() {
-        return wireLength;
+    override fun getDefaultPickupItem(): ItemStack {
+        return ItemStack.EMPTY
     }
 
-    public void setWireLength(int wireLength) {
-        this.wireLength = wireLength;
-    }
-
-    @Override
-    public void playerTouch(@NotNull Player pEntity) {
-    }
-
-    @Override
-    protected @NotNull ItemStack getPickupItem() {
-        return ItemStack.EMPTY;
-    }
-
-    @Override
-    protected @NotNull ItemStack getDefaultPickupItem() {
-        return ItemStack.EMPTY;
-    }
-
-    @Override
-    protected void onHitEntity(EntityHitResult result) {
-        Entity entity = result.getEntity();
-        if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
-            return;
-        if (this.getOwner() instanceof LivingEntity living) {
-            if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
-                living.level().playSound(null, living.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
-
-                PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
-            }
+    override fun onHitEntity(result: EntityHitResult) {
+        val entity = result.entity
+        val owner = this.owner
+        if (owner != null && owner.vehicle != null && entity == owner.vehicle) return
+        if (owner is ServerPlayer) {
+            owner.level()
+                .playSound(null, owner.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1f, 1f)
+            sendPacketTo(owner, ClientIndicatorMessage(0, 5))
         }
-        if (entity instanceof LivingEntity living) {
-            entity.invulnerableTime = 0;
-            DamageHandler.doDamage(entity, ModDamageTypes.causeShockDamage(this.level().registryAccess(), this.getOwner()), this.damage);
-            if (living instanceof Player player && player.isCreative()) {
-                return;
+        if (entity is LivingEntity) {
+            entity.invulnerableTime = 0
+            entity.forceHurt(causeShockDamage(this.level().registryAccess(), owner), this.damage)
+            if (entity is Player && entity.isCreative) {
+                return
             }
-            if (!living.level().isClientSide()) {
-                if (living instanceof Creeper creeper && living.level() instanceof ServerLevel serverLevel) {
-                    creeper.thunderHit(serverLevel, new LightningBolt(EntityType.LIGHTNING_BOLT, serverLevel));
+
+            val level = entity.level()
+            if (level is ServerLevel) {
+                if (entity is Creeper) {
+                    entity.thunderHit(level, LightningBolt(EntityType.LIGHTNING_BOLT, level))
                 } else {
-                    living.addEffect(new MobEffectInstance(ModMobEffects.SHOCK, 100 + volt * 30, volt), this.getOwner());
+                    entity.addEffect(
+                        MobEffectInstance(ModMobEffects.SHOCK, 100 + volt * 30, volt),
+                        owner
+                    )
                 }
             }
         }
-        this.discard();
+        this.discard()
     }
 
-    @Override
-    public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
-        super.onHitBlock(blockHitResult);
-        BlockPos resultPos = blockHitResult.getBlockPos();
-        BlockState state = this.level().getBlockState(resultPos);
-        if (state.getBlock() instanceof BellBlock bell) {
-            bell.attemptToRing(this.level(), resultPos, blockHitResult.getDirection());
+    public override fun onHitBlock(blockHitResult: BlockHitResult) {
+        super.onHitBlock(blockHitResult)
+        val resultPos = blockHitResult.blockPos
+        val state = this.level().getBlockState(resultPos)
+        val block = state.block
+        if (block is BellBlock) {
+            block.attemptToRing(this.level(), resultPos, blockHitResult.direction)
         }
     }
 
-    @Override
-    public void tick() {
-        super.tick();
+    override fun tick() {
+        super.tick()
 
         if (this.tickCount == 1) {
-            initialPos = this.position();
+            initialPos = this.position()
         }
 
-        if (initialPos != null && this.position().distanceTo(initialPos) > 10 + 4 * wireLength && !stopped) {
-            stopped = true;
-            this.setDeltaMovement(new Vec3(0, 0, 0));
+        if (initialPos != null && this.position().distanceTo(initialPos!!) > 10 + 4 * wireLength && !stopped) {
+            stopped = true
+            this.deltaMovement = Vec3(0.0, 0.0, 0.0)
         }
 
         if (this.tickCount > 200) {
-            this.discard();
+            this.discard()
         }
     }
 
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
-    }
+    override fun getModel() = BedrockModelLoader.TASER_BULLET_MODEL
 }
 
