@@ -6,10 +6,7 @@ import com.atsuishio.superbwarfare.api.event.ProjectileHitEvent.HitEntity
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage
-import com.atsuishio.superbwarfare.tools.ChunkLoadManager
-import com.atsuishio.superbwarfare.tools.CustomExplosion
-import com.atsuishio.superbwarfare.tools.ParticleTool
-import com.atsuishio.superbwarfare.tools.sendPacketTo
+import com.atsuishio.superbwarfare.tools.*
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.nbt.CompoundTag
@@ -30,10 +27,8 @@ import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
-import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.entity.IEntityAdditionalSpawnData
 import net.minecraftforge.network.NetworkHooks
-import net.minecraftforge.network.PacketDistributor
 import java.util.function.Consumer
 
 abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMotionEntity, IEntityAdditionalSpawnData,
@@ -170,7 +165,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
 
     override fun onHitEntity(result: EntityHitResult) {
         super.onHitEntity(result)
-        MinecraftForge.EVENT_BUS.post(
+        postEvent(
             HitEntity(
                 this.owner,
                 this,
@@ -182,7 +177,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
 
     override fun onHitBlock(result: BlockHitResult) {
         super.onHitBlock(result)
-        MinecraftForge.EVENT_BUS.post(
+        postEvent(
             HitBlock(
                 result.blockPos,
                 this.level().getBlockState(result.blockPos),
@@ -311,7 +306,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
         if (!shouldSyncMotion()) return
 
         if (this.tickCount % this.type.updateInterval() == 0) {
-            sendPacketTo(PacketDistributor.TRACKING_ENTITY.with { this }, ClientMotionSyncMessage(this))
+            sendPacketToTrackingThis(ClientMotionSyncMessage(this))
         }
     }
 

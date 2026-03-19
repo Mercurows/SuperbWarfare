@@ -315,7 +315,7 @@ open class CustomExplosion(
             val player = this.damageSource.entity
             if (player is ServerPlayer) {
                 SoundTool.playLocalSound(player, ModSounds.INDICATION.get())
-                sendPacketTo(player, ClientIndicatorMessage(0, 5))
+                player.sendPacket(ClientIndicatorMessage(0, 5))
             }
         }
     }

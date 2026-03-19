@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.network.message.receive.LivingGunKillMessage
 import com.atsuishio.superbwarfare.tools.TraceTool
+import com.atsuishio.superbwarfare.tools.sendPacket
 import com.atsuishio.superbwarfare.tools.sendPacketTo
 import com.atsuishio.superbwarfare.tools.sendPacketToAll
 import net.minecraft.core.BlockPos
@@ -118,8 +119,7 @@ open class BeastItem : SwordItem(
             }
 
             if (attacker is ServerPlayer) {
-                sendPacketTo(attacker, ClientIndicatorMessage(1, 5))
-
+                attacker.sendPacket(ClientIndicatorMessage(0, 5))
                 val holder = Holder.direct(ModSounds.INDICATION.get())
                 sendPacketTo(
                     attacker, ClientboundSoundPacket(
@@ -144,7 +144,14 @@ open class BeastItem : SwordItem(
                 )
 
                 if (MiscConfig.SEND_KILL_FEEDBACK.get()) {
-                    sendPacketToAll(LivingGunKillMessage(attacker.id, target.id, false, ModDamageTypes.BEAST))
+                    sendPacketToAll(
+                        LivingGunKillMessage(
+                            attacker.id,
+                            target.id,
+                            false,
+                            ModDamageTypes.BEAST
+                        )
+                    )
                 }
             }
 

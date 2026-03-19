@@ -28,7 +28,6 @@ import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
-import net.minecraftforge.network.PacketDistributor
 import kotlin.math.max
 
 open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Level) :
@@ -322,7 +321,7 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
 
     override fun syncMotion() {
         if (!this.level().isClientSide) {
-            sendPacketTo(PacketDistributor.TRACKING_ENTITY.with { this }, ClientMotionSyncMessage(this))
+            sendPacketToTrackingThis(ClientMotionSyncMessage(this))
         }
     }
 

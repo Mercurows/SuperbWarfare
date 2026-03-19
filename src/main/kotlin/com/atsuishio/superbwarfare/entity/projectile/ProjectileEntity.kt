@@ -64,9 +64,7 @@ import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
 import net.minecraft.world.phys.shapes.VoxelShape
-import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.entity.PartEntity
-import net.minecraftforge.network.PacketDistributor
 import java.util.*
 import java.util.function.BiFunction
 import java.util.function.Function
@@ -451,7 +449,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
 
     override fun syncMotion() {
         if (!this.level().isClientSide) {
-            sendPacketTo(PacketDistributor.TRACKING_ENTITY.with { this }, ClientMotionSyncMessage(this))
+            sendPacketToTrackingThis(ClientMotionSyncMessage(this))
         }
     }
 
@@ -683,7 +681,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
             val face = result.direction
             val state = level().getBlockState(pos)
 
-            if (MinecraftForge.EVENT_BUS.post(
+            if (postEvent(
                     HitBlock(
                         pos,
                         state,
@@ -828,7 +826,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
         val headshot = result.headshot
         val legShot = result.legShot
 
-        if (MinecraftForge.EVENT_BUS.post(HitEntity(this.shooter, this, result))) return
+        if (postEvent(HitEntity(this.shooter, this, result))) return
 
         if (entity is PartEntity<*>) {
             entity = entity.getParent()

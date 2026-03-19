@@ -11,7 +11,7 @@ import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.TraceTool
 import com.atsuishio.superbwarfare.tools.forceHurt
-import com.atsuishio.superbwarfare.tools.sendPacketTo
+import com.atsuishio.superbwarfare.tools.sendPacketToTrackingThis
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.level.ServerLevel
@@ -28,7 +28,6 @@ import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.HitResult
-import net.minecraftforge.network.PacketDistributor
 
 open class MediumRocketEntity : FastThrowableProjectile, BasicGeoProjectileEntity {
     enum class Type {
@@ -238,7 +237,7 @@ open class MediumRocketEntity : FastThrowableProjectile, BasicGeoProjectileEntit
 
     override fun syncMotion() {
         if (!this.level().isClientSide) {
-            sendPacketTo(PacketDistributor.TRACKING_ENTITY.with { this }, ClientMotionSyncMessage(this))
+            sendPacketToTrackingThis(ClientMotionSyncMessage(this))
         }
     }
 

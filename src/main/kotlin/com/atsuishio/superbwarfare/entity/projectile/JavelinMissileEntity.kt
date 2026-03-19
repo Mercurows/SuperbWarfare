@@ -10,11 +10,8 @@ import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.resource.BedrockModelLoader
-import com.atsuishio.superbwarfare.tools.EntityFindUtil
-import com.atsuishio.superbwarfare.tools.SeekTool
+import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.VectorTool.calculateAngle
-import com.atsuishio.superbwarfare.tools.angleTo
-import com.atsuishio.superbwarfare.tools.forceHurt
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
@@ -32,7 +29,6 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.Vec3
-import net.minecraftforge.common.MinecraftForge
 import kotlin.math.max
 
 open class JavelinMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
@@ -96,7 +92,7 @@ open class JavelinMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
             this.discard()
         }
 
-        MinecraftForge.EVENT_BUS.post(
+        postEvent(
             HitEntity(
                 owner,
                 this,

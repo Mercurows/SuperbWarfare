@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.network.dataslot.ContainerEnergyData
 import com.atsuishio.superbwarfare.network.dataslot.ContainerEnergyDataSlot
 import com.atsuishio.superbwarfare.network.dataslot.ContainerEnergyDataSlot.Companion.forContainer
 import com.atsuishio.superbwarfare.network.message.receive.ContainerDataMessage
+import com.atsuishio.superbwarfare.tools.sendPacket
 import com.atsuishio.superbwarfare.tools.sendPacketTo
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.inventory.AbstractContainerMenu
@@ -13,7 +14,6 @@ import net.minecraftforge.event.entity.player.PlayerContainerEvent.Close
 import net.minecraftforge.event.entity.player.PlayerContainerEvent.Open
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber
-import net.minecraftforge.network.PacketDistributor
 
 abstract class EnergyMenu : AbstractContainerMenu {
     private val containerEnergyDataSlots: MutableList<ContainerEnergyDataSlot> = arrayListOf()
@@ -35,10 +35,9 @@ abstract class EnergyMenu : AbstractContainerMenu {
         }
 
         if (!pairs.isEmpty()) {
-            val target = PacketDistributor.NMLIST.with {
-                this.usingPlayers.stream().map { it.connection.connection }.toList()
+            this.usingPlayers.forEach { p ->
+                p.sendPacket(ContainerDataMessage(this.containerId, pairs))
             }
-            sendPacketTo(target, ContainerDataMessage(this.containerId, pairs))
         }
 
         super.broadcastChanges()

@@ -7,7 +7,7 @@ import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.FormatTool.format1D
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.mc
-import com.atsuishio.superbwarfare.tools.sendPacketTo
+import com.atsuishio.superbwarfare.tools.sendPacket
 import com.google.common.collect.ImmutableMultimap
 import com.google.common.collect.Multimap
 import net.minecraft.ChatFormatting
@@ -168,7 +168,7 @@ open class MonitorItem : Item(Properties().stacksTo(1)) {
             itemstack.getOrCreateTag().putBoolean(LINKED, false)
             itemstack.getOrCreateTag().putString(LINKED_DRONE, "none")
             if (player is ServerPlayer) {
-                sendPacketTo(player, ResetCameraTypeMessage)
+                player.sendPacket(ResetCameraTypeMessage)
             }
         }
 
