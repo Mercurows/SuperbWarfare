@@ -64,6 +64,8 @@ object BedrockModelLoader {
     val MEDIUM_ROCKET_MODEL = registerCommonModel("projectile/medium_rocket")
     val MORTAR_SHELL_MODEL = registerCommonModel("projectile/mortar_shell")
     val TASER_BULLET_MODEL = registerCommonModel("projectile/taser_bullet")
+    val CLAYMORE_MODEL = registerCommonModel("projectile/claymore")
+    val MEDICAL_KIT_MODEL = registerCommonModel("projectile/medical_kit")
 
     val COMMON_LOADER: RawResourceLoader = object : RawResourceLoader {
         override fun <T> load(inputStream: InputStream, clazz: Class<T>): T {

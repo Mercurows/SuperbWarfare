@@ -24,6 +24,10 @@ open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context) :
         return loc("textures/bedrock/projectile/${entity.type.descriptionId.split(".")[2]}.png")
     }
 
+    override fun shouldShowName(pEntity: T): Boolean {
+        return false
+    }
+
     override fun render(
         entity: T,
         yaw: Float,
