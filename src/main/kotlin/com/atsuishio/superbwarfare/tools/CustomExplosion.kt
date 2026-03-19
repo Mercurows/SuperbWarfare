@@ -28,7 +28,6 @@ import net.minecraft.world.level.gameevent.GameEvent
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import net.neoforged.neoforge.event.EventHooks
-import net.neoforged.neoforge.network.PacketDistributor
 import java.util.function.Supplier
 import kotlin.math.floor
 import kotlin.math.sqrt
@@ -320,7 +319,7 @@ class CustomExplosion @JvmOverloads constructor(
                 val player = this.damageSource.entity
                 if (player is ServerPlayer) {
                     SoundTool.playLocalSound(player, ModSounds.INDICATION.get())
-                    PacketDistributor.sendToPlayer(player, ClientIndicatorMessage(0, 5))
+                    player.sendPacket(ClientIndicatorMessage(0, 5))
                 }
             }
         }

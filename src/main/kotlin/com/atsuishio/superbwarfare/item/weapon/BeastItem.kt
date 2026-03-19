@@ -11,6 +11,8 @@ import com.atsuishio.superbwarfare.item.CustomDamageProperty
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.network.message.receive.LivingGunKillMessage
 import com.atsuishio.superbwarfare.tools.TraceTool
+import com.atsuishio.superbwarfare.tools.sendPacket
+import com.atsuishio.superbwarfare.tools.sendPacketToAll
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Holder
 import net.minecraft.core.particles.ParticleTypes
@@ -31,7 +33,6 @@ import net.minecraft.world.item.Tiers
 import net.minecraft.world.item.TooltipFlag
 import net.minecraft.world.level.gameevent.GameEvent
 import net.minecraft.world.phys.AABB
-import net.neoforged.neoforge.network.PacketDistributor
 import java.util.function.Consumer
 import javax.annotation.ParametersAreNonnullByDefault
 
@@ -118,7 +119,7 @@ open class BeastItem : SwordItem(
             }
 
             if (attacker is ServerPlayer) {
-                PacketDistributor.sendToPlayer(attacker, ClientIndicatorMessage(0, 5))
+                attacker.sendPacket(ClientIndicatorMessage(0, 5))
                 val holder = Holder.direct(ModSounds.INDICATION.get())
                 attacker.connection.send(
                     ClientboundSoundPacket(
@@ -143,7 +144,7 @@ open class BeastItem : SwordItem(
                 )
 
                 if (MiscConfig.SEND_KILL_FEEDBACK.get()) {
-                    PacketDistributor.sendToAllPlayers(
+                    sendPacketToAll(
                         LivingGunKillMessage(
                             attacker.id,
                             target.id,

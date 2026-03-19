@@ -45,7 +45,6 @@ import net.minecraft.world.entity.projectile.Projectile
 import net.minecraft.world.item.ItemStack
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
-import net.neoforged.neoforge.common.NeoForge
 import net.neoforged.neoforge.event.entity.living.*
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent
@@ -310,7 +309,7 @@ object LivingEventHandler {
         }
 
         if (!sourceEntity.level().isClientSide() && sourceEntity is ServerPlayer) {
-            if (NeoForge.EVENT_BUS.post(Indicator(sourceEntity, source, event.entity)).isCanceled()) {
+            if (postEvent(Indicator(sourceEntity, source, event.entity)).isCanceled()) {
                 return
             }
 
@@ -496,7 +495,7 @@ object LivingEventHandler {
 
         if (attacker == null) return
 
-        if (NeoForge.EVENT_BUS.post(SendKillMessage(attacker, source, entity)).isCanceled()) {
+        if (postEvent(SendKillMessage(attacker, source, entity)).isCanceled()) {
             return
         }
 

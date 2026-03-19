@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.FormatTool.format1D
 import com.atsuishio.superbwarfare.tools.NBTTool
 import com.atsuishio.superbwarfare.tools.mc
+import com.atsuishio.superbwarfare.tools.sendPacket
 import net.minecraft.ChatFormatting
 import net.minecraft.client.CameraType
 import net.minecraft.client.Minecraft
@@ -28,7 +29,6 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
-import net.neoforged.neoforge.network.PacketDistributor
 import javax.annotation.ParametersAreNonnullByDefault
 
 open class MonitorItem : Item(Properties().stacksTo(1)) {
@@ -189,7 +189,7 @@ open class MonitorItem : Item(Properties().stacksTo(1)) {
             tag.putBoolean(LINKED, false)
             tag.putString(LINKED_DRONE, "none")
             if (player is ServerPlayer) {
-                PacketDistributor.sendToPlayer(player, ResetCameraTypeMessage)
+                player.sendPacket(ResetCameraTypeMessage)
             }
         }
 
