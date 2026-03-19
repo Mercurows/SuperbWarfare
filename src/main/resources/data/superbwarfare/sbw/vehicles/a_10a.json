@@ -197,7 +197,7 @@
       "Velocity": 1.05,
       "SeekWeaponInfo": {
         "SeekDirection": "Default",
-        "SeekRange": 384,
+        "SeekRange": 512,
         "SeekAngle": 20,
         "SeekTime": 10,
         "MaxTargetHeight": 32,
@@ -216,7 +216,7 @@
             "Name": "weapon.superbwarfare.agm_65_missile_block",
             "SeekWeaponInfo": {
               "SeekDirection": "Default",
-              "SeekRange": 384,
+              "SeekRange": 512,
               "SeekAngle": 20,
               "SeekTime": 10,
               "MaxTargetHeight": 32,
