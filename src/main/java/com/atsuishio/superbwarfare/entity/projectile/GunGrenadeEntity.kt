@@ -16,17 +16,17 @@ import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 
 open class GunGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity {
-    constructor(type: EntityType<out GunGrenadeEntity>, world: Level?) : super(type, world) {
+    constructor(type: EntityType<out GunGrenadeEntity>, world: Level) : super(type, world) {
         this.noCulling = true
     }
 
-    constructor(entity: Entity?, level: Level?, damage: Float, explosionDamage: Float, explosionRadius: Float) : super(
+    constructor(entity: Entity?, level: Level, damage: Float, explosionDamage: Float, explosionRadius: Float) : super(
         ModEntities.GUN_GRENADE.get(), entity, level
     ) {
         this.noCulling = true
-        this.damage = damage
-        this.explosionDamage = explosionDamage
-        this.explosionRadius = explosionRadius
+        this.damageValue = damage
+        this.explosionDamageValue = explosionDamage
+        this.explosionRadiusValue = explosionRadius
     }
 
     override fun getDefaultItem(): Item {
@@ -39,7 +39,7 @@ open class GunGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity 
         val owner = this.owner
         if (owner != null && owner.vehicle != null && entity == owner.vehicle) return
 
-        entity.forceHurt(causeProjectileHitDamage(this.level().registryAccess(), this, owner), damage)
+        entity.forceHurt(causeProjectileHitDamage(this.level().registryAccess(), this, owner), damageValue)
 
         if (entity is LivingEntity) {
             entity.invulnerableTime = 0

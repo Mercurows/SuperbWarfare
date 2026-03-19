@@ -31,8 +31,8 @@ open class SwarmDroneEntity(type: EntityType<out SwarmDroneEntity>, level: Level
 
     init {
         this.noCulling = true
-        this.explosionDamage = 80f
-        this.explosionRadius = 5f
+        this.explosionDamageValue = 80f
+        this.explosionRadiusValue = 5f
         randomFloat = random.nextFloat()
     }
 

@@ -26,12 +26,11 @@ import kotlin.math.max
 
 open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level) : MissileProjectile(type, level),
     BasicGeoProjectileEntity {
-
     init {
         this.noCulling = true
-        this.damage = 1100f
-        this.explosionDamage = 180f
-        this.explosionRadius = 12f
+        this.damageValue = 1100f
+        this.explosionDamageValue = 180f
+        this.explosionRadiusValue = 12f
         this.distracted = false
         this.durability = 25
     }
@@ -154,7 +153,7 @@ open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level) : Missil
     }
 
     override fun getDefaultGravity(): Double {
-        return if (tickCount < 8) 0.15 else super.getGravity()
+        return if (tickCount < 8) 0.15 else super.getGravityValue()
     }
 
     override fun getSound(): SoundEvent {

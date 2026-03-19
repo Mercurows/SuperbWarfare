@@ -29,9 +29,9 @@ open class Kh39Entity(type: EntityType<out Kh39Entity>, level: Level) : MissileP
 
     init {
         this.noCulling = true
-        this.damage = 1100f
-        this.explosionDamage = 180f
-        this.explosionRadius = 12f
+        this.damageValue = 1100f
+        this.explosionDamageValue = 180f
+        this.explosionRadiusValue = 12f
         this.distracted = false
         this.durability = 25
     }
@@ -154,7 +154,7 @@ open class Kh39Entity(type: EntityType<out Kh39Entity>, level: Level) : MissileP
     }
 
     override fun getDefaultGravity(): Double {
-        return if (tickCount < 8) 0.15 else super.getGravity()
+        return if (tickCount < 8) 0.15 else super.getGravityValue()
     }
 
     override fun getSound(): SoundEvent {

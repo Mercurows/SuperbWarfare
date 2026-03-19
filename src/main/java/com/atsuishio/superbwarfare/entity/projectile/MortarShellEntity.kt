@@ -53,9 +53,9 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
 
     constructor(type: EntityType<out MortarShellEntity>, level: Level) : super(type, level) {
         this.noCulling = true
-        this.damage = 60f
-        this.explosionDamage = 100f
-        this.explosionRadius = 8f
+        this.damageValue = 60f
+        this.explosionDamageValue = 100f
+        this.explosionRadiusValue = 8f
     }
 
     constructor(
@@ -67,10 +67,10 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
         gravity: Float
     ) : super(type, x, y, z, level) {
         this.noCulling = true
-        this.damage = 60f
-        this.explosionDamage = 100f
-        this.explosionRadius = 8f
-        this.gravity = gravity
+        this.damageValue = 60f
+        this.explosionDamageValue = 100f
+        this.explosionRadiusValue = 8f
+        this.gravityValue = gravity
     }
 
     constructor(
@@ -83,9 +83,9 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
         ModEntities.MORTAR_SHELL.get(), entity, level
     ) {
         this.noCulling = true
-        this.damage = damage
-        this.explosionDamage = explosionDamage
-        this.explosionRadius = explosionRadius
+        this.damageValue = damage
+        this.explosionDamageValue = explosionDamage
+        this.explosionRadiusValue = explosionRadius
     }
 
     fun setEffectsFromItem(stack: ItemStack) {
@@ -168,7 +168,7 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
 
             entity.forceHurt(
                 causeProjectileHitDamage(this.level().registryAccess(), this, owner),
-                this.damage
+                this.damageValue
             )
 
             if (type == Type.WP) {
@@ -197,7 +197,7 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
             findNearEntity(blockHitResult.getLocation(), owner!!)
         }
 
-        if (!this.level().isClientSide() && this.level() is ServerLevel) {
+        if (!this.level().isClientSide()) {
             if (this.tickCount > 1) {
                 causeExplode(blockHitResult.getLocation())
                 this.createAreaCloud(this.level(), position())
@@ -209,7 +209,7 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
     fun findNearEntity(pos: Vec3, shooter: Entity) {
         if (this.level() is ServerLevel) {
             val entities = SeekTool.Builder(shooter)
-                .withinRange(pos, explosionRadius.toDouble())
+                .withinRange(pos, explosionRadiusValue.toDouble())
                 .notItsVehicle()
                 .baseFilter()
                 .noVehicle()
@@ -237,6 +237,13 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
     }
 
     override fun tick() {
+        val level = this.level()
+        if (tickCount > getLife()) {
+            if (level is ServerLevel) {
+                this.createAreaCloud(level, position())
+            }
+        }
+
         super.tick()
         if (deltaMovement.lengthSqr() > 25) {
             mediumTrail()

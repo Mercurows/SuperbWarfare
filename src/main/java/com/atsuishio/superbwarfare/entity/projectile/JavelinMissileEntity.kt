@@ -51,9 +51,9 @@ open class JavelinMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
         ModEntities.JAVELIN_MISSILE.get(), entity, level
     ) {
         this.noCulling = true
-        this.damage = damage
-        this.explosionDamage = explosionDamage
-        this.explosionRadius = explosionRadius
+        this.damageValue = damage
+        this.explosionDamageValue = explosionDamage
+        this.explosionRadiusValue = explosionRadius
         this.guideType = guideType
         this.durability = 50
         if (targetPos != null) {
@@ -81,7 +81,7 @@ open class JavelinMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
         if (this.level() is ServerLevel) {
             entity.forceHurt(
                 causeProjectileHitDamage(this.level().registryAccess(), this, owner),
-                this.damage * if (this.isTop) 1.25f else 1f
+                this.damageValue * if (this.isTop) 1.25f else 1f
             )
 
             if (entity is LivingEntity) {

@@ -30,7 +30,7 @@ import kotlin.math.max
 open class WhitePhosphorusProjectileEntity : FastThrowableProjectile {
     constructor(type: EntityType<out WhitePhosphorusProjectileEntity>, world: Level) : super(type, world)
 
-    constructor(entity: Entity?, level: Level?) : super(ModEntities.WHITE_PHOSPHORUS_PROJECTILE.get(), entity, level) {
+    constructor(entity: Entity?, level: Level) : super(ModEntities.WHITE_PHOSPHORUS_PROJECTILE.get(), entity, level) {
         this.noCulling = true
     }
 

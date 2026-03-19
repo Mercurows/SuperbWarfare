@@ -26,9 +26,9 @@ open class SmallRocketEntity(type: EntityType<out SmallRocketEntity>, level: Lev
 
     init {
         this.noCulling = true
-        this.damage = 140f
-        this.explosionDamage = 60f
-        this.explosionRadius = 5f
+        this.damageValue = 140f
+        this.explosionDamageValue = 60f
+        this.explosionRadiusValue = 5f
         this.durability = 20
     }
 
@@ -49,8 +49,8 @@ open class SmallRocketEntity(type: EntityType<out SmallRocketEntity>, level: Lev
             }
 
             entity.forceHurt(
-                causeProjectileHitDamage(this.level().registryAccess(), this, this.owner),
-                this.damage
+                causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()),
+                this.damageValue
             )
 
             if (entity is LivingEntity) {

@@ -23,7 +23,7 @@ class MediumRocketItem(
 ) : Item(
     Properties().stacksTo(4)
 ), DispenserLaunchable {
-    fun createProjectile(level: Level?, pos: Position): MediumRocketEntity {
+    fun createProjectile(level: Level, pos: Position): MediumRocketEntity {
         return MediumRocketEntity(
             ModEntities.MEDIUM_ROCKET.get(),
             pos.x(),

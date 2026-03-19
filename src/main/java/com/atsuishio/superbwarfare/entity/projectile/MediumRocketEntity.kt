@@ -49,7 +49,7 @@ open class MediumRocketEntity : FastThrowableProjectile, BasicGeoProjectileEntit
         pX: Double,
         pY: Double,
         pZ: Double,
-        pLevel: Level?,
+        pLevel: Level,
         damage: Float,
         radius: Float,
         explosionDamage: Float,
@@ -60,9 +60,9 @@ open class MediumRocketEntity : FastThrowableProjectile, BasicGeoProjectileEntit
         spreadAngle: Int
     ) : super(pEntityType, pX, pY, pZ, pLevel) {
         this.noCulling = true
-        this.damage = damage
-        this.explosionRadius = radius
-        this.explosionDamage = explosionDamage
+        this.damageValue = damage
+        this.explosionRadiusValue = radius
+        this.explosionDamageValue = explosionDamage
         this.fireProbability = fireProbability
         this.fireTime = fireTime
         this.type = type
@@ -79,20 +79,20 @@ open class MediumRocketEntity : FastThrowableProjectile, BasicGeoProjectileEntit
         return true
     }
 
-    override fun addAdditionalSaveData(pCompound: CompoundTag) {
-        super.addAdditionalSaveData(pCompound)
-        pCompound.putFloat("FireProbability", this.fireProbability)
-        pCompound.putInt("FireTime", this.fireTime)
+    override fun addAdditionalSaveData(compound: CompoundTag) {
+        super.addAdditionalSaveData(compound)
+        compound.putFloat("FireProbability", this.fireProbability)
+        compound.putInt("FireTime", this.fireTime)
     }
 
-    override fun readAdditionalSaveData(pCompound: CompoundTag) {
-        super.readAdditionalSaveData(pCompound)
-        if (pCompound.contains("FireProbability")) {
-            this.fireProbability = pCompound.getFloat("FireProbability")
+    override fun readAdditionalSaveData(compound: CompoundTag) {
+        super.readAdditionalSaveData(compound)
+        if (compound.contains("FireProbability")) {
+            this.fireProbability = compound.getFloat("FireProbability")
         }
 
-        if (pCompound.contains("FireTime")) {
-            this.fireTime = pCompound.getInt("FireTime")
+        if (compound.contains("FireTime")) {
+            this.fireTime = compound.getInt("FireTime")
         }
     }
 
@@ -100,15 +100,15 @@ open class MediumRocketEntity : FastThrowableProjectile, BasicGeoProjectileEntit
         return ModItems.SMALL_ROCKET.get()
     }
 
-    public override fun onHitBlock(blockHitResult: BlockHitResult) {
-        super.onHitBlock(blockHitResult)
+    public override fun onHitBlock(result: BlockHitResult) {
+        super.onHitBlock(result)
 
         val level = this.level()
         if (level is ServerLevel) {
-            val pos = blockHitResult.blockPos
+            val pos = result.blockPos
             val blockState = level.getBlockState(pos)
             if (type == Type.HE || type == Type.CM) {
-                causeExplode(blockHitResult.getLocation())
+                causeExplode(result.getLocation())
                 this.discard()
                 return
             }
@@ -137,12 +137,12 @@ open class MediumRocketEntity : FastThrowableProjectile, BasicGeoProjectileEntit
                     causeExplode(pos.center)
                     discard()
                 } else {
-                    ParticleTool.cannonHitParticles(level, blockHitResult.getLocation())
+                    ParticleTool.cannonHitParticles(level, result.getLocation())
                     val mediumRocket = MediumRocketEntity(ModEntities.MEDIUM_ROCKET.get(), level)
-                    mediumRocket.setPos(blockHitResult.getLocation().add(deltaMovement.normalize().scale(0.99)))
+                    mediumRocket.setPos(result.getLocation().add(deltaMovement.normalize().scale(0.99)))
                     mediumRocket.shoot(
                         deltaMovement.x,
-                        deltaMovement.y - gravity,
+                        deltaMovement.y - gravityValue,
                         deltaMovement.z,
                         (deltaMovement.length() * resistance).toFloat(),
                         0f
@@ -150,39 +150,39 @@ open class MediumRocketEntity : FastThrowableProjectile, BasicGeoProjectileEntit
                     mediumRocket.owner = owner
                     mediumRocket.durability(durability)
                     mediumRocket.setType(Type.AP)
-                    mediumRocket.setGravity(gravity)
-                    mediumRocket.setLife(life - tickCount)
-                    mediumRocket.setDamage((damage * resistance).toFloat())
-                    mediumRocket.setExplosionDamage((explosionDamage * resistance).toFloat())
-                    mediumRocket.setExplosionRadius((explosionRadius * resistance).toFloat())
+                    mediumRocket.setGravity(gravityValue)
+                    mediumRocket.setLife(lifeValue - tickCount)
+                    mediumRocket.setDamage((damageValue * resistance).toFloat())
+                    mediumRocket.setExplosionDamage((explosionDamageValue * resistance).toFloat())
+                    mediumRocket.setExplosionRadius((explosionRadiusValue * resistance).toFloat())
                     level.addFreshEntity(mediumRocket)
                     discard()
                 }
             } else {
-                destroyBlock(blockHitResult)
+                destroyBlock(result)
             }
         }
     }
 
-    public override fun onHitEntity(entityHitResult: EntityHitResult) {
-        super.onHitEntity(entityHitResult)
+    public override fun onHitEntity(result: EntityHitResult) {
+        super.onHitEntity(result)
         if (tickCount < 2) return
         val level = this.level()
         if (level is ServerLevel) {
-            val entity = entityHitResult.entity
+            val entity = result.entity
             val owner = this.owner
             if (owner != null && entity == owner.vehicle) return
 
             entity.forceHurt(
                 causeProjectileHitDamage(level.registryAccess(), this, owner),
-                this.damage
+                this.damageValue
             )
             if (entity is LivingEntity) {
                 entity.invulnerableTime = 0
             }
 
             if (entity is VehicleEntity) {
-                causeExplode(entityHitResult.getLocation())
+                causeExplode(result.getLocation())
                 this.discard()
             }
 
@@ -198,7 +198,7 @@ open class MediumRocketEntity : FastThrowableProjectile, BasicGeoProjectileEntit
                         if (rayTraceResultEntity.entity !== entity) {
                             target.forceHurt(
                                 causeProjectileHitDamage(level.registryAccess(), this, owner),
-                                (this.damage * resistance).toFloat()
+                                (this.damageValue * resistance).toFloat()
                             )
                             if (target is LivingEntity) {
                                 target.invulnerableTime = 0
@@ -208,7 +208,7 @@ open class MediumRocketEntity : FastThrowableProjectile, BasicGeoProjectileEntit
                 }
 
                 deltaMovement = deltaMovement.scale(resistance)
-                setDamage((this.damage * resistance).toFloat())
+                setDamage((this.damageValue * resistance).toFloat())
             }
         }
     }
@@ -252,9 +252,9 @@ open class MediumRocketEntity : FastThrowableProjectile, BasicGeoProjectileEntit
             repeat(spreadAmount) {
                 val gunGrenadeEntity = GunGrenadeEntity(
                     shooter, level,
-                    6 * damage / spreadAmount,
-                    5 * explosionDamage / spreadAmount,
-                    explosionRadius / 2
+                    6 * damageValue / spreadAmount,
+                    5 * explosionDamageValue / spreadAmount,
+                    explosionRadiusValue / 2
                 )
 
                 gunGrenadeEntity.setPos(position().x, position().y, position().z)

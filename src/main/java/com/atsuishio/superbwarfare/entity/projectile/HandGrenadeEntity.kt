@@ -26,14 +26,14 @@ import kotlin.math.min
 open class HandGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity {
     override fun getModel() = BedrockModelLoader.HAND_GRENADE_MODEL
 
-    constructor(type: EntityType<out HandGrenadeEntity>, level: Level?) : super(type, level) {
+    constructor(type: EntityType<out HandGrenadeEntity>, level: Level) : super(type, level) {
         this.noCulling = true
-        this.damage = 1f
-        this.explosionDamage = ExplosionConfig.M67_GRENADE_EXPLOSION_DAMAGE.get().toFloat()
-        this.explosionRadius = ExplosionConfig.M67_GRENADE_EXPLOSION_RADIUS.get().toFloat()
+        this.damageValue = 1f
+        this.explosionDamageValue = ExplosionConfig.M67_GRENADE_EXPLOSION_DAMAGE.get().toFloat()
+        this.explosionRadiusValue = ExplosionConfig.M67_GRENADE_EXPLOSION_RADIUS.get().toFloat()
     }
 
-    constructor(type: EntityType<out HandGrenadeEntity>, x: Double, y: Double, z: Double, level: Level?) : super(
+    constructor(type: EntityType<out HandGrenadeEntity>, x: Double, y: Double, z: Double, level: Level) : super(
         type,
         x,
         y,
@@ -41,16 +41,16 @@ open class HandGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity
         level
     ) {
         this.noCulling = true
-        this.damage = 1f
-        this.explosionDamage = ExplosionConfig.M67_GRENADE_EXPLOSION_DAMAGE.get().toFloat()
-        this.explosionRadius = ExplosionConfig.M67_GRENADE_EXPLOSION_RADIUS.get().toFloat()
+        this.damageValue = 1f
+        this.explosionDamageValue = ExplosionConfig.M67_GRENADE_EXPLOSION_DAMAGE.get().toFloat()
+        this.explosionRadiusValue = ExplosionConfig.M67_GRENADE_EXPLOSION_RADIUS.get().toFloat()
     }
 
-    constructor(entity: LivingEntity?, level: Level?) : super(ModEntities.HAND_GRENADE.get(), entity, level) {
+    constructor(entity: LivingEntity?, level: Level) : super(ModEntities.HAND_GRENADE.get(), entity, level) {
         this.noCulling = true
-        this.damage = 1f
-        this.explosionDamage = ExplosionConfig.M67_GRENADE_EXPLOSION_DAMAGE.get().toFloat()
-        this.explosionRadius = ExplosionConfig.M67_GRENADE_EXPLOSION_RADIUS.get().toFloat()
+        this.damageValue = 1f
+        this.explosionDamageValue = ExplosionConfig.M67_GRENADE_EXPLOSION_DAMAGE.get().toFloat()
+        this.explosionRadiusValue = ExplosionConfig.M67_GRENADE_EXPLOSION_RADIUS.get().toFloat()
     }
 
     override fun getDefaultItem(): Item {
@@ -107,7 +107,7 @@ open class HandGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity
                             sendPacketTo(owner, ClientIndicatorMessage(0, 5))
                         }
                     }
-                    entity.hurt(entity.damageSources().thrown(this, owner), this.damage)
+                    entity.hurt(entity.damageSources().thrown(this, owner), this.damageValue)
                 }
                 this.bounce(
                     Direction.getNearest(
@@ -128,7 +128,7 @@ open class HandGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity
             Direction.Axis.X -> this.deltaMovement = this.deltaMovement.multiply(-0.5, 0.75, 0.75)
             Direction.Axis.Y -> {
                 this.deltaMovement = this.deltaMovement.multiply(0.75, -0.25, 0.75)
-                if (this.deltaMovement.y() < this.getGravity()) {
+                if (this.deltaMovement.y() < this.getGravityValue()) {
                     this.deltaMovement = this.deltaMovement.multiply(1.0, 0.0, 1.0)
                 }
             }

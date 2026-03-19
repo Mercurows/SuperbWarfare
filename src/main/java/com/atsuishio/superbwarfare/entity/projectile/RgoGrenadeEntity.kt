@@ -19,13 +19,13 @@ import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.HitResult
 
 open class RgoGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity {
-    constructor(type: EntityType<out RgoGrenadeEntity>, level: Level?) : super(type, level) {
+    constructor(type: EntityType<out RgoGrenadeEntity>, level: Level) : super(type, level) {
         this.noCulling = true
-        this.explosionDamage = ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get().toFloat()
-        this.explosionRadius = ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get().toFloat()
+        this.explosionDamageValue = ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get().toFloat()
+        this.explosionRadiusValue = ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get().toFloat()
     }
 
-    constructor(type: EntityType<out RgoGrenadeEntity>, x: Double, y: Double, z: Double, level: Level?) : super(
+    constructor(type: EntityType<out RgoGrenadeEntity>, x: Double, y: Double, z: Double, level: Level) : super(
         type,
         x,
         y,
@@ -33,18 +33,18 @@ open class RgoGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity 
         level
     ) {
         this.noCulling = true
-        this.explosionDamage = ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get().toFloat()
-        this.explosionRadius = ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get().toFloat()
+        this.explosionDamageValue = ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get().toFloat()
+        this.explosionRadiusValue = ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get().toFloat()
     }
 
-    constructor(entity: LivingEntity?, level: Level?) : super(ModEntities.RGO_GRENADE.get(), entity, level) {
+    constructor(entity: LivingEntity?, level: Level) : super(ModEntities.RGO_GRENADE.get(), entity, level) {
         this.noCulling = true
-        this.explosionDamage = ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get().toFloat()
-        this.explosionRadius = ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get().toFloat()
+        this.explosionDamageValue = ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get().toFloat()
+        this.explosionRadiusValue = ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get().toFloat()
     }
 
-    constructor(entity: LivingEntity?, level: Level?, life: Int) : this(entity, level) {
-        this.life = life
+    constructor(entity: LivingEntity?, level: Level, life: Int) : this(entity, level) {
+        this.lifeValue = life
     }
 
     override fun getDefaultItem(): Item {
@@ -62,7 +62,7 @@ open class RgoGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity 
                     if (block is BellBlock) {
                         block.attemptToRing(this.level(), resultPos, blockResult.direction)
                     }
-                    this.customExplode(this.explosionDamage, this.explosionRadius, 1.2f)
+                    this.customExplode(this.explosionDamageValue, this.explosionRadiusValue, 1.2f)
                 }
 
                 HitResult.Type.ENTITY -> {
@@ -70,7 +70,7 @@ open class RgoGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity 
                     val entity = entityResult.entity
                     if (this.owner != null && this.owner!!.vehicle != null && entity === this.owner!!.vehicle) return
                     if (entity !is DroneEntity) {
-                        this.customExplode(this.explosionDamage, this.explosionRadius, 1.2f)
+                        this.customExplode(this.explosionDamageValue, this.explosionRadiusValue, 1.2f)
                     }
                 }
 
