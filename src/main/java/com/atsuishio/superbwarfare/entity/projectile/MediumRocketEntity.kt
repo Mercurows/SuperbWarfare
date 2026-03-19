@@ -295,5 +295,5 @@ open class MediumRocketEntity : FastThrowableProjectile, BasicGeoProjectileEntit
         this.spreadAngle = spreadAngle
     }
 
-    override fun getModel() = BedrockModelLoader.MEDIUM_ROCKET
+    override fun getModel() = BedrockModelLoader.MEDIUM_ROCKET_MODEL
 }

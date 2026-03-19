@@ -1,301 +1,316 @@
-package com.atsuishio.superbwarfare.entity.projectile;
+package com.atsuishio.superbwarfare.entity.projectile
 
-import com.atsuishio.superbwarfare.init.*;
-import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
-import com.atsuishio.superbwarfare.tools.CustomExplosion;
-import com.atsuishio.superbwarfare.tools.DamageHandler;
-import com.atsuishio.superbwarfare.tools.ParticleTool;
-import com.atsuishio.superbwarfare.tools.SeekTool;
-import com.google.common.collect.Sets;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.AreaEffectCloud;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.PotionContents;
-import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BellBlock;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.PacketDistributor;
-import org.jetbrains.annotations.NotNull;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.animation.AnimatableManager;
-import software.bernie.geckolib.util.GeckoLibUtil;
+import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
+import com.atsuishio.superbwarfare.init.ModEntities
+import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.init.ModMobEffects
+import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
+import com.atsuishio.superbwarfare.resource.BedrockModelLoader
+import com.atsuishio.superbwarfare.tools.CustomExplosion
+import com.atsuishio.superbwarfare.tools.ParticleTool
+import com.atsuishio.superbwarfare.tools.SeekTool
+import com.atsuishio.superbwarfare.tools.forceHurt
+import net.minecraft.core.component.DataComponents
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.ListTag
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.server.level.ServerLevel
+import net.minecraft.server.level.ServerPlayer
+import net.minecraft.sounds.SoundEvent
+import net.minecraft.sounds.SoundSource
+import net.minecraft.world.effect.MobEffectInstance
+import net.minecraft.world.entity.AreaEffectCloud
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.alchemy.Potion
+import net.minecraft.world.item.alchemy.PotionContents
+import net.minecraft.world.item.alchemy.Potions
+import net.minecraft.world.level.ClipContext
+import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.BellBlock
+import net.minecraft.world.phys.BlockHitResult
+import net.minecraft.world.phys.EntityHitResult
+import net.minecraft.world.phys.HitResult
+import net.minecraft.world.phys.Vec3
+import net.neoforged.neoforge.network.PacketDistributor
+import java.util.*
+import kotlin.math.max
 
-import java.util.Objects;
-import java.util.Set;
-
-public class MortarShellEntity extends FastThrowableProjectile implements GeoEntity {
-
-    public enum Type {
+open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity {
+    enum class Type {
         NORMAL, WP
     }
 
-    private Type type = Type.NORMAL;
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private Potion potion = Potions.WATER.value();
-    private final Set<MobEffectInstance> effects = Sets.newHashSet();
+    private var type: Type? = Type.NORMAL
+    private var potion: Potion? = Potions.WATER.value()
+    private val effects: MutableSet<MobEffectInstance> = hashSetOf()
 
-    public MortarShellEntity(EntityType<? extends MortarShellEntity> type, Level level) {
-        super(type, level);
-        this.noCulling = true;
-        this.damage = 60;
-        this.explosionDamage = 100;
-        this.explosionRadius = 8;
+    constructor(type: EntityType<out MortarShellEntity>, level: Level) : super(type, level) {
+        this.noCulling = true
+        this.damage = 60f
+        this.explosionDamage = 100f
+        this.explosionRadius = 8f
     }
 
-    public MortarShellEntity(EntityType<? extends MortarShellEntity> type, double x, double y, double z, Level level, float gravity) {
-        super(type, x, y, z, level);
-        this.noCulling = true;
-        this.damage = 60;
-        this.explosionDamage = 100;
-        this.explosionRadius = 8;
-        this.gravity = gravity;
+    constructor(
+        type: EntityType<out MortarShellEntity>,
+        x: Double,
+        y: Double,
+        z: Double,
+        level: Level,
+        gravity: Float
+    ) : super(type, x, y, z, level) {
+        this.noCulling = true
+        this.damage = 60f
+        this.explosionDamage = 100f
+        this.explosionRadius = 8f
+        this.gravity = gravity
     }
 
-    public MortarShellEntity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
-        super(ModEntities.MORTAR_SHELL.get(), entity, level);
-        this.noCulling = true;
-        this.damage = damage;
-        this.explosionDamage = explosionDamage;
-        this.explosionRadius = explosionRadius;
+    constructor(
+        entity: LivingEntity?,
+        level: Level,
+        damage: Float,
+        explosionDamage: Float,
+        explosionRadius: Float
+    ) : super(
+        ModEntities.MORTAR_SHELL.get(), entity, level
+    ) {
+        this.noCulling = true
+        this.damage = damage
+        this.explosionDamage = explosionDamage
+        this.explosionRadius = explosionRadius
     }
 
-    public void setEffectsFromItem(ItemStack stack) {
-        if (stack.is(ModItems.POTION_MORTAR_SHELL.get())) {
-            var potionContents = stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
-            this.potion = potionContents.potion().orElse(Potions.WATER).value();
+    fun setEffectsFromItem(stack: ItemStack) {
+        if (stack.`is`(ModItems.POTION_MORTAR_SHELL.get())) {
+            val potionContents =
+                stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY)
+            this.potion = potionContents.potion().orElse(Potions.WATER).value()
 
-            for (MobEffectInstance mobeffectinstance : potionContents.getAllEffects()) {
-                this.effects.add(new MobEffectInstance(mobeffectinstance));
+            for (instance in potionContents.allEffects) {
+                this.effects.add(MobEffectInstance(instance))
             }
-        } else if (stack.is(ModItems.MORTAR_SHELL.get())) {
-            this.potion = Potions.WATER.value();
-            this.effects.clear();
+        } else if (stack.`is`(ModItems.MORTAR_SHELL.get())) {
+            this.potion = Potions.WATER.value()
+            this.effects.clear()
         }
     }
 
-    public void setType(Type type) {
-        this.type = type;
+    fun setType(type: Type?) {
+        this.type = type
     }
 
-    @Override
-    public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
-        super.addAdditionalSaveData(pCompound);
+    override fun addAdditionalSaveData(pCompound: CompoundTag) {
+        super.addAdditionalSaveData(pCompound)
 
-        if (this.potion != Potions.WATER.value()) {
-            pCompound.putString("Potion", Objects.requireNonNullElse(BuiltInRegistries.POTION.getKey(this.potion), "empty").toString());
+        if (this.potion != Potions.WATER.value() && this.potion != null) {
+            pCompound.putString(
+                "Potion",
+                Objects.requireNonNullElse(
+                    BuiltInRegistries.POTION.getKey(this.potion!!),
+                    "empty"
+                ).toString()
+            )
         }
 
         if (!this.effects.isEmpty()) {
-            ListTag listtag = new ListTag();
-            for (MobEffectInstance mobeffectinstance : this.effects) {
-                listtag.add(mobeffectinstance.save());
+            val listTag = ListTag()
+            for (instance in this.effects) {
+                listTag.add(instance.save())
             }
-            pCompound.put("CustomPotionEffects", listtag);
+            pCompound.put("CustomPotionEffects", listTag)
         }
     }
 
-    @Override
-    public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
-        super.readAdditionalSaveData(pCompound);
+    override fun readAdditionalSaveData(pCompound: CompoundTag) {
+        super.readAdditionalSaveData(pCompound)
 
         if (pCompound.contains("Potion", 8)) {
-            var tagName = pCompound.getString("Potion");
-            this.potion = BuiltInRegistries.POTION.get(ResourceLocation.tryParse(tagName));
+            val tagName = pCompound.getString("Potion")
+            this.potion = BuiltInRegistries.POTION.get(ResourceLocation.parse(tagName))
         }
 
-        var listTag = pCompound.getList("CustomPotionEffects", 10);
-        for (int i = 0; i < listTag.size(); ++i) {
-            CompoundTag compoundtag = listTag.getCompound(i);
-            MobEffectInstance instance = MobEffectInstance.load(compoundtag);
+        val listTag = pCompound.getList("CustomPotionEffects", 10)
+        for (i in listTag.indices) {
+            val compoundtag = listTag.getCompound(i)
+            val instance = MobEffectInstance.load(compoundtag)
             if (instance != null) {
-                this.effects.add(instance);
+                this.effects.add(instance)
             }
         }
     }
 
-    @Override
-    protected @NotNull Item getDefaultItem() {
-        return ModItems.MORTAR_SHELL.get();
+    override fun getDefaultItem(): Item {
+        return ModItems.MORTAR_SHELL.get()
     }
 
-    @Override
-    public void onHitEntity(@NotNull EntityHitResult entityHitResult) {
-        super.onHitEntity(entityHitResult);
-        Entity entity = entityHitResult.getEntity();
-        if (this.getOwner() != null && this.getOwner().getVehicle() != null && entity == this.getOwner().getVehicle())
-            return;
-        if (this.level() instanceof ServerLevel && this.tickCount > 1) {
-            if (this.getOwner() instanceof LivingEntity living) {
-                if (!living.level().isClientSide() && living instanceof ServerPlayer player) {
-                    living.level().playSound(null, living.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1, 1);
+    public override fun onHitEntity(entityHitResult: EntityHitResult) {
+        super.onHitEntity(entityHitResult)
+        val entity = entityHitResult.entity
+        val owner = this.owner
+        if (owner != null && owner.vehicle != null && entity == owner.vehicle) return
+        if (this.level() is ServerLevel && this.tickCount > 1) {
+            if (owner is LivingEntity) {
+                if (owner is ServerPlayer) {
+                    owner.level()
+                        .playSound(null, owner.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1f, 1f)
 
-                    PacketDistributor.sendToPlayer(player, new ClientIndicatorMessage(0, 5));
+                    PacketDistributor.sendToPlayer(owner, ClientIndicatorMessage(0, 5))
                 }
             }
 
-            DamageHandler.doDamage(entity, ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()), this.damage);
+            entity.forceHurt(
+                causeProjectileHitDamage(this.level().registryAccess(), this, owner),
+                this.damage
+            )
 
             if (type == Type.WP) {
-                findNearEntity(entityHitResult.getLocation(), getOwner());
+                findNearEntity(entityHitResult.getLocation(), getOwner()!!)
             }
 
-            if (this.level() instanceof ServerLevel) {
-                causeExplode(entityHitResult.getLocation());
-                this.createAreaCloud(this.level(), position());
+            if (this.level() is ServerLevel) {
+                causeExplode(entityHitResult.getLocation())
+                this.createAreaCloud(this.level(), position())
             }
-            this.discard();
+            this.discard()
         }
     }
 
-    @Override
-    public void onHitBlock(@NotNull BlockHitResult blockHitResult) {
-        super.onHitBlock(blockHitResult);
-        BlockPos resultPos = blockHitResult.getBlockPos();
-        BlockState state = this.level().getBlockState(resultPos);
+    public override fun onHitBlock(blockHitResult: BlockHitResult) {
+        super.onHitBlock(blockHitResult)
+        val resultPos = blockHitResult.blockPos
+        val state = this.level().getBlockState(resultPos)
 
-        if (state.getBlock() instanceof BellBlock bell) {
-            bell.attemptToRing(this.level(), resultPos, blockHitResult.getDirection());
+        val block = state.block
+        if (block is BellBlock) {
+            block.attemptToRing(this.level(), resultPos, blockHitResult.direction)
         }
 
-        if (type == Type.WP) {
-            findNearEntity(blockHitResult.getLocation(), getOwner());
+        if (type == Type.WP && owner != null) {
+            findNearEntity(blockHitResult.getLocation(), owner!!)
         }
 
-        if (!this.level().isClientSide() && this.level() instanceof ServerLevel) {
+        if (!this.level().isClientSide() && this.level() is ServerLevel) {
             if (this.tickCount > 1) {
-                causeExplode(blockHitResult.getLocation());
-                this.createAreaCloud(this.level(), position());
+                causeExplode(blockHitResult.getLocation())
+                this.createAreaCloud(this.level(), position())
             }
         }
-        this.discard();
+        this.discard()
     }
 
-    public void findNearEntity(Vec3 pos, Entity shooter) {
-        if (this.level() instanceof ServerLevel) {
+    fun findNearEntity(pos: Vec3, shooter: Entity) {
+        if (this.level() is ServerLevel) {
+            val entities = SeekTool.Builder(shooter)
+                .withinRange(pos, explosionRadius.toDouble())
+                .notItsVehicle()
+                .baseFilter()
+                .noVehicle()
+                .build()
 
-            var entities = new SeekTool.Builder(shooter)
-                    .withinRange(pos, explosionRadius)
-                    .notItsVehicle()
-                    .baseFilter()
-                    .noVehicle()
-                    .build();
+            for (e in entities) {
+                val dis = pos.distanceTo(e.position())
 
-            for (Entity e : entities) {
-                var dis = pos.distanceTo(e.position());
-
-                if (e instanceof LivingEntity living && checkNoClip(e, pos)) {
-                    if (living instanceof Player player && player.isCreative()) {
-                        return;
+                if (e is LivingEntity && checkNoClip(e, pos)) {
+                    if (e is Player && e.isCreative) {
+                        return
                     }
-                    if (!living.level().isClientSide()) {
-                        living.addEffect(new MobEffectInstance(ModMobEffects.PHOSPHORUS_FIRE, (int) (300 - 30 * dis), (int) Math.max(explosionRadius - dis, 0)), this.getOwner());
+                    if (!e.level().isClientSide()) {
+                        e.addEffect(
+                            MobEffectInstance(
+                                ModMobEffects.PHOSPHORUS_FIRE,
+                                (300 - 30 * dis).toInt(),
+                                max(explosionRadius - dis, 0.0).toInt()
+                            ), this.owner
+                        )
                     }
                 }
             }
         }
     }
 
-    @Override
-    public void tick() {
-        super.tick();
-        if (getDeltaMovement().lengthSqr() > 25) {
-            mediumTrail();
+    override fun tick() {
+        super.tick()
+        if (deltaMovement.lengthSqr() > 25) {
+            mediumTrail()
         }
 
         if (type == Type.WP) {
-            BlockHitResult hitResult = level().clip(new ClipContext(
+            val hitResult = level().clip(
+                ClipContext(
                     position(),
-                    position().add(getDeltaMovement().scale(8)),
+                    position().add(deltaMovement.scale(8.0)),
                     ClipContext.Block.VISUAL,
                     ClipContext.Fluid.ANY,
                     this
-            ));
+                )
+            )
 
-            if (hitResult.getType() == HitResult.Type.BLOCK) {
-                releaseWp(getOwner());
+            if (hitResult.type == HitResult.Type.BLOCK) {
+                releaseWp(owner)
             }
         }
     }
 
-    private void releaseWp(Entity shooter) {
-        if (level() instanceof ServerLevel serverLevel) {
-            ParticleTool.spawnMediumExplosionParticles(serverLevel, position());
-            for (int index0 = 0; index0 < 32; index0++) {
-                WhitePhosphorusProjectileEntity whitePhosphorusProjectileEntity = new WhitePhosphorusProjectileEntity(shooter, serverLevel);
+    private fun releaseWp(shooter: Entity?) {
+        val level = this.level()
+        if (level is ServerLevel) {
+            ParticleTool.spawnMediumExplosionParticles(level, position())
+            repeat(31) {
+                val whitePhosphorusProjectileEntity = WhitePhosphorusProjectileEntity(shooter, level)
 
-                whitePhosphorusProjectileEntity.setPos(position().x, position().y, position().z);
-                whitePhosphorusProjectileEntity.shoot(getDeltaMovement().x, getDeltaMovement().y, getDeltaMovement().z, (float) (random.nextFloat() * 0.05f + 0.1f * getDeltaMovement().length()),
-                        35);
-                serverLevel.addFreshEntity(whitePhosphorusProjectileEntity);
+                whitePhosphorusProjectileEntity.setPos(position().x, position().y, position().z)
+                whitePhosphorusProjectileEntity.shoot(
+                    deltaMovement.x,
+                    deltaMovement.y,
+                    deltaMovement.z,
+                    (random.nextFloat() * 0.05f + 0.1f * deltaMovement.length()).toFloat(),
+                    35f
+                )
+                level.addFreshEntity(whitePhosphorusProjectileEntity)
             }
-            discard();
+            discard()
         }
     }
 
-    @Override
-    public CustomExplosion.@NotNull Builder buildExplosion(@NotNull Vec3 vec3) {
-        return super.buildExplosion(vec3).damageMultiplier(1.25F);
+    override fun buildExplosion(vec3: Vec3): CustomExplosion.Builder {
+        return super.buildExplosion(vec3).damageMultiplier(1.25f)
     }
 
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-    }
+    fun createAreaCloud(level: Level, pos: Vec3) {
+        if (this.potion === Potions.WATER.value()) return
 
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
-    }
-
-    public void createAreaCloud(Level level, Vec3 pos) {
-        if (this.potion == Potions.WATER.value()) return;
-
-        AreaEffectCloud cloud = new AreaEffectCloud(level, pos.x, pos.y, pos.z);
-        for (MobEffectInstance effect : this.effects) {
-            cloud.addEffect(effect);
+        val cloud = AreaEffectCloud(level, pos.x, pos.y, pos.z)
+        for (effect in this.effects) {
+            cloud.addEffect(effect)
         }
-        cloud.setDuration((int) this.explosionDamage);
-        cloud.setRadius(this.explosionRadius);
-        if (this.getOwner() instanceof LivingEntity living) {
-            cloud.setOwner(living);
+        cloud.duration = this.explosionDamage.toInt()
+        cloud.radius = this.explosionRadius
+        val owner = this.owner
+        if (owner is LivingEntity) {
+            cloud.owner = owner
         }
-        level.addFreshEntity(cloud);
+        level.addFreshEntity(cloud)
     }
 
-    @Override
-    public @NotNull SoundEvent getSound() {
-        return ModSounds.SHELL_FLY.get();
+    override fun getSound(): SoundEvent {
+        return ModSounds.SHELL_FLY.get()
     }
 
-    @Override
-    public float getVolume() {
-        return 0.06f;
+    override fun getVolume(): Float {
+        return 0.06f
     }
 
-    @Override
-    public boolean forceLoadChunk() {
-        return true;
+    override fun forceLoadChunk(): Boolean {
+        return true
     }
+
+    override fun getModel() = BedrockModelLoader.MORTAR_SHELL_MODEL
 }

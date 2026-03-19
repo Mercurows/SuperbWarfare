@@ -124,6 +124,6 @@ open class RpgRocketStandardEntity : FastThrowableProjectile, BasicGeoProjectile
         return 0.2f
     }
 
-    override fun getModel() = BedrockModelLoader.RPG_ROCKET_STANDARD
+    override fun getModel() = BedrockModelLoader.RPG_ROCKET_STANDARD_MODEL
     override fun getHiddenTicks() = 1
 }

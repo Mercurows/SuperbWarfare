@@ -123,5 +123,5 @@ open class IglaMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
         return 0.4f
     }
 
-    override fun getModel() = BedrockModelLoader.IGLA_9K38_MISSILE
+    override fun getModel() = BedrockModelLoader.IGLA_9K38_MISSILE_MODEL
 }

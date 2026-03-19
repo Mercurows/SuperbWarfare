@@ -121,7 +121,7 @@ open class RpgRocketTBGEntity : FastThrowableProjectile, BasicGeoProjectileEntit
         return ModSounds.ROCKET_FLY.get()
     }
 
-    override fun getModel() = BedrockModelLoader.RPG_ROCKET_TBG
+    override fun getModel() = BedrockModelLoader.RPG_ROCKET_TBG_MODEL
 
     override fun getHiddenTicks() = 1
 }

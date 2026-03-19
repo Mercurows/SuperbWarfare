@@ -78,7 +78,7 @@ open class GunGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity 
         return false
     }
 
-    override fun getModel() = BedrockModelLoader.GUN_GRENADE
+    override fun getModel() = BedrockModelLoader.GUN_GRENADE_MODEL
 
     override fun getHiddenTicks() = 1
 }

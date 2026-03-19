@@ -98,5 +98,5 @@ open class Ru9m336MissileEntity(type: EntityType<out Ru9m336MissileEntity>, leve
         return 0.4f
     }
 
-    override fun getModel() = BedrockModelLoader.RU_9M336_MISSILE
+    override fun getModel() = BedrockModelLoader.RU_9M336_MISSILE_MODEL
 }

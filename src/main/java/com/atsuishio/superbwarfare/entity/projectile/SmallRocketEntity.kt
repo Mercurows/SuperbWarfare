@@ -22,7 +22,7 @@ import net.minecraft.world.phys.EntityHitResult
 
 open class SmallRocketEntity(type: EntityType<out SmallRocketEntity>, level: Level) :
     FastThrowableProjectile(type, level), BasicGeoProjectileEntity {
-    override fun getModel() = BedrockModelLoader.SMALL_ROCKET
+    override fun getModel() = BedrockModelLoader.SMALL_ROCKET_MODEL
 
     init {
         this.noCulling = true

@@ -353,7 +353,7 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
         this.spreadAngle = spreadAngle
     }
 
-    override fun getModel() = BedrockModelLoader.CANNON_SHELL
+    override fun getModel() = BedrockModelLoader.CANNON_SHELL_MODEL
 
     override fun getHiddenTicks() = 1
 }

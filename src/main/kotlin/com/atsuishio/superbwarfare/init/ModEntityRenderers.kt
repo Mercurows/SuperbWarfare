@@ -25,7 +25,7 @@ object ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.RPG_ROCKET_STANDARD.get(), ::BasicProjectileRenderer)
         event.registerEntityRenderer(ModEntities.SMALL_ROCKET.get(), ::BasicProjectileRenderer)
         event.registerEntityRenderer(ModEntities.MEDIUM_ROCKET.get(), ::BasicProjectileRenderer)
-        event.registerEntityRenderer(ModEntities.MORTAR_SHELL.get(), ::MortarShellRenderer)
+        event.registerEntityRenderer(ModEntities.MORTAR_SHELL.get(), ::BasicProjectileRenderer)
         event.registerEntityRenderer(ModEntities.CANNON_SHELL.get(), ::BasicProjectileRenderer)
         event.registerEntityRenderer(ModEntities.PROJECTILE.get(), ::ProjectileEntityRenderer)
         event.registerEntityRenderer(ModEntities.MK_42.get(), ::Mk42Renderer)
