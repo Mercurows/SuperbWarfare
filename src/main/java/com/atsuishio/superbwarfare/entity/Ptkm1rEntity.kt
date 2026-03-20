@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.tools.CustomExplosion
+import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.SeekTool
 import net.minecraft.commands.arguments.EntityAnchorArgument
@@ -37,6 +38,7 @@ import java.util.*
 
 open class Ptkm1rEntity : Entity, OwnableEntity {
     var aimingTime: Int = 0
+    var target: String? = "none"
     open val animationInstance: Ptkm1rAnimationInstance? =
         if (this.level().isClientSide) Ptkm1rAnimationInstance(this) else null
 
@@ -182,7 +184,7 @@ open class Ptkm1rEntity : Entity, OwnableEntity {
             )
         }
 
-        if (tickCount > 20 && onGround() && tickCount % 10 == 0) {
+        if (tickCount > 20 && onGround()) {
             findTarget()
         }
 
@@ -190,35 +192,41 @@ open class Ptkm1rEntity : Entity, OwnableEntity {
     }
 
     open fun findTarget() {
-        val range = 40
-        var target: Entity? = null
+        if (target.equals("none") && tickCount % 10 == 0) {
+            val range = 40
+            val list = SeekTool.Builder(this)
+                .withinRange(range.toDouble())
+                .build()
+            for (entity in list) {
+                val condition =
+                    entity.onGround()
+                            && this.getOwner() !== entity && !(entity is Player && (entity.isCreative || entity.isSpectator))
+                            && (this.getOwner() != null
+                            && !SeekTool.IS_FRIENDLY.test(this.getOwner(), entity)
+                            && entity !== this.getOwner()!!.vehicle)
+                            && !entity.isShiftKeyDown
+                            && ((entity.boundingBox.getSize() > 1.5 || entity is VehicleEntity || entity is SenpaiEntity) && entity.deltaMovement.lengthSqr() > 0.009)
+                if (!condition) continue
 
-        val list = SeekTool.Builder(this)
-            .withinRange(range.toDouble())
-            .build()
-
-        for (entity in list) {
-            val condition =
-                entity.onGround()
-                        && this.getOwner() !== entity && !(entity is Player && (entity.isCreative || entity.isSpectator))
-                        && (this.getOwner() != null
-                        && !SeekTool.IS_FRIENDLY.test(this.getOwner(), entity)
-                        && entity !== this.getOwner()!!.vehicle)
-                        && !entity.isShiftKeyDown
-                        && ((entity.boundingBox.getSize() > 1.5 || entity is VehicleEntity || entity is SenpaiEntity) && entity.deltaMovement.lengthSqr() > 0.009)
-            if (!condition) continue
-
-            target = entity
-            break
+                target = entity.stringUUID
+                break
+            }
         }
 
-        if (target != null) {
+        val targetEntity = EntityFindUtil.findEntity(level(), target)
+
+        if (targetEntity == null) {
+            target = "none"
+            if (aimingTime > 0) {
+                aimingTime--
+            }
+        } else {
             val targetXRot: Float
-            val distance = target.distanceTo(this).toDouble()
+            val distance = targetEntity.distanceTo(this).toDouble()
 
             if (distance < range) {
                 targetXRot = -40f
-                this.look(target.position())
+                this.look(targetEntity.position())
                 if (distance < range - 5) {
                     aimingTime++
                 } else if (aimingTime > 0) {
@@ -233,10 +241,8 @@ open class Ptkm1rEntity : Entity, OwnableEntity {
             this.xRot += 0.25f * diffX
 
             if (aimingTime > 10) {
-                shoot(target, distance)
+                shoot(targetEntity, distance)
             }
-        } else if (aimingTime > 0) {
-            aimingTime--
         }
     }
 
