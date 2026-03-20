@@ -39,7 +39,6 @@ class Ptkm1rRenderer(renderManager: EntityRendererProvider.Context) : EntityRend
         val ani = entity.animationInstance ?: return
 
         poseStack.pushPose()
-        poseStack.mulPose(Axis.YP.rotationDegrees(-entity.getViewYRot(partialTick) + 180f))
 
         val renderType = RenderType.entityTranslucent(getTextureLocation(entity))
         val vertexConsumer = buffer.getBuffer(renderType)
@@ -48,24 +47,11 @@ class Ptkm1rRenderer(renderManager: EntityRendererProvider.Context) : EntityRend
         ani.tick()
         model.applyPose(BLENDER.blend(model.bindPose, ani.getPose()))
 
-        // TODO 把这个轴调了
         val bodyBone = model.getBone("body")
-        if (bodyBone != null) {
-            bodyBone.rotation.mul(Axis.YP.rotationDegrees(-entity.yRot))
-        }
+        bodyBone?.rotation?.rotationY(-entityYaw * Mth.DEG_TO_RAD)
 
         val zhuBone = model.getBone("zhu2")
-        if (zhuBone != null) {
-            zhuBone.rotation.mul(
-                Axis.XP.rotation(
-                    0.5f * Mth.lerp(
-                        partialTick,
-                        entity.xRotO,
-                        entity.xRot
-                    )
-                )
-            )
-        }
+        zhuBone?.rotation?.rotationX(-0.5f * Mth.lerp(partialTick, entity.xRotO, entity.xRot) * Mth.DEG_TO_RAD)
 
         model.renderToBuffer(
             poseStack,
