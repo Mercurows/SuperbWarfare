@@ -194,8 +194,9 @@ open class Ptkm1rEntity : Entity, OwnableEntity {
     }
 
     open fun findTarget() {
+        val range = 40
         if (target.equals("none") && tickCount % 10 == 0) {
-            val range = 40
+
             val list = SeekTool.Builder(this)
                 .withinRange(range.toDouble())
                 .build()
