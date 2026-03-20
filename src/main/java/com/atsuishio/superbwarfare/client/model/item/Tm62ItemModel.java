@@ -19,6 +19,6 @@ public class Tm62ItemModel extends GeoModel<Tm62Item> {
 
     @Override
     public ResourceLocation getTextureResource(Tm62Item animatable) {
-        return Mod.loc("textures/entity/tm_62.png");
+        return Mod.loc("textures/bedrock/projectile/tm_62.png");
     }
 }
