@@ -33,6 +33,7 @@ object BedrockModelLoader {
     val DPS_GENERATOR_MA = registerCommonModelAndAnimation("entity/dps_generator")
     val MK_82_MA = registerCommonModelAndAnimation("projectile/mk_82")
     val SWARM_DRONE_MA = registerCommonModelAndAnimation("projectile/swarm_drone")
+    val PTKM_1R_MA = registerCommonModelAndAnimation("projectile/ptkm_1r")
 
     // armor models
     val GE_HELMET_M_35_MODEL = registerArmorModel("armor/ge_helmet_m_35")
@@ -66,6 +67,9 @@ object BedrockModelLoader {
     val TASER_BULLET_MODEL = registerCommonModel("projectile/taser_bullet")
     val CLAYMORE_MODEL = registerCommonModel("projectile/claymore")
     val MEDICAL_KIT_MODEL = registerCommonModel("projectile/medical_kit")
+    val BLU_43_MODEL = registerCommonModel("projectile/blu_43")
+    val C4_MODEL = registerCommonModel("projectile/c4")
+    val TM_62_MODEL = registerCommonModel("projectile/tm_62")
 
     val COMMON_LOADER: RawResourceLoader = object : RawResourceLoader {
         override fun <T> load(inputStream: InputStream, clazz: Class<T>): T {

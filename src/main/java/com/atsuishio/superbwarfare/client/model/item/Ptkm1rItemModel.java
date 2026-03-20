@@ -19,6 +19,6 @@ public class Ptkm1rItemModel extends GeoModel<Ptkm1rItem> {
 
     @Override
     public ResourceLocation getTextureResource(Ptkm1rItem animatable) {
-        return Mod.loc("textures/entity/ptkm_1r.png");
+        return Mod.loc("textures/item/ptkm_1r.png");
     }
 }
