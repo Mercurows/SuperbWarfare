@@ -295,11 +295,11 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
         fun serverTick(level: Level, pos: BlockPos, state: BlockState, entity: BlueprintResearchTableBlockEntity) {
             if (entity.fuel < MAX_FUEL) {
                 val fuelItem = entity.getItem(SLOT_FUEL)
-                if (fuelItem.isEmpty || !fuelItem.`is`(ModTags.Items.RESEARCH_FUEL)) return
-
-                fuelItem.shrink(1)
-                entity.fuel++
-                entity.setChanged()
+                if (!fuelItem.isEmpty && fuelItem.`is`(ModTags.Items.RESEARCH_FUEL)) {
+                    fuelItem.shrink(1)
+                    entity.fuel++
+                    entity.setChanged()
+                }
             }
 
             if (entity.fuel > 0 && entity.hasRecipe()) {
