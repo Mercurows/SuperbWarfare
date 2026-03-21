@@ -14,8 +14,12 @@ import net.minecraft.resources.ResourceLocation
 import org.joml.Matrix3f
 import org.joml.Matrix4f
 
-class FlareDecoyEntityRenderer(pContext: EntityRendererProvider.Context) : EntityRenderer<com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity>(pContext) {
-    override fun getBlockLightLevel(pEntity: com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity, pPos: BlockPos): Int {
+class FlareDecoyEntityRenderer(pContext: EntityRendererProvider.Context) :
+    EntityRenderer<com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity>(pContext) {
+    override fun getBlockLightLevel(
+        pEntity: com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity,
+        pPos: BlockPos
+    ): Int {
         return 15
     }
 
@@ -43,7 +47,7 @@ class FlareDecoyEntityRenderer(pContext: EntityRendererProvider.Context) : Entit
     }
 
     override fun getTextureLocation(entity: com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity): ResourceLocation {
-        return TEXTURES[(entity.tickCount % 8 + 1)]
+        return TEXTURES[entity.tickCount % 8]
     }
 
     companion object {
@@ -61,6 +65,6 @@ class FlareDecoyEntityRenderer(pContext: EntityRendererProvider.Context) : Entit
                 .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pLightmapUV).normal(pNormal, 0f, 1f, 0f).endVertex()
         }
 
-        val TEXTURES: List<ResourceLocation> = ArrayList((1..8).map { loc("textures/particle/fire_star_$it.png") })
+        val TEXTURES: List<ResourceLocation> = ArrayList((0..7).map { loc("textures/particle/fire_star_$it.png") })
     }
 }

@@ -44,7 +44,7 @@ class WhitePhosphorusProjectileEntityRenderer(pContext: EntityRendererProvider.C
     }
 
     override fun getTextureLocation(entity: com.atsuishio.superbwarfare.entity.projectile.WhitePhosphorusProjectileEntity): ResourceLocation {
-        return TEXTURES[(entity.tickCount % 8 + 1)]
+        return TEXTURES[entity.tickCount % 8]
     }
 
     companion object {
@@ -62,6 +62,6 @@ class WhitePhosphorusProjectileEntityRenderer(pContext: EntityRendererProvider.C
                 .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pLightmapUV).normal(pNormal, 0f, 1f, 0f).endVertex()
         }
 
-        val TEXTURES: List<ResourceLocation> = ArrayList((1..8).map { loc("textures/particle/fire_star_$it.png") })
+        val TEXTURES: List<ResourceLocation> = ArrayList((0..7).map { loc("textures/particle/fire_star_$it.png") })
     }
 }
