@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.entity.Tm62Entity
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.item.DispenserLaunchable
+import com.atsuishio.superbwarfare.tools.mc
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer
 import net.minecraft.core.dispenser.BlockSource
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior
@@ -23,32 +24,23 @@ import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent
 import org.joml.Math
-import software.bernie.geckolib.animatable.GeoItem
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache
-import software.bernie.geckolib.animation.AnimatableManager
-import software.bernie.geckolib.util.GeckoLibUtil
 
-open class Tm62Item : Item(Properties().stacksTo(8)), GeoItem, DispenserLaunchable {
-    private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
-
+open class Tm62Item : Item(Properties().stacksTo(8)), DispenserLaunchable {
     @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
     companion object {
         @SubscribeEvent
         private fun registerItemExtensions(event: RegisterClientExtensionsEvent) {
             event.registerItem(object : IClientItemExtensions {
-                private val renderer: BlockEntityWithoutLevelRenderer = Tm62ItemRenderer()
+                private var renderer: BlockEntityWithoutLevelRenderer? = null
 
                 override fun getCustomRenderer(): BlockEntityWithoutLevelRenderer {
-                    return renderer
+                    if (renderer == null) {
+                        renderer = Tm62ItemRenderer(mc.blockEntityRenderDispatcher, mc.entityModels)
+                    }
+                    return renderer!!
                 }
             }, ModItems.TM_62)
         }
-    }
-
-    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) {}
-
-    override fun getAnimatableInstanceCache(): AnimatableInstanceCache {
-        return this.cache
     }
 
     override fun use(level: Level, player: Player, hand: InteractionHand): InteractionResultHolder<ItemStack> {
