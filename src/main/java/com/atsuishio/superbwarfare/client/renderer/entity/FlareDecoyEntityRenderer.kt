@@ -40,7 +40,7 @@ class FlareDecoyEntityRenderer(pContext: EntityRendererProvider.Context) : Entit
     }
 
     override fun getTextureLocation(entity: FlareDecoyEntity): ResourceLocation {
-        return TEXTURES[(entity.tickCount % 8 + 1)]
+        return TEXTURES[entity.tickCount % 8]
     }
 
     companion object {
@@ -61,6 +61,6 @@ class FlareDecoyEntityRenderer(pContext: EntityRendererProvider.Context) : Entit
                 .setNormal(pPose, 0f, 1f, 0f)
         }
 
-        val TEXTURES: List<ResourceLocation> = ArrayList((1..8).map { loc("textures/particle/fire_star_$it.png") })
+        val TEXTURES: List<ResourceLocation> = ArrayList((0..7).map { loc("textures/particle/fire_star_$it.png") })
     }
 }

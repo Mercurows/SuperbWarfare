@@ -41,7 +41,7 @@ class WhitePhosphorusProjectileEntityRenderer(pContext: EntityRendererProvider.C
     }
 
     override fun getTextureLocation(entity: WhitePhosphorusProjectileEntity): ResourceLocation {
-        return TEXTURES[(entity.tickCount % 8 + 1)]
+        return TEXTURES[entity.tickCount % 8]
     }
 
     companion object {
@@ -59,6 +59,6 @@ class WhitePhosphorusProjectileEntityRenderer(pContext: EntityRendererProvider.C
                 .setNormal(pose, 0f, 1f, 0f)
         }
 
-        val TEXTURES: List<ResourceLocation> = ArrayList((1..8).map { loc("textures/particle/fire_star_$it.png") })
+        val TEXTURES: List<ResourceLocation> = ArrayList((0..7).map { loc("textures/particle/fire_star_$it.png") })
     }
 }
