@@ -84,7 +84,7 @@ public class DroneRenderer extends GeoEntityRenderer<DroneEntity> {
         var xLength = displayData.get(9);
         var yLength = displayData.get(10);
 
-        for (int i = 0; i < animatable.getAmmo(); i++) {
+        for (int i = 0; i < entity.getAmmo(); i++) {
             float x, z;
             if (data.get(MAX_AMMO) == 1) {
                 // 神风或单个挂载
