@@ -12,7 +12,11 @@ import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.NonNullList
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.network.Connection
 import net.minecraft.network.chat.Component
+import net.minecraft.network.protocol.Packet
+import net.minecraft.network.protocol.game.ClientGamePacketListener
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket
 import net.minecraft.world.*
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
@@ -29,16 +33,11 @@ import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.capabilities.ForgeCapabilities
 import net.minecraftforge.common.util.LazyOptional
 import net.minecraftforge.items.wrapper.SidedInvWrapper
-import software.bernie.geckolib.animatable.GeoBlockEntity
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
-import software.bernie.geckolib.core.animation.AnimatableManager
-import software.bernie.geckolib.util.GeckoLibUtil
 import java.util.*
 
 open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
-    BlockEntity(ModBlockEntities.BLUEPRINT_RESEARCH_TABLE.get(), pos, state), GeoBlockEntity,
+    BlockEntity(ModBlockEntities.BLUEPRINT_RESEARCH_TABLE.get(), pos, state),
     WorldlyContainer, MenuProvider {
-    private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
     protected val items: NonNullList<ItemStack> = NonNullList.withSize(6, ItemStack.EMPTY)
 
     private var itemHandlers =
@@ -50,6 +49,7 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
     var maxProcessTick: Int = DEFAULT_TIME
         get() = field.coerceAtLeast(1)
     var activated: Boolean = false
+    var crafting: Boolean = false
 
     protected val dataAccess: ContainerData = object : ContainerData {
         override fun get(index: Int): Int {
@@ -85,6 +85,7 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
         this.lastSelectedIndex = tag.getInt("LastSelectedIndex")
         this.fuel = tag.getInt("Fuel")
         this.activated = tag.getBoolean("Activated")
+        this.crafting = tag.getBoolean("Crafting")
 
         ContainerHelper.loadAllItems(tag, this.items)
     }
@@ -96,15 +97,9 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
         tag.putInt("LastSelectedIndex", this.lastSelectedIndex)
         tag.putInt("Fuel", this.fuel)
         tag.putBoolean("Activated", this.activated)
+        tag.putBoolean("Crafting", this.crafting)
 
         ContainerHelper.saveAllItems(tag, this.items)
-    }
-
-    override fun registerControllers(controllers: AnimatableManager.ControllerRegistrar) {
-    }
-
-    override fun getAnimatableInstanceCache(): AnimatableInstanceCache {
-        return cache
     }
 
     override fun getSlotsForFace(side: Direction): IntArray {
@@ -272,6 +267,7 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
         this.tick = 0
         this.maxProcessTick = 100
         this.activated = false
+        this.crafting = false
         this.setChanged()
     }
 
@@ -300,6 +296,34 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
         super.reviveCaps()
         this.itemHandlers =
             SidedInvWrapper.create(this, Direction.UP, Direction.DOWN, Direction.NORTH, Direction.SOUTH, Direction.EAST)
+    }
+
+    fun sync() {
+        val level = this.level ?: return
+        if (level.isClientSide) return
+        this.setChanged()
+        level.sendBlockUpdated(this.worldPosition, this.blockState, this.blockState, 3)
+    }
+
+    override fun getUpdateTag(): CompoundTag {
+        val tag = CompoundTag()
+        this.saveAdditional(tag)
+        return tag
+    }
+
+    override fun getUpdatePacket(): Packet<ClientGamePacketListener> {
+        return ClientboundBlockEntityDataPacket.create(this)
+    }
+
+    override fun handleUpdateTag(tag: CompoundTag?) {
+        tag?.let { this.load(it) }
+    }
+
+    override fun onDataPacket(
+        net: Connection,
+        pkt: ClientboundBlockEntityDataPacket
+    ) {
+        this.handleUpdateTag(pkt.tag)
     }
 
     companion object {
@@ -338,6 +362,11 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
                     entity.activated = false
                     return
                 }
+
+                if (!entity.crafting) {
+                    entity.crafting = true
+                }
+
                 entity.maxProcessTick = recipe.get().time
 
                 if (entity.tick < entity.maxProcessTick) {
@@ -348,6 +377,8 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
                     entity.fuel--
                     entity.setChanged()
                 }
+
+                entity.sync()
             } else {
                 if (entity.activated) {
                     entity.activated = false
