@@ -64,7 +64,8 @@
       "ShootPos": {
         "Transform": "Barrel",
         "Positions": [[0, 0.4, 2.578025]],
-        "Directions": ["Barrel"]
+        "Directions": ["Barrel"],
+        "ViewPosition": [0, 0.45, 2.0]
       },
       "SoundInfo": {
         "FireSoundInstances": "superbwarfare:hpj_11_fire"

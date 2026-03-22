@@ -41,4 +41,6 @@ class Hpj11Model : VehicleModel<Hpj11Entity>() {
             else -> super.collectTransform(boneName)
         }
     }
+
+    override fun hideForTurretControllerWhileZooming() = true
 }
