@@ -210,9 +210,8 @@ object LivingEventHandler {
      * 根据造成的伤害，提供武器经验
      */
     private fun giveExpToWeapon(event: LivingIncomingDamageEvent) {
-        val source = event.source
-        val sourceEntity = source.entity
-        if (sourceEntity !is Player) return
+        val source = event.source ?: return
+        val sourceEntity = source.entity as? LivingEntity ?: return
         val stack = sourceEntity.mainHandItem
         if (stack.item !is GunItem) return
         val entity = event.entity
@@ -236,9 +235,8 @@ object LivingEventHandler {
     }
 
     private fun giveKillExpToWeapon(event: LivingDeathEvent) {
-        val source = event.source
-        val sourceEntity = source.entity
-        if (sourceEntity !is Player) return
+        val source = event.source ?: return
+        val sourceEntity = source.entity as? LivingEntity ?: return
         val stack = sourceEntity.mainHandItem
         if (stack.item !is GunItem) return
         if (event.entity.type.`is`(ModTags.EntityTypes.NO_EXPERIENCE)) return
@@ -274,9 +272,8 @@ object LivingEventHandler {
     }
 
     private fun handleGunLevels(event: LivingIncomingDamageEvent) {
-        val source = event.source
-        val sourceEntity = source.entity
-        if (sourceEntity !is Player) return
+        val source = event.source ?: return
+        val sourceEntity = source.entity as? LivingEntity ?: return
         val stack = sourceEntity.mainHandItem
         if (stack.item !is GunItem) return
         if (event.entity.type.`is`(ModTags.EntityTypes.NO_EXPERIENCE)) return
