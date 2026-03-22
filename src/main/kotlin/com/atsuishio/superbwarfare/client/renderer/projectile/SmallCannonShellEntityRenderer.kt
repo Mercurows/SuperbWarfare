@@ -50,7 +50,7 @@ class SmallCannonShellEntityRenderer(manager: EntityRendererProvider.Context) :
         val width = 0.3f
         val position = entity.getPosition(partialTick)
         val distance = position.distanceTo(eyePos)
-        val length = 0.7 * entity.deltaMovement.length()
+        val length = 0.7 * entity.deltaMovement.length() * Mth.clamp(0.75 * entity.tickCount, 0.0, 1.0)
 
         poseStack.mulPose(Axis.YP.rotationDegrees(-entityYaw))
         poseStack.mulPose(Axis.XP.rotationDegrees(Mth.lerp(partialTick, entity.xRotO, entity.xRot)))
