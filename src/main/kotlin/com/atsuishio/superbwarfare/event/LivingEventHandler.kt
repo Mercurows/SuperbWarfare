@@ -213,7 +213,7 @@ object LivingEventHandler {
      */
     private fun giveExpToWeapon(event: LivingHurtEvent) {
         val source = event.source ?: return
-        val sourceEntity = source.entity as? Player ?: return
+        val sourceEntity = source.entity as? LivingEntity ?: return
         val stack = sourceEntity.mainHandItem
         if (stack.item !is GunItem) return
         val entity = event.entity
@@ -238,7 +238,7 @@ object LivingEventHandler {
 
     private fun giveKillExpToWeapon(event: LivingDeathEvent) {
         val source = event.source ?: return
-        val sourceEntity = source.entity as? Player ?: return
+        val sourceEntity = source.entity as? LivingEntity ?: return
         val stack = sourceEntity.mainHandItem
         if (stack.item !is GunItem) return
         val entity = event.entity
@@ -276,7 +276,7 @@ object LivingEventHandler {
 
     private fun handleGunLevels(event: LivingHurtEvent) {
         val source = event.source ?: return
-        val sourceEntity = source.entity as? Player ?: return
+        val sourceEntity = source.entity as? LivingEntity ?: return
         val stack = sourceEntity.mainHandItem
         if (stack.item !is GunItem) return
         val entity = event.entity
