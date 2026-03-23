@@ -572,6 +572,12 @@
   "death.attack.repair_tool": "%1$s被修理了一顿",
   "death.attack.repair_tool.entity": "%1$s被%2$s修好了",
   "death.attack.repair_tool.item": "%1$s被%2$s用%3$s修好了",
+  "death.attack.phosphorus_fire": "%1$s对烧伤的理解深入骨髓",
+  "death.attack.phosphorus_fire.entity": "%2$s让%1$s对烧伤的理解深入骨髓",
+  "death.attack.phosphorus_fire.item": "%2$s用%3$s让%1$s对烧伤的理解深入骨髓",
+  "death.attack.super_star_hit": "%1$s化作了星光",
+  "death.attack.super_star_hit.entity": "%2$s让%1$s化作了星光",
+  "death.attack.super_star_hit.item": "%2$s用%3$s让%1$s化作了星光",
 
   "entity.superbwarfare.projectile": "子弹",
   "entity.superbwarfare.mortar_shell": "迫击炮弹",
