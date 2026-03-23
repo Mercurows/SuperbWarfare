@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
@@ -58,9 +59,10 @@ public abstract class HornSoundInstance extends AbstractTickableSoundInstance {
         this.z = this.entity.getZ();
 
         this.pitch = this.getPitch(this.entity);
+        Vec3 cameraPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
 
         if (player.getVehicle() != this.entity) {
-            double distance = this.entity.position().subtract(player.position()).length();
+            double distance = this.entity.position().subtract(cameraPos).length();
             this.pitch += (float) (0.1 * Math.atan(lastDistance - distance));
 
             this.lastDistance = distance;

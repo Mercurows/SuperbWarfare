@@ -6,6 +6,7 @@ import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 
 public abstract class VehicleFireSoundInstance extends AbstractTickableSoundInstance {
 
@@ -56,6 +57,16 @@ public abstract class VehicleFireSoundInstance extends AbstractTickableSoundInst
         this.z = this.entity.getZ();
 
         this.pitch = this.getPitch(this.entity);
+        Vec3 cameraPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+
+        if (player.getVehicle() != this.entity) {
+            double distance = this.entity.position().subtract(cameraPos).length();
+            this.pitch += (float) (0.1 * Math.atan(lastDistance - distance));
+
+            this.lastDistance = distance;
+        } else {
+            this.lastDistance = 0;
+        }
     }
 
     public static class VehicleFireSound extends VehicleSoundInstance {

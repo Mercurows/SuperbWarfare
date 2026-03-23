@@ -62,9 +62,10 @@ public abstract class VehicleSoundInstance extends AbstractTickableSoundInstance
         this.z = this.mobileVehicle.getZ();
 
         this.pitch = this.getPitch(this.mobileVehicle);
+        Vec3 cameraPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
 
         if (player.getVehicle() != this.mobileVehicle) {
-            double distance = this.mobileVehicle.position().subtract(player.position()).length();
+            double distance = this.mobileVehicle.position().subtract(cameraPos).length();
             this.pitch += (float) (0.16 * java.lang.Math.atan(lastDistance - distance));
 
             this.lastDistance = distance;
