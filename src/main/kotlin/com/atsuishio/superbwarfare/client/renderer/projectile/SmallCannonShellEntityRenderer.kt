@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.renderer.projectile
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.ClientRenderHandler
 import com.atsuishio.superbwarfare.entity.projectile.SmallCannonShellEntity
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
 import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.mojang.blaze3d.vertex.PoseStack
@@ -52,8 +53,8 @@ class SmallCannonShellEntityRenderer(manager: EntityRendererProvider.Context) :
         val distance = position.distanceTo(eyePos)
         val length = 0.7 * entity.deltaMovement.length() * Mth.clamp(0.75 * entity.tickCount, 0.0, 1.0)
 
-        poseStack.mulPose(Axis.YP.rotationDegrees(-entityYaw))
-        poseStack.mulPose(Axis.XP.rotationDegrees(Mth.lerp(partialTick, entity.xRotO, entity.xRot)))
+        poseStack.mulPose(Axis.YP.rotationDegrees(VehicleVecUtils.getYRotFromVector(entity.deltaMovement).toFloat()))
+        poseStack.mulPose(Axis.XP.rotationDegrees(-VehicleVecUtils.getXRotFromVector(entity.deltaMovement).toFloat()))
         poseStack.scale(width, width, length.toFloat())
 
         if (entity.tickCount >= 5 || distance > 5.0) {

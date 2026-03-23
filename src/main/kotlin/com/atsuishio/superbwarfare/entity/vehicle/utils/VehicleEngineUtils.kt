@@ -608,18 +608,22 @@ object VehicleEngineUtils {
                 downInputDown = false
 
                 if (!isWreck) {
-                    setZRot(roll * 0.99f)
+                    roll *= 0.99f
                     xRot -= 0.5f * deltaMovement.dot(getViewVector(1f)).toFloat()
-//                    deltaMovement.multiply(0.96, 0.98, 0.96)
+                    roll -= 0.5f * deltaMovement.dot(getRightVec(1f)).toFloat()
                 }
 
                 if (!hasPassenger) {
-                    power *= 0.995f
+                    power = Math.max(power * 0.99f, if (onGround()) 0f else 0.055f)
                 }
             } else {
                 if (hoverMode) {
-                    setZRot(roll * 0.9f)
-                    xRot *= 0.9f
+                    roll *= 0.97f
+                    roll -= 0.5f * deltaMovement.dot(getRightVec(1f)).toFloat()
+
+                    xRot *= 0.97f
+                    xRot -= 0.5f * deltaMovement.dot(getViewVector(1f)).toFloat()
+
                     rightInputDown = false
                     leftInputDown = false
                     mouseMoveSpeedX = 0f

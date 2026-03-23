@@ -10,11 +10,11 @@ class Mi28Model : VehicleModel<Mi28Entity>() {
     override fun collectTransform(boneName: String): TransformContext<Mi28Entity>? {
         return when (boneName) {
             "propeller" -> TransformContext { bone, vehicle, state ->
-                bone.rotY = Mth.lerp(state.partialTick, vehicle.propellerRotO, vehicle.propellerRot)
+                bone.rotY = -Mth.lerp(state.partialTick, vehicle.propellerRotO, vehicle.propellerRot)
             }
 
             "tailPropeller" -> TransformContext { bone, vehicle, state ->
-                bone.rotX = -6 * Mth.lerp(state.partialTick, vehicle.propellerRotO, vehicle.propellerRot)
+                bone.rotX = 6 * Mth.lerp(state.partialTick, vehicle.propellerRotO, vehicle.propellerRot)
             }
 
             "missile1" -> TransformContext { bone, vehicle, _ ->

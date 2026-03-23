@@ -63,7 +63,7 @@ open class SmallCannonShellEntity(type: EntityType<out SmallCannonShellEntity>, 
         val state = this.level().getBlockState(resultPos)
 
         if (this.level() is ServerLevel) {
-            val hardness = this.level().getBlockState(resultPos).getBlock().defaultDestroyTime()
+            val hardness = this.level().getBlockState(resultPos).block.defaultDestroyTime()
             if (hardness != -1f) {
                 if (ExplosionConfig.EXPLOSION_DESTROY.get() && ExplosionConfig.EXTRA_EXPLOSION_EFFECT.get()) {
                     val destroy = Math.random() < (1.0 - (hardness / 50.0)).coerceIn(0.1, 1.0)

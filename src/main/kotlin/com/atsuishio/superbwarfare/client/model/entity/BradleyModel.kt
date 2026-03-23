@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.entity
 
+import com.atsuishio.superbwarfare.entity.vehicle.Bmp2Entity
 import com.atsuishio.superbwarfare.entity.vehicle.BradleyEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.tools.localPlayer
@@ -9,19 +10,27 @@ import net.minecraft.util.Mth
 
 class BradleyModel : VehicleModel<BradleyEntity>() {
     override fun collectTransform(boneName: String): TransformContext<BradleyEntity>? {
-        return when (boneName) {
-            "guangdian" -> TransformContext { bone, _, _ ->
-                bone.rotX = animationProcessor.getBone("barrel").rotX
-            }
+        if (boneName == "base" || boneName == "Track") {
+            val baseTransform = super.collectTransform(boneName)
 
-
-            "bradley" -> TransformContext { bone, vehicle, _ ->
+            return TransformContext { bone, vehicle, state ->
                 val player = localPlayer
-                bone.isHidden = player != null && vehicle.hasWeapon(vehicle.getSeatIndex(player)) && vehicle === player.vehicle && vehicle.getFirstPassenger() !== player && (options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle)
+                bone.isHidden =
+                    player != null && vehicle === player.vehicle && vehicle.getFirstPassenger() !== player && (options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle)
+                baseTransform?.transform(bone, vehicle, state)
             }
-
-            else -> super.collectTransform(boneName)
         }
+
+        if (boneName == "guangdian") {
+            val baseTransform = super.collectTransform(boneName)
+
+            return TransformContext { bone, vehicle, state ->
+                bone.rotX = animationProcessor.getBone("barrel").rotX
+                baseTransform?.transform(bone, vehicle, state)
+            }
+        }
+
+        return super.collectTransform(boneName)
     }
 
     override fun getBoneRotX(t: Float): Float {

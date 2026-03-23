@@ -1761,6 +1761,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         this.wasHeliCrash = this.heliCrash()
         this.wasVehicleSkip = this.vehicleSkip()
 
+        this.prevRoll = this.roll
+
         //        this.wasInCarMusicPlaying = this.inCarMusicPlaying();
         turretYRotO = this.turretYRot
         turretXRotO = this.turretXRot
@@ -1821,8 +1823,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         if (this.health >= this.getMaxHealth()) {
             repairCoolDown = maxRepairCoolDown()
         }
-
-        this.prevRoll = this.roll
 
         val delta = Math.abs(yRot - yRotO)
         while (yRot > 180f) {
@@ -3722,10 +3722,15 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     open fun getUpVec(ticks: Float): Vec3 {
         val transform = getVehicleTransform(ticks)
-
         val force0 = transformPosition(transform, 0.0, 0.0, 0.0)
         val force1 = transformPosition(transform, 0.0, 1.0, 0.0)
+        return Vec3(force0.x, force0.y, force0.z).vectorTo(Vec3(force1.x, force1.y, force1.z))
+    }
 
+    open fun getRightVec(ticks: Float): Vec3 {
+        val transform = getVehicleTransform(ticks)
+        val force0 = transformPosition(transform, 0.0, 0.0, 0.0)
+        val force1 = transformPosition(transform, -1.0, 0.0, 0.0)
         return Vec3(force0.x, force0.y, force0.z).vectorTo(Vec3(force1.x, force1.y, force1.z))
     }
 
@@ -4104,6 +4109,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     open fun collideBlocks() {
         if (tickCount % 4 != 0) return
+        if (computed().engineType == EngineType.FIXED) return
+        if (deltaMovement.lengthSqr() < 0.01) return
         VehicleMotionUtils.collideBlocks(this)
     }
 
