@@ -863,7 +863,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                 val tag = LaunchableEntityTool.getModifiedTag(
                     newInfo,
                     ShootData(
-                        shooter?.getUUID(),
+                        shooter?.uuid,
                         damage,
                         data.get(GunProp.EXPLOSION_DAMAGE),
                         data.get(GunProp.EXPLOSION_RADIUS),
@@ -897,35 +897,35 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
         // 发射任意实体
         entity.setPos(
-            shootPosition.x - 0.1 * shootDirection.x,
-            shootPosition.y - 0.1 - 0.1 * shootDirection.y,
-            shootPosition.z + -0.1 * shootDirection.z
+            shootPosition.x,
+            shootPosition.y,
+            shootPosition.z
         )
 
         var x = shootDirection.x
-        var y = shootDirection.y + 0.001f
+        var y = shootDirection.y
         var z = shootDirection.z
 
-        if (uuid != null && zoom && (shooter != null && !shooter.isShiftKeyDown)) {
-            val target = EntityFindUtil.findEntity(level, uuid.toString())
-            val gunData = from(stack)
-            val intelligentChipLevel = gunData.perk.getLevel(ModPerks.INTELLIGENT_CHIP).toInt()
-            if (intelligentChipLevel > 0 && target != null) {
-                val targetVec = target.eyePosition
-                val playerVec = shooter.eyePosition
-                val hasGravity = gunData.perk.getLevel(ModPerks.MICRO_MISSILE) <= 0
-                val toVec = calculateFiringSolution(
-                    playerVec,
-                    targetVec,
-                    Vec3.ZERO,
-                    data.get(GunProp.VELOCITY),
-                    if (hasGravity) 0.03 else 0.0
-                )
-                x = toVec.x
-                y = toVec.y
-                z = toVec.z
-            }
-        }
+//        if (uuid != null && zoom && (shooter != null && !shooter.isShiftKeyDown)) {
+//            val target = EntityFindUtil.findEntity(level, uuid.toString())
+//            val gunData = from(stack)
+//            val intelligentChipLevel = gunData.perk.getLevel(ModPerks.INTELLIGENT_CHIP).toInt()
+//            if (intelligentChipLevel > 0 && target != null) {
+//                val targetVec = target.eyePosition
+//                val playerVec = shooter.eyePosition
+//                val hasGravity = gunData.perk.getLevel(ModPerks.MICRO_MISSILE) <= 0
+//                val toVec = calculateFiringSolution(
+//                    playerVec,
+//                    targetVec,
+//                    Vec3.ZERO,
+//                    data.get(GunProp.VELOCITY),
+//                    if (hasGravity) data.get(GunProp.GRAVITY) else 0.0
+//                )
+//                x = toVec.x
+//                y = toVec.y
+//                z = toVec.z
+//            }
+//        }
 
         if (entity is Projectile) {
             entity.shoot(x, y, z, velocity, spread.toFloat())

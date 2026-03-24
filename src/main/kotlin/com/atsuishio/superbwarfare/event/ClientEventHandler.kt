@@ -2586,40 +2586,8 @@ object ClientEventHandler {
                             }
                         }
                         if (lockedEntity != null && lockedEntity!!.isAlive) {
-                            val targetVec = Vec3(
-                                Mth.lerp(
-                                    event.partialTick,
-                                    lockedEntity!!.xo,
-                                    lockedEntity!!.x
-                                ),
-                                Mth.lerp(
-                                    event.partialTick,
-                                    lockedEntity!!.yo + lockedEntity!!.eyeHeight,
-                                    lockedEntity!!.eyeY
-                                ),
-                                Mth.lerp(
-                                    event.partialTick,
-                                    lockedEntity!!.zo,
-                                    lockedEntity!!.z
-                                )
-                            )
-                            val playerVec = Vec3(
-                                Mth.lerp(
-                                    event.partialTick,
-                                    player.xo - 0.1 * player.getViewVector(1f).x,
-                                    player.x - 0.1 * player.getViewVector(1f).x
-                                ),
-                                Mth.lerp(
-                                    event.partialTick,
-                                    player.yo + player.eyeHeight - 0.1 * player.getViewVector(1f).y,
-                                    player.eyeY - 0.1 * player.getViewVector(1f).y
-                                ),
-                                Mth.lerp(
-                                    event.partialTick,
-                                    player.zo - 0.1 * player.getViewVector(1f).z,
-                                    player.z - 0.1 * player.getViewVector(1f).z
-                                )
-                            )
+                            val targetVec = lockedEntity!!.getEyePosition(event.partialTick.toFloat())
+                            val playerVec = player.getEyePosition(event.partialTick.toFloat())
 
                             val hasGravity = data.perk.getLevel(ModPerks.MICRO_MISSILE) <= 0
                             val velocity =
@@ -2632,9 +2600,9 @@ object ClientEventHandler {
                             val toVec = RangeTool.calculateFiringSolution(
                                 playerVec,
                                 targetVec,
-                                lockedEntity!!.deltaMovement,
+                                lockedEntity!!.deltaMovement.scale(0.5),
                                 velocity,
-                                if (hasGravity) 0.03 else 0.0
+                                if (hasGravity) data.get(GunProp.GRAVITY) else 0.0
                             )
 
                             look(player, toVec)
