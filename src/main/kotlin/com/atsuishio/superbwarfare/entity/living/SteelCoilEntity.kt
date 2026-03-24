@@ -1,8 +1,6 @@
 package com.atsuishio.superbwarfare.entity.living
 
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
-import com.atsuishio.superbwarfare.entity.getValue
-import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.entity.vehicle.TurretWreckEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes
@@ -12,44 +10,65 @@ import com.atsuishio.superbwarfare.tools.angleTo
 import com.atsuishio.superbwarfare.tools.forceHurt
 import net.minecraft.core.NonNullList
 import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.protocol.Packet
 import net.minecraft.network.protocol.game.ClientGamePacketListener
-import net.minecraft.network.syncher.EntityDataAccessor
-import net.minecraft.network.syncher.EntityDataSerializers
-import net.minecraft.network.syncher.SynchedEntityData
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.util.Mth
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.*
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier
 import net.minecraft.world.entity.ai.attributes.Attributes
+import net.minecraft.world.entity.ai.goal.Goal
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal
+import net.minecraft.world.entity.ai.goal.target.ResetUniversalAngerTargetGoal
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.vehicle.Boat
 import net.minecraft.world.entity.vehicle.Minecart
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.entity.EntityTypeTest
-import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
+import net.minecraftforge.common.ForgeMod
 import net.minecraftforge.network.NetworkHooks
+import java.util.*
 
-open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mob(type, level) {
+open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : PathfinderMob(type, level), NeutralMob {
     var wheelRot = 0f
     var wheelRotO = 0f
-    open var targetUUID by TARGET_UUID
     open var targetPosition = Vec3(0.0, 0.0, 0.0)
-    open var currentPosition = Vec3(0.0, 0.0, 0.0)
     open var startCrush = false
     open var restartCrushTimer = 0
+    private var remainingPersistentAngerTime = 0
+    private var persistentAngerTarget: UUID? = null
 
-    override fun defineSynchedData() {
-        super.defineSynchedData()
-        with(entityData) {
-            define(TARGET_UUID, "")
+    override fun addAdditionalSaveData(pCompound: CompoundTag) {
+        super.addAdditionalSaveData(pCompound)
+        this.addPersistentAngerSaveData(pCompound)
+    }
+
+    override fun readAdditionalSaveData(pCompound: CompoundTag) {
+        super.readAdditionalSaveData(pCompound)
+        this.readPersistentAngerSaveData(this.level(), pCompound)
+    }
+
+    override fun registerGoals() {
+        this.goalSelector.addGoal(0, SteelCoilCrushGoal(this))
+        this.targetSelector.addGoal(0, HurtByTargetGoal(this, SteelCoilEntity::class.java))
+        this.targetSelector.addGoal(2, ResetUniversalAngerTargetGoal(this, true))
+    }
+
+    override fun aiStep() {
+        super.aiStep()
+
+        val level = this.level()
+        if (level is ServerLevel) {
+            this.updatePersistentAnger(level, true)
         }
     }
 
-    override fun canCollideWith(pEntity: Entity): Boolean {
-        return false
+    override fun canCollideWith(entity: Entity): Boolean {
+        return entity is SteelCoilEntity
     }
 
     override fun canBeCollidedWith(): Boolean {
@@ -81,88 +100,30 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mo
         return NetworkHooks.getEntitySpawningPacket(this)
     }
 
-    open fun seekNearLivingEntity(
-        seekRange: Double,
-    ) = level().getEntitiesOfClass(Player::class.java, AABB(position(), position()).inflate(seekRange)) { true }
-        .sortedBy { it.distanceToSqr(position()) }
-        .find { target ->
-            target.distanceToSqr(this) <= seekRange * seekRange && !(target.isSpectator || target.isCreative)
-        }
-
     override fun baseTick() {
         wheelRotO = wheelRot
         super.baseTick()
         val speed = deltaMovement.dot(forward).toFloat()
-        val c = 4f * Mth.PI
-        val t = c / speed
-        val rpt = 360f / t
-        wheelRot += Mth.PI * rpt
-
-        if (health <= maxHealth * 0.8f && tickCount % 10 == 0 && target == null) {
-            val player = seekNearLivingEntity(attributes.getValue(Attributes.FOLLOW_RANGE))
-            if (player != null) {
-                setTarget(player)
-            }
+        if (speed > 0) {
+            val c = 4f * Mth.PI
+            val t = c / speed
+            val rpt = 360f / t
+            wheelRot += Mth.PI * rpt
         }
 
-        if (target != null) {
+        if (this.target != null && this.tickCount % 20 == 0) {
             val targetPos = target!!.position().add(
-                position().vectorTo(target!!.position()).normalize()
-                    .scale(position().distanceTo(target!!.position()).coerceAtLeast(12.0))
+                this.position().vectorTo(target!!.position()).normalize()
+                    .scale(this.position().distanceTo(target!!.position()).coerceAtLeast(12.0))
             )
 
-            if (!startCrush) {
-                targetPosition = targetPos
-                currentPosition = position()
-                startCrush = true
-                restartCrushTimer = 0
-            }
-
-            if (startCrush) {
-                restartCrushTimer++
-
-                val d0: Double = target!!.position().x - this.x
-                val d1: Double = target!!.position().z - this.z
-
-                if (attackableEntity(target!!)) {
-                    val f9 = (Mth.atan2(d1, d0) * (180f / Math.PI.toFloat()).toDouble()).toFloat() - 90.0f
-                    this.yRot = lerpRot(this.yRot, f9, 3.0f)
-                }
-
-                val s = (position().distanceToSqr(targetPosition) / (currentPosition.distanceToSqr(targetPosition)))
-
-                this.moveControl.setWantedPosition(
-                    targetPosition.x,
-                    targetPosition.y,
-                    targetPosition.z,
-                    5 * Mth.clamp(Mth.sin(Mth.PI * s.toFloat()).toDouble(), 0.4, 1.0)
-                )
-                if (position().distanceToSqr(targetPosition) < 2 || restartCrushTimer > 100) {
-                    if (!attackableEntity(target!!)) {
-                        setTarget(null as LivingEntity?)
-                    }
-                    startCrush = false
-                    restartCrushTimer = 0
-                }
-            }
+            this.targetPosition = targetPos
         }
 
-//        val targetPlayer = EntityFindUtil.findEntity(level(), targetUUID)
-//
-//        if (tickCount % 10 == 0 && targetPlayer == null) {
-//            val player = seekNearLivingEntity(attributes.getValue(Attributes.FOLLOW_RANGE))
-//            if (player != null) {
-//                targetUUID = player.stringUUID
-//            }
-//        }
-//
-//        if (player != null) {
-//            this.moveControl.setWantedPosition(player.position().x, player.position().y, player.position().z, 2.0)
-//        }
         crushEntities()
     }
 
-    fun attackableEntity(entity: Entity): Boolean {
+    fun isAttackableEntity(entity: Entity): Boolean {
         return !(!entity.isAlive || (entity is Player && (entity.isCreative || entity.isSpectator)))
     }
 
@@ -191,18 +152,15 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mo
     }
 
     companion object {
-        @JvmField
-        val TARGET_UUID: EntityDataAccessor<String> =
-            SynchedEntityData.defineId(SteelCoilEntity::class.java, EntityDataSerializers.STRING)
-
         fun createAttributes(): AttributeSupplier.Builder {
             return createMobAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.25)
                 .add(Attributes.MAX_HEALTH, 100.0)
                 .add(Attributes.ARMOR, 30.0)
-                .add(Attributes.ATTACK_DAMAGE, 20.0)
+                .add(Attributes.ATTACK_DAMAGE, 1.0)
                 .add(Attributes.FOLLOW_RANGE, 48.0)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0)
+                .add(ForgeMod.STEP_HEIGHT_ADDITION.get(), 2.0)
         }
     }
 
@@ -210,13 +168,11 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mo
     fun crushEntities() {
         if (this.isRemoved) return
         val vec3 = this.deltaMovement
-        val entities: List<Entity>?
-
         val frontBox = this.boundingBox.move(vec3)
-        entities = this.level().getEntities(
+        val entities = this.level().getEntities(
             EntityTypeTest.forClass(Entity::class.java),
             frontBox
-        ) { entity -> entity !== this && entity!!.vehicle == null }
+        ) { entity -> entity !== this && entity!!.vehicle == null && entity !is SteelCoilEntity }
             .stream().filter { entity ->
                 if (entity.isAlive) {
                     val type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.type)
@@ -244,11 +200,11 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mo
             }
 
             if (entity is VehicleEntity) {
-                f = Mth.clamp((entity.mass / 30).toDouble(), 0.25, 4.0)
-                f1 = Mth.clamp((30 / entity.mass).toDouble(), 0.25, 4.0)
+                f = (entity.mass / 30).toDouble().coerceIn(0.25, 4.0)
+                f1 = (30 / entity.mass).toDouble().coerceIn(0.25, 4.0)
             } else {
-                f = Mth.clamp(2 * entitySize / thisSize, 0.25, 4.0)
-                f1 = Mth.clamp(thisSize / 2 * entitySize, 0.25, 4.0)
+                f = (2 * entitySize / thisSize).coerceIn(0.25, 4.0)
+                f1 = (thisSize / 2 * entitySize).coerceIn(0.25, 4.0)
             }
 
             val length = v0.length().toFloat()
@@ -282,5 +238,102 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Mo
 
     open fun pushNew(pX: Double, pY: Double, pZ: Double) {
         this.deltaMovement = this.deltaMovement.add(pX, pY, pZ)
+    }
+
+    override fun getRemainingPersistentAngerTime(): Int {
+        return this.remainingPersistentAngerTime
+    }
+
+    override fun setRemainingPersistentAngerTime(pRemainingPersistentAngerTime: Int) {
+        this.remainingPersistentAngerTime = pRemainingPersistentAngerTime
+    }
+
+    override fun getPersistentAngerTarget(): UUID? {
+        return this.persistentAngerTarget
+    }
+
+    override fun setPersistentAngerTarget(pPersistentAngerTarget: UUID?) {
+        this.persistentAngerTarget = pPersistentAngerTarget
+    }
+
+    override fun startPersistentAngerTimer() {
+        this.remainingPersistentAngerTime = this.random.nextIntBetweenInclusive(20, 30)
+    }
+
+    class SteelCoilCrushGoal(val entity: SteelCoilEntity) : Goal() {
+        init {
+            this.flags = EnumSet.of(Flag.MOVE)
+        }
+
+        override fun canUse(): Boolean {
+            val rate = entity.health / entity.maxHealth
+            if (rate > 0.8f) return false
+            return entity.target != null
+        }
+
+        fun refresh() {
+            if (!entity.startCrush) {
+                entity.startCrush = true
+                entity.restartCrushTimer = 0
+            }
+            if (entity.target != null) {
+                if (!entity.isAttackableEntity(entity.target!!)) {
+                    entity.target = null
+                }
+            }
+        }
+
+        override fun start() {
+            super.start()
+            this.refresh()
+        }
+
+        override fun stop() {
+            super.stop()
+
+            entity.moveControl.setWantedPosition(entity.x, entity.y, entity.z, 0.0)
+
+            entity.startCrush = false
+            entity.restartCrushTimer = 0
+            entity.setTarget(null)
+        }
+
+        override fun canContinueToUse(): Boolean {
+            return entity.target?.isAlive ?: false
+        }
+
+        override fun tick() {
+            super.tick()
+
+            val target = entity.target ?: return
+            if (entity.startCrush) {
+                entity.restartCrushTimer++
+
+                val d0 = target.position().x - entity.x
+                val d1 = target.position().z - entity.z
+
+                if (entity.isAttackableEntity(target)) {
+                    val f9 = (Mth.atan2(d1, d0) * (180f / Math.PI.toFloat()).toDouble()).toFloat() - 90.0f
+                    entity.yRot = entity.lerpRot(entity.yRot, f9, 3.0f)
+                }
+
+                val rate = entity.health / entity.maxHealth
+                val speed = ((1 - rate.coerceAtLeast(0f)) * 5.0).coerceIn(2.0, 5.0)
+
+                entity.moveControl.setWantedPosition(
+                    entity.targetPosition.x,
+                    entity.targetPosition.y,
+                    entity.targetPosition.z,
+                    speed
+                )
+
+                if (entity.position().distanceToSqr(entity.targetPosition) < 2 || entity.restartCrushTimer > 100) {
+                    this.refresh()
+                    if (entity.target == null) {
+                        this.stop()
+                    }
+                }
+            }
+        }
     }
 }
