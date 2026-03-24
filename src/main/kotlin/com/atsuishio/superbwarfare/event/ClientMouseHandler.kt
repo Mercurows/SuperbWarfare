@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.event
 import com.atsuishio.superbwarfare.client.MouseMovementHandler
 import com.atsuishio.superbwarfare.config.client.ControlConfig
 import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType
 import com.atsuishio.superbwarfare.entity.vehicle.Tom6Entity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -64,35 +65,28 @@ object ClientMouseHandler {
         val player = localPlayer ?: return
         if (event.phase == TickEvent.Phase.START) return
 
-        if (notInGame) {
-            speedX = 0.0
-            speedY = 0.0
-            lerpSpeedX = 0.0
-            lerpSpeedY = 0.0
-        }
-
         posO = posN
-        posN = if (notInGame) Vec2(0f, 0f) else MouseMovementHandler.getMousePos()
+        posN = MouseMovementHandler.getMousePos()
 
         val stack = player.mainHandItem
 
         if (stack.`is`(ModItems.MONITOR.get()) && stack.getOrCreateTag().getBoolean("Using")
             && stack.getOrCreateTag().getBoolean("Linked")
         ) {
-            val drone =
-                EntityFindUtil.findDrone(player.level(), stack.getOrCreateTag().getString("LinkedDrone")) ?: return
+            val drone = EntityFindUtil.findDrone(player.level(), stack.getOrCreateTag().getString("LinkedDrone")) ?: return
 
-            if (notInGame) {
-                sendPacketToServer(MouseMoveMessage(0.0, 0.0))
-                return
-            }
             speedX = (drone.mouseSensitivity / ClientEventHandler.droneFovLerp) * (posN.x - posO.x)
             speedY = (drone.mouseSensitivity / ClientEventHandler.droneFovLerp) * (posN.y - posO.y)
 
             lerpSpeedX = Mth.lerp(0.3, lerpSpeedX, speedX)
             lerpSpeedY = Mth.lerp(0.3, lerpSpeedY, speedY)
 
-            sendPacketToServer(MouseMoveMessage(lerpSpeedX, lerpSpeedY))
+            if (notInGame) {
+                sendPacketToServer(MouseMoveMessage(0.0, 0.0))
+            } else {
+                sendPacketToServer(MouseMoveMessage(lerpSpeedX, lerpSpeedY))
+            }
+
             return
         }
 
@@ -100,11 +94,6 @@ object ClientMouseHandler {
         if (vehicle is VehicleEntity && player == vehicle.firstPassenger
             && (vehicle.vehicleType == VehicleType.AIRPLANE || vehicle.vehicleType == VehicleType.HELICOPTER)
         ) {
-            if (notInGame) {
-                sendPacketToServer(MouseMoveMessage(0.0, 0.0))
-                return
-            }
-
             var y = 1
             if (ControlConfig.INVERT_AIRCRAFT_CONTROL.get()) {
                 y = -1
@@ -138,22 +127,27 @@ object ClientMouseHandler {
                 i *= (1 - (Mth.abs(vehicle.roll) - 90) / 90)
             }
 
-            if (!ClientEventHandler.isFreeCam(player)) {
-                if (mc.options.cameraType == CameraType.FIRST_PERSON) {
-                    if (vehicle !is Tom6Entity) {
-                        sendPacketToServer(
-                            MouseMoveMessage(
-                                (1 - abs(vehicle.roll) / 90) * lerpSpeedX + (abs(vehicle.roll) / 90) * lerpSpeedY * i,
-                                (1 - abs(vehicle.roll) / 90) * lerpSpeedY + (abs(vehicle.roll) / 90) * lerpSpeedX * if (vehicle.roll < 0) -1.0 else 1.0
+            if (notInGame) {
+                sendPacketToServer(MouseMoveMessage(0.0, 0.0))
+            } else {
+                if (!ClientEventHandler.isFreeCam(player)) {
+                    if (mc.options.cameraType == CameraType.FIRST_PERSON) {
+                        if (vehicle.computed().engineType != EngineType.TOM6) {
+                            sendPacketToServer(
+                                MouseMoveMessage(
+                                    (1 - abs(vehicle.roll) / 90) * lerpSpeedX + (abs(vehicle.roll) / 90) * lerpSpeedY * i,
+                                    (1 - abs(vehicle.roll) / 90) * lerpSpeedY + (abs(vehicle.roll) / 90) * lerpSpeedX * if (vehicle.roll < 0) -1.0 else 1.0
+                                )
                             )
-                        )
+                        }
+                    } else {
+                        sendPacketToServer(MouseMoveMessage(lerpSpeedX, lerpSpeedY))
                     }
                 } else {
-                    sendPacketToServer(MouseMoveMessage(lerpSpeedX, lerpSpeedY))
+                    sendPacketToServer(MouseMoveMessage(0.0, 0.0))
                 }
-            } else {
-                sendPacketToServer(MouseMoveMessage(0.0, 0.0))
             }
+
         }
     }
 
