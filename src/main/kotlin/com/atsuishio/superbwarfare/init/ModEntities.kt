@@ -326,7 +326,6 @@ object ModEntities {
         return REGISTRY.register(name) { -> entityTypeBuilder.build(name) }
     }
 
-
     private fun <T : Entity> misc(
         entity: (EntityType<T>, Level) -> T
     ): EntityType.Builder<T> = EntityType.Builder.of(entity, MobCategory.MISC)

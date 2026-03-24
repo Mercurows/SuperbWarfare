@@ -1,43 +1,53 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
-import com.atsuishio.superbwarfare.client.model.entity.SteelCoilModel
+import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.entity.living.SteelCoilEntity
+import com.atsuishio.superbwarfare.resource.BedrockModelLoader
+import com.mojang.blaze3d.vertex.PoseStack
+import com.mojang.math.Axis
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
+import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.resources.ResourceLocation
-import software.bernie.geckolib.renderer.GeoEntityRenderer
 
-class SteelCoilRenderer(renderManager: EntityRendererProvider.Context) : GeoEntityRenderer<SteelCoilEntity>(
-    renderManager,
-    SteelCoilModel()
-) {
-    init {
-        this.scaleWidth = 2f
-        this.scaleHeight = 2f
+class SteelCoilRenderer(renderManager: EntityRendererProvider.Context) :
+    EntityRenderer<SteelCoilEntity>(renderManager) {
+
+    override fun render(
+        entity: SteelCoilEntity,
+        entityYaw: Float,
+        partialTick: Float,
+        poseStack: PoseStack,
+        buffer: MultiBufferSource,
+        packedLight: Int
+    ) {
+        val model = BedrockModelLoader.getModel(BedrockModelLoader.STEEL_COIL_MODEL) ?: return
+        val bone = model.getBone("main") ?: return
+
+        poseStack.pushPose()
+
+        poseStack.scale(2.0f, 2.0f, 2.0f)
+        poseStack.mulPose(Axis.YP.rotationDegrees(-entityYaw + 180f))
+
+        bone.rotation.mul(Axis.XP.rotationDegrees(-entity.getRotation(partialTick)))
+
+        model.renderToBuffer(
+            poseStack,
+            buffer.getBuffer(RenderType.entityCutout(this.getTextureLocation(entity))),
+            packedLight,
+            OverlayTexture.NO_OVERLAY
+        )
+
+        poseStack.popPose()
     }
 
-    override fun getRenderType(
-        animatable: SteelCoilEntity,
-        texture: ResourceLocation,
-        bufferSource: MultiBufferSource?,
-        partialTick: Float
-    ): RenderType = RenderType.entityTranslucent(getTextureLocation(animatable))
-
-    override fun getDeathMaxRotation(entityLivingBaseIn: SteelCoilEntity): Float {
-        return 0f
+    override fun getTextureLocation(pEntity: SteelCoilEntity): ResourceLocation {
+        return TEXTURE
     }
 
-    override fun shouldShowName(animatable: SteelCoilEntity): Boolean {
-        return animatable.hasCustomName()
-    }
-
-    override fun getPackedOverlay(
-        animatable: SteelCoilEntity,
-        u: Float,
-        partialTick: Float
-    ): Int {
-        return OverlayTexture.pack(OverlayTexture.u(u), OverlayTexture.v(false))
+    companion object {
+        val TEXTURE = loc("textures/bedrock/entity/steel_coil.png")
     }
 }

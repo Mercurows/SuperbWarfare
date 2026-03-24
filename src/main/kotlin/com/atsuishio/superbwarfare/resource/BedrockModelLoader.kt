@@ -42,6 +42,8 @@ object BedrockModelLoader {
     val US_HELMET_PASGT_MODEL = registerArmorModel("armor/us_helmet_pasgt")
 
     // models
+    val STEEL_COIL_MODEL = registerCommonModel("entity/steel_coil")
+
     val PROJECTILE_MODEL = registerCommonModel("projectile/projectile")
     val HAND_GRENADE_MODEL = registerCommonModel("projectile/hand_grenade")
     val RGO_GRENADE_MODEL = registerCommonModel("projectile/rgo_grenade")
