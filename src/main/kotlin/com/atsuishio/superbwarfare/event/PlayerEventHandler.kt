@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.tools.InventoryTool
 import com.atsuishio.superbwarfare.tools.ParticleTool
+import com.atsuishio.superbwarfare.tools.ServerEntityTracker
 import com.atsuishio.superbwarfare.tools.TraceTool
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
@@ -165,6 +166,13 @@ object PlayerEventHandler {
                 level, ModParticleTypes.FIRE_STAR.get(), position.x, position.y, position.z,
                 2, 0.0, 0.0, 0.0, 0.2, false
             )
+        }
+    }
+
+    @SubscribeEvent
+    fun onServerTick(event: TickEvent.ServerTickEvent) {
+        if (event.phase == TickEvent.Phase.END) {
+            ServerEntityTracker.tick()
         }
     }
 }

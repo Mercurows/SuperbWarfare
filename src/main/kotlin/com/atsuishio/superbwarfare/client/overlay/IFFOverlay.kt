@@ -44,12 +44,12 @@ object IFFOverlay : CommonOverlay("iff") {
     override fun shouldRender() = super.shouldRender() && DisplayConfig.VEHICLE_INFO.get()
 
     override fun RenderContext.render() {
+        //TODO 没能成功超视距显示载具图标
         CuriosApi.getCuriosInventory(player).ifPresent { c ->
             c.findFirstCurio(ModItems.IFF.get()).ifPresent { _ ->
-                val entities = SeekTool.Builder(player)
-                    .friendly()
-                    .build()
-                for (e in entities) {
+                val entities = ClientEntityTracker.getInCurrentDimension(player.level())
+                for (entity in entities) {
+                    val e = player.level().getEntity(entity.id)
                     if (e != null && e !== player && e.position().canBeSeen() && e !== player.vehicle) {
                         var team: Entity? = e
                         if (e.vehicle != null) {

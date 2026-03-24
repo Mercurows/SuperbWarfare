@@ -102,6 +102,16 @@ public class SeekTool {
                 .toList();
     }
 
+    public static List<Entity> getVehicle(Level level) {
+        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
+                .filter(e -> e instanceof VehicleEntity && BASIC_FILTER.test(e) && NOT_IN_SMOKE.test(e)).toList();
+    }
+
+    public static List<Entity> getPlayer(Level level) {
+        return StreamSupport.stream(EntityFindUtil.getEntities(level).getAll().spliterator(), false)
+                .filter(e -> e instanceof Player && BASIC_FILTER.test(e) && NOT_IN_SMOKE.test(e)).toList();
+    }
+
     private static double calculateAngle(Entity entityA, Entity entityB) {
         Vec3 start = new Vec3(entityA.getX() - entityB.getX(), entityA.getY() - entityB.getY(), entityA.getZ() - entityB.getZ());
         Vec3 end = entityB.getLookAngle();
