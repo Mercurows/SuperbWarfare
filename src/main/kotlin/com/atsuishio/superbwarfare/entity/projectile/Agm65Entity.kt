@@ -153,7 +153,7 @@ open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level) : Missil
     }
 
     override fun getDefaultGravity(): Double {
-        return if (tickCount < 8) 0.15 else super.getGravityValue()
+        return if (tickCount < 8) 0.15 else super.getCustomGravity().toDouble()
     }
 
     override fun getSound(): SoundEvent {

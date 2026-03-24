@@ -54,17 +54,17 @@ open class GunGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity 
         this.discard()
     }
 
-    public override fun onHitBlock(blockHitResult: BlockHitResult) {
-        super.onHitBlock(blockHitResult)
-        val resultPos = blockHitResult.blockPos
+    public override fun onHitBlock(result: BlockHitResult) {
+        super.onHitBlock(result)
+        val resultPos = result.blockPos
         val state = this.level().getBlockState(resultPos)
         val block = state.block
 
         if (block is BellBlock) {
-            block.attemptToRing(this.level(), resultPos, blockHitResult.direction)
+            block.attemptToRing(this.level(), resultPos, result.direction)
         }
         if (this.level() is ServerLevel) {
-            causeExplode(blockHitResult.getLocation())
+            causeExplode(result.getLocation())
         }
         this.discard()
     }

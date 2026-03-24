@@ -1,9 +1,7 @@
 package com.atsuishio.superbwarfare.init
 
 import com.atsuishio.superbwarfare.client.renderer.entity.*
-import com.atsuishio.superbwarfare.client.renderer.projectile.BasicProjectileRenderer
-import com.atsuishio.superbwarfare.client.renderer.projectile.ProjectileEntityRenderer
-import com.atsuishio.superbwarfare.client.renderer.projectile.SmallCannonShellEntityRenderer
+import com.atsuishio.superbwarfare.client.renderer.projectile.*
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber

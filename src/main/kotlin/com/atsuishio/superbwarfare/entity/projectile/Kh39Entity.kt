@@ -154,7 +154,7 @@ open class Kh39Entity(type: EntityType<out Kh39Entity>, level: Level) : MissileP
     }
 
     override fun getDefaultGravity(): Double {
-        return if (tickCount < 8) 0.15 else super.getGravityValue()
+        return if (tickCount < 8) 0.15 else super.getCustomGravity().toDouble()
     }
 
     override fun getSound(): SoundEvent {

@@ -185,7 +185,7 @@ open class SuperStarProjectileEntity(type: EntityType<out SuperStarProjectileEnt
         val dir = Vec3(vx, vy, vz) + deltaMovement.normalize().scale(-0.1)
 
         if (state.block === Blocks.WATER && !isInWater) {
-            val particleData = CustomCloudOption(1f, 1f, 1f, 80, 0.5f, 1f, false, false)
+            val particleData = CustomCloudOption(1f, 1f, 1f, 80, 0.5f, 1f, cooldown = false, light = false)
             repeat(9) { i ->
                 val vec3 = randomVec(dir, 40.0)
                 ParticleTool.sendParticle(

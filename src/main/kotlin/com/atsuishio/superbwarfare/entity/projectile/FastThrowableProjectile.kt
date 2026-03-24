@@ -366,7 +366,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
         return lifeValue
     }
 
-    fun getGravityValue(): Float {
+    fun getCustomGravity(): Float {
         return this.gravityValue
     }
 
