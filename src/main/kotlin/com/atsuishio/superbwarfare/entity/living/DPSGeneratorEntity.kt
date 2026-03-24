@@ -1,7 +1,9 @@
-package com.atsuishio.superbwarfare.entity
+package com.atsuishio.superbwarfare.entity.living
 
 import com.atsuishio.superbwarfare.capability.energy.SyncedEntityEnergyStorage
 import com.atsuishio.superbwarfare.client.animation.entity.DPSGeneratorAnimationInstance
+import com.atsuishio.superbwarfare.entity.getValue
+import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds

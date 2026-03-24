@@ -1,7 +1,9 @@
-package com.atsuishio.superbwarfare.entity
+package com.atsuishio.superbwarfare.entity.living
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.animation.entity.SenpaiAnimationInstance
+import com.atsuishio.superbwarfare.entity.getValue
+import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.init.ModSounds
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag

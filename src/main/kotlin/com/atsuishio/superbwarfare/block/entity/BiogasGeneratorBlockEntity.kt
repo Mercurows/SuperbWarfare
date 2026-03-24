@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.block.entity
 
-import com.atsuishio.superbwarfare.entity.SenpaiEntity
+import com.atsuishio.superbwarfare.entity.living.SenpaiEntity
 import com.atsuishio.superbwarfare.init.ModBlockEntities
 import com.atsuishio.superbwarfare.init.ModTags
 import net.minecraft.core.BlockPos

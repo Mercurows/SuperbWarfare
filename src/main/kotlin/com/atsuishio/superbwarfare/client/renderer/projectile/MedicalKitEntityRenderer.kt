@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.projectile
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
-import com.atsuishio.superbwarfare.entity.MedicalKitEntity
+import com.atsuishio.superbwarfare.entity.projectile.MedicalKitEntity
 import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis

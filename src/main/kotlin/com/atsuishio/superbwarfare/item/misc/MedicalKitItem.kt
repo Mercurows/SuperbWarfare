@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.item.misc
 
-import com.atsuishio.superbwarfare.entity.MedicalKitEntity
+import com.atsuishio.superbwarfare.entity.projectile.MedicalKitEntity
 import com.atsuishio.superbwarfare.init.ModEntities
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component

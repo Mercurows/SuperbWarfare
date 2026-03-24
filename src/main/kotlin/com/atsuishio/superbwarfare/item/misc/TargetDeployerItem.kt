@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.item.misc
 
-import com.atsuishio.superbwarfare.entity.TargetEntity
+import com.atsuishio.superbwarfare.entity.living.TargetEntity
 import com.atsuishio.superbwarfare.init.ModEntities
 import net.minecraft.core.Direction
 import net.minecraft.server.level.ServerLevel
