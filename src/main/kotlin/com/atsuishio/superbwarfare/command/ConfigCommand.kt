@@ -78,7 +78,6 @@ private fun saveCollisionConfigs() {
 
 private fun SingleCommand.booleanConfig(
     prop: KProperty0<ModConfigSpec.BooleanValue>,
-    msg: String? = null,
     effect: (Boolean) -> Unit = {}
 ) {
     val name = buildString {
@@ -102,13 +101,12 @@ private fun SingleCommand.booleanConfig(
         }
     }
 
-    booleanConfig(name, prop.get(), msg ?: "commands.superbwarfare.config.${prop.name.lowercase()}", effect)
+    booleanConfig(name, prop.get(), effect)
 }
 
 private fun SingleCommand.booleanConfig(
     name: String,
     config: ModConfigSpec.BooleanValue,
-    msg: String,
     effect: (Boolean) -> Unit = {}
 ) {
     name {
@@ -123,7 +121,10 @@ private fun SingleCommand.booleanConfig(
                 effect(value)
 
                 success {
-                    Component.translatable("$msg.${if (value) "enabled" else "disabled"}")
+                    Component.translatable(
+                        "commands.superbwarfare.config.${if (value) "enabled" else "disabled"}",
+                        name
+                    )
                 }
 
                 return@execute 0
