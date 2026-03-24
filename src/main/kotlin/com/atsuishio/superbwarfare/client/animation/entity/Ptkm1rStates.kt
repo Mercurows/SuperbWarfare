@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.animation.entity
 
 import com.atsuishio.superbwarfare.client.animation.AnimationPlayType
-import com.atsuishio.superbwarfare.entity.Ptkm1rEntity
+import com.atsuishio.superbwarfare.entity.projectile.Ptkm1rEntity
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.SimpleAnimationState
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.SimpleTransition
 

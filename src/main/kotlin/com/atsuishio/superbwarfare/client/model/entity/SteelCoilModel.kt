@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.model.entity
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
-import com.atsuishio.superbwarfare.entity.SteelCoilEntity
+import com.atsuishio.superbwarfare.entity.living.SteelCoilEntity
 import net.minecraft.util.Mth
 import software.bernie.geckolib.animation.AnimationState
 import software.bernie.geckolib.model.GeoModel

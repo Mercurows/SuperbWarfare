@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.item.weapon
 
 import com.atsuishio.superbwarfare.config.server.MiscConfig
-import com.atsuishio.superbwarfare.entity.DPSGeneratorEntity
-import com.atsuishio.superbwarfare.entity.TargetEntity
+import com.atsuishio.superbwarfare.entity.living.DPSGeneratorEntity
+import com.atsuishio.superbwarfare.entity.living.TargetEntity
 import com.atsuishio.superbwarfare.entity.mixin.BeastEntityKiller
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModRarities

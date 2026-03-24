@@ -10,7 +10,7 @@ import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.SoundInfo
 import com.atsuishio.superbwarfare.data.gun.value.ReloadState
-import com.atsuishio.superbwarfare.entity.TargetEntity
+import com.atsuishio.superbwarfare.entity.living.TargetEntity
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback
 import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimableEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity

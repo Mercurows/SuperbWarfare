@@ -1,6 +1,8 @@
-package com.atsuishio.superbwarfare.entity
+package com.atsuishio.superbwarfare.entity.living
 
 import com.atsuishio.superbwarfare.client.animation.entity.TargetAnimationInstance
+import com.atsuishio.superbwarfare.entity.getValue
+import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier.Companion.createDefaultModifier
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds

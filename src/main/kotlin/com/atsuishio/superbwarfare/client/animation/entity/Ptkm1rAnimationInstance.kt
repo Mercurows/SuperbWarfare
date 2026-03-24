@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.animation.entity
 
-import com.atsuishio.superbwarfare.entity.Ptkm1rEntity
+import com.atsuishio.superbwarfare.entity.projectile.Ptkm1rEntity
 import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.maydaymemory.mae.basic.Pose
 import com.maydaymemory.mae.control.statemachine.AnimationStateMachine

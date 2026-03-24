@@ -3,8 +3,8 @@ package com.atsuishio.superbwarfare.entity.vehicle.base
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
-import com.atsuishio.superbwarfare.entity.TargetEntity
 import com.atsuishio.superbwarfare.entity.getValue
+import com.atsuishio.superbwarfare.entity.living.TargetEntity
 import com.atsuishio.superbwarfare.entity.projectile.DestroyableProjectile
 import com.atsuishio.superbwarfare.entity.projectile.SmallCannonShellEntity
 import com.atsuishio.superbwarfare.entity.setValue

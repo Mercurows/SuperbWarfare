@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.animation.entity
 
-import com.atsuishio.superbwarfare.entity.TargetEntity
+import com.atsuishio.superbwarfare.entity.living.TargetEntity
 import com.maydaymemory.mae.basic.Pose
 import com.maydaymemory.mae.control.statemachine.AnimationStateMachine
 

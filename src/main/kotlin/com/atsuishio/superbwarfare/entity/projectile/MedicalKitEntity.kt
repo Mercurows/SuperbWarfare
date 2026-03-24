@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.entity
+package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.item.misc.MedicalKitItem.Companion.treat

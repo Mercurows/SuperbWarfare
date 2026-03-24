@@ -2,7 +2,10 @@ package com.atsuishio.superbwarfare.init
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.config.server.SpawnConfig
-import com.atsuishio.superbwarfare.entity.*
+import com.atsuishio.superbwarfare.entity.living.DPSGeneratorEntity
+import com.atsuishio.superbwarfare.entity.living.SenpaiEntity
+import com.atsuishio.superbwarfare.entity.living.SteelCoilEntity
+import com.atsuishio.superbwarfare.entity.living.TargetEntity
 import com.atsuishio.superbwarfare.entity.projectile.*
 import com.atsuishio.superbwarfare.entity.vehicle.*
 import net.minecraft.core.registries.BuiltInRegistries

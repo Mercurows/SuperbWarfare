@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.item.projectile
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.renderer.item.Tm62ItemRenderer
-import com.atsuishio.superbwarfare.entity.Tm62Entity
+import com.atsuishio.superbwarfare.entity.projectile.Tm62Entity
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.item.DispenserLaunchable

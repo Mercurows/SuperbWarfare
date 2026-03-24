@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.item.misc
 
-import com.atsuishio.superbwarfare.entity.C4Entity
+import com.atsuishio.superbwarfare.entity.projectile.C4Entity
 import com.atsuishio.superbwarfare.tools.FormatTool.format1DZZ
 import com.atsuishio.superbwarfare.tools.TraceTool
 import net.minecraft.ChatFormatting

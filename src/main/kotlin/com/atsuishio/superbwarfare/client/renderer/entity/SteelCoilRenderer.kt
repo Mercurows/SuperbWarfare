@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.client.model.entity.SteelCoilModel
-import com.atsuishio.superbwarfare.entity.SteelCoilEntity
+import com.atsuishio.superbwarfare.entity.living.SteelCoilEntity
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.entity.EntityRendererProvider

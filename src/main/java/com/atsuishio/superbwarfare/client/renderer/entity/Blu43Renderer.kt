@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
-import com.atsuishio.superbwarfare.entity.Blu43Entity
+import com.atsuishio.superbwarfare.entity.projectile.Blu43Entity
 import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis

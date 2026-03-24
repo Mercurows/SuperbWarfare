@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.item.projectile
 
-import com.atsuishio.superbwarfare.entity.Blu43Entity
+import com.atsuishio.superbwarfare.entity.projectile.Blu43Entity
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.item.DispenserLaunchable
 import net.minecraft.core.dispenser.BlockSource

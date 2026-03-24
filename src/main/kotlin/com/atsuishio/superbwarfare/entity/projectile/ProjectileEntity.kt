@@ -6,9 +6,9 @@ import com.atsuishio.superbwarfare.client.particle.BulletDecalOption
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.component.ModDataComponents
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig
-import com.atsuishio.superbwarfare.entity.DPSGeneratorEntity
 import com.atsuishio.superbwarfare.entity.OBBEntity
-import com.atsuishio.superbwarfare.entity.TargetEntity
+import com.atsuishio.superbwarfare.entity.living.DPSGeneratorEntity
+import com.atsuishio.superbwarfare.entity.living.TargetEntity
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity

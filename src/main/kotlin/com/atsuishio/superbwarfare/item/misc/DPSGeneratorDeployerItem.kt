@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.item.misc
 
-import com.atsuishio.superbwarfare.entity.DPSGeneratorEntity
+import com.atsuishio.superbwarfare.entity.living.DPSGeneratorEntity
 import com.atsuishio.superbwarfare.init.ModEntities
 import net.minecraft.ChatFormatting
 import net.minecraft.core.BlockPos
