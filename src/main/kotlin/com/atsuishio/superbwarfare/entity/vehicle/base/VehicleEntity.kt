@@ -1552,7 +1552,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 when (part) {
                     TURRET -> turretHealth -= computedAmount
                     WHEEL_LEFT -> leftWheelHealth -= computedAmount
-                    WHEEL_RIGHT -> rightWheelHealth = -computedAmount
+                    WHEEL_RIGHT -> rightWheelHealth -= computedAmount
                     MAIN_ENGINE -> mainEngineHealth -= computedAmount
                     SUB_ENGINE -> subEngineHealth -= computedAmount
 
