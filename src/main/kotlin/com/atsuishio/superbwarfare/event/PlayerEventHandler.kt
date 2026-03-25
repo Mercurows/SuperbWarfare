@@ -188,12 +188,13 @@ object PlayerEventHandler {
     fun onServerTick(event: ServerTickEvent.Post) {
         val server = event.server
         // TODO 添加同步间隔配置项
-        if (server.tickCount % 50 != 0) return
+        if (server.tickCount % 3 != 0) return
         for (level in server.allLevels) {
             val list = arrayListOf<EntitySyncMessage.SyncedEntity>()
 
             for (entity in level.allEntities) {
                 if (entity !is VehicleEntity) continue
+                if (!SeekTool.NOT_IN_SMOKE.test(entity)) continue
 
                 list.add(
                     EntitySyncMessage.SyncedEntity(

@@ -19,7 +19,7 @@ object ClientSyncedEntityHandler {
         val level = mc.level ?: return
         val entities = SYNCED_ENTITIES[dim] ?: ConcurrentHashMap<Int, ClientSyncedEntity>()
         val tick = player.tickCount
-        entities.entries.removeIf { tick - it.value.timeStamp > 20 }
+        entities.entries.removeIf { tick - it.value.timeStamp > 3 }
         
         for (syncedEntity in list) {
             val id = syncedEntity.id
