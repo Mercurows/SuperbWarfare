@@ -12,8 +12,10 @@ import net.minecraft.core.NonNullList
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.sounds.SoundEvent
 import net.minecraft.util.Mth
 import net.minecraft.world.damagesource.DamageSource
+import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.entity.*
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier
 import net.minecraft.world.entity.ai.attributes.Attributes
@@ -50,8 +52,20 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Pa
 
     override fun registerGoals() {
         this.goalSelector.addGoal(0, SteelCoilCrushGoal(this))
-        this.targetSelector.addGoal(0, HurtByTargetGoal(this, SteelCoilEntity::class.java))
+        this.targetSelector.addGoal(0, HurtByTargetGoal(this, SteelCoilEntity::class.java).setAlertOthers())
         this.targetSelector.addGoal(2, ResetUniversalAngerTargetGoal(this, true))
+    }
+
+    override fun canBeAffected(pEffectInstance: MobEffectInstance?): Boolean {
+        return false
+    }
+
+    override fun getHurtSound(pDamageSource: DamageSource?): SoundEvent {
+        return ModSounds.INDICATION_VEHICLE.get()
+    }
+
+    override fun getDeathSound(): SoundEvent {
+        return ModSounds.STEEL_PIPE_DROP.get()
     }
 
     override fun aiStep() {

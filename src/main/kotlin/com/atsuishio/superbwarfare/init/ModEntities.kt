@@ -50,7 +50,7 @@ object ModEntities {
     @JvmField
     val STEEL_COIL = register(
         "steel_coil", EntityType.Builder.of(::SteelCoilEntity, MobCategory.CREATURE)
-            .sized(2f, 2f)
+            .setTrackingRange(64).sized(2f, 2f)
     )
 
     // Misc Entities

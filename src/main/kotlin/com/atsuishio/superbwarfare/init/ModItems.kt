@@ -195,6 +195,9 @@ object ModItems {
             Properties()
         )
     }
+    @JvmField val STEEL_COIL_SPAWN_EGG = registerItem("steel_coil_spawn_egg") {
+        DeferredSpawnEggItem(ModEntities.STEEL_COIL, 0, 0xc0c0c0, Properties())
+    }
     @JvmField val ANCIENT_CPU = registerItem("ancient_cpu") { Item(Properties().rarity(Rarity.RARE)) }
     @JvmField val PROPELLER = registerItem("propeller")
     @JvmField val LARGE_PROPELLER = registerItem("large_propeller")

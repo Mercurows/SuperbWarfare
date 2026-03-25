@@ -222,6 +222,7 @@
   "item.superbwarfare.dps_generator_deployer": "DPS发电机",
   "des.superbwarfare.dps_generator_deployer": "“那我问你，你DPS多少？”",
   "item.superbwarfare.senpai_spawn_egg": "野兽先辈刷怪蛋",
+  "item.superbwarfare.steel_coil_spawn_egg": "钢卷刷怪蛋",
   "item.superbwarfare.knife": "军刀",
   "item.superbwarfare.hammer": "大锤",
   "des.superbwarfare.hammer": "参与合成次数：%1$s",
@@ -656,6 +657,8 @@
   "entity.superbwarfare.steel_coil": "钢卷",
   "entity.superbwarfare.turret_wreck": "炮塔残骸",
   "entity.superbwarfare.ztz_99a": "ZTZ-99A主战坦克",
+  "entity.superbwarfare.super_star_projectile": "超级大星星",
+  "entity.superbwarfare.prismatic_bolt": "星光斩击",
 
   "key.categories.superbwarfare": "卓越前线",
   "key.superbwarfare.hold_zoom": "瞄准(按住)",

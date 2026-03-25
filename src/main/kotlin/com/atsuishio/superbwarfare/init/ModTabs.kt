@@ -180,6 +180,7 @@ object ModTabs {
     fun buildTabContentsVanilla(tabData: BuildCreativeModeTabContentsEvent) {
         if (tabData.tabKey === CreativeModeTabs.SPAWN_EGGS) {
             tabData.accept(ModItems.SENPAI_SPAWN_EGG.get())
+            tabData.accept(ModItems.STEEL_COIL_SPAWN_EGG.get())
         }
     }
 
