@@ -1065,7 +1065,7 @@ object VehicleEngineUtils {
 
         val f = Mth.clamp(
             Math.max(
-                (if (onGround()) 0.96f else 1f) - 0.013 * deltaMovement.lengthSqr(), 0.5
+                (if (onGround()) 0.96f else 1f) - 0.015 * deltaMovement.lengthSqr(), 0.5
             ) + 0.0001f * Mth.abs(deltaMovement.normalize().dot(getViewVector(1f)).toFloat()), 0.01, 0.99
         ).toFloat()
 
@@ -1115,7 +1115,7 @@ object VehicleEngineUtils {
             val maxPower = if (sprintInputDown || onGround()) 2.2f else (if (power > 1) power - 0.012f else 1f)
 
             if (forwardInputDown) {
-                power = Mth.clamp(power + 0.045f * powerAdd, -0.1f, maxPower)
+                power = Mth.clamp(power + 0.02f * powerAdd, -0.1f, maxPower)
             }
 
             if (backInputDown) {
@@ -1199,7 +1199,7 @@ object VehicleEngineUtils {
         )
         deltaMovement = deltaMovement.add(
             getViewVector(1f).scale(
-                0.1 * speedRate * power
+                0.061 * speedRate * power
             )
         )
     }
