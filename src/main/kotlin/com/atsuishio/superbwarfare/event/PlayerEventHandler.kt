@@ -11,10 +11,7 @@ import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
-import com.atsuishio.superbwarfare.tools.InventoryTool
-import com.atsuishio.superbwarfare.tools.ParticleTool
-import com.atsuishio.superbwarfare.tools.TraceTool
-import com.atsuishio.superbwarfare.tools.sendPacketTo
+import com.atsuishio.superbwarfare.tools.*
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
@@ -176,12 +173,13 @@ object PlayerEventHandler {
         if (event.phase != TickEvent.Phase.END) return
         val server = event.server
         // TODO 添加同步间隔配置项
-        if (server.tickCount % 50 != 0) return
+        if (server.tickCount % 3 != 0) return
         for (level in server.allLevels) {
             val list = arrayListOf<EntitySyncMessage.SyncedEntity>()
 
             for (entity in level.allEntities) {
                 if (entity !is VehicleEntity) continue
+                if (!SeekTool.NOT_IN_SMOKE.test(entity)) continue
 
                 list.add(
                     EntitySyncMessage.SyncedEntity(
