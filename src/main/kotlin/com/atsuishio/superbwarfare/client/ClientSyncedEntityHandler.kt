@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client
 
 import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage.SyncedEntity
+import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.mc
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
@@ -9,12 +10,17 @@ import net.minecraft.world.entity.Entity
 import java.util.concurrent.ConcurrentHashMap
 
 object ClientSyncedEntityHandler {
-    val SYNCED_ENTITIES = hashMapOf<ResourceLocation, ConcurrentHashMap<Int, Entity>>()
+    val SYNCED_ENTITIES = hashMapOf<ResourceLocation, ConcurrentHashMap<Int, ClientSyncedEntity>>()
+
+    data class ClientSyncedEntity(val entity: Entity, val timeStamp: Int)
 
     fun sync(dim: ResourceLocation, list: List<SyncedEntity>) {
+        val player = localPlayer ?: return
         val level = mc.level ?: return
-        val entities = SYNCED_ENTITIES[dim] ?: ConcurrentHashMap<Int, Entity>()
-
+        val entities = SYNCED_ENTITIES[dim] ?: ConcurrentHashMap<Int, ClientSyncedEntity>()
+        val tick = player.tickCount
+        entities.entries.removeIf { tick - it.value.timeStamp > 20 }
+        
         for (syncedEntity in list) {
             val id = syncedEntity.id
             if (entities[id] != null) continue
@@ -32,7 +38,7 @@ object ClientSyncedEntityHandler {
             entity.setPos(syncedEntity.pos)
             entity.deltaMovement = syncedEntity.motion
 
-            entities[id] = entity
+            entities[id] = ClientSyncedEntity(entity, tick)
         }
 
         SYNCED_ENTITIES[dim] = entities
