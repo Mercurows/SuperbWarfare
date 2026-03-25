@@ -2126,14 +2126,14 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             val accelForward: Double = acceleration!!.multiply(1.0, 0.0, 1.0).dot(forward)
             val accelRight: Double = acceleration.multiply(1.0, 0.0, 1.0).dot(right)
 
-            val targetPitch = (25 * accelForward).toFloat()
+            val targetPitch = (10 * accelForward).toFloat()
             val omegaP = 2.0f * java.lang.Math.PI.toFloat() * 2f
             val zetaP = 0.6f
             val angularAccelP: Float = omegaP * omegaP * (targetPitch - pitchAngle) - 2 * zetaP * omegaP * pitchVelocity
             pitchVelocity += angularAccelP * 0.05f // dt = 0.05s
             pitchAngle += pitchVelocity * 0.05f
 
-            val targetRoll = (40 * accelRight).toFloat()
+            val targetRoll = (15 * accelRight).toFloat()
             val omegaR = 2.0f * java.lang.Math.PI.toFloat() * 2f
             val zetaR = 0.6f
             val angularAccelR: Float = omegaR * omegaR * (targetRoll - rollAngle) - 2 * zetaR * omegaR * rollVelocity

@@ -8,10 +8,7 @@ import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModTags
-import com.atsuishio.superbwarfare.tools.VectorTool
-import com.atsuishio.superbwarfare.tools.angleTo
-import com.atsuishio.superbwarfare.tools.canBeSeen
-import com.atsuishio.superbwarfare.tools.worldToScreen
+import com.atsuishio.superbwarfare.tools.*
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Camera
@@ -50,7 +47,13 @@ object IFFOverlay : CommonOverlay("iff") {
             c.findFirstCurio(ModItems.IFF.get()).ifPresent { _ ->
                 val entities = ClientSyncedEntityHandler.SYNCED_ENTITIES[this.player.level().dimension().location()] ?: return@ifPresent
                 for (entry in entities) {
-                    val e = entry.value
+                    var e = entry.value
+
+                    val clientEntity = player.level().getEntity(e.id)
+                    if (clientEntity != null) {
+                        e = clientEntity
+                    }
+
                     if (e !== player && e.position().canBeSeen() && e !== player.vehicle) {
                         var team: Entity? = e
                         if (e.vehicle != null) {
