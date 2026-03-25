@@ -47,7 +47,7 @@ object IFFOverlay : CommonOverlay("iff") {
             c.findFirstCurio(ModItems.IFF.get()).ifPresent { _ ->
                 val entities = ClientSyncedEntityHandler.SYNCED_ENTITIES[this.player.level().dimension().location()] ?: return@ifPresent
                 for (entry in entities) {
-                    var e = entry.value
+                    var e = entry.value.entity
 
                     val clientEntity = player.level().getEntity(e.id)
                     if (clientEntity != null) {
