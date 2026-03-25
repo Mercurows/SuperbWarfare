@@ -85,6 +85,7 @@ private fun registerPayloads() {
     playToClient<ShootClientMessage>()
     playToClient<SoundClientMessage>()
     playToClient<TDMSyncMessage>()
+    playToClient<EntitySyncMessage>()
 
     playToServer<AdjustMortarAngleMessage>()
     playToServer<AdjustZoomFovMessage>()

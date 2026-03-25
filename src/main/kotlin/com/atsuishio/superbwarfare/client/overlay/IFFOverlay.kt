@@ -1,13 +1,17 @@
 package com.atsuishio.superbwarfare.client.overlay
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
+import com.atsuishio.superbwarfare.client.ClientSyncedEntityHandler
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModTags
-import com.atsuishio.superbwarfare.tools.*
+import com.atsuishio.superbwarfare.tools.VectorTool
+import com.atsuishio.superbwarfare.tools.angleTo
+import com.atsuishio.superbwarfare.tools.canBeSeen
+import com.atsuishio.superbwarfare.tools.worldToScreen
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Camera
@@ -32,8 +36,6 @@ object IFFOverlay : CommonOverlay("iff") {
     val FRIENDLY_APC: ResourceLocation = loc("textures/overlay/teammate/friendly_apc.png")
     val FRIENDLY_AA: ResourceLocation = loc("textures/overlay/teammate/friendly_aa.png")
     val FRIENDLY_CAR: ResourceLocation = loc("textures/overlay/teammate/friendly_car.png")
-
-    @JvmField
     val FRIENDLY_ARTILLERY: ResourceLocation = loc("textures/overlay/teammate/friendly_artillery.png")
     val FRIENDLY_BOAT: ResourceLocation = loc("textures/overlay/teammate/friendly_boat.png")
     val FRIENDLY_DEFENSE: ResourceLocation = loc("textures/overlay/teammate/friendly_defense.png")
@@ -47,11 +49,11 @@ object IFFOverlay : CommonOverlay("iff") {
         CuriosApi.getCuriosInventory(player)
             .flatMap { c -> c.findFirstCurio(ModItems.IFF.get()) }
             .ifPresent { _ ->
-                val entities = SeekTool.Builder(player)
-                    .friendly()
-                    .build()
-                for (e in entities) {
-                    if (e != null && e !== player && e.position().canBeSeen() && e !== player.vehicle) {
+                val entities = ClientSyncedEntityHandler.SYNCED_ENTITIES[this.player.level().dimension().location()]
+                    ?: return@ifPresent
+                for (entry in entities) {
+                    val e = entry.value
+                    if (e !== player && e.position().canBeSeen() && e !== player.vehicle) {
                         var team: Entity? = e
                         if (e.vehicle != null) {
                             team = e.vehicle

@@ -10,8 +10,10 @@ import com.atsuishio.superbwarfare.init.ModParticleTypes
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.item.gun.GunItem
+import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
 import com.atsuishio.superbwarfare.tools.*
 import net.minecraft.core.BlockPos
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvents
@@ -26,6 +28,7 @@ import net.neoforged.neoforge.event.entity.player.AttackEntityEvent
 import net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent
 import net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerRespawnEvent
 import net.neoforged.neoforge.event.tick.PlayerTickEvent
+import net.neoforged.neoforge.event.tick.ServerTickEvent
 import kotlin.math.ceil
 
 @EventBusSubscriber
@@ -177,6 +180,35 @@ object PlayerEventHandler {
                         2, 0.0, 0.0, 0.0, 0.2, false
                     )
                 }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    fun onServerTick(event: ServerTickEvent.Post) {
+        val server = event.server
+        // TODO 添加同步间隔配置项
+        if (server.tickCount % 50 != 0) return
+        for (level in server.allLevels) {
+            val list = arrayListOf<EntitySyncMessage.SyncedEntity>()
+
+            for (entity in level.allEntities) {
+                if (entity !is VehicleEntity) continue
+
+                list.add(
+                    EntitySyncMessage.SyncedEntity(
+                        entity.id,
+                        BuiltInRegistries.ENTITY_TYPE.getKey(entity.type),
+                        entity.position(),
+                        entity.deltaMovement,
+                        // TODO 如何正确序列化
+                        entity.serializeNBT(event.server.registryAccess())
+                    )
+                )
+            }
+
+            for (player in server.playerList.players) {
+                sendPacketTo(player, EntitySyncMessage(level.dimension().location(), list))
             }
         }
     }
