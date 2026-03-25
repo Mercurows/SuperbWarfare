@@ -2183,6 +2183,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
             copyBlueprint(writer, ModItems.HPJ_11_BLUEPRINT.get())
             copyBlueprint(writer, ModItems.ANNIHILATOR_BLUEPRINT.get())
             copyBlueprint(writer, ModItems.QL_1031_BLUEPRINT.get())
+            copyBlueprint(writer, ModItems.SUPER_STAR_SHOOTER_BLUEPRINT.get())
         }
 
         private fun buildPerkRecipes(writer: Consumer<FinishedRecipe>) {
@@ -2514,6 +2515,18 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .define('d', Tags.Items.NUGGETS_GOLD)
                 .unlockedBy(getHasName(ModItems.DATA_CHIP_SUBSTRATE.get()), has(ModItems.DATA_CHIP_SUBSTRATE.get()))
                 .save(writer, loc(getItemName(ModItems.LEGENDARY_BLUEPRINT_DATA_CHIP.get())))
+            ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.VIRTUAL_BLUEPRINT_DATA_CHIP.get())
+                .pattern("eae")
+                .pattern("cbc")
+                .pattern("fdf")
+                .define('a', Tags.Items.GLASS)
+                .define('b', ModItems.DATA_CHIP_SUBSTRATE.get())
+                .define('c', ModTags.Items.INGOTS_CEMENTED_CARBIDE)
+                .define('d', Tags.Items.NUGGETS_GOLD)
+                .define('e', Tags.Items.GEMS_AMETHYST)
+                .define('f', Tags.Items.GEMS_DIAMOND)
+                .unlockedBy(getHasName(ModItems.DATA_CHIP_SUBSTRATE.get()), has(ModItems.DATA_CHIP_SUBSTRATE.get()))
+                .save(writer, loc(getItemName(ModItems.VIRTUAL_BLUEPRINT_DATA_CHIP.get())))
             ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.BOOST_RESEARCH_MODULE.get())
                 .pattern("ada")
                 .pattern("bcb")

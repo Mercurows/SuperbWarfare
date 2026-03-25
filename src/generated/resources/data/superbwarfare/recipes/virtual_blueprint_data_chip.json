@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "tag": "forge:glass"
+    },
+    "b": {
+      "item": "superbwarfare:data_chip_substrate"
+    },
+    "c": {
+      "tag": "superbwarfare:ingots/cemented_carbide"
+    },
+    "d": {
+      "tag": "forge:nuggets/gold"
+    },
+    "e": {
+      "tag": "forge:gems/amethyst"
+    },
+    "f": {
+      "tag": "forge:gems/diamond"
+    }
+  },
+  "pattern": [
+    "eae",
+    "cbc",
+    "fdf"
+  ],
+  "result": {
+    "item": "superbwarfare:virtual_blueprint_data_chip"
+  },
+  "show_notification": true
+}
