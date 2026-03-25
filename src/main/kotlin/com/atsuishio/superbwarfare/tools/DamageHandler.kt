@@ -44,6 +44,11 @@ object DamageHandler {
             } else if (entity is Player && (entity.isCreative || entity.isSpectator)) {
                 return false
             } else {
+                val sourceEntity = source.entity
+                if (entity.isAlliedTo(sourceEntity) && entity.team?.isAllowFriendlyFire == false) {
+                    return false
+                }
+
                 if (entity.isSleeping && !entity.level().isClientSide) {
                     entity.stopSleeping()
                 }
@@ -77,21 +82,20 @@ object DamageHandler {
                     damage *= 0.75f
                 }
 
-                val entity1 = source.entity
-                if (entity1 != null) {
-                    if (entity1 is LivingEntity) {
+                if (sourceEntity != null) {
+                    if (sourceEntity is LivingEntity) {
                         if (!source.`is`(DamageTypeTags.NO_ANGER)) {
-                            entity.setLastHurtByMob(entity1)
+                            entity.setLastHurtByMob(sourceEntity)
                         }
                     }
 
-                    if (entity1 is Player) {
+                    if (sourceEntity is Player) {
                         entity.lastHurtByPlayerTime = 100
-                        entity.setLastHurtByPlayer(entity1)
-                    } else if (entity1 is TamableAnimal) {
-                        if (entity1.isTame) {
+                        entity.setLastHurtByPlayer(sourceEntity)
+                    } else if (sourceEntity is TamableAnimal) {
+                        if (sourceEntity.isTame) {
                             entity.lastHurtByPlayerTime = 100
-                            val owner = entity1.owner
+                            val owner = sourceEntity.owner
                             if (owner is Player) {
                                 entity.setLastHurtByPlayer(owner)
                             } else {
@@ -108,11 +112,11 @@ object DamageHandler {
                         entity.hurtMarked = true
                     }
 
-                    if (entity1 != null && !source.`is`(DamageTypeTags.IS_EXPLOSION)) {
-                        var d0 = entity1.x - entity.x
+                    if (sourceEntity != null && !source.`is`(DamageTypeTags.IS_EXPLOSION)) {
+                        var d0 = sourceEntity.x - entity.x
 
                         var d1: Double
-                        d1 = entity1.z - entity.z
+                        d1 = sourceEntity.z - entity.z
                         while (d0 * d0 + d1 * d1 < 1.0E-4) {
                             d0 = (Math.random() - Math.random()) * 0.01
                             d1 = (Math.random() - Math.random()) * 0.01
@@ -148,8 +152,8 @@ object DamageHandler {
                     CriteriaTriggers.ENTITY_HURT_PLAYER.trigger(entity, source, damage, damage, flag)
                 }
 
-                if (entity1 is ServerPlayer) {
-                    CriteriaTriggers.PLAYER_HURT_ENTITY.trigger(entity1, entity, source, damage, damage, flag)
+                if (sourceEntity is ServerPlayer) {
+                    CriteriaTriggers.PLAYER_HURT_ENTITY.trigger(sourceEntity, entity, source, damage, damage, flag)
                 }
 
                 return true
