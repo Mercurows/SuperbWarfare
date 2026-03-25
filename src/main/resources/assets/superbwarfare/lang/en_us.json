@@ -222,6 +222,7 @@
   "item.superbwarfare.dps_generator_deployer": "DPS Generator",
   "des.superbwarfare.dps_generator_deployer": "\"So what is your DPS?\"",
   "item.superbwarfare.senpai_spawn_egg": "Senpai Spawn Egg",
+  "item.superbwarfare.steel_coil_spawn_egg": "Steel Coil Spawn Egg",
   "item.superbwarfare.knife": "Knife",
   "item.superbwarfare.hammer": "Hammer",
   "des.superbwarfare.hammer": "Crafting Count: %1$s",
@@ -656,6 +657,8 @@
   "entity.superbwarfare.steel_coil": "Steel Coil",
   "entity.superbwarfare.turret_wreck": "Turret Wreck",
   "entity.superbwarfare.ztz_99a": "ZTZ-99A MBT",
+  "entity.superbwarfare.super_star_projectile": "Super Star",
+  "entity.superbwarfare.prismatic_bolt": "Prismatic Bolt",
 
   "key.categories.superbwarfare": "Superb Warfare",
   "key.superbwarfare.hold_zoom": "Zoom (Hold)",
