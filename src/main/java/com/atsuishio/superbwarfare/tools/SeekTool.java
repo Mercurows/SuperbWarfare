@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.tools;
 
+import com.atsuishio.superbwarfare.client.ClientSyncedEntityHandler;
 import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -32,6 +33,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public class SeekTool {
@@ -318,8 +320,15 @@ public class SeekTool {
         }
 
         public List<Entity> build() {
-            return StreamSupport.stream(EntityFindUtil.getEntities(entity.level()).getAll().spliterator(), false)
-                    .filter(e -> {
+            var entities = EntityFindUtil.getEntities(entity.level()).getAll().spliterator();
+            var stream = StreamSupport.stream(entities, false);
+            if (entity.level().isClientSide) {
+                var clientEntities = ClientSyncedEntityHandler.getEntitiesInLevel(entity.level());
+                if (clientEntities != null) {
+                    stream = Stream.concat(stream, clientEntities.stream());
+                }
+            }
+            return stream.filter(e -> {
                         for (var f : this.filters) {
                             if (!f.test(e)) return false;
                         }
@@ -330,8 +339,15 @@ public class SeekTool {
 
         @Nullable
         public Entity buildWithClosest() {
-            return StreamSupport.stream(EntityFindUtil.getEntities(entity.level()).getAll().spliterator(), false)
-                    .filter(e -> {
+            var entities = EntityFindUtil.getEntities(entity.level()).getAll().spliterator();
+            var stream = StreamSupport.stream(entities, false);
+            if (entity.level().isClientSide) {
+                var clientEntities = ClientSyncedEntityHandler.getEntitiesInLevel(entity.level());
+                if (clientEntities != null) {
+                    stream = Stream.concat(stream, clientEntities.stream());
+                }
+            }
+            return stream.filter(e -> {
                         for (var f : this.filters) {
                             if (!f.test(e)) return false;
                         }
