@@ -219,8 +219,8 @@ open class Tm62Entity : Entity, OwnableEntity {
     private fun triggerExplode() {
         CustomExplosion.Builder(this)
             .attacker(this.getOwner())
-            .damage(450f)
-            .radius(13f)
+            .damage(ExplosionConfig.TM_62_EXPLOSION_DAMAGE.get().toFloat())
+            .radius(ExplosionConfig.TM_62_EXPLOSION_RADIUS.get().toFloat())
             .withParticleType(ParticleTool.ParticleType.HUGE)
             .explode()
 

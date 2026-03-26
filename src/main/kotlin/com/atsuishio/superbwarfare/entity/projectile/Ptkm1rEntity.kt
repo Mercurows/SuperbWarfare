@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.animation.entity.Ptkm1rAnimationInstance
+import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.entity.living.SenpaiEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier.Companion.createDefaultModifier
@@ -251,9 +252,9 @@ open class Ptkm1rEntity : Entity, OwnableEntity {
         val level = this.level()
         if (level is ServerLevel) {
             val ptkmProjectile = PtkmProjectileEntity(this.getOwner(), level)
-            ptkmProjectile.setDamage(500f)
-            ptkmProjectile.setExplosionDamage(80f)
-            ptkmProjectile.setExplosionRadius(7f)
+            ptkmProjectile.setDamage(ExplosionConfig.PTKM_1R_PROJECTILE_HIT_DAMAGE.get().toFloat())
+            ptkmProjectile.setExplosionDamage(ExplosionConfig.PTKM_1R_PROJECTILE_EXPLOSION_DAMAGE.get().toFloat())
+            ptkmProjectile.setExplosionRadius(ExplosionConfig.PTKM_1R_PROJECTILE_EXPLOSION_RADIUS.get().toFloat())
             ptkmProjectile.setTarget(entity)
             ptkmProjectile.setShootTime((0.5f * distance).toInt())
             ptkmProjectile.setPos(position().x, eyePosition.y, position().z)
@@ -290,8 +291,8 @@ open class Ptkm1rEntity : Entity, OwnableEntity {
 
     private fun triggerExplode() {
         CustomExplosion.Builder(this)
-            .damage(100f)
-            .radius(6f)
+            .damage(ExplosionConfig.PTKM_1R_EXPLOSION_DAMAGE.get().toFloat())
+            .radius(ExplosionConfig.PTKM_1R_EXPLOSION_RADIUS.get().toFloat())
             .attacker(this.getOwner())
             .withParticleType(ParticleTool.ParticleType.HUGE)
             .explode()

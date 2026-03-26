@@ -83,7 +83,72 @@ object ExplosionConfig {
     @JvmField
     val CLAYMORE_EXPLOSION_RADIUS = buildServerConfig {
         comment("The explosion radius of Claymore")
-        defineInRange("claymore_explosion_radius", 4, 1, Int.MAX_VALUE).also { pop(2) }
+        defineInRange("claymore_explosion_radius", 4, 1, Int.MAX_VALUE).also { pop() }
     }
 
+    @JvmField
+    val TM_62_EXPLOSION_DAMAGE = buildServerConfig {
+        push("Tm 62")
+
+        comment("The explosion damage of Tm 62")
+        defineInRange("tm_62_explosion_damage", 450, 1, Int.MAX_VALUE)
+    }
+
+    @JvmField
+    val TM_62_EXPLOSION_RADIUS = buildServerConfig {
+        comment("The explosion radius of Tm 62")
+        defineInRange("tm_62_explosion_radius", 13, 1, Int.MAX_VALUE).also { pop() }
+    }
+
+    @JvmField
+    val LUNGE_MINE_EXPLOSION_DAMAGE = buildServerConfig {
+        push("Lunge Mine")
+
+        comment("The explosion damage of Lunge Mine")
+        defineInRange("lunge_mine_explosion_damage", 60, 1, Int.MAX_VALUE)
+    }
+
+    @JvmField
+    val LUNGE_MINE_ATTACK_DAMAGE = buildServerConfig {
+        comment("The attack damage of Lunge Mine")
+        defineInRange("lunge_mine_attack_damage", 600, 1, Int.MAX_VALUE)
+    }
+
+    @JvmField
+    val LUNGE_MINE_EXPLOSION_RADIUS = buildServerConfig {
+        comment("The explosion radius of Lunge Mine")
+        defineInRange("lunge_mine_explosion_radius", 4, 1, Int.MAX_VALUE).also { pop() }
+    }
+
+    @JvmField
+    val PTKM_1R_EXPLOSION_DAMAGE = buildServerConfig {
+        push("Ptkm 1r")
+
+        comment("The explosion damage of Ptkm 1r")
+        defineInRange("ptkm_1r_explosion_damage", 100, 1, Int.MAX_VALUE)
+    }
+
+    @JvmField
+    val PTKM_1R_EXPLOSION_RADIUS = buildServerConfig {
+        comment("The explosion radius of Ptkm 1r")
+        defineInRange("ptkm_1r_explosion_radius", 6, 1, Int.MAX_VALUE)
+    }
+
+    @JvmField
+    val PTKM_1R_PROJECTILE_HIT_DAMAGE = buildServerConfig {
+        comment("The hit damage of projectile launched by Ptkm 1r")
+        defineInRange("ptkm_1r_projectile_hit_damage", 500, 1, Int.MAX_VALUE)
+    }
+
+    @JvmField
+    val PTKM_1R_PROJECTILE_EXPLOSION_DAMAGE = buildServerConfig {
+        comment("The explosion damage of projectile launched by Ptkm 1r")
+        defineInRange("ptkm_1r_projectile_explosion_damage", 80, 1, Int.MAX_VALUE)
+    }
+
+    @JvmField
+    val PTKM_1R_PROJECTILE_EXPLOSION_RADIUS = buildServerConfig {
+        comment("The explosion radius of projectile launched by Ptkm 1r")
+        defineInRange("ptkm_1r_projectile_explosion_radius", 7, 1, Int.MAX_VALUE).also { pop(2) }
+    }
 }

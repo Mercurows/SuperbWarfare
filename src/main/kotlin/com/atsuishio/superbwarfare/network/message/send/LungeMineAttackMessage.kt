@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.send
 
+import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModItems
@@ -21,7 +22,6 @@ data class LungeMineAttackMessage(
     val uuid: SerializedUUID,
     val pos: SerializedVec3,
 ) : ServerPacketPayload() {
-
     override fun PayloadContext.handler() {
         val player = sender()
         val stack = player.mainHandItem
@@ -33,9 +33,10 @@ data class LungeMineAttackMessage(
                 }
                 val lookingEntity = EntityFindUtil.findEntity(player.level(), uuid.toString())
                 if (lookingEntity != null) {
+                    val damage = ExplosionConfig.LUNGE_MINE_ATTACK_DAMAGE.get().toFloat()
                     lookingEntity.forceHurt(
                         ModDamageTypes.causeLungeMineDamage(player.level().registryAccess(), player, player),
-                        (if (lookingEntity is VehicleEntity) 600 else 150).toFloat()
+                        if (lookingEntity is VehicleEntity) damage else damage / 4f
                     )
                     causeLungeMineExplode(player, lookingEntity)
                 }
@@ -45,9 +46,8 @@ data class LungeMineAttackMessage(
                 }
 
                 CustomExplosion.Builder(player)
-                    .damage(60f)
-                    .radius(4f)
-                    .damageMultiplier(1.25f)
+                    .damage(ExplosionConfig.LUNGE_MINE_EXPLOSION_DAMAGE.get().toFloat())
+                    .radius(ExplosionConfig.LUNGE_MINE_EXPLOSION_RADIUS.get().toFloat())
                     .withParticleType(ParticleTool.ParticleType.MEDIUM)
                     .position(pos)
                     .explode()
@@ -58,10 +58,9 @@ data class LungeMineAttackMessage(
 
     fun causeLungeMineExplode(attacker: Entity, target: Entity) {
         CustomExplosion.Builder(target)
-            .damage(60f)
-            .radius(4f)
+            .damage(ExplosionConfig.LUNGE_MINE_EXPLOSION_DAMAGE.get().toFloat())
+            .radius(ExplosionConfig.LUNGE_MINE_EXPLOSION_RADIUS.get().toFloat())
             .attacker(attacker)
-            .damageMultiplier(1.25f)
             .withParticleType(ParticleTool.ParticleType.MEDIUM)
             .explode()
     }
