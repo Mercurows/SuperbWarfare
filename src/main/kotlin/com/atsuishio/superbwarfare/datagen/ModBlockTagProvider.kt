@@ -58,12 +58,6 @@ class ModBlockTagProvider(
         )
         this.tag(BlockTags.MINEABLE_WITH_SHOVEL).add(ModBlocks.SANDBAG.get())
 
-        this.tag(ModTags.Blocks.MINEABLE_WITH_MILITARY_SHOVEL)
-            .add(Blocks.COBWEB)
-            .addTag(BlockTags.MINEABLE_WITH_SHOVEL)
-            .addTag(BlockTags.MINEABLE_WITH_AXE)
-            .addTag(BlockTags.MINEABLE_WITH_HOE)
-
         this.tag(ModTags.Blocks.SOFT_COLLISION)
             .addTag(BlockTags.LEAVES)
             .add(Blocks.LILY_PAD, Blocks.COBWEB, Blocks.CACTUS, Blocks.MANGROVE_ROOTS)
@@ -115,6 +109,8 @@ class ModBlockTagProvider(
             .add(Blocks.LANTERN, Blocks.SOUL_LANTERN, Blocks.CHAIN)
         this.tag(ModTags.Blocks.AUTO_LANDING)
             .add(ModBlocks.CHARGING_STATION.get(), ModBlocks.CREATIVE_CHARGING_STATION.get())
+        this.tag(ModTags.Blocks.VEHICLE_PASS_THROUGH)
+            .addTag(BlockTags.SWORD_EFFICIENT)
 
         this.tag(Tags.Blocks.ORES).addTags(cTag("ores/lead"), cTag("ores/tungsten"), cTag("ores/silver"))
         this.tag(cTag("ores/lead")).add(ModBlocks.GALENA_ORE.get(), ModBlocks.DEEPSLATE_GALENA_ORE.get())
