@@ -196,7 +196,7 @@ open class VehicleAssemblingTableBlock : BaseEntityBlock(
         val CODEC: MapCodec<VehicleAssemblingTableBlock> = simpleCodec { _ -> VehicleAssemblingTableBlock() }
 
         private fun createVehicle(
-            server: ServerLevel?,
+            server: ServerLevel,
             facing: Direction,
             originalPos: BlockPos
         ): VehicleAssemblingTableVehicleEntity {

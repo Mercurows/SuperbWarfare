@@ -13,6 +13,7 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -27,14 +28,20 @@ import javax.annotation.Nullable;
 @Mixin(Entity.class)
 public abstract class EntityMixin implements OBBHitter {
 
-    @Shadow @Nullable public abstract Entity getVehicle();
+    @Shadow
+    @Nullable
+    public abstract Entity getVehicle();
 
-    @Shadow private AABB bb;
-    @Shadow private float eyeHeight;
+    @Shadow
+    private AABB bb;
+    @Shadow
+    private float eyeHeight;
 
-    @Shadow public abstract Vec3 position();
+    @Shadow
+    public abstract Vec3 position();
 
-    @Shadow private Vec3 position;
+    @Shadow
+    private Vec3 position;
     @Unique
     public OBB.Part sbw$currentHitPart;
 
@@ -47,7 +54,7 @@ public abstract class EntityMixin implements OBBHitter {
     }
 
     @Override
-    public void sbw$setCurrentHitPart(OBB.Part part) {
+    public void sbw$setCurrentHitPart(OBB.@NotNull Part part) {
         this.sbw$currentHitPart = part;
     }
 
@@ -79,8 +86,8 @@ public abstract class EntityMixin implements OBBHitter {
         }
         if (entity instanceof Player player && player.getMainHandItem().getItem() instanceof SuperStarShooterItem) {
             ci.cancel();
-            float f = (float)pXRot * 0.15F;
-            float f1 = (float)pYRot * 0.15F;
+            float f = (float) pXRot * 0.15F;
+            float f1 = (float) pYRot * 0.15F;
             player.setXRot(player.getXRot() + f);
             player.setYRot(player.getYRot() + f1);
             player.setXRot(Mth.clamp(player.getXRot(), -90.0F, 90.0F));
@@ -114,7 +121,7 @@ public abstract class EntityMixin implements OBBHitter {
         if (this.getVehicle() instanceof VehicleEntity vehicle) {
             cir.cancel();
             var s = vehicle.getPassengerRenderScale();
-            cir.setReturnValue(this.position.y + (double)this.eyeHeight * s);
+            cir.setReturnValue(this.position.y + (double) this.eyeHeight * s);
         }
     }
 

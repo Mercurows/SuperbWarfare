@@ -27,7 +27,6 @@ import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessag
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.atsuishio.superbwarfare.tools.*
-import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
 import com.atsuishio.superbwarfare.tools.VectorTool.isInLiquid
 import com.atsuishio.superbwarfare.world.phys.EntityResult
 import net.minecraft.client.gui.screens.Screen
@@ -893,9 +892,9 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             shootPosition.z
         )
 
-        var x = shootDirection.x
-        var y = shootDirection.y
-        var z = shootDirection.z
+        val x = shootDirection.x
+        val y = shootDirection.y
+        val z = shootDirection.z
 
 //        if (uuid != null && zoom && (shooter != null && !shooter.isShiftKeyDown)) {
 //            val target = EntityFindUtil.findEntity(level, uuid.toString())
