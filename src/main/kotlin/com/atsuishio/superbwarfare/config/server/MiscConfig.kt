@@ -102,6 +102,12 @@ object MiscConfig {
     }
 
     @JvmField
+    val STEEL_COIL_AWAKE_PERCENTAGE = buildServerConfig {
+        comment("The minimum health percentage for activating steel coils")
+        define("steel_coil_awake_percentage", 0.99f)
+    }
+
+    @JvmField
     val SMOKE_HIDE_TARGET = buildServerConfig {
         comment("Set true to allow smoke to prevent entities from being set as target")
         define("smoke_hide_target", false).also { pop() }

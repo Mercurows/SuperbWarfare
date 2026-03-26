@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity.living
 
+import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
 import com.atsuishio.superbwarfare.entity.vehicle.TurretWreckEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -138,7 +139,7 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Pa
     }
 
     fun isAttackableEntity(entity: Entity): Boolean {
-        return !(!entity.isAlive || (entity is Player && (entity.isCreative || entity.isSpectator)))
+        return entity.isAlive || (entity is Player && (!entity.isCreative && !entity.isSpectator))
     }
 
     protected fun lerpRot(pSourceAngle: Float, pTargetAngle: Float, pMaximumChange: Float): Float {
@@ -169,10 +170,11 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Pa
         fun createAttributes(): AttributeSupplier.Builder {
             return createMobAttributes()
                 .add(Attributes.MOVEMENT_SPEED, 0.25)
-                .add(Attributes.MAX_HEALTH, 100.0)
+                .add(Attributes.MAX_HEALTH, 200.0)
                 .add(Attributes.ARMOR, 30.0)
+                .add(Attributes.ARMOR_TOUGHNESS, 20.0)
                 .add(Attributes.ATTACK_DAMAGE, 1.0)
-                .add(Attributes.FOLLOW_RANGE, 48.0)
+                .add(Attributes.FOLLOW_RANGE, 64.0)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0)
                 .add(ForgeMod.STEP_HEIGHT_ADDITION.get(), 2.0)
         }
@@ -281,7 +283,7 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Pa
 
         override fun canUse(): Boolean {
             val rate = entity.health / entity.maxHealth
-            if (rate > 0.8f) return false
+            if (rate > MiscConfig.STEEL_COIL_AWAKE_PERCENTAGE.get()) return false
             return entity.target != null
         }
 

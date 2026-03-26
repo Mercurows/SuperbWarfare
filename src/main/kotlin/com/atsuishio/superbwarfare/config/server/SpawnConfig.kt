@@ -13,9 +13,14 @@ object SpawnConfig {
     }
 
     @JvmField
+    val SPAWN_STEEL_COIL = buildServerConfig {
+        comment("Set true to allow Steel Coil to spawn naturally")
+        define("spawn_steel_coil", false)
+    }
+
+    @JvmField
     val SPAWN_MOB_WITH_GUNS = buildServerConfig {
         comment("this feature is under development, DO NOT TURN THIS ON!")
         define("spawn_mob_with_guns", false).also { pop() }
     }
-
 }
