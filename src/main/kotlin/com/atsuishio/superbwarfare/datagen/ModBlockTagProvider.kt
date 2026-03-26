@@ -109,6 +109,8 @@ class ModBlockTagProvider(
             .add(Blocks.LANTERN, Blocks.SOUL_LANTERN, Blocks.CHAIN)
         this.tag(ModTags.Blocks.AUTO_LANDING)
             .add(ModBlocks.CHARGING_STATION.get(), ModBlocks.CREATIVE_CHARGING_STATION.get())
+        this.tag(ModTags.Blocks.VEHICLE_PASS_THROUGH)
+            .addTag(BlockTags.SWORD_EFFICIENT)
 
         this.tag(Tags.Blocks.ORES).addTags(forgeTag("ores/lead"), forgeTag("ores/tungsten"), forgeTag("ores/silver"))
         this.tag(forgeTag("ores/lead")).add(ModBlocks.GALENA_ORE.get(), ModBlocks.DEEPSLATE_GALENA_ORE.get())

@@ -126,6 +126,10 @@ object ModTags {
         // 辅助降落可识别的方块
         @JvmField
         val AUTO_LANDING = modBlockTag("auto_landing")
+
+        // 载具可以穿过的方块
+        @JvmField
+        val VEHICLE_PASS_THROUGH = modBlockTag("vehicle_pass_through")
     }
 
     object DamageTypes {

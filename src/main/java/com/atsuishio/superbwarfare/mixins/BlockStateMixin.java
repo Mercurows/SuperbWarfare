@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModBlocks;
+import com.atsuishio.superbwarfare.init.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
@@ -36,9 +37,7 @@ public abstract class BlockStateMixin {
 		if (entity instanceof VehicleEntity vehicle) {
 			BlockState state = vehicle.level().getBlockState(pos);
 
-			//TODO 未来添加更多能穿过的方块
-
-			if (state.is(BlockTags.SWORD_EFFICIENT) && !state.is(BlockTags.MINEABLE_WITH_AXE)) {
+			if (state.is(ModTags.Blocks.VEHICLE_PASS_THROUGH) && !state.is(BlockTags.MINEABLE_WITH_AXE)) {
 				ci.setReturnValue(Shapes.empty());
 			}
 
