@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.launcher.SuperStarShooterItem;
 import com.atsuishio.superbwarfare.tools.OBB;
@@ -12,7 +11,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Math;
@@ -29,14 +27,20 @@ import javax.annotation.Nullable;
 @Mixin(Entity.class)
 public abstract class EntityMixin implements OBBHitter {
 
-    @Shadow @Nullable public abstract Entity getVehicle();
+    @Shadow
+    @Nullable
+    public abstract Entity getVehicle();
 
-    @Shadow private AABB bb;
-    @Shadow private float eyeHeight;
+    @Shadow
+    private AABB bb;
+    @Shadow
+    private float eyeHeight;
 
-    @Shadow public abstract Vec3 position();
+    @Shadow
+    public abstract Vec3 position();
 
-    @Shadow private Vec3 position;
+    @Shadow
+    private Vec3 position;
     @Unique
     public OBB.Part sbw$currentHitPart;
 
@@ -78,8 +82,8 @@ public abstract class EntityMixin implements OBBHitter {
         }
         if (entity instanceof Player player && player.getMainHandItem().getItem() instanceof SuperStarShooterItem) {
             ci.cancel();
-            float f = (float)pXRot * 0.15F;
-            float f1 = (float)pYRot * 0.15F;
+            float f = (float) pXRot * 0.15F;
+            float f1 = (float) pYRot * 0.15F;
             player.setXRot(player.getXRot() + f);
             player.setYRot(player.getYRot() + f1);
             player.setXRot(Mth.clamp(player.getXRot(), -90.0F, 90.0F));
@@ -113,7 +117,7 @@ public abstract class EntityMixin implements OBBHitter {
         if (this.getVehicle() instanceof VehicleEntity vehicle) {
             cir.cancel();
             var s = vehicle.getPassengerRenderScale();
-            cir.setReturnValue(this.position.y + (double)this.eyeHeight * s);
+            cir.setReturnValue(this.position.y + (double) this.eyeHeight * s);
         }
     }
 

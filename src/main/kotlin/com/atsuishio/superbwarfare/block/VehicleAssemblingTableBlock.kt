@@ -208,7 +208,7 @@ open class VehicleAssemblingTableBlock : BaseEntityBlock(
         val BLOCK_PART: EnumProperty<BlockPart> = EnumProperty.create("block_part", BlockPart::class.java)
 
         private fun createVehicle(
-            server: ServerLevel?,
+            server: ServerLevel,
             facing: Direction,
             originalPos: BlockPos
         ): VehicleAssemblingTableVehicleEntity {
