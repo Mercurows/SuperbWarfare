@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:virtual_blueprint_data_chip_researching"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_virtual_blueprint_data_chip": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:virtual_blueprint_data_chip"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_virtual_blueprint_data_chip",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:virtual_blueprint_data_chip_researching"
+    ]
+  },
+  "sends_telemetry_event": false
+}

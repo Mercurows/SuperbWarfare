@@ -1,0 +1,48 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_damage_perk_data_chip": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:damage_perk_data_chip"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_directional_research_module": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:directional_research_module"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:damage_perk_data_chip_researching_directional"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_damage_perk_data_chip",
+      "has_directional_research_module",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:damage_perk_data_chip_researching_directional"
+    ]
+  },
+  "sends_telemetry_event": false
+}

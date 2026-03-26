@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_annihilator_blueprint": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:annihilator_blueprint"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:annihilator_blueprint_copy_researching"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_annihilator_blueprint",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:annihilator_blueprint_copy_researching"
+    ]
+  },
+  "sends_telemetry_event": false
+}

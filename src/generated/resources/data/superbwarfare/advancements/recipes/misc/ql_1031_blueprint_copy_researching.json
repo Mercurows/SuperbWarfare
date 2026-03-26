@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_ql_1031_blueprint": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:ql_1031_blueprint"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:ql_1031_blueprint_copy_researching"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_ql_1031_blueprint",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:ql_1031_blueprint_copy_researching"
+    ]
+  },
+  "sends_telemetry_event": false
+}

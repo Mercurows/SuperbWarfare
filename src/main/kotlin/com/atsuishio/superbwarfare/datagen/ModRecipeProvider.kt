@@ -2602,9 +2602,9 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
 
         private fun buildSpecialRecipes(writer: Consumer<FinishedRecipe>) {
             SpecialRecipeBuilder.special(ModRecipes.POTION_MORTAR_SHELL_SERIALIZER.get())
-                .save(writer, "potion_mortar_shell")
-            SpecialRecipeBuilder.special(ModRecipes.SMOKE_DYE_SERIALIZER.get()).save(writer, "smoke_dye")
-            SpecialRecipeBuilder.special(ModRecipes.VEHICLE_RESET_SERIALIZER.get()).save(writer, "vehicle_reset")
+                .save(writer, "superbwarfare:potion_mortar_shell")
+            SpecialRecipeBuilder.special(ModRecipes.SMOKE_DYE_SERIALIZER.get()).save(writer, "superbwarfare:smoke_dye")
+            SpecialRecipeBuilder.special(ModRecipes.VEHICLE_RESET_SERIALIZER.get()).save(writer, "superbwarfare:vehicle_reset")
         }
 
         private fun buildResearchRecipes(writer: Consumer<FinishedRecipe>) {
@@ -2627,13 +2627,13 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .define('B', Items.PAPER)
                 .define('C', result)
                 .unlockedBy(getHasName(result), has(result))
-                .save(writer, "${getItemName(result)}_copy")
+                .save(writer, loc("${getItemName(result)}_copy"))
             ResearchingRecipeBuilder.item(result.asItem(), 2, result)
                 .base(Items.PAPER)
                 .addition(Items.LAPIS_LAZULI)
                 .time(600)
                 .unlockedBy(getHasName(result), has(result))
-                .save(writer, "${getItemName(result)}_copy_researching")
+                .save(writer, loc("${getItemName(result)}_copy_researching"))
         }
 
         fun gunSmithing(
@@ -2884,7 +2884,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .addition(Items.LAPIS_LAZULI)
                 .time(time)
                 .unlockedBy(getHasName(input), has(input))
-                .save(writer, getItemName(input) + "_researching")
+                .save(writer, loc(getItemName(input) + "_researching"))
             ResearchingRecipeBuilder.tag(tag, 2, input)
                 .base(Items.PAPER)
                 .addition(Items.LAPIS_LAZULI)
@@ -2893,7 +2893,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .color(1)
                 .unlockedBy(getHasName(input), has(input))
                 .unlockedBy(getHasName(ModItems.BOOST_RESEARCH_MODULE.get()), has(ModItems.BOOST_RESEARCH_MODULE.get()))
-                .save(writer, getItemName(input) + "_researching_boost")
+                .save(writer, loc(getItemName(input) + "_researching_boost"))
             ResearchingRecipeBuilder.tag(tag, input = input)
                 .base(Items.PAPER)
                 .addition(Items.LAPIS_LAZULI)
@@ -2906,7 +2906,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                     getHasName(ModItems.DIRECTIONAL_RESEARCH_MODULE.get()),
                     has(ModItems.DIRECTIONAL_RESEARCH_MODULE.get())
                 )
-                .save(writer, getItemName(input) + "_researching_directional")
+                .save(writer, loc(getItemName(input) + "_researching_directional"))
             ResearchingRecipeBuilder.tag(tag, input = input)
                 .base(Items.PAPER)
                 .addition(Items.LAPIS_LAZULI)
@@ -2918,7 +2918,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                     getHasName(ModItems.EFFECTIVE_RESEARCH_MODULE.get()),
                     has(ModItems.EFFECTIVE_RESEARCH_MODULE.get())
                 )
-                .save(writer, getItemName(input) + "_researching_effective")
+                .save(writer, loc(getItemName(input) + "_researching_effective"))
             if (enlargedTag != null) {
                 ResearchingRecipeBuilder.tag(enlargedTag, input = input)
                     .base(Items.PAPER)
@@ -2931,7 +2931,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                         getHasName(ModItems.ENLARGEMENT_RESEARCH_MODULE.get()),
                         has(ModItems.ENLARGEMENT_RESEARCH_MODULE.get())
                     )
-                    .save(writer, getItemName(input) + "_researching_enlargement")
+                    .save(writer, loc(getItemName(input) + "_researching_enlargement"))
             }
 
             ResearchingRecipeBuilder.item(input, input = tag)
@@ -2939,7 +2939,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .addition(Items.AMETHYST_SHARD)
                 .time(200)
                 .unlockedBy("has_${tag.location.path}", has(tag))
-                .save(writer, getItemName(input) + "_from_blueprint")
+                .save(writer, loc(getItemName(input) + "_from_blueprint"))
             ResearchingRecipeBuilder.item(input, 2, tag)
                 .base(ModItems.DATA_CHIP_SUBSTRATE.get())
                 .addition(Items.AMETHYST_SHARD)
@@ -2948,7 +2948,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .color(1)
                 .unlockedBy("has_${tag.location.path}", has(tag))
                 .unlockedBy(getHasName(ModItems.BOOST_RESEARCH_MODULE.get()), has(ModItems.BOOST_RESEARCH_MODULE.get()))
-                .save(writer, getItemName(input) + "_from_blueprint_boost")
+                .save(writer, loc(getItemName(input) + "_from_blueprint_boost"))
         }
 
         fun generatePerkResearchingRecipe(writer: Consumer<FinishedRecipe>, type: Perk.Type) {
@@ -2975,7 +2975,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .base(ModItems.EMPTY_PERK.get())
                 .time(600)
                 .unlockedBy(getHasName(inputPerk), has(inputPerk))
-                .save(writer, getItemName(inputPerk) + "_researching")
+                .save(writer, loc(getItemName(inputPerk) + "_researching"))
             ResearchingRecipeBuilder.tag(resTag, 2, inputPerk)
                 .base(ModItems.EMPTY_PERK.get())
                 .special(ModItems.BOOST_RESEARCH_MODULE.get())
@@ -2983,7 +2983,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .color(1)
                 .unlockedBy(getHasName(inputPerk), has(inputPerk))
                 .unlockedBy(getHasName(ModItems.BOOST_RESEARCH_MODULE.get()), has(ModItems.BOOST_RESEARCH_MODULE.get()))
-                .save(writer, getItemName(inputPerk) + "_researching_boost")
+                .save(writer, loc(getItemName(inputPerk) + "_researching_boost"))
             ResearchingRecipeBuilder.tag(resTag, 1, inputPerk)
                 .base(ModItems.EMPTY_PERK.get())
                 .special(ModItems.DIRECTIONAL_RESEARCH_MODULE.get())
@@ -2995,7 +2995,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                     getHasName(ModItems.DIRECTIONAL_RESEARCH_MODULE.get()),
                     has(ModItems.DIRECTIONAL_RESEARCH_MODULE.get())
                 )
-                .save(writer, getItemName(inputPerk) + "_researching_directional")
+                .save(writer, loc(getItemName(inputPerk) + "_researching_directional"))
             ResearchingRecipeBuilder.tag(resTag, 1, inputPerk)
                 .base(ModItems.EMPTY_PERK.get())
                 .special(ModItems.EFFECTIVE_RESEARCH_MODULE.get())
@@ -3006,14 +3006,14 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                     getHasName(ModItems.EFFECTIVE_RESEARCH_MODULE.get()),
                     has(ModItems.EFFECTIVE_RESEARCH_MODULE.get())
                 )
-                .save(writer, getItemName(inputPerk) + "_researching_effective")
+                .save(writer, loc(getItemName(inputPerk) + "_researching_effective"))
 
             ResearchingRecipeBuilder.item(inputPerk, 1, resTag)
                 .base(ModItems.DATA_CHIP_SUBSTRATE.get())
                 .addition(Items.AMETHYST_SHARD)
                 .time(200)
                 .unlockedBy("has_${resTag.location.path}", has(resTag))
-                .save(writer, getItemName(inputPerk) + "_from_blueprint")
+                .save(writer, loc(getItemName(inputPerk) + "_from_blueprint"))
             ResearchingRecipeBuilder.item(inputPerk, 2, resTag)
                 .base(ModItems.DATA_CHIP_SUBSTRATE.get())
                 .addition(Items.AMETHYST_SHARD)
@@ -3022,7 +3022,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .color(1)
                 .unlockedBy("has_${resTag.location.path}", has(resTag))
                 .unlockedBy(getHasName(ModItems.BOOST_RESEARCH_MODULE.get()), has(ModItems.BOOST_RESEARCH_MODULE.get()))
-                .save(writer, getItemName(inputPerk) + "_from_blueprint_boost")
+                .save(writer, loc(getItemName(inputPerk) + "_from_blueprint_boost"))
         }
     }
 }

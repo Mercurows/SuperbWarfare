@@ -1,0 +1,46 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_boost_research_module": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:boost_research_module"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_perk/researchable/functional": {
+      "conditions": {
+        "items": [
+          {
+            "tag": "superbwarfare:perk/researchable/functional"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:functional_perk_data_chip_from_blueprint_boost"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_perk/researchable/functional",
+      "has_boost_research_module",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:functional_perk_data_chip_from_blueprint_boost"
+    ]
+  },
+  "sends_telemetry_event": false
+}
