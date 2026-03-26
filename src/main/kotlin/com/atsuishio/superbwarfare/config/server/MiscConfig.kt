@@ -108,6 +108,12 @@ object MiscConfig {
     }
 
     @JvmField
+    val THROW_MEDICAL_KIT = buildServerConfig {
+        comment("Set true to enable player throwing medical kits")
+        define("throw_medical_kit", true)
+    }
+
+    @JvmField
     val SMOKE_HIDE_TARGET = buildServerConfig {
         comment("Set true to allow smoke to prevent entities from being set as target")
         define("smoke_hide_target", false).also { pop() }

@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier.Companion.createDefaultModifier
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModEntities
@@ -236,8 +237,8 @@ open class Blu43Entity : Entity, OwnableEntity {
     private fun triggerExplode() {
         CustomExplosion.Builder(this)
             .attacker(this.getOwner())
-            .damage(10f)
-            .radius(2f)
+            .damage(ExplosionConfig.BLU_43_EXPLOSION_DAMAGE.get().toFloat())
+            .radius(ExplosionConfig.BLU_43_EXPLOSION_RADIUS.get().toFloat())
             .keepBlock()
             .withParticleType(ParticleTool.ParticleType.SMALL)
             .explode()

@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.item.misc
 
+import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.entity.projectile.MedicalKitEntity
 import com.atsuishio.superbwarfare.init.ModEntities
 import net.minecraft.ChatFormatting
@@ -34,6 +35,10 @@ open class MedicalKitItem : Item(Properties().stacksTo(16)) {
         val stack = player.getItemInHand(handIn)
 
         if (player.isShiftKeyDown) {
+            if (!MiscConfig.THROW_MEDICAL_KIT.get()) {
+                return InteractionResultHolder.fail(stack)
+            }
+
             if (!level.isClientSide) {
                 val randomRot = ((2 * Math.random() - 1) * 180).coerceIn(-180.0, 180.0).toFloat()
                 val entity = MedicalKitEntity(ModEntities.MEDICAL_KIT.get(), level)
