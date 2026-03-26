@@ -11,11 +11,11 @@
       },
       "trigger": "minecraft:inventory_changed"
     },
-    "has_damage_perk_data_chip": {
+    "has_perk/researchable/damage": {
       "conditions": {
         "items": [
           {
-            "items": "superbwarfare:damage_perk_data_chip"
+            "items": "#superbwarfare:perk/researchable/damage"
           }
         ]
       },
@@ -23,7 +23,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:damage_perk_data_chip_researching_boost"
+        "recipe": "superbwarfare:damage_perk_data_chip_from_blueprint_boost"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -31,13 +31,13 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_damage_perk_data_chip",
+      "has_perk/researchable/damage",
       "has_boost_research_module"
     ]
   ],
   "rewards": {
     "recipes": [
-      "minecraft:damage_perk_data_chip_researching_boost"
+      "superbwarfare:damage_perk_data_chip_from_blueprint_boost"
     ]
   }
 }

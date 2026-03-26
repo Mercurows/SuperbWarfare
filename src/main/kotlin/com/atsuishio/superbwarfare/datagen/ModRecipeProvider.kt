@@ -2751,9 +2751,9 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
 
         private fun buildSpecialRecipes(writer: RecipeOutput) {
             SpecialRecipeBuilder.special(::PotionMortarShellRecipe)
-                .save(writer, "potion_mortar_shell")
-            SpecialRecipeBuilder.special(::SmokeDyeRecipe)
-            SpecialRecipeBuilder.special(::VehicleResetRecipe)
+                .save(writer, "superbwarfare:potion_mortar_shell")
+            SpecialRecipeBuilder.special(::SmokeDyeRecipe).save(writer, "superbwarfare:smoke_dye")
+            SpecialRecipeBuilder.special(::VehicleResetRecipe).save(writer, "superbwarfare:vehicle_reset")
         }
 
         private fun buildResearchRecipes(writer: RecipeOutput) {
@@ -3123,7 +3123,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 .base(ModItems.EMPTY_PERK.get())
                 .time(600)
                 .unlockedBy(getHasName(inputPerk), has(inputPerk))
-                .save(writer, getItemName(inputPerk) + "_researching")
+                .save(writer, loc(getItemName(inputPerk) + "_researching"))
             ResearchingRecipeBuilder.tag(resTag, 2, inputPerk)
                 .base(ModItems.EMPTY_PERK.get())
                 .special(ModItems.BOOST_RESEARCH_MODULE.get())
@@ -3131,7 +3131,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 .color(1)
                 .unlockedBy(getHasName(inputPerk), has(inputPerk))
                 .unlockedBy(getHasName(ModItems.BOOST_RESEARCH_MODULE.get()), has(ModItems.BOOST_RESEARCH_MODULE.get()))
-                .save(writer, getItemName(inputPerk) + "_researching_boost")
+                .save(writer, loc(getItemName(inputPerk) + "_researching_boost"))
             ResearchingRecipeBuilder.tag(resTag, 1, inputPerk)
                 .base(ModItems.EMPTY_PERK.get())
                 .special(ModItems.DIRECTIONAL_RESEARCH_MODULE.get())
@@ -3143,7 +3143,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                     getHasName(ModItems.DIRECTIONAL_RESEARCH_MODULE.get()),
                     has(ModItems.DIRECTIONAL_RESEARCH_MODULE.get())
                 )
-                .save(writer, getItemName(inputPerk) + "_researching_directional")
+                .save(writer, loc(getItemName(inputPerk) + "_researching_directional"))
             ResearchingRecipeBuilder.tag(resTag, 1, inputPerk)
                 .base(ModItems.EMPTY_PERK.get())
                 .special(ModItems.EFFECTIVE_RESEARCH_MODULE.get())
@@ -3154,14 +3154,14 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                     getHasName(ModItems.EFFECTIVE_RESEARCH_MODULE.get()),
                     has(ModItems.EFFECTIVE_RESEARCH_MODULE.get())
                 )
-                .save(writer, getItemName(inputPerk) + "_researching_effective")
+                .save(writer, loc(getItemName(inputPerk) + "_researching_effective"))
 
             ResearchingRecipeBuilder.item(inputPerk, 1, resTag)
                 .base(ModItems.DATA_CHIP_SUBSTRATE.get())
                 .addition(Items.AMETHYST_SHARD)
                 .time(200)
                 .unlockedBy("has_${resTag.location.path}", has(resTag))
-                .save(writer, getItemName(inputPerk) + "_from_blueprint")
+                .save(writer, loc(getItemName(inputPerk) + "_from_blueprint"))
             ResearchingRecipeBuilder.item(inputPerk, 2, resTag)
                 .base(ModItems.DATA_CHIP_SUBSTRATE.get())
                 .addition(Items.AMETHYST_SHARD)
@@ -3170,7 +3170,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 .color(1)
                 .unlockedBy("has_${resTag.location.path}", has(resTag))
                 .unlockedBy(getHasName(ModItems.BOOST_RESEARCH_MODULE.get()), has(ModItems.BOOST_RESEARCH_MODULE.get()))
-                .save(writer, getItemName(inputPerk) + "_from_blueprint_boost")
+                .save(writer, loc(getItemName(inputPerk) + "_from_blueprint_boost"))
         }
     }
 }

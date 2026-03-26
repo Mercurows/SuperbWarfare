@@ -1,21 +1,21 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_damage_perk_data_chip": {
+    "has_ammo_perk_data_chip": {
       "conditions": {
         "items": [
           {
-            "items": "superbwarfare:damage_perk_data_chip"
+            "items": "superbwarfare:ammo_perk_data_chip"
           }
         ]
       },
       "trigger": "minecraft:inventory_changed"
     },
-    "has_directional_research_module": {
+    "has_boost_research_module": {
       "conditions": {
         "items": [
           {
-            "items": "superbwarfare:directional_research_module"
+            "items": "superbwarfare:boost_research_module"
           }
         ]
       },
@@ -23,7 +23,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:damage_perk_data_chip_researching_directional"
+        "recipe": "superbwarfare:ammo_perk_data_chip_researching_boost"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -31,13 +31,13 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_damage_perk_data_chip",
-      "has_directional_research_module"
+      "has_ammo_perk_data_chip",
+      "has_boost_research_module"
     ]
   ],
   "rewards": {
     "recipes": [
-      "minecraft:damage_perk_data_chip_researching_directional"
+      "superbwarfare:ammo_perk_data_chip_researching_boost"
     ]
   }
 }

@@ -23,7 +23,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:functional_perk_data_chip_researching_boost"
+        "recipe": "superbwarfare:functional_perk_data_chip_researching_boost"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -37,7 +37,7 @@
   ],
   "rewards": {
     "recipes": [
-      "minecraft:functional_perk_data_chip_researching_boost"
+      "superbwarfare:functional_perk_data_chip_researching_boost"
     ]
   }
 }

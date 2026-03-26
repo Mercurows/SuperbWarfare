@@ -11,9 +11,19 @@
       },
       "trigger": "minecraft:inventory_changed"
     },
+    "has_directional_research_module": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:directional_research_module"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:ammo_perk_data_chip_researching"
+        "recipe": "superbwarfare:ammo_perk_data_chip_researching_directional"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -21,12 +31,13 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_ammo_perk_data_chip"
+      "has_ammo_perk_data_chip",
+      "has_directional_research_module"
     ]
   ],
   "rewards": {
     "recipes": [
-      "minecraft:ammo_perk_data_chip_researching"
+      "superbwarfare:ammo_perk_data_chip_researching_directional"
     ]
   }
 }

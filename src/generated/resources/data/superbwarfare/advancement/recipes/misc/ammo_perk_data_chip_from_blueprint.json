@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_functional_perk_data_chip": {
+    "has_perk/researchable/ammo": {
       "conditions": {
         "items": [
           {
-            "items": "superbwarfare:functional_perk_data_chip"
+            "items": "#superbwarfare:perk/researchable/ammo"
           }
         ]
       },
@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:functional_perk_data_chip_researching"
+        "recipe": "superbwarfare:ammo_perk_data_chip_from_blueprint"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -21,12 +21,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_functional_perk_data_chip"
+      "has_perk/researchable/ammo"
     ]
   ],
   "rewards": {
     "recipes": [
-      "minecraft:functional_perk_data_chip_researching"
+      "superbwarfare:ammo_perk_data_chip_from_blueprint"
     ]
   }
 }

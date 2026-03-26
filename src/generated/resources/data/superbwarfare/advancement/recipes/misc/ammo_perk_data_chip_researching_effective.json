@@ -23,7 +23,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "minecraft:ammo_perk_data_chip_researching_effective"
+        "recipe": "superbwarfare:ammo_perk_data_chip_researching_effective"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -37,7 +37,7 @@
   ],
   "rewards": {
     "recipes": [
-      "minecraft:ammo_perk_data_chip_researching_effective"
+      "superbwarfare:ammo_perk_data_chip_researching_effective"
     ]
   }
 }
