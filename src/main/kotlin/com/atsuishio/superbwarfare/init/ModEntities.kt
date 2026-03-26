@@ -49,8 +49,8 @@ object ModEntities {
 
     @JvmField
     val STEEL_COIL = register(
-        "steel_coil", EntityType.Builder.of(::SteelCoilEntity, MobCategory.CREATURE)
-            .setTrackingRange(64).sized(2f, 2f)
+        "steel_coil", EntityType.Builder.of(::SteelCoilEntity, MobCategory.MONSTER)
+            .setTrackingRange(64).setUpdateInterval(3).sized(2f, 2f)
     )
 
     // Misc Entities
@@ -354,6 +354,15 @@ object ModEntities {
                 world.difficulty != Difficulty.PEACEFUL
                         && SpawnConfig.SPAWN_SENPAI.get()
                         && Monster.isDarkEnoughToSpawn(world, pos, random)
+                        && Mob.checkMobSpawnRules(entityType, world, reason, pos, random)
+            },
+            RegisterSpawnPlacementsEvent.Operation.OR
+        )
+        event.register(
+            STEEL_COIL.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+            { entityType, world, reason, pos, random ->
+                world.difficulty != Difficulty.PEACEFUL
+                        && SpawnConfig.SPAWN_STEEL_COIL.get()
                         && Mob.checkMobSpawnRules(entityType, world, reason, pos, random)
             },
             RegisterSpawnPlacementsEvent.Operation.OR
