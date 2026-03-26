@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.client
 
+import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage.SyncedEntity
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.mc
@@ -12,16 +13,23 @@ import java.util.concurrent.ConcurrentHashMap
 
 object ClientSyncedEntityHandler {
     @JvmField
-    val SYNCED_ENTITIES = hashMapOf<ResourceLocation, ConcurrentHashMap<Int, ClientSyncedEntity>>()
+    val SYNCED_FRIENDLY_ENTITIES = hashMapOf<ResourceLocation, ConcurrentHashMap<Int, ClientSyncedEntity>>()
+
+    @JvmField
+    val SYNCED_HOSTILE_ENTITIES = hashMapOf<ResourceLocation, ConcurrentHashMap<Int, ClientSyncedEntity>>()
 
     data class ClientSyncedEntity(val entity: Entity, val timeStamp: Int)
 
-    fun sync(dim: ResourceLocation, list: List<SyncedEntity>) {
+    fun sync(dim: ResourceLocation, list: List<SyncedEntity>, friendly: Boolean) {
         val player = localPlayer ?: return
         val level = mc.level ?: return
-        val entities = SYNCED_ENTITIES[dim] ?: ConcurrentHashMap<Int, ClientSyncedEntity>()
+        val entities = if (friendly) {
+            SYNCED_FRIENDLY_ENTITIES[dim] ?: ConcurrentHashMap<Int, ClientSyncedEntity>()
+        } else {
+            SYNCED_HOSTILE_ENTITIES[dim] ?: ConcurrentHashMap<Int, ClientSyncedEntity>()
+        }
         val tick = player.tickCount
-        entities.entries.removeIf { tick - it.value.timeStamp > 3 }
+        entities.entries.removeIf { tick - it.value.timeStamp > MiscConfig.SYNC_ENTITY_INTERVAL.get() }
 
         for (syncedEntity in list) {
             val id = syncedEntity.id
@@ -43,11 +51,20 @@ object ClientSyncedEntityHandler {
             entities[id] = ClientSyncedEntity(entity, tick)
         }
 
-        SYNCED_ENTITIES[dim] = entities
+        if (friendly) {
+            SYNCED_FRIENDLY_ENTITIES[dim] = entities
+        } else {
+            SYNCED_HOSTILE_ENTITIES[dim] = entities
+        }
     }
 
     @JvmStatic
-    fun getEntitiesInLevel(level: Level): List<Entity>? {
-        return SYNCED_ENTITIES[level.dimension().location()]?.map { it.value.entity }?.toList()
+    fun getSyncedFriendlyEntities(level: Level): List<Entity>? {
+        return SYNCED_FRIENDLY_ENTITIES[level.dimension().location()]?.map { it.value.entity }?.toList()
+    }
+
+    @JvmStatic
+    fun getSyncedHostileEntities(level: Level): List<Entity>? {
+        return SYNCED_HOSTILE_ENTITIES[level.dimension().location()]?.map { it.value.entity }?.toList()
     }
 }

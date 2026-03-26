@@ -187,17 +187,17 @@ object PlayerEventHandler {
     @SubscribeEvent
     fun onServerTick(event: ServerTickEvent.Post) {
         val server = event.server
-        // TODO 添加同步间隔配置项
-        if (server.tickCount % 3 != 0) return
-        for (level in server.allLevels) {
-            val list = arrayListOf<EntitySyncMessage.SyncedEntity>()
+        if (server.tickCount % MiscConfig.SYNC_ENTITY_INTERVAL.get() != 0) return
+        for (player in server.playerList.players) {
+            for (level in server.allLevels) {
+                val friendlyList = arrayListOf<EntitySyncMessage.SyncedEntity>()
+                val hostileList = arrayListOf<EntitySyncMessage.SyncedEntity>()
 
-            for (entity in level.allEntities) {
-                if (entity !is VehicleEntity) continue
-                if (!SeekTool.NOT_IN_SMOKE.test(entity)) continue
+                for (entity in level.allEntities) {
+                    if (entity !is VehicleEntity) continue
+                    if (!SeekTool.NOT_IN_SMOKE.test(entity)) continue
 
-                list.add(
-                    EntitySyncMessage.SyncedEntity(
+                    val synced = EntitySyncMessage.SyncedEntity(
                         entity.id,
                         BuiltInRegistries.ENTITY_TYPE.getKey(entity.type),
                         entity.position(),
@@ -205,11 +205,16 @@ object PlayerEventHandler {
                         // TODO 如何正确序列化
                         entity.serializeNBT(event.server.registryAccess())
                     )
-                )
-            }
 
-            for (player in server.playerList.players) {
-                sendPacketTo(player, EntitySyncMessage(level.dimension().location(), list))
+                    if (SeekTool.IS_FRIENDLY.test(player, entity)) {
+                        friendlyList.add(synced)
+                    } else {
+                        hostileList.add(synced)
+                    }
+                }
+
+                sendPacketTo(player, EntitySyncMessage(level.dimension().location(), friendlyList, true))
+                sendPacketTo(player, EntitySyncMessage(level.dimension().location(), hostileList, false))
             }
         }
     }

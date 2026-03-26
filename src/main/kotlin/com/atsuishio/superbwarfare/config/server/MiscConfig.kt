@@ -96,6 +96,12 @@ object MiscConfig {
     }
 
     @JvmField
+    val SYNC_ENTITY_INTERVAL = buildServerConfig {
+        comment("The interval for synchronizing client entities with the server")
+        define("sync_entity_interval", 3)
+    }
+
+    @JvmField
     val SMOKE_HIDE_TARGET = buildServerConfig {
         comment("Set true to allow smoke to prevent entities from being set as target")
         define("smoke_hide_target", false).also { pop() }
