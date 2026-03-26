@@ -45,6 +45,12 @@ object VehicleConfig {
     }
 
     @JvmField
+    val SAME_TEAM_ENTER_VEHICLE = buildServerConfig {
+        comment("Set true to allow only entities in same team to enter vehicle")
+        define("same_team_enter_vehicle", true)
+    }
+
+    @JvmField
     val COLLECT_DROPS_BY_CRASHING = buildServerConfig {
         comment("Allow vehicles to collect drops after killing other entities by crashing")
         define("collect_drops_by_crashing", true)

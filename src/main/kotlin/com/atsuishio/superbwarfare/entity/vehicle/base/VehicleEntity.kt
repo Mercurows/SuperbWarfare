@@ -1415,8 +1415,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             return InteractionResult.sidedSuccess(player.level().isClientSide)
         }
 
-        if (player.vehicle === this) return InteractionResult.PASS
-
         if (stack.`is`(ModItems.VEHICLE_DAMAGE_ANALYZER.get())) {
             if (!level().isClientSide) {
                 if (this.damageDebugResultReceiver != null) {
@@ -1452,19 +1450,19 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 return InteractionResult.SUCCESS
             }
         } else if (!player.isShiftKeyDown && this.maxPassengers > 0) {
-            val entities = getPassengers()
-            for (passenger in entities) {
-                if (passenger.team != null && (TDMSavedData.enabledTDM(passenger) || passenger.team !== player.team)) {
+            if (VehicleConfig.SAME_TEAM_ENTER_VEHICLE.get()) {
+                for (passenger in this.getPassengers()) {
+                    if (passenger.team != null && (TDMSavedData.enabledTDM(passenger) || passenger.team !== player.team)) {
+                        return InteractionResult.PASS
+                    }
+                }
+
+                if (this.lastDriver != null
+                    && !SeekTool.IN_SAME_TEAM.test(player, this.lastDriver)
+                    && this.lastDriver?.team != null
+                ) {
                     return InteractionResult.PASS
                 }
-            }
-
-            if (this.lastDriver != null && !SeekTool.IN_SAME_TEAM.test(
-                    player,
-                    this.lastDriver
-                ) && this.lastDriver?.team != null
-            ) {
-                return InteractionResult.PASS
             }
 
             if (isWreck) {
