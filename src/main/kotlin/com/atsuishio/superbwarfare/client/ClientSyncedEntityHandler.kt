@@ -7,9 +7,11 @@ import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.level.Level
 import java.util.concurrent.ConcurrentHashMap
 
 object ClientSyncedEntityHandler {
+    @JvmField
     val SYNCED_ENTITIES = hashMapOf<ResourceLocation, ConcurrentHashMap<Int, ClientSyncedEntity>>()
 
     data class ClientSyncedEntity(val entity: Entity, val timeStamp: Int)
@@ -20,7 +22,7 @@ object ClientSyncedEntityHandler {
         val entities = SYNCED_ENTITIES[dim] ?: ConcurrentHashMap<Int, ClientSyncedEntity>()
         val tick = player.tickCount
         entities.entries.removeIf { tick - it.value.timeStamp > 3 }
-        
+
         for (syncedEntity in list) {
             val id = syncedEntity.id
             if (entities[id] != null) continue
@@ -42,5 +44,10 @@ object ClientSyncedEntityHandler {
         }
 
         SYNCED_ENTITIES[dim] = entities
+    }
+
+    @JvmStatic
+    fun getEntitiesInLevel(level: Level): List<Entity>? {
+        return SYNCED_ENTITIES[level.dimension().location()]?.map { it.value.entity }?.toList()
     }
 }
