@@ -87,6 +87,20 @@ object ExplosionConfig {
     }
 
     @JvmField
+    val BLU_43_EXPLOSION_DAMAGE = buildServerConfig {
+        push("Blu 43")
+
+        comment("The explosion damage of Blu 43")
+        defineInRange("blu_43_explosion_damage", 10, 1, Int.MAX_VALUE)
+    }
+
+    @JvmField
+    val BLU_43_EXPLOSION_RADIUS = buildServerConfig {
+        comment("The explosion radius of Blu 43")
+        defineInRange("blu_43_explosion_radius", 2, 1, Int.MAX_VALUE).also { pop() }
+    }
+
+    @JvmField
     val TM_62_EXPLOSION_DAMAGE = buildServerConfig {
         push("Tm 62")
 
