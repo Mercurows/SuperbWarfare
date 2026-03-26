@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
+import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeCustomExplosionDamage
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
 import com.atsuishio.superbwarfare.init.ModEntities
@@ -31,15 +32,15 @@ open class PtkmProjectileEntity : FastThrowableProjectile, BasicGeoProjectileEnt
     private var target: Entity? = null
 
     constructor(type: EntityType<out PtkmProjectileEntity>, level: Level) : super(type, level) {
-        this.damageValue = 500f
-        this.explosionDamageValue = 80f
-        this.explosionRadiusValue = 7f
+        this.damageValue = ExplosionConfig.PTKM_1R_PROJECTILE_HIT_DAMAGE.get().toFloat()
+        this.explosionDamageValue = ExplosionConfig.PTKM_1R_PROJECTILE_EXPLOSION_DAMAGE.get().toFloat()
+        this.explosionRadiusValue = ExplosionConfig.PTKM_1R_PROJECTILE_EXPLOSION_RADIUS.get().toFloat()
     }
 
     constructor(entity: LivingEntity?, level: Level) : super(ModEntities.PTKM_PROJECTILE.get(), entity, level) {
-        this.damageValue = 500f
-        this.explosionDamageValue = 80f
-        this.explosionRadiusValue = 7f
+        this.damageValue = ExplosionConfig.PTKM_1R_PROJECTILE_HIT_DAMAGE.get().toFloat()
+        this.explosionDamageValue = ExplosionConfig.PTKM_1R_PROJECTILE_EXPLOSION_DAMAGE.get().toFloat()
+        this.explosionRadiusValue = ExplosionConfig.PTKM_1R_PROJECTILE_EXPLOSION_RADIUS.get().toFloat()
     }
 
     override fun getDefaultItem(): Item {
@@ -50,10 +51,10 @@ open class PtkmProjectileEntity : FastThrowableProjectile, BasicGeoProjectileEnt
         return !this.isRemoved
     }
 
-    public override fun onHitEntity(entityHitResult: EntityHitResult) {
-        super.onHitEntity(entityHitResult)
+    public override fun onHitEntity(result: EntityHitResult) {
+        super.onHitEntity(result)
         if (this.level() is ServerLevel) {
-            val entity = entityHitResult.entity
+            val entity = result.entity
             val owner = this.owner
             if (owner != null && entity == owner.vehicle) return
 
@@ -67,15 +68,15 @@ open class PtkmProjectileEntity : FastThrowableProjectile, BasicGeoProjectileEnt
                 entity.invulnerableTime = 0
             }
 
-            explode(entityHitResult.getLocation())
+            explode(result.getLocation())
             this.discard()
         }
     }
 
-    public override fun onHitBlock(blockHitResult: BlockHitResult) {
-        super.onHitBlock(blockHitResult)
+    public override fun onHitBlock(result: BlockHitResult) {
+        super.onHitBlock(result)
         if (this.level() is ServerLevel) {
-            explode(blockHitResult.getLocation())
+            explode(result.getLocation())
             this.discard()
         }
     }

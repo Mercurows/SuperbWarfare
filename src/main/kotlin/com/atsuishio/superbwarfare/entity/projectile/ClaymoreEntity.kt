@@ -220,7 +220,7 @@ open class ClaymoreEntity(type: EntityType<ClaymoreEntity>, level: Level) : Enti
 
     fun destroy() {
         if (level() is ServerLevel) {
-            val attacker = EntityFindUtil.findEntity(this.level(), this.entityData.get<String?>(LAST_ATTACKER_UUID))
+            val attacker = EntityFindUtil.findEntity(this.level(), this.entityData.get(LAST_ATTACKER_UUID))
 
             CustomExplosion.Builder(attacker ?: this)
                 .damage(ExplosionConfig.CLAYMORE_EXPLOSION_DAMAGE.get().toFloat() / 5)
