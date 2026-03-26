@@ -45,7 +45,7 @@ object IFFOverlay : CommonOverlay("iff") {
     override fun RenderContext.render() {
         CuriosApi.getCuriosInventory(player).ifPresent { c ->
             c.findFirstCurio(ModItems.IFF.get()).ifPresent { _ ->
-                val entities = ClientSyncedEntityHandler.SYNCED_ENTITIES[this.player.level().dimension().location()] ?: return@ifPresent
+                val entities = ClientSyncedEntityHandler.SYNCED_FRIENDLY_ENTITIES[this.player.level().dimension().location()] ?: return@ifPresent
                 for (entry in entities) {
                     var e = entry.value.entity
 

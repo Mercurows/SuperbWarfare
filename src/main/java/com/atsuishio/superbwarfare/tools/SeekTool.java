@@ -323,7 +323,7 @@ public class SeekTool {
             var entities = EntityFindUtil.getEntities(entity.level()).getAll().spliterator();
             var stream = StreamSupport.stream(entities, false);
             if (entity.level().isClientSide) {
-                var clientEntities = ClientSyncedEntityHandler.getEntitiesInLevel(entity.level());
+                var clientEntities = ClientSyncedEntityHandler.getSyncedFriendlyEntities(entity.level());
                 if (clientEntities != null) {
                     stream = Stream.concat(stream, clientEntities.stream());
                 }
@@ -342,7 +342,7 @@ public class SeekTool {
             var entities = EntityFindUtil.getEntities(entity.level()).getAll().spliterator();
             var stream = StreamSupport.stream(entities, false);
             if (entity.level().isClientSide) {
-                var clientEntities = ClientSyncedEntityHandler.getEntitiesInLevel(entity.level());
+                var clientEntities = ClientSyncedEntityHandler.getSyncedFriendlyEntities(entity.level());
                 if (clientEntities != null) {
                     stream = Stream.concat(stream, clientEntities.stream());
                 }

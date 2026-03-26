@@ -11,10 +11,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class EntitySyncMessage(
     val dim: SerializedResourceLocation,
-    val list: List<SyncedEntity>
+    val list: List<SyncedEntity>,
+    val friendly: Boolean
 ) : ClientPacketPayload() {
     override fun PayloadContext.handler() {
-        ClientSyncedEntityHandler.sync(dim, list)
+        ClientSyncedEntityHandler.sync(dim, list, friendly)
     }
 
     @Serializable
