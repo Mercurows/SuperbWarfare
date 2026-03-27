@@ -661,6 +661,13 @@
   "entity.superbwarfare.prismatic_bolt": "Prismatic Bolt",
 
   "key.categories.superbwarfare": "Superb Warfare",
+  "key.superbwarfare.move_forward": "Forward",
+  "key.superbwarfare.move_backward": "Backward",
+  "key.superbwarfare.move_left": "Turn Left",
+  "key.superbwarfare.move_right": "Turn Right",
+  "key.superbwarfare.move_space": "Brake/Jump/Landing Gear",
+  "key.superbwarfare.move_shift": "Decelerate",
+  "key.superbwarfare.move_ctrl": "Accelerate",
   "key.superbwarfare.hold_zoom": "Zoom (Hold)",
   "key.superbwarfare.switch_zoom": "Zoom (Switch)",
   "key.superbwarfare.fire": "Fire",

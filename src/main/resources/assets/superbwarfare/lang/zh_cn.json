@@ -661,6 +661,13 @@
   "entity.superbwarfare.prismatic_bolt": "星光斩击",
 
   "key.categories.superbwarfare": "卓越前线",
+  "key.superbwarfare.move_forward": "前进",
+  "key.superbwarfare.move_backward": "后退",
+  "key.superbwarfare.move_left": "左转",
+  "key.superbwarfare.move_right": "右转",
+  "key.superbwarfare.move_space": "刹车/跳跃/起落架",
+  "key.superbwarfare.move_shift": "减速",
+  "key.superbwarfare.move_ctrl": "加力",
   "key.superbwarfare.hold_zoom": "瞄准(按住)",
   "key.superbwarfare.switch_zoom": "瞄准(切换)",
   "key.superbwarfare.fire": "开火",
