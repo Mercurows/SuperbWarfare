@@ -197,7 +197,7 @@
       "Velocity": 1.05,
       "SeekWeaponInfo": {
         "SeekDirection": "Default",
-        "SeekRange": 512,
+        "SeekRange": 2048,
         "SeekAngle": 20,
         "SeekTime": 10,
         "MaxTargetHeight": 32,

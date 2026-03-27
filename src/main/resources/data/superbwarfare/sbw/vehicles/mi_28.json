@@ -247,7 +247,7 @@
             "Name": "weapon.superbwarfare.kh_39_missile_block",
             "SeekWeaponInfo": {
               "SeekDirection": "Barrel",
-              "SeekRange": 384,
+              "SeekRange": 512,
               "SeekAngle": 20,
               "SeekTime": 20,
               "MaxTargetHeight": 32,
@@ -270,7 +270,7 @@
       "Velocity": 3,
       "SeekWeaponInfo": {
         "SeekDirection": "Barrel",
-        "SeekRange": 384,
+        "SeekRange": 1024,
         "SeekAngle": 20,
         "SeekTime": 20,
         "MaxTargetHeight": 32,
@@ -316,7 +316,7 @@
       "Velocity": 3,
       "SeekWeaponInfo": {
         "SeekDirection": "Default",
-        "SeekRange": 384,
+        "SeekRange": 1024,
         "SeekAngle": 20,
         "SeekTime": 20,
         "MinTargetHeight": 32,

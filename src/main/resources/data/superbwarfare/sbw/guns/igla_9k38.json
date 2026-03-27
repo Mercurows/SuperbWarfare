@@ -11,7 +11,7 @@
   "ZoomReload": false,
   "SeekTime": 30,
   "SeekAngle": 20,
-  "SeekRange": 256,
+  "SeekRange": 384,
   "MinTargetHeight": 16,
   "SeekType": "HoldZoom",
   "GunType": "DirectLauncher",

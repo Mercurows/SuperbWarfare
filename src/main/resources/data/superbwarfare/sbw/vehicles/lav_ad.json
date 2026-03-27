@@ -216,7 +216,7 @@
       "Velocity": 3,
       "SeekWeaponInfo": {
         "SeekDirection": "Barrel",
-        "SeekRange": 384,
+        "SeekRange": 1024,
         "SeekAngle": 20,
         "SeekTime": 10,
         "MinTargetHeight": 16,
