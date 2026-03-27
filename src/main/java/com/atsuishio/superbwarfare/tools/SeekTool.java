@@ -181,7 +181,6 @@ public class SeekTool {
      */
     public static final TriPredicate<Entity, Double, Double> IN_HEIGHT_RANGE = (entity, min, max) -> {
         Level level = entity.level();
-        if (level.isClientSide) return true;
 
         var pos = entity.getOnPos();
         double y = pos.getY();
@@ -190,6 +189,10 @@ public class SeekTool {
 
         // 如果实体已低于世界底部或高于顶部
         if (y < minY || y > maxY) {
+            return true;
+        }
+
+        if (level.isClientSide && MinecraftUtil.getLocalPlayer() != null && MinecraftUtil.getLocalPlayer().level().getEntity(entity.getId()) == null) {
             return true;
         }
 
