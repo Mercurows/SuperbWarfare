@@ -178,6 +178,8 @@ object PlayerEventHandler {
                 val friendlyList = arrayListOf<EntitySyncMessage.SyncedEntity>()
                 val hostileList = arrayListOf<EntitySyncMessage.SyncedEntity>()
 
+                // TODO 添加一个雷达和一个标记机制，被扫描到和被标记的实体才会被加入同步列表
+
                 for (entity in level.allEntities) {
                     if (entity !is VehicleEntity) continue
                     if (!SeekTool.NOT_IN_SMOKE.test(entity)) continue
