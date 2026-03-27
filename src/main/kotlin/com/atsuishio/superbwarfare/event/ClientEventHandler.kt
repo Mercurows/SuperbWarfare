@@ -712,7 +712,7 @@ object ClientEventHandler {
                                 player
                             )
                         )
-                        seekingPos = result.getLocation()
+                        seekingPos = result.location
 
                         if (seekingTime > lockTime + 2 && !lockOn) {
                             lockOn = true
@@ -784,7 +784,7 @@ object ClientEventHandler {
                                     sendPacketToServer(
                                         SeekingWeaponWarningMessage(
                                             false,
-                                            seekingEntity!!.getUUID()
+                                            seekingEntity!!.uuid
                                         )
                                     )
                                 }
@@ -797,7 +797,7 @@ object ClientEventHandler {
                                         ShootMessage(
                                             gunSpread,
                                             zoom,
-                                            lockingEntity!!.getUUID(),
+                                            lockingEntity!!.uuid,
                                             lockingEntity!!.eyePosition.toVector3f()
                                         )
                                     )
@@ -878,7 +878,7 @@ object ClientEventHandler {
                     sendPacketToServer(
                         SeekingWeaponWarningMessage(
                             true,
-                            lockingEntity!!.getUUID()
+                            lockingEntity!!.uuid
                         )
                     )
                 }
