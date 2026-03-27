@@ -2167,13 +2167,14 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             val maxTargetHeight = seekWeaponInfo.maxTargetHeight
 
             val hostileList = level.allEntities
-                .filter {
-                    it is VehicleEntity
+                .asSequence()
+                .mapNotNull {
+                    val flag = it is VehicleEntity
                             && SeekTool.NOT_IN_SMOKE.test(it)
                             && it.distanceToSqr(player) <= seekRange * seekRange
                             && SeekTool.IN_HEIGHT_RANGE.test(it, minTargetHeight, maxTargetHeight)
                             && !SeekTool.IS_FRIENDLY.test(player, it)
-                }.map {
+                    if (!flag) return@mapNotNull null
                     EntitySyncMessage.SyncedEntity(
                         it.id,
                         BuiltInRegistries.ENTITY_TYPE.getKey(it.type),
@@ -2181,11 +2182,10 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                         it.deltaMovement,
                         it.serializeNBT(level.registryAccess())
                     )
-                }
+                }.toList()
             sendPacketTo(player, EntitySyncMessage(level.dimension().location(), hostileList, false))
         }
     }
-
 
     override fun canFreeze() = false
 
