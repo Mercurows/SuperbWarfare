@@ -26,7 +26,6 @@ import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
 import org.joml.Math
 
-// TODO 预制通用固定翼飞机HUD，提取准星
 @OnlyIn(Dist.CLIENT)
 object OldAircraftHud {
     const val ID: String = "@OldAircraft"
@@ -206,7 +205,6 @@ object OldAircraftHud {
                 xCross = bombHitPosX.toFloat()
                 yCross = bombHitPosY.toFloat()
             }
-
 
             if (mc.options.cameraType != CameraType.FIRST_PERSON && !ClientEventHandler.zoomVehicle) {
                 var cross = CROSSHAIR_3P

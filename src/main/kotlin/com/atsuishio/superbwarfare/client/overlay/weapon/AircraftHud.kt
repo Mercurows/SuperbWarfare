@@ -31,7 +31,6 @@ import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
 import org.joml.Math
 
-// TODO 预制通用固定翼飞机HUD，提取准星
 @OnlyIn(Dist.CLIENT)
 object AircraftHud {
     const val ID: String = "@Aircraft"

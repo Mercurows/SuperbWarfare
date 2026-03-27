@@ -74,7 +74,6 @@ open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context) :
             OverlayTexture.NO_OVERLAY
         )
 
-        // TODO 这个对吗
         val texture = entity.getEmissiveTexture()
         if (texture != null) {
             model.renderToBuffer(
