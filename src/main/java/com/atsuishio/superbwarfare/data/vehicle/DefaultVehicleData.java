@@ -87,6 +87,9 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     @SerializedName("UpStep")
     public float upStep = 0;
 
+    @SerializedName("TrackDistanceMultiply")
+    public double trackDistanceMultiply = 1;
+
     @SerializedName("MouseSensitivity")
     public double mouseSensitivity = 0.4;
 

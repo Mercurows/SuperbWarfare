@@ -1,6 +1,7 @@
 {
   "MaxHealth": 800,
   "MaxEnergy": 20000000,
+  "TrackDistanceMultiply": 0.5,
   "OBB": [
     {
       "Size": [2.969, 0.898, 5.0],
