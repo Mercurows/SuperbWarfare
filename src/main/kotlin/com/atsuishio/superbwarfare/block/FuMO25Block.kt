@@ -2,10 +2,13 @@ package com.atsuishio.superbwarfare.block
 
 import com.atsuishio.superbwarfare.block.entity.FuMO25BlockEntity
 import com.atsuishio.superbwarfare.init.ModBlockEntities
+import com.atsuishio.superbwarfare.tools.SeekTool
 import com.mojang.serialization.MapCodec
 import net.minecraft.core.BlockPos
 import net.minecraft.world.InteractionResult
+import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.BlockGetter
 import net.minecraft.world.level.Level
@@ -41,9 +44,17 @@ open class FuMO25Block :
         if (level.isClientSide) {
             return InteractionResult.SUCCESS
         } else {
-            val blockentity = level.getBlockEntity(pos)
-            if (blockentity is FuMO25BlockEntity) {
-                player.openMenu(blockentity)
+            val blockEntity = level.getBlockEntity(pos)
+            if (blockEntity is FuMO25BlockEntity) {
+                val uuid = blockEntity.ownerUUID
+                if (uuid != null && uuid != player.uuid) {
+                    val owner = level.getPlayerByUUID(uuid)
+                    if (owner != null && !SeekTool.IS_FRIENDLY.test(owner, player)) {
+                        return InteractionResult.FAIL
+                    }
+                }
+
+                player.openMenu(blockEntity)
             }
             return InteractionResult.CONSUME
         }
@@ -82,6 +93,19 @@ open class FuMO25Block :
             )
         }
         return null
+    }
+
+    override fun setPlacedBy(
+        level: Level,
+        pos: BlockPos,
+        state: BlockState,
+        placer: LivingEntity?,
+        stack: ItemStack
+    ) {
+        super.setPlacedBy(level, pos, state, placer, stack)
+        if (placer == null) return
+        val entity = level.getBlockEntity(pos) as? FuMO25BlockEntity ?: return
+        entity.ownerUUID = placer.uuid
     }
 
     override fun onRemove(

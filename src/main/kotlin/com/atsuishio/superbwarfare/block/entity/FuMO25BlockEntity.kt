@@ -1,19 +1,25 @@
 package com.atsuishio.superbwarfare.block.entity
 
 import com.atsuishio.superbwarfare.block.FuMO25Block
+import com.atsuishio.superbwarfare.config.server.MiscConfig
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModBlockEntities
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.inventory.menu.FuMO25Menu
 import com.atsuishio.superbwarfare.network.dataslot.ContainerEnergyData
+import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
 import com.atsuishio.superbwarfare.tools.SeekTool
+import com.atsuishio.superbwarfare.tools.sendPacketTo
 import net.minecraft.core.BlockPos
 import net.minecraft.core.HolderLookup
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.Connection
 import net.minecraft.network.chat.Component
 import net.minecraft.network.protocol.Packet
 import net.minecraft.network.protocol.game.ClientGamePacketListener
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.MenuProvider
 import net.minecraft.world.effect.MobEffectInstance
@@ -28,6 +34,7 @@ import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.neoforged.neoforge.energy.EnergyStorage
 import net.neoforged.neoforge.energy.IEnergyStorage
+import java.util.*
 import javax.annotation.ParametersAreNonnullByDefault
 
 open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
@@ -38,6 +45,7 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
     var type: FuncType = FuncType.NORMAL
     var powered: Boolean = false
     var tick: Int = 0
+    var ownerUUID: UUID? = null
 
     protected val dataAccess: ContainerEnergyData = object : ContainerEnergyData {
         override fun get(index: Int): Long {
@@ -87,6 +95,10 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
         this.type = FuncType.entries[tag.getInt("Type").coerceIn(0, 3)]
         this.powered = tag.getBoolean("Powered")
         this.tick = tag.getInt("Tick")
+
+        if (tag.contains("OwnerUUID")) {
+            this.ownerUUID = tag.getUUID("OwnerUUID")
+        }
     }
 
     @ParametersAreNonnullByDefault
@@ -97,6 +109,8 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
         tag.putInt("Type", this.type.ordinal)
         tag.putBoolean("Powered", this.powered)
         tag.putInt("Tick", this.tick)
+
+        this.ownerUUID?.let { tag.putUUID("OwnerUUID", it) }
     }
 
     override fun getDisplayName(): Component {
@@ -160,21 +174,20 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
         const val GLOW_RANGE: Int = 64
 
         const val DEFAULT_ENERGY_COST: Int = 256
-        const val MAX_ENERGY_COST: Int = 512
+        const val MAX_ENERGY_COST: Int = 1024
 
         const val DEFAULT_MIN_ENERGY: Int = 64000
 
         const val MAX_DATA_COUNT: Int = 4
 
-        fun serverTick(pLevel: Level, pPos: BlockPos, pState: BlockState, blockEntity: FuMO25BlockEntity) {
-            if (pState.getValue(FuMO25Block.POWERED)) {
+        fun serverTick(level: Level, pos: BlockPos, state: BlockState, blockEntity: FuMO25BlockEntity) {
+            val energyStorage = blockEntity.getEnergyStorage()
+            val energy = energyStorage.energyStored
+
+            if (state.getValue(FuMO25Block.POWERED)) {
                 blockEntity.tick++
                 blockEntity.sync()
             }
-
-            val energyStorage = blockEntity.getEnergyStorage()
-            val energy = energyStorage.energyStored
-            blockEntity.tick++
 
             val funcType = blockEntity.type
             val energyCost = if (funcType == FuncType.WIDER) {
@@ -184,28 +197,36 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
             }
 
             if (energy < energyCost) {
-                if (pState.getValue(FuMO25Block.POWERED)) {
-                    pLevel.setBlockAndUpdate(pPos, pState.setValue(FuMO25Block.POWERED, false))
-                    pLevel.playSound(null, pPos, ModSounds.RADAR_SEARCH_END.get(), SoundSource.BLOCKS, 1f, 1f)
+                if (state.getValue(FuMO25Block.POWERED)) {
+                    level.setBlockAndUpdate(pos, state.setValue(FuMO25Block.POWERED, false))
+                    level.playSound(null, pos, ModSounds.RADAR_SEARCH_END.get(), SoundSource.BLOCKS, 1f, 1f)
                     blockEntity.powered = false
-                    setChanged(pLevel, pPos, pState)
+                    setChanged(level, pos, state)
                 }
             } else {
-                if (!pState.getValue(FuMO25Block.POWERED)) {
+                if (!state.getValue(FuMO25Block.POWERED)) {
                     if (energy >= DEFAULT_MIN_ENERGY) {
-                        pLevel.setBlockAndUpdate(pPos, pState.setValue(FuMO25Block.POWERED, true))
-                        pLevel.playSound(null, pPos, ModSounds.RADAR_SEARCH_START.get(), SoundSource.BLOCKS, 1f, 1f)
+                        level.setBlockAndUpdate(pos, state.setValue(FuMO25Block.POWERED, true))
+                        level.playSound(null, pos, ModSounds.RADAR_SEARCH_START.get(), SoundSource.BLOCKS, 1f, 1f)
                         blockEntity.powered = true
-                        setChanged(pLevel, pPos, pState)
+                        setChanged(level, pos, state)
                     }
                 } else {
                     energyStorage.extractEnergy(energyCost, false)
                     if (blockEntity.tick == 300) {
-                        pLevel.playSound(null, pPos, ModSounds.RADAR_SEARCH_IDLE.get(), SoundSource.BLOCKS, 1f, 1f)
+                        level.playSound(null, pos, ModSounds.RADAR_SEARCH_IDLE.get(), SoundSource.BLOCKS, 1f, 1f)
                     }
 
                     if (blockEntity.tick % 100 == 0) {
                         blockEntity.setGlowEffect()
+                    }
+
+                    val uuid = blockEntity.ownerUUID
+                    if (uuid != null) {
+                        val owner = level.getPlayerByUUID(uuid)
+                        if (owner != null && level is ServerLevel) {
+                            scanEntities(level, pos, blockEntity, owner)
+                        }
                     }
                 }
             }
@@ -213,6 +234,30 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
             if (blockEntity.tick >= 300) {
                 blockEntity.tick = 0
             }
+        }
+
+        fun scanEntities(level: ServerLevel, pos: BlockPos, blockEntity: FuMO25BlockEntity, player: Player) {
+            if (blockEntity.tick % MiscConfig.SYNC_ENTITY_INTERVAL.get() != 0) return
+
+            val range = if (blockEntity.type == FuncType.WIDER) 2048 else 1024
+            val hostileList = level.allEntities.filter {
+                it is VehicleEntity
+                        && SeekTool.NOT_IN_SMOKE.test(it)
+                        && it.distanceToSqr(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble()) <= range * range
+                        && !SeekTool.IS_FRIENDLY.test(player, it)
+            }.map {
+                EntitySyncMessage.SyncedEntity(
+                    it.id,
+                    BuiltInRegistries.ENTITY_TYPE.getKey(it.type),
+                    it.position(),
+                    it.deltaMovement,
+                    it.serializeNBT(level.registryAccess())
+                )
+            }
+
+            level.players()
+                .filter { SeekTool.IS_FRIENDLY.test(it, player) }
+                .forEach { sendPacketTo(it, EntitySyncMessage(level.dimension().location(), hostileList, false)) }
         }
     }
 }

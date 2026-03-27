@@ -2121,14 +2121,14 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             val accelRight: Double = acceleration.multiply(1.0, 0.0, 1.0).dot(right)
 
             val targetPitch = (10 * accelForward).toFloat()
-            val omegaP = 2.0f * java.lang.Math.PI.toFloat() * 2f
+            val omegaP = 2.0f * Math.PI.toFloat() * 2f
             val zetaP = 0.6f
             val angularAccelP: Float = omegaP * omegaP * (targetPitch - pitchAngle) - 2 * zetaP * omegaP * pitchVelocity
             pitchVelocity += angularAccelP * 0.05f // dt = 0.05s
             pitchAngle += pitchVelocity * 0.05f
 
             val targetRoll = (15 * accelRight).toFloat()
-            val omegaR = 2.0f * java.lang.Math.PI.toFloat() * 2f
+            val omegaR = 2.0f * Math.PI.toFloat() * 2f
             val zetaR = 0.6f
             val angularAccelR: Float = omegaR * omegaR * (targetRoll - rollAngle) - 2 * zetaR * omegaR * rollVelocity
             rollVelocity += angularAccelR * 0.05f
@@ -2157,8 +2157,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         val data = this.getGunData(player) ?: return
         val seekWeaponInfo = data.get(GunProp.SEEK_WEAPON_INFO) ?: return
 
-        val server = this.server
-        if (server != null) {
+        val level = this.level()
+        if (level is ServerLevel) {
             // 搜索范围
             val seekRange = seekWeaponInfo.seekRange
             // 最小目标高度
@@ -2166,30 +2166,23 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             // 最大目标高度
             val maxTargetHeight = seekWeaponInfo.maxTargetHeight
 
-            for (level in server.allLevels) {
-                val hostileList = arrayListOf<EntitySyncMessage.SyncedEntity>()
-
-                for (entity in level.allEntities) {
-                    if (entity !is VehicleEntity) continue
-                    if (!SeekTool.NOT_IN_SMOKE.test(entity)) continue
-                    if (entity.distanceToSqr(player) > seekRange * seekRange) continue
-                    if (!SeekTool.IN_HEIGHT_RANGE.test(entity, minTargetHeight, maxTargetHeight)) continue
-
-                    val synced = EntitySyncMessage.SyncedEntity(
-                        entity.id,
-                        BuiltInRegistries.ENTITY_TYPE.getKey(entity.type),
-                        entity.position(),
-                        entity.deltaMovement,
-                        entity.serializeNBT(server.registryAccess())
+            val hostileList = level.allEntities
+                .filter {
+                    it is VehicleEntity
+                            && SeekTool.NOT_IN_SMOKE.test(it)
+                            && it.distanceToSqr(player) <= seekRange * seekRange
+                            && SeekTool.IN_HEIGHT_RANGE.test(it, minTargetHeight, maxTargetHeight)
+                            && !SeekTool.IS_FRIENDLY.test(player, it)
+                }.map {
+                    EntitySyncMessage.SyncedEntity(
+                        it.id,
+                        BuiltInRegistries.ENTITY_TYPE.getKey(it.type),
+                        it.position(),
+                        it.deltaMovement,
+                        it.serializeNBT(level.registryAccess())
                     )
-
-                    if (!SeekTool.IS_FRIENDLY.test(player, entity)) {
-                        hostileList.add(synced)
-                    }
                 }
-
-                sendPacketTo(player, EntitySyncMessage(level.dimension().location(), hostileList, false))
-            }
+            sendPacketTo(player, EntitySyncMessage(level.dimension().location(), hostileList, false))
         }
     }
 
@@ -2521,8 +2514,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                         (240 + 40 * random).toInt(),
                         2.5f + 0.5f * random,
                         -0.07f,
-                        true,
-                        true
+                        cooldown = true,
+                        light = true
                     ),
                     Vec3(this.x, this.y + 0.85f * bbHeight, this.z),
                     0.35f * this.bbWidth,
@@ -2538,8 +2531,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                         (80 + 40 * random).toInt(),
                         1.5f + 0.5f * random,
                         -0.07f,
-                        false,
-                        true
+                        cooldown = false,
+                        light = true
                     ),
                     Vec3(this.x, this.y + 0.85f * bbHeight, this.z),
                     0.3f * this.bbWidth,
