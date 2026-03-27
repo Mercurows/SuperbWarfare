@@ -613,8 +613,8 @@ object VehicleEngineUtils {
                     roll -= 0.5f * deltaMovement.dot(getRightVec(1f)).toFloat()
                 }
 
-                if (!hasPassenger) {
-                    power = Math.max(power * 0.99f, if (onGround()) 0f else 0.055f)
+                if (!hasPassenger && engineStartOver) {
+                    power = Math.max(power * 0.99f, if (onGround()) 0f else 0.048f)
                 }
             } else {
                 if (hoverMode) {
