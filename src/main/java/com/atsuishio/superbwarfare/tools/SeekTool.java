@@ -192,7 +192,7 @@ public class SeekTool {
             return true;
         }
 
-        if (level.isClientSide && MinecraftUtil.getLocalPlayer() != null && MinecraftUtil.getLocalPlayer().level().getEntity(entity.getId()) == null) {
+        if (level.isClientSide && level.getEntity(entity.getId()) == null) {
             return true;
         }
 
