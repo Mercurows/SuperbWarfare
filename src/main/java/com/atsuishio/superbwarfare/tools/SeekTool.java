@@ -181,6 +181,7 @@ public class SeekTool {
      */
     public static final TriPredicate<Entity, Double, Double> IN_HEIGHT_RANGE = (entity, min, max) -> {
         Level level = entity.level();
+        if (level.isClientSide) return true;
 
         var pos = entity.getOnPos();
         double y = pos.getY();
@@ -192,23 +193,18 @@ public class SeekTool {
             return true;
         }
 
-        if (MinecraftUtil.getLocalPlayer() != null && MinecraftUtil.getLocalPlayer().level().getEntity(entity.getId()) != null) {
-            int height = 0;
-            while (true) {
-                height++;
+        int height = 0;
+        while (true) {
+            height++;
 
-                if (height < minY || height > maxY) return false;
+            if (height < minY || height > maxY) return false;
 
-                var state = level.getBlockState(pos.offset(0, -height, 0));
-                if (!state.isAir()) {
-                    break;
-                }
+            var state = level.getBlockState(pos.offset(0, -height, 0));
+            if (!state.isAir()) {
+                break;
             }
-            return height >= min && height <= max;
-        } else {
-            // TODO 这里应该把超视距实体丢服务器检测地形高度
-            return true;
         }
+        return height >= min && height <= max;
     };
 
     /**
