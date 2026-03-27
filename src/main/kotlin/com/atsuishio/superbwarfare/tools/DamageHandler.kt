@@ -21,7 +21,10 @@ import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.TamableAnimal
 import net.minecraft.world.entity.player.Player
 
-fun Entity.forceHurt(source: DamageSource, damage: Float): Boolean = doDamage(this, source, damage)
+fun Entity?.forceHurt(source: DamageSource, damage: Float): Boolean {
+    return if (this == null) false
+    else doDamage(this, source, damage)
+}
 
 object DamageHandler {
     @JvmStatic
@@ -45,7 +48,7 @@ object DamageHandler {
                 return false
             } else {
                 val sourceEntity = source.entity
-                if (entity.isAlliedTo(sourceEntity) && entity.team?.isAllowFriendlyFire == false) {
+                if (sourceEntity != null && entity.isAlliedTo(sourceEntity) && entity.team?.isAllowFriendlyFire == false) {
                     return false
                 }
 
