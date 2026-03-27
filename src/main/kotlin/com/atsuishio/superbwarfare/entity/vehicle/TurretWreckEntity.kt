@@ -47,17 +47,10 @@ import org.joml.Matrix4d
 import org.joml.Quaterniond
 import org.joml.Quaternionf
 import org.joml.Vector4d
-import software.bernie.geckolib.animatable.GeoEntity
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache
-import software.bernie.geckolib.animation.AnimatableManager
-import software.bernie.geckolib.util.GeckoLibUtil
 import java.util.stream.StreamSupport
 import kotlin.random.Random
 
-
-open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) : Entity(type, world), GeoEntity {
-    private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
-
+open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, level: Level) : Entity(type, level) {
     companion object {
         @JvmField
         val QUATERNION_X: EntityDataAccessor<Float> =
@@ -244,21 +237,6 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
         } else {
             setQuaternion(Quaterniond(getQuaternion(1f).rotateX(0.015f + 0.002f * deltaMovement.y.toFloat())))
         }
-//
-//        for (player in getPlayer(level())) {
-//            if (player is Player) {
-//                player.displayClientMessage(Component.literal(getEulerAngles(getQuaternion(1f)).z.toString()), true)
-//            }
-//
-//        }
-
-//        for (player in getPlayer(level())) {
-//            val vehicle = player.vehicle
-//            if (vehicle is Lav150Entity) {
-//                val quaterniond = VectorTool.combineRotationsTurret(1f, vehicle)
-//                setQuaternion(quaterniond)
-//            }
-//        }
 
         if (level().isClientSide) {
             val random = 2 * (this.random.nextFloat() - 0.5f)
@@ -286,8 +264,8 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
                     (240 + 40 * random).toInt(),
                     2.5f + 0.5f * random,
                     -0.07f,
-                    true,
-                    true
+                    cooldown = true,
+                    light = true
                 ),
                 Vec3(this.x, this.y + 0.85f * bbHeight, this.z),
                 0.35f * this.bbWidth,
@@ -303,8 +281,8 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
                     (80 + 40 * random).toInt(),
                     1.5f + 0.5f * random,
                     -0.07f,
-                    false,
-                    true
+                    cooldown = false,
+                    light = true
                 ),
                 Vec3(this.x, this.y + 0.85f * bbHeight, this.z),
                 0.3f * this.bbWidth,
@@ -426,10 +404,7 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
         Mth.lerp(tickDelta, qwO, quaternionW)
     )
 
-    override fun registerControllers(controllers: AnimatableManager.ControllerRegistrar?) {}
-    override fun getAnimatableInstanceCache(): AnimatableInstanceCache = this.cache
-
-    fun getWreckTransform(partialTicks: Float): Matrix4d {
+    open fun getWreckTransform(partialTicks: Float): Matrix4d {
         val transform = Matrix4d()
         transform.translate(
             Mth.lerp(partialTicks.toDouble(), xo, x),
@@ -460,12 +435,6 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
         val force1 = transformPosition(transform, -1.0, 0.0, 0.0)
         return Vec3(force0.x, force0.y, force0.z).vectorTo(Vec3(force1.x, force1.y, force1.z))
     }
-
-//    open fun getAxisAngle(ticks: Float): FloatArray {
-//        val x = -VehicleVecUtils.getXRotFromVector(getUpVec(ticks))
-//        val y = -VehicleVecUtils.getZRotFromVector(getUpVec(ticks))
-//        return floatArrayOf(x, y, z)
-//    }
 
     open fun transformPosition(transform: Matrix4d, x: Double, y: Double, z: Double): Vector4d {
         return transform.transform(Vector4d(x, y, z, 1.0))
@@ -531,7 +500,7 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, world: Level) 
             EntityTypeTest.forClass(Entity::class.java),
             frontBox
         ) { entity -> entity !== this && entity!!.vehicle == null }
-            .stream().filter { entity ->
+            .filter { entity ->
                 if (entity.isAlive) {
                     val type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.type)
                     return@filter (entity is VehicleEntity || entity is Boat || entity is Minecart || (entity is TurretWreckEntity && entity.tickCount > 5)
