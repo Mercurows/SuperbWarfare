@@ -388,17 +388,32 @@ public class SeekTool {
         }
 
         public Builder withinRange(double range) {
-            this.filters.add(e -> e.position().distanceTo(this.entity.getEyePosition()) <= range);
+            this.filters.add(e -> {
+                if (e instanceof VehicleEntity vehicle) {
+                    return vehicle.position().distanceToSqr(this.entity.getEyePosition()) <= range * vehicle.computed().trackDistanceMultiply * range * vehicle.computed().trackDistanceMultiply;
+                }
+                return e.position().distanceToSqr(this.entity.getEyePosition()) <= range * range;
+            });
             return this;
         }
 
         public Builder withinRange(Vec3 vec3, double range) {
-            this.filters.add(e -> e.position().distanceTo(vec3) <= range);
+            this.filters.add(e -> {
+                if (e instanceof VehicleEntity vehicle) {
+                    return vehicle.position().distanceToSqr(vec3) <= range * vehicle.computed().trackDistanceMultiply * range * vehicle.computed().trackDistanceMultiply;
+                }
+                return e.position().distanceToSqr(vec3) <= range * range;
+            });
             return this;
         }
 
         public Builder overRange(double range) {
-            this.filters.add(e -> e.position().distanceTo(this.entity.getEyePosition()) >= range);
+            this.filters.add(e -> {
+                if (e instanceof VehicleEntity vehicle) {
+                    return vehicle.position().distanceToSqr(this.entity.getEyePosition()) > range * vehicle.computed().trackDistanceMultiply * range * vehicle.computed().trackDistanceMultiply;
+                }
+                return e.position().distanceToSqr(this.entity.getEyePosition()) > range * range;
+            });
             return this;
         }
 
