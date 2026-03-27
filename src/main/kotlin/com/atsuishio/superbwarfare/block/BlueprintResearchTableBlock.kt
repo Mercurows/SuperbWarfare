@@ -151,14 +151,8 @@ open class BlueprintResearchTableBlock :
             return createTickerHelper(
                 pBlockEntityType,
                 ModBlockEntities.BLUEPRINT_RESEARCH_TABLE.get(),
-                BlockEntityTicker { pLevel: Level, pPos: BlockPos, pState: BlockState, blockEntity: BlueprintResearchTableBlockEntity ->
-                    BlueprintResearchTableBlockEntity.serverTick(
-                        pLevel,
-                        pPos,
-                        pState,
-                        blockEntity
-                    )
-                })
+                BlueprintResearchTableBlockEntity::serverTick
+            )
         }
         return null
     }

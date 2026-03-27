@@ -76,17 +76,11 @@ open class FuMO25Block :
         pBlockEntityType: BlockEntityType<T?>
     ): BlockEntityTicker<T?>? {
         if (!pLevel.isClientSide) {
-            return createTickerHelper<FuMO25BlockEntity?, T?>(
+            return createTickerHelper(
                 pBlockEntityType,
-                ModBlockEntities.FUMO_25.get()
-            ) { pLevel, pPos, pState, blockEntity ->
-                FuMO25BlockEntity.serverTick(
-                    pLevel,
-                    pPos,
-                    pState,
-                    blockEntity
-                )
-            }
+                ModBlockEntities.FUMO_25.get(),
+                FuMO25BlockEntity::serverTick
+            )
         }
         return null
     }

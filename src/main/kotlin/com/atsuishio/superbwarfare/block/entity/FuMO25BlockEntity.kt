@@ -9,10 +9,12 @@ import com.atsuishio.superbwarfare.tools.SeekTool
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.network.Connection
 import net.minecraft.network.chat.Component
+import net.minecraft.network.protocol.Packet
+import net.minecraft.network.protocol.game.ClientGamePacketListener
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket
 import net.minecraft.sounds.SoundSource
-import net.minecraft.util.Mth
 import net.minecraft.world.MenuProvider
 import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.effect.MobEffects
@@ -28,23 +30,14 @@ import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.capabilities.ForgeCapabilities
 import net.minecraftforge.common.util.LazyOptional
 import net.minecraftforge.energy.EnergyStorage
-import software.bernie.geckolib.animatable.GeoBlockEntity
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
-import software.bernie.geckolib.core.animation.AnimatableManager.ControllerRegistrar
-import software.bernie.geckolib.network.SerializableDataTicket
-import software.bernie.geckolib.util.GeckoLibUtil
 
 open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
-    BlockEntity(ModBlockEntities.FUMO_25.get(), pPos, pBlockState), MenuProvider, GeoBlockEntity {
-    private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
-
-    private var energyHandler: LazyOptional<EnergyStorage>
+    BlockEntity(ModBlockEntities.FUMO_25.get(), pPos, pBlockState), MenuProvider {
+    private var energyHandler: LazyOptional<EnergyStorage> = LazyOptional.of { EnergyStorage(MAX_ENERGY) }
 
     var type: FuncType = FuncType.NORMAL
-    var time: Int = 0
     var powered: Boolean = false
     var tick: Int = 0
-    var yRot0: Float = 0f
 
     protected val dataAccess: ContainerEnergyData = object : ContainerEnergyData {
         override fun get(index: Int): Long {
@@ -53,9 +46,8 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
                     .orElse(0L)
 
                 1 -> this@FuMO25BlockEntity.type.ordinal.toLong()
-                2 -> this@FuMO25BlockEntity.time.toLong()
-                3 -> if (this@FuMO25BlockEntity.powered) 1L else 0L
-                4 -> this@FuMO25BlockEntity.tick.toLong()
+                2 -> if (this@FuMO25BlockEntity.powered) 1L else 0L
+                3 -> this@FuMO25BlockEntity.tick.toLong()
                 else -> 0L
             }
         }
@@ -70,19 +62,14 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
                 }
 
                 1 -> this@FuMO25BlockEntity.type = FuncType.entries[value.toInt()]
-                2 -> this@FuMO25BlockEntity.time = value.toInt()
-                3 -> this@FuMO25BlockEntity.powered = value == 1L
-                4 -> this@FuMO25BlockEntity.tick = value.toInt()
+                2 -> this@FuMO25BlockEntity.powered = value == 1L
+                3 -> this@FuMO25BlockEntity.tick = value.toInt()
             }
         }
 
         override fun getCount(): Int {
             return MAX_DATA_COUNT
         }
-    }
-
-    init {
-        this.energyHandler = LazyOptional.of { EnergyStorage(MAX_ENERGY) }
     }
 
     private fun setGlowEffect() {
@@ -92,36 +79,36 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
         val entities = SeekTool.getEntitiesWithinRange(pos, level, GLOW_RANGE.toDouble())
         entities.forEach {
             if (it is LivingEntity) {
-                it.addEffect(MobEffectInstance(MobEffects.GLOWING, 100, 0, true, false))
+                it.addEffect(MobEffectInstance(MobEffects.GLOWING, 110, 0, true, false))
             }
         }
     }
 
-    override fun load(pTag: CompoundTag) {
-        super.load(pTag)
+    override fun load(tag: CompoundTag) {
+        super.load(tag)
 
-        if (pTag.contains("Energy")) {
+        if (tag.contains("Energy")) {
             getCapability(ForgeCapabilities.ENERGY).ifPresent {
-                (it as EnergyStorage).deserializeNBT(pTag.get("Energy"))
+                (it as EnergyStorage).deserializeNBT(tag.get("Energy"))
             }
         }
-        this.type = FuncType.entries[Mth.clamp(pTag.getInt("Type"), 0, 3)]
-        this.time = pTag.getInt("Time")
-        this.powered = pTag.getBoolean("Powered")
+        this.type = FuncType.entries[tag.getInt("Type").coerceIn(0, 3)]
+        this.powered = tag.getBoolean("Powered")
+        this.tick = tag.getInt("Tick")
     }
 
-    override fun saveAdditional(pTag: CompoundTag) {
-        super.saveAdditional(pTag)
+    override fun saveAdditional(tag: CompoundTag) {
+        super.saveAdditional(tag)
 
         getCapability(ForgeCapabilities.ENERGY).ifPresent {
-            pTag.put(
+            tag.put(
                 "Energy",
                 (it as EnergyStorage).serializeNBT()
             )
         }
-        pTag.putInt("Type", this.type.ordinal)
-        pTag.putInt("Time", this.time)
-        pTag.putBoolean("Powered", this.powered)
+        tag.putInt("Type", this.type.ordinal)
+        tag.putBoolean("Powered", this.powered)
+        tag.putInt("Tick", this.tick)
     }
 
     override fun getDisplayName(): Component {
@@ -138,11 +125,32 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
         )
     }
 
-    override fun getUpdatePacket(): ClientboundBlockEntityDataPacket? {
+    fun sync() {
+        val level = this.level ?: return
+        if (level.isClientSide) return
+        this.setChanged()
+        level.sendBlockUpdated(this.worldPosition, this.blockState, this.blockState, 3)
+    }
+
+    override fun getUpdateTag(): CompoundTag {
+        val tag = CompoundTag()
+        this.saveAdditional(tag)
+        return tag
+    }
+
+    override fun getUpdatePacket(): Packet<ClientGamePacketListener> {
         return ClientboundBlockEntityDataPacket.create(this)
     }
 
-    override fun registerControllers(data: ControllerRegistrar?) {
+    override fun handleUpdateTag(tag: CompoundTag?) {
+        tag?.let { this.load(it) }
+    }
+
+    override fun onDataPacket(
+        net: Connection,
+        pkt: ClientboundBlockEntityDataPacket
+    ) {
+        this.handleUpdateTag(pkt.tag)
     }
 
     override fun <T> getCapability(cap: Capability<T?>, side: Direction?): LazyOptional<T?> {
@@ -162,10 +170,6 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
         this.energyHandler = LazyOptional.of { EnergyStorage(MAX_ENERGY) }
     }
 
-    override fun getAnimatableInstanceCache(): AnimatableInstanceCache {
-        return this.cache
-    }
-
     enum class FuncType {
         NORMAL,
         WIDER,
@@ -174,9 +178,6 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
     }
 
     companion object {
-        @JvmField
-        var FUMO25_TICK: SerializableDataTicket<Int>? = null
-
         const val MAX_ENERGY: Int = 1000000
 
         // 固定距离，以后有人改动这个需要自行解决GUI渲染问题
@@ -185,11 +186,11 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
         const val GLOW_RANGE: Int = 64
 
         const val DEFAULT_ENERGY_COST: Int = 256
-        const val MAX_ENERGY_COST: Int = 1024
+        const val MAX_ENERGY_COST: Int = 512
 
         const val DEFAULT_MIN_ENERGY: Int = 64000
 
-        const val MAX_DATA_COUNT: Int = 5
+        const val MAX_DATA_COUNT: Int = 4
 
         fun serverTick(pLevel: Level, pPos: BlockPos, pState: BlockState, blockEntity: FuMO25BlockEntity) {
             val energy =
@@ -197,7 +198,7 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
 
             if (pState.getValue(FuMO25Block.POWERED)) {
                 blockEntity.tick++
-                blockEntity.setAnimData(FUMO25_TICK, blockEntity.tick)
+                blockEntity.sync()
             }
 
             val funcType = blockEntity.type
@@ -214,10 +215,6 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
                     blockEntity.powered = false
                     setChanged(pLevel, pPos, pState)
                 }
-                if (blockEntity.time > 0) {
-                    blockEntity.time = 0
-                    blockEntity.setChanged()
-                }
             } else {
                 if (!pState.getValue(FuMO25Block.POWERED)) {
                     if (energy >= DEFAULT_MIN_ENERGY) {
@@ -228,27 +225,18 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
                     }
                 } else {
                     blockEntity.energyHandler.ifPresent { it.extractEnergy(energyCost, false) }
-                    if (blockEntity.tick == 200) {
+                    if (blockEntity.tick == 300) {
                         pLevel.playSound(null, pPos, ModSounds.RADAR_SEARCH_IDLE.get(), SoundSource.BLOCKS, 1f, 1f)
                     }
 
-                    if (blockEntity.time > 0) {
-                        if (blockEntity.time % 100 == 0) {
-                            blockEntity.setGlowEffect()
-                        }
-                        blockEntity.time--
-                        blockEntity.setChanged()
+                    if (blockEntity.tick % 100 == 0) {
+                        blockEntity.setGlowEffect()
                     }
                 }
             }
 
-            if (blockEntity.tick >= 200) {
+            if (blockEntity.tick >= 300) {
                 blockEntity.tick = 0
-            }
-
-            if (blockEntity.time <= 0 && blockEntity.type != FuncType.NORMAL) {
-                blockEntity.type = FuncType.NORMAL
-                blockEntity.setChanged()
             }
         }
     }

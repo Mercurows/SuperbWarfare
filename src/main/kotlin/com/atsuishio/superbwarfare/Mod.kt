@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare
 
 import com.atsuishio.superbwarfare.api.event.RegisterContainersEvent
-import com.atsuishio.superbwarfare.block.entity.FuMO25BlockEntity
 import com.atsuishio.superbwarfare.client.MouseMovementHandler
 import com.atsuishio.superbwarfare.client.molang.MolangVariable
 import com.atsuishio.superbwarfare.compat.coldsweat.ColdSweatCompatHandler
@@ -24,8 +23,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
-import software.bernie.geckolib.network.SerializableDataTicket
-import software.bernie.geckolib.util.GeckoLibUtil
 import thedarkcolour.kotlinforforge.forge.MOD_BUS
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -62,8 +59,6 @@ class Mod {
         bus.addListener<FMLCommonSetupEvent> { onCommonSetup(it) }
         bus.addListener<FMLClientSetupEvent> { onClientSetup(it) }
         bus.addListener<FMLCommonSetupEvent> { ModItems.registerDispenserBehavior() }
-
-        registerDataTickets()
 
         if (TACZGunEventHandler.compatCondition()) {
             MinecraftForge.EVENT_BUS.addListener(TACZGunEventHandler::entityHurtByTACZGun)
@@ -112,10 +107,6 @@ class Mod {
         MolangVariable.register()
         event.enqueueWork { ModScreens.register() }
         event.enqueueWork { ModSoundInstances.init() }
-    }
-
-    private fun registerDataTickets() {
-        FuMO25BlockEntity.FUMO25_TICK = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofInt(loc("fumo25_tick")))
     }
 
     companion object {

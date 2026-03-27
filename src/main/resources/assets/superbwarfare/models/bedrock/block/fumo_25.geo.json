@@ -16,13 +16,13 @@
 					"pivot": [0, 0, 0]
 				},
 				{
-					"name": "mian",
+					"name": "rolling",
 					"parent": "root",
-					"pivot": [-0.00125, 24, 0]
+					"pivot": [0, 0, 0]
 				},
 				{
 					"name": "yundongjian",
-					"parent": "mian",
+					"parent": "rolling",
 					"pivot": [0, 48.65, -1.5]
 				},
 				{
@@ -3755,14 +3755,14 @@
 					]
 				},
 				{
-					"name": "gudingjian",
+					"name": "fixed",
 					"parent": "root",
 					"pivot": [0, 8, 0],
 					"rotation": [0, 90, 0]
 				},
 				{
 					"name": "2zhu",
-					"parent": "gudingjian",
+					"parent": "fixed",
 					"pivot": [-0.00125, 20, 0],
 					"cubes": [
 						{
@@ -3815,7 +3815,7 @@
 				},
 				{
 					"name": "2zhu3",
-					"parent": "gudingjian",
+					"parent": "fixed",
 					"pivot": [-0.00125, 6, 0],
 					"cubes": [
 						{
@@ -3870,7 +3870,7 @@
 				},
 				{
 					"name": "2zhu2",
-					"parent": "gudingjian",
+					"parent": "fixed",
 					"pivot": [-7.00125, 18.72, 0],
 					"cubes": [
 						{
@@ -3915,7 +3915,7 @@
 				},
 				{
 					"name": "1zhuleiban",
-					"parent": "gudingjian",
+					"parent": "fixed",
 					"pivot": [0, 8, 0],
 					"cubes": [
 						{
@@ -4044,7 +4044,7 @@
 				},
 				{
 					"name": "dizuo",
-					"parent": "gudingjian",
+					"parent": "fixed",
 					"pivot": [0, 5.5, 0],
 					"cubes": [
 						{
@@ -4447,7 +4447,11 @@
 			],
 			"item_display_transforms": {
 				"thirdperson_righthand": {
-					"scale": [2, 2, 2]
+					"rotation": [0, 0, 0],
+					"translation": [0, 0, 0],
+					"scale": [2, 2, 2],
+					"rotation_pivot": [0, 0, 0],
+					"scale_pivot": [0, 0, 0]
 				}
 			}
 		}
