@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.capability.energy.SyncedEntityEnergyStorage
 import com.atsuishio.superbwarfare.capability.energy.VehicleEnergyStorage
 import com.atsuishio.superbwarfare.client.particle.CannonMuzzleFlareOption
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
+import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
 import com.atsuishio.superbwarfare.data.DataLoader
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
@@ -40,6 +41,7 @@ import com.atsuishio.superbwarfare.inventory.menu.*
 import com.atsuishio.superbwarfare.item.container.ContainerBlockItem
 import com.atsuishio.superbwarfare.item.curio.DogTagItem
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
+import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.OBB.Part.*
 import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
@@ -1984,6 +1986,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 if (mob.getData(ModAttachments.PLAYER_VARIABLE).activeThermalImaging && seat.hasThermalImaging) {
                     mob.addEffect(MobEffectInstance(MobEffects.NIGHT_VISION, 5, 0, false, false))
                 }
+
+                vehicleRadar(mob)
             }
         }
 
@@ -2146,6 +2150,49 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             this.updateOBB()
         }
     }
+
+    // TODO 添加更多的雷达机制
+    fun vehicleRadar(player: Player) {
+        if (tickCount % MiscConfig.SYNC_ENTITY_INTERVAL.get() != 0) return
+        val data = this.getGunData(player) ?: return
+        val seekWeaponInfo = data.get(GunProp.SEEK_WEAPON_INFO) ?: return
+
+        val server = this.server
+        if (server != null) {
+            // 搜索范围
+            val seekRange = seekWeaponInfo.seekRange
+            // 最小目标高度
+            val minTargetHeight = seekWeaponInfo.minTargetHeight
+            // 最大目标高度
+            val maxTargetHeight = seekWeaponInfo.maxTargetHeight
+
+            for (level in server.allLevels) {
+                val hostileList = arrayListOf<EntitySyncMessage.SyncedEntity>()
+
+                for (entity in level.allEntities) {
+                    if (entity !is VehicleEntity) continue
+                    if (!SeekTool.NOT_IN_SMOKE.test(entity)) continue
+                    if (entity.distanceToSqr(player) > seekRange * seekRange) continue
+                    if (!SeekTool.IN_HEIGHT_RANGE.test(entity, minTargetHeight, maxTargetHeight)) continue
+
+                    val synced = EntitySyncMessage.SyncedEntity(
+                        entity.id,
+                        BuiltInRegistries.ENTITY_TYPE.getKey(entity.type),
+                        entity.position(),
+                        entity.deltaMovement,
+                        entity.serializeNBT(server.registryAccess())
+                    )
+
+                    if (!SeekTool.IS_FRIENDLY.test(player, entity)) {
+                        hostileList.add(synced)
+                    }
+                }
+
+                sendPacketTo(player, EntitySyncMessage(level.dimension().location(), hostileList, false))
+            }
+        }
+    }
+
 
     override fun canFreeze() = false
 

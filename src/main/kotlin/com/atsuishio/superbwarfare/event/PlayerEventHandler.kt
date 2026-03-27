@@ -10,10 +10,8 @@ import com.atsuishio.superbwarfare.init.ModParticleTypes
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.item.gun.GunItem
-import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
 import com.atsuishio.superbwarfare.tools.*
 import net.minecraft.core.BlockPos
-import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvents
@@ -28,7 +26,6 @@ import net.neoforged.neoforge.event.entity.player.AttackEntityEvent
 import net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent
 import net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerRespawnEvent
 import net.neoforged.neoforge.event.tick.PlayerTickEvent
-import net.neoforged.neoforge.event.tick.ServerTickEvent
 import kotlin.math.ceil
 
 @EventBusSubscriber
@@ -184,40 +181,42 @@ object PlayerEventHandler {
         }
     }
 
-    @SubscribeEvent
-    fun onServerTick(event: ServerTickEvent.Post) {
-        val server = event.server
-        if (server.tickCount % MiscConfig.SYNC_ENTITY_INTERVAL.get() != 0) return
-        for (player in server.playerList.players) {
-            for (level in server.allLevels) {
-                val friendlyList = arrayListOf<EntitySyncMessage.SyncedEntity>()
-                val hostileList = arrayListOf<EntitySyncMessage.SyncedEntity>()
+    //暂时并不需要一个全局的实体同步机制
 
-                // TODO 添加一个雷达和一个标记机制，被扫描到和被标记的实体才会被加入同步列表
-
-                for (entity in level.allEntities) {
-                    if (entity !is VehicleEntity) continue
-                    if (!SeekTool.NOT_IN_SMOKE.test(entity)) continue
-
-                    val synced = EntitySyncMessage.SyncedEntity(
-                        entity.id,
-                        BuiltInRegistries.ENTITY_TYPE.getKey(entity.type),
-                        entity.position(),
-                        entity.deltaMovement,
-                        // TODO 如何正确序列化
-                        entity.serializeNBT(event.server.registryAccess())
-                    )
-
-                    if (SeekTool.IS_FRIENDLY.test(player, entity)) {
-                        friendlyList.add(synced)
-                    } else {
-                        hostileList.add(synced)
-                    }
-                }
-
-                sendPacketTo(player, EntitySyncMessage(level.dimension().location(), friendlyList, true))
-                sendPacketTo(player, EntitySyncMessage(level.dimension().location(), hostileList, false))
-            }
-        }
-    }
+//    @SubscribeEvent
+//    fun onServerTick(event: TickEvent.ServerTickEvent) {
+//        if (event.phase != TickEvent.Phase.END) return
+//        val server = event.server
+//        if (server.tickCount % MiscConfig.SYNC_ENTITY_INTERVAL.get() != 0) return
+//        for (player in server.playerList.players) {
+//            for (level in server.allLevels) {
+//                val friendlyList = arrayListOf<EntitySyncMessage.SyncedEntity>()
+//                val hostileList = arrayListOf<EntitySyncMessage.SyncedEntity>()
+//
+//                // TODO 添加一个雷达和一个标记机制，被扫描到和被标记的实体才会被加入队友的同步列表
+//
+//                for (entity in level.allEntities) {
+//                    if (entity !is VehicleEntity) continue
+//                    if (!SeekTool.NOT_IN_SMOKE.test(entity)) continue
+//
+//                    val synced = EntitySyncMessage.SyncedEntity(
+//                        entity.id,
+//                        ForgeRegistries.ENTITY_TYPES.getKey(entity.type)!!,
+//                        entity.position(),
+//                        entity.deltaMovement,
+//                        entity.serializeNBT()
+//                    )
+//
+//                    if (SeekTool.IS_FRIENDLY.test(player, entity)) {
+//                        friendlyList.add(synced)
+//                    } else {
+//                        hostileList.add(synced)
+//                    }
+//                }
+//
+//                sendPacketTo(player, EntitySyncMessage(level.dimension().location(), friendlyList, true))
+//                sendPacketTo(player, EntitySyncMessage(level.dimension().location(), hostileList, false))
+//            }
+//        }
+//    }
 }

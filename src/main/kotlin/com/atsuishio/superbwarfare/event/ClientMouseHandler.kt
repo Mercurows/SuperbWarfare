@@ -65,6 +65,10 @@ object ClientMouseHandler {
 
         posO = posN
         posN = MouseMovementHandler.getMousePos()
+        val speed = 256f
+        val moveSpeedX = Mth.clamp(posN.x - posO.x, -speed, speed)
+        val moveSpeedY = Mth.clamp(posN.y - posO.y, -speed, speed)
+
 
         val stack = player.mainHandItem
         val tag = NBTTool.getTag(stack)
@@ -75,8 +79,8 @@ object ClientMouseHandler {
             val drone =
                 EntityFindUtil.findDrone(player.level(), stack.getOrCreateTag().getString("LinkedDrone")) ?: return
 
-            speedX = (drone.mouseSensitivity / ClientEventHandler.droneFovLerp) * (posN.x - posO.x)
-            speedY = (drone.mouseSensitivity / ClientEventHandler.droneFovLerp) * (posN.y - posO.y)
+            speedX = (drone.mouseSensitivity / ClientEventHandler.droneFovLerp) * moveSpeedX
+            speedY = (drone.mouseSensitivity / ClientEventHandler.droneFovLerp) * moveSpeedY
 
             lerpSpeedX = Mth.lerp(0.3, lerpSpeedX, speedX)
             lerpSpeedY = Mth.lerp(0.3, lerpSpeedY, speedY)
@@ -101,9 +105,8 @@ object ClientMouseHandler {
 
             val sensitivity = vehicle.mouseSensitivity
 
-            speedX = sensitivity * (posN.x - posO.x) * (if (ClientEventHandler.zoomVehicle) 0.3 else 1.0)
-            speedY =
-                y * sensitivity * (posN.y - posO.y) * (if (ClientEventHandler.zoomVehicle) 0.4 else 1.0)
+            speedX = sensitivity * moveSpeedX * (if (ClientEventHandler.zoomVehicle) 0.3 else 1.0)
+            speedY = y * sensitivity * moveSpeedY * (if (ClientEventHandler.zoomVehicle) 0.4 else 1.0)
 
             mouseXMoveTick = Mth.lerp(0.1, mouseXMoveTick, speedX)
             mouseYMoveTick = Mth.lerp(0.1, mouseYMoveTick, speedY)
