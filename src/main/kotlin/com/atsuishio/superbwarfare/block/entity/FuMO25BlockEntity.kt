@@ -266,12 +266,12 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
             if (blockEntity.tick % MiscConfig.SYNC_ENTITY_INTERVAL.get() != 0) return
 
             val range = if (blockEntity.type == FuncType.WIDER) 2048 else 1024
-            val hostileList = level.allEntities.filter {
-                it is VehicleEntity
+            val hostileList = level.allEntities.asSequence().mapNotNull {
+                val flag = it is VehicleEntity
                         && SeekTool.NOT_IN_SMOKE.test(it)
                         && it.distanceToSqr(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble()) <= range * range
                         && !SeekTool.IS_FRIENDLY.test(player, it)
-            }.map {
+                if (!flag) return@mapNotNull null
                 EntitySyncMessage.SyncedEntity(
                     it.id,
                     ForgeRegistries.ENTITY_TYPES.getKey(it.type)!!,
@@ -279,9 +279,10 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
                     it.deltaMovement,
                     it.serializeNBT()
                 )
-            }
+            }.toList()
 
             level.players()
+                .asSequence()
                 .filter { SeekTool.IS_FRIENDLY.test(it, player) }
                 .forEach { sendPacketTo(it, EntitySyncMessage(level.dimension().location(), hostileList, false)) }
         }
