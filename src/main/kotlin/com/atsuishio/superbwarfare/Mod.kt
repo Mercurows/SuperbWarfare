@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare
 
 import com.atsuishio.superbwarfare.api.event.RegisterContainersEvent
-import com.atsuishio.superbwarfare.block.entity.FuMO25BlockEntity
 import com.atsuishio.superbwarfare.client.MouseMovementHandler
 import com.atsuishio.superbwarfare.client.renderer.molang.MolangVariable
 import com.atsuishio.superbwarfare.compat.CompatHolder
@@ -31,8 +30,6 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
-import software.bernie.geckolib.constant.dataticket.SerializableDataTicket
-import software.bernie.geckolib.util.GeckoLibUtil
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 
@@ -73,8 +70,6 @@ class Mod(bus: IEventBus, container: ModContainer) {
         bus.addListener<FMLCommonSetupEvent> { ModItems.registerDispenserBehavior() }
 
         bus.addListener<RegisterPayloadHandlersEvent> { initializeNetwork(it) }
-
-        registerDataTickets()
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
             CompatHolder.hasMod(CompatHolder.CLOTH_CONFIG) { ClothConfigHelper.registerScreen() }
@@ -117,10 +112,6 @@ class Mod(bus: IEventBus, container: ModContainer) {
         MouseMovementHandler.init()
         MolangVariable.register()
         event.enqueueWork { ModSoundInstances.init() }
-    }
-
-    private fun registerDataTickets() {
-        FuMO25BlockEntity.FUMO25_TICK = GeckoLibUtil.addDataTicket(SerializableDataTicket.ofInt(loc("fumo25_tick")))
     }
 
     companion object {

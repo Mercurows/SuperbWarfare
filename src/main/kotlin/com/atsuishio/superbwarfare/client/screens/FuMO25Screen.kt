@@ -188,14 +188,11 @@ class FuMO25Screen(pMenu: FuMO25Menu, pPlayerInventory: Inventory, pTitle: Compo
         }
 
         val type = this.menu.funcType.toInt()
-        var component = when (type) {
+        val component = when (type) {
             1 -> Component.translatable("des.superbwarfare.fumo_25.type_1")
             2 -> Component.translatable("des.superbwarfare.fumo_25.type_2")
             3 -> Component.translatable("des.superbwarfare.fumo_25.type_3")
             else -> Component.translatable("des.superbwarfare.fumo_25.type_0")
-        }
-        if (type != 0) {
-            component = component.append(Component.literal(" ${this.menu.time / 20}s"))
         }
         guiGraphics.drawString(this.font, component, i + 173, j + 43, 0xffffff)
     }

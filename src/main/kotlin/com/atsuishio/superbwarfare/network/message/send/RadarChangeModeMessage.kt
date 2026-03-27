@@ -14,6 +14,6 @@ data class RadarChangeModeMessage(val mode: Byte) : ServerPacketPayload() {
         val menu = player.containerMenu as? FuMO25Menu ?: return
         if (!player.containerMenu.stillValid(player)) return
 
-        menu.setFuncTypeAndTime(mode)
+        menu.funcType = mode.toLong()
     }
 }

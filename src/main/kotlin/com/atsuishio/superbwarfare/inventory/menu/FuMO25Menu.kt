@@ -173,24 +173,14 @@ open class FuMO25Menu(
     val energy: Long
         get() = this.containerData[0]
 
-    val funcType: Long
+    var funcType: Long
+        set(type) {
+            this.containerData[1] = type
+        }
         get() = this.containerData[1]
 
-    fun setFuncTypeAndTime(type: Byte) {
-        this.containerData[1] = type.toLong()
-        val tick = when (type) {
-            1.toByte(), 2.toByte() -> 1200
-            3.toByte() -> 600
-            else -> 0
-        }
-        this.containerData[2] = tick.toLong()
-    }
-
-    val time: Long
-        get() = this.containerData[2]
-
     val isPowered: Boolean
-        get() = this.containerData[3] == 1L
+        get() = this.containerData[2] == 1L
 
     internal class ParaSlot(pContainer: Container, pSlot: Int, pX: Int, pY: Int) : Slot(pContainer, pSlot, pX, pY) {
         override fun mayPlace(pStack: ItemStack): Boolean {

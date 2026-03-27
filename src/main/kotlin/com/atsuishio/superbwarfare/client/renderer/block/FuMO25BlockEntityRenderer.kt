@@ -1,27 +1,46 @@
 package com.atsuishio.superbwarfare.client.renderer.block
 
+import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.block.entity.FuMO25BlockEntity
-import com.atsuishio.superbwarfare.client.model.block.FuMO25Model
+import com.atsuishio.superbwarfare.resource.BedrockModelLoader
+import com.mojang.blaze3d.vertex.PoseStack
+import com.mojang.math.Axis
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
-import net.minecraft.resources.ResourceLocation
-import software.bernie.geckolib.renderer.GeoBlockRenderer
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer
 
-class FuMO25BlockEntityRenderer : GeoBlockRenderer<FuMO25BlockEntity>(FuMO25Model()) {
-    override fun getRenderType(
-        animatable: FuMO25BlockEntity,
-        texture: ResourceLocation?,
-        bufferSource: MultiBufferSource?,
-        partialTick: Float
-    ): RenderType {
-        return RenderType.entityTranslucent(getTextureLocation(animatable))
+class FuMO25BlockEntityRenderer : BlockEntityRenderer<FuMO25BlockEntity> {
+    override fun render(
+        blockEntity: FuMO25BlockEntity,
+        partialTick: Float,
+        poseStack: PoseStack,
+        buffer: MultiBufferSource,
+        packedLight: Int,
+        packedOverlay: Int
+    ) {
+        val model = BedrockModelLoader.getModel(BedrockModelLoader.FUMO_25_MODEL) ?: return
+        val bone = model.getBone("rolling") ?: return
+
+        poseStack.pushPose()
+
+        poseStack.translate(0.5, 0.0, 0.5)
+
+        val tick = blockEntity.tick
+        bone.rotation.mul(Axis.YN.rotationDegrees(tick * 1.2f))
+
+        model.renderToBuffer(
+            poseStack,
+            buffer.getBuffer(RenderType.entityTranslucent(TEXTURE)),
+            packedLight,
+            packedOverlay
+        )
+
+        model.applyPose(model.bindPose)
+
+        poseStack.popPose()
     }
 
-    override fun shouldRenderOffScreen(pBlockEntity: FuMO25BlockEntity): Boolean {
-        return false
-    }
-
-    override fun getViewDistance(): Int {
-        return 512
+    companion object {
+        val TEXTURE = loc("textures/bedrock/block/fumo_25.png")
     }
 }

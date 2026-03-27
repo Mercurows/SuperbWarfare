@@ -73,6 +73,7 @@ object BedrockModelLoader {
     val TM_62_MODEL = registerCommonModel("projectile/tm_62")
 
     val BLUEPRINT_RESEARCH_TABLE_MODEL = registerCommonModel("block/blueprint_research_table")
+    val FUMO_25_MODEL = registerCommonModel("block/fumo_25")
 
     val COMMON_LOADER: RawResourceLoader = object : RawResourceLoader {
         override fun <T> load(inputStream: InputStream, clazz: Class<T>): T {

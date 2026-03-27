@@ -54,7 +54,7 @@ object ModCapabilities {
         // FuMO25
         event.registerBlockEntity(
             Capabilities.EnergyStorage.BLOCK, ModBlockEntities.FUMO_25.value()
-        ) { obj, direction -> obj.getEnergyStorage(direction) }
+        ) { obj, direction -> obj.getEnergyStorage() }
 
         event.registerBlockEntity(
             Capabilities.ItemHandler.BLOCK, ModBlockEntities.BLUEPRINT_RESEARCH_TABLE.value()
