@@ -8,7 +8,10 @@ import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModTags
-import com.atsuishio.superbwarfare.tools.*
+import com.atsuishio.superbwarfare.tools.VectorTool
+import com.atsuishio.superbwarfare.tools.angleTo
+import com.atsuishio.superbwarfare.tools.canBeSeen
+import com.atsuishio.superbwarfare.tools.worldToScreen
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Camera
@@ -51,55 +54,52 @@ object IFFOverlay : CommonOverlay("iff") {
                         ?: return@ifPresent
                 for (entry in entities) {
                     var e = entry.value.entity
+                    val clientEntity = player.level().getEntity(e.id)
+                    if (clientEntity != null) {
+                        e = clientEntity
+                    }
 
-                    if (SeekTool.IS_FRIENDLY.test(player, e)) {
-                        val clientEntity = player.level().getEntity(e.id)
-                        if (clientEntity != null) {
-                            e = clientEntity
+                    if (e !== player && e.position().canBeSeen() && e !== player.vehicle) {
+                        var team: Entity? = e
+                        if (e.vehicle != null) {
+                            team = e.vehicle
                         }
 
-                        if (e !== player && e.position().canBeSeen() && e !== player.vehicle) {
-                            var team: Entity? = e
-                            if (e.vehicle != null) {
-                                team = e.vehicle
-                            }
+                        RenderSystem.disableDepthTest()
+                        RenderSystem.depthMask(false)
+                        RenderSystem.enableBlend()
+                        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
+                        RenderSystem.blendFuncSeparate(
+                            GlStateManager.SourceFactor.SRC_ALPHA,
+                            GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                            GlStateManager.SourceFactor.ONE,
+                            GlStateManager.DestFactor.ZERO
+                        )
 
-                            RenderSystem.disableDepthTest()
-                            RenderSystem.depthMask(false)
-                            RenderSystem.enableBlend()
-                            RenderSystem.setShader { GameRenderer.getPositionTexShader() }
-                            RenderSystem.blendFuncSeparate(
-                                GlStateManager.SourceFactor.SRC_ALPHA,
-                                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
-                                GlStateManager.SourceFactor.ONE,
-                                GlStateManager.DestFactor.ZERO
-                            )
-
-                            if (checkNoClip(player, team!!, cameraPos)) {
-                                RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
-                            } else {
-                                RenderSystem.setShaderColor(1f, 1f, 1f, 0.4f)
-                            }
-
-                            val pos = VectorTool.lerpGetEntityBoundingBoxCenter(team, partialTick)
-                            val point = pos.worldToScreen()
-                            val xf = point.x.toFloat()
-                            val yf = point.y.toFloat()
-                            val icon: ResourceLocation = getResourceLocation(team)
-
-                            RenderHelper.preciseBlit(
-                                guiGraphics,
-                                icon,
-                                Mth.clamp(xf - 6, 0f, (screenWidth - 12).toFloat()),
-                                Mth.clamp(yf - 6, 0f, (screenHeight - 12).toFloat()),
-                                0f,
-                                0f,
-                                12f,
-                                12f,
-                                12f,
-                                12f
-                            )
+                        if (checkNoClip(player, team!!, cameraPos)) {
+                            RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
+                        } else {
+                            RenderSystem.setShaderColor(1f, 1f, 1f, 0.4f)
                         }
+
+                        val pos = VectorTool.lerpGetEntityBoundingBoxCenter(team, partialTick)
+                        val point = pos.worldToScreen()
+                        val xf = point.x.toFloat()
+                        val yf = point.y.toFloat()
+                        val icon: ResourceLocation = getResourceLocation(team)
+
+                        RenderHelper.preciseBlit(
+                            guiGraphics,
+                            icon,
+                            Mth.clamp(xf - 6, 0f, (screenWidth - 12).toFloat()),
+                            Mth.clamp(yf - 6, 0f, (screenHeight - 12).toFloat()),
+                            0f,
+                            0f,
+                            12f,
+                            12f,
+                            12f,
+                            12f
+                        )
                     }
                 }
             }

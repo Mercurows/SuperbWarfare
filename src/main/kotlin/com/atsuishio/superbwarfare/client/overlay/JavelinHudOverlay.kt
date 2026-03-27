@@ -141,7 +141,7 @@ object JavelinHudOverlay : CommonOverlay("javelin_hud") {
                     for (e in entities) {
                         val pos = lerpGetEntityBoundingBoxCenter(e, partialTick)
                         val point = pos.worldToScreen()
-                        val lockOn = ClientEventHandler.lockOn && e === targetEntity
+                        val lockOn = ClientEventHandler.lockOn && e.id == targetEntity?.id
                         val nearest = e === nearestEntity
 
                         poseStack.pushPose()
