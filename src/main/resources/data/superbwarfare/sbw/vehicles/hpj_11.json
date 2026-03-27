@@ -54,7 +54,7 @@
       "AmmoType": "superbwarfare:small_shell_ap",
       "SeekWeaponInfo": {
         "SeekDirection": "Barrel",
-        "SeekRange": 384,
+        "SeekRange": 512,
         "SeekAngle": 20,
         "SeekTime": 10,
         "MinTargetSize": 0.1,

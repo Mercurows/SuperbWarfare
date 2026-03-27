@@ -169,9 +169,8 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
                 val pos3 = lerpGetEntityBoundingBoxCenter(e, partialTick)
                 if (pos3.canBeSeen() && !seekInfo.onlyLockBlock) {
                     val point = pos3.worldToScreen()
-                    val lockOn = ClientEventHandler.lockOnVehicle && targetEntity != null && e === targetEntity
-                    val nearest =
-                        e === (if (ClientEventHandler.seekingEntityVehicle == null) nearestEntity else ClientEventHandler.seekingEntityVehicle)
+                    val lockOn = ClientEventHandler.lockOnVehicle && targetEntity != null && e.id == targetEntity.id
+                    val nearest = e.id  == (if (ClientEventHandler.seekingEntityVehicle == null) nearestEntity?.id else ClientEventHandler.seekingEntityVehicle?.id)
 
                     poseStack.pushPose()
                     val x = point.x.toFloat()
