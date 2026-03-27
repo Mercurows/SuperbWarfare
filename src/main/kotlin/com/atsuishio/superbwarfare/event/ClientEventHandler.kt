@@ -615,7 +615,6 @@ object ClientEventHandler {
     }
 
     fun handleControlVehicle(player: Player, stack: ItemStack) {
-        val options = mc.options
         var keys: Short = 0
         val vehicle = player.vehicle
 
@@ -625,24 +624,22 @@ object ClientEventHandler {
                     && stack.tag!!.getBoolean(MonitorItem.USING)
                     && stack.tag!!.getBoolean(MonitorItem.LINKED))
         ) {
-
-            // TODO 把这些都设置成自定义按键
-            if (options.keyLeft.isDown) {
+            if (ModKeyMappings.MOVE_LEFT.isDown) {
                 keys = keys or 0b000000001
             }
-            if (options.keyRight.isDown) {
+            if (ModKeyMappings.MOVE_RIGHT.isDown) {
                 keys = keys or 0b000000010
             }
-            if (options.keyUp.isDown) {
+            if (ModKeyMappings.MOVE_FORWARD.isDown) {
                 keys = keys or 0b000000100
             }
-            if (options.keyDown.isDown) {
+            if (ModKeyMappings.MOVE_BACKWARD.isDown) {
                 keys = keys or 0b000001000
             }
-            if (options.keyJump.isDown) {
+            if (ModKeyMappings.MOVE_SPACE.isDown) {
                 keys = keys or 0b000010000
             }
-            if (options.keyShift.isDown) {
+            if (ModKeyMappings.MOVE_SHIFT.isDown) {
                 keys = keys or 0b000100000
             }
             if (ModKeyMappings.RELEASE_DECOY.isDown) {
@@ -651,7 +648,7 @@ object ClientEventHandler {
             if (holdFireVehicle) {
                 keys = keys or 0b010000000
             }
-            if (options.keySprint.isDown) {
+            if (ModKeyMappings.MOVE_CTRL.isDown) {
                 keys = keys or 0b100000000
             }
         }

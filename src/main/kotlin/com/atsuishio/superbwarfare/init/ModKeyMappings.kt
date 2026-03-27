@@ -12,133 +12,125 @@ import org.lwjgl.glfw.GLFW
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, value = [Dist.CLIENT])
 object ModKeyMappings {
-    @JvmField
-    val RELOAD: KeyMapping = KeyMapping("key.superbwarfare.reload", GLFW.GLFW_KEY_R, "key.categories.superbwarfare")
+    const val CATEGORY = "key.categories.superbwarfare"
+    private val KEYS = mutableListOf<KeyMapping>()
 
     @JvmField
-    val FIRE_MODE: KeyMapping =
-        KeyMapping("key.superbwarfare.fire_mode", GLFW.GLFW_KEY_N, "key.categories.superbwarfare")
+    val MOVE_FORWARD = registerKey("move_forward", GLFW.GLFW_KEY_W)
 
     @JvmField
-    val SENSITIVITY_INCREASE: KeyMapping =
-        KeyMapping("key.superbwarfare.sensitivity_increase", GLFW.GLFW_KEY_PAGE_UP, "key.categories.superbwarfare")
+    val MOVE_BACKWARD = registerKey("move_backward", GLFW.GLFW_KEY_S)
 
     @JvmField
-    val SENSITIVITY_REDUCE: KeyMapping =
-        KeyMapping("key.superbwarfare.sensitivity_reduce", GLFW.GLFW_KEY_PAGE_DOWN, "key.categories.superbwarfare")
+    val MOVE_LEFT = registerKey("move_left", GLFW.GLFW_KEY_A)
 
     @JvmField
-    val INTERACT: KeyMapping = KeyMapping("key.superbwarfare.interact", GLFW.GLFW_KEY_X, "key.categories.superbwarfare")
+    val MOVE_RIGHT = registerKey("move_right", GLFW.GLFW_KEY_D)
 
     @JvmField
-    val DISMOUNT: KeyMapping =
-        KeyMapping("key.superbwarfare.dismount", GLFW.GLFW_KEY_LEFT_ALT, "key.categories.superbwarfare")
+    val MOVE_SPACE = registerKey("move_space", GLFW.GLFW_KEY_SPACE)
 
     @JvmField
-    val BREATH: KeyMapping =
-        KeyMapping("key.superbwarfare.breath", GLFW.GLFW_KEY_LEFT_CONTROL, "key.categories.superbwarfare")
+    val MOVE_SHIFT = registerKey("move_shift", GLFW.GLFW_KEY_LEFT_SHIFT)
 
     @JvmField
-    val CONFIG: KeyMapping = KeyMapping(
-        "key.superbwarfare.config", KeyConflictContext.IN_GAME,
-        KeyModifier.ALT, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_O, "key.categories.superbwarfare"
+    val MOVE_CTRL = registerKey("move_ctrl", GLFW.GLFW_KEY_LEFT_CONTROL)
+
+    @JvmField
+    val RELOAD = registerKey("reload", GLFW.GLFW_KEY_R)
+
+    @JvmField
+    val FIRE_MODE = registerKey("fire_mode", GLFW.GLFW_KEY_N)
+
+    @JvmField
+    val SENSITIVITY_INCREASE = registerKey("sensitivity_increase", GLFW.GLFW_KEY_PAGE_UP)
+
+    @JvmField
+    val SENSITIVITY_REDUCE = registerKey("sensitivity_reduce", GLFW.GLFW_KEY_PAGE_DOWN)
+
+    @JvmField
+    val INTERACT = registerKey("interact", GLFW.GLFW_KEY_X)
+
+    @JvmField
+    val DISMOUNT = registerKey("dismount", GLFW.GLFW_KEY_LEFT_ALT)
+
+    @JvmField
+    val BREATH = registerKey("breath", GLFW.GLFW_KEY_LEFT_CONTROL)
+
+    @JvmField
+    val CONFIG = registerKey(
+        "config",
+        GLFW.GLFW_KEY_O,
+        KeyConflictContext.IN_GAME,
+        KeyModifier.ALT
     )
 
     @JvmField
-    val EDIT_MODE: KeyMapping =
-        KeyMapping("key.superbwarfare.edit_mode", GLFW.GLFW_KEY_H, "key.categories.superbwarfare")
+    val EDIT_MODE = registerKey("edit_mode", GLFW.GLFW_KEY_H)
 
     @JvmField
-    val CHANGE_AMMO_FORWARD: KeyMapping =
-        KeyMapping("key.superbwarfare.change_ammo_forward", GLFW.GLFW_KEY_LEFT, "key.categories.superbwarfare")
+    val CHANGE_AMMO_FORWARD = registerKey("change_ammo_forward", GLFW.GLFW_KEY_LEFT)
 
     @JvmField
-    val CHANGE_AMMO_BACKWARD: KeyMapping =
-        KeyMapping("key.superbwarfare.change_ammo_backward", GLFW.GLFW_KEY_RIGHT, "key.categories.superbwarfare")
+    val CHANGE_AMMO_BACKWARD = registerKey("change_ammo_backward", GLFW.GLFW_KEY_RIGHT)
 
     @JvmField
-    val CHANGE_FIRE_MODE_FORWARD: KeyMapping =
-        KeyMapping("key.superbwarfare.change_fire_mode_forward", GLFW.GLFW_KEY_UP, "key.categories.superbwarfare")
+    val CHANGE_FIRE_MODE_FORWARD = registerKey("change_fire_mode_forward", GLFW.GLFW_KEY_UP)
 
     @JvmField
-    val CHANGE_FIRE_MODE_BACKWARD: KeyMapping =
-        KeyMapping("key.superbwarfare.change_fire_mode_backward", GLFW.GLFW_KEY_DOWN, "key.categories.superbwarfare")
+    val CHANGE_FIRE_MODE_BACKWARD = registerKey("change_fire_mode_backward", GLFW.GLFW_KEY_DOWN)
 
     @JvmField
-    val UNLOAD: KeyMapping =
-        KeyMapping("key.superbwarfare.unload", InputConstants.UNKNOWN.value, "key.categories.superbwarfare")
+    val UNLOAD = registerKey("unload", InputConstants.UNKNOWN.value)
 
     @JvmField
-    val FIRE: KeyMapping = KeyMapping(
-        "key.superbwarfare.fire",
-        InputConstants.Type.MOUSE,
-        GLFW.GLFW_MOUSE_BUTTON_LEFT,
-        "key.categories.superbwarfare"
-    )
+    val FIRE = registerKey("fire", GLFW.GLFW_MOUSE_BUTTON_LEFT, type = InputConstants.Type.MOUSE)
 
     @JvmField
-    val HOLD_ZOOM: KeyMapping = KeyMapping(
-        "key.superbwarfare.hold_zoom",
-        InputConstants.Type.MOUSE,
-        GLFW.GLFW_MOUSE_BUTTON_RIGHT,
-        "key.categories.superbwarfare"
-    )
+    val HOLD_ZOOM = registerKey("hold_zoom", GLFW.GLFW_MOUSE_BUTTON_RIGHT, type = InputConstants.Type.MOUSE)
 
     @JvmField
-    val SWITCH_ZOOM: KeyMapping =
-        KeyMapping("key.superbwarfare.switch_zoom", GLFW.GLFW_KEY_UNKNOWN, "key.categories.superbwarfare")
+    val SWITCH_ZOOM = registerKey("switch_zoom", GLFW.GLFW_KEY_UNKNOWN)
 
     @JvmField
-    val RELEASE_DECOY: KeyMapping =
-        KeyMapping("key.superbwarfare.release_decoy", GLFW.GLFW_KEY_V, "key.categories.superbwarfare")
+    val RELEASE_DECOY = registerKey("release_decoy", GLFW.GLFW_KEY_V)
 
     @JvmField
-    val FREE_CAMERA: KeyMapping =
-        KeyMapping("key.superbwarfare.free_camera", GLFW.GLFW_KEY_C, "key.categories.superbwarfare")
+    val FREE_CAMERA = registerKey("free_camera", GLFW.GLFW_KEY_C)
 
     @JvmField
-    val MELEE: KeyMapping = KeyMapping("key.superbwarfare.melee", GLFW.GLFW_KEY_V, "key.categories.superbwarfare")
+    val MELEE = registerKey("melee", GLFW.GLFW_KEY_V)
 
     @JvmField
-    val VEHICLE_SEEK: KeyMapping =
-        KeyMapping("key.superbwarfare.vehicle_seek", GLFW.GLFW_KEY_X, "key.categories.superbwarfare")
+    val VEHICLE_SEEK = registerKey("vehicle_seek", GLFW.GLFW_KEY_X)
 
     @JvmField
-    val MARK: KeyMapping = KeyMapping(
-        "key.superbwarfare.mark",
-        InputConstants.Type.MOUSE,
-        GLFW.GLFW_MOUSE_BUTTON_MIDDLE,
-        "key.categories.superbwarfare"
-    )
+    val MARK = registerKey("mark", GLFW.GLFW_MOUSE_BUTTON_MIDDLE, type = InputConstants.Type.MOUSE)
 
     @JvmField
-    val ACTIVE_THERMAL_IMAGING: KeyMapping =
-        KeyMapping("key.superbwarfare.active_thermal_imaging", GLFW.GLFW_KEY_K, "key.categories.superbwarfare")
+    val ACTIVE_THERMAL_IMAGING = registerKey("active_thermal_imaging", GLFW.GLFW_KEY_K)
+
+    private fun registerKey(
+        name: String,
+        code: Int,
+        conflictContext: KeyConflictContext = KeyConflictContext.IN_GAME,
+        modifier: KeyModifier = KeyModifier.NONE,
+        type: InputConstants.Type = InputConstants.Type.KEYSYM
+    ): KeyMapping {
+        val key = KeyMapping(
+            "key.superbwarfare.$name",
+            conflictContext,
+            modifier,
+            type,
+            code,
+            CATEGORY
+        )
+        KEYS.add(key)
+        return key
+    }
 
     @SubscribeEvent
     fun registerKeyMappings(event: RegisterKeyMappingsEvent) {
-        event.register(RELOAD)
-        event.register(FIRE_MODE)
-        event.register(SENSITIVITY_INCREASE)
-        event.register(SENSITIVITY_REDUCE)
-        event.register(INTERACT)
-        event.register(DISMOUNT)
-        event.register(BREATH)
-        event.register(CONFIG)
-        event.register(EDIT_MODE)
-        event.register(FIRE)
-        event.register(HOLD_ZOOM)
-        event.register(SWITCH_ZOOM)
-        event.register(RELEASE_DECOY)
-        event.register(MELEE)
-        event.register(VEHICLE_SEEK)
-        event.register(FREE_CAMERA)
-        event.register(MARK)
-        event.register(CHANGE_AMMO_FORWARD)
-        event.register(CHANGE_AMMO_BACKWARD)
-        event.register(CHANGE_FIRE_MODE_FORWARD)
-        event.register(CHANGE_FIRE_MODE_BACKWARD)
-        event.register(UNLOAD)
-        event.register(ACTIVE_THERMAL_IMAGING)
+        KEYS.forEach { event.register(it) }
     }
 }
