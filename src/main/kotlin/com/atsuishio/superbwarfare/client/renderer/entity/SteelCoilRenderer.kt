@@ -40,6 +40,8 @@ class SteelCoilRenderer(renderManager: EntityRendererProvider.Context) :
             OverlayTexture.NO_OVERLAY
         )
 
+        model.applyPose(model.bindPose)
+
         poseStack.popPose()
     }
 

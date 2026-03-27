@@ -23,6 +23,7 @@ class BlueprintResearchTableBlockEntityRenderer : BlockEntityRenderer<BlueprintR
         packedOverlay: Int
     ) {
         val model = BedrockModelLoader.getModel(BedrockModelLoader.BLUEPRINT_RESEARCH_TABLE_MODEL) ?: return
+        val bone = model.getBone("rolling") ?: return
 
         poseStack.pushPose()
 
@@ -36,7 +37,10 @@ class BlueprintResearchTableBlockEntityRenderer : BlockEntityRenderer<BlueprintR
         poseStack.translate(0.5, 0.0, 0.5)
         poseStack.mulPose(Axis.YP.rotationDegrees(rot))
 
-        // TODO 想个办法解决旋转件问题
+        if (blockEntity.crafting) {
+            bone.rotation.mul(Axis.XP.rotationDegrees(blockEntity.tick * 8 % 360f))
+        }
+
         model.renderToBuffer(
             poseStack,
             buffer.getBuffer(RenderType.entityTranslucent(TEXTURE)),
@@ -50,6 +54,8 @@ class BlueprintResearchTableBlockEntityRenderer : BlockEntityRenderer<BlueprintR
             packedLight,
             packedOverlay
         )
+
+        model.applyPose(model.bindPose)
 
         poseStack.popPose()
     }
