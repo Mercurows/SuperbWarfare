@@ -22,13 +22,11 @@ import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.ClipContext
-import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.client.gui.overlay.ForgeGui
 import org.joml.Math
 
-// TODO 预制通用固定翼飞机HUD，提取准星
 @OnlyIn(Dist.CLIENT)
 object OldAircraftHud {
     const val ID: String = "@OldAircraft"
@@ -46,8 +44,8 @@ object OldAircraftHud {
     private val CROSSHAIR_3P = loc("textures/overlay/vehicle/crosshair/third_camera.png")
     private val BOMB_RING = loc("textures/overlay/crosshair/rex_circle.png")
 
-    private var mouseX = 0f;
-    private var mouseY = 0f;
+    private var mouseX = 0f
+    private var mouseY = 0f
 
     fun render(
         vehicle: VehicleEntity,
@@ -209,7 +207,6 @@ object OldAircraftHud {
                 xCross = bombHitPosX.toFloat()
                 yCross = bombHitPosY.toFloat()
             }
-
 
             if (mc.options.cameraType != CameraType.FIRST_PERSON && !ClientEventHandler.zoomVehicle) {
                 var cross = CROSSHAIR_3P

@@ -16,7 +16,6 @@ import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 
 open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context) :
@@ -71,7 +70,6 @@ open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context) :
             OverlayTexture.NO_OVERLAY
         )
 
-        // TODO 这个对吗
         val texture = entity.getEmissiveTexture()
         if (texture != null) {
             model.renderToBuffer(

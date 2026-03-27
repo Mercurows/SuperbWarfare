@@ -424,7 +424,6 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
         }
     }
 
-    // TODO 正确显示文本和备弹数量，正确判断是否应该显示武器名称
     @JvmStatic
     fun renderWeaponInfoFirst(
         guiGraphics: GuiGraphics,
