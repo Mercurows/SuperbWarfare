@@ -98,7 +98,7 @@ object MiscConfig {
     @JvmField
     val SYNC_ENTITY_INTERVAL = buildServerConfig {
         comment("The interval for synchronizing client entities with the server")
-        defineInRange("sync_entity_interval", 3, 1, Int.MAX_VALUE)
+        defineInRange("sync_entity_interval", 10, 1, Int.MAX_VALUE)
     }
 
     @JvmField
