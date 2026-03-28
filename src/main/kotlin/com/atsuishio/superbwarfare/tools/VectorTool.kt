@@ -8,6 +8,7 @@ import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
+import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec2
 import net.minecraft.world.phys.Vec3
@@ -21,6 +22,7 @@ import org.joml.Vector4d
 import java.lang.Math
 import kotlin.math.acos
 import kotlin.math.sqrt
+
 
 operator fun Vec3.plus(other: Vec3): Vec3 = add(other)
 operator fun Vec3.minus(other: Vec3): Vec3 = subtract(other)
@@ -63,11 +65,9 @@ fun Vec3.worldToScreen(): Vec3 {
 @OnlyIn(Dist.CLIENT)
 @JvmName("canSee")
 fun Vec3.canBeSeen(): Boolean {
-    val camera = mc.gameRenderer.mainCamera
-    val cameraPos = camera.position
-    val viewVec = Vec3(camera.lookVector)
-    val v1 = cameraPos.vectorTo(this)
-    return v1.angleTo(viewVec) < ClientEventHandler.fov + 10
+    val frustum = mc.levelRenderer.frustum ?: return false
+    val aabb = AABB(this, this).inflate(0.01)
+    return frustum.isVisible(aabb)
 }
 
 fun Vec3.angleTo(other: Vec3): Double {
