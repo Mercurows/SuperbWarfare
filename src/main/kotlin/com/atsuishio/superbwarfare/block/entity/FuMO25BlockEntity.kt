@@ -4,12 +4,15 @@ import com.atsuishio.superbwarfare.block.FuMO25Block
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModBlockEntities
+import com.atsuishio.superbwarfare.init.ModParticleTypes
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.inventory.menu.FuMO25Menu
 import com.atsuishio.superbwarfare.network.dataslot.ContainerEnergyData
 import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
+import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.SeekTool
 import com.atsuishio.superbwarfare.tools.sendPacketTo
+import com.atsuishio.superbwarfare.tools.toVec3
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
@@ -20,6 +23,7 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundSource
+import net.minecraft.util.Mth
 import net.minecraft.world.MenuProvider
 import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.effect.MobEffects
@@ -31,6 +35,7 @@ import net.minecraft.world.inventory.ContainerLevelAccess
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.phys.Vec3
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.capabilities.ForgeCapabilities
 import net.minecraftforge.common.util.LazyOptional
@@ -222,6 +227,11 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
                 DEFAULT_ENERGY_COST
             }
 
+            val f = Mth.sin(blockEntity.tick * (Math.PI.toFloat() / 180f)).toDouble()
+            val f1 = -Mth.cos(blockEntity.tick * (Math.PI.toFloat() / 180f)).toDouble()
+
+            val direct = Vec3(f, 0.0, f1)
+
             if (energy < energyCost) {
                 if (state.getValue(FuMO25Block.POWERED)) {
                     level.setBlockAndUpdate(pos, state.setValue(FuMO25Block.POWERED, false))
@@ -239,7 +249,7 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
                     }
                 } else {
                     blockEntity.energyHandler.ifPresent { it.extractEnergy(energyCost, false) }
-                    if (blockEntity.tick == 300) {
+                    if (blockEntity.tick == 360) {
                         level.playSound(null, pos, ModSounds.RADAR_SEARCH_IDLE.get(), SoundSource.BLOCKS, 1f, 1f)
                     }
 
@@ -251,26 +261,69 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
                     if (uuid != null) {
                         val owner = level.getPlayerByUUID(uuid)
                         if (owner != null && level is ServerLevel) {
-                            scanEntities(level, pos, blockEntity, owner)
+                            scanEntities(level, pos, blockEntity, owner, direct)
                         }
                     }
                 }
             }
 
-            if (blockEntity.tick >= 300) {
+            if (blockEntity.tick >= 360) {
                 blockEntity.tick = 0
             }
+
+
+//            // 测试粒子
+//            if (level is ServerLevel) {
+//
+//                val f2 = Mth.sin((blockEntity.tick - 60) * (Math.PI.toFloat() / 180f)).toDouble()
+//                val f3 = -Mth.cos((blockEntity.tick - 60) * (Math.PI.toFloat() / 180f)).toDouble()
+//
+//                val dir1 = Vec3(f2, 0.0, f3)
+//
+//                val f4 = Mth.sin((blockEntity.tick + 60) * (Math.PI.toFloat() / 180f)).toDouble()
+//                val f5 = -Mth.cos((blockEntity.tick + 60) * (Math.PI.toFloat() / 180f)).toDouble()
+//
+//                val dir2 = Vec3(f4, 0.0, f5)
+//
+//                ParticleTool.sendParticle(
+//                    level,
+//                    ModParticleTypes.FIRE_STAR.get(),
+//                    pos.x.toDouble() + 0.5,
+//                    pos.y.toDouble() + 2.5,
+//                    pos.z.toDouble() + 0.5,
+//                    0,
+//                    dir1.x,
+//                    dir1.y,
+//                    dir1.z,
+//                    2.0,
+//                    false
+//                )
+//                ParticleTool.sendParticle(
+//                    level,
+//                    ModParticleTypes.FIRE_STAR.get(),
+//                    pos.x.toDouble() + 0.5,
+//                    pos.y.toDouble() + 2.5,
+//                    pos.z.toDouble() + 0.5,
+//                    0,
+//                    dir2.x,
+//                    dir2.y,
+//                    dir2.z,
+//                    2.0,
+//                    false
+//                )
+//            }
         }
 
-        fun scanEntities(level: ServerLevel, pos: BlockPos, blockEntity: FuMO25BlockEntity, player: Player) {
+        fun scanEntities(level: ServerLevel, pos: BlockPos, blockEntity: FuMO25BlockEntity, player: Player, vec3: Vec3) {
             if (blockEntity.tick % MiscConfig.SYNC_ENTITY_INTERVAL.get() != 0) return
 
             val range = if (blockEntity.type == FuncType.WIDER) 2048 else 1024
             val hostileList = level.allEntities.asSequence().mapNotNull {
                 val flag = it is VehicleEntity
                         && SeekTool.NOT_IN_SMOKE.test(it)
-                        && it.distanceToSqr(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble()) <= range * range
+                        && it.distanceToSqr(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble()) <= range * range * it.computed().trackDistanceMultiply * it.computed().trackDistanceMultiply
                         && !SeekTool.IS_FRIENDLY.test(player, it)
+                        && SeekTool.calculateAngle(Vec3(pos.x.toDouble() + 0.5, pos.y.toDouble() + 2.5, pos.z.toDouble() + 0.5), vec3, it) < 60
                 if (!flag) return@mapNotNull null
                 EntitySyncMessage.SyncedEntity(
                     it.id,

@@ -104,13 +104,13 @@ public class SeekTool {
                 .toList();
     }
 
-    private static double calculateAngle(Entity entityA, Entity entityB) {
+    public static double calculateAngle(Entity entityA, Entity entityB) {
         Vec3 start = new Vec3(entityA.getX() - entityB.getX(), entityA.getY() - entityB.getY(), entityA.getZ() - entityB.getZ());
         Vec3 end = entityB.getLookAngle();
         return VectorTool.calculateAngle(start, end);
     }
 
-    private static double calculateAngle(Vec3 pos, Vec3 vec3, Entity entityA) {
+    public static double calculateAngle(Vec3 pos, Vec3 vec3, Entity entityA) {
         Vec3 start = pos.vectorTo(entityA.position());
         return VectorTool.calculateAngle(start, vec3);
     }
@@ -388,6 +388,11 @@ public class SeekTool {
 
         public Builder withinRange(double range) {
             this.filters.add(e -> {
+                var clientEntities = ClientSyncedEntityHandler.getSyncedHostileEntities(entity.level());
+                if (clientEntities != null && entity.level().isClientSide && entity instanceof Player player && (player.level().getEntity(e.getId()) == null || clientEntities.contains(e))) {
+                    return true;
+                }
+
                 if (e instanceof VehicleEntity vehicle) {
                     return vehicle.position().distanceToSqr(this.entity.getEyePosition()) <= range * vehicle.computed().trackDistanceMultiply * range * vehicle.computed().trackDistanceMultiply;
                 }
@@ -398,6 +403,11 @@ public class SeekTool {
 
         public Builder withinRange(Vec3 vec3, double range) {
             this.filters.add(e -> {
+                var clientEntities = ClientSyncedEntityHandler.getSyncedHostileEntities(entity.level());
+                if (clientEntities != null && entity.level().isClientSide && entity instanceof Player player && (player.level().getEntity(e.getId()) == null || clientEntities.contains(e))) {
+                    return true;
+                }
+
                 if (e instanceof VehicleEntity vehicle) {
                     return vehicle.position().distanceToSqr(vec3) <= range * vehicle.computed().trackDistanceMultiply * range * vehicle.computed().trackDistanceMultiply;
                 }

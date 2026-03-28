@@ -147,7 +147,7 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
             var nearestEntity = ClientEventHandler.nearestEntityVehicle
             val seekVec = vehicle.getSeekVec(player, partialTick)
 
-            val entities = SeekTool.Builder(vehicle)
+            val entities = SeekTool.Builder(player)
                 .withinRange(seekInfo.seekRange)
                 .withinAngle(cameraPos, seekVec, seekInfo.seekAngle)
                 .baseFilter()

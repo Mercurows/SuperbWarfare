@@ -25,8 +25,7 @@ class FuMO25BlockEntityRenderer : BlockEntityRenderer<FuMO25BlockEntity> {
 
         poseStack.translate(0.5, 0.0, 0.5)
 
-        val tick = blockEntity.tick
-        bone.rotation.mul(Axis.YN.rotationDegrees(tick * 1.2f))
+        bone.rotation.mul(Axis.YN.rotationDegrees(blockEntity.tick.toFloat()))
 
         model.renderToBuffer(
             poseStack,
