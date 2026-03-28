@@ -1,9 +1,14 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
+import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
+import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
+import com.atsuishio.superbwarfare.tools.SeekTool
 import com.atsuishio.superbwarfare.tools.forceHurt
+import com.atsuishio.superbwarfare.tools.sendPacketTo
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
@@ -142,5 +147,32 @@ abstract class MissileProjectile : DestroyableProjectile, CustomSyncMotionEntity
         @JvmField
         val TARGET_UUID: EntityDataAccessor<String> =
             SynchedEntityData.defineId(MissileProjectile::class.java, EntityDataSerializers.STRING)
+    }
+
+    override fun tick() {
+        super.tick()
+        // 给队友同步友方导弹位置
+
+        val level = level()
+        if (server != null && server!!.tickCount % MiscConfig.SYNC_ENTITY_INTERVAL.get() != 0) return
+
+        if (level is ServerLevel && owner != null) {
+            val friendlyMissileList = arrayListOf<EntitySyncMessage.SyncedEntity>()
+            val synced = EntitySyncMessage.SyncedEntity(
+                id,
+                BuiltInRegistries.ENTITY_TYPE.getKey(type),
+                position(),
+                deltaMovement,
+                serializeNBT(level.registryAccess())
+            )
+
+            friendlyMissileList.add(synced)
+
+            for (player in server!!.playerList.players) {
+                if (SeekTool.IS_FRIENDLY.test(player, this.owner)) {
+                    sendPacketTo(player, EntitySyncMessage(level.dimension().location(), friendlyMissileList, true))
+                }
+            }
+        }
     }
 }

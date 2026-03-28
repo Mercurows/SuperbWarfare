@@ -1590,20 +1590,22 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open fun onHurt(pHealAmount: Float, attacker: Entity?, send: Boolean) {
         if (this.level() is ServerLevel) {
             val holder = Holder.direct(ModSounds.INDICATION_VEHICLE.get())
-            if (attacker is ServerPlayer && pHealAmount > 0 && this.health > 0 && send && (this !is DroneEntity)) {
-                attacker.connection.send(
-                    ClientboundSoundPacket(
-                        holder,
-                        SoundSource.PLAYERS,
-                        attacker.x,
-                        attacker.eyeY,
-                        attacker.z,
-                        0.25f + (2.75f * pHealAmount / this.getMaxHealth()),
-                        random.nextFloat() * 0.1f + 0.9f,
-                        attacker.level().random.nextLong()
+            for (player in server!!.playerList.players) {
+                if (player == attacker && pHealAmount > 0 && this.health > 0 && send && (this !is DroneEntity)) {
+                    player.connection.send(
+                        ClientboundSoundPacket(
+                            holder,
+                            SoundSource.PLAYERS,
+                            player.x,
+                            player.eyeY,
+                            player.z,
+                            0.25f + (2.75f * pHealAmount / this.getMaxHealth()),
+                            random.nextFloat() * 0.1f + 0.9f,
+                            player.level().random.nextLong()
+                        )
                     )
-                )
-                attacker.sendPacket(ClientIndicatorMessage(3, 5))
+                    player.sendPacket(ClientIndicatorMessage(3, 5))
+                }
             }
 
             if (pHealAmount > 0 && send) {
@@ -2153,7 +2155,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     // TODO 添加更多的雷达机制
     fun vehicleRadar(player: Player) {
-        if (tickCount % MiscConfig.SYNC_ENTITY_INTERVAL.get() != 0) return
+        if ((level().server?.tickCount ?: return) % MiscConfig.SYNC_ENTITY_INTERVAL.get() != 0) return
         val data = this.getGunData(player) ?: return
         val seekWeaponInfo = data.get(GunProp.SEEK_WEAPON_INFO) ?: return
 

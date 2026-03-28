@@ -42,4 +42,8 @@ class FuMO25BlockEntityRenderer : BlockEntityRenderer<FuMO25BlockEntity> {
     companion object {
         val TEXTURE = loc("textures/bedrock/block/fumo_25.png")
     }
+
+    override fun getViewDistance(): Int {
+        return 256
+    }
 }
