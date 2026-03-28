@@ -45,7 +45,7 @@ class IffItem : Item(Properties().stacksTo(1)), ICurioItem {
                     val friendlyList = arrayListOf<EntitySyncMessage.SyncedEntity>()
                     for (entity in level.allEntities) {
                         if (!SeekTool.NOT_IN_SMOKE.test(entity)) continue
-                        if (entity is VehicleEntity || entity is Player) {
+                        if (entity is VehicleEntity) {
                             val synced = EntitySyncMessage.SyncedEntity(
                                 entity.id,
                                 BuiltInRegistries.ENTITY_TYPE.getKey(entity.type),
