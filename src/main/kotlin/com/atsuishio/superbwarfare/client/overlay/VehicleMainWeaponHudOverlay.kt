@@ -9,16 +9,12 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.init.ModKeyMappings
 import com.atsuishio.superbwarfare.init.ModTags
+import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.MathTool.getGradientColor
 import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
-import com.atsuishio.superbwarfare.tools.SeekTool
-import com.atsuishio.superbwarfare.tools.TraceTool
 import com.atsuishio.superbwarfare.tools.VectorTool.lerpGetEntityBoundingBoxCenter
-import com.atsuishio.superbwarfare.tools.canBeSeen
-import com.atsuishio.superbwarfare.tools.worldToScreen
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.GameRenderer
@@ -165,7 +161,8 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
                 if (pos3.canBeSeen() && !seekInfo.onlyLockBlock) {
                     val point = pos3.worldToScreen()
                     val lockOn = ClientEventHandler.lockOnVehicle && targetEntity != null && e.id == targetEntity.id
-                    val nearest = e.id  == (if (ClientEventHandler.seekingEntityVehicle == null) nearestEntity?.id else ClientEventHandler.seekingEntityVehicle?.id)
+                    val nearest =
+                        e.id == (if (ClientEventHandler.seekingEntityVehicle == null) nearestEntity?.id else ClientEventHandler.seekingEntityVehicle?.id)
 
                     poseStack.pushPose()
                     val x = point.x.toFloat()
@@ -173,6 +170,20 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
 
                     if (lockOn) {
                         lock = true
+
+                        poseStack.pushPose()
+                        poseStack.translate(x, y, 0f)
+                        val str = "${e.displayName?.string} [${FormatTool.format1D(e.distanceTo(player).toDouble())}m]"
+                        guiGraphics.drawString(
+                            mc.font,
+                            str,
+                            -mc.font.width(str) / 2,
+                            -20,
+                            0xFFBD7F,
+                            false
+                        )
+                        poseStack.popPose()
+
                         RenderHelper.preciseBlitWithColor(
                             guiGraphics,
                             FRAME_LOCK,
@@ -184,7 +195,7 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
                             24f,
                             24f,
                             24f,
-                            -0x1
+                            -0x1f
                         )
                         nearestEntity = targetEntity
                         if (seekInfo.calculateTrajectory) {
@@ -251,7 +262,7 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
                         }
                     } else if (nearest && !lock) {
                         lerpLock = Mth.lerp(partialTick, lerpLock, ClientEventHandler.seekingTimeVehicle.toFloat())
-                        val lockTime = Mth.clamp((seekTime - lerpLock) * (20f / seekTime), 0f, 20f)
+                        val lockTime = ((seekTime - lerpLock) * (20f / seekTime)).coerceIn(0f, 20f)
                         if (ClientEventHandler.seekingTimeVehicle > 0) {
                             RenderHelper.preciseBlitWithColor(
                                 guiGraphics,
@@ -311,7 +322,7 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
                             poseStack.pushPose()
                             poseStack.translate(x, y, 0f)
                             val string = "[" + ModKeyMappings.VEHICLE_SEEK.key.displayName.string + "]"
-                            val width = Minecraft.getInstance().font.width(string)
+                            val width = mc.font.width(string)
                             guiGraphics.drawString(
                                 mc.font,
                                 string,
@@ -322,6 +333,19 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
                             )
                             poseStack.popPose()
                         }
+
+                        poseStack.pushPose()
+                        poseStack.translate(x, y, 0f)
+                        val str = "${e.displayName?.string} [${FormatTool.format1D(e.distanceTo(player).toDouble())}m]"
+                        guiGraphics.drawString(
+                            mc.font,
+                            str,
+                            -mc.font.width(str) / 2,
+                            -20,
+                            0xFFBD7F,
+                            false
+                        )
+                        poseStack.popPose()
 
                         RenderHelper.preciseBlitWithColor(
                             guiGraphics,
@@ -364,7 +388,7 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
                     val x = point.x.toFloat()
                     val y = point.y.toFloat()
                     lerpLock = Mth.lerp(partialTick, lerpLock, ClientEventHandler.seekingTimeVehicle.toFloat())
-                    val lockTime = Mth.clamp((seekTime - lerpLock) * (20f / seekTime), 0f, 20f)
+                    val lockTime = ((seekTime - lerpLock) * (20f / seekTime)).coerceIn(0f, 20f)
                     if (ClientEventHandler.seekingTimeVehicle > 0 && !lockOn) {
                         RenderHelper.preciseBlitWithColor(
                             guiGraphics,
@@ -424,7 +448,7 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
                         poseStack.pushPose()
                         poseStack.translate(x, y, 0f)
                         val string = "[" + ModKeyMappings.VEHICLE_SEEK.key.displayName.string + "]"
-                        val width = Minecraft.getInstance().font.width(string)
+                        val width = mc.font.width(string)
                         guiGraphics.drawString(
                             mc.font,
                             string,
