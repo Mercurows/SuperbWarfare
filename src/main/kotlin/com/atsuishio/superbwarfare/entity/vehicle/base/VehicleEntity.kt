@@ -2171,7 +2171,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             val hostileList = level.allEntities
                 .asSequence()
                 .mapNotNull {
-                    val flag = it is VehicleEntity
+                    val flag = (it is VehicleEntity || VehicleConfig.inScanList(it.type))
                             && SeekTool.NOT_IN_SMOKE.test(it)
                             && it.distanceToSqr(player) <= seekRange * seekRange
                             && SeekTool.IN_HEIGHT_RANGE.test(it, minTargetHeight, maxTargetHeight)

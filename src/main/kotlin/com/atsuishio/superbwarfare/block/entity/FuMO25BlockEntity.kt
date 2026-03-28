@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.block.entity
 
 import com.atsuishio.superbwarfare.block.FuMO25Block
 import com.atsuishio.superbwarfare.config.server.MiscConfig
+import com.atsuishio.superbwarfare.config.server.VehicleConfig
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModBlockEntities
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -296,13 +297,11 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
 
             val range = if (blockEntity.type == FuncType.WIDER) 2048 else 1024
             val hostileList = level.allEntities.asSequence().mapNotNull {
-                val flag = it is VehicleEntity
+                val seekRange =
+                    range * range * if (it is VehicleEntity) it.computed().trackDistanceMultiply * it.computed().trackDistanceMultiply else 1.0
+                val flag = (it is VehicleEntity || VehicleConfig.inScanList(it.type))
                         && SeekTool.NOT_IN_SMOKE.test(it)
-                        && it.distanceToSqr(
-                    pos.x.toDouble(),
-                    pos.y.toDouble(),
-                    pos.z.toDouble()
-                ) <= range * range * it.computed().trackDistanceMultiply * it.computed().trackDistanceMultiply
+                        && it.distanceToSqr(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble()) <= seekRange
                         && !SeekTool.IS_FRIENDLY.test(player, it)
                         && SeekTool.calculateAngle(
                     Vec3(

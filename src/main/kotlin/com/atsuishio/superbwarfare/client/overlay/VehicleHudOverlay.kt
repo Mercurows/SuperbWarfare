@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.client.animation.AnimationCurves
 import com.atsuishio.superbwarfare.client.animation.AnimationTimer
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
-import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo.Aircraft
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo.Helicopter
@@ -14,10 +13,7 @@ import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModKeyMappings
-import com.atsuishio.superbwarfare.tools.FormatTool
-import com.atsuishio.superbwarfare.tools.NBTTool
-import com.atsuishio.superbwarfare.tools.localPlayer
-import com.atsuishio.superbwarfare.tools.options
+import com.atsuishio.superbwarfare.tools.*
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.ChatFormatting
@@ -288,8 +284,7 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
     ) {
         val passengers = vehicle.getOrderedPassengers()
 
-        var index = 0
-        for (i in passengers.indices.reversed()) {
+        for ((index, i) in passengers.indices.reversed().withIndex()) {
             val passenger = passengers[i]
 
             val y = screenHeight - 35 - index * 12
@@ -305,13 +300,13 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
                     .ifPresent { s -> name.set(s.stack().hoverName.string) }
             }
 
-            guiGraphics.drawString(Minecraft.getInstance().font, name.get(), 42, y, 0x66ff00, true)
+            guiGraphics.drawString(mc.font, name.get(), 42, y, 0x66ff00, true)
 
             val num = "[" + (i + 1) + "]"
             guiGraphics.drawString(
-                Minecraft.getInstance().font,
+                mc.font,
                 num,
-                25 - Minecraft.getInstance().font.width(num),
+                25 - mc.font.width(num),
                 y,
                 0x66ff00,
                 true
@@ -330,7 +325,6 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
                 8f,
                 8f
             )
-            index++
         }
     }
 
@@ -467,8 +461,7 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
         val index = vehicle.getSeatIndex(player)
         if (index == -1) return
 
-        val weapons = vehicle.computed().seats().get(index).weapons().stream()
-            .map<GunData?> { name: String? -> vehicle.getGunData(name!!) }.toList()
+        val weapons = vehicle.computed().seats()[index].weapons().map { vehicle.getGunData(it) }
         if (weapons.isEmpty()) return
 
         val weaponIndex = vehicle.getWeaponIndex(index)

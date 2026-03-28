@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.config.server
 
 import com.atsuishio.superbwarfare.config.buildServerConfig
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.world.entity.EntityType
 
 object VehicleConfig {
 
@@ -93,6 +95,12 @@ object VehicleConfig {
     }
 
     @JvmField
+    val SCAN_WHITE_LIST = buildServerConfig {
+        comment("List of entity types that can be scanned by radar")
+        defineList("scan_white_list", listOf("ywzj_vehicle:*")) { true }
+    }
+
+    @JvmField
     val REPAIR_COOLDOWN = buildServerConfig {
         push("repair")
 
@@ -104,5 +112,18 @@ object VehicleConfig {
     val REPAIR_AMOUNT = buildServerConfig {
         comment("The default amount of health restored per tick when a vehicle is self-repairing")
         defineInRange("repair_amount", 0.05, -100000000.0, 100000000.0).also { pop(2) }
+    }
+
+    fun inScanList(type: EntityType<*>): Boolean {
+        val path = BuiltInRegistries.ENTITY_TYPE.getKey(type)
+        SCAN_WHITE_LIST.get().forEach {
+            if (it.contains(":*")) {
+                val namespace = it.split(":*")[0]
+                if (path.toString().startsWith(namespace)) return true
+            } else {
+                if (it == path.toString()) return true
+            }
+        }
+        return false
     }
 }
