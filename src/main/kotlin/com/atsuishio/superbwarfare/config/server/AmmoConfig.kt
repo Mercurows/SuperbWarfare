@@ -16,6 +16,7 @@ object AmmoConfig {
     val AMMO_LIMIT = Ammo.entries.associateWith {
         buildServerConfig {
             comment("The max ammo limit of ${it.serializationName}")
+            comment("玩家身上能存储的最大弹药数量")
             defineInRange("${it.name}_ammo_limit", Int.MAX_VALUE, 0, Int.MAX_VALUE)
         }
     }
@@ -23,6 +24,7 @@ object AmmoConfig {
     val AMMO_BOX_LIMIT = Ammo.entries.associateWith {
         buildServerConfig {
             comment("The max ammo limit for ammo boxes of ${it.serializationName}")
+            comment("弹药箱能存储的最大弹药数量")
             defineInRange("${it.name}_ammo_box_limit", Int.MAX_VALUE, 0, Int.MAX_VALUE)
         }
     }

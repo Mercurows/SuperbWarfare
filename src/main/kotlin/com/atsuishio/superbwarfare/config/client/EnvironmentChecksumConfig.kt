@@ -9,6 +9,7 @@ object EnvironmentChecksumConfig {
         push("checksum")
 
         comment("System environment checksum, do not edit")
+        comment("校验码，别动")
         define("environment_checksum", "").also { pop() }
     }
 
