@@ -8,6 +8,7 @@ object ProjectileConfig {
         push("projectile")
 
         comment("Set true to allow projectiles to destroy certain blocks")
+        comment("是否允许子弹破坏方块")
         define("allow_projectile_destroy_blocks", false)
             .also { pop() }
     }
