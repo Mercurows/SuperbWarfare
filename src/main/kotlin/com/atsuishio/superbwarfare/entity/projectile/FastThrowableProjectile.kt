@@ -140,11 +140,9 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
             updateChunkLoading(level)
         }
 
-        if (tickCount > getLife()) {
-            if (level is ServerLevel) {
-                if (explosionRadiusValue > 0) {
-                    causeExplode(position())
-                }
+        if (tickCount > getLife() && level is ServerLevel) {
+            if (explosionRadiusValue > 0) {
+                causeExplode(position())
             }
             this.discard()
         }
