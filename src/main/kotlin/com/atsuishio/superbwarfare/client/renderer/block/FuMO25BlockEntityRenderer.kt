@@ -8,7 +8,6 @@ import com.mojang.math.Axis
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer
-import net.minecraft.world.phys.Vec3
 
 class FuMO25BlockEntityRenderer : BlockEntityRenderer<FuMO25BlockEntity> {
     override fun render(

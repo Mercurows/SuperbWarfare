@@ -2,17 +2,15 @@ package com.atsuishio.superbwarfare.block.entity
 
 import com.atsuishio.superbwarfare.block.FuMO25Block
 import com.atsuishio.superbwarfare.config.server.MiscConfig
+import com.atsuishio.superbwarfare.config.server.VehicleConfig
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModBlockEntities
-import com.atsuishio.superbwarfare.init.ModParticleTypes
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.inventory.menu.FuMO25Menu
 import com.atsuishio.superbwarfare.network.dataslot.ContainerEnergyData
 import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
-import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.SeekTool
 import com.atsuishio.superbwarfare.tools.sendPacketTo
-import com.atsuishio.superbwarfare.tools.toVec3
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
@@ -314,16 +312,30 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
 //            }
         }
 
-        fun scanEntities(level: ServerLevel, pos: BlockPos, blockEntity: FuMO25BlockEntity, player: Player, vec3: Vec3) {
+        fun scanEntities(
+            level: ServerLevel,
+            pos: BlockPos,
+            blockEntity: FuMO25BlockEntity,
+            player: Player,
+            vec3: Vec3
+        ) {
             if (level.server.tickCount % MiscConfig.SYNC_ENTITY_INTERVAL.get() != 0) return
 
             val range = if (blockEntity.type == FuncType.WIDER) 2048 else 1024
             val hostileList = level.allEntities.asSequence().mapNotNull {
-                val flag = it is VehicleEntity
+                val seekRange =
+                    range * range * if (it is VehicleEntity) it.computed().trackDistanceMultiply * it.computed().trackDistanceMultiply else 1.0
+                val flag = (it is VehicleEntity || VehicleConfig.inScanList(it.type))
                         && SeekTool.NOT_IN_SMOKE.test(it)
-                        && it.distanceToSqr(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble()) <= range * range * it.computed().trackDistanceMultiply * it.computed().trackDistanceMultiply
+                        && it.distanceToSqr(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble()) <= seekRange
                         && !SeekTool.IS_FRIENDLY.test(player, it)
-                        && SeekTool.calculateAngle(Vec3(pos.x.toDouble() + 0.5, pos.y.toDouble() + 2.5, pos.z.toDouble() + 0.5), vec3, it) < 60
+                        && SeekTool.calculateAngle(
+                    Vec3(
+                        pos.x.toDouble() + 0.5,
+                        pos.y.toDouble() + 2.5,
+                        pos.z.toDouble() + 0.5
+                    ), vec3, it
+                ) < 60
                 if (!flag) return@mapNotNull null
                 EntitySyncMessage.SyncedEntity(
                     it.id,
