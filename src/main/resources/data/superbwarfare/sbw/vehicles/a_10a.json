@@ -195,6 +195,7 @@
       "ExplosionRadius": 12,
       "AddShooterDeltaMovement": true,
       "Velocity": 1.05,
+      "ProjectileLife": 3600,
       "SeekWeaponInfo": {
         "SeekDirection": "Default",
         "SeekRange": 1024,

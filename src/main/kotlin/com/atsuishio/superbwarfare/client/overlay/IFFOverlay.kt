@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.client.overlay.weapon.AircraftHud
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType
+import com.atsuishio.superbwarfare.entity.projectile.MissileProjectile
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModTags
@@ -41,6 +42,7 @@ object IFFOverlay : CommonOverlay("iff") {
     val FRIENDLY_DRONE: ResourceLocation = loc("textures/overlay/teammate/friendly_drone.png")
     val FRIENDLY_HELICOPTER: ResourceLocation = loc("textures/overlay/teammate/friendly_helicopter.png")
     val FRIENDLY_MINE: ResourceLocation = loc("textures/overlay/teammate/friendly_mine.png")
+    val FRIENDLY_MISSILE: ResourceLocation = loc("textures/overlay/teammate/friendly_missile.png")
 
     override fun shouldRender() = super.shouldRender() && DisplayConfig.VEHICLE_INFO.get()
 
@@ -187,6 +189,8 @@ object IFFOverlay : CommonOverlay("iff") {
             }
         } else if (entity.type.`is`(ModTags.EntityTypes.MINE)) {
             icon = FRIENDLY_MINE
+        } else if (entity is MissileProjectile) {
+            icon = FRIENDLY_MISSILE
         }
         return icon
     }

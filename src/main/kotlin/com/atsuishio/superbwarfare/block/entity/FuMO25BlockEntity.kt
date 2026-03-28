@@ -315,7 +315,7 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
         }
 
         fun scanEntities(level: ServerLevel, pos: BlockPos, blockEntity: FuMO25BlockEntity, player: Player, vec3: Vec3) {
-            if (blockEntity.tick % MiscConfig.SYNC_ENTITY_INTERVAL.get() != 0) return
+            if (level.server.tickCount % MiscConfig.SYNC_ENTITY_INTERVAL.get() != 0) return
 
             val range = if (blockEntity.type == FuncType.WIDER) 2048 else 1024
             val hostileList = level.allEntities.asSequence().mapNotNull {
