@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.entity.projectile.MissileProjectile
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModTags
+import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
 import com.atsuishio.superbwarfare.tools.*
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
@@ -26,6 +27,7 @@ import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
+import net.minecraftforge.registries.ForgeRegistries
 import top.theillusivec4.curios.api.CuriosApi
 
 @OnlyIn(Dist.CLIENT)
@@ -49,10 +51,28 @@ object IFFOverlay : CommonOverlay("iff") {
     override fun RenderContext.render() {
         CuriosApi.getCuriosInventory(player).ifPresent { c ->
             c.findFirstCurio(ModItems.IFF.get()).ifPresent { _ ->
+                val clientEntities = SeekTool.Builder(player)
+                    .friendly()
+                    .build()
+
+                for (e in clientEntities) {
+                    val friendlyList = arrayListOf<EntitySyncMessage.SyncedEntity>()
+                    val synced = EntitySyncMessage.SyncedEntity(
+                        e.id,
+                        ForgeRegistries.ENTITY_TYPES.getKey(e.type)!!,
+                        e.position(),
+                        e.deltaMovement,
+                        e.serializeNBT()
+                    )
+
+                    friendlyList.add(synced)
+                    ClientSyncedEntityHandler.sync(player.level().dimension().location(), friendlyList, true)
+                }
+
                 val entities = ClientSyncedEntityHandler.SYNCED_FRIENDLY_ENTITIES[this.player.level().dimension().location()] ?: return@ifPresent
 
-                for (entry in entities) {
-                    var e = entry.value.entity
+                for (entry in entities.values) {
+                    var e = entry.entity
                     val clientEntity = player.level().getEntity(e.id)
                     if (clientEntity != null) {
                         e = clientEntity
@@ -143,7 +163,7 @@ object IFFOverlay : CommonOverlay("iff") {
 
                         var color = 0xFFBD7F
 
-                        if (e is VehicleEntity && (e.firstPassenger == null || (e is OwnableEntity && e.owner == null)) || e.team == null) {
+                        if (e is VehicleEntity && ((e.firstPassenger == null && e.team == null) || (e is OwnableEntity && e.owner == null))) {
                             color = -1
                         }
 
