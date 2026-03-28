@@ -221,7 +221,7 @@ public class MortarEntity extends ArtilleryEntity {
         boolean canAim = true;
 
         setTargetPos(parameters.pos());
-        setDepressed(parameters.isDepressed());
+        setDepressed(!parameters.isDepressed());
         setRadius(parameters.radius());
         Vec3 randomPos = VectorToolKt.randomPos(getTargetPos().getCenter(), getRadius()).add(0, -1, 0);
         Vec3 flatTrajectory = calculateLaunchVector(getEyePosition(), randomPos, getProjectileVelocity(weaponName), getProjectileGravity(weaponName), getDepressed());

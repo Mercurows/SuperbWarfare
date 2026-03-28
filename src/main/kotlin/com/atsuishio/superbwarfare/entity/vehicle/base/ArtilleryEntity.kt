@@ -134,7 +134,7 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
         var canAim = true
 
         targetPos = parameters.pos
-        depressed = parameters.isDepressed
+        depressed = !parameters.isDepressed
         radius = parameters.radius
         val distance = targetPos.center.distanceTo(getShootPos(weaponName, 1f))
         val randomPos = targetPos.center.randomPos(radius).add(0.0, -1.0 - 0.0023 * distance, 0.0)
