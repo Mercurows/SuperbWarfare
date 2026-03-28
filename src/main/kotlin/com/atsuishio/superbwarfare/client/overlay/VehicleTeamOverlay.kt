@@ -86,7 +86,7 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                 val size = ((50 / ClientEventHandler.fov) * 0.9f * max((512 - entityRange) / 512, 0.1)
                     .coerceIn(0.4, 1.0)).toFloat()
                 poseStack.scale(size, size, size)
-                val font = Minecraft.getInstance().font
+                val font = mc.font
 
                 var color = -1
 

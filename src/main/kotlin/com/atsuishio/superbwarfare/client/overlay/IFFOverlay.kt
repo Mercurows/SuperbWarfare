@@ -19,6 +19,7 @@ import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.OwnableEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.vehicle.Boat
 import net.minecraft.world.level.ClipContext
@@ -52,6 +53,7 @@ object IFFOverlay : CommonOverlay("iff") {
                 val entities =
                     ClientSyncedEntityHandler.SYNCED_FRIENDLY_ENTITIES[this.player.level().dimension().location()]
                         ?: return@ifPresent
+
                 for (entry in entities) {
                     var e = entry.value.entity
                     val clientEntity = player.level().getEntity(e.id)
@@ -88,7 +90,7 @@ object IFFOverlay : CommonOverlay("iff") {
                         val yf = point.y.toFloat()
                         val icon: ResourceLocation = getResourceLocation(team)
 
-                        RenderHelper.preciseBlit(
+                        RenderHelper.preciseBlitWithColor(
                             guiGraphics,
                             icon,
                             Mth.clamp(xf - 6, 0f, (screenWidth - 12).toFloat()),
@@ -98,10 +100,74 @@ object IFFOverlay : CommonOverlay("iff") {
                             12f,
                             12f,
                             12f,
-                            12f
+                            12f,
+                            0x7FFFAD
                         )
                     }
                 }
+
+                val hostileEntities =
+                    ClientSyncedEntityHandler.SYNCED_HOSTILE_ENTITIES[this.player.level().dimension().location()]
+                        ?: return@ifPresent
+
+                for (entry in hostileEntities) {
+                    var e = entry.value.entity
+                    val clientEntity = player.level().getEntity(e.id)
+                    if (clientEntity != null) {
+                        e = clientEntity
+                    }
+
+                    if (e !== player && e.position().canBeSeen() && e !== player.vehicle) {
+                        var team: Entity? = e
+                        if (e.vehicle != null) {
+                            team = e.vehicle
+                        }
+
+                        RenderSystem.disableDepthTest()
+                        RenderSystem.depthMask(false)
+                        RenderSystem.enableBlend()
+                        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
+                        RenderSystem.blendFuncSeparate(
+                            GlStateManager.SourceFactor.SRC_ALPHA,
+                            GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                            GlStateManager.SourceFactor.ONE,
+                            GlStateManager.DestFactor.ZERO
+                        )
+
+                        if (checkNoClip(player, team!!, cameraPos)) {
+                            RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
+                        } else {
+                            RenderSystem.setShaderColor(1f, 1f, 1f, 0.4f)
+                        }
+
+                        val pos = VectorTool.lerpGetEntityBoundingBoxCenter(team, partialTick)
+                        val point = pos.worldToScreen()
+                        val xf = point.x.toFloat()
+                        val yf = point.y.toFloat()
+                        val icon: ResourceLocation = getResourceLocation(team)
+
+                        var color = 0xFFBD7F
+
+                        if (e is VehicleEntity && (e.firstPassenger == null || (e is OwnableEntity && e.owner == null)) || e.team == null) {
+                            color = -1
+                        }
+
+                        RenderHelper.preciseBlitWithColor(
+                            guiGraphics,
+                            icon,
+                            Mth.clamp(xf - 6, 0f, (screenWidth - 12).toFloat()),
+                            Mth.clamp(yf - 6, 0f, (screenHeight - 12).toFloat()),
+                            0f,
+                            0f,
+                            12f,
+                            12f,
+                            12f,
+                            12f,
+                            color
+                        )
+                    }
+                }
+
             }
     }
 
