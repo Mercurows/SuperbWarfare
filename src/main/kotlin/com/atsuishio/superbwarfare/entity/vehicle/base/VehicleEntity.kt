@@ -2173,9 +2173,10 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 .mapNotNull {
                     val flag = (it is VehicleEntity || VehicleConfig.inScanList(it.type))
                             && SeekTool.NOT_IN_SMOKE.test(it)
-                            && it.distanceToSqr(player) <= seekRange * seekRange
+                            && it.distanceToSqr(this) <= seekRange * seekRange
                             && SeekTool.IN_HEIGHT_RANGE.test(it, minTargetHeight, maxTargetHeight)
                             && !SeekTool.IS_FRIENDLY.test(player, it)
+                            && VectorTool.checkNoClip(eyePosition, it.eyePosition, level())
                     if (!flag) return@mapNotNull null
                     EntitySyncMessage.SyncedEntity(
                         it.id,
