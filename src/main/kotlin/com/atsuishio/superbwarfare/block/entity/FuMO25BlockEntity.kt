@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.inventory.menu.FuMO25Menu
 import com.atsuishio.superbwarfare.network.dataslot.ContainerEnergyData
 import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
 import com.atsuishio.superbwarfare.tools.SeekTool
+import com.atsuishio.superbwarfare.tools.VectorTool
 import com.atsuishio.superbwarfare.tools.sendPacketTo
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
@@ -335,7 +336,11 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
                         pos.y.toDouble() + 2.5,
                         pos.z.toDouble() + 0.5
                     ), vec3, it
-                ) < 60
+                ) < 60 && VectorTool.checkNoClip(Vec3(
+                    pos.x.toDouble() + 0.5,
+                    pos.y.toDouble() + 2.5,
+                    pos.z.toDouble() + 0.5
+                ), it.eyePosition, level)
                 if (!flag) return@mapNotNull null
                 EntitySyncMessage.SyncedEntity(
                     it.id,
