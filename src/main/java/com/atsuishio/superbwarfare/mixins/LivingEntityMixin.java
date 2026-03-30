@@ -9,7 +9,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -18,13 +17,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
-import java.util.Stack;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin implements ICustomKnockback, DamageAccess {
-
-    @Shadow
-    protected Stack<DamageContainer> damageContainers;
 
     @Shadow
     @Nullable
@@ -107,10 +102,5 @@ public abstract class LivingEntityMixin implements ICustomKnockback, DamageAcces
         if (pVehicle instanceof VehicleEntity vehicle) {
             vehicle.removeSeatIndexTag(((LivingEntity) (Object) this));
         }
-    }
-
-    @Override
-    public Stack<DamageContainer> superbwarfare$getDamageContainers() {
-        return this.damageContainers;
     }
 }
