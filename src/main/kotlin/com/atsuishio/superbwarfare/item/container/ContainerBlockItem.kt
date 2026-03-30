@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
 import net.minecraft.core.component.DataComponents
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.network.chat.Component
 import net.minecraft.tags.DamageTypeTags
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
@@ -77,6 +78,18 @@ class ContainerBlockItem : BlockItem(ModBlocks.CONTAINER.get(), Properties().sta
         return res
     }
 
+    override fun getName(stack: ItemStack): Component {
+        val tag = stack.get(DataComponents.BLOCK_ENTITY_DATA)?.copyTag()
+        var args = Component.translatable("des.superbwarfare.container.empty")
+        if (tag != null && tag.contains("EntityType")) {
+            val type = tag.getString("EntityType")
+            val entityType = EntityType.byString(type)
+            if (entityType.isPresent) {
+                args = Component.translatable(entityType.get().descriptionId)
+            }
+        }
+        return Component.translatable("item.superbwarfare.container", args)
+    }
 
     override fun registerControllers(data: ControllerRegistrar) {
         data.add(AnimationController(this, "controller", 0) { _ -> PlayState.CONTINUE })

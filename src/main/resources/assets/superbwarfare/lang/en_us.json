@@ -371,6 +371,8 @@
   "des.superbwarfare.fumo_25.type_2": "Alert Mode",
   "des.superbwarfare.fumo_25.type_3": "Guidance Mode",
   "block.superbwarfare.container": "Container",
+  "item.superbwarfare.container": "Container [%1$s]",
+  "des.superbwarfare.container.info": "Press %1$s key to see info",
   "des.superbwarfare.container.empty": "Empty",
   "des.superbwarfare.container.fail.empty": "This container is empty",
   "des.superbwarfare.container.fail.open": "Not enough space",
