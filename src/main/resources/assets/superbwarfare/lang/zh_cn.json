@@ -371,6 +371,8 @@
   "des.superbwarfare.fumo_25.type_2": "警戒模式",
   "des.superbwarfare.fumo_25.type_3": "制导模式",
   "block.superbwarfare.container": "集装箱",
+  "item.superbwarfare.container": "集装箱 [%1$s]",
+  "des.superbwarfare.container.info": "按下 %1$s 键查看简介",
   "des.superbwarfare.container.empty": "空的",
   "des.superbwarfare.container.fail.empty": "这个箱子是空的",
   "des.superbwarfare.container.fail.open": "没有足够的空间",

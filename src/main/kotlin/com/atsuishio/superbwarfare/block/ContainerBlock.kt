@@ -99,20 +99,14 @@ open class ContainerBlock :
     override fun <T : BlockEntity?> getTicker(
         pLevel: Level,
         pState: BlockState,
-        pBlockEntityType: BlockEntityType<T?>
+        pBlockEntityType: BlockEntityType<T>
     ): BlockEntityTicker<T?>? {
         if (!pLevel.isClientSide) {
-            return createTickerHelper<ContainerBlockEntity?, T?>(
+            return createTickerHelper<ContainerBlockEntity, T>(
                 pBlockEntityType,
-                ModBlockEntities.CONTAINER.get()
-            ) { pLevel, pPos, pState, blockEntity ->
-                ContainerBlockEntity.serverTick(
-                    pLevel,
-                    pPos,
-                    pState,
-                    blockEntity
-                )
-            }
+                ModBlockEntities.CONTAINER.get(),
+                ContainerBlockEntity::serverTick
+            )
         }
         return null
     }
@@ -120,7 +114,7 @@ open class ContainerBlock :
     override fun appendHoverText(
         pStack: ItemStack,
         pLevel: BlockGetter?,
-        pTooltip: MutableList<Component?>,
+        pTooltip: MutableList<Component>,
         pFlag: TooltipFlag
     ) {
         super.appendHoverText(pStack, pLevel, pTooltip, pFlag)
@@ -144,11 +138,11 @@ open class ContainerBlock :
                     ).withStyle(ChatFormatting.ITALIC).withStyle(ChatFormatting.AQUA)
                 )
             } else {
-                // 实体名称
-                val entityTranslationKey = getEntityTranslationKey(type)
                 pTooltip.add(
-                    Component.translatable(entityTranslationKey ?: "des.superbwarfare.container.empty")
-                        .withStyle(ChatFormatting.GRAY)
+                    Component.translatable(
+                        "des.superbwarfare.container.info",
+                        Component.literal("[Shift]").withStyle(ChatFormatting.AQUA)
+                    ).withStyle(ChatFormatting.GRAY)
                 )
             }
 

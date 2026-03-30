@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.init.ModBlocks
 import com.atsuishio.superbwarfare.init.ModEntities
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.network.chat.Component
 import net.minecraft.tags.DamageTypeTags
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
@@ -77,6 +78,19 @@ class ContainerBlockItem : BlockItem(ModBlocks.CONTAINER.get(), Properties().sta
             }
         }
         return res
+    }
+
+    override fun getName(stack: ItemStack): Component {
+        val tag = getBlockEntityData(stack)
+        var args = Component.translatable("des.superbwarfare.container.empty")
+        if (tag != null && tag.contains("EntityType")) {
+            val type = tag.getString("EntityType")
+            val entityType = EntityType.byString(type)
+            if (entityType.isPresent) {
+                args = Component.translatable(entityType.get().descriptionId)
+            }
+        }
+        return Component.translatable("item.superbwarfare.container", args)
     }
 
     private fun predicate(event: AnimationState<ContainerBlockItem>): PlayState {
