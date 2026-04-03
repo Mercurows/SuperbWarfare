@@ -102,11 +102,10 @@ open class MedicalKitItem : Item(Properties().stacksTo(16)) {
         return 40
     }
 
-    companion object {
-        @JvmStatic
-        fun treat(living: LivingEntity) {
-            living.heal(5 + 0.25f * living.maxHealth)
-            living.addEffect(MobEffectInstance(MobEffects.REGENERATION, 100, 1, false, false), living)
-        }
+    open fun treat(living: LivingEntity) {
+        val value =
+            MiscConfig.MEDICAL_KIT_HEAL_AMOUNT.get() + MiscConfig.MEDICAL_KIT_HEAL_PERCENTAGE.get() * living.maxHealth
+        living.heal(value.toFloat())
+        living.addEffect(MobEffectInstance(MobEffects.REGENERATION, 100, 1, false, false), living)
     }
 }

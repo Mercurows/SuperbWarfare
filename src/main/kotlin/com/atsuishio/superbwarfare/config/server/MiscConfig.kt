@@ -126,9 +126,39 @@ object MiscConfig {
 
     @JvmField
     val THROW_MEDICAL_KIT = buildServerConfig {
+        push("medical kit")
+
         comment("Set true to enable player throwing medical kits")
         comment("是否允许玩家投掷医疗包")
         define("throw_medical_kit", true)
+    }
+
+    @JvmField
+    val MEDICAL_KIT_HEAL_AMOUNT = buildServerConfig {
+        comment("The healing value of using medical kits")
+        comment("使用医疗包的固定治疗数值")
+        defineInRange("medical_kit_heal_amount", 5, 0, Int.MAX_VALUE)
+    }
+
+    @JvmField
+    val MEDICAL_KIT_HEAL_PERCENTAGE = buildServerConfig {
+        comment("The percentage of the player's health restored using the medical kit")
+        comment("使用医疗包治疗的玩家生命值比例")
+        defineInRange("medical_kit_heal_percentage", 0.25, 0.0, 1.0)
+    }
+
+    @JvmField
+    val MEDICAL_KIT_ENTITY_HEAL_AMOUNT = buildServerConfig {
+        comment("The healing value of picking up medical kit entity")
+        comment("拾取医疗包实体的固定治疗数值")
+        defineInRange("medical_kit_entity_heal_amount", 5, 0, Int.MAX_VALUE)
+    }
+
+    @JvmField
+    val MEDICAL_KIT_ENTITY_HEAL_PERCENTAGE = buildServerConfig {
+        comment("The percentage of the player's health restored picking up medical kit entity")
+        comment("拾取医疗包实体治疗的玩家生命值比例")
+        defineInRange("medical_kit_entity_heal_percentage", 0.25, 0.0, 1.0).also { pop() }
     }
 
     @JvmField
