@@ -173,8 +173,11 @@ object ClientMouseHandler {
         val vehicle = player.vehicle
         val hover = vehicle is VehicleEntity && vehicle.vehicleType == VehicleType.HELICOPTER && vehicle.hoverMode
 
-        if (!ClientEventHandler.isFreeCam(player) && !hover) {
-            val s = if (mc.options.cameraType == CameraType.FIRST_PERSON) 0.6 else 0.2
+        if (!ClientEventHandler.isFreeCam(player)) {
+            var s = if (mc.options.cameraType == CameraType.FIRST_PERSON) 0.6 else 0.2
+            if (hover) {
+                s *= 0.5
+            }
             freeCameraYaw = Mth.lerp(s * times, freeCameraYaw, 0.0)
             freeCameraPitch = Mth.lerp(s * times, freeCameraPitch, 0.0)
         }
