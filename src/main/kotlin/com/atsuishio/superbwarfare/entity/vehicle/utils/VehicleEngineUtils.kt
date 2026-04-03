@@ -557,9 +557,9 @@ object VehicleEngineUtils {
         val energyCost = engineInfo.energyCostRate.toInt()
         val powerAdd = engineInfo.increment
         val powerReduce = engineInfo.decrement
-        val pitchSpeed = engineInfo.pitchSpeed
-        val yawSpeed = engineInfo.yawSpeed
-        val rollSpeed = engineInfo.rollSpeed
+        var pitchSpeed = engineInfo.pitchSpeed
+        var yawSpeed = engineInfo.yawSpeed
+        var rollSpeed = engineInfo.rollSpeed
         val lift = engineInfo.liftSpeed
         val speed = engineInfo.speed
 
@@ -624,10 +624,11 @@ object VehicleEngineUtils {
                     xRot *= 0.97f
                     xRot -= 0.5f * deltaMovement.dot(getViewVector(1f)).toFloat()
 
-                    rightInputDown = false
-                    leftInputDown = false
-                    mouseMoveSpeedX = 0f
-                    mouseMoveSpeedY = 0f
+                    rollSpeed *= 0.05f
+                    yawSpeed *= 0.5f
+                    pitchSpeed *= 0.2f
+
+                    deltaMovement = deltaMovement.multiply(0.95, 1.0, 0.95)
                 }
 
                 if (rightInputDown) {
