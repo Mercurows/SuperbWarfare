@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
+import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.init.ModItems
-import com.atsuishio.superbwarfare.item.misc.MedicalKitItem.Companion.treat
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.server.level.ServerLevel
@@ -10,6 +10,8 @@ import net.minecraft.sounds.SoundSource
 import net.minecraft.util.Mth
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
+import net.minecraft.world.effect.MobEffectInstance
+import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
@@ -126,6 +128,13 @@ open class MedicalKitEntity(type: EntityType<MedicalKitEntity>, level: Level) : 
                 (Mth.atan2(vec3.x, vec3.z) * (180f / Math.PI.toFloat()).toDouble()).toFloat()
             )
         }
+    }
+
+    open fun treat(living: LivingEntity) {
+        val value =
+            MiscConfig.MEDICAL_KIT_ENTITY_HEAL_AMOUNT.get() + MiscConfig.MEDICAL_KIT_ENTITY_HEAL_PERCENTAGE.get() * living.maxHealth
+        living.heal(value.toFloat())
+        living.addEffect(MobEffectInstance(MobEffects.REGENERATION, 100, 1, false, false), living)
     }
 
     companion object {
