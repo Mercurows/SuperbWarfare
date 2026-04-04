@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
 import com.atsuishio.superbwarfare.entity.vehicle.TurretWreckEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier.Companion.createDefaultModifier
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -16,6 +17,7 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.util.Mth
 import net.minecraft.world.damagesource.DamageSource
+import net.minecraft.world.damagesource.DamageTypes
 import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.entity.*
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier
@@ -49,6 +51,10 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Pa
     override fun readAdditionalSaveData(pCompound: CompoundTag) {
         super.readAdditionalSaveData(pCompound)
         this.readPersistentAngerSaveData(this.level(), pCompound)
+    }
+
+    override fun hurt(source: DamageSource, amount: Float): Boolean {
+        return super.hurt(source, DAMAGE_MODIFIER.compute(source, amount))
     }
 
     override fun registerGoals() {
@@ -169,6 +175,12 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Pa
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0)
                 .add(Attributes.STEP_HEIGHT, 2.0)
         }
+
+        private val DAMAGE_MODIFIER = createDefaultModifier()
+            .immuneTo(DamageTypes.IN_WALL)
+            .immuneTo(DamageTypes.DROWN)
+            .immuneTo(DamageTypes.FALL)
+            .multiply(0.5f, DamageTypes.PLAYER_ATTACK)
     }
 
     @Suppress("DEPRECATION")

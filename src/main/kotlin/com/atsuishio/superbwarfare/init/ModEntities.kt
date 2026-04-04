@@ -50,7 +50,7 @@ object ModEntities {
     @JvmField
     val STEEL_COIL = register(
         "steel_coil", EntityType.Builder.of(::SteelCoilEntity, MobCategory.MONSTER)
-            .setTrackingRange(64).setUpdateInterval(3).sized(2f, 2f)
+            .setTrackingRange(64).setUpdateInterval(3).sized(2f, 2f).fireImmune()
     )
 
     // Misc Entities
