@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.api.event.ProjectileHitEvent.HitBlock
 import com.atsuishio.superbwarfare.api.event.ProjectileHitEvent.HitEntity
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
+import com.atsuishio.superbwarfare.config.server.ProjectileConfig
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage
 import com.atsuishio.superbwarfare.tools.ChunkLoadManager
 import com.atsuishio.superbwarfare.tools.CustomExplosion
@@ -253,6 +254,8 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
     }
 
     private fun updateChunkLoading(serverLevel: ServerLevel) {
+        if (!ProjectileConfig.PROJECTILE_CHUNK_LOADING.get()) return
+
         val currentPos = ChunkPos(blockPosition())
 
         // 检查是否需要更新
