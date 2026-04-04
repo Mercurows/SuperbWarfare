@@ -363,6 +363,7 @@ object ModEntities {
             { entityType, world, reason, pos, random ->
                 world!!.difficulty != Difficulty.PEACEFUL
                         && SpawnConfig.SPAWN_STEEL_COIL.get()
+                        && Monster.isDarkEnoughToSpawn(world, pos, random)
                         && Mob.checkMobSpawnRules(entityType, world, reason, pos, random)
             },
             SpawnPlacementRegisterEvent.Operation.OR
