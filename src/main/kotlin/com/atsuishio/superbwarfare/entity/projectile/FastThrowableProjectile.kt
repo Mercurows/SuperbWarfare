@@ -124,13 +124,13 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
         }
 
         // 撤销重力影响
-        vec3 = vec3.add(0.0, this.getGravity().toDouble(), 0.0)
+        vec3 = vec3.add(0.0, this.gravity.toDouble(), 0.0)
         // 重新计算动量
         this.deltaMovement = vec3.scale((1 / friction).toDouble())
 
         // 重新应用重力
         val vec31 = this.deltaMovement
-        this.setDeltaMovement(vec31.x, vec31.y - this.getGravity().toDouble(), vec31.z)
+        this.setDeltaMovement(vec31.x, vec31.y - this.gravity.toDouble(), vec31.z)
 
         // 同步动量
         this.syncMotion()
@@ -264,7 +264,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
 
         // 计算需要加载的新区块
         val neededChunks: MutableSet<ChunkPos> = hashSetOf()
-        for (i in -1..5) {
+        for (i in -1..2) {
             val pos = position().add(deltaMovement.scale(i.toDouble()))
             val blockPos = BlockPos.containing(pos)
             neededChunks.add(ChunkPos(blockPos))

@@ -195,7 +195,7 @@
       "ExplosionRadius": 12,
       "AddShooterDeltaMovement": true,
       "Velocity": 1.05,
-      "ProjectileLife": 3600,
+      "ProjectileLife": 1200,
       "SeekWeaponInfo": {
         "SeekDirection": "Default",
         "SeekRange": 1024,
@@ -217,7 +217,7 @@
             "Name": "weapon.superbwarfare.agm_65_missile_block",
             "SeekWeaponInfo": {
               "SeekDirection": "Default",
-              "SeekRange": 512,
+              "SeekRange": 1024,
               "SeekAngle": 20,
               "SeekTime": 10,
               "MaxTargetHeight": 32,
