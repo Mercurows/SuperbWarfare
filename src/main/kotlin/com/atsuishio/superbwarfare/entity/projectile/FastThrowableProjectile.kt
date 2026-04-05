@@ -265,7 +265,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
 
         // 计算需要加载的新区块
         val neededChunks: MutableSet<ChunkPos> = hashSetOf()
-        for (i in -1..5) {
+        for (i in -1..2) {
             val pos = position().add(deltaMovement.scale(i.toDouble()))
             val blockPos = BlockPos.containing(pos)
             neededChunks.add(ChunkPos(blockPos))
