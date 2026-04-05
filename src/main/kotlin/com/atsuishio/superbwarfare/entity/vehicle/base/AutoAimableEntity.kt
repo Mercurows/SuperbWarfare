@@ -208,7 +208,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
             )
 
             if (nearestEntity != null) {
-                targetUUID = nearestEntity.getStringUUID()
+                targetUUID = nearestEntity.stringUUID
                 this.consumeEnergy(seekInfo.seekEnergyCost)
             }
         }
@@ -223,8 +223,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
                 || (target is VehicleEntity && target.isWreck)
                 || target === this
                 || target is TargetEntity
-                || target.isInWater
-                || target is Projectile && (target.onGround() || target.deltaMovement.lengthSqr() < 0.001)
+                || (target is Projectile && (target.onGround() || target.deltaMovement.lengthSqr() < 0.0001))
             ) {
                 targetUUID = ""
                 return
@@ -232,7 +231,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
 
             val targetVehicle = target.vehicle
             if (targetVehicle != null) {
-                targetUUID = targetVehicle.getStringUUID()
+                targetUUID = targetVehicle.stringUUID
             }
 
             if (!target.isAlive) {
@@ -412,6 +411,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
             .smokeFilter()
             .noVehicle()
             .differentTeam()
+            .notFriendly()
             .build()
 
         for (e in entities) {
