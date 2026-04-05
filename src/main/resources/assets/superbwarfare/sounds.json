@@ -4420,5 +4420,14 @@
         "name": "superbwarfare:vehicle/ztz_99a/ztz_99a_engine"
       }
     ]
+  },
+  "steel_coil_move": {
+    "sounds": [
+      {
+        "attenuation_distance": 48,
+        "stream": false,
+        "name": "superbwarfare:steel_coil_move"
+      }
+    ]
   }
 }

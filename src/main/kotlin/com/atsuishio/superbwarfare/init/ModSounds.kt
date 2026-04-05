@@ -40,6 +40,8 @@ object ModSounds {
     @JvmField val IDLE = register("idle")
     @JvmField val HENG = register("heng")
 
+    @JvmField val STEEL_COIL_MOVE = register("steel_coil_move")
+
     @JvmField val LAND = register("land")
     @JvmField val HIT_WATER = register("hit_water")
     @JvmField val HEADSHOT = register("headshot")

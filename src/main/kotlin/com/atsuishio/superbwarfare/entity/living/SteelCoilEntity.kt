@@ -2,14 +2,17 @@ package com.atsuishio.superbwarfare.entity.living
 
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
+import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo
 import com.atsuishio.superbwarfare.entity.vehicle.TurretWreckEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier.Companion.createDefaultModifier
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.tools.angleTo
 import com.atsuishio.superbwarfare.tools.forceHurt
+import net.minecraft.core.BlockPos
 import net.minecraft.core.NonNullList
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
@@ -32,11 +35,14 @@ import net.minecraft.world.entity.vehicle.Boat
 import net.minecraft.world.entity.vehicle.Minecart
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.entity.EntityTypeTest
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.common.ForgeMod
 import net.minecraftforge.network.NetworkHooks
 import java.util.*
+import java.util.function.Consumer
+import javax.annotation.ParametersAreNonnullByDefault
 
 open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : PathfinderMob(type, level), NeutralMob {
     var wheelRot = 0f
@@ -46,6 +52,8 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Pa
     open var restartCrushTimer = 0
     private var remainingPersistentAngerTime = 0
     private var persistentAngerTarget: UUID? = null
+
+    private var wasMoving = false
 
     override fun addAdditionalSaveData(pCompound: CompoundTag) {
         super.addAdditionalSaveData(pCompound)
@@ -122,6 +130,13 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Pa
     }
 
     override fun baseTick() {
+        if (this.level().isClientSide) {
+            if (!this.wasMoving && this.moving()) {
+                playMoveSound.accept(this)
+            }
+        }
+
+        this.wasMoving = this.moving()
         wheelRotO = wheelRot
         super.baseTick()
         val speed = deltaMovement.dot(forward).toFloat()
@@ -135,7 +150,7 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Pa
         if (this.target != null && this.tickCount % 20 == 0) {
             val targetPos = target!!.position().add(
                 this.position().vectorTo(target!!.position()).normalize()
-                    .scale(this.position().distanceTo(target!!.position()).coerceAtLeast(12.0))
+                    .scale(this.position().distanceTo(target!!.position()).coerceAtLeast(1.0))
             )
 
             this.targetPosition = targetPos
@@ -143,6 +158,8 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Pa
 
         crushEntities()
     }
+
+    open fun moving() = deltaMovement.lengthSqr() > 0.0001 && onGround()
 
     fun isAttackableEntity(entity: Entity): Boolean {
         return entity.isAlive || (entity is Player && (!entity.isCreative && !entity.isSpectator))
@@ -179,7 +196,7 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Pa
                 .add(Attributes.MAX_HEALTH, 200.0)
                 .add(Attributes.ARMOR, 30.0)
                 .add(Attributes.ARMOR_TOUGHNESS, 20.0)
-                .add(Attributes.ATTACK_DAMAGE, 1.0)
+                .add(Attributes.ATTACK_DAMAGE, 5.0)
                 .add(Attributes.FOLLOW_RANGE, 64.0)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0)
                 .add(ForgeMod.STEP_HEIGHT_ADDITION.get(), 2.0)
@@ -189,13 +206,24 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Pa
             .immuneTo(DamageTypes.IN_WALL)
             .immuneTo(DamageTypes.DROWN)
             .immuneTo(DamageTypes.FALL)
+            .immuneTo(DamageTypes.IN_FIRE)
+            .immuneTo(DamageTypes.ON_FIRE)
+            .immuneTo(DamageTypes.CACTUS)
+            .immuneTo(DamageTypes.MAGIC)
+            .multiply(0.5f, DamageTypes.EXPLOSION)
+            .multiply(0.5f, DamageTypes.PLAYER_EXPLOSION)
+            .multiply(0.25f, ModTags.DamageTypes.PROJECTILE)
             .multiply(0.5f, DamageTypes.PLAYER_ATTACK)
+            .multiply(2f, ModDamageTypes.REPAIR_TOOL)
+
+        var playMoveSound: Consumer<SteelCoilEntity?> = Consumer { }
     }
 
     @Suppress("DEPRECATION")
     fun crushEntities() {
         if (this.isRemoved) return
         val vec3 = this.deltaMovement
+        if (vec3.lengthSqr() <= 0.0001) return
         val frontBox = this.boundingBox.move(vec3)
         val entities = this.level().getEntities(
             EntityTypeTest.forClass(Entity::class.java),
@@ -238,7 +266,7 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Pa
             val length = v0.length().toFloat()
             val velAdd = v0.normalize().scale(0.8 * length)
 
-            if (length <= 0.2) {
+            if (length <= 0.01) {
                 continue
             }
 
@@ -249,7 +277,7 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Pa
                     this.level().registryAccess(),
                     this, this
                 ),
-                (f1 * 120 * (Mth.abs(length) - 0.2) * (Mth.abs(length) - 0.2)).toFloat()
+                (this.attributes.getValue(Attributes.ATTACK_DAMAGE) + f1 * 240 * (Mth.abs(length) - 0.01) * (Mth.abs(length) - 0.01)).toFloat()
             )
 
             this.pushNew(-0.3f * f * velAdd.x, -0.3f * f * velAdd.y, -0.3f * f * velAdd.z)

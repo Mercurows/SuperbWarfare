@@ -1,5 +1,5 @@
 {
-  "MaxHealth": 250,
+  "MaxHealth": 300,
   "MaxEnergy": 5000000,
   "OBB": [
     {
@@ -85,12 +85,12 @@
     "EngineSoundVolume" : 0.6
   },
   "UpStep": 1.5,
-  "Mass": 20,
+  "Mass": 100,
   "RotateOffsetHeight": 2.2,
   "DamageModifiers": [
-    "All - 4",
-    "minecraft:lava + 4",
-    "All * 0.5",
+    "All - 5",
+    "minecraft:lava + 5",
+    "All * 0.4",
     "minecraft:arrow * 0.2",
     "minecraft:trident * 0.4",
     "minecraft:mob_attack * 0.4",
