@@ -112,9 +112,18 @@ object MiscConfig {
 
     @JvmField
     val SYNC_ENTITY_INTERVAL = buildServerConfig {
+        push("sync")
+
         comment("The interval for synchronizing client entities with the server")
         comment("服务端同步客户端实体的间隔")
         defineInRange("sync_entity_interval", 10, 1, Int.MAX_VALUE)
+    }
+
+    @JvmField
+    val CLIENT_SYNC_EXPIRE_TIME = buildServerConfig {
+        comment("The expire time for synchronized client entities")
+        comment("同步到客户端的实体的数据失效时间")
+        defineInRange("client_sync_expire_time", 20, 1, Int.MAX_VALUE).also { pop() }
     }
 
     @JvmField

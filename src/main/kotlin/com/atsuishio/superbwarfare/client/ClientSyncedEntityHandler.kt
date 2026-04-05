@@ -29,8 +29,6 @@ object ClientSyncedEntityHandler {
             SYNCED_HOSTILE_ENTITIES[dim] ?: ConcurrentHashMap<Int, ClientSyncedEntity>()
         }
         val tick = player.tickCount
-        entities.entries.removeIf { tick - it.value.timeStamp > MiscConfig.SYNC_ENTITY_INTERVAL.get() }
-
         for (syncedEntity in list) {
             val id = syncedEntity.id
             if (entities[id] != null) continue
@@ -58,13 +56,22 @@ object ClientSyncedEntityHandler {
         }
     }
 
-    @JvmStatic
-    fun getSyncedFriendlyEntities(level: Level): List<Entity>? {
-        return SYNCED_FRIENDLY_ENTITIES[level.dimension().location()]?.map { it.value.entity }?.toList()
+    fun clean(tick: Int) {
+        SYNCED_FRIENDLY_ENTITIES.forEach { (_, map) ->
+            map.entries.removeIf { tick - it.value.timeStamp > MiscConfig.CLIENT_SYNC_EXPIRE_TIME.get() }
+        }
+        SYNCED_HOSTILE_ENTITIES.forEach { (_, map) ->
+            map.entries.removeIf { tick - it.value.timeStamp > MiscConfig.CLIENT_SYNC_EXPIRE_TIME.get() }
+        }
     }
 
     @JvmStatic
-    fun getSyncedHostileEntities(level: Level): List<Entity>? {
-        return SYNCED_HOSTILE_ENTITIES[level.dimension().location()]?.map { it.value.entity }?.toList()
+    fun getSyncedFriendlyEntities(level: Level): List<Entity> {
+        return SYNCED_FRIENDLY_ENTITIES[level.dimension().location()]?.map { it.value.entity }?.toList() ?: listOf()
+    }
+
+    @JvmStatic
+    fun getSyncedHostileEntities(level: Level): List<Entity> {
+        return SYNCED_HOSTILE_ENTITIES[level.dimension().location()]?.map { it.value.entity }?.toList() ?: listOf()
     }
 }

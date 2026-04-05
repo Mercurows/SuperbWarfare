@@ -328,7 +328,7 @@ public class SeekTool {
             var stream = StreamSupport.stream(entities, false);
             if (entity.level().isClientSide) {
                 var clientEntities = ClientSyncedEntityHandler.getSyncedHostileEntities(entity.level());
-                if (clientEntities != null) {
+                if (!clientEntities.isEmpty()) {
                     stream = Stream.concat(stream, clientEntities.stream());
                 }
             }
@@ -347,7 +347,7 @@ public class SeekTool {
             var stream = StreamSupport.stream(entities, false);
             if (entity.level().isClientSide) {
                 var clientEntities = ClientSyncedEntityHandler.getSyncedHostileEntities(entity.level());
-                if (clientEntities != null) {
+                if (!clientEntities.isEmpty()) {
                     stream = Stream.concat(stream, clientEntities.stream());
                 }
             }
@@ -367,7 +367,7 @@ public class SeekTool {
             var stream = StreamSupport.stream(entities, false);
             if (entity.level().isClientSide) {
                 var clientEntities = ClientSyncedEntityHandler.getSyncedHostileEntities(entity.level());
-                if (clientEntities != null) {
+                if (!clientEntities.isEmpty()) {
                     stream = Stream.concat(stream, clientEntities.stream());
                 }
             }
@@ -389,7 +389,7 @@ public class SeekTool {
         public Builder withinRange(double range) {
             this.filters.add(e -> {
                 var clientEntities = ClientSyncedEntityHandler.getSyncedHostileEntities(entity.level());
-                if (clientEntities != null && entity.level().isClientSide && entity instanceof Player player && (player.level().getEntity(e.getId()) == null || clientEntities.contains(e))) {
+                if (!clientEntities.isEmpty() && entity.level().isClientSide && entity instanceof Player player && (player.level().getEntity(e.getId()) == null || clientEntities.contains(e))) {
                     return true;
                 }
 
@@ -404,7 +404,7 @@ public class SeekTool {
         public Builder withinRange(Vec3 vec3, double range) {
             this.filters.add(e -> {
                 var clientEntities = ClientSyncedEntityHandler.getSyncedHostileEntities(entity.level());
-                if (clientEntities != null && entity.level().isClientSide && entity instanceof Player player && (player.level().getEntity(e.getId()) == null || clientEntities.contains(e))) {
+                if (!clientEntities.isEmpty() && entity.level().isClientSide && entity instanceof Player player && (player.level().getEntity(e.getId()) == null || clientEntities.contains(e))) {
                     return true;
                 }
 
