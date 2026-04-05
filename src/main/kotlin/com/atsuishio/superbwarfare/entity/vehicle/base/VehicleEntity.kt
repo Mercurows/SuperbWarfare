@@ -4467,8 +4467,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     override fun getOBBs(): MutableList<OBB> {
         if (this.obbCache == null) {
-            this.obbCache = this.obb.stream().filter { obj -> Objects.nonNull(obj) }
-                .map { obj -> obj!!.getOBB() }.toList()
+            this.obbCache = this.obb.asSequence().map { it.obb }.toMutableList()
         }
         return this.obbCache!!
     }

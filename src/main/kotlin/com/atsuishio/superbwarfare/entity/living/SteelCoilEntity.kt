@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.living
 
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
-import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo
 import com.atsuishio.superbwarfare.entity.vehicle.TurretWreckEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier.Companion.createDefaultModifier
@@ -12,7 +11,6 @@ import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.tools.angleTo
 import com.atsuishio.superbwarfare.tools.forceHurt
-import net.minecraft.core.BlockPos
 import net.minecraft.core.NonNullList
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
@@ -33,12 +31,10 @@ import net.minecraft.world.entity.vehicle.Boat
 import net.minecraft.world.entity.vehicle.Minecart
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
-import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.entity.EntityTypeTest
 import net.minecraft.world.phys.Vec3
 import java.util.*
 import java.util.function.Consumer
-import javax.annotation.ParametersAreNonnullByDefault
 
 open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : PathfinderMob(type, level), NeutralMob {
     var wheelRot = 0f
@@ -207,7 +203,7 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Pa
             .multiply(0.5f, DamageTypes.PLAYER_ATTACK)
             .multiply(2f, ModDamageTypes.REPAIR_TOOL)
 
-        var playMoveSound: Consumer<SteelCoilEntity?> = Consumer { }
+        var playMoveSound: Consumer<SteelCoilEntity> = Consumer { }
     }
 
     @Suppress("DEPRECATION")
@@ -220,7 +216,7 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Pa
             EntityTypeTest.forClass(Entity::class.java),
             frontBox
         ) { entity -> entity !== this && entity!!.vehicle == null && entity !is SteelCoilEntity }
-            .stream().filter { entity ->
+            .asSequence().filter { entity ->
                 if (entity.isAlive) {
                     val type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.type)
                     return@filter (entity is VehicleEntity || entity is Boat || entity is Minecart || (entity is TurretWreckEntity && entity.tickCount > 5)
@@ -268,7 +264,9 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Pa
                     this.level().registryAccess(),
                     this, this
                 ),
-                (this.attributes.getValue(Attributes.ATTACK_DAMAGE) + f1 * 240 * (Mth.abs(length) - 0.01) * (Mth.abs(length) - 0.01)).toFloat()
+                (this.attributes.getValue(Attributes.ATTACK_DAMAGE) + f1 * 240 * (Mth.abs(length) - 0.01) * (Mth.abs(
+                    length
+                ) - 0.01)).toFloat()
             )
 
             this.pushNew(-0.3f * f * velAdd.x, -0.3f * f * velAdd.y, -0.3f * f * velAdd.z)
