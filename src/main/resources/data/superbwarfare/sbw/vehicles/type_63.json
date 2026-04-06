@@ -2,6 +2,7 @@
   "MaxHealth": 100,
   "MaxEnergy": 0,
   "Mass": 0.45,
+  "KeepChunkLoaded": false,
   "TurretPos": [0, 0.45703125, -0.1625],
   "TurretYawRange": [-15, 15],
   "TurretPitchRange": [-5, 60],

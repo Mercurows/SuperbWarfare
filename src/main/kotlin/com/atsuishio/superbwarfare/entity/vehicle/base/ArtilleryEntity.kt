@@ -137,7 +137,7 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
         depressed = !parameters.isDepressed
         radius = parameters.radius
         val distance = targetPos.center.distanceTo(getShootPos(weaponName, 1f))
-        val randomPos = targetPos.center.randomPos(radius).add(0.0, -1.0 - 0.0023 * distance, 0.0)
+        val randomPos = targetPos.center.randomPos(radius).add(0.0, -1.0 - 0.0018 * distance, 0.0)
         val launchVector = calculateLaunchVector(
             getShootPos(weaponName, 1f),
             randomPos,
@@ -196,7 +196,7 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity
     open fun resetTarget(weaponName: String) {
         if (this.isWreck) return
         val distance = targetPos.center.distanceTo(getShootPos(weaponName, 1f))
-        val randomPos = targetPos.center.randomPos(radius).add(0.0, -1.0 - 0.0023 * distance, 0.0)
+        val randomPos = targetPos.center.randomPos(radius).add(0.0, -1.0 - 0.0018 * distance, 0.0)
         val launchVector = calculateLaunchVector(
             getShootPos(weaponName, 1f),
             randomPos,

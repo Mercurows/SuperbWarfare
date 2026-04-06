@@ -1,6 +1,7 @@
 {
   "MaxHealth": 80,
   "MaxEnergy": 100000,
+  "KeepChunkLoaded": false,
   "Seats": {
     "Transform": "Vehicle",
     "Position": [0, -0.3, -0.0625],

@@ -75,6 +75,7 @@ import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
+import net.minecraft.server.level.TicketType
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
@@ -99,6 +100,7 @@ import net.minecraft.world.entity.vehicle.DismountHelper
 import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.NameTagItem
+import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.gameevent.GameEvent
@@ -2143,14 +2145,22 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
 
         lowHealthWarning()
-        this.refreshDimensions()
-
         if (!this.enableAABB()) {
             this.handlePartDamaged(this)
             // 处理部件血量
             this.handlePartHealth()
             this.updateOBB()
         }
+
+        if (level() is ServerLevel && computed().keepChunkLoaded) {
+            this.keepChunkLoaded(this.position())
+            this.keepChunkLoaded(position().add(this.lookAngle.normalize().scale(16.0)))
+        }
+    }
+
+    fun keepChunkLoaded(position: Vec3) {
+        val chunkPos = ChunkPos(BlockPos.containing(position))
+        (level() as ServerLevel).chunkSource.addRegionTicket(TicketType.POST_TELEPORT, chunkPos, 3, this.id)
     }
 
     // TODO 添加更多的雷达机制
