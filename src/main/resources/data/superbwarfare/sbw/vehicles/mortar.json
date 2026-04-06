@@ -1,6 +1,7 @@
 {
   "MaxHealth": 40,
   "MaxEnergy": 0,
+  "KeepChunkLoaded": false,
   "TurretPitchRange": [20, 89],
   "Weapons": {
     "Main": {

@@ -15,6 +15,7 @@ import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.protocol.Packet
 import net.minecraft.network.protocol.game.ClientGamePacketListener
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.server.level.TicketType
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.util.Mth
@@ -43,8 +44,6 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
     var firstHit: Boolean = true
 
     private var isFastMoving = false
-    private val currentChunks: MutableSet<ChunkPos> = hashSetOf()
-    private var lastChunkPos: ChunkPos? = null
 
     var exploded: Boolean = false
 
@@ -136,16 +135,18 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
         this.syncMotion()
 
         // 更新区块加载位置
-        val level = this.level()
-        if (level is ServerLevel && forceLoadChunk()) {
-            updateChunkLoading(level)
-        }
-
-        if (tickCount > getLife() && level is ServerLevel) {
-            if (explosionRadiusValue > 0) {
-                causeExplode(position())
+        if (level() is ServerLevel) {
+            if (forceLoadChunk()) {
+                this.keepChunkLoaded(this.position())
+                this.keepChunkLoaded(position().add(this.deltaMovement.normalize().scale(16.0)))
             }
-            this.discard()
+
+            if (tickCount > getLife()) {
+                if (explosionRadiusValue > 0) {
+                    causeExplode(position())
+                }
+                this.discard()
+            }
         }
     }
 
@@ -252,54 +253,9 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
         return false
     }
 
-    private fun updateChunkLoading(serverLevel: ServerLevel) {
-        if (!ProjectileConfig.PROJECTILE_CHUNK_LOADING.get()) return
-
-        val currentPos = ChunkPos(blockPosition())
-
-        // 检查是否需要更新
-        if (lastChunkPos != null && lastChunkPos == currentPos) {
-            return
-        }
-
-        // 计算需要加载的新区块
-        val neededChunks: MutableSet<ChunkPos> = hashSetOf()
-        for (i in -1..2) {
-            val pos = position().add(deltaMovement.scale(i.toDouble()))
-            val blockPos = BlockPos.containing(pos)
-            neededChunks.add(ChunkPos(blockPos))
-        }
-
-        // 释放不再需要的区块
-        val toRelease = HashSet<ChunkPos>(currentChunks)
-        toRelease.removeAll(neededChunks)
-        for (pos in toRelease) {
-            ChunkLoadManager.releaseChunk(serverLevel, pos, getUUID())
-            currentChunks.remove(pos)
-        }
-
-        // 加载新区块
-        for (pos in neededChunks) {
-            if (!currentChunks.contains(pos)) {
-                ChunkLoadManager.forceChunk(serverLevel, pos, getUUID())
-                currentChunks.add(pos)
-            }
-        }
-
-        lastChunkPos = currentPos
-    }
-
-    override fun remove(reason: RemovalReason) {
-        val level = this.level()
-        if (level is ServerLevel) {
-            // 释放所有加载的区块
-            for (pos in currentChunks) {
-                ChunkLoadManager.releaseChunk(level, pos, getUUID())
-            }
-            ChunkLoadManager.releaseAllForEntity(level, getUUID())
-            currentChunks.clear()
-        }
-        super.remove(reason)
+    fun keepChunkLoaded(position: Vec3) {
+        val chunkPos = ChunkPos(BlockPos.containing(position))
+        (level() as ServerLevel).chunkSource.addRegionTicket(TicketType.POST_TELEPORT, chunkPos, 3, this.id)
     }
 
     override fun syncMotion() {

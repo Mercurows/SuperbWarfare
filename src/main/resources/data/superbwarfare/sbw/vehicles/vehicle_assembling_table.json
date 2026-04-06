@@ -1,6 +1,7 @@
 {
   "MaxHealth": 100,
   "MaxEnergy": 0,
+  "KeepChunkLoaded": false,
   "Seats": {
     "IsEnclosed": true,
     "Transform": "Vehicle",

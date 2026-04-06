@@ -90,6 +90,9 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     @SerializedName("TrackDistanceMultiply")
     public double trackDistanceMultiply = 1;
 
+    @SerializedName("KeepChunkLoaded")
+    public boolean keepChunkLoaded = true;
+
     @SerializedName("MouseSensitivity")
     public double mouseSensitivity = 0.4;
 
