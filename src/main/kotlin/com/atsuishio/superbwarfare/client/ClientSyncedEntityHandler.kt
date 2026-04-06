@@ -13,31 +13,29 @@ import java.util.concurrent.ConcurrentHashMap
 
 object ClientSyncedEntityHandler {
     @JvmField
-    val SYNCED_FRIENDLY_ENTITIES = hashMapOf<ResourceLocation, ConcurrentHashMap<Int, ClientSyncedEntity>>()
+    val SYNCED_ENTITIES = ConcurrentHashMap<SyncedKey, ClientSyncedEntity>()
 
-    @JvmField
-    val SYNCED_HOSTILE_ENTITIES = hashMapOf<ResourceLocation, ConcurrentHashMap<Int, ClientSyncedEntity>>()
+    data class SyncedKey(val dim: ResourceLocation, val id: Int, val friendly: Boolean)
 
     data class ClientSyncedEntity(val entity: Entity, val timeStamp: Int)
 
     fun sync(dim: ResourceLocation, list: List<SyncedEntity>, friendly: Boolean) {
         val player = localPlayer ?: return
         val level = mc.level ?: return
-        val entities = if (friendly) {
-            SYNCED_FRIENDLY_ENTITIES[dim] ?: ConcurrentHashMap<Int, ClientSyncedEntity>()
-        } else {
-            SYNCED_HOSTILE_ENTITIES[dim] ?: ConcurrentHashMap<Int, ClientSyncedEntity>()
-        }
         val tick = player.tickCount
         for (syncedEntity in list) {
-            val id = syncedEntity.id
-            if (entities[id] != null) continue
-
-            val type = ForgeRegistries.ENTITY_TYPES.getValue(syncedEntity.type) ?: continue
-            val entity = type.create(level) ?: continue
-            val tag = syncedEntity.tag as? CompoundTag ?: continue
-            entity.load(tag)
-            entity.id = syncedEntity.id
+            val key = SyncedKey(dim, syncedEntity.id, friendly)
+            val existedEntity = SYNCED_ENTITIES[key]
+            var entity: Entity
+            if (existedEntity != null) {
+                entity = existedEntity.entity
+            } else {
+                val type = ForgeRegistries.ENTITY_TYPES.getValue(syncedEntity.type) ?: continue
+                entity = type.create(level) ?: continue
+                val tag = syncedEntity.tag as? CompoundTag ?: continue
+                entity.load(tag)
+                entity.id = syncedEntity.id
+            }
 
             val pos = syncedEntity.pos
             entity.xo = pos.x
@@ -45,33 +43,42 @@ object ClientSyncedEntityHandler {
             entity.zo = pos.z
             entity.setPos(syncedEntity.pos)
             entity.deltaMovement = syncedEntity.motion
-
-            entities[id] = ClientSyncedEntity(entity, tick)
-        }
-
-        if (friendly) {
-            SYNCED_FRIENDLY_ENTITIES[dim] = entities
-        } else {
-            SYNCED_HOSTILE_ENTITIES[dim] = entities
+            SYNCED_ENTITIES[key] = ClientSyncedEntity(entity, tick)
         }
     }
 
     fun clean(tick: Int) {
-        SYNCED_FRIENDLY_ENTITIES.forEach { (_, map) ->
-            map.entries.removeIf { tick - it.value.timeStamp > MiscConfig.CLIENT_SYNC_EXPIRE_TIME.get() }
-        }
-        SYNCED_HOSTILE_ENTITIES.forEach { (_, map) ->
-            map.entries.removeIf { tick - it.value.timeStamp > MiscConfig.CLIENT_SYNC_EXPIRE_TIME.get() }
-        }
+        SYNCED_ENTITIES.values.removeIf { tick - it.timeStamp > MiscConfig.CLIENT_SYNC_EXPIRE_TIME.get() }
+
+        // 测试的时候用这个，把上面的注释掉
+//        val toRemove = SYNCED_ENTITIES.filter {
+//            tick - it.value.timeStamp > MiscConfig.CLIENT_SYNC_EXPIRE_TIME.get()
+//        }
+//        toRemove.forEach {
+//            localPlayer?.displayClientMessage(
+//                Component.literal(
+//                    "${it.value.entity.displayName.string} was expired with time ${it.value.timeStamp}, id ${it.key.id}"
+//                ),
+//                false
+//            )
+//            SYNCED_ENTITIES.remove(it.key)
+//        }
     }
 
     @JvmStatic
     fun getSyncedFriendlyEntities(level: Level): List<Entity> {
-        return SYNCED_FRIENDLY_ENTITIES[level.dimension().location()]?.map { it.value.entity }?.toList() ?: listOf()
+        return SYNCED_ENTITIES.filterKeys { it.dim == level.dimension().location() && it.friendly }
+            .map { it.value.entity }
     }
 
     @JvmStatic
     fun getSyncedHostileEntities(level: Level): List<Entity> {
-        return SYNCED_HOSTILE_ENTITIES[level.dimension().location()]?.map { it.value.entity }?.toList() ?: listOf()
+        return SYNCED_ENTITIES.filterKeys { it.dim == level.dimension().location() && !it.friendly }
+            .map { it.value.entity }
+    }
+
+    @JvmStatic
+    fun getSyncedEntities(level: Level): List<Entity> {
+        return SYNCED_ENTITIES.filterKeys { it.dim == level.dimension().location() }.map { it.value.entity }
     }
 }

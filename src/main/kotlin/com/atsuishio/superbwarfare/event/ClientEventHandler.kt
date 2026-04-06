@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay
 import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
-import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -465,10 +464,6 @@ object ClientEventHandler {
         val player = localPlayer ?: return
         if (event.phase == TickEvent.Phase.START) return
 
-        if (player.tickCount % MiscConfig.SYNC_ENTITY_INTERVAL.get() == 0) {
-            ClientSyncedEntityHandler.clean(player.tickCount)
-        }
-
         val stack = player.mainHandItem
         if (notInGame && !ClickEventHandler.switchZoom) {
             zoom = false
@@ -480,6 +475,7 @@ object ClientEventHandler {
 
         recoilForce *= 0.55
 
+        ClientSyncedEntityHandler.clean(player.tickCount)
         isProne(player)
         handleVariableDecrease()
         aimAtVillager(player)
