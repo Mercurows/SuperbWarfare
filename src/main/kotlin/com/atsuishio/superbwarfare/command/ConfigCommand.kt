@@ -34,6 +34,7 @@ val CONFIG_COMMAND = buildCommand("config") {
     booleanConfig(MiscConfig::MINE_HITBOX_INVISIBLE)
     booleanConfig(MiscConfig::SMOKE_HIDE_TARGET)
     booleanConfig(MiscConfig::THROW_MEDICAL_KIT)
+    booleanConfig(MiscConfig::SYNC_ENTITY_OVER_RANGE)
 }
 
 private enum class DestroyType(

@@ -10,8 +10,9 @@ import com.atsuishio.superbwarfare.init.ModParticleTypes
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.item.gun.GunItem
-import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
-import com.atsuishio.superbwarfare.tools.*
+import com.atsuishio.superbwarfare.tools.InventoryTool
+import com.atsuishio.superbwarfare.tools.ParticleTool
+import com.atsuishio.superbwarfare.tools.TraceTool
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
@@ -26,7 +27,6 @@ import net.minecraftforge.event.entity.player.AttackEntityEvent
 import net.minecraftforge.event.entity.player.PlayerEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.registries.ForgeRegistries
 import kotlin.math.ceil
 
 @Mod.EventBusSubscriber

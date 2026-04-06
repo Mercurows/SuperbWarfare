@@ -320,6 +320,7 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
             player: Player,
             vec3: Vec3
         ) {
+            if (!MiscConfig.SYNC_ENTITY_OVER_RANGE.get()) return
             if (level.server.tickCount % MiscConfig.SYNC_ENTITY_INTERVAL.get() != 0) return
 
             val range = if (blockEntity.type == FuncType.WIDER) 2048 else 1024

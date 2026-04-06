@@ -111,9 +111,16 @@ object MiscConfig {
     }
 
     @JvmField
-    val SYNC_ENTITY_INTERVAL = buildServerConfig {
+    val SYNC_ENTITY_OVER_RANGE = buildServerConfig {
         push("sync")
 
+        comment("Set true to enable synchronizing client entities with the server")
+        comment("是否允许服务端同步超视距的客户端实体")
+        define("sync_entity_over_range", true)
+    }
+
+    @JvmField
+    val SYNC_ENTITY_INTERVAL = buildServerConfig {
         comment("The interval for synchronizing client entities with the server")
         comment("服务端同步客户端实体的间隔")
         defineInRange("sync_entity_interval", 10, 1, Int.MAX_VALUE)

@@ -84,10 +84,10 @@ abstract class MissileProjectile : DestroyableProjectile, CustomSyncMotionEntity
         compound.putString("TargetUuid", this.targetUUID)
     }
 
-    public override fun onHitBlock(blockHitResult: BlockHitResult) {
-        super.onHitBlock(blockHitResult)
+    public override fun onHitBlock(result: BlockHitResult) {
+        super.onHitBlock(result)
         if (this.level() is ServerLevel) {
-            destroyBlock(blockHitResult)
+            destroyBlock(result)
         }
     }
 
@@ -154,6 +154,7 @@ abstract class MissileProjectile : DestroyableProjectile, CustomSyncMotionEntity
         // 给队友同步友方导弹位置
 
         val level = level()
+        if (!MiscConfig.SYNC_ENTITY_OVER_RANGE.get()) return
         if (server != null && server!!.tickCount % MiscConfig.SYNC_ENTITY_INTERVAL.get() != 0) return
 
         if (level is ServerLevel && owner != null) {
