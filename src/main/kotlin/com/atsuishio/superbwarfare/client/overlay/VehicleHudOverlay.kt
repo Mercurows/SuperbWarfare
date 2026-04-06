@@ -16,7 +16,6 @@ import com.atsuishio.superbwarfare.init.ModKeyMappings
 import com.atsuishio.superbwarfare.tools.FormatTool
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.mc
-import com.atsuishio.superbwarfare.tools.options
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.ChatFormatting
@@ -34,7 +33,6 @@ import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import org.joml.Math
 import top.theillusivec4.curios.api.CuriosApi
-import java.util.concurrent.atomic.AtomicReference
 
 @OnlyIn(Dist.CLIENT)
 object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
@@ -49,7 +47,6 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
     private val PASSENGER = loc("textures/overlay/vehicle/base/passenger.png")
 
     private val SELECTED = loc("textures/overlay/vehicle/weapon/frame/selected.png")
-    private val SWITCH_AMMO = loc("textures/overlay/vehicle/weapon/frame/switch_ammo.png")
     private val NUMBER = loc("textures/overlay/vehicle/weapon/frame/number.png")
 
     private val FRAMES = arrayOf(
@@ -63,8 +60,6 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
         loc("textures/overlay/vehicle/weapon/frame/frame_8.png"),
         loc("textures/overlay/vehicle/weapon/frame/frame_9.png")
     )
-
-    private val GEAR = loc("textures/overlay/vehicle/aircraft/gear.png")
 
     private val HIT_MARKER = loc("textures/overlay/crosshair/hit_marker.png")
     private val HIT_MARKER_VEHICLE = loc("textures/overlay/crosshair/hit_marker_vehicle.png")
@@ -287,23 +282,23 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
             val passenger = passengers[i]
 
             val y = h - 35 - index * 12
-            val name = AtomicReference("---")
+            var name = "---"
 
             if (passenger != null) {
-                name.set(passenger.name.string)
+                name = passenger.name.string
             }
 
             if (passenger is Player) {
                 CuriosApi.getCuriosInventory(passenger).ifPresent { c ->
                     c.findFirstCurio(ModItems.DOG_TAG.get()).ifPresent { s ->
                         if (s.stack().hasCustomHoverName()) {
-                            name.set(s.stack().getHoverName().string)
+                            name = s.stack().getHoverName().string
                         }
                     }
                 }
             }
 
-            guiGraphics.drawString(mc.font, name.get(), 42, y, 0x66ff00, true)
+            guiGraphics.drawString(mc.font, name, 42, y, 0x66ff00, true)
 
             val num = "[" + (i + 1) + "]"
             guiGraphics.drawString(
@@ -350,9 +345,7 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
         if (vehicle.gearUp) {
             if (vehicle.synchedGearRot == 1f) {
                 componentReady = Component.translatable("tips.superbwarfare.gear_retracted").append(
-                    Component.literal(
-                        " [" + options.keyJump.defaultKey.displayName.string + "]"
-                    )
+                    Component.literal(" [${ModKeyMappings.MOVE_SPACE.key.displayName.string}]")
                 )
             } else {
                 componentReady =
@@ -362,17 +355,13 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
         } else {
             if (vehicle.synchedGearRot == 0f) {
                 componentReady = Component.translatable("tips.superbwarfare.gear_extended").append(
-                    Component.literal(
-                        " [" + options.keyJump.defaultKey.displayName.string + "]"
-                    )
+                    Component.literal(" [${ModKeyMappings.MOVE_SPACE.key.displayName.string}]")
                 )
             } else {
                 componentReady =
                     Component.translatable("tips.superbwarfare.gear_extending").withStyle(ChatFormatting.RED)
             }
         }
-
-
 
         guiGraphics.drawString(
             Minecraft.getInstance().font,
@@ -399,19 +388,14 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
         if (localPlayer != vehicle.firstPassenger) return
 
         var componentReady = Component.translatable("tips.superbwarfare.hover_mode_off").append(
-            Component.literal(
-                " [" + options.keyJump.defaultKey.displayName.string + "]"
-            )
+            Component.literal(" [${ModKeyMappings.MOVE_SPACE.key.displayName.string}]")
         )
 
         if (vehicle.hoverMode) {
             componentReady = Component.translatable("tips.superbwarfare.hover_mode_on").append(
-                Component.literal(
-                    " [" + options.keyJump.defaultKey.displayName.string + "]"
-                )
+                Component.literal(" [${ModKeyMappings.MOVE_SPACE.key.displayName.string}]")
             )
         }
-
 
         guiGraphics.drawString(
             Minecraft.getInstance().font,
