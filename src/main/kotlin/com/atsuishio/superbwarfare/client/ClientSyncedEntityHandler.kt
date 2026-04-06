@@ -2,22 +2,30 @@ package com.atsuishio.superbwarfare.client
 
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage.SyncedEntity
+import com.atsuishio.superbwarfare.network.message.receive.PlayerInfoSyncMessage.SyncedPlayerInfo
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.mc
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.level.Level
+import net.minecraft.world.phys.Vec3
 import net.minecraftforge.registries.ForgeRegistries
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 object ClientSyncedEntityHandler {
     @JvmField
     val SYNCED_ENTITIES = ConcurrentHashMap<SyncedKey, ClientSyncedEntity>()
 
+    @JvmField
+    val SYNCED_PLAYERS = ConcurrentHashMap<UUID, ClientSyncedPlayerInfo>()
+
     data class SyncedKey(val dim: ResourceLocation, val id: Int, val friendly: Boolean)
 
     data class ClientSyncedEntity(val entity: Entity, val timeStamp: Int)
+
+    data class ClientSyncedPlayerInfo(val pos: Vec3, val name: String, val timeStamp: Int)
 
     fun sync(dim: ResourceLocation, list: List<SyncedEntity>, friendly: Boolean) {
         val player = localPlayer ?: return
@@ -47,9 +55,21 @@ object ClientSyncedEntityHandler {
         }
     }
 
+    fun syncPlayerInfo(dim: ResourceLocation, list: List<SyncedPlayerInfo>) {
+        val player = localPlayer ?: return
+        val level = mc.level ?: return
+        if (dim != level.dimension().location()) return
+
+        val tick = player.tickCount
+        for (info in list) {
+            val uuid = info.uuid
+            SYNCED_PLAYERS[uuid] = ClientSyncedPlayerInfo(info.pos, info.name, tick)
+        }
+    }
+
     fun clean(tick: Int) {
         SYNCED_ENTITIES.values.removeIf { tick - it.timeStamp > MiscConfig.CLIENT_SYNC_EXPIRE_TIME.get() }
-
+        SYNCED_PLAYERS.values.removeIf { tick - it.timeStamp > MiscConfig.CLIENT_SYNC_EXPIRE_TIME.get() }
         // 测试的时候用这个，把上面的注释掉
 //        val toRemove = SYNCED_ENTITIES.filter {
 //            tick - it.value.timeStamp > MiscConfig.CLIENT_SYNC_EXPIRE_TIME.get()
@@ -80,5 +100,10 @@ object ClientSyncedEntityHandler {
     @JvmStatic
     fun getSyncedEntities(level: Level): List<Entity> {
         return SYNCED_ENTITIES.filterKeys { it.dim == level.dimension().location() }.map { it.value.entity }
+    }
+
+    @JvmStatic
+    fun getSyncedPlayerInfo(): List<Pair<Vec3, String>> {
+        return SYNCED_PLAYERS.map { Pair(it.value.pos, it.value.name) }
     }
 }
