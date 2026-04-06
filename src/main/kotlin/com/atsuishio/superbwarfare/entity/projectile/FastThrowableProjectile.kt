@@ -136,7 +136,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
 
         // 更新区块加载位置
         if (level() is ServerLevel) {
-            if (forceLoadChunk()) {
+            if (forceLoadChunk() && ProjectileConfig.PROJECTILE_CHUNK_LOADING.get()) {
                 this.keepChunkLoaded(this.position())
                 this.keepChunkLoaded(position().add(this.deltaMovement.normalize().scale(16.0)))
             }
