@@ -2154,7 +2154,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
         if (level() is ServerLevel && computed().keepChunkLoaded) {
             this.keepChunkLoaded(this.position())
-            this.keepChunkLoaded(position().add(this.lookAngle.normalize().scale(16.0)))
+            this.keepChunkLoaded(position().add(deltaMovement.normalize().scale(16.0)))
         }
     }
 
