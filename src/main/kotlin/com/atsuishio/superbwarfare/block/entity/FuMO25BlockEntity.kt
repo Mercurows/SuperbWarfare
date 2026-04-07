@@ -329,7 +329,7 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
 
             level.players()
                 .asSequence()
-                .filter { SeekTool.IS_FRIENDLY.test(it, player) }
+                .filter { SeekTool.IS_FRIENDLY.test(player, it) }
                 .forEach { sendPacketTo(it, EntitySyncMessage(level.dimension().location(), hostileList, false)) }
         }
     }

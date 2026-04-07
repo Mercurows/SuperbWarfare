@@ -48,7 +48,8 @@ open class IffItem : Item(Properties().stacksTo(1)), ICurioItem {
             for (level in server.allLevels) {
                 val entities = level.allEntities
                     .asSequence()
-                    .filter { it is VehicleEntity && !SeekTool.NOT_IN_SMOKE.test(it) }
+                    .filter { it is VehicleEntity && SeekTool.NOT_IN_SMOKE.test(it) }
+                    .toList()
 
                 for (player in server.playerList.players) {
                     if (CuriosApi.getCuriosInventory(player)
@@ -56,7 +57,7 @@ open class IffItem : Item(Properties().stacksTo(1)), ICurioItem {
                     ) continue
 
                     val list = entities.mapNotNull {
-                        if (!SeekTool.IS_FRIENDLY.test(it, player)) return@mapNotNull null
+                        if (!SeekTool.IS_FRIENDLY.test(player, it)) return@mapNotNull null
                         EntitySyncMessage.SyncedEntity(
                             it.id,
                             BuiltInRegistries.ENTITY_TYPE.getKey(it.type),
@@ -70,7 +71,7 @@ open class IffItem : Item(Properties().stacksTo(1)), ICurioItem {
                     val playerList = server.playerList.players
                         .asSequence()
                         .mapNotNull {
-                            if (!SeekTool.IS_FRIENDLY.test(it, player)) return@mapNotNull null
+                            if (!SeekTool.IS_FRIENDLY.test(player, it)) return@mapNotNull null
                             PlayerInfoSyncMessage.SyncedPlayerInfo(
                                 it.uuid,
                                 it.position(),
