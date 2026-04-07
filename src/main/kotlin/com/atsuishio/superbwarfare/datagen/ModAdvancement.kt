@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.datagen
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
-import net.minecraft.ChatFormatting
 import net.minecraft.advancements.*
 import net.minecraft.advancements.critereon.*
 import net.minecraft.core.registries.Registries
@@ -14,7 +13,6 @@ import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.ItemLike
 import net.minecraft.world.level.block.Block
-import net.minecraft.world.level.storage.loot.LootTable
 import java.util.*
 import java.util.function.Consumer
 import java.util.function.UnaryOperator
@@ -27,27 +25,19 @@ class ModAdvancement(private val id: String, b: UnaryOperator<Builder>) {
     private val builder: Advancement.Builder = Advancement.Builder.advancement()
     private var parent: ModAdvancement? = null
     var result: AdvancementHolder? = null
-    private val group: Group
 
     init {
-
         val builtInBuilder = Builder()
         b.apply(builtInBuilder)
-        this.group = builtInBuilder.group
 
         var bg: Optional<ResourceLocation> = Optional.empty()
         if (id == "root") {
-            if (group == Group.MAIN) {
-                bg = Optional.of(MAIN_BACKGROUND)
-            }
-            if (group == Group.LEGENDARY) {
-                bg = Optional.of(LEGENDARY_BACKGROUND)
-            }
+            bg = Optional.of(MAIN_BACKGROUND)
         }
 
         builder.display(
             DisplayInfo(
-                builtInBuilder.icon,
+                builtInBuilder.icon!!,
                 titleComponent(),
                 Component.translatable(description()),
                 bg,
@@ -60,29 +50,25 @@ class ModAdvancement(private val id: String, b: UnaryOperator<Builder>) {
     }
 
     private fun title(): String {
-        return Mod.MODID + ".advancement." + group.path + "." + id
+        return "${Mod.MODID}.advancement.main.$id"
     }
 
     private fun titleComponent(): Component {
-        if (this.group == Group.LEGENDARY && this.id != "root") {
-            return Component.translatable(title()).withStyle(ChatFormatting.GOLD)
-        }
         return Component.translatable(title())
     }
 
     private fun description(): String {
-        return title() + ".des"
+        return "${title()}.des"
     }
 
     fun save(t: Consumer<AdvancementHolder>) {
-        val parent = parent
         if (parent != null) {
-            builder.parent(parent.result)
+            builder.parent(parent!!.result!!)
         }
 
-        val advancementholder = builder.build(loc(group.path + "/" + id))
-        t.accept(advancementholder)
-        result = advancementholder
+        val holder = builder.build(loc("main/$id"))
+        t.accept(holder)
+        result = holder
     }
 
     enum class Type(
@@ -100,23 +86,17 @@ class ModAdvancement(private val id: String, b: UnaryOperator<Builder>) {
         SECRET_CHALLENGE(AdvancementType.CHALLENGE, true, true, true)
     }
 
-    enum class Group(val path: String) {
-        MAIN("main"),
-        LEGENDARY("legendary");
-    }
-
     inner class Builder {
         var type = Type.DEFAULT
         private var keyIndex = 0
         var icon: ItemStack? = null
-        var group = Group.MAIN
 
         fun type(type: Type): Builder {
             this.type = type
             return this
         }
 
-        fun parent(other: ModAdvancement?): Builder {
+        fun parent(other: ModAdvancement): Builder {
             this@ModAdvancement.parent = other
             return this
         }
@@ -176,11 +156,6 @@ class ModAdvancement(private val id: String, b: UnaryOperator<Builder>) {
             return this
         }
 
-        fun group(group: Group): Builder {
-            this.group = group
-            return this
-        }
-
         fun rewardExp(exp: Int): Builder {
             builder.rewards(AdvancementRewards.Builder.experience(exp).build())
             return this
@@ -189,7 +164,7 @@ class ModAdvancement(private val id: String, b: UnaryOperator<Builder>) {
         fun rewardLootTable(location: ResourceLocation): Builder {
             builder.rewards(
                 AdvancementRewards.Builder.loot(
-                    ResourceKey.create<LootTable?>(
+                    ResourceKey.create(
                         Registries.LOOT_TABLE,
                         location
                     )

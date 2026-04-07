@@ -13,11 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-<<<<<<<< HEAD:src/generated/resources/data/superbwarfare/advancement/recipes/misc/hpj_11_blueprint_copy_researching.json
         "recipe": "superbwarfare:hpj_11_blueprint_copy_researching"
-========
-        "recipe": "superbwarfare:hpj_11_blueprint_copy"
->>>>>>>> 9c1131531 (修复配方位置错误的问题):src/generated/resources/data/superbwarfare/advancement/recipes/misc/hpj_11_blueprint_copy.json
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -30,11 +26,7 @@
   ],
   "rewards": {
     "recipes": [
-<<<<<<<< HEAD:src/generated/resources/data/superbwarfare/advancement/recipes/misc/hpj_11_blueprint_copy_researching.json
       "superbwarfare:hpj_11_blueprint_copy_researching"
-========
-      "superbwarfare:hpj_11_blueprint_copy"
->>>>>>>> 9c1131531 (修复配方位置错误的问题):src/generated/resources/data/superbwarfare/advancement/recipes/misc/hpj_11_blueprint_copy.json
     ]
   }
 }
