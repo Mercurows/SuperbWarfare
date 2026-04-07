@@ -17,7 +17,6 @@ import net.minecraft.client.Camera
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.OwnableEntity
 import net.minecraft.world.entity.player.Player
@@ -31,23 +30,24 @@ import top.theillusivec4.curios.api.CuriosApi
 
 @OnlyIn(Dist.CLIENT)
 object IFFOverlay : CommonOverlay("iff") {
-    val FRIENDLY_INDICATOR: ResourceLocation = loc("textures/overlay/teammate/friendly_indicator.png")
-    val FRIENDLY_AIRCRAFT: ResourceLocation = loc("textures/overlay/teammate/friendly_aircraft.png")
-    val FRIENDLY_TANK: ResourceLocation = loc("textures/overlay/teammate/friendly_tank.png")
-    val FRIENDLY_APC: ResourceLocation = loc("textures/overlay/teammate/friendly_apc.png")
-    val FRIENDLY_AA: ResourceLocation = loc("textures/overlay/teammate/friendly_aa.png")
-    val FRIENDLY_CAR: ResourceLocation = loc("textures/overlay/teammate/friendly_car.png")
-    val FRIENDLY_ARTILLERY: ResourceLocation = loc("textures/overlay/teammate/friendly_artillery.png")
-    val FRIENDLY_BOAT: ResourceLocation = loc("textures/overlay/teammate/friendly_boat.png")
-    val FRIENDLY_DEFENSE: ResourceLocation = loc("textures/overlay/teammate/friendly_defense.png")
-    val FRIENDLY_DRONE: ResourceLocation = loc("textures/overlay/teammate/friendly_drone.png")
-    val FRIENDLY_HELICOPTER: ResourceLocation = loc("textures/overlay/teammate/friendly_helicopter.png")
-    val FRIENDLY_MINE: ResourceLocation = loc("textures/overlay/teammate/friendly_mine.png")
-    val FRIENDLY_MISSILE: ResourceLocation = loc("textures/overlay/teammate/friendly_missile.png")
+    val FRIENDLY_INDICATOR = loc("textures/overlay/teammate/friendly_indicator.png")
+    val FRIENDLY_AIRCRAFT = loc("textures/overlay/teammate/friendly_aircraft.png")
+    val FRIENDLY_TANK = loc("textures/overlay/teammate/friendly_tank.png")
+    val FRIENDLY_APC = loc("textures/overlay/teammate/friendly_apc.png")
+    val FRIENDLY_AA = loc("textures/overlay/teammate/friendly_aa.png")
+    val FRIENDLY_CAR = loc("textures/overlay/teammate/friendly_car.png")
+    val FRIENDLY_ARTILLERY = loc("textures/overlay/teammate/friendly_artillery.png")
+    val FRIENDLY_BOAT = loc("textures/overlay/teammate/friendly_boat.png")
+    val FRIENDLY_DEFENSE = loc("textures/overlay/teammate/friendly_defense.png")
+    val FRIENDLY_DRONE = loc("textures/overlay/teammate/friendly_drone.png")
+    val FRIENDLY_HELICOPTER = loc("textures/overlay/teammate/friendly_helicopter.png")
+    val FRIENDLY_MINE = loc("textures/overlay/teammate/friendly_mine.png")
+    val FRIENDLY_MISSILE = loc("textures/overlay/teammate/friendly_missile.png")
 
     override fun shouldRender() = super.shouldRender() && DisplayConfig.VEHICLE_INFO.get()
 
     override fun RenderContext.render() {
+        val level = player.level()
         CuriosApi.getCuriosInventory(player)
             .flatMap { c -> c.findFirstCurio(ModItems.IFF.get()) }
             .ifPresent { _ ->
@@ -66,25 +66,15 @@ object IFFOverlay : CommonOverlay("iff") {
                     )
 
                     friendlyList.add(synced)
-                    ClientSyncedEntityHandler.sync(player.level().dimension().location(), friendlyList, true)
+                    ClientSyncedEntityHandler.sync(level.dimension().location(), friendlyList, true)
                 }
 
-                val entities =
-                    ClientSyncedEntityHandler.SYNCED_FRIENDLY_ENTITIES[this.player.level().dimension().location()]
-                        ?: return@ifPresent
-
-                for (entry in entities.values) {
-                    var e = entry.entity
-                    val clientEntity = player.level().getEntity(e.id)
-                    if (clientEntity != null) {
-                        e = clientEntity
-                    }
+                val entities = ClientSyncedEntityHandler.getSyncedEntities(level)
+                for (entity in entities) {
+                    val e = level.getEntity(entity.id) ?: entity
 
                     if (e !== player && e.position().canBeSeen() && e !== player.vehicle) {
-                        var team: Entity? = e
-                        if (e.vehicle != null) {
-                            team = e.vehicle
-                        }
+                        val teammate = e.vehicle ?: e
 
                         RenderSystem.disableDepthTest()
                         RenderSystem.depthMask(false)
@@ -97,23 +87,23 @@ object IFFOverlay : CommonOverlay("iff") {
                             GlStateManager.DestFactor.ZERO
                         )
 
-                        if (checkNoClip(player, team!!, cameraPos)) {
+                        if (checkNoClip(player, teammate, cameraPos)) {
                             RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
                         } else {
                             RenderSystem.setShaderColor(1f, 1f, 1f, 0.4f)
                         }
 
-                        val pos = VectorTool.lerpGetEntityBoundingBoxCenter(team, partialTick)
+                        val pos = VectorTool.lerpGetEntityBoundingBoxCenter(teammate, partialTick)
                         val point = pos.worldToScreen()
                         val xf = point.x.toFloat()
                         val yf = point.y.toFloat()
-                        val icon: ResourceLocation = getResourceLocation(team)
+                        val icon = getResourceLocation(teammate)
 
                         RenderHelper.preciseBlitWithColor(
                             guiGraphics,
                             icon,
-                            Mth.clamp(xf - 6, 0f, (screenWidth - 12).toFloat()),
-                            Mth.clamp(yf - 6, 0f, (screenHeight - 12).toFloat()),
+                            (xf - 6).coerceIn(0f, (screenWidth - 12).toFloat()),
+                            (yf - 6).coerceIn(0f, (screenHeight - 12).toFloat()),
                             0f,
                             0f,
                             12f,
@@ -125,22 +115,12 @@ object IFFOverlay : CommonOverlay("iff") {
                     }
                 }
 
-                val hostileEntities =
-                    ClientSyncedEntityHandler.SYNCED_HOSTILE_ENTITIES[this.player.level().dimension().location()]
-                        ?: return@ifPresent
-
-                for (entry in hostileEntities) {
-                    var e = entry.value.entity
-                    val clientEntity = player.level().getEntity(e.id)
-                    if (clientEntity != null) {
-                        e = clientEntity
-                    }
+                val hostileEntities = ClientSyncedEntityHandler.getSyncedHostileEntities(player.level())
+                for (entity in hostileEntities) {
+                    val e = level.getEntity(entity.id) ?: entity
 
                     if (e !== player && e.position().canBeSeen() && e !== player.vehicle) {
-                        var team: Entity? = e
-                        if (e.vehicle != null) {
-                            team = e.vehicle
-                        }
+                        val enemy = e.vehicle ?: e
 
                         RenderSystem.disableDepthTest()
                         RenderSystem.depthMask(false)
@@ -153,17 +133,17 @@ object IFFOverlay : CommonOverlay("iff") {
                             GlStateManager.DestFactor.ZERO
                         )
 
-                        if (checkNoClip(player, team!!, cameraPos)) {
+                        if (checkNoClip(player, enemy, cameraPos)) {
                             RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
                         } else {
                             RenderSystem.setShaderColor(1f, 1f, 1f, 0.4f)
                         }
 
-                        val pos = VectorTool.lerpGetEntityBoundingBoxCenter(team, partialTick)
+                        val pos = VectorTool.lerpGetEntityBoundingBoxCenter(enemy, partialTick)
                         val point = pos.worldToScreen()
                         val xf = point.x.toFloat()
                         val yf = point.y.toFloat()
-                        val icon: ResourceLocation = getResourceLocation(team)
+                        val icon = getResourceLocation(enemy)
 
                         var color = 0xFFBD7F
 
@@ -174,8 +154,8 @@ object IFFOverlay : CommonOverlay("iff") {
                         RenderHelper.preciseBlitWithColor(
                             guiGraphics,
                             icon,
-                            Mth.clamp(xf - 6, 0f, (screenWidth - 12).toFloat()),
-                            Mth.clamp(yf - 6, 0f, (screenHeight - 12).toFloat()),
+                            (xf - 6).coerceIn(0f, (screenWidth - 12).toFloat()),
+                            (yf - 6).coerceIn(0f, (screenHeight - 12).toFloat()),
                             0f,
                             0f,
                             12f,
@@ -192,12 +172,10 @@ object IFFOverlay : CommonOverlay("iff") {
 
 
     private fun getResourceLocation(entity: Entity): ResourceLocation {
-        var icon: ResourceLocation = FRIENDLY_INDICATOR
-
-        if (entity is Boat) {
-            icon = FRIENDLY_BOAT
+        return if (entity is Boat) {
+            FRIENDLY_BOAT
         } else if (entity is VehicleEntity) {
-            icon = when (entity.vehicleType) {
+            when (entity.vehicleType) {
                 VehicleType.AIRPLANE -> FRIENDLY_AIRCRAFT
                 VehicleType.HELICOPTER -> FRIENDLY_HELICOPTER
                 VehicleType.APC -> FRIENDLY_APC
@@ -211,11 +189,12 @@ object IFFOverlay : CommonOverlay("iff") {
                 else -> FRIENDLY_INDICATOR
             }
         } else if (entity.type.`is`(ModTags.EntityTypes.MINE)) {
-            icon = FRIENDLY_MINE
+            FRIENDLY_MINE
         } else if (entity is MissileProjectile) {
-            icon = FRIENDLY_MISSILE
+            FRIENDLY_MISSILE
+        } else {
+            FRIENDLY_INDICATOR
         }
-        return icon
     }
 
     fun checkNoClip(player: Player, teammate: Entity, pos: Vec3): Boolean {
