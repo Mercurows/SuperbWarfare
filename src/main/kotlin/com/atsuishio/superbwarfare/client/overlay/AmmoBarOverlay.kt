@@ -69,10 +69,11 @@ object AmmoBarOverlay : CommonOverlay("ammo_bar") {
 
             // 渲染开火模式切换按键
             if (item !== ModItems.MINIGUN.get()) {
+                val str = "[${ModKeyMappings.FIRE_MODE.key.displayName.string}]"
                 guiGraphics.drawString(
                     font,
-                    "[" + ModKeyMappings.FIRE_MODE.key.displayName.string + "]",
-                    x - 111.5f,
+                    str,
+                    (x - 100f) - font.width(str),
                     (y - 20).toFloat(),
                     0xFFFFFF,
                     false
@@ -207,42 +208,46 @@ object AmmoBarOverlay : CommonOverlay("ammo_bar") {
 
                 // 这里不能和上面合并
                 if (!renderStackCount) {
-                    if (consumerType == AmmoConsumeType.INVALID) {
-                        RenderHelper.preciseBlit(
-                            guiGraphics, AMMO_STACK,
-                            (x - 50).toFloat(),
-                            y - 19.5f,
-                            12f,
-                            8.5f,
-                            5f,
-                            8f,
-                            24f,
-                            24f
-                        )
-                    } else if (consumerType == AmmoConsumeType.ENERGY) {
-                        RenderHelper.preciseBlit(
-                            guiGraphics, AMMO_STACK,
-                            (x - 50).toFloat(),
-                            y - 19.5f,
-                            12f,
-                            16.5f,
-                            5f,
-                            8f,
-                            24f,
-                            24f
-                        )
-                    } else {
-                        RenderHelper.preciseBlit(
-                            guiGraphics, AMMO_STACK,
-                            x - 51f,
-                            (y - 20).toFloat(),
-                            0f,
-                            8.5f,
-                            7f,
-                            8f,
-                            24f,
-                            24f
-                        )
+                    when (consumerType) {
+                        AmmoConsumeType.INVALID -> {
+                            RenderHelper.preciseBlit(
+                                guiGraphics, AMMO_STACK,
+                                (x - 50).toFloat(),
+                                y - 19.5f,
+                                12f,
+                                8.5f,
+                                5f,
+                                8f,
+                                24f,
+                                24f
+                            )
+                        }
+                        AmmoConsumeType.ENERGY -> {
+                            RenderHelper.preciseBlit(
+                                guiGraphics, AMMO_STACK,
+                                (x - 50).toFloat(),
+                                y - 19.5f,
+                                12f,
+                                16.5f,
+                                5f,
+                                8f,
+                                24f,
+                                24f
+                            )
+                        }
+                        else -> {
+                            RenderHelper.preciseBlit(
+                                guiGraphics, AMMO_STACK,
+                                x - 51f,
+                                (y - 20).toFloat(),
+                                0f,
+                                8.5f,
+                                7f,
+                                8f,
+                                24f,
+                                24f
+                            )
+                        }
                     }
                 }
 
@@ -380,10 +385,10 @@ object AmmoBarOverlay : CommonOverlay("ammo_bar") {
     private val REPLACE_FORMAT_CODE: Pattern = Pattern.compile("§.")
 
     private fun getGunDisplayName(stack: ItemStack): String {
-        if (!stack.isEmpty) {
-            return ClientLanguageGetter.EN_US.getOrDefault(stack.descriptionId)
+        return if (!stack.isEmpty) {
+            ClientLanguageGetter.EN_US.getOrDefault(stack.descriptionId)
         } else {
-            return ""
+            ""
         }
     }
 

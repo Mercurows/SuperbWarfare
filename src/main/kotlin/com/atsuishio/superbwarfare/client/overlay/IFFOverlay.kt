@@ -49,6 +49,10 @@ object IFFOverlay : CommonOverlay("iff") {
 
     override fun RenderContext.render() {
         val level = player.level()
+
+        val poseStack = guiGraphics.pose()
+        poseStack.pushPose()
+
         CuriosApi.getCuriosInventory(player)
             .flatMap { c -> c.findFirstCurio(ModItems.IFF.get()) }
             .ifPresent { _ ->
@@ -113,6 +117,8 @@ object IFFOverlay : CommonOverlay("iff") {
                             12f,
                             0x7FFFAD
                         )
+
+                        RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
                     }
                 }
 
@@ -165,12 +171,14 @@ object IFFOverlay : CommonOverlay("iff") {
                             12f,
                             color
                         )
+
+                        RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
                     }
                 }
-
             }
-    }
 
+        poseStack.popPose()
+    }
 
     private fun getResourceLocation(entity: Entity): ResourceLocation {
         return if (entity is Boat) {
