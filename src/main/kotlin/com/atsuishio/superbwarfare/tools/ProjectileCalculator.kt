@@ -8,8 +8,8 @@ import net.minecraft.world.phys.shapes.CollisionContext
 import java.util.*
 
 object ProjectileCalculator {
-    private const val TIME_STEP = 0.05 // 时间步长（刻）
-    private const val MAX_ITERATIONS = 2000 // 最大迭代次数
+    private const val TIME_STEP = 1 // 时间步长（刻）
+    private const val MAX_ITERATIONS = 512 // 最大迭代次数
 
     /**
      * 计算炮弹精确落点位置（Vec3）

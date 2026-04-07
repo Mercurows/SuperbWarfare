@@ -767,6 +767,7 @@ object VehicleEngineUtils {
         )
 
         if (power > 0.04f) {
+            engineStart = true
             engineStartOver = true
         }
 
@@ -1050,6 +1051,7 @@ object VehicleEngineUtils {
         }
 
         if (power > 0.2f) {
+            engineStart = true
             engineStartOver = true
         }
 

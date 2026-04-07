@@ -426,6 +426,12 @@ object ClientEventHandler {
     private var lastX: Float = 0f
     private var lastY: Float = 0f
 
+    @JvmField
+    var bombHitPosO: Vec3 = Vec3.ZERO
+
+    @JvmField
+    var bombHitPos: Vec3 = Vec3.ZERO
+
     @SubscribeEvent
     fun handleWeaponTurn(event: RenderHandEvent) {
         val player = localPlayer ?: return
@@ -484,6 +490,7 @@ object ClientEventHandler {
         handleShootDelay(player, stack)
         handleControlVehicle(player, stack)
         handleArtilleryIndicator(player, stack)
+        calculateBombHitPos(player)
     }
 
     @JvmStatic
@@ -605,6 +612,19 @@ object ClientEventHandler {
 
         if (shootCoolDown > 0) {
             shootCoolDown--
+        }
+    }
+
+    fun calculateBombHitPos(player: Player) {
+        if (player.vehicle != null && player.vehicle is VehicleEntity) {
+        val vehicle = player.vehicle as VehicleEntity
+            val gunData = vehicle.getGunData(player)
+            bombHitPosO = bombHitPos
+            bombHitPos = if (gunData != null && gunData.get(GunProp.CROSSHAIR) == "@AirBomb") {
+                vehicle.bombHitPos(player)
+            } else {
+                Vec3.ZERO
+            }
         }
     }
 
