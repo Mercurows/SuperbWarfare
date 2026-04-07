@@ -16,6 +16,7 @@ import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Camera
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.nbt.CompoundTag
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.OwnableEntity
@@ -62,7 +63,7 @@ object IFFOverlay : CommonOverlay("iff") {
                         BuiltInRegistries.ENTITY_TYPE.getKey(e.type),
                         e.position(),
                         e.deltaMovement,
-                        e.serializeNBT(e.level().registryAccess())
+                        CompoundTag().also { e.saveWithoutId(it) }
                     )
 
                     friendlyList.add(synced)

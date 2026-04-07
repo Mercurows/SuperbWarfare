@@ -2193,7 +2193,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                         BuiltInRegistries.ENTITY_TYPE.getKey(it.type),
                         it.position(),
                         it.deltaMovement,
-                        it.serializeNBT(level.registryAccess())
+                        CompoundTag().also { tag -> it.saveWithoutId(tag) }
                     )
                 }.toList()
             sendPacketTo(player, EntitySyncMessage(level.dimension().location(), hostileList, false))

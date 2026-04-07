@@ -84,10 +84,10 @@ abstract class MissileProjectile : DestroyableProjectile, CustomSyncMotionEntity
         compound.putString("TargetUuid", this.targetUUID)
     }
 
-    public override fun onHitBlock(blockHitResult: BlockHitResult) {
-        super.onHitBlock(blockHitResult)
+    public override fun onHitBlock(result: BlockHitResult) {
+        super.onHitBlock(result)
         if (this.level() is ServerLevel) {
-            destroyBlock(blockHitResult)
+            destroyBlock(result)
         }
     }
 
@@ -163,7 +163,7 @@ abstract class MissileProjectile : DestroyableProjectile, CustomSyncMotionEntity
                 BuiltInRegistries.ENTITY_TYPE.getKey(type),
                 position(),
                 deltaMovement,
-                serializeNBT(level.registryAccess())
+                CompoundTag().also { tag -> this.saveWithoutId(tag) }
             )
 
             friendlyMissileList.add(synced)

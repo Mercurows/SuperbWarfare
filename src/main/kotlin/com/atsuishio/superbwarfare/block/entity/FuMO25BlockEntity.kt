@@ -44,7 +44,7 @@ import javax.annotation.ParametersAreNonnullByDefault
 open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
     BlockEntity(ModBlockEntities.FUMO_25.get(), pPos, pBlockState), MenuProvider {
 
-    private val energyStorage: IEnergyStorage? = null
+    private val energyStorage: IEnergyStorage = EnergyStorage(MAX_ENERGY)
 
     var type: FuncType = FuncType.NORMAL
     var powered: Boolean = false
@@ -54,8 +54,7 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
     protected val dataAccess: ContainerEnergyData = object : ContainerEnergyData {
         override fun get(index: Int): Long {
             return when (index) {
-                0 -> this@FuMO25BlockEntity.energyStorage?.energyStored ?: 0
-
+                0 -> this@FuMO25BlockEntity.energyStorage.energyStored
                 1 -> this@FuMO25BlockEntity.type.ordinal
                 2 -> if (this@FuMO25BlockEntity.powered) 1 else 0
                 3 -> this@FuMO25BlockEntity.tick
@@ -65,7 +64,7 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
 
         override fun set(index: Int, value: Long) {
             when (index) {
-                0 -> this@FuMO25BlockEntity.energyStorage?.receiveEnergy(value.toInt(), false)
+                0 -> this@FuMO25BlockEntity.energyStorage.receiveEnergy(value.toInt(), false)
                 1 -> this@FuMO25BlockEntity.type = FuncType.entries[value.toInt()]
                 2 -> this@FuMO25BlockEntity.powered = value == 1L
                 3 -> this@FuMO25BlockEntity.tick = value.toInt()
@@ -160,7 +159,7 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
         this.handleUpdateTag(pkt.tag, lookupProvider)
     }
 
-    fun getEnergyStorage() = this.energyStorage!!
+    fun getEnergyStorage() = this.energyStorage
 
     enum class FuncType {
         NORMAL,
@@ -310,18 +309,20 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
                         pos.y.toDouble() + 2.5,
                         pos.z.toDouble() + 0.5
                     ), vec3, it
-                ) < 60 && VectorTool.checkNoClip(Vec3(
-                    pos.x.toDouble() + 0.5,
-                    pos.y.toDouble() + 2.5,
-                    pos.z.toDouble() + 0.5
-                ), it.eyePosition, level)
+                ) < 60 && VectorTool.checkNoClip(
+                    Vec3(
+                        pos.x.toDouble() + 0.5,
+                        pos.y.toDouble() + 2.5,
+                        pos.z.toDouble() + 0.5
+                    ), it.eyePosition, level
+                )
                 if (!flag) return@mapNotNull null
                 EntitySyncMessage.SyncedEntity(
                     it.id,
                     BuiltInRegistries.ENTITY_TYPE.getKey(it.type),
                     it.position(),
                     it.deltaMovement,
-                    it.serializeNBT(level.registryAccess())
+                    CompoundTag().also { tag -> it.saveWithoutId(tag) }
                 )
             }.toList()
 
