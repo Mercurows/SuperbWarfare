@@ -78,6 +78,7 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
     }
 
     override fun loadAdditional(tag: CompoundTag, registries: HolderLookup.Provider) {
+        super.loadAdditional(tag, registries)
 
         this.tick = tag.getInt("Tick")
         this.lastSelectedIndex = tag.getInt("LastSelectedIndex")
