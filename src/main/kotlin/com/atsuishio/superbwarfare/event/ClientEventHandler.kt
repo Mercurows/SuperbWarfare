@@ -616,15 +616,14 @@ object ClientEventHandler {
     }
 
     fun calculateBombHitPos(player: Player) {
-        if (player.vehicle != null && player.vehicle is VehicleEntity) {
-        val vehicle = player.vehicle as VehicleEntity
-            val gunData = vehicle.getGunData(player)
-            bombHitPosO = bombHitPos
-            bombHitPos = if (gunData != null && gunData.get(GunProp.CROSSHAIR) == "@AirBomb") {
-                vehicle.bombHitPos(player)
-            } else {
-                Vec3.ZERO
-            }
+        val vehicle = player.vehicle as? VehicleEntity ?: return
+        val gunData = vehicle.getGunData(player)
+
+        bombHitPosO = bombHitPos
+        bombHitPos = if (gunData != null && gunData.get(GunProp.CROSSHAIR) == "@AirBomb") {
+            vehicle.bombHitPos(player)
+        } else {
+            Vec3.ZERO
         }
     }
 
