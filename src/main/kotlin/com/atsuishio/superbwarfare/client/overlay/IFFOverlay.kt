@@ -22,6 +22,7 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.vehicle.Boat
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.phys.HitResult
+import net.minecraft.world.phys.Vec2
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
@@ -54,24 +55,6 @@ object IFFOverlay : CommonOverlay("iff") {
 
         CuriosApi.getCuriosInventory(player).ifPresent { c ->
             c.findFirstCurio(ModItems.IFF.get()).ifPresent { _ ->
-                val clientEntities = SeekTool.Builder(player)
-                    .friendly()
-                    .build()
-
-                for (e in clientEntities) {
-                    val friendlyList = arrayListOf<EntitySyncMessage.SyncedEntity>()
-                    val synced = EntitySyncMessage.SyncedEntity(
-                        e.id,
-                        ForgeRegistries.ENTITY_TYPES.getKey(e.type)!!,
-                        e.position(),
-                        e.deltaMovement,
-                        e.serializeNBT()
-                    )
-
-                    friendlyList.add(synced)
-                    ClientSyncedEntityHandler.sync(level.dimension().location(), friendlyList, true)
-                }
-
                 val entities = ClientSyncedEntityHandler.getSyncedEntities(level)
                 for (entity in entities) {
                     val e = level.getEntity(entity.id) ?: entity
@@ -116,7 +99,91 @@ object IFFOverlay : CommonOverlay("iff") {
                             0x7FFFAD
                         )
 
+                        if (Vec2(xf, yf).distanceToSqr(Vec2(screenWidth.toFloat() / 2.0f, screenHeight.toFloat() / 2.0f)) < 20) {
+                            poseStack.pushPose()
+                            poseStack.translate(xf, yf, 0f)
+                            poseStack.scale(0.75f, 0.75f, 1f)
+                            val str = "${e.displayName.string} [${FormatTool.format1D(pos.distanceTo(player.position()))}m]"
+                            guiGraphics.drawString(
+                                mc.font,
+                                str,
+                                -mc.font.width(str) / 2,
+                                10,
+                                0x7FFFAD,
+                                false
+                            )
+                            poseStack.popPose()
+                        }
+
                         RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
+                    }
+                }
+
+                val players = ClientSyncedEntityHandler.getSyncedPlayerInfo()
+
+                for (otherPlayers in players) {
+                    if (otherPlayers.uuid != player.uuid) {
+                        val localPlayer = EntityFindUtil.findPlayer(level, otherPlayers.uuid.toString())
+                        var pos = otherPlayers.pos
+
+                        if (localPlayer != null) {
+                            pos = VectorTool.lerpGetEntityBoundingBoxCenter(localPlayer, partialTick)
+                        }
+
+                        if (pos.canBeSeen()) {
+                            RenderSystem.disableDepthTest()
+                            RenderSystem.depthMask(false)
+                            RenderSystem.enableBlend()
+                            RenderSystem.setShader { GameRenderer.getPositionTexShader() }
+                            RenderSystem.blendFuncSeparate(
+                                GlStateManager.SourceFactor.SRC_ALPHA,
+                                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                                GlStateManager.SourceFactor.ONE,
+                                GlStateManager.DestFactor.ZERO
+                            )
+
+                            if (checkNoClip(player, pos, cameraPos)) {
+                                RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
+                            } else {
+                                RenderSystem.setShaderColor(1f, 1f, 1f, 0.4f)
+                            }
+
+                            val point = pos.worldToScreen()
+                            val xf = point.x.toFloat()
+                            val yf = point.y.toFloat()
+
+                            RenderHelper.blit(
+                                guiGraphics.pose(),
+                                FRIENDLY_INDICATOR,
+                                (xf - 6).coerceIn(0f, (screenWidth - 12).toFloat()),
+                                (yf - 6).coerceIn(0f, (screenHeight - 12).toFloat()),
+                                0f,
+                                0f,
+                                12f,
+                                12f,
+                                12f,
+                                12f,
+                                0x7FFFAD
+                            )
+
+                            if (Vec2(xf, yf).distanceToSqr(Vec2(screenWidth.toFloat() / 2.0f, screenHeight.toFloat() / 2.0f)) < 20) {
+                                poseStack.pushPose()
+                                poseStack.translate(xf, yf, 0f)
+                                poseStack.scale(0.75f, 0.75f, 1f)
+                                val str = "${otherPlayers.name} [${FormatTool.format1D(pos.distanceTo(player.position()))}m]"
+                                guiGraphics.drawString(
+                                    mc.font,
+                                    str,
+                                    -mc.font.width(str) / 2,
+                                    10,
+                                    0x7FFFAD,
+                                    false
+                                )
+                                poseStack.popPose()
+                            }
+
+                            RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
+                        }
                     }
                 }
 
@@ -170,6 +237,22 @@ object IFFOverlay : CommonOverlay("iff") {
                             color
                         )
 
+                        if (Vec2(xf, yf).distanceToSqr(Vec2(screenWidth.toFloat() / 2.0f, screenHeight.toFloat() / 2.0f)) < 20) {
+                            poseStack.pushPose()
+                            poseStack.translate(xf, yf, 0f)
+                            poseStack.scale(0.75f, 0.75f, 1f)
+                            val str = "${e.displayName.string} [${FormatTool.format1D(pos.distanceTo(player.position()))}m]"
+                            guiGraphics.drawString(
+                                mc.font,
+                                str,
+                                -mc.font.width(str) / 2,
+                                10,
+                                color,
+                                false
+                            )
+                            poseStack.popPose()
+                        }
+
                         RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
                     }
                 }
@@ -209,6 +292,15 @@ object IFFOverlay : CommonOverlay("iff") {
         return player.level().clip(
             ClipContext(
                 pos, teammate.position(),
+                ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, player
+            )
+        ).type != HitResult.Type.BLOCK
+    }
+
+    fun checkNoClip(player: Player, targetPos: Vec3, pos: Vec3): Boolean {
+        return player.level().clip(
+            ClipContext(
+                pos, targetPos,
                 ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, player
             )
         ).type != HitResult.Type.BLOCK
