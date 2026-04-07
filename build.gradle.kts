@@ -198,15 +198,15 @@ dependencies {
     val sbm = implementation(
         group = "com.github.mcmodderanchor",
         name = "simplebedrockmodel",
-        version = "2.2.0-forge+mc1.21.1",
+        version = "2.2.1-forge+mc1.21.1",
     )
     jarJar(sbm) {
         version {
             strictly("[2.0,3.0)")
-            prefer("2.2.0")
+            prefer("2.2.1")
         }
     }
-    compileOnly("com.maydaymemory:mae:1.1.0") {
+    compileOnly("com.maydaymemory:mae:1.1.2") {
         exclude("com.google.code.findbugs", "jsr305")
         exclude("it.unimi.dsi", "fastutil")
         exclude("org.joml", "joml")
