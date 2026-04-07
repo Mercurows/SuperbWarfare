@@ -2165,6 +2165,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     // TODO 添加更多的雷达机制
     fun vehicleRadar(player: Player) {
+        if (!MiscConfig.SYNC_ENTITY_OVER_RANGE.get()) return
         if ((level().server?.tickCount ?: return) % MiscConfig.SYNC_ENTITY_INTERVAL.get() != 0) return
         val data = this.getGunData(player) ?: return
         val seekWeaponInfo = data.get(GunProp.SEEK_WEAPON_INFO) ?: return

@@ -184,6 +184,7 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
         const val MAX_DATA_COUNT: Int = 4
 
         fun serverTick(level: Level, pos: BlockPos, state: BlockState, blockEntity: FuMO25BlockEntity) {
+            if (!MiscConfig.SYNC_ENTITY_OVER_RANGE.get()) return
             val energyStorage = blockEntity.getEnergyStorage()
             val energy = energyStorage.energyStored
 

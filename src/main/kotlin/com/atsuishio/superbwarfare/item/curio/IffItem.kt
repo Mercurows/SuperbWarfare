@@ -41,6 +41,7 @@ open class IffItem : Item(Properties().stacksTo(1)), ICurioItem {
     companion object {
         @SubscribeEvent
         fun onIFFItemServerTick(event: ServerTickEvent.Post) {
+            if (!MiscConfig.SYNC_ENTITY_OVER_RANGE.get()) return
             val server = event.server
             if (server.tickCount % MiscConfig.SYNC_ENTITY_INTERVAL.get() != 0) return
 
