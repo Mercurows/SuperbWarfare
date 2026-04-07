@@ -22,6 +22,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.ClipContext
+import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.client.gui.overlay.ForgeGui
@@ -104,7 +105,12 @@ object OldAircraftHud {
         var posCross = shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(dis))
 
         if (bomb) {
-            posCross = vehicle.bombHitPos(player)
+            val bombHitPosO = ClientEventHandler.bombHitPosO
+            val bombHitPos = ClientEventHandler.bombHitPos
+            val bombHitPosX = Mth.lerp(partialTick.toDouble(), bombHitPosO.x, bombHitPos.x)
+            val bombHitPosY = Mth.lerp(partialTick.toDouble(), bombHitPosO.y, bombHitPos.y)
+            val bombHitPosZ = Mth.lerp(partialTick.toDouble(), bombHitPosO.z, bombHitPos.z)
+            posCross = Vec3(bombHitPosX, bombHitPosY, bombHitPosZ)
         }
 
         val p = pos.worldToScreen()

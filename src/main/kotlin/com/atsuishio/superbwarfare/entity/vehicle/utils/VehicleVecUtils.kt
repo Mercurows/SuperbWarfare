@@ -20,10 +20,6 @@ import org.joml.Vector4d
  * 处理载具相关动量、向量和旋转等数据的工具类
  */
 object VehicleVecUtils {
-    var bombHitPosX = 0.0
-    var bombHitPosY = 0.0
-    var bombHitPosZ = 0.0
-
     @JvmStatic
     fun transformPosition(transform: Matrix4d, x: Double, y: Double, z: Double): Vector4d =
         transform.transform(Vector4d(x, y, z, 1.0))
@@ -159,9 +155,11 @@ object VehicleVecUtils {
             return vehicle.getShootVec(entity, partialTicks)
         } else if (stringOrVec3.isString) {
             if (stringOrVec3.string == "Bomb") {
-                bombHitPosX = Mth.lerp(0.1 * partialTicks, bombHitPosX, vehicle.bombHitPos(entity).x)
-                bombHitPosY = Mth.lerp(0.1 * partialTicks, bombHitPosY, vehicle.bombHitPos(entity).y)
-                bombHitPosZ = Mth.lerp(0.1 * partialTicks, bombHitPosZ, vehicle.bombHitPos(entity).z)
+                val bombHitPosO = ClientEventHandler.bombHitPosO
+                val bombHitPos = ClientEventHandler.bombHitPos
+                val bombHitPosX = Mth.lerp(partialTicks.toDouble(), bombHitPosO.x, bombHitPos.x)
+                val bombHitPosY = Mth.lerp(partialTicks.toDouble(), bombHitPosO.y, bombHitPos.y)
+                val bombHitPosZ = Mth.lerp(partialTicks.toDouble(), bombHitPosO.z, bombHitPos.z)
                 return getViewPos(vehicle, entity, partialTicks).vectorTo(Vec3(bombHitPosX, bombHitPosY, bombHitPosZ))
             }
             return vehicle.getVectorFromString(stringOrVec3.string, partialTicks, vehicle.getSeatIndex(entity))
