@@ -27,6 +27,8 @@ object ClientSyncedEntityHandler {
 
     data class ClientSyncedPlayerInfo(val pos: Vec3, val name: String, val timeStamp: Int)
 
+    data class ClientSyncedPlayer(val uuid: UUID, val pos: Vec3, val name: String)
+
     fun sync(dim: ResourceLocation, list: List<SyncedEntity>, friendly: Boolean) {
         val player = localPlayer ?: return
         val level = mc.level ?: return
@@ -103,7 +105,13 @@ object ClientSyncedEntityHandler {
     }
 
     @JvmStatic
-    fun getSyncedPlayerInfo(): List<Pair<Vec3, String>> {
-        return SYNCED_PLAYERS.map { Pair(it.value.pos, it.value.name) }
+    fun getSyncedPlayerInfo(): List<ClientSyncedPlayer> {
+        return SYNCED_PLAYERS.entries.map {
+            ClientSyncedPlayer(
+                it.key,
+                it.value.pos,
+                it.value.name
+            )
+        }
     }
 }
