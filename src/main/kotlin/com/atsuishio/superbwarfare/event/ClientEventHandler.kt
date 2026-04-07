@@ -1,11 +1,13 @@
 package com.atsuishio.superbwarfare.event
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.client.ClientSyncedEntityHandler
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay
 import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
+import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -455,6 +457,10 @@ object ClientEventHandler {
     @SubscribeEvent
     fun handleClientTick(event: ClientTickEvent.Post) {
         val player = localPlayer ?: return
+
+        if (player.tickCount % MiscConfig.SYNC_ENTITY_INTERVAL.get() == 0) {
+            ClientSyncedEntityHandler.clean(player.tickCount)
+        }
 
         val stack = player.mainHandItem
         if (notInGame && !ClickEventHandler.switchZoom) {
