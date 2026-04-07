@@ -233,4 +233,23 @@ object VectorTool {
             )
         ).type != HitResult.Type.BLOCK
     }
+
+    @JvmStatic
+    fun checkNoClipRadar(pos1: Vec3, pos2: Vec3, level: Level): Boolean {
+        val check1 = level.clip(
+            ClipContext(
+                pos1, pos1.add(pos1.vectorTo(pos2).normalize().scale(128.0)),
+                ClipContext.Block.VISUAL, ClipContext.Fluid.ANY, CollisionContext.empty()
+            )
+        ).type != HitResult.Type.BLOCK
+
+        val check2 = level.clip(
+            ClipContext(
+                pos2, pos2.add(pos2.vectorTo(pos1).normalize().scale(128.0)),
+                ClipContext.Block.VISUAL, ClipContext.Fluid.ANY, CollisionContext.empty()
+            )
+        ).type != HitResult.Type.BLOCK
+
+        return check1 && check2
+    }
 }

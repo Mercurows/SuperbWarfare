@@ -8,6 +8,7 @@ import com.mojang.math.Axis
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer
+import net.minecraft.util.Mth
 
 class FuMO25BlockEntityRenderer : BlockEntityRenderer<FuMO25BlockEntity> {
     override fun render(
@@ -25,7 +26,15 @@ class FuMO25BlockEntityRenderer : BlockEntityRenderer<FuMO25BlockEntity> {
 
         poseStack.translate(0.5, 0.0, 0.5)
 
-        bone.rotation.mul(Axis.YN.rotationDegrees(blockEntity.tick.toFloat()))
+        bone.rotation.mul(
+            Axis.YN.rotationDegrees(
+                Mth.lerp(
+                    partialTick,
+                    blockEntity.tickO.toFloat(),
+                    blockEntity.tick.toFloat()
+                )
+            )
+        )
 
         model.renderToBuffer(
             poseStack,

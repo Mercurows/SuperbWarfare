@@ -40,6 +40,7 @@ import net.neoforged.neoforge.energy.EnergyStorage
 import net.neoforged.neoforge.energy.IEnergyStorage
 import java.util.*
 import javax.annotation.ParametersAreNonnullByDefault
+import kotlin.math.abs
 
 open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
     BlockEntity(ModBlockEntities.FUMO_25.get(), pPos, pBlockState), MenuProvider {
@@ -48,6 +49,7 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
 
     var type: FuncType = FuncType.NORMAL
     var powered: Boolean = false
+    var tickO: Int = 0
     var tick: Int = 0
     var ownerUUID: UUID? = null
 
@@ -58,6 +60,7 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
                 1 -> this@FuMO25BlockEntity.type.ordinal
                 2 -> if (this@FuMO25BlockEntity.powered) 1 else 0
                 3 -> this@FuMO25BlockEntity.tick
+                4 -> this@FuMO25BlockEntity.tickO
                 else -> 0
             }.toLong()
         }
@@ -68,6 +71,7 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
                 1 -> this@FuMO25BlockEntity.type = FuncType.entries[value.toInt()]
                 2 -> this@FuMO25BlockEntity.powered = value == 1L
                 3 -> this@FuMO25BlockEntity.tick = value.toInt()
+                4 -> this@FuMO25BlockEntity.tickO = value.toInt()
             }
         }
 
@@ -98,6 +102,7 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
         this.type = FuncType.entries[tag.getInt("Type").coerceIn(0, 3)]
         this.powered = tag.getBoolean("Powered")
         this.tick = tag.getInt("Tick")
+        this.tickO = tag.getInt("TickO")
 
         if (tag.contains("OwnerUUID")) {
             this.ownerUUID = tag.getUUID("OwnerUUID")
@@ -112,6 +117,7 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
         tag.putInt("Type", this.type.ordinal)
         tag.putBoolean("Powered", this.powered)
         tag.putInt("Tick", this.tick)
+        tag.putInt("TickO", this.tickO)
 
         this.ownerUUID?.let { tag.putUUID("OwnerUUID", it) }
     }
@@ -181,12 +187,14 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
 
         const val DEFAULT_MIN_ENERGY: Int = 64000
 
-        const val MAX_DATA_COUNT: Int = 4
+        const val MAX_DATA_COUNT: Int = 5
 
         fun serverTick(level: Level, pos: BlockPos, state: BlockState, blockEntity: FuMO25BlockEntity) {
             if (!MiscConfig.SYNC_ENTITY_OVER_RANGE.get()) return
             val energyStorage = blockEntity.getEnergyStorage()
             val energy = energyStorage.energyStored
+
+            blockEntity.tickO = blockEntity.tick
 
             if (state.getValue(FuMO25Block.POWERED)) {
                 blockEntity.tick++
@@ -240,8 +248,14 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
                 }
             }
 
-            if (blockEntity.tick >= 360) {
-                blockEntity.tick = 0
+            val deltaT = abs(blockEntity.tick - blockEntity.tickO)
+            while (blockEntity.tick > 360) {
+                blockEntity.tick -= 360
+                blockEntity.tickO = blockEntity.tick - deltaT
+            }
+            while (blockEntity.tick <= 0) {
+                blockEntity.tick += 360
+                blockEntity.tickO = deltaT + blockEntity.tick
             }
 
 
@@ -310,7 +324,7 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
                         pos.y.toDouble() + 2.5,
                         pos.z.toDouble() + 0.5
                     ), vec3, it
-                ) < 60 && VectorTool.checkNoClip(
+                ) < 60 && VectorTool.checkNoClipRadar(
                     Vec3(
                         pos.x.toDouble() + 0.5,
                         pos.y.toDouble() + 2.5,
