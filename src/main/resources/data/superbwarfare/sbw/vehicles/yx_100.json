@@ -330,6 +330,8 @@
       },
       "SeekWeaponInfo": {
         "SeekDirection": "Passenger",
+        "CanGuidedByRadar": false,
+        "AffectedByStealthTarget": false,
         "SeekRange": 384,
         "SeekAngle": 20,
         "SeekTime": 10,

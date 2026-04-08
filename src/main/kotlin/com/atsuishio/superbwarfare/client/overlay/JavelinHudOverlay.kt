@@ -126,7 +126,7 @@ object JavelinHudOverlay : CommonOverlay("javelin_hud") {
             if (decoy == null) {
                 val targetEntity = ClientEventHandler.lockingEntity
                 val entities = SeekTool.Builder(player)
-                    .withinRange(data.get(GunProp.SEEK_RANGE))
+                    .withinRangeSeekWeapon(data.get(GunProp.SEEK_RANGE), data.get(GunProp.MAX_GUIDED_RANGE), data.get(GunProp.AFFECTED_BY_STEALTH_TARGET), data.get(GunProp.CAN_GUIDED_BY_RADAR))
                     .withinAngle(data.get(GunProp.SEEK_ANGLE))
                     .baseFilter()
                     .heightRange(data.get(GunProp.MIN_TARGET_HEIGHT), data.get(GunProp.MAX_TARGET_HEIGHT))
@@ -134,7 +134,7 @@ object JavelinHudOverlay : CommonOverlay("javelin_hud") {
                     .noVehicle()
                     .noClip()
                     .notFriendly()
-                    .build()
+                    .buildSeekWeapon(data.get(GunProp.CAN_GUIDED_BY_RADAR))
                 val nearestEntity = ClientEventHandler.nearestEntity
 
                 if (ClientEventHandler.guideType == 0) {

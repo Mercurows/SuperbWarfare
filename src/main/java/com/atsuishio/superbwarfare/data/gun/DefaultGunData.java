@@ -306,6 +306,15 @@ public class DefaultGunData implements IDBasedData<DefaultGunData> {
     @SerializedName("SeekRange")
     public double seekRange = 384;
 
+    @SerializedName("MaxGuidedRange")
+    public double maxGuidedRange = 1024;
+
+    @SerializedName("CanGuidedByRadar")
+    public boolean canGuidedByRadar = true;
+
+    @SerializedName("AffectedByStealthTarget")
+    public boolean affectedByStealthTarget = true;
+
     @SerializedName("MinTargetHeight")
     public double minTargetHeight = 0;
 

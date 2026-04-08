@@ -139,7 +139,7 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
             val seekVec = vehicle.getSeekVec(player, partialTick)
 
             val entities = SeekTool.Builder(player)
-                .withinRange(seekInfo.seekRange)
+                .withinRangeSeekWeapon(seekInfo.seekRange, seekInfo.maxGuidedRange, seekInfo.affectedByStealthTarget, seekInfo.canGuidedByRadar)
                 .withinAngle(cameraPos, seekVec, seekInfo.seekAngle)
                 .baseFilter()
                 .heightRange(seekInfo.minTargetHeight, seekInfo.maxTargetHeight)
@@ -148,7 +148,7 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
                 .noVehicle()
                 .noClip()
                 .notFriendly()
-                .build()
+                .buildSeekWeapon(seekInfo.canGuidedByRadar)
 
             val decoy = TraceTool.findLookDecoy(player, cameraPos, seekVec, seekInfo.seekRange)
 
