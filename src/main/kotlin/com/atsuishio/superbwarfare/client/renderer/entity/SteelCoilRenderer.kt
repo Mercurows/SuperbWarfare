@@ -45,11 +45,12 @@ class SteelCoilRenderer(renderManager: EntityRendererProvider.Context) :
         poseStack.popPose()
     }
 
-    override fun getTextureLocation(pEntity: SteelCoilEntity): ResourceLocation {
-        return TEXTURE
+    override fun getTextureLocation(entity: SteelCoilEntity): ResourceLocation {
+        return if (entity.uuid.leastSignificantBits % 810 == 0L) TEXTURE_ALTER else TEXTURE
     }
 
     companion object {
         val TEXTURE = loc("textures/bedrock/entity/steel_coil.png")
+        val TEXTURE_ALTER = loc("textures/bedrock/entity/steel_coil_alter.png")
     }
 }
