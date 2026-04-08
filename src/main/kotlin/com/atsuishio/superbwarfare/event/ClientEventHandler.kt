@@ -699,18 +699,21 @@ object ClientEventHandler {
             val fovAdjust = mc.options.fov().get() / 80f
             val seekAngle = data.get(GunProp.SEEK_ANGLE) * fovAdjust
             val range = data.get(GunProp.SEEK_RANGE)
+            val maxGuidedRange = data.get(GunProp.MAX_GUIDED_RANGE)
+            val canGuidedByRadar = data.get(GunProp.CAN_GUIDED_BY_RADAR)
+            val affectedByStealthTarget = data.get(GunProp.AFFECTED_BY_STEALTH_TARGET)
             val cameraPos = mc.gameRenderer.mainCamera.position
 
             if (zoomTime > 0.7) {
                 nearestEntity = SeekTool.Builder(player)
-                    .withinRange(range)
+                    .withinRangeSeekWeapon(range, maxGuidedRange, affectedByStealthTarget, canGuidedByRadar)
                     .withinAngle(seekAngle)
                     .baseFilter()
                     .heightRange(data.get(GunProp.MIN_TARGET_HEIGHT), data.get(GunProp.MAX_TARGET_HEIGHT))
                     .smokeFilter()
                     .noVehicle()
                     .noClip()
-                    .buildWithClosest()
+                    .buildWithClosestSeekWeapon(canGuidedByRadar)
 
                 val decoy = TraceTool.findLookDecoy(player, cameraPos, player.getViewVector(1f), range)
                 if (decoy != null && decoy.type.`is`(ModTags.EntityTypes.DECOY)) {
@@ -925,9 +928,15 @@ object ClientEventHandler {
         val maxTargetHeight = seekWeaponInfo.maxTargetHeight
         // 最小目标碰撞箱大小
         val minTargetSize = seekWeaponInfo.minTargetSize
+        // 能被友方雷达引导的最大锁定范围
+        val maxGuidedRange = seekWeaponInfo.maxGuidedRange
+        // 能否友方雷达引导
+        val canGuidedByRadar = seekWeaponInfo.canGuidedByRadar
+        // 是否能被隐身目标影响
+        val affectedByStealthTarget = seekWeaponInfo.affectedByStealthTarget
 
         nearestEntityVehicle = SeekTool.Builder(player)
-            .withinRange(seekRange)
+            .withinRangeSeekWeapon(seekRange, maxGuidedRange, affectedByStealthTarget, canGuidedByRadar)
             .withinAngle(cameraPos, seekVec, seekAngle)
             .baseFilter()
             .heightRange(minTargetHeight, maxTargetHeight)
@@ -936,7 +945,7 @@ object ClientEventHandler {
             .noVehicle()
             .noClip()
             .notFriendly()
-            .buildWithClosest(cameraPos, seekVec)
+            .buildWithClosest(cameraPos, seekVec, canGuidedByRadar)
 
         val decoy = TraceTool.findLookDecoy(player, cameraPos, seekVec, seekRange)
         if (decoy != null && decoy.type.`is`(ModTags.EntityTypes.DECOY)) {

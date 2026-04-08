@@ -340,7 +340,7 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
             val range = if (blockEntity.type == FuncType.WIDER) 2048 else 1024
             val hostileList = level.allEntities.asSequence().mapNotNull {
                 val seekRange =
-                    range * range * if (it is VehicleEntity) it.computed().trackDistanceMultiply * it.computed().trackDistanceMultiply else 1.0
+                    range * range * if (it is VehicleEntity && !it.isWreck) it.computed().trackDistanceMultiply * it.computed().trackDistanceMultiply else 1.0
                 val flag = (it is VehicleEntity || VehicleConfig.inScanList(it.type))
                         && SeekTool.NOT_IN_SMOKE.test(it)
                         && it.distanceToSqr(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble()) <= seekRange

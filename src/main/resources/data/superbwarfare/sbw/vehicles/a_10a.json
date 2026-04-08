@@ -198,6 +198,7 @@
       "ProjectileLife": 1200,
       "SeekWeaponInfo": {
         "SeekDirection": "Default",
+        "MaxGuidedRange": 8192,
         "SeekRange": 1024,
         "SeekAngle": 20,
         "SeekTime": 10,
@@ -217,7 +218,7 @@
             "Name": "weapon.superbwarfare.agm_65_missile_block",
             "SeekWeaponInfo": {
               "SeekDirection": "Default",
-              "SeekRange": 1024,
+              "SeekRange": 512,
               "SeekAngle": 20,
               "SeekTime": 10,
               "MaxTargetHeight": 32,

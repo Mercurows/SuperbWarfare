@@ -12,6 +12,8 @@
   "SeekTime": 30,
   "SeekAngle": 20,
   "SeekRange": 384,
+  "CanGuidedByRadar": false,
+  "AffectedByStealthTarget": false,
   "MinTargetHeight": 16,
   "SeekType": "HoldZoom",
   "GunType": "DirectLauncher",

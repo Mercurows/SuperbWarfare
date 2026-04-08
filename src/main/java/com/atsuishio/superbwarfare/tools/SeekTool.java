@@ -341,6 +341,44 @@ public class SeekTool {
                     .toList();
         }
 
+        public List<Entity> buildSeekWeapon(boolean canGuidedByRadar) {
+            var entities = EntityFindUtil.getEntities(entity.level()).getAll().spliterator();
+            var stream = StreamSupport.stream(entities, false);
+            if (entity.level().isClientSide && canGuidedByRadar) {
+                var clientEntities = ClientSyncedEntityHandler.getSyncedHostileEntities(entity.level());
+                if (!clientEntities.isEmpty()) {
+                    stream = Stream.concat(stream, clientEntities.stream());
+                }
+            }
+            return stream.filter(e -> {
+                        for (var f : this.filters) {
+                            if (!f.test(e)) return false;
+                        }
+                        return true;
+                    })
+                    .toList();
+        }
+
+        @Nullable
+        public Entity buildWithClosestSeekWeapon(boolean canGuidedByRadar) {
+            var entities = EntityFindUtil.getEntities(entity.level()).getAll().spliterator();
+            var stream = StreamSupport.stream(entities, false);
+            if (entity.level().isClientSide && canGuidedByRadar) {
+                var clientEntities = ClientSyncedEntityHandler.getSyncedHostileEntities(entity.level());
+                if (!clientEntities.isEmpty()) {
+                    stream = Stream.concat(stream, clientEntities.stream());
+                }
+            }
+            return stream.filter(e -> {
+                        for (var f : this.filters) {
+                            if (!f.test(e)) return false;
+                        }
+                        return true;
+                    })
+                    .min(Comparator.comparingDouble(e -> calculateAngle(e, entity)))
+                    .orElse(null);
+        }
+
         @Nullable
         public Entity buildWithClosest() {
             var entities = EntityFindUtil.getEntities(entity.level()).getAll().spliterator();
@@ -362,10 +400,10 @@ public class SeekTool {
         }
 
         @Nullable
-        public Entity buildWithClosest(Vec3 pos, Vec3 vec3) {
+        public Entity buildWithClosest(Vec3 pos, Vec3 vec3, boolean canGuidedByRadar) {
             var entities = EntityFindUtil.getEntities(entity.level()).getAll().spliterator();
             var stream = StreamSupport.stream(entities, false);
-            if (entity.level().isClientSide) {
+            if (entity.level().isClientSide && canGuidedByRadar) {
                 var clientEntities = ClientSyncedEntityHandler.getSyncedHostileEntities(entity.level());
                 if (!clientEntities.isEmpty()) {
                     stream = Stream.concat(stream, clientEntities.stream());
@@ -401,13 +439,25 @@ public class SeekTool {
             return this;
         }
 
-        public Builder withinRange(Vec3 vec3, double range) {
+        public Builder withinRangeSeekWeapon(double range, double maxGuidedRange, boolean affectedByStealthTarget, boolean canGuidedByRadar) {
             this.filters.add(e -> {
-                var clientEntities = ClientSyncedEntityHandler.getSyncedHostileEntities(entity.level());
-                if (!clientEntities.isEmpty() && entity.level().isClientSide && entity instanceof Player player && (player.level().getEntity(e.getId()) == null || clientEntities.contains(e))) {
-                    return true;
+                if (canGuidedByRadar) {
+                    var clientEntities = ClientSyncedEntityHandler.getSyncedHostileEntities(entity.level());
+                    if (!clientEntities.isEmpty() && entity.level().isClientSide && entity instanceof Player player && (player.level().getEntity(e.getId()) == null || clientEntities.contains(e))) {
+                        return e.position().distanceToSqr(this.entity.getEyePosition()) <= maxGuidedRange * maxGuidedRange;
+                    }
                 }
 
+                if (e instanceof VehicleEntity vehicle && affectedByStealthTarget) {
+                    return vehicle.position().distanceToSqr(this.entity.getEyePosition()) <= range * vehicle.computed().trackDistanceMultiply * range * vehicle.computed().trackDistanceMultiply;
+                }
+                return e.position().distanceToSqr(this.entity.getEyePosition()) <= range * range;
+            });
+            return this;
+        }
+
+        public Builder withinRange(Vec3 vec3, double range) {
+            this.filters.add(e -> {
                 if (e instanceof VehicleEntity vehicle) {
                     return vehicle.position().distanceToSqr(vec3) <= range * vehicle.computed().trackDistanceMultiply * range * vehicle.computed().trackDistanceMultiply;
                 }

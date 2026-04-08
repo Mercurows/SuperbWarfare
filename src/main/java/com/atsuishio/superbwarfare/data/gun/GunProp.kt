@@ -107,6 +107,15 @@ class GunProp<T, R> private constructor(
         val SEEK_RANGE = plainProp(DefaultGunData::seekRange)
 
         @JvmField
+        val MAX_GUIDED_RANGE = plainProp(DefaultGunData::maxGuidedRange)
+
+        @JvmField
+        val CAN_GUIDED_BY_RADAR = plainProp(DefaultGunData::canGuidedByRadar)
+
+        @JvmField
+        val AFFECTED_BY_STEALTH_TARGET = plainProp(DefaultGunData::affectedByStealthTarget)
+
+        @JvmField
         val MIN_TARGET_HEIGHT = plainProp(DefaultGunData::minTargetHeight)
 
         @JvmField

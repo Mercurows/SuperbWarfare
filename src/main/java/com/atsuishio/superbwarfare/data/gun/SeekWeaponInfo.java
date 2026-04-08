@@ -32,4 +32,13 @@ public class SeekWeaponInfo {
 
     @SerializedName("OnlyLockEntity")
     public boolean onlyLockEntity = false;
+
+    @SerializedName("MaxGuidedRange")
+    public double maxGuidedRange = 2048;
+
+    @SerializedName("CanGuidedByRadar")
+    public boolean canGuidedByRadar = true;
+
+    @SerializedName("AffectedByStealthTarget")
+    public boolean affectedByStealthTarget = true;
 }

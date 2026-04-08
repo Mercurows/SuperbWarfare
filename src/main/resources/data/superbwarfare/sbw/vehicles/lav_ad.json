@@ -216,7 +216,9 @@
       "Velocity": 3,
       "SeekWeaponInfo": {
         "SeekDirection": "Barrel",
-        "SeekRange": 1024,
+        "CanGuidedByRadar": false,
+        "AffectedByStealthTarget": true,
+        "SeekRange": 384,
         "SeekAngle": 20,
         "SeekTime": 10,
         "MinTargetHeight": 16,
