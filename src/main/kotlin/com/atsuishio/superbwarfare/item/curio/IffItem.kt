@@ -52,33 +52,34 @@ open class IffItem : Item(Properties().stacksTo(1)), ICurioItem {
                     .toList()
 
                 for (player in server.playerList.players) {
-                    if (CuriosApi.getCuriosInventory(player)
-                            .map { it.findFirstCurio(ModItems.IFF.get()).isEmpty }.get()
-                    ) continue
+                    if (!player.isAlive) continue
+                    CuriosApi.getCuriosInventory(player)
+                        .flatMap { c -> c.findFirstCurio(ModItems.IFF.get()) }
+                        .ifPresent { _ ->
+                            val list = entities.mapNotNull {
+                                if (!SeekTool.IS_FRIENDLY.test(player, it)) return@mapNotNull null
+                                EntitySyncMessage.SyncedEntity(
+                                    it.id,
+                                    BuiltInRegistries.ENTITY_TYPE.getKey(it.type),
+                                    it.position(),
+                                    it.deltaMovement,
+                                    CompoundTag().also { tag -> it.saveWithoutId(tag) }
+                                )
+                            }.toList()
+                            sendPacketTo(player, EntitySyncMessage(level.dimension().location(), list, true))
 
-                    val list = entities.mapNotNull {
-                        if (!SeekTool.IS_FRIENDLY.test(player, it)) return@mapNotNull null
-                        EntitySyncMessage.SyncedEntity(
-                            it.id,
-                            BuiltInRegistries.ENTITY_TYPE.getKey(it.type),
-                            it.position(),
-                            it.deltaMovement,
-                            CompoundTag().also { tag -> it.saveWithoutId(tag) }
-                        )
-                    }.toList()
-                    sendPacketTo(player, EntitySyncMessage(level.dimension().location(), list, true))
-
-                    val playerList = server.playerList.players
-                        .asSequence()
-                        .mapNotNull {
-                            if (!SeekTool.IS_FRIENDLY.test(player, it)) return@mapNotNull null
-                            PlayerInfoSyncMessage.SyncedPlayerInfo(
-                                it.uuid,
-                                it.position(),
-                                it.displayName?.string ?: "---"
-                            )
-                        }.toList()
-                    sendPacketTo(player, PlayerInfoSyncMessage(level.dimension().location(), playerList))
+                            val playerList = server.playerList.players
+                                .asSequence()
+                                .mapNotNull {
+                                    if (!SeekTool.IS_FRIENDLY.test(player, it)) return@mapNotNull null
+                                    PlayerInfoSyncMessage.SyncedPlayerInfo(
+                                        it.uuid,
+                                        it.position(),
+                                        it.displayName?.string ?: "---"
+                                    )
+                                }.toList()
+                            sendPacketTo(player, PlayerInfoSyncMessage(level.dimension().location(), playerList))
+                        }
                 }
             }
         }
