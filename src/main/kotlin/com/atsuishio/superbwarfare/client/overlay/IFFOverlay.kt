@@ -53,6 +53,25 @@ object IFFOverlay : CommonOverlay("iff") {
         val poseStack = guiGraphics.pose()
         poseStack.pushPose()
 
+        val clientEntities = SeekTool.Builder(player)
+            .friendly()
+            .notPlayer()
+            .build()
+
+        for (e in clientEntities) {
+            val friendlyList = arrayListOf<EntitySyncMessage.SyncedEntity>()
+            val synced = EntitySyncMessage.SyncedEntity(
+                e.id,
+                ForgeRegistries.ENTITY_TYPES.getKey(e.type)!!,
+                e.position(),
+                e.deltaMovement,
+                e.serializeNBT()
+            )
+
+            friendlyList.add(synced)
+            ClientSyncedEntityHandler.sync(level.dimension().location(), friendlyList, true)
+        }
+
         CuriosApi.getCuriosInventory(player).ifPresent { c ->
             c.findFirstCurio(ModItems.IFF.get()).ifPresent { _ ->
                 val entities = ClientSyncedEntityHandler.getSyncedEntities(level)
@@ -99,11 +118,11 @@ object IFFOverlay : CommonOverlay("iff") {
                             0x7FFFAD
                         )
 
-                        if (Vec2(xf, yf).distanceToSqr(Vec2(screenWidth.toFloat() / 2.0f, screenHeight.toFloat() / 2.0f)) < 20) {
+                        if (Vec2(xf, yf).distanceToSqr(Vec2(screenWidth.toFloat() / 2.0f, screenHeight.toFloat() / 2.0f)) < 12) {
                             poseStack.pushPose()
                             poseStack.translate(xf, yf, 0f)
                             poseStack.scale(0.75f, 0.75f, 1f)
-                            val str = "${e.displayName.string} [${FormatTool.format1D(pos.distanceTo(player.position()))}m]"
+                            val str = "${e.displayName.string} [${FormatTool.format1D(pos.distanceTo(cameraPos))}m]"
                             guiGraphics.drawString(
                                 mc.font,
                                 str,
@@ -166,11 +185,11 @@ object IFFOverlay : CommonOverlay("iff") {
                                 0x7FFFAD
                             )
 
-                            if (Vec2(xf, yf).distanceToSqr(Vec2(screenWidth.toFloat() / 2.0f, screenHeight.toFloat() / 2.0f)) < 20) {
+                            if (Vec2(xf, yf).distanceToSqr(Vec2(screenWidth.toFloat() / 2.0f, screenHeight.toFloat() / 2.0f)) < 12) {
                                 poseStack.pushPose()
                                 poseStack.translate(xf, yf, 0f)
                                 poseStack.scale(0.75f, 0.75f, 1f)
-                                val str = "${otherPlayers.name} [${FormatTool.format1D(pos.distanceTo(player.position()))}m]"
+                                val str = "${otherPlayers.name} [${FormatTool.format1D(pos.distanceTo(cameraPos))}m]"
                                 guiGraphics.drawString(
                                     mc.font,
                                     str,
@@ -237,11 +256,11 @@ object IFFOverlay : CommonOverlay("iff") {
                             color
                         )
 
-                        if (Vec2(xf, yf).distanceToSqr(Vec2(screenWidth.toFloat() / 2.0f, screenHeight.toFloat() / 2.0f)) < 20) {
+                        if (Vec2(xf, yf).distanceToSqr(Vec2(screenWidth.toFloat() / 2.0f, screenHeight.toFloat() / 2.0f)) < 12) {
                             poseStack.pushPose()
                             poseStack.translate(xf, yf, 0f)
                             poseStack.scale(0.75f, 0.75f, 1f)
-                            val str = "${e.displayName.string} [${FormatTool.format1D(pos.distanceTo(player.position()))}m]"
+                            val str = "${e.displayName.string} [${FormatTool.format1D(pos.distanceTo(cameraPos))}m]"
                             guiGraphics.drawString(
                                 mc.font,
                                 str,

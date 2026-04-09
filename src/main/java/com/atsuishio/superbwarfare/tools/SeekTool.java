@@ -275,6 +275,8 @@ public class SeekTool {
         return entities.isEmpty();
     };
 
+    public static final Predicate<Entity> NOT_PLAYER = e -> !(e instanceof Player);
+
     /**
      * 判断某实体是否是自己的
      */
@@ -488,6 +490,11 @@ public class SeekTool {
 
         public Builder friendly() {
             this.filters.add(e -> IS_FRIENDLY.test(entity, e));
+            return this;
+        }
+
+        public Builder notPlayer() {
+            this.filters.add(NOT_PLAYER);
             return this;
         }
 
