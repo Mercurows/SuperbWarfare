@@ -307,6 +307,8 @@ public class SeekTool {
      */
     public static final Predicate<Entity> IS_INVULNERABLE = e -> e.isInvulnerable() || (e instanceof Player player && (player.isCreative() || player.isSpectator()));
 
+    public static final Predicate<Entity> NOT_PLAYER = e -> !(e instanceof Player);
+
     public static class Builder {
 
         @NotNull
@@ -489,6 +491,11 @@ public class SeekTool {
 
         public Builder friendly() {
             this.filters.add(e -> IS_FRIENDLY.test(entity, e));
+            return this;
+        }
+
+        public Builder notPlayer() {
+            this.filters.add(NOT_PLAYER);
             return this;
         }
 

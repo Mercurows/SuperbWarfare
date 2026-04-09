@@ -9,11 +9,14 @@ import com.atsuishio.superbwarfare.entity.projectile.MissileProjectile
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModTags
+import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
 import com.atsuishio.superbwarfare.tools.*
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Camera
 import net.minecraft.client.renderer.GameRenderer
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.nbt.CompoundTag
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.OwnableEntity
@@ -50,6 +53,25 @@ object IFFOverlay : CommonOverlay("iff") {
 
         val poseStack = guiGraphics.pose()
         poseStack.pushPose()
+
+        val clientEntities = SeekTool.Builder(player)
+            .friendly()
+            .notPlayer()
+            .build()
+
+        for (e in clientEntities) {
+            val friendlyList = arrayListOf<EntitySyncMessage.SyncedEntity>()
+            val synced = EntitySyncMessage.SyncedEntity(
+                e.id,
+                BuiltInRegistries.ENTITY_TYPE.getKey(e.type),
+                e.position(),
+                e.deltaMovement,
+                CompoundTag().also { e.saveWithoutId(it) }
+            )
+
+            friendlyList.add(synced)
+            ClientSyncedEntityHandler.sync(level.dimension().location(), friendlyList, true)
+        }
 
         CuriosApi.getCuriosInventory(player)
             .flatMap { c -> c.findFirstCurio(ModItems.IFF.get()) }
@@ -98,11 +120,11 @@ object IFFOverlay : CommonOverlay("iff") {
                             0x7FFFAD
                         )
 
-                        if (Vec2(xf, yf).distanceToSqr(Vec2(screenWidth.toFloat() / 2.0f, screenHeight.toFloat() / 2.0f)) < 20) {
+                        if (Vec2(xf, yf).distanceToSqr(Vec2(screenWidth.toFloat() / 2.0f, screenHeight.toFloat() / 2.0f)) < 12) {
                             poseStack.pushPose()
                             poseStack.translate(xf, yf, 0f)
                             poseStack.scale(0.75f, 0.75f, 1f)
-                            val str = "${e.displayName?.string ?: "---"} [${FormatTool.format1D(pos.distanceTo(player.position()))}m]"
+                            val str = "${e.displayName?.string ?: "---"} [${FormatTool.format1D(pos.distanceTo(cameraPos))}m]"
                             guiGraphics.drawString(
                                 mc.font,
                                 str,
@@ -164,11 +186,11 @@ object IFFOverlay : CommonOverlay("iff") {
                                 0x7FFFAD
                             )
 
-                            if (Vec2(xf, yf).distanceToSqr(Vec2(screenWidth.toFloat() / 2.0f, screenHeight.toFloat() / 2.0f)) < 20) {
+                            if (Vec2(xf, yf).distanceToSqr(Vec2(screenWidth.toFloat() / 2.0f, screenHeight.toFloat() / 2.0f)) < 12) {
                                 poseStack.pushPose()
                                 poseStack.translate(xf, yf, 0f)
                                 poseStack.scale(0.75f, 0.75f, 1f)
-                                val str = "${otherPlayers.name} [${FormatTool.format1D(pos.distanceTo(player.position()))}m]"
+                                val str = "${otherPlayers.name} [${FormatTool.format1D(pos.distanceTo(cameraPos))}m]"
                                 guiGraphics.drawString(
                                     mc.font,
                                     str,
@@ -235,11 +257,11 @@ object IFFOverlay : CommonOverlay("iff") {
                             color
                         )
 
-                        if (Vec2(xf, yf).distanceToSqr(Vec2(screenWidth.toFloat() / 2.0f, screenHeight.toFloat() / 2.0f)) < 20) {
+                        if (Vec2(xf, yf).distanceToSqr(Vec2(screenWidth.toFloat() / 2.0f, screenHeight.toFloat() / 2.0f)) < 12) {
                             poseStack.pushPose()
                             poseStack.translate(xf, yf, 0f)
                             poseStack.scale(0.75f, 0.75f, 1f)
-                            val str = "${e.displayName?.string ?: "---"} [${FormatTool.format1D(pos.distanceTo(player.position()))}m]"
+                            val str = "${e.displayName?.string ?: "---"} [${FormatTool.format1D(pos.distanceTo(cameraPos))}m]"
                             guiGraphics.drawString(
                                 mc.font,
                                 str,
