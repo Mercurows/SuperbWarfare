@@ -404,6 +404,9 @@
   "block.superbwarfare.blueprint_research_table": "Blueprint Research Table",
   "des.superbwarfare.blueprint_research_table_1": "A workbench for researching weapon blueprints, occupies 2 blocks",
   "des.superbwarfare.blueprint_research_table_2": "The left part is used for automated input and output, and the right part can be connected to redstone signals for automated control",
+  "block.superbwarfare.raw_galena_block": "Raw Galena Block",
+  "block.superbwarfare.raw_scheelite_block": "Raw Scheelite Block",
+  "block.superbwarfare.raw_silver_block": "Raw Silver Block",
 
   "item.superbwarfare.high_energy_explosives": "High Energy Explosives",
   "item.superbwarfare.grain": "Grain",

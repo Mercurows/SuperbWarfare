@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.datagen.builder.ResearchingRecipeBuilder
 import com.atsuishio.superbwarfare.datagen.builder.VehicleAssemblingRecipeBuilder
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.init.ModItems.Materials
+import com.atsuishio.superbwarfare.init.ModTags.commonItemTag
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe
 import net.minecraft.data.PackOutput
@@ -56,10 +57,10 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
     }
 
     companion object {
-        val PLATES_COPPER: TagKey<Item> = ModTags.commonItemTag("plates/copper")
-        val INGOTS_LEAD: TagKey<Item> = ModTags.commonItemTag("ingots/lead")
-        val INGOTS_SILVER: TagKey<Item> = ModTags.commonItemTag("ingots/silver")
-        val INGOTS_TUNGSTEN: TagKey<Item> = ModTags.commonItemTag("ingots/tungsten")
+        val PLATES_COPPER: TagKey<Item> = commonItemTag("plates/copper")
+        val INGOTS_LEAD: TagKey<Item> = commonItemTag("ingots/lead")
+        val INGOTS_SILVER: TagKey<Item> = commonItemTag("ingots/silver")
+        val INGOTS_TUNGSTEN: TagKey<Item> = commonItemTag("ingots/tungsten")
 
         private fun buildToolRecipes(writer: Consumer<FinishedRecipe>) {
             ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.ARTILLERY_INDICATOR.get())
@@ -966,8 +967,8 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .unlockedBy(getHasName(ModItems.GRENADE_40MM.get()), has(ModItems.GRENADE_40MM.get()))
                 .save(writer, loc(getItemName(ModItems.CM_HEAD.get())))
             ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.COAL_IRON_POWDER.get())
-                .requires(ModTags.commonItemTag("dusts/iron"))
-                .requires(ModTags.commonItemTag("dusts/coal_coke"))
+                .requires(commonItemTag("dusts/iron"))
+                .requires(commonItemTag("dusts/coal_coke"))
                 .unlockedBy(getHasName(ModItems.IRON_POWDER.get()), has(ModItems.IRON_POWDER.get()))
                 .unlockedBy(getHasName(ModItems.COAL_POWDER.get()), has(ModItems.COAL_POWDER.get()))
                 .save(writer, loc(getItemName(ModItems.COAL_IRON_POWDER.get())))
@@ -1125,7 +1126,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 100,
                 RecipeSerializer.BLASTING_RECIPE
             )
-                .unlockedBy(getHasName(ModItems.GALENA_ORE.get()), has(ModTags.commonItemTag("ores/lead")))
+                .unlockedBy(getHasName(ModItems.GALENA_ORE.get()), has(commonItemTag("ores/lead")))
                 .save(writer, loc(getItemName(Items.IRON_INGOT) + "_blasting_from_ore"))
             ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.LEAD_INGOT.get(), 9)
                 .requires(ModItems.LEAD_BLOCK.get())
@@ -1149,7 +1150,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 200,
                 RecipeSerializer.SMELTING_RECIPE
             )
-                .unlockedBy(getHasName(ModItems.GALENA_ORE.get()), has(ModTags.commonItemTag("ores/lead")))
+                .unlockedBy(getHasName(ModItems.GALENA_ORE.get()), has(commonItemTag("ores/lead")))
                 .save(writer, loc(getItemName(ModItems.LEAD_INGOT.get()) + "_smelting_from_ore"))
             ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.LIGHT_ARMAMENT_MODULE.get())
                 .pattern("ddd")
@@ -1240,10 +1241,10 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .unlockedBy(getHasName(Items.IRON_NUGGET), has(Tags.Items.NUGGETS_IRON))
                 .save(writer, loc(getItemName(ModItems.PROPELLER.get())))
             ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.RAW_CEMENTED_CARBIDE_POWDER.get(), 8)
-                .requires(Ingredient.of(ModTags.commonItemTag("dusts/tungsten")), 7)
-                .requires(ModTags.commonItemTag("dusts/iron"))
-                .requires(ModTags.commonItemTag("dusts/coal_coke"))
-                .unlockedBy(getHasName(ModItems.TUNGSTEN_POWDER.get()), has(ModTags.commonItemTag("dusts/tungsten")))
+                .requires(Ingredient.of(commonItemTag("dusts/tungsten")), 7)
+                .requires(commonItemTag("dusts/iron"))
+                .requires(commonItemTag("dusts/coal_coke"))
+                .unlockedBy(getHasName(ModItems.TUNGSTEN_POWDER.get()), has(commonItemTag("dusts/tungsten")))
                 .save(writer, loc(getItemName(ModItems.RAW_CEMENTED_CARBIDE_POWDER.get())))
             ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.SEEKER.get(), 4)
                 .pattern(" a ")
@@ -1293,7 +1294,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 100,
                 RecipeSerializer.BLASTING_RECIPE
             )
-                .unlockedBy(getHasName(ModItems.SILVER_ORE.get()), has(ModTags.commonItemTag("ores/silver")))
+                .unlockedBy(getHasName(ModItems.SILVER_ORE.get()), has(commonItemTag("ores/silver")))
                 .save(writer, loc(getItemName(ModItems.SILVER_INGOT.get()) + "_blasting_from_ore"))
             ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.SILVER_INGOT.get(), 9)
                 .requires(ModItems.SILVER_BLOCK.get())
@@ -1317,7 +1318,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 200,
                 RecipeSerializer.SMELTING_RECIPE
             )
-                .unlockedBy(getHasName(ModItems.GALENA_ORE.get()), has(ModTags.commonItemTag("ores/silver")))
+                .unlockedBy(getHasName(ModItems.GALENA_ORE.get()), has(commonItemTag("ores/silver")))
                 .save(writer, loc(getItemName(ModItems.SILVER_INGOT.get()) + "_smelting_from_ore"))
             ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.SMALL_BATTERY_PACK.get())
                 .pattern("aa")
@@ -1365,7 +1366,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 100,
                 RecipeSerializer.BLASTING_RECIPE
             )
-                .unlockedBy(getHasName(ModItems.SCHEELITE_ORE.get()), has(ModTags.commonItemTag("ores/tungsten")))
+                .unlockedBy(getHasName(ModItems.SCHEELITE_ORE.get()), has(commonItemTag("ores/tungsten")))
                 .save(writer, loc(getItemName(ModItems.TUNGSTEN_INGOT.get()) + "_blasting_from_ore"))
             SimpleCookingRecipeBuilder.generic(
                 Ingredient.of(ModItems.TUNGSTEN_POWDER.get()),
@@ -1558,6 +1559,27 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .define('e', ModTags.Items.INGOTS_STEEL)
                 .unlockedBy(getHasName(Items.CARTOGRAPHY_TABLE), has(Items.CARTOGRAPHY_TABLE))
                 .save(writer, loc(getItemName(ModItems.BLUEPRINT_RESEARCH_TABLE.get())))
+            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ModItems.RAW_GALENA_BLOCK.get())
+                .pattern("aaa")
+                .pattern("aaa")
+                .pattern("aaa")
+                .define('a', commonItemTag("raw_materials/lead"))
+                .unlockedBy(getHasName(ModItems.GALENA.get()), has(commonItemTag("raw_materials/lead")))
+                .save(writer, loc(getItemName(ModItems.RAW_GALENA_BLOCK.get())))
+            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ModItems.RAW_SCHEELITE_BLOCK.get())
+                .pattern("aaa")
+                .pattern("aaa")
+                .pattern("aaa")
+                .define('a', Ingredient.of(commonItemTag("raw_materials/tungsten")))
+                .unlockedBy(getHasName(ModItems.SCHEELITE.get()), has(commonItemTag("raw_materials/tungsten")))
+                .save(writer, loc(getItemName(ModItems.RAW_SCHEELITE_BLOCK.get())))
+            ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, ModItems.RAW_SILVER_BLOCK.get())
+                .pattern("aaa")
+                .pattern("aaa")
+                .pattern("aaa")
+                .define('a', commonItemTag("raw_materials/silver"))
+                .unlockedBy(getHasName(ModItems.RAW_SILVER.get()), has(commonItemTag("raw_materials/silver")))
+                .save(writer, loc(getItemName(ModItems.RAW_SILVER_BLOCK.get())))
         }
 
         private fun buildVehicleRecipes(writer: Consumer<FinishedRecipe>) {
@@ -2201,7 +2223,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .pattern("bab")
                 .pattern("cbc")
                 .define('a', ModItems.EMPTY_PERK.get())
-                .define('b', ModTags.commonItemTag("storage_blocks/tungsten"))
+                .define('b', commonItemTag("storage_blocks/tungsten"))
                 .define('c', INGOTS_TUNGSTEN)
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.AP_BULLET))
@@ -2293,7 +2315,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .pattern("bab")
                 .pattern("cbc")
                 .define('a', ModItems.EMPTY_PERK.get())
-                .define('b', ModTags.commonItemTag("storage_blocks/lead"))
+                .define('b', commonItemTag("storage_blocks/lead"))
                 .define('c', Items.SPIDER_EYE)
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.POISONOUS_BULLET))
@@ -2335,7 +2357,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .pattern("bab")
                 .pattern("cbc")
                 .define('a', ModItems.EMPTY_PERK.get())
-                .define('b', ModTags.commonItemTag("storage_blocks/silver"))
+                .define('b', commonItemTag("storage_blocks/silver"))
                 .define('c', INGOTS_SILVER)
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.SILVER_BULLET))
@@ -2355,7 +2377,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .define('a', ModItems.EMPTY_PERK.get())
                 .define('b', ModItems.CELL.get())
                 .define('c', Items.LIGHTNING_ROD)
-                .define('d', ModTags.commonItemTag("dusts/coal_coke"))
+                .define('d', commonItemTag("dusts/coal_coke"))
                 .define('e', Tags.Items.INGOTS_IRON)
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .save(writer, perkLoc(ModPerks.VOLT_OVERLOAD))
@@ -2381,7 +2403,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .define('a', ModItems.EMPTY_PERK.get())
                 .define('b', Items.POWDER_SNOW_BUCKET)
                 .define('c', Items.BLUE_ICE)
-                .define('d', ModTags.commonItemTag("storage_blocks/silver"))
+                .define('d', commonItemTag("storage_blocks/silver"))
                 .unlockedBy(getHasName(ModItems.EMPTY_PERK.get()), has(ModItems.EMPTY_PERK.get()))
                 .unlockedBy(getHasName(Items.POWDER_SNOW_BUCKET), has(Items.POWDER_SNOW_BUCKET))
                 .save(writer, perkLoc(ModPerks.POWERFUL_COOLER))
@@ -2598,6 +2620,18 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .define('d', Tags.Items.NUGGETS_GOLD)
                 .unlockedBy(getHasName(ModItems.DATA_CHIP_SUBSTRATE.get()), has(ModItems.DATA_CHIP_SUBSTRATE.get()))
                 .save(writer, loc(getItemName(ModItems.DAMAGE_PERK_DATA_CHIP.get())))
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.GALENA.get(), 9)
+                .requires(commonItemTag("storage_blocks/raw_lead"))
+                .unlockedBy(getHasName(ModItems.RAW_GALENA_BLOCK.get()), has(commonItemTag("storage_blocks/raw_lead")))
+                .save(writer, loc("${getItemName(ModItems.GALENA.get())}_from_raw_block"))
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.SCHEELITE.get(), 9)
+                .requires(commonItemTag("storage_blocks/raw_tungsten"))
+                .unlockedBy(getHasName(ModItems.RAW_SCHEELITE_BLOCK.get()), has(commonItemTag("storage_blocks/raw_tungsten")))
+                .save(writer, loc("${getItemName(ModItems.SCHEELITE.get())}_from_raw_block"))
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.RAW_SILVER.get(), 9)
+                .requires(commonItemTag("storage_blocks/raw_silver"))
+                .unlockedBy(getHasName(ModItems.RAW_SILVER_BLOCK.get()), has(commonItemTag("storage_blocks/raw_silver")))
+                .save(writer, loc("${getItemName(ModItems.RAW_SILVER.get())}_from_raw_block"))
         }
 
         private fun buildSpecialRecipes(writer: Consumer<FinishedRecipe>) {

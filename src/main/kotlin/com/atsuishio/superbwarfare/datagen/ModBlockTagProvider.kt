@@ -3,12 +3,10 @@ package com.atsuishio.superbwarfare.datagen
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.init.ModBlocks
 import com.atsuishio.superbwarfare.init.ModTags
+import com.atsuishio.superbwarfare.init.ModTags.commonBlockTag
 import net.minecraft.core.HolderLookup
 import net.minecraft.data.PackOutput
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.BlockTags
-import net.minecraft.tags.TagKey
-import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.Blocks
 import net.minecraftforge.common.Tags
 import net.minecraftforge.common.data.BlockTagsProvider
@@ -23,8 +21,10 @@ class ModBlockTagProvider(
     override fun addTags(pProvider: HolderLookup.Provider) {
         this.tag(BlockTags.NEEDS_IRON_TOOL).add(
             ModBlocks.GALENA_ORE.get(), ModBlocks.SCHEELITE_ORE.get(),
-            ModBlocks.DEEPSLATE_GALENA_ORE.get(), ModBlocks.DEEPSLATE_SCHEELITE_ORE.get(), ModBlocks.DRAGON_TEETH.get(),
-            ModBlocks.SILVER_ORE.get(), ModBlocks.DEEPSLATE_SILVER_ORE.get()
+            ModBlocks.DEEPSLATE_GALENA_ORE.get(), ModBlocks.DEEPSLATE_SCHEELITE_ORE.get(),
+            ModBlocks.SILVER_ORE.get(), ModBlocks.DEEPSLATE_SILVER_ORE.get(),
+            ModBlocks.RAW_GALENA_BLOCK.get(), ModBlocks.RAW_SCHEELITE_BLOCK.get(),
+            ModBlocks.RAW_SILVER_BLOCK.get(), ModBlocks.DRAGON_TEETH.get()
         )
 
         this.tag(BlockTags.MINEABLE_WITH_AXE).add(ModBlocks.BARBED_WIRE.get())
@@ -54,7 +54,10 @@ class ModBlockTagProvider(
             ModBlocks.LUCKY_CONTAINER.get(),
             ModBlocks.VEHICLE_ASSEMBLING_TABLE.get(),
             ModBlocks.BIOGAS_GENERATOR.get(),
-            ModBlocks.BLUEPRINT_RESEARCH_TABLE.get()
+            ModBlocks.BLUEPRINT_RESEARCH_TABLE.get(),
+            ModBlocks.RAW_GALENA_BLOCK.get(),
+            ModBlocks.RAW_SCHEELITE_BLOCK.get(),
+            ModBlocks.RAW_SILVER_BLOCK.get()
         )
         this.tag(BlockTags.MINEABLE_WITH_SHOVEL).add(ModBlocks.SANDBAG.get())
 
@@ -112,13 +115,19 @@ class ModBlockTagProvider(
         this.tag(ModTags.Blocks.VEHICLE_PASS_THROUGH)
             .addTag(BlockTags.SWORD_EFFICIENT)
 
-        this.tag(Tags.Blocks.ORES).addTags(forgeTag("ores/lead"), forgeTag("ores/tungsten"), forgeTag("ores/silver"))
-        this.tag(forgeTag("ores/lead")).add(ModBlocks.GALENA_ORE.get(), ModBlocks.DEEPSLATE_GALENA_ORE.get())
-        this.tag(forgeTag("ores/tungsten")).add(ModBlocks.SCHEELITE_ORE.get(), ModBlocks.DEEPSLATE_SCHEELITE_ORE.get())
-        this.tag(forgeTag("ores/silver")).add(ModBlocks.SILVER_ORE.get(), ModBlocks.DEEPSLATE_SILVER_ORE.get())
+        this.tag(Tags.Blocks.ORES).addTags(commonBlockTag("ores/lead"), commonBlockTag("ores/tungsten"), commonBlockTag("ores/silver"))
+        this.tag(commonBlockTag("ores/lead")).add(ModBlocks.GALENA_ORE.get(), ModBlocks.DEEPSLATE_GALENA_ORE.get())
+        this.tag(commonBlockTag("ores/tungsten")).add(ModBlocks.SCHEELITE_ORE.get(), ModBlocks.DEEPSLATE_SCHEELITE_ORE.get())
+        this.tag(commonBlockTag("ores/silver")).add(ModBlocks.SILVER_ORE.get(), ModBlocks.DEEPSLATE_SILVER_ORE.get())
 
         // 这个tag仅用于其他mod配方兼容，自己家配方不用这个
-        this.tag(forgeTag("ores/scheelite")).add(ModBlocks.SCHEELITE_ORE.get(), ModBlocks.DEEPSLATE_SCHEELITE_ORE.get())
+        this.tag(commonBlockTag("ores/scheelite")).add(ModBlocks.SCHEELITE_ORE.get(), ModBlocks.DEEPSLATE_SCHEELITE_ORE.get())
+
+        this.tag(commonBlockTag("storage_blocks/raw_lead")).add(ModBlocks.RAW_GALENA_BLOCK.get())
+        this.tag(commonBlockTag("storage_blocks/raw_tungsten")).add(ModBlocks.RAW_SCHEELITE_BLOCK.get())
+        this.tag(commonBlockTag("storage_blocks/raw_silver")).add(ModBlocks.RAW_SILVER_BLOCK.get())
+
+        this.tag(commonBlockTag("storage_blocks/raw_scheelite")).add(ModBlocks.RAW_SCHEELITE_BLOCK.get())
 
         this.tag(Tags.Blocks.ORES_IN_GROUND_STONE)
             .add(ModBlocks.GALENA_ORE.get(), ModBlocks.SCHEELITE_ORE.get(), ModBlocks.SILVER_ORE.get())
@@ -127,11 +136,5 @@ class ModBlockTagProvider(
             ModBlocks.DEEPSLATE_SCHEELITE_ORE.get(),
             ModBlocks.DEEPSLATE_SILVER_ORE.get()
         )
-    }
-
-    companion object {
-        fun forgeTag(name: String): TagKey<Block> {
-            return BlockTags.create(ResourceLocation("forge", name))
-        }
     }
 }

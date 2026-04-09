@@ -404,6 +404,9 @@
   "block.superbwarfare.blueprint_research_table": "蓝图研究台",
   "des.superbwarfare.blueprint_research_table_1": "用于研发武器蓝图的工作台，占地2个方块",
   "des.superbwarfare.blueprint_research_table_2": "左侧部分用于自动化输入输出，右侧部分可以接入红石信号进行自动化控制",
+  "block.superbwarfare.raw_galena_block": "粗方铅块",
+  "block.superbwarfare.raw_scheelite_block": "粗白钨块",
+  "block.superbwarfare.raw_silver_block": "粗银块",
 
   "item.superbwarfare.high_energy_explosives": "高能炸药",
   "item.superbwarfare.grain": "推进药柱",
@@ -419,8 +422,8 @@
   "item.superbwarfare.tungsten_ingot": "钨锭",
   "item.superbwarfare.silver_ingot": "银锭",
   "item.superbwarfare.cemented_carbide_ingot": "硬质合金锭",
-  "item.superbwarfare.galena": "粗方铅矿",
-  "item.superbwarfare.scheelite": "白钨矿",
+  "item.superbwarfare.galena": "粗方铅",
+  "item.superbwarfare.scheelite": "粗白钨",
   "item.superbwarfare.raw_silver": "粗银",
 
   "item.superbwarfare.armor_plate": "防弹插板",

@@ -6,6 +6,7 @@ import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.SoundType
 import net.minecraft.world.level.block.state.BlockBehaviour
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument
+import net.minecraft.world.level.material.MapColor
 import net.minecraftforge.registries.DeferredRegister
 import net.minecraftforge.registries.ForgeRegistries
 import net.minecraftforge.registries.RegistryObject
@@ -23,6 +24,9 @@ object ModBlocks {
     @JvmField val DEEPSLATE_SCHEELITE_ORE = registerBlock("deepslate_scheelite_ore") { Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.STONE).strength(3f, 8f).requiresCorrectToolForDrops()) }
     @JvmField val SILVER_ORE = registerBlock("silver_ore") { Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.STONE).strength(3f, 5f).requiresCorrectToolForDrops()) }
     @JvmField val DEEPSLATE_SILVER_ORE = registerBlock("deepslate_silver_ore") { Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.STONE).strength(3f, 8f).requiresCorrectToolForDrops()) }
+    @JvmField val RAW_GALENA_BLOCK = registerBlock("raw_galena_block") { Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_CYAN).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(5.0F, 6.0F)) }
+    @JvmField val RAW_SCHEELITE_BLOCK = registerBlock("raw_scheelite_block") { Block(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_YELLOW).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(5.0F, 6.0F)) }
+    @JvmField val RAW_SILVER_BLOCK = registerBlock("raw_silver_block") { Block(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_WHITE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(5.0F, 6.0F)) }
 
     @JvmField val DRAGON_TEETH = registerBlock("dragon_teeth") { DragonTeethBlock() }
     @JvmField val REFORGING_TABLE = registerBlock("reforging_table") { ReforgingTableBlock() }
