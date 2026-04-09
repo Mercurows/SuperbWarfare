@@ -217,7 +217,7 @@
       "SeekWeaponInfo": {
         "SeekDirection": "Barrel",
         "CanGuidedByRadar": false,
-        "AffectedByStealthTarget": true,
+        "AffectedByStealthTarget": false,
         "SeekRange": 384,
         "SeekAngle": 20,
         "SeekTime": 10,
