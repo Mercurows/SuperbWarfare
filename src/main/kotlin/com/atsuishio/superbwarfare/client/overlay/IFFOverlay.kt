@@ -26,10 +26,14 @@ import net.minecraft.world.phys.Vec2
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
+import net.minecraftforge.event.TickEvent
+import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.registries.ForgeRegistries
 import top.theillusivec4.curios.api.CuriosApi
 
 @OnlyIn(Dist.CLIENT)
+@Mod.EventBusSubscriber(Dist.CLIENT)
 object IFFOverlay : CommonOverlay("iff") {
     val FRIENDLY_INDICATOR = loc("textures/overlay/teammate/friendly_indicator.png")
     val FRIENDLY_AIRCRAFT = loc("textures/overlay/teammate/friendly_aircraft.png")
@@ -45,6 +49,32 @@ object IFFOverlay : CommonOverlay("iff") {
     val FRIENDLY_MINE = loc("textures/overlay/teammate/friendly_mine.png")
     val FRIENDLY_MISSILE = loc("textures/overlay/teammate/friendly_missile.png")
 
+    @SubscribeEvent
+    fun onIFFClientTick(event: TickEvent.ClientTickEvent) {
+        if (event.phase == TickEvent.Phase.START) return
+        val player = localPlayer ?: return
+        val level = clientLevel ?: return
+        CuriosApi.getCuriosInventory(player).ifPresent { c ->
+            c.findFirstCurio(ModItems.IFF.get()).ifPresent { _ ->
+                val clientEntities = SeekTool.Builder(player)
+                    .friendly()
+                    .notPlayer()
+                    .build()
+                    .asSequence()
+                    .map {
+                        EntitySyncMessage.SyncedEntity(
+                            it.id,
+                            ForgeRegistries.ENTITY_TYPES.getKey(it.type)!!,
+                            it.position(),
+                            it.deltaMovement,
+                            it.serializeNBT()
+                        )
+                    }.toList()
+                ClientSyncedEntityHandler.sync(level.dimension().location(), clientEntities, true)
+            }
+        }
+    }
+
     override fun shouldRender() = super.shouldRender() && DisplayConfig.VEHICLE_INFO.get()
 
     override fun RenderContext.render() {
@@ -52,25 +82,6 @@ object IFFOverlay : CommonOverlay("iff") {
 
         val poseStack = guiGraphics.pose()
         poseStack.pushPose()
-
-        val clientEntities = SeekTool.Builder(player)
-            .friendly()
-            .notPlayer()
-            .build()
-
-        for (e in clientEntities) {
-            val friendlyList = arrayListOf<EntitySyncMessage.SyncedEntity>()
-            val synced = EntitySyncMessage.SyncedEntity(
-                e.id,
-                ForgeRegistries.ENTITY_TYPES.getKey(e.type)!!,
-                e.position(),
-                e.deltaMovement,
-                e.serializeNBT()
-            )
-
-            friendlyList.add(synced)
-            ClientSyncedEntityHandler.sync(level.dimension().location(), friendlyList, true)
-        }
 
         CuriosApi.getCuriosInventory(player).ifPresent { c ->
             c.findFirstCurio(ModItems.IFF.get()).ifPresent { _ ->
@@ -118,7 +129,13 @@ object IFFOverlay : CommonOverlay("iff") {
                             0x7FFFAD
                         )
 
-                        if (Vec2(xf, yf).distanceToSqr(Vec2(screenWidth.toFloat() / 2.0f, screenHeight.toFloat() / 2.0f)) < 12) {
+                        if (Vec2(xf, yf).distanceToSqr(
+                                Vec2(
+                                    screenWidth.toFloat() / 2.0f,
+                                    screenHeight.toFloat() / 2.0f
+                                )
+                            ) < 12
+                        ) {
                             poseStack.pushPose()
                             poseStack.translate(xf, yf, 0f)
                             poseStack.scale(0.75f, 0.75f, 1f)
@@ -185,7 +202,13 @@ object IFFOverlay : CommonOverlay("iff") {
                                 0x7FFFAD
                             )
 
-                            if (Vec2(xf, yf).distanceToSqr(Vec2(screenWidth.toFloat() / 2.0f, screenHeight.toFloat() / 2.0f)) < 12) {
+                            if (Vec2(xf, yf).distanceToSqr(
+                                    Vec2(
+                                        screenWidth.toFloat() / 2.0f,
+                                        screenHeight.toFloat() / 2.0f
+                                    )
+                                ) < 12
+                            ) {
                                 poseStack.pushPose()
                                 poseStack.translate(xf, yf, 0f)
                                 poseStack.scale(0.75f, 0.75f, 1f)
@@ -256,7 +279,13 @@ object IFFOverlay : CommonOverlay("iff") {
                             color
                         )
 
-                        if (Vec2(xf, yf).distanceToSqr(Vec2(screenWidth.toFloat() / 2.0f, screenHeight.toFloat() / 2.0f)) < 12) {
+                        if (Vec2(xf, yf).distanceToSqr(
+                                Vec2(
+                                    screenWidth.toFloat() / 2.0f,
+                                    screenHeight.toFloat() / 2.0f
+                                )
+                            ) < 12
+                        ) {
                             poseStack.pushPose()
                             poseStack.translate(xf, yf, 0f)
                             poseStack.scale(0.75f, 0.75f, 1f)
