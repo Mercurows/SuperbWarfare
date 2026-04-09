@@ -19,6 +19,11 @@ object ModTags {
     }
 
     @JvmStatic
+    fun commonBlockTag(name: String): TagKey<Block> {
+        return BlockTags.create(ResourceLocation.fromNamespaceAndPath("c", name))
+    }
+
+    @JvmStatic
     fun modItemTag(name: String): TagKey<Item> {
         return ItemTags.create(Mod.loc(name))
     }

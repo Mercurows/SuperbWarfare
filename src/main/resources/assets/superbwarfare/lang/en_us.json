@@ -404,6 +404,9 @@
   "block.superbwarfare.blueprint_research_table": "Blueprint Research Table",
   "des.superbwarfare.blueprint_research_table_1": "A workbench for researching weapon blueprints, occupies 2 blocks",
   "des.superbwarfare.blueprint_research_table_2": "The left part is used for automated input and output, and the right part can be connected to redstone signals for automated control",
+  "block.superbwarfare.raw_galena_block": "Raw Galena Block",
+  "block.superbwarfare.raw_scheelite_block": "Raw Scheelite Block",
+  "block.superbwarfare.raw_silver_block": "Raw Silver Block",
 
   "item.superbwarfare.high_energy_explosives": "High Energy Explosives",
   "item.superbwarfare.grain": "Grain",
@@ -776,6 +779,7 @@
   "tips.superbwarfare.category.civilian": "Civilian Vehicles",
   "tips.superbwarfare.category.water": "Water Vehicles",
   "tips.superbwarfare.category.misc": "Miscellaneous",
+
   "tips.superbwarfare.switch_ammo": "Switch",
   "tips.superbwarfare.flare.ready": "FLARE READY",
   "tips.superbwarfare.hover_mode_on": "HOVER ON",
@@ -791,6 +795,7 @@
   "tips.superbwarfare.auto_aimable_entity.inactive": "INACTIVE",
   "tips.superbwarfare.need.ammo": "Not Enough Ammo! Need ",
   "tips.superbwarfare.not.enough.energy": "Not Enough Energy",
+
   "tips.superbwarfare.vehicle_reset_kit_1": "[Warning] Detected Superb Warfare version change [%1$s=>%2$s]. Vehicles from previous version may not work properly.",
   "tips.superbwarfare.vehicle_reset_kit_2": "After taking all items from the old vehicle, use %1$s to craft with the vehicle container to complete the reset.",
   "tips.superbwarfare.vehicle_reset_kit_3": "If you don't want to see this warning, you can disable it in Client Config.",
@@ -986,6 +991,7 @@
   "des.jade_plugin_superbwarfare.dps_generator.level": "Generator Level: %1$s",
   "des.jade_plugin_superbwarfare.dps_generator.health": "Maximum Health: %1$s",
   "config.jade.plugin_superbwarfare.vehicle_deployer": "Vehicle Deployer",
+
   "gamerule.sbwDoGenerateLoots": "Generate Superb Warfare Chest Loots",
 
   "superbwarfare.advancement.main.root": "Superb Warfare",

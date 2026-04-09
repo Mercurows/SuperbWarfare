@@ -106,6 +106,9 @@ class ModBlockStateProvider(output: PackOutput, exFileHelper: ExistingFileHelper
         blockWithItem(ModBlocks.SILVER_ORE)
         blockWithItem(ModBlocks.DEEPSLATE_SILVER_ORE)
         blockWithItem(ModBlocks.SILVER_BLOCK)
+        blockWithItem(ModBlocks.RAW_GALENA_BLOCK)
+        blockWithItem(ModBlocks.RAW_SCHEELITE_BLOCK)
+        blockWithItem(ModBlocks.RAW_SILVER_BLOCK)
 
         simpleBlock(ModBlocks.FUMO_25.get(), UncheckedModelFile(modLoc("block/fumo_25")))
     }

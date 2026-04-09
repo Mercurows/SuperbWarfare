@@ -51,12 +51,21 @@ class ModItemTagProvider(
             commonItemTag("storage_blocks/lead"),
             commonItemTag("storage_blocks/steel"),
             commonItemTag("storage_blocks/tungsten"),
-            commonItemTag("storage_blocks/silver")
+            commonItemTag("storage_blocks/silver"),
+            commonItemTag("storage_blocks/raw_lead"),
+            commonItemTag("storage_blocks/raw_tungsten"),
+            commonItemTag("storage_blocks/raw_silver"),
+            commonItemTag("storage_blocks/raw_scheelite")
         )
         this.tag(commonItemTag("storage_blocks/lead")).add(ModItems.LEAD_BLOCK.get())
         this.tag(commonItemTag("storage_blocks/steel")).add(ModItems.STEEL_BLOCK.get())
         this.tag(commonItemTag("storage_blocks/tungsten")).add(ModItems.TUNGSTEN_BLOCK.get())
         this.tag(commonItemTag("storage_blocks/silver")).add(ModItems.SILVER_BLOCK.get())
+
+        this.tag(commonItemTag("storage_blocks/raw_lead")).add(ModItems.RAW_GALENA_BLOCK.get())
+        this.tag(commonItemTag("storage_blocks/raw_tungsten")).add(ModItems.RAW_SCHEELITE_BLOCK.get())
+        this.tag(commonItemTag("storage_blocks/raw_silver")).add(ModItems.RAW_SILVER_BLOCK.get())
+        this.tag(commonItemTag("storage_blocks/raw_scheelite")).add(ModItems.RAW_SCHEELITE_BLOCK.get())
 
         this.tag(ModTags.Items.STORAGE_BLOCK_STEEL).addTag(commonItemTag("storage_blocks/steel"))
             .addOptional(ResourceLocation.fromNamespaceAndPath("dreamaticvoyage", "fukamizu_bread_bricks"))

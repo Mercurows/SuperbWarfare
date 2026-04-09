@@ -3,6 +3,10 @@
     "#c:storage_blocks/lead",
     "#c:storage_blocks/steel",
     "#c:storage_blocks/tungsten",
-    "#c:storage_blocks/silver"
+    "#c:storage_blocks/silver",
+    "#c:storage_blocks/raw_lead",
+    "#c:storage_blocks/raw_tungsten",
+    "#c:storage_blocks/raw_silver",
+    "#c:storage_blocks/raw_scheelite"
   ]
 }

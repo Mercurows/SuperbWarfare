@@ -4,8 +4,11 @@
     "superbwarfare:scheelite_ore",
     "superbwarfare:deepslate_galena_ore",
     "superbwarfare:deepslate_scheelite_ore",
-    "superbwarfare:dragon_teeth",
     "superbwarfare:silver_ore",
-    "superbwarfare:deepslate_silver_ore"
+    "superbwarfare:deepslate_silver_ore",
+    "superbwarfare:raw_galena_block",
+    "superbwarfare:raw_scheelite_block",
+    "superbwarfare:raw_silver_block",
+    "superbwarfare:dragon_teeth"
   ]
 }

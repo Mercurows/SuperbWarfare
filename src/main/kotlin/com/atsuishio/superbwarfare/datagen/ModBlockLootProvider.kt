@@ -42,6 +42,9 @@ class ModBlockLootProvider(provider: HolderLookup.Provider) :
         this.dropSelf(ModBlocks.AIRCRAFT_CATAPULT.get())
         this.dropSelf(ModBlocks.SUPERB_ITEM_INTERFACE.get())
         this.dropSelf(ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE.get())
+        this.dropSelf(ModBlocks.RAW_GALENA_BLOCK.get())
+        this.dropSelf(ModBlocks.RAW_SCHEELITE_BLOCK.get())
+        this.dropSelf(ModBlocks.RAW_SILVER_BLOCK.get())
         this.add(
             ModBlocks.BLUEPRINT_RESEARCH_TABLE.get(),
             this.applyExplosionDecay(
