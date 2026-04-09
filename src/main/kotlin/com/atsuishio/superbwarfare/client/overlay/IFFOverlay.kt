@@ -28,9 +28,13 @@ import net.minecraft.world.phys.Vec2
 import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
+import net.neoforged.bus.api.SubscribeEvent
+import net.neoforged.fml.common.EventBusSubscriber
+import net.neoforged.neoforge.client.event.ClientTickEvent
 import top.theillusivec4.curios.api.CuriosApi
 
 @OnlyIn(Dist.CLIENT)
+@EventBusSubscriber(Dist.CLIENT)
 object IFFOverlay : CommonOverlay("iff") {
     val FRIENDLY_INDICATOR = loc("textures/overlay/teammate/friendly_indicator.png")
     val FRIENDLY_AIRCRAFT = loc("textures/overlay/teammate/friendly_aircraft.png")
@@ -46,6 +50,31 @@ object IFFOverlay : CommonOverlay("iff") {
     val FRIENDLY_MINE = loc("textures/overlay/teammate/friendly_mine.png")
     val FRIENDLY_MISSILE = loc("textures/overlay/teammate/friendly_missile.png")
 
+    @SubscribeEvent
+    fun onIFFClientTick(event: ClientTickEvent.Post) {
+        val player = localPlayer ?: return
+        val level = clientLevel ?: return
+        CuriosApi.getCuriosInventory(player)
+            .flatMap { c -> c.findFirstCurio(ModItems.IFF.get()) }
+            .ifPresent { _ ->
+                val clientEntities = SeekTool.Builder(player)
+                    .friendly()
+                    .notPlayer()
+                    .build()
+                    .asSequence()
+                    .map {
+                        EntitySyncMessage.SyncedEntity(
+                            it.id,
+                            BuiltInRegistries.ENTITY_TYPE.getKey(it.type),
+                            it.position(),
+                            it.deltaMovement,
+                            CompoundTag().also { tag -> it.saveWithoutId(tag) }
+                        )
+                    }.toList()
+                ClientSyncedEntityHandler.sync(level.dimension().location(), clientEntities, true)
+            }
+    }
+
     override fun shouldRender() = super.shouldRender() && DisplayConfig.VEHICLE_INFO.get()
 
     override fun RenderContext.render() {
@@ -53,25 +82,6 @@ object IFFOverlay : CommonOverlay("iff") {
 
         val poseStack = guiGraphics.pose()
         poseStack.pushPose()
-
-        val clientEntities = SeekTool.Builder(player)
-            .friendly()
-            .notPlayer()
-            .build()
-
-        for (e in clientEntities) {
-            val friendlyList = arrayListOf<EntitySyncMessage.SyncedEntity>()
-            val synced = EntitySyncMessage.SyncedEntity(
-                e.id,
-                BuiltInRegistries.ENTITY_TYPE.getKey(e.type),
-                e.position(),
-                e.deltaMovement,
-                CompoundTag().also { e.saveWithoutId(it) }
-            )
-
-            friendlyList.add(synced)
-            ClientSyncedEntityHandler.sync(level.dimension().location(), friendlyList, true)
-        }
 
         CuriosApi.getCuriosInventory(player)
             .flatMap { c -> c.findFirstCurio(ModItems.IFF.get()) }
@@ -120,11 +130,18 @@ object IFFOverlay : CommonOverlay("iff") {
                             0x7FFFAD
                         )
 
-                        if (Vec2(xf, yf).distanceToSqr(Vec2(screenWidth.toFloat() / 2.0f, screenHeight.toFloat() / 2.0f)) < 12) {
+                        if (Vec2(xf, yf).distanceToSqr(
+                                Vec2(
+                                    screenWidth.toFloat() / 2.0f,
+                                    screenHeight.toFloat() / 2.0f
+                                )
+                            ) < 12
+                        ) {
                             poseStack.pushPose()
                             poseStack.translate(xf, yf, 0f)
                             poseStack.scale(0.75f, 0.75f, 1f)
-                            val str = "${e.displayName?.string ?: "---"} [${FormatTool.format1D(pos.distanceTo(cameraPos))}m]"
+                            val str =
+                                "${e.displayName?.string ?: "---"} [${FormatTool.format1D(pos.distanceTo(cameraPos))}m]"
                             guiGraphics.drawString(
                                 mc.font,
                                 str,
@@ -186,7 +203,13 @@ object IFFOverlay : CommonOverlay("iff") {
                                 0x7FFFAD
                             )
 
-                            if (Vec2(xf, yf).distanceToSqr(Vec2(screenWidth.toFloat() / 2.0f, screenHeight.toFloat() / 2.0f)) < 12) {
+                            if (Vec2(xf, yf).distanceToSqr(
+                                    Vec2(
+                                        screenWidth.toFloat() / 2.0f,
+                                        screenHeight.toFloat() / 2.0f
+                                    )
+                                ) < 12
+                            ) {
                                 poseStack.pushPose()
                                 poseStack.translate(xf, yf, 0f)
                                 poseStack.scale(0.75f, 0.75f, 1f)
@@ -257,11 +280,18 @@ object IFFOverlay : CommonOverlay("iff") {
                             color
                         )
 
-                        if (Vec2(xf, yf).distanceToSqr(Vec2(screenWidth.toFloat() / 2.0f, screenHeight.toFloat() / 2.0f)) < 12) {
+                        if (Vec2(xf, yf).distanceToSqr(
+                                Vec2(
+                                    screenWidth.toFloat() / 2.0f,
+                                    screenHeight.toFloat() / 2.0f
+                                )
+                            ) < 12
+                        ) {
                             poseStack.pushPose()
                             poseStack.translate(xf, yf, 0f)
                             poseStack.scale(0.75f, 0.75f, 1f)
-                            val str = "${e.displayName?.string ?: "---"} [${FormatTool.format1D(pos.distanceTo(cameraPos))}m]"
+                            val str =
+                                "${e.displayName?.string ?: "---"} [${FormatTool.format1D(pos.distanceTo(cameraPos))}m]"
                             guiGraphics.drawString(
                                 mc.font,
                                 str,
