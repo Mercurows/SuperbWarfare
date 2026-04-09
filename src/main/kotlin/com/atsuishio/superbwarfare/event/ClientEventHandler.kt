@@ -19,7 +19,7 @@ import com.atsuishio.superbwarfare.network.message.send.*
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.atsuishio.superbwarfare.tools.*
-import com.atsuishio.superbwarfare.world.TDMSavedData
+import com.atsuishio.superbwarfare.world.saveddata.TDMSavedData
 import net.minecraft.ChatFormatting
 import net.minecraft.client.CameraType
 import net.minecraft.client.Minecraft

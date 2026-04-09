@@ -10,7 +10,7 @@ import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.tools.CustomExplosion
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.ParticleTool
-import com.atsuishio.superbwarfare.world.TDMSavedData.Companion.enabledTDM
+import com.atsuishio.superbwarfare.world.saveddata.TDMSavedData.Companion.enabledTDM
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers

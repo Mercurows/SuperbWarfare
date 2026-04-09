@@ -49,7 +49,7 @@ import com.atsuishio.superbwarfare.tools.OBB.Part.*
 import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
 import com.atsuishio.superbwarfare.tools.VectorTool.combineRotationsTurret
 import com.atsuishio.superbwarfare.tools.VectorTool.lerpGetEntityBoundingBoxCenter
-import com.atsuishio.superbwarfare.world.TDMSavedData
+import com.atsuishio.superbwarfare.world.saveddata.TDMSavedData
 import com.google.common.collect.ImmutableList
 import com.mojang.math.Axis
 import net.minecraft.ChatFormatting

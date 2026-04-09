@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.world
+package com.atsuishio.superbwarfare.world.saveddata
 
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.network.message.receive.TDMSyncMessage
@@ -45,15 +45,15 @@ class TDMSavedData : SavedData {
         }
     }
 
-    fun addEntity(entity: String?): Boolean {
-        return this.entities.add(entity!!)
+    fun addEntity(entity: String): Boolean {
+        return this.entities.add(entity)
     }
 
-    fun removeEntity(entity: String?): Boolean {
+    fun removeEntity(entity: String): Boolean {
         return this.entities.remove(entity)
     }
 
-    fun containsEntity(entity: String?): Boolean {
+    fun containsEntity(entity: String): Boolean {
         return this.entities.contains(entity)
     }
 
