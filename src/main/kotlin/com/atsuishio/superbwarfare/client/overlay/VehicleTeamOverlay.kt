@@ -128,6 +128,16 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                                 color,
                                 false
                             )
+                        } else {
+                            val info = "${lookingEntity.displayName?.string} ${controller.displayName?.string}"
+                            guiGraphics.drawString(
+                                font,
+                                Component.literal(info),
+                                -font.width(info) / 2,
+                                -13,
+                                color,
+                                false
+                            )
                         }
                     } else {
                         val info = lookingEntity.displayName!!.string
@@ -140,7 +150,17 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                         val team: Team? = player.team
                         if (team is PlayerTeam) {
                             val info =
-                                "${lookingEntity.displayName!!.string} ${player1.displayName?.string}${if (player1.team == null) "" else " <${team.displayName.string}>"}"
+                                "${lookingEntity.displayName?.string} ${player1.displayName?.string}${if (player1.team == null) "" else " <${team.displayName.string}>"}"
+                            guiGraphics.drawString(
+                                font,
+                                Component.literal(info),
+                                -font.width(info) / 2,
+                                -13,
+                                color,
+                                false
+                            )
+                        } else {
+                            val info = "${lookingEntity.displayName?.string} ${player1.displayName?.string}"
                             guiGraphics.drawString(
                                 font,
                                 Component.literal(info),
@@ -161,7 +181,17 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                         val team: Team? = player.team
                         if (team is PlayerTeam) {
                             val info =
-                                "${lookingEntity.displayName!!.string} ${player1.displayName?.string}${if (player1.team == null) "" else " <${team.displayName.string}>"}"
+                                "${lookingEntity.displayName?.string} ${player1.displayName?.string}${if (player1.team == null) "" else " <${team.displayName.string}>"}"
+                            guiGraphics.drawString(
+                                font,
+                                Component.literal(info),
+                                -font.width(info) / 2,
+                                -13,
+                                color,
+                                false
+                            )
+                        } else {
+                            val info = "${lookingEntity.displayName?.string} ${player1.displayName?.string}"
                             guiGraphics.drawString(
                                 font,
                                 Component.literal(info),
