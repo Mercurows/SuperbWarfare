@@ -69,9 +69,7 @@ object ClientMouseHandler {
         val moveSpeedX = Mth.clamp(posN.x - posO.x, -speed, speed)
         val moveSpeedY = Mth.clamp(posN.y - posO.y, -speed, speed)
 
-
         val stack = player.mainHandItem
-        val tag = NBTTool.getTag(stack)
 
         if (stack.`is`(ModItems.MONITOR.get()) && stack.getOrCreateTag().getBoolean("Using")
             && stack.getOrCreateTag().getBoolean("Linked")

@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage
-import com.atsuishio.superbwarfare.tools.ChunkLoadManager
 import com.atsuishio.superbwarfare.tools.CustomExplosion
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import net.minecraft.core.BlockPos
