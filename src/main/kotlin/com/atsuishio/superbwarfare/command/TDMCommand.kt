@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.command
 
-import com.atsuishio.superbwarfare.world.TDMSavedData
+import com.atsuishio.superbwarfare.world.saveddata.TDMSavedData
 import net.minecraft.network.chat.Component
 import net.minecraft.world.level.saveddata.SavedData
 

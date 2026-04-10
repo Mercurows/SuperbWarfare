@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.world
+package com.atsuishio.superbwarfare.world.saveddata
 
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.network.message.receive.TDMSyncMessage

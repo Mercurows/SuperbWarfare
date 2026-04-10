@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.network.message.receive
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.network.ClientPacketPayload
 import com.atsuishio.superbwarfare.network.PayloadContext
-import com.atsuishio.superbwarfare.world.TDMSavedData
+import com.atsuishio.superbwarfare.world.saveddata.TDMSavedData
 import kotlinx.serialization.Serializable
 
 @Serializable

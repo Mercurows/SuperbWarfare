@@ -18,7 +18,7 @@ import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessag
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
 import com.atsuishio.superbwarfare.tools.VectorTool.calculateAngle
-import com.atsuishio.superbwarfare.world.TDMSavedData
+import com.atsuishio.superbwarfare.world.saveddata.TDMSavedData
 import net.minecraft.core.Holder
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.nbt.CompoundTag
