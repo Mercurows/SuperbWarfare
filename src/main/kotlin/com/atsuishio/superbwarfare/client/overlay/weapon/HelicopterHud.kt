@@ -34,9 +34,11 @@ import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.client.gui.overlay.ForgeGui
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.common.Mod
 import org.joml.Math
 
 @OnlyIn(Dist.CLIENT)
+@Mod.EventBusSubscriber(Dist.CLIENT)
 object HelicopterHud {
     const val ID: String = "@Helicopter"
 

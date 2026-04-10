@@ -62,7 +62,7 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
     override fun shouldRender() = super.shouldRender() && !ClientEventHandler.isEditing
 
     @SubscribeEvent
-    fun onVehicleTeamOverlayClientTick(event: TickEvent.ClientTickEvent) {
+    fun onVehicleMainWeaponHudOverlayClientTick(event: TickEvent.ClientTickEvent) {
         if (event.phase == TickEvent.Phase.START) return
         val player = localPlayer ?: return
         val vehicle = player.vehicle
