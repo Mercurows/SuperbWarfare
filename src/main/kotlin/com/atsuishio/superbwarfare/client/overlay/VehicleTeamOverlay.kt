@@ -3,17 +3,14 @@ package com.atsuishio.superbwarfare.client.overlay
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
-import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimableEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.init.ModItems
-import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.FormatTool.format1D
 import com.atsuishio.superbwarfare.tools.VectorTool.lerpGetEntityBoundingBoxCenter
-import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.network.chat.Component
 import net.minecraft.world.entity.Entity
@@ -24,51 +21,72 @@ import net.minecraft.world.scores.PlayerTeam
 import net.minecraft.world.scores.Team
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
+import net.neoforged.bus.api.SubscribeEvent
+import net.neoforged.fml.common.EventBusSubscriber
+import net.neoforged.neoforge.client.event.ClientTickEvent
 import kotlin.math.max
 
 @OnlyIn(Dist.CLIENT)
+@EventBusSubscriber(Dist.CLIENT)
 object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
     override fun shouldRender() = super.shouldRender() && DisplayConfig.VEHICLE_INFO.get()
 
-    override fun RenderContext.render() {
+    private var lookingEntity: Entity? = null
+    private var entityRange = 0.0
+    private var lookAtEntity = false
+
+    @SubscribeEvent
+    fun onVehicleTeamOverlayClientTick(event: ClientTickEvent.Post) {
+        val player = localPlayer ?: return
+        val camera = mc.gameRenderer.mainCamera
+        var viewPos = camera.position
         var viewVec = Vec3(camera.lookVector)
-        var entityRange = 0.0
         val distance = VehicleConfig.VEHICLE_INFO_DISPLAY_DISTANCE.get().toDouble()
-        var lookingEntity = TraceTool.camerafFindLookingEntity(
+
+        lookingEntity = TraceTool.camerafFindLookingEntity(
             player,
-            cameraPos,
+            viewPos,
             viewVec,
             distance
         )
-        if (lookingEntity is SmokeDecoyEntity) return
 
         (player.vehicle as? VehicleEntity)?.let { vehicle ->
             if (vehicle.hasWeapon(vehicle.getSeatIndex(player))) {
-                lookingEntity = vehicle.getPlayerLookAtEntityOnVehicle(player, distance, partialTick)
-                viewVec = vehicle.getViewVec(player, partialTick)
+                viewVec = vehicle.getShootDirectionForHud(player, 1f)
+                viewPos = vehicle.getShootPosForHud(player, 1f)
+                lookingEntity = TraceTool.camerafFindLookingEntity(
+                    player,
+                    viewPos,
+                    viewVec,
+                    distance
+                )
             }
         }
 
-        val decoy = TraceTool.findLookDecoy(player, cameraPos, viewVec, distance)
-        if (decoy != null && decoy.type.`is`(ModTags.EntityTypes.DECOY)) return
-
-        var lookAtEntity = false
-        if (lookingEntity != null) {
-            lookAtEntity = true
-            entityRange = player.distanceTo(lookingEntity).toDouble()
+        if (lookingEntity is VehicleEntity) {
+            val decoy = TraceTool.findLookDecoy(player, viewPos, viewVec, distance)
+            if (decoy == null) {
+                lookAtEntity = true
+                entityRange = player.distanceTo(lookingEntity!!).toDouble()
+            } else {
+                lookAtEntity = false
+            }
+        } else {
+            lookAtEntity = false
         }
+    }
+
+    override fun RenderContext.render() {
+        if (!lookAtEntity) return
+        val lookingEntity = lookingEntity as VehicleEntity
 
         val stack = player.mainHandItem
         val usingDrone = stack.`is`(ModItems.MONITOR.get())
                 && stack.getOrCreateTag().getBoolean("Using")
                 && stack.getOrCreateTag().getBoolean("Linked")
-        if (entityRange > distance) return
 
         val poseStack = guiGraphics.pose()
-        if (lookAtEntity && lookingEntity is VehicleEntity && !usingDrone) {
-            val vehicle = lookingEntity
-            if (entityRange > VehicleConfig.VEHICLE_INFO_DISPLAY_DISTANCE.get()) return
-
+        if (!usingDrone) {
             val pos = lerpGetEntityBoundingBoxCenter(lookingEntity, partialTick)
                 .add(Vec3(0.0, lookingEntity.bbHeight / 2 + 0.5, 0.0))
 
@@ -92,8 +110,8 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
 
                 if (lookingEntity is DroneEntity) {
                     val controller = EntityFindUtil.findPlayer(
-                        vehicle.level(),
-                        vehicle.getEntityData().get(DroneEntity.CONTROLLER)
+                        lookingEntity.level(),
+                        lookingEntity.getEntityData().get(DroneEntity.CONTROLLER)
                     )
                     if (controller != null) {
                         color = controller.teamColor
@@ -101,7 +119,7 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                         val team: Team? = player.team
                         if (team is PlayerTeam) {
                             val info =
-                                "${lookingEntity.displayName!!.string} ${controller.displayName!!.string}${if (controller.team == null) "" else " <${team.displayName.string}>"}"
+                                "${lookingEntity.displayName?.string} ${controller.displayName?.string}${if (controller.team == null) "" else " <${team.displayName.string}>"}"
                             guiGraphics.drawString(
                                 font,
                                 Component.literal(info),
@@ -116,7 +134,7 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                         guiGraphics.drawString(font, Component.literal(info), -font.width(info) / 2, -13, color, false)
                     }
                 } else if (lookingEntity is OwnableEntity) {
-                    val player1 = vehicle.owner
+                    val player1 = lookingEntity.owner
                     if (player1 is Player) {
                         color = player1.teamColor
                         val team: Team? = player.team
@@ -194,12 +212,12 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                 poseStack.pushPose()
                 poseStack.translate(x, y - 12, 0f)
 
-                val font = Minecraft.getInstance().font
-                val owner: Entity? = vehicle.owner
+                val font = mc.font
+                val owner: Entity? = lookingEntity.owner
 
                 if (owner != null) {
                     val color: Int = owner.teamColor
-                    val active: Boolean = vehicle.active
+                    val active: Boolean = lookingEntity.active
 
                     val info =
                         if (active) "tips.superbwarfare.auto_aimable_entity.active" else "tips.superbwarfare.auto_aimable_entity.inactive"
