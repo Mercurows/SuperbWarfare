@@ -6,15 +6,14 @@ import com.atsuishio.superbwarfare.client.overlay.VehicleHudOverlay.renderKillIn
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay.renderEnergyInfo
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getXRotFromVector
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.event.ClientMouseHandler
 import com.atsuishio.superbwarfare.init.ModKeyMappings
+import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.FormatTool.format0D
 import com.atsuishio.superbwarfare.tools.MathTool.getGradientColor
-import com.atsuishio.superbwarfare.tools.TraceTool
-import com.atsuishio.superbwarfare.tools.canBeSeen
-import com.atsuishio.superbwarfare.tools.worldToScreen
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.math.Axis
@@ -29,9 +28,13 @@ import net.minecraft.world.level.ClipContext
 import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
+import net.neoforged.bus.api.SubscribeEvent
+import net.neoforged.fml.common.EventBusSubscriber
+import net.neoforged.neoforge.client.event.ClientTickEvent
 import org.joml.Math
 
 @OnlyIn(Dist.CLIENT)
+@EventBusSubscriber(Dist.CLIENT)
 object HelicopterHud {
     const val ID: String = "@Helicopter"
 
@@ -58,6 +61,35 @@ object HelicopterHud {
     private var mouseX = 0f
     private var mouseY = 0f
 
+    private var dis = 512.0
+
+    @SubscribeEvent
+    fun onHelicopterHudClientTick(event: ClientTickEvent.Post) {
+        val player = localPlayer ?: return
+        val vehicle = player.vehicle
+        if (vehicle !is VehicleEntity) return
+        if (vehicle.computed().hudType != ID) return
+        if (player == vehicle.firstPassenger) {
+            val shootPos = vehicle.getShootPosForHud(player, 1f)
+
+            val result = player.level().clip(
+                ClipContext(
+                    shootPos, shootPos.add(vehicle.getShootDirectionForHud(player, 1f).scale(512.0)),
+                    ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, player
+                )
+            )
+            val hitPos = result.location
+
+            dis = shootPos.distanceTo(hitPos)
+
+            val lookingEntity = vehicle.getPlayerLookAtEntityOnVehicle(player, 512.0, 1f)
+
+            if (lookingEntity != null) {
+                dis = shootPos.distanceTo(lookingEntity.position())
+            }
+        }
+    }
+
     fun render(
         vehicle: VehicleEntity,
         player: LocalPlayer,
@@ -66,7 +98,7 @@ object HelicopterHud {
         screenWidth: Int,
         screenHeight: Int
     ) {
-        val mc = Minecraft.getInstance()
+        val mc = mc
         val poseStack = guiGraphics.pose()
         val index = vehicle.getSeatIndex(player)
         val data = vehicle.getGunData(index)
@@ -97,7 +129,7 @@ object HelicopterHud {
                     COMPASS,
                     screenWidth.toFloat() / 2 - 128,
                     10f,
-                    128 - (64f / 45 * vehicle.getYaw(partialTick)),
+                    128 - (64f / 45 * VehicleVecUtils.getYRotFromVector(Vec3(mc.gameRenderer.mainCamera.lookVector)).toFloat()),
                     0f,
                     256f,
                     16f,
@@ -269,33 +301,15 @@ object HelicopterHud {
             val l = (screenHeight - j) / 2f
 
             val shootPos = vehicle.getShootPosForHud(player, partialTick)
-
-            val result = player.level().clip(
-                ClipContext(
-                    shootPos, shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(512.0)),
-                    ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, player
-                )
-            )
-            val hitPos = result.getLocation()
-
-            var dis = shootPos.distanceTo(hitPos)
-
-            val lookingEntity = vehicle.getPlayerLookAtEntityOnVehicle(player, 512.0, partialTick)
-
-            if (lookingEntity != null) {
-                dis = shootPos.distanceTo(lookingEntity.position())
-            }
-
             val pos = shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(dis))
             val screenPos = pos.worldToScreen()
             val speed = vehicle.deltaMovement.length() * 72
             lerpVy = Mth.lerp((0.021f * partialTick).toDouble(), lerpVy.toDouble(), vehicle.deltaMovement.y() * 20).toFloat()
 
-
             val x = screenPos.x.toFloat()
             val y = screenPos.y.toFloat()
 
-            if (Minecraft.getInstance().options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) {
+            if (mc.options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) {
                 RenderHelper.preciseBlitWithColor(guiGraphics, HELI_BASE, k, l, 0f, 0f, i, j, i, j, color)
 
                 val diffY = -Mth.lerp(partialTick, vehicle.turretYRotO, vehicle.turretYRot) * 0.3f
@@ -345,13 +359,13 @@ object HelicopterHud {
                 RenderHelper.preciseBlitWithColor(
                     guiGraphics,
                     AircraftHud.HUD_LINE,
-                    screenWidth / 2f - 72,
+                    screenWidth / 2f - 144,
                     screenHeight / 2f - 128,
                     0f,
                     722.5f + 4.725f * pitch,
-                    144f,
+                    288f,
                     256f,
-                    144f,
+                    288f,
                     1701f,
                     color
                 )

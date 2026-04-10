@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.event.ClientMouseHandler
 import com.atsuishio.superbwarfare.init.ModKeyMappings
 import com.atsuishio.superbwarfare.tools.canBeSeen
+import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.mc
 import com.atsuishio.superbwarfare.tools.worldToScreen
 import com.mojang.blaze3d.platform.GlStateManager
@@ -25,9 +26,13 @@ import net.minecraft.world.level.ClipContext
 import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
+import net.neoforged.bus.api.SubscribeEvent
+import net.neoforged.fml.common.EventBusSubscriber
+import net.neoforged.neoforge.client.event.ClientTickEvent
 import org.joml.Math
 
 @OnlyIn(Dist.CLIENT)
+@EventBusSubscriber(Dist.CLIENT)
 object OldAircraftHud {
     const val ID: String = "@OldAircraft"
 
@@ -46,6 +51,34 @@ object OldAircraftHud {
 
     private var mouseX = 0f
     private var mouseY = 0f
+
+    private var dis = 512.0
+
+    @SubscribeEvent
+    fun onOldAircraftHudClientTick(event: ClientTickEvent.Post) {
+        val player = localPlayer ?: return
+        val vehicle = player.vehicle
+        if (vehicle !is VehicleEntity) return
+        if (vehicle.computed().hudType != ID) return
+
+        val shootPos = vehicle.getShootPosForHud(player, 1f)
+
+        val result = player.level().clip(
+            ClipContext(
+                shootPos, shootPos.add(vehicle.getShootDirectionForHud(player, 1f).scale(512.0)),
+                ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, player
+            )
+        )
+        val hitPos = result.location
+
+        dis = shootPos.distanceTo(hitPos)
+
+        val lookingEntity = vehicle.getPlayerLookAtEntityOnVehicle(player, 512.0, 1f)
+
+        if (lookingEntity != null) {
+            dis = shootPos.distanceTo(lookingEntity.position())
+        }
+    }
 
     fun render(
         vehicle: VehicleEntity,
@@ -84,20 +117,6 @@ object OldAircraftHud {
         diffX = Mth.lerp(partialTick.toDouble(), diffX.toDouble(), ClientMouseHandler.lerpSpeedY).toFloat()
 
         val shootPos = vehicle.getShootPosForHud(player, partialTick)
-
-        val result = player.level().clip(
-            ClipContext(
-                shootPos, shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(512.0)),
-                ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, player
-            )
-        )
-        val hitPos = result.getLocation()
-        var dis = shootPos.distanceTo(hitPos)
-        val lookingEntity = vehicle.getPlayerLookAtEntityOnVehicle(player, 512.0, partialTick)
-
-        if (lookingEntity != null) {
-            dis = shootPos.distanceTo(lookingEntity.position())
-        }
 
         val pos = cameraPos.add(vehicle.getViewVector(partialTick).scale(512.0))
         var posCross = shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(dis))
