@@ -44,7 +44,6 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
         var viewVec = Vec3(camera.lookVector)
         val distance = VehicleConfig.VEHICLE_INFO_DISPLAY_DISTANCE.get().toDouble()
 
-
         lookingEntity = TraceTool.camerafFindLookingEntity(
             player,
             viewPos,

@@ -9,12 +9,9 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.event.ClientMouseHandler
 import com.atsuishio.superbwarfare.init.ModKeyMappings
-import com.atsuishio.superbwarfare.tools.FormatTool
+import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.FormatTool.format0D
 import com.atsuishio.superbwarfare.tools.MathTool.getGradientColor
-import com.atsuishio.superbwarfare.tools.canBeSeen
-import com.atsuishio.superbwarfare.tools.mc
-import com.atsuishio.superbwarfare.tools.worldToScreen
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.math.Axis
@@ -30,9 +27,13 @@ import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.client.gui.overlay.ForgeGui
+import net.minecraftforge.event.TickEvent
+import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.common.Mod
 import org.joml.Math
 
 @OnlyIn(Dist.CLIENT)
+@Mod.EventBusSubscriber(Dist.CLIENT)
 object AircraftHud {
     const val ID: String = "@Aircraft"
 
@@ -65,6 +66,35 @@ object AircraftHud {
     private var mouseX = 0f
     private var mouseY = 0f
     private var lerpPower = 0f
+
+    private var dis = 512.0
+
+    @SubscribeEvent
+    fun onAircraftHudClientTick(event: TickEvent.ClientTickEvent) {
+        if (event.phase == TickEvent.Phase.START) return
+        val player = localPlayer ?: return
+        val vehicle = player.vehicle
+        if (vehicle !is VehicleEntity) return
+        if (vehicle.computed().hudType != ID) return
+
+        val shootPos = vehicle.getShootPosForHud(player, 1f)
+
+        val result = player.level().clip(
+            ClipContext(
+                shootPos, shootPos.add(vehicle.getShootDirectionForHud(player, 1f).scale(512.0)),
+                ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, player
+            )
+        )
+        val hitPos = result.location
+
+        dis = shootPos.distanceTo(hitPos)
+
+        val lookingEntity = vehicle.getPlayerLookAtEntityOnVehicle(player, 512.0, 1f)
+
+        if (lookingEntity != null) {
+            dis = shootPos.distanceTo(lookingEntity.position())
+        }
+    }
 
     fun render(
         vehicle: VehicleEntity,
@@ -105,22 +135,6 @@ object AircraftHud {
         val speed = vehicle.absoluteSpeed * 72
 
         val shootPos = vehicle.getShootPosForHud(player, partialTick)
-
-        val result = player.level().clip(
-            ClipContext(
-                shootPos, shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(512.0)),
-                ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, player
-            )
-        )
-        val hitPos = result.location
-
-        var dis = shootPos.distanceTo(hitPos)
-
-        val lookingEntity = vehicle.getPlayerLookAtEntityOnVehicle(player, 512.0, partialTick)
-
-        if (lookingEntity != null) {
-            dis = shootPos.distanceTo(lookingEntity.position())
-        }
 
         val pos = cameraPos.add(vehicle.getViewVector(partialTick).scale(512.0))
         var posCross = shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(dis))
@@ -414,13 +428,13 @@ object AircraftHud {
             RenderHelper.blit(
                 poseStack,
                 HUD_LINE,
-                x - 72 + diffY,
+                x - 144 + diffY,
                 y - 128,
                 0f,
                 722.5f + 4.725f * pitch,
-                144f,
+                288f,
                 256f,
-                144f,
+                288f,
                 1701f,
                 color
             )
