@@ -12,7 +12,10 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModParticleTypes
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.tools.*
+import com.atsuishio.superbwarfare.tools.CustomExplosion
+import com.atsuishio.superbwarfare.tools.ParticleTool
+import com.atsuishio.superbwarfare.tools.angleTo
+import com.atsuishio.superbwarfare.tools.forceHurt
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.particles.ParticleOptions
@@ -48,7 +51,6 @@ import org.joml.Matrix4d
 import org.joml.Quaterniond
 import org.joml.Quaternionf
 import org.joml.Vector4d
-import java.util.stream.StreamSupport
 import kotlin.random.Random
 
 open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, level: Level) : Entity(type, level) {
@@ -192,12 +194,6 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, level: Level) 
         compound.putFloat("Qw", entityData.get(QUATERNION_W))
         compound.putString("VehicleName", entityData.get(VEHICLE_NAME))
         compound.putFloat("Health", entityData.get(HEALTH))
-    }
-
-    fun getPlayer(level: Level?): List<Entity> {
-        return StreamSupport.stream(EntityFindUtil.getEntities(level).all.spliterator(), false)
-            .filter { e: Entity -> e is Player }
-            .toList()
     }
 
     override fun baseTick() {

@@ -1408,8 +1408,8 @@ object ClientEventHandler {
         // cooldown in ms
         val cooldown = (1000 / rps).roundToInt()
 
-        //左轮类
-        if (clientTimer.getProgress() == 0L && stack.`is`(ModItems.TRACHELIUM.get()) && holdingFireKey) {
+        // 左轮类
+        if (clientTimer.progress == 0L && stack.`is`(ModItems.TRACHELIUM.get()) && holdingFireKey) {
             revolverPreTime = (revolverPreTime + 0.3 * times).coerceIn(0.0, 1.0)
             revolverWheelPreTime =
                 (revolverWheelPreTime + 0.32 * times).coerceIn(0.0, if (revolverPreTime > 0.7) 1.0 else 0.55)
@@ -1430,7 +1430,7 @@ object ClientEventHandler {
             && !isEditing
         ) {
             if (mode == FireMode.SEMI) {
-                if (clientTimer.getProgress() == 0L) {
+                if (clientTimer.progress == 0L) {
                     clientTimer.start()
                     shootClient(player)
                 }
@@ -1441,8 +1441,8 @@ object ClientEventHandler {
                     clientTimer.progress = cooldown.toLong() + 1L
                 }
 
-                if (clientTimer.getProgress() >= cooldown) {
-                    var newProgress = clientTimer.getProgress()
+                if (clientTimer.progress >= cooldown) {
+                    var newProgress = clientTimer.progress
 
                     // 低帧率下的开火次数补偿
                     do {
@@ -1459,13 +1459,13 @@ object ClientEventHandler {
             }
 
         } else {
-            if (mode != FireMode.SEMI && clientTimer.getProgress() >= cooldown) {
+            if (mode != FireMode.SEMI && clientTimer.progress >= cooldown) {
                 clientTimer.stop()
             }
             fireSpread = 0.0
         }
 
-        if (mode == FireMode.SEMI && clientTimer.getProgress() >= cooldown) {
+        if (mode == FireMode.SEMI && clientTimer.progress >= cooldown) {
             clientTimer.stop()
         }
 
@@ -1693,8 +1693,8 @@ object ClientEventHandler {
                     clientTimerVehicle.progress = (cooldown + 1).toLong()
                 }
 
-                if (clientTimerVehicle.getProgress() >= cooldown) {
-                    var newProgress = clientTimerVehicle.getProgress()
+                if (clientTimerVehicle.progress >= cooldown) {
+                    var newProgress = clientTimerVehicle.progress
 
                     // 低帧率下的开火次数补偿
                     do {
@@ -1716,7 +1716,7 @@ object ClientEventHandler {
                 if (gunData.get(GunProp.DEFAULT_FIRE_MODE) == "Semi") {
                     holdFireVehicle = false
                 }
-            } else if (clientTimerVehicle.getProgress() >= cooldown) {
+            } else if (clientTimerVehicle.progress >= cooldown) {
                 clientTimerVehicle.stop()
             }
         } else {
