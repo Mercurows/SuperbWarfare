@@ -130,6 +130,9 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                                 color,
                                 false
                             )
+                        } else {
+                            val info = "${lookingEntity.displayName.string} ${controller.displayName.string}"
+                            guiGraphics.drawString(font, Component.literal(info), -font.width(info) / 2, -13, color, false)
                         }
                     } else {
                         val info = lookingEntity.displayName.string
@@ -151,6 +154,9 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                                 color,
                                 false
                             )
+                        } else {
+                            val info = "${lookingEntity.displayName.string} ${player1.displayName.string}"
+                            guiGraphics.drawString(font, Component.literal(info), -font.width(info) / 2, -13, color, false)
                         }
                     } else {
                         val info = lookingEntity.displayName.string
@@ -172,6 +178,9 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                                 color,
                                 false
                             )
+                        } else {
+                            val info = "${lookingEntity.displayName.string} ${player1.displayName.string}"
+                            guiGraphics.drawString(font, Component.literal(info), -font.width(info) / 2, -13, color, false)
                         }
                     } else {
                         val info = lookingEntity.displayName.string
