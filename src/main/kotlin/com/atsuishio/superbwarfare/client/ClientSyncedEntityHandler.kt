@@ -25,9 +25,21 @@ object ClientSyncedEntityHandler {
 
     data class ClientSyncedEntity(val entity: Entity, val timeStamp: Int)
 
-    data class ClientSyncedPlayerInfo(val pos: Vec3, val name: String, val timeStamp: Int)
+    data class ClientSyncedPlayerInfo(
+        val pos: Vec3,
+        val name: String,
+        val timeStamp: Int,
+        val onVehicle: Boolean,
+        val isDriver: Boolean
+    )
 
-    data class ClientSyncedPlayer(val uuid: UUID, val pos: Vec3, val name: String)
+    data class ClientSyncedPlayer(
+        val uuid: UUID,
+        val pos: Vec3,
+        val name: String,
+        val onVehicle: Boolean,
+        val isDriver: Boolean
+    )
 
     fun sync(dim: ResourceLocation, list: List<SyncedEntity>, friendly: Boolean) {
         val player = localPlayer ?: return
@@ -65,7 +77,7 @@ object ClientSyncedEntityHandler {
         val tick = player.tickCount
         for (info in list) {
             val uuid = info.uuid
-            SYNCED_PLAYERS[uuid] = ClientSyncedPlayerInfo(info.pos, info.name, tick)
+            SYNCED_PLAYERS[uuid] = ClientSyncedPlayerInfo(info.pos, info.name, tick, info.onVehicle, info.isDriver)
         }
     }
 
@@ -110,7 +122,9 @@ object ClientSyncedEntityHandler {
             ClientSyncedPlayer(
                 it.key,
                 it.value.pos,
-                it.value.name
+                it.value.name,
+                it.value.onVehicle,
+                it.value.isDriver
             )
         }
     }
