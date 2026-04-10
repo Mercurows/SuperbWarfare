@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.world.saveddata
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import net.minecraft.core.HolderLookup
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.ListTag
 import net.minecraft.nbt.Tag
@@ -8,15 +9,15 @@ import net.minecraft.server.level.TicketType
 import net.minecraft.util.Unit
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.saveddata.SavedData
-import net.minecraftforge.event.server.ServerStartedEvent
-import net.minecraftforge.event.server.ServerStoppingEvent
-import net.minecraftforge.eventbus.api.SubscribeEvent
-import net.minecraftforge.fml.common.Mod
+import net.neoforged.bus.api.SubscribeEvent
+import net.neoforged.fml.common.EventBusSubscriber
+import net.neoforged.neoforge.event.server.ServerStartedEvent
+import net.neoforged.neoforge.event.server.ServerStoppingEvent
 
 class ChunkPosSavedData : SavedData() {
     val chunkPositions = mutableSetOf<ChunkPos>()
 
-    override fun save(tag: CompoundTag): CompoundTag {
+    override fun save(tag: CompoundTag, registries: HolderLookup.Provider): CompoundTag {
         tag.put("Pos", this.savePos())
         return tag
     }
@@ -45,7 +46,7 @@ class ChunkPosSavedData : SavedData() {
         this.chunkPositions.clear()
     }
 
-    @Mod.EventBusSubscriber
+    @EventBusSubscriber
     companion object {
         const val FILE_ID: String = "superbwarfare_chunk_pos"
 
@@ -61,7 +62,13 @@ class ChunkPosSavedData : SavedData() {
         fun posSavedDataOnServerStarted(event: ServerStartedEvent) {
             val server = event.server
             for (level in server.allLevels) {
-                val data = level.dataStorage.get({ load(it) }, FILE_ID) ?: continue
+                val data = level.dataStorage.get(
+                    Factory(
+                        { ChunkPosSavedData() },
+                        { tag, _ -> load(tag) },
+                        null
+                    ), FILE_ID
+                ) ?: continue
                 val posSet = data.chunkPositions
                 if (posSet.isEmpty()) continue
 
@@ -79,9 +86,11 @@ class ChunkPosSavedData : SavedData() {
             val server = event.server
             for (level in server.allLevels) {
                 val data = level.dataStorage.computeIfAbsent(
-                    { load(it) },
-                    { ChunkPosSavedData() },
-                    FILE_ID
+                    Factory(
+                        { ChunkPosSavedData() },
+                        { tag, _ -> load(tag) },
+                        null
+                    ), FILE_ID
                 ) ?: continue
 
                 val list = level.allEntities
