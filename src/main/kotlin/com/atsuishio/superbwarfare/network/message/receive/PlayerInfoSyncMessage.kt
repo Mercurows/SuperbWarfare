@@ -21,7 +21,9 @@ data class PlayerInfoSyncMessage(
     data class SyncedPlayerInfo(
         val uuid: SerializedUUID,
         val pos: SerializedVec3,
-        val name: String
+        val name: String,
+        val onVehicle: Boolean,
+        val isDriver: Boolean
     )
 
 }

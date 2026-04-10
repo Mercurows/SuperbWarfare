@@ -185,23 +185,33 @@ object IFFOverlay : CommonOverlay("iff") {
                                 RenderSystem.setShaderColor(1f, 1f, 1f, 0.4f)
                             }
 
+                            if (localPlayer != null && localPlayer.vehicle != null) {
+                                pos = VectorTool.lerpGetEntityBoundingBoxCenter(localPlayer.vehicle!!, partialTick)
+                            }
+
                             val point = pos.worldToScreen()
                             val xf = point.x.toFloat()
                             val yf = point.y.toFloat()
 
-                            RenderHelper.blit(
-                                guiGraphics.pose(),
-                                FRIENDLY_INDICATOR,
-                                (xf - 6).coerceIn(0f, (screenWidth - 12).toFloat()),
-                                (yf - 6).coerceIn(0f, (screenHeight - 12).toFloat()),
-                                0f,
-                                0f,
-                                12f,
-                                12f,
-                                12f,
-                                12f,
-                                0x7FFFAD
-                            )
+                            var height = 10
+
+                            if (!otherPlayers.onVehicle) {
+                                RenderHelper.blit(
+                                    guiGraphics.pose(),
+                                    FRIENDLY_INDICATOR,
+                                    (xf - 6).coerceIn(0f, (screenWidth - 12).toFloat()),
+                                    (yf - 6).coerceIn(0f, (screenHeight - 12).toFloat()),
+                                    0f,
+                                    0f,
+                                    12f,
+                                    12f,
+                                    12f,
+                                    12f,
+                                    0x7FFFAD
+                                )
+                            } else {
+                                height = 20
+                            }
 
                             if (Vec2(xf, yf).distanceToSqr(
                                     Vec2(
@@ -213,12 +223,20 @@ object IFFOverlay : CommonOverlay("iff") {
                                 poseStack.pushPose()
                                 poseStack.translate(xf, yf, 0f)
                                 poseStack.scale(0.75f, 0.75f, 1f)
-                                val str = "${otherPlayers.name} [${FormatTool.format1D(pos.distanceTo(cameraPos))}m]"
+
+                                val str: String = if (otherPlayers.isDriver) {
+                                    otherPlayers.name
+                                } else if (otherPlayers.onVehicle) {
+                                    ""
+                                } else {
+                                    "${otherPlayers.name} [${FormatTool.format1D(pos.distanceTo(cameraPos))}m]"
+                                }
+
                                 guiGraphics.drawString(
                                     mc.font,
                                     str,
                                     -mc.font.width(str) / 2,
-                                    10,
+                                    height,
                                     0x7FFFAD,
                                     false
                                 )

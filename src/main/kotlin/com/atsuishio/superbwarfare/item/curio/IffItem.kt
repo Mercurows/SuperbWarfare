@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
 import com.atsuishio.superbwarfare.network.message.receive.PlayerInfoSyncMessage
 import com.atsuishio.superbwarfare.tools.SeekTool
+import com.atsuishio.superbwarfare.tools.VectorTool
 import com.atsuishio.superbwarfare.tools.sendPacketTo
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
@@ -72,11 +73,23 @@ open class IffItem : Item(Properties().stacksTo(1)), ICurioItem {
                                 .asSequence()
                                 .mapNotNull {
                                     if (!SeekTool.IS_FRIENDLY.test(player, it)) return@mapNotNull null
-                                    PlayerInfoSyncMessage.SyncedPlayerInfo(
-                                        it.uuid,
-                                        it.position(),
-                                        it.displayName.string
-                                    )
+                                    if (it.vehicle != null) {
+                                        PlayerInfoSyncMessage.SyncedPlayerInfo(
+                                            it.uuid,
+                                            VectorTool.lerpGetEntityBoundingBoxCenter(it.vehicle!!, 1f),
+                                            it.displayName.string,
+                                            onVehicle = true,
+                                            it == it.vehicle!!.firstPassenger
+                                        )
+                                    } else {
+                                        PlayerInfoSyncMessage.SyncedPlayerInfo(
+                                            it.uuid,
+                                            it.position(),
+                                            it.displayName.string,
+                                            onVehicle = false,
+                                            isDriver = false
+                                        )
+                                    }
                                 }.toList()
                             sendPacketTo(player, PlayerInfoSyncMessage(level.dimension().location(), playerList))
                         }
