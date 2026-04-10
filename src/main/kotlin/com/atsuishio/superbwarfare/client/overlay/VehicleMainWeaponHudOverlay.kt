@@ -20,10 +20,14 @@ import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
+import net.neoforged.bus.api.SubscribeEvent
+import net.neoforged.fml.common.EventBusSubscriber
+import net.neoforged.neoforge.client.event.ClientTickEvent
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -31,6 +35,7 @@ import kotlin.math.sin
  * 控制载具主武器的玩家显示的HUD
  */
 @OnlyIn(Dist.CLIENT)
+@EventBusSubscriber(Dist.CLIENT)
 object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
     const val EMPTY = "@Empty"
 
@@ -52,7 +57,39 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
     private val SHOOT_INDICATOR = loc("textures/overlay/frame/frame_diamond.png")
     private val BLOCK = loc("textures/overlay/misc/block.png")
 
+    var entities: List<Entity>? = null
+
     override fun shouldRender() = super.shouldRender() && !ClientEventHandler.isEditing
+
+    @SubscribeEvent
+    fun onVehicleMainWeaponHudOverlayClientTick(event: ClientTickEvent.Post) {
+        val player = localPlayer ?: return
+        val vehicle = player.vehicle
+        if (vehicle !is VehicleEntity) return
+        val gunData = vehicle.getGunData(player) ?: return
+        val seekInfo = gunData.get(GunProp.SEEK_WEAPON_INFO) ?: return
+
+        val camera = mc.gameRenderer.mainCamera
+        val cameraPos = camera.position
+        val seekVec = vehicle.getSeekVec(player, 1f)
+
+        entities = SeekTool.Builder(player)
+            .withinRangeSeekWeapon(
+                seekInfo.seekRange,
+                seekInfo.maxGuidedRange,
+                seekInfo.affectedByStealthTarget,
+                seekInfo.canGuidedByRadar
+            )
+            .withinAngle(cameraPos, seekVec, seekInfo.seekAngle)
+            .baseFilter()
+            .heightRange(seekInfo.minTargetHeight, seekInfo.maxTargetHeight)
+            .sizeBiggerThan(seekInfo.minTargetSize)
+            .smokeFilter()
+            .noVehicle()
+            .noClip()
+            .notFriendly()
+            .buildSeekWeapon(seekInfo.canGuidedByRadar)
+    }
 
     override fun RenderContext.render() {
         val vehicle = player.vehicle
@@ -133,32 +170,17 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
 
         val seekTime = seekInfo.seekTime
 
-        if (seekInfo.onlyLockEntity) {
+        if (seekInfo.onlyLockEntity && entities != null) {
             val targetEntity = ClientEventHandler.lockingEntityVehicle
             var nearestEntity = ClientEventHandler.nearestEntityVehicle
-            val seekVec = vehicle.getSeekVec(player, partialTick)
-
-            val entities = SeekTool.Builder(player)
-                .withinRangeSeekWeapon(seekInfo.seekRange, seekInfo.maxGuidedRange, seekInfo.affectedByStealthTarget, seekInfo.canGuidedByRadar)
-                .withinAngle(cameraPos, seekVec, seekInfo.seekAngle)
-                .baseFilter()
-                .heightRange(seekInfo.minTargetHeight, seekInfo.maxTargetHeight)
-                .sizeBiggerThan(seekInfo.minTargetSize)
-                .smokeFilter()
-                .noVehicle()
-                .noClip()
-                .notFriendly()
-                .buildSeekWeapon(seekInfo.canGuidedByRadar)
-
-            val decoy = TraceTool.findLookDecoy(player, cameraPos, seekVec, seekInfo.seekRange)
-
-            if (decoy != null && decoy.type.`is`(ModTags.EntityTypes.DECOY)) return
 
             for (e in entities) {
                 if (e.type.`is`(ModTags.EntityTypes.DECOY)) continue
-
                 val pos3 = lerpGetEntityBoundingBoxCenter(e, partialTick)
-                if (pos3.canBeSeen() && !seekInfo.onlyLockBlock) {
+                val decoy =
+                    TraceTool.findLookDecoy(player, cameraPos, cameraPos.vectorTo(pos3).normalize(), seekInfo.seekRange)
+
+                if (decoy == null && pos3.canBeSeen() && !seekInfo.onlyLockBlock) {
                     val point = pos3.worldToScreen()
                     val lockOn = ClientEventHandler.lockOnVehicle && targetEntity != null && e.id == targetEntity.id
                     val nearest =

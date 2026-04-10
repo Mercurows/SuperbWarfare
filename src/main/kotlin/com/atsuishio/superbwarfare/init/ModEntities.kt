@@ -70,7 +70,7 @@ object ModEntities {
     @JvmField
     val SMOKE_DECOY = register(
         "smoke_decoy",
-        misc(::SmokeDecoyEntity).setTrackingRange(64).setUpdateInterval(1).noSave().sized(4.5f, 4.5f)
+        misc(::SmokeDecoyEntity).setTrackingRange(64).setUpdateInterval(1).noSave().sized(5.5f, 5.5f)
     )
 
     @JvmField

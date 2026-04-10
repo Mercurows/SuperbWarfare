@@ -217,7 +217,7 @@
       "SeekWeaponInfo": {
         "SeekDirection": "Barrel",
         "CanGuidedByRadar": false,
-        "AffectedByStealthTarget": true,
+        "AffectedByStealthTarget": false,
         "SeekRange": 384,
         "SeekAngle": 20,
         "SeekTime": 10,
@@ -319,7 +319,9 @@
   "HudType": "@Land",
   "TerrainCompat": [
     [1.368, 0, 2.21], [-1.368, 0, 2.21],
-    [1.368, 0, 0.843], [-1.368, 0, 0.843], [1.368, 0, -0.85], [-1.368, 0, -0.85], [1.368, 0, -2.27], [-1.368, 0, -2.27]
+    [1.368, 0, 0.843], [-1.368, 0, 0.843]
+  , [1.368, 0, -0.85], [-1.368, 0, -0.85]
+  , [1.368, 0, -2.27], [-1.368, 0, -2.27]
   ],
   "InertiaRotateRate": 1.25
 }
