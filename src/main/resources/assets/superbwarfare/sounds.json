@@ -159,6 +159,14 @@
       }
     ]
   },
+  "super_star_shooter_reload_empty": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/super_star_shooter/super_star_shooter_reload_empty",
+        "stream": false
+      }
+    ]
+  },
   "m_79_fire_1p": {
     "sounds": [
       {
