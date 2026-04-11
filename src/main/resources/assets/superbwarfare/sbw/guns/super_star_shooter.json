@@ -1,6 +1,7 @@
 {
   "Animation": {
-    "Idle": "animation.super_star_shooter.idle"
+    "Idle": "animation.super_star_shooter.idle",
+    "Reload": "animation.super_star_shooter.reload"
   },
   "Model": {
     "Animation": "superbwarfare:animations/super_star_shooter.animation.json",
@@ -8,6 +9,5 @@
     "Texture": "superbwarfare:textures/item/super_star_shooter.png"
   },
   "FlarePosition": [0, 0, 0.59375],
-  "FlareSize": 1,
-  "UseOldHandRenderer": true
+  "FlareSize": 1
 }

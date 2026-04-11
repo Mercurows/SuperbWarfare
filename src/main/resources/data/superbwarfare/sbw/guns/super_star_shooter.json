@@ -9,7 +9,7 @@
   "Velocity": 3,
   "Magazine": 300,
   "Weight": 20,
-  "EmptyReloadTime": 64,
+  "EmptyReloadTime": 111,
   "RPM": 300,
   "Gravity": 0,
   "DefaultZoom": 1.25,
@@ -27,9 +27,9 @@
   "SoundInfo": {
     "Fire1P": "superbwarfare:star_shoot_1p",
     "Fire3P": "superbwarfare:star_shoot_3p",
-    "ReloadEmpty": "superbwarfare:m_79_reload_empty",
+    "ReloadEmpty": "superbwarfare:super_star_shooter_reload_empty",
     "CancellableSounds": [
-      "superbwarfare:m_79_reload_empty"
+      "superbwarfare:super_star_shooter_reload_empty"
     ]
   }
 }
