@@ -481,7 +481,7 @@ object ClientEventHandler {
 
         recoilForce *= 0.55
 
-        ClientSyncedEntityHandler.clean(player.tickCount)
+        ClientSyncedEntityHandler.clean()
         isProne(player)
         handleVariableDecrease()
         aimAtVillager(player)
