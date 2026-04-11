@@ -158,7 +158,8 @@ object IFFOverlay : CommonOverlay("iff") {
                     }
                 }
 
-                val players = ClientSyncedEntityHandler.getSyncedPlayerInfo()
+                val players = ClientSyncedEntityHandler.getSyncedPlayerInfo(level)
+
                 for (otherPlayers in players) {
                     if (otherPlayers.uuid != player.uuid) {
                         val localPlayer = EntityFindUtil.findPlayer(level, otherPlayers.uuid.toString())
