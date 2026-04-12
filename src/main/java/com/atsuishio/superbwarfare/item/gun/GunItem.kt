@@ -7,6 +7,8 @@ import com.atsuishio.superbwarfare.client.particle.BulletDecalOption
 import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent
 import com.atsuishio.superbwarfare.data.CustomData
+import com.atsuishio.superbwarfare.data.PMC
+import com.atsuishio.superbwarfare.data.PropertyModifier1
 import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.getDefault
@@ -71,7 +73,7 @@ import java.util.function.Consumer
 import javax.annotation.ParametersAreNonnullByDefault
 
 abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), ItemScreenProvider, GunPropertyModifier,
-    EnergyStorageItem {
+    EnergyStorageItem, PropertyModifier1<GunData, DefaultGunData> {
 
     protected val random: RandomSource = RandomSource.create()
 
@@ -103,6 +105,21 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         rawData.boltActionTime += getCustomBoltActionTime(data)
 
         return rawData
+    }
+
+    override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) = with(GunProp) {
+        val data = modifier.data
+
+        modifier[DAMAGE] += getCustomDamage(data)
+        modifier[HEADSHOT] += getCustomHeadshot(data)
+        modifier[BYPASSES_ARMOR] += getCustomBypassArmor(data)
+        modifier[MAGAZINE] += getCustomMagazine(data)
+        modifier[DEFAULT_ZOOM] += getCustomZoom(data)
+        modifier[RPM] += getCustomRPM(data)
+        modifier[WEIGHT] += getCustomWeight(data)
+        modifier[VELOCITY] += getCustomVelocity(data)
+        modifier[SOUND_RADIUS] += getCustomSoundRadius(data)
+        modifier[BOLT_ACTION_TIME] += getCustomBoltActionTime(data)
     }
 
     override fun isBarVisible(stack: ItemStack): Boolean {

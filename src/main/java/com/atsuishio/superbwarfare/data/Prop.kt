@@ -4,13 +4,21 @@ import java.lang.reflect.Type
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.javaType
 
+
 @OptIn(ExperimentalStdlibApi::class)
 abstract class Prop<DATA : DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA, FIELD, RESULT, SELF : Prop<DATA, DEFAULT_DATA, FIELD, RESULT, SELF>> protected constructor(
     val prop: KMutableProperty1<DEFAULT_DATA, FIELD>,
     val transform: (FIELD) -> RESULT,
-    val limiter: PropModifyContext<DATA, DEFAULT_DATA, RESULT>.() -> RESULT = { value },
 ) {
     protected val type: Type = prop.returnType.javaType
+
+    // TODO 使用kt serializer
+//    @Suppress("unchecked_cast")
+//    protected val serializer = run {
+//        val klass = prop.findAnnotation<Serializable>()?.with ?: return@run serializer(prop.returnType)
+//
+//        return@run (klass.objectInstance ?: klass.createInstance())
+//    } as KSerializer<FIELD>
 
     init {
         props.add(this)
@@ -20,18 +28,35 @@ abstract class Prop<DATA : DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA, FIEL
         return transform(prop.get(data))
     }
 
-    fun asModifier(data: DATA): PropModifier<DATA, DEFAULT_DATA, RESULT> {
-        return PropModifier(this, data)
-    }
-
-    class PropModifyContext<DATA : DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA, VALUE>(
-        val modifier: PropModifier<DATA, DEFAULT_DATA, VALUE>,
-        val data: DATA,
-        val value: VALUE
-    )
-
     companion object {
         @JvmField
         val props = mutableListOf<Prop<*, *, *, *, *>>()
+    }
+}
+
+// TODO
+// 属性修改上下文，可以视为针对当前类型属性的所有属性值的临时map
+class PMC<DATA : DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA>(val data: DATA) {
+
+    private val currentProps = mutableMapOf<Prop<DATA, *, *, *, *>, Any?>()
+
+    @Suppress("UNCHECKED_CAST")
+    operator fun <T : Prop<DATA, DEFAULT_DATA, *, RESULT, T>, RESULT> get(prop: T) = currentProps.getOrPut(prop) {
+        prop.getDefault(data.getDefault()) as Any?
+    } as RESULT
+
+    operator fun <T : Prop<DATA, DEFAULT_DATA, *, RESULT, T>, RESULT : Any> set(prop: T, value: RESULT) {
+        currentProps[prop] = value
+    }
+
+    fun reset() {
+        currentProps.clear()
+    }
+
+    fun <T : Prop<DATA, DEFAULT_DATA, *, RESULT, T>, RESULT : Any> modify(
+        prop: T,
+        modifier: (RESULT) -> RESULT
+    ) {
+        this[prop] = modifier(this[prop])
     }
 }
