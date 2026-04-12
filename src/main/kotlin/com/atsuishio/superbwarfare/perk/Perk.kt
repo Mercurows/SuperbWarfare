@@ -1,6 +1,9 @@
 package com.atsuishio.superbwarfare.perk
 
+import com.atsuishio.superbwarfare.data.PMC
+import com.atsuishio.superbwarfare.data.PropertyModifier1
 import com.atsuishio.superbwarfare.data.gun.DamageReduce
+import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunPropertyModifier
 import com.atsuishio.superbwarfare.init.ModItems
@@ -16,7 +19,8 @@ import net.minecraftforge.registries.RegistryManager
 import net.minecraftforge.registries.RegistryObject
 import java.util.*
 
-open class Perk(val descriptionId: String, val type: Type) : GunPropertyModifier {
+open class Perk(val descriptionId: String, val type: Type) : GunPropertyModifier,
+    PropertyModifier1<GunData, DefaultGunData> {
     val name: String
 
     init {
@@ -36,6 +40,9 @@ open class Perk(val descriptionId: String, val type: Type) : GunPropertyModifier
         }
         this.name = builder.toString()
     }
+
+    // 默认不进行修改
+    override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) {}
 
     fun getItem(): RegistryObject<Item> {
         val result = ModItems.PERKS.getEntries().filter {

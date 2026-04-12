@@ -1,8 +1,10 @@
 package com.atsuishio.superbwarfare.perk
 
+import com.atsuishio.superbwarfare.data.PMC
 import com.atsuishio.superbwarfare.data.gun.DamageReduce
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity
 import net.minecraft.world.effect.MobEffect
 import net.minecraft.world.effect.MobEffectInstance
@@ -49,6 +51,24 @@ open class AmmoPerk : Perk {
         }
 
         return super.computeProperties(data, rawData)
+    }
+
+    override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) = with(modifier) {
+        modify(GunProp.BYPASSES_ARMOR) {
+            it.coerceAtLeast(modifier[GunProp.BYPASSES_ARMOR] + bypassArmorRate).coerceAtLeast(0.0)
+        }
+        modify(GunProp.VELOCITY) { it.coerceAtLeast(modifier[GunProp.VELOCITY] * speedRate).coerceAtLeast(0.0) }
+
+        val perk = data.perk.get(Type.AMMO)
+        if (perk is AmmoPerk) {
+            if (perk.slug) {
+                modifier[GunProp.DAMAGE] *= perk.damageRate * modifier[GunProp.PROJECTILE_AMOUNT]
+                modifier[GunProp.PROJECTILE_AMOUNT] = 1
+                modifier[GunProp.ZOOM_SPREAD_RATE] = 0.15
+            } else {
+                modifier[GunProp.DAMAGE] *= perk.damageRate
+            }
+        }
     }
 
     override fun modifyProjectile(

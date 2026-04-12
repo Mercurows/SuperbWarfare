@@ -3,12 +3,11 @@ package com.atsuishio.superbwarfare.item.gun
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.api.event.ShootEvent
-import com.atsuishio.superbwarfare.capability.energy.ItemEnergyProvider
-import com.atsuishio.superbwarfare.capability.energy.ItemEnergyStorage
 import com.atsuishio.superbwarfare.client.particle.BulletDecalOption
 import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent
 import com.atsuishio.superbwarfare.data.CustomData
+import com.atsuishio.superbwarfare.data.PropertyModifier1
 import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.getDefault
@@ -34,7 +33,6 @@ import com.google.common.collect.HashMultimap
 import com.google.common.collect.Multimap
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.core.BlockPos
-import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
@@ -67,7 +65,6 @@ import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.common.capabilities.ForgeCapabilities
-import net.minecraftforge.common.capabilities.ICapabilityProvider
 import net.minecraftforge.common.util.LazyOptional
 import net.minecraftforge.energy.IEnergyStorage
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber
@@ -79,7 +76,8 @@ import java.util.function.Consumer
 import javax.annotation.ParametersAreNonnullByDefault
 
 @EventBusSubscriber
-abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), ItemScreenProvider, GunPropertyModifier {
+abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), ItemScreenProvider, GunPropertyModifier,
+    PropertyModifier1<GunData, DefaultGunData> {
     protected val random: RandomSource = RandomSource.create()
 
     @JvmField
@@ -108,6 +106,21 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         rawData.boltActionTime += getCustomBoltActionTime(gunData)
 
         return rawData
+    }
+
+    override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) = with(GunProp) {
+        val data = modifier.data
+
+        modifier[DAMAGE] += getCustomDamage(data)
+        modifier[HEADSHOT] += getCustomHeadshot(data)
+        modifier[BYPASSES_ARMOR] += getCustomBypassArmor(data)
+        modifier[MAGAZINE] += getCustomMagazine(data)
+        modifier[DEFAULT_ZOOM] += getCustomZoom(data)
+        modifier[RPM] += getCustomRPM(data)
+        modifier[WEIGHT] += getCustomWeight(data)
+        modifier[VELOCITY] += getCustomVelocity(data)
+        modifier[SOUND_RADIUS] += getCustomSoundRadius(data)
+        modifier[BOLT_ACTION_TIME] += getCustomBoltActionTime(data)
     }
 
     override fun initCapabilities(stack: ItemStack, nbt: CompoundTag?): ICapabilityProvider? {

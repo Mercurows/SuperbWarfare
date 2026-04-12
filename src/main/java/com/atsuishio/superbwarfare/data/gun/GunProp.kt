@@ -2,14 +2,13 @@ package com.atsuishio.superbwarfare.data.gun
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.ModColor
+import com.atsuishio.superbwarfare.data.PMC
 import com.atsuishio.superbwarfare.data.Prop
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.getPerkPriority
 import com.atsuishio.superbwarfare.init.ModPerks
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.perk.Perk
-import net.minecraft.util.Mth
 import net.minecraftforge.registries.RegistryManager
-import kotlin.math.max
 import kotlin.math.min
 import kotlin.reflect.KMutableProperty1
 
@@ -17,40 +16,29 @@ import kotlin.reflect.KMutableProperty1
 class GunProp<T, R> private constructor(
     prop: KMutableProperty1<DefaultGunData, T>,
     transform: (T) -> R,
-    limiter: PropModifyContext<GunData, DefaultGunData, R>.() -> R = { value },
-) :
-    Prop<GunData, DefaultGunData, T, R, GunProp<T, R>>(prop, transform, limiter) {
+) : Prop<GunData, DefaultGunData, T, R, GunProp<T, R>>(prop, transform) {
 
     companion object {
         private fun <T> plainProp(
             prop: KMutableProperty1<DefaultGunData, T>,
-            limiter: PropModifyContext<GunData, DefaultGunData, T>.() -> T = { value },
         ): GunProp<T, T> {
-            return GunProp(prop, { it }, limiter)
+            return GunProp(prop) { it }
         }
 
         @JvmField
-        val MAX_DURABILITY = plainProp(DefaultGunData::maxDurability) { max(0, value) }
+        val MAX_DURABILITY = plainProp(DefaultGunData::maxDurability)
 
         @JvmField
-        val DURABILITY_PER_SHOOT = plainProp(DefaultGunData::durabilityPerShoot) { max(0, value) }
+        val DURABILITY_PER_SHOOT = plainProp(DefaultGunData::durabilityPerShoot)
 
         @JvmField
-        val MAX_ENERGY = plainProp(DefaultGunData::maxEnergy) { max(0, value) }
+        val MAX_ENERGY = plainProp(DefaultGunData::maxEnergy)
 
         @JvmField
-        val MAX_RECEIVE_ENERGY = plainProp(DefaultGunData::maxReceiveEnergy) {
-            val maxEnergy = modifier.get(MAX_ENERGY)
-            val value = Mth.clamp(value, -1, maxEnergy)
-            if (value < 0) maxEnergy else value
-        }
+        val MAX_RECEIVE_ENERGY = plainProp(DefaultGunData::maxReceiveEnergy)
 
         @JvmField
-        val MAX_EXTRACT_ENERGY = plainProp(DefaultGunData::maxExtractEnergy) {
-            val maxEnergy = modifier.get(MAX_ENERGY)
-            val value = Mth.clamp(value, -1, maxEnergy)
-            if (value < 0) maxEnergy else value
-        }
+        val MAX_EXTRACT_ENERGY = plainProp(DefaultGunData::maxExtractEnergy)
 
         @JvmField
         val RECOIL_X = plainProp(DefaultGunData::recoilX)
@@ -86,16 +74,16 @@ class GunProp<T, R> private constructor(
         val MELEE_DAMAGE = plainProp(DefaultGunData::meleeDamage)
 
         @JvmField
-        val MELEE_DURATION = plainProp(DefaultGunData::meleeDuration) { max(1, value) }
+        val MELEE_DURATION = plainProp(DefaultGunData::meleeDuration)
 
         @JvmField
         val MELEE_RANGE = plainProp(DefaultGunData::meleeRange)
 
         @JvmField
-        val MELEE_ANGLE = plainProp(DefaultGunData::meleeAngle) { value.coerceIn(1, 180) }
+        val MELEE_ANGLE = plainProp(DefaultGunData::meleeAngle)
 
         @JvmField
-        val ZOOM_SPREAD_RATE = plainProp(DefaultGunData::zoomSpreadRate) { value.coerceIn(0.0, 1.0) }
+        val ZOOM_SPREAD_RATE = plainProp(DefaultGunData::zoomSpreadRate)
 
         @JvmField
         val SEEK_TIME = plainProp(DefaultGunData::seekTime)
@@ -122,35 +110,33 @@ class GunProp<T, R> private constructor(
         val MAX_TARGET_HEIGHT = plainProp(DefaultGunData::maxTargetHeight)
 
         @JvmField
-        val RANGE = plainProp(DefaultGunData::range) { max(1, value) }
+        val RANGE = plainProp(DefaultGunData::range)
 
         @JvmField
         val MELEE_DAMAGE_TIME =
-            plainProp(DefaultGunData::meleeDamageTime) { min(modifier.get(MELEE_DURATION) - 1, value) }
+            plainProp(DefaultGunData::meleeDamageTime)
 
         @JvmField
-        val PROJECTILE = GunProp(DefaultGunData::projectile, { it.value!! })
+        val PROJECTILE = GunProp(DefaultGunData::projectile) { it.value!! }
 
         @JvmField
-        val AMMO_COST_PER_SHOOT = plainProp(DefaultGunData::ammoCostPerShoot) { max(0, value) }
+        val AMMO_COST_PER_SHOOT = plainProp(DefaultGunData::ammoCostPerShoot)
 
         @JvmField
-        val PROJECTILE_AMOUNT = plainProp(DefaultGunData::projectileAmount) { max(0, value) }
+        val PROJECTILE_AMOUNT = plainProp(DefaultGunData::projectileAmount)
 
         @JvmField
-        val WEIGHT = plainProp(DefaultGunData::weight) { max(1.0, value) }
+        val WEIGHT = plainProp(DefaultGunData::weight)
 
         @JvmField
-        val DEFAULT_FIRE_MODE = GunProp(DefaultGunData::defaultFireMode, { it.ifEmpty { FireMode.SEMI.name!! }!! })
+        val DEFAULT_FIRE_MODE = GunProp(DefaultGunData::defaultFireMode) { it.ifEmpty { FireMode.SEMI.name!! }!! }
 
         @JvmField
         val AVAILABLE_FIRE_MODES =
-            GunProp(DefaultGunData::availableFireModes, { it?.list?.map { l -> l.value!! } ?: listOf() })
+            GunProp(DefaultGunData::availableFireModes) { it?.list?.map { l -> l.value!! } ?: listOf() }
 
         @JvmField
-        val MAGAZINE = plainProp(DefaultGunData::magazine) {
-            if (modifier.get(PROJECTILE_AMOUNT) <= 0 && modifier.get(MELEE_DAMAGE) > 0) 0 else max(0, value)
-        }
+        val MAGAZINE = plainProp(DefaultGunData::magazine)
 
         @JvmField
         val RELOAD_TYPES = GunProp(DefaultGunData::reloadTypes, { it?.filterNotNull().orEmpty() })
@@ -178,7 +164,7 @@ class GunProp<T, R> private constructor(
         val DEFAULT_ZOOM = plainProp(DefaultGunData::defaultZoom)
 
         @JvmField
-        val BURST_AMOUNT = plainProp(DefaultGunData::burstAmount) { max(0, value) }
+        val BURST_AMOUNT = plainProp(DefaultGunData::burstAmount)
 
         @JvmField
         val BYPASSES_ARMOR = plainProp(DefaultGunData::bypassesArmor)
@@ -229,7 +215,7 @@ class GunProp<T, R> private constructor(
         val SOUND_RADIUS = plainProp(DefaultGunData::soundRadius)
 
         @JvmField
-        val RPM = plainProp(DefaultGunData::rpm) { value.coerceIn(1, 114514) }
+        val RPM = plainProp(DefaultGunData::rpm)
 
         @JvmField
         val EXPLOSION_DAMAGE = plainProp(DefaultGunData::explosionDamage)
@@ -262,7 +248,7 @@ class GunProp<T, R> private constructor(
         val IN_LAVA_COOLDOWN_RATE = plainProp(DefaultGunData::inLavaCooldownRate)
 
         @JvmField
-        val AVAILABLE_PERKS = GunProp(DefaultGunData::availablePerks, {
+        val AVAILABLE_PERKS = GunProp(DefaultGunData::availablePerks) {
             val availablePerks = mutableListOf<Perk>()
             val perkNames = it?.list?.filterNotNull().orEmpty().ifEmpty { return@GunProp availablePerks }
 
@@ -309,19 +295,19 @@ class GunProp<T, R> private constructor(
                 }
             }
             return@GunProp availablePerks.toList()
-        })
+        }
 
         @JvmField
         val ICON = GunProp(DefaultGunData::icon, { it ?: GunItem.DEFAULT_ICON })
 
         @JvmField
-        val CROSSHAIR = GunProp(DefaultGunData::crosshair, { it.ifEmpty { "@GunDefault" }!! })
+        val CROSSHAIR = GunProp(DefaultGunData::crosshair) { it.ifEmpty { "@GunDefault" }!! }
 
         @JvmField
-        val CROSSHAIR_ZOOMING = GunProp(DefaultGunData::crosshairZooming, { it.ifEmpty { "@Empty" }!! })
+        val CROSSHAIR_ZOOMING = GunProp(DefaultGunData::crosshairZooming) { it.ifEmpty { "@Empty" }!! }
 
         @JvmField
-        val CROSSHAIR_COLOR = GunProp(DefaultGunData::crosshairColor, { it ?: ModColor() })
+        val CROSSHAIR_COLOR = GunProp(DefaultGunData::crosshairColor) { it ?: ModColor() }
 
         // 注意Nullable
         @JvmField
@@ -334,7 +320,7 @@ class GunProp<T, R> private constructor(
         val SEEK_WEAPON_INFO = plainProp(DefaultGunData::seekWeaponInfo)
 
         @JvmField
-        val SOUND_INFO = GunProp(DefaultGunData::soundInfo, { it ?: SoundInfo() })
+        val SOUND_INFO = GunProp(DefaultGunData::soundInfo) { it ?: SoundInfo() }
 
         @JvmField
         val SHOOT_ANIMATION_TIME = plainProp(DefaultGunData::shootAnimationTime)
@@ -356,5 +342,39 @@ class GunProp<T, R> private constructor(
 
         @JvmField
         val AP_DURABILITY = plainProp(DefaultGunData::apDurability)
+
+        // TODO 会不会有点屎...
+        fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) = with(modifier) {
+            modify(MAX_DURABILITY) { it.coerceAtLeast(0) }
+            modify(DURABILITY_PER_SHOOT) { it.coerceAtLeast(0) }
+            modify(MAX_ENERGY) { it.coerceAtLeast(0) }
+            modify(MAX_RECEIVE_ENERGY) {
+                val maxEnergy = modifier[MAX_ENERGY]
+                val value = it.coerceIn(-1, maxEnergy)
+                if (value < 0) maxEnergy else value
+            }
+            modify(MAX_EXTRACT_ENERGY) {
+                val maxEnergy = modifier[MAX_ENERGY]
+                val value = it.coerceIn(-1, maxEnergy)
+                if (value < 0) maxEnergy else value
+            }
+
+            modify(MELEE_DURATION) { it.coerceAtLeast(1) }
+            modify(MELEE_ANGLE) { it.coerceIn(1, 180) }
+            modify(ZOOM_SPREAD_RATE) { it.coerceIn(0.0, 1.0) }
+
+            modify(RANGE) { it.coerceAtLeast(1) }
+            modify(MELEE_DAMAGE_TIME) { min(modifier[MELEE_DURATION] - 1, it) }
+            modify(AMMO_COST_PER_SHOOT) { it.coerceAtLeast(0) }
+            modify(PROJECTILE_AMOUNT) { it.coerceAtLeast(0) }
+            modify(WEIGHT) { it.coerceAtLeast(1.0) }
+
+            modify(MAGAZINE) {
+                if (modifier[PROJECTILE_AMOUNT] <= 0 && modifier[MELEE_DAMAGE] > 0) 0 else it.coerceAtLeast(0)
+            }
+
+            modify(BURST_AMOUNT) { it.coerceAtLeast(0) }
+            modify(RPM) { it.coerceIn(1, 114514) }
+        }
     }
 }

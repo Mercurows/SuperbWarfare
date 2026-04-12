@@ -2,9 +2,7 @@ package com.atsuishio.superbwarfare.data.gun;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.annotation.ServerOnly;
-import com.atsuishio.superbwarfare.data.DeserializeFromString;
-import com.atsuishio.superbwarfare.data.JsonPropertyModifier;
-import com.atsuishio.superbwarfare.data.StringToObject;
+import com.atsuishio.superbwarfare.data.*;
 import com.atsuishio.superbwarfare.tools.InventoryTool;
 import com.atsuishio.superbwarfare.tools.MinecraftUtil;
 import com.google.gson.JsonObject;
@@ -27,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier {
+public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier, PropertyModifier1<GunData, DefaultGunData> {
     @SerializedName("Ammo")
     public String ammo;
 
@@ -272,7 +270,7 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
     private final transient JsonPropertyModifier<GunData, DefaultGunData> jsonPropModifier = new JsonPropertyModifier<>();
 
     @Override
-    public DefaultGunData computeProperties(GunData gunData, DefaultGunData rawData) {
+    public DefaultGunData computeProperties(@NotNull GunData gunData, DefaultGunData rawData) {
         if (this.projectile != null) {
             rawData.projectile = projectile;
         }
@@ -284,6 +282,16 @@ public class AmmoConsumer implements DeserializeFromString, GunPropertyModifier 
 
         return rawData;
     }
+
+    @Override
+    public void modifyProperty(@NotNull PMC<GunData, DefaultGunData> modifier) {
+        if (this.projectile != null) {
+            modifier.set(GunProp.PROJECTILE, projectile.value);
+        }
+
+        // TODO jsonPropModifier
+    }
+
 
     @SuppressWarnings("invalid")
     public void init() {

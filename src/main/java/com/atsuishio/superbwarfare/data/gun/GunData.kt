@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.data.gun
 
 import com.atsuishio.superbwarfare.data.DefaultDataSupplier
 import com.atsuishio.superbwarfare.data.JsonPropertyModifier
+import com.atsuishio.superbwarfare.data.PMC
 import com.atsuishio.superbwarfare.data.StringOrVec3
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.AMMO_CONSUMER
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.AMMO_COST_PER_SHOOT
@@ -157,29 +158,56 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     }
 
     fun update() {
+        pmc.reset()
         this.cache = null
         this.propCache.clear()
     }
 
     private val propCache = ConcurrentHashMap<GunProp<*, *>, Any>()
 
+    private val pmc = PMC(this)
+
     // TODO 重新实现get
     @Suppress("unchecked_cast")
     @JvmOverloads
     fun <T> get(prop: GunProp<*, T>, useCache: Boolean = true): T {
-        if (useCache) {
-            val cached = propCache[prop]
-            if (cached == Unit) return null as T
-            if (cached != null) return cached as T
+        val cached = propCache[prop]
+        if (cached == Unit) return null as T
+        if (cached != null) return cached as T
 
-            val computed = prop.asModifier(this).compute(compute(false))
+        // TODO property override tag
+//        jsonPropModifier.update(propertyOverrideString.get())
+//        rawData = jsonPropModifier.computeProperties(this, rawData)
 
-            // 牛魔的 getOrPut为什么值都不能为null
-            propCache[prop] = computed ?: Unit
+        // gun modifiers
+        item.modifyProperty(pmc)
 
-            return computed
+        // FireMode
+        selectedFireModeInfo(pmc[AVAILABLE_FIRE_MODES]).modifyProperty(pmc)
+
+        // AmmoConsumer
+        selectedAmmoConsumer(pmc[AMMO_CONSUMER]).modifyProperty(pmc)
+
+        // perk
+        for (type in Perk.Type.entries.toTypedArray()) {
+            val instance = perk.get(type) ?: continue
+
+            instance.modifyProperty(pmc)
         }
-        return prop.asModifier(this).compute(compute())
+
+        // TODO 临时属性修改
+//        if (tempModifications != null) {
+//            rawData = tempModifications!!.apply(rawData)
+//        }
+
+        // limit
+        GunProp.modifyProperty(pmc)
+
+        // TODO 这到底写了个啥缓存啊（恼）
+        // 牛魔的 getOrPut为什么值都不能为null
+        propCache[prop] = pmc[prop] ?: Unit
+
+        return pmc[prop]
     }
 
     fun hasInfiniteBackupAmmo(shooter: Entity?): Boolean {
