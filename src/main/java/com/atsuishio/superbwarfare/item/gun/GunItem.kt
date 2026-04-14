@@ -3,10 +3,13 @@ package com.atsuishio.superbwarfare.item.gun
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.api.event.ShootEvent
+import com.atsuishio.superbwarfare.capability.energy.ItemEnergyProvider
+import com.atsuishio.superbwarfare.capability.energy.ItemEnergyStorage
 import com.atsuishio.superbwarfare.client.particle.BulletDecalOption
 import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent
 import com.atsuishio.superbwarfare.data.CustomData
+import com.atsuishio.superbwarfare.data.PMC
 import com.atsuishio.superbwarfare.data.PropertyModifier1
 import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
@@ -33,6 +36,7 @@ import com.google.common.collect.HashMultimap
 import com.google.common.collect.Multimap
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.core.BlockPos
+import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
@@ -65,6 +69,7 @@ import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.common.capabilities.ForgeCapabilities
+import net.minecraftforge.common.capabilities.ICapabilityProvider
 import net.minecraftforge.common.util.LazyOptional
 import net.minecraftforge.energy.IEnergyStorage
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber
@@ -93,17 +98,17 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         addBoltTimeBehavior(this.boltTimeBehaviors)
     }
 
-    override fun computeProperties(gunData: GunData, rawData: DefaultGunData): DefaultGunData {
-        rawData.damage += getCustomDamage(gunData)
-        rawData.headshot += getCustomHeadshot(gunData)
-        rawData.bypassesArmor += getCustomBypassArmor(gunData)
-        rawData.magazine += getCustomMagazine(gunData)
-        rawData.defaultZoom += getCustomZoom(gunData)
-        rawData.rpm += getCustomRPM(gunData)
-        rawData.weight += getCustomWeight(gunData)
-        rawData.velocity += getCustomVelocity(gunData)
-        rawData.soundRadius += getCustomSoundRadius(gunData)
-        rawData.boltActionTime += getCustomBoltActionTime(gunData)
+    override fun computeProperties(data: GunData, rawData: DefaultGunData): DefaultGunData {
+        rawData.damage += getCustomDamage(data)
+        rawData.headshot += getCustomHeadshot(data)
+        rawData.bypassesArmor += getCustomBypassArmor(data)
+        rawData.magazine += getCustomMagazine(data)
+        rawData.defaultZoom += getCustomZoom(data)
+        rawData.rpm += getCustomRPM(data)
+        rawData.weight += getCustomWeight(data)
+        rawData.velocity += getCustomVelocity(data)
+        rawData.soundRadius += getCustomSoundRadius(data)
+        rawData.boltActionTime += getCustomBoltActionTime(data)
 
         return rawData
     }

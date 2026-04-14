@@ -15,7 +15,6 @@ import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.core.BlockPos
-import net.minecraft.util.Mth
 
 class ProjectileEntityRenderer(manager: EntityRendererProvider.Context) : EntityRenderer<ProjectileEntity>(manager) {
     override fun getTextureLocation(pEntity: ProjectileEntity) = loc("textures/entity/empty.png")
