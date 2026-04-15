@@ -11,8 +11,6 @@ import com.google.gson.annotations.SerializedName
 import com.mojang.brigadier.exceptions.CommandSyntaxException
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import net.minecraft.core.RegistryAccess
-import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.NbtUtils
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
@@ -20,9 +18,9 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
-import net.neoforged.neoforge.capabilities.Capabilities
-import net.neoforged.neoforge.items.IItemHandler
-import java.util.function.Consumer
+import net.minecraftforge.common.capabilities.ForgeCapabilities
+import net.minecraftforge.items.IItemHandler
+import net.minecraftforge.registries.ForgeRegistries
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.math.min
@@ -104,8 +102,7 @@ class AmmoConsumer : DeserializeFromString, GunPropertyModifier, PropertyModifie
     fun consume(data: GunData, shooter: Entity, count: Int): Int {
         var count = count
         if (!initialized) init()
-        if (count <= 0 || this.type == AmmoConsumeType.INFINITE || shooter is Player && shooter.isCreative
-        ) return 0
+        if (count <= 0 || this.type == AmmoConsumeType.INFINITE || shooter is Player && shooter.isCreative) return 0
 
         if (type == AmmoConsumeType.INVALID) {
             Mod.LOGGER.warn("consume ammo failed: invalid AmmoConsumeType")
@@ -127,11 +124,10 @@ class AmmoConsumer : DeserializeFromString, GunPropertyModifier, PropertyModifie
         }
 
         if (type == AmmoConsumeType.ENERGY) {
-            val energyStorage = data.getEnergyProvider(shooter) ?: return 0
-            return energyStorage.extractEnergy(count, false)
+            return data.getEnergyProvider(shooter).map { it.extractEnergy(count, false) }.orElse(0)
         }
 
-        val handler = shooter.getCapability(Capabilities.ItemHandler.ENTITY)
+        val handler = shooter.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve().orElse(null)
         if (handler != null) {
             return consumed + consume(data, handler, count)
         } else {
@@ -145,23 +141,28 @@ class AmmoConsumer : DeserializeFromString, GunPropertyModifier, PropertyModifie
      */
     fun consume(data: GunData, handler: IItemHandler, count: Int): Int {
         if (!initialized) init()
-        if (type == AmmoConsumeType.INVALID || type == AmmoConsumeType.INFINITE || type == AmmoConsumeType.EMPTY || count <= 0
-        ) return 0
+        if (type == AmmoConsumeType.INVALID || type == AmmoConsumeType.INFINITE || type == AmmoConsumeType.EMPTY || count <= 0) return 0
 
-        if (type == AmmoConsumeType.PLAYER_AMMO) {
-            val consumed = InventoryTool.consumeAmmoItem(handler, this.playerAmmoType, count)
-            val rest = consumed - count
-            data.virtualAmmo.add(rest)
-            return count
-        } else if (type == AmmoConsumeType.ENERGY) {
-            val energyStorage = data.stack.getCapability(Capabilities.EnergyStorage.ITEM) ?: return 0
-            return energyStorage.extractEnergy(count, false)
-        } else {
-            return InventoryTool.consumeItem(
-                handler,
-                { stack -> this.isAmmoItem(stack) },
-                count
-            )
+        when (type) {
+            AmmoConsumeType.PLAYER_AMMO -> {
+                val consumed = InventoryTool.consumeAmmoItem(handler, this.playerAmmoType, count)
+                val rest = consumed - count
+                data.virtualAmmo.add(rest)
+                return count
+            }
+
+            AmmoConsumeType.ENERGY -> {
+                return data.stack.getCapability(ForgeCapabilities.ENERGY).map { it.extractEnergy(count, false) }
+                    .orElse(0)
+            }
+
+            else -> {
+                return InventoryTool.consumeItem(
+                    handler,
+                    { stack -> this.isAmmoItem(stack) },
+                    count
+                )
+            }
         }
     }
 
@@ -177,11 +178,13 @@ class AmmoConsumer : DeserializeFromString, GunPropertyModifier, PropertyModifie
         if (type == AmmoConsumeType.PLAYER_AMMO && entity is Player) {
             playerAmmoCount = playerAmmoType!!.get(entity)
         } else if (type == AmmoConsumeType.ENERGY) {
-            val energyStorage = data.getEnergyProvider(entity) ?: return 0
-            return energyStorage.energyStored
+            return data.getEnergyProvider(entity).map { it.energyStored }.orElse(0)
         }
 
-        return playerAmmoCount + count(data, entity.getCapability(Capabilities.ItemHandler.ENTITY))
+        return playerAmmoCount + count(
+            data,
+            entity.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve().orElse(null)
+        )
     }
 
     /**
@@ -195,8 +198,7 @@ class AmmoConsumer : DeserializeFromString, GunPropertyModifier, PropertyModifie
         if (type == AmmoConsumeType.ITEM) {
             return InventoryTool.countItem(handler) { stack -> this.isAmmoItem(stack) }
         } else if (type == AmmoConsumeType.ENERGY) {
-            val energyStorage = data.stack.getCapability(Capabilities.EnergyStorage.ITEM) ?: return 0
-            return energyStorage.energyStored
+            return data.stack.getCapability(ForgeCapabilities.ENERGY).map { it.energyStored }.orElse(0)
         }
 
         return InventoryTool.countAmmoItem(handler, this.playerAmmoType)
@@ -232,7 +234,7 @@ class AmmoConsumer : DeserializeFromString, GunPropertyModifier, PropertyModifie
                     Mod.LOGGER.warn("withdraw player ammo failed: invalid player ammo type")
                 }
             } else {
-                val itemHandler = ammoSupplier.getCapability(Capabilities.ItemHandler.ENTITY)
+                val itemHandler = ammoSupplier.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve().orElse(null)
                 if (itemHandler != null) {
                     return withdraw(itemHandler, count)
                 } else {
@@ -244,7 +246,7 @@ class AmmoConsumer : DeserializeFromString, GunPropertyModifier, PropertyModifie
                 InventoryTool.insertItem(ammoSupplier, this.stack, count)
                 return count
             } else {
-                val itemHandler = ammoSupplier.getCapability(Capabilities.ItemHandler.ENTITY)
+                val itemHandler = ammoSupplier.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve().orElse(null)
                 if (itemHandler != null) {
                     return withdraw(itemHandler, count)
                 } else {
@@ -257,16 +259,18 @@ class AmmoConsumer : DeserializeFromString, GunPropertyModifier, PropertyModifie
 
     fun withdraw(handler: IItemHandler, count: Int): Int {
         if (!initialized) init()
-        if (type == AmmoConsumeType.INVALID || type == AmmoConsumeType.INFINITE || type == AmmoConsumeType.EMPTY || type == AmmoConsumeType.ENERGY || count <= 0
+        if (type == AmmoConsumeType.INVALID
+            || type == AmmoConsumeType.INFINITE
+            || type == AmmoConsumeType.EMPTY
+            || type == AmmoConsumeType.ENERGY
+            || count <= 0
         ) {
             return 0
         }
-
-        val stackToInsert: ItemStack?
-        if (type == AmmoConsumeType.PLAYER_AMMO) {
-            stackToInsert = this.playerAmmoType!!.itemStack
+        val stackToInsert = if (type == AmmoConsumeType.PLAYER_AMMO) {
+            this.playerAmmoType!!.itemStack
         } else {
-            stackToInsert = this.stack
+            this.stack
         }
 
         return InventoryTool.insertItem(handler, stackToInsert, count)
@@ -277,7 +281,7 @@ class AmmoConsumer : DeserializeFromString, GunPropertyModifier, PropertyModifie
     @kotlinx.serialization.Transient
     private val jsonPropModifier = JsonPropertyModifier<GunData, DefaultGunData>()
 
-    override fun computeProperties(gunData: GunData, rawData: DefaultGunData): DefaultGunData {
+    override fun computeProperties(data: GunData, rawData: DefaultGunData): DefaultGunData {
         var rawData = rawData
         if (this.projectile != null) {
             rawData.projectile = projectile!!
@@ -285,7 +289,7 @@ class AmmoConsumer : DeserializeFromString, GunPropertyModifier, PropertyModifie
 
         if (override != null) {
             jsonPropModifier.update(override)
-            rawData = jsonPropModifier.computeProperties(gunData, rawData)!!
+            rawData = jsonPropModifier.computeProperties(data, rawData)!!
         }
 
         return rawData
@@ -298,7 +302,6 @@ class AmmoConsumer : DeserializeFromString, GunPropertyModifier, PropertyModifie
 
         // TODO jsonPropModifier
     }
-
 
     fun init() {
         if (ammo == null) return
@@ -343,7 +346,7 @@ class AmmoConsumer : DeserializeFromString, GunPropertyModifier, PropertyModifie
                 Mod.LOGGER.warn("invalid item id: {}", id)
                 return
             }
-            val item = BuiltInRegistries.ITEM.get(location)
+            val item = ForgeRegistries.ITEMS.getValue(location)
             if (item === Items.AIR) {
                 Mod.LOGGER.warn("invalid item: {}", id)
                 return
@@ -355,8 +358,7 @@ class AmmoConsumer : DeserializeFromString, GunPropertyModifier, PropertyModifie
                     val tag = NbtUtils.snbtToStructure(data)
                     tag.putString("id", location.toString())
                     tag.putInt("count", 1)
-                    ItemStack.parse(RegistryAccess.EMPTY, tag)
-                        .ifPresent(Consumer { stack: ItemStack? -> this.stack = stack!! })
+                    this.stack = ItemStack.of(tag)
                 } catch (exception: CommandSyntaxException) {
                     Mod.LOGGER.warn("invalid item data {}: {}", data, exception.message)
                     return

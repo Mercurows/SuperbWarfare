@@ -230,7 +230,7 @@ object GunEventHandler {
                 PlayerVariable.modify(shooter) {
                     if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
                         val ammoType = data.selectedAmmoConsumer().playerAmmoType
-                        ammoType.add(it, count)
+                        ammoType?.add(it, count)
                     }
                 }
             }

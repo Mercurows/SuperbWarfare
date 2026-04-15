@@ -46,6 +46,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
+import net.minecraft.world.scores.PlayerTeam
 import org.joml.Math
 import java.util.*
 
@@ -160,7 +161,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
 
         val pTeam = owner?.team
 
-        if (pTeam != null && level() is ServerLevel) {
+        if (pTeam != null && pTeam is PlayerTeam && level() is ServerLevel) {
             level().scoreboard.addPlayerToTeam(this.getStringUUID(), pTeam)
         }
     }
