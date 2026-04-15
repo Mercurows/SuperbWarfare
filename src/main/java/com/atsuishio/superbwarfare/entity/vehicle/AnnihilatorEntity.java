@@ -103,7 +103,7 @@ public class AnnihilatorEntity extends ArtilleryEntity {
         var data = getGunData(weaponName);
         if (data != null) {
             var projectileInfo = data.get(GunProp.PROJECTILE);
-            var projectileType = projectileInfo.type;
+            var projectileType = projectileInfo.getId();
             var projectileTypeStr = projectileType.trim().toLowerCase(Locale.ROOT);
             int rpm = (int) Math.ceil(20f / ((float) vehicleWeaponRpm(weaponName) / 60));
 

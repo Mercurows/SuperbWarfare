@@ -18,8 +18,8 @@ public class LaunchableEntityTool {
         JsonObject launchableData;
         if (projectileInfo.data != null) {
             launchableData = projectileInfo.data;
-        } else if (CustomData.LAUNCHABLE_ENTITY.containsKey(projectileInfo.type)) {
-            launchableData = CustomData.LAUNCHABLE_ENTITY.get(projectileInfo.type).data;
+        } else if (CustomData.LAUNCHABLE_ENTITY.containsKey(projectileInfo.getId())) {
+            launchableData = CustomData.LAUNCHABLE_ENTITY.get(projectileInfo.getId()).data;
         } else {
             return null;
         }

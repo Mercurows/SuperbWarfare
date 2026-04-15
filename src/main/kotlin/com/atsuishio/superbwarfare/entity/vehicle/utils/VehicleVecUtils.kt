@@ -162,9 +162,9 @@ object VehicleVecUtils {
                 val bombHitPosZ = Mth.lerp(partialTicks.toDouble(), bombHitPosO.z, bombHitPos.z)
                 return getViewPos(vehicle, entity, partialTicks).vectorTo(Vec3(bombHitPosX, bombHitPosY, bombHitPosZ))
             }
-            return vehicle.getVectorFromString(stringOrVec3.string, partialTicks, vehicle.getSeatIndex(entity))
+            return vehicle.getVectorFromString(stringOrVec3.string!!, partialTicks, vehicle.getSeatIndex(entity))
         } else {
-            val vec3 = stringOrVec3.vec3
+            val vec3 = stringOrVec3.vec3!!
             val worldPosition = transformPosition(
                 vehicle.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, partialTicks),
                 vec3.x + stringOrVec3.vec3.x,
@@ -214,14 +214,14 @@ object VehicleVecUtils {
     fun getSeekVec(vehicle: VehicleEntity, entity: Entity?, partialTicks: Float): Vec3? {
         val data = vehicle.getGunData(vehicle.getSeatIndex(entity)) ?: return vehicle.getViewVector(partialTicks)
 
-        val stringOrVec3 = data.get(GunProp.SEEK_WEAPON_INFO).seekDirection
+        val stringOrVec3 = data.get(GunProp.SEEK_WEAPON_INFO)?.seekDirection
 
         if (stringOrVec3 == null) {
             return vehicle.getShootVec(entity, partialTicks)
         } else if (stringOrVec3.isString) {
-            return vehicle.getVectorFromString(stringOrVec3.string, partialTicks, vehicle.getSeatIndex(entity))
+            return vehicle.getVectorFromString(stringOrVec3.string!!, partialTicks, vehicle.getSeatIndex(entity))
         } else {
-            val vec3 = stringOrVec3.vec3
+            val vec3 = stringOrVec3.vec3!!
             val worldPosition = transformPosition(
                 vehicle.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, partialTicks),
                 vec3.x + stringOrVec3.vec3.x,
@@ -256,13 +256,13 @@ object VehicleVecUtils {
         val stringOrVec3 = data.fireDirection()
 
         if (stringOrVec3.isString) {
-            return vehicle.getVectorFromString(stringOrVec3.string, partialTicks, vehicle.getSeatIndex(entity))
+            return vehicle.getVectorFromString(stringOrVec3.string!!, partialTicks, vehicle.getSeatIndex(entity))
         } else {
             val vec3 = data.firePosition()
 
             val worldPosition = transformPosition(
                 vehicle.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, partialTicks),
-                vec3.x + stringOrVec3.vec3.x,
+                vec3.x + stringOrVec3.vec3!!.x,
                 vec3.y + stringOrVec3.vec3.y,
                 vec3.z + stringOrVec3.vec3.z
             )
@@ -292,7 +292,7 @@ object VehicleVecUtils {
 
             val worldPosition = transformPosition(
                 vehicle.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, partialTicks),
-                vec3.x + stringOrVec3.vec3.x,
+                vec3.x + stringOrVec3.vec3!!.x,
                 vec3.y + stringOrVec3.vec3.y,
                 vec3.z + stringOrVec3.vec3.z
             )
@@ -365,14 +365,14 @@ object VehicleVecUtils {
                     entity.getViewVector(partialTicks)
                 }
             } else {
-                vehicle.getVectorFromString(stringOrVec3.string, partialTicks, vehicle.getSeatIndex(entity))
+                vehicle.getVectorFromString(stringOrVec3.string!!, partialTicks, vehicle.getSeatIndex(entity))
             }
         } else {
             val vec3 = data.position
 
             val worldPosition = transformPosition(
                 vehicle.getTransformFromString(data.transform, partialTicks),
-                vec3.x + stringOrVec3.vec3.x,
+                vec3.x + stringOrVec3.vec3!!.x,
                 vec3.y + stringOrVec3.vec3.y,
                 vec3.z + stringOrVec3.vec3.z
             )
@@ -425,12 +425,12 @@ object VehicleVecUtils {
         val stringOrVec3 = data.zoomDirection
         if (stringOrVec3 != null) {
             return if (stringOrVec3.isString) {
-                vehicle.getVectorFromString(stringOrVec3.string, partialTicks, vehicle.getSeatIndex(entity))
+                vehicle.getVectorFromString(stringOrVec3.string!!, partialTicks, vehicle.getSeatIndex(entity))
             } else {
                 val vec3 = data.zoomPosition
                 val worldPosition = transformPosition(
                     vehicle.getTransformFromString(data.transform, partialTicks),
-                    vec3.x + stringOrVec3.vec3.x,
+                    vec3.x + stringOrVec3.vec3!!.x,
                     vec3.y + stringOrVec3.vec3.y,
                     vec3.z + stringOrVec3.vec3.z
                 )

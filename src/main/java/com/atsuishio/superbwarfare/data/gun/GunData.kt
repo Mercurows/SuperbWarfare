@@ -140,7 +140,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         rawData = selectedFireModeInfo(rawData.availableFireModes()).computeProperties(this, rawData)
 
         // AmmoConsumer
-        rawData = selectedAmmoConsumer(rawData.getAmmoConsumers()).computeProperties(this, rawData)
+        rawData = selectedAmmoConsumer(rawData.getProcessedAmmoConsumers()).computeProperties(this, rawData)
 
         // perk
         for (type in Perk.Type.entries.toTypedArray()) {
@@ -263,8 +263,8 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
             val currentConsumer = selectedAmmoConsumer()
             val targetConsumer = consumers[selectedAmmoType.get()]
 
-            val currentSlot = currentConsumer.ammoSlot ?: "Default"
-            val targetSlot = targetConsumer.ammoSlot ?: "Default"
+            val currentSlot = currentConsumer.ammoSlot
+            val targetSlot = targetConsumer.ammoSlot
 
             if (currentSlot == targetSlot && ammoSupplier != null && targetConsumer.shouldUnload) {
                 this.withdrawAmmo(ammoSupplier)

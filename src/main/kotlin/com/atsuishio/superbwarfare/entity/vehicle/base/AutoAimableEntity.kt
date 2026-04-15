@@ -46,7 +46,6 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
-import net.minecraft.world.scores.PlayerTeam
 import org.joml.Math
 import java.util.*
 
@@ -161,7 +160,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
 
         val pTeam = owner?.team
 
-        if (pTeam != null && pTeam is PlayerTeam && level() is ServerLevel) {
+        if (pTeam != null && level() is ServerLevel) {
             level().scoreboard.addPlayerToTeam(this.getStringUUID(), pTeam)
         }
     }
@@ -186,7 +185,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
         if (this.energy < seekInfo.seekEnergyCost) return
 
         val projectileInfo = data.get(GunProp.PROJECTILE)
-        val projectileType = projectileInfo.type
+        val projectileType = projectileInfo.itemId
         val projectileTypeStr = projectileType.trim().lowercase()
         val rpm = Math.ceil(20f / (vehicleWeaponRpm(weaponName).toFloat() / 60)).toInt()
 

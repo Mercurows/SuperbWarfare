@@ -272,7 +272,7 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
                     renderKillIndicator(guiGraphics, screenWidth.toFloat(), screenHeight.toFloat())
                 } else if (crosshairPath == "@VehicleCommonSeekMissile" && data.get(GunProp.SEEK_WEAPON_INFO) != null && data.get(
                         GunProp.SEEK_WEAPON_INFO
-                    ).onlyLockBlock
+                    )?.onlyLockBlock ?: false
                 ) {
                     var vec3 = ClientEventHandler.seekingPosVehicle
                     if (ClientEventHandler.seekingTimeVehicle > 0) {

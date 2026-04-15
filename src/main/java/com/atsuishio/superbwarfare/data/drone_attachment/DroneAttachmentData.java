@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.data.drone_attachment;
 import com.atsuishio.superbwarfare.data.IDBasedData;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import org.jetbrains.annotations.NotNull;
 
 public class DroneAttachmentData implements IDBasedData<DroneAttachmentData> {
     @SerializedName("Item")
@@ -68,12 +69,12 @@ public class DroneAttachmentData implements IDBasedData<DroneAttachmentData> {
     }
 
     @Override
-    public String getId() {
+    public @NotNull String getId() {
         return this.itemID;
     }
 
     @Override
-    public void setId(String id) {
+    public void setId(@NotNull String id) {
         this.itemID = id;
     }
 

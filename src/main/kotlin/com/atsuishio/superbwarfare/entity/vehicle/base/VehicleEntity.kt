@@ -1101,11 +1101,12 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
 
         val soundRadius = gunData.get(GunProp.SOUND_RADIUS)
-        if (soundInfo.fire3P != null) {
+        val fire3P = soundInfo.fire3P
+        if (fire3P != null) {
             pos?.let {
                 SoundTool.playDistantSound(
                     serverLevel,
-                    soundInfo.fire3P,
+                    fire3P,
                     it,
                     (soundRadius * 0.4f).toFloat(),
                     pitch,
@@ -1114,11 +1115,12 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             }
         }
 
-        if (soundInfo.fire3PFar != null) {
+        val fire3PFar = soundInfo.fire3PFar
+        if (fire3PFar != null) {
             pos?.let {
                 SoundTool.playDistantSound(
                     serverLevel,
-                    soundInfo.fire3PFar,
+                    fire3PFar,
                     it,
                     (soundRadius * 0.7f).toFloat(),
                     pitch,
@@ -1127,11 +1129,12 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             }
         }
 
-        if (soundInfo.fire3PVeryFar != null) {
+        val fire3PVeryFar = soundInfo.fire3PVeryFar
+        if (fire3PVeryFar != null) {
             pos?.let {
                 SoundTool.playDistantSound(
                     serverLevel,
-                    soundInfo.fire3PVeryFar,
+                    fire3PVeryFar,
                     it,
                     soundRadius.toFloat(),
                     pitch,
@@ -2998,9 +3001,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         if (stringOrVec3 == null) {
             return getViewVec(entity, partialTicks)
         } else if (stringOrVec3.isString) {
-            return getVectorFromString(stringOrVec3.string, partialTicks, getSeatIndex(entity))
+            return getVectorFromString(stringOrVec3.string!!, partialTicks, getSeatIndex(entity))
         } else {
-            val vec3 = stringOrVec3.vec3
+            val vec3 = stringOrVec3.vec3!!
             val worldPosition = transformPosition(
                 getTransformFromString(data.get(GunProp.SHOOT_POS).transform, partialTicks),
                 vec3.x + stringOrVec3.vec3.x,
@@ -3720,13 +3723,13 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         } else if (stringOrVec3.isString) {
             return deltaMovement.add(
                 getVectorFromString(
-                    stringOrVec3.string,
+                    stringOrVec3.string!!,
                     1f,
                     getSeatIndex(entity)
                 ).scale(force)
             )
         } else {
-            val vec3 = stringOrVec3.vec3
+            val vec3 = stringOrVec3.vec3!!
             val worldPosition = transformPosition(
                 getTransformFromString(dismountInfo.transform),
                 vec3.x + stringOrVec3.vec3.x,

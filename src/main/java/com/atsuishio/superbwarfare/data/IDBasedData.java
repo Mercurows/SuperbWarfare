@@ -1,13 +1,14 @@
 package com.atsuishio.superbwarfare.data;
 
 import com.google.gson.JsonObject;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 
 public interface IDBasedData<T extends IDBasedData<T>> extends Serializable {
-    String getId();
+    @NotNull String getId();
 
-    void setId(String id);
+    void setId(@NotNull String id);
 
     default JsonObject toJson() {
         return DataLoader.JSON_OBJECT_CACHE.getUnchecked(this);

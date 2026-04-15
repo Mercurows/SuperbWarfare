@@ -8,18 +8,19 @@ import com.atsuishio.superbwarfare.resource.ModelResource;
 import com.google.gson.annotations.SerializedName;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 
 public class DefaultGunResource implements IDBasedData<DefaultGunResource> {
 
     private transient String id = "";
 
     @Override
-    public String getId() {
+    public @NotNull String getId() {
         return this.id;
     }
 
     @Override
-    public void setId(String id) {
+    public void setId(@NotNull String id) {
         this.id = id;
     }
 

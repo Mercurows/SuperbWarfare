@@ -176,7 +176,7 @@ object AmmoBarOverlay : CommonOverlay("ammo_bar") {
                 if (renderStackCount) {
                     val ammoStack: ItemStack
                     if (consumerType == AmmoConsumeType.PLAYER_AMMO) {
-                        val ammoType = ammoConsumer.playerAmmoType
+                        val ammoType = ammoConsumer.playerAmmoType!!
                         ammoStack = when (ammoType) {
                             Ammo.HANDGUN -> ItemStack(ModItems.HANDGUN_AMMO.get())
                             Ammo.RIFLE -> ItemStack(ModItems.RIFLE_AMMO.get())
@@ -395,7 +395,7 @@ object AmmoBarOverlay : CommonOverlay("ammo_bar") {
     private fun getAmmoDisplayName(data: GunData): String {
         val consumer = data.selectedAmmoConsumer()
         if (consumer.type == AmmoConsumeType.PLAYER_AMMO) {
-            return consumer.playerAmmoType.displayName
+            return consumer.playerAmmoType?.displayName ?: "Error"
         } else if (consumer.type == AmmoConsumeType.INFINITE) {
             return "Infinity"
         } else if (data.meleeOnly()) {

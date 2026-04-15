@@ -226,7 +226,7 @@ object GunEventHandler {
                 val capability = shooter.getData(ModAttachments.PLAYER_VARIABLE).watch()
                 if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
                     val ammoType = data.selectedAmmoConsumer().playerAmmoType
-                    ammoType.add(capability, count)
+                    ammoType?.add(capability, count)
                 }
                 shooter.setData(ModAttachments.PLAYER_VARIABLE, capability)
                 capability.sync(shooter)
@@ -265,18 +265,14 @@ object GunEventHandler {
                 ) else data.get(GunProp.EMPTY_RELOAD_TIME) - 1)
             ) {
                 if (shooter is VehicleEntity) {
-                    if (sound1p != null) {
-                        for (passenger in shooter.getPassengers()) {
-                            if (passenger is ServerPlayer) {
-                                SoundTool.playLocalSound(passenger, sound1p, 3f, 1f)
-                            }
+                    for (passenger in shooter.getPassengers()) {
+                        if (passenger is ServerPlayer) {
+                            SoundTool.playLocalSound(passenger, sound1p, 3f, 1f)
                         }
                     }
 
                     val sound = soundInfo.vehicleReload3p
-                    if (sound != null) {
-                        shooter.level().playSound(shooter, shooter.onPos, sound, SoundSource.PLAYERS, 2f, 1f)
-                    }
+                    shooter.level().playSound(shooter, shooter.onPos, sound, SoundSource.PLAYERS, 2f, 1f)
                 }
             }
 
