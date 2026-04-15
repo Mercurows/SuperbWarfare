@@ -742,7 +742,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         val stack = data.stack
 
         val projectileInfo = data.get(GunProp.PROJECTILE)
-        val projectileType = projectileInfo.type
+        val projectileType = projectileInfo.itemId
         val projectileTypeStr = projectileType.trim { it <= ' ' }.lowercase()
 
         if (projectileTypeStr == "empty") {
@@ -875,7 +875,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             } else if (CustomData.LAUNCHABLE_ENTITY.containsKey(projectileType)) {
                 val newInfo = ProjectileInfo()
                 newInfo.data = CustomData.LAUNCHABLE_ENTITY[projectileType]!!.data
-                newInfo.type = projectileType
+                newInfo.itemId = projectileType
 
                 val tag = LaunchableEntityTool.getModifiedTag(
                     newInfo,

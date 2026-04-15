@@ -245,6 +245,7 @@ object GunEventHandler {
         tickPerk(shooter, data)
         handleCooldown(shooter, data)
         redrawExtraAmmo(shooter, data)
+
         data.shootAnimationTimer.set(max(data.shootAnimationTimer.get() - 1, 0))
         data.shootTimer.set(max(data.shootTimer.get() - 1, 0))
 
@@ -267,18 +268,14 @@ object GunEventHandler {
                 ) else data.get(GunProp.EMPTY_RELOAD_TIME) - 1)
             ) {
                 if (shooter is VehicleEntity) {
-                    if (sound1p != null) {
-                        for (passenger in shooter.getPassengers()) {
-                            if (passenger is ServerPlayer) {
-                                SoundTool.playLocalSound(passenger, sound1p, 3f, 1f)
-                            }
+                    for (passenger in shooter.getPassengers()) {
+                        if (passenger is ServerPlayer) {
+                            SoundTool.playLocalSound(passenger, sound1p, 3f, 1f)
                         }
                     }
 
                     val sound = soundInfo.vehicleReload3p
-                    if (sound != null) {
-                        shooter.level().playSound(shooter, shooter.onPos, sound, SoundSource.PLAYERS, 2f, 1f)
-                    }
+                    shooter.level().playSound(shooter, shooter.onPos, sound, SoundSource.PLAYERS, 2f, 1f)
                 }
             }
 
@@ -332,8 +329,7 @@ object GunEventHandler {
     }
 
     fun finishGunNormalReload(shooter: Entity?, data: GunData) {
-        val gunItem = data.item()
-        data.reloadAmmo(shooter, gunItem.hasBulletInBarrel(data))
+        data.reloadAmmo(shooter, data.item().hasBulletInBarrel(data))
         postEvent(ReloadEvent.Post(shooter, data))
     }
 
@@ -700,29 +696,28 @@ object GunEventHandler {
 
         for (i in 0..<itemHandler.slots) {
             val cell = itemHandler.getStackInSlot(i)
+            if (!cell.`is`(ModItems.CELL.get())) continue
 
-            if (cell.`is`(ModItems.CELL.get())) {
-                val stackCap = data.stack().getCapability(ForgeCapabilities.ENERGY)
-                if (!stackCap.isPresent) continue
+            val stackCap = data.stack().getCapability(ForgeCapabilities.ENERGY)
+            if (!stackCap.isPresent) continue
 
-                val stackStorage = stackCap.resolve().get()
+            val stackStorage = stackCap.resolve().get()
 
-                val stackMaxEnergy = stackStorage.maxEnergyStored
-                val stackEnergy = stackStorage.energyStored
+            val stackMaxEnergy = stackStorage.maxEnergyStored
+            val stackEnergy = stackStorage.energyStored
 
-                val cellCap = cell.getCapability(ForgeCapabilities.ENERGY)
-                if (!cellCap.isPresent) continue
+            val cellCap = cell.getCapability(ForgeCapabilities.ENERGY)
+            if (!cellCap.isPresent) continue
 
-                val cellStorage = cellCap.resolve().get()
-                val cellEnergy = cellStorage.energyStored
+            val cellStorage = cellCap.resolve().get()
+            val cellEnergy = cellStorage.energyStored
 
-                val stackEnergyNeed = min(cellEnergy, stackMaxEnergy - stackEnergy)
+            val stackEnergyNeed = min(cellEnergy, stackMaxEnergy - stackEnergy)
 
-                if (cellEnergy > 0) {
-                    stackStorage.receiveEnergy(stackEnergyNeed, false)
-                }
-                cellStorage.extractEnergy(stackEnergyNeed, false)
+            if (cellEnergy > 0) {
+                stackStorage.receiveEnergy(stackEnergyNeed, false)
             }
+            cellStorage.extractEnergy(stackEnergyNeed, false)
         }
     }
 

@@ -1071,13 +1071,13 @@ object ClientEventHandler {
 
     fun playLockingSound(data: GunData, player: Player) {
         val soundInfo = data.get(GunProp.SOUND_INFO)
-        val sound = soundInfo.locking ?: return
+        val sound = soundInfo.locking
         player.playSound(sound, 2f, 1f)
     }
 
     fun playLockedSound(data: GunData, player: Player) {
         val soundInfo = data.get(GunProp.SOUND_INFO)
-        val sound = soundInfo.locked ?: return
+        val sound = soundInfo.locked
         player.playSound(sound, 2f, 1f)
     }
 
@@ -1625,7 +1625,7 @@ object ClientEventHandler {
         queueClientWorkIfDelayed((1 + 1.5 * shooterHeight).toInt()) {
             if (GunResource.compute(stack).ejectShell) {
                 if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
-                    val ammoType: Ammo = data.selectedAmmoConsumer().playerAmmoType
+                    val ammoType: Ammo = data.selectedAmmoConsumer().playerAmmoType!!
                     when (ammoType) {
                         Ammo.SHOTGUN ->
                             player.playSound(

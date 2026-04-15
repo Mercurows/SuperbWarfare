@@ -4,18 +4,19 @@ import com.atsuishio.superbwarfare.data.IDBasedData;
 import com.atsuishio.superbwarfare.data.ObjectToList;
 import com.atsuishio.superbwarfare.data.StringToObject;
 import com.google.gson.annotations.SerializedName;
+import org.jetbrains.annotations.NotNull;
 
 public class DefaultMobGunData implements IDBasedData<DefaultMobGunData> {
 
     private transient String id = "";
 
     @Override
-    public String getId() {
+    public @NotNull String getId() {
         return this.id;
     }
 
     @Override
-    public void setId(String id) {
+    public void setId(@NotNull String id) {
         this.id = id;
     }
 

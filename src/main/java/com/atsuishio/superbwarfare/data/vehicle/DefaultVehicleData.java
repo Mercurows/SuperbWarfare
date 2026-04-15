@@ -17,6 +17,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeConfigSpec;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -28,12 +29,12 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     public transient boolean isDefaultData = true;
 
     @Override
-    public String getId() {
+    public @NotNull String getId() {
         return this.id;
     }
 
     @Override
-    public void setId(String id) {
+    public void setId(@NotNull String id) {
         this.id = id;
     }
 
@@ -224,7 +225,7 @@ public class DefaultVehicleData implements IDBasedData<DefaultVehicleData> {
     public int turretControllerIndex = 0;
     @SerializedName("TurretCustomPitch")
     public float turretCustomPitch = 0;
-    
+
     @SerializedName("HudType")
     public String hudType = "@Empty";
     @SerializedName("BarrelPos")

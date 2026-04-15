@@ -27,7 +27,7 @@ class ComplexJsonResourceReloadListener(private val data: MutableMap<String, Dat
                         val id = pathLocation.toString()
 
                         if (data is IDBasedData<*>) {
-                            data.setId(id)
+                            data.id = id
                         }
                         map.put(id, data)
                     }
