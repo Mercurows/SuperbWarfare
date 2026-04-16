@@ -1,16 +1,19 @@
 package com.atsuishio.superbwarfare.data
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.api.event.LoadingDataEvent
+import com.atsuishio.superbwarfare.api.event.LoadingJsonEvent
+import com.atsuishio.superbwarfare.data.gun.DefaultGunData
+import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData
+import com.atsuishio.superbwarfare.tools.postEvent
 import net.minecraft.resources.FileToIdConverter
 import net.minecraft.server.packs.resources.ResourceManager
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener
 import net.minecraft.util.profiling.ProfilerFiller
-import javax.annotation.ParametersAreNonnullByDefault
 
 class ComplexJsonResourceReloadListener(private val data: MutableMap<String, DataLoader.GeneralData<*>>) :
     SimplePreparableReloadListener<Any>() {
 
-    @ParametersAreNonnullByDefault
     override fun prepare(resourceManager: ResourceManager, profiler: ProfilerFiller): Any {
         this.data.forEach { (name, value) ->
             val map = value.dataMap
@@ -23,12 +26,34 @@ class ComplexJsonResourceReloadListener(private val data: MutableMap<String, Dat
 
                 try {
                     entry.value.openAsReader().use { reader ->
-                        val data = DataLoader.GSON.fromJson(reader, value.type)
                         val id = pathLocation.toString()
+
+                        var jsonStr = reader.lineSequence().joinToString("\n")
+                        val jsonEvent = LoadingJsonEvent(id, jsonStr)
+                        if (!postEvent(jsonEvent)) {
+                            jsonStr = jsonEvent.jsonStr
+                        }
+
+                        var data = DataLoader.GSON.fromJson(jsonStr, value.type)
 
                         if (data is IDBasedData<*>) {
                             data.id = id
                         }
+
+                        if (data is DefaultGunData) {
+                            val event = LoadingDataEvent.Gun(id, data)
+                            if (!postEvent(event)) {
+                                data = event.data
+                            }
+                        }
+
+                        if (data is DefaultVehicleData) {
+                            val event = LoadingDataEvent.Vehicle(id, data)
+                            if (!postEvent(event)) {
+                                data = event.data
+                            }
+                        }
+
                         map.put(id, data)
                     }
                 } catch (exception: Exception) {
@@ -42,7 +67,6 @@ class ComplexJsonResourceReloadListener(private val data: MutableMap<String, Dat
         return NULL
     }
 
-    @ParametersAreNonnullByDefault
     override fun apply(obj: Any, resourceManager: ResourceManager, profiler: ProfilerFiller) {
     }
 
