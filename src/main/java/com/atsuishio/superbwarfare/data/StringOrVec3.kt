@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.data
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.serialization.kserializer.SerializedVec3
 import com.atsuishio.superbwarfare.serialization.kserializer.Vec3Serializer
 import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
@@ -8,7 +9,8 @@ import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.buildClassSerialDescriptor
+import kotlinx.serialization.descriptors.element
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonDecoder
@@ -83,8 +85,10 @@ class StringOrVec3 {
 }
 
 object StringOrVec3Serializer : KSerializer<StringOrVec3> {
-    override val descriptor: SerialDescriptor
-        get() = StringOrVec3.serializer().descriptor
+    override val descriptor = buildClassSerialDescriptor("StringOrVec3") {
+        element<String?>("string")
+        element<SerializedVec3?>("vec3")
+    }
 
     override fun serialize(encoder: Encoder, value: StringOrVec3) {
         if (value.string != null) {
