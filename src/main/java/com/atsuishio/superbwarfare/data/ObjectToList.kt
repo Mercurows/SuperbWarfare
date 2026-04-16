@@ -20,19 +20,13 @@ import java.lang.reflect.Type
 /**
  * {} -> [{}]
  */
-@Serializable(OTLSerializer::class)
-class ObjectToList<T> {
+@Serializable
+data class ObjectToList<T>(
     @JvmField
     var list: MutableList<T>
-
-    constructor(list: MutableList<T>) {
-        this.list = list
-    }
-
+) {
     @SafeVarargs
-    constructor(vararg objects: T) {
-        this.list = mutableListOf(*objects)
-    }
+    constructor(vararg objects: T) : this(mutableListOf(*objects))
 
     internal class ListOrObjectAdapter<T>(type: Type, private val gson: Gson) : TypeAdapter<ObjectToList<T>>() {
         /**
@@ -93,8 +87,7 @@ typealias SerializedObjectToList<T> = @Serializable(OTLSerializer::class) Object
 class OTLSerializer<T>(elementSerializer: KSerializer<T>) :
     JsonTransformingSerializer<ObjectToList<T>>(ObjectToList.serializer(elementSerializer)) {
     override fun transformDeserialize(element: JsonElement): JsonElement {
-        val items = element as? JsonArray ?: JsonArray(listOf(element))
-        return buildJsonObject { put("items", items) }
+        val list = element as? JsonArray ?: JsonArray(listOf(element))
+        return buildJsonObject { put("list", list) }
     }
 }
-
