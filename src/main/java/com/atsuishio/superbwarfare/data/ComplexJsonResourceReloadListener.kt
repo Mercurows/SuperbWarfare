@@ -30,7 +30,8 @@ class ComplexJsonResourceReloadListener(private val data: MutableMap<String, Dat
 
                         var jsonStr = reader.lineSequence().joinToString("\n")
                         val jsonEvent = LoadingJsonEvent(id, jsonStr)
-                        if (!postEvent(jsonEvent)) {
+                        postEvent(jsonEvent)
+                        if (!jsonEvent.isCanceled) {
                             jsonStr = jsonEvent.jsonStr
                         }
 
@@ -42,14 +43,16 @@ class ComplexJsonResourceReloadListener(private val data: MutableMap<String, Dat
 
                         if (data is DefaultGunData) {
                             val event = LoadingDataEvent.Gun(id, data)
-                            if (!postEvent(event)) {
+                            postEvent(event)
+                            if (!event.isCanceled) {
                                 data = event.data
                             }
                         }
 
                         if (data is DefaultVehicleData) {
                             val event = LoadingDataEvent.Vehicle(id, data)
-                            if (!postEvent(event)) {
+                            postEvent(event)
+                            if (!event.isCanceled) {
                                 data = event.data
                             }
                         }

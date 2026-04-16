@@ -4,7 +4,8 @@ import com.google.gson.JsonParser
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
-import net.minecraftforge.eventbus.api.Event
+import net.neoforged.bus.api.Event
+import net.neoforged.bus.api.ICancellableEvent
 import org.jetbrains.annotations.ApiStatus
 
 typealias GsonObject = com.google.gson.JsonObject
@@ -13,7 +14,7 @@ typealias GsonObject = com.google.gson.JsonObject
 open class LoadingJsonEvent(
     val id: String,
     var jsonStr: String
-) : Event() {
+) : Event(), ICancellableEvent {
     val asGsonObject: GsonObject
         get() = JsonParser.parseString(jsonStr).asJsonObject
 
