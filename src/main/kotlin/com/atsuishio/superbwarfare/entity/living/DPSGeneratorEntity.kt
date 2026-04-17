@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.capability.energy.SyncedEntityEnergyStorage
 import com.atsuishio.superbwarfare.client.animation.entity.DPSGeneratorAnimationInstance
 import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.setValue
+import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier.Companion.createDefaultModifier
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -92,7 +93,7 @@ open class DPSGeneratorEntity(type: EntityType<DPSGeneratorEntity>, level: Level
 
     override fun hurt(source: DamageSource, amount: Float): Boolean {
         // 不处理/kill伤害
-        var amount = amount
+        var amount = DAMAGE_MODIFIER.compute(source, amount)
         if (source.`is`(DamageTypes.GENERIC_KILL)) {
             this.remove(RemovalReason.KILLED)
             return super.hurt(source, amount)
@@ -341,5 +342,14 @@ open class DPSGeneratorEntity(type: EntityType<DPSGeneratorEntity>, level: Level
                 .add(Attributes.KNOCKBACK_RESISTANCE, 10.0)
                 .add(Attributes.FLYING_SPEED, 0.0)
         }
+
+        private val DAMAGE_MODIFIER = createDefaultModifier()
+            .immuneTo(DamageTypes.IN_WALL)
+            .immuneTo(DamageTypes.DROWN)
+            .immuneTo(DamageTypes.LAVA)
+            .immuneTo(DamageTypes.CACTUS)
+            .immuneTo(DamageTypes.FALL)
+            .immuneTo(DamageTypes.SWEET_BERRY_BUSH)
+            .immuneTo(DamageTypes.BAD_RESPAWN_POINT)
     }
 }
