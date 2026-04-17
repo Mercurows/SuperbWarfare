@@ -13,16 +13,18 @@ class ShootPos {
     @SerialName("Transform")
     var transform: String = "Default"
 
+    // TODO 后续替换成kt序列化和kt List
+
     // 注意这个是复数
     // TODO 允许普通枪使用Positions
     @SerializedName("Positions")
     @SerialName("Positions")
-    var positions: List<SerializedVec3> = listOf(Vec3.ZERO)
+    var positions: java.util.ArrayList<SerializedVec3> = arrayListOf(Vec3.ZERO)
 
     // TODO 允许普通枪使用Directions
     @SerializedName("Directions")
     @SerialName("Directions")
-    var directions: List<StringOrVec3> = listOf(StringOrVec3("Default"))
+    var directions: java.util.ArrayList<StringOrVec3> = arrayListOf(StringOrVec3("Default"))
 
     @SerializedName("ShootPositionForHud")
     @SerialName("ShootPositionForHud")
