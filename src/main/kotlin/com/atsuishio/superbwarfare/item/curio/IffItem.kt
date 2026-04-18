@@ -73,13 +73,16 @@ open class IffItem : Item(Properties().stacksTo(1)), ICurioItem {
                                 .asSequence()
                                 .mapNotNull {
                                     if (!SeekTool.IS_FRIENDLY.test(player, it)) return@mapNotNull null
-                                    if (it.vehicle != null) {
+                                    val vehicle = it.vehicle
+                                    if (vehicle != null) {
                                         PlayerInfoSyncMessage.SyncedPlayerInfo(
                                             it.uuid,
-                                            VectorTool.lerpGetEntityBoundingBoxCenter(it.vehicle!!, 1f),
+                                            if (vehicle is VehicleEntity)
+                                                VectorTool.lerpGetEntityBoundingBoxCenter(vehicle, 1f)
+                                            else it.position(),
                                             it.displayName?.string ?: "",
                                             onVehicle = true,
-                                            it == it.vehicle!!.firstPassenger
+                                            it == vehicle.firstPassenger
                                         )
                                     } else {
                                         PlayerInfoSyncMessage.SyncedPlayerInfo(
