@@ -336,6 +336,7 @@
   "item.superbwarfare.ammo_perk_data_chip": "Ammo Perk Data Chip",
   "item.superbwarfare.functional_perk_data_chip": "Functional Perk Data Chip",
   "item.superbwarfare.damage_perk_data_chip": "Damage Perk Data Chip",
+  "item.superbwarfare.edd": "Entry Denial Device",
 
   "attribute.superbwarfare.bullet_resistance": "Bullet Resistance",
 
@@ -664,6 +665,7 @@
   "entity.superbwarfare.ztz_99a": "ZTZ-99A MBT",
   "entity.superbwarfare.super_star_projectile": "Super Star",
   "entity.superbwarfare.prismatic_bolt": "Prismatic Bolt",
+  "entity.superbwarfare.edd": "Entry Denial Device",
 
   "key.categories.superbwarfare": "Superb Warfare",
   "key.superbwarfare.move_forward": "Forward / Throttle Up",

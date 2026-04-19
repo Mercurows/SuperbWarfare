@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
+import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.entity.projectile.EDDEntity
 import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.mojang.blaze3d.vertex.PoseStack
@@ -10,6 +11,7 @@ import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.texture.OverlayTexture
+import net.minecraft.core.Direction
 import net.minecraft.resources.ResourceLocation
 
 class EDDRenderer(renderManager: EntityRendererProvider.Context) : EntityRenderer<EDDEntity>(renderManager) {
@@ -26,7 +28,27 @@ class EDDRenderer(renderManager: EntityRendererProvider.Context) : EntityRendere
 
         poseStack.pushPose()
 
-        poseStack.mulPose(Axis.YN.rotationDegrees(entity.direction.toYRot() + 90f))
+        val direction = entity.direction
+
+        poseStack.mulPose(Axis.XP.rotationDegrees(180f))
+        poseStack.mulPose(Axis.YN.rotationDegrees(direction.toYRot() + 180f))
+
+        if (direction == Direction.EAST || direction == Direction.WEST) {
+            poseStack.mulPose(Axis.YP.rotationDegrees(180f))
+        }
+
+        if (direction != Direction.NORTH) {
+            if (!entity.isFacingLeft()) {
+                poseStack.mulPose(Axis.ZP.rotationDegrees(180f))
+            }
+        } else {
+            if (entity.isFacingLeft()) {
+                poseStack.mulPose(Axis.ZP.rotationDegrees(180f))
+            }
+        }
+
+        bone.visible = entity.tickCount <= 20
+        bone.zScale = ExplosionConfig.EDD_TRACE_RANGE.get().toFloat()
 
         model.renderToBuffer(
             poseStack,
