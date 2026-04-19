@@ -103,8 +103,10 @@ object ModEntities {
         misc(::MedicalKitEntity).setTrackingRange(64).setUpdateInterval(1).sized(0.4f, 0.2f)
     )
 
-    // Projectiles
+    @JvmField
+    val EDD = register("edd", misc(::EDDEntity).setTrackingRange(10).setUpdateInterval(Int.MAX_VALUE).sized(0.5f, 0.5f))
 
+    // Projectiles
     @JvmField
     val TASER_BULLET = register("taser_bullet", fastProjectile(::TaserBulletEntity, true).sized(0.25f, 0.25f))
 
