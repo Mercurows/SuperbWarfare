@@ -3,29 +3,30 @@
   "MaxEnergy": 500000,
   "OBB": [
     {
-      "Size": [1.5625, 0.75, 3.1875],
-      "Position": [0, 0.875, 0.375]
+      "Size": [1.188, 0.906, 4.875],
+      "Position": [0, 0.906, 1.063]
     },
     {
-      "Size": [1.0625, 0.5, 1.90625],
-      "Position": [0, 2.0625, -0.71875]
+      "Size": [1.0625, 0.594, 1.438],
+      "Position": [0, 2.406, 0.0625]
+    },
+    {
+      "Part": "Turret",
+      "Size": [0.406, 0.344, 0.5],
+      "Position": [0.098, 0.406, 0.188],
+      "Transform": "Turret",
+      "Rotation": "Turret"
     }
   ],
+  "TurretControllerIndex": 1,
   "Seats": [
     {
       "Transform": "Vehicle",
-      "Position": [0, 0.6, -0.2],
-      "MinPitch": -25,
-      "MaxPitch": 50,
-      "MinYaw": -105,
-      "MaxYaw": 105,
-      "CameraPos": {
-        "Transform": "Barrel",
-        "ZoomPosition": [0, 0.4, -0.6],
-        "Direction": "Barrel"
-      },
-      "Weapons": ["MachineGun"],
-      "Sensitivity": [0.75, 0.8, 1],
+      "Position": [0, 0.5875, 0],
+      "MinPitch": -60,
+      "MaxPitch": 60,
+      "MinYaw": -90,
+      "MaxYaw": 90,
       "DismountInfo": {
         "Transform": "Vehicle",
         "Position": [0, 0.375, -4.2]
@@ -33,9 +34,17 @@
     },
     {
       "Transform": "Vehicle",
-      "Position": [-0.8, 0.35, -1.2],
-      "MinYaw": -90,
-      "MaxYaw": 90,
+      "Position": [0, 0.5875, -0.842],
+      "MinPitch": -20,
+      "MaxPitch": 60,
+      "CanRotateBody": true,
+      "CameraPos": {
+        "Transform": "Turret",
+        "UseFixedCameraPos": true,
+        "Position": [0, 0.30811875, 0.492],
+        "Direction": "Barrel"
+      },
+      "Weapons": ["MachineGun"],
       "DismountInfo": {
         "Transform": "Vehicle",
         "Position": [0, 0.375, -4.2]
@@ -78,7 +87,6 @@
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
       "Spread": 0.25,
-      "CrosshairColor": "0xFFFFFF",
       "Projectile": "superbwarfare:projectile",
       "RPM": 450,
       "Damage": 40,
@@ -93,11 +101,12 @@
       "AmmoType": "@HeavyAmmo",
       "ShootPos": {
         "Transform": "Barrel",
-        "Positions": [[0, 0.2, 1]],
-        "Directions": ["Barrel"]
+        "Positions": [[0, 0.047, 1]],
+        "Directions": ["Barrel"],
+        "ViewPosition": [0, 0.047, 1]
       },
-      "Crosshair": "@VehicleDynamicCross",
-      "CrosshairZooming": "@VehicleCommonGun",
+      "CrosshairColor": "0x66FF00",
+      "Crosshair": "@VehicleCommonGun",
       "SoundInfo": {
         "Fire1P": "superbwarfare:m_2_hb_fire_1p",
         "Fire3P": "superbwarfare:m_2_hb_fire_3p",
@@ -109,12 +118,12 @@
     }
   },
 
-  "TurretPos": [0, 2.5616625, -0.565625],
+  "TurretPos": [0, 3.112, -0.365],
   "TurretTurnSpeed": [25, 25],
-  "TurretPitchRange": [-25, 50],
-  "BarrelPos": [0, 0.5088375, 0.04173125],
+  "TurretPitchRange": [-20, 60],
+  "BarrelPos": [0, 0.592, 0.019],
   "HasDecoy": true,
-  "Mass": 0.7,
+  "Mass": 1.5,
   "RotateOffsetHeight": 1,
   "DamageModifiers": [
     "All - 2",
@@ -151,7 +160,7 @@
   },
   "EngineType": "Ship",
   "EngineInfo": {
-    "Buoyancy": 0.12,
+    "Buoyancy": 0.09,
     "EnergyCostRate": 48,
     "MaxForwardSpeedRate": 1.5,
     "MaxBackwardSpeedRate": 1.0,
@@ -162,7 +171,7 @@
     "BodyRollRate": 1.0
   },
   "VehicleContainerType": "Medium",
-  "ThirdPersonCameraPos": [0, 1.5, 3],
+  "ThirdPersonCameraPos": [-0.5, 1.5, 3],
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/speedboat_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/water.png",
   "Type": "Boat",
@@ -175,12 +184,5 @@
     ]
   },
   "EngineSound": "superbwarfare:speedboat_engine",
-  "TerrainCompat": [
-    [0.875, 0, 1.1875], [0, 0, 1.1875], [-0.875, 0, 1.1875],
-    [0.875, 0, 0.1875], [0, 0, 0.1875], [-0.875, 0, 0.1875],
-    [0.875, 0, -0.8125], [0, 0, -0.8125], [-0.875, 0, -0.8125],
-    [0.875, 0, -1.8125], [0, 0, -1.8125], [-0.875, 0, -1.8125],
-    [0.875, 0, -2.6875], [0, 0, -2.6875], [-0.875, 0, -2.6875]
-  ],
   "InertiaRotateRate": 2
 }
