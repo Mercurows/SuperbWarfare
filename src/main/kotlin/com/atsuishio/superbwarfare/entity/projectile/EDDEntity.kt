@@ -1,7 +1,16 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.config.server.ExplosionConfig
+import com.atsuishio.superbwarfare.entity.living.TargetEntity
+import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier.Companion.createDefaultModifier
+import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModEntities
+import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.tools.CustomExplosion
+import com.atsuishio.superbwarfare.tools.ParticleTool
+import com.atsuishio.superbwarfare.tools.toVec3
+import com.atsuishio.superbwarfare.world.saveddata.TDMSavedData.Companion.enabledTDM
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
@@ -13,12 +22,19 @@ import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.server.players.OldUsersConverter
 import net.minecraft.sounds.SoundEvents
+import net.minecraft.world.InteractionHand
+import net.minecraft.world.InteractionResult
+import net.minecraft.world.damagesource.DamageSource
+import net.minecraft.world.damagesource.DamageTypes
 import net.minecraft.world.entity.*
 import net.minecraft.world.entity.decoration.HangingEntity
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.DiodeBlock
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
+import net.minecraftforge.items.ItemHandlerHelper
 import java.util.*
 
 open class EDDEntity : HangingEntity, OwnableEntity {
@@ -37,12 +53,29 @@ open class EDDEntity : HangingEntity, OwnableEntity {
     @JvmOverloads
     constructor(
         type: EntityType<out EDDEntity> = ModEntities.EDD.get(),
+        owner: LivingEntity?,
+        level: Level,
+        corner: Int = 0
+    ) : super(type, level) {
+        this.corner = corner
+        if (owner != null) {
+            this.setOwnerUUID(owner.getUUID())
+        }
+    }
+
+    @JvmOverloads
+    constructor(
+        type: EntityType<out EDDEntity> = ModEntities.EDD.get(),
+        owner: LivingEntity?,
         level: Level,
         pos: BlockPos,
         direction: Direction,
         corner: Int = 0
     ) : super(type, level, pos) {
         this.corner = corner
+        if (owner != null) {
+            this.setOwnerUUID(owner.getUUID())
+        }
         this.setDirection(direction)
     }
 
@@ -237,6 +270,92 @@ open class EDDEntity : HangingEntity, OwnableEntity {
         return this.entityData.get(OWNER_UUID).orElse(null)
     }
 
+    fun isOwnedBy(pEntity: LivingEntity?): Boolean {
+        return pEntity === this.getOwner()
+    }
+
+    fun isFacingLeft(): Boolean {
+        return this.corner == 0 || this.corner == 1
+    }
+
+    fun getFacingDirection(): Direction {
+        return when (this.direction) {
+            Direction.NORTH -> if (this.isFacingLeft()) Direction.EAST else Direction.WEST
+            Direction.SOUTH -> if (this.isFacingLeft()) Direction.WEST else Direction.EAST
+            Direction.EAST -> if (this.isFacingLeft()) Direction.SOUTH else Direction.NORTH
+            else -> if (this.isFacingLeft()) Direction.NORTH else Direction.SOUTH
+        }
+    }
+
+    override fun isPickable(): Boolean {
+        return !this.isRemoved
+    }
+
+    override fun hurt(source: DamageSource, amount: Float): Boolean {
+        val damage = DAMAGE_MODIFIER.compute(source, amount)
+        if (source.entity != null) {
+            this.entityData.set(LAST_ATTACKER_UUID, source.entity!!.getStringUUID())
+        }
+        this.entityData.set(HEALTH, this.entityData.get(HEALTH) - damage)
+        return super.hurt(source, damage)
+    }
+
+    private fun triggerExplode() {
+        CustomExplosion.Builder(this)
+            .attacker(this.getOwner())
+            .damage(ExplosionConfig.EDD_EXPLOSION_DAMAGE.get().toFloat())
+            .radius(ExplosionConfig.EDD_EXPLOSION_RADIUS.get().toFloat())
+            .keepBlock()
+            .withParticleType(ParticleTool.ParticleType.MINI)
+            .explode()
+
+        this.discard()
+    }
+
+    override fun interact(player: Player, hand: InteractionHand): InteractionResult {
+        if (this.isOwnedBy(player) && player.isShiftKeyDown) {
+            if (!this.level().isClientSide()) {
+                this.discard()
+            }
+
+            if (!player.abilities.instabuild) {
+                ItemHandlerHelper.giveItemToPlayer(player, ItemStack(ModItems.EDD.get()))
+            }
+        }
+
+        return InteractionResult.sidedSuccess(this.level().isClientSide())
+    }
+
+    override fun tick() {
+        super.tick()
+
+        val facing = this.getFacingDirection()
+
+        // TODO 修改为正确的扫描范围
+        val aabb = AABB(this.position(), this.position()).expandTowards(
+            facing.step().toVec3().scale(ExplosionConfig.EDD_TRACE_RANGE.get().toDouble())
+        )
+        val flag = this.level().getEntitiesOfClass(
+            Entity::class.java,
+            aabb
+        ) {
+            it !is EDDEntity && it != this.owner && (it !is TargetEntity)
+                    && !(it is Player && (it.isCreative || it.isSpectator))
+                    && (this.getOwner() != null && !this.getOwner()!!
+                .isAlliedTo(it) || it.team == null || enabledTDM(it))
+        }.isNotEmpty()
+
+        if (flag) {
+            this.triggerExplode()
+            ParticleTool.spawnMiniExplosionParticles(this.level(), this.position())
+            this.discard()
+        }
+
+        if (this.entityData.get(HEALTH) <= 0) {
+            this.discard()
+        }
+    }
+
     companion object {
         @JvmField
         val OWNER_UUID: EntityDataAccessor<Optional<UUID>> =
@@ -249,5 +368,11 @@ open class EDDEntity : HangingEntity, OwnableEntity {
         @JvmField
         val HEALTH: EntityDataAccessor<Float> =
             SynchedEntityData.defineId(EDDEntity::class.java, EntityDataSerializers.FLOAT)
+
+        private val DAMAGE_MODIFIER = createDefaultModifier()
+            .multiply(0.02f, ModDamageTypes.CUSTOM_EXPLOSION)
+            .multiply(0.02f, ModDamageTypes.MINE)
+            .multiply(0.02f, ModDamageTypes.PROJECTILE_EXPLOSION)
+            .multiply(0.02f, DamageTypes.EXPLOSION)
     }
 }

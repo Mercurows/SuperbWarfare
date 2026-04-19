@@ -336,6 +336,7 @@
   "item.superbwarfare.ammo_perk_data_chip": "子弹模组数据芯片",
   "item.superbwarfare.functional_perk_data_chip": "功能模组数据芯片",
   "item.superbwarfare.damage_perk_data_chip": "伤害模组数据芯片",
+  "item.superbwarfare.edd": "防止攻入装置",
 
   "attribute.superbwarfare.bullet_resistance": "子弹防护",
 
@@ -664,6 +665,7 @@
   "entity.superbwarfare.ztz_99a": "ZTZ-99A主战坦克",
   "entity.superbwarfare.super_star_projectile": "超级大星星",
   "entity.superbwarfare.prismatic_bolt": "星光斩击",
+  "entity.superbwarfare.edd": "防止攻入装置",
 
   "key.categories.superbwarfare": "卓越前线",
   "key.superbwarfare.move_forward": "前进/提升油门",

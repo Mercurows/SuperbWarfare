@@ -115,6 +115,29 @@ object ExplosionConfig {
     }
 
     @JvmField
+    val EDD_EXPLOSION_DAMAGE = buildServerConfig {
+        push("EDD")
+
+        comment("The explosion damage of EDD")
+        comment("防止攻入装置的爆炸伤害")
+        defineInRange("edd_explosion_damage", 60, 1, Int.MAX_VALUE)
+    }
+
+    @JvmField
+    val EDD_EXPLOSION_RADIUS = buildServerConfig {
+        comment("The explosion radius of EDD")
+        comment("防止攻入装置的爆炸半径")
+        defineInRange("edd_explosion_radius", 2, 1, Int.MAX_VALUE)
+    }
+
+    @JvmField
+    val EDD_TRACE_RANGE = buildServerConfig {
+        comment("The trace range of EDD")
+        comment("防止攻入装置的触发距离")
+        defineInRange("edd_trace_range", 2, 1, Int.MAX_VALUE).also { pop() }
+    }
+
+    @JvmField
     val TM_62_EXPLOSION_DAMAGE = buildServerConfig {
         push("Tm 62")
 

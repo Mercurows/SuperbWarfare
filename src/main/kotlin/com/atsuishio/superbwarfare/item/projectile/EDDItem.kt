@@ -28,6 +28,7 @@ open class EDDItem : Item(Properties().rarity(Rarity.UNCOMMON)) {
 
             val level = context.level
             val entity = EDDEntity(
+                owner = player,
                 level = level,
                 pos = relative,
                 direction = direction,
