@@ -163,6 +163,7 @@ object ModItems {
     @JvmField val PTKM_1R = registerAmmo("ptkm_1r") { Ptkm1rItem() }
     @JvmField val C4_BOMB = registerAmmo("c4_bomb") { C4BombItem() }
     @JvmField val BLU_43_MINE = registerAmmo("blu_43_mine") { Blu43MineItem() }
+    @JvmField val EDD = registerAmmo("edd") { EDDItem() }
     @JvmField val SMALL_ROCKET = registerAmmo("small_rocket") { Item(Properties().stacksTo(16)) }
     @JvmField val MEDIUM_ROCKET_AP =
         registerAmmo("medium_rocket_ap") { MediumRocketItem(500f, 6f, 100f, 0f, 0, MediumRocketEntity.Type.AP, 0) }
