@@ -326,7 +326,10 @@ object KillMessageOverlay : CommonOverlay("kill_message") {
         if (record.headshot) {
             icon = HEADSHOT
         } else {
-            if (DamageTypeTool.isCompatGunDamage(record.damageType, record.target.level().registryAccess())) {
+            val item = record.attacker.mainHandItem
+            if (DamageTypeTool.isCompatGunDamage(record.damageType, record.target.level().registryAccess())
+                && (item.item is GunItem || item.descriptionId == "tacz:modern_kinetic_gun")
+            ) {
                 icon = null
                 if (record.damageType === ModDamageTypes.PROJECTILE_HIT) {
                     icon = GENERIC
