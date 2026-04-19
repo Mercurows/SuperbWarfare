@@ -362,7 +362,7 @@ class DefaultGunData : IDBasedData<DefaultGunData> {
         "!superbwarfare:cupid_arrow"
     )
 
-    fun availablePerks(): MutableList<String> {
+    fun availablePerks(): List<String> {
         return availablePerks.list
     }
 

@@ -8,22 +8,44 @@ import com.atsuishio.superbwarfare.data.gun.GunData.Companion.getPerkPriority
 import com.atsuishio.superbwarfare.init.ModPerks
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.perk.Perk
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.serializer
 import net.minecraftforge.registries.RegistryManager
 import kotlin.math.min
 import kotlin.reflect.KMutableProperty1
 
 @Suppress("UNUSED")
-class GunProp<T, R> private constructor(
+class GunProp<T, R>(
     prop: KMutableProperty1<DefaultGunData, T>,
+    serializer: () -> KSerializer<T>,
     transform: (T) -> R,
-) : Prop<GunData, DefaultGunData, T, R, GunProp<T, R>>(prop, transform) {
+) : Prop<GunData, DefaultGunData, T, R, GunProp<T, R>>(prop, serializer, transform) {
 
     companion object {
-        private fun <T> plainProp(
+        inline fun <reified T> plainProp(
             prop: KMutableProperty1<DefaultGunData, T>,
         ): GunProp<T, T> {
-            return GunProp(prop) { it }
+//            val serializerClass = prop.annotations.filterIsInstance<Serializable>().singleOrNull()?.with
+//
+//            @Suppress("UNCHECKED_CAST")
+//            val s = (serializerClass?.objectInstance ?: serializerClass?.createInstance()) as KSerializer<T>?
+
+            // TODO 如何正确获取并创建@Serialiable上的KSerializer实例？
+            return GunProp(prop, { serializer<T>() }) { it }
         }
+
+        inline fun <reified T, R> complexProp(
+            prop: KMutableProperty1<DefaultGunData, T>,
+            noinline transform: (T) -> R
+        ): GunProp<T, R> {
+//            val serializerClass = prop.annotations.filterIsInstance<Serializable>().singleOrNull()?.with
+//
+//            @Suppress("UNCHECKED_CAST")
+//            val s = (serializerClass?.objectInstance ?: serializerClass?.createInstance()) as KSerializer<T>?
+            // TODO 如何正确获取并创建@Serialiable上的KSerializer实例？
+            return GunProp(prop, { serializer<T>() }, transform)
+        }
+
 
         @JvmField
         val MAX_DURABILITY = plainProp(DefaultGunData::maxDurability)
@@ -117,7 +139,7 @@ class GunProp<T, R> private constructor(
             plainProp(DefaultGunData::meleeDamageTime)
 
         @JvmField
-        val PROJECTILE = GunProp(DefaultGunData::projectile) { it.value!! }
+        val PROJECTILE = complexProp(DefaultGunData::projectile) { it.value!! }
 
         @JvmField
         val AMMO_COST_PER_SHOOT = plainProp(DefaultGunData::ammoCostPerShoot)
@@ -129,23 +151,23 @@ class GunProp<T, R> private constructor(
         val WEIGHT = plainProp(DefaultGunData::weight)
 
         @JvmField
-        val DEFAULT_FIRE_MODE = GunProp(DefaultGunData::defaultFireMode) { it.ifEmpty { FireMode.SEMI.name!! }!! }
+        val DEFAULT_FIRE_MODE = complexProp(DefaultGunData::defaultFireMode) { it.ifEmpty { FireMode.SEMI.name!! }!! }
 
         @JvmField
         val AVAILABLE_FIRE_MODES =
-            GunProp(DefaultGunData::availableFireModes) { it?.list?.map { l -> l.value!! } ?: listOf() }
+            complexProp(DefaultGunData::availableFireModes) { it?.list?.map { l -> l.value!! } ?: listOf() }
 
         @JvmField
         val MAGAZINE = plainProp(DefaultGunData::magazine)
 
         @JvmField
-        val RELOAD_TYPES = GunProp(DefaultGunData::reloadTypes, { it?.filterNotNull().orEmpty() })
+        val RELOAD_TYPES = complexProp(DefaultGunData::reloadTypes, { it?.filterNotNull().orEmpty() })
 
         @JvmField
-        val SEEK_TYPE = GunProp(DefaultGunData::seekType, { it ?: SeekType.NONE })
+        val SEEK_TYPE = complexProp(DefaultGunData::seekType, { it ?: SeekType.NONE })
 
         @JvmField
-        val GUN_TYPE = GunProp(DefaultGunData::gunType, { it ?: GunType.SPECIAL })
+        val GUN_TYPE = complexProp(DefaultGunData::gunType, { it ?: GunType.SPECIAL })
 
         // 注意Nullable
         @JvmField
@@ -170,7 +192,7 @@ class GunProp<T, R> private constructor(
         val BYPASSES_ARMOR = plainProp(DefaultGunData::bypassesArmor)
 
         @JvmField
-        val AMMO_CONSUMER = GunProp(
+        val AMMO_CONSUMER = complexProp(
             DefaultGunData::ammoConsumers,
             { it?.list?.map { l -> l.value!!.also { consumer -> consumer.init() } } ?: listOf() }
         )
@@ -248,9 +270,9 @@ class GunProp<T, R> private constructor(
         val IN_LAVA_COOLDOWN_RATE = plainProp(DefaultGunData::inLavaCooldownRate)
 
         @JvmField
-        val AVAILABLE_PERKS = GunProp(DefaultGunData::availablePerks) {
+        val AVAILABLE_PERKS = complexProp(DefaultGunData::availablePerks) {
             val availablePerks = mutableListOf<Perk>()
-            val perkNames = it?.list?.filterNotNull().orEmpty().ifEmpty { return@GunProp availablePerks }
+            val perkNames = it?.list?.filterNotNull().orEmpty().ifEmpty { return@complexProp availablePerks }
 
             val sortedNames = perkNames.distinct().sortedWith { s1, s2 ->
                 val p1 = getPerkPriority(s1)
@@ -294,33 +316,33 @@ class GunProp<T, R> private constructor(
                     }
                 }
             }
-            return@GunProp availablePerks.toList()
+            return@complexProp availablePerks.toList()
         }
 
         @JvmField
-        val ICON = GunProp(DefaultGunData::icon, { it ?: GunItem.DEFAULT_ICON })
+        val ICON = complexProp(DefaultGunData::icon, { it ?: GunItem.DEFAULT_ICON })
 
         @JvmField
-        val CROSSHAIR = GunProp(DefaultGunData::crosshair) { it.ifEmpty { "@GunDefault" }!! }
+        val CROSSHAIR = complexProp(DefaultGunData::crosshair) { it.ifEmpty { "@GunDefault" }!! }
 
         @JvmField
-        val CROSSHAIR_ZOOMING = GunProp(DefaultGunData::crosshairZooming) { it.ifEmpty { "@Empty" }!! }
+        val CROSSHAIR_ZOOMING = complexProp(DefaultGunData::crosshairZooming) { it.ifEmpty { "@Empty" }!! }
 
         @JvmField
-        val CROSSHAIR_COLOR = GunProp(DefaultGunData::crosshairColor) { it ?: ModColor() }
+        val CROSSHAIR_COLOR = complexProp(DefaultGunData::crosshairColor) { it ?: ModColor() }
 
         // 注意Nullable
         @JvmField
         val NAME = plainProp(DefaultGunData::name)
 
         @JvmField
-        val SHOOT_POS = GunProp(DefaultGunData::shootPos, { it ?: ShootPos() })
+        val SHOOT_POS = complexProp(DefaultGunData::shootPos, { it ?: ShootPos() })
 
         @JvmField
         val SEEK_WEAPON_INFO = plainProp(DefaultGunData::seekWeaponInfo)
 
         @JvmField
-        val SOUND_INFO = GunProp(DefaultGunData::soundInfo) { it ?: SoundInfo() }
+        val SOUND_INFO = complexProp(DefaultGunData::soundInfo) { it ?: SoundInfo() }
 
         @JvmField
         val SHOOT_ANIMATION_TIME = plainProp(DefaultGunData::shootAnimationTime)

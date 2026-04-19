@@ -91,3 +91,26 @@ class OTLSerializer<T>(elementSerializer: KSerializer<T>) :
         return buildJsonObject { put("list", list) }
     }
 }
+
+//class OTLSerializer1<T>(val elementSerializer: KSerializer<T>) : KSerializer<ObjectToList<T>> {
+//    override val descriptor = elementSerializer.descriptor
+//
+//    override fun serialize(
+//        encoder: Encoder,
+//        value: ObjectToList<T>
+//    ) {
+//        encoder.encodeSerializableValue(ListSerializer(elementSerializer), value.list)
+//    }
+//
+//    override fun deserialize(decoder: Decoder): ObjectToList<T> {
+//        require(decoder is JsonDecoder)
+//
+//        val element = decoder.decodeJsonElement()
+//        return if (element is JsonArray) {
+//            ObjectToList(element.map { decoder.json.decodeFromJsonElement(elementSerializer, it) }.toMutableList())
+//        } else {
+//            ObjectToList(listOf(decoder.decodeSerializableValue(elementSerializer)).toMutableList())
+//        }
+//    }
+//
+//}

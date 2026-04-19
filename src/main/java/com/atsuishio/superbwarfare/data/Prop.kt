@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.data
 
+import kotlinx.serialization.KSerializer
 import java.lang.reflect.Type
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.javaType
@@ -8,17 +9,10 @@ import kotlin.reflect.javaType
 @OptIn(ExperimentalStdlibApi::class)
 abstract class Prop<DATA : DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA, FIELD, RESULT, SELF : Prop<DATA, DEFAULT_DATA, FIELD, RESULT, SELF>> protected constructor(
     val prop: KMutableProperty1<DEFAULT_DATA, FIELD>,
+    val serializer: () -> KSerializer<FIELD>,
     val transform: (FIELD) -> RESULT,
 ) {
     protected val type: Type = prop.returnType.javaType
-
-    // TODO 使用kt serializer
-//    @Suppress("unchecked_cast")
-//    protected val serializer = run {
-//        val klass = prop.findAnnotation<Serializable>()?.with ?: return@run serializer(prop.returnType)
-//
-//        return@run (klass.objectInstance ?: klass.createInstance())
-//    } as KSerializer<FIELD>
 
     init {
         props.add(this)
