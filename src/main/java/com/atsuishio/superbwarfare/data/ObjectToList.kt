@@ -9,10 +9,11 @@ import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonTransformingSerializer
-import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.JsonDecoder
 import java.io.IOException
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
@@ -84,33 +85,33 @@ data class ObjectToList<T>(
 
 typealias SerializedObjectToList<T> = @Serializable(OTLSerializer::class) ObjectToList<T>
 
-class OTLSerializer<T>(elementSerializer: KSerializer<T>) :
-    JsonTransformingSerializer<ObjectToList<T>>(ObjectToList.serializer(elementSerializer)) {
-    override fun transformDeserialize(element: JsonElement): JsonElement {
-        val list = element as? JsonArray ?: JsonArray(listOf(element))
-        return buildJsonObject { put("list", list) }
-    }
-}
-
-//class OTLSerializer1<T>(val elementSerializer: KSerializer<T>) : KSerializer<ObjectToList<T>> {
-//    override val descriptor = elementSerializer.descriptor
-//
-//    override fun serialize(
-//        encoder: Encoder,
-//        value: ObjectToList<T>
-//    ) {
-//        encoder.encodeSerializableValue(ListSerializer(elementSerializer), value.list)
+//class OTLSerializer<T>(elementSerializer: KSerializer<T>) :
+//    JsonTransformingSerializer<ObjectToList<T>>(ObjectToList.serializer(elementSerializer)) {
+//    override fun transformDeserialize(element: JsonElement): JsonElement {
+//        val list = element as? JsonArray ?: JsonArray(listOf(element))
+//        return buildJsonObject { put("list", list) }
 //    }
-//
-//    override fun deserialize(decoder: Decoder): ObjectToList<T> {
-//        require(decoder is JsonDecoder)
-//
-//        val element = decoder.decodeJsonElement()
-//        return if (element is JsonArray) {
-//            ObjectToList(element.map { decoder.json.decodeFromJsonElement(elementSerializer, it) }.toMutableList())
-//        } else {
-//            ObjectToList(listOf(decoder.decodeSerializableValue(elementSerializer)).toMutableList())
-//        }
-//    }
-//
 //}
+
+class OTLSerializer<T>(val elementSerializer: KSerializer<T>) : KSerializer<ObjectToList<T>> {
+    override val descriptor = elementSerializer.descriptor
+
+    override fun serialize(
+        encoder: Encoder,
+        value: ObjectToList<T>
+    ) {
+        encoder.encodeSerializableValue(ListSerializer(elementSerializer), value.list)
+    }
+
+    override fun deserialize(decoder: Decoder): ObjectToList<T> {
+        require(decoder is JsonDecoder)
+
+        val element = decoder.decodeJsonElement()
+        return if (element is JsonArray) {
+            ObjectToList(element.map { decoder.json.decodeFromJsonElement(elementSerializer, it) }.toMutableList())
+        } else {
+            ObjectToList(listOf(decoder.decodeSerializableValue(elementSerializer)).toMutableList())
+        }
+    }
+
+}
