@@ -11,19 +11,18 @@ import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.TooltipFlag
 import net.minecraft.world.item.context.UseOnContext
-import net.minecraft.world.level.Level
 import net.minecraft.world.level.gameevent.GameEvent
 import net.minecraft.world.phys.Vec3
 import kotlin.math.abs
 
 open class EDDItem : Item(Properties()) {
     override fun appendHoverText(
-        pStack: ItemStack,
-        pLevel: Level?,
-        pTooltipComponents: MutableList<Component>,
-        pIsAdvanced: TooltipFlag
+        stack: ItemStack,
+        context: TooltipContext,
+        tooltipComponents: MutableList<Component>,
+        tooltipFlag: TooltipFlag
     ) {
-        pTooltipComponents.add(Component.translatable("des.superbwarfare.edd").withStyle(ChatFormatting.GRAY))
+        tooltipComponents.add(Component.translatable("des.superbwarfare.edd").withStyle(ChatFormatting.GRAY))
     }
 
     override fun useOn(context: UseOnContext): InteractionResult {

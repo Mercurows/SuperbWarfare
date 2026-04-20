@@ -5,9 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "superbwarfare:laser_unit"
-            ]
+            "items": "superbwarfare:laser_unit"
           }
         ]
       },
@@ -22,14 +20,13 @@
   },
   "requirements": [
     [
-      "has_laser_unit",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_laser_unit"
     ]
   ],
   "rewards": {
     "recipes": [
       "superbwarfare:edd"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

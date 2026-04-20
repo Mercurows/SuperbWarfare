@@ -104,7 +104,7 @@ object ModEntities {
     )
 
     @JvmField
-    val EDD = register("edd", misc(::EDDEntity).setTrackingRange(10).setUpdateInterval(Int.MAX_VALUE).sized(0.5f, 0.5f))
+    val EDD = register("edd", misc(::EDDEntity).setTrackingRange(10).eyeHeight(0f).setUpdateInterval(Int.MAX_VALUE).sized(0.5f, 0.5f))
 
     // Projectiles
     @JvmField

@@ -18,11 +18,15 @@ import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
+import net.minecraft.server.level.ServerEntity
 import net.minecraft.server.players.OldUsersConverter
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
-import net.minecraft.world.entity.*
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.OwnableEntity
 import net.minecraft.world.entity.decoration.HangingEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
@@ -30,7 +34,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.DiodeBlock
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
-import net.minecraftforge.items.ItemHandlerHelper
+import net.neoforged.neoforge.items.ItemHandlerHelper
 import java.util.*
 
 open class EDDEntity : HangingEntity, OwnableEntity {
@@ -75,17 +79,9 @@ open class EDDEntity : HangingEntity, OwnableEntity {
         this.setDirection(direction)
     }
 
-    override fun defineSynchedData() {
-        super.defineSynchedData()
-        this.entityData.define(OWNER_UUID, Optional.empty())
-        this.entityData.define(LAST_ATTACKER_UUID, "undefined")
-    }
-
-    override fun getEyeHeight(
-        pPose: Pose,
-        pDimensions: EntityDimensions
-    ): Float {
-        return 0f
+    override fun defineSynchedData(builder: SynchedEntityData.Builder) {
+        builder.define(OWNER_UUID, Optional.empty())
+            .define(LAST_ATTACKER_UUID, "undefined")
     }
 
     override fun addAdditionalSaveData(tag: CompoundTag) {
@@ -151,16 +147,17 @@ open class EDDEntity : HangingEntity, OwnableEntity {
         this.recalculateBoundingBox()
     }
 
-    public override fun recalculateBoundingBox() {
-        val direction = this.direction ?: return
-
+    override fun calculateBoundingBox(
+        pos: BlockPos,
+        direction: Direction
+    ): AABB {
         val d0 = 0.46875
         val centerX = this.pos.x.toDouble() + 0.5 - direction.stepX.toDouble() * d0
         val centerY = this.pos.y.toDouble() + 0.5 - direction.stepY.toDouble() * d0
         val centerZ = this.pos.z.toDouble() + 0.5 - direction.stepZ.toDouble() * d0
 
-        val halfWidth = this.width / 32.0
-        val halfHeight = this.height / 32.0
+        val halfWidth = 8 / 32.0
+        val halfHeight = 8 / 32.0
 
         val cornerOffset = calculateCornerOffset(direction, this.corner, halfWidth, halfHeight)
 
@@ -170,16 +167,16 @@ open class EDDEntity : HangingEntity, OwnableEntity {
 
         this.setPosRaw(finalX, finalY, finalZ)
 
-        var dx = this.width / 32.0
-        var dy = this.height / 32.0
-        var dz = this.width / 32.0
+        var dx = 8 / 32.0
+        var dy = 8 / 32.0
+        var dz = 8 / 32.0
         when (direction.axis) {
             Direction.Axis.X -> dx = 1.0 / 32.0
             Direction.Axis.Y -> dy = 1.0 / 32.0
             Direction.Axis.Z -> dz = 1.0 / 32.0
         }
 
-        this.boundingBox = AABB(
+        return AABB(
             finalX - dx, finalY - dy, finalZ - dz,
             finalX + dx, finalY + dy, finalZ + dz
         )
@@ -219,10 +216,6 @@ open class EDDEntity : HangingEntity, OwnableEntity {
         }
     }
 
-    override fun getWidth() = 8
-
-    override fun getHeight() = 8
-
     override fun dropItem(pBrokenEntity: Entity?) {
 
     }
@@ -241,7 +234,7 @@ open class EDDEntity : HangingEntity, OwnableEntity {
         }
     }
 
-    override fun getAddEntityPacket(): Packet<ClientGamePacketListener> {
+    override fun getAddEntityPacket(entity: ServerEntity): Packet<ClientGamePacketListener> {
         val data = this.corner * 10 + this.direction.get3DDataValue()
         return ClientboundAddEntityPacket(this, data, this.getPos())
     }
@@ -261,7 +254,7 @@ open class EDDEntity : HangingEntity, OwnableEntity {
     }
 
     fun isOwnedBy(pEntity: LivingEntity?): Boolean {
-        return pEntity === this.getOwner()
+        return pEntity === this.owner
     }
 
     fun isFacingLeft(): Boolean {
@@ -282,7 +275,7 @@ open class EDDEntity : HangingEntity, OwnableEntity {
 
     private fun triggerExplode() {
         CustomExplosion.Builder(this)
-            .attacker(this.getOwner())
+            .attacker(this.owner)
             .damage(ExplosionConfig.EDD_EXPLOSION_DAMAGE.get().toFloat())
             .radius(ExplosionConfig.EDD_EXPLOSION_RADIUS.get().toFloat())
             .keepBlock()

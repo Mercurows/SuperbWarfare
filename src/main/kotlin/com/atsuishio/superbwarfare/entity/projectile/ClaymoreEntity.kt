@@ -90,14 +90,14 @@ open class ClaymoreEntity(type: EntityType<ClaymoreEntity>, level: Level) : Enti
     }
 
     fun isOwnedBy(pEntity: LivingEntity?): Boolean {
-        return pEntity === this.getOwner()
+        return pEntity === this.owner
     }
 
     public override fun addAdditionalSaveData(compound: CompoundTag) {
         compound.putFloat("Health", this.entityData.get(HEALTH))
         compound.putString("LastAttacker", this.entityData.get(LAST_ATTACKER_UUID))
         if (this.ownerUUID != null) {
-            compound.putUUID("Owner", this.ownerUUID)
+            compound.putUUID("Owner", this.ownerUUID!!)
         }
     }
 
@@ -168,11 +168,11 @@ open class ClaymoreEntity(type: EntityType<ClaymoreEntity>, level: Level) : Enti
                 Entity::class.java,
                 AABB(center, center).inflate(2.5 / 2.0),
             ) { true }) {
-                val condition = this.getOwner() !== target
+                val condition = this.owner !== target
                         && (target is LivingEntity || target is VehicleEntity)
                         && (target !is TargetEntity)
                         && !(target is Player && (target.isCreative || target.isSpectator))
-                        && (this.getOwner() != null && !this.getOwner()!!
+                        && (this.owner != null && !this.owner!!
                     .isAlliedTo(target) || target.team == null || enabledTDM(target))
                         && !target.isShiftKeyDown
                 if (!condition) continue
@@ -235,7 +235,7 @@ open class ClaymoreEntity(type: EntityType<ClaymoreEntity>, level: Level) : Enti
 
     private fun triggerExplode() {
         CustomExplosion.Builder(this)
-            .attacker(this.getOwner())
+            .attacker(this.owner)
             .damage(ExplosionConfig.CLAYMORE_EXPLOSION_DAMAGE.get().toFloat())
             .radius(ExplosionConfig.CLAYMORE_EXPLOSION_RADIUS.get().toFloat())
             .withParticleType(ParticleTool.ParticleType.MEDIUM)
