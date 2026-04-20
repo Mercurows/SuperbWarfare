@@ -8,8 +8,6 @@ import com.atsuishio.superbwarfare.data.gun.GunData.Companion.getPerkPriority
 import com.atsuishio.superbwarfare.init.ModPerks
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.perk.Perk
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.serializer
 import net.minecraftforge.registries.RegistryManager
 import kotlin.math.min
 import kotlin.reflect.KMutableProperty1
@@ -17,33 +15,21 @@ import kotlin.reflect.KMutableProperty1
 @Suppress("UNUSED")
 class GunProp<T, R>(
     prop: KMutableProperty1<DefaultGunData, T>,
-    serializer: () -> KSerializer<T>,
     transform: (T) -> R,
-) : Prop<GunData, DefaultGunData, T, R, GunProp<T, R>>(prop, serializer, transform) {
+) : Prop<GunData, DefaultGunData, T, R, GunProp<T, R>>(prop, transform) {
 
     companion object {
         inline fun <reified T> plainProp(
             prop: KMutableProperty1<DefaultGunData, T>,
         ): GunProp<T, T> {
-//            val serializerClass = prop.annotations.filterIsInstance<Serializable>().singleOrNull()?.with
-//
-//            @Suppress("UNCHECKED_CAST")
-//            val s = (serializerClass?.objectInstance ?: serializerClass?.createInstance()) as KSerializer<T>?
-
-            // TODO 如何正确获取并创建@Serialiable上的KSerializer实例？
-            return GunProp(prop, { serializer<T>() }) { it }
+            return GunProp(prop) { it }
         }
 
         inline fun <reified T, R> complexProp(
             prop: KMutableProperty1<DefaultGunData, T>,
             noinline transform: (T) -> R
         ): GunProp<T, R> {
-//            val serializerClass = prop.annotations.filterIsInstance<Serializable>().singleOrNull()?.with
-//
-//            @Suppress("UNCHECKED_CAST")
-//            val s = (serializerClass?.objectInstance ?: serializerClass?.createInstance()) as KSerializer<T>?
-            // TODO 如何正确获取并创建@Serialiable上的KSerializer实例？
-            return GunProp(prop, { serializer<T>() }, transform)
+            return GunProp(prop, transform)
         }
 
 
