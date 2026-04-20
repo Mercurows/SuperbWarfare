@@ -337,6 +337,7 @@
   "item.superbwarfare.functional_perk_data_chip": "功能模组数据芯片",
   "item.superbwarfare.damage_perk_data_chip": "伤害模组数据芯片",
   "item.superbwarfare.edd": "防止攻入装置",
+  "des.superbwarfare.edd": "只能放置在方块的侧面",
 
   "attribute.superbwarfare.bullet_resistance": "子弹防护",
 

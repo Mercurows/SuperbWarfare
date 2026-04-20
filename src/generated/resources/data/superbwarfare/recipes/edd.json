@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": {
+      "item": "superbwarfare:laser_unit"
+    },
+    "b": {
+      "tag": "forge:ingots/iron"
+    },
+    "c": {
+      "item": "superbwarfare:high_energy_explosives"
+    },
+    "d": {
+      "tag": "minecraft:planks"
+    }
+  },
+  "pattern": [
+    " a ",
+    "bcb",
+    " d "
+  ],
+  "result": {
+    "count": 4,
+    "item": "superbwarfare:edd"
+  },
+  "show_notification": true
+}

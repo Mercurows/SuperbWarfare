@@ -3,8 +3,6 @@ package com.atsuishio.superbwarfare.entity.projectile
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.entity.living.TargetEntity
-import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier.Companion.createDefaultModifier
-import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.tools.CustomExplosion
@@ -24,8 +22,6 @@ import net.minecraft.server.players.OldUsersConverter
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
-import net.minecraft.world.damagesource.DamageSource
-import net.minecraft.world.damagesource.DamageTypes
 import net.minecraft.world.entity.*
 import net.minecraft.world.entity.decoration.HangingEntity
 import net.minecraft.world.entity.player.Player
@@ -83,7 +79,6 @@ open class EDDEntity : HangingEntity, OwnableEntity {
         super.defineSynchedData()
         this.entityData.define(OWNER_UUID, Optional.empty())
         this.entityData.define(LAST_ATTACKER_UUID, "undefined")
-        this.entityData.define(HEALTH, 5f)
     }
 
     override fun getEyeHeight(
@@ -95,7 +90,6 @@ open class EDDEntity : HangingEntity, OwnableEntity {
 
     override fun addAdditionalSaveData(tag: CompoundTag) {
         super.addAdditionalSaveData(tag)
-        tag.putFloat("Health", this.entityData.get(HEALTH))
         tag.putInt("Corner", this.corner)
         tag.putString("LastAttacker", this.entityData.get(LAST_ATTACKER_UUID))
         if (this.ownerUUID != null) {
@@ -106,10 +100,6 @@ open class EDDEntity : HangingEntity, OwnableEntity {
 
     override fun readAdditionalSaveData(tag: CompoundTag) {
         super.readAdditionalSaveData(tag)
-        if (tag.contains("Health")) {
-            this.entityData.set(HEALTH, tag.getFloat("Health"))
-        }
-
         if (tag.contains("LastAttacker")) {
             this.entityData.set(LAST_ATTACKER_UUID, tag.getString("LastAttacker"))
         }
@@ -280,8 +270,7 @@ open class EDDEntity : HangingEntity, OwnableEntity {
 
     fun getFacingDirection(): Direction {
         return when (this.direction) {
-            Direction.NORTH -> if (this.isFacingLeft()) Direction.EAST else Direction.WEST
-            Direction.SOUTH -> if (this.isFacingLeft()) Direction.WEST else Direction.EAST
+            Direction.NORTH, Direction.SOUTH -> if (this.isFacingLeft()) Direction.WEST else Direction.EAST
             Direction.EAST -> if (this.isFacingLeft()) Direction.SOUTH else Direction.NORTH
             else -> if (this.isFacingLeft()) Direction.NORTH else Direction.SOUTH
         }
@@ -289,15 +278,6 @@ open class EDDEntity : HangingEntity, OwnableEntity {
 
     override fun isPickable(): Boolean {
         return !this.isRemoved
-    }
-
-    override fun hurt(source: DamageSource, amount: Float): Boolean {
-        val damage = DAMAGE_MODIFIER.compute(source, amount)
-        if (source.entity != null) {
-            this.entityData.set(LAST_ATTACKER_UUID, source.entity!!.getStringUUID())
-        }
-        this.entityData.set(HEALTH, this.entityData.get(HEALTH) - damage)
-        return super.hurt(source, damage)
     }
 
     private fun triggerExplode() {
@@ -331,27 +311,23 @@ open class EDDEntity : HangingEntity, OwnableEntity {
 
         val facing = this.getFacingDirection()
 
-        // TODO 修改为正确的扫描范围
-        val aabb = AABB(this.position(), this.position()).expandTowards(
-            facing.step().toVec3().scale(ExplosionConfig.EDD_TRACE_RANGE.get().toDouble())
-        )
+        val aabb = this.boundingBox
+            .expandTowards(this.lookAngle.normalize().scale(0.5))
+            .expandTowards(facing.step().toVec3().scale(ExplosionConfig.EDD_TRACE_RANGE.get().toDouble()))
         val flag = this.level().getEntitiesOfClass(
             Entity::class.java,
             aabb
         ) {
-            it !is EDDEntity && it != this.owner && (it !is TargetEntity)
+            it !is EDDEntity && it !is TargetEntity
+                    && it != this.owner
                     && !(it is Player && (it.isCreative || it.isSpectator))
-                    && (this.getOwner() != null && !this.getOwner()!!
+                    && (this.owner != null && !this.owner!!
                 .isAlliedTo(it) || it.team == null || enabledTDM(it))
         }.isNotEmpty()
 
         if (flag) {
             this.triggerExplode()
             ParticleTool.spawnMiniExplosionParticles(this.level(), this.position())
-            this.discard()
-        }
-
-        if (this.entityData.get(HEALTH) <= 0) {
             this.discard()
         }
     }
@@ -364,15 +340,5 @@ open class EDDEntity : HangingEntity, OwnableEntity {
         @JvmField
         val LAST_ATTACKER_UUID: EntityDataAccessor<String> =
             SynchedEntityData.defineId(EDDEntity::class.java, EntityDataSerializers.STRING)
-
-        @JvmField
-        val HEALTH: EntityDataAccessor<Float> =
-            SynchedEntityData.defineId(EDDEntity::class.java, EntityDataSerializers.FLOAT)
-
-        private val DAMAGE_MODIFIER = createDefaultModifier()
-            .multiply(0.02f, ModDamageTypes.CUSTOM_EXPLOSION)
-            .multiply(0.02f, ModDamageTypes.MINE)
-            .multiply(0.02f, ModDamageTypes.PROJECTILE_EXPLOSION)
-            .multiply(0.02f, DamageTypes.EXPLOSION)
     }
 }

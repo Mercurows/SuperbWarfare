@@ -1,19 +1,31 @@
 package com.atsuishio.superbwarfare.item.projectile
 
 import com.atsuishio.superbwarfare.entity.projectile.EDDEntity
+import net.minecraft.ChatFormatting
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
+import net.minecraft.network.chat.Component
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.item.Rarity
+import net.minecraft.world.item.TooltipFlag
 import net.minecraft.world.item.context.UseOnContext
+import net.minecraft.world.level.Level
 import net.minecraft.world.level.gameevent.GameEvent
 import net.minecraft.world.phys.Vec3
 import kotlin.math.abs
 
-open class EDDItem : Item(Properties().rarity(Rarity.UNCOMMON)) {
+open class EDDItem : Item(Properties()) {
+    override fun appendHoverText(
+        pStack: ItemStack,
+        pLevel: Level?,
+        pTooltipComponents: MutableList<Component>,
+        pIsAdvanced: TooltipFlag
+    ) {
+        pTooltipComponents.add(Component.translatable("des.superbwarfare.edd").withStyle(ChatFormatting.GRAY))
+    }
+
     override fun useOn(context: UseOnContext): InteractionResult {
         val pos = context.clickedPos
         val direction = context.clickedFace

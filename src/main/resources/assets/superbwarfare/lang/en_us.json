@@ -666,6 +666,7 @@
   "entity.superbwarfare.super_star_projectile": "Super Star",
   "entity.superbwarfare.prismatic_bolt": "Prismatic Bolt",
   "entity.superbwarfare.edd": "Entry Denial Device",
+  "des.superbwarfare.edd": "It can only be placed on the side of a block",
 
   "key.categories.superbwarfare": "Superb Warfare",
   "key.superbwarfare.move_forward": "Forward / Throttle Up",
