@@ -127,7 +127,7 @@ object ExplosionConfig {
     val EDD_EXPLOSION_RADIUS = buildServerConfig {
         comment("The explosion radius of EDD")
         comment("防止攻入装置的爆炸半径")
-        defineInRange("edd_explosion_radius", 2, 1, Int.MAX_VALUE)
+        defineInRange("edd_explosion_radius", 3, 1, Int.MAX_VALUE)
     }
 
     @JvmField

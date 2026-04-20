@@ -930,7 +930,7 @@
     }
   ],
   "textures": {
-    "1": "superbwarfare:block/claymore",
+    "1": "superbwarfare:item/claymore",
     "particle": "superbwarfare:item/claymore"
   }
 }
