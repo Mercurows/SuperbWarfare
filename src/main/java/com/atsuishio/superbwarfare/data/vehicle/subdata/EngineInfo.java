@@ -77,8 +77,6 @@ public abstract class EngineInfo {
     public static class Ship extends EngineInfo {
         @SerializedName("BodyPitchRate")
         public double bodyPitchRate = 1;
-        @SerializedName("BodyRollRate")
-        public double bodyRollRate = 1;
         // 转向速度
         @SerializedName("SteeringSpeed")
         public float steeringSpeed = 0.1f;

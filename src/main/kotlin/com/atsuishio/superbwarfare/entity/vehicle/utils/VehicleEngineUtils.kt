@@ -424,7 +424,6 @@ object VehicleEngineUtils {
         val powerReduce = engineInfo.decrement
         val steeringSpeed = engineInfo.steeringSpeed
         val bodyPitchRate = engineInfo.bodyPitchRate
-        val bodyRollRate = engineInfo.bodyRollRate
 
         if (buoyancy != 0.0) {
             val fluidFloat = buoyancy * VehicleVecUtils.getSubmergedHeight(this)
@@ -515,10 +514,10 @@ object VehicleEngineUtils {
 
         if (rightInputDown) {
             holdTick++
-            deltaRot -= steeringSpeed * 0.12f * Math.min(holdTick, 10)
+            deltaRot -= steeringSpeed * 0.03f * Math.min(holdTick, 40)
         } else if (leftInputDown) {
             holdTick++
-            deltaRot += steeringSpeed * 0.12f * Math.min(holdTick, 10)
+            deltaRot += steeringSpeed * 0.03f * Math.min(holdTick, 40)
         } else {
             holdTick = 0
         }
@@ -539,7 +538,7 @@ object VehicleEngineUtils {
                 (xRot - direct * (if (onGround()) 0 else 1) * bodyPitchRate * deltaMovement.horizontalDistance()).toFloat()
             yRot = (yRot - 20 * deltaMovement.horizontalDistance() * deltaRot * (if (power > 0) 1 else -1)).toFloat()
             deltaMovement = deltaMovement.add(
-                getViewVector(1f).scale(0.11 * targetSpeed * power)
+                getViewVector(1f).scale(0.11 * targetSpeed * power * (if (Mth.abs(power) <= 1) Mth.abs(power) else 1f))
             )
 
             deltaMovement = deltaMovement.add(
