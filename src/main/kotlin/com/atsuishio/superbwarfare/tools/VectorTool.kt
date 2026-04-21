@@ -8,7 +8,6 @@ import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
-import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec2
 import net.minecraft.world.phys.Vec3
@@ -226,16 +225,6 @@ object VectorTool {
 
     @JvmStatic
     fun checkNoClip(pos1: Vec3, pos2: Vec3, level: Level): Boolean {
-        return level.clip(
-            ClipContext(
-                pos1, pos2,
-                ClipContext.Block.VISUAL, ClipContext.Fluid.ANY, null
-            )
-        ).type != HitResult.Type.BLOCK
-    }
-
-    @JvmStatic
-    fun checkNoClipRadar(pos1: Vec3, pos2: Vec3, level: Level): Boolean {
         val check1 = level.clip(
             ClipContext(
                 pos1, pos1.add(pos1.vectorTo(pos2).normalize().scale(128.0)),
