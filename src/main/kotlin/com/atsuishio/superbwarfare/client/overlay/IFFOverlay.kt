@@ -26,6 +26,7 @@ import net.minecraft.world.level.ClipContext
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec2
 import net.minecraft.world.phys.Vec3
+import net.minecraft.world.phys.shapes.CollisionContext
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
 import net.neoforged.bus.api.SubscribeEvent
@@ -363,7 +364,7 @@ object IFFOverlay : CommonOverlay("iff") {
         return player.level().clip(
             ClipContext(
                 pos, pos.add(pos.vectorTo(teammate.position()).normalize().scale(512.0)),
-                ClipContext.Block.VISUAL, ClipContext.Fluid.ANY, player
+                ClipContext.Block.VISUAL, ClipContext.Fluid.ANY, CollisionContext.empty()
             )
         ).type != HitResult.Type.BLOCK
     }
@@ -372,7 +373,7 @@ object IFFOverlay : CommonOverlay("iff") {
         return player.level().clip(
             ClipContext(
                 pos, pos.add(pos.vectorTo(targetPos).normalize().scale(512.0)),
-                ClipContext.Block.VISUAL, ClipContext.Fluid.ANY, player
+                ClipContext.Block.VISUAL, ClipContext.Fluid.ANY, CollisionContext.empty()
             )
         ).type != HitResult.Type.BLOCK
     }
