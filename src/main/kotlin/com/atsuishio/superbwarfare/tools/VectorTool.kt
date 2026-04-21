@@ -168,7 +168,11 @@ object VectorTool {
 
     @JvmStatic
     fun combineRotationsPassengerWeaponStationBarrel(partialTicks: Float, entity: VehicleEntity): Quaterniond {
-        val barrelPitch = Mth.clamp(-Mth.lerp(partialTicks, entity.gunXRotO, entity.gunXRot), entity.passengerWeaponMinPitch, entity.passengerWeaponMaxPitch)
+        val barrelPitch = Mth.clamp(
+            -Mth.lerp(partialTicks, entity.gunXRotO, entity.gunXRot),
+            entity.passengerWeaponMinPitch,
+            entity.passengerWeaponMaxPitch
+        )
         val passengerWeaponStationPitchRot = Axis.XP.rotationDegrees(-barrelPitch)
         return combineRotationsPassengerWeaponStation(partialTicks, entity)
             .mul(Quaterniond(passengerWeaponStationPitchRot))
@@ -226,16 +230,6 @@ object VectorTool {
 
     @JvmStatic
     fun checkNoClip(pos1: Vec3, pos2: Vec3, level: Level): Boolean {
-        return level.clip(
-            ClipContext(
-                pos1, pos2,
-                ClipContext.Block.VISUAL, ClipContext.Fluid.ANY, CollisionContext.empty()
-            )
-        ).type != HitResult.Type.BLOCK
-    }
-
-    @JvmStatic
-    fun checkNoClipRadar(pos1: Vec3, pos2: Vec3, level: Level): Boolean {
         val check1 = level.clip(
             ClipContext(
                 pos1, pos1.add(pos1.vectorTo(pos2).normalize().scale(128.0)),

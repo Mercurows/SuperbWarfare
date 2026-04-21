@@ -362,8 +362,8 @@ object IFFOverlay : CommonOverlay("iff") {
     fun checkNoClip(player: Player, teammate: Entity, pos: Vec3): Boolean {
         return player.level().clip(
             ClipContext(
-                pos, teammate.position(),
-                ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, player
+                pos, pos.add(pos.vectorTo(teammate.position()).normalize().scale(512.0)),
+                ClipContext.Block.VISUAL, ClipContext.Fluid.ANY, player
             )
         ).type != HitResult.Type.BLOCK
     }
@@ -371,8 +371,8 @@ object IFFOverlay : CommonOverlay("iff") {
     fun checkNoClip(player: Player, targetPos: Vec3, pos: Vec3): Boolean {
         return player.level().clip(
             ClipContext(
-                pos, targetPos,
-                ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, player
+                pos, pos.add(pos.vectorTo(targetPos).normalize().scale(512.0)),
+                ClipContext.Block.VISUAL, ClipContext.Fluid.ANY, player
             )
         ).type != HitResult.Type.BLOCK
     }

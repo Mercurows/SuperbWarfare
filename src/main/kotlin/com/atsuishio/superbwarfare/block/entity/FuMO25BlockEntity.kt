@@ -324,7 +324,7 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
                         pos.y.toDouble() + 2.5,
                         pos.z.toDouble() + 0.5
                     ), vec3, it
-                ) < 60 && VectorTool.checkNoClipRadar(
+                ) < 60 && VectorTool.checkNoClip(
                     Vec3(
                         pos.x.toDouble() + 0.5,
                         pos.y.toDouble() + 2.5,
