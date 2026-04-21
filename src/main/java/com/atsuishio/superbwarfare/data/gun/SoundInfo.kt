@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.data.gun
 
 import com.atsuishio.superbwarfare.annotation.ServerOnly
 import com.atsuishio.superbwarfare.data.ObjectToList
-import com.atsuishio.superbwarfare.data.SerializedObjectToList
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedSoundEvent
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.SerialName
@@ -118,5 +117,5 @@ class SoundInfo {
     // 切枪时应该被中止播放的音效
     @SerializedName("CancellableSounds")
     @SerialName("CancellableSounds")
-    var cancellableSounds: SerializedObjectToList<String> = ObjectToList()
+    var cancellableSounds: ObjectToList<String> = ObjectToList()
 }
