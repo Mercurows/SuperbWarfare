@@ -52,7 +52,8 @@
     },
     {
       "Transform": "Vehicle",
-      "Position": [0.8, 0.35, -1.2],
+      "Position": [-0.875, 0.5625, -2.1875],
+      "Orientation": -90,
       "MinYaw": -90,
       "MaxYaw": 90,
       "DismountInfo": {
@@ -62,7 +63,8 @@
     },
     {
       "Transform": "Vehicle",
-      "Position": [-0.8, 0.35, -2.2],
+      "Position": [0.875, 0.5625, -2.1875],
+      "Orientation": 90,
       "MinYaw": -90,
       "MaxYaw": 90,
       "DismountInfo": {
@@ -72,7 +74,7 @@
     },
     {
       "Transform": "Vehicle",
-      "Position": [0.8, 0.35, -2.2],
+      "Position": [0, 0.688, -3.188],
       "MinYaw": -90,
       "MaxYaw": 90,
       "DismountInfo": {
@@ -167,8 +169,7 @@
     "Increment": 0.035,
     "Decrement": 0.022,
     "SteeringSpeed": 0.15,
-    "BodyPitchRate": 1.1,
-    "BodyRollRate": 1.0
+    "BodyRollRate": 0.8
   },
   "VehicleContainerType": "Medium",
   "ThirdPersonCameraPos": [-0.5, 1.5, 3],
