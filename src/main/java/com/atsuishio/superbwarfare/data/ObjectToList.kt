@@ -19,13 +19,12 @@ import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
 /**
+ * 创建一个List包装类，反序列化时将单个对象解析为单元素List，或直接以List方式进行读取，不影响序列化
  * {} -> [{}]
  */
-@Serializable
-data class ObjectToList<T>(
-    @JvmField
-    var list: MutableList<T>
-) {
+@Serializable(OTLSerializer::class)
+@Suppress("DelegationToVarProperty")
+data class ObjectToList<T>(@JvmField var list: MutableList<T>) : List<T> by list {
     @SafeVarargs
     constructor(vararg objects: T) : this(mutableListOf(*objects))
 
@@ -83,16 +82,6 @@ data class ObjectToList<T>(
     }
 }
 
-typealias SerializedObjectToList<T> = @Serializable(OTLSerializer::class) ObjectToList<T>
-
-//class OTLSerializer<T>(elementSerializer: KSerializer<T>) :
-//    JsonTransformingSerializer<ObjectToList<T>>(ObjectToList.serializer(elementSerializer)) {
-//    override fun transformDeserialize(element: JsonElement): JsonElement {
-//        val list = element as? JsonArray ?: JsonArray(listOf(element))
-//        return buildJsonObject { put("list", list) }
-//    }
-//}
-
 class OTLSerializer<T>(val elementSerializer: KSerializer<T>) : KSerializer<ObjectToList<T>> {
     override val descriptor = elementSerializer.descriptor
 
@@ -104,7 +93,7 @@ class OTLSerializer<T>(val elementSerializer: KSerializer<T>) : KSerializer<Obje
     }
 
     override fun deserialize(decoder: Decoder): ObjectToList<T> {
-        require(decoder is JsonDecoder)
+        require(decoder is JsonDecoder) { "only JsonDecoder is supported!" }
 
         val element = decoder.decodeJsonElement()
         return if (element is JsonArray) {

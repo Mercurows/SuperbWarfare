@@ -7,16 +7,26 @@ import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonDecoder
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.jsonPrimitive
 import java.io.IOException
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
+import kotlin.reflect.KClass
+import kotlin.reflect.KProperty
+import kotlin.reflect.full.createInstance
 
 /**
+ * 创建一个value的包装类，允许使用字符串创建对象，或者直接以对象形式解析JSON值，在序列化和反序列化时可以将该包装类视为不存在
  * "" -> {}
  */
 // TODO 重新用kt实现STO
-@Serializable
+@Serializable(STOSerializer::class)
 class StringToObject<T : DeserializeFromString>(@JvmField var value: T) {
     internal class StringOrObjectAdapter<T : DeserializeFromString>(type: Type, private val gson: Gson) :
         TypeAdapter<StringToObject<T>>() {
@@ -65,24 +75,51 @@ class StringToObject<T : DeserializeFromString>(@JvmField var value: T) {
     }
 }
 
-//class STOSerializer<T>(private val serializer: KSerializer<StringToObject<T>>) : KSerializer<StringToObject<T>> {
-//    override val descriptor: SerialDescriptor
-//        get() = serializer.descriptor
-//
-//    override fun serialize(encoder: Encoder, value: StringToObject<T>) {
-//        TODO("Not yet implemented")
-//    }
-//
-//    override fun deserialize(decoder: Decoder): StringToObject<T> {
-//        require(decoder is JsonDecoder)
-//        val element = decoder.decodeJsonElement()
-//
-//        if (element !is JsonPrimitive || !element.jsonPrimitive.isString) return serializer.deserialize(decoder)
-//
-//        val fac = serializer.descriptor.annotations.filterIsInstance<STOFactory>().first().factory as KClass<StringInstanceBuilder<T>>
-//        val obj = fac.objectInstance!!.fromString(element.jsonPrimitive.content)
-//
-//        return StringToObject(obj)
-//    }
-//
-//}
+private val cachedInstances = mutableMapOf<KClass<*>, Any>()
+
+// 获取object实例或者创建无参构造函数实例
+@Suppress("UNCHECKED_CAST")
+private fun <T : Any> KClass<T>.getInstance() = cachedInstances.getOrPut(this) {
+    objectInstance ?: createInstance()
+} as T
+
+class STOSerializer<T : DeserializeFromString>(private val serializer: KSerializer<T>) :
+    KSerializer<StringToObject<T>> {
+    override val descriptor = serializer.descriptor
+
+    override fun serialize(encoder: Encoder, value: StringToObject<T>) {
+        encoder.encodeSerializableValue(serializer, value.value)
+    }
+
+    override fun deserialize(decoder: Decoder): StringToObject<T> {
+        require(decoder is JsonDecoder) { "only JsonDecoder is supported!" }
+        val element = decoder.decodeJsonElement()
+
+        if (element !is JsonPrimitive || !element.jsonPrimitive.isString) return StringToObject(
+            Json.decodeFromJsonElement(serializer, element)
+        )
+
+        @Suppress("UNCHECKED_CAST")
+        val fac = serializer.descriptor.annotations.filterIsInstance<STOFactory>()
+            .singleOrNull()?.factory as KClass<StringInstanceBuilder<T>>?
+
+        requireNotNull(fac) { "No factory found for ${serializer.descriptor.serialName}! Add a @STOFactory annotation to your target class!" }
+        return StringToObject(fac.getInstance().fromString(element.jsonPrimitive.content))
+    }
+}
+
+/**
+ * 将该注解用于StringToObject<T>的T类上，用于指定生成T实例的StringInstanceBuilder<T>工厂类
+ */
+@OptIn(ExperimentalSerializationApi::class)
+@Retention(AnnotationRetention.RUNTIME)
+@SerialInfo
+@Target(AnnotationTarget.CLASS)
+annotation class STOFactory(val factory: KClass<out StringInstanceBuilder<*>>)
+
+interface StringInstanceBuilder<T> {
+    fun fromString(value: String): T
+}
+
+@Suppress("UNCHECKED_CAST")
+fun <V> KProperty<V>.serializer() = serializer(returnType) as KSerializer<V>

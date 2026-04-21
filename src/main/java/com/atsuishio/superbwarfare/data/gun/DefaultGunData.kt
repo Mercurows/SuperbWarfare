@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.annotation.ServerOnly
 import com.atsuishio.superbwarfare.data.IDBasedData
 import com.atsuishio.superbwarfare.data.ModColor
-import com.atsuishio.superbwarfare.data.SerializedObjectToList
+import com.atsuishio.superbwarfare.data.ObjectToList
 import com.atsuishio.superbwarfare.data.StringToObject
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedResourceLocation
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedVec3
@@ -178,7 +178,7 @@ class DefaultGunData : IDBasedData<DefaultGunData> {
 
     @SerializedName("AvailableFireModes")
     @SerialName("AvailableFireModes")
-    var availableFireModes = SerializedObjectToList(StringToObject(FireModeInfo()))
+    var availableFireModes = ObjectToList(StringToObject(FireModeInfo()))
 
     fun availableFireModes() = availableFireModes.list.map { it.value }
 
@@ -221,7 +221,7 @@ class DefaultGunData : IDBasedData<DefaultGunData> {
 
     @SerializedName("AmmoType")
     @SerialName("AmmoType")
-    var ammoConsumers: SerializedObjectToList<StringToObject<AmmoConsumer>> = SerializedObjectToList()
+    var ammoConsumers: ObjectToList<StringToObject<AmmoConsumer>> = ObjectToList()
 
     @Transient
     @kotlinx.serialization.Transient
@@ -350,7 +350,7 @@ class DefaultGunData : IDBasedData<DefaultGunData> {
 
     @SerializedName("AvailablePerks")
     @SerialName("AvailablePerks")
-    var availablePerks = SerializedObjectToList(
+    var availablePerks = ObjectToList(
         "@Ammo",
         "superbwarfare:field_doctor",
         "superbwarfare:powerful_attraction",
