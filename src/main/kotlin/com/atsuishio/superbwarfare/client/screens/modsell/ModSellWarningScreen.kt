@@ -6,18 +6,12 @@ import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.components.AbstractButton
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.screens.Screen
-import net.minecraft.client.gui.screens.TitleScreen
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen
-import net.minecraft.client.gui.screens.multiplayer.SafetyScreen
 import net.minecraft.client.gui.screens.multiplayer.WarningScreen
 import net.minecraft.network.chat.CommonComponents
 import net.minecraft.network.chat.Component
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.client.event.ScreenEvent
-import net.minecraftforge.eventbus.api.EventPriority
-import net.minecraftforge.eventbus.api.SubscribeEvent
-import net.minecraftforge.fml.common.Mod
 import java.net.InetAddress
 import java.security.MessageDigest
 import java.util.*
@@ -31,7 +25,7 @@ class ModSellWarningScreen(val lastScreen: Screen) : WarningScreen(
         .append(Component.literal(TranslationRecord.get(TranslationRecord.CONTENT)))
 ) {
 
-    @Mod.EventBusSubscriber(value = [Dist.CLIENT])
+    //    @Mod.EventBusSubscriber(value = [Dist.CLIENT])
     companion object {
         val ENVIRONMENT_CHECKSUM = generateEnvironmentHash()
 
@@ -68,17 +62,17 @@ class ModSellWarningScreen(val lastScreen: Screen) : WarningScreen(
             }
         }
 
-        @SubscribeEvent(priority = EventPriority.HIGH)
-        fun onGuiOpen(event: ScreenEvent.Opening) {
-            if (!((event.newScreen is JoinMultiplayerScreen || event.newScreen is SafetyScreen) && event.currentScreen is TitleScreen))
-                return
-
-            if (EnvironmentChecksumConfig.ENVIRONMENT_CHECKSUM.get().equals(ENVIRONMENT_CHECKSUM)) return
-
-            // 拦截多人游戏界面加载
-            event.isCanceled = true
-            mc.setScreen(event.currentScreen?.let { ModSellWarningScreen(it) })
-        }
+//        @SubscribeEvent(priority = EventPriority.HIGH)
+//        fun onGuiOpen(event: ScreenEvent.Opening) {
+//            if (!((event.newScreen is JoinMultiplayerScreen || event.newScreen is SafetyScreen) && event.currentScreen is TitleScreen))
+//                return
+//
+//            if (EnvironmentChecksumConfig.ENVIRONMENT_CHECKSUM.get().equals(ENVIRONMENT_CHECKSUM)) return
+//
+//            // 拦截多人游戏界面加载
+//            event.isCanceled = true
+//            mc.setScreen(event.currentScreen?.let { ModSellWarningScreen(it) })
+//        }
     }
 
     protected override fun initButtons(yOffset: Int) {
