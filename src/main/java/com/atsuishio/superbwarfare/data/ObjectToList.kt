@@ -12,7 +12,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonDecoder
 import java.io.IOException
@@ -100,7 +99,7 @@ class OTLSerializer<T>(val elementSerializer: KSerializer<T>) : KSerializer<Obje
         return if (element is JsonArray) {
             ObjectToList(element.map { decoder.json.decodeFromJsonElement(elementSerializer, it) }.toMutableList())
         } else {
-            ObjectToList(listOf(Json.decodeFromJsonElement(elementSerializer, element)).toMutableList())
+            ObjectToList(listOf(decoder.json.decodeFromJsonElement(elementSerializer, element)).toMutableList())
         }
     }
 
