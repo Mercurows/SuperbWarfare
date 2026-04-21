@@ -10,7 +10,6 @@ import com.google.gson.stream.JsonWriter
 import kotlinx.serialization.*
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonPrimitive
@@ -96,7 +95,7 @@ class STOSerializer<T : DeserializeFromString>(private val serializer: KSerializ
         val element = decoder.decodeJsonElement()
 
         if (element !is JsonPrimitive || !element.jsonPrimitive.isString) return StringToObject(
-            Json.decodeFromJsonElement(serializer, element)
+            decoder.json.decodeFromJsonElement(serializer, element)
         )
 
         @Suppress("UNCHECKED_CAST")
