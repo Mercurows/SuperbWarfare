@@ -95,7 +95,7 @@ class CategoryButton(x: Int, y: Int, var category: VehicleAssemblingRecipe.Categ
         if (this.isHovered()) {
             pGuiGraphics.renderTooltip(
                 mc.font,
-                Component.translatable("tips.superbwarfare.category." + this.category.name),
+                Component.translatable("tips.superbwarfare.category." + this.category.typeName),
                 mouseX,
                 mouseY
             )

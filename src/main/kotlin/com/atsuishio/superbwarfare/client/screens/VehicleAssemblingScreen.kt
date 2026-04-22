@@ -264,7 +264,7 @@ class VehicleAssemblingScreen(pMenu: VehicleAssemblingMenu, pPlayerInventory: In
                 pose.scale(0.5f, 0.5f, 1f)
                 pose.translate(0f, 0f, 200f)
 
-                val count = input.getCount()
+                val count = input.count
                 val player = localPlayer
                 if (player != null && player.isCreative()) {
                     val text = Component.literal("$count/∞")
@@ -405,7 +405,7 @@ class VehicleAssemblingScreen(pMenu: VehicleAssemblingMenu, pPlayerInventory: In
                 }
 
                 val hasCount = materialCount.get(i)
-                val needCount = inputs[i].getCount()
+                val needCount = inputs[i].count
                 val player = localPlayer
                 val isCreative = player != null && player.isCreative()
                 if (hasCount < needCount && !isCreative) {

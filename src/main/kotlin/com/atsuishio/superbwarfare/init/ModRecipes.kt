@@ -42,7 +42,7 @@ object ModRecipes {
     }
 
     @JvmField
-    val VEHICLE_ASSEMBLING_SERIALIZER = register("vehicle_assembling") { VehicleAssemblingRecipeSerializer() }
+    val VEHICLE_ASSEMBLING_SERIALIZER = register("vehicle_assembling") { VehicleAssemblingRecipeSerializer }
 
     @JvmField
     val VEHICLE_RESET_SERIALIZER = register("vehicle_reset") {
