@@ -17,7 +17,6 @@ import net.minecraft.world.inventory.ContainerLevelAccess
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.crafting.RecipeManager
 import net.neoforged.neoforge.capabilities.Capabilities
-import net.neoforged.neoforge.items.IItemHandler
 
 open class VehicleAssemblingMenu @JvmOverloads constructor(
     pContainerId: Int,
@@ -46,9 +45,8 @@ open class VehicleAssemblingMenu @JvmOverloads constructor(
      * Code based on TaC-Z
      */
     fun assembleVehicle(id: ResourceLocation, player: ServerPlayer) {
-        val recipe = this.getRecipeById(id, player.level().recipeManager)
-        if (recipe == null) return
-        val handler = player.getCapability<IItemHandler?>(Capabilities.ItemHandler.ENTITY)
+        val recipe = this.getRecipeById(id, player.level().recipeManager) ?: return
+        val handler = player.getCapability(Capabilities.ItemHandler.ENTITY)
         if (handler != null) {
             if (!player.isCreative) {
                 val recordCount = Int2IntArrayMap()
@@ -60,7 +58,7 @@ open class VehicleAssemblingMenu @JvmOverloads constructor(
                     for (i in 0..<handler.slots) {
                         val stack = handler.getStackInSlot(i)
                         val stackCount = stack.count
-                        if (!stack.isEmpty && ingredient.getIngredient().test(stack)) {
+                        if (!stack.isEmpty && ingredient.ingredient.test(stack)) {
                             count += stackCount
                             if (count > ingredient.count) {
                                 val remaining = count - ingredient.count

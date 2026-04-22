@@ -43,6 +43,7 @@ class VehicleAssemblingResult {
     }
 
     @Transient
+    @get:JvmName("result")
     var result: ItemStack? = null
 
     fun getResult(): ItemStack {

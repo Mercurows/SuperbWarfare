@@ -190,7 +190,7 @@ class VehicleAssemblingScreen(pMenu: VehicleAssemblingMenu, pPlayerInventory: In
             var count = 0
 
             for (stack in player.getInventory().items) {
-                if (!stack.isEmpty && ingredient.getIngredient().test(stack)) {
+                if (!stack.isEmpty && ingredient.ingredient.test(stack)) {
                     count += stack.count
                 }
             }
@@ -242,7 +242,7 @@ class VehicleAssemblingScreen(pMenu: VehicleAssemblingMenu, pPlayerInventory: In
                 val posY = y + 118 + i * 14
 
                 val input = inputs[index]
-                val ingredient = input.getIngredient()
+                val ingredient = input.ingredient
                 val items = ingredient.getItems()
                 if (items.size == 0) continue
 
@@ -751,7 +751,7 @@ class VehicleAssemblingScreen(pMenu: VehicleAssemblingMenu, pPlayerInventory: In
                     val index = i * 4 + j
                     if (index >= inputs.size) return areas
                     val input = inputs[index]
-                    val ingredient = input.getIngredient()
+                    val ingredient = input.ingredient
                     val items = ingredient.getItems()
                     if (items.size == 0) continue
                     val x = this.leftPos + 215 + j * 34

@@ -22,7 +22,7 @@ class VehicleAssemblingRecipeBuilder : RecipeBuilder {
     private val result: Item
     private val entityType: EntityType<*>?
     private val count: Int
-    private val category: VehicleAssemblingRecipe.Category?
+    private val category: VehicleAssemblingRecipe.Category
     private val ingredients: MutableMap<String, Int> = Maps.newLinkedHashMap()
     private val criteria: MutableMap<String, Criterion<*>> = LinkedHashMap()
 
