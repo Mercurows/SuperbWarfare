@@ -66,22 +66,6 @@ object ModEnumExtensions {
             get() = SUPERBWARFARE_LUNGE_MINE_POSE.getValue()
 
         @JvmField
-        val SUPERBWARFARE_AURELIA_SCEPTRE_POSE: EnumProxy<ArmPose> = EnumProxy(
-            ArmPose::class.java,
-            false,
-            IArmPoseTransformer { model, _, arm ->
-                if (arm != HumanoidArm.LEFT) {
-                    model.rightArm.xRot = -67.5f * Mth.DEG_TO_RAD + model.head.xRot + 0.05f * model.rightArm.xRot
-                    model.rightArm.yRot = 5f * Mth.DEG_TO_RAD + model.head.yRot
-                }
-            }
-        )
-
-        @JvmStatic
-        val aureliaSceptrePose: ArmPose
-            get() = SUPERBWARFARE_AURELIA_SCEPTRE_POSE.getValue()
-
-        @JvmField
         val SUPERBWARFARE_MINIGUN_POSE: EnumProxy<ArmPose> = EnumProxy(
             ArmPose::class.java,
             false,
