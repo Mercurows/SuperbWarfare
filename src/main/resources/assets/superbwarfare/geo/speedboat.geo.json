@@ -16,6 +16,36 @@
 					"pivot": [0, 0, 0]
 				},
 				{
+					"name": "body_left_dogTag",
+					"parent": "root",
+					"pivot": [19.1183, 21.66387, 2.22464],
+					"rotation": [0, -90, 0],
+					"cubes": [
+						{
+							"origin": [15.6183, 18.16387, 2.22464],
+							"size": [7, 7, 0],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [0, 0]}
+							}
+						}
+					]
+				},
+				{
+					"name": "body_right_dogTag",
+					"parent": "root",
+					"pivot": [-19.1183, 21.66387, 2.22464],
+					"rotation": [0, 90, 0],
+					"cubes": [
+						{
+							"origin": [-22.6183, 18.16387, 2.22464],
+							"size": [7, 7, 0],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [0, 0]}
+							}
+						}
+					]
+				},
+				{
 					"name": "weapon",
 					"parent": "root",
 					"pivot": [0.00202, 48.94105, 6.66229]

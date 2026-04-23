@@ -542,7 +542,7 @@ object VehicleEngineUtils {
             )
 
             deltaMovement = deltaMovement.add(
-                getUpVec(1f).scale(deltaMovement.length() * 0.015 * VehicleVecUtils.getSubmergedHeight(this) * Mth.abs(xRot))
+                getUpVec(1f).scale(deltaMovement.length() * 0.005 * VehicleVecUtils.getSubmergedHeight(this) * Mth.abs(xRot))
             )
         } else {
             xRot *= 0.99f
