@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.data
 
+import com.atsuishio.superbwarfare.serialization.serializersModule
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
 import com.google.gson.TypeAdapterFactory
@@ -121,4 +122,4 @@ interface StringInstanceBuilder<T> {
 }
 
 @Suppress("UNCHECKED_CAST")
-fun <V> KProperty<V>.serializer() = serializer(returnType) as KSerializer<V>
+fun <V> KProperty<V>.serializer() = serializersModule.serializer(returnType) as KSerializer<V>
