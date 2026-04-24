@@ -1,14 +1,12 @@
 package com.atsuishio.superbwarfare.data.gun
 
-import com.atsuishio.superbwarfare.data.DeserializeFromString
-import com.atsuishio.superbwarfare.data.JsonPropertyModifier
-import com.atsuishio.superbwarfare.data.PMC
-import com.atsuishio.superbwarfare.data.PropertyModifier1
+import com.atsuishio.superbwarfare.data.*
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedGsonObject
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@STOFactory(FireModeInfo.FireModeInfoInstanceBuilder::class)
 @Serializable
 class FireModeInfo : DeserializeFromString, GunPropertyModifier, PropertyModifier1<GunData, DefaultGunData> {
     @JvmField
@@ -29,9 +27,9 @@ class FireModeInfo : DeserializeFromString, GunPropertyModifier, PropertyModifie
     @kotlinx.serialization.Transient
     private val jsonPropModifier = JsonPropertyModifier<GunData, DefaultGunData>()
 
-    override fun computeProperties(gunData: GunData, rawData: DefaultGunData): DefaultGunData {
+    override fun computeProperties(data: GunData, rawData: DefaultGunData): DefaultGunData {
         jsonPropModifier.update(override)
-        return jsonPropModifier.computeProperties(gunData, rawData)
+        return jsonPropModifier.computeProperties(data, rawData)
     }
 
     override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) {
@@ -46,5 +44,13 @@ class FireModeInfo : DeserializeFromString, GunPropertyModifier, PropertyModifie
 
         this.mode = FireMode.tryParse(str)
         this.name = str
+    }
+
+    object FireModeInfoInstanceBuilder : StringInstanceBuilder<FireModeInfo> {
+        override fun fromString(value: String) = FireModeInfo().apply {
+            init()
+            this.mode = FireMode.tryParse(value)
+            this.name = value
+        }
     }
 }
