@@ -58,6 +58,7 @@ object DataLoader {
         directory: String,
         clazz: Class<T>,
         synced: Boolean = false,
+        isKtData: Boolean = false,
         onReload: Consumer<Map<String, Any>>? = null
     ): DataMap<T> {
         val data = LOADED_DATA[directory]
@@ -66,7 +67,7 @@ object DataLoader {
             return data.proxyMap as DataMap<T>
         } else {
             val proxyMap = DataMap<T>(directory, LOADED_DATA)
-            LOADED_DATA[directory] = GeneralData(clazz, proxyMap, HashMap(), synced, onReload)
+            LOADED_DATA[directory] = GeneralData(clazz, proxyMap, HashMap(), synced, isKtData, onReload)
             return proxyMap
         }
     }
@@ -76,6 +77,7 @@ object DataLoader {
     fun <T> createResource(
         directory: String,
         clazz: Class<T>,
+        isKtData: Boolean = false,
         onReload: Consumer<Map<String, Any>>? = null
     ): DataMap<T> {
         val resource = LOADED_RESOURCE[directory]
@@ -84,7 +86,7 @@ object DataLoader {
             return resource.proxyMap as DataMap<T>
         } else {
             val proxyMap = DataMap<T>(directory, LOADED_RESOURCE)
-            LOADED_RESOURCE[directory] = GeneralData(clazz, proxyMap, HashMap(), false, onReload)
+            LOADED_RESOURCE[directory] = GeneralData(clazz, proxyMap, HashMap(), false, isKtData, onReload)
             return proxyMap
         }
     }
@@ -121,10 +123,12 @@ object DataLoader {
     }
 
     data class GeneralData<T>(
-        val type: Class<*>, val proxyMap: DataMap<T>,
+        val type: Class<*>,
+        val proxyMap: DataMap<T>,
         val dataMap: HashMap<String, Any>,
         val synced: Boolean,
-        val onReload: Consumer<Map<String, Any>>?,
+        val isKtData: Boolean = false,
+        val onReload: Consumer<Map<String, Any>>?
     ) {
         val mapType by lazy {
             TypeToken.getParameterized(HashMap::class.java, String::class.java, type)!!

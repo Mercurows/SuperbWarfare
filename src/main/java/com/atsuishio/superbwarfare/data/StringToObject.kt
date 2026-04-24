@@ -91,6 +91,7 @@ class STOSerializer<T : DeserializeFromString>(private val serializer: KSerializ
         encoder.encodeSerializableValue(serializer, value.value)
     }
 
+    @OptIn(ExperimentalSerializationApi::class)
     override fun deserialize(decoder: Decoder): StringToObject<T> {
         require(decoder is JsonDecoder) { "only JsonDecoder is supported!" }
         val element = decoder.decodeJsonElement()

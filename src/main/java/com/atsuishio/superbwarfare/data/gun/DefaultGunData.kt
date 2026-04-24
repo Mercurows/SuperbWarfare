@@ -174,7 +174,7 @@ class DefaultGunData : IDBasedData<DefaultGunData> {
 
     @SerializedName("DefaultFireMode")
     @SerialName("DefaultFireMode")
-    var defaultFireMode: String = FireMode.SEMI.name
+    var defaultFireMode: String = FireMode.SEMI.typeName
 
     @SerializedName("AvailableFireModes")
     @SerialName("AvailableFireModes")

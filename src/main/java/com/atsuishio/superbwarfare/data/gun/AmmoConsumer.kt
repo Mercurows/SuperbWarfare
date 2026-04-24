@@ -27,6 +27,7 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.math.min
 
+@STOFactory(AmmoConsumer.AmmoConsumerInstanceBuilder::class)
 @Serializable
 class AmmoConsumer : DeserializeFromString, GunPropertyModifier, PropertyModifier1<GunData, DefaultGunData> {
     @SerializedName("Ammo")
@@ -372,6 +373,13 @@ class AmmoConsumer : DeserializeFromString, GunPropertyModifier, PropertyModifie
     override fun deserializeFromString(str: String?) {
         this.ammo = str
         init()
+    }
+
+    object AmmoConsumerInstanceBuilder : StringInstanceBuilder<AmmoConsumer> {
+        override fun fromString(value: String) = AmmoConsumer().apply {
+            this.ammo = value
+            init()
+        }
     }
 
     companion object {

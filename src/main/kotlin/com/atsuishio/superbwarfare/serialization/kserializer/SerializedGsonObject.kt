@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.serialization.kserializer
 import com.atsuishio.superbwarfare.tools.toGson
 import com.atsuishio.superbwarfare.tools.toKxJson
 import com.google.gson.JsonObject
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -12,10 +13,10 @@ import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonEncoder
 import kotlinx.serialization.json.jsonObject
 
-
 typealias SerializedGsonObject = @Serializable(GsonObjectSerializer::class) JsonObject
 
 object GsonObjectSerializer : KSerializer<JsonObject> {
+    @OptIn(ExperimentalSerializationApi::class)
     override val descriptor =
         SerialDescriptor("GsonObject", kotlinx.serialization.json.JsonObject.serializer().descriptor)
 

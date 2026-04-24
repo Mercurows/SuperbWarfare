@@ -136,7 +136,7 @@ class GunProp<T, R>(
         val WEIGHT = plainProp(DefaultGunData::weight)
 
         @JvmField
-        val DEFAULT_FIRE_MODE = complexProp(DefaultGunData::defaultFireMode) { it.ifEmpty { FireMode.SEMI.name!! }!! }
+        val DEFAULT_FIRE_MODE = complexProp(DefaultGunData::defaultFireMode) { it.ifEmpty { FireMode.SEMI.typeName!! }!! }
 
         @JvmField
         val AVAILABLE_FIRE_MODES =

@@ -12,11 +12,11 @@ class DamageReduce {
 
     @SerializedName("Rate")
     @SerialName("Rate")
-    var rate: Double
+    var rate: Double = 0.0
 
     @SerializedName("MinDistance")
     @SerialName("MinDistance")
-    var minDistance: Double
+    var minDistance: Double = 0.0
 
     @JvmOverloads
     constructor(type: ReduceType = ReduceType.EMPTY) {
@@ -46,6 +46,7 @@ class DamageReduce {
 //        this.minDistance = minDistance
 //    }
 
+    @Serializable
     enum class ReduceType(val typeName: String, val rate: Double, val minDistance: Double) {
         @SerializedName("Shotgun")
         @SerialName("Shotgun")

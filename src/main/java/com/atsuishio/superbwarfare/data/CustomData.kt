@@ -27,7 +27,7 @@ object CustomData {
 
     @JvmField
     val GUN_DATA = DataLoader.createData(
-        "sbw/guns", DefaultGunData::class.java, true
+        "sbw/guns", DefaultGunData::class.java, true, isKtData = true
     ) { _ -> GunData.DATA_CACHE.invalidateAll() }
 
     @JvmField
