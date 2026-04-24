@@ -255,8 +255,8 @@ object VehicleMotionUtils {
 
         // TODO 继续优化这个逆天碰撞
         for (entity in entities) {
-            val entitySize = entity.boundingBox.getSize()
-            val thisSize = vehicle.boundingBox.getSize()
+            val entitySize = entity.boundingBox.size
+            val thisSize = vehicle.boundingBox.size
             val f: Double
             val f1: Double
 
@@ -523,8 +523,8 @@ object VehicleMotionUtils {
                             70,
                             1f + 7f * speed + Math.random().toFloat() * 2,
                             Math.random().toFloat() * -0.12f,
-                            false,
-                            false
+                            cooldown = false,
+                            light = false
                         )
                         vehicle.addRandomParticle(
                             particleOption,

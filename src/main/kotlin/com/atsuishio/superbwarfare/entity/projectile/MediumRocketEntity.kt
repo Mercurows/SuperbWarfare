@@ -100,6 +100,7 @@ open class MediumRocketEntity : FastThrowableProjectile, BasicGeoProjectileEntit
         return ModItems.SMALL_ROCKET.get()
     }
 
+    @Suppress("DEPRECATION")
     public override fun onHitBlock(result: BlockHitResult) {
         super.onHitBlock(result)
 

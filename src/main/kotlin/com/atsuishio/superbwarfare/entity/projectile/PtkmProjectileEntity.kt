@@ -120,7 +120,7 @@ open class PtkmProjectileEntity : FastThrowableProjectile, BasicGeoProjectileEnt
                     var count = 8
 
                     var i = 0f
-                    while (i < this.distanceTo(target)) {
+                    while (i < this.distanceTo(target!!)) {
                         ParticleTool.sendParticle(
                             level, ParticleTypes.CLOUD,
                             position().x + i * deltaMovement.normalize().x,

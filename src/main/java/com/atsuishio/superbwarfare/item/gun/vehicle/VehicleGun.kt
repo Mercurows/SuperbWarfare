@@ -22,7 +22,7 @@ import javax.annotation.ParametersAreNonnullByDefault
 
 class VehicleGun : GunItem(Properties()) {
 
-    override fun computeProperties(gunData: GunData, rawData: DefaultGunData): DefaultGunData {
+    override fun computeProperties(data: GunData, rawData: DefaultGunData): DefaultGunData {
         if (rawData.autoReload == null) {
             rawData.autoReload = true
         }

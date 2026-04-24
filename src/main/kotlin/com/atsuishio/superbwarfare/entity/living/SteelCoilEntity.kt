@@ -67,11 +67,12 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Pa
         this.targetSelector.addGoal(2, ResetUniversalAngerTargetGoal(this, true))
     }
 
-    override fun canBeAffected(pEffectInstance: MobEffectInstance?): Boolean {
+    @Deprecated("Deprecated in Java")
+    override fun canBeAffected(pEffectInstance: MobEffectInstance): Boolean {
         return false
     }
 
-    override fun getHurtSound(pDamageSource: DamageSource?): SoundEvent {
+    override fun getHurtSound(pDamageSource: DamageSource): SoundEvent {
         return ModSounds.INDICATION_VEHICLE.get()
     }
 

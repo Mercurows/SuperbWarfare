@@ -118,6 +118,7 @@ class CustomExplosion @JvmOverloads constructor(
         return this
     }
 
+    @Suppress("DEPRECATION")
     override fun explode() {
         // 这个效果更好但是性能损耗巨大
 //        int sampleCount = (int) Mth.clamp(Math.PI * this.radius * this.radius, 64, 4096);
@@ -326,7 +327,7 @@ class CustomExplosion @JvmOverloads constructor(
     }
 
     class Builder(private var directSource: Entity) {
-        private val level: Level
+        private val level: Level = directSource.level()
         private var sourceEntity: Entity?
         private var attackerEntity: Entity?
         private var damage = 0f
@@ -341,7 +342,6 @@ class CustomExplosion @JvmOverloads constructor(
         var position: Vec3
 
         init {
-            this.level = directSource.level()
             this.sourceEntity = directSource
             this.attackerEntity = directSource
             this.position = Vec3(directSource.x, directSource.eyeY, directSource.z)

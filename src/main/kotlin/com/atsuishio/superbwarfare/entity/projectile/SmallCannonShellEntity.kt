@@ -57,9 +57,9 @@ open class SmallCannonShellEntity(type: EntityType<out SmallCannonShellEntity>, 
         }
     }
 
-    public override fun onHitBlock(blockHitResult: BlockHitResult) {
-        super.onHitBlock(blockHitResult)
-        val resultPos = blockHitResult.blockPos
+    public override fun onHitBlock(result: BlockHitResult) {
+        super.onHitBlock(result)
+        val resultPos = result.blockPos
         val state = this.level().getBlockState(resultPos)
 
         if (this.level() is ServerLevel) {
@@ -76,10 +76,10 @@ open class SmallCannonShellEntity(type: EntityType<out SmallCannonShellEntity>, 
 
         val block = state.block
         if (block is BellBlock) {
-            block.attemptToRing(this.level(), resultPos, blockHitResult.direction)
+            block.attemptToRing(this.level(), resultPos, result.direction)
         }
         if (this.level() is ServerLevel) {
-            causeExplode(blockHitResult.getLocation(), false)
+            causeExplode(result.getLocation(), false)
         }
         this.discard()
     }
@@ -101,7 +101,7 @@ open class SmallCannonShellEntity(type: EntityType<out SmallCannonShellEntity>, 
         if (aa) {
             crushProjectile(deltaMovement)
         }
-        if (owner != null && distanceToSqr(owner) > 1048576) {
+        if (owner != null && distanceToSqr(owner!!) > 1048576) {
             if (level() is ServerLevel) {
                 causeExplode(position())
             }

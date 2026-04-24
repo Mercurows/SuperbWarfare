@@ -83,7 +83,7 @@ open class CustomCloudParticle protected constructor(
 
     public override fun getLightColor(partialTick: Float): Int {
         val blockpos = BlockPos.containing(this.x, this.y + 1, this.z)
-        val lightLevel = if (this.level.hasChunkAt(blockpos)) LevelRenderer.getLightColor(this.level, blockpos) else 0
+        val lightLevel = if (this.level.isLoaded(blockpos)) LevelRenderer.getLightColor(this.level, blockpos) else 0
         return if (light) 15728880 else lightLevel
     }
 

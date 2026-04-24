@@ -80,6 +80,7 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
         return ModItems.LARGE_SHELL_HE.get()
     }
 
+    @Suppress("DEPRECATION")
     override fun onHitBlock(result: BlockHitResult) {
         super.onHitBlock(result)
         val level = this.level()

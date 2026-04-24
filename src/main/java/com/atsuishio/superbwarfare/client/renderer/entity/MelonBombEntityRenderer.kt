@@ -44,6 +44,7 @@ class MelonBombEntityRenderer(context: EntityRendererProvider.Context) : EntityR
         super.render(entity, entityYaw, partialTicks, matrixStack, buffer, packedLight)
     }
 
+    @Suppress("DEPRECATION")
     override fun getTextureLocation(entity: MelonBombEntity): ResourceLocation {
         return TextureAtlas.LOCATION_BLOCKS
     }

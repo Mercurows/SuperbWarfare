@@ -62,10 +62,10 @@ open class SmallRocketEntity(type: EntityType<out SmallRocketEntity>, level: Lev
         }
     }
 
-    public override fun onHitBlock(blockHitResult: BlockHitResult) {
-        super.onHitBlock(blockHitResult)
+    public override fun onHitBlock(result: BlockHitResult) {
+        super.onHitBlock(result)
         if (this.level() is ServerLevel) {
-            destroyBlock(blockHitResult)
+            destroyBlock(result)
         }
     }
 

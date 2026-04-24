@@ -9,7 +9,7 @@ import net.minecraft.world.item.TooltipFlag
 import javax.annotation.ParametersAreNonnullByDefault
 
 class VehicleResetKitItem : Item(Properties().rarity(Rarity.UNCOMMON).stacksTo(1)) {
-    override fun hasCraftingRemainingItem(stack: ItemStack?): Boolean {
+    override fun hasCraftingRemainingItem(stack: ItemStack): Boolean {
         return true
     }
 

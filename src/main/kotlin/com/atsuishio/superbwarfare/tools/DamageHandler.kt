@@ -88,7 +88,7 @@ object DamageHandler {
                 if (sourceEntity != null) {
                     if (sourceEntity is LivingEntity) {
                         if (!source.`is`(DamageTypeTags.NO_ANGER)) {
-                            entity.setLastHurtByMob(sourceEntity)
+                            entity.lastHurtByMob = sourceEntity
                         }
                     }
 
@@ -186,7 +186,7 @@ object DamageHandler {
                 ).withStyle(ChatFormatting.GREEN)
             )
 
-        return Component.literal("[").append(vehicle.displayName)
+        return Component.literal("[").append(vehicle.displayName ?: Component.empty())
             .append(Component.literal("] ").withStyle(ChatFormatting.WHITE))
             .append(
                 Component.translatable(

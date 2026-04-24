@@ -63,11 +63,11 @@ open class WhitePhosphorusProjectileEntity : FastThrowableProjectile {
         this.discard()
     }
 
-    override fun onHitBlock(blockHitResult: BlockHitResult) {
-        super.onHitBlock(blockHitResult)
+    override fun onHitBlock(result: BlockHitResult) {
+        super.onHitBlock(result)
         val owner = this.owner
         if (owner != null) {
-            findNearEntity(blockHitResult.getLocation(), owner)
+            findNearEntity(result.getLocation(), owner)
         }
         this.discard()
     }

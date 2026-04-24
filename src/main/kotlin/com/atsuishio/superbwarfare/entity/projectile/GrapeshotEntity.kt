@@ -115,6 +115,7 @@ open class GrapeshotEntity : FastThrowableProjectile {
         }
     }
 
+    @Suppress("DEPRECATION")
     fun summonVectorParticle(serverLevel: ServerLevel, state: BlockState, pos: Vec3, dir: Vec3) {
         val particleData = BlockParticleOption(ParticleTypes.BLOCK, state)
         for (i in 0..6) {
