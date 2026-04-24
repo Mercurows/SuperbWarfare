@@ -101,7 +101,7 @@ open class SmallCannonShellEntity(type: EntityType<out SmallCannonShellEntity>, 
         if (aa) {
             crushProjectile(deltaMovement)
         }
-        if (owner != null && distanceToSqr(owner) > 1048576) {
+        if (owner != null && distanceToSqr(owner!!) > 1048576) {
             if (level() is ServerLevel) {
                 causeExplode(position())
             }

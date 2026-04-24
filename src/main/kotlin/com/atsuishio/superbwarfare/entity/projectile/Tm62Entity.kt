@@ -79,7 +79,7 @@ open class Tm62Entity : Entity, OwnableEntity {
         compound.putString("LastAttacker", this.entityData.get(LAST_ATTACKER_UUID))
         compound.putBoolean("Fuse", this.entityData.get(FUSE))
         if (this.ownerUUID != null) {
-            compound.putUUID("Owner", this.ownerUUID)
+            compound.putUUID("Owner", this.ownerUUID!!)
         }
     }
 
@@ -106,7 +106,7 @@ open class Tm62Entity : Entity, OwnableEntity {
                 uuid = if (this.server == null) {
                     UUID.fromString(s)
                 } else {
-                    OldUsersConverter.convertMobOwnerIfNecessary(this.server, s)
+                    OldUsersConverter.convertMobOwnerIfNecessary(this.server!!, s)
                 }
             } catch (exception: Exception) {
                 Mod.LOGGER.error("Couldn't load owner UUID of {}: {}", this, exception)

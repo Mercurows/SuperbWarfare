@@ -111,7 +111,7 @@ open class TaserBulletEntity(type: EntityType<out TaserBulletEntity>, level: Lev
             initialPos = this.position()
         }
 
-        if (initialPos != null && this.position().distanceTo(initialPos) > 10 + 4 * wireLength && !stopped) {
+        if (initialPos != null && this.position().distanceTo(initialPos!!) > 10 + 4 * wireLength && !stopped) {
             stopped = true
             this.deltaMovement = Vec3(0.0, 0.0, 0.0)
         }

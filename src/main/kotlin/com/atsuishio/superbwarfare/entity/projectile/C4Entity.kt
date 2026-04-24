@@ -77,11 +77,11 @@ open class C4Entity : Entity, OwnableEntity {
         compound.putInt("BombTick", this.entityData.get(BOMB_TICK))
 
         if (this.lastState != null) {
-            compound.put("InBlockState", NbtUtils.writeBlockState(this.lastState))
+            compound.put("InBlockState", NbtUtils.writeBlockState(this.lastState!!))
         }
 
         if (this.ownerUUID != null) {
-            compound.putUUID("Owner", this.ownerUUID)
+            compound.putUUID("Owner", this.ownerUUID!!)
         }
     }
 
@@ -119,7 +119,7 @@ open class C4Entity : Entity, OwnableEntity {
                 uuid = if (this.server == null) {
                     UUID.fromString(s)
                 } else {
-                    OldUsersConverter.convertMobOwnerIfNecessary(this.server, s)
+                    OldUsersConverter.convertMobOwnerIfNecessary(this.server!!, s)
                 }
             } catch (exception: Exception) {
                 Mod.LOGGER.error("Couldn't load owner UUID of {}: {}", this, exception)

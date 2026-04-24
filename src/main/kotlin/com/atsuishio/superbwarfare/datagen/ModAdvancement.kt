@@ -32,7 +32,7 @@ class ModAdvancement(private val id: String, b: UnaryOperator<Builder>) {
         }
 
         builder.display(
-            builtInBuilder.icon, titleComponent(),
+            builtInBuilder.icon!!, titleComponent(),
             Component.translatable(description()), bg,
             builtInBuilder.type.frame, builtInBuilder.type.toast, builtInBuilder.type.announce, builtInBuilder.type.hide
         )
@@ -52,7 +52,7 @@ class ModAdvancement(private val id: String, b: UnaryOperator<Builder>) {
 
     fun save(t: Consumer<Advancement>) {
         if (parent != null) {
-            builder.parent(parent!!.result)
+            builder.parent(parent!!.result!!)
         }
         result = builder.save(t, loc("main/$id").toString())
     }

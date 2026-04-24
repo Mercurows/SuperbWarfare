@@ -392,7 +392,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
                     }
                 }
             }
-            if (entityResults.isEmpty()) {
+            if (entityResults.isEmpty() && result != null) {
                 this.onHit(result)
             }
 
@@ -453,7 +453,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
         }
     }
 
-    override fun onHit(result: HitResult?) {
+    override fun onHit(result: HitResult) {
         if (result is BlockHitResult) {
             val level = this.level()
             if (result.type == HitResult.Type.MISS) {
@@ -493,7 +493,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
             }
 
             if (this.shooter is Player) {
-                if (entity.hasIndirectPassenger(shooter)) {
+                if (entity.hasIndirectPassenger(shooter!!)) {
                     return
                 }
             }

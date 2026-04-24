@@ -9,7 +9,6 @@ import net.minecraft.advancements.AdvancementRewards
 import net.minecraft.advancements.CriterionTriggerInstance
 import net.minecraft.advancements.RequirementsStrategy
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger
-import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.data.recipes.CraftingRecipeBuilder
 import net.minecraft.data.recipes.FinishedRecipe
 import net.minecraft.data.recipes.RecipeBuilder
@@ -22,6 +21,7 @@ import net.minecraft.world.item.crafting.CraftingBookCategory
 import net.minecraft.world.item.crafting.Ingredient
 import net.minecraft.world.item.crafting.RecipeSerializer
 import net.minecraft.world.level.ItemLike
+import net.minecraftforge.registries.ForgeRegistries
 import java.util.function.Consumer
 
 /**
@@ -158,7 +158,7 @@ class NBTShapedRecipeBuilder(val category: RecipeCategory, pResult: ItemLike, va
 
             pJson.add("key", jsonObject)
             val result = JsonObject()
-            result.addProperty("item", BuiltInRegistries.ITEM.getKey(this.result).toString())
+            result.addProperty("item", ForgeRegistries.ITEMS.getKey(this.result).toString())
             if (this.count > 1) {
                 result.addProperty("count", this.count)
             }

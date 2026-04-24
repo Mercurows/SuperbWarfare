@@ -10,7 +10,6 @@ import net.minecraft.advancements.AdvancementRewards
 import net.minecraft.advancements.CriterionTriggerInstance
 import net.minecraft.advancements.RequirementsStrategy
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger
-import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.data.recipes.FinishedRecipe
 import net.minecraft.data.recipes.RecipeBuilder
 import net.minecraft.data.recipes.RecipeCategory
@@ -20,6 +19,7 @@ import net.minecraft.world.entity.EntityType
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.crafting.RecipeSerializer
 import net.minecraft.world.level.ItemLike
+import net.minecraftforge.registries.ForgeRegistries
 import java.util.function.Consumer
 
 class VehicleAssemblingRecipeBuilder : RecipeBuilder {
@@ -47,7 +47,7 @@ class VehicleAssemblingRecipeBuilder : RecipeBuilder {
     @JvmOverloads
     fun require(item: ItemLike, count: Int = 1): VehicleAssemblingRecipeBuilder {
         this.ingredients.merge(
-            BuiltInRegistries.ITEM.getKey(item.asItem()).toString(),
+            ForgeRegistries.ITEMS.getKey(item.asItem()).toString(),
             count
         ) { _, v -> count + v }
         return this
@@ -175,7 +175,7 @@ class VehicleAssemblingRecipeBuilder : RecipeBuilder {
             if (this.entityType != null) {
                 res.addProperty("entity", EntityType.getKey(this.entityType).toString())
             } else {
-                res.addProperty("item", BuiltInRegistries.ITEM.getKey(this.result).toString())
+                res.addProperty("item", ForgeRegistries.ITEMS.getKey(this.result).toString())
                 if (this.count > 1) {
                     res.addProperty("count", this.count)
                 }

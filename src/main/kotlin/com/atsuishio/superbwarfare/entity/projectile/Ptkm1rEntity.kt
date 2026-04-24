@@ -89,7 +89,7 @@ open class Ptkm1rEntity : Entity, OwnableEntity {
         compound.putString("LastAttacker", this.entityData.get(LAST_ATTACKER_UUID))
         compound.putString("Target", this.entityData.get(TARGET_UUID))
         if (this.ownerUUID != null) {
-            compound.putUUID("Owner", this.ownerUUID)
+            compound.putUUID("Owner", this.ownerUUID!!)
         }
     }
 
@@ -115,7 +115,7 @@ open class Ptkm1rEntity : Entity, OwnableEntity {
                 uuid = if (this.server == null) {
                     UUID.fromString(s)
                 } else {
-                    OldUsersConverter.convertMobOwnerIfNecessary(this.server, s)
+                    OldUsersConverter.convertMobOwnerIfNecessary(this.server!!, s)
                 }
             } catch (exception: Exception) {
                 Mod.LOGGER.error("Couldn't load owner UUID of {}: {}", this, exception)

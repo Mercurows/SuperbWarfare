@@ -174,7 +174,7 @@ open class JavelinMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
         } else if (guideType == 1 && targetPos != null) {
             val dis = targetPos!!.vectorTo(position()).horizontalDistance()
             val height = if (dis > 30) 0.2 * (dis - 30) else 0.0
-            val dir = position().vectorTo(targetPos).horizontalDistanceSqr() < 900
+            val dir = position().vectorTo(targetPos!!).horizontalDistanceSqr() < 900
             val toVec = eyePosition.vectorTo(targetPos!!.add(0.0, height, 0.0)).normalize()
 
             if (this.tickCount > 3) {

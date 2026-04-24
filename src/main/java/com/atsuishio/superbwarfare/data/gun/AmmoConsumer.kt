@@ -353,7 +353,7 @@ class AmmoConsumer : DeserializeFromString, GunPropertyModifier, PropertyModifie
                 return
             }
 
-            this.stack = ItemStack(item)
+            this.stack = ItemStack(item!!)
             if (!data.isEmpty()) {
                 try {
                     val tag = NbtUtils.snbtToStructure(data)

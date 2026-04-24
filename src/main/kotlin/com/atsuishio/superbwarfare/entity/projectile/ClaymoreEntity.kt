@@ -97,7 +97,7 @@ open class ClaymoreEntity(type: EntityType<ClaymoreEntity>, level: Level) : Enti
         compound.putFloat("Health", this.entityData.get(HEALTH))
         compound.putString("LastAttacker", this.entityData.get(LAST_ATTACKER_UUID))
         if (this.ownerUUID != null) {
-            compound.putUUID("Owner", this.ownerUUID)
+            compound.putUUID("Owner", this.ownerUUID!!)
         }
     }
 
@@ -120,7 +120,7 @@ open class ClaymoreEntity(type: EntityType<ClaymoreEntity>, level: Level) : Enti
                 uuid = if (this.server == null) {
                     UUID.fromString(s)
                 } else {
-                    OldUsersConverter.convertMobOwnerIfNecessary(this.server, s)
+                    OldUsersConverter.convertMobOwnerIfNecessary(this.server!!, s)
                 }
             } catch (exception: Exception) {
                 Mod.LOGGER.error("Couldn't load owner UUID of {}: {}", this, exception)

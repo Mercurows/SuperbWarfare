@@ -231,6 +231,7 @@ open class EDDEntity : HangingEntity, OwnableEntity {
         this.playSound(SoundEvents.ITEM_FRAME_PLACE, 1f, 1f)
     }
 
+    @Suppress("DEPRECATION")
     override fun survives(): Boolean {
         if (!this.level().noCollision(this)) {
             return false
