@@ -46,11 +46,11 @@ public class JavelinItem extends GunGeoItem {
 
     @Override
     public void shoot(@NotNull ShootParameters parameters) {
-        var data = parameters.data();
-        var shooter = parameters.shooter();
-        var targetUUID = parameters.targetEntityUUID();
-        var targetPos = parameters.targetPos();
-        var zoom = parameters.zoom();
+        var data = parameters.data;
+        var shooter = parameters.shooter;
+        var targetUUID = parameters.targetEntityUUID;
+        var targetPos = parameters.targetPos;
+        var zoom = parameters.zoom;
 
         if (shooter == null) return;
         if (!zoom || !data.hasEnoughAmmoToShoot(shooter)) return;

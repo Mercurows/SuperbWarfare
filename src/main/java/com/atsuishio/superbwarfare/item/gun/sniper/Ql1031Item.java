@@ -17,8 +17,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -27,7 +25,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.constant.DataTickets;
@@ -101,10 +98,10 @@ public class Ql1031Item extends GunGeoItem {
     @Override
     public void afterShoot(@NotNull ShootParameters parameters) {
         super.afterShoot(parameters);
-        var data = parameters.data();
-        var level = parameters.level();
-        var shootPosition = parameters.shootPosition();
-        var shootDirection = parameters.shootDirection();
+        var data = parameters.data;
+        var level = parameters.level;
+        var shootPosition = parameters.shootPosition;
+        var shootDirection = parameters.shootDirection;
 
         if (data.selectedFireModeInfo().name.equals("Hold")) {
             for (int i = 0;i < 40;i += 2) {

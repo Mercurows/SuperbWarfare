@@ -6,16 +6,12 @@ import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.init.ModPerks;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.function.Supplier;
 
 public class TaserItem extends GunGeoItem {
@@ -33,7 +29,7 @@ public class TaserItem extends GunGeoItem {
     public void afterShoot(@NotNull ShootParameters parameters) {
         super.afterShoot(parameters);
 
-        var data = parameters.data();
+        var data = parameters.data;
 
         var stack = data.stack;
         int perkLevel = data.perk.getLevel(ModPerks.VOLT_OVERLOAD);

@@ -30,8 +30,8 @@ public class RpgItem extends GunGeoItem {
     public boolean shootBullet(@NotNull ShootParameters parameters) {
         if (!super.shootBullet(parameters)) return false;
 
-        var shooter = parameters.shooter();
-        var level = parameters.level();
+        var shooter = parameters.shooter;
+        var level = parameters.level;
 
         if (shooter != null) {
             ParticleTool.sendParticle(level, ParticleTypes.CLOUD, shooter.getX() + 1.8 * shooter.getLookAngle().x,

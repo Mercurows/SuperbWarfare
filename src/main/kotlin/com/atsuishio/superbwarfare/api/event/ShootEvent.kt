@@ -9,11 +9,11 @@ import org.jetbrains.annotations.ApiStatus
 
 @ApiStatus.AvailableSince("0.8.9")
 open class ShootEvent private constructor(val parameters: ShootParameters) : Event() {
-    val shooter: Entity? = parameters.shooter()
-    val level: ServerLevel = parameters.level()
-    val data: GunData = parameters.data()
-    val spread: Double = parameters.spread()
-    val zoom: Boolean = parameters.zoom()
+    val shooter: Entity? = parameters.shooter
+    val level: ServerLevel = parameters.level
+    val data: GunData = parameters.data
+    val spread: Double = parameters.spread
+    val zoom: Boolean = parameters.zoom
 
     class Pre(parameters: ShootParameters) : ShootEvent(parameters)
 
