@@ -34,8 +34,8 @@ public class HomemadeShotgunItem extends GunGeoItem {
     public void beforeShoot(@NotNull ShootParameters parameters) {
         super.beforeShoot(parameters);
 
-        var shooter = parameters.shooter();
-        var level = parameters.level();
+        var shooter = parameters.shooter;
+        var level = parameters.level;
 
         if (shooter instanceof ServerPlayer serverPlayer) {
             ParticleTool.sendParticle(level, ParticleTypes.CLOUD, shooter.getX() + 1.8 * shooter.getLookAngle().x, shooter.getY() + shooter.getBbHeight() - 0.1 + 1.8 * shooter.getLookAngle().y,

@@ -30,7 +30,7 @@ public class TaserItem extends GunGeoItem {
     public void afterShoot(@NotNull ShootParameters parameters) {
         super.afterShoot(parameters);
 
-        var data = parameters.data();
+        var data = parameters.data;
 
         var stack = data.stack;
         int perkLevel = data.perk.getLevel(ModPerks.VOLT_OVERLOAD);

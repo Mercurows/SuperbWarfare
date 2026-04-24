@@ -109,7 +109,7 @@ public class SentinelItem extends GunGeoItem {
     public void afterShoot(@NotNull ShootParameters parameters) {
         super.afterShoot(parameters);
 
-        var data = parameters.data();
+        var data = parameters.data;
 
         var cap = data.stack.getCapability(Capabilities.EnergyStorage.ITEM);
         if (cap != null) {

@@ -92,10 +92,10 @@ public class Ql1031Item extends GunGeoItem {
     @Override
     public void afterShoot(@NotNull ShootParameters parameters) {
         super.afterShoot(parameters);
-        var data = parameters.data();
-        var level = parameters.level();
-        var shootPosition = parameters.shootPosition();
-        var shootDirection = parameters.shootDirection();
+        var data = parameters.data;
+        var level = parameters.level;
+        var shootPosition = parameters.shootPosition;
+        var shootDirection = parameters.shootDirection;
 
         if (data.selectedFireModeInfo().name.equals("Hold")) {
             for (int i = 0; i < 40; i += 2) {

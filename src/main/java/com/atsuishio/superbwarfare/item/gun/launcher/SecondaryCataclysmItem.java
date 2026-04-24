@@ -105,11 +105,11 @@ public class SecondaryCataclysmItem extends GunGeoItem {
 
     @Override
     public boolean shootBullet(@NotNull ShootParameters parameters) {
-        var data = parameters.data();
-        var level = parameters.level();
-        var shootPosition = parameters.shootPosition();
-        var shootDirection = parameters.shootDirection();
-        var zoom = parameters.zoom();
+        var data = parameters.data;
+        var level = parameters.level;
+        var shootPosition = parameters.shootPosition;
+        var shootDirection = parameters.shootDirection;
+        var zoom = parameters.zoom;
 
         var stack = data.stack;
 
