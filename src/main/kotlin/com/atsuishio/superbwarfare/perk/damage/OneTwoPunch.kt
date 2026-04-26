@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.perk.damage
 
+import com.atsuishio.superbwarfare.data.PMC
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
@@ -11,15 +12,12 @@ import net.minecraft.world.entity.LivingEntity
 import kotlin.math.floor
 
 object OneTwoPunch : Perk("one_two_punch", Type.DAMAGE) {
-    override fun computeProperties(
-        data: GunData,
-        rawData: DefaultGunData
-    ): DefaultGunData {
-        val tag = data.perk.getTag(this) ?: return super.computeProperties(data, rawData)
+    override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) {
+        super.modifyProperty(modifier)
+        val tag = modifier.data.perk.getTag(this) ?: return
         if (tag.getInt("OneTwoPunchTime") > 0) {
-            rawData.meleeDamage *= 1.5 + 0.75 * (data.perk.getLevel(this) - 1)
+            modifier[GunProp.MELEE_DAMAGE] *= (1.5 + 0.75 * (modifier.data.perk.getLevel(this) - 1))
         }
-        return super.computeProperties(data, rawData)
     }
 
     override fun onHit(

@@ -165,15 +165,8 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
 
     private val propCache = ConcurrentHashMap<GunProp<*, *>, Any>()
 
-    private val pmc = PMC(this)
-
-    // TODO 重新实现get
-    @Suppress("unchecked_cast")
-    @JvmOverloads
-    fun <T> get(prop: GunProp<*, T>, useCache: Boolean = true): T {
-        val cached = propCache[prop]
-        if (cached == Unit) return null as T
-        if (cached != null) return cached as T
+    private val pmc by lazy {
+        val pmc = PMC(this@GunData)
 
         // TODO property override tag
 //        jsonPropModifier.update(propertyOverrideString.get())
@@ -203,10 +196,12 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         // limit
         GunProp.modifyProperty(pmc)
 
-        // TODO 这到底写了个啥缓存啊（恼）
-        // 牛魔的 getOrPut为什么值都不能为null
-        propCache[prop] = pmc[prop] ?: Unit
+        pmc
+    }
 
+    // TODO 重新实现get
+    @Suppress("unchecked_cast")
+    fun <T> get(prop: GunProp<*, T>): T {
         return pmc[prop]
     }
 
@@ -871,9 +866,9 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         overHeat = BooleanValue(gunDataTag, "OverHeat")
         zooming = BooleanValue(gunDataTag, "Zooming")
 
-        var defaultFireMode = get(GunProp.DEFAULT_FIRE_MODE, false)
+        var defaultFireMode = get(GunProp.DEFAULT_FIRE_MODE)
 
-        val fireModes = get(AVAILABLE_FIRE_MODES, false)
+        val fireModes = get(AVAILABLE_FIRE_MODES)
         for (i in fireModes.indices) {
             if (fireModes[i].name == defaultFireMode) {
                 selectedFireMode.defaultValue = i
@@ -905,7 +900,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         @JvmOverloads
         @JvmStatic
         fun <T> get(stack: ItemStack, prop: GunProp<*, T>, useCache: Boolean = true): T {
-            return from(stack).get(prop, useCache)
+            return from(stack).get(prop)
         }
 
         @JvmStatic

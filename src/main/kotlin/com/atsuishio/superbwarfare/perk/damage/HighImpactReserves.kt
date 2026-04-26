@@ -1,16 +1,15 @@
 package com.atsuishio.superbwarfare.perk.damage
 
+import com.atsuishio.superbwarfare.data.PMC
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.perk.Perk
 
 object HighImpactReserves : Perk("high_impact_reserves", Type.DAMAGE) {
-    override fun computeProperties(
-        data: GunData,
-        rawData: DefaultGunData
-    ): DefaultGunData {
-        val rate = data.ammo.get().toDouble() / 1.coerceAtLeast(rawData.magazine)
-        val level = data.perk.getLevel(this)
+    override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) {
+        val rate = modifier.data.ammo.get().toDouble() / 1.coerceAtLeast(modifier[GunProp.MAGAZINE])
+        val level = modifier.data.perk.getLevel(this)
         val limit = 0.5 + (level - 1) * 0.02
 
         if (rate <= limit) {
@@ -25,8 +24,8 @@ object HighImpactReserves : Perk("high_impact_reserves", Type.DAMAGE) {
             val minOutput = min1 + t * (min20 - min1)
             val maxOutput = max1 + t * (max20 - max1)
 
-            rawData.damage *= (1 + (1 - (rate / limit)) * (maxOutput - minOutput) + minOutput)
+            modifier[GunProp.DAMAGE] *= (1 + (1 - (rate / limit)) * (maxOutput - minOutput) + minOutput)
         }
-        return super.computeProperties(data, rawData)
+        super.modifyProperty(modifier)
     }
 }

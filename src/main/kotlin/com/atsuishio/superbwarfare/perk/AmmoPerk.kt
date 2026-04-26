@@ -32,27 +32,6 @@ open class AmmoPerk : Perk {
 
     constructor(descriptionId: String, type: Type) : this(Builder(descriptionId, type))
 
-    override fun computeProperties(
-        data: GunData,
-        rawData: DefaultGunData
-    ): DefaultGunData {
-        rawData.bypassesArmor = 0.0.coerceAtLeast(rawData.bypassesArmor + this.bypassArmorRate)
-        rawData.velocity = 0.0.coerceAtLeast(rawData.velocity * this.speedRate)
-
-        val perk = data.perk.get(Type.AMMO)
-        if (perk is AmmoPerk) {
-            if (perk.slug) {
-                rawData.damage *= perk.damageRate * rawData.projectileAmount
-                rawData.projectileAmount = 1
-                rawData.zoomSpreadRate = 0.15
-            } else {
-                rawData.damage *= perk.damageRate
-            }
-        }
-
-        return super.computeProperties(data, rawData)
-    }
-
     override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) = with(modifier) {
         modify(GunProp.BYPASSES_ARMOR) {
             it.coerceAtLeast(modifier[GunProp.BYPASSES_ARMOR] + bypassArmorRate).coerceAtLeast(0.0)

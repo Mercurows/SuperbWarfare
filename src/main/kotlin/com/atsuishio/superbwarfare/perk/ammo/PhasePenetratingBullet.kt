@@ -1,21 +1,22 @@
 package com.atsuishio.superbwarfare.perk.ammo
 
+import com.atsuishio.superbwarfare.data.PMC
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity
 import com.atsuishio.superbwarfare.perk.AmmoPerk
 import com.atsuishio.superbwarfare.perk.PerkInstance
 import net.minecraft.world.entity.Entity
 
 object PhasePenetratingBullet : AmmoPerk(
-    Builder("phase_penetrating_bullet", Type.AMMO).damageRate(0.2).speedRate(1.5).rgb(255, 255, 255)
+    Builder("phase_penetrating_bullet", Type.AMMO).speedRate(1.5).rgb(255, 255, 255)
 ) {
-    override fun computeProperties(
-        data: GunData,
-        rawData: DefaultGunData
-    ): DefaultGunData {
-        rawData.damage *= 0.2 + 0.04 * data.perk.getLevel(this)
-        return super.computeProperties(data, rawData)
+    override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) {
+        super.modifyProperty(modifier)
+        with(GunProp) {
+            modifier[DAMAGE] *= (0.2 + 0.04 * modifier.data.perk.getLevel(this@PhasePenetratingBullet))
+        }
     }
 
     override fun modifyProjectile(

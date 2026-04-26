@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.perk.damage
 
+import com.atsuishio.superbwarfare.data.PMC
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
@@ -10,17 +11,16 @@ import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.Entity
 
 object FairMeans : Perk("fair_means", Type.DAMAGE) {
-    override fun computeProperties(
-        data: GunData,
-        rawData: DefaultGunData
-    ): DefaultGunData {
-        val tag = data.perk.getTag(this) ?: return super.computeProperties(data, rawData)
-        if (tag.getBoolean("FairMeans")) {
-            rawData.damage *= 1.5 + 0.225 * data.perk.getLevel(this)
-        } else {
-            rawData.damage *= 0.2 + 0.04 * data.perk.getLevel(this)
+    override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) {
+        super.modifyProperty(modifier)
+        val tag = modifier.data.perk.getTag(this) ?: return
+        with(GunProp) {
+            if (tag.getBoolean("FairMeans")) {
+                modifier[DAMAGE] *= (1.5 + 0.225 * modifier.data.perk.getLevel(this@FairMeans))
+            } else {
+                modifier[DAMAGE] *= (0.2 + 0.04 * modifier.data.perk.getLevel(this@FairMeans))
+            }
         }
-        return super.computeProperties(data, rawData)
     }
 
     override fun onHurtEntity(
