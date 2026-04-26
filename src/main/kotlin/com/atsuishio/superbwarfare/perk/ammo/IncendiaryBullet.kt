@@ -1,7 +1,9 @@
 package com.atsuishio.superbwarfare.perk.ammo
 
+import com.atsuishio.superbwarfare.data.PMC
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.perk.AmmoPerk
@@ -13,12 +15,11 @@ object IncendiaryBullet : AmmoPerk(
         .rgb(230, 131, 65)
         .mobEffect(ModMobEffects.BURN)
 ) {
-    override fun computeProperties(
-        data: GunData,
-        rawData: DefaultGunData
-    ): DefaultGunData {
-        rawData.velocity = if (data.isShotgun) 4.5 else rawData.velocity
-        return super.computeProperties(data, rawData)
+    override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) {
+        super.modifyProperty(modifier)
+        with(GunProp) {
+            modifier[VELOCITY] = if (modifier.data.isShotgun) 4.5 else modifier[VELOCITY]
+        }
     }
 
     override fun getEffectDuration(instance: PerkInstance): Int {
