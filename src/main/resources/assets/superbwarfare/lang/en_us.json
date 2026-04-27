@@ -730,6 +730,11 @@
   "commands.superbwarfare.tdm.remove.multiple": "Disabled Death Match Mode for %s entities",
   "commands.superbwarfare.config.enabled": "Enabled config %1$s",
   "commands.superbwarfare.config.disabled": "Disabled config %1$s",
+  "commands.superbwarfare.ride.fail.passenger": "The selected passenger must be a living entity",
+  "commands.superbwarfare.ride.fail.vehicle": "The selected vehicle must be a Superb Warfare vehicle entity",
+  "commands.superbwarfare.ride.fail.full": "The vehicle doesn't have empty seats",
+  "commands.superbwarfare.ride.fail.exist": "The current seat already has a passenger",
+  "commands.superbwarfare.ride.success": "%1$s sits in seat number %3$s of %2$",
 
   "tips.superbwarfare.sensitivity": "Current Sensitivity of This Gun: %1$s",
   "tips.superbwarfare.monitor.linked": "Connect!",
