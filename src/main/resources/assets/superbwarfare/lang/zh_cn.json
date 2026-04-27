@@ -735,6 +735,10 @@
   "commands.superbwarfare.ride.fail.full": "载具座位已满",
   "commands.superbwarfare.ride.fail.exist": "当前座位已有乘客",
   "commands.superbwarfare.ride.success": "%1$s坐在了%2$s的%3$s号位",
+  "commands.superbwarfare.dismount.fail.vehicle": "所选的载具必须是卓越前线的载具实体",
+  "commands.superbwarfare.dismount.fail.index": "所选的载具没有这个座位",
+  "commands.superbwarfare.dismount.success.all": "已移除%1$s的所有乘客",
+  "commands.superbwarfare.dismount.success.single": "已移除%1$s的%2$s号位乘客",
 
   "tips.superbwarfare.sensitivity": "当前枪械的灵敏度为：%1$s",
   "tips.superbwarfare.monitor.linked": "连接成功！",
