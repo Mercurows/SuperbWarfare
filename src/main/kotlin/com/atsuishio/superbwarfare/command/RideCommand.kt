@@ -18,7 +18,7 @@ val RIDE_COMMAND = buildCommand("ride") {
 
             intArg("seatIndex", min = 1) {
                 execute {
-                    val res = ride(getArg(this@passenger), getArg(this@vehicle), getArg(this@intArg))
+                    val res = ride(getArg(this@passenger), getArg(this@vehicle), intArg)
                     if (res.success) success { res.message } else fail { res.message }
                     return@execute res.index
                 }
@@ -28,8 +28,8 @@ val RIDE_COMMAND = buildCommand("ride") {
                         val res = ride(
                             getArg(this@passenger),
                             getArg(this@vehicle),
-                            getArg(this@intArg),
-                            getArg(this@boolArg)
+                            intArg,
+                            boolArg
                         )
                         if (res.success) success { res.message } else fail { res.message }
                         return@execute res.index
@@ -40,7 +40,7 @@ val RIDE_COMMAND = buildCommand("ride") {
     }
 }
 
-fun ride(passenger: Entity, vehicle: Entity, seatIndex: Int = 0, forceRide: Boolean = false): RideCommandResult {
+private fun ride(passenger: Entity, vehicle: Entity, seatIndex: Int = 0, forceRide: Boolean = false): RideCommandResult {
     val passenger =
         passenger as? LivingEntity ?: return RideCommandResult(
             false,
@@ -122,7 +122,7 @@ fun ride(passenger: Entity, vehicle: Entity, seatIndex: Int = 0, forceRide: Bool
     }
 }
 
-data class RideCommandResult(
+private data class RideCommandResult(
     val success: Boolean,
     val message: Component,
     val index: Int
