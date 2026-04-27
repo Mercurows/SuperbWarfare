@@ -3643,7 +3643,10 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
      * @return 下车的位置
      */
     open fun getDismountLocationForIndex(passenger: LivingEntity, index: Int): Vec3 {
-        val dismountInfo = this.computed().seats()[index].dismountInfo
+        val seats = this.computed().seats()
+        if (index >= seats.size) return dismount(passenger)
+
+        val dismountInfo = seats[index].dismountInfo
         if (dismountInfo != null) {
             val vec3 = dismountInfo.position
             if (vec3 != null) {
@@ -3692,7 +3695,10 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     }
 
     open fun getEjectionPosition(passenger: LivingEntity, index: Int): Vec3 {
-        val dismountInfo = this.computed().seats()[index].dismountInfo
+        val seats = this.computed().seats()
+        if (index >= seats.size) return passenger.position()
+
+        val dismountInfo = seats[index].dismountInfo
         if (dismountInfo != null) {
             val vec3 = dismountInfo.ejectPosition ?: return passenger.position()
             val worldPosition = transformPosition(

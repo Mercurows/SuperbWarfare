@@ -13,7 +13,6 @@ import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.Entity
 import kotlin.reflect.KClass
 
-
 // 这才是真正的Builder！
 open class SingleCommand(val argumentBuilder: ArgumentBuilder<CommandSourceStack, *>, val name: String = "default") {
     val cmd: MutableList<SingleCommand> = mutableListOf()
@@ -70,8 +69,15 @@ open class SingleCommand(val argumentBuilder: ArgumentBuilder<CommandSourceStack
         ).apply(builder)
     }
 
-    inline fun intArg(argName: String = "$name.int", builder: CommandWithIntArg.() -> Unit) {
-        cmd += CommandWithIntArg(Commands.argument(argName, IntegerArgumentType.integer()), argName).apply(builder)
+    inline fun intArg(
+        argName: String = "$name.int",
+        min: Int = Int.MIN_VALUE,
+        max: Int = Int.MAX_VALUE,
+        builder: CommandWithIntArg.() -> Unit
+    ) {
+        cmd += CommandWithIntArg(Commands.argument(argName, IntegerArgumentType.integer(min, max)), argName).apply(
+            builder
+        )
     }
 
     inline fun boolArg(argName: String = "$name.bool", builder: CommandWithBoolArg.() -> Unit) {

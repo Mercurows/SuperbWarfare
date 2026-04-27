@@ -730,6 +730,11 @@
   "commands.superbwarfare.tdm.remove.multiple": "已为%s个实体禁用死亡竞赛模式",
   "commands.superbwarfare.config.enabled": "配置项%1$s已启用",
   "commands.superbwarfare.config.disabled": "配置项%1$s已禁用",
+  "commands.superbwarfare.ride.fail.passenger": "所选的乘客必须是生物",
+  "commands.superbwarfare.ride.fail.vehicle": "所选的载具必须是卓越前线的载具实体",
+  "commands.superbwarfare.ride.fail.full": "载具座位已满",
+  "commands.superbwarfare.ride.fail.exist": "当前座位已有乘客",
+  "commands.superbwarfare.ride.success": "%1$s坐在了%2$s的%3$s号位",
 
   "tips.superbwarfare.sensitivity": "当前枪械的灵敏度为：%1$s",
   "tips.superbwarfare.monitor.linked": "连接成功！",
