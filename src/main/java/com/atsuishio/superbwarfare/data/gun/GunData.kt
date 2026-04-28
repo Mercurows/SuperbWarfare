@@ -41,8 +41,6 @@ import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.component.CustomData
 import net.minecraft.world.phys.Vec3
-import net.neoforged.api.distmarker.Dist
-import net.neoforged.fml.loading.FMLEnvironment
 import net.neoforged.neoforge.energy.IEnergyStorage
 import net.neoforged.neoforge.items.IItemHandler
 import org.jetbrains.annotations.ApiStatus
@@ -179,9 +177,11 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     @Suppress("unchecked_cast")
     fun <T> get(prop: GunProp<*, T>): T {
         val currentStack = this.stack
-        if (FMLEnvironment.dist == Dist.DEDICATED_SERVER && !(currentStack sameWith lastTimeStack)) {
+        if (!(currentStack sameWith lastTimeStack)) {
             pmc = PMC(this)
             lastTimeStack = currentStack.copy()
+        } else {
+            return pmc[prop]
         }
 
         // property override tag

@@ -39,15 +39,12 @@ open class AmmoPerk : Perk {
         }
         modify(GunProp.VELOCITY) { it.coerceAtLeast(modifier[GunProp.VELOCITY] * speedRate).coerceAtLeast(0.0) }
 
-        val perk = data.perk.get(Type.AMMO)
-        if (perk is AmmoPerk) {
-            if (perk.slug) {
-                modifier[GunProp.DAMAGE] *= perk.damageRate * modifier[GunProp.PROJECTILE_AMOUNT]
-                modifier[GunProp.PROJECTILE_AMOUNT] = 1
-                modifier[GunProp.ZOOM_SPREAD_RATE] = 0.15
-            } else {
-                modifier[GunProp.DAMAGE] *= perk.damageRate
-            }
+        if (slug) {
+            modifier[GunProp.DAMAGE] *= damageRate * modifier[GunProp.PROJECTILE_AMOUNT]
+            modifier[GunProp.PROJECTILE_AMOUNT] = 1
+            modifier[GunProp.ZOOM_SPREAD_RATE] = 0.15
+        } else {
+            modifier[GunProp.DAMAGE] *= damageRate
         }
     }
 
