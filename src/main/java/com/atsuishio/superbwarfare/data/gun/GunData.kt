@@ -35,10 +35,8 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.phys.Vec3
-import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.common.util.LazyOptional
 import net.minecraftforge.energy.IEnergyStorage
-import net.minecraftforge.fml.loading.FMLEnvironment
 import net.minecraftforge.items.IItemHandler
 import org.jetbrains.annotations.ApiStatus
 import java.util.*
@@ -174,9 +172,11 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     @Suppress("unchecked_cast")
     fun <T> get(prop: GunProp<*, T>): T {
         val currentStack = this.stack
-        if (FMLEnvironment.dist == Dist.DEDICATED_SERVER && !(currentStack sameWith lastTimeStack)) {
+        if (!(currentStack sameWith lastTimeStack)) {
             pmc = PMC(this)
             lastTimeStack = currentStack.copy()
+        } else {
+            return pmc[prop]
         }
 
         // property override tag

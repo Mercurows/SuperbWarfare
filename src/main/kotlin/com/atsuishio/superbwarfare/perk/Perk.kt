@@ -21,25 +21,9 @@ import java.util.*
 
 open class Perk(val descriptionId: String, val type: Type) : GunPropertyModifier,
     PropertyModifier1<GunData, DefaultGunData> {
-    val name: String
-
-    init {
-        val builder = StringBuilder()
-        var useUpperCase = false
-        var isFirst = true
-        descriptionId.forEach {
-            if (isFirst || useUpperCase) {
-                builder.append(it.uppercase(Locale.ROOT))
-                isFirst = false
-                useUpperCase = false
-            } else if (it == '_') {
-                useUpperCase = true
-            } else {
-                builder.append(it)
-            }
-        }
-        this.name = builder.toString()
-    }
+    val name: String = descriptionId.split("_")
+        .filter { it.isNotEmpty() }
+        .joinToString("") { word -> word.replaceFirstChar { it.uppercase(Locale.ROOT) } }
 
     // 默认不进行修改
     override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) {}

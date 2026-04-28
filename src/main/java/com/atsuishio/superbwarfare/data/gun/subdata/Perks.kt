@@ -66,9 +66,17 @@ class Perks(gun: GunData) {
     }
 
     fun getLevel(perk: Perk): Short {
-        val list = rootTag.getList(perk.type.typeName, Tag.TAG_COMPOUND.toInt())
-        val entry = list.firstOrNull { (it as CompoundTag).getString("Name") == perk.name } as? CompoundTag
-        return entry?.getShort("Level") ?: 0
+        val name = perk.type.typeName
+        if (rootTag.contains(name, Tag.TAG_COMPOUND.toInt())) {
+            val tag = rootTag.getCompound(name)
+            return tag.getShort("Level")
+        }
+        if (rootTag.contains(name, Tag.TAG_LIST.toInt())) {
+            val list = rootTag.getList(name, Tag.TAG_COMPOUND.toInt())
+            val entry = list.firstOrNull { (it as CompoundTag).getString("Name") == perk.name } as? CompoundTag
+            return entry?.getShort("Level") ?: 0
+        }
+        return 0
     }
 
     fun getLevel(registry: RegistryObject<Perk>): Short = getLevel(registry.get())
