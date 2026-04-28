@@ -10,7 +10,7 @@ import com.atsuishio.superbwarfare.client.particle.CannonMuzzleFlareOption
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
-import com.atsuishio.superbwarfare.data.DataLoader
+import com.atsuishio.superbwarfare.data.ComplexJsonResourceReloadListener
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
@@ -105,7 +105,6 @@ import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.gameevent.GameEvent
-import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec2
 import net.minecraft.world.phys.Vec3
@@ -255,8 +254,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open var obb = listOf<OBBInfo>()
         protected set
 
-    open var aabbV = listOf<AABB>()
-
     open var engineInfo: EngineInfo? = null
 
     protected var interpolationSteps = 0
@@ -284,7 +281,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     protected var noPassengerTime = 0
     protected var damageDebugResultReceiver: Player? = null
-    private var previousVelocity: Vec3 = Vec3.ZERO
 
     open var decoyReloadCoolDown = 0
 
@@ -373,7 +369,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open var lastDamageStamp: Long = 0
 
     private fun initOBB() {
-        this.obb = data().getDefault().copy().obb.filterNotNull().toList()
+        this.obb = data().getDefault().copy().obb.toList()
     }
 
     override fun onSyncedDataUpdated(dataValues: MutableList<DataValue<*>>) {
@@ -471,7 +467,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     }
 
     open fun getContainerSize(): Int {
-        return computed().vehicleContainerType?.size ?: 0
+        return computed().vehicleContainerType.size
     }
 
     fun getItem(slot: Int): ItemStack {
@@ -743,7 +739,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     open val thirdPersonCameraPosition: Vec3
         get() {
-            var pos = computed().thirdPersonCameraPos
+            val pos = computed().thirdPersonCameraPos
             return Vec3(pos.z + ClientMouseHandler.custom3pDistanceLerp, pos.y, pos.x)
         }
 
@@ -3393,15 +3389,22 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         if (this.engineInfo == null) {
             val engineInfo = computed.engineInfo
             try {
-                this.engineInfo = when (engineType) {
-                    EngineType.WHEEL -> DataLoader.GSON.fromJson(engineInfo, Wheel::class.java)
-                    EngineType.TRACK -> DataLoader.GSON.fromJson(engineInfo, Track::class.java)
-                    EngineType.HELICOPTER -> DataLoader.GSON.fromJson(engineInfo, Helicopter::class.java)
-                    EngineType.SHIP -> DataLoader.GSON.fromJson(engineInfo, Ship::class.java)
-                    EngineType.AIRCRAFT -> DataLoader.GSON.fromJson(engineInfo, Aircraft::class.java)
-                    EngineType.WHEELCHAIR -> DataLoader.GSON.fromJson(engineInfo, WheelChair::class.java)
-                    EngineType.TOM6 -> DataLoader.GSON.fromJson(engineInfo, Tom6::class.java)
+                val serializer = when (engineType) {
+                    EngineType.WHEEL -> Wheel.serializer()
+                    EngineType.TRACK -> Track.serializer()
+                    EngineType.HELICOPTER -> Helicopter.serializer()
+                    EngineType.SHIP -> Ship.serializer()
+                    EngineType.AIRCRAFT -> Aircraft.serializer()
+                    EngineType.WHEELCHAIR -> WheelChair.serializer()
+                    EngineType.TOM6 -> Tom6.serializer()
+
                     else -> null
+                }
+
+                this.engineInfo = if (serializer == null) {
+                    null
+                } else {
+                    ComplexJsonResourceReloadListener.JSON.decodeFromJsonElement(serializer, engineInfo.toKxJson())
                 }
             } catch (e: Exception) {
                 Mod.LOGGER.error("Failed to parse engine info for vehicle {}, {}", this, e)
@@ -4524,7 +4527,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     @OnlyIn(Dist.CLIENT)
     open fun firstPersonAmmoComponent(data: GunData, player: Player?): Component {
         val name = data.get(GunProp.NAME)
-        if (name == null || name.isBlank()) return Component.empty()
+        if (name.isNullOrBlank()) return Component.empty()
 
         val ammoCount = this.getAmmoCount(player)
         return Component.translatable(name, if (ammoCount == Int.MAX_VALUE) "∞" else ammoCount)
