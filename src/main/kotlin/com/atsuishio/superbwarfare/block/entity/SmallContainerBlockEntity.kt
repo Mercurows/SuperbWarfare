@@ -40,6 +40,7 @@ open class SmallContainerBlockEntity(pos: BlockPos, state: BlockState) :
     var lootTableSeed: Long = 0
     var tick: Int = 0
     var player: Player? = null
+    var opened: Boolean = false
 
     private val cache: AnimatableInstanceCache? = GeckoLibUtil.createInstanceCache(this)
 
@@ -72,6 +73,7 @@ open class SmallContainerBlockEntity(pos: BlockPos, state: BlockState) :
             this.lootTableSeed = compound.getLong("LootTableSeed")
         }
         this.tick = compound.getInt("Tick")
+        this.opened = compound.getBoolean("Opened")
     }
 
     public override fun saveAdditional(compound: CompoundTag) {
@@ -83,6 +85,7 @@ open class SmallContainerBlockEntity(pos: BlockPos, state: BlockState) :
             }
         }
         compound.putInt("Tick", this.tick)
+        compound.putBoolean("Opened", this.opened)
     }
 
     override fun getUpdatePacket(): ClientboundBlockEntityDataPacket? {
@@ -163,6 +166,8 @@ open class SmallContainerBlockEntity(pos: BlockPos, state: BlockState) :
                     )
                 }
             } else {
+                if (blockEntity.opened) return
+
                 val items = blockEntity.unpackLootTable(blockEntity.player)
                 if (!items.isEmpty()) {
                     for (item in items) {
@@ -175,6 +180,9 @@ open class SmallContainerBlockEntity(pos: BlockPos, state: BlockState) :
                         pLevel.addFreshEntity(entity)
                     }
                 }
+
+                blockEntity.opened = true
+                blockEntity.setChanged()
                 pLevel.setBlockAndUpdate(pPos, Blocks.AIR.defaultBlockState())
             }
         }

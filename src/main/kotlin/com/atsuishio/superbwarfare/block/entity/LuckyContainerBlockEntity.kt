@@ -36,6 +36,7 @@ open class LuckyContainerBlockEntity(pos: BlockPos, state: BlockState) :
     var location: ResourceLocation? = null
     var icon: ResourceLocation? = null
     var tick: Int = 0
+    var opened: Boolean = false
 
     private val cache: AnimatableInstanceCache? = GeckoLibUtil.createInstanceCache(this)
 
@@ -90,6 +91,7 @@ open class LuckyContainerBlockEntity(pos: BlockPos, state: BlockState) :
             this.icon = ResourceLocation(compound.getString("Icon"))
         }
         this.tick = compound.getInt("Tick")
+        this.opened = compound.getBoolean("Opened")
     }
 
     public override fun saveAdditional(compound: CompoundTag) {
@@ -101,6 +103,7 @@ open class LuckyContainerBlockEntity(pos: BlockPos, state: BlockState) :
             compound.putString("Icon", this.icon.toString())
         }
         compound.putInt("Tick", this.tick)
+        compound.putBoolean("Opened", this.opened)
     }
 
     override fun getUpdatePacket(): ClientboundBlockEntityDataPacket? {
@@ -156,8 +159,13 @@ open class LuckyContainerBlockEntity(pos: BlockPos, state: BlockState) :
                     )
                 }
             } else {
+                if (blockEntity.opened) return
+
                 val direction = pState.getValue(LuckyContainerBlock.FACING)
                 val type = blockEntity.unpackEntities()
+
+                blockEntity.opened = true
+                blockEntity.setChanged()
 
                 if (type != null) {
                     val entity: Entity? = type.create(pLevel)

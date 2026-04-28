@@ -36,6 +36,7 @@ open class ContainerBlockEntity(pos: BlockPos, state: BlockState) :
     @JvmField
     var entityTag: CompoundTag? = null
     var tick: Int = 0
+    var opened: Boolean = false
 
     private val cache: AnimatableInstanceCache? = GeckoLibUtil.createInstanceCache(this)
 
@@ -69,6 +70,7 @@ open class ContainerBlockEntity(pos: BlockPos, state: BlockState) :
             this.entityTag = compound.getCompound("Entity")
         }
         this.tick = compound.getInt("Tick")
+        this.opened = compound.getBoolean("Opened")
     }
 
     public override fun saveAdditional(compound: CompoundTag) {
@@ -80,6 +82,7 @@ open class ContainerBlockEntity(pos: BlockPos, state: BlockState) :
             compound.putString("EntityType", EntityType.getKey(this.entityType!!).toString())
         }
         compound.putInt("Tick", this.tick)
+        compound.putBoolean("Opened", this.opened)
     }
 
     override fun getUpdatePacket(): ClientboundBlockEntityDataPacket? {
@@ -132,6 +135,8 @@ open class ContainerBlockEntity(pos: BlockPos, state: BlockState) :
                     )
                 }
             } else {
+                if (blockEntity.opened) return
+
                 val direction = pState.getValue(ContainerBlock.FACING)
 
                 val entity = blockEntity.entityType!!.create(pLevel) ?: return
@@ -139,6 +144,9 @@ open class ContainerBlockEntity(pos: BlockPos, state: BlockState) :
                 if (blockEntity.entityTag != null) {
                     entity.load(blockEntity.entityTag!!)
                 }
+
+                blockEntity.opened = true
+                blockEntity.setChanged()
 
                 entity.setPos(
                     pPos.x + 0.5 + (2 * Math.random() - 1) * 0.1f,
