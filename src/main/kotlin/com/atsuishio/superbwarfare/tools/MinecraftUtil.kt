@@ -76,7 +76,8 @@ fun Vec3?.toFormattedString(): String {
 fun isSameItemStack(a: ItemStack, b: ItemStack) = a sameWith b
 
 // 为空tag添加特判后的比较，专治乱用getOrCreateTag（恼）
-infix fun ItemStack.sameWith(that: ItemStack): Boolean {
+infix fun ItemStack.sameWith(that: ItemStack?): Boolean {
+    if (that == null) return false
     if (this.tag == null && that.hasEmptyTag() || that.tag == null && this.hasEmptyTag()) {
         val a = this.copy().apply { tag = null }
         val b = that.copy().apply { tag = null }

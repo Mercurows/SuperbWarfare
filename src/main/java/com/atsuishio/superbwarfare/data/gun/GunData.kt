@@ -35,8 +35,10 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.phys.Vec3
+import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.common.util.LazyOptional
 import net.minecraftforge.energy.IEnergyStorage
+import net.minecraftforge.fml.loading.FMLEnvironment
 import net.minecraftforge.items.IItemHandler
 import org.jetbrains.annotations.ApiStatus
 import java.util.*
@@ -75,6 +77,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     val id: String
 
     var defaultDataSupplier: Supplier<DefaultGunData>
+    var lastTimeStack: ItemStack? = null
 
     private fun getOrPut(name: String): CompoundTag {
         if (!this.tag.contains(name)) {
@@ -165,15 +168,20 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
 
     private val propCache = ConcurrentHashMap<GunProp<*, *>, Any>()
 
-    private val pmc by lazy {
-        val pmc = PMC(this@GunData)
+    var pmc = PMC(this)
+
+    // TODO 重新实现get
+    @Suppress("unchecked_cast")
+    fun <T> get(prop: GunProp<*, T>): T {
+        val currentStack = this.stack
+        if (FMLEnvironment.dist == Dist.DEDICATED_SERVER && !(currentStack sameWith lastTimeStack)) {
+            pmc = PMC(this)
+            lastTimeStack = currentStack.copy()
+        }
 
         // property override tag
         jsonPropModifier.update(propertyOverrideString.get())
         jsonPropModifier.modifyProperty(pmc)
-
-        // Gun Item
-        item.modifyProperty(pmc)
 
         // gun modifiers
         item.modifyProperty(pmc)
@@ -199,12 +207,6 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         // limit
         GunProp.modifyProperty(pmc)
 
-        pmc
-    }
-
-    // TODO 重新实现get
-    @Suppress("unchecked_cast")
-    fun <T> get(prop: GunProp<*, T>): T {
         return pmc[prop]
     }
 
@@ -593,7 +595,8 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     val damageReduceRate: Double
         get() {
             for (type in Perk.Type.entries.toTypedArray()) {
-                return this.perk.getInstances(type).minOfOrNull { it.perk.getModifiedDamageReduceRate(this.rawDamageReduce) } ?: continue
+                return this.perk.getInstances(type)
+                    .minOfOrNull { it.perk.getModifiedDamageReduceRate(this.rawDamageReduce) } ?: continue
             }
             return this.rawDamageReduce!!.rate
         }
@@ -601,7 +604,8 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     val damageReduceMinDistance: Double
         get() {
             for (type in Perk.Type.entries.toTypedArray()) {
-                return this.perk.getInstances(type).minOfOrNull { it.perk.getModifiedDamageReduceMinDistance(this.rawDamageReduce) } ?: continue
+                return this.perk.getInstances(type)
+                    .minOfOrNull { it.perk.getModifiedDamageReduceMinDistance(this.rawDamageReduce) } ?: continue
             }
             return this.rawDamageReduce!!.minDistance
         }
