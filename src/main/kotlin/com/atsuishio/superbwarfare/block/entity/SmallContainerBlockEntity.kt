@@ -144,7 +144,7 @@ open class SmallContainerBlockEntity(pos: BlockPos, state: BlockState) :
 
                 if (blockEntity.tick == 18) {
                     ParticleTool.sendParticle(
-                        pLevel as ServerLevel?,
+                        pLevel as ServerLevel,
                         ParticleTypes.EXPLOSION,
                         pPos.x.toDouble(),
                         (pPos.y + 1).toDouble(),

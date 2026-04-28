@@ -565,7 +565,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         if (!pPlayer.isSpectator && this.hasMenu()) {
             val computed = computed()
             val type = computed.vehicleContainerType
-            if (type == null || !type.hasMenu()) return null
+            if (!type.hasMenu()) return null
             return when (type) {
                 VehicleContainerType.MINI -> MiniVehicleContainerMenu(pContainerId, pPlayerInventory, this.id)
                 VehicleContainerType.SMALL -> SmallVehicleContainerMenu(pContainerId, pPlayerInventory, this.id)
@@ -744,9 +744,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open val thirdPersonCameraPosition: Vec3
         get() {
             var pos = computed().thirdPersonCameraPos
-            if (pos == null) {
-                pos = Vec3(0.0, 1.0, 3.0)
-            }
             return Vec3(pos.z + ClientMouseHandler.custom3pDistanceLerp, pos.y, pos.x)
         }
 
@@ -2082,7 +2079,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
 
         val terrainCompat = this.computed().terrainCompat
-        if (terrainCompat != null) {
+        if (terrainCompat.isNotEmpty()) {
             if (!((vehicleType == VehicleType.AIRPLANE || vehicleType == VehicleType.HELICOPTER) && isWreck)) {
                 this.terrainCompact(terrainCompat)
             }
@@ -3933,7 +3930,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             return seat.hidePassenger
         }
 
-        return seat.isEnclosed
+        return seat.isEnclosed!!
     }
 
     open fun isEnclosed(passenger: Entity?): Boolean {
@@ -3993,10 +3990,10 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     }
 
     open fun useAircraftCamera(seatIndex: Int): Boolean {
-        val seat = computed().seats()[seatIndex]
+        val seat = computed().seats().getOrNull(seatIndex)
         if (seat != null) {
             val data = seat.cameraPos
-            return data.useAircraftCamera
+            return data?.useAircraftCamera ?: false
         } else {
             return false
         }
@@ -4011,7 +4008,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     @OnlyIn(Dist.CLIENT)
     open fun getCameraRotation(partialTicks: Float, player: Player, zoom: Boolean, isFirstPerson: Boolean): Vec2? {
         val index = this.getSeatIndex(player)
-        val seat = computed().seats()[index]
+        val seat = computed().seats().getOrNull(index)
         val gunData = getGunData(player)
         if (seat != null) {
             val data = seat.cameraPos
@@ -4050,7 +4047,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     @OnlyIn(Dist.CLIENT)
     open fun getCameraPosition(partialTicks: Float, player: Player, zoom: Boolean, isFirstPerson: Boolean): Vec3? {
         val index = this.getSeatIndex(player)
-        val seat = computed().seats()[index]
+        val seat = computed().seats().getOrNull(index)
         if (seat != null) {
             val data = seat.cameraPos
             val gunData = getGunData(player)
@@ -4087,7 +4084,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     @OnlyIn(Dist.CLIENT)
     open fun useFixedCameraPos(entity: Entity?): Boolean {
         val index = this.getSeatIndex(entity)
-        val seat = computed().seats()[index]
+        val seat = computed().seats().getOrNull(index)
         if (seat != null) {
             val data = seat.cameraPos
             if (data != null) {
@@ -4096,7 +4093,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
         return false
     }
-
 
     override fun <T> getCapability(cap: Capability<T?>, side: Direction?): LazyOptional<T?> {
         if (cap === ForgeCapabilities.ENERGY && this.hasEnergyStorage()) {
@@ -4541,7 +4537,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     override fun getOBBs(): MutableList<OBB> {
         if (this.obbCache == null) {
-            this.obbCache = this.obb.asSequence().map { it.obb }.toMutableList()
+            this.obbCache = this.obb.asSequence().map { it.getOBB() }.toMutableList()
         }
         return this.obbCache!!
     }

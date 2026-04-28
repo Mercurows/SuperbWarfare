@@ -119,7 +119,7 @@ public class SodayoPickUpRocketEntity extends ArtilleryEntity {
                             return super.interact(player, hand);
                         } else {
                             player.addItem(getItems().get(i).copyWithCount(1));
-                            Vec3 vec3 = OBB.vector3dToVec3(this.barrel[i].center());
+                            Vec3 vec3 = OBB.vector3dToVec3(this.barrel[i].center);
                             serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.TYPE_63_RELOAD.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.1f + 0.9f);
                             cooldown = 5;
                             getItems().set(i, ItemStack.EMPTY);
@@ -138,7 +138,7 @@ public class SodayoPickUpRocketEntity extends ArtilleryEntity {
                     if (!player.isCreative()) {
                         stack.shrink(1);
                     }
-                    Vec3 vec3 = OBB.vector3dToVec3(this.barrel[i].center());
+                    Vec3 vec3 = OBB.vector3dToVec3(this.barrel[i].center);
                     serverLevel.playSound(null, vec3.x, vec3.y, vec3.z, ModSounds.TYPE_63_RELOAD.get(), SoundSource.PLAYERS, 1f, random.nextFloat() * 0.1f + 0.9f);
                     cooldown = 5;
                     setChanged();
@@ -227,7 +227,7 @@ public class SodayoPickUpRocketEntity extends ArtilleryEntity {
         float shootGravity = getProjectileGravity(gunData);
 
         OBB obb = this.barrel[i];
-        Vec3 shootPos = OBB.vector3dToVec3(obb.center());
+        Vec3 shootPos = OBB.vector3dToVec3(obb.center);
 
         var entityToSpawn = new MediumRocketEntity(ModEntities.MEDIUM_ROCKET.get(), shootPos.x, shootPos.y, shootPos.z, level(),
                 gunData.get(GunProp.DAMAGE).floatValue(), gunData.get(GunProp.EXPLOSION_RADIUS).floatValue(), gunData.get(GunProp.EXPLOSION_DAMAGE).floatValue(),
@@ -296,31 +296,31 @@ public class SodayoPickUpRocketEntity extends ArtilleryEntity {
         Matrix4d transform = getVehicleTransform(1);
 
         Vector4d worldPositionBody1 = transformPosition(transform, 0, 1, 0.593);
-        this.body1.center().set(new Vector3f((float) worldPositionBody1.x, (float) worldPositionBody1.y, (float) worldPositionBody1.z));
+        this.body1.center.set(new Vector3f((float) worldPositionBody1.x, (float) worldPositionBody1.y, (float) worldPositionBody1.z));
         this.body1.updateRotation(VectorTool.combineRotations(1, this));
 
         Vector4d worldPositionBody2 = transformPosition(transform, 0, 1.875, 0.375);
-        this.body2.center().set(new Vector3f((float) worldPositionBody2.x, (float) worldPositionBody2.y, (float) worldPositionBody2.z));
+        this.body2.center.set(new Vector3f((float) worldPositionBody2.x, (float) worldPositionBody2.y, (float) worldPositionBody2.z));
         this.body2.updateRotation(VectorTool.combineRotations(1, this));
 
         Vector4d worldPositionBody3 = transformPosition(transform, 0, 2.15625, 0.9);
-        this.body3.center().set(new Vector3f((float) worldPositionBody3.x, (float) worldPositionBody3.y, (float) worldPositionBody3.z));
+        this.body3.center.set(new Vector3f((float) worldPositionBody3.x, (float) worldPositionBody3.y, (float) worldPositionBody3.z));
         this.body3.updateRotation(VectorTool.combineRotations(1, this));
 
         Vector4d worldPositionWheelLF = transformPosition(transform, 1, 0.5, 2.875);
-        this.wheelLF.center().set(new Vector3f((float) worldPositionWheelLF.x, (float) worldPositionWheelLF.y, (float) worldPositionWheelLF.z));
+        this.wheelLF.center.set(new Vector3f((float) worldPositionWheelLF.x, (float) worldPositionWheelLF.y, (float) worldPositionWheelLF.z));
         this.wheelLF.updateRotation(VectorTool.combineRotations(1, this));
 
         Vector4d worldPositionWheelRF = transformPosition(transform, -1, 0.5, 2.875);
-        this.wheelRF.center().set(new Vector3f((float) worldPositionWheelRF.x, (float) worldPositionWheelRF.y, (float) worldPositionWheelRF.z));
+        this.wheelRF.center.set(new Vector3f((float) worldPositionWheelRF.x, (float) worldPositionWheelRF.y, (float) worldPositionWheelRF.z));
         this.wheelRF.updateRotation(VectorTool.combineRotations(1, this));
 
         Vector4d worldPositionWheelLB = transformPosition(transform, 1, 0.5, -1.28);
-        this.wheelLB.center().set(new Vector3f((float) worldPositionWheelLB.x, (float) worldPositionWheelLB.y, (float) worldPositionWheelLB.z));
+        this.wheelLB.center.set(new Vector3f((float) worldPositionWheelLB.x, (float) worldPositionWheelLB.y, (float) worldPositionWheelLB.z));
         this.wheelLB.updateRotation(VectorTool.combineRotations(1, this));
 
         Vector4d worldPositionWheelRB = transformPosition(transform, -1, 0.5, -1.28);
-        this.wheelRB.center().set(new Vector3f((float) worldPositionWheelRB.x, (float) worldPositionWheelRB.y, (float) worldPositionWheelRB.z));
+        this.wheelRB.center.set(new Vector3f((float) worldPositionWheelRB.x, (float) worldPositionWheelRB.y, (float) worldPositionWheelRB.z));
         this.wheelRB.updateRotation(VectorTool.combineRotations(1, this));
 
         Matrix4d transformB = getBarrelTransform(1);
@@ -341,13 +341,13 @@ public class SodayoPickUpRocketEntity extends ArtilleryEntity {
         setBarrelOBB(11, -0.3659375 + 3 * i, 0.244375 - 2 * i);
 
         Vector4d worldPositionTurret = transformPosition(transformB, 0, 0, 0.3740625);
-        this.turret.center().set(new Vector3f((float) worldPositionTurret.x, (float) worldPositionTurret.y, (float) worldPositionTurret.z));
+        this.turret.center.set(new Vector3f((float) worldPositionTurret.x, (float) worldPositionTurret.y, (float) worldPositionTurret.z));
         this.turret.updateRotation(VectorTool.combineRotationsBarrel(1, this));
     }
 
     private void setBarrelOBB(int index, double x, double y) {
         Vector4d vec = transformPosition(getBarrelTransform(1), x, y, -0.44625);
-        this.barrel[index].center().set(new Vector3f((float) vec.x, (float) vec.y, (float) vec.z));
+        this.barrel[index].center.set(new Vector3f((float) vec.x, (float) vec.y, (float) vec.z));
         this.barrel[index].updateRotation(VectorTool.combineRotationsBarrel(1, this));
     }
 

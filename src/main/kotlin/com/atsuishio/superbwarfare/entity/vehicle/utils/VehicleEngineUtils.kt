@@ -244,7 +244,6 @@ object VehicleEngineUtils {
 
             deltaMovement = deltaMovement.multiply(f0.toDouble(), 0.99, f0.toDouble())
         } else if (isInFluidType) {
-
             powerAdd *= 0.1f
             powerReduce *= 0.1f
 
@@ -259,15 +258,12 @@ object VehicleEngineUtils {
                     .scale(0.04 * deltaMovement.dot(getViewVector(1f)))
             )
             deltaMovement = deltaMovement.multiply(f1.toDouble(), 0.85, f1.toDouble())
-
         } else {
             deltaMovement = deltaMovement.multiply(0.99, 0.99, 0.99)
         }
 
-
         if (level.isClientSide) {
             if (isInFluidType && deltaMovement.horizontalDistanceSqr() > 0.3162) {
-
                 addRandomParticle(ParticleTypes.CLOUD, position().add(
                     0.0,
                     VehicleVecUtils.getSubmergedHeight(this) - 0.2,
@@ -283,21 +279,19 @@ object VehicleEngineUtils {
 
             if (upInputDown && onGround() && deltaMovement.horizontalDistanceSqr() > 0.01) {
                 for (pos in computed().terrainCompat) {
-                    if (pos != null) {
-                        val worldPosition = transformPosition(
-                            getVehicleTransform(1f),
-                            pos.x, pos.y, pos.z
-                        )
+                    val worldPosition = transformPosition(
+                        getVehicleTransform(1f),
+                        pos.x, pos.y, pos.z
+                    )
 
-                        val option = CustomCloudOption(0x000000, 200, 1.5f, 0f, false, false)
+                    val option = CustomCloudOption(0x000000, 200, 1.5f, 0f, false, false)
 
-                        level().addParticle(option,
-                            worldPosition.x,
-                            worldPosition.y,
-                            worldPosition.z,
-                            0.0, 0.0, 0.0
-                        )
-                    }
+                    level().addParticle(option,
+                        worldPosition.x,
+                        worldPosition.y,
+                        worldPosition.z,
+                        0.0, 0.0, 0.0
+                    )
                 }
             }
         }

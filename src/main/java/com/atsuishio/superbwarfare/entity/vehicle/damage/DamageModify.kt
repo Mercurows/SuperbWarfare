@@ -2,7 +2,11 @@ package com.atsuishio.superbwarfare.entity.vehicle.damage
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.DeserializeFromString
+import com.atsuishio.superbwarfare.data.STOFactory
+import com.atsuishio.superbwarfare.data.StringInstanceBuilder
 import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation
@@ -15,6 +19,8 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.math.max
 
+@STOFactory(DamageModify.DamageModifyInstanceBuilder::class)
+@Serializable
 class DamageModify : DeserializeFromString {
     override fun deserializeFromString(str: String) {
         val matcher: Matcher = MODIFY_PATTERN.matcher(str.trim())
@@ -45,34 +51,75 @@ class DamageModify : DeserializeFromString {
         this.value = if (value.isEmpty()) 0f else value.toFloat() * (if (operator == "+") -1 else 1)
     }
 
+    object DamageModifyInstanceBuilder : StringInstanceBuilder<DamageModify> {
+        override fun fromString(value: String) = DamageModify().apply {
+            val matcher: Matcher = MODIFY_PATTERN.matcher(value.trim())
+            if (!matcher.matches()) {
+                Mod.LOGGER.warn("invalid damage modify: {}", value)
+                return@apply
+            }
+
+            val prefix = matcher.group("prefix").trim()
+            val id = matcher.group("id").trim()
+            val operator = matcher.group("operator").trim()
+            val value = matcher.group("value").trim()
+
+            this.source = prefix + id
+            generateSourceType()
+
+            this.type = when (operator) {
+                "-", "+" -> ModifyType.REDUCE
+                "*" -> ModifyType.MULTIPLY
+                else -> if (value == "0") ModifyType.IMMUNITY else ModifyType.INVALID
+            }
+
+            if (this.type == ModifyType.INVALID) {
+                Mod.LOGGER.warn("invalid damage modify: {}", value)
+                return@apply
+            }
+
+            this.value = if (value.isEmpty()) 0f else value.toFloat() * (if (operator == "+") -1 else 1)
+        }
+    }
+
+    @Serializable
     enum class ModifyType {
         @SerializedName("Immunity")
+        @SerialName("Immunity")
         IMMUNITY,  // 完全免疫
 
         @SerializedName("Reduce")
+        @SerialName("Reduce")
         REDUCE,  // 固定数值减伤
 
         @SerializedName("Multiply")
+        @SerialName("Multiply")
         MULTIPLY,  // 乘以指定倍数
 
         @SerializedName("Invalid")
+        @SerialName("Invalid")
         INVALID // 解析无效
     }
 
     @SerializedName("Value")
+    @SerialName("Value")
     var value: Float = 0f
 
     @SerializedName("Type")
+    @SerialName("Type")
     var type: ModifyType? = ModifyType.IMMUNITY
 
     @SerializedName("Source")
+    @SerialName("Source")
     var source: String = "All"
 
     @Transient
+    @kotlinx.serialization.Transient
     var entityId: String? = ""
 
     // 必须默认为null，否则无法处理JSON读取Source的情况
     @Transient
+    @kotlinx.serialization.Transient
     var sourceType: SourceType? = null
 
     enum class SourceType {
@@ -85,15 +132,19 @@ class DamageModify : DeserializeFromString {
     }
 
     @Transient
+    @kotlinx.serialization.Transient
     var sourceTagKey: TagKey<DamageType>? = null
 
     @Transient
+    @kotlinx.serialization.Transient
     var sourceKey: ResourceKey<DamageType>? = null
 
     @Transient
+    @kotlinx.serialization.Transient
     var entityTag: TagKey<EntityType<*>>? = null
 
     @Transient
+    @kotlinx.serialization.Transient
     var condition: Function<DamageSource, Boolean>? = null
 
     @Suppress("unused")
@@ -104,7 +155,6 @@ class DamageModify : DeserializeFromString {
         this.value = value
         this.sourceType = SourceType.ALL
     }
-
 
     constructor(type: ModifyType?, value: Float, sourceTagKey: TagKey<DamageType>?) {
         this.type = type

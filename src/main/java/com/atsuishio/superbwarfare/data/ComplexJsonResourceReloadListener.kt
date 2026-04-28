@@ -81,7 +81,7 @@ class ComplexJsonResourceReloadListener(private val data: MutableMap<String, Dat
         private val NULL = Any()
 
         @OptIn(ExperimentalSerializationApi::class)
-        private val JSON = Json {
+        val JSON = Json {
             isLenient = true
             ignoreUnknownKeys = true
             serializersModule = com.atsuishio.superbwarfare.serialization.serializersModule

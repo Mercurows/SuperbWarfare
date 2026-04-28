@@ -490,7 +490,7 @@ open class CustomExplosion(
             ParticleTool.spawnExplosionParticles(
                 particleType,
                 directSource.level(),
-                if (particlePosition != null) particlePosition else position
+                if (particlePosition != null) particlePosition!! else position
             )
         }
     }
