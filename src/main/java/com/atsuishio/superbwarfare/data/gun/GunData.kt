@@ -194,9 +194,10 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
 
         // perk
         for (type in Perk.Type.entries.toTypedArray()) {
-            val instance = perk.get(type) ?: continue
-
-            instance.modifyProperty(pmc)
+            val list = perk.getInstances(type)
+            for (instance in list) {
+                instance.perk.modifyProperty(pmc)
+            }
         }
 
         // TODO 临时属性修改
