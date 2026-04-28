@@ -10,7 +10,7 @@ import com.atsuishio.superbwarfare.client.particle.CannonMuzzleFlareOption
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
-import com.atsuishio.superbwarfare.data.ComplexJsonResourceReloadListener
+import com.atsuishio.superbwarfare.data.DataLoader
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
@@ -3404,7 +3404,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 this.engineInfo = if (serializer == null) {
                     null
                 } else {
-                    ComplexJsonResourceReloadListener.JSON.decodeFromJsonElement(serializer, engineInfo.toKxJson())
+                    DataLoader.JSON.decodeFromJsonElement(serializer, engineInfo.toKxJson())
                 }
             } catch (e: Exception) {
                 Mod.LOGGER.error("Failed to parse engine info for vehicle {}, {}", this, e)

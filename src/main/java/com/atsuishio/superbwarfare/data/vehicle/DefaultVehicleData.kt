@@ -199,7 +199,7 @@ class DefaultVehicleData : IDBasedData<DefaultVehicleData> {
             }
 
             map[entry.key] =
-                ComplexJsonResourceReloadListener.JSON.decodeFromJsonElement(
+                DataLoader.JSON.decodeFromJsonElement(
                     DefaultGunData.serializer(),
                     value.asJsonObject.toKxJson()
                 )

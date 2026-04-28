@@ -15,6 +15,8 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.world.phys.Vec2
@@ -30,6 +32,15 @@ object DataLoader {
 
     @JvmField
     val GSON: Gson = createCommonBuilder().create()
+
+    @OptIn(ExperimentalSerializationApi::class)
+    val JSON = Json {
+        isLenient = true
+        ignoreUnknownKeys = true
+        serializersModule = com.atsuishio.superbwarfare.serialization.serializersModule
+        allowTrailingComma = true
+        allowSpecialFloatingPointValues = true
+    }
 
     @JvmField
     val JSON_OBJECT_CACHE: LoadingCache<Any, JsonObject> = CacheBuilder.newBuilder()
