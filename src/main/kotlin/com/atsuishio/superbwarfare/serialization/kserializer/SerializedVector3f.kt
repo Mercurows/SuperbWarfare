@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.serialization.kserializer
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.FloatArraySerializer
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.descriptors.element
 import kotlinx.serialization.encoding.Decoder
@@ -18,12 +19,11 @@ object Vector3fSerializer : KSerializer<Vector3f> {
     }
 
     override fun serialize(encoder: Encoder, value: Vector3f) {
-        encoder.encodeFloat(value.x)
-        encoder.encodeFloat(value.y)
-        encoder.encodeFloat(value.z)
+        encoder.encodeSerializableValue(FloatArraySerializer(), floatArrayOf(value.x, value.y, value.z))
     }
 
     override fun deserialize(decoder: Decoder): Vector3f {
-        return Vector3f(decoder.decodeFloat(), decoder.decodeFloat(), decoder.decodeFloat())
+        val (x, y, z) = decoder.decodeSerializableValue(FloatArraySerializer())
+        return Vector3f(x, y, z)
     }
 }

@@ -427,7 +427,7 @@ object VehicleVecUtils {
             return if (stringOrVec3.isString) {
                 vehicle.getVectorFromString(stringOrVec3.string!!, partialTicks, vehicle.getSeatIndex(entity))
             } else {
-                val vec3 = data.zoomPosition
+                val vec3 = data.zoomPosition ?: Vec3.ZERO
                 val worldPosition = transformPosition(
                     vehicle.getTransformFromString(data.transform, partialTicks),
                     vec3.x + stringOrVec3.vec3!!.x,

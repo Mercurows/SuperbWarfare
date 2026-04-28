@@ -436,7 +436,7 @@ class CustomExplosion @JvmOverloads constructor(
             ParticleTool.spawnExplosionParticles(
                 particleType,
                 directSource.level(),
-                if (particlePosition != null) particlePosition else position
+                if (particlePosition != null) particlePosition!! else position
             )
         }
     }

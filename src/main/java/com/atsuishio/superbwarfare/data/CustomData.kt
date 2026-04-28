@@ -22,7 +22,7 @@ object CustomData {
 
     @JvmField
     val VEHICLE_DATA = DataLoader.createData(
-        "sbw/vehicles", DefaultVehicleData::class.java, true
+        "sbw/vehicles", DefaultVehicleData::class.java, true, isKtData = true
     ) { _ -> VehicleData.dataCache.invalidateAll() }
 
     @JvmField

@@ -9,7 +9,8 @@ import com.google.gson.stream.JsonWriter
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.buildClassSerialDescriptor
+import kotlinx.serialization.descriptors.element
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonDecoder
@@ -67,14 +68,15 @@ class ModColor {
         }
 
         companion object {
-            val COLOR_PATTERN: Pattern = Pattern.compile("^(#|0x)?(?<color>[a-f0-9]{6,})$")
+            val COLOR_PATTERN: Pattern = Pattern.compile("^(#|0x)?(?<color>[A-Fa-f0-9]{6,})$")
         }
     }
 }
 
 object ModColorSerializer : KSerializer<ModColor> {
-    override val descriptor: SerialDescriptor
-        get() = ModColor.serializer().descriptor
+    override val descriptor = buildClassSerialDescriptor("ModColor") {
+        element<Int>("color")
+    }
 
     override fun serialize(encoder: Encoder, value: ModColor) {
         encoder.encodeInt(value.get())
@@ -89,7 +91,7 @@ object ModColorSerializer : KSerializer<ModColor> {
         require(element is JsonPrimitive) { "JsonPrimitive is required!" }
 
         if (element.isString) {
-            val input = element.toString()
+            val input = element.content
             val str = input.trim { it <= ' ' }.lowercase()
             val matcher = COLOR_PATTERN.matcher(str)
 
@@ -103,5 +105,4 @@ object ModColorSerializer : KSerializer<ModColor> {
 
         throw SerializationException("Invalid color format: $element")
     }
-
 }
