@@ -34,6 +34,7 @@ open class LuckyContainerBlockEntity(pos: BlockPos, state: BlockState) :
     var location: ResourceLocation? = null
     var icon: ResourceLocation? = null
     var tick: Int = 0
+    var opened: Boolean = false
 
     private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
 
@@ -85,9 +86,9 @@ open class LuckyContainerBlockEntity(pos: BlockPos, state: BlockState) :
             this.icon = ResourceLocation.parse(tag.getString("Icon"))
         }
         this.tick = tag.getInt("Tick")
+        this.opened = tag.getBoolean("Opened")
     }
 
-    @ParametersAreNonnullByDefault
     override fun saveAdditional(tag: CompoundTag, registries: HolderLookup.Provider) {
         super.saveAdditional(tag, registries)
         if (this.location != null) {
@@ -97,6 +98,7 @@ open class LuckyContainerBlockEntity(pos: BlockPos, state: BlockState) :
             tag.putString("Icon", this.icon.toString())
         }
         tag.putInt("Tick", this.tick)
+        tag.putBoolean("Opened", this.opened)
     }
 
     override fun getUpdatePacket(): ClientboundBlockEntityDataPacket? {
@@ -107,7 +109,6 @@ open class LuckyContainerBlockEntity(pos: BlockPos, state: BlockState) :
         return this.saveWithFullMetadata(registries)
     }
 
-    @ParametersAreNonnullByDefault
     override fun saveToItem(stack: ItemStack, registries: HolderLookup.Provider) {
         val tag = CompoundTag()
         if (this.location != null) {
@@ -153,8 +154,13 @@ open class LuckyContainerBlockEntity(pos: BlockPos, state: BlockState) :
                     )
                 }
             } else {
+                if (blockEntity.opened) return
+
                 val direction = pState.getValue(LuckyContainerBlock.FACING)
                 val type = blockEntity.unpackEntities()
+
+                blockEntity.opened = true
+                blockEntity.setChanged()
 
                 if (type != null) {
                     val entity: Entity? = type.create(pLevel)

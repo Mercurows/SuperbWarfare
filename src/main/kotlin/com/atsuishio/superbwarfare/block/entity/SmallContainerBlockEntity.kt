@@ -33,7 +33,6 @@ import software.bernie.geckolib.animatable.GeoBlockEntity
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.animation.*
 import software.bernie.geckolib.util.GeckoLibUtil
-import javax.annotation.ParametersAreNonnullByDefault
 
 open class SmallContainerBlockEntity(pos: BlockPos, state: BlockState) :
     BlockEntity(ModBlockEntities.SMALL_CONTAINER.get(), pos, state), GeoBlockEntity {
@@ -41,6 +40,7 @@ open class SmallContainerBlockEntity(pos: BlockPos, state: BlockState) :
     var lootTableSeed: Long = 0
     var tick: Int = 0
     var player: Player? = null
+    var opened: Boolean = false
 
     private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
 
@@ -62,7 +62,6 @@ open class SmallContainerBlockEntity(pos: BlockPos, state: BlockState) :
         return this.cache
     }
 
-    @ParametersAreNonnullByDefault
     override fun loadAdditional(tag: CompoundTag, registries: HolderLookup.Provider) {
         super.loadAdditional(tag, registries)
 
@@ -74,9 +73,9 @@ open class SmallContainerBlockEntity(pos: BlockPos, state: BlockState) :
             this.lootTableSeed = tag.getLong("LootTableSeed")
         }
         this.tick = tag.getInt("Tick")
+        this.opened = tag.getBoolean("Opened")
     }
 
-    @ParametersAreNonnullByDefault
     override fun saveAdditional(tag: CompoundTag, registries: HolderLookup.Provider) {
         super.saveAdditional(tag, registries)
 
@@ -88,6 +87,7 @@ open class SmallContainerBlockEntity(pos: BlockPos, state: BlockState) :
             }
         }
         tag.putInt("Tick", this.tick)
+        tag.putBoolean("Opened", this.opened)
     }
 
     override fun getUpdatePacket(): ClientboundBlockEntityDataPacket? {
@@ -98,7 +98,6 @@ open class SmallContainerBlockEntity(pos: BlockPos, state: BlockState) :
         return this.saveWithFullMetadata(registries)
     }
 
-    @ParametersAreNonnullByDefault
     override fun saveToItem(stack: ItemStack, registries: HolderLookup.Provider) {
         val tag = CompoundTag()
         if (this.lootTable != null) {
@@ -120,7 +119,7 @@ open class SmallContainerBlockEntity(pos: BlockPos, state: BlockState) :
         val lootTable = this.lootTable
         val serverLevel = level?.server
         if (lootTable != null && level != null && serverLevel != null) {
-            val loottable = serverLevel.reloadableRegistries().getLootTable(lootTable)
+            val table = serverLevel.reloadableRegistries().getLootTable(lootTable)
             if (pPlayer is ServerPlayer) {
                 CriteriaTriggers.GENERATE_LOOT.trigger(pPlayer, lootTable)
             }
@@ -132,7 +131,7 @@ open class SmallContainerBlockEntity(pos: BlockPos, state: BlockState) :
                 builder.withLuck(pPlayer.luck).withParameter(LootContextParams.THIS_ENTITY, pPlayer)
             }
 
-            return loottable.getRandomItems(builder.create(LootContextParamSets.CHEST), this.lootTableSeed).stream()
+            return table.getRandomItems(builder.create(LootContextParamSets.CHEST), this.lootTableSeed).stream()
                 .toList()
         }
         return mutableListOf()
@@ -172,6 +171,8 @@ open class SmallContainerBlockEntity(pos: BlockPos, state: BlockState) :
                     )
                 }
             } else {
+                if (blockEntity.opened) return
+
                 val items = blockEntity.unpackLootTable(blockEntity.player)
                 if (!items.isEmpty()) {
                     for (item in items) {
@@ -184,6 +185,9 @@ open class SmallContainerBlockEntity(pos: BlockPos, state: BlockState) :
                         pLevel.addFreshEntity(entity)
                     }
                 }
+
+                blockEntity.opened = true
+                blockEntity.setChanged()
                 pLevel.setBlockAndUpdate(pPos, Blocks.AIR.defaultBlockState())
             }
         }

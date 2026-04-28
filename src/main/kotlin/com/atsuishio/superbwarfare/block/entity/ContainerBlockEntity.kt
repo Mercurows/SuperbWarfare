@@ -33,6 +33,7 @@ open class ContainerBlockEntity(pos: BlockPos, state: BlockState) :
     @JvmField
     var entityTag: CompoundTag? = null
     var tick: Int = 0
+    var opened: Boolean = false
 
     private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
 
@@ -67,6 +68,7 @@ open class ContainerBlockEntity(pos: BlockPos, state: BlockState) :
             this.entityTag = tag.getCompound("Entity")
         }
         this.tick = tag.getInt("Tick")
+        this.opened = tag.getBoolean("Opened")
     }
 
     private fun saveDataToTag(tag: CompoundTag) {
@@ -79,6 +81,7 @@ open class ContainerBlockEntity(pos: BlockPos, state: BlockState) :
             tag.put("Entity", entityTag)
         }
         tag.putInt("Tick", this.tick)
+        tag.putBoolean("Opened", this.opened)
     }
 
     override fun saveAdditional(tag: CompoundTag, registries: HolderLookup.Provider) {
@@ -139,6 +142,8 @@ open class ContainerBlockEntity(pos: BlockPos, state: BlockState) :
                     )
                 }
             } else {
+                if (blockEntity.opened) return
+
                 val direction = pState.getValue(ContainerBlock.FACING)
 
                 val entity = blockEntity.entityType!!.create(pLevel) ?: return
@@ -147,6 +152,9 @@ open class ContainerBlockEntity(pos: BlockPos, state: BlockState) :
                 if (entityTag != null) {
                     entity.load(entityTag)
                 }
+
+                blockEntity.opened = true
+                blockEntity.setChanged()
 
                 entity.setPos(
                     pPos.x + 0.5 + (2 * Math.random() - 1) * 0.1f,
