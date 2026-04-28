@@ -29,7 +29,7 @@ class JsonPropertyModifier<DATA : DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DAT
     }
 
     override fun computeProperties(data: DATA, rawData: DEFAULT_DATA): DEFAULT_DATA {
-        if (obj == null) return rawData
+        if (obj == null || obj!!.size() == 0) return rawData
 
         val dataJson = DataLoader.GSON.toJsonTree(rawData).getAsJsonObject()
         for (entry in obj!!.entrySet()) {
