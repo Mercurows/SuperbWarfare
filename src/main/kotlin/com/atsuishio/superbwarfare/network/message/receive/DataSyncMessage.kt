@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.serialization.kserializer.CompressedString
 import com.atsuishio.superbwarfare.tools.invoke
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.serializer
 
 @Serializable
 data class DataSyncMessage(
@@ -21,7 +22,11 @@ data class DataSyncMessage(
             return
         }
 
-        val map = DataLoader.GSON.fromJson(jsonData, data.mapType) as Map<String, Any>
+        val map = if (data.isKtData) {
+            DataLoader.JSON.decodeFromString(serializer(data.mapType.type), jsonData)
+        } else {
+            DataLoader.GSON.fromJson(jsonData, data.mapType)
+        } as Map<String, Any>
 
         data.dataMap.clear()
         data.dataMap.putAll(map)

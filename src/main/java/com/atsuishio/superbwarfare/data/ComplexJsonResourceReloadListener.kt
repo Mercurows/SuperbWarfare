@@ -6,8 +6,6 @@ import com.atsuishio.superbwarfare.api.event.LoadingJsonEvent
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData
 import com.atsuishio.superbwarfare.tools.postEvent
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import net.minecraft.resources.FileToIdConverter
 import net.minecraft.server.packs.resources.ResourceManager
@@ -39,7 +37,7 @@ class ComplexJsonResourceReloadListener(private val data: MutableMap<String, Dat
                         }
 
                         var data = if (value.isKtData) {
-                            JSON.decodeFromString(serializer(value.type), jsonStr)
+                            DataLoader.JSON.decodeFromString(serializer(value.type), jsonStr)
                         } else {
                             DataLoader.GSON.fromJson(jsonStr, value.type)
                         }
@@ -82,14 +80,5 @@ class ComplexJsonResourceReloadListener(private val data: MutableMap<String, Dat
 
     companion object {
         private val NULL = Any()
-
-        @OptIn(ExperimentalSerializationApi::class)
-        val JSON = Json {
-            isLenient = true
-            ignoreUnknownKeys = true
-            serializersModule = com.atsuishio.superbwarfare.serialization.serializersModule
-            allowTrailingComma = true
-            allowSpecialFloatingPointValues = true
-        }
     }
 }
