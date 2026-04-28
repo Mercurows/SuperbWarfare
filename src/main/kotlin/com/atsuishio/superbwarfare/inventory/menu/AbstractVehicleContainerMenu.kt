@@ -73,8 +73,12 @@ abstract class AbstractVehicleContainerMenu(type: MenuType<*>?, id: Int, invento
         return vehicle.isAlive && pPlayer.canInteractWithEntity(this.vehicle, 3.0)
     }
 
-    class VehicleSlot(private val vehicle: VehicleEntity?, val slotIndex: Int, x: Int, y: Int) :
-        SlotItemHandler(vehicle?.inventory, slotIndex, x, y) {
+    class VehicleSlot(
+        private val vehicle: VehicleEntity?,
+        @get:JvmName("slotIndex") val slotIndex: Int,
+        x: Int,
+        y: Int
+    ) : SlotItemHandler(vehicle?.inventory, slotIndex, x, y) {
         override fun mayPickup(playerIn: Player): Boolean {
             return this.vehicle?.canTakeItem(slotIndex) ?: false
         }

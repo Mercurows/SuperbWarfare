@@ -25,7 +25,7 @@ class FireModeInfo : DeserializeFromString, GunPropertyModifier, PropertyModifie
 
     @Transient
     @kotlinx.serialization.Transient
-    private val jsonPropModifier = JsonPropertyModifier<GunData, DefaultGunData>()
+    private val jsonPropModifier = JsonPropertyModifier(GunProp.entries)
 
     override fun computeProperties(data: GunData, rawData: DefaultGunData): DefaultGunData {
         jsonPropModifier.update(override)
@@ -33,7 +33,8 @@ class FireModeInfo : DeserializeFromString, GunPropertyModifier, PropertyModifie
     }
 
     override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) {
-        // TODO Json PropertyModifier
+        jsonPropModifier.update(override)
+        jsonPropModifier.modifyProperty(modifier)
     }
 
     fun init() {

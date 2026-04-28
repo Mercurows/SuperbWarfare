@@ -276,7 +276,7 @@ class AmmoConsumer : DeserializeFromString, GunPropertyModifier, PropertyModifie
 
     @Transient
     @kotlinx.serialization.Transient
-    private val jsonPropModifier = JsonPropertyModifier<GunData, DefaultGunData>()
+    private val jsonPropModifier = JsonPropertyModifier(GunProp.entries)
 
     override fun computeProperties(data: GunData, rawData: DefaultGunData): DefaultGunData {
         var rawData = rawData
@@ -284,9 +284,10 @@ class AmmoConsumer : DeserializeFromString, GunPropertyModifier, PropertyModifie
             rawData.projectile = projectile!!
         }
 
+        val override = override
         if (override != null) {
             jsonPropModifier.update(override)
-            rawData = jsonPropModifier.computeProperties(data, rawData)!!
+            rawData = jsonPropModifier.computeProperties(data, rawData)
         }
 
         return rawData
@@ -297,7 +298,8 @@ class AmmoConsumer : DeserializeFromString, GunPropertyModifier, PropertyModifie
             modifier[GunProp.PROJECTILE] = projectile!!.value
         }
 
-        // TODO jsonPropModifier
+        jsonPropModifier.update(override)
+        jsonPropModifier.modifyProperty(modifier)
     }
 
 

@@ -1,5 +1,9 @@
 package com.atsuishio.superbwarfare.data
 
+import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
 import java.lang.reflect.Type
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.javaType
@@ -13,12 +17,20 @@ abstract class Prop<DATA : DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA, FIEL
 
     val serializer by lazy { prop.serializer() }
 
+    val serializationName = prop.annotations.filterIsInstance<SerialName>().singleOrNull()?.value
+        ?: prop.annotations.filterIsInstance<SerializedName>().singleOrNull()?.value
+        ?: prop.name
+
     init {
         props.add(this)
     }
 
     fun getDefault(data: DEFAULT_DATA): RESULT {
         return transform(prop.get(data))
+    }
+
+    fun deserialize(element: JsonElement): RESULT {
+        return transform(Json.decodeFromJsonElement(serializer, element))
     }
 
     companion object {
@@ -34,11 +46,11 @@ class PMC<DATA : DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA>(val data: DATA
     private val currentProps = mutableMapOf<Prop<DATA, *, *, *, *>, Any?>()
 
     @Suppress("UNCHECKED_CAST")
-    operator fun <T : Prop<DATA, DEFAULT_DATA, *, RESULT, T>, RESULT> get(prop: T) = currentProps.getOrPut(prop) {
+    operator fun <T : Prop<DATA, DEFAULT_DATA, *, RESULT, *>, RESULT> get(prop: T) = currentProps.getOrPut(prop) {
         prop.getDefault(data.getDefault()) as Any?
     } as RESULT
 
-    operator fun <T : Prop<DATA, DEFAULT_DATA, *, RESULT, T>, RESULT : Any> set(prop: T, value: RESULT) {
+    operator fun <T : Prop<DATA, DEFAULT_DATA, *, RESULT, *>, RESULT : Any> set(prop: T, value: RESULT) {
         currentProps[prop] = value
     }
 
@@ -46,7 +58,7 @@ class PMC<DATA : DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA>(val data: DATA
         currentProps.clear()
     }
 
-    fun <T : Prop<DATA, DEFAULT_DATA, *, RESULT, T>, RESULT : Any> modify(
+    fun <T : Prop<DATA, DEFAULT_DATA, *, RESULT, *>, RESULT : Any> modify(
         prop: T,
         modifier: (RESULT) -> RESULT
     ) {
