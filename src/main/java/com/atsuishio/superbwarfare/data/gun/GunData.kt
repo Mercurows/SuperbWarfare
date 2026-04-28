@@ -41,6 +41,8 @@ import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.component.CustomData
 import net.minecraft.world.phys.Vec3
+import net.neoforged.api.distmarker.Dist
+import net.neoforged.fml.loading.FMLEnvironment
 import net.neoforged.neoforge.energy.IEnergyStorage
 import net.neoforged.neoforge.items.IItemHandler
 import org.jetbrains.annotations.ApiStatus
@@ -80,6 +82,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     val id: String
 
     var defaultDataSupplier: Supplier<DefaultGunData>
+    var lastTimeStack: ItemStack? = null
 
     private fun getOrPut(name: String): CompoundTag {
         if (!this.tag.contains(name)) {
@@ -170,15 +173,20 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
 
     private val propCache = ConcurrentHashMap<GunProp<*, *>, Any>()
 
-    private val pmc by lazy {
-        val pmc = PMC(this@GunData)
+    var pmc = PMC(this)
+
+    // TODO 重新实现get
+    @Suppress("unchecked_cast")
+    fun <T> get(prop: GunProp<*, T>): T {
+        val currentStack = this.stack
+        if (FMLEnvironment.dist == Dist.DEDICATED_SERVER && !(currentStack sameWith lastTimeStack)) {
+            pmc = PMC(this)
+            lastTimeStack = currentStack.copy()
+        }
 
         // property override tag
         jsonPropModifier.update(propertyOverrideString.get())
         jsonPropModifier.modifyProperty(pmc)
-
-        // Gun Item
-        item.modifyProperty(pmc)
 
         // gun modifiers
         item.modifyProperty(pmc)
@@ -204,12 +212,6 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         // limit
         GunProp.modifyProperty(pmc)
 
-        pmc
-    }
-
-    // TODO 重新实现get
-    @Suppress("unchecked_cast")
-    fun <T> get(prop: GunProp<*, T>): T {
         return pmc[prop]
     }
 

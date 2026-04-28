@@ -80,7 +80,10 @@ fun Vec3?.toFormattedString(): String {
 }
 
 fun isSameItemStack(a: ItemStack, b: ItemStack) = a sameWith b
-infix fun ItemStack.sameWith(that: ItemStack) = ItemStack.isSameItemSameComponents(this, that)
+infix fun ItemStack.sameWith(that: ItemStack?): Boolean {
+    return if (that == null) false
+    else ItemStack.isSameItemSameComponents(this, that)
+}
 
 fun Player.sendPacket(packet: CustomPacketPayload) = sendPacketTo(this, packet)
 fun Player.sendPacket(packet: Packet<*>) = sendPacketTo(this, packet)
