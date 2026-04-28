@@ -110,7 +110,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         tempModifications = null
     }
 
-    private val jsonPropModifier = JsonPropertyModifier<GunData, DefaultGunData>()
+    private val jsonPropModifier = JsonPropertyModifier(GunProp.entries)
 
     private var cache: DefaultGunData? = null
 
@@ -168,9 +168,12 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     private val pmc by lazy {
         val pmc = PMC(this@GunData)
 
-        // TODO property override tag
-//        jsonPropModifier.update(propertyOverrideString.get())
-//        rawData = jsonPropModifier.computeProperties(this, rawData)
+        // property override tag
+        jsonPropModifier.update(propertyOverrideString.get())
+        jsonPropModifier.modifyProperty(pmc)
+
+        // Gun Item
+        item.modifyProperty(pmc)
 
         // gun modifiers
         item.modifyProperty(pmc)

@@ -19,17 +19,19 @@ class GunProp<T, R>(
 ) : Prop<GunData, DefaultGunData, T, R, GunProp<T, R>>(prop, transform) {
 
     companion object {
+        val entries = mutableListOf<GunProp<*, *>>()
+
         inline fun <reified T> plainProp(
             prop: KMutableProperty1<DefaultGunData, T>,
         ): GunProp<T, T> {
-            return GunProp(prop) { it }
+            return GunProp(prop) { it }.also { entries.add(it) }
         }
 
         inline fun <reified T, R> complexProp(
             prop: KMutableProperty1<DefaultGunData, T>,
             noinline transform: (T) -> R
         ): GunProp<T, R> {
-            return GunProp(prop, transform)
+            return GunProp(prop, transform).also { entries.add(it) }
         }
 
 
@@ -137,7 +139,8 @@ class GunProp<T, R>(
         val WEIGHT = plainProp(DefaultGunData::weight)
 
         @JvmField
-        val DEFAULT_FIRE_MODE = complexProp(DefaultGunData::defaultFireMode) { it.ifEmpty { FireMode.SEMI.typeName!! }!! }
+        val DEFAULT_FIRE_MODE =
+            complexProp(DefaultGunData::defaultFireMode) { it.ifEmpty { FireMode.SEMI.typeName!! }!! }
 
         @JvmField
         val AVAILABLE_FIRE_MODES =
