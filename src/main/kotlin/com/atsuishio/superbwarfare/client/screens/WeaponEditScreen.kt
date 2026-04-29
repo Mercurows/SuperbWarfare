@@ -35,6 +35,14 @@ class WeaponEditScreen(private val stack: ItemStack) : Screen(Component.empty())
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick)
     }
 
+    override fun renderBackground(
+        guiGraphics: GuiGraphics,
+        mouseX: Int,
+        mouseY: Int,
+        partialTick: Float
+    ) {
+    }
+
     fun renderEdit(pGuiGraphics: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTick: Float) {
         if (stack.item !is GunItem) return
         val player = localPlayer ?: return
@@ -48,11 +56,11 @@ class WeaponEditScreen(private val stack: ItemStack) : Screen(Component.empty())
         pose.pushPose()
 
         pGuiGraphics.fill(this.width - 165, 4, this.width - 4, 110, -0x80000000)
-        pGuiGraphics.drawString(this.font, this.stack.getHoverName(), this.width - 161, 6, 0xFFFFFF, false)
+        pGuiGraphics.drawString(this.font, this.stack.hoverName, this.width - 161, 6, 0xFFFFFF, false)
         pGuiGraphics.fill(
             this.width - 163,
             16,
-            min(this.width + this.font.width(this.stack.getHoverName()) - 159, this.width - 6),
+            min(this.width + this.font.width(this.stack.hoverName) - 159, this.width - 6),
             17,
             -0x1
         )

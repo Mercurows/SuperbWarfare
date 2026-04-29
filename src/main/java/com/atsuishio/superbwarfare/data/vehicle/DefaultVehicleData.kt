@@ -16,7 +16,7 @@ import kotlinx.serialization.Serializable
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.phys.Vec2
 import net.minecraft.world.phys.Vec3
-import net.minecraftforge.common.ForgeConfigSpec
+import net.neoforged.neoforge.common.ModConfigSpec
 import java.util.*
 import kotlin.math.max
 
@@ -294,7 +294,7 @@ class DefaultVehicleData : IDBasedData<DefaultVehicleData> {
     }
 
     companion object {
-        private fun <T> getConfigOrDefault(config: ForgeConfigSpec.ConfigValue<T>): T {
+        private fun <T> getConfigOrDefault(config: ModConfigSpec.ConfigValue<T>): T {
             return try {
                 config.get()
             } catch (exception: Exception) {
