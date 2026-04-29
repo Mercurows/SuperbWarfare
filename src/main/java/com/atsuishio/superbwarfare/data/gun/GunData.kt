@@ -104,7 +104,6 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
 
     fun setTempModifications(modification: Function<DefaultGunData, DefaultGunData>) {
         tempModifications = modification
-        this.update()
     }
 
     fun clearTempModifications() {
@@ -156,12 +155,6 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         }
 
         return rawData
-    }
-
-    fun update() {
-        pmc.reset()
-        this.cache = null
-        this.propCache.clear()
     }
 
     private val propCache = ConcurrentHashMap<GunProp<*, *>, Any>()
@@ -788,8 +781,6 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
 //        if (gunDataTag.isEmpty()) {
 //            stack.removeTagKey("GunData");
 //        }
-
-        update()
     }
 
     override fun equals(other: Any?): Boolean {
