@@ -38,7 +38,6 @@ import net.minecraft.client.gui.screens.Screen
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvent
@@ -78,7 +77,6 @@ import software.bernie.geckolib.animatable.GeoItem
 import java.util.*
 import java.util.concurrent.atomic.AtomicReference
 import java.util.function.Consumer
-import javax.annotation.ParametersAreNonnullByDefault
 
 @EventBusSubscriber
 abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), ItemScreenProvider, GunPropertyModifier,
@@ -190,10 +188,8 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
     open fun isInitialized(data: GunData) = data.gunDataTag.hasUUID("UUID")
 
-    @ParametersAreNonnullByDefault
     override fun canAttackBlock(pState: BlockState, pLevel: Level, pPos: BlockPos, pPlayer: Player) = false
 
-    @ParametersAreNonnullByDefault
     override fun inventoryTick(stack: ItemStack, level: Level, entity: Entity, slot: Int, selected: Boolean) {
         if (stack.item !is GunItem || level.isClientSide) return
 
@@ -207,7 +203,6 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         data.tick(entity, inMainHand)
     }
 
-    @ParametersAreNonnullByDefault
     override fun shouldCauseReequipAnimation(oldStack: ItemStack, newStack: ItemStack, slotChanged: Boolean) = false
 
     override fun getAttributeModifiers(
@@ -252,7 +247,9 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     open fun getGunIcon(data: GunData) = data.get(GunProp.ICON)
 
     override fun isFoil(stack: ItemStack) = false
+
     override fun isEnchantable(stack: ItemStack) = false
+
     override fun canApplyAtEnchantingTable(stack: ItemStack?, enchantment: Enchantment?) = false
 
     override fun getMaxDamage(stack: ItemStack): Int {
@@ -829,12 +826,12 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
             if (entity is MediumRocketEntity) {
                 val type = data.get(GunProp.SHELL_TYPE)
-                if (type.equals("AP")) {
+                if (type == "AP") {
                     entity.setType(MediumRocketEntity.Type.AP)
                     entity.durability(data.get(GunProp.AP_DURABILITY))
-                } else if (type.equals("HE")) {
+                } else if (type == "HE") {
                     entity.setType(MediumRocketEntity.Type.HE)
-                } else if (type.equals("CM")) {
+                } else if (type == "CM") {
                     entity.setType(MediumRocketEntity.Type.CM)
                     entity.setSpreadAmount(data.get(GunProp.SPREAD_AMOUNT))
                     entity.setSpreadAngle(data.get(GunProp.SPREAD_ANGLE))
@@ -1119,6 +1116,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     }
 
     open fun getRayHitBlockSound(data: GunData): SoundEvent = SoundEvents.EMPTY
+
     open fun getRayHitEntitySound(data: GunData): SoundEvent = SoundEvents.EMPTY
 
     open fun onRayHitEntity(
@@ -1250,8 +1248,6 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     }
 
     companion object {
-        val DEFAULT_ICON: ResourceLocation = loc("textures/gun_icon/default_icon.png")
-
         protected fun getEntityResult(target: Entity, hitBoxPos: Vec3, hitPos: Vec3): EntityResult {
             var headshot = false
             var legShot = false

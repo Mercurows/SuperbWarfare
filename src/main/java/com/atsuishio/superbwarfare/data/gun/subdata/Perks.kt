@@ -26,7 +26,7 @@ class Perks(gun: GunData) {
         return if (rootTag.contains(typeName, Tag.TAG_LIST.toInt())) {
             rootTag.getList(typeName, Tag.TAG_COMPOUND.toInt())
         } else {
-            val tag = rootTag.getCompound(typeName);
+            val tag = rootTag.getCompound(typeName)
             ListTag().also { rootTag.put(typeName, tag) }
         }
     }

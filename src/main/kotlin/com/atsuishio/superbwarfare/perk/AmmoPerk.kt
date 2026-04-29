@@ -32,13 +32,11 @@ open class AmmoPerk : Perk {
 
     constructor(descriptionId: String, type: Type) : this(Builder(descriptionId, type))
 
-    override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) = with(modifier) {
-        modify(GunProp.BYPASSES_ARMOR) {
-            it.coerceAtLeast(modifier[GunProp.BYPASSES_ARMOR] + bypassArmorRate).coerceAtLeast(0.0)
-        }
-        modify(GunProp.VELOCITY) { it.coerceAtLeast(modifier[GunProp.VELOCITY] * speedRate).coerceAtLeast(0.0) }
+    override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) {
+        modifier[GunProp.BYPASSES_ARMOR] = (modifier[GunProp.BYPASSES_ARMOR] + bypassArmorRate).coerceAtLeast(0.0)
+        modifier[GunProp.VELOCITY] = (modifier[GunProp.VELOCITY] * speedRate).coerceAtLeast(0.0)
 
-        if (slug) {
+        return if (slug) {
             modifier[GunProp.DAMAGE] *= damageRate * modifier[GunProp.PROJECTILE_AMOUNT]
             modifier[GunProp.PROJECTILE_AMOUNT] = 1
             modifier[GunProp.ZOOM_SPREAD_RATE] = 0.15
