@@ -60,7 +60,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEnti
         val stack = player.mainHandItem
 
         if (player.isCrouching && !isWreck) {
-            if (stack.`is`(ModTags.Items.TOOLS_CROWBAR) && (owner == null || player === owner)) {
+            if (!player.level().isClientSide && stack.`is`(ModTags.Items.TOOLS_CROWBAR) && (owner == null || player === owner)) {
                 val container = ContainerBlockItem.createInstance(this)
                 if (!player.addItem(container)) {
                     player.drop(container, false)
