@@ -17,6 +17,7 @@
   "MaxTargetHeight": 64,
   "SeekType": "HoldFire",
   "GunType": "DirectLauncher",
+  "Projectile": "superbwarfare:javelin_missile",
   "AvailableFireModes": [
     "Dir",
     "Top"
@@ -27,7 +28,8 @@
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",
     "superbwarfare:monster_hunter",
-    "superbwarfare:vorpal_weapon"
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:battle_of_wits"
   ],
   "SoundInfo": {
     "Fire1P": "superbwarfare:javelin_fire_1p",
