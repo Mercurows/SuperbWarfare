@@ -11,6 +11,7 @@ import com.atsuishio.superbwarfare.serialization.kserializer.SerializedResourceL
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedVec3
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import net.minecraft.resources.ResourceLocation
 import kotlin.math.max
 import kotlin.math.min
 
@@ -389,7 +390,7 @@ class DefaultGunData : IDBasedData<DefaultGunData> {
     var addShooterDeltaMovement = false
 
     @SerialName("Icon")
-    var icon: SerializedResourceLocation = loc("textures/gun_icon/default_icon.png")
+    var icon: SerializedResourceLocation = DEFAULT_ICON
 
     /*
      * 准星类型
@@ -448,5 +449,10 @@ class DefaultGunData : IDBasedData<DefaultGunData> {
 
         burstAmount = max(0, burstAmount)
         rpm = rpm.coerceIn(1, 114514)
+    }
+
+    companion object {
+        val DEFAULT_ICON: ResourceLocation = loc("textures/gun_icon/default_icon.png")
+
     }
 }
