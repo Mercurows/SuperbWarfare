@@ -1,32 +1,17 @@
 {
   "variants": {
-    "facing=east,show_range=false": {
+    "facing=east": {
       "model": "superbwarfare:block/creative_charging_station",
       "y": 90
     },
-    "facing=east,show_range=true": {
-      "model": "superbwarfare:block/creative_charging_station",
-      "y": 90
-    },
-    "facing=north,show_range=false": {
+    "facing=north": {
       "model": "superbwarfare:block/creative_charging_station"
     },
-    "facing=north,show_range=true": {
-      "model": "superbwarfare:block/creative_charging_station"
-    },
-    "facing=south,show_range=false": {
+    "facing=south": {
       "model": "superbwarfare:block/creative_charging_station",
       "y": 180
     },
-    "facing=south,show_range=true": {
-      "model": "superbwarfare:block/creative_charging_station",
-      "y": 180
-    },
-    "facing=west,show_range=false": {
-      "model": "superbwarfare:block/creative_charging_station",
-      "y": 270
-    },
-    "facing=west,show_range=true": {
+    "facing=west": {
       "model": "superbwarfare:block/creative_charging_station",
       "y": 270
     }

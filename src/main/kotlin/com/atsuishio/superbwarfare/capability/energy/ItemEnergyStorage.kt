@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.capability.energy
 
-import com.atsuishio.superbwarfare.component.ModDataComponents
+import com.atsuishio.superbwarfare.init.ModDataComponents
 import net.minecraft.world.item.ItemStack
 import java.util.function.Function
 

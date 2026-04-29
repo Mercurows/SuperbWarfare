@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.client.tooltip
 
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent
-import com.atsuishio.superbwarfare.component.ModDataComponents
 import com.atsuishio.superbwarfare.config.server.MiscConfig
+import com.atsuishio.superbwarfare.init.ModDataComponents
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphics

@@ -1,9 +1,9 @@
 package com.atsuishio.superbwarfare.item.blockitem
 
 import com.atsuishio.superbwarfare.client.tooltip.component.ChargingStationImageComponent
-import com.atsuishio.superbwarfare.component.ModDataComponents
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.init.ModBlocks
+import com.atsuishio.superbwarfare.init.ModDataComponents
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
 import net.minecraft.world.inventory.tooltip.TooltipComponent

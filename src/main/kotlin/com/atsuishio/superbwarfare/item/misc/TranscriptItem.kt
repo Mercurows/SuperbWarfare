@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.item.misc
 
-import com.atsuishio.superbwarfare.component.ModDataComponents
+import com.atsuishio.superbwarfare.init.ModDataComponents
 import com.atsuishio.superbwarfare.tools.FormatTool
 import com.atsuishio.superbwarfare.tools.getOrCreateTag
 import com.mojang.datafixers.util.Pair

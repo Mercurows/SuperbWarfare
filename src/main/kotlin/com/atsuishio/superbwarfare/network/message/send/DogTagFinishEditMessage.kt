@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.send
 
-import com.atsuishio.superbwarfare.component.ModDataComponents
+import com.atsuishio.superbwarfare.init.ModDataComponents
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload

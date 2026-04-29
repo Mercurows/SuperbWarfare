@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.block.entity
 
-import com.atsuishio.superbwarfare.block.CreativeChargingStationBlock
 import com.atsuishio.superbwarfare.capability.energy.InfinityEnergyStorage
 import com.atsuishio.superbwarfare.init.ModBlockEntities
 import net.minecraft.core.BlockPos
@@ -18,7 +17,6 @@ import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.AABB
 import net.neoforged.neoforge.capabilities.Capabilities
 import net.neoforged.neoforge.energy.IEnergyStorage
-import javax.annotation.ParametersAreNonnullByDefault
 
 /**
  * Energy Data Slot Code based on @GoryMoon's Chargers
@@ -37,7 +35,6 @@ open class CreativeChargingStationBlockEntity(pos: BlockPos, state: BlockState) 
         return ClientboundBlockEntityDataPacket.create(this)
     }
 
-    @ParametersAreNonnullByDefault
     override fun onDataPacket(
         connection: Connection,
         packet: ClientboundBlockEntityDataPacket,
@@ -109,14 +106,6 @@ open class CreativeChargingStationBlockEntity(pos: BlockPos, state: BlockState) 
             pState: BlockState,
             blockEntity: CreativeChargingStationBlockEntity
         ) {
-            if (blockEntity.showRange != pState.getValue(CreativeChargingStationBlock.SHOW_RANGE)) {
-                pLevel.setBlockAndUpdate(
-                    pPos,
-                    pState.setValue(CreativeChargingStationBlock.SHOW_RANGE, blockEntity.showRange)
-                )
-                setChanged(pLevel, pPos, pState)
-            }
-
             blockEntity.chargeEntity()
             blockEntity.chargeBlock()
         }

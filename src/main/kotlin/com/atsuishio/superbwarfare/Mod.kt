@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.client.renderer.molang.MolangVariable
 import com.atsuishio.superbwarfare.compat.CompatHolder
 import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper
 import com.atsuishio.superbwarfare.compat.coldsweat.ColdSweatCompatHandler
-import com.atsuishio.superbwarfare.component.ModDataComponents
 import com.atsuishio.superbwarfare.config.CLIENT_CONFIG
 import com.atsuishio.superbwarfare.config.COMMON_CONFIG
 import com.atsuishio.superbwarfare.config.SERVER_CONFIG
