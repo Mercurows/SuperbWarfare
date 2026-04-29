@@ -61,7 +61,8 @@
     "superbwarfare:micro_missile",
     "superbwarfare:regeneration",
     "superbwarfare:one_two_punch",
-    "superbwarfare:cast_no_shadows"
+    "superbwarfare:cast_no_shadows",
+    "superbwarfare:battle_of_wits"
   ],
   "SoundInfo": {
     "Fire1P": "superbwarfare:secondary_cataclysm_fire_1p",

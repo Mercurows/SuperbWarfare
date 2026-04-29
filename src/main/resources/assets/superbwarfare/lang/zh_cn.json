@@ -519,6 +519,8 @@
   "des.superbwarfare.one_two_punch": "一发弹药的所有弹片均命中时可在短时间内提高近战伤害",
   "item.superbwarfare.brain_storm": "脑洞大开",
   "des.superbwarfare.brain_storm": "增加武器的爆头倍率",
+  "item.superbwarfare.battle_of_wits": "唇枪舌剑",
+  "des.superbwarfare.battle_of_wits": "发送消息会提升下一次射击的伤害",
 
   "item.superbwarfare.empty_perk": "空白模组",
   "item.superbwarfare.shortcut_pack": "捷径包",
@@ -811,6 +813,9 @@
   "tips.superbwarfare.vehicle_reset_kit_1": "[警告] 检测到卓越前线版本变化[%1$s=>%2$s]，之前版本的载具可能无法正常使用",
   "tips.superbwarfare.vehicle_reset_kit_2": "你可以在取出旧版本载具的所有物品后，使用%1$s与装有载具的集装箱进行合成，以完成重置",
   "tips.superbwarfare.vehicle_reset_kit_3": "如果你不想看到此警告，可以在客户端配置中关闭",
+
+  "tips.superbwarfare.battle_of_wits.active": "你的这句话为下一次射击增加了%1$s的伤害",
+  "tips.superbwarfare.battle_of_wits.cooldown": "唇枪舌剑现已可用",
 
   "container.superbwarfare.reforging_table": "枪械重塑台",
   "container.superbwarfare.charging_station": "充电站",

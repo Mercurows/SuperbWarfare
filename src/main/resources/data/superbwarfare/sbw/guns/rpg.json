@@ -37,7 +37,8 @@
     "superbwarfare:intelligent_chip",
     "superbwarfare:monster_hunter",
     "superbwarfare:vorpal_weapon",
-    "superbwarfare:micro_missile"
+    "superbwarfare:micro_missile",
+    "superbwarfare:battle_of_wits"
   ],
   "SoundInfo": {
     "Fire1P": "superbwarfare:rpg_fire_1p",

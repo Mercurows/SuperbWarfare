@@ -19,11 +19,13 @@
   "GunType": "DirectLauncher",
   "AmmoType": "superbwarfare:medium_anti_air_missile",
   "Icon": "superbwarfare:textures/gun_icon/igla_9k38_icon.png",
+  "Projectile": "superbwarfare:igla_9k38_missile",
   "AvailablePerks": [
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",
     "superbwarfare:monster_hunter",
-    "superbwarfare:vorpal_weapon"
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:battle_of_wits"
   ],
   "SoundInfo": {
     "Fire1P": "superbwarfare:igla_9k38_fire_1p",

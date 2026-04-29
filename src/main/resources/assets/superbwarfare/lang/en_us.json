@@ -518,6 +518,8 @@
   "des.superbwarfare.one_two_punch": "Hitting enemies with every pellet in a shot increases melee damage for a short duration.",
   "item.superbwarfare.brain_storm": "Brain Storm",
   "des.superbwarfare.brain_storm": "Increases the rate of headshot.",
+  "item.superbwarfare.battle_of_wits": "Battle of Wits",
+  "des.superbwarfare.battle_of_wits": "Sending a message increases damage of next shot.",
 
   "item.superbwarfare.empty_perk": "Empty Perk",
   "item.superbwarfare.shortcut_pack": "Shortcut Pack",
@@ -811,6 +813,9 @@
   "tips.superbwarfare.vehicle_reset_kit_1": "[Warning] Detected Superb Warfare version change [%1$s=>%2$s]. Vehicles from previous version may not work properly.",
   "tips.superbwarfare.vehicle_reset_kit_2": "After taking all items from the old vehicle, use %1$s to craft with the vehicle container to complete the reset.",
   "tips.superbwarfare.vehicle_reset_kit_3": "If you don't want to see this warning, you can disable it in Client Config.",
+
+  "tips.superbwarfare.battle_of_wits.active": "Your words add %1$s damage to your next shot.",
+  "tips.superbwarfare.battle_of_wits.cooldown": "Battle of Wits is now ready",
 
   "container.superbwarfare.reforging_table": "Gun Reforge Table",
   "container.superbwarfare.charging_station": "Charging Station",

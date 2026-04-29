@@ -58,7 +58,7 @@ object CustomEventHandler {
         val data = GunData.from(stack)
         val key = ForgeRegistries.ENTITY_TYPES.getKey(projectile.type) ?: return
 
-        if (!data.get(GunProp.PROJECTILE).itemId.equals(key.toString())) return
+        if (data.get(GunProp.PROJECTILE).itemId != key.toString()) return
 
         for (type in Perk.Type.entries) {
             val instance = data.perk.getInstances(type)
