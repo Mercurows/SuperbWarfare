@@ -40,7 +40,6 @@ import net.minecraftforge.energy.IEnergyStorage
 import net.minecraftforge.items.IItemHandler
 import org.jetbrains.annotations.ApiStatus
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Function
 import java.util.function.Supplier
 import kotlin.math.max
@@ -74,8 +73,13 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     @JvmField
     val id: String
 
-    var defaultDataSupplier: Supplier<DefaultGunData>
+    private var defaultDataSupplier: Supplier<DefaultGunData>
     var lastTimeStack: ItemStack? = null
+
+    fun resetDefaultDataSupplier(supplier: Supplier<DefaultGunData>) {
+        pmc = null
+        defaultDataSupplier = supplier
+    }
 
     private fun getOrPut(name: String): CompoundTag {
         if (!this.tag.contains(name)) {
@@ -157,18 +161,23 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         return rawData
     }
 
-    private val propCache = ConcurrentHashMap<GunProp<*, *>, Any>()
-
-    var pmc = PMC(this)
+    private var pmc: PMC<GunData, DefaultGunData>? = PMC(this)
 
     // TODO 重新实现get
     @Suppress("unchecked_cast")
     fun <T> get(prop: GunProp<*, T>): T {
         val currentStack = this.stack
-        if (!(currentStack sameWith lastTimeStack)) {
-            pmc = PMC(this)
+        val pmc = if (this.pmc == null) {
+            PMC(this).also { this.pmc = it }
+        } else {
+            this.pmc!!
+        }
+
+        if (!init || !(currentStack sameWith lastTimeStack)) {
+            this.pmc = PMC(this)
             lastTimeStack = currentStack.copy()
         } else {
+            // 务必在初始化之后再调用缓存
             return pmc[prop]
         }
 
@@ -757,7 +766,6 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     @JvmField
     val perk: Perks
 
-
     fun save() {
         if (stack sameWith originalItemStack) return
 
@@ -810,6 +818,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         }
     }
 
+    private var init = false
     private val originalItemStack: ItemStack
 
     init {
@@ -874,6 +883,8 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
                 break
             }
         }
+
+        init = true
     }
 
     companion object {

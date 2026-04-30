@@ -16,6 +16,8 @@ class GunProp<T, R>(
     transform: (T) -> R,
 ) : Prop<GunData, DefaultGunData, T, R, GunProp<T, R>>(prop, transform) {
 
+    override fun toString() = "GunProp[$serializationName]"
+
     companion object {
         val entries = mutableListOf<GunProp<*, *>>()
 

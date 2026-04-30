@@ -123,7 +123,6 @@ import org.joml.*
 import java.util.*
 import java.util.function.Consumer
 import java.util.function.Function
-import java.util.function.Supplier
 import javax.annotation.ParametersAreNonnullByDefault
 import kotlin.math.*
 import kotlin.random.Random
@@ -144,7 +143,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                     data = GunData.from(ItemStack(ModItems.VEHICLE_GUN.get()))
                 }
 
-                data.defaultDataSupplier = Supplier { kv.value }
+                data.resetDefaultDataSupplier { kv.value }
                 newMap[kv.key] = data
             }
 
@@ -179,8 +178,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open fun getGunData(seatIndex: Int, weaponIndex: Int): GunData? {
         val seat = getSeat(seatIndex) ?: return null
 
-        val weapons = seat.weapons()
-        val name = weapons.getOrNull(weaponIndex) ?: return null
+        val name = seat.weapons().getOrNull(weaponIndex) ?: return null
 
         return getGunData(name)
     }

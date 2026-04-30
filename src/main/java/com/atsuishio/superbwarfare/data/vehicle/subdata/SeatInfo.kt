@@ -55,10 +55,7 @@ class SeatInfo {
     @SerialName("Weapons")
     private var weapons: ObjectToList<String>? = ObjectToList()
 
-    fun weapons(): MutableList<String> {
-        if (weapons == null) return mutableListOf()
-        return weapons!!.list
-    }
+    fun weapons() = weapons?.list ?: mutableListOf()
 
     @SerialName("CameraPos")
     var cameraPos: CameraPos? = null
