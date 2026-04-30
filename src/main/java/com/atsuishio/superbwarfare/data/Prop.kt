@@ -17,6 +17,8 @@ abstract class Prop<DATA : DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA, FIEL
 
     val serializer by lazy { prop.serializer() }
 
+    override fun toString() = "Prop[$serializationName]"
+
     val serializationName = prop.annotations.filterIsInstance<SerialName>().singleOrNull()?.value
         ?: prop.annotations.filterIsInstance<SerializedName>().singleOrNull()?.value
         ?: prop.name
