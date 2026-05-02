@@ -9,10 +9,10 @@ import com.atsuishio.superbwarfare.tools.FormatTool.format0D
 import com.atsuishio.superbwarfare.tools.FormatTool.format1D
 import com.atsuishio.superbwarfare.tools.FormatTool.format2D
 import com.atsuishio.superbwarfare.tools.OBB
-
 import com.atsuishio.superbwarfare.tools.RangeTool.getRange
 import com.atsuishio.superbwarfare.tools.TraceTool
 import com.atsuishio.superbwarfare.tools.TrajectoryCalculator.calculateLaunchVector
+import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.worldToScreen
 import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
@@ -23,20 +23,35 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
+import net.minecraftforge.event.TickEvent
+import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.common.Mod
 import kotlin.math.max
 
 @OnlyIn(Dist.CLIENT)
+@Mod.EventBusSubscriber(Dist.CLIENT)
 object Type63InfoOverlay : CommonOverlay("type_63_info") {
-    private val AP = ItemStack(ModItems.MEDIUM_ROCKET_AP.get())
-    private val HE = ItemStack(ModItems.MEDIUM_ROCKET_HE.get())
-    private val CM = ItemStack(ModItems.MEDIUM_ROCKET_CM.get())
+    private val AP by lazy { ItemStack(ModItems.MEDIUM_ROCKET_AP.get()) }
+    private val HE by lazy { ItemStack(ModItems.MEDIUM_ROCKET_HE.get()) }
+    private val CM by lazy { ItemStack(ModItems.MEDIUM_ROCKET_CM.get()) }
+
+    private var lookingEntity: Type63Entity? = null
+
+    @SubscribeEvent
+    fun tracingEntity(event: TickEvent.ClientTickEvent) {
+        if (event.phase == TickEvent.Phase.START) return
+        val player = localPlayer ?: return
+        val entity = TraceTool.findLookingEntity(player, player.getEntityReach())
+        if (entity is Type63Entity) {
+            lookingEntity = entity
+        }
+    }
 
     override fun RenderContext.render() {
+        val lookingEntity = lookingEntity ?: return
+
         val poseStack = guiGraphics.pose()
 
-        val lookingEntity = TraceTool.findLookingEntity(player, player.getEntityReach())
-
-        if (lookingEntity !is Type63Entity) return
         guiGraphics.drawString(
             Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.mortar.pitch")
                 .append(
@@ -67,8 +82,8 @@ object Type63InfoOverlay : CommonOverlay("type_63_info") {
                             max(
                                 getRange(
                                     lookingEntity.getEntityData().get(Type63Entity.SHOOT_PITCH).toDouble(),
-                                        lookingEntity.getProjectileVelocity("Main").toDouble(),
-                                        lookingEntity.getProjectileGravity("Main").toDouble()
+                                    lookingEntity.getProjectileVelocity("Main").toDouble(),
+                                    lookingEntity.getProjectileGravity("Main").toDouble()
                                 ).toInt(), 0
                             ).toDouble(), "m"
                         )
@@ -134,10 +149,12 @@ object Type63InfoOverlay : CommonOverlay("type_63_info") {
 
             val targetPos = Vec3(targetX, targetY, targetZ)
             val launchVector =
-                calculateLaunchVector(lookingEntity.getShootPos(partialTick), targetPos,
-                        lookingEntity.getProjectileVelocity("Main").toDouble(),
-                        lookingEntity.getProjectileGravity("Main").toDouble(),
-                        isDepressed)
+                calculateLaunchVector(
+                    lookingEntity.getShootPos(partialTick), targetPos,
+                    lookingEntity.getProjectileVelocity("Main").toDouble(),
+                    lookingEntity.getProjectileGravity("Main").toDouble(),
+                    isDepressed
+                )
 
             val vec3 = EntityAnchorArgument.Anchor.EYES.apply(lookingEntity)
             val d0 = (targetPos.x - vec3.x) * 0.2
