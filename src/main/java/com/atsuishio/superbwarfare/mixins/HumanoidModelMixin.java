@@ -61,7 +61,7 @@ public abstract class HumanoidModelMixin {
         if (livingEntity.getVehicle() instanceof VehicleEntity vehicle) {
             var index = vehicle.getSeatIndex(livingEntity);
             var seats = vehicle.computed().seats();
-            if (index >= seats.size()) return;
+            if (index >= seats.size() || index < 0) return;
             var seat = seats.get(index);
 
             if (seat.pose.equals("Pilot")) {
