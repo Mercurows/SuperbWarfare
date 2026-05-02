@@ -122,8 +122,11 @@ public class GameRendererMixin {
 
         if (pLivingEntity.getVehicle() instanceof VehicleEntity vehicle) {
             var index = vehicle.getSeatIndex(pLivingEntity);
-            var seat = vehicle.computed().seats().get(index);
-            if (seat != null && seat.hasThermalImaging) {
+            var seats = vehicle.computed().seats();
+            if (index < 0 || index >= seats.size()) return;
+
+            var seat = seats.get(index);
+            if (seat.hasThermalImaging) {
                 hasThermalImagingVehicle = true;
             }
         }
