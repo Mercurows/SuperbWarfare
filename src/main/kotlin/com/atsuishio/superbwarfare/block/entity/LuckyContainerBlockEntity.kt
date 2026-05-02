@@ -27,7 +27,6 @@ import software.bernie.geckolib.animatable.GeoBlockEntity
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.animation.*
 import software.bernie.geckolib.util.GeckoLibUtil
-import javax.annotation.ParametersAreNonnullByDefault
 
 open class LuckyContainerBlockEntity(pos: BlockPos, state: BlockState) :
     BlockEntity(ModBlockEntities.LUCKY_CONTAINER.get(), pos, state), GeoBlockEntity {
@@ -76,7 +75,6 @@ open class LuckyContainerBlockEntity(pos: BlockPos, state: BlockState) :
         return this.cache
     }
 
-    @ParametersAreNonnullByDefault
     override fun loadAdditional(tag: CompoundTag, registries: HolderLookup.Provider) {
         super.loadAdditional(tag, registries)
         if (tag.contains("Location", 8)) {

@@ -34,7 +34,6 @@ import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraft.world.phys.shapes.VoxelShape
-import javax.annotation.ParametersAreNonnullByDefault
 
 @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")
 open class SmallContainerBlock :
@@ -47,7 +46,6 @@ open class SmallContainerBlock :
         )
     }
 
-    @ParametersAreNonnullByDefault
     override fun useItemOn(
         stack: ItemStack,
         state: BlockState,
@@ -90,20 +88,13 @@ open class SmallContainerBlock :
         if (!pLevel.isClientSide) {
             return createTickerHelper<SmallContainerBlockEntity?, T?>(
                 pBlockEntityType,
-                ModBlockEntities.SMALL_CONTAINER.get()
-            ) { pLevel, pPos, pState, blockEntity ->
-                SmallContainerBlockEntity.serverTick(
-                    pLevel,
-                    pPos,
-                    pState,
-                    blockEntity
-                )
-            }
+                ModBlockEntities.SMALL_CONTAINER.get(),
+                SmallContainerBlockEntity::serverTick
+            )
         }
         return null
     }
 
-    @ParametersAreNonnullByDefault
     override fun appendHoverText(
         stack: ItemStack,
         context: TooltipContext,

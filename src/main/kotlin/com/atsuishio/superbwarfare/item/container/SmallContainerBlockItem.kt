@@ -3,17 +3,20 @@ package com.atsuishio.superbwarfare.item.container
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.renderer.item.SmallContainerBlockItemRenderer
-import com.atsuishio.superbwarfare.init.ModBlockEntities
 import com.atsuishio.superbwarfare.init.ModBlocks
 import com.atsuishio.superbwarfare.init.ModItems
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer
-import net.minecraft.nbt.CompoundTag
+import net.minecraft.core.component.DataComponents
+import net.minecraft.core.registries.Registries
+import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.DamageTypeTags
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.damagesource.DamageTypes
 import net.minecraft.world.item.BlockItem
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.component.SeededContainerLoot
+import net.minecraft.world.level.storage.loot.LootTable
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions
@@ -58,13 +61,16 @@ class SmallContainerBlockItem : BlockItem(ModBlocks.SMALL_CONTAINER.get(), Prope
 
         @JvmOverloads
         fun createInstance(lootTable: ResourceLocation, lootTableSeed: Long = 0L): ItemStack {
+            return createInstance(ResourceKey.create(Registries.LOOT_TABLE, lootTable), lootTableSeed)
+        }
+
+        @JvmOverloads
+        fun createInstance(lootTable: ResourceKey<LootTable>, lootTableSeed: Long = 0L): ItemStack {
             val stack = ItemStack(ModBlocks.SMALL_CONTAINER.get())
-            val tag = CompoundTag()
-            tag.putString("LootTable", lootTable.toString())
-            if (lootTableSeed != 0L) {
-                tag.putLong("LootTableSeed", lootTableSeed)
-            }
-            setBlockEntityData(stack, ModBlockEntities.SMALL_CONTAINER.get(), tag)
+            stack.set(
+                DataComponents.CONTAINER_LOOT,
+                SeededContainerLoot(lootTable, lootTableSeed)
+            )
             return stack
         }
 

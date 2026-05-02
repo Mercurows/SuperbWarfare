@@ -1,12 +1,13 @@
 package com.atsuishio.superbwarfare.block.entity
 
-import com.atsuishio.superbwarfare.block.ContainerBlock
 import com.atsuishio.superbwarfare.block.SmallContainerBlock
 import com.atsuishio.superbwarfare.init.ModBlockEntities
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import net.minecraft.advancements.CriteriaTriggers
 import net.minecraft.core.BlockPos
 import net.minecraft.core.HolderLookup
+import net.minecraft.core.component.DataComponentMap
+import net.minecraft.core.component.DataComponents
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.core.registries.Registries
 import net.minecraft.nbt.CompoundTag
@@ -21,6 +22,7 @@ import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.BlockItem
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.component.SeededContainerLoot
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.entity.BlockEntity
@@ -61,6 +63,24 @@ open class SmallContainerBlockEntity(pos: BlockPos, state: BlockState) :
 
     override fun getAnimatableInstanceCache(): AnimatableInstanceCache {
         return this.cache
+    }
+
+    override fun applyImplicitComponents(componentInput: DataComponentInput) {
+        super.applyImplicitComponents(componentInput)
+
+        val loot = componentInput.get(DataComponents.CONTAINER_LOOT)
+        if (loot != null) {
+            this.lootTable = loot.lootTable()
+            this.lootTableSeed = loot.seed()
+        }
+    }
+
+    override fun collectImplicitComponents(components: DataComponentMap.Builder) {
+        super.collectImplicitComponents(components)
+
+        if (this.lootTable != null) {
+            components.set(DataComponents.CONTAINER_LOOT, SeededContainerLoot(this.lootTable!!, this.lootTableSeed))
+        }
     }
 
     override fun loadAdditional(tag: CompoundTag, registries: HolderLookup.Provider) {
@@ -140,7 +160,7 @@ open class SmallContainerBlockEntity(pos: BlockPos, state: BlockState) :
 
     companion object {
         fun serverTick(pLevel: Level, pPos: BlockPos, pState: BlockState, blockEntity: SmallContainerBlockEntity) {
-            if (!pState.getValue(ContainerBlock.OPENED)) {
+            if (!pState.getValue(SmallContainerBlock.OPENED)) {
                 return
             }
 
