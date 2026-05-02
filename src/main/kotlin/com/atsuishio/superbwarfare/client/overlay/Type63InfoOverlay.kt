@@ -38,9 +38,7 @@ object Type63InfoOverlay : CommonOverlay("type_63_info") {
     fun tracingEntity(event: ClientTickEvent.Post) {
         val player = localPlayer ?: return
         val entity = TraceTool.findLookingEntity(player, player.getEntityReach())
-        if (entity is Type63Entity) {
-            lookingEntity = entity
-        }
+        lookingEntity = entity as? Type63Entity
     }
 
     override fun RenderContext.render() {
