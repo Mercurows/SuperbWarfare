@@ -34,6 +34,19 @@ class SnapshotWarningScreen(val lastScreen: Screen) : Screen(
         this.button?.active = false
     }
 
+    override fun renderBackground(
+        guiGraphics: GuiGraphics,
+        mouseX: Int,
+        mouseY: Int,
+        partialTick: Float
+    ) {
+        if (this.minecraft!!.level == null) {
+            this.renderPanorama(guiGraphics, partialTick)
+        }
+
+        this.renderMenuBackground(guiGraphics)
+    }
+
     override fun init() {
         super.init()
         this.message = MultiLineLabel.create(
