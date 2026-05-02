@@ -167,14 +167,13 @@ class GunData private constructor(
     @Suppress("unchecked_cast")
     fun <T> get(prop: GunProp<*, T>): T {
         val currentStack = this.stack
-        val pmc = if (this.pmc == null) {
+        val pmc = if (this.pmc == null || !(currentStack sameWith lastTimeStack)) {
             PMC(this).also { this.pmc = it }
         } else {
             this.pmc!!
         }
 
-        if (!init || !(currentStack sameWith lastTimeStack)) {
-            this.pmc = PMC(this)
+        if (!(currentStack sameWith lastTimeStack)) {
             lastTimeStack = currentStack.copy()
         } else {
             // 务必在初始化之后再调用缓存
@@ -827,8 +826,6 @@ class GunData private constructor(
         }
     }
 
-    private var init = false
-
     init {
         require(stack.item is GunItem) { "stack is not GunItem!" }
 
@@ -891,8 +888,6 @@ class GunData private constructor(
                 break
             }
         }
-
-        init = true
     }
 
     companion object {
