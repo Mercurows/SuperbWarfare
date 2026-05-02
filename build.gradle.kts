@@ -22,7 +22,7 @@ fun getGitCommitHash(): String {
     }.getOrElse { "unknown" }
 }
 
-version = "${project.property("minecraft_version")}-${project.property("mod_version")}-${getGitCommitHash()}"
+version = "${project.property("mod_version")}-mc${project.property("minecraft_version")}-${getGitCommitHash()}"
 group = "com.atsuishio.superbwarfare"
 
 base {
