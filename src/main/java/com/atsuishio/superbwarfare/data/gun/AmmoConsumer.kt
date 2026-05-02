@@ -29,7 +29,7 @@ import kotlin.math.min
 
 @STOFactory(AmmoConsumer.AmmoConsumerInstanceBuilder::class)
 @Serializable
-class AmmoConsumer : DeserializeFromString, GunPropertyModifier, PropertyModifier1<GunData, DefaultGunData> {
+class AmmoConsumer : DeserializeFromString, PropertyModifier1<GunData, DefaultGunData> {
     @SerializedName("Ammo")
     @SerialName("Ammo")
     var ammo: String? = null
@@ -149,20 +149,26 @@ class AmmoConsumer : DeserializeFromString, GunPropertyModifier, PropertyModifie
         if (type == AmmoConsumeType.INVALID || type == AmmoConsumeType.INFINITE || type == AmmoConsumeType.EMPTY || count <= 0
         ) return 0
 
-        if (type == AmmoConsumeType.PLAYER_AMMO) {
-            val consumed = InventoryTool.consumeAmmoItem(handler, this.playerAmmoType, count)
-            val rest = consumed - count
-            data.virtualAmmo.add(rest)
-            return count
-        } else if (type == AmmoConsumeType.ENERGY) {
-            val energyStorage = data.stack.getCapability(Capabilities.EnergyStorage.ITEM) ?: return 0
-            return energyStorage.extractEnergy(count, false)
-        } else {
-            return InventoryTool.consumeItem(
-                handler,
-                { stack -> this.isAmmoItem(stack) },
-                count
-            )
+        when (type) {
+            AmmoConsumeType.PLAYER_AMMO -> {
+                val consumed = InventoryTool.consumeAmmoItem(handler, this.playerAmmoType, count)
+                val rest = consumed - count
+                data.virtualAmmo.add(rest)
+                return count
+            }
+
+            AmmoConsumeType.ENERGY -> {
+                val energyStorage = data.stack.getCapability(Capabilities.EnergyStorage.ITEM) ?: return 0
+                return energyStorage.extractEnergy(count, false)
+            }
+
+            else -> {
+                return InventoryTool.consumeItem(
+                    handler,
+                    { stack -> this.isAmmoItem(stack) },
+                    count
+                )
+            }
         }
     }
 
@@ -258,40 +264,26 @@ class AmmoConsumer : DeserializeFromString, GunPropertyModifier, PropertyModifie
 
     fun withdraw(handler: IItemHandler, count: Int): Int {
         if (!initialized) init()
-        if (type == AmmoConsumeType.INVALID || type == AmmoConsumeType.INFINITE || type == AmmoConsumeType.EMPTY || type == AmmoConsumeType.ENERGY || count <= 0
+        if (type == AmmoConsumeType.INVALID
+            || type == AmmoConsumeType.INFINITE
+            || type == AmmoConsumeType.EMPTY
+            || type == AmmoConsumeType.ENERGY
+            || count <= 0
         ) {
             return 0
         }
-
-        val stackToInsert: ItemStack?
-        if (type == AmmoConsumeType.PLAYER_AMMO) {
-            stackToInsert = this.playerAmmoType!!.itemStack
+        val stackToInsert = if (type == AmmoConsumeType.PLAYER_AMMO) {
+            this.playerAmmoType!!.itemStack
         } else {
-            stackToInsert = this.stack
+            this.stack
         }
 
         return InventoryTool.insertItem(handler, stackToInsert, count)
     }
 
-
     @Transient
     @kotlinx.serialization.Transient
     private val jsonPropModifier = JsonPropertyModifier(GunProp.entries)
-
-    override fun computeProperties(data: GunData, rawData: DefaultGunData): DefaultGunData {
-        var rawData = rawData
-        if (this.projectile != null) {
-            rawData.projectile = projectile!!
-        }
-
-        val override = override
-        if (override != null) {
-            jsonPropModifier.update(override)
-            rawData = jsonPropModifier.computeProperties(data, rawData)
-        }
-
-        return rawData
-    }
 
     override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) {
         if (this.projectile != null) {

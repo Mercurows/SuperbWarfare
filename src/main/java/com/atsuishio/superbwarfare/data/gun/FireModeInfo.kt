@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 
 @STOFactory(FireModeInfo.FireModeInfoInstanceBuilder::class)
 @Serializable
-class FireModeInfo : DeserializeFromString, GunPropertyModifier, PropertyModifier1<GunData, DefaultGunData> {
+class FireModeInfo : DeserializeFromString, PropertyModifier1<GunData, DefaultGunData> {
     @JvmField
     @SerializedName("Mode")
     @SerialName("Mode")
@@ -26,11 +26,6 @@ class FireModeInfo : DeserializeFromString, GunPropertyModifier, PropertyModifie
     @Transient
     @kotlinx.serialization.Transient
     private val jsonPropModifier = JsonPropertyModifier(GunProp.entries)
-
-    override fun computeProperties(data: GunData, rawData: DefaultGunData): DefaultGunData {
-        jsonPropModifier.update(override)
-        return jsonPropModifier.computeProperties(data, rawData)
-    }
 
     override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) {
         jsonPropModifier.update(override)

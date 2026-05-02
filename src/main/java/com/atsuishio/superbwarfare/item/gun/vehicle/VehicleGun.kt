@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun.vehicle
 
+import com.atsuishio.superbwarfare.data.PMC
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
@@ -18,24 +19,21 @@ import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.Vec3
 import net.neoforged.neoforge.capabilities.Capabilities
 import net.neoforged.neoforge.energy.IEnergyStorage
-import javax.annotation.ParametersAreNonnullByDefault
 
-class VehicleGun : GunItem(Properties()) {
-
-    override fun computeProperties(data: GunData, rawData: DefaultGunData): DefaultGunData {
-        if (rawData.autoReload == null) {
-            rawData.autoReload = true
+open class VehicleGun : GunItem(Properties()) {
+    override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) {
+        if (modifier[GunProp.AUTO_RELOAD] == null) {
+            modifier[GunProp.AUTO_RELOAD] = true
         }
-        // TODO 如何处理真的想设置null的情况
-        if (rawData.shootShake == null) {
-            rawData.shootShake = Vec3(5.0, 6.0, 9.0)
+        if (modifier[GunProp.SHOOT_SHAKE] == null) {
+            modifier[GunProp.SHOOT_SHAKE] = Vec3(5.0, 6.0, 9.0)
         }
-
-        return rawData
     }
 
     override fun init(data: GunData) {}
+
     override fun isInitialized(data: GunData) = true
+
     override fun enableShootTimer() = true
 
     override fun canShoot(data: GunData, shooter: Entity?): Boolean {
@@ -58,7 +56,6 @@ class VehicleGun : GunItem(Properties()) {
         }
     }
 
-    @ParametersAreNonnullByDefault
     override fun appendHoverText(
         stack: ItemStack,
         context: TooltipContext,

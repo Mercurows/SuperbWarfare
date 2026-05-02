@@ -52,7 +52,7 @@ class PMC<DATA : DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA>(val data: DATA
         prop.getDefault(data.getDefault()) as Any?
     } as RESULT
 
-    operator fun <T : Prop<DATA, DEFAULT_DATA, *, RESULT, *>, RESULT : Any> set(prop: T, value: RESULT) {
+    operator fun <T : Prop<DATA, DEFAULT_DATA, *, RESULT, *>, RESULT> set(prop: T, value: RESULT) {
         currentProps[prop] = value
     }
 

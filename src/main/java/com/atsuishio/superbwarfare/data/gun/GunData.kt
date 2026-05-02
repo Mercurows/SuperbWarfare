@@ -127,43 +127,42 @@ class GunData private constructor(
         if (cache != null && useCache) return cache!!
 
         var rawData = getDefault().copy()
-
-        // property override tag
-        jsonPropModifier.update(propertyOverrideString.get())
-        rawData = jsonPropModifier.computeProperties(this, rawData)
-
-        // gun modifiers
-        rawData = item.computeProperties(this, rawData)
-
-        // FireMode
-        rawData = selectedFireModeInfo(rawData.availableFireModes()).computeProperties(this, rawData)
-
-        // AmmoConsumer
-        rawData = selectedAmmoConsumer(rawData.getProcessedAmmoConsumers()).computeProperties(this, rawData)
-
-        // perk
-        for (type in Perk.Type.entries.toTypedArray()) {
-            val instance = perk.get(type) ?: continue
-
-            rawData = instance.computeProperties(this, rawData)
-        }
-
-        // 临时属性修改
-        if (tempModifications != null) {
-            rawData = tempModifications!!.apply(rawData)
-        }
-
-        rawData.limit()
-        if (useCache) {
-            cache = rawData
-        }
+//
+//        // property override tag
+//        jsonPropModifier.update(propertyOverrideString.get())
+//        rawData = jsonPropModifier.computeProperties(this, rawData)
+//
+//        // gun modifiers
+//        rawData = item.computeProperties(this, rawData)
+//
+//        // FireMode
+//        rawData = selectedFireModeInfo(rawData.availableFireModes()).computeProperties(this, rawData)
+//
+//        // AmmoConsumer
+//        rawData = selectedAmmoConsumer(rawData.getProcessedAmmoConsumers()).computeProperties(this, rawData)
+//
+//        // perk
+//        for (type in Perk.Type.entries.toTypedArray()) {
+//            val instance = perk.get(type) ?: continue
+//
+//            rawData = instance.computeProperties(this, rawData)
+//        }
+//
+//        // 临时属性修改
+//        if (tempModifications != null) {
+//            rawData = tempModifications!!.apply(rawData)
+//        }
+//
+//        rawData.limit()
+//        if (useCache) {
+//            cache = rawData
+//        }
 
         return rawData
     }
 
     private var pmc: PMC<GunData, DefaultGunData>? = null
 
-    // TODO 重新实现get
     @Suppress("unchecked_cast")
     fun <T> get(prop: GunProp<*, T>): T {
         val currentStack = this.stack

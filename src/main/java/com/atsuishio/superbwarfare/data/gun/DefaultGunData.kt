@@ -118,7 +118,7 @@ class DefaultGunData : IDBasedData<DefaultGunData> {
     @JvmField
     @ServerOnly
     @SerialName("Projectile")
-    var projectile: StringToObject<ProjectileInfo> = StringToObject<ProjectileInfo>(ProjectileInfo())
+    var projectile: StringToObject<ProjectileInfo> = StringToObject(ProjectileInfo())
 
     fun projectile(): ProjectileInfo {
         return projectile.value

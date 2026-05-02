@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.data.PropertyModifier1
 import com.atsuishio.superbwarfare.data.gun.DamageReduce
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.gun.GunData
-import com.atsuishio.superbwarfare.data.gun.GunPropertyModifier
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModPerks
 import com.atsuishio.superbwarfare.item.misc.PerkItem
@@ -20,8 +19,7 @@ import net.minecraft.world.item.Item
 import net.neoforged.neoforge.registries.DeferredHolder
 import java.util.*
 
-open class Perk(val descriptionId: String, val type: Type) : GunPropertyModifier,
-    PropertyModifier1<GunData, DefaultGunData> {
+open class Perk(val descriptionId: String, val type: Type) : PropertyModifier1<GunData, DefaultGunData> {
     val name: String = descriptionId.split("_")
         .filter { it.isNotEmpty() }
         .joinToString("") { word -> word.replaceFirstChar { it.uppercase(Locale.ROOT) } }
