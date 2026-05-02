@@ -5,14 +5,12 @@ import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getXRotF
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.item.misc.FiringParametersItem
 import com.atsuishio.superbwarfare.item.misc.firingParameters
+import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.FormatTool.format0D
 import com.atsuishio.superbwarfare.tools.FormatTool.format1D
 import com.atsuishio.superbwarfare.tools.FormatTool.format2D
-import com.atsuishio.superbwarfare.tools.OBB
 import com.atsuishio.superbwarfare.tools.RangeTool.getRange
-import com.atsuishio.superbwarfare.tools.TraceTool
 import com.atsuishio.superbwarfare.tools.TrajectoryCalculator.calculateLaunchVector
-import com.atsuishio.superbwarfare.tools.worldToScreen
 import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
 import net.minecraft.commands.arguments.EntityAnchorArgument
@@ -22,20 +20,34 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
+import net.neoforged.bus.api.SubscribeEvent
+import net.neoforged.fml.common.EventBusSubscriber
+import net.neoforged.neoforge.client.event.ClientTickEvent
 import kotlin.math.max
 
 @OnlyIn(Dist.CLIENT)
+@EventBusSubscriber(Dist.CLIENT)
 object Type63InfoOverlay : CommonOverlay("type_63_info") {
-    private val AP = ItemStack(ModItems.MEDIUM_ROCKET_AP.get())
-    private val HE = ItemStack(ModItems.MEDIUM_ROCKET_HE.get())
-    private val CM = ItemStack(ModItems.MEDIUM_ROCKET_CM.get())
+    private val AP by lazy { ItemStack(ModItems.MEDIUM_ROCKET_AP.get()) }
+    private val HE by lazy { ItemStack(ModItems.MEDIUM_ROCKET_HE.get()) }
+    private val CM by lazy { ItemStack(ModItems.MEDIUM_ROCKET_CM.get()) }
+
+    private var lookingEntity: Type63Entity? = null
+
+    @SubscribeEvent
+    fun tracingEntity(event: ClientTickEvent.Post) {
+        val player = localPlayer ?: return
+        val entity = TraceTool.findLookingEntity(player, player.getEntityReach())
+        if (entity is Type63Entity) {
+            lookingEntity = entity
+        }
+    }
 
     override fun RenderContext.render() {
+        val lookingEntity = lookingEntity ?: return
+
         val poseStack = guiGraphics.pose()
 
-        val lookingEntity = TraceTool.findLookingEntity(player, player.entityInteractionRange())
-
-        if (lookingEntity !is Type63Entity) return
         guiGraphics.drawString(
             Minecraft.getInstance().font, Component.translatable("tips.superbwarfare.mortar.pitch")
                 .append(
@@ -95,7 +107,7 @@ object Type63InfoOverlay : CommonOverlay("type_63_info") {
                 val x = point.x.toFloat()
                 val y = point.y.toFloat()
 
-                var component = stack.getHoverName()
+                var component = stack.hoverName
 
                 if (stack.isEmpty) {
                     component = Component.translatable("tips.superbwarfare.barrel_empty")
