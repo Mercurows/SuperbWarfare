@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.item.curio
 
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.tools.getOrCreateTag
+import com.atsuishio.superbwarfare.tools.NBTTool
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.LivingEntity
@@ -28,8 +28,8 @@ class ParachuteItem : Item(Properties().stacksTo(1).durability(600)), ICurioItem
 
     override fun curioTick(slotContext: SlotContext, stack: ItemStack) {
         val entity = slotContext.entity()
+        val tag = NBTTool.getTag(stack)
         if (entity !is Player) {
-            val tag = stack.getOrCreateTag()
             if (!tag.getBoolean(TAG_OPEN) && entity.deltaMovement.y < -0.6 && entity.fallDistance > 4) {
                 tag.putBoolean(TAG_OPEN, true)
                 entity.level().playSound(
@@ -45,10 +45,11 @@ class ParachuteItem : Item(Properties().stacksTo(1).durability(600)), ICurioItem
             }
         }
 
-        if (stack.getOrCreateTag().getBoolean(TAG_OPEN)) {
+        if (tag.getBoolean(TAG_OPEN)) {
             val level = entity.level()
             if ((entity.onGround() || entity.isInWater) || entity.isFallFlying || entity.vehicle != null || (entity is Player && entity.abilities.flying)) {
-                stack.getOrCreateTag().putBoolean(TAG_OPEN, false)
+                tag.putBoolean(TAG_OPEN, false)
+                NBTTool.saveTag(stack, tag)
                 level.playSound(
                     null,
                     entity.x,
@@ -90,7 +91,7 @@ class ParachuteItem : Item(Properties().stacksTo(1).durability(600)), ICurioItem
         fun isParachuteOpen(entity: LivingEntity?): Boolean {
             return CuriosApi.getCuriosInventory(entity).map {
                 it.findFirstCurio(ModItems.PARACHUTE.get())
-                    .map { c -> c.stack.getOrCreateTag().getBoolean(TAG_OPEN) }.orElse(false)
+                    .map { c -> NBTTool.getTag(c.stack).getBoolean(TAG_OPEN) }.orElse(false)
             }.orElse(false)
         }
 
