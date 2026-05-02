@@ -131,13 +131,10 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             val weapons = computed().weapons()
 
             for (kv in weapons.entries) {
-                var data = rawMap[kv.key]
+                val oldData = rawMap[kv.key]
+                val stack = oldData?.stack?.copy() ?: ItemStack(ModItems.VEHICLE_GUN.get())
+                val data = GunData.from(stack) { kv.value }
 
-                if (data == null) {
-                    data = GunData.from(ItemStack(ModItems.VEHICLE_GUN.get()))
-                }
-
-                data.resetDefaultDataSupplier { kv.value }
                 newMap[kv.key] = data
             }
 

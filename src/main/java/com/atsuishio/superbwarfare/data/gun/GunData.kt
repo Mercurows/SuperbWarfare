@@ -23,7 +23,6 @@ import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.tools.InventoryTool
-import com.atsuishio.superbwarfare.tools.invoke
 import com.atsuishio.superbwarfare.tools.sameWith
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
@@ -46,14 +45,15 @@ import net.neoforged.neoforge.items.IItemHandler
 import org.jetbrains.annotations.ApiStatus
 import java.util.*
 import java.util.function.Function
-import java.util.function.Supplier
 import kotlin.math.max
 import kotlin.math.min
 
 fun ItemStack.isGunItem() = this.item is GunItem
 fun ItemStack.toGunData() = if (isGunItem()) GunData.from(this) else null
 
-class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<DefaultGunData> {
+class GunData private constructor(
+    stack: ItemStack, initialDefaultDataSupplier: (() -> DefaultGunData)? = null
+) : DefaultDataSupplier<DefaultGunData> {
     @JvmField
     val stack: ItemStack
 
@@ -78,13 +78,8 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     @JvmField
     val id: String
 
-    private var defaultDataSupplier: Supplier<DefaultGunData>
+    private var defaultDataSupplier: () -> DefaultGunData
     var lastTimeStack: ItemStack? = null
-
-    fun resetDefaultDataSupplier(supplier: Supplier<DefaultGunData>) {
-        pmc = null
-        defaultDataSupplier = supplier
-    }
 
     private fun getOrPut(name: String): CompoundTag {
         if (!this.tag.contains(name)) {
@@ -166,7 +161,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         return rawData
     }
 
-    private var pmc: PMC<GunData, DefaultGunData>? = PMC(this)
+    private var pmc: PMC<GunData, DefaultGunData>? = null
 
     // TODO 重新实现get
     @Suppress("unchecked_cast")
@@ -597,7 +592,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
 
     fun canApplyPerk(perk: Perk) = availablePerks().contains(perk)
 
-    val rawDamageReduce: DamageReduce?
+    val rawDamageReduce: DamageReduce
         get() = getDefault().damageReduce
 
     val damageReduceRate: Double
@@ -606,7 +601,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
                 return this.perk.getInstances(type)
                     .minOfOrNull { it.perk.getModifiedDamageReduceRate(this.rawDamageReduce) } ?: continue
             }
-            return this.rawDamageReduce!!.rate
+            return this.rawDamageReduce.rate
         }
 
     val damageReduceMinDistance: Double
@@ -615,7 +610,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
                 return this.perk.getInstances(type)
                     .minOfOrNull { it.perk.getModifiedDamageReduceMinDistance(this.rawDamageReduce) } ?: continue
             }
-            return this.rawDamageReduce!!.minDistance
+            return this.rawDamageReduce.minDistance
         }
 
     fun meleeOnly(): Boolean {
@@ -813,8 +808,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     }
 
     fun copy(): GunData {
-        val data: GunData = from(this.stack.copy())
-        data.defaultDataSupplier = this.defaultDataSupplier
+        val data = from(this.stack.copy(), this.defaultDataSupplier)
         return data
     }
 
@@ -843,7 +837,7 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         this.stack = stack
         this.id = getRegistryId(stack.item)
 
-        this.defaultDataSupplier = Supplier { gunItem.getDefaultData(this) }
+        this.defaultDataSupplier = initialDefaultDataSupplier ?: { gunItem.getDefaultData(this) }
 
         val customData = stack.get(DataComponents.CUSTOM_DATA)
         this.tag = if (customData != null) customData.copyTag() else CompoundTag()
@@ -902,13 +896,15 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
     }
 
     companion object {
+        private val itemStackDefaultDataSupplier = mutableMapOf<ItemStack, () -> DefaultGunData>()
+
         @JvmField
         val DATA_CACHE: LoadingCache<ItemStack, GunData> = CacheBuilder.newBuilder()
             .weakKeys()
             .weakValues()
             .build(object : CacheLoader<ItemStack, GunData>() {
                 override fun load(stack: ItemStack): GunData {
-                    return GunData(stack)
+                    return GunData(stack, itemStackDefaultDataSupplier[stack])
                 }
             })
 
@@ -917,8 +913,11 @@ class GunData private constructor(stack: ItemStack) : DefaultDataSupplier<Defaul
         }
 
         @JvmStatic
-        fun from(stack: ItemStack): GunData {
+        @JvmOverloads
+        fun from(stack: ItemStack, defaultDataSupplier: (() -> DefaultGunData)? = null): GunData {
+            defaultDataSupplier?.let { itemStackDefaultDataSupplier[stack] = it }
             return DATA_CACHE.getUnchecked(stack)
+                .also { itemStackDefaultDataSupplier -= stack }
         }
 
         @JvmOverloads
