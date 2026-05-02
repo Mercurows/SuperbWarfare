@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.block.entity
 
-import com.atsuishio.superbwarfare.block.ContainerBlock
+import com.atsuishio.superbwarfare.block.SmallContainerBlock
 import com.atsuishio.superbwarfare.init.ModBlockEntities
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import net.minecraft.advancements.CriteriaTriggers
@@ -45,7 +45,7 @@ open class SmallContainerBlockEntity(pos: BlockPos, state: BlockState) :
     private val cache: AnimatableInstanceCache? = GeckoLibUtil.createInstanceCache(this)
 
     private fun predicate(event: AnimationState<SmallContainerBlockEntity?>): PlayState? {
-        return if (this.blockState.getValue(ContainerBlock.OPENED)) {
+        return if (this.blockState.getValue(SmallContainerBlock.OPENED)) {
             event.setAndContinue(RawAnimation.begin().thenPlay("animation.container.open"))
         } else {
             PlayState.STOP
@@ -134,7 +134,7 @@ open class SmallContainerBlockEntity(pos: BlockPos, state: BlockState) :
 
     companion object {
         fun serverTick(pLevel: Level, pPos: BlockPos, pState: BlockState, blockEntity: SmallContainerBlockEntity) {
-            if (!pState.getValue(ContainerBlock.OPENED)) {
+            if (!pState.getValue(SmallContainerBlock.OPENED)) {
                 return
             }
 
