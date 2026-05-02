@@ -1949,7 +1949,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 }
             }
             if (mob is Player && level() is ServerLevel) {
-                if (tickCount % 5 == 0) {
+                if (tickCount % 20 == 0) {
                     val gunData: GunData? = getGunData(mob)
                     if (gunData != null) {
                         if (gunData.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.ENERGY) {
@@ -1959,18 +1959,16 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                                     true
                                 )
                             }
-                        } else {
-                            if (getAmmoCount(mob) < gunData.get(GunProp.AMMO_COST_PER_SHOOT)) {
-                                val stack = gunData.selectedAmmoConsumer().stack()
-                                if (stack != ItemStack.EMPTY && !InventoryTool.hasCreativeAmmoBox(this) && !gunData.reloading()) {
-                                    mob.displayClientMessage(
-                                        Component.translatable("tips.superbwarfare.need.ammo")
-                                            .append(
-                                                Component.literal("[").append(stack.hoverName).append("]")
-                                                    .withStyle(ChatFormatting.YELLOW)
-                                            ), true
-                                    )
-                                }
+                        } else if (getAmmoCount(mob) < gunData.get(GunProp.AMMO_COST_PER_SHOOT)) {
+                            val stack = gunData.selectedAmmoConsumer().stack()
+                            if (stack != ItemStack.EMPTY && !InventoryTool.hasCreativeAmmoBox(this) && !gunData.reloading()) {
+                                mob.displayClientMessage(
+                                    Component.translatable("tips.superbwarfare.need.ammo")
+                                        .append(
+                                            Component.literal("[").append(stack.hoverName).append("]")
+                                                .withStyle(ChatFormatting.YELLOW)
+                                        ), true
+                                )
                             }
                         }
                     }
