@@ -258,7 +258,7 @@ object ClickEventHandler {
             if (key == ModKeyMappings.ACTIVE_THERMAL_IMAGING.key.value) {
                 if (vehicle is VehicleEntity) {
                     val index = vehicle.getSeatIndex(player)
-                    val seat = vehicle.computed().seats()[index] ?: return
+                    val seat = vehicle.computed().seats().getOrNull(index) ?: return
                     if (seat.hasThermalImaging) {
                         ClientEventHandler.activeThermalImaging = !ClientEventHandler.activeThermalImaging
                         if (ClientEventHandler.activeThermalImaging) {
@@ -484,7 +484,7 @@ object ClickEventHandler {
             if (!(stack.`is`(ModItems.BOCEK.get()))) {
                 if (!data.meleeOnly()) {
                     // 普通枪（？）
-                    if (stack.`is`(ModItems.QL_1031.get()) && data.selectedFireModeInfo().name.equals("Hold")
+                    if (stack.`is`(ModItems.QL_1031.get()) && data.selectedFireModeInfo().name == "Hold"
                         && item.canShoot(data, player)
                     ) {
                         player.playSound(ModSounds.QL_1031_CHARGE.get(), 1f, 1f)

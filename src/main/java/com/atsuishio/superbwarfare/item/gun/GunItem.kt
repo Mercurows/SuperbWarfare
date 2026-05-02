@@ -79,7 +79,7 @@ import java.util.concurrent.atomic.AtomicReference
 import java.util.function.Consumer
 
 @EventBusSubscriber
-abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), ItemScreenProvider, GunPropertyModifier,
+abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), ItemScreenProvider,
     PropertyModifier1<GunData, DefaultGunData> {
     protected val random: RandomSource = RandomSource.create()
 
@@ -94,21 +94,6 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     init {
         addReloadTimeBehavior(this.reloadTimeBehaviors)
         addBoltTimeBehavior(this.boltTimeBehaviors)
-    }
-
-    override fun computeProperties(data: GunData, rawData: DefaultGunData): DefaultGunData {
-        rawData.damage += getCustomDamage(data)
-        rawData.headshot += getCustomHeadshot(data)
-        rawData.bypassesArmor += getCustomBypassArmor(data)
-        rawData.magazine += getCustomMagazine(data)
-        rawData.defaultZoom += getCustomZoom(data)
-        rawData.rpm += getCustomRPM(data)
-        rawData.weight += getCustomWeight(data)
-        rawData.velocity += getCustomVelocity(data)
-        rawData.soundRadius += getCustomSoundRadius(data)
-        rawData.boltActionTime += getCustomBoltActionTime(data)
-
-        return rawData
     }
 
     override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) = with(GunProp) {
@@ -802,39 +787,48 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                 entity.setLauncherVehicle(shooter.vehicle!!.getUUID())
             }
 
-            if (entity is SmallCannonShellEntity && data.get(GunProp.SHELL_TYPE).equals("AA")) {
+            if (entity is SmallCannonShellEntity && data.get(GunProp.SHELL_TYPE) == "AA") {
                 entity.antiAir(true)
             }
 
             if (entity is CannonShellEntity) {
                 val type = data.get(GunProp.SHELL_TYPE)
-                if (type.equals("AP")) {
-                    entity.setType(CannonShellEntity.Type.AP)
-                    entity.durability(data.get(GunProp.AP_DURABILITY))
-                } else if (type.equals("HE")) {
-                    entity.setType(CannonShellEntity.Type.HE)
-                } else if (type.equals("CM")) {
-                    entity.setType(CannonShellEntity.Type.CM)
-                    entity.setSpreadAmount(data.get(GunProp.SPREAD_AMOUNT))
-                    entity.setSpreadAngle(data.get(GunProp.SPREAD_ANGLE))
-                } else if (type.equals("WP")) {
-                    entity.setType(CannonShellEntity.Type.WP)
-                    entity.setSpreadAmount(data.get(GunProp.SPREAD_AMOUNT))
-                    entity.setSpreadAngle(data.get(GunProp.SPREAD_ANGLE))
+                when (type) {
+                    "AP" -> {
+                        entity.setType(CannonShellEntity.Type.AP)
+                        entity.durability(data.get(GunProp.AP_DURABILITY))
+                    }
+                    "HE" -> {
+                        entity.setType(CannonShellEntity.Type.HE)
+                    }
+                    "CM" -> {
+                        entity.setType(CannonShellEntity.Type.CM)
+                        entity.setSpreadAmount(data.get(GunProp.SPREAD_AMOUNT))
+                        entity.setSpreadAngle(data.get(GunProp.SPREAD_ANGLE))
+                    }
+                    "WP" -> {
+                        entity.setType(CannonShellEntity.Type.WP)
+                        entity.setSpreadAmount(data.get(GunProp.SPREAD_AMOUNT))
+                        entity.setSpreadAngle(data.get(GunProp.SPREAD_ANGLE))
+                    }
                 }
             }
 
             if (entity is MediumRocketEntity) {
                 val type = data.get(GunProp.SHELL_TYPE)
-                if (type == "AP") {
-                    entity.setType(MediumRocketEntity.Type.AP)
-                    entity.durability(data.get(GunProp.AP_DURABILITY))
-                } else if (type == "HE") {
-                    entity.setType(MediumRocketEntity.Type.HE)
-                } else if (type == "CM") {
-                    entity.setType(MediumRocketEntity.Type.CM)
-                    entity.setSpreadAmount(data.get(GunProp.SPREAD_AMOUNT))
-                    entity.setSpreadAngle(data.get(GunProp.SPREAD_ANGLE))
+                when (type) {
+                    "AP" -> {
+                        entity.setType(MediumRocketEntity.Type.AP)
+                        entity.durability(data.get(GunProp.AP_DURABILITY))
+                    }
+                    "HE" -> {
+                        entity.setType(MediumRocketEntity.Type.HE)
+                    }
+                    "CM" -> {
+                        entity.setType(MediumRocketEntity.Type.CM)
+                        entity.setSpreadAmount(data.get(GunProp.SPREAD_AMOUNT))
+                        entity.setSpreadAngle(data.get(GunProp.SPREAD_ANGLE))
+                    }
                 }
             }
 
@@ -916,30 +910,9 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             shootPosition.z
         )
 
-        var x = shootDirection.x
-        var y = shootDirection.y
-        var z = shootDirection.z
-
-//        if (uuid != null && zoom && (shooter != null && !shooter.isShiftKeyDown)) {
-//            val target = EntityFindUtil.findEntity(level, uuid.toString())
-//            val gunData = from(stack)
-//            val intelligentChipLevel = gunData.perk.getLevel(ModPerks.INTELLIGENT_CHIP).toInt()
-//            if (intelligentChipLevel > 0 && target != null) {
-//                val targetVec = target.eyePosition
-//                val playerVec = shooter.eyePosition
-//                val hasGravity = gunData.perk.getLevel(ModPerks.MICRO_MISSILE) <= 0
-//                val toVec = calculateFiringSolution(
-//                    playerVec,
-//                    targetVec,
-//                    Vec3.ZERO,
-//                    data.get(GunProp.VELOCITY),
-//                    if (hasGravity) data.get(GunProp.GRAVITY) else 0.0
-//                )
-//                x = toVec.x
-//                y = toVec.y
-//                z = toVec.z
-//            }
-//        }
+        val x = shootDirection.x
+        val y = shootDirection.y
+        val z = shootDirection.z
 
         if (entity is Projectile) {
             entity.shoot(x, y, z, velocity, spread.toFloat())

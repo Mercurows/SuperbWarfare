@@ -514,7 +514,7 @@ object ClientEventHandler {
         if (vehicle is VehicleEntity) {
             val index = vehicle.getSeatIndex(player)
             if (index != -1) {
-                val seat = vehicle.computed().seats()[index]
+                val seat = vehicle.computed().seats().getOrNull(index)
                 if (seat != null && seat.hasThermalImaging) {
                     hasThermalImagingGoggles = true
                 }

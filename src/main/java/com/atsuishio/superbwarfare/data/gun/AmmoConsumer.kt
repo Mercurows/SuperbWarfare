@@ -27,7 +27,7 @@ import kotlin.math.min
 
 @STOFactory(AmmoConsumer.AmmoConsumerInstanceBuilder::class)
 @Serializable
-class AmmoConsumer : DeserializeFromString, GunPropertyModifier, PropertyModifier1<GunData, DefaultGunData> {
+class AmmoConsumer : DeserializeFromString, PropertyModifier1<GunData, DefaultGunData> {
     @SerializedName("Ammo")
     @SerialName("Ammo")
     var ammo: String? = null
@@ -277,25 +277,9 @@ class AmmoConsumer : DeserializeFromString, GunPropertyModifier, PropertyModifie
         return InventoryTool.insertItem(handler, stackToInsert, count)
     }
 
-
     @Transient
     @kotlinx.serialization.Transient
     private val jsonPropModifier = JsonPropertyModifier(GunProp.entries)
-
-    override fun computeProperties(data: GunData, rawData: DefaultGunData): DefaultGunData {
-        var rawData = rawData
-        if (this.projectile != null) {
-            rawData.projectile = projectile!!
-        }
-
-        val override = override
-        if (override != null) {
-            jsonPropModifier.update(override)
-            rawData = jsonPropModifier.computeProperties(data, rawData)
-        }
-
-        return rawData
-    }
 
     override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) {
         if (this.projectile != null) {
