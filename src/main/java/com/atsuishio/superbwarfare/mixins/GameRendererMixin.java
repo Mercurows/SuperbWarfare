@@ -56,7 +56,6 @@ public class GameRendererMixin {
 
         matrices.mulPose(Axis.ZP.rotationDegrees(ClientEventHandler.cameraRoll));
 
-
         if (entity instanceof Player player && !player.isSpectator() && player.hasEffect(ModMobEffects.SHOCK.get())) {
             float shakeStrength = (float) DisplayConfig.SHOCK_SCREEN_SHAKE.get() / 100.0f;
             if (shakeStrength <= 0.0f) return;
@@ -120,8 +119,11 @@ public class GameRendererMixin {
 
         if (pLivingEntity.getVehicle() instanceof VehicleEntity vehicle) {
             var index = vehicle.getSeatIndex(pLivingEntity);
-            var seat = vehicle.computed().seats().get(index);
-            if (seat != null && seat.hasThermalImaging) {
+            var seats = vehicle.computed().seats();
+            if (index < 0 || index >= seats.size()) return;
+
+            var seat = seats.get(index);
+            if (seat.hasThermalImaging) {
                 hasThermalImagingVehicle = true;
             }
         }
