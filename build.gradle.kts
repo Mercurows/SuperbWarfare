@@ -18,7 +18,7 @@ tasks.named<Wrapper>("wrapper") {
     distributionType = Wrapper.DistributionType.BIN
 }
 
-version = "${project.property("minecraft_version")}-${project.property("mod_version")}"
+version = "${project.property("mod_version")}-mc${project.property("minecraft_version")}"
 group = "com.atsuishio.superbwarfare"
 
 repositories {
