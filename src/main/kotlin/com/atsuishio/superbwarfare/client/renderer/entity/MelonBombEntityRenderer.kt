@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
+import com.atsuishio.superbwarfare.entity.projectile.MelonBombEntity
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
 import net.minecraft.client.renderer.MultiBufferSource
@@ -11,7 +12,7 @@ import net.minecraft.client.renderer.texture.TextureAtlas
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.level.block.Blocks
 
-class MelonBombEntityRenderer(context: EntityRendererProvider.Context) : EntityRenderer<com.atsuishio.superbwarfare.entity.projectile.MelonBombEntity>(context) {
+class MelonBombEntityRenderer(context: EntityRendererProvider.Context) : EntityRenderer<MelonBombEntity>(context) {
     private val blockRenderer: BlockRenderDispatcher = context.blockRenderDispatcher
 
     init {
@@ -19,7 +20,7 @@ class MelonBombEntityRenderer(context: EntityRendererProvider.Context) : EntityR
     }
 
     override fun render(
-        entity: com.atsuishio.superbwarfare.entity.projectile.MelonBombEntity,
+        entity: MelonBombEntity,
         entityYaw: Float,
         partialTicks: Float,
         matrixStack: PoseStack,
@@ -44,7 +45,7 @@ class MelonBombEntityRenderer(context: EntityRendererProvider.Context) : EntityR
     }
 
     @Suppress("DEPRECATION")
-    override fun getTextureLocation(entity: com.atsuishio.superbwarfare.entity.projectile.MelonBombEntity): ResourceLocation {
+    override fun getTextureLocation(entity: MelonBombEntity): ResourceLocation {
         return TextureAtlas.LOCATION_BLOCKS
     }
 }

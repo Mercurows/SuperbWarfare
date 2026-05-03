@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.client.renderer.entity
 import com.atsuishio.superbwarfare.client.layer.vehicle.Bmp2Layer
 import com.atsuishio.superbwarfare.client.model.entity.Bmp2Model
 import com.atsuishio.superbwarfare.entity.vehicle.Bmp2Entity
-import com.atsuishio.superbwarfare.entity.vehicle.T90aEntity
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
 import net.minecraft.client.renderer.MultiBufferSource

@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
-import com.atsuishio.superbwarfare.tools.mc
+import com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
 import com.mojang.math.Axis
@@ -14,16 +14,18 @@ import net.minecraft.core.BlockPos
 import net.minecraft.resources.ResourceLocation
 import org.joml.Matrix3f
 import org.joml.Matrix4f
-import kotlin.math.min
 
-class SuperStarProjectileRenderer(pContext: EntityRendererProvider.Context) :
-    EntityRenderer<com.atsuishio.superbwarfare.entity.projectile.SuperStarProjectileEntity>(pContext) {
-    override fun getBlockLightLevel(pEntity: com.atsuishio.superbwarfare.entity.projectile.SuperStarProjectileEntity, pPos: BlockPos): Int {
+class FlareDecoyEntityRenderer(pContext: EntityRendererProvider.Context) :
+    EntityRenderer<FlareDecoyEntity>(pContext) {
+    override fun getBlockLightLevel(
+        pEntity: FlareDecoyEntity,
+        pPos: BlockPos
+    ): Int {
         return 15
     }
 
     override fun render(
-        pEntity: com.atsuishio.superbwarfare.entity.projectile.SuperStarProjectileEntity,
+        pEntity: FlareDecoyEntity,
         pEntityYaw: Float,
         pPartialTicks: Float,
         pMatrixStack: PoseStack,
@@ -31,26 +33,22 @@ class SuperStarProjectileRenderer(pContext: EntityRendererProvider.Context) :
         pPackedLight: Int
     ) {
         pMatrixStack.pushPose()
-        pMatrixStack.translate(0.0, min(-0.75 + pEntity.tickCount * 0.05, 0.0), 0.0)
-        val viewXRot = mc.gameRenderer.mainCamera.xRot > 0
         pMatrixStack.mulPose(this.entityRenderDispatcher.cameraOrientation())
-        pMatrixStack.mulPose(Axis.XP.rotationDegrees(if (viewXRot) -90f else 90f))
-        pMatrixStack.translate(0f, -1f, 0f)
-        pMatrixStack.mulPose(Axis.YP.rotationDegrees(pEntity.getLerpTick(pPartialTicks) * (if (viewXRot) 18 else -18)))
+        pMatrixStack.mulPose(Axis.YP.rotationDegrees(180f))
         val lastPose = pMatrixStack.last()
         val pose = lastPose.pose()
         val normal = lastPose.normal()
         val consumer = pBuffer.getBuffer(RenderType.entityCutoutNoCull(getTextureLocation(pEntity)))
-        vertex(consumer, pose, normal, pPackedLight, -0.5f, -0.5f, 0, 1)
-        vertex(consumer, pose, normal, pPackedLight, 0.5f, -0.5f, 1, 1)
-        vertex(consumer, pose, normal, pPackedLight, 0.5f, 0.5f, 1, 0)
-        vertex(consumer, pose, normal, pPackedLight, -0.5f, 0.5f, 0, 0)
+        vertex(consumer, pose, normal, pPackedLight, 0f, 0f, 0, 1)
+        vertex(consumer, pose, normal, pPackedLight, 1f, 0f, 1, 1)
+        vertex(consumer, pose, normal, pPackedLight, 1f, 1f, 1, 0)
+        vertex(consumer, pose, normal, pPackedLight, 0f, 1f, 0, 0)
         pMatrixStack.popPose()
         super.render(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight)
     }
 
-    override fun getTextureLocation(pEntity: com.atsuishio.superbwarfare.entity.projectile.SuperStarProjectileEntity): ResourceLocation {
-        return TEXTURE
+    override fun getTextureLocation(entity: FlareDecoyEntity): ResourceLocation {
+        return TEXTURES[entity.tickCount % 8]
     }
 
     companion object {
@@ -60,14 +58,14 @@ class SuperStarProjectileRenderer(pContext: EntityRendererProvider.Context) :
             pNormal: Matrix3f,
             pLightmapUV: Int,
             pX: Float,
-            pZ: Float,
+            pY: Float,
             pU: Int,
             pV: Int
         ) {
-            pConsumer.vertex(pPose, pX, 0f, pZ).color(255, 255, 0, 255).uv(pU.toFloat(), pV.toFloat())
+            pConsumer.vertex(pPose, pX - 0.5f, pY - 0.25f, 0f).color(255, 255, 255, 255).uv(pU.toFloat(), pV.toFloat())
                 .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pLightmapUV).normal(pNormal, 0f, 1f, 0f).endVertex()
         }
 
-        val TEXTURE = loc("textures/particle/white_star.png")
+        val TEXTURES: List<ResourceLocation> = ArrayList((0..7).map { loc("textures/particle/fire_star_$it.png") })
     }
 }
