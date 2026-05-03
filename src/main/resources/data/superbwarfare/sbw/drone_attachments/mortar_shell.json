@@ -4,6 +4,6 @@
   "HitDamage": 60,
   "ExplosionDamage": 100,
   "ExplosionRadius": 8,
-  "Offset": [0, 0.02, 0.25],
+  "Offset": [0, -0.2, 0.0],
   "TickCount": 2
 }

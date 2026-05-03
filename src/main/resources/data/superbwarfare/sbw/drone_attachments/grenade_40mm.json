@@ -8,8 +8,8 @@
   "ExplosionRadius": 5,
   "Offset": [
     0,
-    -0.35,
-    0.08
+    0.035,
+    -0.05
   ],
   "Rotation": [
     90,
