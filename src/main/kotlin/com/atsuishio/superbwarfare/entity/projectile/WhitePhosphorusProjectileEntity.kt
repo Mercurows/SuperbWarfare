@@ -37,9 +37,6 @@ open class WhitePhosphorusProjectileEntity : FastThrowableProjectile {
         return Items.AIR
     }
 
-    override fun defineSynchedData() {
-    }
-
     override fun onHitEntity(result: EntityHitResult) {
         super.onHitEntity(result)
         val entity = result.entity
