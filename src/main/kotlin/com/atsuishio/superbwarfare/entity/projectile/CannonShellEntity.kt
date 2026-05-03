@@ -88,12 +88,12 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
             val blockState = level().getBlockState(pos)
 
             if (type == Type.WP) {
-                findNearEntity(result.getLocation(), owner!!)
-                causeExplode(result.getLocation())
+                findNearEntity(result.location, owner!!)
+                causeExplode(result.location)
                 this.discard()
             }
             if (type != Type.AP) {
-                causeExplode(result.getLocation())
+                causeExplode(result.location)
                 this.discard()
             } else {
                 if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
@@ -121,9 +121,9 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
                         causeExplode(pos.center)
                         discard()
                     } else {
-                        ParticleTool.cannonHitParticles(level, result.getLocation())
+                        ParticleTool.cannonHitParticles(level, result.location)
                         val cannonShell = CannonShellEntity(ModEntities.CANNON_SHELL.get(), level)
-                        cannonShell.setPos(result.getLocation().add(deltaMovement.normalize().scale(0.99)))
+                        cannonShell.setPos(result.location.add(deltaMovement.normalize().scale(0.99)))
                         cannonShell.shoot(
                             deltaMovement.x,
                             deltaMovement.y,
@@ -134,7 +134,7 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
                         cannonShell.owner = owner
                         cannonShell.durability(durability)
                         cannonShell.setType(Type.AP)
-                        cannonShell.setGravity(gravityValue)
+                        cannonShell.gravity = gravityValue
                         cannonShell.setLife(lifeValue - tickCount)
                         cannonShell.setDamage((damageValue * resistance).toFloat())
                         cannonShell.setExplosionDamage((explosionDamageValue * resistance).toFloat())
@@ -167,12 +167,12 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
             }
 
             if (type == Type.WP) {
-                findNearEntity(result.getLocation(), owner!!)
+                findNearEntity(result.location, owner!!)
             }
 
 
             if (entity is VehicleEntity) {
-                causeExplode(result.getLocation())
+                causeExplode(result.location)
                 this.discard()
             }
 
@@ -199,6 +199,9 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
 
                 deltaMovement = deltaMovement.scale(resistance)
                 setDamage((this.damageValue * resistance).toFloat())
+            } else {
+                causeExplode(result.location)
+                this.discard()
             }
         }
     }
