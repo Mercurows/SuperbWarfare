@@ -3,9 +3,11 @@
   "Entity": "superbwarfare:gun_grenade",
   "IsKamikaze": false,
   "Count": 4,
-  "HitDamage": 20,
-  "ExplosionDamage": 50,
-  "ExplosionRadius": 5,
+  "DropData": {
+    "Damage": 20,
+    "ExplosionDamage": 50,
+    "Radius": 5
+  },
   "Offset": [
     0,
     0.035,
