@@ -27,7 +27,7 @@ import kotlin.math.min
 
 @STOFactory(AmmoConsumer.AmmoConsumerInstanceBuilder::class)
 @Serializable
-class AmmoConsumer : DeserializeFromString, PropertyModifier1<GunData, DefaultGunData> {
+class AmmoConsumer : DeserializeFromString, PropertyModifier<GunData, DefaultGunData> {
     @SerializedName("Ammo")
     @SerialName("Ammo")
     var ammo: String? = null

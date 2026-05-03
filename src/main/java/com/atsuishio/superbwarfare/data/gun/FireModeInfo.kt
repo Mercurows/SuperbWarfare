@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 
 @STOFactory(FireModeInfo.FireModeInfoInstanceBuilder::class)
 @Serializable
-class FireModeInfo : DeserializeFromString, PropertyModifier1<GunData, DefaultGunData> {
+class FireModeInfo : DeserializeFromString, PropertyModifier<GunData, DefaultGunData> {
     @JvmField
     @SerializedName("Mode")
     @SerialName("Mode")

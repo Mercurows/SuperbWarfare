@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.perk
 
 import com.atsuishio.superbwarfare.data.PMC
-import com.atsuishio.superbwarfare.data.PropertyModifier1
+import com.atsuishio.superbwarfare.data.PropertyModifier
 import com.atsuishio.superbwarfare.data.gun.DamageReduce
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.gun.GunData
@@ -18,7 +18,7 @@ import net.minecraftforge.registries.RegistryManager
 import net.minecraftforge.registries.RegistryObject
 import java.util.*
 
-open class Perk(val descriptionId: String, val type: Type) : PropertyModifier1<GunData, DefaultGunData> {
+open class Perk(val descriptionId: String, val type: Type) : PropertyModifier<GunData, DefaultGunData> {
     val name: String = descriptionId.split("_")
         .filter { it.isNotEmpty() }
         .joinToString("") { word -> word.replaceFirstChar { it.uppercase(Locale.ROOT) } }

@@ -8,7 +8,7 @@ import com.google.gson.JsonObject
 class JsonPropertyModifier<DATA : DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA>(
     // TODO 实现VehicleProp后禁止该项为空
     val props: List<Prop<DATA, DEFAULT_DATA, *, *, *>>? = null
-) : PropertyModifier<DATA, DEFAULT_DATA>, PropertyModifier1<DATA, DEFAULT_DATA> {
+) : OldPropertyModifier<DATA, DEFAULT_DATA>, PropertyModifier<DATA, DEFAULT_DATA> {
     private var obj: JsonObject? = null
     private var str: String? = null
 
