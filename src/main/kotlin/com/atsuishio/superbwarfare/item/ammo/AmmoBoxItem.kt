@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.init.ModAttachments
 import com.atsuishio.superbwarfare.init.ModDataComponents
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.item.common.ammo.box.AmmoBoxInfo
 import com.atsuishio.superbwarfare.tools.FormatTool.format0D
 import com.atsuishio.superbwarfare.tools.SoundTool
 import com.atsuishio.superbwarfare.tools.plus

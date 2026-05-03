@@ -24,7 +24,6 @@ import net.minecraft.world.level.Level
 import net.neoforged.neoforge.capabilities.Capabilities
 import org.joml.Math
 import java.util.*
-import javax.annotation.ParametersAreNonnullByDefault
 import kotlin.math.roundToInt
 
 class ElectricBatonItem : SwordItem(
@@ -47,7 +46,6 @@ class ElectricBatonItem : SwordItem(
 
     override fun getMaxEnergy(stack: ItemStack) = MAX_ENERGY
 
-    @ParametersAreNonnullByDefault
     override fun use(level: Level, player: Player, usedHand: InteractionHand): InteractionResultHolder<ItemStack> {
         val stack = player.getItemInHand(usedHand)
 
@@ -88,7 +86,6 @@ class ElectricBatonItem : SwordItem(
         ) 0xFFFF00 else super.getBarColor(stack)
     }
 
-    @ParametersAreNonnullByDefault
     override fun hurtEnemy(stack: ItemStack, target: LivingEntity, attacker: LivingEntity): Boolean {
         attacker.level().playSound(
             null,

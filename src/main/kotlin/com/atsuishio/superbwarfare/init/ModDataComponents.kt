@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.init
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.gun.Ammo
-import com.atsuishio.superbwarfare.item.common.ammo.box.AmmoBoxInfo
+import com.atsuishio.superbwarfare.item.ammo.AmmoBoxInfo
 import com.atsuishio.superbwarfare.item.misc.FiringParametersItem
 import com.mojang.datafixers.util.Pair
 import com.mojang.serialization.Codec
