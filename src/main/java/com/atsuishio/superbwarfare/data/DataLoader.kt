@@ -17,6 +17,7 @@ import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.serializer
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.world.phys.Vec2
@@ -145,7 +146,11 @@ object DataLoader {
         }
 
         fun serializeToString(): String {
-            return GSON.toJson(dataMap)!!
+            return if (isKtData) {
+                JSON.encodeToString(serializer(mapType.type), dataMap)
+            } else {
+                GSON.toJson(dataMap)!!
+            }
         }
     }
 
