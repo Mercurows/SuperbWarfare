@@ -21,7 +21,8 @@ import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent
 import kotlin.math.max
 
-class UsHelmetPasgtItem : ArmorItem(ModArmorMaterial.CEMENTED_CARBIDE, Type.HELMET, Properties()) {
+class UsHelmetPasgtItem :
+    ArmorItem(ModArmorMaterial.CEMENTED_CARBIDE, Type.HELMET, Properties().durability(Type.HELMET.getDurability(50))) {
     @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
     companion object {
         val TEXTURE = loc("textures/bedrock/armor/us_helmet_pasgt.png")

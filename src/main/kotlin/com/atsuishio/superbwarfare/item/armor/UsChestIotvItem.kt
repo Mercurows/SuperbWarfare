@@ -21,8 +21,11 @@ import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent
 import kotlin.math.max
 
-class UsChestIotvItem : ArmorItem(ModArmorMaterial.CEMENTED_CARBIDE, Type.CHESTPLATE, Properties()) {
-
+class UsChestIotvItem : ArmorItem(
+    ModArmorMaterial.CEMENTED_CARBIDE,
+    Type.CHESTPLATE,
+    Properties().durability(Type.CHESTPLATE.getDurability(50))
+) {
     @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
     companion object {
         val TEXTURE = loc("textures/bedrock/armor/us_chest_iotv.png")

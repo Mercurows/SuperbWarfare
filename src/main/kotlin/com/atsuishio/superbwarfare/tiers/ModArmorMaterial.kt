@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.tiers
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.init.ModItems
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.sounds.SoundEvents
@@ -27,7 +28,7 @@ object ModArmorMaterial {
             10,
             SoundEvents.ARMOR_EQUIP_IRON,
             { Ingredient.of(ModItems.CEMENTED_CARBIDE_INGOT.value()) },
-            listOf<ArmorMaterial.Layer>(),
+            listOf(ArmorMaterial.Layer(loc("cemented_carbide"))),
             4f,
             0.05f,
         )
@@ -45,7 +46,7 @@ object ModArmorMaterial {
             9,
             SoundEvents.ARMOR_EQUIP_IRON,
             { Ingredient.of(ModItems.STEEL_INGOT.value()) },
-            listOf<ArmorMaterial.Layer>(),
+            listOf(ArmorMaterial.Layer(loc("steel"))),
             1f,
             0f,
         )
