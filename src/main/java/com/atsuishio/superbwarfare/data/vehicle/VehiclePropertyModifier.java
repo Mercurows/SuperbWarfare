@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.data.vehicle;
 
-import com.atsuishio.superbwarfare.data.PropertyModifier;
+import com.atsuishio.superbwarfare.data.OldPropertyModifier;
 
-public interface VehiclePropertyModifier extends PropertyModifier<VehicleData, DefaultVehicleData> {
+public interface VehiclePropertyModifier extends OldPropertyModifier<VehicleData, DefaultVehicleData> {
 }

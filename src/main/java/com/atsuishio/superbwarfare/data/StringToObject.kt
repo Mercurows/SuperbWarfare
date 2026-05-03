@@ -25,7 +25,6 @@ import kotlin.reflect.full.createInstance
  * 创建一个value的包装类，允许使用字符串创建对象，或者直接以对象形式解析JSON值，在序列化和反序列化时可以将该包装类视为不存在
  * "" -> {}
  */
-// TODO 重新用kt实现STO
 @Serializable(STOSerializer::class)
 class StringToObject<T : DeserializeFromString>(@JvmField var value: T) {
     internal class StringOrObjectAdapter<T : DeserializeFromString>(type: Type, private val gson: Gson) :

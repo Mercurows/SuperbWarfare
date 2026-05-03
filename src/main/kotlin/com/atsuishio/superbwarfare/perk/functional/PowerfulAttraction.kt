@@ -48,20 +48,4 @@ object PowerfulAttraction : Perk("powerful_attraction", Type.FUNCTIONAL) {
             event.isCanceled = true
         }
     }
-
-    // TODO LootingLevelEvent
-//    @SubscribeEvent
-//    fun onLootingLevel(event: LootingLevelEvent) {
-//        val source = event.damageSource ?: return
-//        val sourceEntity = source.entity
-//        if (sourceEntity !is LivingEntity) return
-//
-//        val stack = sourceEntity.mainHandItem
-//        if (stack.item !is GunItem) return
-//
-//        val level = GunData.from(stack).perk.getLevel(this)
-//        if (level > 0 && DamageTypeTool.isGunDamage(source)) {
-//            event.lootingLevel = level / 4
-//        }
-//    }
 }

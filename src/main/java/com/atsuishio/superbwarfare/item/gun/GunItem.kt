@@ -8,7 +8,7 @@ import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent
 import com.atsuishio.superbwarfare.data.CustomData
 import com.atsuishio.superbwarfare.data.PMC
-import com.atsuishio.superbwarfare.data.PropertyModifier1
+import com.atsuishio.superbwarfare.data.PropertyModifier
 import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.getDefault
@@ -71,7 +71,7 @@ import java.util.concurrent.atomic.AtomicReference
 import java.util.function.Consumer
 
 abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), ItemScreenProvider,
-    EnergyStorageItem, PropertyModifier1<GunData, DefaultGunData> {
+    EnergyStorageItem, PropertyModifier<GunData, DefaultGunData> {
 
     protected val random: RandomSource = RandomSource.create()
 
