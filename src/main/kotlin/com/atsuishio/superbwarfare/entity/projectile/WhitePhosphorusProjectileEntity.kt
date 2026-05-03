@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.tools.SeekTool
 import com.atsuishio.superbwarfare.tools.forceHurt
 import com.atsuishio.superbwarfare.tools.sendPacketTo
 import net.minecraft.core.particles.ParticleTypes
-import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundSource
@@ -37,8 +36,6 @@ open class WhitePhosphorusProjectileEntity : FastThrowableProjectile {
     override fun getDefaultItem(): Item {
         return Items.AIR
     }
-
-    override fun defineSynchedData(builder: SynchedEntityData.Builder) {}
 
     override fun onHitEntity(result: EntityHitResult) {
         super.onHitEntity(result)
