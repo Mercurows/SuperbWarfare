@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.item.material
 
 import com.atsuishio.superbwarfare.client.tooltip.component.CellImageComponent
+import com.atsuishio.superbwarfare.item.EnergyStorageItem
 import com.atsuishio.superbwarfare.tools.tag
 import net.minecraft.ChatFormatting
 import net.minecraft.core.component.DataComponents
@@ -22,7 +23,7 @@ import java.util.*
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-open class BatteryItem(var maxEnergy: Int, properties: Properties) : Item(properties.stacksTo(1)) {
+open class BatteryItem(var maxEnergy: Int, properties: Properties) : Item(properties.stacksTo(1)), EnergyStorageItem {
 
     companion object {
         const val TAG_ENABLED = "Enabled"
@@ -128,4 +129,6 @@ open class BatteryItem(var maxEnergy: Int, properties: Properties) : Item(proper
         }
         return super.overrideOtherStackedOnMe(stack, other, slot, action, player, access)
     }
+
+    override fun getMaxEnergy(stack: ItemStack) = this.maxEnergy
 }
