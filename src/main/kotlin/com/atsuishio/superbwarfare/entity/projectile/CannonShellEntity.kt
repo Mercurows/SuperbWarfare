@@ -135,7 +135,7 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
                         cannonShell.owner = owner
                         cannonShell.durability(durability)
                         cannonShell.setType(Type.AP)
-                        cannonShell.gravity = gravityValue
+                        cannonShell.setGravity(gravityValue)
                         cannonShell.setLife(lifeValue - tickCount)
                         cannonShell.setDamage((damageValue * resistance).toFloat())
                         cannonShell.setExplosionDamage((explosionDamageValue * resistance).toFloat())
