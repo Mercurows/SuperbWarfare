@@ -13,7 +13,6 @@ import net.minecraft.world.item.TooltipFlag
 import net.minecraft.world.item.context.UseOnContext
 import net.minecraft.world.level.gameevent.GameEvent
 import net.minecraft.world.phys.Vec3
-import kotlin.math.abs
 
 open class EDDItem : Item(Properties()) {
     override fun appendHoverText(
@@ -43,7 +42,7 @@ open class EDDItem : Item(Properties()) {
                 level = level,
                 pos = relative,
                 direction = direction,
-                corner = this.getCornerFromHit(direction, context.clickLocation)
+                corner = this.getCornerFromHit(direction, pos, context.clickLocation)
             )
 
             if (entity.survives()) {
@@ -70,32 +69,28 @@ open class EDDItem : Item(Properties()) {
         return !player.level().isOutsideBuildHeight(pos) && player.mayUseItemAt(pos, direction, stack)
     }
 
-    fun getCornerFromHit(face: Direction, hitVec: Vec3): Int {
-        val u: Double
-        val v: Double
+    fun getCornerFromHit(face: Direction, pos: BlockPos, hitVec: Vec3): Int {
+        val x = hitVec.x
+        val y = hitVec.y
+        val z = hitVec.z
 
-        when (face) {
-            Direction.NORTH, Direction.SOUTH -> {
-                u = hitVec.x.toInt() - hitVec.x
-                v = hitVec.y.toInt() - hitVec.y
-            }
-
-            Direction.EAST, Direction.WEST -> {
-                u = hitVec.z.toInt() - hitVec.z
-                v = hitVec.y.toInt() - hitVec.y
-            }
-
-            else -> return 0
+        val top = y > pos.y + 0.5
+        val left = when (face) {
+            Direction.WEST -> z < pos.z + 0.5
+            Direction.EAST -> z > pos.z + 0.5
+            Direction.SOUTH -> x < pos.x + 0.5
+            Direction.NORTH -> x > pos.x + 0.5
+            else -> false
         }
 
-        val left = if (face == Direction.WEST) abs(u) < 0.5 else abs(u) > 0.5
-        val top = abs(v) < 0.5
-
-        return when {
-            left && top -> 0
-            left && !top -> 1
-            !left && top -> 2
-            else -> 3
+        return if (left && top) {
+            0
+        } else if (left) {
+            1
+        } else if (!top) {
+            2
+        } else {
+            3
         }
     }
 }

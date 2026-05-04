@@ -37,14 +37,8 @@ class EDDRenderer(renderManager: EntityRendererProvider.Context) : EntityRendere
             poseStack.mulPose(Axis.YP.rotationDegrees(180f))
         }
 
-        if (direction != Direction.NORTH) {
-            if (!entity.isFacingLeft()) {
-                poseStack.mulPose(Axis.ZP.rotationDegrees(180f))
-            }
-        } else {
-            if (entity.isFacingLeft()) {
-                poseStack.mulPose(Axis.ZP.rotationDegrees(180f))
-            }
+        if (!entity.isFacingLeft()) {
+            poseStack.mulPose(Axis.ZP.rotationDegrees(180f))
         }
 
         bone.visible = entity.tickCount <= 20
