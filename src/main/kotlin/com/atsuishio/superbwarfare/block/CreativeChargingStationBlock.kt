@@ -91,13 +91,13 @@ class CreativeChargingStationBlock :
         return CreativeChargingStationBlockEntity(pPos, pState)
     }
 
-    override fun <T : BlockEntity?> getTicker(
+    override fun <T : BlockEntity> getTicker(
         pLevel: Level,
         pState: BlockState,
-        pBlockEntityType: BlockEntityType<T?>
-    ): BlockEntityTicker<T?>? {
+        pBlockEntityType: BlockEntityType<T>
+    ): BlockEntityTicker<T>? {
         if (!pLevel.isClientSide) {
-            return createTickerHelper<CreativeChargingStationBlockEntity?, T?>(
+            return createTickerHelper<CreativeChargingStationBlockEntity, T>(
                 pBlockEntityType,
                 ModBlockEntities.CREATIVE_CHARGING_STATION.get()
             ) { _, _, _, blockEntity -> CreativeChargingStationBlockEntity.serverTick(blockEntity) }
@@ -129,6 +129,18 @@ class CreativeChargingStationBlock :
     override fun getStateForPlacement(pContext: BlockPlaceContext): BlockState? {
         return this.defaultBlockState()
             .setValue(FACING, pContext.horizontalDirection.opposite)
+    }
+
+    override fun hasAnalogOutputSignal(pState: BlockState): Boolean {
+        return true
+    }
+
+    override fun getAnalogOutputSignal(
+        pState: BlockState,
+        pLevel: Level,
+        pPos: BlockPos
+    ): Int {
+        return 15
     }
 
     companion object {

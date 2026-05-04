@@ -25,6 +25,7 @@ import net.minecraft.world.level.block.state.StateDefinition
 import net.minecraft.world.level.block.state.properties.BooleanProperty
 import net.minecraft.world.level.block.state.properties.DirectionProperty
 import net.minecraft.world.phys.BlockHitResult
+import net.minecraftforge.common.capabilities.ForgeCapabilities
 
 @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")
 open class ChargingStationBlock :
@@ -77,23 +78,17 @@ open class ChargingStationBlock :
         return ChargingStationBlockEntity(pPos, pState)
     }
 
-    override fun <T : BlockEntity?> getTicker(
+    override fun <T : BlockEntity> getTicker(
         pLevel: Level,
         pState: BlockState,
-        pBlockEntityType: BlockEntityType<T?>
-    ): BlockEntityTicker<T?>? {
+        pBlockEntityType: BlockEntityType<T>
+    ): BlockEntityTicker<T>? {
         if (!pLevel.isClientSide) {
-            return createTickerHelper<ChargingStationBlockEntity?, T?>(
+            return createTickerHelper<ChargingStationBlockEntity, T>(
                 pBlockEntityType,
-                ModBlockEntities.CHARGING_STATION.get()
-            ) { pLevel, pPos, pState, blockEntity ->
-                ChargingStationBlockEntity.serverTick(
-                    pLevel,
-                    pPos,
-                    pState,
-                    blockEntity
-                )
-            }
+                ModBlockEntities.CHARGING_STATION.get(),
+                ChargingStationBlockEntity::serverTick
+            )
         }
         return null
     }
@@ -132,6 +127,24 @@ open class ChargingStationBlock :
         val itemstack = super.getCloneItemStack(pLevel, pPos, pState)
         pLevel.getBlockEntity(pPos, ModBlockEntities.CHARGING_STATION.get()).ifPresent { it.saveToItem(itemstack) }
         return itemstack
+    }
+
+    override fun getAnalogOutputSignal(
+        pState: BlockState,
+        pLevel: Level,
+        pPos: BlockPos
+    ): Int {
+        val blockEntity = pLevel.getBlockEntity(pPos)
+        if (blockEntity is ChargingStationBlockEntity) {
+            val rate = blockEntity.getCapability(ForgeCapabilities.ENERGY)
+                .map { it.energyStored / it.maxEnergyStored.toDouble() }.orElse(0.0)
+            return (15 * rate).toInt()
+        }
+        return super.getAnalogOutputSignal(pState, pLevel, pPos)
+    }
+
+    override fun hasAnalogOutputSignal(pState: BlockState): Boolean {
+        return true
     }
 
     companion object {
