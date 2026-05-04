@@ -120,7 +120,7 @@ open class ClaymoreEntity(type: EntityType<ClaymoreEntity>, level: Level) : Enti
                 uuid = if (this.server == null) {
                     UUID.fromString(s)
                 } else {
-                    OldUsersConverter.convertMobOwnerIfNecessary(this.server, s)
+                    OldUsersConverter.convertMobOwnerIfNecessary(this.server!!, s)
                 }
             } catch (exception: Exception) {
                 Mod.LOGGER.error("Couldn't load owner UUID of {}: {}", this, exception)
@@ -170,11 +170,14 @@ open class ClaymoreEntity(type: EntityType<ClaymoreEntity>, level: Level) : Enti
             ) { true }) {
                 val condition = this.owner !== target
                         && (target is LivingEntity || target is VehicleEntity)
-                        && (target !is TargetEntity)
+                        && target !is TargetEntity
                         && !(target is Player && (target.isCreative || target.isSpectator))
-                        && (this.owner != null && !this.owner!!
-                    .isAlliedTo(target) || target.team == null || enabledTDM(target))
                         && !target.isShiftKeyDown
+                        && if (ExplosionConfig.FRIENDLY_MINES.get()) {
+                    if (owner == null) true else owner != target && !owner!!.isAlliedTo(target)
+                } else {
+                    (owner != null && owner != target && !owner!!.isAlliedTo(target)) || target.team == null || enabledTDM(target)
+                }
                 if (!condition) continue
 
                 ParticleTool.spawnMediumExplosionParticles(this.level(), this.position())

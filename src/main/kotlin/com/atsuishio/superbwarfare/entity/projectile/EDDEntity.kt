@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.entity.living.TargetEntity
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.tools.CustomExplosion
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.toVec3
@@ -310,13 +311,17 @@ open class EDDEntity : HangingEntity, OwnableEntity {
         val flag = this.level().getEntitiesOfClass(
             Entity::class.java,
             aabb
-        ) {
+        ) { true }.asSequence().filter {
             it !is EDDEntity && it !is TargetEntity
+                    && !it.type.`is`(ModTags.EntityTypes.DECOY)
                     && it != this.owner
                     && !(it is Player && (it.isCreative || it.isSpectator))
-                    && (this.owner != null && !this.owner!!
-                .isAlliedTo(it) || it.team == null || enabledTDM(it))
-        }.isNotEmpty()
+                    && if (ExplosionConfig.FRIENDLY_MINES.get()) {
+                if (owner == null) true else owner != it && !owner!!.isAlliedTo(it)
+            } else {
+                (owner != null && owner != it && !owner!!.isAlliedTo(it)) || it.team == null || enabledTDM(it)
+            }
+        }.toList().isNotEmpty()
 
         if (flag) {
             this.triggerExplode()

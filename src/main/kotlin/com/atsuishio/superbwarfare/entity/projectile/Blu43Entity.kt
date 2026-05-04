@@ -6,8 +6,10 @@ import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier.Companio
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.tools.CustomExplosion
 import com.atsuishio.superbwarfare.tools.ParticleTool
+import com.atsuishio.superbwarfare.world.saveddata.TDMSavedData.Companion.enabledTDM
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
@@ -72,7 +74,7 @@ open class Blu43Entity : Entity, OwnableEntity {
     }
 
     fun isOwnedBy(pEntity: LivingEntity?): Boolean {
-        return pEntity === this.getOwner()
+        return pEntity === this.owner
     }
 
     public override fun addAdditionalSaveData(compound: CompoundTag) {
@@ -176,8 +178,18 @@ open class Blu43Entity : Entity, OwnableEntity {
             val entities = level().getEntities(
                 EntityTypeTest.forClass(Entity::class.java),
                 frontBox
-            ) { it != this && !(it is Player && it.isSpectator) && (it !is HangingEntity) && it.boundingBox.getSize() > 0.4 }
-                .stream().toList()
+            ) { true }.asSequence().filter {
+                it != this
+                        && !(it is Player && it.isSpectator)
+                        && it !is HangingEntity
+                        && !it.type.`is`(ModTags.EntityTypes.DECOY)
+                        && it.boundingBox.size > 0.4
+                        && if (ExplosionConfig.FRIENDLY_MINES.get()) {
+                    if (owner == null) true else owner != it && !owner!!.isAlliedTo(it)
+                } else {
+                    (owner != null && owner != it && !owner!!.isAlliedTo(it)) || it.team == null || enabledTDM(it)
+                }
+            }.toList()
 
             for (entity in entities) {
                 if (entity != null) {
@@ -213,7 +225,7 @@ open class Blu43Entity : Entity, OwnableEntity {
                                 baseAmplifier,
                                 false,
                                 false
-                            ), this.getOwner()
+                            ), this.owner
                         )
                         entity.addEffect(
                             MobEffectInstance(
@@ -222,9 +234,9 @@ open class Blu43Entity : Entity, OwnableEntity {
                                 baseAmplifier,
                                 false,
                                 false
-                            ), this.getOwner()
+                            ), this.owner
                         )
-                        entity.addEffect(MobEffectInstance(MobEffects.BLINDNESS, 30, 0, false, false), this.getOwner())
+                        entity.addEffect(MobEffectInstance(MobEffects.BLINDNESS, 30, 0, false, false), this.owner)
                     }
                     break
                 }
@@ -238,7 +250,7 @@ open class Blu43Entity : Entity, OwnableEntity {
 
     private fun triggerExplode() {
         CustomExplosion.Builder(this)
-            .attacker(this.getOwner())
+            .attacker(this.owner)
             .damage(ExplosionConfig.BLU_43_EXPLOSION_DAMAGE.get().toFloat())
             .radius(ExplosionConfig.BLU_43_EXPLOSION_RADIUS.get().toFloat())
             .keepBlock()
