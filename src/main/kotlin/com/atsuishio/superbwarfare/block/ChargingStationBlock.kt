@@ -23,7 +23,6 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty
 import net.minecraft.world.level.block.state.properties.DirectionProperty
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.HitResult
-import javax.annotation.ParametersAreNonnullByDefault
 
 @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")
 open class ChargingStationBlock :
@@ -48,7 +47,6 @@ open class ChargingStationBlock :
         )
     }
 
-    @ParametersAreNonnullByDefault
     override fun useWithoutItem(
         state: BlockState,
         level: Level,
@@ -65,9 +63,9 @@ open class ChargingStationBlock :
     }
 
     protected fun openContainer(pLevel: Level, pPos: BlockPos, pPlayer: Player) {
-        val blockentity = pLevel.getBlockEntity(pPos)
-        if (blockentity is ChargingStationBlockEntity) {
-            pPlayer.openMenu(blockentity)
+        val blockEntity = pLevel.getBlockEntity(pPos)
+        if (blockEntity is ChargingStationBlockEntity) {
+            pPlayer.openMenu(blockEntity)
         }
     }
 
@@ -81,23 +79,17 @@ open class ChargingStationBlock :
         return ChargingStationBlockEntity(pPos, pState)
     }
 
-    override fun <T : BlockEntity?> getTicker(
+    override fun <T : BlockEntity> getTicker(
         pLevel: Level,
         pState: BlockState,
-        pBlockEntityType: BlockEntityType<T?>
-    ): BlockEntityTicker<T?>? {
+        pBlockEntityType: BlockEntityType<T>
+    ): BlockEntityTicker<T>? {
         if (!pLevel.isClientSide) {
             return createTickerHelper(
                 pBlockEntityType,
                 ModBlockEntities.CHARGING_STATION.get(),
-                BlockEntityTicker { pLevel, pPos, pState, blockEntity ->
-                    ChargingStationBlockEntity.serverTick(
-                        pLevel,
-                        pPos,
-                        pState,
-                        blockEntity
-                    )
-                })
+                ChargingStationBlockEntity::serverTick
+            )
         }
         return null
     }
@@ -132,7 +124,24 @@ open class ChargingStationBlock :
             .setValue(SHOW_RANGE, false)
     }
 
-    @ParametersAreNonnullByDefault
+    override fun hasAnalogOutputSignal(state: BlockState): Boolean {
+        return true
+    }
+
+    override fun getAnalogOutputSignal(
+        state: BlockState,
+        level: Level,
+        pos: BlockPos
+    ): Int {
+        val blockEntity = level.getBlockEntity(pos)
+        if (blockEntity is ChargingStationBlockEntity) {
+            val energy = blockEntity.getEnergyStorage(null)
+            val rate = energy.energyStored / energy.maxEnergyStored.toDouble()
+            return (15 * rate).toInt()
+        }
+        return super.getAnalogOutputSignal(state, level, pos)
+    }
+
     override fun getCloneItemStack(
         state: BlockState,
         target: HitResult,
