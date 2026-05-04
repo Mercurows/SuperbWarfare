@@ -361,20 +361,22 @@ object IFFOverlay : CommonOverlay("iff") {
     }
 
     fun checkNoClip(player: Player, teammate: Entity, pos: Vec3): Boolean {
+        val vec = pos.vectorTo(teammate.position())
+        val toPos = if (vec.lengthSqr() > 512 * 512)
+            pos.add(pos.vectorTo(teammate.position()).normalize().scale(512.0))
+        else teammate.position()
         return player.level().clip(
-            ClipContext(
-                pos, pos.add(pos.vectorTo(teammate.position()).normalize().scale(512.0)),
-                ClipContext.Block.VISUAL, ClipContext.Fluid.ANY, CollisionContext.empty()
-            )
+            ClipContext(pos, toPos, ClipContext.Block.VISUAL, ClipContext.Fluid.ANY, CollisionContext.empty())
         ).type != HitResult.Type.BLOCK
     }
 
     fun checkNoClip(player: Player, targetPos: Vec3, pos: Vec3): Boolean {
+        val vec = pos.vectorTo(targetPos)
+        val toPos = if (vec.lengthSqr() > 512 * 512)
+            pos.add(pos.vectorTo(targetPos).normalize().scale(512.0))
+        else targetPos
         return player.level().clip(
-            ClipContext(
-                pos, pos.add(pos.vectorTo(targetPos).normalize().scale(512.0)),
-                ClipContext.Block.VISUAL, ClipContext.Fluid.ANY, CollisionContext.empty()
-            )
+            ClipContext(pos, toPos, ClipContext.Block.VISUAL, ClipContext.Fluid.ANY, CollisionContext.empty())
         ).type != HitResult.Type.BLOCK
     }
 
