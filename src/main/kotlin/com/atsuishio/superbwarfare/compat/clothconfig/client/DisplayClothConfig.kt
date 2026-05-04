@@ -141,6 +141,18 @@ object DisplayClothConfig {
         category.addEntry(
             entryBuilder
                 .startBooleanToggle(
+                    Component.translatable("config.superbwarfare.client.display.iff_hud"),
+                    DisplayConfig.IFF_HUD.get()
+                )
+                .setDefaultValue(true)
+                .setSaveConsumer { DisplayConfig.IFF_HUD.set(it) }
+                .setTooltip(Component.translatable("config.superbwarfare.client.display.iff_hud.des"))
+                .build()
+        )
+
+        category.addEntry(
+            entryBuilder
+                .startBooleanToggle(
                     Component.translatable("config.superbwarfare.client.display.float_cross_hair"),
                     DisplayConfig.FLOAT_CROSS_HAIR.get()
                 )
