@@ -103,6 +103,17 @@ public class SecondaryCataclysmItem extends GunGeoItem {
         data.add(meleeController);
     }
 
+    // TODO 复活临时修改，而不是现在这套
+    @Override
+    public double getCustomDamage(GunData data) {
+        var stack = data.stack;
+        var cap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
+        if (cap != null && cap.getEnergyStored() > 0) {
+            return 2.5 * data.getDefault().damage;
+        }
+        return 0;
+    }
+
     @Override
     public boolean shootBullet(@NotNull ShootParameters parameters) {
         var data = parameters.data;
@@ -116,15 +127,16 @@ public class SecondaryCataclysmItem extends GunGeoItem {
         var stackCap = stack.getCapability(Capabilities.EnergyStorage.ITEM);
         var hasEnoughEnergy = stackCap != null && stackCap.getEnergyStored() >= 3000;
 
-        boolean isChargedFire = zoom && hasEnoughEnergy;
-
-        if (isChargedFire) {
-            data.setTempModifications(rawData -> {
-                rawData.damage *= 1.25F;
-                rawData.velocity *= 4;
-                return rawData;
-            });
-        }
+        boolean isChargedFire = hasEnoughEnergy;
+//                zoom && hasEnoughEnergy;
+//
+//        if (isChargedFire) {
+//            data.setTempModifications(rawData -> {
+//                rawData.damage *= 1.25F;
+//                rawData.velocity *= 4;
+//                return rawData;
+//            });
+//        }
 
         if (!super.shootBullet(parameters)) return false;
 
@@ -147,7 +159,7 @@ public class SecondaryCataclysmItem extends GunGeoItem {
     public void playFireSounds(GunData data, Entity shooter, boolean zoom) {
         var cap = data.stack.getCapability(Capabilities.EnergyStorage.ITEM);
 
-        if (cap != null && cap.getEnergyStored() > 3000 && zoom) {
+        if (cap != null && cap.getEnergyStored() > 3000) {
             float soundRadius = data.get(GunProp.SOUND_RADIUS).floatValue();
 
             shooter.playSound(ModSounds.SECONDARY_CATACLYSM_FIRE_3P_CHARGE.get(), soundRadius * 0.4f, 1f);
