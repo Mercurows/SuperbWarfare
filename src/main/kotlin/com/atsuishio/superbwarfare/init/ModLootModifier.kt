@@ -22,7 +22,7 @@ import thedarkcolour.kotlinforforge.neoforge.forge.MOD_BUS
 import java.util.function.Supplier
 import javax.annotation.ParametersAreNonnullByDefault
 
-@EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Mod.MODID)
 object ModLootModifier {
     @JvmStatic
     val LOOT_MODIFIERS: DeferredRegister<MapCodec<out IGlobalLootModifier>> =

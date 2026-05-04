@@ -159,7 +159,7 @@ open class MilitaryShovelItem :
 
     override fun getAnimatableInstanceCache() = this.cache
 
-    @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
+    @EventBusSubscriber
     companion object {
         @SubscribeEvent
         fun registerRenderer(event: RegisterClientExtensionsEvent) {

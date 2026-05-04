@@ -31,7 +31,7 @@ class ResourceOnceLogger {
         }
     }
 
-    @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = Mod.MODID)
     companion object {
         private val INSTANCE = ReloadListener()
         private val LOGGERS = ArrayList<ResourceOnceLogger?>()

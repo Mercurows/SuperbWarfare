@@ -21,7 +21,7 @@ import software.bernie.geckolib.util.GeckoLibUtil
 open class Ptkm1rItem : AbstractDeployerItem(Properties().rarity(Rarity.RARE).stacksTo(2)), GeoItem {
     private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
 
-    @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
+    @EventBusSubscriber
     companion object {
         @SubscribeEvent
         fun registerRenderer(event: RegisterClientExtensionsEvent) {

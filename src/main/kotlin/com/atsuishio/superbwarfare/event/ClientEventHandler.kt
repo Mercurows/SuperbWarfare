@@ -62,7 +62,7 @@ import java.util.*
 import kotlin.experimental.or
 import kotlin.math.*
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, value = [Dist.CLIENT])
+@EventBusSubscriber(Dist.CLIENT)
 object ClientEventHandler {
     @JvmField
     var zoomTime: Double = 0.0

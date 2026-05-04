@@ -16,7 +16,7 @@ import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.event.AddReloadListenerEvent
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber
 object WreckageLootDataManager : SimpleJsonResourceReloadListener(Gson(), "sbw/loot") {
     private val data: MutableMap<ResourceLocation, WreckageLootData> = mutableMapOf()
 

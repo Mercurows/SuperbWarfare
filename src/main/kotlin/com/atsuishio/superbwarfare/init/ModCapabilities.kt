@@ -14,7 +14,7 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent
 import net.neoforged.neoforge.items.wrapper.InvWrapper
 import net.neoforged.neoforge.items.wrapper.SidedInvWrapper
 
-@EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Mod.MODID)
 object ModCapabilities {
     @SubscribeEvent
     fun registerCapabilities(event: RegisterCapabilitiesEvent) {

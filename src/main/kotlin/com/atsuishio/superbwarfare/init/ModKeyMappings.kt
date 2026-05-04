@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.init
 
-import com.atsuishio.superbwarfare.Mod
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.KeyMapping
 import net.neoforged.api.distmarker.Dist
@@ -11,7 +10,7 @@ import net.neoforged.neoforge.client.settings.KeyConflictContext
 import net.neoforged.neoforge.client.settings.KeyModifier
 import org.lwjgl.glfw.GLFW
 
-@EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD, value = [Dist.CLIENT])
+@EventBusSubscriber(Dist.CLIENT)
 object ModKeyMappings {
     const val CATEGORY = "key.categories.superbwarfare"
     private val KEYS = mutableListOf<KeyMapping>()

@@ -26,7 +26,7 @@ class UsChestIotvItem : ArmorItem(
     Type.CHESTPLATE,
     Properties().durability(Type.CHESTPLATE.getDurability(50))
 ) {
-    @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber
     companion object {
         val TEXTURE = loc("textures/bedrock/armor/us_chest_iotv.png")
 

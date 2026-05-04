@@ -37,12 +37,10 @@ import software.bernie.geckolib.animation.AnimatableManager.ControllerRegistrar
 import software.bernie.geckolib.animation.AnimationController
 import software.bernie.geckolib.animation.PlayState
 import software.bernie.geckolib.util.GeckoLibUtil
-import javax.annotation.ParametersAreNonnullByDefault
 
 class ContainerBlockItem : BlockItem(ModBlocks.CONTAINER.get(), Properties().stacksTo(1).fireResistant()), GeoItem {
     private val cache = GeckoLibUtil.createInstanceCache(this)
 
-    @ParametersAreNonnullByDefault
     override fun canBeHurtBy(stack: ItemStack, source: DamageSource) = super.canBeHurtBy(stack, source)
             && !source.`is`(DamageTypeTags.IS_EXPLOSION)
             && !source.`is`(DamageTypes.CACTUS)
@@ -97,7 +95,7 @@ class ContainerBlockItem : BlockItem(ModBlocks.CONTAINER.get(), Properties().sta
 
     override fun getAnimatableInstanceCache(): AnimatableInstanceCache = this.cache
 
-    @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = Mod.MODID)
     companion object {
         @SubscribeEvent(priority = EventPriority.HIGH)
         fun registerContainers(event: RegisterContainersEvent) {

@@ -65,7 +65,7 @@ class ParachuteRenderer : ICurioRenderer {
         matrixStack.popPose()
     }
 
-    @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, value = [Dist.CLIENT])
+    @EventBusSubscriber(Dist.CLIENT)
     companion object {
         private var parachuteModel: ParachuteModel? = null
         private val TEXTURE = loc("textures/curio/parachute.png")

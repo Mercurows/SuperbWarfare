@@ -10,7 +10,7 @@ import net.neoforged.neoforge.registries.DeferredHolder
 import net.neoforged.neoforge.registries.DeferredRegister
 import java.util.function.Supplier
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber
 object ModAttributes {
     val ATTRIBUTES: DeferredRegister<Attribute> =
         DeferredRegister.create(BuiltInRegistries.ATTRIBUTE, com.atsuishio.superbwarfare.Mod.MODID)

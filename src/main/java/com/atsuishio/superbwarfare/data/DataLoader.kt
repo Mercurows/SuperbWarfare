@@ -170,7 +170,7 @@ object DataLoader {
         }
     }
 
-    @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = Mod.MODID)
     internal object ClientReloadListener {
         @SubscribeEvent
         fun addResourceReloadListener(event: RegisterClientReloadListenersEvent) {

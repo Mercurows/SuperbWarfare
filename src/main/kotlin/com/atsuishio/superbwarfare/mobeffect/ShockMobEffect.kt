@@ -25,7 +25,7 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent
 import net.neoforged.neoforge.event.tick.EntityTickEvent
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber
 object ShockMobEffect : MobEffect(MobEffectCategory.HARMFUL, -256) {
     // 为什么这里还是 Target
     const val TAG_ATTACKER = "TargetShockAttacker"

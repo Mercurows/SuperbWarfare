@@ -11,7 +11,7 @@ import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.client.event.ClientTickEvent
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, value = [Dist.CLIENT])
+@EventBusSubscriber(Dist.CLIENT)
 object FuMO25ScreenHelper {
     const val TOLERANCE_DISTANCE_SQR = 256
 

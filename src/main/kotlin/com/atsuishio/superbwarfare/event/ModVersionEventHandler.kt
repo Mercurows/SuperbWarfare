@@ -6,7 +6,7 @@ import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.event.ModMismatchEvent
 import org.apache.maven.artifact.versioning.ArtifactVersion
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, value = [Dist.CLIENT])
+@EventBusSubscriber(Dist.CLIENT)
 object ModVersionEventHandler {
     @JvmField
     var previousVersion: ArtifactVersion? = null

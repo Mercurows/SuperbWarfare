@@ -71,7 +71,7 @@ class LuckyContainerBlockItem :
         return this.cache
     }
 
-    @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = Mod.MODID)
     companion object {
         @JvmField
         val LUCKY_CONTAINERS: MutableList<() -> ItemStack> = mutableListOf(

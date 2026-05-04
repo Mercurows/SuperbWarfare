@@ -7,7 +7,7 @@ import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent
 
-@EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD, value = [Dist.CLIENT])
+@EventBusSubscriber(modid = Mod.MODID, value = [Dist.CLIENT])
 object ModScreens {
     @SubscribeEvent
     fun clientLoad(event: RegisterMenuScreensEvent) {

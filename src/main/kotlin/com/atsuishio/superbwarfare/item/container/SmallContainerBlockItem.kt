@@ -51,7 +51,7 @@ class SmallContainerBlockItem : BlockItem(ModBlocks.SMALL_CONTAINER.get(), Prope
         return this.cache
     }
 
-    @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = Mod.MODID)
     companion object {
         @JvmField
         val SMALL_CONTAINERS: MutableList<() -> ItemStack> = mutableListOf(

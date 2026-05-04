@@ -21,7 +21,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent
 import net.neoforged.neoforge.client.event.ViewportEvent
 import kotlin.math.abs
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, value = [Dist.CLIENT])
+@EventBusSubscriber(Dist.CLIENT)
 object ClientMouseHandler {
     @JvmField
     var posO: Vec2 = Vec2(0f, 0f)

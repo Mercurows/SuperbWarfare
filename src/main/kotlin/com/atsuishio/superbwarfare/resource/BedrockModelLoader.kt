@@ -19,7 +19,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber
 object BedrockModelLoader {
     private val COMMON_MODELS = mutableListOf<ResourceLocation>()
     private val COMMON_MODELS_AND_ANIMATIONS = hashMapOf<ResourceLocation, ResourceLocation>()

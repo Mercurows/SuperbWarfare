@@ -22,7 +22,7 @@ class BlueprintResearchTableBlockItem : BlockItem(ModBlocks.BLUEPRINT_RESEARCH_T
 
     override fun getAnimatableInstanceCache(): AnimatableInstanceCache = this.cache
 
-    @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
+    @EventBusSubscriber
     companion object {
         @SubscribeEvent
         fun registerRenderer(event: RegisterClientExtensionsEvent) {

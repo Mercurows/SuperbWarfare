@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import java.util.stream.Stream
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber
 object WelcomeProcedure {
     @SubscribeEvent
     fun onFMLCommonSetup(event: FMLCommonSetupEvent?) {

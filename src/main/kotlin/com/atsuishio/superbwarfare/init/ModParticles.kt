@@ -6,7 +6,7 @@ import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, value = [Dist.CLIENT])
+@EventBusSubscriber(Dist.CLIENT)
 object ModParticles {
     @SubscribeEvent
     fun registerParticles(event: RegisterParticleProvidersEvent) {

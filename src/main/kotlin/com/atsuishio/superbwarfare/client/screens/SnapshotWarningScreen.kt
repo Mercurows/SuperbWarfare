@@ -88,7 +88,7 @@ class SnapshotWarningScreen(val lastScreen: Screen) : Screen(
         mc.setScreen(this.lastScreen)
     }
 
-    @EventBusSubscriber(value = [Dist.CLIENT])
+    @EventBusSubscriber(Dist.CLIENT)
     companion object {
         var firstTimeStart = false
 

@@ -29,7 +29,7 @@ import net.neoforged.neoforge.client.event.RegisterItemDecorationsEvent
 import top.theillusivec4.curios.api.client.CuriosRendererRegistry
 import kotlin.math.min
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, value = [Dist.CLIENT])
+@EventBusSubscriber(Dist.CLIENT)
 object ClientRenderHandler {
     // TODO 正确赋值该变量
     @JvmStatic

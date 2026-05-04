@@ -20,7 +20,7 @@ import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent
 import net.neoforged.neoforge.event.tick.EntityTickEvent
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber
 object BurnMobEffect : MobEffect(MobEffectCategory.HARMFUL, -12708330) {
     const val TAG_ATTACKER = "BurnAttacker"
 

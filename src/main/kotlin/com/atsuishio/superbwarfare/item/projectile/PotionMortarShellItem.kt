@@ -69,7 +69,7 @@ class PotionMortarShellItem : MortarShellItem(), DispenserLaunchable {
         }
     }
 
-    @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, value = [Dist.CLIENT])
+    @EventBusSubscriber(Dist.CLIENT)
     companion object {
         @SubscribeEvent
         fun onRegisterColorHandlers(event: RegisterColorHandlersEvent.Item) {

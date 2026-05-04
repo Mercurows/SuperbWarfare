@@ -35,7 +35,6 @@ import software.bernie.geckolib.animation.AnimationState
 import software.bernie.geckolib.animation.PlayState
 import software.bernie.geckolib.animation.RawAnimation
 import software.bernie.geckolib.util.GeckoLibUtil
-import javax.annotation.ParametersAreNonnullByDefault
 
 // 不要改这个东西，会肘击 YSM
 open class LungeMine : Item(Properties().stacksTo(4)), GeoItem {
@@ -79,17 +78,14 @@ open class LungeMine : Item(Properties().stacksTo(4)), GeoItem {
         return this.cache
     }
 
-    @ParametersAreNonnullByDefault
     override fun onEntitySwing(stack: ItemStack, entity: LivingEntity, hand: InteractionHand): Boolean {
         return false
     }
 
-    @ParametersAreNonnullByDefault
     override fun shouldCauseReequipAnimation(oldStack: ItemStack, newStack: ItemStack, slotChanged: Boolean): Boolean {
         return false
     }
 
-    @ParametersAreNonnullByDefault
     override fun use(worldIn: Level, playerIn: Player, handIn: InteractionHand): InteractionResultHolder<ItemStack?> {
         val stack = playerIn.getItemInHand(handIn)
         if (playerIn is ServerPlayer) {
@@ -121,7 +117,7 @@ open class LungeMine : Item(Properties().stacksTo(4)), GeoItem {
         return false
     }
 
-    @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = Mod.MODID)
     companion object {
         var transformType: ItemDisplayContext? = null
 
@@ -134,7 +130,6 @@ open class LungeMine : Item(Properties().stacksTo(4)), GeoItem {
                     return renderer
                 }
 
-                @ParametersAreNonnullByDefault
                 override fun getArmPose(
                     entityLiving: LivingEntity,
                     hand: InteractionHand,

@@ -17,7 +17,6 @@ import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.event.entity.player.PlayerEvent
 import org.joml.Math
-import javax.annotation.ParametersAreNonnullByDefault
 
 open class HammerItem(tier: Tier, attackDamage: Int, attackSpeed: Float, properties: Properties) :
     SwordItem(tier, properties.attributes(createAttributes(tier, attackDamage, attackSpeed))) {
@@ -67,7 +66,6 @@ open class HammerItem(tier: Tier, attackDamage: Int, attackSpeed: Float, propert
         return true
     }
 
-    @ParametersAreNonnullByDefault
     override fun hurtEnemy(stack: ItemStack, target: LivingEntity, attacker: LivingEntity): Boolean {
         attacker.level().playSound(
             null,
@@ -80,7 +78,7 @@ open class HammerItem(tier: Tier, attackDamage: Int, attackSpeed: Float, propert
         return super.hurtEnemy(stack, target, attacker)
     }
 
-    @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
+    @EventBusSubscriber
     companion object {
         @SubscribeEvent
         fun onItemCraftedByHammer(event: PlayerEvent.ItemCraftedEvent) {

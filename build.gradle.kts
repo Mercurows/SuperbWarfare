@@ -225,6 +225,10 @@ dependencies {
     // Cloth Config相关
     implementation("me.shedaniel.cloth:cloth-config-neoforge:15.0.140")
 
+    // Kubejs
+    implementation("curse.maven:kubejs-238086:7278501")
+    implementation("curse.maven:rhino-416294:7104526")
+
 //    implementation("curse.maven:cupboard-326652:6078150")
 //    implementation("curse.maven:connectivity-470193:6229173")
 

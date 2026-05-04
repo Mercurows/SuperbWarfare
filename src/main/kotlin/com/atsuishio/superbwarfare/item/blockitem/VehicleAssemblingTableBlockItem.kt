@@ -51,7 +51,7 @@ class VehicleAssemblingTableBlockItem : BlockItem(ModBlocks.VEHICLE_ASSEMBLING_T
         return this.cache
     }
 
-    @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = Mod.MODID)
     companion object {
         @SubscribeEvent
         private fun registerItemExtensions(event: RegisterClientExtensionsEvent) {

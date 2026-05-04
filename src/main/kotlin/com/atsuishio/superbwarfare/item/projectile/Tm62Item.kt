@@ -26,7 +26,7 @@ import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsE
 import org.joml.Math
 
 open class Tm62Item : Item(Properties().stacksTo(8)), DispenserLaunchable {
-    @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = Mod.MODID)
     companion object {
         @SubscribeEvent
         private fun registerItemExtensions(event: RegisterClientExtensionsEvent) {

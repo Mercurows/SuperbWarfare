@@ -38,7 +38,7 @@ import net.neoforged.neoforge.client.settings.KeyConflictContext
 import org.lwjgl.glfw.GLFW
 import top.theillusivec4.curios.api.CuriosApi
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, value = [Dist.CLIENT])
+@EventBusSubscriber(Dist.CLIENT)
 object ClickEventHandler {
     @JvmField
     var switchZoom: Boolean = false
@@ -256,7 +256,7 @@ object ClickEventHandler {
             if (key == ModKeyMappings.ACTIVE_THERMAL_IMAGING.key.value) {
                 if (vehicle is VehicleEntity) {
                     val index = vehicle.getSeatIndex(player)
-                    val seat = vehicle.computed().seats()[index] ?: return
+                    val seat = vehicle.computed().seats().getOrNull(index) ?: return
                     if (seat.hasThermalImaging) {
                         ClientEventHandler.activeThermalImaging = !ClientEventHandler.activeThermalImaging
                         if (ClientEventHandler.activeThermalImaging) {
@@ -482,7 +482,7 @@ object ClickEventHandler {
             if (!(stack.`is`(ModItems.BOCEK.get()))) {
                 if (!data.meleeOnly()) {
                     // 普通枪（？）
-                    if (stack.`is`(ModItems.QL_1031.get()) && data.selectedFireModeInfo().name.equals("Hold")
+                    if (stack.`is`(ModItems.QL_1031.get()) && data.selectedFireModeInfo().name == "Hold"
                         && item.canShoot(data, player)
                     ) {
                         player.playSound(ModSounds.QL_1031_CHARGE.get(), 1f, 1f)
@@ -498,7 +498,7 @@ object ClickEventHandler {
                 // 波塞克特殊处理
                 ClientEventHandler.bowPower = 0.0
                 ClientEventHandler.holdingFireKey = true
-                player.setSprinting(false)
+                player.isSprinting = false
                 if (data.hasEnoughAmmoToShoot(player)) {
                     return
                 }
@@ -521,19 +521,19 @@ object ClickEventHandler {
                     if (fireMode == FireMode.BURST) {
                         if (ClientEventHandler.burstFireAmount == 0) {
                             ClientEventHandler.noSprintTicks = 8f
-                            player.setSprinting(false)
+                            player.isSprinting = false
                             ClientEventHandler.burstFireAmount = data.get(GunProp.BURST_AMOUNT)
                         }
                     } else if (fireMode == FireMode.SEMI) {
                         if (ClientEventHandler.burstFireAmount == 0) {
                             ClientEventHandler.noSprintTicks = 3f
-                            player.setSprinting(false)
+                            player.isSprinting = false
                             ClientEventHandler.burstFireAmount = 1
                         }
                     }
 
                     ClientEventHandler.holdingFireKey = true
-                    player.setSprinting(false)
+                    player.isSprinting = false
                 }
             }
         }

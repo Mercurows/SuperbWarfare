@@ -15,7 +15,7 @@ import net.neoforged.neoforge.common.brewing.BrewingRecipe
 import net.neoforged.neoforge.common.brewing.IBrewingRecipe
 import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber
 object ModPotionRecipes {
     @SubscribeEvent
     fun register(event: RegisterBrewingRecipesEvent) {

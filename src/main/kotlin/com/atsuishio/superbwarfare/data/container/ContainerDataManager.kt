@@ -12,7 +12,7 @@ import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.event.AddReloadListenerEvent
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber
 object ContainerDataManager : SimpleJsonResourceReloadListener(Gson(), "sbw/containers") {
     private val containerData: MutableMap<ResourceLocation, MutableList<Pair<String, Int>>> = hashMapOf()
 

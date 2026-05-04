@@ -55,7 +55,7 @@ abstract class EnergyMenu(pMenuType: MenuType<*>?, id: Int, containerData: Conta
         this.containerEnergyDataSlots[id].set(data.toLong())
     }
 
-    @EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME)
+    @EventBusSubscriber
     companion object {
         @SubscribeEvent
         fun onContainerOpened(event: Open) {

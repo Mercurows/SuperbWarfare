@@ -7,7 +7,7 @@ import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.client.event.ClientTickEvent
 import java.util.*
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.GAME, value = [Dist.CLIENT])
+@EventBusSubscriber(Dist.CLIENT)
 object KillMessageHandler {
     val QUEUE: Queue<LivingKillRecord> = ArrayDeque()
 

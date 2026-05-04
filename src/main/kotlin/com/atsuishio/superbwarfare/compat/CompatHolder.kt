@@ -9,7 +9,7 @@ import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent
 import net.neoforged.fml.loading.FMLEnvironment
 
-@EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Mod.MODID)
 object CompatHolder {
     const val DMV: String = "dreamaticvoyage"
     const val VRC: String = "virtuarealcraft"

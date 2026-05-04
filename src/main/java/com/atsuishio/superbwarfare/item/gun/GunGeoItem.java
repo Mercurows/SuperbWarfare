@@ -31,7 +31,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
-@EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Mod.MODID)
 public abstract class GunGeoItem extends GunItem implements GeoItem, CustomRendererItem {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
