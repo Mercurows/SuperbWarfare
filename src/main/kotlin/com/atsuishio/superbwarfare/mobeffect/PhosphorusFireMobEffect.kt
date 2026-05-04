@@ -5,10 +5,14 @@ import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.network.message.receive.ClientPhosphorusFireMessage
 import com.atsuishio.superbwarfare.tools.forceHurt
 import com.atsuishio.superbwarfare.tools.sendPacketToTrackingThis
+import net.minecraft.core.registries.Registries
 import net.minecraft.world.effect.MobEffect
 import net.minecraft.world.effect.MobEffectCategory
 import net.minecraft.world.effect.MobEffectInstance
+import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.item.enchantment.EnchantmentHelper
+import net.minecraft.world.item.enchantment.Enchantments
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.common.EffectCure
@@ -31,7 +35,22 @@ object PhosphorusFireMobEffect : MobEffect(MobEffectCategory.HARMFUL, 0xB1C1F2) 
         val fireCount = entity.persistentData.getInt(TAG_PHOSPHORUS_FIRE_COUNT)
         val fireLevel = fireCount / 4
 
-        val damage = 1f + 0.5f * amplifier + ((amplifier + 1) * 5f).coerceAtMost(fireLevel * (amplifier * 0.6f + 1.2f))
+        var damage = 1f + 0.5f * amplifier + ((amplifier + 1) * 5f).coerceAtMost(fireLevel * (amplifier * 0.6f + 1.2f))
+        if (entity.isInWater) {
+            damage /= 1.5f
+        }
+        if (entity.hasEffect(MobEffects.FIRE_RESISTANCE)) {
+            damage /= 2f
+        }
+
+        val enchantment = entity.level().registryAccess()
+            .lookupOrThrow(Registries.ENCHANTMENT)
+            .get(Enchantments.FIRE_PROTECTION)
+            .orElse(null)
+        if (enchantment != null) {
+            val fireResLevel = EnchantmentHelper.getEnchantmentLevel(enchantment, entity)
+            damage /= 1 + fireResLevel * 0.1f
+        }
 
         entity.forceHurt(
             ModDamageTypes.causePhosphorusFireDamage(entity.level().registryAccess(), null, attacker),
