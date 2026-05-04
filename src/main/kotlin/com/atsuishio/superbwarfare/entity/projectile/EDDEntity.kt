@@ -35,7 +35,7 @@ import net.minecraftforge.items.ItemHandlerHelper
 import java.util.*
 
 open class EDDEntity : HangingEntity, OwnableEntity {
-    // 0 - Left Top; 1 - Left Bottom; 2 - Right Top; 3 - Right Bottom
+    // 0 - Left Top; 1 - Left Bottom; 2 - Right Bottom; 3 - Right Top
     var corner: Int
 
     @JvmOverloads
@@ -195,24 +195,28 @@ open class EDDEntity : HangingEntity, OwnableEntity {
         if (corner !in 0..3) return Vec3.ZERO
 
         val left = (corner == 0 || corner == 1)   // 左
-        val top = (corner == 0 || corner == 2)   // 上
+        val top = (corner == 0 || corner == 3)   // 上
+
+        val signY = if (top) 1.0 else -1.0
 
         return when (direction) {
-            Direction.NORTH, Direction.SOUTH -> {
+            Direction.NORTH -> {
+                val signX = if (left) 1.0 else -1.0
+                Vec3(signX * width, signY * height, 0.0)
+            }
+
+            Direction.SOUTH -> {
                 val signX = if (left) -1.0 else 1.0
-                val signY = if (top) 1.0 else -1.0
                 Vec3(signX * width, signY * height, 0.0)
             }
 
             Direction.WEST -> {
                 val signZ = if (left) -1.0 else 1.0
-                val signY = if (top) 1.0 else -1.0
                 Vec3(0.0, signY * height, signZ * width)
             }
 
             Direction.EAST -> {
                 val signZ = if (left) 1.0 else -1.0
-                val signY = if (top) 1.0 else -1.0
                 Vec3(0.0, signY * height, signZ * width)
             }
 
@@ -272,7 +276,8 @@ open class EDDEntity : HangingEntity, OwnableEntity {
 
     fun getFacingDirection(): Direction {
         return when (this.direction) {
-            Direction.NORTH, Direction.SOUTH -> if (this.isFacingLeft()) Direction.WEST else Direction.EAST
+            Direction.NORTH -> if (this.isFacingLeft()) Direction.EAST else Direction.WEST
+            Direction.SOUTH -> if (this.isFacingLeft()) Direction.WEST else Direction.EAST
             Direction.EAST -> if (this.isFacingLeft()) Direction.SOUTH else Direction.NORTH
             else -> if (this.isFacingLeft()) Direction.NORTH else Direction.SOUTH
         }
