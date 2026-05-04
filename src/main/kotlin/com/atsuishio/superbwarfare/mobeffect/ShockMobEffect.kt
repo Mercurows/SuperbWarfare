@@ -115,7 +115,7 @@ object ShockMobEffect : MobEffect(MobEffectCategory.HARMFUL, -256) {
         val living = event.entity
         val instance = event.effectInstance ?: return
 
-        if (instance.effect.value() != ModMobEffects.SHOCK.value()) {
+        if (instance.effect.value() == ModMobEffects.SHOCK.value()) {
             living.persistentData.remove(TAG_ATTACKER)
         }
     }
@@ -125,7 +125,7 @@ object ShockMobEffect : MobEffect(MobEffectCategory.HARMFUL, -256) {
         val living = event.entity
         val instance = event.effectInstance ?: return
 
-        if (instance.effect.value() != ModMobEffects.SHOCK.value()) {
+        if (instance.effect.value() == ModMobEffects.SHOCK.value()) {
             living.persistentData.remove(TAG_ATTACKER)
         }
     }

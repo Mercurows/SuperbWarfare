@@ -79,7 +79,7 @@ object BurnMobEffect : MobEffect(MobEffectCategory.HARMFUL, -12708330) {
         val living = event.entity
         val instance = event.effectInstance ?: return
 
-        if (instance.effect.value() != ModMobEffects.BURN.value()) {
+        if (instance.effect.value() == ModMobEffects.BURN.value()) {
             living.persistentData.remove(TAG_ATTACKER)
         }
     }
@@ -89,7 +89,7 @@ object BurnMobEffect : MobEffect(MobEffectCategory.HARMFUL, -12708330) {
         val living = event.entity
         val instance = event.effectInstance ?: return
 
-        if (instance.effect.value() != ModMobEffects.BURN.value()) {
+        if (instance.effect.value() == ModMobEffects.BURN.value()) {
             living.persistentData.remove(TAG_ATTACKER)
         }
     }

@@ -93,7 +93,7 @@ object PhosphorusFireMobEffect : MobEffect(MobEffectCategory.HARMFUL, 0xB1C1F2) 
         val living = event.entity
         val instance = event.effectInstance ?: return
 
-        if (instance.effect.value() != ModMobEffects.PHOSPHORUS_FIRE.value()) {
+        if (instance.effect.value() == ModMobEffects.PHOSPHORUS_FIRE.value()) {
             living.persistentData.remove(TAG_PHOSPHORUS_FIRE_ATTACKER)
             living.persistentData.remove(TAG_PHOSPHORUS_FIRE_COUNT)
 
@@ -106,7 +106,7 @@ object PhosphorusFireMobEffect : MobEffect(MobEffectCategory.HARMFUL, 0xB1C1F2) 
         val living = event.entity
         val instance = event.effectInstance ?: return
 
-        if (instance.effect.value() != ModMobEffects.PHOSPHORUS_FIRE.value()) {
+        if (instance.effect.value() == ModMobEffects.PHOSPHORUS_FIRE.value()) {
             living.persistentData.remove(TAG_PHOSPHORUS_FIRE_ATTACKER)
             living.persistentData.remove(TAG_PHOSPHORUS_FIRE_COUNT)
 

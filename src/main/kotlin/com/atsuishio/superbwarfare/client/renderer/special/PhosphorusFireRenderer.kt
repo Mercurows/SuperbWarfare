@@ -37,39 +37,37 @@ object PhosphorusFireRenderer {
 
         var hwRatio = entity.bbHeight / size
         var xOffset = 0.5f
-        var yOffset = (entity.y - entity.boundingBox.minY).toFloat()
+        var yOffset = 0.0f
         var zOffset = 0.0f
 
         val camera = mc.entityRenderDispatcher.cameraOrientation()
         stack.mulPose(Quaternionf(0f, camera.y, 0f, camera.w))
-
-        stack.translate(0.0f, 0.0f, hwRatio * 0.02f)
+        stack.translate(0.0f, 0.0f, 0.3f - (hwRatio.toInt()).toFloat() * 0.02f)
 
         var i = 0
         val vertexConsumer = event.multiBufferSource.getBuffer(Sheets.cutoutBlockSheet())
 
         val pose = stack.last()
         while (hwRatio > 0.0f) {
-            val atlasSprite = if (i % 2 == 0) sprite1 else sprite2
-            var u0 = atlasSprite.u0
-            val v0 = atlasSprite.v0
-            var u1 = atlasSprite.u1
-            val v1 = atlasSprite.v1
+            val sprite = if (i % 2 == 0) sprite1 else sprite2
+            var u0 = sprite.u0
+            val v0 = sprite.v0
+            var u1 = sprite.u1
+            val v1 = sprite.v1
             if (i / 2 % 2 == 0) {
                 val temp = u1
                 u1 = u0
                 u0 = temp
             }
 
-            fireVertex(pose, vertexConsumer, xOffset - 0.0f, 0.0f - yOffset, zOffset, u1, v1)
-            fireVertex(pose, vertexConsumer, -xOffset - 0.0f, 0.0f - yOffset, zOffset, u0, v1)
-            fireVertex(pose, vertexConsumer, -xOffset - 0.0f, 1.4f - yOffset, zOffset, u0, v0)
-            fireVertex(pose, vertexConsumer, xOffset - 0.0f, 1.4f - yOffset, zOffset, u1, v0)
-
+            fireVertex(pose, vertexConsumer, -xOffset - 0.0f, 0.0f - yOffset, zOffset, u1, v1)
+            fireVertex(pose, vertexConsumer, xOffset - 0.0f, 0.0f - yOffset, zOffset, u0, v1)
+            fireVertex(pose, vertexConsumer, xOffset - 0.0f, 1.4f - yOffset, zOffset, u0, v0)
+            fireVertex(pose, vertexConsumer, -xOffset - 0.0f, 1.4f - yOffset, zOffset, u1, v0)
             hwRatio -= 0.45f
-            yOffset -= 0.45f
             xOffset *= 0.9f
-            zOffset += 0.03f
+            yOffset -= 0.45f
+            zOffset -= 0.03f
             ++i
         }
 
@@ -85,7 +83,7 @@ object PhosphorusFireRenderer {
         pTexU: Float,
         pTexV: Float
     ) {
-        pBuffer.addVertex(pMatrixEntry.pose(), pX, pY, pZ).setColor(150, 150, 255, 255).setUv(pTexU, pTexV)
+        pBuffer.addVertex(pMatrixEntry, pX, pY, pZ).setColor(150, 150, 255, 255).setUv(pTexU, pTexV)
             .setUv1(0, 10).setLight(240).setNormal(pMatrixEntry, 0.0f, 1.0f, 0.0f)
     }
 }
