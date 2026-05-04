@@ -109,6 +109,15 @@ public class SecondaryCataclysmItem extends GunGeoItem {
         data.add(meleeController);
     }
 
+    // TODO 复活临时修改，而不是现在这套
+    @Override
+    public double getCustomDamage(GunData data) {
+        var stack = data.stack;
+        return stack.getCapability(ForgeCapabilities.ENERGY)
+                .map(cap -> cap.getEnergyStored() > 0 ? 2.5 * data.getDefault().damage : 0)
+                .orElse(0D);
+    }
+
     @Override
     public boolean shootBullet(@NotNull ShootParameters parameters) {
         var data = parameters.data;
@@ -123,15 +132,16 @@ public class SecondaryCataclysmItem extends GunGeoItem {
                 .map(storage -> storage.getEnergyStored() >= 3000)
                 .orElse(false);
 
-        boolean isChargedFire = zoom && hasEnoughEnergy;
+        boolean isChargedFire = hasEnoughEnergy;
+//                zoom && hasEnoughEnergy;
 
-        if (isChargedFire) {
-            data.setTempModifications(rawData -> {
-                rawData.damage *= 1.25F;
-                rawData.velocity *= 4;
-                return rawData;
-            });
-        }
+//        if (isChargedFire) {
+//            data.setTempModifications(rawData -> {
+//                rawData.damage *= 1.25F;
+//                rawData.velocity *= 4;
+//                return rawData;
+//            });
+//        }
 
         if (!super.shootBullet(parameters)) return false;
 
