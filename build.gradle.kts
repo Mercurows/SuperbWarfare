@@ -198,6 +198,11 @@ dependencies {
     // 车万女仆
     implementation(fg.deobf("curse.maven:touhou-little-maid-355044:7510714"))
 
+    // KubeJS
+    implementation(fg.deobf("curse.maven:kubejs-238086:5853326"))
+    implementation(fg.deobf("curse.maven:architectury-api-419699:5137938"))
+    implementation(fg.deobf("curse.maven:rhino-416294:6186971"))
+
     // 测试用mod
     // 这俩是仅客户端mod
     // implementation fg.deobf("curse.maven:oculus-581495:6020952")
@@ -211,6 +216,11 @@ dependencies {
     // better combat相关
     implementation(fg.deobf("curse.maven:better-combat-by-daedelus-639842:5625757"))
     implementation(fg.deobf("curse.maven:playeranimator-658587:4587214"))
+
+//    implementation(fg.deobf("curse.maven:lionfish-api-1001614:7923140"))
+//    implementation(fg.deobf("curse.maven:lendercataclysm-551586:7934870"))
+//    implementation(fg.deobf("curse.maven:citadel-331936:7476570"))
+//    implementation(fg.deobf("curse.maven:alexs-caves-924854:5848216"))
 
 //    implementation("curse.maven:spark-361579:4587309")
 }
