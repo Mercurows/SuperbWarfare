@@ -77,6 +77,13 @@ object DisplayConfig {
     }
 
     @JvmField
+    val IFF_HUD = buildClientConfig {
+        comment("Set true to display IFF HUD")
+        comment("是否开启敌我识别装置位置HUD")
+        define("iff_hud", true)
+    }
+
+    @JvmField
     val FLOAT_CROSS_HAIR = buildClientConfig {
         comment("Set true to enable float cross hair")
         comment("是否开启浮动准星")

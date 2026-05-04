@@ -76,7 +76,7 @@ object IFFOverlay : CommonOverlay("iff") {
         }
     }
 
-    override fun shouldRender() = super.shouldRender() && DisplayConfig.VEHICLE_INFO.get()
+    override fun shouldRender() = super.shouldRender() && DisplayConfig.IFF_HUD.get()
 
     override fun RenderContext.render() {
         val level = player.level()
