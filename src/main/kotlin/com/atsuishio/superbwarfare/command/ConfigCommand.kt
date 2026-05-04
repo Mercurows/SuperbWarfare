@@ -16,6 +16,7 @@ val CONFIG_COMMAND = buildCommand("config") {
 
     booleanConfig(ExplosionConfig::EXPLOSION_DESTROY)
     booleanConfig(ExplosionConfig::EXTRA_EXPLOSION_EFFECT)
+    booleanConfig(ExplosionConfig::FRIENDLY_MINES)
 
     booleanConfig(ProjectileConfig::PROJECTILE_DESTROY_BLOCKS)
     booleanConfig(ProjectileConfig::PROJECTILE_CHUNK_LOADING)

@@ -6,8 +6,10 @@ import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier.Companio
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.tools.CustomExplosion
 import com.atsuishio.superbwarfare.tools.ParticleTool
+import com.atsuishio.superbwarfare.world.saveddata.TDMSavedData.Companion.enabledTDM
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.nbt.CompoundTag
@@ -71,7 +73,7 @@ open class Tm62Entity : Entity, OwnableEntity {
     }
 
     fun isOwnedBy(pEntity: LivingEntity?): Boolean {
-        return pEntity === this.getOwner()
+        return pEntity === this.owner
     }
 
     public override fun addAdditionalSaveData(compound: CompoundTag) {
@@ -188,9 +190,16 @@ open class Tm62Entity : Entity, OwnableEntity {
             val entities = level().getEntities(
                 EntityTypeTest.forClass(Entity::class.java),
                 frontBox
-            ) {
-                it != this && !(it is Player && it.isSpectator) && it !is HangingEntity
-                        && (it.boundingBox.getSize() > 1.5 || (it.boundingBox.getSize() > 0.9 && it.deltaMovement.y() < -0.35))
+            ) { true }.asSequence().filter {
+                it != this && !(it is Player && it.isSpectator)
+                        && it !is HangingEntity
+                        && !it.type.`is`(ModTags.EntityTypes.DECOY)
+                        && (it.boundingBox.size > 1.5 || (it.boundingBox.size > 0.9 && it.deltaMovement.y() < -0.35))
+                        && if (ExplosionConfig.FRIENDLY_MINES.get()) {
+                    if (owner == null) true else owner != it && !owner!!.isAlliedTo(it)
+                } else {
+                    (owner != null && owner != it && !owner!!.isAlliedTo(it)) || it.team == null || enabledTDM(it)
+                }
             }.toList()
 
             for (entity in entities) {
@@ -218,7 +227,7 @@ open class Tm62Entity : Entity, OwnableEntity {
 
     private fun triggerExplode() {
         CustomExplosion.Builder(this)
-            .attacker(this.getOwner())
+            .attacker(this.owner)
             .damage(ExplosionConfig.TM_62_EXPLOSION_DAMAGE.get().toFloat())
             .radius(ExplosionConfig.TM_62_EXPLOSION_RADIUS.get().toFloat())
             .withParticleType(ParticleTool.ParticleType.HUGE)

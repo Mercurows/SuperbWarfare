@@ -81,7 +81,7 @@ open class Ptkm1rEntity : Entity, OwnableEntity {
     }
 
     fun isOwnedBy(pEntity: LivingEntity?): Boolean {
-        return pEntity === this.getOwner()
+        return pEntity === this.owner
     }
 
     public override fun addAdditionalSaveData(compound: CompoundTag) {
@@ -195,19 +195,18 @@ open class Ptkm1rEntity : Entity, OwnableEntity {
     open fun findTarget() {
         val range = 40
         if (target.equals("none") && tickCount % 10 == 0) {
-
             val list = SeekTool.Builder(this)
                 .withinRange(range.toDouble())
                 .build()
             for (entity in list) {
                 val condition =
                     entity.onGround()
-                            && this.getOwner() !== entity && !(entity is Player && (entity.isCreative || entity.isSpectator))
-                            && (this.getOwner() != null
-                            && !SeekTool.IS_FRIENDLY.test(this.getOwner(), entity)
-                            && entity !== this.getOwner()!!.vehicle)
+                            && this.owner !== entity
+                            && !(entity is Player && (entity.isCreative || entity.isSpectator))
                             && !entity.isShiftKeyDown
-                            && ((entity.boundingBox.getSize() > 1.5 || entity is VehicleEntity || entity is SenpaiEntity) && entity.deltaMovement.lengthSqr() > 0.009)
+                            && ((entity.boundingBox.size > 1.5 || entity is VehicleEntity || entity is SenpaiEntity) && entity.deltaMovement.lengthSqr() > 0.009)
+                            && this.owner?.vehicle !== entity
+                            && (!ExplosionConfig.FRIENDLY_MINES.get() || !SeekTool.IS_FRIENDLY.test(this.owner, entity))
                 if (!condition) continue
 
                 target = entity.stringUUID
@@ -251,7 +250,7 @@ open class Ptkm1rEntity : Entity, OwnableEntity {
     private fun shoot(entity: Entity?, distance: Double) {
         val level = this.level()
         if (level is ServerLevel) {
-            val ptkmProjectile = PtkmProjectileEntity(this.getOwner(), level)
+            val ptkmProjectile = PtkmProjectileEntity(this.owner, level)
             ptkmProjectile.setDamage(ExplosionConfig.PTKM_1R_PROJECTILE_HIT_DAMAGE.get().toFloat())
             ptkmProjectile.setExplosionDamage(ExplosionConfig.PTKM_1R_PROJECTILE_EXPLOSION_DAMAGE.get().toFloat())
             ptkmProjectile.setExplosionRadius(ExplosionConfig.PTKM_1R_PROJECTILE_EXPLOSION_RADIUS.get().toFloat())
@@ -293,7 +292,7 @@ open class Ptkm1rEntity : Entity, OwnableEntity {
         CustomExplosion.Builder(this)
             .damage(ExplosionConfig.PTKM_1R_EXPLOSION_DAMAGE.get().toFloat())
             .radius(ExplosionConfig.PTKM_1R_EXPLOSION_RADIUS.get().toFloat())
-            .attacker(this.getOwner())
+            .attacker(this.owner)
             .withParticleType(ParticleTool.ParticleType.HUGE)
             .explode()
 

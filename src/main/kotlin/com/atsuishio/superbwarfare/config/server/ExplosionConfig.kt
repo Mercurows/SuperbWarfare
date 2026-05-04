@@ -28,6 +28,13 @@ object ExplosionConfig {
     }
 
     @JvmField
+    val FRIENDLY_MINES = buildServerConfig {
+        comment("Set true to allow mines to ignore friendly entities")
+        comment("地雷等爆炸物是否会被友方激活")
+        define("friendly_mines", true)
+    }
+
+    @JvmField
     val RGO_GRENADE_EXPLOSION_DAMAGE = buildServerConfig {
         push("RGO Grenade")
 
