@@ -24,6 +24,7 @@ import net.minecraft.server.players.OldUsersConverter
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
+import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
@@ -78,6 +79,11 @@ open class EDDEntity : HangingEntity, OwnableEntity {
             this.setOwnerUUID(owner.getUUID())
         }
         this.setDirection(direction)
+    }
+
+    override fun hurt(source: DamageSource, amount: Float): Boolean {
+        if (source.directEntity is EDDEntity) return false
+        return super.hurt(source, amount)
     }
 
     override fun defineSynchedData(builder: SynchedEntityData.Builder) {
@@ -279,8 +285,9 @@ open class EDDEntity : HangingEntity, OwnableEntity {
         return !this.isRemoved
     }
 
-    private fun triggerExplode() {
+    private fun triggerExplode(pos: Vec3) {
         CustomExplosion.Builder(this)
+            .position(pos)
             .attacker(this.owner)
             .damage(ExplosionConfig.EDD_EXPLOSION_DAMAGE.get().toFloat())
             .radius(ExplosionConfig.EDD_EXPLOSION_RADIUS.get().toFloat())
@@ -313,7 +320,7 @@ open class EDDEntity : HangingEntity, OwnableEntity {
         val aabb = this.boundingBox
             .expandTowards(this.lookAngle.normalize().scale(0.5))
             .expandTowards(facing.step().toVec3().scale(ExplosionConfig.EDD_TRACE_RANGE.get().toDouble()))
-        val flag = this.level().getEntitiesOfClass(
+        val entity = this.level().getEntitiesOfClass(
             Entity::class.java,
             aabb
         ) { true }.asSequence().filter {
@@ -326,11 +333,11 @@ open class EDDEntity : HangingEntity, OwnableEntity {
             } else {
                 (owner != null && owner != it && !owner!!.isAlliedTo(it)) || it.team == null || enabledTDM(it)
             }
-        }.toList().isNotEmpty()
+        }.toList().firstOrNull()
 
-        if (flag) {
-            this.triggerExplode()
-            ParticleTool.spawnMiniExplosionParticles(this.level(), this.position())
+        if (entity != null) {
+            this.triggerExplode(entity.position())
+            ParticleTool.spawnMiniExplosionParticles(this.level(), entity.position())
             this.discard()
         }
     }
