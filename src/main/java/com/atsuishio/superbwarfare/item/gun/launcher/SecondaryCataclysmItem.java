@@ -160,7 +160,7 @@ public class SecondaryCataclysmItem extends GunGeoItem {
     @Override
     public void playFireSounds(GunData data, Entity shooter, boolean zoom) {
         data.stack.getCapability(ForgeCapabilities.ENERGY).ifPresent(cap -> {
-            if (cap.getEnergyStored() > 3000 && zoom) {
+            if (cap.getEnergyStored() > 3000) {
                 float soundRadius = data.get(GunProp.SOUND_RADIUS).floatValue();
 
                 shooter.playSound(ModSounds.SECONDARY_CATACLYSM_FIRE_3P_CHARGE.get(), soundRadius * 0.4f, 1f);
