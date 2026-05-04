@@ -903,7 +903,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
 
         if (!this.mobEffects.isEmpty() && entity is LivingEntity) {
             for (instance in this.mobEffects) {
-                entity.addEffect(instance, this.shooter)
+                entity.addEffect(MobEffectInstance(instance), this.shooter)
             }
         }
 

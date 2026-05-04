@@ -2424,7 +2424,7 @@ object ClientEventHandler {
         val player = entity as? Player ?: return
         if (player.isSpectator) return
 
-        if (entity.hasEffect(ModMobEffects.SHOCK.get()) && mc.options.cameraType == CameraType.FIRST_PERSON) {
+        if (entity.hasEffect(ModMobEffects.SHOCK) && mc.options.cameraType == CameraType.FIRST_PERSON) {
             val shakeStrength = DisplayConfig.SHOCK_SCREEN_SHAKE.get().toFloat() / 100.0f
             if (shakeStrength <= 0.0f) return
             event.yaw = mc.gameRenderer.mainCamera.yRot +

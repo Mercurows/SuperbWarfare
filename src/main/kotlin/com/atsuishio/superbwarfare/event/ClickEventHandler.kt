@@ -247,7 +247,7 @@ object ClickEventHandler {
         if (key < 0) return
 
         if (player.isSpectator) return
-        if (player.hasEffect(ModMobEffects.SHOCK.get())) return
+        if (player.hasEffect(ModMobEffects.SHOCK)) return
 
         val stack = player.mainHandItem
         val vehicle = player.vehicle
@@ -439,7 +439,7 @@ object ClickEventHandler {
     fun handleWeaponFirePress(player: Player, stack: ItemStack) {
         ClientEventHandler.isEditing = false
 
-        if (player.hasEffect(ModMobEffects.SHOCK.get())) return
+        if (player.hasEffect(ModMobEffects.SHOCK)) return
 
         val vehicle = player.vehicle
 
