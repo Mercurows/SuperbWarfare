@@ -88,7 +88,6 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
 
         val poseStack = guiGraphics.pose()
         if (!usingDrone) {
-
             val pos = lerpGetEntityBoundingBoxCenter(lookingEntity, partialTick)
                 .add(Vec3(0.0, lookingEntity.bbHeight / 2 + 0.5, 0.0))
 
@@ -118,7 +117,7 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                     if (controller != null) {
                         color = controller.teamColor
 
-                        val team = player.team
+                        val team = controller.team
                         if (team is PlayerTeam) {
                             val info =
                                 "${lookingEntity.displayName.string} ${controller.displayName.string}${if (controller.team == null) "" else " <${team.displayName.string}>"}"
@@ -142,7 +141,7 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                     val player1 = lookingEntity.owner
                     if (player1 is Player) {
                         color = player1.teamColor
-                        val team = player.team
+                        val team = player1.team
                         if (team is PlayerTeam) {
                             val info =
                                 "${lookingEntity.displayName.string} ${player1.displayName.string}${if (player1.team == null) "" else " <${team.displayName.string}>"}"
@@ -166,7 +165,7 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                     val player1 = lookingEntity.getFirstPassenger()
                     if (lookingEntity.maxPassengers > 0 && player1 is Player) {
                         color = player1.teamColor
-                        val team = player.team
+                        val team = player1.team
                         if (team is PlayerTeam) {
                             val info =
                                 "${lookingEntity.displayName.string} ${player1.displayName.string}${if (player1.team == null) "" else " <${team.displayName.string}>"}"
