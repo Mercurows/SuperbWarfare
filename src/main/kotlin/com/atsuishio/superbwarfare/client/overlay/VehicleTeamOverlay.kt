@@ -82,8 +82,8 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
 
         val stack = player.mainHandItem
         val usingDrone = stack.`is`(ModItems.MONITOR.get())
-                && stack.getOrCreateTag().getBoolean("Using")
-                && stack.getOrCreateTag().getBoolean("Linked")
+                && NBTTool.getTag(stack).getBoolean("Using")
+                && NBTTool.getTag(stack).getBoolean("Linked")
 
         val poseStack = guiGraphics.pose()
         if (!usingDrone) {
@@ -116,7 +116,7 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                     if (controller != null) {
                         color = controller.teamColor
 
-                        val team: Team? = player.team
+                        val team: Team? = controller.team
                         if (team is PlayerTeam) {
                             val info =
                                 "${lookingEntity.displayName?.string} ${controller.displayName?.string}${if (controller.team == null) "" else " <${team.displayName.string}>"}"
@@ -147,7 +147,7 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                     val player1 = lookingEntity.owner
                     if (player1 is Player) {
                         color = player1.teamColor
-                        val team: Team? = player.team
+                        val team: Team? = player1.team
                         if (team is PlayerTeam) {
                             val info =
                                 "${lookingEntity.displayName?.string} ${player1.displayName?.string}${if (player1.team == null) "" else " <${team.displayName.string}>"}"
@@ -178,7 +178,7 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
                     val player1 = lookingEntity.getFirstPassenger()
                     if (lookingEntity.maxPassengers > 0 && player1 is Player) {
                         color = player1.teamColor
-                        val team: Team? = player.team
+                        val team: Team? = player1.team
                         if (team is PlayerTeam) {
                             val info =
                                 "${lookingEntity.displayName?.string} ${player1.displayName?.string}${if (player1.team == null) "" else " <${team.displayName.string}>"}"

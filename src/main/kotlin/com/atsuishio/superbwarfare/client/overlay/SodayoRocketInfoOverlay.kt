@@ -13,9 +13,9 @@ import net.neoforged.api.distmarker.OnlyIn
 
 @OnlyIn(Dist.CLIENT)
 object SodayoRocketInfoOverlay : CommonOverlay("sodayo_rocket_info") {
-    private val AP = ItemStack(ModItems.MEDIUM_ROCKET_AP.get())
-    private val HE = ItemStack(ModItems.MEDIUM_ROCKET_HE.get())
-    private val CM = ItemStack(ModItems.MEDIUM_ROCKET_CM.get())
+    private val AP by lazy { ItemStack(ModItems.MEDIUM_ROCKET_AP.get()) }
+    private val HE by lazy { ItemStack(ModItems.MEDIUM_ROCKET_HE.get()) }
+    private val CM by lazy { ItemStack(ModItems.MEDIUM_ROCKET_CM.get()) }
 
     override fun RenderContext.render() {
         val poseStack = guiGraphics.pose()
@@ -42,7 +42,7 @@ object SodayoRocketInfoOverlay : CommonOverlay("sodayo_rocket_info") {
                 val x = point.x.toFloat()
                 val y = point.y.toFloat()
 
-                var component = stack.getHoverName()
+                var component = stack.hoverName
 
                 if (stack.isEmpty) {
                     component = Component.translatable("tips.superbwarfare.barrel_empty")
