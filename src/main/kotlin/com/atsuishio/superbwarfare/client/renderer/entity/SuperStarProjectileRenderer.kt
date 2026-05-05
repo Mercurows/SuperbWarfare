@@ -60,7 +60,7 @@ class SuperStarProjectileRenderer(pContext: EntityRendererProvider.Context) :
             pU: Int,
             pV: Int
         ) {
-            pConsumer.addVertex(pose, pX - 0.5f, pY - 0.25f, 0f).setColor(255, 255, 255, 255)
+            pConsumer.addVertex(pose, pX, 0f, pY).setColor(255, 255, 0, 255)
                 .setUv(pU.toFloat(), pV.toFloat()).setOverlay(OverlayTexture.NO_OVERLAY).setLight(pLightmapUV)
                 .setNormal(pose, 0f, 1f, 0f)
         }
