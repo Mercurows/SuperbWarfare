@@ -19,7 +19,6 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker
 import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.BlockHitResult
-import javax.annotation.ParametersAreNonnullByDefault
 
 class CreativeSuperbItemInterfaceBlock : SuperbItemInterfaceBlock() {
 
@@ -38,26 +37,18 @@ class CreativeSuperbItemInterfaceBlock : SuperbItemInterfaceBlock() {
         return CreativeSuperbItemInterfaceBlockEntity(pPos, pState)
     }
 
-    @ParametersAreNonnullByDefault
-    override fun <T : BlockEntity?> getTicker(
+    override fun <T : BlockEntity> getTicker(
         pLevel: Level,
         pState: BlockState,
-        pBlockEntityType: BlockEntityType<T?>
-    ): BlockEntityTicker<T?>? {
+        pBlockEntityType: BlockEntityType<T>
+    ): BlockEntityTicker<T>? {
         return if (pLevel.isClientSide) null else createTickerHelper(
             pBlockEntityType,
             ModBlockEntities.CREATIVE_SUPERB_ITEM_INTERFACE.get(),
-            BlockEntityTicker { level, pos, state, blockEntity ->
-                CreativeSuperbItemInterfaceBlockEntity.serverTick(
-                    level,
-                    pos,
-                    state,
-                    blockEntity
-                )
-            })
+            CreativeSuperbItemInterfaceBlockEntity::serverTick
+        )
     }
 
-    @ParametersAreNonnullByDefault
     override fun useWithoutItem(
         state: BlockState,
         level: Level,
@@ -68,9 +59,9 @@ class CreativeSuperbItemInterfaceBlock : SuperbItemInterfaceBlock() {
         if (level.isClientSide) {
             return InteractionResult.SUCCESS
         } else {
-            val blockentity = level.getBlockEntity(pos)
-            if (blockentity is CreativeSuperbItemInterfaceBlockEntity) {
-                player.openMenu(blockentity)
+            val blockEntity = level.getBlockEntity(pos)
+            if (blockEntity is CreativeSuperbItemInterfaceBlockEntity) {
+                player.openMenu(blockEntity)
             }
 
             return InteractionResult.CONSUME
@@ -85,9 +76,9 @@ class CreativeSuperbItemInterfaceBlock : SuperbItemInterfaceBlock() {
         pIsMoving: Boolean
     ) {
         if (!pState.`is`(pNewState.block)) {
-            val blockentity = pLevel.getBlockEntity(pPos)
-            if (blockentity is CreativeSuperbItemInterfaceBlockEntity) {
-                Containers.dropContents(pLevel, pPos, blockentity)
+            val blockEntity = pLevel.getBlockEntity(pPos)
+            if (blockEntity is CreativeSuperbItemInterfaceBlockEntity) {
+                Containers.dropContents(pLevel, pPos, blockEntity)
                 pLevel.updateNeighbourForOutputSignal(pPos, this)
             }
 

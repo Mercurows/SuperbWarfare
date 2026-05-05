@@ -10,6 +10,7 @@ import net.minecraft.core.Direction
 import net.minecraft.network.chat.Component
 import net.minecraft.world.Containers
 import net.minecraft.world.InteractionHand
+import net.minecraft.world.InteractionResult
 import net.minecraft.world.ItemInteractionResult
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.AbstractContainerMenu
@@ -33,7 +34,6 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty
 import net.minecraft.world.level.material.MapColor
 import net.minecraft.world.level.pathfinder.PathComputationType
 import net.minecraft.world.phys.BlockHitResult
-import javax.annotation.ParametersAreNonnullByDefault
 
 @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")
 open class SuperbItemInterfaceBlock : BaseEntityBlock(
@@ -52,22 +52,35 @@ open class SuperbItemInterfaceBlock : BaseEntityBlock(
         return SuperbItemInterfaceBlockEntity(ModBlockEntities.SUPERB_ITEM_INTERFACE.get(), pPos, pState)
     }
 
-    override fun <T : BlockEntity?> getTicker(
+    override fun useWithoutItem(
+        state: BlockState,
+        level: Level,
+        pos: BlockPos,
+        player: Player,
+        hitResult: BlockHitResult
+    ): InteractionResult {
+        if (level.isClientSide) {
+            return InteractionResult.SUCCESS
+        } else {
+            val blockEntity = level.getBlockEntity(pos)
+            if (blockEntity is SuperbItemInterfaceBlockEntity) {
+                player.openMenu(blockEntity)
+            }
+
+            return InteractionResult.CONSUME
+        }
+    }
+
+    override fun <T : BlockEntity> getTicker(
         pLevel: Level,
         pState: BlockState,
-        pBlockEntityType: BlockEntityType<T?>
-    ): BlockEntityTicker<T?>? {
-        return if (pLevel.isClientSide) null else createTickerHelper<SuperbItemInterfaceBlockEntity?, T?>(
+        pBlockEntityType: BlockEntityType<T>
+    ): BlockEntityTicker<T>? {
+        return if (pLevel.isClientSide) null else createTickerHelper<SuperbItemInterfaceBlockEntity, T>(
             pBlockEntityType,
-            ModBlockEntities.SUPERB_ITEM_INTERFACE.get()
-        ) { level, pos, state, blockEntity ->
-            SuperbItemInterfaceBlockEntity.serverTick(
-                level,
-                pos,
-                state,
-                blockEntity
-            )
-        }
+            ModBlockEntities.SUPERB_ITEM_INTERFACE.get(),
+            SuperbItemInterfaceBlockEntity::serverTick
+        )
     }
 
     override fun getStateForPlacement(context: BlockPlaceContext): BlockState? {
@@ -155,12 +168,10 @@ open class SuperbItemInterfaceBlock : BaseEntityBlock(
         pBuilder.add(ENABLED).add(FACING)
     }
 
-    @ParametersAreNonnullByDefault
     override fun isPathfindable(state: BlockState, pathComputationType: PathComputationType): Boolean {
         return false
     }
 
-    @ParametersAreNonnullByDefault
     override fun appendHoverText(
         stack: ItemStack,
         context: TooltipContext,
