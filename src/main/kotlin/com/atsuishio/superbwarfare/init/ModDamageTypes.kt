@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.init
 import com.atsuishio.superbwarfare.Mod
 import net.minecraft.core.Holder
 import net.minecraft.core.RegistryAccess
+import net.minecraft.core.component.DataComponents
 import net.minecraft.core.registries.Registries
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceKey
@@ -192,21 +193,36 @@ object ModDamageTypes {
 
         override fun getLocalizedDeathMessage(pLivingEntity: LivingEntity): Component {
             val entity = this.entity ?: this.getDirectEntity()
-            if (entity == null) {
-                return Component.translatable("death.attack.${this.msgId}", pLivingEntity.displayName)
-            } else if (entity is LivingEntity && entity.mainHandItem.hoverName != null) {
-                return Component.translatable(
-                    "death.attack.${this.msgId}.item",
-                    pLivingEntity.displayName,
-                    entity.displayName,
-                    entity.mainHandItem.hoverName
-                )
-            } else {
-                return Component.translatable(
-                    "death.attack.${this.msgId}.entity",
-                    pLivingEntity.displayName,
-                    entity.displayName
-                )
+            when (entity) {
+                null -> {
+                    return Component.translatable("death.attack.${this.msgId}", pLivingEntity.displayName)
+                }
+
+                is LivingEntity -> {
+                    val item = entity.mainHandItem
+                    return if (!item.isEmpty && item.has(DataComponents.CUSTOM_NAME)) {
+                        Component.translatable(
+                            "death.attack.${this.msgId}.item",
+                            pLivingEntity.displayName,
+                            entity.displayName,
+                            item.displayName
+                        )
+                    } else {
+                        Component.translatable(
+                            "death.attack.${this.msgId}.entity",
+                            pLivingEntity.displayName,
+                            entity.displayName
+                        )
+                    }
+                }
+
+                else -> {
+                    return Component.translatable(
+                        "death.attack.${this.msgId}.entity",
+                        pLivingEntity.displayName,
+                        entity.displayName
+                    )
+                }
             }
         }
     }
