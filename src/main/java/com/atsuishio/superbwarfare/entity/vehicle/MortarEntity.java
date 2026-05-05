@@ -342,6 +342,7 @@ public class MortarEntity extends ArtilleryEntity {
 
     @Override
     public void setChanged() {
+        super.setChanged();
         if (!entityData.get(INTELLIGENT)) {
             vehicleShoot(null, "Main");
         }

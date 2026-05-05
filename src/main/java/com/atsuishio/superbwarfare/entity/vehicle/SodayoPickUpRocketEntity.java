@@ -353,6 +353,7 @@ public class SodayoPickUpRocketEntity extends ArtilleryEntity {
 
     @Override
     public void setChanged() {
+        super.setChanged();
         var list = new ArrayList<Integer>();
         for (var item : this.getItems()) {
             if (item.getItem() instanceof MediumRocketItem mediumRocketItem) {

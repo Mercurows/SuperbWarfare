@@ -141,7 +141,8 @@ public class InventoryTool {
             var required = (count % supplyCount == 0) ? count / supplyCount : count / supplyCount + 1;
 
             var countToShrink = Math.min(stack.getCount(), required);
-            stack.shrink(countToShrink);
+            handler.extractItem(i, countToShrink, false);
+//            stack.shrink(countToShrink);
             count -= countToShrink * supplyCount;
             if (count <= 0) break;
         }
@@ -284,7 +285,8 @@ public class InventoryTool {
             if (!predicate.test(stack)) continue;
 
             var countToShrink = Math.min(stack.getCount(), count);
-            stack.shrink(countToShrink);
+//            stack.shrink(countToShrink);
+            handler.extractItem(i, countToShrink, false);
             count -= countToShrink;
             if (count <= 0) break;
         }

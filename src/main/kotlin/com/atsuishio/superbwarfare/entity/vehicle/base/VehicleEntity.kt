@@ -43,6 +43,7 @@ import com.atsuishio.superbwarfare.inventory.menu.*
 import com.atsuishio.superbwarfare.item.container.ContainerBlockItem
 import com.atsuishio.superbwarfare.item.curio.DogTagItem
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
+import com.atsuishio.superbwarfare.network.message.receive.ClientVehicleItemMessage
 import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.OBB.Part.*
@@ -493,7 +494,10 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         this.inventory.setStackInSlot(slot, pStack)
     }
 
-    open fun setChanged() {}
+    open fun setChanged() {
+        val item = itemHandler.resolve().orElse(null) ?: return
+        sendPacketToTrackingThis(ClientVehicleItemMessage(this.id, item.serializeNBT()))
+    }
 
     fun clearContent() {
         this.inventory.clear()
@@ -639,6 +643,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         this.passengers =
             ImmutableList.copyOf(orderedPassengers.stream().filter { obj: Entity? -> Objects.nonNull(obj) }.toList())
         this.gameEvent(GameEvent.ENTITY_MOUNT, pPassenger)
+
+        this.setChanged()
     }
 
     override fun removePassenger(pPassenger: Entity) {

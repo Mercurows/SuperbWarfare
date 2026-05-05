@@ -68,6 +68,7 @@ private fun registerPayloads() {
     playToClient<TDMSyncMessage>()
     playToClient<EntitySyncMessage>()
     playToClient<PlayerInfoSyncMessage>()
+    playToClient<ClientVehicleItemMessage>()
 
     playToServer<AdjustMortarAngleMessage>()
     playToServer<AdjustZoomFovMessage>()
