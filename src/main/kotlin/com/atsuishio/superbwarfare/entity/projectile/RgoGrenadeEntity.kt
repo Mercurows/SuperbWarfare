@@ -87,6 +87,10 @@ open class RgoGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity 
             level, ParticleTypes.SMOKE, this.xo, this.yo, this.zo,
             1, 0.0, 0.0, 0.0, 0.01, true
         )
+
+        if (isInFluidType) {
+            deltaMovement = deltaMovement.scale(0.75)
+        }
     }
 
     override fun getModel() = BedrockModelLoader.RGO_GRENADE_MODEL

@@ -207,6 +207,10 @@ open class M18SmokeGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEn
             }
         }
 
+        if (isInFluidType) {
+            deltaMovement = deltaMovement.scale(0.75)
+        }
+
         if (level is ServerLevel) {
             ParticleTool.sendParticle(
                 level, ParticleTypes.SMOKE, this.xo, this.yo, this.zo,
