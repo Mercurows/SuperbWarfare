@@ -72,6 +72,10 @@ open class MedicalKitEntity(type: EntityType<MedicalKitEntity>, level: Level) : 
             this.deltaMovement = this.deltaMovement.multiply(1.0, -0.9, 1.0)
         }
 
+        if (isInFluidType) {
+            deltaMovement = deltaMovement.scale(0.75)
+        }
+
         if (this.tickCount >= 10) {
             touchEntity()
         }

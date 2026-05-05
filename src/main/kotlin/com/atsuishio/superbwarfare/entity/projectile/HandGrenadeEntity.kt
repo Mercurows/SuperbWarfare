@@ -146,6 +146,9 @@ open class HandGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity
                 1, 0.0, 0.0, 0.0, 0.01, true
             )
         }
+        if (isInFluidType) {
+            deltaMovement = deltaMovement.scale(0.75)
+        }
     }
 
     override fun isFastMoving(): Boolean {
