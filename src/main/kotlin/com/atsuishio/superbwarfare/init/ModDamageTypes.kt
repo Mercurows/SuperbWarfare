@@ -193,20 +193,21 @@ object ModDamageTypes {
         override fun getLocalizedDeathMessage(pLivingEntity: LivingEntity): Component {
             val entity = this.entity ?: this.getDirectEntity()
             if (entity == null) {
-                return Component.translatable("death.attack." + this.msgId, pLivingEntity.displayName)
-            } else if (entity is LivingEntity) {
+                return Component.translatable("death.attack.${this.msgId}", pLivingEntity.displayName)
+            } else if (entity is LivingEntity && entity.mainHandItem.hoverName != null) {
                 return Component.translatable(
-                    "death.attack." + this.msgId + ".item",
+                    "death.attack.${this.msgId}.item",
                     pLivingEntity.displayName,
                     entity.displayName,
-                    entity.mainHandItem.getHoverName()
+                    entity.mainHandItem.hoverName
+                )
+            } else {
+                return Component.translatable(
+                    "death.attack.${this.msgId}.entity",
+                    pLivingEntity.displayName,
+                    entity.displayName
                 )
             }
-            return Component.translatable(
-                "death.attack." + this.msgId + ".entity",
-                pLivingEntity.displayName,
-                entity.displayName
-            )
         }
     }
 }
