@@ -132,12 +132,8 @@ object IFFOverlay : CommonOverlay("iff") {
                             0x7FFFAD
                         )
 
-                        if (Vec2(xf, yf).distanceToSqr(
-                                Vec2(
-                                    screenWidth.toFloat() / 2.0f,
-                                    screenHeight.toFloat() / 2.0f
-                                )
-                            ) < 12
+                        if (Vec2(xf, yf)
+                                .distanceToSqr(Vec2(screenWidth.toFloat() / 2.0f, screenHeight.toFloat() / 2.0f)) < 12
                         ) {
                             poseStack.pushPose()
                             poseStack.translate(xf, yf, 0f)

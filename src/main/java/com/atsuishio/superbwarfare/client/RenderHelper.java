@@ -163,7 +163,7 @@ public class RenderHelper {
                 (uOffset + width) / textureWidth,
                 vOffset / textureHeight,
                 (vOffset + height) / textureHeight,
-                color
+                color | 0xFF000000
         );
     }
 
