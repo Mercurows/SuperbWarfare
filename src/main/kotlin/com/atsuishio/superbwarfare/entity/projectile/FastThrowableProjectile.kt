@@ -414,6 +414,10 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
         this.xRotO = this.xRot
     }
 
+    override fun getDefaultGravity(): Double {
+        return this.gravityValue.toDouble()
+    }
+
     companion object {
         var playFlySound: Consumer<FastThrowableProjectile> = Consumer { }
         var playNearFlySound: Consumer<FastThrowableProjectile> = Consumer { }

@@ -258,4 +258,8 @@ open class SuperStarProjectileEntity(type: EntityType<out SuperStarProjectileEnt
     fun getLerpTick(tickDelta: Float) = Mth.lerp(tickDelta, tickO.toFloat(), tick.toFloat())
 
     override fun isFastMoving() = false
+
+    override fun isNoGravity(): Boolean {
+        return true
+    }
 }
