@@ -25,7 +25,6 @@ import net.minecraft.world.item.crafting.RecipeType
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.DispenserBlock
 import net.minecraft.world.phys.Vec3
-import javax.annotation.ParametersAreNonnullByDefault
 
 open class C4BombItem : Item(Properties()), DispenserLaunchable {
     override fun use(level: Level, player: Player, hand: InteractionHand): InteractionResultHolder<ItemStack?> {
@@ -63,7 +62,6 @@ open class C4BombItem : Item(Properties()), DispenserLaunchable {
         return InteractionResultHolder.consume(stack)
     }
 
-    @ParametersAreNonnullByDefault
     override fun appendHoverText(
         stack: ItemStack,
         context: TooltipContext,
@@ -119,7 +117,9 @@ open class C4BombItem : Item(Properties()), DispenserLaunchable {
 
         fun makeInstance(): ItemStack {
             val stack = ItemStack(ModItems.C4_BOMB.get())
-            stack.getOrCreateTag().putBoolean(TAG_CONTROL, true)
+            val tag = NBTTool.getTag(stack)
+            tag.putBoolean(TAG_CONTROL, true)
+            NBTTool.saveTag(stack, tag)
             return stack
         }
     }
