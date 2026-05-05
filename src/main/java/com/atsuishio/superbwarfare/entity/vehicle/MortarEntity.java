@@ -207,6 +207,7 @@ public class MortarEntity extends ArtilleryEntity {
                 MortarShellEntity entityToSpawn = MortarShellItem.createShell(shooter, level, this.getItems().get(0), getProjectileGravity("Main"), gunData.get(GunProp.DAMAGE).floatValue(), gunData.get(GunProp.EXPLOSION_DAMAGE).floatValue(), gunData.get(GunProp.EXPLOSION_RADIUS).floatValue());
                 entityToSpawn.setPos(this.getX(), this.getEyeY(), this.getZ());
                 entityToSpawn.shoot(this.getLookAngle().x, this.getLookAngle().y, this.getLookAngle().z, getProjectileVelocity("Main"), getProjectileSpread("Main"));
+                entityToSpawn.setLife(gunData.get(GunProp.PROJECTILE_LIFE));
                 level.addFreshEntity(entityToSpawn);
 
                 ParticleTool.spawnMediumCannonMuzzleParticles(getLookAngle(), new Vec3(this.getX(), this.getEyeY(), this.getZ()).add(getLookAngle().scale(1.5)), server, this);
