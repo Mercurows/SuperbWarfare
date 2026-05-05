@@ -70,10 +70,17 @@ open class DogTagEditorScreen(var stack: ItemStack, private val hand: Interactio
     }
 
     override fun render(pGuiGraphics: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTick: Float) {
-        this.renderBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick)
         this.renderBg(pGuiGraphics)
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick)
         this.name.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick)
+    }
+
+    override fun renderBackground(
+        guiGraphics: GuiGraphics,
+        mouseX: Int,
+        mouseY: Int,
+        partialTick: Float
+    ) {
     }
 
     override fun mouseClicked(pMouseX: Double, pMouseY: Double, pButton: Int): Boolean {

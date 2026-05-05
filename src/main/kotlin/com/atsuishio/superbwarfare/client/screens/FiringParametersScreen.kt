@@ -60,10 +60,17 @@ open class FiringParametersScreen(private val stack: ItemStack, private val hand
     }
 
     override fun render(pGuiGraphics: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTick: Float) {
-        this.renderBackground(pGuiGraphics, pMouseX, pMouseY, pPartialTick)
         this.renderBg(pGuiGraphics, pMouseX, pMouseY)
-        super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick)
         this.renderPositions(pGuiGraphics, pMouseX, pMouseY, pPartialTick)
+        super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick)
+    }
+
+    override fun renderBackground(
+        guiGraphics: GuiGraphics,
+        mouseX: Int,
+        mouseY: Int,
+        partialTick: Float
+    ) {
     }
 
     protected fun renderPositions(pGuiGraphics: GuiGraphics, pMouseX: Int, pMouseY: Int, pPartialTick: Float) {
