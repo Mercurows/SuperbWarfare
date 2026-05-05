@@ -56,6 +56,7 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
         this.damageValue = 60f
         this.explosionDamageValue = 100f
         this.explosionRadiusValue = 8f
+        this.gravityValue = 0.13f
     }
 
     constructor(
@@ -86,6 +87,7 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
         this.damageValue = damage
         this.explosionDamageValue = explosionDamage
         this.explosionRadiusValue = explosionRadius
+        this.gravityValue = 0.13f
     }
 
     fun setEffectsFromItem(stack: ItemStack) {
