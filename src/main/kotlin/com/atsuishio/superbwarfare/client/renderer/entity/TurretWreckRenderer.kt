@@ -80,7 +80,7 @@ class TurretWreckRenderer(renderManager: EntityRendererProvider.Context) :
                 source,
                 packedLight,
                 packedOverlay,
-                FastColor.ARGB32.colorFromFloat(0.3f, 0.3f, 0.3f, 1.0f)
+                FastColor.ARGB32.colorFromFloat(1.0f, 0.3f, 0.3f, 0.3f)
             )
             renderer.renderChildBones(
                 poseStack,
@@ -93,7 +93,7 @@ class TurretWreckRenderer(renderManager: EntityRendererProvider.Context) :
                 partialTick,
                 packedLight,
                 packedOverlay,
-                FastColor.ARGB32.colorFromFloat(0.3f, 0.3f, 0.3f, 1.0f)
+                FastColor.ARGB32.colorFromFloat(1.0f, 0.3f, 0.3f, 0.3f)
             )
             poseStack.popPose()
         }
