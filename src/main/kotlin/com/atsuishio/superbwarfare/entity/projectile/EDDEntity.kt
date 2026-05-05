@@ -28,9 +28,11 @@ import net.minecraft.world.entity.*
 import net.minecraft.world.entity.decoration.HangingEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.DiodeBlock
 import net.minecraft.world.phys.AABB
+import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.items.ItemHandlerHelper
 import java.util.*
@@ -341,7 +343,17 @@ open class EDDEntity : HangingEntity, OwnableEntity {
             } else {
                 (owner != null && owner != it && !owner!!.isAlliedTo(it)) || it.team == null || enabledTDM(it)
             }
-        }.toList().firstOrNull()
+        }.toList().firstOrNull {
+            this.level().clip(
+                ClipContext(
+                    this.position(),
+                    it.position(),
+                    ClipContext.Block.COLLIDER,
+                    ClipContext.Fluid.NONE,
+                    null
+                )
+            ).type != HitResult.Type.BLOCK
+        }
 
         if (entity != null) {
             this.triggerExplode(entity.position())
