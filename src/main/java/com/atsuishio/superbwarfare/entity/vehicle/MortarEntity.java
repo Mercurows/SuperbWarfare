@@ -53,6 +53,7 @@ public class MortarEntity extends ArtilleryEntity {
     public static final EntityDataAccessor<Float> TARGET_PITCH = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> TARGET_YAW = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Boolean> INTELLIGENT = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> NEED_RESET_TARGET = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.BOOLEAN);
 
     private LivingEntity shooter = null;
 
@@ -73,6 +74,7 @@ public class MortarEntity extends ArtilleryEntity {
         this.entityData.define(TARGET_PITCH, -70f);
         this.entityData.define(TARGET_YAW, this.getYRot());
         this.entityData.define(FIRE_TIME, 0);
+        this.entityData.define(NEED_RESET_TARGET, true);
     }
 
     @Override
@@ -152,9 +154,8 @@ public class MortarEntity extends ArtilleryEntity {
             if (!player.isCreative()) {
                 mainHandItem.shrink(1);
             }
-            if (!this.entityData.get(INTELLIGENT)) {
-                vehicleShoot(player, "Main");
-            }
+            vehicleShoot(player, "Main");
+            entityData.set(NEED_RESET_TARGET, false);
             return InteractionResult.SUCCESS;
         }
 
@@ -214,9 +215,11 @@ public class MortarEntity extends ArtilleryEntity {
 
                 this.clearContent();
 
-                if (this.entityData.get(INTELLIGENT)) {
+                if (this.entityData.get(INTELLIGENT) && entityData.get(NEED_RESET_TARGET)) {
                     this.resetTarget("Main");
                 }
+
+                entityData.set(NEED_RESET_TARGET, true);
 
                 gunData.shakePlayers(this);
             }
