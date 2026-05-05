@@ -578,9 +578,6 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
                         ammoCount /= Math.max(1.0, vehicle.maxEnergy.toDouble() / 100).toInt()
                     }
                     if (!data.useBackpackAmmo()) {
-
-                        //TODO 有BUG,备弹显示只会在打开GUI的时候才会刷新数量
-
                         var lengthB = 11
 
                         if (backUpAmmoCount in 10..99) {
