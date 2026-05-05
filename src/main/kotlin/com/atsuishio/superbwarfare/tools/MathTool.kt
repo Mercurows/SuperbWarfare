@@ -63,11 +63,11 @@ object MathTool {
         progress = max(0, min(100, progress))
         val ratio = progress / 100.0f
 
-        return if (mode == 2) {
+        return (if (mode == 2) {
             hsvGradient(startColor, endColor, ratio)
         } else {
             hslGradient(startColor, endColor, ratio)
-        }
+        }.toLong() or 0xFF000000).toInt()
     }
 
     /**
