@@ -8,8 +8,8 @@ import net.minecraft.world.phys.shapes.CollisionContext
 import java.util.*
 
 object ProjectileCalculator {
-    private const val TIME_STEP = 1 // 时间步长（刻）
-    private const val MAX_ITERATIONS = 512 // 最大迭代次数
+    private const val TIME_STEP = 0.05 // 时间步长（刻）
+    private const val MAX_ITERATIONS = 2048 // 最大迭代次数
 
     /**
      * 计算炮弹精确落点位置（Vec3）
@@ -47,7 +47,7 @@ object ProjectileCalculator {
 
             if (collisionPoint.isPresent) {
                 // 精确计算碰撞点
-                return refineCollisionPoint(level, previousPos, collisionPoint.get())
+                return collisionPoint.get()
             }
 
             // 边界检查
@@ -81,38 +81,10 @@ object ProjectileCalculator {
 
         // 如果检测到碰撞，返回碰撞点
         if (hitResult.type == HitResult.Type.BLOCK) {
-            return Optional.of(hitResult.getLocation())
+            return Optional.of(hitResult.location)
         }
 
         // 没有检测到碰撞
         return Optional.empty()
-    }
-
-    /**
-     * 精确计算碰撞点（使用二分法提高精度）
-     */
-    private fun refineCollisionPoint(level: Level, safePoint: Vec3, collisionPoint: Vec3): Vec3 {
-        var low = safePoint
-        var high = collisionPoint
-        var bestPoint = collisionPoint
-
-        // 二分法迭代提高精度
-        repeat(9) {
-            val mid = low.add(high.subtract(low).scale(0.5))
-
-            // 检查从安全点到中点是否有碰撞
-            val collision = checkCollision(level, low, mid)
-
-            if (collision.isPresent) {
-                // 有碰撞，将高点移动到中点
-                high = mid
-                bestPoint = collision.get()
-            } else {
-                // 无碰撞，将低点移动到中点
-                low = mid
-            }
-        }
-
-        return bestPoint
     }
 }
