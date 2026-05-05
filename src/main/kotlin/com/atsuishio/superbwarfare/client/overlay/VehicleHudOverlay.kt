@@ -48,6 +48,8 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
 
     private val SELECTED = loc("textures/overlay/vehicle/weapon/frame/selected.png")
     private val NUMBER = loc("textures/overlay/vehicle/weapon/frame/number.png")
+    private val FRACTION = loc("textures/overlay/vehicle/weapon/frame/fraction.png")
+    private val PLUS = loc("textures/overlay/vehicle/weapon/frame/plus.png")
 
     private val FRAMES = arrayOf(
         loc("textures/overlay/vehicle/weapon/frame/frame_1.png"),
@@ -553,6 +555,7 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
                 )
 
                 var ammoCount = vehicle.getAmmoCount(player)
+                val backUpAmmoCount = data.countBackupAmmo(vehicle)
 
                 if (ammoCount == Int.MAX_VALUE) {
                     RenderHelper.preciseBlit(
@@ -573,21 +576,107 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
                     if (percent) {
                         ammoCount /= Math.max(1.0, vehicle.maxEnergy.toDouble() / 100).toInt()
                     }
-                    renderNumber(
-                        guiGraphics,
-                        ammoCount,
-                        percent,
-                        w - 20 + xOffset,
-                        h - frameIndex * 18 - 15.5f,
-                        0.25f
-                    )
+                    if (!data.useBackpackAmmo()) {
+
+                        //TODO 有BUG,备弹显示只会在打开GUI的时候才会刷新数量
+
+                        var lengthB = 11
+
+                        if (backUpAmmoCount in 10..99) {
+                            lengthB = 14
+                        }
+                        if (backUpAmmoCount >= 100) {
+                            lengthB = 16
+                        }
+
+                        if (backUpAmmoCount == Int.MAX_VALUE) {
+                            RenderHelper.preciseBlit(
+                                guiGraphics,
+                                NUMBER,
+                                w - 22 + xOffset,
+                                (h - frameIndex * 18 - 15).toFloat(),
+                                100f,
+                                58f,
+                                0f,
+                                10f,
+                                7.5f,
+                                75f,
+                                7.5f
+                            )
+                            lengthB = 14
+                        } else {
+                            if (backUpAmmoCount >= 100) {
+                                renderNumber(
+                                    guiGraphics,
+                                    99,
+                                    percent,
+                                    w - 20 + xOffset,
+                                    h - frameIndex * 18 - 12f,
+                                    0.125f
+                                )
+                                RenderHelper.preciseBlit(
+                                    guiGraphics,
+                                    PLUS,
+                                    w - 17.5f + xOffset,
+                                    h - frameIndex * 18 - 12f,
+                                    0f,
+                                    0f,
+                                    4f,
+                                    4f,
+                                    4f,
+                                    4f
+                                )
+                            } else {
+                                renderNumber(
+                                    guiGraphics,
+                                    backUpAmmoCount,
+                                    percent,
+                                    w - 18 + xOffset,
+                                    h - frameIndex * 18 - 12f,
+                                    0.125f
+                                )
+                            }
+                        }
+
+                        RenderHelper.preciseBlit(
+                            guiGraphics,
+                            FRACTION,
+                            w - 14 + xOffset - lengthB,
+                            h - frameIndex * 18 - 15.5f,
+                            0f,
+                            0f,
+                            8f,
+                            8f,
+                            8f,
+                            8f
+                        )
+
+                        renderNumber(
+                            guiGraphics,
+                            ammoCount,
+                            percent,
+                            w - 18 + xOffset - lengthB,
+                            h - frameIndex * 18 - 15.5f,
+                            0.25f
+                        )
+
+                    } else {
+                        renderNumber(
+                            guiGraphics,
+                            ammoCount,
+                            percent,
+                            w - 20 + xOffset,
+                            h - frameIndex * 18 - 15.5f,
+                            0.25f
+                        )
+                    }
                 }
             }
 
             RenderHelper.preciseBlit(
                 guiGraphics,
                 weapon!!.get(GunProp.ICON),
-                w - 85 + xOffset,
+                w - 86 + xOffset,
                 (h - frameIndex * 18 - 20).toFloat(),
                 100f,
                 0f,
