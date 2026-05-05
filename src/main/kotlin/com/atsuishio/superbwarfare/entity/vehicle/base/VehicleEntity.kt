@@ -495,6 +495,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     }
 
     open fun setChanged() {
+        if (this.level().isClientSide) return
         val item = itemHandler.resolve().orElse(null) ?: return
         sendPacketToTrackingThis(ClientVehicleItemMessage(this.id, item.serializeNBT()))
     }
