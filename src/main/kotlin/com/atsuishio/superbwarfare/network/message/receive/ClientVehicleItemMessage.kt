@@ -16,6 +16,6 @@ data class ClientVehicleItemMessage(
     override fun PayloadContext.handler() {
         val entity = clientLevel?.getEntity(id) as? VehicleEntity ?: return
         val tag = tag as? CompoundTag ?: return
-        entity.inventory.deserializeNBT(tag)
+        entity.inventory.deserializeNBT(entity.level().registryAccess(), tag)
     }
 }

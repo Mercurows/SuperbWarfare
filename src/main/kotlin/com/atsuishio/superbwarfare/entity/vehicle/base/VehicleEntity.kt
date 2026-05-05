@@ -488,8 +488,14 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     }
 
     open fun setChanged() {
-        val item = itemHandler.resolve().orElse(null) ?: return
-        sendPacketToTrackingThis(ClientVehicleItemMessage(this.id, item.serializeNBT()))
+        if (!this.level().isClientSide) {
+            sendPacketToTrackingThis(
+                ClientVehicleItemMessage(
+                    this.id,
+                    inventory.serializeNBT(this.level().registryAccess())
+                )
+            )
+        }
     }
 
     fun clearContent() {
@@ -1406,7 +1412,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         }
 
         if (stack.item is NameTagItem && stack.hasCustomHoverName()) {
-            this.customName = stack.getHoverName()
+            this.customName = stack.hoverName
             stack.shrink(1)
             return InteractionResult.sidedSuccess(this.level().isClientSide())
         }
