@@ -7,6 +7,8 @@ import com.atsuishio.superbwarfare.init.ModBlockEntities
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import net.minecraft.core.BlockPos
 import net.minecraft.core.HolderLookup
+import net.minecraft.core.component.DataComponentMap
+import net.minecraft.core.component.DataComponents
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket
@@ -18,6 +20,7 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.item.BlockItem
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.component.CustomData
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.entity.BlockEntity
@@ -75,8 +78,27 @@ open class LuckyContainerBlockEntity(pos: BlockPos, state: BlockState) :
         return this.cache
     }
 
-    override fun loadAdditional(tag: CompoundTag, registries: HolderLookup.Provider) {
-        super.loadAdditional(tag, registries)
+    override fun collectImplicitComponents(components: DataComponentMap.Builder) {
+        super.collectImplicitComponents(components)
+        components.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(saveToTag()))
+    }
+
+    override fun applyImplicitComponents(componentInput: DataComponentInput) {
+        super.applyImplicitComponents(componentInput)
+        val data = componentInput.get(DataComponents.BLOCK_ENTITY_DATA)
+        if (data != null) {
+            this.loadFromTag(data.copyTag())
+        }
+    }
+
+    private fun saveToTag(): CompoundTag {
+        val tag = CompoundTag()
+        tag.putString("id", "superbwarfare:lucky_container")
+        saveDataToTag(tag)
+        return tag
+    }
+
+    private fun loadFromTag(tag: CompoundTag) {
         if (tag.contains("Location", 8)) {
             this.location = ResourceLocation.parse(tag.getString("Location"))
         }
@@ -87,8 +109,7 @@ open class LuckyContainerBlockEntity(pos: BlockPos, state: BlockState) :
         this.opened = tag.getBoolean("Opened")
     }
 
-    override fun saveAdditional(tag: CompoundTag, registries: HolderLookup.Provider) {
-        super.saveAdditional(tag, registries)
+    private fun saveDataToTag(tag: CompoundTag) {
         if (this.location != null) {
             tag.putString("Location", this.location.toString())
         }
@@ -97,6 +118,16 @@ open class LuckyContainerBlockEntity(pos: BlockPos, state: BlockState) :
         }
         tag.putInt("Tick", this.tick)
         tag.putBoolean("Opened", this.opened)
+    }
+
+    override fun loadAdditional(tag: CompoundTag, registries: HolderLookup.Provider) {
+        super.loadAdditional(tag, registries)
+        this.loadFromTag(tag)
+    }
+
+    override fun saveAdditional(tag: CompoundTag, registries: HolderLookup.Provider) {
+        super.saveAdditional(tag, registries)
+        this.saveDataToTag(tag)
     }
 
     override fun getUpdatePacket(): ClientboundBlockEntityDataPacket? {
