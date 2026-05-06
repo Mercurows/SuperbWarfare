@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 import net.minecraft.world.phys.Vec3
+import software.bernie.geckolib.cache.`object`.BakedGeoModel
 import software.bernie.geckolib.renderer.GeoEntityRenderer
 
 class VehicleAssemblingTableVehicleRenderer(renderManager: EntityRendererProvider.Context) :
@@ -28,21 +29,29 @@ class VehicleAssemblingTableVehicleRenderer(renderManager: EntityRendererProvide
         return RenderType.entityTranslucent(getTextureLocation(animatable))
     }
 
-    override fun defaultRender(
+    override fun actuallyRender(
         poseStack: PoseStack,
         animatable: VehicleAssemblingTableVehicleEntity,
-        bufferSource: MultiBufferSource,
+        model: BakedGeoModel,
         renderType: RenderType?,
+        bufferSource: MultiBufferSource,
         buffer: VertexConsumer?,
-        yaw: Float,
+        isReRender: Boolean,
         partialTick: Float,
-        packedLight: Int
+        packedLight: Int,
+        packedOverlay: Int,
+        colour: Int
     ) {
         poseStack.pushPose()
         poseStack.translate(-0.5, 0.0, 0.5)
 
         val root = Vec3(0.5, 0.5, -0.5)
-        poseStack.rotateAround(Axis.YP.rotationDegrees(-yaw), root.x.toFloat(), root.y.toFloat(), root.z.toFloat())
+        poseStack.rotateAround(
+            Axis.YP.rotationDegrees(-animatable.getYaw(partialTick)),
+            root.x.toFloat(),
+            root.y.toFloat(),
+            root.z.toFloat()
+        )
         poseStack.rotateAround(
             Axis.XP.rotationDegrees(Mth.lerp(partialTick, animatable.xRotO, animatable.xRot)),
             root.x.toFloat(),
@@ -55,7 +64,20 @@ class VehicleAssemblingTableVehicleRenderer(renderManager: EntityRendererProvide
             root.y.toFloat(),
             root.z.toFloat()
         )
-        super.defaultRender(poseStack, animatable, bufferSource, renderType, buffer, yaw, partialTick, packedLight)
+
+        super.actuallyRender(
+            poseStack,
+            animatable,
+            model,
+            renderType,
+            bufferSource,
+            buffer,
+            isReRender,
+            partialTick,
+            packedLight,
+            packedOverlay,
+            colour
+        )
         poseStack.popPose()
     }
 }

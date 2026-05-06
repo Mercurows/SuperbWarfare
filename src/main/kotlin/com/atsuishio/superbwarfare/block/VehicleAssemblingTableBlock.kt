@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.block.entity.VehicleAssemblingTableBlockEntity
 import com.atsuishio.superbwarfare.block.property.BlockPart
 import com.atsuishio.superbwarfare.entity.vehicle.VehicleAssemblingTableVehicleEntity
+import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.item.blockitem.VehicleAssemblingTableBlockItem
 import com.mojang.serialization.MapCodec
 import net.minecraft.ChatFormatting
@@ -32,7 +33,9 @@ import net.minecraft.world.level.pathfinder.PathComputationType
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraft.world.phys.shapes.VoxelShape
-import javax.annotation.ParametersAreNonnullByDefault
+import net.neoforged.bus.api.SubscribeEvent
+import net.neoforged.fml.common.EventBusSubscriber
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickBlock
 
 @Suppress("OVERRIDE_DEPRECATION", "DEPRECATION")
 open class VehicleAssemblingTableBlock : BaseEntityBlock(
@@ -45,7 +48,6 @@ open class VehicleAssemblingTableBlock : BaseEntityBlock(
         )
     }
 
-    @ParametersAreNonnullByDefault
     override fun appendHoverText(
         stack: ItemStack,
         context: TooltipContext,
@@ -128,7 +130,6 @@ open class VehicleAssemblingTableBlock : BaseEntityBlock(
         return super.updateShape(state, direction, neighborState, level, pos, neighborPos)
     }
 
-    @ParametersAreNonnullByDefault
     override fun playerWillDestroy(level: Level, pos: BlockPos, state: BlockState, player: Player): BlockState {
         if (!level.isClientSide && player.isCreative) {
             val facing = state.getValue(FACING)
@@ -147,7 +148,6 @@ open class VehicleAssemblingTableBlock : BaseEntityBlock(
         return super.playerWillDestroy(level, pos, state, player)
     }
 
-    @ParametersAreNonnullByDefault
     override fun useWithoutItem(
         state: BlockState,
         level: Level,
@@ -185,6 +185,7 @@ open class VehicleAssemblingTableBlock : BaseEntityBlock(
 
     override fun codec() = CODEC
 
+    @EventBusSubscriber(modid = Mod.MODID)
     companion object {
         @JvmField
         val FACING: DirectionProperty = HorizontalDirectionalBlock.FACING
@@ -194,6 +195,29 @@ open class VehicleAssemblingTableBlock : BaseEntityBlock(
 
         @JvmField
         val CODEC: MapCodec<VehicleAssemblingTableBlock> = simpleCodec { _ -> VehicleAssemblingTableBlock() }
+
+        @SubscribeEvent
+        fun onInteractVehicleBlock(event: RightClickBlock) {
+            val level = event.level
+            if (level is ServerLevel && event.entity.mainHandItem.`is`(ModTags.Items.TOOLS_CROWBAR)) {
+                val pos = event.hitVec.blockPos
+                val state = level.getBlockState(pos)
+                if (state.block is VehicleAssemblingTableBlock) {
+                    val facing = state.getValue(FACING)
+                    val part = state.getValue(BLOCK_PART)
+                    val originalPos = part.relativeNegative(pos, facing)
+
+                    val vehicle = createVehicle(level, facing, originalPos)
+                    level.addFreshEntity(vehicle)
+
+                    for (p in BlockPart.entries) {
+                        level.destroyBlock(p.relative(originalPos, facing), false)
+                    }
+
+                    event.cancellationResult = InteractionResult.SUCCESS
+                }
+            }
+        }
 
         private fun createVehicle(
             server: ServerLevel,
