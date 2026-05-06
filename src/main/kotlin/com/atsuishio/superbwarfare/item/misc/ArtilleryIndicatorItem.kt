@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
 import com.atsuishio.superbwarfare.item.ItemScreenProvider
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.NBTTool
-import com.atsuishio.superbwarfare.tools.getOrCreateTag
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.nbt.CompoundTag
@@ -27,10 +26,8 @@ import net.minecraft.world.item.*
 import net.minecraft.world.level.Level
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
-import javax.annotation.ParametersAreNonnullByDefault
 
 open class ArtilleryIndicatorItem : Item(Properties().stacksTo(1).rarity(Rarity.UNCOMMON)), ItemScreenProvider {
-    @ParametersAreNonnullByDefault
     override fun appendHoverText(
         stack: ItemStack,
         context: TooltipContext,
@@ -94,28 +91,23 @@ open class ArtilleryIndicatorItem : Item(Properties().stacksTo(1).rarity(Rarity.
     }
 
     fun checkFull(stack: ItemStack): Boolean {
-        val tags = stack.getOrCreateTag().getList(TAG_CANNON, Tag.TAG_COMPOUND.toInt())
+        val tags = NBTTool.getTag(stack).getList(TAG_CANNON, Tag.TAG_COMPOUND.toInt())
         return tags.size >= MiscConfig.ARTILLERY_INDICATOR_LIST_SIZE.get()
     }
 
-    fun nnon(stack: ItemStack, entity: Entity): Boolean {
+    fun addCannon(stack: ItemStack, entity: Entity): Boolean {
         val uuid = entity.getStringUUID()
         val tag = NBTTool.getTag(stack)
         val tags = tag.getList(TAG_CANNON, Tag.TAG_COMPOUND.toInt())
         if (tags.isEmpty()) {
-            tag.putString(
-                TAG_TYPE,
-                entity.type.getDescriptionId()
-            )
+            tag.putString(TAG_TYPE, entity.type.descriptionId)
         } else {
-            if (tag.getString(TAG_TYPE) != entity.type
-                    .getDescriptionId()
-            ) {
+            if (tag.getString(TAG_TYPE) != entity.type.descriptionId) {
                 return false
             }
         }
 
-        val list: MutableList<CompoundTag> = ArrayList<CompoundTag>()
+        val list: MutableList<CompoundTag> = arrayListOf()
         for (i in tags.indices) {
             list.add(tags.getCompound(i))
         }
@@ -137,7 +129,8 @@ open class ArtilleryIndicatorItem : Item(Properties().stacksTo(1).rarity(Rarity.
     }
 
     fun removeCannon(stack: ItemStack, uuid: String?): Boolean {
-        val tags = stack.getOrCreateTag().getList(TAG_CANNON, Tag.TAG_COMPOUND.toInt())
+        val tag = NBTTool.getTag(stack)
+        val tags = tag.getList(TAG_CANNON, Tag.TAG_COMPOUND.toInt())
         val list: MutableList<CompoundTag> = arrayListOf()
         var flag = false
         for (i in tags.indices) {
@@ -151,10 +144,11 @@ open class ArtilleryIndicatorItem : Item(Properties().stacksTo(1).rarity(Rarity.
         if (flag) {
             val listTag = ListTag()
             listTag.addAll(list)
-            stack.getOrCreateTag().put(TAG_CANNON, listTag)
+            tag.put(TAG_CANNON, listTag)
             if (listTag.isEmpty()) {
-                stack.getOrCreateTag().remove(TAG_TYPE)
+                tag.remove(TAG_TYPE)
             }
+            NBTTool.saveTag(stack, tag)
         }
 
         return flag
@@ -166,7 +160,8 @@ open class ArtilleryIndicatorItem : Item(Properties().stacksTo(1).rarity(Rarity.
     }
 
     fun setTarget(stack: ItemStack, player: Player) {
-        val tags = stack.getOrCreateTag().getList(TAG_CANNON, Tag.TAG_COMPOUND.toInt())
+        val mainTag = NBTTool.getTag(stack)
+        val tags = mainTag.getList(TAG_CANNON, Tag.TAG_COMPOUND.toInt())
         val list: MutableList<CompoundTag> = arrayListOf()
 
         for (i in tags.indices) {
@@ -182,10 +177,11 @@ open class ArtilleryIndicatorItem : Item(Properties().stacksTo(1).rarity(Rarity.
         if (list.size != tags.size) {
             val listTag = ListTag()
             listTag.addAll(list)
-            stack.getOrCreateTag().put(TAG_CANNON, listTag)
+            mainTag.put(TAG_CANNON, listTag)
             if (listTag.isEmpty()) {
-                stack.getOrCreateTag().remove(TAG_TYPE)
+                mainTag.remove(TAG_TYPE)
             }
+            NBTTool.saveTag(stack, mainTag)
         }
     }
 
@@ -197,7 +193,7 @@ open class ArtilleryIndicatorItem : Item(Properties().stacksTo(1).rarity(Rarity.
             return InteractionResult.FAIL
         }
 
-        if (this.nnon(stack, entity)) {
+        if (this.addCannon(stack, entity)) {
             if (player is ServerPlayer) {
                 player.level()
                     .playSound(null, player.onPos, SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5f, 1f)
