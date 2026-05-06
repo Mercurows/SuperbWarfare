@@ -2815,8 +2815,6 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
         }
 
         fun copyBlueprint(writer: RecipeOutput, result: ItemLike) {
-            copySmithingTemplate(writer, result, Items.LAPIS_LAZULI)
-
             ShapedRecipeBuilder.shaped(RecipeCategory.MISC, result, 2)
                 .pattern("ABA")
                 .pattern("ACA")
