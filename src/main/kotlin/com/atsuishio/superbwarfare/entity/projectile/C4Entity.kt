@@ -5,7 +5,10 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.tools.*
+import com.atsuishio.superbwarfare.tools.CustomExplosion
+import com.atsuishio.superbwarfare.tools.EntityFindUtil
+import com.atsuishio.superbwarfare.tools.NBTTool
+import com.atsuishio.superbwarfare.tools.ParticleTool
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.core.registries.Registries
@@ -136,7 +139,7 @@ open class C4Entity : Entity, OwnableEntity {
     }
 
     override fun interact(player: Player, hand: InteractionHand): InteractionResult {
-        if (this.getOwner() === player && player.isShiftKeyDown) {
+        if (this.owner === player && player.isShiftKeyDown) {
             if (!this.level().isClientSide()) {
                 this.discard()
             }
@@ -299,7 +302,7 @@ open class C4Entity : Entity, OwnableEntity {
         val d2 = pTarget.z
         val d3 = sqrt(d0 * d0 + d2 * d2)
         xRot = Mth.wrapDegrees((-(Mth.atan2(d1, d3) * 57.2957763671875)).toFloat())
-        setYHeadRot(yRot)
+        yHeadRot = yRot
         this.xRotO = xRot
         this.yRotO = yRot
     }
@@ -333,7 +336,7 @@ open class C4Entity : Entity, OwnableEntity {
         if (!pTarget.canBeHitByProjectile()) {
             return false
         } else {
-            val entity: Entity? = this.getOwner()
+            val entity: Entity? = this.owner
             return entity == null
                     || (entity === pTarget && this.tickCount > 2)
                     || !entity.isPassengerOfSameVehicle(pTarget)
@@ -409,7 +412,7 @@ open class C4Entity : Entity, OwnableEntity {
         }
 
         CustomExplosion.Builder(this)
-            .attacker(this.getOwner())
+            .attacker(this.owner)
             .damage(ExplosionConfig.C4_EXPLOSION_DAMAGE.get().toFloat())
             .radius(ExplosionConfig.C4_EXPLOSION_RADIUS.get().toFloat())
             .position(pos)
@@ -434,9 +437,9 @@ open class C4Entity : Entity, OwnableEntity {
         get() {
             val stack = ItemStack(ModItems.C4_BOMB.get())
             if (this.getEntityData().get(IS_CONTROLLABLE)) {
-                val tag = stack.getOrCreateTag()
+                val tag = NBTTool.getTag(stack)
                 tag.putBoolean("Control", true)
-                stack.tag = tag
+                NBTTool.saveTag(stack, tag)
             }
             return stack
         }
