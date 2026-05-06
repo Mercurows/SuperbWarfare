@@ -2,8 +2,7 @@ package com.atsuishio.superbwarfare.item.misc
 
 import com.atsuishio.superbwarfare.init.ModDataComponents
 import com.atsuishio.superbwarfare.tools.FormatTool
-import com.atsuishio.superbwarfare.tools.getOrCreateTag
-import com.mojang.datafixers.util.Pair
+import com.atsuishio.superbwarfare.tools.NBTTool
 import net.minecraft.ChatFormatting
 import net.minecraft.nbt.ListTag
 import net.minecraft.network.chat.Component
@@ -14,10 +13,8 @@ import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.TooltipFlag
 import net.minecraft.world.level.Level
-import javax.annotation.ParametersAreNonnullByDefault
 
 open class TranscriptItem : Item(Properties().stacksTo(1)) {
-    @ParametersAreNonnullByDefault
     override fun appendHoverText(
         stack: ItemStack,
         context: TooltipContext,
@@ -30,7 +27,7 @@ open class TranscriptItem : Item(Properties().stacksTo(1)) {
 
     fun addScoresText(stack: ItemStack, tooltip: MutableList<Component>) {
         var scores = stack.get(ModDataComponents.TRANSCRIPT_SCORE)
-        if (scores == null) scores = mutableListOf<Pair<Int, Double>>()
+        if (scores == null) scores = mutableListOf()
 
         var total = 0
         for (info in scores) {
@@ -63,7 +60,9 @@ open class TranscriptItem : Item(Properties().stacksTo(1)) {
     override fun use(pLevel: Level, pPlayer: Player, pUsedHand: InteractionHand): InteractionResultHolder<ItemStack> {
         if (pPlayer.isCrouching) {
             val stack = pPlayer.getItemInHand(pUsedHand)
-            stack.getOrCreateTag().put(TAG_SCORES, ListTag())
+            val tag = NBTTool.getTag(stack)
+            tag.put(TAG_SCORES, ListTag())
+            NBTTool.saveTag(stack, tag)
             return InteractionResultHolder.success(stack)
         }
         return super.use(pLevel, pPlayer, pUsedHand)
