@@ -7,7 +7,10 @@ import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage
-import com.atsuishio.superbwarfare.tools.*
+import com.atsuishio.superbwarfare.tools.CustomExplosion
+import com.atsuishio.superbwarfare.tools.ParticleTool
+import com.atsuishio.superbwarfare.tools.postEvent
+import com.atsuishio.superbwarfare.tools.sendPacketToTrackingThis
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.nbt.CompoundTag
@@ -253,7 +256,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
         return false
     }
 
-    fun keepChunkLoaded(position: Vec3) {
+    open fun keepChunkLoaded(position: Vec3) {
         val chunkPos = ChunkPos(BlockPos.containing(position))
         (level() as ServerLevel).chunkSource.addRegionTicket(TicketType.POST_TELEPORT, chunkPos, 3, this.id)
     }
@@ -271,7 +274,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
         return this.deltaMovement.length() >= 0.5
     }
 
-    fun shouldSyncMotion(): Boolean {
+    open fun shouldSyncMotion(): Boolean {
         return true
     }
 
@@ -322,7 +325,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
         this.lifeValue = life
     }
 
-    fun getLife(): Int {
+    open fun getLife(): Int {
         return lifeValue
     }
 
