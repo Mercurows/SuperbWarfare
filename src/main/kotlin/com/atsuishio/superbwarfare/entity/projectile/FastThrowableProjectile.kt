@@ -253,7 +253,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
         return false
     }
 
-    fun keepChunkLoaded(position: Vec3) {
+    open fun keepChunkLoaded(position: Vec3) {
         val chunkPos = ChunkPos(BlockPos.containing(position))
         (level() as ServerLevel).chunkSource.addRegionTicket(TicketType.POST_TELEPORT, chunkPos, 3, this.id)
     }
@@ -271,7 +271,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
         return this.deltaMovement.length() >= 0.5
     }
 
-    fun shouldSyncMotion(): Boolean {
+    open fun shouldSyncMotion(): Boolean {
         return true
     }
 
@@ -318,11 +318,11 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
         this.lifeValue = life
     }
 
-    fun getLife(): Int {
+    open fun getLife(): Int {
         return lifeValue
     }
 
-    fun getCustomGravity(): Float {
+    open fun getCustomGravity(): Float {
         return this.gravityValue
     }
 
