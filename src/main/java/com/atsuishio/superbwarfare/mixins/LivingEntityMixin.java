@@ -9,6 +9,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -17,6 +18,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
+import java.util.Stack;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin implements ICustomKnockback, DamageAccess {
@@ -39,6 +41,10 @@ public abstract class LivingEntityMixin implements ICustomKnockback, DamageAcces
 
     @Shadow
     protected abstract boolean checkTotemDeathProtection(DamageSource pDamageSource);
+
+    @Shadow
+    @Nullable
+    protected Stack<DamageContainer> damageContainers;
 
     @Unique
     private double superbwarfare$knockbackStrength = -1;
@@ -95,6 +101,11 @@ public abstract class LivingEntityMixin implements ICustomKnockback, DamageAcces
     @Override
     public boolean superbWarfare$checkTotemDeathProtection(DamageSource pDamageSource) {
         return this.checkTotemDeathProtection(pDamageSource);
+    }
+
+    @Override
+    public @Nullable Stack<DamageContainer> superbwarfare$getDamageContainers() {
+        return this.damageContainers;
     }
 
     @Inject(method = "dismountVehicle", at = @At("RETURN"))

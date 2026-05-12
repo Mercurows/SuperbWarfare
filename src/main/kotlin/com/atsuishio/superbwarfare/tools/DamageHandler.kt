@@ -13,13 +13,18 @@ import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.tags.DamageTypeTags
+import net.minecraft.tags.EntityTypeTags
 import net.minecraft.world.damagesource.DamageSource
+import net.minecraft.world.damagesource.DamageTypes
 import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.TamableAnimal
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.entity.projectile.Projectile
+import net.neoforged.neoforge.common.CommonHooks
+import net.neoforged.neoforge.common.damagesource.DamageContainer
 
 fun Entity?.forceHurt(source: DamageSource, damage: Float): Boolean {
     return if (this == null) false
@@ -52,114 +57,130 @@ object DamageHandler {
                     return false
                 }
 
-                if (entity.isSleeping && !entity.level().isClientSide) {
-                    entity.stopSleeping()
-                }
-                entity.setNoActionTime(0)
+                val damageAccess = DamageAccess.of(entity)
+                val container = damageAccess.`superbwarfare$getDamageContainers`() ?: return false
+                container.push(DamageContainer(source, damage))
 
-                val access = DamageAccess.of(entity)
-
-                val flag = false
-
-                entity.walkAnimation.setSpeed(1.5f)
-
-                var flag1 = true
-                if (entity.invulnerableTime > 10 && !source.`is`(DamageTypeTags.BYPASSES_COOLDOWN)) {
-                    if (damage <= entity.lastHurt) {
-                        return false
+                if (CommonHooks.onEntityIncomingDamage(entity, container.peek())) {
+                    return false
+                } else {
+                    if (entity.isSleeping && !entity.level().isClientSide) {
+                        entity.stopSleeping()
                     }
 
-                    access.`superbWarfare$actuallyHurt`(source, damage - entity.lastHurt)
-                    entity.lastHurt = damage
-                    flag1 = false
-                } else {
-                    entity.lastHurt = damage
-                    entity.invulnerableTime = 20
-                    access.`superbWarfare$actuallyHurt`(source, damage)
-                    entity.hurtDuration = 10
-                    entity.hurtTime = entity.hurtDuration
-                }
+                    entity.noActionTime = 0
+                    damage = container.peek().newDamage
+                    val f = damage
+                    val flag = false
 
-                if (source.`is`(DamageTypeTags.DAMAGES_HELMET) && !entity.getItemBySlot(EquipmentSlot.HEAD).isEmpty) {
-                    access.`superbWarfare$hurtHelmet`(source, damage)
-                    damage *= 0.75f
-                }
+                    if (source.`is`(DamageTypeTags.IS_FREEZING) && entity.type.`is`(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES)) {
+                        damage *= 5f
+                    }
 
-                if (sourceEntity != null) {
-                    if (sourceEntity is LivingEntity) {
-                        if (!source.`is`(DamageTypeTags.NO_ANGER)) {
-                            entity.lastHurtByMob = sourceEntity
+                    if (source.`is`(DamageTypeTags.DAMAGES_HELMET) && !entity.getItemBySlot(EquipmentSlot.HEAD).isEmpty) {
+                        damageAccess.`superbWarfare$hurtHelmet`(source, damage)
+                        damage *= 0.75f
+                    }
+
+                    container.peek().newDamage = damage
+                    entity.walkAnimation.setSpeed(1.5f)
+
+                    var flag1 = true
+                    if (entity.invulnerableTime > 10f && !source.`is`(DamageTypeTags.BYPASSES_COOLDOWN)) {
+                        if (damage <= entity.lastHurt) {
+                            container.pop()
+                            return false
+                        }
+
+                        damageAccess.`superbWarfare$actuallyHurt`(source, damage - entity.lastHurt)
+                        entity.lastHurt = damage
+                        flag1 = false
+                    } else {
+                        entity.lastHurt = damage
+                        entity.invulnerableTime = container.peek().postAttackInvulnerabilityTicks
+                        damageAccess.`superbWarfare$actuallyHurt`(source, damage)
+                        entity.hurtDuration = 10
+                        entity.hurtTime = entity.hurtDuration
+                    }
+
+                    damage = container.peek().newDamage
+
+                    if (sourceEntity != null) {
+                        if (sourceEntity is LivingEntity) {
+                            if (!source.`is`(DamageTypeTags.NO_ANGER) &&
+                                (!source.`is`(DamageTypes.WIND_CHARGE) || !entity.type.`is`(EntityTypeTags.NO_ANGER_FROM_WIND_CHARGE))
+                            ) {
+                                entity.lastHurtByMob = sourceEntity
+                            }
+                        }
+
+                        if (sourceEntity is Player) {
+                            entity.lastHurtByPlayerTime = 100
+                            entity.setLastHurtByPlayer(sourceEntity)
+                        } else if (sourceEntity is TamableAnimal && sourceEntity.isTame) {
+                            entity.lastHurtByPlayerTime = 100
+                            val owner = sourceEntity.owner
+                            entity.setLastHurtByPlayer(owner as? Player)
                         }
                     }
 
-                    if (sourceEntity is Player) {
-                        entity.lastHurtByPlayerTime = 100
-                        entity.setLastHurtByPlayer(sourceEntity)
-                    } else if (sourceEntity is TamableAnimal) {
-                        if (sourceEntity.isTame) {
-                            entity.lastHurtByPlayerTime = 100
-                            val owner = sourceEntity.owner
-                            if (owner is Player) {
-                                entity.setLastHurtByPlayer(owner)
-                            } else {
-                                entity.setLastHurtByPlayer(null)
+                    if (flag1) {
+                        entity.level().broadcastDamageEvent(entity, source)
+
+                        if (!source.`is`(DamageTypeTags.NO_IMPACT)) {
+                            entity.hurtMarked = true
+                        }
+
+                        if (!source.`is`(DamageTypeTags.NO_KNOCKBACK)) {
+                            var d0 = 0.0
+                            var d1 = 0.0
+                            val directEntity = source.directEntity
+                            if (directEntity is Projectile) {
+                                val pair = directEntity.calculateHorizontalHurtKnockbackDirection(entity, source)
+                                d0 = -pair.leftDouble()
+                                d1 = -pair.rightDouble()
+                            } else if (source.sourcePosition != null) {
+                                d0 = source.sourcePosition!!.x() - entity.x
+                                d1 = source.sourcePosition!!.z() - entity.z
+                            }
+
+                            entity.knockback(0.4000000059604645, d0, d1)
+                            if (!flag) {
+                                entity.indicateDamage(d0, d1)
                             }
                         }
                     }
-                }
 
-                if (flag1) {
-                    entity.level().broadcastDamageEvent(entity, source)
+                    if (entity.isDeadOrDying) {
+                        if (!damageAccess.`superbWarfare$checkTotemDeathProtection`(source)) {
+                            if (flag1) {
+                                entity.makeSound(damageAccess.`superbWarfare$getDeathSound`())
+                            }
 
-                    if (!source.`is`(DamageTypeTags.NO_IMPACT)) {
-                        entity.hurtMarked = true
+                            entity.die(source)
+                        }
+                    } else if (flag1) {
+                        damageAccess.`superbWarfare$playHurtSound`(source)
                     }
 
-                    if (sourceEntity != null && !source.`is`(DamageTypeTags.IS_EXPLOSION)) {
-                        var d0 = sourceEntity.x - entity.x
+                    entity.lastDamageSource = source
+                    entity.lastDamageStamp = entity.level().gameTime
 
-                        var d1: Double
-                        d1 = sourceEntity.z - entity.z
-                        while (d0 * d0 + d1 * d1 < 1.0E-4) {
-                            d0 = (Math.random() - Math.random()) * 0.01
-                            d1 = (Math.random() - Math.random()) * 0.01
-                        }
-
-                        entity.knockback(0.4, d0, d1)
-                        if (!flag) {
-                            entity.indicateDamage(d0, d1)
-                        }
+                    for (instance in entity.activeEffects) {
+                        instance.onMobHurt(entity, source, damage)
                     }
-                }
 
-                if (entity.isDeadOrDying) {
-                    if (!access.`superbWarfare$checkTotemDeathProtection`(source)) {
-                        val soundEvent = access.`superbWarfare$getDeathSound`()
-                        if (flag1 && soundEvent != null) {
-                            entity.playSound(
-                                soundEvent,
-                                access.`superbWarfare$getSoundVolume`(),
-                                entity.voicePitch
-                            )
-                        }
-                        entity.die(source)
+                    if (entity is ServerPlayer) {
+                        CriteriaTriggers.ENTITY_HURT_PLAYER.trigger(entity, source, f, damage, flag)
                     }
-                } else if (flag1) {
-                    access.`superbWarfare$playHurtSound`(source)
+
+                    if (sourceEntity is ServerPlayer) {
+                        CriteriaTriggers.PLAYER_HURT_ENTITY.trigger(sourceEntity, entity, source, f, damage, flag)
+                    }
+
+                    container.pop()
+                    return true
                 }
-
-                entity.lastDamageSource = source
-                entity.lastDamageStamp = entity.level().gameTime
-
-                if (entity is ServerPlayer) {
-                    CriteriaTriggers.ENTITY_HURT_PLAYER.trigger(entity, source, damage, damage, flag)
-                }
-
-                if (sourceEntity is ServerPlayer) {
-                    CriteriaTriggers.PLAYER_HURT_ENTITY.trigger(sourceEntity, entity, source, damage, damage, flag)
-                }
-
-                return true
             }
         }
         return false
