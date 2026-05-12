@@ -88,8 +88,7 @@ open class SenpaiEntity(type: EntityType<SenpaiEntity>, level: Level) : Monster(
         this.runner = compound.getBoolean("Runner")
     }
 
-    override fun getStandingEyeHeight(poseIn: Pose, sizeIn: EntityDimensions): Float = 1.75f
-
+    override fun getStandingEyeHeight(poseIn: Pose, sizeIn: EntityDimensions): Float = 1.6f
 
     override fun getAddEntityPacket(): Packet<ClientGamePacketListener?> {
         return NetworkHooks.getEntitySpawningPacket(this)
