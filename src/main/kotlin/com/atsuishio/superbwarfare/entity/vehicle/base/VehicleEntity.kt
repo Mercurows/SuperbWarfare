@@ -520,8 +520,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         return this.hasContainer() && slot in 0 until this.getContainerSize()
     }
 
-    override fun remove(pReason: RemovalReason) {
-        if (!this.level().isClientSide && pReason != RemovalReason.DISCARDED) {
+    override fun remove(reason: RemovalReason) {
+        if (!this.level().isClientSide && reason != RemovalReason.DISCARDED && reason != RemovalReason.UNLOADED_WITH_PLAYER) {
             for (i in 0 until inventory.slots) {
                 val stack = inventory.getStackInSlot(i)
                 if (!stack.isEmpty) {
@@ -529,7 +529,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 }
             }
         }
-        super.remove(pReason)
+        super.remove(reason)
     }
 
     override fun openCustomInventoryScreen(player: Player) {
