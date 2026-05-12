@@ -76,7 +76,6 @@ open class AmmoBoxItem : Item(Properties().stacksTo(1)) {
         fun asDrop(): AmmoBoxData = copy(selectedType = null, isDrop = true)
     }
 
-    // TODO 优化这一坨反人类逻辑
     override fun use(level: Level, player: Player, hand: InteractionHand): InteractionResultHolder<ItemStack> {
         val stack = player.getItemInHand(hand)
 
@@ -185,6 +184,7 @@ open class AmmoBoxItem : Item(Properties().stacksTo(1)) {
         val slotStack = slot.item
         val slotItem = slotStack.item
         val info = stack.ammoBoxData
+        val count = min(slotStack.maxStackSize, slotStack.count)
 
         // 右键放弹药
         if (action == ClickAction.SECONDARY &&
@@ -193,7 +193,7 @@ open class AmmoBoxItem : Item(Properties().stacksTo(1)) {
             val type = info.type ?: (slotItem as? AmmoSupplierItem)?.type ?: return false
             val newItem = if (slotStack.isEmpty) type.item else slotItem as AmmoSupplierItem
             val newStack = if (slotStack.isEmpty) type.itemStack else slotStack.copy()
-            val currentStackCount = if (slotStack.isEmpty) 0 else slotStack.count
+            val currentStackCount = if (slotStack.isEmpty) 0 else count
 
             val currentCount = info.selectedAmmoCount
             val countToStore = min(newStack.maxStackSize - currentStackCount, currentCount / newItem.ammoToAdd)
@@ -210,11 +210,11 @@ open class AmmoBoxItem : Item(Properties().stacksTo(1)) {
         // 左键收弹药
         if (!info.isDrop && action == ClickAction.PRIMARY && slotItem is AmmoSupplierItem) {
             val type = slotItem.type
-            val addCount = (info.restCount(type) / slotItem.ammoToAdd).coerceAtMost(slotStack.count)
+            val addCount = (info.restCount(type) / slotItem.ammoToAdd).coerceAtMost(count)
             if (addCount < 0) return true
 
             type.add(stack, addCount * slotItem.ammoToAdd)
-            slot.safeTake(slotStack.count, addCount, player)
+            slot.safeTake(count, addCount, player)
 
             player.playSound(ModSounds.BULLET_SUPPLY.get())
             return true
