@@ -235,7 +235,9 @@ open class BlueprintResearchTableBlockEntity(pos: BlockPos, state: BlockState) :
     }
 
     private fun canInsertAmountIntoOutputSlot(count: Int): Boolean {
-        return this.items[SLOT_OUTPUT].count + count <= this.items[SLOT_OUTPUT].maxStackSize
+        val output = this.items[SLOT_OUTPUT]
+        val size = if (output.isEmpty) 64 else output.maxStackSize
+        return output.count + count <= size
     }
 
     private fun craftItem() {
