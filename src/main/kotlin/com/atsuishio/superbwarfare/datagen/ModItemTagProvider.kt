@@ -125,9 +125,33 @@ class ModItemTagProvider(
         )
         this.tag(ModTags.Items.TOOLS_HAMMER).addTag(ModTags.Items.HAMMER)
 
-        this.tag(Tags.Items.ARMORS)
-            .add(ModItems.RU_HELMET_6B47.get(), ModItems.US_HELMET_PASGT.get(), ModItems.GE_HELMET_M_35.get())
-        this.tag(Tags.Items.ARMORS).add(ModItems.RU_CHEST_6B43.get(), ModItems.US_CHEST_IOTV.get())
+        this.tag(Tags.Items.ARMORS).add(
+            ModItems.RU_HELMET_6B47.get(),
+            ModItems.US_HELMET_PASGT.get(),
+            ModItems.GE_HELMET_M_35.get(),
+            ModItems.RU_CHEST_6B43.get(),
+            ModItems.US_CHEST_IOTV.get()
+        )
+
+        this.tag(ItemTags.CHEST_ARMOR).add(
+            ModItems.RU_CHEST_6B43.get(),
+            ModItems.US_CHEST_IOTV.get()
+        )
+        this.tag(ItemTags.CHEST_ARMOR_ENCHANTABLE).add(
+            ModItems.RU_CHEST_6B43.get(),
+            ModItems.US_CHEST_IOTV.get()
+        )
+
+        this.tag(ItemTags.HEAD_ARMOR).add(
+            ModItems.RU_HELMET_6B47.get(),
+            ModItems.US_HELMET_PASGT.get(),
+            ModItems.GE_HELMET_M_35.get()
+        )
+        this.tag(ItemTags.HEAD_ARMOR_ENCHANTABLE).add(
+            ModItems.RU_HELMET_6B47.get(),
+            ModItems.US_HELMET_PASGT.get(),
+            ModItems.GE_HELMET_M_35.get()
+        )
 
         this.tag(ModTags.Items.RESEARCH_FUEL).add(Items.GUNPOWDER, Items.GLOWSTONE_DUST, Items.REDSTONE, Items.SUGAR)
 
@@ -303,10 +327,29 @@ class ModItemTagProvider(
         this.tag(ModTags.Items.ENLARGED_LEGENDARY_BLUEPRINT)
             .addTags(ModTags.Items.LEGENDARY_BLUEPRINT, ModTags.Items.SUPERB_BLUEPRINT)
 
-        this.tag(ItemTags.SWORDS).add(ModItems.MILITARY_SHOVEL.get())
+        this.tag(ItemTags.SWORDS).add(
+            ModItems.MILITARY_SHOVEL.get(),
+            ModItems.KNIFE.get(),
+            ModItems.T_BATON.get(),
+            ModItems.ELECTRIC_BATON.get(),
+            ModItems.STEEL_PIPE.get(),
+            ModItems.CROWBAR.get()
+        ).addTag(ModTags.Items.HAMMER)
+        this.tag(ItemTags.SWORD_ENCHANTABLE).add(
+            ModItems.MILITARY_SHOVEL.get(),
+            ModItems.KNIFE.get(),
+            ModItems.T_BATON.get(),
+            ModItems.ELECTRIC_BATON.get(),
+            ModItems.STEEL_PIPE.get(),
+            ModItems.CROWBAR.get()
+        ).addTag(ModTags.Items.HAMMER)
+
         this.tag(ItemTags.AXES).add(ModItems.MILITARY_SHOVEL.get())
         this.tag(ItemTags.SHOVELS).add(ModItems.MILITARY_SHOVEL.get())
         this.tag(ItemTags.HOES).add(ModItems.MILITARY_SHOVEL.get())
+        this.tag(ItemTags.MINING_ENCHANTABLE).add(ModItems.MILITARY_SHOVEL.get())
+        this.tag(ItemTags.VANISHING_ENCHANTABLE).add(ModItems.MILITARY_SHOVEL.get())
+        this.tag(ItemTags.DURABILITY_ENCHANTABLE).add(ModItems.MILITARY_SHOVEL.get())
 
         ModItems.PERKS.entries.forEach {
             val item = it.get()
