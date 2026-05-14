@@ -52,7 +52,8 @@ open class IffItem : Item(Properties().stacksTo(1)), ICurioItem {
                     .filter { it is VehicleEntity && SeekTool.NOT_IN_SMOKE.test(it) }
                     .toList()
 
-                for (player in server.playerList.players) {
+                val players = server.playerList.players
+                for (player in players) {
                     if (!player.isAlive) continue
                     CuriosApi.getCuriosInventory(player)
                         .flatMap { c -> c.findFirstCurio(ModItems.IFF.get()) }
@@ -69,9 +70,10 @@ open class IffItem : Item(Properties().stacksTo(1)), ICurioItem {
                             }.toList()
                             sendPacketTo(player, EntitySyncMessage(level.dimension().location(), list, true))
 
-                            val playerList = server.playerList.players
+                            val playerList = players
                                 .asSequence()
                                 .mapNotNull {
+                                    if (level != it.level()) return@mapNotNull null
                                     if (!SeekTool.IS_FRIENDLY.test(player, it)) return@mapNotNull null
                                     val vehicle = it.vehicle
                                     if (vehicle != null) {

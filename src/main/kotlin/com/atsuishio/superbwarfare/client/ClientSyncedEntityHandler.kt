@@ -63,9 +63,7 @@ object ClientSyncedEntityHandler {
     }
 
     fun syncPlayerInfo(dim: ResourceLocation, list: List<SyncedPlayerInfo>) {
-        val level = mc.level ?: return
-        if (dim != level.dimension().location()) return
-
+        if (mc.level == null) return
         val time = System.currentTimeMillis()
         for (info in list) {
             val key = SyncedPlayerKey(dim, info.uuid)
