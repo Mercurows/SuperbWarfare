@@ -112,14 +112,28 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     }
 
     override fun initCapabilities(stack: ItemStack, nbt: CompoundTag?): ICapabilityProvider? {
-        val cap = ItemEnergyStorage(
-            stack,
-            { _ -> GunData.get(stack, GunProp.MAX_ENERGY) },
-            { _ -> GunData.get(stack, GunProp.MAX_RECEIVE_ENERGY) },
-            { _ -> GunData.get(stack, GunProp.MAX_EXTRACT_ENERGY) }
-        )
-
-        return ItemEnergyProvider(stack, LazyOptional.of { cap })
+        return if (stack.item !is GunItem) {
+            ItemEnergyProvider(
+                stack,
+                LazyOptional.of {
+                    ItemEnergyStorage(
+                        stack,
+                        { _ -> 0 },
+                        { _ -> -1 },
+                        { _ -> -1 }
+                    )
+                }
+            )
+        } else {
+            ItemEnergyProvider(stack, LazyOptional.of {
+                ItemEnergyStorage(
+                    stack,
+                    { _ -> GunData.get(stack, GunProp.MAX_ENERGY) },
+                    { _ -> GunData.get(stack, GunProp.MAX_RECEIVE_ENERGY) },
+                    { _ -> GunData.get(stack, GunProp.MAX_EXTRACT_ENERGY) }
+                )
+            })
+        }
     }
 
     override fun isBarVisible(stack: ItemStack): Boolean {
@@ -798,14 +812,17 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                         entity.setType(CannonShellEntity.Type.AP)
                         entity.durability(data.get(GunProp.AP_DURABILITY))
                     }
+
                     "HE" -> {
                         entity.setType(CannonShellEntity.Type.HE)
                     }
+
                     "CM" -> {
                         entity.setType(CannonShellEntity.Type.CM)
                         entity.setSpreadAmount(data.get(GunProp.SPREAD_AMOUNT))
                         entity.setSpreadAngle(data.get(GunProp.SPREAD_ANGLE))
                     }
+
                     "WP" -> {
                         entity.setType(CannonShellEntity.Type.WP)
                         entity.setSpreadAmount(data.get(GunProp.SPREAD_AMOUNT))
@@ -821,9 +838,11 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                         entity.setType(MediumRocketEntity.Type.AP)
                         entity.durability(data.get(GunProp.AP_DURABILITY))
                     }
+
                     "HE" -> {
                         entity.setType(MediumRocketEntity.Type.HE)
                     }
+
                     "CM" -> {
                         entity.setType(MediumRocketEntity.Type.CM)
                         entity.setSpreadAmount(data.get(GunProp.SPREAD_AMOUNT))
