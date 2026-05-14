@@ -44,7 +44,7 @@ object ModEntities {
     val SENPAI = register(
         "senpai",
         EntityType.Builder.of(::SenpaiEntity, MobCategory.MONSTER)
-            .setTrackingRange(64).setUpdateInterval(3).sized(0.65f, 1.7f)
+            .setTrackingRange(64).setUpdateInterval(3).sized(0.65f, 2f)
     )
 
     @JvmField
