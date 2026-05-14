@@ -56,10 +56,10 @@ open class AmmoPerk : Perk {
         if (this.mobEffects().isEmpty()) return
         val amplifier = this.getEffectAmplifier(instance)
         val duration = this.getEffectDuration(instance)
-        val mobEffectInstances = arrayListOf<MobEffectInstance>()
+        val mobEffectInstances = arrayListOf<Supplier<MobEffectInstance>>()
         this.mobEffects()
             .forEach {
-                mobEffectInstances.add(
+                mobEffectInstances.add {
                     MobEffectInstance(
                         Holder.direct(it),
                         duration,
@@ -67,7 +67,7 @@ open class AmmoPerk : Perk {
                         false,
                         !this.hideParticle
                     )
-                )
+                }
             }
         entity.effect(mobEffectInstances)
     }

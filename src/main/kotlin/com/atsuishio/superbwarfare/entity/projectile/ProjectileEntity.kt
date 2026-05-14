@@ -67,10 +67,8 @@ import net.neoforged.neoforge.entity.PartEntity
 import net.neoforged.neoforge.event.EventHooks
 import net.neoforged.neoforge.network.PacketDistributor
 import java.util.*
-import java.util.function.BiFunction
+import java.util.function.*
 import java.util.function.Function
-import java.util.function.Predicate
-import java.util.function.ToDoubleFunction
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.max
@@ -131,7 +129,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
     var isPenetrating: Boolean = false
 
     // 子弹造成的状态效果
-    private val mobEffects = ArrayList<MobEffectInstance>()
+    private val mobEffects = ArrayList<Supplier<MobEffectInstance>>()
 
     // 发射子弹的武器ID
     var gunItemId: String? = null
@@ -903,7 +901,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
 
         if (!this.mobEffects.isEmpty() && entity is LivingEntity) {
             for (instance in this.mobEffects) {
-                entity.addEffect(MobEffectInstance(instance), this.shooter)
+                entity.addEffect(MobEffectInstance(instance()), this.shooter)
             }
         }
 
@@ -1071,7 +1069,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
         return this
     }
 
-    fun effect(mobEffectInstances: List<MobEffectInstance>): ProjectileEntity {
+    fun effect(mobEffectInstances: List<Supplier<MobEffectInstance>>): ProjectileEntity {
         this.mobEffects.addAll(mobEffectInstances)
         return this
     }
