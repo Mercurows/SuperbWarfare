@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.projectile
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.setValue
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
 import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
 import com.atsuishio.superbwarfare.tools.SeekTool
@@ -127,6 +128,7 @@ abstract class MissileProjectile : DestroyableProjectile, CustomSyncMotionEntity
         val diffY = Mth.wrapDegrees(targetAngleY - this.yRot)
         val diffX = Mth.wrapDegrees(targetAngleX - this.xRot)
 
+        deltaMovement = deltaMovement.scale(1 - 0.0004 * VehicleVecUtils.calculateAngle(vec3, v0))
         this.yRot += (0.95f * diffY).coerceIn(-turnSpeed, turnSpeed)
         this.xRot += (0.95f * diffX).coerceIn(-turnSpeed, turnSpeed)
     }
