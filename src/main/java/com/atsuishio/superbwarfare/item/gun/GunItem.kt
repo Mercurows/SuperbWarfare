@@ -75,11 +75,17 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
     protected val random: RandomSource = RandomSource.create()
 
-    override fun getMaxEnergy(stack: ItemStack) = GunData.get(stack, GunProp.MAX_ENERGY)
+    override fun getMaxEnergy(stack: ItemStack): Int {
+        return if (stack.item is GunItem) GunData.get(stack, GunProp.MAX_ENERGY) else 0
+    }
 
-    override fun getMaxReceiveEnergy(stack: ItemStack) = GunData.get(stack, GunProp.MAX_RECEIVE_ENERGY)
+    override fun getMaxReceiveEnergy(stack: ItemStack): Int {
+        return if (stack.item is GunItem) GunData.get(stack, GunProp.MAX_RECEIVE_ENERGY) else -1
+    }
 
-    override fun getMaxExtractEnergy(stack: ItemStack) = GunData.get(stack, GunProp.MAX_EXTRACT_ENERGY)
+    override fun getMaxExtractEnergy(stack: ItemStack): Int {
+        return if (stack.item is GunItem) GunData.get(stack, GunProp.MAX_EXTRACT_ENERGY) else -1
+    }
 
     @JvmField
     val reloadTimeBehaviors = mutableMapOf<Int, Consumer<GunData>?>()
