@@ -19,7 +19,7 @@ open class AmmoPerk : Perk {
     val slug: Boolean
     val rgb: FloatArray
     val hideParticle: Boolean
-    val mobEffects: () -> ArrayList<MobEffect>
+    val mobEffects: ArrayList<Holder<MobEffect>>
 
     constructor(builder: Builder) : super(builder.descriptionId, builder.type) {
         this.bypassArmorRate = builder.bypassArmorRate
@@ -28,7 +28,7 @@ open class AmmoPerk : Perk {
         this.slug = builder.slug
         this.rgb = builder.rgb
         this.hideParticle = builder.hideParticle
-        this.mobEffects = { builder.mobEffects }
+        this.mobEffects = builder.mobEffects
     }
 
     constructor(descriptionId: String, type: Type) : this(Builder(descriptionId, type))
@@ -53,15 +53,15 @@ open class AmmoPerk : Perk {
     ) {
         if (entity !is ProjectileEntity) return
         entity.setRGB(this.rgb)
-        if (this.mobEffects().isEmpty()) return
+        if (this.mobEffects.isEmpty()) return
         val amplifier = this.getEffectAmplifier(instance)
         val duration = this.getEffectDuration(instance)
         val mobEffectInstances = arrayListOf<Supplier<MobEffectInstance>>()
-        this.mobEffects()
+        this.mobEffects
             .forEach {
                 mobEffectInstances.add {
                     MobEffectInstance(
-                        Holder.direct(it),
+                        it,
                         duration,
                         amplifier,
                         false,
@@ -101,7 +101,7 @@ open class AmmoPerk : Perk {
         var slug: Boolean = false
         var rgb = floatArrayOf(1f, 222 / 255f, 39 / 255f)
         var hideParticle: Boolean = false
-        val mobEffects = arrayListOf<MobEffect>()
+        val mobEffects = arrayListOf<Holder<MobEffect>>()
 
         fun bypassArmorRate(bypassArmorRate: Double): Builder {
             this.bypassArmorRate = bypassArmorRate.coerceIn(-1.0, 1.0)
@@ -130,8 +130,8 @@ open class AmmoPerk : Perk {
             return this
         }
 
-        fun mobEffect(mobEffect: Supplier<out MobEffect>): Builder {
-            this.mobEffects += mobEffect.get()
+        fun mobEffect(mobEffect: Holder<MobEffect>): Builder {
+            this.mobEffects += mobEffect
             return this
         }
 

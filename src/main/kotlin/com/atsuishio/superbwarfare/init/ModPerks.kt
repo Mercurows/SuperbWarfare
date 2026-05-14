@@ -53,7 +53,7 @@ object ModPerks {
         AmmoPerk(
             AmmoPerk.Builder("poisonous_bullet", Perk.Type.AMMO).bypassArmorRate(0.0).damageRate(1.0)
                 .speedRate(1.0).rgb(48, 131, 6)
-                .mobEffect { MobEffects.POISON.value() }
+                .mobEffect(MobEffects.POISON)
         )
     }
     @JvmField val BEAST_BULLET = registerAmmoPerk("beast_bullet") { BeastBullet }

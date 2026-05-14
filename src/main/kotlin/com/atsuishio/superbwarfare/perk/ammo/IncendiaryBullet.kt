@@ -13,7 +13,7 @@ import net.minecraft.world.entity.Entity
 object IncendiaryBullet : AmmoPerk(
     Builder("incendiary_bullet", Type.AMMO).bypassArmorRate(-0.4).damageRate(0.7).speedRate(0.75).slug()
         .rgb(230, 131, 65)
-        .mobEffect { ModMobEffects.BURN.value() }
+        .mobEffect(ModMobEffects.BURN)
 ) {
     override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) {
         super.modifyProperty(modifier)

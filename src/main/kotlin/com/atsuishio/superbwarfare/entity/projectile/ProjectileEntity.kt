@@ -561,7 +561,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
             val size = 10
 
             var scores = stack.get(ModDataComponents.TRANSCRIPT_SCORE)
-            if (scores == null) scores = mutableListOf<Pair<Int, Double>>()
+            if (scores == null) scores = mutableListOf()
 
             val queue = ArrayDeque(scores)
             queue.offer(Pair<Int, Double>(score, distance))

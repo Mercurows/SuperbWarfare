@@ -11,7 +11,7 @@ import net.minecraft.world.entity.monster.Vex
 
 object RiotBullet : AmmoPerk(
     Builder("riot_bullet", Type.AMMO).bypassArmorRate(-0.3).damageRate(0.9).speedRate(0.8).slug().rgb(70, 35, 230)
-        .mobEffect { MobEffects.MOVEMENT_SLOWDOWN.value() }.mobEffect { MobEffects.WEAKNESS.value() }
+        .mobEffect(MobEffects.MOVEMENT_SLOWDOWN).mobEffect(MobEffects.WEAKNESS)
 ) {
     override fun getModifiedDamage(
         damage: Float,

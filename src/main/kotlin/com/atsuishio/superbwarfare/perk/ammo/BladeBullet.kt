@@ -10,7 +10,7 @@ import com.atsuishio.superbwarfare.perk.PerkInstance
 
 object BladeBullet : AmmoPerk(
     Builder("blade_bullet", Type.AMMO).damageRate(0.6).speedRate(0.8).rgb(0xB4, 0x4B, 0x88)
-        .mobEffect { ModMobEffects.TRAUMA.value() }
+        .mobEffect(ModMobEffects.TRAUMA)
 ) {
     override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) {
         super.modifyProperty(modifier)
