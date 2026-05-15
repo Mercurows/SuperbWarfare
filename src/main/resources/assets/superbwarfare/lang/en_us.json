@@ -1064,6 +1064,8 @@
   "warning.superbwarfare.title.snapshot": "[SuperbWarfare Gameplay Warning]",
   "warning.superbwarfare.content.snapshot": "It has been detected that Minecraft is running a snapshot version of SuperbWarfare mod. This version may be incompatible with some add-on mods, cause unknown bugs, or even have irreversible effects on existing save files. If you wish to continue playing this version, please create a new save file to do so!",
 
+  "pack.superbwarfare.sbw_legacy": "Superb Warfare Legacy Textures",
+
   "superbwarfare.book.superb_warfare_manual": "Superb Warfare Manual",
   "superbwarfare.book.superb_warfare_manual.des": "A tutorial on Superb Warfare mod, teaching you how to become a superb soldier (WIP)",
   "superbwarfare.category.weapon": "Weapons",

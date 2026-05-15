@@ -13,7 +13,11 @@ import com.atsuishio.superbwarfare.data.CustomData
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.network.initializeNetwork
 import com.atsuishio.superbwarfare.tiers.ModArmorMaterial
+import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.server.packs.PackType
+import net.minecraft.server.packs.repository.Pack
+import net.minecraft.server.packs.repository.PackSource
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.bus.api.IEventBus
 import net.neoforged.bus.api.SubscribeEvent
@@ -25,6 +29,7 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent
 import net.neoforged.fml.loading.FMLEnvironment
 import net.neoforged.neoforge.client.event.ClientTickEvent
 import net.neoforged.neoforge.common.NeoForge
+import net.neoforged.neoforge.event.AddPackFindersEvent
 import net.neoforged.neoforge.event.tick.ServerTickEvent
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent
 import org.apache.logging.log4j.LogManager
@@ -69,6 +74,7 @@ class Mod(bus: IEventBus, container: ModContainer) {
         bus.addListener<FMLCommonSetupEvent> { ModItems.registerDispenserBehavior() }
 
         bus.addListener<RegisterPayloadHandlersEvent> { initializeNetwork(it) }
+        bus.addListener<AddPackFindersEvent> { onRegisterBuiltInResourcePacks(it) }
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
             CompatHolder.hasMod(CompatHolder.CLOTH_CONFIG) { ClothConfigHelper.registerScreen() }
@@ -91,7 +97,6 @@ class Mod(bus: IEventBus, container: ModContainer) {
     @Suppress("unused")
     private fun tick(event: ClientTickEvent.Post) = executeWork(CLIENT_QUEUE)
 
-
     private fun executeWork(workQueueC: MutableCollection<Task>) {
         workQueueC.removeAll(
             workQueueC
@@ -111,6 +116,17 @@ class Mod(bus: IEventBus, container: ModContainer) {
         MouseMovementHandler.init()
         MolangVariable.register()
         event.enqueueWork { ModSoundInstances.init() }
+    }
+
+    private fun onRegisterBuiltInResourcePacks(event: AddPackFindersEvent) {
+        event.addPackFinders(
+            loc("resourcepacks/sbw_legacy"),
+            PackType.CLIENT_RESOURCES,
+            Component.translatable("pack.superbwarfare.sbw_legacy"),
+            PackSource.BUILT_IN,
+            false,
+            Pack.Position.TOP
+        )
     }
 
     companion object {
