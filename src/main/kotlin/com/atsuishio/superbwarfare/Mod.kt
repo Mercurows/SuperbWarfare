@@ -11,16 +11,25 @@ import com.atsuishio.superbwarfare.config.SERVER_CONFIG
 import com.atsuishio.superbwarfare.data.CustomData
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.network.NetworkRegistry
+import net.minecraft.SharedConstants
+import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.server.packs.PackType
+import net.minecraft.server.packs.repository.Pack
+import net.minecraft.server.packs.repository.PackSource
+import net.minecraft.world.flag.FeatureFlagSet
 import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.event.AddPackFindersEvent
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.event.TickEvent.ClientTickEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.ModList
 import net.minecraftforge.fml.ModLoadingContext
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.config.ModConfig
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
+import net.minecraftforge.resource.PathPackResources
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import thedarkcolour.kotlinforforge.forge.MOD_BUS
@@ -59,6 +68,7 @@ class Mod {
         bus.addListener<FMLCommonSetupEvent> { onCommonSetup(it) }
         bus.addListener<FMLClientSetupEvent> { onClientSetup(it) }
         bus.addListener<FMLCommonSetupEvent> { ModItems.registerDispenserBehavior() }
+        bus.addListener<AddPackFindersEvent> { onRegisterBuiltInResourcePacks(it) }
 
         if (TACZGunEventHandler.compatCondition()) {
             MinecraftForge.EVENT_BUS.addListener(TACZGunEventHandler::entityHurtByTACZGun)
@@ -107,6 +117,32 @@ class Mod {
         MolangVariable.register()
         event.enqueueWork { ModScreens.register() }
         event.enqueueWork { ModSoundInstances.init() }
+    }
+
+    private fun onRegisterBuiltInResourcePacks(event: AddPackFindersEvent) {
+        val info = Pack.Info(
+            Component.literal("Superb Warfare - Legacy Textures"),
+            SharedConstants.getCurrentVersion().getPackVersion(PackType.SERVER_DATA),
+            SharedConstants.getCurrentVersion().getPackVersion(PackType.CLIENT_RESOURCES),
+            FeatureFlagSet.of(),
+            false
+        )
+
+        val path = ModList.get().getModFileById(MODID).file.findResource("resourcepacks/sbw_legacy")
+
+        val pack = Pack.create(
+            "${MODID}:resourcepacks/sbw_legacy",
+            Component.translatable("pack.superbwarfare.sbw_legacy"),
+            false,
+            { PathPackResources(it, true, path) },
+            info,
+            PackType.CLIENT_RESOURCES,
+            Pack.Position.TOP,
+            false,
+            PackSource.BUILT_IN
+        )
+
+        event.addRepositorySource { it.accept(pack) }
     }
 
     companion object {
