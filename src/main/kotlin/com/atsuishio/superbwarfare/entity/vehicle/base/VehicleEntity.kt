@@ -3072,6 +3072,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                         && !p.type.`is`(ModTags.EntityTypes.DECOY)
                         && SeekTool.NOT_IN_SMOKE.test(p)
                         && p !== shooter
+                        && p.vehicle != shooter.vehicle
                         && (p !is Projectile)
             }, distance
         )
