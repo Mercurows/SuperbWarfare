@@ -195,6 +195,7 @@ open class Tm62Entity : Entity, OwnableEntity {
             ) { true }.asSequence().filter {
                 it != this && !(it is Player && it.isSpectator)
                         && it !is HangingEntity
+                        && it !is Display
                         && !it.type.`is`(ModTags.EntityTypes.DECOY)
                         && (it.boundingBox.size > 1.5 || (it.boundingBox.size > 0.9 && it.deltaMovement.y() < -0.35))
                         && if (ExplosionConfig.FRIENDLY_MINES.get()) {
