@@ -137,7 +137,7 @@ object MiscConfig {
     val STEEL_COIL_AWAKE_PERCENTAGE = buildServerConfig {
         comment("The minimum health percentage for activating steel coils")
         comment("激怒钢卷所需的最小生命值比例")
-        define("steel_coil_awake_percentage", 0.99f)
+        defineInRange("steel_coil_awake_percentage", 0.99, 0.0, 1.0)
     }
 
     @JvmField
