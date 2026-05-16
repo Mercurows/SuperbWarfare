@@ -788,7 +788,7 @@ object VehicleEngineUtils {
         val dotViewVector = deltaMovement.dot(getViewVector(1f))
         val normalizeDotViewVector = deltaMovement.normalize().dot(getViewVector(1f))
 
-        var f = Mth.clamp(0.985 - 0.0017 * resistance * speedSqr - 0.00001 * (1 - Mth.abs(normalizeDotViewVector.toFloat())), 0.01, 0.99).toFloat()
+        var f = Mth.clamp(0.96 - 0.0017 * resistance * speedSqr - 0.00001 * (1 - Mth.abs(normalizeDotViewVector.toFloat())), 0.01, 0.99).toFloat()
 
         if (onGround()) {
             if (isWreck) {
@@ -803,7 +803,7 @@ object VehicleEngineUtils {
             val forward = dotViewVector > 0
             deltaMovement = deltaMovement.add(
                 getViewVector(1f)
-                    .scale((if (forward) 0.015 else -0.015) * dotViewVector)
+                    .scale((if (forward) 0.04 else -0.04) * dotViewVector)
             )
         }
 
