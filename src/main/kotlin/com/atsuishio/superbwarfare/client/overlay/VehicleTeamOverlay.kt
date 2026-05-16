@@ -42,7 +42,11 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
         val camera = mc.gameRenderer.mainCamera
         var viewPos = camera.position
         var viewVec = Vec3(camera.lookVector)
-        val distance = VehicleConfig.VEHICLE_INFO_DISPLAY_DISTANCE.get().toDouble()
+        val distance = try {
+            VehicleConfig.VEHICLE_INFO_DISPLAY_DISTANCE.get().toDouble()
+        } catch (_: Exception) {
+            196.0
+        }
 
         lookingEntity = TraceTool.camerafFindLookingEntity(
             player,
