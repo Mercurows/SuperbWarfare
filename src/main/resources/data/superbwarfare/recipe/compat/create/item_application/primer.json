@@ -10,11 +10,11 @@
   ],
   "results": [
     {
-      "item": "superbwarfare:primer",
+      "id": "superbwarfare:primer",
       "count": 4
     }
   ],
-  "conditions": [
+  "neoforge:conditions": [
     {
       "type": "neoforge:mod_loaded",
       "modid": "create"

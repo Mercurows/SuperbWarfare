@@ -10,10 +10,10 @@
   ],
   "results": [
     {
-      "item": "superbwarfare:large_shell_he"
+      "id": "superbwarfare:large_shell_he"
     }
   ],
-  "conditions": [
+  "neoforge:conditions": [
     {
       "type": "neoforge:mod_loaded",
       "modid": "create"

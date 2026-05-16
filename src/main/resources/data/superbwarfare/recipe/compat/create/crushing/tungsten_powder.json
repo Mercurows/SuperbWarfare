@@ -1,4 +1,10 @@
 {
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "create"
+    }
+  ],
   "type": "create:crushing",
   "ingredients": [
     {
@@ -10,12 +16,6 @@
     {
       "count": 1,
       "id": "superbwarfare:tungsten_powder"
-    }
-  ],
-  "neoforge:conditions": [
-    {
-      "type": "neoforge:mod_loaded",
-      "modid": "create"
     }
   ]
 }
