@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.world.saveddata
 
+import com.atsuishio.superbwarfare.config.server.VehicleConfig
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import net.minecraft.core.HolderLookup
 import net.minecraft.nbt.CompoundTag
@@ -61,6 +62,8 @@ class ChunkPosSavedData : SavedData() {
         @SubscribeEvent
         fun posSavedDataOnServerStarted(event: ServerStartedEvent) {
             val server = event.server
+            if (!VehicleConfig.VEHICLE_CHUNK_LOADING.get()) return
+
             for (level in server.allLevels) {
                 val data = level.dataStorage.get(
                     Factory(
@@ -84,6 +87,8 @@ class ChunkPosSavedData : SavedData() {
         @SubscribeEvent
         fun posSavedDataOnServerStopping(event: ServerStoppingEvent) {
             val server = event.server
+            if (!VehicleConfig.VEHICLE_CHUNK_LOADING.get()) return
+
             for (level in server.allLevels) {
                 val data = level.dataStorage.computeIfAbsent(
                     Factory(

@@ -24,6 +24,7 @@ val CONFIG_COMMAND = buildCommand("config") {
     booleanConfig(VehicleConfig::COLLECT_DROPS_BY_CRASHING)
     booleanConfig(VehicleConfig::VEHICLE_ITEM_PICKUP)
     booleanConfig(VehicleConfig::SAME_TEAM_ENTER_VEHICLE)
+    booleanConfig(VehicleConfig::VEHICLE_CHUNK_LOADING)
     booleanConfig(VehicleConfig::COLLISION_DESTROY_SOFT_BLOCKS)
     booleanConfig(VehicleConfig::COLLISION_DESTROY_NORMAL_BLOCKS)
     booleanConfig(VehicleConfig::COLLISION_DESTROY_HARD_BLOCKS)
