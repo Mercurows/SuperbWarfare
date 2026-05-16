@@ -180,6 +180,7 @@ open class Blu43Entity : Entity, OwnableEntity {
                 it != this
                         && !(it is Player && it.isSpectator)
                         && it !is HangingEntity
+                        && it !is Display
                         && !it.type.`is`(ModTags.EntityTypes.DECOY)
                         && it.boundingBox.size > 0.4
                         && if (ExplosionConfig.FRIENDLY_MINES.get()) {
