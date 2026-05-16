@@ -53,6 +53,13 @@ object VehicleConfig {
     }
 
     @JvmField
+    val VEHICLE_CHUNK_LOADING = buildServerConfig {
+        comment("Allow certain vehicles to load chunks")
+        comment("是否允许部分载具加载区块")
+        define("vehicle_chunk_loading", true)
+    }
+
+    @JvmField
     val SAME_TEAM_ENTER_VEHICLE = buildServerConfig {
         comment("Set true to allow only entities in same team to enter vehicle")
         comment("是否仅允许同队伍玩家进入同一辆载具")

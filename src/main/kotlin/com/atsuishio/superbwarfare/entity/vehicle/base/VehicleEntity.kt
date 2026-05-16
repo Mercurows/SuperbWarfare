@@ -2156,7 +2156,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             this.updateOBB()
         }
 
-        if (level() is ServerLevel && computed().keepChunkLoaded) {
+        if (level() is ServerLevel && VehicleConfig.VEHICLE_CHUNK_LOADING.get() && computed().keepChunkLoaded) {
             this.keepChunkLoaded(this.position())
             this.keepChunkLoaded(position().add(deltaMovement.normalize().scale(16.0)))
         }
