@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.entity.projectile.BasicGeoProjectileEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
 import com.atsuishio.superbwarfare.resource.BedrockModelLoader
+import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
 import com.maydaymemory.mae.basic.ArrayPoseBuilder
 import com.maydaymemory.mae.basic.ZYXBoneTransformFactory
 import com.maydaymemory.mae.blend.EulerAdditiveBlender
@@ -65,7 +66,9 @@ open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context) :
 
         model.renderToBuffer(
             poseStack,
-            vertexConsumer,
+            buffer,
+            RenderType.entityCutout(getTextureLocation(entity)),
+            BedrockModelRenderTypes.polyMeshCutout(getTextureLocation(entity)),
             packedLight,
             OverlayTexture.NO_OVERLAY
         )
@@ -74,7 +77,9 @@ open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context) :
         if (texture != null) {
             model.renderToBuffer(
                 poseStack,
-                buffer.getBuffer(RenderType.eyes(texture)),
+                buffer,
+                RenderType.entityCutout(getTextureLocation(entity)),
+                BedrockModelRenderTypes.polyMeshCutout(getTextureLocation(entity)),
                 packedLight,
                 OverlayTexture.NO_OVERLAY
             )
