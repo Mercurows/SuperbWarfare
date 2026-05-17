@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.entity.living.SenpaiEntity
 import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.atsuishio.superbwarfare.resource.BedrockModelLoader.getModel
+import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
 import com.maydaymemory.mae.basic.ArrayPoseBuilder
 import com.maydaymemory.mae.basic.ZYXBoneTransformFactory
 import com.maydaymemory.mae.blend.EulerAdditiveBlender
@@ -41,16 +42,25 @@ class SenpaiRenderer(renderManager: EntityRendererProvider.Context) : EntityRend
         pPoseStack.mulPose(Axis.YP.rotationDegrees(180f))
         pPoseStack.mulPose(Axis.YP.rotationDegrees(-pEntity.getViewYRot(pPartialTick)))
 
-        val renderType = RenderType.entityCutout(getTextureLocation(pEntity))
-        val vertexConsumer = pBuffer.getBuffer(renderType)
+//        val renderType = RenderType.entityCutout(getTextureLocation(pEntity))
+//        val vertexConsumer = pBuffer.getBuffer(renderType)
 
         ani.context.partialTick = pPartialTick
         ani.tick()
         model.applyPose(BLENDER.blend(model.bindPose, ani.getPose()))
 
+//        model.renderToBuffer(
+//            pPoseStack,
+//            vertexConsumer,
+//            pPackedLight,
+//            OverlayTexture.pack(0f, pEntity.hurtTime > 0 || pEntity.deathTime > 0)
+//        )
+
         model.renderToBuffer(
             pPoseStack,
-            vertexConsumer,
+            pBuffer,
+            RenderType.entityCutout(getTextureLocation(pEntity)),
+            BedrockModelRenderTypes.polyMeshCutout(getTextureLocation(pEntity)),
             pPackedLight,
             OverlayTexture.pack(0f, pEntity.hurtTime > 0 || pEntity.deathTime > 0)
         )
