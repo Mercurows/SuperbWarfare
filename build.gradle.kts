@@ -23,6 +23,7 @@ group = "com.atsuishio.superbwarfare"
 
 repositories {
     mavenLocal()
+    mavenCentral()
     flatDir {
         dir("libs")
     }
@@ -60,12 +61,19 @@ repositories {
             includeGroup("curse.maven")
         }
     }
-
+    maven {
+        url = uri("https://api.modrinth.com/maven")
+    }
     maven {
         name = "Kotlin for Forge"
         url = uri("https://thedarkcolour.github.io/KotlinForForge/")
     }
-    mavenCentral()
+    maven {
+        url = uri("https://jitpack.io")
+        content {
+            includeGroup("com.github.MCModderAnchor")
+        }
+    }
 }
 
 base {
@@ -196,14 +204,14 @@ dependencies {
 
     // SBM
     val sbm = implementation(
-        group = "com.github.mcmodderanchor",
-        name = "simplebedrockmodel",
-        version = "2.3.2-neoforge-mc1.21.1",
+        group = "com.github.MCModderAnchor",
+        name = "SimpleBedrockModel",
+        version = "2.3.3-neoforge-mc1.21.1",
     )
     jarJar(sbm) {
         version {
             strictly("[2.0,3.0)")
-            prefer("2.3.2")
+            prefer("2.3.3")
         }
     }
     compileOnly("com.maydaymemory:mae:1.1.2") {
