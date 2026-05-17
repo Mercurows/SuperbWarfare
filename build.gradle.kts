@@ -88,6 +88,7 @@ sourceSets.main.get().resources {
 
 repositories {
     mavenLocal()
+    mavenCentral()
     flatDir {
         dir("libs")
     }
@@ -135,6 +136,12 @@ repositories {
         name = "Kotlin for Forge"
         url = uri("https://thedarkcolour.github.io/KotlinForForge/")
     }
+    maven {
+        url = uri("https://jitpack.io")
+        content {
+            includeGroup("com.github.mcmodderanchor")
+        }
+    }
     mavenCentral()
 }
 
@@ -157,9 +164,9 @@ dependencies {
     implementation(fg.deobf("com.eliotlash.mclib:mclib:20"))
 
     // SBM
-    val sbm = implementation(fg.deobf("com.github.mcmodderanchor:simplebedrockmodel:2.3.2-forge-mc1.20.1"))
+    val sbm = implementation(fg.deobf("com.github.mcmodderanchor:simplebedrockmodel:2.3.3-forge-mc1.20.1"))
     jarJar(sbm) {
-        jarJar.ranged(sbm, "[2.3.2,)")
+        jarJar.ranged(sbm, "[2.3.3,)")
     }
     compileOnly("com.maydaymemory:mae:1.1.2") {
         exclude("com.google.code.findbugs", "jsr305")
