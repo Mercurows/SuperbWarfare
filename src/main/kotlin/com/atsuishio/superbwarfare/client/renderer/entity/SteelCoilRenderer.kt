@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.renderer.entity
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.entity.living.SteelCoilEntity
 import com.atsuishio.superbwarfare.resource.BedrockModelLoader
+import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
 import net.minecraft.client.renderer.MultiBufferSource
@@ -35,7 +36,9 @@ class SteelCoilRenderer(renderManager: EntityRendererProvider.Context) :
 
         model.renderToBuffer(
             poseStack,
-            buffer.getBuffer(RenderType.entityCutout(this.getTextureLocation(entity))),
+            buffer,
+            RenderType.entityCutout(getTextureLocation(entity)),
+            BedrockModelRenderTypes.polyMeshCutout(getTextureLocation(entity)),
             packedLight,
             OverlayTexture.NO_OVERLAY
         )
