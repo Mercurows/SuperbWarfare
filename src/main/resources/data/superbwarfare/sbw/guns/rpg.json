@@ -8,13 +8,13 @@
   "ExplosionRadius": 11,
   "ZoomReload": false,
   "Headshot": 0,
-  "Velocity": 0.1,
+  "Velocity": 4,
   "Magazine": 1,
   "Weight": 7,
   "EmptyReloadTime": 100,
   "RPM": 120,
-  "Gravity": 0.0,
-  "ProjectileLife": 200,
+  "Gravity": 0.03,
+  "ProjectileLife": 100,
   "GunType": "DirectLauncher",
   "AmmoType": [
     "superbwarfare:rpg_rocket_tbg",
@@ -25,8 +25,8 @@
         "Damage": 450,
         "ExplosionDamage": 40,
         "ExplosionRadius": 5,
-        "Velocity": 0.1,
-        "Gravity": 0,
+        "Velocity": 6,
+        "Gravity": 0.015,
         "Icon": "superbwarfare:textures/gun_icon/rpg_standard_icon.png"
       }
     }
