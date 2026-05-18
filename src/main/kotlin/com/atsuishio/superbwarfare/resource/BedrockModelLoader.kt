@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.resource
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
+import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.model.BedrockArmorModel
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.BedrockAnimation
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.model.BedrockModel
@@ -26,6 +27,8 @@ object BedrockModelLoader {
     private val COMMON_MODELS_AND_ANIMATIONS = hashMapOf<ResourceLocation, ResourceLocation>()
     private val ARMOR_MODELS = mutableListOf<ResourceLocation>()
     private val ARMOR_MODELS_POJO = hashMapOf<ResourceLocation, BedrockArmorModel>()
+    private val VEHICLE_MODELS = mutableListOf<ResourceLocation>()
+    private val VEHICLE_MODELS_POJO = hashMapOf<ResourceLocation, BedrockVehicleModel>()
 
     // models and animations
     val SENPAI_MA = registerCommonModelAndAnimation("entity/senpai")
@@ -74,10 +77,11 @@ object BedrockModelLoader {
     val TM_62_MODEL = registerCommonModel("projectile/tm_62")
     val EDD_MODEL = registerCommonModel("projectile/edd")
 
-    val WHEEL_CHAIR = registerCommonModel("vehicle/wheel_chair")
-
     val BLUEPRINT_RESEARCH_TABLE_MODEL = registerCommonModel("block/blueprint_research_table")
     val FUMO_25_MODEL = registerCommonModel("block/fumo_25")
+
+    // vehicles
+    val WHEEL_CHAIR = registerVehicleModel("vehicle/wheel_chair")
 
     val COMMON_LOADER: RawResourceLoader = object : RawResourceLoader {
         override fun <T> load(inputStream: InputStream, clazz: Class<T>): T {
@@ -110,12 +114,19 @@ object BedrockModelLoader {
         return rl
     }
 
+    fun registerVehicleModel(path: String): ResourceLocation {
+        val rl = loc("$path.geo")
+        VEHICLE_MODELS.add(rl)
+        return rl
+    }
+
     @SubscribeEvent
     fun onRegisterBedrockModels(event: RegisterBedrockModelEvent) {
         with(event) {
             COMMON_MODELS.forEach { register(it, COMMON_LOADER) }
             COMMON_MODELS_AND_ANIMATIONS.forEach { register(it.key, COMMON_LOADER) }
             ARMOR_MODELS.forEach { register(it, COMMON_LOADER, ::BedrockArmorModel) }
+            VEHICLE_MODELS.forEach { register(it, COMMON_LOADER, ::BedrockVehicleModel) }
         }
     }
 
@@ -133,6 +144,11 @@ object BedrockModelLoader {
                 val model = it[path] as? BedrockArmorModel ?: return@forEach
                 ARMOR_MODELS_POJO[path] = model
             }
+            VEHICLE_MODELS.forEach { path ->
+                val model = it[path] as? BedrockVehicleModel ?: return@forEach
+                model.init()
+                VEHICLE_MODELS_POJO[path] = model
+            }
         }
     }
 
@@ -144,6 +160,11 @@ object BedrockModelLoader {
     @JvmStatic
     fun getArmorModel(location: ResourceLocation): BedrockArmorModel? {
         return ARMOR_MODELS_POJO[location]
+    }
+
+    @JvmStatic
+    fun getVehicleModel(location: ResourceLocation): BedrockVehicleModel? {
+        return VEHICLE_MODELS_POJO[location]
     }
 
     @JvmStatic
