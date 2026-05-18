@@ -73,6 +73,8 @@ object BedrockModelLoader {
     val TM_62_MODEL = registerCommonModel("projectile/tm_62")
     val EDD_MODEL = registerCommonModel("projectile/edd")
 
+    val WHEEL_CHAIR = registerCommonModel("vehicle/wheel_chair")
+
     val BLUEPRINT_RESEARCH_TABLE_MODEL = registerCommonModel("block/blueprint_research_table")
     val FUMO_25_MODEL = registerCommonModel("block/fumo_25")
 

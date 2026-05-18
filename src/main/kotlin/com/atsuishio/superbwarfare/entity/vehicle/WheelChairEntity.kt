@@ -1,9 +1,10 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
 import com.atsuishio.superbwarfare.Mod.Companion.queueServerWork
-import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModCriteriaTriggers
 import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import net.minecraft.core.Direction
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
@@ -16,7 +17,8 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 import org.joml.Math
 
-open class WheelChairEntity(type: EntityType<WheelChairEntity>, level: Level) : GeoVehicleEntity(type, level) {
+open class WheelChairEntity(type: EntityType<out WheelChairEntity>, level: Level) : VehicleEntity(type, level),
+    BasicGeoVehicleEntity {
     override fun playerTouch(pPlayer: Player) {
         if (this.position().distanceTo(pPlayer.position()) > 1.4
             || pPlayer === this.getFirstPassenger() && pPlayer.position().y > position().y
@@ -95,4 +97,6 @@ open class WheelChairEntity(type: EntityType<WheelChairEntity>, level: Level) : 
         }
         super.bounceHorizontal(direction)
     }
+
+    override fun getModel() = BedrockModelLoader.WHEEL_CHAIR
 }
