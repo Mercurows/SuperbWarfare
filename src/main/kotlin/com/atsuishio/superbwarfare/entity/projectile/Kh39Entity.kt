@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.ModTags
-import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
@@ -167,6 +166,4 @@ open class Kh39Entity(type: EntityType<out Kh39Entity>, level: Level) : MissileP
 
     override val maxHealth: Float
         get() = 70f
-
-    override fun getModel() = BedrockModelLoader.KH_39_MODEL
 }

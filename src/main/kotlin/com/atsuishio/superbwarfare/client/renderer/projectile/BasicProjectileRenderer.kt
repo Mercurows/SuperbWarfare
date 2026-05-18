@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.client.renderer.projectile
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.entity.projectile.BasicGeoProjectileEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
-import com.atsuishio.superbwarfare.resource.BedrockModelLoader
+import com.atsuishio.superbwarfare.resource.ProjectileModelReloadListener
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
 import com.maydaymemory.mae.basic.ArrayPoseBuilder
 import com.maydaymemory.mae.basic.ZYXBoneTransformFactory
@@ -22,7 +22,13 @@ import net.minecraft.world.entity.Entity
 open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context) :
     EntityRenderer<T>(manager) where T : Entity, T : BasicGeoProjectileEntity {
     override fun getTextureLocation(entity: T): ResourceLocation {
-        return loc("textures/bedrock/projectile/${entity.type.descriptionId.split(".")[2]}.png")
+        val (_, namespace, id) = entity.type.descriptionId.split(".")
+        return ResourceLocation(namespace, "textures/bedrock/projectile/$id.png")
+    }
+
+    fun getModelLocation(entity: T): ResourceLocation {
+        val (_,  namespace, id) = entity.type.descriptionId.split(".")
+        return ResourceLocation(namespace, id)
     }
 
     override fun shouldShowName(pEntity: T): Boolean {
@@ -38,22 +44,19 @@ open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context) :
         packedLight: Int
     ) {
         if (entity.tickCount <= entity.getHiddenTicks()) return
-        val model = BedrockModelLoader.getModel(entity.getModel()) ?: return
+        val model = ProjectileModelReloadListener.getModel(getModelLocation(entity)) ?: return
 
         poseStack.pushPose()
 
         poseStack.translate(0f, entity.bbHeight / 2, 0f)
 
-        //十分鬼畜而神秘的写法，直接用yaw的话会导致弹体在+-180°偏航时抽搐，遂采用这种脱裤子放屁的写法
+        // 十分鬼畜而神秘的写法，直接用yaw的话会导致弹体在+-180°偏航时抽搐，遂采用这种脱裤子放屁的写法
         poseStack.mulPose(Axis.YP.rotationDegrees(VehicleVecUtils.getYRotFromVector(entity.lookAngle).toFloat()))
         poseStack.mulPose(
             Axis.XP.rotationDegrees(
                 -VehicleVecUtils.getXRotFromVector(entity.lookAngle).toFloat() + 180f
             )
         )
-
-        val renderType = RenderType.entityTranslucent(getTextureLocation(entity))
-        val vertexConsumer = buffer.getBuffer(renderType)
 
         if (entity.getAnimationInstance() != null) {
             val ani = entity.getAnimationInstance()!!

@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.entity.projectile
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.forceHurt
 import net.minecraft.core.particles.ParticleTypes
@@ -119,8 +118,6 @@ open class RpgRocketTBGEntity : FastThrowableProjectile, BasicGeoProjectileEntit
     override fun getSound(): SoundEvent {
         return ModSounds.ROCKET_FLY.get()
     }
-
-    override fun getModel() = BedrockModelLoader.RPG_ROCKET_TBG_MODEL
 
     override fun getHiddenTicks() = 1
 }

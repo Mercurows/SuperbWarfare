@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.entity.projectile.Tm62Entity
-import com.atsuishio.superbwarfare.resource.BedrockModelLoader
+import com.atsuishio.superbwarfare.resource.ProjectileModelReloadListener
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
 import net.minecraft.client.renderer.MultiBufferSource
@@ -22,7 +22,7 @@ class Tm62Renderer(renderManager: EntityRendererProvider.Context) : EntityRender
         bufferIn: MultiBufferSource,
         packedLightIn: Int
     ) {
-        val model = BedrockModelLoader.getModel(BedrockModelLoader.TM_62_MODEL) ?: return
+        val model = ProjectileModelReloadListener.getModel(MODEL) ?: return
 
         poseStack.pushPose()
 
@@ -51,5 +51,6 @@ class Tm62Renderer(renderManager: EntityRendererProvider.Context) : EntityRender
 
     companion object {
         val TEXTURE = loc("textures/bedrock/projectile/tm_62.png")
+        val MODEL = loc("tm_62")
     }
 }

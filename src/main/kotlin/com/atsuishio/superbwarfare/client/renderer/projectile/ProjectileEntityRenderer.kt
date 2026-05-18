@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.ClientRenderHandler
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
-import com.atsuishio.superbwarfare.resource.BedrockModelLoader
+import com.atsuishio.superbwarfare.resource.ProjectileModelReloadListener
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
@@ -39,7 +39,7 @@ class ProjectileEntityRenderer(manager: EntityRendererProvider.Context) : Entity
         buffer: MultiBufferSource,
         packedLight: Int
     ) {
-        val model = BedrockModelLoader.getModel(BedrockModelLoader.PROJECTILE_MODEL) ?: return
+        val model = ProjectileModelReloadListener.getModel(MODEL) ?: return
         val eyePos = localPlayer?.eyePosition ?: return
 
         poseStack.pushPose()
@@ -76,5 +76,6 @@ class ProjectileEntityRenderer(manager: EntityRendererProvider.Context) : Entity
 
     companion object {
         val TEXTURE = loc("textures/bedrock/projectile/projectile.png")
+        val MODEL = loc("projectile")
     }
 }

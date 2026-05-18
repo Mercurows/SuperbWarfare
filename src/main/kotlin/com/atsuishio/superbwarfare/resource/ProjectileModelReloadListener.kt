@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.resource
 
 import com.atsuishio.superbwarfare.Mod
-import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.BedrockAnimation
+import com.github.mcmodderanchor.simplebedrockmodel.v1.common.model.BedrockModel
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.BedrockModelPOJO
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.packs.resources.ResourceManager
@@ -18,7 +18,10 @@ import net.minecraftforge.eventbus.api.SubscribeEvent
     modid = Mod.MODID,
     value = [Dist.CLIENT]
 )
-object VehicleModelReloadListener : BedrockModelReloadListener<BedrockVehicleModel>("models/bedrock/vehicle") {
+object ProjectileModelReloadListener : BedrockModelReloadListener<BedrockModel>(
+    "models/bedrock/projectile",
+    "animations/projectile"
+) {
     override fun apply(
         map: Map<ResourceLocation, BedrockModelPOJO>,
         resourceManager: ResourceManager,
@@ -26,9 +29,7 @@ object VehicleModelReloadListener : BedrockModelReloadListener<BedrockVehicleMod
     ) {
         super.apply(map, resourceManager, profiler)
         map.forEach { (location, pojo) ->
-            val model = BedrockVehicleModel(pojo)
-            model.init()
-            this.models[location] = model
+            this.models[location] = BedrockModel(pojo)
         }
         this.animFiles.forEach { (location, file) ->
             val model = this.models[location] ?: return@forEach
@@ -39,6 +40,6 @@ object VehicleModelReloadListener : BedrockModelReloadListener<BedrockVehicleMod
 
     @SubscribeEvent
     fun onAddClientResourceListener(event: RegisterClientReloadListenersEvent) {
-        event.registerReloadListener(VehicleModelReloadListener)
+        event.registerReloadListener(ProjectileModelReloadListener)
     }
 }

@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes.causeShockDamage
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
-import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.atsuishio.superbwarfare.tools.forceHurt
 import com.atsuishio.superbwarfare.tools.sendPacketTo
 import net.minecraft.server.level.ServerLevel
@@ -117,7 +116,5 @@ open class TaserBulletEntity(type: EntityType<out TaserBulletEntity>, level: Lev
             this.discard()
         }
     }
-
-    override fun getModel() = BedrockModelLoader.TASER_BULLET_MODEL
 }
 

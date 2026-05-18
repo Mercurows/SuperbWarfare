@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.entity.projectile
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.forceHurt
 import net.minecraft.core.particles.ParticleTypes
@@ -124,6 +123,5 @@ open class RpgRocketStandardEntity : FastThrowableProjectile, BasicGeoProjectile
         return 0.2f
     }
 
-    override fun getModel() = BedrockModelLoader.RPG_ROCKET_STANDARD_MODEL
     override fun getHiddenTicks() = 1
 }

@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.entity.projectile
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
-import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.atsuishio.superbwarfare.tools.forceHurt
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.Entity
@@ -77,8 +76,6 @@ open class GunGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity 
     override fun isFastMoving(): Boolean {
         return false
     }
-
-    override fun getModel() = BedrockModelLoader.GUN_GRENADE_MODEL
 
     override fun getHiddenTicks() = 1
 }

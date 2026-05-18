@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
-import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.atsuishio.superbwarfare.tools.CustomExplosion
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.SeekTool
@@ -320,6 +319,4 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
     override fun forceLoadChunk(): Boolean {
         return true
     }
-
-    override fun getModel() = BedrockModelLoader.MORTAR_SHELL_MODEL
 }
