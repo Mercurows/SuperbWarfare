@@ -1,11 +1,10 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
-import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
-import com.atsuishio.superbwarfare.resource.BedrockModelLoader
+import com.atsuishio.superbwarfare.resource.VehicleModelReloadListener
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
 import com.maydaymemory.mae.basic.ArrayPoseBuilder
@@ -44,7 +43,13 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
     protected var hideForPassengerWeaponStationControllerWhileZooming = false
 
     override fun getTextureLocation(entity: T): ResourceLocation {
-        return loc("textures/bedrock/vehicle/${entity.type.descriptionId.split(".")[2]}.png")
+        val (_, namespace, id) = entity.type.descriptionId.split(".")
+        return ResourceLocation(namespace, "textures/bedrock/vehicle/$id.png")
+    }
+
+    fun getModelLocation(entity: T): ResourceLocation {
+        val (_,  namespace, id) = entity.type.descriptionId.split(".")
+        return ResourceLocation(namespace, "$id.geo")
     }
 
     override fun shouldShowName(pEntity: T): Boolean {
@@ -59,7 +64,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         buffer: MultiBufferSource,
         packedLight: Int
     ) {
-        val model = BedrockModelLoader.getVehicleModel(entity.getModel()) ?: return
+        val model = VehicleModelReloadListener.getModel(getModelLocation(entity)) ?: return
 
         poseStack.pushPose()
 

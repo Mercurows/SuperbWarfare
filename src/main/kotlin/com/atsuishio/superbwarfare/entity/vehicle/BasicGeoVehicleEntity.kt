@@ -4,8 +4,6 @@ import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimat
 import net.minecraft.resources.ResourceLocation
 
 interface BasicGeoVehicleEntity {
-    fun getModel(): ResourceLocation
-
     fun getAnimation(): ResourceLocation? = null
 
     fun getAnimationInstance(): BasicProjectileAnimationInstance<*>? = null
