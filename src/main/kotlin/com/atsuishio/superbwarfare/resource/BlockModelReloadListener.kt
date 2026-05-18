@@ -7,9 +7,9 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.packs.resources.ResourceManager
 import net.minecraft.util.profiling.ProfilerFiller
 
-object ProjectileModelReloadListener : BedrockModelReloadListener<BedrockModel>(
-    "models/bedrock/projectile",
-    "animations/projectile"
+object BlockModelReloadListener : BedrockModelReloadListener<BedrockModel>(
+    "models/bedrock/block",
+    "animations/block"
 ) {
     override fun apply(
         map: Map<ResourceLocation, BedrockModelPOJO>,

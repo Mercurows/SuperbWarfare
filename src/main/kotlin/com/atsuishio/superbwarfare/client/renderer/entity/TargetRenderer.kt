@@ -2,8 +2,7 @@ package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.entity.living.TargetEntity
-import com.atsuishio.superbwarfare.resource.BedrockModelLoader
-import com.atsuishio.superbwarfare.resource.BedrockModelLoader.getModel
+import com.atsuishio.superbwarfare.resource.EntityModelReloadListener
 import com.maydaymemory.mae.basic.ArrayPoseBuilder
 import com.maydaymemory.mae.basic.ZYXBoneTransformFactory
 import com.maydaymemory.mae.blend.EulerAdditiveBlender
@@ -30,7 +29,7 @@ class TargetRenderer(renderManager: EntityRendererProvider.Context) : EntityRend
         buffer: MultiBufferSource,
         packedLight: Int
     ) {
-        val model = getModel(BedrockModelLoader.TARGET_MA.first) ?: return
+        val model = EntityModelReloadListener.getModel(MODEL) ?: return
         val ani = entity.animationInstance ?: return
 
         poseStack.pushPose()
@@ -64,5 +63,6 @@ class TargetRenderer(renderManager: EntityRendererProvider.Context) : EntityRend
         val TEXTURE = loc("textures/bedrock/entity/target.png")
         val TEXTURE_E = loc("textures/bedrock/entity/target_e.png")
         val BLENDER: EulerAdditiveBlender = SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }
+        val MODEL = loc("target")
     }
 }
