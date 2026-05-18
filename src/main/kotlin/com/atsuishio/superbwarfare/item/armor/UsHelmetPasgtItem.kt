@@ -27,46 +27,45 @@ class UsHelmetPasgtItem :
     companion object {
         val TEXTURE = loc("textures/bedrock/armor/us_helmet_pasgt.png")
         val MODEL = loc("us_helmet_pasgt")
-    }
 
-    @SubscribeEvent
-    fun registerRender(event: RegisterClientExtensionsEvent) {
-        event.registerItem(object : IClientItemExtensions {
-            private var renderer: GeoArmorRenderer? = null
+        @SubscribeEvent
+        fun registerRender(event: RegisterClientExtensionsEvent) {
+            event.registerItem(object : IClientItemExtensions {
+                private var renderer: GeoArmorRenderer? = null
 
-            override fun getHumanoidArmorModel(
-                livingEntity: LivingEntity,
-                itemStack: ItemStack,
-                equipmentSlot: EquipmentSlot,
-                original: HumanoidModel<*>
-            ): HumanoidModel<*> {
-                if (this.renderer == null) {
-                    this.renderer = GeoArmorRenderer(
-                        ArmorModelReloadListener.getModel(MODEL),
-                        TEXTURE
-                    )
+                override fun getHumanoidArmorModel(
+                    livingEntity: LivingEntity,
+                    itemStack: ItemStack,
+                    equipmentSlot: EquipmentSlot,
+                    original: HumanoidModel<*>
+                ): HumanoidModel<*> {
+                    if (this.renderer == null) {
+                        this.renderer = GeoArmorRenderer(
+                            ArmorModelReloadListener.getModel(MODEL),
+                            TEXTURE
+                        )
+                    }
+
+                    this.renderer!!.preparePose(livingEntity, itemStack, equipmentSlot, original)
+                    return this.renderer!!
                 }
-
-                this.renderer!!.preparePose(livingEntity, itemStack, equipmentSlot, original)
-                return this.renderer!!
-            }
-        }, ModItems.US_HELMET_PASGT)
+            }, ModItems.US_HELMET_PASGT)
+        }
     }
-}
 
-override fun getDefaultAttributeModifiers(stack: ItemStack): ItemAttributeModifiers {
-    val modifiers = super.getDefaultAttributeModifiers(stack)
-    val list = ArrayList<ItemAttributeModifiers.Entry>(modifiers.modifiers())
-    list.add(
-        ItemAttributeModifiers.Entry(
-            ModAttributes.BULLET_RESISTANCE, AttributeModifier(
-                Mod.ATTRIBUTE_MODIFIER,
-                0.2 * max(0.0, 1 - stack.damageValue.toDouble() / stack.maxDamage),
-                AttributeModifier.Operation.ADD_VALUE
-            ),
-            EquipmentSlotGroup.bySlot(this.type.slot)
+    override fun getDefaultAttributeModifiers(stack: ItemStack): ItemAttributeModifiers {
+        val modifiers = super.getDefaultAttributeModifiers(stack)
+        val list = ArrayList<ItemAttributeModifiers.Entry>(modifiers.modifiers())
+        list.add(
+            ItemAttributeModifiers.Entry(
+                ModAttributes.BULLET_RESISTANCE, AttributeModifier(
+                    Mod.ATTRIBUTE_MODIFIER,
+                    0.2 * max(0.0, 1 - stack.damageValue.toDouble() / stack.maxDamage),
+                    AttributeModifier.Operation.ADD_VALUE
+                ),
+                EquipmentSlotGroup.bySlot(this.type.slot)
+            )
         )
-    )
-    return ItemAttributeModifiers(list, true)
-}
+        return ItemAttributeModifiers(list, true)
+    }
 }

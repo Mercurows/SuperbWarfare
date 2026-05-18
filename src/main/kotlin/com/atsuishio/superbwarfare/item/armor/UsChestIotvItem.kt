@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.init.ModAttributes
 import com.atsuishio.superbwarfare.init.ModItems
-import com.atsuishio.superbwarfare.resource.BedrockModelLoader
+import com.atsuishio.superbwarfare.resource.ArmorModelReloadListener
 import com.atsuishio.superbwarfare.tiers.ModArmorMaterial
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.GeoArmorRenderer
 import net.minecraft.client.model.HumanoidModel
@@ -29,6 +29,7 @@ class UsChestIotvItem : ArmorItem(
     @EventBusSubscriber
     companion object {
         val TEXTURE = loc("textures/bedrock/armor/us_chest_iotv.png")
+        val MODEL = loc("us_chest_iotv")
 
         @SubscribeEvent
         fun registerRender(event: RegisterClientExtensionsEvent) {
@@ -43,7 +44,7 @@ class UsChestIotvItem : ArmorItem(
                 ): HumanoidModel<*> {
                     if (this.renderer == null) {
                         this.renderer = GeoArmorRenderer(
-                            BedrockModelLoader.getArmorModel(BedrockModelLoader.US_CHEST_IOTV_MODEL),
+                            ArmorModelReloadListener.getModel(MODEL),
                             TEXTURE
                         )
                     }

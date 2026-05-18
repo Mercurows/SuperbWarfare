@@ -23,12 +23,12 @@ open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context) :
     EntityRenderer<T>(manager) where T : Entity, T : BasicGeoProjectileEntity {
     override fun getTextureLocation(entity: T): ResourceLocation {
         val (_, namespace, id) = entity.type.descriptionId.split(".")
-        return ResourceLocation(namespace, "textures/bedrock/projectile/$id.png")
+        return ResourceLocation.fromNamespaceAndPath(namespace, "textures/bedrock/projectile/$id.png")
     }
 
     fun getModelLocation(entity: T): ResourceLocation {
         val (_,  namespace, id) = entity.type.descriptionId.split(".")
-        return ResourceLocation(namespace, id)
+        return ResourceLocation.fromNamespaceAndPath(namespace, id)
     }
 
     override fun shouldShowName(pEntity: T): Boolean {

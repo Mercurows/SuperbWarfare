@@ -31,7 +31,7 @@ abstract class BedrockModelReloadListener<T> @JvmOverloads constructor(
 
         for ((location, resource) in modelConverter.listMatchingResources(resourceManager).entries) {
             var id = modelConverter.fileToId(location)
-            id = ResourceLocation(id.namespace, id.path.removeSuffix(".geo"))
+            id = ResourceLocation.fromNamespaceAndPath(id.namespace, id.path.removeSuffix(".geo"))
 
             try {
                 resource.openAsReader().use {
@@ -51,7 +51,7 @@ abstract class BedrockModelReloadListener<T> @JvmOverloads constructor(
 
             for ((location, resource) in animConverter.listMatchingResources(resourceManager).entries) {
                 var id = animConverter.fileToId(location)
-                id = ResourceLocation(id.namespace, id.path.removeSuffix(".animation"))
+                id = ResourceLocation.fromNamespaceAndPath(id.namespace, id.path.removeSuffix(".animation"))
 
                 try {
                     resource.openAsReader().use {

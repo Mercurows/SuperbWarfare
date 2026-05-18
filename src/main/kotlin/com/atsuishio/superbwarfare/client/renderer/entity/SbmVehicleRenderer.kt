@@ -44,12 +44,12 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
 
     override fun getTextureLocation(entity: T): ResourceLocation {
         val (_, namespace, id) = entity.type.descriptionId.split(".")
-        return ResourceLocation(namespace, "textures/bedrock/vehicle/$id.png")
+        return ResourceLocation.fromNamespaceAndPath(namespace, "textures/bedrock/vehicle/$id.png")
     }
 
     fun getModelLocation(entity: T): ResourceLocation {
         val (_,  namespace, id) = entity.type.descriptionId.split(".")
-        return ResourceLocation(namespace, "$id.geo")
+        return ResourceLocation.fromNamespaceAndPath(namespace, "$id.geo")
     }
 
     override fun shouldShowName(pEntity: T): Boolean {
