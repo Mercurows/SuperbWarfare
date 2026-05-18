@@ -1,15 +1,15 @@
 package com.atsuishio.superbwarfare.resource
 
+import com.github.mcmodderanchor.simplebedrockmodel.v1.client.model.BedrockArmorModel
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.BedrockAnimation
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.model.BedrockModel
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.BedrockModelPOJO
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.packs.resources.ResourceManager
 import net.minecraft.util.profiling.ProfilerFiller
 
-object ProjectileModelReloadListener : BedrockModelReloadListener<BedrockModel>(
-    "models/bedrock/projectile",
-    "animations/projectile"
+object ArmorModelReloadListener : BedrockModelReloadListener<BedrockArmorModel>(
+    "models/bedrock/armor",
+    "animations/armor"
 ) {
     override fun apply(
         map: Map<ResourceLocation, BedrockModelPOJO>,
@@ -18,7 +18,7 @@ object ProjectileModelReloadListener : BedrockModelReloadListener<BedrockModel>(
     ) {
         super.apply(map, resourceManager, profiler)
         map.forEach { (location, pojo) ->
-            this.models[location] = BedrockModel(pojo)
+            this.models[location] = BedrockArmorModel(pojo)
         }
         this.animFiles.forEach { (location, file) ->
             val model = this.models[location] ?: return@forEach

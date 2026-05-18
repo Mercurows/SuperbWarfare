@@ -1,24 +1,16 @@
 package com.atsuishio.superbwarfare.resource
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.BedrockAnimation
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.BedrockModelPOJO
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.packs.resources.ResourceManager
 import net.minecraft.util.profiling.ProfilerFiller
-import net.minecraftforge.api.distmarker.Dist
-import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.client.event.RegisterClientReloadListenersEvent
-import net.minecraftforge.eventbus.api.SubscribeEvent
 
-@OnlyIn(Dist.CLIENT)
-@net.minecraftforge.fml.common.Mod.EventBusSubscriber(
-    bus = net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus.MOD,
-    modid = Mod.MODID,
-    value = [Dist.CLIENT]
-)
-object VehicleModelReloadListener : BedrockModelReloadListener<BedrockVehicleModel>("models/bedrock/vehicle") {
+object VehicleModelReloadListener : BedrockModelReloadListener<BedrockVehicleModel>(
+    "models/bedrock/vehicle",
+    "animations/vehicle"
+) {
     override fun apply(
         map: Map<ResourceLocation, BedrockModelPOJO>,
         resourceManager: ResourceManager,
@@ -35,10 +27,5 @@ object VehicleModelReloadListener : BedrockModelReloadListener<BedrockVehicleMod
             this.animations[location] = BedrockAnimation.createAnimation(file, model)
         }
         this.animFiles.clear()
-    }
-
-    @SubscribeEvent
-    fun onAddClientResourceListener(event: RegisterClientReloadListenersEvent) {
-        event.registerReloadListener(VehicleModelReloadListener)
     }
 }

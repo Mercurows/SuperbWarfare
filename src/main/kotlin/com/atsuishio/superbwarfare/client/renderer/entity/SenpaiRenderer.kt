@@ -2,8 +2,7 @@ package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.entity.living.SenpaiEntity
-import com.atsuishio.superbwarfare.resource.BedrockModelLoader
-import com.atsuishio.superbwarfare.resource.BedrockModelLoader.getModel
+import com.atsuishio.superbwarfare.resource.EntityModelReloadListener
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
 import com.maydaymemory.mae.basic.ArrayPoseBuilder
 import com.maydaymemory.mae.basic.ZYXBoneTransformFactory
@@ -35,26 +34,16 @@ class SenpaiRenderer(renderManager: EntityRendererProvider.Context) : EntityRend
         pBuffer: MultiBufferSource,
         pPackedLight: Int
     ) {
-        val model = getModel(BedrockModelLoader.SENPAI_MA.first) ?: return
+        val model = EntityModelReloadListener.getModel(MODEL) ?: return
         val ani = pEntity.animationInstance ?: return
 
         pPoseStack.pushPose()
         pPoseStack.mulPose(Axis.YP.rotationDegrees(180f))
         pPoseStack.mulPose(Axis.YP.rotationDegrees(-pEntity.getViewYRot(pPartialTick)))
 
-//        val renderType = RenderType.entityCutout(getTextureLocation(pEntity))
-//        val vertexConsumer = pBuffer.getBuffer(renderType)
-
         ani.context.partialTick = pPartialTick
         ani.tick()
         model.applyPose(BLENDER.blend(model.bindPose, ani.getPose()))
-
-//        model.renderToBuffer(
-//            pPoseStack,
-//            vertexConsumer,
-//            pPackedLight,
-//            OverlayTexture.pack(0f, pEntity.hurtTime > 0 || pEntity.deathTime > 0)
-//        )
 
         model.renderToBuffer(
             pPoseStack,
@@ -70,5 +59,6 @@ class SenpaiRenderer(renderManager: EntityRendererProvider.Context) : EntityRend
     companion object {
         var TEXTURE = loc("textures/bedrock/entity/senpai.png")
         val BLENDER: EulerAdditiveBlender = SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }
+        val MODEL = loc("senpai")
     }
 }

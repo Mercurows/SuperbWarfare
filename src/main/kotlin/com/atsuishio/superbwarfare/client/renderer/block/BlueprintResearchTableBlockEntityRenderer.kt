@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.client.renderer.block
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.block.BlueprintResearchTableBlock
 import com.atsuishio.superbwarfare.block.entity.BlueprintResearchTableBlockEntity
-import com.atsuishio.superbwarfare.resource.BedrockModelLoader
+import com.atsuishio.superbwarfare.resource.BlockModelReloadListener
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
 import net.minecraft.client.renderer.MultiBufferSource
@@ -22,7 +22,7 @@ class BlueprintResearchTableBlockEntityRenderer : BlockEntityRenderer<BlueprintR
         packedLight: Int,
         packedOverlay: Int
     ) {
-        val model = BedrockModelLoader.getModel(BedrockModelLoader.BLUEPRINT_RESEARCH_TABLE_MODEL) ?: return
+        val model = BlockModelReloadListener.getModel(MODEL) ?: return
         val bone = model.getBone("rolling") ?: return
 
         poseStack.pushPose()
@@ -70,5 +70,6 @@ class BlueprintResearchTableBlockEntityRenderer : BlockEntityRenderer<BlueprintR
     companion object {
         val TEXTURE = loc("textures/bedrock/block/blueprint_research_table.png")
         val TEXTURE_E = loc("textures/bedrock/block/blueprint_research_table_e.png")
+        val MODEL = loc("blueprint_research_table")
     }
 }
