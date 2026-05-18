@@ -43,14 +43,18 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
 
         poseStack.pushPose()
 
-        vehicleAxis(entity, poseStack, yaw, partialTick)
+        rotateVehicleAxis(entity, poseStack, yaw, partialTick)
 
         if (entity.getAnimationInstance() != null) {
             val ani = entity.getAnimationInstance()!!
             ani.context.partialTick = partialTick
             ani.tick()
             model.applyPose(BLENDER.blend(model.bindPose, ani.getPose()))
+        } else {
+            model.applyPose(model.bindPose)
         }
+
+        transformCustomModelPart(entity, model, poseStack, yaw, partialTick)
 
         model.renderToBuffer(
             poseStack,
@@ -73,15 +77,13 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             )
         }
 
-        customModelPart(entity, model, poseStack, yaw, partialTick)
-
         poseStack.popPose()
     }
 
-    open fun customModelPart(entityIn: T, model: BedrockModel, poseStack: PoseStack, entityYaw: Float, partialTicks: Float) {
+    open fun transformCustomModelPart(entityIn: T, model: BedrockModel, poseStack: PoseStack, entityYaw: Float, partialTicks: Float) {
     }
 
-    open fun vehicleAxis(entityIn: T, poseStack: PoseStack, entityYaw: Float, partialTicks: Float) {
+    open fun rotateVehicleAxis(entityIn: T, poseStack: PoseStack, entityYaw: Float, partialTicks: Float) {
         val root = Vec3(0.0, entityIn.rotateOffsetHeight, 0.0)
         poseStack.rotateAround(
             Axis.YP.rotationDegrees(-entityYaw + 180),
