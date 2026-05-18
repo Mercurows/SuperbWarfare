@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.ModTags
-import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
 import com.atsuishio.superbwarfare.tools.SeekTool
@@ -97,6 +96,4 @@ open class Ru9m336MissileEntity(type: EntityType<out Ru9m336MissileEntity>, leve
     override fun getVolume(): Float {
         return 0.4f
     }
-
-    override fun getModel() = BedrockModelLoader.RU_9M336_MISSILE_MODEL
 }

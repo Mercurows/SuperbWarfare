@@ -19,6 +19,10 @@ open class BasicEntityContext<T : Entity>(val entity: T, location: ResourceLocat
     private var animationRunner: AnimationRunner? = null
 
     init {
+        init(location)
+    }
+
+    open fun init(location: ResourceLocation) {
         val ani = getAnimations(location)
         for (entry in ani!!) {
             animations[entry.name] = entry

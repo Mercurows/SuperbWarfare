@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimat
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.ModTags
-import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.SeekTool
@@ -191,9 +190,5 @@ open class SwarmDroneEntity(type: EntityType<out SwarmDroneEntity>, level: Level
         this.deltaMovement = vec3
     }
 
-    override fun getModel() = BedrockModelLoader.SWARM_DRONE_MA.first
-
     override fun getAnimationInstance() = this.anim
-
-    override fun getAnimation() = BedrockModelLoader.SWARM_DRONE_MA.second
 }

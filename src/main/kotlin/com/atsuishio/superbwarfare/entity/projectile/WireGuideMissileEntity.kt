@@ -65,6 +65,4 @@ open class WireGuideMissileEntity(type: EntityType<out WireGuideMissileEntity>, 
 
     override val maxHealth: Float
         get() = 20f
-
-    override fun getModel() = BedrockModelLoader.WIRE_GUIDE_MISSILE_MODEL
 }

@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.atsuishio.superbwarfare.tools.CustomExplosion
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
@@ -193,8 +192,6 @@ open class PtkmProjectileEntity : FastThrowableProjectile, BasicGeoProjectileEnt
     override fun isFastMoving(): Boolean {
         return false
     }
-
-    override fun getModel() = BedrockModelLoader.PTKM_PROJECTILE_MODEL
 
     companion object {
         fun spawnDirectionalParticles(

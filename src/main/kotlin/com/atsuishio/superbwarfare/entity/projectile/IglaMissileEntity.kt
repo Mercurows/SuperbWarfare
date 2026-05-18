@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.ModTags
-import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
 import com.atsuishio.superbwarfare.tools.SeekTool
@@ -122,6 +121,4 @@ open class IglaMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
     override fun getVolume(): Float {
         return 0.4f
     }
-
-    override fun getModel() = BedrockModelLoader.IGLA_9K38_MISSILE_MODEL
 }

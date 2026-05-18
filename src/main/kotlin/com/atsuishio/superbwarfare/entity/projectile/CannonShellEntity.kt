@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage
-import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.atsuishio.superbwarfare.tools.*
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
@@ -355,8 +354,6 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
     fun setSpreadAngle(spreadAngle: Int) {
         this.spreadAngle = spreadAngle
     }
-
-    override fun getModel() = BedrockModelLoader.CANNON_SHELL_MODEL
 
     override fun getHiddenTicks() = 1
 }

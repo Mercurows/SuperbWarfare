@@ -120,7 +120,5 @@ open class TaserBulletEntity(type: EntityType<out TaserBulletEntity>, level: Lev
             this.discard()
         }
     }
-
-    override fun getModel() = BedrockModelLoader.TASER_BULLET_MODEL
 }
 

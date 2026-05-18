@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
-import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.customExplode
 import net.minecraft.core.particles.ParticleTypes
@@ -92,6 +91,4 @@ open class RgoGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity 
             deltaMovement = deltaMovement.scale(0.75)
         }
     }
-
-    override fun getModel() = BedrockModelLoader.RGO_GRENADE_MODEL
 }

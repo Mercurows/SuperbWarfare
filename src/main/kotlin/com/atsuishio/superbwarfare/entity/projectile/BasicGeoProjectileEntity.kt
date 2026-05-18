@@ -1,11 +1,14 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
+import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
 import net.minecraft.resources.ResourceLocation
 
 interface BasicGeoProjectileEntity {
-    fun getModel(): ResourceLocation
+    @Deprecated("Model location is auto loaded now")
+    fun getModel(): ResourceLocation = loc("projectile/projectile")
 
+    @Deprecated("Animation location is auto loaded now")
     fun getAnimation(): ResourceLocation? = null
 
     fun getAnimationInstance(): BasicProjectileAnimationInstance<*>? = null

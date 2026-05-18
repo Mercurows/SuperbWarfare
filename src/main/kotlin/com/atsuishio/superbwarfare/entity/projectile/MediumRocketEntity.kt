@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage
-import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.TraceTool
 import com.atsuishio.superbwarfare.tools.forceHurt
@@ -294,6 +293,4 @@ open class MediumRocketEntity : FastThrowableProjectile, BasicGeoProjectileEntit
     fun setSpreadAngle(spreadAngle: Int) {
         this.spreadAngle = spreadAngle
     }
-
-    override fun getModel() = BedrockModelLoader.MEDIUM_ROCKET_MODEL
 }

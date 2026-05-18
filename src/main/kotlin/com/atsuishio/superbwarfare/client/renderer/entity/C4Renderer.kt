@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.entity.projectile.C4Entity
-import com.atsuishio.superbwarfare.resource.BedrockModelLoader
+import com.atsuishio.superbwarfare.resource.ProjectileModelReloadListener
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
 import net.minecraft.client.renderer.MultiBufferSource
@@ -26,7 +26,7 @@ class C4Renderer(renderManager: EntityRendererProvider.Context) : EntityRenderer
         bufferIn: MultiBufferSource,
         packedLightIn: Int
     ) {
-        val model = BedrockModelLoader.getModel(BedrockModelLoader.C4_MODEL) ?: return
+        val model = ProjectileModelReloadListener.getModel(MODEL) ?: return
 
         poseStack.pushPose()
         if (entityIn.deltaMovement.lengthSqr() > 0) {
@@ -61,5 +61,6 @@ class C4Renderer(renderManager: EntityRendererProvider.Context) : EntityRenderer
     companion object {
         val TEXTURE = loc("textures/bedrock/projectile/c4.png")
         val TEXTURE_ALTER = loc("textures/bedrock/projectile/c4_alter.png")
+        val MODEL = loc("c4")
     }
 }

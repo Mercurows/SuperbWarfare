@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
-import com.atsuishio.superbwarfare.resource.BedrockModelLoader
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.sendPacketTo
 import net.minecraft.core.Direction
@@ -244,6 +243,4 @@ open class M18SmokeGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEn
     override fun isFastMoving(): Boolean {
         return false
     }
-
-    override fun getModel() = BedrockModelLoader.M18_SMOKE_GRENADE_MODEL
 }
