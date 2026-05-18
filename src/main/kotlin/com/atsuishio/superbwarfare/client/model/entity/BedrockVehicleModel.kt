@@ -20,6 +20,11 @@ open class BedrockVehicleModel(pojo: BedrockModelPOJO) : BedrockModel(pojo) {
     open fun init() {
         val map = this.boneMap
 
+        val leftWheels = mutableListOf<BedrockBone>()
+        val rightWheels = mutableListOf<BedrockBone>()
+        val leftWheelsTurn = mutableListOf<BedrockBone>()
+        val rightWheelsTurn = mutableListOf<BedrockBone>()
+
         for ((name, bone) in map.entries) {
             val matcher = WHEEL_PATTERN.matcher(name)
             if (matcher.matches()) {
@@ -41,5 +46,10 @@ open class BedrockVehicleModel(pojo: BedrockModelPOJO) : BedrockModel(pojo) {
                 }
             }
         }
+
+        this.leftWheels = leftWheels
+        this.rightWheels = rightWheels
+        this.leftWheelsTurn = leftWheelsTurn
+        this.rightWheelsTurn = rightWheelsTurn
     }
 }

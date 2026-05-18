@@ -21,6 +21,8 @@ import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 import net.minecraft.world.phys.Vec3
+import org.joml.Quaterniond
+import org.joml.Quaternionf
 
 open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
     EntityRenderer<T>(manager) where T : VehicleEntity, T : BasicGeoVehicleEntity {
@@ -49,7 +51,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
 
     fun getModelLocation(entity: T): ResourceLocation {
         val (_,  namespace, id) = entity.type.descriptionId.split(".")
-        return ResourceLocation.fromNamespaceAndPath(namespace, "$id.geo")
+        return ResourceLocation.fromNamespaceAndPath(namespace, id)
     }
 
     override fun shouldShowName(pEntity: T): Boolean {
@@ -137,20 +139,24 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         entityYaw: Float,
         partialTicks: Float
     ) {
-        // TODO 实现旋转
+
         model.leftWheels.forEach {
-            it.rotation.mul(Axis.XP.rotationDegrees(1.5f * leftWheelRot))
+            it.rotation.rotationX(1.5f * leftWheelRot)
         }
         model.rightWheels.forEach {
-            it.rotation.mul(Axis.XP.rotationDegrees(1.5f * rightWheelRot))
+            it.rotation.rotationX(1.5f * rightWheelRot)
         }
         model.leftWheelsTurn.forEach {
-            it.rotation.mul(Axis.XP.rotationDegrees(1.5f * leftWheelRot))
-            it.rotation.mul(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, vehicle.rudderRotO, vehicle.rudderRot)))
+            val yawRot = Axis.YP.rotation(Mth.lerp(partialTicks, vehicle.rudderRotO, vehicle.rudderRot))
+            val pitchRot = Axis.XP.rotation(1.5f * leftWheelRot)
+            val quaternion =  Quaterniond(yawRot).mul(Quaterniond(pitchRot))
+            it.rotation.mul(Quaternionf(quaternion))
         }
         model.rightWheelsTurn.forEach {
-            it.rotation.mul(Axis.XP.rotationDegrees(1.5f * rightWheelRot))
-            it.rotation.mul(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, vehicle.rudderRotO, vehicle.rudderRot)))
+            val yawRot = Axis.YP.rotation(Mth.lerp(partialTicks, vehicle.rudderRotO, vehicle.rudderRot))
+            val pitchRot = Axis.XP.rotation(1.5f * rightWheelRot)
+            val quaternion =  Quaterniond(yawRot).mul(Quaterniond(pitchRot))
+            it.rotation.mul(Quaternionf(quaternion))
         }
     }
 
