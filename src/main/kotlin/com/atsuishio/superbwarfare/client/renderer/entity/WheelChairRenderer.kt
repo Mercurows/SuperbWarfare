@@ -10,7 +10,7 @@ import net.minecraft.util.Mth
 open class WheelChairRenderer<T>(manager: EntityRendererProvider.Context) :
     SbmVehicleRenderer<T>(manager) where T : VehicleEntity, T : BasicGeoVehicleEntity {
 
-    override fun customModelPart(entityIn: T, model: BedrockModel, poseStack: PoseStack, entityYaw: Float, partialTicks: Float) {
+    override fun transformCustomModelPart(entityIn: T, model: BedrockModel, poseStack: PoseStack, entityYaw: Float, partialTicks: Float) {
         val wRb = model.getBone("w_rb")
         val wLb = model.getBone("w_lb")
         val wRr = model.getBone("w_rr")
