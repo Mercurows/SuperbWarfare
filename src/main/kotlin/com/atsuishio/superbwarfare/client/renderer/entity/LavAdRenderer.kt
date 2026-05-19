@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.mojang.blaze3d.vertex.PoseStack
-import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 
 class LavAdRenderer<T>(manager: EntityRendererProvider.Context) :
@@ -14,8 +13,14 @@ class LavAdRenderer<T>(manager: EntityRendererProvider.Context) :
         return true
     }
 
-    override fun transformCustomModelPart(vehicle: T, model: BedrockVehicleModel, poseStack: PoseStack, entityYaw: Float, partialTicks: Float, buffer: MultiBufferSource, packedLight: Int) {
-        super.transformCustomModelPart(vehicle, model, poseStack, entityYaw, partialTicks, buffer, packedLight)
+    override fun transformCustomModelPart(
+        vehicle: T,
+        model: BedrockVehicleModel,
+        poseStack: PoseStack,
+        entityYaw: Float,
+        partialTicks: Float
+    ) {
+        super.transformCustomModelPart(vehicle, model, poseStack, entityYaw, partialTicks)
 
         val rotBarrel = model.getBone("rot_barrel")
 

@@ -16,7 +16,15 @@ class Tom6Renderer<T>(manager: EntityRendererProvider.Context) :
 
     private val blockRenderer: BlockRenderDispatcher = manager.blockRenderDispatcher
 
-    override fun transformCustomModelPart(vehicle: T, model: BedrockVehicleModel, poseStack: PoseStack, entityYaw: Float, partialTicks: Float, buffer: MultiBufferSource, packedLight: Int) {
+    override fun renderCustomPart(
+        vehicle: T,
+        model: BedrockVehicleModel,
+        poseStack: PoseStack,
+        entityYaw: Float,
+        partialTicks: Float,
+        buffer: MultiBufferSource,
+        packedLight: Int
+    ) {
         if (vehicle.hasMelon) {
             poseStack.pushPose()
             poseStack.scale(0.85f, 0.85f, 0.85f)
@@ -35,7 +43,6 @@ class Tom6Renderer<T>(manager: EntityRendererProvider.Context) :
                 false
             )
             poseStack.popPose()
-
             poseStack.popPose()
         }
     }

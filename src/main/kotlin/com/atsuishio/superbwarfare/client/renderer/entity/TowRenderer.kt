@@ -9,14 +9,19 @@ import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.options
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.CameraType
-import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 
 class TowRenderer<T>(manager: EntityRendererProvider.Context) :
     SbmVehicleRenderer<T>(manager) where T : VehicleEntity, T : BasicGeoVehicleEntity {
 
-    override fun transformCustomModelPart(vehicle: T, model: BedrockVehicleModel, poseStack: PoseStack, entityYaw: Float, partialTicks: Float, buffer: MultiBufferSource, packedLight: Int) {
-        super.transformCustomModelPart(vehicle, model, poseStack, entityYaw, partialTicks, buffer, packedLight)
+    override fun transformCustomModelPart(
+        vehicle: T,
+        model: BedrockVehicleModel,
+        poseStack: PoseStack,
+        entityYaw: Float,
+        partialTicks: Float
+    ) {
+        super.transformCustomModelPart(vehicle, model, poseStack, entityYaw, partialTicks)
         val guanMiao = model.getBone("guanmiao")
         val missile = model.getBone("missile")
 
