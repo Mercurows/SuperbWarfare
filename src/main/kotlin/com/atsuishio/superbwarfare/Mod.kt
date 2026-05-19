@@ -150,7 +150,7 @@ class Mod {
         const val ATTRIBUTE_MODIFIER = "superbwarfare_attribute_modifier"
 
         @JvmField
-        val LOGGER: Logger = LogManager.getLogger(Mod::class.java)
+        val LOGGER: Logger = LogManager.getLogger(com.atsuishio.superbwarfare.Mod::class.java)
 
         @JvmStatic
         fun loc(path: String): ResourceLocation = ResourceLocation(MODID, path)
