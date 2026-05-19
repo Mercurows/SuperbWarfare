@@ -13,6 +13,7 @@ import com.atsuishio.superbwarfare.init.ModRecipes
 import com.atsuishio.superbwarfare.inventory.menu.VehicleAssemblingMenu
 import com.atsuishio.superbwarfare.network.message.send.AssembleVehicleMessage
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe
+import com.atsuishio.superbwarfare.tools.RenderDistanceHelper
 import com.atsuishio.superbwarfare.tools.clientLevel
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.sendPacketToServer
@@ -465,10 +466,9 @@ class VehicleAssemblingScreen(pMenu: VehicleAssemblingMenu, pPlayerInventory: In
 
     fun renderModel(holder: RecipeHolder<VehicleAssemblingRecipe>, guiGraphics: GuiGraphics) {
         val mc = Minecraft.getInstance()
-        val level = mc.level
-        if (level == null) return
+        val level = mc.level ?: return
 
-        RenderHelper.markGuiRenderTimestamp()
+        RenderDistanceHelper.markGuiRenderTimestamp()
         val stack = holder.value().result.getResult()
         var renderEntity: Entity? = null
 
