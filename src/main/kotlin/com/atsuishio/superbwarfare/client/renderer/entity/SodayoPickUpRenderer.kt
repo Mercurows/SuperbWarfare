@@ -38,7 +38,7 @@ class SodayoPickUpRenderer<T>(manager: EntityRendererProvider.Context) :
 
         if (vehicle is SodayoPickUpRocketEntity) {
             model.shell.forEachIndexed { index, bone ->
-                val items = vehicle.getEntityData().get(SodayoPickUpRocketEntity.LOADED_AMMO)
+                val items = vehicle.entityData.get(SodayoPickUpRocketEntity.LOADED_AMMO)
                 bone.visible = items[index] != -1
             }
         }
