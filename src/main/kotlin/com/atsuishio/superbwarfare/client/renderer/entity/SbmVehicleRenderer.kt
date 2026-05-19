@@ -106,7 +106,8 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         }
 
         this.tickVariables(entity, yaw, partialTick)
-        this.transformCustomModelPart(entity, model, poseStack, yaw, partialTick, buffer, packedLight)
+        this.transformCustomModelPart(entity, model, poseStack, yaw, partialTick)
+        this.renderCustomPart(entity, model, poseStack, yaw, partialTick, buffer, packedLight)
 
         model.renderToBuffer(
             poseStack,
@@ -156,7 +157,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             ClientEventHandler.zoomVehicle && vehicle.getNthEntity(vehicle.passengerWeaponStationControllerIndex) === localPlayer
     }
 
-    open fun transformCustomModelPart(
+    open fun renderCustomPart(
         vehicle: T,
         model: BedrockVehicleModel,
         poseStack: PoseStack,
@@ -164,6 +165,15 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         partialTicks: Float,
         buffer: MultiBufferSource,
         packedLight: Int
+    ) {
+    }
+
+    open fun transformCustomModelPart(
+        vehicle: T,
+        model: BedrockVehicleModel,
+        poseStack: PoseStack,
+        entityYaw: Float,
+        partialTicks: Float
     ) {
         // Wheels
         model.leftWheels.forEach {
