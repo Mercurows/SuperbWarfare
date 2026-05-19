@@ -1,7 +1,0 @@
-{
-  "Model": {
-    "Animation": "superbwarfare:animations/speedboat.animation.json",
-    "Model": "superbwarfare:geo/speedboat.geo.json",
-    "Texture": "superbwarfare:textures/entity/speedboat.png"
-  }
-}

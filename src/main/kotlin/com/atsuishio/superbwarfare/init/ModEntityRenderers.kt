@@ -35,7 +35,7 @@ object ModEntityRenderers {
             registerEntityRenderer(ModEntities.MLE_1934.get(), ::Mle1934Renderer)
             registerEntityRenderer(ModEntities.JAVELIN_MISSILE.get(), ::BasicProjectileRenderer)
             registerEntityRenderer(ModEntities.ANNIHILATOR.get(), ::AnnihilatorRenderer)
-            registerEntityRenderer(ModEntities.SPEEDBOAT.get(), ::SpeedboatRenderer)
+            registerEntityRenderer(ModEntities.SPEEDBOAT.get(), ::SpeedBoatRenderer)
             registerEntityRenderer(ModEntities.TINY_SPEEDBOAT.get(), ::TinySpeedboatRenderer)
             registerEntityRenderer(ModEntities.WHEEL_CHAIR.get(), ::WheelChairRenderer)
             registerEntityRenderer(ModEntities.AH_6.get(), ::Ah6Renderer)
