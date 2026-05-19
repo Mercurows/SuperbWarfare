@@ -16,17 +16,6 @@ import net.minecraft.util.Mth;
 import org.joml.Matrix4f;
 
 public class RenderHelper {
-
-    private static long GUI_RENDER_TIMESTAMP = -1L;
-
-    public static void markGuiRenderTimestamp() {
-        GUI_RENDER_TIMESTAMP = System.currentTimeMillis();
-    }
-
-    public static boolean isInGui() {
-        return System.currentTimeMillis() - GUI_RENDER_TIMESTAMP < 100L;
-    }
-
     public static void preciseBlit(GuiGraphics gui, ResourceLocation pAtlasLocation, float pX, float pY, float pUOffset, float pVOffset, float pWidth, float pHeight, float pTextureWidth, float pTextureHeight) {
         preciseBlit(gui, pAtlasLocation, pX, pY, 0, pUOffset, pVOffset, pWidth, pHeight, pTextureWidth, pTextureHeight);
     }

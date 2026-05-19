@@ -16,10 +16,7 @@ import com.atsuishio.superbwarfare.init.ModRecipes
 import com.atsuishio.superbwarfare.inventory.menu.VehicleAssemblingMenu
 import com.atsuishio.superbwarfare.network.message.send.AssembleVehicleMessage
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe
-import com.atsuishio.superbwarfare.tools.clientLevel
-import com.atsuishio.superbwarfare.tools.localPlayer
-import com.atsuishio.superbwarfare.tools.mc
-import com.atsuishio.superbwarfare.tools.sendPacketToServer
+import com.atsuishio.superbwarfare.tools.*
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.platform.Lighting
 import com.mojang.blaze3d.systems.RenderSystem
@@ -471,7 +468,7 @@ open class VehicleAssemblingScreen(menu: VehicleAssemblingMenu, inventory: Inven
         val mc = Minecraft.getInstance()
         val level = mc.level ?: return
 
-        RenderHelper.markGuiRenderTimestamp()
+        RenderDistanceHelper.markGuiRenderTimestamp()
         val stack = recipe.result.getResult()
         var renderEntity: Entity? = null
 

@@ -2,11 +2,11 @@ package com.atsuishio.superbwarfare.client.model.entity
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
-import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.resource.vehicle.DefaultVehicleResource
 import com.atsuishio.superbwarfare.resource.vehicle.VehicleResource
+import com.atsuishio.superbwarfare.tools.RenderDistanceHelper
 import com.atsuishio.superbwarfare.tools.ResourceOnceLogger
 import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation
@@ -48,7 +48,7 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
     protected var modelCache: ResourceLocation? = null
 
     override fun getModelResource(vehicle: T): ResourceLocation? {
-        if (RenderHelper.isInGui()) {
+        if (RenderDistanceHelper.isInGui()) {
             return getDefault(vehicle).model.model
         }
 
@@ -75,7 +75,7 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
     protected var textureCache: ResourceLocation? = null
 
     override fun getTextureResource(vehicle: T): ResourceLocation? {
-        if (RenderHelper.isInGui()) {
+        if (RenderDistanceHelper.isInGui()) {
             return getDefault(vehicle).model.texture
         }
 

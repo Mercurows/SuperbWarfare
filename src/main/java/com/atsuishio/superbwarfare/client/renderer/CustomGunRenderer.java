@@ -1,9 +1,9 @@
 package com.atsuishio.superbwarfare.client.renderer;
 
-import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.client.model.item.CustomGunModel;
 import com.atsuishio.superbwarfare.config.client.DisplayConfig;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
+import com.atsuishio.superbwarfare.tools.RenderDistanceHelper;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -72,7 +72,7 @@ public class CustomGunRenderer<T extends GunGeoItem & GeoAnimatable> extends Geo
         if (renderPerspective != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND
                 && DisplayConfig.ENABLE_GUN_LOD.get()
                 && geoModel instanceof CustomGunModel<T> gunModel
-                && !RenderHelper.isInGui()
+                && !RenderDistanceHelper.isInGui()
         ) {
             return gunModel.getLODTextureResource(animatable);
         }
@@ -136,7 +136,7 @@ public class CustomGunRenderer<T extends GunGeoItem & GeoAnimatable> extends Geo
         if (renderPerspective != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND
                 && DisplayConfig.ENABLE_GUN_LOD.get()
                 && geoModel instanceof CustomGunModel<T> gunModel
-                && !RenderHelper.isInGui()
+                && !RenderDistanceHelper.isInGui()
         ) {
 //            if (player != null) {
 //                Vec3 pos = new Vec3(poseStack.last().pose().m30(), poseStack.last().pose().m31(), poseStack.last().pose().m32());

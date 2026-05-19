@@ -4,7 +4,9 @@ import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
+import com.atsuishio.superbwarfare.resource.VehicleLODModelReloadListener
 import com.atsuishio.superbwarfare.resource.VehicleModelReloadListener
+import com.atsuishio.superbwarfare.tools.RenderDistanceHelper
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
 import com.maydaymemory.mae.basic.ArrayPoseBuilder
@@ -49,9 +51,19 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         return ResourceLocation(namespace, "textures/bedrock/vehicle/$id.png")
     }
 
+    fun getLODTextureLocation(entity: T, level: Int): ResourceLocation {
+        val (_, namespace, id) = entity.type.descriptionId.split(".")
+        return ResourceLocation(namespace, "textures/bedrock/vehicle_lod/$id.lod$level.png")
+    }
+
     fun getModelLocation(entity: T): ResourceLocation {
-        val (_,  namespace, id) = entity.type.descriptionId.split(".")
+        val (_, namespace, id) = entity.type.descriptionId.split(".")
         return ResourceLocation(namespace, id)
+    }
+
+    fun getLODModelLocation(entity: T, level: Int): ResourceLocation {
+        val (_, namespace, id) = entity.type.descriptionId.split(".")
+        return ResourceLocation(namespace, "$id.lod$level")
     }
 
     override fun shouldShowName(pEntity: T): Boolean {
@@ -66,7 +78,19 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         buffer: MultiBufferSource,
         packedLight: Int
     ) {
-        val model = VehicleModelReloadListener.getModel(getModelLocation(entity)) ?: return
+        var model = VehicleModelReloadListener.getModel(getModelLocation(entity)) ?: return
+        var texture = getTextureLocation(entity)
+
+        val lodLevel = getLODLevel(poseStack, entity)
+        if (lodLevel > 0) {
+            // TODO 等修改好LOD level之后直接获取
+            for (i in lodLevel downTo 1) {
+                val lod = VehicleLODModelReloadListener.getModel(getLODModelLocation(entity, i)) ?: continue
+                model = lod
+                texture = getLODTextureLocation(entity, i)
+                break
+            }
+        }
 
         poseStack.pushPose()
 
@@ -87,19 +111,19 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         model.renderToBuffer(
             poseStack,
             buffer,
-            RenderType.entityCutout(getTextureLocation(entity)),
-            BedrockModelRenderTypes.polyMeshCutout(getTextureLocation(entity)),
+            RenderType.entityCutout(texture),
+            BedrockModelRenderTypes.polyMeshCutout(texture),
             packedLight,
             OverlayTexture.NO_OVERLAY
         )
 
-        val texture = entity.getEmissiveTexture()
-        if (texture != null) {
+        val emissiveTexture = entity.getEmissiveTexture()
+        if (emissiveTexture != null) {
             model.renderToBuffer(
                 poseStack,
                 buffer,
-                RenderType.entityCutout(getTextureLocation(entity)),
-                BedrockModelRenderTypes.polyMeshCutout(getTextureLocation(entity)),
+                RenderType.entityCutout(emissiveTexture),
+                BedrockModelRenderTypes.polyMeshCutout(emissiveTexture),
                 packedLight,
                 OverlayTexture.NO_OVERLAY
             )
@@ -139,7 +163,6 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         entityYaw: Float,
         partialTicks: Float
     ) {
-
         // Wheels
         model.leftWheels.forEach {
             it.rotation.rotationX(1.5f * leftWheelRot)
@@ -150,13 +173,13 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         model.leftWheelsTurn.forEach {
             val yawRot = Axis.YP.rotation(Mth.lerp(partialTicks, vehicle.rudderRotO, vehicle.rudderRot))
             val pitchRot = Axis.XP.rotation(1.5f * leftWheelRot)
-            val quaternion =  Quaterniond(yawRot).mul(Quaterniond(pitchRot))
+            val quaternion = Quaterniond(yawRot).mul(Quaterniond(pitchRot))
             it.rotation.mul(Quaternionf(quaternion))
         }
         model.rightWheelsTurn.forEach {
             val yawRot = Axis.YP.rotation(Mth.lerp(partialTicks, vehicle.rudderRotO, vehicle.rudderRot))
             val pitchRot = Axis.XP.rotation(1.5f * rightWheelRot)
-            val quaternion =  Quaterniond(yawRot).mul(Quaterniond(pitchRot))
+            val quaternion = Quaterniond(yawRot).mul(Quaterniond(pitchRot))
             it.rotation.mul(Quaternionf(quaternion))
         }
 
@@ -197,7 +220,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
 
             val pitch = Axis.XP.rotationDegrees(r * recoilShake)
             val roll = Axis.ZP.rotationDegrees(r2 * recoilShake)
-            val quaternion =  Quaterniond(pitch).mul(Quaterniond(roll))
+            val quaternion = Quaterniond(pitch).mul(Quaterniond(roll))
             base.rotation.mul(Quaternionf(quaternion))
         }
 
@@ -249,6 +272,20 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
     }
 
     open fun hideForTurretControllerWhileZooming() = false
+
+    fun getLODLevel(poseStack: PoseStack, vehicle: T): Int {
+        /** TODO 换成LOD Level
+         * 新的LOD level只需要指定n个distance即可
+         **/
+        val list = listOf(32, 64, 96)
+        list.forEachIndexed { index, distance ->
+            if (RenderDistanceHelper.shouldRenderLOD(poseStack, distance.toDouble())) {
+                return index + 1
+            }
+        }
+
+        return 0
+    }
 
     companion object {
         val BLENDER: EulerAdditiveBlender = SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }
