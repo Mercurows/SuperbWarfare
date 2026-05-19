@@ -9,7 +9,7 @@ import net.minecraft.util.profiling.ProfilerFiller
 
 object ArmorModelReloadListener : BedrockModelReloadListener<BedrockArmorModel>(
     "models/bedrock/armor",
-    "animations/armor"
+    "animations/bedrock/armor"
 ) {
     override fun apply(
         map: Map<ResourceLocation, BedrockModelPOJO>,
