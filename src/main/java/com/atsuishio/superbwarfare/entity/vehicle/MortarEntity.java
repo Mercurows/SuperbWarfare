@@ -1,8 +1,9 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
+import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.GeckoArtilleryEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.init.ModEntities;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -22,6 +23,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -39,14 +41,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import software.bernie.geckolib.animation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.atsuishio.superbwarfare.tools.TrajectoryCalculator.calculateLaunchVector;
 
-public class MortarEntity extends GeckoArtilleryEntity {
+public class MortarEntity extends ArtilleryEntity implements BasicGeoVehicleEntity {
     public static final EntityDataAccessor<Integer> FIRE_TIME = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Float> TARGET_PITCH = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> TARGET_YAW = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
@@ -300,12 +301,14 @@ public class MortarEntity extends GeckoArtilleryEntity {
         this.setXRot(Mth.clamp(this.getXRot() + Mth.clamp(0.5f * diffX, -20f, 20f), -getTurretMaxPitch(), -getTurretMinPitch()));
     }
 
-    private PlayState movementPredicate(AnimationState<MortarEntity> event) {
-        if (this.entityData.get(FIRE_TIME) > 0) {
-            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mortar.fire"));
-        }
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mortar.idle"));
-    }
+    // TODO 实现动画
+
+//    private PlayState movementPredicate(AnimationState<MortarEntity> event) {
+//        if (this.entityData.get(FIRE_TIME) > 0) {
+//            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mortar.fire"));
+//        }
+//        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mortar.idle"));
+//    }
 
     @Override
     public void destroy() {
@@ -325,11 +328,6 @@ public class MortarEntity extends GeckoArtilleryEntity {
         }
         super.destroy();
         discard();
-    }
-
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-        data.add(new AnimationController<>(this, "movement", 0, this::movementPredicate));
     }
 
     @Override
@@ -359,5 +357,23 @@ public class MortarEntity extends GeckoArtilleryEntity {
     @Override
     public boolean canBind() {
         return this.entityData.get(INTELLIGENT);
+    }
+
+    @Nullable
+    @Override
+    public ResourceLocation getAnimation() {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public BasicProjectileAnimationInstance<?> getAnimationInstance() {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public ResourceLocation getEmissiveTexture() {
+        return null;
     }
 }
