@@ -9,7 +9,7 @@ import net.minecraft.util.profiling.ProfilerFiller
 
 open class BasicModelReloadListener(path: String) : BedrockModelReloadListener<BedrockModel>(
     "models/bedrock/$path",
-    "animations/$path"
+    "animations/bedrock/$path"
 ) {
     override fun apply(
         map: Map<ResourceLocation, BedrockModelPOJO>,

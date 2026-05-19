@@ -9,7 +9,7 @@ import net.minecraft.util.profiling.ProfilerFiller
 
 object VehicleModelReloadListener : BedrockModelReloadListener<BedrockVehicleModel>(
     "models/bedrock/vehicle",
-    "animations/vehicle"
+    "animations/bedrock/vehicle"
 ) {
     override fun apply(
         map: Map<ResourceLocation, BedrockModelPOJO>,
