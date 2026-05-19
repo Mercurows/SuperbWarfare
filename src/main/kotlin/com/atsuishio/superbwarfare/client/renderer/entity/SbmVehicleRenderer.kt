@@ -140,6 +140,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         partialTicks: Float
     ) {
 
+        // Wheels
         model.leftWheels.forEach {
             it.rotation.rotationX(1.5f * leftWheelRot)
         }
@@ -158,6 +159,71 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             val quaternion =  Quaterniond(yawRot).mul(Quaterniond(pitchRot))
             it.rotation.mul(Quaternionf(quaternion))
         }
+
+        // 瞄准时隐藏车体
+        val root = model.getBone("root")
+
+        if (root != null && hideForTurretControllerWhileZooming()) {
+            root.visible = !hideForTurretControllerWhileZooming
+        }
+
+        // 瞄准时隐藏乘客武器站
+        val passengerWeaponStation = model.getBone("passengerWeaponStation")
+
+        if (passengerWeaponStation != null && hideForTurretControllerWhileZooming()) {
+            passengerWeaponStation.visible = !hideForTurretControllerWhileZooming
+        }
+
+        //射击时带来的车体摇晃视觉效果
+
+        val base = model.getBone("base")
+
+        if (base != null) {
+            val a = vehicle.yawWhileShoot
+            val r = (Mth.abs(a) - 90f) / 90f
+
+            val r2 = if (Mth.abs(a) <= 90f) {
+                a / 90f
+            } else {
+                if (a < 0) {
+                    -(180f + a) / 90f
+                } else {
+                    (180f - a) / 90f
+                }
+            }
+
+            base.x = r2 * recoilShake
+            base.z = r * recoilShake
+
+            val pitch = Axis.XP.rotationDegrees(r * recoilShake)
+            val roll = Axis.ZP.rotationDegrees(-r2 * recoilShake)
+            val quaternion =  Quaterniond(pitch).mul(Quaterniond(roll))
+            base.rotation.mul(Quaternionf(quaternion))
+        }
+
+        // Turret
+
+        val turret = model.getBone("turret")
+
+        if (turret != null) {
+            turret.rotation.rotationY(turretYRot * Mth.DEG_TO_RAD)
+            val turretLaser = model.getBone("turretLaser")
+            turretLaser?.rotation?.rotationY(turretYRot * Mth.DEG_TO_RAD)
+            turret.visible = !(vehicle.isWreck && vehicle.hasTurret() && vehicle.sympatheticDetonated)
+        }
+
+        //Barrel
+
+        val barrel = model.getBone("barrel")
+
+        if (barrel != null) {
+            val rot = Mth.clamp(-turretXRot, vehicle.turretMinPitch, vehicle.turretMaxPitch) * Mth.DEG_TO_RAD
+
+            barrel.rotation.rotationX(rot)
+            val barrelLaser = model.getBone("barrelLaser")
+            barrelLaser?.rotation?.rotationY(rot)
+        }
+
     }
 
     open fun rotateVehicleAxis(entityIn: T, poseStack: PoseStack, entityYaw: Float, partialTicks: Float) {
@@ -181,6 +247,8 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             root.z.toFloat()
         )
     }
+
+    open fun hideForTurretControllerWhileZooming() = false
 
     companion object {
         val BLENDER: EulerAdditiveBlender = SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }

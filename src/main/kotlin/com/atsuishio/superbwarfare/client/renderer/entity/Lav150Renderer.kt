@@ -1,14 +1,13 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
-import com.atsuishio.superbwarfare.client.layer.vehicle.Lav150Layer
-import com.atsuishio.superbwarfare.client.model.entity.Lav150Model
-import com.atsuishio.superbwarfare.entity.vehicle.Lav150Entity
+import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 
-class Lav150Renderer(renderManager: EntityRendererProvider.Context) :
-    VehicleRenderer<Lav150Entity>(renderManager, Lav150Model()) {
+class Lav150Renderer<T>(manager: EntityRendererProvider.Context) :
+    SbmVehicleRenderer<T>(manager) where T : VehicleEntity, T : BasicGeoVehicleEntity {
 
-    init {
-        this.addRenderLayer(Lav150Layer(this))
+    override fun hideForTurretControllerWhileZooming(): Boolean {
+        return true
     }
 }
