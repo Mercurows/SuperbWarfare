@@ -192,11 +192,11 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
                 }
             }
 
-            base.x = r2 * recoilShake
+            base.x = -r2 * recoilShake * 0.5f
             base.z = r * recoilShake
 
             val pitch = Axis.XP.rotationDegrees(r * recoilShake)
-            val roll = Axis.ZP.rotationDegrees(-r2 * recoilShake)
+            val roll = Axis.ZP.rotationDegrees(r2 * recoilShake)
             val quaternion =  Quaterniond(pitch).mul(Quaterniond(roll))
             base.rotation.mul(Quaternionf(quaternion))
         }
