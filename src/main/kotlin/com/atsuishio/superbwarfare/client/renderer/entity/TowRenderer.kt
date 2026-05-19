@@ -1,8 +1,29 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
-import com.atsuishio.superbwarfare.client.model.entity.TowModel
+import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
+import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.TowEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.event.ClientEventHandler
+import com.atsuishio.superbwarfare.tools.localPlayer
+import com.atsuishio.superbwarfare.tools.options
+import com.mojang.blaze3d.vertex.PoseStack
+import net.minecraft.client.CameraType
+import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 
-class TowRenderer(renderManager: EntityRendererProvider.Context) :
-    VehicleRenderer<TowEntity>(renderManager, TowModel())
+class TowRenderer<T>(manager: EntityRendererProvider.Context) :
+    SbmVehicleRenderer<T>(manager) where T : VehicleEntity, T : BasicGeoVehicleEntity {
+
+    override fun transformCustomModelPart(vehicle: T, model: BedrockVehicleModel, poseStack: PoseStack, entityYaw: Float, partialTicks: Float, buffer: MultiBufferSource, packedLight: Int) {
+        super.transformCustomModelPart(vehicle, model, poseStack, entityYaw, partialTicks, buffer, packedLight)
+        val guanMiao = model.getBone("guanmiao")
+        val missile = model.getBone("missile")
+
+        guanMiao.visible = !(vehicle.turretControllerIndex == vehicle.getSeatIndex(localPlayer)
+                && (options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle))
+
+        missile.visible = vehicle.entityData.get(TowEntity.LOADED)
+
+    }
+}

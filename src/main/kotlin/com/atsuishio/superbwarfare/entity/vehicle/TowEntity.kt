@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle
 
 import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.setValue
-import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -31,7 +31,7 @@ import net.minecraft.world.phys.Vec3
 import org.joml.Math
 import java.util.*
 
-class TowEntity(type: EntityType<TowEntity>, world: Level) : GeoVehicleEntity(type, world) {
+class TowEntity(type: EntityType<TowEntity>, world: Level) : VehicleEntity(type, world), BasicGeoVehicleEntity {
 
     override fun defineSynchedData(builder: SynchedEntityData.Builder) {
         super.defineSynchedData(builder)

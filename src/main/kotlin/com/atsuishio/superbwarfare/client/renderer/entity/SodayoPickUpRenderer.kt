@@ -11,6 +11,7 @@ import com.atsuishio.superbwarfare.tools.options
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
 import net.minecraft.client.CameraType
+import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.util.Mth
 import org.joml.Quaterniond
@@ -18,8 +19,8 @@ import org.joml.Quaternionf
 
 class SodayoPickUpRenderer<T>(manager: EntityRendererProvider.Context) :
     SbmVehicleRenderer<T>(manager) where T : VehicleEntity, T : BasicGeoVehicleEntity {
-    override fun transformCustomModelPart(vehicle: T, model: BedrockVehicleModel, poseStack: PoseStack, entityYaw: Float, partialTicks: Float) {
-        super.transformCustomModelPart(vehicle, model, poseStack, entityYaw, partialTicks)
+    override fun transformCustomModelPart(vehicle: T, model: BedrockVehicleModel, poseStack: PoseStack, entityYaw: Float, partialTicks: Float, buffer: MultiBufferSource, packedLight: Int) {
+        super.transformCustomModelPart(vehicle, model, poseStack, entityYaw, partialTicks, buffer, packedLight)
         val control = model.getBone("control")
         val head = model.getBone("head")
 

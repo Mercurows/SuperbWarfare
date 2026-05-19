@@ -176,6 +176,7 @@
       "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/gun_7_62mm.png",
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
+      "DefaultZoom": 3,
       "Spread": 0.5,
       "CrosshairColor": "0x66FF00",
       "Projectile": "superbwarfare:projectile",
