@@ -22,7 +22,7 @@ abstract class BedrockModelReloadListener<T> @JvmOverloads constructor(
     val animFiles: MutableMap<ResourceLocation, BedrockAnimationFile> = hashMapOf()
     val animations: MutableMap<ResourceLocation, List<BedrockAnimation>> = hashMapOf()
 
-    override fun prepare(
+    public override fun prepare(
         resourceManager: ResourceManager,
         profiler: ProfilerFiller
     ): Map<ResourceLocation, BedrockModelPOJO> {
@@ -70,7 +70,7 @@ abstract class BedrockModelReloadListener<T> @JvmOverloads constructor(
         return map
     }
 
-    override fun apply(
+    public override fun apply(
         map: Map<ResourceLocation, BedrockModelPOJO>,
         resourceManager: ResourceManager,
         profiler: ProfilerFiller

@@ -136,7 +136,7 @@ class Mod(bus: IEventBus, container: ModContainer) {
         val ATTRIBUTE_MODIFIER: ResourceLocation = loc("attribute_modifier")
 
         @JvmField
-        val LOGGER: Logger = LogManager.getLogger(Mod::class.java)
+        val LOGGER: Logger = LogManager.getLogger(com.atsuishio.superbwarfare.Mod::class.java)
 
         @JvmStatic
         fun loc(path: String): ResourceLocation = ResourceLocation.fromNamespaceAndPath(MODID, path)
