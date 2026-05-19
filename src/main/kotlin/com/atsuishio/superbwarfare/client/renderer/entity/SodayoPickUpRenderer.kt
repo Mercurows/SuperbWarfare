@@ -31,12 +31,10 @@ class SodayoPickUpRenderer<T>(manager: EntityRendererProvider.Context) :
         head.rotation.mul(Quaternionf(quaternion))
 
         if (vehicle is SodayoPickUpRocketEntity) {
-            // TODO 正确实现隐藏火箭弹
-//            model.shell.forEach {
-//                val items = vehicle.getEntityData().get(SodayoPickUpRocketEntity.LOADED_AMMO)
-//                val i = matcher.group("id").toInt()
-//                it.visible = items[i] != -1
-//            }
+            model.shell.forEachIndexed { index, bone ->
+                val items = vehicle.getEntityData().get(SodayoPickUpRocketEntity.LOADED_AMMO)
+                bone.visible = items[index] != -1
+            }
         }
 
         if (vehicle is SodayoPickUpTowEntity) {

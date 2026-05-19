@@ -9,6 +9,8 @@ open class BedrockVehicleModel(pojo: BedrockModelPOJO) : BedrockModel(pojo) {
     companion object {
         @JvmField
         val WHEEL_PATTERN: Pattern = Pattern.compile("^wheel(?<direction>[LR]).*$")
+
+        @JvmField
         val SHELL_PATTERN: Pattern = Pattern.compile("^shell(?<id>\\d+)$")
     }
 
@@ -28,7 +30,7 @@ open class BedrockVehicleModel(pojo: BedrockModelPOJO) : BedrockModel(pojo) {
         val leftWheelsTurn = mutableListOf<BedrockBone>()
         val rightWheelsTurn = mutableListOf<BedrockBone>()
 
-        val shell = mutableListOf<BedrockBone>()
+        val tempShell = hashMapOf<Int, BedrockBone>()
 
         for ((name, bone) in map.entries) {
             val matcher = WHEEL_PATTERN.matcher(name)
@@ -52,9 +54,9 @@ open class BedrockVehicleModel(pojo: BedrockModelPOJO) : BedrockModel(pojo) {
             }
 
             val matcherShell = SHELL_PATTERN.matcher(name)
-
             if (matcherShell.matches()) {
-                shell += bone
+                val index = matcherShell.group("id").toInt()
+                tempShell[index] = bone
             }
         }
 
@@ -63,6 +65,6 @@ open class BedrockVehicleModel(pojo: BedrockModelPOJO) : BedrockModel(pojo) {
         this.leftWheelsTurn = leftWheelsTurn
         this.rightWheelsTurn = rightWheelsTurn
 
-        this.shell = shell
+        this.shell = tempShell.toSortedMap().values.toMutableList()
     }
 }
