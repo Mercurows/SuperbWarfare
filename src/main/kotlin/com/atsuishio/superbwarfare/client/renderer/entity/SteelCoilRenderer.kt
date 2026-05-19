@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.entity.living.SteelCoilEntity
-import com.atsuishio.superbwarfare.resource.EntityModelReloadListener
+import com.atsuishio.superbwarfare.resource.model.EntityModelReloadListener
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis

@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.client.renderer.item
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.item.blockitem.BlueprintResearchTableBlockItem
-import com.atsuishio.superbwarfare.resource.BlockModelReloadListener
+import com.atsuishio.superbwarfare.resource.model.BlockModelReloadListener
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
 import net.minecraft.client.model.geom.EntityModelSet

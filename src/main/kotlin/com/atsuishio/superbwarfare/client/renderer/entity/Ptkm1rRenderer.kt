@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.entity.projectile.Ptkm1rEntity
-import com.atsuishio.superbwarfare.resource.ProjectileModelReloadListener
+import com.atsuishio.superbwarfare.resource.model.ProjectileModelReloadListener
 import com.maydaymemory.mae.basic.ArrayPoseBuilder
 import com.maydaymemory.mae.basic.ZYXBoneTransformFactory
 import com.maydaymemory.mae.blend.EulerAdditiveBlender

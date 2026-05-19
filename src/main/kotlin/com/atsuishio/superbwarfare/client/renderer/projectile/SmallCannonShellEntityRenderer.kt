@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.ClientRenderHandler
 import com.atsuishio.superbwarfare.entity.projectile.SmallCannonShellEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
-import com.atsuishio.superbwarfare.resource.ProjectileModelReloadListener
+import com.atsuishio.superbwarfare.resource.model.ProjectileModelReloadListener
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
