@@ -18,7 +18,7 @@
 				{
 					"name": "base",
 					"parent": "root",
-					"pivot": [0, 0, 4.5]
+					"pivot": [0, 0, 0]
 				},
 				{
 					"name": "turret",
