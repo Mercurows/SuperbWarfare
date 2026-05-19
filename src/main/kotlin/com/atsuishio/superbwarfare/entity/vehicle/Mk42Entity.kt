@@ -1,12 +1,12 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
 import com.atsuishio.superbwarfare.entity.buildControllers
-import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.GeckoArtilleryEntity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.level.Level
 import software.bernie.geckolib.animation.AnimatableManager.ControllerRegistrar
 
-class Mk42Entity(type: EntityType<Mk42Entity>, world: Level) : ArtilleryEntity(type, world) {
+class Mk42Entity(type: EntityType<Mk42Entity>, world: Level) : GeckoArtilleryEntity(type, world) {
 
     override fun getDamageModifier() = super.getDamageModifier()
         .custom { source, damage -> getSourceAngle(source, 0.25f) * damage }

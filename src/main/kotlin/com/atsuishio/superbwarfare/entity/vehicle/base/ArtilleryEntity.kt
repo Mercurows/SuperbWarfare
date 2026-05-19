@@ -36,7 +36,7 @@ import org.joml.Math
 import org.joml.Vector3f
 import java.util.*
 
-open class ArtilleryEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity(type, world) {
+open class ArtilleryEntity(type: EntityType<*>, world: Level) : VehicleEntity(type, world) {
 
     open var barrelAnim by BARREL_ANIM
     open var shootVec by SHOOT_VEC

@@ -14,7 +14,7 @@ import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import java.util.*
 
-class SodayoPickUpTowEntity(type: EntityType<SodayoPickUpTowEntity>, world: Level) : GeoVehicleEntity(type, world) {
+class SodayoPickUpTowEntity(type: EntityType<SodayoPickUpTowEntity>, world: Level) : GeoVehicleEntity(type, world), BasicGeoVehicleEntity {
 
     override fun getDamageModifier() = super.getDamageModifier()
         .custom { source, damage -> getSourceAngle(source, 0.25f) * damage }
