@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
-import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.util.Mth
 import net.minecraft.world.phys.Vec3
@@ -19,9 +18,7 @@ class MortarRenderer<T>(manager: EntityRendererProvider.Context) :
         model: BedrockVehicleModel,
         poseStack: PoseStack,
         entityYaw: Float,
-        partialTicks: Float,
-        buffer: MultiBufferSource,
-        packedLight: Int
+        partialTicks: Float
     ) {
         val paoguan = model.getBone("paoguan")
         val monitor = model.getBone("monitor")
