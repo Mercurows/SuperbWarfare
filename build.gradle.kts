@@ -160,7 +160,7 @@ dependencies {
     implementation(fg.deobf("com.eliotlash.mclib:mclib:20"))
 
     // Rhino
-    val rhino = minecraftLibrary("org.mozilla114:rhino:1.9.1")
+    val rhino = minecraftLibrary("com.atsuishio:rhino:1.8.1-SNAPSHOT")
     jarJar(rhino) {
         jarJar.ranged(rhino, "[1.8.0, 2.0.0)")
     }
@@ -220,7 +220,7 @@ dependencies {
     implementation(fg.deobf("curse.maven:create-328085:6255513"))
     implementation(fg.deobf("curse.maven:mmmmmmmmmmmm-225738:6237015"))
     implementation(fg.deobf("curse.maven:selene-499980:6249659"))
-    implementation(fg.deobf("curse.maven:limitless-vehicle-1446269:7675116"))
+//    implementation(fg.deobf("curse.maven:limitless-vehicle-1446269:7675116"))
     implementation(fg.deobf("curse.maven:create-power-loader-936020:6549987"))
     // better combat相关
     implementation(fg.deobf("curse.maven:better-combat-by-daedelus-639842:5625757"))
