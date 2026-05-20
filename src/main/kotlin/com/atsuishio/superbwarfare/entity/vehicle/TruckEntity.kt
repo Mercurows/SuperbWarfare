@@ -56,9 +56,6 @@ class TruckEntity(type: EntityType<TruckEntity>, world: Level) : VehicleEntity(t
         return super.interact(player, hand)
     }
 
-    override fun getDamageModifier() = super.getDamageModifier()
-        .custom { source, damage -> getSourceAngle(source, 0.25f) * damage }
-
     override fun baseTick() {
         super.baseTick()
         if (decoyInputDown) {

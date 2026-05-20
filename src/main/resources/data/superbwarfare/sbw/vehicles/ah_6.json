@@ -214,7 +214,8 @@
     "@superbwarfare:mortar_shell * 3",
     "@#superbwarfare:at_rocket * 3",
     "@#superbwarfare:aerial_bomb * 2",
-    "All * 0.7"
+    "All * 0.7",
+    "$damage * (entity.getHealth() > 0.1 ? 0.7 : 0.05)"
   ],
   "DestroyInfo": {
     "ParticleType": "Huge",

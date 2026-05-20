@@ -14,8 +14,6 @@ import java.util.*
 class Ztz99aEntity(type: EntityType<Ztz99aEntity>, world: Level) : GeoVehicleEntity(type, world) {
     override var turretXRot = -3f
     override var turretXRotO = -3f
-    override fun getDamageModifier() = super.getDamageModifier()
-        .custom { source, damage -> getSourceAngle(source, 0.3f) * damage }
 
     override fun registerControllers(data: AnimatableManager.ControllerRegistrar) = buildControllers(data) {
         "cannon" {

@@ -11,13 +11,18 @@ import net.minecraft.tags.TagKey
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.damagesource.DamageType
 import net.minecraft.world.damagesource.DamageTypes
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import java.util.function.Function
 
 class DamageModifier {
     private val immuneList = mutableListOf<DamageModify>()
     private val modifyList = mutableListOf<DamageModify>()
-    private val customList = mutableListOf<(DamageSource, Float) -> Float>()
+    private val customList = mutableListOf<DamageModify>()
+
+    fun interface CustomDamageModifier {
+        fun compute(entity: Entity, source: DamageSource, damage: Float): Float
+    }
 
     /**
      * 免疫所有伤害
@@ -207,8 +212,11 @@ class DamageModifier {
      *
      * @param damageModifyFunction 自定义伤害值计算函数
      */
-    fun custom(damageModifyFunction: (DamageSource, Float) -> Float): DamageModifier {
-        customList.add(damageModifyFunction)
+    fun custom(damageModifyFunction: CustomDamageModifier): DamageModifier {
+        val modifier = DamageModify()
+        modifier.type = DamageModify.ModifyType.CUSTOM
+        modifier.modifyFunction = damageModifyFunction
+        customList.add(modifier)
         return this
     }
 
@@ -218,6 +226,7 @@ class DamageModifier {
                 DamageModify.ModifyType.IMMUNITY -> immuneList.add(damageModify)
                 DamageModify.ModifyType.REDUCE -> modifyList.add(damageModify)
                 DamageModify.ModifyType.MULTIPLY -> modifyList.add(damageModify)
+                DamageModify.ModifyType.CUSTOM -> customList.add(damageModify)
                 else -> Mod.LOGGER.error("unknown modify type ${damageModify.type}")
             }
         }
@@ -228,6 +237,7 @@ class DamageModifier {
     fun toList(): List<DamageModify> = buildList {
         addAll(immuneList)
         addAll(modifyList)
+        addAll(customList)
     }
 
     fun match(source: DamageSource): List<DamageModify> {
@@ -290,6 +300,8 @@ class DamageModifier {
                     .append(Component.literal("" + modify.value).withStyle(ChatFormatting.RESET))
                     .append(Component.literal(" = " + format2D(damage.toDouble())).withStyle(ChatFormatting.WHITE))
 
+                DamageModify.ModifyType.CUSTOM -> Component.empty()
+
                 else -> Component.literal("INVALID!").withStyle(ChatFormatting.RED)
             }
             val component = Component.translatable(
@@ -303,20 +315,20 @@ class DamageModifier {
     /**
      * 获取调试用的详细减伤结果
      */
-    fun matchResult(source: DamageSource, damage: Float): MutableList<ModifyResult> {
+    fun matchResult(entity: Entity, source: DamageSource, damage: Float): MutableList<ModifyResult> {
         var damage = damage
         val matchList = match(source)
         val list = ArrayList<ModifyResult>()
 
         for (damageModify in matchList) {
-            damage = damageModify.compute(damage)
+            damage = damageModify.compute(entity, source, damage)
             list.add(ModifyResult(damageModify, damage))
 
             if (damage <= 0) return list
         }
 
         for (func in customList) {
-            damage = func(source, damage)
+            damage = func.compute(entity, source, damage)
             list.add(ModifyResult(null, damage))
 
             if (damage <= 0) break
@@ -332,18 +344,18 @@ class DamageModifier {
      * @param damage 原伤害值
      * @return 减伤后的伤害值
      */
-    fun compute(source: DamageSource, damage: Float): Float {
+    fun compute(entity: Entity, source: DamageSource, damage: Float): Float {
         var damage = damage
         val matchList = match(source)
 
         for (damageModify in matchList) {
-            damage = damageModify.compute(damage)
+            damage = damageModify.compute(entity, source, damage)
             if (damage <= 0) return 0f
         }
 
         // 最后计算自定义伤害
         for (func in customList) {
-            damage = func(source, damage)
+            damage = func.compute(entity, source, damage)
             if (damage <= 0) return 0f
         }
 

@@ -7,10 +7,6 @@ import net.minecraft.world.level.Level
 import software.bernie.geckolib.animation.AnimatableManager
 
 class SodayoPickUpHmgEntity(type: EntityType<SodayoPickUpHmgEntity>, world: Level) : GeoVehicleEntity(type, world), BasicGeoVehicleEntity {
-
-    override fun getDamageModifier() = super.getDamageModifier()
-        .custom { source, damage -> getSourceAngle(source, 0.25f) * damage }
-
     override fun baseTick() {
         super.baseTick()
         if (decoyInputDown) {

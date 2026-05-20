@@ -53,7 +53,7 @@ open class ClaymoreEntity(type: EntityType<ClaymoreEntity>, level: Level) : Enti
 
     override fun hurt(source: DamageSource, amount: Float): Boolean {
         var amount = amount
-        amount = DAMAGE_MODIFIER.compute(source, amount)
+        amount = DAMAGE_MODIFIER.compute(this, source, amount)
 
         if (source.entity != null) {
             this.entityData.set(LAST_ATTACKER_UUID, source.entity!!.getStringUUID())

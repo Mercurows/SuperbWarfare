@@ -1539,7 +1539,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         // 计算减伤后的伤害
         var computedAmount = amount
         if (!source.`is`(ModTags.DamageTypes.BYPASSES_VEHICLE)) {
-            computedAmount = this.getDamageModifier().compute(source, amount)
+            computedAmount = this.getDamageModifier().compute(this, source, amount)
         }
 
         this.crash = source.`is`(ModDamageTypes.VEHICLE_STRIKE)

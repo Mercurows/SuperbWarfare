@@ -5,9 +5,6 @@ import net.minecraft.world.entity.EntityType
 import net.minecraft.world.level.Level
 
 class Lav25Entity(type: EntityType<Lav25Entity>, world: Level) : VehicleEntity(type, world), BasicGeoVehicleEntity {
-    override fun getDamageModifier() = super.getDamageModifier()
-        .custom { source, damage -> getSourceAngle(source, 0.15f) * damage }
-
 //    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) = buildControllers(data) {
 //        "cannon" {
 //            if (getShootAnimationTimer(0, 0) > 0) {

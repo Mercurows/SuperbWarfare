@@ -30,10 +30,6 @@ class PrismTankEntity(type: EntityType<PrismTankEntity>, world: Level) : GeoVehi
     init {
         this.noCulling = true
     }
-
-    override fun getDamageModifier() = super.getDamageModifier()
-        .custom { source, damage -> getSourceAngle(source, 0.2f) * damage }
-
     fun hitBlock(pos: Vec3, gunData: GunData, shooter: Entity?) {
         val serverLevel = level() as? ServerLevel ?: return
 

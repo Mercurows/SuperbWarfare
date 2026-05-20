@@ -9,10 +9,6 @@ import net.minecraft.world.level.Level
 import software.bernie.geckolib.animation.AnimatableManager.ControllerRegistrar
 
 class Plz05Entity(type: EntityType<Plz05Entity>, world: Level) : GeckoArtilleryEntity(type, world) {
-
-    override fun getDamageModifier() = super.getDamageModifier()
-        .custom { source, damage -> getSourceAngle(source, 0.3f) * damage }
-
     override fun baseTick() {
         super.baseTick()
 

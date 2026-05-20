@@ -12,10 +12,6 @@ import software.bernie.geckolib.animation.AnimatableManager
 import java.util.*
 
 class T90aEntity(type: EntityType<T90aEntity>, world: Level) : GeoVehicleEntity(type, world) {
-
-    override fun getDamageModifier() = super.getDamageModifier()
-        .custom { source, damage -> getSourceAngle(source, 0.3f) * damage }
-
     override fun registerControllers(data: AnimatableManager.ControllerRegistrar) = buildControllers(data) {
         "cannon" {
             if (getShootAnimationTimer(0, 0) > 0) {

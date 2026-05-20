@@ -187,7 +187,7 @@ object DamageHandler {
     }
 
     fun getDamageInfo(vehicle: VehicleEntity, source: DamageSource, amount: Float): MutableComponent {
-        val detailedDamageResult = vehicle.getDamageModifier().matchResult(source, amount)
+        val detailedDamageResult = vehicle.getDamageModifier().matchResult(vehicle, source, amount)
         val finalDamage =
             if (detailedDamageResult.isEmpty()) amount else detailedDamageResult[detailedDamageResult.size - 1].damage
 

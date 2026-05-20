@@ -422,7 +422,8 @@
     "@#superbwarfare:at_rocket * 0.9",
     "@superbwarfare:gun_grenade * 0.25",
     "@superbwarfare:mortar_shell * 0.25",
-    "@superbwarfare:tm_62 * 1.5"
+    "@superbwarfare:tm_62 * 1.5",
+    "$entity.getSourceAngle(source, 0.3) * damage"
   ],
   "DestroyInfo": {
     "ParticleType": "Giant",

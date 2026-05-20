@@ -93,7 +93,7 @@ open class DPSGeneratorEntity(type: EntityType<DPSGeneratorEntity>, level: Level
 
     override fun hurt(source: DamageSource, amount: Float): Boolean {
         // 不处理/kill伤害
-        var amount = DAMAGE_MODIFIER.compute(source, amount)
+        var amount = DAMAGE_MODIFIER.compute(this, source, amount)
         if (source.`is`(DamageTypes.GENERIC_KILL)) {
             this.remove(RemovalReason.KILLED)
             return super.hurt(source, amount)

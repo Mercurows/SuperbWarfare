@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimat
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.projectile.MediumRocketEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.projectile.MediumRocketItem;
 import com.atsuishio.superbwarfare.tools.OBB;
@@ -77,12 +76,6 @@ public class SodayoPickUpRocketEntity extends ArtilleryEntity implements BasicGe
         this.barrel[11] = new OBB(OBB.vec3ToVector3d(this.position()), new Vector3d(0.09375f, 0.09375f, 0.0625f), new Quaterniond(), OBB.Part.INTERACTIVE);
 
         this.turret = new OBB(OBB.vec3ToVector3d(this.position()), new Vector3d(0.4765625f, 0.3515625f, 0.7578125f), new Quaterniond(), OBB.Part.TURRET);
-    }
-
-    @Override
-    public @NotNull DamageModifier getDamageModifier() {
-        return super.getDamageModifier()
-                .custom((source, damage) -> getSourceAngle(source, 0.25f) * damage);
     }
 
     @Override
