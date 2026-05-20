@@ -51,6 +51,10 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         return ResourceLocation(namespace, "textures/bedrock/vehicle/$id.png")
     }
 
+    open fun getEmissiveTextureLocation(entity: T): ResourceLocation? {
+        return null
+    }
+
     fun getLODTextureLocation(entity: T, level: Int): ResourceLocation {
         val (_, namespace, id) = entity.type.descriptionId.split(".")
         return ResourceLocation(namespace, "textures/bedrock/vehicle_lod/$id.lod$level.png")
@@ -80,6 +84,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
     ) {
         var model = VehicleModelReloadListener.getModel(getModelLocation(entity)) ?: return
         var texture = getTextureLocation(entity)
+        val emissiveTexture = getEmissiveTextureLocation(entity)
 
         val lodLevel = getLODLevel(poseStack, entity)
         if (lodLevel > 0) {
@@ -107,7 +112,6 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
 
         this.tickVariables(entity, yaw, partialTick)
         this.transformCustomModelPart(entity, model, poseStack, yaw, partialTick)
-        this.renderCustomPart(entity, model, poseStack, yaw, partialTick, buffer, packedLight)
 
         model.renderToBuffer(
             poseStack,
@@ -118,17 +122,18 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             OverlayTexture.NO_OVERLAY
         )
 
-        val emissiveTexture = entity.getEmissiveTexture()
         if (emissiveTexture != null) {
             model.renderToBuffer(
                 poseStack,
                 buffer,
-                RenderType.entityCutout(emissiveTexture),
+                RenderType.eyes(emissiveTexture),
                 BedrockModelRenderTypes.polyMeshCutout(emissiveTexture),
                 packedLight,
                 OverlayTexture.NO_OVERLAY
             )
         }
+
+        this.renderCustomPart(entity, model, poseStack, yaw, partialTick, buffer, packedLight)
 
         poseStack.popPose()
     }
@@ -242,8 +247,6 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
 
         if (turret != null) {
             turret.rotation.rotationY(turretYRot * Mth.DEG_TO_RAD)
-            val turretLaser = model.getBone("turretLaser")
-            turretLaser?.rotation?.rotationY(turretYRot * Mth.DEG_TO_RAD)
             turret.visible = !(vehicle.isWreck && vehicle.hasTurret() && vehicle.sympatheticDetonated)
         }
 
@@ -253,10 +256,23 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
 
         if (barrel != null) {
             val rot = Mth.clamp(-turretXRot, vehicle.turretMinPitch, vehicle.turretMaxPitch) * Mth.DEG_TO_RAD
-
             barrel.rotation.rotationX(rot)
-            val barrelLaser = model.getBone("barrelLaser")
-            barrelLaser?.rotation?.rotationY(rot)
+        }
+
+        // Laser
+
+        val laser = model.getBone("laser")
+
+        if (laser != null) {
+            laser.zScale = 10 * vehicle.laserLength
+            val scale = Mth.lerp(
+                partialTicks,
+                vehicle.laserScaleO,
+                vehicle.laserScale
+            ).coerceAtMost(1.2f)
+
+            laser.xScale = scale
+            laser.yScale = scale
         }
 
     }

@@ -489,10 +489,4 @@ public class Type63Entity extends VehicleEntity implements BasicGeoVehicleEntity
     public BasicProjectileAnimationInstance<?> getAnimationInstance() {
         return null;
     }
-
-    @Nullable
-    @Override
-    public ResourceLocation getEmissiveTexture() {
-        return null;
-    }
 }

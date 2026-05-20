@@ -378,10 +378,4 @@ public class SodayoPickUpRocketEntity extends ArtilleryEntity implements BasicGe
     public BasicProjectileAnimationInstance<?> getAnimationInstance() {
         return null;
     }
-
-    @Nullable
-    @Override
-    public ResourceLocation getEmissiveTexture() {
-        return null;
-    }
 }
