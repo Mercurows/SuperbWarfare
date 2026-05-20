@@ -148,10 +148,6 @@ repositories {
 //jarJar.enable()
 
 dependencies {
-//    implementation("org.mozilla:rhino:1.8.0")
-//    minecraftLibrary("org.mozilla:rhino:1.8.0")
-//    jarJar(group = "org.mozilla", name = "rhino", version = "[1.8.0,2.0.0)")
-
     implementation("thedarkcolour:kotlinforforge:4.11.0")
 
     minecraft("net.minecraftforge:forge:1.20.1-47.2.0")
@@ -162,6 +158,12 @@ dependencies {
 
     implementation(fg.deobf("software.bernie.geckolib:geckolib-forge-1.20.1:4.4.6"))
     implementation(fg.deobf("com.eliotlash.mclib:mclib:20"))
+
+    // Rhino
+    val rhino = minecraftLibrary("org.mozilla114:rhino:1.9.1")
+    jarJar(rhino) {
+        jarJar.ranged(rhino, "[1.8.0, 2.0.0)")
+    }
 
     // SBM
     val sbm = implementation(fg.deobf("com.github.mcmodderanchor:simplebedrockmodel:2.3.3-forge-mc1.20.1"))
