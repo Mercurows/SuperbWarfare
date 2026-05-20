@@ -1,8 +1,13 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
-import com.atsuishio.superbwarfare.client.model.entity.Bl132Model
-import com.atsuishio.superbwarfare.entity.vehicle.Bl132Entity
+import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 
-class Bl132Renderer(renderManager: EntityRendererProvider.Context) :
-    VehicleRenderer<Bl132Entity>(renderManager, Bl132Model())
+class Bl132Renderer<T>(manager: EntityRendererProvider.Context) :
+    SbmVehicleRenderer<T>(manager) where T : VehicleEntity, T : BasicGeoVehicleEntity {
+
+    override fun hideForTurretControllerWhileZooming(): Boolean {
+        return true
+    }
+}

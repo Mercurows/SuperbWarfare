@@ -31,8 +31,8 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -486,12 +486,6 @@ public class Type63Entity extends VehicleEntity implements BasicGeoVehicleEntity
     @Nullable
     @Override
     public BasicProjectileAnimationInstance<?> getAnimationInstance() {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public ResourceLocation getEmissiveTexture() {
         return null;
     }
 }

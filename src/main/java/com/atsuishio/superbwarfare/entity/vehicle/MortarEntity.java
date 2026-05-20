@@ -370,10 +370,4 @@ public class MortarEntity extends ArtilleryEntity implements BasicGeoVehicleEnti
     public BasicProjectileAnimationInstance<?> getAnimationInstance() {
         return null;
     }
-
-    @Nullable
-    @Override
-    public ResourceLocation getEmissiveTexture() {
-        return null;
-    }
 }

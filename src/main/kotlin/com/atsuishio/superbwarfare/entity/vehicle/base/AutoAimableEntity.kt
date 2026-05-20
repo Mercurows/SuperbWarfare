@@ -49,7 +49,7 @@ import net.minecraft.world.phys.Vec3
 import org.joml.Math
 import java.util.*
 
-open class AutoAimableEntity(type: EntityType<*>, world: Level) : GeoVehicleEntity(type, world), OwnableEntity {
+open class AutoAimableEntity(type: EntityType<*>, world: Level) : VehicleEntity(type, world), OwnableEntity {
     open var changeTargetTimer: Int = 0
 
     open var targetUUID by TARGET_UUID

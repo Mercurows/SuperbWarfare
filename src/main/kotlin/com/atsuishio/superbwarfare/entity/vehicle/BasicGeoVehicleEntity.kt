@@ -7,6 +7,4 @@ interface BasicGeoVehicleEntity {
     fun getAnimation(): ResourceLocation? = null
 
     fun getAnimationInstance(): BasicProjectileAnimationInstance<*>? = null
-
-    fun getEmissiveTexture(): ResourceLocation? = null
 }
