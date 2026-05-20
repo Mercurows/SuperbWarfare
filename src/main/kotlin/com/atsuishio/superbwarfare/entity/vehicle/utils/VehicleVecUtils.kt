@@ -122,9 +122,9 @@ object VehicleVecUtils {
      * @return 角度
      */
     fun getDamageSourceAngle(vehicle: VehicleEntity, source: DamageSource, multiplier: Float): Float {
-        var attacker = source.directEntity
+        var attacker = source.entity
         if (attacker == null) {
-            attacker = source.entity
+            attacker = source.directEntity
         }
 
         if (attacker != null) {
