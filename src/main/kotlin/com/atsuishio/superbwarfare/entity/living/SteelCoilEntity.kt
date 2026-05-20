@@ -62,7 +62,7 @@ open class SteelCoilEntity(type: EntityType<SteelCoilEntity>, level: Level) : Pa
     }
 
     override fun hurt(source: DamageSource, amount: Float): Boolean {
-        return super.hurt(source, DAMAGE_MODIFIER.compute(source, amount))
+        return super.hurt(source, DAMAGE_MODIFIER.compute(this, source, amount))
     }
 
     override fun registerGoals() {

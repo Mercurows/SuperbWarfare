@@ -5,10 +5,6 @@ import net.minecraft.world.entity.EntityType
 import net.minecraft.world.level.Level
 
 class Bl132Entity(type: EntityType<Bl132Entity>, world: Level) : ArtilleryEntity(type, world), BasicGeoVehicleEntity {
-
-    override fun getDamageModifier() = super.getDamageModifier()
-        .custom { source, damage -> getSourceAngle(source, 0.1f) * damage }
-
 //    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) = buildControllers(data) {
 //        for (i in 1..4) {
 //            "fire$i" {

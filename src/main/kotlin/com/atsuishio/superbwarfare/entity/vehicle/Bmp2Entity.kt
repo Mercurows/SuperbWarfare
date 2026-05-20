@@ -7,10 +7,6 @@ import net.minecraft.world.level.Level
 import software.bernie.geckolib.core.animation.AnimatableManager
 
 class Bmp2Entity(type: EntityType<Bmp2Entity>, world: Level) : GeoVehicleEntity(type, world) {
-
-    override fun getDamageModifier() = super.getDamageModifier()
-        .custom { source, damage -> getSourceAngle(source, 0.15f) * damage }
-
     override fun registerControllers(data: AnimatableManager.ControllerRegistrar) = buildControllers(data) {
         "cannon" {
             if (getShootAnimationTimer(0, 0) > 0) {

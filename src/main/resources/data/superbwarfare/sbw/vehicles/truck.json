@@ -113,7 +113,8 @@
     "@superbwarfare:gun_grenade * 1.4",
     "@superbwarfare:rgo_grenade * 3",
     "@superbwarfare:hand_grenade * 2.5",
-    "@superbwarfare:mortar_shell * 2"
+    "@superbwarfare:mortar_shell * 2",
+    "$entity.getSourceAngle(source, 0.25) * damage"
   ],
   "VehicleContainerType": "Huge",
   "DestroyInfo": {

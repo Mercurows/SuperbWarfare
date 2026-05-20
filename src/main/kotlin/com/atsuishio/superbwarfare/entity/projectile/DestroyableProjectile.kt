@@ -32,7 +32,7 @@ abstract class DestroyableProjectile : FastThrowableProjectile, CustomSyncMotion
 
     override fun hurt(source: DamageSource, amount: Float): Boolean {
         var amount = amount
-        amount = DAMAGE_MODIFIER.compute(source, amount)
+        amount = DAMAGE_MODIFIER.compute(this, source, amount)
         health -= amount
 
         return super.hurt(source, amount)

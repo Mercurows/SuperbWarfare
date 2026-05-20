@@ -8,8 +8,8 @@ import software.bernie.geckolib.core.animation.AnimatableManager
 
 class BradleyEntity(type: EntityType<BradleyEntity>, world: Level) : GeoVehicleEntity(type, world) {
 
-    override fun getDamageModifier() = super.getDamageModifier()
-        .custom { source, damage -> getSourceAngle(source, 0.15f) * damage }
+//    override fun getDamageModifier() = super.getDamageModifier()
+//        .custom { source, damage -> getSourceAngle(source, 0.15f) * damage }
 
     override fun registerControllers(data: AnimatableManager.ControllerRegistrar) = buildControllers(data) {
         "cannon" {

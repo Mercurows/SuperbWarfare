@@ -189,7 +189,8 @@
     "@#superbwarfare:at_rocket * 1.3",
     "superbwarfare:vehicle_strike * 3",
     "@superbwarfare:gun_grenade * 1.5",
-    "@#superbwarfare:aa_missile * 0.5"
+    "@#superbwarfare:aa_missile * 0.5",
+    "$entity.getSourceAngle(source, 0.2) * damage"
   ],
   "DestroyInfo": {
     "ParticleType": "Huge",

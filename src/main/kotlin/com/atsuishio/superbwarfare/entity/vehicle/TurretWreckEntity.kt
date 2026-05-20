@@ -124,7 +124,7 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, level: Level) 
 
     override fun hurt(source: DamageSource, amount: Float): Boolean {
         var amount = amount
-        amount = DAMAGE_MODIFIER.compute(source, amount)
+        amount = DAMAGE_MODIFIER.compute(this, source, amount)
         entityData.set(HEALTH, entityData.get(HEALTH) - amount)
         if (level() is ServerLevel) {
             val serverLevel = level() as ServerLevel

@@ -5,10 +5,6 @@ import net.minecraft.world.entity.EntityType
 import net.minecraft.world.level.Level
 
 class Mk42Entity(type: EntityType<Mk42Entity>, world: Level) : ArtilleryEntity(type, world), BasicGeoVehicleEntity {
-
-    override fun getDamageModifier() = super.getDamageModifier()
-        .custom { source, damage -> getSourceAngle(source, 0.25f) * damage }
-
 //    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) = buildControllers(data) {
 //        "shoot" {
 //            if (getShootAnimationTimer(0, 0) > 0) {

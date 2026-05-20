@@ -8,10 +8,6 @@ import net.minecraft.world.level.Level
 import software.bernie.geckolib.core.animation.AnimatableManager
 
 class Yx100Entity(type: EntityType<Yx100Entity>, world: Level) : GeoVehicleEntity(type, world) {
-
-    override fun getDamageModifier() = super.getDamageModifier()
-        .custom { source, damage -> getSourceAngle(source, 0.3f) * damage }
-
     override fun registerControllers(data: AnimatableManager.ControllerRegistrar) = buildControllers(data) {
         "cannon" {
             if (getShootAnimationTimer(0, 0) > 0) {

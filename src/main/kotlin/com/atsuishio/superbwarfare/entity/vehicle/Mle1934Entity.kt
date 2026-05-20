@@ -5,10 +5,6 @@ import net.minecraft.world.entity.EntityType
 import net.minecraft.world.level.Level
 
 class Mle1934Entity(type: EntityType<Mle1934Entity>, world: Level) : ArtilleryEntity(type, world), BasicGeoVehicleEntity {
-
-    override fun getDamageModifier() = super.getDamageModifier()
-        .custom { source, damage -> getSourceAngle(source, 0.25f) * damage }
-
 //    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) = buildControllers(data) {
 //        "fireLeft" {
 //            if (barrelAnim.getOrElse(1) { 0 } > 0) {

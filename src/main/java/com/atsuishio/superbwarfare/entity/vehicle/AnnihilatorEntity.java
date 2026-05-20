@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.vehicle.base.GeckoArtilleryEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -91,12 +90,6 @@ public class AnnihilatorEntity extends GeckoArtilleryEntity {
         var parameters = FiringParametersItemKt.getFiringParameters(stack);
         var pos = parameters.pos();
         setTargetPos(pos);
-    }
-
-    @Override
-    public @NotNull DamageModifier getDamageModifier() {
-        return super.getDamageModifier()
-                .custom((source, damage) -> getSourceAngle(source, 3) * damage);
     }
 
     @Override

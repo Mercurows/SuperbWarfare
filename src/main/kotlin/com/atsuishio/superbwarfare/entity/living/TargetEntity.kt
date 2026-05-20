@@ -78,7 +78,7 @@ open class TargetEntity(type: EntityType<TargetEntity>, level: Level) : LivingEn
             return super.hurt(source, amount)
         }
 
-        amount = DAMAGE_MODIFIER.compute(source, amount)
+        amount = DAMAGE_MODIFIER.compute(this, source, amount)
         if (amount <= 0 || this.downTime > 0) {
             return false
         }

@@ -5,10 +5,6 @@ import net.minecraft.world.entity.EntityType
 import net.minecraft.world.level.Level
 
 class Lav150Entity(type: EntityType<Lav150Entity>, world: Level) : GeoVehicleEntity(type, world), BasicGeoVehicleEntity {
-
-    override fun getDamageModifier() = super.getDamageModifier()
-        .custom { source, damage -> getSourceAngle(source, 0.15f) * damage }
-
     // TODO 实现动画
 
 //    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) = buildControllers(data) {
