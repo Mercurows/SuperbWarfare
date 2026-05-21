@@ -53,23 +53,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
 
     override fun getTextureLocation(entity: T): ResourceLocation {
         val (_, namespace, id) = entity.type.descriptionId.split(".")
-        val res = ResourceLocation.fromNamespaceAndPath(namespace, "textures/bedrock/vehicle/$id.png")
-
-        if (ClientEventHandler.activeThermalImaging) {
-            return SmartTextureBrightener.getSmartBrightenedTexture(res, 3f)
-        } else if (entity.isWreck) {
-            return if ((entity.vehicleType == VehicleType.AIRPLANE || entity.vehicleType == VehicleType.HELICOPTER)) {
-                if (entity.sympatheticDetonated) {
-                    TextureBrightnessHandler.getBrightenedTexture(res, 0.3f)
-                } else {
-                    res
-                }
-            } else {
-                TextureBrightnessHandler.getBrightenedTexture(res, 0.3f)
-            }
-        }
-
-        return res
+        return ResourceLocation.fromNamespaceAndPath(namespace, "textures/bedrock/vehicle/$id.png")
     }
 
     open fun getEmissiveTextureLocation(entity: T): ResourceLocation? {
@@ -116,6 +100,22 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
                 texture = getLODTextureLocation(entity, i)
                 break
             }
+        }
+
+        texture = if (ClientEventHandler.activeThermalImaging) {
+            SmartTextureBrightener.getSmartBrightenedTexture(texture, 3f)
+        } else if (entity.isWreck) {
+            if ((entity.vehicleType == VehicleType.AIRPLANE || entity.vehicleType == VehicleType.HELICOPTER)) {
+                if (entity.sympatheticDetonated) {
+                    TextureBrightnessHandler.getBrightenedTexture(texture, 0.3f)
+                } else {
+                    texture
+                }
+            } else {
+                TextureBrightnessHandler.getBrightenedTexture(texture, 0.3f)
+            }
+        } else {
+            texture
         }
 
         poseStack.pushPose()
