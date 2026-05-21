@@ -4,8 +4,8 @@ import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
-import com.atsuishio.superbwarfare.resource.VehicleLODModelReloadListener
-import com.atsuishio.superbwarfare.resource.VehicleModelReloadListener
+import com.atsuishio.superbwarfare.resource.model.VehicleLODModelReloadListener
+import com.atsuishio.superbwarfare.resource.model.VehicleModelReloadListener
 import com.atsuishio.superbwarfare.tools.RenderDistanceHelper
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes

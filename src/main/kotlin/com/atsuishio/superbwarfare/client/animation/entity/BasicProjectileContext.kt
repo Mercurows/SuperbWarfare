@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.animation.entity
 
 import com.atsuishio.superbwarfare.entity.projectile.BasicGeoProjectileEntity
-import com.atsuishio.superbwarfare.resource.ProjectileModelReloadListener
+import com.atsuishio.superbwarfare.resource.model.ProjectileModelReloadListener
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.Entity
 

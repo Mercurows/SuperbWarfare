@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.animation.entity
 
 import com.atsuishio.superbwarfare.client.animation.AnimationPlayType
-import com.atsuishio.superbwarfare.resource.EntityModelReloadListener
+import com.atsuishio.superbwarfare.resource.model.EntityModelReloadListener
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.BedrockAnimation
 import com.maydaymemory.mae.basic.DummyPose
 import com.maydaymemory.mae.basic.Keyframe

@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.resource
+package com.atsuishio.superbwarfare.resource.model
 
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.BedrockModelPOJO

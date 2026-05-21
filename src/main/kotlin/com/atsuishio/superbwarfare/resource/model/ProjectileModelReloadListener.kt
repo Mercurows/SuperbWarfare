@@ -1,3 +1,3 @@
-package com.atsuishio.superbwarfare.resource
+package com.atsuishio.superbwarfare.resource.model
 
 object ProjectileModelReloadListener : BasicModelReloadListener("projectile")

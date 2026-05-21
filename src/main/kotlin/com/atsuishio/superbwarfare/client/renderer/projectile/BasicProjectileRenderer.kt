@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.client.renderer.projectile
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.entity.projectile.BasicGeoProjectileEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
-import com.atsuishio.superbwarfare.resource.ProjectileModelReloadListener
+import com.atsuishio.superbwarfare.resource.model.ProjectileModelReloadListener
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
 import com.maydaymemory.mae.basic.ArrayPoseBuilder
 import com.maydaymemory.mae.basic.ZYXBoneTransformFactory

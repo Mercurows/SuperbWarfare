@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.resource
+package com.atsuishio.superbwarfare.resource.model
 
 import com.atsuishio.superbwarfare.Mod
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.BedrockAnimation
