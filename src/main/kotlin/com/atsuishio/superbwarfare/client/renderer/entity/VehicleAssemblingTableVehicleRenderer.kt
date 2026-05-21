@@ -1,12 +1,11 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
-import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
 import net.minecraft.client.renderer.entity.EntityRendererProvider
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 import net.minecraft.world.phys.Vec3
 
@@ -37,7 +36,9 @@ class VehicleAssemblingTableVehicleRenderer<T>(manager: EntityRendererProvider.C
         )
     }
 
-    override fun getEmissiveTextureLocation(entity: T): ResourceLocation? {
-        return Mod.loc("textures/bedrock/vehicle/vehicle_assembling_table_e.png")
+    override fun getEmissiveTextureLocation(entity: T) = TEXTURE_E
+
+    companion object {
+        val TEXTURE_E = loc("textures/bedrock/vehicle/vehicle_assembling_table_e.png")
     }
 }
