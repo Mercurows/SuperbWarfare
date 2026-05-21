@@ -8,7 +8,7 @@ import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import net.minecraft.world.entity.EntityType
 
-class VehicleResource private constructor(val vehicle: VehicleEntity) : DefaultDataSupplier<DefaultVehicleResource?> {
+class VehicleResource private constructor(val vehicle: VehicleEntity) : DefaultDataSupplier<DefaultVehicleResource> {
     val id: String = getRegistryId(vehicle.type)
 
     private var cache: DefaultVehicleResource? = null
