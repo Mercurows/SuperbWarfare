@@ -12,6 +12,7 @@ import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockMo
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.CameraType
 import net.minecraft.client.renderer.MultiBufferSource
+import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.resources.ResourceLocation
@@ -88,10 +89,27 @@ class Hpj11Renderer<T>(manager: EntityRendererProvider.Context) :
             )
         }
 
-        // TODO 实现炮管变红
+        val heat = vehicle.getWeaponHeat(0).toFloat()
+
+        if (heat > 0) {
+            model.renderToBuffer(
+                poseStack,
+                buffer.getBuffer(RenderType.eyes(getBarrelHeatTextureLocation())),
+                packedLight,
+                OverlayTexture.NO_OVERLAY,
+                heat / 100,
+                heat / 100,
+                heat / 100,
+                1f
+            )
+        }
     }
 
     fun getMuzzleFlareTextureLocation(): ResourceLocation {
         return Mod.loc("textures/bedrock/vehicle/hpj_11_e.png")
+    }
+
+    fun getBarrelHeatTextureLocation(): ResourceLocation {
+        return Mod.loc("textures/bedrock/vehicle/hpj_11_heat.png")
     }
 }
