@@ -45,6 +45,7 @@ import net.minecraft.world.entity.projectile.Projectile
 import net.minecraft.world.item.ItemStack
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
+import net.neoforged.neoforge.common.util.TriState
 import net.neoforged.neoforge.event.entity.living.*
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent.Applicable
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent
@@ -607,8 +608,6 @@ object LivingEventHandler {
             val stack = pickUp.item.copy()
             val oldCount = stack.count
 
-            // TODO 正确实现setCanPickup
-
             val count = InventoryTool.insertItem(vehicle.inventory.getItems(), stack)
 
             pickUp.discard()
@@ -620,7 +619,7 @@ object LivingEventHandler {
                 }
             }
         }
-//        event.isCanceled = true
+        event.setCanPickup(TriState.FALSE)
     }
 
     @SubscribeEvent
