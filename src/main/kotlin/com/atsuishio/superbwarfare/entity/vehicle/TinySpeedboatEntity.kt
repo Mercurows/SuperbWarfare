@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle
 
 import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.setValue
-import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
@@ -15,7 +15,7 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.DyeItem
 import net.minecraft.world.level.Level
 
-class TinySpeedboatEntity(type: EntityType<TinySpeedboatEntity>, world: Level) : GeoVehicleEntity(type, world) {
+open class TinySpeedboatEntity(type: EntityType<TinySpeedboatEntity>, world: Level) : VehicleEntity(type, world), BasicGeoVehicleEntity {
 
     companion object {
         @JvmField

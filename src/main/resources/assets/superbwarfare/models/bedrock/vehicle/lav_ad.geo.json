@@ -1093,8 +1093,13 @@
 					]
 				},
 				{
-					"name": "tube1",
+					"name": "tube",
 					"parent": "rot_barrel",
+					"pivot": [2.8395, 48.085, 20.725]
+				},
+				{
+					"name": "tube1",
+					"parent": "tube",
 					"pivot": [2.8395, 48.085, 20.725],
 					"cubes": [
 						{
@@ -1112,7 +1117,7 @@
 				},
 				{
 					"name": "tube2",
-					"parent": "rot_barrel",
+					"parent": "tube",
 					"pivot": [2.8395, 48.085, 20.725],
 					"rotation": [0, 0, 72],
 					"cubes": [
@@ -1131,7 +1136,7 @@
 				},
 				{
 					"name": "tube3",
-					"parent": "rot_barrel",
+					"parent": "tube",
 					"pivot": [2.8395, 48.085, 20.725],
 					"rotation": [0, 0, 144],
 					"cubes": [
@@ -1150,7 +1155,7 @@
 				},
 				{
 					"name": "tube4",
-					"parent": "rot_barrel",
+					"parent": "tube",
 					"pivot": [2.8395, 48.085, 20.725],
 					"rotation": [0, 0, -144],
 					"cubes": [
@@ -1169,7 +1174,7 @@
 				},
 				{
 					"name": "tube5",
-					"parent": "rot_barrel",
+					"parent": "tube",
 					"pivot": [2.8395, 48.085, 20.725],
 					"rotation": [0, 0, -72],
 					"cubes": [

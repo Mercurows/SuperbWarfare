@@ -1,6 +1,9 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
+import com.atsuishio.superbwarfare.client.renderer.SmartTextureBrightener
+import com.atsuishio.superbwarfare.client.renderer.TextureBrightnessHandler
+import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
@@ -17,11 +20,13 @@ import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
+import net.minecraft.client.renderer.culling.Frustum
 import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
+import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import org.joml.Quaterniond
 import org.joml.Quaternionf
@@ -48,7 +53,23 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
 
     override fun getTextureLocation(entity: T): ResourceLocation {
         val (_, namespace, id) = entity.type.descriptionId.split(".")
-        return ResourceLocation.fromNamespaceAndPath(namespace, "textures/bedrock/vehicle/$id.png")
+        val res = ResourceLocation.fromNamespaceAndPath(namespace, "textures/bedrock/vehicle/$id.png")
+
+        if (ClientEventHandler.activeThermalImaging) {
+            return SmartTextureBrightener.getSmartBrightenedTexture(res, 3f)
+        } else if (entity.isWreck) {
+            return if ((entity.vehicleType == VehicleType.AIRPLANE || entity.vehicleType == VehicleType.HELICOPTER)) {
+                if (entity.sympatheticDetonated) {
+                    TextureBrightnessHandler.getBrightenedTexture(res, 0.3f)
+                } else {
+                    res
+                }
+            } else {
+                TextureBrightnessHandler.getBrightenedTexture(res, 0.3f)
+            }
+        }
+
+        return res
     }
 
     open fun getEmissiveTextureLocation(entity: T): ResourceLocation? {
@@ -113,10 +134,16 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         this.tickVariables(entity, yaw, partialTick)
         this.transformCustomModelPart(entity, model, poseStack, yaw, partialTick)
 
+        val waterMask = model.getBone("waterMask")
+        val waterFlag = waterMask != null
+        if (waterFlag) {
+            waterMask.visible = false
+        }
+
         model.renderToBuffer(
             poseStack,
             buffer,
-            RenderType.entityCutout(texture),
+            RenderType.entityTranslucent(texture),
             BedrockModelRenderTypes.polyMeshCutout(texture),
             packedLight,
             OverlayTexture.NO_OVERLAY
@@ -128,6 +155,16 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
                 buffer,
                 RenderType.eyes(emissiveTexture),
                 BedrockModelRenderTypes.polyMeshCutout(emissiveTexture),
+                packedLight,
+                OverlayTexture.NO_OVERLAY
+            )
+        }
+
+        if (waterFlag) {
+            waterMask.visible = true
+            waterMask.render(
+                poseStack,
+                buffer.getBuffer(RenderType.waterMask()),
                 packedLight,
                 OverlayTexture.NO_OVERLAY
             )
@@ -313,6 +350,28 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         }
 
         return 0
+    }
+
+    override fun shouldRender(vehicle: T, pCamera: Frustum, pCamX: Double, pCamY: Double, pCamZ: Double): Boolean {
+        if (!vehicle.shouldRender(pCamX, pCamY, pCamZ)) {
+            return false
+        } else if (vehicle.noCulling) {
+            return true
+        } else {
+            var aabb = vehicle.boundingBoxForCulling.inflate(5.0)
+            if (aabb.hasNaN() || aabb.getSize() == 0.0) {
+                aabb = AABB(
+                    vehicle.x - 8.0,
+                    vehicle.y - 6.0,
+                    vehicle.z - 8.0,
+                    vehicle.x + 8.0,
+                    vehicle.y + 6.0,
+                    vehicle.z + 8.0
+                )
+            }
+
+            return pCamera.isVisible(aabb)
+        }
     }
 
     companion object {
