@@ -34,22 +34,22 @@ import org.joml.Quaternionf
 open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
     EntityRenderer<T>(manager) where T : VehicleEntity, T : BasicGeoVehicleEntity {
 
-    protected var pitch = 0f
-    protected var yaw = 0f
-    protected var roll = 0f
-    protected var leftWheelRot = 0f
-    protected var rightWheelRot = 0f
-    protected var leftTrack = 0f
-    protected var rightTrack = 0f
+    var pitch = 0f
+    var yaw = 0f
+    var roll = 0f
+    var leftWheelRot = 0f
+    var rightWheelRot = 0f
+    var leftTrack = 0f
+    var rightTrack = 0f
 
-    protected var turretYRot = 0f
+    var turretYRot = 0f
 
-    protected var turretXRot = 0f
-    protected var turretYaw = 0f
-    protected var recoilShake = 0f
+    var turretXRot = 0f
+    var turretYaw = 0f
+    var recoilShake = 0f
 
-    protected var hideForTurretControllerWhileZooming = false
-    protected var hideForPassengerWeaponStationControllerWhileZooming = false
+    var hideForTurretControllerWhileZooming = false
+    var hideForPassengerWeaponStationControllerWhileZooming = false
 
     override fun getTextureLocation(entity: T): ResourceLocation {
         val (_, namespace, id) = entity.type.descriptionId.split(".")
@@ -251,8 +251,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             passengerWeaponStation.visible = !hideForTurretControllerWhileZooming
         }
 
-        //射击时带来的车体摇晃视觉效果
-
+        // 射击时带来的车体摇晃视觉效果
         val base = model.getBone("base")
 
         if (base != null) {
@@ -279,27 +278,21 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         }
 
         // Turret
-
         val turret = model.getBone("turret")
-
         if (turret != null) {
             turret.rotation.rotationY(turretYRot * Mth.DEG_TO_RAD)
             turret.visible = !(vehicle.isWreck && vehicle.hasTurret() && vehicle.sympatheticDetonated)
         }
 
-        //Barrel
-
+        // Barrel
         val barrel = model.getBone("barrel")
-
         if (barrel != null) {
             val rot = Mth.clamp(-turretXRot, vehicle.turretMinPitch, vehicle.turretMaxPitch) * Mth.DEG_TO_RAD
             barrel.rotation.rotationX(rot)
         }
 
         // Laser
-
         val laser = model.getBone("laser")
-
         if (laser != null) {
             laser.zScale = 10 * vehicle.laserLength
             val scale = Mth.lerp(
@@ -311,7 +304,6 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             laser.xScale = scale
             laser.yScale = scale
         }
-
     }
 
     open fun rotateVehicleAxis(entityIn: T, poseStack: PoseStack, entityYaw: Float, partialTicks: Float) {
