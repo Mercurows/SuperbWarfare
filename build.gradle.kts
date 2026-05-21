@@ -202,6 +202,20 @@ dependencies {
     runtimeOnly("top.theillusivec4.curios:curios-neoforge:9.2.0+1.21.1")
     compileOnly("top.theillusivec4.curios:curios-neoforge:9.2.0+1.21.1:api")
 
+    // Rhino
+    add("additionalRuntimeClasspath", "com.atsuishio:rhino:1.8.1-SNAPSHOT")
+    val rhino = implementation(
+        group = "com.atsuishio",
+        name = "rhino",
+        version = "1.8.1-SNAPSHOT"
+    )
+    jarJar(rhino) {
+        version {
+            strictly("[1.8.0, 2.0.0)")
+            prefer("1.8.1")
+        }
+    }
+
     // SBM
     val sbm = implementation(
         group = "com.github.MCModderAnchor",
