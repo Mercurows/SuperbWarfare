@@ -43,4 +43,10 @@ function transformCustomModelPart(vehicle, model, poseStack, entityYaw, partialT
         turret.rotation.rotationY(renderer.getTurretYRot() * Mth.DEG_TO_RAD)
         turret.visible = !(vehicle.isWreck && vehicle.hasTurret() && vehicle.sympatheticDetonated)
     }
+
+    var barrel = model.getBone("barrel")
+    if (barrel != null) {
+        var rot = Mth.clamp(-renderer.getTurretXRot(), vehicle.turretMinPitch, vehicle.turretMaxPitch) * Mth.DEG_TO_RAD
+        barrel.rotation.rotationX(rot)
+    }
 }
