@@ -48,7 +48,7 @@ object CustomData {
 
     @JvmField
     val VEHICLE_RESOURCE = DataLoader.createResource(
-        "sbw/vehicles", DefaultVehicleResource::class.java
+        "sbw/vehicles", DefaultVehicleResource::class.java, isKtData = true
     ) { _ -> VehicleResource.RESOURCE_CACHE.invalidateAll() }
 
     // 务必在Mod加载时调用该方法，确保上面的静态数据加载成功
