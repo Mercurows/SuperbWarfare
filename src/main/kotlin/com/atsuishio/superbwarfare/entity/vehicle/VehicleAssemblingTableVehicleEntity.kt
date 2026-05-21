@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle
 
 import com.atsuishio.superbwarfare.block.VehicleAssemblingTableBlock
 import com.atsuishio.superbwarfare.block.property.BlockPart
-import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeVehicleStrikeDamage
 import com.atsuishio.superbwarfare.inventory.menu.VehicleAssemblingMenu
@@ -30,8 +30,8 @@ import net.minecraft.world.level.Level
 import kotlin.math.max
 import kotlin.math.min
 
-open class VehicleAssemblingTableVehicleEntity(type: EntityType<*>, level: Level) : GeoVehicleEntity(type, level),
-    HasCustomInventoryScreen, MenuProvider {
+open class VehicleAssemblingTableVehicleEntity(type: EntityType<*>, level: Level) : VehicleEntity(type, level),
+    HasCustomInventoryScreen, MenuProvider, BasicGeoVehicleEntity {
     var deltaXo: Float = 0f
     var deltaYo: Float = 0f
     var deltaX: Float = 0f
