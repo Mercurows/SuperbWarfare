@@ -54,8 +54,12 @@ class TinySpeedboatRenderer<T>(manager: EntityRendererProvider.Context) :
             color = getRainbowColorHSL(vehicle.tickCount)
             renderType = RenderType.entityTranslucentEmissive(getColorTextureLocation())
         } else {
-            val afloat = DyeColor.byId(id).textureDiffuseColors
-            color = floatArrayOf(afloat[0], afloat[1], afloat[2])
+            val intColor = DyeColor.byId(id).textureDiffuseColor
+            color = floatArrayOf(
+                ((intColor shr 16) and 0xFF).toFloat(),
+                ((intColor shr 8) and 0xFF).toFloat(),
+                (intColor and 0xFF).toFloat()
+            )
         }
 
         if (ClientEventHandler.activeThermalImaging) {
