@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
-import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
 import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
@@ -15,7 +15,6 @@ import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.texture.OverlayTexture
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 
 class Hpj11Renderer<T>(manager: EntityRendererProvider.Context) :
@@ -46,17 +45,13 @@ class Hpj11Renderer<T>(manager: EntityRendererProvider.Context) :
         rdr.rotation.rotationX(rot)
         rdr2.rotation.rotationX(rot)
 
-
         val paoGuanRoll = model.getBone("paoguanroll")
+        val flare = model.getBone("flare")
 
         val gunData = vehicle.getGunData(0, 0)
         if (gunData != null) {
             paoGuanRoll.rotation.rotationZ(-0.5f * (gunData.shootTimer.get() * System.currentTimeMillis() % 36000000) / 75f)
-        }
 
-        val flare = model.getBone("flare")
-
-        if (gunData != null) {
             flare.visible = gunData.shootTimer.get() > 2
             flare.xScale = (2 + 0.8 * (Math.random() - 0.5)).toFloat()
             flare.yScale = (2 + 0.8 * (Math.random() - 0.5)).toFloat()
@@ -82,8 +77,8 @@ class Hpj11Renderer<T>(manager: EntityRendererProvider.Context) :
             model.renderToBuffer(
                 poseStack,
                 buffer,
-                ModRenderTypes.MUZZLE_FLASH_TYPE.apply(getMuzzleFlareTextureLocation()),
-                BedrockModelRenderTypes.polyMeshCutout(getMuzzleFlareTextureLocation()),
+                ModRenderTypes.MUZZLE_FLASH_TYPE.apply(MUZZLE_FLARE),
+                BedrockModelRenderTypes.polyMeshCutout(MUZZLE_FLARE),
                 packedLight,
                 OverlayTexture.NO_OVERLAY
             )
@@ -94,7 +89,7 @@ class Hpj11Renderer<T>(manager: EntityRendererProvider.Context) :
         if (heat > 0) {
             model.renderToBuffer(
                 poseStack,
-                buffer.getBuffer(RenderType.eyes(getBarrelHeatTextureLocation())),
+                buffer.getBuffer(RenderType.eyes(HEAT)),
                 packedLight,
                 OverlayTexture.NO_OVERLAY,
                 heat / 100,
@@ -105,11 +100,8 @@ class Hpj11Renderer<T>(manager: EntityRendererProvider.Context) :
         }
     }
 
-    fun getMuzzleFlareTextureLocation(): ResourceLocation {
-        return Mod.loc("textures/bedrock/vehicle/hpj_11_e.png")
-    }
-
-    fun getBarrelHeatTextureLocation(): ResourceLocation {
-        return Mod.loc("textures/bedrock/vehicle/hpj_11_heat.png")
+    companion object {
+        val MUZZLE_FLARE = loc("textures/bedrock/vehicle/hpj_11_e.png")
+        val HEAT = loc("textures/bedrock/vehicle/hpj_11_heat.png")
     }
 }
