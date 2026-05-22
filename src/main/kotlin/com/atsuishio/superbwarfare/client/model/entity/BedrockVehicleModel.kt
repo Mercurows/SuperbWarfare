@@ -12,6 +12,9 @@ open class BedrockVehicleModel(pojo: BedrockModelPOJO) : BedrockModel(pojo) {
 
         @JvmField
         val SHELL_PATTERN: Pattern = Pattern.compile("^shell(?<id>\\d+)$")
+
+        @JvmField
+        val TRACK_PATTERN: Pattern = Pattern.compile("^track(?<type>Mov|Rot)(?<direction>[LR])(?<id>\\d+)$")
     }
 
     lateinit var leftWheels: List<BedrockBone>
@@ -22,6 +25,12 @@ open class BedrockVehicleModel(pojo: BedrockModelPOJO) : BedrockModel(pojo) {
 
     lateinit var shell: List<BedrockBone>
 
+    lateinit var leftTrackMove: List<BedrockBone>
+    lateinit var leftTrackRot: List<BedrockBone>
+
+    lateinit var rightTrackMove: List<BedrockBone>
+    lateinit var rightTrackRot: List<BedrockBone>
+
     open fun init() {
         val map = this.boneMap
 
@@ -31,6 +40,11 @@ open class BedrockVehicleModel(pojo: BedrockModelPOJO) : BedrockModel(pojo) {
         val rightWheelsTurn = mutableListOf<BedrockBone>()
 
         val tempShell = hashMapOf<Int, BedrockBone>()
+
+        val leftTrackMove = mutableListOf<BedrockBone>()
+        val leftTrackRot = mutableListOf<BedrockBone>()
+        val rightTrackMove = mutableListOf<BedrockBone>()
+        val rightTrackRot = mutableListOf<BedrockBone>()
 
         for ((name, bone) in map.entries) {
             val matcher = WHEEL_PATTERN.matcher(name)
@@ -58,6 +72,26 @@ open class BedrockVehicleModel(pojo: BedrockModelPOJO) : BedrockModel(pojo) {
                 val index = matcherShell.group("id").toInt()
                 tempShell[index] = bone
             }
+
+            val matcherTrackPart = TRACK_PATTERN.matcher(name)
+            if (matcherTrackPart.matches()) {
+                val isRot = matcherTrackPart.group("type") == "Rot"
+                val isL = matcherTrackPart.group("direction") == "L"
+
+                if (isRot) {
+                    if (isL) {
+                        leftTrackRot += bone
+                    } else {
+                        rightTrackRot += bone
+                    }
+                } else {
+                    if (isL) {
+                        leftTrackMove += bone
+                    } else {
+                        rightTrackMove += bone
+                    }
+                }
+            }
         }
 
         this.leftWheels = leftWheels
@@ -66,5 +100,10 @@ open class BedrockVehicleModel(pojo: BedrockModelPOJO) : BedrockModel(pojo) {
         this.rightWheelsTurn = rightWheelsTurn
 
         this.shell = tempShell.toSortedMap().values.toMutableList()
+
+        this.leftTrackMove = leftTrackMove
+        this.leftTrackRot = leftTrackRot
+        this.rightTrackMove = rightTrackMove
+        this.rightTrackRot = rightTrackRot
     }
 }

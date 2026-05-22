@@ -217,7 +217,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         entityYaw: Float,
         partialTicks: Float
     ) {
-        // Wheels
+        // 车轮
         model.leftWheels.forEach {
             it.rotation.rotationX(1.5f * leftWheelRot)
         }
@@ -235,6 +235,32 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             val pitchRot = Axis.XP.rotation(1.5f * rightWheelRot)
             val quaternion = Quaterniond(yawRot).mul(Quaterniond(pitchRot))
             it.rotation.mul(Quaternionf(quaternion))
+        }
+
+        // 履带
+
+        model.leftTrackMove.forEachIndexed { index, bone ->
+            val t = wrap(leftTrack + getTrackDistance() * index, vehicle)
+            bone.y += getBoneMoveY(t)
+            bone.z += getBoneMoveZ(t)
+        }
+
+        model.rightTrackMove.forEachIndexed { index, bone ->
+            val t = wrap(rightTrack + getTrackDistance() * index, vehicle)
+            bone.y += getBoneMoveY(t)
+            bone.z += getBoneMoveZ(t)
+        }
+
+        // TODO 旋转为什么不对
+
+        model.leftTrackRot.forEachIndexed { index, bone ->
+            val t = wrap(leftTrack + getTrackDistance() * index, vehicle)
+            bone.rotation.rotationX(-getBoneRotX(t) * Mth.DEG_TO_RAD)
+        }
+
+        model.rightTrackRot.forEachIndexed { index, bone ->
+            val t = wrap(rightTrack + getTrackDistance() * index, vehicle)
+            bone.rotation.rotationX(-getBoneRotX(t) * Mth.DEG_TO_RAD)
         }
 
         // 瞄准时隐藏车体
@@ -365,6 +391,17 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             return pCamera.isVisible(aabb)
         }
     }
+
+    open fun getBoneRotX(t: Float) = t
+    open fun getBoneMoveY(t: Float) = t
+    open fun getBoneMoveZ(t: Float) = t
+    open fun getTrackDistance() = 2f
+
+    protected fun wrap(value: Float, range: Int) = ((value % range) + range) % range
+
+    protected fun wrap(value: Float, vehicle: VehicleEntity) = wrap(value, getDefaultWrapRange(vehicle))
+
+    fun getDefaultWrapRange(vehicle: VehicleEntity) = vehicle.getTrackAnimationLength()
 
     companion object {
         val BLENDER: EulerAdditiveBlender = SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }
