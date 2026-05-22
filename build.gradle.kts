@@ -202,10 +202,10 @@ dependencies {
     runtimeOnly("top.theillusivec4.curios:curios-neoforge:9.2.0+1.21.1")
     compileOnly("top.theillusivec4.curios:curios-neoforge:9.2.0+1.21.1:api")
 
-    // Rhino
-    add("additionalRuntimeClasspath", "com.atsuishio:rhino:1.8.1-SNAPSHOT")
+    // 从ywzj毛来的Rhino
+    add("additionalRuntimeClasspath", "org.ywzj:rhino:1.8.1-SNAPSHOT")
     val rhino = implementation(
-        group = "com.atsuishio",
+        group = "org.ywzj",
         name = "rhino",
         version = "1.8.1-SNAPSHOT"
     )
