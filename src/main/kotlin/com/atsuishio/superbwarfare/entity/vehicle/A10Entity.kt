@@ -1,14 +1,14 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
-import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModParticleTypes
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 
-class A10Entity(type: EntityType<A10Entity>, world: Level) : GeoVehicleEntity(type, world) {
+open class A10Entity(type: EntityType<A10Entity>, world: Level) : VehicleEntity(type, world), BasicGeoVehicleEntity {
 
     override fun baseTick() {
         super.baseTick()

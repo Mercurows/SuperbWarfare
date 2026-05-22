@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
-import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.level.Level
 
-class Mi28Entity(type: EntityType<Mi28Entity>, world: Level) : GeoVehicleEntity(type, world)
+open class Mi28Entity(type: EntityType<Mi28Entity>, world: Level) : VehicleEntity(type, world), BasicGeoVehicleEntity
