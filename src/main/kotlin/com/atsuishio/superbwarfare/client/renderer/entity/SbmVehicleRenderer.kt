@@ -256,8 +256,6 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             bone.z += getBoneMoveZ(t)
         }
 
-        // TODO 旋转为什么不对
-
         model.leftTrackRot.forEachIndexed { index, bone ->
             val t = wrap(leftTrack + getTrackDistance() * index, vehicle)
             bone.rotation.rotationX(-getBoneRotX(t) * Mth.DEG_TO_RAD)
@@ -279,7 +277,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         val passengerWeaponStation = model.getBone("passengerWeaponStation")
 
         if (passengerWeaponStation != null && hideForTurretControllerWhileZooming()) {
-            passengerWeaponStation.visible = !hideForTurretControllerWhileZooming
+            passengerWeaponStation.visible = !hideForPassengerWeaponStationControllerWhileZooming
         }
 
         // 射击时带来的车体摇晃视觉效果
@@ -335,6 +333,28 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             laser.xScale = scale
             laser.yScale = scale
         }
+
+        // 乘客武器站
+
+        val passengerWeaponStationYaw = model.getBone("passengerWeaponStationYaw")
+
+        passengerWeaponStationYaw?.rotation?.rotationY(Mth.lerp(
+            partialTicks,
+            vehicle.gunYRotO,
+            vehicle.gunYRot
+        ) * Mth.DEG_TO_RAD - turretYRot * Mth.DEG_TO_RAD)
+
+        val passengerWeaponStationPitch = model.getBone("passengerWeaponStationPitch")
+
+        passengerWeaponStationPitch?.rotation?.rotationX(Mth.clamp(
+            -Mth.lerp(
+                partialTicks,
+                vehicle.gunXRotO,
+                vehicle.gunXRot
+            ) * Mth.DEG_TO_RAD,
+            vehicle.passengerWeaponMinPitch * Mth.DEG_TO_RAD,
+            vehicle.passengerWeaponMaxPitch * Mth.DEG_TO_RAD
+        ))
     }
 
     open fun rotateVehicleAxis(entityIn: T, poseStack: PoseStack, entityYaw: Float, partialTicks: Float) {
