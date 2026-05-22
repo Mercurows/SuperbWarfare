@@ -17,7 +17,6 @@ class Ah6Renderer<T>(manager: EntityRendererProvider.Context) :
         partialTicks: Float
     ) {
 
-        // TODO 实现lod功能
         super.transformCustomModelPart(vehicle, model, poseStack, entityYaw, partialTicks)
         val propeller = model.getBone("propeller")
         val tailPropeller = model.getBone("tailPropeller")
