@@ -4,18 +4,6 @@ function transformCustomModelPart(vehicle, model, poseStack, entityYaw, partialT
     var Quaternionf = this.Quaternionf
     var Mth = this.Mth
 
-    var turret = model.getBone("turret")
-    if (turret != null) {
-        turret.rotation.rotationY(renderer.getTurretYRot() * Mth.DEG_TO_RAD)
-        turret.visible = !(vehicle.isWreck && vehicle.hasTurret() && vehicle.sympatheticDetonated)
-    }
-
-    var barrel = model.getBone("barrel")
-    if (barrel != null) {
-        var rot = Mth.clamp(-renderer.getTurretXRot(), vehicle.turretMinPitch, vehicle.turretMaxPitch) * Mth.DEG_TO_RAD
-        barrel.rotation.rotationX(rot)
-    }
-
     var glow = model.getBone("glow")
     var scale = Math.min(Mth.lerp(partialTicks, vehicle.laserScaleO, vehicle.laserScale), 1.2)
 

@@ -33,6 +33,7 @@ class WaveforceTowerRenderer<T>(manager: EntityRendererProvider.Context) :
     ) {
         val func = VehicleResource.getDefault(vehicle).getScript() ?: return
         VehicleScriptManager.invokeTransform(func, vehicle, model, poseStack, entityYaw, partialTicks, this)
+        super.transformCustomModelPart(vehicle, model, poseStack, entityYaw, partialTicks)
     }
 
     override fun renderCustomPart(

@@ -15,9 +15,6 @@ open class BedrockVehicleModel(pojo: BedrockModelPOJO) : BedrockModel(pojo) {
 
         @JvmField
         val TRACK_PATTERN: Pattern = Pattern.compile("^track(?<type>Mov|Rot)(?<direction>[LR])(?<id>\\d+)$")
-
-        @JvmField
-        val WAVE_FORCE_LIGHT_PATTERN: Pattern = Pattern.compile("^light_(?<type>on|off)(?<id>\\d+)")
     }
 
     lateinit var leftWheels: List<BedrockBone>
@@ -34,8 +31,6 @@ open class BedrockVehicleModel(pojo: BedrockModelPOJO) : BedrockModel(pojo) {
     lateinit var rightTrackMove: List<BedrockBone>
     lateinit var rightTrackRot: List<BedrockBone>
 
-    lateinit var waveForceLight: List<BedrockBone>
-
     open fun init() {
         val map = this.boneMap
 
@@ -50,8 +45,6 @@ open class BedrockVehicleModel(pojo: BedrockModelPOJO) : BedrockModel(pojo) {
         val leftTrackRot = hashMapOf<Int, BedrockBone>()
         val rightTrackMove = hashMapOf<Int, BedrockBone>()
         val rightTrackRot = hashMapOf<Int, BedrockBone>()
-
-        val waveForceLight = hashMapOf<Int, BedrockBone>()
 
         for ((name, bone) in map.entries) {
             val matcher = WHEEL_PATTERN.matcher(name)
@@ -100,14 +93,6 @@ open class BedrockVehicleModel(pojo: BedrockModelPOJO) : BedrockModel(pojo) {
                     }
                 }
             }
-
-            val waveForceLightMatcher = WAVE_FORCE_LIGHT_PATTERN.matcher(name)
-            if (waveForceLightMatcher.matches()) {
-                val isOn = waveForceLightMatcher.group("type") == "on"
-                val index = waveForceLightMatcher.group("id").toInt()
-                waveForceLight[index] = bone
-            }
-
         }
 
         this.leftWheels = leftWheels
@@ -121,7 +106,5 @@ open class BedrockVehicleModel(pojo: BedrockModelPOJO) : BedrockModel(pojo) {
         this.leftTrackRot = leftTrackRot.toSortedMap().values.toMutableList()
         this.rightTrackMove = rightTrackMove.toSortedMap().values.toMutableList()
         this.rightTrackRot = rightTrackRot.toSortedMap().values.toMutableList()
-
-        this.waveForceLight = waveForceLight.toSortedMap().values.toMutableList()
     }
 }

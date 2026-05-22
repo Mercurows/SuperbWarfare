@@ -243,7 +243,6 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         }
 
         // 履带
-
         model.leftTrackMove.forEachIndexed { index, bone ->
             val t = wrap(leftTrack + getTrackDistance() * index, vehicle)
             bone.y += getBoneMoveY(t)
@@ -335,7 +334,6 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         }
 
         // 乘客武器站
-
         val passengerWeaponStationYaw = model.getBone("passengerWeaponStationYaw")
 
         passengerWeaponStationYaw?.rotation?.rotationY(Mth.lerp(
@@ -418,8 +416,11 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
     }
 
     open fun getBoneRotX(t: Float) = t
+
     open fun getBoneMoveY(t: Float) = t
+
     open fun getBoneMoveZ(t: Float) = t
+
     open fun getTrackDistance() = 2f
 
     protected fun wrap(value: Float, range: Int) = ((value % range) + range) % range
