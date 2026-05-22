@@ -6921,7 +6921,7 @@
 				{
 					"name": "base",
 					"parent": "root",
-					"pivot": [0, 8, -3]
+					"pivot": [0, 0, 0]
 				},
 				{
 					"name": "turret",

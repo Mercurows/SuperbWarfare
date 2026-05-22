@@ -1,14 +1,12 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
-import com.atsuishio.superbwarfare.entity.buildControllers
-import com.atsuishio.superbwarfare.entity.vehicle.base.GeckoArtilleryEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
 import com.atsuishio.superbwarfare.tools.angleTo
 import com.atsuishio.superbwarfare.tools.toVec3
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.level.Level
-import software.bernie.geckolib.core.animation.AnimatableManager
 
-class Plz05Entity(type: EntityType<Plz05Entity>, world: Level) : GeckoArtilleryEntity(type, world) {
+open class Plz05Entity(type: EntityType<Plz05Entity>, world: Level) : ArtilleryEntity(type, world), BasicGeoVehicleEntity {
     override fun baseTick() {
         super.baseTick()
 
@@ -24,22 +22,22 @@ class Plz05Entity(type: EntityType<Plz05Entity>, world: Level) : GeckoArtilleryE
         }
     }
 
-    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) = buildControllers(data) {
-        "shoot" {
-            if (getShootAnimationTimer(1, 0) > 0) {
-                thenPlay("animation.plz_05.shoot")
-            } else {
-                thenLoop("animation.plz_05.idle")
-            }
-        }
-        "lockTurret"(10) {
-            if (lockTurret) {
-                thenPlay("animation.plz_05.lock_turret")
-            } else {
-                thenLoop("animation.plz_05.idle")
-            }
-        }
-    }
+//    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) = buildControllers(data) {
+//        "shoot" {
+//            if (getShootAnimationTimer(1, 0) > 0) {
+//                thenPlay("animation.plz_05.shoot")
+//            } else {
+//                thenLoop("animation.plz_05.idle")
+//            }
+//        }
+//        "lockTurret"(10) {
+//            if (lockTurret) {
+//                thenPlay("animation.plz_05.lock_turret")
+//            } else {
+//                thenLoop("animation.plz_05.idle")
+//            }
+//        }
+//    }
 
     override fun canBind() = true
 }
