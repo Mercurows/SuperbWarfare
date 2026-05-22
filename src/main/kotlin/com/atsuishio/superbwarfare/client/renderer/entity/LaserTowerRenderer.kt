@@ -34,16 +34,12 @@ class LaserTowerRenderer<T>(manager: EntityRendererProvider.Context) :
             model.renderToBuffer(
                 poseStack,
                 buffer,
-                RenderType.energySwirl(getLaserTextureLocation(), 1f, 1f),
-                BedrockModelRenderTypes.polyMeshCutout(getLaserTextureLocation()),
+                RenderType.energySwirl(LASER, 1f, 1f),
+                BedrockModelRenderTypes.polyMeshCutout(LASER),
                 packedLight,
                 OverlayTexture.NO_OVERLAY
             )
         }
-    }
-
-    fun getLaserTextureLocation(): ResourceLocation {
-        return Mod.loc("textures/bedrock/vehicle/laser_tower_laser.png")
     }
 
     override fun getEmissiveTextureLocation(entity: T): ResourceLocation? {
@@ -52,5 +48,9 @@ class LaserTowerRenderer<T>(manager: EntityRendererProvider.Context) :
         } else {
             super.getEmissiveTextureLocation(entity)
         }
+    }
+
+    companion object {
+        val LASER = Mod.loc("textures/bedrock/vehicle/laser_tower_laser.png")
     }
 }
