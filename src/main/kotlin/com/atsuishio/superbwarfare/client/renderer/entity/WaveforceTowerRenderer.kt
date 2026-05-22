@@ -60,17 +60,13 @@ class WaveforceTowerRenderer<T>(manager: EntityRendererProvider.Context) :
 
         // TODO 实现充能进度灯
 
-//        val matcher = LIGHT_PATTERN.matcher(boneName)
-//        if (matcher.matches()) {
-//            val isOn = matcher.group("type") == "on"
-//            val index = matcher.group("id").toInt()
-//
-//            return TransformContext { bone, vehicle, _ ->
-//                val energy = vehicle.chargeProgress
-//                val shouldTurnOn = energy >= index / 7f
-//                bone.isHidden = shouldTurnOn != isOn
-//            }
-//        }
+        model.waveForceLight.forEachIndexed { index, bone ->
+            val isOn = matcher.group("type") == "on"
+            val energy = vehicle.chargeProgress
+            val shouldTurnOn = energy >= index / 7f
+
+            bone.visible = shouldTurnOn == isOn
+        }
     }
 
     override fun renderCustomPart(
