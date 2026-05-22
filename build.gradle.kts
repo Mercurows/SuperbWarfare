@@ -159,8 +159,8 @@ dependencies {
     implementation(fg.deobf("software.bernie.geckolib:geckolib-forge-1.20.1:4.4.6"))
     implementation(fg.deobf("com.eliotlash.mclib:mclib:20"))
 
-    // Rhino
-    val rhino = minecraftLibrary("com.atsuishio:rhino:1.8.1-SNAPSHOT")
+    // 从ywzj毛来的Rhino
+    val rhino = minecraftLibrary("org.ywzj:rhino:1.8.1-SNAPSHOT")
     jarJar(rhino) {
         jarJar.ranged(rhino, "[1.8.0, 2.0.0)")
     }
