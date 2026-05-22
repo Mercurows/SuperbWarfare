@@ -18,7 +18,7 @@
 				{
 					"name": "base",
 					"parent": "root",
-					"pivot": [0, 15.95888, 11.25],
+					"pivot": [0, 0, 0],
 					"cubes": [
 						{
 							"origin": [32.67205, 28.80662, -36.56451],
@@ -7303,8 +7303,13 @@
 					]
 				},
 				{
-					"name": "Wheel",
+					"name": "Track",
 					"parent": "root",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "Wheel",
+					"parent": "Track",
 					"pivot": [-0.8, 15.5, -16.8]
 				},
 				{
@@ -8477,7 +8482,7 @@
 				},
 				{
 					"name": "TrackL",
-					"parent": "root",
+					"parent": "Track",
 					"pivot": [30, 24.43117, 54.91481]
 				},
 				{
@@ -9909,7 +9914,7 @@
 				},
 				{
 					"name": "TrackR",
-					"parent": "root",
+					"parent": "Track",
 					"pivot": [-30, 24.43117, 54.91481]
 				},
 				{

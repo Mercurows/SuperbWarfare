@@ -75,6 +75,10 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         return ResourceLocation.fromNamespaceAndPath(namespace, "$id.lod$level")
     }
 
+    open fun renderScale(): Float {
+        return 1f
+    }
+
     override fun shouldShowName(pEntity: T): Boolean {
         return false
     }
@@ -121,6 +125,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         poseStack.pushPose()
 
         this.rotateVehicleAxis(entity, poseStack, yaw, partialTick)
+        poseStack.scale(renderScale(), renderScale(), renderScale())
 
         if (entity.getAnimationInstance() != null) {
             val ani = entity.getAnimationInstance()!!
