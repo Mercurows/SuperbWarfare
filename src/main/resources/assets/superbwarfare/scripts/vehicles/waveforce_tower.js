@@ -13,7 +13,7 @@ function transformCustomModelPart(vehicle, model, poseStack, entityYaw, partialT
 
     var glow2 = model.getBone("glow2")
 
-    glow2.z = -16 * vehicle.laserLength - 2.5
+    glow2.z += -16 * vehicle.laserLength
 
     glow2.xScale = scale
     glow2.yScale = scale
