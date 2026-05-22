@@ -13,12 +13,12 @@
 			"bones": [
 				{
 					"name": "root",
-					"pivot": [0, 0, -7.85]
+					"pivot": [0, 0, 0]
 				},
 				{
 					"name": "base",
 					"parent": "root",
-					"pivot": [0, 12, 0]
+					"pivot": [0, 0, 0]
 				},
 				{
 					"name": "turret",
@@ -9030,8 +9030,13 @@
 					]
 				},
 				{
-					"name": "Wheel",
+					"name": "Track",
 					"parent": "root",
+					"pivot": [0, 0, -7.85]
+				},
+				{
+					"name": "Wheel",
+					"parent": "Track",
 					"pivot": [-0.8, 15.5, -23.8]
 				},
 				{
@@ -10292,7 +10297,7 @@
 				},
 				{
 					"name": "TrackL",
-					"parent": "root",
+					"parent": "Track",
 					"pivot": [30, 24.43117, 49.06481]
 				},
 				{
@@ -11594,7 +11599,7 @@
 				},
 				{
 					"name": "TrackR",
-					"parent": "root",
+					"parent": "Track",
 					"pivot": [-30, 24.43117, 47.91481]
 				},
 				{
