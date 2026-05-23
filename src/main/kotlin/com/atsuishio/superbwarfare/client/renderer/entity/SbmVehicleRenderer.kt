@@ -17,6 +17,7 @@ import com.maydaymemory.mae.basic.ZYXBoneTransformFactory
 import com.maydaymemory.mae.blend.EulerAdditiveBlender
 import com.maydaymemory.mae.blend.SimpleEulerAdditiveBlender
 import com.mojang.blaze3d.vertex.PoseStack
+import com.mojang.blaze3d.vertex.VertexConsumer
 import com.mojang.math.Axis
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
@@ -28,6 +29,8 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
+import org.joml.Matrix3f
+import org.joml.Matrix4f
 import org.joml.Quaterniond
 import org.joml.Quaternionf
 
@@ -140,6 +143,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         this.transformCustomModelPart(entity, model, poseStack, yaw, partialTick)
 
         val waterMask = model.getBone("waterMask")
+
         val waterFlag = waterMask != null
         if (waterFlag) {
             waterMask.visible = false
@@ -175,9 +179,60 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             )
         }
 
+        // TODO 自定义图章
+//        val name = bone.name
+//        if (name.endsWith("_dogTag")) {
+//            bone.isHidden = true
+//            val list = animatable.dogTagIcon
+//            val flag = list.all { row -> row.all { it == (-1).toShort() } }
+//            if (DisplayConfig.DOG_TAG_ICON_VISIBLE.get() && !flag) {
+//                poseStack.pushPose()
+//                RenderUtils.translateMatrixToBone(poseStack, bone)
+//                RenderUtils.translateToPivotPoint(poseStack, bone)
+//                rotateMatrixAroundBone(poseStack, bone)
+//                RenderUtils.scaleMatrixForBone(poseStack, bone)
+//                RenderUtils.translateAwayFromPivotPoint(poseStack, bone)
+//                poseStack.translate(bone.pivotX / 16, bone.pivotY / 16, bone.pivotZ / 16)
+//                poseStack.mulPose(Axis.YP.rotationDegrees(180f))
+//                poseStack.mulPose(Axis.XP.rotationDegrees(90f))
+//
+//                val pose = poseStack.last()
+//                val lastMatrix = pose.pose()
+//                val lastMatrix3f = pose.normal()
+//                val vertexConsumer =
+//                    bufferSource.getBuffer(RenderType.entityCutoutNoCull(SpritePixelHelper.getDogTagIcon(list, animatable.uuid.toString())))
+//
+//                val scale = bone.cubes[0].size
+//                val xSize = scale.x.toFloat() / 16
+//                val ySize = scale.y.toFloat() / 16
+//
+//                vertex(vertexConsumer, lastMatrix, lastMatrix3f, packedLight, -0.5f * xSize, -0.5f * ySize, 0, 1)
+//                vertex(vertexConsumer, lastMatrix, lastMatrix3f, packedLight, 0.5f * xSize, -0.5f * ySize, 1, 1)
+//                vertex(vertexConsumer, lastMatrix, lastMatrix3f, packedLight, 0.5f * xSize, 0.5f * ySize, 1, 0)
+//                vertex(vertexConsumer, lastMatrix, lastMatrix3f, packedLight, -0.5f * xSize, 0.5f * ySize, 0, 0)
+//                poseStack.popPose()
+//
+//                bufferSource.getBuffer(RenderType.entityTranslucent(getTextureLocation(animatable)))
+//            }
+//        }
+
         this.renderCustomPart(entity, model, poseStack, yaw, partialTick, buffer, packedLight)
 
         poseStack.popPose()
+    }
+
+    private fun vertex(
+        pConsumer: VertexConsumer,
+        pPose: Matrix4f,
+        pNormal: Matrix3f,
+        pLightmapUV: Int,
+        pX: Float,
+        pZ: Float,
+        pU: Int,
+        pV: Int
+    ) {
+        pConsumer.vertex(pPose, pX, 0f, -pZ).color(255, 255, 255, 255).uv(pU.toFloat(), pV.toFloat())
+            .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pLightmapUV).normal(pNormal, 0f, 1f, 0f).endVertex()
     }
 
     open fun tickVariables(vehicle: T, entityYaw: Float, partialTicks: Float) {
