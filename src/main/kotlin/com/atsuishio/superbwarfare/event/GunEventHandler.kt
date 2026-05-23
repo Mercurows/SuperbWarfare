@@ -147,11 +147,11 @@ object GunEventHandler {
         val autoReload = data.get(GunProp.AUTO_RELOAD) ?: return
 
         if (inMainHand && autoReload && !data.hasEnoughAmmoToShoot(shooter)) {
-            tryStartReload(shooter, data)
+            tryStartReload(shooter, data, false)
         }
     }
 
-    fun tryStartReload(shooter: Entity?, data: GunData) {
+    fun tryStartReload(shooter: Entity?, data: GunData, save: Boolean = true) {
         if (data.useBackpackAmmo() || data.meleeOnly()) return
 
         if ((shooter == null || !shooter.isSpectator)
@@ -181,7 +181,9 @@ object GunEventHandler {
             }
 
             data.burstAmount.reset()
-            data.save()
+            if (save) {
+                data.save()
+            }
         }
     }
 
