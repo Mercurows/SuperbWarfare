@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.Ju87Entity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.mojang.blaze3d.vertex.PoseStack
-import com.mojang.math.Axis
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.util.Mth
@@ -30,8 +29,6 @@ class Ju87Renderer<T>(manager: EntityRendererProvider.Context) :
         val wingLR = model.getBone("wingLR")
         val wingLR2 = model.getBone("wingLR2")
         val wingLR3 = model.getBone("wingLR3")
-
-        val rotL = Axis.XP.rotation(1.5f * leftWheelRot)
 
         wingLR.rotation.rotateX(
             1.5f * Mth.lerp(
@@ -115,10 +112,12 @@ class Ju87Renderer<T>(manager: EntityRendererProvider.Context) :
 
         propeller.rotation.rotateZ(-Mth.lerp(partialTicks, vehicle.propellerRotO, vehicle.propellerRot))
 
-        // TODO 修复小螺旋桨运动
+        // TODO 尝试更简单的方式
 
-        propeller2.rotation.rotateZ(-0.5f * (vehicle.deltaMovement.dot(vehicle.lookAngle).toFloat() * System.currentTimeMillis() % 36000000) / 75f)
-        propeller3.rotation.rotateZ(0.5f * (vehicle.deltaMovement.dot(vehicle.lookAngle).toFloat() * System.currentTimeMillis() % 36000000) / 75f)
+        val rot = Mth.lerp(partialTicks, vehicle.smallPropellerO, vehicle.smallPropeller)
+
+        propeller2.rotation.rotateZ(-rot)
+        propeller3.rotation.rotateZ(rot)
 
         val bomb1 = model.getBone("bomb1")
         val bomb2 = model.getBone("bomb2")

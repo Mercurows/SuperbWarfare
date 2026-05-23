@@ -8,12 +8,16 @@ import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
+import org.joml.Math
 import java.util.*
 
 open class Ju87Entity(type: EntityType<Ju87Entity>, world: Level) : VehicleEntity(type, world), BasicGeoVehicleEntity {
 
     override var turretYRot = 180f
     override var turretYRotO = 180f
+
+    var smallPropellerO = 0f
+    var smallPropeller = 180f
 
     override fun vehicleShoot(living: LivingEntity?, uuid: UUID?, targetPos: Vec3?) {
         val level = living?.level()
@@ -37,4 +41,23 @@ open class Ju87Entity(type: EntityType<Ju87Entity>, world: Level) : VehicleEntit
 //            }
 //        }
 //    }
+
+    override fun baseTick() {
+        smallPropellerO = smallPropeller
+        super.baseTick()
+        if (level().isClientSide) {
+            smallPropeller += deltaMovement.dot(lookAngle).toFloat()
+
+            val delta = Math.abs(smallPropeller - smallPropellerO)
+            while (smallPropeller > 180f) {
+                smallPropeller -= 360f
+                smallPropellerO = smallPropeller - delta
+            }
+            while (smallPropeller <= -180f) {
+                smallPropeller += 360f
+                smallPropellerO = delta + smallPropeller
+            }
+
+        }
+    }
 }
