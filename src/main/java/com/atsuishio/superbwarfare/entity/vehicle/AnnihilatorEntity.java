@@ -1,10 +1,11 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
-import com.atsuishio.superbwarfare.entity.vehicle.base.GeckoArtilleryEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModTags;
@@ -17,6 +18,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -33,19 +35,15 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Math;
 import org.joml.Matrix4d;
 import org.joml.Vector4d;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
 
 import java.util.Locale;
 import java.util.UUID;
 
-public class AnnihilatorEntity extends GeckoArtilleryEntity {
+public class AnnihilatorEntity extends ArtilleryEntity implements BasicGeoVehicleEntity {
     public static final EntityDataAccessor<Float> LASER_LEFT_LENGTH = SynchedEntityData.defineId(AnnihilatorEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> LASER_MIDDLE_LENGTH = SynchedEntityData.defineId(AnnihilatorEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> LASER_RIGHT_LENGTH = SynchedEntityData.defineId(AnnihilatorEntity.class, EntityDataSerializers.FLOAT);
@@ -243,19 +241,30 @@ public class AnnihilatorEntity extends GeckoArtilleryEntity {
 
     @Override
     public boolean canShoot(LivingEntity living) {
+
+        for (int i = 1; i <= 7; i++) {
+
+        }
         var gunData = getGunData(getSeatIndex(living));
         return gunData != null && gunData.canShoot(getAmmoSupplier()) && this.canConsume(gunData.get(GunProp.AMMO_COST_PER_SHOOT)) && !isWreck();
     }
 
-    private PlayState movementPredicate(AnimationState<AnnihilatorEntity> event) {
-        if (getChargeProgress() < 1) {
-            return event.setAndContinue(RawAnimation.begin().thenPlayAndHold("animation.annihilator.fire"));
-        }
-        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.annihilator.idle"));
+//    private PlayState movementPredicate(AnimationState<AnnihilatorEntity> event) {
+//        if (getChargeProgress() < 1) {
+//            return event.setAndContinue(RawAnimation.begin().thenPlayAndHold("animation.annihilator.fire"));
+//        }
+//        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.annihilator.idle"));
+//    }
+
+    @Nullable
+    @Override
+    public ResourceLocation getAnimation() {
+        return null;
     }
 
+    @Nullable
     @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar data) {
-        data.add(new AnimationController<>(this, "movement", 0, this::movementPredicate));
+    public BasicProjectileAnimationInstance<?> getAnimationInstance() {
+        return null;
     }
 }
