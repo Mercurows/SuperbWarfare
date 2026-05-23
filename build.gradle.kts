@@ -212,7 +212,7 @@ dependencies {
     jarJar(rhino) {
         version {
             strictly("[1.8.0, 2.0.0)")
-            prefer("1.8.1")
+            prefer("1.8.1-SNAPSHOT")
         }
     }
 
