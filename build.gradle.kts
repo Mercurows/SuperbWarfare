@@ -160,7 +160,8 @@ dependencies {
     implementation(fg.deobf("com.eliotlash.mclib:mclib:20"))
 
     // 从ywzj毛来的Rhino
-    val rhino = minecraftLibrary("org.ywzj:rhino:1.8.1-SNAPSHOT")
+    val rhino = dependencies.create("org.ywzj:rhino:1.8.1-SNAPSHOT")
+    compileOnly(rhino)
     jarJar(rhino) {
         jarJar.ranged(rhino, "[1.8.0, 2.0.0)")
     }
