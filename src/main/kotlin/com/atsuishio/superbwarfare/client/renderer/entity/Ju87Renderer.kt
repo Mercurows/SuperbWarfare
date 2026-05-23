@@ -110,10 +110,13 @@ class Ju87Renderer<T>(manager: EntityRendererProvider.Context) :
         )
 
         val propeller = model.getBone("propeller")
-        val propeller2 = model.getBone("propeller")
-        val propeller3 = model.getBone("propeller")
+        val propeller2 = model.getBone("propeller2")
+        val propeller3 = model.getBone("propeller3")
 
         propeller.rotation.rotateZ(-Mth.lerp(partialTicks, vehicle.propellerRotO, vehicle.propellerRot))
+
+        // TODO 修复小螺旋桨运动
+
         propeller2.rotation.rotateZ(-0.5f * (vehicle.deltaMovement.dot(vehicle.lookAngle).toFloat() * System.currentTimeMillis() % 36000000) / 75f)
         propeller3.rotation.rotateZ(0.5f * (vehicle.deltaMovement.dot(vehicle.lookAngle).toFloat() * System.currentTimeMillis() % 36000000) / 75f)
 
