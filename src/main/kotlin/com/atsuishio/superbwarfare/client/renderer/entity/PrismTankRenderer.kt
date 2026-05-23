@@ -20,6 +20,24 @@ class PrismTankRenderer<T>(manager: EntityRendererProvider.Context) :
         return true
     }
 
+    override fun transformCustomModelPart(
+        vehicle: T,
+        model: BedrockVehicleModel,
+        poseStack: PoseStack,
+        entityYaw: Float,
+        partialTicks: Float
+    ) {
+        super.transformCustomModelPart(vehicle, model, poseStack, entityYaw, partialTicks)
+
+        val fanL = model.getBone("fanL")
+        val fanR = model.getBone("fanR")
+
+        val rot = (System.currentTimeMillis() % 36000000) / 75f
+
+        fanL.rotation.rotationY(rot)
+        fanR.rotation.rotationY(rot)
+    }
+
     override fun renderCustomPart(
         vehicle: T,
         model: BedrockVehicleModel,
@@ -30,12 +48,6 @@ class PrismTankRenderer<T>(manager: EntityRendererProvider.Context) :
         packedLight: Int
     ) {
         super.renderCustomPart(vehicle, model, poseStack, entityYaw, partialTicks, buffer, packedLight)
-
-        val fanL = model.getBone("fanL")
-        val fanR = model.getBone("fanR")
-
-        fanL.rotation.rotationY((System.currentTimeMillis() % 36000000) / 75f)
-        fanR.rotation.rotationY((System.currentTimeMillis() % 36000000) / 75f)
 
         if (vehicle.laserScale > 0) {
             model.renderToBuffer(
