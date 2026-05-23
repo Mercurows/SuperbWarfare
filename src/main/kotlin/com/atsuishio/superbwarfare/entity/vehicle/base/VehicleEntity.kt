@@ -131,28 +131,23 @@ import kotlin.random.Random
 abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEntityType, pLevel),
     VehiclePropertyModifier, HasCustomInventoryScreen, OBBEntity {
 
-    private var gunDataMapCache: Map<String, GunData>? = null
-    private fun getProcessedGunDataMap(): Map<String, GunData> {
-        val rawMap = entityData.get(GUN_DATA_MAP)
-        val newMap = mutableMapOf<String, GunData>()
-        val weapons = computed().weapons()
-
-        for (kv in weapons.entries) {
-            val oldData = rawMap[kv.key]
-            val stack = oldData?.stack?.copy() ?: ItemStack(ModItems.VEHICLE_GUN.get())
-            val data = GunData.from(stack) { kv.value }
-
-            newMap[kv.key] = data
-        }
-
-        return newMap.toMap()
-    }
-
     open var gunDataMap: Map<String, GunData>
-        get() = gunDataMapCache ?: getProcessedGunDataMap().also { gunDataMapCache = it }
-        set(value) {
-            gunDataMapCache = value
+        get() {
+            val rawMap = entityData.get(GUN_DATA_MAP)
+            val newMap = mutableMapOf<String, GunData>()
+            val weapons = computed().weapons()
+
+            for (kv in weapons.entries) {
+                val oldData = rawMap[kv.key]
+                val stack = oldData?.stack?.copy() ?: ItemStack(ModItems.VEHICLE_GUN.get())
+                val data = GunData.from(stack) { kv.value }
+
+                newMap[kv.key] = data
+            }
+
+            return newMap.toMap()
         }
+        set(value) = this.entityData.set(GUN_DATA_MAP, value.toMap())
 
     open fun getSeat(seatIndex: Int) =
         computed().seats().getOrNull(seatIndex)
@@ -1707,8 +1702,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     }
 
     override fun baseTick() {
-        gunDataMapCache = getProcessedGunDataMap()
-
         if (prevMotion == null) {
             prevMotion = this.deltaMovement
         }
@@ -2167,8 +2160,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             this.keepChunkLoaded(this.position())
             this.keepChunkLoaded(position().add(deltaMovement.normalize().scale(16.0)))
         }
-
-        this.entityData.set(GUN_DATA_MAP, gunDataMapCache!!)
     }
 
     fun keepChunkLoaded(position: Vec3) {
