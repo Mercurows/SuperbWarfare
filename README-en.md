@@ -20,10 +20,9 @@ Install Cloth Config mod 11.1.106-1.20.1 or above to enable in-game configuratio
 
 ## License
 
-The code portion of this mod is open-sourced under GPL-3.0 license.
+The code portion of this mod is open-sourced under GPL-3.0 License.
 
-All models, textures and other resources (except specially marked ones) are owned by the development team. Unauthorized
-use without permission is prohibited.
+All assets use CC BY-NC-SA 3.0 License.
 
 ## Links
 
