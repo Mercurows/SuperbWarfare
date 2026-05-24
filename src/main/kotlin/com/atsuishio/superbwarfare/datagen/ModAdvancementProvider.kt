@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.advancement.criteria.OttoSprintTrigger
 import com.atsuishio.superbwarfare.advancement.criteria.RPGMeleeExplosionTrigger
 import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.init.ModPerks
 import com.atsuishio.superbwarfare.init.ModTags
 import net.minecraft.advancements.Advancement
 import net.minecraft.advancements.AdvancementHolder
@@ -133,6 +134,11 @@ class ModAdvancementProvider(
             it.icon(ModItems.INTELLIGENT_CHIP!!.get())
                 .whenIconCollected()
                 .type(ModAdvancement.Type.GOAL)
+                .parent(enclave)
+        }
+        val powerfulCooler = advancement("powerful_cooler") {
+            it.icon(ModItems.PERK_ITEMS[ModPerks.POWERFUL_COOLER]!!.get())
+                .whenIconCollected()
                 .parent(enclave)
         }
 

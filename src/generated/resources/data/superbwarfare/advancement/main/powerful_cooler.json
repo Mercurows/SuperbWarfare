@@ -1,0 +1,33 @@
+{
+  "parent": "superbwarfare:main/enclave",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:powerful_cooler"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "superbwarfare.advancement.main.powerful_cooler.des"
+    },
+    "icon": {
+      "count": 1,
+      "id": "superbwarfare:powerful_cooler"
+    },
+    "title": {
+      "translate": "superbwarfare.advancement.main.powerful_cooler"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "sends_telemetry_event": true
+}
