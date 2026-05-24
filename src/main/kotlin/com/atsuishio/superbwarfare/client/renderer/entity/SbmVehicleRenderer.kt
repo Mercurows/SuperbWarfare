@@ -29,7 +29,6 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
-import org.joml.Matrix3f
 import org.joml.Matrix4f
 import org.joml.Quaterniond
 import org.joml.Quaternionf
@@ -224,15 +223,19 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
     private fun vertex(
         pConsumer: VertexConsumer,
         pPose: Matrix4f,
-        pNormal: Matrix3f,
+        pNormal: PoseStack.Pose,
         pLightmapUV: Int,
         pX: Float,
         pZ: Float,
         pU: Int,
         pV: Int
     ) {
-        pConsumer.vertex(pPose, pX, 0f, -pZ).color(255, 255, 255, 255).uv(pU.toFloat(), pV.toFloat())
-            .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pLightmapUV).normal(pNormal, 0f, 1f, 0f).endVertex()
+        pConsumer.addVertex(pPose, pX, 0f, -pZ)
+            .setColor(255, 255, 255, 255)
+            .setUv(pU.toFloat(), pV.toFloat())
+            .setOverlay(OverlayTexture.NO_OVERLAY)
+            .setLight(pLightmapUV)
+            .setNormal(pNormal, 0f, 1f, 0f)
     }
 
     open fun tickVariables(vehicle: T, entityYaw: Float, partialTicks: Float) {
