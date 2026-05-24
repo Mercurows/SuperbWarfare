@@ -1057,6 +1057,8 @@
   "superbwarfare.advancement.main.rush_rush_run.des": "电棍得配轮椅才能打得出伤害，搞的跟卓越晚期一样",
   "superbwarfare.advancement.main.vehicle_assembling": "3D打印",
   "superbwarfare.advancement.main.vehicle_assembling.des": "制作一个载具装配台",
+  "superbwarfare.advancement.main.powerful_cooler": "评价冰箱需要会制冷或维修吗",
+  "superbwarfare.advancement.main.powerful_cooler.des": "武器模组某天更新后不适配这把枪了不该骂吗",
 
   "warning.superbwarfare.title.mod_sell": "【卓越前线 警示声明】",
   "warning.superbwarfare.content.mod_sell": "== 本模组完全免费开源，禁止用于任何商业行为 ==\n本模组代码采用GPL-3协议开源，美术资源私有禁止商用\n禁止付费下载、充值获取道具等违反协议和Mojang EULA的行为\n如遇以上行为，请到本模组仓库处提交Issue进行举报",
