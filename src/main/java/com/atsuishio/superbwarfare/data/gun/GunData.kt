@@ -791,8 +791,7 @@ class GunData private constructor(
     }
 
     fun copy(): GunData {
-        val data = from(this.stack.copy(), this.defaultDataSupplier)
-        return data
+        return GunData(this.stack.copy(), this.defaultDataSupplier)
     }
 
     // TODO 删了这个，这个是为了临时适配女仆mod用的
@@ -877,15 +876,13 @@ class GunData private constructor(
     }
 
     companion object {
-        private val itemStackDefaultDataSupplier = mutableMapOf<ItemStack, () -> DefaultGunData>()
-
         @JvmField
         val DATA_CACHE: LoadingCache<ItemStack, GunData> = CacheBuilder.newBuilder()
             .weakKeys()
             .weakValues()
             .build(object : CacheLoader<ItemStack, GunData>() {
                 override fun load(stack: ItemStack): GunData {
-                    return GunData(stack, itemStackDefaultDataSupplier[stack])
+                    return GunData(stack)
                 }
             })
 
@@ -896,9 +893,10 @@ class GunData private constructor(
         @JvmStatic
         @JvmOverloads
         fun from(stack: ItemStack, defaultDataSupplier: (() -> DefaultGunData)? = null): GunData {
-            defaultDataSupplier?.let { itemStackDefaultDataSupplier[stack] = it }
+            if (defaultDataSupplier != null) {
+                return GunData(stack, defaultDataSupplier)
+            }
             return DATA_CACHE.getUnchecked(stack)
-                .also { itemStackDefaultDataSupplier -= stack }
         }
 
         @JvmOverloads

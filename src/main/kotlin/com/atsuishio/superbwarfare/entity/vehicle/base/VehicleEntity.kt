@@ -236,9 +236,9 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         if (name == null) return
 
         val map = this.gunDataMap.toMutableMap()
-        var data = getGunData(name) ?: return
+        val oldData = map[name] ?: return
 
-        data = data.copy()
+        val data = oldData.copy()
         consumer.accept(data)
         data.save()
         map[name] = data
