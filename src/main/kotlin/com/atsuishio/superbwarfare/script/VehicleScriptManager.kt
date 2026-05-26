@@ -12,7 +12,7 @@ typealias JSFunction = org.mozillaa.javascript.Function
 // TODO 测试用，以后不这样写
 object VehicleScriptManager {
     val RHINO_CONTEXT: Context = Context.enter()
-    val SHARED_SCOPE: ScriptableObject = RHINO_CONTEXT.initSafeStandardObjects()
+    val SHARED_SCOPE: ScriptableObject = RHINO_CONTEXT.initStandardObjects()
 
     class ScriptFunction(val script: Script, val scope: Scriptable)
 

@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.Mod;
-import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance;
+import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInstance;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
@@ -262,9 +262,8 @@ public class AnnihilatorEntity extends ArtilleryEntity implements BasicGeoVehicl
         return null;
     }
 
-    @Nullable
     @Override
-    public BasicProjectileAnimationInstance<?> getAnimationInstance() {
+    public @Nullable VehicleAnimationInstance<?> getAnimationInstance() {
         return null;
     }
 }

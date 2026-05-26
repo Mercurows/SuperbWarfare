@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
+import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInstance
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import net.minecraft.server.level.ServerLevel
@@ -11,6 +12,10 @@ import net.minecraft.world.phys.Vec3
 import java.util.*
 
 class M1A2Entity(type: EntityType<M1A2Entity>, world: Level) : VehicleEntity(type, world), BasicGeoVehicleEntity {
+    val anim: VehicleAnimationInstance<M1A2Entity>? =
+        if (world.isClientSide) VehicleAnimationInstance(this) else null
+
+    override fun getAnimationInstance() = anim
 //    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) = buildControllers(data) {
 //        "cannon" {
 //            if (getShootAnimationTimer(0, 0) > 0) {
@@ -41,6 +46,11 @@ class M1A2Entity(type: EntityType<M1A2Entity>, world: Level) : VehicleEntity(typ
             ParticleTool.spawnBigCannonMuzzleParticles(getShootVec(living, 1f), getShootPos(living, 1f), level, this)
         }
         super.vehicleShoot(living, uuid, targetPos)
+    }
+
+    override fun vehicleShoot(living: LivingEntity?, weaponName: String) {
+        super.vehicleShoot(living, weaponName)
+        if (level().isClientSide) anim?.fire(weaponName)
     }
 
     override fun getTurretMaxHealth() = 100f
