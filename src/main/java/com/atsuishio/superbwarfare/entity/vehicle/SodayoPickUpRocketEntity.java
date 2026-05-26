@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
 import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance;
+import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInstance;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.projectile.MediumRocketEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity;
@@ -366,9 +367,8 @@ public class SodayoPickUpRocketEntity extends ArtilleryEntity implements BasicGe
         return null;
     }
 
-    @Nullable
     @Override
-    public BasicProjectileAnimationInstance<?> getAnimationInstance() {
+    public @Nullable VehicleAnimationInstance<?> getAnimationInstance() {
         return null;
     }
 }
