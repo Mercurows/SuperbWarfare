@@ -1,6 +1,9 @@
 package com.atsuishio.superbwarfare.tools
 
 import java.text.DecimalFormat
+import java.util.*
+
+fun String.camelToSnake() = FormatTool.camelToSnake(this)
 
 object FormatTool {
     @JvmField
@@ -40,4 +43,20 @@ object FormatTool {
     @JvmStatic
     @JvmOverloads
     fun format1DZZ(num: Double, str: String = "") = DECIMAL_FORMAT_1ZZ.format(num) + str
+
+    fun camelToSnake(camel: String): String {
+        if (camel.isEmpty()) return camel
+        val result = StringBuilder()
+        result.append(camel[0].lowercase(Locale.ROOT))
+        for (i in 1 until camel.length) {
+            val ch = camel[i]
+            if (ch.isUpperCase()) {
+                result.append('_')
+                result.append(ch.lowercase(Locale.ROOT))
+            } else {
+                result.append(ch)
+            }
+        }
+        return result.toString()
+    }
 }

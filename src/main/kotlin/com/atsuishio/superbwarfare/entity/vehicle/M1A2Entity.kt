@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
+import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInstance
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.tools.ParticleTool
@@ -48,19 +49,18 @@ class M1A2Entity(type: EntityType<M1A2Entity>, world: Level) : VehicleEntity(typ
         super.vehicleShoot(living, uuid, targetPos)
     }
 
-    override fun vehicleShoot(living: LivingEntity?, weaponName: String) {
-        super.vehicleShoot(living, weaponName)
-        if (level().isClientSide) anim?.fire(weaponName)
-    }
-
     override fun getTurretMaxHealth() = 100f
+
     override fun getWheelMaxHealth() = 100f
+
     override fun getEngineMaxHealth() = 150f
 
     override val customTurretMinPitch: Float
         get() = if (Mth.abs(turretYRot) > 135) ((Mth.abs(turretYRot) - 135) * 0.4f).coerceAtMost(7f) else 0f
 
-    override fun baseTick() {
-        super.baseTick()
+    override fun getAnimation() = ANIM
+
+    companion object {
+        val ANIM = loc("animation/bedrock/vehicle/m_1a_2.aniamtion.json")
     }
 }
