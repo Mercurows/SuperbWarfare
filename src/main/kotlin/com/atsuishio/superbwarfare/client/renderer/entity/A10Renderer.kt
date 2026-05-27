@@ -31,15 +31,10 @@ class A10Renderer<T>(manager: EntityRendererProvider.Context) :
         val seats = this.seatsCache ?: vehicle.computed().seats().also { this.seatsCache = it }
 
         for ((index, seat) in seats.withIndex()) {
-            val weapons = seat.weapons().map { vehicle.getGunData(it) }
-            if (weapons.isEmpty()) continue
-
-            val weaponIndex = vehicle.getWeaponIndex(index)
-            if (weaponIndex == -1) continue
-
-            for (k in weapons.indices) {
+            for (k in seat.weapons().indices) {
                 val data = vehicle.getGunData(index, k) ?: continue
-                if (data.ammo.get() <= 0) continue
+                val ammo = data.ammo.get()
+                if (ammo <= 0) continue
 
                 val projectileInfo = data.get(GunProp.PROJECTILE)
                 val projectileType = projectileInfo.itemId
@@ -51,32 +46,29 @@ class A10Renderer<T>(manager: EntityRendererProvider.Context) :
                     val size = data.get(GunProp.SHOOT_POS).positions.size
                     if (size <= 0) return@ifPresent
 
-                    poseStack.pushPose()
-//                    poseStack.mulPose(Axis.YP.rotationDegrees(180f))
-
                     for (j in 0..<size) {
-                        val pos = data.get(GunProp.SHOOT_POS).positions[j]
+                        if (j >= ammo) continue
 
-                        // TODO 读取对应dummy组
+                        val dummyName = "dummy_${index}_${k}_${j}"
+                        val bone = model.getBone(dummyName) ?: continue
 
-                        val dummy = "dummy$i"
-
-                        poseStack.mulPoseMatrix(dummy)
+                        poseStack.pushPose()
+                        bone.translateAndRotateAndScale(poseStack)
 
                         entityRenderDispatcher.render(
                             entity,
-                            pos.x,
-                            pos.y,
-                            pos.z,
+                            0.0,
+                            0.0,
+                            0.0,
                             entityYaw,
                             partialTicks,
                             poseStack,
                             buffer,
                             packedLight
                         )
-                    }
 
-                    poseStack.popPose()
+                        poseStack.popPose()
+                    }
                 }
             }
         }
