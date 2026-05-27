@@ -128,3 +128,4 @@ run/
 .cache
 
 .kotlin
+/.claude/settings.json
