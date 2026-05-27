@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.A10Entity
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.mojang.blaze3d.vertex.PoseStack
-import com.mojang.math.Axis
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.util.Mth
@@ -53,10 +52,17 @@ class A10Renderer<T>(manager: EntityRendererProvider.Context) :
                     if (size <= 0) return@ifPresent
 
                     poseStack.pushPose()
-                    poseStack.mulPose(Axis.YP.rotationDegrees(180f))
+//                    poseStack.mulPose(Axis.YP.rotationDegrees(180f))
 
                     for (j in 0..<size) {
                         val pos = data.get(GunProp.SHOOT_POS).positions[j]
+
+                        // TODO 读取对应dummy组
+
+                        val dummy = "dummy$i"
+
+                        poseStack.mulPoseMatrix(dummy)
+
                         entityRenderDispatcher.render(
                             entity,
                             pos.x,
