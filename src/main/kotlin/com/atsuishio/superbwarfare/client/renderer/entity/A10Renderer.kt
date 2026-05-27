@@ -5,8 +5,8 @@ import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.vehicle.subdata.SeatInfo
 import com.atsuishio.superbwarfare.entity.vehicle.A10Entity
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.mojang.blaze3d.vertex.PoseStack
+import com.mojang.math.Axis
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.util.Mth
@@ -49,11 +49,12 @@ class A10Renderer<T>(manager: EntityRendererProvider.Context) :
                     for (j in 0..<size) {
                         if (j >= ammo) continue
 
-                        val dummyName = "dummy_${index}_${k}_${j}"
+                        val dummyName = "dummy_${index}_${k}_${j + 1}"
                         val bone = model.getBone(dummyName) ?: continue
 
                         poseStack.pushPose()
-                        bone.translateAndRotateAndScale(poseStack)
+                        poseStack.mulPoseMatrix(bone.globalTransform)
+                        poseStack.mulPose(Axis.YP.rotationDegrees(180f))
 
                         entityRenderDispatcher.render(
                             entity,
@@ -166,33 +167,5 @@ class A10Renderer<T>(manager: EntityRendererProvider.Context) :
 
         qianzhou.rotation.rotateZ(Mth.lerp(partialTicks, vehicle.propellerRotO, vehicle.propellerRot))
         qianzhou2.rotation.rotateZ(Mth.lerp(partialTicks, vehicle.propellerRotO, vehicle.propellerRot))
-
-        val bomb1 = model.getBone("bomb1")
-        val bomb2 = model.getBone("bomb2")
-        val bomb3 = model.getBone("bomb3")
-
-        bomb1.visible = !shouldHideBomb(vehicle, 3)
-        bomb2.visible = !shouldHideBomb(vehicle, 2)
-        bomb3.visible = !shouldHideBomb(vehicle, 1)
-
-        val missile1 = model.getBone("missile1")
-        val missile2 = model.getBone("missile2")
-        val missile3 = model.getBone("missile3")
-        val missile4 = model.getBone("missile4")
-
-        missile1.visible = !shouldHideMissile(vehicle, 4)
-        missile2.visible = !shouldHideMissile(vehicle, 3)
-        missile3.visible = !shouldHideMissile(vehicle, 2)
-        missile4.visible = !shouldHideMissile(vehicle, 1)
-    }
-
-    fun shouldHideBomb(vehicle: VehicleEntity, ammo: Int): Boolean {
-        val gunData = vehicle.getGunData("Bomb") ?: return false
-        return gunData.ammo.get() < ammo
-    }
-
-    fun shouldHideMissile(vehicle: VehicleEntity, ammo: Int): Boolean {
-        val gunData = vehicle.getGunData("Missile") ?: return false
-        return gunData.ammo.get() < ammo
     }
 }
