@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
 import com.atsuishio.superbwarfare.data.gun.GunProp
+import com.atsuishio.superbwarfare.data.vehicle.subdata.SeatInfo
 import com.atsuishio.superbwarfare.entity.vehicle.A10Entity
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -15,6 +16,8 @@ import net.minecraft.world.entity.EntityType
 class A10Renderer<T>(manager: EntityRendererProvider.Context) :
     SbmVehicleRenderer<T>(manager) where T : A10Entity, T : BasicGeoVehicleEntity {
 
+    private var seatsCache: MutableList<SeatInfo>? = null
+
     override fun renderCustomPart(
         vehicle: T,
         model: BedrockVehicleModel,
@@ -26,72 +29,48 @@ class A10Renderer<T>(manager: EntityRendererProvider.Context) :
     ) {
         super.renderCustomPart(vehicle, model, poseStack, entityYaw, partialTicks, buffer, packedLight)
 
-        val seatSize = vehicle.computed().seats().size
+        val seats = this.seatsCache ?: vehicle.computed().seats().also { this.seatsCache = it }
 
-        for (i in 0..seatSize) {
+        for ((index, seat) in seats.withIndex()) {
+            val weapons = seat.weapons().map { vehicle.getGunData(it) }
+            if (weapons.isEmpty()) continue
 
-//                val dummyPos = vehicle.getShootPos(i, partialTicks)
-//                val worldPosition = VehicleVecUtils.transformPosition(
-//                    vehicle.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, partialTicks),
-//                    dummyPos.x,
-//                    dummyPos.y,
-//                    dummyPos.z
-//                )
-//
-//                val pos = Vec3(worldPosition.x, worldPosition.y, worldPosition.z).subtract(vehicle.position())
+            val weaponIndex = vehicle.getWeaponIndex(index)
+            if (weaponIndex == -1) continue
 
-            // TODO 我想渲染出每种武器使用的弹药，现在这里会越界
+            for (k in weapons.indices) {
+                val data = vehicle.getGunData(index, k) ?: continue
+                if (data.ammo.get() <= 0) continue
 
-            val weapons = vehicle.computed().seats()[i].weapons().map { vehicle.getGunData(it) }
-            if (weapons.isNotEmpty()) {
-                val weaponIndex = vehicle.getWeaponIndex(i)
-                if (weaponIndex != -1) {
+                val projectileInfo = data.get(GunProp.PROJECTILE)
+                val projectileType = projectileInfo.itemId
 
-                    val s = weapons.size
+                EntityType.byString(projectileType).ifPresent { entityType ->
+                    val entity = entityType.create(vehicle.level()) ?: return@ifPresent
+                    entity.tickCount = 1
 
-                    for (k in 0..<s) {
+                    val size = data.get(GunProp.SHOOT_POS).positions.size
+                    if (size <= 0) return@ifPresent
 
-                        val data = vehicle.getGunData(i, k)
+                    poseStack.pushPose()
+                    poseStack.mulPose(Axis.YP.rotationDegrees(180f))
 
-                        val projectileInfo = data!!.get(GunProp.PROJECTILE)
-                        val projectileType = projectileInfo.itemId
-
-                        EntityType.byString(projectileType).ifPresent { entityType ->
-                            val entity = entityType.create(vehicle.level())
-                            if (entity != null) {
-                                entity.tickCount = 1
-
-                                poseStack.pushPose()
-                                poseStack.mulPose(Axis.YP.rotationDegrees(180f))
-
-                                val size = data.get(GunProp.SHOOT_POS).positions.size
-
-                                if (size > 0) {
-
-                                    for (j in 0..<size) {
-
-                                        val pos = data.get(GunProp.SHOOT_POS).positions[j]
-
-                                        entityRenderDispatcher.render(
-                                            entity,
-                                            pos.x,
-                                            pos.y,
-                                            pos.z,
-                                            entityYaw,
-                                            partialTicks,
-                                            poseStack,
-                                            buffer,
-                                            packedLight
-                                        )
-
-                                    }
-                                }
-
-                                poseStack.popPose()
-                            }
-
-                        }
+                    for (j in 0..<size) {
+                        val pos = data.get(GunProp.SHOOT_POS).positions[j]
+                        entityRenderDispatcher.render(
+                            entity,
+                            pos.x,
+                            pos.y,
+                            pos.z,
+                            entityYaw,
+                            partialTicks,
+                            poseStack,
+                            buffer,
+                            packedLight
+                        )
                     }
+
+                    poseStack.popPose()
                 }
             }
         }
@@ -111,35 +90,43 @@ class A10Renderer<T>(manager: EntityRendererProvider.Context) :
 
         val wingLR = model.getBone("wingLR")
 
-        wingLR.rotation.rotateX(1.5f * Mth.lerp(
-            partialTicks,
-            vehicle.flap1LRotO,
-            vehicle.flap1LRot
-        ) * Mth.DEG_TO_RAD)
+        wingLR.rotation.rotateX(
+            1.5f * Mth.lerp(
+                partialTicks,
+                vehicle.flap1LRotO,
+                vehicle.flap1LRot
+            ) * Mth.DEG_TO_RAD
+        )
 
         val wingRR = model.getBone("wingRR")
 
-        wingRR.rotation.rotateX(1.5f * Mth.lerp(
-            partialTicks,
-            vehicle.flap1RRotO,
-            vehicle.flap1RRot
-        ) * Mth.DEG_TO_RAD)
+        wingRR.rotation.rotateX(
+            1.5f * Mth.lerp(
+                partialTicks,
+                vehicle.flap1RRotO,
+                vehicle.flap1RRot
+            ) * Mth.DEG_TO_RAD
+        )
 
         val wingLR2 = model.getBone("wingLR2")
 
-        wingLR2.rotation.rotateX(1.5f * Mth.lerp(
-            partialTicks,
-            vehicle.flap1L2RotO,
-            vehicle.flap1L2Rot
-        ) * Mth.DEG_TO_RAD)
+        wingLR2.rotation.rotateX(
+            1.5f * Mth.lerp(
+                partialTicks,
+                vehicle.flap1L2RotO,
+                vehicle.flap1L2Rot
+            ) * Mth.DEG_TO_RAD
+        )
 
         val wingRR2 = model.getBone("wingRR2")
 
-        wingRR2.rotation.rotateX(1.5f * Mth.lerp(
-            partialTicks,
-            vehicle.flap1R2RotO,
-            vehicle.flap1R2Rot
-        ) * Mth.DEG_TO_RAD)
+        wingRR2.rotation.rotateX(
+            1.5f * Mth.lerp(
+                partialTicks,
+                vehicle.flap1R2RotO,
+                vehicle.flap1R2Rot
+            ) * Mth.DEG_TO_RAD
+        )
 
         val wingLB = model.getBone("wingLB")
 
@@ -152,17 +139,21 @@ class A10Renderer<T>(manager: EntityRendererProvider.Context) :
         val weiyiL = model.getBone("weiyiL")
         val weiyiR = model.getBone("weiyiR")
 
-        weiyiL.rotation.rotateY(Mth.clamp(
-            Mth.lerp(partialTicks, vehicle.flap3RotO, vehicle.flap3Rot),
-            -20f,
-            20f
-        ) * Mth.DEG_TO_RAD)
+        weiyiL.rotation.rotateY(
+            Mth.clamp(
+                Mth.lerp(partialTicks, vehicle.flap3RotO, vehicle.flap3Rot),
+                -20f,
+                20f
+            ) * Mth.DEG_TO_RAD
+        )
 
-        weiyiR.rotation.rotateY(Mth.clamp(
-            Mth.lerp(partialTicks, vehicle.flap3RotO, vehicle.flap3Rot),
-            -20f,
-            20f
-        ) * Mth.DEG_TO_RAD)
+        weiyiR.rotation.rotateY(
+            Mth.clamp(
+                Mth.lerp(partialTicks, vehicle.flap3RotO, vehicle.flap3Rot),
+                -20f,
+                20f
+            ) * Mth.DEG_TO_RAD
+        )
 
         val gear = model.getBone("gear")
         val gear2 = model.getBone("gear2")
