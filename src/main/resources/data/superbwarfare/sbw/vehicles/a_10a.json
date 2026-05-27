@@ -164,7 +164,7 @@
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 0.88, 0.047],
         "ShootDirectionForHud": "Bomb",
-        "Positions": [[-0.418, 0.88, 0.047], [0, 0.88, 0.047], [0.418, 0.88, 0.047]],
+        "Positions": [[0.418, 0.88, 0.047], [0, 0.88, 0.047], [-0.418, 0.88, 0.047]],
         "BoundUpWithAmmoAmount": true,
         "Directions": ["DeltaMovement"],
         "ViewPosition": [0, 0.88, 0.047],
@@ -231,7 +231,7 @@
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 1.1475, 0],
-        "Positions": [[-4.97, 1.19, 0], [-3.96, 1.1166, 0], [3.96, 1.1166, 0], [4.97, 1.19, 0]],
+        "Positions": [[4.97, 1.19, 0], [3.96, 1.1166, 0], [-3.96, 1.1166, 0], [-4.97, 1.19, 0]],
         "BoundUpWithAmmoAmount": true
       },
       "SoundInfo": {
