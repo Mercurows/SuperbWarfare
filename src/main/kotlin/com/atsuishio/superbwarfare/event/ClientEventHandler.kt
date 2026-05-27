@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.event
 
+import com.atsuishio.superbwarfare.api.event.ClientVehicleFireEvent
 import com.atsuishio.superbwarfare.capability.ModCapabilities
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable
 import com.atsuishio.superbwarfare.client.ClientSyncedEntityHandler
@@ -10,6 +11,7 @@ import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
+import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.item.gun.GunItem
@@ -60,6 +62,7 @@ import org.joml.Matrix4f
 import org.lwjgl.glfw.GLFW
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone
 import software.bernie.geckolib.core.animation.AnimationProcessor
+import thedarkcolour.kotlinforforge.forge.FORGE_BUS
 import top.theillusivec4.curios.api.CuriosApi
 import java.util.*
 import kotlin.experimental.or
@@ -1704,6 +1707,7 @@ object ClientEventHandler {
                                 if (lockingPosVehicle != null) lockingPosVehicle!!.toVector3f() else null
                             )
                         )
+                        FORGE_BUS.post(ClientVehicleFireEvent(vehicle, player))
                         if (mc.options.cameraType == CameraType.FIRST_PERSON || zoomVehicle) {
                             playVehicleClientSounds(player, vehicle)
                         }
@@ -2902,6 +2906,17 @@ object ClientEventHandler {
             event.red = 0.1F
             event.green = 0.1F
             event.blue = 0.1F
+        }
+    }
+
+    @SubscribeEvent
+    fun onClientVehicleFire(event: ClientVehicleFireEvent) {
+        val shooter = event.shooter
+        val vehicle = event.entity
+        if (vehicle is BasicGeoVehicleEntity) {
+            val ani = vehicle.getAnimationInstance() ?: return
+            val name = vehicle.getGunName(vehicle.getSeatIndex(shooter)) ?: return
+            ani.fire(name.camelToSnake())
         }
     }
 }
