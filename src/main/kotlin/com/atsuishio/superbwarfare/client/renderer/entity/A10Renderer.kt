@@ -1,15 +1,102 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.A10Entity
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.mojang.blaze3d.vertex.PoseStack
+import com.mojang.math.Axis
+import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.util.Mth
+import net.minecraft.world.entity.EntityType
 
 class A10Renderer<T>(manager: EntityRendererProvider.Context) :
     SbmVehicleRenderer<T>(manager) where T : A10Entity, T : BasicGeoVehicleEntity {
+
+    override fun renderCustomPart(
+        vehicle: T,
+        model: BedrockVehicleModel,
+        poseStack: PoseStack,
+        entityYaw: Float,
+        partialTicks: Float,
+        buffer: MultiBufferSource,
+        packedLight: Int
+    ) {
+        super.renderCustomPart(vehicle, model, poseStack, entityYaw, partialTicks, buffer, packedLight)
+
+        val seatSize = vehicle.computed().seats().size
+
+        for (i in 0..seatSize) {
+
+//                val dummyPos = vehicle.getShootPos(i, partialTicks)
+//                val worldPosition = VehicleVecUtils.transformPosition(
+//                    vehicle.getTransformFromString(data.get(GunProp.SHOOT_POS).transform, partialTicks),
+//                    dummyPos.x,
+//                    dummyPos.y,
+//                    dummyPos.z
+//                )
+//
+//                val pos = Vec3(worldPosition.x, worldPosition.y, worldPosition.z).subtract(vehicle.position())
+
+            // TODO 我想渲染出每种武器使用的弹药，现在这里会越界
+
+            val weapons = vehicle.computed().seats()[i].weapons().map { vehicle.getGunData(it) }
+            if (weapons.isNotEmpty()) {
+                val weaponIndex = vehicle.getWeaponIndex(i)
+                if (weaponIndex != -1) {
+
+                    val s = weapons.size
+
+                    for (k in 0..<s) {
+
+                        val data = vehicle.getGunData(i, k)
+
+                        val projectileInfo = data!!.get(GunProp.PROJECTILE)
+                        val projectileType = projectileInfo.itemId
+
+                        EntityType.byString(projectileType).ifPresent { entityType ->
+                            val entity = entityType.create(vehicle.level())
+                            if (entity != null) {
+                                entity.tickCount = 1
+
+                                poseStack.pushPose()
+                                poseStack.mulPose(Axis.YP.rotationDegrees(180f))
+
+                                val size = data.get(GunProp.SHOOT_POS).positions.size
+
+                                if (size > 0) {
+
+                                    for (j in 0..<size) {
+
+                                        val pos = data.get(GunProp.SHOOT_POS).positions[j]
+
+                                        entityRenderDispatcher.render(
+                                            entity,
+                                            pos.x,
+                                            pos.y,
+                                            pos.z,
+                                            entityYaw,
+                                            partialTicks,
+                                            poseStack,
+                                            buffer,
+                                            packedLight
+                                        )
+
+                                    }
+                                }
+
+                                poseStack.popPose()
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     override fun transformCustomModelPart(
         vehicle: T,
         model: BedrockVehicleModel,

@@ -164,7 +164,7 @@
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 0.88, 0.047],
         "ShootDirectionForHud": "Bomb",
-        "Positions": [[-0.418, 0.88, 0.047], [0, 0.88, 0.047], [-0.418, 0.88, 0.047]],
+        "Positions": [[-0.418, 0.88, 0.047], [0, 0.88, 0.047], [0.418, 0.88, 0.047]],
         "BoundUpWithAmmoAmount": true,
         "Directions": ["DeltaMovement"],
         "ViewPosition": [0, 0.88, 0.047],
