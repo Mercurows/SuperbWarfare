@@ -131,6 +131,9 @@ class DefaultGunData : IDBasedData<DefaultGunData> {
     @SerialName("SeekWeaponInfo")
     var seekWeaponInfo: SeekWeaponInfo? = null
 
+    @SerialName("ProjectileDummyInfo")
+    var projectileDummyInfo: ProjectileDummyInfo? = null
+
     @SerialName("AmmoCostPerShoot")
     var ammoCostPerShoot = 1
 

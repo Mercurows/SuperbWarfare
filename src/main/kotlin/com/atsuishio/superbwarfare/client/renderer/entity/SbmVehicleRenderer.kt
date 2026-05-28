@@ -3,6 +3,8 @@ package com.atsuishio.superbwarfare.client.renderer.entity
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
 import com.atsuishio.superbwarfare.client.renderer.SmartTextureBrightener
 import com.atsuishio.superbwarfare.client.renderer.TextureBrightnessHandler
+import com.atsuishio.superbwarfare.data.gun.GunProp
+import com.atsuishio.superbwarfare.data.vehicle.subdata.SeatInfo
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -27,6 +29,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
+import net.minecraft.world.entity.EntityType
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import org.joml.Matrix3f
@@ -53,6 +56,8 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
 
     var hideForTurretControllerWhileZooming = false
     var hideForPassengerWeaponStationControllerWhileZooming = false
+
+    private var seatsCache: MutableList<SeatInfo>? = null
 
     override fun getTextureLocation(entity: T): ResourceLocation {
         val (_, namespace, id) = entity.type.descriptionId.split(".")
@@ -268,6 +273,67 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         buffer: MultiBufferSource,
         packedLight: Int
     ) {
+
+        val seats = this.seatsCache ?: vehicle.computed().seats().also { this.seatsCache = it }
+
+        for ((index, seat) in seats.withIndex()) {
+            for (k in seat.weapons().indices) {
+                val data = vehicle.getGunData(index, k) ?: continue
+                val dummyInfo = data.get(GunProp.PROJECTILE_DUMMY_INFO)?: continue
+                val ammo = data.ammo.get()
+                if (ammo <= 0) continue
+
+                val projectileInfo = data.get(GunProp.PROJECTILE)
+                val projectileType = projectileInfo.itemId
+
+                EntityType.byString(projectileType).ifPresent { entityType ->
+                    val entity = entityType.create(vehicle.level()) ?: return@ifPresent
+                    entity.tickCount = 1
+
+                    val size = data.get(GunProp.SHOOT_POS).positions.size
+                    if (size <= 0) return@ifPresent
+
+                    for (j in 0..<size) {
+                        if (j >= ammo) continue
+
+                        val dummyName = "dummy_${index}_${k}_${j + 1}"
+                        val bone = model.getBone(dummyName) ?: continue
+
+                        poseStack.pushPose()
+                        poseStack.mulPoseMatrix(bone.globalTransform)
+
+                        val scale = dummyInfo.scale
+
+                        poseStack.scale(scale.x.toFloat(), scale.y.toFloat(), scale.z.toFloat())
+                        poseStack.mulPose(Axis.YP.rotationDegrees(180f))
+
+                        val rotate = dummyInfo.rotate
+
+                        val yawRot = Axis.YP.rotation(rotate.y.toFloat())
+                        val pitchRot = Axis.XP.rotation(rotate.x.toFloat())
+                        val rollRot = Axis.ZP.rotation(rotate.z.toFloat())
+                        val quaternion = Quaterniond(yawRot).mul(Quaterniond(pitchRot)).mul(Quaterniond(rollRot))
+                        poseStack.mulPose(Quaternionf(quaternion))
+
+                        val offset = dummyInfo.offset
+
+                        entityRenderDispatcher.render(
+                            entity,
+                            offset.x,
+                            offset.y,
+                            offset.z,
+                            entityYaw,
+                            partialTicks,
+                            poseStack,
+                            buffer,
+                            packedLight
+                        )
+
+                        poseStack.popPose()
+                    }
+                }
+            }
+        }
     }
 
     open fun transformCustomModelPart(

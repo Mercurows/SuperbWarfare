@@ -330,6 +330,9 @@ class GunProp<T, R>(
         val SEEK_WEAPON_INFO = plainProp(DefaultGunData::seekWeaponInfo)
 
         @JvmField
+        val PROJECTILE_DUMMY_INFO = plainProp(DefaultGunData::projectileDummyInfo)
+
+        @JvmField
         val SOUND_INFO = complexProp(DefaultGunData::soundInfo) { it }
 
         @JvmField

@@ -170,6 +170,11 @@
         "ViewPosition": [0, 0.88, 0.047],
         "ViewDirection": "Bomb"
       },
+      "ProjectileDummyInfo": {
+        "Offset": [0, -0.55, -0.25],
+        "Rotate": [0, 0, 0],
+        "Scale": [0.75, 0.75, 0.75]
+      },
       "SoundInfo": {
         "Fire1P": "superbwarfare:bomb_release",
         "Fire3P": "superbwarfare:bomb_release",
@@ -205,6 +210,11 @@
         "MaxTargetHeight": 32,
         "MinTargetSize": 0.9,
         "OnlyLockEntity": true
+      },
+      "ProjectileDummyInfo": {
+        "Offset": [0, -0.65, -1.85],
+        "Rotate": [0, 0, 0],
+        "Scale": [0.75, 0.75, 0.75]
       },
       "AmmoType": [
         {
