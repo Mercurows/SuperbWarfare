@@ -450,15 +450,29 @@ object ClientEventHandler {
     @JvmStatic
     fun isFreeCam(player: Player): Boolean {
         val vehicle = player.vehicle
-        return vehicle is VehicleEntity && vehicle.allowFreeCam() && ModKeyMappings.FREE_CAMERA.isDown()
+        return vehicle is VehicleEntity && vehicle.allowFreeCam() && ModKeyMappings.FREE_CAMERA.isDown
+    }
+
+    @JvmStatic
+    fun isNacelleCam(player: Player): Boolean {
+        val vehicle = player.vehicle
+
+        if (vehicle is VehicleEntity) {
+            val data = vehicle.getGunData(player)
+            if (data != null) {
+                return data.get(GunProp.USE_NACELLE_CAMERA) && zoomVehicle
+            }
+        }
+
+        return false
     }
 
     private fun isMoving(): Boolean {
         val player = localPlayer ?: return false
-        return mc.options.keyLeft.isDown()
-                || mc.options.keyRight.isDown()
-                || mc.options.keyUp.isDown()
-                || mc.options.keyDown.isDown()
+        return mc.options.keyLeft.isDown
+                || mc.options.keyRight.isDown
+                || mc.options.keyUp.isDown
+                || mc.options.keyDown.isDown
                 || player.isSprinting
     }
 

@@ -320,17 +320,21 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
 
                         val offset = dummyInfo.offset
 
-                        entityRenderDispatcher.render(
-                            entity,
-                            offset.x,
-                            offset.y,
-                            offset.z,
-                            entityYaw,
-                            partialTicks,
-                            poseStack,
-                            buffer,
-                            packedLight
-                        )
+                        val flag = dummyInfo.hideDummyWhileZooming && ClientEventHandler.zoomVehicle
+
+                        if (!flag) {
+                            entityRenderDispatcher.render(
+                                entity,
+                                offset.x,
+                                offset.y,
+                                offset.z,
+                                entityYaw,
+                                partialTicks,
+                                poseStack,
+                                buffer,
+                                packedLight
+                            )
+                        }
 
                         poseStack.popPose()
                     }

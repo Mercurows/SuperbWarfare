@@ -257,6 +257,9 @@ class GunProp<T, R>(
         val IN_LAVA_COOLDOWN_RATE = plainProp(DefaultGunData::inLavaCooldownRate)
 
         @JvmField
+        val USE_NACELLE_CAMERA = plainProp(DefaultGunData::useNacelleCamera)
+
+        @JvmField
         val AVAILABLE_PERKS = complexProp(DefaultGunData::availablePerks) {
             val availablePerks = mutableListOf<Perk>()
             val perkNames = it.list.ifEmpty { return@complexProp availablePerks }

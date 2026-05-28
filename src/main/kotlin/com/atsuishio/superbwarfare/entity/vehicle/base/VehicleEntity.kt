@@ -34,6 +34,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getXRotFromVector
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getYRotFromVector
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleWeaponUtils
+import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.event.ClientMouseHandler
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.inventory.handler.VehicleContainerHandler
@@ -4013,10 +4014,17 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                     )
                 }
                 if (useAircraftCamera(index)) {
-                    return Vec2(
-                        (getYaw(partialTicks) - ClientMouseHandler.freeCameraYaw).toFloat(),
-                        (getPitch(partialTicks) + ClientMouseHandler.freeCameraPitch).toFloat()
-                    )
+                    return if (ClientEventHandler.isNacelleCam(player)) {
+                        Vec2(
+                            (getYaw(partialTicks) - ClientMouseHandler.nacelleCameraYaw).toFloat(),
+                            (getPitch(partialTicks) + ClientMouseHandler.nacelleCameraPitch).toFloat()
+                        )
+                    } else {
+                        Vec2(
+                            (getYaw(partialTicks) - ClientMouseHandler.freeCameraYaw).toFloat(),
+                            (getPitch(partialTicks) + ClientMouseHandler.freeCameraPitch).toFloat()
+                        )
+                    }
                 }
                 if (zoom || isFirstPerson) {
                     return Vec2(

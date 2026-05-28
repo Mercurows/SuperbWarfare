@@ -59,6 +59,18 @@ object ClientMouseHandler {
     @JvmField
     var mouseYMoveTick: Double = 0.0
 
+    @JvmField
+    var lerpNacelleSpeedX: Double = 0.0
+
+    @JvmField
+    var lerpNacelleSpeedY: Double = 0.0
+
+    @JvmField
+    var nacelleCameraPitch: Double = 0.0
+
+    @JvmField
+    var nacelleCameraYaw: Double = 0.0
+
     @SubscribeEvent
     fun handleClientTick(event: ClientTickEvent.Post) {
         val player = localPlayer ?: return
@@ -103,8 +115,8 @@ object ClientMouseHandler {
 
             val sensitivity = vehicle.mouseSensitivity
 
-            speedX = sensitivity * moveSpeedX * (if (ClientEventHandler.zoomVehicle) 0.3 else 1.0)
-            speedY = y * sensitivity * moveSpeedY * (if (ClientEventHandler.zoomVehicle) 0.4 else 1.0)
+            speedX = sensitivity * moveSpeedX * (if (ClientEventHandler.zoomVehicle && !ClientEventHandler.isNacelleCam(player)) 0.3 else 1.0)
+            speedY = y * sensitivity * moveSpeedY * (if (ClientEventHandler.zoomVehicle && !ClientEventHandler.isNacelleCam(player)) 0.4 else 1.0)
 
             mouseXMoveTick = Mth.lerp(0.1, mouseXMoveTick, speedX)
             mouseYMoveTick = Mth.lerp(0.1, mouseYMoveTick, speedY)
@@ -116,6 +128,9 @@ object ClientMouseHandler {
                 lerpSpeedX = Mth.lerp((0.0045 * abs(mouseXMoveTick)).coerceAtLeast(0.1), lerpSpeedX, speedX * 0.5)
                 lerpSpeedY = Mth.lerp((0.0035 * abs(mouseYMoveTick)).coerceAtLeast(0.1), lerpSpeedY, speedY * 0.5)
             }
+
+            lerpNacelleSpeedX = Mth.lerp((0.05 * abs(mouseXMoveTick)).coerceAtLeast(0.13), lerpNacelleSpeedX, speedX * 1.4)
+            lerpNacelleSpeedY = Mth.lerp((0.05 * abs(mouseYMoveTick)).coerceAtLeast(0.13), lerpNacelleSpeedY, speedY * 1.4)
 
             var i = 0.0
             if (vehicle.roll < 0) {
@@ -131,7 +146,7 @@ object ClientMouseHandler {
             if (notInGame) {
                 sendPacketToServer(MouseMoveMessage(0.0, 0.0))
             } else {
-                if (!ClientEventHandler.isFreeCam(player)) {
+                if (!(ClientEventHandler.isFreeCam(player) || ClientEventHandler.isNacelleCam(player))) {
                     if (mc.options.cameraType == CameraType.FIRST_PERSON) {
                         if (vehicle.computed().engineType != EngineType.TOM6) {
                             sendPacketToServer(
@@ -194,6 +209,27 @@ object ClientMouseHandler {
         }
 
         custom3pDistanceLerp = Mth.lerp(times.toDouble(), custom3pDistanceLerp, custom3pDistance)
+
+
+        if (ClientEventHandler.isNacelleCam(player)) {
+            nacelleCameraYaw -= 0.2f * times * lerpNacelleSpeedX
+            nacelleCameraPitch += 0.2f * times * lerpNacelleSpeedY
+        }
+
+        nacelleCameraPitch = Mth.clamp(nacelleCameraPitch, 0.0, 180.0)
+
+        while (nacelleCameraYaw > 180F) {
+            nacelleCameraYaw -= 360
+        }
+        while (nacelleCameraYaw <= -180F) {
+            nacelleCameraYaw += 360
+        }
+        while (nacelleCameraPitch > 180F) {
+            nacelleCameraPitch -= 360
+        }
+        while (nacelleCameraPitch <= -180F) {
+            nacelleCameraPitch += 360
+        }
     }
 
     /**
