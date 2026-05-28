@@ -29,6 +29,7 @@ import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.config.ModConfig
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
+import net.minecraftforge.registries.DataPackRegistryEvent
 import net.minecraftforge.resource.PathPackResources
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -69,6 +70,7 @@ class Mod {
         bus.addListener<FMLClientSetupEvent> { onClientSetup(it) }
         bus.addListener<FMLCommonSetupEvent> { ModItems.registerDispenserBehavior() }
         bus.addListener<AddPackFindersEvent> { onRegisterBuiltInResourcePacks(it) }
+        bus.addListener<DataPackRegistryEvent.NewRegistry> { ModDatapackRegistries.onNewRegistry(it) }
 
         if (TACZGunEventHandler.compatCondition()) {
             MinecraftForge.EVENT_BUS.addListener(TACZGunEventHandler::entityHurtByTACZGun)

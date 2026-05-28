@@ -162,7 +162,7 @@ public class BocekItem extends GunGeoItem {
                 player.playSound(ModSounds.BOCEK_SHATTER_CAP_FIRE_3P.get(), 2, 1);
             }
 
-            if (perk == ModPerks.BEAST_BULLET.get()) {
+            if (perk == ModPerks.INSTANCE.getBEAST_BULLET().get()) {
                 player.playSound(ModSounds.HENG.get(), 4f, 1f);
 
                 if (player instanceof ServerPlayer serverPlayer) {

@@ -32,7 +32,7 @@ public class TaserItem extends GunGeoItem {
         var data = parameters.data;
 
         var stack = data.stack;
-        int perkLevel = data.perk.getLevel(ModPerks.VOLT_OVERLOAD);
+        int perkLevel = data.perk.getLevel(ModPerks.INSTANCE.getVOLT_OVERLOAD());
         stack.getCapability(ForgeCapabilities.ENERGY).ifPresent(energy -> energy.extractEnergy(400 + 100 * perkLevel, false));
     }
 
@@ -40,7 +40,7 @@ public class TaserItem extends GunGeoItem {
     public boolean canShoot(GunData data, @Nullable Entity shooter) {
         var stack = data.stack;
 
-        int perkLevel = data.perk.getLevel(ModPerks.VOLT_OVERLOAD);
+        int perkLevel = data.perk.getLevel(ModPerks.INSTANCE.getVOLT_OVERLOAD());
         var hasEnoughEnergy = stack.getCapability(ForgeCapabilities.ENERGY)
                 .map(storage -> storage.getEnergyStored() >= 400 + 100 * perkLevel)
                 .orElse(false);

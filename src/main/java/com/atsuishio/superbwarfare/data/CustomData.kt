@@ -38,7 +38,6 @@ object CustomData {
         "sbw/mob_guns", DefaultMobGunData::class.java
     ) { _ -> MobGunData.dataCache.invalidateAll() }
 
-
     // Resource
 
     @JvmField
