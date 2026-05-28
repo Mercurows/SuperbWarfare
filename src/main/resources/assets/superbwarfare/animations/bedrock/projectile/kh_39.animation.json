@@ -1,0 +1,65 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.kh_39.start": {
+			"loop": "hold_on_last_frame",
+			"animation_length": 0.25,
+			"bones": {
+				"yipian1": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"0.25": [0, -90, 0]
+					}
+				},
+				"yipian2": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"0.25": [0, 90, 0]
+					}
+				},
+				"yipian3": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"0.25": [0, -90, 0]
+					}
+				},
+				"yipian4": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"0.25": [0, 90, 0]
+					}
+				}
+			}
+		},
+		"animation.projectile.start": {
+			"loop": "hold_on_last_frame",
+			"animation_length": 0.25,
+			"bones": {
+				"yipian1": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"0.25": [0, -90, 0]
+					}
+				},
+				"yipian2": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"0.25": [0, 90, 0]
+					}
+				},
+				"yipian3": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"0.25": [0, -90, 0]
+					}
+				},
+				"yipian4": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"0.25": [0, 90, 0]
+					}
+				}
+			}
+		}
+	}
+}

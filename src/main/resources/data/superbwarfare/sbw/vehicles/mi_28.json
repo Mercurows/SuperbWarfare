@@ -279,6 +279,11 @@
         "MinTargetSize": 0.9,
         "OnlyLockEntity": true
       },
+      "ProjectileDummyInfo": {
+        "Offset": [0, -0.385, -1.62],
+        "Rotate": [0, 0, 0],
+        "Scale": [0.75, 0.75, 0.75]
+      },
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 0.797, 4.219],
