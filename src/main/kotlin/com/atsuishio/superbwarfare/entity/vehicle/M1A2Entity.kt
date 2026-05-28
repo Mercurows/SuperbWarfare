@@ -38,6 +38,6 @@ class M1A2Entity(type: EntityType<M1A2Entity>, world: Level) : VehicleEntity(typ
     override fun getAnimation() = ANIM
 
     companion object {
-        val ANIM = loc("animation/bedrock/vehicle/m_1a_2.aniamtion.json")
+        val ANIM = loc("animation/bedrock/vehicle/m_1a_2.animation.json")
     }
 }

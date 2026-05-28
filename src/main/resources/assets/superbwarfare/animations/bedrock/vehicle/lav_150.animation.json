@@ -1,16 +1,16 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.lav_150.idle": {
-			"animation_length": 0.25,
+		"animation.cannon.idle": {
+			"loop": true,
 			"bones": {
 				"flare": {
 					"scale": 0
 				}
 			}
 		},
-		"animation.lav_150.idle2": {
-			"animation_length": 0.25,
+		"animation.machine_gun.idle": {
+			"loop": true,
 			"bones": {
 				"flare2": {
 					"scale": 0

@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.animation.entity
 
-import com.atsuishio.superbwarfare.client.animation.AnimationPlayType
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.maydaymemory.mae.basic.Pose
 import net.minecraft.resources.ResourceLocation
@@ -15,7 +14,7 @@ class VehicleAnimationInstance<T>(entity: T) where T : Entity, T : BasicGeoVehic
     }
 
     fun fire(weaponName: String) {
-        context.playAnimation("animation.$weaponName.fire", AnimationPlayType.PLAY_ONCE_STOP)
+        context.fire(weaponName)
     }
 
     fun tick() {
