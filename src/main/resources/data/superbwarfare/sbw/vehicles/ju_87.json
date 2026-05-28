@@ -187,6 +187,10 @@
         "ViewPosition": [0, 0.75, 1.5],
         "ViewDirection": "Bomb"
       },
+      "ProjectileDummyInfo": {
+        "Offset": [0, -0.21, 0],
+        "Scale": [0.65, 0.65, 0.65]
+      },
       "SoundInfo": {
         "Fire1P": "superbwarfare:bomb_release",
         "Fire3P": "superbwarfare:bomb_release",
@@ -223,6 +227,10 @@
         "Directions": ["DeltaMovement"],
         "ViewPosition": [0, 0.13, 1.55],
         "ViewDirection": "Bomb"
+      },
+      "ProjectileDummyInfo": {
+        "Offset": [0, -0.17, 0.08],
+        "Scale": [0.65, 0.65, 0.65]
       },
       "SoundInfo": {
         "Fire1P": "superbwarfare:bomb_release",

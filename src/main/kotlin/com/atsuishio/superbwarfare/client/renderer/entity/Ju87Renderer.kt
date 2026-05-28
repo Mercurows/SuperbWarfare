@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.client.renderer.entity
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.Ju87Entity
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
@@ -112,34 +111,9 @@ class Ju87Renderer<T>(manager: EntityRendererProvider.Context) :
 
         propeller.rotation.rotateZ(-Mth.lerp(partialTicks, vehicle.propellerRotO, vehicle.propellerRot))
 
-        // TODO 尝试更简单的方式
-
         val rot = Mth.lerp(partialTicks, vehicle.smallPropellerO, vehicle.smallPropeller)
 
         propeller2.rotation.rotateZ(-rot)
         propeller3.rotation.rotateZ(rot)
-
-        val bomb1 = model.getBone("bomb1")
-        val bomb2 = model.getBone("bomb2")
-        val bomb3 = model.getBone("bomb3")
-        val bomb4 = model.getBone("bomb4")
-        val bomb5 = model.getBone("bomb5")
-
-        bomb1.visible = !shouldHideBomb(vehicle, 4)
-        bomb2.visible = !shouldHideBomb(vehicle, 3)
-        bomb3.visible = !shouldHideBomb(vehicle, 2)
-        bomb4.visible = !shouldHideBomb(vehicle, 1)
-        bomb5.visible = !shouldHideBigBomb(vehicle, 1)
-
-    }
-
-    private fun shouldHideBomb(vehicle: VehicleEntity, ammo: Int): Boolean {
-        val gunData = vehicle.getGunData("BombSmall") ?: return false
-        return gunData.ammo.get() < ammo
-    }
-
-    private fun shouldHideBigBomb(vehicle: VehicleEntity, ammo: Int): Boolean {
-        val gunData = vehicle.getGunData("Bomb") ?: return false
-        return gunData.ammo.get() < ammo
     }
 }

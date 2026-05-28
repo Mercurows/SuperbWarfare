@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.client.renderer.entity
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.Mi28Entity
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.util.Mth
@@ -24,16 +23,5 @@ class Mi28Renderer<T>(manager: EntityRendererProvider.Context) :
 
         propeller.rotation.rotateY(-Mth.lerp(partialTicks, vehicle.propellerRotO, vehicle.propellerRot))
         tailPropeller.rotation.rotateX(6 * Mth.lerp(partialTicks, vehicle.propellerRotO, vehicle.propellerRot))
-
-        val missile1 = model.getBone("missile1")
-        val missile2 = model.getBone("missile2")
-
-        missile1.visible = !shouldHideMissile(vehicle, 2)
-        missile2.visible = !shouldHideMissile(vehicle, 1)
-    }
-
-    fun shouldHideMissile(vehicle: VehicleEntity, ammo: Int): Boolean {
-        val gunData = vehicle.getGunData("SeekMissile") ?: return false
-        return gunData.ammo.get() < ammo
     }
 }

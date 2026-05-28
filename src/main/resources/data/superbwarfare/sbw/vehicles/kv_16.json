@@ -100,6 +100,9 @@
         "ViewPosition": [0, 0.156, 0.45],
         "ViewDirection": "Bomb"
       },
+      "ProjectileDummyInfo": {
+        "Offset": [0, -0.25, 0]
+      },
       "SoundInfo": {
         "Fire1P": "superbwarfare:bomb_release",
         "Fire3P": "superbwarfare:bomb_release",
