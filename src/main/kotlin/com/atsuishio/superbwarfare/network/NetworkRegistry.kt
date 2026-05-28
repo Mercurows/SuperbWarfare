@@ -84,6 +84,7 @@ private fun registerPayloads() {
     playToClient<ShakeClientMessage>()
     playToClient<ShootClientMessage>()
     playToClient<SoundClientMessage>()
+    playToClient<VehicleShootClientMessage>()
     playToClient<TDMSyncMessage>()
     playToClient<EntitySyncMessage>()
     playToClient<PlayerInfoSyncMessage>()

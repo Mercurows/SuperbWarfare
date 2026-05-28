@@ -59,7 +59,6 @@ import org.joml.Matrix4f
 import org.lwjgl.glfw.GLFW
 import software.bernie.geckolib.animation.AnimationProcessor
 import software.bernie.geckolib.cache.`object`.GeoBone
-import thedarkcolour.kotlinforforge.neoforge.forge.FORGE_BUS
 import top.theillusivec4.curios.api.CuriosApi
 import java.util.*
 import kotlin.experimental.or
@@ -1718,7 +1717,7 @@ object ClientEventHandler {
                                 if (lockingPosVehicle != null) lockingPosVehicle!!.toVector3f() else null
                             )
                         )
-                        FORGE_BUS.post(ClientVehicleFireEvent(vehicle, player))
+//                        FORGE_BUS.post(ClientVehicleFireEvent(vehicle, player))
                         if (mc.options.cameraType == CameraType.FIRST_PERSON || zoomVehicle) {
                             playVehicleClientSounds(player, vehicle)
                         }
@@ -2779,12 +2778,12 @@ object ClientEventHandler {
 
     @JvmStatic
     fun handleShells(x: Float, y: Float, vararg shells: GeoBone) {
-        for (i in 0..<shells.size) {
+        for ((i, element) in shells.withIndex()) {
             if (i >= 5) break
-            shells[i].posX = (-x * shellIndexTime[i] * ((150 - shellIndexTime[i]) / 150)).toFloat()
-            shells[i].posY = (y * randomShell[0] * shellIndexTime[i] - 0.025 * shellIndexTime[i].pow(2)).toFloat()
-            shells[i].rotX = (randomShell[1] * shellIndexTime[i]).toFloat()
-            shells[i].rotY = (randomShell[2] * shellIndexTime[i]).toFloat()
+            element.posX = (-x * shellIndexTime[i] * ((150 - shellIndexTime[i]) / 150)).toFloat()
+            element.posY = (y * randomShell[0] * shellIndexTime[i] - 0.025 * shellIndexTime[i].pow(2)).toFloat()
+            element.rotX = (randomShell[1] * shellIndexTime[i]).toFloat()
+            element.rotY = (randomShell[2] * shellIndexTime[i]).toFloat()
         }
     }
 
