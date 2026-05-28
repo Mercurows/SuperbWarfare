@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
+import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
+import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes
 import com.atsuishio.superbwarfare.client.renderer.SmartTextureBrightener
 import com.atsuishio.superbwarfare.client.renderer.TextureBrightnessHandler
 import com.atsuishio.superbwarfare.data.gun.GunProp
@@ -181,6 +183,36 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
                 packedLight,
                 OverlayTexture.NO_OVERLAY
             )
+        }
+
+        // TODO 只是测试射击火焰用的组
+
+        val flare = model.getBone("flare")
+
+        val flareFlag = flare != null
+        if (flareFlag) {
+            flare.visible = false
+        }
+
+        if (flareFlag) {
+            val flareModel = VehicleModelReloadListener.getModel(Mod.loc("muzzle_flare"))
+
+            if (flareModel != null) {
+                poseStack.pushPose()
+                poseStack.mulPoseMatrix(flare.globalTransform)
+                flareModel.renderToBuffer(
+                    poseStack,
+                    buffer,
+                    ModRenderTypes.MUZZLE_FLASH_TYPE.apply(MUZZLE_FLARE),
+                    BedrockModelRenderTypes.polyMeshCutout(MUZZLE_FLARE),
+                    packedLight,
+                    OverlayTexture.NO_OVERLAY
+                )
+                flareModel.applyPose(flareModel.bindPose)
+
+                poseStack.popPose()
+            }
+
         }
 
         // TODO 自定义图章
@@ -559,5 +591,6 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
 
     companion object {
         val BLENDER: EulerAdditiveBlender = SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }
+        val MUZZLE_FLARE = Mod.loc("textures/particle/flare.png")
     }
 }

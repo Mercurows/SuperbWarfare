@@ -16,6 +16,8 @@ class M1A2Entity(type: EntityType<M1A2Entity>, world: Level) : VehicleEntity(typ
     val anim: VehicleAnimationInstance<M1A2Entity>? =
         if (world.isClientSide) VehicleAnimationInstance(this) else null
 
+    override fun getAnimationInstance() = anim
+
     override fun vehicleShoot(living: LivingEntity?, uuid: UUID?, targetPos: Vec3?) {
         val level = living?.level()
         if (level is ServerLevel && living == firstPassenger && getWeaponIndex(0) == 0) {

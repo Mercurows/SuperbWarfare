@@ -1,0 +1,61 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.unknown",
+				"texture_width": 512,
+				"texture_height": 512,
+				"visible_bounds_width": 9,
+				"visible_bounds_height": 5.5,
+				"visible_bounds_offset": [0, 2.25, 0]
+			},
+			"bones": [
+				{
+					"name": "flare",
+					"pivot": [0, -0.00001, 0.04969],
+					"cubes": [
+						{
+							"origin": [-0.72751, -0.72751, -0.01218],
+							"size": [1.455, 1.455, 0],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [512, 512]},
+								"south": {"uv": [0, 0], "uv_size": [512, 512]}
+							}
+						},
+						{
+							"origin": [-1.83001, -0.60752, -0.7997],
+							"size": [3.66, 1.215, 0],
+							"pivot": [-0.00001, -0.00001, -0.79968],
+							"rotation": [0, -90, -60],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [512, 512]},
+								"south": {"uv": [0, 0], "uv_size": [512, 512]}
+							}
+						},
+						{
+							"origin": [-1.83001, -0.60752, -0.7997],
+							"size": [3.66, 1.215, 0],
+							"pivot": [-0.00001, -0.00001, -0.79968],
+							"rotation": [0, -90, -120],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [512, 512]},
+								"south": {"uv": [0, 0], "uv_size": [512, 512]}
+							}
+						},
+						{
+							"origin": [-1.83001, -0.60752, -0.7997],
+							"size": [3.66, 1.215, 0],
+							"pivot": [-0.00001, -0.00001, -0.79968],
+							"rotation": [0, -90, 0],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [512, 512]},
+								"south": {"uv": [0, 0], "uv_size": [512, 512]}
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}

@@ -265,6 +265,14 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
                         false
                     )
 
+                    val heat = entity.getWeaponHeat(player)
+                    val component = entity.firstPersonAmmoComponent(data, player)
+
+                    guiGraphics.drawString(
+                        font, component, (screenWidth) / 2 - 50 - font.width(component), screenHeight / 2 + 2,
+                        MathTool.getGradientColor(color, 0xFF0000, heat, 2), false
+                    )
+
                 } else if (crosshairPath == "@VehicleCnHpjZooming") {
                     val dynamicTexture: ResourceLocation? = CROSSHAIR_MAP["@VehicleDynamicCross"]
                     RenderHelper.preciseBlitWithColor(
