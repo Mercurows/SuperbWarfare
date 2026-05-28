@@ -11,7 +11,6 @@ import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.item.misc.ArtilleryIndicatorItem
 import com.atsuishio.superbwarfare.item.misc.firingParameters
 import com.atsuishio.superbwarfare.tools.FormatTool.format0D
-import com.atsuishio.superbwarfare.tools.InventoryTool
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.TrajectoryCalculator.calculateLaunchVector
 import com.atsuishio.superbwarfare.tools.randomPos
@@ -226,21 +225,7 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : VehicleEntity(ty
             }
         }
 
-        // TODO 替换装弹逻辑？
-        val gunData = getGunData("Main")
         val controller = getNthEntity(turretControllerIndex)
-        if (gunData != null && level() is ServerLevel && controller is Player) {
-            val ammoCount = InventoryTool.countItem(controller, gunData.selectedAmmoConsumer().stack().item)
-            if (ammoCount > 0) {
-                val inStack = this.getItems().first()
-                val count = inStack.count
-
-                if (count < Math.min(this.maxStackSize, inStack.maxStackSize)) {
-                    this.setItem(0, gunData.selectedAmmoConsumer().stack().copyWithCount(count + 1))
-                    InventoryTool.consumeItem(controller, gunData.selectedAmmoConsumer().stack().item, 1)
-                }
-            }
-        }
 
         if (deltaMovement.horizontalDistanceSqr() > 0.007 && this !is Plz05Entity) {
             lockTurret = true
