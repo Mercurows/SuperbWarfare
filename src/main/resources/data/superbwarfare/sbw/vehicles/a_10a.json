@@ -173,7 +173,8 @@
       "ProjectileDummyInfo": {
         "Offset": [0, -0.55, -0.25],
         "Rotate": [0, 0, 0],
-        "Scale": [0.75, 0.75, 0.75]
+        "Scale": [0.75, 0.75, 0.75],
+        "HideDummyWhileZooming": true
       },
       "SoundInfo": {
         "Fire1P": "superbwarfare:bomb_release",
@@ -188,7 +189,8 @@
     },
     "Missile": {
       "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/agm_65.png",
-      "DefaultZoom": 2,
+      "DefaultZoom": 1.25,
+      "UseNacelleCamera": true,
       "DefaultFireMode": "Semi",
       "AvailableFireModes": "Semi",
       "Magazine": 4,
@@ -202,7 +204,7 @@
       "Velocity": 1.05,
       "ProjectileLife": 1200,
       "SeekWeaponInfo": {
-        "SeekDirection": "Default",
+        "SeekDirection": "ClientCamera",
         "MaxGuidedRange": 8192,
         "SeekRange": 1024,
         "SeekAngle": 20,
@@ -227,7 +229,7 @@
           "Override": {
             "Name": "weapon.superbwarfare.agm_65_missile_block",
             "SeekWeaponInfo": {
-              "SeekDirection": "Default",
+              "SeekDirection": "ClientCamera",
               "SeekRange": 512,
               "SeekAngle": 20,
               "SeekTime": 10,
@@ -242,7 +244,8 @@
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 1.1475, 0],
         "Positions": [[4.97, 1.19, 0], [3.96, 1.1166, 0], [-3.96, 1.1166, 0], [-4.97, 1.19, 0]],
-        "BoundUpWithAmmoAmount": true
+        "BoundUpWithAmmoAmount": true,
+        "ViewPosition": [0, 0.88, 0.047]
       },
       "SoundInfo": {
         "Fire1P": "superbwarfare:bomb_release",
@@ -254,6 +257,7 @@
         "Locked": "superbwarfare:missile_locked"
       },
       "Crosshair": "@AirCraftMissile",
+      "CrosshairZooming": "@AirCraftNacelle",
       "CrosshairColor": "0x66FF00",
       "SoundRadius": 8
     }

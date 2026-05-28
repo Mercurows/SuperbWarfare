@@ -11,10 +11,7 @@ import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.init.ModKeyMappings
-import com.atsuishio.superbwarfare.tools.ResourceOnceLogger
-import com.atsuishio.superbwarfare.tools.canBeSeen
-import com.atsuishio.superbwarfare.tools.toFormattedString
-import com.atsuishio.superbwarfare.tools.worldToScreen
+import com.atsuishio.superbwarfare.tools.*
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.math.Axis
@@ -25,6 +22,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 import net.minecraft.world.level.ClipContext
+import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import org.joml.Math
@@ -51,6 +49,7 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
         "@VehicleCommonCannonZooming" to loc("textures/overlay/vehicle/crosshair/common_cannon_zooming.png"),
         "@VehicleLaserCannon" to loc("textures/overlay/vehicle/crosshair/laser_cannon.png"),
         "@AirCraftCommon" to loc("textures/overlay/vehicle/aircraft/common.png"),
+        "@AirCraftNacelle" to loc("textures/overlay/vehicle/crosshair/nacelle.png"),
         "@NoCross" to loc("textures/overlay/vehicle/crosshair/empty.png")
 
     )
@@ -126,19 +125,30 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
         scopeScale = Mth.lerp(partialTick, scopeScale, 1f)
         val scale: Float = scopeScale
 
-        val shootPos = entity.getShootPosForHud(player, partialTick)
+        var shootPos = entity.getShootPosForHud(player, 1f)
+        var shootVec = entity.getShootDirectionForHud(player, 1f).scale(512.0)
+        val nacelleCam = ClientEventHandler.isNacelleCam(player)
+
+        if (nacelleCam) {
+            shootPos = camera.position
+            shootVec = Vec3(camera.lookVector).scale(512.0)
+        }
 
         val result = player.level().clip(
             ClipContext(
-                shootPos, shootPos.add(entity.getShootDirectionForHud(player, partialTick).scale(512.0)),
-                ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player
+                shootPos, shootPos.add(shootVec),
+                ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, player
             )
         )
-        val hitPos = result.getLocation()
+
+        val hitPos = result.location
 
         var dis = shootPos.distanceTo(hitPos)
 
-        val lookingEntity = entity.getPlayerLookAtEntityOnVehicle(player, 512.0, partialTick)
+        var lookingEntity = entity.getPlayerLookAtEntityOnVehicle(player, 512.0, 1f)
+        if (nacelleCam) {
+            lookingEntity = TraceTool.camerafFindLookingEntity(player, shootPos, shootVec, 512.0)
+        }
 
         if (lookingEntity != null) {
             dis = shootPos.distanceTo(lookingEntity.position())
@@ -230,6 +240,32 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
                         x - 7.5f + (2 * (Math.random() - 0.5f)).toFloat(),
                         y - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
                     )
+                } else if (crosshairPath == "@AirCraftNacelle") {
+                    RenderHelper.blit(
+                        poseStack,
+                        texture,
+                        centerW,
+                        centerH,
+                        0f,
+                        0f,
+                        scaledMinWH,
+                        scaledMinWH,
+                        scaledMinWH,
+                        scaledMinWH,
+                        color
+                    )
+                    renderKillIndicator(guiGraphics, screenWidth.toFloat(), screenHeight.toFloat())
+
+                    val width = Minecraft.getInstance().font.width(FormatTool.format0D(dis, " m"))
+                    guiGraphics.drawString(
+                        Minecraft.getInstance().font,
+                        Component.literal(FormatTool.format0D(dis, " m")),
+                        screenWidth / 2 - width / 2,
+                        screenHeight / 2 + 30,
+                        color,
+                        false
+                    )
+
                 } else if (crosshairPath == "@VehicleCnHpjZooming") {
                     val dynamicTexture: ResourceLocation? = CROSSHAIR_MAP.get("@VehicleDynamicCross")
                     RenderHelper.blit(

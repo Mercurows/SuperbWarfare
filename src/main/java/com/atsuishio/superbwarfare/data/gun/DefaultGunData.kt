@@ -182,6 +182,9 @@ class DefaultGunData : IDBasedData<DefaultGunData> {
     @SerialName("AmmoType")
     var ammoConsumers: ObjectToList<StringToObject<AmmoConsumer>> = ObjectToList()
 
+    @SerialName("UseNacelleCamera")
+    var useNacelleCamera = false
+
     @Transient
     @kotlinx.serialization.Transient
     private var ammoConsumersCache: List<AmmoConsumer>? = null

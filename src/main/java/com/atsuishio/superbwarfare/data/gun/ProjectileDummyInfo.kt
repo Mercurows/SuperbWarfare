@@ -20,4 +20,8 @@ class ProjectileDummyInfo {
     @SerializedName("Scale")
     @SerialName("Scale")
     var scale: SerializedVec3 = Vec3(1.0, 1.0, 1.0)
+
+    @SerializedName("HideDummyWhileZooming")
+    @SerialName("HideDummyWhileZooming")
+    var hideDummyWhileZooming = false
 }

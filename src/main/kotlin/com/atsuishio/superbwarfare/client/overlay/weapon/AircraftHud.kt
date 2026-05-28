@@ -205,6 +205,10 @@ object AircraftHud {
             }
         }
 
+        if (ClientEventHandler.isNacelleCam(player)) {
+            return
+        }
+
         poseStack.pushPose()
 
         if ((mc.options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) && pos.canBeSeen()) {
