@@ -62,7 +62,6 @@ import org.joml.Matrix4f
 import org.lwjgl.glfw.GLFW
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone
 import software.bernie.geckolib.core.animation.AnimationProcessor
-import thedarkcolour.kotlinforforge.forge.FORGE_BUS
 import top.theillusivec4.curios.api.CuriosApi
 import java.util.*
 import kotlin.experimental.or
@@ -1721,7 +1720,7 @@ object ClientEventHandler {
                                 if (lockingPosVehicle != null) lockingPosVehicle!!.toVector3f() else null
                             )
                         )
-                        FORGE_BUS.post(ClientVehicleFireEvent(vehicle, player))
+//                        FORGE_BUS.post(ClientVehicleFireEvent(vehicle, player))
                         if (mc.options.cameraType == CameraType.FIRST_PERSON || zoomVehicle) {
                             playVehicleClientSounds(player, vehicle)
                         }

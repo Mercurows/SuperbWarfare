@@ -46,6 +46,7 @@ import com.atsuishio.superbwarfare.item.curio.DogTagItem
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.network.message.receive.ClientVehicleItemMessage
 import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
+import com.atsuishio.superbwarfare.network.message.receive.VehicleShootClientMessage
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.OBB.Part.*
 import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
@@ -1012,6 +1013,15 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         val gunData = getGunData(weaponName)
         afterShoot(gunData, getShootVec(weaponName, 1f))
         playShootSound3p(living, weaponName)
+
+        if (living != null) {
+            sendPacketToAll(
+                VehicleShootClientMessage(
+                    living.uuid,
+                    this.uuid
+                )
+            )
+        }
     }
 
     open fun vehicleShoot(living: LivingEntity?, uuid: UUID?, targetPos: Vec3?) {
@@ -1038,6 +1048,15 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         val gunData = getGunData(seatIndex)
         afterShoot(gunData, getShootVec(living, 1f))
         playShootSound3p(living, seatIndex)
+
+        if (living != null) {
+            sendPacketToAll(
+                VehicleShootClientMessage(
+                    living.uuid,
+                    this.uuid
+                )
+            )
+        }
     }
 
     open fun afterShoot(gunData: GunData?, shootVec: Vec3) {
