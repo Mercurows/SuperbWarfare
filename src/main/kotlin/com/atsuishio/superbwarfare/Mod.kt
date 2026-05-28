@@ -32,6 +32,7 @@ import net.neoforged.neoforge.common.NeoForge
 import net.neoforged.neoforge.event.AddPackFindersEvent
 import net.neoforged.neoforge.event.tick.ServerTickEvent
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent
+import net.neoforged.neoforge.registries.DataPackRegistryEvent
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.util.*
@@ -75,6 +76,7 @@ class Mod(bus: IEventBus, container: ModContainer) {
 
         bus.addListener<RegisterPayloadHandlersEvent> { initializeNetwork(it) }
         bus.addListener<AddPackFindersEvent> { onRegisterBuiltInResourcePacks(it) }
+        bus.addListener<DataPackRegistryEvent.NewRegistry> { ModDatapackRegistries.onNewRegistry(it) }
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
             CompatHolder.hasMod(CompatHolder.CLOTH_CONFIG) { ClothConfigHelper.registerScreen() }

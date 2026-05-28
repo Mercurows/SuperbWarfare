@@ -66,4 +66,14 @@ class PMC<DATA : DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA>(val data: DATA
     ) {
         this[prop] = modifier(this[prop])
     }
+
+    @Suppress("UNCHECKED_CAST")
+    fun getUnchecked(prop: Prop<*, *, *, *, *>): Any? {
+        return (this as PMC<Any, Any?>)[prop as Prop<Any, Any?, *, Any?, *>]
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun setUnchecked(prop: Prop<*, *, *, *, *>, value: Any?) {
+        (this as PMC<Any?, Any?>)[prop as Prop<Any?, Any?, *, Any?, *>] = value
+    }
 }
