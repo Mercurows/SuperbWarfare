@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.perk.AmmoPerk
+import com.atsuishio.superbwarfare.perk.IAmmoStat
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.atsuishio.superbwarfare.tools.TraceTool
@@ -381,7 +382,8 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
         )
         if (!player.isSprinting || ClientEventHandler.noSprintTicks > 0 || ClientEventHandler.bowPullPos > 0) {
             if (ClientEventHandler.zoomTime < 0.1) {
-                if (perk is AmmoPerk && perk.slug) {
+                val isSlug = when (perk) { is AmmoPerk -> perk.slug; is IAmmoStat -> perk.slug; else -> false }
+                if (isSlug) {
                     normalCrossHair(guiGraphics, screenWidth, screenHeight, spread, moveX, moveY)
                 } else {
                     shotgunCrossHair(guiGraphics, finPosX, finPosY, finLength)

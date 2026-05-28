@@ -1,0 +1,9 @@
+{
+  "Type": "ammo",
+  "BypassArmorRate": -0.3,
+  "DamageRate": 0.5,
+  "SpeedRate": 0.85,
+  "Slug": true,
+  "RGB": [240, 20, 10],
+  "Script": "superbwarfare:perks/he_bullet.js"
+}
