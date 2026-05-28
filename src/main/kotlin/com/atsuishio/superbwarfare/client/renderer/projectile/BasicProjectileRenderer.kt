@@ -52,11 +52,8 @@ open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context) :
 
         // 十分鬼畜而神秘的写法，直接用yaw的话会导致弹体在+-180°偏航时抽搐，遂采用这种脱裤子放屁的写法
         poseStack.mulPose(Axis.YP.rotationDegrees(VehicleVecUtils.getYRotFromVector(entity.lookAngle).toFloat()))
-        poseStack.mulPose(
-            Axis.XP.rotationDegrees(
-                -VehicleVecUtils.getXRotFromVector(entity.lookAngle).toFloat() + 180f
-            )
-        )
+        poseStack.mulPose(Axis.XP.rotationDegrees(-VehicleVecUtils.getXRotFromVector(entity.lookAngle).toFloat() + 180f))
+        poseStack.mulPose(Axis.ZP.rotationDegrees(180f))
 
         if (entity.getAnimationInstance() != null) {
             val ani = entity.getAnimationInstance()!!
