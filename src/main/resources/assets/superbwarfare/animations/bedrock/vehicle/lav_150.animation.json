@@ -17,7 +17,8 @@
 				}
 			}
 		},
-		"animation.lav_150.fire": {
+		"animation.cannon.fire": {
+			"loop": "hold_on_last_frame",
 			"animation_length": 0.4,
 			"bones": {
 				"barrel2": {
@@ -48,7 +49,8 @@
 				}
 			}
 		},
-		"animation.lav_150.fire2": {
+		"animation.machine_gun.fire": {
+			"loop": "hold_on_last_frame",
 			"animation_length": 0.4,
 			"bones": {
 				"flare2": {
