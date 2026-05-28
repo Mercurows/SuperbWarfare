@@ -16,31 +16,6 @@ class M1A2Entity(type: EntityType<M1A2Entity>, world: Level) : VehicleEntity(typ
     val anim: VehicleAnimationInstance<M1A2Entity>? =
         if (world.isClientSide) VehicleAnimationInstance(this) else null
 
-    override fun getAnimationInstance() = anim
-//    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) = buildControllers(data) {
-//        "cannon" {
-//            if (getShootAnimationTimer(0, 0) > 0) {
-//                thenPlay("animation.t_90a.fire")
-//            } else {
-//                thenLoop("animation.t_90a.idle")
-//            }
-//        }
-//        "coax" {
-//            if (getShootAnimationTimer(0, 1) > 0) {
-//                thenPlay("animation.t_90a.fire_coax")
-//            } else {
-//                thenLoop("animation.t_90a.idle_coax")
-//            }
-//        }
-//        "passengerWeaponStation" {
-//            if (getShootAnimationTimer(1, 0) > 0) {
-//                thenPlay("animation.t_90a.fire_weapon_station")
-//            } else {
-//                thenLoop("animation.t_90a.idle_weapon_station")
-//            }
-//        }
-//    }
-
     override fun vehicleShoot(living: LivingEntity?, uuid: UUID?, targetPos: Vec3?) {
         val level = living?.level()
         if (level is ServerLevel && living == firstPassenger && getWeaponIndex(0) == 0) {
