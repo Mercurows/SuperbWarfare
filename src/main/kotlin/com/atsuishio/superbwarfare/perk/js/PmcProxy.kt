@@ -47,4 +47,6 @@ class PmcProxy(private val pmc: PMC<GunData, DefaultGunData>) {
         pmc.setUnchecked(prop, result)
         return result
     }
+
+    fun isShotgun(): Boolean = pmc.data.isShotgun
 }

@@ -1,0 +1,9 @@
+{
+  "Type": "ammo",
+  "BypassArmorRate": 0.0,
+  "DamageRate": 0.8,
+  "SpeedRate": 0.9,
+  "RGB": [177, 193, 242],
+  "MobEffects": ["superbwarfare:phosphorus_fire"],
+  "HideParticle": true
+}

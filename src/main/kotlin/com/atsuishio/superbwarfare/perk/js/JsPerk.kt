@@ -6,21 +6,41 @@ import com.atsuishio.superbwarfare.data.gun.DamageReduce
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity
+import com.atsuishio.superbwarfare.perk.IAmmoStat
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.perk.PerkInstance
 import com.atsuishio.superbwarfare.script.ScriptManager
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.damagesource.DamageSource
+import net.minecraft.world.effect.MobEffect
+import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.entity.Entity
+import net.minecraftforge.registries.ForgeRegistries
 import org.mozillaa.javascript.Function
 
-class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : Perk(perkId, descriptor.perkType) {
+class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : Perk(perkId, descriptor.perkType), IAmmoStat {
+    override val damageRate: Double get() = descriptor.damageRate
+    override val speedRate: Double get() = descriptor.speedRate
+    override val slug: Boolean get() = descriptor.slug
     private val ammoConfig: AmmoConfig? = if (type == Type.AMMO) {
+        val effects = mutableListOf<MobEffect>()
+        descriptor.mobEffects?.forEach { name ->
+            val rl = ResourceLocation.tryParse(name) ?: return@forEach
+            val effect = ForgeRegistries.MOB_EFFECTS.getValue(rl)
+            if (effect != null) {
+                effects.add(effect)
+            } else {
+                Mod.LOGGER.warn("Unknown mob effect '{}' in perk '{}'", name, perkId)
+            }
+        }
         AmmoConfig(
             descriptor.bypassArmorRate,
             descriptor.damageRate,
             descriptor.speedRate,
             descriptor.slug,
             descriptor.rgb ?: listOf(255, 222, 39),
+            effects,
+            descriptor.hideParticle,
         )
     } else null
 
@@ -50,7 +70,57 @@ class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : Perk(
         if (entity is ProjectileEntity) {
             val r = config.rgb
             entity.setRGB(floatArrayOf(r[0] / 255f, r[1] / 255f, r[2] / 255f))
+            if (config.mobEffects.isNotEmpty()) {
+                val amplifier = getEffectAmplifier(instance)
+                val duration = getEffectDuration(instance)
+                val instances = config.mobEffects.map {
+                    MobEffectInstance(it, duration, amplifier, false, !config.hideParticle)
+                }
+                entity.effect(ArrayList(instances))
+            }
         }
+
+        val s = script ?: return
+        val f = s.scope.get("modifyProjectile", s.scope) as? Function ?: return
+
+        val proxy = ProjectileProxy(entity)
+        val level = instance.level.toInt()
+
+        f.call(s.context, s.scope, s.scope, arrayOf(proxy, level, data.isShotgun))
+    }
+
+    override fun getModifiedDamage(
+        damage: Float,
+        data: GunData,
+        instance: PerkInstance,
+        target: Entity,
+        source: DamageSource
+    ): Float {
+        val s = script ?: return damage
+        val f = s.scope.get("getModifiedDamage", s.scope) as? Function ?: return damage
+
+        val level = instance.level.toInt()
+        val targetInfo = TargetProxy(target)
+        val result = f.call(s.context, s.scope, s.scope, arrayOf(damage, targetInfo, level))
+        return (result as? Number)?.toFloat() ?: damage
+    }
+
+    fun getEffectAmplifier(instance: PerkInstance): Int {
+        val s = script ?: return instance.level - 1
+        val f = s.scope.get("getEffectAmplifier", s.scope) as? Function ?: return instance.level - 1
+
+        val level = instance.level.toInt()
+        val result = f.call(s.context, s.scope, s.scope, arrayOf(level))
+        return (result as? Number)?.toInt() ?: (instance.level - 1)
+    }
+
+    fun getEffectDuration(instance: PerkInstance): Int {
+        val s = script ?: return 70 + 30 * instance.level
+        val f = s.scope.get("getEffectDuration", s.scope) as? Function ?: return 70 + 30 * instance.level
+
+        val level = instance.level.toInt()
+        val result = f.call(s.context, s.scope, s.scope, arrayOf(level))
+        return (result as? Number)?.toInt() ?: (70 + 30 * instance.level)
     }
 
     override fun getModifiedDamageReduceRate(reduce: DamageReduce?): Double {
@@ -101,5 +171,7 @@ class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : Perk(
         val speedRate: Double,
         val slug: Boolean,
         val rgb: List<Int>,
+        val mobEffects: List<MobEffect>,
+        val hideParticle: Boolean,
     )
 }

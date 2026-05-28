@@ -1,0 +1,6 @@
+{
+  "Type": "ammo",
+  "BypassArmorRate": 0.0,
+  "RGB": [134, 65, 14],
+  "Script": "superbwarfare:perks/beast_bullet.js"
+}

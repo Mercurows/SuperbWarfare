@@ -1,0 +1,8 @@
+{
+  "Type": "ammo",
+  "BypassArmorRate": 0.0,
+  "DamageRate": 1.0,
+  "SpeedRate": 1.0,
+  "RGB": [48, 131, 6],
+  "MobEffects": ["minecraft:poison"]
+}

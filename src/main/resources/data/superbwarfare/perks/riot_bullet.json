@@ -1,0 +1,10 @@
+{
+  "Type": "ammo",
+  "BypassArmorRate": -0.3,
+  "DamageRate": 0.9,
+  "SpeedRate": 0.8,
+  "Slug": true,
+  "RGB": [70, 35, 230],
+  "MobEffects": ["minecraft:slowness", "minecraft:weakness"],
+  "Script": "superbwarfare:perks/riot_bullet.js"
+}

@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.perk.AmmoPerk
+import com.atsuishio.superbwarfare.perk.IAmmoStat
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.tools.FormatTool.format1D
 import net.minecraft.ChatFormatting
@@ -16,8 +17,10 @@ class ClientBocekImageTooltip(tooltip: GunImageComponent) : ClientGunImageToolti
 
             val data = from(stack)
             val perk = data.perk.get(Perk.Type.AMMO)
-            if (perk is AmmoPerk && perk.slug) {
-                slug = true
+            slug = when (perk) {
+                is AmmoPerk -> perk.slug
+                is IAmmoStat -> perk.slug
+                else -> false
             }
 
             val damage = data.get(GunProp.DAMAGE)
