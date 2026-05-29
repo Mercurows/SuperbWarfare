@@ -15,6 +15,7 @@ import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.effect.MobEffect
 import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.LivingEntity
 import net.minecraftforge.registries.ForgeRegistries
 import org.mozillaa.javascript.Function
 
@@ -61,8 +62,9 @@ class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : Perk(
         val level = modifier.data.perk.getLevel(this).toInt()
         val tag = modifier.data.perk.getTag(this)
         val perkTag = tag?.let { PerkTagProxy(it) }
+        val gunDataProxy = GunDataProxy(modifier.data)
 
-        f.call(s.context, s.scope, s.scope, arrayOf(pmcProxy, level, perkTag))
+        f.call(s.context, s.scope, s.scope, arrayOf(pmcProxy, level, perkTag, gunDataProxy))
     }
 
     override fun modifyProjectile(data: GunData, instance: PerkInstance, entity: Entity) {
@@ -101,7 +103,10 @@ class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : Perk(
 
         val level = instance.level.toInt()
         val targetInfo = TargetProxy(target)
-        val result = f.call(s.context, s.scope, s.scope, arrayOf(damage, targetInfo, level))
+        val tag = data.perk.getTag(this)
+        val perkTag = tag?.let { PerkTagProxy(it) }
+        val sourceProxy = DamageSourceProxy(source)
+        val result = f.call(s.context, s.scope, s.scope, arrayOf(damage, targetInfo, level, perkTag, sourceProxy))
         return (result as? Number)?.toFloat() ?: damage
     }
 
@@ -214,6 +219,42 @@ class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : Perk(
         val level = instance.level.toInt()
 
         f.call(s.context, s.scope, s.scope, arrayOf(perkTag, level, gunDataProxy, targetProxy, sourceProxy))
+    }
+
+    override fun onChangeSlot(
+        data: GunData,
+        instance: PerkInstance,
+        living: Entity?
+    ) {
+        val s = script ?: return
+        val f = s.scope.get("onChangeSlot", s.scope) as? Function ?: return
+
+        val tag = data.perk.getTag(this)
+        val perkTag = tag?.let { PerkTagProxy(it) }
+        val gunDataProxy = GunDataProxy(data)
+        val entityProxy = EntityProxy(living)
+        val level = instance.level.toInt()
+
+        f.call(s.context, s.scope, s.scope, arrayOf(perkTag, level, gunDataProxy, entityProxy))
+    }
+
+    override fun onHit(
+        attacker: LivingEntity,
+        data: GunData,
+        instance: PerkInstance,
+        target: Entity
+    ) {
+        val s = script ?: return
+        val f = s.scope.get("onHit", s.scope) as? Function ?: return
+
+        val tag = data.perk.getTag(this)
+        val perkTag = tag?.let { PerkTagProxy(it) }
+        val gunDataProxy = GunDataProxy(data)
+        val attackerProxy = EntityProxy(attacker)
+        val targetProxy = EntityProxy(target)
+        val level = instance.level.toInt()
+
+        f.call(s.context, s.scope, s.scope, arrayOf(attackerProxy, level, gunDataProxy, targetProxy, perkTag))
     }
 
     fun getEffectAmplifier(instance: PerkInstance): Int {

@@ -1,7 +1,9 @@
 package com.atsuishio.superbwarfare.perk.js
 
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity
+import com.atsuishio.superbwarfare.tools.CustomExplosion
 import com.atsuishio.superbwarfare.tools.InventoryTool
+import com.atsuishio.superbwarfare.tools.ParticleTool
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.OwnableEntity
@@ -17,6 +19,8 @@ class EntityProxy(val entity: Entity?) {
     fun isPlayer(): Boolean = entity is Player
     fun isLivingEntity(): Boolean = entity is LivingEntity
     fun isProjectile(): Boolean = entity is ProjectileEntity
+
+    fun isZoom(): Boolean = (entity as? ProjectileEntity)?.isZoom ?: false
 
     // ── Creative / Inventory ──
     fun isCreative(): Boolean = (entity as? Player)?.isCreative == true
@@ -87,5 +91,24 @@ class EntityProxy(val entity: Entity?) {
     // ── Projectile ──
     fun getBypassArmorRate(): Double {
         return (entity as? ProjectileEntity)?.bypassArmorRate?.toDouble() ?: 0.0
+    }
+
+    // ── Explosion ──
+    fun createExplosion(damage: Number, radius: Number, attackerProxy: EntityProxy, keepBlocks: Boolean, fireTime: Number) {
+        val target = entity ?: return
+        val attacker = attackerProxy.entity ?: return
+        val builder = CustomExplosion.Builder(target)
+            .damage(damage.toFloat())
+            .radius(radius.toFloat())
+            .directSource(attacker)
+            .source(null)
+            .fireTime(fireTime.toInt())
+            .withParticleType(ParticleTool.ParticleType.SMALL)
+
+        if (keepBlocks) {
+            builder.keepBlock()
+        }
+
+        builder.explode()
     }
 }

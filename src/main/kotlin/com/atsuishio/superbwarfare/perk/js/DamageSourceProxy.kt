@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.perk.js
 
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes
+import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.tools.DamageTypeTool
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.damagesource.DamageSource
@@ -18,9 +19,17 @@ class DamageSourceProxy(private val source: DamageSource) {
     // ── Damage type checks ──
     fun isGunDamage(): Boolean = DamageTypeTool.isGunDamage(source)
 
+    fun isGunFireDamage(): Boolean = DamageTypeTool.isGunFireDamage(source)
+
     fun isHeadshot(): Boolean = source.`is`(ModDamageTypes.GUN_FIRE_HEADSHOT)
 
+    fun isHeadshotDamage(): Boolean = DamageTypeTool.isHeadshotDamage(source)
+
     fun isAbsoluteHeadshot(): Boolean = source.`is`(ModDamageTypes.GUN_FIRE_HEADSHOT_ABSOLUTE)
+
+    fun isProjectile(): Boolean = source.`is`(ModTags.DamageTypes.PROJECTILE)
+
+    fun isProjectileAbsolute(): Boolean = source.`is`(ModTags.DamageTypes.PROJECTILE_ABSOLUTE)
 
     // ── Entity access ──
     fun getDirectEntity(): EntityProxy = EntityProxy(source.directEntity)

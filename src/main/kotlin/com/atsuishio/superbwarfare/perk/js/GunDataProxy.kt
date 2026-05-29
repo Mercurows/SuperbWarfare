@@ -10,6 +10,11 @@ import kotlin.jvm.optionals.getOrElse
  */
 class GunDataProxy(private val data: GunData) {
 
+    // ── Gun Properties ──
+    fun getBypassesArmor(): Double = data.get(GunProp.BYPASSES_ARMOR)
+
+    fun getProjectileAmount(): Int = data.get(GunProp.PROJECTILE_AMOUNT)
+
     // ── Magazine ──
     fun getMagazine(): Int = data.get(GunProp.MAGAZINE)
 
