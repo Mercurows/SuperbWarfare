@@ -15,6 +15,9 @@ open class BedrockVehicleModel(pojo: BedrockModelPOJO) : BedrockModel(pojo) {
 
         @JvmField
         val TRACK_PATTERN: Pattern = Pattern.compile("^track(?<type>Mov|Rot)(?<direction>[LR])(?<id>\\d+)$")
+
+        @JvmField
+        val FLARE_PATTERN: Pattern = Pattern.compile("^flare.*")
     }
 
     lateinit var leftWheels: List<BedrockBone>
@@ -31,6 +34,8 @@ open class BedrockVehicleModel(pojo: BedrockModelPOJO) : BedrockModel(pojo) {
     lateinit var rightTrackMove: List<BedrockBone>
     lateinit var rightTrackRot: List<BedrockBone>
 
+    lateinit var flareBones: List<BedrockBone>
+
     open fun init() {
         val map = this.boneMap
 
@@ -45,6 +50,8 @@ open class BedrockVehicleModel(pojo: BedrockModelPOJO) : BedrockModel(pojo) {
         val leftTrackRot = hashMapOf<Int, BedrockBone>()
         val rightTrackMove = hashMapOf<Int, BedrockBone>()
         val rightTrackRot = hashMapOf<Int, BedrockBone>()
+
+        val flareBones = mutableListOf<BedrockBone>()
 
         for ((name, bone) in map.entries) {
             val matcher = WHEEL_PATTERN.matcher(name)
@@ -93,6 +100,11 @@ open class BedrockVehicleModel(pojo: BedrockModelPOJO) : BedrockModel(pojo) {
                     }
                 }
             }
+
+            val matcherFlare = FLARE_PATTERN.matcher(name)
+            if (matcherFlare.matches()) {
+                flareBones += bone
+            }
         }
 
         this.leftWheels = leftWheels
@@ -106,5 +118,7 @@ open class BedrockVehicleModel(pojo: BedrockModelPOJO) : BedrockModel(pojo) {
         this.leftTrackRot = leftTrackRot.toSortedMap().values.toMutableList()
         this.rightTrackMove = rightTrackMove.toSortedMap().values.toMutableList()
         this.rightTrackRot = rightTrackRot.toSortedMap().values.toMutableList()
+
+        this.flareBones = flareBones
     }
 }

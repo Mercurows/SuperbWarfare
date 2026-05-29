@@ -48,7 +48,7 @@
         "ZoomPosition": [-0.025, 0.645, 1.204],
         "Direction": "Barrel"
       },
-      "Weapons": ["Cannon", "MainMachineGun", "Missile"],
+      "Weapons": ["Cannon", "MachineGun", "Missile"],
       "Sensitivity": [0.53, 0.71, 0.9],
       "DismountInfo": {
         "Transform": "Vehicle",
@@ -208,7 +208,7 @@
         "Directions": ["Barrel"]
       }
     },
-    "MainMachineGun": {
+    "MachineGun": {
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
       "DefaultZoom": 3,

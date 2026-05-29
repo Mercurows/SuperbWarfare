@@ -93,7 +93,7 @@ class T90aRenderer<T>(manager: EntityRendererProvider.Context) :
         return 2.25f
     }
 
-    override fun getEmissiveTextureLocation(entity: T): ResourceLocation? {
+    override fun getEmissiveTextureLocation(entity: T): ResourceLocation {
         return Mod.loc("textures/bedrock/vehicle/t_90a_e.png")
     }
 }

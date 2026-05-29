@@ -82,7 +82,7 @@
         "ZoomPosition": [0.0, 0.0, 0.25],
         "Direction": "Barrel"
       },
-      "Weapons": ["Cannon", "MainMachineGun", "Missile"],
+      "Weapons": ["Cannon", "MachineGun", "Missile"],
       "Transform": "Turret",
       "Position": [0.554, -1.236, -0.09],
       "CanRotateHead": false,
@@ -221,7 +221,7 @@
         "Directions": ["Barrel"]
       }
     },
-    "MainMachineGun": {
+    "MachineGun": {
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
       "DefaultZoom": 3,
