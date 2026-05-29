@@ -126,10 +126,10 @@ open class MortarEntity(type: EntityType<MortarEntity>, level: Level) : Artiller
                     null
                 )
             }
+            if (shooter != null) {
+                sendPacketToAll(VehicleShootClientMessage(shooter!!.uuid, this.getUUID(), 0, weaponName))
+            }
         }
-
-        // TODO 为啥不放动画
-        sendPacketToAll(VehicleShootClientMessage(shooter!!.getUUID(), this.getUUID(), 0, weaponName))
     }
 
     override fun interact(player: Player, hand: InteractionHand): InteractionResult {
@@ -201,7 +201,7 @@ open class MortarEntity(type: EntityType<MortarEntity>, level: Level) : Artiller
         return list
     }
 
-    protected override fun getEyeHeight(pPose: Pose, pSize: EntityDimensions): Float {
+    override fun getEyeHeight(pPose: Pose, pSize: EntityDimensions): Float {
         return 0.2f
     }
 
@@ -252,6 +252,17 @@ open class MortarEntity(type: EntityType<MortarEntity>, level: Level) : Artiller
 
                 gunData.shakePlayers(this)
             }
+        }
+
+        var f = 0.98f
+        if (this.onGround()) {
+            val pos = this.blockPosBelowThatAffectsMyMovement
+            f = this.level().getBlockState(pos).getFriction(this.level(), pos, this) * 0.98f
+        }
+
+        this.deltaMovement = this.deltaMovement.multiply(f.toDouble(), 0.98, f.toDouble())
+        if (this.onGround()) {
+            this.deltaMovement = this.deltaMovement.multiply(1.0, -0.9, 1.0)
         }
     }
 
