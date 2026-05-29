@@ -11,7 +11,7 @@ class VehicleAnimationInstance<T>(entity: T) where T : Entity, T : BasicGeoVehic
 
     init {
         val (_, namespace, id) = entity.type.descriptionId.split(".")
-        context = VehicleAnimationContext(entity, ResourceLocation(namespace, id))
+        context = VehicleAnimationContext(entity, ResourceLocation.fromNamespaceAndPath(namespace, id))
     }
 
     fun fire(weaponName: String) {

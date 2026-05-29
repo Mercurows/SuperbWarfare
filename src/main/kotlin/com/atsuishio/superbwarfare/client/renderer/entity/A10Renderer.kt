@@ -53,7 +53,7 @@ class A10Renderer<T>(manager: EntityRendererProvider.Context) :
                         val bone = model.getBone(dummyName) ?: continue
 
                         poseStack.pushPose()
-                        poseStack.mulPoseMatrix(bone.globalTransform)
+                        poseStack.mulPose(bone.globalTransform)
                         poseStack.mulPose(Axis.YP.rotationDegrees(180f))
 
                         entityRenderDispatcher.render(
