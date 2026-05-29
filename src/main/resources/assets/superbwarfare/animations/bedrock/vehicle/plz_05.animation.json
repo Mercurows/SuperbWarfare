@@ -1,10 +1,10 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.plz_05.idle": {
+		"animation.main.idle": {
 			"loop": true
 		},
-		"animation.plz_05.shoot": {
+		"animation.main.fire": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 1,
 			"bones": {

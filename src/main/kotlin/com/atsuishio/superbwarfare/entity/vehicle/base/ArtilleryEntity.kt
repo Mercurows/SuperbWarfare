@@ -1,12 +1,10 @@
 package com.atsuishio.superbwarfare.entity.vehicle.base
 
-import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.entity.vehicle.Plz05Entity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getXRotFromVector
 import com.atsuishio.superbwarfare.init.ModItems
-import com.atsuishio.superbwarfare.init.ModSerializers
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.item.misc.ArtilleryIndicatorItem
 import com.atsuishio.superbwarfare.item.misc.firingParameters
@@ -31,22 +29,17 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
-import org.joml.Math
 import org.joml.Vector3f
 import java.util.*
 
 open class ArtilleryEntity(type: EntityType<*>, world: Level) : VehicleEntity(type, world) {
 
-    open var barrelAnim by BARREL_ANIM
     open var shootVec by SHOOT_VEC
     open var depressed by DEPRESSED
     open var targetPos by TARGET_POS
     open var radius by RADIUS
     open var lockTurret by LOCK_TURRET
 
-    init {
-        barrelAnim = List(Math.max(4, this.maxBarrel)) { 0 }
-    }
 
     override fun interact(player: Player, hand: InteractionHand): InteractionResult {
         val gunData = getGunData("Main") ?: return InteractionResult.SUCCESS
@@ -92,7 +85,6 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : VehicleEntity(ty
             define(DEPRESSED, false)
             define(TARGET_POS, BlockPos(0, 0, 0))
             define(RADIUS, 0)
-            define(BARREL_ANIM, List(4) { 0 })
             define(LOCK_TURRET, false)
         }
     }
@@ -210,20 +202,10 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : VehicleEntity(ty
         }
     }
 
-    open val maxBarrel: Int
-        get() = getGunData("Main")?.get(GunProp.MAGAZINE) ?: 1
 
     override fun baseTick() {
         super.baseTick()
-
         if (this.isWreck) return
-        for (i in 0..<this.maxBarrel) {
-            val animCounters = barrelAnim.toMutableList()
-            if (i < animCounters.size && animCounters[i] > 0) {
-                animCounters[i] = animCounters[i] - 1
-                barrelAnim = animCounters.toList()
-            }
-        }
 
         val controller = getNthEntity(turretControllerIndex)
 
@@ -249,13 +231,6 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : VehicleEntity(ty
     }
 
     open fun beforeShoot(living: LivingEntity?) {
-        val data = getGunData("Main")
-        if (data != null && data.ammo.get() > 0) {
-            val animCounters = barrelAnim.toMutableList()
-            animCounters[data.ammo.get() - 1] = data.get(GunProp.SHOOT_ANIMATION_TIME)
-            barrelAnim = animCounters.toList()
-        }
-
         val level = living?.level()
         if (level is ServerLevel) {
             ParticleTool.spawnBigCannonMuzzleParticles(getShootVec("Main", 1f), getShootPos("Main", 1f), level, this)
@@ -265,10 +240,6 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : VehicleEntity(ty
     open fun canBind() = false
 
     companion object {
-        @JvmField
-        val BARREL_ANIM: EntityDataAccessor<List<Int>> =
-            SynchedEntityData.defineId(ArtilleryEntity::class.java, ModSerializers.INT_LIST_SERIALIZER.get())
-
         @JvmField
         val SHOOT_VEC: EntityDataAccessor<Vector3f> =
             SynchedEntityData.defineId(ArtilleryEntity::class.java, EntityDataSerializers.VECTOR3)

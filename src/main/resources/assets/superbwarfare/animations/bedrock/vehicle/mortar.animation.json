@@ -1,7 +1,7 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.mortar.idle": {
+		"animation.main.idle": {
 			"loop": true,
 			"bones": {
 				"mortar": {
@@ -22,7 +22,7 @@
 				}
 			}
 		},
-		"animation.mortar.fire": {
+		"animation.main.fire": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 1.5,
 			"bones": {

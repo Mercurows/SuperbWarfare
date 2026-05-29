@@ -1,14 +1,22 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
-import com.atsuishio.superbwarfare.entity.buildControllers
-import com.atsuishio.superbwarfare.entity.vehicle.base.GeckoArtilleryEntity
+import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInstance
+import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
 import com.atsuishio.superbwarfare.tools.angleTo
 import com.atsuishio.superbwarfare.tools.toVec3
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.level.Level
-import software.bernie.geckolib.animation.AnimatableManager.ControllerRegistrar
 
-class Plz05Entity(type: EntityType<Plz05Entity>, world: Level) : GeckoArtilleryEntity(type, world) {
+open class Plz05Entity(type: EntityType<Plz05Entity>, world: Level) : ArtilleryEntity(type, world), BasicGeoVehicleEntity {
+
+    val anim: VehicleAnimationInstance<Plz05Entity>? =
+        if (world.isClientSide) VehicleAnimationInstance(this) else null
+    override fun getAnimationInstance() = anim
+    override fun getAnimation() = ANIM
+    companion object {
+        val ANIM = Mod.loc("animation/bedrock/vehicle/plz_05.animation.json")
+    }
     override fun baseTick() {
         super.baseTick()
 
@@ -21,23 +29,6 @@ class Plz05Entity(type: EntityType<Plz05Entity>, world: Level) : GeckoArtilleryE
             }
         } else {
             lockTurret = false
-        }
-    }
-
-    override fun registerControllers(data: ControllerRegistrar) = buildControllers(data) {
-        "shoot" {
-            if (getShootAnimationTimer(1, 0) > 0) {
-                thenPlay("animation.plz_05.shoot")
-            } else {
-                thenLoop("animation.plz_05.idle")
-            }
-        }
-        "lockTurret"(10) {
-            if (lockTurret) {
-                thenPlay("animation.plz_05.lock_turret")
-            } else {
-                thenLoop("animation.plz_05.idle")
-            }
         }
     }
 

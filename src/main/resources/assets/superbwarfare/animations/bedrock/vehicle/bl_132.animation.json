@@ -1,10 +1,19 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.bl_132.idle": {
+		"animation.main.idle": {
 			"loop": true
 		},
-		"animation.bl_132.fire_1": {
+		"animation.main.idle.2": {
+			"loop": true
+		},
+		"animation.main.idle.3": {
+			"loop": true
+		},
+		"animation.main.idle.4": {
+			"loop": true
+		},
+		"animation.main.fire.3": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 1,
 			"bones": {
@@ -36,7 +45,7 @@
 				}
 			}
 		},
-		"animation.bl_132.fire_2": {
+		"animation.main.fire.2": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 1,
 			"bones": {
@@ -68,7 +77,7 @@
 				}
 			}
 		},
-		"animation.bl_132.fire_3": {
+		"animation.main.fire.1": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 1,
 			"bones": {
@@ -100,7 +109,7 @@
 				}
 			}
 		},
-		"animation.bl_132.fire_4": {
+		"animation.main.fire": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 1,
 			"bones": {

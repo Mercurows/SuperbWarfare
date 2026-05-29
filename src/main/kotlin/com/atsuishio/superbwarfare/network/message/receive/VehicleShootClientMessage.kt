@@ -14,7 +14,8 @@ import thedarkcolour.kotlinforforge.neoforge.forge.FORGE_BUS
 data class VehicleShootClientMessage(
     val shooter: SerializedUUID,
     val vehicle: SerializedUUID,
-    val index: Int
+    val index: Int,
+    val weaponName: String = ""
 ) : ClientPacketPayload() {
 
     override fun PayloadContext.handler() {
@@ -24,7 +25,8 @@ data class VehicleShootClientMessage(
         val v = EntityFindUtil.findEntity(player.level(), vehicle.toString())
 
         if (v is VehicleEntity) {
-            FORGE_BUS.post(s?.let { ClientVehicleFireEvent(v, it, index) })
+            val name = weaponName.ifEmpty { null }
+            FORGE_BUS.post(s?.let { ClientVehicleFireEvent(v, it, index, name) })
         }
     }
 }
