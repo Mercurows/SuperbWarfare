@@ -2931,7 +2931,6 @@ object ClientEventHandler {
             val ani = vehicle.getAnimationInstance() ?: return
             val name = vehicle.getGunName(vehicle.getSeatIndex(shooter)) ?: return
             ani.fire(name.camelToSnake(), index)
-            Minecraft.getInstance().player?.displayClientMessage(Component.literal(index.toString()), true)
         }
     }
 }
