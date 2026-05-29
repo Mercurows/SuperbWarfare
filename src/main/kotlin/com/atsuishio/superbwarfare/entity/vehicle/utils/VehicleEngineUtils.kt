@@ -938,6 +938,15 @@ object VehicleEngineUtils {
                 roll *= xSpeed
             }
 
+            if (Mth.abs(xRot) < 10) {
+                xRot += if (deltaMovement.y() < 0) {
+                    1.2f * deltaMovement.y.toFloat()
+                } else {
+                    0.5f * deltaMovement.y.toFloat()
+                }
+                xRot *= 0.995f
+            }
+
             propellerRot += 30 * power
 
             // 起落架

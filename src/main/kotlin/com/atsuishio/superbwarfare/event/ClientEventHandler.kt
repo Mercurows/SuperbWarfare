@@ -2929,7 +2929,5 @@ object ClientEventHandler {
                 ?: return
             ani.fire(name.camelToSnake(), index)
         }
-
-        Minecraft.getInstance().player?.displayClientMessage(Component.literal(index.toString()), true)
     }
 }
