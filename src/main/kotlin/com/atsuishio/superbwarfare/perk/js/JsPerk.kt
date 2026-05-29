@@ -47,7 +47,7 @@ class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : Perk(
     private val script: ScriptManager.CustomScript? by lazy {
         descriptor.script?.let { scriptName ->
             val source = loadScriptSource(scriptName) ?: return@lazy null
-            ScriptManager.createSafeScript("perk/$perkId", source)?.also { it.exec() }
+            ScriptManager.createSafeScript("sbw/perk/$perkId", source)?.also { it.exec() }
         }
     }
 
@@ -103,6 +103,117 @@ class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : Perk(
         val targetInfo = TargetProxy(target)
         val result = f.call(s.context, s.scope, s.scope, arrayOf(damage, targetInfo, level))
         return (result as? Number)?.toFloat() ?: damage
+    }
+
+    // ══════════════════════════════════════════════════
+    // Functional Perk Hooks
+    // ══════════════════════════════════════════════════
+
+    override fun tick(data: GunData, instance: PerkInstance, entity: Entity?) {
+        val s = script ?: return
+        val f = s.scope.get("tick", s.scope) as? Function ?: return
+
+        val tag = data.perk.getTag(this)
+        val perkTag = tag?.let { PerkTagProxy(it) }
+        val gunDataProxy = GunDataProxy(data)
+        val entityProxy = EntityProxy(entity)
+        val level = instance.level.toInt()
+
+        f.call(s.context, s.scope, s.scope, arrayOf(perkTag, level, gunDataProxy, entityProxy))
+    }
+
+    override fun onKill(
+        data: GunData,
+        instance: PerkInstance,
+        target: Entity,
+        source: DamageSource
+    ) {
+        val s = script ?: return
+        val f = s.scope.get("onKill", s.scope) as? Function ?: return
+
+        val tag = data.perk.getTag(this)
+        val perkTag = tag?.let { PerkTagProxy(it) }
+        val gunDataProxy = GunDataProxy(data)
+        val targetProxy = EntityProxy(target)
+        val sourceProxy = DamageSourceProxy(source)
+        val level = instance.level.toInt()
+
+        f.call(s.context, s.scope, s.scope, arrayOf(perkTag, level, gunDataProxy, targetProxy, sourceProxy))
+    }
+
+    override fun preReload(data: GunData, instance: PerkInstance, entity: Entity?) {
+        val s = script ?: return
+        val f = s.scope.get("preReload", s.scope) as? Function ?: return
+
+        val tag = data.perk.getTag(this)
+        val perkTag = tag?.let { PerkTagProxy(it) }
+        val gunDataProxy = GunDataProxy(data)
+        val entityProxy = EntityProxy(entity)
+        val level = instance.level.toInt()
+
+        f.call(s.context, s.scope, s.scope, arrayOf(perkTag, level, gunDataProxy, entityProxy))
+    }
+
+    override fun postReload(data: GunData, instance: PerkInstance, entity: Entity?) {
+        val s = script ?: return
+        val f = s.scope.get("postReload", s.scope) as? Function ?: return
+
+        val tag = data.perk.getTag(this)
+        val perkTag = tag?.let { PerkTagProxy(it) }
+        val gunDataProxy = GunDataProxy(data)
+        val entityProxy = EntityProxy(entity)
+        val level = instance.level.toInt()
+
+        f.call(s.context, s.scope, s.scope, arrayOf(perkTag, level, gunDataProxy, entityProxy))
+    }
+
+    override fun onHurtEntity(
+        damage: Float,
+        data: GunData,
+        instance: PerkInstance,
+        target: Entity,
+        source: DamageSource
+    ) {
+        val s = script ?: return
+        val f = s.scope.get("onHurtEntity", s.scope) as? Function ?: return
+
+        val tag = data.perk.getTag(this)
+        val perkTag = tag?.let { PerkTagProxy(it) }
+        val gunDataProxy = GunDataProxy(data)
+        val targetProxy = EntityProxy(target)
+        val sourceProxy = DamageSourceProxy(source)
+        val level = instance.level.toInt()
+
+        f.call(s.context, s.scope, s.scope, arrayOf(damage, perkTag, level, gunDataProxy, targetProxy, sourceProxy))
+    }
+
+    override fun getModifiedCustomRPM(rpm: Int, data: GunData, instance: PerkInstance): Int {
+        val s = script ?: return rpm
+        val f = s.scope.get("getModifiedCustomRPM", s.scope) as? Function ?: return rpm
+
+        val gunDataProxy = GunDataProxy(data)
+        val level = instance.level.toInt()
+        val result = f.call(s.context, s.scope, s.scope, arrayOf(rpm, level, gunDataProxy))
+        return (result as? Number)?.toInt() ?: rpm
+    }
+
+    override fun onMeleeAttack(
+        data: GunData,
+        instance: PerkInstance,
+        target: Entity,
+        source: DamageSource
+    ) {
+        val s = script ?: return
+        val f = s.scope.get("onMeleeAttack", s.scope) as? Function ?: return
+
+        val tag = data.perk.getTag(this)
+        val perkTag = tag?.let { PerkTagProxy(it) }
+        val gunDataProxy = GunDataProxy(data)
+        val targetProxy = EntityProxy(target)
+        val sourceProxy = DamageSourceProxy(source)
+        val level = instance.level.toInt()
+
+        f.call(s.context, s.scope, s.scope, arrayOf(perkTag, level, gunDataProxy, targetProxy, sourceProxy))
     }
 
     fun getEffectAmplifier(instance: PerkInstance): Int {

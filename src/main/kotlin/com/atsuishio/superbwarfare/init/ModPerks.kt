@@ -3,12 +3,12 @@ package com.atsuishio.superbwarfare.init
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.perk.AmmoPerk
-import com.atsuishio.superbwarfare.perk.js.JsPerk
 import com.atsuishio.superbwarfare.perk.Perk
-import com.atsuishio.superbwarfare.perk.js.PerkDescriptor
 import com.atsuishio.superbwarfare.perk.ammo.*
 import com.atsuishio.superbwarfare.perk.damage.*
 import com.atsuishio.superbwarfare.perk.functional.*
+import com.atsuishio.superbwarfare.perk.js.JsPerk
+import com.atsuishio.superbwarfare.perk.js.PerkDescriptor
 import com.google.gson.JsonParser
 import com.mojang.serialization.JsonOps
 import net.minecraft.core.Registry
@@ -131,7 +131,7 @@ object ModPerks {
     private fun autoRegisterFromJsons() {
         try {
             val modFile = ModList.get().getModFileById(Mod.MODID).file
-            val perksDir = modFile.findResource("data/${Mod.MODID}/perks")
+            val perksDir = modFile.findResource("data/${Mod.MODID}/sbw/perks")
             Files.list(perksDir).use { stream ->
                 stream.filter { it.fileName.toString().endsWith(".json") }
                     .forEach { path ->

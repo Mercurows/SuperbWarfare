@@ -13,7 +13,8 @@ abstract class Prop<DATA : DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA, FIEL
     val prop: KMutableProperty1<DEFAULT_DATA, FIELD>,
     val transform: (FIELD) -> RESULT,
 ) {
-    protected val type: Type = prop.returnType.javaType
+    @JvmField
+    val type: Type = prop.returnType.javaType
 
     val serializer by lazy { prop.serializer() }
 
