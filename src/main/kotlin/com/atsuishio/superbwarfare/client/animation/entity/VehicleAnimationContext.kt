@@ -93,6 +93,12 @@ class VehicleAnimationContext<T>(val entity: T, location: ResourceLocation) wher
         }
     }
 
+    fun stopAnimation(animationName: String) {
+        val weaponName = extractWeaponName(animationName) ?: return
+        weaponRunners.remove(weaponName)
+        weaponIndices.remove(weaponName)
+    }
+
     private fun extractWeaponName(animationName: String?): String? {
         if (animationName == null) return null
         val name = animationName.removePrefix("animation.")

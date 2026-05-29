@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.client.animation.AnimationPlayType
 import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInstance
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
 import com.atsuishio.superbwarfare.tools.angleTo
@@ -17,6 +18,9 @@ open class Plz05Entity(type: EntityType<Plz05Entity>, world: Level) : ArtilleryE
     companion object {
         val ANIM = Mod.loc("animation/bedrock/vehicle/plz_05.animation.json")
     }
+
+    private var wasLockTurret = false
+
     override fun baseTick() {
         super.baseTick()
 
@@ -29,6 +33,18 @@ open class Plz05Entity(type: EntityType<Plz05Entity>, world: Level) : ArtilleryE
             }
         } else {
             lockTurret = false
+        }
+
+        //TODO 加入渐入渐出效果
+
+        if (level().isClientSide) {
+            val ctx = anim?.context ?: return
+            if (lockTurret && !wasLockTurret) {
+                ctx.playAnimation("animation.plz_05.lock_turret", AnimationPlayType.LOOP)
+            } else if (!lockTurret && wasLockTurret) {
+                ctx.stopAnimation("animation.plz_05.lock_turret")
+            }
+            wasLockTurret = lockTurret
         }
     }
 
