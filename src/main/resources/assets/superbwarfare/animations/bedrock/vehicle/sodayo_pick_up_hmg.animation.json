@@ -1,7 +1,7 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.hmg.idle": {
+		"animation.machine_gun.idle": {
 			"animation_length": 0.1,
 			"bones": {
 				"flare": {
@@ -9,7 +9,7 @@
 				}
 			}
 		},
-		"animation.hmg.fire": {
+		"animation.machine_gun.fire": {
 			"animation_length": 0.15,
 			"bones": {
 				"flare": {
@@ -49,18 +49,6 @@
 						"0.0": [0.6, -0.3, 0],
 						"0.1167": [0, 0, 0],
 						"0.15": [0, 0, 0]
-					}
-				},
-				"m2hb": {
-					"rotation": {
-						"0.0": [0, 0, 0],
-						"0.0167": [-0.1, 0, 0],
-						"0.1": [0, 0, 0]
-					},
-					"position": {
-						"0.0": [0, 0, 0],
-						"0.0167": [0, 0.005, 0.2],
-						"0.0917": [0, 0, 0]
 					}
 				}
 			}

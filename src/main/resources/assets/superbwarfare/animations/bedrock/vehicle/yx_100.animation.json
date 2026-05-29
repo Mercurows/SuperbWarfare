@@ -1,7 +1,7 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.yx_100.idle": {
+		"animation.cannon.idle": {
 			"loop": true,
 			"bones": {
 				"glow": {
@@ -9,7 +9,7 @@
 				}
 			}
 		},
-		"animation.yx_100.fire": {
+		"animation.cannon.fire": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 2,
 			"bones": {
@@ -120,7 +120,7 @@
 				}
 			}
 		},
-		"animation.yx_100.fire_coax": {
+		"animation.machine_gun.fire": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 0.15,
 			"bones": {
@@ -136,7 +136,7 @@
 				}
 			}
 		},
-		"animation.yx_100.idle_coax": {
+		"animation.machine_gun.idle": {
 			"loop": true,
 			"bones": {
 				"flare2": {
@@ -144,7 +144,7 @@
 				}
 			}
 		},
-		"animation.yx_100.idle_weapon_station": {
+		"animation.passenger_cannon.idle": {
 			"loop": true,
 			"bones": {
 				"flare": {
@@ -152,7 +152,7 @@
 				}
 			}
 		},
-		"animation.yx_100.fire_weapon_station": {
+		"animation.passenger_cannon.fire": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 0.15,
 			"bones": {

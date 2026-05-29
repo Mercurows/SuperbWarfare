@@ -36,7 +36,7 @@ class Yx100Renderer<T>(manager: EntityRendererProvider.Context) :
 
         model.renderToBuffer(
             poseStack,
-            buffer.getBuffer(ModRenderTypes.LASER.apply(MUZZLE_FLARE)),
+            buffer.getBuffer(ModRenderTypes.LASER.apply(MUZZLE_GLOW)),
             packedLight,
             OverlayTexture.NO_OVERLAY
         )
@@ -115,6 +115,6 @@ class Yx100Renderer<T>(manager: EntityRendererProvider.Context) :
     }
 
     companion object {
-        val MUZZLE_FLARE = Mod.loc("textures/bedrock/vehicle/yx_100_flare.png")
+        val MUZZLE_GLOW = Mod.loc("textures/bedrock/vehicle/yx_100_glow.png")
     }
 }

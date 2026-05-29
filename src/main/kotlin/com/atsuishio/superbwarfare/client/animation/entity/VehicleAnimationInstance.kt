@@ -13,8 +13,8 @@ class VehicleAnimationInstance<T>(entity: T) where T : Entity, T : BasicGeoVehic
         context = VehicleAnimationContext(entity, ResourceLocation(namespace, id))
     }
 
-    fun fire(weaponName: String) {
-        context.fire(weaponName)
+    fun fire(weaponName: String, index: Int) {
+        context.fire(weaponName, index)
     }
 
     fun tick() {

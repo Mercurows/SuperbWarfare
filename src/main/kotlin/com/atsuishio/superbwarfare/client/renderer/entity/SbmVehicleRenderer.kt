@@ -191,6 +191,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         if (flareFlag) {
             for (flare in flareBones) {
                 flare.visible = false
+                flare.rotation.rotateZ((0.5 * (Math.random() - 0.5)).toFloat())
             }
         }
 

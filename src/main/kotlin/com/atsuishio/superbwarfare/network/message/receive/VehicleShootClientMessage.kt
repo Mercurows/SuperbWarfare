@@ -13,7 +13,8 @@ import thedarkcolour.kotlinforforge.forge.FORGE_BUS
 @Serializable
 data class VehicleShootClientMessage(
     val shooter: SerializedUUID,
-    val vehicle: SerializedUUID
+    val vehicle: SerializedUUID,
+    val index: Int
 ) : ClientPacketPayload() {
 
     override fun PayloadContext.handler() {
@@ -23,7 +24,7 @@ data class VehicleShootClientMessage(
         val v = EntityFindUtil.findEntity(player.level(), vehicle.toString())
 
         if (v is VehicleEntity) {
-            FORGE_BUS.post(s?.let { ClientVehicleFireEvent(v, it) })
+            FORGE_BUS.post(s?.let { ClientVehicleFireEvent(v, it, index) })
         }
     }
 }
