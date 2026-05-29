@@ -1,0 +1,4 @@
+{
+  "Type": "damage",
+  "Script": "superbwarfare:sbw/perks/killing_tally.js"
+}

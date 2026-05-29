@@ -34,4 +34,10 @@ class ProjectileProxy(private val entity: Entity) {
     fun setWireLength(length: Number) {
         taser?.wireLength = length.toInt()
     }
+
+    fun setVolt(volt: Number) {
+        taser?.volt = volt.toInt()
+    }
+
+    fun isZoom(): Boolean = projectile?.isZoom ?: false
 }
