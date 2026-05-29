@@ -415,14 +415,23 @@ open class MortarEntity(type: EntityType<MortarEntity>, level: Level) : Artiller
     }
 
     companion object {
+        @JvmField
         val FIRE_TIME: EntityDataAccessor<Int> =
             SynchedEntityData.defineId(MortarEntity::class.java, EntityDataSerializers.INT)
+
+        @JvmField
         val TARGET_PITCH: EntityDataAccessor<Float> =
             SynchedEntityData.defineId(MortarEntity::class.java, EntityDataSerializers.FLOAT)
+
+        @JvmField
         val TARGET_YAW: EntityDataAccessor<Float> =
             SynchedEntityData.defineId(MortarEntity::class.java, EntityDataSerializers.FLOAT)
+
+        @JvmField
         val INTELLIGENT: EntityDataAccessor<Boolean> =
             SynchedEntityData.defineId(MortarEntity::class.java, EntityDataSerializers.BOOLEAN)
+
+        @JvmField
         val NEED_RESET_TARGET: EntityDataAccessor<Boolean> =
             SynchedEntityData.defineId(MortarEntity::class.java, EntityDataSerializers.BOOLEAN)
         private val ANIM = loc("animation/bedrock/vehicle/mortar.animation.json")
