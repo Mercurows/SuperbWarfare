@@ -5,5 +5,5 @@
   "SpeedRate": 0.95,
   "Slug": true,
   "RGB": [230, 131, 65],
-  "Script": "superbwarfare:perks/jhp_bullet.js"
+  "Script": "superbwarfare:sbw/perks/jhp_bullet.js"
 }

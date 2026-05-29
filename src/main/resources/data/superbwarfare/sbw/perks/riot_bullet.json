@@ -6,5 +6,5 @@
   "Slug": true,
   "RGB": [70, 35, 230],
   "MobEffects": ["minecraft:slowness", "minecraft:weakness"],
-  "Script": "superbwarfare:perks/riot_bullet.js"
+  "Script": "superbwarfare:sbw/perks/riot_bullet.js"
 }

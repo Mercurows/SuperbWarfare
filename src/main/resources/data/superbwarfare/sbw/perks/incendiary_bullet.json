@@ -6,5 +6,5 @@
   "Slug": true,
   "RGB": [230, 131, 65],
   "MobEffects": ["superbwarfare:burn"],
-  "Script": "superbwarfare:perks/incendiary_bullet.js"
+  "Script": "superbwarfare:sbw/perks/incendiary_bullet.js"
 }

@@ -2,5 +2,5 @@
   "Type": "ammo",
   "SpeedRate": 1.1,
   "RGB": [255, 255, 255],
-  "Script": "superbwarfare:perks/phase_penetrating_bullet.js"
+  "Script": "superbwarfare:sbw/perks/phase_penetrating_bullet.js"
 }

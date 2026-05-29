@@ -1,5 +1,5 @@
 {
   "Type": "ammo",
   "SpeedRate": 1.2,
-  "Script": "superbwarfare:perks/micro_missile.js"
+  "Script": "superbwarfare:sbw/perks/micro_missile.js"
 }

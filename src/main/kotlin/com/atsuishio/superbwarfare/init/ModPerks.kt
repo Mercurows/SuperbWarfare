@@ -134,7 +134,7 @@ object ModPerks {
     private fun autoRegisterFromJsons() {
         try {
             val modFile = ModList.get().getModFileById(Mod.MODID).file
-            val perksDir = modFile.findResource("data/${Mod.MODID}/perks")
+            val perksDir = modFile.findResource("data/${Mod.MODID}/sbw/perks")
             Files.list(perksDir).use { stream ->
                 stream.filter { it.fileName.toString().endsWith(".json") }
                     .forEach { path ->
