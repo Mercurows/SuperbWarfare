@@ -2640,8 +2640,26 @@
 				{
 					"name": "passengerWeaponStationPitch",
 					"parent": "passengerWeaponStationYaw",
-					"pivot": [-14.59476, 58.98148, 18.24854],
+					"pivot": [-14.59476, 58.98148, 18.24854]
+				},
+				{
+					"name": "hmg",
+					"parent": "passengerWeaponStationPitch",
+					"pivot": [-13.6492, 60.43318, 13.35196],
 					"cubes": [
+						{
+							"origin": [-12.06934, 60.86918, 15.00404],
+							"size": [1.25, 0.23438, 1.40625],
+							"pivot": [-12.06934, 60.86918, 15.70716],
+							"rotation": [-180, 0, 100],
+							"uv": {
+								"north": {"uv": [334, 406], "uv_size": [1, 1]},
+								"south": {"uv": [406, 334], "uv_size": [1, 1]},
+								"west": {"uv": [335, 406], "uv_size": [1, 1]},
+								"up": {"uv": [406, 335], "uv_size": [1, 1]},
+								"down": {"uv": [336, 407], "uv_size": [1, -1]}
+							}
+						},
 						{
 							"origin": [45.85938, 58.67188, 46.13685],
 							"size": [1.40625, 0.9375, 5.23438],
@@ -3501,25 +3519,12 @@
 								"up": {"uv": [333, 406], "uv_size": [1, 1]},
 								"down": {"uv": [406, 334], "uv_size": [1, -1]}
 							}
-						},
-						{
-							"origin": [-12.06934, 60.86918, 15.00404],
-							"size": [1.25, 0.23438, 1.40625],
-							"pivot": [-12.06934, 60.86918, 15.70716],
-							"rotation": [-180, 0, 100],
-							"uv": {
-								"north": {"uv": [334, 406], "uv_size": [1, 1]},
-								"south": {"uv": [406, 334], "uv_size": [1, 1]},
-								"west": {"uv": [335, 406], "uv_size": [1, 1]},
-								"up": {"uv": [406, 335], "uv_size": [1, 1]},
-								"down": {"uv": [336, 407], "uv_size": [1, -1]}
-							}
 						}
 					]
 				},
 				{
 					"name": "action",
-					"parent": "passengerWeaponStationPitch",
+					"parent": "hmg",
 					"pivot": [-14.6875, 61.03516, 5.23841],
 					"cubes": [
 						{
@@ -3565,7 +3570,7 @@
 				},
 				{
 					"name": "flare",
-					"parent": "passengerWeaponStationPitch",
+					"parent": "hmg",
 					"pivot": [-14.675, 60.99982, -7.72799],
 					"cubes": [
 						{
