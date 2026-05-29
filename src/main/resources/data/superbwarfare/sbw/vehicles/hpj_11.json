@@ -45,7 +45,7 @@
       "ExplosionDamage": 5,
       "ExplosionRadius": 2,
       "Spread": 0.35,
-      "HeatPerShoot": 1.6,
+      "HeatPerShoot": 1.2,
       "NaturalCooldown": 0.5,
       "ShootAnimationTime": 3,
       "Crosshair": "@VehicleDynamicCross",
@@ -63,7 +63,7 @@
       },
       "ShootPos": {
         "Transform": "Barrel",
-        "Positions": [[0, 0.4, 2.578025]],
+        "Positions": [[0, 0.3, 2.578025]],
         "Directions": ["Barrel"],
         "ViewPosition": [0, 0.45, 2.0]
       },

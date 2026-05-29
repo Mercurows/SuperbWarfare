@@ -2,13 +2,11 @@ package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
-import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.Hpj11Entity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.options
-import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.CameraType
 import net.minecraft.client.renderer.MultiBufferSource
@@ -44,21 +42,6 @@ class Hpj11Renderer<T>(manager: EntityRendererProvider.Context) :
 
         rdr.rotation.rotationX(rot)
         rdr2.rotation.rotationX(rot)
-
-        val paoGuanRoll = model.getBone("paoguanroll")
-        val flare = model.getBone("flare")
-
-        val gunData = vehicle.getGunData(0, 0)
-        if (gunData != null) {
-            paoGuanRoll.rotation.rotationZ(-0.5f * (gunData.shootTimer.get() * System.currentTimeMillis() % 36000000) / 75f)
-
-            flare.visible = gunData.shootTimer.get() > 2
-            flare.xScale = (2 + 0.8 * (Math.random() - 0.5)).toFloat()
-            flare.yScale = (2 + 0.8 * (Math.random() - 0.5)).toFloat()
-            flare.rotation.rotationZ((0.5 * (Math.random() - 0.5)).toFloat())
-        } else {
-            flare.visible = false
-        }
     }
 
     override fun renderCustomPart(
@@ -72,19 +55,7 @@ class Hpj11Renderer<T>(manager: EntityRendererProvider.Context) :
     ) {
         super.renderCustomPart(vehicle, model, poseStack, entityYaw, partialTicks, buffer, packedLight)
 
-        val gunData = vehicle.getGunData(0, 0)
-        if (gunData != null && gunData.shootTimer.get() > 2) {
-            model.renderToBuffer(
-                poseStack,
-                buffer,
-                ModRenderTypes.MUZZLE_FLASH_TYPE.apply(MUZZLE_FLARE),
-                BedrockModelRenderTypes.polyMeshCutout(MUZZLE_FLARE),
-                packedLight,
-                OverlayTexture.NO_OVERLAY
-            )
-        }
-
-        val heat = vehicle.getWeaponHeat(0).toFloat()
+        val heat = Mth.clamp(vehicle.getWeaponHeat(0).toFloat(), 0f, 100f)
 
         if (heat > 0) {
             model.renderToBuffer(
@@ -101,7 +72,6 @@ class Hpj11Renderer<T>(manager: EntityRendererProvider.Context) :
     }
 
     companion object {
-        val MUZZLE_FLARE = loc("textures/bedrock/vehicle/hpj_11_e.png")
         val HEAT = loc("textures/bedrock/vehicle/hpj_11_heat.png")
     }
 }

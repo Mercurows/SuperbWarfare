@@ -175,16 +175,15 @@
       "RPM": 1200,
       "Velocity": 23,
       "Gravity": 0.03,
-      "Damage": 23,
+      "Damage": 20,
       "ExplosionDamage": 2,
       "ExplosionRadius": 1,
       "ProjectileLife": 20,
       "Spread": 0.75,
       "RecoilTime": 19,
-      "RecoilForce": 0.25,
-      "HeatPerShoot": 1.8,
+      "RecoilForce": 0.5,
+      "HeatPerShoot": 1.4,
       "NaturalCooldown": 0.75,
-      "ShootAnimationTime": 3,
       "Crosshair": "@VehicleCommonGunDynamic",
       "CrosshairColor": "0x66FF00",
       "Name": "weapon.superbwarfare.25mm_cannon_aa",
@@ -195,7 +194,7 @@
       "AmmoType": "superbwarfare:small_shell_aa",
       "ShootPos": {
         "Transform": "Barrel",
-        "Positions": [[0, 0.12, 1.96]],
+        "Positions": [[0, 0, 1.96]],
         "Directions": ["Barrel"]
       }
     },

@@ -186,32 +186,33 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             )
         }
 
-        // TODO 只是测试射击火焰用的组
-
-        val flare = model.getBone("flare")
-
-        val flareFlag = flare != null
+        val flareBones = model.flareBones
+        val flareFlag = flareBones.isNotEmpty()
         if (flareFlag) {
-            flare.visible = false
+            for (flare in flareBones) {
+                flare.visible = false
+            }
         }
 
         if (flareFlag && !(ClientEventHandler.zoomVehicle && (hideForTurretControllerWhileZooming || hideForPassengerWeaponStationControllerWhileZooming))) {
             val flareModel = VehicleModelReloadListener.getModel(Mod.loc("muzzle_flare"))
 
             if (flareModel != null) {
-                poseStack.pushPose()
-                poseStack.mulPoseMatrix(flare.globalTransform)
-                flareModel.renderToBuffer(
-                    poseStack,
-                    buffer,
-                    ModRenderTypes.MUZZLE_FLASH_TYPE.apply(MUZZLE_FLARE),
-                    BedrockModelRenderTypes.polyMeshCutout(MUZZLE_FLARE),
-                    packedLight,
-                    OverlayTexture.NO_OVERLAY
-                )
-                flareModel.applyPose(flareModel.bindPose)
+                for (flare in flareBones) {
+                    poseStack.pushPose()
+                    poseStack.mulPoseMatrix(flare.globalTransform)
+                    flareModel.renderToBuffer(
+                        poseStack,
+                        buffer,
+                        ModRenderTypes.MUZZLE_FLASH_TYPE.apply(MUZZLE_FLARE),
+                        BedrockModelRenderTypes.polyMeshCutout(MUZZLE_FLARE),
+                        packedLight,
+                        OverlayTexture.NO_OVERLAY
+                    )
+                    flareModel.applyPose(flareModel.bindPose)
 
-                poseStack.popPose()
+                    poseStack.popPose()
+                }
             }
 
         }
