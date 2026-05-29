@@ -13,33 +13,6 @@
 			"loop": "hold_on_last_frame",
 			"animation_length": 2,
 			"bones": {
-				"bone": {
-					"position": {
-						"0.0": [0, 0, 0],
-						"0.0083": [0, 0, 9.25],
-						"0.0917": {
-							"pre": [0, 0, 5.64],
-							"post": [0, 0, 5.64],
-							"lerp_mode": "catmullrom"
-						},
-						"0.175": {
-							"post": [0, 0, 2.65],
-							"lerp_mode": "catmullrom"
-						},
-						"0.3": {
-							"post": [0, 0, 0.62],
-							"lerp_mode": "catmullrom"
-						},
-						"0.4833": {
-							"post": [0, 0, 0],
-							"lerp_mode": "catmullrom"
-						},
-						"2.0": {
-							"post": [0, 0, 0],
-							"lerp_mode": "catmullrom"
-						}
-					}
-				},
 				"barrelroot": {
 					"rotation": {
 						"0.0": {

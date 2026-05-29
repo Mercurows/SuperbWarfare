@@ -13,52 +13,6 @@
 			"loop": "hold_on_last_frame",
 			"animation_length": 2,
 			"bones": {
-				"barrelroot": {
-					"rotation": {
-						"0.0": {
-							"post": [0, 0, 0],
-							"lerp_mode": "catmullrom"
-						},
-						"0.0417": {
-							"post": [-1.86, 0, 0],
-							"lerp_mode": "catmullrom"
-						},
-						"0.0917": {
-							"post": [-2, 0, 0],
-							"lerp_mode": "catmullrom"
-						},
-						"0.175": {
-							"post": [-0.38, 0, 0],
-							"lerp_mode": "catmullrom"
-						},
-						"0.2833": {
-							"post": [1.34, 0, 0],
-							"lerp_mode": "catmullrom"
-						},
-						"0.375": {
-							"post": [0.88, 0, 0],
-							"lerp_mode": "catmullrom"
-						},
-						"0.4667": {
-							"post": [-0.24, 0, 0],
-							"lerp_mode": "catmullrom"
-						},
-						"0.6333": {
-							"post": [0, 0, 0],
-							"lerp_mode": "catmullrom"
-						}
-					}
-				},
-				"glow": {
-					"scale": {
-						"0.0": [0, 0, 0],
-						"0.0083": [1, 1, 1],
-						"0.1917": [1, 1, 1],
-						"0.5": [0, 0, 0],
-						"0.9917": [0, 0, 0],
-						"2.0": [0, 0, 0]
-					}
-				},
 				"barrel_action": {
 					"position": {
 						"0.0": {
@@ -170,7 +124,7 @@
 						"0.1167": [0, 0, 0]
 					}
 				},
-				"nsvt": {
+				"mg": {
 					"rotation": {
 						"0.0": [0, 0, 0],
 						"0.0417": [0, 0, 0],

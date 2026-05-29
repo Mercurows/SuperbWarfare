@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.vehicle
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.animation.AnimationPlayType
-import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationContext
 import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInstance
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
 import com.atsuishio.superbwarfare.tools.angleTo
@@ -43,7 +42,7 @@ open class Plz05Entity(type: EntityType<Plz05Entity>, world: Level) : ArtilleryE
                     fadeInTicks = 40)
             } else if (!lockTurret && wasLockTurret) {
                 ctx.stopAnimation("animation.plz_05.lock_turret",
-                    fadeOutTicks = 40)
+                    fadeOutTicks = 80)
             }
             wasLockTurret = lockTurret
         }
