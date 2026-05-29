@@ -1,21 +1,19 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
+import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInstance
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.level.Level
 
 class Bl132Entity(type: EntityType<Bl132Entity>, world: Level) : ArtilleryEntity(type, world), BasicGeoVehicleEntity {
-//    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) = buildControllers(data) {
-//        for (i in 1..4) {
-//            "fire$i" {
-//                if (barrelAnim.getOrElse(i) { 0 } > 0) {
-//                    thenPlay("animation.bl_132.fire_${5 - i}")
-//                } else {
-//                    thenLoop("animation.bl_132.idle")
-//                }
-//            }
-//        }
-//    }
+    val anim: VehicleAnimationInstance<Bl132Entity>? =
+        if (world.isClientSide) VehicleAnimationInstance(this) else null
+    override fun getAnimationInstance() = anim
+    override fun getAnimation() = ANIM
+    companion object {
+        val ANIM = Mod.loc("animation/bedrock/vehicle/bl_132.animation.json")
+    }
 
     override fun canBind() = true
 }

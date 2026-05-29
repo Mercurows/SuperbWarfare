@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
-import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance;
+import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInstance;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity;
@@ -13,6 +13,7 @@ import com.atsuishio.superbwarfare.item.misc.ArtilleryIndicatorItem;
 import com.atsuishio.superbwarfare.item.misc.FiringParametersItemKt;
 import com.atsuishio.superbwarfare.item.misc.MonitorItem;
 import com.atsuishio.superbwarfare.item.projectile.MortarShellItem;
+import com.atsuishio.superbwarfare.network.message.receive.VehicleShootClientMessage;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.atsuishio.superbwarfare.tools.SoundTool;
@@ -44,6 +45,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.atsuishio.superbwarfare.tools.MinecraftUtil.sendPacketToAll;
 import static com.atsuishio.superbwarfare.tools.TrajectoryCalculator.calculateLaunchVector;
 
 public class MortarEntity extends ArtilleryEntity implements BasicGeoVehicleEntity {
@@ -52,15 +54,19 @@ public class MortarEntity extends ArtilleryEntity implements BasicGeoVehicleEnti
     public static final EntityDataAccessor<Float> TARGET_YAW = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Boolean> INTELLIGENT = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> NEED_RESET_TARGET = SynchedEntityData.defineId(MortarEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final ResourceLocation ANIM = Mod.loc("animation/bedrock/vehicle/mortar.animation.json");
 
+    private final VehicleAnimationInstance<MortarEntity> anim;
     private LivingEntity shooter = null;
 
     public MortarEntity(EntityType<MortarEntity> type, Level level) {
         super(type, level);
+        this.anim = level.isClientSide ? new VehicleAnimationInstance<>(this) : null;
     }
 
     public MortarEntity(Level level, float yRot) {
         super(ModEntities.MORTAR.get(), level);
+        this.anim = level.isClientSide ? new VehicleAnimationInstance<>(this) : null;
         this.setYRot(yRot);
         this.entityData.set(TARGET_YAW, yRot);
     }
@@ -113,9 +119,17 @@ public class MortarEntity extends ArtilleryEntity implements BasicGeoVehicleEnti
         }
 
         if (level() instanceof ServerLevel serverLevel) {
-            SoundTool.playDistantSound(serverLevel, soundInfo.fire3P, position(), (float) (0.25f * gunData.get(GunProp.SOUND_RADIUS)), random.nextFloat() * 0.1f + 1, null);
-            SoundTool.playDistantSound(serverLevel, soundInfo.fire3PFar, position(), gunData.get(GunProp.SOUND_RADIUS).floatValue(), random.nextFloat() * 0.1f + 1, null);
+            if (soundInfo.fire3P != null) {
+                SoundTool.playDistantSound(serverLevel, soundInfo.fire3P, position(), (float) (0.25f * gunData.get(GunProp.SOUND_RADIUS)), random.nextFloat() * 0.1f + 1, null);
+            }
+            if (soundInfo.fire3PFar != null) {
+                SoundTool.playDistantSound(serverLevel, soundInfo.fire3PFar, position(), gunData.get(GunProp.SOUND_RADIUS).floatValue(), random.nextFloat() * 0.1f + 1, null);
+            }
         }
+
+        // TODO 为啥不放动画
+
+        sendPacketToAll(new VehicleShootClientMessage(shooter.getUUID(), this.getUUID(), 0, weaponName));
     }
 
     @Override
@@ -305,15 +319,6 @@ public class MortarEntity extends ArtilleryEntity implements BasicGeoVehicleEnti
         this.setXRot(Mth.clamp(this.getXRot() + Mth.clamp(0.5f * diffX, -20f, 20f), -getTurretMaxPitch(), -getTurretMinPitch()));
     }
 
-    // TODO 实现动画
-
-//    private PlayState movementPredicate(AnimationState<MortarEntity> event) {
-//        if (this.entityData.get(FIRE_TIME) > 0) {
-//            return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mortar.fire"));
-//        }
-//        return event.setAndContinue(RawAnimation.begin().thenLoop("animation.mortar.idle"));
-//    }
-
     @Override
     public void destroy() {
         if (this.level() instanceof ServerLevel level) {
@@ -363,15 +368,13 @@ public class MortarEntity extends ArtilleryEntity implements BasicGeoVehicleEnti
         return this.entityData.get(INTELLIGENT);
     }
 
-    @Nullable
     @Override
     public ResourceLocation getAnimation() {
-        return null;
+        return ANIM;
     }
-
 
     @Override
     public @Nullable VehicleAnimationInstance<?> getAnimationInstance() {
-        return null;
+        return anim;
     }
 }
