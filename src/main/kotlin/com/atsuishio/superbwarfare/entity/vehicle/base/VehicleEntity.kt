@@ -1012,10 +1012,21 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         playShootSound3p(living, weaponName)
 
         if (living != null) {
+            val shootPos = gunData!!.get(GunProp.SHOOT_POS)
+            val list = shootPos.positions
+            val size = list.size
+
+            val index: Int = if (shootPos.boundUpWithAmmoAmount) {
+                Mth.clamp(gunData.ammo.get() - 1, 0, size)
+            } else {
+                gunData.fireIndex.get() % size
+            }
+
             sendPacketToAll(
                 VehicleShootClientMessage(
                     living.uuid,
-                    this.uuid
+                    this.uuid,
+                    index
                 )
             )
         }
@@ -1047,10 +1058,21 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         playShootSound3p(living, seatIndex)
 
         if (living != null) {
+            val shootPos = gunData!!.get(GunProp.SHOOT_POS)
+            val list = shootPos.positions
+            val size = list.size
+
+            val index: Int = if (shootPos.boundUpWithAmmoAmount) {
+                Mth.clamp(gunData.ammo.get() - 1, 0, size)
+            } else {
+                gunData.fireIndex.get() % size
+            }
+
             sendPacketToAll(
                 VehicleShootClientMessage(
                     living.uuid,
-                    this.uuid
+                    this.uuid,
+                    index
                 )
             )
         }

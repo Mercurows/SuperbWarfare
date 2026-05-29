@@ -2921,10 +2921,12 @@ object ClientEventHandler {
     fun onClientVehicleFire(event: ClientVehicleFireEvent) {
         val shooter = event.shooter
         val vehicle = event.entity
+        val index = event.index
         if (vehicle is BasicGeoVehicleEntity) {
             val ani = vehicle.getAnimationInstance() ?: return
             val name = vehicle.getGunName(vehicle.getSeatIndex(shooter)) ?: return
-            ani.fire(name.camelToSnake())
+            ani.fire(name.camelToSnake(), index)
+            Minecraft.getInstance().player?.displayClientMessage(Component.literal(index.toString()), true)
         }
     }
 }

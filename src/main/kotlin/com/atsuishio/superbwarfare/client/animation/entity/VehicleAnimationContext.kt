@@ -4,11 +4,7 @@ import com.atsuishio.superbwarfare.client.animation.AnimationPlayType
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.resource.model.VehicleModelReloadListener
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.BedrockAnimation
-import com.maydaymemory.mae.basic.ArrayPoseBuilder
-import com.maydaymemory.mae.basic.DummyPose
-import com.maydaymemory.mae.basic.Keyframe
-import com.maydaymemory.mae.basic.Pose
-import com.maydaymemory.mae.basic.ZYXBoneTransformFactory
+import com.maydaymemory.mae.basic.*
 import com.maydaymemory.mae.blend.EulerAdditiveBlender
 import com.maydaymemory.mae.blend.SimpleEulerAdditiveBlender
 import com.maydaymemory.mae.control.runner.AnimationContext
@@ -23,6 +19,7 @@ class VehicleAnimationContext<T>(val entity: T, location: ResourceLocation) wher
     var partialTick: Float = 0f
 
     private val weaponRunners = linkedMapOf<String, AnimationRunner>()
+    private val weaponIndices = hashMapOf<String, Int>()
 
     init {
         val ani = VehicleModelReloadListener.getAnimation(location)
@@ -35,23 +32,54 @@ class VehicleAnimationContext<T>(val entity: T, location: ResourceLocation) wher
     }
 
     private fun startIdleAnimations() {
+        // 处理无编号的 idle 动画：animation.X.idle
         for ((name, animation) in animations) {
             if (name.startsWith("animation.") && name.endsWith(".idle")) {
-                val weaponName = name.removePrefix("animation.").removeSuffix(".idle")
+                val rest = name.removePrefix("animation.").removeSuffix(".idle")
                 val runner = AnimationRunner(animation, AnimationContext(animation.specifiedEndTimeS))
                 runner.state = AnimationPlayType.LOOP.state()
-                weaponRunners[weaponName] = runner
+                weaponRunners[rest] = runner
             }
+        }
+
+        // 处理带序号的 idle 动画: animation.X.idle.1, animation.X.idle.2, etc.
+        val idlePattern = Regex("^animation\\.(.+)\\.idle\\.(\\d+)$")
+        for ((name, animation) in animations) {
+            val match = idlePattern.matchEntire(name) ?: continue
+            val weaponName = match.groupValues[1]
+            val index = match.groupValues[2].toInt()
+            val key = "$weaponName#$index"
+            val runner = AnimationRunner(animation, AnimationContext(animation.specifiedEndTimeS))
+            runner.state = AnimationPlayType.LOOP.state()
+            weaponRunners[key] = runner
+            weaponIndices[key] = index
         }
     }
 
-    fun fire(weaponName: String) {
-        val fireAnimName = "animation.$weaponName.fire"
+    fun fire(weaponName: String, index: Int) {
+        val key: String
+        val fireAnimName: String
+        if (index == 0) {
+            fireAnimName = "animation.$weaponName.fire"
+            key = weaponName
+        } else {
+            key = "$weaponName#$index"
+            val specificName = "animation.$weaponName.fire.$index"
+            fireAnimName = if (animations.containsKey(specificName)) {
+                specificName
+            } else {
+                "animation.$weaponName.fire"
+            }
+        }
+
         val fireAnimation = animations[fireAnimName] ?: return
 
         val runner = AnimationRunner(fireAnimation, AnimationContext(fireAnimation.specifiedEndTimeS))
         runner.state = AnimationPlayType.PLAY_ONCE_STOP.state()
-        weaponRunners[weaponName] = runner
+        weaponRunners[key] = runner
+        if (index != 0) {
+            weaponIndices[key] = index
+        }
     }
 
     fun playAnimation(animationName: String?, type: AnimationPlayType) {
@@ -80,8 +108,15 @@ class VehicleAnimationContext<T>(val entity: T, location: ResourceLocation) wher
         for ((weaponName, runner) in weaponRunners) {
             runner.tick()
             if (runner.state is StopState) {
-                val idleAnimName = "animation.$weaponName.idle"
-                if (animations.containsKey(idleAnimName)) {
+                val index = weaponIndices[weaponName]
+                val base = weaponName.substringBeforeLast('#')
+                val idleExists = if (index != null && index > 0) {
+                    animations.containsKey("animation.$base.idle.$index") ||
+                        animations.containsKey("animation.$base.idle")
+                } else {
+                    animations.containsKey("animation.$base.idle")
+                }
+                if (idleExists) {
                     transitionToIdle.add(weaponName)
                 } else {
                     toRemove.add(weaponName)
@@ -105,7 +140,22 @@ class VehicleAnimationContext<T>(val entity: T, location: ResourceLocation) wher
     }
 
     private fun startIdle(weaponName: String) {
-        val idleAnimName = "animation.$weaponName.idle"
+        val index = weaponIndices[weaponName]
+        val idleAnimName: String
+
+        if (index != null && index > 0) {
+            val base = weaponName.substringBeforeLast('#')
+            val specificName = "animation.$base.idle.$index"
+            if (animations.containsKey(specificName)) {
+                idleAnimName = specificName
+            } else {
+                idleAnimName = "animation.$base.idle"
+            }
+        } else {
+            val base = weaponName.substringBeforeLast('#')
+            idleAnimName = "animation.$base.idle"
+        }
+
         val idleAnimation = animations[idleAnimName] ?: return
 
         val runner = AnimationRunner(idleAnimation, AnimationContext(idleAnimation.specifiedEndTimeS))

@@ -1,46 +1,23 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
+import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInstance
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
-import com.atsuishio.superbwarfare.tools.ParticleTool
-import net.minecraft.core.particles.ParticleTypes
-import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.EntityType
-import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.level.Level
-import net.minecraft.world.phys.Vec3
 import org.joml.Math
-import java.util.*
 
 open class Ju87Entity(type: EntityType<Ju87Entity>, world: Level) : VehicleEntity(type, world), BasicGeoVehicleEntity {
+
+    val anim: VehicleAnimationInstance<Ju87Entity>? =
+        if (world.isClientSide) VehicleAnimationInstance(this) else null
+    override fun getAnimationInstance() = anim
 
     override var turretYRot = 180f
     override var turretYRotO = 180f
 
     var smallPropellerO = 0f
     var smallPropeller = 180f
-
-    override fun vehicleShoot(living: LivingEntity?, uuid: UUID?, targetPos: Vec3?) {
-        val level = living?.level()
-        if (level is ServerLevel && living == firstPassenger && getWeaponIndex(0) == 0) {
-            val pos = getShootPos(living, 1f)
-            ParticleTool.sendParticle(level, ParticleTypes.CLOUD,
-                    pos.x,
-                    pos.y,
-                    pos.z,
-                    1, 0.1, 0.1, 0.1, 0.0, true)
-        }
-        super.vehicleShoot(living, uuid, targetPos)
-    }
-
-//    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) = buildControllers(data) {
-//        "machineGun" {
-//            if (getShootAnimationTimer(1, 0) > 0) {
-//                thenPlay("animation.mg_17.fire")
-//            } else {
-//                thenLoop("animation.mg_17.idle")
-//            }
-//        }
-//    }
 
     override fun baseTick() {
         smallPropellerO = smallPropeller
@@ -59,5 +36,10 @@ open class Ju87Entity(type: EntityType<Ju87Entity>, world: Level) : VehicleEntit
             }
 
         }
+    }
+
+    override fun getAnimation() = ANIM
+    companion object {
+        val ANIM = Mod.loc("animation/bedrock/vehicle/ju_87.animation.json")
     }
 }
