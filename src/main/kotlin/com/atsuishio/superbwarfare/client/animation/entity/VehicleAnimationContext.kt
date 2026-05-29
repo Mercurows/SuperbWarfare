@@ -13,6 +13,7 @@ import com.maydaymemory.mae.control.runner.StopState
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.world.entity.Entity
+import org.joml.Vector3f
 
 class VehicleAnimationContext<T>(val entity: T, location: ResourceLocation) where T : Entity, T : BasicGeoVehicleEntity {
     val animations = hashMapOf<String, BedrockAnimation>()
@@ -20,6 +21,33 @@ class VehicleAnimationContext<T>(val entity: T, location: ResourceLocation) wher
 
     private val weaponRunners = linkedMapOf<String, AnimationRunner>()
     private val weaponIndices = hashMapOf<String, Int>()
+
+    private val fadeMap = hashMapOf<String, FadeInfo>()
+
+    companion object {
+        val BLENDER: EulerAdditiveBlender =
+            SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }
+
+        const val DEFAULT_FADE_TICKS = 10
+    }
+
+    private data class FadeInfo(
+        val weaponName: String,
+        val isFadingIn: Boolean,
+        val fadeTicks: Int,
+        var elapsed: Int = 0
+    ) {
+        fun alpha(): Float {
+            val progress = elapsed.toFloat() / fadeTicks.toFloat()
+            return if (isFadingIn) {
+                progress.coerceIn(0f, 1f)
+            } else {
+                (1f - progress).coerceIn(0f, 1f)
+            }
+        }
+
+        fun isDone(): Boolean = elapsed >= fadeTicks
+    }
 
     init {
         val ani = VehicleModelReloadListener.getAnimation(location)
@@ -82,21 +110,30 @@ class VehicleAnimationContext<T>(val entity: T, location: ResourceLocation) wher
         }
     }
 
-    fun playAnimation(animationName: String?, type: AnimationPlayType) {
+    fun playAnimation(animationName: String?, type: AnimationPlayType, fadeInTicks: Int = 0) {
         val animation = animations[animationName] ?: return
         val runner = AnimationRunner(animation, AnimationContext(animation.specifiedEndTimeS))
         runner.state = type.state()
 
         val weaponName = extractWeaponName(animationName)
         if (weaponName != null) {
+            fadeMap.remove(weaponName)
             weaponRunners[weaponName] = runner
+            if (fadeInTicks > 0) {
+                fadeMap[weaponName] = FadeInfo(weaponName, true, fadeInTicks)
+            }
         }
     }
 
-    fun stopAnimation(animationName: String) {
+    fun stopAnimation(animationName: String, fadeOutTicks: Int = 0) {
         val weaponName = extractWeaponName(animationName) ?: return
-        weaponRunners.remove(weaponName)
-        weaponIndices.remove(weaponName)
+        if (fadeOutTicks > 0 && weaponRunners.containsKey(weaponName)) {
+            fadeMap[weaponName] = FadeInfo(weaponName, false, fadeOutTicks)
+        } else {
+            weaponRunners.remove(weaponName)
+            weaponIndices.remove(weaponName)
+            fadeMap.remove(weaponName)
+        }
     }
 
     private fun extractWeaponName(animationName: String?): String? {
@@ -108,10 +145,40 @@ class VehicleAnimationContext<T>(val entity: T, location: ResourceLocation) wher
     }
 
     fun tick() {
+        // Process fade transitions
+        val completedFades = mutableListOf<String>()
+        for ((weaponName, fade) in fadeMap) {
+            fade.elapsed++
+            if (fade.isDone()) {
+                completedFades.add(weaponName)
+            }
+        }
+        for (weaponName in completedFades) {
+            val fade = fadeMap.remove(weaponName) ?: continue
+            if (!fade.isFadingIn) {
+                // Fade-out complete: remove the runner and transition to idle if available
+                val index = weaponIndices[weaponName]
+                weaponRunners.remove(weaponName)
+                weaponIndices.remove(weaponName)
+                val base = weaponName.substringBeforeLast('#')
+                val idleExists = if (index != null && index > 0) {
+                    animations.containsKey("animation.$base.idle.$index") ||
+                        animations.containsKey("animation.$base.idle")
+                } else {
+                    animations.containsKey("animation.$base.idle")
+                }
+                if (idleExists) {
+                    startIdle(weaponName)
+                }
+            }
+        }
+
         val transitionToIdle = mutableListOf<String>()
         val toRemove = mutableListOf<String>()
 
         for ((weaponName, runner) in weaponRunners) {
+            // Skip ticking for fading-out runners that aren't being processed
+            if (fadeMap[weaponName]?.isFadingIn == false) continue
             runner.tick()
             if (runner.state is StopState) {
                 val index = weaponIndices[weaponName]
@@ -183,17 +250,44 @@ class VehicleAnimationContext<T>(val entity: T, location: ResourceLocation) wher
     fun getPose(): Pose {
         if (weaponRunners.isEmpty()) return DummyPose.INSTANCE
         var result: Pose = DummyPose.INSTANCE
-        for (runner in weaponRunners.values) {
-            val pose = runner.evaluate()
+        for ((weaponName, runner) in weaponRunners) {
+            var pose = runner.evaluate()
             if (pose != DummyPose.INSTANCE) {
+                val alpha = fadeMap[weaponName]?.alpha() ?: 1f
+                if (alpha < 1f) {
+                    pose = scalePose(pose, alpha)
+                }
                 result = if (result == DummyPose.INSTANCE) pose else BLENDER.blend(result, pose)
             }
         }
         return result
     }
 
-    companion object {
-        val BLENDER: EulerAdditiveBlender =
-            SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }
+    private fun scalePose(pose: Pose, alpha: Float): Pose {
+        if (alpha >= 1f) return pose
+        if (alpha <= 0f) return DummyPose.INSTANCE
+
+        val builder = ArrayPoseBuilder()
+        for (transform in pose.getBoneTransforms()) {
+            // Translation: scale toward [0,0,0] (additive)
+            val translation = Vector3f(transform.translation()).mul(alpha)
+
+            // Rotation (Euler angles): scale toward [0,0,0] (additive)
+            val euler = Vector3f(transform.rotation().asEulerAngle())
+            euler.mul(alpha)
+
+            // Scale: lerp from [1,1,1] toward target (multiplicative)
+            val origScale = transform.scale()
+            val newScale = Vector3f(
+                1f + (origScale.x() - 1f) * alpha,
+                1f + (origScale.y() - 1f) * alpha,
+                1f + (origScale.z() - 1f) * alpha
+            )
+
+            builder.addBoneTransform(
+                BoneTransform(transform.boneIndex(), translation, ZYXRotationView(Vector3f(euler)), newScale)
+            )
+        }
+        return builder.toPose()
     }
 }

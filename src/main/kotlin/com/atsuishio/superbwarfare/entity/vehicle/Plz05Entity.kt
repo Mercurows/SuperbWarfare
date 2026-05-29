@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.vehicle
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.animation.AnimationPlayType
+import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationContext
 import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInstance
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
 import com.atsuishio.superbwarfare.tools.angleTo
@@ -35,14 +36,14 @@ open class Plz05Entity(type: EntityType<Plz05Entity>, world: Level) : ArtilleryE
             lockTurret = false
         }
 
-        //TODO 加入渐入渐出效果
-
         if (level().isClientSide) {
             val ctx = anim?.context ?: return
             if (lockTurret && !wasLockTurret) {
-                ctx.playAnimation("animation.plz_05.lock_turret", AnimationPlayType.LOOP)
+                ctx.playAnimation("animation.plz_05.lock_turret", AnimationPlayType.LOOP,
+                    fadeInTicks = 40)
             } else if (!lockTurret && wasLockTurret) {
-                ctx.stopAnimation("animation.plz_05.lock_turret")
+                ctx.stopAnimation("animation.plz_05.lock_turret",
+                    fadeOutTicks = 40)
             }
             wasLockTurret = lockTurret
         }
