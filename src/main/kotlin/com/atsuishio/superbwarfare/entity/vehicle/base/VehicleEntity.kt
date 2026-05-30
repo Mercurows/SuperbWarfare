@@ -2737,11 +2737,11 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open fun getSelectedWeapon(seatIndex: Int) =
         selectedWeapon.getOrElse(seatIndex) { -1 }
 
-    open fun turretAutoAimFromVector(shootVec: Vec3?) {
+    open fun turretAutoAimFromVector(shootVec: Vec3) {
         VehicleWeaponUtils.turretAutoAimFromVector(this, shootVec)
     }
 
-    open fun turretAutoAimFromUuid(uuid: String, pLiving: LivingEntity?) {
+    open fun turretAutoAimFromUuid(uuid: String, pLiving: LivingEntity) {
         VehicleWeaponUtils.turretAutoAimFromUuid(this, uuid, pLiving)
     }
 
