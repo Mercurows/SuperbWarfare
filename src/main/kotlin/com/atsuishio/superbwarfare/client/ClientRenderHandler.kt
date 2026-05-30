@@ -84,9 +84,10 @@ object ClientRenderHandler {
         event.registerBelow(VehicleHudOverlay.ID, VehicleMainWeaponHudOverlay.ID, VehicleMainWeaponHudOverlay)
         event.registerBelow(
             VehicleMainWeaponHudOverlay.ID,
-            VehicleCrosshairOverlay.ID,
-            VehicleCrosshairOverlay
+            GPWSOverlay.ID,
+            GPWSOverlay
         )
+        event.registerBelow(GPWSOverlay.ID, VehicleCrosshairOverlay.ID, VehicleCrosshairOverlay)
         event.registerBelowAll(StaminaOverlay.ID, StaminaOverlay)
         event.registerBelowAll(AmmoCountOverlay.ID, AmmoCountOverlay)
         event.registerBelowAll(ItemRendererFixOverlay.ID, ItemRendererFixOverlay)

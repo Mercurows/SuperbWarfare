@@ -4437,5 +4437,53 @@
         "name": "superbwarfare:steel_coil_move"
       }
     ]
+  },
+  "pull_up": {
+    "sounds": [
+      {
+        "stream": false,
+        "name": "superbwarfare:gpws/pull_up"
+      }
+    ]
+  },
+  "sink_rate": {
+    "sounds": [
+      {
+        "stream": false,
+        "name": "superbwarfare:gpws/sink_rate"
+      }
+    ]
+  },
+  "terrain": {
+    "sounds": [
+      {
+        "stream": false,
+        "name": "superbwarfare:gpws/terrain"
+      }
+    ]
+  },
+  "terrain_ahead": {
+    "sounds": [
+      {
+        "stream": false,
+        "name": "superbwarfare:gpws/terrain_ahead"
+      }
+    ]
+  },
+  "too_low_gear": {
+    "sounds": [
+      {
+        "stream": false,
+        "name": "superbwarfare:gpws/too_low_gear"
+      }
+    ]
+  },
+  "too_low_terrain": {
+    "sounds": [
+      {
+        "stream": false,
+        "name": "superbwarfare:gpws/too_low_terrain"
+      }
+    ]
   }
 }
