@@ -920,13 +920,13 @@ object VehicleEngineUtils {
                 roll *= xSpeed
             }
 
-            if (Mth.abs(xRot) < 10) {
+            if (Mth.abs(xRot) < 20 && Mth.abs(mouseMoveSpeedY) < 0.006) {
                 xRot += if (deltaMovement.y() < 0) {
                     1.2f * deltaMovement.y.toFloat()
                 } else {
                     0.5f * deltaMovement.y.toFloat()
                 }
-                xRot *= 0.995f
+                xRot *= 0.996f
             }
 
             propellerRot += 30 * power

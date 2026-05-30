@@ -85,6 +85,11 @@ object ClientRenderHandler {
         event.registerBelow(Mod.loc(VehicleHudOverlay.ID), VehicleMainWeaponHudOverlay.ID, VehicleMainWeaponHudOverlay)
         event.registerBelow(
             Mod.loc(VehicleMainWeaponHudOverlay.ID),
+            GPWSOverlay.ID,
+            GPWSOverlay
+        )
+        event.registerBelow(
+            Mod.loc(GPWSOverlay.ID),
             VehicleCrosshairOverlay.ID,
             VehicleCrosshairOverlay
         )
