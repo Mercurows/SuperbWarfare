@@ -68,7 +68,7 @@ object VehicleWeaponUtils {
         val max = ySpeed
 
         vehicle.turretXRot = Mth.clamp(
-            vehicle.turretXRot + Mth.clamp(1f * diffX, -xSpeed, xSpeed),
+            vehicle.turretXRot + Mth.clamp(0.75f * diffX, -xSpeed, xSpeed),
             -vehicle.turretMaxPitch,
             -vehicle.turretMinPitch
         )

@@ -210,6 +210,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
         var hitPos: Vec3? = null
         if (entity is OBBEntity && !entity.enableAABB()) {
             for (obb in entity.getOBBs()) {
+                if (obb.part == OBB.Part.COLLISION) continue
                 val obbVec = obb.clip(OBB.vec3ToVector3d(startVec), OBB.vec3ToVector3d(endVec)).orElse(null)
                 if (obbVec != null) {
                     hitPos = OBB.vector3dToVec3(obbVec)

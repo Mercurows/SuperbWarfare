@@ -4192,10 +4192,8 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             this.setOnGround(true)
         }
 
-        val aabb = this.boundingBox
-
-        val list = level().getEntityCollisions(this, aabb.expandTowards(pVec))
-        val vec3 = if (pVec.lengthSqr() == 0.0) pVec else collideBoundingBox(this, pVec, aabb, this.level(), list)
+        // 使用OBB碰撞解决替代原版AABB碰撞
+        val vec3 = VehicleMotionUtils.resolveObbWorldCollision(this, pVec)
         val flag = pVec.x != vec3.x
         val flag1 = pVec.y != vec3.y
         val flag2 = pVec.z != vec3.z
@@ -4203,35 +4201,50 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         val stepHeight = maxUpStep()
 
         if (stepHeight > 0.0f && flag3 && (flag || flag2)) {
-
-            var vec31 = collideBoundingBox(
-                this, Vec3(pVec.x, stepHeight.toDouble(), pVec.z), aabb,
-                this.level(), list
+            // 尝试步进
+            var vec31 = VehicleMotionUtils.resolveObbWorldCollision(
+                this, Vec3(pVec.x, stepHeight.toDouble(), pVec.z), allowStepUp = false
             )
-            val vec32 = collideBoundingBox(
-                this, Vec3(0.0, stepHeight.toDouble(), 0.0), aabb.expandTowards(pVec.x, 0.0, pVec.z),
-                this.level(), list
+            val vec32 = VehicleMotionUtils.resolveObbWorldCollision(
+                this, Vec3(0.0, stepHeight.toDouble(), 0.0), allowStepUp = false
             )
             if (vec32.y < stepHeight.toDouble()) {
-                val vec33 = collideBoundingBox(
-                    this, Vec3(pVec.x, 0.0, pVec.z), aabb.move(vec32),
-                    this.level(), list
-                ).add(vec32)
+                // 头顶有遮挡，尝试先向上移动vec32，再水平移动
+                val collisionObb = this.getCollisionOBB()
+                val horizPart: Vec3
+                if (collisionObb != null) {
+                    val stepUpObbs = listOf(collisionObb.move(Vec3(vec32.x, vec32.y, vec32.z)))
+                    horizPart = VehicleMotionUtils.resolveObbWorldCollision(
+                        this, Vec3(pVec.x, 0.0, pVec.z), stepUpObbs, allowStepUp = false
+                    )
+                } else {
+                    val movedBox = this.boundingBox.move(vec32)
+                    val list = level().getEntityCollisions(this, movedBox.expandTowards(pVec.x, 0.0, pVec.z))
+                    horizPart = Entity.collideBoundingBox(this, Vec3(pVec.x, 0.0, pVec.z), movedBox, level(), list)
+                }
+                val vec33 = horizPart.add(vec32)
                 if (vec33.horizontalDistanceSqr() > vec31.horizontalDistanceSqr()) {
                     vec31 = vec33
                 }
             }
 
             if (vec31.horizontalDistanceSqr() > vec3.horizontalDistanceSqr()) {
-                return vec31.add(
-                    collideBoundingBox(
-                        this,
-                        Vec3(0.0, -vec31.y + pVec.y, 0.0),
-                        aabb.move(vec31),
-                        this.level(),
-                        list
+                // 步进成功，处理垂直下落
+                val collisionObb = this.getCollisionOBB()
+                val stepDown: Vec3
+                if (collisionObb != null) {
+                    val stepUpObbs = listOf(collisionObb.move(Vec3(vec31.x, vec31.y, vec31.z)))
+                    stepDown = VehicleMotionUtils.resolveObbWorldCollision(
+                        this, Vec3(0.0, -vec31.y + pVec.y, 0.0), stepUpObbs, allowStepUp = false
                     )
-                )
+                } else {
+                    // 无OBB时用偏移AABB模拟步进后位置
+                    val movedBox = this.boundingBox.move(vec31)
+                    val list = level().getEntityCollisions(this, movedBox.expandTowards(0.0, -vec31.y + pVec.y, 0.0))
+                    stepDown =
+                        Entity.collideBoundingBox(this, Vec3(0.0, -vec31.y + pVec.y, 0.0), movedBox, level(), list)
+                }
+                return vec31.add(stepDown)
             }
         }
 
@@ -4268,7 +4281,11 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             this.minorHorizontalCollision = false
         }
 
-        this.setOnGroundWithMovement(this.verticalCollisionBelow, vec3)
+        this.setOnGroundWithKnownMovement(this.verticalCollisionBelow, vec3)
+        // 补充OBB级别的地面检测：任意OBB接触地面即判定为onGround
+        if (!this.onGround() && VehicleMotionUtils.checkObbOnGround(this)) {
+            this.setOnGround(true)
+        }
         val blockpos = this.getOnPos(0.2f)
         val blockstate = level().getBlockState(blockpos)
         if (this.isRemoved) {
@@ -4550,6 +4567,13 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             this.obbCache = this.obb.asSequence().map { it.getOBB() }.toMutableList()
         }
         return this.obbCache!!
+    }
+
+    /**
+     * 获取用于碰撞和旋转物理的单个COLLISION类型OBB
+     */
+    open fun getCollisionOBB(): OBB? {
+        return getOBBs().firstOrNull { it.part == OBB.Part.COLLISION }
     }
 
     open fun getEnergyDataAccessor() = ENERGY

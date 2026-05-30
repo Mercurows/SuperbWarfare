@@ -301,7 +301,11 @@ data class OBB(
 
         @SerializedName("Interactive")
         @SerialName("Interactive")
-        INTERACTIVE
+        INTERACTIVE,
+
+        @SerializedName("Collision")
+        @SerialName("Collision")
+        COLLISION
     }
 
     companion object {
@@ -343,8 +347,93 @@ data class OBB(
         }
 
         /**
+         * 计算OBB和AABB之间的最小平移向量(MTV)
+         * 使用分离轴定理(SAT)检测碰撞并计算穿透深度
+         *
+         * @param obb  OBB盒
+         * @param aabb AABB盒
+         * @return 若发生碰撞则返回MTV（方向为将OBB推出AABB的方向，大小为最小穿透深度），否则返回null
+         */
+        @JvmStatic
+        fun computeObbAabbMtv(obb: OBB, aabb: AABB): Vector3d? {
+            val obbAxes = obb.getAxes()
+            val aabbCenter = Vector3d(aabb.center.x, aabb.center.y, aabb.center.z)
+            val aabbHalfExtents = Vector3d(aabb.xsize / 2.0, aabb.ysize / 2.0, aabb.zsize / 2.0)
+            val obbCenter = obb.center
+            val obbExtents = obb.extents
+
+            val worldAxes = arrayOf(
+                Vector3d(1.0, 0.0, 0.0),
+                Vector3d(0.0, 1.0, 0.0),
+                Vector3d(0.0, 0.0, 1.0)
+            )
+
+            var minOverlap = Double.MAX_VALUE
+            val mtvAxis = Vector3d()
+            var pushNegative = false  // true = push along -axis, false = push along +axis
+
+            // 收集所有候选分离轴：3 OBB面法线 + 3 世界轴(AABB面法线) + 9 叉积轴
+            val candidateAxes = mutableListOf<Vector3d>()
+            candidateAxes.addAll(obbAxes)      // OBB面法线
+            candidateAxes.addAll(worldAxes)    // 世界轴（AABB面法线）
+
+            // 叉积轴（边-边碰撞检测）
+            for (obbAxis in obbAxes) {
+                for (worldAxis in worldAxes) {
+                    val cross = Vector3d()
+                    obbAxis.cross(worldAxis, cross)
+                    if (cross.lengthSquared() > 1e-7) {
+                        cross.normalize()
+                        candidateAxes.add(cross)
+                    }
+                }
+            }
+
+            for (axis in candidateAxes) {
+                // OBB在轴上的投影
+                val obbProjCenter = obbCenter.dot(axis)
+                val obbRadius = Math.abs(obbAxes[0].dot(axis)) * obbExtents.x +
+                        Math.abs(obbAxes[1].dot(axis)) * obbExtents.y +
+                        Math.abs(obbAxes[2].dot(axis)) * obbExtents.z
+                val obbMin = obbProjCenter - obbRadius
+                val obbMax = obbProjCenter + obbRadius
+
+                // AABB在轴上的投影（AABB是轴对齐的，投影半径可以优化计算）
+                val aabbProjCenter = aabbCenter.dot(axis)
+                val aabbRadius = Math.abs(axis.x) * aabbHalfExtents.x +
+                        Math.abs(axis.y) * aabbHalfExtents.y +
+                        Math.abs(axis.z) * aabbHalfExtents.z
+                val aabbMin = aabbProjCenter - aabbRadius
+                val aabbMax = aabbProjCenter + aabbRadius
+
+                // 检查分离
+                if (obbMax < aabbMin || aabbMax < obbMin) {
+                    return null  // 找到分离轴，无碰撞
+                }
+
+                // 计算重叠量：两个重叠方向中取较小者
+                val overlap1 = obbMax - aabbMin
+                val overlap2 = aabbMax - obbMin
+                val overlap = Math.min(overlap1, overlap2)
+
+                if (overlap < minOverlap) {
+                    minOverlap = overlap
+                    mtvAxis.set(axis)
+                    // overlap1 < overlap2 意味着obbMax离aabbMin更近，应沿-axis推出OBB
+                    pushNegative = overlap1 < overlap2
+                }
+            }
+
+            // 构建MTV：方向指向将OBB推出AABB的最小方向
+            if (pushNegative) {
+                mtvAxis.negate()
+            }
+            return Vector3d(mtvAxis).mul(minOverlap)
+        }
+
+        /**
          * 计算OBB上离待判定点最近的点
-         * 
+         *
          * @param point 待判定点
          * @param obb   OBB盒
          * @return 在OBB上离待判定点最近的点
@@ -388,6 +477,7 @@ data class OBB(
             var minDistanceSq = Double.MAX_VALUE
 
             for (obb in lookingEntity.getOBBs()) {
+                if (obb.part == Part.COLLISION) continue
                 // 使用精确的射线相交检测
                 val hitPos: Vec3? = rayIntersect(obb, eyePos, lookEnd)
 

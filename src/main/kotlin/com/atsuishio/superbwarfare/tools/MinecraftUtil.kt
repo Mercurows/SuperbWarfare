@@ -147,6 +147,8 @@ var ItemStack.tag
     }
 
 fun LivingEntity.hasEffect(effect: MobEffect) = hasEffect(Holder.direct(effect))
+val Entity.stepHeight get() = this.maxUpStep()
+fun Entity.setOnGroundWithKnownMovement(onGround: Boolean, movement: Vec3) = setOnGroundWithMovement(onGround, movement)
 val ItemStack.isEdible get() = this.get(DataComponents.FOOD) != null
 fun Player.getEntityReach() = entityInteractionRange()
 fun Player.getBlockReach() = blockInteractionRange()
