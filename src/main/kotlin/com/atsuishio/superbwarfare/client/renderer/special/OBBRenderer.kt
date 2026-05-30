@@ -36,6 +36,14 @@ object OBBRenderer {
                     halfExtents.x(), halfExtents.y(), halfExtents.z(),
                     1f, 0.8f, 0f, 1f
                 )
+            } else if (obb.part == OBB.Part.COLLISION) {
+                renderOBB(
+                    poseStack, buffer,
+                    center.x() - position.x(), center.y() - position.y(), center.z() - position.z(),
+                    rotation,
+                    halfExtents.x(), halfExtents.y(), halfExtents.z(),
+                    1f, 0f, 0f, 1f
+                )
             } else {
                 renderOBB(
                     poseStack, buffer,

@@ -32,6 +32,7 @@ public class EntityUtilMixin {
         if (entity instanceof OBBEntity obbEntity && !obbEntity.enableAABB()) {
             var obbList = obbEntity.getOBBs();
             for (var obb : obbList) {
+                if (obb.part == OBB.Part.COLLISION) continue;
                 Optional<Vector3d> optional = obb.clip(OBB.vec3ToVector3d(startVec), OBB.vec3ToVector3d(endVec));
                 if (optional.isPresent()) {
                     cir.setReturnValue(new EntityKineticBullet.EntityResult(entity, OBB.vector3dToVec3(optional.get()), false));

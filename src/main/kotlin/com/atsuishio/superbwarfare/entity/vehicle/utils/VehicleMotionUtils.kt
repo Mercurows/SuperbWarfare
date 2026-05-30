@@ -488,99 +488,138 @@ object VehicleMotionUtils {
     }
 
     fun terrainCompact(vehicle: VehicleEntity, positions: MutableList<Vec3>) {
-        if (vehicle.onGround()) {
-            val transform = vehicle.getWheelsTransform(1f)
-            for (vec3 in positions) {
-                val vector4d = transformPosition(transform, vec3.x, vec3.y - 0.02, vec3.z)
-                val p = Vec3(vector4d.x, vector4d.y, vector4d.z)
-                val level = vehicle.level()
-                val res = level.clip(
-                    ClipContext(
-                        p, p.add(0.0, -128.0, 0.0),
-                        ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, vehicle
-                    )
-                )
+        if (!vehicle.onGround()) {
+            if (vehicle.isInFluidType) { vehicle.xRot *= 0.9f; vehicle.setZRot(vehicle.roll * 0.9f) }
+            return
+        }
 
-                val heightY: Double
+        val level = vehicle.level()
+        val transform = vehicle.getWheelsTransform(1f)
 
-                var blockPos = BlockPos.containing(p)
-                val blockPosUp = BlockPos.containing(p.add(0.0, 1.0, 0.0))
-                if (level.getBlockState(blockPosUp).canOcclude()) {
-                    blockPos = blockPosUp
+        // 地形采样点：OBB底面3×3网格（替代预设轮位）
+        val obb = vehicle.getCollisionOBB()
+        val samplePoints = mutableListOf<Vec3>()
+        if (obb != null) {
+            val hx = obb.extents.x; val hz = obb.extents.z; val hy = obb.extents.y
+            val grid = 4  // 3×3网格
+            for (ix in 0 until grid) {
+                for (iz in 0 until grid) {
+                    val lx = -hx + 2.0 * hx * ix / (grid - 1)
+                    val lz = -hz + 2.0 * hz * iz / (grid - 1)
+                    samplePoints.add(Vec3(lx, -hy, lz))
                 }
-                val state = level.getBlockState(blockPos)
-                val shape = state.getCollisionShape(level, blockPos)
-
-                if (vehicle.level().isClientSide && vehicle.deltaMovement.horizontalDistanceSqr() > 0.01) {
-                    if (state.`is`(BlockTags.SAND) || state.`is`(BlockTags.SNOW)) {
-                        val model = Minecraft.getInstance().modelManager.blockModelShaper.getBlockModel(state)
-                        val sprite = model.particleIcon
-                        val color = SpritePixelHelper.getRandomPixelRGB(sprite, 0)
-                        val speed = Math.min(vehicle.deltaMovement.length(), 0.5).toFloat()
-
-                        val particleOption = CustomCloudOption(color, 70, 1f + 7f * speed + Math.random().toFloat() * 2, Math.random().toFloat() * -0.12f, false, false)
-                        vehicle.addRandomParticle(particleOption, p.add(0.0, 0.2, 0.0).subtract(vehicle.deltaMovement.scale(1.5)), speed, vehicle.level(), 1, vehicle.deltaMovement.scale(60.0))
-                    } else {
-                        val particleData = BlockParticleOption(ParticleTypes.BLOCK, state)
-                        vehicle.addRandomParticle(particleData, p.add(0.0, 0.1, 0.0), 0.2f, vehicle.level(), 0f, 1)
-
-                        if (vehicle.engineInfo is EngineInfo.Track && vehicle.drift() && vehicle.deltaMovement.horizontalDistanceSqr() > 0.0004 && state.`is`(BlockTags.MINEABLE_WITH_PICKAXE)) {
-                            vehicle.addRandomParticle(ModParticleTypes.FIRE_STAR.get(), p.add(0.0, 0.1, 0.0), 0.25f, vehicle.level(), 0.08f, 1)
-                        }
-                    }
-                }
-
-                heightY = if (!shape.isEmpty) {
-                    p.y - (shape.max(Direction.Axis.Y) + blockPos.y)
-                } else if (res.type == HitResult.Type.BLOCK && level.noCollision(AABB(p, p))) {
-                    Mth.clamp(p.y - res.location.y, 0.0, 20.0)
-                } else {
-                    0.0
-                }
-
-                updateTerrainCompact(vehicle, p, heightY)
             }
-        } else if (vehicle.isInFluidType) {
-            vehicle.xRot *= 0.9f
-            vehicle.setZRot(vehicle.roll * 0.9f)
+        }
+        // 回退：无OBB时用预设轮位
+        if (samplePoints.isEmpty()) samplePoints.addAll(positions)
+
+        for (vec3 in samplePoints) {
+            val vector4d = transformPosition(transform, vec3.x, vec3.y - 0.02, vec3.z)
+            val p = Vec3(vector4d.x, vector4d.y, vector4d.z)
+            val res = level.clip(ClipContext(p, p.add(0.0, -128.0, 0.0), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, vehicle))
+            var blockPos = BlockPos.containing(p)
+            val blockPosUp = BlockPos.containing(p.add(0.0, 1.0, 0.0))
+            if (level.getBlockState(blockPosUp).canOcclude()) blockPos = blockPosUp
+            val state = level.getBlockState(blockPos)
+            val shape = state.getCollisionShape(level, blockPos)
+            val heightY = if (!shape.isEmpty) p.y - (shape.max(Direction.Axis.Y) + blockPos.y)
+                else if (res.type == HitResult.Type.BLOCK && level.noCollision(AABB(p, p))) (p.y - res.location.y).coerceIn(0.0, 20.0)
+                else 0.0
+            updateTerrainCompact(vehicle, p, heightY)
+        }
+
+        // 粒子特效：使用预设轮位
+        if (level.isClientSide && vehicle.deltaMovement.horizontalDistanceSqr() > 0.01) {
+            for (vec3 in positions) {
+                val v = transformPosition(transform, vec3.x, vec3.y - 0.02, vec3.z)
+                val p = Vec3(v.x, v.y, v.z)
+                val blockPos = BlockPos.containing(p)
+                val state = level.getBlockState(blockPos)
+                if (state.isAir) continue
+                if (state.`is`(BlockTags.SAND) || state.`is`(BlockTags.SNOW)) {
+                    val model = Minecraft.getInstance().modelManager.blockModelShaper.getBlockModel(state)
+                    val sprite = model.particleIcon
+                    val color = SpritePixelHelper.getRandomPixelRGB(sprite, 0)
+                    val speed = Math.min(vehicle.deltaMovement.length(), 0.5).toFloat()
+                    vehicle.addRandomParticle(CustomCloudOption(color, 70, 1f + 7f * speed + Math.random().toFloat() * 2, Math.random().toFloat() * -0.12f, false, false), p.add(0.0, 0.2, 0.0).subtract(vehicle.deltaMovement.scale(1.5)), speed, level, 1, vehicle.deltaMovement.scale(60.0))
+                } else {
+                    vehicle.addRandomParticle(BlockParticleOption(ParticleTypes.BLOCK, state), p.add(0.0, 0.1, 0.0), 0.2f, level, 0f, 1)
+                    if (vehicle.engineInfo is EngineInfo.Track && vehicle.drift() && vehicle.deltaMovement.horizontalDistanceSqr() > 0.0004 && state.`is`(BlockTags.MINEABLE_WITH_PICKAXE))
+                        vehicle.addRandomParticle(ModParticleTypes.FIRE_STAR.get(), p.add(0.0, 0.1, 0.0), 0.25f, level, 0.08f, 1)
+                }
+            }
         }
     }
 
     fun updateTerrainCompact(entity: VehicleEntity, landingTarget: Vec3, heightY: Double) {
         var currentPos = entity.position()
-        val aabb = entity.boundingBox
-        val aabb1 = AABB(aabb.minX, aabb.minY - 1.0E-6, aabb.minZ, aabb.maxX, aabb.minY, aabb.maxZ)
-        val optional = entity.level().findSupportingBlock(entity, aabb1)
-        if (optional.isPresent) {
-            currentPos = currentPos.add(currentPos.vectorTo(optional.get().center).scale(0.6))
+        // 直接从轮位点向下射线找支撑面，避免OBB顶点跳跃导致抽搐
+        val obb = entity.getCollisionOBB()
+        if (obb != null) {
+            val res = entity.level().clip(ClipContext(
+                Vec3(landingTarget.x, landingTarget.y + 0.3, landingTarget.z),
+                Vec3(landingTarget.x, landingTarget.y - 2.0, landingTarget.z),
+                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity))
+            if (res.type == HitResult.Type.BLOCK) {
+                currentPos = currentPos.add(currentPos.vectorTo(res.location).scale(0.6))
+            }
+        } else {
+            val aabb = entity.boundingBox
+            val aabb1 = AABB(aabb.minX, aabb.minY - 1.0E-6, aabb.minZ, aabb.maxX, aabb.minY, aabb.maxZ)
+            val optional = entity.level().findSupportingBlock(entity, aabb1)
+            if (optional.isPresent) {
+                currentPos = currentPos.add(currentPos.vectorTo(optional.get().center).scale(0.6))
+            }
         }
-        val horizontalOffset = Vec3(
-            landingTarget.x - currentPos.x,
-            0.0,
-            landingTarget.z - currentPos.z
-        )
-
+        val horizontalOffset = Vec3(landingTarget.x - currentPos.x, 0.0, landingTarget.z - currentPos.z)
         val horizontalDistance = horizontalOffset.length()
         val horizontalDirection = if (horizontalDistance > 0) horizontalOffset.normalize() else Vec3.ZERO
-
-
-        val tiltSmoothingFactor = 0.01f
-
-        val targetTilt =
-            Math.min(heightY * 9 * entity.data().compute().terrainCompatRotateRate * horizontalDistance, 45.0).toFloat()
-
+        val tiltSmoothingFactor = 0.007f
+        val targetTilt = Math.min(heightY * 36 * entity.data().compute().terrainCompatRotateRate * horizontalDistance, 45.0).toFloat()
         val yawRad = Math.toRadians(-entity.yRot)
         val localDirection = Vec3(
             horizontalDirection.x * Math.cos(yawRad) - horizontalDirection.z * Math.sin(yawRad),
             0.0,
             horizontalDirection.x * Math.sin(yawRad) + horizontalDirection.z * Math.cos(yawRad)
         )
-
         val targetXRot = (-localDirection.z * targetTilt).toFloat()
         val targetZRot = (localDirection.x * targetTilt).toFloat()
-
         entity.xRot = lerpAngle(entity.xRot, -targetXRot, tiltSmoothingFactor)
         entity.setZRot(lerpAngle(entity.roll, -targetZRot, tiltSmoothingFactor))
+    }
+
+    /**
+     * 检查载具的任意OBB是否接触地面
+     * 将每个OBB向下偏移微小距离后检测与方块的碰撞
+     *
+     * @param vehicle 载具
+     * @return 是否有OBB接触地面
+     */
+    fun checkObbOnGround(vehicle: VehicleEntity): Boolean {
+        val obb = vehicle.getCollisionOBB() ?: return vehicle.onGround()
+
+        val testObb = obb.move(Vec3(0.0, -0.02, 0.0))
+        val axes = testObb.getAxes()
+        val ext = testObb.extents
+        val halfX = Math.abs(axes[0].x) * ext.x + Math.abs(axes[1].x) * ext.y + Math.abs(axes[2].x) * ext.z
+        val halfY = Math.abs(axes[0].y) * ext.x + Math.abs(axes[1].y) * ext.y + Math.abs(axes[2].y) * ext.z
+        val halfZ = Math.abs(axes[0].z) * ext.x + Math.abs(axes[1].z) * ext.y + Math.abs(axes[2].z) * ext.z
+        val searchAABB = AABB(
+            testObb.center.x - halfX - 0.1, testObb.center.y - halfY - 0.1, testObb.center.z - halfZ - 0.1,
+            testObb.center.x + halfX + 0.1, testObb.center.y + halfY + 0.1, testObb.center.z + halfZ + 0.1
+        )
+        for (pos in BlockPos.betweenClosedStream(searchAABB)) {
+            val state = vehicle.level().getBlockState(pos)
+            if (state.isAir) continue
+            val shape = state.getCollisionShape(vehicle.level(), pos)
+            if (shape.isEmpty) continue
+            for (aabb in shape.toAabbs()) {
+                if (OBB.isColliding(testObb, aabb.move(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble()))) {
+                    return true
+                }
+            }
+        }
+        return false
     }
 
     fun getWheelsTransform(vehicle: VehicleEntity, partialTicks: Float): Matrix4d {
@@ -592,5 +631,193 @@ object VehicleMotionUtils {
         )
         transform.rotate(Axis.YP.rotationDegrees(-Mth.lerp(partialTicks, vehicle.yRotO, vehicle.yRot)))
         return transform
+    }
+
+    /**
+     * 使用OBB进行载具与世界（方块+实体）的碰撞检测与解决
+     * 当载具使用OBB碰撞箱时，替代原版的AABB碰撞
+     *
+     * @param vehicle  载具
+     * @param movement 预期移动向量
+     * @return 经过碰撞修正后的实际移动向量
+     */
+    fun resolveObbWorldCollision(vehicle: VehicleEntity, movement: Vec3, allowStepUp: Boolean = true): Vec3 {
+        // 更新OBB位置
+        vehicle.updateOBB()
+
+        // 没有COLLISION OBB → 回退原版AABB
+        val collisionObb = vehicle.getCollisionOBB()
+        if (collisionObb == null) {
+            val aabb = vehicle.boundingBox
+            val list = vehicle.level().getEntityCollisions(vehicle, aabb.expandTowards(movement))
+            return Entity.collideBoundingBox(vehicle, movement, aabb, vehicle.level(), list)
+        }
+
+        return resolveObbWorldCollision(vehicle, movement, listOf(collisionObb), allowStepUp)
+    }
+
+    /**
+     * 使用显式OBB列表进行碰撞解决（用于步进检测等需要偏移OBB的场景）
+     *
+     * @param vehicle  载具
+     * @param movement 预期移动向量
+     * @param obbs     预先计算好的OBB列表（可以是偏移后的副本）
+     * @return 经过碰撞修正后的实际移动向量
+     */
+    fun resolveObbWorldCollision(vehicle: VehicleEntity, movement: Vec3, obbs: List<OBB>, allowStepUp: Boolean = true): Vec3 {
+        if (movement.lengthSqr() < 1e-7) return movement
+        if (obbs.isEmpty()) return Entity.collideBoundingBox(vehicle, movement, vehicle.boundingBox, vehicle.level(),
+            vehicle.level().getEntityCollisions(vehicle, vehicle.boundingBox.expandTowards(movement)))
+
+        // 从OBB列表计算搜索用AABB
+        val combinedMin = Vector3d(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE)
+        val combinedMax = Vector3d(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE)
+        for (obb in obbs) {
+            val vertices = obb.getVertices()
+            for (vertex in vertices) {
+                combinedMin.x = Math.min(combinedMin.x, vertex.x)
+                combinedMin.y = Math.min(combinedMin.y, vertex.y)
+                combinedMin.z = Math.min(combinedMin.z, vertex.z)
+                combinedMax.x = Math.max(combinedMax.x, vertex.x)
+                combinedMax.y = Math.max(combinedMax.y, vertex.y)
+                combinedMax.z = Math.max(combinedMax.z, vertex.z)
+            }
+        }
+        val searchAABB = AABB(OBB.vector3dToVec3(combinedMin), OBB.vector3dToVec3(combinedMax))
+            .expandTowards(movement)
+            .inflate(0.5)
+            .expandTowards(0.0, vehicle.stepHeight.toDouble() + 0.5, 0.0)
+
+        // 收集方块碰撞AABB
+        val allAabbs = mutableListOf<AABB>()
+        for (shape in vehicle.level().getBlockCollisions(vehicle, searchAABB)) {
+            for (aabb in shape.toAabbs()) {
+                allAabbs.add(aabb)
+            }
+        }
+
+        // 收集实体碰撞AABB
+        for (shape in vehicle.level().getEntityCollisions(vehicle, searchAABB)) {
+            for (aabb in shape.toAabbs()) {
+                allAabbs.add(aabb)
+            }
+        }
+
+        if (allAabbs.isEmpty()) return movement
+
+        // 迭代碰撞解决（最多3次迭代）
+        // 关键：每轮迭代只取穿透最深的那个碰撞进行修正，避免多个OBB
+        // 同时接触同一方块时产生的修正被重复累加导致弹跳
+        var resultMovement = movement
+        val maxIterations = 3
+
+        for (iter in 0 until maxIterations) {
+            var deepestVertMag = 0.0
+            var bestVertX = 0.0; var bestVertY = 0.0; var bestVertZ = 0.0
+            var deepestHorizMag = 0.0
+            var bestHorizX = 0.0; var bestHorizY = 0.0; var bestHorizZ = 0.0
+
+            for (obb in obbs) {
+                // 将OBB移动到预期位置
+                val movedObb = obb.move(
+                    Vec3(resultMovement.x, resultMovement.y, resultMovement.z)
+                )
+
+                // 获取OBB轴用于计算紧致包围AABB（粗过滤）
+                val axes = movedObb.getAxes()
+                val ext = movedObb.extents
+
+                val obbHalfX = Math.abs(axes[0].x) * ext.x + Math.abs(axes[1].x) * ext.y + Math.abs(axes[2].x) * ext.z
+                val obbHalfY = Math.abs(axes[0].y) * ext.x + Math.abs(axes[1].y) * ext.y + Math.abs(axes[2].y) * ext.z
+                val obbHalfZ = Math.abs(axes[0].z) * ext.x + Math.abs(axes[1].z) * ext.y + Math.abs(axes[2].z) * ext.z
+
+                val obbEnclosingAABB = AABB(
+                    movedObb.center.x - obbHalfX,
+                    movedObb.center.y - obbHalfY,
+                    movedObb.center.z - obbHalfZ,
+                    movedObb.center.x + obbHalfX,
+                    movedObb.center.y + obbHalfY,
+                    movedObb.center.z + obbHalfZ
+                )
+
+                for (aabb in allAabbs) {
+                    // 粗过滤：包围AABB不相交则跳过SAT
+                    if (!obbEnclosingAABB.intersects(aabb)) continue
+
+                    val mtv = OBB.computeObbAabbMtv(movedObb, aabb) ?: continue
+
+                    // MTV长度（穿透深度）
+                    val mtvLen = Math.sqrt(mtv.x * mtv.x + mtv.y * mtv.y + mtv.z * mtv.z)
+                    if (mtvLen < 1e-7) continue
+
+                    // MTV单位方向
+                    val dirX = mtv.x / mtvLen
+                    val dirY = mtv.y / mtvLen
+                    val dirZ = mtv.z / mtvLen
+
+                    // 计算当前移动向量在MTV方向上的投影
+                    // 负值表示移动方向与推出方向相反（正在进入碰撞）
+                    val movDotMtv = resultMovement.x * dirX + resultMovement.y * dirY + resultMovement.z * dirZ
+
+                    var thisCorrectionX = 0.0
+                    var thisCorrectionY = 0.0
+                    var thisCorrectionZ = 0.0
+                    var isVertical = false
+
+                    if (movDotMtv < 0.0) {
+                        val isGroundCollision = Math.abs(dirY) > 0.9
+
+                        val obbBottomY = movedObb.center.y - obbHalfY
+                        val singleBlockHeight = aabb.maxY - obbBottomY
+                        val stepHeight = vehicle.stepHeight.toDouble()
+                        val isStepUpCandidate = allowStepUp && !isGroundCollision
+                                && singleBlockHeight > 0.0 && singleBlockHeight <= stepHeight
+
+                        if (isStepUpCandidate) {
+                            var totalObstacleTop = aabb.maxY
+                            for (otherAabb in allAabbs) {
+                                if (otherAabb.minY >= aabb.maxY - 0.05
+                                    && otherAabb.maxX > aabb.minX && otherAabb.minX < aabb.maxX
+                                    && otherAabb.maxZ > aabb.minZ && otherAabb.minZ < aabb.maxZ)
+                                    totalObstacleTop = Math.max(totalObstacleTop, otherAabb.maxY)
+                            }
+                            val totalObstacleHeight = totalObstacleTop - obbBottomY
+                            if (totalObstacleHeight <= stepHeight + 0.01) {
+                                thisCorrectionY = totalObstacleHeight + 0.011
+                                isVertical = true
+                            } else {
+                                // 过高障碍：硬停止 + 穿透推出
+                                thisCorrectionX = -movDotMtv * dirX; thisCorrectionZ = -movDotMtv * dirZ
+                                if (mtvLen > 0.1) { val po = (mtvLen - 0.1) * 0.5; thisCorrectionX += dirX * po; thisCorrectionZ += dirZ * po }
+                            }
+                        } else if (isGroundCollision) {
+                            thisCorrectionY = -movDotMtv * dirY
+                            isVertical = true
+                        } else {
+                            // 墙壁碰撞：硬停止 + 穿透推出
+                            thisCorrectionX = -movDotMtv * dirX; thisCorrectionZ = -movDotMtv * dirZ
+                            if (mtvLen > 0.1) { val po = (mtvLen - 0.1) * 0.5; thisCorrectionX += dirX * po; thisCorrectionZ += dirZ * po }
+                        }
+                    }
+
+                    // 垂直/水平独立追踪最深穿透
+                    if (isVertical && mtvLen > deepestVertMag) {
+                        deepestVertMag = mtvLen; bestVertX = thisCorrectionX; bestVertY = thisCorrectionY; bestVertZ = thisCorrectionZ
+                    } else if (!isVertical && mtvLen > deepestHorizMag) {
+                        deepestHorizMag = mtvLen; bestHorizX = thisCorrectionX; bestHorizY = thisCorrectionY; bestHorizZ = thisCorrectionZ
+                    }
+                }
+            }
+
+            if (deepestVertMag == 0.0 && deepestHorizMag == 0.0) break
+
+            resultMovement = Vec3(
+                resultMovement.x + bestVertX + bestHorizX,
+                resultMovement.y + bestVertY + bestHorizY,
+                resultMovement.z + bestVertZ + bestHorizZ
+            )
+        }
+
+        return resultMovement
     }
 }
