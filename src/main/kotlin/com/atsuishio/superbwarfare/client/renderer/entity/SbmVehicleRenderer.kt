@@ -138,7 +138,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         this.rotateVehicleAxis(entity, poseStack, yaw, partialTick)
         poseStack.scale(renderScale(), renderScale(), renderScale())
 
-        if (entity.getAnimationInstance() != null) {
+        if (entity.getAnimationInstance() != null && lodLevel <= 0) {
             val ani = entity.getAnimationInstance()!!
             ani.context.partialTick = partialTick
             ani.tick()
