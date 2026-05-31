@@ -174,6 +174,7 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
             if (entity is VehicleEntity) {
                 causeExplode(result.location)
                 this.discard()
+                return
             }
 
             if (type == Type.AP) {
@@ -192,6 +193,11 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
                             )
                             if (target is LivingEntity) {
                                 target.invulnerableTime = 0
+                            }
+                            if (target is VehicleEntity) {
+                                causeExplode(target.boundingBox.center)
+                                this.discard()
+                                return
                             }
                         }
                     }

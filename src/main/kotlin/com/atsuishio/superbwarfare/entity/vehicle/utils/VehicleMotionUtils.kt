@@ -492,25 +492,28 @@ object VehicleMotionUtils {
             return
         }
 
+        var currentPos = vehicle.position()
         val level = vehicle.level()
         val transform = vehicle.getWheelsTransform(1f)
 
-        // 地形采样点：OBB底面3×3网格（替代预设轮位）
+        // 地形采样点：OBB底面2×n网格，2列（左右边缘）+ n排（前后分布）
         val obb = vehicle.getCollisionOBB()
         val samplePoints = mutableListOf<Vec3>()
         if (obb != null) {
-            val hx = obb.extents.x
-            val hz = obb.extents.z
+            val hx = obb.extents.x;
+            val hz = obb.extents.z;
             val hy = obb.extents.y
-            val grid = 4  // 3×3网格
-            for (ix in 0 until grid) {
-                for (iz in 0 until grid) {
-                    val lx = -hx + 2.0 * hx * ix / (grid - 1)
-                    val lz = -hz + 2.0 * hz * iz / (grid - 1)
+            val cols = 2       // 固定2列：左(-hx) 右(+hx)
+            val rows = 6       // n排：沿z轴前->后分布
+            for (ci in 0 until cols) {
+                for (ri in 0 until rows) {
+                    val lx = -hx + 2.0 * hx * ci / (cols - 1)
+                    val lz = -hz + 2.0 * hz * ri / (rows - 1)
                     samplePoints.add(Vec3(lx, -hy, lz))
                 }
             }
         }
+
         // 回退：无OBB时用预设轮位
         if (samplePoints.isEmpty()) samplePoints.addAll(positions)
 
@@ -596,33 +599,23 @@ object VehicleMotionUtils {
 
     fun updateTerrainCompact(entity: VehicleEntity, landingTarget: Vec3, heightY: Double) {
         var currentPos = entity.position()
-        // 直接从轮位点向下射线找支撑面，避免OBB顶点跳跃导致抽搐
-        val obb = entity.getCollisionOBB()
-        if (obb != null) {
-            val res = entity.level().clip(
-                ClipContext(
-                    Vec3(landingTarget.x, landingTarget.y + 0.3, landingTarget.z),
-                    Vec3(landingTarget.x, landingTarget.y - 2.0, landingTarget.z),
-                    ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity
-                )
-            )
-            if (res.type == HitResult.Type.BLOCK) {
-                currentPos = currentPos.add(currentPos.vectorTo(res.location).scale(0.6))
-            }
-        } else {
-            val aabb = entity.boundingBox
-            val aabb1 = AABB(aabb.minX, aabb.minY - 1.0E-6, aabb.minZ, aabb.maxX, aabb.minY, aabb.maxZ)
-            val optional = entity.level().findSupportingBlock(entity, aabb1)
-            if (optional.isPresent) {
-                currentPos = currentPos.add(currentPos.vectorTo(optional.get().center).scale(0.6))
-            }
+
+        var aabb = entity.boundingBox
+        if (entity.getCollisionOBB() != null) {
+            aabb = calculateCombinedAABBOptimized(entity)
         }
+        val aabb1 = AABB(aabb.minX, aabb.minY - 1.0E-6, aabb.minZ, aabb.maxX, aabb.minY, aabb.maxZ)
+        val optional = entity.level().findSupportingBlock(entity, aabb1)
+        if (optional.isPresent) {
+            currentPos = currentPos.add(currentPos.vectorTo(optional.get().center).scale(0.6))
+        }
+
         val horizontalOffset = Vec3(landingTarget.x - currentPos.x, 0.0, landingTarget.z - currentPos.z)
         val horizontalDistance = horizontalOffset.length()
         val horizontalDirection = if (horizontalDistance > 0) horizontalOffset.normalize() else Vec3.ZERO
         val tiltSmoothingFactor = 0.007f
         val targetTilt =
-            Math.min(heightY * 36 * entity.data().compute().terrainCompatRotateRate * horizontalDistance, 45.0)
+            Math.min(heightY * 20 * entity.data().compute().terrainCompatRotateRate * horizontalDistance, 45.0)
                 .toFloat()
         val yawRad = Math.toRadians(-entity.yRot)
         val localDirection = Vec3(
