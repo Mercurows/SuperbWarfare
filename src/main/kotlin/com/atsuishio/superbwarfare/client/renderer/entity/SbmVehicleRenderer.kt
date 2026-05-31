@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
 import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes
 import com.atsuishio.superbwarfare.client.renderer.SmartTextureBrightener
 import com.atsuishio.superbwarfare.client.renderer.TextureBrightnessHandler
+import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.vehicle.subdata.SeatInfo
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType
@@ -14,6 +15,7 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.resource.model.VehicleLODModelReloadListener
 import com.atsuishio.superbwarfare.resource.model.VehicleModelReloadListener
 import com.atsuishio.superbwarfare.tools.RenderDistanceHelper
+import com.atsuishio.superbwarfare.tools.SpritePixelHelper
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
 import com.maydaymemory.mae.basic.ArrayPoseBuilder
@@ -155,6 +157,12 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             waterMask.visible = false
         }
 
+        val dogTagBones = model.dogTagBones
+        val dogTagFlag = dogTagBones.isNotEmpty()
+        if (dogTagFlag) {
+            dogTagBones.forEach { it.visible = false }
+        }
+
         model.renderToBuffer(
             poseStack,
             buffer,
@@ -217,42 +225,39 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
 
         }
 
-        // TODO 自定义图章
-//        val name = bone.name
-//        if (name.endsWith("_dogTag")) {
-//            bone.isHidden = true
-//            val list = animatable.dogTagIcon
-//            val flag = list.all { row -> row.all { it == (-1).toShort() } }
-//            if (DisplayConfig.DOG_TAG_ICON_VISIBLE.get() && !flag) {
-//                poseStack.pushPose()
-//                RenderUtils.translateMatrixToBone(poseStack, bone)
-//                RenderUtils.translateToPivotPoint(poseStack, bone)
-//                rotateMatrixAroundBone(poseStack, bone)
-//                RenderUtils.scaleMatrixForBone(poseStack, bone)
-//                RenderUtils.translateAwayFromPivotPoint(poseStack, bone)
-//                poseStack.translate(bone.pivotX / 16, bone.pivotY / 16, bone.pivotZ / 16)
-//                poseStack.mulPose(Axis.YP.rotationDegrees(180f))
-//                poseStack.mulPose(Axis.XP.rotationDegrees(90f))
-//
-//                val pose = poseStack.last()
-//                val lastMatrix = pose.pose()
-//                val lastMatrix3f = pose.normal()
-//                val vertexConsumer =
-//                    bufferSource.getBuffer(RenderType.entityCutoutNoCull(SpritePixelHelper.getDogTagIcon(list, animatable.uuid.toString())))
-//
-//                val scale = bone.cubes[0].size
-//                val xSize = scale.x.toFloat() / 16
-//                val ySize = scale.y.toFloat() / 16
-//
-//                vertex(vertexConsumer, lastMatrix, lastMatrix3f, packedLight, -0.5f * xSize, -0.5f * ySize, 0, 1)
-//                vertex(vertexConsumer, lastMatrix, lastMatrix3f, packedLight, 0.5f * xSize, -0.5f * ySize, 1, 1)
-//                vertex(vertexConsumer, lastMatrix, lastMatrix3f, packedLight, 0.5f * xSize, 0.5f * ySize, 1, 0)
-//                vertex(vertexConsumer, lastMatrix, lastMatrix3f, packedLight, -0.5f * xSize, 0.5f * ySize, 0, 0)
-//                poseStack.popPose()
-//
-//                bufferSource.getBuffer(RenderType.entityTranslucent(getTextureLocation(animatable)))
-//            }
-//        }
+        // 自定义图章
+        if (dogTagFlag) {
+            val list = entity.dogTagIcon
+            val flag = list.all { row -> row.all { it == (-1).toShort() } }
+            if (DisplayConfig.DOG_TAG_ICON_VISIBLE.get() && !flag) {
+                val dogTagTexture = SpritePixelHelper.getDogTagIcon(list, entity.uuid.toString())
+
+                for (bone in dogTagBones) {
+                    poseStack.pushPose()
+                    poseStack.mulPoseMatrix(bone.getGlobalTransform())
+                    poseStack.mulPose(Axis.YP.rotationDegrees(180f))
+                    poseStack.mulPose(Axis.XP.rotationDegrees(90f))
+
+                    val pose = poseStack.last()
+                    val lastMatrix = pose.pose()
+                    val lastMatrix3f = pose.normal()
+                    val vertexConsumer =
+                        buffer.getBuffer(RenderType.entityCutoutNoCull(dogTagTexture))
+
+                    val cube = bone.cubes.firstOrNull()
+                    val xSize = cube?.width() ?: 1f
+                    val ySize = cube?.height() ?: 1f
+
+                    vertex(vertexConsumer, lastMatrix, lastMatrix3f, packedLight, -0.5f * xSize, -0.5f * ySize, 0, 1)
+                    vertex(vertexConsumer, lastMatrix, lastMatrix3f, packedLight, 0.5f * xSize, -0.5f * ySize, 1, 1)
+                    vertex(vertexConsumer, lastMatrix, lastMatrix3f, packedLight, 0.5f * xSize, 0.5f * ySize, 1, 0)
+                    vertex(vertexConsumer, lastMatrix, lastMatrix3f, packedLight, -0.5f * xSize, 0.5f * ySize, 0, 0)
+                    poseStack.popPose()
+                }
+
+                buffer.getBuffer(RenderType.entityTranslucent(getTextureLocation(entity)))
+            }
+        }
 
         this.renderCustomPart(entity, model, poseStack, yaw, partialTick, buffer, packedLight)
 
