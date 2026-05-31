@@ -181,8 +181,9 @@ open class MediumRocketEntity : FastThrowableProjectile, BasicGeoProjectileEntit
             }
 
             if (entity is VehicleEntity) {
-                causeExplode(result.getLocation())
+                causeExplode(result.location)
                 this.discard()
+                return
             }
 
             if (type == Type.AP) {
@@ -201,6 +202,11 @@ open class MediumRocketEntity : FastThrowableProjectile, BasicGeoProjectileEntit
                             )
                             if (target is LivingEntity) {
                                 target.invulnerableTime = 0
+                            }
+                            if (target is VehicleEntity) {
+                                causeExplode(target.boundingBox.center)
+                                this.discard()
+                                return
                             }
                         }
                     }
