@@ -4538,13 +4538,6 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
     open val vehicleType: VehicleType?
         get() = computed().type
 
-    /**
-     * @author YWZJ Ranpoes
-     */
-    open fun support(entity: Entity) {
-        VehicleMotionUtils.support(this, entity)
-    }
-
     open val isAmphibious: Boolean
         get() = VehicleMiscUtils.isAmphibious(this)
 

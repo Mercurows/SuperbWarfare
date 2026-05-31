@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo
 import com.atsuishio.superbwarfare.entity.living.TargetEntity
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity
 import com.atsuishio.superbwarfare.entity.vehicle.TurretWreckEntity
-import com.atsuishio.superbwarfare.entity.vehicle.Type63Entity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.lerpAngle
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.transformPosition
@@ -19,7 +18,6 @@ import net.minecraft.core.Direction
 import net.minecraft.core.particles.BlockParticleOption
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.server.level.ServerLevel
 import net.minecraft.tags.BlockTags
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
@@ -78,134 +76,184 @@ object VehicleMotionUtils {
     }
 
     /**
-     * 支撑自身范围内的实体
+     * 实体与OBB碰撞箱载具的碰撞交互
+     *
+     * 基于SAT(分离轴定理)计算OBB与实体AABB之间的MTV(最小平移向量)，
+     * 根据MTV方向区分碰撞类型并施加对应的碰撞响应：
+     * - 实体在OBB上方 → 支撑站在表面，跟随载具移动
+     * - 实体在OBB侧面/下方 → 推出OBB + 动量传递
      *
      * @param vehicle 载具
      */
     fun supportEntities(vehicle: VehicleEntity) {
         if (vehicle.isRemoved) return
-        if (vehicle.enableAABB() || vehicle is Type63Entity) {
-            return
+        if (vehicle.enableAABB()) return
+
+        val searchBox = calculateCombinedAABBOptimized(vehicle).inflate(0.5)
+        val entities = vehicle.level().getEntities(
+            EntityTypeTest.forClass(Entity::class.java), searchBox
+        ) { entity ->
+            entity !== vehicle && entity !== vehicle.getFirstPassenger() && entity.vehicle == null
         }
 
-        val frontBox = calculateCombinedAABBOptimized(vehicle).inflate(1.0)
-        val entities = vehicle.level().getEntities(
-            EntityTypeTest.forClass(Entity::class.java), frontBox
-        ) { entity -> entity !== vehicle && entity !== vehicle.getFirstPassenger() && entity!!.vehicle == null }
-            .stream().filter { entity ->
-                if (entity!!.isAlive && vehicle.isInObb(entity, vehicle.deltaMovement)) {
-                    val type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.type)
-                    return@filter (entity is VehicleEntity || entity is Boat || entity is Minecart || (entity is TurretWreckEntity && entity.tickCount > 5) || (entity is LivingEntity && !(entity is Player && entity.isSpectator))) || VehicleConfig.COLLISION_ENTITY_WHITELIST.get()
-                        .contains(type.toString())
-                }
-                false
-            }
-            .toList()
+        for (entity in entities) {
+            if (!entity.isAlive) continue
+            if (entity is Player && entity.isSpectator) continue
 
-        entities.forEach { e ->
-            if (e is Player && vehicle.level().isClientSide) {
-                vehicle.support(e)
-            } else if (!vehicle.level().isClientSide) {
-                vehicle.support(e)
+            // 玩家：客户端和服务端都处理（客户端保证响应，服务端保证权威位置不被拉回）
+            // 非玩家：仅服务端处理
+            if (entity is Player) {
+                handleEntityObbCollision(vehicle, entity)
+            } else {
+                if (!vehicle.level().isClientSide) handleEntityObbCollision(vehicle, entity)
             }
         }
     }
 
     /**
-     * 支撑某一个实体
+     * 处理单个实体与载具OBB之间的碰撞交互
      *
-     * @param vehicle 载具
-     * @author YWZJ Ranpoes
+     * 关键：位置修正和速度修正分离，防止deltaMovement被加两次。
+     * entity.move() 自己会加上deltaMovement，我们不能再加一次。
+     *
+     * - 阶段A：当前帧已陷入OBB → 从当前位置沿MTV推出（纯位置修正，不含deltaMovement）
+     * - 阶段B：deltaMovement会导致穿入 → 只截速度不调位置（交给entity.move()处理）
      */
-    fun support(vehicle: VehicleEntity, entity: Entity) {
+    private fun handleEntityObbCollision(vehicle: VehicleEntity, entity: Entity) {
         if (entity is DroneEntity) return
-
         if (vehicle.enableAABB()) return
-        if (entity.noPhysics || vehicle.noPhysics) {
-            return
-        }
+        if (entity.noPhysics || vehicle.noPhysics) return
 
         if (entity is TurretWreckEntity) {
             entity.supportByVehicle = true
         }
 
-        val feetPos = entity.position().subtract(Vec3(0.0, 0.1, 0.0))
-        val lowPos = feetPos.add(0.0, (entity.eyeHeight / 4).toDouble(), 0.0)
-        val midPos = feetPos.add(0.0, (entity.eyeHeight / 2).toDouble(), 0.0)
-        val eyePos = feetPos.add(0.0, entity.eyeHeight.toDouble(), 0.0)
+        val vehicleDx = vehicle.x - vehicle.xo
+        val vehicleDz = vehicle.z - vehicle.zo
+        val movement = entity.deltaMovement
+        val minPenetration = 0.01
 
-        for (obb in vehicle.getOBBs()) {
-            if (obb.contains(feetPos)) {
-                if (!entity.noPhysics && !vehicle.noPhysics) {
-                    val gravity = Math.max(entity.deltaMovement.y, 0.0)
-                    if (gravity == 0.0) {
-                        entity.setOnGround(true)
-                    }
-                    val depth = obb.getEmbeddingDepth(feetPos)
-                    entity.deltaMovement =
-                        vehicle.deltaMovement.add(0.0, if (gravity + depth <= 0.4f) 0.0 else depth * 1.1, 0.0)
-                    entity.fallDistance = 0f
+        // === 阶段A：当前帧已陷入 → 迭代推出，每轮选穿透最深的OBB（避免多OBB间ping-pong） ===
+        for (iter in 0 until 4) {
+            var bestMtvX = 0.0;
+            var bestMtvY = 0.0;
+            var bestMtvZ = 0.0
+            var bestLenSq = 0.0
+            var bestOnTop = false
 
-                    continue
+            for (obb in vehicle.getOBBs()) {
+                if (obb.part == OBB.Part.COLLISION) continue
+                val curMtv = OBB.computeObbAabbMtv(obb, entity.boundingBox) ?: continue
+                val curLenSq = curMtv.x * curMtv.x + curMtv.y * curMtv.y + curMtv.z * curMtv.z
+                if (curLenSq < minPenetration * minPenetration) continue
+                if (curLenSq > bestLenSq) {
+                    bestLenSq = curLenSq
+                    bestMtvX = curMtv.x; bestMtvY = curMtv.y; bestMtvZ = curMtv.z
+                    bestOnTop = -curMtv.y / Math.sqrt(curLenSq) > 0.5
                 }
             }
 
-            if (obb.contains(midPos) || obb.contains(lowPos) || obb.contains(eyePos)) {
-                entity.isSprinting = false
-                var dx = entity.x - obb.center.x
-                var dz = entity.z - obb.center.z
-                var dMax = Mth.absMax(dx, dz)
-                if (dMax >= 0.01) {
-                    dMax = Math.sqrt(dMax)
-                    dx /= dMax
-                    dz /= dMax
-                    var d = 1 / dMax
-                    if (d > 1) {
-                        d = 1.0
-                    }
-                    dx *= d
-                    dz *= d
-                    dx *= 0.12
-                    dz *= 0.12
-                    if (entity.isPushable) {
-                        entity.push(dx, 0.0, dz)
-                    }
-                    continue
-                }
+            if (bestLenSq == 0.0) break  // 没有碰撞
+
+            // 推出方向单位向量，额外加余量防止立刻再陷入
+            val bestLen = Math.sqrt(bestLenSq)
+            val pushNx = -bestMtvX / bestLen
+            val pushNy = -bestMtvY / bestLen
+            val pushNz = -bestMtvZ / bestLen
+            val extra = 0.02
+            val pushX = -bestMtvX + pushNx * extra
+            var pushY = -bestMtvY + pushNy * extra
+            val pushZ = -bestMtvZ + pushNz * extra
+            // 站在地面上时不允许向下推，防止玩家被压进地里
+            if (pushY < 0 && entity.onGround()) pushY = 0.0
+
+            if (bestOnTop) {
+                entity.setPos(
+                    entity.x + pushX + vehicleDx,
+                    entity.y + pushY,
+                    entity.z + pushZ + vehicleDz
+                )
+                entity.deltaMovement = Vec3(vehicle.deltaMovement.x, 0.0, vehicle.deltaMovement.z)
+                entity.setOnGround(true)
+                entity.fallDistance = 0f
+                return
+            }
+            // 推出 + 清零朝向该OBB的速度分量
+            entity.setPos(
+                entity.x + pushX,
+                entity.y + pushY,
+                entity.z + pushZ
+            )
+            val velToward = movement.x * pushNx + movement.y * pushNy + movement.z * pushNz
+            if (velToward > 0) {
+                entity.deltaMovement = Vec3(
+                    movement.x - pushNx * velToward,
+                    movement.y - pushNy * velToward,
+                    movement.z - pushNz * velToward
+                )
             }
 
-            val aabb = entity.boundingBox
-            if (OBB.isColliding(obb, aabb)) {
-                val face = obb.getEmbeddingFace(midPos)
-                val axes = obb.getAxes()
-                val support: Vector3d = axes[Math.abs(face) - 1]!!
-                if (face < 0) {
-                    support.negate()
-                }
-
-                if (entity is Player && entity.onGround() && entity.isCrouching && entity.level() is ServerLevel) {
-                    // 推车
-                    vehicle.setDeltaMovement(
-                        vehicle.deltaMovement.add(OBB.vector3dToVec3(support).normalize().multiply(-1.0, 0.0, -1.0))
-                            .normalize()
-                            .scale(entity.deltaMovement.length())
-                    )
-                }
-
-                entity.isSprinting = false
-                if (entity.isPushable) {
-                    var force = entity.deltaMovement.horizontalDistance() * 2
-                    if (vehicle.deltaMovement.length() > 0.01 && Math.abs(face) != 2) {
-                        force = 0.2
-                    }
-                    var vec = OBB.vector3dToVec3(support).scale(force)
-                    vec = Vec3(vec.x, 0.0, vec.z)
-                    entity.setPos(entity.position().add(vec))
-                    vehicle.hasImpulse = true
-                }
+            // 玩家潜行时侧面碰撞OBB → 缓慢推车
+            if (entity is Player && entity.isCrouching && !vehicle.level().isClientSide) {
+                vehicle.pushNew(-pushNx * 0.03, 0.0, -pushNz * 0.03)
             }
         }
+
+        // === 阶段B：deltaMovement会导致穿入 → 对所有OBB同时截速度 ===
+        var clampedDx = movement.x
+        var clampedDy = movement.y
+        var clampedDz = movement.z
+        var standingOnObb = false
+        var hasCollision = false
+
+        for (iter in 0 until 4) {
+            var clippedAny = false
+            for (obb in vehicle.getOBBs()) {
+                if (obb.part == OBB.Part.COLLISION) continue
+
+                val probeAabb = entity.boundingBox.move(clampedDx, clampedDy, clampedDz)
+                val mtv = OBB.computeObbAabbMtv(obb, probeAabb) ?: continue
+                val mtvLenSq = mtv.x * mtv.x + mtv.y * mtv.y + mtv.z * mtv.z
+                if (mtvLenSq < minPenetration * minPenetration) continue
+
+                val mtvLen = Math.sqrt(mtvLenSq)
+                val nx = -mtv.x / mtvLen
+                val ny = -mtv.y / mtvLen
+                val nz = -mtv.z / mtvLen
+
+                if (mtvLen > 0.05) {
+                    val velIntoObb = clampedDx * nx + clampedDy * ny + clampedDz * nz
+                    if (velIntoObb > 0) {
+                        val oldDy = clampedDy
+                        clampedDx -= nx * velIntoObb
+                        clampedDy -= ny * velIntoObb
+                        clampedDz -= nz * velIntoObb
+                        // 不能让截断增加下落速度，否则地面上碰OBB的玩家会陷进地里
+                        if (clampedDy < oldDy) clampedDy = oldDy
+                        clippedAny = true
+                    }
+                }
+
+                if (ny > 0.5) standingOnObb = true
+                hasCollision = true
+                // 不break：本OBB截断后继续检查其他OBB，同一轮内交叉收敛
+            }
+            if (!clippedAny) break
+        }
+
+        if (!hasCollision) return
+
+        if (standingOnObb) {
+            // 站在顶上时速度跟随载具
+            entity.deltaMovement = Vec3(vehicle.deltaMovement.x, 0.0, vehicle.deltaMovement.z)
+            entity.setOnGround(true)
+            entity.fallDistance = 0f
+        } else {
+            // 侧面碰撞：只截速度不调位置
+            entity.deltaMovement = Vec3(clampedDx, clampedDy, clampedDz)
+        }
     }
+
 
     /**
      * 撞击实体并造成伤害
@@ -492,7 +540,6 @@ object VehicleMotionUtils {
             return
         }
 
-        var currentPos = vehicle.position()
         val level = vehicle.level()
         val transform = vehicle.getWheelsTransform(1f)
 
@@ -518,12 +565,12 @@ object VehicleMotionUtils {
         if (samplePoints.isEmpty()) samplePoints.addAll(positions)
 
         for (vec3 in samplePoints) {
-            val vector4d = transformPosition(transform, vec3.x, vec3.y - 0.02, vec3.z)
-            val p = Vec3(vector4d.x, vector4d.y, vector4d.z)
+            val vector4d = transformPosition(transform, vec3.x, vec3.y, vec3.z)
+            val p = Vec3(vector4d.x, vehicle.y, vector4d.z)
             val res = level.clip(
                 ClipContext(
                     p,
-                    p.add(0.0, -128.0, 0.0),
+                    p.add(0.0, -32.0, 0.0),
                     ClipContext.Block.COLLIDER,
                     ClipContext.Fluid.NONE,
                     vehicle
@@ -548,7 +595,7 @@ object VehicleMotionUtils {
             for (vec3 in positions) {
                 val v = transformPosition(transform, vec3.x, vec3.y - 0.02, vec3.z)
                 val p = Vec3(v.x, v.y, v.z)
-                val blockPos = BlockPos.containing(p)
+                val blockPos = BlockPos.containing(p.add(0.0, -0.3, 0.0))
                 val state = level.getBlockState(blockPos)
                 if (state.isAir) continue
                 if (state.`is`(BlockTags.SAND) || state.`is`(BlockTags.SNOW)) {
