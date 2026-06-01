@@ -353,7 +353,7 @@ class ModItemTagProvider(
 
         ModItems.PERKS.entries.forEach {
             val item = it.get()
-            if (item is PerkItem<*>) {
+            if (item is PerkItem) {
                 when (item.perk.type) {
                     Perk.Type.AMMO -> {
                         this.tag(ModTags.Items.AMMO_PERK).add(item)

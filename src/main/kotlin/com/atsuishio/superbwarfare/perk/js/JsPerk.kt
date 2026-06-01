@@ -10,25 +10,28 @@ import com.atsuishio.superbwarfare.perk.IAmmoStat
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.perk.PerkInstance
 import com.atsuishio.superbwarfare.script.ScriptManager
+import net.minecraft.core.Holder
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.effect.MobEffect
 import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.entity.Entity
-import net.minecraftforge.registries.ForgeRegistries
 import org.mozillaa.javascript.Function
+import java.util.function.Supplier
 
-class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : Perk(perkId, descriptor.perkType), IAmmoStat {
+class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : Perk(perkId, descriptor.perkType),
+    IAmmoStat {
     override val damageRate: Double get() = descriptor.damageRate
     override val speedRate: Double get() = descriptor.speedRate
     override val slug: Boolean get() = descriptor.slug
     private val ammoConfig: AmmoConfig? = if (type == Type.AMMO) {
-        val effects = mutableListOf<MobEffect>()
+        val effects = mutableListOf<Holder<MobEffect>>()
         descriptor.mobEffects?.forEach { name ->
             val rl = ResourceLocation.tryParse(name) ?: return@forEach
-            val effect = ForgeRegistries.MOB_EFFECTS.getValue(rl)
-            if (effect != null) {
-                effects.add(effect)
+            val effect = BuiltInRegistries.MOB_EFFECT.getHolder(rl)
+            if (effect.isPresent) {
+                effects.add(effect.get())
             } else {
                 Mod.LOGGER.warn("Unknown mob effect '{}' in perk '{}'", name, perkId)
             }
@@ -74,9 +77,9 @@ class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : Perk(
                 val amplifier = getEffectAmplifier(instance)
                 val duration = getEffectDuration(instance)
                 val instances = config.mobEffects.map {
-                    MobEffectInstance(it, duration, amplifier, false, !config.hideParticle)
+                    Supplier { MobEffectInstance(it, duration, amplifier, false, !config.hideParticle) }
                 }
-                entity.effect(ArrayList(instances))
+                entity.effect(instances)
             }
         }
 
@@ -171,7 +174,7 @@ class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : Perk(
         val speedRate: Double,
         val slug: Boolean,
         val rgb: List<Int>,
-        val mobEffects: List<MobEffect>,
+        val mobEffects: List<Holder<MobEffect>>,
         val hideParticle: Boolean,
     )
 }

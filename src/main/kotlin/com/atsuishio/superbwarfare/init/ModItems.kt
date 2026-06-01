@@ -465,7 +465,7 @@ object ModItems {
         PERKS.register(id, item)
 
     @JvmField
-    val PERK_ITEMS: MutableMap<DeferredHolder<Perk, out Perk>, DeferredHolder<Item, out PerkItem<*>>> =
+    val PERK_ITEMS: MutableMap<DeferredHolder<Perk, out Perk>, DeferredHolder<Item, out PerkItem>> =
         mutableMapOf()
 
     @JvmField
@@ -475,8 +475,8 @@ object ModItems {
      * 单独注册，用于Tab图标，不要删
      */
     // @formatter:off
-    @JvmField var AP_BULLET: DeferredHolder<Item, out PerkItem<*>>? = null
-    @JvmField var INTELLIGENT_CHIP: DeferredHolder<Item, out PerkItem<*>>? = null
+    @JvmField var AP_BULLET: DeferredHolder<Item, out PerkItem>? = null
+    @JvmField var INTELLIGENT_CHIP: DeferredHolder<Item, out PerkItem>? = null
     // @formatter:on
 
     private fun registerPerkItems() {
@@ -489,7 +489,7 @@ object ModItems {
     }
 
     private fun registerSinglePerkItem(perk: DeferredHolder<Perk, out Perk>) {
-        PERK_ITEMS[perk] = registerPerkItem(perk.id.path) { PerkItem(perk) }
+        PERK_ITEMS[perk] = registerPerkItem(perk.id.path) { PerkItem { perk.get() } }
     }
 
     // @formatter:off

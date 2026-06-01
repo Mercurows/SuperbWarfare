@@ -110,7 +110,7 @@ open class ReforgingTableMenu(
                     if (!this.moveItemStackTo(stack, INPUT_SLOT, INPUT_SLOT + 1, false)) {
                         return ItemStack.EMPTY
                     }
-                } else if (item is PerkItem<*>) {
+                } else if (item is PerkItem) {
                     val type = item.perk.type
                     if (type == Perk.Type.AMMO) {
                         if (!this.moveItemStackTo(stack, AMMO_PERK_SLOT, AMMO_PERK_SLOT + 1, false)) {
@@ -180,7 +180,7 @@ open class ReforgingTableMenu(
                 val item = itemstack.item
 
                 if (copy.item is GunItem
-                    && item is PerkItem<*>
+                    && item is PerkItem
                     && !copy.isEmpty && GunData.from(copy).perk.getLevel(item) > 0
                 ) continue
 
@@ -255,7 +255,7 @@ open class ReforgingTableMenu(
 
         listOf(ammo, func, damage).forEach { item ->
             val perkItem = item.item
-            if (!item.isEmpty && perkItem is PerkItem<*> && GunData.from(container.getItem(INPUT_SLOT))
+            if (!item.isEmpty && perkItem is PerkItem && GunData.from(container.getItem(INPUT_SLOT))
                     .canApplyPerk(perkItem.perk)
             ) {
                 data.perk.set(
@@ -300,7 +300,7 @@ open class ReforgingTableMenu(
         }
 
         val perkItem = perk.item
-        if (perkItem is PerkItem<*>) {
+        if (perkItem is PerkItem) {
             when (perkItem.perk.type) {
                 Perk.Type.AMMO -> this.ammoPerkLevel.set(0)
                 Perk.Type.FUNCTIONAL -> this.funcPerkLevel.set(0)
@@ -329,7 +329,7 @@ open class ReforgingTableMenu(
      * @param pStack Perk物品
      */
     private fun onPlacePerk(pStack: ItemStack) {
-        val perkItem = pStack.item as? PerkItem<*> ?: return
+        val perkItem = pStack.item as? PerkItem ?: return
 
         when (perkItem.perk.type) {
             Perk.Type.AMMO -> this.ammoPerkLevel.set(1)
@@ -390,7 +390,7 @@ open class ReforgingTableMenu(
             }
 
             val perkItem = this.container.getItem(slot).item
-            if (perk != null && perkItem is PerkItem<*> && perkItem.perk == perk) {
+            if (perk != null && perkItem is PerkItem && perkItem.perk == perk) {
                 this.container.setItem(slot, ItemStack.EMPTY)
             }
         }
@@ -468,7 +468,7 @@ open class ReforgingTableMenu(
                 Perk.Type.DAMAGE -> DAMAGE_PERK_SLOT
             }
 
-            val perkItem = pStack.item as? PerkItem<*> ?: return false
+            val perkItem = pStack.item as? PerkItem ?: return false
 
             return perkItem.perk.type == type && !container.getItem(INPUT_SLOT).isEmpty
                     && container.getItem(INPUT_SLOT).item is GunItem

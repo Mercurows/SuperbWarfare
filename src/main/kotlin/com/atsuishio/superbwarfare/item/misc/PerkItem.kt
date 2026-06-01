@@ -39,9 +39,9 @@ open class PerkItem(private val perkSupplier: Supplier<Perk>) : Item(Properties(
                 )
         )
         if (perk is AmmoPerk) {
-            appendAmmoTooltips(perk.damageRate, perk.speedRate, perk.slug, tooltips)
+            appendAmmoTooltips(perk.damageRate, perk.speedRate, perk.slug, tooltipComponents)
         } else if (perk is IAmmoStat) {
-            appendAmmoTooltips(perk.damageRate, perk.speedRate, perk.slug, tooltips)
+            appendAmmoTooltips(perk.damageRate, perk.speedRate, perk.slug, tooltipComponents)
         }
     }
 

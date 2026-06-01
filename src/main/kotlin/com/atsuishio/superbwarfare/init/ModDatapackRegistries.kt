@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.perk.js.PerkDescriptor
 import net.minecraft.core.Registry
 import net.minecraft.resources.ResourceKey
-import net.minecraftforge.registries.DataPackRegistryEvent
+import net.neoforged.neoforge.registries.DataPackRegistryEvent
 
 object ModDatapackRegistries {
 

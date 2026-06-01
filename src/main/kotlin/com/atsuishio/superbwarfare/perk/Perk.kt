@@ -30,7 +30,7 @@ open class Perk(val descriptionId: String, val type: Type) : PropertyModifier<Gu
     fun getItem(): DeferredHolder<Item, out Item> {
         val result = ModItems.PERKS.getEntries().filter {
             val item = it.get()
-            if (item is PerkItem<*>) {
+            if (item is PerkItem) {
                 return@filter item.perk == this
             }
             return@filter false
@@ -97,7 +97,7 @@ open class Perk(val descriptionId: String, val type: Type) : PropertyModifier<Gu
     private val perkKey = ResourceKey.create(ModPerks.PERK_KEY, ResourceLocation.parse(this.descriptionId))
 
     open fun `is`(tag: TagKey<Perk>): Boolean {
-        return ModPerks.PERK_REGISTRY.getHolder(perkKey).map { it.`is`(tag) }.orElse(false)
+        return ModPerks.PERK_REGISTRY.getHolder(perkKey).map { it.`is`(tag) }.orElseGet { false }
     }
 
     enum class Type(val typeName: String, val color: ChatFormatting) {

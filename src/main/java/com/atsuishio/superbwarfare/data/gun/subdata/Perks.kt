@@ -81,7 +81,7 @@ class Perks(gun: GunData) {
 
     fun getLevel(registry: DeferredHolder<Perk, out Perk>): Short = getLevel(registry.get())
 
-    fun getLevel(item: PerkItem<*>): Short {
+    fun getLevel(item: PerkItem): Short {
         return getLevel(item.perk)
     }
 
@@ -90,7 +90,7 @@ class Perks(gun: GunData) {
         val instances = mutableListOf<PerkInstance>()
         if (rootTag.contains(typeName, Tag.TAG_LIST.toInt())) {
             val list = rootTag.getList(typeName, Tag.TAG_COMPOUND.toInt())
-            for (i in 0 until list.size) {
+            for (i in list.indices) {
                 val tag = list.getCompound(i)
                 val name = tag.getString("Name")
                 val level = tag.getShort("Level")
