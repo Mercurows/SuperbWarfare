@@ -14,11 +14,11 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.levelgen.Heightmap
 import net.minecraft.world.phys.HitResult
-import net.minecraftforge.api.distmarker.Dist
-import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.event.TickEvent
-import net.minecraftforge.eventbus.api.SubscribeEvent
-import net.minecraftforge.fml.common.Mod
+import net.neoforged.api.distmarker.Dist
+import net.neoforged.api.distmarker.OnlyIn
+import net.neoforged.bus.api.SubscribeEvent
+import net.neoforged.fml.common.EventBusSubscriber
+import net.neoforged.neoforge.client.event.ClientTickEvent
 import kotlin.math.max
 
 /**
@@ -29,7 +29,7 @@ import kotlin.math.max
  * 警告触发条件针对MC短视距特点进行了合理调整。
  */
 @OnlyIn(Dist.CLIENT)
-@Mod.EventBusSubscriber(Dist.CLIENT)
+@EventBusSubscriber(Dist.CLIENT)
 object GPWSOverlay : CommonOverlay("gpws") {
 
     /** 起飞后警告抑制时间 (tick) */
@@ -79,8 +79,7 @@ object GPWSOverlay : CommonOverlay("gpws") {
     private var forwardCollisionDistance = -1.0
 
     @SubscribeEvent
-    fun onClientTick(event: TickEvent.ClientTickEvent) {
-        if (event.phase == TickEvent.Phase.START) return
+    fun onClientTick(event: ClientTickEvent.Post) {
         blinkTick++
 
         val player = localPlayer ?: return
@@ -100,7 +99,7 @@ object GPWSOverlay : CommonOverlay("gpws") {
             // 在地面时，持续重置抑制计时器
             takeoffGraceTicks = TAKEOFF_GRACE_TICKS
             forwardCollisionDistance = -1.0
-        } else if (wasOnGround && !onGround) {
+        } else if (wasOnGround) {
             // 刚离地瞬间，开始倒计时
             takeoffGraceTicks = TAKEOFF_GRACE_TICKS
         } else if (takeoffGraceTicks > 0) {
@@ -383,26 +382,32 @@ object GPWSOverlay : CommonOverlay("gpws") {
                 playPullUpSound(player)
                 soundCooldowns[warning] = 30  // 1.5秒冷却
             }
+
             GPWSWarning.SINK_RATE -> {
                 playSinkRateSound(player)
                 soundCooldowns[warning] = 40
             }
+
             GPWSWarning.TERRAIN_AHEAD -> {
                 playTerrainAheadSound(player)
                 soundCooldowns[warning] = 50
             }
+
             GPWSWarning.TERRAIN -> {
                 playTerrainSound(player)
                 soundCooldowns[warning] = 60
             }
+
             GPWSWarning.TOO_LOW_GEAR -> {
                 playTooLowGearSound(player)
                 soundCooldowns[warning] = 60
             }
+
             GPWSWarning.TOO_LOW_TERRAIN -> {
                 playTooLowTerrainSound(player)
                 soundCooldowns[warning] = 60
             }
+
             else -> {}
         }
     }
@@ -426,32 +431,32 @@ object GPWSOverlay : CommonOverlay("gpws") {
 
     /** PULL UP 警告音效 — 最紧急 */
     private fun playPullUpSound(player: Player) {
-         player.playSound(ModSounds.GPWS_PULL_UP.get(), 2.0f, 1.0f)
+        player.playSound(ModSounds.GPWS_PULL_UP.get(), 2.0f, 1.0f)
     }
 
     /** SINK RATE 警告音效 — 下降率过高 */
     private fun playSinkRateSound(player: Player) {
-         player.playSound(ModSounds.GPWS_SINK_RATE.get(), 2.0f, 1.0f)
+        player.playSound(ModSounds.GPWS_SINK_RATE.get(), 2.0f, 1.0f)
     }
 
     /** TERRAIN AHEAD 警告音效 — 前方地形 */
     private fun playTerrainAheadSound(player: Player) {
-         player.playSound(ModSounds.GPWS_TERRAIN_AHEAD.get(), 2.0f, 1.0f)
+        player.playSound(ModSounds.GPWS_TERRAIN_AHEAD.get(), 2.0f, 1.0f)
     }
 
     /** TERRAIN 地形警告音效 */
     private fun playTerrainSound(player: Player) {
-         player.playSound(ModSounds.GPWS_TERRAIN.get(), 2.0f, 1.0f)
+        player.playSound(ModSounds.GPWS_TERRAIN.get(), 2.0f, 1.0f)
     }
 
     /** TOO LOW GEAR 起落架警告音效 */
     private fun playTooLowGearSound(player: Player) {
-         player.playSound(ModSounds.GPWS_TOO_LOW_GEAR.get(), 2.0f, 1.0f)
+        player.playSound(ModSounds.GPWS_TOO_LOW_GEAR.get(), 2.0f, 1.0f)
     }
 
     /** TOO LOW TERRAIN 过低警告音效 */
     private fun playTooLowTerrainSound(player: Player) {
-         player.playSound(ModSounds.GPWS_TOO_LOW_TERRAIN.get(), 2.0f, 1.0f)
+        player.playSound(ModSounds.GPWS_TOO_LOW_TERRAIN.get(), 2.0f, 1.0f)
     }
 
     /** 高度报数音效 (50, 40, 30, 20, 10) */

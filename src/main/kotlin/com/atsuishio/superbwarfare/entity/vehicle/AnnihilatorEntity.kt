@@ -40,7 +40,7 @@ import net.minecraft.world.phys.Vec3
 import org.joml.Math
 import java.util.*
 
-class AnnihilatorEntity(type: EntityType<AnnihilatorEntity?>, world: Level) : ArtilleryEntity(type, world),
+class AnnihilatorEntity(type: EntityType<AnnihilatorEntity>, world: Level) : ArtilleryEntity(type, world),
     BasicGeoVehicleEntity {
     init {
         this.noCulling = true
