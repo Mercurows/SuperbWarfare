@@ -1,10 +1,10 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
-import com.atsuishio.superbwarfare.Mod.Companion.loc
+import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInstance
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
-import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getXRotFromVector
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModTags
@@ -12,14 +12,8 @@ import com.atsuishio.superbwarfare.item.misc.ArtilleryIndicatorItem
 import com.atsuishio.superbwarfare.item.misc.MonitorItem
 import com.atsuishio.superbwarfare.item.misc.firingParameters
 import com.atsuishio.superbwarfare.item.projectile.MortarShellItem
-import com.atsuishio.superbwarfare.item.projectile.MortarShellItem.Companion.createShell
 import com.atsuishio.superbwarfare.network.message.receive.VehicleShootClientMessage
-import com.atsuishio.superbwarfare.tools.FormatTool.format0D
-import com.atsuishio.superbwarfare.tools.ParticleTool.spawnMediumCannonMuzzleParticles
-import com.atsuishio.superbwarfare.tools.SoundTool
-import com.atsuishio.superbwarfare.tools.TrajectoryCalculator.calculateLaunchVector
-import com.atsuishio.superbwarfare.tools.randomPos
-import com.atsuishio.superbwarfare.tools.sendPacketToAll
+import com.atsuishio.superbwarfare.tools.*
 import net.minecraft.ChatFormatting
 import net.minecraft.commands.arguments.EntityAnchorArgument
 import net.minecraft.nbt.CompoundTag
@@ -133,8 +127,9 @@ open class MortarEntity : ArtilleryEntity, BasicGeoVehicleEntity {
             }
         }
 
-        // TODO 为啥不放动画
-        sendPacketToAll(VehicleShootClientMessage(shooter!!.getUUID(), this.getUUID(), 0, weaponName))
+        if (shooter != null) {
+            sendPacketToAll(VehicleShootClientMessage(shooter!!.uuid, this.getUUID(), 0, weaponName))
+        }
     }
 
     override fun interact(player: Player, hand: InteractionHand): InteractionResult {
@@ -220,7 +215,7 @@ open class MortarEntity : ArtilleryEntity, BasicGeoVehicleEntity {
             val level = this.level()
             val gunData = getGunData("Main")
             if (level is ServerLevel && gunData != null) {
-                val entityToSpawn = createShell(
+                val entityToSpawn = MortarShellItem.createShell(
                     shooter,
                     level,
                     this.getItems().first(),
@@ -240,7 +235,7 @@ open class MortarEntity : ArtilleryEntity, BasicGeoVehicleEntity {
                 entityToSpawn.setLife(gunData.get(GunProp.PROJECTILE_LIFE))
                 level.addFreshEntity(entityToSpawn)
 
-                spawnMediumCannonMuzzleParticles(
+                ParticleTool.spawnMediumCannonMuzzleParticles(
                     lookAngle,
                     Vec3(this.x, this.eyeY, this.z).add(lookAngle.scale(1.5)),
                     level,
@@ -258,6 +253,17 @@ open class MortarEntity : ArtilleryEntity, BasicGeoVehicleEntity {
                 gunData.shakePlayers(this)
             }
         }
+
+        var f = 0.98f
+        if (this.onGround()) {
+            val pos = this.blockPosBelowThatAffectsMyMovement
+            f = this.level().getBlockState(pos).getFriction(this.level(), pos, this) * 0.98f
+        }
+
+        this.deltaMovement = this.deltaMovement.multiply(f.toDouble(), 0.98, f.toDouble())
+        if (this.onGround()) {
+            this.deltaMovement = this.deltaMovement.multiply(1.0, -0.9, 1.0)
+        }
     }
 
     override fun setTarget(stack: ItemStack, entity: Entity?, weaponName: String) {
@@ -268,14 +274,14 @@ open class MortarEntity : ArtilleryEntity, BasicGeoVehicleEntity {
         depressed = !parameters.isDepressed
         radius = parameters.radius
         val randomPos = targetPos.center.randomPos(radius).add(0.0, -1.0, 0.0)
-        val flatTrajectory = calculateLaunchVector(
+        val flatTrajectory = TrajectoryCalculator.calculateLaunchVector(
             eyePosition,
             randomPos,
             getProjectileVelocity(weaponName).toDouble(),
             getProjectileGravity(weaponName).toDouble(),
             depressed
         )
-        val highTrajectory = calculateLaunchVector(
+        val highTrajectory = TrajectoryCalculator.calculateLaunchVector(
             eyePosition,
             randomPos,
             getProjectileVelocity(weaponName).toDouble(),
@@ -285,15 +291,18 @@ open class MortarEntity : ArtilleryEntity, BasicGeoVehicleEntity {
 
         var component: Component = Component.literal("")
         val location: Component = Component.translatable("tips.superbwarfare.mortar.position", this.displayName)
-            .append(Component.literal(" X:" + format0D(x) + " Y:" + format0D(y) + " Z:" + format0D(z) + " "))
+            .append(
+                Component.literal(" X:" + FormatTool.format0D(x) + " Y:" + FormatTool.format0D(y) + " Z:" + FormatTool.format0D(
+                    z
+                ) + " "))
         var angle = xRot
 
         if (flatTrajectory == null || highTrajectory == null) {
             canAim = false
             component = Component.translatable("tips.superbwarfare.mortar.out_of_range")
         } else {
-            angle = -getXRotFromVector(flatTrajectory).toFloat()
-            val angle2 = -getXRotFromVector(highTrajectory).toFloat()
+            angle = -VehicleVecUtils.getXRotFromVector(flatTrajectory).toFloat()
+            val angle2 = -VehicleVecUtils.getXRotFromVector(highTrajectory).toFloat()
             if (angle < -turretMaxPitch || angle > -turretMinPitch) {
                 if (angle2 > -turretMaxPitch && angle2 < -turretMinPitch) {
                     component = Component.translatable("tips.superbwarfare.ballistics.warn2")
@@ -326,7 +335,7 @@ open class MortarEntity : ArtilleryEntity, BasicGeoVehicleEntity {
 
     override fun resetTarget(weaponName: String) {
         val randomPos = targetPos.center.randomPos(radius).add(0.0, -1.0, 0.0)
-        val launchVector = calculateLaunchVector(
+        val launchVector = TrajectoryCalculator.calculateLaunchVector(
             eyePosition,
             randomPos,
             getProjectileVelocity(weaponName).toDouble(),
@@ -338,7 +347,7 @@ open class MortarEntity : ArtilleryEntity, BasicGeoVehicleEntity {
         if (launchVector == null) {
             return
         }
-        val angle = -getXRotFromVector(launchVector).toFloat()
+        val angle = -VehicleVecUtils.getXRotFromVector(launchVector).toFloat()
         if (angle > -turretMaxPitch && angle < -turretMinPitch) {
             entityData.set(TARGET_PITCH, angle)
         }
@@ -428,6 +437,6 @@ open class MortarEntity : ArtilleryEntity, BasicGeoVehicleEntity {
         @JvmField
         val NEED_RESET_TARGET: EntityDataAccessor<Boolean> =
             SynchedEntityData.defineId(MortarEntity::class.java, EntityDataSerializers.BOOLEAN)
-        private val ANIM = loc("animation/bedrock/vehicle/mortar.animation.json")
+        private val ANIM = Mod.loc("animation/bedrock/vehicle/mortar.animation.json")
     }
 }
