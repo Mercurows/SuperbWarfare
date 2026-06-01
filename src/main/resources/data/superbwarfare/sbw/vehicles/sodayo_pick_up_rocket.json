@@ -8,6 +8,11 @@
   "TurretControllerIndex": 2,
   "Seats": [
     {
+      "Part": "Collision",
+      "Size": [1.25, 0.729, 3.375],
+      "Position": [0, 0.719, 0.563]
+    },
+    {
       "IsEnclosed": true,
       "Transform": "Vehicle",
       "Position": [

@@ -4,6 +4,11 @@
   "TrackDistanceMultiply": 0.5,
   "OBB": [
     {
+      "Part": "Collision",
+      "Size": [3, 1.438, 5.906],
+      "Position": [0, 1.438, 0.281]
+    },
+    {
       "Size": [2.969, 0.898, 5.0],
       "Position": [0.0, 1.758, -0.469]
     },

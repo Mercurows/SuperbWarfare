@@ -144,7 +144,7 @@ object VehicleMotionUtils {
             var bestOnTop = false
 
             for (obb in vehicle.getOBBs()) {
-                if (obb.part == OBB.Part.COLLISION) continue
+                if (obb.part == OBB.Part.COLLISION || obb.part == OBB.Part.INTERACTIVE) continue
                 val curMtv = OBB.computeObbAabbMtv(obb, entity.boundingBox) ?: continue
                 val curLenSq = curMtv.x * curMtv.x + curMtv.y * curMtv.y + curMtv.z * curMtv.z
                 if (curLenSq < minPenetration * minPenetration) continue
@@ -211,7 +211,7 @@ object VehicleMotionUtils {
         for (iter in 0 until 4) {
             var clippedAny = false
             for (obb in vehicle.getOBBs()) {
-                if (obb.part == OBB.Part.COLLISION) continue
+                if (obb.part == OBB.Part.COLLISION || obb.part == OBB.Part.INTERACTIVE) continue
 
                 val probeAabb = entity.boundingBox.move(clampedDx, clampedDy, clampedDz)
                 val mtv = OBB.computeObbAabbMtv(obb, probeAabb) ?: continue
@@ -541,12 +541,13 @@ object VehicleMotionUtils {
         }
 
         val level = vehicle.level()
-        val transform = vehicle.getVehicleTransform(1f)
+        var transform = vehicle.getWheelsTransform(1f)
 
         // 地形采样点：OBB底面2×n网格，2列（左右边缘）+ n排（前后分布）
         val obb = vehicle.getCollisionOBB()
         val samplePoints = mutableListOf<Vec3>()
         if (obb != null) {
+            transform = vehicle.getVehicleTransform(1f)
             val hx = obb.extents.x; val hz = obb.extents.z; val hy = obb.extents.y
             val cols = 2       // 固定2列：左(-hx) 右(+hx)
             val rows = 6       // n排：沿z轴前->后分布
@@ -625,8 +626,8 @@ object VehicleMotionUtils {
     fun updateTerrainCompact(entity: VehicleEntity, sumXH: Double, sumZH: Double, sumX2: Double, sumZ2: Double) {
         val rate = entity.data().compute().terrainCompatRotateRate
 
-        val slopeX = if (sumX2 > 0.0) (sumXH / sumX2).coerceIn(-3.0, 3.0) * rate * 2 else 0.0
-        val slopeZ = if (sumZ2 > 0.0) (sumZH / sumZ2).coerceIn(-3.0, 3.0) * rate * 2 else 0.0
+        val slopeX = if (sumX2 > 0.0) (sumXH / sumX2).coerceIn(-3.0, 3.0) * rate * 2.5 else 0.0
+        val slopeZ = if (sumZ2 > 0.0) (sumZH / sumZ2).coerceIn(-3.0, 3.0) * rate * 2.5 else 0.0
 
         val targetXRot = Mth.clamp((Mth.atan2(slopeZ, 1.0) * Mth.RAD_TO_DEG).toFloat(), -45f, 45f)
         val targetRoll = -Mth.clamp((Mth.atan2(slopeX, 1.0) * Mth.RAD_TO_DEG).toFloat(), -45f, 45f)
