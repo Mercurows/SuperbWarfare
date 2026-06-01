@@ -4334,7 +4334,16 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         } else {
             if (this.horizontalCollision) {
                 val vec31 = this.deltaMovement
-                this.setDeltaMovement(if (flag4) 0.0 else vec31.x, vec31.y, if (flag) 0.0 else vec31.z)
+                if (this.minorHorizontalCollision) {
+                    // 微小碰撞：减速而非完全停止
+                    this.setDeltaMovement(
+                        if (flag4) vec31.x * 0.3 else vec31.x,
+                        vec31.y,
+                        if (flag) vec31.z * 0.3 else vec31.z
+                    )
+                } else {
+                    this.setDeltaMovement(if (flag4) 0.0 else vec31.x, vec31.y, if (flag) 0.0 else vec31.z)
+                }
             }
 
             val block = blockstate.block
