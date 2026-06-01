@@ -199,7 +199,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
 
             if (flareModel != null) {
                 poseStack.pushPose()
-                poseStack.mulPoseMatrix(flare.globalTransform)
+                poseStack.mulPose(flare.globalTransform)
                 flareModel.renderToBuffer(
                     poseStack,
                     buffer,
@@ -335,7 +335,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
                         val bone = model.getBone(dummyName) ?: continue
 
                         poseStack.pushPose()
-                        poseStack.mulPoseMatrix(bone.globalTransform)
+                        poseStack.mulPose(bone.globalTransform)
 
                         val scale = dummyInfo.scale
 

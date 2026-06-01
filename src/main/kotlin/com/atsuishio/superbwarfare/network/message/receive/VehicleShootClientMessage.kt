@@ -8,7 +8,7 @@ import com.atsuishio.superbwarfare.serialization.kserializer.SerializedUUID
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.localPlayer
 import kotlinx.serialization.Serializable
-import thedarkcolour.kotlinforforge.forge.FORGE_BUS
+import thedarkcolour.kotlinforforge.neoforge.forge.FORGE_BUS
 
 @Serializable
 data class VehicleShootClientMessage(
