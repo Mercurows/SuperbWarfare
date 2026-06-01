@@ -2,8 +2,7 @@ package com.atsuishio.superbwarfare.perk.js
 
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
-import net.minecraftforge.common.capabilities.ForgeCapabilities
-import kotlin.jvm.optionals.getOrElse
+import net.neoforged.neoforge.capabilities.Capabilities
 
 /**
  * Proxy that exposes GunData properties and methods to JS perk scripts.
@@ -55,12 +54,12 @@ class GunDataProxy(private val data: GunData) {
 
     // ── Energy (for Regeneration) ──
     fun getMaxEnergyStored(): Int {
-        return data.stack.getCapability(ForgeCapabilities.ENERGY).map { it.maxEnergyStored }.getOrElse { 0 }
+        val cap = data.stack.getCapability(Capabilities.EnergyStorage.ITEM) ?: return 0
+        return cap.maxEnergyStored
     }
 
     fun receiveEnergy(amount: Int): Int {
-        return data.stack.getCapability(ForgeCapabilities.ENERGY)
-            .map { it.receiveEnergy(amount, false) }
-            .getOrElse { 0 }
+        val cap = data.stack.getCapability(Capabilities.EnergyStorage.ITEM) ?: return 0
+        return cap.receiveEnergy(amount, false)
     }
 }

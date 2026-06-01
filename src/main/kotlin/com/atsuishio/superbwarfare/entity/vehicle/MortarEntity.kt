@@ -42,7 +42,7 @@ open class MortarEntity : ArtilleryEntity, BasicGeoVehicleEntity {
     private val anim: VehicleAnimationInstance<MortarEntity>?
     private var shooter: LivingEntity? = null
 
-    constructor(type: EntityType<MortarEntity?>, level: Level) : super(type, level) {
+    constructor(type: EntityType<MortarEntity>, level: Level) : super(type, level) {
         this.anim = if (level.isClientSide) VehicleAnimationInstance(this) else null
     }
 
