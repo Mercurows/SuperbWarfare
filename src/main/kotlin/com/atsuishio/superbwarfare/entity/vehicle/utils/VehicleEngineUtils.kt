@@ -148,9 +148,9 @@ object VehicleEngineUtils {
         }
 
         targetSpeed = if (power > 0) {
-            (maxForwardSpeedRate * (1 + xRot / 40)).toDouble()
+            (maxForwardSpeedRate * (1 + xRot / 60)).toDouble()
         } else {
-            (maxBackwardSpeedRate * (1 - xRot / 40)).toDouble()
+            (maxBackwardSpeedRate * (1 - xRot / 60)).toDouble()
         }
 
         if (!forwardInputDown && !backInputDown) {
@@ -338,9 +338,9 @@ object VehicleEngineUtils {
         }
 
         targetSpeed = if (power > 0) {
-            (maxForwardSpeedRate * (1 + xRot / 40)).toDouble()
+            (maxForwardSpeedRate * (1 + xRot / 60)).toDouble()
         } else {
-            (maxBackwardSpeedRate * (1 - xRot / 40)).toDouble()
+            (maxBackwardSpeedRate * (1 - xRot / 60)).toDouble()
         }
 
         if (!forwardInputDown && !backInputDown) {
