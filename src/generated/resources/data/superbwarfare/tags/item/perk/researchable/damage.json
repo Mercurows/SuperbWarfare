@@ -1,19 +1,19 @@
 {
   "values": [
-    "superbwarfare:kill_clip",
-    "superbwarfare:gutshot_straight",
-    "superbwarfare:killing_tally",
-    "superbwarfare:head_seeker",
-    "superbwarfare:monster_hunter",
-    "superbwarfare:volt_overload",
-    "superbwarfare:desperado",
-    "superbwarfare:vorpal_weapon",
-    "superbwarfare:magnificent_howl",
-    "superbwarfare:firefly",
-    "superbwarfare:fair_means",
-    "superbwarfare:high_impact_reserves",
-    "superbwarfare:one_two_punch",
     "superbwarfare:brain_storm",
+    "superbwarfare:desperado",
+    "superbwarfare:fair_means",
+    "superbwarfare:firefly",
+    "superbwarfare:gutshot_straight",
+    "superbwarfare:head_seeker",
+    "superbwarfare:high_impact_reserves",
+    "superbwarfare:killing_tally",
+    "superbwarfare:kill_clip",
+    "superbwarfare:magnificent_howl",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:one_two_punch",
+    "superbwarfare:volt_overload",
+    "superbwarfare:vorpal_weapon",
     "superbwarfare:battle_of_wits"
   ]
 }

@@ -1,0 +1,13 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "defense",
+  "inputs": [
+    "minecraft:dispenser",
+    "superbwarfare:mortar_barrel",
+    "superbwarfare:artillery_indicator",
+    "superbwarfare:mortar_bipod"
+  ],
+  "result": {
+    "entity": "superbwarfare:tow"
+  }
+}

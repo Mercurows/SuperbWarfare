@@ -17,6 +17,7 @@ import com.atsuishio.superbwarfare.resource.model.VehicleModelReloadListener
 import com.atsuishio.superbwarfare.tools.RenderDistanceHelper
 import com.atsuishio.superbwarfare.tools.SpritePixelHelper
 import com.atsuishio.superbwarfare.tools.localPlayer
+import com.atsuishio.superbwarfare.tools.mulPoseMatrix
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
 import com.maydaymemory.mae.basic.ArrayPoseBuilder
 import com.maydaymemory.mae.basic.ZYXBoneTransformFactory
@@ -234,13 +235,13 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
 
                 for (bone in dogTagBones) {
                     poseStack.pushPose()
-                    poseStack.mulPoseMatrix(bone.getGlobalTransform())
+                    poseStack.mulPoseMatrix(bone.globalTransform)
                     poseStack.mulPose(Axis.YP.rotationDegrees(180f))
                     poseStack.mulPose(Axis.XP.rotationDegrees(90f))
 
                     val pose = poseStack.last()
                     val lastMatrix = pose.pose()
-                    val lastMatrix3f = pose.normal()
+                    val lastMatrix3f = pose
                     val vertexConsumer =
                         buffer.getBuffer(RenderType.entityCutoutNoCull(dogTagTexture))
 
@@ -567,7 +568,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             return true
         } else {
             var aabb = vehicle.boundingBoxForCulling.inflate(5.0)
-            if (aabb.hasNaN() || aabb.getSize() == 0.0) {
+            if (aabb.hasNaN() || aabb.size == 0.0) {
                 aabb = AABB(
                     vehicle.x - 8.0,
                     vehicle.y - 6.0,

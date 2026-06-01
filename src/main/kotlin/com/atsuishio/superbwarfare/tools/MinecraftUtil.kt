@@ -4,6 +4,7 @@ package com.atsuishio.superbwarfare.tools
 
 import com.atsuishio.superbwarfare.Mod.Companion.queueClientWork
 import com.atsuishio.superbwarfare.tools.FormatTool.format0D
+import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
 import net.minecraft.client.Options
 import net.minecraft.client.gui.Font
@@ -30,6 +31,7 @@ import net.neoforged.bus.api.Event
 import net.neoforged.neoforge.common.NeoForge
 import net.neoforged.neoforge.network.PacketDistributor
 import net.neoforged.neoforge.registries.DeferredHolder
+import org.joml.Matrix4f
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 
@@ -155,3 +157,5 @@ fun Player.getBlockReach() = blockInteractionRange()
 val Minecraft.deltaFrameTime get() = timer.gameTimeDeltaTicks
 
 fun ItemStack.hasCustomHoverName() = this.has(DataComponents.CUSTOM_NAME)
+
+fun PoseStack.mulPoseMatrix(pose: Matrix4f) = mulPose(pose)
