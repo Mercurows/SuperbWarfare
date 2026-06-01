@@ -202,7 +202,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             }
         }
 
-        if (flareFlag && !(ClientEventHandler.zoomVehicle && (hideForTurretControllerWhileZooming || hideForPassengerWeaponStationControllerWhileZooming))) {
+        if (lodLevel <= 0 && flareFlag && !(ClientEventHandler.zoomVehicle && (hideForTurretControllerWhileZooming || hideForPassengerWeaponStationControllerWhileZooming))) {
             val flareModel = VehicleModelReloadListener.getModel(Mod.loc("muzzle_flare"))
 
             if (flareModel != null) {
