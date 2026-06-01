@@ -35,9 +35,7 @@ import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
 import org.joml.Math
 import org.joml.Matrix4d
-import org.joml.Quaterniond
 import org.joml.Vector3d
-
 
 /**
  * 处理载具运动相关方法的工具类
@@ -49,6 +47,7 @@ object VehicleMotionUtils {
      *
      * @param vehicle 载具
      */
+    @JvmStatic
     fun preventStacking(vehicle: VehicleEntity) {
         val entities = vehicle.level().getEntities(
             EntityTypeTest.forClass(VehicleEntity::class.java),
@@ -89,6 +88,7 @@ object VehicleMotionUtils {
      *
      * @param vehicle 载具
      */
+    @JvmStatic
     fun supportEntities(vehicle: VehicleEntity) {
         if (vehicle.isRemoved) return
         if (vehicle.enableAABB()) return
@@ -138,8 +138,10 @@ object VehicleMotionUtils {
         val minPenetration = 0.01
 
         // === 阶段A：当前帧已陷入 → 迭代推出，每轮选穿透最深的OBB（避免多OBB间ping-pong） ===
-        for (iter in 0 until 4) {
-            var bestMtvX = 0.0; var bestMtvY = 0.0; var bestMtvZ = 0.0
+        repeat(4) {
+            var bestMtvX = 0.0
+            var bestMtvY = 0.0
+            var bestMtvZ = 0.0
             var bestLenSq = 0.0
             var bestOnTop = false
 
@@ -155,7 +157,7 @@ object VehicleMotionUtils {
                 }
             }
 
-            if (bestLenSq == 0.0) break  // 没有碰撞
+            if (bestLenSq == 0.0) return@repeat  // 没有碰撞
 
             // 推出方向单位向量，额外加余量防止立刻再陷入
             val bestLen = Math.sqrt(bestLenSq)
@@ -208,7 +210,7 @@ object VehicleMotionUtils {
         var standingOnObb = false
         var hasCollision = false
 
-        for (iter in 0 until 4) {
+        repeat(4) {
             var clippedAny = false
             for (obb in vehicle.getOBBs()) {
                 if (obb.part == OBB.Part.COLLISION || obb.part == OBB.Part.INTERACTIVE) continue
@@ -240,7 +242,7 @@ object VehicleMotionUtils {
                 hasCollision = true
                 // 不break：本OBB截断后继续检查其他OBB，同一轮内交叉收敛
             }
-            if (!clippedAny) break
+            if (!clippedAny) return@repeat
         }
 
         if (!hasCollision) return
@@ -262,6 +264,7 @@ object VehicleMotionUtils {
      *
      * @param vehicle 载具
      */
+    @JvmStatic
     fun crushEntities(vehicle: VehicleEntity) {
         if (!vehicle.canCrushEntities()) return
         if (vehicle.isRemoved) return
@@ -302,8 +305,8 @@ object VehicleMotionUtils {
 
         // TODO 继续优化这个逆天碰撞
         for (entity in entities) {
-            val entitySize = entity.boundingBox.getSize()
-            val thisSize = vehicle.boundingBox.getSize()
+            val entitySize = entity.boundingBox.size
+            val thisSize = vehicle.boundingBox.size
             val f: Double
             val f1: Double
 
@@ -407,6 +410,7 @@ object VehicleMotionUtils {
     }
 
     // TODO 实现正确的AABB包围箱
+    @JvmStatic
     fun calculateCombinedAABBOptimized(vehicle: VehicleEntity): AABB {
         if (vehicle.enableAABB()) {
             return vehicle.boundingBox
@@ -439,6 +443,7 @@ object VehicleMotionUtils {
      *
      * @param vehicle 载具
      */
+    @JvmStatic
     fun collideBlocks(vehicle: VehicleEntity) {
         if (!VehicleConfig.COLLISION_DESTROY_SOFT_BLOCKS.get()
             && !VehicleConfig.COLLISION_DESTROY_NORMAL_BLOCKS.get()
@@ -503,6 +508,7 @@ object VehicleMotionUtils {
      *
      * @param vehicle 载具
      */
+    @JvmStatic
     fun handleVehicleMoveOnDragonTeeth(vehicle: VehicleEntity) {
         val aabb = vehicle.boundingBox
         val aabb1 = AABB(aabb.minX, aabb.minY - 1.0E-6, aabb.minZ, aabb.maxX, aabb.minY, aabb.maxZ)
@@ -515,6 +521,7 @@ object VehicleMotionUtils {
         }
     }
 
+    @JvmStatic
     fun bounceHorizontal(vehicle: VehicleEntity, direction: Direction) {
         when (direction.axis) {
             Direction.Axis.X -> vehicle.setDeltaMovement(vehicle.deltaMovement.multiply(0.8, 0.99, 0.99))
@@ -523,6 +530,7 @@ object VehicleMotionUtils {
         }
     }
 
+    @JvmStatic
     fun bounceVertical(vehicle: VehicleEntity, direction: Direction) {
         if (!vehicle.level().isClientSide) {
             vehicle.level().playSound(null, vehicle, ModSounds.VEHICLE_STRIKE.get(), vehicle.soundSource, 1f, 1f)
@@ -534,9 +542,12 @@ object VehicleMotionUtils {
         }
     }
 
+    @JvmStatic
     fun terrainCompact(vehicle: VehicleEntity, positions: MutableList<Vec3>) {
         if (!vehicle.onGround()) {
-            if (vehicle.isInFluidType) { vehicle.xRot *= 0.9f; vehicle.setZRot(vehicle.roll * 0.9f) }
+            if (vehicle.isInFluidType) {
+                vehicle.xRot *= 0.9f; vehicle.setZRot(vehicle.roll * 0.9f)
+            }
             return
         }
 
@@ -548,7 +559,9 @@ object VehicleMotionUtils {
         val samplePoints = mutableListOf<Vec3>()
         if (obb != null) {
             transform = vehicle.getVehicleTransform(1f)
-            val hx = obb.extents.x; val hz = obb.extents.z; val hy = obb.extents.y
+            val hx = obb.extents.x
+            val hz = obb.extents.z
+            val hy = obb.extents.y
             val cols = 2       // 固定2列：左(-hx) 右(+hx)
             val rows = 6       // n排：沿z轴前->后分布
             for (ci in 0 until cols) {
@@ -564,21 +577,34 @@ object VehicleMotionUtils {
         if (samplePoints.isEmpty()) samplePoints.addAll(positions)
 
         // 最小二乘平面拟合累加器（载具局部坐标系，X=右，Z=前）
-        var sumXH = 0.0; var sumZH = 0.0
-        var sumX2 = 0.0; var sumZ2 = 0.0
+        var sumXH = 0.0
+        var sumZH = 0.0
+        var sumX2 = 0.0
+        var sumZ2 = 0.0
 
         for (vec3 in samplePoints) {
             val vector4d = transformPosition(transform, vec3.x, vec3.y, vec3.z)
             val p = Vec3(vector4d.x, vector4d.y, vector4d.z)
-            val res = level.clip(ClipContext(p, p.add(0.0, -20.0, 0.0), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, vehicle))
+            val res = level.clip(
+                ClipContext(
+                    p,
+                    p.add(0.0, -20.0, 0.0),
+                    ClipContext.Block.COLLIDER,
+                    ClipContext.Fluid.NONE,
+                    vehicle
+                )
+            )
             var blockPos = BlockPos.containing(p)
             val blockPosUp = BlockPos.containing(p.add(0.0, 1.0, 0.0))
             if (level.getBlockState(blockPosUp).canOcclude()) blockPos = blockPosUp
             val state = level.getBlockState(blockPos)
             val shape = state.getCollisionShape(level, blockPos)
             val heightY = if (!shape.isEmpty) p.y - (shape.max(Direction.Axis.Y) + blockPos.y)
-                else if (res.type == HitResult.Type.BLOCK && level.noCollision(AABB(p, p))) (p.y - res.location.y).coerceIn(0.0, 20.0)
-                else 0.0
+            else if (res.type == HitResult.Type.BLOCK && level.noCollision(AABB(p, p))) (p.y - res.location.y).coerceIn(
+                0.0,
+                20.0
+            )
+            else 0.0
             sumXH += vec3.x * heightY
             sumZH += vec3.z * heightY
             sumX2 += vec3.x * vec3.x
@@ -602,11 +628,42 @@ object VehicleMotionUtils {
                     val sprite = model.particleIcon
                     val color = SpritePixelHelper.getRandomPixelRGB(sprite, 0)
                     val speed = Math.min(vehicle.deltaMovement.length(), 0.5).toFloat()
-                    vehicle.addRandomParticle(CustomCloudOption(color, 70, 1f + 7f * speed + Math.random().toFloat() * 2, Math.random().toFloat() * -0.12f, false, false), p.add(0.0, 0.2, 0.0).subtract(vehicle.deltaMovement.scale(1.5)), speed, level, 1, vehicle.deltaMovement.scale(60.0))
+                    vehicle.addRandomParticle(
+                        CustomCloudOption(
+                            color,
+                            70,
+                            1f + 7f * speed + Math.random().toFloat() * 2,
+                            Math.random().toFloat() * -0.12f,
+                            false,
+                            light = false
+                        ),
+                        p.add(0.0, 0.2, 0.0).subtract(vehicle.deltaMovement.scale(1.5)),
+                        speed,
+                        level,
+                        1,
+                        vehicle.deltaMovement.scale(60.0)
+                    )
                 } else {
-                    vehicle.addRandomParticle(BlockParticleOption(ParticleTypes.BLOCK, state), p.add(0.0, 0.1, 0.0), 0.2f, level, 0f, 1)
-                    if (vehicle.engineInfo is EngineInfo.Track && vehicle.drift() && vehicle.deltaMovement.horizontalDistanceSqr() > 0.0004 && state.`is`(BlockTags.MINEABLE_WITH_PICKAXE))
-                        vehicle.addRandomParticle(ModParticleTypes.FIRE_STAR.get(), p.add(0.0, 0.1, 0.0), 0.25f, level, 0.08f, 1)
+                    vehicle.addRandomParticle(
+                        BlockParticleOption(ParticleTypes.BLOCK, state),
+                        p.add(0.0, 0.1, 0.0),
+                        0.2f,
+                        level,
+                        0f,
+                        1
+                    )
+                    if (vehicle.engineInfo is EngineInfo.Track && vehicle.drift() && vehicle.deltaMovement.horizontalDistanceSqr() > 0.0004 && state.`is`(
+                            BlockTags.MINEABLE_WITH_PICKAXE
+                        )
+                    )
+                        vehicle.addRandomParticle(
+                            ModParticleTypes.FIRE_STAR.get(),
+                            p.add(0.0, 0.1, 0.0),
+                            0.25f,
+                            level,
+                            0.08f,
+                            1
+                        )
                 }
             }
         }
@@ -623,6 +680,7 @@ object VehicleMotionUtils {
      *
      * 角度约定：正xRot = 低头，正roll = 右侧下沉
      */
+    @JvmStatic
     fun updateTerrainCompact(entity: VehicleEntity, sumXH: Double, sumZH: Double, sumX2: Double, sumZ2: Double) {
         val rate = entity.data().compute().terrainCompatRotateRate
 
@@ -644,6 +702,7 @@ object VehicleMotionUtils {
      * @param vehicle 载具
      * @return 是否有OBB接触地面
      */
+    @JvmStatic
     fun checkObbOnGround(vehicle: VehicleEntity): Boolean {
         val obb = vehicle.getCollisionOBB() ?: return vehicle.onGround()
 
@@ -671,6 +730,7 @@ object VehicleMotionUtils {
         return false
     }
 
+    @JvmStatic
     fun getWheelsTransform(vehicle: VehicleEntity, partialTicks: Float): Matrix4d {
         val transform = Matrix4d()
         transform.translate(
@@ -683,57 +743,14 @@ object VehicleMotionUtils {
     }
 
     /**
-     * OBB分解结果：子AABB列表 + OBB真实最小Y（用于精确地面碰撞）
-     */
-    private data class ObbDecomposition(val subAabbs: List<AABB>, val obbMinY: Double, val obbMaxY: Double)
-
-    /**
-     * 将OBB分解为1x1子AABB集合，利用OBB局部坐标检查确保不超出OBB
-     * 同时返回OBB的世界空间真实最小/最大Y，用于精确地面碰撞检测
-     */
-    private fun decomposeObb(obb: OBB): ObbDecomposition {
-        val vertices = obb.getVertices()
-        var minX = Double.MAX_VALUE; var minY = Double.MAX_VALUE; var minZ = Double.MAX_VALUE
-        var maxX = -Double.MAX_VALUE; var maxY = -Double.MAX_VALUE; var maxZ = -Double.MAX_VALUE
-        for (v in vertices) {
-            if (v.x < minX) minX = v.x; if (v.y < minY) minY = v.y; if (v.z < minZ) minZ = v.z
-            if (v.x > maxX) maxX = v.x; if (v.y > maxY) maxY = v.y; if (v.z > maxZ) maxZ = v.z
-        }
-        val invRotation = obb.rotation.conjugate(Quaterniond())
-        val center = obb.center; val ext = obb.extents
-        val result = mutableListOf<AABB>()
-        val g = 1.0
-        // 对齐方块网格（不做内缩，OBB局部坐标检查已确保不超出OBB）
-        val sx = Math.floor(minX / g) * g; val ex = Math.ceil(maxX / g) * g
-        val sy = Math.floor(minY / g) * g; val ey = Math.ceil(maxY / g) * g
-        val sz = Math.floor(minZ / g) * g; val ez = Math.ceil(maxZ / g) * g
-        var cx = sx
-        while (cx < ex) {
-            var cy = sy
-            while (cy < ey) {
-                var cz = sz
-                while (cz < ez) {
-                    val wx = cx + 0.5; val wy = cy + 0.5; val wz = cz + 0.5
-                    val l = Vector3d(wx - center.x, wy - center.y, wz - center.z).rotate(invRotation)
-                    if (Math.abs(l.x) <= ext.x && Math.abs(l.y) <= ext.y && Math.abs(l.z) <= ext.z)
-                        result.add(AABB(cx, cy, cz, cx + g, cy + g, cz + g))
-                    cz += g
-                }
-                cy += g
-            }
-            cx += g
-        }
-        return ObbDecomposition(result, minY, maxY)
-    }
-
-    /**
      * 使用OBB的世界包围AABB + 原版碰撞逻辑进行载具与世界碰撞检测与解决
      *
      * @param vehicle  载具
      * @param movement 预期移动向量
      * @return 经过碰撞修正后的实际移动向量
      */
-    fun resolveObbWorldCollision(vehicle: VehicleEntity, movement: Vec3, allowStepUp: Boolean = true): Vec3 {
+    @JvmStatic
+    fun resolveObbWorldCollision(vehicle: VehicleEntity, movement: Vec3): Vec3 {
         vehicle.updateOBB()
 
         val collisionObb = vehicle.getCollisionOBB()
@@ -743,36 +760,54 @@ object VehicleMotionUtils {
             return Entity.collideBoundingBox(vehicle, movement, aabb, vehicle.level(), list)
         }
 
-        return resolveObbWorldCollision(vehicle, movement, listOf(collisionObb), allowStepUp)
+        return resolveObbWorldCollision(vehicle, movement, listOf(collisionObb))
     }
 
     /**
      * 使用显式OBB列表进行碰撞解决
-     * 将每个OBB分解为1x1子AABB，逐个子AABB用原版碰撞，取最保守结果
+     * 基于SAT(分离轴定理)直接对OBB与世界AABB做碰撞检测，
+     * 计算MTV(最小平移向量)并按Y→X→Z顺序逐轴裁剪运动向量。
+     *
+     * 相比旧的1x1网格分解法：
+     * - 更精确：SAT找到最小穿透方向，阶梯地形边界处MTV由水平轴主导而非Y轴，
+     *   因此vCollide的跨步探测能正确工作
+     * - 更快速：配合粗过滤(broad phase)，OBB数量级(1-2)取代子AABB数量级(~30)
+     *
+     * @param vehicle  载具
+     * @param movement 预期移动向量
+     * @param obbs     参与碰撞的OBB列表
+     * @return 经过碰撞修正后的实际移动向量
      */
-    fun resolveObbWorldCollision(vehicle: VehicleEntity, movement: Vec3, obbs: List<OBB>, allowStepUp: Boolean = true): Vec3 {
+    @JvmStatic
+    fun resolveObbWorldCollision(vehicle: VehicleEntity, movement: Vec3, obbs: List<OBB>): Vec3 {
         if (movement.lengthSqr() < 1e-7) return movement
-        if (obbs.isEmpty()) return Entity.collideBoundingBox(vehicle, movement, vehicle.boundingBox, vehicle.level(),
-            vehicle.level().getEntityCollisions(vehicle, vehicle.boundingBox.expandTowards(movement)))
+        if (obbs.isEmpty()) return Entity.collideBoundingBox(
+            vehicle, movement, vehicle.boundingBox, vehicle.level(),
+            vehicle.level().getEntityCollisions(vehicle, vehicle.boundingBox.expandTowards(movement))
+        )
 
-        // 分解OBB为子AABB，同时记录每个OBB的真实minY/maxY
-        val decompositions = obbs.map { decomposeObb(it) }
-        val subAabbs = decompositions.flatMap { it.subAabbs }
-        if (subAabbs.isEmpty()) return movement
-
-        // 搜索范围（子AABB展开运动向量后取并集，包含stepHeight以支持步进检测）
-        var sMinX = Double.MAX_VALUE; var sMinY = Double.MAX_VALUE; var sMinZ = Double.MAX_VALUE
-        var sMaxX = -Double.MAX_VALUE; var sMaxY = -Double.MAX_VALUE; var sMaxZ = -Double.MAX_VALUE
-        for (sub in subAabbs) {
-            val m = sub.expandTowards(movement)
-            if (m.minX < sMinX) sMinX = m.minX; if (m.minY < sMinY) sMinY = m.minY; if (m.minZ < sMinZ) sMinZ = m.minZ
-            if (m.maxX > sMaxX) sMaxX = m.maxX; if (m.maxY > sMaxY) sMaxY = m.maxY; if (m.maxZ > sMaxZ) sMaxZ = m.maxZ
+        // 计算搜索范围：所有OBB的世界AABB展开movement后取并集
+        var sMinX = Double.MAX_VALUE
+        var sMinY = Double.MAX_VALUE
+        var sMinZ = Double.MAX_VALUE
+        var sMaxX = -Double.MAX_VALUE
+        var sMaxY = -Double.MAX_VALUE
+        var sMaxZ = -Double.MAX_VALUE
+        for (obb in obbs) {
+            val obbAabb = OBB.getWorldAABB(obb)
+            val expanded = obbAabb.expandTowards(movement)
+            if (expanded.minX < sMinX) sMinX = expanded.minX
+            if (expanded.minY < sMinY) sMinY = expanded.minY
+            if (expanded.minZ < sMinZ) sMinZ = expanded.minZ
+            if (expanded.maxX > sMaxX) sMaxX = expanded.maxX
+            if (expanded.maxY > sMaxY) sMaxY = expanded.maxY
+            if (expanded.maxZ > sMaxZ) sMaxZ = expanded.maxZ
         }
         val searchBox = AABB(sMinX, sMinY, sMinZ, sMaxX, sMaxY, sMaxZ)
             .inflate(0.5)
             .expandTowards(0.0, vehicle.stepHeight.toDouble() + 0.5, 0.0)
 
-        // 收集方块+实体碰撞AABB
+        // 收集世界碰撞AABB（方块 + 实体）
         val allAabbs = mutableListOf<AABB>()
         for (shape in vehicle.level().getBlockCollisions(vehicle, searchBox))
             for (aabb in shape.toAabbs()) allAabbs.add(aabb)
@@ -780,72 +815,89 @@ object VehicleMotionUtils {
             for (aabb in shape.toAabbs()) allAabbs.add(aabb)
         if (allAabbs.isEmpty()) return movement
 
-        var rx = movement.x; var ry = movement.y; var rz = movement.z
+        var rx = movement.x
+        var ry = movement.y
+        var rz = movement.z
+        val minPenetration = 0.005  // 忽略极小的浮点穿透
+        val maxPenetration = 0.1    // 基础允许陷入量：仅在切向（平行于接触面）方向生效
+        // 法向（MTV方向）始终严格，避免陷入地面/飞天
 
-        // Y轴碰撞：对每个OBB的底部/顶部网格层使用真实minY/maxY以避免网格对齐悬空
-        // 只在边缘层使用真实值：底部子AABB的minY替换为obbMinY，顶部子AABB的maxY替换为obbMaxY
-        // 中间层继续使用网格对齐的subMinY/subMaxY，避免倾斜OBB时顶点AABB过大导致误判
-        for (dec in decompositions) {
-            val obbMinY = dec.obbMinY; val obbMaxY = dec.obbMaxY
-            val bottomGridY = Math.floor(obbMinY)
-            val topGridY = Math.ceil(obbMaxY)
+        // Y轴：将每个OBB按(0, ry, 0)移动后，SAT检测与世界AABB的碰撞，通过MTV裁剪ry
+        for (obb in obbs) {
+            val testObb = obb.move(Vec3(0.0, ry, 0.0))
+            val obbAabb = OBB.getWorldAABB(testObb)
+            for (aabb in allAabbs) {
+                // 粗过滤：在非解析轴(XZ)上快速排除无重叠的AABB
+                if (obbAabb.maxX <= aabb.minX || obbAabb.minX >= aabb.maxX) continue
+                if (obbAabb.maxZ <= aabb.minZ || obbAabb.minZ >= aabb.maxZ) continue
+                val mtv = OBB.computeObbAabbMtv(testObb, aabb) ?: continue
+                if (Math.abs(mtv.y) < minPenetration) continue
+                val mtvLen = Math.sqrt(mtv.x * mtv.x + mtv.y * mtv.y + mtv.z * mtv.z)
+                // nY = MTV中Y轴的分量占比，同时用于两个目的：
+                // 1) effectiveMaxPen：法向严格(nY→1则容差→0)，切向软(nY→0则容差→满)
+                // 2) nY作为响应缩放：nY高=地面接触→Y全响应；nY低=墙接触→Y响应趋零，避免突变弹出
+                val nY = Math.abs(mtv.y) / mtvLen
+                val effectiveMaxPen = maxPenetration * (1.0 - nY)
 
-            for (sub in dec.subAabbs) {
-                val subMinX = sub.minX; val subMaxX = sub.maxX
-                val subMinZ = sub.minZ; val subMaxZ = sub.maxZ
-                // 只有底部网格层的子AABB使用OBB真实minY（纯yaw旋转时所有底部子AABB的minY相同）
-                val useMinY = if (sub.minY <= bottomGridY) obbMinY else sub.minY
-                // 只有顶部网格层的子AABB使用OBB真实maxY
-                val useMaxY = if (sub.maxY >= topGridY) obbMaxY else sub.maxY
-
-                for (aabb in allAabbs) {
-                    if (subMaxX <= aabb.minX || subMinX >= aabb.maxX ||
-                        subMaxZ <= aabb.minZ || subMinZ >= aabb.maxZ) continue
-                    if (ry > 0 && useMaxY <= aabb.minY) {
-                        val a = aabb.minY - useMaxY; if (a < ry) ry = a
-                    } else if (ry < 0 && useMinY >= aabb.maxY) {
-                        val a = aabb.maxY - useMinY; if (a > ry) ry = a
-                    } else if (useMinY < aabb.maxY && useMaxY > aabb.minY && ry <= 0) {
-                        val p = aabb.maxY - useMinY; if (p > ry) ry = p
+                if (ry > 0 && mtv.y < 0) {
+                    val excess = -mtv.y - effectiveMaxPen
+                    if (excess > 0) ry = Math.max(0.0, ry - excess * nY)
+                } else if (ry < 0 && mtv.y > 0) {
+                    val excess = mtv.y - effectiveMaxPen
+                    if (excess > 0) ry = Math.min(0.0, ry + excess * nY)
+                } else if (ry <= 0 && mtv.y > 0) {
+                    if (mtv.y > effectiveMaxPen) {
+                        val excess = mtv.y - effectiveMaxPen
+                        ry = Math.min(0.0, ry + excess * 0.5 * nY)
                     }
                 }
             }
         }
 
-        // 根据裁剪后的Y更新所有子AABB
-        val updatedSubs = subAabbs.map { it.move(0.0, ry, 0.0) }
-
-        // X轴
-        for (sub in updatedSubs) {
-            val subMinY = sub.minY; val subMaxY = sub.maxY
-            val subMinX = sub.minX; val subMaxX = sub.maxX
-            val subMinZ = sub.minZ; val subMaxZ = sub.maxZ
+        // X轴：将每个OBB按(rx, ry, 0)移动后检测
+        for (obb in obbs) {
+            val testObb = obb.move(Vec3(rx, ry, 0.0))
+            val obbAabb = OBB.getWorldAABB(testObb)
             for (aabb in allAabbs) {
-                if (subMaxY <= aabb.minY || subMinY >= aabb.maxY ||
-                    subMaxZ <= aabb.minZ || subMinZ >= aabb.maxZ) continue
-                if (rx > 0 && subMaxX <= aabb.minX) {
-                    val a = aabb.minX - subMaxX; if (a < rx) rx = a
-                } else if (rx < 0 && subMinX >= aabb.maxX) {
-                    val a = aabb.maxX - subMinX; if (a > rx) rx = a
+                // 粗过滤：在非解析轴(YZ)上快速排除
+                if (obbAabb.maxY <= aabb.minY || obbAabb.minY >= aabb.maxY) continue
+                if (obbAabb.maxZ <= aabb.minZ || obbAabb.minZ >= aabb.maxZ) continue
+                val mtv = OBB.computeObbAabbMtv(testObb, aabb) ?: continue
+                if (Math.abs(mtv.x) < minPenetration) continue
+                val mtvLen = Math.sqrt(mtv.x * mtv.x + mtv.y * mtv.y + mtv.z * mtv.z)
+                val nX = Math.abs(mtv.x) / mtvLen
+                val effectiveMaxPen = maxPenetration * (1.0 - nX)
+
+                if (rx > 0 && mtv.x < 0) {
+                    val excess = -mtv.x - effectiveMaxPen
+                    if (excess > 0) rx = Math.max(0.0, rx - excess * nX)
+                } else if (rx < 0 && mtv.x > 0) {
+                    val excess = mtv.x - effectiveMaxPen
+                    if (excess > 0) rx = Math.min(0.0, rx + excess * nX)
                 }
             }
         }
 
-        // 根据裁剪后的X再次更新
-        val updatedSubs2 = updatedSubs.map { it.move(rx, 0.0, 0.0) }
-
-        // Z轴
-        for (sub in updatedSubs2) {
-            val subMinY = sub.minY; val subMaxY = sub.maxY
-            val subMinX = sub.minX; val subMaxX = sub.maxX
-            val subMinZ = sub.minZ; val subMaxZ = sub.maxZ
+        // Z轴：将每个OBB按(rx, ry, rz)移动后检测
+        for (obb in obbs) {
+            val testObb = obb.move(Vec3(rx, ry, rz))
+            val obbAabb = OBB.getWorldAABB(testObb)
             for (aabb in allAabbs) {
-                if (subMaxY <= aabb.minY || subMinY >= aabb.maxY ||
-                    subMaxX <= aabb.minX || subMinX >= aabb.maxX) continue
-                if (rz > 0 && subMaxZ <= aabb.minZ) {
-                    val a = aabb.minZ - subMaxZ; if (a < rz) rz = a
-                } else if (rz < 0 && subMinZ >= aabb.maxZ) {
-                    val a = aabb.maxZ - subMinZ; if (a > rz) rz = a
+                // 粗过滤：在非解析轴(XY)上快速排除
+                if (obbAabb.maxX <= aabb.minX || obbAabb.minX >= aabb.maxX) continue
+                if (obbAabb.maxY <= aabb.minY || obbAabb.minY >= aabb.maxY) continue
+                val mtv = OBB.computeObbAabbMtv(testObb, aabb) ?: continue
+                if (Math.abs(mtv.z) < minPenetration) continue
+                val mtvLen = Math.sqrt(mtv.x * mtv.x + mtv.y * mtv.y + mtv.z * mtv.z)
+                val nZ = Math.abs(mtv.z) / mtvLen
+                val effectiveMaxPen = maxPenetration * (1.0 - nZ)
+
+                if (rz > 0 && mtv.z < 0) {
+                    val excess = -mtv.z - effectiveMaxPen
+                    if (excess > 0) rz = Math.max(0.0, rz - excess * nZ)
+                } else if (rz < 0 && mtv.z > 0) {
+                    val excess = mtv.z - effectiveMaxPen
+                    if (excess > 0) rz = Math.min(0.0, rz + excess * nZ)
                 }
             }
         }

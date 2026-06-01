@@ -432,6 +432,33 @@ data class OBB(
         }
 
         /**
+         * 计算OBB的世界轴对齐包围盒(AABB)
+         * 通过8个顶点求最小/最大坐标得出
+         *
+         * @param obb OBB盒
+         * @return OBB的世界AABB
+         */
+        @JvmStatic
+        fun getWorldAABB(obb: OBB): AABB {
+            val vertices = obb.getVertices()
+            var minX = Double.MAX_VALUE
+            var minY = Double.MAX_VALUE
+            var minZ = Double.MAX_VALUE
+            var maxX = -Double.MAX_VALUE
+            var maxY = -Double.MAX_VALUE
+            var maxZ = -Double.MAX_VALUE
+            for (v in vertices) {
+                if (v.x < minX) minX = v.x
+                if (v.y < minY) minY = v.y
+                if (v.z < minZ) minZ = v.z
+                if (v.x > maxX) maxX = v.x
+                if (v.y > maxY) maxY = v.y
+                if (v.z > maxZ) maxZ = v.z
+            }
+            return AABB(minX, minY, minZ, maxX, maxY, maxZ)
+        }
+
+        /**
          * 计算OBB上离待判定点最近的点
          *
          * @param point 待判定点

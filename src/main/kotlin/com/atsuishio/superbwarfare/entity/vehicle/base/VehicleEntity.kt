@@ -4247,10 +4247,10 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         if (stepHeight > 0.0f && flag3 && (flag || flag2)) {
             // 尝试步进
             var vec31 = VehicleMotionUtils.resolveObbWorldCollision(
-                this, Vec3(pVec.x, stepHeight.toDouble(), pVec.z), allowStepUp = false
+                this, Vec3(pVec.x, stepHeight.toDouble(), pVec.z)
             )
             val vec32 = VehicleMotionUtils.resolveObbWorldCollision(
-                this, Vec3(0.0, stepHeight.toDouble(), 0.0), allowStepUp = false
+                this, Vec3(0.0, stepHeight.toDouble(), 0.0)
             )
             if (vec32.y < stepHeight.toDouble()) {
                 // 头顶有遮挡，尝试先向上移动vec32，再水平移动
@@ -4259,7 +4259,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 if (collisionObb != null) {
                     val stepUpObbs = listOf(collisionObb.move(Vec3(vec32.x, vec32.y, vec32.z)))
                     horizPart = VehicleMotionUtils.resolveObbWorldCollision(
-                        this, Vec3(pVec.x, 0.0, pVec.z), stepUpObbs, allowStepUp = false)
+                        this, Vec3(pVec.x, 0.0, pVec.z), stepUpObbs)
                 } else {
                     val movedBox = this.boundingBox.move(vec32)
                     val list = level().getEntityCollisions(this, movedBox.expandTowards(pVec.x, 0.0, pVec.z))
@@ -4278,7 +4278,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 if (collisionObb != null) {
                     val stepUpObbs = listOf(collisionObb.move(Vec3(vec31.x, vec31.y, vec31.z)))
                     stepDown = VehicleMotionUtils.resolveObbWorldCollision(
-                        this, Vec3(0.0, -vec31.y + pVec.y, 0.0), stepUpObbs, allowStepUp = false)
+                        this, Vec3(0.0, -vec31.y + pVec.y, 0.0), stepUpObbs)
                 } else {
                     // 无OBB时用偏移AABB模拟步进后位置
                     val movedBox = this.boundingBox.move(vec31)
