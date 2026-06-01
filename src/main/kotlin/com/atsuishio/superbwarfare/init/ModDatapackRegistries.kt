@@ -9,7 +9,7 @@ import net.neoforged.neoforge.registries.DataPackRegistryEvent
 object ModDatapackRegistries {
 
     val PERKS_KEY: ResourceKey<Registry<PerkDescriptor>> =
-        ResourceKey.createRegistryKey(Mod.loc("perks"))
+        ResourceKey.createRegistryKey(Mod.loc("sbw/perks"))
 
     fun onNewRegistry(event: DataPackRegistryEvent.NewRegistry) {
         event.dataPackRegistry(PERKS_KEY, PerkDescriptor.CODEC)
