@@ -246,7 +246,6 @@
   "item.superbwarfare.mortar_barrel": "Mortar Barrel",
   "item.superbwarfare.mortar_deployer": "Mortar",
   "des.superbwarfare.mortar_deployer": "While sneaking, right-click mortar with Monitor to convert it to intelligent mortar",
-  "item.superbwarfare.tow_deployer": "TOW Anti-tank Missile Launcher",
   "item.superbwarfare.tow_missile": "TOW Anti-tank Missile",
   "item.superbwarfare.claymore_mine": "Claymore",
   "item.superbwarfare.c4_bomb": "C4",
@@ -862,6 +861,7 @@
   "info.superbwarfare.bradley": "The M2 Bradley is the current U.S. infantry fighting vehicle. Its primary armament consists of a 25mm chain gun and a TOW anti-tank missile launcher. Designed to transport infantry and provide them with potent direct fire support, it also possesses anti-armor capability, and is known for its balanced mobility and protection",
   "info.superbwarfare.lav_25": "The LAV-25 is a U.S. wheeled infantry fighting vehicle. Its primary armament consists of a 25mm chain gun. Designed for reconnaissance, rapid assault, and infantry transport missions, it features amphibious capability and excellent on-road mobility, renowned for its high tactical flexibility",
   "info.superbwarfare.ztz_99a": "The ZTZ-99A is the Chinese army's premier main battle tank. Its primary armament is a 125mm smoothbore gun capable of firing multiple types of ammunition. Equipped with advanced composite armor, it is designed for high-intensity ground assault, renowned for its powerful firepower, protection, and battlefield survivability",
+  "info.superbwarfare.tow": "The TOW is a heavy anti-tank missile launcher. Typically deployed on vehicles or helicopter platforms, it utilizes wire-guided or radio command guidance. Specifically designed to precisely destroy enemy main battle tanks, armored vehicles, and fortified positions from long range, it offers high reliability and sustained combat capability",
 
   "weapon.superbwarfare.20mm_cannon": "20MM CANNON %1$s",
   "weapon.superbwarfare.20mm_cannon_ap": "20MM CANNON AP %1$s",

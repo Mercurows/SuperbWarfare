@@ -1,15 +1,15 @@
 {
   "values": [
-    "superbwarfare:heal_clip",
-    "superbwarfare:fourth_times_charm",
-    "superbwarfare:subsistence",
+    "superbwarfare:backpack_linked_magazine",
+    "superbwarfare:cast_no_shadows",
     "superbwarfare:field_doctor",
+    "superbwarfare:fourth_times_charm",
+    "superbwarfare:heal_clip",
+    "superbwarfare:powerful_cooler",
     "superbwarfare:regeneration",
+    "superbwarfare:subsistence",
     "superbwarfare:turbo_charger",
     "superbwarfare:powerful_attraction",
-    "superbwarfare:intelligent_chip",
-    "superbwarfare:backpack_linked_magazine",
-    "superbwarfare:powerful_cooler",
-    "superbwarfare:cast_no_shadows"
+    "superbwarfare:intelligent_chip"
   ]
 }

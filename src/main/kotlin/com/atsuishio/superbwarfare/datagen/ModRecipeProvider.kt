@@ -278,16 +278,6 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .define('c', Items.ARMOR_STAND)
                 .unlockedBy(getHasName(Items.TARGET), has(Items.TARGET))
                 .save(writer, loc(getItemName(ModItems.TARGET_DEPLOYER.get())))
-            ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.TOW_DEPLOYER.get())
-                .pattern("c ")
-                .pattern("ab")
-                .pattern("d ")
-                .define('a', Items.DISPENSER)
-                .define('b', ModItems.MORTAR_BARREL.get())
-                .define('c', ModItems.ARTILLERY_INDICATOR.get())
-                .define('d', ModTags.Items.STORAGE_BLOCK_STEEL)
-                .unlockedBy(getHasName(Items.DISPENSER), has(Items.DISPENSER))
-                .save(writer, loc(getItemName(ModItems.TOW_DEPLOYER.get())))
         }
 
         private fun buildArmorRecipes(writer: Consumer<FinishedRecipe>) {
@@ -1657,6 +1647,16 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .unlockedBy(getHasName(ModItems.LASER_UNIT.get()), has(ModItems.LASER_UNIT.get()))
                 .save(writer, loc(getEntityTypeName(ModEntities.LASER_TOWER.get())))
             VehicleAssemblingRecipeBuilder.entity(
+                ModEntities.TOW.get(),
+                VehicleAssemblingRecipe.Category.DEFENSE
+            )
+                .require(Items.DISPENSER)
+                .require(ModItems.MORTAR_BARREL.get())
+                .require(ModItems.ARTILLERY_INDICATOR.get())
+                .require(ModItems.MORTAR_BIPOD.get())
+                .unlockedBy(getHasName(ModItems.ARTILLERY_INDICATOR.get()), has(ModItems.ARTILLERY_INDICATOR.get()))
+                .save(writer, loc(getEntityTypeName(ModEntities.TOW.get())))
+            VehicleAssemblingRecipeBuilder.entity(
                 ModEntities.WAVEFORCE_TOWER.get(),
                 VehicleAssemblingRecipe.Category.DEFENSE
             )
@@ -1879,7 +1879,10 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .require(ModItems.MEDIUM_BATTERY_PACK.get())
                 .require(ModItems.WHEEL.get(), 4)
                 .require(ModItems.LARGE_MOTOR.get())
-                .require(ModItems.TOW_DEPLOYER.get())
+                .require(Items.DISPENSER)
+                .require(ModItems.MORTAR_BARREL.get())
+                .require(ModItems.ARTILLERY_INDICATOR.get())
+                .require(ModItems.MORTAR_BIPOD.get())
                 .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
                 .save(writer, loc(getEntityTypeName(ModEntities.SODAYO_PICK_UP_TOW.get())))
             VehicleAssemblingRecipeBuilder.entity(ModEntities.MI_28.get(), VehicleAssemblingRecipe.Category.AIRCRAFT)

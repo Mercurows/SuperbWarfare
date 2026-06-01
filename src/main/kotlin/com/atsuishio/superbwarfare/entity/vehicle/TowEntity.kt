@@ -108,21 +108,6 @@ class TowEntity(type: EntityType<TowEntity>, world: Level) : VehicleEntity(type,
         }
     }
 
-    override fun getRetrieveItems(): List<ItemStack> {
-        val list = arrayListOf<ItemStack>()
-        list.add(ItemStack(ModItems.TOW_DEPLOYER.get()))
-
-        val data = getGunData(0)
-        if (loaded && data != null) {
-            val stack = data.selectedAmmoConsumer().stack().copyWithCount(data.withdrawAmmoCount())
-            if (!stack.isEmpty) {
-                list.add(stack.copy())
-            }
-        }
-
-        return list
-    }
-
     override fun vehicleShoot(living: LivingEntity?, uuid: UUID?, targetPos: Vec3?) {
         super.vehicleShoot(living, uuid, targetPos)
 

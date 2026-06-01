@@ -6,7 +6,10 @@
     "superbwarfare:medium_battery_pack",
     "4 superbwarfare:wheel",
     "superbwarfare:large_motor",
-    "superbwarfare:tow_deployer"
+    "minecraft:dispenser",
+    "superbwarfare:mortar_barrel",
+    "superbwarfare:artillery_indicator",
+    "superbwarfare:mortar_bipod"
   ],
   "result": {
     "entity": "superbwarfare:sodayo_pick_up_tow"

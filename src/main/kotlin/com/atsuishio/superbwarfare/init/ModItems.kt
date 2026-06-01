@@ -241,7 +241,6 @@ object ModItems {
     @JvmField val MORTAR_BARREL = registerItem("mortar_barrel")
     @JvmField val MORTAR_BASE_PLATE = registerItem("mortar_base_plate")
     @JvmField val MORTAR_BIPOD = registerItem("mortar_bipod")
-    @JvmField val TOW_DEPLOYER = registerItem("tow_deployer") { TowDeployerItem() }
     @JvmField val SEEKER = registerItem("seeker")
     @JvmField val MISSILE_ENGINE = registerItem("missile_engine")
     @JvmField val FUSEE = registerItem("fusee")

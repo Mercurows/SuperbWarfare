@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_dispenser": {
+    "has_artillery_indicator": {
       "conditions": {
         "items": [
           {
             "items": [
-              "minecraft:dispenser"
+              "superbwarfare:artillery_indicator"
             ]
           }
         ]
@@ -15,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:tow_deployer"
+        "recipe": "superbwarfare:tow"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_dispenser",
+      "has_artillery_indicator",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:tow_deployer"
+      "superbwarfare:tow"
     ]
   },
   "sends_telemetry_event": false

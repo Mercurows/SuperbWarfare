@@ -246,7 +246,6 @@
   "item.superbwarfare.mortar_barrel": "迫击炮管",
   "item.superbwarfare.mortar_deployer": "迫击炮",
   "des.superbwarfare.mortar_deployer": "潜行时，使用遥控器右击迫击炮可将其转化为智能迫击炮",
-  "item.superbwarfare.tow_deployer": "陶式反坦克导弹发射器",
   "item.superbwarfare.tow_missile": "陶式反坦克导弹",
   "item.superbwarfare.claymore_mine": "阔剑地雷",
   "item.superbwarfare.c4_bomb": "C4炸药",
@@ -862,6 +861,7 @@
   "info.superbwarfare.bradley": "M2“布拉德利”是美军现役步兵战车。主要武器为一门25毫米链式机炮和“陶”式反坦克导弹发射器，设计用于运载步兵并为其提供强大的直接火力支援，兼具一定的反装甲能力，以均衡的机动性与防护性著称",
   "info.superbwarfare.lav_25": "LAV-25是美军的轮式步兵战车。主要武器为一门25毫米链式机炮，设计用于执行侦察、快速突击和步兵输送任务，具备两栖能力和优异的公路机动性，以高战术灵活性著称",
   "info.superbwarfare.ztz_99a": "ZTZ-99A是中国陆军王牌主战坦克。主武器为一门125毫米滑膛炮，可发射多种弹药，配备先进复合装甲，专为高强度地面突击设计，以强大的火力、防护力和战场生存能力著称",
+  "info.superbwarfare.tow": "陶式（TOW）是一款重型反坦克导弹发射器。通常采用车载或直升机平台，采用线导或无线指令制导，专为从远距离精确摧毁敌方主战坦克、装甲车及坚固工事而设计，具备高可靠性与持续作战能力",
 
   "weapon.superbwarfare.20mm_cannon": "20毫米机炮 %1$s",
   "weapon.superbwarfare.20mm_cannon_ap": "20毫米机炮 穿甲弹 %1$s",
