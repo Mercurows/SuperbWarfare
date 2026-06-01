@@ -3,6 +3,11 @@
   "MaxEnergy": 5000000,
   "OBB": [
     {
+      "Part": "Collision",
+      "Size": [1.375, 1.625, 4.406],
+      "Position": [0, 1.625, 0.71875]
+    },
+    {
       "Size": [0.2656, 0.547, 0.547],
       "Position": [1.0156, 0.547, 3.203],
       "Part": "WheelLeft"
