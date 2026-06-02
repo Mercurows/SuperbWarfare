@@ -126,6 +126,7 @@ object VehicleMotionUtils {
         if (entity.noPhysics || vehicle.noPhysics) return
 
         if (entity is TurretWreckEntity) {
+            if (entity.tickCount < 1) return
             entity.supportByVehicle = true
         }
 
@@ -470,7 +471,7 @@ object VehicleMotionUtils {
         }
 
         if (!vehicle.enableAABB()) {
-            val aabb = calculateCombinedAABBOptimized(vehicle)
+            val aabb = calculateCombinedAABBOptimized(vehicle).inflate(0.25, 0.0, 0.25).move(vehicle.deltaMovement).move(0.0, 0.5, 0.0)
             BlockPos.betweenClosedStream(aabb).forEach { pos ->
                 val state = vehicle.level().getBlockState(pos)
                 if (vehicle.isInObb(pos, vehicle.deltaMovement)) {
