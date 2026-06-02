@@ -133,6 +133,20 @@ abstract class MissileProjectile : DestroyableProjectile, CustomSyncMotionEntity
         this.xRot += (0.95f * diffX).coerceIn(-turnSpeed, turnSpeed)
     }
 
+    fun turnYaw(vec3: Vec3, turnSpeed: Float) {
+        var vec3 = vec3
+        val v0 = deltaMovement.normalize()
+
+        vec3 = vec3.add(v0.scale(-0.4))
+
+        val targetAngleY = (-Mth.atan2(vec3.x, vec3.z) * (180f / Math.PI.toFloat()).toDouble()).toFloat()
+        val diffY = Mth.wrapDegrees(targetAngleY - this.yRot)
+
+        deltaMovement = deltaMovement.scale(1 - 0.0004 * VehicleVecUtils.calculateAngle(vec3, v0))
+        this.yRot += (0.95f * diffY).coerceIn(-turnSpeed, turnSpeed)
+
+    }
+
     override fun forceLoadChunk(): Boolean {
         return true
     }
