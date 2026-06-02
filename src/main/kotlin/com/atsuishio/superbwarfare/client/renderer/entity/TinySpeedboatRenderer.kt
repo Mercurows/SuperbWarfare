@@ -81,6 +81,12 @@ class TinySpeedboatRenderer<T>(manager: EntityRendererProvider.Context) :
         return Mod.loc("textures/bedrock/vehicle/tiny_speedboat_color.png")
     }
 
+    /**
+     * 通过调整色相(H)来实现RGB灯效，使用HSV模型：
+     * - H(色相)随时间循环，产生彩虹渐变
+     * - S(饱和度)固定为1.0，颜色始终饱和
+     * - V(明度)固定为1.0，始终保持最大亮度（RGB灯效特征：至少一个通道为最大值）
+     */
     fun getRainbowColorHSL(tickCount: Int): FloatArray {
         // 完整循环的tick数，调整这个值控制变化速度
         val cycleTicks = 80
@@ -88,41 +94,39 @@ class TinySpeedboatRenderer<T>(manager: EntityRendererProvider.Context) :
         // 计算色相（0-1范围）
         val hue = (tickCount % cycleTicks) / cycleTicks.toFloat()
 
-        // 固定饱和度和亮度
+        // 固定饱和度和明度（HSV模型，V=1保证RGB灯效的鲜艳明亮）
         val saturation = 1.0f
-        val lightness = 0.5f
+        val value = 1.0f
 
-        return hslToRgb(hue, saturation, lightness)
+        return hsvToRgb(hue, saturation, value)
     }
 
-    // HSL转RGB转换函数
-    fun hslToRgb(h: Float, s: Float, l: Float): FloatArray {
-        val r: Float
-        val g: Float
-        val b: Float
-
+    /**
+     * HSV→RGB转换：仅通过调整色相(H)来改变颜色，
+     * S和V固定时，输出RGB至少有一个通道为1.0，符合RGB灯效特征
+     */
+    fun hsvToRgb(h: Float, s: Float, v: Float): FloatArray {
         if (s == 0f) {
-            b = l
-            g = b
-            r = g
-        } else {
-            val q = if (l < 0.5f) l * (1 + s) else l + s - l * s
-            val p = 2 * l - q
-            r = hueToRgb(p, q, h + 1f / 3f)
-            g = hueToRgb(p, q, h)
-            b = hueToRgb(p, q, h - 1f / 3f)
+            return floatArrayOf(v, v, v, 1.0f)
         }
 
-        return floatArrayOf(r, g, b, 1.0f) // Alpha保持1.0
-    }
+        val hue = h * 6f
+        val sector = hue.toInt()       // 色相扇区 0-5
+        val fraction = hue - sector     // 扇区内插值 0-1
+        val p = v * (1f - s)
+        val q = v * (1f - s * fraction)
+        val t = v * (1f - s * (1f - fraction))
 
-    private fun hueToRgb(p: Float, q: Float, t: Float): Float {
-        var t = t
-        if (t < 0f) t += 1f
-        if (t > 1f) t -= 1f
-        if (t < 1f / 6f) return p + (q - p) * 6f * t
-        if (t < 1f / 2f) return q
-        if (t < 2f / 3f) return p + (q - p) * (2f / 3f - t) * 6f
-        return p
+        val (r, g, b) = when (sector % 6) {
+            0 -> Triple(v, t, p)
+            1 -> Triple(q, v, p)
+            2 -> Triple(p, v, t)
+            3 -> Triple(p, q, v)
+            4 -> Triple(t, p, v)
+            5 -> Triple(v, p, q)
+            else -> Triple(v, v, v)  // unreachable
+        }
+
+        return floatArrayOf(r, g, b, 1.0f)
     }
 }
