@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
-import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.tools.ParticleTool
@@ -11,7 +10,6 @@ import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundSource
-import net.minecraft.util.Mth
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.item.Item
@@ -113,20 +111,6 @@ open class Ru3m14MissileEntity(type: EntityType<out Ru3m14MissileEntity>, level:
         }
     }
 
-    fun turnYaw(vec3: Vec3, turnSpeed: Float) {
-        var vec3 = vec3
-        val v0 = deltaMovement.normalize()
-
-        vec3 = vec3.add(v0.scale(-0.4))
-
-        val targetAngleY = (-Mth.atan2(vec3.x, vec3.z) * (180f / Math.PI.toFloat()).toDouble()).toFloat()
-        val diffY = Mth.wrapDegrees(targetAngleY - this.yRot)
-
-        deltaMovement = deltaMovement.scale(1 - 0.0004 * VehicleVecUtils.calculateAngle(vec3, v0))
-        this.yRot += (0.95f * diffY).coerceIn(-turnSpeed, turnSpeed)
-
-    }
-
     override fun getGravity(): Float {
         return if (tickCount < 8) 0.15f else super.getGravity()
     }
@@ -135,14 +119,10 @@ open class Ru3m14MissileEntity(type: EntityType<out Ru3m14MissileEntity>, level:
         return ModSounds.ROCKET_FLY.get()
     }
 
-    override fun getVolume(): Float {
-        return 0.7f
-    }
-
     override val maxHealth: Float
         get() = 200f
 
     override fun getFlareHiddenTicks(): Int {
-        return 19
+        return 9
     }
 }

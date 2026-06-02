@@ -21,7 +21,7 @@
       "MaxPitch": 80,
       "MinYaw": -90,
       "MaxYaw": 90,
-      "Weapons": ["Cannon", "Kalibr"],
+      "Weapons": ["Cannon", "Kalibr", "AAMissile"],
       "Sensitivity": [0.55, 0.8, 0.9],
       "CameraPos": {
         "Transform": "Vehicle",
@@ -129,7 +129,7 @@
         }
       ],
       "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/ru_3m14.png",
-      "DefaultZoom": 3,
+      "DefaultZoom": 2,
       "DefaultFireMode": "Semi",
       "Magazine": 6,
       "EmptyReloadTime": 400,
@@ -154,6 +154,58 @@
         "Directions": [[0, 1, 0]],
         "ViewDirection": "Passenger",
         "BoundUpWithAmmoAmount": true
+      },
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:bomb_release",
+        "Fire3P": "superbwarfare:bomb_release",
+        "VehicleReload3p": "superbwarfare:bomb_reload",
+        "VehicleReloadSoundTime": 11,
+        "Change": "superbwarfare:into_missile",
+        "Locking": "superbwarfare:javelin_locking",
+        "Locked": "superbwarfare:javelin_locked"
+      },
+      "CrosshairColor": "0xFFC700",
+      "Crosshair": "@VehicleCommonMissile",
+      "CrosshairZooming": "@VehicleCommonSeekMissile",
+      "SoundRadius": 8,
+      "AvailableFireModes": ["Semi"]
+    },
+    "AAMissile": {
+      "AmmoType": [
+        {
+          "Ammo": "superbwarfare:large_anti_ground_missile",
+          "ShouldUnload": false
+        }
+      ],
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/ru_9m100.png",
+      "DefaultZoom": 2,
+      "DefaultFireMode": "Semi",
+      "Magazine": 8,
+      "EmptyReloadTime": 400,
+      "Projectile": "superbwarfare:ru_9m100_missile",
+      "Name": "weapon.superbwarfare.9m_100_missile",
+      "Damage": 400,
+      "ExplosionDamage": 160,
+      "ExplosionRadius": 10,
+      "Velocity": 1.7,
+      "SeekWeaponInfo": {
+        "SeekDirection": "Passenger",
+        "CanGuidedByRadar": true,
+        "AffectedByStealthTarget": true,
+        "MaxGuidedRange": 4096,
+        "SeekRange": 1024,
+        "SeekAngle": 20,
+        "SeekTime": 20,
+        "MinTargetHeight": 32,
+        "MinTargetSize": 0.1,
+        "OnlyLockEntity": true
+      },
+      "ShootPos": {
+        "Transform": "Vehicle",
+        "ShootPositionForHud": [0, 5.1, 0.9375],
+        "Positions": [[-1.5, 4, -1.4375], [1.5, 4, -1.4375]],
+        "Directions": [[0, 1, 0]],
+        "ViewDirection": "Passenger"
       },
       "SoundInfo": {
         "Fire1P": "superbwarfare:bomb_release",
