@@ -4186,7 +4186,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
 
     private var sbwCacheOnGround = false
 
-    fun vCollide(pVec: Vec3): Vec3 {
+    open fun vCollide(pVec: Vec3): Vec3 {
         if (ignoreEntityGroundCheckStepping) {
             sbwCacheOnGround = this.onGround()
             this.setOnGround(true)
@@ -4214,13 +4214,11 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
                 val horizPart: Vec3
                 if (collisionObb != null) {
                     val stepUpObbs = listOf(collisionObb.move(Vec3(vec32.x, vec32.y, vec32.z)))
-                    horizPart = VehicleMotionUtils.resolveObbWorldCollision(
-                        this, Vec3(pVec.x, 0.0, pVec.z), stepUpObbs
-                    )
+                    horizPart = VehicleMotionUtils.resolveObbWorldCollision(this, Vec3(pVec.x, 0.0, pVec.z), stepUpObbs)
                 } else {
                     val movedBox = this.boundingBox.move(vec32)
                     val list = level().getEntityCollisions(this, movedBox.expandTowards(pVec.x, 0.0, pVec.z))
-                    horizPart = Entity.collideBoundingBox(this, Vec3(pVec.x, 0.0, pVec.z), movedBox, level(), list)
+                    horizPart = collideBoundingBox(this, Vec3(pVec.x, 0.0, pVec.z), movedBox, level(), list)
                 }
                 val vec33 = horizPart.add(vec32)
                 if (vec33.horizontalDistanceSqr() > vec31.horizontalDistanceSqr()) {
@@ -4231,18 +4229,26 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             if (vec31.horizontalDistanceSqr() > vec3.horizontalDistanceSqr()) {
                 // 步进成功，处理垂直下落
                 val collisionObb = this.getCollisionOBB()
-                val stepDown: Vec3
+                var stepDown: Vec3
                 if (collisionObb != null) {
                     val stepUpObbs = listOf(collisionObb.move(Vec3(vec31.x, vec31.y, vec31.z)))
                     stepDown = VehicleMotionUtils.resolveObbWorldCollision(
                         this, Vec3(0.0, -vec31.y + pVec.y, 0.0), stepUpObbs
                     )
+
+                    // 支撑感知：防止OBB步进下落时卡入小坑洞
+                    // 当OBB底面绝大部分有方块支撑时，限制下陷量
+                    val steppedObb = stepUpObbs[0].move(stepDown)
+                    val (supportRatio, correction) = VehicleMotionUtils.checkBottomSupportRatio(this, steppedObb)
+                    if (supportRatio >= 0.75 && correction > 0) {
+                        // 大部分底面有支撑但OBB有部分陷入地表，向上修正
+                        stepDown = Vec3(stepDown.x, stepDown.y + correction, stepDown.z)
+                    }
                 } else {
                     // 无OBB时用偏移AABB模拟步进后位置
                     val movedBox = this.boundingBox.move(vec31)
                     val list = level().getEntityCollisions(this, movedBox.expandTowards(0.0, -vec31.y + pVec.y, 0.0))
-                    stepDown =
-                        Entity.collideBoundingBox(this, Vec3(0.0, -vec31.y + pVec.y, 0.0), movedBox, level(), list)
+                    stepDown = collideBoundingBox(this, Vec3(0.0, -vec31.y + pVec.y, 0.0), movedBox, level(), list)
                 }
                 return vec31.add(stepDown)
             }
@@ -4256,7 +4262,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
         return vec3
     }
 
-    fun vMove(pType: MoverType, pPos: Vec3) {
+    open fun vMove(pType: MoverType, pPos: Vec3) {
         var pPos = pPos
 
         level().profiler.push("move")
@@ -4575,7 +4581,7 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
      * 获取用于碰撞和旋转物理的单个COLLISION类型OBB
      */
     open fun getCollisionOBB(): OBB? {
-        return getOBBs().firstOrNull { it.part == OBB.Part.COLLISION }
+        return getOBBs().firstOrNull { it.part == COLLISION }
     }
 
     open fun getEnergyDataAccessor() = ENERGY

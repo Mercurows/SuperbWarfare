@@ -471,7 +471,8 @@ object VehicleMotionUtils {
         }
 
         if (!vehicle.enableAABB()) {
-            val aabb = calculateCombinedAABBOptimized(vehicle).inflate(0.25, 0.0, 0.25).move(vehicle.deltaMovement).move(0.0, 0.5, 0.0)
+            val aabb = calculateCombinedAABBOptimized(vehicle).inflate(0.25, 0.0, 0.25).move(vehicle.deltaMovement)
+                .move(0.0, 0.5, 0.0)
             BlockPos.betweenClosedStream(aabb).forEach { pos ->
                 val state = vehicle.level().getBlockState(pos)
                 if (vehicle.isInObb(pos, vehicle.deltaMovement)) {
@@ -580,7 +581,15 @@ object VehicleMotionUtils {
         var sumX2 = 0.0
         var sumZ2 = 0.0
 
-        for (vec3 in samplePoints) {
+        // 支撑感知：检测悬空采样点的比例，避免小幅悬空导致载具向下倾斜
+        // 当大部分采样点下方有方块支撑时，仅用有支撑的点做平面拟合
+        val GROUND_DISTANCE_THRESHOLD = 1.5  // 地形在1.5格内视为"有支撑"
+        val MIN_STABLE_SUPPORT_RATIO = 0.75  // 至少75%的采样点有支撑时保持水平，忽略少量悬空
+
+        // 第一遍：计算所有采样点的heightY
+        val heightYArray = DoubleArray(samplePoints.size)
+
+        for ((i, vec3) in samplePoints.withIndex()) {
             val vector4d = transformPosition(transform, vec3.x, vec3.y, vec3.z)
             val p = Vec3(vector4d.x, vector4d.y, vector4d.z)
             val res = level.clip(
@@ -603,10 +612,31 @@ object VehicleMotionUtils {
                 20.0
             )
             else 0.0
-            sumXH += vec3.x * heightY
-            sumZH += vec3.z * heightY
-            sumX2 += vec3.x * vec3.x
-            sumZ2 += vec3.z * vec3.z
+            heightYArray[i] = heightY
+        }
+
+        val supportedCount = heightYArray.count { it <= GROUND_DISTANCE_THRESHOLD }
+        val supportedRatio = supportedCount.toDouble() / heightYArray.size
+
+        // 第二遍：根据支撑比例选择性地累加到平面拟合
+        if (supportedRatio >= MIN_STABLE_SUPPORT_RATIO && supportedCount > 0) {
+            // 大部分采样点有支撑，仅用有支撑的点做平面拟合，忽略悬空部分
+            for ((i, vec3) in samplePoints.withIndex()) {
+                if (heightYArray[i] <= GROUND_DISTANCE_THRESHOLD) {
+                    sumXH += vec3.x * heightYArray[i]
+                    sumZH += vec3.z * heightYArray[i]
+                    sumX2 += vec3.x * vec3.x
+                    sumZ2 += vec3.z * vec3.z
+                }
+            }
+        } else {
+            // 悬空比例较高，载具确实处于悬崖边缘，使用所有点做完整拟合
+            for ((i, vec3) in samplePoints.withIndex()) {
+                sumXH += vec3.x * heightYArray[i]
+                sumZH += vec3.z * heightYArray[i]
+                sumX2 += vec3.x * vec3.x
+                sumZ2 += vec3.z * vec3.z
+            }
         }
 
         if (sumX2 > 0.0 || sumZ2 > 0.0) {
@@ -728,6 +758,75 @@ object VehicleMotionUtils {
         return false
     }
 
+    /**
+     * 检查OBB底面支撑比例，用于防止载具步进下落时卡入小坑洞
+     * 采样底面5个点（四角+中心），检查各点正下方是否有方块支撑
+     *
+     * @param vehicle 载具
+     * @param obb 位于目标位置的OBB
+     * @return Pair<支撑比例(0.0~1.0), 需要的向上修正量>
+     *         修正量 > 0 表示OBB有部分陷入地表以下，需要向上推
+     */
+    @JvmStatic
+    fun checkBottomSupportRatio(vehicle: VehicleEntity, obb: OBB): Pair<Double, Double> {
+        val level = vehicle.level()
+        val axes = obb.getAxes()
+        val center = obb.center
+        val ex = obb.extents.x
+        val ey = obb.extents.y
+        val ez = obb.extents.z
+
+        // 底面5个采样点：四角 + 中心
+        val sampleOffsets = listOf(
+            Pair(-1.0, -1.0), Pair(-1.0, 1.0), Pair(1.0, -1.0), Pair(1.0, 1.0), Pair(0.0, 0.0)
+        )
+
+        val closeThreshold = 1.5  // 方块表面0.5格内视为"接触地表"
+        var onSurfaceCount = 0
+        var maxPenetration = 0.0  // 采样点低于方块表面的最大深度
+
+        for ((fx, fz) in sampleOffsets) {
+            val lx = fx * ex
+            val lz = fz * ez
+
+            // 计算底面采样点的世界坐标: center + lx*axis0 + (-ey)*axis1 + lz*axis2
+            val wx = center.x + axes[0].x * lx + axes[1].x * (-ey) + axes[2].x * lz
+            val wy = center.y + axes[0].y * lx + axes[1].y * (-ey) + axes[2].y * lz
+            val wz = center.z + axes[0].z * lx + axes[1].z * (-ey) + axes[2].z * lz
+
+            val p = Vec3(wx, wy, wz)
+            val blockPos = BlockPos.containing(p)
+            val blockPosBelow = BlockPos.containing(p.add(0.0, -0.02, 0.0))
+            var state = level.getBlockState(blockPosBelow)
+            var shape = state.getCollisionShape(level, blockPosBelow)
+
+            // 如果正下方没有碰撞，检查当前方块位置
+            if (shape.isEmpty) {
+                state = level.getBlockState(blockPos)
+                shape = state.getCollisionShape(level, blockPos)
+            }
+
+            if (!shape.isEmpty) {
+                // 使用正确的blockPos（与shape对应的）
+                val shapeBlockPos = if (!level.getBlockState(blockPosBelow)
+                        .getCollisionShape(level, blockPosBelow).isEmpty
+                ) blockPosBelow else blockPos
+                val blockTopY = shapeBlockPos.y + shape.max(Direction.Axis.Y)
+                val dist = wy - blockTopY  // >0=在地表上方, <0=陷入地表
+
+                if (Math.abs(dist) <= closeThreshold) {
+                    onSurfaceCount++
+                    if (dist < 0) {
+                        maxPenetration = Math.max(maxPenetration, -dist)
+                    }
+                }
+            }
+        }
+
+        val ratio = onSurfaceCount.toDouble() / sampleOffsets.size
+        return Pair(ratio, maxPenetration)
+    }
+
     @JvmStatic
     fun getWheelsTransform(vehicle: VehicleEntity, partialTicks: Float): Matrix4d {
         val transform = Matrix4d()
@@ -835,7 +934,9 @@ object VehicleMotionUtils {
                 // 1) effectiveMaxPen：法向严格(nY→1则容差→0)，切向软(nY→0则容差→满)
                 // 2) nY作为响应缩放：nY高=地面接触→Y全响应；nY低=墙接触→Y响应趋零，避免突变弹出
                 val nY = Math.abs(mtv.y) / mtvLen
-                val effectiveMaxPen = maxPenetration * (1.0 - nY)
+                // nY→1(平坦地面接触)时允许1.5cm微小穿透作为稳定缓冲区，防止OBB在接地时微反弹
+                // nY→0(墙面接触)时保持10cm完整容差，让水平碰撞平滑
+                val effectiveMaxPen = maxPenetration * (1.0 - nY * 0.85)
 
                 if (ry > 0 && mtv.y < 0) {
                     val excess = -mtv.y - effectiveMaxPen
