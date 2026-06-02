@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo
 import com.atsuishio.superbwarfare.entity.living.TargetEntity
-import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity
 import com.atsuishio.superbwarfare.entity.vehicle.TurretWreckEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.lerpAngle
@@ -23,6 +22,7 @@ import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.entity.projectile.Projectile
 import net.minecraft.world.entity.vehicle.Boat
 import net.minecraft.world.entity.vehicle.Minecart
 import net.minecraft.world.level.ClipContext
@@ -121,7 +121,7 @@ object VehicleMotionUtils {
      * - 阶段B：deltaMovement会导致穿入 → 只截速度不调位置（交给entity.move()处理）
      */
     private fun handleEntityObbCollision(vehicle: VehicleEntity, entity: Entity) {
-        if (entity is DroneEntity) return
+        if (entity is Projectile) return
         if (vehicle.enableAABB()) return
         if (entity.noPhysics || vehicle.noPhysics) return
 

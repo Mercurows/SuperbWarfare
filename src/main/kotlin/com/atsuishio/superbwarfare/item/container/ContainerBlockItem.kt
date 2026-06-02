@@ -133,6 +133,7 @@ class ContainerBlockItem : BlockItem(ModBlocks.CONTAINER.get(), Properties().sta
             event.add(ModEntities.KV_16)
             event.add(ModEntities.JU_87)
             event.add(ModEntities.A_10A)
+            event.add(ModEntities.HAPPIEST_GHAST)
         }
 
         @SubscribeEvent
