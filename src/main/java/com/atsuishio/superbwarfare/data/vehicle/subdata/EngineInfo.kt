@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.data.vehicle.subdata
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.airShipEngine
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.aircraftEngine
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.helicopterEngine
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.shipEngine
@@ -35,6 +36,33 @@ abstract class EngineInfo {
     var engineSoundVolume: Float = 0.4f
 
     abstract fun work(vehicle: VehicleEntity)
+
+    @Serializable
+    open class AirShip : EngineInfo() {
+        // 转向速度
+        @SerialName("SteeringSpeed")
+        var steeringSpeed: Float = 1f
+
+        // 最大前进速度系数
+        @SerialName("MaxForwardSpeedRate")
+        var maxForwardSpeedRate: Float = 1f
+
+        // 最大后退速度系数
+        @SerialName("MaxBackwardSpeedRate")
+        var maxBackwardSpeedRate: Float = 1f
+
+        // 最大上升速度系数
+        @SerialName("MaxUpSpeedRate")
+        var maxUpSpeedRate: Float = 1f
+
+        // 最大上升速度系数
+        @SerialName("MaxDownSpeedRate")
+        var maxDownSpeedRate: Float = 1f
+
+        override fun work(vehicle: VehicleEntity) {
+            vehicle.airShipEngine(this)
+        }
+    }
 
     @Serializable
     open class Wheel : EngineInfo() {

@@ -30,5 +30,8 @@ enum class EngineType {
     WHEELCHAIR,
 
     @SerialName("Tom6")
-    TOM6
+    TOM6,
+
+    @SerialName("AirShip")
+    AIRSHIP
 }

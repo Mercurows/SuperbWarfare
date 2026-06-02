@@ -105,7 +105,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         texture = if (ClientEventHandler.activeThermalImaging) {
             SmartTextureBrightener.getSmartBrightenedTexture(texture, 3f)
         } else if (entity.isWreck) {
-            if ((entity.vehicleType == VehicleType.AIRPLANE || entity.vehicleType == VehicleType.HELICOPTER)) {
+            if ((entity.vehicleType == VehicleType.AIRPLANE || entity.vehicleType == VehicleType.HELICOPTER || entity.vehicleType == VehicleType.AIRSHIP)) {
                 if (entity.sympatheticDetonated) {
                     TextureBrightnessHandler.getBrightenedTexture(texture, 0.3f)
                 } else {

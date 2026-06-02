@@ -1,6 +1,7 @@
 {
   "MaxHealth": 500,
   "MaxEnergy": 5000000,
+  "Gravity": 0,
   "OBB": [
     {
       "Part": "Collision",
@@ -21,6 +22,14 @@
       "MinYaw": -90,
       "MaxYaw": 90,
       "Weapons": ["Cannon"],
+      "Sensitivity": [0.55, 0.8, 0.9],
+      "CameraPos": {
+        "Transform": "Vehicle",
+        "UseFixedCameraPos": true,
+        "Position": [0, 5.1, 0.9375],
+        "ZoomPosition": [0, 3, 2.1],
+        "ZoomDirection": "Barrel"
+      },
       "DismountInfo": {
         "Transform": "Vehicle",
         "Position": [0, 0.375, -4.2]
@@ -67,7 +76,7 @@
       "AvailableFireModes": "Auto",
       "Projectile": "superbwarfare:small_cannon_shell",
       "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_30mm_ap.png",
-      "DefaultZoom": 3,
+      "DefaultZoom": 2,
       "RPM": 600,
       "Velocity": 18,
       "Damage": 65,
@@ -87,7 +96,8 @@
         "Fire3PVeryFar": "superbwarfare:mi_28_cannon_veryfar",
         "Change": "superbwarfare:into_cannon"
       },
-      "Crosshair": "@Empty",
+      "Crosshair": "@VehicleCommonGunDynamic",
+      "CrosshairColor": "0xFFC700",
       "SoundRadius": 24,
       "AmmoType": [
         "superbwarfare:small_shell_ap",
@@ -112,28 +122,25 @@
       }
     }
   },
-  "EngineType": "Track",
+  "EngineType": "AirShip",
   "EngineInfo": {
-    "Buoyancy": 0,
+    "Buoyancy": 0.1,
     "EnergyCostRate": 128,
-    "WheelRotSpeed": 1.25,
-    "WheelDifferential": 0.75,
-    "TrackRotSpeed": 1.9,
-    "TrackDifferential": 0.6,
-    "MaxForwardSpeedRate": 0.78,
-    "MaxBackwardSpeedRate": 0.5,
-    "Increment": 0.02,
-    "Decrement": 0.01,
-    "SteeringSpeed": 0.1,
+    "MaxForwardSpeedRate": 1.0,
+    "MaxBackwardSpeedRate": 1.0,
+    "MaxUpSpeedRate": 1.0,
+    "MaxDownSpeedRate": 1.0,
+    "Increment": 1.0,
+    "Decrement": 1.0,
+    "SteeringSpeed": 2.0,
     "EngineSoundVolume" : 0.6
   },
   "TurretPos": [0, 2, 0],
   "BarrelPos": [0, 0, 0],
-  "TurretTurnSpeed": [10, 0],
-  "TurretYawRange": [0, 0],
+  "TurretTurnSpeed": [10, 10],
+  "TurretYawRange": [-12, 12],
   "TurretPitchRange": [-80, 80],
-  "EngineSound": "superbwarfare:t_90a_engine",
-  "ThirdPersonCameraPos": [0, 1.25, 8.25],
+  "ThirdPersonCameraPos": [0, 1.25, 7.25],
   "UpStep": 1.1,
   "RotateOffsetHeight": 2,
   "Mass": 24,
@@ -175,8 +182,9 @@
   },
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/ah_6_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png",
-  "VehicleContainerType": "Small",
-  "Type": "Helicopter",
-  "TerrainCompat": [[0.867, 0, 1.406], [-0.867, 0, 1.406], [0.867, 0, 0.656], [-0.867, 0, 0.656], [0.867, 0, -0.656], [-0.867, 0, -0.656]],
-  "HudType": "@Helicopter"
+  "VehicleContainerType": "Medium",
+  "Type": "AirShip",
+  "HudType": "@Helicopter",
+  "HUDColor": "0xFFC700",
+  "TerrainCompat": [[0.867, 0, 1.406], [-0.867, 0, 1.406], [0.867, 0, 0.656], [-0.867, 0, 0.656], [0.867, 0, -0.656], [-0.867, 0, -0.656]]
 }

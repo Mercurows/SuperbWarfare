@@ -40,4 +40,7 @@ enum class VehicleType {
 
     @SerialName("Special")
     SPECIAL,
+
+    @SerialName("AirShip")
+    AIRSHIP
 }

@@ -204,7 +204,7 @@ abstract class VehicleRenderer<T>(renderManager: EntityRendererProvider.Context,
         if (ClientEventHandler.activeThermalImaging) {
             return SmartTextureBrightener.getSmartBrightenedTexture(res, 3f)
         } else if (animatable.isWreck) {
-            return if ((animatable.vehicleType == VehicleType.AIRPLANE || animatable.vehicleType == VehicleType.HELICOPTER)) {
+            return if ((animatable.vehicleType == VehicleType.AIRPLANE || animatable.vehicleType == VehicleType.HELICOPTER || animatable.vehicleType == VehicleType.AIRSHIP)) {
                 if (animatable.sympatheticDetonated) {
                     TextureBrightnessHandler.getBrightenedTexture(res, 0.3f)
                 } else {

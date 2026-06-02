@@ -13,10 +13,27 @@ import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.client.renderer.texture.OverlayTexture
+import net.minecraft.util.Mth
 import java.io.IOException
 
 class HappiestGhastRenderer<T>(manager: EntityRendererProvider.Context) :
     SbmVehicleRenderer<T>(manager) where T : HappiestGhastEntity, T : BasicGeoVehicleEntity {
+
+    override fun transformCustomModelPart(
+        vehicle: T,
+        model: BedrockVehicleModel,
+        poseStack: PoseStack,
+        entityYaw: Float,
+        partialTicks: Float
+    ) {
+        super.transformCustomModelPart(vehicle, model, poseStack, entityYaw, partialTicks)
+
+        val turretRight = model.getBone("turret_right")
+        if (turretRight != null) {
+            turretRight.rotation.rotationY(turretYRot * Mth.DEG_TO_RAD)
+            turretRight.visible = !(vehicle.isWreck && vehicle.hasTurret() && vehicle.sympatheticDetonated)
+        }
+    }
 
     override fun renderCustomPart(
         vehicle: T,
