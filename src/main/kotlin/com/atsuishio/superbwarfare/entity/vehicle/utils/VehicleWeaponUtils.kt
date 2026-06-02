@@ -57,8 +57,6 @@ object VehicleWeaponUtils {
         val diffY = Mth.wrapDegrees(-getYRotFromVector(shootVec) + getYRotFromVector(barrelVector)).toFloat()
         val diffX = Mth.wrapDegrees(-getXRotFromVector(shootVec) + getXRotFromVector(barrelVector)).toFloat()
 
-        vehicle.turretTurnSound(diffX, diffY, 0.95f)
-
         if (vehicle.getEntityData().get(VehicleEntity.TURRET_DAMAGED)) {
             ySpeed *= 0.2f
             xSpeed *= 0.2f
@@ -77,6 +75,9 @@ object VehicleWeaponUtils {
             -vehicle.turretMaxYaw,
             -vehicle.turretMinYaw
         )
+
+        vehicle.turretTurnSound(vehicle.turretXRot - vehicle.turretXRotO, vehicle.turretYRot - vehicle.turretYRotO, 0.95f)
+
         vehicle.turretYRotLock = Mth.clamp(-1f * diffY, min, max)
     }
 

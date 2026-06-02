@@ -335,6 +335,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     open var holdTick = 0
     open var holdPowerTick = 0
 
+    open var liftSpeed = 0f
     open var destroyRot = 0f
 
     open var jumpCoolDown = 0
@@ -1910,7 +1911,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         }
 
         if (isWreck) {
-            if ((vehicleType == VehicleType.AIRPLANE || vehicleType == VehicleType.HELICOPTER) && (onGround() || isInFluidType) && !sympatheticDetonated) {
+            if ((vehicleType == VehicleType.AIRPLANE || vehicleType == VehicleType.HELICOPTER || vehicleType == VehicleType.AIRSHIP) && (onGround() || isInFluidType) && !sympatheticDetonated) {
                 sympatheticDetonated = true
                 val destroyInfo = computed().destroyInfo
                 if (destroyInfo.explodePassengers) {
@@ -1936,7 +1937,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                 this.generateWreckageLoot()
             }
 
-            if (vehicleType != VehicleType.AIRPLANE && vehicleType != VehicleType.HELICOPTER) {
+            if (vehicleType != VehicleType.AIRPLANE && vehicleType != VehicleType.HELICOPTER && vehicleType != VehicleType.AIRSHIP) {
                 ejectPassengers()
             }
         }
@@ -2109,7 +2110,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         hornVolume *= 0.5f
 
         if (hasDecoy()) {
-            if (this.vehicleType == VehicleType.AIRPLANE || this.vehicleType == VehicleType.HELICOPTER) {
+            if (this.vehicleType == VehicleType.AIRPLANE || this.vehicleType == VehicleType.HELICOPTER || vehicleType == VehicleType.AIRSHIP) {
                 releaseDecoy()
             } else {
                 releaseSmokeDecoy(getTurretVector(1f))
@@ -2118,7 +2119,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         val terrainCompat = this.computed().terrainCompat
         if (terrainCompat.isNotEmpty()) {
-            if (!((vehicleType == VehicleType.AIRPLANE || vehicleType == VehicleType.HELICOPTER) && isWreck)) {
+            if (!((vehicleType == VehicleType.AIRPLANE || vehicleType == VehicleType.HELICOPTER || vehicleType == VehicleType.AIRSHIP) && isWreck)) {
                 this.terrainCompact(terrainCompat)
             }
         }
@@ -2386,7 +2387,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             mainEngineHealth = 0f
             subEngineHealth = 0f
         }
-        if ((vehicleType == VehicleType.HELICOPTER || vehicleType == VehicleType.AIRPLANE) && health < 0.05 * getMaxHealth()) {
+        if ((vehicleType == VehicleType.HELICOPTER || vehicleType == VehicleType.AIRPLANE || vehicleType == VehicleType.AIRSHIP) && health < 0.05 * getMaxHealth()) {
             mainEngineHealth = 0f
             subEngineHealth = 0f
         }
@@ -3284,7 +3285,6 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             )
         ).toFloat()
 
-        this.turretTurnSound(diffX, diffY, 0.95f)
 
         this.gunXRot = Mth.clamp(
             this.gunXRot + Mth.clamp(diffX, -xSpeed, xSpeed),
@@ -3296,6 +3296,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             -this.passengerWeaponMaxYaw,
             -this.passengerWeaponMinYaw
         )
+
+        turretTurnSound(gunXRot - gunXRotO, gunYRot - gunYRotO, 0.95f)
     }
 
     open fun adjustWeaponControllerAngle() {
@@ -3319,7 +3321,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     open fun destroy() {
         val destroyInfo = computed().destroyInfo
 
-        if (vehicleType != VehicleType.AIRPLANE && vehicleType != VehicleType.HELICOPTER) {
+        if (vehicleType != VehicleType.AIRPLANE && vehicleType != VehicleType.HELICOPTER || vehicleType == VehicleType.AIRSHIP) {
             if (destroyInfo.explodePassengers) {
                 if (this.crash && destroyInfo.crashPassengers) {
                     crashPassengers()
@@ -3440,6 +3442,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                     EngineType.AIRCRAFT -> Aircraft.serializer()
                     EngineType.WHEELCHAIR -> WheelChair.serializer()
                     EngineType.TOM6 -> Tom6.serializer()
+                    EngineType.AIRSHIP -> AirShip.serializer()
 
                     else -> null
                 }

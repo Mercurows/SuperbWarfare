@@ -124,8 +124,8 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
         scopeScale = Mth.lerp(partialTick, scopeScale, 1f)
         val scale: Float = scopeScale
 
-        var shootPos = entity.getShootPosForHud(player, 1f)
-        var shootVec = entity.getShootDirectionForHud(player, 1f).scale(512.0)
+        var shootPos = entity.getShootPosForHud(player, partialTick)
+        var shootVec = entity.getShootDirectionForHud(player, partialTick).scale(512.0)
         val nacelleCam = ClientEventHandler.isNacelleCam(player)
 
         if (nacelleCam) {
@@ -144,7 +144,7 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
 
         var dis = shootPos.distanceTo(hitPos)
 
-        var lookingEntity = entity.getPlayerLookAtEntityOnVehicle(player, 512.0, 1f)
+        var lookingEntity = entity.getPlayerLookAtEntityOnVehicle(player, 512.0, partialTick)
         if (nacelleCam) {
             lookingEntity = TraceTool.camerafFindLookingEntity(player, shootPos, shootVec, 512.0)
         }
