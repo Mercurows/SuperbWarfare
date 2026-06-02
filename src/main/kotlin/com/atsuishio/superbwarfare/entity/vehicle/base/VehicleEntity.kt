@@ -2072,18 +2072,18 @@ abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity
             .pow(4.0) * sin(0.2 * Math.PI * (cannonRecoilTime - 2.5))
         cannonRecoilForce *= 0.93f
 
-        this.supportEntities()
-        this.crushEntities()
-        this.setDeltaMovement(this.deltaMovement.add(0.0, -this.computed().gravity, 0.0))
-        this.move(MoverType.SELF, this.deltaMovement)
-
-
         if (tickCount % 4 == 0) {
             this.clearArrow()
             this.preventStacking()
             this.moveOnDragonTeeth()
             this.collideBlocks()
         }
+
+        this.supportEntities()
+        this.crushEntities()
+        this.setDeltaMovement(this.deltaMovement.add(0.0, -this.computed().gravity, 0.0))
+        this.move(MoverType.SELF, this.deltaMovement)
+
 
         if (this.hasEnergyStorage() && this.tickCount % 20 == 0) {
             for (stack in this.inventory.getItems()) {
