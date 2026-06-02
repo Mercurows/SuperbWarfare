@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.vehicle.utils
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo
+import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType
 import com.atsuishio.superbwarfare.entity.living.TargetEntity
 import com.atsuishio.superbwarfare.entity.vehicle.TurretWreckEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -546,6 +547,7 @@ object VehicleMotionUtils {
 
     @JvmStatic
     fun terrainCompact(vehicle: VehicleEntity, positions: MutableList<Vec3>) {
+        if (vehicle.vehicleType == VehicleType.AIRSHIP) return
         if (!vehicle.onGround()) {
             if (vehicle.isInFluidType) {
                 vehicle.xRot *= 0.9f; vehicle.setZRot(vehicle.roll * 0.9f)
