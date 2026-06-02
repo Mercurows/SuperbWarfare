@@ -21,7 +21,7 @@
       "MaxPitch": 80,
       "MinYaw": -90,
       "MaxYaw": 90,
-      "Weapons": ["Cannon"],
+      "Weapons": ["Cannon", "Kalibr"],
       "Sensitivity": [0.55, 0.8, 0.9],
       "CameraPos": {
         "Transform": "Vehicle",
@@ -120,6 +120,55 @@
         "Positions": [[-2.578, -0.125, 3], [2.578, -0.125, 3]],
         "Directions": [[0.005, 0, 1], [-0.005, 0, 1]]
       }
+    },
+    "Kalibr": {
+      "AmmoType": [
+        {
+          "Ammo": "superbwarfare:large_anti_ground_missile",
+          "ShouldUnload": false
+        }
+      ],
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/ru_3m14.png",
+      "DefaultZoom": 3,
+      "DefaultFireMode": "Semi",
+      "Magazine": 6,
+      "EmptyReloadTime": 400,
+      "Projectile": "superbwarfare:ru_3m14_missile",
+      "Name": "weapon.superbwarfare.ru_3m14_missile_block",
+      "Damage": 3000,
+      "ExplosionDamage": 1400,
+      "ExplosionRadius": 36,
+      "ProjectileLife": 24000,
+      "Velocity": 1.7,
+      "SeekWeaponInfo": {
+        "SeekDirection": "Passenger",
+        "SeekRange": 512,
+        "SeekAngle": 25,
+        "SeekTime": 20,
+        "OnlyLockBlock": true
+      },
+      "ShootPos": {
+        "Transform": "Vehicle",
+        "ShootPositionForHud": [0, 5.1, 0.9375],
+        "Positions": [[-1.5, 4, 1.4375], [1.5, 4, 1.4375], [-1.5, 4, 0.475], [1.5, 4, 0.475], [-1.5, 4, -0.475], [1.5, 4, -0.475]],
+        "Directions": [[0, 1, 0]],
+        "ViewDirection": "Passenger",
+        "BoundUpWithAmmoAmount": true
+      },
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:bomb_release",
+        "Fire3P": "superbwarfare:bomb_release",
+        "VehicleReload3p": "superbwarfare:bomb_reload",
+        "VehicleReloadSoundTime": 11,
+        "Change": "superbwarfare:into_missile",
+        "Locking": "superbwarfare:javelin_locking",
+        "Locked": "superbwarfare:javelin_locked"
+      },
+      "CrosshairColor": "0xFFC700",
+      "Crosshair": "@VehicleCommonMissile",
+      "CrosshairZooming": "@VehicleCommonSeekMissile",
+      "SoundRadius": 8,
+      "AvailableFireModes": ["Semi"]
     }
   },
   "EngineType": "AirShip",
@@ -140,7 +189,7 @@
   "TurretTurnSpeed": [10, 10],
   "TurretYawRange": [-12, 12],
   "TurretPitchRange": [-80, 80],
-  "ThirdPersonCameraPos": [0, 1.25, 7.25],
+  "ThirdPersonCameraPos": [0, 3, 6],
   "UpStep": 1.1,
   "RotateOffsetHeight": 2,
   "Mass": 24,
@@ -180,7 +229,7 @@
     "ExplosionRadius": 8,
     "CrashPassengers": true
   },
-  "VehicleIcon": "superbwarfare:textures/vehicle_icon/ah_6_icon.png",
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/happiest_ghast_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png",
   "VehicleContainerType": "Medium",
   "Type": "AirShip",

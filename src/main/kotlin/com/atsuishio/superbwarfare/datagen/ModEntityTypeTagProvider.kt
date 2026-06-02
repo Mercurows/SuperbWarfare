@@ -61,7 +61,8 @@ class ModEntityTypeTagProvider(
 
         this.tag(ModTags.EntityTypes.AA_MISSILE).add(
             ModEntities.IGLA_MISSILE.get(),
-            ModEntities.RU_9M336_MISSILE.get()
+            ModEntities.RU_9M336_MISSILE.get(),
+            ModEntities.RU_9M100_MISSILE.get()
         )
 
         this.tag(ModTags.EntityTypes.SEEK_BLACKLIST).add(
