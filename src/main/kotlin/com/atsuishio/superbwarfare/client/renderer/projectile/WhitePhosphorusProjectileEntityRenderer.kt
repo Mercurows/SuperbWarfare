@@ -1,7 +1,7 @@
-package com.atsuishio.superbwarfare.client.renderer.entity
+package com.atsuishio.superbwarfare.client.renderer.projectile
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
-import com.atsuishio.superbwarfare.entity.projectile.GrapeshotEntity
+import com.atsuishio.superbwarfare.entity.projectile.WhitePhosphorusProjectileEntity
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
 import com.mojang.math.Axis
@@ -10,13 +10,19 @@ import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.texture.OverlayTexture
+import net.minecraft.core.BlockPos
 import net.minecraft.resources.ResourceLocation
 import org.joml.Matrix3f
 import org.joml.Matrix4f
 
-class GrapeshotRenderer(pContext: EntityRendererProvider.Context) : EntityRenderer<GrapeshotEntity>(pContext) {
+class WhitePhosphorusProjectileEntityRenderer(pContext: EntityRendererProvider.Context) :
+    EntityRenderer<WhitePhosphorusProjectileEntity>(pContext) {
+    override fun getBlockLightLevel(pEntity: WhitePhosphorusProjectileEntity, pPos: BlockPos): Int {
+        return 15
+    }
+
     override fun render(
-        pEntity: GrapeshotEntity,
+        pEntity: WhitePhosphorusProjectileEntity,
         pEntityYaw: Float,
         pPartialTicks: Float,
         pMatrixStack: PoseStack,
@@ -29,7 +35,7 @@ class GrapeshotRenderer(pContext: EntityRendererProvider.Context) : EntityRender
         val lastPose = pMatrixStack.last()
         val pose = lastPose.pose()
         val normal = lastPose.normal()
-        val consumer = pBuffer.getBuffer(RenderType.entityTranslucent(getTextureLocation(pEntity)))
+        val consumer = pBuffer.getBuffer(RenderType.entityCutoutNoCull(getTextureLocation(pEntity)))
         vertex(consumer, pose, normal, pPackedLight, 0f, 0f, 0, 1)
         vertex(consumer, pose, normal, pPackedLight, 1f, 0f, 1, 1)
         vertex(consumer, pose, normal, pPackedLight, 1f, 1f, 1, 0)
@@ -38,8 +44,8 @@ class GrapeshotRenderer(pContext: EntityRendererProvider.Context) : EntityRender
         super.render(pEntity, pEntityYaw, pPartialTicks, pMatrixStack, pBuffer, pPackedLight)
     }
 
-    override fun getTextureLocation(pEntity: GrapeshotEntity): ResourceLocation {
-        return TEXTURE
+    override fun getTextureLocation(entity: WhitePhosphorusProjectileEntity): ResourceLocation {
+        return TEXTURES[entity.tickCount % 8]
     }
 
     companion object {
@@ -57,6 +63,6 @@ class GrapeshotRenderer(pContext: EntityRendererProvider.Context) : EntityRender
                 .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(pLightmapUV).normal(pNormal, 0f, 1f, 0f).endVertex()
         }
 
-        val TEXTURE = loc("textures/entity/grape_projectile.png")
+        val TEXTURES: List<ResourceLocation> = ArrayList((0..7).map { loc("textures/particle/fire_star_$it.png") })
     }
 }

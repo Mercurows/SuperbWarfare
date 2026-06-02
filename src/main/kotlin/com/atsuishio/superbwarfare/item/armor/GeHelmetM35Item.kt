@@ -23,7 +23,7 @@ import kotlin.math.max
 class GeHelmetM35Item : ArmorItem(ModArmorMaterial.STEEL, Type.HELMET, Properties()) {
     companion object {
         val TEXTURE = loc("textures/bedrock/armor/ge_helmet_m_35.png")
-        val MODEL = loc("ge_helmet_m_35")
+        val MODEL = loc("models/bedrock/armor/ge_helmet_m_35.geo.json")
     }
 
     override fun initializeClient(consumer: Consumer<IClientItemExtensions>) {

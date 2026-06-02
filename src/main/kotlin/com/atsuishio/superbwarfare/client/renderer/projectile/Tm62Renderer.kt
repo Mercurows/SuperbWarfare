@@ -1,7 +1,7 @@
-package com.atsuishio.superbwarfare.client.renderer.entity
+package com.atsuishio.superbwarfare.client.renderer.projectile
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
-import com.atsuishio.superbwarfare.entity.projectile.C4Entity
+import com.atsuishio.superbwarfare.entity.projectile.Tm62Entity
 import com.atsuishio.superbwarfare.resource.model.ProjectileModelReloadListener
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
@@ -13,13 +13,9 @@ import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 
-class C4Renderer(renderManager: EntityRendererProvider.Context) : EntityRenderer<C4Entity>(renderManager) {
-    init {
-        this.shadowRadius = 0f
-    }
-
+class Tm62Renderer(renderManager: EntityRendererProvider.Context) : EntityRenderer<Tm62Entity>(renderManager) {
     override fun render(
-        entityIn: C4Entity,
+        entityIn: Tm62Entity,
         entityYaw: Float,
         partialTicks: Float,
         poseStack: PoseStack,
@@ -29,12 +25,8 @@ class C4Renderer(renderManager: EntityRendererProvider.Context) : EntityRenderer
         val model = ProjectileModelReloadListener.getModel(MODEL) ?: return
 
         poseStack.pushPose()
-        if (entityIn.deltaMovement.lengthSqr() > 0) {
-            poseStack.mulPose(Axis.YP.rotationDegrees(-entityYaw + 180f))
-            poseStack.mulPose(Axis.XP.rotationDegrees(Mth.lerp(partialTicks, entityIn.xRotO, entityIn.xRot) + 90))
-        }
 
-        poseStack.scale(0.5f, 0.5f, 0.5f)
+        poseStack.mulPose(Axis.YP.rotationDegrees(-Mth.lerp(partialTicks, entityIn.yRotO, entityIn.yRot) + 180f))
 
         val renderType = RenderType.entityTranslucent(getTextureLocation(entityIn))
         val vertexConsumer = bufferIn.getBuffer(renderType)
@@ -49,18 +41,16 @@ class C4Renderer(renderManager: EntityRendererProvider.Context) : EntityRenderer
         poseStack.popPose()
     }
 
-    override fun getTextureLocation(entity: C4Entity): ResourceLocation {
-        val uuid = entity.getUUID()
-        return if (uuid.leastSignificantBits % 114 == 0L) {
-            TEXTURE_ALTER
-        } else {
-            TEXTURE
-        }
+    override fun getTextureLocation(pEntity: Tm62Entity): ResourceLocation {
+        return TEXTURE
+    }
+
+    override fun shouldShowName(pEntity: Tm62Entity): Boolean {
+        return false
     }
 
     companion object {
-        val TEXTURE = loc("textures/bedrock/projectile/c4.png")
-        val TEXTURE_ALTER = loc("textures/bedrock/projectile/c4_alter.png")
-        val MODEL = loc("models/bedrock/projectile/c4.geo.json")
+        val TEXTURE = loc("textures/bedrock/projectile/tm_62.png")
+        val MODEL = loc("tm_62")
     }
 }

@@ -1,5 +1,5 @@
 // KILL_CLIP: 击杀后换弹获得伤害加成
-function modifyProperty(pmc, level, perkTag) {
+function modifyProperty(pmc, level, perkTag, gunDataProxy) {
     if (perkTag && perkTag.getInt("KillClipTime") > 0) {
         pmc.mul("Damage", 1.2 + 0.05 * level)
     }

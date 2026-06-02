@@ -1,5 +1,5 @@
 // ONE_TWO_PUNCH: 命中一定次数后获得近战伤害加成
-function modifyProperty(pmc, level, perkTag) {
+function modifyProperty(pmc, level, perkTag, gunDataProxy) {
     if (!perkTag) return
     if (perkTag.getInt("OneTwoPunchTime") > 0) {
         pmc.mul("MeleeDamage", 1.5 + 0.75 * (level - 1))

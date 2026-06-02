@@ -23,7 +23,7 @@ import kotlin.math.max
 class RuChest6b43Item : ArmorItem(ModArmorMaterial.CEMENTED_CARBIDE, Type.CHESTPLATE, Properties()) {
     companion object {
         val TEXTURE = loc("textures/bedrock/armor/ru_chest_6b43.png")
-        val MODEL = loc("ru_chest_6b43")
+        val MODEL = loc("models/bedrock/armor/ru_chest_6b43.geo.json")
     }
 
     override fun initializeClient(consumer: Consumer<IClientItemExtensions>) {

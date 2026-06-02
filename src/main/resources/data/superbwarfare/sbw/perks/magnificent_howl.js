@@ -1,5 +1,5 @@
 // MAGNIFICENT_HOWL: 爆头击杀累积层数，换弹后获得伤害加成
-function modifyProperty(pmc, level, perkTag) {
+function modifyProperty(pmc, level, perkTag, gunDataProxy) {
     if (!perkTag) return
     if (perkTag.getInt("MagnificentHowlDamageCount") > 0) {
         pmc.mul("Damage", 1.5)
