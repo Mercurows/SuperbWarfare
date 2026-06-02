@@ -1,8 +1,8 @@
-function modifyProperty(pmc, level, perkTag, gunData) {
-    if (!gunData) return
+function modifyProperty(pmc, level, perkTag, gunDataProxy) {
+    if (!gunDataProxy) return
 
-    const ammo = gunData.getAmmo()
-    let magazine = gunData.getMagazine()
+    const ammo = gunDataProxy.getAmmo()
+    let magazine = gunDataProxy.getMagazine()
     if (magazine <= 0) magazine = 1
     const rate = ammo / magazine
     const limit = 0.5 + (level - 1) * 0.02
