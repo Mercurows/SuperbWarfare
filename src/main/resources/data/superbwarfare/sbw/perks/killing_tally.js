@@ -1,5 +1,5 @@
 // KILLING_TALLY: 持续击杀叠加伤害(最多3层)
-function modifyProperty(pmc, level, perkTag) {
+function modifyProperty(pmc, level, perkTag, gunDataProxy) {
     if (!perkTag) return
     pmc.mul("Damage", 1 + (0.1 * level) * perkTag.getInt("KillingTally"))
 }

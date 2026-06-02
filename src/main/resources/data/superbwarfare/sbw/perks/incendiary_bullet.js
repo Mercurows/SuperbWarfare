@@ -1,4 +1,4 @@
-function modifyProperty(pmc, level, perkTag) {
+function modifyProperty(pmc, level, perkTag, gunDataProxy) {
     if (pmc.isShotgun()) {
         pmc.set("Velocity", 4.5)
     }

@@ -58,6 +58,6 @@ class BlueprintResearchingTableBlockItemRenderer(dispatcher: BlockEntityRenderDi
 
     companion object {
         val TEXTURE = loc("textures/bedrock/block/blueprint_research_table.png")
-        val MODEL = loc("blueprint_research_table")
+        val MODEL = loc("models/bedrock/block/blueprint_research_table.geo.json")
     }
 }

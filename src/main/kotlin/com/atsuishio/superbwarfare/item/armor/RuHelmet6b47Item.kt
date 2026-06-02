@@ -29,7 +29,7 @@ class RuHelmet6b47Item : ArmorItem(
     @EventBusSubscriber
     companion object {
         val TEXTURE = loc("textures/bedrock/armor/ru_helmet_6b47.png")
-        val MODEL = loc("ru_helmet_6b47")
+        val MODEL = loc("models/bedrock/armor/ru_helmet_6b47.geo.json")
 
         @SubscribeEvent
         fun registerRender(event: RegisterClientExtensionsEvent) {

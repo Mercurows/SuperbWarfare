@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.client.renderer.entity
+package com.atsuishio.superbwarfare.client.renderer.projectile
 
 import com.atsuishio.superbwarfare.entity.projectile.MelonBombEntity
 import com.mojang.blaze3d.vertex.PoseStack

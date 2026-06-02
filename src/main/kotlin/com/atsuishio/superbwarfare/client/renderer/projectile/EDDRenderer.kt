@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.client.renderer.entity
+package com.atsuishio.superbwarfare.client.renderer.projectile
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
