@@ -1,7 +1,6 @@
-// FIREFLY: 爆头击杀产生爆炸
 function onKill(perkTag, level, gunData, targetProxy, sourceProxy) {
     if (!sourceProxy.isHeadshotDamage()) return
-    var attacker = sourceProxy.getAttackingPlayer()
+    const attacker = sourceProxy.getAttackingPlayer()
     if (attacker.isNull()) return
     targetProxy.createExplosion(
         6 + level * 2,

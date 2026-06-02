@@ -1,4 +1,3 @@
-// HEAD_SEEKER: 命中后短时间内爆头伤害提升
 function getModifiedDamage(damage, target, level, perkTag, sourceProxy) {
     if (!perkTag) return damage
     if (sourceProxy && sourceProxy.isHeadshotDamage() && perkTag.getInt("HeadSeeker") > 0) {

@@ -1,4 +1,4 @@
-function getModifiedDamage(damage, target, level) {
+function getModifiedDamage(damage, target, level, perkTag, sourceProxy) {
     if (target.isRaider) {
         return damage * (1 + 0.5 * level)
     }
