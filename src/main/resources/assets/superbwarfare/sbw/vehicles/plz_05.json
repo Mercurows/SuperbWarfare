@@ -1,0 +1,13 @@
+{
+  "Animation": "superbwarfare:animations/bedrock/vehicle/plz_05.animation.json",
+  "Models": [
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle/plz_05.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/plz_05.png"
+    },
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle_lod/plz_05.lod1.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/plz_05.lod.png"
+    }
+  ]
+}

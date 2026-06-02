@@ -1,0 +1,8 @@
+{
+  "Models": [
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle/tom_6.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/tom_6.png"
+    }
+  ]
+}

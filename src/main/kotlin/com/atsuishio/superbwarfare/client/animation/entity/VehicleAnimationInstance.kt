@@ -1,27 +1,35 @@
 package com.atsuishio.superbwarfare.client.animation.entity
 
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.resource.vehicle.VehicleResource
 import com.maydaymemory.mae.basic.Pose
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.world.entity.Entity
 
-class VehicleAnimationInstance<T>(entity: T) where T : Entity, T : BasicGeoVehicleEntity {
-    val context: VehicleAnimationContext<T>
+open class VehicleAnimationInstance<T>(
+    entity: T,
+    location: ResourceLocation
+) where T : VehicleEntity, T : BasicGeoVehicleEntity {
+    val context: VehicleAnimationContext<T> = VehicleAnimationContext(entity, location)
 
-    init {
-        val (_, namespace, id) = entity.type.descriptionId.split(".")
-        context = VehicleAnimationContext(entity, ResourceLocation(namespace, id))
-    }
-
-    fun fire(weaponName: String, index: Int) {
+    open fun fire(weaponName: String, index: Int) {
         context.fire(weaponName, index)
     }
 
-    fun tick() {
+    open fun tick() {
         context.tick()
     }
 
-    fun getPose(): Pose {
+    open fun getPose(): Pose {
         return context.getPose()
+    }
+
+    companion object {
+        @JvmStatic
+        fun <T> create(entity: T): VehicleAnimationInstance<T>? where T : VehicleEntity, T : BasicGeoVehicleEntity {
+            val anim = VehicleResource.compute(entity)
+            val location = anim.animation ?: return null
+            return VehicleAnimationInstance(entity, location)
+        }
     }
 }

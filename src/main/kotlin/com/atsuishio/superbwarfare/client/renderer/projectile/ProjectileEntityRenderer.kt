@@ -76,6 +76,6 @@ class ProjectileEntityRenderer(manager: EntityRendererProvider.Context) : Entity
 
     companion object {
         val TEXTURE = loc("textures/bedrock/projectile/projectile.png")
-        val MODEL = loc("projectile")
+        val MODEL = loc("models/bedrock/projectile/projectile.geo.json")
     }
 }

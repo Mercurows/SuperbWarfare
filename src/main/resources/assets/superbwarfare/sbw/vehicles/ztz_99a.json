@@ -1,0 +1,9 @@
+{
+  "Animation": "superbwarfare:animations/bedrock/vehicle/ztz_99a.animation.json",
+  "Models": [
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle/ztz_99a.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/ztz_99a.png"
+    }
+  ]
+}

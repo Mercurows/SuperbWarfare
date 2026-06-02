@@ -1,0 +1,24 @@
+{
+  "Animation": "superbwarfare:animations/bedrock/vehicle/ah_6.animation.json",
+  "Models": [
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle/ah_6.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/ah_6.png"
+    },
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle_lod/ah_6.lod1.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle_lod/ah_6.lod.png",
+      "LODDistance": 32
+    },
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle_lod/ah_6.lod2.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle_lod/ah_6.lod.png",
+      "LODDistance": 64
+    },
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle_lod/ah_6.lod3.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle_lod/ah_6.lod.png",
+      "LODDistance": 96
+    }
+  ]
+}

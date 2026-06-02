@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
 import com.atsuishio.superbwarfare.Mod
-import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInstance
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
@@ -18,7 +17,6 @@ import net.minecraft.core.Direction
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundSource
 import net.minecraft.util.Mth
@@ -40,8 +38,7 @@ import net.minecraft.world.phys.Vec3
 import org.joml.Math
 import java.util.*
 
-open class AnnihilatorEntity(type: EntityType<AnnihilatorEntity>, world: Level) : ArtilleryEntity(type, world),
-    BasicGeoVehicleEntity {
+open class AnnihilatorEntity(type: EntityType<AnnihilatorEntity>, world: Level) : ArtilleryEntity(type, world){
     init {
         this.noCulling = true
     }
@@ -283,14 +280,6 @@ open class AnnihilatorEntity(type: EntityType<AnnihilatorEntity>, world: Level) 
     override fun canShoot(living: LivingEntity?): Boolean {
         val gunData = getGunData(getSeatIndex(living))
         return gunData != null && gunData.canShoot(ammoSupplier) && this.canConsume(gunData.get(GunProp.AMMO_COST_PER_SHOOT)) && !isWreck
-    }
-
-    override fun getAnimation(): ResourceLocation? {
-        return null
-    }
-
-    override fun getAnimationInstance(): VehicleAnimationInstance<*>? {
-        return null
     }
 
     companion object {

@@ -1,0 +1,8 @@
+{
+  "Models": [
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle/wheel_chair.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/wheel_chair.png"
+    }
+  ]
+}

@@ -14,6 +14,8 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.resource.model.VehicleLODModelReloadListener
 import com.atsuishio.superbwarfare.resource.model.VehicleModelReloadListener
+import com.atsuishio.superbwarfare.resource.vehicle.VehicleModelPojo
+import com.atsuishio.superbwarfare.resource.vehicle.VehicleResource
 import com.atsuishio.superbwarfare.tools.RenderDistanceHelper
 import com.atsuishio.superbwarfare.tools.SpritePixelHelper
 import com.atsuishio.superbwarfare.tools.localPlayer
@@ -68,23 +70,8 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         return ResourceLocation(namespace, "textures/bedrock/vehicle/$id.png")
     }
 
-    open fun getEmissiveTextureLocation(entity: T): ResourceLocation? {
-        return null
-    }
-
-    fun getLODTextureLocation(entity: T, level: Int): ResourceLocation {
-        val (_, namespace, id) = entity.type.descriptionId.split(".")
-        return ResourceLocation(namespace, "textures/bedrock/vehicle_lod/$id.lod$level.png")
-    }
-
-    fun getModelLocation(entity: T): ResourceLocation {
-        val (_, namespace, id) = entity.type.descriptionId.split(".")
-        return ResourceLocation(namespace, id)
-    }
-
-    fun getLODModelLocation(entity: T, level: Int): ResourceLocation {
-        val (_, namespace, id) = entity.type.descriptionId.split(".")
-        return ResourceLocation(namespace, "$id.lod$level")
+    open fun getEmissiveTextureLocation(poseStack: PoseStack, entity: T): ResourceLocation? {
+        return this.getCurrentModel(poseStack, entity)?.emissiveTexture
     }
 
     open fun renderScale(): Float {
@@ -103,21 +90,18 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         buffer: MultiBufferSource,
         packedLight: Int
     ) {
-        var model = VehicleModelReloadListener.getModel(getModelLocation(entity)) ?: return
-        var texture = getTextureLocation(entity)
-        val emissiveTexture = getEmissiveTextureLocation(entity)
+        val currentModel = this.getCurrentModel(poseStack, entity) ?: return
+        val modelPath = currentModel.model ?: return
+        var texture = currentModel.texture ?: return
 
-        val lodLevel = getLODLevel(poseStack, entity)
-        if (lodLevel > 0) {
-            // TODO 等修改好LOD level之后直接获取
-            for (i in lodLevel downTo 1) {
-                val lod = VehicleLODModelReloadListener.getModel(getLODModelLocation(entity, i)) ?: continue
-                model = lod
-                texture = getLODTextureLocation(entity, i)
-                break
-            }
-        }
+        val isLOD = currentModel.isLOD()
+        val model = if (isLOD) {
+            VehicleLODModelReloadListener.getModel(modelPath)
+        } else {
+            VehicleModelReloadListener.getModel(modelPath)
+        } ?: return
 
+        val emissiveTexture = this.getEmissiveTextureLocation(poseStack, entity)
         texture = if (ClientEventHandler.activeThermalImaging) {
             SmartTextureBrightener.getSmartBrightenedTexture(texture, 3f)
         } else if (entity.isWreck) {
@@ -139,7 +123,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         this.rotateVehicleAxis(entity, poseStack, yaw, partialTick)
         poseStack.scale(renderScale(), renderScale(), renderScale())
 
-        if (entity.getAnimationInstance() != null && lodLevel <= 0) {
+        if (entity.getAnimationInstance() != null && !isLOD) {
             val ani = entity.getAnimationInstance()!!
             ani.context.partialTick = partialTick
             ani.tick()
@@ -203,8 +187,8 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             }
         }
 
-        if (lodLevel <= 0 && flareFlag && !(ClientEventHandler.zoomVehicle && (hideForTurretControllerWhileZooming || hideForPassengerWeaponStationControllerWhileZooming))) {
-            val flareModel = VehicleModelReloadListener.getModel(Mod.loc("muzzle_flare"))
+        if (!isLOD && flareFlag && !(ClientEventHandler.zoomVehicle && (hideForTurretControllerWhileZooming || hideForPassengerWeaponStationControllerWhileZooming))) {
+            val flareModel = VehicleModelReloadListener.getModel(MUZZLE_FLARE_MODEL)
 
             if (flareModel != null) {
                 for (flare in flareBones) {
@@ -223,7 +207,6 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
                     poseStack.popPose()
                 }
             }
-
         }
 
         // 自定义图章
@@ -312,13 +295,12 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         buffer: MultiBufferSource,
         packedLight: Int
     ) {
-
         val seats = this.seatsCache ?: vehicle.computed().seats().also { this.seatsCache = it }
 
         for ((index, seat) in seats.withIndex()) {
             for (k in seat.weapons().indices) {
                 val data = vehicle.getGunData(index, k) ?: continue
-                val dummyInfo = data.get(GunProp.PROJECTILE_DUMMY_INFO)?: continue
+                val dummyInfo = data.get(GunProp.PROJECTILE_DUMMY_INFO) ?: continue
                 val ammo = data.ammo.get()
                 if (ammo <= 0) continue
 
@@ -500,23 +482,27 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         // 乘客武器站
         val passengerWeaponStationYaw = model.getBone("passengerWeaponStationYaw")
 
-        passengerWeaponStationYaw?.rotation?.rotationY(Mth.lerp(
-            partialTicks,
-            vehicle.gunYRotO,
-            vehicle.gunYRot
-        ) * Mth.DEG_TO_RAD - turretYRot * Mth.DEG_TO_RAD)
+        passengerWeaponStationYaw?.rotation?.rotationY(
+            Mth.lerp(
+                partialTicks,
+                vehicle.gunYRotO,
+                vehicle.gunYRot
+            ) * Mth.DEG_TO_RAD - turretYRot * Mth.DEG_TO_RAD
+        )
 
         val passengerWeaponStationPitch = model.getBone("passengerWeaponStationPitch")
 
-        passengerWeaponStationPitch?.rotation?.rotationX(Mth.clamp(
-            -Mth.lerp(
-                partialTicks,
-                vehicle.gunXRotO,
-                vehicle.gunXRot
-            ) * Mth.DEG_TO_RAD,
-            vehicle.passengerWeaponMinPitch * Mth.DEG_TO_RAD,
-            vehicle.passengerWeaponMaxPitch * Mth.DEG_TO_RAD
-        ))
+        passengerWeaponStationPitch?.rotation?.rotationX(
+            Mth.clamp(
+                -Mth.lerp(
+                    partialTicks,
+                    vehicle.gunXRotO,
+                    vehicle.gunXRot
+                ) * Mth.DEG_TO_RAD,
+                vehicle.passengerWeaponMinPitch * Mth.DEG_TO_RAD,
+                vehicle.passengerWeaponMaxPitch * Mth.DEG_TO_RAD
+            )
+        )
     }
 
     open fun rotateVehicleAxis(entityIn: T, poseStack: PoseStack, entityYaw: Float, partialTicks: Float) {
@@ -543,18 +529,16 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
 
     open fun hideForTurretControllerWhileZooming() = false
 
-    fun getLODLevel(poseStack: PoseStack, vehicle: T): Int {
-        /** TODO 换成LOD Level
-         * 新的LOD level只需要指定n个distance即可
-         **/
-        val list = listOf(32, 64, 96)
-        list.forEachIndexed { index, distance ->
-            if (RenderDistanceHelper.shouldRenderLOD(poseStack, distance.toDouble())) {
-                return index + 1
+    open fun getCurrentModel(poseStack: PoseStack, vehicle: T): VehicleModelPojo? {
+        val models = VehicleResource.compute(vehicle).getModels()
+        if (models.isEmpty()) return null
+        models.forEachIndexed { index, model ->
+            if (index == 0) return@forEachIndexed
+            if (RenderDistanceHelper.shouldRenderLOD(poseStack, model.distance.toDouble())) {
+                return model
             }
         }
-
-        return 0
+        return models.first()
     }
 
     override fun shouldRender(vehicle: T, pCamera: Frustum, pCamX: Double, pCamY: Double, pCamZ: Double): Boolean {
@@ -596,5 +580,6 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
     companion object {
         val BLENDER: EulerAdditiveBlender = SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }
         val MUZZLE_FLARE = Mod.loc("textures/particle/flare.png")
+        val MUZZLE_FLARE_MODEL = Mod.loc("models/bedrock/vehicle/muzzle_flare.geo.json")
     }
 }

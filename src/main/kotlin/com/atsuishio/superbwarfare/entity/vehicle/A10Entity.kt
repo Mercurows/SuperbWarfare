@@ -1,7 +1,5 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
-import com.atsuishio.superbwarfare.Mod
-import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInstance
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModParticleTypes
@@ -10,15 +8,7 @@ import net.minecraft.world.entity.EntityType
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 
-open class A10Entity(type: EntityType<A10Entity>, world: Level) : VehicleEntity(type, world), BasicGeoVehicleEntity {
-    val anim: VehicleAnimationInstance<A10Entity>? =
-        if (world.isClientSide) VehicleAnimationInstance(this) else null
-    override fun getAnimationInstance() = anim
-    override fun getAnimation() = ANIM
-    companion object {
-        val ANIM = Mod.loc("animation/bedrock/vehicle/a_10a.animation.json")
-    }
-
+open class A10Entity(type: EntityType<A10Entity>, world: Level) : VehicleEntity(type, world) {
     override fun onEngine1Damaged(pos: Vec3) {
         if (level().isClientSide) {
             val random = 2 * (this.random.nextFloat() - 0.5f)

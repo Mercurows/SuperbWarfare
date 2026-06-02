@@ -1,0 +1,13 @@
+{
+  "Animation": "superbwarfare:animations/bedrock/vehicle/mi_28.animation.json",
+  "Models": [
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle/mi_28.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/mi_28.png"
+    },
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle_lod/mi_28.lod1.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/mi_28.png"
+    }
+  ]
+}

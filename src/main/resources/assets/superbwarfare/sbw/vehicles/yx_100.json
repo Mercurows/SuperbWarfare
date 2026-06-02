@@ -1,0 +1,10 @@
+{
+  "Animation": "superbwarfare:animations/bedrock/vehicle/yx_100.animation.json",
+  "Models": [
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle/yx_100.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/yx_100.png",
+      "EmissiveTexture": "superbwarfare:textures/bedrock/vehicle/yx_100_e.png"
+    }
+  ]
+}

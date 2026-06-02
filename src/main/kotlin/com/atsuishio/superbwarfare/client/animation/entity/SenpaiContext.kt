@@ -6,7 +6,7 @@ import kotlin.math.abs
 
 class SenpaiContext(entity: SenpaiEntity) : BasicEntityContext<SenpaiEntity>(entity, ANIM) {
     companion object {
-        val ANIM = loc("senpai")
+        val ANIM = loc("animations/bedrock/entity/senpai.animation.json")
     }
 
     fun isRunner(): Boolean {

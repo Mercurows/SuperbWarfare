@@ -9,7 +9,6 @@ import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.texture.OverlayTexture
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 
 class Yx100Renderer<T>(manager: EntityRendererProvider.Context) :
@@ -108,10 +107,6 @@ class Yx100Renderer<T>(manager: EntityRendererProvider.Context) :
 
     override fun getTrackDistance(): Float {
         return 1.96f
-    }
-
-    override fun getEmissiveTextureLocation(entity: T): ResourceLocation {
-        return Mod.loc("textures/bedrock/vehicle/yx_100_e.png")
     }
 
     companion object {

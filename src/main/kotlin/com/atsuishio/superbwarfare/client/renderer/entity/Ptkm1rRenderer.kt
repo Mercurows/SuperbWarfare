@@ -64,6 +64,6 @@ class Ptkm1rRenderer(renderManager: EntityRendererProvider.Context) : EntityRend
     companion object {
         val TEXTURE = loc("textures/bedrock/projectile/ptkm_1r.png")
         val BLENDER: EulerAdditiveBlender = SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }
-        val MODEL = loc("ptkm_1r")
+        val MODEL = loc("models/bedrock/projectile/ptkm_1r.geo.json")
     }
 }

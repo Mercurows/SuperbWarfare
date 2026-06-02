@@ -64,6 +64,6 @@ class DPSGeneratorRenderer(renderManager: EntityRendererProvider.Context) :
         val TEXTURES = ArrayList<ResourceLocation>((0..7).map { loc("textures/bedrock/entity/dps_generator_tier_${it}.png") })
         val TEXTURE_E = loc("textures/bedrock/entity/dps_generator_e.png")
         val BLENDER: EulerAdditiveBlender = SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }
-        val MODEL = loc("dps_generator")
+        val MODEL = loc("models/bedrock/entity/dps_generator.geo.json")
     }
 }

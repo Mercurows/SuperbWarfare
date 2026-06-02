@@ -1,7 +1,5 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
-import com.atsuishio.superbwarfare.Mod
-import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInstance
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import net.minecraft.server.level.ServerLevel
@@ -11,12 +9,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 import java.util.*
 
-class Ztz99aEntity(type: EntityType<Ztz99aEntity>, world: Level) : VehicleEntity(type, world), BasicGeoVehicleEntity {
-    val anim: VehicleAnimationInstance<Ztz99aEntity>? =
-        if (world.isClientSide) VehicleAnimationInstance(this) else null
-
-    override fun getAnimationInstance() = anim
-
+class Ztz99aEntity(type: EntityType<Ztz99aEntity>, world: Level) : VehicleEntity(type, world) {
     override var turretXRot = -3f
     override var turretXRotO = -3f
 
@@ -31,8 +24,4 @@ class Ztz99aEntity(type: EntityType<Ztz99aEntity>, world: Level) : VehicleEntity
     override fun getTurretMaxHealth() = 100f
     override fun getWheelMaxHealth() = 100f
     override fun getEngineMaxHealth() = 150f
-    override fun getAnimation() = ANIM
-    companion object {
-        val ANIM = Mod.loc("animation/bedrock/vehicle/ztz_99a.animation.json")
-    }
 }

@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.entity.living.TargetEntity
 
 class TargetContext(entity: TargetEntity) : BasicEntityContext<TargetEntity>(entity, ANIM) {
     companion object {
-        val ANIM = loc("target")
+        val ANIM = loc("animations/bedrock/entity/target.animation.json")
     }
 
     fun isDown(): Boolean {

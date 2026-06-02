@@ -1,0 +1,9 @@
+{
+  "Models": [
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle/tiny_speedboat.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/tiny_speedboat.png",
+      "EmissiveTexture": "superbwarfare:textures/bedrock/vehicle/tiny_speedboat_color.png"
+    }
+  ]
+}

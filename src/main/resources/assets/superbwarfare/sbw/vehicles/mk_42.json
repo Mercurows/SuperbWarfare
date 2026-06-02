@@ -1,0 +1,9 @@
+{
+  "Animation": "superbwarfare:animations/bedrock/vehicle/mk_42.animation.json",
+  "Models": [
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle/mk_42.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/mk_42.png"
+    }
+  ]
+}

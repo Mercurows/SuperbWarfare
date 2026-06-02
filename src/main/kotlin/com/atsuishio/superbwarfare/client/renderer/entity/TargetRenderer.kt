@@ -63,6 +63,6 @@ class TargetRenderer(renderManager: EntityRendererProvider.Context) : EntityRend
         val TEXTURE = loc("textures/bedrock/entity/target.png")
         val TEXTURE_E = loc("textures/bedrock/entity/target_e.png")
         val BLENDER: EulerAdditiveBlender = SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }
-        val MODEL = loc("target")
+        val MODEL = loc("models/bedrock/entity/target.geo.json")
     }
 }

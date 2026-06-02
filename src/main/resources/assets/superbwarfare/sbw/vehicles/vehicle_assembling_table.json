@@ -1,0 +1,9 @@
+{
+  "Models": [
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle/vehicle_assembling_table.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/vehicle_assembling_table.png",
+      "EmissiveTexture": "superbwarfare:textures/bedrock/vehicle/vehicle_assembling_table_e.png"
+    }
+  ]
+}

@@ -1,3 +1,11 @@
 {
+  "Animation": "superbwarfare:animations/bedrock/vehicle/waveforce_tower.animation.json",
+  "Models": [
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle/waveforce_tower.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/waveforce_tower.png",
+      "EmissiveTexture": "superbwarfare:textures/bedrock/vehicle/waveforce_tower_glow.png"
+    }
+  ],
   "Script": "superbwarfare:scripts/vehicles/waveforce_tower.js"
 }

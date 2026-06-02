@@ -10,7 +10,6 @@ import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.texture.OverlayTexture
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 
 class PrismTankRenderer<T>(manager: EntityRendererProvider.Context) :
@@ -120,10 +119,6 @@ class PrismTankRenderer<T>(manager: EntityRendererProvider.Context) :
         if (t <= 99.25) return Mth.lerp((t - 98.8333f) / (99.25f - 98.8333f), -3.03f, -1.95f)
 
         return Mth.lerp((t - 99.25f) / (100f - 99.25f), -1.95f, 0f)
-    }
-
-    override fun getEmissiveTextureLocation(entity: T): ResourceLocation {
-        return Mod.loc("textures/bedrock/vehicle/prism_tank_e.png")
     }
 
     companion object {

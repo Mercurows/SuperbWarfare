@@ -1,0 +1,18 @@
+{
+  "Models": [
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle/type_63.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/type_63.png"
+    },
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle_lod/type_63.lod1.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle_lod/type_63.lod.png",
+      "LODDistance": 32
+    },
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle_lod/type_63.lod2.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle_lod/type_63.lod.png",
+      "LODDistance": 64
+    }
+  ]
+}

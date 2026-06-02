@@ -1,7 +1,5 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
-import com.atsuishio.superbwarfare.Mod.Companion.loc
-import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInstance
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getXRotFromVector
@@ -27,7 +25,6 @@ import net.minecraft.network.chat.Component
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvents
@@ -42,10 +39,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 
-open class MortarEntity(type: EntityType<MortarEntity>, level: Level) : ArtilleryEntity(type, level),
-    BasicGeoVehicleEntity {
-    private val anim: VehicleAnimationInstance<MortarEntity>? =
-        if (level.isClientSide) VehicleAnimationInstance(this) else null
+open class MortarEntity(type: EntityType<MortarEntity>, level: Level) : ArtilleryEntity(type, level) {
     private var shooter: LivingEntity? = null
 
     constructor(level: Level, yRot: Float) : this(ModEntities.MORTAR.get(), level) {
@@ -406,14 +400,6 @@ open class MortarEntity(type: EntityType<MortarEntity>, level: Level) : Artiller
         return this.entityData.get(INTELLIGENT)
     }
 
-    override fun getAnimation(): ResourceLocation {
-        return ANIM
-    }
-
-    override fun getAnimationInstance(): VehicleAnimationInstance<*>? {
-        return anim
-    }
-
     companion object {
         @JvmField
         val FIRE_TIME: EntityDataAccessor<Int> =
@@ -434,6 +420,5 @@ open class MortarEntity(type: EntityType<MortarEntity>, level: Level) : Artiller
         @JvmField
         val NEED_RESET_TARGET: EntityDataAccessor<Boolean> =
             SynchedEntityData.defineId(MortarEntity::class.java, EntityDataSerializers.BOOLEAN)
-        private val ANIM = loc("animation/bedrock/vehicle/mortar.animation.json")
     }
 }

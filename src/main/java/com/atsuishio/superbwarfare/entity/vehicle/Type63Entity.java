@@ -1,7 +1,5 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
-import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance;
-import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInstance;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.projectile.MediumRocketEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
@@ -16,7 +14,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -32,14 +29,13 @@ import net.minecraft.world.level.entity.EntityTypeTest;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.joml.Math;
 import org.joml.*;
+import org.joml.Math;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Type63Entity extends VehicleEntity implements BasicGeoVehicleEntity {
+public class Type63Entity extends VehicleEntity {
 
     public static final EntityDataAccessor<Float> TARGET_PITCH = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Float> TARGET_YAW = SynchedEntityData.defineId(Type63Entity.class, EntityDataSerializers.FLOAT);
@@ -477,16 +473,5 @@ public class Type63Entity extends VehicleEntity implements BasicGeoVehicleEntity
             }
         }
         this.entityData.set(LOADED_AMMO, list);
-    }
-
-    @Nullable
-    @Override
-    public ResourceLocation getAnimation() {
-        return null;
-    }
-
-    @Override
-    public @Nullable VehicleAnimationInstance<?> getAnimationInstance() {
-        return null;
     }
 }

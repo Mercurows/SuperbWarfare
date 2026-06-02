@@ -1,0 +1,9 @@
+{
+  "Models": [
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle/prism_tank.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/prism_tank.png",
+      "EmissiveTexture": "superbwarfare:textures/bedrock/vehicle/prism_tank_e.png"
+    }
+  ]
+}

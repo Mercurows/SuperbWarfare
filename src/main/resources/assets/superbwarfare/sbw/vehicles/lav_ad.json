@@ -1,0 +1,9 @@
+{
+  "Animation": "superbwarfare:animations/bedrock/vehicle/lav_ad.animation.json",
+  "Models": [
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle/lav_ad.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/lav_ad.png"
+    }
+  ]
+}

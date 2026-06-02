@@ -7,14 +7,11 @@ import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager
 import software.bernie.geckolib.util.GeckoLibUtil
 
+@Deprecated("Geckolib will be removed since 0.8.10, use Simple Bedrock Model instead")
 abstract class GeckoArtilleryEntity(pEntityType: EntityType<*>, pLevel: Level) : ArtilleryEntity(pEntityType, pLevel),
     GeoEntity {
-
-        // TODO 临时文件，换完就扔（恼）
-
     private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
     override fun getAnimatableInstanceCache() = this.cache
 
     override fun registerControllers(data: AnimatableManager.ControllerRegistrar) {}
-
 }

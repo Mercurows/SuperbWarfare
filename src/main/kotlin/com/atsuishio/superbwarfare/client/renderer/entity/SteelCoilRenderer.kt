@@ -55,6 +55,6 @@ class SteelCoilRenderer(renderManager: EntityRendererProvider.Context) :
     companion object {
         val TEXTURE = loc("textures/bedrock/entity/steel_coil.png")
         val TEXTURE_ALTER = loc("textures/bedrock/entity/steel_coil_alter.png")
-        val MODEL = loc("steel_coil")
+        val MODEL = loc("models/bedrock/entity/steel_coil.geo.json")
     }
 }

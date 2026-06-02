@@ -1,7 +1,5 @@
 package com.atsuishio.superbwarfare.entity.vehicle;
 
-import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance;
-import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInstance;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.projectile.MediumRocketEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity;
@@ -14,7 +12,6 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -36,7 +33,7 @@ import org.joml.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SodayoPickUpRocketEntity extends ArtilleryEntity implements BasicGeoVehicleEntity {
+public class SodayoPickUpRocketEntity extends ArtilleryEntity {
     public static final EntityDataAccessor<List<Integer>> LOADED_AMMO = SynchedEntityData.defineId(SodayoPickUpRocketEntity.class, ModSerializers.INT_LIST_SERIALIZER.get());
     public OBB body1;
     public OBB body2;
@@ -359,16 +356,5 @@ public class SodayoPickUpRocketEntity extends ArtilleryEntity implements BasicGe
             }
         }
         this.entityData.set(LOADED_AMMO, list);
-    }
-
-    @Nullable
-    @Override
-    public ResourceLocation getAnimation() {
-        return null;
-    }
-
-    @Override
-    public @Nullable VehicleAnimationInstance<?> getAnimationInstance() {
-        return null;
     }
 }

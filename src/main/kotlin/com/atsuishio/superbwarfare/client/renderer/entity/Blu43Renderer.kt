@@ -46,6 +46,6 @@ class Blu43Renderer(renderManager: EntityRendererProvider.Context) : EntityRende
 
     companion object {
         val TEXTURE = loc("textures/bedrock/projectile/blu_43.png")
-        val MODEL = loc("blu_43")
+        val MODEL = loc("models/bedrock/projectile/blu_43.geo.json")
     }
 }

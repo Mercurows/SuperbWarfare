@@ -59,6 +59,6 @@ class SenpaiRenderer(renderManager: EntityRendererProvider.Context) : EntityRend
     companion object {
         var TEXTURE = loc("textures/bedrock/entity/senpai.png")
         val BLENDER: EulerAdditiveBlender = SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }
-        val MODEL = loc("senpai")
+        val MODEL = loc("models/bedrock/entity/senpai.geo.json")
     }
 }

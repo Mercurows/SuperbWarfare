@@ -1,0 +1,8 @@
+{
+  "Models": [
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle/sodayo_pick_up_rocket.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/sodayo_pick_up_rocket.png"
+    }
+  ]
+}

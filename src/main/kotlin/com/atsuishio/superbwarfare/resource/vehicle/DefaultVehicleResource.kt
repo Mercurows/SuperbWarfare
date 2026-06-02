@@ -29,13 +29,22 @@ class DefaultVehicleResource : IDBasedData<DefaultVehicleResource> {
         this.id = id
     }
 
+    @Deprecated("Use models instead", ReplaceWith("getModels()"))
     @SerialName("Model")
     private val model: ModelResource? = null
 
+    @Deprecated("Use models instead", ReplaceWith("getModels()"))
     fun getModel() = this.model ?: ModelResource()
 
+    @Deprecated("Use models instead", ReplaceWith("getModels()"))
     @SerialName("LODDistance")
     var lodDistance: ObjectToList<Double> = ObjectToList(48.0, 96.0)
+
+    @SerialName("Animation")
+    val animation: SerializedResourceLocation? = null
+
+    @SerialName("Models")
+    private val models: ObjectToList<VehicleModelPojo> = ObjectToList()
 
     @SerialName("Script")
     private val script: SerializedResourceLocation? = null
@@ -44,9 +53,15 @@ class DefaultVehicleResource : IDBasedData<DefaultVehicleResource> {
     @kotlin.jvm.Transient
     private var scriptCache: VehicleScriptManager.ScriptFunction? = null
 
+    fun getModels(): List<VehicleModelPojo> {
+        val list = models.list
+        list.sortBy { it.distance }
+        return list
+    }
+
     fun getScript(): VehicleScriptManager.ScriptFunction? {
         if (this.scriptCache != null) return this.scriptCache!!
-
+        if (this.script == null) return null
         return try {
             val resource = mc.resourceManager.getResource(script)
             if (resource.isEmpty) return null

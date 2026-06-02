@@ -1,7 +1,5 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
-import com.atsuishio.superbwarfare.Mod.Companion.loc
-import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInstance
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import net.minecraft.server.level.ServerLevel
@@ -12,12 +10,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 import java.util.*
 
-class M1A2Entity(type: EntityType<M1A2Entity>, world: Level) : VehicleEntity(type, world), BasicGeoVehicleEntity {
-    val anim: VehicleAnimationInstance<M1A2Entity>? =
-        if (world.isClientSide) VehicleAnimationInstance(this) else null
-
-    override fun getAnimationInstance() = anim
-
+class M1A2Entity(type: EntityType<M1A2Entity>, world: Level) : VehicleEntity(type, world) {
     override fun vehicleShoot(living: LivingEntity?, uuid: UUID?, targetPos: Vec3?) {
         val level = living?.level()
         if (level is ServerLevel && living == firstPassenger && getWeaponIndex(0) == 0) {
@@ -34,10 +27,4 @@ class M1A2Entity(type: EntityType<M1A2Entity>, world: Level) : VehicleEntity(typ
 
     override val customTurretMinPitch: Float
         get() = if (Mth.abs(turretYRot) > 135) ((Mth.abs(turretYRot) - 135) * 0.4f).coerceAtMost(7f) else 0f
-
-    override fun getAnimation() = ANIM
-
-    companion object {
-        val ANIM = loc("animation/bedrock/vehicle/m_1a_2.animation.json")
-    }
 }

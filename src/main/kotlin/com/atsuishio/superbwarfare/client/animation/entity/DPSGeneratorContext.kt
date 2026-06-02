@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.entity.living.DPSGeneratorEntity
 
 class DPSGeneratorContext(entity: DPSGeneratorEntity) : BasicEntityContext<DPSGeneratorEntity>(entity, ANIM) {
     companion object {
-        val ANIM = loc("dps_generator")
+        val ANIM = loc("animations/bedrock/entity/dps_generator.animation.json")
     }
 
     fun isDown(): Boolean {

@@ -1,0 +1,10 @@
+{
+  "Animation": "superbwarfare:animations/bedrock/vehicle/t_90a.animation.json",
+  "Models": [
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle/t_90a.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/t_90a.png",
+      "EmissiveTexture": "superbwarfare:textures/bedrock/vehicle/t_90a_e.png"
+    }
+  ]
+}
