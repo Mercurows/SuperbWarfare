@@ -281,6 +281,9 @@ class DefaultVehicleData : IDBasedData<DefaultVehicleData> {
     @SerialName("InertiaRotateRate")
     var inertiaRotateRate: Float = 0f
 
+    @SerialName("HasMissileInputScreen")
+    var hasMissileInputScreen: Boolean = false
+
     override fun limit() {
         this.maxHealth = max(this.maxHealth, 0f)
         this.repairCooldown = max(this.repairCooldown, 0)

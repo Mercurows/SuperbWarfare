@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.event
 
+import com.atsuishio.superbwarfare.client.screens.MissilePosInputScreen
 import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen
 import com.atsuishio.superbwarfare.compat.CompatHolder
 import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper
@@ -354,6 +355,11 @@ object ClickEventHandler {
             }
 
             if (key == ModKeyMappings.EDIT_MODE.key.value) {
+                if (vehicle is VehicleEntity && vehicle.data().compute().hasMissileInputScreen) {
+                    Minecraft.getInstance().setScreen(MissilePosInputScreen())
+                    return
+                }
+
                 val item = stack.item
                 if (item is ItemScreenProvider) {
                     val screen = item.getItemScreen(stack, player, InteractionHand.MAIN_HAND)
