@@ -828,6 +828,7 @@
   "container.superbwarfare.vehicle_assembling_table.count": "制作数量：%1$s",
   "container.superbwarfare.mod_info": "由%1$s添加",
   "container.superbwarfare.blueprint_research_table": "蓝图研究台",
+  "container.superbwarfare.missile_pos_input": "导弹坐标输入",
 
   "info.superbwarfare.mod_id": "卓越前线",
   "info.superbwarfare.no_info": "[暂无信息]",
@@ -865,6 +866,7 @@
   "info.superbwarfare.lav_25": "LAV-25是美军的轮式步兵战车。主要武器为一门25毫米链式机炮，设计用于执行侦察、快速突击和步兵输送任务，具备两栖能力和优异的公路机动性，以高战术灵活性著称",
   "info.superbwarfare.ztz_99a": "ZTZ-99A是中国陆军王牌主战坦克。主武器为一门125毫米滑膛炮，可发射多种弹药，配备先进复合装甲，专为高强度地面突击设计，以强大的火力、防护力和战场生存能力著称",
   "info.superbwarfare.tow": "陶式（TOW）是一款重型反坦克导弹发射器。通常采用车载或直升机平台，采用线导或无线指令制导，专为从远距离精确摧毁敌方主战坦克、装甲车及坚固工事而设计，具备高可靠性与持续作战能力",
+  "info.superbwarfare.happiest_ghast": "咦嘻嘻嘻嘻嘻嘻哈哈哈哈哈哈哈，呀哈哈哈哈哈哈哈，嘻嘻嘻嘻嘻嘻",
 
   "weapon.superbwarfare.20mm_cannon": "20毫米机炮 %1$s",
   "weapon.superbwarfare.20mm_cannon_ap": "20毫米机炮 穿甲弹 %1$s",

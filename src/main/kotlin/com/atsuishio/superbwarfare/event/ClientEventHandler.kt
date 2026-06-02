@@ -440,6 +440,9 @@ object ClientEventHandler {
     @JvmField
     var bombHitPos: Vec3 = Vec3.ZERO
 
+    @JvmField
+    var missileLockingPos: BlockPos? = null
+
     @SubscribeEvent
     fun handleWeaponTurn(event: RenderHandEvent) {
         val player = localPlayer ?: return

@@ -828,6 +828,7 @@
   "container.superbwarfare.vehicle_assembling_table.count": "Result Count: %1$s",
   "container.superbwarfare.mod_info": "Added by %1$s",
   "container.superbwarfare.blueprint_research_table": "Blueprint Research Table",
+  "container.superbwarfare.missile_pos_input": "Missile Position Input",
 
   "info.superbwarfare.mod_id": "Superb Warfare",
   "info.superbwarfare.no_info": "[No Info]",
@@ -865,6 +866,7 @@
   "info.superbwarfare.lav_25": "The LAV-25 is a U.S. wheeled infantry fighting vehicle. Its primary armament consists of a 25mm chain gun. Designed for reconnaissance, rapid assault, and infantry transport missions, it features amphibious capability and excellent on-road mobility, renowned for its high tactical flexibility",
   "info.superbwarfare.ztz_99a": "The ZTZ-99A is the Chinese army's premier main battle tank. Its primary armament is a 125mm smoothbore gun capable of firing multiple types of ammunition. Equipped with advanced composite armor, it is designed for high-intensity ground assault, renowned for its powerful firepower, protection, and battlefield survivability",
   "info.superbwarfare.tow": "The TOW is a heavy anti-tank missile launcher. Typically deployed on vehicles or helicopter platforms, it utilizes wire-guided or radio command guidance. Specifically designed to precisely destroy enemy main battle tanks, armored vehicles, and fortified positions from long range, it offers high reliability and sustained combat capability",
+  "info.superbwarfare.happiest_ghast": "Heeheeheeheeheehee hahahahahaha, yahahahahaha, heeheeheeheehee",
 
   "weapon.superbwarfare.20mm_cannon": "20MM CANNON %1$s",
   "weapon.superbwarfare.20mm_cannon_ap": "20MM CANNON AP %1$s",
