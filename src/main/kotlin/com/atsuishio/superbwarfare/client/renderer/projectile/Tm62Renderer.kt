@@ -51,6 +51,6 @@ class Tm62Renderer(renderManager: EntityRendererProvider.Context) : EntityRender
 
     companion object {
         val TEXTURE = loc("textures/bedrock/projectile/tm_62.png")
-        val MODEL = loc("tm_62")
+        val MODEL = loc("models/bedrock/projectile/tm_62.geo.json")
     }
 }

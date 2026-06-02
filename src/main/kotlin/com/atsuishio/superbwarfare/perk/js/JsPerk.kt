@@ -19,10 +19,14 @@ import net.minecraft.world.entity.LivingEntity
 import net.minecraftforge.registries.ForgeRegistries
 import org.mozillaa.javascript.Function
 
-class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : Perk(perkId, descriptor.perkType), IAmmoStat {
+open class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : Perk(perkId, descriptor.perkType),
+    IAmmoStat {
     override val damageRate: Double get() = descriptor.damageRate
+
     override val speedRate: Double get() = descriptor.speedRate
+
     override val slug: Boolean get() = descriptor.slug
+
     private val ammoConfig: AmmoConfig? = if (type == Type.AMMO) {
         val effects = mutableListOf<MobEffect>()
         descriptor.mobEffects?.forEach { name ->
@@ -109,10 +113,6 @@ class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : Perk(
         val result = f.call(s.context, s.scope, s.scope, arrayOf(damage, targetInfo, level, perkTag, sourceProxy))
         return (result as? Number)?.toFloat() ?: damage
     }
-
-    // ══════════════════════════════════════════════════
-    // Functional Perk Hooks
-    // ══════════════════════════════════════════════════
 
     override fun tick(data: GunData, instance: PerkInstance, entity: Entity?) {
         val s = script ?: return

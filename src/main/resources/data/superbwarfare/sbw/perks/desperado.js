@@ -1,8 +1,5 @@
-// DESPERADO: 爆头击杀后换弹获得射速加成
 function modifyProperty(pmc, level, perkTag, gunDataProxy) {
     if (perkTag && perkTag.getInt("DesperadoTimePost") > 0) {
-        // 原逻辑: RPM *= 1.285 + 0.015 * (level - 1) 在 Kotlin 中 modifier[RPM] 获取的是基础值
-        // 这里改为乘法叠加
         pmc.mul("RPM", 1.285 + 0.015 * level)
     }
 }
@@ -22,7 +19,7 @@ function onKill(perkTag, level, gunData, targetProxy, sourceProxy) {
 
 function preReload(perkTag, level, gunData, entityProxy) {
     if (!perkTag) return
-    var time = perkTag.getInt("DesperadoTime")
+    const time = perkTag.getInt("DesperadoTime")
     if (time > 0) {
         perkTag.remove("DesperadoTime")
         perkTag.putBoolean("Desperado", true)

@@ -19,6 +19,6 @@ class Ptkm1rAnimationInstance(entity: Ptkm1rEntity) {
     }
 
     companion object {
-        val ANIM = loc("ptkm_1r")
+        val ANIM = loc("animations/bedrock/projectile/ptkm_1r.animation.json")
     }
 }

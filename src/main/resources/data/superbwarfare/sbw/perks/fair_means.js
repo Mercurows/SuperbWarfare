@@ -1,4 +1,3 @@
-// FAIR_MEANS: 击穿/未击穿交替触发伤害切换
 function modifyProperty(pmc, level, perkTag, gunDataProxy) {
     if (!perkTag) return
     if (perkTag.getBoolean("FairMeans")) {
