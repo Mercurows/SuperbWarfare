@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.queueServerWork
 import com.atsuishio.superbwarfare.capability.energy.SyncedEntityEnergyStorage
 import com.atsuishio.superbwarfare.capability.energy.VehicleEnergyStorage
+import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInstance
 import com.atsuishio.superbwarfare.client.particle.CannonMuzzleFlareOption
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.config.server.MiscConfig
@@ -23,10 +24,7 @@ import com.atsuishio.superbwarfare.entity.OBBEntity
 import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter
 import com.atsuishio.superbwarfare.entity.setValue
-import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity
-import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity
-import com.atsuishio.superbwarfare.entity.vehicle.Tom6Entity
-import com.atsuishio.superbwarfare.entity.vehicle.TurretWreckEntity
+import com.atsuishio.superbwarfare.entity.vehicle.*
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleMiscUtils
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleMotionUtils
@@ -124,8 +122,12 @@ import javax.annotation.ParametersAreNonnullByDefault
 import kotlin.math.*
 import kotlin.random.Random
 
-abstract class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEntityType, pLevel),
-    VehiclePropertyModifier, HasCustomInventoryScreen, OBBEntity {
+open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEntityType, pLevel),
+    VehiclePropertyModifier, HasCustomInventoryScreen, OBBEntity, BasicGeoVehicleEntity {
+    val anim: VehicleAnimationInstance<VehicleEntity>? =
+        if (pLevel.isClientSide) VehicleAnimationInstance.create(this) else null
+
+    override fun getAnimationInstance() = anim
 
     open var gunDataMap: Map<String, GunData>
         get() {

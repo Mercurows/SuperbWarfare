@@ -1,0 +1,19 @@
+{
+  "Animation": "superbwarfare:animations/bedrock/vehicle/lav_150.animation.json",
+  "Models": [
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle/lav_150.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/lav_150.png"
+    },
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle_lod/lav_150.lod1.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle_lod/lav_150.lod1.png",
+      "LODDistance": 32
+    },
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle_lod/lav_150.lod2.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle_lod/lav_150.lod2.png",
+      "LODDistance": 64
+    }
+  ]
+}

@@ -17,7 +17,6 @@ import net.minecraft.client.renderer.texture.OverlayTexture
 class WaveforceTowerRenderer<T>(manager: EntityRendererProvider.Context) :
     SbmVehicleRenderer<T>(manager) where T : WaveforceTowerEntity, T : BasicGeoVehicleEntity {
     companion object {
-        val TEXTURE_E = loc("textures/bedrock/vehicle/waveforce_tower_glow.png")
         val TEXTURE_LASER = loc("textures/bedrock/vehicle/waveforce_tower_laser.png")
     }
 
@@ -48,11 +47,12 @@ class WaveforceTowerRenderer<T>(manager: EntityRendererProvider.Context) :
         super.renderCustomPart(vehicle, model, poseStack, entityYaw, partialTicks, buffer, packedLight)
 
         if (vehicle.energy > 0 && vehicle.active) {
+            val emissive = this.getEmissiveTextureLocation(poseStack, vehicle)
             model.renderToBuffer(
                 poseStack,
                 buffer,
-                ModRenderTypes.LASER.apply(TEXTURE_E),
-                BedrockModelRenderTypes.polyMeshCutout(TEXTURE_E),
+                ModRenderTypes.LASER.apply(emissive),
+                BedrockModelRenderTypes.polyMeshCutout(emissive),
                 packedLight,
                 OverlayTexture.NO_OVERLAY
             )

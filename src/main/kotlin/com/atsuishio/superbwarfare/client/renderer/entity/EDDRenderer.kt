@@ -63,6 +63,6 @@ class EDDRenderer(renderManager: EntityRendererProvider.Context) : EntityRendere
     companion object {
         val TEXTURE = loc("textures/bedrock/projectile/edd.png")
         val TEXTURE_ALTER = loc("textures/bedrock/projectile/edd_alter.png")
-        val MODEL = loc("edd")
+        val MODEL = loc("models/bedrock/projectile/edd.geo.json")
     }
 }

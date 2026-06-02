@@ -25,6 +25,6 @@ open class BasicProjectileAnimationInstance<T>(
 
     open fun getAnimationLocation(entity: T): ResourceLocation {
         val (_,  namespace, id) = entity.type.descriptionId.split(".")
-        return ResourceLocation.fromNamespaceAndPath(namespace, id)
+        return ResourceLocation.fromNamespaceAndPath(namespace, "animations/bedrock/projectile/$id")
     }
 }

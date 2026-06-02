@@ -58,6 +58,6 @@ class MedicalKitEntityRenderer(renderManager: EntityRendererProvider.Context) :
 
     companion object {
         val TEXTURE = loc("textures/bedrock/projectile/medical_kit.png")
-        val MODEL = loc("medical_kit")
+        val MODEL = loc("models/bedrock/projectile/medical_kit.geo.json")
     }
 }

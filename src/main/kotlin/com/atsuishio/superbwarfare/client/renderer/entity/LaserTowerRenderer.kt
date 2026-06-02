@@ -42,11 +42,11 @@ class LaserTowerRenderer<T>(manager: EntityRendererProvider.Context) :
         }
     }
 
-    override fun getEmissiveTextureLocation(entity: T): ResourceLocation? {
+    override fun getEmissiveTextureLocation(poseStack: PoseStack, entity: T): ResourceLocation? {
         return if (entity.energy > 0 && entity.active) {
-            Mod.loc("textures/bedrock/vehicle/laser_tower_e.png")
+            super.getEmissiveTextureLocation(poseStack, entity)
         } else {
-            super.getEmissiveTextureLocation(entity)
+            null
         }
     }
 

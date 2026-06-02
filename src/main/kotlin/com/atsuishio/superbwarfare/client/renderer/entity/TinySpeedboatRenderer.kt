@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.TinySpeedboatEntity
@@ -11,7 +10,6 @@ import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.texture.OverlayTexture
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 import net.minecraft.world.item.DyeColor
 
@@ -43,8 +41,9 @@ class TinySpeedboatRenderer<T>(manager: EntityRendererProvider.Context) :
         packedLight: Int
     ) {
         super.renderCustomPart(vehicle, model, poseStack, entityYaw, partialTicks, buffer, packedLight)
+        val emissive = this.getEmissiveTextureLocation(poseStack, vehicle) ?: return
 
-        var renderType = RenderType.entityTranslucent(getColorTextureLocation())
+        var renderType = RenderType.entityTranslucent(emissive)
 
         val id: Int = vehicle.colorId
 
@@ -52,7 +51,7 @@ class TinySpeedboatRenderer<T>(manager: EntityRendererProvider.Context) :
 
         if (vehicle.customName != null && vehicle.customName!!.string == "jeb_") {
             color = getRainbowColorHSL(vehicle.tickCount)
-            renderType = RenderType.entityTranslucentEmissive(getColorTextureLocation())
+            renderType = RenderType.entityTranslucentEmissive(emissive)
         } else {
             val intColor = DyeColor.byId(id).textureDiffuseColor
             color = floatArrayOf(
@@ -64,14 +63,14 @@ class TinySpeedboatRenderer<T>(manager: EntityRendererProvider.Context) :
 
         if (ClientEventHandler.activeThermalImaging) {
             color = floatArrayOf(1f, 1f, 1f, 1.0f)
-            renderType = RenderType.entityTranslucentEmissive(getColorTextureLocation())
+            renderType = RenderType.entityTranslucentEmissive(emissive)
         }
 
         model.renderToBuffer(
             poseStack,
             buffer,
             renderType,
-            BedrockModelRenderTypes.polyMeshCutout(getColorTextureLocation()),
+            BedrockModelRenderTypes.polyMeshCutout(emissive),
             packedLight,
             OverlayTexture.NO_OVERLAY,
             color[0],
@@ -79,10 +78,6 @@ class TinySpeedboatRenderer<T>(manager: EntityRendererProvider.Context) :
             color[2],
             1f
         )
-    }
-
-    fun getColorTextureLocation(): ResourceLocation {
-        return Mod.loc("textures/bedrock/vehicle/tiny_speedboat_color.png")
     }
 
     /**

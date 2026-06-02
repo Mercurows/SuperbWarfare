@@ -61,6 +61,6 @@ class ClaymoreRenderer(renderManager: EntityRendererProvider.Context) : EntityRe
     companion object {
         val TEXTURE = loc("textures/bedrock/projectile/claymore.png")
         val TEXTURE_ALTER = loc("textures/bedrock/projectile/claymore_alter.png")
-        val MODEL = loc("claymore")
+        val MODEL = loc("models/bedrock/projectile/claymore.geo.json")
     }
 }

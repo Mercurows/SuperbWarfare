@@ -1,0 +1,8 @@
+{
+  "Models": [
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle/sodayo_pick_up_tow.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/sodayo_pick_up_tow.png"
+    }
+  ]
+}

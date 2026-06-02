@@ -78,6 +78,6 @@ class SmallCannonShellEntityRenderer(manager: EntityRendererProvider.Context) :
 
     companion object {
         val TEXTURE = loc("textures/bedrock/projectile/small_cannon_shell.png")
-        val MODEL = loc("small_cannon_shell")
+        val MODEL = loc("models/bedrock/projectile/small_cannon_shell.geo.json")
     }
 }

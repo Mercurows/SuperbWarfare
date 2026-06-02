@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
-import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.mojang.blaze3d.vertex.PoseStack
@@ -34,11 +33,5 @@ class VehicleAssemblingTableVehicleRenderer<T>(manager: EntityRendererProvider.C
             root.y.toFloat(),
             root.z.toFloat()
         )
-    }
-
-    override fun getEmissiveTextureLocation(entity: T) = TEXTURE_E
-
-    companion object {
-        val TEXTURE_E = loc("textures/bedrock/vehicle/vehicle_assembling_table_e.png")
     }
 }

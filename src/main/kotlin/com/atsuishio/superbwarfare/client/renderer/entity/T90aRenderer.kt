@@ -1,10 +1,8 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import net.minecraft.client.renderer.entity.EntityRendererProvider
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 
 class T90aRenderer<T>(manager: EntityRendererProvider.Context) :
@@ -91,9 +89,5 @@ class T90aRenderer<T>(manager: EntityRendererProvider.Context) :
 
     override fun getTrackDistance(): Float {
         return 2.25f
-    }
-
-    override fun getEmissiveTextureLocation(entity: T): ResourceLocation {
-        return Mod.loc("textures/bedrock/vehicle/t_90a_e.png")
     }
 }

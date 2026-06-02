@@ -28,7 +28,7 @@ open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context) :
 
     fun getModelLocation(entity: T): ResourceLocation {
         val (_,  namespace, id) = entity.type.descriptionId.split(".")
-        return ResourceLocation.fromNamespaceAndPath(namespace, id)
+        return ResourceLocation.fromNamespaceAndPath(namespace, "models/bedrock/projectile/$id.geo.json")
     }
 
     override fun shouldShowName(pEntity: T): Boolean {

@@ -22,6 +22,9 @@ abstract class BedrockModelReloadListener<T> @JvmOverloads constructor(
     val animFiles: MutableMap<ResourceLocation, BedrockAnimationFile> = hashMapOf()
     val animations: MutableMap<ResourceLocation, List<BedrockAnimation>> = hashMapOf()
 
+    val idToModelPaths: MutableMap<ResourceLocation, ResourceLocation> = hashMapOf()
+    val animPathToIds: MutableMap<ResourceLocation, ResourceLocation> = hashMapOf()
+
     public override fun prepare(
         resourceManager: ResourceManager,
         profiler: ProfilerFiller
@@ -32,11 +35,11 @@ abstract class BedrockModelReloadListener<T> @JvmOverloads constructor(
         for ((location, resource) in modelConverter.listMatchingResources(resourceManager).entries) {
             var id = modelConverter.fileToId(location)
             id = ResourceLocation.fromNamespaceAndPath(id.namespace, id.path.removeSuffix(".geo"))
-
             try {
                 resource.openAsReader().use {
                     val pojo = GsonHelper.fromJson(this.gson, it, BedrockModelPOJO::class.java)
-                    val existed = map.put(id, pojo)
+                    val existed = map.put(location, pojo)
+                    idToModelPaths[id] = location
                     if (existed != null) {
                         throw IllegalStateException("Duplicate model resource $resource")
                     }
@@ -56,7 +59,8 @@ abstract class BedrockModelReloadListener<T> @JvmOverloads constructor(
                 try {
                     resource.openAsReader().use {
                         val file = GsonHelper.fromJson(this.gson, it, BedrockAnimationFile::class.java)
-                        val existed = this.animFiles.put(id, file)
+                        val existed = this.animFiles.put(location, file)
+                        animPathToIds[location] = id
                         if (existed != null) {
                             throw IllegalStateException("Duplicate animation resource $resource")
                         }

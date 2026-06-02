@@ -1,0 +1,9 @@
+{
+  "Animation": "superbwarfare:animations/bedrock/vehicle/happiest_ghast.animation.json",
+  "Models": [
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle/happiest_ghast.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/happiest_ghast.png"
+    }
+  ]
+}

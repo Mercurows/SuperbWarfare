@@ -2,10 +2,10 @@ package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.model.entity.VehicleModel
-import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.TurretWreckEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.resource.model.VehicleModelReloadListener
+import com.atsuishio.superbwarfare.resource.vehicle.VehicleResource
 import com.atsuishio.superbwarfare.tools.mc
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
@@ -100,9 +100,12 @@ class TurretWreckRenderer(renderManager: EntityRendererProvider.Context) :
                     FastColor.ARGB32.colorFromFloat(1.0f, 0.3f, 0.3f, 0.3f)
                 )
                 poseStack.popPose()
-            } else if (entity is BasicGeoVehicleEntity && renderer is SbmVehicleRenderer) {
-                val model = VehicleModelReloadListener.getModel(renderer.getModelLocation(entity)) ?: return
-                val tex = renderer.getTextureLocation(entity)
+            } else if (renderer is SbmVehicleRenderer) {
+                val models = VehicleResource.compute(entity).getModels()
+                if (models.isEmpty()) return
+                val modelPath = models.first().model ?: return
+                val texturePath = models.first().texture ?: return
+                val model = VehicleModelReloadListener.getModel(modelPath) ?: return
 
                 val turret = model.getBone("turret")
                 if (turret.isEmpty) return
@@ -130,7 +133,7 @@ class TurretWreckRenderer(renderManager: EntityRendererProvider.Context) :
 
                 turret.render(
                     poseStack,
-                    bufferSource.getBuffer(RenderType.entityTranslucent(tex)),
+                    bufferSource.getBuffer(RenderType.entityTranslucent(texturePath)),
                     packedLight,
                     OverlayTexture.NO_OVERLAY,
                     0.3f, 0.3f, 0.3f, 1f

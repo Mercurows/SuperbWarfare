@@ -21,7 +21,9 @@ open class BasicModelReloadListener(path: String) : BedrockModelReloadListener<B
             this.models[location] = BedrockModel(pojo)
         }
         this.animFiles.forEach { (location, file) ->
-            val model = this.models[location] ?: return@forEach
+            val id = this.animPathToIds[location] ?: return@forEach
+            val path = this.idToModelPaths[id] ?: return@forEach
+            val model = this.models[path] ?: return@forEach
             this.animations[location] = BedrockAnimation.createAnimation(file, model)
         }
         this.animFiles.clear()

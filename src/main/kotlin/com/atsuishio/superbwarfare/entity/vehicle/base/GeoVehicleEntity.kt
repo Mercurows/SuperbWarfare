@@ -7,6 +7,7 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.animation.AnimatableManager
 import software.bernie.geckolib.util.GeckoLibUtil
 
+@Deprecated("Geckolib will be removed since 0.8.10, use Simple Bedrock Model instead")
 abstract class GeoVehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : VehicleEntity(pEntityType, pLevel),
     GeoEntity {
 

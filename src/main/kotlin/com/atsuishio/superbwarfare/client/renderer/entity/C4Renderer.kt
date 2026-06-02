@@ -61,6 +61,6 @@ class C4Renderer(renderManager: EntityRendererProvider.Context) : EntityRenderer
     companion object {
         val TEXTURE = loc("textures/bedrock/projectile/c4.png")
         val TEXTURE_ALTER = loc("textures/bedrock/projectile/c4_alter.png")
-        val MODEL = loc("c4")
+        val MODEL = loc("models/bedrock/projectile/c4.geo.json")
     }
 }
