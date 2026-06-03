@@ -275,11 +275,12 @@ open class VehicleAssemblingScreen(menu: VehicleAssemblingMenu, inventory: Inven
         }
     }
 
-    // TODO 这俩是什么玩意
-    private val scaleAnimator = ValueAnimator<Float>(300, DEFAULT_MODEL_SCALE)
+    @Suppress("unchecked_cast")
+    private val scaleAnimator = ValueAnimator(300, DEFAULT_MODEL_SCALE)
         .animation(AnimationCurves.EASE_OUT_EXPO) as ValueAnimator<Float>
 
-    private val modelPosAnimator = ValueAnimator<Vec2>(300, Vec2(DEFAULT_MODEL_X.toFloat(), DEFAULT_MODEL_Y.toFloat()))
+    @Suppress("unchecked_cast")
+    private val modelPosAnimator = ValueAnimator(300, Vec2(DEFAULT_MODEL_X.toFloat(), DEFAULT_MODEL_Y.toFloat()))
         .animation(AnimationCurves.EASE_OUT_EXPO) as ValueAnimator<Vec2>
 
     init {
@@ -324,16 +325,16 @@ open class VehicleAssemblingScreen(menu: VehicleAssemblingMenu, inventory: Inven
             if (pDelta > 0) {
                 targetScale = min(
                     scaleAnimator.lerp(
-                        scaleAnimator.oldValue()!!,
-                        scaleAnimator.newValue()!!,
+                        scaleAnimator.oldValue(),
+                        scaleAnimator.newValue(),
                         System.currentTimeMillis()
                     ) + 20, MAX_MODEL_SCALE
                 )
             } else {
                 targetScale = max(
                     scaleAnimator.lerp(
-                        scaleAnimator.oldValue()!!,
-                        scaleAnimator.newValue()!!,
+                        scaleAnimator.oldValue(),
+                        scaleAnimator.newValue(),
                         System.currentTimeMillis()
                     ) - 20, MIN_MODEL_SCALE
                 )
@@ -403,7 +404,7 @@ open class VehicleAssemblingScreen(menu: VehicleAssemblingMenu, inventory: Inven
                     return@AssembleButton
                 }
             }
-            sendPacketToServer(AssembleVehicleMessage(this.currentRecipe!!.id, this.menu!!.containerId))
+            sendPacketToServer(AssembleVehicleMessage(this.currentRecipe!!.id, this.menu.containerId))
         })
     }
 
@@ -435,8 +436,8 @@ open class VehicleAssemblingScreen(menu: VehicleAssemblingMenu, inventory: Inven
                 scaleAnimator.update(
                     max(
                         scaleAnimator.lerp(
-                            scaleAnimator.oldValue()!!,
-                            scaleAnimator.newValue()!!,
+                            scaleAnimator.oldValue(),
+                            scaleAnimator.newValue(),
                             System.currentTimeMillis()
                         ) - 20,
                         MIN_MODEL_SCALE
@@ -453,8 +454,8 @@ open class VehicleAssemblingScreen(menu: VehicleAssemblingMenu, inventory: Inven
                 scaleAnimator.update(
                     min(
                         scaleAnimator.lerp(
-                            scaleAnimator.oldValue()!!,
-                            scaleAnimator.newValue()!!,
+                            scaleAnimator.oldValue(),
+                            scaleAnimator.newValue(),
                             System.currentTimeMillis()
                         ) + 20, MAX_MODEL_SCALE
                     )
@@ -528,7 +529,7 @@ open class VehicleAssemblingScreen(menu: VehicleAssemblingMenu, inventory: Inven
         posestack.translate(8.0, 8.0, 0.0)
         posestack.scale(1f, -1f, 1f)
         val currentScale =
-            scaleAnimator.lerp(scaleAnimator.oldValue()!!, scaleAnimator.newValue()!!, System.currentTimeMillis())
+            scaleAnimator.lerp(scaleAnimator.oldValue(), scaleAnimator.newValue(), System.currentTimeMillis())
         posestack.scale(currentScale, currentScale, currentScale)
 
         val rot =
@@ -584,7 +585,7 @@ open class VehicleAssemblingScreen(menu: VehicleAssemblingMenu, inventory: Inven
         val yOffset = modelPosAnimator.lerp(oldVec.y, newVec.y, System.currentTimeMillis())
         posestack.translate(this.leftPos + xOffset, this.topPos + yOffset, 50f)
         val currentScale =
-            scaleAnimator.lerp(scaleAnimator.oldValue()!!, scaleAnimator.newValue()!!, System.currentTimeMillis())
+            scaleAnimator.lerp(scaleAnimator.oldValue(), scaleAnimator.newValue(), System.currentTimeMillis())
         posestack.scale(currentScale, currentScale, -currentScale)
 
         val size = renderEntity.boundingBox.getSize().toFloat()

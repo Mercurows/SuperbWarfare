@@ -26,7 +26,7 @@ object AmmoCountOverlay : CommonOverlay("ammo_count") {
         .forwardAnimation(AnimationCurves.EASE_OUT_EXPO)
         .backwardAnimation(AnimationCurves.EASE_IN_EXPO)
 
-    private val ammoCountAnimators = ValueAnimator.create(
+    private val ammoCountAnimators = ValueAnimator.create<Int?>(
         Ammo.entries.size, 800, 0
     )
     private val ammoBoxAnimators = ValueAnimator.create(

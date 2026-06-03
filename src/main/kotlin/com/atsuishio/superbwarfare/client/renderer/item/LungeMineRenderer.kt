@@ -85,12 +85,12 @@ open class LungeMineRenderer : GeoItemRenderer<LungeMine>(LungeMineModel()) {
     }
 
     override fun renderRecursively(
-        stack: PoseStack?,
+        stack: PoseStack,
         animatable: LungeMine?,
         bone: GeoBone,
-        type: RenderType?,
-        buffer: MultiBufferSource?,
-        bufferIn: VertexConsumer?,
+        type: RenderType,
+        buffer: MultiBufferSource,
+        bufferIn: VertexConsumer,
         isReRender: Boolean,
         partialTick: Float,
         packedLightIn: Int,
