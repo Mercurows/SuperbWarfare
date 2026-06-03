@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.projectile
 import com.atsuishio.superbwarfare.Mod.Companion.queueServerWork
 import com.atsuishio.superbwarfare.api.event.ProjectileHitEvent.HitBlock
 import com.atsuishio.superbwarfare.api.event.ProjectileHitEvent.HitEntity
+import com.atsuishio.superbwarfare.client.particle.CannonMuzzleFlareOption
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig
@@ -335,6 +336,31 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
 
     override fun setGravity(gravity: Float) {
         this.gravityValue = gravity
+    }
+
+    open fun hugeMissileTrail(tick: Int) {
+        val serverLevel = level()
+        if (tickCount > tick) {
+            if (serverLevel is ServerLevel) {
+                val d = deltaMovement
+                val direct = d.normalize().scale(-1.0)
+                val s = deltaMovement.length()
+                ParticleTool.spawnDirectionalParticles(1, 0.0, serverLevel, CannonMuzzleFlareOption(0.75f, 0.6f, 0.6f, 12, 0.78f, 2, 0.3f), direct, position(), 0.04 * s)
+                ParticleTool.spawnDirectionalParticles(1, 0.0, serverLevel, CannonMuzzleFlareOption(0.55f, 0.5f, 0.5f, 16, 0.90f, 2, 0.2f), direct, position(), 0.03 * s)
+                ParticleTool.spawnDirectionalParticles(1, 0.0, serverLevel, CannonMuzzleFlareOption(0.4f, 0.4f, 0.4f, 24, 0.92f, 2, 0.1f), direct, position(), 0.02 * s)
+            }
+            if (level().isClientSide) {
+                val l = deltaMovement.length()
+                var i = 0.0
+                while (i < l) {
+                    val startPos = Vec3(xo, yo + bbHeight / 2, zo)
+                    val pos = startPos.add(deltaMovement.normalize().scale(-i))
+                    val random = 2 * (this.random.nextFloat() - 0.5f)
+                    level().addParticle(CannonMuzzleFlareOption(0.7f, 0.7f, 0.7f, 600, 0.97f, (10 + 4 * random).toInt(), 0.06f), pos.x + random, pos.y + random, pos.z + random, 0.0, 0.0, 0.0)
+                    i += 2.0
+                }
+            }
+        }
     }
 
     open fun largeTrail() {

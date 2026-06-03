@@ -84,7 +84,7 @@ open class Ru3m14MissileEntity(type: EntityType<out Ru3m14MissileEntity>, level:
         }
 
         if (this.tickCount > 10) {
-            largeTrail()
+            hugeMissileTrail(10)
             if (level is ServerLevel) {
                 if (targetPos != null) {
                     lostTarget = y < targetPos!!.y

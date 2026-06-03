@@ -1,3 +1,12 @@
+/*
+ * Ported from Raise Sound Limit Simplified (Unofficial Forge Port)
+ * https://github.com/RelativityMC/raise-sound-limit-simplified
+ *
+ * Original authors: RelativityMC, ishland, mrqx0195
+ * Licensed under the MIT License.
+ *
+ * Thanks to the original authors for their work on raising Minecraft's sound source limit.
+ */
 package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.sound.SoundLimit;
