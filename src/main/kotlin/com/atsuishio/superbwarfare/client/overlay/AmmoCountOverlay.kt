@@ -27,8 +27,12 @@ object AmmoCountOverlay : CommonOverlay("ammo_count") {
         .forwardAnimation(AnimationCurves.EASE_OUT_EXPO)
         .backwardAnimation(AnimationCurves.EASE_IN_EXPO)
 
-    private val ammoCountAnimators = ValueAnimator.create(Ammo.entries.size, 800, 0)
-    private val ammoBoxAnimators = ValueAnimator.create(Ammo.entries.size, 800, 0)
+    private val ammoCountAnimators = ValueAnimator.create<Int?>(
+        Ammo.entries.size, 800, 0
+    )
+    private val ammoBoxAnimators = ValueAnimator.create(
+        Ammo.entries.size, 800, 0
+    )
 
     /**
      * 在手持弹药或弹药盒时，渲染玩家弹药总量信息
