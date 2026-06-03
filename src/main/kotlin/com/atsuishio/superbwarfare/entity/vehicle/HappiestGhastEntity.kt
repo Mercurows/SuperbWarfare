@@ -28,9 +28,12 @@ open class HappiestGhastEntity(type: EntityType<HappiestGhastEntity>, world: Lev
     override fun vehicleShoot(living: LivingEntity?, uuid: UUID?, targetPos: Vec3?) {
         val serverLevel = level()
         if (serverLevel is ServerLevel) {
-            val pos = getShootPos("Kalibr", 1f)
-            val direct = getShootVec("Kalibr", 1f)
-            missileLaunchEffect(serverLevel, pos, direct)
+            val name = this.getGunName(0)
+            if (name == "Kalibr") {
+                val pos = getShootPos(name, 1f)
+                val direct = getShootVec(name, 1f)
+                missileLaunchEffect(serverLevel, pos, direct)
+            }
         }
         super.vehicleShoot(living, uuid, targetPos)
     }
