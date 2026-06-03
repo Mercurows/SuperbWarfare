@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.block.entity
 
 import com.atsuishio.superbwarfare.block.ContainerBlock
+import com.atsuishio.superbwarfare.client.animation.block.ContainerBlockAnimationInstance
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModBlockEntities
 import com.atsuishio.superbwarfare.tools.ParticleTool
@@ -18,18 +19,15 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
+import net.minecraftforge.api.distmarker.Dist
+import net.minecraftforge.api.distmarker.OnlyIn
 import org.joml.Math
-import software.bernie.geckolib.animatable.GeoBlockEntity
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
-import software.bernie.geckolib.core.animation.AnimatableManager.ControllerRegistrar
-import software.bernie.geckolib.core.animation.AnimationController
-import software.bernie.geckolib.core.animation.AnimationState
-import software.bernie.geckolib.core.animation.RawAnimation
-import software.bernie.geckolib.core.`object`.PlayState
-import software.bernie.geckolib.util.GeckoLibUtil
 
 open class ContainerBlockEntity(pos: BlockPos, state: BlockState) :
-    BlockEntity(ModBlockEntities.CONTAINER.get(), pos, state), GeoBlockEntity {
+    BlockEntity(ModBlockEntities.CONTAINER.get(), pos, state) {
+    @OnlyIn(Dist.CLIENT)
+    open val animationInstance: ContainerBlockAnimationInstance? = ContainerBlockAnimationInstance(this)
+
     @JvmField
     var entityType: EntityType<*>? = null
 
@@ -37,29 +35,6 @@ open class ContainerBlockEntity(pos: BlockPos, state: BlockState) :
     var entityTag: CompoundTag? = null
     var tick: Int = 0
     var opened: Boolean = false
-
-    private val cache: AnimatableInstanceCache? = GeckoLibUtil.createInstanceCache(this)
-
-    private fun predicate(event: AnimationState<ContainerBlockEntity?>): PlayState? {
-        if (this.blockState.getValue(ContainerBlock.OPENED)) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.container.open"))
-        }
-        return PlayState.STOP
-    }
-
-    override fun registerControllers(data: ControllerRegistrar) {
-        data.add(
-            AnimationController<ContainerBlockEntity?>(
-                this,
-                "controller",
-                0
-            ) { this.predicate(it) }
-        )
-    }
-
-    override fun getAnimatableInstanceCache(): AnimatableInstanceCache? {
-        return this.cache
-    }
 
     override fun load(compound: CompoundTag) {
         super.load(compound)

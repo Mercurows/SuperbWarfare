@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.client.renderer.item.ContainerBlockItemRender
 import com.atsuishio.superbwarfare.init.ModBlockEntities
 import com.atsuishio.superbwarfare.init.ModBlocks
 import com.atsuishio.superbwarfare.init.ModEntities
+import com.atsuishio.superbwarfare.tools.mc
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
@@ -29,18 +30,9 @@ import net.minecraftforge.client.extensions.common.IClientItemExtensions
 import net.minecraftforge.eventbus.api.EventPriority
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber
-import software.bernie.geckolib.animatable.GeoItem
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
-import software.bernie.geckolib.core.animation.AnimatableManager.ControllerRegistrar
-import software.bernie.geckolib.core.animation.AnimationController
-import software.bernie.geckolib.core.animation.AnimationState
-import software.bernie.geckolib.core.`object`.PlayState
-import software.bernie.geckolib.util.GeckoLibUtil
 import java.util.function.Consumer
 
-class ContainerBlockItem : BlockItem(ModBlocks.CONTAINER.get(), Properties().stacksTo(1).fireResistant()), GeoItem {
-    private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
-
+class ContainerBlockItem : BlockItem(ModBlocks.CONTAINER.get(), Properties().stacksTo(1).fireResistant()) {
     override fun canBeHurtBy(pDamageSource: DamageSource): Boolean {
         return super.canBeHurtBy(pDamageSource) && !pDamageSource.`is`(DamageTypeTags.IS_EXPLOSION) && !pDamageSource.`is`(
             DamageTypes.CACTUS
@@ -93,32 +85,19 @@ class ContainerBlockItem : BlockItem(ModBlocks.CONTAINER.get(), Properties().sta
         return Component.translatable("item.superbwarfare.container", args)
     }
 
-    private fun predicate(event: AnimationState<ContainerBlockItem>): PlayState {
-        return PlayState.CONTINUE
-    }
-
     override fun initializeClient(consumer: Consumer<IClientItemExtensions?>) {
         super.initializeClient(consumer)
         consumer.accept(object : IClientItemExtensions {
-            private val renderer: BlockEntityWithoutLevelRenderer = ContainerBlockItemRenderer()
+            private var renderer: BlockEntityWithoutLevelRenderer? = null
 
             override fun getCustomRenderer(): BlockEntityWithoutLevelRenderer {
-                return renderer
+                if (renderer == null) {
+                    renderer = ContainerBlockItemRenderer(mc.blockEntityRenderDispatcher, mc.entityModels)
+                }
+                return renderer!!
             }
         })
     }
-
-    override fun registerControllers(data: ControllerRegistrar) {
-        data.add(
-            AnimationController<ContainerBlockItem>(
-                this,
-                "controller",
-                0
-            ) { this.predicate(it) }
-        )
-    }
-
-    override fun getAnimatableInstanceCache(): AnimatableInstanceCache = this.cache
 
     @EventBusSubscriber(modid = Mod.MODID, bus = EventBusSubscriber.Bus.MOD)
     companion object {
