@@ -287,6 +287,9 @@ class DefaultGunData : IDBasedData<DefaultGunData> {
     @SerialName("ShootDelay")
     var shootDelay = 0
 
+    @SerialName("ShootDelayTime")
+    var shootDelayTime = 0
+
     @ServerOnly
     @SerialName("HeatPerShoot")
     var heatPerShoot = 0.0
