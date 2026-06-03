@@ -1,9 +1,19 @@
 package com.atsuishio.superbwarfare.tools
 
 import com.google.gson.*
+import net.minecraft.core.component.DataComponents
 import net.minecraft.nbt.*
+import net.minecraft.world.item.ItemStack
 
 object NBTTool {
+    @JvmStatic
+    fun getTag(stack: ItemStack): CompoundTag {
+        val data = stack.get(DataComponents.CUSTOM_DATA)
+        if (data != null) return data.copyTag()
+
+        return CompoundTag()
+    }
+
     @JvmStatic
     fun convertToJson(nbt: CompoundTag): JsonObject {
         val json = JsonObject()
