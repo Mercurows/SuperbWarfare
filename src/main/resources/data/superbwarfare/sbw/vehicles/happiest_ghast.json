@@ -150,7 +150,8 @@
       "ExplosionDamage": 1400,
       "ExplosionRadius": 36,
       "ProjectileLife": 24000,
-      "Velocity": 1.7,
+      "ShootDelayTime": 10,
+      "Velocity": 2.3,
       "SeekWeaponInfo": {
         "SeekDirection": "Passenger",
         "SeekRange": 512,
@@ -161,7 +162,7 @@
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 5.1, 0.9375],
-        "Positions": [[-1.5, 4, 1.4375], [1.5, 4, 1.4375], [-1.5, 4, 0.475], [1.5, 4, 0.475], [-1.5, 4, -0.475], [1.5, 4, -0.475]],
+        "Positions": [[-1.5, 0.5, 1.4375], [1.5, 0.5, 1.4375], [-1.5, 0.5, 0.475], [1.5, 0.5, 0.475], [-1.5, 0.5, -0.475], [1.5, 0.5, -0.475]],
         "Directions": [[0, 1, 0]],
         "ViewDirection": "Passenger",
         "BoundUpWithAmmoAmount": true
@@ -198,7 +199,8 @@
       "Damage": 400,
       "ExplosionDamage": 160,
       "ExplosionRadius": 10,
-      "Velocity": 1.7,
+      "Velocity": 2.3,
+      "ShootDelayTime": 10,
       "SeekWeaponInfo": {
         "SeekDirection": "Passenger",
         "CanGuidedByRadar": true,
@@ -214,7 +216,7 @@
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 5.1, 0.9375],
-        "Positions": [[-1.5, 4, -1.4375], [1.5, 4, -1.4375]],
+        "Positions": [[-1.5, 0.5, -1.4375], [1.5, 0.5, -1.4375]],
         "Directions": [[0, 1, 0]],
         "ViewDirection": "Passenger"
       },

@@ -239,6 +239,9 @@ class GunProp<T, R>(
         val SHOOT_DELAY = plainProp(DefaultGunData::shootDelay)
 
         @JvmField
+        val SHOOT_DELAY_TIME = plainProp(DefaultGunData::shootDelayTime)
+
+        @JvmField
         val HEAT_PER_SHOOT = plainProp(DefaultGunData::heatPerShoot)
 
         @JvmField
