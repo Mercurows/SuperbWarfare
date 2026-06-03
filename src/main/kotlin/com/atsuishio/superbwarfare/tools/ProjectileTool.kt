@@ -42,11 +42,15 @@ object ProjectileTool {
         radius: Float,
         damageMultiplier: Float = 0.0f
     ) {
-        val particleType = if (radius < 4) {
+        val particleType = if (radius < 2.0) {
+            ParticleTool.ParticleType.MINI
+        } else if (radius in 2.0..<4.0) {
             ParticleTool.ParticleType.SMALL
-        } else if (radius in 4.0..<10.0) {
+        } else if (radius in 4.0..<7.0) {
             ParticleTool.ParticleType.MEDIUM
-        } else if (radius in 10.0..<16.0) {
+        } else if (radius in 7.0..<10.0) {
+            ParticleTool.ParticleType.LARGE
+        } else if (radius in 10.0..<20.0) {
             ParticleTool.ParticleType.HUGE
         } else {
             ParticleTool.ParticleType.GIANT

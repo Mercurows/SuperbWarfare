@@ -11,6 +11,7 @@ import com.atsuishio.superbwarfare.config.SERVER_CONFIG
 import com.atsuishio.superbwarfare.data.CustomData
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.network.NetworkRegistry
+import com.atsuishio.superbwarfare.sound.SoundLimit
 import net.minecraft.SharedConstants
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
@@ -18,6 +19,7 @@ import net.minecraft.server.packs.PackType
 import net.minecraft.server.packs.repository.Pack
 import net.minecraft.server.packs.repository.PackSource
 import net.minecraft.world.flag.FeatureFlagSet
+import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.AddPackFindersEvent
 import net.minecraftforge.event.TickEvent
@@ -29,6 +31,7 @@ import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.config.ModConfig
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent
+import net.minecraftforge.fml.loading.FMLEnvironment
 import net.minecraftforge.registries.DataPackRegistryEvent
 import net.minecraftforge.resource.PathPackResources
 import org.apache.logging.log4j.LogManager
@@ -80,6 +83,10 @@ class Mod {
         }
 
         MinecraftForge.EVENT_BUS.register(this)
+
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            SoundLimit.init()
+        }
 
         CustomData.load()
     }
