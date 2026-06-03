@@ -59,7 +59,6 @@ import org.joml.Matrix4f
 import org.lwjgl.glfw.GLFW
 import software.bernie.geckolib.animation.AnimationProcessor
 import software.bernie.geckolib.cache.`object`.GeoBone
-import thedarkcolour.kotlinforforge.neoforge.forge.vectorutil.v3d.toVector3f
 import top.theillusivec4.curios.api.CuriosApi
 import java.util.*
 import kotlin.experimental.or
@@ -1718,7 +1717,7 @@ object ClientEventHandler {
                         sendPacketToServer(
                             VehicleFireMessage(
                                 if (lockingEntityVehicle != null) lockingEntityVehicle!!.uuid else null,
-                                if (lockingPosVehicle != null) lockingPosVehicle!!.toVector3f() else missileLockingPos?.toVector3f()
+                                if (lockingPosVehicle != null) lockingPosVehicle!!.toVector3f() else missileLockingPos?.toVec3f()
                             )
                         )
 //                        FORGE_BUS.post(ClientVehicleFireEvent(vehicle, player))

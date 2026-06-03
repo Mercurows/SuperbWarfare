@@ -34,6 +34,8 @@ fun Vec3.toVector3d() = Vector3d(x, y, z)
 fun Vec3.toVector3i() = Vector3i(x.toInt(), y.toInt(), z.toInt())
 fun Vec3.toBlockPos() = BlockPos(x.toInt(), y.toInt(), z.toInt())
 
+fun BlockPos.toVec3f() = Vector3f(x.toFloat(), y.toFloat(), z.toFloat())
+
 /**
  * 将世界坐标转换为屏幕坐标
  *

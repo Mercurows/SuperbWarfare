@@ -104,6 +104,7 @@ object AnimationHelper {
         model.zRot = 0f
     }
 
+    @JvmStatic
     fun handleShellsAnimation(animationProcessor: AnimationProcessor<*>, x: Float, y: Float) {
         val shell1 = animationProcessor.getBone("shell1")
         val shell2 = animationProcessor.getBone("shell2")
@@ -114,6 +115,7 @@ object AnimationHelper {
         handleShells(x, y, shell1, shell2, shell3, shell4, shell5)
     }
 
+    @JvmStatic
     fun handleReloadShakeAnimation(stack: ItemStack, main: GeoBone, camera: GeoBone, roll: Float, pitch: Float) {
         val data = from(stack)
         if (data.reload.time() > 0) {
@@ -130,6 +132,7 @@ object AnimationHelper {
     }
 
 
+    @JvmStatic
     fun handleShootFlare(
         name: String,
         stack: PoseStack,
@@ -157,6 +160,7 @@ object AnimationHelper {
         }
     }
 
+    @JvmStatic
     fun handleShootFlare(
         name: String,
         stack: PoseStack,
@@ -307,6 +311,7 @@ object AnimationHelper {
             .setNormal(pPose, 0f, 1f, 0f)
     }
 
+    @JvmStatic
     fun handleZoomCrossHair(
         currentBuffer: MultiBufferSource,
         renderType: RenderType,
@@ -394,6 +399,7 @@ object AnimationHelper {
             .setNormal(pNormal, 0f, 1f, 0f)
     }
 
+    @JvmStatic
     fun renderArms(
         localPlayer: LocalPlayer, transformType: ItemDisplayContext?, stack: PoseStack, name: String?, bone: GeoBone,
         currentBuffer: MultiBufferSource, renderType: RenderType, packedLightIn: Int, useOldHandRender: Boolean
