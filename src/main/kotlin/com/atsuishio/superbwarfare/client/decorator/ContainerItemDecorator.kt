@@ -32,35 +32,21 @@ class ContainerItemDecorator : IItemDecorator {
         if (customIcon != null) {
             val pose = guiGraphics.pose()
             pose.pushPose()
-            // 16×16 全尺寸图标，覆盖整个物品栏格子
-            RenderHelper.preciseBlit(
-                guiGraphics,
-                customIcon,
-                xOffset.toFloat(),
-                yOffset.toFloat(),
-                200f,
-                0f,
-                0f,
-                16f,
-                16f,
-                16f,
-                16f
-            )
+            RenderHelper.preciseBlit(guiGraphics, customIcon, xOffset.toFloat(), yOffset.toFloat(), 200f, 0f, 0f, 16f, 16f, 16f, 16f)
             pose.popPose()
-//            return true
         }
 
         // 回退：使用载具自带的小角标图标（8×8）
-        var icon: ResourceLocation? = null
-        if (icons.containsKey(typeString)) {
-            icon = icons[typeString]
+        var icon: ResourceLocation?
+        if (ICON_CACHE.containsKey(typeString)) {
+            icon = ICON_CACHE[typeString]
         } else {
             val entityType = EntityType.byString(typeString).orElse(null) ?: return false
             val level = clientLevel ?: return false
             val entity: Entity? = entityType.create(level)
             if (entity !is VehicleEntity) return false
-            icon = entity.vehicleItemIcon
-            icons[typeString] = icon
+            icon = entity.vehicleItemIcon ?: return false
+            ICON_CACHE[typeString] = icon
         }
         if (icon == null) return false
 
@@ -72,12 +58,12 @@ class ContainerItemDecorator : IItemDecorator {
     }
 
     companion object {
-        private val icons = HashMap<String?, ResourceLocation?>()
+        private val ICON_CACHE = hashMapOf<String, ResourceLocation>()
 
         /**
          * 缓存已检查过的车辆自定义图标路径，null表示已检查且未找到
          */
-        private val customIconCache = HashMap<String, ResourceLocation?>()
+        private val CUSTOM_ICON_CACHE = hashMapOf<String, ResourceLocation>()
 
         /**
          * 根据ItemStack获取自定义载具图标纹理路径
@@ -90,13 +76,13 @@ class ContainerItemDecorator : IItemDecorator {
             val id = ResourceLocation.tryParse(entityType) ?: return null
             val vehicleId = id.path
 
-            val cached = customIconCache[vehicleId]
-            if (cached !== null || customIconCache.containsKey(vehicleId)) return cached
+            val cached = CUSTOM_ICON_CACHE[vehicleId]
+            if (cached !== null || CUSTOM_ICON_CACHE.containsKey(vehicleId)) return cached
 
             val texturePath = Mod.loc("textures/vehicle_icon/container/$vehicleId.png")
             val resource = Minecraft.getInstance().resourceManager.getResource(texturePath)
-            val result = if (resource.isPresent) texturePath else null
-            customIconCache[vehicleId] = result
+            val result = if (resource.isPresent) texturePath else return null
+            CUSTOM_ICON_CACHE[vehicleId] = result
             return result
         }
     }

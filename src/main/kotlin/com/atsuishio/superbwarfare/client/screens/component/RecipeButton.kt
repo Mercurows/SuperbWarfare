@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.screens.component
 import com.atsuishio.superbwarfare.block.ContainerBlock.Companion.getEntityTranslationKey
 import com.atsuishio.superbwarfare.client.screens.VehicleAssemblingScreen
 import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.tools.font
 import com.atsuishio.superbwarfare.tools.mc
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.gui.GuiGraphics
@@ -74,6 +75,7 @@ class RecipeButton(x: Int, y: Int, private val stack: ItemStack, onPress: OnPres
         }
 
         pGuiGraphics.renderItem(this.stack, this.x + 2, this.y + 1)
+        pGuiGraphics.renderItemDecorations(font, this.stack, this.x + 2, this.y + 1)
         val hoverName: Component?
         if (this.stack.`is`(ModItems.CONTAINER.get())) {
             val data = this.stack.get(DataComponents.BLOCK_ENTITY_DATA)
@@ -82,10 +84,10 @@ class RecipeButton(x: Int, y: Int, private val stack: ItemStack, onPress: OnPres
                 val key = getEntityTranslationKey(tag.getString("EntityType"))
                 hoverName = Component.translatable(key ?: "des.superbwarfare.container.empty")
             } else {
-                hoverName = this.stack.getHoverName()
+                hoverName = this.stack.hoverName
             }
         } else {
-            hoverName = this.stack.getHoverName()
+            hoverName = this.stack.hoverName
         }
         renderScrollingString(
             pGuiGraphics,

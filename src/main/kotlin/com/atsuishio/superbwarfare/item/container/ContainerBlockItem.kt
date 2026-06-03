@@ -7,6 +7,8 @@ import com.atsuishio.superbwarfare.init.ModBlockEntities
 import com.atsuishio.superbwarfare.init.ModBlocks
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.tools.mc
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer
 import net.minecraft.core.component.DataComponents
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
@@ -31,17 +33,13 @@ import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent
-import software.bernie.geckolib.animatable.GeoItem
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache
-import software.bernie.geckolib.animation.AnimatableManager.ControllerRegistrar
-import software.bernie.geckolib.animation.AnimationController
-import software.bernie.geckolib.animation.PlayState
-import software.bernie.geckolib.util.GeckoLibUtil
 
-class ContainerBlockItem : BlockItem(ModBlocks.CONTAINER.get(), Properties().stacksTo(1).fireResistant()), GeoItem {
-    private val cache = GeckoLibUtil.createInstanceCache(this)
+class ContainerBlockItem : BlockItem(ModBlocks.CONTAINER.get(), Properties().stacksTo(1).fireResistant()) {
 
-    override fun canBeHurtBy(stack: ItemStack, source: DamageSource) = super.canBeHurtBy(stack, source)
+    override fun canBeHurtBy(
+        stack: ItemStack,
+        source: DamageSource
+    ) = super.canBeHurtBy(stack, source)
             && !source.`is`(DamageTypeTags.IS_EXPLOSION)
             && !source.`is`(DamageTypes.CACTUS)
 
@@ -89,11 +87,6 @@ class ContainerBlockItem : BlockItem(ModBlocks.CONTAINER.get(), Properties().sta
         return Component.translatable("item.superbwarfare.container", args)
     }
 
-    override fun registerControllers(data: ControllerRegistrar) {
-        data.add(AnimationController(this, "controller", 0) { _ -> PlayState.CONTINUE })
-    }
-
-    override fun getAnimatableInstanceCache(): AnimatableInstanceCache = this.cache
 
     @EventBusSubscriber(modid = Mod.MODID)
     companion object {
@@ -139,8 +132,14 @@ class ContainerBlockItem : BlockItem(ModBlocks.CONTAINER.get(), Properties().sta
         @SubscribeEvent
         private fun registerArmorExtensions(event: RegisterClientExtensionsEvent) {
             event.registerItem(object : IClientItemExtensions {
-                private val renderer = ContainerBlockItemRenderer()
-                override fun getCustomRenderer() = renderer
+                private var renderer: BlockEntityWithoutLevelRenderer? = null
+
+                override fun getCustomRenderer(): BlockEntityWithoutLevelRenderer {
+                    if (renderer == null) {
+                        renderer = ContainerBlockItemRenderer(mc.blockEntityRenderDispatcher, mc.entityModels)
+                    }
+                    return renderer!!
+                }
             }, ModItems.CONTAINER)
         }
 
@@ -152,7 +151,7 @@ class ContainerBlockItem : BlockItem(ModBlocks.CONTAINER.get(), Properties().sta
             val tag = if (data != null) data.copyTag() else CompoundTag()
 
             val entityTag = CompoundTag()
-            val encodedId = entity.getEncodeId()
+            val encodedId = entity.encodeId
             if (encodedId != null) {
                 entityTag.putString("id", encodedId)
             }
