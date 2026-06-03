@@ -163,6 +163,7 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
         }
 
         val seekInfo = gunData.get(GunProp.SEEK_WEAPON_INFO)
+        val color = gunData.get(GunProp.CROSSHAIR_COLOR).get()
         if (seekInfo == null) {
             poseStack.popPose()
             return
@@ -400,7 +401,7 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
                     poseStack.popPose()
                 }
             }
-        } else {
+        } else if (seekInfo.onlyLockBlock) {
             val pos = ClientEventHandler.lockingPosVehicle
             if (pos != null) {
                 val lockOn = ClientEventHandler.lockOnVehicle
@@ -497,7 +498,82 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
                     )
                     poseStack.popPose()
                 }
+            } else {
+                poseStack.pushPose()
+                poseStack.translate((screenWidth / 2).toDouble(), (screenHeight / 2).toDouble(), 0.0)
+
+                RenderHelper.preciseBlit(
+                    guiGraphics,
+                    FRAME_TARGET,
+                    -12f,
+                    -12f,
+                    0f,
+                    0f,
+                    24f,
+                    24f,
+                    24f,
+                    24f,
+                )
+
+                val string = "[" + ModKeyMappings.VEHICLE_SEEK.key.displayName.string + "]"
+                val width = mc.font.width(string)
+                guiGraphics.drawString(
+                    mc.font,
+                    string,
+                    -width / 2,
+                    10,
+                    0xFFBD7F,
+                    false
+                )
+                poseStack.popPose()
             }
+        } else if (seekInfo.inputBlockPos) {
+            poseStack.pushPose()
+            poseStack.translate((screenWidth / 2).toDouble() + 40, (screenHeight / 2).toDouble(), 0.0)
+
+            val stringX = "X: " + (ClientEventHandler.missileLockingPos?.x ?: "---")
+            guiGraphics.drawString(
+                mc.font,
+                stringX,
+                0,
+                -17,
+                color,
+                false
+            )
+
+            val stringY = "Y: " + (ClientEventHandler.missileLockingPos?.y ?: "---")
+            guiGraphics.drawString(
+                mc.font,
+                stringY,
+                0,
+                -8,
+                color,
+                false
+            )
+
+            val stringZ = "Z: " + (ClientEventHandler.missileLockingPos?.z ?: "---")
+            guiGraphics.drawString(
+                mc.font,
+                stringZ,
+                0,
+                1,
+                color,
+                false
+            )
+
+            val string = Component.translatable(
+                "tips.superbwarfare.input_missile_target",
+                ModKeyMappings.EDIT_MODE.translatedKeyMessage
+            )
+            guiGraphics.drawString(
+                mc.font,
+                string,
+                0,
+                10,
+                color,
+                false
+            )
+            poseStack.popPose()
         }
 
         poseStack.popPose()

@@ -47,6 +47,10 @@ class SeekWeaponInfo {
     @SerialName("OnlyLockEntity")
     var onlyLockEntity = false
 
+    @SerializedName("InputBlockPos")
+    @SerialName("InputBlockPos")
+    var inputBlockPos = false
+
     @SerializedName("MaxGuidedRange")
     @SerialName("MaxGuidedRange")
     var maxGuidedRange = 2048.0

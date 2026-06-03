@@ -775,6 +775,7 @@
   "tips.superbwarfare.ballistics.warn3": "Exceeding maximum elevation",
   "tips.superbwarfare.mount.onboard": "Press %1$s to Dismount, Hold %1$s to Eject",
   "tips.superbwarfare.press_s_to_landing": "Hold S to assist helicopter landing",
+  "tips.superbwarfare.input_missile_target": "Press [%1$s] to Input Target Position",
 
   "tips.superbwarfare.target.yaw": "Target Yaw: ",
   "tips.superbwarfare.target.pitch": "Target Pitch: ",
@@ -906,6 +907,7 @@
   "weapon.superbwarfare.agm_65_missile_entity": "AGM-65 %1$s (Entity Mode)",
   "weapon.superbwarfare.agm_65_missile_block": "AGM-65 %1$s (Block Mode)",
   "weapon.superbwarfare.ru_3m14_missile_block": "3M-14 Kalibr Cruise Missile %1$s (Block Mode)",
+  "weapon.superbwarfare.ru_3m14_missile_coordinates": "3M-14 Kalibr Cruise Missile %1$s (Coordinates Mode)",
   "weapon.superbwarfare.9m_120_missile": "9M-120 %1$s",
   "weapon.superbwarfare.9m_336_missile": "9M-336 %1$s",
   "weapon.superbwarfare.9m_100_missile": "9M-100 %1$s",

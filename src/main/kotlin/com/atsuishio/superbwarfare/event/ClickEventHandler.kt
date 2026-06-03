@@ -355,9 +355,15 @@ object ClickEventHandler {
             }
 
             if (key == ModKeyMappings.EDIT_MODE.key.value) {
-                if (vehicle is VehicleEntity && vehicle.data().compute().hasMissileInputScreen) {
-                    Minecraft.getInstance().setScreen(MissilePosInputScreen())
-                    return
+                if (vehicle is VehicleEntity) {
+                    val data = vehicle.getGunData(player)
+                    if (data != null) {
+                        val input = data.get(GunProp.SEEK_WEAPON_INFO)?.inputBlockPos
+                        if (input == true) {
+                            Minecraft.getInstance().setScreen(MissilePosInputScreen())
+                            return
+                        }
+                    }
                 }
 
                 val item = stack.item
@@ -583,6 +589,14 @@ object ClickEventHandler {
 
         val vehicle = player.vehicle
         if (vehicle is VehicleEntity && vehicle.hasWeapon(vehicle.getSeatIndex(player)) && vehicle.banHand(player)) {
+            val data = vehicle.getGunData(player)
+            if (data != null) {
+                val input = data.get(GunProp.SEEK_WEAPON_INFO)?.inputBlockPos
+                if (input == true) {
+                    Minecraft.getInstance().setScreen(MissilePosInputScreen())
+                    return
+                }
+            }
             ClientEventHandler.zoomVehicle = true
             return
         }
