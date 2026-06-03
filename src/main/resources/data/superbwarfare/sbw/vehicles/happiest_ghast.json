@@ -126,6 +126,17 @@
         {
           "Ammo": "superbwarfare:large_anti_ground_missile",
           "ShouldUnload": false
+        },
+        {
+          "Ammo": "superbwarfare:large_anti_ground_missile",
+          "ShouldUnload": false,
+          "Override": {
+            "Name": "weapon.superbwarfare.ru_3m14_missile_coordinates",
+            "SeekWeaponInfo": {
+              "SeekDirection": "Passenger",
+              "InputBlockPos": true
+            }
+          }
         }
       ],
       "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/ru_3m14.png",
@@ -287,6 +298,5 @@
   "Type": "AirShip",
   "HudType": "@Helicopter",
   "HUDColor": "0xFFC700",
-  "TerrainCompat": [[0.867, 0, 1.406], [-0.867, 0, 1.406], [0.867, 0, 0.656], [-0.867, 0, 0.656], [0.867, 0, -0.656], [-0.867, 0, -0.656]],
-  "HasMissileInputScreen": true
+  "TerrainCompat": [[0.867, 0, 1.406], [-0.867, 0, 1.406], [0.867, 0, 0.656], [-0.867, 0, 0.656], [0.867, 0, -0.656], [-0.867, 0, -0.656]]
 }

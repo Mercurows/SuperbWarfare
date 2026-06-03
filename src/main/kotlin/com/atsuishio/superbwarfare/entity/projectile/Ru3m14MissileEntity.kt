@@ -4,12 +4,12 @@ import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimat
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.tools.ParticleTool
-import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundSource
+import net.minecraft.util.Mth
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.item.Item
@@ -21,11 +21,13 @@ open class Ru3m14MissileEntity(type: EntityType<out Ru3m14MissileEntity>, level:
     val anim: BasicProjectileAnimationInstance<*>? =
         if (this.level().isClientSide) BasicProjectileAnimationInstance(this) else null
 
+    var startPos: Vec3 = Vec3.ZERO
+    var distance = 0.0
+
     override fun getAnimationInstance(): BasicProjectileAnimationInstance<*>? {
         return this.anim
     }
     init {
-        this.noCulling = true
         this.damageValue = 3000f
         this.explosionDamageValue = 1400f
         this.explosionRadiusValue = 36f
@@ -47,14 +49,34 @@ open class Ru3m14MissileEntity(type: EntityType<out Ru3m14MissileEntity>, level:
     override fun tick() {
         super.tick()
 
-        var toVec = lookAngle
         val level = this.level()
+        var toVec = lookAngle
 
-        if (level is ServerLevel && targetPos != null) {
-            val dis = targetPos!!.vectorTo(position()).horizontalDistance()
-            val height = if (dis > 30) 0.4 * (dis - 30) else 0.0
-            val targetPos = this.targetPos!!.add(0.0, height, 0.0)
-            toVec = calculateFiringSolution(position(), targetPos, Vec3.ZERO, deltaMovement.length(), 0.0)
+        if (targetPos != null && level is ServerLevel) {
+            if (tickCount == 1) {
+                startPos = position()
+                distance = targetPos!!.vectorTo(position()).horizontalDistance()
+            }
+            val flyDistance = position().vectorTo(startPos).horizontalDistance()
+            val dis = Mth.clamp(flyDistance / distance, 0.0, 1.0)
+
+            var height: Double = if (dis < 0.2) {
+                0.5 * flyDistance
+            } else if (dis >= 0.2 && dis < 0.8) {
+                0.1 * distance
+            } else {
+                0.0
+            }
+
+            if (targetPos!!.vectorTo(position()).horizontalDistance() < 400) {
+                height = 0.0
+            }
+
+            var targetPos = this.targetPos!!.add(0.0, height, 0.0)
+            if (targetPos.y > 2048) {
+                targetPos = Vec3(targetPos.x, 2048.0, targetPos.z)
+            }
+            toVec = position().vectorTo(targetPos)
         }
 
         if (tickCount in 2..10 && toVec != lookAngle) {
@@ -63,9 +85,19 @@ open class Ru3m14MissileEntity(type: EntityType<out Ru3m14MissileEntity>, level:
 
         if (this.tickCount > 10) {
             largeTrail()
-            this.deltaMovement = this.deltaMovement.scale(0.05).add(lookAngle.scale(8.0))
-            this.deltaMovement = this.deltaMovement.multiply(0.85, 0.85, 0.85)
-            turn(toVec, ((tickCount - 10) * 0.5f).coerceIn(0f, 15f))
+            if (level is ServerLevel) {
+                if (targetPos != null) {
+                    lostTarget = y < targetPos!!.y
+                }
+
+                this.deltaMovement = this.deltaMovement.add(lookAngle.scale(Mth.clamp(0.05 * (tickCount - 10), 0.15, 1.5)))
+                val f = (0.84 + y * 0.00005).coerceAtMost(0.86)
+                this.deltaMovement = this.deltaMovement.multiply(f, f, f)
+
+                if (!lostTarget) {
+                    turn(toVec, ((tickCount - 10) * 0.1f).coerceIn(0f, 30f))
+                }
+            }
         } else {
             this.deltaMovement = this.deltaMovement.add(0.0, -0.1, 0.0)
             this.deltaMovement = this.deltaMovement.multiply(0.99, 0.99, 0.99)
@@ -112,7 +144,7 @@ open class Ru3m14MissileEntity(type: EntityType<out Ru3m14MissileEntity>, level:
     }
 
     override fun getGravity(): Float {
-        return if (tickCount < 8) 0.15f else super.getGravity()
+        return if (tickCount < 8) 0.1f else super.getGravity()
     }
 
     override fun getSound(): SoundEvent {

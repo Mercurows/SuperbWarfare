@@ -368,8 +368,10 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
 
             poseStack.popPose()
         } else if (Minecraft.getInstance().options.cameraType == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
+            val seekInfo = data.get(GunProp.SEEK_WEAPON_INFO)
+            val flag = seekInfo != null && seekInfo.inputBlockPos
             // 渲染第三人称
-            if (pos.canBeSeen() && !((entity.vehicleType == VehicleType.AIRPLANE || entity.vehicleType == VehicleType.HELICOPTER) && player === entity.getFirstPassenger())) {
+            if (!flag && pos.canBeSeen() && !((entity.vehicleType == VehicleType.AIRPLANE || entity.vehicleType == VehicleType.HELICOPTER) && player === entity.getFirstPassenger())) {
                 val x = p.x.toFloat()
                 val y = p.y.toFloat()
 

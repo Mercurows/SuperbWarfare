@@ -136,7 +136,7 @@ open class Ru9m100MissileEntity(type: EntityType<out Ru9m100MissileEntity>, leve
     }
 
     override fun getGravity(): Float {
-        return if (tickCount < 8) 0.15f else super.getGravity()
+        return if (tickCount < 8) 0.1f else super.getGravity()
     }
 
     override fun getSound(): SoundEvent {

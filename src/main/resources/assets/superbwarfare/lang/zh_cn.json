@@ -775,6 +775,7 @@
   "tips.superbwarfare.ballistics.warn3": "超过最大仰角",
   "tips.superbwarfare.mount.onboard": "按下%1$s来脱离，按住%1$s弹射",
   "tips.superbwarfare.press_s_to_landing": "按住S以辅助直升机降落",
+  "tips.superbwarfare.input_missile_target": "按下[%1$s]输入目标位置",
 
   "tips.superbwarfare.target.yaw": "目标偏航角: ",
   "tips.superbwarfare.target.pitch": "目标俯仰角: ",
@@ -906,6 +907,7 @@
   "weapon.superbwarfare.agm_65_missile_entity": "AGM-65“小牛”空对地导弹 %1$s （实体模式）",
   "weapon.superbwarfare.agm_65_missile_block": "AGM-65“小牛”空对地导弹 %1$s （方块模式）",
   "weapon.superbwarfare.ru_3m14_missile_block": "3M-14“口径”巡航导弹 %1$s （方块模式）",
+  "weapon.superbwarfare.ru_3m14_missile_coordinates": "3M-14“口径”巡航导弹 %1$s （坐标模式）",
   "weapon.superbwarfare.9m_120_missile": "9M-120“冲锋”反坦克导弹 %1$s",
   "weapon.superbwarfare.9m_336_missile": "9M-336“柳树”对空导弹 %1$s",
   "weapon.superbwarfare.9m_100_missile": "9M-100对空导弹 %1$s",
