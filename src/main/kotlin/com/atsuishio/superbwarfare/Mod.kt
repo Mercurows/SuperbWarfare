@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.config.SERVER_CONFIG
 import com.atsuishio.superbwarfare.data.CustomData
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.network.initializeNetwork
+import com.atsuishio.superbwarfare.sound.SoundLimit
 import com.atsuishio.superbwarfare.tiers.ModArmorMaterial
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
@@ -87,6 +88,10 @@ class Mod(bus: IEventBus, container: ModContainer) {
         }
 
         NeoForge.EVENT_BUS.register(this)
+
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            SoundLimit.init()
+        }
 
         CustomData.load()
     }
