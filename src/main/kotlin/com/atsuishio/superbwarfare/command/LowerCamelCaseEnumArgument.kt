@@ -20,13 +20,11 @@ import java.util.function.Function
 /**
  * 用于指令的枚举类型参数，会把枚举常量的名称转换为小驼峰形式
  *
- *
  * Code based on [CaerulaArbor](https://github.com/Apocalypse114/CaerulaArbor)
  *
  * @author Mercurows
  */
 class LowerCamelCaseEnumArgument<T : Enum<T>> private constructor(private val enumClass: Class<T>) : ArgumentType<T> {
-
     private val names by lazy {
         enumClass.enumConstants.map { e -> valueMapper.apply(e) }.toList()
     }
@@ -64,24 +62,32 @@ class LowerCamelCaseEnumArgument<T : Enum<T>> private constructor(private val en
 
     override fun getExamples() = names
 
-    class Info<T : Enum<T>> : ArgumentTypeInfo<LowerCamelCaseEnumArgument<T>, Info<T>.Template> {
-
+    class Info : ArgumentTypeInfo<LowerCamelCaseEnumArgument<*>, Info.Template> {
         override fun serializeToNetwork(template: Template, buffer: FriendlyByteBuf) {
-            buffer.writeUtf(template.enumClass.getName())
+            buffer.writeUtf(template.enumClass.name)
         }
 
         @Suppress("unchecked_cast")
-        override fun deserializeFromNetwork(buffer: FriendlyByteBuf) =
-            Template(Class.forName(buffer.readUtf()) as Class<T>)
-
-        override fun serializeToJson(template: Template, json: JsonObject) {
-            json.addProperty("enum", template.enumClass.getName())
+        override fun deserializeFromNetwork(buffer: FriendlyByteBuf): Template {
+            return Template(Class.forName(buffer.readUtf()) as Class<out Enum<*>>)
         }
 
-        override fun unpack(argument: LowerCamelCaseEnumArgument<T>) = Template(argument.enumClass)
+        override fun serializeToJson(template: Template, json: JsonObject) {
+            json.addProperty("enum", template.enumClass.name)
+        }
 
-        inner class Template(val enumClass: Class<T>) : ArgumentTypeInfo.Template<LowerCamelCaseEnumArgument<T>> {
-            override fun instantiate(pStructure: CommandBuildContext) = LowerCamelCaseEnumArgument(this.enumClass)
+        @Suppress("unchecked_cast")
+        override fun unpack(argument: LowerCamelCaseEnumArgument<*>): Template {
+            return Template(argument.enumClass)
+        }
+
+        inner class Template(val enumClass: Class<out Enum<*>>) :
+            ArgumentTypeInfo.Template<LowerCamelCaseEnumArgument<*>> {
+            @Suppress("unchecked_cast")
+            override fun instantiate(pStructure: CommandBuildContext): LowerCamelCaseEnumArgument<*> {
+                return LowerCamelCaseEnumArgument(this.enumClass as Class<Nothing>)
+            }
+
             override fun type() = this@Info
         }
     }
