@@ -31,14 +31,14 @@ class ContainerBlockItemRenderer(dispatcher: BlockEntityRenderDispatcher, set: E
 
 //        poseStack.translate(0.8, 0.8, 0.4)
 
+        model.applyPose(model.bindPose)
+
         model.renderToBuffer(
             poseStack,
             bufferSource.getBuffer(RenderType.entityCutout(TEXTURE)),
             packedLight,
             packedOverlay
         )
-
-        model.applyPose(model.bindPose)
 
         poseStack.popPose()
     }
