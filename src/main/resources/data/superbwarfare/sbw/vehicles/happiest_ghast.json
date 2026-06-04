@@ -1,5 +1,5 @@
 {
-  "MaxHealth": 500,
+  "MaxHealth": 350,
   "MaxEnergy": 5000000,
   "Gravity": 0,
   "OBB": [
@@ -32,41 +32,47 @@
       },
       "DismountInfo": {
         "Transform": "Vehicle",
-        "Position": [0, 0.375, -4.2]
+        "Position": [0, 4.5, 0.9375]
       }
     },
     {
       "Transform": "Vehicle",
-      "Position": [-0.3375, 0.638, 0.75],
-      "MinPitch": -80,
-      "MaxPitch": 80,
-      "MinYaw": -80,
-      "MaxYaw": 80,
+      "Position": [-0.75, 3.5, 0.2125],
+      "MinYaw": -90,
+      "MaxYaw": 90,
       "DismountInfo": {
         "Transform": "Vehicle",
-        "Position": [-1.5, 0.9, 0.75]
+        "Position": [-0.75, 4.5, 0.3125]
       }
     },
     {
       "Transform": "Vehicle",
-      "Position": [-1.05, 0.3, 0],
-      "Orientation": 90,
-      "MinYaw": -80,
-      "MaxYaw": 80,
+      "Position": [0.75, 3.5, 0.2125],
+      "MinYaw": -90,
+      "MaxYaw": 90,
       "DismountInfo": {
         "Transform": "Vehicle",
-        "Position": [-1.5, 0.9, 0]
+        "Position": [0.75, 4.5, 0.3125]
       }
     },
     {
       "Transform": "Vehicle",
-      "Position": [1.05, 0.3, 0],
-      "Orientation": -90,
-      "MinYaw": -80,
-      "MaxYaw": 80,
+      "Position": [-0.75, 3.5, -0.7875],
+      "MinYaw": -90,
+      "MaxYaw": 90,
       "DismountInfo": {
         "Transform": "Vehicle",
-        "Position": [1.5, 0.9, 0]
+        "Position": [-0.75, 4.5, -0.6875]
+      }
+    },
+    {
+      "Transform": "Vehicle",
+      "Position": [0.75, 3.5, -0.7875],
+      "MinYaw": -90,
+      "MaxYaw": 90,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0.75, 4.5, -0.6875]
       }
     }
   ],
@@ -261,38 +267,35 @@
   "Mass": 24,
   "HasDecoy": true,
   "DamageModifiers": [
-    "All - 7",
-    "minecraft:lava + 8",
-    "minecraft:arrow * 0.2",
-    "minecraft:trident * 0.4",
-    "minecraft:mob_attack * 0.4",
-    "minecraft:mob_attack_no_aggro * 0.4",
-    "minecraft:mob_projectile * 0.4",
-    "minecraft:player_attack * 0.4",
-    "minecraft:lava * 2.5",
-    "@minecraft:tnt * 6",
-    "@minecraft:tnt_minecart * 6",
-    "minecraft:explosion * 4",
-    "minecraft:player_explosion * 4",
-    "superbwarfare:projectile_hit * 0.8",
-    "superbwarfare:grapeshot_hit * 0.75",
-    "#superbwarfare:projectile * 0.16",
-    "superbwarfare:vehicle_strike * 7",
-    "superbwarfare:laser * 0.4",
-    "@superbwarfare:cannon_shell * 2",
-    "@superbwarfare:small_cannon_shell * 1.1",
-    "@superbwarfare:gun_grenade * 2.2",
-    "@superbwarfare:rgo_grenade * 6",
-    "@superbwarfare:hand_grenade * 5",
-    "@superbwarfare:mortar_shell * 3",
-    "@#superbwarfare:at_rocket * 3",
-    "@#superbwarfare:aerial_bomb * 2",
-    "All * 0.65"
+    "All - 11",
+    "minecraft:lava + 11",
+    "minecraft:lava * 10",
+    "All * 0.2",
+    "minecraft:arrow * 1.5",
+    "minecraft:trident * 1.5",
+    "minecraft:mob_attack * 2.5",
+    "minecraft:mob_attack_no_aggro * 2",
+    "minecraft:mob_projectile * 1.5",
+    "minecraft:explosion * 6",
+    "minecraft:player_explosion * 6",
+    "superbwarfare:custom_explosion * 2.0",
+    "superbwarfare:projectile_explosion * 2",
+    "superbwarfare:mine * 0.75",
+    "superbwarfare:projectile_hit * 1.25",
+    "superbwarfare:grapeshot_hit * 0.3",
+    "superbwarfare:laser * 1.25",
+    "@#superbwarfare:aerial_bomb * 3",
+    "#superbwarfare:projectile * 0.25",
+    "#superbwarfare:projectile_absolute * 0.85",
+    "superbwarfare:vehicle_strike * 4",
+    "@superbwarfare:mortar_shell * 1.25",
+    "@superbwarfare:gun_grenade * 1.5",
+    "@superbwarfare:javelin_missile * 0.8"
   ],
   "DestroyInfo": {
     "ParticleType": "Huge",
     "ExplosionDamage": 300,
-    "ExplosionRadius": 8,
+    "ExplosionRadius": 12,
     "CrashPassengers": true
   },
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/happiest_ghast_icon.png",
@@ -301,5 +304,5 @@
   "Type": "AirShip",
   "HudType": "@Helicopter",
   "HUDColor": "0xFFC700",
-  "TerrainCompat": [[0.867, 0, 1.406], [-0.867, 0, 1.406], [0.867, 0, 0.656], [-0.867, 0, 0.656], [0.867, 0, -0.656], [-0.867, 0, -0.656]]
+  "TerrainCompat": [[2, 0, 2], [-2, 0, 2], [2, 0, -2], [-2, 0, -2]]
 }
