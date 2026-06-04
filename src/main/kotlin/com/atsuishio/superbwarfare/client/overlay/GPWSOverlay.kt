@@ -72,9 +72,6 @@ object GPWSOverlay : CommonOverlay("gpws") {
     // 音效冷却计时器 (tick)
     private val soundCooldowns = mutableMapOf<GPWSWarning, Int>()
 
-    // 高度报数冷却
-    private var altitudeCalloutCooldown = 0
-
     // 前方碰撞距离缓存（供渲染使用）
     private var forwardCollisionDistance = -1.0
 
@@ -117,7 +114,6 @@ object GPWSOverlay : CommonOverlay("gpws") {
         soundCooldowns.forEach { (key, value) ->
             if (value > 0) soundCooldowns[key] = value - 1
         }
-        if (altitudeCalloutCooldown > 0) altitudeCalloutCooldown--
 
         // 前方地形碰撞检测
         forwardCollisionDistance = checkForwardTerrainCollision(vehicle)
@@ -129,12 +125,6 @@ object GPWSOverlay : CommonOverlay("gpws") {
         // 触发音效
         if (currentWarning != GPWSWarning.NONE) {
             triggerWarningSound(player, currentWarning)
-        }
-
-        // 高度报数（仅下降时）
-        val agl = getHeightAboveGround(vehicle)
-        if (agl > 0 && agl <= 50 && vehicle.deltaMovement.y < -1.0 && takeoffGraceTicks <= 0) {
-            triggerAltitudeCallout(player, agl)
         }
     }
 
@@ -220,8 +210,6 @@ object GPWSOverlay : CommonOverlay("gpws") {
         val vehicle = player.vehicle ?: return false
         return vehicle is VehicleEntity && isAircraft(vehicle)
     }
-
-    // ==================== 核心逻辑 ====================
 
     /**
      * 判断是否为飞行器（直升机或固定翼）
@@ -412,23 +400,6 @@ object GPWSOverlay : CommonOverlay("gpws") {
         }
     }
 
-    /**
-     * 触发高度报数
-     */
-    private fun triggerAltitudeCallout(player: Player, agl: Double) {
-        if (altitudeCalloutCooldown > 0) return
-
-        val height = agl.toInt()
-        val calloutHeights = intArrayOf(100, 80, 60, 40, 20)
-        if (height in calloutHeights) {
-            playAltitudeCallout(player, height)
-            altitudeCalloutCooldown = 30
-        }
-    }
-
-    // TODO: 以下音效方法待接入 ModSounds 中的实际音效资源
-    // 音效资源建议放置路径: sounds/gpws/
-
     /** PULL UP 警告音效 — 最紧急 */
     private fun playPullUpSound(player: Player) {
         player.playSound(ModSounds.GPWS_PULL_UP.get(), 2.0f, 1.0f)
@@ -459,26 +430,12 @@ object GPWSOverlay : CommonOverlay("gpws") {
         player.playSound(ModSounds.GPWS_TOO_LOW_TERRAIN.get(), 2.0f, 1.0f)
     }
 
-    /** 高度报数音效 (50, 40, 30, 20, 10) */
-    private fun playAltitudeCallout(player: Player, height: Int) {
-        // val sound = when (height) {
-        //     50 -> ModSounds.GPWS_ALTITUDE_100.get()
-        //     40 -> ModSounds.GPWS_ALTITUDE_80.get()
-        //     30 -> ModSounds.GPWS_ALTITUDE_60.get()
-        //     20 -> ModSounds.GPWS_ALTITUDE_40.get()
-        //     10 -> ModSounds.GPWS_ALTITUDE_20.get()
-        //     else -> return
-        // }
-        // player.playSound(sound, 0.8f, 1.0f)
-    }
-
     private fun resetState() {
         lastWarning = GPWSWarning.NONE
         takeoffGraceTicks = 0
         wasOnGround = false
         forwardCollisionDistance = -1.0
         soundCooldowns.clear()
-        altitudeCalloutCooldown = 0
     }
 
     init {

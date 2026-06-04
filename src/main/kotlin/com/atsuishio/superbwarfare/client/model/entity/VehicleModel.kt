@@ -21,6 +21,7 @@ import software.bernie.geckolib.model.GeoModel
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
+@Deprecated("Geckolib will be removed since 0.8.10", ReplaceWith("BedrockVehicleModel"))
 open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnimatable {
     protected var pitch = 0f
     protected var yaw = 0f
@@ -125,7 +126,6 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
 
     protected var init = false
 
-    // TODO 在重载资源包时清空缓存
     protected val TRANSFORMS = mutableListOf<Pair<String, TransformContext<T>>>()
 
     open fun collectTransform(boneName: String): TransformContext<T>? {
@@ -327,7 +327,6 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
             val name = pair.getA()
             val bone = animationProcessor.getBone(name)
 
-            // TODO 这里怎么可能为空？
             if (bone != null) {
                 pair.getB().transform(bone, vehicle, animationState)
             }
