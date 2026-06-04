@@ -1416,6 +1416,8 @@ object VehicleEngineUtils {
             backInputDown = false
             leftInputDown = false
             rightInputDown = false
+            upInputDown = false
+            downInputDown = false
             power *= 0.95f
         }
 
@@ -1424,6 +1426,8 @@ object VehicleEngineUtils {
             rightInputDown = false
             forwardInputDown = false
             backInputDown = false
+            upInputDown = false
+            downInputDown = false
             power = 0f
         }
 
@@ -1474,19 +1478,27 @@ object VehicleEngineUtils {
             liftSpeed = Mth.clamp(liftSpeed - 0.05f, -1f, 1f)
         }
 
-        liftSpeed -= 0.01f * deltaMovement.y.toFloat()
+        if (health > 0) {
+            xRot *= 0.97f
+            roll *= 0.97f
+        }
 
-        if (!upInputDown && !downInputDown) {
-            liftSpeed *= 0.8f
+        if (health > 0.1f * getMaxHealth()) {
+            if (!upInputDown && !downInputDown) {
+                liftSpeed *= 0.8f
+            }
+
+            liftSpeed -= 0.01f * deltaMovement.y.toFloat()
+
+            if (!hasPassenger) {
+                liftSpeed = Math.max(liftSpeed - 0.025f, -0.25f)
+            }
+        } else {
+            liftSpeed = Math.max(liftSpeed - 0.01f, -3f)
         }
 
         if (level() is ServerLevel) {
             consumeEnergy(energyCost)
-        }
-
-        if (health > 0) {
-            xRot *= 0.97f
-            roll *= 0.97f
         }
 
         deltaRot *= Math.max(0.8f - 0.01f * deltaMovement.horizontalDistance(), 0.3).toFloat()
@@ -1497,7 +1509,6 @@ object VehicleEngineUtils {
         } else {
             deltaMovement.add(0.0, maxDownSpeedRate * 0.06 * liftSpeed, 0.0)
         }
-
     }
 
     fun VehicleEntity.moveWithOutPower(player: Player, forward: Boolean) {

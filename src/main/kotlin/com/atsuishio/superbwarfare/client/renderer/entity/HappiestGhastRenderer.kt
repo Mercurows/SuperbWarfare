@@ -51,25 +51,25 @@ class HappiestGhastRenderer<T>(manager: EntityRendererProvider.Context) :
         updateFlowTexture(vehicle.tickCount)
 
         // 使用动态纹理的 ResourceLocation，替代原始玻璃贴图
-        val texLocation = if (flowTextureReady) FLOW_GLASS else GLASS
+        val texLocation = if (flowTextureReady && !vehicle.sympatheticDetonated) FLOW_GLASS else GLASS
 
         val renderType = RenderType.entityTranslucent(texLocation)
         val renderTypeLight = RenderType.eyes(texLocation)
         val polyMeshType = BedrockModelRenderTypes.polyMeshCutout(texLocation)
 
-        // 基础层：白色渲染，完整显示色相偏移后的彩虹贴图
         model.renderToBuffer(
             poseStack, buffer, renderType, polyMeshType,
             packedLight, OverlayTexture.NO_OVERLAY,
             1f, 1f, 1f, 1f
         )
 
-        // 发光层：叠加发光流光
-        model.renderToBuffer(
-            poseStack, buffer, renderTypeLight, polyMeshType,
-            packedLight, OverlayTexture.NO_OVERLAY,
-            1f, 1f, 1f, 1f
-        )
+        if (!vehicle.sympatheticDetonated) {
+            model.renderToBuffer(
+                poseStack, buffer, renderTypeLight, polyMeshType,
+                packedLight, OverlayTexture.NO_OVERLAY,
+                1f, 1f, 1f, 1f
+            )
+        }
     }
 
     companion object {

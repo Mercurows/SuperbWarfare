@@ -123,7 +123,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         this.rotateVehicleAxis(entity, poseStack, yaw, partialTick)
         poseStack.scale(renderScale(), renderScale(), renderScale())
 
-        if (entity.getAnimationInstance() != null && !isLOD) {
+        if (entity.getAnimationInstance() != null && !isLOD && !entity.sympatheticDetonated) {
             val ani = entity.getAnimationInstance()!!
             ani.context.partialTick = partialTick
             ani.tick()
@@ -187,7 +187,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             }
         }
 
-        if (!isLOD && flareFlag && !(ClientEventHandler.zoomVehicle && (hideForTurretControllerWhileZooming || hideForPassengerWeaponStationControllerWhileZooming))) {
+        if (!isLOD && !entity.sympatheticDetonated && flareFlag && !(ClientEventHandler.zoomVehicle && (hideForTurretControllerWhileZooming || hideForPassengerWeaponStationControllerWhileZooming))) {
             val flareModel = VehicleModelReloadListener.getModel(MUZZLE_FLARE_MODEL)
 
             if (flareModel != null) {
@@ -210,7 +210,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         }
 
         // 自定义图章
-        if (dogTagFlag) {
+        if (dogTagFlag && entity.health > 0) {
             val list = entity.dogTagIcon
             val flag = list.all { row -> row.all { it == (-1).toShort() } }
             if (DisplayConfig.DOG_TAG_ICON_VISIBLE.get() && !flag) {
