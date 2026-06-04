@@ -2416,6 +2416,54 @@
       }
     ]
   },
+  "epic_explosion_close": {
+    "sounds": [
+      {
+        "name": "superbwarfare:explosion/epic_explosion_close_01",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:explosion/epic_explosion_close_02",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:explosion/epic_explosion_close_03",
+        "stream": false
+      }
+    ]
+  },
+  "epic_explosion_far": {
+    "sounds": [
+      {
+        "name": "superbwarfare:explosion/epic_explosion_far_01",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:explosion/epic_explosion_far_02",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:explosion/epic_explosion_far_03",
+        "stream": false
+      }
+    ]
+  },
+  "epic_explosion_very_far": {
+    "sounds": [
+      {
+        "name": "superbwarfare:explosion/epic_explosion_very_far_01",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:explosion/epic_explosion_very_far_02",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:explosion/epic_explosion_very_far_03",
+        "stream": false
+      }
+    ]
+  },
   "open": {
     "sounds": [
       {

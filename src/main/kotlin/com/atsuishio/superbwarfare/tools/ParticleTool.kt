@@ -258,9 +258,9 @@ object ParticleTool {
         val z = pos.z
 
         if (level is ServerLevel) {
-            playDistantSound(level, ModSounds.HUGE_EXPLOSION_CLOSE.get(), pos, 24f, 1f, null)
-            playDistantSound(level, ModSounds.HUGE_EXPLOSION_FAR.get(), pos, 60f, 1f, null)
-            playDistantSound(level, ModSounds.HUGE_EXPLOSION_VERY_FAR.get(), pos, 256f, 1f, null)
+            playDistantSound(level, ModSounds.EPIC_EXPLOSION_CLOSE.get(), pos, 24f, 1f, null)
+            playDistantSound(level, ModSounds.EPIC_EXPLOSION_FAR.get(), pos, 38f, 1f, null)
+            playDistantSound(level, ModSounds.EPIC_EXPLOSION_VERY_FAR.get(), pos, 132f, 1f, null)
 
             if ((level.getBlockState(BlockPos.containing(x, y, z))).block === Blocks.WATER) {
                 sendParticle(level, ParticleTypes.CLOUD, x, y + 3, z, 100, 2.0, 6.0, 2.0, 0.01, true)
