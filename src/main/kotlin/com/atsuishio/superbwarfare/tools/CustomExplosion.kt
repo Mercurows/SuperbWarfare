@@ -29,7 +29,9 @@ import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import net.neoforged.neoforge.event.EventHooks
 import java.util.function.Supplier
+import kotlin.math.cos
 import kotlin.math.floor
+import kotlin.math.sin
 import kotlin.math.sqrt
 
 class CustomExplosion @JvmOverloads constructor(
@@ -181,13 +183,14 @@ class CustomExplosion @JvmOverloads constructor(
             val center = Vec3(this.x, this.y, this.z)
             val random = level.random
 
+            // Flattened AABB: wider XZ, shorter Y
             val aabb = AABB(
-                x - 0.5 * radius,
-                y - 0.5 * radius,
-                z - 0.5 * radius,
-                x + 0.5 * radius,
-                y + 0.5 * radius,
-                z + 0.5 * radius
+                x - 0.6 * radius,
+                y - 0.3 * radius,
+                z - 0.6 * radius,
+                x + 0.6 * radius,
+                y + 0.3 * radius,
+                z + 0.6 * radius
             )
 
             val minPos = BlockPos(
@@ -204,21 +207,27 @@ class CustomExplosion @JvmOverloads constructor(
 
             BlockPos.betweenClosedStream(minPos, maxPos).forEach { blockpos ->
                 var effectiveRadius = 0.4 * radius
-                val distanceSqr = blockpos!!.center.distanceToSqr(center).toFloat()
+                val dx = (blockpos.center.x - center.x).toFloat()
+                val dy = (blockpos.center.y - center.y).toFloat()
+                val dz = (blockpos.center.z - center.z).toFloat()
+                // Flattened ellipsoid: ~1.2x wider horizontal, ~0.6x shorter vertical
+                val flattenedDistSqr = (dx * dx + dz * dz) + dy * dy * 3.0f
+                val distanceSqr = dx * dx + dy * dy + dz * dz
                 var force = this.radius * (0.25f + random.nextFloat() * 0.15f) * 0.02f * damage
 
                 if (distanceSqr > radius * radius * 0.15) {
                     effectiveRadius += (random.nextDouble() - 0.5) * radius * 0.2
                 }
-                if (level.isInWorldBounds(blockpos) && blockpos.center
-                        .distanceToSqr(center) <= effectiveRadius * effectiveRadius
+                val flattenedRadius = effectiveRadius * 1.2f
+                if (level.isInWorldBounds(blockpos) &&
+                    flattenedDistSqr <= flattenedRadius * flattenedRadius
                 ) {
                     val blockState = this.level.getBlockState(blockpos)
                     var resistance = blockState.block.defaultDestroyTime()
                     if (blockState.soundType === SoundType.METAL || blockState.soundType === SoundType.COPPER || blockState.soundType === SoundType.NETHERITE_BLOCK) {
                         resistance *= 3f
                     }
-                    force *= (1 - (distanceSqr / (effectiveRadius * effectiveRadius))).toFloat()
+                    force *= ((1f - (flattenedDistSqr / (flattenedRadius * flattenedRadius))).coerceIn(0.0, 1.0)).toFloat()
 
                     if (resistance != -1f && force > resistance && this.damageCalculator.shouldBlockExplode(
                             this,
@@ -232,6 +241,60 @@ class CustomExplosion @JvmOverloads constructor(
                             level.destroyBlock(blockpos, true)
                         }
                     }
+                }
+            }
+
+            // Add radial spikes concentrated on the equatorial plane (±20°) for jagged crater edge
+            val numRays = 32 + random.nextInt(17) // 32-48 rays, denser since restricted to belt
+            val coreRadius = 0.4f * radius
+            val flattenedCoreRadius = coreRadius * 1.2f // Match ellipsoid horizontal radius
+            // Restrict to equatorial belt: radius * sin(20°) ≈ radius * 0.34
+            val beltHalfHeight = (radius * 0.34).toInt().coerceAtLeast(1)
+            val beltYMin = (floor(center.y) - beltHalfHeight).toInt()
+            val beltYMax = (floor(center.y) + beltHalfHeight).toInt()
+
+            for (r in 0 until numRays) {
+                val angle = 2.0 * Math.PI * r / numRays + (random.nextDouble() - 0.5) * 0.25
+                // Spikes extend beyond the ellipsoid core edge
+                val spikeLength = flattenedCoreRadius * (1.0f + random.nextFloat() * 1.1f)
+
+                val dx = cos(angle)
+                val dz = sin(angle)
+
+                var dist = flattenedCoreRadius * 0.35f
+                while (dist < spikeLength) {
+                    val bx = floor(center.x + dx * dist).toInt()
+                    val bz = floor(center.z + dz * dist).toInt()
+
+                    for (dy in beltYMin..beltYMax) {
+                        val blockpos = BlockPos(bx, dy, bz)
+
+                        if (blockpos in set || !level.isInWorldBounds(blockpos)) continue
+
+                        val fdx = (blockpos.center.x - center.x).toFloat()
+                        val fdy = (blockpos.center.y - center.y).toFloat()
+                        val fdz = (blockpos.center.z - center.z).toFloat()
+                        // Use same ellipsoid model as main crater
+                        val flattenedDistSqr = (fdx * fdx + fdz * fdz) + fdy * fdy * 3.0f
+                        if (flattenedDistSqr > spikeLength * spikeLength) continue
+
+                        var force = this.radius * (0.25f + random.nextFloat() * 0.15f) * 0.02f * damage
+                        force *= (1f - (flattenedDistSqr / (spikeLength * spikeLength))).coerceIn(0f, 1f)
+
+                        val blockState = this.level.getBlockState(blockpos)
+                        var resistance = blockState.block.defaultDestroyTime()
+                        if (blockState.soundType === SoundType.METAL || blockState.soundType === SoundType.COPPER || blockState.soundType === SoundType.NETHERITE_BLOCK) {
+                            resistance *= 3f
+                        }
+
+                        if (resistance != -1f && force > resistance &&
+                            this.damageCalculator.shouldBlockExplode(this, this.level, blockpos, blockState, force)
+                        ) {
+                            set.add(blockpos.immutable())
+                        }
+                    }
+
+                    dist += 1.2f
                 }
             }
 
