@@ -48,6 +48,13 @@ object ModParticleTypes {
         )
 
     @JvmField
+    val CUSTOM_FLARE: DeferredHolder<ParticleType<*>, ParticleType<CustomFlareOption>> =
+        REGISTRY.register(
+            "custom_flare",
+            Supplier { createOptions(CustomFlareOption.CODEC, true, CustomFlareOption.STREAM_CODEC) }
+        )
+
+    @JvmField
     val CUSTOM_CLOUD: DeferredHolder<ParticleType<*>, ParticleType<CustomCloudOption>> =
         REGISTRY.register(
             "custom_cloud",

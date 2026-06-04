@@ -200,7 +200,7 @@
       "ExplosionDamage": 160,
       "ExplosionRadius": 10,
       "Velocity": 2.3,
-      "ShootDelayTime": 10,
+      "ShootDelayTime": 2,
       "SeekWeaponInfo": {
         "SeekDirection": "Passenger",
         "CanGuidedByRadar": true,
@@ -216,9 +216,10 @@
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 5.1, 0.9375],
-        "Positions": [[-1.5, 0.5, -1.4375], [1.5, 0.5, -1.4375]],
+        "Positions": [[-1.3125, 0.5, -1.25], [-1.6875, 0.5, -1.25], [-1.3125, 0.5, -1.625], [-1.6875, 0.5, -1.625], [1.3125, 0.5, -1.25], [1.6875, 0.5, -1.25], [1.3125, 0.5, -1.625], [1.6875, 0.5, -1.625]],
         "Directions": [[0, 1, 0]],
-        "ViewDirection": "Passenger"
+        "ViewDirection": "Passenger",
+        "BoundUpWithAmmoAmount": true
       },
       "SoundInfo": {
         "Fire1P": "superbwarfare:bomb_release",

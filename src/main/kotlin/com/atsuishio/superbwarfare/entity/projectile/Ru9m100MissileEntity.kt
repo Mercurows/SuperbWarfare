@@ -78,7 +78,6 @@ open class Ru9m100MissileEntity(type: EntityType<out Ru9m100MissileEntity>, leve
             }
 
             if (this.tickCount > 10) {
-                largeTrail()
 
                 if (this.tickCount > 20 && !lostTarget) {
                     lostTarget = VectorTool.calculateAngle(deltaMovement, toVec) > 120
@@ -132,6 +131,10 @@ open class Ru9m100MissileEntity(type: EntityType<out Ru9m100MissileEntity>, leve
                     true
                 )
             }
+        }
+
+        if (this.tickCount > 10) {
+            largeTrail()
         }
     }
 

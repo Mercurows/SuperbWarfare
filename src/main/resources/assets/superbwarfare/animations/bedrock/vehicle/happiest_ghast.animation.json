@@ -408,6 +408,17 @@
 					}
 				}
 			}
+		},
+		"animation.door.open": {
+			"loop": true,
+			"bones": {
+				"door7": {
+					"rotation": [0, 0, -90]
+				},
+				"door8": {
+					"rotation": [0, 0, 90]
+				}
+			}
 		}
 	}
 }
