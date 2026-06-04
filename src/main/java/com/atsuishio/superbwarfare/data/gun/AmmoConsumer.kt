@@ -125,7 +125,7 @@ class AmmoConsumer : DeserializeFromString, PropertyModifier<GunData, DefaultGun
         }
 
         if (type == AmmoConsumeType.ENERGY) {
-            return data.getEnergyProvider(shooter).map { it.extractEnergy(count, false) }.orElse(0)
+            return data.getEnergyProvider(shooter).map { it.extractEnergy(count, false) }.orElseGet { 0 }
         }
 
         val handler = shooter.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve().orElse(null)
@@ -154,7 +154,7 @@ class AmmoConsumer : DeserializeFromString, PropertyModifier<GunData, DefaultGun
 
             AmmoConsumeType.ENERGY -> {
                 return data.stack.getCapability(ForgeCapabilities.ENERGY).map { it.extractEnergy(count, false) }
-                    .orElse(0)
+                    .orElseGet { 0 }
             }
 
             else -> {
@@ -179,7 +179,7 @@ class AmmoConsumer : DeserializeFromString, PropertyModifier<GunData, DefaultGun
         if (type == AmmoConsumeType.PLAYER_AMMO && entity is Player) {
             playerAmmoCount = playerAmmoType!!.get(entity)
         } else if (type == AmmoConsumeType.ENERGY) {
-            return data.getEnergyProvider(entity).map { it.energyStored }.orElse(0)
+            return data.getEnergyProvider(entity).map { it.energyStored }.orElseGet { 0 }
         }
 
         return playerAmmoCount + count(
@@ -199,7 +199,7 @@ class AmmoConsumer : DeserializeFromString, PropertyModifier<GunData, DefaultGun
         if (type == AmmoConsumeType.ITEM) {
             return InventoryTool.countItem(handler) { stack -> this.isAmmoItem(stack) }
         } else if (type == AmmoConsumeType.ENERGY) {
-            return data.stack.getCapability(ForgeCapabilities.ENERGY).map { it.energyStored }.orElse(0)
+            return data.stack.getCapability(ForgeCapabilities.ENERGY).map { it.energyStored }.orElseGet { 0 }
         }
 
         return InventoryTool.countAmmoItem(handler, this.playerAmmoType)
@@ -334,12 +334,12 @@ class AmmoConsumer : DeserializeFromString, PropertyModifier<GunData, DefaultGun
                 return
             }
             val item = ForgeRegistries.ITEMS.getValue(location)
-            if (item === Items.AIR) {
+            if (item == null || item == Items.AIR) {
                 Mod.LOGGER.warn("invalid item: {}", id)
                 return
             }
 
-            this.stack = ItemStack(item!!)
+            this.stack = ItemStack(item)
             if (!data.isEmpty()) {
                 try {
                     val tag = NbtUtils.snbtToStructure(data)
