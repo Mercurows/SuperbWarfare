@@ -14,14 +14,23 @@ import net.minecraft.world.phys.Vec3
 import java.util.*
 
 open class HappiestGhastEntity(type: EntityType<HappiestGhastEntity>, world: Level) : VehicleEntity(type, world) {
+    open var wasOpen = false
+
     override fun baseTick() {
         super.baseTick()
 
+        val doorOpen = getWeaponIndex(0) == 2
+
         if (level().isClientSide) {
             val ctx = anim?.context ?: return
-            if (tickCount > 1) {
-                ctx.playAnimation("animation.ghast.wave", AnimationPlayType.LOOP, fadeInTicks = 20)
+            if (doorOpen && !wasOpen) {
+                ctx.playAnimation("animation.door.open", AnimationPlayType.LOOP,
+                    fadeInTicks = 20)
+            } else if (!doorOpen && wasOpen) {
+                ctx.stopAnimation("animation.door.open",
+                    fadeOutTicks = 20)
             }
+            wasOpen = doorOpen
         }
     }
 
@@ -29,7 +38,7 @@ open class HappiestGhastEntity(type: EntityType<HappiestGhastEntity>, world: Lev
         val serverLevel = level()
         if (serverLevel is ServerLevel) {
             val name = this.getGunName(0)
-            if (name == "Kalibr") {
+            if (name == "Kalibr" || name == "AAMissile") {
                 val pos = getShootPos(name, 1f)
                 val direct = getShootVec(name, 1f)
                 missileLaunchEffect(serverLevel, pos, direct)

@@ -1,10 +1,7 @@
 package com.atsuishio.superbwarfare.init
 
 import com.atsuishio.superbwarfare.Mod
-import com.atsuishio.superbwarfare.client.particle.BulletDecalOption
-import com.atsuishio.superbwarfare.client.particle.CannonMuzzleFlareOption
-import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
-import com.atsuishio.superbwarfare.client.particle.CustomSmokeOption
+import com.atsuishio.superbwarfare.client.particle.*
 import com.mojang.serialization.Codec
 import net.minecraft.core.particles.ParticleOptions
 import net.minecraft.core.particles.ParticleType
@@ -52,6 +49,16 @@ object ModParticleTypes {
                 CannonMuzzleFlareOption.CODEC,
                 true,
                 CannonMuzzleFlareOption.DESERIALIZER
+            )
+        }
+
+    @JvmField
+    val CUSTOM_FLARE: RegistryObject<ParticleType<CustomFlareOption>> =
+        REGISTRY.register("custom_flare") {
+            createOptions<CustomFlareOption>(
+                CustomFlareOption.CODEC,
+                true,
+                CustomFlareOption.DESERIALIZER
             )
         }
 

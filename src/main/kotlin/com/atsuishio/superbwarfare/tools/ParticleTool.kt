@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.tools
 import com.atsuishio.superbwarfare.Mod.Companion.queueServerWork
 import com.atsuishio.superbwarfare.client.particle.CannonMuzzleFlareOption
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
+import com.atsuishio.superbwarfare.client.particle.CustomFlareOption
 import com.atsuishio.superbwarfare.init.ModParticleTypes
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage.Companion.sendToNearbyPlayers
@@ -56,6 +57,7 @@ object ParticleTool {
             ParticleType.LARGE -> spawnLargeExplosionParticles(level, pos)
             ParticleType.HUGE -> spawnHugeExplosionParticles(level, pos)
             ParticleType.GIANT -> spawnGiantExplosionParticles(level, pos)
+            ParticleType.EPIC -> spawnEpicExplosionParticles(level, pos)
         }
     }
 
@@ -218,6 +220,7 @@ object ParticleTool {
             sendParticle(level, ParticleTypes.EXPLOSION, x, y + 6, z, 100, 6.0, 6.0, 6.0, 1.0, true)
             sendParticle(level, ParticleTypes.FLASH, x, y + 7, z, 200, 7.0, 7.0, 7.0, 1.0, true)
             sendParticle(level, ModParticleTypes.FIRE_STAR.get(), x, y + 3, z, 800, 0.0, 0.0, 0.0, 2.0, true)
+            sendParticle(level, CustomFlareOption(1f, 1f, 1f, 10, 0.75f, 1, 2f), x, y + 3, z, 1000, 10.0, 10.0, 10.0, 0.005, true)
 
             for (h in 0..4) {
                 for (i in 0..199) {
@@ -232,19 +235,71 @@ object ParticleTool {
             for (i in 0..23) {
                 queueServerWork(i) {
                     if (i < 12) {
-                        sendParticle(level, CustomCloudOption(1 - (i.toFloat() / 24), 0.5f - (i.toFloat() / 48), 0f, 100, 4f, 0f, cooldown = true, light = true), x, y + 2 * i, z, 35, 2 - 0.1 * i, 0.5, 2 - 0.1 * i, 0.005, true)
-                        sendParticle(level, CustomCloudOption(0.8f - (i.toFloat() / 24), 0.4f - (i.toFloat() / 48), 0f, 100, 4f, 0f, cooldown = true, light = true), x, y + 0.5, z, 55, 3 + 0.5 * i, 0.3, 3 + 0.5 * i, 0.005, true)
+                        sendParticle(level, CustomFlareOption(0.6f - (i.toFloat() / 24), 0.3f - (i.toFloat() / 48), 0f, 140, 0.95f, 4, 0.075f), x, y + 2 * i, z, 35, 2 - 0.1 * i, 0.5, 2 - 0.1 * i, 0.005, true)
+                        sendParticle(level, CustomFlareOption(0.4f - (i.toFloat() / 48), 0.2f - (i.toFloat() / 96), 0f, 180, 0.96f, 4, 0.075f), x, y + 0.5, z, 55, 3 + 0.5 * i, 0.3, 3 + 0.5 * i, 0.005, true)
                     }
                     if (i in 8..<16) {
                         val k = i - 8
-                        sendParticle(level, CustomCloudOption(1f, 0.5f, 0f, 100, 6f, 0f, cooldown = true, light = true), x, y + 20, z, 20 * k, 1 + 0.5 * k, 1 + 0.2 * k, 1 + 0.5 * k, 0.005, true)
-                        sendParticle(level, CustomCloudOption(0.5f, 0.25f, 0f, 100, 6f, 0f, cooldown = true, light = true), x, y + 20, z, 10 * k, 1 + 0.5 * k, 1 + 0.2 * k, 1 + 0.5 * k, 0.005, true)
-                        sendParticle(level, CustomCloudOption(0.25f, 0.125f, 0f, 100, 8f, 0f, cooldown = true, light = true), x, y + 20, z, 10 * k, 1 + 0.5 * k, 1 + 0.2 * k, 1 + 0.5 * k, 0.005, true)
+                        sendParticle(level, CustomFlareOption(0.25f, 0.125f, 0f, 100, 0.95f, 2, 0.075f), x, y + 20, z, 20 * k, 1 + 0.5 * k, 1 + 0.2 * k, 1 + 0.5 * k, 0.005, true)
+                        sendParticle(level, CustomFlareOption(0.125f, 0.0625f, 0f, 150, 0.95f, 3, 0.01f), x, y + 20, z, 10 * k, 1 + 0.5 * k, 1 + 0.2 * k, 1 + 0.5 * k, 0.005, true)
+                        sendParticle(level, CustomFlareOption(0.0625f, 0.03125f, 0f, 200, 0.95f, 4, 0.15f), x, y + 20, z, 10 * k, 1 + 0.5 * k, 1 + 0.2 * k, 1 + 0.5 * k, 0.005, true)
                     }
-                    sendParticle(level, CustomCloudOption(0.667f, 0.631f, 0.592f, 100, 4f, 0f, cooldown = false, light = false), x, y + 0.2, z, 4 * i, i.toDouble(), 0.1, i.toDouble(), 0.0003 * i, true)
+                    sendParticle(level, CustomFlareOption(0.667f, 0.631f, 0.592f, 100, 0.97f, 10, 0.06f), x, y - 1, z, 8 * i, i.toDouble() * 1.3, 0.05, i.toDouble() * 1.3, 0.0003 * i, true)
                 }
             }
             sendToNearbyPlayers(level, x, y, z, 384.0, 30.0, 16.0)
+        }
+    }
+
+    @JvmStatic
+    fun spawnEpicExplosionParticles(level: Level?, pos: Vec3) {
+        val x = pos.x
+        val y = pos.y
+        val z = pos.z
+
+        if (level is ServerLevel) {
+            playDistantSound(level, ModSounds.HUGE_EXPLOSION_CLOSE.get(), pos, 24f, 1f, null)
+            playDistantSound(level, ModSounds.HUGE_EXPLOSION_FAR.get(), pos, 60f, 1f, null)
+            playDistantSound(level, ModSounds.HUGE_EXPLOSION_VERY_FAR.get(), pos, 256f, 1f, null)
+
+            if ((level.getBlockState(BlockPos.containing(x, y, z))).block === Blocks.WATER) {
+                sendParticle(level, ParticleTypes.CLOUD, x, y + 3, z, 100, 2.0, 6.0, 2.0, 0.01, true)
+                sendParticle(level, ParticleTypes.CLOUD, x, y + 3, z, 200, 4.0, 2.0, 4.0, 0.01, true)
+                sendParticle(level, ParticleTypes.FALLING_WATER, x, y + 3, z, 500, 3.0, 8.0, 3.0, 1.0, true)
+                sendParticle(level, ParticleTypes.BUBBLE_COLUMN_UP, x, y, z, 350, 6.0, 1.0, 6.0, 0.1, true)
+            }
+
+            sendParticle(level, ParticleTypes.EXPLOSION, x, y + 6, z, 450, 12.0, 12.0, 12.0, 1.0, true)
+            sendParticle(level, ParticleTypes.FLASH, x, y + 7, z, 600, 13.0, 13.0, 13.0, 1.0, true)
+            sendParticle(level, ModParticleTypes.FIRE_STAR.get(), x, y + 8, z, 1800, 0.0, 0.0, 0.0, 4.0, true)
+            sendParticle(level, CustomFlareOption(1f, 1f, 1f, 10, 0.75f, 1, 2f), x, y + 3, z, 2500, 18.0, 18.0, 18.0, 0.005, true)
+
+            for (h in 0..4) {
+                for (i in 0..450) {
+                    val v = Vec3(1.0, 0.0, 0.0).yRot((i * Math.random()).toFloat())
+                    sendParticle(
+                        level, CustomCloudOption(1f, 1f, 1f, 45, 9f, 0f, cooldown = false, light = false), x, y + 1, z,
+                        0, v.x, v.y, v.z, (900 - 3 * h).toDouble(), true
+                    )
+                }
+            }
+
+            for (i in 0..23) {
+                queueServerWork(i) {
+                    if (i < 12) {
+                        sendParticle(level, CustomFlareOption(0.6f - (i.toFloat() / 24), 0.3f - (i.toFloat() / 48), 0f, 140, 0.95f, 4, 0.075f), x, y + 5 * i, z, 60, 4.5 - 0.15 * i, 1.2, 4.5 - 0.15 * i, 0.005, true)
+                        sendParticle(level, CustomFlareOption(0.4f - (i.toFloat() / 48), 0.2f - (i.toFloat() / 96), 0f, 180, 0.96f, 4, 0.075f), x, y + 0.5, z, 80, 6 + 0.9 * i, 1.2, 6 + 0.9 * i, 0.005, true)
+                    }
+                    if (i in 8..<16) {
+                        val k = i - 8
+                        sendParticle(level, CustomFlareOption(0.25f, 0.125f, 0f, 100, 0.95f, 2, 0.075f), x, y + 50, z, 60 * k, 3 + 1.3 * k, 2.2 + 0.5 * k, 3 + 1.3 * k, 0.005, true)
+                        sendParticle(level, CustomFlareOption(0.125f, 0.0625f, 0f, 150, 0.95f, 3, 0.01f), x, y + 50, z, 30 * k, 3 + 1.3 * k, 2.2 + 0.5 * k, 3 + 1.3 * k, 0.005, true)
+                        sendParticle(level, CustomFlareOption(0.0625f, 0.03125f, 0f, 200, 0.95f, 4, 0.15f), x, y + 50, z, 30 * k, 3 + 1.3 * k, 2.2 + 0.5 * k, 3 + 1.3 * k, 0.005, true)
+                    }
+                    sendParticle(level, CustomFlareOption(0.667f, 0.631f, 0.592f, 100, 0.97f, 10, 0.06f), x, y - 1, z, 18 * i, i.toDouble() * 2.5, 0.05, i.toDouble() * 2.5, 0.0003 * i, true)
+                }
+            }
+            sendToNearbyPlayers(level, x, y, z, 768.0, 54.0, 36.0)
         }
     }
 
@@ -482,5 +537,9 @@ object ParticleTool {
         @SerializedName("Giant")
         @SerialName("Giant")
         GIANT,
+
+        @SerializedName("Epic")
+        @SerialName("Epic")
+        EPIC
     }
 }
