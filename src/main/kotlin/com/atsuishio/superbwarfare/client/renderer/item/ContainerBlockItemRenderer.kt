@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.item
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
+import com.atsuishio.superbwarfare.client.decorator.ContainerItemDecorator
 import com.atsuishio.superbwarfare.item.container.ContainerBlockItem
 import com.atsuishio.superbwarfare.resource.model.BlockModelReloadListener
 import com.mojang.blaze3d.vertex.PoseStack
@@ -14,7 +15,6 @@ import net.minecraft.world.item.ItemStack
 
 class ContainerBlockItemRenderer(dispatcher: BlockEntityRenderDispatcher, set: EntityModelSet) :
     BlockEntityWithoutLevelRenderer(dispatcher, set) {
-    // TODO 把模型位置调对，再加上GUI禁用此渲染
     override fun renderByItem(
         stack: ItemStack,
         transformType: ItemDisplayContext,
@@ -26,10 +26,12 @@ class ContainerBlockItemRenderer(dispatcher: BlockEntityRenderDispatcher, set: E
         if (stack.item !is ContainerBlockItem) return
 
         val model = BlockModelReloadListener.getModel(MODEL) ?: return
+        val icon = ContainerItemDecorator.getCustomIcon(stack)
+        if (icon != null && transformType == ItemDisplayContext.GUI) return
 
         poseStack.pushPose()
 
-//        poseStack.translate(0.8, 0.8, 0.4)
+        poseStack.translate(0.5f, 0.5f, 0.5f)
 
         model.applyPose(model.bindPose)
 

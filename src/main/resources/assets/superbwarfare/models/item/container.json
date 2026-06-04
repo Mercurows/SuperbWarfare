@@ -7,78 +7,10 @@
   ],
   "display": {
     "thirdperson_righthand": {
-      "rotation": [
-        90,
-        0,
-        0
-      ],
       "translation": [
         0,
-        -2,
-        -6
-      ],
-      "scale": [
-        0.4,
-        0.4,
-        0.4
-      ]
-    },
-    "thirdperson_lefthand": {
-      "rotation": [
-        90,
-        0,
-        0
-      ],
-      "translation": [
-        0,
-        -2,
-        -6
-      ],
-      "scale": [
-        0.4,
-        0.4,
-        0.4
-      ]
-    },
-    "firstperson_righthand": {
-      "rotation": [
-        -176.35,
-        27.92,
-        -176.98
-      ],
-      "translation": [
-        -2,
-        0,
-        0
-      ],
-      "scale": [
-        0.4,
-        0.4,
-        0.4
-      ]
-    },
-    "firstperson_lefthand": {
-      "rotation": [
-        -176.35,
-        27.92,
-        -176.98
-      ],
-      "translation": [
-        -2,
-        0,
-        0
-      ],
-      "scale": [
-        0.4,
-        0.4,
-        0.4
-      ]
-    },
-    "ground": {
-      "translation": [
-        0,
-        -1.75,
-        0
+        -5.75,
+        -4.5
       ],
       "scale": [
         0.5,
@@ -86,21 +18,40 @@
         0.5
       ]
     },
-    "gui": {
-      "rotation": [
-        -155,
-        -45,
-        180
-      ],
+    "thirdperson_lefthand": {
       "translation": [
         0,
-        -4.5,
-        0
+        -5.75,
+        -4.5
       ],
       "scale": [
-        0.65,
-        0.65,
-        0.65
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        -180,
+        60,
+        -180
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        -180,
+        60,
+        -180
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
       ]
     },
     "head": {
@@ -110,11 +61,35 @@
         0
       ]
     },
+    "ground": {
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ]
+    },
     "fixed": {
       "translation": [
         0,
-        -7.75,
-        1
+        -7.5,
+        0
+      ]
+    },
+    "gui": {
+      "translation": [
+        0,
+        -4.5,
+        0
+      ],
+      "rotation": [
+        -155,
+        -45,
+        -180
+      ],
+      "scale": [
+        0.65,
+        0.65,
+        0.65
       ]
     }
   },
