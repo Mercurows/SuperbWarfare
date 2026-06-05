@@ -59,6 +59,9 @@ abstract class EngineInfo {
         @SerialName("MaxDownSpeedRate")
         var maxDownSpeedRate: Float = 1f
 
+        @SerialName("FloatHeight")
+        var floatHeight: Double = 3.0
+
         override fun work(vehicle: VehicleEntity) {
             vehicle.airShipEngine(this)
         }

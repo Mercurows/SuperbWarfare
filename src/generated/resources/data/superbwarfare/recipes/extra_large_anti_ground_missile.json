@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "superbwarfare:large_anti_ground_missile"
+    },
+    {
+      "item": "superbwarfare:large_anti_ground_missile"
+    }
+  ],
+  "result": {
+    "item": "superbwarfare:extra_large_anti_ground_missile"
+  }
+}

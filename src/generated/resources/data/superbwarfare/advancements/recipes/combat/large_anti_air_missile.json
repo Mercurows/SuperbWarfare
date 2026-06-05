@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_medium_anti_air_missile": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:medium_anti_air_missile"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:large_anti_air_missile"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_medium_anti_air_missile",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:large_anti_air_missile"
+    ]
+  },
+  "sends_telemetry_event": false
+}

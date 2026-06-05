@@ -191,7 +191,7 @@
     "AAMissile": {
       "AmmoType": [
         {
-          "Ammo": "superbwarfare:large_anti_ground_missile",
+          "Ammo": "superbwarfare:large_anti_air_missile",
           "ShouldUnload": false
         }
       ],
@@ -246,7 +246,7 @@
   "EngineType": "AirShip",
   "EngineInfo": {
     "Buoyancy": 0.1,
-    "EnergyCostRate": 128,
+    "EnergyCostRate": 64,
     "MaxForwardSpeedRate": 1.0,
     "MaxBackwardSpeedRate": 1.0,
     "MaxUpSpeedRate": 1.0,
@@ -254,7 +254,8 @@
     "Increment": 1.0,
     "Decrement": 1.0,
     "SteeringSpeed": 2.0,
-    "EngineSoundVolume" : 0.6
+    "EngineSoundVolume" : 0.6,
+    "FloatHeight": 3.2
   },
   "TurretPos": [0, 2, 0],
   "BarrelPos": [0, 0, 0],
