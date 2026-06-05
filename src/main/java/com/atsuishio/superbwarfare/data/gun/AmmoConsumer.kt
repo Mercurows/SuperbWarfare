@@ -113,7 +113,7 @@ class AmmoConsumer : DeserializeFromString, PropertyModifier<GunData, DefaultGun
     fun count(data: GunData, entity: Entity?): Int {
         if (!initialized) init()
         if (entity == null) return 0
-        return strategy.count(data, this, entity)
+        return strategy.count(data, this, entity).coerceAtLeast(0)
     }
 
     /**
@@ -122,7 +122,7 @@ class AmmoConsumer : DeserializeFromString, PropertyModifier<GunData, DefaultGun
     fun count(data: GunData, handler: IItemHandler?): Int {
         if (!initialized) init()
         if (handler == null) return 0
-        return strategy.count(data, this, handler)
+        return strategy.count(data, this, handler).coerceAtLeast(0)
     }
 
     /**

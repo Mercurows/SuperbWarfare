@@ -55,11 +55,13 @@ abstract class AmmoConsumeStrategy {
          * 所有弹药策略的注册列表，按优先级排序。
          * 添加新弹药类型时，在此列表的合适位置插入即可。
          */
+        // TODO 优化注册方式？
         val strategies: List<AmmoConsumeStrategy> = listOf(
             EmptyAmmoStrategy,
             InfiniteAmmoStrategy,
             EnergyAmmoStrategy,
             PlayerAmmoStrategy,
+            HealthAmmoStrategy,
             ItemAmmoStrategy,
             InvalidAmmoStrategy,
         )
