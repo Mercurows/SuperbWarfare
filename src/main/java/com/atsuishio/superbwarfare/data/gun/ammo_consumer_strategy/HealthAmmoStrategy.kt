@@ -6,7 +6,7 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.tools.forceHurt
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
-import net.neoforged.neoforge.items.IItemHandler
+import net.minecraftforge.items.IItemHandler
 import kotlin.math.floor
 
 /**
@@ -42,10 +42,12 @@ object HealthAmmoStrategy : AmmoConsumeStrategy() {
     }
 
     override fun consume(data: GunData, consumer: AmmoConsumer, handler: IItemHandler, count: Int) = 0
+
     override fun count(data: GunData, consumer: AmmoConsumer, entity: Entity?) =
         floor(((entity as? LivingEntity)?.health ?: 0F) * ammoPerHealth - 0.00001).toInt()
 
     override fun count(data: GunData, consumer: AmmoConsumer, handler: IItemHandler?) = 0
+
     override fun withdraw(consumer: AmmoConsumer, ammoSupplier: Entity, count: Int): Int {
         (ammoSupplier as? LivingEntity)?.heal(count / ammoPerHealth) ?: return 0
         return count
