@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.entity.mixin.DamageAccess
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier.ModifyResult
+import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.tools.DamageHandler.doDamage
 import com.atsuishio.superbwarfare.tools.FormatTool.format2D
 import net.minecraft.ChatFormatting
@@ -125,7 +126,9 @@ object DamageHandler {
                             d1 = (Math.random() - Math.random()) * 0.01
                         }
 
-                        entity.knockback(0.4, d0, d1)
+                        if (!source.`is`(ModTags.DamageTypes.NO_HURT_EFFECT)) {
+                            entity.knockback(0.4, d0, d1)
+                        }
                         if (!flag) {
                             entity.indicateDamage(d0, d1)
                         }
