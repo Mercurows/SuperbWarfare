@@ -589,6 +589,9 @@
   "death.attack.super_star_hit": "%1$s化作了星光",
   "death.attack.super_star_hit.entity": "%2$s让%1$s化作了星光",
   "death.attack.super_star_hit.item": "%2$s用%3$s让%1$s化作了星光",
+  "death.attack.ammo_consumption": "%1$s弹尽粮绝了",
+  "death.attack.ammo_consumption.entity": "%1$s弹尽粮绝了",
+  "death.attack.ammo_consumption.item": "%1$s弹尽粮绝了",
 
   "entity.superbwarfare.projectile": "子弹",
   "entity.superbwarfare.mortar_shell": "迫击炮弹",

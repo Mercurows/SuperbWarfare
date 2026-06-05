@@ -50,7 +50,8 @@ class ModDamageTypeTagProvider(
                 DamageTypes.PLAYER_EXPLOSION,
                 ModDamageTypes.CUSTOM_EXPLOSION,
                 ModDamageTypes.MINE,
-                ModDamageTypes.PROJECTILE_EXPLOSION
+                ModDamageTypes.PROJECTILE_EXPLOSION,
+                ModDamageTypes.AMMO_CONSUMPTION
             )
         this.tag(ModTags.DamageTypes.VEHICLE_IMMUNE)
             .add(DamageTypes.CACTUS, DamageTypes.SWEET_BERRY_BUSH, DamageTypes.IN_WALL)
@@ -102,9 +103,14 @@ class ModDamageTypeTagProvider(
             ModDamageTypes.REPAIR_TOOL,
             ModDamageTypes.SUPER_STAR_HIT,
             ModDamageTypes.SUPER_STAR_SLASH,
-            ModDamageTypes.PHOSPHORUS_FIRE
+            ModDamageTypes.PHOSPHORUS_FIRE,
+            ModDamageTypes.AMMO_CONSUMPTION
         )
-        this.tag(DamageTypeTags.BYPASSES_EFFECTS).add(ModDamageTypes.SHOCK, ModDamageTypes.PHOSPHORUS_FIRE)
+        this.tag(DamageTypeTags.BYPASSES_EFFECTS).add(
+            ModDamageTypes.SHOCK,
+            ModDamageTypes.PHOSPHORUS_FIRE,
+            ModDamageTypes.AMMO_CONSUMPTION
+        )
         this.tag(DamageTypeTags.BYPASSES_ENCHANTMENTS).add(
             ModDamageTypes.GUN_FIRE_ABSOLUTE,
             ModDamageTypes.GUN_FIRE_HEADSHOT_ABSOLUTE,
@@ -119,7 +125,8 @@ class ModDamageTypeTagProvider(
             ModDamageTypes.AIR_CRASH,
             ModDamageTypes.SUPER_STAR_HIT,
             ModDamageTypes.SUPER_STAR_SLASH,
-            ModDamageTypes.PHOSPHORUS_FIRE
+            ModDamageTypes.PHOSPHORUS_FIRE,
+            ModDamageTypes.AMMO_CONSUMPTION
         )
         this.tag(DamageTypeTags.IS_EXPLOSION)
             .add(ModDamageTypes.PROJECTILE_EXPLOSION, ModDamageTypes.CUSTOM_EXPLOSION, ModDamageTypes.LUNGE_MINE)

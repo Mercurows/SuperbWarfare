@@ -4,6 +4,7 @@
     "minecraft:player_explosion",
     "superbwarfare:custom_explosion",
     "superbwarfare:mine",
-    "superbwarfare:projectile_explosion"
+    "superbwarfare:projectile_explosion",
+    "superbwarfare:ammo_consumption"
   ]
 }

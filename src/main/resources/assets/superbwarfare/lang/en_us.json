@@ -589,6 +589,9 @@
   "death.attack.super_star_hit": "%1$s scattered into starlight",
   "death.attack.super_star_hit.entity": "%2$s scattered %1$s into starlight",
   "death.attack.super_star_hit.item": "%2$s scattered %1$s into starlight with %3$s",
+  "death.attack.ammo_consumption": "%1$s made the last shot",
+  "death.attack.ammo_consumption.entity": "%1$s made the last shot",
+  "death.attack.ammo_consumption.item": "%1$s made the last shot",
 
   "entity.superbwarfare.projectile": "Bullet",
   "entity.superbwarfare.mortar_shell": "Mortar Shell",

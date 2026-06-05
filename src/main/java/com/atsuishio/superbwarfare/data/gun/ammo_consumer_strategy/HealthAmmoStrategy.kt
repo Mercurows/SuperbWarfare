@@ -37,9 +37,8 @@ object HealthAmmoStrategy : AmmoConsumeStrategy() {
     override fun consume(data: GunData, consumer: AmmoConsumer, shooter: Entity, count: Int): Int {
         shooter.invulnerableTime = 0
 
-        // TODO 修改为正确的伤害类型
         shooter.forceHurt(
-            ModDamageTypes.causeMineDamage(shooter.level().registryAccess(), shooter),
+            ModDamageTypes.causeAmmoConsumptionDamage(shooter.level().registryAccess(), shooter),
             count / ammoPerHealth
         )
         return 1
