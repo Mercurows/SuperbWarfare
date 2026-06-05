@@ -33,6 +33,12 @@ class HappiestGhastRenderer<T>(manager: EntityRendererProvider.Context) :
             turretRight.rotation.rotationY(turretYRot * Mth.DEG_TO_RAD)
             turretRight.visible = !(vehicle.isWreck && vehicle.hasTurret() && vehicle.sympatheticDetonated)
         }
+
+        val controlP = model.getBone("controlP")
+        controlP?.rotation?.rotationX(Mth.clamp(-vehicle.power * 40, -20f, 20f) * Mth.DEG_TO_RAD)
+
+        val controlT = model.getBone("controlT")
+        controlT?.rotation?.rotationZ(Mth.clamp(vehicle.deltaRot * 16, -20f, 20f) * Mth.DEG_TO_RAD)
     }
 
     override fun renderCustomPart(

@@ -141,6 +141,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.MEDIUM_ROCKET_CM)
         simpleItem(ModItems.MEDIUM_ANTI_GROUND_MISSILE)
         simpleItem(ModItems.LARGE_ANTI_GROUND_MISSILE)
+        simpleItem(ModItems.EXTRA_LARGE_ANTI_GROUND_MISSILE)
         simpleItem(ModItems.SMALL_SHELL_AP)
         simpleItem(ModItems.SMALL_SHELL_HE)
         simpleItem(ModItems.SMALL_SHELL_GS)

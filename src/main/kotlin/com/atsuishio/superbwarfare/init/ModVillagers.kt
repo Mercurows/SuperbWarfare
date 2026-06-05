@@ -434,6 +434,10 @@ object ModVillagers {
                     ItemStack(ModItems.LARGE_ANTI_GROUND_MISSILE.get(), 1), 8, 10, 0.05f
                 ),
                 BasicItemListing(
+                    ItemStack(Items.EMERALD, 32),
+                    ItemStack(ModItems.EXTRA_LARGE_ANTI_GROUND_MISSILE.get(), 1), 8, 20, 0.05f
+                ),
+                BasicItemListing(
                     ItemStack(Items.EMERALD, 16),
                     ItemStack(ModItems.MEDIUM_AERIAL_BOMB.get(), 1), 8, 10, 0.05f
                 ),
@@ -472,6 +476,10 @@ object ModVillagers {
                 BasicItemListing(
                     ItemStack(ModItems.LARGE_ANTI_GROUND_MISSILE.get(), 1),
                     ItemStack(Items.EMERALD, 8), 32, 4, 0.05f
+                ),
+                BasicItemListing(
+                    ItemStack(ModItems.EXTRA_LARGE_ANTI_GROUND_MISSILE.get(), 1),
+                    ItemStack(Items.EMERALD, 16), 32, 8, 0.05f
                 ),
                 BasicItemListing(
                     ItemStack(ModItems.MEDIUM_AERIAL_BOMB.get(), 1),

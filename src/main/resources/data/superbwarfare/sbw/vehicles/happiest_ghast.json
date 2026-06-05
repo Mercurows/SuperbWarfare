@@ -130,11 +130,11 @@
     "Kalibr": {
       "AmmoType": [
         {
-          "Ammo": "superbwarfare:large_anti_ground_missile",
+          "Ammo": "superbwarfare:extra_large_anti_ground_missile",
           "ShouldUnload": false
         },
         {
-          "Ammo": "superbwarfare:large_anti_ground_missile",
+          "Ammo": "superbwarfare:extra_large_anti_ground_missile",
           "ShouldUnload": false,
           "Override": {
             "Name": "weapon.superbwarfare.ru_3m14_missile_coordinates",
