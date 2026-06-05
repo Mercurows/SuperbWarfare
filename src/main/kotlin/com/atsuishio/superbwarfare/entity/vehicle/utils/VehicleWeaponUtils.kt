@@ -213,4 +213,105 @@ object VehicleWeaponUtils {
             1f
         )
     }
+
+    /**
+     * 根据UUID，使乘客位武器自动瞄准
+     *
+     * @param vehicle 载具
+     * @param uuid    目标的UUID字符串
+     * @param pLiving 操控载具的实体
+     */
+    @JvmStatic
+    fun passengerWeaponAutoAimFormUuid(vehicle: VehicleEntity, uuid: String?, pLiving: LivingEntity) {
+        var target = findEntity(vehicle.level(), uuid)
+        if (target != null) {
+            if (target.vehicle != null) {
+                target = target.vehicle
+            }
+
+            val targetPos = target!!.boundingBox.center
+            var targetVel = target.deltaMovement
+
+            if (target is LivingEntity) {
+                val gravity = target.getAttributeValue(ForgeMod.ENTITY_GRAVITY.get())
+                targetVel = targetVel.add(0.0, gravity, 0.0)
+            }
+
+            if (target is Player) {
+                targetVel = targetVel.multiply(2.0, 1.0, 2.0)
+            }
+
+            val targetVec = calculateFiringSolution(
+                vehicle.getShootPos(pLiving, 1f).subtract(
+                    vehicle.getShootVec(pLiving, 1f).scale(
+                        vehicle.getShootPos(pLiving, 1f).distanceTo(pLiving.position())
+                    )
+                ),
+                targetPos,
+                targetVel,
+                vehicle.getProjectileVelocity(pLiving).toDouble(),
+                vehicle.getProjectileGravity(pLiving).toDouble()
+            )
+            passengerWeaponAutoAimFormVector(vehicle, targetVec)
+        }
+    }
+
+    /**
+     * 根据方向向量，使乘客位武器自动瞄准
+     *
+     * @param vehicle  载具
+     * @param shootVec 需要让武器站以这个角度发射的向量
+     */
+    @JvmStatic
+    fun passengerWeaponAutoAimFormVector(vehicle: VehicleEntity, shootVec: Vec3) {
+        val ySpeed = vehicle.passengerWeaponYSpeed
+        val xSpeed = vehicle.passengerWeaponXSpeed
+        val diffY = Mth.wrapDegrees(
+            -getYRotFromVector(shootVec) + getYRotFromVector(
+                vehicle.getPassengerWeaponStationVector(1f)
+            )
+        ).toFloat()
+        val diffX = Mth.wrapDegrees(
+            -getXRotFromVector(shootVec) + getXRotFromVector(
+                vehicle.getPassengerWeaponStationVector(1f)
+            )
+        ).toFloat()
+
+        vehicle.gunXRot = Mth.clamp(
+            vehicle.gunXRot + Mth.clamp(diffX, -xSpeed, xSpeed),
+            -vehicle.passengerWeaponMaxPitch,
+            -vehicle.passengerWeaponMinPitch
+        )
+        vehicle.gunYRot = Mth.clamp(
+            vehicle.gunYRot - Mth.clamp(diffY, -ySpeed, ySpeed),
+            -vehicle.passengerWeaponMaxYaw,
+            -vehicle.passengerWeaponMinYaw
+        )
+
+        vehicle.turretTurnSound(vehicle.gunXRot - vehicle.gunXRotO, vehicle.gunYRot - vehicle.gunYRotO, 0.95f)
+    }
+
+    /**
+     * 根据操控者调整乘客武器站角度
+     *
+     * @param vehicle 载具
+     */
+    @JvmStatic
+    fun adjustWeaponControllerAngle(vehicle: VehicleEntity) {
+        val entity = vehicle.getNthEntity(vehicle.passengerWeaponStationControllerIndex)
+        val pos = vehicle.passengerWeaponStationBarrelPosition
+        if (entity != null && pos != null) {
+            val aimPos = vehicle.boundingBox.center.add(entity.getViewVector(1f).scale(512.0))
+
+            val transform = vehicle.getGunTransform(1f)
+            val worldPosition = transformPosition(transform, pos.x, pos.y, pos.z)
+
+            val aimVec = Vec3(worldPosition.x, worldPosition.y, worldPosition.z).vectorTo(aimPos)
+            passengerWeaponAutoAimFormVector(vehicle, aimVec)
+        }
+
+        if (entity == null) {
+            vehicle.gunYRot += vehicle.turretYRotLock
+        }
+    }
 }

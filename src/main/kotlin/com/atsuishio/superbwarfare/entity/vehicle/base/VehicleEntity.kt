@@ -7,8 +7,6 @@ import com.atsuishio.superbwarfare.capability.energy.SyncedEntityEnergyStorage
 import com.atsuishio.superbwarfare.capability.energy.VehicleEnergyStorage
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable
 import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInstance
-import com.atsuishio.superbwarfare.client.particle.CannonMuzzleFlareOption
-import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
 import com.atsuishio.superbwarfare.data.DataLoader
@@ -16,8 +14,6 @@ import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.ShootParameters
-import com.atsuishio.superbwarfare.data.loot.WreckageLootData
-import com.atsuishio.superbwarfare.data.loot.WreckageLootDataManager
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData
 import com.atsuishio.superbwarfare.data.vehicle.VehiclePropertyModifier
 import com.atsuishio.superbwarfare.data.vehicle.subdata.*
@@ -26,15 +22,14 @@ import com.atsuishio.superbwarfare.entity.OBBEntity
 import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter
 import com.atsuishio.superbwarfare.entity.setValue
-import com.atsuishio.superbwarfare.entity.vehicle.*
+import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity
+import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity
+import com.atsuishio.superbwarfare.entity.vehicle.Tom6Entity
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier
-import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleMiscUtils
-import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleMotionUtils
-import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
+import com.atsuishio.superbwarfare.entity.vehicle.utils.*
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getXRotFromVector
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getYRotFromVector
-import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleWeaponUtils
-import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.event.ClientMouseHandler
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.inventory.handler.VehicleContainerHandler
@@ -47,7 +42,6 @@ import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
 import com.atsuishio.superbwarfare.network.message.receive.VehicleShootClientMessage
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.OBB.Part.*
-import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
 import com.atsuishio.superbwarfare.tools.VectorTool.combineRotationsTurret
 import com.atsuishio.superbwarfare.tools.VectorTool.lerpGetEntityBoundingBoxCenter
 import com.atsuishio.superbwarfare.world.saveddata.TDMSavedData
@@ -61,8 +55,6 @@ import net.minecraft.core.Direction
 import net.minecraft.core.Holder
 import net.minecraft.core.NonNullList
 import net.minecraft.core.particles.ParticleOptions
-import net.minecraft.core.particles.ParticleTypes
-import net.minecraft.core.registries.Registries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.IntArrayTag
 import net.minecraft.nbt.IntTag
@@ -74,7 +66,6 @@ import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.network.syncher.SynchedEntityData.DataValue
-import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
@@ -92,7 +83,6 @@ import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.entity.*
-import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.projectile.AbstractArrow
@@ -111,7 +101,6 @@ import net.minecraft.world.phys.Vec2
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.common.ForgeMod
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.capabilities.ForgeCapabilities
 import net.minecraftforge.common.util.FakePlayer
@@ -126,7 +115,6 @@ import java.util.function.Consumer
 import java.util.function.Function
 import javax.annotation.ParametersAreNonnullByDefault
 import kotlin.math.*
-import kotlin.random.Random
 
 open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEntityType, pLevel),
     VehiclePropertyModifier, HasCustomInventoryScreen, OBBEntity, BasicGeoVehicleEntity {
@@ -1465,7 +1453,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         }
 
         if (stack.item is NameTagItem && stack.hasCustomHoverName()) {
-            this.customName = stack.getHoverName()
+            this.customName = stack.hoverName
             stack.shrink(1)
             return InteractionResult.sidedSuccess(this.level().isClientSide())
         }
@@ -2353,108 +2341,11 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         get() = this
 
     open fun handlePartDamaged(obbEntity: OBBEntity) {
-        val obbList = obbEntity.getOBBs()
-        for (obb in obbList) {
-            val pos = obb.center.toVec3()
-            when (obb.part) {
-                TURRET -> {
-                    if (turretDamaged) {
-                        this.onTurretDamaged(pos)
-                    }
-                }
-
-                WHEEL_LEFT -> {
-                    if (leftWheelDamaged) {
-                        this.onLeftWheelDamaged(pos)
-                    }
-                }
-
-                WHEEL_RIGHT -> {
-                    if (rightWheelDamaged) {
-                        this.onRightWheelDamaged(pos)
-                    }
-                }
-
-                MAIN_ENGINE -> {
-                    if (mainEngineDamaged) {
-                        this.onEngine1Damaged(pos)
-                    }
-                }
-
-                SUB_ENGINE -> {
-                    if (subEngineDamaged) {
-                        this.onEngine2Damaged(pos)
-                    }
-                }
-
-                else -> {}
-            }
-        }
+        VehicleEffectUtils.handlePartDamaged(this, obbEntity)
     }
 
     open fun handlePartHealth() {
-        if (this.hasTurret() && (vehicleType == VehicleType.AA || vehicleType == VehicleType.APC || vehicleType == VehicleType.TANK) && health < 0.05 * getMaxHealth()) {
-            turretHealth = 0f
-            mainEngineHealth = 0f
-            subEngineHealth = 0f
-        }
-        if ((vehicleType == VehicleType.HELICOPTER || vehicleType == VehicleType.AIRPLANE || vehicleType == VehicleType.AIRSHIP) && health < 0.05 * getMaxHealth()) {
-            mainEngineHealth = 0f
-            subEngineHealth = 0f
-        }
-
-        if (turretHealth <= 0) {
-            turretDamaged = true
-        } else if (turretHealth > 0.95 * this.getTurretMaxHealth()) {
-            turretDamaged = false
-        }
-
-        if (leftWheelHealth <= 0) {
-            leftWheelDamaged = true
-        } else if (leftWheelHealth > 0.95 * this.getWheelMaxHealth()) {
-            leftWheelDamaged = false
-        }
-
-        if (rightWheelHealth <= 0) {
-            rightWheelDamaged = true
-        } else if (rightWheelHealth > 0.95 * this.getWheelMaxHealth()) {
-            rightWheelDamaged = false
-        }
-
-        if (mainEngineHealth <= 0) {
-            mainEngineDamaged = true
-        } else if (mainEngineHealth > 0.95 * this.getEngineMaxHealth()) {
-            mainEngineDamaged = false
-        }
-
-        if (subEngineHealth <= 0) {
-            subEngineDamaged = true
-        } else if (subEngineHealth > 0.95 * this.getEngineMaxHealth()) {
-            subEngineDamaged = false
-        }
-
-        if (!isWreck) {
-            turretHealth = Math.min(
-                turretHealth + 0.0025f * this.getTurretMaxHealth(),
-                this.getTurretMaxHealth()
-            )
-            leftWheelHealth = Math.min(
-                leftWheelHealth + 0.0025f * this.getWheelMaxHealth(),
-                this.getWheelMaxHealth()
-            )
-            rightWheelHealth = Math.min(
-                rightWheelHealth + 0.0025f * this.getWheelMaxHealth(),
-                this.getWheelMaxHealth()
-            )
-            mainEngineHealth = Math.min(
-                mainEngineHealth + 0.0025f * this.getEngineMaxHealth(),
-                this.getEngineMaxHealth()
-            )
-            subEngineHealth = Math.min(
-                subEngineHealth + 0.0025f * this.getEngineMaxHealth(),
-                this.getEngineMaxHealth()
-            )
-        }
+        VehicleEffectUtils.handlePartHealth(this)
     }
 
     open fun addRandomParticle(
@@ -2465,21 +2356,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         speed: Float,
         count: Int
     ) {
-        val randomX = 2 * (this.random.nextFloat() - 0.5f)
-        val randomY = 2 * (this.random.nextFloat() - 0.5f)
-        val randomZ = 2 * (this.random.nextFloat() - 0.5f)
-        repeat(count) {
-            level.addAlwaysVisibleParticle(
-                particleOptions,
-                true,
-                pos.x + randomPos * randomX,
-                pos.y + randomPos * randomY,
-                pos.z + randomPos * randomZ,
-                (randomX * speed).toDouble(),
-                (randomY * speed).toDouble(),
-                (randomZ * speed).toDouble()
-            )
-        }
+        VehicleEffectUtils.addRandomParticle(this, particleOptions, pos, randomPos, level, speed, count)
     }
 
     open fun addRandomParticle(
@@ -2490,28 +2367,11 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         count: Int,
         vec3: Vec3
     ) {
-        val randomX = 2 * (this.random.nextFloat() - 0.5f)
-        val randomY = 2 * (this.random.nextFloat() - 0.5f)
-        val randomZ = 2 * (this.random.nextFloat() - 0.5f)
-        repeat(count) {
-            level.addAlwaysVisibleParticle(
-                particleOptions,
-                true,
-                pos.x + randomPos * randomX,
-                pos.y + randomPos * randomY,
-                pos.z + randomPos * randomZ,
-                vec3.x,
-                vec3.y,
-                vec3.z
-            )
-        }
+        VehicleEffectUtils.addRandomParticle(this, particleOptions, pos, randomPos, level, count, vec3)
     }
 
     open fun defaultPartDamageEffect(pos: Vec3) {
-        if (level().isClientSide) {
-            addRandomParticle(ModParticleTypes.FIRE_STAR.get(), pos, 0f, level(), 0.25f, 1)
-            addRandomParticle(ParticleTypes.LARGE_SMOKE, pos, 0.5f, level(), 0.001f, 1)
-        }
+        VehicleEffectUtils.defaultPartDamageEffect(this, pos)
     }
 
     open fun onTurretDamaged(pos: Vec3) {
@@ -2544,201 +2404,15 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     open fun lowHealthWarning() {
-        if (!data().compute().hasLowHealthWarning) return
-        if (this.health <= 0.4 * this.getMaxHealth()) {
-            addRandomParticle(
-                ParticleTypes.LARGE_SMOKE,
-                Vec3(this.x, this.y + 0.7f * bbHeight, this.z),
-                0.35f * this.bbWidth,
-                level(),
-                0.01f,
-                1
-            )
-        }
-
-        if (this.health <= 0.25 * this.getMaxHealth()) {
-            playLowHealthParticle()
-        }
-        if (this.health <= 0.15 * this.getMaxHealth()) {
-            playLowHealthParticle()
-        }
-
-        if (this.health <= 0.1 * this.getMaxHealth()) {
-            val random = 2 * (this.random.nextFloat() - 0.5f)
-            if (level().isClientSide) {
-                addRandomParticle(
-                    ParticleTypes.LARGE_SMOKE,
-                    Vec3(this.x, this.y + 0.7f * bbHeight, this.z),
-                    0.35f * this.bbWidth,
-                    level(),
-                    0.01f,
-                    2
-                )
-                addRandomParticle(
-                    ParticleTypes.CAMPFIRE_COSY_SMOKE,
-                    Vec3(this.x, this.y + 0.7f * bbHeight, this.z),
-                    0.35f * this.bbWidth,
-                    level(),
-                    0.01f,
-                    2
-                )
-                addRandomParticle(
-                    CustomCloudOption(
-                        1f,
-                        0.1f,
-                        0f,
-                        (240 + 40 * random).toInt(),
-                        2.5f + 0.5f * random,
-                        -0.07f,
-                        cooldown = true,
-                        light = true
-                    ),
-                    Vec3(this.x, this.y + 0.85f * bbHeight, this.z),
-                    0.35f * this.bbWidth,
-                    level(),
-                    0.01f,
-                    1
-                )
-                addRandomParticle(
-                    CustomCloudOption(
-                        1f,
-                        0.35f,
-                        0f,
-                        (80 + 40 * random).toInt(),
-                        1.5f + 0.5f * random,
-                        -0.07f,
-                        cooldown = false,
-                        light = true
-                    ),
-                    Vec3(this.x, this.y + 0.85f * bbHeight, this.z),
-                    0.3f * this.bbWidth,
-                    level(),
-                    0.01f,
-                    1
-                )
-            }
-
-            if (computed().destroyInfo.sympatheticDetonation
-                && health < 0.05 * getMaxHealth() && this.hasTurret()
-                && (vehicleType == VehicleType.AA || vehicleType == VehicleType.APC || vehicleType == VehicleType.TANK)
-                && !sympatheticDetonated
-                && !turretBurned
-            ) {
-                turretBurned = true
-                turretBurnTimer = 400
-            }
-
-            if (turretBurnTimer > 0 && !sympatheticDetonated && health < 0.05 * getMaxHealth()) {
-                if (level().isClientSide) {
-                    val pos = turretBurnEffectPos()
-                    val dir = getUpVec(1f)
-                    ParticleTool.spawnDirectionalParticles(
-                        (12 + 10 * random).toInt(),
-                        0.05 * random.toDouble(),
-                        level(),
-                        CannonMuzzleFlareOption(1f, 0.97f, 0.97f, 4, 0.5f, 1, 0.3f),
-                        dir,
-                        pos,
-                        4.5 + random
-                    )
-                    ParticleTool.spawnDirectionalParticles(
-                        (4 + 4 * random).toInt(),
-                        0.8 * random.toDouble(),
-                        level(),
-                        ModParticleTypes.FIRE_STAR.get(),
-                        dir,
-                        pos,
-                        0.4 + random
-                    )
-                    ParticleTool.spawnDirectionalParticles(
-                        (4 + 4 * random).toInt(),
-                        0.8 * random.toDouble(),
-                        level(),
-                        ParticleTypes.LAVA,
-                        dir,
-                        pos,
-                        0.4 + random
-                    )
-                    ParticleTool.spawnDirectionalParticles(
-                        (4 + 4 * random).toInt(),
-                        0.8 * random.toDouble(),
-                        level(),
-                        ParticleTypes.FLAME,
-                        dir,
-                        pos,
-                        0.4 + random
-                    )
-                }
-
-                if (turretBurnTimer == 400) {
-                    this.level().playSound(
-                        null,
-                        onPos,
-                        ModSounds.TURRET_BURN_START.get(),
-                        SoundSource.BLOCKS,
-                        4f,
-                        1f + 0.05f * random
-                    )
-                }
-                if (turretBurnTimer % 5 == 0) {
-                    this.level().playSound(
-                        null,
-                        onPos,
-                        ModSounds.TURRET_BURN.get(),
-                        SoundSource.BLOCKS,
-                        1.5f,
-                        1f + 0.05f * random
-                    )
-                }
-            }
-
-            if (health > 0.05 * getMaxHealth()) {
-                turretBurned = false
-                turretBurnTimer = 0
-            }
-
-            if (this.tickCount % 15 == 0) {
-                this.level().playSound(null, this.onPos, SoundEvents.FIRE_AMBIENT, SoundSource.PLAYERS, 1f, 1f)
-            }
-        }
-
-        if (health > 0 && health < 0.1f * this.getMaxHealth() && tickCount % 13 == 0) {
-            this.level().playSound(null, this.onPos, ModSounds.NO_HEALTH.get(), SoundSource.PLAYERS, 1f, 1f)
-        } else if (this.health >= 0.1f && this.health < 0.4f * this.getMaxHealth() && tickCount % 10 == 0) {
-            this.level().playSound(null, this.onPos, ModSounds.LOW_HEALTH.get(), SoundSource.PLAYERS, 1f, 1f)
-        }
+        VehicleEffectUtils.lowHealthWarning(this)
     }
 
     open fun turretBurnEffectPos(): Vec3? {
-        val pos = turretPos
-        val worldPosition = pos?.let {
-            transformPosition(
-                getVehicleTransform(1f),
-                pos.x, pos.y, it.z
-            )
-        }
-        return worldPosition?.let { Vec3(it.x, worldPosition.y, worldPosition.z) }
+        return VehicleEffectUtils.turretBurnEffectPos(this)
     }
 
     open fun playLowHealthParticle() {
-        if (level().isClientSide) {
-            addRandomParticle(
-                ParticleTypes.LARGE_SMOKE,
-                Vec3(this.x, this.y + 0.7f * bbHeight, this.z),
-                0.35f * this.bbWidth,
-                level(),
-                0.01f,
-                1
-            )
-            addRandomParticle(
-                ParticleTypes.CAMPFIRE_COSY_SMOKE,
-                Vec3(this.x, this.y + 0.7f * bbHeight, this.z),
-                0.35f * this.bbWidth,
-                level(),
-                0.01f,
-                1
-            )
-        }
+        VehicleEffectUtils.playLowHealthParticle(this)
     }
 
     open fun adjustTurretAngle() {
@@ -3241,40 +2915,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
      * @param pLiving 操控载具的实体
      */
     open fun passengerWeaponAutoAimFormUuid(uuid: String?, pLiving: LivingEntity) {
-        var target = EntityFindUtil.findEntity(level(), uuid)
-        if (target != null) {
-            if (target.vehicle != null) {
-                target = target.vehicle
-            }
-
-            val targetPos = target!!.boundingBox.center
-            var targetVel = target.deltaMovement
-
-            if (target is LivingEntity) {
-                val gravity = target.getAttributeValue(ForgeMod.ENTITY_GRAVITY.get())
-                targetVel = targetVel.add(0.0, gravity, 0.0)
-            }
-
-            if (target is Player) {
-                targetVel = targetVel.multiply(2.0, 1.0, 2.0)
-            }
-
-            val targetVec = calculateFiringSolution(
-                getShootPos(pLiving, 1f).subtract(
-                    getShootVec(pLiving, 1f).scale(
-                        getShootPos(
-                            pLiving,
-                            1f
-                        ).distanceTo(pLiving.position())
-                    )
-                ),
-                targetPos,
-                targetVel,
-                getProjectileVelocity(pLiving).toDouble(),
-                getProjectileGravity(pLiving).toDouble()
-            )
-            passengerWeaponAutoAimFormVector(targetVec)
-        }
+        VehicleWeaponUtils.passengerWeaponAutoAimFormUuid(this, uuid, pLiving)
     }
 
     /**
@@ -3283,153 +2924,30 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
      * @param shootVec 需要让武器站以这个角度发射的向量
      */
     open fun passengerWeaponAutoAimFormVector(shootVec: Vec3) {
-        val ySpeed = this.passengerWeaponYSpeed
-        val xSpeed = this.passengerWeaponXSpeed
-        val diffY = Mth.wrapDegrees(
-            -getYRotFromVector(shootVec) + getYRotFromVector(
-                getPassengerWeaponStationVector(1f)
-            )
-        ).toFloat()
-        val diffX = Mth.wrapDegrees(
-            -getXRotFromVector(shootVec) + getXRotFromVector(
-                getPassengerWeaponStationVector(1f)
-            )
-        ).toFloat()
-
-
-        this.gunXRot = Mth.clamp(
-            this.gunXRot + Mth.clamp(diffX, -xSpeed, xSpeed),
-            -this.passengerWeaponMaxPitch,
-            -this.passengerWeaponMinPitch
-        )
-        this.gunYRot = Mth.clamp(
-            this.gunYRot - Mth.clamp(diffY, -ySpeed, ySpeed),
-            -this.passengerWeaponMaxYaw,
-            -this.passengerWeaponMinYaw
-        )
-
-        turretTurnSound(gunXRot - gunXRotO, gunYRot - gunYRotO, 0.95f)
+        VehicleWeaponUtils.passengerWeaponAutoAimFormVector(this, shootVec)
     }
 
     open fun adjustWeaponControllerAngle() {
-        val entity = getNthEntity(this.passengerWeaponStationControllerIndex)
-        val pos: Vec3? = passengerWeaponStationBarrelPosition
-        if (entity != null && pos != null) {
-            val aimPos = boundingBox.center.add(entity.getViewVector(1f).scale(512.0))
-
-            val transform: Matrix4d = getGunTransform(1f)
-            val worldPosition = transformPosition(transform, pos.x, pos.y, pos.z)
-
-            val aimVec = Vec3(worldPosition.x, worldPosition.y, worldPosition.z).vectorTo(aimPos)
-            passengerWeaponAutoAimFormVector(aimVec)
-        }
-
-        if (entity == null) {
-            gunYRot += turretYRotLock
-        }
+        VehicleWeaponUtils.adjustWeaponControllerAngle(this)
     }
 
     open fun destroy() {
-        val destroyInfo = computed().destroyInfo
-
-        if (vehicleType != VehicleType.AIRPLANE && vehicleType != VehicleType.HELICOPTER || vehicleType == VehicleType.AIRSHIP) {
-            if (destroyInfo.explodePassengers) {
-                if (this.crash && destroyInfo.crashPassengers) {
-                    crashPassengers()
-                } else {
-                    explodePassengers()
-                }
-            }
-            vehicleExplosion(destroyInfo)
-        }
-
-        if (hasTurret() && destroyInfo.sympatheticDetonation && Math.random() < destroyInfo.sympatheticDetonationChance) {
-            sympatheticDetonated = true
-            val turretWreckEntity = TurretWreckEntity(ModEntities.TURRET_WRECK.get(), level())
-            if (turretPos != null) {
-                val pos = turretPos?.let { position().add(it) }
-                pos?.let { turretWreckEntity.setPos(it.x, pos.y, pos.z) }
-            } else {
-                turretWreckEntity.setPos(this.x, this.eyeY, this.z)
-            }
-
-            val dir = getUpVec(1f).add(deltaMovement + Vec3(0.0, this.computed().gravity, 0.0))
-
-            val rdm = (Math.random() - 0.5) * 0.4 + 1
-            turretWreckEntity.deltaMovement = Vec3(dir.x, dir.y, dir.z).normalize().add(
-                random.triangle(0.0, 0.0172275 * 12.toDouble()),
-                random.triangle(0.0, 0.0172275 * 12.toDouble()),
-                random.triangle(0.0, 0.0172275 * 12.toDouble())
-            ).scale(destroyInfo.sympatheticDetonationForce.toDouble() * rdm)
-
-            val quaternion = combineRotationsTurret(1f, this)
-            turretWreckEntity.vehicleName = ForgeRegistries.ENTITY_TYPES.getKey(this.type).toString()
-            turretWreckEntity.xRot = this.getTurretPitch(1f)
-            turretWreckEntity.yRot = -getYRotFromVector(getBarrelVector(1f)).toFloat()
-            turretWreckEntity.setQuaternion0(quaternion)
-            turretWreckEntity.setQuaternion(quaternion)
-            level().addFreshEntity(turretWreckEntity)
-        }
-
-        if (destroyInfo.noWreck) {
-            discard()
-        }
+        VehicleDestroyUtils.destroy(this)
     }
 
     open fun vehicleExplosion(destroyInfo: DestroyInfo) {
-        val radius = destroyInfo.explosionRadius
-        if (radius > 0) {
-            queueServerWork(1) {
-                val damage = destroyInfo.explosionDamage
-                val particleType = destroyInfo.particleType
-
-                val explosion = createCustomExplosion()
-                    .radius(radius)
-                    .damage(damage)
-                    .withParticleType(particleType)
-
-                if (!destroyInfo.explodeBlocks) {
-                    explosion.keepBlock()
-                }
-
-                explosion.explode()
-            }
-        }
+        VehicleDestroyUtils.vehicleExplosion(this, destroyInfo)
     }
 
     open fun createCustomExplosion(): CustomExplosion.Builder = CustomExplosion.Builder(this)
         .attacker(this.lastAttacker)
 
-    protected fun crashPassengers() {
-        for (entity in this.getPassengers()) {
-            if (entity is LivingEntity) {
-                repeat(VehicleConfig.AIR_CRASH_EXPLOSION_COUNT.get()) {
-                    val tempAttacker = if (entity === this.lastAttacker) null else this.lastAttacker
-                    entity.invulnerableTime = 0
-                    entity.hurt(
-                        ModDamageTypes.causeAirCrashDamage(this.level().registryAccess(), null, tempAttacker),
-                        VehicleConfig.AIR_CRASH_EXPLOSION_DAMAGE.get().toFloat()
-                    )
-                }
-            }
-        }
+    open fun crashPassengers() {
+        VehicleDestroyUtils.crashPassengers(this)
     }
 
-    protected fun explodePassengers() {
-        for (entity in this.getPassengers()) {
-            if (entity !is LivingEntity) continue
-            repeat(VehicleConfig.SELF_EXPLOSION_COUNT.get()) {
-                val tempAttacker = if (entity === this.lastAttacker) null else this.lastAttacker
-                entity.invulnerableTime = 0
-                entity.hurt(
-                    ModDamageTypes.causeVehicleExplosionDamage(
-                        this.level().registryAccess(),
-                        null,
-                        tempAttacker
-                    ), VehicleConfig.SELF_EXPLOSION_DAMAGE.get().toFloat()
-                )
-            }
-        }
+    open fun explodePassengers() {
+        VehicleDestroyUtils.explodePassengers(this)
     }
 
     open fun travel() {
@@ -3625,7 +3143,6 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
          * @return 炮塔自定义俯仰
          */
         get() = computed().turretCustomPitch
-
 
     open fun getTurretTransform(partialTicks: Float): Matrix4d {
         return VehicleVecUtils.getTurretTransform(this, partialTicks)
@@ -4067,42 +3584,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
      */
     @OnlyIn(Dist.CLIENT)
     open fun getCameraRotation(partialTicks: Float, player: Player, zoom: Boolean, isFirstPerson: Boolean): Vec2? {
-        val index = this.getSeatIndex(player)
-        val seat = computed().seats().getOrNull(index)
-        val gunData = getGunData(player)
-        if (seat != null) {
-            val data = seat.cameraPos
-            if (data != null) {
-                if (zoom && gunData != null && gunData.get(GunProp.SHOOT_POS).viewDirection != null) {
-                    return Vec2(
-                        -getYRotFromVector(getViewVec(player, partialTicks)).toFloat(),
-                        -getXRotFromVector(getViewVec(player, partialTicks)).toFloat()
-                    )
-                }
-                if (useAircraftCamera(index)) {
-                    return if (ClientEventHandler.isNacelleCam(player)) {
-                        Vec2(
-                            (getYaw(partialTicks) - ClientMouseHandler.nacelleCameraYaw).toFloat(),
-                            (getPitch(partialTicks) + ClientMouseHandler.nacelleCameraPitch).toFloat()
-                        )
-                    } else {
-                        Vec2(
-                            (getYaw(partialTicks) - ClientMouseHandler.freeCameraYaw).toFloat(),
-                            (getPitch(partialTicks) + ClientMouseHandler.freeCameraPitch).toFloat()
-                        )
-                    }
-                }
-                if (zoom || isFirstPerson) {
-                    return Vec2(
-                        -getYRotFromVector(cameraDirection(player, partialTicks)).toFloat(),
-                        -getXRotFromVector(cameraDirection(player, partialTicks)).toFloat()
-                    )
-                }
-            } else {
-                return null
-            }
-        }
-        return null
+        return VehicleClientUtils.getCameraRotation(this, partialTicks, player, zoom, isFirstPerson)
     }
 
     /**
@@ -4113,36 +3595,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
      */
     @OnlyIn(Dist.CLIENT)
     open fun getCameraPosition(partialTicks: Float, player: Player, zoom: Boolean, isFirstPerson: Boolean): Vec3? {
-        val index = this.getSeatIndex(player)
-        val seat = computed().seats().getOrNull(index)
-        if (seat != null) {
-            val data = seat.cameraPos
-            val gunData = getGunData(player)
-            if (data != null) {
-                if (zoom || isFirstPerson) {
-                    return if (zoom) {
-                        if (gunData != null && gunData.get(GunProp.SHOOT_POS).viewPosition != null) {
-                            getViewPos(player, partialTicks)
-                        } else {
-                            getZoomPos(player, partialTicks)
-                        }
-                    } else {
-                        getCameraPos(player, partialTicks)
-                    }
-                } else if (useAircraftCamera(index)) {
-                    val transform = getClientVehicleTransform(partialTicks)
-                    val maxCameraPosition = transformPosition(
-                        transform,
-                        data.aircraftCameraPos.x,
-                        data.aircraftCameraPos.y + 0.1 * ClientMouseHandler.custom3pDistanceLerp,
-                        data.aircraftCameraPos.z - ClientMouseHandler.custom3pDistanceLerp
-                    )
-                    return maxCameraPosition.maxZoom(transform)
-                }
-            }
-            return null
-        }
-        return null
+        return VehicleClientUtils.getCameraPosition(this, partialTicks, player, zoom, isFirstPerson)
     }
 
     /**
@@ -4150,15 +3603,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
      */
     @OnlyIn(Dist.CLIENT)
     open fun useFixedCameraPos(entity: Entity?): Boolean {
-        val index = this.getSeatIndex(entity)
-        val seat = computed().seats().getOrNull(index)
-        if (seat != null) {
-            val data = seat.cameraPos
-            if (data != null) {
-                return data.useFixedCameraPos
-            }
-        }
-        return false
+        return VehicleClientUtils.useFixedCameraPos(this, entity)
     }
 
     override fun <T> getCapability(cap: Capability<T?>, side: Direction?): LazyOptional<T?> {
@@ -4615,16 +4060,12 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
     @OnlyIn(Dist.CLIENT)
     open fun firstPersonAmmoComponent(data: GunData, player: Player?): Component {
-        val name = data.get(GunProp.NAME)
-        if (name.isNullOrBlank()) return Component.empty()
-
-        val ammoCount = this.getAmmoCount(player)
-        return Component.translatable(name, if (ammoCount == Int.MAX_VALUE) "∞" else ammoCount)
+        return VehicleClientUtils.firstPersonAmmoComponent(this, data, player)
     }
 
     @OnlyIn(Dist.CLIENT)
     open fun thirdPersonAmmoComponent(data: GunData, player: Player?): Component {
-        return firstPersonAmmoComponent(data, player)
+        return VehicleClientUtils.thirdPersonAmmoComponent(this, data, player)
     }
 
     override fun getOBBs(): MutableList<OBB> {
@@ -4644,53 +4085,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     open fun getEnergyDataAccessor() = ENERGY
 
     open fun generateWreckageLoot() {
-        val data = WreckageLootDataManager.getLootData(this.type) ?: return
-        val pools = data.pools
-        if (pools.isEmpty()) return
-        pools.forEach poolLoop@{ pool ->
-            val type = pool.type
-            if (type == WreckageLootData.Pool.Type.TURRET_ONLY) return@poolLoop
-            val entries = pool.entries
-            if (entries.isEmpty()) return@poolLoop
-            val source = pool.source
-            if (source != "@Default") {
-                val lastSource = this.lastDamageSource ?: return@poolLoop
-                val parsedLoc = ResourceLocation.tryParse(source) ?: return@poolLoop
-                val damageType = ResourceKey.create(Registries.DAMAGE_TYPE, parsedLoc)
-                if (!lastSource.`is`(damageType)) return@poolLoop
-            } else if (this.lastDamageSource?.`is`(ModDamageTypes.REPAIR_TOOL) == true) {
-                return@poolLoop
-            }
-
-            repeat(pool.rolls) {
-                entries.forEach { entry ->
-                    val random = Random.nextDouble()
-                    val chance =
-                        if (type == WreckageLootData.Pool.Type.VEHICLE_ONLY) {
-                            if (this.hasTurret() && this.sympatheticDetonated) {
-                                entry.chance
-                            } else return@poolLoop
-                        } else if (type == WreckageLootData.Pool.Type.COMPLETE) {
-                            if (this.hasTurret()) {
-                                if (this.sympatheticDetonated) return@poolLoop
-                                else entry.chance
-                            } else {
-                                entry.chance
-                            }
-                        } else {
-                            entry.chance * if (this.hasTurret() && this.sympatheticDetonated) (1.0 - VehicleConfig.TURRET_WRECKAGE_LOOT_RATE.get()) else 1.0
-                        }
-
-                    if (random > chance) return@forEach
-                    val name = entry.name
-                    val item = ForgeRegistries.ITEMS.getValue(ResourceLocation(name)) ?: return@forEach
-                    val count = entry.count
-                    val entity = ItemEntity(level(), x, (y + 1), z, ItemStack(item, count))
-                    entity.setPickUpDelay(10)
-                    level().addFreshEntity(entity)
-                }
-            }
-        }
+        VehicleLootUtils.generateWreckageLoot(this)
     }
 
     companion object {
