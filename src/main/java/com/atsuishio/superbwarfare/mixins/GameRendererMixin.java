@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.data.vehicle.VehicleData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModMobEffects;
+import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -131,6 +132,17 @@ public class GameRendererMixin {
         if (ClientEventHandler.activeThermalImaging || ClientEventHandler.hasThermalImagingGoggles() || hasThermalImagingVehicle) {
             cir.cancel();
             cir.setReturnValue(pLivingEntity.hasEffect(MobEffects.NIGHT_VISION) ? 1f : 0f);
+        }
+    }
+
+    @Inject(method = "bobHurt", at = @At("HEAD"), cancellable = true)
+    private void bobHurt(PoseStack pMatrixStack, float pPartialTicks, CallbackInfo ci) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.getCameraEntity() instanceof LivingEntity living) {
+            var source = living.getLastDamageSource();
+            if (source != null && source.is(ModTags.DamageTypes.NO_HURT_EFFECT)) {
+                ci.cancel();
+            }
         }
     }
 }

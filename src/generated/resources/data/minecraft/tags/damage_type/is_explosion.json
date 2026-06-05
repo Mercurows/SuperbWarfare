@@ -2,6 +2,7 @@
   "values": [
     "superbwarfare:projectile_explosion",
     "superbwarfare:custom_explosion",
-    "superbwarfare:lunge_mine"
+    "superbwarfare:lunge_mine",
+    "superbwarfare:ammo_consumption"
   ]
 }

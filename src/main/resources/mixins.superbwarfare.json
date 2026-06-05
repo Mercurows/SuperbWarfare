@@ -38,6 +38,7 @@
     "LibraryMixin",
     "LightTextureMixin",
     "LivingEntityRendererMixin",
+    "LocalPlayerMixin",
     "MinecraftMixin",
     "MouseHandlerMixin",
     "MultiPlayerGameModeMixin",
