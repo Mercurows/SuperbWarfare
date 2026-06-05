@@ -3,6 +3,8 @@ package com.atsuishio.superbwarfare.data.gun.ammo_consumer_strategy
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
 import com.atsuishio.superbwarfare.data.gun.GunData
 import net.minecraft.world.entity.Entity
+import net.minecraftforge.api.distmarker.Dist
+import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.common.capabilities.ForgeCapabilities
 import net.minecraftforge.items.IItemHandler
 
@@ -36,4 +38,7 @@ object EnergyAmmoStrategy : AmmoConsumeStrategy() {
     override fun withdraw(consumer: AmmoConsumer, ammoSupplier: Entity, count: Int) = 0
 
     override fun withdraw(consumer: AmmoConsumer, handler: IItemHandler, count: Int) = 0
+
+    @OnlyIn(Dist.CLIENT)
+    override fun getDisplayName(consumer: AmmoConsumer) = "Energy"
 }

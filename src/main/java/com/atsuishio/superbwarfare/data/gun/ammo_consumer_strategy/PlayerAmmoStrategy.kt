@@ -7,6 +7,8 @@ import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.tools.InventoryTool
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
+import net.minecraftforge.api.distmarker.Dist
+import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.common.capabilities.ForgeCapabilities
 import net.minecraftforge.items.IItemHandler
 import kotlin.math.min
@@ -117,5 +119,10 @@ object PlayerAmmoStrategy : AmmoConsumeStrategy() {
     override fun withdraw(consumer: AmmoConsumer, handler: IItemHandler, count: Int): Int {
         val ammoType = consumer.playerAmmoType ?: return 0
         return InventoryTool.insertItem(handler, ammoType.itemStack, count)
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    override fun getDisplayName(consumer: AmmoConsumer): String {
+        return consumer.playerAmmoType?.displayName ?: super.getDisplayName(consumer)
     }
 }

@@ -1,15 +1,19 @@
 package com.atsuishio.superbwarfare.data.gun.ammo_consumer_strategy
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.client.language.ClientLanguageGetter
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.tools.InventoryTool
 import net.minecraft.nbt.NbtUtils
+import net.minecraft.network.chat.contents.TranslatableContents
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
+import net.minecraftforge.api.distmarker.Dist
+import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.common.capabilities.ForgeCapabilities
 import net.minecraftforge.items.IItemHandler
 import net.minecraftforge.registries.ForgeRegistries
@@ -115,5 +119,18 @@ object ItemAmmoStrategy : AmmoConsumeStrategy() {
 
     override fun withdraw(consumer: AmmoConsumer, handler: IItemHandler, count: Int): Int {
         return InventoryTool.insertItem(handler, consumer.stack(), count)
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    override fun getDisplayName(consumer: AmmoConsumer): String {
+        val stack = consumer.stack
+        if (stack.isEmpty) return super.getDisplayName(consumer)
+        val nameComponent = consumer.stack().hoverName
+        val contents = nameComponent.contents
+        if (contents is TranslatableContents) {
+            return ClientLanguageGetter.EN_US.getOrDefault(contents.key)
+        }
+
+        return ClientLanguageGetter.EN_US.getOrDefault(consumer.stack().descriptionId)
     }
 }
