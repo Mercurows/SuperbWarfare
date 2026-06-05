@@ -19,9 +19,9 @@ object HealthAmmoStrategy : AmmoConsumeStrategy() {
 
     var ammoPerHealth: Float = 1F
 
-    override fun match(ammo: String) =
-        ammo.startsWith("health", true)
-                && ammo == "health" || ammo.substringAfter("health").trimEnd().toFloatOrNull() != null
+    override fun match(ammo: String) = ammo.lowercase().startsWith("health", true)
+            && ammo.lowercase() == "health"
+            || ammo.lowercase().substringAfter("health").trimEnd().toFloatOrNull() != null
 
     override fun init(
         consumer: AmmoConsumer,
@@ -29,11 +29,15 @@ object HealthAmmoStrategy : AmmoConsumeStrategy() {
         matchedString: String
     ) {
         super.init(consumer, count, matchedString)
-        val extracted = matchedString.substringAfter("health").trimEnd().toFloatOrNull()?.coerceAtLeast(0F) ?: 1F
+        val extracted = matchedString.lowercase().substringAfter("health").trimEnd().toFloatOrNull()?.coerceAtLeast(0F)
+            ?: 1F
         ammoPerHealth = if (extracted.isNaN() || extracted == 0F || extracted.isInfinite()) 1F else extracted
     }
 
     override fun consume(data: GunData, consumer: AmmoConsumer, shooter: Entity, count: Int): Int {
+        shooter.invulnerableTime = 0
+
+        // TODO 修改为正确的伤害类型
         shooter.forceHurt(
             ModDamageTypes.causeMineDamage(shooter.level().registryAccess(), shooter),
             count / ammoPerHealth
