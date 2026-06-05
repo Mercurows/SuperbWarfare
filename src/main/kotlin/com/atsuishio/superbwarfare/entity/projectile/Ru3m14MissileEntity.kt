@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimat
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.tools.ParticleTool
+import com.atsuishio.superbwarfare.tools.VectorTool
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.server.level.ServerLevel
@@ -86,9 +87,7 @@ open class Ru3m14MissileEntity(type: EntityType<out Ru3m14MissileEntity>, level:
         if (this.tickCount > 10) {
             hugeMissileTrail()
             if (level is ServerLevel) {
-                if (targetPos != null) {
-                    lostTarget = y < targetPos!!.y
-                }
+                val lostTarget = (VectorTool.calculateAngle(lookAngle, toVec) > 90 && tickCount > 50)
 
                 this.deltaMovement = this.deltaMovement.add(lookAngle.scale(Mth.clamp(0.05 * (tickCount - 10), 0.15, 1.5)))
                 val f = (0.84 + y * 0.00005).coerceAtMost(0.86)

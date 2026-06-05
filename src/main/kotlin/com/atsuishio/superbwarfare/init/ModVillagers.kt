@@ -443,6 +443,10 @@ object ModVillagers {
                     ItemStack(ModItems.MEDIUM_AERIAL_BOMB.get(), 1), 8, 10, 0.05f
                 ),
                 BasicItemListing(
+                    ItemStack(Items.EMERALD, 32),
+                    ItemStack(ModItems.LARGE_AERIAL_BOMB.get(), 1), 8, 10, 0.05f
+                ),
+                BasicItemListing(
                     ItemStack(ModItems.LARGE_SHELL_HE.get(), 1),
                     ItemStack(Items.EMERALD, 4), 32, 4, 0.05f
                 ),
@@ -485,6 +489,10 @@ object ModVillagers {
                 BasicItemListing(
                     ItemStack(ModItems.MEDIUM_AERIAL_BOMB.get(), 1),
                     ItemStack(Items.EMERALD, 8), 32, 4, 0.05f
+                ),
+                BasicItemListing(
+                    ItemStack(ModItems.LARGE_AERIAL_BOMB.get(), 1),
+                    ItemStack(Items.EMERALD, 16), 32, 4, 0.05f
                 )
             )
             trades[4].addAll(list4)

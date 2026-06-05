@@ -8,7 +8,7 @@ import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
 import com.atsuishio.superbwarfare.tools.SeekTool
-import com.atsuishio.superbwarfare.tools.angleTo
+import com.atsuishio.superbwarfare.tools.VectorTool
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.server.level.ServerLevel
@@ -102,7 +102,7 @@ open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level) : Missil
         if (this.tickCount > 8) {
             this.deltaMovement = this.deltaMovement.scale(0.05).add(lookAngle.scale(8.0))
             this.deltaMovement = this.deltaMovement.multiply(0.85, 0.85, 0.85)
-            val lostTarget = lookAngle.angleTo(toVec) > 170
+            val lostTarget = (VectorTool.calculateAngle(lookAngle, toVec) > 90 && tickCount > 40)
             if (!lostTarget) {
                 turn(toVec, ((tickCount - 8) * 0.5f).coerceIn(0f, 15f))
             }

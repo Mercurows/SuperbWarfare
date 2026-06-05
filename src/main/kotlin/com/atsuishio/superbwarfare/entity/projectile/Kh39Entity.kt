@@ -106,7 +106,7 @@ open class Kh39Entity(type: EntityType<out Kh39Entity>, level: Level) : MissileP
         if (this.tickCount > 8) {
             this.deltaMovement = this.deltaMovement.scale(0.05).add(lookAngle.scale(8.0))
             this.deltaMovement = this.deltaMovement.multiply(0.85, 0.85, 0.85)
-            val lostTarget = (calculateAngle(lookAngle, toVec) > 170)
+            val lostTarget = (calculateAngle(lookAngle, toVec) > 90 && tickCount > 40)
             if (!lostTarget) {
                 turn(toVec, ((tickCount - 8) * 0.5f).coerceIn(0f, 15f))
             }

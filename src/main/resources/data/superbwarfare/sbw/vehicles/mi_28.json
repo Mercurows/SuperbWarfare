@@ -255,6 +255,16 @@
               "OnlyLockBlock": true
             }
           }
+        },        {
+          "Ammo": "superbwarfare:large_anti_ground_missile",
+          "ShouldUnload": false,
+          "Override": {
+            "Name": "weapon.superbwarfare.kh_39_missile_block",
+            "SeekWeaponInfo": {
+              "SeekDirection": "Barrel",
+              "InputBlockPos": true
+            }
+          }
         }
       ],
       "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/kh_39.png",
@@ -267,7 +277,7 @@
       "Damage": 1100,
       "ExplosionDamage": 180,
       "ExplosionRadius": 12,
-      "ProjectileLife": 1200,
+      "ProjectileLife": 3600,
       "Velocity": 3,
       "SeekWeaponInfo": {
         "SeekDirection": "Barrel",

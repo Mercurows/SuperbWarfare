@@ -22,6 +22,7 @@ class ModEntityTypeTagProvider(
         this.tag(ModTags.EntityTypes.AERIAL_BOMB).add(
             ModEntities.MELON_BOMB.get(),
             ModEntities.MK_82.get(),
+            ModEntities.MK_84.get(),
             ModEntities.SC_50.get(),
             ModEntities.SC_250.get(),
             ModEntities.RU_3M14_MISSILE.get()
@@ -32,8 +33,11 @@ class ModEntityTypeTagProvider(
             ModEntities.JAVELIN_MISSILE.get(),
             ModEntities.MELON_BOMB.get(),
             ModEntities.MK_82.get(),
+            ModEntities.MK_84.get(),
             ModEntities.SWARM_DRONE.get(),
-            ModEntities.WIRE_GUIDE_MISSILE.get()
+            ModEntities.WIRE_GUIDE_MISSILE.get(),
+            ModEntities.RU_3M14_MISSILE.get()
+
         )
 
         this.tag(ModTags.EntityTypes.DECOY).add(
