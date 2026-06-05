@@ -5,7 +5,9 @@
       "conditions": {
         "items": [
           {
-            "items": "superbwarfare:medium_anti_air_missile"
+            "items": [
+              "superbwarfare:medium_anti_air_missile"
+            ]
           }
         ]
       },
@@ -20,13 +22,14 @@
   },
   "requirements": [
     [
-      "has_the_recipe",
-      "has_medium_anti_air_missile"
+      "has_medium_anti_air_missile",
+      "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
       "superbwarfare:large_anti_air_missile"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

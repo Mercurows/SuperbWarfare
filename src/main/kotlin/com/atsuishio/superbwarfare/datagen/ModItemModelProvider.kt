@@ -158,6 +158,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.THERMAL_IMAGING_GOGGLES)
         simpleItem(ModItems.VEHICLE_DAMAGE_ANALYZER)
         simpleItem(ModItems.MEDIUM_ANTI_AIR_MISSILE)
+        simpleItem(ModItems.LARGE_ANTI_AIR_MISSILE)
         simpleItem(ModItems.LASER_UNIT)
         simpleItem(ModItems.VEHICLE_RESET_KIT)
         handheldItem(ModItems.RPG_ROCKET_STANDARD)

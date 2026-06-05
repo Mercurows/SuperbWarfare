@@ -5,7 +5,9 @@
       "conditions": {
         "items": [
           {
-            "items": "superbwarfare:large_anti_ground_missile"
+            "items": [
+              "superbwarfare:large_anti_ground_missile"
+            ]
           }
         ]
       },
@@ -20,13 +22,14 @@
   },
   "requirements": [
     [
-      "has_the_recipe",
-      "has_large_anti_ground_missile"
+      "has_large_anti_ground_missile",
+      "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
       "superbwarfare:extra_large_anti_ground_missile"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

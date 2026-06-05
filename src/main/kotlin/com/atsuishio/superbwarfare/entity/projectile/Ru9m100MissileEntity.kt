@@ -28,7 +28,7 @@ open class Ru9m100MissileEntity(type: EntityType<out Ru9m100MissileEntity>, leve
     }
 
     override fun getDefaultItem(): Item {
-        return ModItems.MEDIUM_ANTI_AIR_MISSILE.get()
+        return ModItems.LARGE_ANTI_AIR_MISSILE.get()
     }
 
     override fun tick() {

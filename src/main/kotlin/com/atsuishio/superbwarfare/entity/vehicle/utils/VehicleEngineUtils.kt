@@ -1368,6 +1368,7 @@ object VehicleEngineUtils {
         val powerAdd = engineInfo.increment * 0.05f
         val powerReduce = engineInfo.decrement * 0.05f
         val steeringSpeed = engineInfo.steeringSpeed * 0.05f
+        val floatHeight = engineInfo.floatHeight
 
         if (buoyancy != 0.0) {
             val fluidFloat = buoyancy * VehicleVecUtils.getSubmergedHeight(this)
@@ -1491,7 +1492,14 @@ object VehicleEngineUtils {
             liftSpeed -= 0.01f * deltaMovement.y.toFloat()
 
             if (!hasPassenger) {
-                liftSpeed = Math.max(liftSpeed - 0.025f, -0.25f)
+                val groundY = level().getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, blockX, blockZ).toDouble()
+                liftSpeed = if (groundY > level().minBuildHeight) {
+                    val distToGround = y - groundY
+                    val diff = (distToGround - floatHeight) * 0.05f
+                    Math.clamp(liftSpeed - diff.toFloat(), -0.25f, 0.25f)
+                } else {
+                    Math.max(liftSpeed - 0.025f, -0.25f)
+                }
             }
         } else {
             liftSpeed = Math.max(liftSpeed - 0.01f, -3f)

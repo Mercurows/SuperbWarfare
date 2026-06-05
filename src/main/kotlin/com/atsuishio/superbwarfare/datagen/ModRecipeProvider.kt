@@ -664,7 +664,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 .define('b', ModItems.SMALL_ROCKET.get())
                 .unlockedBy(getHasName(ModItems.HE_HEAD.get()), has(ModItems.HE_HEAD.get()))
                 .save(writer, loc(getItemName(ModItems.MEDIUM_ROCKET_HE.get())))
-            ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.MORTAR_SHELL.get(), 4)
+            ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.MORTAR_SHELL.get(), 8)
                 .pattern(" a ")
                 .pattern("bcb")
                 .pattern(" d ")
