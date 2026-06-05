@@ -76,6 +76,7 @@ abstract class AmmoConsumeStrategy {
             PlayerAmmoStrategy,
             HealthAmmoStrategy(),
             HungerAmmoStrategy(),
+            ExpAmmoStrategy(),
             ItemAmmoStrategy,
             InvalidAmmoStrategy,
         )
