@@ -6,6 +6,8 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.tools.forceHurt
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
+import net.neoforged.api.distmarker.Dist
+import net.neoforged.api.distmarker.OnlyIn
 import net.neoforged.neoforge.items.IItemHandler
 import kotlin.math.floor
 
@@ -57,4 +59,7 @@ class HealthAmmoStrategy : AmmoConsumeStrategy() {
     }
 
     override fun withdraw(consumer: AmmoConsumer, handler: IItemHandler, count: Int) = 0
+
+    @OnlyIn(Dist.CLIENT)
+    override fun getDisplayName(consumer: AmmoConsumer) = "Health"
 }

@@ -4,6 +4,8 @@ import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.ammo_consumer_strategy.AmmoConsumeStrategy.Companion.match
 import net.minecraft.world.entity.Entity
+import net.neoforged.api.distmarker.Dist
+import net.neoforged.api.distmarker.OnlyIn
 import net.neoforged.neoforge.items.IItemHandler
 
 /**
@@ -57,6 +59,10 @@ abstract class AmmoConsumeStrategy {
     /** 向 IItemHandler 返还指定数量的弹药，返回成功返还的数量 */
     abstract fun withdraw(consumer: AmmoConsumer, handler: IItemHandler, count: Int): Int
 
+    /** 在武器 AmmoBarOverlay 上显示的弹药信息 */
+    @OnlyIn(Dist.CLIENT)
+    open fun getDisplayName(consumer: AmmoConsumer): String = "Invalid"
+
     companion object {
         /**
          * 所有弹药策略的注册列表，按优先级排序。
@@ -69,6 +75,7 @@ abstract class AmmoConsumeStrategy {
             EnergyAmmoStrategy,
             PlayerAmmoStrategy,
             HealthAmmoStrategy(),
+            HungerAmmoStrategy(),
             ItemAmmoStrategy,
             InvalidAmmoStrategy,
         )
