@@ -153,7 +153,7 @@
       "Projectile": "superbwarfare:ru_3m14_missile",
       "Name": "weapon.superbwarfare.ru_3m14_missile_block",
       "Damage": 5000,
-      "ExplosionDamage": 1600,
+      "ExplosionDamage": 1500,
       "ExplosionRadius": 31,
       "ProjectileLife": 24000,
       "ShootDelayTime": 10,
@@ -204,7 +204,7 @@
       "Name": "weapon.superbwarfare.9m_100_missile",
       "Damage": 400,
       "ExplosionDamage": 160,
-      "ExplosionRadius": 10,
+      "ExplosionRadius": 9,
       "Velocity": 2.3,
       "ShootDelayTime": 2,
       "SeekWeaponInfo": {

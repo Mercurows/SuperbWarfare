@@ -364,6 +364,17 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 .define('e', ModItems.MISSILE_ENGINE.get())
                 .unlockedBy(getHasName(ModItems.MISSILE_ENGINE.get()), has(ModItems.MISSILE_ENGINE.get()))
                 .save(writer, loc(getItemName(ModItems.LARGE_ANTI_GROUND_MISSILE.get())))
+
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.EXTRA_LARGE_ANTI_GROUND_MISSILE.get())
+                .requires(ModItems.LARGE_ANTI_GROUND_MISSILE.get(), 2)
+                .unlockedBy(getHasName(ModItems.LARGE_ANTI_GROUND_MISSILE.get()), has(ModItems.LARGE_ANTI_GROUND_MISSILE.get()))
+                .save(writer, loc(getItemName(ModItems.EXTRA_LARGE_ANTI_GROUND_MISSILE.get())))
+
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.LARGE_ANTI_GROUND_MISSILE.get(), 2)
+                .requires(ModItems.EXTRA_LARGE_ANTI_GROUND_MISSILE.get())
+                .unlockedBy(getHasName(ModItems.LARGE_ANTI_GROUND_MISSILE.get()), has(ModItems.LARGE_ANTI_GROUND_MISSILE.get()))
+                .save(writer, loc(getItemName(ModItems.LARGE_ANTI_GROUND_MISSILE.get()) + "_from_extra_large_anti_ground_missile"))
+
             ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.SMALL_ROCKET.get(), 4)
                 .pattern(" a ")
                 .pattern("bcb")
@@ -569,6 +580,16 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 )
                 .unlockedBy(getHasName(ModItems.MISSILE_ENGINE.get()), has(ModItems.MISSILE_ENGINE.get()))
                 .save(writer, loc(getItemName(ModItems.MEDIUM_ANTI_AIR_MISSILE.get())))
+
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.LARGE_ANTI_AIR_MISSILE.get())
+                .requires(ModItems.MEDIUM_ANTI_AIR_MISSILE.get(), 2)
+                .unlockedBy(getHasName(ModItems.MEDIUM_ANTI_AIR_MISSILE.get()), has(ModItems.MEDIUM_ANTI_AIR_MISSILE.get()))
+                .save(writer, loc(getItemName(ModItems.LARGE_ANTI_AIR_MISSILE.get())))
+
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.MEDIUM_ANTI_AIR_MISSILE.get(), 2)
+                .requires(ModItems.LARGE_ANTI_AIR_MISSILE.get())
+                .unlockedBy(getHasName(ModItems.MEDIUM_ANTI_AIR_MISSILE.get()), has(ModItems.MEDIUM_ANTI_AIR_MISSILE.get()))
+                .save(writer, loc(getItemName(ModItems.MEDIUM_ANTI_AIR_MISSILE.get()) + "_from_large_anti_air_missile"))
 
             ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.MEDIUM_ANTI_GROUND_MISSILE.get())
                 .requires(ModItems.JAVELIN_MISSILE.get())
@@ -920,6 +941,23 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                     has(ModItems.MEDIUM_AERIAL_BOMB.get())
                 )
                 .save(writer, loc(getItemName(ModItems.SMALL_AERIAL_BOMB.get()) + "_from_medium_aerial_bomb"))
+
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.LARGE_AERIAL_BOMB.get())
+                .requires(ModItems.MEDIUM_AERIAL_BOMB.get(), 2)
+                .unlockedBy(
+                    getHasName(ModItems.MEDIUM_AERIAL_BOMB.get()),
+                    has(ModItems.MEDIUM_AERIAL_BOMB.get())
+                )
+                .save(writer, loc(getItemName(ModItems.LARGE_AERIAL_BOMB.get())))
+
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.MEDIUM_AERIAL_BOMB.get(), 2)
+                .requires(ModItems.LARGE_AERIAL_BOMB.get())
+                .unlockedBy(
+                    getHasName(ModItems.MEDIUM_AERIAL_BOMB.get()),
+                    has(ModItems.MEDIUM_AERIAL_BOMB.get())
+                )
+                .save(writer, loc(getItemName(ModItems.MEDIUM_AERIAL_BOMB.get()) + "_from_large_aerial_bomb"))
+
             ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.CANNON_CORE.get())
                 .pattern("aaa")
                 .pattern("bcd")

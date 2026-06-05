@@ -149,6 +149,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.SWARM_DRONE)
         simpleItem(ModItems.SMALL_AERIAL_BOMB)
         simpleItem(ModItems.MEDIUM_AERIAL_BOMB)
+        simpleItem(ModItems.LARGE_AERIAL_BOMB)
         simpleItem(ModItems.SMALL_BATTERY_PACK)
         simpleItem(ModItems.MEDIUM_BATTERY_PACK)
         simpleItem(ModItems.LARGE_BATTERY_PACK)

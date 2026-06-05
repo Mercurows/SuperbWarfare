@@ -7018,13 +7018,13 @@
 				{
 					"name": "dummy_0_2_1",
 					"parent": "root",
-					"pivot": [7, 16, 1],
+					"pivot": [0, 16, 1],
 					"rotation": [2.5, 0, 0]
 				},
 				{
 					"name": "dummy_0_2_2",
 					"parent": "root",
-					"pivot": [0, 16, 1],
+					"pivot": [7, 16, 1],
 					"rotation": [2.5, 0, 0]
 				},
 				{

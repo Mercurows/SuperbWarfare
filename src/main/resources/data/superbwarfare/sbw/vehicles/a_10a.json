@@ -145,8 +145,42 @@
       "SoundRadius": 12
     },
     "Bomb": {
-      "AmmoType": "superbwarfare:medium_aerial_bomb",
       "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/mk_82.png",
+      "AmmoType": [
+        {
+          "Ammo": "superbwarfare:medium_aerial_bomb",
+          "ShouldUnload": true
+        },
+        {
+          "Ammo": "superbwarfare:large_aerial_bomb",
+          "ShouldUnload": true,
+          "Override": {
+            "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/mk_84.png",
+            "Name": "weapon.superbwarfare.mk_84_bomb",
+            "Projectile": "superbwarfare:mk_84",
+            "ShootPos": {
+              "Transform": "Vehicle",
+              "ShootPositionForHud": [0, 0.77, 0.047],
+              "ShootDirectionForHud": "Bomb",
+              "Positions": [[0, 0.77, 0.047]],
+              "BoundUpWithAmmoAmount": true,
+              "Directions": ["DeltaMovement"],
+              "ViewPosition": [0, 0.77, 0.047],
+              "ViewDirection": "Bomb"
+            },
+            "ProjectileDummyInfo": {
+              "Offset": [0, -0.59, 0.125],
+              "Rotate": [0, 0, 0],
+              "Scale": [0.85, 0.85, 0.85],
+              "HideDummyWhileZooming": true
+            },
+            "Magazine": 1,
+            "EmptyReloadTime": 300,
+            "ExplosionDamage": 1600,
+            "ExplosionRadius": 40
+          }
+        }
+      ],
       "DefaultZoom": 2,
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Semi",
@@ -164,7 +198,7 @@
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 0.88, 0.047],
         "ShootDirectionForHud": "Bomb",
-        "Positions": [[0.418, 0.88, 0.047], [0, 0.88, 0.047], [-0.418, 0.88, 0.047]],
+        "Positions": [[0, 0.88, 0.047], [0.418, 0.88, 0.047], [-0.418, 0.88, 0.047]],
         "BoundUpWithAmmoAmount": true,
         "Directions": ["DeltaMovement"],
         "ViewPosition": [0, 0.88, 0.047],
@@ -202,7 +236,7 @@
       "ExplosionRadius": 12,
       "AddShooterDeltaMovement": true,
       "Velocity": 1.05,
-      "ProjectileLife": 1200,
+      "ProjectileLife": 3600,
       "SeekWeaponInfo": {
         "SeekDirection": "ClientCamera",
         "MaxGuidedRange": 8192,
@@ -236,6 +270,17 @@
               "MaxTargetHeight": 32,
               "MinTargetSize": 0.9,
               "OnlyLockBlock": true
+            }
+          }
+        },
+        {
+          "Ammo": "superbwarfare:large_anti_ground_missile",
+          "ShouldUnload": false,
+          "Override": {
+            "Name": "weapon.superbwarfare.agm_65_missile_coordinates",
+            "SeekWeaponInfo": {
+              "SeekDirection": "ClientCamera",
+              "InputBlockPos": true
             }
           }
         }

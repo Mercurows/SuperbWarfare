@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "superbwarfare:medium_anti_air_missile"
+    },
+    {
+      "item": "superbwarfare:medium_anti_air_missile"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:large_anti_air_missile"
+  }
+}
