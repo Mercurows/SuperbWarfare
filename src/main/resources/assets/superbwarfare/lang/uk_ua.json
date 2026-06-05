@@ -881,6 +881,7 @@
   "weapon.superbwarfare.laser": "ЛАЗЕР %1$s",
   "item.superbwarfare.medium_anti_ground_missile": "Середня ракета проти наземних цілей",
   "item.superbwarfare.large_anti_ground_missile": "Велика ракета проти наземних цілей",
+  "item.superbwarfare.extra_large_anti_ground_missile": "Надвелика ракета проти наземних цілей",
   "entity.superbwarfare.kh_39": "Х-39 \"Ізделіє\" 305",
   "entity.superbwarfare.ru_9m336_missile": "Зенітна ракета 9M336",
   "item.superbwarfare.medium_anti_air_missile": "Середня зенітна ракета",

@@ -43,7 +43,7 @@ open class Ru3m14MissileEntity(type: EntityType<out Ru3m14MissileEntity>, level:
     }
 
     override fun getDefaultItem(): Item {
-        return ModItems.LARGE_ANTI_GROUND_MISSILE.get()
+        return ModItems.EXTRA_LARGE_ANTI_GROUND_MISSILE.get()
     }
 
     override fun tick() {
