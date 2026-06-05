@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.entity.mixin.DamageAccess;
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.init.ModTags;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -112,6 +113,34 @@ public abstract class LivingEntityMixin implements ICustomKnockback, DamageAcces
     private void dismountVehicle(Entity pVehicle, CallbackInfo ci) {
         if (pVehicle instanceof VehicleEntity vehicle) {
             vehicle.removeSeatIndexTag(((LivingEntity) (Object) this));
+        }
+    }
+
+    @Shadow
+    @Nullable
+    public DamageSource lastDamageSource;
+
+    @Shadow
+    public long lastDamageStamp;
+
+    @Inject(method = "playHurtSound", at = @At("HEAD"), cancellable = true)
+    protected void playHurtSound(DamageSource pSource, CallbackInfo ci) {
+        if (pSource.is(ModTags.DamageTypes.NO_HURT_EFFECT)) {
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "handleDamageEvent", at = @At("HEAD"), cancellable = true)
+    public void handleDamageEvent(DamageSource pSource, CallbackInfo ci) {
+        if (pSource.is(ModTags.DamageTypes.NO_HURT_EFFECT)) {
+            ci.cancel();
+
+            LivingEntity living = (LivingEntity) (Object) this;
+            living.invulnerableTime = 0;
+            living.hurtTime = 0;
+            living.hurtDuration = 0;
+            this.lastDamageSource = pSource;
+            this.lastDamageStamp = living.level().getGameTime();
         }
     }
 }

@@ -128,10 +128,15 @@ class ModDamageTypeTagProvider(
             ModDamageTypes.PHOSPHORUS_FIRE,
             ModDamageTypes.AMMO_CONSUMPTION
         )
-        this.tag(DamageTypeTags.IS_EXPLOSION)
-            .add(ModDamageTypes.PROJECTILE_EXPLOSION, ModDamageTypes.CUSTOM_EXPLOSION, ModDamageTypes.LUNGE_MINE)
+        this.tag(DamageTypeTags.IS_EXPLOSION).add(
+            ModDamageTypes.PROJECTILE_EXPLOSION,
+            ModDamageTypes.CUSTOM_EXPLOSION,
+            ModDamageTypes.LUNGE_MINE,
+            ModDamageTypes.AMMO_CONSUMPTION
+        )
         this.tag(DamageTypeTags.IS_FIRE).add(ModDamageTypes.BURN)
         this.tag(ModTags.DamageTypes.BYPASSES_VEHICLE).add(ModDamageTypes.REPAIR_TOOL)
+        this.tag(ModTags.DamageTypes.NO_HURT_EFFECT).add(ModDamageTypes.AMMO_CONSUMPTION)
 
         this.tag(otherModTag("cataclysm", "bypasses_hurt_time")).add(
             ModDamageTypes.GUN_FIRE_ABSOLUTE,

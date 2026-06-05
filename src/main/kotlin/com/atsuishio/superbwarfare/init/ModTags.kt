@@ -168,6 +168,10 @@ object ModTags {
         // 载具减伤不会计算的伤害类型
         @JvmField
         val BYPASSES_VEHICLE = modDamageTag("bypasses_vehicle")
+
+        // 没有任何受伤提示的伤害类型
+        @JvmField
+        val NO_HURT_EFFECT = modDamageTag("no_hurt_effect")
     }
 
     object EntityTypes {
