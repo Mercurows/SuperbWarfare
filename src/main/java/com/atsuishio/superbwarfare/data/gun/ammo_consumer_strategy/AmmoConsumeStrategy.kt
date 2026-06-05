@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.ammo_consumer_strategy.AmmoConsumeStrategy.Companion.match
 import net.minecraft.world.entity.Entity
-import net.neoforged.neoforge.items.IItemHandler
+import net.minecraftforge.items.IItemHandler
 
 /**
  * 弹药消耗策略抽象类。

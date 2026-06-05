@@ -4,16 +4,15 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.tools.InventoryTool
-import net.minecraft.core.RegistryAccess
-import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.NbtUtils
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
-import net.neoforged.neoforge.capabilities.Capabilities
-import net.neoforged.neoforge.items.IItemHandler
+import net.minecraftforge.common.capabilities.ForgeCapabilities
+import net.minecraftforge.items.IItemHandler
+import net.minecraftforge.registries.ForgeRegistries
 
 /**
  * 物品弹药策略（兜底策略）— ammo 字符串形如 "minecraft:arrow"、 "mod:item"、 "mod:item{tag}"
@@ -48,8 +47,8 @@ object ItemAmmoStrategy : AmmoConsumeStrategy() {
             consumer.type = AmmoConsumer.AmmoConsumeType.INVALID
             return
         }
-        val item = BuiltInRegistries.ITEM.get(location)
-        if (item === Items.AIR) {
+        val item = ForgeRegistries.ITEMS.getValue(location)
+        if (item == null || item === Items.AIR) {
             Mod.LOGGER.warn("invalid item: {}", id)
             consumer.type = AmmoConsumer.AmmoConsumeType.INVALID
             return
@@ -61,7 +60,7 @@ object ItemAmmoStrategy : AmmoConsumeStrategy() {
                 val tag = NbtUtils.snbtToStructure(data)
                 tag.putString("id", location.toString())
                 tag.putInt("count", 1)
-                ItemStack.parse(RegistryAccess.EMPTY, tag).ifPresent { s -> consumer.stack = s }
+                consumer.stack = ItemStack.of(tag)
             } catch (exception: Exception) {
                 Mod.LOGGER.warn("invalid item data {}: {}", data, exception.message)
                 consumer.type = AmmoConsumer.AmmoConsumeType.INVALID
@@ -71,9 +70,9 @@ object ItemAmmoStrategy : AmmoConsumeStrategy() {
     }
 
     override fun consume(data: GunData, consumer: AmmoConsumer, shooter: Entity, count: Int): Int {
-        val handler = shooter.getCapability(Capabilities.ItemHandler.ENTITY)
-        if (handler != null) {
-            return consume(data, consumer, handler, count)
+        val handler = shooter.getCapability(ForgeCapabilities.ITEM_HANDLER)
+        if (handler.isPresent) {
+            return consume(data, consumer, handler.resolve().get(), count)
         } else {
             Mod.LOGGER.warn("consume ammo failed: invalid item handler for entity {}", shooter)
             return 0
@@ -90,7 +89,8 @@ object ItemAmmoStrategy : AmmoConsumeStrategy() {
 
     override fun count(data: GunData, consumer: AmmoConsumer, entity: Entity?): Int {
         if (entity == null) return 0
-        return count(data, consumer, entity.getCapability(Capabilities.ItemHandler.ENTITY))
+        val handler = entity.getCapability(ForgeCapabilities.ITEM_HANDLER)
+        return count(data, consumer, handler.resolve().orElse(null))
     }
 
     override fun count(data: GunData, consumer: AmmoConsumer, handler: IItemHandler?): Int {
@@ -103,9 +103,9 @@ object ItemAmmoStrategy : AmmoConsumeStrategy() {
             InventoryTool.insertItem(ammoSupplier, consumer.stack(), count)
             return count
         } else {
-            val itemHandler = ammoSupplier.getCapability(Capabilities.ItemHandler.ENTITY)
-            if (itemHandler != null) {
-                return withdraw(consumer, itemHandler, count)
+            val itemHandler = ammoSupplier.getCapability(ForgeCapabilities.ITEM_HANDLER)
+            if (itemHandler.isPresent) {
+                return withdraw(consumer, itemHandler.resolve().get(), count)
             } else {
                 Mod.LOGGER.warn("withdraw ammo failed: invalid item handler")
             }

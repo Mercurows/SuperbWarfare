@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
 import com.atsuishio.superbwarfare.data.gun.GunData
 import net.minecraft.world.entity.Entity
-import net.neoforged.neoforge.items.IItemHandler
+import net.minecraftforge.items.IItemHandler
 
 /**
  * 无效弹药策略 — 兜底策略，匹配所有未被其他策略匹配的 ammo 字符串。
@@ -24,9 +24,14 @@ object InvalidAmmoStrategy : AmmoConsumeStrategy() {
     }
 
     override fun consume(data: GunData, consumer: AmmoConsumer, shooter: Entity, count: Int) = 0
+
     override fun consume(data: GunData, consumer: AmmoConsumer, handler: IItemHandler, count: Int) = 0
+
     override fun count(data: GunData, consumer: AmmoConsumer, entity: Entity?) = 0
+
     override fun count(data: GunData, consumer: AmmoConsumer, handler: IItemHandler?) = 0
+
     override fun withdraw(consumer: AmmoConsumer, ammoSupplier: Entity, count: Int) = 0
+
     override fun withdraw(consumer: AmmoConsumer, handler: IItemHandler, count: Int) = 0
 }

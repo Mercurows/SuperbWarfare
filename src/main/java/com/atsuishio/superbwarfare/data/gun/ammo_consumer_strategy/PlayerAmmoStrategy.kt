@@ -7,8 +7,8 @@ import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.tools.InventoryTool
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
-import net.neoforged.neoforge.capabilities.Capabilities
-import net.neoforged.neoforge.items.IItemHandler
+import net.minecraftforge.common.capabilities.ForgeCapabilities
+import net.minecraftforge.items.IItemHandler
 import kotlin.math.min
 
 /**
@@ -54,9 +54,9 @@ object PlayerAmmoStrategy : AmmoConsumeStrategy() {
         }
 
         // 如果还有剩余需要消耗的数量，从物品栏消耗
-        val handler = shooter.getCapability(Capabilities.ItemHandler.ENTITY)
-        if (handler != null) {
-            return consumed + consume(data, consumer, handler, remaining)
+        val handler = shooter.getCapability(ForgeCapabilities.ITEM_HANDLER)
+        if (handler.isPresent) {
+            return consumed + consume(data, consumer, handler.resolve().get(), remaining)
         } else {
             Mod.LOGGER.warn("consume ammo failed: invalid item handler for entity {}", shooter)
             return consumed
@@ -76,7 +76,11 @@ object PlayerAmmoStrategy : AmmoConsumeStrategy() {
         if (entity is Player) {
             playerAmmoCount = consumer.playerAmmoType?.get(entity) ?: 0
         }
-        return playerAmmoCount + count(data, consumer, entity.getCapability(Capabilities.ItemHandler.ENTITY))
+        return playerAmmoCount + count(
+            data,
+            consumer,
+            entity.getCapability(ForgeCapabilities.ITEM_HANDLER).resolve().orElse(null)
+        )
     }
 
     override fun count(data: GunData, consumer: AmmoConsumer, handler: IItemHandler?): Int {
@@ -100,9 +104,9 @@ object PlayerAmmoStrategy : AmmoConsumeStrategy() {
                 Mod.LOGGER.warn("withdraw player ammo failed: invalid player ammo type")
             }
         } else {
-            val itemHandler = ammoSupplier.getCapability(Capabilities.ItemHandler.ENTITY)
-            if (itemHandler != null) {
-                return withdraw(consumer, itemHandler, count)
+            val itemHandler = ammoSupplier.getCapability(ForgeCapabilities.ITEM_HANDLER)
+            if (itemHandler.isPresent) {
+                return withdraw(consumer, itemHandler.resolve().get(), count)
             } else {
                 Mod.LOGGER.warn("withdraw ammo failed: invalid item handler")
             }
