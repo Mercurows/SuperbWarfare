@@ -13,11 +13,13 @@ import kotlin.math.floor
  * health
  * health 10 (每1血=10弹药)
  */
-object HealthAmmoStrategy : AmmoConsumeStrategy() {
+class HealthAmmoStrategy : AmmoConsumeStrategy() {
 
     override val defaultType = AmmoConsumer.AmmoConsumeType.ITEM
 
     var ammoPerHealth: Float = 1F
+
+    override fun create(): AmmoConsumeStrategy = HealthAmmoStrategy()
 
     override fun match(ammo: String) = ammo.lowercase().startsWith("health", true)
             && ammo.lowercase() == "health"

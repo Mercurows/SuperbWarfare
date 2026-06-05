@@ -167,7 +167,7 @@ class AmmoConsumer : DeserializeFromString, PropertyModifier<GunData, DefaultGun
         this.loadAmount = count
 
         val ammoStr = trimmed.trimStart { it.isDigit() || it.isWhitespace() }.trimEnd()
-        val strategy = AmmoConsumeStrategy.match(ammoStr)
+        val strategy = AmmoConsumeStrategy.match(ammoStr).create()
 
         this.strategy = strategy
         this.type = strategy.defaultType

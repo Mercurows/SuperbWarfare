@@ -32,6 +32,13 @@ abstract class AmmoConsumeStrategy {
      */
     open fun init(consumer: AmmoConsumer, count: Int, matchedString: String) {}
 
+    /**
+     * 创建本策略的新实例。默认返回 this（适用于无状态单例策略）。
+     * 有状态策略（如 [HealthAmmoStrategy]）应重写此方法返回新实例，
+     * 以避免多消费者共享可变状态。
+     */
+    open fun create(): AmmoConsumeStrategy = this
+
     /** 从 shooter 实体消耗指定数量的弹药，返回实际消耗的弹药物品数量 */
     abstract fun consume(data: GunData, consumer: AmmoConsumer, shooter: Entity, count: Int): Int
 
@@ -61,7 +68,7 @@ abstract class AmmoConsumeStrategy {
             InfiniteAmmoStrategy,
             EnergyAmmoStrategy,
             PlayerAmmoStrategy,
-            HealthAmmoStrategy,
+            HealthAmmoStrategy(),
             ItemAmmoStrategy,
             InvalidAmmoStrategy,
         )
