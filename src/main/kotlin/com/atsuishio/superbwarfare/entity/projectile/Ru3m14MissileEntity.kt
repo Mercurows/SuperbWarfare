@@ -71,7 +71,13 @@ open class Ru3m14MissileEntity(type: EntityType<out Ru3m14MissileEntity>, level:
                 0.0
             }
 
-            if (targetPos!!.vectorTo(position()).horizontalDistance() < 400) {
+            val d = targetPos!!.vectorTo(position()).horizontalDistance()
+
+            if (d < 600) {
+                height = 0.125 * d
+            }
+
+            if (d < 100) {
                 height = 0.0
             }
 

@@ -307,7 +307,7 @@
 				}
 			}
 		},
-		"animation.kalibr.fire": {
+      "animation.main.fire": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 1.25,
 			"bones": {
@@ -324,7 +324,7 @@
 				}
 			}
 		},
-		"animation.kalibr.fire.5": {
+      "animation.main.fire.5": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 1.25,
 			"bones": {
@@ -341,7 +341,7 @@
 				}
 			}
 		},
-		"animation.kalibr.fire.4": {
+      "animation.main.fire.4": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 1.25,
 			"bones": {
@@ -358,7 +358,7 @@
 				}
 			}
 		},
-		"animation.kalibr.fire.3": {
+      "animation.main.fire.3": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 1.25,
 			"bones": {
@@ -375,7 +375,7 @@
 				}
 			}
 		},
-		"animation.kalibr.fire.2": {
+      "animation.main.fire.2": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 1.25,
 			"bones": {
@@ -392,7 +392,7 @@
 				}
 			}
 		},
-		"animation.kalibr.fire.1": {
+      "animation.main.fire.1": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 1.25,
 			"bones": {

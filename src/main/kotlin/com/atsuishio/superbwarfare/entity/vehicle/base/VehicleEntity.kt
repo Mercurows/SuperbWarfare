@@ -978,7 +978,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         return gunData.shootAnimationTimer.get()
     }
 
-    open fun vehicleShoot(living: LivingEntity?, weaponName: String) {
+    open fun vehicleShoot(living: LivingEntity?, weaponName: String, targetPos: Vec3?) {
         if (isWreck) return
 
         val gunData = getGunData(weaponName)
@@ -997,7 +997,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                         data.get(GunProp.SPREAD),
                         true,
                         null,
-                        null
+                        targetPos
                     )
                 )
             }
@@ -1012,7 +1012,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             val size = list.size
 
             val index: Int = if (shootPos.boundUpWithAmmoAmount) {
-                Mth.clamp(gunData.ammo.get() - 1, 0, size)
+                Mth.clamp(gunData.ammo.get(), 0, size)
             } else {
                 gunData.fireIndex.get() % size
             }

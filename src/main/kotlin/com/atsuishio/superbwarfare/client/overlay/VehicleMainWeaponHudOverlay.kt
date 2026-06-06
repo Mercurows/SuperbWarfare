@@ -529,7 +529,7 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
             }
         } else if (seekInfo.inputBlockPos) {
             poseStack.pushPose()
-            poseStack.translate((screenWidth / 2).toDouble() + 40, (screenHeight / 2).toDouble(), 0.0)
+            poseStack.translate((screenWidth / 2).toDouble() + 90, (screenHeight / 2).toDouble(), 0.0)
 
             val stringX = "X: " + (ClientEventHandler.missileLockingPos?.x ?: "---")
             guiGraphics.drawString(

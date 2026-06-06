@@ -65,7 +65,7 @@ open class AnnihilatorEntity(type: EntityType<AnnihilatorEntity>, world: Level) 
 
         if (mainStack.`is`(ModTags.Items.TOOLS_CROWBAR) && !player.isCrouching) {
             if (chargeProgress >= 1) {
-                vehicleShoot(player, "Main")
+                vehicleShoot(player, "Main", null)
             }
             return InteractionResult.SUCCESS
         }
@@ -210,7 +210,7 @@ open class AnnihilatorEntity(type: EntityType<AnnihilatorEntity>, world: Level) 
             .explode()
     }
 
-    override fun vehicleShoot(living: LivingEntity?, weaponName: String) {
+    override fun vehicleShoot(living: LivingEntity?, weaponName: String, targetPos: Vec3?) {
         if (this.isWreck) return
         val data = getGunData(weaponName)
         shoot(living, data)

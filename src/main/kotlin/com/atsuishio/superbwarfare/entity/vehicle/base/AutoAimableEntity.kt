@@ -262,7 +262,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : VehicleEntity(
                                 rayShoot(owner, target, data)
                                 changeTargetTimer = 0
                             } else if (getAmmoCount(weaponName) > 0 && tickCount % rpm == 0) {
-                                vehicleShoot(owner, "Main")
+                                vehicleShoot(owner, "Main", targetPos)
                                 changeTargetTimer = 0
                             }
                         }

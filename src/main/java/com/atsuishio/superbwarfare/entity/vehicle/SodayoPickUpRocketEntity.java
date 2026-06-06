@@ -192,7 +192,7 @@ public class SodayoPickUpRocketEntity extends ArtilleryEntity {
     }
 
     @Override
-    public void vehicleShoot(@Nullable LivingEntity living, @NotNull String name) {
+    public void vehicleShoot(@Nullable LivingEntity living, @NotNull String name, @Nullable Vec3 targetPos) {
         if (this.isWreck()) return;
         // 顺序发射
         for (int i = 0; i < 12; i++) {
