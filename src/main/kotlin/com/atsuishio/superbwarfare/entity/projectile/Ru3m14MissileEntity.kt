@@ -88,6 +88,11 @@ open class Ru3m14MissileEntity(type: EntityType<out Ru3m14MissileEntity>, level:
             toVec = position().vectorTo(targetPos)
         }
 
+        if (targetPos == null && tickCount > 200) {
+            discard()
+            causeExplode(position())
+        }
+
         if (tickCount in 2..10 && toVec != lookAngle) {
             turnYaw(toVec, 30f)
         }
