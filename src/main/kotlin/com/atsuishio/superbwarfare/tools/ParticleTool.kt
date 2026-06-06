@@ -299,7 +299,7 @@ object ParticleTool {
                     sendParticle(level, CustomFlareOption(0.667f, 0.631f, 0.592f, 100, 0.97f, 10, 0.06f), x, y - 1, z, 18 * i, i.toDouble() * 2.5, 0.05, i.toDouble() * 2.5, 0.0003 * i, true)
                 }
             }
-            sendToNearbyPlayers(level, x, y, z, 768.0, 54.0, 36.0)
+            sendToNearbyPlayers(level, x, y, z, 768.0, 54.0, 9.0)
         }
     }
 

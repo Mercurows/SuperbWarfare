@@ -21,7 +21,7 @@
       "MaxPitch": 80,
       "MinYaw": -90,
       "MaxYaw": 90,
-      "Weapons": ["Cannon", "Kalibr", "AAMissile"],
+      "Weapons": ["Cannon", "Main", "AAMissile"],
       "Sensitivity": [0.55, 0.8, 0.9],
       "CameraPos": {
         "Transform": "Vehicle",
@@ -127,7 +127,7 @@
         "Directions": [[0.005, 0, 1], [-0.005, 0, 1]]
       }
     },
-    "Kalibr": {
+    "Main": {
       "AmmoType": [
         {
           "Ammo": "superbwarfare:extra_large_anti_ground_missile",
@@ -150,6 +150,7 @@
       "DefaultFireMode": "Semi",
       "Magazine": 6,
       "EmptyReloadTime": 400,
+      "RPM": 120,
       "Projectile": "superbwarfare:ru_3m14_missile",
       "Name": "weapon.superbwarfare.ru_3m14_missile_block",
       "Damage": 5000,

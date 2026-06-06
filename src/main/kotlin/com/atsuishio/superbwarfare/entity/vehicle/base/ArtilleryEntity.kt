@@ -37,6 +37,7 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : VehicleEntity(ty
     open var shootVec by SHOOT_VEC
     open var depressed by DEPRESSED
     open var targetPos by TARGET_POS
+    open var originPos by ORIGIN_POS
     open var radius by RADIUS
     open var lockTurret by LOCK_TURRET
 
@@ -54,7 +55,7 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : VehicleEntity(ty
 
         if (stack.`is`(ModTags.Items.TOOLS_CROWBAR) && !player.isShiftKeyDown && !isWreck) {
             if (gunData.ammo.get() > 0 && player.level() is ServerLevel) {
-                vehicleShoot(player, "Main")
+                vehicleShoot(player, "Main", targetPos.center)
             }
             return InteractionResult.SUCCESS
         }
@@ -84,6 +85,7 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : VehicleEntity(ty
             define(SHOOT_VEC, forward.toVector3f())
             define(DEPRESSED, false)
             define(TARGET_POS, BlockPos(0, 0, 0))
+            define(ORIGIN_POS, BlockPos(0, 0, 0))
             define(RADIUS, 0)
             define(LOCK_TURRET, false)
         }
@@ -100,6 +102,9 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : VehicleEntity(ty
         compound.putInt("TargetX", targetPos.x)
         compound.putInt("TargetY", targetPos.y)
         compound.putInt("TargetZ", targetPos.z)
+        compound.putInt("OriginX", originPos.x)
+        compound.putInt("OriginY", originPos.y)
+        compound.putInt("OriginZ", originPos.z)
     }
 
     override fun readAdditionalSaveData(compound: CompoundTag) {
@@ -116,6 +121,9 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : VehicleEntity(ty
         }
         if (compound.contains("TargetX") && compound.contains("TargetY") && compound.contains("TargetZ")) {
             targetPos = BlockPos(compound.getInt("TargetX"), compound.getInt("TargetX"), compound.getInt("TargetZ"))
+        }
+        if (compound.contains("OriginX") && compound.contains("OriginY") && compound.contains("OriginZ")) {
+            originPos = BlockPos(compound.getInt("OriginX"), compound.getInt("OriginX"), compound.getInt("OriginZ"))
         }
     }
 
@@ -220,9 +228,9 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : VehicleEntity(ty
         }
     }
 
-    override fun vehicleShoot(living: LivingEntity?, weaponName: String) {
+    override fun vehicleShoot(living: LivingEntity?, weaponName: String, targetPos: Vec3?) {
         beforeShoot(living)
-        super.vehicleShoot(living, weaponName)
+        super.vehicleShoot(living, weaponName, targetPos)
     }
 
     override fun vehicleShoot(living: LivingEntity?, uuid: UUID?, targetPos: Vec3?) {
@@ -259,5 +267,9 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : VehicleEntity(ty
         @JvmField
         val LOCK_TURRET: EntityDataAccessor<Boolean> =
             SynchedEntityData.defineId(ArtilleryEntity::class.java, EntityDataSerializers.BOOLEAN)
+
+        @JvmField
+        val ORIGIN_POS: EntityDataAccessor<BlockPos> =
+            SynchedEntityData.defineId(ArtilleryEntity::class.java, EntityDataSerializers.BLOCK_POS)
     }
 }

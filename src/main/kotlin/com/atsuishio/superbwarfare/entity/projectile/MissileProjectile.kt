@@ -94,6 +94,7 @@ abstract class MissileProjectile : DestroyableProjectile, CustomSyncMotionEntity
 
     override fun onHitEntity(result: EntityHitResult) {
         super.onHitEntity(result)
+        if (tickCount < 3) return
         val entity = result.entity
         val owner = this.owner
         if (owner != null && owner.vehicle != null && entity == owner.vehicle) return
@@ -107,7 +108,7 @@ abstract class MissileProjectile : DestroyableProjectile, CustomSyncMotionEntity
                 entity.invulnerableTime = 0
             }
 
-            causeExplode(result.getLocation())
+            causeExplode(result.location)
             this.discard()
         }
     }

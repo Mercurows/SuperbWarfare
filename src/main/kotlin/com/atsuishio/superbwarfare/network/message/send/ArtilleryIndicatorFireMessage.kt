@@ -40,14 +40,14 @@ object ArtilleryIndicatorFireMessage : ServerPacketPayload() {
                 val gunData = entity.getGunData("Main")
                 if (gunData != null && (entity is MortarEntity || gunData.ammo.get() > 0)) {
                     queueServerWork(i % 5 + 1) {
-                        entity.vehicleShoot(player, "Main")
+                        entity.vehicleShoot(player, "Main", entity.targetPos.center)
                         entity.resetTarget("Main")
                     }
                 }
             }
 
             if (entity is SodayoPickUpRocketEntity) {
-                entity.vehicleShoot(player, "Main")
+                entity.vehicleShoot(player, "Main", entity.targetPos.center)
             }
         }
     }

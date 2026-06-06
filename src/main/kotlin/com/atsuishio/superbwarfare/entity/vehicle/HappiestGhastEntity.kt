@@ -3,17 +3,21 @@ package com.atsuishio.superbwarfare.entity.vehicle
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.animation.AnimationPlayType
 import com.atsuishio.superbwarfare.client.particle.CannonMuzzleFlareOption
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
+import com.atsuishio.superbwarfare.item.misc.firingParameters
 import com.atsuishio.superbwarfare.tools.ParticleTool
+import com.atsuishio.superbwarfare.tools.randomPos
+import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
-import java.util.*
 
-open class HappiestGhastEntity(type: EntityType<HappiestGhastEntity>, world: Level) : VehicleEntity(type, world) {
+open class HappiestGhastEntity(type: EntityType<HappiestGhastEntity>, world: Level) : ArtilleryEntity(type, world) {
     open var wasOpen = false
 
     override fun baseTick() {
@@ -32,19 +36,6 @@ open class HappiestGhastEntity(type: EntityType<HappiestGhastEntity>, world: Lev
             }
             wasOpen = doorOpen
         }
-    }
-
-    override fun vehicleShoot(living: LivingEntity?, uuid: UUID?, targetPos: Vec3?) {
-        val serverLevel = level()
-        if (serverLevel is ServerLevel) {
-            val name = this.getGunName(0)
-            if (name == "Kalibr" || name == "AAMissile") {
-                val pos = getShootPos(name, 1f)
-                val direct = getShootVec(name, 1f)
-                missileLaunchEffect(serverLevel, pos, direct)
-            }
-        }
-        super.vehicleShoot(living, uuid, targetPos)
     }
 
     fun missileLaunchEffect(serverLevel: ServerLevel, pos: Vec3, direct: Vec3) {
@@ -96,4 +87,32 @@ open class HappiestGhastEntity(type: EntityType<HappiestGhastEntity>, world: Lev
             0.1
         )
     }
+
+    override fun setTarget(stack: ItemStack, entity: Entity?, weaponName: String) {
+        val parameters = stack.firingParameters
+        radius = parameters.radius
+        originPos = parameters.pos
+        val randomPos = originPos.center.randomPos(radius).add(0.0, -1.0, 0.0)
+        targetPos = BlockPos.containing(randomPos)
+    }
+
+    override fun resetTarget(weaponName: String) {
+        if (this.isWreck) return
+        val randomPos = originPos.center.randomPos(radius).add(0.0, -1.0, 0.0)
+        targetPos = BlockPos.containing(randomPos)
+    }
+
+    override fun beforeShoot(living: LivingEntity?) {
+        val serverLevel = level()
+        if (serverLevel is ServerLevel) {
+            val name = this.getGunName(0)
+            if (name == "Main" || name == "AAMissile") {
+                val pos = getShootPos(name, 1f)
+                val direct = getShootVec(name, 1f)
+                missileLaunchEffect(serverLevel, pos, direct)
+            }
+        }
+    }
+
+    override fun canBind() = true
 }

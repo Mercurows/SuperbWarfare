@@ -76,7 +76,7 @@ open class MortarEntity(type: EntityType<MortarEntity>, level: Level) : Artiller
         }
     }
 
-    override fun vehicleShoot(living: LivingEntity?, weaponName: String) {
+    override fun vehicleShoot(living: LivingEntity?, weaponName: String, targetPos: Vec3?) {
         if (this.getItems()[0].item !is MortarShellItem) return
         val gunData = getGunData(weaponName) ?: return
         if (entityData.get(FIRE_TIME) != 0) return
@@ -151,7 +151,7 @@ open class MortarEntity(type: EntityType<MortarEntity>, level: Level) : Artiller
 
         if (stack.`is`(ModTags.Items.TOOLS_CROWBAR)) {
             if (this.getItems()[0].item is MortarShellItem && this.entityData.get(FIRE_TIME) == 0 && level() is ServerLevel) {
-                vehicleShoot(player, "Main")
+                vehicleShoot(player, "Main", targetPos.center)
             }
             return InteractionResult.SUCCESS
         }
@@ -161,7 +161,7 @@ open class MortarEntity(type: EntityType<MortarEntity>, level: Level) : Artiller
             if (!player.isCreative) {
                 stack.shrink(1)
             }
-            vehicleShoot(player, "Main")
+            vehicleShoot(player, "Main", targetPos.center)
             entityData.set(NEED_RESET_TARGET, false)
             return InteractionResult.SUCCESS
         }
@@ -384,7 +384,7 @@ open class MortarEntity(type: EntityType<MortarEntity>, level: Level) : Artiller
     override fun setChanged() {
         super.setChanged()
         if (!entityData.get(INTELLIGENT)) {
-            vehicleShoot(null, "Main")
+            vehicleShoot(null, "Main", targetPos.center)
         }
     }
 
