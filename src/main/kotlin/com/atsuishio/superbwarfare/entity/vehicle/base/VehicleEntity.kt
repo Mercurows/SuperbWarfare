@@ -1015,7 +1015,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             val size = list.size
 
             val index: Int = if (shootPos.boundUpWithAmmoAmount) {
-                Mth.clamp(gunData.ammo.get(), 0, size)
+                Mth.clamp(gunData.ammo.get() - 1, 0, size)
             } else {
                 gunData.fireIndex.get() % size
             }
@@ -1066,7 +1066,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             val size = list.size
 
             val index: Int = if (shootPos.boundUpWithAmmoAmount) {
-                Mth.clamp(gunData.ammo.get(), 0, size)
+                Mth.clamp(gunData.ammo.get() - 1, 0, size)
             } else {
                 gunData.fireIndex.get() % size
             }

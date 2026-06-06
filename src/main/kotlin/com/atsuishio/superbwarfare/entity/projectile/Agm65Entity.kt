@@ -89,6 +89,9 @@ open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level) : Missil
                         )
                     }
                 }
+            } else if (tickCount > 200) {
+                discard()
+                causeExplode(position())
             }
         } else {
             if (level is ServerLevel && targetPos != null) {
@@ -96,6 +99,10 @@ open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level) : Missil
                 val height = if (dis > 30) 0.4 * (dis - 30) else 0.0
                 val targetPos = this.targetPos!!.add(0.0, height, 0.0)
                 toVec = calculateFiringSolution(position(), targetPos, Vec3.ZERO, deltaMovement.length(), 0.0)
+            }
+            if (targetPos == null && tickCount > 200) {
+                discard()
+                causeExplode(position())
             }
         }
 
