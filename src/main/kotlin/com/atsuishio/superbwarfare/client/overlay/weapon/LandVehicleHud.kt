@@ -70,9 +70,10 @@ object LandVehicleHud {
 
         val recoil = Mth.lerp(partialTick, vehicle.recoilShakeO.toFloat(), vehicle.recoilShake.toFloat())
         lerpRecoil = Mth.lerp(0.1f * partialTick, lerpRecoil, recoil * (2 * (Math.random() - 0.5f)).toFloat())
+        val pitch = Mth.lerp(partialTick, vehicle.fakePitchO, vehicle.fakePitch)
         poseStack.translate(
             lerpRecoil * 6 + screenWidth * 0.025f * recoil,
-            recoil * 3 + screenHeight * 0.025f * recoil,
+            recoil * 3 + screenHeight * 0.025f * recoil - pitch,
             0f
         )
         poseStack.scale(1 - recoil * 0.05f, 1 - recoil * 0.05f, 1f)
