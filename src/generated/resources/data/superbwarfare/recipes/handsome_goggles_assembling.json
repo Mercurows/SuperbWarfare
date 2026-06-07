@@ -1,0 +1,17 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "aircraft",
+  "inputs": [
+    "8 minecraft:dispenser",
+    "8 minecraft:iron_trapdoor",
+    "2 superbwarfare:light_armament_module",
+    "superbwarfare:heavy_armament_module",
+    "superbwarfare:medium_battery_pack",
+    "2 minecraft:lever",
+    "4 #superbwarfare:ingots/steel",
+    "3 #forge:stained_glass_panes"
+  ],
+  "result": {
+    "item": "superbwarfare:handsome_goggles"
+  }
+}

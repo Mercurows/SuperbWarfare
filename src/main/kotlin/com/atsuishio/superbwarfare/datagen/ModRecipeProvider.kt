@@ -334,6 +334,22 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                     has(ModItems.CEMENTED_CARBIDE_INGOT.get())
                 )
                 .save(writer, loc(getItemName(ModItems.US_CHEST_IOTV.get())))
+
+            VehicleAssemblingRecipeBuilder.item(
+                ModItems.HANDSOME_GOGGLES.get(),
+                1,
+                VehicleAssemblingRecipe.Category.AIRCRAFT
+            )
+                .require(Items.DISPENSER, 8)
+                .require(Items.IRON_TRAPDOOR, 8)
+                .require(ModItems.LIGHT_ARMAMENT_MODULE.get(), 2)
+                .require(ModItems.HEAVY_ARMAMENT_MODULE.get())
+                .require(ModItems.MEDIUM_BATTERY_PACK.get())
+                .require(Items.LEVER, 2)
+                .require(ModTags.Items.INGOTS_STEEL, 4)
+                .require(Tags.Items.STAINED_GLASS_PANES, 3)
+                .unlockedBy(getHasName(ModItems.HEAVY_ARMAMENT_MODULE.get()), has(ModItems.HEAVY_ARMAMENT_MODULE.get()))
+                .save(writer, loc(getItemName(ModItems.HANDSOME_GOGGLES.get()) + "_assembling"))
         }
 
         private fun buildAmmoRecipes(writer: Consumer<FinishedRecipe>) {
@@ -358,13 +374,22 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
 
             ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.EXTRA_LARGE_ANTI_GROUND_MISSILE.get())
                 .requires(ModItems.LARGE_ANTI_GROUND_MISSILE.get(), 2)
-                .unlockedBy(getHasName(ModItems.LARGE_ANTI_GROUND_MISSILE.get()), has(ModItems.LARGE_ANTI_GROUND_MISSILE.get()))
+                .unlockedBy(
+                    getHasName(ModItems.LARGE_ANTI_GROUND_MISSILE.get()),
+                    has(ModItems.LARGE_ANTI_GROUND_MISSILE.get())
+                )
                 .save(writer, loc(getItemName(ModItems.EXTRA_LARGE_ANTI_GROUND_MISSILE.get())))
 
             ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.LARGE_ANTI_GROUND_MISSILE.get(), 2)
                 .requires(ModItems.EXTRA_LARGE_ANTI_GROUND_MISSILE.get())
-                .unlockedBy(getHasName(ModItems.LARGE_ANTI_GROUND_MISSILE.get()), has(ModItems.LARGE_ANTI_GROUND_MISSILE.get()))
-                .save(writer, loc(getItemName(ModItems.LARGE_ANTI_GROUND_MISSILE.get()) + "_from_extra_large_anti_ground_missile"))
+                .unlockedBy(
+                    getHasName(ModItems.LARGE_ANTI_GROUND_MISSILE.get()),
+                    has(ModItems.LARGE_ANTI_GROUND_MISSILE.get())
+                )
+                .save(
+                    writer,
+                    loc(getItemName(ModItems.LARGE_ANTI_GROUND_MISSILE.get()) + "_from_extra_large_anti_ground_missile")
+                )
 
             ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.SMALL_ROCKET.get(), 4)
                 .pattern(" a ")
@@ -569,12 +594,18 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
 
             ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.LARGE_ANTI_AIR_MISSILE.get())
                 .requires(ModItems.MEDIUM_ANTI_AIR_MISSILE.get(), 2)
-                .unlockedBy(getHasName(ModItems.MEDIUM_ANTI_AIR_MISSILE.get()), has(ModItems.MEDIUM_ANTI_AIR_MISSILE.get()))
+                .unlockedBy(
+                    getHasName(ModItems.MEDIUM_ANTI_AIR_MISSILE.get()),
+                    has(ModItems.MEDIUM_ANTI_AIR_MISSILE.get())
+                )
                 .save(writer, loc(getItemName(ModItems.LARGE_ANTI_AIR_MISSILE.get())))
 
             ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.MEDIUM_ANTI_AIR_MISSILE.get(), 2)
                 .requires(ModItems.LARGE_ANTI_AIR_MISSILE.get())
-                .unlockedBy(getHasName(ModItems.MEDIUM_ANTI_AIR_MISSILE.get()), has(ModItems.MEDIUM_ANTI_AIR_MISSILE.get()))
+                .unlockedBy(
+                    getHasName(ModItems.MEDIUM_ANTI_AIR_MISSILE.get()),
+                    has(ModItems.MEDIUM_ANTI_AIR_MISSILE.get())
+                )
                 .save(writer, loc(getItemName(ModItems.MEDIUM_ANTI_AIR_MISSILE.get()) + "_from_large_anti_air_missile"))
 
             ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.MEDIUM_ANTI_GROUND_MISSILE.get())
@@ -2680,11 +2711,17 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .save(writer, loc("${getItemName(ModItems.GALENA.get())}_from_raw_block"))
             ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.SCHEELITE.get(), 9)
                 .requires(commonItemTag("storage_blocks/raw_tungsten"))
-                .unlockedBy(getHasName(ModItems.RAW_SCHEELITE_BLOCK.get()), has(commonItemTag("storage_blocks/raw_tungsten")))
+                .unlockedBy(
+                    getHasName(ModItems.RAW_SCHEELITE_BLOCK.get()),
+                    has(commonItemTag("storage_blocks/raw_tungsten"))
+                )
                 .save(writer, loc("${getItemName(ModItems.SCHEELITE.get())}_from_raw_block"))
             ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.RAW_SILVER.get(), 9)
                 .requires(commonItemTag("storage_blocks/raw_silver"))
-                .unlockedBy(getHasName(ModItems.RAW_SILVER_BLOCK.get()), has(commonItemTag("storage_blocks/raw_silver")))
+                .unlockedBy(
+                    getHasName(ModItems.RAW_SILVER_BLOCK.get()),
+                    has(commonItemTag("storage_blocks/raw_silver"))
+                )
                 .save(writer, loc("${getItemName(ModItems.RAW_SILVER.get())}_from_raw_block"))
         }
 
@@ -2692,7 +2729,8 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
             SpecialRecipeBuilder.special(ModRecipes.POTION_MORTAR_SHELL_SERIALIZER.get())
                 .save(writer, "superbwarfare:potion_mortar_shell")
             SpecialRecipeBuilder.special(ModRecipes.SMOKE_DYE_SERIALIZER.get()).save(writer, "superbwarfare:smoke_dye")
-            SpecialRecipeBuilder.special(ModRecipes.VEHICLE_RESET_SERIALIZER.get()).save(writer, "superbwarfare:vehicle_reset")
+            SpecialRecipeBuilder.special(ModRecipes.VEHICLE_RESET_SERIALIZER.get())
+                .save(writer, "superbwarfare:vehicle_reset")
         }
 
         private fun buildResearchRecipes(writer: Consumer<FinishedRecipe>) {
