@@ -134,6 +134,24 @@ class ModDamageTypeTagProvider(
             ModDamageTypes.LUNGE_MINE,
             ModDamageTypes.AMMO_CONSUMPTION
         )
+        this.tag(DamageTypeTags.NO_KNOCKBACK).add(
+            ModDamageTypes.AMMO_CONSUMPTION,
+            ModDamageTypes.GUN_FIRE,
+            ModDamageTypes.GUN_FIRE_HEADSHOT,
+            ModDamageTypes.GUN_FIRE_ABSOLUTE,
+            ModDamageTypes.GUN_FIRE_HEADSHOT_ABSOLUTE,
+            ModDamageTypes.LASER,
+            ModDamageTypes.LASER_STATIC,
+            ModDamageTypes.LASER_HEADSHOT,
+            ModDamageTypes.BURN,
+            ModDamageTypes.SHOCK,
+            ModDamageTypes.PROJECTILE_HIT,
+            ModDamageTypes.REPAIR_TOOL,
+            ModDamageTypes.SUPER_STAR_HIT,
+            ModDamageTypes.SUPER_STAR_SLASH,
+            ModDamageTypes.AIR_CRASH,
+            ModDamageTypes.PHOSPHORUS_FIRE,
+        )
         this.tag(DamageTypeTags.IS_FIRE).add(ModDamageTypes.BURN)
         this.tag(ModTags.DamageTypes.BYPASSES_VEHICLE).add(ModDamageTypes.REPAIR_TOOL)
         this.tag(ModTags.DamageTypes.NO_HURT_EFFECT).add(ModDamageTypes.AMMO_CONSUMPTION)

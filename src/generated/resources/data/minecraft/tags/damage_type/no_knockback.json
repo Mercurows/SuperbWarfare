@@ -1,0 +1,20 @@
+{
+  "values": [
+    "superbwarfare:ammo_consumption",
+    "superbwarfare:gunfire",
+    "superbwarfare:gunfire_headshot",
+    "superbwarfare:gunfire_absolute",
+    "superbwarfare:gunfire_headshot_absolute",
+    "superbwarfare:laser",
+    "superbwarfare:laser_static",
+    "superbwarfare:laser_headshot",
+    "superbwarfare:burn",
+    "superbwarfare:shock",
+    "superbwarfare:projectile_hit",
+    "superbwarfare:repair_tool",
+    "superbwarfare:super_star_hit",
+    "superbwarfare:super_star_slash",
+    "superbwarfare:air_crash",
+    "superbwarfare:phosphorus_fire"
+  ]
+}
