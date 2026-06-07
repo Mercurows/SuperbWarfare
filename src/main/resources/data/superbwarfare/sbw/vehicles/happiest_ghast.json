@@ -270,8 +270,7 @@
   "HasDecoy": true,
   "DamageModifiers": [
     "All - 11",
-    "minecraft:lava + 11",
-    "minecraft:lava * 10",
+    "minecraft:lava 0",
     "All * 0.2",
     "minecraft:arrow * 1.5",
     "minecraft:trident * 1.5",
