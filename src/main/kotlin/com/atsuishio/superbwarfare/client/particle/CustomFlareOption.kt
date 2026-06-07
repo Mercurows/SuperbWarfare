@@ -3,11 +3,13 @@ package com.atsuishio.superbwarfare.client.particle
 import com.atsuishio.superbwarfare.init.ModParticleTypes
 import com.atsuishio.superbwarfare.ksp.annotation.GenerateMapCodec
 import com.atsuishio.superbwarfare.tools.createStreamCodec
+import kotlinx.serialization.Serializable
 import net.minecraft.core.particles.ParticleOptions
 import net.minecraft.core.particles.ParticleType
 import kotlin.math.roundToInt
 
 @GenerateMapCodec
+@Serializable
 class CustomFlareOption(
     val color: Int,
     val life: Int,
