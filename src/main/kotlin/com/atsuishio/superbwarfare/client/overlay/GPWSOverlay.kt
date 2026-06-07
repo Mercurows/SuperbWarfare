@@ -297,7 +297,7 @@ object GPWSOverlay : CommonOverlay("gpws") {
         if (onGround) return GPWSWarning.NONE
 
         val agl = getHeightAboveGround(vehicle)
-        if (agl > 500) return GPWSWarning.NONE  // 安全高度
+        if (agl > 200) return GPWSWarning.NONE  // 安全高度
 
         val verticalSpeed = vehicle.deltaMovement.y  // 负值 = 下降
         val isDescending = verticalSpeed < -0.5
@@ -311,7 +311,7 @@ object GPWSOverlay : CommonOverlay("gpws") {
             return GPWSWarning.PULL_UP
         }
         // 条件 B: 极低高度 + 快速下降
-        if ((agl < 120 && verticalSpeed < -1) || (agl < 20 && isDescending)) {
+        if ((agl < 120 && verticalSpeed < -1) || (agl < 12 && isDescending)) {
             return GPWSWarning.PULL_UP
         }
 
@@ -326,12 +326,12 @@ object GPWSOverlay : CommonOverlay("gpws") {
         }
 
         // ─── 4. TERRAIN — 未处于着陆构型且接近地面（起飞抑制期间跳过） ───
-        if (!inGracePeriod && agl < 24 && !isLandingConfig && isDescending) {
+        if (!inGracePeriod && agl < 16 && !isLandingConfig && isDescending) {
             return GPWSWarning.TERRAIN
         }
 
         // ─── 5. TOO LOW, GEAR — 仅固定翼，起落架未放下（起飞抑制期间跳过） ───
-        if (!inGracePeriod && isFixedWingWithGear(vehicle) && agl < 20 && vehicle.gearUp && !isClimbing) {
+        if (!inGracePeriod && isFixedWingWithGear(vehicle) && agl < 8 && vehicle.gearUp && !isClimbing) {
             return GPWSWarning.TOO_LOW_GEAR
         }
 
