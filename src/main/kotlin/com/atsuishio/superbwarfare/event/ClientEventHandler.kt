@@ -1717,10 +1717,7 @@ object ClientEventHandler {
                         sendPacketToServer(
                             VehicleFireMessage(
                                 if (lockingEntityVehicle != null) lockingEntityVehicle!!.uuid else null,
-                                if (lockingPosVehicle != null) lockingPosVehicle!!.toVector3f() else (if (gunData.get(
-                                        GunProp.SEEK_WEAPON_INFO
-                                    )?.inputBlockPos == true
-                                ) missileLockingPos?.toVec3f() else null)
+                                if (lockingPosVehicle != null) lockingPosVehicle!!.toVector3f() else (if (gunData.get(GunProp.SEEK_WEAPON_INFO)?.inputBlockPos == true) missileLockingPos?.center?.toVector3f() else null)
                             )
                         )
 //                        FORGE_BUS.post(ClientVehicleFireEvent(vehicle, player))
