@@ -245,6 +245,7 @@ object ModItems {
     @JvmField val GE_HELMET_M_35 = registerItem("ge_helmet_m_35") { GeHelmetM35Item() }
     @JvmField val PARACHUTE = registerItem("parachute") { ParachuteItem() }
     @JvmField val THERMAL_IMAGING_GOGGLES = registerItem("thermal_imaging_goggles") { ThermalImagingGogglesItem() }
+    @JvmField val HANDSOME_GOGGLES = registerItem("handsome_goggles") { HandsomeGogglesItem() }
 
     @JvmField val MORTAR_DEPLOYER = registerItem("mortar_deployer") { MortarDeployerItem() }
     @JvmField val MORTAR_BARREL = registerItem("mortar_barrel")
