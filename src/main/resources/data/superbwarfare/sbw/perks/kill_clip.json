@@ -1,4 +1,4 @@
 {
   "Type": "damage",
-  "Script": "superbwarfare:sbw/perks/kill_clip.js"
+  "Script": "superbwarfare:scripts/perks/kill_clip.js"
 }

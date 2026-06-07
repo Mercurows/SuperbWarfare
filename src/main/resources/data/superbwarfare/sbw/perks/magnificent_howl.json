@@ -1,4 +1,4 @@
 {
   "Type": "damage",
-  "Script": "superbwarfare:sbw/perks/magnificent_howl.js"
+  "Script": "superbwarfare:scripts/perks/magnificent_howl.js"
 }

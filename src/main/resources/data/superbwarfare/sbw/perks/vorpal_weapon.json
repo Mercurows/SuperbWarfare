@@ -1,4 +1,4 @@
 {
   "Type": "damage",
-  "Script": "superbwarfare:sbw/perks/vorpal_weapon.js"
+  "Script": "superbwarfare:scripts/perks/vorpal_weapon.js"
 }

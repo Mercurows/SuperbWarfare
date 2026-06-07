@@ -1,4 +1,4 @@
 {
   "Type": "functional",
-  "Script": "superbwarfare:sbw/perks/fourth_times_charm.js"
+  "Script": "superbwarfare:scripts/perks/fourth_times_charm.js"
 }

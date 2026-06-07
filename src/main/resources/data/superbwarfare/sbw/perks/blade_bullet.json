@@ -4,5 +4,5 @@
   "SpeedRate": 0.8,
   "RGB": [180, 75, 136],
   "MobEffects": ["superbwarfare:trauma"],
-  "Script": "superbwarfare:sbw/perks/blade_bullet.js"
+  "Script": "superbwarfare:scripts/perks/blade_bullet.js"
 }

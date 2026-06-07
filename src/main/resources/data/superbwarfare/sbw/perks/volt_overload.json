@@ -1,4 +1,4 @@
 {
   "Type": "damage",
-  "Script": "superbwarfare:sbw/perks/volt_overload.js"
+  "Script": "superbwarfare:scripts/perks/volt_overload.js"
 }

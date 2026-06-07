@@ -1,4 +1,4 @@
 {
   "Type": "functional",
-  "Script": "superbwarfare:sbw/perks/powerful_cooler.js"
+  "Script": "superbwarfare:scripts/perks/powerful_cooler.js"
 }

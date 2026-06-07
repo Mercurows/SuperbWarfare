@@ -1,6 +1,6 @@
 {
   "Type": "ammo",
-  "Script": "superbwarfare:sbw/perks/ap_bullet.js",
+  "Script": "superbwarfare:scripts/perks/ap_bullet.js",
   "BypassArmorRate": 0.4,
   "DamageRate": 0.9,
   "SpeedRate": 1.2,

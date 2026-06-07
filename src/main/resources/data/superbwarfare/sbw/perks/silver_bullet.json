@@ -4,5 +4,5 @@
   "DamageRate": 0.8,
   "SpeedRate": 1.1,
   "RGB": [87, 166, 219],
-  "Script": "superbwarfare:sbw/perks/silver_bullet.js"
+  "Script": "superbwarfare:scripts/perks/silver_bullet.js"
 }

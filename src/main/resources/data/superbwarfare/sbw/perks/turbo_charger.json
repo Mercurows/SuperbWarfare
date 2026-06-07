@@ -1,4 +1,4 @@
 {
   "Type": "functional",
-  "Script": "superbwarfare:sbw/perks/turbo_charger.js"
+  "Script": "superbwarfare:scripts/perks/turbo_charger.js"
 }
