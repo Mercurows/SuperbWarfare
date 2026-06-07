@@ -4,15 +4,16 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.HappiestGhastEntity
+import com.atsuishio.superbwarfare.tools.mc
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
 import com.mojang.blaze3d.platform.NativeImage
 import com.mojang.blaze3d.vertex.PoseStack
-import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.client.renderer.texture.OverlayTexture
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 import java.io.IOException
 
@@ -52,12 +53,13 @@ class HappiestGhastRenderer<T>(manager: EntityRendererProvider.Context) :
     ) {
         super.renderCustomPart(vehicle, model, poseStack, entityYaw, partialTicks, buffer, packedLight)
 
-        // 确保动态纹理已加载，然后逐像素偏移色相
-        ensureFlowTextureLoaded()
-        updateFlowTexture(vehicle.tickCount)
-
-        // 使用动态纹理的 ResourceLocation，替代原始玻璃贴图
-        val texLocation = if (flowTextureReady && !vehicle.sympatheticDetonated) FLOW_GLASS else GLASS
+        // 确保动态纹理已预计算，直接获取当前帧对应的预计算纹理
+        ensureFlowTexturesLoaded()
+        val texLocation = if (flowTexturesReady && !vehicle.sympatheticDetonated) {
+            getFlowFrame(vehicle.tickCount)
+        } else {
+            GLASS
+        }
 
         val renderType = RenderType.entityTranslucent(texLocation)
         val renderTypeLight = RenderType.eyes(texLocation)
@@ -80,68 +82,60 @@ class HappiestGhastRenderer<T>(manager: EntityRendererProvider.Context) :
 
     companion object {
         val GLASS = Mod.loc("textures/bedrock/vehicle/happiest_ghast_glass.png")
-        val FLOW_GLASS = Mod.loc("textures/bedrock/vehicle/happiest_ghast_glass_flow")
         private const val CYCLE_TICKS = 80
 
-        /** 原始贴图像素（只读，不会被修改） */
-        private var sourceImage: NativeImage? = null
-        /** 输出缓冲区（写入色相偏移后的像素） */
-        private var destImage: NativeImage? = null
-        /** 动态纹理实例 */
-        private var flowTexture: DynamicTexture? = null
-        /** 上一次更新的色相偏移值，用于避免重复上传 */
-        private var lastHueShift = Float.NaN
-        /** 动态纹理是否可用 */
-        private var flowTextureReady = false
+        /**
+         * 预计算的色相偏移帧纹理，索引为帧号 (0..79)。
+         * 参考 GeckoLib 的动态贴图方案：预先将所有帧计算好并注册到 TextureManager，
+         * 运行时只需切换 ResourceLocation，无需每 tick 做 CPU 像素处理或 GPU 上传。
+         */
+        private var flowFrames: Array<ResourceLocation?> = arrayOfNulls(CYCLE_TICKS)
+        private var flowTexturesReady = false
 
         @Synchronized
-        private fun ensureFlowTextureLoaded() {
-            if (flowTextureReady || sourceImage != null) return
+        private fun ensureFlowTexturesLoaded() {
+            if (flowTexturesReady) return
 
             try {
-                val mc = Minecraft.getInstance()
                 val resource = mc.resourceManager.getResource(GLASS).get()
-                sourceImage = NativeImage.read(resource.open())
+                val sourceImage = NativeImage.read(resource.open())
 
-                val src = sourceImage!!
-                // 创建同尺寸的输出缓冲区
-                destImage = NativeImage(src.width, src.height, true)
-                // 用输出缓冲区创建 DynamicTexture
-                flowTexture = DynamicTexture(destImage!!)
-                mc.textureManager.register(FLOW_GLASS, flowTexture)
-                flowTextureReady = true
+                // 预计算所有 CYCLE_TICKS 帧，每帧对应一个色相偏移量
+                for (frame in 0 until CYCLE_TICKS) {
+                    val hueShift = frame.toFloat() / CYCLE_TICKS
+                    val framePixels = createHueShiftedFrame(sourceImage, hueShift)
+                    val frameTexture = DynamicTexture(framePixels)
+                    val frameLoc = Mod.loc("textures/bedrock/vehicle/happiest_ghast_glass_flow_$frame")
+                    mc.textureManager.register(frameLoc, frameTexture)
+                    flowFrames[frame] = frameLoc
+                }
+
+                sourceImage.close()
+                flowTexturesReady = true
             } catch (_: IOException) {
-                // 加载失败时 flowTextureReady 保持 false，渲染回退到原始贴图
+                // 加载失败时 flowTexturesReady 保持 false，渲染回退到原始贴图
             }
         }
 
         /**
-         * 对贴图的每个像素做 HSV 色相偏移，实现彩虹渐变的无限循环流动效果。
-         *
-         * 工作流程：
-         * 1. 读取原始贴图像素 → ARGB 格式
-         * 2. 提取 R/G/B → 转为 HSV
-         * 3. H += 当前帧偏移量（0→1 循环）
-         * 4. HSV → RGB → 写回输出缓冲区
-         * 5. 上传到 GPU
-         *
-         * 效果：贴图上"红橙黄绿青蓝紫"的渐变会整体向前滚动，
-         * 即 "红橙黄绿青蓝紫" → "橙黄绿青蓝紫红" → "黄绿青蓝紫红橙" → ... 无限循环。
+         * 根据 tickCount 获取当前帧对应的预计算纹理 ResourceLocation。
+         * 无需任何 CPU 像素处理或 GPU 上传——直接返回已注册的纹理。
          */
-        @Synchronized
-        fun updateFlowTexture(tickCount: Int) {
-            val source = sourceImage ?: return
-            val dest = destImage ?: return
-            val texture = flowTexture ?: return
+        private fun getFlowFrame(tickCount: Int): ResourceLocation {
+            val frame = tickCount % CYCLE_TICKS
+            return flowFrames[frame] ?: GLASS
+        }
 
-            // 色相偏移量：0→1 循环，每 CYCLE_TICKS 完成一个完整周期
-            val hueShift = ((tickCount % CYCLE_TICKS).toFloat() / CYCLE_TICKS)
-            if (hueShift == lastHueShift) return
-            lastHueShift = hueShift
+        /**
+         * 创建一个色相偏移后的 NativeImage。
+         * 对每个像素做 HSV 色相偏移，保留原始饱和度和明度。
+         * 此方法仅在初始化时调用 CYCLE_TICKS 次，运行时不再调用。
+         */
+        private fun createHueShiftedFrame(source: NativeImage, hueShift: Float): NativeImage {
+            val dest = NativeImage(source.width, source.height, true)
 
             for (y in 0 until source.height) {
                 for (x in 0 until source.width) {
-                    // NativeImage ARGB 格式：bits 24-31=A, 16-23=R, 8-15=G, 0-7=B
                     val argb = source.getPixelRGBA(x, y)
                     val a = (argb shr 24) and 0xFF
                     if (a == 0) {
@@ -153,7 +147,6 @@ class HappiestGhastRenderer<T>(manager: EntityRendererProvider.Context) :
                     val g = (argb shr 8) and 0xFF
                     val b = argb and 0xFF
 
-                    // RGB 0-255 → 0-1 → HSV，偏移色相，HSV → RGB 0-1 → 0-255
                     val (h, s, v) = rgbToHsv(r / 255f, g / 255f, b / 255f)
                     val newHue = (h + hueShift) % 1f
                     val (nr, ng, nb) = hsvToRgbScalar(newHue, s, v)
@@ -162,11 +155,10 @@ class HappiestGhastRenderer<T>(manager: EntityRendererProvider.Context) :
                     val ig = (ng * 255).toInt().coerceIn(0, 255)
                     val ib = (nb * 255).toInt().coerceIn(0, 255)
 
-                    val newArgb = (a shl 24) or (ir shl 16) or (ig shl 8) or ib
-                    dest.setPixelRGBA(x, y, newArgb)
+                    dest.setPixelRGBA(x, y, (a shl 24) or (ir shl 16) or (ig shl 8) or ib)
                 }
             }
-            texture.upload()
+            return dest
         }
 
         // ========== RGB ↔ HSV 转换 ==========
@@ -187,9 +179,8 @@ class HappiestGhastRenderer<T>(manager: EntityRendererProvider.Context) :
             } / 6f
 
             val s = if (max == 0f) 0f else delta / max
-            val v = max
 
-            return Triple(h, s, v)
+            return Triple(h, s, max)
         }
 
         /** HSV → RGB 0-1：保留纹理原本的饱和度和明度，只偏移色相 */
