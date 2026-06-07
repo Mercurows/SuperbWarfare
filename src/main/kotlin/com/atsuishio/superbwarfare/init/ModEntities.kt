@@ -136,7 +136,7 @@ object ModEntities {
     val MORTAR_SHELL = register("mortar_shell", fastProjectile(::MortarShellEntity).sized(0.5f, 0.5f))
 
     @JvmField
-    val PROJECTILE = register("projectile", fastProjectile(::ProjectileEntity).sized(0.25f, 0.25f))
+    val PROJECTILE = register("projectile", fastProjectile(::ProjectileEntity).sized(0.25f, 0.25f).noSave())
 
     @JvmField
     val CANNON_SHELL = register("cannon_shell", fastProjectile(::CannonShellEntity).sized(0.75f, 0.75f))
@@ -358,7 +358,6 @@ object ModEntities {
         .setShouldReceiveVelocityUpdates(receiveVelocityUpdates)
         .setTrackingRange(64)
         .setUpdateInterval(1)
-        .noSave()
 
     @SubscribeEvent
     fun onRegisterSpawnPlacement(event: SpawnPlacementRegisterEvent) {
