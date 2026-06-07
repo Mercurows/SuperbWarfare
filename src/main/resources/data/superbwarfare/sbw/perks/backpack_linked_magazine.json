@@ -1,4 +1,4 @@
 {
   "Type": "functional",
-  "Script": "superbwarfare:sbw/perks/backpack_linked_magazine.js"
+  "Script": "superbwarfare:scripts/perks/backpack_linked_magazine.js"
 }

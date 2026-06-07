@@ -1,4 +1,4 @@
 {
   "Type": "functional",
-  "Script": "superbwarfare:sbw/perks/heal_clip.js"
+  "Script": "superbwarfare:scripts/perks/heal_clip.js"
 }

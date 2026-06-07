@@ -1,4 +1,4 @@
 {
   "Type": "damage",
-  "Script": "superbwarfare:sbw/perks/high_impact_reserves.js"
+  "Script": "superbwarfare:scripts/perks/high_impact_reserves.js"
 }

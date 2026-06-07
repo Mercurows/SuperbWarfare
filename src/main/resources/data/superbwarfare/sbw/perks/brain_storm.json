@@ -1,4 +1,4 @@
 {
   "Type": "damage",
-  "Script": "superbwarfare:sbw/perks/brain_storm.js"
+  "Script": "superbwarfare:scripts/perks/brain_storm.js"
 }

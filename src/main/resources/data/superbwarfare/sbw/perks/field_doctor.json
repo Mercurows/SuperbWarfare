@@ -1,4 +1,4 @@
 {
   "Type": "functional",
-  "Script": "superbwarfare:sbw/perks/field_doctor.js"
+  "Script": "superbwarfare:scripts/perks/field_doctor.js"
 }

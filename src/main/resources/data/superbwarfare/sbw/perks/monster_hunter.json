@@ -1,4 +1,4 @@
 {
   "Type": "damage",
-  "Script": "superbwarfare:sbw/perks/monster_hunter.js"
+  "Script": "superbwarfare:scripts/perks/monster_hunter.js"
 }

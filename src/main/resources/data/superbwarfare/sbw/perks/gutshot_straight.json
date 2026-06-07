@@ -1,4 +1,4 @@
 {
   "Type": "damage",
-  "Script": "superbwarfare:sbw/perks/gutshot_straight.js"
+  "Script": "superbwarfare:scripts/perks/gutshot_straight.js"
 }

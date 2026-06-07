@@ -1,4 +1,4 @@
 {
   "Type": "damage",
-  "Script": "superbwarfare:sbw/perks/desperado.js"
+  "Script": "superbwarfare:scripts/perks/desperado.js"
 }

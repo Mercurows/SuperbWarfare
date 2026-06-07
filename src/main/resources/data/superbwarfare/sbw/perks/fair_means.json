@@ -1,4 +1,4 @@
 {
   "Type": "damage",
-  "Script": "superbwarfare:sbw/perks/fair_means.js"
+  "Script": "superbwarfare:scripts/perks/fair_means.js"
 }

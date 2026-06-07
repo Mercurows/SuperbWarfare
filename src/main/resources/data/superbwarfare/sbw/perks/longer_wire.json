@@ -1,4 +1,4 @@
 {
   "Type": "ammo",
-  "Script": "superbwarfare:sbw/perks/longer_wire.js"
+  "Script": "superbwarfare:scripts/perks/longer_wire.js"
 }
