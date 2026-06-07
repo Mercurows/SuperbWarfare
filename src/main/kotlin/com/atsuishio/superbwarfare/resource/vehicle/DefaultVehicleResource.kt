@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.IDBasedData
 import com.atsuishio.superbwarfare.data.ObjectToList
 import com.atsuishio.superbwarfare.resource.ModelResource
+import com.atsuishio.superbwarfare.script.ScriptMath
 import com.atsuishio.superbwarfare.script.VehicleScriptManager
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedResourceLocation
 import com.atsuishio.superbwarfare.tools.mc
@@ -77,10 +78,9 @@ class DefaultVehicleResource : IDBasedData<DefaultVehicleResource> {
             val scope = VehicleScriptManager.RHINO_CONTEXT.newObject(VehicleScriptManager.SHARED_SCOPE)
             scope.parentScope = VehicleScriptManager.SHARED_SCOPE
 
-            ScriptableObject.putProperty(scope, "Mth", NativeJavaClass(scope, net.minecraft.util.Mth::class.java))
+            ScriptableObject.putProperty(scope, "JsMath", ScriptMath)
             ScriptableObject.putProperty(scope, "Quaterniond", NativeJavaClass(scope, org.joml.Quaterniond::class.java))
             ScriptableObject.putProperty(scope, "Quaternionf", NativeJavaClass(scope, org.joml.Quaternionf::class.java))
-            ScriptableObject.putProperty(scope, "Axis", NativeJavaClass(scope, com.mojang.math.Axis::class.java))
 
             script.exec(VehicleScriptManager.RHINO_CONTEXT, scope, scope)
 
