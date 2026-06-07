@@ -920,7 +920,7 @@ object VehicleEngineUtils {
                 roll *= xSpeed
             }
 
-            if (Mth.abs(xRot) < 20 && Mth.abs(mouseMoveSpeedY) < 0.006) {
+            if (Mth.abs(xRot) < 20 && Mth.abs(mouseMoveSpeedY) < 0.002) {
                 xRot += if (deltaMovement.y() < 0) {
                     1.2f * deltaMovement.y.toFloat()
                 } else {
@@ -1046,10 +1046,10 @@ object VehicleEngineUtils {
     }
 
     private fun updateRotation(entity: VehicleEntity) {
-        val d0 = entity.deltaMovement.add(0.0, -0.36, 0.0)
+        val d0 = entity.deltaMovement.add(0.0, -0.06, 0.0)
         if (Mth.abs(entity.xRot) < 60) {
             val diffY = Mth.wrapDegrees(-VehicleVecUtils.getYRotFromVector(d0) - entity.yRot).toFloat()
-            entity.yRot += 0.01f * diffY
+            entity.yRot += 0.002f * diffY
         }
         if (Mth.abs(entity.xRot) < 90) {
             val diffX = Mth.wrapDegrees(-VehicleVecUtils.getXRotFromVector(d0) - entity.xRot).toFloat()
