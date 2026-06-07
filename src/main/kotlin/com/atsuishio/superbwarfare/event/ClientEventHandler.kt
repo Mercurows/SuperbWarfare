@@ -62,7 +62,6 @@ import org.joml.Matrix4f
 import org.lwjgl.glfw.GLFW
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone
 import software.bernie.geckolib.core.animation.AnimationProcessor
-import thedarkcolour.kotlinforforge.forge.vectorutil.v3d.toVector3f
 import top.theillusivec4.curios.api.CuriosApi
 import java.util.*
 import kotlin.experimental.or
@@ -1721,7 +1720,7 @@ object ClientEventHandler {
                         sendPacketToServer(
                             VehicleFireMessage(
                                 if (lockingEntityVehicle != null) lockingEntityVehicle!!.uuid else null,
-                                if (lockingPosVehicle != null) lockingPosVehicle!!.toVector3f() else (if (gunData.get(GunProp.SEEK_WEAPON_INFO)?.inputBlockPos == true) missileLockingPos?.toVector3f() else null)
+                                if (lockingPosVehicle != null) lockingPosVehicle!!.toVector3f() else (if (gunData.get(GunProp.SEEK_WEAPON_INFO)?.inputBlockPos == true) missileLockingPos?.center?.toVector3f() else null)
                             )
                         )
 //                        FORGE_BUS.post(ClientVehicleFireEvent(vehicle, player))
