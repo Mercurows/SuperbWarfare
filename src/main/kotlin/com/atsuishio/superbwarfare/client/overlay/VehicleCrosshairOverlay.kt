@@ -96,9 +96,10 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
         poseStack.pushPose()
 
         val recoil = Mth.lerp(partialTick, entity.recoilShakeO.toFloat(), entity.recoilShake.toFloat())
+        val pitch = Mth.lerp(partialTick, entity.fakePitchO, entity.fakePitch)
         poseStack.translate(
             LandVehicleHud.lerpRecoil * 6 + screenWidth * 0.025f * recoil,
-            recoil * 3 + screenHeight * 0.025f * recoil,
+            recoil * 3 + screenHeight * 0.025f * recoil - pitch,
             0f
         )
         poseStack.scale(1 - recoil * 0.05f, 1 - recoil * 0.05f, 1f)

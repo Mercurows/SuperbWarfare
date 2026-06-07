@@ -150,13 +150,13 @@ abstract class VehicleRenderer<T>(renderManager: EntityRendererProvider.Context,
             root.z.toFloat()
         )
         poseStack.rotateAround(
-            Axis.XP.rotationDegrees(Mth.lerp(partialTicks, entityIn.xRotO, entityIn.xRot)),
+            Axis.XP.rotationDegrees(Mth.lerp(partialTicks, entityIn.xRotO + entityIn.fakePitchO, entityIn.xRot + entityIn.fakePitch)),
             root.x.toFloat(),
             root.y.toFloat(),
             root.z.toFloat()
         )
         poseStack.rotateAround(
-            Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entityIn.prevRoll, entityIn.roll)),
+            Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entityIn.prevRoll + entityIn.fakeRollO, entityIn.roll + entityIn.fakeRoll)),
             root.x.toFloat(),
             root.y.toFloat(),
             root.z.toFloat()

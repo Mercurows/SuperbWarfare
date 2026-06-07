@@ -342,6 +342,11 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     var prevRollAngle = 0f
     var prevMotion: Vec3? = null
 
+    var fakePitchO = 0f
+    var fakeRollO= 0f
+    var fakePitch = 0f
+    var fakeRoll= 0f
+
     open var lastDamageSource: DamageSource? = null
         get() {
             if (this.level().gameTime - this.lastDamageStamp > 40L) {
@@ -1745,16 +1750,18 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     override fun baseTick() {
-        if (prevMotion == null) {
-            prevMotion = this.deltaMovement
-        }
-
-        this.prevPitchAngle = this.pitchAngle
-        this.prevRollAngle = this.rollAngle
-
-
         val computed = computed()
         if (this.level().isClientSide) {
+            if (prevMotion == null) {
+                prevMotion = this.deltaMovement
+            }
+
+            fakePitchO = fakePitch
+            fakeRollO = fakeRoll
+
+            this.prevPitchAngle = this.pitchAngle
+            this.prevRollAngle = this.rollAngle
+
             if (!this.wasEngineRunning && this.engineRunning()) {
                 playEngineSound.accept(this)
                 playSwimSound.accept(this)
@@ -2147,44 +2154,47 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         if (level().isClientSide) {
             absoluteSpeedLerp = Mth.lerp(0.2, absoluteSpeedLerp, positionO.vectorTo(position()).length())
             absoluteSpeed = absoluteSpeedLerp
-        }
 
-        if (prevMotion != null) {
-            val motion = this.deltaMovement
-            var acceleration = prevMotion?.let { motion.subtract(it) }
+            fakeRoll *= 0.8f
+            fakePitch *= 0.8f
 
-            if (acceleration != null && acceleration.length() > 0.02) {
-                acceleration = acceleration.normalize().scale(0.02)
+            if (prevMotion != null) {
+                val motion = this.deltaMovement
+                var acceleration = prevMotion?.let { motion.subtract(it) }
+
+                if (acceleration != null && acceleration.length() > 0.02) {
+                    acceleration = acceleration.normalize().scale(0.02)
+                }
+
+                val yaw = this.yRot
+                val sinYaw = Mth.sin(yaw * Mth.DEG_TO_RAD)
+                val cosYaw = Mth.cos(yaw * Mth.DEG_TO_RAD)
+
+                val forward = Vec3(-sinYaw.toDouble(), 0.0, cosYaw.toDouble())
+                val right = Vec3(-cosYaw.toDouble(), 0.0, -sinYaw.toDouble())
+
+                val accelForward: Double = acceleration!!.multiply(1.0, 0.0, 1.0).dot(forward)
+                val accelRight: Double = acceleration.multiply(1.0, 0.0, 1.0).dot(right)
+
+                val targetPitch = (15 * accelForward).toFloat()
+                val omegaP = 2.0f * Math.PI.toFloat() * 2f
+                val zetaP = 0.6f
+                val angularAccelP: Float = omegaP * omegaP * (targetPitch - pitchAngle) - 2 * zetaP * omegaP * pitchVelocity
+                pitchVelocity += angularAccelP * 0.05f // dt = 0.05s
+                pitchAngle += pitchVelocity * 0.05f
+
+                val targetRoll = (20 * accelRight).toFloat()
+                val omegaR = 2.0f * Math.PI.toFloat() * 2f
+                val zetaR = 0.6f
+                val angularAccelR: Float = omegaR * omegaR * (targetRoll - rollAngle) - 2 * zetaR * omegaR * rollVelocity
+                rollVelocity += angularAccelR * 0.05f
+                rollAngle += rollVelocity * 0.05f
+
+                prevMotion = motion
+
+                fakePitch -= pitchAngle * computed().inertiaRotateRate
+                fakeRoll -= rollAngle * computed().inertiaRotateRate
             }
-
-            val yaw = this.yRot
-            val sinYaw = Mth.sin(yaw * Mth.DEG_TO_RAD)
-            val cosYaw = Mth.cos(yaw * Mth.DEG_TO_RAD)
-
-            val forward = Vec3(-sinYaw.toDouble(), 0.0, cosYaw.toDouble())
-            val right = Vec3(-cosYaw.toDouble(), 0.0, -sinYaw.toDouble())
-
-            val accelForward: Double = acceleration!!.multiply(1.0, 0.0, 1.0).dot(forward)
-            val accelRight: Double = acceleration.multiply(1.0, 0.0, 1.0).dot(right)
-
-            val targetPitch = (10 * accelForward).toFloat()
-            val omegaP = 2.0f * Math.PI.toFloat() * 2f
-            val zetaP = 0.6f
-            val angularAccelP: Float = omegaP * omegaP * (targetPitch - pitchAngle) - 2 * zetaP * omegaP * pitchVelocity
-            pitchVelocity += angularAccelP * 0.05f // dt = 0.05s
-            pitchAngle += pitchVelocity * 0.05f
-
-            val targetRoll = (15 * accelRight).toFloat()
-            val omegaR = 2.0f * Math.PI.toFloat() * 2f
-            val zetaR = 0.6f
-            val angularAccelR: Float = omegaR * omegaR * (targetRoll - rollAngle) - 2 * zetaR * omegaR * rollVelocity
-            rollVelocity += angularAccelR * 0.05f
-            rollAngle += rollVelocity * 0.05f
-
-            prevMotion = motion
-
-            xRot -= pitchAngle * computed().inertiaRotateRate
-            roll -= rollAngle * computed().inertiaRotateRate
         }
 
         lowHealthWarning()
@@ -3170,10 +3180,9 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     open fun handleClientSync() {
-        if (level() is ServerLevel && tickCount % 2 == 0) {
-            serverYaw = yRot
-            serverPitch = xRot
-        }
+        serverYaw = yRot
+        serverPitch = xRot
+
         if (isControlledByLocalInstance) {
             interpolationSteps = 0
             syncPacketPositionCodec(x, y, z)
