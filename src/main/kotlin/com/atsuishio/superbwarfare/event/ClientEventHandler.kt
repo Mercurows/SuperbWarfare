@@ -2530,8 +2530,6 @@ object ClientEventHandler {
 
         lookDistance = Mth.lerp(0.2 * times, lookDistance, range)
 
-        lookDistance = Mth.lerp(0.2 * times, lookDistance, range)
-
         val angle =
             if (lookDistance != 0.0 && cameraLocation != 0.0) {
                 atan(abs(cameraLocation) / (lookDistance + 2.9)) * Mth.RAD_TO_DEG
