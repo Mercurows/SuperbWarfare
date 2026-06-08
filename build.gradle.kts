@@ -142,7 +142,9 @@ repositories {
             includeGroup("com.github.mcmodderanchor")
         }
     }
-    mavenCentral()
+    maven {
+        url = uri("https://maven.sighs.cc/repository/maven-public/")
+    }
 }
 
 //jarJar.enable()
@@ -175,6 +177,18 @@ dependencies {
         exclude("com.google.code.findbugs", "jsr305")
         exclude("it.unimi.dsi", "fastutil")
         exclude("org.joml", "joml")
+    }
+
+    // TODO 我需要掌中明月 我需要掌中明月 我需要掌中明月 我需要掌中明月 我需要掌中明月 但是这个JIJ写法不对
+//    val moon = implementation(fg.deobf("curse.maven:handheld-moon-1398036:7300858"))
+//    jarJar(moon) {
+//        jarJar.ranged(moon, "[1.0.0,)")
+//    }
+
+    // AUI
+    val aui = implementation("com.sighs:ApricityUI-forge-1.20.1:1.1.4")
+    jarJar(aui) {
+        jarJar.ranged(aui, "[1.1.4,)")
     }
 
     // 可选 mod 依赖
