@@ -1,8 +1,6 @@
 package com.atsuishio.superbwarfare.event
 
 import com.atsuishio.superbwarfare.api.event.ClientVehicleFireEvent
-import com.atsuishio.superbwarfare.capability.ModCapabilities
-import com.atsuishio.superbwarfare.capability.player.PlayerVariable
 import com.atsuishio.superbwarfare.client.ClientSyncedEntityHandler
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay
@@ -545,17 +543,6 @@ object ClientEventHandler {
             turnOffThermalImaging()
         } else if (Minecraft.getInstance().gameRenderer.currentEffect() == null) {
             turnOnThermalImaging()
-        }
-
-        val active = player.getCapability(ModCapabilities.PLAYER_VARIABLE, null)
-            .orElse(PlayerVariable()).activeThermalImaging
-
-        if (activeThermalImaging && !active) {
-            sendPacketToServer(ActiveThermalImagingMessage(true))
-        }
-
-        if (active && !activeThermalImaging) {
-            sendPacketToServer(ActiveThermalImagingMessage(false))
         }
     }
 

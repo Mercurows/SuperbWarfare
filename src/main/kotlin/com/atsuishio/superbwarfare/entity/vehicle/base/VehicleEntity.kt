@@ -2,10 +2,8 @@ package com.atsuishio.superbwarfare.entity.vehicle.base
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.queueServerWork
-import com.atsuishio.superbwarfare.capability.ModCapabilities
 import com.atsuishio.superbwarfare.capability.energy.SyncedEntityEnergyStorage
 import com.atsuishio.superbwarfare.capability.energy.VehicleEnergyStorage
-import com.atsuishio.superbwarfare.capability.player.PlayerVariable
 import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInstance
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
@@ -80,8 +78,6 @@ import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.SimpleMenuProvider
 import net.minecraft.world.damagesource.DamageSource
-import net.minecraft.world.effect.MobEffectInstance
-import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.entity.*
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
@@ -2033,15 +2029,6 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                         }
                     }
                 }
-
-                val index: Int = getSeatIndex(mob)
-                val seat: SeatInfo = computed().seats()[index]
-                if (mob.getCapability(ModCapabilities.PLAYER_VARIABLE, null)
-                        .orElse(PlayerVariable()).activeThermalImaging && seat.hasThermalImaging
-                ) {
-                    mob.addEffect(MobEffectInstance(MobEffects.NIGHT_VISION, 5, 0, false, false))
-                }
-
                 vehicleRadar(mob)
             }
         }
