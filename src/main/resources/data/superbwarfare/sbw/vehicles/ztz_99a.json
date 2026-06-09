@@ -315,7 +315,7 @@
     "#superbwarfare:projectile_absolute * 0.15",
     "@#superbwarfare:aa_missile * 0.3",
     "@superbwarfare:small_cannon_shell * 0.25",
-    "@superbwarfare:c4 * 4",
+    "@superbwarfare:c4 * 6",
     "@#superbwarfare:at_rocket * 1.1",
     "@superbwarfare:gun_grenade * 1.25",
     "@superbwarfare:mortar_shell * 1.25",
