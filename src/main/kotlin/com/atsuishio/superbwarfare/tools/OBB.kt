@@ -551,11 +551,13 @@ data class OBB(
             )
 
             if (intersects) {
-                val t = result.x // 交点参数
+                val t = result.x // 交点参数（可能超出 [0,1] 范围因为 intersectRayAab 检测的是无限射线）
+                // 将 t 钳制到线段范围内: [0, 1]。t < 0 意味着射线起点在 OBB 内部，取 t=0
+                val clampedT = Math.max(0.0, Math.min(1.0, t))
                 val localHit = Vector3d(
-                    localStart.x + t * (localEnd.x - localStart.x),
-                    localStart.y + t * (localEnd.y - localStart.y),
-                    localStart.z + t * (localEnd.z - localStart.z)
+                    localStart.x + clampedT * (localEnd.x - localStart.x),
+                    localStart.y + clampedT * (localEnd.y - localStart.y),
+                    localStart.z + clampedT * (localEnd.z - localStart.z)
                 )
 
                 // 转换回世界坐标系

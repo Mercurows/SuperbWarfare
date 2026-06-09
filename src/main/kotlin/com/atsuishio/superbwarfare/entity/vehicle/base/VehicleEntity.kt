@@ -1501,6 +1501,11 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                 this.discard()
                 return InteractionResult.SUCCESS
             }
+        } else if (!player.isShiftKeyDown
+            && (stack.`is`(ModItems.C4_BOMB.get()) || stack.`is`(ModItems.DETONATOR.get()))
+            && this.maxPassengers > 0) {
+            // Player is holding C4 — don't mount, let the item's use() handle the interaction
+            return InteractionResult.PASS
         } else if (!player.isShiftKeyDown && this.maxPassengers > 0) {
             if (VehicleConfig.SAME_TEAM_ENTER_VEHICLE.get()) {
                 for (passenger in this.getPassengers()) {
