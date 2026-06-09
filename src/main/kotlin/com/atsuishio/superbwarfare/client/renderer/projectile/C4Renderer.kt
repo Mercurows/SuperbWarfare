@@ -2,14 +2,19 @@ package com.atsuishio.superbwarfare.client.renderer.projectile
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.entity.projectile.C4Entity
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
 import com.atsuishio.superbwarfare.resource.model.ProjectileModelReloadListener
+import com.atsuishio.superbwarfare.tools.mc
 import com.mojang.blaze3d.vertex.PoseStack
+import com.mojang.blaze3d.vertex.VertexConsumer
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.phys.Vec3
+import org.joml.Matrix4f
 import org.joml.Quaternionf
 
 class C4Renderer(renderManager: EntityRendererProvider.Context) : EntityRenderer<C4Entity>(renderManager) {
@@ -28,10 +33,8 @@ class C4Renderer(renderManager: EntityRendererProvider.Context) : EntityRenderer
         val model = ProjectileModelReloadListener.getModel(MODEL) ?: return
 
         poseStack.pushPose()
-        poseStack.rotateAround(
-            Quaternionf(entityIn.getQuaternion(partialTicks)),
-            0f, 0f, 0f
-        )
+        val q = Quaternionf(entityIn.getQuaternion(partialTicks))
+        poseStack.rotateAround(q, 0f, 0f, 0f)
 
         val renderType = RenderType.entityTranslucent(getTextureLocation(entityIn))
         val vertexConsumer = bufferIn.getBuffer(renderType)
@@ -44,6 +47,24 @@ class C4Renderer(renderManager: EntityRendererProvider.Context) : EntityRenderer
         )
 
         poseStack.popPose()
+
+        if (this.entityRenderDispatcher.shouldRenderHitBoxes()
+            && !entityIn.isInvisible
+            && !mc.showOnlyReducedInfo()
+        ) {
+            val pose = poseStack.last()
+            val matrix4f = poseStack.last().pose()
+            val buffer = bufferIn.getBuffer(RenderType.lines())
+
+            val frontVec = VehicleVecUtils.getFrontVec(q)
+            renderAxis(pose, matrix4f, frontVec, buffer, 0, 0, 255)
+
+            val upVec = VehicleVecUtils.getUpVec(q)
+            renderAxis(pose, matrix4f, upVec, buffer, 0, 255, 0)
+
+            val rightVec = VehicleVecUtils.getRightVec(q)
+            renderAxis(pose, matrix4f, rightVec, buffer, 255, 0, 0)
+        }
     }
 
     override fun getTextureLocation(entity: C4Entity): ResourceLocation {
@@ -53,6 +74,27 @@ class C4Renderer(renderManager: EntityRendererProvider.Context) : EntityRenderer
         } else {
             TEXTURE
         }
+    }
+
+    private fun renderAxis(
+        pose: PoseStack.Pose,
+        matrix4f: Matrix4f,
+        vec3: Vec3,
+        buffer: VertexConsumer,
+        r: Int,
+        g: Int,
+        b: Int
+    ) {
+        buffer.addVertex(matrix4f, 0.0f, 0.125f, 0.0f)
+            .setColor(r, g, b, 255)
+            .setNormal(pose, vec3.x.toFloat(), vec3.y.toFloat(), vec3.z.toFloat())
+        buffer.addVertex(
+            matrix4f,
+            (vec3.x * 0.5).toFloat(),
+            (0.125 + vec3.y * 0.5).toFloat(),
+            (vec3.z * 0.5).toFloat()
+        ).setColor(r, g, b, 255)
+            .setNormal(pose, vec3.x.toFloat(), vec3.y.toFloat(), vec3.z.toFloat())
     }
 
     companion object {

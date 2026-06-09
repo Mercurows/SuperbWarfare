@@ -61,7 +61,7 @@ open class C4Entity : Entity, OwnableEntity {
         level
     ) {
         if (owner != null) {
-            this.setOwnerUUID(owner.getUUID())
+            this.ownerUUID = owner.uuid
         }
         this.entityData.set(IS_CONTROLLABLE, isControllable)
     }
@@ -79,8 +79,7 @@ open class C4Entity : Entity, OwnableEntity {
             define(STICKY_OBB_INDEX, -1)
             define(STICKY_Y_OFFSET, 0f)
             define(ON_ENTITY, false)
-            define(QUATERNION_VEC, Vector3f())
-            define(QUATERNION_W, 1f)
+            define(QUATERNION, Quaternionf())
         }
     }
 
@@ -92,28 +91,26 @@ open class C4Entity : Entity, OwnableEntity {
         return this.entityData.get(OWNER_UUID).orElse(null)
     }
 
-    // Quaternion synched data delegates
-    var quaternionVec by QUATERNION_VEC
-    var quaternionW by QUATERNION_W
+    // Quaternion synched data delegate
+    var quaternion by QUATERNION
 
     open fun setQuaternion(quaternion: Quaterniond) {
-        quaternionVec = Vector3f(quaternion.x.toFloat(), quaternion.y.toFloat(), quaternion.z.toFloat())
-        quaternionW = quaternion.w.toFloat()
+        this.quaternion = Quaternionf(quaternion.x.toFloat(), quaternion.y.toFloat(), quaternion.z.toFloat(), quaternion.w.toFloat())
     }
 
     open fun getQuaternion(tickDelta: Float) = Quaternionf(
-        Mth.lerp(tickDelta, qxO, quaternionVec.x()),
-        Mth.lerp(tickDelta, qyO, quaternionVec.y()),
-        Mth.lerp(tickDelta, qzO, quaternionVec.z()),
-        Mth.lerp(tickDelta, qwO, quaternionW)
+        Mth.lerp(tickDelta, qxO, quaternion.x()),
+        Mth.lerp(tickDelta, qyO, quaternion.y()),
+        Mth.lerp(tickDelta, qzO, quaternion.z()),
+        Mth.lerp(tickDelta, qwO, quaternion.w())
     )
 
     override fun baseTick() {
         // Track previous quaternion for interpolation
-        qxO = quaternionVec.x()
-        qyO = quaternionVec.y()
-        qzO = quaternionVec.z()
-        qwO = quaternionW
+        qxO = quaternion.x()
+        qyO = quaternion.y()
+        qzO = quaternion.z()
+        qwO = quaternion.w()
         super.baseTick()
     }
 
@@ -132,11 +129,11 @@ open class C4Entity : Entity, OwnableEntity {
         compound.putFloat("StickyYOffset", this.entityData.get(STICKY_Y_OFFSET))
         compound.putBoolean("InGround", this.inGround)
 
-        val qVec = this.entityData.get(QUATERNION_VEC)
-        compound.putFloat("Qx", qVec.x())
-        compound.putFloat("Qy", qVec.y())
-        compound.putFloat("Qz", qVec.z())
-        compound.putFloat("Qw", this.entityData.get(QUATERNION_W))
+        val q = this.entityData.get(QUATERNION)
+        compound.putFloat("Qx", q.x())
+        compound.putFloat("Qy", q.y())
+        compound.putFloat("Qz", q.z())
+        compound.putFloat("Qw", q.w())
 
         if (this.lastState != null) {
             compound.put("InBlockState", NbtUtils.writeBlockState(this.lastState!!))
@@ -195,10 +192,9 @@ open class C4Entity : Entity, OwnableEntity {
 
         if (compound.contains("Qx")) {
             this.entityData.set(
-                QUATERNION_VEC,
-                Vector3f(compound.getFloat("Qx"), compound.getFloat("Qy"), compound.getFloat("Qz"))
+                QUATERNION,
+                Quaternionf(compound.getFloat("Qx"), compound.getFloat("Qy"), compound.getFloat("Qz"), compound.getFloat("Qw"))
             )
-            this.entityData.set(QUATERNION_W, compound.getFloat("Qw"))
         }
 
         var uuid: UUID?
@@ -221,7 +217,7 @@ open class C4Entity : Entity, OwnableEntity {
 
         if (uuid != null) {
             try {
-                this.setOwnerUUID(uuid)
+                this.ownerUUID = uuid
             } catch (_: Throwable) {
             }
         }
@@ -597,7 +593,7 @@ open class C4Entity : Entity, OwnableEntity {
 
     protected fun onHitBlock(pResult: BlockHitResult) {
         this.lastState = this.level().getBlockState(pResult.blockPos)
-        val vec3 = pResult.getLocation().subtract(this.x, this.y, this.z)
+        val vec3 = pResult.location.subtract(this.x, this.y, this.z)
         this.deltaMovement = vec3
         val vec31 = vec3.normalize().scale(0.05)
         this.setPosRaw(this.x - vec31.x, this.y - vec31.y, this.z - vec31.z)
@@ -613,9 +609,9 @@ open class C4Entity : Entity, OwnableEntity {
             val volume = min(4f, speed.toFloat() / 4f + 0.5f)
             this.level().playSound(
                 null,
-                pResult.getLocation().x,
-                pResult.getLocation().y,
-                pResult.getLocation().z,
+                pResult.location.x,
+                pResult.location.y,
+                pResult.location.z,
                 event,
                 SoundSource.AMBIENT,
                 volume,
@@ -735,12 +731,8 @@ open class C4Entity : Entity, OwnableEntity {
             SynchedEntityData.defineId(C4Entity::class.java, EntityDataSerializers.BOOLEAN)
 
         @JvmField
-        val QUATERNION_VEC: EntityDataAccessor<Vector3f> =
-            SynchedEntityData.defineId(C4Entity::class.java, EntityDataSerializers.VECTOR3)
-
-        @JvmField
-        val QUATERNION_W: EntityDataAccessor<Float> =
-            SynchedEntityData.defineId(C4Entity::class.java, EntityDataSerializers.FLOAT)
+        val QUATERNION: EntityDataAccessor<Quaternionf> =
+            SynchedEntityData.defineId(C4Entity::class.java, EntityDataSerializers.QUATERNION)
 
         const val DEFAULT_DEFUSE_PROGRESS: Int = 100
 

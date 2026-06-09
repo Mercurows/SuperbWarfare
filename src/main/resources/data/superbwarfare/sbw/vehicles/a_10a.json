@@ -337,6 +337,7 @@
     "@superbwarfare:rgo_grenade * 6",
     "@superbwarfare:hand_grenade * 5",
     "@superbwarfare:mortar_shell * 3",
+    "@superbwarfare:c4 * 2.5",
     "@#superbwarfare:at_rocket * 3",
     "@#superbwarfare:aerial_bomb * 2",
     "All * 0.65"

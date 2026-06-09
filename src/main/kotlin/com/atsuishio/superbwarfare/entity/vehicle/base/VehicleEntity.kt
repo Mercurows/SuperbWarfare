@@ -1565,7 +1565,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         if (source.`is`(ModTags.DamageTypes.VEHICLE_IMMUNE)) return false
 
         if (DamageTypeTool.isGunDamage(source) && source.entity != null && source.entity!!
-                .vehicle === this
+                .vehicle === this && !source.`is`(ModDamageTypes.CUSTOM_EXPLOSION)
         ) {
             return false
         }
@@ -1577,7 +1577,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             )
             && lastDriver.team != null && source.entity!!.team != null && source.entity!!
                 .team === lastDriver.team && !source.entity!!.team!!
-                .isAllowFriendlyFire && (source.entity === lastDriver && !source.`is`(ModDamageTypes.VEHICLE_STRIKE))
+                .isAllowFriendlyFire && (source.entity === lastDriver && !source.`is`(ModDamageTypes.VEHICLE_STRIKE)
+                    && !source.`is`(ModDamageTypes.CUSTOM_EXPLOSION))
         ) {
             return false
         }
