@@ -4,14 +4,13 @@ import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.entity.projectile.C4Entity
 import com.atsuishio.superbwarfare.resource.model.ProjectileModelReloadListener
 import com.mojang.blaze3d.vertex.PoseStack
-import com.mojang.math.Axis
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.util.Mth
+import org.joml.Quaternionf
 
 class C4Renderer(renderManager: EntityRendererProvider.Context) : EntityRenderer<C4Entity>(renderManager) {
     init {
@@ -29,12 +28,10 @@ class C4Renderer(renderManager: EntityRendererProvider.Context) : EntityRenderer
         val model = ProjectileModelReloadListener.getModel(MODEL) ?: return
 
         poseStack.pushPose()
-        if (entityIn.deltaMovement.lengthSqr() > 0) {
-            poseStack.mulPose(Axis.YP.rotationDegrees(-entityYaw + 180f))
-            poseStack.mulPose(Axis.XP.rotationDegrees(Mth.lerp(partialTicks, entityIn.xRotO, entityIn.xRot) + 90))
-        }
-
-        poseStack.scale(0.5f, 0.5f, 0.5f)
+        poseStack.rotateAround(
+            Quaternionf(entityIn.getQuaternion(partialTicks)),
+            0f, 0f, 0f
+        )
 
         val renderType = RenderType.entityTranslucent(getTextureLocation(entityIn))
         val vertexConsumer = bufferIn.getBuffer(renderType)

@@ -95,7 +95,7 @@ object ModEntities {
     )
 
     @JvmField
-    val C4 = register("c4", misc(::C4Entity).setTrackingRange(64).setUpdateInterval(1).sized(0.5f, 0.5f))
+    val C4 = register("c4", misc(::C4Entity).setTrackingRange(64).setUpdateInterval(1).sized(0.25f, 0.25f))
 
     @JvmField
     val MEDICAL_KIT = register(

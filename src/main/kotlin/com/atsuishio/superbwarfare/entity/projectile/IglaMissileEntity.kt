@@ -61,7 +61,7 @@ open class IglaMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
         }
 
         if (entity != null && this.targetUUID != "none") {
-            if ((!entity.getPassengers().isEmpty() || entity is VehicleEntity)
+            if ((entity.getPassengers().isNotEmpty() || entity is VehicleEntity)
                 && entity.tickCount % (max(0.04 * this.distanceTo(entity), 2.0).toInt()) == 0
             ) {
                 entity.level().playSound(

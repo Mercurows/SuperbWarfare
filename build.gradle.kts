@@ -186,10 +186,10 @@ dependencies {
 //    }
 
     // AUI
-    val aui = implementation("com.sighs:ApricityUI-forge-1.20.1:1.1.4")
-    jarJar(aui) {
-        jarJar.ranged(aui, "[1.1.4,)")
-    }
+//    val aui = implementation("com.sighs:ApricityUI-forge-1.20.1:1.1.4")
+//    jarJar(aui) {
+//        jarJar.ranged(aui, "[1.1.4,)")
+//    }
 
     // 可选 mod 依赖
 

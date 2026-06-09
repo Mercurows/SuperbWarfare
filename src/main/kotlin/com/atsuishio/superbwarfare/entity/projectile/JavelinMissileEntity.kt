@@ -87,7 +87,7 @@ open class JavelinMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
                 entity.invulnerableTime = 0
             }
 
-            causeExplode(result.getLocation())
+            causeExplode(result.location)
             this.discard()
         }
 
@@ -96,7 +96,7 @@ open class JavelinMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
                 owner,
                 this,
                 entity,
-                result.getLocation()
+                result.location
             )
         )
     }
@@ -118,7 +118,7 @@ open class JavelinMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
 
         for (e in decoy) {
             if (e.type.`is`(ModTags.EntityTypes.DECOY) && !this.distracted) {
-                this.targetUUID = e.getStringUUID()
+                this.targetUUID = e.stringUUID
                 this.distracted = true
                 break
             }
