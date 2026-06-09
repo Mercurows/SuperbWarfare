@@ -101,7 +101,18 @@ public abstract class VehicleSoundInstance extends AbstractTickableSoundInstance
             } else {
                 pitch = Math.min(power, 1.5f);
             }
-            return pitch;
+
+            if (mobileVehicle.getVehicleType() == VehicleType.AIRSHIP) {
+                if (power < 0.5) {
+                    pitch = 0.8f + power * 0.2f;
+                } else if (power <= 1) {
+                    pitch = 0.9f + ((power - 0.5f) * 0.2f);
+                } else {
+                    pitch = Math.min(power, 1.5f);
+                }
+            }
+
+            return Mth.abs(pitch);
         }
 
         @Override

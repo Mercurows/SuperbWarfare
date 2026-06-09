@@ -190,6 +190,9 @@ object ModSounds {
     @JvmField val GPWS_TERRAIN_AHEAD = register("terrain_ahead")
     @JvmField val GPWS_TOO_LOW_GEAR = register("too_low_gear")
     @JvmField val GPWS_TOO_LOW_TERRAIN = register("too_low_terrain")
+
+    @JvmField val HAPPIEST_GHAST_DOOR_OPEN = register("happiest_ghast_door_open")
+    @JvmField val HAPPIEST_GHAST_DOOR_CLOSE = register("happiest_ghast_door_close")
     // @formatter:on
 
     fun register(name: String): DeferredHolder<SoundEvent, SoundEvent> =
