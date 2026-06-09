@@ -4,12 +4,15 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.animation.AnimationPlayType
 import com.atsuishio.superbwarfare.client.particle.CannonMuzzleFlareOption
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
+import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.misc.firingParameters
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.randomPos
+import com.atsuishio.superbwarfare.tools.toBlockPos
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
@@ -29,10 +32,12 @@ open class HappiestGhastEntity(type: EntityType<HappiestGhastEntity>, world: Lev
             val ctx = anim?.context ?: return
             if (doorOpen && !wasOpen) {
                 ctx.playAnimation("animation.door.open", AnimationPlayType.LOOP,
-                    fadeInTicks = 20)
+                    fadeInTicks = 40)
+                level().playLocalSound(boundingBox.center.toBlockPos(), ModSounds.HAPPIEST_GHAST_DOOR_OPEN.get(), SoundSource.AMBIENT, 1F, 1F, false)
             } else if (!doorOpen && wasOpen) {
                 ctx.stopAnimation("animation.door.open",
-                    fadeOutTicks = 20)
+                    fadeOutTicks = 30)
+                level().playLocalSound(boundingBox.center.toBlockPos(), ModSounds.HAPPIEST_GHAST_DOOR_CLOSE.get(), SoundSource.AMBIENT, 1F, 1F, false)
             }
             wasOpen = doorOpen
         }

@@ -3007,6 +3007,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             ) * engineInfo.engineSoundVolume
 
             EngineType.HELICOPTER -> synchedPropellerRot * engineInfo.engineSoundVolume
+            EngineType.AIRSHIP -> Mth.clamp(Mth.abs(power) * engineInfo.engineSoundVolume + engineInfo.engineSoundVolume, engineInfo.engineSoundVolume, 1.5f)
+
             else -> Mth.abs(power) * engineInfo.engineSoundVolume
         }
     }
@@ -3962,7 +3964,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
     open fun hasDecoy() = computed().hasDecoy
 
-    open fun engineRunning() = Math.abs(power) > 0
+    open fun engineRunning() = if (vehicleType == VehicleType.AIRSHIP) health > 0 else Math.abs(power) > 0
 
     /**
      * 撬棍shift+右键收回载具时返还的物品

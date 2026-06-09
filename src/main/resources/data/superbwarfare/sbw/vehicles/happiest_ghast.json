@@ -175,8 +175,8 @@
         "BoundUpWithAmmoAmount": true
       },
       "SoundInfo": {
-        "Fire1P": "superbwarfare:bomb_release",
-        "Fire3P": "superbwarfare:bomb_release",
+        "Fire1P": "superbwarfare:happiest_ghast_kalibr_missile_fire",
+        "Fire3P": "superbwarfare:happiest_ghast_kalibr_missile_fire",
         "VehicleReload3p": "superbwarfare:bomb_reload",
         "VehicleReloadSoundTime": 11,
         "Change": "superbwarfare:into_missile",
@@ -186,7 +186,7 @@
       "CrosshairColor": "0xFFC700",
       "Crosshair": "@VehicleCommonMissile",
       "CrosshairZooming": "@VehicleCommonSeekMissile",
-      "SoundRadius": 8,
+      "SoundRadius": 6,
       "AvailableFireModes": ["Semi"]
     },
     "AAMissile": {
@@ -229,8 +229,8 @@
         "BoundUpWithAmmoAmount": true
       },
       "SoundInfo": {
-        "Fire1P": "superbwarfare:bomb_release",
-        "Fire3P": "superbwarfare:bomb_release",
+        "Fire1P": "superbwarfare:happiest_ghast_missile_fire",
+        "Fire3P": "superbwarfare:happiest_ghast_missile_fire",
         "VehicleReload3p": "superbwarfare:bomb_reload",
         "VehicleReloadSoundTime": 11,
         "Change": "superbwarfare:into_missile",
@@ -245,6 +245,7 @@
     }
   },
   "EngineType": "AirShip",
+  "EngineSound": "superbwarfare:happiest_ghast_engine",
   "EngineInfo": {
     "Buoyancy": 0.1,
     "EnergyCostRate": 64,
@@ -255,7 +256,7 @@
     "Increment": 1.0,
     "Decrement": 1.0,
     "SteeringSpeed": 2.0,
-    "EngineSoundVolume" : 0.6,
+    "EngineSoundVolume" : 0.3,
     "FloatHeight": 3.2
   },
   "TurretPos": [0, 2, 0],

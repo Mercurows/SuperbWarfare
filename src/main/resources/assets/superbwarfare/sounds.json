@@ -3272,8 +3272,6 @@
   "bomb_release": {
     "sounds": [
       {
-        "attenuation_distance": 32,
-        "stream": true,
         "name": "superbwarfare:bomb_release"
       }
     ]
@@ -3288,8 +3286,6 @@
   "bomb_reload": {
     "sounds": [
       {
-        "attenuation_distance": 16,
-        "stream": true,
         "name": "superbwarfare:bomb_reload"
       }
     ]
@@ -4531,6 +4527,47 @@
       {
         "stream": false,
         "name": "superbwarfare:gpws/too_low_terrain"
+      }
+    ]
+  },
+  "happiest_ghast_kalibr_missile_fire": {
+    "sounds": [
+      {
+        "stream": false,
+        "name": "superbwarfare:vehicle/happiest_ghast/happiest_ghast_kalibr_missile_fire"
+      }
+    ]
+  },
+  "happiest_ghast_missile_fire": {
+    "sounds": [
+      {
+        "stream": false,
+        "name": "superbwarfare:vehicle/happiest_ghast/happiest_ghast_missile_fire"
+      }
+    ]
+  },
+  "happiest_ghast_door_open": {
+    "sounds": [
+      {
+        "stream": false,
+        "name": "superbwarfare:vehicle/happiest_ghast/happiest_ghast_door_open"
+      }
+    ]
+  },
+  "happiest_ghast_door_close": {
+    "sounds": [
+      {
+        "stream": false,
+        "name": "superbwarfare:vehicle/happiest_ghast/happiest_ghast_door_close"
+      }
+    ]
+  },
+  "happiest_ghast_engine": {
+    "sounds": [
+      {
+        "attenuation_distance": 24,
+        "stream": true,
+        "name": "superbwarfare:vehicle/happiest_ghast/happiest_ghast_engine"
       }
     ]
   }
