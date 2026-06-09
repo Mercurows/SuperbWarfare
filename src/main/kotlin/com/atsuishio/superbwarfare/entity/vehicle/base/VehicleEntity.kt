@@ -3796,7 +3796,21 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             ignoreEntityGroundCheckStepping = true
         }
 
-        vMove(movementType, movement)
+        // When Sable (Create: Aeronautics) is present, delegate to Entity.move()
+        // so that Sable's mixin wrap can inject sub-level collision detection.
+        if (com.atsuishio.superbwarfare.compat.sable.SableCompat.isSableAvailable()) {
+            val savedX = this.x
+            val savedZ = this.z
+            val isPureVertical = movement.x == 0.0 && movement.z == 0.0 && movement.y != 0.0
+            super.move(movementType, movement)
+            // Undo Sable-injected horizontal inherited motion for fixed turrets
+            // that only intend vertical movement (gravity / fixedEngine).
+            if (isPureVertical) {
+                this.setPos(savedX, this.y, savedZ)
+            }
+        } else {
+            vMove(movementType, movement)
+        }
 
         if (lastTickSpeed < 0.2 || collisionCoolDown > 0 || this is DroneEntity) return
         val driver = this.lastDriver

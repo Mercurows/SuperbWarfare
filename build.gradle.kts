@@ -62,6 +62,7 @@ repositories {
         }
     }
     maven {
+        name = "Modrinth"
         url = uri("https://api.modrinth.com/maven")
     }
     maven {
@@ -192,9 +193,6 @@ dependencies {
     ksp(project(":ksp"))
     implementation(project(":ksp"))
 
-//    implementation("org.mozilla:rhino:1.8.0")
-//    add("additionalRuntimeClasspath", "org.mozilla:rhino:1.8.0")
-//    jarJar(group = "org.mozilla", name = "rhino", version = "[1.8.0,2.0.0)")
     implementation("thedarkcolour:kotlinforforge-neoforge:5.10.0")
 
     implementation("software.bernie.geckolib:geckolib-neoforge-1.21.1:4.7.5")
@@ -272,6 +270,12 @@ dependencies {
     implementation("curse.maven:playeranimator-658587:6024462")
 
     implementation("curse.maven:spark-361579:6225208")
+    implementation("maven.modrinth:sodium:mc1.21.1-0.6.13-neoforge")
+
+    implementation("curse.maven:create-328085:7963363")
+    // Sable
+    implementation("curse.maven:sable-1312371:8007005")
+    implementation("maven.modrinth:create-aeronautics:1.1.3+mc1.21.1")
 //    implementation(fg.deobf("curse.maven:oculus-581495:6020952"))
 //    implementation(fg.deobf("curse.maven:embeddium-908741:5681725"))
 //    implementation(fg.deobf("curse.maven:timeless-and-classics-zero-1028108:6069384"))

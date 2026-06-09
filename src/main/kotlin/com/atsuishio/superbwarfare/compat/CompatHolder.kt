@@ -17,6 +17,7 @@ object CompatHolder {
     const val COLD_SWEAT: String = "cold_sweat"
     const val REALCAMERA: String = "realcamera"
     const val NET_MUSIC: String = "netmusic"
+    const val SABLE: String = "sable"
 
     @SubscribeEvent
     fun onInterModEnqueue(event: InterModEnqueueEvent) {
