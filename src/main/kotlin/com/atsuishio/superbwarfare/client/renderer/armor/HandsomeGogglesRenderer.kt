@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.armor
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.tools.deltaFrameTime
 import com.atsuishio.superbwarfare.tools.mc
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.model.BedrockArmorModel
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.GeoArmorRenderer
@@ -10,6 +11,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.util.FastColor.ARGB32
 import java.io.IOException
 
 class HandsomeGogglesRenderer(model: BedrockArmorModel) : GeoArmorRenderer(model, GLASS) {
@@ -146,15 +148,17 @@ class HandsomeGogglesRenderer(model: BedrockArmorModel) : GeoArmorRenderer(model
         poseStack: PoseStack,
         buffer: VertexConsumer,
         light: Int,
-        overlay: Int,
-        r: Float,
-        g: Float,
-        b: Float,
-        a: Float
+        packedOverlay: Int,
+        color: Int
     ) {
         val mc = mc
         val bufferSource = mc.renderBuffers().bufferSource()
-        val partialTick = mc.frameTime
+        val partialTick = mc.deltaFrameTime
+
+        val r = ARGB32.red(color).toFloat() / 255.0f
+        val g = ARGB32.green(color).toFloat() / 255.0f
+        val b = ARGB32.blue(color).toFloat() / 255.0f
+        val a = ARGB32.alpha(color).toFloat() / 255.0f
 
         poseStack.pushPose()
         if (this.livingEntity != null && this.equipmentSlot != null && this.original != null) {
@@ -165,7 +169,7 @@ class HandsomeGogglesRenderer(model: BedrockArmorModel) : GeoArmorRenderer(model
             poseStack,
             bufferSource.getBuffer(RenderType.entityTranslucent(TEXTURE)),
             light,
-            overlay,
+            packedOverlay,
             r,
             g,
             b,
@@ -175,7 +179,7 @@ class HandsomeGogglesRenderer(model: BedrockArmorModel) : GeoArmorRenderer(model
             poseStack,
             bufferSource.getBuffer(RenderType.eyes(this.texture)),
             light,
-            overlay,
+            packedOverlay,
             r,
             g,
             b,
@@ -183,7 +187,7 @@ class HandsomeGogglesRenderer(model: BedrockArmorModel) : GeoArmorRenderer(model
         )
         poseStack.popPose()
 
-        afterRender(poseStack, buffer, light, overlay, r, g, b, a)
+        afterRender(poseStack, buffer, light, packedOverlay, r, g, b, a)
     }
 
     override fun getTexture(): ResourceLocation {

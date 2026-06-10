@@ -343,6 +343,22 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                     has(ModItems.CEMENTED_CARBIDE_INGOT.get())
                 )
                 .save(writer, loc(getItemName(ModItems.US_CHEST_IOTV.get())))
+
+            VehicleAssemblingRecipeBuilder.item(
+                ModItems.HANDSOME_GOGGLES.get(),
+                1,
+                VehicleAssemblingRecipe.Category.AIRCRAFT
+            )
+                .require(Items.DISPENSER, 8)
+                .require(Items.IRON_TRAPDOOR, 8)
+                .require(ModItems.LIGHT_ARMAMENT_MODULE.get(), 2)
+                .require(ModItems.HEAVY_ARMAMENT_MODULE.get())
+                .require(ModItems.MEDIUM_BATTERY_PACK.get())
+                .require(Items.LEVER, 2)
+                .require(ModTags.Items.INGOTS_STEEL, 4)
+                .require(Tags.Items.GLASS_PANES, 3)
+                .unlockedBy(getHasName(ModItems.HEAVY_ARMAMENT_MODULE.get()), has(ModItems.HEAVY_ARMAMENT_MODULE.get()))
+                .save(writer, loc(getItemName(ModItems.HANDSOME_GOGGLES.get()) + "_assembling"))
         }
 
         private fun buildAmmoRecipes(writer: RecipeOutput) {
