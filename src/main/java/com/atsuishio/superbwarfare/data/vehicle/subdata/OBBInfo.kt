@@ -21,6 +21,9 @@ class OBBInfo {
     @SerialName("Rotation")
     var rotation: String = "Default"
 
+    @SerialName("CustomRotate")
+    var customRotate: SerializedVec3 = Vec3.ZERO
+
     @SerialName("Part")
     var part: OBB.Part = OBB.Part.BODY
 
