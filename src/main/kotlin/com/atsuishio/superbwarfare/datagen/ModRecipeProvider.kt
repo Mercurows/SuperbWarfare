@@ -367,13 +367,21 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
 
             ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.EXTRA_LARGE_ANTI_GROUND_MISSILE.get())
                 .requires(ModItems.LARGE_ANTI_GROUND_MISSILE.get(), 2)
-                .unlockedBy(getHasName(ModItems.LARGE_ANTI_GROUND_MISSILE.get()), has(ModItems.LARGE_ANTI_GROUND_MISSILE.get()))
+                .unlockedBy(
+                    getHasName(ModItems.LARGE_ANTI_GROUND_MISSILE.get()),
+                    has(ModItems.LARGE_ANTI_GROUND_MISSILE.get())
+                )
                 .save(writer, loc(getItemName(ModItems.EXTRA_LARGE_ANTI_GROUND_MISSILE.get())))
-
             ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.LARGE_ANTI_GROUND_MISSILE.get(), 2)
                 .requires(ModItems.EXTRA_LARGE_ANTI_GROUND_MISSILE.get())
-                .unlockedBy(getHasName(ModItems.LARGE_ANTI_GROUND_MISSILE.get()), has(ModItems.LARGE_ANTI_GROUND_MISSILE.get()))
-                .save(writer, loc(getItemName(ModItems.LARGE_ANTI_GROUND_MISSILE.get()) + "_from_extra_large_anti_ground_missile"))
+                .unlockedBy(
+                    getHasName(ModItems.LARGE_ANTI_GROUND_MISSILE.get()),
+                    has(ModItems.LARGE_ANTI_GROUND_MISSILE.get())
+                )
+                .save(
+                    writer,
+                    loc(getItemName(ModItems.LARGE_ANTI_GROUND_MISSILE.get()) + "_from_extra_large_anti_ground_missile")
+                )
 
             ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.SMALL_ROCKET.get(), 4)
                 .pattern(" a ")
@@ -583,12 +591,17 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
 
             ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.LARGE_ANTI_AIR_MISSILE.get())
                 .requires(ModItems.MEDIUM_ANTI_AIR_MISSILE.get(), 2)
-                .unlockedBy(getHasName(ModItems.MEDIUM_ANTI_AIR_MISSILE.get()), has(ModItems.MEDIUM_ANTI_AIR_MISSILE.get()))
+                .unlockedBy(
+                    getHasName(ModItems.MEDIUM_ANTI_AIR_MISSILE.get()),
+                    has(ModItems.MEDIUM_ANTI_AIR_MISSILE.get())
+                )
                 .save(writer, loc(getItemName(ModItems.LARGE_ANTI_AIR_MISSILE.get())))
-
             ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.MEDIUM_ANTI_AIR_MISSILE.get(), 2)
                 .requires(ModItems.LARGE_ANTI_AIR_MISSILE.get())
-                .unlockedBy(getHasName(ModItems.MEDIUM_ANTI_AIR_MISSILE.get()), has(ModItems.MEDIUM_ANTI_AIR_MISSILE.get()))
+                .unlockedBy(
+                    getHasName(ModItems.MEDIUM_ANTI_AIR_MISSILE.get()),
+                    has(ModItems.MEDIUM_ANTI_AIR_MISSILE.get())
+                )
                 .save(writer, loc(getItemName(ModItems.MEDIUM_ANTI_AIR_MISSILE.get()) + "_from_large_anti_air_missile"))
 
             ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.MEDIUM_ANTI_GROUND_MISSILE.get())
@@ -2829,11 +2842,17 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 .save(writer, loc("${getItemName(ModItems.GALENA.get())}_from_raw_block"))
             ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.SCHEELITE.get(), 9)
                 .requires(commonItemTag("storage_blocks/raw_tungsten"))
-                .unlockedBy(getHasName(ModItems.RAW_SCHEELITE_BLOCK.get()), has(commonItemTag("storage_blocks/raw_tungsten")))
+                .unlockedBy(
+                    getHasName(ModItems.RAW_SCHEELITE_BLOCK.get()),
+                    has(commonItemTag("storage_blocks/raw_tungsten"))
+                )
                 .save(writer, loc("${getItemName(ModItems.SCHEELITE.get())}_from_raw_block"))
             ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.RAW_SILVER.get(), 9)
                 .requires(commonItemTag("storage_blocks/raw_silver"))
-                .unlockedBy(getHasName(ModItems.RAW_SILVER_BLOCK.get()), has(commonItemTag("storage_blocks/raw_silver")))
+                .unlockedBy(
+                    getHasName(ModItems.RAW_SILVER_BLOCK.get()),
+                    has(commonItemTag("storage_blocks/raw_silver"))
+                )
                 .save(writer, loc("${getItemName(ModItems.RAW_SILVER.get())}_from_raw_block"))
         }
 
