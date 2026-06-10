@@ -2264,6 +2264,12 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
             obb.center.set(Vec3(worldPos.x, worldPos.y, worldPos.z).toVector3d())
             obb.updateRotation(this.getRotationFromString(obbInfo.rotation))
+
+            val rotate = obbInfo.customRotate
+
+            obb.rotation.mul(Quaterniond(Axis.YP.rotationDegrees(rotate.y.toFloat())))
+            obb.rotation.mul(Quaterniond(Axis.XP.rotationDegrees(rotate.x.toFloat())))
+            obb.rotation.mul(Quaterniond(Axis.ZP.rotationDegrees(rotate.z.toFloat())))
         }
     }
 
