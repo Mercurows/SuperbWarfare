@@ -363,8 +363,15 @@ class CustomExplosion @JvmOverloads constructor(
                                 force -= ((optional.get() + 0.3f) * 0.3f).toDouble()
                             }
 
-                            val vec31 = position.vectorTo(entity.boundingBox.center).normalize()
-                            entity.deltaMovement = entity.deltaMovement.add(vec31.scale(force))
+                            // Prevent extreme negative knockback when the explosion center
+                            // is at an unbreakable block (hardness -1, e.g. bedrock/barrier)
+                            // whose explosion resistance can exceed 3,600,000
+                            force = force.coerceAtLeast(0.0)
+
+                            if (force > 0.0) {
+                                val vec31 = position.vectorTo(entity.boundingBox.center).normalize()
+                                entity.deltaMovement = entity.deltaMovement.add(vec31.scale(force))
+                            }
 
 
                             hit = true
@@ -379,12 +386,13 @@ class CustomExplosion @JvmOverloads constructor(
                 }
             }
 
-            if (hit) {
-                val player = this.damageSource.entity
-                if (player is ServerPlayer) {
-                    SoundTool.playLocalSound(player, ModSounds.INDICATION.get())
-                    player.sendPacket(ClientIndicatorMessage(0, 5))
-                }
+        }
+
+        if (hit) {
+            val player = this.damageSource.entity
+            if (player is ServerPlayer) {
+                SoundTool.playLocalSound(player, ModSounds.INDICATION.get())
+                player.sendPacket(ClientIndicatorMessage(0, 5))
             }
         }
     }
