@@ -272,10 +272,10 @@ dependencies {
     implementation("curse.maven:spark-361579:6225208")
     implementation("maven.modrinth:sodium:mc1.21.1-0.6.13-neoforge")
 
-    implementation("curse.maven:create-328085:7963363")
+    compileOnly("curse.maven:create-328085:7963363")
     // Sable
-    implementation("curse.maven:sable-1312371:8007005")
-    implementation("maven.modrinth:create-aeronautics:1.1.3+mc1.21.1")
+    compileOnly("curse.maven:sable-1312371:8007005")
+    compileOnly("maven.modrinth:create-aeronautics:1.1.3+mc1.21.1")
 //    implementation(fg.deobf("curse.maven:oculus-581495:6020952"))
 //    implementation(fg.deobf("curse.maven:embeddium-908741:5681725"))
 //    implementation(fg.deobf("curse.maven:timeless-and-classics-zero-1028108:6069384"))
