@@ -68,7 +68,7 @@ open class HappiestGhastEntity(type: EntityType<HappiestGhastEntity>, world: Lev
             1,
             0.0,
             serverLevel,
-            CannonMuzzleFlareOption(0.4f, 0.4f, 0.4f, 45, 0.88f, 2, 0.05f),
+            CannonMuzzleFlareOption(1f, 1f, 1f, 45, 0.88f, 2, 0.05f),
             direct,
             pos.add(direct.scale(3.5)),
             0.15
@@ -77,7 +77,7 @@ open class HappiestGhastEntity(type: EntityType<HappiestGhastEntity>, world: Lev
             1,
             0.0,
             serverLevel,
-            CannonMuzzleFlareOption(0.45f, 0.45f, 0.45f, 47, 0.90f, 2, 0.03f),
+            CannonMuzzleFlareOption(1f, 1f, 1f, 47, 0.90f, 2, 0.03f),
             direct,
             pos.add(direct.scale(3.5)),
             0.125
@@ -86,7 +86,7 @@ open class HappiestGhastEntity(type: EntityType<HappiestGhastEntity>, world: Lev
             1,
             0.0,
             serverLevel,
-            CannonMuzzleFlareOption(0.5f, 0.5f, 0.5f, 48, 0.92f, 2, 0.01f),
+            CannonMuzzleFlareOption(1f, 1f, 1f, 48, 0.92f, 2, 0.01f),
             direct,
             pos.add(direct.scale(3.5)),
             0.1

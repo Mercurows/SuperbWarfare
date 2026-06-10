@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.tools
 
+import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes
@@ -339,35 +340,66 @@ open class CustomExplosion(
                         val damagePercent = (1 - distanceRate) * seenPercent
                         val damageFinal = (damagePercent * damagePercent + damagePercent) / 2 * damage
 
-                        if (entity is Monster) {
-                            doDamage(
-                                entity,
-                                this.damageSource,
-                                damageFinal.toFloat() * (1 + 0.2f * this.damageMultiplier)
-                            )
-                        } else {
-                            doDamage(entity, this.damageSource, damageFinal.toFloat())
-                        }
+                        // Calculate shockwave delay based on distance and speed
+                        val shockwaveDelay = (distance / 340 * 20).toInt().coerceAtMost(100)
 
-                        if (entity is LivingEntity) {
-                            var force = damageFinal * 0.015
-                            force = ProtectionEnchantment.getExplosionKnockbackAfterDampener(entity, force)
-                            val vec31 = position.vectorTo(entity.boundingBox.center).normalize()
-                            if (entity is Player && !entity.isCreative && !entity.isSpectator) {
-                                entity.deltaMovement = entity.deltaMovement.add(vec31.scale(force))
-                            } else {
-                                entity.deltaMovement = entity.deltaMovement.add(vec31.scale(force))
-                            }
-                        }
-
+                        // Set hit flag immediately for player feedback
                         if (entity is LivingEntity || entity is VehicleEntity) {
                             hit = true
                         }
 
-                        entity.invulnerableTime = 1
+                        // Capture computed values for delayed application
+                        val capturedDamageFinal = damageFinal
+                        val capturedDamageSource = this.damageSource
+                        val capturedDamageMultiplier = this.damageMultiplier
+                        val capturedFireTime = this.fireTime
+                        val isMonster = entity is Monster
+                        val isLiving = entity is LivingEntity
+                        val isPlayer = entity is Player
 
-                        if (fireTime > 0) {
-                            entity.setSecondsOnFire(fireTime)
+                        // Compute knockback force at explosion time
+                        val knockbackForce = if (isLiving) {
+                            var force = damageFinal * 0.015
+                            force = ProtectionEnchantment.getExplosionKnockbackAfterDampener(entity as LivingEntity, force)
+                            val vec31 = position.vectorTo(entity.boundingBox.center).normalize()
+                            force to vec31
+                        } else {
+                            null
+                        }
+
+                        val applyShockwaveDamage = Runnable {
+                            if (!entity.isRemoved) {
+                                if (isMonster) {
+                                    doDamage(
+                                        entity,
+                                        capturedDamageSource,
+                                        capturedDamageFinal.toFloat() * (1 + 0.2f * capturedDamageMultiplier)
+                                    )
+                                } else {
+                                    doDamage(entity, capturedDamageSource, capturedDamageFinal.toFloat())
+                                }
+
+                                if (knockbackForce != null && entity is LivingEntity) {
+                                    val (force, vec31) = knockbackForce
+                                    if (isPlayer && !(entity as Player).isCreative && !(entity as Player).isSpectator) {
+                                        entity.deltaMovement = entity.deltaMovement.add(vec31.scale(force))
+                                    } else {
+                                        entity.deltaMovement = entity.deltaMovement.add(vec31.scale(force))
+                                    }
+                                }
+
+                                entity.invulnerableTime = 1
+
+                                if (capturedFireTime > 0) {
+                                    entity.setSecondsOnFire(capturedFireTime)
+                                }
+                            }
+                        }
+
+                        if (shockwaveDelay <= 0) {
+                            applyShockwaveDamage.run()
+                        } else {
+                            Mod.queueServerWork(shockwaveDelay, applyShockwaveDamage)
                         }
                     }
                 }
