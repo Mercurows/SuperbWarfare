@@ -4,11 +4,10 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.getValue
-import com.atsuishio.superbwarfare.entity.living.TargetEntity
 import com.atsuishio.superbwarfare.entity.projectile.DestroyableProjectile
 import com.atsuishio.superbwarfare.entity.projectile.SmallCannonShellEntity
 import com.atsuishio.superbwarfare.entity.setValue
-import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getSubmergedHeight
+import com.atsuishio.superbwarfare.entity.vehicle.ai.TowerAI
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getXRotFromVector
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -18,7 +17,6 @@ import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessag
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
 import com.atsuishio.superbwarfare.tools.VectorTool.calculateAngle
-import com.atsuishio.superbwarfare.world.saveddata.TDMSavedData
 import net.minecraft.core.Holder
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.nbt.CompoundTag
@@ -38,12 +36,10 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.OwnableEntity
-import net.minecraft.world.entity.monster.Enemy
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.projectile.Projectile
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
-import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
 import net.minecraft.world.scores.PlayerTeam
@@ -56,6 +52,13 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : VehicleEntity(
     open var targetUUID by TARGET_UUID
     open var optionalOwnerUUID by OWNER_UUID
     open var active by ACTIVE
+
+    /** 防御塔 AI 系统实例 */
+    open val towerAI: TowerAI by lazy { TowerAI(this) }
+
+    /** AI 威胁评分配置，子类可覆盖以定制行为 */
+    open val threatConfig: TowerAI.ThreatConfig
+        get() = TowerAI.ThreatConfig()
 
     override fun interact(player: Player, hand: InteractionHand): InteractionResult {
         val stack = player.mainHandItem
@@ -197,134 +200,125 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : VehicleEntity(
 
         val barrelRootPos = getShootPos(weaponName, 1f)
 
-        if (targetUUID == "" && tickCount % seekIterative == 0) {
-            val nearestEntity = seekNearLivingEntity(
+        // ---- 使用 TowerAI 系统进行目标管理与获取 ----
+
+        // 1. 验证当前目标是否仍有效（含视线检查）
+        val targetValid = towerAI.tracker.validateCurrentTarget(barrelRootPos)
+
+        // 2. 尝试获取新目标（含优先切换逻辑）
+        if (!targetValid || targetUUID.isEmpty()) {
+            towerAI.tracker.acquireTarget(
                 barrelRootPos,
                 turretMinPitch.toDouble(),
                 turretMaxPitch.toDouble(),
                 minSeekRange,
                 maxSeekRange,
-                minTargetSize
+                minTargetSize,
+                seekIterative,
             )
-
-            if (nearestEntity != null) {
-                targetUUID = nearestEntity.stringUUID
-                this.consumeEnergy(seekInfo.seekEnergyCost)
-            }
-        }
-
-        val target = EntityFindUtil.findEntity(level(), targetUUID)
-
-        if (target != null && SeekTool.NOT_IN_SMOKE.test(target)) {
-            if (SeekTool.IS_INVULNERABLE.test(target)
-                || getSubmergedHeight(target) >= target.bbHeight
-                || target.distanceTo(this) !in minSeekRange..maxSeekRange
-                || (target is LivingEntity && target.health <= 0)
-                || (target is VehicleEntity && target.isWreck)
-                || target === this
-                || target is TargetEntity
-                || (target is Projectile && (target.onGround() || target.deltaMovement.lengthSqr() < 0.0001))
-            ) {
-                targetUUID = ""
-                return
-            }
-
-            val targetVehicle = target.vehicle
-            if (targetVehicle != null) {
-                targetUUID = targetVehicle.stringUUID
-            }
-
-            if (!target.isAlive) {
-                targetUUID = ""
-            }
-
-            val targetPos = target.boundingBox.center
-            val targetVel = target.deltaMovement
-
-            val targetVec = if (projectileTypeStr == "ray") {
-                barrelRootPos.vectorTo(targetPos).normalize()
-            } else {
-                calculateFiringSolution(
+        } else {
+            // 即使当前目标有效，也定期扫描是否有更高优先级目标
+            if (tickCount % seekIterative == 0) {
+                towerAI.tracker.acquireTarget(
                     barrelRootPos,
-                    targetPos,
-                    targetVel.scale(1.1 + random.nextFloat() * 0.2f),
-                    getProjectileVelocity(weaponName).toDouble(),
-                    getProjectileGravity(weaponName).toDouble()
+                    turretMinPitch.toDouble(),
+                    turretMaxPitch.toDouble(),
+                    minSeekRange,
+                    maxSeekRange,
+                    minTargetSize,
+                    seekIterative,
                 )
             }
+        }
 
+        // 3. 获取当前锁定的目标
+        val target = EntityFindUtil.findEntity(level(), targetUUID)
+        if (target == null || !target.isAlive) {
+            targetUUID = ""
+            return
+        }
 
-            if (laserScale == 0f) {
-                turretAutoAimFromVector(targetVec)
-                if (calculateAngle(getShootVec(weaponName, 1f), targetVec) < 1) {
-                    if (checkNoClip(target, barrelRootPos) && !data.overHeat.get()) {
-                        if (level() is ServerLevel) {
-                            if (projectileTypeStr == "ray" && chargeProgress == 1f) {
-                                rayShoot(owner, target, data)
-                                changeTargetTimer = 0
-                            } else if (getAmmoCount(weaponName) > 0 && tickCount % rpm == 0) {
-                                vehicleShoot(owner, "Main", targetPos)
-                                changeTargetTimer = 0
-                            }
+        // 烟雾中丢失目标
+        if (!SeekTool.NOT_IN_SMOKE.test(target)) {
+            targetUUID = ""
+            return
+        }
+
+        // 目标骑到了其他载具上则跟踪该载具
+        val targetVehicle = target.vehicle
+        if (targetVehicle != null) {
+            targetUUID = targetVehicle.stringUUID
+        }
+
+        // 4. 计算瞄准向量并执行攻击
+        val targetPos = target.boundingBox.center
+        val targetVel = target.deltaMovement
+
+        val targetVec = if (projectileTypeStr == "ray") {
+            barrelRootPos.vectorTo(targetPos).normalize()
+        } else {
+            calculateFiringSolution(
+                barrelRootPos,
+                targetPos,
+                targetVel.scale(1.1 + random.nextFloat() * 0.2f),
+                getProjectileVelocity(weaponName).toDouble(),
+                getProjectileGravity(weaponName).toDouble()
+            )
+        }
+
+        if (laserScale == 0f) {
+            turretAutoAimFromVector(targetVec)
+            if (calculateAngle(getShootVec(weaponName, 1f), targetVec) < 1) {
+                if (checkNoClip(target, barrelRootPos) && !data.overHeat.get()) {
+                    if (level() is ServerLevel) {
+                        if (projectileTypeStr == "ray" && chargeProgress == 1f) {
+                            rayShoot(owner, target, data)
+                            changeTargetTimer = 0
+                        } else if (getAmmoCount(weaponName) > 0 && tickCount % rpm == 0) {
+                            vehicleShoot(owner, "Main", targetPos)
+                            changeTargetTimer = 0
                         }
-                    } else {
-                        changeTargetTimer++
                     }
+                } else {
+                    // 目标被遮挡，立即清除并让下个 tick 重新索敌
+                    towerAI.tracker.clearTarget()
                 }
             }
-        } else {
-            targetUUID = ""
         }
 
+        // 5. 超时切换（保底机制，处理持续无法瞄准的边缘情况）
         if (changeTargetTimer > changeTargetTime) {
-            targetUUID = ""
-            changeTargetTimer = 0
+            towerAI.tracker.clearTarget()
         }
     }
 
+    @Deprecated(
+        message = "Use TowerAI.TeamResolver.isHostile() instead",
+        replaceWith = ReplaceWith("TowerAI.TeamResolver.isHostile(this, entity)")
+    )
     open fun basicEnemyFilter(entity: Entity): Boolean {
-        if (entity is Projectile) return false
-        val owner = owner ?: return false
-        entity.team ?: return false
-
-        return (!entity.isAlliedTo(owner) && !entity.isAlliedTo(this)) || TDMSavedData.enabledTDM(entity)
+        return TowerAI.TeamResolver.isHostile(this, entity)
     }
 
+    @Deprecated(
+        message = "Use TowerAI.TeamResolver.isHostileProjectile() instead",
+        replaceWith = ReplaceWith("TowerAI.TeamResolver.isHostileProjectile(this, projectile)")
+    )
     open fun basicEnemyProjectileFilter(projectile: Projectile): Boolean {
-        val owner = owner ?: return false
-        val projectileOwner = projectile.owner ?: return false
-
-        if (projectileOwner === owner) return false
-
-        return !projectileOwner.isAlliedTo(owner)
-                || (projectileOwner.team != null && TDMSavedData.enabledTDM(projectileOwner))
+        return TowerAI.TeamResolver.isHostileProjectile(this, projectile)
     }
 
-    // 防御类载具实体搜寻周围实体
-    open fun seekNearLivingEntity(
-        pos: Vec3,
-        minAngle: Double,
-        maxAngle: Double,
-        minRange: Double,
-        seekRange: Double,
-        size: Double
-    ) = level().getEntitiesOfClass(Entity::class.java, AABB(pos, pos).inflate(seekRange)) { true }
-        .sortedBy { it.distanceToSqr(pos) }
-        .find { target ->
-            target.distanceToSqr(this) > minRange * minRange
-                    && target.distanceToSqr(this) <= seekRange * seekRange
-                    && canAim(pos, target, minAngle, maxAngle)
-                    && getSubmergedHeight(target) <= target.bbHeight
-                    && checkNoClip(target, pos)
-                    && !(target is Player && (target.isSpectator || target.isCreative))
-                    && ((target is LivingEntity && target is Enemy && target.health > 0)
-                    || isThreateningEntity(target, size, pos)
-                    || basicEnemyFilter(target))
-                    && SeekTool.NOT_IN_SMOKE.test(target)
-                    && !SeekTool.IN_BLACKLIST.test(target)
-        }
 
-    // 判断具有威胁的弹射物
+
+    /**
+     * 判断具有威胁的弹射物。
+     *
+     * @deprecated 使用 [TowerAI.TargetValidator.isValidProjectileTarget] 替代（含轨迹威胁分析）
+     */
+    @Deprecated(
+        message = "Use TowerAI.TargetValidator.isValidProjectileTarget() instead",
+        replaceWith = ReplaceWith("TowerAI.TargetValidator.isValidProjectileTarget(this, target as Projectile, pos)")
+    )
     open fun isThreateningEntity(target: Entity, size: Double, pos: Vec3): Boolean {
         if (target is SmallCannonShellEntity) return false
 
