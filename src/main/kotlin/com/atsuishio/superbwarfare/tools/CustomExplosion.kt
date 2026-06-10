@@ -380,12 +380,18 @@ class CustomExplosion @JvmOverloads constructor(
                                 }
 
                                 if (knockbackForce != null && entity is LivingEntity) {
-                                    val (force, vec31) = knockbackForce
-                                    if (isPlayer && !entity.isCreative && !entity.isSpectator) {
-                                        entity.deltaMovement = entity.deltaMovement.add(vec31.scale(force))
-                                    } else {
-                                        entity.deltaMovement = entity.deltaMovement.add(vec31.scale(force))
+                                    var (force, vec31) = knockbackForce
+
+                                    force = force.coerceAtLeast(0.0)
+                                    if (force > 0.0) {
+                                        if (isPlayer && !entity.isCreative && !entity.isSpectator) {
+                                            entity.deltaMovement = entity.deltaMovement.add(vec31.scale(force))
+                                        } else {
+                                            entity.deltaMovement = entity.deltaMovement.add(vec31.scale(force))
+                                        }
                                     }
+
+
                                 }
 
                                 entity.invulnerableTime = 1
