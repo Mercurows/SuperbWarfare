@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.tools
 
+import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
@@ -20,6 +22,7 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.item.PrimedTnt
 import net.minecraft.world.entity.monster.Monster
+import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.Explosion
 import net.minecraft.world.level.ExplosionDamageCalculator
 import net.minecraft.world.level.Level
@@ -335,52 +338,68 @@ class CustomExplosion @JvmOverloads constructor(
                         val damagePercent = (1 - distanceRate) * seenPercent
                         val damageFinal = (damagePercent * damagePercent + damagePercent) / 2 * damage
 
-                        if (entity is Monster) {
-                            doDamage(
-                                entity,
-                                this.damageSource,
-                                damageFinal.toFloat() * (1 + 0.2f * this.damageMultiplier)
-                            )
-                        } else {
-                            doDamage(entity, this.damageSource, damageFinal.toFloat())
+                        // Calculate shockwave delay based on distance and speed
+                        val shockwaveDelay = (distance / 340 * 20).toInt().coerceAtMost(100)
+
+                        // Set hit flag immediately for player feedback
+                        if (entity is LivingEntity || entity is VehicleEntity) {
+                            hit = true
                         }
 
-                        if (entity is LivingEntity) {
+                        // Capture computed values for delayed application
+                        val capturedDamageFinal = damageFinal
+                        val capturedDamageSource = this.damageSource
+                        val capturedDamageMultiplier = this.damageMultiplier
+                        val capturedFireTime = this.fireTime
+                        val isMonster = entity is Monster
+                        val isLiving = entity is LivingEntity
+                        val isPlayer = entity is Player
+
+                        // Compute knockback force at explosion time
+                        val knockbackForce = if (isLiving) {
                             var force = damageFinal * 0.015
 
-                            val blockpos = BlockPos.containing(position.x, position.y, position.z)
-                            val blockstate = this.level.getBlockState(blockpos)
-                            val fluidstate = this.level.getFluidState(blockpos)
+                            // TODO 正确计算force
+//                            force = ProtectionEnchantment.getExplosionKnockbackAfterDampener(entity, force)
+                            val vec31 = position.vectorTo(entity.boundingBox.center).normalize()
+                            force to vec31
+                        } else {
+                            null
+                        }
 
-                            val optional = this.damageCalculator.getBlockExplosionResistance(
-                                this,
-                                this.level,
-                                blockpos,
-                                blockstate,
-                                fluidstate
-                            )
-                            if (optional.isPresent) {
-                                force -= ((optional.get() + 0.3f) * 0.3f).toDouble()
+                        val applyShockwaveDamage = Runnable {
+                            if (!entity.isRemoved) {
+                                if (isMonster) {
+                                    doDamage(
+                                        entity,
+                                        capturedDamageSource,
+                                        capturedDamageFinal.toFloat() * (1 + 0.2f * capturedDamageMultiplier)
+                                    )
+                                } else {
+                                    doDamage(entity, capturedDamageSource, capturedDamageFinal.toFloat())
+                                }
+
+                                if (knockbackForce != null && entity is LivingEntity) {
+                                    val (force, vec31) = knockbackForce
+                                    if (isPlayer && !entity.isCreative && !entity.isSpectator) {
+                                        entity.deltaMovement = entity.deltaMovement.add(vec31.scale(force))
+                                    } else {
+                                        entity.deltaMovement = entity.deltaMovement.add(vec31.scale(force))
+                                    }
+                                }
+
+                                entity.invulnerableTime = 1
+
+                                if (capturedFireTime > 0) {
+                                    entity.remainingFireTicks = capturedFireTime
+                                }
                             }
+                        }
 
-                            // Prevent extreme negative knockback when the explosion center
-                            // is at an unbreakable block (hardness -1, e.g. bedrock/barrier)
-                            // whose explosion resistance can exceed 3,600,000
-                            force = force.coerceAtLeast(0.0)
-
-                            if (force > 0.0) {
-                                val vec31 = position.vectorTo(entity.boundingBox.center).normalize()
-                                entity.deltaMovement = entity.deltaMovement.add(vec31.scale(force))
-                            }
-
-
-                            hit = true
-
-                            entity.invulnerableTime = 1
-
-                            if (fireTime > 0) {
-                                entity.remainingFireTicks = fireTime
-                            }
+                        if (shockwaveDelay <= 0) {
+                            applyShockwaveDamage.run()
+                        } else {
+                            Mod.queueServerWork(shockwaveDelay, applyShockwaveDamage)
                         }
                     }
                 }

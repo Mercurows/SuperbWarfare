@@ -87,7 +87,9 @@ open class CustomFlareParticle protected constructor(
     }
 
     public override fun getLightColor(partialTick: Float): Int {
-        return 15728880
+        val blockLight = (15 * alpha).toInt().coerceIn(0, 15)
+        val skyLight = (15 * alpha).toInt().coerceIn(0, 15)
+        return (blockLight shl 4) or (skyLight shl 20)
     }
 
     override fun getRenderType(): ParticleRenderType {
