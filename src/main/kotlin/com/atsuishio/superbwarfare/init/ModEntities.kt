@@ -304,6 +304,9 @@ object ModEntities {
     @JvmField
     val HAPPIEST_GHAST = register("happiest_ghast", vehicle(::HappiestGhastEntity).sized(4f, 4f))
 
+    @JvmField
+    val KIROV = register("kirov", vehicle(::KirovEntity).sized(22f, 26f))
+
     // Special
     @JvmField
     val DRONE = register("drone", misc(::DroneEntity).setTrackingRange(512).setUpdateInterval(1).sized(0.6f, 0.2f))
