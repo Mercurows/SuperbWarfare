@@ -25,7 +25,7 @@ open class KirovEntity(type: EntityType<KirovEntity>, world: Level) : VehicleEnt
         propellerLO = propellerL
         propellerRO = propellerR
         super.baseTick()
-        if (level().isClientSide) {
+        if (level().isClientSide && !sympatheticDetonated) {
             //最顶上的螺旋桨
             propeller += power * 2f
 

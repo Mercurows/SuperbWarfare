@@ -28,7 +28,7 @@ object VehicleDestroyUtils {
     fun destroy(vehicle: VehicleEntity) {
         val destroyInfo = vehicle.computed().destroyInfo
 
-        if (vehicle.vehicleType != VehicleType.AIRPLANE && vehicle.vehicleType != VehicleType.HELICOPTER || vehicle.vehicleType == VehicleType.AIRSHIP) {
+        if (vehicle.vehicleType != VehicleType.AIRPLANE && vehicle.vehicleType != VehicleType.HELICOPTER && vehicle.vehicleType != VehicleType.AIRSHIP) {
             if (destroyInfo.explodePassengers) {
                 if (vehicle.crash && destroyInfo.crashPassengers) {
                     crashPassengers(vehicle)
