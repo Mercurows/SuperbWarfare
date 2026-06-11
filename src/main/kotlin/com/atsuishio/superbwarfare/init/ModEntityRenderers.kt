@@ -59,6 +59,7 @@ object ModEntityRenderers {
             registerEntityRenderer(ModEntities.HPJ_11.get(), ::Hpj11Renderer)
             registerEntityRenderer(ModEntities.A_10A.get(), ::A10Renderer)
             registerEntityRenderer(ModEntities.HAPPIEST_GHAST.get(), ::HappiestGhastRenderer)
+            registerEntityRenderer(ModEntities.KIROV.get(), ::KirovRenderer)
             registerEntityRenderer(ModEntities.MK_82.get(), ::BasicProjectileRenderer)
             registerEntityRenderer(ModEntities.MK_84.get(), ::BasicProjectileRenderer)
             registerEntityRenderer(ModEntities.SC_50.get(), ::BasicProjectileRenderer)

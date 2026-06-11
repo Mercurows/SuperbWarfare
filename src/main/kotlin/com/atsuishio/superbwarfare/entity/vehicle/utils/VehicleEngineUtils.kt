@@ -1424,20 +1424,20 @@ object VehicleEngineUtils {
             power = Math.max(power - (if (power > 0) powerReduce * 4f else powerReduce) * (maxPower - (Mth.abs(power) / 1.02f)), -1f)
             if (rightInputDown) {
                 holdTick++
-                deltaRot += steeringSpeed * 0.45f * Math.min(holdTick, 10)
+                deltaRot += steeringSpeed * 0.1125f * Math.min(holdTick, 40)
             } else if (leftInputDown) {
                 holdTick++
-                deltaRot -= steeringSpeed * 0.45f * Math.min(holdTick, 10)
+                deltaRot -= steeringSpeed * 0.1125f * Math.min(holdTick, 40)
             } else {
                 holdTick = 0
             }
         } else {
             if (rightInputDown) {
                 holdTick++
-                deltaRot -= steeringSpeed * 0.45f * Math.min(holdTick, 10)
+                deltaRot -= steeringSpeed * 0.1125f * Math.min(holdTick, 40)
             } else if (leftInputDown) {
                 holdTick++
-                deltaRot += steeringSpeed * 0.45f * Math.min(holdTick, 10)
+                deltaRot += steeringSpeed * 0.1125f * Math.min(holdTick, 40)
             } else {
                 holdTick = 0
             }

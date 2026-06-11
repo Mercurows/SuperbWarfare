@@ -667,6 +667,7 @@
   "des.superbwarfare.vehicle_damage_analyzer.info.final": "最終值：%1$s",
   "item.superbwarfare.parachute": "降落傘",
   "entity.superbwarfare.medical_kit": "醫療包",
+  "entity.superbwarfare.kirov": "基洛夫空艇",
   "effect.superbwarfare.strike_protection": "撞擊保護",
   "tips.superbwarfare.modify_result.function": "[自訂計算]",
   "tips.superbwarfare.modify_result.all": "[全域減傷]",

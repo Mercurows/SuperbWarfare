@@ -23,5 +23,6 @@
   "item.superbwarfare.hunting_rifle": "Jachtgeweer",
   "item.superbwarfare.secondary_cataclysm": "Secundaire catastrofe",
   "des.superbwarfare.guns.damage": "Schade ",
-  "des.superbwarfare.guns.level": "Niveau "
+  "des.superbwarfare.guns.level": "Niveau ",
+  "entity.superbwarfare.kirov": "Kirov Luchtschip"
 }

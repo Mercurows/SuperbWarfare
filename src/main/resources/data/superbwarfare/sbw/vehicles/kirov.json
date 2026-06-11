@@ -1,0 +1,252 @@
+{
+  "MaxHealth": 4000,
+  "MaxEnergy": 40000000,
+  "Gravity": 0,
+  "OBB": [
+    {
+      "Part": "Collision",
+      "Size": [7.125, 7.125, 31.9375],
+      "Position": [0, 18.667, 0]
+    },
+    {
+      "Size": [7.125, 2.9375, 18.406],
+      "Position": [0, 18.667, 3.531]
+    },
+    {
+      "Size": [7.125, 2.9375, 18.406],
+      "Position": [0, 18.667, 3.531]
+    },
+    {
+      "Size": [7.125, 2.9375, 18.406],
+      "Position": [0, 18.667, 3.531],
+      "CustomRotate": [0, 0, 45]
+    },
+    {
+      "Size": [7.125, 2.9375, 18.406],
+      "Position": [0, 18.667, 3.531],
+      "CustomRotate": [0, 0, -45]
+    },
+    {
+      "Size": [7.125, 2.9375, 18.406],
+      "Position": [0, 18.667, 3.531],
+      "CustomRotate": [0, 0, 90]
+    },
+
+    {
+      "Size": [5.55, 2.289, 4.972],
+      "Position": [0, 18.667, 26.909]
+    },
+    {
+      "Size": [5.55, 2.289, 4.972],
+      "Position": [0, 18.667, 26.909]
+    },
+    {
+      "Size": [5.55, 2.289, 4.972],
+      "Position": [0, 18.667, 26.909],
+      "CustomRotate": [0, 0, 45]
+    },
+    {
+      "Size": [5.55, 2.289, 4.972],
+      "Position": [0, 18.667, 26.909],
+      "CustomRotate": [0, 0, -45]
+    },
+    {
+      "Size": [5.55, 2.289, 4.972],
+      "Position": [0, 18.667, 26.909],
+      "CustomRotate": [0, 0, 90]
+    },
+
+    {
+      "Size": [4.829, 1.991, 5.594],
+      "Position": [0, 18.667, -20.468]
+    },
+    {
+      "Size": [4.829, 1.991, 5.594],
+      "Position": [0, 18.667, -20.468]
+    },
+    {
+      "Size": [4.829, 1.991, 5.594],
+      "Position": [0, 18.667, -20.468],
+      "CustomRotate": [0, 0, 45]
+    },
+    {
+      "Size": [4.829, 1.991, 5.594],
+      "Position": [0, 18.667, -20.468],
+      "CustomRotate": [0, 0, -45]
+    },
+    {
+      "Size": [4.829, 1.991, 5.594],
+      "Position": [0, 18.667, -20.468],
+      "CustomRotate": [0, 0, 90]
+    },
+
+    {
+      "Size": [1.813, 1.813, 2.031],
+      "Position": [0, 18.667, -28.0938],
+      "CustomRotate": [0, 0, 45]
+    },
+
+    {
+      "Size": [3.651, 0.928, 2.938],
+      "Position": [0, 24.417, -28.938]
+    },
+    {
+      "Size": [3.651, 0.928, 2.938],
+      "Position": [0, 12.917, -28.938]
+    },
+    {
+      "Size": [0.928, 3.651, 2.938],
+      "Position": [-5.759, 18.667, -28.938]
+    },
+    {
+      "Size": [0.928, 3.651, 2.938],
+      "Position": [5.759, 18.667, -28.938]
+    },
+
+    {
+      "Size": [2.094, 2.313, 0.969],
+      "Position": [-9.219, 18.042, -0.531]
+    },
+    {
+      "Size": [2.094, 2.313, 0.969],
+      "Position": [9.219, 18.042, -0.531]
+    },
+    {
+      "Size": [2.094, 0.969, 2.313],
+      "Position": [-9.219, 18.667, -13.406]
+    },
+    {
+      "Size": [2.094, 0.969, 2.313],
+      "Position": [9.219, 18.667, -13.406]
+    },
+    {
+      "Size": [0.469, 1.188, 1],
+      "Position": [0, 26.979, -13.0625]
+    },
+    {
+      "Size": [0.906, 0.906, 2.313],
+      "Position": [0, 29.010, -13.406]
+    },
+
+    {
+      "Size": [1.488, 0.875, 13.6875],
+      "Position": [0, 10.667, 3]
+    },
+    {
+      "Size": [1.488, 4, 6],
+      "Position": [0, 5.792, -0.875]
+    },
+    {
+      "Size": [2.625, 2.0625, 3.7813],
+      "Position": [0, 7.729, 12.906]
+    },
+    {
+      "Size": [2, 2, 4],
+      "Position": [0, 2.0417, -8.75]
+    }
+  ],
+  "Seats": [
+    {
+      "Transform": "Vehicle",
+      "Position": [0, 7.7125, 14.6875],
+      "MinPitch": -80,
+      "MaxPitch": 80,
+      "MinYaw": -90,
+      "MaxYaw": 90,
+      "Sensitivity": [0.55, 0.8, 0.9],
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0, 0.5, 0]
+      }
+    },
+    {
+      "Transform": "Vehicle",
+      "Position": [0, 7.7125, 13.6875],
+      "MinYaw": -90,
+      "MaxYaw": 90,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0, 0.5, 0]
+      }
+    },
+    {
+      "Transform": "Vehicle",
+      "Position": [1, 7.7125, 13.6875],
+      "MinYaw": -90,
+      "MaxYaw": 90,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0, 0.5, 0]
+      }
+    },
+    {
+      "Transform": "Vehicle",
+      "Position": [-1, 7.7125, 13.6875],
+      "MinYaw": -90,
+      "MaxYaw": 90,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0, 0.5, 0]
+      }
+    }
+  ],
+  "EngineType": "AirShip",
+  "EngineSound": "superbwarfare:kirov_engine",
+  "EngineInfo": {
+    "Buoyancy": 0.1,
+    "EnergyCostRate": 128,
+    "MaxForwardSpeedRate": 0.7,
+    "MaxBackwardSpeedRate": 0.6,
+    "MaxUpSpeedRate": 0.3,
+    "MaxDownSpeedRate": 0.3,
+    "Increment": 0.4,
+    "Decrement": 0.3,
+    "SteeringSpeed": 0.3,
+    "EngineSoundVolume" : 0.4,
+    "FloatHeight": 3.5
+  },
+  "ThirdPersonCameraPos": [0, 11, 44],
+  "UpStep": 1.1,
+  "RotateOffsetHeight": 24,
+  "Mass": 400,
+  "HasDecoy": true,
+  "DamageModifiers": [
+    "All - 13",
+    "minecraft:lava 0",
+    "All * 0.2",
+    "minecraft:arrow * 1.5",
+    "minecraft:trident * 1.5",
+    "minecraft:mob_attack * 2.5",
+    "minecraft:mob_attack_no_aggro * 2",
+    "minecraft:mob_projectile * 1.5",
+    "minecraft:explosion * 6",
+    "minecraft:player_explosion * 6",
+    "superbwarfare:custom_explosion * 2.0",
+    "superbwarfare:projectile_explosion * 2",
+    "superbwarfare:mine * 0.75",
+    "superbwarfare:projectile_hit * 1.25",
+    "superbwarfare:grapeshot_hit * 0.3",
+    "superbwarfare:laser * 1.25",
+    "@#superbwarfare:aerial_bomb * 3",
+    "#superbwarfare:projectile * 0.25",
+    "#superbwarfare:projectile_absolute * 0.85",
+    "superbwarfare:vehicle_strike * 4",
+    "@superbwarfare:c4 * 2.5",
+    "@superbwarfare:mortar_shell * 1.25",
+    "@superbwarfare:gun_grenade * 1.5",
+    "@superbwarfare:javelin_missile * 0.8"
+  ],
+  "DestroyInfo": {
+    "ParticleType": "Huge",
+    "ExplosionDamage": 300,
+    "ExplosionRadius": 12,
+    "CrashPassengers": true
+  },
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/happiest_ghast_icon.png",
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png",
+  "VehicleContainerType": "Medium",
+  "Type": "AirShip",
+  "HudType": "@Helicopter",
+  "HUDColor": "0xFFC700",
+  "TerrainCompat": [[2, 0, 2], [-2, 0, 2], [2, 0, -2], [-2, 0, -2]]
+}

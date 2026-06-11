@@ -599,6 +599,7 @@
   "entity.superbwarfare.small_rocket": "소구경 로켓",
   "entity.superbwarfare.medium_rocket": "중구경 로켓",
   "entity.superbwarfare.type_63": "Type-63 107mm 다연장 로켓 발사 시스템",
+  "entity.superbwarfare.kirov": "키로프 비행선",
   "tips.superbwarfare.mortar.target_pos.radius": "타격 반경: %1$s",
   "tips.superbwarfare.mortar.warn": "%1$s은(는) 이 위치를 조준할 수 없습니다",
   "tips.superbwarfare.target.yaw": "대상 Yaw: ",

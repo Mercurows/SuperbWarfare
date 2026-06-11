@@ -4570,5 +4570,14 @@
         "name": "superbwarfare:vehicle/happiest_ghast/happiest_ghast_engine"
       }
     ]
+  },
+  "kirov_engine": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/kirov/kirov_engine"
+      }
+    ]
   }
 }
