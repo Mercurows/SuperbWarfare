@@ -440,7 +440,7 @@ class CustomExplosion @JvmOverloads constructor(
         init {
             this.sourceEntity = directSource
             this.attackerEntity = directSource
-            this.position = Vec3(directSource.x, directSource.eyeY, directSource.z)
+            this.position = Vec3(directSource.x, directSource.y, directSource.z)
         }
 
         fun directSource(directSource: Entity): Builder {

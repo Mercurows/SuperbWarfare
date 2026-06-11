@@ -23,6 +23,8 @@ import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.FormatTool.format1D
 import com.atsuishio.superbwarfare.tools.HitboxHelper.getBoundingBox
 import com.atsuishio.superbwarfare.tools.HitboxHelper.getVelocity
+import com.atsuishio.superbwarfare.tools.OBB.Companion.vec3ToVector3d
+import com.atsuishio.superbwarfare.tools.OBB.Companion.vector3dToVec3
 import com.atsuishio.superbwarfare.tools.VectorTool.isInLiquid
 import com.atsuishio.superbwarfare.world.phys.EntityResult
 import com.atsuishio.superbwarfare.world.phys.ExtendedEntityRayTraceResult
@@ -1106,6 +1108,41 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
     }
 
     companion object {
+        /**
+         * Static OBB raycast: returns the world-space hit position on the entity's OBB,
+         * or null if the ray doesn't intersect any non-COLLISION OBB.
+         * Used by FastThrowableProjectile subclasses to bypass vanilla hit detection.
+         */
+        @JvmStatic
+        fun clipObb(projectile: Entity, entity: Entity, startVec: Vec3, endVec: Vec3): Vec3? {
+            if (entity is OBBEntity && !entity.enableAABB()) {
+                var collisonHit: Vec3? = null
+                for (obb in entity.getOBBs()) {
+                    if (obb.part == OBB.Part.COLLISION) {
+                        // Save COLLISION OBB for fallback, but check BODY OBBs first
+                        val obbVec = obb.clip(vec3ToVector3d(startVec), vec3ToVector3d(endVec)).orElse(null)
+                        if (obbVec != null) {
+                            collisonHit = vector3dToVec3(obbVec)
+                        }
+                        continue
+                    }
+                    val obbVec = obb.clip(vec3ToVector3d(startVec), vec3ToVector3d(endVec)).orElse(null)
+                    if (obbVec != null) {
+                        val hitPos = vector3dToVec3(obbVec)
+                        OBBHitter.getInstance(projectile).`sbw$setCurrentHitPart`(obb.part)
+                        return hitPos
+                    }
+                }
+                // Fallback: use COLLISION OBB if no BODY OBB was hit (covers gaps on large vehicles)
+                return collisonHit
+            }
+            return null
+        }
+
+        @JvmField
+        val PROJECTILE_TARGETS_FAST =
+            Predicate { input: Entity? -> input != null && input.isPickable && !input.isSpectator && input.isAlive }
+
         @JvmField
         val COLOR_R: EntityDataAccessor<Float> =
             SynchedEntityData.defineId(ProjectileEntity::class.java, EntityDataSerializers.FLOAT)

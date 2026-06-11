@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.config.server.ProjectileConfig
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage
 import com.atsuishio.superbwarfare.tools.CustomExplosion
 import com.atsuishio.superbwarfare.tools.ParticleTool
+import com.atsuishio.superbwarfare.tools.postEvent
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.nbt.CompoundTag
@@ -29,7 +30,6 @@ import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
-import net.neoforged.neoforge.common.NeoForge
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn
 import net.neoforged.neoforge.network.PacketDistributor
 import java.util.function.Consumer
@@ -108,7 +108,8 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
     }
 
     override fun tick() {
-        super.tick()
+        this.baseTick()
+        this.updateRotation()
 
         if (!this.isFastMoving && this.isFastMoving() && this.level().isClientSide) {
             playFlySound.accept(this)
@@ -116,21 +117,82 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
         }
         this.isFastMoving = this.isFastMoving()
 
-        var vec3 = this.deltaMovement
+        if (!this.level().isClientSide()) {
+            val startVec = this.position()
+            var endVec = startVec.add(this.deltaMovement)
+
+            // Block collision
+            val blockHit = this.level().clip(
+                ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this)
+            )
+            if (blockHit.type != HitResult.Type.MISS) {
+                endVec = blockHit.location
+            }
+
+            // OBB-based entity collision (replaces vanilla ProjectileUtil path)
+            val entities = this.level().getEntities(
+                this,
+                this.boundingBox.expandTowards(this.deltaMovement).inflate(1.0),
+                ProjectileEntity.PROJECTILE_TARGETS_FAST
+            )
+            var closestEntity: Entity? = null
+            var closestHitVec: Vec3? = null
+            var closestDistSqr = Double.MAX_VALUE
+
+            for (entity in entities) {
+                if (entity == this.owner || this.owner != null && entity == this.owner!!.vehicle) continue
+                if (this.owner != null && entity.getRootVehicle() === this.owner!!.getRootVehicle()) continue
+
+                var hitVec: Vec3? = null
+
+                // For OBB entities: use OBB clip only, never fall back to AABB
+                if (entity is com.atsuishio.superbwarfare.entity.OBBEntity && !entity.enableAABB()) {
+                    hitVec = ProjectileEntity.clipObb(this, entity, startVec, endVec)
+                } else {
+                    // Non-OBB entities: use vanilla AABB clip
+                    hitVec = entity.boundingBox.clip(startVec, endVec).orElse(null)
+                }
+
+                if (hitVec != null) {
+                    val d = startVec.distanceToSqr(hitVec)
+                    if (d < closestDistSqr) {
+                        closestDistSqr = d
+                        closestEntity = entity
+                        closestHitVec = hitVec
+                    }
+                }
+            }
+
+            // Process block hit first, then entity hit
+            if (blockHit.type != HitResult.Type.MISS) {
+                this.onHitBlock(blockHit)
+            }
+            if (closestEntity != null) {
+                val result = EntityHitResult(closestEntity, closestHitVec!!)
+                this.onHitEntity(result)
+            }
+
+            // Movement
+            this.setPos(this.x + deltaMovement.x, this.y + deltaMovement.y, this.z + deltaMovement.z)
+        } else {
+            this.setPosRaw(this.x + deltaMovement.x, this.y + deltaMovement.y, this.z + deltaMovement.z)
+        }
+
+        // Custom friction and gravity
+        // Note: super.tick() is not called, so vanilla gravity was never applied.
+        // We apply friction first, then our own gravity directly (no undo needed).
         val friction = if (this.isInWater) {
             0.8f
         } else {
             0.99f
         }
 
-        // 撤销重力影响
-        vec3 = vec3.add(0.0, this.gravityValue.toDouble(), 0.0)
-        // 重新计算动量
-        this.deltaMovement = vec3.scale((1 / friction).toDouble())
-
-        // 重新应用重力
-        val vec31 = this.deltaMovement
-        this.setDeltaMovement(vec31.x, vec31.y - this.gravityValue.toDouble(), vec31.z)
+        this.deltaMovement = this.deltaMovement.scale((1 / friction).toDouble())
+        this.setDeltaMovement(
+            this.deltaMovement.x,
+            this.deltaMovement.y - this.gravity.toDouble(),
+            this.deltaMovement.z
+        )
 
         // 同步动量
         this.syncMotion()
@@ -165,27 +227,25 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
     }
 
     override fun onHitEntity(result: EntityHitResult) {
-        super.onHitEntity(result)
-        NeoForge.EVENT_BUS.post(
+        postEvent(
             HitEntity(
                 this.owner,
                 this,
                 result.entity,
-                result.getLocation()
+                result.location
             )
         )
     }
 
     override fun onHitBlock(result: BlockHitResult) {
-        super.onHitBlock(result)
-        NeoForge.EVENT_BUS.post(
+        postEvent(
             HitBlock(
                 result.blockPos,
                 this.level().getBlockState(result.blockPos),
                 result.direction,
                 this.owner,
                 this,
-                result.getLocation()
+                result.location
             )
         )
     }
@@ -196,7 +256,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
         if (hardness != -1f) {
             if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
                 if (firstHit) {
-                    causeExplode(blockHitResult.getLocation())
+                    causeExplode(blockHitResult.location)
                     firstHit = false
                     queueServerWork(3) { this.discard() }
                 }
@@ -205,11 +265,11 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
                 }
             }
         } else {
-            causeExplode(blockHitResult.getLocation())
+            causeExplode(blockHitResult.location)
             this.discard()
         }
         if (!ExplosionConfig.EXPLOSION_DESTROY.get()) {
-            causeExplode(blockHitResult.getLocation())
+            causeExplode(blockHitResult.location)
             this.discard()
         }
     }
