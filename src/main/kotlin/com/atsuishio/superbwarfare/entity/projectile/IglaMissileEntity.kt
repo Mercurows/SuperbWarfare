@@ -49,18 +49,18 @@ open class IglaMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
 
         mediumTrail()
 
-        val entity = EntityFindUtil.findEntity(this.level(), this.targetUUID)
+        val entity = EntityFindUtil.findEntity(this.level(), this.getTargetUUID())
         val decoy = SeekTool.seekLivingEntities(this, 32.0, 90.0)
 
         for (e in decoy) {
-            if (e.type.`is`(ModTags.EntityTypes.DECOY) && !this.distracted) {
-                this.targetUUID = e.getStringUUID()
-                this.distracted = true
+            if (e.type.`is`(ModTags.EntityTypes.DECOY) && !this.isDistracted()) {
+                this.setTargetUUID(e.getStringUUID())
+                this.setDistracted(true)
                 break
             }
         }
 
-        if (entity != null && this.targetUUID != "none") {
+        if (entity != null && this.getTargetUUID() != "none") {
             if ((entity.getPassengers().isNotEmpty() || entity is VehicleEntity)
                 && entity.tickCount % (max(0.04 * this.distanceTo(entity), 2.0).toInt()) == 0
             ) {
@@ -88,29 +88,29 @@ open class IglaMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
             )
 
             if (this.tickCount > 1) {
-                lostTarget = deltaMovement.angleTo(toVec) > 120 && !lostTarget
+                setLostTarget(deltaMovement.angleTo(toVec) > 120 && !isLostTarget())
 
                 val owner = this.owner
-                if (owner is Player && owner.mainHandItem.`is`(ModItems.IGLA_9K38.get()) && !lost) {
+                if (owner is Player && owner.mainHandItem.`is`(ModItems.IGLA_9K38.get()) && !isLost()) {
                     val handItem = owner.mainHandItem
                     val data = from(handItem)
-                    lost = !data.zooming.get() || !checkNoClip(owner.eyePosition, targetPos, this.level())
+                    setLost(!data.zooming.get() || !checkNoClip(owner.eyePosition, targetPos, this.level()))
                 }
 
-                if (!lostTarget && !lost) {
+                if (!isLostTarget() && !isLost()) {
                     turn(toVec, ((tickCount - 1) * 0.5f).coerceIn(0f, 15f))
                     this.deltaMovement = this.deltaMovement.scale(0.05).add(lookAngle.scale(8.0))
                 }
 
-                if (lostTarget) {
-                    this.targetUUID = "none"
+                if (isLostTarget()) {
+                    this.setTargetUUID("none")
                 }
             }
         }
 
-        if (lost) {
+        if (isLost()) {
             deltaMovement = deltaMovement.add(0.0, 0.03, 0.0)
-            this.targetUUID = "none"
+            this.setTargetUUID("none")
         }
     }
 

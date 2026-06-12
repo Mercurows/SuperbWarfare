@@ -1,8 +1,6 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.config.server.MiscConfig
-import com.atsuishio.superbwarfare.entity.getValue
-import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
 import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
 import com.atsuishio.superbwarfare.tools.SeekTool
@@ -25,17 +23,40 @@ import net.minecraftforge.entity.IEntityAdditionalSpawnData
 import net.minecraftforge.registries.ForgeRegistries
 
 abstract class MissileProjectile : DestroyableProjectile, ITrackableProjectile, IEntityAdditionalSpawnData {
-    override var targetPos: Vec3? = null
+    private var targetPosValue: Vec3? = null
+    override fun getTargetPos(): Vec3? = targetPosValue
+    override fun setTargetPos(value: Vec3?) {
+        targetPosValue = value
+    }
 
-    override var guideType: Int = 0
+    private var guideTypeValue: Int = 0
+    override fun getGuideType(): Int = guideTypeValue
+    override fun setGuideType(value: Int) {
+        guideTypeValue = value
+    }
 
-    override var distracted: Boolean = false
+    private var distractedValue: Boolean = false
+    override fun isDistracted(): Boolean = distractedValue
+    override fun setDistracted(value: Boolean) {
+        distractedValue = value
+    }
 
-    override var lost: Boolean = false
+    private var lostValue: Boolean = false
+    override fun isLost(): Boolean = lostValue
+    override fun setLost(value: Boolean) {
+        lostValue = value
+    }
 
-    override var lostTarget: Boolean = false
+    private var lostTargetValue: Boolean = false
+    override fun isLostTarget(): Boolean = lostTargetValue
+    override fun setLostTarget(value: Boolean) {
+        lostTargetValue = value
+    }
 
-    override var targetUUID by TARGET_UUID
+    override fun getTargetUUID(): String = entityData.get(TARGET_UUID)
+    override fun setTargetUUID(value: String) {
+        entityData.set(TARGET_UUID, value)
+    }
 
     constructor(pEntityType: EntityType<out ThrowableItemProjectile>, pLevel: Level) : super(pEntityType, pLevel)
 
@@ -48,12 +69,12 @@ abstract class MissileProjectile : DestroyableProjectile, ITrackableProjectile, 
     }
 
     fun setTargetUuid(uuid: String) {
-        this.targetUUID = uuid
+        this.setTargetUUID(uuid)
     }
 
     fun setTargetVec(targetPos: Vec3?) {
         if (targetPos != null) {
-            this.targetPos = targetPos
+            this.targetPosValue = targetPos
         }
     }
 
@@ -65,13 +86,13 @@ abstract class MissileProjectile : DestroyableProjectile, ITrackableProjectile, 
     override fun readAdditionalSaveData(compound: CompoundTag) {
         super.readAdditionalSaveData(compound)
         if (compound.contains("TargetUuid")) {
-            targetUUID = compound.getString("TargetUuid")
+            setTargetUUID(compound.getString("TargetUuid"))
         }
     }
 
     override fun addAdditionalSaveData(compound: CompoundTag) {
         super.addAdditionalSaveData(compound)
-        compound.putString("TargetUuid", this.targetUUID)
+        compound.putString("TargetUuid", this.getTargetUUID())
     }
 
     public override fun onHitBlock(result: BlockHitResult) {

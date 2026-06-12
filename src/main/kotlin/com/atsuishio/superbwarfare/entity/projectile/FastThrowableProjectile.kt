@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.client.particle.CustomFlareOption
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig
-import com.atsuishio.superbwarfare.entity.OBBEntity
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage
 import com.atsuishio.superbwarfare.tools.CustomExplosion
 import com.atsuishio.superbwarfare.tools.ParticleTool
@@ -48,26 +47,25 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
     var durability: Int = 50
     var firstHit: Boolean = true
 
-    override var damage: Float
-        get() = damageValue
-        set(v) {
-            damageValue = v
-        }
-    override var explosionDamage: Float
-        get() = explosionDamageValue
-        set(v) {
-            explosionDamageValue = v
-        }
-    override var explosionRadius: Float
-        get() = explosionRadiusValue
-        set(v) {
-            explosionRadiusValue = v
-        }
-    override var life: Int
-        get() = lifeValue
-        set(v) {
-            lifeValue = v
-        }
+    override fun getDamage(): Float = damageValue
+    override fun setDamage(value: Float) {
+        damageValue = value
+    }
+
+    override fun getExplosionDamage(): Float = explosionDamageValue
+    override fun setExplosionDamage(value: Float) {
+        explosionDamageValue = value
+    }
+
+    override fun getExplosionRadius(): Float = explosionRadiusValue
+    override fun setExplosionRadius(value: Float) {
+        explosionRadiusValue = value
+    }
+
+    override fun getLife(): Int = lifeValue
+    override fun setLife(value: Int) {
+        lifeValue = value
+    }
 
     private var isFastMoving = false
 
@@ -133,8 +131,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
     }
 
     override fun tick() {
-        this.baseTick()
-        this.updateRotation()
+        super.tick()
 
         if (!this.isFastMoving && this.isFastMoving() && this.level().isClientSide) {
             playFlySound.accept(this)
@@ -142,80 +139,21 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         }
         this.isFastMoving = this.isFastMoving()
 
-        if (!this.level().isClientSide()) {
-            val startVec = this.position()
-            var endVec = startVec.add(this.deltaMovement)
-
-            // Block collision
-            val blockHit = this.level().clip(
-                ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this)
-            )
-            if (blockHit.type != HitResult.Type.MISS) {
-                endVec = blockHit.location
-            }
-
-            // OBB-based entity collision (replaces vanilla ProjectileUtil path)
-            val entities = this.level().getEntities(
-                this,
-                this.boundingBox.expandTowards(this.deltaMovement).inflate(1.0),
-                ProjectileEntity.PROJECTILE_TARGETS_FAST
-            )
-            var closestEntity: Entity? = null
-            var closestHitVec: Vec3? = null
-            var closestDistSqr = Double.MAX_VALUE
-
-            for (entity in entities) {
-                if (entity == this.owner || this.owner != null && entity == this.owner!!.vehicle) continue
-                if (this.owner != null && entity.getRootVehicle() === this.owner!!.getRootVehicle()) continue
-
-                // For OBB entities: use OBB clip only, never fall back to AABB
-                val hitVec = if (entity is OBBEntity && !entity.enableAABB()) {
-                    ProjectileEntity.clipObb(this, entity, startVec, endVec)
-                } else {
-                    // Non-OBB entities: use vanilla AABB clip
-                    entity.boundingBox.clip(startVec, endVec).orElse(null)
-                }
-
-                if (hitVec != null) {
-                    val d = startVec.distanceToSqr(hitVec)
-                    if (d < closestDistSqr) {
-                        closestDistSqr = d
-                        closestEntity = entity
-                        closestHitVec = hitVec
-                    }
-                }
-            }
-
-            // Process block hit first, then entity hit
-            if (blockHit.type != HitResult.Type.MISS) {
-                this.onHitBlock(blockHit)
-            }
-            if (closestEntity != null) {
-                val result = EntityHitResult(closestEntity, closestHitVec!!)
-                this.onHitEntity(result)
-            }
-
-            // Movement
-            this.setPos(this.x + deltaMovement.x, this.y + deltaMovement.y, this.z + deltaMovement.z)
-        } else {
-            this.setPosRaw(this.x + deltaMovement.x, this.y + deltaMovement.y, this.z + deltaMovement.z)
-        }
-
-        // Custom friction and gravity
-        // Note: super.tick() is not called, so vanilla gravity was never applied.
-        // We apply friction first, then our own gravity directly (no undo needed).
+        var vec3 = this.deltaMovement
         val friction = if (this.isInWater) {
             0.8f
         } else {
             0.99f
         }
 
-        this.deltaMovement = this.deltaMovement.scale((1 / friction).toDouble())
-        this.setDeltaMovement(
-            this.deltaMovement.x,
-            this.deltaMovement.y - this.gravity.toDouble(),
-            this.deltaMovement.z
-        )
+        // 撤销重力影响
+        vec3 = vec3.add(0.0, this.gravity.toDouble(), 0.0)
+        // 重新计算动量
+        this.deltaMovement = vec3.scale((1 / friction).toDouble())
+
+        // 重新应用重力
+        val vec31 = this.deltaMovement
+        this.setDeltaMovement(vec31.x, vec31.y - this.gravity.toDouble(), vec31.z)
 
         // 同步动量
         this.syncMotion()
@@ -227,7 +165,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
                 this.keepChunkLoaded(position().add(this.deltaMovement.normalize().scale(16.0)))
             }
 
-            if (tickCount > life) {
+            if (tickCount > this.lifeValue) {
                 if (explosionRadiusValue > 0) {
                     causeExplode(position())
                 }
@@ -250,6 +188,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
     }
 
     override fun onHitEntity(result: EntityHitResult) {
+        super.onHitEntity(result)
         postEvent(
             HitEntity(
                 this.owner,
@@ -261,6 +200,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
     }
 
     override fun onHitBlock(result: BlockHitResult) {
+        super.onHitBlock(result)
         postEvent(
             HitBlock(
                 result.blockPos,

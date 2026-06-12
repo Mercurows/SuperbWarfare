@@ -784,11 +784,11 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
             // SBW弹射物专属属性
             if (entity is IBulletProperties) {
-                entity.damage = damage.toFloat()
+                entity.setDamage(damage.toFloat())
                 entity.setCustomGravity(data.get(GunProp.GRAVITY).toFloat())
-                entity.explosionDamage = data.get(GunProp.EXPLOSION_DAMAGE).toFloat()
-                entity.explosionRadius = data.get(GunProp.EXPLOSION_RADIUS).toFloat()
-                entity.life = data.get(GunProp.PROJECTILE_LIFE)
+                entity.setExplosionDamage(data.get(GunProp.EXPLOSION_DAMAGE).toFloat())
+                entity.setExplosionRadius(data.get(GunProp.EXPLOSION_RADIUS).toFloat())
+                entity.setLife(data.get(GunProp.PROJECTILE_LIFE))
             }
 
             if (entity is WireGuideMissileEntity && shooter != null && shooter.vehicle != null) {
@@ -848,10 +848,10 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             if (entity is MissileProjectile && shooter != null) {
                 val target = EntityFindUtil.findEntity(shooter.level(), uuid.toString())
                 if (target != null) {
-                    entity.guideType = 0
+                    entity.setGuideType(0)
                     entity.setTargetUuid(uuid.toString())
                 } else if (targetPos != null) {
-                    entity.guideType = 1
+                    entity.setGuideType(1)
                     entity.setTargetVec(targetPos)
                 }
             }

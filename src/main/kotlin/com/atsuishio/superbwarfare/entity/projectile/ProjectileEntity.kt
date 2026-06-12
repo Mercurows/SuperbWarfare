@@ -24,8 +24,6 @@ import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.FormatTool.format1D
 import com.atsuishio.superbwarfare.tools.HitboxHelper.getBoundingBox
 import com.atsuishio.superbwarfare.tools.HitboxHelper.getVelocity
-import com.atsuishio.superbwarfare.tools.OBB.Companion.vec3ToVector3d
-import com.atsuishio.superbwarfare.tools.OBB.Companion.vector3dToVec3
 import com.atsuishio.superbwarfare.tools.VectorTool.isInLiquid
 import com.atsuishio.superbwarfare.world.phys.EntityResult
 import com.atsuishio.superbwarfare.world.phys.ExtendedEntityRayTraceResult
@@ -71,7 +69,6 @@ import java.util.*
 import java.util.function.BiFunction
 import java.util.function.Function
 import java.util.function.Predicate
-import java.util.function.ToDoubleFunction
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.ceil
@@ -80,31 +77,99 @@ import kotlin.math.max
 @Suppress("unused")
 open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level: Level) : Projectile(entityType, level),
     IBulletProperties, IAdvancedHitDetection, IFastMotionSync {
-    // 子弹的发射者，可以为空（public setter 由 IBulletProperties 接口要求）
+    // 子弹的发射者，可以为空
     var shooter: Entity? = null
 
     // 子弹的发射者的ID
     var shooterId: Int = 0
         protected set
 
-    // ===== IBulletProperties 属性 =====
-    override var damage = 1f
-    override var headShot = 1f
-    override var legShot = 0.5f
-    override var beast = false
-    override var isZoom: Boolean = false
-    override var explosionDamage = 0.0f
-    override var explosionRadius = 0.0f
-    override var fireLevel = 0
-    override var dragonBreath = false
-    override var knockback = 0.05f
-    override var velocity = 20f
-    override var forceKnockback = false
-    override var life = 40
-
+    // ===== IBulletProperties 属性（使用 getter/setter 方法） =====
+    private var damageValue = 1f
+    private var headShotValue = 1f
+    private var legShotValue = 0.5f
+    private var beastValue = false
+    private var isZoomValue: Boolean = false
+    private var explosionDamageValue = 0.0f
+    private var explosionRadiusValue = 0.0f
+    private var fireLevelValue = 0
+    private var dragonBreathValue = false
+    private var knockbackValue = 0.05f
+    private var velocityValue = 20f
+    private var forceKnockbackValue = false
+    private var lifeValue = 40
     // 子弹的穿甲比例
-    var bypassArmorRate: Float = 0.0f
-        private set
+    private var bypassArmorRateValue = 0.0f
+
+    override fun getDamage(): Float = damageValue
+    override fun setDamage(value: Float) {
+        damageValue = value
+    }
+
+    override fun getHeadShot(): Float = headShotValue
+    override fun setHeadShot(value: Float) {
+        headShotValue = value
+    }
+
+    override fun getLegShot(): Float = legShotValue
+    override fun setLegShot(value: Float) {
+        legShotValue = value
+    }
+
+    override fun getBeast(): Boolean = beastValue
+    override fun setBeast(value: Boolean) {
+        beastValue = value
+    }
+
+    override fun getIsZoom(): Boolean = isZoomValue
+    override fun setIsZoom(value: Boolean) {
+        isZoomValue = value
+    }
+
+    override fun getExplosionDamage(): Float = explosionDamageValue
+    override fun setExplosionDamage(value: Float) {
+        explosionDamageValue = value
+    }
+
+    override fun getExplosionRadius(): Float = explosionRadiusValue
+    override fun setExplosionRadius(value: Float) {
+        explosionRadiusValue = value
+    }
+
+    override fun getFireLevel(): Int = fireLevelValue
+    override fun setFireLevel(value: Int) {
+        fireLevelValue = value
+    }
+
+    override fun getDragonBreath(): Boolean = dragonBreathValue
+    override fun setDragonBreath(value: Boolean) {
+        dragonBreathValue = value
+    }
+
+    override fun getKnockback(): Float = knockbackValue
+    override fun setKnockback(value: Float) {
+        knockbackValue = value
+    }
+
+    override fun getVelocity(): Float = velocityValue
+    override fun setVelocity(value: Float) {
+        velocityValue = value
+    }
+
+    override fun getForceKnockback(): Boolean = forceKnockbackValue
+    override fun setForceKnockback(value: Boolean) {
+        forceKnockbackValue = value
+    }
+
+    override fun getLife(): Int = lifeValue
+    override fun setLife(value: Int) {
+        lifeValue = value
+    }
+
+    override fun getBypassArmorRate(): Float = bypassArmorRateValue
+    override fun setBypassArmorRate(value: Float) {
+        bypassArmorRateValue = value
+    }
 
     // 是否能穿墙
     var isPenetrating: Boolean = false
@@ -125,44 +190,6 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
 
     constructor(level: Level) : this(ModEntities.PROJECTILE.get(), level)
 
-    override fun findEntityOnPath(startVec: Vec3, endVec: Vec3): EntityResult? {
-        var hitVec: Vec3? = null
-        var hitEntity: Entity? = null
-        var headshot = false
-        var legShot = false
-        val entities = this.level()
-            .getEntities(
-                this,
-                this.boundingBox
-                    .expandTowards(this.deltaMovement)
-                    .inflate((if (this.beast) 3 else 1).toDouble()),
-                PROJECTILE_TARGETS
-            )
-        var closestDistance = Double.MAX_VALUE
-
-        for (entity in entities) {
-            if (entity == this.shooter || this.shooter != null && entity == this.shooter!!.vehicle) continue
-            if (this.shooter != null && entity.getRootVehicle() === this.shooter!!.getRootVehicle()) continue
-
-            if (entity is TargetEntity && entity.getEntityData().get(TargetEntity.DOWN_TIME) > 0) continue
-            if (entity is DPSGeneratorEntity && entity.getEntityData().get(DPSGeneratorEntity.DOWN_TIME) > 0) continue
-
-            val result = this.getHitResult(entity, startVec, endVec) ?: continue
-
-            val hitPos = result.hitVec
-
-            val distanceToHit = startVec.distanceTo(hitPos)
-            if (distanceToHit < closestDistance) {
-                hitVec = hitPos
-                hitEntity = entity
-                closestDistance = distanceToHit
-                headshot = result.headshot
-                legShot = result.legShot
-            }
-        }
-        return if (hitEntity != null) EntityResult(hitEntity, hitVec!!, headshot, legShot) else null
-    }
-
     override fun findEntitiesOnPath(startVec: Vec3, endVec: Vec3): MutableList<EntityResult> {
         val hitEntities: MutableList<EntityResult> = arrayListOf()
         val entities = this.level().getEntities(
@@ -173,11 +200,15 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
             PROJECTILE_TARGETS
         )
         for (entity in entities) {
-            if (this.shooter == null || entity !== shooter && entity !== this.shooter!!.vehicle) {
-                val result = this.getHitResult(entity, startVec, endVec) ?: continue
-                if (entity.vehicle != null && this.shooter != null && entity.vehicle === this.shooter!!.vehicle) continue
-                hitEntities.add(result)
-            }
+            if (entity == this.shooter || this.shooter != null
+                && (entity == this.shooter!!.vehicle || entity.getRootVehicle() === this.shooter!!.getRootVehicle())
+            ) continue
+
+            if (entity is TargetEntity && entity.getEntityData().get(TargetEntity.DOWN_TIME) > 0) continue
+            if (entity is DPSGeneratorEntity && entity.getEntityData().get(DPSGeneratorEntity.DOWN_TIME) > 0) continue
+
+            val result = this.getHitResult(entity, startVec, endVec) ?: continue
+            hitEntities.add(result)
         }
         return hitEntities
     }
@@ -192,50 +223,48 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
         if (entity is OBBEntity && !entity.enableAABB()) {
             for (obb in entity.getOBBs()) {
                 if (obb.part == OBB.Part.COLLISION) continue
-                val obbVec = obb.clip(vec3ToVector3d(startVec), vec3ToVector3d(endVec)).orElse(null)
-                if (obbVec != null) {
-                    hitPos = vector3dToVec3(obbVec)
-                    val level = this.level()
-                    if (level is ServerLevel) {
-                        level.playSound(
-                            null,
-                            BlockPos.containing(hitPos),
-                            ModSounds.HIT.get(),
-                            SoundSource.PLAYERS,
-                            1f,
-                            1f
-                        )
-                        ParticleTool.sendParticle(
-                            level,
-                            ModParticleTypes.FIRE_STAR.get(),
-                            hitPos.x,
-                            hitPos.y,
-                            hitPos.z,
-                            2,
-                            0.0,
-                            0.0,
-                            0.0,
-                            0.2,
-                            false
-                        )
-                        ParticleTool.sendParticle(
-                            level,
-                            ParticleTypes.SMOKE,
-                            hitPos.x,
-                            hitPos.y,
-                            hitPos.z,
-                            2,
-                            0.0,
-                            0.0,
-                            0.0,
-                            0.01,
-                            false
-                        )
-                    }
-
-                    val acc = OBBHitter.getInstance(this)
-                    acc.`sbw$setCurrentHitPart`(obb.part)
+                val obbVec = obb.clip(startVec.toVector3d(), endVec.toVector3d()).orElse(null) ?: continue
+                hitPos = obbVec.toVec3()
+                val level = this.level()
+                if (level is ServerLevel) {
+                    level.playSound(
+                        null,
+                        BlockPos.containing(hitPos),
+                        ModSounds.HIT.get(),
+                        SoundSource.PLAYERS,
+                        1f,
+                        1f
+                    )
+                    ParticleTool.sendParticle(
+                        level,
+                        ModParticleTypes.FIRE_STAR.get(),
+                        hitPos.x,
+                        hitPos.y,
+                        hitPos.z,
+                        2,
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.2,
+                        false
+                    )
+                    ParticleTool.sendParticle(
+                        level,
+                        ParticleTypes.SMOKE,
+                        hitPos.x,
+                        hitPos.y,
+                        hitPos.z,
+                        2,
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.01,
+                        false
+                    )
                 }
+
+                val acc = OBBHitter.getInstance(this)
+                acc.`sbw$setCurrentHitPart`(obb.part)
             }
         } else {
             var boundingBox = entity.boundingBox
@@ -270,7 +299,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
             }
             boundingBox = boundingBox.move(velocity.multiply(-5.0, -5.0, -5.0))
 
-            if (this.beast) {
+            if (this.beastValue) {
                 boundingBox = boundingBox.inflate(3.0)
             }
 
@@ -290,10 +319,6 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
         }
         if (hitBoxPos.y < (0.33 * bodyHeight) && entity is LivingEntity) {
             legShot = true
-        }
-
-        if (this.explosionDamage > 0) {
-            explosionBullet(this, hitPos)
         }
 
         return EntityResult(entity, hitPos, headshot, legShot)
@@ -319,7 +344,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
                 rayTraceBlocks(
                     level,
                     ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this),
-                    if (this.isPenetrating || this.beast) Predicate { true } else if (ProjectileConfig.PROJECTILE_DESTROY_BLOCKS.get()) IGNORE_LIST.and(
+                    if (this.isPenetrating || this.beastValue) Predicate { true } else if (ProjectileConfig.PROJECTILE_DESTROY_BLOCKS.get()) IGNORE_LIST.and(
                         Predicate { input -> !input.`is`(ModTags.Blocks.BULLET_CAN_DESTROY) }) else IGNORE_LIST
                 )
 
@@ -327,7 +352,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
                 rayTraceBlocks(
                     level,
                     ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, this),
-                    if (this.isPenetrating || this.beast) Predicate { true } else if (ProjectileConfig.PROJECTILE_DESTROY_BLOCKS.get()) IGNORE_LIST.and(
+                    if (this.isPenetrating || this.beastValue) Predicate { true } else if (ProjectileConfig.PROJECTILE_DESTROY_BLOCKS.get()) IGNORE_LIST.and(
                         Predicate { input -> !input.`is`(ModTags.Blocks.BULLET_CAN_DESTROY) }) else IGNORE_LIST
                 )
 
@@ -335,14 +360,9 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
                 endVec = result.getLocation()
             }
 
-            val entityResults: MutableList<EntityResult> = arrayListOf()
-            val temp = findEntitiesOnPath(startVec, endVec)
-            entityResults.addAll(temp)
-
+            val entityResults = findEntitiesOnPath(startVec, endVec)
             if (this.shooter != null) {
-                entityResults.sortWith(Comparator.comparingDouble(ToDoubleFunction {
-                    it.hitVec.distanceTo(this.shooter!!.position())
-                }))
+                entityResults.sortBy { it.hitVec.distanceTo(this.shooter!!.position()) }
             }
 
             for (entityResult in entityResults) {
@@ -358,9 +378,9 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
                     this.onHit(result)
                 }
 
-                if (!this.beast) {
-                    this.bypassArmorRate -= 0.2f
-                    if (this.bypassArmorRate < 0.8f) {
+                if (!this.beastValue) {
+                    this.bypassArmorRateValue -= 0.2f
+                    if (this.bypassArmorRateValue < 0.8f) {
                         if (result != null && !(resEntity is TargetEntity && resEntity.getEntityData()
                                 .get(TargetEntity.DOWN_TIME) > 0)
                             && !(resEntity is DPSGeneratorEntity && resEntity.getEntityData()
@@ -383,11 +403,11 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
 
         this.deltaMovement = this.deltaMovement.add(0.0, -this.gravity.toDouble(), 0.0)
 
-        if (this.tickCount > (if (fireLevel > 0) 10 else life)) {
+        if (this.tickCount > (if (fireLevelValue > 0) 10 else lifeValue)) {
             this.discard()
         }
 
-        if (fireLevel > 0 && dragonBreath && level is ServerLevel) {
+        if (fireLevelValue > 0 && dragonBreathValue && level is ServerLevel) {
             val randomPos = this.tickCount * 0.08 * (Math.random() - 0.5)
             ParticleTool.sendParticle(
                 level,
@@ -452,12 +472,9 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
                 1f
             )
             val hitVec = result.getLocation()
+            this.onHitBlock(result)
 
-            this.onHitBlock(hitVec, result)
-            if (this.explosionDamage > 0) {
-                explosionBullet(this, hitVec)
-            }
-            if (fireLevel > 0 && level is ServerLevel) {
+            if (fireLevelValue > 0 && level is ServerLevel) {
                 ParticleTool.sendParticle(
                     level, ParticleTypes.LAVA, hitVec.x, hitVec.y, hitVec.z,
                     3, 0.0, 0.0, 0.0, 0.5, true
@@ -653,31 +670,33 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
         }
     }
 
-    protected fun onHitBlock(location: Vec3, result: BlockHitResult) {
+    override fun onHitBlock(result: BlockHitResult) {
         val level = this.level()
+        val location = result.location
         if (level is ServerLevel) {
             val pos = result.blockPos
             val face = result.direction
             val state = level().getBlockState(pos)
 
-            if (postEvent(
-                    HitBlock(
-                        pos,
-                        state,
-                        face,
-                        this.shooter,
-                        this,
-                        result.getLocation()
-                    )
-                )
-            ) return
+            if (postEvent(HitBlock(pos, state, face, this.shooter, this, location))) return
+
+            state.onProjectileHit(level, state, result, this)
+
+            if (this.explosionDamageValue > 0) {
+                CustomExplosion.Builder(this)
+                    .attacker(this.shooter)
+                    .damage(this.explosionDamageValue)
+                    .radius(this.explosionRadiusValue)
+                    .position(location)
+                    .explode()
+            }
 
             val vx = face.stepX.toDouble()
             val vy = face.stepY.toDouble()
             val vz = face.stepZ.toDouble()
             val dir = Vec3(vx, vy, vz)
 
-            if (this.beast) {
+            if (this.beastValue) {
                 ParticleTool.sendParticle(
                     level,
                     ParticleTypes.END_ROD,
@@ -692,21 +711,14 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
                     true
                 )
             } else {
-                val bulletDecalOption = if (
-                    this.entityData.get(COLOR_R) == DEFAULT_R
-                    && this.entityData.get(COLOR_G) == DEFAULT_G
-                    && this.entityData.get(COLOR_B) == DEFAULT_B
-                ) {
-                    BulletDecalOption(result.direction, result.blockPos)
-                } else {
-                    BulletDecalOption(
-                        result.direction,
-                        result.blockPos,
-                        this.entityData.get(COLOR_R),
-                        this.entityData.get(COLOR_G),
-                        this.entityData.get(COLOR_B)
-                    )
-                }
+                val bulletDecalOption = BulletDecalOption(
+                    result.direction,
+                    result.blockPos,
+                    this.entityData.get(COLOR_R),
+                    this.entityData.get(COLOR_G),
+                    this.entityData.get(COLOR_B)
+                )
+
                 ParticleTool.sendParticle(
                     level,
                     bulletDecalOption,
@@ -821,13 +833,13 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
                 (2 * Math.random() - 1).toFloat() * 0.1f + 1.0f
             )
 
-            if (beast) {
+            if (beastValue) {
                 beastKill(this.shooter, entity)
                 return
             }
         }
 
-        this.damage *= (deltaMovement.length() / velocity).coerceIn(0.0, 1.0).toFloat()
+        this.damageValue *= (deltaMovement.length() / velocityValue).coerceIn(0.0, 1.0).toFloat()
 
         val shooter = this.shooter
         if (headshot) {
@@ -847,7 +859,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
                 )
                 sendPacketTo(shooter, ClientIndicatorMessage(1, 5))
             }
-            performOnHit(entity, this.damage, true, this.knockback.toDouble())
+            performOnHit(entity, this.damageValue, true, this.knockbackValue.toDouble())
         } else {
             if (shooter is ServerPlayer) {
                 val holder = Holder.direct(ModSounds.INDICATION.get())
@@ -875,10 +887,10 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
                         entity.addEffect(MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 2, false, false))
                     }
                 }
-                this.damage *= this.legShot
+                this.damageValue *= this.legShotValue
             }
 
-            performOnHit(entity, this.damage, false, this.knockback.toDouble())
+            performOnHit(entity, this.damageValue, false, this.knockbackValue.toDouble())
         }
 
         if (!this.mobEffects.isEmpty() && entity is LivingEntity) {
@@ -887,12 +899,21 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
             }
         }
 
+        if (this.explosionDamageValue > 0) {
+            CustomExplosion.Builder(this)
+                .attacker(this.shooter)
+                .damage(this.explosionDamageValue)
+                .radius(this.explosionRadiusValue)
+                .position(result.location)
+                .explode()
+        }
+
         this.discard()
     }
 
     override fun performOnHit(entity: Entity, damage: Float, headshot: Boolean, knockback: Double) {
         if (entity is LivingEntity) {
-            if (this.forceKnockback) {
+            if (this.forceKnockbackValue) {
                 val vec3 = this.deltaMovement.multiply(1.0, 0.0, 1.0).normalize()
                 entity.addDeltaMovement(vec3.scale(knockback))
                 performDamage(entity, damage, headshot)
@@ -905,15 +926,6 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
         } else {
             performDamage(entity, damage, headshot)
         }
-    }
-
-    protected fun explosionBullet(projectile: Entity, hitVec: Vec3) {
-        CustomExplosion.Builder(projectile)
-            .attacker(this.shooter)
-            .damage(this.explosionDamage)
-            .radius(this.explosionRadius)
-            .position(hitVec)
-            .explode()
     }
 
     open fun shoot(living: LivingEntity?, vecX: Double, vecY: Double, vecZ: Double, velocity: Float, spread: Float) {
@@ -943,14 +955,14 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
     }
 
     override fun performDamage(entity: Entity, damage: Float, isHeadshot: Boolean) {
-        val rate = this.bypassArmorRate.coerceIn(0f, 1f)
+        val rate = this.bypassArmorRateValue.coerceIn(0f, 1f)
 
         val normalDamage = damage * (1 - rate).coerceIn(0f, 1f)
         val absoluteDamage = damage * rate.coerceIn(0f, 1f)
 
         entity.invulnerableTime = 0
 
-        val headShotModifier = if (isHeadshot) this.headShot else 1f
+        val headShotModifier = if (isHeadshot) this.headShotValue else 1f
         // 先造成穿甲伤害
         if (absoluteDamage > 0) {
             entity.forceHurt(
@@ -963,10 +975,10 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
             entity.invulnerableTime = 0
 
             // 大于1的穿甲对载具造成额外伤害
-            if (entity is VehicleEntity && this.bypassArmorRate > 1) {
+            if (entity is VehicleEntity && this.bypassArmorRateValue > 1) {
                 entity.hurt(
                     causeGunFireAbsoluteDamage(this.level().registryAccess(), this, this.shooter),
-                    absoluteDamage * (this.bypassArmorRate - 1) * 0.5f
+                    absoluteDamage * (this.bypassArmorRateValue - 1) * 0.5f
                 )
             }
         }
@@ -991,43 +1003,43 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
     }
 
     fun damage(damage: Float): ProjectileEntity {
-        this.damage = damage
+        this.damageValue = damage
         return this
     }
 
     fun velocity(velocity: Float): ProjectileEntity {
-        this.velocity = velocity
+        this.velocityValue = velocity
         return this
     }
 
     fun headShot(headShot: Float): ProjectileEntity {
-        this.headShot = headShot
+        this.headShotValue = headShot
         return this
     }
 
     fun legShot(legShot: Float): ProjectileEntity {
-        this.legShot = legShot
+        this.legShotValue = legShot
         return this
     }
 
     fun beast(): ProjectileEntity {
-        this.beast = true
+        this.beastValue = true
         return this
     }
 
     fun fireBullet(fireLevel: Int, dragonBreath: Boolean): ProjectileEntity {
-        this.fireLevel = fireLevel
-        this.dragonBreath = dragonBreath
+        this.fireLevelValue = fireLevel
+        this.dragonBreathValue = dragonBreath
         return this
     }
 
     fun zoom(zoom: Boolean): ProjectileEntity {
-        this.isZoom = zoom
+        this.isZoomValue = zoom
         return this
     }
 
     fun bypassArmorRate(bypassArmorRate: Float): ProjectileEntity {
-        this.bypassArmorRate = bypassArmorRate
+        this.bypassArmorRateValue = bypassArmorRate
         return this
     }
 
@@ -1050,11 +1062,6 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
         this.entityData.get(COLOR_B)
     )
 
-    override fun setFireBullet(fireLevel: Int, dragonBreath: Boolean) {
-        this.fireLevel = fireLevel
-        this.dragonBreath = dragonBreath
-    }
-
     override fun setEffect(effects: List<MobEffectInstance>) {
         this.mobEffects.addAll(effects)
     }
@@ -1064,14 +1071,18 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
     }
 
     // ===== Builder methods (return ProjectileEntity for chaining) =====
+    fun setFireBullet(fireLevel: Int, dragonBreath: Boolean) {
+        this.fireLevelValue = fireLevel
+        this.dragonBreathValue = dragonBreath
+    }
 
     fun knockback(knockback: Float): ProjectileEntity {
-        this.knockback = knockback
+        this.knockbackValue = knockback
         return this
     }
 
     fun forceKnockback(): ProjectileEntity {
-        this.forceKnockback = true
+        this.forceKnockbackValue = true
         return this
     }
 
@@ -1086,37 +1097,6 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
     }
 
     companion object {
-        /**
-         * Static OBB raycast: returns the world-space hit position on the entity's OBB,
-         * or null if the ray doesn't intersect any non-COLLISION OBB.
-         * Used by FastThrowableProjectile subclasses to bypass vanilla hit detection.
-         */
-        @JvmStatic
-        fun clipObb(projectile: Entity, entity: Entity, startVec: Vec3, endVec: Vec3): Vec3? {
-            if (entity is OBBEntity && !entity.enableAABB()) {
-                var collisonHit: Vec3? = null
-                for (obb in entity.getOBBs()) {
-                    if (obb.part == OBB.Part.COLLISION) {
-                        // Save COLLISION OBB for fallback, but check BODY OBBs first
-                        val obbVec = obb.clip(vec3ToVector3d(startVec), vec3ToVector3d(endVec)).orElse(null)
-                        if (obbVec != null) {
-                            collisonHit = vector3dToVec3(obbVec)
-                        }
-                        continue
-                    }
-                    val obbVec = obb.clip(vec3ToVector3d(startVec), vec3ToVector3d(endVec)).orElse(null)
-                    if (obbVec != null) {
-                        val hitPos = vector3dToVec3(obbVec)
-                        OBBHitter.getInstance(projectile).`sbw$setCurrentHitPart`(obb.part)
-                        return hitPos
-                    }
-                }
-                // Fallback: use COLLISION OBB if no BODY OBB was hit (covers gaps on large vehicles)
-                return collisonHit
-            }
-            return null
-        }
-
         @JvmField
         val PROJECTILE_TARGETS_FAST =
             Predicate { input: Entity? -> input != null && input.isPickable && !input.isSpectator && input.isAlive }

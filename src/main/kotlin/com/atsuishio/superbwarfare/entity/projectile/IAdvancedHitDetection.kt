@@ -1,5 +1,10 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
+import com.atsuishio.superbwarfare.entity.OBBEntity
+import com.atsuishio.superbwarfare.entity.mixin.OBBHitter
+import com.atsuishio.superbwarfare.tools.OBB
+import com.atsuishio.superbwarfare.tools.OBB.Companion.vec3ToVector3d
+import com.atsuishio.superbwarfare.tools.OBB.Companion.vector3dToVec3
 import com.atsuishio.superbwarfare.world.phys.EntityResult
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.Vec3
@@ -11,11 +16,6 @@ import net.minecraft.world.phys.Vec3
  * 实现此接口的实体需要提供这些高级命中判定方法
  */
 interface IAdvancedHitDetection {
-    /**
-     * 在路径上查找最近的可命中实体（含爆头/打腿判定）
-     */
-    fun findEntityOnPath(startVec: Vec3, endVec: Vec3): EntityResult?
-
     /**
      * 在路径上查找所有可命中实体
      */
@@ -48,7 +48,28 @@ interface IAdvancedHitDetection {
          */
         @JvmStatic
         fun clipObb(projectile: Entity, entity: Entity, startVec: Vec3, endVec: Vec3): Vec3? {
-            return ProjectileEntity.clipObb(projectile, entity, startVec, endVec)
+            if (entity is OBBEntity && !entity.enableAABB()) {
+                var collisionHit: Vec3? = null
+                for (obb in entity.getOBBs()) {
+                    if (obb.part == OBB.Part.COLLISION) {
+                        // Save COLLISION OBB for fallback, but check BODY OBBs first
+                        val obbVec = obb.clip(vec3ToVector3d(startVec), vec3ToVector3d(endVec)).orElse(null)
+                        if (obbVec != null) {
+                            collisionHit = vector3dToVec3(obbVec)
+                        }
+                        continue
+                    }
+                    val obbVec = obb.clip(vec3ToVector3d(startVec), vec3ToVector3d(endVec)).orElse(null)
+                    if (obbVec != null) {
+                        val hitPos = vector3dToVec3(obbVec)
+                        OBBHitter.getInstance(projectile).`sbw$setCurrentHitPart`(obb.part)
+                        return hitPos
+                    }
+                }
+                // Fallback: use COLLISION OBB if no BODY OBB was hit (covers gaps on large vehicles)
+                return collisionHit
+            }
+            return null
         }
     }
 }

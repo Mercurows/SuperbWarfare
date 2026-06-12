@@ -39,5 +39,5 @@ class ProjectileProxy(private val entity: Entity) {
         taser?.volt = volt.toInt()
     }
 
-    fun isZoom(): Boolean = projectile?.isZoom ?: false
+    fun isZoom(): Boolean = projectile?.getIsZoom() ?: false
 }

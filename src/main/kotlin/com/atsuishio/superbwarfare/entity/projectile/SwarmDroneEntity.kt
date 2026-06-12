@@ -65,9 +65,9 @@ open class SwarmDroneEntity(type: EntityType<out SwarmDroneEntity>, level: Level
         super.tick()
         val entity = EntityFindUtil.findEntity(this.level(), entityData.get(TARGET_UUID))
         SeekTool.seekLivingEntities(this, 32.0, 90.0).forEach {
-            if (it.type.`is`(ModTags.EntityTypes.DECOY) && !this.distracted) {
+            if (it.type.`is`(ModTags.EntityTypes.DECOY) && !this.isDistracted()) {
                 this.entityData.set(TARGET_UUID, it.getStringUUID())
-                this.distracted = true
+                this.setDistracted(true)
                 return@forEach
             }
         }
@@ -107,12 +107,12 @@ open class SwarmDroneEntity(type: EntityType<out SwarmDroneEntity>, level: Level
         val owner = this.owner
         if (tickCount > 10 && owner != null) {
             val targetPos: Vec3?
-            if (guideType == 0 && entity != null) {
+            if (getGuideType() == 0 && entity != null) {
                 val targetVec = Vec3(entity.deltaMovement.x, 0.0, entity.deltaMovement.z)
                 targetPos = entity.eyePosition.add(targetVec)
-                this.targetPos = targetPos
-            } else if (this.targetPos != null) {
-                targetPos = this.targetPos
+                this.setTargetPos(targetPos)
+            } else if (this.getTargetPos() != null) {
+                targetPos = this.getTargetPos()
             } else {
                 val result = owner.level().clip(
                     ClipContext(

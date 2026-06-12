@@ -251,9 +251,9 @@ open class Ptkm1rEntity : Entity, OwnableEntity {
         val level = this.level()
         if (level is ServerLevel) {
             val ptkmProjectile = PtkmProjectileEntity(this.owner, level)
-            ptkmProjectile.damage = ExplosionConfig.PTKM_1R_PROJECTILE_HIT_DAMAGE.get().toFloat()
-            ptkmProjectile.explosionDamage = ExplosionConfig.PTKM_1R_PROJECTILE_EXPLOSION_DAMAGE.get().toFloat()
-            ptkmProjectile.explosionRadius = ExplosionConfig.PTKM_1R_PROJECTILE_EXPLOSION_RADIUS.get().toFloat()
+            ptkmProjectile.setDamage(ExplosionConfig.PTKM_1R_PROJECTILE_HIT_DAMAGE.get().toFloat())
+            ptkmProjectile.setExplosionDamage(ExplosionConfig.PTKM_1R_PROJECTILE_EXPLOSION_DAMAGE.get().toFloat())
+            ptkmProjectile.setExplosionRadius(ExplosionConfig.PTKM_1R_PROJECTILE_EXPLOSION_RADIUS.get().toFloat())
             ptkmProjectile.setTarget(entity)
             ptkmProjectile.setShootTime((0.5f * distance).toInt())
             ptkmProjectile.setPos(position().x, eyePosition.y, position().z)

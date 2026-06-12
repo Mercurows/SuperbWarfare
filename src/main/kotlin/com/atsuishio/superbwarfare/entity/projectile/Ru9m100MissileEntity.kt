@@ -34,19 +34,19 @@ open class Ru9m100MissileEntity(type: EntityType<out Ru9m100MissileEntity>, leve
     override fun tick() {
         super.tick()
 
-        val entity = EntityFindUtil.findEntity(this.level(), this.targetUUID)
+        val entity = EntityFindUtil.findEntity(this.level(), this.getTargetUUID())
         val decoy = SeekTool.seekLivingEntities(this, 32.0, 90.0)
         val level = this.level()
 
         for (e in decoy) {
-            if (e.type.`is`(ModTags.EntityTypes.DECOY) && !this.distracted) {
-                this.targetUUID = e.stringUUID
-                this.distracted = true
+            if (e.type.`is`(ModTags.EntityTypes.DECOY) && !this.isDistracted()) {
+                this.setTargetUUID(e.stringUUID)
+                this.setDistracted(true)
                 break
             }
         }
 
-        if (entity != null && this.targetUUID != "none") {
+        if (entity != null && this.getTargetUUID() != "none") {
             if ((entity.getPassengers().isNotEmpty() || entity is VehicleEntity)
                 && entity.tickCount % (max(0.04 * this.distanceTo(entity), 2.0).toInt()) == 0
             ) {
@@ -79,17 +79,17 @@ open class Ru9m100MissileEntity(type: EntityType<out Ru9m100MissileEntity>, leve
 
             if (this.tickCount > 10) {
 
-                if (this.tickCount > 20 && !lostTarget) {
-                    lostTarget = VectorTool.calculateAngle(deltaMovement, toVec) > 120
+                if (this.tickCount > 20 && !isLostTarget()) {
+                    setLostTarget(VectorTool.calculateAngle(deltaMovement, toVec) > 120)
                 }
 
-                if (!lostTarget) {
+                if (!isLostTarget()) {
                     turn(toVec, ((tickCount - 1) * 0.5f).coerceIn(0f, 15f))
                     this.deltaMovement = this.deltaMovement.scale(0.05).add(lookAngle.scale(8.0))
                 }
 
-                if (lostTarget) {
-                    this.targetUUID = "none"
+                if (isLostTarget()) {
+                    this.setTargetUUID("none")
                 }
             }
         }

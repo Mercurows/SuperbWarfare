@@ -20,7 +20,7 @@ class EntityProxy(val entity: Entity?) {
     fun isLivingEntity(): Boolean = entity is LivingEntity
     fun isProjectile(): Boolean = entity is ProjectileEntity
 
-    fun isZoom(): Boolean = (entity as? ProjectileEntity)?.isZoom ?: false
+    fun isZoom(): Boolean = (entity as? ProjectileEntity)?.getIsZoom() ?: false
 
     // ── Creative / Inventory ──
     fun isCreative(): Boolean = (entity as? Player)?.isCreative == true
@@ -90,7 +90,7 @@ class EntityProxy(val entity: Entity?) {
 
     // ── Projectile ──
     fun getBypassArmorRate(): Double {
-        return (entity as? ProjectileEntity)?.bypassArmorRate?.toDouble() ?: 0.0
+        return (entity as? ProjectileEntity)?.getBypassArmorRate()?.toDouble() ?: 0.0
     }
 
     // ── Explosion ──
