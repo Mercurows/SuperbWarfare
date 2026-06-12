@@ -15,7 +15,7 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
-import net.minecraft.world.entity.projectile.Projectile
+import net.minecraft.world.entity.projectile.ThrowableItemProjectile
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
@@ -58,9 +58,9 @@ abstract class MissileProjectile : DestroyableProjectile, ITrackableProjectile, 
         entityData.set(TARGET_UUID, value)
     }
 
-    constructor(pEntityType: EntityType<out Projectile>, pLevel: Level) : super(pEntityType, pLevel)
+    constructor(pEntityType: EntityType<out ThrowableItemProjectile>, pLevel: Level) : super(pEntityType, pLevel)
 
-    constructor(pEntityType: EntityType<out Projectile>, pShooter: Entity?, pLevel: Level) :
+    constructor(pEntityType: EntityType<out ThrowableItemProjectile>, pShooter: Entity?, pLevel: Level) :
             super(pEntityType, pLevel) {
         this.owner = pShooter
         if (pShooter != null) {

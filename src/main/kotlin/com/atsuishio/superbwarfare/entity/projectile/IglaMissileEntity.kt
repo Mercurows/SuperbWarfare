@@ -19,6 +19,7 @@ import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.animal.Pig
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 import kotlin.math.max
@@ -37,6 +38,10 @@ open class IglaMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
         this.explosionDamageValue = explosionDamage
         this.explosionRadiusValue = explosionRadius
         this.durability = 0
+    }
+
+    override fun getDefaultItem(): Item {
+        return ModItems.MEDIUM_ANTI_AIR_MISSILE.get()
     }
 
     override fun tick() {

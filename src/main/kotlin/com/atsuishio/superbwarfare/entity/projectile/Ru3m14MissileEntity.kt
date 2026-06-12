@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
+import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.VectorTool
@@ -12,6 +13,7 @@ import net.minecraft.sounds.SoundSource
 import net.minecraft.util.Mth
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.EntityType
+import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 
@@ -32,6 +34,10 @@ open class Ru3m14MissileEntity(type: EntityType<out Ru3m14MissileEntity>, level:
         this.damageValue = 3000f
         this.explosionDamageValue = 1400f
         this.explosionRadiusValue = 36f
+    }
+
+    override fun getDefaultItem(): Item {
+        return ModItems.EXTRA_LARGE_ANTI_GROUND_MISSILE.get()
     }
 
     override fun hurt(source: DamageSource, amount: Float): Boolean {

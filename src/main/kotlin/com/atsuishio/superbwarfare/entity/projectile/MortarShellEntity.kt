@@ -25,6 +25,7 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.alchemy.Potion
 import net.minecraft.world.item.alchemy.PotionContents
@@ -105,6 +106,10 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
 
     fun setType(type: Type?) {
         this.type = type
+    }
+
+    override fun getDefaultItem(): Item {
+        return ModItems.MORTAR_SHELL.get()
     }
 
     override fun addAdditionalSaveData(compound: CompoundTag) {

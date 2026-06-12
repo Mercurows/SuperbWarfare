@@ -21,7 +21,6 @@ import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.network.protocol.game.ClientboundSoundPacket
-import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.server.level.TicketType
@@ -35,7 +34,7 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
-import net.minecraft.world.entity.projectile.Projectile
+import net.minecraft.world.entity.projectile.ThrowableItemProjectile
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
@@ -50,7 +49,7 @@ import net.neoforged.neoforge.network.PacketDistributor
 import java.util.function.Consumer
 import java.util.function.Predicate
 
-abstract class FastThrowableProjectile : Projectile, IFastMotionSync, IEntityWithComplexSpawn,
+abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSync, IEntityWithComplexSpawn,
     IBulletProperties, IAdvancedHitDetection {
     protected var damageValue: Float = 0f
     protected var explosionDamageValue: Float = 0f
@@ -114,10 +113,10 @@ abstract class FastThrowableProjectile : Projectile, IFastMotionSync, IEntityWit
 
     var exploded: Boolean = false
 
-    constructor(entityType: EntityType<out Projectile>, level: Level) : super(entityType, level)
+    constructor(entityType: EntityType<out ThrowableItemProjectile>, level: Level) : super(entityType, level)
 
     constructor(
-        entityType: EntityType<out Projectile>,
+        entityType: EntityType<out ThrowableItemProjectile>,
         x: Double,
         y: Double,
         z: Double,
@@ -126,14 +125,14 @@ abstract class FastThrowableProjectile : Projectile, IFastMotionSync, IEntityWit
         this.setPos(x, y, z)
     }
 
-    constructor(entityType: EntityType<out Projectile>, shooter: Entity?, level: Level) : super(entityType, level) {
+    constructor(entityType: EntityType<out ThrowableItemProjectile>, shooter: Entity?, level: Level) : super(
+        entityType,
+        level
+    ) {
         this.owner = shooter
         if (shooter != null) {
             this.setPos(shooter.x, shooter.eyeY - 0.1, shooter.z)
         }
-    }
-
-    override fun defineSynchedData(builder: SynchedEntityData.Builder) {
     }
 
     override fun readAdditionalSaveData(compound: CompoundTag) {
@@ -176,7 +175,7 @@ abstract class FastThrowableProjectile : Projectile, IFastMotionSync, IEntityWit
     }
 
     override fun tick() {
-        super.tick()
+        super.baseTick()
         this.updateRotation()
 
         val vec = this.deltaMovement
@@ -228,6 +227,9 @@ abstract class FastThrowableProjectile : Projectile, IFastMotionSync, IEntityWit
         this.deltaMovement = this.deltaMovement.add(0.0, -this.getCustomGravity().toDouble(), 0.0)
 
         if (this.tickCount > lifeValue) {
+            if (explosionRadiusValue > 0) {
+                causeExplode(position())
+            }
             this.discard()
         }
 
@@ -245,13 +247,6 @@ abstract class FastThrowableProjectile : Projectile, IFastMotionSync, IEntityWit
             if (forceLoadChunk() && ProjectileConfig.PROJECTILE_CHUNK_LOADING.get()) {
                 this.keepChunkLoaded(this.position())
                 this.keepChunkLoaded(position().add(this.deltaMovement.normalize().scale(16.0)))
-            }
-
-            if (tickCount > this.lifeValue) {
-                if (explosionRadiusValue > 0) {
-                    causeExplode(position())
-                }
-                this.discard()
             }
         }
     }
@@ -404,7 +399,7 @@ abstract class FastThrowableProjectile : Projectile, IFastMotionSync, IEntityWit
         val state = level.getBlockState(pos)
         val location = result.location
         if (postEvent(HitBlock(pos, state, face, this.owner, this, location)).isCanceled) return
-        state.onProjectileHit(level, state, result, this)
+//        state.onProjectileHit(level, state, result, this)
 
         this.afterHitBlock(result)
     }

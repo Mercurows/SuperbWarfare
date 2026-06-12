@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
-import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
@@ -18,19 +18,13 @@ import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.animal.Pig
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon
+import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 import kotlin.math.max
 
 open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level) : MissileProjectile(type, level),
     BasicGeoProjectileEntity {
-    val anim: BasicProjectileAnimationInstance<*>? =
-        if (this.level().isClientSide) BasicProjectileAnimationInstance(this) else null
-
-    override fun getAnimationInstance(): BasicProjectileAnimationInstance<*>? {
-        return this.anim
-    }
-
     init {
         this.noCulling = true
         this.damageValue = 1100f
@@ -38,6 +32,10 @@ open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level) : Missil
         this.explosionRadiusValue = 12f
         this.setDistracted(false)
         this.durability = 25
+    }
+
+    override fun getDefaultItem(): Item {
+        return ModItems.LARGE_ANTI_GROUND_MISSILE.get()
     }
 
     override fun tick() {

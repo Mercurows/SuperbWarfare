@@ -181,6 +181,52 @@ ItemStack NBT ↔ GunData.from(stack) 获取运行时实例
 - **添加网络包**: 创建 Message 类 + 在 NetworkRegistry 注册
 - **配置项**: ClientConfig / CommonConfig / ServerConfig 中定义，Cloth Config 生成 GUI
 
-## TODO 数量
+## 1.20同步相关事项
 
-项目当前约 47 个 TODO（分布于数据层、渲染层、实体层和事件处理器），代表已知缺漏。
+该项目主开发分支为superbwarfare，使用Minecraft 1.20和Forge进行开发，1.21分支的同步方式为cherry
+pick再解决冲突。在解决冲突时，优先导入并使用MinecraftUtil.kt里定义的1.20兼容函数（若没有对应的可以主动创建），其余常见的兼容性修改见下
+
+- 将`net.minecraftforge`等forge相关的包更改为neoforge的，如将`net.minecraftforge.api.distmarker.Dist`和
+  `net.minecraftforge.api.distmarker.OnlyIn`改为`net.neoforged.api.distmarker.Dist`和
+  `net.neoforged.api.distmarker.OnlyIn`
+
+- `override fun initializeClient(consumer: Consumer<IClientItemExtensions>)`方法已被弃用，请在需要注册自定义renderer的类上面定义
+  `@EventBusSubscriber companion object`，并在里面声明
+  `@SubscribeEvent fun registerRender(event: RegisterClientExtensionsEvent)`方法进行注册，示例：
+
+```kotlin
+class SomeItem : Item {
+  @EventBusSubscriber
+  companion object {
+    @SubscribeEvent
+    fun registerRender(event: RegisterClientExtensionsEvent) {
+      event.registerItem(object : IClientItemExtensions {
+        // ... 
+      }, ModItems.SOME_ITEM)
+    }
+  }
+}
+```
+
+- Capability在neoforge被重写，不再返回Optional，而是返回Nullable的值，使用方法示例
+
+```kotlin
+val cap = someThing.getCapability(Capabilities.EnergyStorage.ITEM)
+if (cap != null) {
+  // ...
+}
+```
+
+- `override fun defineSynchedData()`已被改为`override fun defineSynchedData(builder: SynchedEntityData.Builder)`
+  ，建议同步时将代码修改为
+
+```kotlin
+override fun defineSynchedData(builder: SynchedEntityData.Builder) {
+  with(builder) {
+    builder.define(key, value)
+    builder.define(key, value)
+  }
+}
+```
+
+- `@Mod.EventBusSubscriber`已改为`@EventBusSubscriber`，记得同步更新导入
