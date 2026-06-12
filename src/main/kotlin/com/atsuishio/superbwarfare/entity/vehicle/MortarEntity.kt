@@ -223,7 +223,7 @@ open class MortarEntity(type: EntityType<MortarEntity>, level: Level) : Artiller
                     getProjectileVelocity("Main"),
                     getProjectileSpread("Main")
                 )
-                entityToSpawn.setLife(gunData.get(GunProp.PROJECTILE_LIFE))
+                entityToSpawn.life = gunData.get(GunProp.PROJECTILE_LIFE)
                 level.addFreshEntity(entityToSpawn)
 
                 ParticleTool.spawnMediumCannonMuzzleParticles(

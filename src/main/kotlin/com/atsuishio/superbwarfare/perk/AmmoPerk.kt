@@ -5,12 +5,11 @@ import com.atsuishio.superbwarfare.data.gun.DamageReduce
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
-import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity
+import com.atsuishio.superbwarfare.entity.projectile.IBulletProperties
 import net.minecraft.core.Holder
 import net.minecraft.world.effect.MobEffect
 import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.entity.Entity
-import java.util.function.Supplier
 
 open class AmmoPerk : Perk {
     val bypassArmorRate: Double
@@ -51,25 +50,15 @@ open class AmmoPerk : Perk {
         instance: PerkInstance,
         entity: Entity
     ) {
-        if (entity !is ProjectileEntity) return
+        if (entity !is IBulletProperties) return
         entity.setRGB(this.rgb)
         if (this.mobEffects.isEmpty()) return
         val amplifier = this.getEffectAmplifier(instance)
         val duration = this.getEffectDuration(instance)
-        val mobEffectInstances = arrayListOf<Supplier<MobEffectInstance>>()
+        val mobEffectInstances = arrayListOf<MobEffectInstance>()
         this.mobEffects
-            .forEach {
-                mobEffectInstances.add {
-                    MobEffectInstance(
-                        it,
-                        duration,
-                        amplifier,
-                        false,
-                        !this.hideParticle
-                    )
-                }
-            }
-        entity.effect(mobEffectInstances)
+            .forEach { mobEffectInstances.add(MobEffectInstance(it, duration, amplifier, false, !this.hideParticle)) }
+        entity.setEffect(mobEffectInstances)
     }
 
     open fun getEffectAmplifier(instance: PerkInstance): Int {

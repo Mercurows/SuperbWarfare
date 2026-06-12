@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.entity.projectile
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.setValue
-import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
 import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
 import com.atsuishio.superbwarfare.tools.SeekTool
@@ -15,7 +14,6 @@ import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.server.level.ServerLevel
-import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
@@ -26,23 +24,18 @@ import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.Vec3
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn
 
-abstract class MissileProjectile : DestroyableProjectile, CustomSyncMotionEntity, IEntityWithComplexSpawn {
-    @JvmField
-    var targetPos: Vec3? = null
+abstract class MissileProjectile : DestroyableProjectile, ITrackableProjectile, IEntityWithComplexSpawn {
+    override var targetPos: Vec3? = null
 
-    @JvmField
-    var guideType: Int = 0
+    override var guideType: Int = 0
 
-    @JvmField
-    var distracted: Boolean = false
+    override var distracted: Boolean = false
 
-    @JvmField
-    var lost: Boolean = false
+    override var lost: Boolean = false
 
-    @JvmField
-    var lostTarget: Boolean = false
+    override var lostTarget: Boolean = false
 
-    open var targetUUID by TARGET_UUID
+    override var targetUUID by TARGET_UUID
 
     constructor(pEntityType: EntityType<out ThrowableItemProjectile>, pLevel: Level) : super(pEntityType, pLevel)
 
@@ -56,10 +49,6 @@ abstract class MissileProjectile : DestroyableProjectile, CustomSyncMotionEntity
 
     fun setTargetUuid(uuid: String) {
         this.targetUUID = uuid
-    }
-
-    fun setGuideType(guideType: Int) {
-        this.guideType = guideType
     }
 
     fun setTargetVec(targetPos: Vec3?) {
@@ -114,38 +103,6 @@ abstract class MissileProjectile : DestroyableProjectile, CustomSyncMotionEntity
     }
 
     override fun updateRotation() {
-    }
-
-    fun turn(vec3: Vec3, turnSpeed: Float) {
-        var vec3 = vec3
-        val v0 = deltaMovement.normalize()
-
-        vec3 = vec3.add(v0.scale(-0.4))
-
-        val d0 = vec3.horizontalDistance()
-        val targetAngleY = (-Mth.atan2(vec3.x, vec3.z) * (180f / Math.PI.toFloat()).toDouble()).toFloat()
-        val targetAngleX = (-Mth.atan2(vec3.y, d0) * (180f / Math.PI.toFloat()).toDouble()).toFloat()
-
-        val diffY = Mth.wrapDegrees(targetAngleY - this.yRot)
-        val diffX = Mth.wrapDegrees(targetAngleX - this.xRot)
-
-        deltaMovement = deltaMovement.scale(1 - 0.0004 * VehicleVecUtils.calculateAngle(vec3, v0))
-        this.yRot += (0.95f * diffY).coerceIn(-turnSpeed, turnSpeed)
-        this.xRot += (0.95f * diffX).coerceIn(-turnSpeed, turnSpeed)
-    }
-
-    fun turnYaw(vec3: Vec3, turnSpeed: Float) {
-        var vec3 = vec3
-        val v0 = deltaMovement.normalize()
-
-        vec3 = vec3.add(v0.scale(-0.4))
-
-        val targetAngleY = (-Mth.atan2(vec3.x, vec3.z) * (180f / Math.PI.toFloat()).toDouble()).toFloat()
-        val diffY = Mth.wrapDegrees(targetAngleY - this.yRot)
-
-        deltaMovement = deltaMovement.scale(1 - 0.0004 * VehicleVecUtils.calculateAngle(vec3, v0))
-        this.yRot += (0.95f * diffY).coerceIn(-turnSpeed, turnSpeed)
-
     }
 
     override fun forceLoadChunk(): Boolean {

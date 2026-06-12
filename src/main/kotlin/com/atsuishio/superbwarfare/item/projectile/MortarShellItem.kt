@@ -51,7 +51,7 @@ open class MortarShellItem : Item(Properties().stacksTo(8)), DispenserLaunchable
             explosionRadius: Float
         ): MortarShellEntity {
             val shellEntity = MortarShellEntity(entity, level, damage, explosionDamage, explosionRadius)
-            shellEntity.setGravity(gravity)
+            shellEntity.setCustomGravity(gravity)
             shellEntity.setEffectsFromItem(stack)
             shellEntity.setType(if (stack.`is`(ModItems.MORTAR_SHELL_WP.get())) MortarShellEntity.Type.WP else MortarShellEntity.Type.NORMAL)
             return shellEntity

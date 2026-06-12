@@ -150,11 +150,11 @@ open class MediumRocketEntity : FastThrowableProjectile, BasicGeoProjectileEntit
                     mediumRocket.owner = owner
                     mediumRocket.durability(durability)
                     mediumRocket.setType(Type.AP)
-                    mediumRocket.setGravity(gravityValue)
-                    mediumRocket.setLife(lifeValue - tickCount)
-                    mediumRocket.setDamage((damageValue * resistance).toFloat())
-                    mediumRocket.setExplosionDamage((explosionDamageValue * resistance).toFloat())
-                    mediumRocket.setExplosionRadius((explosionRadiusValue * resistance).toFloat())
+                    mediumRocket.setCustomGravity(gravityValue)
+                    mediumRocket.life = lifeValue - tickCount
+                    mediumRocket.damage = (damageValue * resistance).toFloat()
+                    mediumRocket.explosionDamage = (explosionDamageValue * resistance).toFloat()
+                    mediumRocket.explosionRadius = (explosionRadiusValue * resistance).toFloat()
                     level.addFreshEntity(mediumRocket)
                     discard()
                 }
@@ -214,7 +214,7 @@ open class MediumRocketEntity : FastThrowableProjectile, BasicGeoProjectileEntit
                 }
 
                 deltaMovement = deltaMovement.scale(resistance)
-                setDamage((this.damageValue * resistance).toFloat())
+                damage = (this.damageValue * resistance).toFloat()
             }
         }
     }
