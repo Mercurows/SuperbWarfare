@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.client.particle.CustomSmokeOption
 import com.atsuishio.superbwarfare.init.ModEntities
-import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.tools.ParticleTool
@@ -16,7 +15,6 @@ import net.minecraft.sounds.SoundSource
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
-import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.BellBlock
 import net.minecraft.world.phys.BlockHitResult
@@ -84,10 +82,6 @@ open class M18SmokeGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEn
         if (compound.contains("BColor")) {
             this.blue = compound.getFloat("BColor")
         }
-    }
-
-    override fun getDefaultItem(): Item {
-        return ModItems.M18_SMOKE_GRENADE.get()
     }
 
     override fun onHit(result: HitResult) {
@@ -162,7 +156,7 @@ open class M18SmokeGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEn
             Direction.Axis.X -> this.deltaMovement = this.deltaMovement.multiply(-0.5, 0.75, 0.75)
             Direction.Axis.Y -> {
                 this.deltaMovement = this.deltaMovement.multiply(0.75, -0.25, 0.75)
-                if (this.deltaMovement.y() < this.getGravity()) {
+                if (this.deltaMovement.y() < this.getCustomGravity()) {
                     this.deltaMovement = this.deltaMovement.multiply(1.0, 0.0, 1.0)
                 }
             }
@@ -229,7 +223,7 @@ open class M18SmokeGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEn
         }
     }
 
-    override fun getGravity(): Float {
+    override fun getCustomGravity(): Float {
         return 0.07f
     }
 

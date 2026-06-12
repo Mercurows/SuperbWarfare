@@ -26,6 +26,6 @@ object PhasePenetratingBullet : AmmoPerk(
     ) {
         super.modifyProjectile(data, instance, entity)
         if (entity !is ProjectileEntity) return
-        entity.isPenetrating = true
+        entity.setPenetrating(true)
     }
 }

@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
 import com.atsuishio.superbwarfare.init.ModEntities
-import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.tools.*
@@ -23,7 +22,6 @@ import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.animal.Pig
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon
-import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
@@ -58,10 +56,6 @@ open class JavelinMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
         if (targetPos != null) {
             this.setTargetPos(targetPos)
         }
-    }
-
-    override fun getDefaultItem(): Item {
-        return ModItems.JAVELIN_MISSILE.get()
     }
 
     fun setAttackMode(mode: Boolean) {
@@ -101,10 +95,10 @@ open class JavelinMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
         )
     }
 
-    override fun onHitBlock(blockHitResult: BlockHitResult) {
-        super.onHitBlock(blockHitResult)
+    override fun onHitBlock(result: BlockHitResult) {
+        super.onHitBlock(result)
         if (this.level() is ServerLevel) {
-            destroyBlock(blockHitResult)
+            destroyBlock(result)
         }
     }
 

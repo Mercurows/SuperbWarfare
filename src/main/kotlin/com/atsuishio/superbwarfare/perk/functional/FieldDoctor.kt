@@ -32,7 +32,7 @@ object FieldDoctor : Perk("field_doctor", Type.FUNCTIONAL) {
 
         val directEntity = source.directEntity
         val sourceEntity = source.entity
-        if (directEntity is ProjectileEntity && !directEntity.getIsZoom()) {
+        if (directEntity is ProjectileEntity && !directEntity.isZoom()) {
             var attacker: LivingEntity? = null
             if (sourceEntity is LivingEntity) {
                 attacker = sourceEntity

@@ -10,13 +10,13 @@ import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
-import net.minecraft.world.entity.projectile.ThrowableItemProjectile
+import net.minecraft.world.entity.projectile.Projectile
 import net.minecraft.world.level.Level
 
 abstract class DestroyableProjectile : FastThrowableProjectile {
-    constructor(pEntityType: EntityType<out ThrowableItemProjectile>, pLevel: Level) : super(pEntityType, pLevel)
+    constructor(pEntityType: EntityType<out Projectile>, pLevel: Level) : super(pEntityType, pLevel)
 
-    constructor(pEntityType: EntityType<out ThrowableItemProjectile>, pShooter: Entity?, pLevel: Level) : super(
+    constructor(pEntityType: EntityType<out Projectile>, pShooter: Entity?, pLevel: Level) : super(
         pEntityType,
         pLevel
     ) {

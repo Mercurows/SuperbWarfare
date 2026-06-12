@@ -2,13 +2,11 @@ package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
 import com.atsuishio.superbwarfare.init.ModEntities
-import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.tools.forceHurt
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
-import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.BellBlock
 import net.minecraft.world.phys.BlockHitResult
@@ -26,10 +24,6 @@ open class GunGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity 
         this.damageValue = damage
         this.explosionDamageValue = explosionDamage
         this.explosionRadiusValue = explosionRadius
-    }
-
-    override fun getDefaultItem(): Item {
-        return ModItems.GRENADE_40MM.get()
     }
 
     override fun onHitEntity(result: EntityHitResult) {
@@ -53,17 +47,17 @@ open class GunGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity 
         this.discard()
     }
 
-    public override fun onHitBlock(blockHitResult: BlockHitResult) {
-        super.onHitBlock(blockHitResult)
-        val resultPos = blockHitResult.blockPos
+    public override fun onHitBlock(result: BlockHitResult) {
+        super.onHitBlock(result)
+        val resultPos = result.blockPos
         val state = this.level().getBlockState(resultPos)
         val block = state.block
 
         if (block is BellBlock) {
-            block.attemptToRing(this.level(), resultPos, blockHitResult.direction)
+            block.attemptToRing(this.level(), resultPos, result.direction)
         }
         if (this.level() is ServerLevel) {
-            causeExplode(blockHitResult.getLocation())
+            causeExplode(result.getLocation())
         }
         this.discard()
     }

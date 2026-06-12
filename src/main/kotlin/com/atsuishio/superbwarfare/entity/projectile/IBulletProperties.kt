@@ -45,15 +45,15 @@ interface IBulletProperties {
     fun setVelocity(value: Float) {}
 
     // 是否为野兽弹
-    fun getBeast(): Boolean = false
+    fun isBeast(): Boolean = false
     fun setBeast(value: Boolean) {}
 
     // 是否属于瞄准发射
-    fun getIsZoom(): Boolean = false
-    fun setIsZoom(value: Boolean) {}
+    fun isZoom(): Boolean = false
+    fun setZoom(value: Boolean) {}
 
     // 是否强制击退
-    fun getForceKnockback(): Boolean = false
+    fun isForceKnockback(): Boolean = false
     fun setForceKnockback(value: Boolean) {}
 
     // 造成的燃烧等级
@@ -61,8 +61,12 @@ interface IBulletProperties {
     fun setFireLevel(value: Int) {}
 
     // 是否为龙息弹
-    fun getDragonBreath(): Boolean = false
+    fun isDragonBreath(): Boolean = false
     fun setDragonBreath(value: Boolean) {}
+
+    // 是否能穿墙
+    fun isPenetrating(): Boolean = false
+    fun setPenetrating(value: Boolean) {}
 
     // 颜色
     fun setRGB(rgb: FloatArray) {}
@@ -70,6 +74,7 @@ interface IBulletProperties {
 
     fun setEffect(effects: List<MobEffectInstance>) {}
 
+    fun getCustomGravity(): Float = 0f
     fun setCustomGravity(gravity: Float) {}
 
     companion object {

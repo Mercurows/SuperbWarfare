@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeCustomExplosionDamage
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
 import com.atsuishio.superbwarfare.init.ModEntities
-import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.tools.CustomExplosion
 import com.atsuishio.superbwarfare.tools.ParticleTool
@@ -18,7 +17,6 @@ import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
-import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
@@ -40,10 +38,6 @@ open class PtkmProjectileEntity : FastThrowableProjectile, BasicGeoProjectileEnt
         this.damageValue = ExplosionConfig.PTKM_1R_PROJECTILE_HIT_DAMAGE.get().toFloat()
         this.explosionDamageValue = ExplosionConfig.PTKM_1R_PROJECTILE_EXPLOSION_DAMAGE.get().toFloat()
         this.explosionRadiusValue = ExplosionConfig.PTKM_1R_PROJECTILE_EXPLOSION_RADIUS.get().toFloat()
-    }
-
-    override fun getDefaultItem(): Item {
-        return ModItems.PTKM_1R.get()
     }
 
     override fun isPickable(): Boolean {

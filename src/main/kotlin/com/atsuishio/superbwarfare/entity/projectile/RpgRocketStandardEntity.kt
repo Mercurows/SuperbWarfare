@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
-import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.forceHurt
@@ -10,8 +9,6 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
-import net.minecraft.world.entity.projectile.ThrowableItemProjectile
-import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
@@ -27,7 +24,7 @@ open class RpgRocketStandardEntity : FastThrowableProjectile, BasicGeoProjectile
     }
 
     constructor(
-        pEntityType: EntityType<out ThrowableItemProjectile>,
+        pEntityType: EntityType<out RpgRocketStandardEntity>,
         pX: Double,
         pY: Double,
         pZ: Double,
@@ -42,10 +39,6 @@ open class RpgRocketStandardEntity : FastThrowableProjectile, BasicGeoProjectile
         this.explosionDamageValue = explosionDamage
         this.explosionRadiusValue = explosionRadius
         this.gravityValue = 0.015f
-    }
-
-    override fun getDefaultItem(): Item {
-        return ModItems.RPG_ROCKET_STANDARD.get()
     }
 
     public override fun onHitBlock(result: BlockHitResult) {

@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.projectile
 import com.atsuishio.superbwarfare.entity.OBBEntity
 import com.atsuishio.superbwarfare.entity.living.DPSGeneratorEntity
 import com.atsuishio.superbwarfare.entity.living.TargetEntity
+import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -19,6 +20,7 @@ import com.atsuishio.superbwarfare.tools.toVec3
 import com.atsuishio.superbwarfare.tools.toVector3d
 import com.atsuishio.superbwarfare.world.phys.EntityResult
 import net.minecraft.core.BlockPos
+import net.minecraft.core.BlockPos.MutableBlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.Holder
 import net.minecraft.nbt.CompoundTag
@@ -34,8 +36,16 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.projectile.Projectile
+import net.minecraft.world.level.ClipContext
+import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.level.material.FluidState
+import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.Vec3
+import net.minecraft.world.phys.shapes.VoxelShape
 import java.util.*
+import java.util.function.BiFunction
+import java.util.function.Function
 import java.util.function.Predicate
 import kotlin.math.abs
 import kotlin.math.ceil
@@ -167,7 +177,25 @@ interface IAdvancedHitDetection {
     /**
      * 执行命中后的伤害施加与击退
      */
-    fun performOnHit(entity: Entity, damage: Float, headshot: Boolean, knockback: Double)
+    fun performOnHit(entity: Entity, damage: Float, headshot: Boolean, knockback: Double) {
+        if (this !is IBulletProperties) return
+        if (this !is Projectile) return
+
+        if (entity is LivingEntity) {
+            if (this.isForceKnockback()) {
+                val vec3 = this.deltaMovement.multiply(1.0, 0.0, 1.0).normalize()
+                entity.addDeltaMovement(vec3.scale(knockback))
+                performDamage(entity, damage, headshot)
+            } else {
+                val iCustomKnockback = ICustomKnockback.getInstance(entity)
+                iCustomKnockback.`superbWarfare$setKnockbackStrength`(knockback)
+                performDamage(entity, damage, headshot)
+                iCustomKnockback.`superbWarfare$resetKnockbackStrength`()
+            }
+        } else {
+            performDamage(entity, damage, headshot)
+        }
+    }
 
     /**
      * 记录靶环分数（用于训练场计分）
@@ -282,6 +310,105 @@ interface IAdvancedHitDetection {
             }
 
             return max(1, ceil(10.0 * ((0.5 - v) / 0.5).coerceIn(0.0, 1.0)).toInt())
+        }
+
+        @JvmStatic
+        fun rayTraceBlocks(
+            world: Level,
+            context: ClipContext,
+            ignorePredicate: Predicate<BlockState>
+        ): BlockHitResult {
+            return performRayTrace(
+                context, { rayTraceContext, blockPos ->
+                    val blockState: BlockState = world.getBlockState(blockPos)
+                    if (ignorePredicate.test(blockState)) return@performRayTrace null
+                    val fluidState: FluidState = world.getFluidState(blockPos)
+                    val startVec: Vec3 = rayTraceContext.from
+                    val endVec: Vec3 = rayTraceContext.to
+                    val blockShape: VoxelShape = rayTraceContext.getBlockShape(blockState, world, blockPos)
+                    val blockResult: BlockHitResult? =
+                        world.clipWithInteractionOverride(startVec, endVec, blockPos, blockShape, blockState)
+                    val fluidShape: VoxelShape = rayTraceContext.getFluidShape(fluidState, world, blockPos)
+                    val fluidResult: BlockHitResult? = fluidShape.clip(startVec, endVec, blockPos)
+                    val blockDistance =
+                        if (blockResult == null) Double.MAX_VALUE else rayTraceContext.from
+                            .distanceToSqr(blockResult.getLocation())
+                    val fluidDistance =
+                        if (fluidResult == null) Double.MAX_VALUE else rayTraceContext.from
+                            .distanceToSqr(fluidResult.getLocation())
+                    if (blockDistance <= fluidDistance) blockResult else fluidResult
+                },
+                { rayTraceContext ->
+                    val vec3 = rayTraceContext.from.subtract(rayTraceContext.to)
+                    BlockHitResult.miss(
+                        rayTraceContext.to,
+                        Direction.getNearest(vec3.x, vec3.y, vec3.z),
+                        BlockPos.containing(rayTraceContext.to)
+                    )
+                })
+        }
+
+        @JvmStatic
+        fun <T> performRayTrace(
+            context: ClipContext,
+            hitFunction: BiFunction<ClipContext, BlockPos, T?>,
+            function: Function<ClipContext, T>
+        ): T {
+            val startVec = context.from
+            val endVec = context.to
+            if (startVec != endVec) {
+                val startX = Mth.lerp(-0.0000001, endVec.x, startVec.x)
+                val startY = Mth.lerp(-0.0000001, endVec.y, startVec.y)
+                val startZ = Mth.lerp(-0.0000001, endVec.z, startVec.z)
+                val endX = Mth.lerp(-0.0000001, startVec.x, endVec.x)
+                val endY = Mth.lerp(-0.0000001, startVec.y, endVec.y)
+                val endZ = Mth.lerp(-0.0000001, startVec.z, endVec.z)
+                var blockX = Mth.floor(endX)
+                var blockY = Mth.floor(endY)
+                var blockZ = Mth.floor(endZ)
+                val mutablePos = MutableBlockPos(blockX, blockY, blockZ)
+                val t = hitFunction.apply(context, mutablePos)
+                if (t != null) {
+                    return t
+                }
+
+                val deltaX = startX - endX
+                val deltaY = startY - endY
+                val deltaZ = startZ - endZ
+                val signX = Mth.sign(deltaX)
+                val signY = Mth.sign(deltaY)
+                val signZ = Mth.sign(deltaZ)
+                val d9 = if (signX == 0) Double.MAX_VALUE else signX.toDouble() / deltaX
+                val d10 = if (signY == 0) Double.MAX_VALUE else signY.toDouble() / deltaY
+                val d11 = if (signZ == 0) Double.MAX_VALUE else signZ.toDouble() / deltaZ
+                var d12 = d9 * (if (signX > 0) 1 - Mth.frac(endX) else Mth.frac(endX))
+                var d13 = d10 * (if (signY > 0) 1 - Mth.frac(endY) else Mth.frac(endY))
+                var d14 = d11 * (if (signZ > 0) 1 - Mth.frac(endZ) else Mth.frac(endZ))
+
+                while (d12 <= 1 || d13 <= 1 || d14 <= 1) {
+                    if (d12 < d13) {
+                        if (d12 < d14) {
+                            blockX += signX
+                            d12 += d9
+                        } else {
+                            blockZ += signZ
+                            d14 += d11
+                        }
+                    } else if (d13 < d14) {
+                        blockY += signY
+                        d13 += d10
+                    } else {
+                        blockZ += signZ
+                        d14 += d11
+                    }
+
+                    val t1 = hitFunction.apply(context, mutablePos.set(blockX, blockY, blockZ))
+                    if (t1 != null) {
+                        return t1
+                    }
+                }
+            }
+            return function.apply(context)
         }
     }
 }

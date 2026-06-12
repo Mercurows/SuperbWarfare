@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
-import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
@@ -13,7 +12,6 @@ import net.minecraft.sounds.SoundEvent
 import net.minecraft.util.Mth
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.EntityType
-import net.minecraft.world.item.Item
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.EntityHitResult
@@ -42,10 +40,6 @@ open class SwarmDroneEntity(type: EntityType<out SwarmDroneEntity>, level: Level
         }
 
         return super.hurt(source, amount)
-    }
-
-    override fun getDefaultItem(): Item {
-        return ModItems.SWARM_DRONE.get()
     }
 
     override fun onHitEntity(result: EntityHitResult) {

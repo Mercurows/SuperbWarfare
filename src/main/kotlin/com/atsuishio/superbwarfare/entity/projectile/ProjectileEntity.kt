@@ -8,8 +8,11 @@ import com.atsuishio.superbwarfare.config.server.ProjectileConfig
 import com.atsuishio.superbwarfare.entity.OBBEntity
 import com.atsuishio.superbwarfare.entity.living.DPSGeneratorEntity
 import com.atsuishio.superbwarfare.entity.living.TargetEntity
-import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter
+import com.atsuishio.superbwarfare.entity.projectile.IAdvancedHitDetection.Companion.rayTraceBlocks
+import com.atsuishio.superbwarfare.entity.projectile.IBulletProperties.Companion.DEFAULT_B
+import com.atsuishio.superbwarfare.entity.projectile.IBulletProperties.Companion.DEFAULT_G
+import com.atsuishio.superbwarfare.entity.projectile.IBulletProperties.Companion.DEFAULT_R
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeGunFireAbsoluteDamage
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeGunFireDamage
@@ -29,8 +32,6 @@ import com.atsuishio.superbwarfare.tools.VectorTool.isInLiquid
 import com.atsuishio.superbwarfare.world.phys.EntityResult
 import com.atsuishio.superbwarfare.world.phys.ExtendedEntityRayTraceResult
 import net.minecraft.core.BlockPos
-import net.minecraft.core.BlockPos.MutableBlockPos
-import net.minecraft.core.Direction
 import net.minecraft.core.Holder
 import net.minecraft.core.particles.BlockParticleOption
 import net.minecraft.core.particles.ParticleTypes
@@ -56,14 +57,12 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.SoundType
 import net.minecraft.world.level.block.state.BlockState
-import net.minecraft.world.level.material.FluidState
+import net.minecraft.world.level.gameevent.GameEvent
 import net.minecraft.world.phys.BlockHitResult
+import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
-import net.minecraft.world.phys.shapes.VoxelShape
 import net.minecraftforge.entity.PartEntity
-import java.util.function.BiFunction
-import java.util.function.Function
 import java.util.function.Predicate
 import kotlin.math.PI
 import kotlin.math.max
@@ -72,21 +71,23 @@ import kotlin.math.max
 open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level: Level) : Projectile(entityType, level),
     IBulletProperties, IAdvancedHitDetection, IFastMotionSync {
     // ===== IBulletProperties 属性（使用 getter/setter 方法） =====
-    private var damageValue = 1f
-    private var headShotValue = 1f
-    private var legShotValue = 0.5f
-    private var beastValue = false
-    private var isZoomValue: Boolean = false
-    private var explosionDamageValue = 0.0f
-    private var explosionRadiusValue = 0.0f
-    private var fireLevelValue = 0
-    private var dragonBreathValue = false
-    private var knockbackValue = 0.05f
-    private var velocityValue = 20f
-    private var forceKnockbackValue = false
-    private var lifeValue = 40
+    protected var damageValue = 1f
+    protected var headShotValue = 1f
+    protected var legShotValue = 0.5f
+    protected var beastValue = false
+    protected var isZoomValue: Boolean = false
+    protected var explosionDamageValue = 0.0f
+    protected var explosionRadiusValue = 0.0f
+    protected var fireLevelValue = 0
+    protected var dragonBreathValue = false
+    protected var knockbackValue = 0.05f
+    protected var velocityValue = 20f
+    protected var forceKnockbackValue = false
+    protected var lifeValue = 40
     // 子弹的穿甲比例
-    private var bypassArmorRateValue = 0.0f
+    protected var bypassArmorRateValue = 0.0f
+    // 是否能穿墙
+    protected var penetratingValue: Boolean = false
 
     override fun getDamage(): Float = damageValue
     override fun setDamage(value: Float) {
@@ -103,13 +104,13 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
         legShotValue = value
     }
 
-    override fun getBeast(): Boolean = beastValue
+    override fun isBeast(): Boolean = beastValue
     override fun setBeast(value: Boolean) {
         beastValue = value
     }
 
-    override fun getIsZoom(): Boolean = isZoomValue
-    override fun setIsZoom(value: Boolean) {
+    override fun isZoom(): Boolean = isZoomValue
+    override fun setZoom(value: Boolean) {
         isZoomValue = value
     }
 
@@ -128,7 +129,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
         fireLevelValue = value
     }
 
-    override fun getDragonBreath(): Boolean = dragonBreathValue
+    override fun isDragonBreath(): Boolean = dragonBreathValue
     override fun setDragonBreath(value: Boolean) {
         dragonBreathValue = value
     }
@@ -143,7 +144,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
         velocityValue = value
     }
 
-    override fun getForceKnockback(): Boolean = forceKnockbackValue
+    override fun isForceKnockback(): Boolean = forceKnockbackValue
     override fun setForceKnockback(value: Boolean) {
         forceKnockbackValue = value
     }
@@ -158,8 +159,10 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
         bypassArmorRateValue = value
     }
 
-    // 是否能穿墙
-    var isPenetrating: Boolean = false
+    override fun isPenetrating(): Boolean = penetratingValue
+    override fun setPenetrating(value: Boolean) {
+        penetratingValue = value
+    }
 
     // 子弹造成的状态效果
     private val mobEffects = arrayListOf<MobEffectInstance>()
@@ -263,7 +266,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
             }
             boundingBox = boundingBox.move(velocity.multiply(-5.0, -5.0, -5.0))
 
-            if (this.beastValue) {
+            if (this.isBeast()) {
                 boundingBox = boundingBox.inflate(3.0)
             }
 
@@ -308,7 +311,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
                 rayTraceBlocks(
                     level,
                     ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this),
-                    if (this.isPenetrating || this.beastValue) Predicate { true } else if (ProjectileConfig.PROJECTILE_DESTROY_BLOCKS.get()) IGNORE_LIST.and(
+                    if (this.isPenetrating() || this.isBeast()) Predicate { true } else if (ProjectileConfig.PROJECTILE_DESTROY_BLOCKS.get()) IGNORE_LIST.and(
                         Predicate { input -> !input.`is`(ModTags.Blocks.BULLET_CAN_DESTROY) }) else IGNORE_LIST
                 )
 
@@ -316,7 +319,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
                 rayTraceBlocks(
                     level,
                     ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, this),
-                    if (this.isPenetrating || this.beastValue) Predicate { true } else if (ProjectileConfig.PROJECTILE_DESTROY_BLOCKS.get()) IGNORE_LIST.and(
+                    if (this.isPenetrating() || this.isBeast()) Predicate { true } else if (ProjectileConfig.PROJECTILE_DESTROY_BLOCKS.get()) IGNORE_LIST.and(
                         Predicate { input -> !input.`is`(ModTags.Blocks.BULLET_CAN_DESTROY) }) else IGNORE_LIST
                 )
 
@@ -342,7 +345,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
                     this.onHit(result)
                 }
 
-                if (!this.beastValue) {
+                if (!this.isBeast()) {
                     this.bypassArmorRateValue -= 0.2f
                     if (this.bypassArmorRateValue < 0.8f) {
                         if (result != null && !(resEntity is TargetEntity && resEntity.getEntityData()
@@ -367,7 +370,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
 
         this.deltaMovement = this.deltaMovement.add(0.0, -this.gravity.toDouble(), 0.0)
 
-        if (this.tickCount > (if (fireLevelValue > 0) 10 else lifeValue)) {
+        if (this.tickCount > lifeValue) {
             this.discard()
         }
 
@@ -425,17 +428,25 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
             val resultPos = result.blockPos
             val state = level.getBlockState(resultPos)
             val event = state.block.getSoundType(state, level, resultPos, this).breakSound
+
+            val hitVec = result.location
             level.playSound(
                 null,
-                result.getLocation().x,
-                result.getLocation().y,
-                result.getLocation().z,
+                hitVec.x,
+                hitVec.y,
+                hitVec.z,
                 event,
                 SoundSource.AMBIENT,
                 1f,
                 1f
             )
-            val hitVec = result.getLocation()
+
+            level.gameEvent(
+                GameEvent.PROJECTILE_LAND,
+                hitVec,
+                GameEvent.Context.of(this, state)
+            )
+
             this.onHitBlock(result)
 
             if (fireLevelValue > 0 && level is ServerLevel) {
@@ -458,8 +469,13 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
                 }
             }
 
-            this.onHitEntity(entity, result)
-            entity.invulnerableTime = 0
+            this.level().gameEvent(
+                GameEvent.PROJECTILE_LAND,
+                result.location,
+                GameEvent.Context.of(this, null)
+            )
+
+            this.onHitEntity(result)
         }
     }
 
@@ -558,16 +574,16 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
 
     override fun onHitBlock(result: BlockHitResult) {
         val level = this.level()
+        val pos = result.blockPos
+        val face = result.direction
+        val state = level.getBlockState(pos)
         val location = result.location
+
+        if (postEvent(HitBlock(pos, state, face, this.owner, this, location))) return
+
+        state.onProjectileHit(level, state, result, this)
+
         if (level is ServerLevel) {
-            val pos = result.blockPos
-            val face = result.direction
-            val state = level().getBlockState(pos)
-
-            if (postEvent(HitBlock(pos, state, face, this.owner, this, location))) return
-
-            state.onProjectileHit(level, state, result, this)
-
             if (this.explosionDamageValue > 0) {
                 CustomExplosion.Builder(this)
                     .attacker(this.owner)
@@ -582,7 +598,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
             val vz = face.stepZ.toDouble()
             val dir = Vec3(vx, vy, vz)
 
-            if (this.beastValue) {
+            if (this.isBeast()) {
                 ParticleTool.sendParticle(
                     level,
                     ParticleTypes.END_ROD,
@@ -697,9 +713,10 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
         )
     }
 
-    protected fun onHitEntity(entity: Entity?, result: ExtendedEntityRayTraceResult) {
-        var entity = entity ?: return
+    override fun onHitEntity(result: EntityHitResult) {
+        if (result !is ExtendedEntityRayTraceResult) return
 
+        var entity = result.entity ?: return
         val headshot = result.headshot
         val legShot = result.legShot
 
@@ -719,7 +736,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
                 (2 * Math.random() - 1).toFloat() * 0.1f + 1.0f
             )
 
-            if (beastValue) {
+            if (isBeast()) {
                 beastKill(this.owner, entity)
                 return
             }
@@ -795,23 +812,6 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
         }
 
         this.discard()
-    }
-
-    override fun performOnHit(entity: Entity, damage: Float, headshot: Boolean, knockback: Double) {
-        if (entity is LivingEntity) {
-            if (this.forceKnockbackValue) {
-                val vec3 = this.deltaMovement.multiply(1.0, 0.0, 1.0).normalize()
-                entity.addDeltaMovement(vec3.scale(knockback))
-                performDamage(entity, damage, headshot)
-            } else {
-                val iCustomKnockback = ICustomKnockback.getInstance(entity)
-                iCustomKnockback.`superbWarfare$setKnockbackStrength`(knockback)
-                performDamage(entity, damage, headshot)
-                iCustomKnockback.`superbWarfare$resetKnockbackStrength`()
-            }
-        } else {
-            performDamage(entity, damage, headshot)
-        }
     }
 
     open fun shoot(living: LivingEntity?, vecX: Double, vecY: Double, vecZ: Double, velocity: Float, spread: Float) {
@@ -1001,109 +1001,6 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
 
         private val IGNORE_LIST = Predicate { input: BlockState ->
             input.`is`(ModTags.Blocks.BULLET_IGNORE) && !(input.`is`(Blocks.IRON_DOOR) || input.`is`(Blocks.IRON_TRAPDOOR))
-        }
-
-        // 子弹的颜色
-        const val DEFAULT_R: Float = 1.0f
-        const val DEFAULT_G: Float = 222 / 255f
-        const val DEFAULT_B: Float = 39 / 255f
-
-        @JvmStatic
-        fun rayTraceBlocks(
-            world: Level,
-            context: ClipContext,
-            ignorePredicate: Predicate<BlockState>
-        ): BlockHitResult {
-            return performRayTrace(
-                context, { rayTraceContext, blockPos ->
-                    val blockState: BlockState = world.getBlockState(blockPos)
-                    if (ignorePredicate.test(blockState)) return@performRayTrace null
-                    val fluidState: FluidState = world.getFluidState(blockPos)
-                    val startVec: Vec3 = rayTraceContext.from
-                    val endVec: Vec3 = rayTraceContext.to
-                    val blockShape: VoxelShape = rayTraceContext.getBlockShape(blockState, world, blockPos)
-                    val blockResult: BlockHitResult? =
-                        world.clipWithInteractionOverride(startVec, endVec, blockPos, blockShape, blockState)
-                    val fluidShape: VoxelShape = rayTraceContext.getFluidShape(fluidState, world, blockPos)
-                    val fluidResult: BlockHitResult? = fluidShape.clip(startVec, endVec, blockPos)
-                    val blockDistance =
-                        if (blockResult == null) Double.MAX_VALUE else rayTraceContext.from
-                            .distanceToSqr(blockResult.getLocation())
-                    val fluidDistance =
-                        if (fluidResult == null) Double.MAX_VALUE else rayTraceContext.from
-                            .distanceToSqr(fluidResult.getLocation())
-                    if (blockDistance <= fluidDistance) blockResult else fluidResult
-                },
-                { rayTraceContext ->
-                    val vec3 = rayTraceContext.from.subtract(rayTraceContext.to)
-                    BlockHitResult.miss(
-                        rayTraceContext.to,
-                        Direction.getNearest(vec3.x, vec3.y, vec3.z),
-                        BlockPos.containing(rayTraceContext.to)
-                    )
-                })
-        }
-
-        private fun <T> performRayTrace(
-            context: ClipContext,
-            hitFunction: BiFunction<ClipContext, BlockPos, T?>,
-            function: Function<ClipContext, T>
-        ): T {
-            val startVec = context.from
-            val endVec = context.to
-            if (startVec != endVec) {
-                val startX = Mth.lerp(-0.0000001, endVec.x, startVec.x)
-                val startY = Mth.lerp(-0.0000001, endVec.y, startVec.y)
-                val startZ = Mth.lerp(-0.0000001, endVec.z, startVec.z)
-                val endX = Mth.lerp(-0.0000001, startVec.x, endVec.x)
-                val endY = Mth.lerp(-0.0000001, startVec.y, endVec.y)
-                val endZ = Mth.lerp(-0.0000001, startVec.z, endVec.z)
-                var blockX = Mth.floor(endX)
-                var blockY = Mth.floor(endY)
-                var blockZ = Mth.floor(endZ)
-                val mutablePos = MutableBlockPos(blockX, blockY, blockZ)
-                val t = hitFunction.apply(context, mutablePos)
-                if (t != null) {
-                    return t
-                }
-
-                val deltaX = startX - endX
-                val deltaY = startY - endY
-                val deltaZ = startZ - endZ
-                val signX = Mth.sign(deltaX)
-                val signY = Mth.sign(deltaY)
-                val signZ = Mth.sign(deltaZ)
-                val d9 = if (signX == 0) Double.MAX_VALUE else signX.toDouble() / deltaX
-                val d10 = if (signY == 0) Double.MAX_VALUE else signY.toDouble() / deltaY
-                val d11 = if (signZ == 0) Double.MAX_VALUE else signZ.toDouble() / deltaZ
-                var d12 = d9 * (if (signX > 0) 1 - Mth.frac(endX) else Mth.frac(endX))
-                var d13 = d10 * (if (signY > 0) 1 - Mth.frac(endY) else Mth.frac(endY))
-                var d14 = d11 * (if (signZ > 0) 1 - Mth.frac(endZ) else Mth.frac(endZ))
-
-                while (d12 <= 1 || d13 <= 1 || d14 <= 1) {
-                    if (d12 < d13) {
-                        if (d12 < d14) {
-                            blockX += signX
-                            d12 += d9
-                        } else {
-                            blockZ += signZ
-                            d14 += d11
-                        }
-                    } else if (d13 < d14) {
-                        blockY += signY
-                        d13 += d10
-                    } else {
-                        blockZ += signZ
-                        d14 += d11
-                    }
-
-                    val t1 = hitFunction.apply(context, mutablePos.set(blockX, blockY, blockZ))
-                    if (t1 != null) {
-                        return t1
-                    }
-                }
-            }
-            return function.apply(context)
         }
     }
 }
