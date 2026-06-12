@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.config.server.ProjectileConfig
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.projectile.GrapeshotEntity
+import com.atsuishio.superbwarfare.entity.projectile.IAdvancedHitDetection
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity
 import com.atsuishio.superbwarfare.entity.projectile.SuperStarProjectileEntity
 import com.atsuishio.superbwarfare.init.ModTags
@@ -80,13 +81,13 @@ object CustomEventHandler {
             }
         }
 
+        if (projectile is IAdvancedHitDetection && block is TargetBlock) {
+            projectile.recordHitScore(face, event.hitVec)
+        }
+
         if (projectile is ProjectileEntity) {
             if (ProjectileConfig.PROJECTILE_DESTROY_BLOCKS.get() && state.`is`(ModTags.Blocks.BULLET_CAN_DESTROY)) {
-                projectile.level().destroyBlock(pos, false, projectile.shooter)
-            }
-
-            if (block is TargetBlock) {
-                projectile.recordHitScore(face, event.hitVec)
+                projectile.level().destroyBlock(pos, false, projectile.owner)
             }
         }
 

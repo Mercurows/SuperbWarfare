@@ -6,15 +6,6 @@ import net.minecraft.world.effect.MobEffectInstance
  * 子弹属性接口 — 定义投射物的核心数据的 getter/setter 方法。
  *
  * 实现类需覆盖对应方法。部分方法提供默认实现。
- *
- * - 必须覆盖：[getDamage]/[setDamage]、[getExplosionDamage]/[setExplosionDamage]、
- *   [getExplosionRadius]/[setExplosionRadius]、[getLife]/[setLife]
- * - 有默认值：[getHeadShot]/[setHeadShot]、[getLegShot]/[setLegShot]、
- *   [getKnockback]/[setKnockback]、[getVelocity]/[setVelocity]、[getBeast]/[setBeast]、
- *   [getIsZoom]/[setIsZoom]、[getForceKnockback]/[setForceKnockback]、
- *   [getFireLevel]/[setFireLevel]、[getDragonBreath]/[setDragonBreath]、
- *   [getBypassArmorRate]/[setBypassArmorRate]
- * - 复合操作保留方法：[setRGB]/[getRGB]、[setEffect]、[setCustomGravity]
  */
 interface IBulletProperties {
     // 伤害值

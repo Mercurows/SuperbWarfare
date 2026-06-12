@@ -11,17 +11,18 @@ import com.atsuishio.superbwarfare.entity.living.TargetEntity
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
-import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeGunFireAbsoluteDamage
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeGunFireDamage
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeGunFireHeadshotAbsoluteDamage
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeGunFireHeadshotDamage
-import com.atsuishio.superbwarfare.item.misc.TranscriptItem
+import com.atsuishio.superbwarfare.init.ModEntities
+import com.atsuishio.superbwarfare.init.ModParticleTypes
+import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.item.weapon.BeastItem.Companion.beastKill
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage
 import com.atsuishio.superbwarfare.tools.*
-import com.atsuishio.superbwarfare.tools.FormatTool.format1D
 import com.atsuishio.superbwarfare.tools.HitboxHelper.getBoundingBox
 import com.atsuishio.superbwarfare.tools.HitboxHelper.getVelocity
 import com.atsuishio.superbwarfare.tools.VectorTool.isInLiquid
@@ -33,10 +34,6 @@ import net.minecraft.core.Direction
 import net.minecraft.core.Holder
 import net.minecraft.core.particles.BlockParticleOption
 import net.minecraft.core.particles.ParticleTypes
-import net.minecraft.nbt.CompoundTag
-import net.minecraft.nbt.ListTag
-import net.minecraft.nbt.Tag
-import net.minecraft.network.chat.Component
 import net.minecraft.network.protocol.game.ClientboundSoundPacket
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
@@ -65,25 +62,15 @@ import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
 import net.minecraft.world.phys.shapes.VoxelShape
 import net.minecraftforge.entity.PartEntity
-import java.util.*
 import java.util.function.BiFunction
 import java.util.function.Function
 import java.util.function.Predicate
 import kotlin.math.PI
-import kotlin.math.abs
-import kotlin.math.ceil
 import kotlin.math.max
 
 @Suppress("unused")
 open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level: Level) : Projectile(entityType, level),
     IBulletProperties, IAdvancedHitDetection, IFastMotionSync {
-    // 子弹的发射者，可以为空
-    var shooter: Entity? = null
-
-    // 子弹的发射者的ID
-    var shooterId: Int = 0
-        protected set
-
     // ===== IBulletProperties 属性（使用 getter/setter 方法） =====
     private var damageValue = 1f
     private var headShotValue = 1f
@@ -190,29 +177,6 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
 
     constructor(level: Level) : this(ModEntities.PROJECTILE.get(), level)
 
-    override fun findEntitiesOnPath(startVec: Vec3, endVec: Vec3): MutableList<EntityResult> {
-        val hitEntities: MutableList<EntityResult> = arrayListOf()
-        val entities = this.level().getEntities(
-            this,
-            this.boundingBox
-                .expandTowards(this.deltaMovement)
-                .inflate(1.0),
-            PROJECTILE_TARGETS
-        )
-        for (entity in entities) {
-            if (entity == this.shooter || this.shooter != null
-                && (entity == this.shooter!!.vehicle || entity.getRootVehicle() === this.shooter!!.getRootVehicle())
-            ) continue
-
-            if (entity is TargetEntity && entity.getEntityData().get(TargetEntity.DOWN_TIME) > 0) continue
-            if (entity is DPSGeneratorEntity && entity.getEntityData().get(DPSGeneratorEntity.DOWN_TIME) > 0) continue
-
-            val result = this.getHitResult(entity, startVec, endVec) ?: continue
-            hitEntities.add(result)
-        }
-        return hitEntities
-    }
-
     /**
      * From TaC-Z
      */
@@ -270,7 +234,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
             var boundingBox = entity.boundingBox
             var velocity = Vec3(entity.x - entity.xOld, entity.y - entity.yOld, entity.z - entity.zOld)
 
-            val shooter = this.shooter
+            val shooter = this.owner
             if (entity is ServerPlayer && shooter is ServerPlayer) {
                 val ping = Mth.floor((shooter.latency / 1000.0) * 20.0 + 0.5)
                 boundingBox = getBoundingBox(entity, ping)
@@ -361,14 +325,14 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
             }
 
             val entityResults = findEntitiesOnPath(startVec, endVec)
-            if (this.shooter != null) {
-                entityResults.sortBy { it.hitVec.distanceTo(this.shooter!!.position()) }
+            if (this.owner != null) {
+                entityResults.sortBy { it.hitVec.distanceTo(this.owner!!.position()) }
             }
 
             for (entityResult in entityResults) {
                 result = ExtendedEntityRayTraceResult(entityResult)
                 val resEntity = result.entity
-                val shooter = this.shooter
+                val shooter = this.owner
                 if (resEntity is Player) {
                     if (shooter is Player && !shooter.canHarmPlayer(resEntity)) {
                         result = null
@@ -484,96 +448,18 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
 
         if (result is ExtendedEntityRayTraceResult) {
             val entity = result.entity
-            if (entity.id == this.shooterId) {
+            if (entity == this.owner) {
                 return
             }
 
-            if (this.shooter is Player) {
-                if (entity.hasIndirectPassenger(shooter!!)) {
+            if (this.owner is Player) {
+                if (entity.hasIndirectPassenger(this.owner!!)) {
                     return
                 }
             }
 
             this.onHitEntity(entity, result)
             entity.invulnerableTime = 0
-        }
-    }
-
-    private fun getRings(direction: Direction, hitVec: Vec3): Int {
-        val x = abs(Mth.frac(hitVec.x) - 0.5)
-        val y = abs(Mth.frac(hitVec.y) - 0.5)
-        val z = abs(Mth.frac(hitVec.z) - 0.5)
-        val axis = direction.axis
-        val v: Double = if (axis === Direction.Axis.Y) {
-            max(x, z)
-        } else if (axis === Direction.Axis.Z) {
-            max(x, y)
-        } else {
-            max(y, z)
-        }
-
-        return max(1, ceil(10.0 * ((0.5 - v) / 0.5).coerceIn(0.0, 1.0)).toInt())
-    }
-
-    override fun recordHitScore(direction: Direction, hitVec: Vec3) {
-        val shooter = this.shooter ?: return
-        val score = this.getRings(direction, hitVec)
-        val distance = shooter.position().distanceTo(hitVec)
-
-        if (shooter !is Player) {
-            return
-        }
-
-        shooter.displayClientMessage(
-            Component.literal(score.toString())
-                .append(Component.translatable("tips.superbwarfare.shoot.rings"))
-                .append(Component.literal(" " + format1D(distance, "m"))), false
-        )
-
-        if (shooter is ServerPlayer) {
-            val holder = if (score == 10) Holder.direct(ModSounds.HEADSHOT.get())
-            else Holder.direct(ModSounds.INDICATION.get())
-
-            sendPacketTo(
-                shooter,
-                ClientboundSoundPacket(
-                    holder,
-                    SoundSource.PLAYERS,
-                    shooter.x,
-                    shooter.y,
-                    shooter.z,
-                    1f,
-                    1f,
-                    shooter.level().random.nextLong()
-                )
-            )
-            sendPacketTo(shooter, ClientIndicatorMessage(if (score == 10) 1 else 0, 5))
-        }
-
-        val stack = shooter.offhandItem
-        if (stack.`is`(ModItems.TRANSCRIPT.get())) {
-            val size = 10
-
-            val tags = stack.getOrCreateTag().getList(TranscriptItem.TAG_SCORES, Tag.TAG_COMPOUND.toInt())
-
-            val queue: Queue<CompoundTag> = ArrayDeque<CompoundTag>()
-            for (i in tags.indices) {
-                queue.add(tags.getCompound(i))
-            }
-
-            val tag = CompoundTag()
-            tag.putInt("Score", score)
-            tag.putDouble("Distance", distance)
-            queue.offer(tag)
-
-            while (queue.size > size) {
-                queue.poll()
-            }
-
-            val newTags = ListTag()
-            newTags.addAll(queue)
-
-            stack.getOrCreateTag().put(TranscriptItem.TAG_SCORES, newTags)
         }
     }
 
@@ -678,13 +564,13 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
             val face = result.direction
             val state = level().getBlockState(pos)
 
-            if (postEvent(HitBlock(pos, state, face, this.shooter, this, location))) return
+            if (postEvent(HitBlock(pos, state, face, this.owner, this, location))) return
 
             state.onProjectileHit(level, state, result, this)
 
             if (this.explosionDamageValue > 0) {
                 CustomExplosion.Builder(this)
-                    .attacker(this.shooter)
+                    .attacker(this.owner)
                     .damage(this.explosionDamageValue)
                     .radius(this.explosionRadiusValue)
                     .position(location)
@@ -817,7 +703,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
         val headshot = result.headshot
         val legShot = result.legShot
 
-        if (postEvent(HitEntity(this.shooter, this, result))) return
+        if (postEvent(HitEntity(this.owner, this, result))) return
 
         if (entity is PartEntity<*>) {
             entity = entity.getParent()
@@ -834,14 +720,14 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
             )
 
             if (beastValue) {
-                beastKill(this.shooter, entity)
+                beastKill(this.owner, entity)
                 return
             }
         }
 
         this.damageValue *= (deltaMovement.length() / velocityValue).coerceIn(0.0, 1.0).toFloat()
 
-        val shooter = this.shooter
+        val shooter = this.owner
         if (headshot) {
             if (shooter is ServerPlayer) {
                 val holder = Holder.direct(ModSounds.HEADSHOT.get())
@@ -895,13 +781,13 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
 
         if (!this.mobEffects.isEmpty() && entity is LivingEntity) {
             for (instance in this.mobEffects) {
-                entity.addEffect(instance, this.shooter)
+                entity.addEffect(instance, shooter)
             }
         }
 
         if (this.explosionDamageValue > 0) {
             CustomExplosion.Builder(this)
-                .attacker(this.shooter)
+                .attacker(shooter)
                 .damage(this.explosionDamageValue)
                 .radius(this.explosionRadiusValue)
                 .position(result.location)
@@ -967,9 +853,9 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
         if (absoluteDamage > 0) {
             entity.forceHurt(
                 if (isHeadshot)
-                    causeGunFireHeadshotAbsoluteDamage(this.level().registryAccess(), this, this.shooter)
+                    causeGunFireHeadshotAbsoluteDamage(this.level().registryAccess(), this, this.owner)
                 else
-                    causeGunFireAbsoluteDamage(this.level().registryAccess(), this, this.shooter),
+                    causeGunFireAbsoluteDamage(this.level().registryAccess(), this, this.owner),
                 absoluteDamage * headShotModifier
             )
             entity.invulnerableTime = 0
@@ -977,7 +863,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
             // 大于1的穿甲对载具造成额外伤害
             if (entity is VehicleEntity && this.bypassArmorRateValue > 1) {
                 entity.hurt(
-                    causeGunFireAbsoluteDamage(this.level().registryAccess(), this, this.shooter),
+                    causeGunFireAbsoluteDamage(this.level().registryAccess(), this, this.owner),
                     absoluteDamage * (this.bypassArmorRateValue - 1) * 0.5f
                 )
             }
@@ -985,9 +871,9 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
         if (normalDamage > 0) {
             entity.forceHurt(
                 if (isHeadshot)
-                    causeGunFireHeadshotDamage(this.level().registryAccess(), this, this.shooter)
+                    causeGunFireHeadshotDamage(this.level().registryAccess(), this, this.owner)
                 else
-                    causeGunFireDamage(this.level().registryAccess(), this, this.shooter),
+                    causeGunFireDamage(this.level().registryAccess(), this, this.owner),
                 normalDamage * headShotModifier
             )
             entity.invulnerableTime = 0
@@ -998,7 +884,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
      * Builders
      */
     fun shooter(shooter: Entity?): ProjectileEntity {
-        this.shooter = shooter
+        this.owner = shooter
         return this
     }
 
@@ -1113,8 +999,6 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
         val COLOR_B: EntityDataAccessor<Float> =
             SynchedEntityData.defineId(ProjectileEntity::class.java, EntityDataSerializers.FLOAT)
 
-        private val PROJECTILE_TARGETS =
-            Predicate { input: Entity? -> input != null && input.isPickable && !input.isSpectator && input.isAlive }
         private val IGNORE_LIST = Predicate { input: BlockState ->
             input.`is`(ModTags.Blocks.BULLET_IGNORE) && !(input.`is`(Blocks.IRON_DOOR) || input.`is`(Blocks.IRON_TRAPDOOR))
         }
