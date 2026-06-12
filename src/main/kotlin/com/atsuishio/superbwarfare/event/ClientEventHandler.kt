@@ -337,6 +337,10 @@ object ClientEventHandler {
     @JvmField
     var cameraRoll: Float = 0f
 
+    // Tracks whether pushPose was called in bobHurt for vehicle camera rotation
+    @JvmField
+    var vehiclePosePushed: Boolean = false
+
     // 禁止冲刺♿时长tick
     @JvmField
     var noSprintTicks: Float = 0f
@@ -1887,6 +1891,12 @@ object ClientEventHandler {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onRenderHand(event: RenderHandEvent) {
+        // Pop vehicle camera transforms before hand rendering to prevent arm tilt
+        if (vehiclePosePushed) {
+            event.poseStack.popPose()
+            vehiclePosePushed = false
+        }
+
         val player = localPlayer ?: return
 
         val leftHand = if (mc.options.mainHand().get() == HumanoidArm.RIGHT)
