@@ -220,7 +220,7 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
 
     override fun tick() {
         val level = this.level()
-        if (tickCount > getLife()) {
+        if (tickCount > life) {
             if (level is ServerLevel) {
                 this.createAreaCloud(level, position())
             }

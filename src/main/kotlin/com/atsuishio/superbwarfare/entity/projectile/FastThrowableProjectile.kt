@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.client.particle.CustomFlareOption
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig
+import com.atsuishio.superbwarfare.entity.OBBEntity
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage
 import com.atsuishio.superbwarfare.tools.CustomExplosion
 import com.atsuishio.superbwarfare.tools.ParticleTool
@@ -37,8 +38,8 @@ import net.minecraftforge.entity.IEntityAdditionalSpawnData
 import net.minecraftforge.network.NetworkHooks
 import java.util.function.Consumer
 
-abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMotionEntity, IEntityAdditionalSpawnData,
-    ExplosiveProjectile {
+abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSync, IEntityAdditionalSpawnData,
+    IBulletProperties {
     var damageValue: Float = 0f
     var explosionDamageValue: Float = 0f
     var explosionRadiusValue: Float = 0f
@@ -46,6 +47,27 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
     var lifeValue: Int = 400
     var durability: Int = 50
     var firstHit: Boolean = true
+
+    override var damage: Float
+        get() = damageValue
+        set(v) {
+            damageValue = v
+        }
+    override var explosionDamage: Float
+        get() = explosionDamageValue
+        set(v) {
+            explosionDamageValue = v
+        }
+    override var explosionRadius: Float
+        get() = explosionRadiusValue
+        set(v) {
+            explosionRadiusValue = v
+        }
+    override var life: Int
+        get() = lifeValue
+        set(v) {
+            lifeValue = v
+        }
 
     private var isFastMoving = false
 
@@ -146,14 +168,12 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
                 if (entity == this.owner || this.owner != null && entity == this.owner!!.vehicle) continue
                 if (this.owner != null && entity.getRootVehicle() === this.owner!!.getRootVehicle()) continue
 
-                var hitVec: Vec3? = null
-
                 // For OBB entities: use OBB clip only, never fall back to AABB
-                if (entity is com.atsuishio.superbwarfare.entity.OBBEntity && !entity.enableAABB()) {
-                    hitVec = ProjectileEntity.clipObb(this, entity, startVec, endVec)
+                val hitVec = if (entity is OBBEntity && !entity.enableAABB()) {
+                    ProjectileEntity.clipObb(this, entity, startVec, endVec)
                 } else {
                     // Non-OBB entities: use vanilla AABB clip
-                    hitVec = entity.boundingBox.clip(startVec, endVec).orElse(null)
+                    entity.boundingBox.clip(startVec, endVec).orElse(null)
                 }
 
                 if (hitVec != null) {
@@ -207,7 +227,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
                 this.keepChunkLoaded(position().add(this.deltaMovement.normalize().scale(16.0)))
             }
 
-            if (tickCount > getLife()) {
+            if (tickCount > life) {
                 if (explosionRadiusValue > 0) {
                     causeExplode(position())
                 }
@@ -333,11 +353,11 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
         }
     }
 
-    open fun isFastMoving(): Boolean {
+    override fun isFastMoving(): Boolean {
         return this.deltaMovement.length() >= 0.5
     }
 
-    open fun shouldSyncMotion(): Boolean {
+    override fun shouldSyncMotion(): Boolean {
         return true
     }
 
@@ -372,32 +392,12 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
         return true
     }
 
-    override fun setDamage(damage: Float) {
-        this.damageValue = damage
-    }
-
-    override fun setExplosionDamage(explosionDamage: Float) {
-        this.explosionDamageValue = explosionDamage
-    }
-
-    override fun setExplosionRadius(radius: Float) {
-        this.explosionRadiusValue = radius
-    }
-
-    override fun setLife(life: Int) {
-        this.lifeValue = life
-    }
-
-    open fun getLife(): Int {
-        return lifeValue
+    override fun setCustomGravity(gravity: Float) {
+        this.gravityValue = gravity
     }
 
     public override fun getGravity(): Float {
         return this.gravityValue
-    }
-
-    override fun setGravity(gravity: Float) {
-        this.gravityValue = gravity
     }
 
     open fun hugeMissileTrail() {
@@ -408,7 +408,17 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, CustomSyncMoti
                 val startPos = Vec3(xo, yo + bbHeight / 2, zo)
                 val pos = startPos.add(deltaMovement.normalize().scale(-i))
                 val random = 2 * (this.random.nextFloat() - 0.5f)
-                level().addParticle(CustomFlareOption(0.5f, 0.43f, 0.36f, 700, 0.985f, (10 + 8 * random).toInt(), 0.03f), pos.x + random * 0.25, pos.y + random * 0.25, pos.z + random * 0.25, 0.0, 0.0, 0.0)
+                level().addParticle(
+                    CustomFlareOption(
+                        0.5f,
+                        0.43f,
+                        0.36f,
+                        700,
+                        0.985f,
+                        (10 + 8 * random).toInt(),
+                        0.03f
+                    ), pos.x + random * 0.25, pos.y + random * 0.25, pos.z + random * 0.25, 0.0, 0.0, 0.0
+                )
                 i += 2.0
             }
         }
