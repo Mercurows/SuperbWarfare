@@ -175,53 +175,58 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
 
     override fun tick() {
         super.baseTick()
-        this.updateRotation()
 
-        val vec = this.deltaMovement
         val level = this.level()
         if (!level.isClientSide()) {
             val startVec = this.position()
-            var endVec = startVec.add(this.deltaMovement)
-            var result: HitResult? =
-                rayTraceBlocks(
-                    level,
-                    ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this),
-                    if (this.isPenetrating() || this.isBeast()) Predicate { true } else Predicate { false }
-                )
+            val fullEndVec = startVec.add(this.deltaMovement)
 
-            if (result != null && result.type != HitResult.Type.MISS) {
-                endVec = result.getLocation()
-            }
+            // 1. 查找最近的方块碰撞点
+            val blockHit = rayTraceBlocks(
+                level,
+                ClipContext(startVec, fullEndVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this),
+                if (this.isPenetrating() || this.isBeast()) Predicate { true } else Predicate { false }
+            ).takeIf { it.type != HitResult.Type.MISS }
 
-            val entityResults = findEntitiesOnPath(startVec, endVec)
-            if (this.owner != null) {
-                entityResults.sortBy { it.hitVec.distanceTo(this.owner!!.position()) }
-            }
+            // 2. 在路径上查找实体（仅在方块碰撞点之前）
+            val searchEnd = blockHit?.location ?: fullEndVec
+            val entityResults = findEntitiesOnPath(startVec, searchEnd)
+
+            // 3. 找出最近的单一命中目标（方块或实体，取距离最近者，与原版行为一致）
+            var closestHit: HitResult? = blockHit
+            var closestDist = blockHit?.let { startVec.distanceToSqr(it.location) } ?: Double.MAX_VALUE
 
             for (entityResult in entityResults) {
-                result = ExtendedEntityRayTraceResult(entityResult)
-                val resEntity = result.entity
+                val entity = entityResult.entity
                 val shooter = this.owner
-                if (resEntity is Player) {
-                    if (shooter is Player && !shooter.canHarmPlayer(resEntity)) {
-                        result = null
-                    }
+                // 跳过无法伤害的玩家
+                if (entity is Player && shooter is Player && !shooter.canHarmPlayer(entity)) continue
+
+                val dist = startVec.distanceToSqr(entityResult.hitVec)
+                if (dist < closestDist) {
+                    closestDist = dist
+                    closestHit = ExtendedEntityRayTraceResult(entityResult)
                 }
-                if (result != null) {
-                    this.onHit(result)
-                }
-            }
-            if (entityResults.isEmpty() && result != null) {
-                this.onHit(result)
             }
 
-            this.setPos(this.x + vec.x, this.y + vec.y, this.z + vec.z)
-        } else {
-            this.setPosRaw(this.x + vec.x, this.y + vec.y, this.z + vec.z)
+            // 4. 仅对最近的命中目标调用一次 onHit（与原版 ThrowableProjectile 一致）
+            if (closestHit != null) {
+                this.onHit(closestHit)
+                // 命中后将位置设置到碰撞点，确保反弹等逻辑从正确的表面开始
+                val hitLoc = closestHit.location
+                this.setPos(hitLoc.x, hitLoc.y, hitLoc.z)
+            } else {
+                this.setPos(this.x + this.deltaMovement.x, this.y + this.deltaMovement.y, this.z + this.deltaMovement.z)
+            }
         }
+        // 客户端位置由 ClientMotionSyncMessage 每 tick 同步，不再自行推算
 
-        val friction = if (this.isInWater) 0.8f else 0.99f
-        this.deltaMovement = vec.scale((1 / friction).toDouble())
+        // 更新朝向（在 deltaMovement 可能被 onHit/反弹 修改之后）
+        this.updateRotation()
+
+        // 5. 对当前 deltaMovement（已包含反弹等修改）施加摩擦力和重力
+        val friction = if (this.isInWater) 0.8 else 0.99
+        this.deltaMovement = this.deltaMovement.scale(friction)
 
         this.deltaMovement = this.deltaMovement.add(0.0, -this.getCustomGravity().toDouble(), 0.0)
 
@@ -238,7 +243,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         }
         this.isFastMoving = this.isFastMoving()
 
-        // 同步动量
+        // 同步动量与位置到客户端
         this.syncMotion()
 
         // 更新区块加载位置
@@ -398,7 +403,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         val state = level.getBlockState(pos)
         val location = result.location
         if (postEvent(HitBlock(pos, state, face, this.owner, this, location))) return
-//        state.onProjectileHit(level, state, result, this)
+        state.onProjectileHit(level, state, result, this)
 
         this.afterHitBlock(result)
     }
@@ -511,10 +516,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
     override fun syncMotion() {
         if (this.level().isClientSide) return
         if (!shouldSyncMotion()) return
-
-        if (this.tickCount % this.type.updateInterval() == 0) {
-            sendPacketToTrackingThis(ClientMotionSyncMessage(this))
-        }
+        sendPacketToTrackingThis(ClientMotionSyncMessage(this))
     }
 
     override fun isFastMoving(): Boolean {
