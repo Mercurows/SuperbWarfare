@@ -499,7 +499,7 @@ open class CustomExplosion(
         init {
             this.sourceEntity = directSource
             this.attackerEntity = directSource
-            this.position = Vec3(directSource.x, directSource.y, directSource.z)
+            this.position = directSource.boundingBox.center
         }
 
         fun directSource(directSource: Entity): Builder {

@@ -209,6 +209,9 @@ object ModEntities {
     @JvmField
     val MK_84 = register("mk_84", fastProjectile(::Mk84Entity).sized(0.8f, 0.8f))
 
+    @JvmField
+    val BOR_57 = register("bor_57", fastProjectile(::Bor57Entity).sized(0.8f, 0.8f))
+
     // Vehicles
     // Turrets
     @JvmField

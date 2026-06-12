@@ -372,7 +372,7 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
             val seekInfo = data.get(GunProp.SEEK_WEAPON_INFO)
             val flag = seekInfo != null && seekInfo.inputBlockPos
             // 渲染第三人称
-            if (!flag && pos.canBeSeen() && !((entity.vehicleType == VehicleType.AIRPLANE || entity.vehicleType == VehicleType.HELICOPTER) && player === entity.getFirstPassenger())) {
+            if (!flag && pos.canBeSeen() && !((entity.vehicleType == VehicleType.AIRPLANE || entity.vehicleType == VehicleType.HELICOPTER || data.get(GunProp.CROSSHAIR) == "@AirBomb") && player === entity.getFirstPassenger())) {
                 val x = p.x.toFloat()
                 val y = p.y.toFloat()
 

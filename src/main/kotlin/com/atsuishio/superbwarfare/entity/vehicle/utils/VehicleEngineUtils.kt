@@ -1351,6 +1351,7 @@ object VehicleEngineUtils {
         val powerReduce = engineInfo.decrement * 0.05f
         val steeringSpeed = engineInfo.steeringSpeed * 0.05f
         val floatHeight = engineInfo.floatHeight
+        val sprintMultiply = engineInfo.sprintMultiply
 
         if (buoyancy != 0.0) {
             val fluidFloat = buoyancy * VehicleVecUtils.getSubmergedHeight(this)
@@ -1422,25 +1423,16 @@ object VehicleEngineUtils {
 
         if (backInputDown) {
             power = Math.max(power - (if (power > 0) powerReduce * 4f else powerReduce) * (maxPower - (Mth.abs(power) / 1.02f)), -1f)
-            if (rightInputDown) {
-                holdTick++
-                deltaRot += steeringSpeed * 0.1125f * Math.min(holdTick, 40)
-            } else if (leftInputDown) {
-                holdTick++
-                deltaRot -= steeringSpeed * 0.1125f * Math.min(holdTick, 40)
-            } else {
-                holdTick = 0
-            }
+        }
+
+        if (rightInputDown) {
+            holdTick++
+            deltaRot -= steeringSpeed * 0.1125f * Math.min(holdTick, 40)
+        } else if (leftInputDown) {
+            holdTick++
+            deltaRot += steeringSpeed * 0.1125f * Math.min(holdTick, 40)
         } else {
-            if (rightInputDown) {
-                holdTick++
-                deltaRot -= steeringSpeed * 0.1125f * Math.min(holdTick, 40)
-            } else if (leftInputDown) {
-                holdTick++
-                deltaRot += steeringSpeed * 0.1125f * Math.min(holdTick, 40)
-            } else {
-                holdTick = 0
-            }
+            holdTick = 0
         }
 
         if (!forwardInputDown && !backInputDown) {
@@ -1448,7 +1440,7 @@ object VehicleEngineUtils {
         }
 
         targetSpeed = if (power > 0) {
-            (maxForwardSpeedRate).toDouble()
+            (maxForwardSpeedRate).toDouble() * (if (sprintInputDown) sprintMultiply else 1.0)
         } else {
             (maxBackwardSpeedRate).toDouble()
         }
@@ -1492,6 +1484,13 @@ object VehicleEngineUtils {
         }
 
         deltaRot *= Math.max(0.8f - 0.01f * deltaMovement.horizontalDistance(), 0.3).toFloat()
+
+        rudderRot = Mth.clamp(
+            rudderRot + deltaRot,
+            -1f,
+            1f
+        ) * 0.85f
+
         yRot = (yRot - (if (isInFluidType) 0.5 else 1.0) * deltaRot).toFloat()
         deltaMovement = deltaMovement.add(getViewVector(1f).scale(power * targetSpeed * 0.01))
         deltaMovement = if (liftSpeed >= 0) {
