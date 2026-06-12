@@ -135,10 +135,10 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
                         cannonShell.durability(durability)
                         cannonShell.setType(Type.AP)
                         cannonShell.gravityValue = gravityValue
-                        cannonShell.life = lifeValue - tickCount
-                        cannonShell.damage = (damageValue * resistance).toFloat()
-                        cannonShell.explosionDamage = (explosionDamageValue * resistance).toFloat()
-                        cannonShell.explosionRadius = (explosionRadiusValue * resistance).toFloat()
+                        cannonShell.setLife(lifeValue - tickCount)
+                        cannonShell.setDamage((damageValue * resistance).toFloat())
+                        cannonShell.setExplosionDamage((explosionDamageValue * resistance).toFloat())
+                        cannonShell.setExplosionRadius((explosionRadiusValue * resistance).toFloat())
                         level.addFreshEntity(cannonShell)
 
                         this.discard()
@@ -204,7 +204,7 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
                 }
 
                 deltaMovement = deltaMovement.scale(resistance)
-                damage = (this.damageValue * resistance).toFloat()
+                this.setDamage((this.damageValue * resistance).toFloat())
             } else {
                 causeExplode(result.location)
                 this.discard()

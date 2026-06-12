@@ -8,26 +8,32 @@ import net.minecraft.world.phys.Vec3
 /**
  * 追踪制导接口 — 标记一个投射物实体具有目标追踪/制导能力
  *
- * 提供 [turn] 和 [turnYaw] 的默认实现，子类只需提供目标相关属性和制导类型
+ * 提供 [turn] 和 [turnYaw] 的默认实现，子类只需提供目标相关 getter/setter 方法和制导类型
  */
 interface ITrackableProjectile {
     /** 追踪目标的世界坐标 */
-    var targetPos: Vec3?
+    fun getTargetPos(): Vec3?
+    fun setTargetPos(value: Vec3?)
 
     /** 追踪目标的 UUID 字符串 */
-    var targetUUID: String
+    fun getTargetUUID(): String
+    fun setTargetUUID(value: String)
 
     /** 制导类型 */
-    var guideType: Int
+    fun getGuideType(): Int
+    fun setGuideType(value: Int)
 
     /** 是否被诱饵弹干扰 */
-    var distracted: Boolean
+    fun isDistracted(): Boolean
+    fun setDistracted(value: Boolean)
 
     /** 是否已丢失制导（如玩家停止瞄准） */
-    var lost: Boolean
+    fun isLost(): Boolean
+    fun setLost(value: Boolean)
 
     /** 是否丢失追踪目标 */
-    var lostTarget: Boolean
+    fun isLostTarget(): Boolean
+    fun setLostTarget(value: Boolean)
 
     /**
      * 全角度转向（Yaw + Pitch），逐步将当前速度方向转向目标方向

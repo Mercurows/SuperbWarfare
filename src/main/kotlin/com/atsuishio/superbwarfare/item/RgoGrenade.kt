@@ -48,7 +48,7 @@ open class RgoGrenade : Item(Properties().rarity(Rarity.UNCOMMON)), DispenserLau
                     val power = min(usingTime / 8.0f, 1.8f)
 
                     val rgoGrenade = RgoGrenadeEntity(living, level)
-                    rgoGrenade.life = 80 - usingTime
+                    rgoGrenade.setLife(80 - usingTime)
                     rgoGrenade.shootFromRotation(
                         living,
                         living.xRot,

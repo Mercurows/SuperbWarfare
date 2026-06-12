@@ -38,7 +38,7 @@ open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level) : Missil
         this.damageValue = 1100f
         this.explosionDamageValue = 180f
         this.explosionRadiusValue = 12f
-        this.distracted = false
+        this.setDistracted(false)
         this.durability = 25
     }
 
@@ -51,13 +51,13 @@ open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level) : Missil
 
         largeTrail()
 
-        val entity = EntityFindUtil.findEntity(this.level(), this.targetUUID)
+        val entity = EntityFindUtil.findEntity(this.level(), this.getTargetUUID())
         val decoy = SeekTool.seekLivingEntities(this, 32.0, 90.0)
 
         for (e in decoy) {
-            if (e.type.`is`(ModTags.EntityTypes.DECOY) && !this.distracted) {
-                this.targetUUID = e.getStringUUID()
-                this.distracted = true
+            if (e.type.`is`(ModTags.EntityTypes.DECOY) && !this.isDistracted()) {
+                this.setTargetUUID(e.getStringUUID())
+                this.setDistracted(true)
                 break
             }
         }
@@ -65,8 +65,8 @@ open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level) : Missil
         var toVec = lookAngle
         val level = this.level()
 
-        if (guideType == 0) {
-            if (this.targetUUID != "none") {
+        if (getGuideType() == 0) {
+            if (this.getTargetUUID() != "none") {
                 if (entity != null) {
                     if (level is ServerLevel) {
                         if ((!entity.getPassengers().isEmpty() || entity is VehicleEntity)
@@ -102,13 +102,13 @@ open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level) : Missil
                 causeExplode(position())
             }
         } else {
-            if (level is ServerLevel && targetPos != null) {
-                val dis = targetPos!!.vectorTo(position()).horizontalDistance()
+            if (level is ServerLevel && getTargetPos() != null) {
+                val dis = getTargetPos()!!.vectorTo(position()).horizontalDistance()
                 val height = if (dis > 30) 0.4 * (dis - 30) else 0.0
-                val targetPos = this.targetPos!!.add(0.0, height, 0.0)
+                val targetPos = this.getTargetPos()!!.add(0.0, height, 0.0)
                 toVec = calculateFiringSolution(position(), targetPos, Vec3.ZERO, deltaMovement.length(), 0.0)
             }
-            if (targetPos == null && tickCount > 200) {
+            if (getTargetPos() == null && tickCount > 200) {
                 discard()
                 causeExplode(position())
             }

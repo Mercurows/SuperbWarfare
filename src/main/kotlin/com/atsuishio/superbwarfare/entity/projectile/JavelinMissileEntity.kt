@@ -53,10 +53,10 @@ open class JavelinMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
         this.damageValue = damage
         this.explosionDamageValue = explosionDamage
         this.explosionRadiusValue = explosionRadius
-        this.guideType = guideType
+        this.setGuideType(guideType)
         this.durability = 50
         if (targetPos != null) {
-            this.targetPos = targetPos
+            this.setTargetPos(targetPos)
         }
     }
 
@@ -113,18 +113,18 @@ open class JavelinMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
 
         mediumTrail()
 
-        val entity = EntityFindUtil.findEntity(this.level(), targetUUID)
+        val entity = EntityFindUtil.findEntity(this.level(), getTargetUUID())
         val decoy = SeekTool.seekLivingEntities(this, 32.0, 90.0)
 
         for (e in decoy) {
-            if (e.type.`is`(ModTags.EntityTypes.DECOY) && !this.distracted) {
-                this.targetUUID = e.stringUUID
-                this.distracted = true
+            if (e.type.`is`(ModTags.EntityTypes.DECOY) && !this.isDistracted()) {
+                this.setTargetUUID(e.stringUUID)
+                this.setDistracted(true)
                 break
             }
         }
 
-        if (guideType == 0 || targetUUID != "none") {
+        if (getGuideType() == 0 || getTargetUUID() != "none") {
             if (entity != null) {
                 val dir = position().vectorTo(entity.position()).horizontalDistanceSqr() < 900
                 val dis = entity.position().vectorTo(position()).horizontalDistance()
@@ -170,21 +170,21 @@ open class JavelinMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
                     }
                 }
             }
-        } else if (guideType == 1 && targetPos != null) {
-            val dis = targetPos!!.vectorTo(position()).horizontalDistance()
+        } else if (getGuideType() == 1 && getTargetPos() != null) {
+            val dis = getTargetPos()!!.vectorTo(position()).horizontalDistance()
             val height = if (dis > 30) 0.2 * (dis - 30) else 0.0
-            val dir = position().vectorTo(targetPos!!).horizontalDistanceSqr() < 900
-            val toVec = eyePosition.vectorTo(targetPos!!.add(0.0, height, 0.0)).normalize()
+            val dir = position().vectorTo(getTargetPos()!!).horizontalDistanceSqr() < 900
+            val toVec = eyePosition.vectorTo(getTargetPos()!!.add(0.0, height, 0.0)).normalize()
 
             if (this.tickCount > 3) {
                 if (isTop) {
                     if (!dir) {
                         val targetTopPos =
-                            Vec3(targetPos!!.x, targetPos!!.y + (5 * this.tickCount).coerceIn(0, 90), targetPos!!.z)
+                            Vec3(getTargetPos()!!.x, getTargetPos()!!.y + (5 * this.tickCount).coerceIn(0, 90), getTargetPos()!!.z)
                         val toTopVec = eyePosition.vectorTo(targetTopPos).normalize()
                         turn(toTopVec, 6f)
                     } else {
-                        val lostTarget = this.y < targetPos!!.y
+                        val lostTarget = this.y < getTargetPos()!!.y
                         if (!lostTarget) {
                             turn(toVec, 180f)
                             this.deltaMovement = this.deltaMovement.scale(0.1).add(lookAngle.scale(8.0))

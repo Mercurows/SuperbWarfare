@@ -36,18 +36,18 @@ open class Ru9m336MissileEntity(type: EntityType<out Ru9m336MissileEntity>, leve
 
         mediumTrail()
 
-        val entity = EntityFindUtil.findEntity(this.level(), this.targetUUID)
+        val entity = EntityFindUtil.findEntity(this.level(), this.getTargetUUID())
         val decoy = SeekTool.seekLivingEntities(this, 32.0, 90.0)
 
         for (e in decoy) {
-            if (e.type.`is`(ModTags.EntityTypes.DECOY) && !this.distracted) {
-                this.targetUUID = e.getStringUUID()
-                this.distracted = true
+            if (e.type.`is`(ModTags.EntityTypes.DECOY) && !this.isDistracted()) {
+                this.setTargetUUID(e.getStringUUID())
+                this.setDistracted(true)
                 break
             }
         }
 
-        if (entity != null && this.targetUUID != "none") {
+        if (entity != null && this.getTargetUUID() != "none") {
             if ((!entity.getPassengers().isEmpty() || entity is VehicleEntity)
                 && entity.tickCount % (max(0.04 * this.distanceTo(entity), 2.0).toInt()) == 0
             ) {
@@ -75,15 +75,15 @@ open class Ru9m336MissileEntity(type: EntityType<out Ru9m336MissileEntity>, leve
             )
 
             if (this.tickCount > 1) {
-                lostTarget = calculateAngle(deltaMovement, toVec) > 120 && !lostTarget
+                setLostTarget(calculateAngle(deltaMovement, toVec) > 120 && !isLostTarget())
 
-                if (!lostTarget) {
+                if (!isLostTarget()) {
                     turn(toVec, ((tickCount - 1) * 0.5f).coerceIn(0f, 15f))
                     this.deltaMovement = this.deltaMovement.scale(0.05).add(lookAngle.scale(8.0))
                 }
 
-                if (lostTarget) {
-                    this.targetUUID = "none"
+                if (isLostTarget()) {
+                    this.setTargetUUID("none")
                 }
             }
         }

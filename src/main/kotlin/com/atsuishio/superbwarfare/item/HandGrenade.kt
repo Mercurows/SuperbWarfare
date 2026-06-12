@@ -48,7 +48,7 @@ open class HandGrenade : Item(Properties().rarity(Rarity.UNCOMMON)), DispenserLa
                     val power = min(usingTime / 10.0f, 1.5f)
 
                     val handGrenade = HandGrenadeEntity(living, level)
-                    handGrenade.life = 100 - usingTime
+                    handGrenade.setLife(100 - usingTime)
                     handGrenade.shootFromRotation(
                         living,
                         living.xRot,

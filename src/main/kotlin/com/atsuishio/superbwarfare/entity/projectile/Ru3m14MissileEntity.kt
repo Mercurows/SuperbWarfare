@@ -55,10 +55,10 @@ open class Ru3m14MissileEntity(type: EntityType<out Ru3m14MissileEntity>, level:
         val level = this.level()
         var toVec = lookAngle
 
-        if (targetPos != null && level is ServerLevel) {
+        if (getTargetPos() != null && level is ServerLevel) {
             if (tickCount == 1) {
                 startPos = position()
-                distance = targetPos!!.vectorTo(position()).horizontalDistance()
+                distance = getTargetPos()!!.vectorTo(position()).horizontalDistance()
             }
             val flyDistance = position().vectorTo(startPos).horizontalDistance()
             val dis = Mth.clamp(flyDistance / distance, 0.0, 1.0)
@@ -71,7 +71,7 @@ open class Ru3m14MissileEntity(type: EntityType<out Ru3m14MissileEntity>, level:
                 0.0
             }
 
-            val d = targetPos!!.vectorTo(position()).horizontalDistance()
+            val d = getTargetPos()!!.vectorTo(position()).horizontalDistance()
 
             if (d < 600) {
                 height = 0.125 * d
@@ -81,14 +81,14 @@ open class Ru3m14MissileEntity(type: EntityType<out Ru3m14MissileEntity>, level:
                 height = 0.0
             }
 
-            var targetPos = this.targetPos!!.add(0.0, height, 0.0)
+            var targetPos = this.getTargetPos()!!.add(0.0, height, 0.0)
             if (targetPos.y > 2048) {
                 targetPos = Vec3(targetPos.x, 2048.0, targetPos.z)
             }
             toVec = position().vectorTo(targetPos)
         }
 
-        if (targetPos == null && tickCount > 200) {
+        if (getTargetPos() == null && tickCount > 200) {
             discard()
             causeExplode(position())
         }
