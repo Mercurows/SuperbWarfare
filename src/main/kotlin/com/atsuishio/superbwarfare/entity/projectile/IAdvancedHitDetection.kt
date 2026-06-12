@@ -93,10 +93,36 @@ interface IAdvancedHitDetection {
         val expandHeight = if (entity is Player && !entity.isCrouching) 0.0625 else 0.0
         var hitPos: Vec3? = null
         if (entity is OBBEntity && !entity.enableAABB()) {
+            var closestDistSqr = Double.MAX_VALUE
+            var closestHitPos: Vec3? = null
+            var closestHitPart: OBB.Part? = null
+            var collisionHitPos: Vec3? = null
+            var collisionDistSqr = Double.MAX_VALUE
+
             for (obb in entity.getOBBs()) {
-                if (obb.part == OBB.Part.COLLISION) continue
                 val obbVec = obb.clip(startVec.toVector3d(), endVec.toVector3d()).orElse(null) ?: continue
-                hitPos = obbVec.toVec3()
+                val vec = obbVec.toVec3()
+                val distSqr = startVec.distanceToSqr(vec)
+
+                if (obb.part == OBB.Part.COLLISION) {
+                    if (distSqr < collisionDistSqr) {
+                        collisionDistSqr = distSqr
+                        collisionHitPos = vec
+                    }
+                } else {
+                    if (distSqr < closestDistSqr) {
+                        closestDistSqr = distSqr
+                        closestHitPos = vec
+                        closestHitPart = obb.part
+                    }
+                }
+            }
+
+            // 优先使用非 COLLISION 命中，否则回退到 COLLISION（覆盖大型载具的间隙）
+            if (closestHitPos != null) {
+                hitPos = closestHitPos
+                val acc = OBBHitter.getInstance(this)
+                acc.`sbw$setCurrentHitPart`(closestHitPart!!)
                 val level = this.level()
                 if (level is ServerLevel) {
                     level.playSound(
@@ -108,9 +134,8 @@ interface IAdvancedHitDetection {
                         1f
                     )
                 }
-
-                val acc = OBBHitter.getInstance(this)
-                acc.`sbw$setCurrentHitPart`(obb.part)
+            } else if (collisionHitPos != null) {
+                hitPos = collisionHitPos
             }
         } else {
             var boundingBox = entity.boundingBox
@@ -269,25 +294,37 @@ interface IAdvancedHitDetection {
         @JvmStatic
         fun clipObb(projectile: Entity, entity: Entity, startVec: Vec3, endVec: Vec3): Vec3? {
             if (entity is OBBEntity && !entity.enableAABB()) {
-                var collisionHit: Vec3? = null
+                var closestDistSqr = Double.MAX_VALUE
+                var closestHitPos: Vec3? = null
+                var closestHitPart: OBB.Part? = null
+                var collisionHitPos: Vec3? = null
+                var collisionDistSqr = Double.MAX_VALUE
+
                 for (obb in entity.getOBBs()) {
+                    val obbVec = obb.clip(vec3ToVector3d(startVec), vec3ToVector3d(endVec)).orElse(null) ?: continue
+                    val hitPos = vector3dToVec3(obbVec)
+                    val distSqr = startVec.distanceToSqr(hitPos)
+
                     if (obb.part == OBB.Part.COLLISION) {
-                        // Save COLLISION OBB for fallback, but check BODY OBBs first
-                        val obbVec = obb.clip(vec3ToVector3d(startVec), vec3ToVector3d(endVec)).orElse(null)
-                        if (obbVec != null) {
-                            collisionHit = vector3dToVec3(obbVec)
+                        if (distSqr < collisionDistSqr) {
+                            collisionDistSqr = distSqr
+                            collisionHitPos = hitPos
                         }
-                        continue
-                    }
-                    val obbVec = obb.clip(vec3ToVector3d(startVec), vec3ToVector3d(endVec)).orElse(null)
-                    if (obbVec != null) {
-                        val hitPos = vector3dToVec3(obbVec)
-                        OBBHitter.getInstance(projectile).`sbw$setCurrentHitPart`(obb.part)
-                        return hitPos
+                    } else {
+                        if (distSqr < closestDistSqr) {
+                            closestDistSqr = distSqr
+                            closestHitPos = hitPos
+                            closestHitPart = obb.part
+                        }
                     }
                 }
-                // Fallback: use COLLISION OBB if no BODY OBB was hit (covers gaps on large vehicles)
-                return collisionHit
+
+                if (closestHitPos != null) {
+                    OBBHitter.getInstance(projectile).`sbw$setCurrentHitPart`(closestHitPart!!)
+                    return closestHitPos
+                }
+                // Fallback: use COLLISION OBB if no non-COLLISION OBB was hit (covers gaps on large vehicles)
+                return collisionHitPos
             }
             return null
         }
