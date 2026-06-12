@@ -6,11 +6,11 @@ import com.atsuishio.superbwarfare.tools.ProjectileTool.causeCustomExplode
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.Entity
-import net.minecraft.world.entity.projectile.ThrowableItemProjectile
+import net.minecraft.world.entity.projectile.Projectile
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 
-fun ThrowableItemProjectile.customExplode(
+fun Projectile.customExplode(
     source: DamageSource?,
     target: Entity,
     damage: Float,
@@ -18,14 +18,14 @@ fun ThrowableItemProjectile.customExplode(
     damageMultiplier: Float = 0.0F
 ) = causeCustomExplode(this, source, target, damage, radius, damageMultiplier)
 
-fun ThrowableItemProjectile.customExplode(
+fun Projectile.customExplode(
     target: Entity,
     damage: Float,
     radius: Float,
     damageMultiplier: Float = 0.0F
 ) = causeCustomExplode(this, target, damage, radius, damageMultiplier)
 
-fun ThrowableItemProjectile.customExplode(
+fun Projectile.customExplode(
     damage: Float,
     radius: Float,
     damageMultiplier: Float = 0.0F
@@ -35,7 +35,7 @@ object ProjectileTool {
     @JvmStatic
     @JvmOverloads
     fun causeCustomExplode(
-        projectile: ThrowableItemProjectile,
+        projectile: Projectile,
         source: DamageSource?,
         target: Entity,
         damage: Float,
@@ -85,7 +85,7 @@ object ProjectileTool {
     @JvmStatic
     @JvmOverloads
     fun causeCustomExplode(
-        projectile: ThrowableItemProjectile,
+        projectile: Projectile,
         target: Entity,
         damage: Float,
         radius: Float,
@@ -108,7 +108,7 @@ object ProjectileTool {
     @JvmStatic
     @JvmOverloads
     fun causeCustomExplode(
-        projectile: ThrowableItemProjectile,
+        projectile: Projectile,
         damage: Float,
         radius: Float,
         damageMultiplier: Float = 0.0f

@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
-import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.tools.ParticleTool
@@ -14,7 +13,6 @@ import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
-import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
@@ -27,10 +25,6 @@ open class SmallRocketEntity(type: EntityType<out SmallRocketEntity>, level: Lev
         this.explosionDamageValue = 60f
         this.explosionRadiusValue = 5f
         this.durability = 20
-    }
-
-    override fun getDefaultItem(): Item {
-        return ModItems.SMALL_ROCKET.get()
     }
 
     override fun onHitEntity(result: EntityHitResult) {
@@ -46,7 +40,7 @@ open class SmallRocketEntity(type: EntityType<out SmallRocketEntity>, level: Lev
             }
 
             entity.forceHurt(
-                causeProjectileHitDamage(this.level().registryAccess(), this, this.getOwner()),
+                causeProjectileHitDamage(this.level().registryAccess(), this, this.owner),
                 this.damageValue
             )
 

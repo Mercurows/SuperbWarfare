@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
-import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.tools.CustomExplosion
@@ -14,7 +13,6 @@ import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.projectile.Projectile
-import net.minecraft.world.item.Item
 import net.minecraft.world.level.Explosion
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.BellBlock
@@ -32,10 +30,6 @@ open class SmallCannonShellEntity(type: EntityType<out SmallCannonShellEntity>, 
         this.damageValue = 40f
         this.explosionDamageValue = 80f
         this.explosionRadiusValue = 5f
-    }
-
-    override fun getDefaultItem(): Item {
-        return ModItems.SMALL_SHELL_AP.get()
     }
 
     override fun onHitEntity(result: EntityHitResult) {

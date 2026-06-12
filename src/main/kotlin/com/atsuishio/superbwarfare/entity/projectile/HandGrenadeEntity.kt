@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.init.ModEntities
-import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.tools.ParticleTool
@@ -14,7 +13,6 @@ import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
-import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.BellBlock
 import net.minecraft.world.phys.BlockHitResult
@@ -48,10 +46,6 @@ open class HandGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity
         this.damageValue = 1f
         this.explosionDamageValue = ExplosionConfig.M67_GRENADE_EXPLOSION_DAMAGE.get().toFloat()
         this.explosionRadiusValue = ExplosionConfig.M67_GRENADE_EXPLOSION_RADIUS.get().toFloat()
-    }
-
-    override fun getDefaultItem(): Item {
-        return ModItems.HAND_GRENADE.get()
     }
 
     override fun onHit(result: HitResult) {

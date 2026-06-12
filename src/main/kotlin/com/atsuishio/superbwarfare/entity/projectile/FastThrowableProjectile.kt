@@ -7,42 +7,63 @@ import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.client.particle.CustomFlareOption
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig
+import com.atsuishio.superbwarfare.entity.projectile.IAdvancedHitDetection.Companion.rayTraceBlocks
+import com.atsuishio.superbwarfare.init.ModDamageTypes
+import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.item.weapon.BeastItem.Companion.beastKill
+import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage
-import com.atsuishio.superbwarfare.tools.CustomExplosion
-import com.atsuishio.superbwarfare.tools.ParticleTool
-import com.atsuishio.superbwarfare.tools.postEvent
+import com.atsuishio.superbwarfare.tools.*
+import com.atsuishio.superbwarfare.world.phys.ExtendedEntityRayTraceResult
 import net.minecraft.core.BlockPos
+import net.minecraft.core.Holder
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.RegistryFriendlyByteBuf
+import net.minecraft.network.protocol.game.ClientboundSoundPacket
+import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.server.level.ServerPlayer
 import net.minecraft.server.level.TicketType
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundEvents
+import net.minecraft.sounds.SoundSource
 import net.minecraft.util.Mth
+import net.minecraft.world.effect.MobEffectInstance
+import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
-import net.minecraft.world.entity.projectile.ThrowableItemProjectile
+import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.entity.projectile.Projectile
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.gameevent.GameEvent
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn
+import net.neoforged.neoforge.entity.PartEntity
 import net.neoforged.neoforge.network.PacketDistributor
 import java.util.function.Consumer
+import java.util.function.Predicate
 
-abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSync, IEntityWithComplexSpawn,
-    IBulletProperties {
-    var damageValue: Float = 0f
-    var explosionDamageValue: Float = 0f
-    var explosionRadiusValue: Float = 0f
-    var gravityValue: Float = 0.05f
-    var lifeValue: Int = 400
-    var durability: Int = 50
-    var firstHit: Boolean = true
+abstract class FastThrowableProjectile : Projectile, IFastMotionSync, IEntityWithComplexSpawn,
+    IBulletProperties, IAdvancedHitDetection {
+    protected var damageValue: Float = 0f
+    protected var explosionDamageValue: Float = 0f
+    protected var explosionRadiusValue: Float = 0f
+    protected var headShotValue = 1f
+    protected var legShotValue = 1f
+    protected var velocityValue = 4f
+    protected var gravityValue: Float = 0.05f
+    protected var lifeValue: Int = 400
+    protected var durability: Int = 50
+    protected var firstHit: Boolean = true
+    protected var beastValue = false
+    protected var penetratingValue: Boolean = false
 
     override fun getDamage(): Float = damageValue
     override fun setDamage(value: Float) {
@@ -64,28 +85,55 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         lifeValue = value
     }
 
+    override fun getVelocity(): Float = velocityValue
+    override fun setVelocity(value: Float) {
+        velocityValue = value
+    }
+
+    override fun isBeast(): Boolean = beastValue
+    override fun setBeast(value: Boolean) {
+        beastValue = value
+    }
+
+    override fun isPenetrating(): Boolean = penetratingValue
+    override fun setPenetrating(value: Boolean) {
+        penetratingValue = value
+    }
+
+    override fun getHeadShot(): Float = headShotValue
+    override fun setHeadShot(value: Float) {
+        headShotValue = value
+    }
+
+    override fun getLegShot(): Float = legShotValue
+    override fun setLegShot(value: Float) {
+        legShotValue = value
+    }
+
     private var isFastMoving = false
 
     var exploded: Boolean = false
 
-    constructor(pEntityType: EntityType<out ThrowableItemProjectile>, pLevel: Level) : super(pEntityType, pLevel)
+    constructor(entityType: EntityType<out Projectile>, level: Level) : super(entityType, level)
 
     constructor(
-        pEntityType: EntityType<out ThrowableItemProjectile>,
-        pX: Double,
-        pY: Double,
-        pZ: Double,
-        pLevel: Level
-    ) : super(pEntityType, pX, pY, pZ, pLevel)
+        entityType: EntityType<out Projectile>,
+        x: Double,
+        y: Double,
+        z: Double,
+        level: Level
+    ) : super(entityType, level) {
+        this.setPos(x, y, z)
+    }
 
-    constructor(pEntityType: EntityType<out ThrowableItemProjectile>, pShooter: Entity?, pLevel: Level) : super(
-        pEntityType,
-        pLevel
-    ) {
-        this.owner = pShooter
-        if (pShooter != null) {
-            this.setPos(pShooter.x, pShooter.eyeY - 0.1, pShooter.z)
+    constructor(entityType: EntityType<out Projectile>, shooter: Entity?, level: Level) : super(entityType, level) {
+        this.owner = shooter
+        if (shooter != null) {
+            this.setPos(shooter.x, shooter.eyeY - 0.1, shooter.z)
         }
+    }
+
+    override fun defineSynchedData(builder: SynchedEntityData.Builder) {
     }
 
     override fun readAdditionalSaveData(compound: CompoundTag) {
@@ -129,28 +177,65 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
 
     override fun tick() {
         super.tick()
+        this.updateRotation()
+
+        val vec = this.deltaMovement
+        val level = this.level()
+        if (!level.isClientSide()) {
+            val startVec = this.position()
+            var endVec = startVec.add(this.deltaMovement)
+            var result: HitResult? =
+                rayTraceBlocks(
+                    level,
+                    ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this),
+                    if (this.isPenetrating() || this.isBeast()) Predicate { true } else Predicate { false }
+                )
+
+            if (result != null && result.type != HitResult.Type.MISS) {
+                endVec = result.getLocation()
+            }
+
+            val entityResults = findEntitiesOnPath(startVec, endVec)
+            if (this.owner != null) {
+                entityResults.sortBy { it.hitVec.distanceTo(this.owner!!.position()) }
+            }
+
+            for (entityResult in entityResults) {
+                result = ExtendedEntityRayTraceResult(entityResult)
+                val resEntity = result.entity
+                val shooter = this.owner
+                if (resEntity is Player) {
+                    if (shooter is Player && !shooter.canHarmPlayer(resEntity)) {
+                        result = null
+                    }
+                }
+                if (result != null) {
+                    this.onHit(result)
+                }
+            }
+            if (entityResults.isEmpty() && result != null) {
+                this.onHit(result)
+            }
+
+            this.setPos(this.x + vec.x, this.y + vec.y, this.z + vec.z)
+        } else {
+            this.setPosRaw(this.x + vec.x, this.y + vec.y, this.z + vec.z)
+        }
+
+        val friction = if (this.isInWater) 0.8f else 0.99f
+        this.deltaMovement = vec.scale((1 / friction).toDouble())
+
+        this.deltaMovement = this.deltaMovement.add(0.0, -this.getCustomGravity().toDouble(), 0.0)
+
+        if (this.tickCount > lifeValue) {
+            this.discard()
+        }
 
         if (!this.isFastMoving && this.isFastMoving() && this.level().isClientSide) {
             playFlySound.accept(this)
             playNearFlySound.accept(this)
         }
         this.isFastMoving = this.isFastMoving()
-
-        var vec3 = this.deltaMovement
-        val friction = if (this.isInWater) {
-            0.8f
-        } else {
-            0.99f
-        }
-
-        // 撤销重力影响
-        vec3 = vec3.add(0.0, this.gravity.toDouble(), 0.0)
-        // 重新计算动量
-        this.deltaMovement = vec3.scale((1 / friction).toDouble())
-
-        // 重新应用重力
-        val vec31 = this.deltaMovement
-        this.setDeltaMovement(vec31.x, vec31.y - this.gravity.toDouble(), vec31.z)
 
         // 同步动量
         this.syncMotion()
@@ -184,30 +269,178 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         )
     }
 
-    override fun onHitEntity(result: EntityHitResult) {
-        super.onHitEntity(result)
-        postEvent(
-            HitEntity(
-                this.owner,
-                this,
-                result.entity,
-                result.location
+    override fun onHit(result: HitResult) {
+        if (result is BlockHitResult) {
+            val level = this.level()
+            if (result.type == HitResult.Type.MISS) {
+                return
+            }
+            val resultPos = result.blockPos
+            val state = level.getBlockState(resultPos)
+            val event = state.block.getSoundType(state, level, resultPos, this).breakSound
+
+            val hitVec = result.location
+            level.playSound(
+                null,
+                hitVec.x,
+                hitVec.y,
+                hitVec.z,
+                event,
+                SoundSource.AMBIENT,
+                1f,
+                1f
             )
-        )
+
+            this.level().gameEvent(
+                GameEvent.PROJECTILE_LAND,
+                hitVec,
+                GameEvent.Context.of(this, state)
+            )
+
+            this.onHitBlock(result)
+        }
+
+        if (result is ExtendedEntityRayTraceResult) {
+            val entity = result.entity
+            if (entity == this.owner) {
+                return
+            }
+
+            if (this.owner is Player) {
+                if (entity.hasIndirectPassenger(this.owner!!)) {
+                    return
+                }
+            }
+
+            this.level().gameEvent(
+                GameEvent.PROJECTILE_LAND,
+                result.location,
+                GameEvent.Context.of(this, null)
+            )
+
+            this.onHitEntity(result)
+        }
+    }
+
+    override fun onHitEntity(result: EntityHitResult) {
+        if (result !is ExtendedEntityRayTraceResult) return
+
+        var entity = result.entity ?: return
+        val headshot = result.headshot
+        val legShot = result.legShot
+
+        if (postEvent(HitEntity(this.owner, this, result)).isCanceled) return
+
+        if (entity is PartEntity<*>) {
+            entity = entity.getParent()
+        }
+
+        if (entity is LivingEntity) {
+            if (isBeast()) {
+                beastKill(this.owner, entity)
+                return
+            }
+        }
+
+        val shooter = this.owner
+        if (headshot) {
+            if (shooter is ServerPlayer) {
+                val holder = Holder.direct(ModSounds.HEADSHOT.get())
+                sendPacketTo(
+                    shooter, ClientboundSoundPacket(
+                        holder,
+                        SoundSource.PLAYERS,
+                        shooter.x,
+                        shooter.y,
+                        shooter.z,
+                        1f,
+                        1f,
+                        shooter.level().random.nextLong()
+                    )
+                )
+                sendPacketTo(shooter, ClientIndicatorMessage(1, 5))
+            }
+            performOnHit(entity, this.damageValue, true, this.getKnockback().toDouble())
+        } else {
+            if (shooter is ServerPlayer) {
+                val holder = Holder.direct(ModSounds.INDICATION.get())
+                sendPacketTo(
+                    shooter, ClientboundSoundPacket(
+                        holder,
+                        SoundSource.PLAYERS,
+                        shooter.x,
+                        shooter.y,
+                        shooter.z,
+                        1f,
+                        1f,
+                        shooter.level().random.nextLong()
+                    )
+                )
+                sendPacketTo(shooter, ClientIndicatorMessage(0, 5))
+            }
+
+            if (legShot) {
+                if (entity is LivingEntity) {
+                    if (entity is Player && entity.isCreative) {
+                        return
+                    }
+                    if (!entity.level().isClientSide()) {
+                        entity.addEffect(MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 2, false, false))
+                    }
+                }
+                this.damageValue *= this.getLegShot()
+            }
+
+            performOnHit(entity, this.damageValue, false, this.getKnockback().toDouble())
+        }
+
+        this.afterHitEntity(result)
     }
 
     override fun onHitBlock(result: BlockHitResult) {
-        super.onHitBlock(result)
-        postEvent(
-            HitBlock(
-                result.blockPos,
-                this.level().getBlockState(result.blockPos),
-                result.direction,
-                this.owner,
-                this,
-                result.location
+        val level = this.level()
+        val pos = result.blockPos
+        val face = result.direction
+        val state = level.getBlockState(pos)
+        val location = result.location
+        if (postEvent(HitBlock(pos, state, face, this.owner, this, location)).isCanceled) return
+        state.onProjectileHit(level, state, result, this)
+
+        this.afterHitBlock(result)
+    }
+
+    open fun afterHitEntity(result: EntityHitResult) {
+        if (this.explosionDamageValue > 0) {
+            this.causeExplode(result.location)
+        }
+        this.discard()
+    }
+
+    open fun afterHitBlock(result: BlockHitResult) {
+        if (this.explosionDamageValue > 0) {
+            this.causeExplode(result.location)
+        }
+        this.discard()
+    }
+
+    override fun performDamage(
+        entity: Entity,
+        damage: Float,
+        isHeadshot: Boolean
+    ) {
+        entity.invulnerableTime = 0
+
+        val headShotModifier = if (isHeadshot) this.getHeadShot() else 1f
+        if (damage > 0) {
+            entity.forceHurt(
+                if (isHeadshot)
+                    ModDamageTypes.causeProjectileHitHeadshotDamage(this.level().registryAccess(), this, this.owner)
+                else
+                    ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.owner),
+                damage * headShotModifier
             )
-        )
+            entity.invulnerableTime = 0
+        }
     }
 
     open fun destroyBlock(blockHitResult: BlockHitResult) {
@@ -329,7 +562,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         this.gravityValue = gravity
     }
 
-    open fun getCustomGravity(): Float {
+    override fun getCustomGravity(): Float {
         return this.gravityValue
     }
 

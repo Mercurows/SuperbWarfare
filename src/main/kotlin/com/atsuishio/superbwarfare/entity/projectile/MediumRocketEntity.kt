@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
 import com.atsuishio.superbwarfare.init.ModEntities
-import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage
 import com.atsuishio.superbwarfare.tools.ParticleTool
@@ -18,8 +17,6 @@ import net.minecraft.sounds.SoundEvent
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
-import net.minecraft.world.entity.projectile.ThrowableItemProjectile
-import net.minecraft.world.item.Item
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.SoundType
@@ -44,7 +41,7 @@ open class MediumRocketEntity : FastThrowableProjectile, BasicGeoProjectileEntit
     }
 
     constructor(
-        pEntityType: EntityType<out ThrowableItemProjectile>,
+        pEntityType: EntityType<out MediumRocketEntity>,
         pX: Double,
         pY: Double,
         pZ: Double,
@@ -95,11 +92,6 @@ open class MediumRocketEntity : FastThrowableProjectile, BasicGeoProjectileEntit
         }
     }
 
-    override fun getDefaultItem(): Item {
-        return ModItems.SMALL_ROCKET.get()
-    }
-
-    @Suppress("DEPRECATION")
     public override fun onHitBlock(result: BlockHitResult) {
         super.onHitBlock(result)
 

@@ -2,11 +2,9 @@ package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
-import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.world.entity.EntityType
-import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
 import java.util.*
 
@@ -17,10 +15,6 @@ open class WireGuideMissileEntity(type: EntityType<out WireGuideMissileEntity>, 
 
     init {
         this.noCulling = true
-    }
-
-    override fun getDefaultItem(): Item {
-        return ModItems.MEDIUM_ANTI_GROUND_MISSILE.get()
     }
 
     override fun tick() {

@@ -17,7 +17,7 @@ object GutshotStraight : Perk("gutshot_straight", Type.DAMAGE) {
         source: DamageSource
     ): Float {
         val entity = source.directEntity
-        if (DamageTypeTool.isGunFireDamage(source) && entity is ProjectileEntity && entity.getIsZoom()) {
+        if (DamageTypeTool.isGunFireDamage(source) && entity is ProjectileEntity && entity.isZoom()) {
             return damage * (1.15f + 0.05f * instance.level)
         }
         return super.getModifiedDamage(damage, data, instance, target, source)

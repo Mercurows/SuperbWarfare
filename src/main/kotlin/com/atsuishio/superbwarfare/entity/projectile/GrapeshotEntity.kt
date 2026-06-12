@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.entity.projectile
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeGrapeShotHitDamage
 import com.atsuishio.superbwarfare.init.ModEntities
-import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModParticleTypes
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
@@ -20,7 +19,6 @@ import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
-import net.minecraft.world.item.Item
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Blocks
@@ -39,10 +37,6 @@ open class GrapeshotEntity : FastThrowableProjectile {
     constructor(entity: Entity?, level: Level, damage: Float) : super(ModEntities.GRAPESHOT.get(), entity, level) {
         this.noCulling = true
         this.damageValue = damage
-    }
-
-    override fun getDefaultItem(): Item {
-        return ModItems.LARGE_SHELL_GS.get()
     }
 
     override fun onHitEntity(result: EntityHitResult) {
@@ -178,7 +172,7 @@ open class GrapeshotEntity : FastThrowableProjectile {
         if (!this.level().isClientSide()) {
             val startVec = this.position()
             val endVec = startVec.add(this.deltaMovement)
-            val fluidResult = ProjectileEntity.rayTraceBlocks(
+            val fluidResult = IAdvancedHitDetection.rayTraceBlocks(
                 this.level(),
                 ClipContext(startVec, endVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, this)
             ) { false }

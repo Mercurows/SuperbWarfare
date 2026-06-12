@@ -20,7 +20,7 @@ class EntityProxy(val entity: Entity?) {
     fun isLivingEntity(): Boolean = entity is LivingEntity
     fun isProjectile(): Boolean = entity is ProjectileEntity
 
-    fun isZoom(): Boolean = (entity as? ProjectileEntity)?.getIsZoom() ?: false
+    fun isZoom(): Boolean = (entity as? ProjectileEntity)?.isZoom() ?: false
 
     // ── Creative / Inventory ──
     fun isCreative(): Boolean = (entity as? Player)?.isCreative == true

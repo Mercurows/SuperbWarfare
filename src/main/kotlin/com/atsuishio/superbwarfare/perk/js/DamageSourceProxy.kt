@@ -82,7 +82,7 @@ class DamageSourceProxy(private val source: DamageSource) {
      */
     fun isProjectileNotZoom(): Boolean {
         val direct = source.directEntity
-        return direct is ProjectileEntity && !direct.getIsZoom()
+        return direct is ProjectileEntity && !direct.isZoom()
     }
 
     /**
@@ -94,7 +94,7 @@ class DamageSourceProxy(private val source: DamageSource) {
         val directEntity = source.directEntity
         val sourceEntity = source.entity
 
-        if (directEntity !is ProjectileEntity || directEntity.getIsZoom()) return false
+        if (directEntity !is ProjectileEntity || directEntity.isZoom()) return false
 
         var attacker: LivingEntity? = null
         if (sourceEntity is LivingEntity) {

@@ -16,7 +16,7 @@ class ProjectileProxy(private val entity: Entity) {
     }
 
     fun beast() {
-        projectile?.beast()
+        projectile?.setBeast(true)
     }
 
     fun fireBullet(fireLevel: Number, dragonBreath: Boolean) {
@@ -24,7 +24,7 @@ class ProjectileProxy(private val entity: Entity) {
     }
 
     fun setPenetrating(penetrating: Boolean) {
-        projectile?.isPenetrating = penetrating
+        projectile?.setPenetrating(penetrating)
     }
 
     fun setNoGravity(noGravity: Boolean) {
@@ -39,5 +39,5 @@ class ProjectileProxy(private val entity: Entity) {
         taser?.volt = volt.toInt()
     }
 
-    fun isZoom(): Boolean = projectile?.getIsZoom() ?: false
+    fun isZoom(): Boolean = projectile?.isZoom() ?: false
 }

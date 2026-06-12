@@ -3,14 +3,12 @@ package com.atsuishio.superbwarfare.entity.projectile
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity
 import com.atsuishio.superbwarfare.init.ModEntities
-import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.customExplode
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
-import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.BellBlock
 import net.minecraft.world.phys.BlockHitResult
@@ -44,10 +42,6 @@ open class RgoGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity 
 
     constructor(entity: LivingEntity?, level: Level, life: Int) : this(entity, level) {
         this.lifeValue = life
-    }
-
-    override fun getDefaultItem(): Item {
-        return ModItems.RGO_GRENADE.get()
     }
 
     override fun onHit(result: HitResult) {
