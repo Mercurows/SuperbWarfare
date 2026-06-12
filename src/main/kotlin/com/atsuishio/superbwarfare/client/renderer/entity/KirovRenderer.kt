@@ -10,6 +10,10 @@ import net.minecraft.util.Mth
 class KirovRenderer<T>(manager: EntityRendererProvider.Context) :
     SbmVehicleRenderer<T>(manager) where T : KirovEntity, T : BasicGeoVehicleEntity {
 
+    override fun hideForTurretControllerWhileZooming(): Boolean {
+        return true
+    }
+
     override fun transformCustomModelPart(
         vehicle: T,
         model: BedrockVehicleModel,
@@ -49,7 +53,7 @@ class KirovRenderer<T>(manager: EntityRendererProvider.Context) :
         val controlP = model.getBone("controlP")
         controlP?.rotation?.rotationX(Mth.clamp(-vehicle.power * 48, -20f, 20f) * Mth.DEG_TO_RAD)
 
-        val controlT = model.getBone("controlT")
-        controlT?.rotation?.rotationZ(Mth.clamp(vehicle.deltaRot * 40, -20f, 20f) * Mth.DEG_TO_RAD)
+        val rudder = model.getBone("rudder")
+        rudder.rotation.rotationZ(12 * Mth.lerp(partialTicks, vehicle.rudderRotO, vehicle.rudderRot))
     }
 }

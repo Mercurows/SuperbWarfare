@@ -160,6 +160,15 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
                 screenWidth,
                 screenHeight
             )
+
+            KirovHud.ID -> KirovHud.render(
+                vehicle,
+                player,
+                guiGraphics,
+                partialTick,
+                screenWidth,
+                screenHeight
+            )
         }
 
         val seekInfo = gunData.get(GunProp.SEEK_WEAPON_INFO)

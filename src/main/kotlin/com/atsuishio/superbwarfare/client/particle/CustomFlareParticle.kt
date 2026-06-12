@@ -2,7 +2,9 @@ package com.atsuishio.superbwarfare.client.particle
 
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.client.particle.*
+import net.minecraft.core.BlockPos
 import net.minecraft.util.Mth
+import net.minecraft.world.level.LightLayer
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
 import kotlin.math.max
@@ -87,8 +89,19 @@ open class CustomFlareParticle protected constructor(
     }
 
     public override fun getLightColor(partialTick: Float): Int {
-        val blockLight = (15 * alpha).toInt().coerceIn(0, 15)
-        val skyLight = (15 * alpha).toInt().coerceIn(0, 15)
+        val blockPos = BlockPos.containing(this.x, this.y, this.z)
+        val worldBlockLight: Int
+        val worldSkyLight: Int
+        if (this.level.hasChunkAt(blockPos)) {
+            worldBlockLight = this.level.getBrightness(LightLayer.BLOCK, blockPos)
+            worldSkyLight = this.level.getBrightness(LightLayer.SKY, blockPos)
+        } else {
+            worldBlockLight = 0
+            worldSkyLight = 15
+        }
+
+        val blockLight = Mth.lerp(alpha, worldBlockLight.toFloat(), 15f).toInt().coerceIn(0, 15)
+        val skyLight = Mth.lerp(alpha, worldSkyLight.toFloat(), 15f).toInt().coerceIn(0, 15)
         return (blockLight shl 4) or (skyLight shl 20)
     }
 

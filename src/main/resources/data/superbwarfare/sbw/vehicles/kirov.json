@@ -149,19 +149,27 @@
     {
       "Transform": "Vehicle",
       "Position": [0, 7.7125, 14.6875],
+      "IsEnclosed": true,
       "MinPitch": -80,
       "MaxPitch": 80,
       "MinYaw": -90,
       "MaxYaw": 90,
       "Sensitivity": [0.55, 0.8, 0.9],
+      "CameraPos": {
+        "Transform": "Vehicle",
+        "Position": [0, 9.3125, 14.6875],
+        "UseFixedCameraPos": true
+      },
       "DismountInfo": {
         "Transform": "Vehicle",
         "Position": [0, 0.5, 0]
-      }
+      },
+      "Weapons": ["Bomb"]
     },
     {
       "Transform": "Vehicle",
       "Position": [0, 7.7125, 13.6875],
+      "IsEnclosed": true,
       "MinYaw": -90,
       "MaxYaw": 90,
       "DismountInfo": {
@@ -172,6 +180,7 @@
     {
       "Transform": "Vehicle",
       "Position": [1, 7.7125, 13.6875],
+      "IsEnclosed": true,
       "MinYaw": -90,
       "MaxYaw": 90,
       "DismountInfo": {
@@ -182,6 +191,7 @@
     {
       "Transform": "Vehicle",
       "Position": [-1, 7.7125, 13.6875],
+      "IsEnclosed": true,
       "MinYaw": -90,
       "MaxYaw": 90,
       "DismountInfo": {
@@ -190,6 +200,51 @@
       }
     }
   ],
+  "Weapons": {
+    "Bomb": {
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/bor_57.png",
+      "AmmoType": "superbwarfare:large_aerial_bomb",
+      "DefaultZoom": 1.0,
+      "DefaultFireMode": "Semi",
+      "AvailableFireModes": "Semi",
+      "Magazine": 7,
+      "RPM": 120,
+      "EmptyReloadTime": 100,
+      "Gravity": 0.06,
+      "Spread": 10,
+      "Name": "weapon.superbwarfare.bor_57_bomb",
+      "ExplosionDamage": 2200,
+      "ExplosionRadius": 42,
+      "AddShooterDeltaMovement": true,
+      "Velocity": 1.0,
+      "Projectile": "superbwarfare:bor_57",
+      "ShootPos": {
+        "Transform": "Vehicle",
+        "ShootPositionForHud": [0, 2.875, 1.6875],
+        "ShootDirectionForHud": "Bomb",
+        "Positions": [[0, 2.875, 1.6875], [0, 2.875, 1.6875], [0, 2.875, 1.6875], [0, 2.875, 1.6875], [0, 2.875, 1.6875], [0, 2.875, 1.6875], [0, 2.875, 1.6875]],
+        "BoundUpWithAmmoAmount": true,
+        "Directions": ["DeltaMovement"],
+        "ViewPosition": [0, 0.75, -4],
+        "ViewDirection": "Bomb"
+      },
+      "ProjectileDummyInfo": {
+        "Offset": [0, 0, 0],
+        "Rotate": [0, 0, 0],
+        "Scale": [1, 1, 1]
+      },
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:bomb_release",
+        "Fire3P": "superbwarfare:bomb_release",
+        "VehicleReload3p": "superbwarfare:bomb_reload",
+        "VehicleReloadSoundTime": 11,
+        "Change": "superbwarfare:into_missile"
+      },
+      "Crosshair": "@AirBomb",
+      "CrosshairColor": "0x66FF00",
+      "SoundRadius": 8
+    }
+  },
   "EngineType": "AirShip",
   "EngineSound": "superbwarfare:kirov_engine",
   "EngineInfo": {
@@ -203,7 +258,8 @@
     "Decrement": 0.3,
     "SteeringSpeed": 0.3,
     "EngineSoundVolume" : 0.4,
-    "FloatHeight": 3.5
+    "FloatHeight": 3.5,
+    "SprintMultiply": 3
   },
   "ThirdPersonCameraPos": [0, 11, 44],
   "UpStep": 1.1,
@@ -248,7 +304,7 @@
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png",
   "VehicleContainerType": "Huge",
   "Type": "AirShip",
-  "HudType": "@Helicopter",
+  "HudType": "@Kirov",
   "HUDColor": "0xFFC700",
   "TerrainCompat": [[2, 0, 2], [-2, 0, 2], [2, 0, -2], [-2, 0, -2]]
 }

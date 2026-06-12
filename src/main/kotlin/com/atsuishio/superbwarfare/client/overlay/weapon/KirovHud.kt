@@ -7,10 +7,8 @@ import com.atsuishio.superbwarfare.client.overlay.VehicleHudOverlay.renderKillIn
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
-import com.atsuishio.superbwarfare.event.ClientMouseHandler
 import com.atsuishio.superbwarfare.init.ModKeyMappings
 import com.atsuishio.superbwarfare.tools.canBeSeen
-import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.mc
 import com.atsuishio.superbwarfare.tools.worldToScreen
 import com.mojang.blaze3d.platform.GlStateManager
@@ -23,68 +21,24 @@ import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.player.Player
-import net.minecraft.world.level.ClipContext
 import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
-import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
-import net.neoforged.neoforge.client.event.ClientTickEvent
 import org.joml.Math
 
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(Dist.CLIENT)
-object OldAircraftHud {
-    const val ID: String = "@OldAircraft"
-
-    private var lerpVy = 1f
-    private var diffY = 0f
-    private var diffX = 0f
-
-    var bombHitPosX: Double = 0.0
-    var bombHitPosY: Double = 0.0
-
+object KirovHud {
+    const val ID: String = "@Kirov"
     private val BOMB_SCOPE = loc("textures/overlay/vehicle/aircraft/bomb_scope.png")
     private val BOMB_SCOPE_PITCH = loc("textures/overlay/vehicle/aircraft/bomb_scope_pitch.png")
-    private val HUD_BASE = loc("textures/overlay/vehicle/crosshair/old_aircraft_gun.png")
-    private val CROSSHAIR_3P = loc("textures/overlay/vehicle/crosshair/third_camera.png")
     private val BOMB_RING = loc("textures/overlay/crosshair/rex_circle.png")
-
-    private var mouseX = 0f
-    private var mouseY = 0f
-
-    private var dis = 512.0
 
     private val compassHud = CompassHud().apply {
         x = 130f
         y = -76f  // 距底部 72+4 = 76 像素
         size = 72f
-    }
-
-    @SubscribeEvent
-    fun onOldAircraftHudClientTick(event: ClientTickEvent.Post) {
-        val player = localPlayer ?: return
-        val vehicle = player.vehicle
-        if (vehicle !is VehicleEntity) return
-        if (vehicle.computed().hudType != ID) return
-
-        val shootPos = vehicle.getShootPosForHud(player, 1f)
-
-        val result = player.level().clip(
-            ClipContext(
-                shootPos, shootPos.add(vehicle.getShootDirectionForHud(player, 1f).scale(512.0)),
-                ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, player
-            )
-        )
-        val hitPos = result.location
-
-        dis = shootPos.distanceTo(hitPos)
-
-        val lookingEntity = vehicle.getPlayerLookAtEntityOnVehicle(player, 512.0, 1f)
-
-        if (lookingEntity != null) {
-            dis = shootPos.distanceTo(lookingEntity.position())
-        }
     }
 
     fun render(
@@ -96,8 +50,6 @@ object OldAircraftHud {
         screenHeight: Int
     ) {
         if (player !== vehicle.getFirstPassenger()) return
-        val camera = mc.gameRenderer.mainCamera
-        val cameraPos = camera.position
         val poseStack = guiGraphics.pose()
         val gunData = vehicle.getGunData(player) ?: return
 
@@ -105,7 +57,6 @@ object OldAircraftHud {
 
         val bomb = gunData.get(GunProp.CROSSHAIR) == "@AirBomb"
 
-        val color = vehicle.hudColor
         RenderSystem.disableDepthTest()
         RenderSystem.depthMask(false)
         RenderSystem.enableBlend()
@@ -118,26 +69,12 @@ object OldAircraftHud {
         )
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
 
-        lerpVy = Mth.lerp((0.021f * partialTick).toDouble(), lerpVy.toDouble(), vehicle.deltaMovement.y() * 20)
-            .toFloat()
-        diffY = Mth.lerp(partialTick.toDouble(), diffY.toDouble(), ClientMouseHandler.lerpSpeedX).toFloat()
-        diffX = Mth.lerp(partialTick.toDouble(), diffX.toDouble(), ClientMouseHandler.lerpSpeedY).toFloat()
-
-        val shootPos = vehicle.getShootPosForHud(player, partialTick)
-
-        val pos = cameraPos.add(vehicle.getViewVector(partialTick).scale(512.0))
-        var posCross = shootPos.add(vehicle.getShootDirectionForHud(player, partialTick).scale(dis))
-
-        if (bomb) {
-            val bombHitPosO = ClientEventHandler.bombHitPosO
-            val bombHitPos = ClientEventHandler.bombHitPos
-            val bombHitPosX = Mth.lerp(partialTick.toDouble(), bombHitPosO.x, bombHitPos.x)
-            val bombHitPosY = Mth.lerp(partialTick.toDouble(), bombHitPosO.y, bombHitPos.y)
-            val bombHitPosZ = Mth.lerp(partialTick.toDouble(), bombHitPosO.z, bombHitPos.z)
-            posCross = Vec3(bombHitPosX, bombHitPosY, bombHitPosZ)
-        }
-
-        val p = pos.worldToScreen()
+        val bombHitPosO = ClientEventHandler.bombHitPosO
+        val bombHitPos = ClientEventHandler.bombHitPos
+        var bombHitPosX = Mth.lerp(partialTick.toDouble(), bombHitPosO.x, bombHitPos.x)
+        var bombHitPosY = Mth.lerp(partialTick.toDouble(), bombHitPosO.y, bombHitPos.y)
+        val bombHitPosZ = Mth.lerp(partialTick.toDouble(), bombHitPosO.z, bombHitPos.z)
+        val posCross = Vec3(bombHitPosX, bombHitPosY, bombHitPosZ)
         val pCross = posCross.worldToScreen()
 
         // 投弹准星
@@ -198,33 +135,6 @@ object OldAircraftHud {
         compassHud.render(guiGraphics, vehicle, screenWidth, screenHeight, partialTick)
 
         poseStack.pushPose()
-
-        if ((mc.options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) && pos.canBeSeen()) {
-            val x = p.x.toFloat()
-            val y = p.y.toFloat()
-
-            RenderSystem.disableDepthTest()
-            RenderSystem.depthMask(false)
-            RenderSystem.enableBlend()
-            RenderSystem.setShader { GameRenderer.getPositionTexShader() }
-            RenderSystem.blendFuncSeparate(
-                GlStateManager.SourceFactor.SRC_ALPHA,
-                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
-                GlStateManager.SourceFactor.ONE,
-                GlStateManager.DestFactor.ZERO
-            )
-            RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
-
-            RenderHelper.preciseBlitWithColor(guiGraphics, HUD_BASE, x - 24, y - 18, 0f, 0f, 48f, 48f, 48f, 48f, color)
-
-            renderKillIndicatorDynamic(
-                guiGraphics,
-                x - 7.5f + (2 * (Math.random() - 0.5f)).toFloat(),
-                y - 1.5f + (2 * (Math.random() - 0.5f)).toFloat()
-            )
-
-        }
-
         poseStack.pushPose()
 
         if (posCross.canBeSeen()) {
@@ -235,35 +145,15 @@ object OldAircraftHud {
             var yCross = y
 
             if (gunData.get(GunProp.CROSSHAIR) == "@AirBomb") {
-                bombHitPosX = Mth.lerp(0.25 * partialTick.toDouble(), bombHitPosX, x.toDouble())
-                bombHitPosY = Mth.lerp(0.25 * partialTick.toDouble(), bombHitPosY, y.toDouble())
-                xCross = bombHitPosX.toFloat()
-                yCross = bombHitPosY.toFloat()
+                OldAircraftHud.bombHitPosX = Mth.lerp(0.25 * partialTick.toDouble(), OldAircraftHud.bombHitPosX, x.toDouble())
+                OldAircraftHud.bombHitPosY = Mth.lerp(0.25 * partialTick.toDouble(), OldAircraftHud.bombHitPosY, y.toDouble())
+                xCross = OldAircraftHud.bombHitPosX.toFloat()
+                yCross = OldAircraftHud.bombHitPosY.toFloat()
             }
 
             if (mc.options.cameraType != CameraType.FIRST_PERSON && !ClientEventHandler.zoomVehicle) {
-                var cross = CROSSHAIR_3P
-                var size = 16f
-
-                if (gunData.get(GunProp.CROSSHAIR) == "@AirBomb") {
-                    cross = BOMB_RING
-                    size = 24f
-                } else {
-                    mouseX = Mth.lerp(0.1f * partialTick, mouseX, ClientMouseHandler.lerpSpeedX.toFloat())
-                    mouseY = Mth.lerp(0.1f * partialTick, mouseY, ClientMouseHandler.lerpSpeedY.toFloat())
-                    RenderHelper.preciseBlit(
-                        guiGraphics,
-                        BOMB_RING,
-                        xCross - 8 + mouseX,
-                        yCross - 8 + mouseY,
-                        0f,
-                        0f,
-                        16f,
-                        16f,
-                        16f,
-                        16f
-                    )
-                }
+                val cross = BOMB_RING
+                val size = 24f
 
                 poseStack.pushPose()
                 poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), xCross, yCross, 0f)
@@ -303,33 +193,18 @@ object OldAircraftHud {
 
                 poseStack.popPose()
 
-                if (gunData.get(GunProp.CROSSHAIR) == "@AirBomb") {
-                    RenderHelper.preciseBlit(
-                        guiGraphics,
-                        cross,
-                        xCross - 0.5f * size,
-                        yCross - 0.5f * size,
-                        0f,
-                        0f,
-                        size,
-                        size,
-                        size,
-                        size
-                    )
-                } else {
-                    RenderHelper.preciseBlit(
-                        guiGraphics,
-                        cross,
-                        xCross - 0.5f * size,
-                        yCross - 0.5f * size,
-                        0f,
-                        0f,
-                        size,
-                        size,
-                        size,
-                        size
-                    )
-                }
+                RenderHelper.preciseBlit(
+                    guiGraphics,
+                    cross,
+                    xCross - 0.5f * size,
+                    yCross - 0.5f * size,
+                    0f,
+                    0f,
+                    size,
+                    size,
+                    size,
+                    size
+                )
 
                 renderKillIndicatorDynamic(
                     guiGraphics,
