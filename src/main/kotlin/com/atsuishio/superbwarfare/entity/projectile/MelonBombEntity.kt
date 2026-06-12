@@ -6,6 +6,8 @@ import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.world.entity.EntityType
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.Items
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.BlockHitResult
@@ -17,6 +19,10 @@ open class MelonBombEntity(type: EntityType<out MelonBombEntity>, level: Level) 
         this.noCulling = true
         this.explosionRadiusValue = 10f
         this.explosionDamageValue = 500f
+    }
+
+    override fun getDefaultItem(): Item {
+        return Items.MELON
     }
 
     override fun onHitEntity(result: EntityHitResult) {

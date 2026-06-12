@@ -18,6 +18,8 @@ import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.Items
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Blocks
@@ -40,6 +42,8 @@ open class SuperStarProjectileEntity(type: EntityType<out SuperStarProjectileEnt
     init {
         this.noCulling = true
     }
+
+    override fun getDefaultItem(): Item = Items.NETHER_STAR
 
     override fun onHitEntity(result: EntityHitResult) {
         super.onHitEntity(result)

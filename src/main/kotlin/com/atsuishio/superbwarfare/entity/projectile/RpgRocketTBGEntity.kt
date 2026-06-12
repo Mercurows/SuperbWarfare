@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
+import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.forceHurt
@@ -9,6 +10,7 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
@@ -46,6 +48,10 @@ open class RpgRocketTBGEntity : FastThrowableProjectile, BasicGeoProjectileEntit
         if (this.level() is ServerLevel) {
             destroyBlock(result)
         }
+    }
+
+    override fun getDefaultItem(): Item {
+        return ModItems.RPG_ROCKET_TBG.get()
     }
 
     override fun onHitEntity(result: EntityHitResult) {

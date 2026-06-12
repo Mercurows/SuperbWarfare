@@ -2,11 +2,13 @@ package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
 import com.atsuishio.superbwarfare.init.ModEntities
+import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.tools.forceHurt
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.BellBlock
 import net.minecraft.world.phys.BlockHitResult
@@ -24,6 +26,10 @@ open class GunGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity 
         this.damageValue = damage
         this.explosionDamageValue = explosionDamage
         this.explosionRadiusValue = explosionRadius
+    }
+
+    override fun getDefaultItem(): Item {
+        return ModItems.GRENADE_40MM.get()
     }
 
     override fun onHitEntity(result: EntityHitResult) {

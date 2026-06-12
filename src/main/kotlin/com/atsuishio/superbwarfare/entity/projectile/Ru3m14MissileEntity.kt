@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
+import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.VectorTool
@@ -12,10 +13,12 @@ import net.minecraft.sounds.SoundSource
 import net.minecraft.util.Mth
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.EntityType
+import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 
-open class Ru3m14MissileEntity(type: EntityType<out Ru3m14MissileEntity>, level: Level) : MissileProjectile(type, level),
+open class Ru3m14MissileEntity(type: EntityType<out Ru3m14MissileEntity>, level: Level) :
+    MissileProjectile(type, level),
     BasicGeoProjectileEntity {
     val anim: BasicProjectileAnimationInstance<*>? =
         if (this.level().isClientSide) BasicProjectileAnimationInstance(this) else null
@@ -26,10 +29,15 @@ open class Ru3m14MissileEntity(type: EntityType<out Ru3m14MissileEntity>, level:
     override fun getAnimationInstance(): BasicProjectileAnimationInstance<*>? {
         return this.anim
     }
+
     init {
         this.damageValue = 3000f
         this.explosionDamageValue = 1400f
         this.explosionRadiusValue = 36f
+    }
+
+    override fun getDefaultItem(): Item {
+        return ModItems.EXTRA_LARGE_ANTI_GROUND_MISSILE.get()
     }
 
     override fun hurt(source: DamageSource, amount: Float): Boolean {
@@ -94,7 +102,8 @@ open class Ru3m14MissileEntity(type: EntityType<out Ru3m14MissileEntity>, level:
             if (level is ServerLevel) {
                 val lostTarget = (VectorTool.calculateAngle(lookAngle, toVec) > 90 && tickCount > 50)
 
-                this.deltaMovement = this.deltaMovement.add(lookAngle.scale(Mth.clamp(0.05 * (tickCount - 10), 0.15, 1.5)))
+                this.deltaMovement =
+                    this.deltaMovement.add(lookAngle.scale(Mth.clamp(0.05 * (tickCount - 10), 0.15, 1.5)))
                 val f = (0.84 + y * 0.00005).coerceAtMost(0.86)
                 this.deltaMovement = this.deltaMovement.multiply(f, f, f)
 
