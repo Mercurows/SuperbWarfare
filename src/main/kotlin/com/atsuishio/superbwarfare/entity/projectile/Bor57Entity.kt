@@ -1,7 +1,8 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
-import net.minecraft.world.damagesource.DamageSource
+import com.atsuishio.superbwarfare.init.ModItems
 import net.minecraft.world.entity.EntityType
+import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
 
 open class Bor57Entity(type: EntityType<out Bor57Entity>, level: Level) : AerialBombEntity(type, level),
@@ -13,18 +14,8 @@ open class Bor57Entity(type: EntityType<out Bor57Entity>, level: Level) : Aerial
         this.explosionDamageValue = 2200f
     }
 
-    // TODO ?
-//    override fun getDefaultItem(): Item {
-//        return ModItems.LARGE_AERIAL_BOMB.get()
-//    }
-
-    override fun hurt(source: DamageSource, amount: Float): Boolean {
-        val entity = source.directEntity
-        if (entity is Bor57Entity && entity.owner == this.owner) {
-            return false
-        }
-
-        return super.hurt(source, amount)
+    override fun getDefaultItem(): Item {
+        return ModItems.LARGE_AERIAL_BOMB.get()
     }
 
     override val maxHealth: Float
