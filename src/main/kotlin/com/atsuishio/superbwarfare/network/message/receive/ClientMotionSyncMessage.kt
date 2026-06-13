@@ -27,14 +27,13 @@ data class ClientMotionSyncMessage(
         val entity = clientLevel?.getEntity(id) ?: return
         entity.setPos(posX, posY, posZ)
 
-        // 对 motion 做 lerp 插值，避免直接赋值导致的视觉抖动
-        // vanilla 的 lerpMotion 在 1.20+ 等同于 setDeltaMovement，没有实际插值
-        val lerpFactor = 0.6
+        // lerp这个会让弹射物抽搐(恼
+
         val dm = entity.deltaMovement
         entity.setDeltaMovement(
-            dm.x + (motionX - dm.x) * lerpFactor,
-            dm.y + (motionY - dm.y) * lerpFactor,
-            dm.z + (motionZ - dm.z) * lerpFactor
+            dm.x + (motionX - dm.x),
+            dm.y + (motionY - dm.y),
+            dm.z + (motionZ - dm.z)
         )
     }
 }
