@@ -67,7 +67,8 @@ open class ClientGunImageTooltip(tooltip: GunImageComponent) : ClientTooltipComp
     }
 
     protected fun shouldRenderBypassAndHeadshotTooltip(): Boolean {
-        return data.get(GunProp.BYPASSES_ARMOR) > 0 || data.get(GunProp.HEADSHOT) > 0
+//        return data.get(GunProp.BYPASSES_ARMOR) > 0 || data.get(GunProp.HEADSHOT) > 0
+        return true
     }
 
     protected fun shouldRenderPerks(): Boolean {

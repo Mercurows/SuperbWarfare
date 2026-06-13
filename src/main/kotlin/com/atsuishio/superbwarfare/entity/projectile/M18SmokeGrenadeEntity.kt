@@ -35,26 +35,13 @@ open class M18SmokeGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEn
     var blue: Float = 1.0f
         private set
 
-    constructor(type: EntityType<out M18SmokeGrenadeEntity>, level: Level) : super(type, level) {
-        this.noCulling = true
-    }
+    constructor(type: EntityType<out M18SmokeGrenadeEntity>, level: Level) : super(type, level)
 
-    constructor(type: EntityType<out M18SmokeGrenadeEntity>, x: Double, y: Double, z: Double, world: Level) : super(
-        type,
-        x,
-        y,
-        z,
-        world
-    ) {
-        this.noCulling = true
-    }
+    constructor(type: EntityType<out M18SmokeGrenadeEntity>, x: Double, y: Double, z: Double, world: Level) :
+            super(type, x, y, z, world)
 
-    constructor(entity: LivingEntity?, level: Level, fuse: Int) : super(
-        ModEntities.M18_SMOKE_GRENADE.get(),
-        entity,
-        level
-    ) {
-        this.noCulling = true
+    constructor(entity: LivingEntity?, level: Level, fuse: Int) :
+            super(ModEntities.M18_SMOKE_GRENADE.get(), entity, level) {
         this.fuse = fuse
     }
 
@@ -154,20 +141,6 @@ open class M18SmokeGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEn
             }
 
             else -> {}
-        }
-    }
-
-    private fun bounce(direction: Direction) {
-        when (direction.axis) {
-            Direction.Axis.X -> this.deltaMovement = this.deltaMovement.multiply(-0.5, 0.75, 0.75)
-            Direction.Axis.Y -> {
-                this.deltaMovement = this.deltaMovement.multiply(0.75, -0.25, 0.75)
-                if (this.deltaMovement.y() < this.getCustomGravity()) {
-                    this.deltaMovement = this.deltaMovement.multiply(1.0, 0.0, 1.0)
-                }
-            }
-
-            Direction.Axis.Z -> this.deltaMovement = this.deltaMovement.multiply(0.75, 0.75, -0.5)
         }
     }
 

@@ -9,7 +9,7 @@
   "MeleeRange": 1,
   "ExplosionDamage": 50,
   "ExplosionRadius": 5,
-  "Headshot": 0,
+  "Headshot": 2,
   "Velocity": 3.75,
   "Magazine": 8,
   "Weight": 9,
@@ -33,7 +33,6 @@
       "Projectile": "superbwarfare:projectile",
       "Override": {
         "Damage": 10,
-        "Headshot": 1.75,
         "BypassesArmor": 0.2,
         "ExplosionDamage": 0,
         "ProjectileAmount": 6,

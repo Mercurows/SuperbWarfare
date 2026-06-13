@@ -6,7 +6,7 @@
   "Projectile": "superbwarfare:gun_grenade",
   "ExplosionDamage": 80,
   "ExplosionRadius": 5,
-  "Headshot": 0,
+  "Headshot": 2,
   "Velocity": 3.75,
   "Magazine": 1,
   "Weight": 4,
