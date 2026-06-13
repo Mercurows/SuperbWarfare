@@ -3,11 +3,9 @@ package com.atsuishio.superbwarfare.entity.projectile
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
-import com.atsuishio.superbwarfare.tools.SeekTool
 import com.atsuishio.superbwarfare.tools.VectorTool
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.ParticleTypes
@@ -26,7 +24,6 @@ import kotlin.math.max
 open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level) : MissileProjectile(type, level),
     BasicGeoProjectileEntity {
     init {
-        this.noCulling = true
         this.damageValue = 1100f
         this.explosionDamageValue = 180f
         this.explosionRadiusValue = 12f
@@ -44,16 +41,6 @@ open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level) : Missil
         largeTrail()
 
         val entity = EntityFindUtil.findEntity(this.level(), this.getTargetUUID())
-        val decoy = SeekTool.seekLivingEntities(this, 32.0, 90.0)
-
-        for (e in decoy) {
-            if (e.type.`is`(ModTags.EntityTypes.DECOY) && !this.isDistracted()) {
-                this.setTargetUUID(e.getStringUUID())
-                this.setDistracted(true)
-                break
-            }
-        }
-
         var toVec = lookAngle
         val level = this.level()
 

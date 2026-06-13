@@ -1,10 +1,9 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.config.server.MiscConfig
-import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
+import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
 import com.atsuishio.superbwarfare.tools.SeekTool
-import com.atsuishio.superbwarfare.tools.forceHurt
 import com.atsuishio.superbwarfare.tools.sendPacketTo
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
@@ -14,11 +13,9 @@ import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
-import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.BlockHitResult
-import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.Vec3
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn
 
@@ -95,31 +92,9 @@ abstract class MissileProjectile : DestroyableProjectile, ITrackableProjectile, 
         compound.putString("TargetUuid", this.getTargetUUID())
     }
 
-    public override fun onHitBlock(result: BlockHitResult) {
-        super.onHitBlock(result)
+    override fun afterHitBlock(result: BlockHitResult) {
         if (this.level() is ServerLevel) {
             destroyBlock(result)
-        }
-    }
-
-    override fun onHitEntity(result: EntityHitResult) {
-        super.onHitEntity(result)
-        if (tickCount < 3) return
-        val entity = result.entity
-        val owner = this.owner
-        if (owner != null && owner.vehicle != null && entity == owner.vehicle) return
-        if (this.level() is ServerLevel) {
-            entity.forceHurt(
-                causeProjectileHitDamage(this.level().registryAccess(), this, owner),
-                this.damageValue
-            )
-
-            if (entity is LivingEntity) {
-                entity.invulnerableTime = 0
-            }
-
-            causeExplode(result.location)
-            this.discard()
         }
     }
 
@@ -146,9 +121,29 @@ abstract class MissileProjectile : DestroyableProjectile, ITrackableProjectile, 
 
     override fun tick() {
         super.tick()
-        // 给队友同步友方导弹位置
+        this.distractedByDecoy()
+        this.syncPosition()
+    }
 
-        val level = level()
+    open fun distractedByDecoy() {
+        if (this.isDistracted()) return
+
+        val decoy = SeekTool.seekLivingEntities(this, 32.0, 90.0)
+            .asSequence()
+            .filter { it.type.`is`(ModTags.EntityTypes.DECOY) }
+            .toList()
+
+        if (decoy.isNotEmpty()) {
+            this.setTargetUUID(decoy.first().stringUUID)
+            this.setDistracted(true)
+        }
+    }
+
+    /**
+     * 给队友同步友方导弹位置
+     */
+    open fun syncPosition() {
+        val level = this.level()
         if (!MiscConfig.SYNC_ENTITY_OVER_RANGE.get()) return
         if (server != null && server!!.tickCount % MiscConfig.SYNC_ENTITY_INTERVAL.get() != 0) return
 

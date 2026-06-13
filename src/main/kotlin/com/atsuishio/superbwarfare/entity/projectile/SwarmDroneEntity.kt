@@ -3,10 +3,8 @@ package com.atsuishio.superbwarfare.entity.projectile
 import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.ParticleTool
-import com.atsuishio.superbwarfare.tools.SeekTool
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvent
@@ -54,14 +52,6 @@ open class SwarmDroneEntity(type: EntityType<out SwarmDroneEntity>, level: Level
     override fun tick() {
         super.tick()
         val entity = EntityFindUtil.findEntity(this.level(), entityData.get(TARGET_UUID))
-        SeekTool.seekLivingEntities(this, 32.0, 90.0).forEach {
-            if (it.type.`is`(ModTags.EntityTypes.DECOY) && !this.isDistracted()) {
-                this.entityData.set(TARGET_UUID, it.getStringUUID())
-                this.setDistracted(true)
-                return@forEach
-            }
-        }
-
         if (this.tickCount == 1) {
             val level = this.level()
             if (level is ServerLevel) {

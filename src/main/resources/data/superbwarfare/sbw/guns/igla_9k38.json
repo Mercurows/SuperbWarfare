@@ -7,7 +7,7 @@
   "Damage": 260,
   "ExplosionDamage": 90,
   "ExplosionRadius": 6,
-  "Headshot": 0,
+  "Headshot": 2.0,
   "ZoomReload": false,
   "SeekTime": 30,
   "SeekAngle": 20,
