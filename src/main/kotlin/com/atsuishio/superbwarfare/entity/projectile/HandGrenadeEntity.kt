@@ -24,30 +24,14 @@ import net.minecraft.world.phys.Vec3
 import kotlin.math.min
 
 open class HandGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity {
-    constructor(type: EntityType<out HandGrenadeEntity>, level: Level) : super(type, level) {
-        this.noCulling = true
-        this.damageValue = 1f
-        this.explosionDamageValue = ExplosionConfig.M67_GRENADE_EXPLOSION_DAMAGE.get().toFloat()
-        this.explosionRadiusValue = ExplosionConfig.M67_GRENADE_EXPLOSION_RADIUS.get().toFloat()
-        this.headShotValue = 10f
-    }
+    constructor(type: EntityType<out HandGrenadeEntity>, level: Level) : super(type, level)
 
-    constructor(type: EntityType<out HandGrenadeEntity>, x: Double, y: Double, z: Double, level: Level) : super(
-        type,
-        x,
-        y,
-        z,
-        level
-    ) {
-        this.noCulling = true
-        this.damageValue = 1f
-        this.explosionDamageValue = ExplosionConfig.M67_GRENADE_EXPLOSION_DAMAGE.get().toFloat()
-        this.explosionRadiusValue = ExplosionConfig.M67_GRENADE_EXPLOSION_RADIUS.get().toFloat()
-        this.headShotValue = 10f
-    }
+    constructor(type: EntityType<out HandGrenadeEntity>, x: Double, y: Double, z: Double, level: Level) :
+            super(type, x, y, z, level)
 
-    constructor(entity: LivingEntity?, level: Level) : super(ModEntities.HAND_GRENADE.get(), entity, level) {
-        this.noCulling = true
+    constructor(entity: LivingEntity?, level: Level) : super(ModEntities.HAND_GRENADE.get(), entity, level)
+
+    init {
         this.damageValue = 1f
         this.explosionDamageValue = ExplosionConfig.M67_GRENADE_EXPLOSION_DAMAGE.get().toFloat()
         this.explosionRadiusValue = ExplosionConfig.M67_GRENADE_EXPLOSION_RADIUS.get().toFloat()
@@ -108,28 +92,6 @@ open class HandGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity
             ).opposite
         )
         this.deltaMovement = this.deltaMovement.multiply(0.25, 1.0, 0.25)
-    }
-
-    private fun bounce(direction: Direction) {
-        val speed = this.deltaMovement.length()
-
-        // 速度过低时停止弹射，避免在地面上反复微弹跳
-        if (speed < 0.15) {
-            this.deltaMovement = Vec3.ZERO
-            return
-        }
-
-        when (direction.axis) {
-            Direction.Axis.X -> this.deltaMovement = this.deltaMovement.multiply(-0.6, 0.8, 0.8)
-            Direction.Axis.Y -> {
-                this.deltaMovement = this.deltaMovement.multiply(0.8, -0.5, 0.8)
-                if (this.deltaMovement.y() < this.getCustomGravity()) {
-                    this.deltaMovement = this.deltaMovement.multiply(1.0, 0.0, 1.0)
-                }
-            }
-
-            Direction.Axis.Z -> this.deltaMovement = this.deltaMovement.multiply(0.8, 0.8, -0.6)
-        }
     }
 
     override fun tick() {

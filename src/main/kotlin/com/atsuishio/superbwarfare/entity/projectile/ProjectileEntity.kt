@@ -24,7 +24,6 @@ import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.item.weapon.BeastItem.Companion.beastKill
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
-import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.HitboxHelper.getBoundingBox
 import com.atsuishio.superbwarfare.tools.HitboxHelper.getVelocity
@@ -411,12 +410,6 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
         }
 
         this.syncMotion()
-    }
-
-    override fun syncMotion() {
-        if (!this.level().isClientSide) {
-            sendPacketToTrackingThis(ClientMotionSyncMessage(this))
-        }
     }
 
     override fun onHit(result: HitResult) {

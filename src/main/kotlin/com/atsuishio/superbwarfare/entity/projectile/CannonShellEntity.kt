@@ -7,8 +7,10 @@ import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage
-import com.atsuishio.superbwarfare.tools.*
+import com.atsuishio.superbwarfare.tools.ParticleTool
+import com.atsuishio.superbwarfare.tools.SeekTool
+import com.atsuishio.superbwarfare.tools.TraceTool
+import com.atsuishio.superbwarfare.tools.forceHurt
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.level.ServerLevel
@@ -42,10 +44,6 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
     private var type: Type? = Type.AP
     private var spreadAmount = 50
     private var spreadAngle = 15
-
-    init {
-        this.noCulling = true
-    }
 
     override fun getDefaultItem(): Item {
         return ModItems.LARGE_SHELL_HE.get()
@@ -324,12 +322,6 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
                 level.addFreshEntity(whitePhosphorusProjectileEntity)
             }
             discard()
-        }
-    }
-
-    override fun syncMotion() {
-        if (!this.level().isClientSide) {
-            sendPacketToTrackingThis(ClientMotionSyncMessage(this))
         }
     }
 
