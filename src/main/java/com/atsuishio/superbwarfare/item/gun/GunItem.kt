@@ -921,7 +921,11 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         val y = shootDirection.y
         val z = shootDirection.z
 
-        entity.setPos(x, y, z)
+        entity.setPos(
+            shootPosition.x,
+            shootPosition.y,
+            shootPosition.z
+        )
 
         if (entity is Projectile) {
             entity.shoot(x, y, z, velocity, spread.toFloat())
