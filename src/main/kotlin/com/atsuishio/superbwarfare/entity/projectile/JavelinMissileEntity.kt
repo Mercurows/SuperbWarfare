@@ -1,42 +1,35 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
-import com.atsuishio.superbwarfare.api.event.ProjectileHitEvent.HitEntity
 import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
-import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
+import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.init.ModTags
-import com.atsuishio.superbwarfare.tools.*
+import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.VectorTool.calculateAngle
+import com.atsuishio.superbwarfare.tools.angleTo
+import com.atsuishio.superbwarfare.tools.forceHurt
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
-import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
-import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.animal.Pig
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
-import net.minecraft.world.phys.BlockHitResult
-import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.Vec3
 import kotlin.math.max
 
 open class JavelinMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
-
     var isTop by TOP
 
-    constructor(type: EntityType<out JavelinMissileEntity>, level: Level) : super(type, level) {
-        this.noCulling = true
-    }
+    constructor(type: EntityType<out JavelinMissileEntity>, level: Level) : super(type, level)
 
     constructor(
         entity: Entity?,
@@ -49,7 +42,6 @@ open class JavelinMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
     ) : super(
         ModEntities.JAVELIN_MISSILE.get(), entity, level
     ) {
-        this.noCulling = true
         this.damageValue = damage
         this.explosionDamageValue = explosionDamage
         this.explosionRadiusValue = explosionRadius
@@ -73,38 +65,23 @@ open class JavelinMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
         this.entityData.define(TOP, false)
     }
 
-    override fun onHitEntity(result: EntityHitResult) {
-        val entity = result.entity
-        val owner = this.owner
-        if (owner != null && owner.vehicle != null && entity == owner.vehicle) return
-        if (this.level() is ServerLevel) {
+    override fun performDamage(
+        entity: Entity,
+        damage: Float,
+        isHeadshot: Boolean
+    ) {
+        entity.invulnerableTime = 0
+
+        val headShotModifier = if (isHeadshot) this.getHeadShot() else 1f
+        if (damage > 0) {
             entity.forceHurt(
-                causeProjectileHitDamage(this.level().registryAccess(), this, owner),
-                this.damageValue * if (this.isTop) 1.25f else 1f
+                if (isHeadshot)
+                    ModDamageTypes.causeProjectileHitHeadshotDamage(this.level().registryAccess(), this, this.owner)
+                else
+                    ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.owner),
+                damage * headShotModifier * if (this.isTop) 1.25f else 1f
             )
-
-            if (entity is LivingEntity) {
-                entity.invulnerableTime = 0
-            }
-
-            causeExplode(result.location)
-            this.discard()
-        }
-
-        postEvent(
-            HitEntity(
-                owner,
-                this,
-                entity,
-                result.location
-            )
-        )
-    }
-
-    override fun onHitBlock(result: BlockHitResult) {
-        super.onHitBlock(result)
-        if (this.level() is ServerLevel) {
-            destroyBlock(result)
+            entity.invulnerableTime = 0
         }
     }
 
@@ -114,15 +91,6 @@ open class JavelinMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
         mediumTrail()
 
         val entity = EntityFindUtil.findEntity(this.level(), getTargetUUID())
-        val decoy = SeekTool.seekLivingEntities(this, 32.0, 90.0)
-
-        for (e in decoy) {
-            if (e.type.`is`(ModTags.EntityTypes.DECOY) && !this.isDistracted()) {
-                this.setTargetUUID(e.stringUUID)
-                this.setDistracted(true)
-                break
-            }
-        }
 
         if (getGuideType() == 0 || getTargetUUID() != "none") {
             if (entity != null) {
@@ -180,7 +148,11 @@ open class JavelinMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
                 if (isTop) {
                     if (!dir) {
                         val targetTopPos =
-                            Vec3(getTargetPos()!!.x, getTargetPos()!!.y + (5 * this.tickCount).coerceIn(0, 90), getTargetPos()!!.z)
+                            Vec3(
+                                getTargetPos()!!.x,
+                                getTargetPos()!!.y + (5 * this.tickCount).coerceIn(0, 90),
+                                getTargetPos()!!.z
+                            )
                         val toTopVec = eyePosition.vectorTo(targetTopPos).normalize()
                         turn(toTopVec, 6f)
                     } else {

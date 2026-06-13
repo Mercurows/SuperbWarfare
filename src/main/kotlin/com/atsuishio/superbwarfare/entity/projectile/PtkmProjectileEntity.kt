@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
+import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeCustomExplosionDamage
-import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -30,17 +30,15 @@ open class PtkmProjectileEntity : FastThrowableProjectile, BasicGeoProjectileEnt
     private var shootTime = 3
     private var target: Entity? = null
 
-    constructor(type: EntityType<out PtkmProjectileEntity>, level: Level) : super(type, level) {
+    init {
         this.damageValue = ExplosionConfig.PTKM_1R_PROJECTILE_HIT_DAMAGE.get().toFloat()
         this.explosionDamageValue = ExplosionConfig.PTKM_1R_PROJECTILE_EXPLOSION_DAMAGE.get().toFloat()
         this.explosionRadiusValue = ExplosionConfig.PTKM_1R_PROJECTILE_EXPLOSION_RADIUS.get().toFloat()
     }
 
-    constructor(entity: LivingEntity?, level: Level) : super(ModEntities.PTKM_PROJECTILE.get(), entity, level) {
-        this.damageValue = ExplosionConfig.PTKM_1R_PROJECTILE_HIT_DAMAGE.get().toFloat()
-        this.explosionDamageValue = ExplosionConfig.PTKM_1R_PROJECTILE_EXPLOSION_DAMAGE.get().toFloat()
-        this.explosionRadiusValue = ExplosionConfig.PTKM_1R_PROJECTILE_EXPLOSION_RADIUS.get().toFloat()
-    }
+    constructor(type: EntityType<out PtkmProjectileEntity>, level: Level) : super(type, level)
+
+    constructor(entity: LivingEntity?, level: Level) : super(ModEntities.PTKM_PROJECTILE.get(), entity, level)
 
     override fun getDefaultItem(): Item {
         return ModItems.PTKM_1R.get()
@@ -50,30 +48,36 @@ open class PtkmProjectileEntity : FastThrowableProjectile, BasicGeoProjectileEnt
         return !this.isRemoved
     }
 
-    public override fun onHitEntity(result: EntityHitResult) {
-        super.onHitEntity(result)
+    override fun performDamage(
+        entity: Entity,
+        damage: Float,
+        isHeadshot: Boolean
+    ) {
+        entity.invulnerableTime = 0
+
+        val headShotModifier = if (isHeadshot) this.getHeadShot() else 1f
+        if (damage > 0) {
+            val finalDamage = damage * headShotModifier * if (target != null && tickCount > shootTime) 1f else 0.04f
+
+            entity.forceHurt(
+                if (isHeadshot)
+                    ModDamageTypes.causeProjectileHitHeadshotDamage(this.level().registryAccess(), this, this.owner)
+                else
+                    ModDamageTypes.causeProjectileHitDamage(this.level().registryAccess(), this, this.owner),
+                finalDamage
+            )
+            entity.invulnerableTime = 0
+        }
+    }
+
+    override fun afterHitEntity(result: EntityHitResult) {
         if (this.level() is ServerLevel) {
-            val entity = result.entity
-            val owner = this.owner
-            if (owner != null && entity == owner.vehicle) return
-
-            if (target != null && tickCount > shootTime) {
-                entity.forceHurt(causeProjectileHitDamage(this.level().registryAccess(), this, owner), damageValue)
-            } else {
-                entity.forceHurt(causeProjectileHitDamage(this.level().registryAccess(), this, owner), damageValue / 25f)
-            }
-
-            if (entity is LivingEntity) {
-                entity.invulnerableTime = 0
-            }
-
             explode(result.getLocation())
             this.discard()
         }
     }
 
-    public override fun onHitBlock(result: BlockHitResult) {
-        super.onHitBlock(result)
+    override fun afterHitBlock(result: BlockHitResult) {
         if (this.level() is ServerLevel) {
             explode(result.getLocation())
             this.discard()
