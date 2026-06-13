@@ -219,20 +219,24 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
                 // 命中后将位置设置到碰撞点，确保反弹等逻辑从正确的表面开始
                 val hitLoc = closestHit.location
                 this.setPos(hitLoc.x, hitLoc.y, hitLoc.z)
-            } else {
-                this.setPos(this.x + this.deltaMovement.x, this.y + this.deltaMovement.y, this.z + this.deltaMovement.z)
             }
         }
         // 客户端位置由 ClientMotionSyncMessage 每 tick 同步，不再自行推算
 
+        val vec = this.deltaMovement
+        val posX = this.x + vec.x
+        val posY = this.y + vec.y
+        val posZ = this.z + vec.z
         // 更新朝向（在 deltaMovement 可能被 onHit/反弹 修改之后）
         this.updateRotation()
 
         // 5. 对当前 deltaMovement（已包含反弹等修改）施加摩擦力和重力
         val friction = if (this.isInWater) 0.8 else 0.99
-        this.deltaMovement = this.deltaMovement.scale(friction)
+        this.deltaMovement = vec.scale(friction)
 
         this.deltaMovement = this.deltaMovement.add(0.0, -this.getCustomGravity().toDouble(), 0.0)
+
+        this.setPos(posX, posY, posZ)
 
         if (this.tickCount > lifeValue) {
             if (explosionRadiusValue > 0) {
