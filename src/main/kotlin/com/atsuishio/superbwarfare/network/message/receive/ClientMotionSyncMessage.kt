@@ -5,35 +5,21 @@ import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.tools.clientLevel
 import kotlinx.serialization.Serializable
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.phys.Vec3
 
 @Serializable
 data class ClientMotionSyncMessage(
     val id: Int,
-    val posX: Double,
-    val posY: Double,
-    val posZ: Double,
-    val motionX: Float,
-    val motionY: Float,
-    val motionZ: Float,
+    val x: Float,
+    val y: Float,
+    val z: Float,
 ) : ClientPacketPayload() {
 
-    constructor(entity: Entity) : this(
-        entity.id,
-        entity.x, entity.y, entity.z,
-        entity.deltaMovement.x.toFloat(), entity.deltaMovement.y.toFloat(), entity.deltaMovement.z.toFloat()
-    )
+    constructor(id: Int, motion: Vec3) : this(id, motion.x.toFloat(), motion.y.toFloat(), motion.z.toFloat())
+    constructor(entity: Entity) : this(entity.id, entity.deltaMovement)
 
     override fun PayloadContext.handler() {
         val entity = clientLevel?.getEntity(id) ?: return
-        entity.setPos(posX, posY, posZ)
-
-        // lerp这个会让弹射物抽搐(恼
-
-        val dm = entity.deltaMovement
-        entity.setDeltaMovement(
-            dm.x + (motionX - dm.x),
-            dm.y + (motionY - dm.y),
-            dm.z + (motionZ - dm.z)
-        )
+        entity.lerpMotion(x.toDouble(), y.toDouble(), z.toDouble())
     }
 }
