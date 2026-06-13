@@ -28,10 +28,12 @@ abstract class DestroyableProjectile : FastThrowableProjectile {
     override fun isPickable() = !this.isRemoved
 
     override fun hurt(source: DamageSource, amount: Float): Boolean {
-        var amount = amount
-        amount = DAMAGE_MODIFIER.compute(this, source, amount)
-        health -= amount
+        val entity = source.directEntity
+        if (entity is DestroyableProjectile && this.javaClass == entity.javaClass) {
+            if (this.owner == entity.owner) return false
+        }
 
+        this.health -= DAMAGE_MODIFIER.compute(this, source, amount)
         return super.hurt(source, amount)
     }
 

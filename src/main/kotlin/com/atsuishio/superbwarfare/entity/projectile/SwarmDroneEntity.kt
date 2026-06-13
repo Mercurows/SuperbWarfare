@@ -11,7 +11,6 @@ import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.util.Mth
-import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.ClipContext
@@ -37,15 +36,6 @@ open class SwarmDroneEntity(type: EntityType<out SwarmDroneEntity>, level: Level
 
     override fun getDefaultItem(): Item {
         return ModItems.SWARM_DRONE.get()
-    }
-
-    override fun hurt(source: DamageSource, amount: Float): Boolean {
-        val entity = source.directEntity
-        if (entity is SwarmDroneEntity && entity.owner == this.owner) {
-            return false
-        }
-
-        return super.hurt(source, amount)
     }
 
     override fun onHitEntity(result: EntityHitResult) {

@@ -276,7 +276,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         )
     }
 
-    override fun onHit(result: HitResult) {
+    public override fun onHit(result: HitResult) {
         if (result is BlockHitResult) {
             val level = this.level()
             if (result.type == HitResult.Type.MISS) {
@@ -329,7 +329,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         }
     }
 
-    override fun onHitEntity(result: EntityHitResult) {
+    public override fun onHitEntity(result: EntityHitResult) {
         if (result !is ExtendedEntityRayTraceResult) return
 
         var entity = result.entity ?: return
@@ -404,7 +404,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         this.afterHitEntity(result)
     }
 
-    override fun onHitBlock(result: BlockHitResult) {
+    public override fun onHitBlock(result: BlockHitResult) {
         val level = this.level()
         val pos = result.blockPos
         val face = result.direction
