@@ -24,7 +24,6 @@ import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.item.weapon.BeastItem.Companion.beastKill
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
-import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.HitboxHelper.getBoundingBox
 import com.atsuishio.superbwarfare.tools.HitboxHelper.getVelocity
@@ -64,7 +63,6 @@ import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
 import net.neoforged.neoforge.entity.PartEntity
 import net.neoforged.neoforge.event.EventHooks
-import net.neoforged.neoforge.network.PacketDistributor
 import java.util.function.Predicate
 import java.util.function.Supplier
 import kotlin.math.PI
@@ -417,12 +415,6 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
         }
 
         this.syncMotion()
-    }
-
-    override fun syncMotion() {
-        if (!this.level().isClientSide) {
-            PacketDistributor.sendToPlayersTrackingEntity(this, ClientMotionSyncMessage(this))
-        }
     }
 
     override fun onHit(result: HitResult) {

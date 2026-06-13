@@ -12,10 +12,10 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.weapon.BeastItem.Companion.beastKill
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
-import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.world.phys.ExtendedEntityRayTraceResult
 import net.minecraft.core.BlockPos
+import net.minecraft.core.Direction
 import net.minecraft.core.Holder
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.nbt.CompoundTag
@@ -132,6 +132,10 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         if (shooter != null) {
             this.setPos(shooter.x, shooter.eyeY - 0.1, shooter.z)
         }
+    }
+
+    init {
+        this.noCulling = true
     }
 
     override fun readAdditionalSaveData(compound: CompoundTag) {
@@ -513,18 +517,8 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         (level() as ServerLevel).chunkSource.addRegionTicket(TicketType.POST_TELEPORT, chunkPos, 3, this.id)
     }
 
-    override fun syncMotion() {
-        if (this.level().isClientSide) return
-        if (!shouldSyncMotion()) return
-        sendPacketToTrackingThis(ClientMotionSyncMessage(this))
-    }
-
     override fun isFastMoving(): Boolean {
         return this.deltaMovement.length() >= 0.5
-    }
-
-    override fun shouldSyncMotion(): Boolean {
-        return true
     }
 
     override fun writeSpawnData(buffer: RegistryFriendlyByteBuf) {
@@ -670,8 +664,24 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         this.xRotO = this.xRot
     }
 
-    override fun getDefaultGravity(): Double {
-        return this.gravityValue.toDouble()
+    open fun bounce(direction: Direction) {
+        val speed = this.deltaMovement.length()
+        if (speed < 0.15) {
+            this.deltaMovement = Vec3.ZERO
+            return
+        }
+
+        when (direction.axis) {
+            Direction.Axis.X -> this.deltaMovement = this.deltaMovement.multiply(-0.6, 0.8, 0.8)
+            Direction.Axis.Y -> {
+                this.deltaMovement = this.deltaMovement.multiply(0.8, -0.5, 0.8)
+                if (this.deltaMovement.y() < this.getCustomGravity()) {
+                    this.deltaMovement = this.deltaMovement.multiply(1.0, 0.0, 1.0)
+                }
+            }
+
+            Direction.Axis.Z -> this.deltaMovement = this.deltaMovement.multiply(0.8, 0.8, -0.6)
+        }
     }
 
     companion object {

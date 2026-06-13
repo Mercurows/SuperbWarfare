@@ -755,22 +755,22 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
             // SBW子弹弹射物专属属性
             if (entity is ProjectileEntity) {
-                entity.shooter(shooter)
-                    .damage(damage.toFloat())
-                    .headShot(headshot.toFloat())
-                    .zoom(zoom)
-                    .bypassArmorRate(bypassArmorRate.toFloat())
-                    .setGunItemId(stack)
-                    .velocity(finalVelocity)
+                entity.setGunItemId(stack)
             }
 
             // SBW弹射物专属属性
             if (entity is IBulletProperties) {
-                entity.setDamage(damage.toFloat())
-                entity.setCustomGravity(data.get(GunProp.GRAVITY).toFloat())
-                entity.setExplosionDamage(data.get(GunProp.EXPLOSION_DAMAGE).toFloat())
-                entity.setExplosionRadius(data.get(GunProp.EXPLOSION_RADIUS).toFloat())
-                entity.setLife(data.get(GunProp.PROJECTILE_LIFE))
+                with(entity) {
+                    setDamage(damage.toFloat())
+                    setCustomGravity(data.get(GunProp.GRAVITY).toFloat())
+                    setExplosionDamage(data.get(GunProp.EXPLOSION_DAMAGE).toFloat())
+                    setExplosionRadius(data.get(GunProp.EXPLOSION_RADIUS).toFloat())
+                    setLife(data.get(GunProp.PROJECTILE_LIFE))
+                    setHeadShot(headshot.toFloat())
+                    setZoom(zoom)
+                    setBypassArmorRate(bypassArmorRate.toFloat())
+                    setVelocity(finalVelocity)
+                }
             }
 
             if (entity is WireGuideMissileEntity && shooter != null && shooter.vehicle != null) {
@@ -899,15 +899,11 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         }
 
         // 发射任意实体
-        entity.setPos(
-            shootPosition.x,
-            shootPosition.y,
-            shootPosition.z
-        )
-
         val x = shootDirection.x
         val y = shootDirection.y
         val z = shootDirection.z
+
+        entity.setPos(x, y, z)
 
         if (entity is Projectile) {
             entity.shoot(x, y, z, velocity, spread.toFloat())

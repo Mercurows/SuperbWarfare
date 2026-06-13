@@ -6,11 +6,9 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.TraceTool
 import com.atsuishio.superbwarfare.tools.forceHurt
-import com.atsuishio.superbwarfare.tools.sendPacketToTrackingThis
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.level.ServerLevel
@@ -38,9 +36,7 @@ open class MediumRocketEntity : FastThrowableProjectile, BasicGeoProjectileEntit
     private var spreadAmount = 50
     private var spreadAngle = 15
 
-    constructor(type: EntityType<out MediumRocketEntity>, world: Level) : super(type, world) {
-        this.noCulling = true
-    }
+    constructor(type: EntityType<out MediumRocketEntity>, world: Level) : super(type, world)
 
     constructor(
         pEntityType: EntityType<out MediumRocketEntity>,
@@ -57,7 +53,6 @@ open class MediumRocketEntity : FastThrowableProjectile, BasicGeoProjectileEntit
         spreadAmount: Int,
         spreadAngle: Int
     ) : super(pEntityType, pX, pY, pZ, pLevel) {
-        this.noCulling = true
         this.damageValue = damage
         this.explosionRadiusValue = radius
         this.explosionDamageValue = explosionDamage
@@ -236,12 +231,6 @@ open class MediumRocketEntity : FastThrowableProjectile, BasicGeoProjectileEntit
             if (hitResult.type == HitResult.Type.BLOCK) {
                 releaseClusterMunitions(owner)
             }
-        }
-    }
-
-    override fun syncMotion() {
-        if (!this.level().isClientSide) {
-            sendPacketToTrackingThis(ClientMotionSyncMessage(this))
         }
     }
 
