@@ -4,6 +4,8 @@ import com.atsuishio.superbwarfare.entity.projectile.M18SmokeGrenadeEntity
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.DispenserLaunchable
+import com.atsuishio.superbwarfare.item.IDyeableSmokeItem
+import com.atsuishio.superbwarfare.item.IDyeableSmokeItem.Companion.TAG_COLOR
 import net.minecraft.ChatFormatting
 import net.minecraft.core.BlockSource
 import net.minecraft.core.Position
@@ -23,12 +25,12 @@ import net.minecraft.world.item.*
 import net.minecraft.world.level.Level
 import kotlin.math.min
 
-open class M18SmokeGrenadeItem : Item(Properties().rarity(Rarity.UNCOMMON)), DispenserLaunchable {
-    fun setColor(stack: ItemStack, color: Int) {
+open class M18SmokeGrenadeItem : Item(Properties().rarity(Rarity.UNCOMMON)), DispenserLaunchable, IDyeableSmokeItem {
+    override fun setColor(stack: ItemStack, color: Int) {
         stack.getOrCreateTag().putInt(TAG_COLOR, color)
     }
 
-    fun getColor(stack: ItemStack): Int {
+    override fun getColor(stack: ItemStack): Int {
         return if (stack.tag != null && stack.tag!!.contains(TAG_COLOR)) stack.tag!!.getInt(TAG_COLOR) else 0xFFFFFF
     }
 
@@ -126,10 +128,6 @@ open class M18SmokeGrenadeItem : Item(Properties().rarity(Rarity.UNCOMMON)), Dis
                 pSource.level.playSound(null, pSource.pos, ModSounds.GRENADE_THROW.get(), SoundSource.BLOCKS, 1f, 1f)
             }
         }
-    }
-
-    companion object {
-        const val TAG_COLOR: String = "Color"
     }
 }
 

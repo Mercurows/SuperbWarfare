@@ -40,6 +40,12 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
     private var smokeCount: Int = 12
     private var potion: Potion = Potions.EMPTY
     private val effects: MutableSet<MobEffectInstance> = hashSetOf()
+    var red: Float = 1.0f
+        private set
+    var green: Float = 1.0f
+        private set
+    var blue: Float = 1.0f
+        private set
 
     init {
         this.damageValue = 60f
@@ -70,6 +76,16 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
         this.damageValue = damage
         this.explosionDamageValue = explosionDamage
         this.explosionRadiusValue = explosionRadius
+    }
+
+    override fun setEffect(effects: List<MobEffectInstance>) {
+        this.effects.addAll(effects)
+    }
+
+    override fun setRGB(rgb: FloatArray) {
+        this.red = rgb[0] / 255f
+        this.green = rgb[1] / 255f
+        this.blue = rgb[2] / 255f
     }
 
     fun setEffectsFromItem(pStack: ItemStack) {
@@ -119,6 +135,10 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
             }
             compound.put("CustomPotionEffects", list)
         }
+
+        compound.putFloat("RColor", this.red)
+        compound.putFloat("GColor", this.green)
+        compound.putFloat("BColor", this.blue)
     }
 
     override fun readAdditionalSaveData(compound: CompoundTag) {
@@ -129,6 +149,16 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
         }
 
         this.effects.addAll(PotionUtils.getCustomEffects(compound))
+
+        if (compound.contains("RColor")) {
+            this.red = compound.getFloat("RColor")
+        }
+        if (compound.contains("GColor")) {
+            this.green = compound.getFloat("GColor")
+        }
+        if (compound.contains("BColor")) {
+            this.blue = compound.getFloat("BColor")
+        }
     }
 
     override fun afterHitEntity(result: EntityHitResult) {
@@ -137,9 +167,16 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
 
         if (!this.level().isClientSide()) {
             when (type) {
-                Type.WP -> this.causePotionEffect(result.getLocation(), this.owner!!)
+                Type.WP -> this.causeWPEffect(result.getLocation(), this.owner!!)
                 Type.SMOKE -> this.releaseSmoke()
                 else -> {}
+            }
+
+            val entity = result.entity
+            if (this.effects.isNotEmpty() && entity is LivingEntity) {
+                this.effects.forEach {
+                    entity.addEffect(it)
+                }
             }
 
             this.causeExplode(result.getLocation())
@@ -151,7 +188,7 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
     override fun afterHitBlock(result: BlockHitResult) {
         if (!this.level().isClientSide() && this.owner != null) {
             when (type) {
-                Type.WP -> causePotionEffect(result.getLocation(), this.owner!!)
+                Type.WP -> causeWPEffect(result.getLocation(), this.owner!!)
                 Type.SMOKE -> releaseSmoke()
                 else -> {}
             }
@@ -166,7 +203,7 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
         this.discard()
     }
 
-    open fun causePotionEffect(pos: Vec3, shooter: Entity) {
+    open fun causeWPEffect(pos: Vec3, shooter: Entity) {
         if (this.level() is ServerLevel) {
             val entities = SeekTool.Builder(shooter)
                 .withinRange(pos, explosionRadiusValue.toDouble())
@@ -197,6 +234,7 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
             val vec3 = Vec3(1.0, 0.05, 0.0)
             for (i in 0..<this.smokeCount) {
                 val decoy = SmokeDecoyEntity(ModEntities.SMOKE_DECOY.get(), level, true)
+                    .setColor(this.red, this.green, this.blue)
                 decoy.setPos(this.x, this.y + bbHeight, this.z)
                 decoy.decoyShoot(this, vec3.yRot(i * (360f / this.smokeCount) * Mth.DEG_TO_RAD), 2f, 5f)
                 level.addFreshEntity(decoy)
@@ -255,11 +293,15 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
         }
     }
 
-    fun createAreaCloud(level: Level, pos: Vec3) {
-        if (this.potion === Potions.EMPTY) return
+    open fun createAreaCloud(level: Level, pos: Vec3) {
+        if (this.potion === Potions.EMPTY && this.effects.isEmpty()) return
 
         val cloud = AreaEffectCloud(level, pos.x, pos.y, pos.z)
         cloud.setPotion(this.potion)
+        if (this.effects.isNotEmpty()) {
+            this.effects.forEach { cloud.addEffect(it) }
+        }
+
         cloud.duration = this.explosionDamageValue.toInt()
         cloud.radius = this.explosionRadiusValue
         val owner = this.owner

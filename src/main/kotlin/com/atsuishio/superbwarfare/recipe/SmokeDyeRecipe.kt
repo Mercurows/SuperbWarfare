@@ -1,8 +1,7 @@
 package com.atsuishio.superbwarfare.recipe
 
-import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModRecipes
-import com.atsuishio.superbwarfare.item.projectile.M18SmokeGrenadeItem
+import com.atsuishio.superbwarfare.item.IDyeableSmokeItem
 import net.minecraft.core.RegistryAccess
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.inventory.CraftingContainer
@@ -22,7 +21,7 @@ class SmokeDyeRecipe(pId: ResourceLocation, pCategory: CraftingBookCategory) : C
         for (i in 0..<pInv.containerSize) {
             val stack = pInv.getItem(i)
             if (!stack.isEmpty) {
-                if (stack.`is`(ModItems.M18_SMOKE_GRENADE.get())) {
+                if (stack.item is IDyeableSmokeItem) {
                     if (!itemstack.isEmpty) {
                         return false
                     }
@@ -48,7 +47,7 @@ class SmokeDyeRecipe(pId: ResourceLocation, pCategory: CraftingBookCategory) : C
             val stack = pContainer.getItem(i)
             if (!stack.isEmpty) {
                 val item = stack.item
-                if (stack.`is`(ModItems.M18_SMOKE_GRENADE.get())) {
+                if (stack.item is IDyeableSmokeItem) {
                     if (!itemstack.isEmpty) {
                         return ItemStack.EMPTY
                     }
@@ -80,7 +79,7 @@ class SmokeDyeRecipe(pId: ResourceLocation, pCategory: CraftingBookCategory) : C
             var i = 0
             var j = 0
             val item = pStack.item
-            if (item is M18SmokeGrenadeItem) {
+            if (item is IDyeableSmokeItem) {
                 itemstack = pStack.copyWithCount(1)
                 val color: Int = item.getColor(pStack)
                 if (color != 0xFFFFFF) {
