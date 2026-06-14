@@ -9,6 +9,7 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.ListTag
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvent
+import net.minecraft.util.Mth
 import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.entity.AreaEffectCloud
 import net.minecraft.world.entity.Entity
@@ -32,19 +33,21 @@ import kotlin.math.max
 
 open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity {
     enum class Type {
-        NORMAL, WP
+        NORMAL, WP, SMOKE
     }
 
     private var type: Type? = Type.NORMAL
+    private var smokeCount: Int = 12
     private var potion: Potion = Potions.EMPTY
     private val effects: MutableSet<MobEffectInstance> = hashSetOf()
 
-    constructor(type: EntityType<out MortarShellEntity>, level: Level) : super(type, level) {
-        this.noCulling = true
+    init {
         this.damageValue = 60f
         this.explosionDamageValue = 100f
         this.explosionRadiusValue = 8f
     }
+
+    constructor(type: EntityType<out MortarShellEntity>, level: Level) : super(type, level)
 
     constructor(
         type: EntityType<out MortarShellEntity>,
@@ -54,10 +57,6 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
         level: Level,
         gravity: Float
     ) : super(type, x, y, z, level) {
-        this.noCulling = true
-        this.damageValue = 60f
-        this.explosionDamageValue = 100f
-        this.explosionRadiusValue = 8f
         this.gravityValue = gravity
     }
 
@@ -67,10 +66,7 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
         damage: Float,
         explosionDamage: Float,
         explosionRadius: Float
-    ) : super(
-        ModEntities.MORTAR_SHELL.get(), entity, level
-    ) {
-        this.noCulling = true
+    ) : super(ModEntities.MORTAR_SHELL.get(), entity, level) {
         this.damageValue = damage
         this.explosionDamageValue = explosionDamage
         this.explosionRadiusValue = explosionRadius
@@ -85,14 +81,18 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
                     this.effects.add(MobEffectInstance(instance))
                 }
             }
-        } else if (pStack.`is`(ModItems.MORTAR_SHELL.get())) {
+        } else {
             this.potion = Potions.EMPTY
             this.effects.clear()
         }
     }
 
-    fun setType(type: Type?) {
+    open fun setType(type: Type?) {
         this.type = type
+        if (type == Type.SMOKE) {
+            this.damageValue /= 10f
+            this.explosionDamageValue /= 10f
+        }
     }
 
     override fun getDefaultItem(): Item {
@@ -136,8 +136,10 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
         if (this.owner == null) return
 
         if (!this.level().isClientSide()) {
-            if (type == Type.WP) {
-                this.causePotionEffect(result.getLocation(), this.owner!!)
+            when (type) {
+                Type.WP -> this.causePotionEffect(result.getLocation(), this.owner!!)
+                Type.SMOKE -> this.releaseSmoke()
+                else -> {}
             }
 
             this.causeExplode(result.getLocation())
@@ -147,8 +149,12 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
     }
 
     override fun afterHitBlock(result: BlockHitResult) {
-        if (type == Type.WP && this.owner != null) {
-            causePotionEffect(result.getLocation(), this.owner!!)
+        if (!this.level().isClientSide() && this.owner != null) {
+            when (type) {
+                Type.WP -> causePotionEffect(result.getLocation(), this.owner!!)
+                Type.SMOKE -> releaseSmoke()
+                else -> {}
+            }
         }
 
         if (!this.level().isClientSide()) {
@@ -182,6 +188,19 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
                         ), this.owner
                     )
                 }
+        }
+    }
+
+    open fun releaseSmoke() {
+        val level = this.level()
+        if (level is ServerLevel) {
+            val vec3 = Vec3(1.0, 0.05, 0.0)
+            for (i in 0..<this.smokeCount) {
+                val decoy = SmokeDecoyEntity(ModEntities.SMOKE_DECOY.get(), level, true)
+                decoy.setPos(this.x, this.y + bbHeight, this.z)
+                decoy.decoyShoot(this, vec3.yRot(i * (360f / this.smokeCount) * Mth.DEG_TO_RAD), 2f, 5f)
+                level.addFreshEntity(decoy)
+            }
         }
     }
 

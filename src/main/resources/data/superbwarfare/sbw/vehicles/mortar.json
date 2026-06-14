@@ -5,6 +5,7 @@
   "TurretPitchRange": [20, 89],
   "Weapons": {
     "Main": {
+      "AmmoType": "superbwarfare:mortar_shell",
       "Damage": 60,
       "ExplosionDamage": 100,
       "ExplosionRadius": 8,
