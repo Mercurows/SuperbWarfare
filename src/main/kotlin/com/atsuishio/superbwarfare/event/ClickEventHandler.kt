@@ -257,16 +257,16 @@ object ClickEventHandler {
             if (key == ModKeyMappings.ACTIVE_THERMAL_IMAGING.key.value) {
                 if (vehicle is VehicleEntity) {
                     val index = vehicle.getSeatIndex(player)
-                    val seat = vehicle.computed().seats().getOrNull(index) ?: return
-                    if (seat.hasThermalImaging) {
+                    val seat = vehicle.computed().seats().getOrNull(index)
+                    if (seat != null && seat.hasThermalImaging) {
                         ClientEventHandler.activeThermalImaging = !ClientEventHandler.activeThermalImaging
                         if (ClientEventHandler.activeThermalImaging) {
                             player.playSound(ModSounds.CANNON_ZOOM_IN.get())
                         } else {
                             player.playSound(ModSounds.CANNON_ZOOM_OUT.get())
                         }
+                        return
                     }
-                    return
                 }
 
                 CuriosApi.getCuriosInventory(player).ifPresent {

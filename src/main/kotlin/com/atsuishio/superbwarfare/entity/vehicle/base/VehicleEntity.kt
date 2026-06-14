@@ -78,8 +78,6 @@ import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.SimpleMenuProvider
 import net.minecraft.world.damagesource.DamageSource
-import net.minecraft.world.effect.MobEffectInstance
-import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.entity.*
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.entity.player.Player
@@ -2033,12 +2031,6 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                             }
                         }
                     }
-                }
-
-                val index: Int = getSeatIndex(mob)
-                val seat: SeatInfo = computed().seats()[index]
-                if (mob.getData(ModAttachments.PLAYER_VARIABLE).activeThermalImaging && seat.hasThermalImaging) {
-                    mob.addEffect(MobEffectInstance(MobEffects.NIGHT_VISION, 5, 0, false, false))
                 }
 
                 vehicleRadar(mob)

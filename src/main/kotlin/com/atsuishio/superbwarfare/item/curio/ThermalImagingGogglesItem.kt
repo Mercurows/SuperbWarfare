@@ -1,7 +1,5 @@
 package com.atsuishio.superbwarfare.item.curio
 
-import net.minecraft.world.effect.MobEffectInstance
-import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import top.theillusivec4.curios.api.CuriosApi
@@ -13,12 +11,5 @@ class ThermalImagingGogglesItem : Item(Properties().stacksTo(1)), ICurioItem {
         return CuriosApi.getCuriosInventory(slotContext.entity())
             .flatMap { c -> c.findFirstCurio(this) }
             .isEmpty
-    }
-
-    override fun curioTick(slotContext: SlotContext, stack: ItemStack?) {
-        val living = slotContext.entity()
-        if (!living.level().isClientSide) {
-            living.addEffect(MobEffectInstance(MobEffects.NIGHT_VISION, 3, 0, false, false))
-        }
     }
 }

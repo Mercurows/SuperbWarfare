@@ -520,7 +520,7 @@ object ClientEventHandler {
     fun hasThermalImagingGoggles(): Boolean {
         return CuriosApi.getCuriosInventory(localPlayer).map {
             it.findFirstCurio(ModItems.THERMAL_IMAGING_GOGGLES.get()).isPresent
-        }.orElse(false)
+        }.orElseGet { false }
     }
 
     fun handleThermalImaging(player: Player) {
@@ -542,16 +542,6 @@ object ClientEventHandler {
             turnOffThermalImaging()
         } else if (Minecraft.getInstance().gameRenderer.currentEffect() == null) {
             turnOnThermalImaging()
-        }
-
-        val active = player.getData(ModAttachments.PLAYER_VARIABLE).activeThermalImaging
-
-        if (activeThermalImaging && !active) {
-            sendPacketToServer(ActiveThermalImagingMessage(true))
-        }
-
-        if (active && !activeThermalImaging) {
-            sendPacketToServer(ActiveThermalImagingMessage(false))
         }
     }
 
@@ -1721,7 +1711,10 @@ object ClientEventHandler {
                         sendPacketToServer(
                             VehicleFireMessage(
                                 if (lockingEntityVehicle != null) lockingEntityVehicle!!.uuid else null,
-                                if (lockingPosVehicle != null) lockingPosVehicle!!.toVector3f() else (if (gunData.get(GunProp.SEEK_WEAPON_INFO)?.inputBlockPos == true) missileLockingPos?.center?.toVector3f() else null)
+                                if (lockingPosVehicle != null) lockingPosVehicle!!.toVector3f() else (if (gunData.get(
+                                        GunProp.SEEK_WEAPON_INFO
+                                    )?.inputBlockPos == true
+                                ) missileLockingPos?.center?.toVector3f() else null)
                             )
                         )
 //                        FORGE_BUS.post(ClientVehicleFireEvent(vehicle, player))
