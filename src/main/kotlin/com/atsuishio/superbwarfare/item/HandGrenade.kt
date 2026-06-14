@@ -86,7 +86,6 @@ open class HandGrenade : Item(Properties().rarity(Rarity.UNCOMMON)), DispenserLa
                 .attacker(pLivingEntity)
                 .damage(ExplosionConfig.M67_GRENADE_EXPLOSION_DAMAGE.get().toFloat())
                 .radius(ExplosionConfig.M67_GRENADE_EXPLOSION_RADIUS.get().toFloat())
-                .damageMultiplier(1.25f)
                 .withParticleType(ParticleTool.ParticleType.MEDIUM)
                 .explode()
 

@@ -86,7 +86,6 @@ open class RgoGrenade : Item(Properties().rarity(Rarity.UNCOMMON)), DispenserLau
                 .attacker(pLivingEntity)
                 .damage(ExplosionConfig.RGO_GRENADE_EXPLOSION_DAMAGE.get().toFloat())
                 .radius(ExplosionConfig.RGO_GRENADE_EXPLOSION_RADIUS.get().toFloat())
-                .damageMultiplier(1.25f)
                 .withParticleType(ParticleTool.ParticleType.MEDIUM)
                 .explode()
 
