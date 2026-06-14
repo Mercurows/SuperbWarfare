@@ -341,7 +341,7 @@
   "item.superbwarfare.edd": "防止攻入装置",
   "des.superbwarfare.edd": "只能放置在方块的侧面",
   "item.superbwarfare.handsome_goggles": "超级无敌酷炫护目镜",
-  "des.superbwarfare.handsome_goggles": "一副很酷的护目镜，给恶魂戴上应该会更酷",
+  "des.superbwarfare.handsome_goggles": "一副很酷的护目镜，给恶魂戴上应该会更酷\n§c⚠ 光敏性癫痫患者请勿佩戴此眼镜，若要佩戴请按F4关闭着色器效果",
 
   "attribute.superbwarfare.bullet_resistance": "子弹防护",
 

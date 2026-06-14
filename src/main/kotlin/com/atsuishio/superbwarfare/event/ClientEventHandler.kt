@@ -33,10 +33,7 @@ import net.minecraft.sounds.SoundSource
 import net.minecraft.util.Mth
 import net.minecraft.util.RandomSource
 import net.minecraft.world.InteractionHand
-import net.minecraft.world.entity.Entity
-import net.minecraft.world.entity.HumanoidArm
-import net.minecraft.world.entity.LivingEntity
-import net.minecraft.world.entity.Pose
+import net.minecraft.world.entity.*
 import net.minecraft.world.entity.npc.AbstractVillager
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
@@ -510,6 +507,7 @@ object ClientEventHandler {
         lockWeaponSeeking(player, stack)
         vehicleWeaponSeeking(player)
         handleThermalImaging(player)
+        handleHandsomeGoggles(player)
         handleShootDelay(player, stack)
         handleControlVehicle(player, stack)
         handleArtilleryIndicator(player, stack)
@@ -553,8 +551,45 @@ object ClientEventHandler {
 
     @JvmStatic
     fun turnOffThermalImaging() {
+        if (ThermalShaderHandler.isActive()) {
+            mc.gameRenderer.shutdownEffect()
+            ThermalShaderHandler.setActive(false)
+        }
+    }
+
+    @JvmStatic
+    var handsomeGogglesActive: Boolean = false
+
+    @JvmStatic
+    fun isWearingHandsomeGoggles(player: Player): Boolean {
+        return player.getItemBySlot(EquipmentSlot.HEAD).`is`(ModItems.HANDSOME_GOGGLES.get())
+    }
+
+    @JvmStatic
+    fun handleHandsomeGoggles(player: Player) {
+        val wearing = isWearingHandsomeGoggles(player)
+        val isFirstPerson = mc.options.cameraType == CameraType.FIRST_PERSON
+        val shouldBeActive = wearing && isFirstPerson
+        val effectActive = mc.gameRenderer.currentEffect() != null
+
+        if (shouldBeActive && !effectActive) {
+            handsomeGogglesActive = false  // reset so turnOn actually loads
+            turnOnHandsomeGoggles()
+        } else if (!shouldBeActive && effectActive) {
+            turnOffHandsomeGoggles()
+        }
+    }
+
+    @JvmStatic
+    fun turnOnHandsomeGoggles() {
+        handsomeGogglesActive = true
+        mc.gameRenderer.loadEffect(Mod.loc("shaders/post/handsome_goggles.json"))
+    }
+
+    @JvmStatic
+    fun turnOffHandsomeGoggles() {
+        handsomeGogglesActive = false
         mc.gameRenderer.shutdownEffect()
-        ThermalShaderHandler.setActive(false)
     }
 
     /**
