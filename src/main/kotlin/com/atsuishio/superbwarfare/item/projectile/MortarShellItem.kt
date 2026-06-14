@@ -5,6 +5,8 @@ import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.DispenserLaunchable
+import com.atsuishio.superbwarfare.item.IDyeableSmokeItem
+import com.atsuishio.superbwarfare.tools.tag
 import net.minecraft.core.Position
 import net.minecraft.core.dispenser.BlockSource
 import net.minecraft.core.dispenser.DispenseItemBehavior
@@ -56,7 +58,21 @@ open class MortarShellItem : Item(Properties().stacksTo(8)), DispenserLaunchable
             shellEntity.setType(
                 when {
                     stack.`is`(ModItems.MORTAR_SHELL_WP.get()) -> MortarShellEntity.Type.WP
-                    stack.`is`(ModItems.MORTAR_SHELL_SMOKE.get()) -> MortarShellEntity.Type.SMOKE
+                    stack.`is`(ModItems.MORTAR_SHELL_SMOKE.get()) -> {
+                        val tag = stack.tag
+                        if (tag != null && tag.contains(IDyeableSmokeItem.TAG_COLOR)) {
+                            val color = tag.getInt(IDyeableSmokeItem.TAG_COLOR)
+                            shellEntity.setRGB(
+                                floatArrayOf(
+                                    ((color shr 16) and 255).toFloat(),
+                                    ((color shr 8) and 255).toFloat(),
+                                    (color and 255).toFloat()
+                                )
+                            )
+                        }
+                        MortarShellEntity.Type.SMOKE
+                    }
+
                     else -> MortarShellEntity.Type.NORMAL
                 }
             )
