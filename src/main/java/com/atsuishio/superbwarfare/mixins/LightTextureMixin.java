@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.LightTexture;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -48,7 +49,7 @@ public class LightTextureMixin {
     @Inject(method = "updateLightTexture",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/DynamicTexture;upload()V"))
     private void forceMaxSkyBrightness(CallbackInfo ci) {
-        if (!needsBrightnessBoost()) return;
+        if (!superbwarfare$needsBrightnessBoost()) return;
 
         // Copy sky=15 (max) column to all other sky columns to force full brightness everywhere
         for (int blockLight = 0; blockLight < 16; blockLight++) {
@@ -59,7 +60,8 @@ public class LightTextureMixin {
         }
     }
 
-    private static boolean needsBrightnessBoost() {
+    @Unique
+    private static boolean superbwarfare$needsBrightnessBoost() {
         // Thermal imaging goggles (active or just worn)
         if (ClientEventHandler.hasThermalImagingGoggles()) {
             return true;
@@ -71,9 +73,7 @@ public class LightTextureMixin {
             var index = vehicle.getSeatIndex(player);
             var seats = vehicle.computed().seats();
             if (index >= 0 && index < seats.size()) {
-                if (seats.get(index).hasThermalImaging && ClientEventHandler.activeThermalImaging) {
-                    return true;
-                }
+                return seats.get(index).hasThermalImaging && ClientEventHandler.activeThermalImaging;
             }
         }
 

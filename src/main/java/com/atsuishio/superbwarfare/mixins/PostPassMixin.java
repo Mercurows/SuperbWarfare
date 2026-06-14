@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.PostPass;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -17,8 +18,11 @@ public class PostPassMixin {
     @Final
     private EffectInstance effect;
 
-    private static long lastMillis = 0;
-    private static float rainbowSeconds = 0;
+    @Unique
+    private static long superbwarfare$lastMillis = 0;
+
+    @Unique
+    private static float superbwarfare$rainbowSeconds = 0;
 
     /**
      * Sets the RainbowTime uniform to a continuously increasing value in seconds.
@@ -31,17 +35,17 @@ public class PostPassMixin {
         Uniform uniform = this.effect.getUniform("RainbowTime");
         if (uniform != null) {
             long now = System.currentTimeMillis();
-            if (lastMillis == 0) {
-                lastMillis = now;
+            if (superbwarfare$lastMillis == 0) {
+                superbwarfare$lastMillis = now;
             }
-            float delta = (now - lastMillis) / 1000.0f;
-            lastMillis = now;
-            rainbowSeconds += delta;
+            float delta = (now - superbwarfare$lastMillis) / 1000.0f;
+            superbwarfare$lastMillis = now;
+            superbwarfare$rainbowSeconds += delta;
             // Prevent float precision loss by keeping the value bounded
-            if (rainbowSeconds > 7200.0f) {
-                rainbowSeconds -= 3600.0f;
+            if (superbwarfare$rainbowSeconds > 7200.0f) {
+                superbwarfare$rainbowSeconds -= 3600.0f;
             }
-            uniform.set(rainbowSeconds);
+            uniform.set(superbwarfare$rainbowSeconds);
         }
     }
 }
