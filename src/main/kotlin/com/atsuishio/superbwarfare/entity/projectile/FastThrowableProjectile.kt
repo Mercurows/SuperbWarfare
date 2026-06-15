@@ -249,7 +249,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         this.updateRotation()
 
         // 5. 对当前 deltaMovement（已包含反弹等修改）施加摩擦力和重力
-        val friction = if (this.isInWater) 0.8 else 0.99
+        val friction = if (this.isInWater) 0.8 else 1.0
         this.deltaMovement = vec.scale(friction)
 
         this.deltaMovement = this.deltaMovement.add(0.0, -this.getCustomGravity().toDouble(), 0.0)

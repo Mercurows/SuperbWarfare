@@ -52,8 +52,7 @@ open class ClaymoreEntity(type: EntityType<ClaymoreEntity>, level: Level) : Enti
     }
 
     override fun hurt(source: DamageSource, amount: Float): Boolean {
-        var amount = amount
-        amount = DAMAGE_MODIFIER.compute(this, source, amount)
+        val damage = DAMAGE_MODIFIER.compute(this, source, amount)
 
         if (source.entity != null) {
             this.entityData.set(LAST_ATTACKER_UUID, source.entity!!.getStringUUID())
@@ -76,9 +75,9 @@ open class ClaymoreEntity(type: EntityType<ClaymoreEntity>, level: Level) : Enti
             )
         }
         level.playSound(null, this.onPos, ModSounds.HIT.get(), SoundSource.PLAYERS, 1f, 1f)
-        this.entityData.set(HEALTH, this.entityData.get(HEALTH) - amount)
+        this.entityData.set(HEALTH, this.entityData.get(HEALTH) - damage)
 
-        return super.hurt(source, amount)
+        return super.hurt(source, damage)
     }
 
     fun setOwnerUUID(pUuid: UUID?) {

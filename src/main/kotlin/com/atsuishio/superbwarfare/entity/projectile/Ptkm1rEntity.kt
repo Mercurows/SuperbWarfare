@@ -63,13 +63,12 @@ open class Ptkm1rEntity : Entity, OwnableEntity {
     }
 
     override fun hurt(source: DamageSource, amount: Float): Boolean {
-        var amount = amount
-        amount = DAMAGE_MODIFIER.compute(this, source, amount)
+        val damage = DAMAGE_MODIFIER.compute(this, source, amount)
         if (source.entity != null) {
             this.entityData.set(LAST_ATTACKER_UUID, source.entity!!.getStringUUID())
         }
-        this.entityData.set(HEALTH, this.entityData.get(HEALTH) - amount)
-        return super.hurt(source, amount)
+        this.entityData.set(HEALTH, this.entityData.get(HEALTH) - damage)
+        return super.hurt(source, damage)
     }
 
     fun setOwnerUUID(pUuid: UUID?) {

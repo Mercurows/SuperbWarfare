@@ -1,25 +1,17 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
-import com.atsuishio.superbwarfare.init.ModDamageTypes.causeGrapeShotHitDamage
-import com.atsuishio.superbwarfare.init.ModEntities
-import com.atsuishio.superbwarfare.init.ModItems
-import com.atsuishio.superbwarfare.init.ModParticleTypes
-import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
+import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.forceHurt
-import com.atsuishio.superbwarfare.tools.sendPacketTo
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.BlockParticleOption
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.server.level.ServerLevel
-import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
-import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
@@ -27,7 +19,6 @@ import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.SoundType
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.BlockHitResult
-import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.Vec3
 import kotlin.math.min
 
@@ -45,74 +36,60 @@ open class GrapeshotEntity : FastThrowableProjectile {
         return ModItems.LARGE_SHELL_GS.get()
     }
 
-    override fun onHitEntity(result: EntityHitResult) {
-        super.onHitEntity(result)
-        val entity = result.entity
-        val owner = this.owner
-        if (entity == owner) return
-        if (owner != null && owner.vehicle != null && entity == owner.vehicle) return
-        if (this.level() is ServerLevel) {
-            if (owner is ServerPlayer) {
-                owner.level()
-                    .playSound(null, owner.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1f, 1f)
-                sendPacketTo(owner, ClientIndicatorMessage(0, 5))
-            }
+    override fun performDamage(
+        entity: Entity,
+        damage: Float,
+        isHeadshot: Boolean
+    ) {
+        entity.invulnerableTime = 0
 
-            entity.forceHurt(causeGrapeShotHitDamage(this.level().registryAccess(), this, owner), this.damageValue)
-
-            if (entity is LivingEntity) {
-                entity.invulnerableTime = 0
-            }
-            this.discard()
+        val headShotModifier = if (isHeadshot) this.getHeadShot() else 1f
+        if (damage > 0) {
+            entity.forceHurt(
+                ModDamageTypes.causeGrapeShotHitDamage(this.level().registryAccess(), this, this.owner),
+                damage * headShotModifier
+            )
+            entity.invulnerableTime = 0
         }
     }
 
-    public override fun onHitBlock(result: BlockHitResult) {
-        super.onHitBlock(result)
-        val resultPos = result.blockPos
-        val state = this.level().getBlockState(resultPos)
+    override fun afterHitBlock(result: BlockHitResult) {
+        val level = this.level() as? ServerLevel ?: return
 
-        val event = state.block.getSoundType(state, this.level(), resultPos, this).breakSound
+        val resultPos = result.blockPos
+        val state = level.getBlockState(resultPos)
+
+        val event = state.block.getSoundType(state, level, resultPos, this).breakSound
         val volume = min(4f, deltaMovement.length().toFloat() / 4f + 0.5f)
-        this.level().playSound(
+        val location = result.location
+
+        level.playSound(
             null,
-            result.getLocation().x,
-            result.getLocation().y,
-            result.getLocation().z,
+            location.x,
+            location.y,
+            location.z,
             event,
             SoundSource.AMBIENT,
             volume,
             1f
         )
-        val hitVec = result.getLocation()
 
-        this.hitBlock(hitVec, result)
-        this.discard()
-    }
+        val face = result.direction
+        val vx = face.stepX.toDouble()
+        val vy = face.stepY.toDouble()
+        val vz = face.stepZ.toDouble()
+        val dir = Vec3(vx, vy, vz)
+        summonVectorParticle(level, state, location, dir)
+        level.playSound(
+            null,
+            BlockPos(location.x.toInt(), location.y.toInt(), location.z.toInt()),
+            ModSounds.LAND.get(),
+            SoundSource.BLOCKS,
+            1f,
+            1f
+        )
 
-    protected fun hitBlock(location: Vec3, result: BlockHitResult) {
-        val level = this.level()
-        if (level is ServerLevel) {
-            val pos = result.blockPos
-            val face = result.direction
-            val state = level().getBlockState(pos)
-
-            val vx = face.stepX.toDouble()
-            val vy = face.stepY.toDouble()
-            val vz = face.stepZ.toDouble()
-            val dir = Vec3(vx, vy, vz)
-            summonVectorParticle(level, state, location, dir)
-
-            this.discard()
-            level.playSound(
-                null,
-                BlockPos(location.x.toInt(), location.y.toInt(), location.z.toInt()),
-                ModSounds.LAND.get(),
-                SoundSource.BLOCKS,
-                1f,
-                1f
-            )
-        }
+        super.afterHitBlock(result)
     }
 
     fun summonVectorParticle(serverLevel: ServerLevel, state: BlockState, pos: Vec3, dir: Vec3) {
