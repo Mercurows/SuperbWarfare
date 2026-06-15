@@ -1,14 +1,13 @@
 package com.atsuishio.superbwarfare.block.entity
 
 import com.atsuishio.superbwarfare.block.LuckyContainerBlock
+import com.atsuishio.superbwarfare.client.animation.block.LuckyContainerBlockAnimationInstance
 import com.atsuishio.superbwarfare.data.container.ContainerDataManager
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModBlockEntities
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import net.minecraft.core.BlockPos
 import net.minecraft.core.HolderLookup
-import net.minecraft.core.component.DataComponentMap
-import net.minecraft.core.component.DataComponents
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket
@@ -20,25 +19,23 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.item.BlockItem
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.item.component.CustomData
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
+import net.neoforged.api.distmarker.Dist
+import net.neoforged.api.distmarker.OnlyIn
 import org.joml.Math
-import software.bernie.geckolib.animatable.GeoBlockEntity
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache
-import software.bernie.geckolib.animation.*
-import software.bernie.geckolib.util.GeckoLibUtil
 
 open class LuckyContainerBlockEntity(pos: BlockPos, state: BlockState) :
-    BlockEntity(ModBlockEntities.LUCKY_CONTAINER.get(), pos, state), GeoBlockEntity {
+    BlockEntity(ModBlockEntities.LUCKY_CONTAINER.get(), pos, state) {
     var location: ResourceLocation? = null
     var icon: ResourceLocation? = null
     var tick: Int = 0
     var opened: Boolean = false
 
-    private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
+    @OnlyIn(Dist.CLIENT)
+    open val animationInstance: LuckyContainerBlockAnimationInstance? = LuckyContainerBlockAnimationInstance(this)
 
     fun unpackEntities(): EntityType<*>? {
         if (this.location != null && this.level != null && this.level!!.server != null) {
@@ -60,35 +57,6 @@ open class LuckyContainerBlockEntity(pos: BlockPos, state: BlockState) :
             }
         }
         return null
-    }
-
-    private fun predicate(event: AnimationState<LuckyContainerBlockEntity?>): PlayState? {
-        return if (this.blockState.getValue(LuckyContainerBlock.OPENED)) {
-            event.setAndContinue(RawAnimation.begin().thenPlay("animation.container.open"))
-        } else PlayState.STOP
-    }
-
-    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) {
-        data.add(
-            AnimationController(this, "controller", 0) { this.predicate(it) }
-        )
-    }
-
-    override fun getAnimatableInstanceCache(): AnimatableInstanceCache {
-        return this.cache
-    }
-
-    override fun collectImplicitComponents(components: DataComponentMap.Builder) {
-        super.collectImplicitComponents(components)
-        components.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(saveToTag()))
-    }
-
-    override fun applyImplicitComponents(componentInput: DataComponentInput) {
-        super.applyImplicitComponents(componentInput)
-        val data = componentInput.get(DataComponents.BLOCK_ENTITY_DATA)
-        if (data != null) {
-            this.loadFromTag(data.copyTag())
-        }
     }
 
     private fun saveToTag(): CompoundTag {
@@ -122,7 +90,9 @@ open class LuckyContainerBlockEntity(pos: BlockPos, state: BlockState) :
 
     override fun loadAdditional(tag: CompoundTag, registries: HolderLookup.Provider) {
         super.loadAdditional(tag, registries)
-        this.loadFromTag(tag)
+        if (tag.contains("Location", 8)) {
+            this.location = ResourceLocation.parse(tag.getString("Location"))
+        }
     }
 
     override fun saveAdditional(tag: CompoundTag, registries: HolderLookup.Provider) {

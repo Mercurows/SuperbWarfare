@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.client.renderer.item.LuckyContainerBlockItemR
 import com.atsuishio.superbwarfare.init.ModBlockEntities
 import com.atsuishio.superbwarfare.init.ModBlocks
 import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.tools.mc
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.resources.ResourceLocation
@@ -27,17 +28,9 @@ import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent
-import software.bernie.geckolib.animatable.GeoItem
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache
-import software.bernie.geckolib.animation.AnimatableManager
-import software.bernie.geckolib.animation.AnimationController
-import software.bernie.geckolib.animation.AnimationState
-import software.bernie.geckolib.animation.PlayState
-import software.bernie.geckolib.util.GeckoLibUtil
 
 class LuckyContainerBlockItem :
-    BlockItem(ModBlocks.LUCKY_CONTAINER.get(), Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant()), GeoItem {
-    private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
+    BlockItem(ModBlocks.LUCKY_CONTAINER.get(), Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant()) {
 
     override fun canBeHurtBy(stack: ItemStack, source: DamageSource) = super.canBeHurtBy(stack, source)
             && !source.`is`(DamageTypeTags.IS_EXPLOSION)
@@ -57,19 +50,6 @@ class LuckyContainerBlockItem :
         return InteractionResultHolder(interactionResult, player.getItemInHand(hand))
     }
 
-    private fun predicate(event: AnimationState<LuckyContainerBlockItem>): PlayState {
-        return PlayState.CONTINUE
-    }
-
-    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) {
-        data.add(
-            AnimationController(this, "controller", 0) { this.predicate(it) }
-        )
-    }
-
-    override fun getAnimatableInstanceCache(): AnimatableInstanceCache {
-        return this.cache
-    }
 
     @EventBusSubscriber(modid = Mod.MODID)
     companion object {
@@ -97,10 +77,13 @@ class LuckyContainerBlockItem :
         @SubscribeEvent
         private fun registerItemExtensions(event: RegisterClientExtensionsEvent) {
             event.registerItem(object : IClientItemExtensions {
-                private val renderer = LuckyContainerBlockItemRenderer()
+                private var renderer: BlockEntityWithoutLevelRenderer? = null
 
                 override fun getCustomRenderer(): BlockEntityWithoutLevelRenderer {
-                    return renderer
+                    if (renderer == null) {
+                        renderer = LuckyContainerBlockItemRenderer(mc.blockEntityRenderDispatcher, mc.entityModels)
+                    }
+                    return renderer!!
                 }
             }, ModItems.LUCKY_CONTAINER)
         }
