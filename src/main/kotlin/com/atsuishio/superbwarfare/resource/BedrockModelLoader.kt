@@ -15,5 +15,6 @@ object BedrockModelLoader {
         event.registerReloadListener(EntityModelReloadListener)
         event.registerReloadListener(ArmorModelReloadListener)
         event.registerReloadListener(BlockModelReloadListener)
+        event.registerReloadListener(ItemModelReloadListener)
     }
 }
