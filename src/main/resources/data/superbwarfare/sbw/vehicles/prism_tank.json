@@ -188,6 +188,7 @@
     "superbwarfare:lunge_mine * 0.9",
     "superbwarfare:projectile_hit * 1.5",
     "superbwarfare:grapeshot_hit * 0.2",
+    "@superbwarfare:small_cannon_shell * 0.5",
     "@#superbwarfare:aerial_bomb * 4",
     "#superbwarfare:projectile * 0.1",
     "#superbwarfare:projectile_absolute * 0.7",

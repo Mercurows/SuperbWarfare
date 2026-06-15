@@ -289,6 +289,7 @@
     "@#superbwarfare:aerial_bomb * 3",
     "#superbwarfare:projectile * 0.25",
     "#superbwarfare:projectile_absolute * 0.85",
+    "@superbwarfare:small_cannon_shell * 0.75",
     "superbwarfare:vehicle_strike * 4",
     "@superbwarfare:c4 * 2.5",
     "@superbwarfare:mortar_shell * 1.25",

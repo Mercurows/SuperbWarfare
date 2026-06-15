@@ -121,6 +121,7 @@
     "@#superbwarfare:aerial_bomb * 3",
     "superbwarfare:custom_explosion * 2.4",
     "superbwarfare:projectile_explosion * 2",
+    "@superbwarfare:small_cannon_shell * 0.5",
     "superbwarfare:mine * 0.75",
     "@superbwarfare:c4 * 2.5",
     "superbwarfare:grapeshot_hit * 0.25",
