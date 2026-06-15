@@ -121,7 +121,7 @@ object ParticleTool {
             sendParticle(level, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y + 0.25, z, 40, 2.0, 0.001, 2.0, 0.01, true)
             sendParticle(level, ModParticleTypes.FIRE_STAR.get(), x, y + 0.2, z, 50, 0.0, 0.0, 0.0, 0.8, true)
             sendParticle(level, ParticleTypes.FLASH, x, y + 0.5, z, 50, 0.2, 0.2, 0.2, 20.0, true)
-            sendParticle(level, CustomFlareOption(0.75f, 0.375f, 0f, 60, 0.8f, 1, 0.2f), x, y + 0.5, z, 50, 0.75, 1.2, 0.75, 0.05, true)
+            sendParticle(level, CustomFlareOption(0.6f, 0.58f, 0.57f, 60, 0.8f, 1, 0.2f), x, y + 0.5, z, 50, 0.75, 1.2, 0.75, 0.05, true)
             sendParticle(level, CustomFlareOption(0.25f, 0.125f, 0f, 100, 0.91f, 3, 0.25f), x, y + 0.5, z, 50, 0.75, 1.2, 0.75, 0.05, true)
         }
     }
@@ -149,7 +149,7 @@ object ParticleTool {
             sendParticle(level, ModParticleTypes.FIRE_STAR.get(), x, y + 0.2, z, 100, 0.0, 0.0, 0.0, 1.2, true)
             sendParticle(level, ParticleTypes.EXPLOSION, x, y + 1, z, 35, 1.5, 1.5, 1.5, 1.0, true)
             sendParticle(level, ParticleTypes.FLASH, x, y + 1, z, 120, 3.0, 3.0, 3.0, 20.0, true)
-            sendParticle(level, CustomFlareOption(0.75f, 0.375f, 0f, 60, 0.8f, 1, 0.2f), x, y + 1, z, 150, 1.3, 1.7, 1.3, 0.05, true)
+            sendParticle(level, CustomFlareOption(0.6f, 0.58f, 0.57f, 60, 0.8f, 1, 0.2f), x, y + 1, z, 150, 1.3, 1.7, 1.3, 0.05, true)
             sendParticle(level, CustomFlareOption(0.25f, 0.125f, 0f, 100, 0.91f, 3, 0.25f), x, y + 1, z, 80, 1.3, 1.7, 1.3, 0.05, true)
 
             for (h in 0..1) {
@@ -197,7 +197,7 @@ object ParticleTool {
             sendParticle(level, ModParticleTypes.FIRE_STAR.get(), x, y + 1, z, 400, 0.0, 0.0, 0.0, 1.5, true)
             sendParticle(level, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y + 3, z, 75, 2.0, 3.0, 2.0, 0.005, true)
             sendParticle(level, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 150, 7.0, 0.1, 7.0, 0.005, true)
-            sendParticle(level, CustomFlareOption(0.75f, 0.375f, 0f, 60, 0.8f, 1, 0.2f), x, y + 1, z, 200, 1.5, 2.0, 1.5, 0.05, true)
+            sendParticle(level, CustomFlareOption(0.6f, 0.58f, 0.57f, 60, 0.8f, 1, 0.2f), x, y + 1, z, 200, 1.5, 2.0, 1.5, 0.05, true)
             sendParticle(level, CustomFlareOption(0.25f, 0.125f, 0f, 100, 0.91f, 3, 0.25f), x, y + 1, z, 100, 1.5, 2.0, 1.5, 0.05, true)
 
             sendToNearbyPlayers(level, x, y, z, 192.0, 30.0, 12.0)

@@ -32,7 +32,7 @@ open class GunGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity 
 
     override fun tick() {
         super.tick()
-        smallTrail()
+        shellTrail()
     }
 
     override fun isFastMoving(): Boolean {

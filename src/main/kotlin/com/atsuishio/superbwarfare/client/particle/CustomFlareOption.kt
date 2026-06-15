@@ -15,6 +15,7 @@ class CustomFlareOption(
     private val color: Int,
     val life: Int,
     val fade: Float,
+    val size: Float,
     val animationSpeed: Int,
     val sizeAdd: Float
 ) : ParticleOptions {
@@ -25,11 +26,13 @@ class CustomFlareOption(
         life: Int,
         fade: Float,
         animationSpeed: Int,
-        sizeAdd: Float
+        sizeAdd: Float,
+        size: Float = 1f
     ) : this(
         (r * 255).roundToInt() shl 16 or ((g * 255).roundToInt() shl 8) or (b * 255).roundToInt(),
         life,
         fade,
+        size,
         animationSpeed,
         sizeAdd
     )
@@ -51,12 +54,13 @@ class CustomFlareOption(
         buffer.writeInt(this.color)
         buffer.writeInt(this.life)
         buffer.writeFloat(this.fade)
+        buffer.writeFloat(this.size)
         buffer.writeInt(this.animationSpeed)
         buffer.writeFloat(this.sizeAdd)
     }
 
     override fun writeToString(): String {
-        return "${ForgeRegistries.PARTICLE_TYPES.getKey(this.type)} [$color, $life, $fade, $animationSpeed, $sizeAdd]"
+        return "${ForgeRegistries.PARTICLE_TYPES.getKey(this.type)} [$color, $life, $fade, $size, $animationSpeed, $sizeAdd]"
     }
 
     companion object {
@@ -66,6 +70,7 @@ class CustomFlareOption(
                     Codec.INT.fieldOf("color").forGetter { it.color },
                     Codec.INT.fieldOf("life").forGetter { it.life },
                     Codec.FLOAT.fieldOf("fade").forGetter { it.fade },
+                    Codec.FLOAT.fieldOf("size").forGetter { it.size },
                     Codec.INT.fieldOf("animationSpeed").forGetter { it.animationSpeed },
                     Codec.FLOAT.fieldOf("sizeAdd").forGetter { it.sizeAdd }
                 ).apply(builder, ::CustomFlareOption)
@@ -86,10 +91,12 @@ class CustomFlareOption(
                     reader.expect(' ')
                     val fade = reader.readFloat()
                     reader.expect(' ')
+                    val size = reader.readFloat()
+                    reader.expect(' ')
                     val animationSpeed = reader.readInt()
                     reader.expect(' ')
                     val sizeAdd = reader.readFloat()
-                    return CustomFlareOption(color, life, fade, animationSpeed, sizeAdd)
+                    return CustomFlareOption(color, life, fade, size, animationSpeed, sizeAdd)
                 }
 
                 override fun fromNetwork(
@@ -99,6 +106,7 @@ class CustomFlareOption(
                     return CustomFlareOption(
                         buffer.readInt(),
                         buffer.readInt(),
+                        buffer.readFloat(),
                         buffer.readFloat(),
                         buffer.readInt(),
                         buffer.readFloat()

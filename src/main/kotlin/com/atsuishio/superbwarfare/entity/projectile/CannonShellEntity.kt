@@ -244,7 +244,7 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
     override fun tick() {
         super.tick()
 
-        mediumTrail()
+        shellTrail()
 
         if ((type == Type.CM || type == Type.WP) && tickCount > 3) {
             // 使用Minecraft内置的光线追踪进行碰撞检测

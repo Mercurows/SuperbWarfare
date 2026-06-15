@@ -24,6 +24,7 @@ open class CustomFlareParticle protected constructor(
     bCol: Float,
     life: Int,
     fade: Float,
+    size: Float,
     animationSpeed: Int,
     sizeAdd: Float
 ) : TextureSheetParticle(world, x, y, z) {
@@ -60,6 +61,7 @@ open class CustomFlareParticle protected constructor(
                 pType.blue,
                 pType.life,
                 pType.fade,
+                pType.size,
                 pType.animationSpeed,
                 pType.sizeAdd
             )
@@ -68,7 +70,7 @@ open class CustomFlareParticle protected constructor(
 
     init {
         this.setSize(0.45f, 0.45f)
-        this.quadSize *= 14f
+        this.quadSize *= size * 14
         this.lifetime = max(1, life + (this.random.nextInt(1)))
         this.gravity = -0.05f
         this.hasPhysics = false
