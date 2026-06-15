@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.block.VehicleAssemblingTableBlock
 import com.atsuishio.superbwarfare.block.property.BlockPart
 import com.atsuishio.superbwarfare.client.renderer.item.VehicleAssemblingTableBlockItemRenderer
 import com.atsuishio.superbwarfare.init.ModBlocks
+import com.atsuishio.superbwarfare.tools.mc
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
@@ -13,14 +14,9 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraftforge.client.extensions.common.IClientItemExtensions
-import software.bernie.geckolib.animatable.GeoItem
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
-import software.bernie.geckolib.core.animation.AnimatableManager.ControllerRegistrar
-import software.bernie.geckolib.util.GeckoLibUtil
 import java.util.function.Consumer
 
-class VehicleAssemblingTableBlockItem : BlockItem(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get(), Properties()), GeoItem {
-    private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
+class VehicleAssemblingTableBlockItem : BlockItem(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get(), Properties()) {
 
     // 多方块额外碰撞检测
     override fun canPlace(context: BlockPlaceContext, state: BlockState): Boolean {
@@ -41,20 +37,16 @@ class VehicleAssemblingTableBlockItem : BlockItem(ModBlocks.VEHICLE_ASSEMBLING_T
         return super.canPlace(context, state)
     }
 
-    override fun registerControllers(controllers: ControllerRegistrar?) {
-    }
-
-    override fun getAnimatableInstanceCache(): AnimatableInstanceCache {
-        return this.cache
-    }
-
     override fun initializeClient(consumer: Consumer<IClientItemExtensions?>) {
         super.initializeClient(consumer)
         consumer.accept(object : IClientItemExtensions {
-            private val renderer: BlockEntityWithoutLevelRenderer = VehicleAssemblingTableBlockItemRenderer()
+            private var renderer: BlockEntityWithoutLevelRenderer? = null
 
             override fun getCustomRenderer(): BlockEntityWithoutLevelRenderer {
-                return renderer
+                if (renderer == null) {
+                    renderer = VehicleAssemblingTableBlockItemRenderer(mc.blockEntityRenderDispatcher, mc.entityModels)
+                }
+                return renderer!!
             }
         })
     }
