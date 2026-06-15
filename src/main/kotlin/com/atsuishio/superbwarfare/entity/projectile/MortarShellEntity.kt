@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.tools.SeekTool
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.nbt.ListTag
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvent
@@ -42,7 +41,6 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
     private var type: Type? = Type.NORMAL
     private var smokeCount: Int = 12
     private var potion: Potion? = Potions.WATER.value()
-    private val effects: MutableSet<MobEffectInstance> = hashSetOf()
     var red: Float = 1.0f
         private set
     var green: Float = 1.0f
@@ -83,10 +81,6 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
         this.gravityValue = 0.13f
     }
 
-    override fun setEffect(effects: List<MobEffectInstance>) {
-        this.effects.addAll(effects)
-    }
-
     override fun setRGB(rgb: FloatArray) {
         this.red = rgb[0] / 255f
         this.green = rgb[1] / 255f
@@ -100,11 +94,11 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
             this.potion = potionContents.potion().orElse(Potions.WATER).value()
 
             for (instance in potionContents.allEffects) {
-                this.effects.add(MobEffectInstance(instance))
+                this.effectsValue.add(MobEffectInstance(instance))
             }
         } else {
             this.potion = Potions.WATER.value()
-            this.effects.clear()
+            this.effectsValue.clear()
         }
     }
 
@@ -133,14 +127,6 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
             )
         }
 
-        if (!this.effects.isEmpty()) {
-            val listTag = ListTag()
-            for (instance in this.effects) {
-                listTag.add(instance.save())
-            }
-            compound.put("CustomPotionEffects", listTag)
-        }
-
         compound.putFloat("RColor", this.red)
         compound.putFloat("GColor", this.green)
         compound.putFloat("BColor", this.blue)
@@ -153,9 +139,6 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
             val tagName = compound.getString("Potion")
             this.potion = BuiltInRegistries.POTION.get(ResourceLocation.parse(tagName))
         }
-
-        // TODO 如何读取
-//        this.effects.addAll(PotionUtils.getCustomEffects(compound))
 
         if (compound.contains("RColor")) {
             this.red = compound.getFloat("RColor")
@@ -177,13 +160,6 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
                 Type.WP -> this.causeWPEffect(result.getLocation(), this.owner!!)
                 Type.SMOKE -> this.releaseSmoke()
                 else -> {}
-            }
-
-            val entity = result.entity
-            if (this.effects.isNotEmpty() && entity is LivingEntity) {
-                this.effects.forEach {
-                    entity.addEffect(it)
-                }
             }
 
             this.causeExplode(result.getLocation())
@@ -301,13 +277,13 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
     }
 
     open fun createAreaCloud(level: Level, pos: Vec3) {
-        if (this.potion === Potions.WATER.value() && this.effects.isEmpty()) return
+        if (this.potion === Potions.WATER.value() && this.getEffects().isEmpty()) return
 
         val cloud = AreaEffectCloud(level, pos.x, pos.y, pos.z)
         // TODO setPotion
 //        cloud.setPotion(this.potion)
-        if (this.effects.isNotEmpty()) {
-            this.effects.forEach { cloud.addEffect(it) }
+        if (this.getEffects().isNotEmpty()) {
+            this.getEffects().forEach { cloud.addEffect(it) }
         }
 
         cloud.duration = this.explosionDamageValue.toInt()

@@ -19,6 +19,7 @@ import net.minecraft.core.Direction
 import net.minecraft.core.Holder
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.ListTag
 import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.network.protocol.game.ClientboundSoundPacket
 import net.minecraft.server.level.ServerLevel
@@ -62,6 +63,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
     protected var firstHit: Boolean = true
     protected var beastValue = false
     protected var penetratingValue: Boolean = false
+    protected val effectsValue: MutableSet<MobEffectInstance> = hashSetOf()
 
     override fun getDamage(): Float = damageValue
     override fun setDamage(value: Float) {
@@ -108,6 +110,11 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         legShotValue = value
     }
 
+    override fun getEffects(): Set<MobEffectInstance> = effectsValue
+    override fun setEffects(effects: List<MobEffectInstance>) {
+        this.effectsValue.addAll(effects)
+    }
+
     private var isFastMoving = false
 
     var exploded: Boolean = false
@@ -124,10 +131,8 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         this.setPos(x, y, z)
     }
 
-    constructor(entityType: EntityType<out ThrowableItemProjectile>, shooter: Entity?, level: Level) : super(
-        entityType,
-        level
-    ) {
+    constructor(entityType: EntityType<out ThrowableItemProjectile>, shooter: Entity?, level: Level) :
+            super(entityType, level) {
         this.owner = shooter
         if (shooter != null) {
             this.setPos(shooter.x, shooter.eyeY - 0.1, shooter.z)
@@ -155,6 +160,9 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         if (compound.contains("Life")) {
             this.lifeValue = compound.getInt("Life")
         }
+
+        // TODO getCustomEffects
+//        this.effectsValue.addAll(PotionUtils.getCustomEffects(compound))
     }
 
     override fun addAdditionalSaveData(compound: CompoundTag) {
@@ -174,6 +182,15 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         }
         if (this.lifeValue > 0) {
             compound.putInt("Life", this.lifeValue)
+        }
+
+        if (!this.effectsValue.isEmpty()) {
+            val list = ListTag()
+            for (instance in this.effectsValue) {
+                // TODO
+//                list.add(instance.save(CompoundTag()))
+            }
+            compound.put("CustomPotionEffects", list)
         }
     }
 
@@ -419,6 +436,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
     open fun afterHitEntity(result: EntityHitResult) {
         if (this.explosionDamageValue > 0) {
             this.causeExplode(result.location)
+            this.causeRangedEffects(result.location)
         }
         this.discard()
     }
@@ -426,6 +444,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
     open fun afterHitBlock(result: BlockHitResult) {
         if (this.explosionDamageValue > 0) {
             this.causeExplode(result.location)
+            this.causeRangedEffects(result.location)
         }
         this.discard()
     }
@@ -482,6 +501,37 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
             .position(vec3)
             .withParticleType(explosionParticleType(explosionRadiusValue))
             .beast(this.isBeast())
+    }
+
+    open fun causeRangedEffects(vec3: Vec3) {
+        if (this.owner == null) return
+        if (this.level() is ServerLevel) {
+            val entities = SeekTool.Builder(this.owner!!)
+                .withinRange(vec3, explosionRadiusValue.toDouble())
+                .notItsVehicle()
+                .baseFilter()
+                .noVehicle()
+                .build()
+
+            entities.asSequence()
+                .filter { it is LivingEntity && !(it is Player && it.isCreative) }
+                .forEach { entity ->
+                    val dis = vec3.distanceTo(entity.position())
+                    if (!checkNoClip(entity, vec3)) return@forEach
+
+                    this.getEffects().forEach {
+                        val instance = MobEffectInstance(
+                            it.effect,
+                            (it.duration * (dis / explosionRadiusValue)).toInt(),
+                            it.amplifier,
+                            it.isAmbient,
+                            it.isVisible,
+                            it.showIcon()
+                        )
+                        (entity as LivingEntity).addEffect(instance, this.owner)
+                    }
+                }
+        }
     }
 
     open fun causeExplode(vec3: Vec3) {

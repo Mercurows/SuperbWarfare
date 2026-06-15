@@ -72,7 +72,8 @@ interface IBulletProperties {
     fun setRGB(rgb: FloatArray) {}
     fun getRGB(): FloatArray = floatArrayOf(DEFAULT_R, DEFAULT_G, DEFAULT_B)
 
-    fun setEffect(effects: List<MobEffectInstance>) {}
+    fun setEffects(effects: List<MobEffectInstance>) {}
+    fun getEffects(): Set<MobEffectInstance> = hashSetOf()
 
     fun getCustomGravity(): Float = 0f
     fun setCustomGravity(gravity: Float) {}

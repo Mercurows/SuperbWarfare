@@ -949,7 +949,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
         this.entityData.get(COLOR_B)
     )
 
-    override fun setEffect(effects: List<MobEffectInstance>) {
+    override fun setEffects(effects: List<MobEffectInstance>) {
         this.mobEffects.addAll(effects.map { Supplier { it } })
     }
 
