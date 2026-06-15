@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.item.weapon
 
 import com.atsuishio.superbwarfare.client.renderer.item.MilitaryShovelRenderer
 import com.atsuishio.superbwarfare.tiers.ModItemTier
+import com.atsuishio.superbwarfare.tools.mc
 import net.minecraft.ChatFormatting
 import net.minecraft.advancements.CriteriaTriggers
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer
@@ -26,10 +27,6 @@ import net.minecraftforge.client.extensions.common.IClientItemExtensions
 import net.minecraftforge.common.TierSortingRegistry
 import net.minecraftforge.common.ToolAction
 import net.minecraftforge.common.ToolActions
-import software.bernie.geckolib.animatable.GeoItem
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
-import software.bernie.geckolib.core.animation.AnimatableManager
-import software.bernie.geckolib.util.GeckoLibUtil
 import java.util.*
 import java.util.function.Consumer
 
@@ -37,8 +34,7 @@ open class MilitaryShovelItem :
     AxeItem(
         ModItemTier.CEMENTED_CARBIDE, 2f, -2.6f,
         Properties().rarity(Rarity.RARE).durability(810)
-    ), GeoItem {
-    private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
+    ) {
 
     override fun appendHoverText(
         pStack: ItemStack,
@@ -137,19 +133,15 @@ open class MilitaryShovelItem :
     override fun initializeClient(consumer: Consumer<IClientItemExtensions?>) {
         super.initializeClient(consumer)
         consumer.accept(object : IClientItemExtensions {
-            private val renderer: BlockEntityWithoutLevelRenderer = MilitaryShovelRenderer()
+            private var renderer: BlockEntityWithoutLevelRenderer? = null
 
             override fun getCustomRenderer(): BlockEntityWithoutLevelRenderer {
-                return renderer
+                if (renderer == null) {
+                    renderer = MilitaryShovelRenderer(mc.blockEntityRenderDispatcher, mc.entityModels)
+                }
+                return renderer!!
             }
         })
-    }
-
-    override fun registerControllers(data: AnimatableManager.ControllerRegistrar?) {
-    }
-
-    override fun getAnimatableInstanceCache(): AnimatableInstanceCache {
-        return this.cache
     }
 
     companion object {
