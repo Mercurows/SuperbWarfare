@@ -24,6 +24,7 @@ object DamageTypeTool {
     @JvmStatic
     fun isHeadshotDamage(source: DamageSource) = source.`is`(ModDamageTypes.GUN_FIRE_HEADSHOT)
             || source.`is`(ModDamageTypes.GUN_FIRE_HEADSHOT_ABSOLUTE)
+            || source.`is`(ModDamageTypes.PROJECTILE_HIT_HEADSHOT)
             || source.`is`(ModDamageTypes.LASER_HEADSHOT)
 
     @JvmStatic
@@ -34,11 +35,8 @@ object DamageTypeTool {
             || source.`is`(ModDamageTypes.LASER)
 
     @JvmStatic
-    fun isModDamage(source: DamageSource): Boolean = source.typeHolder().unwrapKey().map {
-        it.location().namespace.equals(
-            Mod.MODID
-        )
-    }.orElse(false)
+    fun isModDamage(source: DamageSource): Boolean =
+        source.typeHolder().unwrapKey().map { it.location().namespace.equals(Mod.MODID) }.orElseGet { false }
 
     @JvmStatic
     fun isCompatGunDamage(damageType: ResourceKey<DamageType>, registryAccess: RegistryAccess) =
