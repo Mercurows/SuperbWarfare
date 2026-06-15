@@ -15,10 +15,6 @@ open class WireGuideMissileEntity(type: EntityType<out WireGuideMissileEntity>, 
 
     var launcherVehicleUUID: UUID? = null
 
-    init {
-        this.noCulling = true
-    }
-
     override fun getDefaultItem(): Item {
         return ModItems.MEDIUM_ANTI_GROUND_MISSILE.get()
     }

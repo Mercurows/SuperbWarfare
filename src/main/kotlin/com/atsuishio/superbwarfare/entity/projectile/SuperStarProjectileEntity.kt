@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.forceHurt
 import com.atsuishio.superbwarfare.tools.plus
 import com.atsuishio.superbwarfare.tools.sendPacket
+import com.atsuishio.superbwarfare.world.phys.ExtendedEntityRayTraceResult
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
@@ -46,8 +47,6 @@ open class SuperStarProjectileEntity(type: EntityType<out SuperStarProjectileEnt
     override fun getDefaultItem(): Item = Items.NETHER_STAR
 
     override fun onHitEntity(result: EntityHitResult) {
-        super.onHitEntity(result)
-
         val entity = result.entity
         if (entity === this.owner?.vehicle) return
 
@@ -57,10 +56,23 @@ open class SuperStarProjectileEntity(type: EntityType<out SuperStarProjectileEnt
             this.currentTarget = entity
         }
 
-        this.hitAndSlash(entity)
+        super.onHitEntity(result)
     }
 
-    private fun hitAndSlash(entity: Entity) {
+    override fun performDamage(
+        entity: Entity,
+        damage: Float,
+        isHeadshot: Boolean
+    ) {
+    }
+
+    override fun afterHitEntity(result: EntityHitResult) {
+        if (result !is ExtendedEntityRayTraceResult) return
+        this.hitAndSlash(result.entity, result.headshot)
+    }
+
+    @JvmOverloads
+    open fun hitAndSlash(entity: Entity, headshot: Boolean = false) {
         val level = level() as? ServerLevel ?: return
 
         var hitVec = entity.position()
@@ -74,9 +86,10 @@ open class SuperStarProjectileEntity(type: EntityType<out SuperStarProjectileEnt
         })
 
         // 命中伤害
+        val headShotModifier = if (headshot) this.getHeadShot() else 1f
         entity.forceHurt(
             ModDamageTypes.causeSuperStarHitDamage(level.registryAccess(), this, this.owner),
-            damageValue
+            damageValue * headShotModifier
         )
         entity.invulnerableTime = 0
 
@@ -98,56 +111,50 @@ open class SuperStarProjectileEntity(type: EntityType<out SuperStarProjectileEnt
         }
     }
 
-    public override fun onHitBlock(result: BlockHitResult) {
-        super.onHitBlock(result)
-
+    override fun afterHitBlock(result: BlockHitResult) {
         val resultPos = result.blockPos
         val level = this.level()
         val state = level.getBlockState(resultPos)
 
         val event = state.block.getSoundType(state, level, resultPos, this).breakSound
         val volume = min(4f, deltaMovement.length().toFloat() / 4f + 0.5f)
+
+        val location = result.location
         level.playSound(
             null,
-            result.getLocation().x,
-            result.getLocation().y,
-            result.getLocation().z,
+            location.x,
+            location.y,
+            location.z,
             event,
             SoundSource.AMBIENT,
             volume,
             1f
         )
-        val hitVec = result.getLocation()
 
-        this.hitBlock(hitVec, result)
-        this.discard()
+        if (level is ServerLevel) {
+            val pos = result.blockPos
+            val face = result.direction
+            val state = level.getBlockState(pos)
+
+            val vx = face.stepX.toDouble()
+            val vy = face.stepY.toDouble()
+            val vz = face.stepZ.toDouble()
+            val dir = Vec3(vx, vy, vz)
+            summonVectorParticle(level, state, location, dir)
+
+            this.discard()
+            level.playSound(
+                null,
+                BlockPos(location.x.toInt(), location.y.toInt(), location.z.toInt()),
+                ModSounds.LAND.get(),
+                SoundSource.BLOCKS,
+                1f,
+                1f
+            )
+        }
     }
 
-    fun hitBlock(location: Vec3, result: BlockHitResult) {
-        val level = this.level() as? ServerLevel ?: return
-
-        val pos = result.blockPos
-        val face = result.direction
-        val state = level.getBlockState(pos)
-
-        val vx = face.stepX.toDouble()
-        val vy = face.stepY.toDouble()
-        val vz = face.stepZ.toDouble()
-        val dir = Vec3(vx, vy, vz)
-        summonVectorParticle(level, state, location, dir)
-
-        this.discard()
-        level.playSound(
-            null,
-            BlockPos(location.x.toInt(), location.y.toInt(), location.z.toInt()),
-            ModSounds.LAND.get(),
-            SoundSource.BLOCKS,
-            1f,
-            1f
-        )
-    }
-
-    fun summonVectorParticle(serverLevel: ServerLevel, state: BlockState, pos: Vec3, dir: Vec3) {
+    open fun summonVectorParticle(serverLevel: ServerLevel, state: BlockState, pos: Vec3, dir: Vec3) {
         repeat(2) {
             val vec3 = randomVec(dir, 80.0)
             ParticleTool.sendParticle(
@@ -171,7 +178,7 @@ open class SuperStarProjectileEntity(type: EntityType<out SuperStarProjectileEnt
         }
     }
 
-    fun onHitWater(location: Vec3, result: BlockHitResult) {
+    open fun onHitWater(location: Vec3, result: BlockHitResult) {
         val serverLevel = this.level() as? ServerLevel ?: return
 
         val pos = result.blockPos

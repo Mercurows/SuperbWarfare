@@ -77,159 +77,141 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
         }
     }
 
-    override fun onHitBlock(result: BlockHitResult) {
-        super.onHitBlock(result)
+    override fun afterHitBlock(result: BlockHitResult) {
         val level = this.level()
-        if (level is ServerLevel) {
-            val pos = result.blockPos
-            val blockState = level().getBlockState(pos)
+        if (level !is ServerLevel) return
 
-            if (type == Type.WP) {
-                findNearEntity(result.location, owner!!)
-                causeExplode(result.location)
-                this.discard()
-            }
-            if (type != Type.AP) {
-                causeExplode(result.location)
-                this.discard()
-            } else {
-                if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
-                    val hardness = level.getBlockState(pos).block.defaultDestroyTime()
+        val pos = result.blockPos
+        val blockState = level().getBlockState(pos)
 
-                    val resistance = 0.95 - (hardness / 100).coerceIn(0f, 1f)
+        if (type == Type.WP && this.owner != null) {
+            causeWPEffect(result.location, owner!!)
+            causeExplode(result.location)
+            this.discard()
+        }
 
-                    if (blockState.canOcclude() || blockState.soundType == SoundType.GLASS) {
-                        durability -= 5 + (hardness).toInt()
-                    }
+        if (type != Type.AP) {
+            causeExplode(result.location)
+            this.discard()
+        } else {
+            if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
+                val hardness = level.getBlockState(pos).block.defaultDestroyTime()
 
-                    if (blockState.soundType == SoundType.STONE) {
-                        durability -= 5
-                    }
+                val resistance = 0.95 - (hardness / 100).coerceIn(0f, 1f)
 
-                    if (blockState.soundType == SoundType.METAL || blockState.soundType == SoundType.COPPER || blockState.soundType == SoundType.NETHERITE_BLOCK) {
-                        durability -= 25
-                    }
+                if (blockState.canOcclude() || blockState.soundType == SoundType.GLASS) {
+                    durability -= 5 + (hardness).toInt()
+                }
 
-                    if (hardness <= durability && hardness != -1f) {
-                        level.destroyBlock(pos, true)
-                    }
+                if (blockState.soundType == SoundType.STONE) {
+                    durability -= 5
+                }
 
-                    if (hardness == -1f || hardness > durability || durability <= 0) {
-                        causeExplode(pos.center)
-                        discard()
-                    } else {
-                        ParticleTool.cannonHitParticles(level, result.location)
-                        val cannonShell = CannonShellEntity(ModEntities.CANNON_SHELL.get(), level)
-                        cannonShell.setPos(result.location.add(deltaMovement.normalize().scale(0.99)))
-                        cannonShell.shoot(
-                            deltaMovement.x,
-                            deltaMovement.y,
-                            deltaMovement.z,
-                            (deltaMovement.length() * resistance).toFloat(),
-                            0f
-                        )
-                        cannonShell.owner = owner
-                        cannonShell.durability(durability)
-                        cannonShell.setType(Type.AP)
-                        cannonShell.gravityValue = gravityValue
-                        cannonShell.setLife(lifeValue - tickCount)
-                        cannonShell.setDamage((damageValue * resistance).toFloat())
-                        cannonShell.setExplosionDamage((explosionDamageValue * resistance).toFloat())
-                        cannonShell.setExplosionRadius((explosionRadiusValue * resistance).toFloat())
-                        level.addFreshEntity(cannonShell)
+                if (blockState.soundType == SoundType.METAL || blockState.soundType == SoundType.COPPER || blockState.soundType == SoundType.NETHERITE_BLOCK) {
+                    durability -= 25
+                }
 
-                        this.discard()
-                    }
+                if (hardness <= durability && hardness != -1f) {
+                    level.destroyBlock(pos, true)
+                }
+
+                if (hardness == -1f || hardness > durability || durability <= 0) {
+                    causeExplode(pos.center)
+                    discard()
                 } else {
-                    destroyBlock(result)
+                    ParticleTool.cannonHitParticles(level, result.location)
+                    val cannonShell = CannonShellEntity(ModEntities.CANNON_SHELL.get(), level)
+                    cannonShell.setPos(result.location.add(deltaMovement.normalize().scale(0.99)))
+                    cannonShell.shoot(
+                        deltaMovement.x,
+                        deltaMovement.y,
+                        deltaMovement.z,
+                        (deltaMovement.length() * resistance).toFloat(),
+                        0f
+                    )
+                    cannonShell.owner = owner
+                    cannonShell.durability(durability)
+                    cannonShell.setType(Type.AP)
+                    cannonShell.gravityValue = gravityValue
+                    cannonShell.setLife(lifeValue - tickCount)
+                    cannonShell.setDamage((damageValue * resistance).toFloat())
+                    cannonShell.setExplosionDamage((explosionDamageValue * resistance).toFloat())
+                    cannonShell.setExplosionRadius((explosionRadiusValue * resistance).toFloat())
+                    level.addFreshEntity(cannonShell)
+
+                    this.discard()
                 }
-            }
-        }
-    }
-
-    override fun onHitEntity(result: EntityHitResult) {
-        super.onHitEntity(result)
-        val level = this.level()
-        if (level is ServerLevel) {
-            val entity = result.entity
-            if (this.owner != null && entity == this.owner!!.vehicle) return
-
-            entity.forceHurt(
-                causeProjectileHitDamage(this.level().registryAccess(), this, this.owner),
-                this.damageValue
-            )
-
-            if (entity is LivingEntity) {
-                entity.invulnerableTime = 0
-            }
-
-            if (type == Type.WP) {
-                findNearEntity(result.location, owner!!)
-            }
-
-
-            if (entity is VehicleEntity) {
-                causeExplode(result.location)
-                this.discard()
-                return
-            }
-
-            if (type == Type.AP) {
-                val pos = entity.boundingBox.center
-                val resultEntities = TraceTool.getEntitiesAlongVector(level, pos, deltaMovement) { true }
-                var resistance = 1.0
-
-                for (rayTraceResultEntity in resultEntities) {
-                    if (rayTraceResultEntity.entity != null) {
-                        resistance *= 0.95
-                        val target = rayTraceResultEntity.entity
-                        if (rayTraceResultEntity.entity !== entity) {
-                            target.forceHurt(
-                                causeProjectileHitDamage(this.level().registryAccess(), this, this.owner),
-                                (this.damageValue * resistance).toFloat()
-                            )
-                            if (target is LivingEntity) {
-                                target.invulnerableTime = 0
-                            }
-                            if (target is VehicleEntity) {
-                                causeExplode(target.boundingBox.center)
-                                this.discard()
-                                return
-                            }
-                        }
-                    }
-                }
-
-                deltaMovement = deltaMovement.scale(resistance)
-                this.setDamage((this.damageValue * resistance).toFloat())
             } else {
-                causeExplode(result.location)
-                this.discard()
+                destroyBlock(result)
             }
         }
     }
 
-    fun findNearEntity(pos: Vec3, shooter: Entity) {
-        if (this.level() !is ServerLevel) {
+    override fun afterHitEntity(result: EntityHitResult) {
+        val level = this.level()
+        if (level !is ServerLevel) return
+        val entity = result.entity
+        if (this.owner != null && entity == this.owner!!.vehicle) return
+
+        if (type == Type.WP) {
+            causeWPEffect(result.location, owner!!)
+        }
+
+        if (entity is VehicleEntity) {
+            causeExplode(result.location)
+            this.discard()
             return
         }
 
-        val entities = SeekTool.Builder(shooter)
-            .withinRange(pos, explosionRadiusValue.toDouble())
-            .notItsVehicle()
-            .baseFilter()
-            .noVehicle()
-            .build()
+        if (type == Type.AP) {
+            val pos = entity.boundingBox.center
+            val resultEntities = TraceTool.getEntitiesAlongVector(level, pos, deltaMovement) { true }
+            var resistance = 1.0
 
-        for (e in entities) {
-            val dis = pos.distanceTo(e.position())
-
-            if (e is LivingEntity && checkNoClip(e, pos)) {
-                if (e is Player && e.isCreative) {
-                    return
+            for (rayTraceResultEntity in resultEntities) {
+                if (rayTraceResultEntity.entity != null) {
+                    resistance *= 0.95
+                    val target = rayTraceResultEntity.entity
+                    if (rayTraceResultEntity.entity !== entity) {
+                        target.forceHurt(
+                            causeProjectileHitDamage(this.level().registryAccess(), this, this.owner),
+                            (this.damageValue * resistance).toFloat()
+                        )
+                        if (target is LivingEntity) {
+                            target.invulnerableTime = 0
+                        }
+                        if (target is VehicleEntity) {
+                            causeExplode(target.boundingBox.center)
+                            this.discard()
+                            return
+                        }
+                    }
                 }
-                if (!e.level().isClientSide()) {
-                    e.addEffect(
+            }
+
+            deltaMovement = deltaMovement.scale(resistance)
+            this.setDamage((this.damageValue * resistance).toFloat())
+        } else {
+            causeExplode(result.location)
+            this.discard()
+        }
+    }
+
+    open fun causeWPEffect(pos: Vec3, shooter: Entity) {
+        if (this.level() is ServerLevel) {
+            val entities = SeekTool.Builder(shooter)
+                .withinRange(pos, explosionRadiusValue.toDouble())
+                .notItsVehicle()
+                .baseFilter()
+                .noVehicle()
+                .build()
+
+            entities.asSequence()
+                .filter { it is LivingEntity && !(it is Player && it.isCreative) }
+                .forEach {
+                    val dis = pos.distanceTo(it.position())
+                    if (!checkNoClip(it, pos)) return@forEach
+                    (it as LivingEntity).addEffect(
                         MobEffectInstance(
                             ModMobEffects.PHOSPHORUS_FIRE,
                             (300 - 30 * dis).toInt(),
@@ -237,7 +219,6 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
                         ), this.owner
                     )
                 }
-            }
         }
     }
 
@@ -278,7 +259,7 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
         }
     }
 
-    fun releaseClusterMunitions(shooter: Entity?) {
+    open fun releaseClusterMunitions(shooter: Entity?) {
         val level = this.level()
         if (level is ServerLevel) {
             ParticleTool.spawnMediumExplosionParticles(level, position())
@@ -304,7 +285,7 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
         }
     }
 
-    private fun releaseWp(shooter: Entity?) {
+    open fun releaseWp(shooter: Entity?) {
         val level = this.level()
         if (level is ServerLevel) {
             ParticleTool.spawnMediumExplosionParticles(level, position())

@@ -3,7 +3,7 @@
   "RecoilX": 0.0006,
   "RecoilY": 0.0009,
   "Damage": 60,
-  "Headshot": 1,
+  "Headshot": 2,
   "ExplosionDamage": 45,
   "Projectile": "superbwarfare:super_star_projectile",
   "Velocity": 3,
