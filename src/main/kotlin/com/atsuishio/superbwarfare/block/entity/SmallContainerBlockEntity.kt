@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.block.entity
 
 import com.atsuishio.superbwarfare.block.SmallContainerBlock
+import com.atsuishio.superbwarfare.client.animation.block.SmallContainerBlockAnimationInstance
 import com.atsuishio.superbwarfare.init.ModBlockEntities
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import net.minecraft.advancements.CriteriaTriggers
@@ -25,46 +26,19 @@ import net.minecraft.world.level.storage.loot.LootParams
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams
 import net.minecraft.world.phys.Vec3
-import software.bernie.geckolib.animatable.GeoBlockEntity
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
-import software.bernie.geckolib.core.animation.AnimatableManager.ControllerRegistrar
-import software.bernie.geckolib.core.animation.AnimationController
-import software.bernie.geckolib.core.animation.AnimationState
-import software.bernie.geckolib.core.animation.RawAnimation
-import software.bernie.geckolib.core.`object`.PlayState
-import software.bernie.geckolib.util.GeckoLibUtil
+import net.minecraftforge.api.distmarker.Dist
+import net.minecraftforge.api.distmarker.OnlyIn
 
 open class SmallContainerBlockEntity(pos: BlockPos, state: BlockState) :
-    BlockEntity(ModBlockEntities.SMALL_CONTAINER.get(), pos, state), GeoBlockEntity {
+    BlockEntity(ModBlockEntities.SMALL_CONTAINER.get(), pos, state) {
     var lootTable: ResourceLocation? = null
     var lootTableSeed: Long = 0
     var tick: Int = 0
     var player: Player? = null
     var opened: Boolean = false
 
-    private val cache: AnimatableInstanceCache? = GeckoLibUtil.createInstanceCache(this)
-
-    private fun predicate(event: AnimationState<SmallContainerBlockEntity?>): PlayState? {
-        return if (this.blockState.getValue(SmallContainerBlock.OPENED)) {
-            event.setAndContinue(RawAnimation.begin().thenPlay("animation.container.open"))
-        } else {
-            PlayState.STOP
-        }
-    }
-
-    override fun registerControllers(data: ControllerRegistrar) {
-        data.add(
-            AnimationController<SmallContainerBlockEntity?>(
-                this,
-                "controller",
-                0
-            ) { this.predicate(it) }
-        )
-    }
-
-    override fun getAnimatableInstanceCache(): AnimatableInstanceCache? {
-        return this.cache
-    }
+    @OnlyIn(Dist.CLIENT)
+    open val animationInstance: SmallContainerBlockAnimationInstance? = SmallContainerBlockAnimationInstance(this)
 
     override fun load(compound: CompoundTag) {
         super.load(compound)

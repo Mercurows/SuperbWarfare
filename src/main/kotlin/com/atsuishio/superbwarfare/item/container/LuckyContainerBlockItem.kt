@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.renderer.item.LuckyContainerBlockItemRenderer
 import com.atsuishio.superbwarfare.init.ModBlockEntities
 import com.atsuishio.superbwarfare.init.ModBlocks
+import com.atsuishio.superbwarfare.tools.mc
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.resources.ResourceLocation
@@ -22,18 +23,10 @@ import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.HitResult
 import net.minecraftforge.client.extensions.common.IClientItemExtensions
-import software.bernie.geckolib.animatable.GeoItem
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
-import software.bernie.geckolib.core.animation.AnimatableManager.ControllerRegistrar
-import software.bernie.geckolib.core.animation.AnimationController
-import software.bernie.geckolib.core.animation.AnimationState
-import software.bernie.geckolib.core.`object`.PlayState
-import software.bernie.geckolib.util.GeckoLibUtil
 import java.util.function.Consumer
 
 class LuckyContainerBlockItem :
-    BlockItem(ModBlocks.LUCKY_CONTAINER.get(), Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant()), GeoItem {
-    private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
+    BlockItem(ModBlocks.LUCKY_CONTAINER.get(), Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant()) {
 
     override fun canBeHurtBy(pDamageSource: DamageSource): Boolean {
         return super.canBeHurtBy(pDamageSource)
@@ -55,33 +48,18 @@ class LuckyContainerBlockItem :
         return InteractionResultHolder(interactionResult, player.getItemInHand(hand))
     }
 
-    private fun predicate(event: AnimationState<LuckyContainerBlockItem>): PlayState {
-        return PlayState.CONTINUE
-    }
-
     override fun initializeClient(consumer: Consumer<IClientItemExtensions?>) {
         super.initializeClient(consumer)
         consumer.accept(object : IClientItemExtensions {
-            private val renderer: BlockEntityWithoutLevelRenderer = LuckyContainerBlockItemRenderer()
+            private var renderer: BlockEntityWithoutLevelRenderer? = null
 
             override fun getCustomRenderer(): BlockEntityWithoutLevelRenderer {
-                return renderer
+                if (renderer == null) {
+                    renderer = LuckyContainerBlockItemRenderer(mc.blockEntityRenderDispatcher, mc.entityModels)
+                }
+                return renderer!!
             }
         })
-    }
-
-    override fun registerControllers(data: ControllerRegistrar) {
-        data.add(
-            AnimationController<LuckyContainerBlockItem>(
-                this,
-                "controller",
-                0
-            ) { this.predicate(it) }
-        )
-    }
-
-    override fun getAnimatableInstanceCache(): AnimatableInstanceCache {
-        return this.cache
     }
 
     companion object {
