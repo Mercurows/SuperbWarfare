@@ -16,13 +16,14 @@
   "AmmoType": "superbwarfare:grenade_40mm",
   "Icon": "superbwarfare:textures/gun_icon/m_79_icon.png",
   "AvailablePerks": [
-    "superbwarfare:beast_bullet",
+    "@Ammo",
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",
     "superbwarfare:monster_hunter",
     "superbwarfare:vorpal_weapon",
-    "superbwarfare:micro_missile",
-    "superbwarfare:battle_of_wits"
+    "superbwarfare:battle_of_wits",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:cupid_arrow"
   ],
   "SoundInfo": {
     "Fire1P": "superbwarfare:m_79_fire_1p",

@@ -58,7 +58,7 @@ open class AmmoPerk : Perk {
         val mobEffectInstances = arrayListOf<MobEffectInstance>()
         this.mobEffects()
             .forEach { mobEffectInstances.add(MobEffectInstance(it, duration, amplifier, false, !this.hideParticle)) }
-        entity.setEffect(mobEffectInstances)
+        entity.setEffects(mobEffectInstances)
     }
 
     open fun getEffectAmplifier(instance: PerkInstance): Int {

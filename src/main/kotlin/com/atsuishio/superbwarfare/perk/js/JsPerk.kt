@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.data.PMC
 import com.atsuishio.superbwarfare.data.gun.DamageReduce
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.gun.GunData
-import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity
+import com.atsuishio.superbwarfare.entity.projectile.IBulletProperties
 import com.atsuishio.superbwarfare.perk.IAmmoStat
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.perk.PerkInstance
@@ -26,27 +26,29 @@ open class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : 
 
     override val slug: Boolean get() = descriptor.slug
 
-    private val ammoConfig: AmmoConfig? = if (type == Type.AMMO) {
-        val effects = mutableListOf<MobEffect>()
-        descriptor.mobEffects?.forEach { name ->
-            val rl = ResourceLocation.tryParse(name) ?: return@forEach
-            val effect = ForgeRegistries.MOB_EFFECTS.getValue(rl)
-            if (effect != null) {
-                effects.add(effect)
-            } else {
-                Mod.LOGGER.warn("Unknown mob effect '{}' in perk '{}'", name, perkId)
+    private val ammoConfig: AmmoConfig? by lazy {
+        if (type == Type.AMMO) {
+            val effects = mutableListOf<MobEffect>()
+            descriptor.mobEffects?.forEach { name ->
+                val rl = ResourceLocation.tryParse(name) ?: return@forEach
+                val effect = ForgeRegistries.MOB_EFFECTS.getValue(rl)
+                if (effect != null) {
+                    effects.add(effect)
+                } else {
+                    Mod.LOGGER.warn("Unknown mob effect '{}' in perk '{}'", name, perkId)
+                }
             }
-        }
-        AmmoConfig(
-            descriptor.bypassArmorRate,
-            descriptor.damageRate,
-            descriptor.speedRate,
-            descriptor.slug,
-            descriptor.rgb ?: listOf(255, 222, 39),
-            effects,
-            descriptor.hideParticle,
-        )
-    } else null
+            AmmoConfig(
+                descriptor.bypassArmorRate,
+                descriptor.damageRate,
+                descriptor.speedRate,
+                descriptor.slug,
+                descriptor.rgb ?: listOf(255, 222, 39),
+                effects,
+                descriptor.hideParticle,
+            )
+        } else null
+    }
 
     private val script: ScriptManager.CustomScript? by lazy {
         descriptor.script?.let { scriptName ->
@@ -71,7 +73,7 @@ open class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : 
 
     override fun modifyProjectile(data: GunData, instance: PerkInstance, entity: Entity) {
         val config = ammoConfig ?: return
-        if (entity is ProjectileEntity) {
+        if (entity is IBulletProperties) {
             val r = config.rgb
             entity.setRGB(floatArrayOf(r[0] / 255f, r[1] / 255f, r[2] / 255f))
             if (config.mobEffects.isNotEmpty()) {
@@ -80,7 +82,7 @@ open class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : 
                 val instances = config.mobEffects.map {
                     MobEffectInstance(it, duration, amplifier, false, !config.hideParticle)
                 }
-                entity.effect(ArrayList(instances))
+                entity.setEffects(instances)
             }
         }
 

@@ -200,6 +200,19 @@ interface IAdvancedHitDetection {
     fun performDamage(entity: Entity, damage: Float, isHeadshot: Boolean)
 
     /**
+     * 执行命中生物后添加药水效果
+     */
+    fun performAddEffect(entity: Entity, damage: Float, isHeadshot: Boolean) {
+        if (this !is IBulletProperties) return
+        if (entity.level().isClientSide) return
+        if (this.getEffects().isNotEmpty() && entity is LivingEntity) {
+            this.getEffects().forEach {
+                entity.addEffect(it)
+            }
+        }
+    }
+
+    /**
      * 执行命中后的伤害施加与击退
      */
     fun performOnHit(entity: Entity, damage: Float, headshot: Boolean, knockback: Double) {
@@ -217,6 +230,7 @@ interface IAdvancedHitDetection {
                 performDamage(entity, damage, headshot)
                 iCustomKnockback.`superbWarfare$resetKnockbackStrength`()
             }
+            performAddEffect(entity, damage, headshot)
         } else {
             performDamage(entity, damage, headshot)
         }
