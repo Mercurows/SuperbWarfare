@@ -332,7 +332,7 @@
     "superbwarfare:vehicle_strike * 7",
     "superbwarfare:laser * 0.4",
     "@superbwarfare:cannon_shell * 2",
-    "@superbwarfare:small_cannon_shell * 1.1",
+    "@superbwarfare:small_cannon_shell * 0.75",
     "@superbwarfare:gun_grenade * 2.2",
     "@superbwarfare:rgo_grenade * 6",
     "@superbwarfare:hand_grenade * 5",

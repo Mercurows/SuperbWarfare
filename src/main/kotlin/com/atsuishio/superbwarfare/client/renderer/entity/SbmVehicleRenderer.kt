@@ -184,7 +184,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         if (flareFlag) {
             for (flare in flareBones) {
                 flare.visible = false
-                flare.rotation.rotateZ((0.5 * (Math.random() - 0.5)).toFloat())
+                flare.rotation.rotateZ((0.75 * (Math.random() - 0.5)).toFloat())
             }
         }
 
@@ -195,13 +195,19 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
                 for (flare in flareBones) {
                     poseStack.pushPose()
                     poseStack.mulPoseMatrix(flare.globalTransform)
+                    poseStack.translate(0f, 0f, (0.025 * (Math.random() - 0.5)).toFloat())
+                    poseStack.scale(1 + (0.1 * (Math.random() - 0.5)).toFloat(), 1 + (0.1 * (Math.random() - 0.5)).toFloat(), 1 + (0.1 * (Math.random() - 0.5)).toFloat())
                     flareModel.renderToBuffer(
                         poseStack,
                         buffer,
                         ModRenderTypes.MUZZLE_FLASH_TYPE.apply(MUZZLE_FLARE),
                         BedrockModelRenderTypes.polyMeshCutout(MUZZLE_FLARE),
                         packedLight,
-                        OverlayTexture.NO_OVERLAY
+                        OverlayTexture.NO_OVERLAY,
+                        1f,
+                        1f,
+                        1f,
+                        0.5f + (0.25 * (Math.random() - 0.5)).toFloat()
                     )
                     flareModel.applyPose(flareModel.bindPose)
 
