@@ -17,7 +17,6 @@ import com.atsuishio.superbwarfare.world.phys.ExtendedEntityRayTraceResult
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.Holder
-import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.ListTag
 import net.minecraft.network.RegistryFriendlyByteBuf
@@ -642,13 +641,50 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
             while (i < l) {
                 val startPos = Vec3(xo, yo + bbHeight / 2, zo)
                 val pos = startPos.add(deltaMovement.normalize().scale(-i))
-                level().addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.x, pos.y, pos.z, 0.0, 0.0, 0.0)
-                i += 2.0
+                val random = 2 * (this.random.nextFloat() - 0.5f)
+                level().addParticle(
+                    CustomFlareOption(
+                        0.5f,
+                        0.43f,
+                        0.36f,
+                        600,
+                        0.975f,
+                        (10 + 8 * random).toInt(),
+                        0.03f,
+                        size = 0.75f
+                    ), pos.x + random * 0.2, pos.y + random * 0.2, pos.z + random * 0.2, 0.0, 0.0, 0.0
+                )
+                i += 2
             }
         }
     }
 
     open fun mediumTrail() {
+        if (level().isClientSide && tickCount > 2) {
+            val l = deltaMovement.length()
+            var i = 0.0
+            while (i < l) {
+                val startPos = Vec3(xo, yo + bbHeight / 2, zo)
+                val pos = startPos.add(deltaMovement.normalize().scale(-i))
+                val random = 2 * (this.random.nextFloat() - 0.5f)
+                level().addParticle(
+                    CustomFlareOption(
+                        0.5f,
+                        0.43f,
+                        0.36f,
+                        400,
+                        0.97f,
+                        (10 + 8 * random).toInt(),
+                        0.03f,
+                        size = 0.4f
+                    ), pos.x + random * 0.125, pos.y + random * 0.125, pos.z + random * 0.125, 0.0, 0.0, 0.0
+                )
+                i += 1.5
+            }
+        }
+    }
+
+    open fun shellTrail() {
         if (level().isClientSide && tickCount > 2) {
             val l = deltaMovement.length()
             var i = 0.0
@@ -680,18 +716,20 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
             while (i < l) {
                 val startPos = Vec3(xo, yo + bbHeight / 2, zo)
                 val pos = startPos.add(deltaMovement.normalize().scale(-i))
-                val random = this.random.nextFloat()
-                level().addAlwaysVisibleParticle(
-                    ParticleTypes.SMOKE,
-                    true,
-                    pos.x + 0.25f * random,
-                    pos.y + 0.25f * random,
-                    pos.z + 0.25f * random,
-                    0.0,
-                    0.0,
-                    0.0
+                val random = 2 * (this.random.nextFloat() - 0.5f)
+                level().addParticle(
+                    CustomFlareOption(
+                        0.5f,
+                        0.43f,
+                        0.36f,
+                        80,
+                        0.94f,
+                        (10 + 8 * random).toInt(),
+                        0.01f,
+                        size = 0.25f
+                    ), pos.x + random * 0.1, pos.y + random * 0.1, pos.z + random * 0.1, 0.0, 0.0, 0.0
                 )
-                i += 2.0
+                i += 1
             }
         }
     }

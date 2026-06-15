@@ -68,7 +68,7 @@ open class SmallRocketEntity(type: EntityType<out SmallRocketEntity>, level: Lev
 
     override fun tick() {
         super.tick()
-        mediumTrail()
+        smallTrail()
 
         val level = this.level()
         if (this.tickCount == 3) {
