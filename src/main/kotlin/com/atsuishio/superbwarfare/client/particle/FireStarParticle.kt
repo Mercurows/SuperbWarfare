@@ -58,6 +58,29 @@ open class FireStarParticle protected constructor(
         if (!this.removed) {
             this.setSprite(this.spriteSet.get((this.age / 2) % 8 + 1, 8))
         }
+
+        //TODO 封存的绝密技术
+//        val velocity = Vec3(xd, yd, zd)
+//        val l = velocity.length()
+//        var i = 0.0
+//        while (i < l) {
+//            val startPos = Vec3(xo, yo + bbHeight / 2, zo)
+//            val pos = startPos.add(velocity.normalize().scale(-i))
+//            val offset = 2 * (random.nextFloat() - 0.5f)
+//            level.addParticle(
+//                CustomFlareOption(
+//                    0.5f,
+//                    0.43f,
+//                    0.36f,
+//                    700,
+//                    0.985f,
+//                    (10 + 8 * offset).toInt(),
+//                    0.03f
+//                ), pos.x + offset * 0.25, pos.y + offset * 0.25, pos.z + offset * 0.25, 0.0, 0.0, 0.0
+//            )
+//            i += 2.0
+//        }
+
     }
 
     companion object {
