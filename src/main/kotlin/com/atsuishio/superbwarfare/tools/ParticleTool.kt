@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod.Companion.queueServerWork
 import com.atsuishio.superbwarfare.client.particle.CannonMuzzleFlareOption
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.client.particle.CustomFlareOption
+import com.atsuishio.superbwarfare.client.particle.ExplosionDebrisOption
 import com.atsuishio.superbwarfare.init.ModParticleTypes
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage.Companion.sendToNearbyPlayers
@@ -120,9 +121,10 @@ object ParticleTool {
             sendParticle(level, ParticleTypes.LARGE_SMOKE, x, y + 1, z, 10, 0.4, 1.0, 0.4, 0.02, true)
             sendParticle(level, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y + 0.25, z, 40, 2.0, 0.001, 2.0, 0.01, true)
             sendParticle(level, ModParticleTypes.FIRE_STAR.get(), x, y + 0.2, z, 50, 0.0, 0.0, 0.0, 0.8, true)
-            sendParticle(level, ParticleTypes.FLASH, x, y + 0.5, z, 50, 0.2, 0.2, 0.2, 20.0, true)
+            sendParticle(level, ParticleTypes.FLASH, x, y + 0.5, z, 20, 0.2, 0.2, 0.2, 20.0, true)
             sendParticle(level, CustomFlareOption(0.6f, 0.58f, 0.57f, 60, 0.8f, 1, 0.2f), x, y + 0.5, z, 50, 0.75, 1.2, 0.75, 0.05, true)
             sendParticle(level, CustomFlareOption(0.25f, 0.125f, 0f, 100, 0.91f, 3, 0.25f), x, y + 0.5, z, 50, 0.75, 1.2, 0.75, 0.05, true)
+            sendParticle(level, ExplosionDebrisOption(0.5f, 0.43f, 0.16f, 40, 0.88f, (8 + 8 * Math.random()).toInt(), 0.01f, size = 0.1f), x, y + 0.5, z, 40, 0.0, 0.0, 0.0, 0.6, true)
         }
     }
 
@@ -146,20 +148,19 @@ object ParticleTool {
 
             sendParticle(level, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y + 1, z, 60, 0.5, 2.0, 0.5, 0.02, true)
             sendParticle(level, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y + 0.25, z, 120, 5.0, 0.001, 5.0, 0.01, true)
-            sendParticle(level, ModParticleTypes.FIRE_STAR.get(), x, y + 0.2, z, 100, 0.0, 0.0, 0.0, 1.2, true)
+            sendParticle(level, ModParticleTypes.FIRE_STAR.get(), x, y + 0.2, z, 60, 0.0, 0.0, 0.0, 1.2, true)
             sendParticle(level, ParticleTypes.EXPLOSION, x, y + 1, z, 35, 1.5, 1.5, 1.5, 1.0, true)
             sendParticle(level, ParticleTypes.FLASH, x, y + 1, z, 120, 3.0, 3.0, 3.0, 20.0, true)
             sendParticle(level, CustomFlareOption(0.6f, 0.58f, 0.57f, 60, 0.8f, 1, 0.2f), x, y + 1, z, 150, 1.3, 1.7, 1.3, 0.05, true)
             sendParticle(level, CustomFlareOption(0.25f, 0.125f, 0f, 100, 0.91f, 3, 0.25f), x, y + 1, z, 80, 1.3, 1.7, 1.3, 0.05, true)
+            sendParticle(level, ExplosionDebrisOption(0.5f, 0.43f, 0.16f, 60, 0.91f, (8 + 8 * Math.random()).toInt(), 0.014f, size = 0.13f), x, y + 0.5, z, 60, 0.0, 0.0, 0.0, 0.8, true)
 
-            for (h in 0..1) {
-                for (i in 0..149) {
-                    val v = Vec3(1.0, 0.0, 0.0).yRot((i * Math.random()).toFloat())
-                    sendParticle(
-                        level, CustomCloudOption(0xFFFFFF, 25, 2f, 0f, cooldown = false, light = false), x, y + 0.2, z,
-                        0, v.x, v.y, v.z, (140 - 2 * h).toDouble(), true
-                    )
-                }
+            for (i in 0..149) {
+                val v = Vec3(1.0, 0.0, 0.0).yRot((i * Math.random()).toFloat())
+                sendParticle(
+                    level, CustomCloudOption(0xFFFFFF, 25, 2f, 0f, cooldown = false, light = false), x, y + 0.2, z,
+                    0, v.x, v.y, v.z, 18.0, true
+                )
             }
         }
     }
@@ -182,23 +183,22 @@ object ParticleTool {
                 sendParticle(level, ParticleTypes.BUBBLE_COLUMN_UP, x, y, z, 350, 6.0, 1.0, 6.0, 0.1, true)
             }
 
-            for (h in 0..3) {
-                for (i in 0..199) {
-                    val v = Vec3(1.0, 0.0, 0.0).yRot((i * Math.random()).toFloat())
-                    sendParticle(
-                        level, CustomCloudOption(0xFFFFFF, 25, 4f, 0f, cooldown = false, light = false), x, y + 0.5, z,
-                        0, v.x, v.y, v.z, (200 - 2 * h).toDouble(), true
-                    )
-                }
+            for (i in 0..199) {
+                val v = Vec3(1.0, 0.0, 0.0).yRot((i * Math.random()).toFloat())
+                sendParticle(
+                    level, CustomCloudOption(0xFFFFFF, 10, 4f, 0f, cooldown = false, light = false), x, y + 0.5, z,
+                    0, v.x, v.y, v.z, 20.0, true
+                )
             }
 
             sendParticle(level, ParticleTypes.EXPLOSION, x, y + 3, z, 75, 2.5, 2.5, 2.5, 1.0, true)
             sendParticle(level, ParticleTypes.FLASH, x, y + 3, z, 200, 5.0, 5.0, 5.0, 20.0, true)
-            sendParticle(level, ModParticleTypes.FIRE_STAR.get(), x, y + 1, z, 400, 0.0, 0.0, 0.0, 1.5, true)
+            sendParticle(level, ModParticleTypes.FIRE_STAR.get(), x, y + 1, z, 100, 0.0, 0.0, 0.0, 1.5, true)
             sendParticle(level, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y + 3, z, 75, 2.0, 3.0, 2.0, 0.005, true)
             sendParticle(level, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 150, 7.0, 0.1, 7.0, 0.005, true)
             sendParticle(level, CustomFlareOption(0.6f, 0.58f, 0.57f, 60, 0.8f, 1, 0.2f), x, y + 1, z, 200, 1.5, 2.0, 1.5, 0.05, true)
             sendParticle(level, CustomFlareOption(0.25f, 0.125f, 0f, 100, 0.91f, 3, 0.25f), x, y + 1, z, 100, 1.5, 2.0, 1.5, 0.05, true)
+            sendParticle(level, ExplosionDebrisOption(0.5f, 0.43f, 0.16f, 80, 0.92f, (10 + 8 * Math.random()).toInt(), 0.017f, size = 0.16f), x, y + 0.5, z, 100, 0.0, 0.0, 0.0, 1.0, true)
 
             sendToNearbyPlayers(level, x, y, z, 192.0, 30.0, 12.0)
         }
@@ -224,17 +224,16 @@ object ParticleTool {
 
             sendParticle(level, ParticleTypes.EXPLOSION, x, y + 6, z, 100, 6.0, 6.0, 6.0, 1.0, true)
             sendParticle(level, ParticleTypes.FLASH, x, y + 7, z, 200, 7.0, 7.0, 7.0, 1.0, true)
-            sendParticle(level, ModParticleTypes.FIRE_STAR.get(), x, y + 3, z, 800, 0.0, 0.0, 0.0, 2.0, true)
+            sendParticle(level, ModParticleTypes.FIRE_STAR.get(), x, y + 3, z, 150, 0.0, 0.0, 0.0, 2.0, true)
             sendParticle(level, CustomFlareOption(1f, 1f, 1f, 10, 0.75f, 1, 2f), x, y + 3, z, 1000, 10.0, 10.0, 10.0, 0.005, true)
+            sendParticle(level, ExplosionDebrisOption(0.5f, 0.43f, 0.16f, 150, 0.94f, (10 + 8 * Math.random()).toInt(), 0.025f, size = 0.5f), x, y + 0.5, z, 140, 0.0, 0.0, 0.0, 1.7, true)
 
-            for (h in 0..4) {
-                for (i in 0..199) {
-                    val v = Vec3(1.0, 0.0, 0.0).yRot((i * Math.random()).toFloat())
-                    sendParticle(
-                        level, CustomCloudOption(1f, 1f, 1f, 25, 4f, 0f, cooldown = false, light = false), x, y + 1, z,
-                        0, v.x, v.y, v.z, (1000 - 3 * h).toDouble(), true
-                    )
-                }
+            for (i in 0..360) {
+                val v = Vec3(1.0, 0.0, 0.0).yRot((i * Math.random()).toFloat())
+                sendParticle(
+                    level, CustomCloudOption(1f, 1f, 1f, 25, 4f, 0f, cooldown = false, light = false), x, y + 1, z,
+                    0, v.x, v.y, v.z, 22.0, true
+                )
             }
 
             for (i in 0..23) {
@@ -274,19 +273,18 @@ object ParticleTool {
                 sendParticle(level, ParticleTypes.BUBBLE_COLUMN_UP, x, y, z, 350, 6.0, 1.0, 6.0, 0.1, true)
             }
 
-            sendParticle(level, ParticleTypes.EXPLOSION, x, y + 6, z, 450, 12.0, 12.0, 12.0, 1.0, true)
-            sendParticle(level, ParticleTypes.FLASH, x, y + 7, z, 600, 13.0, 13.0, 13.0, 1.0, true)
-            sendParticle(level, ModParticleTypes.FIRE_STAR.get(), x, y + 8, z, 1800, 0.0, 0.0, 0.0, 4.0, true)
-            sendParticle(level, CustomFlareOption(1f, 1f, 1f, 10, 0.75f, 1, 2f), x, y + 3, z, 2500, 18.0, 18.0, 18.0, 0.005, true)
+            sendParticle(level, ParticleTypes.EXPLOSION, x, y + 6, z, 250, 12.0, 12.0, 12.0, 1.0, true)
+            sendParticle(level, ParticleTypes.FLASH, x, y + 7, z, 300, 13.0, 13.0, 13.0, 1.0, true)
+            sendParticle(level, ModParticleTypes.FIRE_STAR.get(), x, y + 8, z, 200, 0.0, 0.0, 0.0, 4.0, true)
+            sendParticle(level, CustomFlareOption(1f, 1f, 1f, 10, 0.75f, 1, 2f), x, y + 3, z, 1000, 18.0, 18.0, 18.0, 0.005, true)
+            sendParticle(level, ExplosionDebrisOption(0.5f, 0.43f, 0.16f, 340, 0.976f, (10 + 8 * Math.random()).toInt(), 0.035f, size = 0.85f), x, y + 0.5, z, 140, 0.0, 0.0, 0.0, 2.4, true)
 
-            for (h in 0..4) {
-                for (i in 0..450) {
-                    val v = Vec3(1.0, 0.0, 0.0).yRot((i * Math.random()).toFloat())
-                    sendParticle(
-                        level, CustomCloudOption(1f, 1f, 1f, 45, 9f, 0f, cooldown = false, light = false), x, y + 1, z,
-                        0, v.x, v.y, v.z, (900 - 3 * h).toDouble(), true
-                    )
-                }
+            for (i in 0..360) {
+                val v = Vec3(1.0, 0.0, 0.0).yRot((i * Math.random()).toFloat())
+                sendParticle(
+                    level, CustomCloudOption(1f, 1f, 1f, 45, 10f, 0f, cooldown = false, light = false), x, y + 1, z,
+                    0, v.x, v.y, v.z, 24.0, true
+                )
             }
 
             for (i in 0..23) {
@@ -301,7 +299,7 @@ object ParticleTool {
                         sendParticle(level, CustomFlareOption(0.125f, 0.0625f, 0f, 150, 0.95f, 3, 0.01f), x, y + 50, z, 30 * k, 3 + 1.3 * k, 2.2 + 0.5 * k, 3 + 1.3 * k, 0.005, true)
                         sendParticle(level, CustomFlareOption(0.0625f, 0.03125f, 0f, 200, 0.95f, 4, 0.15f), x, y + 50, z, 30 * k, 3 + 1.3 * k, 2.2 + 0.5 * k, 3 + 1.3 * k, 0.005, true)
                     }
-                    sendParticle(level, CustomFlareOption(0.667f, 0.631f, 0.592f, 100, 0.97f, 10, 0.06f), x, y - 1, z, 18 * i, i.toDouble() * 2.5, 0.05, i.toDouble() * 2.5, 0.0003 * i, true)
+                    sendParticle(level, CustomFlareOption(0.667f, 0.631f, 0.592f, 100, 0.97f, 10, 0.06f), x, y - 1, z, 15 * i, i.toDouble() * 2.5, 0.05, i.toDouble() * 2.5, 0.0003 * i, true)
                 }
             }
             sendToNearbyPlayers(level, x, y, z, 768.0, 54.0, 9.0)

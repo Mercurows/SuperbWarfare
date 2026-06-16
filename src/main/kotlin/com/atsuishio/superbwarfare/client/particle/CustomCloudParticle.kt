@@ -70,9 +70,9 @@ open class CustomCloudParticle protected constructor(
         this.lifetime = max(1, life + (this.random.nextInt(life) - (0.1 * life).toInt()))
         this.gravity = gravity
         this.hasPhysics = false
-        this.xd = vx * 0.015
-        this.yd = vy * 0.015
-        this.zd = vz * 0.015
+        this.xd = vx
+        this.yd = vy
+        this.zd = vz
         this.setSpriteFromAge(spriteSet)
         this.rCol = rCol
         this.gCol = gCol
@@ -106,5 +106,9 @@ open class CustomCloudParticle protected constructor(
         } else {
             this.remove()
         }
+
+        xd *= 0.85
+        yd *= 0.85
+        zd *= 0.85
     }
 }
