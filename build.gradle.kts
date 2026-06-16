@@ -64,10 +64,16 @@ repositories {
     maven {
         name = "Modrinth"
         url = uri("https://api.modrinth.com/maven")
+        content {
+            includeGroup("maven.modrinth")
+        }
     }
     maven {
         name = "Kotlin for Forge"
         url = uri("https://thedarkcolour.github.io/KotlinForForge/")
+        content {
+            includeGroup("thedarkcolour")
+        }
     }
     maven {
         url = uri("https://jitpack.io")
@@ -86,7 +92,15 @@ java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(21))
     }
-    withSourcesJar()
+    // Don't use withSourcesJar() — sourcesJar is created manually below
+    // and wired only into publishing, not build (saves ~46s)
+}
+
+// Sources JAR — only built during publishing, not during dev build/runClient
+val sourcesJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("sources")
+    from(sourceSets.main.get().allSource)
+    group = "build"
 }
 
 neoForge {
@@ -311,16 +325,33 @@ sourceSets.main.get().resources.srcDir(generateModMetadata)
 // To avoid having to run "generateModMetadata" manually, make it run on every project reload
 neoForge.ideSyncTask(generateModMetadata)
 
+// Fast development build — compiles code only, skips JAR packaging.
+// Serves as the compilation prerequisite for runClient and runServer.
+// Workflow: devBuild (check errors) → runClient / runServer (launch game)
+tasks.register("devBuild") {
+    description = "Fast dev build: compile + resources only, no JAR packaging"
+    group = "build"
+    dependsOn("classes", "processResources")
+}
+
+// Wire devBuild as the compilation step for dev run tasks.
+// Since runClient/runServer already depend on classes+processResources transitively,
+// this is mostly for explicit ordering — but ensures devBuild stays the single
+// compilation entry point for all dev workflows.
+tasks.named("runClient") { dependsOn("devBuild") }
+tasks.named("runServer") { dependsOn("devBuild") }
+
 // Example configuration to allow publishing using the maven-publish plugin
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
             from(components["java"])
+            artifact(sourcesJar)
         }
     }
     repositories {
         maven {
-            url = uri("file://${project.projectDir}/repo")
+            url = uri(project.projectDir.resolve("repo"))
         }
     }
 }
