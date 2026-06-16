@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.compat.realcamera.RealCameraCompatHolder
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
+import com.atsuishio.superbwarfare.config.server.MarkerConfig
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunProp
@@ -184,7 +185,8 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
         }
 
         // 在开启伤害指示器时才进行渲染
-        if (DisplayConfig.KILL_INDICATION.get() && !(vehicle is Ah6Entity && vehicle.getFirstPassenger() === player)) {
+        // PJM: серверный конфиг ENABLE_HIT_MARKERS жёстко выключает хитмаркеры для всех
+        if (MarkerConfig.ENABLE_HIT_MARKERS.get() && DisplayConfig.KILL_INDICATION.get() && !(vehicle is Ah6Entity && vehicle.getFirstPassenger() === player)) {
             renderKillIndicatorDynamic(guiGraphics, screenWidth, screenHeight, moveX, moveY)
         }
 

@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.overlay
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
+import com.atsuishio.superbwarfare.config.server.MarkerConfig
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
@@ -16,6 +17,9 @@ import net.neoforged.api.distmarker.OnlyIn
 @OnlyIn(Dist.CLIENT)
 object RedTriangleOverlay : CommonOverlay("red_triangle") {
     private val TRIANGLE = loc("textures/overlay/rpg/red_triangle.png")
+
+    // PJM: серверный конфиг ENABLE_RPG_LOCK_MARKER жёстко выключает маркер захвата RPG для всех
+    override fun shouldRender() = super.shouldRender() && MarkerConfig.ENABLE_RPG_LOCK_MARKER.get()
 
     override fun RenderContext.render() {
         val poseStack = guiGraphics.pose()
