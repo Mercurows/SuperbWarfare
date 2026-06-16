@@ -1,10 +1,13 @@
 package com.atsuishio.superbwarfare.item
 
+import com.atsuishio.superbwarfare.client.renderer.item.HandGrenadeRenderer
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.entity.projectile.HandGrenadeEntity
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.tools.CustomExplosion
+import com.atsuishio.superbwarfare.tools.mc
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer
 import net.minecraft.core.BlockSource
 import net.minecraft.core.Position
 import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior
@@ -22,9 +25,25 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Rarity
 import net.minecraft.world.item.UseAnim
 import net.minecraft.world.level.Level
+import net.minecraftforge.client.extensions.common.IClientItemExtensions
+import java.util.function.Consumer
 import kotlin.math.min
 
 open class HandGrenade : Item(Properties().rarity(Rarity.UNCOMMON)), DispenserLaunchable {
+
+    override fun initializeClient(consumer: Consumer<IClientItemExtensions?>) {
+        super.initializeClient(consumer)
+        consumer.accept(object : IClientItemExtensions {
+            private var renderer: BlockEntityWithoutLevelRenderer? = null
+
+            override fun getCustomRenderer(): BlockEntityWithoutLevelRenderer {
+                if (renderer == null) {
+                    renderer = HandGrenadeRenderer(mc.blockEntityRenderDispatcher, mc.entityModels)
+                }
+                return renderer!!
+            }
+        })
+    }
     override fun use(worldIn: Level, playerIn: Player, handIn: InteractionHand): InteractionResultHolder<ItemStack> {
         val stack = playerIn.getItemInHand(handIn)
         playerIn.startUsingItem(handIn)
