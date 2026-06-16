@@ -9,7 +9,10 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.tools.*
+import com.atsuishio.superbwarfare.tools.CustomExplosion
+import com.atsuishio.superbwarfare.tools.EntityFindUtil
+import com.atsuishio.superbwarfare.tools.OBB
+import com.atsuishio.superbwarfare.tools.forceHurt
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.core.registries.Registries
@@ -650,28 +653,9 @@ open class C4Entity : Entity, OwnableEntity {
             .damage(ExplosionConfig.C4_EXPLOSION_DAMAGE.get().toFloat())
             .radius(radius)
             .position(pos)
-            .withParticleType(explosionParticleType(radius))
             .explode()
 
         this.discard()
-    }
-
-    open fun explosionParticleType(radius: Float): ParticleTool.ParticleType {
-        return if (radius < 2.0) {
-            ParticleTool.ParticleType.MINI
-        } else if (radius in 2.0..<4.0) {
-            ParticleTool.ParticleType.SMALL
-        } else if (radius in 4.0..<7.0) {
-            ParticleTool.ParticleType.MEDIUM
-        } else if (radius in 7.0..<10.0) {
-            ParticleTool.ParticleType.LARGE
-        } else if (radius in 10.0..<20.0) {
-            ParticleTool.ParticleType.HUGE
-        } else if (radius in 20.0..<30.0) {
-            ParticleTool.ParticleType.GIANT
-        } else {
-            ParticleTool.ParticleType.EPIC
-        }
     }
 
     protected val waterInertia: Float

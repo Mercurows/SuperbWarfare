@@ -302,7 +302,6 @@ open class EDDEntity : HangingEntity, OwnableEntity {
             .damage(ExplosionConfig.EDD_EXPLOSION_DAMAGE.get().toFloat())
             .radius(ExplosionConfig.EDD_EXPLOSION_RADIUS.get().toFloat())
             .keepBlock()
-            .withParticleType(ParticleTool.ParticleType.MINI)
             .explode()
 
         this.discard()

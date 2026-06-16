@@ -106,7 +106,7 @@
   "ThirdPersonCameraPos": [0, 1, 2],
   "EngineType": "Fixed",
   "DestroyInfo": {
-    "ParticleType": "Medium",
+    : "Medium",
     "ExplosionDamage": 100,
     "ExplosionRadius": 7
   },

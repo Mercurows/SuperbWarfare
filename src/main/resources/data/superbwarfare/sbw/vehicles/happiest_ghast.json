@@ -297,7 +297,7 @@
     "@superbwarfare:javelin_missile * 0.8"
   ],
   "DestroyInfo": {
-    "ParticleType": "Huge",
+    : "Huge",
     "ExplosionDamage": 300,
     "ExplosionRadius": 12,
     "CrashPassengers": true

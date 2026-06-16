@@ -187,7 +187,7 @@
   ],
   "VehicleContainerType": "Small",
   "DestroyInfo": {
-    "ParticleType": "Large",
+    : "Large",
     "ExplosionDamage": 40,
     "ExplosionRadius": 5
   },

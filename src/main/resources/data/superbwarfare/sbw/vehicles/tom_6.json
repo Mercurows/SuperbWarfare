@@ -39,7 +39,7 @@
   ],
   "VehicleContainerType": "Empty",
   "DestroyInfo": {
-    "ParticleType": "Medium",
+    : "Medium",
     "ExplosionDamage": 15,
     "ExplosionRadius": 2,
     "CrashPassengers": true,

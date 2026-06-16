@@ -349,7 +349,7 @@
   ],
   "VehicleContainerType": "Medium",
   "DestroyInfo": {
-    "ParticleType": "Huge",
+    : "Huge",
     "ExplosionDamage": 120,
     "ExplosionRadius": 7,
     "SympatheticDetonation": true,

@@ -163,7 +163,7 @@
     "@#superbwarfare:aa_missile * 1.5"
   ],
   "DestroyInfo": {
-    "ParticleType": "Medium",
+    : "Medium",
     "ExplosionDamage": 80,
     "ExplosionRadius": 5
   },

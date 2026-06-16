@@ -471,28 +471,11 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : VehicleEntity(
     private fun causeLaserExplode(vec3: Vec3, gunData: GunData, living: Entity?) {
         val radius = gunData.get(GunProp.EXPLOSION_RADIUS).toFloat()
 
-        val particleType = if (radius < 2.0) {
-            ParticleTool.ParticleType.MINI
-        } else if (radius in 2.0..<4.0) {
-            ParticleTool.ParticleType.SMALL
-        } else if (radius in 4.0..<7.0) {
-            ParticleTool.ParticleType.MEDIUM
-        } else if (radius in 7.0..<10.0) {
-            ParticleTool.ParticleType.LARGE
-        } else if (radius in 10.0..<20.0) {
-            ParticleTool.ParticleType.HUGE
-        } else if (radius in 20.0..<30.0) {
-            ParticleTool.ParticleType.GIANT
-        } else {
-            ParticleTool.ParticleType.EPIC
-        }
-
         createCustomExplosion()
             .damage(gunData.get(GunProp.EXPLOSION_DAMAGE).toFloat())
             .radius(radius)
             .attacker(living)
             .position(vec3)
-            .withParticleType(particleType)
             .explode()
     }
 
@@ -503,7 +486,6 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : VehicleEntity(
             .keepBlock()
             .attacker(owner)
             .position(vec3)
-            .withParticleType(ParticleTool.ParticleType.MEDIUM)
             .explode()
     }
 

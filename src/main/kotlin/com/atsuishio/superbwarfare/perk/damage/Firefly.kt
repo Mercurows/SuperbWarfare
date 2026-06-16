@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.perk.PerkInstance
 import com.atsuishio.superbwarfare.tools.CustomExplosion
 import com.atsuishio.superbwarfare.tools.DamageTypeTool
-import com.atsuishio.superbwarfare.tools.ParticleTool
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
@@ -35,7 +34,6 @@ object Firefly : Perk("firefly", Type.DAMAGE) {
             .source(null)
             .keepBlock()
             .fireTime(3 + instance.level / 3)
-            .withParticleType(ParticleTool.ParticleType.SMALL)
             .explode()
     }
 }

@@ -38,26 +38,11 @@ object ProjectileTool {
         damage: Float,
         radius: Float
     ) {
-        val particleType = if (radius < 2.0) {
-            ParticleTool.ParticleType.MINI
-        } else if (radius in 2.0..<4.0) {
-            ParticleTool.ParticleType.SMALL
-        } else if (radius in 4.0..<7.0) {
-            ParticleTool.ParticleType.MEDIUM
-        } else if (radius in 7.0..<10.0) {
-            ParticleTool.ParticleType.LARGE
-        } else if (radius in 10.0..<20.0) {
-            ParticleTool.ParticleType.HUGE
-        } else {
-            ParticleTool.ParticleType.GIANT
-        }
-
         val explosion = CustomExplosion.Builder(projectile)
             .damageSource(source)
             .damage(damage)
             .radius(radius)
             .position(Vec3(target.x, target.y + 0.5 * target.bbHeight, target.z))
-            .withParticleType(particleType)
             .particlePosition(projectile.position().add(projectile.deltaMovement.scale(0.5)))
 
         if (projectile is IBulletProperties) {

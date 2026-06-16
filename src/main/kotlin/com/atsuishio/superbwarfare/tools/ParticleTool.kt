@@ -570,6 +570,23 @@ object ParticleTool {
     }
     //@formatter:on
 
+    /**
+     * Unified radius→particleType mapping. The single source of truth for
+     * determining which explosion particle effect to use based on radius.
+     */
+    @JvmStatic
+    fun particleTypeForRadius(radius: Float): ParticleType {
+        return when {
+            radius < 2.0 -> ParticleType.MINI
+            radius < 4.0 -> ParticleType.SMALL
+            radius < 7.0 -> ParticleType.MEDIUM
+            radius < 10.0 -> ParticleType.LARGE
+            radius < 20.0 -> ParticleType.HUGE
+            radius < 30.0 -> ParticleType.GIANT
+            else -> ParticleType.EPIC
+        }
+    }
+
     @Serializable
     enum class ParticleType {
         @SerializedName("Mini")

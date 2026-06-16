@@ -149,7 +149,7 @@
   ],
   "RotateOffsetHeight": 0.5,
   "DestroyInfo": {
-    "ParticleType": "Medium",
+    : "Medium",
     "ExplosionDamage": 80,
     "ExplosionRadius": 6,
     "CrashPassengers": true

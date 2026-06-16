@@ -414,7 +414,7 @@
     "@#superbwarfare:aerial_bomb * 2"
   ],
   "DestroyInfo": {
-    "ParticleType": "Giant",
+    : "Giant",
     "ExplosionDamage": 400,
     "ExplosionRadius": 14,
     "CrashPassengers": true

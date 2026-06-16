@@ -478,7 +478,7 @@ open class CustomExplosion(
         private var attackerEntity: Entity?
         private var damage = 0f
         private var radius = 0f
-        private var particleType: ParticleTool.ParticleType = ParticleTool.ParticleType.MINI
+        private var particleType: ParticleTool.ParticleType? = null
         private var destroyBlock: Supplier<BlockInteraction> =
             Supplier { if (ExplosionConfig.EXPLOSION_DESTROY.get()) BlockInteraction.DESTROY else BlockInteraction.KEEP }
         private var fireTime = 0
@@ -580,8 +580,10 @@ open class CustomExplosion(
             ForgeEventFactory.onExplosionStart(directSource.level(), customExplosion)
             customExplosion.finalizeExplosion(false)
 
+            // Auto-detect particle type from radius if not explicitly set
+            val type = particleType ?: ParticleTool.particleTypeForRadius(radius)
             ParticleTool.spawnExplosionParticles(
-                particleType,
+                type,
                 directSource.level(),
                 if (particlePosition != null) particlePosition!! else position
             )

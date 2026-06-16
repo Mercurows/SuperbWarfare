@@ -282,7 +282,6 @@
   ],
   "RotateOffsetHeight": 1.78,
   "DestroyInfo": {
-    "ParticleType": "Huge",
     "ExplosionDamage": 300,
     "ExplosionRadius": 8,
     "CrashPassengers": true

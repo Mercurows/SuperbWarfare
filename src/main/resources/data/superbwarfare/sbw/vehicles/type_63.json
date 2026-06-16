@@ -69,7 +69,7 @@
   ],
   "VehicleContainerType": "Special",
   "DestroyInfo": {
-    "ParticleType": "Medium",
+    : "Medium",
     "ExplosionDamage": 20,
     "ExplosionRadius": 2,
     "NoWreck": true

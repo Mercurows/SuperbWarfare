@@ -296,7 +296,7 @@
     "@#superbwarfare:aa_missile * 1.65"
   ],
   "DestroyInfo": {
-    "ParticleType": "Epic",
+    : "Epic",
     "ExplosionDamage": 2000,
     "ExplosionRadius": 42,
     "CrashPassengers": true

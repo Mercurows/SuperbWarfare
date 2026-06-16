@@ -135,7 +135,7 @@
   "VehicleContainerType": "Mini",
   "EngineType": "Fixed",
   "DestroyInfo": {
-    "ParticleType": "Medium",
+    : "Medium",
     "ExplosionDamage": 160,
     "ExplosionRadius": 9
   },

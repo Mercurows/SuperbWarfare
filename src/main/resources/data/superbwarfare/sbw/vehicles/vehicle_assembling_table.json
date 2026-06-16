@@ -21,7 +21,7 @@
     "@minecraft:tnt_minecart * 3"
   ],
   "DestroyInfo": {
-    "ParticleType": "Small",
+    : "Small",
     "ExplosionDamage": 20,
     "ExplosionRadius": 3,
     "ExplodePassengers": false,

@@ -431,7 +431,7 @@
     "$entity.getSourceAngle(source, 0.3) * damage"
   ],
   "DestroyInfo": {
-    "ParticleType": "Giant",
+    : "Giant",
     "ExplosionDamage": 200,
     "ExplosionRadius": 16,
     "SympatheticDetonation": true,
