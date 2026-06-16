@@ -267,7 +267,7 @@
   "Mass": 400,
   "HasDecoy": true,
   "DamageModifiers": [
-    "All - 11",
+    "All - 15",
     "minecraft:lava + 11",
     "minecraft:lava * 10",
     "All * 0.2",
@@ -283,7 +283,7 @@
     "superbwarfare:mine * 0.75",
     "superbwarfare:projectile_hit * 0.8",
     "superbwarfare:grapeshot_hit * 0.3",
-    "superbwarfare:laser * 1.25",
+    "superbwarfare:laser * 0.3",
     "@#superbwarfare:aerial_bomb * 3",
     "#superbwarfare:projectile * 0.12",
     "#superbwarfare:projectile_absolute * 0.45",

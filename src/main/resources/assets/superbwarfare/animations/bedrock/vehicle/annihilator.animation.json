@@ -1,7 +1,7 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.annihilator.idle": {
+		"animation.main.idle": {
 			"animation_length": 0.25,
 			"bones": {
 				"glow1": {
@@ -33,7 +33,7 @@
 				}
 			}
 		},
-		"animation.annihilator.fire": {
+		"animation.main.fire": {
 			"animation_length": 1,
 			"bones": {
 				"glow1": {
