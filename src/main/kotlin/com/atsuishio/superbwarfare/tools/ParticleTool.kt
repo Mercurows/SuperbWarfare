@@ -276,8 +276,8 @@ object ParticleTool {
             sendParticle(level, ParticleTypes.EXPLOSION, x, y + 6, z, 250, 12.0, 12.0, 12.0, 1.0, true)
             sendParticle(level, ParticleTypes.FLASH, x, y + 7, z, 300, 13.0, 13.0, 13.0, 1.0, true)
             sendParticle(level, ModParticleTypes.FIRE_STAR.get(), x, y + 8, z, 200, 0.0, 0.0, 0.0, 4.0, true)
-            sendParticle(level, CustomFlareOption(1f, 1f, 1f, 10, 0.75f, 1, 2f), x, y + 3, z, 1000, 18.0, 18.0, 18.0, 0.005, true)
-            sendParticle(level, ExplosionDebrisOption(0.5f, 0.43f, 0.16f, 340, 0.976f, (10 + 8 * Math.random()).toInt(), 0.035f, size = 0.85f), x, y + 0.5, z, 140, 0.0, 0.0, 0.0, 2.4, true)
+            sendParticle(level, CustomFlareOption(1f, 1f, 1f, 50, 0.9f, 8, 80f, size = 60f), x, y + 3, z, 1, 0.0, 0.0, 0.0, 0.005, true)
+            sendParticle(level, ExplosionDebrisOption(0.5f, 0.43f, 0.16f, 800, 0.985f, (12 + 8 * Math.random()).toInt(), 0.035f, size = 1.1f), x, y + 0.5, z, 220, 0.0, 0.0, 0.0, 2.7, true)
 
             for (i in 0..360) {
                 val v = Vec3(1.0, 0.0, 0.0).yRot((i * Math.random()).toFloat())
@@ -289,17 +289,20 @@ object ParticleTool {
 
             for (i in 0..23) {
                 queueServerWork(i) {
+                    if (i < 6) {
+                        sendParticle(level, CustomFlareOption(1f, 0.9f, 0.8f, 40, 0.87f, 12, 0.4f, size = 100f), x, y + 3, z, 10, 2.0, 2.0, 2.0, 0.005, true)
+                    }
                     if (i < 12) {
-                        sendParticle(level, CustomFlareOption(0.6f - (i.toFloat() / 24), 0.3f - (i.toFloat() / 48), 0f, 140, 0.95f, 4, 0.075f), x, y + 5 * i, z, 60, 4.5 - 0.15 * i, 1.2, 4.5 - 0.15 * i, 0.005, true)
-                        sendParticle(level, CustomFlareOption(0.4f - (i.toFloat() / 48), 0.2f - (i.toFloat() / 96), 0f, 180, 0.96f, 4, 0.075f), x, y + 0.5, z, 80, 6 + 0.9 * i, 1.2, 6 + 0.9 * i, 0.005, true)
+                        sendParticle(level, CustomFlareOption(0.6f - (i.toFloat() / 24), 0.3f - (i.toFloat() / 48), 0f, 600, 0.98f, 14, 0.075f, size = 1.5f), x, y + 5 * i, z, 60, 4.5 - 0.15 * i, 1.2, 4.5 - 0.15 * i, 0.005, true)
+                        sendParticle(level, CustomFlareOption(0.4f - (i.toFloat() / 48), 0.2f - (i.toFloat() / 96), 0f, 620, 0.98f, 14, 0.075f, size = 1.2f), x, y + 0.5, z, 80, 6 + 1.2 * i, 0.7, 6 + 1.2 * i, 0.005, true)
                     }
                     if (i in 8..<16) {
                         val k = i - 8
-                        sendParticle(level, CustomFlareOption(0.25f, 0.125f, 0f, 100, 0.95f, 2, 0.075f), x, y + 50, z, 60 * k, 3 + 1.3 * k, 2.2 + 0.5 * k, 3 + 1.3 * k, 0.005, true)
-                        sendParticle(level, CustomFlareOption(0.125f, 0.0625f, 0f, 150, 0.95f, 3, 0.01f), x, y + 50, z, 30 * k, 3 + 1.3 * k, 2.2 + 0.5 * k, 3 + 1.3 * k, 0.005, true)
-                        sendParticle(level, CustomFlareOption(0.0625f, 0.03125f, 0f, 200, 0.95f, 4, 0.15f), x, y + 50, z, 30 * k, 3 + 1.3 * k, 2.2 + 0.5 * k, 3 + 1.3 * k, 0.005, true)
+                        sendParticle(level, CustomFlareOption(0.25f, 0.125f, 0f, 600, 0.98f, 13, 0.025f, size = 4.5f), x, y + 50, z, 60 * k, 3 + 1.3 * k, 2.2 + 0.5 * k, 3 + 1.3 * k, 0.005, true)
+                        sendParticle(level, CustomFlareOption(0.125f, 0.0625f, 0f, 630, 0.98f, 14, 0.007f, size = 4.5f), x, y + 50, z, 30 * k, 3 + 1.3 * k, 2.2 + 0.5 * k, 3 + 1.3 * k, 0.005, true)
+                        sendParticle(level, CustomFlareOption(0.0625f, 0.03125f, 0f, 650, 0.98f, 15, 0.1f, size = 4.5f), x, y + 50, z, 30 * k, 3 + 1.3 * k, 2.2 + 0.5 * k, 3 + 1.3 * k, 0.005, true)
                     }
-                    sendParticle(level, CustomFlareOption(0.667f, 0.631f, 0.592f, 100, 0.97f, 10, 0.06f), x, y - 1, z, 15 * i, i.toDouble() * 2.5, 0.05, i.toDouble() * 2.5, 0.0003 * i, true)
+                    sendParticle(level, CustomFlareOption(0.667f, 0.631f, 0.592f, 600, 0.98f, (4 + 12 * Math.random()).toInt(), 0.02f, size = 0.8f + 1.4f * Math.random().toFloat()), x, y - 1, z, 25 * i, i.toDouble() * 5, 0.05, i.toDouble() * 5, 0.0, true)
                 }
             }
             sendToNearbyPlayers(level, x, y, z, 768.0, 54.0, 9.0)

@@ -645,15 +645,35 @@ open class C4Entity : Entity, OwnableEntity {
             }
         }
 
+        val radius = ExplosionConfig.C4_EXPLOSION_DAMAGE.get().toFloat()
+
         CustomExplosion.Builder(this)
             .attacker(this.owner)
             .damage(ExplosionConfig.C4_EXPLOSION_DAMAGE.get().toFloat())
-            .radius(ExplosionConfig.C4_EXPLOSION_RADIUS.get().toFloat())
+            .radius(radius)
             .position(pos)
-            .withParticleType(ParticleTool.ParticleType.HUGE)
+            .withParticleType(explosionParticleType(radius))
             .explode()
 
         this.discard()
+    }
+
+    open fun explosionParticleType(radius: Float): ParticleTool.ParticleType {
+        return if (radius < 2.0) {
+            ParticleTool.ParticleType.MINI
+        } else if (radius in 2.0..<4.0) {
+            ParticleTool.ParticleType.SMALL
+        } else if (radius in 4.0..<7.0) {
+            ParticleTool.ParticleType.MEDIUM
+        } else if (radius in 7.0..<10.0) {
+            ParticleTool.ParticleType.LARGE
+        } else if (radius in 10.0..<20.0) {
+            ParticleTool.ParticleType.HUGE
+        } else if (radius in 20.0..<30.0) {
+            ParticleTool.ParticleType.GIANT
+        } else {
+            ParticleTool.ParticleType.EPIC
+        }
     }
 
     protected val waterInertia: Float
