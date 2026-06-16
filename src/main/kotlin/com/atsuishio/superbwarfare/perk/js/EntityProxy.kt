@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.perk.js
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity
 import com.atsuishio.superbwarfare.tools.CustomExplosion
 import com.atsuishio.superbwarfare.tools.InventoryTool
-import com.atsuishio.superbwarfare.tools.ParticleTool
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.OwnableEntity
@@ -103,8 +102,6 @@ class EntityProxy(val entity: Entity?) {
             .directSource(attacker)
             .source(null)
             .fireTime(fireTime.toInt())
-            .withParticleType(ParticleTool.ParticleType.SMALL)
-
         if (keepBlocks) {
             builder.keepBlock()
         }

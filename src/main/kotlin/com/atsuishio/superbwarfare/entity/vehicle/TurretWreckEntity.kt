@@ -280,9 +280,8 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, level: Level) 
             this.discard()
 
             CustomExplosion.Builder(this).attacker(null)
-                .radius(0f)
-                .damage(0f)
-                .withParticleType(ParticleTool.ParticleType.SMALL)
+                .radius(4f)
+                .damage(1f)
                 .keepBlock().explode()
 
             this.generateWreckageLoot()

@@ -503,8 +503,8 @@ class CustomExplosion @JvmOverloads constructor(
         private var attackerEntity: Entity?
         private var damage = 0f
         private var radius = 0f
-        private var particleType: ParticleTool.ParticleType? = ParticleTool.ParticleType.MINI
-        private var destroyBlock: Supplier<BlockInteraction?> =
+        private var particleType: ParticleTool.ParticleType? = null
+        private var destroyBlock: Supplier<BlockInteraction> =
             Supplier { if (ExplosionConfig.EXPLOSION_DESTROY.get()) BlockInteraction.DESTROY else BlockInteraction.KEEP }
         private var fireTime = 0
         private var damageSource: DamageSource? = null
@@ -548,7 +548,7 @@ class CustomExplosion @JvmOverloads constructor(
             return this
         }
 
-        fun destroyBlock(destroyBlock: Supplier<BlockInteraction?>): Builder {
+        fun destroyBlock(destroyBlock: Supplier<BlockInteraction>): Builder {
             this.destroyBlock = destroyBlock
             return this
         }
@@ -596,7 +596,7 @@ class CustomExplosion @JvmOverloads constructor(
             val customExplosion = CustomExplosion(
                 level, directSource,
                 source, damage,
-                position.x, position.y, position.z, radius, destroyBlock.get()!!
+                position.x, position.y, position.z, radius, destroyBlock.get()
             )
                 .setFireTime(fireTime)
                 .setBeast(beast)
@@ -605,8 +605,10 @@ class CustomExplosion @JvmOverloads constructor(
             EventHooks.onExplosionStart(directSource.level(), customExplosion)
             customExplosion.finalizeExplosion(false)
 
+            // Auto-detect particle type from radius if not explicitly set
+            val type = particleType ?: ParticleTool.particleTypeForRadius(radius)
             ParticleTool.spawnExplosionParticles(
-                particleType,
+                type,
                 directSource.level(),
                 if (particlePosition != null) particlePosition!! else position
             )

@@ -294,7 +294,6 @@ open class Ptkm1rEntity : Entity, OwnableEntity {
             .damage(ExplosionConfig.PTKM_1R_EXPLOSION_DAMAGE.get().toFloat())
             .radius(ExplosionConfig.PTKM_1R_EXPLOSION_RADIUS.get().toFloat())
             .attacker(this.owner)
-            .withParticleType(ParticleTool.ParticleType.HUGE)
             .explode()
 
         this.discard()

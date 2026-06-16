@@ -496,7 +496,6 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
             .damage(explosionDamageValue)
             .radius(explosionRadiusValue)
             .position(vec3)
-            .withParticleType(explosionParticleType(explosionRadiusValue))
             .beast(this.isBeast())
     }
 
@@ -539,24 +538,6 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
 
         if (discardAfterExplode()) {
             this.discard()
-        }
-    }
-
-    open fun explosionParticleType(radius: Float): ParticleTool.ParticleType {
-        return if (radius < 2.0) {
-            ParticleTool.ParticleType.MINI
-        } else if (radius in 2.0..<4.0) {
-            ParticleTool.ParticleType.SMALL
-        } else if (radius in 4.0..<7.0) {
-            ParticleTool.ParticleType.MEDIUM
-        } else if (radius in 7.0..<10.0) {
-            ParticleTool.ParticleType.LARGE
-        } else if (radius in 10.0..<20.0) {
-            ParticleTool.ParticleType.HUGE
-        } else if (radius in 20.0..<30.0) {
-            ParticleTool.ParticleType.GIANT
-        } else {
-            ParticleTool.ParticleType.EPIC
         }
     }
 

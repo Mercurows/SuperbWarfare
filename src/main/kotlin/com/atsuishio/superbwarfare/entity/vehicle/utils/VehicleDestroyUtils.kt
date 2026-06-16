@@ -81,13 +81,11 @@ object VehicleDestroyUtils {
         if (radius > 0) {
             queueServerWork(1) {
                 val damage = destroyInfo.explosionDamage
-                val particleType = destroyInfo.particleType
 
                 val explosion = CustomExplosion.Builder(vehicle)
                     .attacker(vehicle.lastAttacker)
                     .radius(radius)
                     .damage(damage)
-                    .withParticleType(particleType)
 
                 if (!destroyInfo.explodeBlocks) {
                     explosion.keepBlock()

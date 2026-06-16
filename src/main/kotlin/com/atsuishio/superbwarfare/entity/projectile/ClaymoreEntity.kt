@@ -228,7 +228,6 @@ open class ClaymoreEntity(type: EntityType<ClaymoreEntity>, level: Level) : Enti
                 .damage(ExplosionConfig.CLAYMORE_EXPLOSION_DAMAGE.get().toFloat() / 5)
                 .radius(ExplosionConfig.CLAYMORE_EXPLOSION_RADIUS.get().toFloat())
                 .position(this.position())
-                .withParticleType(ParticleTool.ParticleType.MEDIUM)
                 .explode()
 
             this.discard()
@@ -240,7 +239,6 @@ open class ClaymoreEntity(type: EntityType<ClaymoreEntity>, level: Level) : Enti
             .attacker(this.owner)
             .damage(ExplosionConfig.CLAYMORE_EXPLOSION_DAMAGE.get().toFloat())
             .radius(ExplosionConfig.CLAYMORE_EXPLOSION_RADIUS.get().toFloat())
-            .withParticleType(ParticleTool.ParticleType.MEDIUM)
             .explode()
     }
 

@@ -1935,9 +1935,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             if (health <= -getMaxHealth()) {
                 this.discard()
                 createCustomExplosion()
-                    .radius(0f)
-                    .damage(0f)
-                    .withParticleType(ParticleTool.ParticleType.SMALL)
+                    .radius(5f)
+                    .damage(1f)
                     .keepBlock()
                     .explode()
 
