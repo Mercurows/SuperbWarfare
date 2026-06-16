@@ -297,13 +297,12 @@
     "@superbwarfare:javelin_missile * 0.8"
   ],
   "DestroyInfo": {
-    : "Huge",
     "ExplosionDamage": 300,
     "ExplosionRadius": 12,
     "CrashPassengers": true
   },
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/happiest_ghast_icon.png",
-  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png",
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/airship.png",
   "VehicleContainerType": "Medium",
   "Type": "AirShip",
   "HudType": "@Helicopter",

@@ -191,7 +191,6 @@
   "VehicleContainerType": "Empty",
   "EngineType": "Fixed",
   "DestroyInfo": {
-    : "Giant",
     "ExplosionDamage": 600,
     "ExplosionRadius": 15
   },

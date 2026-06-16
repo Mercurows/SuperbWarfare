@@ -296,13 +296,12 @@
     "@#superbwarfare:aa_missile * 1.65"
   ],
   "DestroyInfo": {
-    : "Epic",
     "ExplosionDamage": 2000,
     "ExplosionRadius": 42,
     "CrashPassengers": true
   },
-  "VehicleIcon": "superbwarfare:textures/vehicle_icon/happiest_ghast_icon.png",
-  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png",
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/kirov_icon.png",
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/airship.png",
   "VehicleContainerType": "Huge",
   "Type": "AirShip",
   "HudType": "@Kirov",

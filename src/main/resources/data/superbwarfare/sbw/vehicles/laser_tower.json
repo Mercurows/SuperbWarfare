@@ -67,7 +67,6 @@
   "SelfHurtPercent": 0,
   "VehicleContainerType": "Empty",
   "DestroyInfo": {
-    : "Medium",
     "ExplosionDamage": 10,
     "ExplosionRadius": 3,
     "ExplodeBlocks": false,

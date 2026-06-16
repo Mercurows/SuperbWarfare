@@ -200,7 +200,6 @@
     "$entity.getSourceAngle(source, 0.2) * damage"
   ],
   "DestroyInfo": {
-    : "Huge",
     "ExplosionDamage": 160,
     "ExplosionRadius": 8
   },

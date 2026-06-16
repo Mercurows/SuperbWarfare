@@ -1458,7 +1458,7 @@ object VehicleEngineUtils {
             roll *= 0.97f
         }
 
-        if (health > 0.1f * getMaxHealth()) {
+        if (health > 0) {
             if (!upInputDown && !downInputDown) {
                 liftSpeed *= 0.8f
             }

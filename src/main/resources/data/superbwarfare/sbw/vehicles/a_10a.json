@@ -344,7 +344,6 @@
   ],
   "RotateOffsetHeight": 1.78,
   "DestroyInfo": {
-    : "Giant",
     "ExplosionDamage": 800,
     "ExplosionRadius": 16,
     "CrashPassengers": true

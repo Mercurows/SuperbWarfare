@@ -50,7 +50,6 @@
   ],
   "VehicleContainerType": "Empty",
   "DestroyInfo": {
-    : "Medium",
     "ExplosionDamage": 15,
     "ExplosionRadius": 2,
     "ExplodePassengers": false,

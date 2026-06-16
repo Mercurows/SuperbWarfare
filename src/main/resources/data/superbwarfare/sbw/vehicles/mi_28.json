@@ -414,14 +414,13 @@
     "@#superbwarfare:aerial_bomb * 2"
   ],
   "DestroyInfo": {
-    : "Giant",
     "ExplosionDamage": 400,
     "ExplosionRadius": 14,
     "CrashPassengers": true
   },
   "HUDColor": "0xFFC700",
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/mi_28_icon.png",
-  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png",
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/helicopter.png",
   "VehicleContainerType": "Small",
   "Type": "Helicopter",
   "HudType": "@Helicopter",

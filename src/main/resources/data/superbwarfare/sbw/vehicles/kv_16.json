@@ -149,7 +149,6 @@
   ],
   "RotateOffsetHeight": 0.5,
   "DestroyInfo": {
-    : "Medium",
     "ExplosionDamage": 80,
     "ExplosionRadius": 6,
     "CrashPassengers": true

@@ -210,7 +210,6 @@
     ]
   },
   "DestroyInfo": {
-    : "Giant",
     "ExplosionDamage": 250,
     "ExplosionRadius": 18,
     "SympatheticDetonation": true,
