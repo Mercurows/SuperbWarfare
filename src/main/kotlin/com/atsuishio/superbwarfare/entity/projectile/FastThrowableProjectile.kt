@@ -199,7 +199,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         super.baseTick()
 
         val level = this.level()
-        if (!level.isClientSide()) {
+        if (!level.isClientSide() && this.tickCount > this.getNoHitTicks()) {
             val startVec = this.position()
             val fullEndVec = startVec.add(this.deltaMovement)
 
@@ -223,6 +223,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
                 val shooter = this.owner
                 // 跳过无法伤害的玩家
                 if (entity is Player && shooter is Player && !shooter.canHarmPlayer(entity)) continue
+                if (entity == shooter || entity == shooter?.vehicle) continue
 
                 val dist = startVec.distanceToSqr(entityResult.hitVec)
                 if (dist < closestDist) {
@@ -327,9 +328,6 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
 
         if (result is ExtendedEntityRayTraceResult) {
             val entity = result.entity
-            if (entity == this.owner) {
-                return
-            }
 
             if (this.owner is Player) {
                 if (entity.hasIndirectPassenger(this.owner!!)) {
