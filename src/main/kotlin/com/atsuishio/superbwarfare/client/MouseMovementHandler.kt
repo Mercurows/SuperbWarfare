@@ -18,6 +18,7 @@ object MouseMovementHandler {
     private var mouseLockActive: Boolean = false
     private var savedRot: Vector3f = Vector3f()
 
+    @JvmStatic
     fun getMousePos(): Vec2 {
         if (mouseHandler.isMouseGrabbed) {
             return Vec2(mouseHandler.xpos().toFloat(), mouseHandler.ypos().toFloat())
@@ -29,12 +30,14 @@ object MouseMovementHandler {
         }
     }
 
+    @JvmStatic
     fun resetCenter() {
         delta = Vec2(0f, 0f)
         vel = Vec2(0f, 0f)
         lastPos = getMousePos()
     }
 
+    @JvmStatic
     fun init() {
         delta = Vec2(0f, 0f)
         vel = Vec2(0f, 0f)
@@ -42,6 +45,7 @@ object MouseMovementHandler {
         lastPos = getMousePos()
     }
 
+    @JvmStatic
     fun getX(useVelocity: Boolean): Float {
         return if (useVelocity) {
             vel.x
@@ -50,6 +54,7 @@ object MouseMovementHandler {
         }
     }
 
+    @JvmStatic
     fun getY(useVelocity: Boolean): Float {
         return if (useVelocity) {
             vel.y
@@ -58,6 +63,7 @@ object MouseMovementHandler {
         }
     }
 
+    @JvmStatic
     fun activateMouseLock() {
         val player = localPlayer ?: return
 
@@ -68,10 +74,12 @@ object MouseMovementHandler {
         lastPos = getMousePos()
     }
 
+    @JvmStatic
     fun deactivateMouseLock() {
         mouseLockActive = false
     }
 
+    @JvmStatic
     fun cancelPlayerTurn() {
         if (!mouseLockActive) return
         val player = localPlayer ?: return
