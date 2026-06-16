@@ -645,7 +645,7 @@ open class C4Entity : Entity, OwnableEntity {
             }
         }
 
-        val radius = ExplosionConfig.C4_EXPLOSION_DAMAGE.get().toFloat()
+        val radius = ExplosionConfig.C4_EXPLOSION_RADIUS.get().toFloat()
 
         CustomExplosion.Builder(this)
             .attacker(this.owner)
