@@ -17,6 +17,16 @@ object ModParticleTypes {
     val FIRE_STAR = registerSimpleParticle("fire_star")
 
     @JvmField
+    val EXPLOSION_DEBRIS: RegistryObject<ParticleType<ExplosionDebrisOption>> =
+        REGISTRY.register("explosion_debris") {
+            createOptions<ExplosionDebrisOption>(
+                ExplosionDebrisOption.CODEC,
+                true,
+                ExplosionDebrisOption.DESERIALIZER
+            )
+        }
+
+    @JvmField
     val WHITE_STAR = registerSimpleParticle("white_star")
 
     @JvmField
