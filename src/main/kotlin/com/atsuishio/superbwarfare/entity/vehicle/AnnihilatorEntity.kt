@@ -9,8 +9,10 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.item.misc.firingParameters
+import com.atsuishio.superbwarfare.network.message.receive.VehicleShootClientMessage
 import com.atsuishio.superbwarfare.tools.DamageHandler
 import com.atsuishio.superbwarfare.tools.TraceTool
+import com.atsuishio.superbwarfare.tools.sendPacketToAll
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.network.syncher.EntityDataAccessor
@@ -258,6 +260,26 @@ open class AnnihilatorEntity(type: EntityType<AnnihilatorEntity>, world: Level) 
                         1f
                     )
                 }
+            }
+
+            if (living != null) {
+                val shootPos = gunData.get(GunProp.SHOOT_POS)
+                val list = shootPos.positions
+                val size = list.size
+
+                val index: Int = if (shootPos.boundUpWithAmmoAmount) {
+                    Mth.clamp(gunData.ammo.get() - 1, 0, size)
+                } else {
+                    gunData.fireIndex.get() % size
+                }
+
+                sendPacketToAll(
+                    VehicleShootClientMessage(
+                        living.uuid,
+                        this.uuid,
+                        index
+                    )
+                )
             }
 
             gunData.shakePlayers(this)
