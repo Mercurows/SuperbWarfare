@@ -1,11 +1,5 @@
 {
-  "parent": "builtin/entity",
-  "texture_size": [
-    32,
-    32
-  ],
-  "gui_light": "front",
-  "display": {
+    "transforms": {
         "firstperson_righthand": {
             "translation": [
                 2.5,
@@ -114,8 +108,5 @@
                 3
             ]
         }
-  },
-  "textures": {
-    "layer0": "superbwarfare:item/military_shovel"
-  }
+    }
 }

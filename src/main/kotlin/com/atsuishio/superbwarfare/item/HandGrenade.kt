@@ -1,11 +1,16 @@
 package com.atsuishio.superbwarfare.item
 
+import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.client.renderer.item.HandGrenadeRenderer
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.entity.projectile.HandGrenadeEntity
 import com.atsuishio.superbwarfare.init.ModEntities
+import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.projectile.AbstractProjectileDispenseBehavior
 import com.atsuishio.superbwarfare.tools.CustomExplosion
+import com.atsuishio.superbwarfare.tools.mc
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer
 import net.minecraft.core.Position
 import net.minecraft.core.dispenser.BlockSource
 import net.minecraft.core.dispenser.DispenseItemBehavior
@@ -22,14 +27,40 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Rarity
 import net.minecraft.world.item.UseAnim
 import net.minecraft.world.level.Level
+import net.neoforged.bus.api.SubscribeEvent
+import net.neoforged.fml.common.EventBusSubscriber
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent
 import kotlin.math.min
 
 open class HandGrenade : Item(Properties().rarity(Rarity.UNCOMMON)), DispenserLaunchable {
-    override fun use(worldIn: Level, playerIn: Player, handIn: InteractionHand): InteractionResultHolder<ItemStack> {
+    @EventBusSubscriber(modid = Mod.MODID)
+    companion object {
+        @SubscribeEvent
+        private fun registerItemExtensions(event: RegisterClientExtensionsEvent) {
+            event.registerItem(object : IClientItemExtensions {
+                private var renderer: BlockEntityWithoutLevelRenderer? = null
+
+                override fun getCustomRenderer(): BlockEntityWithoutLevelRenderer {
+                    if (renderer == null) {
+                        renderer = HandGrenadeRenderer(mc.blockEntityRenderDispatcher, mc.entityModels)
+                    }
+                    return renderer!!
+                }
+            }, ModItems.HAND_GRENADE)
+        }
+    }
+
+    override fun use(
+        worldIn: Level,
+        playerIn: Player,
+        handIn: InteractionHand
+    ): InteractionResultHolder<ItemStack> {
         val stack = playerIn.getItemInHand(handIn)
         playerIn.startUsingItem(handIn)
         if (playerIn is ServerPlayer) {
-            playerIn.level().playSound(null, playerIn.onPos, ModSounds.GRENADE_PULL.get(), SoundSource.PLAYERS, 1f, 1f)
+            playerIn.level()
+                .playSound(null, playerIn.onPos, ModSounds.GRENADE_PULL.get(), SoundSource.PLAYERS, 1f, 1f)
         }
         return InteractionResultHolder.consume(stack)
     }
