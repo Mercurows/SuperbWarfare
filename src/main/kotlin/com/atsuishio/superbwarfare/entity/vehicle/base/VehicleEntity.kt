@@ -34,10 +34,7 @@ import com.atsuishio.superbwarfare.inventory.handler.VehicleContainerHandler
 import com.atsuishio.superbwarfare.inventory.menu.*
 import com.atsuishio.superbwarfare.item.container.ContainerBlockItem
 import com.atsuishio.superbwarfare.item.curio.DogTagItem
-import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
-import com.atsuishio.superbwarfare.network.message.receive.ClientVehicleItemMessage
-import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
-import com.atsuishio.superbwarfare.network.message.receive.VehicleShootClientMessage
+import com.atsuishio.superbwarfare.network.message.receive.*
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.OBB.Part.*
 import com.atsuishio.superbwarfare.tools.VectorTool.combineRotationsTurret
@@ -1458,6 +1455,13 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         if (player.isShiftKeyDown && stack.`is`(ModItems.DOG_TAG.get())) {
             this.dogTagIcon = DogTagItem.getColors(stack).map { it.toList() }.toList()
             return InteractionResult.SUCCESS
+        }
+
+        if (stack.`is`(ModItems.SKIN_SPRAY.get())) {
+            if (!level().isClientSide) {
+                player.sendPacket(OpenVehicleSkinScreenMessage(this.id))
+            }
+            return InteractionResult.CONSUME
         }
 
         if (stack.item is NameTagItem && stack.hasCustomHoverName()) {
