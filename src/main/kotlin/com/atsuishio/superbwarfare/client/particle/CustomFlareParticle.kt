@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.client.particle
 
+import com.atsuishio.superbwarfare.client.renderer.ModParticleRenderTypes
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.client.particle.*
 import net.minecraft.core.BlockPos
@@ -108,7 +109,7 @@ open class CustomFlareParticle protected constructor(
     }
 
     override fun getRenderType(): ParticleRenderType {
-        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT
+        return ModParticleRenderTypes.PARTICLE_SHEET_SOFT_TRANSLUCENT
     }
 
     override fun tick() {
