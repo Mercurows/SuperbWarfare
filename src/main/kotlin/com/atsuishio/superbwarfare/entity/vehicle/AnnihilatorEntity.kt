@@ -6,8 +6,6 @@ import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes
-import com.atsuishio.superbwarfare.init.ModItems
-import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.item.misc.firingParameters
 import com.atsuishio.superbwarfare.network.message.receive.VehicleShootClientMessage
 import com.atsuishio.superbwarfare.tools.DamageHandler
@@ -36,10 +34,11 @@ import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
+import net.minecraftforge.items.ItemHandlerHelper
 import org.joml.Math
 import java.util.*
 
-open class AnnihilatorEntity(type: EntityType<AnnihilatorEntity>, world: Level) : ArtilleryEntity(type, world){
+open class AnnihilatorEntity(type: EntityType<AnnihilatorEntity>, world: Level) : ArtilleryEntity(type, world) {
     init {
         this.noCulling = true
     }
@@ -51,29 +50,36 @@ open class AnnihilatorEntity(type: EntityType<AnnihilatorEntity>, world: Level) 
         this.entityData.define(LASER_RIGHT_LENGTH, 0f)
     }
 
-    override fun interact(player: Player, hand: InteractionHand): InteractionResult {
-        val mainStack = player.mainHandItem
-        val offStack = player.offhandItem
-
-        if (mainStack.item === ModItems.FIRING_PARAMETERS.get() && player.isCrouching) {
-            setTarget(mainStack)
-            return InteractionResult.SUCCESS
-        }
-        if (offStack.item === ModItems.FIRING_PARAMETERS.get() && player.isCrouching) {
-            setTarget(offStack)
-            return InteractionResult.SUCCESS
-        }
-
-        if (mainStack.`is`(ModTags.Items.TOOLS_CROWBAR) && !player.isCrouching) {
+    override fun onCrowbarInteract(
+        stack: ItemStack,
+        player: Player,
+        hand: InteractionHand
+    ): InteractionResult? {
+        if (!player.isShiftKeyDown) {
             if (chargeProgress >= 1) {
                 vehicleShoot(player, "Main", null)
             }
             return InteractionResult.SUCCESS
+        } else {
+            if (this.passengers.isNotEmpty()) return null
+            if (this.isWreck) {
+                return InteractionResult.PASS
+            } else {
+                for (item in this.getRetrieveItems()) {
+                    ItemHandlerHelper.giveItemToPlayer(player, item)
+                }
+                this.remove(RemovalReason.DISCARDED)
+                this.discard()
+                return InteractionResult.SUCCESS
+            }
         }
-        return super.interact(player, hand)
     }
 
-    fun setTarget(stack: ItemStack) {
+    override fun setTarget(
+        stack: ItemStack,
+        entity: Entity?,
+        weaponName: String
+    ) {
         if (this.isWreck) return
         val parameters = stack.firingParameters
         val pos = parameters.pos

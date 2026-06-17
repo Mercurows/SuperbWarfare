@@ -3,7 +3,10 @@ package com.atsuishio.superbwarfare.item.misc
 import com.atsuishio.superbwarfare.client.TooltipTool
 import com.atsuishio.superbwarfare.client.screens.ArtilleryIndicatorScreen
 import com.atsuishio.superbwarfare.config.server.MiscConfig
+import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.item.IVehicleInteract
 import com.atsuishio.superbwarfare.item.ItemScreenProvider
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import net.minecraft.ChatFormatting
@@ -26,7 +29,8 @@ import net.minecraft.world.level.Level
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 
-open class ArtilleryIndicatorItem : Item(Properties().stacksTo(1).rarity(Rarity.UNCOMMON)), ItemScreenProvider {
+open class ArtilleryIndicatorItem : Item(Properties().stacksTo(1).rarity(Rarity.UNCOMMON)), ItemScreenProvider,
+    IVehicleInteract {
     override fun appendHoverText(
         pStack: ItemStack,
         pLevel: Level?,
@@ -210,6 +214,19 @@ open class ArtilleryIndicatorItem : Item(Properties().stacksTo(1).rarity(Rarity.
             )
             return InteractionResult.FAIL
         }
+    }
+
+    override fun onInteractVehicle(
+        vehicle: VehicleEntity,
+        stack: ItemStack,
+        player: Player,
+        hand: InteractionHand
+    ): InteractionResult? {
+        if (vehicle !is ArtilleryEntity) return null
+        if (!vehicle.canBind() && vehicle.isWreck) return null
+        if (player.rootVehicle == vehicle) return InteractionResult.FAIL
+        if (vehicle is MortarEntity && !vehicle.intelligent) return null
+        return bind(stack, player, vehicle)
     }
 
     companion object {

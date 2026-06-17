@@ -1,12 +1,12 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
 import com.atsuishio.superbwarfare.data.gun.GunProp
+import com.atsuishio.superbwarfare.entity.getValue
+import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getXRotFromVector
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
-import com.atsuishio.superbwarfare.init.ModTags
-import com.atsuishio.superbwarfare.item.misc.ArtilleryIndicatorItem
 import com.atsuishio.superbwarfare.item.misc.MonitorItem
 import com.atsuishio.superbwarfare.item.misc.firingParameters
 import com.atsuishio.superbwarfare.item.projectile.MortarShellItem
@@ -38,9 +38,11 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
+import net.minecraftforge.items.ItemHandlerHelper
 
 open class MortarEntity(type: EntityType<MortarEntity>, level: Level) : ArtilleryEntity(type, level) {
     private var shooter: LivingEntity? = null
+    var intelligent by INTELLIGENT
 
     constructor(level: Level, yRot: Float) : this(ModEntities.MORTAR.get(), level) {
         this.yRot = yRot
@@ -133,10 +135,6 @@ open class MortarEntity(type: EntityType<MortarEntity>, level: Level) : Artiller
         val stack = player.mainHandItem
         val mainHandItem = stack.item
 
-        if (mainHandItem is ArtilleryIndicatorItem && this.entityData.get(INTELLIGENT)) {
-            return mainHandItem.bind(stack, player, this)
-        }
-
         if (mainHandItem is MonitorItem && !this.entityData.get(INTELLIGENT)) {
             entityData.set(INTELLIGENT, true)
             if (player is ServerPlayer) {
@@ -145,13 +143,6 @@ open class MortarEntity(type: EntityType<MortarEntity>, level: Level) : Artiller
             }
             if (!player.isCreative) {
                 stack.shrink(1)
-            }
-            return InteractionResult.SUCCESS
-        }
-
-        if (stack.`is`(ModTags.Items.TOOLS_CROWBAR)) {
-            if (this.getItems()[0].item is MortarShellItem && this.entityData.get(FIRE_TIME) == 0 && level() is ServerLevel) {
-                vehicleShoot(player, "Main", targetPos.center)
             }
             return InteractionResult.SUCCESS
         }
@@ -166,18 +157,36 @@ open class MortarEntity(type: EntityType<MortarEntity>, level: Level) : Artiller
             return InteractionResult.SUCCESS
         }
 
-        if (player.mainHandItem.item === ModItems.FIRING_PARAMETERS.get()) {
-            setTarget(player.mainHandItem, player, "Main")
-        }
-        if (player.offhandItem.item === ModItems.FIRING_PARAMETERS.get()) {
-            setTarget(player.offhandItem, player, "Main")
-        }
-
         if (player.isShiftKeyDown) {
             entityData.set(TARGET_YAW, player.yRot)
         }
 
         return InteractionResult.FAIL
+    }
+
+    override fun onCrowbarInteract(
+        stack: ItemStack,
+        player: Player,
+        hand: InteractionHand
+    ): InteractionResult? {
+        if (!player.isShiftKeyDown) {
+            if (this.getItems()[0].item is MortarShellItem && this.entityData.get(FIRE_TIME) == 0 && level() is ServerLevel) {
+                vehicleShoot(player, "Main", targetPos.center)
+            }
+            return InteractionResult.SUCCESS
+        } else {
+            if (this.passengers.isNotEmpty()) return null
+            if (this.isWreck) {
+                return InteractionResult.PASS
+            } else {
+                for (item in this.getRetrieveItems()) {
+                    ItemHandlerHelper.giveItemToPlayer(player, item)
+                }
+                this.remove(RemovalReason.DISCARDED)
+                this.discard()
+                return InteractionResult.SUCCESS
+            }
+        }
     }
 
     override fun getRetrieveItems(): MutableList<ItemStack> {

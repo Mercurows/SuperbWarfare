@@ -32,9 +32,12 @@ import com.atsuishio.superbwarfare.event.ClientMouseHandler
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.inventory.handler.VehicleContainerHandler
 import com.atsuishio.superbwarfare.inventory.menu.*
+import com.atsuishio.superbwarfare.item.IVehicleInteract
 import com.atsuishio.superbwarfare.item.container.ContainerBlockItem
-import com.atsuishio.superbwarfare.item.curio.DogTagItem
-import com.atsuishio.superbwarfare.network.message.receive.*
+import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
+import com.atsuishio.superbwarfare.network.message.receive.ClientVehicleItemMessage
+import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
+import com.atsuishio.superbwarfare.network.message.receive.VehicleShootClientMessage
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.OBB.Part.*
 import com.atsuishio.superbwarfare.tools.VectorTool.combineRotationsTurret
@@ -261,7 +264,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     open var gunXRotO = 0f
 
     protected var noPassengerTime = 0
-    protected var damageDebugResultReceiver: Player? = null
+    var damageDebugResultReceiver: Player? = null
 
     open var decoyReloadCoolDown = 0
 
@@ -342,9 +345,9 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     var prevMotion: Vec3? = null
 
     var fakePitchO = 0f
-    var fakeRollO= 0f
+    var fakeRollO = 0f
     var fakePitch = 0f
-    var fakeRoll= 0f
+    var fakeRoll = 0f
 
     open var lastDamageSource: DamageSource? = null
         get() {
@@ -1451,67 +1454,30 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     override fun interact(player: Player, hand: InteractionHand): InteractionResult {
         if (player.vehicle === this) return InteractionResult.PASS
 
-        val stack = player.mainHandItem
-        if (player.isShiftKeyDown && stack.`is`(ModItems.DOG_TAG.get())) {
-            this.dogTagIcon = DogTagItem.getColors(stack).map { it.toList() }.toList()
-            return InteractionResult.SUCCESS
-        }
+        val mainStack = player.mainHandItem
+        val mainItem = mainStack.item
+        val mainRes = if (mainStack.`is`(ModTags.Items.TOOLS_CROWBAR)) {
+            this.onCrowbarInteract(mainStack, player, hand)
+        } else if (mainItem is IVehicleInteract) {
+            mainItem.onInteractVehicle(this, mainStack, player, hand)
+        } else null
+        if (mainRes != null) return mainRes
 
-        if (stack.`is`(ModItems.SKIN_SPRAY.get())) {
-            if (!level().isClientSide) {
-                player.sendPacket(OpenVehicleSkinScreenMessage(this.id))
-            }
-            return InteractionResult.CONSUME
-        }
-
-        if (stack.item is NameTagItem && stack.hasCustomHoverName()) {
-            this.customName = stack.hoverName
-            stack.shrink(1)
+        if (mainStack.item is NameTagItem && mainStack.hasCustomHoverName()) {
+            this.customName = mainStack.hoverName
+            mainStack.shrink(1)
             return InteractionResult.sidedSuccess(this.level().isClientSide())
         }
 
-        if (this.hasMenu() && player.isShiftKeyDown && !stack.`is`(ModTags.Items.TOOLS_CROWBAR)) {
+        if (this.hasMenu() && player.isShiftKeyDown) {
             this.openMenu(player)
             return InteractionResult.sidedSuccess(player.level().isClientSide)
         }
 
-        if (stack.`is`(ModItems.VEHICLE_DAMAGE_ANALYZER.get())) {
-            if (!level().isClientSide) {
-                if (this.damageDebugResultReceiver != null) {
-                    this.damageDebugResultReceiver = null
-                    player.displayClientMessage(
-                        Component.translatable(
-                            "des.superbwarfare.vehicle_damage_analyzer.unbind",
-                            this.displayName
-                        ), true
-                    )
-                } else {
-                    this.damageDebugResultReceiver = player
-                    player.displayClientMessage(
-                        Component.translatable(
-                            "des.superbwarfare.vehicle_damage_analyzer.bind",
-                            this.displayName
-                        ), true
-                    )
-                }
-            }
-            return InteractionResult.SUCCESS
-        }
-
-        if (player.isShiftKeyDown && stack.`is`(ModTags.Items.TOOLS_CROWBAR) && this.getPassengers().isEmpty()) {
-            if (isWreck) {
-                return InteractionResult.PASS
-            } else {
-                for (item in this.getRetrieveItems()) {
-                    ItemHandlerHelper.giveItemToPlayer(player, item)
-                }
-                this.remove(RemovalReason.DISCARDED)
-                this.discard()
-                return InteractionResult.SUCCESS
-            }
-        } else if (!player.isShiftKeyDown
-            && (stack.`is`(ModItems.C4_BOMB.get()) || stack.`is`(ModItems.DETONATOR.get()))
-            && this.maxPassengers > 0) {
+        if (!player.isShiftKeyDown
+            && (mainStack.`is`(ModItems.C4_BOMB.get()) || mainStack.`is`(ModItems.DETONATOR.get()))
+            && this.maxPassengers > 0
+        ) {
             // Player is holding C4 — don't mount, let the item's use() handle the interaction
             return InteractionResult.PASS
         } else if (!player.isShiftKeyDown && this.maxPassengers > 0) {
@@ -1559,6 +1525,20 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             }
         }
         return InteractionResult.PASS
+    }
+
+    open fun onCrowbarInteract(stack: ItemStack, player: Player, hand: InteractionHand): InteractionResult? {
+        if (!player.isShiftKeyDown || this.passengers.isNotEmpty()) return null
+        if (this.isWreck) {
+            return InteractionResult.PASS
+        } else {
+            for (item in this.getRetrieveItems()) {
+                ItemHandlerHelper.giveItemToPlayer(player, item)
+            }
+            this.remove(RemovalReason.DISCARDED)
+            this.discard()
+            return InteractionResult.SUCCESS
+        }
     }
 
     open val lastDriver: Entity?
@@ -2185,14 +2165,16 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                 val targetPitch = (15 * accelForward).toFloat()
                 val omegaP = 2.0f * Math.PI.toFloat() * 2f
                 val zetaP = 0.6f
-                val angularAccelP: Float = omegaP * omegaP * (targetPitch - pitchAngle) - 2 * zetaP * omegaP * pitchVelocity
+                val angularAccelP: Float =
+                    omegaP * omegaP * (targetPitch - pitchAngle) - 2 * zetaP * omegaP * pitchVelocity
                 pitchVelocity += angularAccelP * 0.05f // dt = 0.05s
                 pitchAngle += pitchVelocity * 0.05f
 
                 val targetRoll = (20 * accelRight).toFloat()
                 val omegaR = 2.0f * Math.PI.toFloat() * 2f
                 val zetaR = 0.6f
-                val angularAccelR: Float = omegaR * omegaR * (targetRoll - rollAngle) - 2 * zetaR * omegaR * rollVelocity
+                val angularAccelR: Float =
+                    omegaR * omegaR * (targetRoll - rollAngle) - 2 * zetaR * omegaR * rollVelocity
                 rollVelocity += angularAccelR * 0.05f
                 rollAngle += rollVelocity * 0.05f
 
@@ -3023,7 +3005,11 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             ) * engineInfo.engineSoundVolume
 
             EngineType.HELICOPTER -> synchedPropellerRot * engineInfo.engineSoundVolume
-            EngineType.AIRSHIP -> Mth.clamp(Mth.abs(power) * engineInfo.engineSoundVolume + engineInfo.engineSoundVolume, engineInfo.engineSoundVolume, 1.5f)
+            EngineType.AIRSHIP -> Mth.clamp(
+                Mth.abs(power) * engineInfo.engineSoundVolume + engineInfo.engineSoundVolume,
+                engineInfo.engineSoundVolume,
+                1.5f
+            )
 
             else -> Mth.abs(power) * engineInfo.engineSoundVolume
         }
