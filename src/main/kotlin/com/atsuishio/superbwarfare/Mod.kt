@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare
 import com.atsuishio.superbwarfare.api.event.RegisterContainersEvent
 import com.atsuishio.superbwarfare.client.MouseMovementHandler
 import com.atsuishio.superbwarfare.client.molang.MolangVariable
+import com.atsuishio.superbwarfare.client.renderer.ModParticleRenderTypes
 import com.atsuishio.superbwarfare.compat.coldsweat.ColdSweatCompatHandler
 import com.atsuishio.superbwarfare.compat.tacz.TACZGunEventHandler
 import com.atsuishio.superbwarfare.config.CLIENT_CONFIG
@@ -20,6 +21,7 @@ import net.minecraft.server.packs.repository.Pack
 import net.minecraft.server.packs.repository.PackSource
 import net.minecraft.world.flag.FeatureFlagSet
 import net.minecraftforge.api.distmarker.Dist
+import net.minecraftforge.client.event.RegisterShadersEvent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.AddPackFindersEvent
 import net.minecraftforge.event.TickEvent
@@ -74,6 +76,7 @@ class Mod {
         bus.addListener<FMLCommonSetupEvent> { ModItems.registerDispenserBehavior() }
         bus.addListener<AddPackFindersEvent> { onRegisterBuiltInResourcePacks(it) }
         bus.addListener<DataPackRegistryEvent.NewRegistry> { ModDatapackRegistries.onNewRegistry(it) }
+        bus.addListener<RegisterShadersEvent> { ModParticleRenderTypes.onRegisterShaders(it) }
 
         if (TACZGunEventHandler.compatCondition()) {
             MinecraftForge.EVENT_BUS.addListener(TACZGunEventHandler::entityHurtByTACZGun)

@@ -608,8 +608,8 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
                         0.5f,
                         0.43f,
                         0.36f,
-                        700,
-                        0.985f,
+                        160,
+                        0.93f,
                         (10 + 8 * random).toInt(),
                         0.03f
                     ), pos.x + random * 0.25, pos.y + random * 0.25, pos.z + random * 0.25, 0.0, 0.0, 0.0
@@ -632,8 +632,8 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
                         0.5f,
                         0.43f,
                         0.36f,
-                        600,
-                        0.975f,
+                        160,
+                        0.93f,
                         (10 + 8 * random).toInt(),
                         0.03f,
                         size = 0.75f
@@ -657,8 +657,8 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
                         0.5f,
                         0.43f,
                         0.36f,
-                        400,
-                        0.97f,
+                        160,
+                        0.93f,
                         (10 + 8 * random).toInt(),
                         0.03f,
                         size = 0.4f
@@ -708,7 +708,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
                         0.43f,
                         0.36f,
                         80,
-                        0.94f,
+                        0.9f,
                         (10 + 8 * random).toInt(),
                         0.01f,
                         size = 0.25f
