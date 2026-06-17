@@ -370,7 +370,7 @@ object ModEntities {
         event.register(
             SENPAI.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
             { entityType, world, reason, pos, random ->
-                world!!.difficulty != Difficulty.PEACEFUL
+                world.difficulty != Difficulty.PEACEFUL
                         && SpawnConfig.SPAWN_SENPAI.get()
                         && Monster.isDarkEnoughToSpawn(world, pos, random)
                         && Mob.checkMobSpawnRules(entityType, world, reason, pos, random)
@@ -380,7 +380,7 @@ object ModEntities {
         event.register(
             STEEL_COIL.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
             { entityType, world, reason, pos, random ->
-                world!!.difficulty != Difficulty.PEACEFUL
+                world.difficulty != Difficulty.PEACEFUL
                         && SpawnConfig.SPAWN_STEEL_COIL.get()
                         && Monster.isDarkEnoughToSpawn(world, pos, random)
                         && Mob.checkMobSpawnRules(entityType, world, reason, pos, random)
