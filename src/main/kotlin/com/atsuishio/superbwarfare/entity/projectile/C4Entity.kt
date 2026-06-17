@@ -43,6 +43,7 @@ import org.joml.Vector3d
 import org.joml.Vector3f
 import java.util.*
 import kotlin.math.min
+import kotlin.math.sign
 import kotlin.math.sqrt
 
 open class C4Entity : Entity, OwnableEntity {
@@ -356,7 +357,7 @@ open class C4Entity : Entity, OwnableEntity {
                     // OBB mode: reconstruct position from OBB-local coordinates on both sides
                     val obbs = target.getOBBs()
                     val obbIndex = entityData.get(STICKY_OBB_INDEX)
-                    if (obbIndex in 0 until obbs.size) {
+                    if (obbIndex in obbs.indices) {
                         val obb = obbs[obbIndex]
                         val localPosVec = entityData.get(STICKY_OBB_LOCAL_POS)
                         val localX = localPosVec.x().toDouble()
@@ -402,7 +403,7 @@ open class C4Entity : Entity, OwnableEntity {
     private fun eulerToQuat(yaw: Float, pitch: Float): Quaterniond {
         return Quaterniond()
             .rotateY(Math.toRadians((-yaw).toDouble()))
-            .rotateX(Math.toRadians((pitch + 90.0).toDouble()))
+            .rotateX(Math.toRadians((pitch + 90.0)))
     }
 
     /**
@@ -410,9 +411,9 @@ open class C4Entity : Entity, OwnableEntity {
      * @param faceIndex from OBB.getEmbeddingFace(): ±1=X, ±2=Y, ±3=Z
      */
     private fun faceIndexToLocalQuat(faceIndex: Int): Quaterniond {
-        val nx = if (kotlin.math.abs(faceIndex) == 1) Math.signum(faceIndex.toDouble()) else 0.0
-        val ny = if (kotlin.math.abs(faceIndex) == 2) Math.signum(faceIndex.toDouble()) else 0.0
-        val nz = if (kotlin.math.abs(faceIndex) == 3) Math.signum(faceIndex.toDouble()) else 0.0
+        val nx = if (kotlin.math.abs(faceIndex) == 1) sign(faceIndex.toDouble()) else 0.0
+        val ny = if (kotlin.math.abs(faceIndex) == 2) sign(faceIndex.toDouble()) else 0.0
+        val nz = if (kotlin.math.abs(faceIndex) == 3) sign(faceIndex.toDouble()) else 0.0
 
         val yRot = Mth.atan2(-nx, nz) * (180.0 / Math.PI)
         val horizontalDist = sqrt(nx * nx + nz * nz)
@@ -623,7 +624,7 @@ open class C4Entity : Entity, OwnableEntity {
     }
 
     fun explode() {
-        var pos = position()
+        val pos = position()
 
         if (onEntity) {
             val target = EntityFindUtil.findEntity(level(), entityData.get(TARGET_UUID))
