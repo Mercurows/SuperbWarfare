@@ -781,6 +781,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     override fun defineSynchedData(builder: SynchedEntityData.Builder) {
         with(builder) {
             define(OVERRIDE, "")
+            define(SKIN_ID, "")
             define(HEALTH, getMaxHealth())
             define(LAST_ATTACKER_UUID, "undefined")
             define(LAST_DRIVER_UUID, "undefined")
@@ -1276,6 +1277,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     override fun readAdditionalSaveData(compound: CompoundTag) {
         VehicleData.from(this).update()
         override = compound.getString("Override")
+        skinId = compound.getString("SkinId")
 
         // GunData
         val state = compound.getCompound("WeaponState")
@@ -1377,6 +1379,11 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         val overrideString = override
         if (!overrideString.isBlank()) {
             compound.putString("Override", overrideString)
+        }
+
+        val skinIdString = skinId
+        if (!skinIdString.isBlank()) {
+            compound.putString("SkinId", skinIdString)
         }
 
         compound.putString("LastAttacker", lastAttackerUUID)
@@ -3988,6 +3995,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     open var cannonRecoilForce by CANNON_RECOIL_FORCE
 
     open var override by OVERRIDE
+    open var skinId by SKIN_ID
     open var lastAttackerUUID by LAST_ATTACKER_UUID
     open var lastDriverUUID by LAST_DRIVER_UUID
     open var dogTagIcon by DOG_TAG_ICON
@@ -4081,6 +4089,10 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         @JvmField
         val OVERRIDE: EntityDataAccessor<String> =
+            SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.STRING)
+
+        @JvmField
+        val SKIN_ID: EntityDataAccessor<String> =
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.STRING)
 
         @JvmField
