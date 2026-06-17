@@ -17,6 +17,7 @@ object CommandRegister {
             add(TDM_COMMAND)
             add(RIDE_COMMAND)
             add(DISMOUNT_COMMAND)
+            add(SKIN_COMMAND)
         }
 
         val result = event.dispatcher.register(command as LiteralArgumentBuilder<CommandSourceStack>)

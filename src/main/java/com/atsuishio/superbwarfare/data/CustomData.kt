@@ -8,6 +8,8 @@ import com.atsuishio.superbwarfare.data.mob_guns.DefaultMobGunData
 import com.atsuishio.superbwarfare.data.mob_guns.MobGunData
 import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData
+import com.atsuishio.superbwarfare.data.vehicle_skin.VehicleSkin
+import com.atsuishio.superbwarfare.data.vehicle_skin.VehicleSkinData
 import com.atsuishio.superbwarfare.resource.gun.DefaultGunResource
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.atsuishio.superbwarfare.resource.vehicle.DefaultVehicleResource
@@ -37,6 +39,11 @@ object CustomData {
     val MOB_GUNS = DataLoader.createData(
         "sbw/mob_guns", DefaultMobGunData::class.java
     ) { _ -> MobGunData.dataCache.invalidateAll() }
+
+    @JvmField
+    val VEHICLE_SKINS = DataLoader.createData(
+        "sbw/vehicle_skins", VehicleSkinData::class.java, true, isKtData = true
+    ) { _ -> VehicleSkin.DATA_CACHE.invalidateAll() }
 
     // Resource
 

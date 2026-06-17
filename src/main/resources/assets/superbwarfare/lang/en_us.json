@@ -758,6 +758,10 @@
   "commands.superbwarfare.dismount.fail.index": "The selected vehicle doesn't have this seat",
   "commands.superbwarfare.dismount.success.all": "All passengers have dismounted from %1$s",
   "commands.superbwarfare.dismount.success.single": "The passenger in seat %2$s has dismounted from %1$s",
+  "commands.superbwarfare.skin.success.set": "The skin of vehicle %1$s has been set to %2$s",
+  "commands.superbwarfare.skin.fail.vehicle": "The selected vehicle must be a Superb Warfare vehicle entity",
+  "commands.superbwarfare.skin.fail.empty": "The selected vehicle doesn't have any skin",
+  "commands.superbwarfare.skin.success.clear": "Cleared skin of vehicle %1$s",
 
   "tips.superbwarfare.sensitivity": "Current Sensitivity of This Gun: %1$s",
   "tips.superbwarfare.monitor.linked": "Connect!",

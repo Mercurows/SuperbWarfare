@@ -758,6 +758,10 @@
   "commands.superbwarfare.dismount.fail.index": "所选的载具没有这个座位",
   "commands.superbwarfare.dismount.success.all": "已移除%1$s的所有乘客",
   "commands.superbwarfare.dismount.success.single": "已移除%1$s的%2$s号位乘客",
+  "commands.superbwarfare.skin.success.set": "载具%1$s的皮肤已设置为%2$s",
+  "commands.superbwarfare.skin.fail.vehicle": "所选的载具必须是卓越前线的载具实体",
+  "commands.superbwarfare.skin.fail.empty": "所选的载具没有皮肤",
+  "commands.superbwarfare.skin.success.clear": "已清除载具%1$s的皮肤",
 
   "tips.superbwarfare.sensitivity": "当前枪械的灵敏度为：%1$s",
   "tips.superbwarfare.monitor.linked": "连接成功！",

@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.vehicle.subdata.SeatInfo
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType
+import com.atsuishio.superbwarfare.data.vehicle_skin.VehicleSkin
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleMotionUtils
@@ -95,7 +96,17 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         val modelPath = currentModel.model ?: return
         var texture = currentModel.texture ?: return
 
+        // Apply vehicle skin (only for full-detail models, not LOD)
         val isLOD = currentModel.isLOD()
+        if (!isLOD) {
+            val skinInfo = VehicleSkin.getSkin(entity)
+            if (skinInfo != null) {
+                val skinTexture = ResourceLocation.tryParse(skinInfo.texture)
+                if (skinTexture != null) {
+                    texture = skinTexture
+                }
+            }
+        }
         val model = if (isLOD) {
             VehicleLODModelReloadListener.getModel(modelPath)
         } else {
