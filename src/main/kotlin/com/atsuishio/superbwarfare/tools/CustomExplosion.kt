@@ -199,7 +199,6 @@ class CustomExplosion @JvmOverloads constructor(
             for (tier in 0 until numTiers) {
                 val minDist = tierBoundaries[tier]
                 val maxDist = tierBoundaries[tier + 1]
-                val delay = tier
 
                 val task = Runnable {
                     // ---- Search this tier's distance ring ----
@@ -297,10 +296,10 @@ class CustomExplosion @JvmOverloads constructor(
                     this@CustomExplosion.toBlow.clear()
                 }
 
-                if (delay <= 0) {
+                if (tier <= 0) {
                     task.run()
                 } else {
-                    Mod.queueServerWork(delay, task)
+                    Mod.queueServerWork(tier, task)
                 }
             }
         }
