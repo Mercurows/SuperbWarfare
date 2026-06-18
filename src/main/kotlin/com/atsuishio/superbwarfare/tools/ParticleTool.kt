@@ -210,8 +210,8 @@ object ParticleTool {
         sendParticleClient(level, ParticleTypes.EXPLOSION, x, y, z, 2, 0.05, 0.05, 0.05, 1.0)
         sendParticleClient(level, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 3, 0.1, 0.1, 0.1, 0.02)
         sendParticleClient(level, ParticleTypes.LARGE_SMOKE, x, y, z, 4, 0.2, 0.2, 0.2, 0.02)
-        sendParticleClient(level, ModParticleTypes.FIRE_STAR.get(), x, y, z, 12, 0.0, 0.0, 0.0, 0.6)
-        sendParticleClient(level, ParticleTypes.FLASH, x, y, z, 3, 0.1, 0.1, 0.1, 20.0)
+        sendParticleClient(level, ModParticleTypes.FIRE_STAR.get(), x, y, z, 8, 0.0, 0.0, 0.0, 0.6)
+        sendParticleClient(level, CustomFlareOption(1f, 1f, 1f, 10, 0.25f, 1, 0.2f, size = 4f), x, y, z, 1, 0.0, 0.0, 0.0, 0.005)
     }
 
     private fun spawnMediumExplosionParticlesInternal(level: Level, pos: Vec3) {
@@ -224,8 +224,7 @@ object ParticleTool {
         sendParticleClient(level, CustomFlareOption(1f, 1f, 1f, 10, 0.25f, 1, 0.2f, size = 6f), x, y, z, 1, 0.0, 0.0, 0.0, 0.005)
         sendParticleClient(level, CustomFlareOption(1f, 0.9f, 0.8f, 10, 0.25f, 1, 0.4f, size = 8f), x, y, z, 1, 0.0, 0.0, 0.0, 0.005)
 
-        sendParticleClient(level, CustomFlareOption(0.6f, 0.58f, 0.57f, 36, 0.85f, 1, 0.2f), x, y + 0.5, z, 1, 0.75, 1.2, 0.75, 0.05)
-        sendParticleClient(level, CustomFlareOption(0.25f, 0.125f, 0f, 40, 0.85f, 1, 0.25f), x, y + 0.5, z, 1, 0.75, 1.2, 0.75, 0.05)
+        sendParticleClient(level, CustomFlareOption(0.5f, 0.25f, 0f, 40, 0.85f, 1, 0.25f), x, y + 0.5, z, 1, 0.75, 1.2, 0.75, 0.05)
 
         sendParticleClient(level, CustomFlareOption(0.667f, 0.631f, 0.592f, 40, 0.85f, (8 + 16 * Math.random()).toInt(), 0.002f, size = 0.6f + 0.8f * Math.random().toFloat()), x, y, z, 16, 2.4, 0.05, 2.4, 0.02)
 
@@ -234,70 +233,118 @@ object ParticleTool {
 
     private fun spawnLargeExplosionParticlesInternal(level: Level, pos: Vec3) {
         val x = pos.x; val y = pos.y; val z = pos.z
-        sendParticleClient(level, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y + 1, z, 60, 0.5, 2.0, 0.5, 0.02)
-        sendParticleClient(level, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y + 0.25, z, 120, 5.0, 0.001, 5.0, 0.01)
-        sendParticleClient(level, ModParticleTypes.FIRE_STAR.get(), x, y + 0.2, z, 60, 0.0, 0.0, 0.0, 1.2)
-        sendParticleClient(level, ParticleTypes.EXPLOSION, x, y + 1, z, 35, 1.5, 1.5, 1.5, 1.0)
-        sendParticleClient(level, ParticleTypes.FLASH, x, y + 1, z, 120, 3.0, 3.0, 3.0, 20.0)
-        sendParticleClient(level, CustomFlareOption(0.6f, 0.58f, 0.57f, 60, 0.8f, 1, 0.2f), x, y + 1, z, 150, 1.3, 1.7, 1.3, 0.05)
-        sendParticleClient(level, CustomFlareOption(0.25f, 0.125f, 0f, 100, 0.91f, 3, 0.25f), x, y + 1, z, 80, 1.3, 1.7, 1.3, 0.05)
-        sendParticleClient(level, ExplosionDebrisOption(0.5f, 0.43f, 0.16f, 60, 0.91f, (8 + 8 * Math.random()).toInt(), 0.014f, size = 0.13f), x, y + 0.5, z, 60, 0.0, 0.0, 0.0, 0.8)
+        sendParticleClient(level, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y + 1, z, 10, 0.5, 2.0, 0.5, 0.02)
+        sendParticleClient(level, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y + 0.25, z, 20, 5.0, 0.001, 5.0, 0.01)
+        sendParticleClient(level, ModParticleTypes.FIRE_STAR.get(), x, y + 0.2, z, 20, 0.0, 0.0, 0.0, 1.2)
+        sendParticleClient(level, ParticleTypes.EXPLOSION, x, y + 1, z, 10, 1.5, 1.5, 1.5, 1.0)
+
+        sendParticleClient(level, CustomFlareOption(1f, 1f, 1f, 10, 0.25f, 1, 0.3f, size = 8f), x, y, z, 1, 0.0, 0.0, 0.0, 0.005)
+        sendParticleClient(level, CustomFlareOption(1f, 0.9f, 0.8f, 10, 0.25f, 1, 0.6f, size = 12f), x, y, z, 1, 0.0, 0.0, 0.0, 0.005)
+
+        sendParticleClient(level, CustomFlareOption(0.6f, 0.58f, 0.57f, 40, 0.88f, 1, 0.2f), x, y + 1, z, 4, 1.3, 1.7, 1.3, 0.05)
+        sendParticleClient(level, CustomFlareOption(0.25f, 0.125f, 0f, 60, 0.88f, 3, 0.25f), x, y + 1, z, 2, 1.3, 1.7, 1.3, 0.05)
+
+        sendParticleClient(level, CustomFlareOption(0.667f, 0.631f, 0.592f, 50, 0.86f, (8 + 16 * Math.random()).toInt(), 0.003f, size = 0.6f + 0.8f * Math.random().toFloat()), x, y, z, 30, 3.2, 0.05, 3.2, 0.04)
+
+        sendParticleClient(level, ExplosionDebrisOption(0.5f, 0.43f, 0.16f, 60, 0.91f, (8 + 8 * Math.random()).toInt(), 0.014f, size = 0.13f), x, y + 0.5, z, 26, 0.0, 0.0, 0.0, 0.8)
         for (i in 0..149) {
             val v = Vec3(1.0, 0.0, 0.0).yRot((i * Math.random()).toFloat())
             sendDirectionalParticleClient(
-                level, CustomCloudOption(0xFFFFFF, 25, 2f, 0f, cooldown = false, light = false), x, y + 0.2, z,
-                v.x * 18.0, v.y * 18.0, v.z * 18.0
+                level, CustomCloudOption(0xFFFFFF, 3, 2f, 0f, cooldown = false, light = false), x, y + 0.2, z,
+                v.x * 12.0, v.y * 12.0, v.z * 12.0
             )
+        }
+
+        for (i in 0..5) {
+            Mod.queueClientWork(i) {
+                sendParticleClient(level, CustomFlareOption(0.5f - (i.toFloat() / 10), 0.25f - (i.toFloat() / 20), 0f, 8 * i, 0.85f, 4, 0.25f, size = 0.7f + 0.08f * i), x, y + 1.3 + 0.8 * i, z, i, 1.1, 0.4, 1.1, 0.1)
+            }
         }
     }
 
     private fun spawnHugeExplosionParticlesInternal(level: Level, pos: Vec3) {
         val x = pos.x; val y = pos.y; val z = pos.z
-        for (i in 0..199) {
+
+        sendParticleClient(level, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y + 1, z, 10, 0.75, 2.2, 0.75, 0.02)
+        sendParticleClient(level, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y + 0.25, z, 10, 8.0, 0.001, 8.0, 0.01)
+        sendParticleClient(level, ModParticleTypes.FIRE_STAR.get(), x, y + 0.2, z, 40, 0.0, 0.0, 0.0, 1.2)
+        sendParticleClient(level, ParticleTypes.EXPLOSION, x, y + 1, z, 10, 2.5, 2.5, 2.5, 1.0)
+
+        // 冲击波
+        sendParticleClient(level, CustomFlareOption(1f, 1f, 1f, 10, 0.5f, 2, 20f, size = 3f), x, y + 3, z, 1, 0.0, 0.0, 0.0, 0.005)
+
+        // 闪光
+        sendParticleClient(level, CustomFlareOption(1f, 1f, 1f, 10, 0.25f, 1, 0.3f, size = 12f), x, y, z, 1, 0.0, 0.0, 0.0, 0.005)
+        sendParticleClient(level, CustomFlareOption(1f, 0.9f, 0.8f, 10, 0.25f, 1, 0.6f, size = 17f), x, y, z, 1, 0.0, 0.0, 0.0, 0.005)
+
+        // 火球
+        sendParticleClient(level, CustomFlareOption(0.6f, 0.58f, 0.57f, 60, 0.9f, 1, 0.4f), x, y + 1, z, 8, 1.3, 1.7, 1.3, 0.05)
+        sendParticleClient(level, CustomFlareOption(0.25f, 0.125f, 0f, 80, 0.9f, 3, 0.5f), x, y + 1, z, 4, 1.3, 1.7, 1.3, 0.05)
+
+        // 地面烟尘
+        sendParticleClient(level, CustomFlareOption(0.667f, 0.631f, 0.592f, 50, 0.86f, (8 + 16 * Math.random()).toInt(), 0.003f, size = 0.6f + 0.8f * Math.random().toFloat()), x, y, z, 55, 4.0, 0.05, 4.2, 0.04)
+
+        // 飞溅碎片
+        sendParticleClient(level, ExplosionDebrisOption(0.5f, 0.43f, 0.16f, 60, 0.91f, (8 + 8 * Math.random()).toInt(), 0.014f, size = 0.13f), x, y + 0.5, z, 40, 0.0, 0.0, 0.0, 0.8)
+
+        // 火球升腾
+        for (i in 0..5) {
+            Mod.queueClientWork(i) {
+                sendParticleClient(level, CustomFlareOption(0.5f - (i.toFloat() / 10), 0.25f - (i.toFloat() / 20), 0f, 10 * i, 0.9f, 4, 0.35f, size = 1 + 0.1f * i), x, y + 2 + 1.2 * i, z, i, 1.5, 0.5, 1.5, 0.1)
+            }
+        }
+
+        // 环形冲击波
+        for (i in 0..149) {
             val v = Vec3(1.0, 0.0, 0.0).yRot((i * Math.random()).toFloat())
             sendDirectionalParticleClient(
-                level, CustomCloudOption(0xFFFFFF, 10, 4f, 0f, cooldown = false, light = false), x, y + 0.5, z,
-                v.x * 20.0, v.y * 20.0, v.z * 20.0
+                level, CustomCloudOption(0xFFFFFF, 3, 3f, 0f, cooldown = false, light = false), x, y + 0.2, z,
+                v.x * 16.0, v.y * 16.0, v.z * 16.0
             )
         }
-        sendParticleClient(level, ParticleTypes.EXPLOSION, x, y + 3, z, 75, 2.5, 2.5, 2.5, 1.0)
-        sendParticleClient(level, ParticleTypes.FLASH, x, y + 3, z, 200, 5.0, 5.0, 5.0, 20.0)
-        sendParticleClient(level, ModParticleTypes.FIRE_STAR.get(), x, y + 1, z, 100, 0.0, 0.0, 0.0, 1.5)
-        sendParticleClient(level, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y + 3, z, 75, 2.0, 3.0, 2.0, 0.005)
-        sendParticleClient(level, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y, z, 150, 7.0, 0.1, 7.0, 0.005)
-        sendParticleClient(level, CustomFlareOption(0.6f, 0.58f, 0.57f, 60, 0.8f, 1, 0.2f), x, y + 1, z, 200, 1.5, 2.0, 1.5, 0.05)
-        sendParticleClient(level, CustomFlareOption(0.25f, 0.125f, 0f, 100, 0.91f, 3, 0.25f), x, y + 1, z, 100, 1.5, 2.0, 1.5, 0.05)
-        sendParticleClient(level, ExplosionDebrisOption(0.5f, 0.43f, 0.16f, 80, 0.92f, (10 + 8 * Math.random()).toInt(), 0.017f, size = 0.16f), x, y + 0.5, z, 100, 0.0, 0.0, 0.0, 1.0)
     }
 
     private fun spawnGiantExplosionParticlesInternal(level: Level, pos: Vec3) {
         val x = pos.x; val y = pos.y; val z = pos.z
-        sendParticleClient(level, ParticleTypes.EXPLOSION, x, y + 6, z, 100, 6.0, 6.0, 6.0, 1.0)
-        sendParticleClient(level, ParticleTypes.FLASH, x, y + 7, z, 200, 7.0, 7.0, 7.0, 1.0)
-        sendParticleClient(level, ModParticleTypes.FIRE_STAR.get(), x, y + 3, z, 150, 0.0, 0.0, 0.0, 2.0)
-        sendParticleClient(level, CustomFlareOption(1f, 1f, 1f, 10, 0.75f, 1, 2f), x, y + 3, z, 1000, 10.0, 10.0, 10.0, 0.005)
-        sendParticleClient(level, ExplosionDebrisOption(0.5f, 0.43f, 0.16f, 150, 0.94f, (10 + 8 * Math.random()).toInt(), 0.025f, size = 0.5f), x, y + 0.5, z, 140, 0.0, 0.0, 0.0, 1.7)
-        for (i in 0..360) {
+
+        sendParticleClient(level, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y + 1, z, 20, 0.75, 2.2, 0.75, 0.02)
+        sendParticleClient(level, ParticleTypes.CAMPFIRE_COSY_SMOKE, x, y + 0.25, z, 20, 12.0, 0.001, 12.0, 0.01)
+        sendParticleClient(level, ModParticleTypes.FIRE_STAR.get(), x, y + 0.2, z, 100, 0.0, 0.0, 0.0, 2.0)
+        sendParticleClient(level, ParticleTypes.EXPLOSION, x, y + 1, z, 30, 5.0, 5.0, 5.0, 1.0)
+
+        // 冲击波
+        sendParticleClient(level, CustomFlareOption(1f, 1f, 1f, 10, 0.5f, 2, 30f, size = 4f), x, y + 3, z, 1, 0.0, 0.0, 0.0, 0.005)
+
+        // 闪光
+        sendParticleClient(level, CustomFlareOption(1f, 1f, 1f, 15, 0.4f, 1, 0.35f, size = 18f), x, y, z, 1, 0.0, 0.0, 0.0, 0.005)
+        sendParticleClient(level, CustomFlareOption(1f, 0.9f, 0.8f, 15, 0.4f, 1, 0.7f, size = 26f), x, y, z, 1, 0.0, 0.0, 0.0, 0.005)
+
+        // 火球
+        sendParticleClient(level, CustomFlareOption(0.6f, 0.58f, 0.57f, 100, 0.89f, 1, 0.6f, size = 2f), x, y + 1, z, 20, 5.2, 1.5, 5.2, 0.05)
+        sendParticleClient(level, CustomFlareOption(0.25f, 0.125f, 0f, 100, 0.89f, 2, 0.8f, size = 2f), x, y + 1, z, 12, 5.2, 1.5, 5.2, 0.05)
+
+        // 地面烟尘
+        sendParticleClient(level, CustomFlareOption(0.667f, 0.631f, 0.592f, 50, 0.86f, (8 + 16 * Math.random()).toInt(), 0.003f, size = 0.6f + 0.8f * Math.random().toFloat()), x, y, z, 75, 10.0, 0.05, 10.2, 0.04)
+
+        // 飞溅碎片
+        sendParticleClient(level, ExplosionDebrisOption(0.5f, 0.43f, 0.16f, 60, 0.91f, (8 + 8 * Math.random()).toInt(), 0.017f, size = 0.4f), x, y + 0.5, z, 80, 0.0, 0.0, 0.0, 1.6)
+
+        // 火球升腾
+        for (i in 0..10) {
+            Mod.queueClientWork(i) {
+                sendParticleClient(level, CustomFlareOption(0.5f - (i.toFloat() / 20), 0.25f - (i.toFloat() / 40), 0f, 4 * i, 0.87f, 2, 0.3f + 0.04f * i, size = 2.4f + 0.03f * i * i), x, y + 1 + 2.2 * i - 0.05 * i * i, z, i.coerceAtMost(5), 3 + 0.01 * i * i, 0.5, 3 + 0.01 * i * i, 0.15)
+            // 冲击波扬尘
+                sendParticleClient(level, CustomFlareOption(0.667f, 0.631f, 0.592f, 80, 0.93f, (4 + 12 * Math.random()).toInt(), 0.02f, size = 0.8f + 1.4f * Math.random().toFloat()), x, y - 0.5, z, 10 * i, i.toDouble() + 10, 0.05, i.toDouble() + 10, 0.0)
+            }
+        }
+
+        // 环形冲击波
+        for (i in 0..149) {
             val v = Vec3(1.0, 0.0, 0.0).yRot((i * Math.random()).toFloat())
             sendDirectionalParticleClient(
-                level, CustomCloudOption(1f, 1f, 1f, 25, 4f, 0f, cooldown = false, light = false), x, y + 1, z,
-                v.x * 22.0, v.y * 22.0, v.z * 22.0
+                level, CustomCloudOption(0xFFFFFF, 5, 6f, 0f, cooldown = false, light = false), x, y + 0.2, z,
+                v.x * 20.0, v.y * 20.0, v.z * 20.0
             )
-        }
-        for (i in 0..23) {
-            Mod.queueClientWork(i) {
-                if (i < 12) {
-                    sendParticleClient(level, CustomFlareOption(0.6f - (i.toFloat() / 24), 0.3f - (i.toFloat() / 48), 0f, 140, 0.95f, 4, 0.075f), x, y + 2 * i, z, 35, 2 - 0.1 * i, 0.5, 2 - 0.1 * i, 0.005)
-                    sendParticleClient(level, CustomFlareOption(0.4f - (i.toFloat() / 48), 0.2f - (i.toFloat() / 96), 0f, 180, 0.96f, 4, 0.075f), x, y + 0.5, z, 55, 3 + 0.5 * i, 0.3, 3 + 0.5 * i, 0.005)
-                }
-                if (i in 8..<16) {
-                    val k = i - 8
-                    sendParticleClient(level, CustomFlareOption(0.25f, 0.125f, 0f, 100, 0.95f, 2, 0.075f), x, y + 20, z, 20 * k, 1 + 0.5 * k, 1 + 0.2 * k, 1 + 0.5 * k, 0.005)
-                    sendParticleClient(level, CustomFlareOption(0.125f, 0.0625f, 0f, 150, 0.95f, 3, 0.01f), x, y + 20, z, 10 * k, 1 + 0.5 * k, 1 + 0.2 * k, 1 + 0.5 * k, 0.005)
-                    sendParticleClient(level, CustomFlareOption(0.0625f, 0.03125f, 0f, 200, 0.95f, 4, 0.15f), x, y + 20, z, 10 * k, 1 + 0.5 * k, 1 + 0.2 * k, 1 + 0.5 * k, 0.005)
-                }
-                sendParticleClient(level, CustomFlareOption(0.667f, 0.631f, 0.592f, 100, 0.97f, 10, 0.06f), x, y - 1, z, 6 * i, i.toDouble(), 0.05, i.toDouble(), 0.0003 * i)
-            }
         }
     }
 
