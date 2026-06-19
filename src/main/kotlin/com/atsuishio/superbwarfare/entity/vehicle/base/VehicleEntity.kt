@@ -34,6 +34,7 @@ import com.atsuishio.superbwarfare.inventory.handler.VehicleContainerHandler
 import com.atsuishio.superbwarfare.inventory.menu.*
 import com.atsuishio.superbwarfare.item.IVehicleInteract
 import com.atsuishio.superbwarfare.item.container.ContainerBlockItem
+import com.atsuishio.superbwarfare.item.misc.VehicleKeyItem
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.network.message.receive.ClientVehicleItemMessage
 import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
@@ -423,6 +424,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
     open var mouseMoveSpeedX by MOUSE_SPEED_X
     open var mouseMoveSpeedY by MOUSE_SPEED_Y
+
+    open var locked by LOCKED
 
     // container start
     val inventory = VehicleContainerHandler(6 * 17, this)
@@ -842,6 +845,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             define(TURRET_BURNED, false)
             define(HOVER_MODE, false)
             define(TURRET_BURN_TIMER, 0)
+            define(LOCKED, false)
         }
     }
 
@@ -1368,6 +1372,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             ContainerHelper.loadAllItems(compound, items)
             this.inventory.setItems(items)
         }
+
+        locked = compound.getBoolean("Locked")
     }
 
     public override fun addAdditionalSaveData(compound: CompoundTag) {
@@ -1449,6 +1455,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         this.resizeItems()
         compound.put("Inventory", this.inventory.serializeNBT())
+
+        compound.putBoolean("Locked", locked)
     }
 
     override fun interact(player: Player, hand: InteractionHand): InteractionResult {
@@ -1456,6 +1464,15 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         val mainStack = player.mainHandItem
         val mainItem = mainStack.item
+
+        if (this.locked && mainItem !is VehicleKeyItem) {
+            player.displayClientMessage(
+                Component.translatable("tips.superbwarfare.vehicle.locked")
+                    .withStyle(ChatFormatting.RED), true
+            )
+            return InteractionResult.FAIL
+        }
+
         val mainRes = if (mainStack.`is`(ModTags.Items.TOOLS_CROWBAR)) {
             this.onCrowbarInteract(mainStack, player, hand)
         } else if (mainItem is IVehicleInteract) {
@@ -1559,13 +1576,13 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         }
 
         val lastDriver = this.lastDriver
-        if (source.entity != null && lastDriver != null && SeekTool.IS_FRIENDLY.test(
-                lastDriver,
-                source.entity
-            )
-            && lastDriver.team != null && source.entity!!.team != null && source.entity!!
-                .team === lastDriver.team && !source.entity!!.team!!
-                .isAllowFriendlyFire && (source.entity === lastDriver && !source.`is`(ModDamageTypes.VEHICLE_STRIKE)
+        if (source.entity != null && lastDriver != null
+            && SeekTool.IS_FRIENDLY.test(lastDriver, source.entity)
+            && lastDriver.team != null
+            && source.entity!!.team != null
+            && source.entity!!.team === lastDriver.team
+            && !source.entity!!.team!!.isAllowFriendlyFire
+            && (source.entity === lastDriver && !source.`is`(ModDamageTypes.VEHICLE_STRIKE)
                     && !source.`is`(ModDamageTypes.CUSTOM_EXPLOSION))
         ) {
             return false
@@ -1952,9 +1969,10 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             lastDriverUUID = getFirstPassenger()!!.getStringUUID()
         }
 
+        // 如果没锁车，下车10秒后清空上一个驾驶员UUID
         if (getPassengers().isEmpty()) {
             noPassengerTime++
-            if (noPassengerTime > 200) {
+            if (noPassengerTime > 200 && !this.locked) {
                 lastDriverUUID = "undefined"
             }
         } else {
@@ -4337,6 +4355,10 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         @JvmField
         val HOVER_MODE: EntityDataAccessor<Boolean> =
+            SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.BOOLEAN)
+
+        @JvmField
+        val LOCKED: EntityDataAccessor<Boolean> =
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.BOOLEAN)
 
         // Map SeatIndex -> GunData

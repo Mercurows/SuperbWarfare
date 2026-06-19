@@ -344,6 +344,7 @@
   "item.superbwarfare.handsome_goggles": "超级无敌酷炫护目镜",
   "des.superbwarfare.handsome_goggles": "一副很酷的护目镜，给恶魂戴上应该会更酷\n§c⚠ 光敏性癫痫患者请勿佩戴此眼镜，若要佩戴请按F4关闭着色器效果",
   "item.superbwarfare.skin_spray": "皮肤喷漆罐",
+  "item.superbwarfare.vehicle_key": "车钥匙",
 
   "attribute.superbwarfare.bullet_resistance": "子弹防护",
 
@@ -796,6 +797,10 @@
   "tips.superbwarfare.mount.onboard": "按下%1$s来脱离，按住%1$s弹射",
   "tips.superbwarfare.press_s_to_landing": "按住S以辅助直升机降落",
   "tips.superbwarfare.input_missile_target": "按下[%1$s]输入目标位置",
+  "tips.superbwarfare.vehicle.locked": "当前载具已被锁定",
+  "tips.superbwarfare.vehicle.lock_vehicle": "成功锁定%1$s",
+  "tips.superbwarfare.vehicle.unlock_vehicle": "成功解锁%1$s",
+  "tips.superbwarfare.vehicle.lock_fail": "这不是你的载具",
 
   "tips.superbwarfare.target.yaw": "目标偏航角: ",
   "tips.superbwarfare.target.pitch": "目标俯仰角: ",
