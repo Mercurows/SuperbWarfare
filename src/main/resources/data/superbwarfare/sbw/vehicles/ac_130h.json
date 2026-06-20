@@ -109,13 +109,13 @@
       "IsEnclosed": true,
       "BanHand": true,
       "Transform": "Vehicle",
-      "Position": [0.84375, 3.275, 14.0625],
+      "Position": [0.84375, 3.375, 14.0625],
       "CanRotateHead": false,
       "Sensitivity": [0, 0, 0],
       "Pose": "Pilot",
       "CameraPos": {
         "Transform": "Vehicle",
-        "Position": [0.84375, 4.875, 14.0625],
+        "Position": [0.84375, 4.975, 14.0625],
         "UseFixedCameraPos": true,
         "UseAircraftCamera": true,
         "AircraftCameraPos": [0, 8, -36]
@@ -127,7 +127,7 @@
     },
     {
       "Transform": "Vehicle",
-      "Position": [-0.84375, 3.275, 14.0625],
+      "Position": [-0.84375, 3.375, 14.0625],
       "MinPitch": -80,
       "MaxPitch": 80,
       "MinYaw": -80,
@@ -139,7 +139,7 @@
     },
     {
       "Transform": "Vehicle",
-      "Position": [0, 3.075, 12.961],
+      "Position": [0, 3.225, 12.961],
       "MinPitch": -80,
       "MaxPitch": 80,
       "MinYaw": -80,
