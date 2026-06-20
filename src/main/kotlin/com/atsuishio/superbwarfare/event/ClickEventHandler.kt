@@ -191,7 +191,7 @@ object ClickEventHandler {
         // 按下自由视角键时，为载具调整相机距离
         if (vehicle is VehicleEntity && player == vehicle.firstPassenger && ModKeyMappings.FREE_CAMERA.isDown()) {
             ClientMouseHandler.custom3pDistance =
-                (ClientMouseHandler.custom3pDistance - event.scrollDelta).coerceIn(-3.0, 8.0)
+                (ClientMouseHandler.custom3pDistance - event.scrollDelta).coerceIn(-3.0, 20.0)
             event.isCanceled = true
             return
         }

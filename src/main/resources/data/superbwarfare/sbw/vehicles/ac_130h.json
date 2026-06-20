@@ -1,0 +1,216 @@
+{
+  "MaxHealth": 1000,
+  "MaxEnergy": 40000000,
+  "MouseSensitivity": 0.1,
+  "OBB": [
+    {
+      "Part": "Collision",
+      "Size": [3.375, 3.3125, 20.594],
+      "Position": [0, 3.3125, -2.469]
+    },
+    {
+      "Size": [28.0625, 0.625, 3.531],
+      "Position": [0, 6, -1.094]
+    },
+    {
+      "Size": [3.1875, 2.75, 10.625],
+      "Position": [0, 3.75, 3.5]
+    },
+    {
+      "Size": [2.4375, 2.25, 1],
+      "Position": [0, 3.625, 15.125]
+    },
+    {
+      "Size": [1.4375, 1.28125, 1.0625],
+      "Position": [0, 2.969, 17.188]
+    },
+    {
+      "Size": [3.1875, 1.094, 4.5],
+      "Position": [0, 5.348, -11.625]
+    },
+    {
+      "Size": [3.1875, 0.53125, 3.5],
+      "Position": [0, 5.969, -19.625]
+    },
+    {
+      "Size": [3.1875, 1.0938, 1.4375],
+      "Position": [0, 3.219, -8.563]
+    },
+    {
+      "Size": [3.1875, 0.5625, 1.5313],
+      "Position": [0, 3.75, -11.5313]
+    },
+    {
+      "Size": [3.1875, 0.5313, 6.5625],
+      "Position": [0, 3.7698, -13.098],
+      "CustomRotate": [20.25, 0, 0]
+    },
+    {
+      "Size": [0.375, 4.96875, 1.8125],
+      "Position": [0, 11.469, -22.188]
+    },
+    {
+      "Size": [0.375, 1.125, 7.21875],
+      "Position": [0, 6.518, -13.459],
+      "CustomRotate": [9, 0, 0]
+    },
+    {
+      "Size": [0.375, 5.031, 1.9063],
+      "Position": [0, 11.113, -19.603],
+      "CustomRotate": [-29, 0, 0]
+    },
+    {
+      "Size": [1.625, 0.3125, 1.5313],
+      "Position": [0, 6.188, -24.6563]
+    },
+    {
+      "Size": [11.25, 0.28125, 2.75],
+      "Position": [0, 6.15625, -20.25]
+    },
+    {
+      "Size": [0.875, 0.875, 5.375],
+      "Position": [10.859, 4.234, -1.125]
+    },
+    {
+      "Size": [0.875, 0.875, 5.375],
+      "Position": [19.3906, 4.718, -1.125]
+    },
+    {
+      "Size": [0.875, 0.875, 5.375],
+      "Position": [-10.859, 4.234, -1.125]
+    },
+    {
+      "Size": [0.875, 0.875, 5.375],
+      "Position": [-19.3906, 4.718, -1.125]
+    },
+    {
+      "Part": "MainEngine",
+      "Size": [1, 1.125, 3.625],
+      "Position": [7.1875, 5.25, 1.5]
+    },
+    {
+      "Part": "MainEngine",
+      "Size": [1, 1.125, 3.625],
+      "Position": [14.5, 5.4375, 1.5]
+    },
+    {
+      "Part": "SubEngine",
+      "Size": [1, 1.125, 3.625],
+      "Position": [-7.1875, 5.25, 1.5]
+    },
+    {
+      "Part": "SubEngine",
+      "Size": [1, 1.125, 3.625],
+      "Position": [-14.5, 5.4375, 1.5]
+    }
+  ],
+  "Seats": [
+    {
+      "IsEnclosed": true,
+      "BanHand": true,
+      "Transform": "Vehicle",
+      "Position": [0.84375, 3.275, 14.0625],
+      "CanRotateHead": false,
+      "Sensitivity": [0, 0, 0],
+      "Pose": "Pilot",
+      "CameraPos": {
+        "Transform": "Vehicle",
+        "Position": [0.84375, 4.875, 14.0625],
+        "UseFixedCameraPos": true,
+        "UseAircraftCamera": true,
+        "AircraftCameraPos": [0, 8, -36]
+      },
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [9.833, 0.5, 11.4375]
+      }
+    },
+    {
+      "Transform": "Vehicle",
+      "Position": [-0.84375, 3.275, 14.0625],
+      "MinPitch": -80,
+      "MaxPitch": 80,
+      "MinYaw": -80,
+      "MaxYaw": 80,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [9.833, 0.5, 11.4375]
+      }
+    },
+    {
+      "Transform": "Vehicle",
+      "Position": [0, 3.075, 12.961],
+      "MinPitch": -80,
+      "MaxPitch": 80,
+      "MinYaw": -80,
+      "MaxYaw": 80,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [9.833, 0.5, 11.4375]
+      }
+    }
+  ],
+  "HudType": "@Aircraft",
+  "UpStep": 1.1,
+  "Mass": 60,
+  "AllowFreeCam": true,
+  "HasDecoy": true,
+  "SendHitParticles": false,
+  "DamageModifiers": [
+    "All - 7",
+    "minecraft:lava + 8",
+    "minecraft:arrow * 0.2",
+    "minecraft:trident * 0.4",
+    "minecraft:mob_attack * 0.4",
+    "minecraft:mob_attack_no_aggro * 0.4",
+    "minecraft:mob_projectile * 0.4",
+    "minecraft:player_attack * 0.4",
+    "minecraft:lava * 2.5",
+    "@minecraft:tnt * 6",
+    "@minecraft:tnt_minecart * 6",
+    "minecraft:explosion * 4",
+    "minecraft:player_explosion * 4",
+    "superbwarfare:projectile_hit * 0.8",
+    "superbwarfare:grapeshot_hit * 0.75",
+    "#superbwarfare:projectile * 0.16",
+    "superbwarfare:vehicle_strike * 7",
+    "superbwarfare:laser * 0.4",
+    "@superbwarfare:cannon_shell * 2",
+    "@superbwarfare:small_cannon_shell * 0.75",
+    "@superbwarfare:gun_grenade * 2.2",
+    "@superbwarfare:rgo_grenade * 6",
+    "@superbwarfare:hand_grenade * 5",
+    "@superbwarfare:mortar_shell * 3",
+    "@superbwarfare:c4 * 2.5",
+    "@#superbwarfare:at_rocket * 3",
+    "@#superbwarfare:aerial_bomb * 2",
+    "All * 0.65"
+  ],
+  "RotateOffsetHeight": 3.4,
+  "DestroyInfo": {
+    "ExplosionDamage": 2000,
+    "ExplosionRadius": 36,
+    "CrashPassengers": true
+  },
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/a_10a_icon.png",
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png",
+  "VehicleContainerType": "Small",
+  "Type": "Airplane",
+  "EngineType": "Aircraft",
+  "EngineInfo": {
+    "EnergyCostRate": 512,
+    "Increment": 0.7,
+    "Decrement": 0.5,
+    "PitchSpeed": 0.2,
+    "YawSpeed": 0.6,
+    "RollSpeed": 0.15,
+    "LiftSpeed": 1.0,
+    "SpeedRate": 0.6,
+    "ClampPitch": 40,
+    "ClampRoll": 50,
+    "EngineStartSound": "superbwarfare:ac_130h_engine_start",
+    "EngineSoundVolume" : 1.3
+  },
+  "TerrainCompat": [[0, 0, 13.875], [-2.898, 0, -1.0475], [2.898, 0, -1.0475]],
+  "EngineSound": "superbwarfare:ac_130h_engine"
+}

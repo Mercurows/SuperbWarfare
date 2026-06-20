@@ -109,11 +109,11 @@ object AircraftHud {
         val camera = mc.gameRenderer.mainCamera
         val cameraPos = camera.position
         val poseStack = guiGraphics.pose()
-        val gunData = vehicle.getGunData(player) ?: return
+        val gunData = vehicle.getGunData(player)
 
         poseStack.pushPose()
 
-        val bomb = gunData.get(GunProp.CROSSHAIR) == "@AirBomb"
+        val bomb = gunData?.get(GunProp.CROSSHAIR) == "@AirBomb"
 
         val color = vehicle.hudColor
         RenderSystem.disableDepthTest()
@@ -164,7 +164,7 @@ object AircraftHud {
 
                 poseStack.pushPose()
                 poseStack.translate(x, y, 0f)
-                val component = vehicle.thirdPersonAmmoComponent(gunData, player)
+                val component = vehicle.thirdPersonAmmoComponent(gunData!!, player)
                 guiGraphics.drawString(mc.font, component, 25, -11, 1, false)
                 poseStack.popPose()
 
@@ -227,7 +227,7 @@ object AircraftHud {
             )
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
 
-            if (gunData.get(GunProp.CROSSHAIR) == "@AirCraftMissile") {
+            if (gunData?.get(GunProp.CROSSHAIR) == "@AirCraftMissile") {
                 RenderHelper.blit(poseStack, HUD_BASE_MISSILE, x - 160, y - 160, 0f, 0f, 320f, 320f, 320f, 320f, color)
             } else {
                 RenderHelper.blit(poseStack, HUD_BASE, x - 160, y - 160, 0f, 0f, 320f, 320f, 320f, 320f, color)
@@ -371,13 +371,15 @@ object AircraftHud {
             guiGraphics.drawString(mc.font, Component.literal("TGT"), 76, 78, color, false)
 
             // 武器名
-            val heat = vehicle.getWeaponHeat(player)
-            val component = vehicle.firstPersonAmmoComponent(gunData, player)
+            if (gunData != null) {
+                val heat = vehicle.getWeaponHeat(player)
+                val component = vehicle.firstPersonAmmoComponent(gunData, player)
 
-            guiGraphics.drawString(
-                mc.font, component, -mc.font.width(component) / 2, 91,
-                getGradientColor(color, 0xFF0000, heat, 2), false
-            )
+                guiGraphics.drawString(
+                    mc.font, component, -mc.font.width(component) / 2, 91,
+                    getGradientColor(color, 0xFF0000, heat, 2), false
+                )
+            }
 
             // 能量警告
             if (vehicle.hasEnergyStorage()) {
@@ -460,9 +462,9 @@ object AircraftHud {
             val xCross = x
             val yCross = y
 
-            if ((mc.options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) && (gunData.get(
+            if ((mc.options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle) && (gunData?.get(
                     GunProp.CROSSHAIR
-                ) != "@AirBomb") && (gunData.get(GunProp.CROSSHAIR) != "@AirCraftMissile")
+                ) != "@AirBomb") && (gunData?.get(GunProp.CROSSHAIR) != "@AirCraftMissile")
             ) {
                 RenderSystem.disableDepthTest()
                 RenderSystem.depthMask(false)
@@ -489,7 +491,7 @@ object AircraftHud {
                     color
                 )
             } else if (mc.options.cameraType != CameraType.FIRST_PERSON && !ClientEventHandler.zoomVehicle) {
-                if (gunData.get(GunProp.CROSSHAIR) == "@AirBomb") {
+                if (gunData?.get(GunProp.CROSSHAIR) == "@AirBomb") {
                     bombHitPosX = Mth.lerp(0.25 * partialTick.toDouble(), bombHitPosX, xCross.toDouble())
                     bombHitPosY = Mth.lerp(0.25 * partialTick.toDouble(), bombHitPosY, yCross.toDouble())
 
@@ -627,7 +629,9 @@ object AircraftHud {
                 poseStack.translate(x, y + 50, 0f)
                 poseStack.scale(0.75f, 0.75f, 1f)
 
-                VehicleMainWeaponHudOverlay.renderWeaponInfoThirdAir(guiGraphics, vehicle, player, gunData, font)
+                if (gunData != null) {
+                    VehicleMainWeaponHudOverlay.renderWeaponInfoThirdAir(guiGraphics, vehicle, player, gunData, font)
+                }
 
                 if (vehicle.hasDecoy()) {
                     if (vehicle.decoyReady) {

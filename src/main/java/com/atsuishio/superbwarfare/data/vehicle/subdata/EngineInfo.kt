@@ -166,6 +166,12 @@ abstract class EngineInfo {
         @SerialName("Speed")
         var speed: Float = 1f
 
+        @SerialName("ClampPitch")
+        var clampPitch: Float = 514f
+
+        @SerialName("ClampRoll")
+        var clampRoll: Float = 514f
+
         // 引擎启动音效
         @SerialName("EngineStartSound")
         var engineStartSound: SerializedSoundEvent = SoundEvents.EMPTY

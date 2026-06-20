@@ -1,0 +1,28 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.ac_130h.idle": {
+			"loop": true
+		},
+		"animation.ac_130h.gear_up": {
+			"loop": "hold_on_last_frame",
+			"bones": {
+				"door1": {
+					"position": [0, 7, -30]
+				},
+				"wheel1": {
+					"rotation": [240, 0, 0]
+				},
+				"door2": {
+					"rotation": [0, 0, 60]
+				},
+				"wheel2": {
+					"position": [0, 39, 0]
+				},
+				"door3": {
+					"rotation": [0, 0, -60]
+				}
+			}
+		}
+	}
+}

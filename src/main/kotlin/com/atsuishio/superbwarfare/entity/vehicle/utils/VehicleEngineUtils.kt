@@ -763,6 +763,8 @@ object VehicleEngineUtils {
         val speedRate = engineInfo.speedRate
         val resistance = engineInfo.resistance * if (downInputDown) 1.5 else 1.0
         val gearRotateAngle = engineInfo.gearRotateAngle
+        val clampPitch = engineInfo.clampPitch
+        val clampRoll = engineInfo.clampRoll
         val energyCost = (engineInfo.energyCostRate * Mth.abs(power)).toInt()
 
         val speedSqr = deltaMovement.lengthSqr()
@@ -893,7 +895,7 @@ object VehicleEngineUtils {
 
             yRot += yawSpeed * addY
             if (!onGround()) {
-                xRot += pitchSpeed * addX
+                xRot = Mth.clamp(xRot + pitchSpeed * addX, -clampPitch, clampPitch)
 
                 if (tickCount > 5) {
                     updateRotation(this)
@@ -903,7 +905,7 @@ object VehicleEngineUtils {
                     addY *= Mth.clamp(1f - Mth.abs(roll) / 45, 0f, 1f)
                 }
 
-                setZRot(roll - rollSpeed * addZ)
+                setZRot(Mth.clamp(roll - rollSpeed * addZ, -clampRoll, clampRoll))
             }
 
             // 自动回正

@@ -688,6 +688,7 @@
   "entity.superbwarfare.edd": "防止攻入装置",
   "entity.superbwarfare.happiest_ghast": "极乐恶魂",
   "entity.superbwarfare.kirov": "基洛夫空艇",
+  "entity.superbwarfare.ac_130h": "AC-130H 空中炮艇",
 
   "key.categories.superbwarfare": "卓越前线",
   "key.superbwarfare.move_forward": "前进/提升油门",
@@ -893,6 +894,8 @@
   "info.superbwarfare.ztz_99a": "ZTZ-99A是中国陆军王牌主战坦克。主武器为一门125毫米滑膛炮，可发射多种弹药，配备先进复合装甲，专为高强度地面突击设计，以强大的火力、防护力和战场生存能力著称",
   "info.superbwarfare.tow": "陶式（TOW）是一款重型反坦克导弹发射器。通常采用车载或直升机平台，采用线导或无线指令制导，专为从远距离精确摧毁敌方主战坦克、装甲车及坚固工事而设计，具备高可靠性与持续作战能力",
   "info.superbwarfare.happiest_ghast": "咦嘻嘻嘻嘻嘻嘻哈哈哈哈哈哈哈，呀哈哈哈哈哈哈哈，嘻嘻嘻嘻嘻嘻",
+  "info.superbwarfare.kirov": "基洛夫空艇是苏联的重型轰炸飞艇。它搭载航空穿甲炸弹，专门用于摧毁地面基地和装甲集群。其装甲厚重、破坏力惊人，缺点是航速缓慢且缺乏对空自卫火力",
+  "info.superbwarfare.ac_130h": "AC-130H“幽灵”是美军重型空中炮艇。主武器为两门20毫米加特林机炮、一门40毫米博福斯机炮及一门105毫米榴弹炮，专为长时间盘旋压制地面目标设计，擅长摧毁据点和轻型装甲，以凶猛火力和持久滞空能力著称",
 
   "weapon.superbwarfare.20mm_cannon": "20毫米机炮 %1$s",
   "weapon.superbwarfare.20mm_cannon_ap": "20毫米机炮 穿甲弹 %1$s",

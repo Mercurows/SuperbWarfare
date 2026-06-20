@@ -4579,5 +4579,23 @@
         "name": "superbwarfare:vehicle/kirov/kirov_engine"
       }
     ]
+  },
+  "ac_130h_engine": {
+    "sounds": [
+      {
+        "attenuation_distance": 256,
+        "stream": true,
+        "name": "superbwarfare:vehicle/ac_130h/ac_130h_engine"
+      }
+    ]
+  },
+  "ac_130h_engine_start": {
+    "sounds": [
+      {
+        "attenuation_distance": 72,
+        "stream": true,
+        "name": "superbwarfare:vehicle/ac_130h/ac_130h_engine_start"
+      }
+    ]
   }
 }

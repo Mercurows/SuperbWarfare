@@ -101,6 +101,7 @@ object ModEntityRenderers {
             registerEntityRenderer(ModEntities.LAV_25.get(), ::Lav25Renderer)
             registerEntityRenderer(ModEntities.ZTZ_99A.get(), ::Ztz99aRenderer)
             registerEntityRenderer(ModEntities.EDD.get(), ::EDDRenderer)
+            registerEntityRenderer(ModEntities.AC_130H.get(), ::Ac130hRenderer)
         }
     }
 }

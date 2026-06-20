@@ -88,28 +88,21 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
     }
 
     override fun RenderContext.render() {
-        val vehicle = player.vehicle
-        if (vehicle !is VehicleEntity) return
-
-        val type: String = vehicle.computed().hudType
-        if (type == EMPTY) return
-
-        val gunData = vehicle.getGunData(player) ?: return
-
         val poseStack = guiGraphics.pose()
         poseStack.pushPose()
 
-        RenderSystem.disableDepthTest()
-        RenderSystem.depthMask(false)
-        RenderSystem.enableBlend()
-        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
-        RenderSystem.blendFuncSeparate(
-            GlStateManager.SourceFactor.SRC_ALPHA,
-            GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
-            GlStateManager.SourceFactor.ONE,
-            GlStateManager.DestFactor.ZERO
-        )
-        RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
+        val vehicle = player.vehicle
+        if (vehicle !is VehicleEntity) {
+            poseStack.popPose()
+            return
+        }
+
+
+        val type: String = vehicle.computed().hudType
+        if (type == EMPTY) {
+            poseStack.popPose()
+            return
+        }
 
         when (type) {
             LandVehicleHud.ID -> LandVehicleHud.render(
@@ -172,6 +165,27 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
                 screenHeight
             )
         }
+
+        val gunData = vehicle.getGunData(player)
+        if (gunData == null) {
+            poseStack.popPose()
+            return
+        }
+
+
+        RenderSystem.disableDepthTest()
+        RenderSystem.depthMask(false)
+        RenderSystem.enableBlend()
+        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
+        RenderSystem.blendFuncSeparate(
+            GlStateManager.SourceFactor.SRC_ALPHA,
+            GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+            GlStateManager.SourceFactor.ONE,
+            GlStateManager.DestFactor.ZERO
+        )
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
+
+
 
         val seekInfo = gunData.get(GunProp.SEEK_WEAPON_INFO)
         val color = gunData.get(GunProp.CROSSHAIR_COLOR).get()
