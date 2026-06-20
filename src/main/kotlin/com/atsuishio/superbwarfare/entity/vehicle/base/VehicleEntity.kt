@@ -4107,6 +4107,16 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         return getOBBs().firstOrNull { it.part == COLLISION }
     }
 
+    /**
+     * 获取COLLISION类型OBB的定义信息（局部中心位置与半长）
+     *
+     * 与[getCollisionOBB]不同，这里返回的是数据定义而非世界空间实例，
+     * 因此其局部位置/半长不受车身pitch/roll影响，可用于构建稳定的地形采样footprint
+     */
+    open fun getCollisionOBBInfo(): OBBInfo? {
+        return obb.firstOrNull { it.part == COLLISION }
+    }
+
     open fun getEnergyDataAccessor() = ENERGY
 
     open fun generateWreckageLoot() {

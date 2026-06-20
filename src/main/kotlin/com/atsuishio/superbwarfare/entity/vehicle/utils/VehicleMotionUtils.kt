@@ -21,7 +21,6 @@ import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.particles.BlockParticleOption
 import net.minecraft.core.particles.ParticleTypes
-import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.tags.BlockTags
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
@@ -30,12 +29,12 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.projectile.Projectile
 import net.minecraft.world.entity.vehicle.Boat
 import net.minecraft.world.entity.vehicle.Minecart
-import net.minecraft.world.level.ClipContext
+import net.minecraft.world.level.Level
 import net.minecraft.world.level.entity.EntityTypeTest
 import net.minecraft.world.level.levelgen.Heightmap
 import net.minecraft.world.phys.AABB
-import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
+import net.minecraftforge.registries.ForgeRegistries
 import org.joml.Math
 import org.joml.Matrix4d
 import org.joml.Vector3d
@@ -157,7 +156,9 @@ object VehicleMotionUtils {
                 if (curLenSq < minPenetration * minPenetration) continue
                 if (curLenSq > bestLenSq) {
                     bestLenSq = curLenSq
-                    bestMtvX = curMtv.x; bestMtvY = curMtv.y; bestMtvZ = curMtv.z
+                    bestMtvX = curMtv.x
+                    bestMtvY = curMtv.y
+                    bestMtvZ = curMtv.z
                     bestOnTop = -curMtv.y / Math.sqrt(curLenSq) > 0.5
                 }
             }
@@ -284,7 +285,7 @@ object VehicleMotionUtils {
             ) { entity -> entity !== vehicle && entity !== vehicle.getFirstPassenger() && entity!!.vehicle == null }
                 .stream().filter { entity ->
                     if (entity.isAlive && vehicle.isInObb(entity, vec3)) {
-                        val type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.type)
+                        val type = ForgeRegistries.ENTITY_TYPES.getKey(entity.type)
                         return@filter (entity is VehicleEntity || entity is Boat || entity is Minecart || (entity is TurretWreckEntity && entity.tickCount > 5) || (entity is LivingEntity && !(entity is Player && entity.isSpectator))) || VehicleConfig.COLLISION_ENTITY_WHITELIST.get()
                             .contains(type.toString())
                     }
@@ -298,7 +299,7 @@ object VehicleMotionUtils {
             ) { entity -> entity !== vehicle && entity !== vehicle.getFirstPassenger() && entity!!.vehicle == null }
                 .stream().filter { entity ->
                     if (entity.isAlive) {
-                        val type = BuiltInRegistries.ENTITY_TYPE.getKey(entity.type)
+                        val type = ForgeRegistries.ENTITY_TYPES.getKey(entity.type)
                         return@filter (entity is VehicleEntity || entity is Boat || entity is Minecart || (entity is TurretWreckEntity && entity.tickCount > 5)
                                 || (entity is LivingEntity && !(entity is Player && entity.isSpectator)))
                                 || VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString())
@@ -568,102 +569,121 @@ object VehicleMotionUtils {
         }
 
         val level = vehicle.level()
-        var transform = vehicle.getWheelsTransform(1f)
+        // 仅含yaw的水平参考系：用它构建采样点，使地形采样与车身pitch/roll解耦，
+        // 避免"上一tick的倾角影响这一tick的采样"造成的角度自反馈与抖动
+        val flatTransform = vehicle.getWheelsTransform(1f)
 
-        // 地形采样点：OBB底面2×n网格，2列（左右边缘）+ n排（前后分布）
-        val obb = vehicle.getCollisionOBB()
-        val samplePoints = mutableListOf<Vec3>()
-        if (obb != null) {
-            transform = vehicle.getVehicleTransform(1f)
-            val hx = obb.extents.x
-            val hz = obb.extents.z
-            val hy = obb.extents.y
-            val cols = 2       // 固定2列：左(-hx) 右(+hx)
-            val rows = 6       // n排：沿z轴前->后分布
+        // 采样列（载具局部坐标，X=右，Z=前）及该列处碰撞OBB底面的局部高度ly
+        val sampleLx = ArrayList<Double>()
+        val sampleLz = ArrayList<Double>()
+        val sampleLy = ArrayList<Double>()
+
+        val collisionInfo = vehicle.getCollisionOBBInfo()
+        if (collisionInfo != null) {
+            // 用碰撞OBB底面footprint采样：cols列(左右,决定roll) × rows排(前后,决定pitch)
+            val cx = collisionInfo.position.x
+            val cz = collisionInfo.position.z
+            val hx = collisionInfo.size.x
+            val hz = collisionInfo.size.z
+            val bottomY = collisionInfo.position.y - collisionInfo.size.y
+            val cols = 3
+            val rows = 5
             for (ci in 0 until cols) {
+                val lx = cx - hx + 2.0 * hx * ci / (cols - 1)
                 for (ri in 0 until rows) {
-                    val lx = -hx + 2.0 * hx * ci / (cols - 1)
-                    val lz = -hz + 2.0 * hz * ri / (rows - 1)
-                    samplePoints.add(Vec3(lx, -hy, lz))
+                    val lz = cz - hz + 2.0 * hz * ri / (rows - 1)
+                    sampleLx.add(lx)
+                    sampleLz.add(lz)
+                    sampleLy.add(bottomY)
                 }
+            }
+        } else {
+            // 回退：无碰撞OBB时用预设接地点（轮位/起落架）
+            for (p in positions) {
+                sampleLx.add(p.x)
+                sampleLz.add(p.z)
+                sampleLy.add(p.y)
+            }
+        }
+        val count = sampleLx.size
+        if (count == 0) return
+
+        // 容差/坑洞参数（单位：方块）
+        val embedTolerance = 0.25    // 横向嵌入容差：地面与OBB底相差不超过此值视为贴合，不产生倾角
+        val searchUp = 1.5           // 上坡探测上限：检测高出OBB底的地形（爬坡），同时限制最大抬头幅度
+        val searchDown = 2.0         // 下坡/坑洞探测下限：检测低于OBB底的地形，同时限制最大低头幅度
+        val potholeDepth = 0.6       // 采样列地面低于OBB底超过此值视为"坑"
+        val potholeIgnoreRatio = 0.4 // 坑采样占比不超过此值时忽略其影响（保持水平，不栽进小坑）
+
+        // 第一遍：对每个采样列做精确AABB探测，求地面相对OBB底的高度差
+        // heightY 约定：正=地面在OBB底下方(悬空/坑)，负=地面嵌入OBB(上坡)
+        val heightY = DoubleArray(count)
+        val isPit = BooleanArray(count)
+        for (i in 0 until count) {
+            val world = transformPosition(flatTransform, sampleLx[i], sampleLy[i], sampleLz[i])
+            val sampleY = world.y
+            val top = sampleTerrainTop(level, world.x, sampleY, world.z, searchUp, searchDown)
+            if (top == null) {
+                // 垂直窗口内无地形支撑（深坑/悬崖外）
+                isPit[i] = true
+                heightY[i] = searchDown
+            } else {
+                val rawPre = sampleY - top
+                isPit[i] = rawPre > potholeDepth
+                // 容差：极小的嵌入/悬空都吸附为贴合(0)，避免体素噪声造成的细碎抖动；
+                // 超出容差后线性响应——上坡(负)允许少量横向嵌入，爬坡时车身抬头
+                var h = rawPre
+                h = if (h in -embedTolerance..embedTolerance) 0.0
+                else if (h > 0) h - embedTolerance else h + embedTolerance
+                heightY[i] = h.coerceIn(-searchUp, searchDown)
             }
         }
 
-        // 回退：无OBB时用预设轮位
-        if (samplePoints.isEmpty()) samplePoints.addAll(positions)
+        // 坑洞忽略：坑占比不大时剔除坑采样点，避免少数坑洞把车身往下拽
+        val pitCount = isPit.count { it }
+        val ignorePits = pitCount in 1..(potholeIgnoreRatio * count).toInt()
 
-        // 最小二乘平面拟合累加器（载具局部坐标系，X=右，Z=前）
+        // 第二遍：对保留点做去中心化最小二乘平面拟合
+        // （去中心化保证"剔除部分采样点后"残余的均匀高度偏移不会污染斜率）
+        var n = 0
+        var meanLx = 0.0
+        var meanLz = 0.0
+        var meanH = 0.0
+        for (i in 0 until count) {
+            if (ignorePits && isPit[i]) continue
+            meanLx += sampleLx[i]
+            meanLz += sampleLz[i]
+            meanH += heightY[i]
+            n++
+        }
+        if (n == 0) return
+        meanLx /= n
+        meanLz /= n
+        meanH /= n
+
         var sumXH = 0.0
         var sumZH = 0.0
         var sumX2 = 0.0
         var sumZ2 = 0.0
-
-        // 支撑感知：检测悬空采样点的比例，避免小幅悬空导致载具向下倾斜
-        // 当大部分采样点下方有方块支撑时，仅用有支撑的点做平面拟合
-        val GROUND_DISTANCE_THRESHOLD = 1.5  // 地形在1.5格内视为"有支撑"
-        val MIN_STABLE_SUPPORT_RATIO = 0.75  // 至少75%的采样点有支撑时保持水平，忽略少量悬空
-
-        // 第一遍：计算所有采样点的heightY
-        val heightYArray = DoubleArray(samplePoints.size)
-
-        for ((i, vec3) in samplePoints.withIndex()) {
-            val vector4d = transformPosition(transform, vec3.x, vec3.y, vec3.z)
-            val p = Vec3(vector4d.x, vector4d.y, vector4d.z)
-            val res = level.clip(
-                ClipContext(
-                    p,
-                    p.add(0.0, -20.0, 0.0),
-                    ClipContext.Block.COLLIDER,
-                    ClipContext.Fluid.NONE,
-                    vehicle
-                )
-            )
-            var blockPos = BlockPos.containing(p)
-            val blockPosUp = BlockPos.containing(p.add(0.0, 1.0, 0.0))
-            if (level.getBlockState(blockPosUp).canOcclude()) blockPos = blockPosUp
-            val state = level.getBlockState(blockPos)
-            val shape = state.getCollisionShape(level, blockPos)
-            val heightY = if (!shape.isEmpty) p.y - (shape.max(Direction.Axis.Y) + blockPos.y)
-            else if (res.type == HitResult.Type.BLOCK && level.noCollision(AABB(p, p))) (p.y - res.location.y).coerceIn(
-                0.0,
-                20.0
-            )
-            else 0.0
-            heightYArray[i] = heightY
+        for (i in 0 until count) {
+            if (ignorePits && isPit[i]) continue
+            val dx = sampleLx[i] - meanLx
+            val dz = sampleLz[i] - meanLz
+            val dh = heightY[i] - meanH
+            sumXH += dx * dh
+            sumX2 += dx * dx
+            sumZH += dz * dh
+            sumZ2 += dz * dz
         }
 
-        val supportedCount = heightYArray.count { it <= GROUND_DISTANCE_THRESHOLD }
-        val supportedRatio = supportedCount.toDouble() / heightYArray.size
-
-        // 第二遍：根据支撑比例选择性地累加到平面拟合
-        if (supportedRatio >= MIN_STABLE_SUPPORT_RATIO && supportedCount > 0) {
-            // 大部分采样点有支撑，仅用有支撑的点做平面拟合，忽略悬空部分
-            for ((i, vec3) in samplePoints.withIndex()) {
-                if (heightYArray[i] <= GROUND_DISTANCE_THRESHOLD) {
-                    sumXH += vec3.x * heightYArray[i]
-                    sumZH += vec3.z * heightYArray[i]
-                    sumX2 += vec3.x * vec3.x
-                    sumZ2 += vec3.z * vec3.z
-                }
-            }
-        } else {
-            // 悬空比例较高，载具确实处于悬崖边缘，使用所有点做完整拟合
-            for ((i, vec3) in samplePoints.withIndex()) {
-                sumXH += vec3.x * heightYArray[i]
-                sumZH += vec3.z * heightYArray[i]
-                sumX2 += vec3.x * vec3.x
-                sumZ2 += vec3.z * vec3.z
-            }
-        }
-
-        if (sumX2 > 0.0 || sumZ2 > 0.0) {
+        if (sumX2 > 1e-6 || sumZ2 > 1e-6) {
             updateTerrainCompact(vehicle, sumXH, sumZH, sumX2, sumZ2)
         }
 
         // 粒子特效：使用预设轮位
         if (level.isClientSide && vehicle.deltaMovement.horizontalDistanceSqr() > 0.01) {
             for (vec3 in positions) {
-                val v = transformPosition(transform, vec3.x, vec3.y - 0.02, vec3.z)
+                val v = transformPosition(flatTransform, vec3.x, vec3.y - 0.02, vec3.z)
                 val p = Vec3(v.x, v.y, v.z)
                 val blockPos = BlockPos.containing(p.add(0.0, -0.3, 0.0))
                 val state = level.getBlockState(blockPos)
@@ -697,9 +717,8 @@ object VehicleMotionUtils {
                         0f,
                         1
                     )
-                    if (vehicle.engineInfo is EngineInfo.Track && vehicle.drift() && vehicle.deltaMovement.horizontalDistanceSqr() > 0.0004 && state.`is`(
-                            BlockTags.MINEABLE_WITH_PICKAXE
-                        )
+                    if (vehicle.engineInfo is EngineInfo.Track && vehicle.drift() && vehicle.deltaMovement.horizontalDistanceSqr() > 0.0004
+                        && state.`is`(BlockTags.MINEABLE_WITH_PICKAXE)
                     )
                         vehicle.addRandomParticle(
                             ModParticleTypes.FIRE_STAR.get(),
@@ -712,6 +731,49 @@ object VehicleMotionUtils {
                 }
             }
         }
+    }
+
+    /**
+     * 在指定列(wx,wz)上、以OBB底面高度wy为基准，探测最贴合的地形碰撞面顶部Y。
+     *
+     * 仅统计落在垂直窗口 [wy - searchDown, wy + searchUp] 内、且该列水平位置确实位于
+     * 方块碰撞盒内的碰撞面，取其中最高的顶部（即车身会贴合到的地面）。
+     * 直接遍历真实方块碰撞盒(toAabbs)而非高度图，因此对台阶/半砖/楼梯等也精确。
+     *
+     * @return 命中的地形顶部世界Y；窗口内无任何碰撞面时返回null（深坑/悬崖外）
+     */
+    private fun sampleTerrainTop(
+        level: Level,
+        wx: Double, wy: Double, wz: Double,
+        searchUp: Double, searchDown: Double
+    ): Double? {
+        val bx = Mth.floor(wx)
+        val bz = Mth.floor(wz)
+        val topBlock = Mth.floor(wy + searchUp)
+        val botBlock = Mth.floor(wy - searchDown)
+        val ceil = wy + searchUp + 1e-6
+        var best = Double.NaN
+        val pos = BlockPos.MutableBlockPos()
+        var by = topBlock
+        while (by >= botBlock) {
+            pos.set(bx, by, bz)
+            val state = level.getBlockState(pos)
+            if (!state.isAir) {
+                val shape = state.getCollisionShape(level, pos)
+                if (!shape.isEmpty) {
+                    for (box in shape.toAabbs()) {
+                        if (wx >= bx + box.minX - 1e-6 && wx <= bx + box.maxX + 1e-6 &&
+                            wz >= bz + box.minZ - 1e-6 && wz <= bz + box.maxZ + 1e-6
+                        ) {
+                            val boxTop = by + box.maxY
+                            if (boxTop <= ceil && (best.isNaN() || boxTop > best)) best = boxTop
+                        }
+                    }
+                }
+            }
+            by--
+        }
+        return if (best.isNaN()) null else best
     }
 
     /**
