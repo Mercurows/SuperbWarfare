@@ -698,7 +698,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             worldDirVec.z().toDouble()
         ).normalize()
 
-        return Pair(worldPos, worldDir)
+        return Pair(worldPos, worldDir.scale(-1.0))
     }
 
     companion object {
