@@ -28,8 +28,8 @@ open class Ac130hEntity(type: EntityType<Ac130hEntity>, world: Level) : VehicleE
         }
 
         if (!onGround() && engineStartOver && firstPassenger == null && energy > 0 && !isWreck && getPassengers().isNotEmpty()) {
-            deltaRot += 0.1f
-            mouseMoveSpeedX = -2f
+            deltaRot += 0.12f
+            mouseMoveSpeedX = -1f
             power = Mth.lerp(0.05f, power, 1.1f)
             xRot *= 0.995f
         }

@@ -1700,6 +1700,7 @@ object ClientEventHandler {
 
     @SubscribeEvent
     fun handleVehicleFire(@Suppress("unused") event: TickEvent.RenderTickEvent) {
+        if (event.phase != TickEvent.Phase.START) return
         if (clientLevel == null) return
         val player = localPlayer ?: return
 
@@ -1755,6 +1756,7 @@ object ClientEventHandler {
                 }
                 if (gunData.get(GunProp.DEFAULT_FIRE_MODE) == "Semi") {
                     holdFireVehicle = false
+                    clientTimerVehicle.stop()
                 }
             } else if (clientTimerVehicle.progress >= cooldown) {
                 clientTimerVehicle.stop()

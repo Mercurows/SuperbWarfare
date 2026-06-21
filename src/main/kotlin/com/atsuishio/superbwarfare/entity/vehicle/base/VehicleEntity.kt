@@ -108,6 +108,7 @@ import net.minecraftforge.network.NetworkHooks
 import net.minecraftforge.registries.ForgeRegistries
 import org.joml.*
 import java.util.*
+import java.util.function.BiConsumer
 import java.util.function.Consumer
 import java.util.function.Function
 import javax.annotation.ParametersAreNonnullByDefault
@@ -281,7 +282,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     private var wasVehicleSkip = false
 
     //    private var wasInCarMusicPlaying = false;
-    private var wasFiring = false
+    private val weaponFiringState: MutableMap<String, Boolean> = mutableMapOf()
 
     open var targetSpeed = 0.0
 
@@ -1798,11 +1799,17 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             //            if (!this.wasInCarMusicPlaying && this.inCarMusicPlaying()) {
 //                playInCarMusic.accept(this);
 //            }
-            if (playFireSound != null && !this.wasFiring && this.isFiring) {
-                playFireSound!!.accept(this)
+            if (playFireSound != null) {
+                for ((weaponName, gunData) in gunDataMap) {
+                    if (gunData.get(GunProp.SOUND_INFO).fireSoundInstances == null) continue
+                    val firing = gunData.shootTimer.get() > 0
+                    val was = weaponFiringState.getOrDefault(weaponName, false)
+                    if (!was && firing) {
+                        playFireSound!!.accept(this, weaponName)
+                    }
+                    weaponFiringState[weaponName] = firing
+                }
             }
-
-            this.wasFiring = this.isFiring
 
         } else {
             // 枪数据处理
@@ -2285,13 +2292,9 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
     open val shootSoundInstance: SoundEvent?
         get() {
-            // TODO why 0?
-            val gunData = getGunData(0)
-            if (gunData != null) {
+            for (gunData in gunDataMap.values) {
                 val instance = gunData.get(GunProp.SOUND_INFO).fireSoundInstances
                 if (instance != null) return instance
-            } else {
-                return getShootSoundInstance("Main")
             }
             return SoundEvents.EMPTY
         }
@@ -2302,37 +2305,53 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         return gunData.get(GunProp.SOUND_INFO).fireSoundInstances ?: SoundEvents.EMPTY
     }
 
+    open fun isWeaponFiring(weaponName: String): Boolean {
+        val gunData = getGunData(weaponName) ?: return false
+        return gunData.shootTimer.get() > 0
+    }
+
+    open fun weaponShootingVolume(weaponName: String): Float {
+        val gunData = getGunData(weaponName) ?: return 0f
+        return gunData.shootTimer.get() * 0.25f
+    }
+
+    open fun weaponShootingPitch(weaponName: String): Float {
+        val gunData = getGunData(weaponName) ?: return 1f
+        return (0.98f + gunData.shootTimer.get() * 0.01f - (if (gunData.heat.get() > 80) (gunData.heat.get() - 80) * 0.01 else 0.0)).toFloat()
+    }
+
     open val isFiring: Boolean
         get() {
-            val gunData = getGunData(0)
-            return if (gunData != null) {
+            for (seatIndex in 0..<computed().seats().size) {
+                val gunData = getGunData(seatIndex) ?: continue
                 val instance = gunData.get(GunProp.SOUND_INFO).fireSoundInstances
-                if (instance != null) {
-                    gunData.shootTimer.get() > 0
-                } else {
-                    false
+                if (instance != null && gunData.shootTimer.get() > 0) {
+                    return true
                 }
-            } else {
-                false
             }
+            return false
         }
 
     open fun shootingVolume(): Float {
-        val gunData = getGunData(0)
-        return if (gunData != null) {
-            gunData.shootTimer.get() * 0.25f
-        } else {
-            0f
+        for (seatIndex in 0..<computed().seats().size) {
+            val gunData = getGunData(seatIndex) ?: continue
+            val instance = gunData.get(GunProp.SOUND_INFO).fireSoundInstances
+            if (instance != null) {
+                return gunData.shootTimer.get() * 0.25f
+            }
         }
+        return 0f
     }
 
     open fun shootingPitch(): Float {
-        val gunData = getGunData(0)
-        return if (gunData != null) {
-            (0.98f + gunData.shootTimer.get() * 0.01f - (if (gunData.heat.get() > 80) (gunData.heat.get() - 80) * 0.01 else 0.0)).toFloat()
-        } else {
-            1f
+        for (seatIndex in 0..<computed().seats().size) {
+            val gunData = getGunData(seatIndex) ?: continue
+            val instance = gunData.get(GunProp.SOUND_INFO).fireSoundInstances
+            if (instance != null) {
+                return (0.98f + gunData.shootTimer.get() * 0.01f - (if (gunData.heat.get() > 80) (gunData.heat.get() - 80) * 0.01 else 0.0)).toFloat()
+            }
         }
+        return 1f
     }
 
     protected fun updateBackupAmmoCount() {
@@ -4242,7 +4261,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         var playVehicleSkipSound: Consumer<VehicleEntity?> = Consumer { }
 
         @JvmField
-        var playFireSound: Consumer<VehicleEntity>? = Consumer { }
+        var playFireSound: BiConsumer<VehicleEntity, String>? = BiConsumer { _, _ -> }
 
         @JvmField
         var ignoreEntityGroundCheckStepping = false

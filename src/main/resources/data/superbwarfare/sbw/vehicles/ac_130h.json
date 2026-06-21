@@ -245,10 +245,7 @@
         "Directions": ["Passenger"]
       },
       "SoundInfo": {
-        "Fire1P": "superbwarfare:minigun_fire_1p",
-        "Fire3P": "superbwarfare:minigun_fire_3p",
-        "Fire3PFar": "superbwarfare:minigun_far",
-        "Fire3PVeryFar": "superbwarfare:minigun_veryfar"
+        "FireSoundInstances": "superbwarfare:hpj_11_fire"
       }
     },
     "Bofors": {

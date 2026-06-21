@@ -71,23 +71,26 @@ public abstract class VehicleFireSoundInstance extends AbstractTickableSoundInst
 
     public static class VehicleFireSound extends VehicleSoundInstance {
 
-        public VehicleFireSound(VehicleEntity vehicle) {
-            super(vehicle.getShootSoundInstance(), Minecraft.getInstance(), vehicle);
+        private final String weaponName;
+
+        public VehicleFireSound(VehicleEntity vehicle, String weaponName) {
+            super(vehicle.getShootSoundInstance(weaponName), Minecraft.getInstance(), vehicle);
+            this.weaponName = weaponName;
         }
 
         @Override
         protected boolean canPlay(VehicleEntity vehicle) {
-            return vehicle.isFiring();
+            return vehicle.isWeaponFiring(weaponName);
         }
 
         @Override
         protected float getPitch(VehicleEntity vehicle) {
-            return vehicle.shootingPitch();
+            return vehicle.weaponShootingPitch(weaponName);
         }
 
         @Override
         protected float getVolume(VehicleEntity vehicle) {
-            return vehicle.shootingVolume();
+            return vehicle.weaponShootingVolume(weaponName);
         }
     }
 }
