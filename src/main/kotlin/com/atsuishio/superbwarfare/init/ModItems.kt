@@ -151,6 +151,10 @@ object ModItems {
     @JvmField val SMALL_SHELL_HE = registerAmmo("small_shell_he")
     @JvmField val SMALL_SHELL_GS = registerAmmo("small_shell_gs")
     @JvmField val SMALL_SHELL_AA = registerAmmo("small_shell_aa")
+    @JvmField val MEDIUM_SHELL_AP = registerAmmo("medium_shell_ap")
+    @JvmField val MEDIUM_SHELL_HE = registerAmmo("medium_shell_he")
+    @JvmField val MEDIUM_SHELL_GS = registerAmmo("medium_shell_gs")
+    @JvmField val MEDIUM_SHELL_AA = registerAmmo("medium_shell_aa")
     @JvmField val LARGE_SHELL_AP = registerAmmo("large_shell_ap") { Item(Properties().rarity(Rarity.RARE)) }
     @JvmField val LARGE_SHELL_HE = registerAmmo("large_shell_he") { Item(Properties().rarity(Rarity.RARE)) }
     @JvmField val LARGE_SHELL_CM = registerAmmo("large_shell_cm") { Item(Properties().rarity(Rarity.RARE)) }

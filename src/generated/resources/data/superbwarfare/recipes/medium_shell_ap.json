@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": {
+      "item": "superbwarfare:tungsten_rod"
+    },
+    "b": {
+      "tag": "superbwarfare:ingots/steel"
+    },
+    "c": {
+      "item": "minecraft:gunpowder"
+    },
+    "d": {
+      "item": "superbwarfare:primer"
+    }
+  },
+  "pattern": [
+    " a ",
+    "bcb",
+    " d "
+  ],
+  "result": {
+    "count": 4,
+    "item": "superbwarfare:medium_shell_ap"
+  },
+  "show_notification": true
+}

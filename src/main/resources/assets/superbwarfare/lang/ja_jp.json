@@ -668,5 +668,9 @@
   "item.superbwarfare.vehicle_reset_kit": "車両リセットキット",
   "item.superbwarfare.large_shell_gs": "大口径ぶどう弾",
   "item.superbwarfare.small_shell_gs": "小口径ぶどう弾",
-  "item.superbwarfare.small_shell_aa": "小口径対空砲弾"
+  "item.superbwarfare.small_shell_aa": "小口径対空砲弾",
+  "item.superbwarfare.medium_shell_ap": "中口径徹甲弾",
+  "item.superbwarfare.medium_shell_he": "中口径榴弾",
+  "item.superbwarfare.medium_shell_gs": "中口径ぶどう弾",
+  "item.superbwarfare.medium_shell_aa": "中口径対空砲弾"
 }

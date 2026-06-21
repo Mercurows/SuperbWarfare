@@ -122,7 +122,7 @@
       },
       "DismountInfo": {
         "Transform": "Vehicle",
-        "Position": [9.833, 0.5, 11.4375]
+        "Position": [4, 0.5, 11.4375]
       }
     },
     {
@@ -138,7 +138,7 @@
       "CameraPos": {
         "Transform": "Vehicle",
         "UseFixedCameraPos": true,
-        "Position": [3.28465, 1.033275, 4.7652625]
+        "Position": [4, 1.033275, 4.7652625]
       },
       "Weapons": "M61",
       "DismountInfo": {
@@ -165,7 +165,7 @@
       "Weapons": "Bofors",
       "DismountInfo": {
         "Transform": "Vehicle",
-        "Position": [9.833, 0.5, 11.4375]
+        "Position": [4, 0.5, 11.4375]
       },
       "HasThermalImaging": true
     },
@@ -187,7 +187,7 @@
       "Weapons": "M102",
       "DismountInfo": {
         "Transform": "Vehicle",
-        "Position": [9.833, 0.5, 11.4375]
+        "Position": [4, 0.5, 11.4375]
       },
       "HasThermalImaging": true
     },
@@ -200,7 +200,7 @@
       "MaxYaw": 80,
       "DismountInfo": {
         "Transform": "Vehicle",
-        "Position": [9.833, 0.5, 11.4375]
+        "Position": [4, 0.5, 11.4375]
       }
     },
     {
@@ -212,7 +212,7 @@
       "MaxYaw": 80,
       "DismountInfo": {
         "Transform": "Vehicle",
-        "Position": [9.833, 0.5, 11.4375]
+        "Position": [4, 0.5, 11.4375]
       }
     }
   ],
@@ -226,7 +226,7 @@
       "DefaultZoom": 3,
       "RPM": 1200,
       "Velocity": 18,
-      "Damage": 45,
+      "Damage": 25,
       "ExplosionDamage": 12,
       "ExplosionRadius": 3.5,
       "HeatPerShoot": 2,
@@ -237,7 +237,19 @@
       "Crosshair": "@AC130Gun",
       "CrosshairColor": "0xFFFFFF",
       "SoundRadius": 24,
-      "AmmoType": "superbwarfare:small_shell_he",
+      "AmmoType": [
+        "superbwarfare:small_shell_he",
+        {
+          "Ammo": "superbwarfare:small_shell_ap",
+          "Override": {
+            "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_25mm_ap.png",
+            "Damage": 50,
+            "ExplosionDamage": 12,
+            "ExplosionRadius": 3,
+            "Name": "weapon.superbwarfare.25mm_cannon_ap"
+          }
+        }
+      ],
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [2.348, 2.52, 8.40625],
@@ -253,13 +265,13 @@
       "AvailableFireModes": "Auto",
       "BoundBones": ["bofors"],
       "Projectile": "superbwarfare:small_cannon_shell",
-      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_30mm_he.png",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_40mm_he.png",
       "DefaultZoom": 3,
       "RPM": 180,
       "Magazine": 12,
       "EmptyReloadTime": 40,
       "Velocity": 16,
-      "Damage": 100,
+      "Damage": 60,
       "ExplosionDamage": 80,
       "ExplosionRadius": 6,
       "ProjectileLife": 40,
@@ -276,7 +288,19 @@
       },
       "Crosshair": "@AC130Cannon",
       "SoundRadius": 24,
-      "AmmoType": "superbwarfare:small_shell_he",
+      "AmmoType": [
+        "superbwarfare:medium_shell_he",
+        {
+          "Ammo": "superbwarfare:medium_shell_ap",
+          "Override": {
+            "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_40mm_ap.png",
+            "Damage": 180,
+            "ExplosionDamage": 20,
+            "ExplosionRadius": 3.6,
+            "Name": "weapon.superbwarfare.40mm_cannon_ap"
+          }
+        }
+      ],
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [2.536, 2.458, -3.344],
@@ -293,12 +317,12 @@
       "DefaultZoom": 3,
       "Magazine": 1,
       "EmptyReloadTime": 100,
-      "Velocity": 15,
+      "Velocity": 14,
       "ProjectileLife": 50,
       "ShellType": "HE",
-      "Damage": 250,
-      "ExplosionDamage": 120,
-      "ExplosionRadius": 10,
+      "Damage": 300,
+      "ExplosionDamage": 200,
+      "ExplosionRadius": 11,
       "RecoilTime": 42,
       "RecoilForce": 0.8,
       "ShootShake": [8, 10, 60],
@@ -318,7 +342,19 @@
       "Crosshair": "@AC130Cannon",
       "CrosshairColor": "0xFFFFFF",
       "SoundRadius": 32,
-      "AmmoType": "superbwarfare:small_shell_he",
+      "AmmoType": [
+        "superbwarfare:large_shell_he",
+        {
+          "Ammo": "superbwarfare:large_shell_ap",
+          "Override": {
+            "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/ap_shell.png",
+            "Damage": 800,
+            "ExplosionDamage": 100,
+            "ExplosionRadius": 5,
+            "Name": "weapon.superbwarfare.cannon_ap"
+          }
+        }
+      ],
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [2.1024, 3.017, -6.702],
@@ -370,9 +406,9 @@
     "CrashPassengers": true
   },
   "ThirdPersonCameraPos": [0, 4, 14],
-  "VehicleIcon": "superbwarfare:textures/vehicle_icon/a_10a_icon.png",
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/ac_130h_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png",
-  "VehicleContainerType": "Small",
+  "VehicleContainerType": "Huge",
   "Type": "Airplane",
   "EngineType": "Aircraft",
   "EngineInfo": {

@@ -300,6 +300,9 @@ object GPWSOverlay : CommonOverlay("gpws") {
         val agl = getHeightAboveGround(vehicle)
         if (agl > 200) return GPWSWarning.NONE  // 安全高度
 
+        // 起落架放下且姿态稳定（俯仰、滚转均 ≤15°）时不显示任何警告
+        if (isStableLandingApproach(vehicle)) return GPWSWarning.NONE
+
         val verticalSpeed = vehicle.deltaMovement.y  // 负值 = 下降
         val isDescending = verticalSpeed < -0.5
         val isClimbing = verticalSpeed > 0.2
@@ -355,6 +358,24 @@ object GPWSOverlay : CommonOverlay("gpws") {
             EngineType.HELICOPTER -> vehicle.hoverMode
             else -> true
         }
+    }
+
+    /**
+     * 判断是否处于稳定进近状态（起落架放下 + 姿态稳定），
+     * 此状态下应抑制所有近地警告，避免正常着陆时产生干扰。
+     *
+     * 条件：
+     * 1. 仅对固定翼飞机生效
+     * 2. 起落架已放下 (gearUp == false)
+     * 3. 俯仰角 (xRot) 绝对值 ≤ 15°
+     * 4. 滚转角 (roll) 绝对值 ≤ 15°
+     */
+    private fun isStableLandingApproach(vehicle: VehicleEntity): Boolean {
+        if (!isFixedWingWithGear(vehicle)) return false
+        if (vehicle.gearUp) return false
+        if (kotlin.math.abs(vehicle.xRot) > 15f) return false
+        if (kotlin.math.abs(vehicle.roll) > 15f) return false
+        return true
     }
 
     // ==================== 音效接口（预留） ====================

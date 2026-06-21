@@ -168,6 +168,10 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.WP_HEAD)
         simpleItem(ModItems.TUNGSTEN_ROD)
         simpleItem(ModItems.GRENADE_40MM)
+        simpleItem(ModItems.MEDIUM_SHELL_AP)
+        simpleItem(ModItems.MEDIUM_SHELL_HE)
+        simpleItem(ModItems.MEDIUM_SHELL_GS)
+        simpleItem(ModItems.MEDIUM_SHELL_AA)
 
         simpleMaterials(ModItems.IRON_MATERIALS)
         simpleMaterials(ModItems.STEEL_MATERIALS)
