@@ -1,7 +1,7 @@
 {
   "MaxHealth": 1000,
   "MaxEnergy": 40000000,
-  "MouseSensitivity": 0.1,
+  "MouseSensitivity": 0.2,
   "OBB": [
     {
       "Part": "Collision",
@@ -126,6 +126,69 @@
       }
     },
     {
+      "HidePassenger": true,
+      "Transform": "Vehicle",
+      "Position": [2, 2.4, 8.4],
+      "Orientation": -90,
+      "MinYaw": -15,
+      "MaxYaw": 15,
+      "MinPitch": -40,
+      "MaxPitch": -15,
+      "Sensitivity": [0.58, 0.77, 0.9],
+      "CameraPos": {
+        "Transform": "Vehicle",
+        "UseFixedCameraPos": true,
+        "Position": [3.28465, 1.033275, 4.7652625]
+      },
+      "Weapons": "M61",
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [9.833, 0.5, 11.4375]
+      }
+    },
+    {
+      "HidePassenger": true,
+      "Transform": "Vehicle",
+      "Position": [2, 2.4, -3.344],
+      "Orientation": -90,
+      "MinYaw": -15,
+      "MaxYaw": 15,
+      "MinPitch": -60,
+      "MaxPitch": 5,
+      "Sensitivity": [0.58, 0.77, 0.9],
+      "CameraPos": {
+        "Transform": "Vehicle",
+        "UseFixedCameraPos": true,
+        "Position": [3.625, 1.5, -4.125]
+      },
+      "Weapons": "Bofors",
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [9.833, 0.5, 11.4375]
+      }
+    },
+    {
+      "HidePassenger": true,
+      "Transform": "Vehicle",
+      "Position": [2, 2.4, -4.7652625],
+      "Orientation": -90,
+      "MinYaw": -15,
+      "MaxYaw": 15,
+      "MinPitch": -35,
+      "MaxPitch": -5,
+      "Sensitivity": [0.58, 0.77, 0.9],
+      "CameraPos": {
+        "Transform": "Vehicle",
+        "UseFixedCameraPos": true,
+        "Position": [3.28465, 1.033275, -4.7652625]
+      },
+      "Weapons": "M102",
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [9.833, 0.5, 11.4375]
+      }
+    },
+    {
       "Transform": "Vehicle",
       "Position": [-0.84375, 3.375, 14.0625],
       "MinPitch": -80,
@@ -150,6 +213,114 @@
       }
     }
   ],
+  "Weapons": {
+    "M61": {
+      "DefaultFireMode": "Auto",
+      "AvailableFireModes": "Auto",
+      "BoundBones": ["m61a", "m61b"],
+      "Projectile": "superbwarfare:small_cannon_shell",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_25mm_he.png",
+      "DefaultZoom": 3,
+      "RPM": 1200,
+      "Velocity": 18,
+      "Damage": 45,
+      "Gravity": 0.03,
+      "ExplosionDamage": 12,
+      "ExplosionRadius": 3.5,
+      "HeatPerShoot": 2,
+      "ProjectileLife": 40,
+      "NaturalCooldown": 1,
+      "Spread": 0.5,
+      "Name": "weapon.superbwarfare.25mm_cannon_he",
+      "Crosshair": "@VehicleDynamicCross",
+      "SoundRadius": 24,
+      "AmmoType": "superbwarfare:small_shell_he",
+      "ShootPos": {
+        "Transform": "Vehicle",
+        "ShootPositionForHud": [2.348, 2.52, 8.40625],
+        "Positions": [[2.348, 2.52, 8.9375], [2.348, 2.52, 7.875]],
+        "Directions": ["Passenger"]
+      },
+      "SoundInfo": {
+        "FireSoundInstances": "superbwarfare:hpj_11_fire"
+      }
+    },
+    "Bofors": {
+      "DefaultFireMode": "Auto",
+      "AvailableFireModes": "Auto",
+      "BoundBones": ["bofors"],
+      "Projectile": "superbwarfare:small_cannon_shell",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/cannon_30mm_he.png",
+      "DefaultZoom": 3,
+      "RPM": 180,
+      "Magazine": 12,
+      "EmptyReloadTime": 60,
+      "Velocity": 16,
+      "Gravity": 0.03,
+      "Damage": 100,
+      "ExplosionDamage": 80,
+      "ExplosionRadius": 6,
+      "HeatPerShoot": 8,
+      "ProjectileLife": 40,
+      "NaturalCooldown": 1,
+      "Spread": 0.5,
+      "Name": "weapon.superbwarfare.40mm_cannon_he",
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:bradley_cannon_fire_1p",
+        "Fire3P": "superbwarfare:bradley_cannon_fire_3p",
+        "Fire3PFar": "superbwarfare:bradley_cannon_far",
+        "Fire3PVeryFar": "superbwarfare:bradley_cannon_veryfar"
+      },
+      "Crosshair": "@VehicleDynamicCross",
+      "SoundRadius": 24,
+      "AmmoType": "superbwarfare:small_shell_he",
+      "ShootPos": {
+        "Transform": "Vehicle",
+        "ShootPositionForHud": [2.536, 2.458, -3.344],
+        "Positions": [[2.536, 2.458, -3.344]],
+        "Directions": ["Passenger"]
+      }
+    },
+    "M102": {
+      "DefaultFireMode": "Auto",
+      "AvailableFireModes": "Auto",
+      "BoundBones": ["m102"],
+      "Projectile": "superbwarfare:cannon_shell",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/he_shell.png",
+      "DefaultZoom": 3,
+      "Magazine": 1,
+      "EmptyReloadTime": 100,
+      "Velocity": 20,
+      "ProjectileLife": 50,
+      "Gravity": 0.03,
+      "ShellType": "HE",
+      "Damage": 250,
+      "ExplosionDamage": 120,
+      "ExplosionRadius": 10,
+      "Spread": 0.5,
+      "Name": "weapon.superbwarfare.cannon_he",
+      "SoundInfo": {
+        "Fire1P": "superbwarfare:m_1a_2_fire_1p",
+        "Fire3P": "superbwarfare:m_1a_2_fire_3p",
+        "Fire3PFar": "superbwarfare:m_1a_2_far",
+        "Fire3PVeryFar": "superbwarfare:m_1a_2_veryfar",
+        "VehicleReload": "superbwarfare:m_1a_2_reload",
+        "Change": "superbwarfare:into_cannon",
+        "CancellableSounds": [
+          "superbwarfare:m_1a_2_reload"
+        ]
+      },
+      "Crosshair": "@VehicleDynamicCross",
+      "SoundRadius": 32,
+      "AmmoType": "superbwarfare:small_shell_he",
+      "ShootPos": {
+        "Transform": "Vehicle",
+        "ShootPositionForHud": [2.1024, 3.017, -6.702],
+        "Positions": [[2.1024, 3.017, -6.702]],
+        "Directions": ["Passenger"]
+      }
+    }
+  },
   "HudType": "@Aircraft",
   "UpStep": 1.1,
   "Mass": 60,
@@ -173,7 +344,7 @@
     "superbwarfare:projectile_hit * 0.8",
     "superbwarfare:grapeshot_hit * 0.75",
     "#superbwarfare:projectile * 0.16",
-    "superbwarfare:vehicle_strike * 7",
+    "superbwarfare:vehicle_strike * 16",
     "superbwarfare:laser * 0.4",
     "@superbwarfare:cannon_shell * 2",
     "@superbwarfare:small_cannon_shell * 0.75",
@@ -192,6 +363,7 @@
     "ExplosionRadius": 36,
     "CrashPassengers": true
   },
+  "ThirdPersonCameraPos": [0, 4, 14],
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/a_10a_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/aircraft.png",
   "VehicleContainerType": "Small",
@@ -201,13 +373,13 @@
     "EnergyCostRate": 512,
     "Increment": 0.7,
     "Decrement": 0.5,
-    "PitchSpeed": 0.2,
-    "YawSpeed": 0.6,
-    "RollSpeed": 0.15,
+    "PitchSpeed": 0.3,
+    "YawSpeed": 0.7,
+    "RollSpeed": 0.2,
     "LiftSpeed": 1.0,
     "SpeedRate": 0.6,
     "ClampPitch": 40,
-    "ClampRoll": 50,
+    "ClampRoll": 45,
     "EngineStartSound": "superbwarfare:ac_130h_engine_start",
     "EngineSoundVolume" : 1.3
   },

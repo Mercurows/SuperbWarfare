@@ -175,6 +175,9 @@ class GunProp<T, R>(
         val DEFAULT_ZOOM = plainProp(DefaultGunData::defaultZoom)
 
         @JvmField
+        val BOUND_BONES = plainProp(DefaultGunData::boundBones)
+
+        @JvmField
         val BURST_AMOUNT = plainProp(DefaultGunData::burstAmount)
 
         @JvmField

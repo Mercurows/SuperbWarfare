@@ -3,7 +3,11 @@ package com.atsuishio.superbwarfare.client.renderer.entity
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
 import com.atsuishio.superbwarfare.entity.vehicle.Ac130hEntity
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
+import com.atsuishio.superbwarfare.event.ClientEventHandler
+import com.atsuishio.superbwarfare.tools.localPlayer
+import com.atsuishio.superbwarfare.tools.options
 import com.mojang.blaze3d.vertex.PoseStack
+import net.minecraft.client.CameraType
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.util.Mth
 
@@ -20,10 +24,11 @@ class Ac130hRenderer<T>(manager: EntityRendererProvider.Context) :
 
         val wingFL = model.getBone("wingFL")
         val wingFR = model.getBone("wingFR")
-        val xRot = -1.5f * Mth.lerp(partialTicks, vehicle.flap2RRotO, vehicle.flap2RRot) * Mth.DEG_TO_RAD
+        val xRotL = -1.5f * Mth.lerp(partialTicks, vehicle.flap2RRotO, vehicle.flap2RRot) * Mth.DEG_TO_RAD
+        val xRotR = -1.5f * Mth.lerp(partialTicks, vehicle.flap2RRotO, vehicle.flap2RRot) * Mth.DEG_TO_RAD
 
-        wingFL.rotation.rotateX(xRot)
-        wingFR.rotation.rotateX(xRot)
+        wingFL.rotation.rotateX(xRotL)
+        wingFR.rotation.rotateX(xRotR)
 
         val tailWingHL = model.getBone("tailWingHL")
 
@@ -54,5 +59,10 @@ class Ac130hRenderer<T>(manager: EntityRendererProvider.Context) :
         propeller3.rotation.rotateZ(rot)
         propeller4.rotation.rotateZ(rot)
 
+        val player = localPlayer
+        val hide = player != null && vehicle === player.vehicle && vehicle.hasWeapon(vehicle.getSeatIndex(player)) && (options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle)
+
+        val gd = model.getBone("gd")
+        gd.visible = !hide
     }
 }

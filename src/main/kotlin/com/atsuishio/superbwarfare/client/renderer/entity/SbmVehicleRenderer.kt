@@ -13,7 +13,9 @@ import com.atsuishio.superbwarfare.data.vehicle_skin.VehicleSkin
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleMotionUtils
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
 import com.atsuishio.superbwarfare.event.ClientEventHandler
+import com.atsuishio.superbwarfare.init.ModParticleTypes
 import com.atsuishio.superbwarfare.resource.model.VehicleLODModelReloadListener
 import com.atsuishio.superbwarfare.resource.model.VehicleModelReloadListener
 import com.atsuishio.superbwarfare.resource.vehicle.VehicleModelPojo
@@ -379,6 +381,26 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
                     }
                 }
             }
+
+            for (k in seat.weapons().indices) {
+                val data = vehicle.getGunData(index, k) ?: continue
+                val boundBones = data.get(GunProp.BOUND_BONES) ?: continue
+                if (vehicle.getNthEntity(index) == null) continue
+
+                for (name in boundBones) {
+                    val bone = model.getBone(name)
+                    if (bone != null) {
+                        val (worldPos, worldDir) = getBoneWorldPosAndDirection(vehicle, bone, entityYaw, partialTicks)
+
+                        // 粒子：直接使用世界坐标
+                        vehicle.level().addParticle(
+                            ModParticleTypes.FIRE_STAR.get(),
+                            worldPos.x, worldPos.y, worldPos.z,
+                            worldDir.x * 4, worldDir.y * 4, worldDir.z * 4
+                        )
+                    }
+                }
+            }
         }
     }
 
@@ -524,6 +546,42 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
                 vehicle.passengerWeaponMaxPitch * Mth.DEG_TO_RAD
             )
         )
+
+        // 武器绑定骨骼
+
+        val seats = this.seatsCache ?: vehicle.computed().seats().also { this.seatsCache = it }
+
+        for ((index, seat) in seats.withIndex()) {
+            for (k in seat.weapons().indices) {
+                val data = vehicle.getGunData(index, k) ?: continue
+                val boundBones = data.get(GunProp.BOUND_BONES) ?: continue
+                val targetVec = vehicle.getShootVec(index, partialTicks) ?: continue
+                if (vehicle.getNthEntity(index) == null) continue
+
+                for (name in boundBones) {
+                    val bone = model.getBone(name)
+                    if (bone != null) {
+                        // TODO 正确获取骨骼朝向
+
+                        val (worldPos, worldDir) = getBoneWorldPosAndDirection(vehicle, bone, entityYaw, partialTicks)
+
+                        val diffY = Mth.wrapDegrees(-VehicleVecUtils.getYRotFromVector(targetVec) + VehicleVecUtils.getYRotFromVector(
+                            worldDir
+                        )
+                        ).toFloat()
+                        val diffX = Mth.wrapDegrees(-VehicleVecUtils.getXRotFromVector(targetVec) + VehicleVecUtils.getXRotFromVector(
+                            worldDir
+                        )
+                        ).toFloat()
+
+                        val yawRot = Axis.YP.rotationDegrees(-diffY)
+                        val pitchRot = Axis.XP.rotationDegrees(-diffX)
+                        val quaternion = Quaterniond(yawRot).mul(Quaterniond(pitchRot))
+                        bone.rotation.mul(Quaternionf(quaternion))
+                    }
+                }
+            }
+        }
     }
 
     open fun rotateVehicleAxis(entityIn: T, poseStack: PoseStack, entityYaw: Float, partialTicks: Float) {

@@ -74,6 +74,9 @@ class DefaultGunData : IDBasedData<DefaultGunData> {
     @SerialName("DefaultZoom")
     var defaultZoom = 1.25
 
+    @SerialName("BoundBones")
+    var boundBones: ObjectToList<String>? = ObjectToList()
+
     @SerialName("MinZoom")
     var minZoom = defaultZoom
 

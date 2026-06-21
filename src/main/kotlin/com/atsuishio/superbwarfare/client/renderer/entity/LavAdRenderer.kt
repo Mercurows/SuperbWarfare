@@ -15,37 +15,6 @@ class LavAdRenderer(manager: EntityRendererProvider.Context) : SbmVehicleRendere
         return true
     }
 
-    override fun transformCustomModelPart(
-        vehicle: LavAdEntity,
-        model: BedrockVehicleModel,
-        poseStack: PoseStack,
-        entityYaw: Float,
-        partialTicks: Float
-    ) {
-        super.transformCustomModelPart(vehicle, model, poseStack, entityYaw, partialTicks)
-
-//        val bone = model.getBone("rocket_right")
-//        val player = localPlayer
-//        if (bone != null && player != null) {
-//            val targetVec = player.getViewVector(partialTicks)
-//            val (worldPos, worldDir) = getBoneWorldPosAndDirection(vehicle, bone, entityYaw, partialTicks)
-//
-//            val diffY = Mth.wrapDegrees(-VehicleVecUtils.getYRotFromVector(targetVec) + VehicleVecUtils.getYRotFromVector(
-//                worldDir
-//            )
-//            ).toFloat()
-//            val diffX = Mth.wrapDegrees(-VehicleVecUtils.getXRotFromVector(targetVec) + VehicleVecUtils.getXRotFromVector(
-//                worldDir
-//            )
-//            ).toFloat()
-//
-//            val yawRot = Axis.YP.rotationDegrees(-diffY)
-//            val pitchRot = Axis.XP.rotationDegrees(-diffX)
-//            val quaternion = Quaterniond(yawRot).mul(Quaterniond(pitchRot))
-//            bone.rotation.mul(Quaternionf(quaternion))
-//        }
-    }
-
     override fun renderCustomPart(
         vehicle: LavAdEntity,
         model: BedrockVehicleModel,
@@ -71,20 +40,6 @@ class LavAdRenderer(manager: EntityRendererProvider.Context) : SbmVehicleRendere
                 1f
             )
         }
-
-//        // 在rocket_right骨骼位置渲染粒子
-//        val bone = model.getBone("rocket_right")
-//        if (bone != null) {
-//            // 直接计算世界坐标和朝向（与相机无关）
-//            val (worldPos, worldDir) = getBoneWorldPosAndDirection(vehicle, bone, entityYaw, partialTicks)
-//
-//            // 粒子：直接使用世界坐标
-//            vehicle.level().addParticle(
-//                ModParticleTypes.FIRE_STAR.get(),
-//                worldPos.x, worldPos.y, worldPos.z,
-//                worldDir.x, worldDir.y, worldDir.z
-//            )
-//        }
     }
 
     companion object {

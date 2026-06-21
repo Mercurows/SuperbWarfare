@@ -824,6 +824,8 @@ object VehicleEngineUtils {
                 rightInputDown = false
                 forwardInputDown = false
                 backInputDown = false
+                sprintInputDown = false
+                downInputDown = false
                 if (onGround()) {
                     power *= 0.95f
                     deltaMovement = deltaMovement.multiply(0.94, 1.0, 0.94)
@@ -881,6 +883,13 @@ object VehicleEngineUtils {
 
                     planeBreak = Math.min(planeBreak + 10, 60f)
                 }
+            } else {
+                leftInputDown = false
+                rightInputDown = false
+                forwardInputDown = false
+                backInputDown = false
+                sprintInputDown = false
+                downInputDown = false
             }
 
             val rotSpeed = 0.3f + 3.2f * Mth.abs(calculateY(roll))
