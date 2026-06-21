@@ -160,4 +160,8 @@ open class Ru3m14MissileEntity(type: EntityType<out Ru3m14MissileEntity>, level:
     override fun getFlareHiddenTicks(): Int {
         return 9
     }
+
+    override fun getNoHitTicks(): Int {
+        return 9
+    }
 }

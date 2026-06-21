@@ -166,4 +166,8 @@ abstract class MissileProjectile : DestroyableProjectile, ITrackableProjectile, 
             }
         }
     }
+
+    override fun getNoHitTicks(): Int {
+        return 3
+    }
 }

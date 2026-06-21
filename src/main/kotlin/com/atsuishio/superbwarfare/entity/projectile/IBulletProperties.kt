@@ -79,7 +79,7 @@ interface IBulletProperties {
     fun setCustomGravity(gravity: Float) {}
 
     // tickCount 小于这个值时，不触发 onHit 判定
-    fun getNoHitTicks(): Int = 1
+    fun getNoHitTicks(): Int = 0
 
     companion object {
         const val DEFAULT_R: Float = 1.0f
