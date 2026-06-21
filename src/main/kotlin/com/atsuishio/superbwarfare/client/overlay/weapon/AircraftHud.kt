@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.client.overlay.VehicleHudOverlay.renderKillIndicatorDynamic
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay
 import com.atsuishio.superbwarfare.data.gun.GunProp
+import com.atsuishio.superbwarfare.entity.vehicle.Ac130hEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.event.ClientMouseHandler
@@ -108,7 +109,9 @@ object AircraftHud {
         screenHeight: Int
     ) {
 
-        ac130GunnerHud.render(vehicle, player, gui, guiGraphics, partialTick, screenWidth, screenHeight)
+        if (vehicle is Ac130hEntity) {
+            ac130GunnerHud.render(vehicle, player, gui, guiGraphics, partialTick, screenWidth, screenHeight)
+        }
 
         if (player !== vehicle.getFirstPassenger()) return
         val camera = mc.gameRenderer.mainCamera
