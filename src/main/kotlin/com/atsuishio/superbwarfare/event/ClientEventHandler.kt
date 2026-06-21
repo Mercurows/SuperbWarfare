@@ -570,12 +570,11 @@ object ClientEventHandler {
         val wearing = isWearingHandsomeGoggles(player)
         val isFirstPerson = mc.options.cameraType == CameraType.FIRST_PERSON
         val shouldBeActive = wearing && isFirstPerson
-        val effectActive = mc.gameRenderer.currentEffect() != null
 
-        if (shouldBeActive && !effectActive) {
+        if (shouldBeActive && !handsomeGogglesActive) {
             handsomeGogglesActive = false  // reset so turnOn actually loads
             turnOnHandsomeGoggles()
-        } else if (!shouldBeActive && effectActive) {
+        } else if (!shouldBeActive && handsomeGogglesActive) {
             turnOffHandsomeGoggles()
         }
     }

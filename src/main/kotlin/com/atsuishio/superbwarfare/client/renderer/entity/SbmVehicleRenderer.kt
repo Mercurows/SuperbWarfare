@@ -15,7 +15,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleMotionUtils
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
 import com.atsuishio.superbwarfare.event.ClientEventHandler
-import com.atsuishio.superbwarfare.init.ModParticleTypes
 import com.atsuishio.superbwarfare.resource.model.VehicleLODModelReloadListener
 import com.atsuishio.superbwarfare.resource.model.VehicleModelReloadListener
 import com.atsuishio.superbwarfare.resource.vehicle.VehicleModelPojo
@@ -382,25 +381,25 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
                 }
             }
 
-            for (k in seat.weapons().indices) {
-                val data = vehicle.getGunData(index, k) ?: continue
-                val boundBones = data.get(GunProp.BOUND_BONES) ?: continue
-                if (vehicle.getNthEntity(index) == null) continue
-
-                for (name in boundBones) {
-                    val bone = model.getBone(name)
-                    if (bone != null) {
-                        val (worldPos, worldDir) = getBoneWorldPosAndDirection(vehicle, bone, entityYaw, partialTicks)
-
-                        // 粒子：直接使用世界坐标
-                        vehicle.level().addParticle(
-                            ModParticleTypes.FIRE_STAR.get(),
-                            worldPos.x, worldPos.y, worldPos.z,
-                            worldDir.x * 4, worldDir.y * 4, worldDir.z * 4
-                        )
-                    }
-                }
-            }
+//            for (k in seat.weapons().indices) {
+//                val data = vehicle.getGunData(index, k) ?: continue
+//                val boundBones = data.get(GunProp.BOUND_BONES) ?: continue
+//                if (vehicle.getNthEntity(index) == null) continue
+//
+//                for (name in boundBones) {
+//                    val bone = model.getBone(name)
+//                    if (bone != null) {
+//                        val (worldPos, worldDir) = getBoneWorldPosAndDirection(vehicle, bone, entityYaw, partialTicks)
+//
+//                        // 粒子：直接使用世界坐标
+//                        vehicle.level().addParticle(
+//                            ModParticleTypes.FIRE_STAR.get(),
+//                            worldPos.x, worldPos.y, worldPos.z,
+//                            worldDir.x * 4, worldDir.y * 4, worldDir.z * 4
+//                        )
+//                    }
+//                }
+//            }
         }
     }
 

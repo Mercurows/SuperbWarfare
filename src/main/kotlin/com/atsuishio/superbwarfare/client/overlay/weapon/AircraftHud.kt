@@ -69,6 +69,8 @@ object AircraftHud {
 
     private var dis = 512.0
 
+    private val ac130GunnerHud = Ac130GunnerHud()
+
     @SubscribeEvent
     fun onAircraftHudClientTick(event: TickEvent.ClientTickEvent) {
         if (event.phase == TickEvent.Phase.START) return
@@ -105,6 +107,9 @@ object AircraftHud {
         screenWidth: Int,
         screenHeight: Int
     ) {
+
+        ac130GunnerHud.render(vehicle, player, gui, guiGraphics, partialTick, screenWidth, screenHeight)
+
         if (player !== vehicle.getFirstPassenger()) return
         val camera = mc.gameRenderer.mainCamera
         val cameraPos = camera.position

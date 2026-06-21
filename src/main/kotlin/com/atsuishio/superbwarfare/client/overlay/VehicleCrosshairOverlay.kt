@@ -50,6 +50,8 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
         "@VehicleLaserCannon" to loc("textures/overlay/vehicle/crosshair/laser_cannon.png"),
         "@AirCraftCommon" to loc("textures/overlay/vehicle/aircraft/common.png"),
         "@AirCraftNacelle" to loc("textures/overlay/vehicle/crosshair/nacelle.png"),
+        "@AC130Gun" to loc("textures/overlay/vehicle/crosshair/ac_130_gun.png"),
+        "@AC130Cannon" to loc("textures/overlay/vehicle/crosshair/ac_130_cannon.png"),
         "@NoCross" to loc("textures/overlay/vehicle/crosshair/empty.png")
 
     )
@@ -222,7 +224,12 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
                         scaledMinWH,
                         color
                     )
-                } else if ((crosshairPath == "@AirCraftCommon" || crosshairPath == "@VehicleLaserCannon" || crosshairPath == "@VehicleCommonGunDynamic") && pos.canBeSeen()) {
+                } else if ((crosshairPath == "@AirCraftCommon"
+                            || crosshairPath == "@VehicleLaserCannon"
+                            || crosshairPath == "@VehicleCommonGunDynamic"
+                            || crosshairPath == "@AC130Gun"
+                            || crosshairPath == "@AC130Cannon"
+                        ) && pos.canBeSeen()) {
                     RenderHelper.blit(
                         poseStack,
                         texture,

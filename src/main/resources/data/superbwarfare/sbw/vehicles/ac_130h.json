@@ -144,7 +144,8 @@
       "DismountInfo": {
         "Transform": "Vehicle",
         "Position": [9.833, 0.5, 11.4375]
-      }
+      },
+      "HasThermalImaging": true
     },
     {
       "HidePassenger": true,
@@ -159,13 +160,14 @@
       "CameraPos": {
         "Transform": "Vehicle",
         "UseFixedCameraPos": true,
-        "Position": [3.625, 1.5, -4.125]
+        "Position": [3.28465, 1.033275, 4.7652625]
       },
       "Weapons": "Bofors",
       "DismountInfo": {
         "Transform": "Vehicle",
         "Position": [9.833, 0.5, 11.4375]
-      }
+      },
+      "HasThermalImaging": true
     },
     {
       "HidePassenger": true,
@@ -180,13 +182,14 @@
       "CameraPos": {
         "Transform": "Vehicle",
         "UseFixedCameraPos": true,
-        "Position": [3.28465, 1.033275, -4.7652625]
+        "Position": [3.28465, 1.033275, 4.7652625]
       },
       "Weapons": "M102",
       "DismountInfo": {
         "Transform": "Vehicle",
         "Position": [9.833, 0.5, 11.4375]
-      }
+      },
+      "HasThermalImaging": true
     },
     {
       "Transform": "Vehicle",
@@ -224,7 +227,6 @@
       "RPM": 1200,
       "Velocity": 18,
       "Damage": 45,
-      "Gravity": 0.03,
       "ExplosionDamage": 12,
       "ExplosionRadius": 3.5,
       "HeatPerShoot": 2,
@@ -232,7 +234,8 @@
       "NaturalCooldown": 1,
       "Spread": 0.5,
       "Name": "weapon.superbwarfare.25mm_cannon_he",
-      "Crosshair": "@VehicleDynamicCross",
+      "Crosshair": "@AC130Gun",
+      "CrosshairColor": "0xFFFFFF",
       "SoundRadius": 24,
       "AmmoType": "superbwarfare:small_shell_he",
       "ShootPos": {
@@ -242,7 +245,10 @@
         "Directions": ["Passenger"]
       },
       "SoundInfo": {
-        "FireSoundInstances": "superbwarfare:hpj_11_fire"
+        "Fire1P": "superbwarfare:minigun_fire_1p",
+        "Fire3P": "superbwarfare:minigun_fire_3p",
+        "Fire3PFar": "superbwarfare:minigun_far",
+        "Fire3PVeryFar": "superbwarfare:minigun_veryfar"
       }
     },
     "Bofors": {
@@ -254,24 +260,24 @@
       "DefaultZoom": 3,
       "RPM": 180,
       "Magazine": 12,
-      "EmptyReloadTime": 60,
+      "EmptyReloadTime": 40,
       "Velocity": 16,
-      "Gravity": 0.03,
       "Damage": 100,
       "ExplosionDamage": 80,
       "ExplosionRadius": 6,
-      "HeatPerShoot": 8,
       "ProjectileLife": 40,
-      "NaturalCooldown": 1,
+      "RecoilTime": 31,
+      "RecoilForce": 0.62,
+      "CrosshairColor": "0xFFFFFF",
       "Spread": 0.5,
       "Name": "weapon.superbwarfare.40mm_cannon_he",
       "SoundInfo": {
-        "Fire1P": "superbwarfare:bradley_cannon_fire_1p",
-        "Fire3P": "superbwarfare:bradley_cannon_fire_3p",
-        "Fire3PFar": "superbwarfare:bradley_cannon_far",
-        "Fire3PVeryFar": "superbwarfare:bradley_cannon_veryfar"
+        "Fire1P": "superbwarfare:bofos_fire_1p",
+        "Fire3P": "superbwarfare:bofos_fire_3p",
+        "Fire3PFar": "superbwarfare:bofos_fire_far",
+        "Fire3PVeryFar": "superbwarfare:bofos_fire_veryfar"
       },
-      "Crosshair": "@VehicleDynamicCross",
+      "Crosshair": "@AC130Cannon",
       "SoundRadius": 24,
       "AmmoType": "superbwarfare:small_shell_he",
       "ShootPos": {
@@ -290,18 +296,20 @@
       "DefaultZoom": 3,
       "Magazine": 1,
       "EmptyReloadTime": 100,
-      "Velocity": 20,
+      "Velocity": 15,
       "ProjectileLife": 50,
-      "Gravity": 0.03,
       "ShellType": "HE",
       "Damage": 250,
       "ExplosionDamage": 120,
       "ExplosionRadius": 10,
+      "RecoilTime": 42,
+      "RecoilForce": 0.8,
+      "ShootShake": [8, 10, 60],
       "Spread": 0.5,
       "Name": "weapon.superbwarfare.cannon_he",
       "SoundInfo": {
-        "Fire1P": "superbwarfare:m_1a_2_fire_1p",
-        "Fire3P": "superbwarfare:m_1a_2_fire_3p",
+        "Fire1P": "superbwarfare:m102_fire_1p",
+        "Fire3P": "superbwarfare:m102_fire_3p",
         "Fire3PFar": "superbwarfare:m_1a_2_far",
         "Fire3PVeryFar": "superbwarfare:m_1a_2_veryfar",
         "VehicleReload": "superbwarfare:m_1a_2_reload",
@@ -310,7 +318,8 @@
           "superbwarfare:m_1a_2_reload"
         ]
       },
-      "Crosshair": "@VehicleDynamicCross",
+      "Crosshair": "@AC130Cannon",
+      "CrosshairColor": "0xFFFFFF",
       "SoundRadius": 32,
       "AmmoType": "superbwarfare:small_shell_he",
       "ShootPos": {

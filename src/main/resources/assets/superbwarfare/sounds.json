@@ -4597,5 +4597,61 @@
         "name": "superbwarfare:vehicle/ac_130h/ac_130h_engine_start"
       }
     ]
+  },
+  "bofos_fire_1p": {
+    "sounds": [
+      {
+        "stream": false,
+        "name": "superbwarfare:vehicle/ac_130h/bofos_fire_1p_1"
+      },
+      {
+        "stream": false,
+        "name": "superbwarfare:vehicle/ac_130h/bofos_fire_1p_2"
+      },
+      {
+        "stream": false,
+        "name": "superbwarfare:vehicle/ac_130h/bofos_fire_1p_3"
+      }
+    ]
+  },
+  "bofos_fire_3p": {
+    "sounds": [
+      {
+        "stream": false,
+        "name": "superbwarfare:vehicle/ac_130h/bofos_fire_3p"
+      }
+    ]
+  },
+  "bofos_fire_far": {
+    "sounds": [
+      {
+        "stream": false,
+        "name": "superbwarfare:vehicle/ac_130h/bofos_fire_far"
+      }
+    ]
+  },
+  "bofos_fire_veryfar": {
+    "sounds": [
+      {
+        "stream": false,
+        "name": "superbwarfare:vehicle/ac_130h/bofos_fire_veryfar"
+      }
+    ]
+  },
+  "m102_fire_1p": {
+    "sounds": [
+      {
+        "stream": false,
+        "name": "superbwarfare:vehicle/ac_130h/m102_fire_1p"
+      }
+    ]
+  },
+  "m102_fire_3p": {
+    "sounds": [
+      {
+        "stream": false,
+        "name": "superbwarfare:vehicle/ac_130h/m102_fire_3p"
+      }
+    ]
   }
 }
