@@ -12,7 +12,6 @@ import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType
 import com.atsuishio.superbwarfare.data.vehicle_skin.VehicleSkin
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
-import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleMotionUtils
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.resource.model.VehicleLODModelReloadListener
@@ -625,7 +624,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         } else if (vehicle.noCulling) {
             return true
         } else {
-            var aabb = VehicleMotionUtils.calculateCombinedAABBOptimized(vehicle).inflate(3.0)
+            var aabb = vehicle.getCombinedAABB().inflate(3.0)
 
             if (aabb.hasNaN() || aabb.getSize() == 0.0) {
                 aabb = AABB(

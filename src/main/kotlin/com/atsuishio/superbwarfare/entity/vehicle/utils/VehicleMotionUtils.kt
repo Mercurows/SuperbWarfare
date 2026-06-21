@@ -96,7 +96,7 @@ object VehicleMotionUtils {
         if (vehicle.isRemoved) return
         if (vehicle.enableAABB()) return
 
-        val searchBox = calculateCombinedAABBOptimized(vehicle).inflate(0.5)
+        val searchBox = vehicle.getCombinedAABB().inflate(0.5)
         val entities = vehicle.level().getEntities(
             EntityTypeTest.forClass(Entity::class.java), searchBox
         ) { entity ->
@@ -279,7 +279,7 @@ object VehicleMotionUtils {
 
         val entities: MutableList<Entity>?
         if (!vehicle.enableAABB()) {
-            val frontBox = calculateCombinedAABBOptimized(vehicle)
+            val frontBox = vehicle.getCombinedAABB()
             entities = vehicle.level().getEntities(
                 EntityTypeTest.forClass(Entity::class.java), frontBox
             ) { entity -> entity !== vehicle && entity !== vehicle.getFirstPassenger() && entity!!.vehicle == null }
@@ -415,7 +415,17 @@ object VehicleMotionUtils {
         }
     }
 
-    // TODO 实现正确的AABB包围箱
+    /**
+     * 计算载具所有OBB的最小外接AABB（投影法，避免逐顶点计算）
+     *
+     * 世界坐标轴上的半长 = Σ(|localAxis_i · worldAxis| * extent_i)
+     * 对于每个OBB，只需计算一次轴投影即可得到AABB范围，无需遍历8个顶点。
+     *
+     * 若载具启用了AABB模式则直接返回原版boundingBox。
+     *
+     * @param vehicle 载具
+     * @return 所有OBB的组合外接AABB
+     */
     @JvmStatic
     fun calculateCombinedAABBOptimized(vehicle: VehicleEntity): AABB {
         if (vehicle.enableAABB()) {
@@ -424,21 +434,30 @@ object VehicleMotionUtils {
 
         val obbList = vehicle.getOBBs()
 
+        if (obbList.isEmpty()) {
+            return vehicle.boundingBox
+        }
+
         val min = Vector3d(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE)
         val max = Vector3d(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE)
 
         for (obb in obbList) {
-            val vertices = obb.getVertices()
+            val axes = obb.getAxes()
+            val c = obb.center
+            val e = obb.extents
 
-            for (vertex in vertices) {
-                min.x = Math.min(min.x, vertex.x)
-                min.y = Math.min(min.y, vertex.y)
-                min.z = Math.min(min.z, vertex.z)
+            // OBB在三个世界坐标轴上的半长投影
+            // halfX = |axis0.x|*extent.x + |axis1.x|*extent.y + |axis2.x|*extent.z
+            val halfX = Math.abs(axes[0].x) * e.x + Math.abs(axes[1].x) * e.y + Math.abs(axes[2].x) * e.z
+            val halfY = Math.abs(axes[0].y) * e.x + Math.abs(axes[1].y) * e.y + Math.abs(axes[2].y) * e.z
+            val halfZ = Math.abs(axes[0].z) * e.x + Math.abs(axes[1].z) * e.y + Math.abs(axes[2].z) * e.z
 
-                max.x = Math.max(max.x, vertex.x)
-                max.y = Math.max(max.y, vertex.y)
-                max.z = Math.max(max.z, vertex.z)
-            }
+            if (c.x - halfX < min.x) min.x = c.x - halfX
+            if (c.y - halfY < min.y) min.y = c.y - halfY
+            if (c.z - halfZ < min.z) min.z = c.z - halfZ
+            if (c.x + halfX > max.x) max.x = c.x + halfX
+            if (c.y + halfY > max.y) max.y = c.y + halfY
+            if (c.z + halfZ > max.z) max.z = c.z + halfZ
         }
 
         return AABB(OBB.vector3dToVec3(min), OBB.vector3dToVec3(max))
@@ -479,7 +498,7 @@ object VehicleMotionUtils {
         }
 
         if (!vehicle.enableAABB()) {
-            val aabb = calculateCombinedAABBOptimized(vehicle).inflate(0.25, 0.0, 0.25).move(vehicle.deltaMovement)
+            val aabb = vehicle.getCombinedAABB().inflate(0.25, 0.0, 0.25).move(vehicle.deltaMovement)
                 .move(0.0, 0.5, 0.0)
             BlockPos.betweenClosedStream(aabb).forEach { pos ->
                 val state = vehicle.level().getBlockState(pos)
@@ -561,7 +580,17 @@ object VehicleMotionUtils {
     @JvmStatic
     fun terrainCompact(vehicle: VehicleEntity, positions: MutableList<Vec3>) {
         if (vehicle.vehicleType == VehicleType.AIRSHIP) return
-        if (getHeightAboveGround(vehicle) > 3) {
+
+        // 若离地高度超过碰撞OBB最长边长的一半，则认为悬空，不处理地形贴合
+        val collisionInfo = vehicle.getCollisionOBBInfo()
+        val maxHalfExtent = if (collisionInfo != null) {
+            val s = collisionInfo.size
+            max(max(s.x, s.y), s.z)
+        } else {
+            3.0
+        }
+
+        if (getHeightAboveGround(vehicle) > maxHalfExtent) {
             if (vehicle.isInFluidType) {
                 vehicle.xRot *= 0.9f; vehicle.setZRot(vehicle.roll * 0.9f)
             }
@@ -569,16 +598,23 @@ object VehicleMotionUtils {
         }
 
         val level = vehicle.level()
-        // 仅含yaw的水平参考系：用它构建采样点，使地形采样与车身pitch/roll解耦，
-        // 避免"上一tick的倾角影响这一tick的采样"造成的角度自反馈与抖动
+        // 仅含yaw的水平参考系：用它构建采样点的(x,z)世界坐标和搜索窗口中心Y，
+        // 使地形采样位置与车身pitch/roll解耦，避免"上一tick的倾角影响这一tick的采样位置"造成的角度自反馈与抖动
         val flatTransform = vehicle.getWheelsTransform(1f)
+
+        // 含pitch/roll的完整参考系：用于计算采样点处OBB底面的实际世界Y坐标，
+        // 使heightY能够反映当前车身倾角（如机头抬高时后方采样点Y更低），从而驱动地形贴合修正
+        val fullTransform = Matrix4d()
+        fullTransform.translate(vehicle.x, vehicle.y, vehicle.z)
+        fullTransform.rotate(Axis.YP.rotationDegrees(-vehicle.yRot))
+        fullTransform.rotate(Axis.XP.rotationDegrees(vehicle.xRot))
+        fullTransform.rotate(Axis.ZP.rotationDegrees(vehicle.roll))
 
         // 采样列（载具局部坐标，X=右，Z=前）及该列处碰撞OBB底面的局部高度ly
         val sampleLx = ArrayList<Double>()
         val sampleLz = ArrayList<Double>()
         val sampleLy = ArrayList<Double>()
 
-        val collisionInfo = vehicle.getCollisionOBBInfo()
         if (collisionInfo != null) {
             // 用碰撞OBB底面footprint采样：cols列(左右,决定roll) × rows排(前后,决定pitch)
             val cx = collisionInfo.position.x
@@ -610,8 +646,8 @@ object VehicleMotionUtils {
 
         // 容差/坑洞参数（单位：方块）
         val embedTolerance = 0.25    // 横向嵌入容差：地面与OBB底相差不超过此值视为贴合，不产生倾角
-        val searchUp = 1.5           // 上坡探测上限：检测高出OBB底的地形（爬坡），同时限制最大抬头幅度
-        val searchDown = 2.0         // 下坡/坑洞探测下限：检测低于OBB底的地形，同时限制最大低头幅度
+        val searchUp = vehicle.stepHeight.toDouble()           // 上坡探测上限：检测高出OBB底的地形（爬坡），同时限制最大抬头幅度
+        val searchDown = maxHalfExtent         // 下坡/坑洞探测下限：检测低于OBB底的地形，同时限制最大低头幅度
         val potholeDepth = 0.6       // 采样列地面低于OBB底超过此值视为"坑"
         val potholeIgnoreRatio = 0.4 // 坑采样占比不超过此值时忽略其影响（保持水平，不栽进小坑）
 
@@ -620,15 +656,18 @@ object VehicleMotionUtils {
         val heightY = DoubleArray(count)
         val isPit = BooleanArray(count)
         for (i in 0 until count) {
-            val world = transformPosition(flatTransform, sampleLx[i], sampleLy[i], sampleLz[i])
-            val sampleY = world.y
-            val top = sampleTerrainTop(level, world.x, sampleY, world.z, searchUp, searchDown)
+            val worldFlat = transformPosition(flatTransform, sampleLx[i], sampleLy[i], sampleLz[i])
+            val worldFull = transformPosition(fullTransform, sampleLx[i], sampleLy[i], sampleLz[i])
+            // 使用flat投影的(x,z)采样地形列，保证采样网格稳定不受pitch/roll影响；
+            // 使用flat投影的Y作为搜索窗口中心（与searchUp/searchDown配合），
+            // 使用full投影的Y作为OBB底面的实际高度，使heightY正确反映车身倾角
+            val top = sampleTerrainTop(level, worldFlat.x, worldFlat.y, worldFlat.z, searchUp, searchDown)
             if (top == null) {
                 // 垂直窗口内无地形支撑（深坑/悬崖外）
                 isPit[i] = true
                 heightY[i] = searchDown
             } else {
-                val rawPre = sampleY - top
+                val rawPre = worldFull.y - top
                 isPit[i] = rawPre > potholeDepth
                 // 容差：极小的嵌入/悬空都吸附为贴合(0)，避免体素噪声造成的细碎抖动；
                 // 超出容差后线性响应——上坡(负)允许少量横向嵌入，爬坡时车身抬头
