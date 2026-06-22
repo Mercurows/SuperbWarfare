@@ -255,19 +255,19 @@ object ModEntities {
     val WHEEL_CHAIR = register("wheel_chair", vehicle(::WheelChairEntity).sized(1.0f, 1.0f))
 
     @JvmField
-    val LAV_150 = register("lav_150", vehicle(::VehicleEntity).sized(2.8f, 2.45f))
+    val LAV_150 = register("lav_150", vehicle().sized(2.8f, 2.45f))
 
     @JvmField
-    val LAV_AD = register("lav_ad", vehicle(::VehicleEntity).sized(2.8f, 2.35f))
+    val LAV_AD = register("lav_ad", vehicle().sized(2.8f, 2.35f))
 
     @JvmField
-    val LAV_25 = register("lav_25", vehicle(::VehicleEntity).sized(2.8f, 2.35f))
+    val LAV_25 = register("lav_25", vehicle().sized(2.8f, 2.35f))
 
     @JvmField
-    val BMP_2 = register("bmp_2", vehicle(::VehicleEntity).sized(3.6f, 2.1f))
+    val BMP_2 = register("bmp_2", vehicle().sized(3.6f, 2.1f))
 
     @JvmField
-    val BRADLEY = register("bradley", vehicle(::VehicleEntity).sized(3.6f, 2.3f))
+    val BRADLEY = register("bradley", vehicle().sized(3.6f, 2.3f))
 
     @JvmField
     val ZTZ_99A = register("ztz_99a", vehicle(::Ztz99aEntity).sized(4.62f, 2.2f))
@@ -292,13 +292,13 @@ object ModEntities {
     val TOM_6 = register("tom_6", vehicle(::Tom6Entity).sized(1.05f, 1.0f))
 
     @JvmField
-    val AH_6 = register("ah_6", vehicle(::VehicleEntity).sized(2.25f, 2.175f))
+    val AH_6 = register("ah_6", vehicle().sized(2.25f, 2.175f))
 
     @JvmField
-    val MI_28 = register("mi_28", vehicle(::VehicleEntity).sized(3.375f, 3.375f))
+    val MI_28 = register("mi_28", vehicle().sized(3.375f, 3.375f))
 
     @JvmField
-    val KV_16 = register("kv_16", vehicle(::VehicleEntity).sized(1f, 1f))
+    val KV_16 = register("kv_16", vehicle().sized(1f, 1f))
 
     @JvmField
     val JU_87 = register("ju_87", vehicle(::Ju87Entity).sized(3f, 2.5f))
@@ -354,6 +354,11 @@ object ModEntities {
     private fun <T : Entity> misc(
         entity: (EntityType<T>, Level) -> T
     ): EntityType.Builder<T> = EntityType.Builder.of(entity, MobCategory.MISC)
+
+    private fun vehicle(): EntityType.Builder<VehicleEntity> = misc(::VehicleEntity)
+        .setTrackingRange(512)
+        .setUpdateInterval(1)
+        .fireImmune()
 
     private fun <T : Entity> vehicle(
         entity: (EntityType<T>, Level) -> T
