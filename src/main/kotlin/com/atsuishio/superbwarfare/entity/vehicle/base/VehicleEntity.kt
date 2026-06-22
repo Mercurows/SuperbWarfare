@@ -4186,7 +4186,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
      * 如果缓存未命中则实时计算
      */
     open fun getCombinedAABB(): AABB {
-        if (enableAABB()) {
+        if (this.enableAABB() || this.getCollisionOBBInfo() == null) {
             return this.boundingBox
         }
         if (combinedAabbCache != null && combinedAabbCacheTick == this.tickCount) {

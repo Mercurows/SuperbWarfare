@@ -581,7 +581,12 @@ object VehicleMotionUtils {
     fun terrainCompact(vehicle: VehicleEntity, positions: MutableList<Vec3>) {
         if (vehicle.vehicleType == VehicleType.AIRSHIP) return
 
-        // 若离地高度超过碰撞OBB最长边长的一半，则认为悬空，不处理地形贴合
+        val level = vehicle.level()
+        val chunkX = vehicle.blockX shr 4
+        val chunkZ = vehicle.blockZ shr 4
+        if (!level.hasChunk(chunkX, chunkZ)) return
+        val groundY = level.getHeight(Heightmap.Types.MOTION_BLOCKING, vehicle.blockX, vehicle.blockZ).toDouble()
+
         val collisionInfo = vehicle.getCollisionOBBInfo()
         val maxHalfExtent = if (collisionInfo != null) {
             val s = collisionInfo.size
@@ -590,14 +595,20 @@ object VehicleMotionUtils {
             3.0
         }
 
-        if (getHeightAboveGround(vehicle) > maxHalfExtent) {
+        // 有碰撞OBB时检测整个OBB底部离地高度，无OBB时检测自身AABB底部离地高度
+        // 若离地超过阈值则认为悬空，不处理地形贴合
+        val heightAboveGround = if (collisionInfo != null) {
+            (vehicle.y + collisionInfo.position.y - collisionInfo.size.y) - groundY
+        } else {
+            vehicle.boundingBox.minY - groundY
+        }
+        if (heightAboveGround > maxHalfExtent) {
             if (vehicle.isInFluidType) {
                 vehicle.xRot *= 0.9f; vehicle.setZRot(vehicle.roll * 0.9f)
             }
             return
         }
 
-        val level = vehicle.level()
         // 仅含yaw的水平参考系：用它构建采样点的(x,z)世界坐标和搜索窗口中心Y，
         // 使地形采样位置与车身pitch/roll解耦，避免"上一tick的倾角影响这一tick的采样位置"造成的角度自反馈与抖动
         val flatTransform = vehicle.getWheelsTransform(1f)
