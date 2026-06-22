@@ -810,6 +810,8 @@
   "tips.superbwarfare.vehicle.lock_vehicle": "Successfully locked vehicle %1$s",
   "tips.superbwarfare.vehicle.unlock_vehicle": "Successfully unlocked vehicle %1$s",
   "tips.superbwarfare.vehicle.lock_fail": "This is not your vehicle",
+  "tips.superbwarfare.vehicle.lock_hurt": "Your vehicle %4$s at [%1$s, %2$s, %3$s] is under attack",
+  "tips.superbwarfare.vehicle.lock_destroy": "Your vehicle %4$s at [%1$s, %2$s, %3$s] has been destroyed",
 
   "tips.superbwarfare.target.yaw": "Target Yaw: ",
   "tips.superbwarfare.target.pitch": "Target Pitch: ",

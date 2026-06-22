@@ -3,8 +3,11 @@ package com.atsuishio.superbwarfare.entity.vehicle
 import com.atsuishio.superbwarfare.block.VehicleAssemblingTableBlock
 import com.atsuishio.superbwarfare.block.property.BlockPart
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
-import com.atsuishio.superbwarfare.init.*
+import com.atsuishio.superbwarfare.init.ModBlocks
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeVehicleStrikeDamage
+import com.atsuishio.superbwarfare.init.ModEntities
+import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.inventory.menu.VehicleAssemblingMenu
 import net.minecraft.ChatFormatting
 import net.minecraft.core.BlockPos
@@ -42,8 +45,12 @@ open class VehicleAssemblingTableVehicleEntity(type: EntityType<*>, level: Level
     constructor(level: Level) : this(ModEntities.VEHICLE_ASSEMBLING_TABLE.get(), level)
 
     // 变回方块
-    override fun interact(player: Player, hand: InteractionHand): InteractionResult {
-        if (player.mainHandItem.`is`(ModTags.Items.TOOLS_CROWBAR) && !player.isCrouching) {
+    override fun onCrowbarInteract(
+        stack: ItemStack,
+        player: Player,
+        hand: InteractionHand
+    ): InteractionResult? {
+        if (!player.isShiftKeyDown) {
             if (!this.level().isClientSide && this.getPassengers().isEmpty()) {
                 val facing = direction
                 val currentPos = this.position()
@@ -88,7 +95,7 @@ open class VehicleAssemblingTableVehicleEntity(type: EntityType<*>, level: Level
             }
             return InteractionResult.PASS
         }
-        return super.interact(player, hand)
+        return super.onCrowbarInteract(stack, player, hand)
     }
 
     override fun baseTick() {
@@ -236,7 +243,7 @@ open class VehicleAssemblingTableVehicleEntity(type: EntityType<*>, level: Level
     }
 
     override fun openMenu(player: Player) {
-        if (player is ServerPlayer) {
+        if (player is ServerPlayer && player.vehicle is VehicleAssemblingTableVehicleEntity) {
             NetworkHooks.openScreen(player, SimpleMenuProvider(this, Component.empty()))
         }
     }
