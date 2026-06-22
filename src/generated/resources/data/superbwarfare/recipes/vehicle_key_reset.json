@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "superbwarfare:vehicle_key"
+    }
+  ],
+  "result": {
+    "item": "superbwarfare:vehicle_key"
+  }
+}

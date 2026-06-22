@@ -346,9 +346,13 @@
   "item.superbwarfare.edd": "防止攻入装置",
   "des.superbwarfare.edd": "只能放置在方块的侧面",
   "item.superbwarfare.handsome_goggles": "超级无敌酷炫护目镜",
-  "des.superbwarfare.handsome_goggles": "一副很酷的护目镜，给恶魂戴上应该会更酷\n§c⚠ 光敏性癫痫患者请勿佩戴此眼镜，若要佩戴请按F4关闭着色器效果",
+  "des.superbwarfare.handsome_goggles": "一副很酷的护目镜，给恶魂戴上应该会更酷",
+  "des.superbwarfare.handsome_goggles.warn": "⚠ 光敏性癫痫患者请勿佩戴此眼镜，若要佩戴请按F4关闭着色器效果",
   "item.superbwarfare.skin_spray": "皮肤喷漆罐",
   "item.superbwarfare.vehicle_key": "车钥匙",
+  "des.superbwarfare.vehicle_key.empty": "未绑定车主，右击以绑定",
+  "des.superbwarfare.vehicle_key.bind": "已绑定至：%1$s",
+  "des.superbwarfare.vehicle_key.not_found": "找不到车主",
 
   "attribute.superbwarfare.bullet_resistance": "子弹防护",
 

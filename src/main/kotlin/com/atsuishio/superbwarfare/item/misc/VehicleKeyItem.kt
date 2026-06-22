@@ -2,17 +2,47 @@ package com.atsuishio.superbwarfare.item.misc
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.item.IVehicleInteract
+import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
+import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.InteractionResultHolder
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.TooltipFlag
 import net.minecraft.world.level.Level
 
 class VehicleKeyItem : Item(Properties().stacksTo(1)), IVehicleInteract {
+    override fun appendHoverText(
+        stack: ItemStack,
+        level: Level?,
+        tooltip: MutableList<Component>,
+        flag: TooltipFlag
+    ) {
+        val tag = stack.tag
+        if (tag == null || !tag.contains(TAG_UUID)) {
+            tooltip.add(Component.translatable("des.superbwarfare.vehicle_key.empty").withStyle(ChatFormatting.GRAY))
+        } else {
+            val entity = if (level != null) EntityFindUtil.findEntity(level, tag.getString(TAG_UUID)) else null
+            if (entity != null) {
+                tooltip.add(
+                    Component.translatable(
+                        "des.superbwarfare.vehicle_key.bind", Component.empty().append(entity.displayName).withStyle(
+                            ChatFormatting.GREEN
+                        )
+                    ).withStyle(ChatFormatting.GRAY)
+                )
+            } else {
+                tooltip.add(
+                    Component.translatable("des.superbwarfare.vehicle_key.not_found").withStyle(ChatFormatting.GRAY)
+                )
+            }
+        }
+    }
+
     override fun use(
         level: Level,
         player: Player,
@@ -21,6 +51,14 @@ class VehicleKeyItem : Item(Properties().stacksTo(1)), IVehicleInteract {
         val stack = player.getItemInHand(hand)
         if (stack.tag == null || !stack.tag!!.contains(TAG_UUID)) {
             stack.orCreateTag.putString(TAG_UUID, player.stringUUID)
+            player.displayClientMessage(
+                Component.translatable(
+                    "des.superbwarfare.vehicle_key.bind", Component.empty().append(player.displayName).withStyle(
+                        ChatFormatting.GREEN
+                    )
+                ).withStyle(ChatFormatting.GRAY), true
+            )
+            player.playSound(SoundEvents.ARROW_HIT_PLAYER)
             return InteractionResultHolder.success(stack)
         }
         return InteractionResultHolder.fail(stack)

@@ -1,0 +1,12 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "misc",
+  "inputs": [
+    "#superbwarfare:ingots/steel",
+    "2 #forge:ingots/iron",
+    "2 #forge:ingots/copper"
+  ],
+  "result": {
+    "item": "superbwarfare:vehicle_key"
+  }
+}

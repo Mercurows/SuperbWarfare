@@ -63,6 +63,9 @@ class HandsomeGogglesItem :
         pTooltipComponents.add(
             Component.translatable("des.superbwarfare.handsome_goggles").withStyle(ChatFormatting.GRAY)
         )
+        pTooltipComponents.add(
+            Component.translatable("des.superbwarfare.handsome_goggles.warn").withStyle(ChatFormatting.RED)
+        )
     }
 
     override fun use(pLevel: Level, pPlayer: Player, pUsedHand: InteractionHand): InteractionResultHolder<ItemStack> {

@@ -204,6 +204,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.BOOST_RESEARCH_MODULE)
 
         handheldItem(ModItems.SKIN_SPRAY)
+        handheldItem(ModItems.VEHICLE_KEY)
 
         // perk
         simpleItem(ModItems.SHORTCUT_PACK)

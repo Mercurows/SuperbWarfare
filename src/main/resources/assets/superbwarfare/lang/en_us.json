@@ -346,9 +346,13 @@
   "item.superbwarfare.edd": "Entry Denial Device",
   "des.superbwarfare.edd": "It can only be placed on the side of a block",
   "item.superbwarfare.handsome_goggles": "Superb Handsome Goggles",
-  "des.superbwarfare.handsome_goggles": "A very cool pair of goggles. It would be even cooler if worn by a Ghast\n§c⚠ Photosensitive epilepsy warning: do not wear these goggles. If you do, press F4 to disable the shader effect",
+  "des.superbwarfare.handsome_goggles": "A very cool pair of goggles. It would be even cooler if worn by a Ghast",
+  "des.superbwarfare.handsome_goggles.warn": "⚠ Photosensitive epilepsy warning: do not wear these goggles. If you do, press F4 to disable the shader effect",
   "item.superbwarfare.skin_spray": "Skin Spray",
   "item.superbwarfare.vehicle_key": "Vehicle Key",
+  "des.superbwarfare.vehicle_key.empty": "No owner bound. Right-click to bind",
+  "des.superbwarfare.vehicle_key.bind": "Bound to: %1$s",
+  "des.superbwarfare.vehicle_key.not_found": "Owner not found",
 
   "attribute.superbwarfare.bullet_resistance": "Bullet Resistance",
 

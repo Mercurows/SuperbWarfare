@@ -2804,6 +2804,21 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                     has(commonItemTag("storage_blocks/raw_silver"))
                 )
                 .save(writer, loc("${getItemName(ModItems.RAW_SILVER.get())}_from_raw_block"))
+
+            VehicleAssemblingRecipeBuilder.item(
+                ModItems.VEHICLE_KEY.get(),
+                1,
+                VehicleAssemblingRecipe.Category.MISC
+            )
+                .require(ModTags.Items.INGOTS_STEEL, 1)
+                .require(Tags.Items.INGOTS_IRON, 2)
+                .require(Tags.Items.INGOTS_COPPER, 2)
+                .unlockedBy(getHasName(ModItems.STEEL_INGOT.get()), has(ModTags.Items.INGOTS_STEEL))
+                .save(writer, loc(getItemName(ModItems.VEHICLE_KEY.get()) + "_assembling"))
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.VEHICLE_KEY.get(), 1)
+                .requires(ModItems.VEHICLE_KEY.get())
+                .unlockedBy(getHasName(ModItems.VEHICLE_KEY.get()), has(ModItems.VEHICLE_KEY.get()))
+                .save(writer, loc("${getItemName(ModItems.VEHICLE_KEY.get())}_reset"))
         }
 
         private fun buildSpecialRecipes(writer: Consumer<FinishedRecipe>) {
