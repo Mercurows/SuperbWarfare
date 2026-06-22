@@ -7,10 +7,10 @@ import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.init.ModItems
-import com.atsuishio.superbwarfare.tools.SeekTool
 import com.atsuishio.superbwarfare.tools.TraceTool
 import com.atsuishio.superbwarfare.tools.VectorTool.lerpGetEntityBoundingBoxCenter
 import com.atsuishio.superbwarfare.tools.canBeSeen
+import com.atsuishio.superbwarfare.tools.seekQuery
 import com.atsuishio.superbwarfare.tools.worldToScreen
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
@@ -119,16 +119,21 @@ object JavelinHudOverlay : CommonOverlay("javelin_hud") {
 
             if (decoy == null) {
                 val targetEntity = ClientEventHandler.lockingEntity
-                val entities = SeekTool.Builder(player)
-                    .withinRangeSeekWeapon(data.get(GunProp.SEEK_RANGE), data.get(GunProp.MAX_GUIDED_RANGE), data.get(GunProp.AFFECTED_BY_STEALTH_TARGET), data.get(GunProp.CAN_GUIDED_BY_RADAR))
-                    .withinAngle(data.get(GunProp.SEEK_ANGLE))
-                    .baseFilter()
-                    .heightRange(data.get(GunProp.MIN_TARGET_HEIGHT), data.get(GunProp.MAX_TARGET_HEIGHT))
-                    .smokeFilter()
-                    .noVehicle()
-                    .noClip()
-                    .notFriendly()
-                    .buildSeekWeapon(data.get(GunProp.CAN_GUIDED_BY_RADAR))
+                val entities = player.seekQuery {
+                    withinRangeSeekWeapon(
+                        data.get(GunProp.SEEK_RANGE),
+                        data.get(GunProp.MAX_GUIDED_RANGE),
+                        data.get(GunProp.AFFECTED_BY_STEALTH_TARGET),
+                        data.get(GunProp.CAN_GUIDED_BY_RADAR)
+                    )
+                    withinAngle(data.get(GunProp.SEEK_ANGLE))
+                    baseFilter()
+                    heightRange(data.get(GunProp.MIN_TARGET_HEIGHT), data.get(GunProp.MAX_TARGET_HEIGHT))
+                    smokeFilter()
+                    noVehicle()
+                    noClip()
+                    notFriendly()
+                }.buildSeekWeapon(data.get(GunProp.CAN_GUIDED_BY_RADAR))
                 val nearestEntity = ClientEventHandler.nearestEntity
 
                 if (ClientEventHandler.guideType == 0) {
