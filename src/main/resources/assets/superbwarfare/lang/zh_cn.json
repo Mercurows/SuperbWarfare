@@ -1242,5 +1242,7 @@
   "commands.superbwarfare.loiter.not_aircraft": "你未乘坐固定翼飞机",
   "commands.superbwarfare.loiter.success": "盘旋参数已设置: X=%1$s Y=%2$s Z=%3$s R=%4$s",
   "commands.superbwarfare.loiter.enabled": "盘旋已开启，中心: X=%1$s Y=%2$s Z=%3$s R=%4$s",
-  "commands.superbwarfare.loiter.disabled": "盘旋已关闭"
+  "commands.superbwarfare.loiter.disabled": "盘旋已关闭",
+  "commands.superbwarfare.loiter.get": "盘旋参数: X=%1$s Y=%2$s Z=%3$s R=%4$s 状态=%5$s",
+  "commands.superbwarfare.loiter.edit": "盘旋参数已更新: X=%1$s Y=%2$s Z=%3$s R=%4$s"
 }

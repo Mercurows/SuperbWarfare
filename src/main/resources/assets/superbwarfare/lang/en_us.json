@@ -1242,5 +1242,7 @@
   "commands.superbwarfare.loiter.not_aircraft": "You are not riding an aircraft",
   "commands.superbwarfare.loiter.success": "Loiter set: X=%1$s Y=%2$s Z=%3$s R=%4$s",
   "commands.superbwarfare.loiter.enabled": "Loiter enabled, center: X=%1$s Y=%2$s Z=%3$s R=%4$s",
-  "commands.superbwarfare.loiter.disabled": "Loiter disabled"
+  "commands.superbwarfare.loiter.disabled": "Loiter disabled",
+  "commands.superbwarfare.loiter.get": "Loiter: X=%1$s Y=%2$s Z=%3$s R=%4$s Status=%5$s",
+  "commands.superbwarfare.loiter.edit": "Loiter updated: X=%1$s Y=%2$s Z=%3$s R=%4$s"
 }

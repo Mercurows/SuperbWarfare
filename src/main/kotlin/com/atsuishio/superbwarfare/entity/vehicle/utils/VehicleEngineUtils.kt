@@ -15,12 +15,10 @@ import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.level.levelgen.Heightmap
 import net.minecraft.world.phys.Vec3
 import org.joml.Math
-import kotlin.math.abs
-import kotlin.math.atan2
-import kotlin.math.min
-import kotlin.math.sqrt
+import kotlin.math.*
 
 object VehicleEngineUtils {
     @JvmStatic
@@ -1688,7 +1686,7 @@ object VehicleEngineUtils {
 
         val altError = altitude - y
         val targetPitch = Mth.clamp(altError.toFloat() * -0.15f, -10f, 10f)
-        xRot = Mth.lerp(0.08f, xRot, targetPitch)
+        xRot = Mth.lerp(0.01f, xRot, targetPitch)
         mouseMoveSpeedY = Mth.clamp(altError.toFloat() * -0.02f, -1f, 1f)
 
         // ========== 6. 油门控制（高度自适应防失速） ==========
@@ -1700,5 +1698,387 @@ object VehicleEngineUtils {
             Mth.clamp(1.1f + altError.toFloat() * 0.0005f, 0.6f, 1.1f)
         }
         power = Mth.lerp(0.05f, power, powerTarget)
+
+        // ========== 7. 障碍物规避 ==========
+        // 通过 mouseMoveSpeedY 模拟鼠标输入，让 aircraftEngine() 的气动模型
+        // 自然限制机动性能。功率被动根据爬升角度缓慢设下限，防失速不主动拉。
+        // 返回 null 表示无威胁或已禁用，跳过整段规避逻辑。
+
+        obstacleAvoidanceOverride()?.let { avoidance ->
+            if (avoidance.mouseYBlendFactor > 0f) {
+                mouseMoveSpeedY = Mth.lerp(avoidance.mouseYBlendFactor, mouseMoveSpeedY, avoidance.mouseYOverride)
+
+                // 被动功率托底：爬升越陡下限越高，只托不拉，变化极慢(lerp 0.02)
+                val climbDemand = Mth.clamp(-avoidance.mouseYOverride / 22f, 0f, 1f)
+                val minPower = Mth.lerp(climbDemand, 1.1f, 1.8f)
+                if (power < minPower) {
+                    power = Mth.lerp(0.02f, power, minPower)
+                }
+            }
+        }
     }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  障碍物规避系统
+    // ═══════════════════════════════════════════════════════════════
+
+    // ─── 常量 ───
+
+    /** 扫描间隔 (tick) — 4 tick = 0.2s，保证响应速度 */
+    private const val OA_SCAN_INTERVAL = 5
+
+    /** 前方扫描最大距离 (格) */
+    private const val OA_SCAN_RANGE = 360.0
+
+    /** 扫描步长 (格) */
+    private const val OA_SCAN_STEP = 20.0
+
+    /** 扇形扫描半角 (度) */
+    private const val OA_FAN_HALF_ANGLE = 15.0
+
+    /** 扇形扫描射线数 (必须为奇数，中间=正前方) */
+    private const val OA_FAN_RAYS = 9
+
+    /** 基础安全余量 (格) — 飞机需要保持高于地形的最小高度 */
+    private const val OA_SAFETY_BASE = 10.0
+
+    /** 速度加成安全余量系数 — 速度越快越早反应 */
+    private const val OA_SAFETY_SPEED_FACTOR = 0.15
+
+    /** 爬升紧迫性特征距离 (格) — urgency = D/(D+d)，D越大越早开始反应 */
+    private const val OA_DANGER_DISTANCE = 300.0
+
+    /** 最大爬升俯仰角 (度, 抬头为负) — 用于 estimateMaxClimb 爬升能力估算 */
+    private const val OA_MAX_CLIMB_PITCH = -25f
+
+    /** 跳过低速扫描阈值 (m/s 真实秒速) */
+    private const val OA_SKIP_SPEED = 5.0
+
+    /** 释放宽限期 (tick) — 威胁消失后持续响应N tick防振荡 */
+    private const val OA_RELEASE_GRACE = 12
+
+    // ─── 数据类 ───
+
+    /** 单条射线的扫描结果 */
+    private data class RayScan(
+        val angleOffset: Double,            // 射线偏移角度 (弧度)
+        val firstImpactDist: Double,        // 首次碰撞距离，-1 表示畅通
+        val firstImpactHeight: Double       // 首次碰撞点的地形高度
+    )
+
+    /** 前方扫描总结果 */
+    private data class ObstacleScan(
+        val hasThreat: Boolean,
+        val threatLevel: Float,             // 0~1，越大越紧急
+        val closestDist: Double,            // 最近碰撞距离，-1 表示无威胁
+        val impactX: Double,                // 碰撞点 X
+        val impactZ: Double,                // 碰撞点 Z
+        val obstacleRelHeight: Double,      // 障碍物高于飞行器的高度
+        val rays: List<RayScan>
+    ) {
+        companion object {
+            val CLEAR = ObstacleScan(false, 0f, -1.0, 0.0, 0.0, 0.0, emptyList())
+        }
+    }
+
+    /** 规避策略 */
+    private enum class AvoidanceStrategy { NONE, CLIMB, EMERGENCY_CLIMB }
+
+    /**
+     * 规避输出：通过 mouseMoveSpeedY 模拟鼠标输入，
+     * 由 aircraftEngine() 的气动模型（pitchSpeed、clampPitch、襟翼等）自然处理。
+     * 功率由集成层根据爬升角度被动托底，不在此处主动设置。
+     */
+    private data class AvoidanceOutput(
+        val mouseYOverride: Float,        // mouseMoveSpeedY 覆盖值（负=抬头）
+        val mouseYBlendFactor: Float      // 俯仰混合因子 0~1
+    ) {
+        companion object {
+            val NONE = AvoidanceOutput(0f, 0f)
+        }
+    }
+
+    // ─── 缓存（按实体 ID 索引，防止多架飞行器共享状态） ───
+
+    private data class AvoidanceCache(
+        val scan: ObstacleScan = ObstacleScan.CLEAR,
+        val threatActive: Boolean = false,
+        val strategy: AvoidanceStrategy = AvoidanceStrategy.NONE,
+        val lastScanTick: Int = -1,
+        val releaseGrace: Int = 0     // >0 表示威胁已消失但仍在宽限期内
+    )
+
+    private val avoidanceCache = mutableMapOf<Int, AvoidanceCache>()
+
+    /** 清理长时间未使用的缓存条目（每 200 tick 触发一次） */
+    private fun cleanupAvoidanceCache(currentTick: Int) {
+        if (currentTick % 200 != 0) return
+        val threshold = currentTick - 400
+        avoidanceCache.entries.removeAll { (_, v) -> v.lastScanTick < threshold }
+    }
+
+    // ─── 主入口 ───
+
+    /**
+     * 障碍物规避主逻辑，在 [aircraftLoiter] 末尾调用。
+     * 扫描帧执行完整分析，非扫描帧用当前位置实时更新距离后继续响应。
+     *
+     * @return 规避输出；null 表示无威胁（缓存已清），调用方可跳过整段规避代码
+     */
+    private fun VehicleEntity.obstacleAvoidanceOverride(): AvoidanceOutput? {
+        // 建筑高度以上：不可能有地形，直接禁用
+        if (y > level().maxBuildHeight) {
+            avoidanceCache.remove(id)
+            return null
+        }
+
+        cleanupAvoidanceCache(tickCount)
+        val cache = avoidanceCache[id]
+
+        // 非扫描帧：用缓存数据 + 实时距离
+        if (tickCount % OA_SCAN_INTERVAL != 0) {
+            if (cache == null) return null
+
+            // 宽限期倒计时：威胁已消失，逐 tick 衰减后释放
+            if (!cache.threatActive) {
+                if (cache.releaseGrace > 1) {
+                    avoidanceCache[id] = cache.copy(releaseGrace = cache.releaseGrace - 1)
+                    val decay = cache.releaseGrace.toFloat() / OA_RELEASE_GRACE
+                    val output = computeAvoidance(cache.strategy, cache.scan, cache.scan.closestDist)
+                    return output.copy(
+                        mouseYBlendFactor = output.mouseYBlendFactor * decay,
+                        mouseYOverride = output.mouseYOverride * decay
+                    )
+                }
+                avoidanceCache.remove(id)
+                return null
+            }
+
+            // 威胁活跃中：计算实时距离
+            val dx = x - cache.scan.impactX
+            val dz = z - cache.scan.impactZ
+            val currentDist = sqrt(dx * dx + dz * dz)
+            // 已经飞过碰撞点或距离增加 → 威胁解除，进入宽限期
+            if (currentDist > cache.scan.closestDist * 1.5 || currentDist < 0) {
+                avoidanceCache[id] = cache.copy(threatActive = false, releaseGrace = OA_RELEASE_GRACE)
+                return computeAvoidance(cache.strategy, cache.scan, currentDist)
+            }
+            val output = computeAvoidance(cache.strategy, cache.scan, currentDist)
+            // 实时距离计算后威胁低于阈值 → 进入宽限期
+            if (output.mouseYBlendFactor <= 0f) {
+                avoidanceCache[id] = cache.copy(threatActive = false, releaseGrace = OA_RELEASE_GRACE)
+                return output
+            }
+            return output
+        }
+
+        // 低速门控
+        val speedPerTick = deltaMovement.length()
+        val speedMs = speedPerTick * 20.0
+        if (speedMs < OA_SKIP_SPEED) {
+            avoidanceCache.remove(id)
+            return null
+        }
+
+        // 1. 前向扫描
+        val scan = scanTerrainAhead(speedMs)
+        if (!scan.hasThreat) {
+            // 无威胁：若之前有活跃威胁则进入宽限期防振荡，否则直接清
+            if (cache != null && cache.threatActive) {
+                avoidanceCache[id] = cache.copy(threatActive = false, releaseGrace = OA_RELEASE_GRACE)
+                val output = computeAvoidance(cache.strategy, cache.scan, cache.scan.closestDist)
+                return output.copy(
+                    mouseYBlendFactor = output.mouseYBlendFactor * 0.5f,
+                    mouseYOverride = output.mouseYOverride * 0.5f
+                )
+            }
+            avoidanceCache.remove(id)
+            return null
+        }
+
+        // 2. 决策
+        val strategy = decideStrategy(scan.obstacleRelHeight, scan.closestDist)
+
+        // 3. 计算规避输出
+        val output = computeAvoidance(strategy, scan, scan.closestDist)
+
+        avoidanceCache[id] = AvoidanceCache(
+            scan = scan,
+            threatActive = true,
+            strategy = strategy,
+            lastScanTick = tickCount
+        )
+
+        return output
+    }
+
+    // ─── 1. 前向扇形扫描 ───
+
+    /**
+     * 沿速度方向发射 OA_FAN_RAYS 条射线，每条射线步进 OA_SCAN_STEP 格，
+     * 使用 MOTION_BLOCKING 高度图检测地形碰撞。
+     */
+    private fun VehicleEntity.scanTerrainAhead(speed: Double): ObstacleScan {
+        val vel = deltaMovement
+        val forward = Vec3(vel.x, 0.0, vel.z).normalize()
+        val level = level()
+        val maxSteps = (OA_SCAN_RANGE / OA_SCAN_STEP).toInt()
+
+        val angles = computeFanAngles()
+        val rays = mutableListOf<RayScan>()
+        var closestDist = Double.MAX_VALUE
+        var impactX = 0.0
+        var impactZ = 0.0
+        var obstacleRelHeight = 0.0
+        val safetyMargin = OA_SAFETY_BASE + speed * OA_SAFETY_SPEED_FACTOR
+
+        for (angleRad in angles) {
+            val rayDir = forward.yRot(angleRad.toFloat())
+            var firstHit = -1.0
+            var firstHeight = 0.0
+            var rayBlocked = false
+
+            for (step in 1..maxSteps) {
+                val dist = step * OA_SCAN_STEP
+                val sx = x + rayDir.x * dist
+                val sz = z + rayDir.z * dist
+                val cx = sx.toInt() shr 4
+                val cz = sz.toInt() shr 4
+
+                if (!level.hasChunk(cx, cz)) {
+                    // 未加载区块：静默截断射线，不标记威胁。
+                    // 扫描范围 300m 通常超出服务器视距，若视为阻塞则每条射线都会产生假威胁。
+                    // 真正的危险地形会在区块随飞机接近而加载后被下轮扫描捕获。
+                    rayBlocked = true
+                    break
+                }
+
+                val terrainY = level.getHeight(Heightmap.Types.MOTION_BLOCKING, sx.toInt(), sz.toInt()).toDouble()
+                val dangerAlt = terrainY + safetyMargin
+
+                if (y < dangerAlt) {
+                    firstHit = dist
+                    firstHeight = terrainY
+                    rayBlocked = true
+                    break
+                }
+            }
+
+            if (!rayBlocked) {
+                rays.add(RayScan(angleRad, -1.0, 0.0))
+            } else {
+                rays.add(RayScan(angleRad, firstHit, firstHeight))
+                if (firstHit < closestDist) {
+                    closestDist = firstHit
+                    val dist = firstHit
+                    impactX = x + rayDir.x * dist
+                    impactZ = z + rayDir.z * dist
+                    obstacleRelHeight = firstHeight + safetyMargin - y
+                }
+            }
+        }
+
+        if (closestDist >= OA_SCAN_RANGE) {
+            return ObstacleScan.CLEAR
+        }
+
+        // 二次威胁曲线：远距离增长缓慢，近距离快速攀升
+        val t = Mth.clamp(1.0 - closestDist / OA_SCAN_RANGE, 0.0, 1.0)
+        val threatLevel = (t * t).toFloat()
+
+        return ObstacleScan(
+            hasThreat = true,
+            threatLevel = threatLevel,
+            closestDist = closestDist,
+            impactX = impactX,
+            impactZ = impactZ,
+            obstacleRelHeight = obstacleRelHeight,
+            rays = rays
+        )
+    }
+
+    /** 计算扇形扫描各射线的偏转角 (弧度) */
+    private fun computeFanAngles(): List<Double> {
+        val rays = OA_FAN_RAYS
+        if (rays <= 1) return listOf(0.0)
+        val halfDeg = OA_FAN_HALF_ANGLE
+        val stepDeg = (2.0 * halfDeg) / (rays - 1)
+        return (0 until rays).map { i ->
+            Math.toRadians(-halfDeg + i * stepDeg)
+        }
+    }
+
+    // ─── 2. 爬升能力估算 ───
+
+    /**
+     * 估算在 [distance] 格内飞行器能爬升的最大高度。
+     * 受限于气动参数和当前速度。
+     */
+    private fun VehicleEntity.estimateMaxClimb(distance: Double): Double {
+        val speedPerTick = deltaMovement.length()
+        val speedMs = speedPerTick * 20.0  // 换算真实秒速
+        if (speedMs < 1.0) return 10.0
+
+        val lift = (engineInfo as? EngineInfo.Aircraft)?.liftSpeed ?: 1f
+        // 气动爬升角 ≈ atan(speedMs * 0.008 * lift * 4.0)，不超过 MAX_CLIMB_PITCH (25°)
+        val climbSlope = min(
+            tan(Math.toRadians((-OA_MAX_CLIMB_PITCH).toDouble())),
+            speedMs * 0.008 * lift.toDouble() * 4.0
+        )
+        return distance * climbSlope
+    }
+
+    // ─── 3. 策略决策 ───
+
+    private fun VehicleEntity.decideStrategy(
+        obstacleRelHeight: Double,
+        distance: Double
+    ): AvoidanceStrategy {
+        if (obstacleRelHeight <= 0) return AvoidanceStrategy.NONE
+        return if (obstacleRelHeight < estimateMaxClimb(distance)) AvoidanceStrategy.CLIMB
+               else AvoidanceStrategy.EMERGENCY_CLIMB
+    }
+
+    // ─── 4. 规避输出计算 ───
+
+    /**
+     * @param currentDist 飞机到碰撞点的当前实时距离
+     *
+     * 通过 mouseMoveSpeedY 模拟鼠标输入，aircraftEngine() 的气动模型
+     * 自然限制 pitchSpeed/clampPitch/襟翼等，确保机动不超性能边界。
+     */
+    private fun computeAvoidance(
+        strategy: AvoidanceStrategy,
+        scan: ObstacleScan,
+        currentDist: Double
+    ): AvoidanceOutput {
+        if (strategy == AvoidanceStrategy.NONE) return AvoidanceOutput.NONE
+
+        val distClamped = Mth.clamp(currentDist, 0.0, OA_SCAN_RANGE)
+
+        // sqrt 曲线：远距离就有明显反应，中距离快速攀升
+        val t = Mth.clamp(1.0 - distClamped / OA_SCAN_RANGE, 0.0, 1.0)
+        val liveThreat = Math.sqrt(t).toFloat()
+        if (liveThreat <= 0.02f) return AvoidanceOutput.NONE
+
+        // urgency = D/(D+d)，D=200
+        val urgency = (OA_DANGER_DISTANCE / (OA_DANGER_DISTANCE + distClamped)).toFloat()
+        val effectiveFactor = liveThreat * urgency
+
+        return when (strategy) {
+            AvoidanceStrategy.CLIMB -> {
+                val mouseYTarget = Mth.clamp(-30f * effectiveFactor, -22f, -5f)
+                val mouseYBlend = Mth.clamp(effectiveFactor * 2.5f, 0f, 1f)
+                AvoidanceOutput(mouseYOverride = mouseYTarget, mouseYBlendFactor = mouseYBlend)
+            }
+
+            AvoidanceStrategy.EMERGENCY_CLIMB -> AvoidanceOutput(
+                mouseYOverride = -22f, mouseYBlendFactor = 1f
+            )
+
+            AvoidanceStrategy.NONE -> AvoidanceOutput.NONE
+        }
+    }
+
+    // ─── 工具 ───
 }
