@@ -1,0 +1,17 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "aircraft",
+  "inputs": [
+    "2 superbwarfare:large_battery_pack",
+    "16 #superbwarfare:storage_blocks/steel",
+    "superbwarfare:heavy_armament_module",
+    "superbwarfare:medium_armament_module",
+    "superbwarfare:light_armament_module",
+    "4 superbwarfare:large_motor",
+    "4 superbwarfare:large_propeller",
+    "10 superbwarfare:wheel"
+  ],
+  "result": {
+    "entity": "superbwarfare:ac_130h"
+  }
+}
