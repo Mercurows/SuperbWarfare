@@ -1240,5 +1240,7 @@
   "superbwarfare.page.resources.silver.2": "$(thing)Deepslate Silver Ore() is generated in the overworld $(thing)from Y=0 to Y=-64$().",
   "commands.superbwarfare.loiter.player_only": "This command can only be executed by a player",
   "commands.superbwarfare.loiter.not_aircraft": "You are not riding an aircraft",
-  "commands.superbwarfare.loiter.success": "Loiter set: X=%1$s Y=%2$s Z=%3$s R=%4$s"
+  "commands.superbwarfare.loiter.success": "Loiter set: X=%1$s Y=%2$s Z=%3$s R=%4$s",
+  "commands.superbwarfare.loiter.enabled": "Loiter enabled, center: X=%1$s Y=%2$s Z=%3$s R=%4$s",
+  "commands.superbwarfare.loiter.disabled": "Loiter disabled"
 }

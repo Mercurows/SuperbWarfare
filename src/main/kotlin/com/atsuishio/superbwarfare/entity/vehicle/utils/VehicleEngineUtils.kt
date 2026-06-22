@@ -1625,7 +1625,9 @@ object VehicleEngineUtils {
     /**
      * 固定翼飞机自动盘旋飞控（左舷朝向圆心）
      *
-     * 两阶段制导：
+     * 三阶段制导：
+     * - **内圈平飞阶段**：当水平距离小于盘旋半径时，减小拐弯幅度接近平飞，
+     *   让飞机自然离心飞向半径外
      * - **拦截阶段**：远离轨道时飞向盘旋圆周
      * - **盘旋阶段**：接近轨道时切换为左舷朝内的切线飞行
      *
@@ -1671,8 +1673,16 @@ object VehicleEngineUtils {
 
         // ========== 4. 偏航控制 ==========
 
-        mouseMoveSpeedX = Mth.clamp(yawError * 1, -20f, 20f)
-        deltaRot += yawError * -0.02f
+        // 当飞机在盘旋半径内部时，减小拐弯幅度接近平飞，让飞机自然飞向半径外
+        val insideCircle = horizontalDist < radius
+        val turnFactor = if (insideCircle) {
+            Mth.clamp((horizontalDist / radius) * (horizontalDist / radius), 0.02, 1.0)
+        } else {
+            1.0f
+        }
+
+        mouseMoveSpeedX = Mth.clamp(yawError * turnFactor.toFloat(), -20f, 20f)
+        deltaRot += yawError * -0.003f * turnFactor.toFloat()
 
         // ========== 5. 高度控制 ==========
 

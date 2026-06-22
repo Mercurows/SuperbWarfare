@@ -261,6 +261,9 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     /** 盘旋参数四元数：x=centerX, y=centerY, z=centerZ, w=radius */
     open var loiterParams by LOITER_PARAMS
 
+    /** 盘旋功能开关 */
+    open var loiterActive by LOITER_ACTIVE
+
     /** 便捷访问：盘旋中心 X */
     var loiterCenterX: Double
         get() = loiterParams.x().toDouble()
@@ -877,6 +880,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             define(TURRET_BURN_TIMER, 0)
             define(LOCKED, false)
             define(LOITER_PARAMS, Quaternionf(0f, 0f, 318f, 400f))
+            define(LOITER_ACTIVE, false)
         }
     }
 
@@ -1414,6 +1418,9 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                 compound.getFloat("LoiterR")
             )
         }
+        if (compound.contains("LoiterActive")) {
+            loiterActive = compound.getBoolean("LoiterActive")
+        }
     }
 
     public override fun addAdditionalSaveData(compound: CompoundTag) {
@@ -1503,6 +1510,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         compound.putFloat("LoiterY", lp.y())
         compound.putFloat("LoiterZ", lp.z())
         compound.putFloat("LoiterR", lp.w())
+        compound.putBoolean("LoiterActive", loiterActive)
     }
 
     override fun interact(player: Player, hand: InteractionHand): InteractionResult {
@@ -2007,9 +2015,10 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         this.travel()
 
-        // 固定翼飞机自动盘旋：空中、引擎启动、无驾驶员、有能量、未坠毁、有乘客
+        // 固定翼飞机自动盘旋：空中、引擎启动、无驾驶员、有能量、未坠毁、有乘客、盘旋开关已开启
         if (!onGround() && engineStartOver && firstPassenger == null && energy > 0 && !isWreck
             && getPassengers().isNotEmpty() && computed.engineType == EngineType.AIRCRAFT
+            && loiterActive
         ) {
             aircraftLoiter()
         }
@@ -4488,5 +4497,10 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         @JvmField
         val LOITER_PARAMS: EntityDataAccessor<Quaternionf> =
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.QUATERNION)
+
+        /** 盘旋功能开关 */
+        @JvmField
+        val LOITER_ACTIVE: EntityDataAccessor<Boolean> =
+            SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.BOOLEAN)
     }
 }
