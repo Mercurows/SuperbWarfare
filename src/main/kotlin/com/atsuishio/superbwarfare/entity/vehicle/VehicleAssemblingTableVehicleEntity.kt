@@ -32,7 +32,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 open class VehicleAssemblingTableVehicleEntity(type: EntityType<*>, level: Level) : VehicleEntity(type, level),
-    HasCustomInventoryScreen, MenuProvider, BasicGeoVehicleEntity {
+    HasCustomInventoryScreen, MenuProvider {
     var deltaXo: Float = 0f
     var deltaYo: Float = 0f
     var deltaX: Float = 0f

@@ -7,9 +7,9 @@ import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunProp
-import com.atsuishio.superbwarfare.entity.vehicle.Ah6Entity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
+import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.perk.AmmoPerk
 import com.atsuishio.superbwarfare.perk.IAmmoStat
@@ -190,7 +190,7 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
         }
 
         // 在开启伤害指示器时才进行渲染
-        if (DisplayConfig.KILL_INDICATION.get() && !(vehicle is Ah6Entity && vehicle.getFirstPassenger() === player)) {
+        if (DisplayConfig.KILL_INDICATION.get() && !(vehicle?.type == ModEntities.AH_6.get() && vehicle.firstPassenger === player)) {
             renderKillIndicatorDynamic(guiGraphics, screenWidth, screenHeight, moveX, moveY)
         }
 

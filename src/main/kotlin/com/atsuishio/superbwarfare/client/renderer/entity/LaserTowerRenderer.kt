@@ -2,8 +2,7 @@ package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
-import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
-import com.atsuishio.superbwarfare.entity.vehicle.LaserTowerEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimableEntity
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.renderer.MultiBufferSource
@@ -12,15 +11,13 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.resources.ResourceLocation
 
-class LaserTowerRenderer<T>(manager: EntityRendererProvider.Context) :
-    SbmVehicleRenderer<T>(manager) where T : LaserTowerEntity, T : BasicGeoVehicleEntity {
-
+class LaserTowerRenderer(manager: EntityRendererProvider.Context) : BasicAutoAimableRenderer(manager){
     override fun hideForTurretControllerWhileZooming(): Boolean {
         return true
     }
 
     override fun renderCustomPart(
-        vehicle: T,
+        vehicle: AutoAimableEntity,
         model: BedrockVehicleModel,
         poseStack: PoseStack,
         entityYaw: Float,
@@ -42,7 +39,7 @@ class LaserTowerRenderer<T>(manager: EntityRendererProvider.Context) :
         }
     }
 
-    override fun getEmissiveTextureLocation(poseStack: PoseStack, entity: T): ResourceLocation? {
+    override fun getEmissiveTextureLocation(poseStack: PoseStack, entity: AutoAimableEntity): ResourceLocation? {
         return if (entity.energy > 0 && entity.active) {
             super.getEmissiveTextureLocation(poseStack, entity)
         } else {

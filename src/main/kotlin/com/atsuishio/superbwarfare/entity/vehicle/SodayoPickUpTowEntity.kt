@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
-import com.atsuishio.superbwarfare.entity.vehicle.base.GeoVehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.unaryMinus
@@ -14,7 +14,7 @@ import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import java.util.*
 
-class SodayoPickUpTowEntity(type: EntityType<SodayoPickUpTowEntity>, world: Level) : GeoVehicleEntity(type, world), BasicGeoVehicleEntity {
+class SodayoPickUpTowEntity(type: EntityType<SodayoPickUpTowEntity>, world: Level) : VehicleEntity(type, world) {
     override fun baseTick() {
         super.baseTick()
         if (decoyInputDown) {

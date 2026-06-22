@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
-import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
@@ -8,10 +7,8 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.util.Mth
 import net.minecraft.world.phys.Vec3
 
-class VehicleAssemblingTableVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
-    SbmVehicleRenderer<T>(manager) where T : VehicleEntity, T : BasicGeoVehicleEntity {
-
-    override fun rotateVehicleAxis(entityIn: T, poseStack: PoseStack, entityYaw: Float, partialTicks: Float) {
+class VehicleAssemblingTableVehicleRenderer(manager: EntityRendererProvider.Context) : BasicVehicleRenderer(manager) {
+    override fun rotateVehicleAxis(entityIn: VehicleEntity, poseStack: PoseStack, entityYaw: Float, partialTicks: Float) {
         poseStack.translate(0.5, 0.0, -0.5)
 
         val root = Vec3(-0.5, 0.5, 0.5)

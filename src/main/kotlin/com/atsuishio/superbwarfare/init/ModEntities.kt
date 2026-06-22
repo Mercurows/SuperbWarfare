@@ -8,6 +8,8 @@ import com.atsuishio.superbwarfare.entity.living.SteelCoilEntity
 import com.atsuishio.superbwarfare.entity.living.TargetEntity
 import com.atsuishio.superbwarfare.entity.projectile.*
 import com.atsuishio.superbwarfare.entity.vehicle.*
+import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimableEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import net.minecraft.world.Difficulty
 import net.minecraft.world.entity.*
 import net.minecraft.world.entity.monster.Monster
@@ -221,7 +223,7 @@ object ModEntities {
     val MK_42 = register("mk_42", vehicle(::Mk42Entity).sized(3.4f, 3.5f))
 
     @JvmField
-    val HPJ_11 = register("hpj_11", vehicle(::Hpj11Entity).sized(2.8f, 2.4f))
+    val HPJ_11 = register("hpj_11", vehicle(::AutoAimableEntity).sized(2.8f, 2.4f))
 
     @JvmField
     val MLE_1934 = register("mle_1934", vehicle(::Mle1934Entity).sized(4.5f, 2.8f))
@@ -233,10 +235,10 @@ object ModEntities {
     val ANNIHILATOR = register("annihilator", vehicle(::AnnihilatorEntity).sized(13f, 4.2f))
 
     @JvmField
-    val LASER_TOWER = register("laser_tower", vehicle(::LaserTowerEntity).sized(0.9f, 1.65f))
+    val LASER_TOWER = register("laser_tower", vehicle(::AutoAimableEntity).sized(0.9f, 1.65f))
 
     @JvmField
-    val WAVEFORCE_TOWER = register("waveforce_tower", vehicle(::WaveforceTowerEntity).sized(1.75f, 3.3f))
+    val WAVEFORCE_TOWER = register("waveforce_tower", vehicle(::AutoAimableEntity).sized(1.75f, 3.3f))
 
     @JvmField
     val TOW = register("tow", vehicle(::TowEntity).sized(0.5f, 1.35f))
@@ -253,19 +255,19 @@ object ModEntities {
     val WHEEL_CHAIR = register("wheel_chair", vehicle(::WheelChairEntity).sized(1.0f, 1.0f))
 
     @JvmField
-    val LAV_150 = register("lav_150", vehicle(::Lav150Entity).sized(2.8f, 2.45f))
+    val LAV_150 = register("lav_150", vehicle(::VehicleEntity).sized(2.8f, 2.45f))
 
     @JvmField
-    val LAV_AD = register("lav_ad", vehicle(::LavAdEntity).sized(2.8f, 2.35f))
+    val LAV_AD = register("lav_ad", vehicle(::VehicleEntity).sized(2.8f, 2.35f))
 
     @JvmField
-    val LAV_25 = register("lav_25", vehicle(::Lav25Entity).sized(2.8f, 2.35f))
+    val LAV_25 = register("lav_25", vehicle(::VehicleEntity).sized(2.8f, 2.35f))
 
     @JvmField
-    val BMP_2 = register("bmp_2", vehicle(::Bmp2Entity).sized(3.6f, 2.1f))
+    val BMP_2 = register("bmp_2", vehicle(::VehicleEntity).sized(3.6f, 2.1f))
 
     @JvmField
-    val BRADLEY = register("bradley", vehicle(::BradleyEntity).sized(3.6f, 2.3f))
+    val BRADLEY = register("bradley", vehicle(::VehicleEntity).sized(3.6f, 2.3f))
 
     @JvmField
     val ZTZ_99A = register("ztz_99a", vehicle(::Ztz99aEntity).sized(4.62f, 2.2f))
@@ -290,13 +292,13 @@ object ModEntities {
     val TOM_6 = register("tom_6", vehicle(::Tom6Entity).sized(1.05f, 1.0f))
 
     @JvmField
-    val AH_6 = register("ah_6", vehicle(::Ah6Entity).sized(2.25f, 2.175f))
+    val AH_6 = register("ah_6", vehicle(::VehicleEntity).sized(2.25f, 2.175f))
 
     @JvmField
-    val MI_28 = register("mi_28", vehicle(::Mi28Entity).sized(3.375f, 3.375f))
+    val MI_28 = register("mi_28", vehicle(::VehicleEntity).sized(3.375f, 3.375f))
 
     @JvmField
-    val KV_16 = register("kv_16", vehicle(::Kv16Entity).sized(1f, 1f))
+    val KV_16 = register("kv_16", vehicle(::VehicleEntity).sized(1f, 1f))
 
     @JvmField
     val JU_87 = register("ju_87", vehicle(::Ju87Entity).sized(3f, 2.5f))

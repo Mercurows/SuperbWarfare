@@ -1,8 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
-import com.atsuishio.superbwarfare.entity.vehicle.Ac130hEntity
-import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.options
@@ -11,10 +10,9 @@ import net.minecraft.client.CameraType
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.util.Mth
 
-class Ac130hRenderer<T>(manager: EntityRendererProvider.Context) :
-    SbmVehicleRenderer<T>(manager) where T : Ac130hEntity, T : BasicGeoVehicleEntity {
+class Ac130hRenderer(manager: EntityRendererProvider.Context) : BasicVehicleRenderer(manager) {
     override fun transformCustomModelPart(
-        vehicle: T,
+        vehicle: VehicleEntity,
         model: BedrockVehicleModel,
         poseStack: PoseStack,
         entityYaw: Float,
@@ -60,7 +58,8 @@ class Ac130hRenderer<T>(manager: EntityRendererProvider.Context) :
         propeller4.rotation.rotateZ(rot)
 
         val player = localPlayer
-        val hide = player != null && vehicle === player.vehicle && vehicle.hasWeapon(vehicle.getSeatIndex(player)) && (options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle)
+        val hide =
+            player != null && vehicle === player.vehicle && vehicle.hasWeapon(vehicle.getSeatIndex(player)) && (options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle)
 
         val gd = model.getBone("gd")
         gd.visible = !hide

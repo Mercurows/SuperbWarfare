@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
-import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.Tom6Entity
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
@@ -11,13 +10,12 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.entity.TntMinecartRenderer
 import net.minecraft.world.level.block.Blocks
 
-class Tom6Renderer<T>(manager: EntityRendererProvider.Context) :
-    SbmVehicleRenderer<T>(manager) where T : Tom6Entity, T : BasicGeoVehicleEntity {
+class Tom6Renderer(manager: EntityRendererProvider.Context) : SbmVehicleRenderer<Tom6Entity>(manager) {
 
     private val blockRenderer: BlockRenderDispatcher = manager.blockRenderDispatcher
 
     override fun renderCustomPart(
-        vehicle: T,
+        vehicle: Tom6Entity,
         model: BedrockVehicleModel,
         poseStack: PoseStack,
         entityYaw: Float,

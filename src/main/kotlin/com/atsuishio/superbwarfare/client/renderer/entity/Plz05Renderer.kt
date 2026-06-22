@@ -1,8 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
-import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
-import com.atsuishio.superbwarfare.entity.vehicle.Plz05Entity
+import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.options
 import com.mojang.blaze3d.vertex.PoseStack
@@ -10,15 +9,13 @@ import net.minecraft.client.CameraType
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.util.Mth
 
-class Plz05Renderer<T>(manager: EntityRendererProvider.Context) :
-    SbmVehicleRenderer<T>(manager) where T : Plz05Entity, T : BasicGeoVehicleEntity {
-
+class Plz05Renderer(manager: EntityRendererProvider.Context) : BasicArtilleryRenderer(manager) {
     override fun hideForTurretControllerWhileZooming(): Boolean {
         return true
     }
 
     override fun transformCustomModelPart(
-        vehicle: T,
+        vehicle: ArtilleryEntity,
         model: BedrockVehicleModel,
         poseStack: PoseStack,
         entityYaw: Float,

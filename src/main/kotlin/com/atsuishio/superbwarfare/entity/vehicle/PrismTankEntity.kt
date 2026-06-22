@@ -26,10 +26,11 @@ import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 
-open class PrismTankEntity(type: EntityType<PrismTankEntity>, world: Level) : VehicleEntity(type, world), BasicGeoVehicleEntity {
+open class PrismTankEntity(type: EntityType<PrismTankEntity>, world: Level) : VehicleEntity(type, world) {
     init {
         this.noCulling = true
     }
+
     fun hitBlock(pos: Vec3, gunData: GunData, shooter: Entity?) {
         val serverLevel = level() as? ServerLevel ?: return
 

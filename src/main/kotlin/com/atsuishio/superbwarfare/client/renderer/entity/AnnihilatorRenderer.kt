@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
 import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes
 import com.atsuishio.superbwarfare.entity.vehicle.AnnihilatorEntity
-import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.renderer.MultiBufferSource
@@ -13,8 +13,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.util.Mth
 
-class AnnihilatorRenderer<T>(manager: EntityRendererProvider.Context) :
-    SbmVehicleRenderer<T>(manager) where T : AnnihilatorEntity, T : BasicGeoVehicleEntity {
+class AnnihilatorRenderer(manager: EntityRendererProvider.Context) : BasicArtilleryRenderer(manager) {
     companion object {
         val TEXTURE_GLOW = Mod.loc("textures/bedrock/vehicle/annihilator_glow.png")
         val TEXTURE_LASER = Mod.loc("textures/bedrock/vehicle/annihilator_laser.png")
@@ -22,7 +21,7 @@ class AnnihilatorRenderer<T>(manager: EntityRendererProvider.Context) :
     }
 
     override fun transformCustomModelPart(
-        vehicle: T,
+        vehicle: ArtilleryEntity,
         model: BedrockVehicleModel,
         poseStack: PoseStack,
         entityYaw: Float,
@@ -54,7 +53,7 @@ class AnnihilatorRenderer<T>(manager: EntityRendererProvider.Context) :
     }
 
     override fun renderCustomPart(
-        vehicle: T,
+        vehicle: ArtilleryEntity,
         model: BedrockVehicleModel,
         poseStack: PoseStack,
         entityYaw: Float,

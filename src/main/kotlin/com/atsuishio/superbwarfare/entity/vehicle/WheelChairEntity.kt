@@ -16,8 +16,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 import org.joml.Math
 
-open class WheelChairEntity(type: EntityType<out WheelChairEntity>, level: Level) : VehicleEntity(type, level),
-    BasicGeoVehicleEntity {
+open class WheelChairEntity(type: EntityType<out WheelChairEntity>, level: Level) : VehicleEntity(type, level) {
     override fun playerTouch(pPlayer: Player) {
         if (this.position().distanceTo(pPlayer.position()) > 1.4
             || pPlayer === this.getFirstPassenger() && pPlayer.position().y > position().y

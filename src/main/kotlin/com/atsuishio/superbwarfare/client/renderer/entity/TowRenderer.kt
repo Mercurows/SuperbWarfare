@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
-import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.TowEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
@@ -11,11 +10,9 @@ import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.CameraType
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 
-class TowRenderer<T>(manager: EntityRendererProvider.Context) :
-    SbmVehicleRenderer<T>(manager) where T : VehicleEntity, T : BasicGeoVehicleEntity {
-
+class TowRenderer(manager: EntityRendererProvider.Context) : BasicVehicleRenderer(manager) {
     override fun transformCustomModelPart(
-        vehicle: T,
+        vehicle: VehicleEntity,
         model: BedrockVehicleModel,
         poseStack: PoseStack,
         entityYaw: Float,

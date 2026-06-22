@@ -2,8 +2,7 @@ package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
-import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
-import com.atsuishio.superbwarfare.entity.vehicle.HappiestGhastEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.tools.mc
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
 import com.mojang.blaze3d.platform.NativeImage
@@ -17,11 +16,10 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 import java.io.IOException
 
-class HappiestGhastRenderer<T>(manager: EntityRendererProvider.Context) :
-    SbmVehicleRenderer<T>(manager) where T : HappiestGhastEntity, T : BasicGeoVehicleEntity {
+class HappiestGhastRenderer(manager: EntityRendererProvider.Context) : BasicVehicleRenderer(manager) {
 
     override fun transformCustomModelPart(
-        vehicle: T,
+        vehicle: VehicleEntity,
         model: BedrockVehicleModel,
         poseStack: PoseStack,
         entityYaw: Float,
@@ -43,7 +41,7 @@ class HappiestGhastRenderer<T>(manager: EntityRendererProvider.Context) :
     }
 
     override fun renderCustomPart(
-        vehicle: T,
+        vehicle: VehicleEntity,
         model: BedrockVehicleModel,
         poseStack: PoseStack,
         entityYaw: Float,

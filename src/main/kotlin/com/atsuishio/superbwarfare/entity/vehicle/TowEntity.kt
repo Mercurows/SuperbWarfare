@@ -31,7 +31,7 @@ import net.minecraft.world.phys.Vec3
 import org.joml.Math
 import java.util.*
 
-class TowEntity(type: EntityType<TowEntity>, world: Level) : VehicleEntity(type, world), BasicGeoVehicleEntity {
+class TowEntity(type: EntityType<TowEntity>, world: Level) : VehicleEntity(type, world) {
 
     override fun defineSynchedData() {
         super.defineSynchedData()

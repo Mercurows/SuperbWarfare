@@ -19,8 +19,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
 import org.joml.Math
 
-open class Tom6Entity(type: EntityType<Tom6Entity>, world: Level) : VehicleEntity(type, world), BasicGeoVehicleEntity {
-
+open class Tom6Entity(type: EntityType<Tom6Entity>, world: Level) : VehicleEntity(type, world) {
     val hasMelon
         get() = weaponData?.hasEnoughAmmoToShoot(this) ?: false
 

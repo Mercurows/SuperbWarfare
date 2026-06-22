@@ -1,30 +1,14 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
-import com.atsuishio.superbwarfare.entity.vehicle.A10Entity
-import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.mojang.blaze3d.vertex.PoseStack
-import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.util.Mth
 
-class A10Renderer<T>(manager: EntityRendererProvider.Context) :
-    SbmVehicleRenderer<T>(manager) where T : A10Entity, T : BasicGeoVehicleEntity {
-
-    override fun renderCustomPart(
-        vehicle: T,
-        model: BedrockVehicleModel,
-        poseStack: PoseStack,
-        entityYaw: Float,
-        partialTicks: Float,
-        buffer: MultiBufferSource,
-        packedLight: Int
-    ) {
-        super.renderCustomPart(vehicle, model, poseStack, entityYaw, partialTicks, buffer, packedLight)
-    }
-
+class A10Renderer(manager: EntityRendererProvider.Context) : BasicVehicleRenderer(manager) {
     override fun transformCustomModelPart(
-        vehicle: T,
+        vehicle: VehicleEntity,
         model: BedrockVehicleModel,
         poseStack: PoseStack,
         entityYaw: Float,

@@ -3,8 +3,7 @@ package com.atsuishio.superbwarfare.client.renderer.entity
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
 import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes
-import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
-import com.atsuishio.superbwarfare.entity.vehicle.WaveforceTowerEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimableEntity
 import com.atsuishio.superbwarfare.resource.vehicle.VehicleResource
 import com.atsuishio.superbwarfare.script.VehicleScriptManager
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
@@ -14,8 +13,7 @@ import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.texture.OverlayTexture
 
-class WaveforceTowerRenderer<T>(manager: EntityRendererProvider.Context) :
-    SbmVehicleRenderer<T>(manager) where T : WaveforceTowerEntity, T : BasicGeoVehicleEntity {
+class WaveforceTowerRenderer(manager: EntityRendererProvider.Context) : BasicAutoAimableRenderer(manager){
     companion object {
         val TEXTURE_LASER = loc("textures/bedrock/vehicle/waveforce_tower_laser.png")
     }
@@ -23,8 +21,9 @@ class WaveforceTowerRenderer<T>(manager: EntityRendererProvider.Context) :
     @Suppress("unused")
     var energy0: Float = 0f
 
+    // TODO 测试用
     override fun transformCustomModelPart(
-        vehicle: T,
+        vehicle: AutoAimableEntity,
         model: BedrockVehicleModel,
         poseStack: PoseStack,
         entityYaw: Float,
@@ -36,7 +35,7 @@ class WaveforceTowerRenderer<T>(manager: EntityRendererProvider.Context) :
     }
 
     override fun renderCustomPart(
-        vehicle: T,
+        vehicle: AutoAimableEntity,
         model: BedrockVehicleModel,
         poseStack: PoseStack,
         entityYaw: Float,

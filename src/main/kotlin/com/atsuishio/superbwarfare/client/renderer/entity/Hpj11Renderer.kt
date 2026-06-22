@@ -2,8 +2,7 @@ package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
-import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
-import com.atsuishio.superbwarfare.entity.vehicle.Hpj11Entity
+import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimableEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.options
@@ -15,15 +14,13 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.util.Mth
 
-class Hpj11Renderer<T>(manager: EntityRendererProvider.Context) :
-    SbmVehicleRenderer<T>(manager) where T : Hpj11Entity, T : BasicGeoVehicleEntity {
-
+class Hpj11Renderer(manager: EntityRendererProvider.Context) : BasicAutoAimableRenderer(manager) {
     override fun hideForTurretControllerWhileZooming(): Boolean {
         return true
     }
 
     override fun transformCustomModelPart(
-        vehicle: T,
+        vehicle: AutoAimableEntity,
         model: BedrockVehicleModel,
         poseStack: PoseStack,
         entityYaw: Float,
@@ -45,7 +42,7 @@ class Hpj11Renderer<T>(manager: EntityRendererProvider.Context) :
     }
 
     override fun renderCustomPart(
-        vehicle: T,
+        vehicle: AutoAimableEntity,
         model: BedrockVehicleModel,
         poseStack: PoseStack,
         entityYaw: Float,

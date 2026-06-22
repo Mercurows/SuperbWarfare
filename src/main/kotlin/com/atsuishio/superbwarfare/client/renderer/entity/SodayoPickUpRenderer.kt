@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
-import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.SodayoPickUpRocketEntity
 import com.atsuishio.superbwarfare.entity.vehicle.SodayoPickUpTowEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -16,10 +15,9 @@ import net.minecraft.util.Mth
 import org.joml.Quaterniond
 import org.joml.Quaternionf
 
-class SodayoPickUpRenderer<T>(manager: EntityRendererProvider.Context) :
-    SbmVehicleRenderer<T>(manager) where T : VehicleEntity, T : BasicGeoVehicleEntity {
+class SodayoPickUpRenderer(manager: EntityRendererProvider.Context) : BasicVehicleRenderer(manager) {
     override fun transformCustomModelPart(
-        vehicle: T,
+        vehicle: VehicleEntity,
         model: BedrockVehicleModel,
         poseStack: PoseStack,
         entityYaw: Float,

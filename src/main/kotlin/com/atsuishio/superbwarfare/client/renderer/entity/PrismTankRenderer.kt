@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
-import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.PrismTankEntity
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
 import com.mojang.blaze3d.vertex.PoseStack
@@ -12,15 +11,13 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.util.Mth
 
-class PrismTankRenderer<T>(manager: EntityRendererProvider.Context) :
-    SbmVehicleRenderer<T>(manager) where T : PrismTankEntity, T : BasicGeoVehicleEntity {
-
+class PrismTankRenderer(manager: EntityRendererProvider.Context) : SbmVehicleRenderer<PrismTankEntity>(manager) {
     override fun hideForTurretControllerWhileZooming(): Boolean {
         return true
     }
 
     override fun transformCustomModelPart(
-        vehicle: T,
+        vehicle: PrismTankEntity,
         model: BedrockVehicleModel,
         poseStack: PoseStack,
         entityYaw: Float,
@@ -38,7 +35,7 @@ class PrismTankRenderer<T>(manager: EntityRendererProvider.Context) :
     }
 
     override fun renderCustomPart(
-        vehicle: T,
+        vehicle: PrismTankEntity,
         model: BedrockVehicleModel,
         poseStack: PoseStack,
         entityYaw: Float,

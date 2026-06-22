@@ -47,6 +47,10 @@ import org.joml.Math
 import java.util.*
 
 open class AutoAimableEntity(type: EntityType<*>, world: Level) : VehicleEntity(type, world), OwnableEntity {
+    init {
+        this.noCulling = true
+    }
+
     open var changeTargetTimer: Int = 0
 
     open var targetUUID by TARGET_UUID

@@ -1,21 +1,18 @@
 package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.client.model.entity.BedrockVehicleModel
-import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.KirovEntity
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.util.Mth
 
-class KirovRenderer<T>(manager: EntityRendererProvider.Context) :
-    SbmVehicleRenderer<T>(manager) where T : KirovEntity, T : BasicGeoVehicleEntity {
-
+class KirovRenderer(manager: EntityRendererProvider.Context) : SbmVehicleRenderer<KirovEntity>(manager){
     override fun hideForTurretControllerWhileZooming(): Boolean {
         return true
     }
 
     override fun transformCustomModelPart(
-        vehicle: T,
+        vehicle: KirovEntity,
         model: BedrockVehicleModel,
         poseStack: PoseStack,
         entityYaw: Float,
