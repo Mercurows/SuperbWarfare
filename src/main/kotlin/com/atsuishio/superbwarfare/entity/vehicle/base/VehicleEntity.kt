@@ -105,12 +105,14 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities
 import net.minecraftforge.common.util.FakePlayer
 import net.minecraftforge.common.util.LazyOptional
 import net.minecraftforge.energy.IEnergyStorage
+import net.minecraftforge.fluids.FluidType
 import net.minecraftforge.items.ItemHandlerHelper
 import net.minecraftforge.network.NetworkHooks
 import net.minecraftforge.registries.ForgeRegistries
 import org.joml.*
 import java.util.*
 import java.util.function.BiConsumer
+import java.util.function.BiPredicate
 import java.util.function.Consumer
 import java.util.function.Function
 import javax.annotation.ParametersAreNonnullByDefault
@@ -1756,17 +1758,68 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         }
 
         val driver = this.lastDriver
-        if (this.locked && driver is Player && attacker != driver && hurtWarnCoolDown > 0) {
-            driver.displayClientMessage(
-                Component.translatable(
-                    "tips.superbwarfare.vehicle.lock_hurt",
-                    FormatTool.format1D(this.x),
-                    FormatTool.format1D(this.y),
-                    FormatTool.format1D(this.z),
-                    this.displayName
-                ).withStyle(ChatFormatting.YELLOW), false
-            )
+        if (this.locked && driver is Player && attacker != driver && hurtWarnCoolDown <= 0 && !this.isWreck) {
+            if (this.level() is ServerLevel) {
+                driver.displayClientMessage(
+                    Component.translatable(
+                        "tips.superbwarfare.vehicle.lock_hurt",
+                        FormatTool.format1D(this.x),
+                        FormatTool.format1D(this.y),
+                        FormatTool.format1D(this.z),
+                        this.displayName
+                    ).withStyle(ChatFormatting.YELLOW), false
+                )
+            }
             hurtWarnCoolDown = 60
+        }
+    }
+
+    override fun isInFluidType(predicate: BiPredicate<FluidType, Double>): Boolean {
+        val collisionOBB = getCollisionOBB() ?: return super.isInFluidType(predicate)
+
+        // 对于有碰撞OBB的载具，只有当OBB接触到流体时才判定为处于流体中
+        val obbAABB = OBB.getWorldAABB(collisionOBB).deflate(0.001)
+        if (obbAABB.hasNaN() || obbAABB.size <= 0.0) {
+            return super.isInFluidType(predicate)
+        }
+
+        val level = level()
+        val minX = Mth.floor(obbAABB.minX)
+        val maxX = Mth.ceil(obbAABB.maxX)
+        val minY = Mth.floor(obbAABB.minY)
+        val maxY = Mth.ceil(obbAABB.maxY)
+        val minZ = Mth.floor(obbAABB.minZ)
+        val maxZ = Mth.ceil(obbAABB.maxZ)
+
+        for (x in minX until maxX) {
+            for (y in minY until maxY) {
+                for (z in minZ until maxZ) {
+                    val pos = BlockPos(x, y, z)
+                    val fluidState = level.getFluidState(pos)
+                    if (!fluidState.isEmpty) {
+                        val height = (y + fluidState.getHeight(level, pos)).toDouble()
+                        if (height >= obbAABB.minY) {
+                            val blockAABB = AABB(
+                                x.toDouble(), y.toDouble(), z.toDouble(),
+                                (x + 1).toDouble(), height, (z + 1).toDouble()
+                            )
+                            if (OBB.isColliding(collisionOBB, blockAABB)) {
+                                if (predicate.test(fluidState.fluidType, height)) {
+                                    return true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false
+    }
+
+    override fun isInLava(): Boolean {
+        if (getCollisionOBB() == null) return super.isInLava()
+        return isInFluidType { type, _ ->
+            type === ForgeRegistries.FLUID_TYPES.get().getValue(ResourceLocation("minecraft", "lava"))
         }
     }
 
