@@ -18,6 +18,7 @@ object CommandRegister {
             add(RIDE_COMMAND)
             add(DISMOUNT_COMMAND)
             add(SKIN_COMMAND)
+            add(LOITER_COMMAND)
         }
 
         val result = event.dispatcher.register(command as LiteralArgumentBuilder<CommandSourceStack>)

@@ -1237,5 +1237,8 @@
   "superbwarfare.page.resources.scheelite.3": "$(thing)钨锭$()只能使用$(thing)高炉$()进行熔炼。",
   "superbwarfare.entry.resources.silver": "银矿石",
   "superbwarfare.page.resources.silver.1": "$(thing)银矿石$()生成于主世界的$(thing)48 ~ 1$()层。",
-  "superbwarfare.page.resources.silver.2": "$(thing)深层银矿石$()生成于主世界的$(thing)0 ~ -64$()层。"
+  "superbwarfare.page.resources.silver.2": "$(thing)深层银矿石$()生成于主世界的$(thing)0 ~ -64$()层。",
+  "commands.superbwarfare.loiter.player_only": "该指令只能由玩家执行",
+  "commands.superbwarfare.loiter.not_aircraft": "你未乘坐固定翼飞机",
+  "commands.superbwarfare.loiter.success": "盘旋参数已设置: X=%1$s Y=%2$s Z=%3$s R=%4$s"
 }

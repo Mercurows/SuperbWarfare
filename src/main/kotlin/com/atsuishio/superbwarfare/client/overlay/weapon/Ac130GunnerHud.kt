@@ -17,6 +17,7 @@ import net.minecraft.client.CameraType
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.GameRenderer
+import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.player.Player
@@ -38,6 +39,12 @@ class Ac130GunnerHud {
     }
 
     var lerpRecoil: Float = 0f
+
+    // 测距缓存（每 tick 更新一次）
+    private var cachedRange: Double = 0.0
+    private var cachedBlockPos: BlockPos? = null
+    private var cachedIsEntity: Boolean = false
+    private var lastRangeTick: Int = -1
     
     fun render(
         vehicle: VehicleEntity,
@@ -169,68 +176,55 @@ class Ac130GunnerHud {
                 // 低电量警告
                 renderEnergyInfo(vehicle, guiGraphics, screenWidth, screenHeight, mc.font)
 
-                // 测距
-                var lookAtEntity = false
+                // 测距（每 tick 更新一次缓存）
+                if (vehicle.tickCount != lastRangeTick) {
+                    lastRangeTick = vehicle.tickCount
 
-                val result = player.level().clip(
-                    ClipContext(
-                        vehicle.getShootPosForHud(player, partialTick),
-                        vehicle.getShootPosForHud(player, partialTick)
-                            .add(vehicle.getShootDirectionForHud(player, partialTick).scale(512.0)),
-                        ClipContext.Block.VISUAL,
-                        ClipContext.Fluid.NONE,
-                        player
-                    )
-                )
-                val hitPos = result.location
-
-                val blockRange = player.getEyePosition(1f).distanceTo(hitPos)
-                var entityRange = 0.0
-
-                val lookingEntity = TraceTool.camerafFindLookingEntity(
-                    player,
-                    vehicle.getShootPosForHud(player, partialTick),
-                    vehicle.getShootDirectionForHud(player, partialTick),
-                    512.0
-                )
-                if (lookingEntity != null) {
-                    lookAtEntity = true
-                    entityRange = player.distanceTo(lookingEntity).toDouble()
-                }
-
-                if (lookAtEntity) {
-                    val width = Minecraft.getInstance().font.width(format0D(entityRange, " m"))
-                    guiGraphics.drawString(
-                        Minecraft.getInstance().font,
-                        Component.literal(format0D(entityRange, " m")),
-                        screenWidth / 2 - width / 2,
-                        screenHeight - 53,
-                        color,
-                        false
-                    )
-                } else {
-                    if (blockRange > 500) {
-                        val width = Minecraft.getInstance().font.width("---m")
-                        guiGraphics.drawString(
-                            Minecraft.getInstance().font,
-                            Component.literal("---m"),
-                            screenWidth / 2 - width / 2,
-                            screenHeight - 53,
-                            color,
-                            false
+                    val result = player.level().clip(
+                        ClipContext(
+                            vehicle.getShootPosForHud(player, 1f),
+                            vehicle.getShootPosForHud(player, 1f)
+                                .add(vehicle.getShootDirectionForHud(player, 1f).scale(512.0)),
+                            ClipContext.Block.VISUAL,
+                            ClipContext.Fluid.NONE,
+                            player
                         )
-                    } else {
-                        val width = Minecraft.getInstance().font.width(format0D(blockRange, " m"))
-                        guiGraphics.drawString(
-                            Minecraft.getInstance().font,
-                            Component.literal(format0D(blockRange, " m")),
-                            screenWidth / 2 - width / 2,
-                            screenHeight - 53,
-                            color,
-                            false
-                        )
+                    )
+                    val hitPos = result.location
+                    cachedBlockPos = BlockPos.containing(hitPos)
+                    cachedRange = player.getEyePosition(1f).distanceTo(hitPos)
+                    cachedIsEntity = false
+
+                    val lookingEntity = TraceTool.camerafFindLookingEntity(
+                        player,
+                        vehicle.getShootPosForHud(player, 1f),
+                        vehicle.getShootDirectionForHud(player, 1f),
+                        512.0
+                    )
+                    if (lookingEntity != null) {
+                        cachedIsEntity = true
+                        cachedRange = player.distanceTo(lookingEntity).toDouble()
+                        cachedBlockPos = lookingEntity.blockPosition()
                     }
                 }
+
+                val displayText = if (cachedIsEntity || cachedRange <= 500) {
+                    val bp = cachedBlockPos
+                    val coordStr = if (bp != null) " [${bp.x}, ${bp.y}, ${bp.z}]" else ""
+                    "${format0D(cachedRange, " m")}$coordStr"
+                } else {
+                    "---m"
+                }
+
+                val width = Minecraft.getInstance().font.width(displayText)
+                guiGraphics.drawString(
+                    Minecraft.getInstance().font,
+                    Component.literal(displayText),
+                    screenWidth / 2 - width / 2,
+                    screenHeight - 53,
+                    color,
+                    false
+                )
                 
                 poseStack.popPose()
             }

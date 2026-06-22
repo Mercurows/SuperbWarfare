@@ -26,6 +26,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity
 import com.atsuishio.superbwarfare.entity.vehicle.Tom6Entity
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier
 import com.atsuishio.superbwarfare.entity.vehicle.utils.*
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleEngineUtils.aircraftLoiter
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getXRotFromVector
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getYRotFromVector
 import com.atsuishio.superbwarfare.event.ClientMouseHandler
@@ -256,6 +257,29 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     open var repairCoolDown = maxRepairCoolDown()
 
     open var crash = false
+
+    /** 盘旋参数四元数：x=centerX, y=centerY, z=centerZ, w=radius */
+    open var loiterParams by LOITER_PARAMS
+
+    /** 便捷访问：盘旋中心 X */
+    var loiterCenterX: Double
+        get() = loiterParams.x().toDouble()
+        set(v) { loiterParams = Quaternionf(v.toFloat(), loiterParams.y(), loiterParams.z(), loiterParams.w()) }
+
+    /** 便捷访问：盘旋中心 Y（高度） */
+    var loiterCenterY: Double
+        get() = loiterParams.y().toDouble()
+        set(v) { loiterParams = Quaternionf(loiterParams.x(), v.toFloat(), loiterParams.z(), loiterParams.w()) }
+
+    /** 便捷访问：盘旋中心 Z */
+    var loiterCenterZ: Double
+        get() = loiterParams.z().toDouble()
+        set(v) { loiterParams = Quaternionf(loiterParams.x(), loiterParams.y(), v.toFloat(), loiterParams.w()) }
+
+    /** 便捷访问：盘旋半径 */
+    var loiterRadius: Double
+        get() = loiterParams.w().toDouble()
+        set(v) { loiterParams = Quaternionf(loiterParams.x(), loiterParams.y(), loiterParams.z(), v.toFloat()) }
 
     open var turretYRot = 0f
     open var turretXRot = 0f
@@ -852,6 +876,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             define(HOVER_MODE, false)
             define(TURRET_BURN_TIMER, 0)
             define(LOCKED, false)
+            define(LOITER_PARAMS, Quaternionf(0f, 0f, 318f, 400f))
         }
     }
 
@@ -1380,6 +1405,15 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         }
 
         locked = compound.getBoolean("Locked")
+
+        if (compound.contains("LoiterX")) {
+            loiterParams = Quaternionf(
+                compound.getFloat("LoiterX"),
+                compound.getFloat("LoiterY"),
+                compound.getFloat("LoiterZ"),
+                compound.getFloat("LoiterR")
+            )
+        }
     }
 
     public override fun addAdditionalSaveData(compound: CompoundTag) {
@@ -1463,6 +1497,12 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         compound.put("Inventory", this.inventory.serializeNBT())
 
         compound.putBoolean("Locked", locked)
+
+        val lp = loiterParams
+        compound.putFloat("LoiterX", lp.x())
+        compound.putFloat("LoiterY", lp.y())
+        compound.putFloat("LoiterZ", lp.z())
+        compound.putFloat("LoiterR", lp.w())
     }
 
     override fun interact(player: Player, hand: InteractionHand): InteractionResult {
@@ -1966,6 +2006,13 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         }
 
         this.travel()
+
+        // 固定翼飞机自动盘旋：空中、引擎启动、无驾驶员、有能量、未坠毁、有乘客
+        if (!onGround() && engineStartOver && firstPassenger == null && energy > 0 && !isWreck
+            && getPassengers().isNotEmpty() && computed.engineType == EngineType.AIRCRAFT
+        ) {
+            aircraftLoiter()
+        }
 
         if (this.health <= computed.selfHurtPercent * this.getMaxHealth()) {
             // 血量过低时自动扣血
@@ -4436,5 +4483,10 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         // Map SeatIndex -> GunData
         protected val GUN_DATA_MAP: EntityDataAccessor<Map<String, GunData>> =
             SynchedEntityData.defineId(VehicleEntity::class.java, ModSerializers.VEHICLE_GUN_DATA_MAP_SERIALIZER.get())
+
+        /** 盘旋参数四元数: x=centerX, y=centerZ, z=altitude, w=radius */
+        @JvmField
+        val LOITER_PARAMS: EntityDataAccessor<Quaternionf> =
+            SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.QUATERNION)
     }
 }

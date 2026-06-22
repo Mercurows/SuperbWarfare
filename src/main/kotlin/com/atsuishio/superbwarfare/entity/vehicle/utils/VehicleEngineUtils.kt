@@ -17,7 +17,10 @@ import net.minecraft.util.Mth
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec3
 import org.joml.Math
+import kotlin.math.abs
+import kotlin.math.atan2
 import kotlin.math.min
+import kotlin.math.sqrt
 
 object VehicleEngineUtils {
     @JvmStatic
@@ -1617,5 +1620,75 @@ object VehicleEngineUtils {
         while (diff > 180) diff -= 360f
 
         return current + diff * factor
+    }
+
+    /**
+     * 固定翼飞机自动盘旋飞控（左舷朝向圆心）
+     *
+     * 两阶段制导：
+     * - **拦截阶段**：远离轨道时飞向盘旋圆周
+     * - **盘旋阶段**：接近轨道时切换为左舷朝内的切线飞行
+     *
+     * 应在 [VehicleEntity.baseTick] 中 engine work 之后调用，
+     * 仅对 [EngineType.AIRCRAFT] 类型生效。
+     */
+    @JvmStatic
+    fun VehicleEntity.aircraftLoiter() {
+        // ========== 0. 解析四元数盘旋参数 ==========
+        // x=centerX, y=centerY(高度), z=centerZ, w=radius
+
+        val lp = loiterParams
+        val centerX = lp.x().toDouble()
+        val altitude = lp.y().toDouble()
+        val centerZ = lp.z().toDouble()
+        val radius = lp.w().toDouble()
+
+        // ========== 1. 位置与误差计算 ==========
+
+        val dx = x - centerX
+        val dz = z - centerZ
+        val horizontalDist = sqrt(dx * dx + dz * dz)
+        val radialError = horizontalDist - radius
+
+        // ========== 2. 两阶段航向制导 ==========
+
+        // 航向 A：左舷朝向圆心的切线方向（盘旋阶段）
+        val tangentYaw = Math.toDegrees(atan2(-dz, -dx))
+        val errorTangent = Mth.wrapDegrees(tangentYaw - yRot.toDouble())
+
+        // 航向 B：指向圆心（拦截阶段）
+        val toCenterYaw = Math.toDegrees(atan2(dx, -dz))
+        val errorToCenter = Mth.wrapDegrees(toCenterYaw - yRot.toDouble())
+
+        // 混合权重：越远越倾向飞向圆心，越近越倾向切线飞行
+        val distFromOrbit = abs(radialError)
+        val blend = Mth.clamp(1.0 - distFromOrbit / (radius * 2.0), 0.0, 1.0)
+        var yawError = (errorTangent * blend + errorToCenter * (1.0 - blend)).toFloat()
+
+        // ========== 3. 径向位置精修 ==========
+
+        yawError += Mth.clamp(radialError.toFloat() * 0.25f, -10f, 10f)
+
+        // ========== 4. 偏航控制 ==========
+
+        mouseMoveSpeedX = Mth.clamp(yawError * 1, -20f, 20f)
+        deltaRot += yawError * -0.02f
+
+        // ========== 5. 高度控制 ==========
+
+        val altError = altitude - y
+        val targetPitch = Mth.clamp(altError.toFloat() * -0.15f, -10f, 10f)
+        xRot = Mth.lerp(0.08f, xRot, targetPitch)
+        mouseMoveSpeedY = Mth.clamp(altError.toFloat() * -0.02f, -1f, 1f)
+
+        // ========== 6. 油门控制（高度自适应防失速） ==========
+
+        // 低于目标高度 → 爬升需增大油门防失速；高于目标高度 → 缓慢减油
+        val powerTarget = if (altError > 0) {
+            Mth.clamp(1.1f + altError.toFloat() * 0.002f, 1.1f, 2.0f)
+        } else {
+            Mth.clamp(1.1f + altError.toFloat() * 0.0005f, 0.6f, 1.1f)
+        }
+        power = Mth.lerp(0.05f, power, powerTarget)
     }
 }

@@ -1237,5 +1237,8 @@
   "superbwarfare.page.resources.scheelite.3": "$(thing)Tungsten Ingot$() can only be blasted by $(thing)Blast Furnace$().",
   "superbwarfare.entry.resources.silver": "Silver Ore",
   "superbwarfare.page.resources.silver.1": "$(thing)Silver Ore$() is generated in the overworld $(thing)from Y=48 to Y=1$().",
-  "superbwarfare.page.resources.silver.2": "$(thing)Deepslate Silver Ore() is generated in the overworld $(thing)from Y=0 to Y=-64$()."
+  "superbwarfare.page.resources.silver.2": "$(thing)Deepslate Silver Ore() is generated in the overworld $(thing)from Y=0 to Y=-64$().",
+  "commands.superbwarfare.loiter.player_only": "This command can only be executed by a player",
+  "commands.superbwarfare.loiter.not_aircraft": "You are not riding an aircraft",
+  "commands.superbwarfare.loiter.success": "Loiter set: X=%1$s Y=%2$s Z=%3$s R=%4$s"
 }

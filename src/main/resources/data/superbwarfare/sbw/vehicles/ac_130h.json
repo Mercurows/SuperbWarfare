@@ -416,7 +416,7 @@
     "Increment": 0.7,
     "Decrement": 0.5,
     "PitchSpeed": 0.3,
-    "YawSpeed": 0.7,
+    "YawSpeed": 0.9,
     "RollSpeed": 0.2,
     "LiftSpeed": 1.0,
     "SpeedRate": 0.6,
