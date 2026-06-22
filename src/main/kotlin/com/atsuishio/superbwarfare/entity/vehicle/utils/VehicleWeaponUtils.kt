@@ -193,6 +193,41 @@ object VehicleWeaponUtils {
     }
 
     @JvmStatic
+    fun releaseDecoyLarge(vehicle: VehicleEntity) {
+        if (vehicle.decoyInputDown) {
+            if (vehicle.decoyReady && vehicle.level() is ServerLevel) {
+                var i = 0
+                while (i < 100) {
+                    val finalI = i
+                    queueServerWork(i) {
+                        val transform = vehicle.getVehicleTransform(1f)
+                        val worldPositionO = transformPosition(transform, 0.0, 0.0, 0.0)
+                        val worldPosition = transformPosition(transform, 1.0, -0.2, 0.6)
+                        val worldPosition2 = transformPosition(transform, -1.0, -0.2, 0.6)
+
+                        val shootVecO = Vec3(worldPositionO.x, worldPositionO.y, worldPositionO.z)
+                        val shootVec1 = Vec3(worldPosition.x, worldPosition.y, worldPosition.z)
+                        val shootVec2 = Vec3(worldPosition2.x, worldPosition2.y, worldPosition2.z)
+
+                        shootDecoy(vehicle, shootVecO.vectorTo(shootVec1).normalize(), finalI == 6)
+                        shootDecoy(vehicle, shootVecO.vectorTo(shootVec2).normalize(), finalI == 6)
+                    }
+                    i += if (i > 6) 2 else 6
+                }
+
+                vehicle.decoyReloadCoolDown = 400
+                vehicle.decoyReady = false
+            }
+            vehicle.decoyInputDown = false
+        }
+        if (!vehicle.decoyReady && vehicle.decoyReloadCoolDown == 0 && vehicle.level() is ServerLevel) {
+            vehicle.decoyReady = true
+            vehicle.level().playSound(null, vehicle, ModSounds.DECOY_RELOAD.get(), vehicle.soundSource, 1f, 1f)
+            vehicle.decoyReloadCoolDown = 400
+        }
+    }
+
+    @JvmStatic
     fun shootDecoy(vehicle: VehicleEntity, shootVec: Vec3, first: Boolean) {
         val flareDecoyEntity = FlareDecoyEntity(vehicle.level())
 

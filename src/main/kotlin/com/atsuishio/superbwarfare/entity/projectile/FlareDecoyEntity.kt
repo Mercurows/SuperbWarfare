@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
+import com.atsuishio.superbwarfare.client.particle.CustomFlareOption
 import com.atsuishio.superbwarfare.init.ModEntities
-import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.protocol.Packet
 import net.minecraft.network.protocol.game.ClientGamePacketListener
@@ -37,8 +37,41 @@ open class FlareDecoyEntity : Entity {
         this.move(MoverType.SELF, this.deltaMovement)
 
         if (level().isClientSide()) {
-            level().addAlwaysVisibleParticle(ParticleTypes.END_ROD, true, this.xo, this.yo, this.zo, 0.0, 0.0, 0.0)
-            level().addAlwaysVisibleParticle(ParticleTypes.CLOUD, true, this.xo, this.yo, this.zo, 0.0, 0.0, 0.0)
+            val l = deltaMovement.length()
+            var i = 0.0
+            while (i < l) {
+                val startPos = Vec3(xo, yo + bbHeight / 2, zo)
+                val pos = startPos.add(deltaMovement.normalize().scale(-i))
+                val random = 2 * (this.random.nextFloat() - 0.5f)
+
+                level().addParticle(
+                    CustomFlareOption(
+                        1f,
+                        0.9f,
+                        0.8f,
+                        200,
+                        0.95f,
+                        (10 + 8 * random).toInt(),
+                        0.03f,
+                        size = 0.25f
+                    ), pos.x + random * 0.2, pos.y + random * 0.2, pos.z + random * 0.2, 0.0, 0.0, 0.0
+                )
+
+                level().addParticle(
+                    CustomFlareOption(
+                        1f,
+                        1f,
+                        1f,
+                        10,
+                        0.5f,
+                        (10 + 8 * random).toInt(),
+                        0.2f,
+                        size = 0.25f
+                    ), pos.x + random * 0.2, pos.y + random * 0.2, pos.z + random * 0.2, 0.0, 0.0, 0.0
+                )
+
+                i += 2
+            }
         }
         if (this.tickCount > 200 || this.isInWater || this.onGround()) {
             this.discard()
