@@ -730,6 +730,11 @@
   "key.superbwarfare.change_fire_mode_backward": "Change Fire Mode Backward",
   "key.superbwarfare.vehicle_seek": "Vehicle Lock Target",
   "key.superbwarfare.active_thermal_imaging": "Active Thermal Imaging",
+  "key.superbwarfare.loiter_config": "Auto-Orbit Config",
+  "screen.superbwarfare.loiter_config.title": "Auto-Orbit Config",
+  "screen.superbwarfare.loiter_config.skip_terrain": "Skip terrain Y check",
+  "screen.superbwarfare.loiter_config.loiter_on": "Loiter: ON",
+  "screen.superbwarfare.loiter_config.loiter_off": "Loiter: OFF",
 
   "effect.superbwarfare.shock": "Shock",
   "effect.superbwarfare.burn": "Burn",

@@ -730,6 +730,11 @@
   "key.superbwarfare.change_fire_mode_backward": "向后切换开火模式",
   "key.superbwarfare.vehicle_seek": "载具锁定目标",
   "key.superbwarfare.active_thermal_imaging": "开启热成像",
+  "key.superbwarfare.loiter_config": "自动盘旋配置",
+  "screen.superbwarfare.loiter_config.title": "自动盘旋配置",
+  "screen.superbwarfare.loiter_config.skip_terrain": "跳过地形Y轴检查",
+  "screen.superbwarfare.loiter_config.loiter_on": "盘旋功能已开启",
+  "screen.superbwarfare.loiter_config.loiter_off": "盘旋功能已关闭",
 
   "effect.superbwarfare.shock": "电击",
   "effect.superbwarfare.burn": "点燃",

@@ -2095,7 +2095,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         this.travel()
 
         // 固定翼飞机自动盘旋：空中、引擎启动、无驾驶员、有能量、未坠毁、有乘客、盘旋开关已开启
-        if (!onGround() && engineStartOver && firstPassenger == null && energy > 0 && !isWreck
+        if (!onGround() && engineStartOver && firstPassenger == null && energy > 1024 && !isWreck
             && getPassengers().isNotEmpty() && computed.engineType == EngineType.AIRCRAFT
             && loiterActive
         ) {

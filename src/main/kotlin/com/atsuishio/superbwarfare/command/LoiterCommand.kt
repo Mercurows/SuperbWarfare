@@ -273,7 +273,7 @@ private fun editLoiterParam(
  * 则自动抬升至地形最高点上方 50 格。
  * 若区块未加载则临时强制加载，利用 MC 自然卸载机制释放。
  */
-private fun resolveSafeY(vehicle: VehicleEntity, x: Int, y: Int, z: Int): Float {
+internal fun resolveSafeY(vehicle: VehicleEntity, x: Int, y: Int, z: Int): Float {
     val level = vehicle.level()
     val chunkX = x shr 4
     val chunkZ = z shr 4
