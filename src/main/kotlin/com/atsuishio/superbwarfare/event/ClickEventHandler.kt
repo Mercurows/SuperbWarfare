@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.event
 
+import com.atsuishio.superbwarfare.client.screens.LoiterConfigScreen
 import com.atsuishio.superbwarfare.client.screens.MissilePosInputScreen
 import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen
 import com.atsuishio.superbwarfare.compat.CompatHolder
@@ -9,6 +10,7 @@ import com.atsuishio.superbwarfare.data.gun.FireMode
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.SeekType
+import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.*
@@ -352,6 +354,12 @@ object ClickEventHandler {
                     if (key == ModKeyMappings.CHANGE_AMMO_BACKWARD.key.value || key == ModKeyMappings.FIRE_MODE.key.value) {
                         sendPacketToServer(EditMessage(5, add = true, isVehicle = true))
                         ClientEventHandler.burstFireAmount = 0
+                    }
+                }
+
+                if (key == ModKeyMappings.LOITER_CONFIG.key.value) {
+                    if (vehicle.computed().engineType == EngineType.AIRCRAFT && mc.screen == null) {
+                        mc.setScreen(LoiterConfigScreen(vehicle))
                     }
                 }
             }
