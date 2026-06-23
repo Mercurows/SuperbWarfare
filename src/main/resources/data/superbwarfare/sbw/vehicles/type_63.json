@@ -13,6 +13,7 @@
       "Gravity": 0.05,
       "Spread": 0.5,
       "ShootShake": [8, 8, 20],
+      "AmmoType": "superbwarfare:medium_rocket_ap",
       "SoundInfo": {
         "Fire3P": "superbwarfare:medium_rocket_fire",
         "VehicleReload3p": "ty63_reload"
