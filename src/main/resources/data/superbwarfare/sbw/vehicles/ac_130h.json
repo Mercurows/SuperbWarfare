@@ -160,7 +160,7 @@
       "CameraPos": {
         "Transform": "Vehicle",
         "UseFixedCameraPos": true,
-        "Position": [3.28465, 1.033275, 4.7652625]
+        "Position": [3.625, 1.5, -4.125]
       },
       "Weapons": "Bofors",
       "DismountInfo": {
@@ -182,7 +182,7 @@
       "CameraPos": {
         "Transform": "Vehicle",
         "UseFixedCameraPos": true,
-        "Position": [3.28465, 1.033275, 4.7652625]
+        "Position": [3.28465, 1.033275, -4.7652625]
       },
       "Weapons": "M102",
       "DismountInfo": {
@@ -254,7 +254,8 @@
         "Transform": "Vehicle",
         "ShootPositionForHud": [2.348, 2.52, 8.40625],
         "Positions": [[2.348, 2.52, 8.9375], [2.348, 2.52, 7.875]],
-        "Directions": ["Passenger"]
+        "Directions": ["Passenger"],
+        "DefaultBarrelDirection": [1, -0.6128, 0]
       },
       "SoundInfo": {
         "FireSoundInstances": "superbwarfare:hpj_11_fire"
@@ -305,7 +306,8 @@
         "Transform": "Vehicle",
         "ShootPositionForHud": [2.536, 2.458, -3.344],
         "Positions": [[2.536, 2.458, -3.344]],
-        "Directions": ["Passenger"]
+        "Directions": ["Passenger"],
+        "DefaultBarrelDirection": [1, -0.46631, 0]
       }
     },
     "M102": {
@@ -359,7 +361,8 @@
         "Transform": "Vehicle",
         "ShootPositionForHud": [2.1024, 3.017, -6.702],
         "Positions": [[2.1024, 3.017, -6.702]],
-        "Directions": ["Passenger"]
+        "Directions": ["Passenger"],
+        "DefaultBarrelDirection": [1, -0.36397, 0]
       }
     }
   },

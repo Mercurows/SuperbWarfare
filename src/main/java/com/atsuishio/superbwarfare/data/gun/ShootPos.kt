@@ -46,4 +46,12 @@ class ShootPos {
     @SerializedName("ViewDirection")
     @SerialName("ViewDirection")
     var viewDirection: StringOrVec3? = null
+
+    @SerializedName("DefaultBarrelDirection")
+    @SerialName("DefaultBarrelDirection")
+    var defaultBarrelDirection: StringOrVec3? = null
+
+    @SerializedName("DefaultTransform")
+    @SerialName("DefaultTransform")
+    var defaultTransform: String = "Default"
 }

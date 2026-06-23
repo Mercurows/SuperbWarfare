@@ -2934,6 +2934,19 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         }
     }
 
+    open fun getDefaultBarrelDirection(seatIndex: Int, ticks: Float): Vec3? {
+        return getDefaultBarrelDirection(getNthEntity(seatIndex), ticks)
+    }
+
+    open fun getDefaultBarrelDirection(entity: Entity?, partialTicks: Float): Vec3? {
+        return VehicleVecUtils.getDefaultBarrelDirection(this, entity, partialTicks)
+    }
+
+    open fun getDefaultBarrelDirection(weaponName: String, partialTicks: Float): Vec3? {
+        return VehicleVecUtils.getDefaultBarrelDirection(this, weaponName, partialTicks)
+    }
+
+
     open fun getShootVec(seatIndex: Int, ticks: Float): Vec3? {
         return getShootVec(getNthEntity(seatIndex), ticks)
     }

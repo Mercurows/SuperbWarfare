@@ -339,6 +339,67 @@ object VehicleVecUtils {
     }
 
     /**
+     * 获取载具默认炮管向量
+     *
+     * @param vehicle      载具
+     * @param entity       乘客
+     * @param partialTicks 客户端ticks
+     * @return 射击向量
+     */
+
+    fun getDefaultBarrelDirection(vehicle: VehicleEntity, entity: Entity?, partialTicks: Float): Vec3? {
+        val data = vehicle.getGunData(vehicle.getSeatIndex(entity)) ?: return null
+
+        val direct = data.get(GunProp.SHOOT_POS).defaultBarrelDirection
+
+        if (direct != null) {
+            val vec3 = direct.vec3!!
+            val worldPosition = transformPosition(
+                vehicle.getTransformFromString(data.get(GunProp.SHOOT_POS).defaultTransform, partialTicks),
+                vec3.x + direct.vec3.x,
+                vec3.y + direct.vec3.y,
+                vec3.z + direct.vec3.z
+            )
+
+            val worldPositionO = transformPosition(
+                vehicle.getTransformFromString(data.get(GunProp.SHOOT_POS).defaultTransform, partialTicks),
+                vec3.x, vec3.y, vec3.z
+            )
+
+            val startPos = Vec3(worldPositionO.x, worldPositionO.y, worldPositionO.z)
+            val endPos = Vec3(worldPosition.x, worldPosition.y, worldPosition.z)
+            return startPos.vectorTo(endPos).normalize()
+        }
+        return null
+    }
+
+    fun getDefaultBarrelDirection(vehicle: VehicleEntity, weaponName: String, partialTicks: Float): Vec3? {
+        val data = vehicle.getGunData(weaponName) ?: return vehicle.getViewVector(partialTicks)
+
+        val direct = data.get(GunProp.SHOOT_POS).defaultBarrelDirection
+
+        if (direct != null) {
+            val vec3 = direct.vec3!!
+            val worldPosition = transformPosition(
+                vehicle.getTransformFromString(data.get(GunProp.SHOOT_POS).defaultTransform, partialTicks),
+                vec3.x + direct.vec3.x,
+                vec3.y + direct.vec3.y,
+                vec3.z + direct.vec3.z
+            )
+
+            val worldPositionO = transformPosition(
+                vehicle.getTransformFromString(data.get(GunProp.SHOOT_POS).defaultTransform, partialTicks),
+                vec3.x, vec3.y, vec3.z
+            )
+
+            val startPos = Vec3(worldPositionO.x, worldPositionO.y, worldPositionO.z)
+            val endPos = Vec3(worldPosition.x, worldPosition.y, worldPosition.z)
+            return startPos.vectorTo(endPos).normalize()
+        }
+        return null
+    }
+
+    /**
      * 获取乘客在载具上的摄像机位置
      *
      * @param vehicle      载具

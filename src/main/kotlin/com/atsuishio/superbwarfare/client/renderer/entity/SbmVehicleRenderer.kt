@@ -22,7 +22,6 @@ import com.atsuishio.superbwarfare.tools.RenderDistanceHelper
 import com.atsuishio.superbwarfare.tools.SpritePixelHelper
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
-import com.github.mcmodderanchor.simplebedrockmodel.v1.common.model.BedrockBone
 import com.maydaymemory.mae.basic.ArrayPoseBuilder
 import com.maydaymemory.mae.basic.ZYXBoneTransformFactory
 import com.maydaymemory.mae.blend.EulerAdditiveBlender
@@ -45,8 +44,6 @@ import org.joml.Matrix3f
 import org.joml.Matrix4f
 import org.joml.Quaterniond
 import org.joml.Quaternionf
-import org.joml.Vector3f
-import java.lang.Math
 
 open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
     EntityRenderer<T>(manager) where T : VehicleEntity, T : BasicGeoVehicleEntity {
@@ -553,27 +550,28 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             for (k in seat.weapons().indices) {
                 val data = vehicle.getGunData(index, k) ?: continue
                 val boundBones = data.get(GunProp.BOUND_BONES) ?: continue
+                val defaultVec = vehicle.getDefaultBarrelDirection(index, partialTicks) ?: continue
                 val targetVec = vehicle.getShootVec(index, partialTicks) ?: continue
                 if (vehicle.getNthEntity(index) == null) continue
 
                 for (name in boundBones) {
                     val bone = model.getBone(name)
                     if (bone != null) {
-                        // TODO 正确获取骨骼朝向
 
-                        val (worldPos, worldDir) = getBoneWorldPosAndDirection(vehicle, bone, entityYaw, partialTicks)
+                        // TODO 期待后人智慧，万一哪天正确实现了获取骨骼朝向呢
 
                         val diffY = Mth.wrapDegrees(-VehicleVecUtils.getYRotFromVector(targetVec) + VehicleVecUtils.getYRotFromVector(
-                            worldDir
+                            defaultVec
                         )
                         ).toFloat()
                         val diffX = Mth.wrapDegrees(-VehicleVecUtils.getXRotFromVector(targetVec) + VehicleVecUtils.getXRotFromVector(
-                            worldDir
+                            defaultVec
                         )
                         ).toFloat()
 
                         val yawRot = Axis.YP.rotationDegrees(-diffY)
                         val pitchRot = Axis.XP.rotationDegrees(-diffX)
+
                         val quaternion = Quaterniond(yawRot).mul(Quaterniond(pitchRot))
                         bone.rotation.mul(Quaternionf(quaternion))
                     }
@@ -654,108 +652,6 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
     protected fun wrap(value: Float, vehicle: VehicleEntity) = wrap(value, getDefaultWrapRange(vehicle))
 
     fun getDefaultWrapRange(vehicle: VehicleEntity) = vehicle.getTrackAnimationLength()
-
-    /**
-     * 构建实体世界旋转矩阵，与 [SbmVehicleRenderer.rotateVehicleAxis] 的旋转部分完全一致。
-     * 旋转顺序：Z(roll) → X(pitch) → Y(yaw)，即 RZ * RX * RY。
-     */
-    open fun buildWorldRotationMatrix(
-        vehicle: T,
-        entityYaw: Float,
-        partialTicks: Float
-    ): Matrix4f {
-        val pitch = Mth.lerp(partialTicks, vehicle.xRotO + vehicle.fakePitchO, vehicle.xRot + vehicle.fakePitch)
-        val roll = Mth.lerp(partialTicks, vehicle.prevRoll + vehicle.fakeRollO, vehicle.roll + vehicle.fakeRoll)
-        return Matrix4f()
-            .rotateZ(-roll * Mth.DEG_TO_RAD)
-            .rotateX(-pitch * Mth.DEG_TO_RAD)
-            .rotateY((-entityYaw + 180f) * Mth.DEG_TO_RAD)
-    }
-
-    /**
-     * 计算骨骼的世界坐标和完整世界变换矩阵。
-     *
-     * 世界坐标 = 实体世界位置 + pivot + R_world * (modelPos - pivot)
-     * 其中 R_world 与 [SbmVehicleRenderer.rotateVehicleAxis] 的旋转顺序一致：
-     * Z(roll) → X(pitch) → Y(yaw)，即矩阵 RZ * RX * RY。
-     *
-     * 返回的 Matrix4f 是骨骼从模型空间到世界空间的完整旋转变换矩阵 =
-     * R_world * boneRot，可直接用于 transformDirection / transformPosition。
-     * 该矩阵不包含平移分量（m30=m31=m32=0）。
-     *
-     * @return Pair<Vec3, Matrix4f> — (世界坐标, 骨骼世界旋转矩阵)
-     */
-    open fun getBoneWorldTransform(
-        vehicle: T,
-        bone: BedrockBone,
-        entityYaw: Float,
-        partialTicks: Float
-    ): Pair<Vec3, Matrix4f> {
-        // 1. 骨骼在模型空间中的变换（SBM库迭代所有parent累乘得到）
-        val boneTransform = Matrix4f(bone.globalTransform)
-        val modelPos = Vec3(
-            boneTransform.m30().toDouble(),
-            boneTransform.m31().toDouble(),
-            boneTransform.m32().toDouble()
-        )
-
-        // 2. 构建实体世界旋转矩阵
-        val worldRot = buildWorldRotationMatrix(vehicle, entityYaw, partialTicks)
-        val pivotY = vehicle.rotateOffsetHeight
-
-        // 3. 旋转中心偏移：pivot + R * (modelPos - pivot)
-        val relativeToPivot = Vector3f(
-            modelPos.x.toFloat(),
-            (modelPos.y - pivotY).toFloat(),
-            modelPos.z.toFloat()
-        )
-        val rotatedRelative = Vector3f()
-        worldRot.transformPosition(relativeToPivot, rotatedRelative)
-
-        val worldPos = vehicle.position().add(
-            rotatedRelative.x().toDouble(),
-            rotatedRelative.y().toDouble() + pivotY,
-            rotatedRelative.z().toDouble()
-        )
-
-        // 4. 构建骨骼的世界旋转矩阵 = R_world * boneRot
-        //    提取 boneTransform 的纯旋转部分（清除平移列）
-        val boneRot = Matrix4f(boneTransform)
-        boneRot.m30(0f)
-        boneRot.m31(0f)
-        boneRot.m32(0f)
-
-        val worldOrient = Matrix4f(worldRot).mul(boneRot)
-
-        return Pair(worldPos, worldOrient)
-    }
-
-    /**
-     * 计算骨骼的世界坐标和朝向。
-     *
-     * 基于 [getBoneWorldTransform] 的结果，提取前向向量（局部Z轴）在世界空间的朝向。
-     *
-     * @return Pair<Vec3, Vec3> — (世界坐标, 世界朝向单位向量)
-     */
-    open fun getBoneWorldPosAndDirection(
-        vehicle: T,
-        bone: BedrockBone,
-        entityYaw: Float,
-        partialTicks: Float
-    ): Pair<Vec3, Vec3> {
-        val (worldPos, worldOrient) = getBoneWorldTransform(vehicle, bone, entityYaw, partialTicks)
-
-        // 从世界旋转矩阵中提取前向（局部Z轴正方向 = 矩阵第3列）
-        val worldDirVec = Vector3f()
-        worldOrient.transformDirection(Vector3f(0f, 0f, 1f), worldDirVec)
-        val worldDir = Vec3(
-            worldDirVec.x().toDouble(),
-            worldDirVec.y().toDouble(),
-            worldDirVec.z().toDouble()
-        ).normalize()
-
-        return Pair(worldPos, worldDir.scale(-1.0))
-    }
 
     companion object {
         val BLENDER: EulerAdditiveBlender = SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }
