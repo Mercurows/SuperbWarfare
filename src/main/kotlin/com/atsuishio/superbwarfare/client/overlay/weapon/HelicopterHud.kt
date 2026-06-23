@@ -227,7 +227,7 @@ object HelicopterHud {
                 val blockRange = player.getEyePosition(1f).distanceTo(hitPos)
                 var entityRange = 0.0
 
-                val lookingEntity = TraceTool.camerafFindLookingEntity(
+                val lookingEntity = TraceTool.cameraFindLookingEntity(
                     player,
                     vehicle.getShootPosForHud(player, partialTick),
                     vehicle.getShootDirectionForHud(player, partialTick),

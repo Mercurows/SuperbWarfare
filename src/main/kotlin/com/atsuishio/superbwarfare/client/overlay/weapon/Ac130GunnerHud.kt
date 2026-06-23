@@ -195,7 +195,7 @@ class Ac130GunnerHud {
                     cachedRange = player.getEyePosition(1f).distanceTo(hitPos)
                     cachedIsEntity = false
 
-                    val lookingEntity = TraceTool.camerafFindLookingEntity(
+                    val lookingEntity = TraceTool.cameraFindLookingEntity(
                         player,
                         vehicle.getShootPosForHud(player, 1f),
                         vehicle.getShootDirectionForHud(player, 1f),

@@ -136,7 +136,7 @@ object ArtilleryHud {
             shootPos = vehicle.getZoomPos(player, partialTick)
         }
 
-        val lookingEntity = TraceTool.camerafFindLookingEntity(player, cameraPos, viewVec, 512.0)
+        val lookingEntity = TraceTool.cameraFindLookingEntity(player, cameraPos, viewVec, 512.0)
         var lookAtEntity = false
 
         val result = player.level().clip(

@@ -40,7 +40,7 @@ object SetFiringParametersMessage : ServerPacketPayload() {
             val radius = parameters.radius
 
             if (lookAtEntity) {
-                stack.firingParameters = FiringParametersItem.Parameters(lookingEntity.blockPosition(), radius, isDepressed)
+                stack.firingParameters = FiringParametersItem.Parameters(lookingEntity!!.blockPosition(), radius, isDepressed)
             } else {
                 stack.firingParameters = FiringParametersItem.Parameters(hitPos, radius, isDepressed)
             }

@@ -258,7 +258,7 @@ object LandVehicleHud {
             val blockRange = player.getEyePosition(1f).distanceTo(hitPos)
             var entityRange = 0.0
 
-            val lookingEntity = TraceTool.camerafFindLookingEntity(player, cameraPos, viewVec, 512.0)
+            val lookingEntity = TraceTool.cameraFindLookingEntity(player, cameraPos, viewVec, 512.0)
             if (lookingEntity != null) {
                 lookAtEntity = true
                 entityRange = player.distanceTo(lookingEntity).toDouble()

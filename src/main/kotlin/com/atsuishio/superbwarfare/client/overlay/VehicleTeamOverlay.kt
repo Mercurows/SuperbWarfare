@@ -48,7 +48,7 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
             196.0
         }
 
-        lookingEntity = TraceTool.camerafFindLookingEntity(
+        lookingEntity = TraceTool.cameraFindLookingEntity(
             player,
             viewPos,
             viewVec,
@@ -59,7 +59,7 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
             if (vehicle.hasWeapon(vehicle.getSeatIndex(player))) {
                 viewVec = vehicle.getShootDirectionForHud(player, 1f)
                 viewPos = vehicle.getShootPosForHud(player, 1f)
-                lookingEntity = TraceTool.camerafFindLookingEntity(
+                lookingEntity = TraceTool.cameraFindLookingEntity(
                     player,
                     viewPos,
                     viewVec,

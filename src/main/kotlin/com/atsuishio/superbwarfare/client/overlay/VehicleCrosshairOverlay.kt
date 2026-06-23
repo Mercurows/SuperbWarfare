@@ -150,7 +150,7 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
 
         var lookingEntity = entity.getPlayerLookAtEntityOnVehicle(player, 512.0, partialTick)
         if (nacelleCam) {
-            lookingEntity = TraceTool.camerafFindLookingEntity(player, shootPos, shootVec, 512.0)
+            lookingEntity = TraceTool.cameraFindLookingEntity(player, shootPos, shootVec, 512.0)
         }
 
         if (lookingEntity != null) {
