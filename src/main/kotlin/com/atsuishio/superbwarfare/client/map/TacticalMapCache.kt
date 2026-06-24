@@ -7,6 +7,7 @@ import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.core.BlockPos
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.tags.FluidTags
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.chunk.LevelChunk
 import net.minecraft.world.level.levelgen.Heightmap
@@ -52,13 +53,19 @@ object TacticalMapCache {
 
     // Chunk surface heights: chunkPos → 256 shorts (16×16 Y values)
     val chunkHeights = ConcurrentHashMap<Long, ShortArray>()
-    private const val MAX_UPDATES_PER_FRAME = 4
+    private const val MAX_UPDATES_PER_FRAME = 12
+
+    // Track which chunks have already been drawn this session (Phase 1 new-chunk discovery)
+    private val drawnChunks = mutableSetOf<Long>()
 
     // Periodic rescan
     private var lastRescanTick = 0L
-    private var rescanRoundRobin = 0
-    private const val RESCAN_INTERVAL = 60L
-    private const val RESCAN_PER_BATCH = 8
+    private var lastCloseRefresh = 0L       // timestamp of last 3×3 rapid refresh
+    private var refreshWaveIndex = 0        // progress through spiral offsets, wraps around
+    private var cachedViewDist = -1
+    private var cachedOffsets: List<Pair<Int, Int>> = emptyList()
+    private const val RESCAN_INTERVAL = 5L
+    private const val RESCAN_PER_BATCH = 64
 
     // Disk cache
     private var cacheDir: File? = null
@@ -100,7 +107,12 @@ object TacticalMapCache {
         dirtyTiles.clear()
         chunkUpdateQueue.clear()
         chunkHeights.clear()
+        drawnChunks.clear()
         lastRescanTick = 0L
+        lastCloseRefresh = 0L
+        refreshWaveIndex = 0
+        cachedViewDist = -1
+        cachedOffsets = emptyList()
         currentDimension = null
         cacheDir = null
     }
@@ -120,15 +132,63 @@ object TacticalMapCache {
         chunkUpdateQueue[chunk.pos.toLong()] = chunk
     }
 
-    fun processChunkUpdates(level: Level) {
+    /**
+     * Two-phase processing, completely independent:
+     *   Phase A — Redraw: drain the update queue directly, closest chunks first.
+     *   Phase B — Initial draw: ring scan for chunks not yet in [drawnChunks].
+     */
+    fun processChunkUpdates(level: Level, playerX: Double, playerZ: Double) {
         ensureInit(level)
-        val iter = chunkUpdateQueue.entries.iterator()
+        if (level !is ClientLevel) return
+
+        val pcx = (playerX / CHUNK_SIZE).toInt()
+        val pcz = (playerZ / CHUNK_SIZE).toInt()
         var processed = 0
-        while (iter.hasNext() && processed < MAX_UPDATES_PER_FRAME) {
-            val (_, chunk) = iter.next()
-            iter.remove()
-            updateChunk(chunk, level)
-            processed++
+
+        // ============================================================
+        // Phase A — REDRAW: drain the queue directly
+        // Every entry in the queue was put there by an explicit request
+        // (block change, periodic refresh, etc.).  No ring scan needed.
+        // ============================================================
+        if (chunkUpdateQueue.isNotEmpty()) {
+            val sorted = chunkUpdateQueue.entries.sortedBy { (key, _) ->
+                val cx = (key shr 32).toInt()
+                val cz = key.toInt()
+                maxOf(kotlin.math.abs(cx - pcx), kotlin.math.abs(cz - pcz))
+            }
+            for ((key, chunk) in sorted) {
+                if (processed >= MAX_UPDATES_PER_FRAME) break
+                chunkUpdateQueue.remove(key)
+                updateChunk(chunk, level)
+                drawnChunks.add(key)
+                processed++
+            }
+        }
+
+        // ============================================================
+        // Phase B — INITIAL DRAW: ring scan for chunks never drawn
+        // ============================================================
+        if (processed < MAX_UPDATES_PER_FRAME) {
+            val viewDist = Minecraft.getInstance().options.renderDistance().get()
+            ringLoop@ for (r in 0..viewDist) {
+                for (dx in -r..r) {
+                    for (dz in -r..r) {
+                        if (dx != r && dx != -r && dz != r && dz != -r) continue
+                        val cx = pcx + dx; val cz = pcz + dz
+                        val key = chunkPosKey(cx, cz)
+                        if (drawnChunks.contains(key)) continue
+                        if (level.hasChunk(cx, cz)) {
+                            val chunk = level.getChunk(cx, cz)
+                            if (chunk is LevelChunk && !chunk.isEmpty) {
+                                updateChunk(chunk, level)
+                                drawnChunks.add(key)
+                                processed++
+                                if (processed >= MAX_UPDATES_PER_FRAME) break@ringLoop
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -148,25 +208,81 @@ object TacticalMapCache {
         val viewDist = Minecraft.getInstance().options.renderDistance().get()
         val pcx = (playerX / CHUNK_SIZE).toInt()
         val pcz = (playerZ / CHUNK_SIZE).toInt()
-        val maxR = viewDist
 
-        // Build spiral offsets: sort by Chebyshev distance (ring), then by angle
-        val offsets = mutableListOf<Pair<Int, Int>>()
-        for (r in 0..maxR) {
-            for (dx in -r..r) for (dz in -r..r)
-                if (dx == r || dx == -r || dz == r || dz == -r)
-                    offsets.add(dx to dz)
+        // Rebuild spiral offsets only when render distance changes
+        if (viewDist != cachedViewDist || cachedOffsets.isEmpty()) {
+            cachedViewDist = viewDist
+            cachedOffsets = buildList {
+                for (r in 0..viewDist) {
+                    for (dx in -r..r) for (dz in -r..r)
+                        if (dx == r || dx == -r || dz == r || dz == -r)
+                            add(dx to dz)
+                }
+            }
         }
+        val offsets = cachedOffsets
+        if (offsets.isEmpty()) return
+
+        // Phase 1: Find new chunks (not yet drawn) — closest first
         var scanned = 0
-        for (i in rescanRoundRobin until rescanRoundRobin + offsets.size) {
-            val (dx, dz) = offsets[i % offsets.size]
+        val newChunkBudget = RESCAN_PER_BATCH / 2
+        for ((dx, dz) in offsets) {
+            if (scanned >= newChunkBudget) break
             val cx = pcx + dx; val cz = pcz + dz
+            val key = chunkPosKey(cx, cz)
+            if (chunkUpdateQueue.containsKey(key) || drawnChunks.contains(key)) continue
             if (level.hasChunk(cx, cz)) {
                 val chunk = level.getChunk(cx, cz)
                 if (chunk is LevelChunk && !chunk.isEmpty) {
                     queueChunkUpdate(chunk)
                     scanned++
-                    if (scanned >= RESCAN_PER_BATCH) { rescanRoundRobin = (i + 1) % offsets.size; break }
+                }
+            }
+        }
+
+        // Phase 2: Sequential refresh through the spiral, wrapping around.
+        // Does NOT use a counter that grows across frames — avoids integer overflow.
+        var refreshed = 0
+        val refreshBudget = RESCAN_PER_BATCH - scanned
+        val n = offsets.size
+        if (n == 0) return
+        // Defensive clamp (handles any residual corruption, e.g. from serialization)
+        if (refreshWaveIndex < 0 || refreshWaveIndex >= n) refreshWaveIndex = 0
+        val steps = minOf(refreshBudget, n)
+        for (s in 0 until steps) {
+            val (dx, dz) = offsets[refreshWaveIndex]
+            val cx = pcx + dx; val cz = pcz + dz
+            val key = chunkPosKey(cx, cz)
+            if (drawnChunks.contains(key) && !chunkUpdateQueue.containsKey(key)) {
+                if (level.hasChunk(cx, cz)) {
+                    val chunk = level.getChunk(cx, cz)
+                    if (chunk is LevelChunk && !chunk.isEmpty) {
+                        queueChunkUpdate(chunk)
+                        refreshed++
+                    }
+                }
+            }
+            // Advance with manual wrap — cannot overflow
+            refreshWaveIndex++
+            if (refreshWaveIndex >= n) refreshWaveIndex = 0
+        }
+
+        // Phase 3: Rapid 1s refresh for the 3×3 chunks immediately around the player.
+        // Guarantees block changes right under the player are visible almost instantly.
+        if (now - lastCloseRefresh >= 1000L) {
+            lastCloseRefresh = now
+            for (dx in -1..1) {
+                for (dz in -1..1) {
+                    val cx = pcx + dx; val cz = pcz + dz
+                    val key = chunkPosKey(cx, cz)
+                    if (drawnChunks.contains(key) && !chunkUpdateQueue.containsKey(key)) {
+                        if (level.hasChunk(cx, cz)) {
+                            val chunk = level.getChunk(cx, cz)
+                            if (chunk is LevelChunk && !chunk.isEmpty) {
+                                queueChunkUpdate(chunk)
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -204,7 +320,7 @@ object TacticalMapCache {
 
                 var actualColor = mapColor
                 var actualY = y
-                if (!state.fluidState.isEmpty) { actualColor = MapColor.WATER; actualY = surfaceY }
+                if (!state.fluidState.isEmpty) { actualColor = if (state.fluidState.`is`(FluidTags.LAVA)) MapColor.COLOR_ORANGE else MapColor.WATER; actualY = surfaceY }
 
                 val brightness = if (!prevSet) MapColor.Brightness.NORMAL
                 else computeBrightness(actualY, prevHeight, worldX, worldZ)
@@ -335,6 +451,7 @@ object TacticalMapCache {
             chunkHeights[chunkPosKey(cx, cz)] = heights
         }
         dirtyTiles.add(RegionPos(tileRX, tileRZ))
+        drawnChunks.add(chunkPosKey(cx, cz))
     }
 
     private fun loadAllChunks() {
@@ -381,7 +498,16 @@ object TacticalMapCache {
         val maxRX = (centerBlockX + blockRadius) shr TILE_SIZE_BITS
         val minRZ = (centerBlockZ - blockRadius) shr TILE_SIZE_BITS
         val maxRZ = (centerBlockZ + blockRadius) shr TILE_SIZE_BITS
-        return buildList { for (rx in minRX..maxRX) for (rz in minRZ..maxRZ) add(RegionPos(rx, rz)) }
+        // Sort tiles by distance from center so inner tiles render first
+        return buildList {
+            for (rx in minRX..maxRX) for (rz in minRZ..maxRZ) add(RegionPos(rx, rz))
+        }.sortedBy { pos ->
+            val tileCenterX = pos.rx * TILE_SIZE + TILE_SIZE / 2
+            val tileCenterZ = pos.rz * TILE_SIZE + TILE_SIZE / 2
+            val dx = tileCenterX - centerBlockX
+            val dz = tileCenterZ - centerBlockZ
+            dx.toLong() * dx + dz.toLong() * dz
+        }
     }
 
     private fun chunkPosKey(cx: Int, cz: Int) = (cx.toLong() shl 32) or (cz.toLong() and 0xFFFFFFFFL)
