@@ -49,6 +49,7 @@
         0.11,
         0.81
       ],
+      "RotateWithVehicle": true,
       "MinPitch": -60,
       "MaxPitch": 60,
       "MinYaw": -80,
@@ -66,6 +67,7 @@
         0.11,
         0.81
       ],
+      "RotateWithVehicle": true,
       "MinPitch": -60,
       "MaxPitch": 60,
       "MinYaw": -80,
@@ -78,6 +80,7 @@
     {
       "Transform": "Vehicle",
       "Position": [1.05, 0.75, -0.7],
+      "RotateWithVehicle": true,
       "Orientation": 45,
       "MinYaw": -80,
       "MaxYaw": 80,
@@ -89,6 +92,7 @@
     {
       "Transform": "Vehicle",
       "Position": [-1.05, 0.75, -0.7],
+      "RotateWithVehicle": true,
       "Orientation": -45,
       "MinYaw": -80,
       "MaxYaw": 80,
@@ -100,6 +104,7 @@
     {
       "Transform": "Vehicle",
       "Position": [0.42, 0.125, -2.18],
+      "RotateWithVehicle": true,
       "Orientation": -90,
       "MinYaw": -80,
       "MaxYaw": 80,
@@ -111,6 +116,7 @@
     {
       "Transform": "Vehicle",
       "Position": [-0.42, 0.125, -2.18],
+      "RotateWithVehicle": true,
       "Orientation": 90,
       "MinYaw": -80,
       "MaxYaw": 80,
@@ -122,6 +128,7 @@
     {
       "Transform": "Vehicle",
       "Position": [0, 1.2, 0],
+      "RotateWithVehicle": true,
       "MinYaw": -70,
       "MaxYaw": 70,
       "MinPitch": -30,
@@ -135,6 +142,7 @@
     {
       "Transform": "Vehicle",
       "Position": [0, 0.75, -2.75],
+      "RotateWithVehicle": true,
       "Orientation": 180,
       "MinYaw": -80,
       "MaxYaw": 80,

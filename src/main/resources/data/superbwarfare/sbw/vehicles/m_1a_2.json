@@ -92,6 +92,7 @@
       "Transform": "Turret",
       "Position": [0.61, -0.2, -0.783],
       "CanRotateBody": true,
+      "RotateWithVehicle": true,
       "MinPitch": -45,
       "MaxPitch": 90,
       "DismountInfo": {
@@ -103,6 +104,7 @@
       "BanHand": true,
       "Transform": "Vehicle",
       "Position": [1.75, 0.587, -5.625],
+      "RotateWithVehicle": true,
       "MinYaw": -95,
       "MaxYaw": 95,
       "Pose": "Climb",
@@ -115,6 +117,7 @@
       "BanHand": true,
       "Transform": "Vehicle",
       "Position": [-1.75, 0.587, -5.625],
+      "RotateWithVehicle": true,
       "MinYaw": -95,
       "MaxYaw": 95,
       "Pose": "Climb",

@@ -2671,6 +2671,11 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         val vec3 = getTransformDirection(1f, entity)
         val yaw = -getYRotFromVector(vec3).toFloat()
 
+        if (seat.rotateWithVehicle) {
+            val vehicleYawDelta = Mth.wrapDegrees(this.yRot - this.yRotO)
+            entity.yRot += vehicleYawDelta
+        }
+
         if (seat.transform == "Vehicle" || seat.transform == "VehicleFlat") {
             if (!seat.canRotateHead) {
                 entity.yRot = yaw

@@ -11,6 +11,7 @@
     {
       "Transform": "Vehicle",
       "Position": [1, 0.8375, 2.656],
+      "RotateWithVehicle": true,
       "MinPitch": -60,
       "MaxPitch": 60,
       "MinYaw": -95,
@@ -43,6 +44,7 @@
       "Transform": "Turret",
       "Position": [1.1525, 0.75, -0.51145],
       "CanRotateBody": true,
+      "RotateWithVehicle": true,
       "MinPitch": -50,
       "MaxPitch": 90,
       "DismountInfo": {
@@ -54,6 +56,7 @@
       "Transform": "Turret",
       "Position": [-1.1525, 0.75, -0.51145],
       "CanRotateBody": true,
+      "RotateWithVehicle": true,
       "MinPitch": -50,
       "MaxPitch": 90,
       "DismountInfo": {

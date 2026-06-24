@@ -149,6 +149,7 @@
     {
       "Transform": "Vehicle",
       "Position": [0, 7.7125, 14.6875],
+      "RotateWithVehicle": true,
       "IsEnclosed": true,
       "MinPitch": -80,
       "MaxPitch": 80,

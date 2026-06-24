@@ -36,6 +36,9 @@ class SeatInfo {
     @SerialName("CanRotateHead")
     var canRotateHead: Boolean = true
 
+    @SerialName("RotateWithVehicle")
+    var rotateWithVehicle: Boolean = false
+
     @JvmField
     @SerialName("HasThermalImaging")
     var hasThermalImaging: Boolean = false

@@ -63,6 +63,7 @@
     {
       "Transform": "Vehicle",
       "Position": [-0.3375, 0.638, 0.75],
+      "RotateWithVehicle": true,
       "MinPitch": -80,
       "MaxPitch": 80,
       "MinYaw": -80,
@@ -75,6 +76,7 @@
     {
       "Transform": "Vehicle",
       "Position": [-1.05, 0.3, 0],
+      "RotateWithVehicle": true,
       "Orientation": 90,
       "MinYaw": -80,
       "MaxYaw": 80,
@@ -86,6 +88,7 @@
     {
       "Transform": "Vehicle",
       "Position": [1.05, 0.3, 0],
+      "RotateWithVehicle": true,
       "Orientation": -90,
       "MinYaw": -80,
       "MaxYaw": 80,

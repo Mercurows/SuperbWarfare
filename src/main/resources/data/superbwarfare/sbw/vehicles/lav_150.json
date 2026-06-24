@@ -74,6 +74,7 @@
       "BanHand": true,
       "Transform": "Vehicle",
       "Position": [0, 1, 0],
+      "RotateWithVehicle": true,
       "CameraPos": {
         "UseSimulate3P": true,
         "Simulate3PPos": [6, 1]
@@ -84,6 +85,7 @@
       "BanHand": true,
       "Transform": "Vehicle",
       "Position": [0, 1, 0],
+      "RotateWithVehicle": true,
       "CameraPos": {
         "UseSimulate3P": true,
         "Simulate3PPos": [6, 1]
@@ -94,6 +96,7 @@
       "BanHand": true,
       "Transform": "Vehicle",
       "Position": [0, 1, 0],
+      "RotateWithVehicle": true,
       "CameraPos": {
         "UseSimulate3P": true,
         "Simulate3PPos": [6, 1]
@@ -103,6 +106,7 @@
       "HidePassenger": true,
       "BanHand": true,
       "Transform": "Vehicle",
+      "RotateWithVehicle": true,
       "Position": [0, 1, 0],
       "CameraPos": {
         "UseSimulate3P": true,

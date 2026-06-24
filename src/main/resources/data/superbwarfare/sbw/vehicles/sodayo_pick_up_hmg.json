@@ -54,6 +54,7 @@
         0.11,
         0.81
       ],
+      "RotateWithVehicle": true,
       "MinPitch": -60,
       "MaxPitch": 60,
       "MinYaw": -80,
@@ -71,6 +72,7 @@
         0.11,
         0.81
       ],
+      "RotateWithVehicle": true,
       "MinPitch": -60,
       "MaxPitch": 60,
       "MinYaw": -80,

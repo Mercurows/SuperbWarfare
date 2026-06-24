@@ -5,6 +5,7 @@
   "Seats": {
     "Transform": "Vehicle",
     "Position": [0, -0.3, -0.0625],
+    "RotateWithVehicle": true,
     "MinYaw": -90,
     "MaxYaw": 90,
     "DismountInfo": {

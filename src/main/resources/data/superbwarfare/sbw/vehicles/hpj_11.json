@@ -41,7 +41,7 @@
       "Velocity": 25,
       "ProjectileLife": 20,
       "Gravity": 0.03,
-      "Damage": 25,
+      "Damage": 32,
       "ExplosionDamage": 5,
       "ExplosionRadius": 2,
       "Spread": 0.35,

@@ -28,6 +28,7 @@
     {
       "Transform": "Vehicle",
       "Position": [0, 0.5875, 0],
+      "RotateWithVehicle": true,
       "MinPitch": -60,
       "MaxPitch": 60,
       "MinYaw": -90,
@@ -58,6 +59,7 @@
     {
       "Transform": "Vehicle",
       "Position": [-0.875, 0.5625, -2.1875],
+      "RotateWithVehicle": true,
       "Orientation": -90,
       "MinYaw": -90,
       "MaxYaw": 90,
@@ -69,6 +71,7 @@
     {
       "Transform": "Vehicle",
       "Position": [0.875, 0.5625, -2.1875],
+      "RotateWithVehicle": true,
       "Orientation": 90,
       "MinYaw": -90,
       "MaxYaw": 90,
@@ -80,6 +83,7 @@
     {
       "Transform": "Vehicle",
       "Position": [0, 0.688, -3.188],
+      "RotateWithVehicle": true,
       "MinYaw": -90,
       "MaxYaw": 90,
       "DismountInfo": {
