@@ -1,6 +1,9 @@
 package com.atsuishio.superbwarfare.client.map
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.Mod.Companion.loc
+import com.atsuishio.superbwarfare.client.map.TacticalMapCache.drawnChunks
+import com.atsuishio.superbwarfare.world.saveddata.TacticalMapSavedData
 import com.mojang.blaze3d.platform.NativeImage
 import net.minecraft.client.Minecraft
 import net.minecraft.client.multiplayer.ClientLevel
@@ -14,9 +17,6 @@ import net.minecraft.world.level.levelgen.Heightmap
 import net.minecraft.world.level.material.MapColor
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.security.MessageDigest
@@ -28,11 +28,9 @@ import java.util.zip.Inflater
  * 战术地图缓存引擎。
  *
  * 内存层: 256×256 tile (NativeImage) → DynamicTexture → GPU
- * 磁盘层: 16×16 chunk 原始 ABGR 二进制文件 (1024 bytes)
- *
- * 磁盘格式: `mapcache/<dim>/c.<cx>.<cz>.bin`
- *   每个文件精确 1024 bytes = 16×16 × 4 ABGR (little-endian int)
- *   写入时仅更新单个 chunk，无需重写整个 tile。
+ * 持久层: 16×16 chunk ABGR 颜色 + 高度数据 (1536 bytes raw, Deflater 压缩),
+ *   通过 [TacticalMapSavedData] 存入世界存档（单人集成服务器）;
+ *   专用服务器客户端仅保留内存缓存，不写入磁盘。
  */
 @OnlyIn(Dist.CLIENT)
 object TacticalMapCache {
@@ -67,8 +65,8 @@ object TacticalMapCache {
     private const val RESCAN_INTERVAL = 5L
     private const val RESCAN_PER_BATCH = 64
 
-    // Disk cache
-    private var cacheDir: File? = null
+    // SavedData-backed persistence (single player via integrated server; null on dedicated-server clients)
+    private var mapSavedData: TacticalMapSavedData? = null
     private var currentDimension: String? = null
 
     /** Build a world-unique identifier for cache separation. */
@@ -96,8 +94,11 @@ object TacticalMapCache {
         val key = "${worldId}_$dimension"
         if (key == currentDimension) return
         currentDimension = key
-        val gameDir = Minecraft.getInstance().gameDirectory
-        cacheDir = File(gameDir, "superbwarfare/mapcache/${worldId}/${dimension.replace(":", "_")}").also { it.mkdirs() }
+
+        // Try to get the SavedData from the integrated server (single player).
+        // On a dedicated-server client there is no local SavedData — we operate
+        // memory-only in that case.
+        mapSavedData = resolveSavedData()
         loadAllChunks()
     }
 
@@ -114,11 +115,11 @@ object TacticalMapCache {
         cachedViewDist = -1
         cachedOffsets = emptyList()
         currentDimension = null
-        cacheDir = null
+        mapSavedData = null
     }
 
     private fun ensureInit(level: Level) {
-        if (cacheDir == null) {
+        if (currentDimension == null) {
             val worldId = getWorldIdentifier()
             initForDimension(level.dimension().location().toString(), worldId)
         }
@@ -174,7 +175,8 @@ object TacticalMapCache {
                 for (dx in -r..r) {
                     for (dz in -r..r) {
                         if (dx != r && dx != -r && dz != r && dz != -r) continue
-                        val cx = pcx + dx; val cz = pcz + dz
+                        val cx = pcx + dx
+                        val cz = pcz + dz
                         val key = chunkPosKey(cx, cz)
                         if (drawnChunks.contains(key)) continue
                         if (level.hasChunk(cx, cz)) {
@@ -228,7 +230,8 @@ object TacticalMapCache {
         val newChunkBudget = RESCAN_PER_BATCH / 2
         for ((dx, dz) in offsets) {
             if (scanned >= newChunkBudget) break
-            val cx = pcx + dx; val cz = pcz + dz
+            val cx = pcx + dx
+            val cz = pcz + dz
             val key = chunkPosKey(cx, cz)
             if (chunkUpdateQueue.containsKey(key) || drawnChunks.contains(key)) continue
             if (level.hasChunk(cx, cz)) {
@@ -247,11 +250,12 @@ object TacticalMapCache {
         val n = offsets.size
         if (n == 0) return
         // Defensive clamp (handles any residual corruption, e.g. from serialization)
-        if (refreshWaveIndex < 0 || refreshWaveIndex >= n) refreshWaveIndex = 0
+        if (refreshWaveIndex !in 0..<n) refreshWaveIndex = 0
         val steps = minOf(refreshBudget, n)
         for (s in 0 until steps) {
             val (dx, dz) = offsets[refreshWaveIndex]
-            val cx = pcx + dx; val cz = pcz + dz
+            val cx = pcx + dx
+            val cz = pcz + dz
             val key = chunkPosKey(cx, cz)
             if (drawnChunks.contains(key) && !chunkUpdateQueue.containsKey(key)) {
                 if (level.hasChunk(cx, cz)) {
@@ -273,7 +277,8 @@ object TacticalMapCache {
             lastCloseRefresh = now
             for (dx in -1..1) {
                 for (dz in -1..1) {
-                    val cx = pcx + dx; val cz = pcz + dz
+                    val cx = pcx + dx
+                    val cz = pcz + dz
                     val key = chunkPosKey(cx, cz)
                     if (drawnChunks.contains(key) && !chunkUpdateQueue.containsKey(key)) {
                         if (level.hasChunk(cx, cz)) {
@@ -306,26 +311,41 @@ object TacticalMapCache {
 
                 val surfaceY = chunk.getHeight(Heightmap.Types.WORLD_SURFACE, x, z)
                 var y = surfaceY
-                if (y <= level.minBuildHeight) { prevHeight = level.minBuildHeight; prevSet = true; continue }
+                if (y <= level.minBuildHeight) {
+                    prevHeight = level.minBuildHeight
+                    prevSet = true
+                    continue
+                }
 
                 val mutablePos = BlockPos.MutableBlockPos(worldX, y, worldZ)
                 var state = chunk.getBlockState(mutablePos)
 
                 while (y > level.minBuildHeight && state.getMapColor(level, mutablePos) == MapColor.NONE) {
-                    y--; mutablePos.setY(y); state = chunk.getBlockState(mutablePos)
+                    y--
+                    mutablePos.setY(y)
+                    state = chunk.getBlockState(mutablePos)
                 }
 
                 val mapColor = state.getMapColor(level, mutablePos)
-                if (mapColor == MapColor.NONE) { prevHeight = y; prevSet = true; continue }
+                if (mapColor == MapColor.NONE) {
+                    prevHeight = y
+                    prevSet = true
+                    continue
+                }
 
                 var actualColor = mapColor
                 var actualY = y
-                if (!state.fluidState.isEmpty) { actualColor = if (state.fluidState.`is`(FluidTags.LAVA)) MapColor.COLOR_ORANGE else MapColor.WATER; actualY = surfaceY }
+                if (!state.fluidState.isEmpty) {
+                    actualColor =
+                        if (state.fluidState.`is`(FluidTags.LAVA)) MapColor.COLOR_ORANGE else MapColor.WATER
+                    actualY = surfaceY
+                }
 
                 val brightness = if (!prevSet) MapColor.Brightness.NORMAL
                 else computeBrightness(actualY, prevHeight, worldX, worldZ)
 
-                prevHeight = actualY; prevSet = true
+                prevHeight = actualY
+                prevSet = true
 
                 if (actualColor != MapColor.NONE) {
                     val abgr = calculateABGR(actualColor, brightness)
@@ -351,7 +371,11 @@ object TacticalMapCache {
 
     private fun computeBrightness(currentY: Int, prevY: Int, worldX: Int, worldZ: Int): MapColor.Brightness {
         val d3 = (currentY - prevY).toDouble() * 0.8 + (((worldX + worldZ) and 1) - 0.5) * 0.4
-        return when { d3 > 0.6 -> MapColor.Brightness.HIGH; d3 < -0.6 -> MapColor.Brightness.LOW; else -> MapColor.Brightness.NORMAL }
+        return when {
+            d3 > 0.6 -> MapColor.Brightness.HIGH
+            d3 < -0.6 -> MapColor.Brightness.LOW
+            else -> MapColor.Brightness.NORMAL
+        }
     }
 
     private fun calculateABGR(mapColor: MapColor, brightness: MapColor.Brightness): Int {
@@ -365,15 +389,35 @@ object TacticalMapCache {
     }
 
     // ========================
-    //  Per-chunk disk cache (1024 bytes per chunk, ABGR raw)
+    //  Per-chunk persistence (SavedData on integrated server, else memory-only)
     // ========================
 
     private const val HEIGHT_BYTES = CHUNK_SIZE * CHUNK_SIZE * 2 // 512
     private const val TOTAL_BYTES = CHUNK_BYTES + HEIGHT_BYTES   // 1536
 
+    /**
+     * Resolve [TacticalMapSavedData] from the integrated server, if available.
+     * Returns null on dedicated-server clients where no local SavedData exists.
+     */
+    private fun resolveSavedData(): TacticalMapSavedData? {
+        val server = Minecraft.getInstance().singleplayerServer ?: return null
+        // Use the overworld's dataStorage as the canonical store for all dimensions.
+        val overworld = server.overworld()
+        return overworld.dataStorage.computeIfAbsent(
+            { TacticalMapSavedData.load(it) },
+            { TacticalMapSavedData() },
+            TacticalMapSavedData.FILE_ID
+        )
+    }
+
+    /**
+     * Persist a single chunk's colour + height data.  When the integrated server is
+     * available the data goes into [TacticalMapSavedData]; otherwise it stays in
+     * memory only (dedicated-server client).
+     */
     private fun saveChunkToDisk(cx: Int, cz: Int) {
-        val dir = cacheDir ?: return
-        val file = File(dir, "c.$cx.$cz.z")
+        val sd = mapSavedData ?: return
+        val dim = currentDimension ?: return
 
         val minBlockX = cx * CHUNK_SIZE
         val minBlockZ = cz * CHUNK_SIZE
@@ -401,20 +445,21 @@ object TacticalMapCache {
             val compressed = ByteArray(raw.size)
             val size = deflater.deflate(compressed)
             deflater.end()
-            FileOutputStream(file).use { it.write(compressed, 0, size) }
+            sd.putChunk(dim, chunkPosKey(cx, cz), compressed.copyOf(size))
         } catch (e: Exception) {
             Mod.LOGGER.warn("Failed to save chunk $cx,$cz: ${e.message}")
         }
     }
 
+    /**
+     * Load a single chunk's colour + height data from [TacticalMapSavedData].
+     * When the integrated server is absent (dedicated client) this is a no-op.
+     */
     private fun loadChunkFromDisk(cx: Int, cz: Int) {
-        val dir = cacheDir ?: return
-        val file = File(dir, "c.$cx.$cz.z")
-        if (!file.exists()) return
+        val sd = mapSavedData ?: return
+        val dim = currentDimension ?: return
 
-        val compressed: ByteArray
-        try { compressed = FileInputStream(file).use { it.readBytes() } }
-        catch (e: Exception) { return }
+        val compressed = sd.getChunk(dim, chunkPosKey(cx, cz)) ?: return
 
         val raw: ByteArray
         try {
@@ -425,7 +470,9 @@ object TacticalMapCache {
             inflater.end()
             // Support both old (1024) and new (1536) format
             raw = if (size == CHUNK_BYTES) tmp.copyOf(size) else if (size >= TOTAL_BYTES) tmp else return
-        } catch (e: Exception) { return }
+        } catch (_: Exception) {
+            return
+        }
 
         val minBlockX = cx * CHUNK_SIZE
         val minBlockZ = cz * CHUNK_SIZE
@@ -454,15 +501,19 @@ object TacticalMapCache {
         drawnChunks.add(chunkPosKey(cx, cz))
     }
 
+    /**
+     * Load all previously-persisted chunks for the current dimension from SavedData.
+     */
     private fun loadAllChunks() {
-        val dir = cacheDir ?: return
-        val files = dir.listFiles { f -> f.name.endsWith(".z") } ?: return
-        for (file in files) {
-            val parts = file.nameWithoutExtension.split(".")
-            if (parts.size != 3) continue
+        val sd = mapSavedData ?: return
+        val dim = currentDimension ?: return
+        for ((key, _) in sd.getChunksForDimension(dim)) {
+            val cx = (key shr 32).toInt()
+            val cz = key.toInt()
             try {
-                loadChunkFromDisk(parts[1].toInt(), parts[2].toInt())
-            } catch (_: Exception) {}
+                loadChunkFromDisk(cx, cz)
+            } catch (_: Exception) {
+            }
         }
     }
 
@@ -479,17 +530,22 @@ object TacticalMapCache {
     fun getTileTexture(rx: Int, rz: Int): ResourceLocation? {
         if (!tileImages.containsKey(RegionPos(rx, rz))) return null
         tileTextures.computeIfAbsent(RegionPos(rx, rz)) {
-            val loc = ResourceLocation("superbwarfare", "map_tile_${rx}_${rz}")
-            try { Minecraft.getInstance().textureManager.release(loc) } catch (_: Exception) {}
+            val loc = loc("map_tile_${rx}_${rz}")
+            try {
+                Minecraft.getInstance().textureManager.release(loc)
+            } catch (_: Exception) {
+            }
             DynamicTexture(tileImages[RegionPos(rx, rz)]!!).also {
                 Minecraft.getInstance().textureManager.register(loc, it)
             }
         }
-        return ResourceLocation("superbwarfare", "map_tile_${rx}_${rz}")
+        return loc("map_tile_${rx}_${rz}")
     }
 
     fun uploadDirtyTextures() {
-        for (pos in dirtyTiles.toList()) { tileTextures[pos]?.upload() }
+        for (pos in dirtyTiles.toList()) {
+            tileTextures[pos]?.upload()
+        }
         dirtyTiles.clear()
     }
 
@@ -513,7 +569,8 @@ object TacticalMapCache {
     private fun chunkPosKey(cx: Int, cz: Int) = (cx.toLong() shl 32) or (cz.toLong() and 0xFFFFFFFFL)
 
     fun getCachedHeight(worldX: Int, worldZ: Int): Short? {
-        val cx = worldX shr 4; val cz = worldZ shr 4
+        val cx = worldX shr 4
+        val cz = worldZ shr 4
         val h = chunkHeights[chunkPosKey(cx, cz)] ?: return null
         return h[(worldZ and 15) * CHUNK_SIZE + (worldX and 15)]
     }
