@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.event
 
 import com.atsuishio.superbwarfare.client.screens.LoiterConfigScreen
 import com.atsuishio.superbwarfare.client.screens.MissilePosInputScreen
+import com.atsuishio.superbwarfare.client.screens.TacticalMapScreen
 import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen
 import com.atsuishio.superbwarfare.compat.CompatHolder
 import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper
@@ -287,6 +288,12 @@ object ClickEventHandler {
 
             if (key == ModKeyMappings.DISMOUNT.key.value) {
                 handleDismountPress(player)
+            }
+
+            if (key == ModKeyMappings.TOGGLE_TACTICAL_MAP.key.value) {
+                if (mc.screen == null) {
+                    mc.setScreen(TacticalMapScreen())
+                }
             }
 
             if (key == Minecraft.getInstance().options.keyJump.key.value) {

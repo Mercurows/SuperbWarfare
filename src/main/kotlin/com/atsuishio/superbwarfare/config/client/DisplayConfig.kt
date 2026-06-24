@@ -152,4 +152,18 @@ object DisplayConfig {
         comment("是否启用版本检查警告")
         define("enable_version_check_warning", true).also { pop() }
     }
+
+    @JvmField
+    val TACTICAL_MAP = buildClientConfig {
+        comment("Set true to enable the tactical map overlay")
+        comment("是否开启战术地图")
+        define("tactical_map", true)
+    }
+
+    @JvmField
+    val TACTICAL_MAP_ZOOM = buildClientConfig {
+        comment("Zoom level for the tactical map (1=closest, 10=farthest)")
+        comment("战术地图缩放等级")
+        defineInRange("tactical_map_zoom", 5.0, 0.05, 20.0)
+    }
 }

@@ -731,6 +731,8 @@
   "key.superbwarfare.vehicle_seek": "Vehicle Lock Target",
   "key.superbwarfare.active_thermal_imaging": "Active Thermal Imaging",
   "key.superbwarfare.loiter_config": "Auto-Orbit Config",
+  "key.superbwarfare.toggle_tactical_map": "Open Tactical Map",
+  "screen.superbwarfare.tactical_map": "Tactical Map",
   "screen.superbwarfare.loiter_config.title": "Auto-Orbit Config",
   "screen.superbwarfare.loiter_config.skip_terrain": "Skip terrain Y check",
   "screen.superbwarfare.loiter_config.loiter_on": "Loiter: ON",

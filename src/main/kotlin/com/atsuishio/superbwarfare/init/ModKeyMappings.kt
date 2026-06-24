@@ -113,6 +113,9 @@ object ModKeyMappings {
     @JvmField
     val LOITER_CONFIG = registerKey("loiter_config", GLFW.GLFW_KEY_J)
 
+    @JvmField
+    val TOGGLE_TACTICAL_MAP = registerKey("toggle_tactical_map", GLFW.GLFW_KEY_M)
+
     private fun registerKey(
         name: String,
         code: Int,

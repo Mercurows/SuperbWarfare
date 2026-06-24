@@ -731,6 +731,8 @@
   "key.superbwarfare.vehicle_seek": "载具锁定目标",
   "key.superbwarfare.active_thermal_imaging": "开启热成像",
   "key.superbwarfare.loiter_config": "自动盘旋配置",
+  "key.superbwarfare.toggle_tactical_map": "打开战术地图",
+  "screen.superbwarfare.tactical_map": "战术地图",
   "screen.superbwarfare.loiter_config.title": "自动盘旋配置",
   "screen.superbwarfare.loiter_config.skip_terrain": "跳过地形Y轴检查",
   "screen.superbwarfare.loiter_config.loiter_on": "盘旋功能已开启",
