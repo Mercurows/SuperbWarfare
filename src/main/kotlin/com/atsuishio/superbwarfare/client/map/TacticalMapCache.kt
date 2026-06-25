@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.client.map
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.map.TacticalMapCache.drawnChunks
-import com.atsuishio.superbwarfare.world.saveddata.TacticalMapSavedData
+import com.atsuishio.superbwarfare.client.map.TacticalMapCache.processPendingChunks
 import com.mojang.blaze3d.platform.NativeImage
 import net.minecraft.client.Minecraft
 import net.minecraft.client.multiplayer.ClientLevel
@@ -17,6 +17,7 @@ import net.minecraft.world.level.levelgen.Heightmap
 import net.minecraft.world.level.material.MapColor
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
+import java.io.File
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.security.MessageDigest
@@ -27,10 +28,11 @@ import java.util.zip.Inflater
 /**
  * 战术地图缓存引擎。
  *
- * 内存层: 256×256 tile (NativeImage) → DynamicTexture → GPU
- * 持久层: 16×16 chunk ABGR 颜色 + 高度数据 (1536 bytes raw, Deflater 压缩),
- *   通过 [TacticalMapSavedData] 存入世界存档（单人集成服务器）;
- *   专用服务器客户端仅保留内存缓存，不写入磁盘。
+ * 内存层: 256x256 tile (NativeImage) -> DynamicTexture -> GPU
+ * 持久层: 16x16 chunk ABGR 颜色 + 高度数据 (1536 bytes raw, Deflater 压缩),
+ *   以 tile 为单位归并存储（每 256x256 一个 .bin 文件），
+ *   路径: `<gameDir>/superbwarfare/tactical_map_cache/<worldId>/<dim>/`，
+ *   每个存档独立缓存，单人/多人均可用。
  */
 @OnlyIn(Dist.CLIENT)
 object TacticalMapCache {
@@ -49,7 +51,7 @@ object TacticalMapCache {
     // Chunk update queue
     private val chunkUpdateQueue = ConcurrentHashMap<Long, LevelChunk>()
 
-    // Chunk surface heights: chunkPos → 256 shorts (16×16 Y values)
+    // Chunk surface heights: chunkPos -> 256 shorts (16x16 Y values)
     val chunkHeights = ConcurrentHashMap<Long, ShortArray>()
 
     private const val MAX_UPDATES_PER_FRAME = 12
@@ -63,16 +65,17 @@ object TacticalMapCache {
 
     // Periodic rescan
     private var lastRescanTick = 0L
-    private var lastCloseRefresh = 0L       // timestamp of last 3×3 rapid refresh
+    private var lastCloseRefresh = 0L       // timestamp of last 3x3 rapid refresh
     private var refreshWaveIndex = 0        // progress through spiral offsets, wraps around
     private var cachedViewDist = -1
     private var cachedOffsets: List<Pair<Int, Int>> = emptyList()
     private const val RESCAN_INTERVAL = 5L
     private const val RESCAN_PER_BATCH = 64
 
-    // SavedData-backed persistence (single player via integrated server; null on dedicated-server clients)
-    private var mapSavedData: TacticalMapSavedData? = null
+    // Local file persistence per world per dimension
+    private var currentWorldId: String? = null
     private var currentDimension: String? = null
+    private var cacheDir: File? = null
 
     /** Build a world-unique identifier for cache separation. */
     fun getWorldIdentifier(): String {
@@ -96,14 +99,11 @@ object TacticalMapCache {
     // ========================
 
     fun initForDimension(dimension: String, worldId: String) {
-        val key = "${worldId}_$dimension"
-        if (key == currentDimension) return
-        currentDimension = key
+        if (worldId == currentWorldId && dimension == currentDimension) return
+        currentWorldId = worldId
+        currentDimension = dimension
+        cacheDir = null // recomputed on next access
 
-        // Try to get the SavedData from the integrated server (single player).
-        // On a dedicated-server client there is no local SavedData — we operate
-        // memory-only in that case.
-        mapSavedData = resolveSavedData()
         loadAllChunks()
     }
 
@@ -120,12 +120,13 @@ object TacticalMapCache {
         refreshWaveIndex = 0
         cachedViewDist = -1
         cachedOffsets = emptyList()
+        currentWorldId = null
         currentDimension = null
-        mapSavedData = null
+        cacheDir = null
     }
 
     private fun ensureInit(level: Level) {
-        if (currentDimension == null) {
+        if (currentWorldId == null) {
             val worldId = getWorldIdentifier()
             initForDimension(level.dimension().location().toString(), worldId)
         }
@@ -141,8 +142,8 @@ object TacticalMapCache {
 
     /**
      * Two-phase processing, completely independent:
-     *   Phase A — Redraw: drain the update queue directly, closest chunks first.
-     *   Phase B — Initial draw: ring scan for chunks not yet in [drawnChunks].
+     *   Phase A - Redraw: drain the update queue directly, closest chunks first.
+     *   Phase B - Initial draw: ring scan for chunks not yet in [drawnChunks].
      */
     fun processChunkUpdates(level: Level, playerX: Double, playerZ: Double) {
         ensureInit(level)
@@ -153,7 +154,7 @@ object TacticalMapCache {
         var processed = 0
 
         // ============================================================
-        // Phase A — REDRAW: drain the queue directly
+        // Phase A - REDRAW: drain the queue directly
         // Every entry in the queue was put there by an explicit request
         // (block change, periodic refresh, etc.).  No ring scan needed.
         // ============================================================
@@ -173,7 +174,7 @@ object TacticalMapCache {
         }
 
         // ============================================================
-        // Phase B — INITIAL DRAW: ring scan for chunks never drawn
+        // Phase B - INITIAL DRAW: ring scan for chunks never drawn
         // ============================================================
         if (processed < MAX_UPDATES_PER_FRAME) {
             val viewDist = Minecraft.getInstance().options.renderDistance().get()
@@ -231,7 +232,7 @@ object TacticalMapCache {
         val offsets = cachedOffsets
         if (offsets.isEmpty()) return
 
-        // Phase 1: Find new chunks (not yet drawn) — closest first
+        // Phase 1: Find new chunks (not yet drawn) - closest first
         var scanned = 0
         val newChunkBudget = RESCAN_PER_BATCH / 2
         for ((dx, dz) in offsets) {
@@ -250,7 +251,7 @@ object TacticalMapCache {
         }
 
         // Phase 2: Sequential refresh through the spiral, wrapping around.
-        // Does NOT use a counter that grows across frames — avoids integer overflow.
+        // Does NOT use a counter that grows across frames - avoids integer overflow.
         var refreshed = 0
         val refreshBudget = RESCAN_PER_BATCH - scanned
         val n = offsets.size
@@ -272,12 +273,12 @@ object TacticalMapCache {
                     }
                 }
             }
-            // Advance with manual wrap — cannot overflow
+            // Advance with manual wrap - cannot overflow
             refreshWaveIndex++
             if (refreshWaveIndex >= n) refreshWaveIndex = 0
         }
 
-        // Phase 3: Rapid 1s refresh for the 3×3 chunks immediately around the player.
+        // Phase 3: Rapid 1s refresh for the 3x3 chunks immediately around the player.
         // Guarantees block changes right under the player are visible almost instantly.
         if (now - lastCloseRefresh >= 1000L) {
             lastCloseRefresh = now
@@ -395,41 +396,99 @@ object TacticalMapCache {
     }
 
     // ========================
-    //  Per-chunk persistence (SavedData on integrated server, else memory-only)
+    //  Tile-based persistence (local files per world per dimension)
+    //
+    //  Each 256x256 tile contains up to 16x16 (256) chunks, grouped into one
+    //  .bin file to keep file counts low while keeping individual files small.
+    //  File format: [int count] + count x (long key, int len, byte[len] data)
     // ========================
 
     private const val HEIGHT_BYTES = CHUNK_SIZE * CHUNK_SIZE * 2 // 512
     private const val TOTAL_BYTES = CHUNK_BYTES + HEIGHT_BYTES   // 1536
+    // Chunks per tile edge: TILE_SIZE / CHUNK_SIZE = 256 / 16 = 16
+    private const val CHUNKS_PER_TILE_BITS = 4
 
-    /**
-     * Resolve [TacticalMapSavedData] from the integrated server, if available.
-     * Returns null on dedicated-server clients where no local SavedData exists.
-     */
-    private fun resolveSavedData(): TacticalMapSavedData? {
-        val server = Minecraft.getInstance().singleplayerServer ?: return null
-        // Use the overworld's dataStorage as the canonical store for all dimensions.
-        val overworld = server.overworld()
-        return overworld.dataStorage.computeIfAbsent(
-            { TacticalMapSavedData.load(it) },
-            { TacticalMapSavedData() },
-            TacticalMapSavedData.FILE_ID
+    private fun getCacheDir(): File? {
+        val dim = currentDimension ?: return null
+        val worldId = currentWorldId ?: return null
+        // Reuse cached directory if still valid
+        cacheDir?.let { if (it.exists()) return it }
+        val dir = File(
+            Minecraft.getInstance().gameDirectory,
+            "superbwarfare/tactical_map_cache/$worldId/${dim.replace(":", "_")}"
         )
+        dir.mkdirs()
+        cacheDir = dir
+        return dir
+    }
+
+    /** Storage tile file: groups all chunks within a 256x256 tile. */
+    private fun tileFile(tileRX: Int, tileRZ: Int): File? {
+        val dir = getCacheDir() ?: return null
+        return File(dir, "${tileRX}_${tileRZ}.bin")
+    }
+
+    /** Read all chunk entries from a tile file -> (chunkKey -> compressed data). */
+    private fun readTileFile(tileRX: Int, tileRZ: Int): Map<Long, ByteArray> {
+        val file = tileFile(tileRX, tileRZ) ?: return emptyMap()
+        if (!file.exists()) return emptyMap()
+        val result = mutableMapOf<Long, ByteArray>()
+        try {
+            val bytes = file.readBytes()
+            val buf = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
+            if (buf.remaining() < 4) return emptyMap()
+            val count = buf.int
+            for (i in 0 until count) {
+                if (buf.remaining() < 12) break
+                val key = buf.long
+                val len = buf.int
+                if (buf.remaining() < len) break
+                val data = ByteArray(len)
+                buf.get(data)
+                result[key] = data
+            }
+        } catch (_: Exception) {
+            // Corrupt file -> treat as empty; will be overwritten on next save
+        }
+        return result
+    }
+
+    /** Write chunk entries to a tile file (atomic via temp file). */
+    private fun writeTileFile(tileRX: Int, tileRZ: Int, chunks: Map<Long, ByteArray>) {
+        val file = tileFile(tileRX, tileRZ) ?: return
+        try {
+            val totalSize = 4 + chunks.entries.sumOf { 8 + 4 + it.value.size }
+            val buf = ByteBuffer.allocate(totalSize).order(ByteOrder.LITTLE_ENDIAN)
+            buf.putInt(chunks.size)
+            for ((key, data) in chunks) {
+                buf.putLong(key)
+                buf.putInt(data.size)
+                buf.put(data)
+            }
+            // Atomic write via temp file
+            val tmp = File(file.parentFile, "${file.name}.tmp")
+            file.delete()
+            tmp.writeBytes(buf.array())
+            tmp.renameTo(file)
+        } catch (e: Exception) {
+            Mod.LOGGER.warn("Failed to write tile $tileRX,$tileRZ: ${e.message}")
+        }
     }
 
     /**
-     * Persist a single chunk's colour + height data.  When the integrated server is
-     * available the data goes into [TacticalMapSavedData]; otherwise it stays in
-     * memory only (dedicated-server client).
+     * Persist a single chunk's color + height data into its parent tile file.
+     * Works for both single-player and dedicated-server clients.
      */
     private fun saveChunkToDisk(cx: Int, cz: Int) {
-        val sd = mapSavedData ?: return
-        val dim = currentDimension ?: return
+        val storageRX = cx shr CHUNKS_PER_TILE_BITS
+        val storageRZ = cz shr CHUNKS_PER_TILE_BITS
 
+        // Compress pixel + height data for this chunk
         val minBlockX = cx * CHUNK_SIZE
         val minBlockZ = cz * CHUNK_SIZE
-        val tileRX = minBlockX shr TILE_SIZE_BITS
-        val tileRZ = minBlockZ shr TILE_SIZE_BITS
-        val tile = tileImages[RegionPos(tileRX, tileRZ)] ?: return
+        val imgTileRX = minBlockX shr TILE_SIZE_BITS
+        val imgTileRZ = minBlockZ shr TILE_SIZE_BITS
+        val tile = tileImages[RegionPos(imgTileRX, imgTileRZ)] ?: return
 
         val tileX = minBlockX and (TILE_SIZE - 1)
         val tileZ = minBlockZ and (TILE_SIZE - 1)
@@ -438,35 +497,42 @@ object TacticalMapCache {
         for (z in 0 until CHUNK_SIZE)
             for (x in 0 until CHUNK_SIZE)
                 buf.putInt(tile.getPixelRGBA(tileX + x, tileZ + z))
-        // Append heights
         val heights = chunkHeights[chunkPosKey(cx, cz)]
         for (z in 0 until CHUNK_SIZE)
             for (x in 0 until CHUNK_SIZE)
                 buf.putShort(heights?.get(z * CHUNK_SIZE + x) ?: 0)
 
+        val compressed: ByteArray
         try {
             val deflater = Deflater(Deflater.BEST_SPEED)
             deflater.setInput(raw)
             deflater.finish()
-            val compressed = ByteArray(raw.size)
-            val size = deflater.deflate(compressed)
+            val tmp = ByteArray(raw.size)
+            val size = deflater.deflate(tmp)
             deflater.end()
-            sd.putChunk(dim, chunkPosKey(cx, cz), compressed.copyOf(size))
+            compressed = tmp.copyOf(size)
         } catch (e: Exception) {
-            Mod.LOGGER.warn("Failed to save chunk $cx,$cz: ${e.message}")
+            Mod.LOGGER.warn("Failed to compress chunk $cx,$cz: ${e.message}")
+            return
         }
+
+        // Read existing tile, update chunk, write back (single read-write per save)
+        val chunks = readTileFile(storageRX, storageRZ).toMutableMap()
+        chunks[chunkPosKey(cx, cz)] = compressed
+        writeTileFile(storageRX, storageRZ, chunks)
     }
 
     /**
-     * Load a single chunk's colour + height data from [TacticalMapSavedData].
-     * When the integrated server is absent (dedicated client) this is a no-op.
+     * Load a single chunk's color + height data from its parent tile file.
      */
     private fun loadChunkFromDisk(cx: Int, cz: Int) {
-        val sd = mapSavedData ?: return
-        val dim = currentDimension ?: return
+        val storageRX = cx shr CHUNKS_PER_TILE_BITS
+        val storageRZ = cz shr CHUNKS_PER_TILE_BITS
 
-        val compressed = sd.getChunk(dim, chunkPosKey(cx, cz)) ?: return
+        val chunks = readTileFile(storageRX, storageRZ)
+        val compressed = chunks[chunkPosKey(cx, cz)] ?: return
 
+        // Decompress
         val raw: ByteArray
         try {
             val inflater = Inflater()
@@ -482,11 +548,11 @@ object TacticalMapCache {
 
         val minBlockX = cx * CHUNK_SIZE
         val minBlockZ = cz * CHUNK_SIZE
-        val tileRX = minBlockX shr TILE_SIZE_BITS
-        val tileRZ = minBlockZ shr TILE_SIZE_BITS
+        val imgTileRX = minBlockX shr TILE_SIZE_BITS
+        val imgTileRZ = minBlockZ shr TILE_SIZE_BITS
         val tileX = minBlockX and (TILE_SIZE - 1)
         val tileZ = minBlockZ and (TILE_SIZE - 1)
-        val tile = getOrCreateTile(tileRX, tileRZ)
+        val tile = getOrCreateTile(imgTileRX, imgTileRZ)
 
         val buf = ByteBuffer.wrap(raw).order(ByteOrder.LITTLE_ENDIAN)
         val heights = ShortArray(CHUNK_SIZE * CHUNK_SIZE)
@@ -503,20 +569,33 @@ object TacticalMapCache {
                     heights[z * CHUNK_SIZE + x] = buf.getShort()
             chunkHeights[chunkPosKey(cx, cz)] = heights
         }
-        dirtyTiles.add(RegionPos(tileRX, tileRZ))
+        dirtyTiles.add(RegionPos(imgTileRX, imgTileRZ))
         drawnChunks.add(chunkPosKey(cx, cz))
     }
 
     /**
-     * Collect all previously-persisted chunk keys from SavedData.
-     * Actual loading is deferred to [processPendingChunks] which drains them
-     * batch-by-batch in distance order, nearest to the player first.
+     * Collect all previously-persisted chunk keys from tile files in the cache
+     * directory. Actual loading is deferred to [processPendingChunks] which drains
+     * them batch-by-batch in distance order, nearest to the player first.
      */
     private fun loadAllChunks() {
-        val sd = mapSavedData ?: return
-        val dim = currentDimension ?: return
-        for ((key, _) in sd.getChunksForDimension(dim)) {
-            pendingChunkQueue.add(key)
+        val dir = getCacheDir() ?: return
+        val files = dir.listFiles() ?: return
+        for (file in files) {
+            if (!file.isFile || !file.name.endsWith(".bin")) continue
+            val parts = file.nameWithoutExtension.split("_")
+            if (parts.size == 2) {
+                try {
+                    val tileRX = parts[0].toInt()
+                    val tileRZ = parts[1].toInt()
+                    // Enumerate chunk keys from the tile file header
+                    val chunks = readTileFile(tileRX, tileRZ)
+                    for (key in chunks.keys) {
+                        pendingChunkQueue.add(key)
+                    }
+                } catch (_: Exception) {
+                }
+            }
         }
     }
 
