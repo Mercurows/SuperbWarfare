@@ -1,14 +1,16 @@
 package com.atsuishio.superbwarfare.client.screens
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
+import com.atsuishio.superbwarfare.client.ClientSyncedEntityHandler
 import com.atsuishio.superbwarfare.client.map.TacticalMapCache
 import com.atsuishio.superbwarfare.client.map.context.MapContextMenu
 import com.atsuishio.superbwarfare.client.map.context.MapMarker
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
+import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType
+import com.atsuishio.superbwarfare.entity.projectile.MissileProjectile
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModKeyMappings
-import com.atsuishio.superbwarfare.tools.EntityFindUtil
-import com.atsuishio.superbwarfare.tools.SeekTool
+import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
@@ -19,10 +21,8 @@ import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.network.chat.Component
 import net.minecraft.world.entity.Entity
-import net.minecraft.world.entity.decoration.HangingEntity
-import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.entity.player.Player
-import net.minecraft.world.entity.projectile.Projectile
+import net.minecraft.world.entity.vehicle.Boat
 import net.minecraft.world.level.chunk.LevelChunk
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
@@ -57,15 +57,27 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
     private var lastMouseX = 0.0
     private var lastMouseY = 0.0
 
-    // Entity cache
-    private var cachedFriendlyEntities: List<Entity> = emptyList()
-    private var entityCacheTick = 0
-
     // Textures
     private val COMPASS_ROSE = loc("textures/overlay/tactical_map/compass_rose.png")
     private val PLAYER_MARKER = loc("textures/overlay/tactical_map/player_marker.png")
     private val TEAMMATE_MARKER = loc("textures/overlay/tactical_map/teammate_marker.png")
     private val POSITION_MARKER = loc("textures/overlay/tactical_map/position_marker.png")
+
+    // Vehicle icons
+    private val ICON_AIRCRAFT = loc("textures/overlay/tactical_map/vehicle/aircraft.png")
+    private val ICON_HELICOPTER = loc("textures/overlay/tactical_map/vehicle/helicopter.png")
+    private val ICON_TANK = loc("textures/overlay/tactical_map/vehicle/tank.png")
+    private val ICON_APC = loc("textures/overlay/tactical_map/vehicle/apc.png")
+    private val ICON_AA = loc("textures/overlay/tactical_map/vehicle/aa.png")
+    private val ICON_CAR = loc("textures/overlay/tactical_map/vehicle/car.png")
+    private val ICON_ARTILLERY = loc("textures/overlay/tactical_map/vehicle/artillery.png")
+    private val ICON_DRONE = loc("textures/overlay/tactical_map/vehicle/drone.png")
+    private val ICON_BOAT = loc("textures/overlay/tactical_map/vehicle/boat.png")
+    private val ICON_DEFENSE = loc("textures/overlay/tactical_map/vehicle/defense.png")
+    private val ICON_AIRSHIP = loc("textures/overlay/tactical_map/vehicle/airship.png")
+    private val ICON_MINE = loc("textures/overlay/tactical_map/vehicle/mine.png")
+    private val ICON_MISSILE = loc("textures/overlay/tactical_map/vehicle/missile.png")
+    private val ICON_MAID = loc("textures/overlay/tactical_map/vehicle/maid.png")
 
     // Settings
     private var zoom = 5.0
@@ -258,20 +270,6 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
         if (!markersLoaded) {
             loadMarkers()
             markersLoaded = true
-        }
-
-        if (player.tickCount - entityCacheTick >= 10) {
-            entityCacheTick = player.tickCount
-            cachedFriendlyEntities = EntityFindUtil.getEntities(level).all
-                .filter { entity ->
-                    entity.isAlive
-                            && entity !== player
-                            && entity !is ItemEntity
-                            && entity !is HangingEntity
-                            && entity !is Projectile
-                            && SeekTool.IS_FRIENDLY.test(player, entity)
-                }
-                .toList()
         }
 
         // Follow player mode
@@ -813,17 +811,33 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
 
         private fun renderFriendlyMarkers(guiGraphics: GuiGraphics, player: Player) {
             val scale = zoom / 5.0
+            val level = player.level()
 
-            for (entity in cachedFriendlyEntities) {
+            RenderSystem.disableDepthTest()
+            RenderSystem.depthMask(false)
+            RenderSystem.enableBlend()
+            RenderSystem.setShader { GameRenderer.getPositionTexShader() }
+            RenderSystem.blendFuncSeparate(
+                GlStateManager.SourceFactor.SRC_ALPHA,
+                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                GlStateManager.SourceFactor.ONE,
+                GlStateManager.DestFactor.ZERO
+            )
+
+            val all = (ClientSyncedEntityHandler.getSyncedFriendlyEntities(level))
+                .filter { it.vehicle == null }  // 跳过乘客
+                .distinctBy { it.id }
+
+            for (e in all) {
+
+                val entity = level.getEntity(e.id) ?: e
                 val dx = entity.x - viewBlockX
                 val dz = entity.z - viewBlockZ
                 val screenX = mapCenterX + (dx * scale).toFloat()
                 val screenY = mapCenterY + (dz * scale).toFloat()
-                val markerSize = when (entity) {
-                    is VehicleEntity -> 8f; is Player -> 7f; else -> 6f
-                }
+                val icon = getVehicleIcon(entity)
+                val iconSize = 12
 
-                // Edge clamp: if outside map, show at edge with reduced alpha
                 val clampedX = screenX.coerceIn((mapLeft + 4).toFloat(), (mapLeft + mapAreaW - 4).toFloat())
                 val clampedY = screenY.coerceIn((mapTop + 4).toFloat(), (mapTop + mapAreaH - 4).toFloat())
                 val alpha = if (screenX == clampedX && screenY == clampedY) 1f else 0.5f
@@ -832,17 +846,63 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
                 val pose = guiGraphics.pose()
                 pose.pushPose()
                 pose.translate(clampedX, clampedY, 0f)
+                if (entity is VehicleEntity || entity is MissileProjectile) {
+                    pose.rotateAround(Axis.ZP.rotationDegrees(entity.yRot + 180f), 0f, 0f, 0f)
+                }
                 guiGraphics.blit(
-                    TEAMMATE_MARKER,
-                    (-markerSize / 2).toInt(), (-markerSize / 2).toInt(),
-                    0f, 0f, markerSize.toInt(), markerSize.toInt(), markerSize.toInt(), markerSize.toInt()
+                    icon,
+                    (-iconSize / 2).toInt(), (-iconSize / 2).toInt(),
+                    0f, 0f, iconSize, iconSize, iconSize, iconSize
                 )
                 pose.popPose()
                 RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
             }
         }
 
+        private fun getVehicleIcon(entity: Entity): net.minecraft.resources.ResourceLocation {
+            return if (entity is Boat) {
+                ICON_BOAT
+            } else if (entity is VehicleEntity) {
+                when (entity.vehicleType) {
+                    VehicleType.AIRPLANE -> ICON_AIRCRAFT
+                    VehicleType.HELICOPTER -> ICON_HELICOPTER
+                    VehicleType.APC -> ICON_APC
+                    VehicleType.CAR -> ICON_CAR
+                    VehicleType.AA -> ICON_AA
+                    VehicleType.TANK -> ICON_TANK
+                    VehicleType.ARTILLERY -> ICON_ARTILLERY
+                    VehicleType.DRONE -> ICON_DRONE
+                    VehicleType.BOAT -> ICON_BOAT
+                    VehicleType.DEFENSE -> ICON_DEFENSE
+                    VehicleType.AIRSHIP -> ICON_AIRSHIP
+                    else -> TEAMMATE_MARKER
+                }
+            } else if (entity.type.`is`(ModTags.EntityTypes.MINE)) {
+                ICON_MINE
+            } else if (entity is MissileProjectile) {
+                ICON_MISSILE
+            } else if (entity.type.descriptionId == "entity.touhou_little_maid.maid") {
+                ICON_MAID
+            } else {
+                TEAMMATE_MARKER
+            }
+        }
+
         private fun renderPlayerMarker(guiGraphics: GuiGraphics, player: Player) {
+            // 玩家坐 VehicleEntity 时只需要载具图标，不渲染玩家标记
+            if (player.vehicle is VehicleEntity) return
+
+            RenderSystem.disableDepthTest()
+            RenderSystem.depthMask(false)
+            RenderSystem.enableBlend()
+            RenderSystem.setShader { GameRenderer.getPositionTexShader() }
+            RenderSystem.blendFuncSeparate(
+                GlStateManager.SourceFactor.SRC_ALPHA,
+                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                GlStateManager.SourceFactor.ONE,
+                GlStateManager.DestFactor.ZERO
+            )
+
             val scale = zoom / 5.0
             val px = mapCenterX + ((player.x - viewBlockX) * scale).toFloat()
             val py = mapCenterY + ((player.z - viewBlockZ) * scale).toFloat()
