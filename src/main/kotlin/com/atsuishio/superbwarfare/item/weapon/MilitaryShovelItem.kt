@@ -27,7 +27,6 @@ import net.minecraftforge.client.extensions.common.IClientItemExtensions
 import net.minecraftforge.common.TierSortingRegistry
 import net.minecraftforge.common.ToolAction
 import net.minecraftforge.common.ToolActions
-import java.util.*
 import java.util.function.Consumer
 
 open class MilitaryShovelItem :
@@ -145,13 +144,11 @@ open class MilitaryShovelItem :
     }
 
     companion object {
-        private val TOOL_ACTIONS: MutableSet<ToolAction> = Collections.newSetFromMap(IdentityHashMap())
-
-        init {
-            TOOL_ACTIONS.addAll(ToolActions.DEFAULT_HOE_ACTIONS)
-            TOOL_ACTIONS.addAll(ToolActions.DEFAULT_SHOVEL_ACTIONS)
-            TOOL_ACTIONS.addAll(ToolActions.DEFAULT_AXE_ACTIONS)
-            TOOL_ACTIONS.add(ToolActions.SWORD_SWEEP)
+        private val TOOL_ACTIONS = buildSet {
+            addAll(ToolActions.DEFAULT_HOE_ACTIONS)
+            addAll(ToolActions.DEFAULT_SHOVEL_ACTIONS)
+            addAll(ToolActions.DEFAULT_AXE_ACTIONS)
+            add(ToolActions.SWORD_SWEEP)
         }
     }
 }
