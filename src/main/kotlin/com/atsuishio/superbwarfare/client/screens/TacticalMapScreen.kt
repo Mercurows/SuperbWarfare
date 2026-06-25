@@ -2,6 +2,8 @@ package com.atsuishio.superbwarfare.client.screens
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.map.TacticalMapCache
+import com.atsuishio.superbwarfare.client.map.context.MapContextMenu
+import com.atsuishio.superbwarfare.client.map.context.MapMarker
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModKeyMappings
@@ -24,6 +26,8 @@ import net.minecraft.world.entity.projectile.Projectile
 import net.minecraft.world.level.chunk.LevelChunk
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
+import java.io.File
+import java.util.*
 
 @OnlyIn(Dist.CLIENT)
 class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.tactical_map")) {
@@ -61,19 +65,35 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
     private val COMPASS_ROSE = loc("textures/overlay/tactical_map/compass_rose.png")
     private val PLAYER_MARKER = loc("textures/overlay/tactical_map/player_marker.png")
     private val TEAMMATE_MARKER = loc("textures/overlay/tactical_map/teammate_marker.png")
+    private val POSITION_MARKER = loc("textures/overlay/tactical_map/position_marker.png")
 
     // Settings
     private var zoom = 5.0
 
-    // Context menu
-    private var ctxMenuVisible = false
-    private var ctxMenuX = 0
-    private var ctxMenuY = 0
-    private var ctxWorldX = 0
-    private var ctxWorldY = 0
-    private var ctxWorldZ = 0
+    // Markers
+    private val markers: MutableList<MapMarker> = mutableListOf()
+    private val connections: MutableMap<UUID, MutableSet<UUID>> = mutableMapOf()
+    private var draggingMarker: MapMarker? = null
+    private var dragOffsetX = 0.0
+    private var dragOffsetY = 0.0
 
-    private data class ContextMenuItem(val label: String, val action: () -> Unit)
+    // Connection mode
+    private var connectionMode = false
+    private var connectingFrom: MapMarker? = null
+
+    // Line context menu
+    private var ctxLinePair: Pair<MapMarker, MapMarker>? = null
+    private var ctxLineMenuX = 0
+    private var ctxLineMenuY = 0
+
+    // Hovered line for highlight; hovered marker for Delete key
+    private var hoveredLine: Pair<MapMarker, MapMarker>? = null
+    private var hoveredMarker: MapMarker? = null
+
+    // Context menu (delegated)
+    private lateinit var contextMenu: MapContextMenu
+
+    private var markersLoaded = false
 
     override fun isPauseScreen() = false
 
@@ -108,6 +128,36 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
     override fun init() {
         zoom = DisplayConfig.TACTICAL_MAP_ZOOM.get().toDouble()
         followPlayer = savedFollowPlayer
+
+        contextMenu = MapContextMenu()
+        contextMenu.onMarkerCreated = { markers.add(it); saveMarker(it) }
+        contextMenu.onMarkerEdited = { edited ->
+            val idx = markers.indexOfFirst { m -> m.id == edited.id }
+            if (idx >= 0) {
+                val updated = MapMarker(edited.id, edited.name, edited.x, edited.y, edited.z, edited.colorIndex)
+                markers[idx] = updated
+                saveMarker(updated)
+            }
+        }
+        contextMenu.onMarkerDelete = { marker ->
+            // 清理双向连线：从对方文件中移除自己的 UUID
+            val myConns = connections[marker.id] ?: emptySet()
+            for (otherId in myConns) {
+                val otherConns = connections[otherId]
+                if (otherConns != null && otherConns.remove(marker.id)) {
+                    val otherMarker = markers.find { m -> m.id == otherId }
+                    if (otherMarker != null) saveMarker(otherMarker)
+                }
+            }
+            connections.remove(marker.id)
+            markers.remove(marker)
+            deleteMarkerFile(marker)
+        }
+        contextMenu.onConnectRequested = { marker ->
+            connectionMode = true
+            connectingFrom = marker
+        }
+
         lastFollowState = followPlayer
         followBtn.message = if (followPlayer) followIconActive else followIconNormal
         val player = localPlayer
@@ -117,6 +167,66 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
         }
         addRenderableWidget(centerBtn)
         addRenderableWidget(followBtn)
+    }
+
+    // ── Marker persistence: <gameDir>/tactical_markers/<worldId>/<dim>/<uuid>.txt ──
+
+    private fun getMarkerDir(): File {
+        val worldId = TacticalMapCache.getWorldIdentifier()
+        val dim = (minecraft?.level?.dimension()?.location()?.toString() ?: "unknown").replace(":", "_")
+        val dir = File(minecraft!!.gameDirectory, "superbwarfare/tactical_markers/$worldId/$dim")
+        dir.mkdirs()
+        return dir
+    }
+
+    private fun markerFile(uuid: UUID): File {
+        return File(getMarkerDir(), "$uuid.txt")
+    }
+
+    private fun loadMarkers() {
+        val dir = getMarkerDir()
+        val files = dir.listFiles() ?: return
+        markers.clear()
+        for (file in files) {
+            if (!file.isFile || !file.name.endsWith(".txt")) continue
+            try {
+                val uuid = UUID.fromString(file.nameWithoutExtension)
+                val p = file.readText().trim().split("|", limit = 6)
+                if (p.size >= 5) {
+                    markers.add(MapMarker(
+                        id = uuid,
+                        name = p[0],
+                        x = p[1].toInt(),
+                        y = p[2].toInt(),
+                        z = p[3].toInt(),
+                        colorIndex = p[4].toInt()
+                    ))
+                    if (p.size >= 6 && p[5].isNotEmpty()) {
+                        connections[uuid] = p[5].split(",").mapNotNullTo(mutableSetOf()) { s ->
+                            try { UUID.fromString(s) } catch (_: Exception) { null }
+                        }
+                    }
+                }
+            } catch (_: Exception) {}
+        }
+    }
+
+    private fun saveMarker(marker: MapMarker) {
+        try {
+            val conns = connections[marker.id]?.joinToString(",") ?: ""
+            val content = "${marker.name}|${marker.x}|${marker.y}|${marker.z}|${marker.colorIndex}|$conns"
+            val newFile = markerFile(marker.id)
+            val tmp = File(newFile.parentFile, "${newFile.name}.tmp")
+            newFile.delete()
+            tmp.writeText(content)
+            tmp.renameTo(newFile)
+        } catch (_: Exception) {}
+    }
+
+    private fun deleteMarkerFile(marker: MapMarker) {
+        try {
+            markerFile(marker.id).delete()
+        } catch (_: Exception) {}
     }
 
     private fun centerOnPlayer() {
@@ -129,8 +239,13 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
     }
 
     override fun tick() {
+        if (::contextMenu.isInitialized) contextMenu.editBoxTick()
+
         val player = localPlayer ?: return
         val level = player.level()
+
+        // 从磁盘加载待处理的区块，按距离玩家最近优先
+        TacticalMapCache.processPendingChunks(viewBlockX, viewBlockZ, 24)
 
         TacticalMapCache.processChunkUpdates(level, viewBlockX, viewBlockZ)
 
@@ -139,6 +254,11 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
 
         // Upload dirty tile textures every tick so center-out loading is visible
         TacticalMapCache.uploadDirtyTextures()
+
+        if (!markersLoaded) {
+            loadMarkers()
+            markersLoaded = true
+        }
 
         if (player.tickCount - entityCacheTick >= 10) {
             entityCacheTick = player.tickCount
@@ -197,6 +317,15 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
             // Layer 3: Friendly entity markers
             renderFriendlyMarkers(pGuiGraphics, player)
 
+            // Layer 3.5: Connection lines + preview in connection mode
+            renderConnectionLines(pGuiGraphics, pMouseX, pMouseY)
+            if (connectionMode && connectingFrom != null && isMouseInPanel(pMouseX.toDouble(), pMouseY.toDouble())) {
+                renderConnectionPreview(pGuiGraphics, pMouseX, pMouseY)
+            }
+
+            // Layer 3.6: Position markers
+            renderPositionMarkers(pGuiGraphics)
+
             // Layer 4: Player marker
             renderPlayerMarker(pGuiGraphics, player)
 
@@ -216,7 +345,43 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
             renderCompassRose(pGuiGraphics)
             renderHudText(pGuiGraphics, player, pMouseX, pMouseY)
 
-            renderContextMenu(pGuiGraphics, pMouseX, pMouseY)
+            // Connection mode indicator
+            if (connectionMode) {
+                val font = minecraft!!.font
+                val txt = Component.translatable("hud.superbwarfare.tactical_map.connect_mode").string
+                pGuiGraphics.drawString(font, txt, mapLeft, mapTop + mapAreaH + 3 + 10, 0xFFFFAA00.toInt(), false)
+            }
+
+            // Marker hover tooltip (coordinates only, also shown while dragging)
+            if (!contextMenu.ctxMenuVisible && !contextMenu.editPanelVisible) {
+                val s = zoom / 5.0
+                val dm = draggingMarker
+                if (dm != null) {
+                    // 拖动中：直接显示被拖标记点的实时坐标
+                    pGuiGraphics.renderTooltip(font, listOf(
+                        net.minecraft.network.chat.Component.literal("${dm.x}, ${dm.y}, ${dm.z}").withStyle(net.minecraft.ChatFormatting.YELLOW)
+                    ), java.util.Optional.empty(), pMouseX, pMouseY)
+                } else {
+                    val hm = contextMenu.hitTestMarker(markers, pMouseX.toDouble(), pMouseY.toDouble(), viewBlockX, viewBlockZ, s, mapCenterX, mapCenterY)
+                    hoveredMarker = hm
+                    if (hm != null) {
+                        pGuiGraphics.renderTooltip(font, listOf(
+                            net.minecraft.network.chat.Component.literal("${hm.x}, ${hm.y}, ${hm.z}").withStyle(net.minecraft.ChatFormatting.GRAY)
+                        ), java.util.Optional.empty(), pMouseX, pMouseY)
+                    }
+                }
+            }
+
+            // Line context menu (position frozen at click time)
+            if (ctxLinePair != null) {
+                val label = Component.translatable("context.superbwarfare.tactical_map.disconnect").string
+                val pw = font.width(label) + 8
+                val ph = 14
+                pGuiGraphics.fill(ctxLineMenuX, ctxLineMenuY, ctxLineMenuX + pw, ctxLineMenuY + ph, 0xEE2A2A2A.toInt())
+                pGuiGraphics.drawString(font, label, ctxLineMenuX + 4, ctxLineMenuY + 3, 0xFFFF5555.toInt(), false)
+            }
+
+            contextMenu.render(pGuiGraphics, font, pMouseX, pMouseY, width, height)
 
             // Update follow button visual state (only when changed to avoid input glitches)
             if (followPlayer != lastFollowState) {
@@ -247,62 +412,137 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
         }
 
         // ========================
-        //  Context menu
+        //  Position markers
         // ========================
 
-        private fun buildContextMenu(): List<ContextMenuItem> = listOf(
-            ContextMenuItem(
-                Component.translatable(
-                    "context.superbwarfare.tactical_map.teleport",
-                    ctxWorldX,
-                    ctxWorldY + 1,
-                    ctxWorldZ
-                ).string
-            ) {
-                val y = ctxWorldY + 1
-                minecraft!!.player!!.connection.sendCommand("tp $ctxWorldX $y $ctxWorldZ")
-            }
-
-        )
-
-        private fun renderContextMenu(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int) {
-            if (!ctxMenuVisible) return
-
-            val items = buildContextMenu()
-            if (items.isEmpty()) return
-
+        private fun renderPositionMarkers(guiGraphics: GuiGraphics) {
+            val scale = zoom / 5.0
             val font = minecraft!!.font
-            val padding = 4
-            val itemHeight = 12
-            val menuW = items.maxOf { font.width(it.label) } + padding * 2
-            val menuH = items.size * itemHeight + padding * 2 + 2
-
-            // Position: offset from cursor, clamp to screen
-            var mx = ctxMenuX + 8
-            var my = ctxMenuY
-            if (mx + menuW > width) mx = ctxMenuX - menuW - 8
-            if (my + menuH > height) my = height - menuH - 4
-
-            // Background
-            guiGraphics.fill(mx, my, mx + menuW, my + menuH, 0xEE2A2A2A.toInt())
-            guiGraphics.fill(mx, my, mx + menuW, my + 1, 0xFF555555.toInt())
-            guiGraphics.fill(mx, my + menuH - 1, mx + menuW, my + menuH, 0xFF555555.toInt())
-            guiGraphics.fill(mx, my, mx + 1, my + menuH, 0xFF555555.toInt())
-            guiGraphics.fill(mx + menuW - 1, my, mx + menuW, my + menuH, 0xFF555555.toInt())
-
-            // Items
-            for ((i, item) in items.withIndex()) {
-                val iy = my + padding + i * itemHeight
-                val hovered = mouseX in mx..mx + menuW && mouseY in iy..iy + itemHeight
-                if (hovered) guiGraphics.fill(mx + 1, iy, mx + menuW - 1, iy + itemHeight, 0x664444FF)
-                guiGraphics.drawString(
-                    font, item.label, mx + padding, iy + 2,
-                    if (hovered) 0xFFFFFFFF.toInt() else 0xFFCCCCCC.toInt(), false
+            for (marker in markers) {
+                MapContextMenu.renderMarker(
+                    guiGraphics, font, marker,
+                    viewBlockX, viewBlockZ, scale,
+                    mapCenterX, mapCenterY,
+                    mapLeft, mapTop, mapAreaW, mapAreaH,
+                    POSITION_MARKER,
+                    isDragging = marker == draggingMarker
                 )
             }
+        }
 
-            // Click handling: check if mouse clicked on an item
-            // (we handle this in mouseClicked by checking ctxMenuVisible)
+        // ── Connection lines ──
+
+        private fun getValidConnections(): Set<Pair<MapMarker, MapMarker>> {
+            val result = mutableSetOf<Pair<MapMarker, MapMarker>>()
+            for (a in markers) {
+                val aConns = connections[a.id] ?: continue
+                for (bId in aConns) {
+                    val b = markers.find { it.id == bId } ?: continue
+                    val bConns = connections[bId] ?: continue
+                    if (bConns.contains(a.id) && a.id < bId) {
+                        result.add(a to b)
+                    }
+                }
+            }
+            return result
+        }
+
+        private fun renderConnectionLines(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int) {
+            val scale = zoom / 5.0
+            val font = minecraft!!.font
+            val whiteColor = 0xCCFFFFFF.toInt()
+            val color = 0xFFFFFFFF.toInt()
+
+            hoveredLine = null
+            for ((a, b) in getValidConnections()) {
+                val ax = (mapCenterX + (a.x - viewBlockX) * scale).toFloat()
+                val ay = (mapCenterY + (a.z - viewBlockZ) * scale).toFloat()
+                val bx = (mapCenterX + (b.x - viewBlockX) * scale).toFloat()
+                val by = (mapCenterY + (b.z - viewBlockZ) * scale).toFloat()
+
+                // Check hover (suppressed when mouse is over a marker)
+                val isHovered = hoveredMarker == null && hitTestLine(mouseX.toDouble(), mouseY.toDouble(), ax.toDouble(), ay.toDouble(), bx.toDouble(), by.toDouble())
+                if (isHovered) hoveredLine = a to b
+                val lineColor = if (isHovered) 0xFFFFFFFF.toInt() else 0xCCFFAA00.toInt()
+
+                // ── Smooth 1px line via PoseStack rotation ──
+                val mx = (ax + bx) / 2f
+                val my = (ay + by) / 2f
+                val dx = (bx - ax).toDouble()
+                val dy = (by - ay).toDouble()
+                val len = kotlin.math.sqrt(dx * dx + dy * dy).toFloat()
+                val angle = Math.atan2(dy, dx)
+
+                val pose = guiGraphics.pose()
+                pose.pushPose()
+                pose.translate(mx, my, 0f)
+                pose.rotateAround(com.mojang.math.Axis.ZP.rotationDegrees(Math.toDegrees(angle).toFloat()), 0f, 0f, 0f)
+                // 1px thin line
+                guiGraphics.fill((-len / 2f).toInt(), 0, (len / 2f).toInt(), 1, lineColor)
+                pose.popPose()
+
+                // ── Distance label always above the line ──
+                val dist = kotlin.math.sqrt(((a.x - b.x).toDouble() * (a.x - b.x) + (a.z - b.z) * (a.z - b.z)))
+                val label = "${dist.toInt()}m"
+                // 文字角度：水平阅读方向，始终在线上方
+                val drawAngle = if (angle > Math.PI / 2 || angle < -Math.PI / 2) angle + Math.PI else angle
+                // 垂直于线段向上偏移（屏幕 Y 轴向下，取正偏移 = 文字在线段上方）
+                val perpUp = font.lineHeight / 2f + 2f
+
+                pose.pushPose()
+                pose.translate((mx + kotlin.math.sin(angle) * perpUp).toFloat(), (my - kotlin.math.cos(angle) * perpUp).toFloat(), 0f)
+                pose.rotateAround(com.mojang.math.Axis.ZP.rotationDegrees(Math.toDegrees(drawAngle).toFloat()), 0f, 0f, 0f)
+                val tw = font.width(label)
+                guiGraphics.drawString(font, label, -tw / 2, -font.lineHeight / 2, color, false)
+                pose.popPose()
+            }
+        }
+
+        private fun renderConnectionPreview(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int) {
+            val scale = zoom / 5.0
+            val src = connectingFrom ?: return
+            val sx = (mapCenterX + (src.x - viewBlockX) * scale)
+            val sy = (mapCenterY + (src.z - viewBlockZ) * scale)
+            val mx = mouseX.toDouble()
+            val my = mouseY.toDouble()
+            val dx = mx - sx; val dy = my - sy
+            val len = kotlin.math.sqrt(dx * dx + dy * dy).toFloat()
+            if (len < 2f) return
+            val angle = Math.atan2(dy, dx)
+            val midX = ((sx + mx) / 2f).toFloat()
+            val midY = ((sy + my) / 2f).toFloat()
+
+            // Dashed line via PoseStack rotation: 1px segments with 1px gaps
+            val dashColor = 0xAAFFAA00.toInt()
+            val pose = guiGraphics.pose()
+            pose.pushPose()
+            pose.translate(midX, midY, 0f)
+            pose.rotateAround(com.mojang.math.Axis.ZP.rotationDegrees(Math.toDegrees(angle).toFloat()), 0f, 0f, 0f)
+            val halfLen = (len / 2f).toInt()
+            var x = -halfLen
+            while (x < halfLen) {
+                guiGraphics.fill(x, 0, x + 1, 1, dashColor)
+                x += 2  // 1px on, 1px off
+            }
+            pose.popPose()
+
+            // Distance tooltip at mouse
+            val worldMX = viewBlockX + (mouseX - mapCenterX) / scale
+            val worldMZ = viewBlockZ + (mouseY - mapCenterY) / scale
+            val realDist = kotlin.math.sqrt((src.x - worldMX) * (src.x - worldMX) + (src.z - worldMZ) * (src.z - worldMZ))
+            val font = minecraft!!.font
+            val label = "${realDist.toInt()}m"
+            guiGraphics.drawString(font, label, mouseX + 10, mouseY + 6, 0xFFFFAA00.toInt(), true)
+        }
+
+        private fun hitTestLine(mx: Double, my: Double, x1: Double, y1: Double, x2: Double, y2: Double): Boolean {
+            val dx = x2 - x1; val dy = y2 - y1
+            val lenSq = dx * dx + dy * dy
+            if (lenSq == 0.0) return false
+            var t = ((mx - x1) * dx + (my - y1) * dy) / lenSq
+            t = t.coerceIn(0.0, 1.0)
+            val px = x1 + t * dx; val py = y1 + t * dy
+            return kotlin.math.hypot(mx - px, my - py) <= 5.0
         }
 
         // ========================
@@ -665,73 +905,146 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
         }
 
         // ========================
-        //  Mouse input (pan + zoom)
+        //  Mouse input (pan + zoom + markers)
         // ========================
 
         override fun mouseClicked(pMouseX: Double, pMouseY: Double, pButton: Int): Boolean {
-            // Context menu item click
-            if (ctxMenuVisible && pButton == 0) {
-                val items = buildContextMenu()
-                val font = minecraft!!.font
-                val padding = 4;
-                val itemHeight = 12
-                val menuW = items.maxOf { font.width(it.label) } + padding * 2
-                val menuH = items.size * itemHeight + padding * 2 + 2
-                var mx = ctxMenuX + 8;
-                var my = ctxMenuY
-                if (mx + menuW > width) mx = ctxMenuX - menuW - 8
-                if (my + menuH > height) my = height - menuH - 4
+            val font = minecraft!!.font
 
-                for ((i, item) in items.withIndex()) {
-                    val iy = my + padding + i * itemHeight
-                    if (pMouseX in mx.toDouble()..(mx + menuW).toDouble() && pMouseY in iy.toDouble()..(iy + itemHeight).toDouble()) {
-                        item.action()
-                        ctxMenuVisible = false
-                        return true
-                    }
+            if (contextMenu.editPanelVisible) {
+                if (pButton == 0) {
+                    if (contextMenu.editBoxMouseClicked(pMouseX, pMouseY, pButton)) return true
+                    if (contextMenu.handleEditPanelClick(pMouseX, pMouseY)) return true
                 }
-                ctxMenuVisible = false
                 return true
             }
+
+            if (contextMenu.ctxMenuVisible) {
+                if (contextMenu.handleContextMenuClick(pMouseX, pMouseY, font, width, height)) return true
+                contextMenu.closeMenu()
+                return true
+            }
+
+            // ── Connection mode ──
+            if (connectionMode && !contextMenu.ctxMenuVisible) {
+                // Right-click in connection mode → exit
+                if (pButton == 1) {
+                    connectionMode = false
+                    connectingFrom = null
+                    return true
+                }
+                // Left-click another marker → connect, then set as new source for chaining
+                if (pButton == 0 && isMouseInPanel(pMouseX, pMouseY)) {
+                    val scale = zoom / 5.0
+                    val hit = contextMenu.hitTestMarker(markers, pMouseX, pMouseY, viewBlockX, viewBlockZ, scale, mapCenterX, mapCenterY)
+                    if (hit != null && hit.id != connectingFrom?.id) {
+                        val src = connectingFrom!!
+                        // Skip if already connected
+                        val srcConns = connections[src.id]
+                        if (srcConns == null || !srcConns.contains(hit.id)) {
+                            connections.getOrPut(src.id) { mutableSetOf() }.add(hit.id)
+                            connections.getOrPut(hit.id) { mutableSetOf() }.add(src.id)
+                            saveMarker(src)
+                            saveMarker(hit)
+                        }
+                        // Chain: target becomes new source
+                        connectingFrom = hit
+                        return true
+                    }
+                    return true
+                }
+                return true
+            }
+
+            // ── Line context menu click (only within button bounds) ──
+            if (ctxLinePair != null) {
+                val label = Component.translatable("context.superbwarfare.tactical_map.disconnect").string
+                val pw = font.width(label) + 8; val ph = 14
+                if (pMouseX in ctxLineMenuX.toDouble()..(ctxLineMenuX + pw).toDouble() &&
+                    pMouseY in ctxLineMenuY.toDouble()..(ctxLineMenuY + ph).toDouble()
+                ) {
+                    val (la, lb) = ctxLinePair!!
+                    connections[la.id]?.remove(lb.id)
+                    connections[lb.id]?.remove(la.id)
+                    saveMarker(la)
+                    saveMarker(lb)
+                    ctxLinePair = null
+                    ctxLineMenuX = 0; ctxLineMenuY = 0
+                    return true
+                }
+                ctxLinePair = null
+                ctxLineMenuX = 0; ctxLineMenuY = 0
+                return true
+            }
+
             if (pButton == 0 && isMouseInPanel(pMouseX, pMouseY)) {
+                val scale = zoom / 5.0
+                val hit = contextMenu.hitTestMarker(markers, pMouseX, pMouseY, viewBlockX, viewBlockZ, scale, mapCenterX, mapCenterY)
+                if (hit != null) {
+                    draggingMarker = hit
+                    dragOffsetX = (mapCenterX + (hit.x - viewBlockX) * scale) - pMouseX
+                    dragOffsetY = (mapCenterY + (hit.z - viewBlockZ) * scale) - pMouseY
+                    return true
+                }
                 isDragging = true
                 lastMouseX = pMouseX
                 lastMouseY = pMouseY
                 return true
             }
+
             if (pButton == 1 && isMouseInPanel(pMouseX, pMouseY)) {
-                // Right-click: open context menu
                 val scale = zoom / 5.0
-                ctxWorldX = (viewBlockX + (pMouseX - mapCenterX) / scale).toInt()
-                ctxWorldZ = (viewBlockZ + (pMouseY - mapCenterY) / scale).toInt()
-                val level = minecraft!!.player!!.level()
-                val chunk = level.getChunk(ctxWorldX shr 4, ctxWorldZ shr 4)
-                val chunkLoaded = chunk is LevelChunk && !chunk.isEmpty
-                ctxWorldY = if (chunkLoaded) {
-                    level.getHeight(
-                        net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE,
-                        ctxWorldX,
-                        ctxWorldZ
-                    )
-                } else {
-                    val cached = TacticalMapCache.getCachedHeight(ctxWorldX, ctxWorldZ)
-                    cached?.toInt() ?: minecraft!!.player!!.blockY
+                val wX = (viewBlockX + (pMouseX - mapCenterX) / scale).toInt()
+                val wZ = (viewBlockZ + (pMouseY - mapCenterY) / scale).toInt()
+
+                // Marker hit-test takes priority over lines
+                val hit = contextMenu.hitTestMarker(markers, pMouseX, pMouseY, viewBlockX, viewBlockZ, scale, mapCenterX, mapCenterY)
+                if (hit != null) {
+                    contextMenu.openMarkerMenu(pMouseX.toInt(), pMouseY.toInt(), hit)
+                    return true
                 }
-                ctxMenuX = pMouseX.toInt()
-                ctxMenuY = pMouseY.toInt()
-                ctxMenuVisible = true
+
+                // Check line hit → freeze menu position at click
+                for ((a, b) in getValidConnections()) {
+                    val ax = mapCenterX + (a.x - viewBlockX) * scale
+                    val ay = mapCenterY + (a.z - viewBlockZ) * scale
+                    val bx = mapCenterX + (b.x - viewBlockX) * scale
+                    val by = mapCenterY + (b.z - viewBlockZ) * scale
+                    if (hitTestLine(pMouseX, pMouseY, ax, ay, bx, by)) {
+                        ctxLinePair = a to b
+                        ctxLineMenuX = pMouseX.toInt() + 8
+                        ctxLineMenuY = pMouseY.toInt()
+                        return true
+                    }
+                }
+                val level = minecraft!!.player!!.level()
+                val chunk = level.getChunk(wX shr 4, wZ shr 4)
+                val chunkLoaded = chunk is LevelChunk && !chunk.isEmpty
+                val wY = if (chunkLoaded) {
+                    level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, wX, wZ)
+                } else {
+                    TacticalMapCache.getCachedHeight(wX, wZ)?.toInt() ?: minecraft!!.player!!.blockY
+                }
+                contextMenu.openMapMenu(pMouseX.toInt(), pMouseY.toInt(), wX, wY, wZ)
                 return true
             }
+
             return super.mouseClicked(pMouseX, pMouseY, pButton)
         }
 
-        override fun mouseDragged(
-            pMouseX: Double,
-            pMouseY: Double,
-            pButton: Int,
-            pDragX: Double,
-            pDragY: Double
-        ): Boolean {
+        override fun mouseDragged(pMouseX: Double, pMouseY: Double, pButton: Int, pDragX: Double, pDragY: Double): Boolean {
+            if (draggingMarker != null && pButton == 0) {
+                val scale = zoom / 5.0
+                val marker = draggingMarker!!
+                val sx = pMouseX + dragOffsetX
+                val sy = pMouseY + dragOffsetY
+                marker.x = (viewBlockX + (sx - mapCenterX) / scale).toInt()
+                marker.z = (viewBlockZ + (sy - mapCenterY) / scale).toInt()
+                // 实时更新 Y 为地表高度；未绘制区域保持上一个有效值
+                val h = TacticalMapCache.getCachedHeight(marker.x, marker.z)
+                if (h != null) marker.y = h.toInt()
+                return true
+            }
             if (isDragging && pButton == 0) {
                 followPlayer = false
                 savedFollowPlayer = false
@@ -748,6 +1061,8 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
         override fun mouseReleased(pMouseX: Double, pMouseY: Double, pButton: Int): Boolean {
             if (pButton == 0) {
                 isDragging = false
+                draggingMarker?.let { saveMarker(it) }
+                draggingMarker = null
                 return true
             }
             return super.mouseReleased(pMouseX, pMouseY, pButton)
@@ -778,13 +1093,49 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
         // ========================
 
         override fun keyPressed(pKeyCode: Int, pScanCode: Int, pModifiers: Int): Boolean {
-            if (pKeyCode == ModKeyMappings.TOGGLE_TACTICAL_MAP.key.value ||
-                pKeyCode == 256 // ESC
-            ) {
+            if (contextMenu.editPanelVisible) {
+                if (contextMenu.editBoxKeyPressed(pKeyCode, pScanCode, pModifiers)) return true
+                if (pKeyCode == 256) { contextMenu.closeEditPanel(); return true }
+                return true
+            }
+            // Delete key (261): disconnect hovered line, or delete hovered marker
+            if (pKeyCode == 261) {
+                if (hoveredLine != null) {
+                    val (la, lb) = hoveredLine!!
+                    connections[la.id]?.remove(lb.id)
+                    connections[lb.id]?.remove(la.id)
+                    saveMarker(la)
+                    saveMarker(lb)
+                    hoveredLine = null
+                    return true
+                }
+                if (hoveredMarker != null && draggingMarker == null && !contextMenu.ctxMenuVisible) {
+                    val m = hoveredMarker!!
+                    val myConns = connections[m.id] ?: emptySet()
+                    for (otherId in myConns) {
+                        val otherConns = connections[otherId]
+                        if (otherConns != null && otherConns.remove(m.id)) {
+                            val other = markers.find { it.id == otherId }
+                            if (other != null) saveMarker(other)
+                        }
+                    }
+                    connections.remove(m.id)
+                    markers.remove(m)
+                    deleteMarkerFile(m)
+                    hoveredMarker = null
+                    return true
+                }
+            }
+            if (pKeyCode == ModKeyMappings.TOGGLE_TACTICAL_MAP.key.value || pKeyCode == 256) {
                 onClose()
                 return true
             }
             return super.keyPressed(pKeyCode, pScanCode, pModifiers)
+        }
+
+        override fun charTyped(pCodePoint: Char, pModifiers: Int): Boolean {
+            if (contextMenu.editPanelVisible) return contextMenu.editBoxCharTyped(pCodePoint, pModifiers)
+            return super.charTyped(pCodePoint, pModifiers)
         }
 
         override fun onClose() {

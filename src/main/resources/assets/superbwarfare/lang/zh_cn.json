@@ -1262,5 +1262,16 @@
   "commands.superbwarfare.loiter.enabled": "盘旋已开启，中心: X=%1$s Y=%2$s Z=%3$s R=%4$s",
   "commands.superbwarfare.loiter.disabled": "盘旋已关闭",
   "commands.superbwarfare.loiter.get": "盘旋参数: X=%1$s Y=%2$s Z=%3$s R=%4$s 状态=%5$s",
-  "commands.superbwarfare.loiter.edit": "盘旋参数已更新: X=%1$s Y=%2$s Z=%3$s R=%4$s"
+  "commands.superbwarfare.loiter.edit": "盘旋参数已更新: X=%1$s Y=%2$s Z=%3$s R=%4$s",
+  "context.superbwarfare.tactical_map.create_marker": "创建标记点",
+  "context.superbwarfare.tactical_map.edit_marker": "编辑",
+  "context.superbwarfare.tactical_map.delete_marker": "删除",
+  "context.superbwarfare.tactical_map.connect": "连线",
+  "context.superbwarfare.tactical_map.disconnect": "取消连接",
+  "hud.superbwarfare.tactical_map.connect_mode": "连线模式：左键目标标记点 | 右键退出",
+  "context.superbwarfare.tactical_map.marker_name": "标记名称",
+  "context.superbwarfare.tactical_map.create_marker_title": "创建标记点",
+  "context.superbwarfare.tactical_map.edit_marker_title": "编辑标记点",
+  "context.superbwarfare.tactical_map.ok": "确定",
+  "context.superbwarfare.tactical_map.cancel": "取消"
 }

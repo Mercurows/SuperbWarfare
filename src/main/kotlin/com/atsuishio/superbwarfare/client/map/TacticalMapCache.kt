@@ -51,10 +51,15 @@ object TacticalMapCache {
 
     // Chunk surface heights: chunkPos → 256 shorts (16×16 Y values)
     val chunkHeights = ConcurrentHashMap<Long, ShortArray>()
+
     private const val MAX_UPDATES_PER_FRAME = 12
 
-    // Track which chunks have already been drawn this session (Phase 1 new-chunk discovery)
+    // Track which chunks have already been drawn this session
     private val drawnChunks = mutableSetOf<Long>()
+
+    // Chunk keys loaded from disk, waiting to be drawn in distance order.
+    // Drained batch-by-batch each tick, nearest to the player first.
+    private val pendingChunkQueue = mutableSetOf<Long>()
 
     // Periodic rescan
     private var lastRescanTick = 0L
@@ -109,6 +114,7 @@ object TacticalMapCache {
         chunkUpdateQueue.clear()
         chunkHeights.clear()
         drawnChunks.clear()
+        pendingChunkQueue.clear()
         lastRescanTick = 0L
         lastCloseRefresh = 0L
         refreshWaveIndex = 0
@@ -502,16 +508,45 @@ object TacticalMapCache {
     }
 
     /**
-     * Load all previously-persisted chunks for the current dimension from SavedData.
+     * Collect all previously-persisted chunk keys from SavedData.
+     * Actual loading is deferred to [processPendingChunks] which drains them
+     * batch-by-batch in distance order, nearest to the player first.
      */
     private fun loadAllChunks() {
         val sd = mapSavedData ?: return
         val dim = currentDimension ?: return
         for ((key, _) in sd.getChunksForDimension(dim)) {
+            pendingChunkQueue.add(key)
+        }
+    }
+
+    /**
+     * Process a batch of pending chunk keys: sort by distance from (px, pz),
+     * load the nearest [maxCount] chunks from disk, and remove them from the queue.
+     */
+    fun processPendingChunks(px: Double, pz: Double, maxCount: Int) {
+        if (pendingChunkQueue.isEmpty()) return
+
+        val pcx = (px / CHUNK_SIZE).toInt()
+        val pcz = (pz / CHUNK_SIZE).toInt()
+
+        val sorted = pendingChunkQueue.sortedBy { key ->
+            val cx = (key shr 32).toInt()
+            val cz = key.toInt()
+            val dx = cx - pcx
+            val dz = cz - pcz
+            dx.toLong() * dx + dz.toLong() * dz
+        }
+
+        var processed = 0
+        for (key in sorted) {
+            if (processed >= maxCount) break
+            pendingChunkQueue.remove(key)
             val cx = (key shr 32).toInt()
             val cz = key.toInt()
             try {
                 loadChunkFromDisk(cx, cz)
+                processed++
             } catch (_: Exception) {
             }
         }
