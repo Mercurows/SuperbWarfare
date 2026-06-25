@@ -3,8 +3,8 @@ package com.atsuishio.superbwarfare.client.particle
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.client.particle.*
 import net.minecraft.world.phys.Vec3
-import net.minecraftforge.api.distmarker.Dist
-import net.minecraftforge.api.distmarker.OnlyIn
+import net.neoforged.api.distmarker.Dist
+import net.neoforged.api.distmarker.OnlyIn
 import kotlin.math.max
 
 @OnlyIn(Dist.CLIENT)
@@ -90,7 +90,6 @@ open class ExplosionDebrisParticle protected constructor(
         this.sizeAdd = sizeAdd
         this.life = life
         this.size = size
-
     }
 
     public override fun getLightColor(partialTick: Float): Int {

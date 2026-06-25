@@ -1,16 +1,16 @@
 package com.atsuishio.superbwarfare.client.particle
 
 import com.atsuishio.superbwarfare.init.ModParticleTypes
-import com.mojang.brigadier.StringReader
-import com.mojang.brigadier.exceptions.CommandSyntaxException
+import com.atsuishio.superbwarfare.tools.createStreamCodec
 import com.mojang.serialization.Codec
+import com.mojang.serialization.MapCodec
 import com.mojang.serialization.codecs.RecordCodecBuilder
+import kotlinx.serialization.Serializable
 import net.minecraft.core.particles.ParticleOptions
 import net.minecraft.core.particles.ParticleType
-import net.minecraft.network.FriendlyByteBuf
-import net.minecraftforge.registries.ForgeRegistries
 import kotlin.math.roundToInt
 
+@Serializable
 class ExplosionDebrisOption(
     private val color: Int,
     val life: Int,
@@ -50,22 +50,9 @@ class ExplosionDebrisOption(
         return ModParticleTypes.EXPLOSION_DEBRIS.get()
     }
 
-    override fun writeToNetwork(buffer: FriendlyByteBuf) {
-        buffer.writeInt(this.color)
-        buffer.writeInt(this.life)
-        buffer.writeFloat(this.fade)
-        buffer.writeFloat(this.size)
-        buffer.writeInt(this.animationSpeed)
-        buffer.writeFloat(this.sizeAdd)
-    }
-
-    override fun writeToString(): String {
-        return "${ForgeRegistries.PARTICLE_TYPES.getKey(this.type)} [$color, $life, $fade, $size, $animationSpeed, $sizeAdd]"
-    }
-
     companion object {
-        val CODEC: Codec<ExplosionDebrisOption> =
-            RecordCodecBuilder.create { builder: RecordCodecBuilder.Instance<ExplosionDebrisOption> ->
+        val CODEC: MapCodec<ExplosionDebrisOption> =
+            RecordCodecBuilder.mapCodec { builder: RecordCodecBuilder.Instance<ExplosionDebrisOption> ->
                 builder.group(
                     Codec.INT.fieldOf("color").forGetter { it.color },
                     Codec.INT.fieldOf("life").forGetter { it.life },
@@ -76,42 +63,6 @@ class ExplosionDebrisOption(
                 ).apply(builder, ::ExplosionDebrisOption)
             }
 
-        @Suppress("DEPRECATION")
-        val DESERIALIZER: ParticleOptions.Deserializer<ExplosionDebrisOption> =
-            object : ParticleOptions.Deserializer<ExplosionDebrisOption> {
-                @Throws(CommandSyntaxException::class)
-                override fun fromCommand(
-                    particleType: ParticleType<ExplosionDebrisOption>,
-                    reader: StringReader
-                ): ExplosionDebrisOption {
-                    reader.expect(' ')
-                    val color = reader.readInt()
-                    reader.expect(' ')
-                    val life = reader.readInt()
-                    reader.expect(' ')
-                    val fade = reader.readFloat()
-                    reader.expect(' ')
-                    val size = reader.readFloat()
-                    reader.expect(' ')
-                    val animationSpeed = reader.readInt()
-                    reader.expect(' ')
-                    val sizeAdd = reader.readFloat()
-                    return ExplosionDebrisOption(color, life, fade, size, animationSpeed, sizeAdd)
-                }
-
-                override fun fromNetwork(
-                    particleType: ParticleType<ExplosionDebrisOption>,
-                    buffer: FriendlyByteBuf
-                ): ExplosionDebrisOption {
-                    return ExplosionDebrisOption(
-                        buffer.readInt(),
-                        buffer.readInt(),
-                        buffer.readFloat(),
-                        buffer.readFloat(),
-                        buffer.readInt(),
-                        buffer.readFloat()
-                    )
-                }
-            }
+        val STREAM_CODEC = createStreamCodec<ExplosionDebrisOption>()
     }
 }

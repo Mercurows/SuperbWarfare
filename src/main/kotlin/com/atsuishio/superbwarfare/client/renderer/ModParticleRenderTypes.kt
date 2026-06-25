@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer
 
-import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.BufferBuilder
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
@@ -10,10 +10,9 @@ import net.minecraft.client.particle.ParticleRenderType
 import net.minecraft.client.renderer.ShaderInstance
 import net.minecraft.client.renderer.texture.TextureAtlas
 import net.minecraft.client.renderer.texture.TextureManager
-import net.minecraft.resources.ResourceLocation
-import net.minecraftforge.api.distmarker.Dist
-import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.client.event.RegisterShadersEvent
+import net.neoforged.api.distmarker.Dist
+import net.neoforged.api.distmarker.OnlyIn
+import net.neoforged.neoforge.client.event.RegisterShadersEvent
 
 @OnlyIn(Dist.CLIENT)
 object ModParticleRenderTypes {
@@ -30,7 +29,7 @@ object ModParticleRenderTypes {
         event.registerShader(
             ShaderInstance(
                 resourceProvider,
-                ResourceLocation(Mod.MODID, "rendertype_particle_soft"),
+                loc("rendertype_particle_soft"),
                 DefaultVertexFormat.PARTICLE
             )
         ) { shader -> softParticleShader = shader }
@@ -44,7 +43,7 @@ object ModParticleRenderTypes {
      * semi-transparent particle textures (e.g. flares, smoke, explosions).
      */
     val PARTICLE_SHEET_SOFT_TRANSLUCENT: ParticleRenderType = object : ParticleRenderType {
-        override fun begin(builder: BufferBuilder, textureManager: TextureManager) {
+        override fun begin(builder: Tesselator, textureManager: TextureManager): BufferBuilder {
             // Override the shader set by ParticleEngine with our no-discard variant
             val shader = softParticleShader
             if (shader != null) {
@@ -58,11 +57,7 @@ object ModParticleRenderTypes {
             RenderSystem.defaultBlendFunc()
             RenderSystem.depthMask(false)
             RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_PARTICLES)
-            builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE)
-        }
-
-        override fun end(tesselator: Tesselator) {
-            tesselator.end()
+            return builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE)
         }
 
         override fun toString(): String = "PARTICLE_SHEET_SOFT_TRANSLUCENT"
