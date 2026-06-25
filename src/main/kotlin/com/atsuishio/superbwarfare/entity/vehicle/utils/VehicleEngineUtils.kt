@@ -1667,7 +1667,7 @@ object VehicleEngineUtils {
 
         // ========== 3. 径向位置精修 ==========
 
-        yawError += Mth.clamp(radialError.toFloat() * 0.25f, -10f, 10f)
+        yawError += Mth.clamp(radialError.toFloat(), -10f, 10f)
 
         // ========== 4. 偏航控制 ==========
 
@@ -1680,7 +1680,7 @@ object VehicleEngineUtils {
         }
 
         mouseMoveSpeedX = Mth.clamp(yawError * turnFactor.toFloat(), -20f, 20f)
-        deltaRot += yawError * -0.003f * turnFactor.toFloat()
+        deltaRot += yawError * -0.02f * turnFactor.toFloat() * Mth.clamp(1 - (Mth.abs(roll) / 30), 0f, 1f)
 
         // ========== 5. 高度控制 ==========
 

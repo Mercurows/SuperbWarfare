@@ -21,6 +21,7 @@ import java.io.File
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.security.MessageDigest
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.zip.Deflater
 import java.util.zip.Inflater
@@ -48,6 +49,13 @@ object TacticalMapCache {
     private val tileTextures = ConcurrentHashMap<RegionPos, DynamicTexture>()
     private val dirtyTiles = mutableSetOf<RegionPos>()
 
+    // Track how many chunks have been loaded into each tile.
+    // A tile is 256×256 blocks = 16×16 = 256 chunks.
+    // GPU upload is deferred until the tile reaches its expected chunk count
+    // (or the very first chunk for immediate visual feedback).
+    private val tileLoadedChunks = ConcurrentHashMap<RegionPos, Int>()     // chunks loaded so far
+    private val tileExpectedChunks = ConcurrentHashMap<RegionPos, Int>()   // total chunks expected (from disk)
+
     // LOD tile storage — lazily downsampled from base tiles at low zoom
     private val lodTileImages = ConcurrentHashMap<LodTileKey, NativeImage>()
     private val lodTileTextures = ConcurrentHashMap<LodTileKey, DynamicTexture>()
@@ -58,7 +66,7 @@ object TacticalMapCache {
     // Chunk surface heights: chunkPos -> 256 shorts (16x16 Y values)
     val chunkHeights = ConcurrentHashMap<Long, ShortArray>()
 
-    private const val MAX_UPDATES_PER_FRAME = 12
+    private const val MAX_UPDATES_PER_FRAME = 16
 
     // Track which chunks have already been drawn this session
     private val drawnChunks = mutableSetOf<Long>()
@@ -66,6 +74,11 @@ object TacticalMapCache {
     // Chunk keys loaded from disk, waiting to be drawn in distance order.
     // Drained batch-by-batch each tick, nearest to the player first.
     private val pendingChunkQueue = mutableSetOf<Long>()
+
+    // Pre-loaded chunk data (decompressed) populated by loadAllChunks().
+    // Eliminates redundant file reads during processPendingChunks().
+    // chunkKey -> raw 1536-byte pixel+height data
+    private val preloadedChunkData = ConcurrentHashMap<Long, ByteArray>()
 
     // Periodic rescan
     private var lastRescanTick = 0L
@@ -133,6 +146,9 @@ object TacticalMapCache {
         chunkHeights.clear()
         drawnChunks.clear()
         pendingChunkQueue.clear()
+        preloadedChunkData.clear()
+        tileLoadedChunks.clear()
+        tileExpectedChunks.clear()
         lastRescanTick = 0L
         lastCloseRefresh = 0L
         refreshWaveIndex = 0
@@ -554,29 +570,36 @@ object TacticalMapCache {
     }
 
     /**
-     * Load a single chunk's color + height data from its parent tile file.
+     * Load a single chunk's color + height data into the tile image.
+     * Checks the in-memory [preloadedChunkData] cache first (populated by
+     * [loadAllChunks]), falling back to disk only for chunks saved after the
+     * initial preload.
      */
-    private fun loadChunkFromDisk(cx: Int, cz: Int) {
-        val storageRX = cx shr CHUNKS_PER_TILE_BITS
-        val storageRZ = cz shr CHUNKS_PER_TILE_BITS
+    private fun loadChunkFromDisk(cx: Int, cz: Int): RegionPos? {
+        val key = chunkPosKey(cx, cz)
 
-        val chunks = readTileFile(storageRX, storageRZ)
-        val compressed = chunks[chunkPosKey(cx, cz)] ?: return
-
-        // Decompress
-        val raw: ByteArray
-        try {
-            val inflater = Inflater()
-            inflater.setInput(compressed)
-            val tmp = ByteArray(TOTAL_BYTES)
-            val size = inflater.inflate(tmp)
-            inflater.end()
-            // Support both old (1024) and new (1536) format
-            raw = if (size == CHUNK_BYTES) tmp.copyOf(size) else if (size >= TOTAL_BYTES) tmp else return
-        } catch (_: Exception) {
-            return
+        // Fast path: data was already decompressed by loadAllChunks()
+        val raw = preloadedChunkData.remove(key)
+        if (raw != null) {
+            return applyChunkData(cx, cz, raw)
         }
 
+        // Slow path: chunk was saved after preload, read from disk
+        val storageRX = cx shr CHUNKS_PER_TILE_BITS
+        val storageRZ = cz shr CHUNKS_PER_TILE_BITS
+        val chunks = readTileFile(storageRX, storageRZ)
+        val compressed = chunks[key] ?: return null
+        val diskRaw = decompressChunkData(compressed) ?: return null
+        return applyChunkData(cx, cz, diskRaw)
+    }
+
+    /**
+     * Write decompressed pixel + height data into the tile image.
+     * Returns the affected tile position for batch LOD invalidation.
+     * Caller is responsible for calling [invalidateLodTilesForBaseTile]
+     * or [invalidateLodTilesBatch] after all chunks are written.
+     */
+    private fun applyChunkData(cx: Int, cz: Int, raw: ByteArray): RegionPos {
         val minBlockX = cx * CHUNK_SIZE
         val minBlockZ = cz * CHUNK_SIZE
         val imgTileRX = minBlockX shr TILE_SIZE_BITS
@@ -586,6 +609,7 @@ object TacticalMapCache {
         val tile = getOrCreateTile(imgTileRX, imgTileRZ)
 
         val buf = ByteBuffer.wrap(raw).order(ByteOrder.LITTLE_ENDIAN)
+        // Write heights in the same pass to reuse the buffer
         val heights = ShortArray(CHUNK_SIZE * CHUNK_SIZE)
         for (z in 0 until CHUNK_SIZE) {
             for (x in 0 until CHUNK_SIZE) {
@@ -593,22 +617,37 @@ object TacticalMapCache {
                 if (abgr != 0) tile.setPixelRGBA(tileX + x, tileZ + z, abgr)
             }
         }
-        // Read height data if present (new format)
         if (raw.size >= TOTAL_BYTES) {
             for (z in 0 until CHUNK_SIZE)
                 for (x in 0 until CHUNK_SIZE)
                     heights[z * CHUNK_SIZE + x] = buf.getShort()
             chunkHeights[chunkPosKey(cx, cz)] = heights
         }
-        dirtyTiles.add(RegionPos(imgTileRX, imgTileRZ))
-        invalidateLodTilesForBaseTile(imgTileRX, imgTileRZ)
+        // Deferred GPU upload: only mark dirty when tile is complete or this is
+        // the very first chunk (so the player sees something immediately).
+        val tilePos = RegionPos(imgTileRX, imgTileRZ)
+        val newCount = (tileLoadedChunks.getOrDefault(tilePos, 0) + 1)
+        tileLoadedChunks[tilePos] = newCount
+        val expected = tileExpectedChunks.getOrDefault(tilePos, Int.MAX_VALUE)
+        if (newCount == 1 || newCount >= expected) {
+            dirtyTiles.add(tilePos)
+        }
+
         drawnChunks.add(chunkPosKey(cx, cz))
+        return tilePos
+    }
+
+    /** Batch-invalidate LOD tiles for a set of unique base tile positions. */
+    private fun invalidateLodTilesBatch(affectedTiles: Set<RegionPos>) {
+        for (tile in affectedTiles) {
+            invalidateLodTilesForBaseTile(tile.rx, tile.rz)
+        }
     }
 
     /**
      * Collect all previously-persisted chunk keys from tile files in the cache
-     * directory. Actual loading is deferred to [processPendingChunks] which drains
-     * them batch-by-batch in distance order, nearest to the player first.
+     * directory. Decompress data immediately and stage in [preloadedChunkData] so
+     * [processPendingChunks] can apply pixels without any further file I/O.
      */
     private fun loadAllChunks() {
         val dir = getCacheDir() ?: return
@@ -620,9 +659,14 @@ object TacticalMapCache {
                 try {
                     val tileRX = parts[0].toInt()
                     val tileRZ = parts[1].toInt()
-                    // Enumerate chunk keys from the tile file header
+                    // Read tile file once; decompress all chunks immediately and
+                    // stage them in memory so processPendingChunks skips disk I/O entirely.
                     val chunks = readTileFile(tileRX, tileRZ)
-                    for (key in chunks.keys) {
+                    // Pre-count expected chunk count per tile for deferred GPU upload
+                    tileExpectedChunks[RegionPos(tileRX, tileRZ)] = chunks.size
+                    for ((key, compressed) in chunks) {
+                        val raw = decompressChunkData(compressed) ?: continue
+                        preloadedChunkData[key] = raw
                         pendingChunkQueue.add(key)
                     }
                 } catch (_: Exception) {
@@ -631,36 +675,75 @@ object TacticalMapCache {
         }
     }
 
+    /** Decompress a single chunk's compressed data, or null if corrupted. */
+    private fun decompressChunkData(compressed: ByteArray): ByteArray? {
+        return try {
+            val inflater = Inflater()
+            inflater.setInput(compressed)
+            val tmp = ByteArray(TOTAL_BYTES)
+            val size = inflater.inflate(tmp)
+            inflater.end()
+            // Support both old (1024) and new (1536) format
+            when {
+                size == CHUNK_BYTES -> tmp.copyOf(size)
+                size >= TOTAL_BYTES -> tmp
+                else -> null
+            }
+        } catch (_: Exception) {
+            null
+        }
+    }
+
     /**
-     * Process a batch of pending chunk keys: sort by distance from (px, pz),
-     * load the nearest [maxCount] chunks from disk, and remove them from the queue.
+     * Process a batch of pending chunk keys: select the nearest chunks using a
+     * bounded max-heap in O(n log k), load pixel data from the in-memory
+     * [preloadedChunkData] cache (no disk I/O), and batch-invalidate LOD tiles.
+     *
+     * Batch size scales adaptively with queue size so large maps load faster:
+     *   - > 2000 queued → 4× base rate  (96/tick)
+     *   - >  500 queued → 2× base rate  (48/tick)
+     *   - otherwise      → 1× base rate  (24/tick)
      */
     fun processPendingChunks(px: Double, pz: Double, maxCount: Int) {
         if (pendingChunkQueue.isEmpty()) return
 
+        // Adaptive batch size: large backlog → more chunks per tick
+        val queueSize = pendingChunkQueue.size
+        val adaptiveMax = when {
+            queueSize > 2000 -> maxCount * 4
+            queueSize > 500  -> maxCount * 2
+            else             -> maxCount
+        }
+
         val pcx = (px / CHUNK_SIZE).toInt()
         val pcz = (pz / CHUNK_SIZE).toInt()
 
-        val sorted = pendingChunkQueue.sortedBy { key ->
+        // Bounded max-heap of size adaptiveMax — O(n log k)
+        val nearest = PriorityQueue<Pair<Long, Long>>(adaptiveMax, compareByDescending { it.second })
+        for (key in pendingChunkQueue) {
             val cx = (key shr 32).toInt()
             val cz = key.toInt()
             val dx = cx - pcx
             val dz = cz - pcz
-            dx.toLong() * dx + dz.toLong() * dz
+            val dist = dx.toLong() * dx + dz.toLong() * dz
+            nearest.offer(key to dist)
+            if (nearest.size > adaptiveMax) nearest.poll()
         }
 
-        var processed = 0
-        for (key in sorted) {
-            if (processed >= maxCount) break
+        // Drain heap sorted by distance, record affected tiles for batch LOD invalidation
+        val affectedTiles = mutableSetOf<RegionPos>()
+        for ((key, _) in nearest.sortedBy { it.second }) {
             pendingChunkQueue.remove(key)
             val cx = (key shr 32).toInt()
             val cz = key.toInt()
             try {
-                loadChunkFromDisk(cx, cz)
-                processed++
+                loadChunkFromDisk(cx, cz)?.let { affectedTiles.add(it) }
             } catch (_: Exception) {
             }
         }
+
+        // Batch-invalidate LOD once per unique base tile (was per-chunk before)
+        invalidateLodTilesBatch(affectedTiles)
     }
 
     // ========================

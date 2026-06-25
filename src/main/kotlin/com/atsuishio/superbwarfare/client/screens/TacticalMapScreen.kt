@@ -20,6 +20,7 @@ import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.network.chat.Component
+import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.vehicle.Boat
@@ -270,7 +271,7 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
         val level = player.level()
 
         // 从磁盘加载待处理的区块，按距离玩家最近优先
-        TacticalMapCache.processPendingChunks(viewBlockX, viewBlockZ, 24)
+        TacticalMapCache.processPendingChunks(viewBlockX, viewBlockZ, 64)
 
         TacticalMapCache.processChunkUpdates(level, viewBlockX, viewBlockZ)
 
@@ -326,7 +327,7 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
         renderGridLines(pGuiGraphics)
 
         // Layer 3: Friendly entity markers
-        renderFriendlyMarkers(pGuiGraphics, player)
+        renderFriendlyMarkers(pGuiGraphics, player, pPartialTick)
 
         // Layer 3.5: Connection lines + preview in connection mode
         renderConnectionLines(pGuiGraphics, pMouseX, pMouseY)
@@ -843,10 +844,10 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
     private fun getGridInterval(): Int = when {
         zoom > 2.0 -> 100
         zoom > 1.0 -> 200
-        zoom >= 0.5 -> 250
-        zoom >= 0.3 -> 500
-        zoom >= 0.2 -> 1000
-        zoom >= 0.15 -> 2000
+        zoom >= 0.75 -> 250
+        zoom >= 0.5 -> 500
+        zoom >= 0.25 -> 1000
+        zoom >= 0.15 -> 2500
         else -> 5000
     }
 
@@ -860,7 +861,7 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
         else -> "5km"
     }
 
-    private fun renderFriendlyMarkers(guiGraphics: GuiGraphics, player: Player) {
+    private fun renderFriendlyMarkers(guiGraphics: GuiGraphics, player: Player, pPartialTick: Float) {
         val scale = zoom / 5.0
         val level = player.level()
 
@@ -882,8 +883,8 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
         for (e in all) {
 
             val entity = level.getEntity(e.id) ?: e
-            val dx = entity.x - viewBlockX
-            val dz = entity.z - viewBlockZ
+            val dx = Mth.lerp(pPartialTick.toDouble(), entity.xo, entity.x) - viewBlockX
+            val dz = Mth.lerp(pPartialTick.toDouble(), entity.zo, entity.z) - viewBlockZ
             val screenX = mapCenterX + (dx * scale).toFloat()
             val screenY = mapCenterY + (dz * scale).toFloat()
             val icon = getVehicleIcon(entity)
