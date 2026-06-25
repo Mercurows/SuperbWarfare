@@ -41,7 +41,7 @@ open class RgoGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity 
         headshot: Boolean,
         knockback: Double
     ) {
-        this.customExplode(this.explosionDamageValue, this.explosionRadiusValue, 1.2f)
+        this.customExplode(this.explosionDamageValue, this.explosionRadiusValue)
     }
 
     override fun tick() {

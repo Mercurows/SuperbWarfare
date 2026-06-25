@@ -16,6 +16,7 @@
   "AmmoType": "superbwarfare:grenade_40mm",
   "Icon": "superbwarfare:textures/gun_icon/m_79_icon.png",
   "AvailablePerks": [
+    "superbwarfare:beast_bullet",
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",
     "superbwarfare:monster_hunter",

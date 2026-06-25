@@ -169,6 +169,7 @@ open class PtkmProjectileEntity : FastThrowableProjectile, BasicGeoProjectileEnt
             .position(pos)
             .withParticleType(ParticleTool.ParticleType.MEDIUM)
             .particlePosition(pos)
+            .beast(this.isBeast())
             .explode()
     }
 

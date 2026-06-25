@@ -189,7 +189,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
             val blockHit = rayTraceBlocks(
                 level,
                 ClipContext(startVec, fullEndVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this),
-                if (this.isPenetrating() || this.isBeast()) Predicate { true } else Predicate { false }
+                if (this.isPenetrating()) Predicate { true } else Predicate { false }
             ).takeIf { it.type != HitResult.Type.MISS }
 
             // 2. 在路径上查找实体（仅在方块碰撞点之前）
@@ -481,6 +481,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
             .radius(explosionRadiusValue)
             .position(vec3)
             .withParticleType(explosionParticleType(explosionRadiusValue))
+            .beast(this.isBeast())
     }
 
     open fun causeExplode(vec3: Vec3) {

@@ -1,12 +1,12 @@
 package com.atsuishio.superbwarfare.perk.js
 
-import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity
+import com.atsuishio.superbwarfare.entity.projectile.IBulletProperties
 import com.atsuishio.superbwarfare.entity.projectile.TaserBulletEntity
 import net.minecraft.world.entity.Entity
 
 class ProjectileProxy(private val entity: Entity) {
-    private val projectile: ProjectileEntity?
-        get() = entity as? ProjectileEntity
+    private val projectile: IBulletProperties?
+        get() = entity as? IBulletProperties
 
     private val taser: TaserBulletEntity?
         get() = entity as? TaserBulletEntity
@@ -20,7 +20,8 @@ class ProjectileProxy(private val entity: Entity) {
     }
 
     fun fireBullet(fireLevel: Number, dragonBreath: Boolean) {
-        projectile?.fireBullet(fireLevel.toInt(), dragonBreath)
+        projectile?.setFireLevel(fireLevel.toInt())
+        projectile?.setDragonBreath(dragonBreath)
     }
 
     fun setPenetrating(penetrating: Boolean) {

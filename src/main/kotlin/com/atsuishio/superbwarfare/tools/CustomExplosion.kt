@@ -5,9 +5,9 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.item.weapon.BeastItem.Companion.beastKill
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage.Companion.sendToNearbyPlayers
-import com.atsuishio.superbwarfare.tools.DamageHandler.doDamage
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Holder
 import net.minecraft.core.particles.ParticleOptions
@@ -21,7 +21,6 @@ import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.item.PrimedTnt
-import net.minecraft.world.entity.monster.Monster
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.Explosion
 import net.minecraft.world.level.ExplosionDamageCalculator
@@ -39,32 +38,32 @@ import kotlin.math.sqrt
 
 class CustomExplosion @JvmOverloads constructor(
     private val level: Level,
-    private val sourceEntity: Entity?,
-    damageSource: DamageSource?,
-    pDamageCalculator: ExplosionDamageCalculator?,
+    private val entity: Entity?,
+    source: DamageSource?,
+    damageCalculator: ExplosionDamageCalculator?,
     private val damage: Float,
     private val x: Double,
     private val y: Double,
     private val z: Double,
     private val radius: Float,
-    pBlockInteraction: BlockInteraction,
+    blockInteraction: BlockInteraction,
     smallParticle: ParticleOptions = ParticleTypes.EXPLOSION,
     bigParticle: ParticleOptions = ParticleTypes.EXPLOSION_EMITTER,
     sound: Holder<SoundEvent> = SoundEvents.GENERIC_EXPLODE
 ) : Explosion(
     level,
-    sourceEntity, damageSource, null,
+    entity, source, null,
     x, y, z, radius,
-    false, pBlockInteraction, smallParticle, bigParticle, sound
+    false, blockInteraction, smallParticle, bigParticle, sound
 ) {
     private val damageSource: DamageSource
     private val damageCalculator: ExplosionDamageCalculator
     private var fireTime = 0
-    private var damageMultiplier = 1f
+    private var beast = false
 
     init {
-        this.damageSource = damageSource ?: level.damageSources().explosion(this)
-        this.damageCalculator = pDamageCalculator ?: ExplosionDamageCalculator()
+        this.damageSource = source ?: level.damageSources().explosion(this)
+        this.damageCalculator = damageCalculator ?: ExplosionDamageCalculator()
     }
 
     constructor(
@@ -118,69 +117,15 @@ class CustomExplosion @JvmOverloads constructor(
         return this
     }
 
-    fun setDamageMultiplier(damageMultiplier: Float): CustomExplosion {
-        this.damageMultiplier = damageMultiplier
+    fun setBeast(flag: Boolean): CustomExplosion {
+        this.beast = flag
         return this
     }
 
     @Suppress("DEPRECATION")
     override fun explode() {
-        // 这个效果更好但是性能损耗巨大
-//        int sampleCount = (int) Mth.clamp(Math.PI * this.radius * this.radius, 64, 4096);
-//
-//        for (int i = 0; i < sampleCount; ++i) {
-//            double theta = 2 * Math.PI * this.level.random.nextDouble();
-//            double phi = Math.acos(2 * this.level.random.nextDouble() - 1);
-//
-//            double d0 = Math.sin(phi) * Math.cos(theta);
-//            double d1 = Math.sin(phi) * Math.sin(theta);
-//            double d2 = Math.cos(phi);
-//
-//            d0 += (this.level.random.nextDouble() - 0.5) * 0.2;
-//            d1 += (this.level.random.nextDouble() - 0.5) * 0.2;
-//            d2 += (this.level.random.nextDouble() - 0.5) * 0.2;
-//
-//            double length = Math.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
-//            d0 /= length;
-//            d1 /= length;
-//            d2 /= length;
-//
-//            float rayStrength = this.radius * (0.7F + this.level.random.nextFloat() * 0.6F);
-//            double currentX = this.x;
-//            double currentY = this.y;
-//            double currentZ = this.z;
-//
-//            for (; rayStrength > 0.0F; rayStrength -= 0.22500001F) {
-//                BlockPos blockpos = BlockPos.containing(currentX, currentY, currentZ);
-//                BlockState blockstate = this.level.getBlockState(blockpos);
-//                FluidState fluidstate = this.level.getFluidState(blockpos);
-//
-//                if (!this.level.isInWorldBounds(blockpos)) {
-//                    break;
-//                }
-//
-//                Optional<Float> optional = this.damageCalculator.getBlockExplosionResistance(
-//                        this, this.level, blockpos, blockstate, fluidstate
-//                );
-//
-//                if (optional.isPresent()) {
-//                    rayStrength -= (optional.get() + 0.3F) * 0.3F;
-//                }
-//
-//                if (rayStrength > 0.0F && this.damageCalculator.shouldBlockExplode(
-//                        this, this.level, blockpos, blockstate, rayStrength
-//                )) {
-//                    set.add(blockpos);
-//                }
-//
-//                currentX += d0 * 0.3;
-//                currentY += d1 * 0.3;
-//                currentZ += d2 * 0.3;
-//            }
-//        }
-
         if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
-            this.level.gameEvent(this.sourceEntity, GameEvent.EXPLODE, Vec3(this.x, this.y, this.z))
+            this.level.gameEvent(this.entity, GameEvent.EXPLODE, Vec3(this.x, this.y, this.z))
             val set: MutableSet<BlockPos> = mutableSetOf()
 
             val center = Vec3(this.x, this.y, this.z)
@@ -312,7 +257,7 @@ class CustomExplosion @JvmOverloads constructor(
         val z0 = Mth.floor(this.z - diameter.toDouble() - 1)
         val z1 = Mth.floor(this.z + diameter.toDouble() + 1)
         val list = this.level.getEntities(
-            this.sourceEntity,
+            this.entity,
             AABB(x0.toDouble(), y0.toDouble(), z0.toDouble(), x1.toDouble(), y1.toDouble(), z1.toDouble())
         )
         EventHooks.onExplosionDetonate(this.level, this, list, diameter.toDouble())
@@ -349,9 +294,7 @@ class CustomExplosion @JvmOverloads constructor(
                         // Capture computed values for delayed application
                         val capturedDamageFinal = damageFinal
                         val capturedDamageSource = this.damageSource
-                        val capturedDamageMultiplier = this.damageMultiplier
                         val capturedFireTime = this.fireTime
-                        val isMonster = entity is Monster
                         val isLiving = entity is LivingEntity
                         val isPlayer = entity is Player
 
@@ -359,8 +302,21 @@ class CustomExplosion @JvmOverloads constructor(
                         val knockbackForce = if (isLiving) {
                             var force = damageFinal * 0.015
 
-                            // TODO 正确计算force
-//                            force = ProtectionEnchantment.getExplosionKnockbackAfterDampener(entity, force)
+                            val blockpos = BlockPos.containing(position.x, position.y, position.z)
+                            val blockstate = this.level.getBlockState(blockpos)
+                            val fluidstate = this.level.getFluidState(blockpos)
+
+                            val optional = this.damageCalculator.getBlockExplosionResistance(
+                                this,
+                                this.level,
+                                blockpos,
+                                blockstate,
+                                fluidstate
+                            )
+                            if (optional.isPresent) {
+                                force -= ((optional.get() + 0.3f) * 0.3f).toDouble()
+                            }
+
                             val vec31 = position.vectorTo(entity.boundingBox.center).normalize()
                             force to vec31
                         } else {
@@ -369,14 +325,10 @@ class CustomExplosion @JvmOverloads constructor(
 
                         val applyShockwaveDamage = Runnable {
                             if (!entity.isRemoved) {
-                                if (isMonster) {
-                                    doDamage(
-                                        entity,
-                                        capturedDamageSource,
-                                        capturedDamageFinal.toFloat() * (1 + 0.2f * capturedDamageMultiplier)
-                                    )
-                                } else {
-                                    doDamage(entity, capturedDamageSource, capturedDamageFinal.toFloat())
+                                entity.forceHurt(capturedDamageSource, capturedDamageFinal.toFloat())
+
+                                if (this.beast && entity != this.damageSource.entity) {
+                                    beastKill(this.damageSource.entity, entity)
                                 }
 
                                 if (knockbackForce != null && entity is LivingEntity) {
@@ -390,8 +342,6 @@ class CustomExplosion @JvmOverloads constructor(
                                             entity.deltaMovement = entity.deltaMovement.add(vec31.scale(force))
                                         }
                                     }
-
-
                                 }
 
                                 entity.invulnerableTime = 1
@@ -432,9 +382,9 @@ class CustomExplosion @JvmOverloads constructor(
         private var destroyBlock: Supplier<BlockInteraction?> =
             Supplier { if (ExplosionConfig.EXPLOSION_DESTROY.get()) BlockInteraction.DESTROY else BlockInteraction.KEEP }
         private var fireTime = 0
-        private var damageMultiplier = 1f
         private var damageSource: DamageSource? = null
         private var particlePosition: Vec3? = null
+        private var beast = false
         var position: Vec3
 
         init {
@@ -488,11 +438,6 @@ class CustomExplosion @JvmOverloads constructor(
             return this
         }
 
-        fun damageMultiplier(damageMultiplier: Float): Builder {
-            this.damageMultiplier = damageMultiplier
-            return this
-        }
-
         fun damageSource(damageSource: DamageSource?): Builder {
             this.damageSource = damageSource
             return this
@@ -505,6 +450,11 @@ class CustomExplosion @JvmOverloads constructor(
 
         fun particlePosition(particlePosition: Vec3?): Builder {
             this.particlePosition = particlePosition
+            return this
+        }
+
+        fun beast(flag: Boolean): Builder {
+            this.beast = flag
             return this
         }
 
@@ -524,7 +474,8 @@ class CustomExplosion @JvmOverloads constructor(
                 position.x, position.y, position.z, radius, destroyBlock.get()!!
             )
                 .setFireTime(fireTime)
-                .setDamageMultiplier(damageMultiplier)
+                .setBeast(beast)
+
             customExplosion.explode()
             EventHooks.onExplosionStart(directSource.level(), customExplosion)
             customExplosion.finalizeExplosion(false)

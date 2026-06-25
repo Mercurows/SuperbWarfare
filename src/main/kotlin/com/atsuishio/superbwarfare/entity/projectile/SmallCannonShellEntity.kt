@@ -92,7 +92,7 @@ open class SmallCannonShellEntity(type: EntityType<out SmallCannonShellEntity>, 
             .position(vec3)
             .withParticleType(explosionParticleType(explosionRadiusValue))
             .destroyBlock { if (hitEntity) Explosion.BlockInteraction.KEEP else (if (ExplosionConfig.EXPLOSION_DESTROY.get()) Explosion.BlockInteraction.DESTROY else Explosion.BlockInteraction.KEEP) }
-            .damageMultiplier(1.25f)
+            .beast(this.isBeast())
             .explode()
     }
 

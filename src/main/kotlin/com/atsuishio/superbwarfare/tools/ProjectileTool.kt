@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.tools
 
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
+import com.atsuishio.superbwarfare.entity.projectile.IBulletProperties
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.tools.ProjectileTool.causeCustomExplode
 import net.minecraft.server.level.ServerLevel
@@ -14,33 +15,28 @@ fun Projectile.customExplode(
     source: DamageSource?,
     target: Entity,
     damage: Float,
-    radius: Float,
-    damageMultiplier: Float = 0.0F
-) = causeCustomExplode(this, source, target, damage, radius, damageMultiplier)
+    radius: Float
+) = causeCustomExplode(this, source, target, damage, radius)
 
 fun Projectile.customExplode(
     target: Entity,
     damage: Float,
-    radius: Float,
-    damageMultiplier: Float = 0.0F
-) = causeCustomExplode(this, target, damage, radius, damageMultiplier)
+    radius: Float
+) = causeCustomExplode(this, target, damage, radius)
 
 fun Projectile.customExplode(
     damage: Float,
-    radius: Float,
-    damageMultiplier: Float = 0.0F
-) = causeCustomExplode(this, damage, radius, damageMultiplier)
+    radius: Float
+) = causeCustomExplode(this, damage, radius)
 
 object ProjectileTool {
     @JvmStatic
-    @JvmOverloads
     fun causeCustomExplode(
         projectile: Projectile,
         source: DamageSource?,
         target: Entity,
         damage: Float,
-        radius: Float,
-        damageMultiplier: Float = 0.0f
+        radius: Float
     ) {
         val particleType = if (radius < 2.0) {
             ParticleTool.ParticleType.MINI
@@ -56,15 +52,18 @@ object ProjectileTool {
             ParticleTool.ParticleType.GIANT
         }
 
-        CustomExplosion.Builder(projectile)
+        val explosion = CustomExplosion.Builder(projectile)
             .damageSource(source)
             .damage(damage)
             .radius(radius)
             .position(Vec3(target.x, target.y + 0.5 * target.bbHeight, target.z))
-            .damageMultiplier(damageMultiplier)
             .withParticleType(particleType)
             .particlePosition(projectile.position().add(projectile.deltaMovement.scale(0.5)))
-            .explode()
+
+        if (projectile is IBulletProperties) {
+            explosion.beast(projectile.isBeast())
+        }
+        explosion.explode()
 
         val pos = projectile.position().add(projectile.deltaMovement.scale(0.5))
 
@@ -83,13 +82,11 @@ object ProjectileTool {
     }
 
     @JvmStatic
-    @JvmOverloads
     fun causeCustomExplode(
         projectile: Projectile,
         target: Entity,
         damage: Float,
-        radius: Float,
-        damageMultiplier: Float = 0.0f
+        radius: Float
     ) {
         causeCustomExplode(
             projectile,
@@ -100,19 +97,16 @@ object ProjectileTool {
             ),
             target,
             damage,
-            radius,
-            damageMultiplier
+            radius
         )
     }
 
     @JvmStatic
-    @JvmOverloads
     fun causeCustomExplode(
         projectile: Projectile,
         damage: Float,
-        radius: Float,
-        damageMultiplier: Float = 0.0f
+        radius: Float
     ) {
-        causeCustomExplode(projectile, projectile, damage, radius, damageMultiplier)
+        causeCustomExplode(projectile, projectile, damage, radius)
     }
 }

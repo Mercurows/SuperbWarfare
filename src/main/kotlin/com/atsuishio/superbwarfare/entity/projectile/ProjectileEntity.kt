@@ -588,6 +588,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
                     .damage(this.explosionDamageValue)
                     .radius(this.explosionRadiusValue)
                     .position(location)
+                    .beast(this.isBeast())
                     .explode()
             }
 
@@ -807,6 +808,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
                 .damage(this.explosionDamageValue)
                 .radius(this.explosionRadiusValue)
                 .position(result.location)
+                .beast(this.isBeast())
                 .explode()
         }
 
