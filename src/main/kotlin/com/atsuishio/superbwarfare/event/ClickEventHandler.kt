@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen
 import com.atsuishio.superbwarfare.compat.CompatHolder
 import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper
 import com.atsuishio.superbwarfare.config.client.ReloadConfig
+import com.atsuishio.superbwarfare.config.server.MapConfig
 import com.atsuishio.superbwarfare.data.gun.FireMode
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
@@ -290,7 +291,7 @@ object ClickEventHandler {
                 handleDismountPress(player)
             }
 
-            if (key == ModKeyMappings.TOGGLE_TACTICAL_MAP.key.value) {
+            if (key == ModKeyMappings.TOGGLE_TACTICAL_MAP.key.value && MapConfig.ENABLE_TACTICAL_MAP.get()) {
                 if (mc.screen == null) {
                     mc.setScreen(TacticalMapScreen())
                 }
