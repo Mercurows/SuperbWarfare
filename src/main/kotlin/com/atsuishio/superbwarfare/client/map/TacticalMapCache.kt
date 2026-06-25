@@ -4,8 +4,8 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.map.TacticalMapCache.drawnChunks
 import com.atsuishio.superbwarfare.client.map.TacticalMapCache.processPendingChunks
+import com.atsuishio.superbwarfare.tools.mc
 import com.mojang.blaze3d.platform.NativeImage
-import net.minecraft.client.Minecraft
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.core.BlockPos
@@ -48,6 +48,10 @@ object TacticalMapCache {
     private val tileTextures = ConcurrentHashMap<RegionPos, DynamicTexture>()
     private val dirtyTiles = mutableSetOf<RegionPos>()
 
+    // LOD tile storage — lazily downsampled from base tiles at low zoom
+    private val lodTileImages = ConcurrentHashMap<LodTileKey, NativeImage>()
+    private val lodTileTextures = ConcurrentHashMap<LodTileKey, DynamicTexture>()
+
     // Chunk update queue
     private val chunkUpdateQueue = ConcurrentHashMap<Long, LevelChunk>()
 
@@ -79,7 +83,7 @@ object TacticalMapCache {
 
     /** Build a world-unique identifier for cache separation. */
     fun getWorldIdentifier(): String {
-        val mc = Minecraft.getInstance()
+        val mc = mc
         // Single player: use integrated server's world data level name
         if (mc.hasSingleplayerServer() && mc.singleplayerServer != null) {
             return mc.singleplayerServer!!.worldData.levelName
@@ -92,6 +96,20 @@ object TacticalMapCache {
             return hash.take(8).joinToString("") { "%02x".format(it) }
         }
         return "unknown"
+    }
+
+    /**
+     * Compute the LOD merge factor for the current zoom level.
+     * Returns a power of 2: 1 = native tiles, 2 = merge 2x2, 4 = merge 4x4, etc.
+     * Capped at 64 to keep LOD tile creation cost bounded.
+     */
+    fun computeLodMergeFactor(zoom: Double): Int {
+        if (zoom >= 2.0) return 1
+        val tileScreenPixels = TILE_SIZE * zoom / 5.0
+        if (tileScreenPixels >= 128.0) return 1
+        var factor = 1
+        while (factor * tileScreenPixels < 128.0 && factor < 64) factor = factor shl 1
+        return factor
     }
 
     // ========================
@@ -123,6 +141,17 @@ object TacticalMapCache {
         currentWorldId = null
         currentDimension = null
         cacheDir = null
+
+        // Release LOD textures from GPU and clear LOD caches
+        for ((key, _) in lodTileTextures) {
+            try {
+                val loc = loc("map_lod_${key.factor}_${key.rx}_${key.rz}")
+                mc.textureManager.release(loc)
+            } catch (_: Exception) {
+            }
+        }
+        lodTileImages.clear()
+        lodTileTextures.clear()
     }
 
     private fun ensureInit(level: Level) {
@@ -177,7 +206,7 @@ object TacticalMapCache {
         // Phase B - INITIAL DRAW: ring scan for chunks never drawn
         // ============================================================
         if (processed < MAX_UPDATES_PER_FRAME) {
-            val viewDist = Minecraft.getInstance().options.renderDistance().get()
+            val viewDist = mc.options.renderDistance().get()
             ringLoop@ for (r in 0..viewDist) {
                 for (dx in -r..r) {
                     for (dz in -r..r) {
@@ -214,7 +243,7 @@ object TacticalMapCache {
         if (now - lastRescanTick < RESCAN_INTERVAL * 50) return
         lastRescanTick = now
 
-        val viewDist = Minecraft.getInstance().options.renderDistance().get()
+        val viewDist = mc.options.renderDistance().get()
         val pcx = (playerX / CHUNK_SIZE).toInt()
         val pcz = (playerZ / CHUNK_SIZE).toInt()
 
@@ -362,6 +391,7 @@ object TacticalMapCache {
                     val tileZ = worldZ and (TILE_SIZE - 1)
                     getOrCreateTile(tileRX, tileRZ).setPixelRGBA(tileX, tileZ, abgr)
                     dirtyTiles.add(RegionPos(tileRX, tileRZ))
+                    invalidateLodTilesForBaseTile(tileRX, tileRZ)
                 }
             }
         }
@@ -405,6 +435,7 @@ object TacticalMapCache {
 
     private const val HEIGHT_BYTES = CHUNK_SIZE * CHUNK_SIZE * 2 // 512
     private const val TOTAL_BYTES = CHUNK_BYTES + HEIGHT_BYTES   // 1536
+
     // Chunks per tile edge: TILE_SIZE / CHUNK_SIZE = 256 / 16 = 16
     private const val CHUNKS_PER_TILE_BITS = 4
 
@@ -414,7 +445,7 @@ object TacticalMapCache {
         // Reuse cached directory if still valid
         cacheDir?.let { if (it.exists()) return it }
         val dir = File(
-            Minecraft.getInstance().gameDirectory,
+            mc.gameDirectory,
             "superbwarfare/tactical_map_cache/$worldId/${dim.replace(":", "_")}"
         )
         dir.mkdirs()
@@ -570,6 +601,7 @@ object TacticalMapCache {
             chunkHeights[chunkPosKey(cx, cz)] = heights
         }
         dirtyTiles.add(RegionPos(imgTileRX, imgTileRZ))
+        invalidateLodTilesForBaseTile(imgTileRX, imgTileRZ)
         drawnChunks.add(chunkPosKey(cx, cz))
     }
 
@@ -632,6 +664,116 @@ object TacticalMapCache {
     }
 
     // ========================
+    //  LOD tile creation & queries
+    // ========================
+
+    /**
+     * Key for LOD tiles. [factor] is the merge factor (power of 2, 2 <= factor <= 64).
+     * [rx] and [rz] are LOD tile grid coordinates; each LOD tile covers
+     * (factor * TILE_SIZE) x (factor * TILE_SIZE) world blocks.
+     */
+    data class LodTileKey(val factor: Int, val rx: Int, val rz: Int)
+
+    /** Downsample factor x factor base tiles into one 256x256 LOD tile. */
+    private fun createLodTile(factor: Int, lodRX: Int, lodRZ: Int): NativeImage {
+        val image = NativeImage(TILE_SIZE, TILE_SIZE, true)
+        val subStep = TILE_SIZE / factor
+
+        for (py in 0 until TILE_SIZE) {
+            val baseRZ = lodRZ * factor + py / subStep
+            val srcZ = (py % subStep) * factor + factor / 2
+
+            for (px in 0 until TILE_SIZE) {
+                val baseRX = lodRX * factor + px / subStep
+                val srcX = (px % subStep) * factor + factor / 2
+
+                val baseTile = tileImages[RegionPos(baseRX, baseRZ)] ?: continue
+                val pixel = baseTile.getPixelRGBA(srcX, srcZ)
+                if (pixel != 0) {
+                    image.setPixelRGBA(px, py, pixel)
+                }
+            }
+        }
+        return image
+    }
+
+    /** Get or create a GPU texture for an LOD tile. */
+    fun getLodTileTexture(factor: Int, lodRX: Int, lodRZ: Int): ResourceLocation {
+        val key = LodTileKey(factor, lodRX, lodRZ)
+        val loc = loc("map_lod_${factor}_${lodRX}_${lodRZ}")
+
+        // Fast path: already on GPU
+        lodTileTextures[key]?.let { return loc }
+
+        // Create the downsampled tile (cached in image map)
+        val image = lodTileImages.computeIfAbsent(key) {
+            createLodTile(factor, lodRX, lodRZ)
+        }
+
+        // Register texture
+        try {
+            mc.textureManager.release(loc)
+        } catch (_: Exception) {
+        }
+        val texture = DynamicTexture(image)
+        mc.textureManager.register(loc, texture)
+        lodTileTextures[key] = texture
+
+        return loc
+    }
+
+    /**
+     * Returns all LOD tile keys visible within the given block radius, sorted by
+     * distance from center so inner tiles render first.
+     */
+    fun getVisibleLodTiles(
+        centerBlockX: Int,
+        centerBlockZ: Int,
+        blockRadius: Int,
+        factor: Int
+    ): List<LodTileKey> {
+        val lodSize = TILE_SIZE * factor
+        val halfSize = lodSize / 2
+        val minRX = Math.floorDiv(centerBlockX - blockRadius - halfSize, lodSize)
+        val maxRX = Math.floorDiv(centerBlockX + blockRadius + halfSize, lodSize)
+        val minRZ = Math.floorDiv(centerBlockZ - blockRadius - halfSize, lodSize)
+        val maxRZ = Math.floorDiv(centerBlockZ + blockRadius + halfSize, lodSize)
+
+        return buildList {
+            for (rx in minRX..maxRX) {
+                for (rz in minRZ..maxRZ) {
+                    add(LodTileKey(factor, rx, rz))
+                }
+            }
+        }.sortedBy { key ->
+            val tcX = key.rx.toLong() * lodSize + halfSize - centerBlockX
+            val tcZ = key.rz.toLong() * lodSize + halfSize - centerBlockZ
+            tcX * tcX + tcZ * tcZ
+        }
+    }
+
+    /** Invalidate all LOD tiles that cover the given base tile. */
+    private fun invalidateLodTilesForBaseTile(rx: Int, rz: Int) {
+        var factor = 2
+        while (factor <= 64) {
+            val lodRX = Math.floorDiv(rx, factor)
+            val lodRZ = Math.floorDiv(rz, factor)
+            val key = LodTileKey(factor, lodRX, lodRZ)
+
+            lodTileImages.remove(key)
+
+            lodTileTextures.remove(key)?.let {
+                try {
+                    val loc = loc("map_lod_${factor}_${lodRX}_${lodRZ}")
+                    mc.textureManager.release(loc)
+                } catch (_: Exception) {
+                }
+            }
+            factor = factor shl 1
+        }
+    }
+
+    // ========================
     //  Tile management
     // ========================
 
@@ -646,11 +788,11 @@ object TacticalMapCache {
         tileTextures.computeIfAbsent(RegionPos(rx, rz)) {
             val loc = loc("map_tile_${rx}_${rz}")
             try {
-                Minecraft.getInstance().textureManager.release(loc)
+                mc.textureManager.release(loc)
             } catch (_: Exception) {
             }
             DynamicTexture(tileImages[RegionPos(rx, rz)]!!).also {
-                Minecraft.getInstance().textureManager.register(loc, it)
+                mc.textureManager.register(loc, it)
             }
         }
         return loc("map_tile_${rx}_${rz}")

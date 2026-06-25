@@ -659,12 +659,9 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
         val scale = zoom / 5.0
         val visibleBlocksX = (mapAreaW / scale).toInt()
         val visibleBlocksZ = (mapAreaH / scale).toInt()
+        val radius = ((visibleBlocksX / 2.0 * 1.5).toInt()).coerceAtLeast(256)
 
-        val tiles = TacticalMapCache.getVisibleTiles(
-            viewBlockX.toInt(),
-            viewBlockZ.toInt(),
-            ((visibleBlocksX / 2.0 * 1.5).toInt()).coerceAtLeast(256)
-        )
+        val factor = TacticalMapCache.computeLodMergeFactor(zoom)
 
         // Use a single PoseStack translate+scale for full float-precision tile positioning.
         // This eliminates the jitter that occurs when tiles are only a few pixels wide
@@ -677,31 +674,68 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
         pose.translate(originScreenX.toFloat(), originScreenZ.toFloat(), 0f)
         pose.scale(scale.toFloat(), scale.toFloat(), 1f)
 
-        for (tile in tiles) {
-            val texLoc = TacticalMapCache.getTileTexture(tile.rx, tile.rz) ?: continue
-
-            val wx = tile.rx * TacticalMapCache.TILE_SIZE
-            val wz = tile.rz * TacticalMapCache.TILE_SIZE
-            val wx2 = wx + TacticalMapCache.TILE_SIZE
-            val wz2 = wz + TacticalMapCache.TILE_SIZE
-
-            // Quick reject in world space
-            val visMinX = viewBlockX - visibleBlocksX / 2.0 - TacticalMapCache.TILE_SIZE
-            val visMaxX = viewBlockX + visibleBlocksX / 2.0 + TacticalMapCache.TILE_SIZE
-            val visMinZ = viewBlockZ - visibleBlocksZ / 2.0 - TacticalMapCache.TILE_SIZE
-            val visMaxZ = viewBlockZ + visibleBlocksZ / 2.0 + TacticalMapCache.TILE_SIZE
-            if (wx2 < visMinX || wx > visMaxX || wz2 < visMinZ || wz > visMaxZ) continue
-
-            RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
-            // Blit at world-space coords the pose stack scales them to screen-space
-            guiGraphics.blit(
-                texLoc,
-                wx, wz,
-                TacticalMapCache.TILE_SIZE, TacticalMapCache.TILE_SIZE,
-                0f, 0f,
-                TacticalMapCache.TILE_SIZE, TacticalMapCache.TILE_SIZE,
-                TacticalMapCache.TILE_SIZE, TacticalMapCache.TILE_SIZE
+        if (factor == 1) {
+            // ── Native tile path (zoom >= 2.0) ──
+            val tiles = TacticalMapCache.getVisibleTiles(
+                viewBlockX.toInt(), viewBlockZ.toInt(), radius
             )
+            for (tile in tiles) {
+                val texLoc = TacticalMapCache.getTileTexture(tile.rx, tile.rz) ?: continue
+
+                val wx = tile.rx * TacticalMapCache.TILE_SIZE
+                val wz = tile.rz * TacticalMapCache.TILE_SIZE
+                val wx2 = wx + TacticalMapCache.TILE_SIZE
+                val wz2 = wz + TacticalMapCache.TILE_SIZE
+
+                // Quick reject in world space
+                val visMinX = viewBlockX - visibleBlocksX / 2.0 - TacticalMapCache.TILE_SIZE
+                val visMaxX = viewBlockX + visibleBlocksX / 2.0 + TacticalMapCache.TILE_SIZE
+                val visMinZ = viewBlockZ - visibleBlocksZ / 2.0 - TacticalMapCache.TILE_SIZE
+                val visMaxZ = viewBlockZ + visibleBlocksZ / 2.0 + TacticalMapCache.TILE_SIZE
+                if (wx2 < visMinX || wx > visMaxX || wz2 < visMinZ || wz > visMaxZ) continue
+
+                RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
+                guiGraphics.blit(
+                    texLoc, wx, wz,
+                    TacticalMapCache.TILE_SIZE, TacticalMapCache.TILE_SIZE,
+                    0f, 0f,
+                    TacticalMapCache.TILE_SIZE, TacticalMapCache.TILE_SIZE,
+                    TacticalMapCache.TILE_SIZE, TacticalMapCache.TILE_SIZE
+                )
+            }
+        } else {
+            // ── LOD tile path (zoom < 2.0) ──
+            val lodSize = TacticalMapCache.TILE_SIZE * factor
+            val lodTiles = TacticalMapCache.getVisibleLodTiles(
+                viewBlockX.toInt(), viewBlockZ.toInt(),
+                radius.coerceAtLeast(lodSize), factor
+            )
+            for (lodTile in lodTiles) {
+                val texLoc = TacticalMapCache.getLodTileTexture(
+                    lodTile.factor, lodTile.rx, lodTile.rz
+                ) ?: continue
+
+                val wx = lodTile.rx * lodSize
+                val wz = lodTile.rz * lodSize
+                val wx2 = wx + lodSize
+                val wz2 = wz + lodSize
+
+                // Quick reject in world space
+                val visMinX = viewBlockX - visibleBlocksX / 2.0 - lodSize
+                val visMaxX = viewBlockX + visibleBlocksX / 2.0 + lodSize
+                val visMinZ = viewBlockZ - visibleBlocksZ / 2.0 - lodSize
+                val visMaxZ = viewBlockZ + visibleBlocksZ / 2.0 + lodSize
+                if (wx2 < visMinX || wx > visMaxX || wz2 < visMinZ || wz > visMaxZ) continue
+
+                RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
+                guiGraphics.blit(
+                    texLoc, wx, wz,
+                    lodSize, lodSize,
+                    0f, 0f,
+                    TacticalMapCache.TILE_SIZE, TacticalMapCache.TILE_SIZE,
+                    TacticalMapCache.TILE_SIZE, TacticalMapCache.TILE_SIZE
+                )
+            }
         }
 
         pose.popPose()
