@@ -24,11 +24,9 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
-import net.neoforged.fml.common.EventBusSubscriber
 import org.joml.Math
 
 @OnlyIn(Dist.CLIENT)
-@EventBusSubscriber(Dist.CLIENT)
 object KirovHud {
     const val ID: String = "@Kirov"
     private val BOMB_SCOPE = loc("textures/overlay/vehicle/aircraft/bomb_scope.png")
@@ -71,8 +69,8 @@ object KirovHud {
 
         val bombHitPosO = ClientEventHandler.bombHitPosO
         val bombHitPos = ClientEventHandler.bombHitPos
-        var bombHitPosX = Mth.lerp(partialTick.toDouble(), bombHitPosO.x, bombHitPos.x)
-        var bombHitPosY = Mth.lerp(partialTick.toDouble(), bombHitPosO.y, bombHitPos.y)
+        val bombHitPosX = Mth.lerp(partialTick.toDouble(), bombHitPosO.x, bombHitPos.x)
+        val bombHitPosY = Mth.lerp(partialTick.toDouble(), bombHitPosO.y, bombHitPos.y)
         val bombHitPosZ = Mth.lerp(partialTick.toDouble(), bombHitPosO.z, bombHitPos.z)
         val posCross = Vec3(bombHitPosX, bombHitPosY, bombHitPosZ)
         val pCross = posCross.worldToScreen()
