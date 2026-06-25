@@ -160,8 +160,14 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
             this.lifeValue = compound.getInt("Life")
         }
 
-        // TODO getCustomEffects
-//        this.effectsValue.addAll(PotionUtils.getCustomEffects(compound))
+        val listTag = compound.getList("CustomPotionEffects", 10)
+        for (i in listTag.indices) {
+            val compoundTag = listTag.getCompound(i)
+            val instance = MobEffectInstance.load(compoundTag)
+            if (instance != null) {
+                this.effectsValue.add(instance)
+            }
+        }
     }
 
     override fun addAdditionalSaveData(compound: CompoundTag) {
@@ -186,8 +192,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         if (!this.effectsValue.isEmpty()) {
             val list = ListTag()
             for (instance in this.effectsValue) {
-                // TODO
-//                list.add(instance.save(CompoundTag()))
+                list.add(instance.save())
             }
             compound.put("CustomPotionEffects", list)
         }

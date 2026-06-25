@@ -20,11 +20,14 @@ import net.minecraft.util.Mth
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.entity.item.PrimedTnt
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Explosion
 import net.minecraft.world.level.ExplosionDamageCalculator
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.SoundType
 import net.minecraft.world.level.gameevent.GameEvent
 import net.minecraft.world.phys.AABB
@@ -415,7 +418,6 @@ class CustomExplosion @JvmOverloads constructor(
                     }
                 }
             }
-
         }
 
         if (hit) {
@@ -456,44 +458,51 @@ class CustomExplosion @JvmOverloads constructor(
         }
     }
 
-    // TODO 1.21 processBlockList
     /**
      * Destroy the given blocks (mark as exploded, spawn drops) and drop their loot.
      * Called both by [finalizeExplosion] for tier-0 blocks and by delayed tasks for outer tiers.
      */
     private fun processBlockList(blocks: Collection<BlockPos>) {
-//        val flag1 = this.indirectSourceEntity is Player
-//        val dropList = ObjectArrayList<Pair<ItemStack, BlockPos>>()
-//
-//        for (blockpos in blocks) {
-//            if (this.level.getBlockState(blockpos).isAir) continue
-//
-//            val blockstate = this.level.getBlockState(blockpos)
-//            val blockpos1 = blockpos.immutable()
-//            this.level.profiler.push("explosion_blocks")
-//
-//            if (this.level is ServerLevel) {
-//                val blockEntity = if (blockstate.hasBlockEntity()) this.level.getBlockEntity(blockpos) else null
-//                val lootParamsBuilder = LootParams.Builder(level)
-//                    .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(blockpos))
-//                    .withParameter(LootContextParams.TOOL, ItemStack.EMPTY)
-//                    .withOptionalParameter(LootContextParams.BLOCK_ENTITY, blockEntity)
-//                    .withOptionalParameter(LootContextParams.THIS_ENTITY, this.entity)
-//                    .withParameter(LootContextParams.EXPLOSION_RADIUS, this.radius)
-//
-//                blockstate.spawnAfterBreak(level, blockpos, ItemStack.EMPTY, flag1)
-//                blockstate.getDrops(lootParamsBuilder).forEach {
-//                    addBlockDrops(dropList, it, blockpos1)
-//                }
-//            }
-//
-//            blockstate.onBlockExploded(this.level, blockpos, this)
-//            this.level.profiler.pop()
-//        }
-//
-//        for (pair in dropList) {
-//            Block.popResource(this.level, pair.getSecond(), pair.getFirst())
-//        }
+        val dropList = arrayListOf<Pair<ItemStack, BlockPos>>()
+
+        this.level.profiler.push("explosion_blocks")
+        for (blockpos in blocks) {
+            if (this.level.getBlockState(blockpos).isAir) continue
+
+            val blockstate = this.level.getBlockState(blockpos)
+            val blockpos1 = blockpos.immutable()
+            blockstate.onExplosionHit(this.level, blockpos1, this) { stack, pos ->
+                addOrAppendStack(dropList, stack, pos)
+            }
+        }
+
+        for (pair in dropList) {
+            Block.popResource(this.level, pair.second, pair.first)
+        }
+
+        this.level.profiler.pop()
+    }
+
+    private fun addOrAppendStack(
+        drops: MutableList<Pair<ItemStack, BlockPos>>,
+        stack: ItemStack,
+        pos: BlockPos
+    ) {
+        for (i in drops.indices) {
+            val pair = drops[i]
+            val itemstack = pair.first
+            if (ItemEntity.areMergable(itemstack, stack)) {
+                drops[i] = Pair(
+                    ItemEntity.merge(itemstack, stack, 16),
+                    pair.second
+                )
+                if (stack.isEmpty) {
+                    return
+                }
+            }
+        }
+
+        drops.add(Pair(stack, pos))
     }
 
     class Builder(private var directSource: Entity) {

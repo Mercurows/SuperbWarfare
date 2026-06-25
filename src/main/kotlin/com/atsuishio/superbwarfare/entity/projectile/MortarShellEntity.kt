@@ -91,7 +91,7 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
         if (stack.`is`(ModItems.POTION_MORTAR_SHELL.get())) {
             val potionContents =
                 stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY)
-            this.potion = potionContents.potion().orElse(Potions.WATER).value()
+            this.potion = potionContents.potion().orElseGet { Potions.WATER }.value()
 
             for (instance in potionContents.allEffects) {
                 this.effectsValue.add(MobEffectInstance(instance))
@@ -280,8 +280,6 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
         if (this.potion === Potions.WATER.value() && this.getEffects().isEmpty()) return
 
         val cloud = AreaEffectCloud(level, pos.x, pos.y, pos.z)
-        // TODO setPotion
-//        cloud.setPotion(this.potion)
         if (this.getEffects().isNotEmpty()) {
             this.getEffects().forEach { cloud.addEffect(it) }
         }
