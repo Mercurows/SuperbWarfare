@@ -58,6 +58,7 @@ object ClientSyncedEntityHandler {
             entity.zo = pos.z
             entity.setPos(syncedEntity.pos)
             entity.deltaMovement = syncedEntity.motion
+            entity.yRot = syncedEntity.yRot
             SYNCED_ENTITIES[key] = ClientSyncedEntity(entity, time)
         }
     }

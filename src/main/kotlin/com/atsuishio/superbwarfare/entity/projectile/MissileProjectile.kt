@@ -154,7 +154,8 @@ abstract class MissileProjectile : DestroyableProjectile, ITrackableProjectile, 
                 ForgeRegistries.ENTITY_TYPES.getKey(type)!!,
                 position(),
                 deltaMovement,
-                serializeNBT()
+                serializeNBT(),
+                yRot
             )
 
             friendlyMissileList.add(synced)

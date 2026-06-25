@@ -24,6 +24,7 @@ data class EntitySyncMessage(
         val type: SerializedResourceLocation,
         val pos: SerializedVec3,
         val motion: SerializedVec3,
-        val tag: SerializedTag
+        val tag: SerializedTag,
+        val yRot: Float = 0f
     )
 }

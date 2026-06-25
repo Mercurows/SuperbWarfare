@@ -69,7 +69,8 @@ object IFFOverlay : CommonOverlay("iff") {
                             ForgeRegistries.ENTITY_TYPES.getKey(it.type)!!,
                             it.position(),
                             it.deltaMovement,
-                            it.serializeNBT()
+                            it.serializeNBT(),
+                            it.yRot
                         )
                     }.toList()
                 ClientSyncedEntityHandler.sync(level.dimension().location(), clientEntities, true)

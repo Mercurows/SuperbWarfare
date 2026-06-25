@@ -2401,7 +2401,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                         ForgeRegistries.ENTITY_TYPES.getKey(it.type)!!,
                         it.position(),
                         it.deltaMovement,
-                        it.serializeNBT()
+                        it.serializeNBT(),
+                        it.yRot
                     )
                 }.toList()
             sendPacketTo(player, EntitySyncMessage(level.dimension().location(), hostileList, false))

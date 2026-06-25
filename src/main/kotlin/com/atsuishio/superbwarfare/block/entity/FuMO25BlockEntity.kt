@@ -362,7 +362,8 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
                     ForgeRegistries.ENTITY_TYPES.getKey(it.type)!!,
                     it.position(),
                     it.deltaMovement,
-                    it.serializeNBT()
+                    it.serializeNBT(),
+                    it.yRot
                 )
             }.toList()
 
