@@ -440,12 +440,12 @@ open class CustomExplosion(
         val flag1 = this.indirectSourceEntity is Player
         val dropList = ObjectArrayList<Pair<ItemStack, BlockPos>>()
 
+        this.level.profiler.push("explosion_blocks")
         for (blockpos in blocks) {
             if (this.level.getBlockState(blockpos).isAir) continue
 
             val blockstate = this.level.getBlockState(blockpos)
             val blockpos1 = blockpos.immutable()
-            this.level.profiler.push("explosion_blocks")
 
             if (this.level is ServerLevel) {
                 val blockEntity = if (blockstate.hasBlockEntity()) this.level.getBlockEntity(blockpos) else null
@@ -463,12 +463,13 @@ open class CustomExplosion(
             }
 
             blockstate.onBlockExploded(this.level, blockpos, this)
-            this.level.profiler.pop()
         }
 
         for (pair in dropList) {
             Block.popResource(this.level, pair.getSecond(), pair.getFirst())
         }
+
+        this.level.profiler.pop()
     }
 
     class Builder(private var directSource: Entity) {
