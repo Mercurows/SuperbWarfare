@@ -170,8 +170,8 @@ class MapContextMenu {
         mapCenterX: Float,
         mapCenterY: Float
     ): MapMarker? {
-        val hw = MapContextMenu.MARKER_TEX_W / 2.0
-        val hh = MapContextMenu.MARKER_TEX_H.toDouble()
+        val hw = MARKER_TEX_W / 2.0
+        val hh = MARKER_TEX_H.toDouble()
         for (marker in markers) {
             // 锚点（底边中点）的屏幕坐标
             val ax = mapCenterX + (marker.x - viewBlockX) * scale
@@ -363,10 +363,11 @@ class MapContextMenu {
         // Cancel button
         val cancelLabel = Component.translatable("context.superbwarfare.tactical_map.cancel").string
         val cancelX = px + panelW - btnW - 8
-        val cancelY = okY
-        val cancelHovered = mouseX in cancelX..cancelX + btnW && mouseY in cancelY..cancelY + btnH
-        guiGraphics.fill(cancelX, cancelY, cancelX + btnW, cancelY + btnH, if (cancelHovered) 0xFF664444.toInt() else 0xFF553333.toInt())
-        guiGraphics.drawString(font, cancelLabel, cancelX + (btnW - font.width(cancelLabel)) / 2, cancelY + 4, 0xFFFFFFFF.toInt(), false)
+        val cancelHovered = mouseX in cancelX..cancelX + btnW && mouseY in okY..okY + btnH
+        guiGraphics.fill(cancelX,
+            okY, cancelX + btnW, okY + btnH, if (cancelHovered) 0xFF664444.toInt() else 0xFF553333.toInt())
+        guiGraphics.drawString(font, cancelLabel, cancelX + (btnW - font.width(cancelLabel)) / 2,
+            okY + 4, 0xFFFFFFFF.toInt(), false)
     }
 
     // ── Edit panel click handling ──
@@ -414,9 +415,8 @@ class MapContextMenu {
 
         // Cancel button
         val cancelX = px + panelW - btnW - 8
-        val cancelY = okY
         if (mouseX in cancelX.toDouble()..(cancelX + btnW).toDouble() &&
-            mouseY in cancelY.toDouble()..(cancelY + btnH).toDouble()
+            mouseY in okY.toDouble()..(okY + btnH).toDouble()
         ) {
             closeEditPanel()
             return true
