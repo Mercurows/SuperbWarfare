@@ -19,7 +19,7 @@ object ModParticleTypes {
     @JvmField
     val EXPLOSION_DEBRIS: RegistryObject<ParticleType<ExplosionDebrisOption>> =
         REGISTRY.register("explosion_debris") {
-            createOptions<ExplosionDebrisOption>(
+            createOptions(
                 ExplosionDebrisOption.CODEC,
                 true,
                 ExplosionDebrisOption.DESERIALIZER
@@ -35,7 +35,7 @@ object ModParticleTypes {
     @JvmField
     val BULLET_DECAL: RegistryObject<ParticleType<BulletDecalOption>> =
         REGISTRY.register("bullet_decal") {
-            createOptions<BulletDecalOption>(
+            createOptions(
                 BulletDecalOption.CODEC,
                 true,
                 BulletDecalOption.DESERIALIZER
@@ -45,7 +45,7 @@ object ModParticleTypes {
     @JvmField
     val CUSTOM_SMOKE: RegistryObject<ParticleType<CustomSmokeOption>> =
         REGISTRY.register("custom_smoke") {
-            createOptions<CustomSmokeOption>(
+            createOptions(
                 CustomSmokeOption.CODEC,
                 true,
                 CustomSmokeOption.DESERIALIZER
@@ -55,7 +55,7 @@ object ModParticleTypes {
     @JvmField
     val CANNON_MUZZLE_FLARE: RegistryObject<ParticleType<CannonMuzzleFlareOption>> =
         REGISTRY.register("cannon_muzzle_flare") {
-            createOptions<CannonMuzzleFlareOption>(
+            createOptions(
                 CannonMuzzleFlareOption.CODEC,
                 true,
                 CannonMuzzleFlareOption.DESERIALIZER
@@ -65,7 +65,7 @@ object ModParticleTypes {
     @JvmField
     val CUSTOM_FLARE: RegistryObject<ParticleType<CustomFlareOption>> =
         REGISTRY.register("custom_flare") {
-            createOptions<CustomFlareOption>(
+            createOptions(
                 CustomFlareOption.CODEC,
                 true,
                 CustomFlareOption.DESERIALIZER
@@ -75,7 +75,7 @@ object ModParticleTypes {
     @JvmField
     val CUSTOM_CLOUD: RegistryObject<ParticleType<CustomCloudOption>> =
         REGISTRY.register("custom_cloud") {
-            createOptions<CustomCloudOption>(
+            createOptions(
                 CustomCloudOption.CODEC,
                 true,
                 CustomCloudOption.DESERIALIZER

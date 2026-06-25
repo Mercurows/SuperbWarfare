@@ -1,16 +1,21 @@
 package com.atsuishio.superbwarfare.client.particle
 
 import com.atsuishio.superbwarfare.init.ModParticleTypes
+import com.atsuishio.superbwarfare.serialization.ByteBufDecoder
+import com.atsuishio.superbwarfare.serialization.ByteBufEncoder
 import com.mojang.brigadier.StringReader
 import com.mojang.brigadier.exceptions.CommandSyntaxException
 import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.serializer
 import net.minecraft.core.particles.ParticleOptions
 import net.minecraft.core.particles.ParticleType
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraftforge.registries.ForgeRegistries
 import kotlin.math.roundToInt
 
+@Serializable
 class CustomCloudOption(
     private val color: Int,
     val life: Int,
@@ -51,12 +56,7 @@ class CustomCloudOption(
     }
 
     override fun writeToNetwork(buffer: FriendlyByteBuf) {
-        buffer.writeInt(this.color)
-        buffer.writeInt(this.life)
-        buffer.writeFloat(this.size)
-        buffer.writeFloat(this.gravity)
-        buffer.writeBoolean(this.cooldown)
-        buffer.writeBoolean(this.light)
+        ByteBufEncoder(buffer).encodeSerializableValue(serializer(), this)
     }
 
     override fun writeToString(): String {
@@ -102,16 +102,7 @@ class CustomCloudOption(
                 override fun fromNetwork(
                     particleType: ParticleType<CustomCloudOption>,
                     buffer: FriendlyByteBuf
-                ): CustomCloudOption {
-                    return CustomCloudOption(
-                        buffer.readInt(),
-                        buffer.readInt(),
-                        buffer.readFloat(),
-                        buffer.readFloat(),
-                        buffer.readBoolean(),
-                        buffer.readBoolean()
-                    )
-                }
+                ) = ByteBufDecoder(buffer).decodeSerializableValue(serializer<CustomCloudOption>())
             }
     }
 }

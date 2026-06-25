@@ -1,16 +1,21 @@
 package com.atsuishio.superbwarfare.client.particle
 
 import com.atsuishio.superbwarfare.init.ModParticleTypes
+import com.atsuishio.superbwarfare.serialization.ByteBufDecoder
+import com.atsuishio.superbwarfare.serialization.ByteBufEncoder
 import com.mojang.brigadier.StringReader
 import com.mojang.brigadier.exceptions.CommandSyntaxException
 import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.serializer
 import net.minecraft.core.particles.ParticleOptions
 import net.minecraft.core.particles.ParticleType
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraftforge.registries.ForgeRegistries
 import kotlin.math.roundToInt
 
+@Serializable
 class ExplosionDebrisOption(
     private val color: Int,
     val life: Int,
@@ -51,12 +56,7 @@ class ExplosionDebrisOption(
     }
 
     override fun writeToNetwork(buffer: FriendlyByteBuf) {
-        buffer.writeInt(this.color)
-        buffer.writeInt(this.life)
-        buffer.writeFloat(this.fade)
-        buffer.writeFloat(this.size)
-        buffer.writeInt(this.animationSpeed)
-        buffer.writeFloat(this.sizeAdd)
+        ByteBufEncoder(buffer).encodeSerializableValue(serializer(), this)
     }
 
     override fun writeToString(): String {
@@ -102,16 +102,7 @@ class ExplosionDebrisOption(
                 override fun fromNetwork(
                     particleType: ParticleType<ExplosionDebrisOption>,
                     buffer: FriendlyByteBuf
-                ): ExplosionDebrisOption {
-                    return ExplosionDebrisOption(
-                        buffer.readInt(),
-                        buffer.readInt(),
-                        buffer.readFloat(),
-                        buffer.readFloat(),
-                        buffer.readInt(),
-                        buffer.readFloat()
-                    )
-                }
+                ) = ByteBufDecoder(buffer).decodeSerializableValue(serializer<ExplosionDebrisOption>())
             }
     }
 }

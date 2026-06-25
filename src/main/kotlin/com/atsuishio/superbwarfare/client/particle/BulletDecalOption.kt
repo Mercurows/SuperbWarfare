@@ -1,10 +1,15 @@
 package com.atsuishio.superbwarfare.client.particle
 
 import com.atsuishio.superbwarfare.init.ModParticleTypes
+import com.atsuishio.superbwarfare.serialization.ByteBufDecoder
+import com.atsuishio.superbwarfare.serialization.ByteBufEncoder
+import com.atsuishio.superbwarfare.serialization.kserializer.SerializedBlockPos
 import com.mojang.brigadier.StringReader
 import com.mojang.brigadier.exceptions.CommandSyntaxException
 import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.serializer
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.particles.ParticleOptions
@@ -12,9 +17,10 @@ import net.minecraft.core.particles.ParticleType
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraftforge.registries.ForgeRegistries
 
+@Serializable
 class BulletDecalOption @JvmOverloads constructor(
     val direction: Direction,
-    val pos: BlockPos,
+    val pos: SerializedBlockPos,
     val red: Float = 0.9f,
     val green: Float = 0f,
     val blue: Float = 0f
@@ -34,11 +40,7 @@ class BulletDecalOption @JvmOverloads constructor(
     }
 
     override fun writeToNetwork(buffer: FriendlyByteBuf) {
-        buffer.writeEnum(this.direction)
-        buffer.writeBlockPos(this.pos)
-        buffer.writeFloat(this.red)
-        buffer.writeFloat(this.green)
-        buffer.writeFloat(this.blue)
+        ByteBufEncoder(buffer).encodeSerializableValue(serializer(), this)
     }
 
     override fun writeToString(): String {
@@ -81,15 +83,7 @@ class BulletDecalOption @JvmOverloads constructor(
                 override fun fromNetwork(
                     particleType: ParticleType<BulletDecalOption>,
                     buffer: FriendlyByteBuf
-                ): BulletDecalOption {
-                    return BulletDecalOption(
-                        buffer.readVarInt(),
-                        buffer.readLong(),
-                        buffer.readFloat(),
-                        buffer.readFloat(),
-                        buffer.readFloat()
-                    )
-                }
+                ) = ByteBufDecoder(buffer).decodeSerializableValue(serializer<BulletDecalOption>())
             }
     }
 }

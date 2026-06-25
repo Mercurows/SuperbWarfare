@@ -1,18 +1,23 @@
 package com.atsuishio.superbwarfare.client.particle
 
 import com.atsuishio.superbwarfare.init.ModParticleTypes
+import com.atsuishio.superbwarfare.serialization.ByteBufDecoder
+import com.atsuishio.superbwarfare.serialization.ByteBufEncoder
 import com.mojang.brigadier.StringReader
 import com.mojang.brigadier.exceptions.CommandSyntaxException
 import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.serializer
 import net.minecraft.core.particles.ParticleOptions
 import net.minecraft.core.particles.ParticleType
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraftforge.registries.ForgeRegistries
 import kotlin.math.roundToInt
 
+@Serializable
 class CannonMuzzleFlareOption(
-    private val color: Int,
+    val color: Int,
     val life: Int,
     val fade: Float,
     val animationSpeed: Int,
@@ -43,16 +48,10 @@ class CannonMuzzleFlareOption(
     val blue: Float
         get() = (this.color and 255) / 255f
 
-    override fun getType(): ParticleType<*> {
-        return ModParticleTypes.CANNON_MUZZLE_FLARE.get()
-    }
+    override fun getType() = ModParticleTypes.CANNON_MUZZLE_FLARE.get()
 
     override fun writeToNetwork(buffer: FriendlyByteBuf) {
-        buffer.writeInt(this.color)
-        buffer.writeInt(this.life)
-        buffer.writeFloat(this.fade)
-        buffer.writeInt(this.animationSpeed)
-        buffer.writeFloat(this.sizeAdd)
+        ByteBufEncoder(buffer).encodeSerializableValue(serializer(), this)
     }
 
     override fun writeToString(): String {
@@ -95,15 +94,7 @@ class CannonMuzzleFlareOption(
                 override fun fromNetwork(
                     particleType: ParticleType<CannonMuzzleFlareOption>,
                     buffer: FriendlyByteBuf
-                ): CannonMuzzleFlareOption {
-                    return CannonMuzzleFlareOption(
-                        buffer.readInt(),
-                        buffer.readInt(),
-                        buffer.readFloat(),
-                        buffer.readInt(),
-                        buffer.readFloat()
-                    )
-                }
+                ) = ByteBufDecoder(buffer).decodeSerializableValue(serializer<CannonMuzzleFlareOption>())
             }
     }
 }
