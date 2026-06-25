@@ -2,7 +2,10 @@ package com.atsuishio.superbwarfare.item.misc
 
 import com.atsuishio.superbwarfare.client.TooltipTool
 import com.atsuishio.superbwarfare.client.screens.FiringParametersScreen
+import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModDataComponents
+import com.atsuishio.superbwarfare.item.IVehicleInteract
 import com.atsuishio.superbwarfare.item.ItemScreenProvider
 import com.atsuishio.superbwarfare.tools.component1
 import com.atsuishio.superbwarfare.tools.component2
@@ -27,7 +30,7 @@ var ItemStack.firingParameters: FiringParametersItem.Parameters
         set(ModDataComponents.FIRING_PARAMETERS, value)
     }
 
-class FiringParametersItem : Item(Properties().stacksTo(1)), ItemScreenProvider {
+class FiringParametersItem : Item(Properties().stacksTo(1)), ItemScreenProvider, IVehicleInteract {
     @JvmRecord
     data class Parameters(val pos: BlockPos, val radius: Int, val isDepressed: Boolean) {
         constructor(pos: BlockPos, isDepressed: Boolean) : this(pos, 0, isDepressed)
@@ -80,5 +83,17 @@ class FiringParametersItem : Item(Properties().stacksTo(1)), ItemScreenProvider 
     @OnlyIn(Dist.CLIENT)
     override fun getItemScreen(stack: ItemStack, player: Player, hand: InteractionHand): Screen {
         return FiringParametersScreen(stack, hand)
+    }
+
+    override fun onInteractVehicle(
+        vehicle: VehicleEntity,
+        stack: ItemStack,
+        player: Player,
+        hand: InteractionHand
+    ): InteractionResult? {
+        if (vehicle !is ArtilleryEntity) return null
+        if (!player.isShiftKeyDown) return null
+        vehicle.setTarget(stack, player, "Main")
+        return InteractionResult.SUCCESS
     }
 }

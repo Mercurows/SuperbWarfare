@@ -4,9 +4,7 @@ import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.entity.vehicle.Plz05Entity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getXRotFromVector
-import com.atsuishio.superbwarfare.init.ModItems
-import com.atsuishio.superbwarfare.init.ModTags
-import com.atsuishio.superbwarfare.item.misc.ArtilleryIndicatorItem
+import com.atsuishio.superbwarfare.item.IVehicleInteract
 import com.atsuishio.superbwarfare.item.misc.firingParameters
 import com.atsuishio.superbwarfare.tools.FormatTool.format0D
 import com.atsuishio.superbwarfare.tools.ParticleTool
@@ -41,36 +39,33 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : VehicleEntity(ty
     open var radius by RADIUS
     open var lockTurret by LOCK_TURRET
 
-
     override fun interact(player: Player, hand: InteractionHand): InteractionResult {
-        val gunData = getGunData("Main") ?: return InteractionResult.SUCCESS
+        if (getGunData("Main") == null) return InteractionResult.SUCCESS
 
-        val stack = player.mainHandItem
-        val item = stack.item
-
-        if (this.canBind() && item is ArtilleryIndicatorItem && !isWreck) {
-            if (player.rootVehicle === this) return InteractionResult.FAIL
-            return item.bind(stack, player, this)
+        val offStack = player.offhandItem
+        val offItem = offStack.item
+        if (offItem is IVehicleInteract) {
+            val res = offItem.onInteractVehicle(this, offStack, player, hand)
+            if (res != null) return res
         }
 
-        if (stack.`is`(ModTags.Items.TOOLS_CROWBAR) && !player.isShiftKeyDown && !isWreck) {
+        return super.interact(player, hand)
+    }
+
+    override fun onCrowbarInteract(
+        stack: ItemStack,
+        player: Player,
+        hand: InteractionHand
+    ): InteractionResult? {
+        val res = super.onCrowbarInteract(stack, player, hand)
+        val gunData = getGunData("Main") ?: return res
+        if (!player.isShiftKeyDown && !isWreck) {
             if (gunData.ammo.get() > 0 && player.level() is ServerLevel) {
                 vehicleShoot(player, "Main", targetPos.center)
             }
             return InteractionResult.SUCCESS
         }
-
-        if (player.mainHandItem.item === ModItems.FIRING_PARAMETERS.get() && player.isShiftKeyDown) {
-            setTarget(player.mainHandItem, player, "Main")
-            return InteractionResult.SUCCESS
-        }
-
-        if (player.offhandItem.item === ModItems.FIRING_PARAMETERS.get() && player.isShiftKeyDown) {
-            setTarget(player.offhandItem, player, "Main")
-            return InteractionResult.SUCCESS
-        }
-
-        return super.interact(player, hand)
+        return res
     }
 
     override fun onAddedToLevel() {

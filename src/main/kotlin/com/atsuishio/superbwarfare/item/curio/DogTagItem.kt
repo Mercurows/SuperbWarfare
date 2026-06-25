@@ -3,11 +3,14 @@ package com.atsuishio.superbwarfare.item.curio
 import com.atsuishio.superbwarfare.client.TooltipTool
 import com.atsuishio.superbwarfare.client.screens.DogTagEditorScreen
 import com.atsuishio.superbwarfare.client.tooltip.component.DogTagImageComponent
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModDataComponents
+import com.atsuishio.superbwarfare.item.IVehicleInteract
 import com.atsuishio.superbwarfare.item.ItemScreenProvider
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Component
 import net.minecraft.world.InteractionHand
+import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.tooltip.TooltipComponent
 import net.minecraft.world.item.Item
@@ -19,10 +22,8 @@ import top.theillusivec4.curios.api.CuriosApi
 import top.theillusivec4.curios.api.SlotContext
 import top.theillusivec4.curios.api.type.capability.ICurioItem
 import java.util.*
-import javax.annotation.ParametersAreNonnullByDefault
 
-class DogTagItem : Item(Properties().stacksTo(1)), ICurioItem, ItemScreenProvider {
-    @ParametersAreNonnullByDefault
+class DogTagItem : Item(Properties().stacksTo(1)), ICurioItem, ItemScreenProvider, IVehicleInteract {
     override fun appendHoverText(
         stack: ItemStack,
         context: TooltipContext,
@@ -47,6 +48,17 @@ class DogTagItem : Item(Properties().stacksTo(1)), ICurioItem, ItemScreenProvide
         return DogTagEditorScreen(stack, hand)
     }
 
+    override fun onInteractVehicle(
+        vehicle: VehicleEntity,
+        stack: ItemStack,
+        player: Player,
+        hand: InteractionHand
+    ): InteractionResult? {
+        if (!player.isShiftKeyDown) return null
+        vehicle.dogTagIcon = getColors(stack).map { it.toList() }.toList()
+        return InteractionResult.SUCCESS
+    }
+
     companion object {
         @JvmStatic
         fun getColors(stack: ItemStack): Array<ShortArray> {
@@ -58,9 +70,9 @@ class DogTagItem : Item(Properties().stacksTo(1)), ICurioItem, ItemScreenProvide
             val data = stack.get(ModDataComponents.DOG_TAG_IMAGE).takeIf { !it.isNullOrEmpty() } ?: return colors
 
             for (i in data.indices union colors.indices) {
-                val color = data[i].takeIf { !it.isNullOrEmpty() } ?: continue
+                val color = data[i].takeIf { it.isNotEmpty() } ?: continue
                 for (j in color.indices union colors[i].indices) {
-                    colors[i][j] = color[j].toShort()
+                    colors[i][j] = color[j]
                 }
             }
 

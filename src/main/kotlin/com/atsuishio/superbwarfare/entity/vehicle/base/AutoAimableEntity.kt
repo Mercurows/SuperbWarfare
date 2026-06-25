@@ -11,7 +11,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.ai.TowerAI
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getXRotFromVector
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.item.container.ContainerBlockItem
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.tools.*
@@ -38,6 +37,7 @@ import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.OwnableEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.projectile.Projectile
+import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.HitResult
@@ -60,43 +60,50 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : VehicleEntity(
         get() = TowerAI.ThreatConfig()
 
     override fun interact(player: Player, hand: InteractionHand): InteractionResult {
-        val stack = player.mainHandItem
+        val res = super.interact(player, hand)
+        if (player.isShiftKeyDown && !isWreck) {
+            if (this.optionalOwnerUUID.isEmpty) {
+                ownerUUID = player.getUUID()
+            }
 
-        if (player.isCrouching && !isWreck) {
-            if (!player.level().isClientSide && stack.`is`(ModTags.Items.TOOLS_CROWBAR) && (owner == null || player === owner)) {
-                val container = ContainerBlockItem.createInstance(this)
-                if (!player.addItem(container)) {
-                    player.drop(container, false)
+            if (this.owner === player) {
+                active = !active
+
+                if (player is ServerPlayer) {
+                    player.level().playSound(
+                        null,
+                        player.onPos,
+                        SoundEvents.ARROW_HIT_PLAYER,
+                        SoundSource.PLAYERS,
+                        0.5f, 1f
+                    )
                 }
-                this.remove(RemovalReason.DISCARDED)
-                this.discard()
-                return InteractionResult.SUCCESS
+                return InteractionResult.sidedSuccess(this.level().isClientSide())
             } else {
-                if (this.optionalOwnerUUID.isEmpty) {
-                    ownerUUID = player.getUUID()
-                }
-
-                if (this.owner === player) {
-                    active = !active
-
-                    if (player is ServerPlayer) {
-                        player.level().playSound(
-                            null,
-                            player.onPos,
-                            SoundEvents.ARROW_HIT_PLAYER,
-                            SoundSource.PLAYERS,
-                            0.5f, 1f
-                        )
-                    }
-                    return InteractionResult.sidedSuccess(this.level().isClientSide())
-                } else {
-                    return InteractionResult.PASS
-                }
+                return InteractionResult.PASS
             }
         }
 
         targetUUID = ""
-        return super.interact(player, hand)
+        return res
+    }
+
+    override fun onCrowbarInteract(
+        stack: ItemStack,
+        player: Player,
+        hand: InteractionHand
+    ): InteractionResult? {
+        if (!player.isShiftKeyDown || this.isWreck) return null
+        if (this.owner != null || player != this.owner) return null
+        if (player.level().isClientSide) return null
+
+        val container = ContainerBlockItem.createInstance(this)
+        if (!player.addItem(container)) {
+            player.drop(container, false)
+        }
+        this.remove(RemovalReason.DISCARDED)
+        this.discard()
+        return InteractionResult.SUCCESS
     }
 
     override fun defineSynchedData(builder: SynchedEntityData.Builder) {
