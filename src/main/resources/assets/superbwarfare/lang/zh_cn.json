@@ -964,8 +964,7 @@
   "weapon.superbwarfare.agm_65_missile_entity": "AGM-65“小牛”空对地导弹 %1$s （实体模式）",
   "weapon.superbwarfare.agm_65_missile_block": "AGM-65“小牛”空对地导弹 %1$s （方块模式）",
   "weapon.superbwarfare.agm_65_missile_coordinates": "AGM-65“小牛”空对地导弹 %1$s （坐标模式）",
-  "weapon.superbwarfare.ru_3m14_missile_block": "3M-14“口径”巡航导弹 %1$s （方块模式）",
-  "weapon.superbwarfare.ru_3m14_missile_coordinates": "3M-14“口径”巡航导弹 %1$s （坐标模式）",
+  "weapon.superbwarfare.ru_3m14_missile": "3M-14“口径”巡航导弹 %1$s",
   "weapon.superbwarfare.9m_120_missile": "9M-120“冲锋”反坦克导弹 %1$s",
   "weapon.superbwarfare.9m_336_missile": "9M-336“柳树”对空导弹 %1$s",
   "weapon.superbwarfare.9m_100_missile": "9M-100对空导弹 %1$s",
@@ -1273,5 +1272,13 @@
   "context.superbwarfare.tactical_map.create_marker_title": "创建标记点",
   "context.superbwarfare.tactical_map.edit_marker_title": "编辑标记点",
   "context.superbwarfare.tactical_map.ok": "确定",
-  "context.superbwarfare.tactical_map.cancel": "取消"
+  "context.superbwarfare.tactical_map.cancel": "取消",
+  "context.superbwarfare.tactical_map.missile_strike": "导弹打击",
+  "context.superbwarfare.tactical_map.missile_ammo": "备弹: %s发",
+  "context.superbwarfare.tactical_map.missile_no_ammo": "弹药耗尽",
+  "context.superbwarfare.tactical_map.direct_attack": "直接攻击",
+  "context.superbwarfare.tactical_map.queue_attack": "队列攻击",
+  "context.superbwarfare.tactical_map.sequential_fire": "次序发射",
+  "context.superbwarfare.tactical_map.cancel_queue": "取消队列",
+  "context.superbwarfare.tactical_map.firing": "发射中"
 }

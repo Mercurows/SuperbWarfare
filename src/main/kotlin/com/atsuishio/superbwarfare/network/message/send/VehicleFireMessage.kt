@@ -12,13 +12,19 @@ import net.minecraft.world.phys.Vec3
 data class VehicleFireMessage(
     val uuid: SerializedUUID?,
     val targetPos: SerializedVector3f?,
+    val weaponName: String? = null,
 ) : ServerPacketPayload() {
     override fun PayloadContext.handler() {
         val player = sender()
         val vehicle = player.vehicle as? VehicleEntity ?: return
 
         if (targetPos != null) {
-            vehicle.vehicleShoot(player, uuid, Vec3(targetPos))
+            // Map strike: fire a specific weapon by name
+            if (weaponName != null) {
+                vehicle.vehicleShoot(player, weaponName, Vec3(targetPos))
+            } else {
+                vehicle.vehicleShoot(player, uuid, Vec3(targetPos))
+            }
         } else {
             vehicle.vehicleShoot(player, uuid, null)
         }

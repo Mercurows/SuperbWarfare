@@ -141,7 +141,6 @@
           "Ammo": "superbwarfare:extra_large_anti_ground_missile",
           "ShouldUnload": false,
           "Override": {
-            "Name": "weapon.superbwarfare.ru_3m14_missile_coordinates",
             "SeekWeaponInfo": {
               "SeekDirection": "Passenger",
               "InputBlockPos": true
@@ -156,7 +155,7 @@
       "EmptyReloadTime": 400,
       "RPM": 120,
       "Projectile": "superbwarfare:ru_3m14_missile",
-      "Name": "weapon.superbwarfare.ru_3m14_missile_block",
+      "Name": "weapon.superbwarfare.ru_3m14_missile",
       "Damage": 5000,
       "ExplosionDamage": 1500,
       "ExplosionRadius": 31,

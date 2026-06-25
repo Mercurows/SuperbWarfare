@@ -6,12 +6,16 @@ import com.atsuishio.superbwarfare.client.map.TacticalMapCache
 import com.atsuishio.superbwarfare.client.map.context.MapContextMenu
 import com.atsuishio.superbwarfare.client.map.context.MapMarker
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType
 import com.atsuishio.superbwarfare.entity.projectile.MissileProjectile
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModKeyMappings
 import com.atsuishio.superbwarfare.init.ModTags
+import com.atsuishio.superbwarfare.network.message.send.VehicleFireMessage
+import com.atsuishio.superbwarfare.serialization.kserializer.SerializedVector3f
 import com.atsuishio.superbwarfare.tools.localPlayer
+import com.atsuishio.superbwarfare.tools.sendPacketToServer
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.math.Axis
@@ -19,6 +23,7 @@ import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.renderer.GameRenderer
+import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
@@ -30,6 +35,7 @@ import net.minecraftforge.api.distmarker.OnlyIn
 import java.io.File
 import java.util.*
 import kotlin.math.atan2
+import kotlin.math.roundToInt
 
 @OnlyIn(Dist.CLIENT)
 class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.tactical_map")) {
@@ -58,7 +64,13 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
         private val ICON_MINE = loc("textures/overlay/tactical_map/vehicle/mine.png")
         private val ICON_MISSILE = loc("textures/overlay/tactical_map/vehicle/missile.png")
         private val ICON_MAID = loc("textures/overlay/tactical_map/vehicle/maid.png")
+
+        // Attack mode
+        private val ATTACK_CURSOR = loc("textures/overlay/tactical_map/attack.png")
+        private val TARGET_FRAME = loc("textures/overlay/tactical_map/target_frame.png")
     }
+
+    private enum class AttackMode { NONE, DIRECT, QUEUE }
 
     // Panel layout
     private var panelX = 0
@@ -94,6 +106,21 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
     // Connection mode
     private var connectionMode = false
     private var connectingFrom: MapMarker? = null
+
+    // ── Missile attack state ──
+    private var attackMode = AttackMode.NONE
+    private var attackWeaponName: String? = null
+    private var attackTargetQueue = mutableListOf<BlockPos>()
+    private var attackFireInterval = 0    // ticks between sequential shots
+    private var directAttackAmmo = 0      // remaining ammo for direct attack cursor display
+    // Queue context menu
+    private var queueMenuVisible = false
+    private var queueMenuX = 0
+    private var queueMenuY = 0
+    // Sequential fire (only active after "次序发射" is clicked)
+    private var seqFireActive = false
+    private var seqFireTimer = 0
+    private var seqFireIndex = 0
 
     // Line context menu
     private var ctxLinePair: Pair<MapMarker, MapMarker>? = null
@@ -286,6 +313,46 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
             markersLoaded = true
         }
 
+        // Sync direct attack ammo from actual GunData (tracks reloads)
+        if (attackMode == AttackMode.DIRECT && attackWeaponName != null) {
+            val vehicle = localPlayer?.vehicle as? VehicleEntity
+            val gd = vehicle?.gunDataMap?.get(attackWeaponName!!)
+            if (gd != null) {
+                val ammoCost = gd.get(GunProp.AMMO_COST_PER_SHOOT)
+                directAttackAmmo = if (ammoCost <= 0) 999
+                    else gd.currentAvailableAmmo(localPlayer) / ammoCost
+            }
+        }
+
+        // Refresh missile weapon ammo counts in open Level 2 menu (tracks reloads)
+        if (contextMenu.missileSubMenuVisible && contextMenu.missileWeapons.isNotEmpty()) {
+            val vehicle = localPlayer?.vehicle as? VehicleEntity
+            if (vehicle != null) {
+                contextMenu.missileWeapons = contextMenu.missileWeapons.map { entry ->
+                    val gd = vehicle.gunDataMap[entry.weaponName]
+                    if (gd != null) {
+                        val ammoCost = gd.get(GunProp.AMMO_COST_PER_SHOOT)
+                        val available = if (ammoCost <= 0) 999
+                            else gd.currentAvailableAmmo(localPlayer) / ammoCost
+                        // Recompute display name so inline %1$s ammo placeholder stays in sync
+                        val rawName = gd.get(GunProp.NAME) ?: entry.weaponName
+                        val translated = try {
+                            Component.translatable(rawName).string
+                        } catch (_: Exception) { rawName }
+                        val ammoStr = "×$available"
+                        val newDisplay = if (translated.contains("%1\$s"))
+                            translated.replace("%1\$s", ammoStr) else translated
+                        entry.copy(ammoCount = available, displayName = newDisplay)
+                    } else entry
+                }
+            }
+        }
+
+        // Sequential fire timer — only active after "次序发射" is clicked
+        if (seqFireActive) {
+            tickSequentialFire()
+        }
+
         // Follow player mode
         if (followPlayer) {
             viewBlockX = player.x
@@ -338,6 +405,11 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
         // Layer 3.6: Position markers
         renderPositionMarkers(pGuiGraphics)
 
+        // Layer 3.7: Queue attack targets
+        if (attackMode == AttackMode.QUEUE) {
+            renderQueueTargets(pGuiGraphics, player)
+        }
+
         // Layer 4: Player marker
         renderPlayerMarker(pGuiGraphics, player)
 
@@ -357,11 +429,14 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
         renderCompassRose(pGuiGraphics)
         renderHudText(pGuiGraphics, player, pMouseX, pMouseY)
 
-        // Connection mode indicator
-        if (connectionMode) {
-            val font = minecraft!!.font
-            val txt = Component.translatable("hud.superbwarfare.tactical_map.connect_mode").string
-            pGuiGraphics.drawString(font, txt, mapLeft, mapTop + mapAreaH + 3 + 10, 0xFFFFAA00.toInt(), false)
+        // ── Attack mode overlay (cursor, queue menu) ──
+        if (attackMode == AttackMode.DIRECT) {
+            renderAttackCursor(pGuiGraphics, pMouseX, pMouseY)
+        }
+
+        // Queue context menu
+        if (queueMenuVisible) {
+            renderQueueMenu(pGuiGraphics, pMouseX, pMouseY)
         }
 
         // Marker hover tooltip (coordinates only, also shown while dragging)
@@ -1005,11 +1080,21 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
         // Position text above the center button, left-aligned with it
         val textX = mapLeft
         val textY = mapTop + mapAreaH + 3
-        guiGraphics.drawString(
-            font,
-            Component.translatable("hud.superbwarfare.tactical_map.pos", posText).string,
-            textX, textY, 0xCC000000.toInt(), false
-        )
+        val fullPosStr = Component.translatable("hud.superbwarfare.tactical_map.pos", posText).string
+        guiGraphics.drawString(font, fullPosStr, textX, textY, 0xCC000000.toInt(), false)
+
+        // Attack mode hints — placed 2px after the position/zoom text
+        val hintX = textX + font.width(fullPosStr) + 2
+        if (attackMode == AttackMode.DIRECT) {
+            val hint = "直接攻击模式：左键发射 | 右键取消"
+            guiGraphics.drawString(font, hint, hintX, textY, 0xFFFF5500.toInt(), false)
+        } else if (attackMode == AttackMode.QUEUE) {
+            val hint = "队列攻击模式：左键添加目标 | 右键打开队列菜单"
+            guiGraphics.drawString(font, hint, hintX, textY, 0xFFFF5500.toInt(), false)
+        } else if (connectionMode) {
+            val hint = Component.translatable("hud.superbwarfare.tactical_map.connect_mode").string
+            guiGraphics.drawString(font, hint, hintX, textY, 0xFFFFAA00.toInt(), false)
+        }
     }
 
     // ========================
@@ -1018,6 +1103,16 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
 
     override fun mouseClicked(pMouseX: Double, pMouseY: Double, pButton: Int): Boolean {
         val font = minecraft!!.font
+
+        // ── Queue context menu click ──
+        if (queueMenuVisible) {
+            return handleQueueMenuClick(pMouseX, pMouseY)
+        }
+
+        // ── Attack mode clicks (handled separately from normal map interaction) ──
+        if (attackMode != AttackMode.NONE) {
+            return handleAttackModeClick(pMouseX, pMouseY, pButton)
+        }
 
         if (contextMenu.editPanelVisible) {
             if (pButton == 0) {
@@ -1163,6 +1258,74 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
             } else {
                 TacticalMapCache.getCachedHeight(wX, wZ)?.toInt() ?: minecraft!!.player!!.blockY
             }
+            // ── Missile strike setup ──
+            contextMenu.missileWeapons = emptyList()
+            contextMenu.onMissileStrike = null
+            val vehicle = localPlayer?.vehicle as? VehicleEntity
+            if (vehicle != null && vehicle.gunDataMap.isNotEmpty()) {
+                val weapons = vehicle.gunDataMap.entries.mapNotNull { (name, gunData) ->
+                    // Check if any ammo type has OnlyLockBlock or InputBlockPos.
+                    // gunData.get() already applies the currently-selected AmmoConsumer's
+                    // Override, but we also need to scan OTHER ammo consumers because the
+                    // player might have a non-lock ammo selected while a lock-capable ammo
+                    // type exists on the same weapon.
+                    val currentSeekInfo = gunData.get(GunProp.SEEK_WEAPON_INFO)
+                    val hasGroundStrike = if (currentSeekInfo != null &&
+                        (currentSeekInfo.onlyLockBlock || currentSeekInfo.inputBlockPos)
+                    ) {
+                        true
+                    } else {
+                        // Check if any AmmoConsumer's Override enables ground strike
+                        val consumers = gunData.get(GunProp.AMMO_CONSUMER)
+                        consumers.any { consumer ->
+                            val o = consumer.override ?: return@any false
+                            val seekObj = o.getAsJsonObject("SeekWeaponInfo") ?: return@any false
+                            (seekObj.get("OnlyLockBlock")?.asBoolean == true)
+                                || (seekObj.get("InputBlockPos")?.asBoolean == true)
+                        }
+                    }
+                    if (hasGroundStrike) {
+                        val ammoCost = gunData.get(GunProp.AMMO_COST_PER_SHOOT)
+                        val available = if (ammoCost <= 0) 999
+                            else gunData.currentAvailableAmmo(localPlayer) / ammoCost
+                        val rawName = gunData.get(GunProp.NAME) ?: name
+                        val translated = try {
+                            Component.translatable(rawName).string
+                        } catch (_: Exception) {
+                            rawName
+                        }
+                        // Fill %1$s with current ammo count (e.g. "×8") when the
+                        // weapon name includes an inline ammo placeholder
+                        val ammoStr = "×$available"
+                        val displayName = if (translated.contains("%1\$s"))
+                            translated.replace("%1\$s", ammoStr)
+                        else translated
+                        MapContextMenu.MissileWeaponEntry(
+                            weaponName = name,
+                            displayName = displayName,
+                            ammoCount = available
+                        )
+                    } else null
+                }
+                if (weapons.isNotEmpty()) {
+                    contextMenu.missileWeapons = weapons
+                    contextMenu.onDirectAttack = { weaponName ->
+                        attackMode = AttackMode.DIRECT
+                        attackWeaponName = weaponName
+                        directAttackAmmo = weapons.find { it.weaponName == weaponName }?.ammoCount ?: 0
+                    }
+                    contextMenu.onQueueAttack = { weaponName ->
+                        attackMode = AttackMode.QUEUE
+                        attackWeaponName = weaponName
+                        attackTargetQueue.clear()
+                        // Store fire interval for sequential fire (default 10 ticks = 0.5s)
+                        val gd = vehicle.gunDataMap[weaponName]
+                        attackFireInterval = gd?.get(GunProp.SHOOT_DELAY_TIME)?.coerceAtLeast(4) ?: 10
+                    }
+                    contextMenu.onMissileStrike = null
+                }
+            }
+
             contextMenu.openMapMenu(pMouseX.toInt(), pMouseY.toInt(), wX, wY, wZ)
             return true
         }
@@ -1273,6 +1436,266 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
     override fun charTyped(pCodePoint: Char, pModifiers: Int): Boolean {
         if (contextMenu.editPanelVisible) return contextMenu.editBoxCharTyped(pCodePoint, pModifiers)
         return super.charTyped(pCodePoint, pModifiers)
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  Missile attack mode rendering & logic
+    // ═══════════════════════════════════════════════════════════════
+
+    private fun renderAttackCursor(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int) {
+        RenderSystem.enableBlend()
+        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
+        // Red when out of ammo, orange when ready
+        if (directAttackAmmo <= 0) {
+            RenderSystem.setShaderColor(0.5f, 0.15f, 0.1f, 0.7f)
+        } else {
+            RenderSystem.setShaderColor(1f, 0.4f, 0.1f, 0.9f)
+        }
+        guiGraphics.blit(ATTACK_CURSOR, mouseX - 8, mouseY - 8, 0f, 0f, 16, 16, 16, 16)
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
+        // Ammo count in top-right corner
+        val font = minecraft!!.font
+        val ammoText = "×$directAttackAmmo"
+        guiGraphics.drawString(font, ammoText,
+            mouseX + 10, mouseY - 12,
+            if (directAttackAmmo > 0) 0xFFFFAA00.toInt() else 0xFFAA3333.toInt(), true)
+    }
+
+    private fun renderQueueTargets(guiGraphics: GuiGraphics, player: Player) {
+        val scale = zoom / 5.0
+        val font = minecraft!!.font
+        RenderSystem.enableBlend()
+        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
+        for ((i, pos) in attackTargetQueue.withIndex()) {
+            val sx = mapCenterX + (pos.x + 0.5 - viewBlockX) * scale
+            val sy = mapCenterY + (pos.z + 0.5 - viewBlockZ) * scale
+            val ix = sx.toFloat() - 8f
+            val iy = sy.toFloat() - 8f
+            RenderSystem.setShaderColor(1f, 0.67f, 0.1f, 0.9f)
+            guiGraphics.blit(TARGET_FRAME, ix.roundToInt(), iy.roundToInt(), 0f, 0f, 16, 16, 16, 16)
+            // Sequence number centered inside the frame
+            val num = "${i + 1}"
+            val nw = font.width(num)
+            guiGraphics.drawString(font, num,
+                (sx - nw / 2f).roundToInt(), (sy - font.lineHeight / 2f).roundToInt(),
+                0xFFFFFFFF.toInt(), false)
+        }
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
+    }
+
+    private fun renderQueueMenu(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int) {
+        val font = minecraft!!.font
+        val items = listOf(
+            Component.translatable("context.superbwarfare.tactical_map.sequential_fire").string,
+            Component.translatable("context.superbwarfare.tactical_map.cancel_queue").string,
+        )
+        if (attackTargetQueue.isEmpty()) {
+            // Only show cancel when queue is empty
+            val label = Component.translatable("context.superbwarfare.tactical_map.cancel_queue").string
+            val pw = font.width(label) + 8
+            val ph = 14
+            var mx = queueMenuX + 8
+            var my = queueMenuY
+            if (mx + pw > width) mx = queueMenuX - pw - 8
+            if (my + ph > height) my = height - ph - 4
+            val hovered = mouseX in mx..mx + pw && mouseY in my..my + ph
+            guiGraphics.fill(mx, my, mx + pw, my + ph, 0xEE2A2A2A.toInt())
+            if (hovered) guiGraphics.fill(mx + 1, my, mx + pw - 1, my + ph, 0x66444444)
+            guiGraphics.drawString(font, label, mx + 4, my + 3,
+                if (hovered) 0xFFFF5555.toInt() else 0xFFCC6666.toInt(), false)
+            return
+        }
+        val padding = 4
+        val itemHeight = 12
+        val menuW = items.maxOf { font.width(it) } + padding * 2
+        val menuH = items.size * itemHeight + padding * 2 + 2
+        var mx = queueMenuX + 8
+        var my = queueMenuY
+        if (mx + menuW > width) mx = queueMenuX - menuW - 8
+        if (my + menuH > height) my = height - menuH - 4
+        val noAmmo = currentAttackAmmo() <= 0
+        val disabled = noAmmo || seqFireActive
+        guiGraphics.fill(mx, my, mx + menuW, my + menuH, 0xEE2A2A2A.toInt())
+        for ((i, label) in items.withIndex()) {
+            val iy = my + padding + i * itemHeight
+            val hovered = mouseX in mx..mx + menuW && mouseY in iy..iy + itemHeight
+            val isSeqFire = i == 0
+            val itemColor = if (isSeqFire && disabled) 0xFF666666.toInt()
+                else if (hovered) 0xFFFFFFFF.toInt() else 0xFFCCCCCC.toInt()
+            if (hovered && (!isSeqFire || !disabled)) {
+                guiGraphics.fill(mx + 1, iy, mx + menuW - 1, iy + itemHeight, 0x664444FF)
+            }
+            guiGraphics.drawString(font, label, mx + padding, iy + 2, itemColor, false)
+            if (hovered && isSeqFire && disabled) {
+                val tip = if (seqFireActive)
+                    Component.translatable("context.superbwarfare.tactical_map.firing")
+                else Component.translatable("context.superbwarfare.tactical_map.missile_no_ammo")
+                guiGraphics.renderTooltip(font, listOf(tip), Optional.empty(), mouseX, mouseY)
+            }
+        }
+    }
+
+    private fun fireMissileAt(worldX: Int, worldY: Int, worldZ: Int) {
+        val name = attackWeaponName ?: return
+        sendPacketToServer(
+            VehicleFireMessage(
+                uuid = null,
+                targetPos = SerializedVector3f(worldX.toFloat(), worldY + 1.5f, worldZ.toFloat()),
+                weaponName = name
+            )
+        )
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    //  Attack mode mouse handling (called from mouseClicked)
+    // ═══════════════════════════════════════════════════════════════
+
+    private fun handleAttackModeClick(mouseX: Double, mouseY: Double, button: Int): Boolean {
+        if (attackMode == AttackMode.DIRECT) {
+            if (button == 0 && isMouseInPanel(mouseX, mouseY)) {
+                if (currentAttackAmmo() <= 0) return true // no ammo, ignore
+                val wX = (viewBlockX + (mouseX - mapCenterX) / (zoom / 5.0)).toInt()
+                val wZ = (viewBlockZ + (mouseY - mapCenterY) / (zoom / 5.0)).toInt()
+                val level = minecraft!!.player!!.level()
+                val chunk = level.getChunk(wX shr 4, wZ shr 4)
+                val loaded = chunk is LevelChunk && !chunk.isEmpty
+                val wY = if (loaded)
+                    level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, wX, wZ)
+                else TacticalMapCache.getCachedHeight(wX, wZ)?.toInt() ?: minecraft!!.player!!.blockY
+                fireMissileAt(wX, wY, wZ)
+                // Ammo refreshed next tick from actual GunData (tracks reloads)
+                return true
+            }
+            if (button == 1) {
+                attackMode = AttackMode.NONE
+                attackWeaponName = null
+                return true
+            }
+            return true // consume all clicks in direct attack mode
+        }
+
+        if (attackMode == AttackMode.QUEUE) {
+            if (button == 0 && isMouseInPanel(mouseX, mouseY)) {
+                // Use real-time ammo so reloads are respected
+                if (attackTargetQueue.size >= currentAttackAmmo()) return true
+                val wX = (viewBlockX + (mouseX - mapCenterX) / (zoom / 5.0)).toInt()
+                val wZ = (viewBlockZ + (mouseY - mapCenterY) / (zoom / 5.0)).toInt()
+                val level = minecraft!!.player!!.level()
+                val chunk = level.getChunk(wX shr 4, wZ shr 4)
+                val loaded = chunk is LevelChunk && !chunk.isEmpty
+                val wY = if (loaded)
+                    level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, wX, wZ)
+                else TacticalMapCache.getCachedHeight(wX, wZ)?.toInt() ?: minecraft!!.player!!.blockY
+                attackTargetQueue.add(BlockPos(wX, wY, wZ))
+                return true
+            }
+            if (button == 1) {
+                queueMenuX = mouseX.toInt()
+                queueMenuY = mouseY.toInt()
+                queueMenuVisible = true
+                return true
+            }
+            return true // consume all clicks in queue mode
+        }
+        return false
+    }
+
+    private fun handleQueueMenuClick(mouseX: Double, mouseY: Double): Boolean {
+        if (!queueMenuVisible) return false
+        val font = minecraft!!.font
+
+        if (attackTargetQueue.isEmpty()) {
+            val label = Component.translatable("context.superbwarfare.tactical_map.cancel_queue").string
+            val pw = font.width(label) + 8
+            val ph = 14
+            var mx = queueMenuX + 8
+            var my = queueMenuY
+            if (mx + pw > width) mx = queueMenuX - pw - 8
+            if (my + ph > height) my = height - ph - 4
+            if (mouseX in mx.toDouble()..(mx + pw).toDouble() && mouseY in my.toDouble()..(my + ph).toDouble()) {
+                cancelQueueAttack()
+                return true
+            }
+            queueMenuVisible = false
+            return true
+        }
+
+        val items = listOf(
+            Component.translatable("context.superbwarfare.tactical_map.sequential_fire").string,
+            Component.translatable("context.superbwarfare.tactical_map.cancel_queue").string,
+        )
+        val padding = 4
+        val itemHeight = 12
+        val menuW = items.maxOf { font.width(it) } + padding * 2
+        val menuH = items.size * itemHeight + padding * 2 + 2
+        var mx = queueMenuX + 8
+        var my = queueMenuY
+        if (mx + menuW > width) mx = queueMenuX - menuW - 8
+        if (my + menuH > height) my = height - menuH - 4
+
+        for ((i, _) in items.withIndex()) {
+            val iy = my + padding + i * itemHeight
+            if (mouseX in mx.toDouble()..(mx + menuW).toDouble() && mouseY in iy.toDouble()..(iy + itemHeight).toDouble()) {
+                when (i) {
+                    0 -> if (!seqFireActive && currentAttackAmmo() > 0) {
+                        queueMenuVisible = false
+                        startSequentialFire()
+                    }
+                    1 -> {
+                        queueMenuVisible = false
+                        cancelQueueAttack()
+                    }
+                }
+                return true
+            }
+        }
+        queueMenuVisible = false
+        return true
+    }
+
+    private fun startSequentialFire() {
+        if (attackTargetQueue.isEmpty()) return
+        seqFireActive = true
+        seqFireIndex = 0
+        seqFireTimer = 0 // fire first shot immediately next tick
+    }
+
+    private fun cancelQueueAttack() {
+        seqFireActive = false
+        attackMode = AttackMode.NONE
+        attackWeaponName = null
+        attackTargetQueue.clear()
+        seqFireTimer = 0
+        seqFireIndex = 0
+        queueMenuVisible = false
+    }
+
+    /** Read current ammo for the attack weapon, or 0 if unavailable. */
+    private fun currentAttackAmmo(): Int {
+        val name = attackWeaponName ?: return 0
+        val vehicle = localPlayer?.vehicle as? VehicleEntity ?: return 0
+        val gd = vehicle.gunDataMap[name] ?: return 0
+        val ammoCost = gd.get(GunProp.AMMO_COST_PER_SHOOT)
+        return if (ammoCost <= 0) 999
+            else gd.currentAvailableAmmo(localPlayer) / ammoCost
+    }
+
+    // Called from tick() for sequential fire
+    private fun tickSequentialFire() {
+        if (seqFireIndex >= attackTargetQueue.size) {
+            seqFireActive = false
+            return
+        }
+        if (seqFireTimer > 0) {
+            seqFireTimer--
+            return
+        }
+        // Guard: don't fire if no ammo (tracks reloads in real-time)
+        if (currentAttackAmmo() <= 0) return
+        val pos = attackTargetQueue[seqFireIndex]
+        fireMissileAt(pos.x, pos.y, pos.z)
+        seqFireIndex++
+        seqFireTimer = attackFireInterval
     }
 
     override fun renderBackground(pGuiGraphics: GuiGraphics) {

@@ -964,8 +964,7 @@
   "weapon.superbwarfare.agm_65_missile_entity": "AGM-65 %1$s (Entity Mode)",
   "weapon.superbwarfare.agm_65_missile_block": "AGM-65 %1$s (Block Mode)",
   "weapon.superbwarfare.agm_65_missile_coordinates": "AGM-65 %1$s (Coordinates Mode)",
-  "weapon.superbwarfare.ru_3m14_missile_block": "3M-14 Kalibr Cruise Missile %1$s (Block Mode)",
-  "weapon.superbwarfare.ru_3m14_missile_coordinates": "3M-14 Kalibr Cruise Missile %1$s (Coordinates Mode)",
+  "weapon.superbwarfare.ru_3m14_missile": "3M-14 Kalibr Cruise Missile %1$s",
   "weapon.superbwarfare.9m_120_missile": "9M-120 %1$s",
   "weapon.superbwarfare.9m_336_missile": "9M-336 %1$s",
   "weapon.superbwarfare.9m_100_missile": "9M-100 %1$s",
@@ -1273,5 +1272,13 @@
   "context.superbwarfare.tactical_map.create_marker_title": "Create Marker",
   "context.superbwarfare.tactical_map.edit_marker_title": "Edit Marker",
   "context.superbwarfare.tactical_map.ok": "OK",
-  "context.superbwarfare.tactical_map.cancel": "Cancel"
+  "context.superbwarfare.tactical_map.cancel": "Cancel",
+  "context.superbwarfare.tactical_map.missile_strike": "Missile Strike",
+  "context.superbwarfare.tactical_map.missile_ammo": "Ammo: %s",
+  "context.superbwarfare.tactical_map.missile_no_ammo": "No ammo",
+  "context.superbwarfare.tactical_map.direct_attack": "Direct Attack",
+  "context.superbwarfare.tactical_map.queue_attack": "Queue Attack",
+  "context.superbwarfare.tactical_map.sequential_fire": "Sequential Fire",
+  "context.superbwarfare.tactical_map.cancel_queue": "Cancel Queue",
+  "context.superbwarfare.tactical_map.firing": "Firing"
 }

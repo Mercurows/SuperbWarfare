@@ -47,6 +47,35 @@ class MapContextMenu {
     // Callback: delete a marker
     var onMarkerDelete: ((MapMarker) -> Unit)? = null
     var onConnectRequested: ((MapMarker) -> Unit)? = null
+    var onMissileStrike: ((String) -> Unit)? = null
+    var onDirectAttack: ((String) -> Unit)? = null
+    var onQueueAttack: ((String) -> Unit)? = null
+
+    // ── Missile strike sub-menu state ──
+    var missileSubMenuVisible = false
+        private set
+    var missileSubMenuX = 0
+        private set
+    var missileSubMenuY = 0
+        private set
+    var missileWeapons: List<MissileWeaponEntry> = emptyList()
+
+    // ── Missile action sub-menu (Level 3) ──
+    var actionSubMenuVisible = false
+        private set
+    var actionSubMenuX = 0
+        private set
+    var actionSubMenuY = 0
+        private set
+    var actionSelectedWeapon: MissileWeaponEntry? = null
+        private set
+
+    /** Entry for a single missile weapon shown in the sub-menu. */
+    data class MissileWeaponEntry(
+        val weaponName: String,
+        val displayName: String,
+        val ammoCount: Int
+    )
 
     // ── Internal data class for menu items ──
     data class ContextMenuItem(val label: String, val action: () -> Unit)
@@ -77,7 +106,17 @@ class MapContextMenu {
 
     fun closeMenu() {
         ctxMenuVisible = false
+        missileSubMenuVisible = false
+        actionSubMenuVisible = false
         ctxTargetMarker = null
+    }
+
+    /** Open the missile strike sub-menu at the given screen position. */
+    fun openMissileSubMenu(screenX: Int, screenY: Int, weapons: List<MissileWeaponEntry>) {
+        missileWeapons = weapons
+        missileSubMenuX = screenX
+        missileSubMenuY = screenY
+        missileSubMenuVisible = true
     }
 
     fun openEditPanel(marker: MapMarker?) {
@@ -134,22 +173,36 @@ class MapContextMenu {
                 }
             )
         } else {
-            listOf(
-                ContextMenuItem(
-                    Component.translatable(
-                        "context.superbwarfare.tactical_map.teleport",
-                        ctxWorldX, ctxWorldY + 1, ctxWorldZ
-                    ).string
-                ) {
-                    val mc = Minecraft.getInstance()
-                    mc.player?.connection?.sendCommand("tp $ctxWorldX ${ctxWorldY + 1} $ctxWorldZ")
-                },
-                ContextMenuItem(
-                    Component.translatable("context.superbwarfare.tactical_map.create_marker").string
-                ) {
-                    openEditPanel(null)
+            buildList {
+                add(
+                    ContextMenuItem(
+                        Component.translatable(
+                            "context.superbwarfare.tactical_map.teleport",
+                            ctxWorldX, ctxWorldY + 1, ctxWorldZ
+                        ).string
+                    ) {
+                        val mc = Minecraft.getInstance()
+                        mc.player?.connection?.sendCommand("tp $ctxWorldX ${ctxWorldY + 1} $ctxWorldZ")
+                    }
+                )
+                add(
+                    ContextMenuItem(
+                        Component.translatable("context.superbwarfare.tactical_map.create_marker").string
+                    ) {
+                        openEditPanel(null)
+                    }
+                )
+                // Missile strike: only shown when the player's vehicle has lock-on-block weapons
+                if (missileWeapons.isNotEmpty()) {
+                    add(
+                        ContextMenuItem(
+                            Component.translatable("context.superbwarfare.tactical_map.missile_strike").string
+                        ) {
+                            openMissileSubMenu(ctxMenuX, ctxMenuY, missileWeapons)
+                        }
+                    )
                 }
-            )
+            }
         }
     }
 
@@ -204,6 +257,12 @@ class MapContextMenu {
 
     // ── Context menu rendering ──
 
+    // Track main menu bounds for sub-menu positioning
+    private var mainMenuMx = 0
+    private var mainMenuMy = 0
+    private var mainMenuW = 0
+    private var mainMenuH = 0
+
     private fun renderContextMenu(
         guiGraphics: GuiGraphics,
         font: net.minecraft.client.gui.Font,
@@ -225,6 +284,11 @@ class MapContextMenu {
         if (mx + menuW > screenWidth) mx = ctxMenuX - menuW - 8
         if (my + menuH > screenHeight) my = screenHeight - menuH - 4
 
+        mainMenuMx = mx
+        mainMenuMy = my
+        mainMenuW = menuW
+        mainMenuH = menuH
+
         // Background
         guiGraphics.fill(mx, my, mx + menuW, my + menuH, 0xEE2A2A2A.toInt())
         guiGraphics.fill(mx, my, mx + menuW, my + 1, 0xFF555555.toInt())
@@ -242,12 +306,201 @@ class MapContextMenu {
                 if (hovered) 0xFFFFFFFF.toInt() else 0xFFCCCCCC.toInt(), false
             )
         }
+
+        // Missile strike sub-menu
+        if (missileSubMenuVisible && missileWeapons.isNotEmpty()) {
+            renderMissileSubMenu(guiGraphics, font, mouseX, mouseY, screenWidth, screenHeight)
+        }
+
+        // Missile action sub-menu (Level 3)
+        if (actionSubMenuVisible && actionSelectedWeapon != null) {
+            renderActionSubMenu(guiGraphics, font, mouseX, mouseY, screenWidth, screenHeight)
+        }
+    }
+
+    private fun renderMissileSubMenu(
+        guiGraphics: GuiGraphics,
+        font: net.minecraft.client.gui.Font,
+        mouseX: Int,
+        mouseY: Int,
+        screenWidth: Int,
+        screenHeight: Int
+    ) {
+        val padding = 4
+        val itemHeight = 12
+
+        // Sub-menu appears to the right of the main menu
+        var smx = mainMenuMx + mainMenuW + 2
+        var smy = mainMenuMy
+
+        // Compute max label width: "weaponName (×N)" for each entry
+        val labels = missileWeapons.map { "${it.displayName}  (×${it.ammoCount})" }
+        val subMenuW = labels.maxOf { font.width(it) } + padding * 2
+        val subMenuH = missileWeapons.size * itemHeight + padding * 2 + 2
+
+        // Flip to left side if it would overflow
+        if (smx + subMenuW > screenWidth) smx = mainMenuMx - subMenuW - 2
+        if (smy + subMenuH > screenHeight) smy = screenHeight - subMenuH - 4
+
+        // Background
+        guiGraphics.fill(smx, smy, smx + subMenuW, smy + subMenuH, 0xEE1E2A1E.toInt())
+        guiGraphics.fill(smx, smy, smx + subMenuW, smy + 1, 0xFF446644.toInt())
+        guiGraphics.fill(smx, smy + subMenuH - 1, smx + subMenuW, smy + subMenuH, 0xFF446644.toInt())
+        guiGraphics.fill(smx, smy, smx + 1, smy + subMenuH, 0xFF446644.toInt())
+        guiGraphics.fill(smx + subMenuW - 1, smy, smx + subMenuW, smy + subMenuH, 0xFF446644.toInt())
+
+        // Items
+        for ((i, entry) in missileWeapons.withIndex()) {
+            val iy = smy + padding + i * itemHeight
+            val label = labels[i]
+            val hovered = mouseX in smx..smx + subMenuW && mouseY in iy..iy + itemHeight
+            if (hovered) guiGraphics.fill(smx + 1, iy, smx + subMenuW - 1, iy + itemHeight, 0x66448844)
+            guiGraphics.drawString(
+                font, label, smx + padding, iy + 2,
+                if (hovered) 0xFFFFFFFF.toInt() else 0xFFAACCAA.toInt(), false
+            )
+
+            // Tooltip on hover: full ammo info
+            if (hovered && entry.ammoCount > 0) {
+                guiGraphics.renderTooltip(
+                    font,
+                    listOf(
+                        Component.translatable(
+                            "context.superbwarfare.tactical_map.missile_ammo",
+                            entry.ammoCount
+                        )
+                    ),
+                    java.util.Optional.empty(),
+                    mouseX, mouseY
+                )
+            } else if (hovered) {
+                guiGraphics.renderTooltip(
+                    font,
+                    listOf(Component.translatable("context.superbwarfare.tactical_map.missile_no_ammo")),
+                    java.util.Optional.empty(),
+                    mouseX, mouseY
+                )
+            }
+        }
+    }
+
+    private fun renderActionSubMenu(
+        guiGraphics: GuiGraphics,
+        font: net.minecraft.client.gui.Font,
+        mouseX: Int,
+        mouseY: Int,
+        screenWidth: Int,
+        screenHeight: Int
+    ) {
+        val items = listOf(
+            Component.translatable("context.superbwarfare.tactical_map.direct_attack").string,
+            Component.translatable("context.superbwarfare.tactical_map.queue_attack").string,
+        )
+        val padding = 4
+        val itemHeight = 12
+        val menuW = items.maxOf { font.width(it) } + padding * 2
+        val menuH = items.size * itemHeight + padding * 2 + 2
+
+        var smx = actionSubMenuX
+        var smy = actionSubMenuY
+        if (smx + menuW > screenWidth) smx = actionSubMenuX - menuW - 2
+        if (smy + menuH > screenHeight) smy = screenHeight - menuH - 4
+
+        // Background (dark olive)
+        guiGraphics.fill(smx, smy, smx + menuW, smy + menuH, 0xEE1E2A1E.toInt())
+        guiGraphics.fill(smx, smy, smx + menuW, smy + 1, 0xFF446644.toInt())
+        guiGraphics.fill(smx, smy + menuH - 1, smx + menuW, smy + menuH, 0xFF446644.toInt())
+        guiGraphics.fill(smx, smy, smx + 1, smy + menuH, 0xFF446644.toInt())
+        guiGraphics.fill(smx + menuW - 1, smy, smx + menuW, smy + menuH, 0xFF446644.toInt())
+
+        for ((i, label) in items.withIndex()) {
+            val iy = smy + padding + i * itemHeight
+            val hovered = mouseX in smx..smx + menuW && mouseY in iy..iy + itemHeight
+            if (hovered) guiGraphics.fill(smx + 1, iy, smx + menuW - 1, iy + itemHeight, 0x66448844)
+            guiGraphics.drawString(
+                font, label, smx + padding, iy + 2,
+                if (hovered) 0xFFFFFFFF.toInt() else 0xFFAACCAA.toInt(), false
+            )
+        }
     }
 
     // ── Context menu click handling ──
 
     fun handleContextMenuClick(mouseX: Double, mouseY: Double, font: net.minecraft.client.gui.Font, screenWidth: Int, screenHeight: Int): Boolean {
         if (!ctxMenuVisible) return false
+
+        // ── Action sub-menu (Level 3) click handling ──
+        if (actionSubMenuVisible && actionSelectedWeapon != null) {
+            val items = listOf(
+                Component.translatable("context.superbwarfare.tactical_map.direct_attack").string,
+                Component.translatable("context.superbwarfare.tactical_map.queue_attack").string,
+            )
+            val padding = 4
+            val itemHeight = 12
+            val menuW = items.maxOf { font.width(it) } + padding * 2
+            val menuH = items.size * itemHeight + padding * 2 + 2
+            var smx = actionSubMenuX
+            var smy = actionSubMenuY
+            if (smx + menuW > screenWidth) smx = actionSubMenuX - menuW - 2
+            if (smy + menuH > screenHeight) smy = screenHeight - menuH - 4
+
+            for ((i, _) in items.withIndex()) {
+                val iy = smy + padding + i * itemHeight
+                if (mouseX in smx.toDouble()..(smx + menuW).toDouble() && mouseY in iy.toDouble()..(iy + itemHeight).toDouble()) {
+                    val weapon = actionSelectedWeapon!!
+                    when (i) {
+                        0 -> onDirectAttack?.invoke(weapon.weaponName)
+                        1 -> onQueueAttack?.invoke(weapon.weaponName)
+                    }
+                    ctxMenuVisible = false
+                    missileSubMenuVisible = false
+                    actionSubMenuVisible = false
+                    return true
+                }
+            }
+            // Click outside action menu closes it
+            actionSubMenuVisible = false
+            return true
+        }
+
+        // ── Missile sub-menu click handling ──
+        if (missileSubMenuVisible && missileWeapons.isNotEmpty()) {
+            val padding = 4
+            val itemHeight = 12
+            val labels = missileWeapons.map { "${it.displayName}  (×${it.ammoCount})" }
+            val subMenuW = labels.maxOf { font.width(it) } + padding * 2
+            val subMenuH = missileWeapons.size * itemHeight + padding * 2 + 2
+            var smx = mainMenuMx + mainMenuW + 2
+            var smy = mainMenuMy
+            if (smx + subMenuW > screenWidth) smx = mainMenuMx - subMenuW - 2
+            if (smy + subMenuH > screenHeight) smy = screenHeight - subMenuH - 4
+
+            // Check sub-menu items → open Level 3 action menu
+            for ((i, entry) in missileWeapons.withIndex()) {
+                val iy = smy + padding + i * itemHeight
+                if (mouseX in smx.toDouble()..(smx + subMenuW).toDouble() && mouseY in iy.toDouble()..(iy + itemHeight).toDouble()) {
+                    if (entry.ammoCount > 0) {
+                        actionSelectedWeapon = entry
+                        // Position the action menu to the right of the sub-menu
+                        actionSubMenuX = smx + subMenuW + 2
+                        actionSubMenuY = iy
+                        actionSubMenuVisible = true
+                    }
+                    return true
+                }
+            }
+
+            // Click outside sub-menu closes it (but keeps main menu if click is in main menu area)
+            val inMainMenu = mouseX in mainMenuMx.toDouble()..(mainMenuMx + mainMenuW).toDouble()
+                && mouseY in mainMenuMy.toDouble()..(mainMenuMy + mainMenuH).toDouble()
+            if (!inMainMenu && !(mouseX in smx.toDouble()..(smx + subMenuW).toDouble() && mouseY in smy.toDouble()..(smy + subMenuH).toDouble())) {
+                missileSubMenuVisible = false
+                return true
+            }
+            // Click in main menu area with sub-menu open → close sub-menu, process main item
+            missileSubMenuVisible = false
+            // Fall through to process main menu click
+        }
 
         val items = buildItems()
         if (items.isEmpty()) return false
@@ -265,11 +518,14 @@ class MapContextMenu {
             val iy = my + padding + i * itemHeight
             if (mouseX in mx.toDouble()..(mx + menuW).toDouble() && mouseY in iy.toDouble()..(iy + itemHeight).toDouble()) {
                 item.action()
-                ctxMenuVisible = false
+                if (!missileSubMenuVisible) {
+                    ctxMenuVisible = false
+                }
                 return true
             }
         }
         ctxMenuVisible = false
+        missileSubMenuVisible = false
         return true
     }
 
