@@ -160,6 +160,10 @@ object ModTags {
         @JvmField
         val GUN_DAMAGE = modDamageTag("gun_damage")
 
+        // 能够由卓越前线的枪械造成的伤害，可用于进度的伤害类型判断
+        @JvmField
+        val SBW_GUN_FIRE_DAMAGE = modDamageTag("sbw_gun_fire_damage")
+
         // 载具减伤不会计算的伤害类型
         @JvmField
         val BYPASSES_VEHICLE = modDamageTag("bypasses_vehicle")

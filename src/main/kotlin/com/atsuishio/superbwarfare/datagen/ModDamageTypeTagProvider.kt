@@ -74,6 +74,12 @@ class ModDamageTypeTagProvider(
             ModDamageTypes.CUSTOM_EXPLOSION,
             ModDamageTypes.PROJECTILE_EXPLOSION
         )
+        this.tag(ModTags.DamageTypes.SBW_GUN_FIRE_DAMAGE).add(
+            ModDamageTypes.GUN_FIRE,
+            ModDamageTypes.GUN_FIRE_HEADSHOT,
+            ModDamageTypes.GUN_FIRE_ABSOLUTE,
+            ModDamageTypes.GUN_FIRE_HEADSHOT_ABSOLUTE
+        )
 
         this.tag(DamageTypeTags.ALWAYS_HURTS_ENDER_DRAGONS).add(
             ModDamageTypes.PROJECTILE_EXPLOSION,

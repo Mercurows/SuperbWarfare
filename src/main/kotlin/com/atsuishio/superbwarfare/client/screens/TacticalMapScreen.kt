@@ -40,7 +40,7 @@ import kotlin.math.atan2
 import kotlin.math.roundToInt
 
 @OnlyIn(Dist.CLIENT)
-class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.tactical_map")) {
+class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare.tactical_map")) {
 
     companion object {
         private var savedFollowPlayer = false
@@ -529,7 +529,7 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
         if (centerBtn.isMouseOver(pMouseX.toDouble(), pMouseY.toDouble())) {
             pGuiGraphics.renderTooltip(
                 font,
-                listOf(Component.translatable("hud.superbwarfare.tactical_map.center_tooltip")),
+                listOf(Component.translatable("context.superbwarfare.tactical_map.center_tooltip")),
                 Optional.empty(),
                 pMouseX, pMouseY
             )
@@ -537,7 +537,7 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
         if (followBtn.isMouseOver(pMouseX.toDouble(), pMouseY.toDouble())) {
             pGuiGraphics.renderTooltip(
                 font,
-                listOf(Component.translatable("hud.superbwarfare.tactical_map.follow_tooltip")),
+                listOf(Component.translatable("context.superbwarfare.tactical_map.follow_tooltip")),
                 Optional.empty(),
                 pMouseX, pMouseY
             )
@@ -1233,12 +1233,12 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
             }
             "$wx, $wy, $wz"
         } else {
-            Component.translatable("hud.superbwarfare.tactical_map.unknown").string
+            Component.translatable("context.superbwarfare.tactical_map.unknown").string
         }) + "  ×${"%.1f".format(zoom)}"
         // Position text above the center button, left-aligned with it
         val textX = mapLeft
         val textY = mapTop + mapAreaH + 3
-        val fullPosStr = Component.translatable("hud.superbwarfare.tactical_map.pos", posText).string
+        val fullPosStr = Component.translatable("context.superbwarfare.tactical_map.pos", posText).string
         guiGraphics.drawString(font, fullPosStr, textX, textY, 0xCC000000.toInt(), false)
 
         // Attack mode hints — placed 2px after the position/zoom text
@@ -1250,7 +1250,7 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
             val hint = "队列攻击模式：左键添加目标 | 右键打开队列菜单"
             guiGraphics.drawString(font, hint, hintX, textY, 0xFFFF5500.toInt(), false)
         } else if (connectionMode) {
-            val hint = Component.translatable("hud.superbwarfare.tactical_map.connect_mode").string
+            val hint = Component.translatable("context.superbwarfare.tactical_map.connect_mode").string
             guiGraphics.drawString(font, hint, hintX, textY, 0xFFFFAA00.toInt(), false)
         }
     }

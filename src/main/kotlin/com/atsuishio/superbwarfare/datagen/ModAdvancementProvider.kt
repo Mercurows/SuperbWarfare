@@ -3,10 +3,15 @@ package com.atsuishio.superbwarfare.datagen
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.advancement.criteria.OttoSprintTrigger
 import com.atsuishio.superbwarfare.advancement.criteria.RPGMeleeExplosionTrigger
+import com.atsuishio.superbwarfare.advancement.criteria.VehicleHurtTrigger
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModPerks
 import com.atsuishio.superbwarfare.init.ModTags
 import net.minecraft.advancements.Advancement
+import net.minecraft.advancements.critereon.DamagePredicate
+import net.minecraft.advancements.critereon.DamageSourcePredicate
+import net.minecraft.advancements.critereon.MinMaxBounds
+import net.minecraft.advancements.critereon.TagPredicate
 import net.minecraft.data.CachedOutput
 import net.minecraft.data.DataProvider
 import net.minecraft.data.PackOutput
@@ -150,6 +155,23 @@ class ModAdvancementProvider(private val packOutput: PackOutput, private val exi
                 .externalTrigger(OttoSprintTrigger.TriggerInstance.get())
                 .type(ModAdvancement.Type.SECRET_CHALLENGE)
                 .parent(mainRoot)
+        }
+
+        val deleteYourGun = advancement("delete_your_gun") {
+            it.icon(ModItems.K_98.get())
+                .externalTrigger(
+                    VehicleHurtTrigger.TriggerInstance.vehicleHurt(
+                        DamagePredicate.Builder.damageInstance()
+                            .type(
+                                DamageSourcePredicate.Builder.damageType().tag(
+                                    TagPredicate.`is`(ModTags.DamageTypes.GUN_DAMAGE)
+                                )
+                            )
+                            .dealtDamage(MinMaxBounds.Doubles.atMost(0.1))
+                    )
+                )
+                .type(ModAdvancement.Type.SECRET_CHALLENGE)
+                .parent(superContainer)
         }
     }
 

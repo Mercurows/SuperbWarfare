@@ -106,7 +106,7 @@ class LoiterConfigScreen(private val vehicle: VehicleEntity) :
         guiGraphics.blit(TEXTURE, i, j, 0f, 0f, imageWidth, imageHeight, 256, 256)
 
         // --- Title ---
-        val title = Component.translatable("screen.superbwarfare.loiter_config.title")
+        val title = Component.translatable("container.superbwarfare.loiter_config.title")
         guiGraphics.drawString(this.font, title, i + 6, j + 6, 0xFF000000.toInt(), false)
 
         // Render buttons
@@ -133,7 +133,7 @@ class LoiterConfigScreen(private val vehicle: VehicleEntity) :
             guiGraphics.blit(TEXTURE, terrainCheckbox.x, terrainCheckbox.y, 229f, 0f, 15, 15, 256, 256)
             guiGraphics.renderTooltip(
                 this.font,
-                Component.translatable("screen.superbwarfare.loiter_config.skip_terrain"),
+                Component.translatable("container.superbwarfare.loiter_config.skip_terrain"),
                 mouseX, mouseY
             )
         }
