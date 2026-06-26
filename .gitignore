@@ -129,3 +129,4 @@ run/
 
 .kotlin
 /.claude/settings.json
+/CLAUDE.md

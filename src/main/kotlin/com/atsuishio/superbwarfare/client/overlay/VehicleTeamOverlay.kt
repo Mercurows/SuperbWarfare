@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.overlay
 
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
+import com.atsuishio.superbwarfare.config.server.MarkerConfig
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimableEntity
@@ -29,7 +30,9 @@ import kotlin.math.max
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(Dist.CLIENT)
 object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
-    override fun shouldRender() = super.shouldRender() && DisplayConfig.VEHICLE_INFO.get()
+    // PJM: серверный конфиг ENABLE_VEHICLE_INFO_MARKER жёстко выключает маркер над техникой для всех
+    override fun shouldRender() =
+        super.shouldRender() && DisplayConfig.VEHICLE_INFO.get() && MarkerConfig.ENABLE_VEHICLE_INFO_MARKER.get()
 
     private var lookingEntity: Entity? = null
     private var entityRange = 0.0

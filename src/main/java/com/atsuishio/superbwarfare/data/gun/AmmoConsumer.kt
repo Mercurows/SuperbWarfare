@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.annotation.ServerOnly
 import com.atsuishio.superbwarfare.data.*
 import com.atsuishio.superbwarfare.data.gun.ammo_consumer_strategy.AmmoConsumeStrategy
+import com.atsuishio.superbwarfare.data.gun.ammo_consumer_strategy.InvalidAmmoStrategy
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedGsonObject
 import com.atsuishio.superbwarfare.tools.isSameItemStack
 import com.google.gson.annotations.SerializedName
@@ -159,7 +160,17 @@ class AmmoConsumer : DeserializeFromString, PropertyModifier<GunData, DefaultGun
 
 
     fun init() {
-        if (ammo == null) return
+        if (ammo == null) {
+            // PJM: sentinel-консьюмер с null ammo (например AmmoConsumer.INVALID,
+            // возвращаемый selectedAmmoConsumer() при пустом AMMO_CONSUMER) всё равно
+            // обязан иметь strategy — иначе count()/consume()/withdraw() обращаются к
+            // неинициализированному lateinit strategy и падают. Назначаем штатную
+            // запасную InvalidAmmoStrategy (как match() делает для нераспознанной строки).
+            strategy = InvalidAmmoStrategy
+            type = InvalidAmmoStrategy.defaultType
+            initialized = true
+            return
+        }
 
         val trimmed = ammo!!.trim()
 
