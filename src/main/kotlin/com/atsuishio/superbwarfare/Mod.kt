@@ -13,6 +13,7 @@ import com.atsuishio.superbwarfare.data.CustomData
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.network.NetworkRegistry
 import com.atsuishio.superbwarfare.sound.SoundLimit
+import com.atsuishio.superbwarfare.tools.ServerSyncedEntityHandler
 import net.minecraft.SharedConstants
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
@@ -98,6 +99,10 @@ class Mod {
     fun tick(event: TickEvent.ServerTickEvent) {
         if (event.phase == TickEvent.Phase.END) {
             executeWork(SERVER_QUEUE)
+            val server = event.server
+            if (server.tickCount % 200 == 0) {
+                ServerSyncedEntityHandler.cleanAll(server)
+            }
         }
     }
 

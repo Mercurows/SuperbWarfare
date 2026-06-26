@@ -4,30 +4,27 @@ import com.atsuishio.superbwarfare.client.ClientSyncedEntityHandler
 import com.atsuishio.superbwarfare.network.ClientPacketPayload
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedResourceLocation
-import com.atsuishio.superbwarfare.serialization.kserializer.SerializedTag
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedVec3
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class EntitySyncMessage(
+data class RadarSyncMessage(
     val dim: SerializedResourceLocation,
-    val list: List<SyncedEntity>,
-    val friendly: Boolean,
-    val neutral: Boolean = false
+    val radars: List<SyncedRadar>,
 ) : ClientPacketPayload() {
     override fun PayloadContext.handler() {
-        ClientSyncedEntityHandler.sync(dim, list, friendly, neutral)
+        ClientSyncedEntityHandler.syncRadars(dim, radars)
     }
 
     @Serializable
-    data class SyncedEntity(
-        val id: Int,
-        val type: SerializedResourceLocation,
+    data class SyncedRadar(
         val pos: SerializedVec3,
-        val targetPos: SerializedVec3?,
-        val tag: SerializedTag,
-        val yRot: Float = 0f,
-        /** 离地高度，-1 表示未计算 */
-        val heightAboveGround: Double = -1.0,
+        val radius: Double,
+        val sweepAngle: Double,
+        val yRot: Double,
+        val ownerName: String,
+        val showIcon: Boolean = true,
+        /** 雷达源唯一标识（如 "block_<pos>" / "vehicle_<id>"），用于替换而非累积 */
+        val sourceId: String = "",
     )
 }

@@ -26,7 +26,6 @@ import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
-import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.vehicle.Boat
@@ -66,6 +65,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         private val ICON_MINE = loc("textures/overlay/tactical_map/vehicle/mine.png")
         private val ICON_MISSILE = loc("textures/overlay/tactical_map/vehicle/missile.png")
         private val ICON_MAID = loc("textures/overlay/tactical_map/vehicle/maid.png")
+        private val RADAR_ICON = loc("textures/overlay/tactical_map/radar.png")
 
         // Attack mode
         private val ATTACK_CURSOR = loc("textures/overlay/tactical_map/attack.png")
@@ -984,117 +984,124 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             GlStateManager.DestFactor.ZERO
         )
 
-        val all = (ClientSyncedEntityHandler.getSyncedFriendlyEntities(level))
-            .filter { it.vehicle == null }  // 跳过乘客
+        // 雷达扇面置于最底层，防止遮挡实体图标
+        renderRadars(level, scale, guiGraphics)
+
+        // 友方（绿色）
+        val friendlyAll = (ClientSyncedEntityHandler.getSyncedFriendlyEntities(level))
+            .filter { it.vehicle == null }
             .distinctBy { it.id }
-
-        for (e in all) {
-
+        for (e in friendlyAll) {
             val entity = level.getEntity(e.id) ?: e
-            val dx = Mth.lerp(pPartialTick.toDouble(), entity.xo, entity.x) - viewBlockX
-            val dz = Mth.lerp(pPartialTick.toDouble(), entity.zo, entity.z) - viewBlockZ
-            val screenX = mapCenterX + (dx * scale).toFloat()
-            val screenY = mapCenterY + (dz * scale).toFloat()
-            val icon = getVehicleIcon(entity)
-            val iconSize = 12
-
-            val clampedX = screenX.coerceIn((mapLeft + 4).toFloat(), (mapLeft + mapAreaW - 4).toFloat())
-            val clampedY = screenY.coerceIn((mapTop + 4).toFloat(), (mapTop + mapAreaH - 4).toFloat())
-            val alpha = if (screenX == clampedX && screenY == clampedY) 1f else 0.5f
-
-            RenderSystem.setShaderColor(1f, 1f, 1f, alpha)
-            val pose = guiGraphics.pose()
-            pose.pushPose()
-            pose.translate(clampedX, clampedY, 0f)
-            if (entity is VehicleEntity || entity is MissileProjectile) {
-                pose.rotateAround(Axis.ZP.rotationDegrees(entity.yRot + 180f), 0f, 0f, 0f)
-            }
-            guiGraphics.blit(
-                icon,
-                -iconSize / 2, -iconSize / 2,
-                0f, 0f, iconSize, iconSize, iconSize, iconSize
-            )
-            pose.popPose()
-
-            // 渲染导弹目标位置：target_pos 图标 + 红色虚线 + 距离
-            if (entity is MissileProjectile) {
-                val key = ClientSyncedEntityHandler.SyncedKey(level.dimension().location(), e.id, true)
-                val synced = ClientSyncedEntityHandler.SYNCED_ENTITIES[key]
-                var targetPos = synced?.targetPos
-                if (level.getEntity(entity.id) != null) {
-                    targetPos = entity.getTargetPos()
-                }
-
-                if (targetPos != null) {
-                    renderTargetPos(targetPos, scale, screenX, screenY, guiGraphics, entity)
-                }
-            }
-
-            // 渲染自身飞机盘旋巡航点：cruise_marker 图标 + 红色虚线 + 距离
-            if (entity is VehicleEntity && entity.loiterActive && player.vehicle == entity) {
-                val useDragPos = draggingLoiterPoint || System.currentTimeMillis() < loiterDragExpireTime
-                val lx = if (useDragPos) loiterDragNewX else entity.loiterCenterX
-                val lz = if (useDragPos) loiterDragNewZ else entity.loiterCenterZ
-                val navScreenX = mapCenterX + (lx - viewBlockX) * scale
-                val navScreenY = mapCenterY + (lz - viewBlockZ) * scale
-
-                // 青色虚线（与连线模式预览虚线同款写法）
-                val ldx = navScreenX - screenX
-                val ldy = navScreenY - screenY
-                val len = kotlin.math.sqrt((ldx * ldx + ldy * ldy).toDouble()).toFloat()
-                if (len > 2f) {
-                    val angle = atan2(ldy.toDouble(), ldx.toDouble())
-                    val midX = ((screenX + navScreenX) / 2f).toFloat()
-                    val midY = ((screenY + navScreenY) / 2f).toFloat()
-                    val dashColor = 0xAACDFFF6.toInt()
-                    val linePose = guiGraphics.pose()
-                    linePose.pushPose()
-                    linePose.translate(midX, midY, 0f)
-                    linePose.rotateAround(Axis.ZP.rotationDegrees(Math.toDegrees(angle).toFloat()), 0f, 0f, 0f)
-                    val halfLen = (len / 2f).toInt()
-                    var ox = -halfLen
-                    while (ox < halfLen) {
-                        guiGraphics.fill(ox, 0, ox + 1, 1, dashColor)
-                        ox += 2
-                    }
-                    linePose.popPose()
-
-                    // 距离标注
-                    val font = minecraft!!.font
-                    val dist = kotlin.math.sqrt((lx - entity.x) * (lx - entity.x) + (lz - entity.z) * (lz - entity.z))
-                    val label = "${dist.toInt()}m"
-                    guiGraphics.drawString(font, label, (navScreenX + 10).toInt(), (navScreenY + 6).toInt(), 0xFFCDFFF6.toInt(), true)
-                }
-
-                // 巡航点贴图（底边中点锚定，与标记点一致规格 8x13）
-                RenderSystem.disableDepthTest()
-                RenderSystem.depthMask(false)
-                RenderSystem.enableBlend()
-                RenderSystem.setShader { GameRenderer.getPositionTexShader() }
-                RenderSystem.blendFuncSeparate(
-                    GlStateManager.SourceFactor.SRC_ALPHA,
-                    GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
-                    GlStateManager.SourceFactor.ONE,
-                    GlStateManager.DestFactor.ZERO
-                )
-                
-                val clampedNX = navScreenX.coerceIn(
-                    (mapLeft + 4).toDouble(),
-                    (mapLeft + mapAreaW - 4).toDouble()
-                ).toFloat()
-                val clampedNY = navScreenY.coerceIn(
-                    (mapTop + 13).toDouble(),
-                    (mapTop + mapAreaH).toDouble()
-                ).toFloat()
-                val navPose = guiGraphics.pose()
-                navPose.pushPose()
-                navPose.translate(clampedNX, clampedNY, 0f)
-                guiGraphics.blit(CRUISE_MARKER, -4, -13, 0f, 0f, 8, 13, 8, 13)
-                navPose.popPose()
-            }
-
-            RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
+            renderMapEntity(entity, level, scale, pPartialTick, guiGraphics, 0xFF7FFFAD.toInt())
         }
+
+        // 中立（灰色）
+        val neutralAll = (ClientSyncedEntityHandler.getSyncedNeutralEntities(level))
+            .filter { it.vehicle == null }
+            .distinctBy { it.id }
+        for (e in neutralAll) {
+            val entity = level.getEntity(e.id) ?: e
+            renderMapEntity(entity, level, scale, pPartialTick, guiGraphics, 0xFFAAAAAA.toInt())
+        }
+
+        // 敌对（红色）
+        val hostileAll = (ClientSyncedEntityHandler.getSyncedHostileEntities(level))
+            .filter { it.vehicle == null }
+            .distinctBy { it.id }
+        for (e in hostileAll) {
+            val entity = level.getEntity(e.id) ?: e
+            renderMapEntity(entity, level, scale, pPartialTick, guiGraphics, 0xFFFF5555.toInt())
+        }
+
+        // 雷达图标置于最顶层
+        renderRadarsIcon(level, scale, guiGraphics)
+
+        RenderSystem.depthMask(true)
+        RenderSystem.defaultBlendFunc()
+        RenderSystem.enableDepthTest()
+        RenderSystem.disableBlend()
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
+    }
+
+    /**
+     * 在战术地图上渲染队友雷达图标和半透明绿色扇面。
+     * 图层 0（最底层）—— 所有后续添加的图标都应渲染在此层之上。
+     */
+
+    private fun renderRadarsIcon(level: net.minecraft.world.level.Level, scale: Double, guiGraphics: GuiGraphics) {
+        val radars = ClientSyncedEntityHandler.getSyncedRadars(level)
+        if (radars.isEmpty()) return
+
+        // 雷达图标
+        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
+        for (radar in radars) {
+            if (radar.showIcon) {
+                val rx = (mapCenterX + (radar.pos.x - viewBlockX) * scale).toFloat()
+                val ry = (mapCenterY + (radar.pos.z - viewBlockZ) * scale).toFloat()
+                val iconSize = 8
+
+                RenderSystem.setShaderColor(1f, 1f, 1f, 0.9f)
+
+                guiGraphics.blit(RADAR_ICON,
+                    (rx - iconSize / 2).toInt(), (ry - iconSize / 2).toInt(),
+                    0f, 0f, iconSize, iconSize, iconSize, iconSize)
+            }
+
+        }
+
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
+    }
+    private fun renderRadars(level: net.minecraft.world.level.Level, scale: Double, guiGraphics: GuiGraphics) {
+        val radars = ClientSyncedEntityHandler.getSyncedRadars(level)
+        if (radars.isEmpty()) return
+
+        RenderSystem.disableDepthTest()
+        RenderSystem.depthMask(false)
+        RenderSystem.enableBlend()
+        RenderSystem.defaultBlendFunc()
+
+        // 绘制扇面（始终绘制）
+        RenderSystem.setShader { GameRenderer.getPositionShader() }
+        for (radar in radars) {
+            val rx = (mapCenterX + (radar.pos.x - viewBlockX) * scale).toFloat()
+            val ry = (mapCenterY + (radar.pos.z - viewBlockZ) * scale).toFloat()
+            val pr = (radar.radius * scale).toFloat()
+            val startAngle = (radar.yRot - radar.sweepAngle / 2.0 - 90.0).toFloat()
+            val sweep = radar.sweepAngle.toFloat().coerceIn(0f, 360f)
+            drawFilledSector(guiGraphics, rx, ry, pr, startAngle, sweep)
+        }
+
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
+    }
+
+    /** 使用 POSITION shader + TRIANGLE_STRIP 绘制填充扇形（0~360° 即完整圆） */
+    private fun drawFilledSector(guiGraphics: GuiGraphics, cx: Float, cy: Float, radius: Float, startDeg: Float, sweepDeg: Float) {
+        if (radius < 2f || sweepDeg <= 0f) return
+        RenderSystem.setShaderColor(0f, 1f, 0f, 0.2f)
+
+        val pose = guiGraphics.pose()
+        pose.pushPose()
+        pose.translate(cx, cy, 0f)
+
+        val tess = com.mojang.blaze3d.vertex.Tesselator.getInstance()
+        val buf = tess.builder
+        // 根据屏幕像素弧长动态计算分段数，小扇面少三角形以优化性能，允许棱角感
+        val arcPixels = sweepDeg / 180f * kotlin.math.PI.toFloat() * radius
+        val steps = (arcPixels / 30f).toInt().coerceIn(3, 12)
+        buf.begin(com.mojang.blaze3d.vertex.VertexFormat.Mode.TRIANGLE_STRIP,
+            com.mojang.blaze3d.vertex.DefaultVertexFormat.POSITION)
+        val matrix = pose.last().pose()
+
+        for (i in 0..steps) {
+            val angleRad = Math.toRadians((startDeg + sweepDeg * i / steps).toDouble())
+            val x = (kotlin.math.cos(angleRad) * radius).toFloat()
+            val y = (kotlin.math.sin(angleRad) * radius).toFloat()
+            buf.vertex(matrix, x, y, 0f).endVertex()
+            buf.vertex(matrix, 0f, 0f, 0f).endVertex()
+        }
+        tess.end()
+        pose.popPose()
     }
 
     private fun renderTargetPos(targetPos: Vec3, scale: Double, screenX: Float, screenY: Float, guiGraphics: GuiGraphics, entity: Entity) {
@@ -1142,6 +1149,110 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         targetPose.scale(breathScale, breathScale, 1f)
         guiGraphics.blit(TARGET_POS, -8, -8, 0f, 0f, 16, 16, 16, 16)
         targetPose.popPose()
+    }
+
+    /**
+     * 在战术地图上渲染单个实体图标（含颜色染色、导弹目标位置、盘旋巡航点）。
+     */
+    private fun renderMapEntity(
+        entity: Entity,
+        level: net.minecraft.world.level.Level,
+        scale: Double,
+        pPartialTick: Float,
+        guiGraphics: GuiGraphics,
+        tintColor: Int
+    ) {
+        val r = ((tintColor shr 16) and 0xFF) / 255f
+        val g = ((tintColor shr 8) and 0xFF) / 255f
+        val b = (tintColor and 0xFF) / 255f
+
+        val dx = entity.x - viewBlockX
+        val dz = entity.z - viewBlockZ
+        val screenX = mapCenterX + (dx * scale).toFloat()
+        val screenY = mapCenterY + (dz * scale).toFloat()
+        val icon = getVehicleIcon(entity)
+        val iconSize = 12
+
+        val clampedX = screenX.coerceIn((mapLeft + 4).toFloat(), (mapLeft + mapAreaW - 4).toFloat())
+        val clampedY = screenY.coerceIn((mapTop + 4).toFloat(), (mapTop + mapAreaH - 4).toFloat())
+        val alpha = if (screenX == clampedX && screenY == clampedY) 1f else 0.5f
+
+        RenderSystem.disableDepthTest()
+        RenderSystem.depthMask(false)
+        RenderSystem.enableBlend()
+        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
+        RenderSystem.blendFuncSeparate(
+            GlStateManager.SourceFactor.SRC_ALPHA,
+            GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+            GlStateManager.SourceFactor.ONE,
+            GlStateManager.DestFactor.ZERO
+        )
+        RenderSystem.setShaderColor(r, g, b, alpha)
+
+        val pose = guiGraphics.pose()
+        pose.pushPose()
+        pose.translate(clampedX, clampedY, 0f)
+        if (entity is VehicleEntity || entity is MissileProjectile) {
+            pose.rotateAround(Axis.ZP.rotationDegrees(entity.yRot + 180f), 0f, 0f, 0f)
+        }
+        guiGraphics.blit(icon, -iconSize / 2, -iconSize / 2, 0f, 0f, iconSize, iconSize, iconSize, iconSize)
+        pose.popPose()
+
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
+
+        // 渲染导弹目标位置
+        if (entity is MissileProjectile) {
+            val synced = ClientSyncedEntityHandler.getSyncedEntry(level, entity.id)
+            val targetPos = entity.getTargetPos() ?: synced?.targetPos
+            if (targetPos != null) {
+                renderTargetPos(targetPos, scale, screenX, screenY, guiGraphics, entity)
+            }
+        }
+
+        // 渲染自身飞机盘旋巡航点
+        val player = localPlayer
+        if (entity is VehicleEntity && entity.loiterActive && player != null && player.vehicle === entity) {
+            val useDragPos = draggingLoiterPoint || System.currentTimeMillis() < loiterDragExpireTime
+            val lx = if (useDragPos) loiterDragNewX else entity.loiterCenterX
+            val lz = if (useDragPos) loiterDragNewZ else entity.loiterCenterZ
+            val navScreenX = mapCenterX + (lx - viewBlockX) * scale
+            val navScreenY = mapCenterY + (lz - viewBlockZ) * scale
+
+            val ldx = navScreenX - screenX
+            val ldy = navScreenY - screenY
+            val len = kotlin.math.sqrt((ldx * ldx + ldy * ldy).toDouble()).toFloat()
+            if (len > 2f) {
+                val angle = atan2(ldy.toDouble(), ldx.toDouble())
+                val midX = ((screenX + navScreenX) / 2f).toFloat()
+                val midY = ((screenY + navScreenY) / 2f).toFloat()
+                val dashColor = 0xAACDFFF6.toInt()
+                val linePose = guiGraphics.pose()
+                linePose.pushPose()
+                linePose.translate(midX, midY, 0f)
+                linePose.rotateAround(Axis.ZP.rotationDegrees(Math.toDegrees(angle).toFloat()), 0f, 0f, 0f)
+                val halfLen = (len / 2f).toInt()
+                var ox = -halfLen
+                while (ox < halfLen) {
+                    guiGraphics.fill(ox, 0, ox + 1, 1, dashColor)
+                    ox += 2
+                }
+                linePose.popPose()
+                val font = minecraft!!.font
+                val dist = kotlin.math.sqrt((lx - entity.x) * (lx - entity.x) + (lz - entity.z) * (lz - entity.z))
+                val label = "${dist.toInt()}m"
+                guiGraphics.drawString(font, label, (navScreenX + 10).toInt(), (navScreenY + 6).toInt(), 0xFFCDFFF6.toInt(), true)
+            }
+
+            val clampedNX = navScreenX.coerceIn(
+                (mapLeft + 4).toDouble(), (mapLeft + mapAreaW - 4).toDouble()).toFloat()
+            val clampedNY = navScreenY.coerceIn(
+                (mapTop + 13).toDouble(), (mapTop + mapAreaH).toDouble()).toFloat()
+            val navPose = guiGraphics.pose()
+            navPose.pushPose()
+            navPose.translate(clampedNX, clampedNY, 0f)
+            guiGraphics.blit(CRUISE_MARKER, -4, -13, 0f, 0f, 8, 13, 8, 13)
+            navPose.popPose()
+        }
     }
 
     private fun getVehicleIcon(entity: Entity): net.minecraft.resources.ResourceLocation {

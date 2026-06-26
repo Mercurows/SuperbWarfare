@@ -74,6 +74,8 @@ class DefaultVehicleData : IDBasedData<DefaultVehicleData> {
     @SerialName("Seats")
     private var seats: ObjectToList<SeatInfo>? = ObjectToList()
 
+    @SerialName("Radar")
+    var radar: ObjectToList<RadarInfo>? = ObjectToList()
     fun seats(): MutableList<SeatInfo> {
         if (seats == null) return mutableListOf()
         return Collections.unmodifiableList(seats!!.list)

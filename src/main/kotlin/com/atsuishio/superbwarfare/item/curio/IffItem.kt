@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
 import com.atsuishio.superbwarfare.network.message.receive.PlayerInfoSyncMessage
 import com.atsuishio.superbwarfare.tools.SeekTool
+import com.atsuishio.superbwarfare.tools.ServerSyncedEntityHandler
 import com.atsuishio.superbwarfare.tools.VectorTool
 import com.atsuishio.superbwarfare.tools.sendPacketTo
 import net.minecraft.ChatFormatting
@@ -17,7 +18,6 @@ import net.minecraft.world.level.Level
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.registries.ForgeRegistries
 import top.theillusivec4.curios.api.CuriosApi
 import top.theillusivec4.curios.api.SlotContext
 import top.theillusivec4.curios.api.type.capability.ICurioItem
@@ -48,28 +48,28 @@ open class IffItem : Item(Properties().stacksTo(1)), ICurioItem {
             if (server.tickCount % MiscConfig.SYNC_ENTITY_INTERVAL.get() != 0) return
 
             for (level in server.allLevels) {
-                val entities = level.allEntities
-                    .asSequence()
-                    .filter { it is VehicleEntity && SeekTool.NOT_IN_SMOKE.test(it) }
-                    .toList()
+                val dim = level.dimension().location()
+
+                // 从 ServerSyncedEntityHandler 查询候选实体
+                val candidates = ServerSyncedEntityHandler.getEntries(dim).asSequence().mapNotNull { entry ->
+                    val entity = level.getEntity(entry.entityId) ?: return@mapNotNull null
+                    if (!SeekTool.NOT_IN_SMOKE.test(entity)) return@mapNotNull null
+                    entry to entity
+                }.toList()
 
                 val players = server.playerList.players
                 for (player in players) {
                     if (!player.isAlive) continue
                     CuriosApi.getCuriosInventory(player).ifPresent { c ->
                         c.findFirstCurio(ModItems.IFF.get()).ifPresent {
-                            val list = entities.mapNotNull {
-                                if (!SeekTool.IS_FRIENDLY.test(player, it)) return@mapNotNull null
+                            val list = candidates.mapNotNull { (entry, entity) ->
+                                if (!SeekTool.IS_FRIENDLY.test(player, entity)) return@mapNotNull null
                                 EntitySyncMessage.SyncedEntity(
-                                    it.id,
-                                    ForgeRegistries.ENTITY_TYPES.getKey(it.type)!!,
-                                    it.position(),
-                                    null,
-                                    it.serializeNBT(),
-                                    it.yRot
+                                    entry.entityId, entry.entityType, entry.pos, null, entry.nbt, entry.yRot,
+                                    heightAboveGround = entry.heightAboveGround,
                                 )
                             }.toList()
-                            sendPacketTo(player, EntitySyncMessage(level.dimension().location(), list, true))
+                            sendPacketTo(player, EntitySyncMessage(dim, list, true))
 
                             val playerList = players
                                 .asSequence()
@@ -89,15 +89,12 @@ open class IffItem : Item(Properties().stacksTo(1)), ICurioItem {
                                         )
                                     } else {
                                         PlayerInfoSyncMessage.SyncedPlayerInfo(
-                                            it.uuid,
-                                            it.position(),
-                                            it.displayName.string,
-                                            onVehicle = false,
-                                            isDriver = false
+                                            it.uuid, it.position(), it.displayName.string,
+                                            onVehicle = false, isDriver = false
                                         )
                                     }
                                 }.toList()
-                            sendPacketTo(player, PlayerInfoSyncMessage(level.dimension().location(), playerList))
+                            sendPacketTo(player, PlayerInfoSyncMessage(dim, playerList))
                         }
                     }
                 }

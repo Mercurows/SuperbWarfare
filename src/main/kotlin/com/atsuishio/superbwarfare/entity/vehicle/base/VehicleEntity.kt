@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInsta
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
 import com.atsuishio.superbwarfare.data.DataLoader
+import com.atsuishio.superbwarfare.data.StringOrVec3
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
@@ -39,7 +40,6 @@ import com.atsuishio.superbwarfare.item.container.ContainerBlockItem
 import com.atsuishio.superbwarfare.item.misc.VehicleKeyItem
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.network.message.receive.ClientVehicleItemMessage
-import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
 import com.atsuishio.superbwarfare.network.message.receive.VehicleShootClientMessage
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.OBB.Part.*
@@ -564,6 +564,9 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     override fun remove(reason: RemovalReason) {
+        if (!this.level().isClientSide) {
+            ServerSyncedEntityHandler.unregister(this)
+        }
         if (!this.level().isClientSide && reason != RemovalReason.DISCARDED && reason != RemovalReason.UNLOADED_WITH_PLAYER) {
             for (i in 0 until inventory.slots) {
                 val stack = inventory.getStackInSlot(i)
@@ -2064,6 +2067,10 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         this.handleClientSync()
 
+        if (!level().isClientSide && !isWreck && health > 0) {
+            ServerSyncedEntityHandler.register(this)
+        }
+
         if (this.level() is ServerLevel && this.health <= 0 && !isWreck) {
             isWreck = true
             destroy()
@@ -2101,6 +2108,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         }
 
         this.travel()
+        vehicleRadar()
 
         // 固定翼飞机自动盘旋：空中、引擎启动、有能量、未坠毁、有乘客、盘旋开关已开启
         if (!onGround() && engineStartOver && energy > 1024 && !isWreck
@@ -2198,7 +2206,6 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                         }
                     }
                 }
-                vehicleRadar(mob)
             }
         }
 
@@ -2378,42 +2385,63 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         (level() as ServerLevel).chunkSource.addRegionTicket(TicketType.POST_TELEPORT, chunkPos, 3, this.id)
     }
 
-    // TODO 添加更多的雷达机制
-    fun vehicleRadar(player: Player) {
+    fun vehicleRadar() {
         if (!MiscConfig.SYNC_ENTITY_OVER_RANGE.get()) return
-        if ((level().server?.tickCount ?: return) % MiscConfig.SYNC_ENTITY_INTERVAL.get() != 0) return
-        val data = this.getGunData(player) ?: return
-        val seekWeaponInfo = data.get(GunProp.SEEK_WEAPON_INFO) ?: return
-
+        val radars = computed().radar ?: return
         val level = this.level()
-        if (level is ServerLevel) {
-            // 搜索范围
-            val seekRange = seekWeaponInfo.seekRange
-            // 最小目标高度
-            val minTargetHeight = seekWeaponInfo.minTargetHeight
-            // 最大目标高度
-            val maxTargetHeight = seekWeaponInfo.maxTargetHeight
+        if (level !is ServerLevel) return
+        val player = EntityFindUtil.findPlayer(level(), lastDriverUUID)
+        if (player !is Player) return
 
-            val hostileList = level.allEntities
-                .asSequence()
-                .mapNotNull {
-                    val flag = (it is VehicleEntity || VehicleConfig.inScanList(it.type))
-                            && SeekTool.NOT_IN_SMOKE.test(it)
-                            && it.distanceToSqr(this) <= seekRange * seekRange
-                            && SeekTool.IN_HEIGHT_RANGE.test(it, minTargetHeight, maxTargetHeight)
-                            && !SeekTool.IS_FRIENDLY.test(player, it)
-                            && VectorTool.checkNoClip(eyePosition, it.eyePosition, level())
-                    if (!flag) return@mapNotNull null
-                    EntitySyncMessage.SyncedEntity(
-                        it.id,
-                        ForgeRegistries.ENTITY_TYPES.getKey(it.type)!!,
-                        it.position(),
-                        null,
-                        it.serializeNBT(),
-                        it.yRot
-                    )
-                }.toList()
-            sendPacketTo(player, EntitySyncMessage(level.dimension().location(), hostileList, false))
+        for (radarInfo in radars) {
+            val stringOrVec3 = radarInfo.direction
+            val dirVec = getRadarVec(1f, stringOrVec3)
+            val baseYRot = -getYRotFromVector(dirVec) + 180
+
+            val config = RadarScanner.RadarConfig(
+                owner = player,
+                center = position(),
+                radius = radarInfo.range.toDouble(),
+                sweepAngle = radarInfo.angle.toDouble(),
+                yRot = baseYRot,
+                rotationSpeed = radarInfo.rotateSpeed.toDouble(),
+                searchType = RadarScanner.SearchType.VEHICLES,
+                minTargetHeight = radarInfo.minTargetHeight,
+                maxTargetHeight = radarInfo.maxTargetHeight,
+                shareWithTeammates = radarInfo.shareWithTeammates,
+                showIcon = false,
+                sourceId = "vehicle_${this.id}",
+            )
+
+            // 每 tick 同步雷达配置（保证旋转流畅）
+            RadarScanner.sendRadarConfig(config, level)
+            RadarScanner.scan(level, config).sendToClients(player, level, config.shareWithTeammates)
+        }
+    }
+
+    fun getRadarVec(partialTicks: Float, stringOrVec3: StringOrVec3?): Vec3 {
+        if (stringOrVec3 == null) {
+            return getViewVector(partialTicks)
+        } else if (stringOrVec3.isString) {
+            return getVectorFromString(stringOrVec3.string!!, partialTicks)
+        } else {
+            val vec3 = stringOrVec3.vec3!!
+            val worldPosition = VehicleVecUtils.transformPosition(getVehicleTransform(partialTicks),
+                vec3.x + stringOrVec3.vec3.x,
+                vec3.y + stringOrVec3.vec3.y,
+                vec3.z + stringOrVec3.vec3.z
+            )
+
+            val worldPositionO = VehicleVecUtils.transformPosition(
+                getVehicleTransform(partialTicks),
+                vec3.x,
+                vec3.y,
+                vec3.z
+            )
+
+            val startPos = Vec3(worldPositionO.x, worldPositionO.y, worldPositionO.z)
+            val endPos = Vec3(worldPosition.x, worldPosition.y, worldPosition.z)
+            return startPos.vectorTo(endPos).normalize()
         }
     }
 

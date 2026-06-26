@@ -2,16 +2,12 @@ package com.atsuishio.superbwarfare.block.entity
 
 import com.atsuishio.superbwarfare.block.FuMO25Block
 import com.atsuishio.superbwarfare.config.server.MiscConfig
-import com.atsuishio.superbwarfare.config.server.VehicleConfig
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModBlockEntities
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.inventory.menu.FuMO25Menu
 import com.atsuishio.superbwarfare.network.dataslot.ContainerEnergyData
-import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
+import com.atsuishio.superbwarfare.tools.RadarScanner
 import com.atsuishio.superbwarfare.tools.SeekTool
-import com.atsuishio.superbwarfare.tools.VectorTool
-import com.atsuishio.superbwarfare.tools.sendPacketTo
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
@@ -22,7 +18,6 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundSource
-import net.minecraft.util.Mth
 import net.minecraft.world.MenuProvider
 import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.effect.MobEffects
@@ -39,7 +34,6 @@ import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.capabilities.ForgeCapabilities
 import net.minecraftforge.common.util.LazyOptional
 import net.minecraftforge.energy.EnergyStorage
-import net.minecraftforge.registries.ForgeRegistries
 import java.util.*
 import kotlin.math.abs
 
@@ -234,11 +228,6 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
                 DEFAULT_ENERGY_COST
             }
 
-            val f = Mth.sin(blockEntity.tick * (Math.PI.toFloat() / 180f)).toDouble()
-            val f1 = -Mth.cos(blockEntity.tick * (Math.PI.toFloat() / 180f)).toDouble()
-
-            val direct = Vec3(f, 0.0, f1)
-
             if (energy < energyCost) {
                 if (state.getValue(FuMO25Block.POWERED)) {
                     level.setBlockAndUpdate(pos, state.setValue(FuMO25Block.POWERED, false))
@@ -268,7 +257,22 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
                     if (uuid != null) {
                         val owner = level.getPlayerByUUID(uuid)
                         if (owner != null && level is ServerLevel) {
-                            scanEntities(level, pos, blockEntity, owner, direct)
+                            // 每 tick 同步雷达配置到客户端（自旋模式保证旋转流畅）
+                            val range = if (blockEntity.type == FuncType.WIDER) 2048 else 1024
+                            val sourceId = "block_${pos.x}_${pos.y}_${pos.z}"
+                            RadarScanner.sendRadarConfig(
+                                RadarScanner.RadarConfig(
+                                    owner = owner,
+                                    center = Vec3(pos.x + 0.5, pos.y + 2.5, pos.z + 0.5),
+                                    radius = range.toDouble(),
+                                    sweepAngle = 120.0,
+                                    yRot = blockEntity.tick.toDouble(),
+                                    searchType = RadarScanner.SearchType.VEHICLES,
+                                    sourceId = sourceId,
+                                ), level
+                            )
+                            // 每 SYNC_ENTITY_INTERVAL 扫描实体
+                            scanEntities(level, pos, blockEntity, owner)
                         }
                     }
                 }
@@ -332,45 +336,25 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
             pos: BlockPos,
             blockEntity: FuMO25BlockEntity,
             player: Player,
-            vec3: Vec3
         ) {
-            if (!MiscConfig.SYNC_ENTITY_OVER_RANGE.get()) return
             if (level.server.tickCount % MiscConfig.SYNC_ENTITY_INTERVAL.get() != 0) return
 
             val range = if (blockEntity.type == FuncType.WIDER) 2048 else 1024
-            val hostileList = level.allEntities.asSequence().mapNotNull {
-                val seekRange =
-                    range * range * if (it is VehicleEntity && !it.isWreck) it.computed().trackDistanceMultiply * it.computed().trackDistanceMultiply else 1.0
-                val flag = (it is VehicleEntity || VehicleConfig.inScanList(it.type))
-                        && SeekTool.NOT_IN_SMOKE.test(it)
-                        && it.distanceToSqr(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble()) <= seekRange
-                        && !SeekTool.IS_FRIENDLY.test(player, it)
-                        && SeekTool.calculateAngle(
-                    Vec3(
-                        pos.x.toDouble() + 0.5,
-                        pos.y.toDouble() + 2.5,
-                        pos.z.toDouble() + 0.5
-                    ), vec3, it
-                ) < 60 && VectorTool.checkNoClip(Vec3(
-                    pos.x.toDouble() + 0.5,
-                    pos.y.toDouble() + 2.5,
-                    pos.z.toDouble() + 0.5
-                ), it.eyePosition, level)
-                if (!flag) return@mapNotNull null
-                EntitySyncMessage.SyncedEntity(
-                    it.id,
-                    ForgeRegistries.ENTITY_TYPES.getKey(it.type)!!,
-                    it.position(),
-                    null,
-                    it.serializeNBT(),
-                    it.yRot
-                )
-            }.toList()
+            val radarPos = Vec3(pos.x + 0.5, pos.y + 2.5, pos.z + 0.5)
 
-            level.players()
-                .asSequence()
-                .filter { SeekTool.IS_FRIENDLY.test(player, it) }
-                .forEach { sendPacketTo(it, EntitySyncMessage(level.dimension().location(), hostileList, false)) }
+            val sourceId = "block_${pos.x}_${pos.y}_${pos.z}"
+            val config = RadarScanner.RadarConfig(
+                owner = player,
+                center = radarPos,
+                radius = range.toDouble(),
+                sweepAngle = 120.0,
+                yRot = blockEntity.tick.toDouble(),
+                searchType = RadarScanner.SearchType.VEHICLES,
+                sourceId = sourceId,
+            )
+
+            val result = RadarScanner.scan(level, config)
+            result.sendToClients(player, level, config.shareWithTeammates)
         }
     }
 }

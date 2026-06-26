@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage.SyncedEntity
 import com.atsuishio.superbwarfare.network.message.receive.PlayerInfoSyncMessage.SyncedPlayerInfo
+import com.atsuishio.superbwarfare.network.message.receive.RadarSyncMessage
 import com.atsuishio.superbwarfare.tools.mc
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.resources.ResourceLocation
@@ -14,33 +15,42 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 object ClientSyncedEntityHandler {
-    @JvmField
-    val SYNCED_ENTITIES = ConcurrentHashMap<SyncedKey, ClientSyncedEntity>()
 
-    @JvmField
-    val SYNCED_PLAYERS = ConcurrentHashMap<SyncedPlayerKey, ClientSyncedPlayer>()
+    data class SyncedKey(val dim: ResourceLocation, val id: Int)
 
-    data class SyncedKey(val dim: ResourceLocation, val id: Int, val friendly: Boolean)
-
-    data class ClientSyncedEntity(val entity: Entity, val timeStamp: Long, val targetPos: Vec3?)
+    data class ClientSyncedEntity(val entity: Entity, val timeStamp: Long, val targetPos: Vec3?, val heightAboveGround: Double = -1.0)
 
     data class SyncedPlayerKey(val dim: ResourceLocation, val uuid: UUID)
 
     data class ClientSyncedPlayer(
-        val timeStamp: Long,
-        val uuid: UUID,
-        val pos: Vec3,
-        val name: String,
-        val onVehicle: Boolean,
-        val isDriver: Boolean
+        val timeStamp: Long, val uuid: UUID, val pos: Vec3, val name: String,
+        val onVehicle: Boolean, val isDriver: Boolean
     )
 
-    fun sync(dim: ResourceLocation, list: List<SyncedEntity>, friendly: Boolean) {
+    /** 友方：IffItem / MissileProjectile 同步 */
+    @JvmField
+    val SYNCED_FRIENDLY = ConcurrentHashMap<SyncedKey, ClientSyncedEntity>()
+    /** 敌对：FuMO25 / vehicleRadar 同步 */
+    @JvmField
+    val SYNCED_HOSTILE = ConcurrentHashMap<SyncedKey, ClientSyncedEntity>()
+    /** 中立：FuMO25 / vehicleRadar 同步（无人载具） */
+    @JvmField
+    val SYNCED_NEUTRAL = ConcurrentHashMap<SyncedKey, ClientSyncedEntity>()
+
+    @JvmField
+    val SYNCED_PLAYERS = ConcurrentHashMap<SyncedPlayerKey, ClientSyncedPlayer>()
+
+    fun sync(dim: ResourceLocation, list: List<SyncedEntity>, friendly: Boolean, neutral: Boolean = false) {
         val level = mc.level ?: return
         val time = System.currentTimeMillis()
+        val targetMap = when {
+            neutral -> SYNCED_NEUTRAL
+            friendly -> SYNCED_FRIENDLY
+            else -> SYNCED_HOSTILE
+        }
         for (syncedEntity in list) {
-            val key = SyncedKey(dim, syncedEntity.id, friendly)
-            val existedEntity = SYNCED_ENTITIES[key]
+            val key = SyncedKey(dim, syncedEntity.id)
+            val existedEntity = targetMap[key]
             var entity: Entity
             if (existedEntity != null) {
                 entity = existedEntity.entity
@@ -51,15 +61,13 @@ object ClientSyncedEntityHandler {
                 entity.load(tag)
                 entity.id = syncedEntity.id
             }
-
-            val pos = syncedEntity.pos
-            entity.xo = pos.x
-            entity.yo = pos.y
-            entity.zo = pos.z
+            entity.xo = entity.x
+            entity.yo = entity.y
+            entity.zo = entity.z
             entity.setPos(syncedEntity.pos)
             entity.deltaMovement = syncedEntity.targetPos ?: Vec3.ZERO
             entity.yRot = syncedEntity.yRot
-            SYNCED_ENTITIES[key] = ClientSyncedEntity(entity, time, syncedEntity.targetPos)
+            targetMap[key] = ClientSyncedEntity(entity, time, syncedEntity.targetPos, syncedEntity.heightAboveGround)
         }
     }
 
@@ -67,37 +75,91 @@ object ClientSyncedEntityHandler {
         if (mc.level == null) return
         val time = System.currentTimeMillis()
         for (info in list) {
-            val key = SyncedPlayerKey(dim, info.uuid)
-            SYNCED_PLAYERS[key] =
+            SYNCED_PLAYERS[SyncedPlayerKey(dim, info.uuid)] =
                 ClientSyncedPlayer(time, info.uuid, info.pos, info.name, info.onVehicle, info.isDriver)
         }
     }
 
     fun clean() {
         val tick = System.currentTimeMillis()
-        SYNCED_ENTITIES.values.removeIf { tick - it.timeStamp > MiscConfig.CLIENT_SYNC_EXPIRE_TIME.get() }
-        SYNCED_PLAYERS.values.removeIf { tick - it.timeStamp > MiscConfig.CLIENT_SYNC_EXPIRE_TIME.get() }
+        val expire = MiscConfig.CLIENT_SYNC_EXPIRE_TIME.get()
+        SYNCED_FRIENDLY.values.removeIf { tick - it.timeStamp > expire }
+        SYNCED_HOSTILE.values.removeIf { tick - it.timeStamp > expire }
+        SYNCED_NEUTRAL.values.removeIf { tick - it.timeStamp > expire }
+        SYNCED_PLAYERS.values.removeIf { tick - it.timeStamp > expire }
+        // 雷达过期清理：超过 2 个 sync 周期未更新则移除
+        val radarExpire = expire * 2L
+        SYNCED_RADARS.values.removeIf { tick - it.timeStamp > radarExpire }
     }
 
     @JvmStatic
-    fun getSyncedFriendlyEntities(level: Level): List<Entity> {
-        return SYNCED_ENTITIES.filterKeys { it.dim == level.dimension().location() && it.friendly }
-            .map { it.value.entity }
-    }
+    fun getSyncedFriendlyEntities(level: Level): List<Entity> =
+        SYNCED_FRIENDLY.filterKeys { it.dim == level.dimension().location() }.map { it.value.entity }
 
     @JvmStatic
-    fun getSyncedHostileEntities(level: Level): List<Entity> {
-        return SYNCED_ENTITIES.filterKeys { it.dim == level.dimension().location() && !it.friendly }
-            .map { it.value.entity }
-    }
+    fun getSyncedHostileEntities(level: Level): List<Entity> =
+        SYNCED_HOSTILE.filterKeys { it.dim == level.dimension().location() }.map { it.value.entity }
 
+    @JvmStatic
+    fun getSyncedNeutralEntities(level: Level): List<Entity> =
+        SYNCED_NEUTRAL.filterKeys { it.dim == level.dimension().location() }.map { it.value.entity }
+
+    /** 返回所有已同步实体（友方+中立，用于 IFFOverlay 和 TacticalMapScreen 友好标记） */
     @JvmStatic
     fun getSyncedEntities(level: Level): List<Entity> {
-        return SYNCED_ENTITIES.filterKeys { it.dim == level.dimension().location() }.map { it.value.entity }
+        val dim = level.dimension().location()
+        val all = mutableListOf<Entity>()
+        SYNCED_FRIENDLY.filterKeys { it.dim == dim }.mapTo(all) { it.value.entity }
+        SYNCED_NEUTRAL.filterKeys { it.dim == dim }.mapTo(all) { it.value.entity }
+        return all
     }
 
     @JvmStatic
-    fun getSyncedPlayerInfo(level: Level): List<ClientSyncedPlayer> {
-        return SYNCED_PLAYERS.filterKeys { it.dim == level.dimension().location() }.map { it.value }
+    fun getSyncedPlayerInfo(level: Level): List<ClientSyncedPlayer> =
+        SYNCED_PLAYERS.filterKeys { it.dim == level.dimension().location() }.map { it.value }
+
+    /** 按 ID 查找任一分类中的条目 */
+    fun getSyncedEntry(level: Level, entityId: Int): ClientSyncedEntity? {
+        val dim = level.dimension().location()
+        return SYNCED_FRIENDLY[SyncedKey(dim, entityId)]
+            ?: SYNCED_HOSTILE[SyncedKey(dim, entityId)]
+            ?: SYNCED_NEUTRAL[SyncedKey(dim, entityId)]
+    }
+
+    // ── 雷达配置同步 ──
+
+    data class SyncedRadar(
+        val pos: Vec3,
+        val radius: Double,
+        val sweepAngle: Double,
+        val yRot: Double,
+        val ownerName: String,
+        val showIcon: Boolean,
+        val sourceId: String,
+        val timeStamp: Long,
+    )
+
+    @JvmField
+    val SYNCED_RADARS = ConcurrentHashMap<SyncedKey, SyncedRadar>()
+
+    fun syncRadars(dim: ResourceLocation, radars: List<RadarSyncMessage.SyncedRadar>) {
+        val time = System.currentTimeMillis()
+        for (r in radars) {
+            // 用 sourceId 作为 key，同一雷达每次更新覆盖旧位置，避免移动拖影
+            val key = SyncedKey(dim, r.sourceId.hashCode())
+            SYNCED_RADARS[key] = SyncedRadar(
+                pos = r.pos, radius = r.radius, sweepAngle = r.sweepAngle,
+                yRot = r.yRot, ownerName = r.ownerName, showIcon = r.showIcon,
+                sourceId = r.sourceId, timeStamp = time,
+            )
+        }
+        // 超过 2 倍 sync 间隔未更新的雷达视为已移除
+        val expire = MiscConfig.CLIENT_SYNC_EXPIRE_TIME.get() * 2L
+        SYNCED_RADARS.values.removeIf { time - it.timeStamp > expire }
+    }
+
+    @JvmStatic
+    fun getSyncedRadars(level: Level): List<SyncedRadar> {
+        return SYNCED_RADARS.filterKeys { it.dim == level.dimension().location() }.values.toList()
     }
 }

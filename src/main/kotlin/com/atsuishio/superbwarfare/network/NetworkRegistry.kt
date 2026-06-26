@@ -70,6 +70,7 @@ private fun registerPayloads() {
     playToClient<TDMSyncMessage>()
     playToClient<EntitySyncMessage>()
     playToClient<PlayerInfoSyncMessage>()
+    playToClient<RadarSyncMessage>()
     playToClient<ClientVehicleItemMessage>()
     playToClient<OpenVehicleSkinScreenMessage>()
 

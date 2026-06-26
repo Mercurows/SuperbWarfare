@@ -17,7 +17,6 @@ import net.minecraft.client.Camera
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.Entity
-import net.minecraft.world.entity.OwnableEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.vehicle.Boat
 import net.minecraft.world.level.ClipContext
@@ -73,7 +72,7 @@ object IFFOverlay : CommonOverlay("iff") {
                             it.yRot
                         )
                     }.toList()
-                ClientSyncedEntityHandler.sync(level.dimension().location(), clientEntities, true)
+                ClientSyncedEntityHandler.sync(level.dimension().location(), clientEntities, friendly = true)
             }
         }
     }
@@ -88,10 +87,10 @@ object IFFOverlay : CommonOverlay("iff") {
 
         CuriosApi.getCuriosInventory(player).ifPresent { c ->
             c.findFirstCurio(ModItems.IFF.get()).ifPresent { _ ->
-                val entities = ClientSyncedEntityHandler.getSyncedEntities(level)
-                for (entity in entities) {
+                // ── 友方实体（绿色）──
+                val friendlyEntities = ClientSyncedEntityHandler.getSyncedFriendlyEntities(level)
+                for (entity in friendlyEntities) {
                     val e = level.getEntity(entity.id) ?: entity
-
                     if (e !== player && e.position().canBeSeen() && e !== player.vehicle) {
                         val teammate = e.vehicle ?: e
 
@@ -105,12 +104,7 @@ object IFFOverlay : CommonOverlay("iff") {
                             GlStateManager.SourceFactor.ONE,
                             GlStateManager.DestFactor.ZERO
                         )
-
-                        if (checkNoClip(player, teammate, cameraPos)) {
-                            RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
-                        } else {
-                            RenderSystem.setShaderColor(1f, 1f, 1f, 0.4f)
-                        }
+                        RenderSystem.setShaderColor(1f, 1f, 1f, if (checkNoClip(player, teammate, cameraPos)) 1f else 0.4f)
 
                         val pos = VectorTool.lerpGetEntityBoundingBoxCenter(teammate, partialTick)
                         val point = pos.worldToScreen()
@@ -119,41 +113,24 @@ object IFFOverlay : CommonOverlay("iff") {
                         val icon = getResourceLocation(teammate)
 
                         RenderHelper.blit(
-                            guiGraphics.pose(),
-                            icon,
+                            guiGraphics.pose(), icon,
                             (xf - 6).coerceIn(0f, (screenWidth - 12).toFloat()),
                             (yf - 6).coerceIn(0f, (screenHeight - 12).toFloat()),
-                            0f,
-                            0f,
-                            12f,
-                            12f,
-                            12f,
-                            12f,
+                            0f, 0f, 12f, 12f, 12f, 12f,
                             0x7FFFAD
                         )
 
                         if (Vec2(xf, yf).distanceToSqr(
-                                Vec2(
-                                    screenWidth.toFloat() / 2.0f,
-                                    screenHeight.toFloat() / 2.0f
-                                )
+                                Vec2(screenWidth.toFloat() / 2.0f, screenHeight.toFloat() / 2.0f)
                             ) < 12
                         ) {
                             poseStack.pushPose()
                             poseStack.translate(xf, yf, 0f)
                             poseStack.scale(0.75f, 0.75f, 1f)
                             val str = "${e.displayName.string} [${FormatTool.format1D(pos.distanceTo(cameraPos))}m]"
-                            guiGraphics.drawString(
-                                mc.font,
-                                str,
-                                -mc.font.width(str) / 2,
-                                10,
-                                0x7FFFAD,
-                                false
-                            )
+                            guiGraphics.drawString(mc.font, str, -mc.font.width(str) / 2, 10, 0x7FFFAD, false)
                             poseStack.popPose()
                         }
-
                         RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
                     }
                 }
@@ -280,50 +257,77 @@ object IFFOverlay : CommonOverlay("iff") {
                         val yf = point.y.toFloat()
                         val icon = getResourceLocation(enemy)
 
-                        var color = 0xFFBD7F
-
-                        if (e is VehicleEntity && ((e.firstPassenger == null && e.team == null) || (e is OwnableEntity && e.owner == null))) {
-                            color = -1
-                        }
-
                         RenderHelper.blit(
                             guiGraphics.pose(),
                             icon,
                             (xf - 6).coerceIn(0f, (screenWidth - 12).toFloat()),
                             (yf - 6).coerceIn(0f, (screenHeight - 12).toFloat()),
-                            0f,
-                            0f,
-                            12f,
-                            12f,
-                            12f,
-                            12f,
-                            color
+                            0f, 0f, 12f, 12f, 12f, 12f,
+                            0xFFBD7F
                         )
 
                         if (Vec2(xf, yf).distanceToSqr(
-                                Vec2(
-                                    screenWidth.toFloat() / 2.0f,
-                                    screenHeight.toFloat() / 2.0f
-                                )
+                                Vec2(screenWidth.toFloat() / 2.0f, screenHeight.toFloat() / 2.0f)
                             ) < 12
                         ) {
                             poseStack.pushPose()
                             poseStack.translate(xf, yf, 0f)
                             poseStack.scale(0.75f, 0.75f, 1f)
                             val str = "${e.displayName.string} [${FormatTool.format1D(pos.distanceTo(cameraPos))}m]"
-                            guiGraphics.drawString(
-                                mc.font,
-                                str,
-                                -mc.font.width(str) / 2,
-                                10,
-                                color,
-                                false
-                            )
+                            guiGraphics.drawString(mc.font, str, -mc.font.width(str) / 2, 10, 0xFFBD7F, false)
                             poseStack.popPose()
                         }
 
                         RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
                     }
+                }
+
+                // 中立实体（无人驾驶、无主人的载具）
+                val neutralEntities = ClientSyncedEntityHandler.getSyncedNeutralEntities(player.level())
+                for (entity in neutralEntities) {
+                    val e = level.getEntity(entity.id) ?: entity
+                    if (e === player || !e.position().canBeSeen() || e === player.vehicle) continue
+                    val neutral = e.vehicle ?: e
+
+                    RenderSystem.disableDepthTest()
+                    RenderSystem.depthMask(false)
+                    RenderSystem.enableBlend()
+                    RenderSystem.setShader { GameRenderer.getPositionTexShader() }
+                    RenderSystem.blendFuncSeparate(
+                        GlStateManager.SourceFactor.SRC_ALPHA,
+                        GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                        GlStateManager.SourceFactor.ONE,
+                        GlStateManager.DestFactor.ZERO
+                    )
+                    RenderSystem.setShaderColor(1f, 1f, 1f, if (checkNoClip(player, neutral, cameraPos)) 1f else 0.4f)
+
+                    val pos = VectorTool.lerpGetEntityBoundingBoxCenter(neutral, partialTick)
+                    val point = pos.worldToScreen()
+                    val xf = point.x.toFloat()
+                    val yf = point.y.toFloat()
+                    val icon = getResourceLocation(neutral)
+
+                    RenderHelper.blit(
+                        guiGraphics.pose(), icon,
+                        (xf - 6).coerceIn(0f, (screenWidth - 12).toFloat()),
+                        (yf - 6).coerceIn(0f, (screenHeight - 12).toFloat()),
+                        0f, 0f, 12f, 12f, 12f, 12f,
+                        -1 // 白色 = 中立
+                    )
+
+                    if (Vec2(xf, yf).distanceToSqr(
+                            Vec2(screenWidth.toFloat() / 2.0f, screenHeight.toFloat() / 2.0f)
+                        ) < 12
+                    ) {
+                        poseStack.pushPose()
+                        poseStack.translate(xf, yf, 0f)
+                        poseStack.scale(0.75f, 0.75f, 1f)
+                        val str = "${e.displayName.string} [${FormatTool.format1D(pos.distanceTo(cameraPos))}m]"
+                        guiGraphics.drawString(mc.font, str, -mc.font.width(str) / 2, 10, -1, false)
+                        poseStack.popPose()
+                    }
+
+                    RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
                 }
             }
         }
