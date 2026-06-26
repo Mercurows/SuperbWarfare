@@ -76,7 +76,11 @@ object VehicleWeaponUtils {
             -vehicle.turretMinYaw
         )
 
-        vehicle.turretTurnSound(vehicle.turretXRot - vehicle.turretXRotO, vehicle.turretYRot - vehicle.turretYRotO, 0.95f)
+        vehicle.turretTurnSound(
+            vehicle.turretXRot - vehicle.turretXRotO,
+            vehicle.turretYRot - vehicle.turretYRotO,
+            0.95f
+        )
 
         vehicle.turretYRotLock = Mth.clamp(-1f * diffY, min, max)
     }
