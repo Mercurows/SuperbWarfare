@@ -47,7 +47,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         // Textures
         private val COMPASS_ROSE = loc("textures/overlay/tactical_map/compass_rose.png")
         private val PLAYER_MARKER = loc("textures/overlay/tactical_map/player_marker.png")
-        private val TEAMMATE_MARKER = loc("textures/overlay/tactical_map/teammate_marker.png")
+        private val TEAMMATE_MARKER = loc("textures/overlay/tactical_map/vehicle/indicator.png")
         private val POSITION_MARKER = loc("textures/overlay/tactical_map/position_marker.png")
 
         // Vehicle icons

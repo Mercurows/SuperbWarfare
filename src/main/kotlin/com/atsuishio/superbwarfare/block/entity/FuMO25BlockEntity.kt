@@ -355,6 +355,20 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
 
             val result = RadarScanner.scan(level, config)
             result.sendToClients(player, level, config.shareWithTeammates)
+
+            val rangeLiving = if (blockEntity.type == FuncType.WIDER) 96 else 128
+            val configLiving = RadarScanner.RadarConfig(
+                owner = player,
+                center = radarPos,
+                radius = rangeLiving.toDouble(),
+                sweepAngle = 120.0,
+                yRot = blockEntity.tick.toDouble(),
+                searchType = RadarScanner.SearchType.LIVING,
+                sourceId = sourceId,
+            )
+
+            val resultLiving = RadarScanner.scan(level, configLiving)
+            resultLiving.sendToClients(player, level, configLiving.shareWithTeammates)
         }
     }
 }

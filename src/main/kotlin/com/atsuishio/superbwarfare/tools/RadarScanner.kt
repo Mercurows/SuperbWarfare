@@ -8,6 +8,7 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.MobCategory
 import net.minecraft.world.entity.OwnableEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec3
@@ -202,7 +203,7 @@ object RadarScanner {
                 .filter { !SeekTool.IS_FRIENDLY.test(config.owner, it) }
                 .forEach {
                     val hag = it.y - it.onPos.y.toDouble()
-                    hostileList.add(SyncedEntity(
+                    val synced = SyncedEntity(
                         it.id,
                         ForgeRegistries.ENTITY_TYPES.getKey(it.type)!!,
                         it.position(),
@@ -210,7 +211,13 @@ object RadarScanner {
                         it.serializeNBT(),
                         it.yRot,
                         heightAboveGround = hag.coerceAtLeast(0.0),
-                    ))
+                    )
+                    // 根据生物类别分类：敌对生物（怪物）→ hostile，被动生物（动物等）→ neutral
+                    if (it.type.category == MobCategory.MONSTER) {
+                        hostileList.add(synced)
+                    } else {
+                        neutralList.add(synced)
+                    }
                 }
         }
 
