@@ -30,6 +30,7 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.vehicle.Boat
 import net.minecraft.world.level.chunk.LevelChunk
+import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import java.io.File
@@ -68,6 +69,7 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
         // Attack mode
         private val ATTACK_CURSOR = loc("textures/overlay/tactical_map/attack.png")
         private val TARGET_FRAME = loc("textures/overlay/tactical_map/target_frame.png")
+        private val TARGET_POS = loc("textures/overlay/tactical_map/target_pos.png")
     }
 
     private enum class AttackMode { NONE, DIRECT, QUEUE }
@@ -982,8 +984,76 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
                 0f, 0f, iconSize, iconSize, iconSize, iconSize
             )
             pose.popPose()
+
+            // 渲染导弹目标位置：target_pos 图标 + 红色虚线 + 距离
+            if (entity is MissileProjectile) {
+                val key = ClientSyncedEntityHandler.SyncedKey(level.dimension().location(), e.id, true)
+                val synced = ClientSyncedEntityHandler.SYNCED_ENTITIES[key]
+                var targetPos = synced?.targetPos
+                if (level.getEntity(entity.id) != null) {
+                    targetPos = entity.getTargetPos()
+                }
+
+                if (targetPos != null) {
+                    renderTargetPos(targetPos, scale, screenX, screenY, guiGraphics, entity)
+                }
+            }
+
+            // 渲染自身飞机盘旋位置：target_pos 图标 + 红色虚线 + 距离
+            if (entity is VehicleEntity && entity.loiterActive && player.vehicle == entity) {
+                val targetPos = Vec3(entity.loiterCenterX, entity.loiterCenterY, entity.loiterCenterZ)
+                renderTargetPos(targetPos, scale, screenX, screenY, guiGraphics, entity)
+            }
+
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
         }
+    }
+
+    private fun renderTargetPos(targetPos: Vec3, scale: Double, screenX: Float, screenY: Float, guiGraphics: GuiGraphics, entity: Entity) {
+        val tdx = targetPos.x - viewBlockX
+        val tdz = targetPos.z - viewBlockZ
+        val targetScreenX = (mapCenterX + tdx * scale).toFloat()
+        val targetScreenY = (mapCenterY + tdz * scale).toFloat()
+
+        // 红色虚线（与连线模式预览虚线同款写法）
+        val ldx = targetScreenX - screenX
+        val ldy = targetScreenY - screenY
+        val len = kotlin.math.sqrt((ldx * ldx + ldy * ldy).toDouble()).toFloat()
+        if (len > 2f) {
+            val angle = atan2(ldy.toDouble(), ldx.toDouble())
+            val midX = ((screenX + targetScreenX) / 2f)
+            val midY = ((screenY + targetScreenY) / 2f)
+            val dashColor = 0xAAFF0000.toInt()
+            val linePose = guiGraphics.pose()
+            linePose.pushPose()
+            linePose.translate(midX, midY, 0f)
+            linePose.rotateAround(Axis.ZP.rotationDegrees(Math.toDegrees(angle).toFloat()), 0f, 0f, 0f)
+            val halfLen = (len / 2f).toInt()
+            var x = -halfLen
+            while (x < halfLen) {
+                guiGraphics.fill(x, 0, x + 1, 1, dashColor)
+                x += 2  // 1px on, 1px off
+            }
+            linePose.popPose()
+
+            // 距离标注
+            val font = minecraft!!.font
+            val dist = kotlin.math.sqrt((targetPos.x - entity.x) * (targetPos.x - entity.x) + (targetPos.z - entity.z) * (targetPos.z - entity.z))
+            val label = "${dist.toInt()}m"
+            guiGraphics.drawString(font, label, (targetScreenX + 10).toInt(), (targetScreenY + 6).toInt(), 0xFFFF0000.toInt(), true)
+        }
+
+        // 目标位置贴图 16x16，呼吸缩放 + 慢速顺时针旋转
+        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
+        val time = System.currentTimeMillis() / 1000.0
+        val breathScale = (1.0 + 0.25 * kotlin.math.sin(time * 4.0)).toFloat()  // ~1.5s 周期, 0.75~1.25
+        val targetPose = guiGraphics.pose()
+        targetPose.pushPose()
+        targetPose.translate(targetScreenX, targetScreenY, 0f)
+        targetPose.scale(breathScale, breathScale, 1f)
+        guiGraphics.blit(TARGET_POS, -8, -8, 0f, 0f, 16, 16, 16, 16)
+        targetPose.popPose()
     }
 
     private fun getVehicleIcon(entity: Entity): net.minecraft.resources.ResourceLocation {

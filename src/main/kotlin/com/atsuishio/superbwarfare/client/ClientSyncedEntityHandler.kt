@@ -22,7 +22,7 @@ object ClientSyncedEntityHandler {
 
     data class SyncedKey(val dim: ResourceLocation, val id: Int, val friendly: Boolean)
 
-    data class ClientSyncedEntity(val entity: Entity, val timeStamp: Long)
+    data class ClientSyncedEntity(val entity: Entity, val timeStamp: Long, val targetPos: Vec3?)
 
     data class SyncedPlayerKey(val dim: ResourceLocation, val uuid: UUID)
 
@@ -57,9 +57,9 @@ object ClientSyncedEntityHandler {
             entity.yo = pos.y
             entity.zo = pos.z
             entity.setPos(syncedEntity.pos)
-            entity.deltaMovement = syncedEntity.motion
+            entity.deltaMovement = syncedEntity.targetPos ?: Vec3.ZERO
             entity.yRot = syncedEntity.yRot
-            SYNCED_ENTITIES[key] = ClientSyncedEntity(entity, time)
+            SYNCED_ENTITIES[key] = ClientSyncedEntity(entity, time, syncedEntity.targetPos)
         }
     }
 

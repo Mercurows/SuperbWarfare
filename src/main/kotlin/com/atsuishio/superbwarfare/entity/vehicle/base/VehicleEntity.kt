@@ -2400,7 +2400,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                         it.id,
                         ForgeRegistries.ENTITY_TYPES.getKey(it.type)!!,
                         it.position(),
-                        it.deltaMovement,
+                        null,
                         it.serializeNBT(),
                         it.yRot
                     )

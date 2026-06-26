@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.gun.GunData
 import net.minecraft.network.syncher.EntityDataSerializer
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.phys.Vec3
 import net.minecraftforge.registries.DeferredRegister
 import net.minecraftforge.registries.ForgeRegistries
 import net.minecraftforge.registries.RegistryObject
@@ -45,6 +46,18 @@ object ModSerializers {
                     list.add(buf.readFloat())
                 }
                 list
+            })
+        }
+
+    @JvmField
+    val VEC3_SERIALIZER: RegistryObject<EntityDataSerializer<Vec3>> =
+        REGISTRY.register("vec3_serializer") {
+            EntityDataSerializer.simple({ buf, v ->
+                buf.writeDouble(v.x)
+                buf.writeDouble(v.y)
+                buf.writeDouble(v.z)
+            }, { buf ->
+                Vec3(buf.readDouble(), buf.readDouble(), buf.readDouble())
             })
         }
 

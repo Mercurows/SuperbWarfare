@@ -1623,11 +1623,13 @@ object VehicleEngineUtils {
     /**
      * 固定翼飞机自动盘旋飞控（左舷朝向圆心）
      *
-     * 三阶段制导：
-     * - **内圈平飞阶段**：当水平距离小于盘旋半径时，减小拐弯幅度接近平飞，
-     *   让飞机自然离心飞向半径外
-     * - **拦截阶段**：远离轨道时飞向盘旋圆周
-     * - **盘旋阶段**：接近轨道时切换为左舷朝内的切线飞行
+     * 两阶段混合制导：
+     * - **切线飞行**：左舷朝向圆心的切线方向，维持绕圈
+     * - **径向修正**：圈内时朝圈外飞，圈外时朝圆心飞
+     *
+     * 混合权重随径向距离自适应——越接近轨道越倾向切线，越远离越倾向径向修正。
+     * 径向混合在极近轨道(<5%半径≈50m)平滑退场→纯P修正防振荡，
+     * 其余距离全效混合。额外 P=0.12, clamp ±35°。
      *
      * 应在 [VehicleEntity.baseTick] 中 engine work 之后调用，
      * 仅对 [EngineType.AIRCRAFT] 类型生效。
@@ -1656,31 +1658,29 @@ object VehicleEngineUtils {
         val tangentYaw = Math.toDegrees(atan2(-dz, -dx))
         val errorTangent = Mth.wrapDegrees(tangentYaw - yRot.toDouble())
 
-        // 航向 B：指向圆心（拦截阶段）
+        // 航向 B：指向圆心（拦截阶段），圈内时反转180°指向圈外
         val toCenterYaw = Math.toDegrees(atan2(dx, -dz))
         val errorToCenter = Mth.wrapDegrees(toCenterYaw - yRot.toDouble())
+        val errorOutward = Mth.wrapDegrees(toCenterYaw + 180.0 - yRot.toDouble())
+        val radialYaw = if (radialError < 0) errorOutward else errorToCenter
 
-        // 混合权重：越远越倾向飞向圆心，越近越倾向切线飞行
+        // 混合权重：越远越倾向径向飞行，越近越倾向切线飞行
+        // 仅在极近轨道（20m内）平滑退场，避免方向翻转导致振荡
         val distFromOrbit = abs(radialError)
-        val blend = Mth.clamp(1.0 - distFromOrbit / (radius * 2.0), 0.0, 1.0)
-        var yawError = (errorTangent * blend + errorToCenter * (1.0 - blend)).toFloat()
+        val blend = Mth.clamp(1.0 - distFromOrbit / radius, 0.0, 0.8)
+        val blendZone = 20.0
+        val blendFactor = Mth.clamp((distFromOrbit - blendZone) / blendZone, 0.0, 1.0)
+        val effectiveRadial = (1.0 - blend) * blendFactor
+        var yawError = (errorTangent * (1.0 - effectiveRadial) + radialYaw * effectiveRadial).toFloat()
 
         // ========== 3. 径向位置精修 ==========
 
-        yawError += Mth.clamp(radialError.toFloat(), -10f, 10f)
+        yawError += Mth.clamp(radialError.toFloat() * 0.12f, -35f, 35f)
 
         // ========== 4. 偏航控制 ==========
 
-        // 当飞机在盘旋半径内部时，减小拐弯幅度接近平飞，让飞机自然飞向半径外
-        val insideCircle = horizontalDist < radius
-        val turnFactor = if (insideCircle) {
-            Mth.clamp((horizontalDist / radius) * (horizontalDist / radius), 0.02, 1.0)
-        } else {
-            1.0f
-        }
-
-        mouseMoveSpeedX = Mth.clamp(yawError * turnFactor.toFloat(), -20f, 20f)
-        deltaRot += yawError * -0.02f * turnFactor.toFloat() * Mth.clamp(1 - (Mth.abs(roll) / 30), 0f, 1f)
+        mouseMoveSpeedX = Mth.clamp(yawError, -20f, 20f)
+        deltaRot += yawError * -0.01f * Mth.clamp(1 - (Mth.abs(roll) / 30), 0f, 1f)
 
         // ========== 5. 高度控制 ==========
 

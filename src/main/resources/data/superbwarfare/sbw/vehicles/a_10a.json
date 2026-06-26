@@ -90,7 +90,7 @@
       "Velocity": 24,
       "Damage": 35,
       "ExplosionDamage": 10,
-      "ExplosionRadius": 4,
+      "ExplosionRadius": 3,
       "HeatPerShoot": 1.5,
       "NaturalCooldown": 0.5,
       "Spread": 0.5,
@@ -123,7 +123,7 @@
       "Damage": 80,
       "ExplosionDamage": 40,
       "ExplosionRadius": 5,
-      "Gravity": 0.02,
+      "Gravity": 0.001,
       "ProjectileLife": 60,
       "Velocity": 11,
       "ShootPos": {
@@ -230,7 +230,7 @@
       "Magazine": 4,
       "EmptyReloadTime": 200,
       "Projectile": "superbwarfare:agm_65",
-      "Name": "weapon.superbwarfare.agm_65_missile_entity",
+      "Name": "weapon.superbwarfare.agm_65_missile",
       "Damage": 1100,
       "ExplosionDamage": 180,
       "ExplosionRadius": 12,
@@ -261,7 +261,6 @@
           "Ammo": "superbwarfare:large_anti_ground_missile",
           "ShouldUnload": false,
           "Override": {
-            "Name": "weapon.superbwarfare.agm_65_missile_block",
             "SeekWeaponInfo": {
               "SeekDirection": "ClientCamera",
               "SeekRange": 512,
@@ -277,7 +276,6 @@
           "Ammo": "superbwarfare:large_anti_ground_missile",
           "ShouldUnload": false,
           "Override": {
-            "Name": "weapon.superbwarfare.agm_65_missile_coordinates",
             "SeekWeaponInfo": {
               "SeekDirection": "ClientCamera",
               "InputBlockPos": true

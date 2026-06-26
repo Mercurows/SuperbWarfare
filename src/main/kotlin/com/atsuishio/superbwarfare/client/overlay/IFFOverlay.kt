@@ -68,7 +68,7 @@ object IFFOverlay : CommonOverlay("iff") {
                             it.id,
                             ForgeRegistries.ENTITY_TYPES.getKey(it.type)!!,
                             it.position(),
-                            it.deltaMovement,
+                            null,
                             it.serializeNBT(),
                             it.yRot
                         )
