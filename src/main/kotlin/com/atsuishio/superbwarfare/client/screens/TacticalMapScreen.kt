@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.client.map.context.MapContextMenu
 import com.atsuishio.superbwarfare.client.map.context.MapMarker
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.GunProp
+import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType
 import com.atsuishio.superbwarfare.entity.projectile.MissileProjectile
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -70,6 +71,7 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
         private val ATTACK_CURSOR = loc("textures/overlay/tactical_map/attack.png")
         private val TARGET_FRAME = loc("textures/overlay/tactical_map/target_frame.png")
         private val TARGET_POS = loc("textures/overlay/tactical_map/target_pos.png")
+        private val CRUISE_MARKER = loc("textures/overlay/tactical_map/cruise_marker.png")
     }
 
     private enum class AttackMode { NONE, DIRECT, QUEUE }
@@ -102,6 +104,12 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
     private val markers: MutableList<MapMarker> = mutableListOf()
     private val connections: MutableMap<UUID, MutableSet<UUID>> = mutableMapOf()
     private var draggingMarker: MapMarker? = null
+    private var draggingLoiterPoint = false
+    private var loiterDragOffX = 0.0
+    private var loiterDragOffY = 0.0
+    private var loiterDragNewX = 0.0
+    private var loiterDragNewZ = 0.0
+    private var loiterDragExpireTime = 0L
     private var dragOffsetX = 0.0
     private var dragOffsetY = 0.0
 
@@ -132,6 +140,7 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
     // Hovered line for highlight hovered marker for Delete key
     private var hoveredLine: Pair<MapMarker, MapMarker>? = null
     private var hoveredMarker: MapMarker? = null
+    private var hoveredLoiterPoint = false
 
     // Context menu (delegated)
     private lateinit var contextMenu: MapContextMenu
@@ -202,6 +211,27 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
         contextMenu.onConnectRequested = { marker ->
             connectionMode = true
             connectingFrom = marker
+        }
+        contextMenu.onLoiterPointEdit = {
+            val vehicle = localPlayer?.vehicle as? VehicleEntity
+            if (vehicle != null) {
+                minecraft!!.setScreen(com.atsuishio.superbwarfare.client.screens.LoiterConfigScreen(vehicle))
+            }
+        }
+        contextMenu.onLoiterPointDelete = {
+            val vehicle = localPlayer?.vehicle as? VehicleEntity
+            if (vehicle != null) {
+                sendPacketToServer(
+                    com.atsuishio.superbwarfare.network.message.send.LoiterConfigMessage(
+                        centerX = vehicle.loiterCenterX.toFloat(),
+                        centerY = vehicle.loiterCenterY.toFloat(),
+                        centerZ = vehicle.loiterCenterZ.toFloat(),
+                        radius = vehicle.loiterRadius.toFloat(),
+                        active = false,
+                        skipTerrain = false
+                    )
+                )
+            }
         }
 
         lastFollowState = followPlayer
@@ -464,6 +494,7 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
                     mapCenterY
                 )
                 hoveredMarker = hm
+                hoveredLoiterPoint = hitTestLoiterPoint(pMouseX.toDouble(), pMouseY.toDouble())
                 if (hm != null) {
                     pGuiGraphics.renderTooltip(
                         font, listOf(
@@ -999,10 +1030,67 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
                 }
             }
 
-            // 渲染自身飞机盘旋位置：target_pos 图标 + 红色虚线 + 距离
+            // 渲染自身飞机盘旋巡航点：cruise_marker 图标 + 红色虚线 + 距离
             if (entity is VehicleEntity && entity.loiterActive && player.vehicle == entity) {
-                val targetPos = Vec3(entity.loiterCenterX, entity.loiterCenterY, entity.loiterCenterZ)
-                renderTargetPos(targetPos, scale, screenX, screenY, guiGraphics, entity)
+                val useDragPos = draggingLoiterPoint || System.currentTimeMillis() < loiterDragExpireTime
+                val lx = if (useDragPos) loiterDragNewX else entity.loiterCenterX
+                val lz = if (useDragPos) loiterDragNewZ else entity.loiterCenterZ
+                val navScreenX = mapCenterX + (lx - viewBlockX) * scale
+                val navScreenY = mapCenterY + (lz - viewBlockZ) * scale
+
+                // 青色虚线（与连线模式预览虚线同款写法）
+                val ldx = navScreenX - screenX
+                val ldy = navScreenY - screenY
+                val len = kotlin.math.sqrt((ldx * ldx + ldy * ldy).toDouble()).toFloat()
+                if (len > 2f) {
+                    val angle = atan2(ldy.toDouble(), ldx.toDouble())
+                    val midX = ((screenX + navScreenX) / 2f).toFloat()
+                    val midY = ((screenY + navScreenY) / 2f).toFloat()
+                    val dashColor = 0xAACDFFF6.toInt()
+                    val linePose = guiGraphics.pose()
+                    linePose.pushPose()
+                    linePose.translate(midX, midY, 0f)
+                    linePose.rotateAround(Axis.ZP.rotationDegrees(Math.toDegrees(angle).toFloat()), 0f, 0f, 0f)
+                    val halfLen = (len / 2f).toInt()
+                    var ox = -halfLen
+                    while (ox < halfLen) {
+                        guiGraphics.fill(ox, 0, ox + 1, 1, dashColor)
+                        ox += 2
+                    }
+                    linePose.popPose()
+
+                    // 距离标注
+                    val font = minecraft!!.font
+                    val dist = kotlin.math.sqrt((lx - entity.x) * (lx - entity.x) + (lz - entity.z) * (lz - entity.z))
+                    val label = "${dist.toInt()}m"
+                    guiGraphics.drawString(font, label, (navScreenX + 10).toInt(), (navScreenY + 6).toInt(), 0xFFCDFFF6.toInt(), true)
+                }
+
+                // 巡航点贴图（底边中点锚定，与标记点一致规格 8x13）
+                RenderSystem.disableDepthTest()
+                RenderSystem.depthMask(false)
+                RenderSystem.enableBlend()
+                RenderSystem.setShader { GameRenderer.getPositionTexShader() }
+                RenderSystem.blendFuncSeparate(
+                    GlStateManager.SourceFactor.SRC_ALPHA,
+                    GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                    GlStateManager.SourceFactor.ONE,
+                    GlStateManager.DestFactor.ZERO
+                )
+                
+                val clampedNX = navScreenX.coerceIn(
+                    (mapLeft + 4).toDouble(),
+                    (mapLeft + mapAreaW - 4).toDouble()
+                ).toFloat()
+                val clampedNY = navScreenY.coerceIn(
+                    (mapTop + 13).toDouble(),
+                    (mapTop + mapAreaH).toDouble()
+                ).toFloat()
+                val navPose = guiGraphics.pose()
+                navPose.pushPose()
+                navPose.translate(clampedNX, clampedNY, 0f)
+                guiGraphics.blit(CRUISE_MARKER, -4, -13, 0f, 0f, 8, 13, 8, 13)
+                navPose.popPose()
             }
 
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
@@ -1198,6 +1286,12 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
             return true
         }
 
+        if (contextMenu.loiterPointMenuVisible) {
+            contextMenu.handleLoiterPointMenuClick(pMouseX.toInt(), pMouseY.toInt())
+            contextMenu.closeLoiterPointMenu()
+            return true
+        }
+
         // ── Connection mode ──
         if (connectionMode) {
             // Right-click in connection mode → exit
@@ -1280,6 +1374,14 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
                 dragOffsetY = (mapCenterY + (hit.z - viewBlockZ) * scale) - pMouseY
                 return true
             }
+            // Loiter point hit-test → start dragging
+            if (hitTestLoiterPoint(pMouseX, pMouseY)) {
+                draggingLoiterPoint = true
+                val vehicle = localPlayer?.vehicle as? VehicleEntity ?: return true
+                loiterDragOffX = (mapCenterX + (vehicle.loiterCenterX - viewBlockX) * scale) - pMouseX
+                loiterDragOffY = (mapCenterY + (vehicle.loiterCenterZ - viewBlockZ) * scale) - pMouseY
+                return true
+            }
             isDragging = true
             lastMouseX = pMouseX
             lastMouseY = pMouseY
@@ -1304,6 +1406,12 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
             )
             if (hit != null) {
                 contextMenu.openMarkerMenu(pMouseX.toInt(), pMouseY.toInt(), hit)
+                return true
+            }
+
+            // Loiter point right-click → show loiter point menu
+            if (hitTestLoiterPoint(pMouseX, pMouseY)) {
+                contextMenu.openLoiterPointMenu(pMouseX.toInt(), pMouseY.toInt())
                 return true
             }
 
@@ -1396,6 +1504,31 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
                 }
             }
 
+            // ── Cruise here setup ──
+            contextMenu.canCruiseHere = false
+            contextMenu.onCruiseHere = null
+            if (vehicle != null && vehicle.computed().engineType == EngineType.AIRCRAFT) {
+                contextMenu.canCruiseHere = true
+                contextMenu.onCruiseHere = { worldX, worldZ ->
+                    val cachedH = TacticalMapCache.getCachedHeight(worldX, worldZ)
+                    val (targetY, skipTerrain) = if (cachedH != null) {
+                        (cachedH + 200).toFloat() to true
+                    } else {
+                        0f to false
+                    }
+                    sendPacketToServer(
+                        com.atsuishio.superbwarfare.network.message.send.LoiterConfigMessage(
+                            centerX = worldX.toFloat(),
+                            centerY = targetY,
+                            centerZ = worldZ.toFloat(),
+                            radius = vehicle.loiterRadius.toFloat(),
+                            active = true,
+                            skipTerrain = skipTerrain
+                        )
+                    )
+                }
+            }
+
             contextMenu.openMapMenu(pMouseX.toInt(), pMouseY.toInt(), wX, wY, wZ)
             return true
         }
@@ -1416,6 +1549,15 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
             if (h != null) marker.y = h.toInt()
             return true
         }
+        if (draggingLoiterPoint && pButton == 0) {
+            val scale = zoom / 5.0
+            val vehicle = localPlayer?.vehicle as? VehicleEntity ?: return true
+            val sx = pMouseX + loiterDragOffX
+            val sy = pMouseY + loiterDragOffY
+            loiterDragNewX = (viewBlockX + (sx - mapCenterX) / scale)
+            loiterDragNewZ = (viewBlockZ + (sy - mapCenterY) / scale)
+            return true
+        }
         if (isDragging && pButton == 0) {
             followPlayer = false
             savedFollowPlayer = false
@@ -1434,6 +1576,23 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
             isDragging = false
             draggingMarker?.let { saveMarker(it) }
             draggingMarker = null
+            if (draggingLoiterPoint) {
+                draggingLoiterPoint = false
+                loiterDragExpireTime = System.currentTimeMillis() + 500
+                val vehicle = localPlayer?.vehicle as? VehicleEntity
+                if (vehicle != null) {
+                    sendPacketToServer(
+                        com.atsuishio.superbwarfare.network.message.send.LoiterConfigMessage(
+                            centerX = loiterDragNewX.toFloat(),
+                            centerY = vehicle.loiterCenterY.toFloat(),
+                            centerZ = loiterDragNewZ.toFloat(),
+                            radius = vehicle.loiterRadius.toFloat(),
+                            active = true,
+                            skipTerrain = false
+                        )
+                    )
+                }
+            }
             return true
         }
         return super.mouseReleased(pMouseX, pMouseY, pButton)
@@ -1459,6 +1618,17 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
         return mx >= mapLeft && mx <= mapLeft + mapAreaW && my >= mapTop && my <= mapTop + mapAreaH
     }
 
+    /** 检测鼠标是否点击了盘旋巡航点（底边中点锚定，8x13判定区域） */
+    private fun hitTestLoiterPoint(mx: Double, my: Double): Boolean {
+        val player = localPlayer ?: return false
+        val vehicle = player.vehicle as? VehicleEntity ?: return false
+        if (!vehicle.loiterActive || vehicle.computed().engineType != EngineType.AIRCRAFT) return false
+        val scale = zoom / 5.0
+        val ax = mapCenterX + (vehicle.loiterCenterX - viewBlockX) * scale
+        val ay = mapCenterY + (vehicle.loiterCenterZ - viewBlockZ) * scale
+        return mx >= ax - 4 && mx <= ax + 4 && my >= ay - 13 && my <= ay
+    }
+
     override fun keyPressed(pKeyCode: Int, pScanCode: Int, pModifiers: Int): Boolean {
         if (contextMenu.editPanelVisible) {
             if (contextMenu.editBoxKeyPressed(pKeyCode, pScanCode, pModifiers)) return true
@@ -1470,6 +1640,23 @@ class TacticalMapScreen : Screen(Component.translatable("screen.superbwarfare.ta
         }
         // Delete key (261): disconnect hovered line, or delete hovered marker
         if (pKeyCode == 261) {
+            // 巡航点优先：Delete 关闭盘旋
+            if (hoveredLoiterPoint) {
+                val vehicle = localPlayer?.vehicle as? VehicleEntity
+                if (vehicle != null) {
+                    sendPacketToServer(
+                        com.atsuishio.superbwarfare.network.message.send.LoiterConfigMessage(
+                            centerX = vehicle.loiterCenterX.toFloat(),
+                            centerY = vehicle.loiterCenterY.toFloat(),
+                            centerZ = vehicle.loiterCenterZ.toFloat(),
+                            radius = vehicle.loiterRadius.toFloat(),
+                            active = false,
+                            skipTerrain = false
+                        )
+                    )
+                }
+                return true
+            }
             if (hoveredLine != null) {
                 val (la, lb) = hoveredLine!!
                 connections[la.id]?.remove(lb.id)

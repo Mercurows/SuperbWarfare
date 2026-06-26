@@ -171,9 +171,12 @@ abstract class MissileProjectile : DestroyableProjectile, ITrackableProjectile, 
         if (level is ServerLevel && owner != null) {
             val friendlyMissileList = arrayListOf<EntitySyncMessage.SyncedEntity>()
             val targetEntity = EntityFindUtil.findEntity(level, getTargetUUID())
+            if (targetEntity != null) {
+                setTargetPos(targetEntity.position())
+            }
             val syncedTargetPos = when {
-                targetEntity != null -> targetEntity.position()
                 getTargetPos() != null -> getTargetPos()
+                distractedValue -> null
                 else -> null
             }
             val synced = EntitySyncMessage.SyncedEntity(

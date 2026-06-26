@@ -50,6 +50,28 @@ class MapContextMenu {
     var onMissileStrike: ((String) -> Unit)? = null
     var onDirectAttack: ((String) -> Unit)? = null
     var onQueueAttack: ((String) -> Unit)? = null
+    var onCruiseHere: ((Int, Int) -> Unit)? = null
+    var canCruiseHere: Boolean = false
+
+    // ── Loiter point context menu state ──
+    var loiterPointMenuVisible = false
+        private set
+    var loiterPointMenuX = 0
+        private set
+    var loiterPointMenuY = 0
+        private set
+    var onLoiterPointEdit: (() -> Unit)? = null
+    var onLoiterPointDelete: (() -> Unit)? = null
+
+    fun openLoiterPointMenu(screenX: Int, screenY: Int) {
+        loiterPointMenuX = screenX
+        loiterPointMenuY = screenY
+        loiterPointMenuVisible = true
+    }
+
+    fun closeLoiterPointMenu() {
+        loiterPointMenuVisible = false
+    }
 
     // ── Missile strike sub-menu state ──
     var missileSubMenuVisible = false
@@ -146,32 +168,50 @@ class MapContextMenu {
     private fun buildItems(): List<ContextMenuItem> {
         val target = ctxTargetMarker
         return if (target != null) {
-            listOf(
-                ContextMenuItem(
-                    Component.translatable(
-                        "context.superbwarfare.tactical_map.teleport",
-                        target.x, target.y + 1, target.z
-                    ).string
-                ) {
-                    val mc = Minecraft.getInstance()
-                    mc.player?.connection?.sendCommand("tp ${target.x} ${target.y + 1} ${target.z}")
-                },
-                ContextMenuItem(
-                    Component.translatable("context.superbwarfare.tactical_map.edit_marker").string
-                ) {
-                    openEditPanel(target)
-                },
-                ContextMenuItem(
-                    Component.translatable("context.superbwarfare.tactical_map.connect").string
-                ) {
-                    onConnectRequested?.invoke(target)
-                },
-                ContextMenuItem(
-                    Component.translatable("context.superbwarfare.tactical_map.delete_marker").string
-                ) {
-                    onMarkerDelete?.invoke(target)
+            buildList {
+                add(
+                    ContextMenuItem(
+                        Component.translatable(
+                            "context.superbwarfare.tactical_map.teleport",
+                            target.x, target.y + 1, target.z
+                        ).string
+                    ) {
+                        val mc = Minecraft.getInstance()
+                        mc.player?.connection?.sendCommand("tp ${target.x} ${target.y + 1} ${target.z}")
+                    }
+                )
+                add(
+                    ContextMenuItem(
+                        Component.translatable("context.superbwarfare.tactical_map.edit_marker").string
+                    ) {
+                        openEditPanel(target)
+                    }
+                )
+                add(
+                    ContextMenuItem(
+                        Component.translatable("context.superbwarfare.tactical_map.connect").string
+                    ) {
+                        onConnectRequested?.invoke(target)
+                    }
+                )
+                if (canCruiseHere) {
+                    add(
+                        ContextMenuItem(
+                            Component.translatable("context.superbwarfare.tactical_map.cruise_here").string
+                        ) {
+                            onCruiseHere?.invoke(target.x, target.z)
+                            closeMenu()
+                        }
+                    )
                 }
-            )
+                add(
+                    ContextMenuItem(
+                        Component.translatable("context.superbwarfare.tactical_map.delete_marker").string
+                    ) {
+                        onMarkerDelete?.invoke(target)
+                    }
+                )
+            }
         } else {
             buildList {
                 add(
@@ -192,6 +232,17 @@ class MapContextMenu {
                         openEditPanel(null)
                     }
                 )
+                // Cruise here: only shown when player is riding an aircraft capable of loitering
+                if (canCruiseHere) {
+                    add(
+                        ContextMenuItem(
+                            Component.translatable("context.superbwarfare.tactical_map.cruise_here").string
+                        ) {
+                            onCruiseHere?.invoke(ctxWorldX, ctxWorldZ)
+                            closeMenu()
+                        }
+                    )
+                }
                 // Missile strike: only shown when the player's vehicle has lock-on-block weapons
                 if (missileWeapons.isNotEmpty()) {
                     add(
@@ -249,6 +300,9 @@ class MapContextMenu {
     ) {
         if (ctxMenuVisible) {
             renderContextMenu(guiGraphics, font, mouseX, mouseY, screenWidth, screenHeight)
+        }
+        if (loiterPointMenuVisible) {
+            renderLoiterPointMenu(guiGraphics, font, mouseX, mouseY, screenWidth, screenHeight)
         }
         if (editPanelVisible) {
             renderEditPanel(guiGraphics, font, mouseX, mouseY, screenWidth, screenHeight)
@@ -316,6 +370,80 @@ class MapContextMenu {
         if (actionSubMenuVisible && actionSelectedWeapon != null) {
             renderActionSubMenu(guiGraphics, font, mouseX, mouseY, screenWidth, screenHeight)
         }
+    }
+
+    private fun renderLoiterPointMenu(
+        guiGraphics: GuiGraphics,
+        font: net.minecraft.client.gui.Font,
+        mouseX: Int,
+        mouseY: Int,
+        screenWidth: Int,
+        screenHeight: Int
+    ) {
+        val items = listOf(
+            Component.translatable("context.superbwarfare.tactical_map.edit_loiter").string,
+            Component.translatable("context.superbwarfare.tactical_map.delete_loiter").string,
+        )
+        val padding = 4
+        val itemHeight = 12
+        var mx = loiterPointMenuX
+        var my = loiterPointMenuY
+        val menuW = items.maxOf { font.width(it) } + padding * 2
+        val menuH = items.size * itemHeight + padding * 2 + 2
+
+        if (mx + menuW > screenWidth) mx = screenWidth - menuW - 4
+        if (my + menuH > screenHeight) my = screenHeight - menuH - 4
+
+        // Background
+        guiGraphics.fill(mx, my, mx + menuW, my + menuH, 0xEE1E2A1E.toInt())
+        guiGraphics.fill(mx, my, mx + menuW, my + 1, 0xFF446644.toInt())
+        guiGraphics.fill(mx, my + menuH - 1, mx + menuW, my + menuH, 0xFF446644.toInt())
+        guiGraphics.fill(mx, my, mx + 1, my + menuH, 0xFF446644.toInt())
+        guiGraphics.fill(mx + menuW - 1, my, mx + menuW, my + menuH, 0xFF446644.toInt())
+
+        // Items
+        for ((i, label) in items.withIndex()) {
+            val iy = my + padding + i * itemHeight
+            val hovered = mouseX in mx..mx + menuW && mouseY in iy..iy + itemHeight
+            if (hovered) guiGraphics.fill(mx + 1, iy, mx + menuW - 1, iy + itemHeight, 0x66448844)
+            guiGraphics.drawString(
+                font, label, mx + padding, iy + 2,
+                if (hovered) 0xFFFFFFFF.toInt() else 0xFFCCCCCC.toInt(), false
+            )
+        }
+    }
+
+    fun handleLoiterPointMenuClick(mouseX: Int, mouseY: Int): Boolean {
+        if (!loiterPointMenuVisible) return false
+        val font = Minecraft.getInstance().font
+        val items = listOf(
+            Component.translatable("context.superbwarfare.tactical_map.edit_loiter").string,
+            Component.translatable("context.superbwarfare.tactical_map.delete_loiter").string,
+        )
+        val padding = 4
+        val itemHeight = 12
+        val menuW = items.maxOf { font.width(it) } + padding * 2
+        var mx = loiterPointMenuX
+        var my = loiterPointMenuY
+        val screenWidth = Minecraft.getInstance().window.guiScaledWidth
+        val screenHeight = Minecraft.getInstance().window.guiScaledHeight
+
+        if (mx + menuW > screenWidth) mx = screenWidth - menuW - 4
+        if (my + items.size * itemHeight + padding * 2 + 2 > screenHeight) my = screenHeight - (items.size * itemHeight + padding * 2 + 2) - 4
+
+        for ((i, _) in items.withIndex()) {
+            val iy = my + padding + i * itemHeight
+            if (mouseX in mx..mx + menuW && mouseY in iy..iy + itemHeight) {
+                when (i) {
+                    0 -> onLoiterPointEdit?.invoke()
+                    1 -> onLoiterPointDelete?.invoke()
+                }
+                loiterPointMenuVisible = false
+                return true
+            }
+        }
+        loiterPointMenuVisible = false
+        return true
     }
 
     private fun renderMissileSubMenu(

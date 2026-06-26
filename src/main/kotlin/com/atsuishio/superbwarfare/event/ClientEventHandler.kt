@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
+import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.*
@@ -714,7 +715,13 @@ object ClientEventHandler {
         }
 
         if (keys != keysCache) {
-            sendPacketToServer(VehicleMovementMessage(keys))
+            // 盘旋模式下阻止操控包发往服务端
+            val blockLoiter = vehicle is VehicleEntity
+                && vehicle.loiterActive
+                && vehicle.computed().engineType == EngineType.AIRCRAFT
+            if (!blockLoiter) {
+                sendPacketToServer(VehicleMovementMessage(keys))
+            }
             keysCache = keys
         }
 

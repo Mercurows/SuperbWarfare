@@ -109,6 +109,7 @@ object ClientMouseHandler {
         if (vehicle is VehicleEntity && player == vehicle.firstPassenger
             && (vehicle.vehicleType == VehicleType.AIRPLANE || vehicle.vehicleType == VehicleType.HELICOPTER)
         ) {
+
             var y = 1
             if (ControlConfig.INVERT_AIRCRAFT_CONTROL.get()) {
                 y = -1
@@ -118,6 +119,8 @@ object ClientMouseHandler {
 
             speedX = sensitivity * moveSpeedX * (if (ClientEventHandler.zoomVehicle && !ClientEventHandler.isNacelleCam(player)) 0.3 else 1.0)
             speedY = y * sensitivity * moveSpeedY * (if (ClientEventHandler.zoomVehicle && !ClientEventHandler.isNacelleCam(player)) 0.4 else 1.0)
+
+
 
             mouseXMoveTick = Mth.lerp(0.1, mouseXMoveTick, speedX)
             mouseYMoveTick = Mth.lerp(0.1, mouseYMoveTick, speedY)
@@ -132,6 +135,11 @@ object ClientMouseHandler {
 
             lerpNacelleSpeedX = Mth.lerp((0.05 * abs(mouseXMoveTick)).coerceAtLeast(0.13), lerpNacelleSpeedX, speedX * 1.4)
             lerpNacelleSpeedY = Mth.lerp((0.05 * abs(mouseYMoveTick)).coerceAtLeast(0.13), lerpNacelleSpeedY, speedY * 1.4)
+
+            // 盘旋模式下禁止操控
+            if (vehicle.loiterActive && vehicle.computed().engineType == EngineType.AIRCRAFT) {
+                return
+            }
 
             var i = 0.0
             if (vehicle.roll < 0) {

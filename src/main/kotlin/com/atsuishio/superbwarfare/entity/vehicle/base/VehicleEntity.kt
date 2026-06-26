@@ -889,7 +889,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             define(HOVER_MODE, false)
             define(TURRET_BURN_TIMER, 0)
             define(LOCKED, false)
-            define(LOITER_PARAMS, Quaternionf(0f, 0f, 318f, 400f))
+            define(LOITER_PARAMS, Quaternionf(0f, 318f, 0f, 400f))
             define(LOITER_ACTIVE, false)
         }
     }
@@ -2094,8 +2094,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         this.travel()
 
-        // 固定翼飞机自动盘旋：空中、引擎启动、无驾驶员、有能量、未坠毁、有乘客、盘旋开关已开启
-        if (!onGround() && engineStartOver && firstPassenger == null && energy > 1024 && !isWreck
+        // 固定翼飞机自动盘旋：空中、引擎启动、有能量、未坠毁、有乘客、盘旋开关已开启
+        if (!onGround() && engineStartOver && energy > 1024 && !isWreck
             && getPassengers().isNotEmpty() && computed.engineType == EngineType.AIRCRAFT
             && loiterActive
         ) {

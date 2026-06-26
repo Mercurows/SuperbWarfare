@@ -1693,9 +1693,9 @@ object VehicleEngineUtils {
 
         // 低于目标高度 → 爬升需增大油门防失速；高于目标高度 → 缓慢减油
         val powerTarget = if (altError > 0) {
-            Mth.clamp(1.1f + altError.toFloat() * 0.002f, 1.1f, 2.0f)
+            Mth.clamp(0.9f + altError.toFloat() * 0.002f, 0.9f, 2.0f)
         } else {
-            Mth.clamp(1.1f + altError.toFloat() * 0.0005f, 0.6f, 1.1f)
+            Mth.clamp(0.9f + altError.toFloat() * 0.0005f, 0.5f, 0.9f)
         }
         power = Mth.lerp(0.05f, power, powerTarget)
 

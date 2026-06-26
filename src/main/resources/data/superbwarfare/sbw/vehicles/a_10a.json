@@ -352,7 +352,7 @@
   "Type": "Airplane",
   "EngineType": "Aircraft",
   "EngineInfo": {
-    "EnergyCostRate": 512,
+    "EnergyCostRate": 256,
     "Increment": 1,
     "Decrement": 1,
     "PitchSpeed": 1,

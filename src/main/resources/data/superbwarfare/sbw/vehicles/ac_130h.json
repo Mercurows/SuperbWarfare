@@ -420,7 +420,7 @@
   "Type": "Airplane",
   "EngineType": "Aircraft",
   "EngineInfo": {
-    "EnergyCostRate": 512,
+    "EnergyCostRate": 256,
     "Increment": 0.7,
     "Decrement": 0.5,
     "PitchSpeed": 0.3,
