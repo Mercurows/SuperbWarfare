@@ -93,8 +93,5 @@
         0.65
       ]
     }
-  },
-  "textures": {
-    "particle": "superbwarfare:block/container"
   }
 }

@@ -118,8 +118,5 @@
         1
       ]
     }
-  },
-  "textures": {
-    "particle": "superbwarfare:block/small_container"
   }
 }
