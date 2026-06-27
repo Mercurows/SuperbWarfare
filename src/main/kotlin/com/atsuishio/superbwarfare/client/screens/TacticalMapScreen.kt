@@ -170,7 +170,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
     private var entityMenuTarget: Entity? = null
     private var entityMenuX = 0
     private var entityMenuY = 0
-    private var selectedEntity: Entity? = null
+    private val selectedEntities = mutableListOf<Entity>()
 
     // Area selection (shift + left-drag)
     private var selectionDragging = false
@@ -390,37 +390,31 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
 
         // Sync direct attack ammo from actual GunData (tracks reloads)
         if (attackMode == AttackMode.DIRECT && attackWeaponName != null) {
-            val vehicle = (selectedEntity as? VehicleEntity)
-                ?: (localPlayer?.vehicle as? VehicleEntity)
-            val gd = vehicle?.gunDataMap?.get(attackWeaponName!!)
-            if (gd != null) {
-                val ammoCost = gd.get(GunProp.AMMO_COST_PER_SHOOT)
-                directAttackAmmo = if (ammoCost <= 0) 999
-                    else gd.currentAvailableAmmo(localPlayer) / ammoCost
-            }
+            directAttackAmmo = currentAttackAmmo()
         }
 
         // Refresh missile weapon ammo counts in open Level 2 menu (tracks reloads)
         if (contextMenu.missileSubMenuVisible && contextMenu.missileWeapons.isNotEmpty()) {
-            val vehicle = (selectedEntity as? VehicleEntity)
-                ?: (localPlayer?.vehicle as? VehicleEntity)
-            if (vehicle != null) {
+            val vehicles = getSelectedVehicles()
+            if (vehicles.isNotEmpty()) {
                 contextMenu.missileWeapons = contextMenu.missileWeapons.map { entry ->
-                    val gd = vehicle.gunDataMap[entry.weaponName]
-                    if (gd != null) {
+                    // 汇总所有载具中该武器的弹药
+                    val totalAmmo = vehicles.sumOf { v ->
+                        val gd = v.gunDataMap[entry.weaponName] ?: return@sumOf 0
                         val ammoCost = gd.get(GunProp.AMMO_COST_PER_SHOOT)
-                        val available = if (ammoCost <= 0) 999
-                            else gd.currentAvailableAmmo(localPlayer) / ammoCost
-                        // Recompute display name so inline %1$s ammo placeholder stays in sync
-                        val rawName = gd.get(GunProp.NAME) ?: entry.weaponName
-                        val translated = try {
-                            Component.translatable(rawName).string
-                        } catch (_: Exception) { rawName }
-                        val ammoStr = "×$available"
-                        val newDisplay = if (translated.contains("%1\$s"))
-                            translated.replace("%1\$s", ammoStr) else translated
-                        entry.copy(ammoCount = available, displayName = newDisplay)
-                    } else entry
+                        if (ammoCost <= 0) 999 else gd.currentAvailableAmmo(localPlayer) / ammoCost
+                    }
+                    // Recompute display name so inline %1$s ammo placeholder stays in sync
+                    val rawName = vehicles.firstNotNullOfOrNull { v ->
+                        v.gunDataMap[entry.weaponName]?.get(GunProp.NAME) as? String
+                    } ?: entry.weaponName
+                    val translated = try {
+                        Component.translatable(rawName).string
+                    } catch (_: Exception) { rawName }
+                    val ammoStr = "×$totalAmmo"
+                    val newDisplay = if (translated.contains("%1\$s"))
+                        translated.replace("%1\$s", ammoStr) else translated
+                    entry.copy(ammoCount = totalAmmo, displayName = newDisplay)
                 }
             }
         }
@@ -653,11 +647,16 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         val color = 0xFFFFFFFF.toInt()
 
         hoveredLine = null
+        val clipL = mapLeft.toFloat(); val clipR = (mapLeft + mapAreaW).toFloat()
+        val clipT = mapTop.toFloat(); val clipB = (mapTop + mapAreaH).toFloat()
         for ((a, b) in getValidConnections()) {
             val ax = (mapCenterX + (a.x - viewBlockX) * scale).toFloat()
             val ay = (mapCenterY + (a.z - viewBlockZ) * scale).toFloat()
             val bx = (mapCenterX + (b.x - viewBlockX) * scale).toFloat()
             val by = (mapCenterY + (b.z - viewBlockZ) * scale).toFloat()
+            // 快速剔除：两端点都在可视区域外且线段不与区域相交
+            if ((ax < clipL && bx < clipL) || (ax > clipR && bx > clipR) ||
+                (ay < clipT && by < clipT) || (ay > clipB && by > clipB)) continue
 
             // Check hover (suppressed when mouse is over a marker)
             val isHovered = hoveredMarker == null && hitTestLine(
@@ -723,19 +722,21 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         val midX = ((sx + mx) / 2f).toFloat()
         val midY = ((sy + my) / 2f).toFloat()
 
-        // Dashed line via PoseStack rotation: 1px segments with 1px gaps
+        // Dashed line via PoseStack rotation: 1px segments with 1px gaps, clipped to visible area
         val dashColor = 0xAAFFAA00.toInt()
-        val pose = guiGraphics.pose()
-        pose.pushPose()
-        pose.translate(midX, midY, 0f)
-        pose.rotateAround(Axis.ZP.rotationDegrees(Math.toDegrees(angle).toFloat()), 0f, 0f, 0f)
-        val halfLen = (len / 2f).toInt()
-        var x = -halfLen
-        while (x < halfLen) {
-            guiGraphics.fill(x, 0, x + 1, 1, dashColor)
-            x += 2  // 1px on, 1px off
+        val range = clipDashRange(sx.toFloat(), sy.toFloat(), mx.toFloat(), my.toFloat())
+        if (range != null) {
+            val pose = guiGraphics.pose()
+            pose.pushPose()
+            pose.translate(midX, midY, 0f)
+            pose.rotateAround(Axis.ZP.rotationDegrees(Math.toDegrees(angle).toFloat()), 0f, 0f, 0f)
+            var x = range.first
+            while (x < range.second) {
+                guiGraphics.fill(x, 0, x + 1, 1, dashColor)
+                x += 2
+            }
+            pose.popPose()
         }
-        pose.popPose()
 
         // Distance tooltip at mouse
         val worldMX = viewBlockX + (mouseX - mapCenterX) / scale
@@ -1088,7 +1089,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             val clampedX = screenX.coerceIn((mapLeft + 4).toFloat(), (mapLeft + mapAreaW - 4).toFloat())
             val clampedY = screenY.coerceIn((mapTop + 4).toFloat(), (mapTop + mapAreaH - 4).toFloat())
             renderMapEntity(entity, level, scale, pPartialTick, guiGraphics, 0xFF7FFFAD.toInt())
-            if (entity.id == selectedEntity?.id) drawSelectedBorder(guiGraphics, clampedX, clampedY)
+            if (selectedEntities.any { it.id == entity.id }) drawSelectedBorder(guiGraphics, clampedX, clampedY)
             hitTestAndBuildTooltip(entity, clampedX, clampedY, "context.superbwarfare.tactical_map.relation.friendly")
             entityRenderList.add(EntityRenderEntry(entity, clampedX, clampedY, "friendly"))
         }
@@ -1104,7 +1105,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             val clampedX = screenX.coerceIn((mapLeft + 4).toFloat(), (mapLeft + mapAreaW - 4).toFloat())
             val clampedY = screenY.coerceIn((mapTop + 4).toFloat(), (mapTop + mapAreaH - 4).toFloat())
             renderMapEntity(entity, level, scale, pPartialTick, guiGraphics, 0xFFAAAAAA.toInt())
-            if (entity.id == selectedEntity?.id) drawSelectedBorder(guiGraphics, clampedX, clampedY)
+            if (selectedEntities.any { it.id == entity.id }) drawSelectedBorder(guiGraphics, clampedX, clampedY)
             hitTestAndBuildTooltip(entity, clampedX, clampedY, "context.superbwarfare.tactical_map.relation.neutral")
             entityRenderList.add(EntityRenderEntry(entity, clampedX, clampedY, "neutral"))
         }
@@ -1120,7 +1121,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             val clampedX = screenX.coerceIn((mapLeft + 4).toFloat(), (mapLeft + mapAreaW - 4).toFloat())
             val clampedY = screenY.coerceIn((mapTop + 4).toFloat(), (mapTop + mapAreaH - 4).toFloat())
             renderMapEntity(entity, level, scale, pPartialTick, guiGraphics, 0xFFFF5555.toInt())
-            if (entity.id == selectedEntity?.id) drawSelectedBorder(guiGraphics, clampedX, clampedY)
+            if (selectedEntities.any { it.id == entity.id }) drawSelectedBorder(guiGraphics, clampedX, clampedY)
             hitTestAndBuildTooltip(entity, clampedX, clampedY, "context.superbwarfare.tactical_map.relation.hostile")
             entityRenderList.add(EntityRenderEntry(entity, clampedX, clampedY, "hostile"))
         }
@@ -1130,8 +1131,8 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             entityMenuVisible = false
             entityMenuTarget = null
         }
-        if (selectedEntity != null && entityRenderList.none { it.entity.id == selectedEntity?.id }) {
-            selectedEntity = null
+        selectedEntities.removeAll { sel ->
+            entityRenderList.none { it.entity.id == sel.id }
         }
 
         // 雷达图标置于最顶层
@@ -1224,17 +1225,45 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         pose.popPose()
     }
 
+    /** Liang-Barsky 线裁剪：将屏幕空间线段裁剪到地图可视区域，返回本地虚线坐标范围 */
+    private fun clipDashRange(sx: Float, sy: Float, ex: Float, ey: Float): Pair<Int, Int>? {
+        val cx1 = mapLeft.toFloat()
+        val cx2 = (mapLeft + mapAreaW).toFloat()
+        val cy1 = mapTop.toFloat()
+        val cy2 = (mapTop + mapAreaH).toFloat()
+
+        val edgeP = floatArrayOf(-(ex - sx), ex - sx, -(ey - sy), ey - sy)
+        val edgeQ = floatArrayOf(sx - cx1, cx2 - sx, sy - cy1, cy2 - sy)
+        var tMin = 0f; var tMax = 1f
+
+        for (i in 0 until 4) {
+            if (edgeP[i] == 0f) { if (edgeQ[i] < 0) return null }
+            else {
+                val t = edgeQ[i] / edgeP[i]
+                if (edgeP[i] < 0) tMin = maxOf(tMin, t) else tMax = minOf(tMax, t)
+            }
+        }
+        if (tMin > tMax) return null
+        val dx = ex - sx; val dy = ey - sy
+        val len = kotlin.math.sqrt((dx * dx + dy * dy).toDouble()).toFloat()
+        val half = (len / 2f).toInt()
+        val lo = (-half + tMin * len).toInt()
+        val hi = (-half + tMax * len).toInt()
+        return maxOf(-half, lo) to minOf(half, hi)
+    }
+
     private fun renderTargetPos(targetPos: Vec3, scale: Double, screenX: Float, screenY: Float, guiGraphics: GuiGraphics, entity: Entity) {
         val tdx = targetPos.x - viewBlockX
         val tdz = targetPos.z - viewBlockZ
         val targetScreenX = (mapCenterX + tdx * scale).toFloat()
         val targetScreenY = (mapCenterY + tdz * scale).toFloat()
 
-        // 红色虚线（与连线模式预览虚线同款写法）
+        // 红色虚线（裁剪到地图可视区域）
         val ldx = targetScreenX - screenX
         val ldy = targetScreenY - screenY
         val len = kotlin.math.sqrt((ldx * ldx + ldy * ldy).toDouble()).toFloat()
         if (len > 2f) {
+            val range = clipDashRange(screenX, screenY, targetScreenX, targetScreenY) ?: return
             val angle = atan2(ldy.toDouble(), ldx.toDouble())
             val midX = ((screenX + targetScreenX) / 2f)
             val midY = ((screenY + targetScreenY) / 2f)
@@ -1243,11 +1272,10 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             linePose.pushPose()
             linePose.translate(midX, midY, 0f)
             linePose.rotateAround(Axis.ZP.rotationDegrees(Math.toDegrees(angle).toFloat()), 0f, 0f, 0f)
-            val halfLen = (len / 2f).toInt()
-            var x = -halfLen
-            while (x < halfLen) {
+            var x = range.first
+            while (x < range.second) {
                 guiGraphics.fill(x, 0, x + 1, 1, dashColor)
-                x += 2  // 1px on, 1px off
+                x += 2
             }
             linePose.popPose()
 
@@ -1342,6 +1370,8 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             val ldy = navScreenY - screenY
             val len = kotlin.math.sqrt((ldx * ldx + ldy * ldy).toDouble()).toFloat()
             if (len > 2f) {
+                val range = clipDashRange(screenX.toFloat(), screenY.toFloat(), navScreenX.toFloat(), navScreenY.toFloat())
+                if (range != null) {
                 val angle = atan2(ldy.toDouble(), ldx.toDouble())
                 val midX = ((screenX + navScreenX) / 2f).toFloat()
                 val midY = ((screenY + navScreenY) / 2f).toFloat()
@@ -1350,9 +1380,8 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
                 linePose.pushPose()
                 linePose.translate(midX, midY, 0f)
                 linePose.rotateAround(Axis.ZP.rotationDegrees(Math.toDegrees(angle).toFloat()), 0f, 0f, 0f)
-                val halfLen = (len / 2f).toInt()
-                var ox = -halfLen
-                while (ox < halfLen) {
+                var ox = range.first
+                while (ox < range.second) {
                     guiGraphics.fill(ox, 0, ox + 1, 1, dashColor)
                     ox += 2
                 }
@@ -1361,6 +1390,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
                 val dist = kotlin.math.sqrt((lx - entity.x) * (lx - entity.x) + (lz - entity.z) * (lz - entity.z))
                 val label = "${dist.toInt()}m"
                 guiGraphics.drawString(font, label, (navScreenX + 10).toInt(), (navScreenY + 6).toInt(), 0xFFCDFFF6.toInt(), true)
+                }
             }
 
             val clampedNX = navScreenX.coerceIn(
@@ -1499,7 +1529,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         }
         val isFriendlyVehicle = target is VehicleEntity &&
             entityRenderList.any { it.entity === target && it.relation == "friendly" }
-        val selectLabel = if (target === selectedEntity)
+        val selectLabel = if (selectedEntities.any { it.id == target.id })
             Component.translatable("context.superbwarfare.tactical_map.entity_menu.deselect").string
         else
             Component.translatable("context.superbwarfare.tactical_map.entity_menu.select").string
@@ -1594,7 +1624,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         }
         val isFriendlyVehicle = target is VehicleEntity &&
             entityRenderList.any { it.entity === target && it.relation == "friendly" }
-        val selectLabel = if (target === selectedEntity)
+        val selectLabel = if (selectedEntities.any { it.id == target.id })
             Component.translatable("context.superbwarfare.tactical_map.entity_menu.deselect").string
         else
             Component.translatable("context.superbwarfare.tactical_map.entity_menu.select").string
@@ -1636,7 +1666,8 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         if (isFriendlyVehicle) {
             ty += itemHeight
             if (mouseX in mx.toDouble()..(mx + menuW).toDouble() && mouseY in ty.toDouble()..(ty + itemHeight).toDouble()) {
-                selectedEntity = if (target === selectedEntity) null else target
+                val idx = selectedEntities.indexOfFirst { it.id == target.id }
+                if (idx >= 0) selectedEntities.removeAt(idx) else selectedEntities.add(target)
                 entityMenuVisible = false
                 entityMenuTarget = null
                 return true
@@ -1678,86 +1709,113 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         val lockEntity: Boolean,  // true = lock UUID, false = use position
     )
 
+    /** 获取所有被选中的载具（用于遥控打击），若未选中则回退到当前骑乘载具 */
+    private fun getSelectedVehicles(): List<VehicleEntity> {
+        val sel = selectedEntities.filterIsInstance<VehicleEntity>()
+        if (sel.isNotEmpty()) return sel
+        val ridden = localPlayer?.vehicle as? VehicleEntity
+        return if (ridden != null) listOf(ridden) else emptyList()
+    }
+
+    /** 在所有选中载具中查找第一个拥有指定武器且有弹药的载具 */
+    private fun findFirstVehicleWithWeapon(weaponName: String): VehicleEntity? {
+        return getSelectedVehicles().firstOrNull { vehicle ->
+            val gd = vehicle.gunDataMap[weaponName] ?: return@firstOrNull false
+            val ammoCost = gd.get(GunProp.AMMO_COST_PER_SHOOT)
+            val available = if (ammoCost <= 0) 999 else gd.currentAvailableAmmo(localPlayer) / ammoCost
+            available > 0
+        }
+    }
+
     private fun buildEntityMissileWeapons(entity: Entity): List<EntityMissileWeapon> {
-        // 武器来源：优先使用选中的友方载具，否则使用当前骑乘的载具
-        val sourceVehicle = (selectedEntity as? VehicleEntity)
-            ?: (localPlayer?.vehicle as? VehicleEntity)
-            ?: return emptyList()
+        val sourceVehicles = getSelectedVehicles()
+        if (sourceVehicles.isEmpty()) return emptyList()
         // 不对武器来源自身显示攻击选项
-        if (entity === sourceVehicle || entity.id == sourceVehicle.id) return emptyList()
-        val level = sourceVehicle.level()
+        if (sourceVehicles.any { entity === it || entity.id == it.id }) return emptyList()
+        val level = sourceVehicles.first().level()
         val syncedEntry = ClientSyncedEntityHandler.getSyncedEntry(level, entity.id)
         val heightAboveGround = syncedEntry?.heightAboveGround ?: -1.0
-        val result = mutableListOf<EntityMissileWeapon>()
-        for ((name, gunData) in sourceVehicle.gunDataMap) {
-            fun com.google.gson.JsonObject.gbool(vararg keys: String) =
-                keys.firstNotNullOfOrNull { if (has(it)) get(it).asBoolean else null } ?: false
-            fun com.google.gson.JsonObject.gdouble(vararg keys: String) =
-                keys.firstNotNullOfOrNull { if (has(it)) get(it).asDouble else null }
 
-            val currentSeek = gunData.get(GunProp.SEEK_WEAPON_INFO)
-            var canLockEntity = currentSeek?.onlyLockEntity == true
-            var canGroundStrike = currentSeek?.onlyLockBlock == true || currentSeek?.inputBlockPos == true
-            var minH = if (canLockEntity) currentSeek?.minTargetHeight ?: 0.0 else Double.MAX_VALUE
-            var maxH = if (canLockEntity) currentSeek?.maxTargetHeight ?: 114514.0 else -1.0
+        // weaponName -> Pair(totalAmmo, canLockEntity)
+        data class Aggregated(val totalAmmo: Int, val canLockEntity: Boolean, val displayNameBase: String)
 
-            val consumers = gunData.get(GunProp.AMMO_CONSUMER)
-            for (c in consumers) {
-                val o = c.override ?: continue
-                val seekObj = o.getAsJsonObject("SeekWeaponInfo")
-                    ?: o.getAsJsonObject("seekWeaponInfo") ?: continue
-                if (!canLockEntity) {
-                    canLockEntity = seekObj.gbool("OnlyLockEntity", "onlyLockEntity")
-                    if (canLockEntity) {
-                        minH = seekObj.gdouble("MinTargetHeight", "minTargetHeight") ?: 0.0
-                        maxH = seekObj.gdouble("MaxTargetHeight", "maxTargetHeight") ?: 114514.0
+        val weaponMap = linkedMapOf<String, Aggregated>()
+
+        for (vehicle in sourceVehicles) {
+            for ((name, gunData) in vehicle.gunDataMap) {
+                fun com.google.gson.JsonObject.gbool(vararg keys: String) =
+                    keys.firstNotNullOfOrNull { if (has(it)) get(it).asBoolean else null } ?: false
+                fun com.google.gson.JsonObject.gdouble(vararg keys: String) =
+                    keys.firstNotNullOfOrNull { if (has(it)) get(it).asDouble else null }
+
+                val currentSeek = gunData.get(GunProp.SEEK_WEAPON_INFO)
+                var canLockEntity = currentSeek?.onlyLockEntity == true
+                var canGroundStrike = currentSeek?.onlyLockBlock == true || currentSeek?.inputBlockPos == true
+                var minH = if (canLockEntity) currentSeek?.minTargetHeight ?: 0.0 else Double.MAX_VALUE
+                var maxH = if (canLockEntity) currentSeek?.maxTargetHeight ?: 114514.0 else -1.0
+
+                val consumers = gunData.get(GunProp.AMMO_CONSUMER)
+                for (c in consumers) {
+                    val o = c.override ?: continue
+                    val seekObj = o.getAsJsonObject("SeekWeaponInfo")
+                        ?: o.getAsJsonObject("seekWeaponInfo") ?: continue
+                    if (!canLockEntity) {
+                        canLockEntity = seekObj.gbool("OnlyLockEntity", "onlyLockEntity")
+                        if (canLockEntity) {
+                            minH = seekObj.gdouble("MinTargetHeight", "minTargetHeight") ?: 0.0
+                            maxH = seekObj.gdouble("MaxTargetHeight", "maxTargetHeight") ?: 114514.0
+                        }
+                    }
+                    if (!canGroundStrike) {
+                        canGroundStrike = seekObj.gbool("OnlyLockBlock", "onlyLockBlock")
+                            || seekObj.gbool("InputBlockPos", "inputBlockPos")
                     }
                 }
-                if (!canGroundStrike) {
-                    canGroundStrike = seekObj.gbool("OnlyLockBlock", "onlyLockBlock")
-                        || seekObj.gbool("InputBlockPos", "inputBlockPos")
+
+                if (!canLockEntity && !canGroundStrike) continue
+
+                if (canLockEntity && heightAboveGround >= 0) {
+                    if (heightAboveGround < minH || heightAboveGround > maxH) canLockEntity = false
+                }
+                if (!canLockEntity && !canGroundStrike) continue
+
+                val ammoCost = gunData.get(GunProp.AMMO_COST_PER_SHOOT)
+                val available = if (ammoCost <= 0) 999 else gunData.currentAvailableAmmo(localPlayer) / ammoCost
+                if (available <= 0) continue
+
+                val rawName = gunData.get(GunProp.NAME) ?: name
+                val translated = try { Component.translatable(rawName).string } catch (_: Exception) { rawName }
+
+                val existing = weaponMap[name]
+                if (existing != null) {
+                    weaponMap[name] = Aggregated(existing.totalAmmo + available, existing.canLockEntity, existing.displayNameBase)
+                } else {
+                    weaponMap[name] = Aggregated(available, canLockEntity, translated)
                 }
             }
-
-            if (!canLockEntity && !canGroundStrike) continue
-
-            if (canLockEntity && heightAboveGround >= 0) {
-                if (heightAboveGround < minH || heightAboveGround > maxH) canLockEntity = false
-            }
-            if (!canLockEntity && !canGroundStrike) continue
-
-            val ammoCost = gunData.get(GunProp.AMMO_COST_PER_SHOOT)
-            val available = if (ammoCost <= 0) 999 else gunData.currentAvailableAmmo(localPlayer) / ammoCost
-            val rawName = gunData.get(GunProp.NAME) ?: name
-            val translated = try { Component.translatable(rawName).string } catch (_: Exception) { rawName }
-            val ammoStr = "×$available"
-            val displayName = if (translated.contains("%1\$s")) translated.replace("%1\$s", ammoStr) else "$translated  $ammoStr"
-            result.add(EntityMissileWeapon(name, displayName, available, canLockEntity))
         }
-        return result
+
+        return weaponMap.map { (name, agg) ->
+            val ammoStr = "×${agg.totalAmmo}"
+            val displayName = if (agg.displayNameBase.contains("%1\$s"))
+                agg.displayNameBase.replace("%1\$s", ammoStr) else "${agg.displayNameBase}  $ammoStr"
+            EntityMissileWeapon(name, displayName, agg.totalAmmo, agg.canLockEntity)
+        }
     }
 
     private fun fireEntityMissile(entity: Entity, weapon: EntityMissileWeapon) {
-        // 如果是从选中的载具遥控发射（而非当前骑乘的载具），带上发射载具的 ID
-        val sourceVehicle = selectedEntity as? VehicleEntity
-        val remoteShooterId = if (sourceVehicle != null && sourceVehicle !== localPlayer?.vehicle) {
-            sourceVehicle.id
-        } else null
-        if (weapon.lockEntity) {
-            sendPacketToServer(VehicleFireMessage(
-                uuid = entity.uuid,
-                targetPos = SerializedVector3f(entity.x.toFloat(), (entity.y + 1.5).toFloat(), entity.z.toFloat()),
-                weaponName = weapon.weaponName,
-                shooterVehicleId = remoteShooterId,
-            ))
-        } else {
-            sendPacketToServer(VehicleFireMessage(
-                uuid = null,
-                targetPos = SerializedVector3f(entity.x.toFloat(), (entity.y + 1.5).toFloat(), entity.z.toFloat()),
-                weaponName = weapon.weaponName,
-                shooterVehicleId = remoteShooterId,
-            ))
-        }
+        // 遥控发射：在所有选中载具中找第一个有弹药的
+        val shooter = findFirstVehicleWithWeapon(weapon.weaponName)
+            ?: (localPlayer?.vehicle as? VehicleEntity)
+            ?: return
+        val remoteShooterId = if (shooter !== localPlayer?.vehicle) shooter.id else null
+        val targetPos = SerializedVector3f(entity.x.toFloat(), (entity.y + 1.5).toFloat(), entity.z.toFloat())
+        sendPacketToServer(VehicleFireMessage(
+            uuid = if (weapon.lockEntity) entity.uuid else null,
+            targetPos = targetPos,
+            weaponName = weapon.weaponName,
+            shooterVehicleId = remoteShooterId,
+        ))
     }
 
     private fun renderSelectionBox(guiGraphics: GuiGraphics) {
@@ -1796,15 +1854,39 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
     }
 
     private fun renderDashedRect(guiGraphics: GuiGraphics, minSX: Float, minSY: Float, maxSX: Float, maxSY: Float, color: Int) {
+        val cx1 = mapLeft
+        val cx2 = mapLeft + mapAreaW
+        val cy1 = mapTop
+        val cy2 = mapTop + mapAreaH
         val dash = 4; val gap = 3; val dashLen = dash + gap
-        var x = minSX.toInt()
-        while (x < maxSX) { val ex = minOf(x + dash, maxSX.toInt()); guiGraphics.fill(x, minSY.toInt(), ex, minSY.toInt() + 1, color); x += dashLen }
-        x = minSX.toInt()
-        while (x < maxSX) { val ex = minOf(x + dash, maxSX.toInt()); guiGraphics.fill(x, maxSY.toInt(), ex, maxSY.toInt() + 1, color); x += dashLen }
-        var y = minSY.toInt()
-        while (y < maxSY) { val ey = minOf(y + dash, maxSY.toInt()); guiGraphics.fill(minSX.toInt(), y, minSX.toInt() + 1, ey, color); y += dashLen }
-        y = minSY.toInt()
-        while (y < maxSY) { val ey = minOf(y + dash, maxSY.toInt()); guiGraphics.fill(maxSX.toInt(), y, maxSX.toInt() + 1, ey, color); y += dashLen }
+        // Top edge
+        if (minSY.toInt() in cy1 until cy2) {
+            val start = maxOf(minSX.toInt(), cx1)
+            val end = minOf(maxSX.toInt(), cx2)
+            var x = start
+            while (x < end) { val ex = minOf(x + dash, end); guiGraphics.fill(x, minSY.toInt(), ex, minSY.toInt() + 1, color); x += dashLen }
+        }
+        // Bottom edge
+        if (maxSY.toInt() in cy1 until cy2) {
+            val start = maxOf(minSX.toInt(), cx1)
+            val end = minOf(maxSX.toInt(), cx2)
+            var x = start
+            while (x < end) { val ex = minOf(x + dash, end); guiGraphics.fill(x, maxSY.toInt(), ex, maxSY.toInt() + 1, color); x += dashLen }
+        }
+        // Left edge
+        if (minSX.toInt() in cx1 until cx2) {
+            val start = maxOf(minSY.toInt(), cy1)
+            val end = minOf(maxSY.toInt(), cy2)
+            var y = start
+            while (y < end) { val ey = minOf(y + dash, end); guiGraphics.fill(minSX.toInt(), y, minSX.toInt() + 1, ey, color); y += dashLen }
+        }
+        // Right edge
+        if (maxSX.toInt() in cx1 until cx2) {
+            val start = maxOf(minSY.toInt(), cy1)
+            val end = minOf(maxSY.toInt(), cy2)
+            var y = start
+            while (y < end) { val ey = minOf(y + dash, end); guiGraphics.fill(maxSX.toInt(), y, maxSX.toInt() + 1, ey, color); y += dashLen }
+        }
     }
 
     private data class Rect4f(val minX: Float, val minY: Float, val maxX: Float, val maxY: Float)
@@ -2219,53 +2301,53 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             contextMenu.missileWeapons = emptyList()
             contextMenu.onMissileStrike = null
             val riddenVehicle = localPlayer?.vehicle as? VehicleEntity
-            val sourceVehicle = (selectedEntity as? VehicleEntity) ?: riddenVehicle
-            if (sourceVehicle != null && sourceVehicle.gunDataMap.isNotEmpty()) {
-                val weapons = sourceVehicle.gunDataMap.entries.mapNotNull { (name, gunData) ->
-                    // Check if any ammo type has OnlyLockBlock or InputBlockPos.
-                    // gunData.get() already applies the currently-selected AmmoConsumer's
-                    // Override, but we also need to scan OTHER ammo consumers because the
-                    // player might have a non-lock ammo selected while a lock-capable ammo
-                    // type exists on the same weapon.
-                    val currentSeekInfo = gunData.get(GunProp.SEEK_WEAPON_INFO)
-                    val hasGroundStrike = if (currentSeekInfo != null &&
-                        (currentSeekInfo.onlyLockBlock || currentSeekInfo.inputBlockPos)
-                    ) {
-                        true
-                    } else {
-                        // Check if any AmmoConsumer's Override enables ground strike
-                        val consumers = gunData.get(GunProp.AMMO_CONSUMER)
-                        consumers.any { consumer ->
-                            val o = consumer.override ?: return@any false
-                            val seekObj = o.getAsJsonObject("SeekWeaponInfo") ?: return@any false
-                            (seekObj.get("OnlyLockBlock")?.asBoolean == true)
-                                || (seekObj.get("InputBlockPos")?.asBoolean == true)
+            val sourceVehicles = getSelectedVehicles()
+            if (sourceVehicles.isNotEmpty()) {
+                // weaponName -> Pair(totalAmmo, displayNameBase)
+                data class GndAgg(val totalAmmo: Int, val displayNameBase: String)
+                val weaponMap = linkedMapOf<String, GndAgg>()
+
+                for (vehicle in sourceVehicles) {
+                    for ((name, gunData) in vehicle.gunDataMap) {
+                        val currentSeekInfo = gunData.get(GunProp.SEEK_WEAPON_INFO)
+                        val hasGroundStrike = if (currentSeekInfo != null &&
+                            (currentSeekInfo.onlyLockBlock || currentSeekInfo.inputBlockPos)
+                        ) {
+                            true
+                        } else {
+                            val consumers = gunData.get(GunProp.AMMO_CONSUMER)
+                            consumers.any { consumer ->
+                                val o = consumer.override ?: return@any false
+                                val seekObj = o.getAsJsonObject("SeekWeaponInfo") ?: return@any false
+                                (seekObj.get("OnlyLockBlock")?.asBoolean == true)
+                                    || (seekObj.get("InputBlockPos")?.asBoolean == true)
+                            }
                         }
-                    }
-                    if (hasGroundStrike) {
+                        if (!hasGroundStrike) continue
                         val ammoCost = gunData.get(GunProp.AMMO_COST_PER_SHOOT)
                         val available = if (ammoCost <= 0) 999
                             else gunData.currentAvailableAmmo(localPlayer) / ammoCost
+                        if (available <= 0) continue
                         val rawName = gunData.get(GunProp.NAME) ?: name
                         val translated = try {
                             Component.translatable(rawName).string
-                        } catch (_: Exception) {
-                            rawName
+                        } catch (_: Exception) { rawName }
+                        val existing = weaponMap[name]
+                        if (existing != null) {
+                            weaponMap[name] = GndAgg(existing.totalAmmo + available, existing.displayNameBase)
+                        } else {
+                            weaponMap[name] = GndAgg(available, translated)
                         }
-                        // Fill %1$s with current ammo count (e.g. "×8") when the
-                        // weapon name includes an inline ammo placeholder
-                        val ammoStr = "×$available"
-                        val displayName = if (translated.contains("%1\$s"))
-                            translated.replace("%1\$s", ammoStr)
-                        else translated
-                        MapContextMenu.MissileWeaponEntry(
-                            weaponName = name,
-                            displayName = displayName,
-                            ammoCount = available
-                        )
-                    } else null
+                    }
                 }
-                if (weapons.isNotEmpty()) {
+
+                if (weaponMap.isNotEmpty()) {
+                    val weapons = weaponMap.map { (name, agg) ->
+                        val ammoStr = "×${agg.totalAmmo}"
+                        val displayName = if (agg.displayNameBase.contains("%1\$s"))
+                            agg.displayNameBase.replace("%1\$s", ammoStr) else agg.displayNameBase
+                        MapContextMenu.MissileWeaponEntry(name, displayName, agg.totalAmmo)
+                    }
                     contextMenu.missileWeapons = weapons
                     contextMenu.onDirectAttack = { weaponName ->
                         attackMode = AttackMode.DIRECT
@@ -2276,8 +2358,9 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
                         attackMode = AttackMode.QUEUE
                         attackWeaponName = weaponName
                         attackTargetQueue.clear()
-                        // Store fire interval for sequential fire (default 10 ticks = 0.5s)
-                        val gd = sourceVehicle.gunDataMap[weaponName]
+                        // 从第一个有该武器的载具读取发射间隔
+                        val firstVeh = sourceVehicles.firstOrNull { it.gunDataMap.containsKey(weaponName) }
+                        val gd = firstVeh?.gunDataMap?.get(weaponName)
                         attackFireInterval = gd?.get(GunProp.SHOOT_DELAY_TIME)?.coerceAtLeast(4) ?: 10
                     }
                     contextMenu.onMissileStrike = null
@@ -2376,6 +2459,20 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
                     minOf(wMinX, wMaxX), minOf(wMinZ, wMaxZ),
                     maxOf(wMinX, wMaxX), maxOf(wMinZ, wMaxZ)
                 ))
+                // 快捷选取框选区域内的所有友方载具
+                val boxMinX = minOf(wMinX, wMaxX)
+                val boxMaxX = maxOf(wMinX, wMaxX)
+                val boxMinZ = minOf(wMinZ, wMaxZ)
+                val boxMaxZ = maxOf(wMinZ, wMaxZ)
+                val level = minecraft?.player?.level() ?: return true
+                for (e in ClientSyncedEntityHandler.getSyncedFriendlyEntities(level)) {
+                    val entity = level.getEntity(e.id) ?: e
+                    if (entity is VehicleEntity && entity.x in boxMinX..boxMaxX && entity.z in boxMinZ..boxMaxZ) {
+                        if (selectedEntities.none { it.id == entity.id }) {
+                            selectedEntities.add(entity)
+                        }
+                    }
+                }
             }
             return true
         }
@@ -2608,10 +2705,11 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
 
     private fun fireMissileAt(worldX: Int, worldY: Int, worldZ: Int) {
         val name = attackWeaponName ?: return
-        val sourceVehicle = selectedEntity as? VehicleEntity
-        val remoteShooterId = if (sourceVehicle != null && sourceVehicle !== localPlayer?.vehicle) {
-            sourceVehicle.id
-        } else null
+        // 遥控发射：在所有选中载具中找第一个有弹药的
+        val shooter = findFirstVehicleWithWeapon(name)
+            ?: (localPlayer?.vehicle as? VehicleEntity)
+            ?: return
+        val remoteShooterId = if (shooter !== localPlayer?.vehicle) shooter.id else null
         sendPacketToServer(
             VehicleFireMessage(
                 uuid = null,
@@ -2746,15 +2844,16 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         queueMenuVisible = false
     }
 
-    /** Read current ammo for the attack weapon, or 0 if unavailable. */
+    /** 所有选中载具（或当前骑乘载具）中指定武器的总弹药数 */
     private fun currentAttackAmmo(): Int {
         val name = attackWeaponName ?: return 0
-        val vehicle = (selectedEntity as? VehicleEntity)
-            ?: (localPlayer?.vehicle as? VehicleEntity) ?: return 0
-        val gd = vehicle.gunDataMap[name] ?: return 0
-        val ammoCost = gd.get(GunProp.AMMO_COST_PER_SHOOT)
-        return if (ammoCost <= 0) 999
-            else gd.currentAvailableAmmo(localPlayer) / ammoCost
+        val vehicles = getSelectedVehicles()
+        if (vehicles.isEmpty()) return 0
+        return vehicles.sumOf { vehicle ->
+            val gd = vehicle.gunDataMap[name] ?: return@sumOf 0
+            val ammoCost = gd.get(GunProp.AMMO_COST_PER_SHOOT)
+            if (ammoCost <= 0) 999 else gd.currentAvailableAmmo(localPlayer) / ammoCost
+        }
     }
 
     // Called from tick() for sequential fire
