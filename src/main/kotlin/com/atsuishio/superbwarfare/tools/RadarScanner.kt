@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.tools
 
+import com.atsuishio.superbwarfare.entity.projectile.MissileProjectile
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
 import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage.SyncedEntity
@@ -157,6 +158,9 @@ object RadarScanner {
                 // 查找真实实体
                 val entity = level.getEntity(entry.entityId) ?: continue
 
+                // 忽略载具残骸
+                if (entity is VehicleEntity && entity.isWreck) continue
+
                 // 地下检查：实体顶部低于地表则跳过
                 if (ServerSyncedEntityHandler.isUnderground(entity)) continue
 
@@ -178,6 +182,14 @@ object RadarScanner {
                     heightAboveGround = entry.heightAboveGround,
                 )
 
+                // 友方导弹由 MissileProjectile.tick() 自行同步，雷达只上报敌方导弹
+                if (entity is MissileProjectile) {
+                    val missileOwner = entity.owner
+                    if (missileOwner == null || !SeekTool.IS_FRIENDLY.test(config.owner, missileOwner)) {
+                        hostileList.add(synced)
+                    }
+                    continue
+                }
                 when {
                     // 中立：无驾驶员、无主人、lastDriverUUID 为空
                     isNeutral(entity) -> neutralList.add(synced)
@@ -202,7 +214,8 @@ object RadarScanner {
                 .filter { SeekTool.NOT_IN_SMOKE.test(it) }
                 .filter { !SeekTool.IS_FRIENDLY.test(config.owner, it) }
                 .forEach {
-                    val hag = it.y - it.onPos.y.toDouble()
+                    val surfaceY = it.level().getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, it.blockX, it.blockZ)
+                    val hag = it.y - surfaceY
                     val synced = SyncedEntity(
                         it.id,
                         ForgeRegistries.ENTITY_TYPES.getKey(it.type)!!,

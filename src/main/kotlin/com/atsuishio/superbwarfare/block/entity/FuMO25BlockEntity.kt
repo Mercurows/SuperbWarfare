@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.block.entity
 
 import com.atsuishio.superbwarfare.block.FuMO25Block
-import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.init.ModBlockEntities
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.inventory.menu.FuMO25Menu
@@ -337,7 +336,6 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
             blockEntity: FuMO25BlockEntity,
             player: Player,
         ) {
-            if (level.server.tickCount % MiscConfig.SYNC_ENTITY_INTERVAL.get() != 0) return
 
             val range = if (blockEntity.type == FuncType.WIDER) 2048 else 1024
             val radarPos = Vec3(pos.x + 0.5, pos.y + 2.5, pos.z + 0.5)

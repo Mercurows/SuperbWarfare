@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.entity.projectile.MissileProjectile
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModTags
-import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
 import com.atsuishio.superbwarfare.tools.*
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
@@ -25,10 +24,7 @@ import net.minecraft.world.phys.Vec2
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.event.TickEvent
-import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.registries.ForgeRegistries
 import top.theillusivec4.curios.api.CuriosApi
 
 @OnlyIn(Dist.CLIENT)
@@ -49,33 +45,6 @@ object IFFOverlay : CommonOverlay("iff") {
     val FRIENDLY_MISSILE = loc("textures/overlay/teammate/friendly_missile.png")
     val FRIENDLY_MAID = loc("textures/overlay/teammate/friendly_maid.png")
     val FRIENDLY_AIRSHIP = loc("textures/overlay/teammate/friendly_airship.png")
-
-    @SubscribeEvent
-    fun onIFFClientTick(event: TickEvent.ClientTickEvent) {
-        if (event.phase == TickEvent.Phase.START) return
-        val player = localPlayer ?: return
-        val level = clientLevel ?: return
-        CuriosApi.getCuriosInventory(player).ifPresent { c ->
-            c.findFirstCurio(ModItems.IFF.get()).ifPresent { _ ->
-                val clientEntities = SeekTool.Builder(player)
-                    .friendly()
-                    .notPlayer()
-                    .build()
-                    .asSequence()
-                    .map {
-                        EntitySyncMessage.SyncedEntity(
-                            it.id,
-                            ForgeRegistries.ENTITY_TYPES.getKey(it.type)!!,
-                            it.position(),
-                            null,
-                            it.serializeNBT(),
-                            it.yRot
-                        )
-                    }.toList()
-                ClientSyncedEntityHandler.sync(level.dimension().location(), clientEntities, friendly = true)
-            }
-        }
-    }
 
     override fun shouldRender() = super.shouldRender() && DisplayConfig.IFF_HUD.get()
 

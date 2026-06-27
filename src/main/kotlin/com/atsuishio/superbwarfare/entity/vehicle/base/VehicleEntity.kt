@@ -40,6 +40,7 @@ import com.atsuishio.superbwarfare.item.container.ContainerBlockItem
 import com.atsuishio.superbwarfare.item.misc.VehicleKeyItem
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.network.message.receive.ClientVehicleItemMessage
+import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
 import com.atsuishio.superbwarfare.network.message.receive.VehicleShootClientMessage
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.OBB.Part.*
@@ -1086,6 +1087,41 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         }
     }
 
+    /** 按武器名发射，同时支持锁定实体 UUID 和指定目标位置 */
+    open fun vehicleShoot(living: LivingEntity?, weaponName: String, uuid: UUID?, targetPos: Vec3?) {
+        if (isWreck) return
+        val gunData = getGunData(weaponName)
+
+        queueServerWork(gunData!!.get(GunProp.SHOOT_DELAY_TIME)) {
+            modifyGunData(weaponName) { data ->
+                if (!data.canShoot(this.ammoSupplier)) return@modifyGunData
+                data.shoot(
+                    ShootParameters(
+                        this.ammoSupplier, living, this.level() as ServerLevel,
+                        getShootPos(weaponName, 1f), getShootVec(weaponName, 1f),
+                        data, data.get(GunProp.SPREAD), true,
+                        uuid, targetPos
+                    )
+                )
+            }
+        }
+
+        afterShoot(gunData, getShootVec(weaponName, 1f))
+        playShootSound3p(living, weaponName)
+
+        if (living != null) {
+            val shootPos = gunData.get(GunProp.SHOOT_POS)
+            val list = shootPos.positions
+            val size = list.size
+            val index: Int = if (shootPos.boundUpWithAmmoAmount) {
+                Mth.clamp(gunData.ammo.get() - 1, 0, size)
+            } else {
+                gunData.fireIndex.get() % size
+            }
+            sendPacketToAll(VehicleShootClientMessage(living.uuid, this.uuid, index, weaponName))
+        }
+    }
+
     open fun vehicleShoot(living: LivingEntity?, uuid: UUID?, targetPos: Vec3?) {
         if (isWreck) return
         val seatIndex = getSeatIndex(living)
@@ -2069,6 +2105,32 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         if (!level().isClientSide && !isWreck && health > 0) {
             ServerSyncedEntityHandler.register(this)
+
+            // 直接向友方玩家同步自身（不依赖 IffItem）
+            val srv = server
+            if (srv != null) {
+                val dim = level().dimension().location()
+                val surfaceY = level().getHeight(
+                    net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE,
+                    blockX, blockZ
+                )
+                val hag = (y - surfaceY).coerceAtLeast(0.0)
+                val synced = EntitySyncMessage.SyncedEntity(
+                    id,
+                    ForgeRegistries.ENTITY_TYPES.getKey(type)!!,
+                    position(),
+                    null,
+                    serializeNBT(),
+                    yRot,
+                    heightAboveGround = hag,
+                )
+                val msg = EntitySyncMessage(dim, listOf(synced), true)
+                for (player in srv.playerList.players) {
+                    if (player.isAlive && SeekTool.IS_FRIENDLY.test(player, this)) {
+                        sendPacketTo(player, msg)
+                    }
+                }
+            }
         }
 
         if (this.level() is ServerLevel && this.health <= 0 && !isWreck) {

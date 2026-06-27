@@ -363,7 +363,7 @@ object TacticalMapCache {
 
                 val surfaceY = chunk.getHeight(Heightmap.Types.WORLD_SURFACE, x, z)
                 var y = surfaceY
-                if (y <= level.minBuildHeight) {
+                if (y < level.minBuildHeight) {
                     prevHeight = level.minBuildHeight
                     prevSet = true
                     continue

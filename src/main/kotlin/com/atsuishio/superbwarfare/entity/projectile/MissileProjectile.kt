@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
-import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.init.ModSerializers
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
@@ -143,15 +142,36 @@ abstract class MissileProjectile : DestroyableProjectile, ITrackableProjectile, 
     override fun tick() {
         super.tick()
         this.distractedByDecoy()
-        // 向服务端同步处理器注册自身
         if (level() is ServerLevel && owner != null) {
             val targetEntity = EntityFindUtil.findEntity(level(), getTargetUUID())
             if (targetEntity != null) {
                 setTargetPos(targetEntity.position())
             }
             ServerSyncedEntityHandler.register(this, getTargetPos())
+
+            // 直接向友方玩家同步自身（不依赖 IffItem / syncPosition）
+            val srv = server
+            if (srv != null) {
+                val dim = level().dimension().location()
+                val surfaceY = level().getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, blockX, blockZ)
+                val hag = (y - surfaceY).coerceAtLeast(0.0)
+                val synced = EntitySyncMessage.SyncedEntity(
+                    id,
+                    net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES.getKey(type)!!,
+                    position(),
+                    getTargetPos(),
+                    serializeNBT(),
+                    yRot,
+                    heightAboveGround = hag,
+                )
+                val msg = EntitySyncMessage(dim, listOf(synced), true)
+                for (player in srv.playerList.players) {
+                    if (SeekTool.IS_FRIENDLY.test(player, this.owner)) {
+                        sendPacketTo(player, msg)
+                    }
+                }
+            }
         }
-        this.syncPosition()
     }
 
     override fun remove(reason: net.minecraft.world.entity.Entity.RemovalReason) {
@@ -175,37 +195,6 @@ abstract class MissileProjectile : DestroyableProjectile, ITrackableProjectile, 
         }
     }
 
-    /**
-     * 给队友同步友方导弹位置（从 ServerSyncedEntityHandler 查询，避免遍历所有实体）
-     */
-    open fun syncPosition() {
-        val level = this.level()
-        if (!MiscConfig.SYNC_ENTITY_OVER_RANGE.get()) return
-        if (server != null && server!!.tickCount % MiscConfig.SYNC_ENTITY_INTERVAL.get() != 0) return
-
-        if (level is ServerLevel && owner != null) {
-            val dim = level.dimension().location()
-            val friendlyMissileList = ServerSyncedEntityHandler.getEntries(dim)
-                .asSequence()
-                .mapNotNull { entry ->
-                    val entity = level.getEntity(entry.entityId) ?: return@mapNotNull null
-                    if (entity !is MissileProjectile) return@mapNotNull null
-                    if (!SeekTool.IS_FRIENDLY.test(owner, entity)) return@mapNotNull null
-                    EntitySyncMessage.SyncedEntity(
-                        entry.entityId, entry.entityType, entry.pos, entry.targetPos, entry.nbt, entry.yRot,
-                        heightAboveGround = entry.heightAboveGround,
-                    )
-                }.toList()
-
-            if (friendlyMissileList.isEmpty()) return
-
-            for (player in server!!.playerList.players) {
-                if (SeekTool.IS_FRIENDLY.test(player, this.owner)) {
-                    sendPacketTo(player, EntitySyncMessage(dim, friendlyMissileList, true))
-                }
-            }
-        }
-    }
 
     override fun getNoHitTicks(): Int {
         return 3

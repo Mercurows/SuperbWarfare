@@ -117,4 +117,6 @@ private fun registerPayloads() {
     playToServer<BlueprintCraftMessage>()
     playToServer<BlueprintSetIndexMessage>()
     playToServer<LoiterConfigMessage>()
+    playToServer<EntityClearMessage>()
+    playToServer<EntityAreaClearMessage>()
 }

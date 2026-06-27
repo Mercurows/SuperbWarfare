@@ -21,7 +21,7 @@ data class VehicleFireMessage(
         if (targetPos != null) {
             // Map strike: fire a specific weapon by name
             if (weaponName != null) {
-                vehicle.vehicleShoot(player, weaponName, Vec3(targetPos))
+                vehicle.vehicleShoot(player, weaponName, uuid, Vec3(targetPos))
             } else {
                 vehicle.vehicleShoot(player, uuid, Vec3(targetPos))
             }

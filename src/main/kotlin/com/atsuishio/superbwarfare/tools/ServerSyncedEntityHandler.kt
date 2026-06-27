@@ -11,6 +11,7 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.registries.ForgeRegistries
 import java.util.concurrent.ConcurrentHashMap
@@ -43,7 +44,7 @@ object ServerSyncedEntityHandler {
     private val entities = ConcurrentHashMap<String, ConcurrentHashMap<Int, Entry>>()
 
     /**
-     * 注册或更新实体。每 tick 由 VehicleEntity / MissileProjectile 调用。
+     * 注册或更新实体。每 tick 由 VehicleEntity / MissileProjectile / IffItem 调用。
      * NBT 仅在与上次同步间隔 >= SYNC_ENTITY_INTERVAL 时重新序列化。
      */
     fun register(entity: Entity, targetPos: Vec3? = null) {
@@ -51,7 +52,7 @@ object ServerSyncedEntityHandler {
         if (level.isClientSide) return
         val server = level.server ?: return
         if (entity is VehicleEntity && entity.isWreck) return
-        if (entity !is VehicleEntity && entity !is MissileProjectile && !VehicleConfig.inScanList(entity.type)) return
+        if (entity !is VehicleEntity && entity !is MissileProjectile && entity !is Player && !VehicleConfig.inScanList(entity.type)) return
 
         val dim = level.dimension().location().toString()
         val currentTick = server.tickCount
@@ -96,16 +97,14 @@ object ServerSyncedEntityHandler {
     /** 计算实体离地高度（使用高度图，高效） */
     private fun computeHeightAboveGround(entity: Entity): Double {
         val level = entity.level()
-        val blockPos = entity.onPos
-        val surfaceY = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, blockPos.x, blockPos.z)
+        val surfaceY = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, entity.blockX, entity.blockZ)
         return (entity.y - surfaceY).coerceAtLeast(0.0)
     }
 
     /** 判定实体是否在地下（实体顶部低于地表） */
     fun isUnderground(entity: Entity): Boolean {
         val level = entity.level()
-        val blockPos = entity.onPos
-        val surfaceY = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, blockPos.x, blockPos.z)
+        val surfaceY = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, entity.blockX, entity.blockZ)
         return entity.y + entity.bbHeight < surfaceY
     }
 
