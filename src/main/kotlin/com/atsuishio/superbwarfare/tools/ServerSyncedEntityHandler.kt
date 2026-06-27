@@ -12,7 +12,11 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.level.levelgen.Heightmap
 import net.minecraft.world.phys.Vec3
+import net.minecraftforge.event.TickEvent
+import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.registries.ForgeRegistries
 import java.util.concurrent.ConcurrentHashMap
 
@@ -23,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap
  * 雷达/IFF 等消费者调用 [getEntries] 从此列表查询，避免遍历 level.allEntities。
  * 定期调用 [cleanAll] 清理已消失实体的过期条目。
  */
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
 object ServerSyncedEntityHandler {
 
     data class Entry(
@@ -32,7 +37,8 @@ object ServerSyncedEntityHandler {
         val yRot: Float,
         val entityType: ResourceLocation,
         val nbt: CompoundTag,
-        val nbtTick: Int,
+        /** 实体注册/更新时间戳（系统时间 ms），用于 NBT 序列化间隔判定和过期清理，不受服务器重启影响 */
+        val timeStamp: Long,
         val targetPos: Vec3?,
         /** 隐身减益系数，非载具实体为 1.0 */
         val trackDistanceMultiply: Double,
@@ -47,22 +53,28 @@ object ServerSyncedEntityHandler {
      * 注册或更新实体。每 tick 由 VehicleEntity / MissileProjectile / IffItem 调用。
      * NBT 仅在与上次同步间隔 >= SYNC_ENTITY_INTERVAL 时重新序列化。
      */
+    @JvmStatic
+    @JvmOverloads
     fun register(entity: Entity, targetPos: Vec3? = null) {
+        if (!MiscConfig.SYNC_ENTITY_OVER_RANGE.get()) return
         val level = entity.level()
         if (level.isClientSide) return
-        val server = level.server ?: return
+        level.server ?: return
         if (entity is VehicleEntity && entity.isWreck) return
-        if (entity !is VehicleEntity && entity !is MissileProjectile && entity !is Player && !VehicleConfig.inScanList(entity.type)) return
+        if (entity !is VehicleEntity && entity !is MissileProjectile && entity !is Player
+            && !VehicleConfig.inScanList(entity.type)
+        ) return
 
         val dim = level.dimension().location().toString()
-        val currentTick = server.tickCount
+        val now = System.currentTimeMillis()
         val existing = entities[dim]?.get(entity.id)
 
         val interval = MiscConfig.SYNC_ENTITY_INTERVAL.get()
-        val (nbt, nbtTick) = if (existing == null || currentTick - existing.nbtTick >= interval) {
-            entity.serializeNBT() to currentTick
+        val intervalMs = interval * 50L // ticks → ms
+        val nbt = if (existing == null || now - existing.timeStamp >= intervalMs) {
+            entity.serializeNBT()
         } else {
-            existing.nbt to existing.nbtTick
+            existing.nbt
         }
 
         val td = if (entity is VehicleEntity && !entity.isWreck)
@@ -76,7 +88,7 @@ object ServerSyncedEntityHandler {
             yRot = entity.yRot,
             entityType = ForgeRegistries.ENTITY_TYPES.getKey(entity.type) ?: return,
             nbt = nbt,
-            nbtTick = nbtTick,
+            timeStamp = now,
             targetPos = targetPos,
             trackDistanceMultiply = td,
             heightAboveGround = hag,
@@ -85,11 +97,13 @@ object ServerSyncedEntityHandler {
         entities.getOrPut(dim) { ConcurrentHashMap() }[entity.id] = entry
     }
 
+    @JvmStatic
     fun unregister(entity: Entity) {
         if (entity.level().isClientSide) return
         entities[entity.level().dimension().location().toString()]?.remove(entity.id)
     }
 
+    @JvmStatic
     fun getEntries(dim: ResourceLocation): Collection<Entry> {
         return entities[dim.toString()]?.values ?: emptyList()
     }
@@ -97,29 +111,47 @@ object ServerSyncedEntityHandler {
     /** 计算实体离地高度（使用高度图，高效） */
     private fun computeHeightAboveGround(entity: Entity): Double {
         val level = entity.level()
-        val surfaceY = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, entity.blockX, entity.blockZ)
+        val surfaceY = level.getHeight(
+            Heightmap.Types.WORLD_SURFACE,
+            entity.blockX,
+            entity.blockZ
+        )
         return (entity.y - surfaceY).coerceAtLeast(0.0)
     }
 
     /** 判定实体是否在地下（实体顶部低于地表） */
+    @JvmStatic
     fun isUnderground(entity: Entity): Boolean {
         val level = entity.level()
-        val surfaceY = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, entity.blockX, entity.blockZ)
+        val surfaceY = level.getHeight(
+            Heightmap.Types.WORLD_SURFACE,
+            entity.blockX,
+            entity.blockZ
+        )
         return entity.y + entity.bbHeight < surfaceY
     }
 
     /**
-     * 清理已消失实体的过期条目。每 200 tick 由 Mod.kt 调用。
+     * 清理已消失实体的过期条目
      */
-    fun cleanAll(server: MinecraftServer, staleTicks: Int = 600) {
-        val currentTick = server.tickCount
+    @JvmStatic
+    fun cleanAll(server: MinecraftServer) {
+        val now = System.currentTimeMillis()
         for (dimLevel in server.allLevels) {
             val dimKey = dimLevel.dimension().location().toString()
             val dimEntries = entities[dimKey] ?: continue
             dimEntries.values.removeIf { entry ->
-                dimLevel.getEntity(entry.entityId) == null &&
-                        currentTick - entry.nbtTick > staleTicks
+                dimLevel.getEntity(entry.entityId) == null && now - entry.timeStamp > MiscConfig.SERVER_SYNC_EXPIRE_TIME.get()
             }
+        }
+    }
+
+    @SubscribeEvent
+    fun tick(event: TickEvent.ServerTickEvent) {
+        if (event.phase == TickEvent.Phase.START) return
+        val server = event.server
+        if (server.tickCount % MiscConfig.SERVER_SYNC_CLEAN_INTERVAL.get() == 0) {
+            cleanAll(server)
         }
     }
 }

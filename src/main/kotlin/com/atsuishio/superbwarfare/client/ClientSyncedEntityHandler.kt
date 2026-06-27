@@ -18,7 +18,12 @@ object ClientSyncedEntityHandler {
 
     data class SyncedKey(val dim: ResourceLocation, val id: Int)
 
-    data class ClientSyncedEntity(val entity: Entity, val timeStamp: Long, val targetPos: Vec3?, val heightAboveGround: Double = -1.0)
+    data class ClientSyncedEntity(
+        val entity: Entity,
+        val timeStamp: Long,
+        val targetPos: Vec3?,
+        val heightAboveGround: Double = -1.0
+    )
 
     data class SyncedPlayerKey(val dim: ResourceLocation, val uuid: UUID)
 
@@ -30,9 +35,11 @@ object ClientSyncedEntityHandler {
     /** 友方：IffItem / MissileProjectile 同步 */
     @JvmField
     val SYNCED_FRIENDLY = ConcurrentHashMap<SyncedKey, ClientSyncedEntity>()
+
     /** 敌对：FuMO25 / vehicleRadar 同步 */
     @JvmField
     val SYNCED_HOSTILE = ConcurrentHashMap<SyncedKey, ClientSyncedEntity>()
+
     /** 中立：FuMO25 / vehicleRadar 同步（无人载具） */
     @JvmField
     val SYNCED_NEUTRAL = ConcurrentHashMap<SyncedKey, ClientSyncedEntity>()
@@ -40,6 +47,8 @@ object ClientSyncedEntityHandler {
     @JvmField
     val SYNCED_PLAYERS = ConcurrentHashMap<SyncedPlayerKey, ClientSyncedPlayer>()
 
+    @JvmStatic
+    @JvmOverloads
     fun sync(dim: ResourceLocation, list: List<SyncedEntity>, friendly: Boolean, neutral: Boolean = false) {
         val level = mc.level ?: return
         val time = System.currentTimeMillis()
@@ -71,6 +80,7 @@ object ClientSyncedEntityHandler {
         }
     }
 
+    @JvmStatic
     fun syncPlayerInfo(dim: ResourceLocation, list: List<SyncedPlayerInfo>) {
         if (mc.level == null) return
         val time = System.currentTimeMillis()
@@ -80,6 +90,7 @@ object ClientSyncedEntityHandler {
         }
     }
 
+    @JvmStatic
     fun clean() {
         val tick = System.currentTimeMillis()
         val expire = MiscConfig.CLIENT_SYNC_EXPIRE_TIME.get()
@@ -119,6 +130,7 @@ object ClientSyncedEntityHandler {
         SYNCED_PLAYERS.filterKeys { it.dim == level.dimension().location() }.map { it.value }
 
     /** 按 ID 查找任一分类中的条目 */
+    @JvmStatic
     fun getSyncedEntry(level: Level, entityId: Int): ClientSyncedEntity? {
         val dim = level.dimension().location()
         return SYNCED_FRIENDLY[SyncedKey(dim, entityId)]
@@ -142,6 +154,7 @@ object ClientSyncedEntityHandler {
     @JvmField
     val SYNCED_RADARS = ConcurrentHashMap<SyncedKey, SyncedRadar>()
 
+    @JvmStatic
     fun syncRadars(dim: ResourceLocation, radars: List<RadarSyncMessage.SyncedRadar>) {
         val time = System.currentTimeMillis()
         for (r in radars) {
