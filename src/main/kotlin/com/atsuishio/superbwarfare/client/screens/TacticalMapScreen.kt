@@ -86,6 +86,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         private val TARGET_FRAME = loc("textures/overlay/tactical_map/target_frame.png")
         private val TARGET_POS = loc("textures/overlay/tactical_map/target_pos.png")
         private val CRUISE_MARKER = loc("textures/overlay/tactical_map/cruise_marker.png")
+        private val SEL_TARGET = loc("textures/overlay/tactical_map/sel_target.png")
     }
 
     private enum class AttackMode { NONE, DIRECT, QUEUE }
@@ -169,6 +170,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
     private var entityMenuTarget: Entity? = null
     private var entityMenuX = 0
     private var entityMenuY = 0
+    private var selectedEntity: Entity? = null
 
     // Area selection (shift + left-drag)
     private var selectionDragging = false
@@ -388,7 +390,8 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
 
         // Sync direct attack ammo from actual GunData (tracks reloads)
         if (attackMode == AttackMode.DIRECT && attackWeaponName != null) {
-            val vehicle = localPlayer?.vehicle as? VehicleEntity
+            val vehicle = (selectedEntity as? VehicleEntity)
+                ?: (localPlayer?.vehicle as? VehicleEntity)
             val gd = vehicle?.gunDataMap?.get(attackWeaponName!!)
             if (gd != null) {
                 val ammoCost = gd.get(GunProp.AMMO_COST_PER_SHOOT)
@@ -399,7 +402,8 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
 
         // Refresh missile weapon ammo counts in open Level 2 menu (tracks reloads)
         if (contextMenu.missileSubMenuVisible && contextMenu.missileWeapons.isNotEmpty()) {
-            val vehicle = localPlayer?.vehicle as? VehicleEntity
+            val vehicle = (selectedEntity as? VehicleEntity)
+                ?: (localPlayer?.vehicle as? VehicleEntity)
             if (vehicle != null) {
                 contextMenu.missileWeapons = contextMenu.missileWeapons.map { entry ->
                     val gd = vehicle.gunDataMap[entry.weaponName]
@@ -1084,6 +1088,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             val clampedX = screenX.coerceIn((mapLeft + 4).toFloat(), (mapLeft + mapAreaW - 4).toFloat())
             val clampedY = screenY.coerceIn((mapTop + 4).toFloat(), (mapTop + mapAreaH - 4).toFloat())
             renderMapEntity(entity, level, scale, pPartialTick, guiGraphics, 0xFF7FFFAD.toInt())
+            if (entity.id == selectedEntity?.id) drawSelectedBorder(guiGraphics, clampedX, clampedY)
             hitTestAndBuildTooltip(entity, clampedX, clampedY, "context.superbwarfare.tactical_map.relation.friendly")
             entityRenderList.add(EntityRenderEntry(entity, clampedX, clampedY, "friendly"))
         }
@@ -1099,6 +1104,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             val clampedX = screenX.coerceIn((mapLeft + 4).toFloat(), (mapLeft + mapAreaW - 4).toFloat())
             val clampedY = screenY.coerceIn((mapTop + 4).toFloat(), (mapTop + mapAreaH - 4).toFloat())
             renderMapEntity(entity, level, scale, pPartialTick, guiGraphics, 0xFFAAAAAA.toInt())
+            if (entity.id == selectedEntity?.id) drawSelectedBorder(guiGraphics, clampedX, clampedY)
             hitTestAndBuildTooltip(entity, clampedX, clampedY, "context.superbwarfare.tactical_map.relation.neutral")
             entityRenderList.add(EntityRenderEntry(entity, clampedX, clampedY, "neutral"))
         }
@@ -1114,14 +1120,18 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             val clampedX = screenX.coerceIn((mapLeft + 4).toFloat(), (mapLeft + mapAreaW - 4).toFloat())
             val clampedY = screenY.coerceIn((mapTop + 4).toFloat(), (mapTop + mapAreaH - 4).toFloat())
             renderMapEntity(entity, level, scale, pPartialTick, guiGraphics, 0xFFFF5555.toInt())
+            if (entity.id == selectedEntity?.id) drawSelectedBorder(guiGraphics, clampedX, clampedY)
             hitTestAndBuildTooltip(entity, clampedX, clampedY, "context.superbwarfare.tactical_map.relation.hostile")
             entityRenderList.add(EntityRenderEntry(entity, clampedX, clampedY, "hostile"))
         }
 
-        // 实体已消失则关闭其右键菜单
+        // 实体已消失则关闭其右键菜单并取消选中
         if (entityMenuTarget != null && entityRenderList.none { it.entity === entityMenuTarget }) {
             entityMenuVisible = false
             entityMenuTarget = null
+        }
+        if (selectedEntity != null && entityRenderList.none { it.entity.id == selectedEntity?.id }) {
+            selectedEntity = null
         }
 
         // 雷达图标置于最顶层
@@ -1365,6 +1375,21 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         }
     }
 
+    private fun drawSelectedBorder(guiGraphics: GuiGraphics, centerX: Float, centerY: Float) {
+        RenderSystem.disableDepthTest()
+        RenderSystem.depthMask(false)
+        RenderSystem.enableBlend()
+        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
+        RenderSystem.blendFuncSeparate(
+            GlStateManager.SourceFactor.SRC_ALPHA,
+            GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+            GlStateManager.SourceFactor.ONE,
+            GlStateManager.DestFactor.ZERO
+        )
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
+        guiGraphics.blit(SEL_TARGET, (centerX - 8).toInt(), (centerY - 8).toInt(), 0f, 0f, 16, 16, 16, 16)
+    }
+
     private fun getVehicleIcon(entity: Entity): net.minecraft.resources.ResourceLocation {
         return if (entity is Boat) {
             ICON_BOAT
@@ -1472,6 +1497,12 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             entityMenuTarget = null
             return
         }
+        val isFriendlyVehicle = target is VehicleEntity &&
+            entityRenderList.any { it.entity === target && it.relation == "friendly" }
+        val selectLabel = if (target === selectedEntity)
+            Component.translatable("context.superbwarfare.tactical_map.entity_menu.deselect").string
+        else
+            Component.translatable("context.superbwarfare.tactical_map.entity_menu.select").string
         val teleportLabel = Component.translatable(
             "context.superbwarfare.tactical_map.entity_menu.teleport",
             target.x.toInt(), target.y.toInt() + 1, target.z.toInt()
@@ -1481,11 +1512,12 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         val isAdmin = minecraft?.player?.hasPermissions(2) ?: false
         val missileWeapons = buildEntityMissileWeapons(target)
         val itemHeight = 14
-        val baseCount = 1 + (if (isAdmin) 1 else 0)
+        val baseCount = 1 + (if (isFriendlyVehicle) 1 else 0) + (if (isAdmin) 1 else 0)
         val missileCount = missileWeapons.size
         val totalCount = baseCount + missileCount
         // Compute widest label
         var maxW = font.width(teleportLabel)
+        if (isFriendlyVehicle) maxW = maxOf(maxW, font.width(selectLabel))
         if (isAdmin) maxW = maxOf(maxW, font.width(clearLabel))
         for (mw in missileWeapons) maxW = maxOf(maxW, font.width(mw.displayName))
         val menuW = maxW + 16
@@ -1512,13 +1544,23 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             if (hovered0) 0xFFFFFFFF.toInt() else 0xFFCCCCCC.toInt(), false)
         idx++
 
-        // Item 1: Clear (admin only)
-        if (isAdmin) {
+        // Item 1: Select / Deselect (friendly vehicle only)
+        if (isFriendlyVehicle) {
             val ty1 = my + 2 + idx * itemHeight
             val hovered1 = mouseX in mx..mx + menuW && mouseY in ty1..ty1 + itemHeight
-            if (hovered1) guiGraphics.fill(mx + 1, ty1, mx + menuW - 1, ty1 + itemHeight, 0x66444444)
-            guiGraphics.drawString(font, clearLabel, mx + 8, ty1 + 3,
-                if (hovered1) 0xFFFF5555.toInt() else 0xFFCC6666.toInt(), false)
+            if (hovered1) guiGraphics.fill(mx + 1, ty1, mx + menuW - 1, ty1 + itemHeight, 0x664444FF)
+            guiGraphics.drawString(font, selectLabel, mx + 8, ty1 + 3,
+                if (hovered1) 0xFFFFFFFF.toInt() else 0xFFCCCCCC.toInt(), false)
+            idx++
+        }
+
+        // Item 2: Clear (admin only)
+        if (isAdmin) {
+            val ty2 = my + 2 + idx * itemHeight
+            val hovered2 = mouseX in mx..mx + menuW && mouseY in ty2..ty2 + itemHeight
+            if (hovered2) guiGraphics.fill(mx + 1, ty2, mx + menuW - 1, ty2 + itemHeight, 0x66444444)
+            guiGraphics.drawString(font, clearLabel, mx + 8, ty2 + 3,
+                if (hovered2) 0xFFFF5555.toInt() else 0xFFCC6666.toInt(), false)
             idx++
         }
 
@@ -1550,6 +1592,12 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             entityMenuTarget = null
             return false
         }
+        val isFriendlyVehicle = target is VehicleEntity &&
+            entityRenderList.any { it.entity === target && it.relation == "friendly" }
+        val selectLabel = if (target === selectedEntity)
+            Component.translatable("context.superbwarfare.tactical_map.entity_menu.deselect").string
+        else
+            Component.translatable("context.superbwarfare.tactical_map.entity_menu.select").string
         val teleportLabel = Component.translatable(
             "context.superbwarfare.tactical_map.entity_menu.teleport",
             target.x.toInt(), target.y.toInt() + 1, target.z.toInt()
@@ -1559,11 +1607,12 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         val isAdmin = minecraft?.player?.hasPermissions(2) ?: false
         val missileWeapons = buildEntityMissileWeapons(target)
         val itemHeight = 14
-        val baseCount = 1 + (if (isAdmin) 1 else 0)
+        val baseCount = 1 + (if (isFriendlyVehicle) 1 else 0) + (if (isAdmin) 1 else 0)
         val missileCount = missileWeapons.size
         val totalCount = baseCount + missileCount
         val font = minecraft!!.font
         var maxW = font.width(teleportLabel)
+        if (isFriendlyVehicle) maxW = maxOf(maxW, font.width(selectLabel))
         if (isAdmin) maxW = maxOf(maxW, font.width(clearLabel))
         for (mw in missileWeapons) maxW = maxOf(maxW, font.width(mw.displayName))
         val menuW = maxW + 16
@@ -1583,7 +1632,18 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             return true
         }
 
-        // Row 1: Clear (admin)
+        // Row 1: Select / Deselect (friendly vehicle only)
+        if (isFriendlyVehicle) {
+            ty += itemHeight
+            if (mouseX in mx.toDouble()..(mx + menuW).toDouble() && mouseY in ty.toDouble()..(ty + itemHeight).toDouble()) {
+                selectedEntity = if (target === selectedEntity) null else target
+                entityMenuVisible = false
+                entityMenuTarget = null
+                return true
+            }
+        }
+
+        // Row 2: Clear (admin)
         if (isAdmin) {
             ty += itemHeight
             if (mouseX in mx.toDouble()..(mx + menuW).toDouble() && mouseY in ty.toDouble()..(ty + itemHeight).toDouble()) {
@@ -1619,14 +1679,17 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
     )
 
     private fun buildEntityMissileWeapons(entity: Entity): List<EntityMissileWeapon> {
-        // 不对自己骑乘的实体显示攻击选项
-        if (entity === localPlayer?.vehicle) return emptyList()
-        val vehicle = localPlayer?.vehicle as? VehicleEntity ?: return emptyList()
-        val level = vehicle.level()
+        // 武器来源：优先使用选中的友方载具，否则使用当前骑乘的载具
+        val sourceVehicle = (selectedEntity as? VehicleEntity)
+            ?: (localPlayer?.vehicle as? VehicleEntity)
+            ?: return emptyList()
+        // 不对武器来源自身显示攻击选项
+        if (entity === sourceVehicle || entity.id == sourceVehicle.id) return emptyList()
+        val level = sourceVehicle.level()
         val syncedEntry = ClientSyncedEntityHandler.getSyncedEntry(level, entity.id)
         val heightAboveGround = syncedEntry?.heightAboveGround ?: -1.0
         val result = mutableListOf<EntityMissileWeapon>()
-        for ((name, gunData) in vehicle.gunDataMap) {
+        for ((name, gunData) in sourceVehicle.gunDataMap) {
             fun com.google.gson.JsonObject.gbool(vararg keys: String) =
                 keys.firstNotNullOfOrNull { if (has(it)) get(it).asBoolean else null } ?: false
             fun com.google.gson.JsonObject.gdouble(vararg keys: String) =
@@ -1675,17 +1738,24 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
     }
 
     private fun fireEntityMissile(entity: Entity, weapon: EntityMissileWeapon) {
+        // 如果是从选中的载具遥控发射（而非当前骑乘的载具），带上发射载具的 ID
+        val sourceVehicle = selectedEntity as? VehicleEntity
+        val remoteShooterId = if (sourceVehicle != null && sourceVehicle !== localPlayer?.vehicle) {
+            sourceVehicle.id
+        } else null
         if (weapon.lockEntity) {
             sendPacketToServer(VehicleFireMessage(
                 uuid = entity.uuid,
-                targetPos = SerializedVector3f(entity.x.toFloat(), (entity.y + 1.5).toFloat(), entity.z.toFloat()) ,
+                targetPos = SerializedVector3f(entity.x.toFloat(), (entity.y + 1.5).toFloat(), entity.z.toFloat()),
                 weaponName = weapon.weaponName,
+                shooterVehicleId = remoteShooterId,
             ))
         } else {
             sendPacketToServer(VehicleFireMessage(
                 uuid = null,
                 targetPos = SerializedVector3f(entity.x.toFloat(), (entity.y + 1.5).toFloat(), entity.z.toFloat()),
                 weaponName = weapon.weaponName,
+                shooterVehicleId = remoteShooterId,
             ))
         }
     }
@@ -2148,9 +2218,10 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             // ── Missile strike setup ──
             contextMenu.missileWeapons = emptyList()
             contextMenu.onMissileStrike = null
-            val vehicle = localPlayer?.vehicle as? VehicleEntity
-            if (vehicle != null && vehicle.gunDataMap.isNotEmpty()) {
-                val weapons = vehicle.gunDataMap.entries.mapNotNull { (name, gunData) ->
+            val riddenVehicle = localPlayer?.vehicle as? VehicleEntity
+            val sourceVehicle = (selectedEntity as? VehicleEntity) ?: riddenVehicle
+            if (sourceVehicle != null && sourceVehicle.gunDataMap.isNotEmpty()) {
+                val weapons = sourceVehicle.gunDataMap.entries.mapNotNull { (name, gunData) ->
                     // Check if any ammo type has OnlyLockBlock or InputBlockPos.
                     // gunData.get() already applies the currently-selected AmmoConsumer's
                     // Override, but we also need to scan OTHER ammo consumers because the
@@ -2206,7 +2277,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
                         attackWeaponName = weaponName
                         attackTargetQueue.clear()
                         // Store fire interval for sequential fire (default 10 ticks = 0.5s)
-                        val gd = vehicle.gunDataMap[weaponName]
+                        val gd = sourceVehicle.gunDataMap[weaponName]
                         attackFireInterval = gd?.get(GunProp.SHOOT_DELAY_TIME)?.coerceAtLeast(4) ?: 10
                     }
                     contextMenu.onMissileStrike = null
@@ -2216,7 +2287,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             // ── Cruise here setup ──
             contextMenu.canCruiseHere = false
             contextMenu.onCruiseHere = null
-            if (vehicle != null && vehicle.computed().engineType == EngineType.AIRCRAFT) {
+            if (riddenVehicle != null && riddenVehicle.computed().engineType == EngineType.AIRCRAFT) {
                 contextMenu.canCruiseHere = true
                 contextMenu.onCruiseHere = { worldX, worldZ ->
                     val cachedH = TacticalMapCache.getCachedHeight(worldX, worldZ)
@@ -2230,7 +2301,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
                             centerX = worldX.toFloat(),
                             centerY = targetY,
                             centerZ = worldZ.toFloat(),
-                            radius = vehicle.loiterRadius.toFloat(),
+                            radius = riddenVehicle.loiterRadius.toFloat(),
                             active = true,
                             skipTerrain = skipTerrain
                         )
@@ -2537,11 +2608,16 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
 
     private fun fireMissileAt(worldX: Int, worldY: Int, worldZ: Int) {
         val name = attackWeaponName ?: return
+        val sourceVehicle = selectedEntity as? VehicleEntity
+        val remoteShooterId = if (sourceVehicle != null && sourceVehicle !== localPlayer?.vehicle) {
+            sourceVehicle.id
+        } else null
         sendPacketToServer(
             VehicleFireMessage(
                 uuid = null,
                 targetPos = SerializedVector3f(worldX.toFloat(), worldY + 1.5f, worldZ.toFloat()),
-                weaponName = name
+                weaponName = name,
+                shooterVehicleId = remoteShooterId,
             )
         )
     }
@@ -2673,7 +2749,8 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
     /** Read current ammo for the attack weapon, or 0 if unavailable. */
     private fun currentAttackAmmo(): Int {
         val name = attackWeaponName ?: return 0
-        val vehicle = localPlayer?.vehicle as? VehicleEntity ?: return 0
+        val vehicle = (selectedEntity as? VehicleEntity)
+            ?: (localPlayer?.vehicle as? VehicleEntity) ?: return 0
         val gd = vehicle.gunDataMap[name] ?: return 0
         val ammoCost = gd.get(GunProp.AMMO_COST_PER_SHOOT)
         return if (ammoCost <= 0) 999

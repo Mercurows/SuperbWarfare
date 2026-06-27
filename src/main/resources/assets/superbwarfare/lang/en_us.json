@@ -1146,6 +1146,8 @@
   "context.superbwarfare.tactical_map.missile_no_ammo": "No ammo",
   "context.superbwarfare.tactical_map.direct_attack": "Direct Attack",
   "context.superbwarfare.tactical_map.queue_attack": "Queue Attack",
+  "context.superbwarfare.tactical_map.direct_attack_mode": "[Direct Attack] Left-click map to fire, right-click to cancel",
+  "context.superbwarfare.tactical_map.queue_attack_mode": "[Queue Attack] Left-click map to add targets, right-click to open queue",
   "context.superbwarfare.tactical_map.sequential_fire": "Sequential Fire",
   "context.superbwarfare.tactical_map.cancel_queue": "Cancel Queue",
   "context.superbwarfare.tactical_map.firing": "Firing",

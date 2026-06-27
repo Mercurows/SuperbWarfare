@@ -1146,6 +1146,8 @@
   "context.superbwarfare.tactical_map.missile_no_ammo": "弹药耗尽",
   "context.superbwarfare.tactical_map.direct_attack": "直接攻击",
   "context.superbwarfare.tactical_map.queue_attack": "队列攻击",
+  "context.superbwarfare.tactical_map.direct_attack_mode": "[直接攻击模式] 左键点击地图发射导弹，右键取消",
+  "context.superbwarfare.tactical_map.queue_attack_mode": "[队列攻击模式] 左键点击地图添加目标，右键打开队列菜单",
   "context.superbwarfare.tactical_map.sequential_fire": "次序发射",
   "context.superbwarfare.tactical_map.cancel_queue": "取消队列",
   "context.superbwarfare.tactical_map.firing": "发射中",
