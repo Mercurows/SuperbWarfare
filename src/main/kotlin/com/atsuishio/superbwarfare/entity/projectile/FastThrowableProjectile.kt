@@ -14,6 +14,7 @@ import com.atsuishio.superbwarfare.item.weapon.BeastItem.Companion.beastKill
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.world.phys.ExtendedEntityRayTraceResult
+import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.Holder
 import net.minecraft.nbt.CompoundTag
@@ -24,6 +25,7 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener
 import net.minecraft.network.protocol.game.ClientboundSoundPacket
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
+import net.minecraft.server.level.TicketType
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
@@ -36,6 +38,7 @@ import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile
 import net.minecraft.world.item.alchemy.PotionUtils
+import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.gameevent.GameEvent
@@ -270,22 +273,13 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         // 同步动量与位置到客户端
         this.syncMotion()
 
-        // 更新区块加载位置（引用计数管理，多弹丸共享区块不会相互卸载）
+        // 更新区块加载位置
         if (level() is ServerLevel) {
             if (forceLoadChunk() && ProjectileConfig.PROJECTILE_CHUNK_LOADING.get()) {
-                ChunkLoadManager.updateEntityChunks(this, listOf(
-                    this.position(),
-                    position().add(this.deltaMovement.normalize().scale(16.0))
-                ))
+                this.keepChunkLoaded(this.position())
+                this.keepChunkLoaded(position().add(this.deltaMovement.normalize().scale(16.0)))
             }
         }
-    }
-
-    override fun remove(reason: RemovalReason) {
-        if (!level().isClientSide) {
-            ChunkLoadManager.removeEntity(this)
-        }
-        super.remove(reason)
     }
 
     override fun updateRotation() {
@@ -554,9 +548,8 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
     }
 
     open fun keepChunkLoaded(position: Vec3) {
-        if (level() is ServerLevel) {
-            ChunkLoadManager.updateEntityChunks(this, listOf(position))
-        }
+        val chunkPos = ChunkPos(BlockPos.containing(position))
+        (level() as ServerLevel).chunkSource.addRegionTicket(TicketType.POST_TELEPORT, chunkPos, 3, this.id)
     }
 
     override fun isFastMoving(): Boolean {
