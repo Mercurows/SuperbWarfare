@@ -20,6 +20,8 @@ object MissileWeaponHelper {
         val displayNameBase: String,
         val totalAmmo: Int,
         val canLockEntity: Boolean,
+        val maxGuidedRange: Double = 2048.0,
+        val inRange: Boolean = true,
     )
 
     /**
@@ -83,7 +85,8 @@ object MissileWeaponHelper {
             ClientSyncedEntityHandler.getSyncedEntry(level, targetEntity.id)?.heightAboveGround ?: -1.0
         } else -1.0
 
-        data class InnerAgg(val totalAmmo: Int, val canLockEntity: Boolean, val displayNameBase: String)
+        data class InnerAgg(val totalAmmo: Int, val canLockEntity: Boolean, val displayNameBase: String,
+            val maxGuidedRange: Double)
         val weaponMap = linkedMapOf<String, InnerAgg>()
 
         for (vehicle in vehicles) {
@@ -101,6 +104,7 @@ object MissileWeaponHelper {
                 var canGroundStrike = currentSeek?.onlyLockBlock == true || currentSeek?.inputBlockPos == true
                 var minH = if (canLockEntity) currentSeek?.minTargetHeight ?: 0.0 else Double.MAX_VALUE
                 var maxH = if (canLockEntity) currentSeek?.maxTargetHeight ?: 114514.0 else -1.0
+                var maxGuidedRange = currentSeek?.maxGuidedRange ?: 2048.0
 
                 val consumers = gunData.get(GunProp.AMMO_CONSUMER)
                 for (c in consumers) {
@@ -122,6 +126,9 @@ object MissileWeaponHelper {
                         canGroundStrike = seekObj.gbool("OnlyLockBlock", "onlyLockBlock")
                             || seekObj.gbool("InputBlockPos", "inputBlockPos")
                     }
+                    // override 中的 MaxGuidedRange
+                    val overrideMgr = seekObj.gdouble("MaxGuidedRange", "maxGuidedRange")
+                    if (overrideMgr != null) maxGuidedRange = overrideMgr
                 }
 
                 // 不可由雷达引导的武器直接跳过
@@ -147,18 +154,28 @@ object MissileWeaponHelper {
 
                 val existing = weaponMap[name]
                 if (existing != null) {
-                    weaponMap[name] = InnerAgg(existing.totalAmmo + available, existing.canLockEntity, existing.displayNameBase)
+                    weaponMap[name] = InnerAgg(existing.totalAmmo + available, existing.canLockEntity,
+                        existing.displayNameBase, minOf(existing.maxGuidedRange, maxGuidedRange))
                 } else {
-                    weaponMap[name] = InnerAgg(available, canLockEntity, translated)
+                    weaponMap[name] = InnerAgg(available, canLockEntity, translated, maxGuidedRange)
                 }
             }
         }
 
+        // Check if at least one selected vehicle is within MaxGuidedRange of the target
+        val targetDist = targetEntity?.let { target ->
+            vehicles.minOfOrNull { it.distanceTo(target) }
+        }
+
         return weaponMap.map { (name, agg) ->
-            val ammoStr = "×${agg.totalAmmo}"
+            val inRange = targetDist == null || targetDist <= agg.maxGuidedRange
+            val ammoStr = if (inRange)
+                Component.translatable("context.superbwarfare.tactical_map.missile_ammo_count", agg.totalAmmo).string
+            else
+                Component.translatable("context.superbwarfare.tactical_map.out_of_range").string
             val displayName = if (agg.displayNameBase.contains("%1\$s"))
                 agg.displayNameBase.replace("%1\$s", ammoStr) else "${agg.displayNameBase}  $ammoStr"
-            AggregatedWeapon(name, displayName, agg.totalAmmo, agg.canLockEntity)
+            AggregatedWeapon(name, displayName, agg.totalAmmo, agg.canLockEntity, agg.maxGuidedRange, inRange)
         }
     }
 }

@@ -154,9 +154,24 @@ class MapEntityRenderer {
                 "context.superbwarfare.tactical_map.tooltip.team", teamName
             ).withStyle(net.minecraft.ChatFormatting.AQUA))
         }
-        val hag = ClientSyncedEntityHandler.getSyncedEntry(level, entity.id)?.heightAboveGround ?: -1.0
-        val hagStr = if (hag >= 0) "离地: %.1f".format(hag) else "离地: N/A"
-        lines.add(Component.literal(hagStr).withStyle(net.minecraft.ChatFormatting.DARK_GREEN))
+        val syncedEntry = ClientSyncedEntityHandler.getSyncedEntry(level, entity.id)
+        val hag = syncedEntry?.heightAboveGround ?: -1.0
+        lines.add(if (hag >= 0)
+            Component.translatable("context.superbwarfare.tactical_map.tooltip.height", "%.1f".format(hag))
+            else Component.translatable("context.superbwarfare.tactical_map.tooltip.height_na"))
+        // Missile speed in Mach: delta between current and previous synced position
+        if (entity is MissileProjectile) {
+            val pp = syncedEntry?.prevPos
+            val speedMs = if (pp != null) {
+                val dx = entity.x - pp.x
+                val dy = entity.y - pp.y
+                val dz = entity.z - pp.z
+                kotlin.math.sqrt(dx * dx + dy * dy + dz * dz) * 20.0
+            } else 0.0
+            val mach = speedMs / 340.0
+            lines.add(Component.translatable("context.superbwarfare.tactical_map.tooltip.speed",
+                "%.1f".format(mach)).withStyle(net.minecraft.ChatFormatting.GOLD))
+        }
         lines.add(Component.translatable(relationKey).withStyle(net.minecraft.ChatFormatting.YELLOW))
         return lines
     }
@@ -206,7 +221,7 @@ class MapEntityRenderer {
         // 导弹目标位置
         if (entity is MissileProjectile) {
             val synced = ClientSyncedEntityHandler.getSyncedEntry(level, entity.id)
-            val targetPos = entity.getTargetPos() ?: synced?.targetPos
+            val targetPos = synced?.targetPos ?: entity.getTargetPos()
             if (targetPos != null) {
                 renderTargetPos(targetPos, scale, screenX, screenY, guiGraphics, entity,
                     viewBlockX, viewBlockZ, mapCenterX, mapCenterY, mapLeft, mapTop, mapAreaW, mapAreaH)

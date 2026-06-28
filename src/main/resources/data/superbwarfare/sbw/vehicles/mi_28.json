@@ -279,7 +279,7 @@
       "Velocity": 3,
       "SeekWeaponInfo": {
         "SeekDirection": "Barrel",
-        "MaxGuidedRange": 4096,
+        "MaxGuidedRange": 16000,
         "SeekRange": 1024,
         "SeekAngle": 20,
         "SeekTime": 20,

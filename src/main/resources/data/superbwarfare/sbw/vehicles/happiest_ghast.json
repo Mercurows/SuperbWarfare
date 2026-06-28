@@ -142,6 +142,7 @@
           "ShouldUnload": false,
           "Override": {
             "SeekWeaponInfo": {
+              "MaxGuidedRange": 2000000,
               "SeekDirection": "Passenger",
               "InputBlockPos": true
             }
@@ -159,10 +160,11 @@
       "Damage": 5000,
       "ExplosionDamage": 1500,
       "ExplosionRadius": 31,
-      "ProjectileLife": 24000,
+      "ProjectileLife": 48000,
       "ShootDelayTime": 10,
       "Velocity": 2.3,
       "SeekWeaponInfo": {
+        "MaxGuidedRange": 2000000,
         "SeekDirection": "Passenger",
         "SeekRange": 512,
         "SeekAngle": 25,
@@ -206,16 +208,17 @@
       "EmptyReloadTime": 400,
       "Projectile": "superbwarfare:ru_9m100_missile",
       "Name": "weapon.superbwarfare.9m_100_missile",
-      "Damage": 400,
-      "ExplosionDamage": 160,
-      "ExplosionRadius": 9,
+      "ProjectileLife": 1600,
+      "Damage": 800,
+      "ExplosionDamage": 320,
+      "ExplosionRadius": 11,
       "Velocity": 2.3,
       "ShootDelayTime": 2,
       "SeekWeaponInfo": {
         "SeekDirection": "Passenger",
         "CanGuidedByRadar": true,
         "AffectedByStealthTarget": true,
-        "MaxGuidedRange": 4096,
+        "MaxGuidedRange": 15000,
         "SeekRange": 1024,
         "SeekAngle": 20,
         "SeekTime": 20,

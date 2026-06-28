@@ -2186,7 +2186,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         } else {
             // 呼吸回血
             if (repairCoolDown == 0 && health > 0) {
-                this.heal(repairAmount())
+                this.heal(5f)
             }
         }
 

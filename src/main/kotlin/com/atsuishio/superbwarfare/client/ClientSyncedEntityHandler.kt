@@ -22,7 +22,9 @@ object ClientSyncedEntityHandler {
         val entity: Entity,
         val timeStamp: Long,
         val targetPos: Vec3?,
-        val heightAboveGround: Double = -1.0
+        val heightAboveGround: Double = -1.0,
+        /** Previous tick position, used for speed computation. */
+        var prevPos: Vec3? = null,
     )
 
     data class SyncedPlayerKey(val dim: ResourceLocation, val uuid: UUID)
@@ -59,10 +61,17 @@ object ClientSyncedEntityHandler {
         }
         for (syncedEntity in list) {
             val key = SyncedKey(dim, syncedEntity.id)
-            val existedEntity = targetMap[key]
+            if (syncedEntity.removed) {
+                targetMap.remove(key)
+                continue
+            }
+            val existedEntry = targetMap[key]
             var entity: Entity
-            if (existedEntity != null) {
-                entity = existedEntity.entity
+            val prevPos = existedEntry?.let { Vec3(it.entity.x, it.entity.y, it.entity.z) }
+            if (existedEntry != null) {
+                entity = existedEntry.entity
+                val tag = syncedEntity.tag as? CompoundTag
+                if (tag != null) entity.load(tag)
             } else {
                 val type = ForgeRegistries.ENTITY_TYPES.getValue(syncedEntity.type) ?: continue
                 entity = type.create(level) ?: continue
@@ -70,13 +79,12 @@ object ClientSyncedEntityHandler {
                 entity.load(tag)
                 entity.id = syncedEntity.id
             }
-            entity.xo = entity.x
-            entity.yo = entity.y
-            entity.zo = entity.z
             entity.setPos(syncedEntity.pos)
             entity.deltaMovement = syncedEntity.targetPos ?: Vec3.ZERO
             entity.yRot = syncedEntity.yRot
-            targetMap[key] = ClientSyncedEntity(entity, time, syncedEntity.targetPos, syncedEntity.heightAboveGround)
+            val entry = ClientSyncedEntity(entity, time, syncedEntity.targetPos, syncedEntity.heightAboveGround)
+            entry.prevPos = prevPos
+            targetMap[key] = entry
         }
     }
 

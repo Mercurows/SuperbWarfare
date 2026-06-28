@@ -46,8 +46,21 @@ import kotlin.math.atan2
 @OnlyIn(Dist.CLIENT)
 class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare.tactical_map")) {
 
+    override fun removed() {
+        super.removed()
+        savedFollowPlayer = followPlayer
+        if (!followPlayer) {
+            savedViewX = viewBlockX
+            savedViewZ = viewBlockZ
+            savedZoom = zoom
+        }
+    }
+
     companion object {
         private var savedFollowPlayer = false
+        private var savedViewX = 0.0
+        private var savedViewZ = 0.0
+        private var savedZoom = -1.0
 
         // Persistent area selection boxes (survive GUI close, reset on game restart)
         data class SelBox(
@@ -211,7 +224,14 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
     }
 
     override fun init() {
-        zoom = DisplayConfig.TACTICAL_MAP_ZOOM.get().toDouble()
+        // Restore last view position/zoom; use config default on first open
+        if (savedZoom > 0) {
+            zoom = savedZoom
+            viewBlockX = savedViewX
+            viewBlockZ = savedViewZ
+        } else {
+            zoom = DisplayConfig.TACTICAL_MAP_ZOOM.get().toDouble()
+        }
         followPlayer = savedFollowPlayer
 
         contextMenu = MapContextMenu()
@@ -270,7 +290,8 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         lastFollowState = followPlayer
         followBtn.message = if (followPlayer) followIconActive else followIconNormal
         val player = localPlayer
-        if (player != null) {
+        // Only centre on player when NOT restoring a saved free-pan position
+        if (player != null && (savedZoom <= 0 || followPlayer)) {
             viewBlockX = player.x
             viewBlockZ = player.z
         }
@@ -1424,7 +1445,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             for (mw in missileWeapons) {
                 val ty = my + 2 + idx * itemHeight
                 val hovered = mouseX in mx..mx + menuW && mouseY in ty..ty + itemHeight
-                val disabled = mw.ammoCount <= 0
+                val disabled = mw.ammoCount <= 0 || !mw.inRange
                 val bg = if (hovered && !disabled) 0x66226644 else 0
                 if (bg != 0) guiGraphics.fill(mx + 1, ty, mx + menuW - 1, ty + itemHeight, bg)
                 val fg = when {
@@ -1433,6 +1454,14 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
                     else -> 0xFFAACCAA.toInt()
                 }
                 guiGraphics.drawString(font, mw.displayName, mx + 8, ty + 3, fg, false)
+                if (hovered && !mw.inRange) {
+                    guiGraphics.renderTooltip(
+                        font,
+                        listOf(Component.translatable("context.superbwarfare.tactical_map.out_of_range",
+                            "%.0f".format(mw.maxGuidedRange))),
+                        java.util.Optional.empty(), mouseX, mouseY
+                    )
+                }
                 idx++
             }
         }
@@ -1512,10 +1541,10 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         if (missileWeapons.isNotEmpty()) {
             ty += itemHeight + 1 // skip separator line
             for (mw in missileWeapons) {
-                if (mw.ammoCount <= 0) { ty += itemHeight; continue }
+                if (mw.ammoCount <= 0 || !mw.inRange) { ty += itemHeight; continue }
                 if (mouseX in mx.toDouble()..(mx + menuW).toDouble() && mouseY in ty.toDouble()..(ty + itemHeight).toDouble()) {
                     fireEntityMissile(target, mw)
-                    // Don't close menu — allow multiple shots
+                    // Don't close menu — allow multiple attacks
                     return true
                 }
                 ty += itemHeight
@@ -1530,6 +1559,8 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         val displayName: String,
         val ammoCount: Int,
         val lockEntity: Boolean,  // true = lock UUID, false = use position
+        val inRange: Boolean = true,
+        val maxGuidedRange: Double = 2048.0,
     )
 
     /** 获取所有被选中的载具（用于遥控打击），若未选中则回退到当前骑乘载具 */
@@ -1543,7 +1574,8 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
     private fun buildEntityMissileWeapons(entity: Entity): List<EntityMissileWeapon> {
         val vehicles = getSelectedVehicles()
         return MissileWeaponHelper.aggregateWeapons(vehicles, entity, requireLockEntity = true, requireLockBlock = true)
-            .map { EntityMissileWeapon(it.weaponName, it.displayNameBase, it.totalAmmo, it.canLockEntity) }
+            .map { EntityMissileWeapon(it.weaponName, it.displayNameBase, it.totalAmmo, it.canLockEntity,
+                it.inRange, it.maxGuidedRange) }
     }
 
     private fun fireEntityMissile(entity: Entity, weapon: EntityMissileWeapon) {
@@ -1910,10 +1942,16 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
                     }
                     contextMenu.missileWeapons = weapons
                     contextMenu.onDirectAttack = { weaponName ->
+                        val agg = groundWeapons.find { it.weaponName == weaponName }
+                        attackHandler.maxGuidedRange = agg?.maxGuidedRange ?: 2048.0
+                        attackHandler.sourcePositions = sourceVehicles.map { it.position() }
                         attackHandler.enterDirectMode(weaponName, weapons.find { it.weaponName == weaponName }?.ammoCount ?: 0)
                     }
                     contextMenu.onQueueAttack = { weaponName ->
                         val firstVeh = sourceVehicles.firstOrNull { it.gunDataMap.containsKey(weaponName) }
+                        val agg = groundWeapons.find { it.weaponName == weaponName }
+                        attackHandler.maxGuidedRange = agg?.maxGuidedRange ?: 2048.0
+                        attackHandler.sourcePositions = sourceVehicles.map { it.position() }
                         attackHandler.enterQueueMode(weaponName, firstVeh)
                     }
                     contextMenu.onMissileStrike = null
@@ -2164,7 +2202,8 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
     // ═══════════════════════════════════════════════════════════════
 
     private fun renderAttackCursor(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int) {
-        attackHandler.renderAttackCursor(guiGraphics, mouseX, mouseY, minecraft!!.font)
+        attackHandler.renderAttackCursor(guiGraphics, mouseX, mouseY, minecraft!!.font,
+            viewBlockX, viewBlockZ, mapCenterX, mapCenterY, zoom)
     }
 
     private fun renderQueueTargets(guiGraphics: GuiGraphics, player: Player) {

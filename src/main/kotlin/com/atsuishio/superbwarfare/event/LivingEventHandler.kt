@@ -741,7 +741,13 @@ object LivingEventHandler {
                     val dz = entity.z - explosionPos.z
                     val distance = sqrt(dx * dx + dy * dy + dz * dz)
                     if (distance != 0.0) {
-                        val visibilityFactor = Explosion.getSeenPercent(explosionPos, entity)
+                        // Use capped sampling for OBB vehicles — their massive AABB
+                        // (e.g. AC-130H at ~28×12×41) would otherwise cause 100 000+
+                        // raycasts inside vanilla Explosion.getSeenPercent.
+                        val visibilityFactor = if (!entity.enableAABB())
+                            CustomExplosion.getSeenPercentOptimized(entity.level(), explosionPos, entity)
+                        else
+                            Explosion.getSeenPercent(explosionPos, entity)
                         val impactStrength = (1.0 - distanceRatio) * visibilityFactor
                         val damage =
                             (impactStrength * impactStrength + impactStrength) / 2.0 * 7.0 * explosionRadius + 1.0

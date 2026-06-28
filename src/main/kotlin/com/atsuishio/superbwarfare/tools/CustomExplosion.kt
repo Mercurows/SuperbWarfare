@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.tools
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
+import com.atsuishio.superbwarfare.entity.OBBEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -25,6 +26,7 @@ import net.minecraft.world.entity.item.PrimedTnt
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.enchantment.ProtectionEnchantment
+import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Explosion
 import net.minecraft.world.level.ExplosionDamageCalculator
 import net.minecraft.world.level.Level
@@ -34,8 +36,10 @@ import net.minecraft.world.level.gameevent.GameEvent
 import net.minecraft.world.level.storage.loot.LootParams
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams
 import net.minecraft.world.phys.AABB
+import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.event.ForgeEventFactory
+import org.joml.Vector3d
 import java.util.function.Supplier
 import kotlin.math.cos
 import kotlin.math.floor
@@ -322,6 +326,9 @@ open class CustomExplosion(
                     val distance = sqrt(xDistance * xDistance + yDistance * yDistance + zDistance * zDistance)
 
                     if (distance != 0.0) {
+                        // VehicleEntity handled by LivingEventHandler.onExplosionDetonate
+                        if (entity is VehicleEntity) continue
+
                         val seenPercent =
                             getSeenPercent(position, entity).toDouble().coerceIn(
                                 0.01 * ExplosionConfig.EXPLOSION_PENETRATION_RATIO.get(),
@@ -342,11 +349,9 @@ open class CustomExplosion(
                         val capturedDamageFinal = damageFinal
                         val capturedDamageSource = this.damageSource
                         val capturedFireTime = this.fireTime
-                        val isLiving = entity is LivingEntity
-                        val isPlayer = entity is Player
 
                         // Compute knockback force at explosion time
-                        val knockbackForce = if (isLiving) {
+                        val knockbackForce = if (entity is LivingEntity) {
                             var force = damageFinal * 0.015
                             force = ProtectionEnchantment.getExplosionKnockbackAfterDampener(entity, force)
                             val vec31 = position.vectorTo(entity.boundingBox.center).normalize()
@@ -368,7 +373,7 @@ open class CustomExplosion(
 
                                     force = force.coerceAtLeast(0.0)
                                     if (force > 0.0) {
-                                        if (isPlayer && !entity.isCreative && !entity.isSpectator) {
+                                        if (entity is Player && !entity.isCreative && !entity.isSpectator) {
                                             entity.deltaMovement = entity.deltaMovement.add(vec31.scale(force))
                                         } else {
                                             entity.deltaMovement = entity.deltaMovement.add(vec31.scale(force))
@@ -591,6 +596,50 @@ open class CustomExplosion(
     }
 
     companion object {
+        /**
+         * Replacement for [Explosion.getSeenPercent] that samples points on the
+         * actual OBB surfaces instead of a dense grid over the vanilla AABB.
+         *
+         * Uses the OBB center + 6 face centres per OBB (7 points each).
+         * For AC-130H: 23 OBBs × 7 = 161 raycasts, vs 118 000 vanilla.
+         */
+        @JvmStatic
+        fun getSeenPercentOptimized(level: Level, center: Vec3, entity: Entity): Float {
+            if (entity is OBBEntity && !entity.enableAABB()) {
+                return getSeenPercentForOBB(level, center, entity)
+            }
+            return Explosion.getSeenPercent(center, entity)
+        }
+
+        /** Sample every OBB centre + 6 face centres, raycast from [center] to each. */
+        @JvmStatic
+        fun getSeenPercentForOBB(level: Level, center: Vec3, obbEntity: OBBEntity): Float {
+            var hits = 0
+            var total = 0
+            val tmp = Vector3d()
+
+            for (obb in obbEntity.getOBBs()) {
+                val axes = obb.getAxes() // fresh copy each iteration
+                val e = obb.extents
+                val c = obb.center
+
+                // 7 samples per OBB: centre + face centres on ±X, ±Y, ±Z
+                for (axisI in 0..2) {
+                    for (sign in listOf(0.0, 1.0, -1.0)) {
+                        if (sign == 0.0 && axisI > 0) continue // centre only once
+                        val offset = axes[axisI].mul(sign * e.get(axisI), tmp)
+                        val point = OBB.vector3dToVec3(Vector3d(c).add(offset))
+                        if (level.clip(ClipContext(center, point,
+                                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, null)
+                            ).type == HitResult.Type.MISS
+                        ) hits++
+                        total++
+                    }
+                }
+            }
+            return if (total > 0) hits.toFloat() / total else 0f
+        }
+
         @JvmStatic
         fun addBlockDrops(
             pDropPositionArray: ObjectArrayList<Pair<ItemStack, BlockPos>>,

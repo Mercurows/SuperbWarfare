@@ -239,7 +239,7 @@
       "ProjectileLife": 3600,
       "SeekWeaponInfo": {
         "SeekDirection": "ClientCamera",
-        "MaxGuidedRange": 8192,
+        "MaxGuidedRange": 48000,
         "SeekRange": 1024,
         "SeekAngle": 20,
         "SeekTime": 10,

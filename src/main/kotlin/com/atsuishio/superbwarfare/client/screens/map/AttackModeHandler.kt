@@ -10,8 +10,10 @@ import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.chunk.LevelChunk
+import net.minecraft.world.phys.Vec3
 import java.util.*
 import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 /**
  * 战术地图攻击模式控制器。
@@ -29,6 +31,8 @@ class AttackModeHandler {
     val targetQueue = mutableListOf<BlockPos>()
     var fireInterval = 0
     var directAmmo = 0
+    var maxGuidedRange = 2048.0
+    var sourcePositions: List<Vec3> = emptyList()
 
     var queueMenuVisible = false
     var queueMenuX = 0
@@ -95,10 +99,19 @@ class AttackModeHandler {
 
     // ── Rendering ──
 
-    fun renderAttackCursor(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, font: net.minecraft.client.gui.Font) {
+    fun renderAttackCursor(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, font: net.minecraft.client.gui.Font,
+        viewBlockX: Double, viewBlockZ: Double, mapCenterX: Float, mapCenterY: Float, zoom: Double
+    ) {
+        val scale = CoordinateConverter.scaleFromZoom(zoom)
+        val wX = CoordinateConverter.screenToWorldX(mouseX.toDouble(), mapCenterX, viewBlockX, scale)
+        val wZ = CoordinateConverter.screenToWorldY(mouseY.toDouble(), mapCenterY, viewBlockZ, scale)
+        val minDist = minSourceDistance(wX, wZ)
+        val outOfRange = minDist > maxGuidedRange
+
+        // Attack cursor icon
         RenderSystem.enableBlend()
         RenderSystem.setShader { GameRenderer.getPositionTexShader() }
-        if (directAmmo <= 0) {
+        if (directAmmo <= 0 || outOfRange) {
             RenderSystem.setShaderColor(0.5f, 0.15f, 0.1f, 0.7f)
         } else {
             RenderSystem.setShaderColor(1f, 0.4f, 0.1f, 0.9f)
@@ -106,10 +119,49 @@ class AttackModeHandler {
         val ATTACK_CURSOR = com.atsuishio.superbwarfare.Mod.Companion.loc("textures/overlay/tactical_map/attack.png")
         guiGraphics.blit(ATTACK_CURSOR, mouseX - 8, mouseY - 8, 0f, 0f, 16, 16, 16, 16)
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
-        val ammoText = "×$directAmmo"
-        guiGraphics.drawString(font, ammoText,
+
+        // Ammo count next to cursor
+        guiGraphics.drawString(font, "×$directAmmo",
             mouseX + 10, mouseY - 12,
             if (directAmmo > 0) 0xFFFFAA00.toInt() else 0xFFAA3333.toInt(), true)
+
+        // Info box at cursor top-right (12px offset)
+        val boxX = mouseX + 12
+        val boxY = mouseY - 12
+        val distStr = formatDist(minDist)
+        val rangeStr = formatDist(maxGuidedRange)
+        val distText = if (outOfRange)
+            Component.translatable("context.superbwarfare.tactical_map.attack_dist_out", distStr).string
+        else
+            Component.translatable("context.superbwarfare.tactical_map.attack_dist", distStr).string
+        val rangeText = Component.translatable("context.superbwarfare.tactical_map.attack_range", rangeStr).string
+        val distColor = if (outOfRange) 0xFFFF4444.toInt() else 0xFFCCCCCC.toInt()
+        val rangeColor = 0xFFAAAAAA.toInt()
+
+        val distW = font.width(distText)
+        val rangeW = font.width(rangeText)
+        val boxW = maxOf(distW, rangeW) + 6
+        val boxH = font.lineHeight * 2 + 4
+        guiGraphics.fill(boxX, boxY - boxH, boxX + boxW, boxY, 0xCC1A1A1A.toInt())
+        guiGraphics.drawString(font, distText, boxX + 3, boxY - boxH + 2, distColor, false)
+        guiGraphics.drawString(font, rangeText, boxX + 3, boxY - font.lineHeight, rangeColor, false)
+    }
+
+    private fun minSourceDistance(worldX: Double, worldZ: Double): Double {
+        if (sourcePositions.isEmpty()) return 0.0
+        val minDistSq = sourcePositions.minOf { pos ->
+            val dx = worldX - pos.x; val dz = worldZ - pos.z
+            dx * dx + dz * dz
+        }
+        return sqrt(minDistSq)
+    }
+
+    private fun isOutOfRange(worldX: Double, worldZ: Double): Boolean {
+        return minSourceDistance(worldX, worldZ) > maxGuidedRange
+    }
+
+    private fun formatDist(meters: Double): String {
+        return if (meters >= 1000.0) "%.1fkm".format(meters / 1000.0) else "%.1fm".format(meters)
     }
 
     fun renderQueueTargets(guiGraphics: GuiGraphics,
@@ -204,6 +256,7 @@ class AttackModeHandler {
                 if ((onGetAmmo?.invoke(weaponName ?: "") ?: 0) <= 0) return true
                 val wX = CoordinateConverter.screenToWorldX(mouseX, mapCenterX, viewBlockX, scale).toInt()
                 val wZ = CoordinateConverter.screenToWorldY(mouseY, mapCenterY, viewBlockZ, scale).toInt()
+                if (isOutOfRange(wX.toDouble(), wZ.toDouble())) return true
                 val wY = lookupHeight(wX, wZ, level)
                 onFireMissile?.invoke(wX, wY, wZ, weaponName!!)
                 return true
@@ -220,6 +273,7 @@ class AttackModeHandler {
                 if (targetQueue.size >= (onGetAmmo?.invoke(weaponName ?: "") ?: 0)) return true
                 val wX = CoordinateConverter.screenToWorldX(mouseX, mapCenterX, viewBlockX, scale).toInt()
                 val wZ = CoordinateConverter.screenToWorldY(mouseY, mapCenterY, viewBlockZ, scale).toInt()
+                if (isOutOfRange(wX.toDouble(), wZ.toDouble())) return true
                 val wY = lookupHeight(wX, wZ, level)
                 targetQueue.add(BlockPos(wX, wY, wZ))
                 return true
