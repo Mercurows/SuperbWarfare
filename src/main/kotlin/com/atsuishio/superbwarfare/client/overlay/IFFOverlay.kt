@@ -75,7 +75,11 @@ object IFFOverlay : CommonOverlay("iff") {
                         )
                         RenderSystem.setShaderColor(1f, 1f, 1f, if (checkNoClip(player, teammate, cameraPos)) 1f else 0.4f)
 
-                        val pos = VectorTool.lerpGetEntityBoundingBoxCenter(teammate, partialTick)
+                        var pos = VectorTool.lerpGetEntityBoundingBoxCenter(teammate, partialTick)
+                        if (level.getEntity(e.id) == null) {
+                            pos = teammate.boundingBox.center
+                        }
+
                         val point = pos.worldToScreen()
                         val xf = point.x.toFloat()
                         val yf = point.y.toFloat()
@@ -220,7 +224,10 @@ object IFFOverlay : CommonOverlay("iff") {
                             RenderSystem.setShaderColor(1f, 1f, 1f, 0.4f)
                         }
 
-                        val pos = VectorTool.lerpGetEntityBoundingBoxCenter(enemy, partialTick)
+                        var pos = VectorTool.lerpGetEntityBoundingBoxCenter(enemy, partialTick)
+                        if (level.getEntity(e.id) == null) {
+                            pos = enemy.boundingBox.center
+                        }
                         val point = pos.worldToScreen()
                         val xf = point.x.toFloat()
                         val yf = point.y.toFloat()

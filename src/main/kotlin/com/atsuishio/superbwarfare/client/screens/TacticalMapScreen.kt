@@ -5,6 +5,12 @@ import com.atsuishio.superbwarfare.client.ClientSyncedEntityHandler
 import com.atsuishio.superbwarfare.client.map.TacticalMapCache
 import com.atsuishio.superbwarfare.client.map.context.MapContextMenu
 import com.atsuishio.superbwarfare.client.map.context.MapMarker
+import com.atsuishio.superbwarfare.client.map.context.MarkerPersistence
+import com.atsuishio.superbwarfare.client.screens.map.AttackModeHandler
+import com.atsuishio.superbwarfare.client.screens.map.CoordinateConverter.scaleFromZoom
+import com.atsuishio.superbwarfare.client.screens.map.MapEntityRenderer
+import com.atsuishio.superbwarfare.client.screens.map.MissileWeaponHelper
+import com.atsuishio.superbwarfare.client.screens.map.SelectionBoxManager
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
@@ -26,20 +32,16 @@ import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.renderer.GameRenderer
-import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
 import net.minecraft.world.entity.Entity
-import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.vehicle.Boat
 import net.minecraft.world.level.chunk.LevelChunk
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import java.io.File
 import java.util.*
 import kotlin.math.atan2
-import kotlin.math.roundToInt
 
 @OnlyIn(Dist.CLIENT)
 class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare.tactical_map")) {
@@ -89,8 +91,6 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         private val SEL_TARGET = loc("textures/overlay/tactical_map/sel_target.png")
     }
 
-    private enum class AttackMode { NONE, DIRECT, QUEUE }
-
     // Panel layout
     private var panelX = 0
     private var panelY = 0
@@ -132,20 +132,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
     private var connectionMode = false
     private var connectingFrom: MapMarker? = null
 
-    // ── Missile attack state ──
-    private var attackMode = AttackMode.NONE
-    private var attackWeaponName: String? = null
-    private var attackTargetQueue = mutableListOf<BlockPos>()
-    private var attackFireInterval = 0    // ticks between sequential shots
-    private var directAttackAmmo = 0      // remaining ammo for direct attack cursor display
-    // Queue context menu
-    private var queueMenuVisible = false
-    private var queueMenuX = 0
-    private var queueMenuY = 0
-    // Sequential fire (only active after "次序发射" is clicked)
-    private var seqFireActive = false
-    private var seqFireTimer = 0
-    private var seqFireIndex = 0
+    // ── Missile attack state (delegated to AttackModeHandler) ──
 
     // Line context menu
     private var ctxLinePair: Pair<MapMarker, MapMarker>? = null
@@ -164,8 +151,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
     private var hoveredEntityTipY = 0
 
     // Entity right-click menu
-    private data class EntityRenderEntry(val entity: Entity, val screenX: Float, val screenY: Float, val relation: String)
-    private val entityRenderList = mutableListOf<EntityRenderEntry>()
+    private val entityRenderList = mutableListOf<MapEntityRenderer.EntityRenderEntry>()
     private var entityMenuVisible = false
     private var entityMenuTarget: Entity? = null
     private var entityMenuX = 0
@@ -184,6 +170,10 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
     private var selMenuX = 0
     private var selMenuY = 0
     private var selMenuConfirmClear = false
+
+    // Render delegates
+    private val entityRenderer = MapEntityRenderer()
+    private val attackHandler = AttackModeHandler()
 
     // Context menu (delegated)
     private lateinit var contextMenu: MapContextMenu
@@ -286,75 +276,26 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         }
         addRenderableWidget(centerBtn)
         addRenderableWidget(followBtn)
+
+        // Wire attack handler callbacks
+        attackHandler.onFireMissile = { wx, wy, wz, name -> fireMissileAt(wx, wy, wz) }
+        attackHandler.onGetAmmo = { name ->
+            MissileWeaponHelper.currentAttackAmmo(name, getSelectedVehicles(), localPlayer)
+        }
     }
 
-    // ── Marker persistence: <gameDir>/tactical_markers/<worldId>/<dim>/<uuid>.txt ──
-
-    private fun getMarkerDir(): File {
-        val worldId = TacticalMapCache.getWorldIdentifier()
-        val dim = (minecraft?.level?.dimension()?.location()?.toString() ?: "unknown").replace(":", "_")
-        val dir = File(minecraft!!.gameDirectory, "superbwarfare/tactical_markers/$worldId/$dim")
-        dir.mkdirs()
-        return dir
-    }
-
-    private fun markerFile(uuid: UUID): File {
-        return File(getMarkerDir(), "$uuid.txt")
-    }
+    // ── Marker persistence: delegated to MarkerPersistence ──
 
     private fun loadMarkers() {
-        val dir = getMarkerDir()
-        val files = dir.listFiles() ?: return
-        markers.clear()
-        for (file in files) {
-            if (!file.isFile || !file.name.endsWith(".txt")) continue
-            try {
-                val uuid = UUID.fromString(file.nameWithoutExtension)
-                val p = file.readText().trim().split("|", limit = 6)
-                if (p.size >= 5) {
-                    markers.add(
-                        MapMarker(
-                            id = uuid,
-                            name = p[0],
-                            x = p[1].toInt(),
-                            y = p[2].toInt(),
-                            z = p[3].toInt(),
-                            colorIndex = p[4].toInt()
-                        )
-                    )
-                    if (p.size >= 6 && p[5].isNotEmpty()) {
-                        connections[uuid] = p[5].split(",").mapNotNullTo(mutableSetOf()) { s ->
-                            try {
-                                UUID.fromString(s)
-                            } catch (_: Exception) {
-                                null
-                            }
-                        }
-                    }
-                }
-            } catch (_: Exception) {
-            }
-        }
+        MarkerPersistence.loadMarkers(minecraft!!, markers, connections)
     }
 
     private fun saveMarker(marker: MapMarker) {
-        try {
-            val conns = connections[marker.id]?.joinToString(",") ?: ""
-            val content = "${marker.name}|${marker.x}|${marker.y}|${marker.z}|${marker.colorIndex}|$conns"
-            val newFile = markerFile(marker.id)
-            val tmp = File(newFile.parentFile, "${newFile.name}.tmp")
-            newFile.delete()
-            tmp.writeText(content)
-            tmp.renameTo(newFile)
-        } catch (_: Exception) {
-        }
+        MarkerPersistence.saveMarker(minecraft!!, marker, connections)
     }
 
     private fun deleteMarkerFile(marker: MapMarker) {
-        try {
-            markerFile(marker.id).delete()
-        } catch (_: Exception) {
-        }
+        MarkerPersistence.deleteMarkerFile(minecraft!!, marker)
     }
 
     private fun centerOnPlayer() {
@@ -389,8 +330,8 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         }
 
         // Sync direct attack ammo from actual GunData (tracks reloads)
-        if (attackMode == AttackMode.DIRECT && attackWeaponName != null) {
-            directAttackAmmo = currentAttackAmmo()
+        if (attackHandler.mode == AttackModeHandler.Mode.DIRECT && attackHandler.weaponName != null) {
+            attackHandler.directAmmo = currentAttackAmmo()
         }
 
         // Refresh missile weapon ammo counts in open Level 2 menu (tracks reloads)
@@ -419,10 +360,8 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             }
         }
 
-        // Sequential fire timer — only active after "次序发射" is clicked
-        if (seqFireActive) {
-            tickSequentialFire()
-        }
+        // Sequential fire timer and ammo sync — delegated to AttackModeHandler
+        attackHandler.tick()
 
         // Follow player mode
         if (followPlayer) {
@@ -480,7 +419,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         renderPositionMarkers(pGuiGraphics)
 
         // Layer 3.7: Queue attack targets
-        if (attackMode == AttackMode.QUEUE) {
+        if (attackHandler.mode == AttackModeHandler.Mode.QUEUE) {
             renderQueueTargets(pGuiGraphics, player)
         }
 
@@ -513,18 +452,18 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         renderHudText(pGuiGraphics, player, pMouseX, pMouseY)
 
         // ── Attack mode overlay (cursor, queue menu) ──
-        if (attackMode == AttackMode.DIRECT) {
+        if (attackHandler.mode == AttackModeHandler.Mode.DIRECT) {
             renderAttackCursor(pGuiGraphics, pMouseX, pMouseY)
         }
 
         // Queue context menu
-        if (queueMenuVisible) {
+        if (attackHandler.queueMenuVisible) {
             renderQueueMenu(pGuiGraphics, pMouseX, pMouseY)
         }
 
         // Marker hover tooltip (coordinates only, also shown while dragging)
         if (!contextMenu.ctxMenuVisible && !contextMenu.editPanelVisible) {
-            val s = zoom / 5.0
+            val s = scaleFromZoom(zoom)
             val dm = draggingMarker
             if (dm != null) {
                 // 拖动中：直接显示被拖标记点的实时坐标
@@ -612,7 +551,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
     }
 
     private fun renderPositionMarkers(guiGraphics: GuiGraphics) {
-        val scale = zoom / 5.0
+        val scale = scaleFromZoom(zoom)
         val font = minecraft!!.font
         for (marker in markers) {
             MapContextMenu.renderMarker(
@@ -642,7 +581,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
     }
 
     private fun renderConnectionLines(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int) {
-        val scale = zoom / 5.0
+        val scale = scaleFromZoom(zoom)
         val font = minecraft!!.font
         val color = 0xFFFFFFFF.toInt()
 
@@ -708,7 +647,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
     }
 
     private fun renderConnectionPreview(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int) {
-        val scale = zoom / 5.0
+        val scale = scaleFromZoom(zoom)
         val src = connectingFrom ?: return
         val sx = (mapCenterX + (src.x - viewBlockX) * scale)
         val sy = (mapCenterY + (src.z - viewBlockZ) * scale)
@@ -724,7 +663,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
 
         // Dashed line via PoseStack rotation: 1px segments with 1px gaps, clipped to visible area
         val dashColor = 0xAAFFAA00.toInt()
-        val range = clipDashRange(sx.toFloat(), sy.toFloat(), mx.toFloat(), my.toFloat())
+        val range = MapEntityRenderer.clipDashRange(sx.toFloat(), sy.toFloat(), mx.toFloat(), my.toFloat(), mapLeft, mapTop, mapAreaW, mapAreaH)
         if (range != null) {
             val pose = guiGraphics.pose()
             pose.pushPose()
@@ -813,7 +752,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
     }
 
     private fun renderMapTiles(guiGraphics: GuiGraphics) {
-        val scale = zoom / 5.0
+        val scale = scaleFromZoom(zoom)
         val visibleBlocksX = (mapAreaW / scale).toInt()
         val visibleBlocksZ = (mapAreaH / scale).toInt()
         val radius = ((visibleBlocksX / 2.0 * 1.5).toInt()).coerceAtLeast(256)
@@ -899,7 +838,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
     }
 
     private fun renderGridLines(guiGraphics: GuiGraphics) {
-        val scale = zoom / 5.0
+        val scale = scaleFromZoom(zoom)
         val gridBlockInterval = getGridInterval()
         val gridPixelInterval = (gridBlockInterval * scale).toFloat()
         if (gridPixelInterval < 8) return
@@ -1018,7 +957,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
     }
 
     private fun renderFriendlyMarkers(guiGraphics: GuiGraphics, player: Player, pPartialTick: Float, mouseX: Int, mouseY: Int) {
-        val scale = zoom / 5.0
+        val scale = scaleFromZoom(zoom)
         val level = player.level()
 
         RenderSystem.disableDepthTest()
@@ -1032,111 +971,52 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             GlStateManager.DestFactor.ZERO
         )
 
-        // 雷达扇面置于最底层，防止遮挡实体图标
-        renderRadars(level, scale, guiGraphics)
-
+        // 雷达扇面置于最底层
+        entityRenderer.renderRadars(level, scale, guiGraphics, mapCenterX, mapCenterY, viewBlockX, viewBlockZ)
         entityRenderList.clear()
-
-        val iconSize = 12
-        val half = iconSize / 2
         hoveredEntityLines = null
 
-        // Helper: check mouse hit and build tooltip
-        fun hitTestAndBuildTooltip(entity: Entity, screenX: Float, screenY: Float, relationKey: String) {
-            if (mouseX.toFloat() in (screenX - half)..(screenX + half) &&
-                mouseY.toFloat() in (screenY - half)..(screenY + half)
-            ) {
-                val lines = mutableListOf<Component>()
-                // Entity name
-                lines.add(Component.translatable(
-                    "context.superbwarfare.tactical_map.tooltip.name",
-                    entity.displayName
-                ).withStyle(net.minecraft.ChatFormatting.WHITE))
-                // Coordinates
-                lines.add(Component.translatable(
-                    "context.superbwarfare.tactical_map.tooltip.pos",
-                    entity.x.toInt().toString(), entity.y.toInt().toString(), entity.z.toInt().toString()
-                ).withStyle(net.minecraft.ChatFormatting.GRAY))
-                // Team name (if available)
-                val teamName = (entity as? LivingEntity)?.team?.name
-                    ?: (entity as? VehicleEntity)?.lastDriver?.let { (it as? LivingEntity)?.team?.name }
-                if (!teamName.isNullOrEmpty()) {
-                    lines.add(Component.translatable(
-                        "context.superbwarfare.tactical_map.tooltip.team", teamName
-                    ).withStyle(net.minecraft.ChatFormatting.AQUA))
-                }
-                // Height above ground (debug)
-                val hag = ClientSyncedEntityHandler.getSyncedEntry(level, entity.id)?.heightAboveGround ?: -1.0
-                val hagStr = if (hag >= 0) "离地: %.1f".format(hag) else "离地: N/A"
-                lines.add(Component.literal(hagStr).withStyle(net.minecraft.ChatFormatting.DARK_GREEN))
-                // Relationship
-                lines.add(Component.translatable(relationKey).withStyle(net.minecraft.ChatFormatting.YELLOW))
-
-                hoveredEntityLines = lines
-                hoveredEntityTipX = mouseX
-                hoveredEntityTipY = mouseY
-            }
-        }
+        val useDragPt = draggingLoiterPoint || System.currentTimeMillis() < loiterDragExpireTime
 
         // 友方（绿色）
-        val friendlyAll = (ClientSyncedEntityHandler.getSyncedFriendlyEntities(level))
-            .filter { it.vehicle == null }
-            .distinctBy { it.id }
-        for (e in friendlyAll) {
-            val entity = level.getEntity(e.id) ?: e
-            val screenX = (mapCenterX + (entity.x - viewBlockX) * scale).toFloat()
-            val screenY = (mapCenterY + (entity.z - viewBlockZ) * scale).toFloat()
-            val clampedX = screenX.coerceIn((mapLeft + 4).toFloat(), (mapLeft + mapAreaW - 4).toFloat())
-            val clampedY = screenY.coerceIn((mapTop + 4).toFloat(), (mapTop + mapAreaH - 4).toFloat())
-            renderMapEntity(entity, level, scale, pPartialTick, guiGraphics, 0xFF7FFFAD.toInt())
-            if (selectedEntities.any { it.id == entity.id }) drawSelectedBorder(guiGraphics, clampedX, clampedY)
-            hitTestAndBuildTooltip(entity, clampedX, clampedY, "context.superbwarfare.tactical_map.relation.friendly")
-            entityRenderList.add(EntityRenderEntry(entity, clampedX, clampedY, "friendly"))
-        }
+        entityRenderer.renderEntityBatch(guiGraphics,
+            ClientSyncedEntityHandler.getSyncedFriendlyEntities(level).filter { it.vehicle == null }.distinctBy { it.id },
+            level, 0xFF7FFFAD.toInt(), "context.superbwarfare.tactical_map.relation.friendly",
+            viewBlockX, viewBlockZ, mapCenterX, mapCenterY, mapLeft, mapTop, mapAreaW, mapAreaH,
+            scale, pPartialTick, mouseX, mouseY, selectedEntities, entityRenderList,
+            { lines, x, y -> hoveredEntityLines = lines; hoveredEntityTipX = x; hoveredEntityTipY = y },
+            useDragPt, loiterDragNewX, loiterDragNewZ, loiterDragExpireTime
+        )
 
         // 中立（灰色）
-        val neutralAll = (ClientSyncedEntityHandler.getSyncedNeutralEntities(level))
-            .filter { it.vehicle == null }
-            .distinctBy { it.id }
-        for (e in neutralAll) {
-            val entity = level.getEntity(e.id) ?: e
-            val screenX = (mapCenterX + (entity.x - viewBlockX) * scale).toFloat()
-            val screenY = (mapCenterY + (entity.z - viewBlockZ) * scale).toFloat()
-            val clampedX = screenX.coerceIn((mapLeft + 4).toFloat(), (mapLeft + mapAreaW - 4).toFloat())
-            val clampedY = screenY.coerceIn((mapTop + 4).toFloat(), (mapTop + mapAreaH - 4).toFloat())
-            renderMapEntity(entity, level, scale, pPartialTick, guiGraphics, 0xFFAAAAAA.toInt())
-            if (selectedEntities.any { it.id == entity.id }) drawSelectedBorder(guiGraphics, clampedX, clampedY)
-            hitTestAndBuildTooltip(entity, clampedX, clampedY, "context.superbwarfare.tactical_map.relation.neutral")
-            entityRenderList.add(EntityRenderEntry(entity, clampedX, clampedY, "neutral"))
-        }
+        entityRenderer.renderEntityBatch(guiGraphics,
+            ClientSyncedEntityHandler.getSyncedNeutralEntities(level).filter { it.vehicle == null }.distinctBy { it.id },
+            level, 0xFFAAAAAA.toInt(), "context.superbwarfare.tactical_map.relation.neutral",
+            viewBlockX, viewBlockZ, mapCenterX, mapCenterY, mapLeft, mapTop, mapAreaW, mapAreaH,
+            scale, pPartialTick, mouseX, mouseY, selectedEntities, entityRenderList,
+            { lines, x, y -> hoveredEntityLines = lines; hoveredEntityTipX = x; hoveredEntityTipY = y },
+            useDragPt, loiterDragNewX, loiterDragNewZ, loiterDragExpireTime
+        )
 
         // 敌对（红色）
-        val hostileAll = (ClientSyncedEntityHandler.getSyncedHostileEntities(level))
-            .filter { it.vehicle == null }
-            .distinctBy { it.id }
-        for (e in hostileAll) {
-            val entity = level.getEntity(e.id) ?: e
-            val screenX = (mapCenterX + (entity.x - viewBlockX) * scale).toFloat()
-            val screenY = (mapCenterY + (entity.z - viewBlockZ) * scale).toFloat()
-            val clampedX = screenX.coerceIn((mapLeft + 4).toFloat(), (mapLeft + mapAreaW - 4).toFloat())
-            val clampedY = screenY.coerceIn((mapTop + 4).toFloat(), (mapTop + mapAreaH - 4).toFloat())
-            renderMapEntity(entity, level, scale, pPartialTick, guiGraphics, 0xFFFF5555.toInt())
-            if (selectedEntities.any { it.id == entity.id }) drawSelectedBorder(guiGraphics, clampedX, clampedY)
-            hitTestAndBuildTooltip(entity, clampedX, clampedY, "context.superbwarfare.tactical_map.relation.hostile")
-            entityRenderList.add(EntityRenderEntry(entity, clampedX, clampedY, "hostile"))
-        }
+        entityRenderer.renderEntityBatch(guiGraphics,
+            ClientSyncedEntityHandler.getSyncedHostileEntities(level).filter { it.vehicle == null }.distinctBy { it.id },
+            level, 0xFFFF5555.toInt(), "context.superbwarfare.tactical_map.relation.hostile",
+            viewBlockX, viewBlockZ, mapCenterX, mapCenterY, mapLeft, mapTop, mapAreaW, mapAreaH,
+            scale, pPartialTick, mouseX, mouseY, selectedEntities, entityRenderList,
+            { lines, x, y -> hoveredEntityLines = lines; hoveredEntityTipX = x; hoveredEntityTipY = y },
+            useDragPt, loiterDragNewX, loiterDragNewZ, loiterDragExpireTime
+        )
 
         // 实体已消失则关闭其右键菜单并取消选中
         if (entityMenuTarget != null && entityRenderList.none { it.entity === entityMenuTarget }) {
             entityMenuVisible = false
             entityMenuTarget = null
         }
-        selectedEntities.removeAll { sel ->
-            entityRenderList.none { it.entity.id == sel.id }
-        }
+        selectedEntities.removeAll { sel -> entityRenderList.none { it.entity.id == sel.id } }
 
         // 雷达图标置于最顶层
-        renderRadarsIcon(level, scale, guiGraphics)
+        entityRenderer.renderRadarsIcon(level, scale, guiGraphics, mapCenterX, mapCenterY, viewBlockX, viewBlockZ)
 
         RenderSystem.depthMask(true)
         RenderSystem.defaultBlendFunc()
@@ -1450,32 +1330,8 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
     }
 
     private fun renderPlayerMarker(guiGraphics: GuiGraphics, player: Player) {
-        // 玩家坐 VehicleEntity 时只需要载具图标，不渲染玩家标记
-        if (player.vehicle is VehicleEntity) return
-
-        RenderSystem.disableDepthTest()
-        RenderSystem.depthMask(false)
-        RenderSystem.enableBlend()
-        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
-        RenderSystem.blendFuncSeparate(
-            GlStateManager.SourceFactor.SRC_ALPHA,
-            GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
-            GlStateManager.SourceFactor.ONE,
-            GlStateManager.DestFactor.ZERO
-        )
-
-        val scale = zoom / 5.0
-        val px = mapCenterX + ((player.x - viewBlockX) * scale).toFloat()
-        val py = mapCenterY + ((player.z - viewBlockZ) * scale).toFloat()
-
-        val poseStack = guiGraphics.pose()
-        poseStack.pushPose()
-        poseStack.translate(px, py, 0f)
-        poseStack.rotateAround(
-            Axis.ZP.rotationDegrees(player.yRot + 180f), 0f, 0f, 0f
-        )
-        guiGraphics.blit(PLAYER_MARKER, -6, -6, 0f, 0f, 12, 12, 12, 12)
-        poseStack.popPose()
+        val scale = scaleFromZoom(zoom)
+        entityRenderer.renderPlayerMarker(guiGraphics, player, viewBlockX, viewBlockZ, mapCenterX, mapCenterY, scale)
     }
 
     /**
@@ -1483,41 +1339,8 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
      * map edge pointing toward the player's location. 50% opacity.
      */
     private fun renderPlayerOffscreenIndicator(guiGraphics: GuiGraphics, player: Player) {
-        val scale = zoom / 5.0
-        val px = (mapCenterX + (player.x - viewBlockX) * scale).toFloat()
-        val py = (mapCenterY + (player.z - viewBlockZ) * scale).toFloat()
-
-        // Check if player is inside the map area
-        val inBounds = px >= mapLeft && px <= mapLeft + mapAreaW &&
-            py >= mapTop && py <= mapTop + mapAreaH
-        if (inBounds) return
-
-        val iconSize = 8
-        val half = iconSize / 2
-
-        // Clamp to the nearest point on the map area edge, inset by half the icon
-        // size so the entire texture stays within the map border.
-        val edgeX = px.coerceIn((mapLeft + half).toFloat(), (mapLeft + mapAreaW - half).toFloat())
-        val edgeY = py.coerceIn((mapTop + half).toFloat(), (mapTop + mapAreaH - half).toFloat())
-
-        // Angle from map center toward the player position
-        val angle = Math.toDegrees(atan2((py - mapCenterY).toDouble(), (px - mapCenterX).toDouble())).toFloat()
-
-        RenderSystem.disableDepthTest()
-        RenderSystem.depthMask(false)
-        RenderSystem.enableBlend()
-        RenderSystem.defaultBlendFunc()
-        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
-        RenderSystem.setShaderColor(1f, 1f, 1f, 0.5f)
-
-        val pose = guiGraphics.pose()
-        pose.pushPose()
-        pose.translate(edgeX, edgeY, 0f)
-        pose.rotateAround(Axis.ZP.rotationDegrees(angle - 90f), 0f, 0f, 0f)
-        guiGraphics.blit(PLAYER_DIRECTION, -half, -half, 0f, 0f, iconSize, iconSize, iconSize, iconSize)
-        pose.popPose()
-
-        RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
+        val scale = scaleFromZoom(zoom)
+        entityRenderer.renderPlayerOffscreenIndicator(guiGraphics, player, viewBlockX, viewBlockZ, mapCenterX, mapCenterY, scale, mapLeft, mapTop, mapAreaW, mapAreaH)
     }
 
     private fun renderEntityContextMenu(guiGraphics: GuiGraphics, font: net.minecraft.client.gui.Font, mouseX: Int, mouseY: Int) {
@@ -1710,97 +1533,17 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
     )
 
     /** 获取所有被选中的载具（用于遥控打击），若未选中则回退到当前骑乘载具 */
-    private fun getSelectedVehicles(): List<VehicleEntity> {
-        val sel = selectedEntities.filterIsInstance<VehicleEntity>()
-        if (sel.isNotEmpty()) return sel
-        val ridden = localPlayer?.vehicle as? VehicleEntity
-        return if (ridden != null) listOf(ridden) else emptyList()
-    }
+    private fun getSelectedVehicles(): List<VehicleEntity> =
+        MissileWeaponHelper.getSelectedVehicles(selectedEntities, localPlayer)
 
     /** 在所有选中载具中查找第一个拥有指定武器且有弹药的载具 */
-    private fun findFirstVehicleWithWeapon(weaponName: String): VehicleEntity? {
-        return getSelectedVehicles().firstOrNull { vehicle ->
-            val gd = vehicle.gunDataMap[weaponName] ?: return@firstOrNull false
-            val ammoCost = gd.get(GunProp.AMMO_COST_PER_SHOOT)
-            val available = if (ammoCost <= 0) 999 else gd.currentAvailableAmmo(localPlayer) / ammoCost
-            available > 0
-        }
-    }
+    private fun findFirstVehicleWithWeapon(weaponName: String): VehicleEntity? =
+        MissileWeaponHelper.findFirstVehicleWithWeapon(weaponName, getSelectedVehicles(), localPlayer)
 
     private fun buildEntityMissileWeapons(entity: Entity): List<EntityMissileWeapon> {
-        val sourceVehicles = getSelectedVehicles()
-        if (sourceVehicles.isEmpty()) return emptyList()
-        // 不对武器来源自身显示攻击选项
-        if (sourceVehicles.any { entity === it || entity.id == it.id }) return emptyList()
-        val level = sourceVehicles.first().level()
-        val syncedEntry = ClientSyncedEntityHandler.getSyncedEntry(level, entity.id)
-        val heightAboveGround = syncedEntry?.heightAboveGround ?: -1.0
-
-        // weaponName -> Pair(totalAmmo, canLockEntity)
-        data class Aggregated(val totalAmmo: Int, val canLockEntity: Boolean, val displayNameBase: String)
-
-        val weaponMap = linkedMapOf<String, Aggregated>()
-
-        for (vehicle in sourceVehicles) {
-            for ((name, gunData) in vehicle.gunDataMap) {
-                fun com.google.gson.JsonObject.gbool(vararg keys: String) =
-                    keys.firstNotNullOfOrNull { if (has(it)) get(it).asBoolean else null } ?: false
-                fun com.google.gson.JsonObject.gdouble(vararg keys: String) =
-                    keys.firstNotNullOfOrNull { if (has(it)) get(it).asDouble else null }
-
-                val currentSeek = gunData.get(GunProp.SEEK_WEAPON_INFO)
-                var canLockEntity = currentSeek?.onlyLockEntity == true
-                var canGroundStrike = currentSeek?.onlyLockBlock == true || currentSeek?.inputBlockPos == true
-                var minH = if (canLockEntity) currentSeek?.minTargetHeight ?: 0.0 else Double.MAX_VALUE
-                var maxH = if (canLockEntity) currentSeek?.maxTargetHeight ?: 114514.0 else -1.0
-
-                val consumers = gunData.get(GunProp.AMMO_CONSUMER)
-                for (c in consumers) {
-                    val o = c.override ?: continue
-                    val seekObj = o.getAsJsonObject("SeekWeaponInfo")
-                        ?: o.getAsJsonObject("seekWeaponInfo") ?: continue
-                    if (!canLockEntity) {
-                        canLockEntity = seekObj.gbool("OnlyLockEntity", "onlyLockEntity")
-                        if (canLockEntity) {
-                            minH = seekObj.gdouble("MinTargetHeight", "minTargetHeight") ?: 0.0
-                            maxH = seekObj.gdouble("MaxTargetHeight", "maxTargetHeight") ?: 114514.0
-                        }
-                    }
-                    if (!canGroundStrike) {
-                        canGroundStrike = seekObj.gbool("OnlyLockBlock", "onlyLockBlock")
-                            || seekObj.gbool("InputBlockPos", "inputBlockPos")
-                    }
-                }
-
-                if (!canLockEntity && !canGroundStrike) continue
-
-                if (canLockEntity && heightAboveGround >= 0) {
-                    if (heightAboveGround < minH || heightAboveGround > maxH) canLockEntity = false
-                }
-                if (!canLockEntity && !canGroundStrike) continue
-
-                val ammoCost = gunData.get(GunProp.AMMO_COST_PER_SHOOT)
-                val available = if (ammoCost <= 0) 999 else gunData.currentAvailableAmmo(localPlayer) / ammoCost
-                if (available <= 0) continue
-
-                val rawName = gunData.get(GunProp.NAME) ?: name
-                val translated = try { Component.translatable(rawName).string } catch (_: Exception) { rawName }
-
-                val existing = weaponMap[name]
-                if (existing != null) {
-                    weaponMap[name] = Aggregated(existing.totalAmmo + available, existing.canLockEntity, existing.displayNameBase)
-                } else {
-                    weaponMap[name] = Aggregated(available, canLockEntity, translated)
-                }
-            }
-        }
-
-        return weaponMap.map { (name, agg) ->
-            val ammoStr = "×${agg.totalAmmo}"
-            val displayName = if (agg.displayNameBase.contains("%1\$s"))
-                agg.displayNameBase.replace("%1\$s", ammoStr) else "${agg.displayNameBase}  $ammoStr"
-            EntityMissileWeapon(name, displayName, agg.totalAmmo, agg.canLockEntity)
-        }
+        val vehicles = getSelectedVehicles()
+        return MissileWeaponHelper.aggregateWeapons(vehicles, entity, requireLockEntity = true, requireLockBlock = true)
+            .map { EntityMissileWeapon(it.weaponName, it.displayNameBase, it.totalAmmo, it.canLockEntity) }
     }
 
     private fun fireEntityMissile(entity: Entity, weapon: EntityMissileWeapon) {
@@ -1819,184 +1562,39 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
     }
 
     private fun renderSelectionBox(guiGraphics: GuiGraphics) {
-        // All confirmed boxes (always visible, even during drag)
-        val scale = zoom / 5.0
-        val font = minecraft!!.font
-        for (box in selBoxes) {
-            val minSX = (mapCenterX + (box.worldMinX - viewBlockX) * scale).toFloat()
-            val maxSX = (mapCenterX + (box.worldMaxX - viewBlockX) * scale).toFloat()
-            val minSY = (mapCenterY + (box.worldMinZ - viewBlockZ) * scale).toFloat()
-            val maxSY = (mapCenterY + (box.worldMaxZ - viewBlockZ) * scale).toFloat()
-            // Very transparent dark blue fill
-            guiGraphics.fill(minSX.toInt(), minSY.toInt(), maxSX.toInt(), maxSY.toInt(), 0x220000AA)
-            // White solid border
-            val bc = 0xCCFFFFFF.toInt()
-            guiGraphics.fill(minSX.toInt(), minSY.toInt(), maxSX.toInt(), minSY.toInt() + 1, bc)
-            guiGraphics.fill(minSX.toInt(), maxSY.toInt(), maxSX.toInt(), maxSY.toInt() + 1, bc)
-            guiGraphics.fill(minSX.toInt(), minSY.toInt(), minSX.toInt() + 1, maxSY.toInt(), bc)
-            guiGraphics.fill(maxSX.toInt(), minSY.toInt(), maxSX.toInt() + 1, maxSY.toInt(), bc)
-            // Dimension labels
-            val wW = kotlin.math.abs(box.worldMaxX - box.worldMinX).toInt()
-            val wH = kotlin.math.abs(box.worldMaxZ - box.worldMinZ).toInt()
-            val labelW = "宽: ${wW}m"; val labelH = "长: ${wH}m"
-            val lw = font.width(labelW)
-            guiGraphics.drawString(font, labelW, ((minSX + maxSX) / 2 - lw / 2).toInt(), minSY.toInt() - 10, 0xFFFFFFFF.toInt(), true)
-            guiGraphics.drawString(font, labelH, maxSX.toInt() + 3, ((minSY + maxSY) / 2 - font.lineHeight / 2).toInt(), 0xFFFFFFFF.toInt(), true)
-        }
-        // Dashed preview during drag (rendered on top of confirmed boxes)
-        if (selectionDragging) {
-            val minSX = minOf(selDragStartX, selDragEndX)
-            val maxSX = maxOf(selDragStartX, selDragEndX)
-            val minSY = minOf(selDragStartY, selDragEndY)
-            val maxSY = maxOf(selDragStartY, selDragEndY)
-            renderDashedRect(guiGraphics, minSX, minSY, maxSX, maxSY, 0xCCFFFFFF.toInt())
-        }
-    }
-
-    private fun renderDashedRect(guiGraphics: GuiGraphics, minSX: Float, minSY: Float, maxSX: Float, maxSY: Float, color: Int) {
-        val cx1 = mapLeft
-        val cx2 = mapLeft + mapAreaW
-        val cy1 = mapTop
-        val cy2 = mapTop + mapAreaH
-        val dash = 4; val gap = 3; val dashLen = dash + gap
-        // Top edge
-        if (minSY.toInt() in cy1 until cy2) {
-            val start = maxOf(minSX.toInt(), cx1)
-            val end = minOf(maxSX.toInt(), cx2)
-            var x = start
-            while (x < end) { val ex = minOf(x + dash, end); guiGraphics.fill(x, minSY.toInt(), ex, minSY.toInt() + 1, color); x += dashLen }
-        }
-        // Bottom edge
-        if (maxSY.toInt() in cy1 until cy2) {
-            val start = maxOf(minSX.toInt(), cx1)
-            val end = minOf(maxSX.toInt(), cx2)
-            var x = start
-            while (x < end) { val ex = minOf(x + dash, end); guiGraphics.fill(x, maxSY.toInt(), ex, maxSY.toInt() + 1, color); x += dashLen }
-        }
-        // Left edge
-        if (minSX.toInt() in cx1 until cx2) {
-            val start = maxOf(minSY.toInt(), cy1)
-            val end = minOf(maxSY.toInt(), cy2)
-            var y = start
-            while (y < end) { val ey = minOf(y + dash, end); guiGraphics.fill(minSX.toInt(), y, minSX.toInt() + 1, ey, color); y += dashLen }
-        }
-        // Right edge
-        if (maxSX.toInt() in cx1 until cx2) {
-            val start = maxOf(minSY.toInt(), cy1)
-            val end = minOf(maxSY.toInt(), cy2)
-            var y = start
-            while (y < end) { val ey = minOf(y + dash, end); guiGraphics.fill(maxSX.toInt(), y, maxSX.toInt() + 1, ey, color); y += dashLen }
-        }
-    }
-
-    private data class Rect4f(val minX: Float, val minY: Float, val maxX: Float, val maxY: Float)
-
-    private fun screenRectFromBox(box: SelBox): Rect4f {
-        val scale = zoom / 5.0
-        val sx = (mapCenterX + (box.worldMinX - viewBlockX) * scale).toFloat()
-        val ex = (mapCenterX + (box.worldMaxX - viewBlockX) * scale).toFloat()
-        val sy = (mapCenterY + (box.worldMinZ - viewBlockZ) * scale).toFloat()
-        val ey = (mapCenterY + (box.worldMaxZ - viewBlockZ) * scale).toFloat()
-        return Rect4f(minOf(sx, ex), minOf(sy, ey), maxOf(sx, ex), maxOf(sy, ey))
+        SelectionBoxManager.render(guiGraphics, selBoxes, viewBlockX, viewBlockZ, mapCenterX, mapCenterY, zoom,
+            selectionDragging, selDragStartX, selDragStartY, selDragEndX, selDragEndY,
+            minecraft!!.font, mapLeft, mapTop, mapAreaW, mapAreaH)
     }
 
     private fun hitTestSelectionBox(mouseX: Double, mouseY: Double): SelBox? {
-        for (box in selBoxes) {
-            val r = screenRectFromBox(box)
-            if (mouseX in r.minX.toDouble()..r.maxX.toDouble() &&
-                mouseY in r.minY.toDouble()..r.maxY.toDouble()
-            ) return box
-        }
-        return null
+        return SelectionBoxManager.hitTestBox(mouseX, mouseY, selBoxes, viewBlockX, viewBlockZ, mapCenterX, mapCenterY, zoom)
     }
 
     private fun renderSelContextMenu(guiGraphics: GuiGraphics, font: net.minecraft.client.gui.Font, mouseX: Int, mouseY: Int) {
-        val removeLabel = Component.translatable("context.superbwarfare.tactical_map.sel_menu.remove").string
-        val clearLabel = Component.translatable("context.superbwarfare.tactical_map.sel_menu.clear").string
-        val confirmClearLabel = "⚠ $clearLabel ?"
-
-        val isAdmin = minecraft?.player?.hasPermissions(2) ?: false
-        val itemHeight = 14
-        val itemCount = if (isAdmin) 2 else 1
-        val clearW = if (selMenuConfirmClear) font.width(confirmClearLabel) else font.width(clearLabel)
-        val menuW = maxOf(font.width(removeLabel), if (isAdmin) clearW else 0) + 16
-        val menuH = itemCount * itemHeight + 4
-
-        var mx = selMenuX + 8
-        var my = selMenuY
-        if (mx + menuW > width) mx = selMenuX - menuW - 8
-        if (my + menuH > height) my = height - menuH
-
-        // Background
-        guiGraphics.fill(mx, my, mx + menuW, my + menuH, 0xEE2A2A2A.toInt())
-        guiGraphics.fill(mx, my, mx + menuW, my + 1, 0xFF555555.toInt())
-        guiGraphics.fill(mx, my + menuH - 1, mx + menuW, my + menuH, 0xFF555555.toInt())
-        guiGraphics.fill(mx, my, mx + 1, my + menuH, 0xFF555555.toInt())
-        guiGraphics.fill(mx + menuW - 1, my, mx + menuW, my + menuH, 0xFF555555.toInt())
-
-        // Item 0: Remove selection
-        val ty0 = my + 2
-        val hovered0 = mouseX in mx..mx + menuW && mouseY in ty0..ty0 + itemHeight
-        if (hovered0) guiGraphics.fill(mx + 1, ty0, mx + menuW - 1, ty0 + itemHeight, 0x664444FF)
-        guiGraphics.drawString(font, removeLabel, mx + 8, ty0 + 3,
-            if (hovered0) 0xFFFFFFFF.toInt() else 0xFFCCCCCC.toInt(), false)
-
-        // Item 1: Beast area clear (admin only)
-        if (isAdmin) {
-            val ty1 = my + 2 + itemHeight
-            val hovered1 = mouseX in mx..mx + menuW && mouseY in ty1..ty1 + itemHeight
-            val confirmBg = if (selMenuConfirmClear) 0x66AA2222 else 0x66444444
-            if (hovered1) guiGraphics.fill(mx + 1, ty1, mx + menuW - 1, ty1 + itemHeight, confirmBg)
-            val label = if (selMenuConfirmClear) confirmClearLabel else clearLabel
-            val labelColor = when {
-                selMenuConfirmClear && hovered1 -> 0xFFFF2222.toInt()
-                selMenuConfirmClear -> 0xFFFF4444.toInt()
-                hovered1 -> 0xFFFF5555.toInt()
-                else -> 0xFFCC6666.toInt()
-            }
-            val menuW2 = font.width(label) + 16
-            guiGraphics.drawString(font, label, mx + 8, ty1 + 3, labelColor, false)
-        }
+        SelectionBoxManager.renderContextMenu(guiGraphics, font, mouseX, mouseY,
+            selMenuX, selMenuY, width, height,
+            minecraft?.player?.hasPermissions(2) ?: false, selMenuConfirmClear)
     }
 
     private fun handleSelMenuClick(mouseX: Double, mouseY: Double): Boolean {
         val targetBox = selMenuTargetBox ?: return false
-        val removeLabel = Component.translatable("context.superbwarfare.tactical_map.sel_menu.remove").string
-        val clearLabel = Component.translatable("context.superbwarfare.tactical_map.sel_menu.clear").string
-        val confirmClearLabel = "⚠ $clearLabel ?"
-
         val isAdmin = minecraft?.player?.hasPermissions(2) ?: false
-        val itemHeight = 14
-        val itemCount = if (isAdmin) 2 else 1
         val font = minecraft!!.font
-        val clearW = if (selMenuConfirmClear) font.width(confirmClearLabel) else font.width(clearLabel)
-        val menuW = maxOf(font.width(removeLabel), if (isAdmin) clearW else 0) + 16
-        val menuH = itemCount * itemHeight + 4
 
-        var mx = selMenuX + 8
-        var my = selMenuY
-        if (mx + menuW > width) mx = selMenuX - menuW - 8
-        if (my + menuH > height) my = height - menuH
-
-        val ty0 = my + 2
-        if (mouseX in mx.toDouble()..(mx + menuW).toDouble() && mouseY in ty0.toDouble()..(ty0 + itemHeight).toDouble()) {
-            // Remove this selection box
-            selBoxes.remove(targetBox)
-            selMenuVisible = false
-            selMenuConfirmClear = false
-            selMenuTargetBox = null
-            return true
-        }
-
-        if (isAdmin) {
-            val ty1 = my + 2 + itemHeight
-            if (mouseX in mx.toDouble()..(mx + menuW).toDouble() && mouseY in ty1.toDouble()..(ty1 + itemHeight).toDouble()) {
+        when (SelectionBoxManager.handleMenuClick(mouseX, mouseY, selMenuX, selMenuY, width, height, isAdmin, selMenuConfirmClear, font)) {
+            1 -> {
+                selBoxes.remove(targetBox)
+                selMenuVisible = false
+                selMenuConfirmClear = false
+                selMenuTargetBox = null
+                return true
+            }
+            2 -> {
                 if (!selMenuConfirmClear) {
-                    // First click: show confirmation
                     selMenuConfirmClear = true
                     return true
                 }
-                // Second click: execute clear
                 sendPacketToServer(EntityAreaClearMessage(
                     targetBox.worldMinX, -64.0, targetBox.worldMinZ,
                     targetBox.worldMaxX, 320.0, targetBox.worldMaxZ
@@ -2007,7 +1605,6 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
                 return true
             }
         }
-
         return false
     }
 
@@ -2019,7 +1616,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
 
     private fun renderHudText(guiGraphics: GuiGraphics, player: Player, mouseX: Int, mouseY: Int) {
         val font = minecraft!!.font
-        val scale = zoom / 5.0
+        val scale = scaleFromZoom(zoom)
 
         // Coordinate text above the center button, left-aligned
         val posText = (if (mouseX in mapLeft..mapLeft + mapAreaW && mouseY in mapTop..mapTop + mapAreaH) {
@@ -2052,10 +1649,10 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
 
         // Attack mode hints — placed 2px after the position/zoom text
         val hintX = textX + font.width(fullPosStr) + 2
-        if (attackMode == AttackMode.DIRECT) {
+        if (attackHandler.mode == AttackModeHandler.Mode.DIRECT) {
             val hint = Component.translatable("context.superbwarfare.tactical_map.direct_attack_mode").string
             guiGraphics.drawString(font, hint, hintX, textY, 0xFFFFFFFF.toInt(), false)
-        } else if (attackMode == AttackMode.QUEUE) {
+        } else if (attackHandler.mode == AttackModeHandler.Mode.QUEUE) {
             val hint = Component.translatable("context.superbwarfare.tactical_map.queue_attack_mode").string
             guiGraphics.drawString(font, hint, hintX, textY, 0xFFFFFFFF.toInt(), false)
         } else if (connectionMode) {
@@ -2072,12 +1669,12 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         val font = minecraft!!.font
 
         // ── Queue context menu click ──
-        if (queueMenuVisible) {
+        if (attackHandler.queueMenuVisible) {
             return handleQueueMenuClick(pMouseX, pMouseY)
         }
 
         // ── Attack mode clicks (handled separately from normal map interaction) ──
-        if (attackMode != AttackMode.NONE) {
+        if (attackHandler.mode != AttackModeHandler.Mode.NONE) {
             return handleAttackModeClick(pMouseX, pMouseY, pButton)
         }
 
@@ -2153,7 +1750,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             }
             // Left-click another marker → connect, then set as new source for chaining
             if (pButton == 0 && isMouseInPanel(pMouseX, pMouseY)) {
-                val scale = zoom / 5.0
+                val scale = scaleFromZoom(zoom)
                 val hit = contextMenu.hitTestMarker(
                     markers,
                     pMouseX,
@@ -2208,7 +1805,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         }
 
         if (pButton == 0 && isMouseInPanel(pMouseX, pMouseY)) {
-            val scale = zoom / 5.0
+            val scale = scaleFromZoom(zoom)
             val hit = contextMenu.hitTestMarker(
                 markers,
                 pMouseX,
@@ -2250,7 +1847,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         }
 
         if (pButton == 1 && isMouseInPanel(pMouseX, pMouseY)) {
-            val scale = zoom / 5.0
+            val scale = scaleFromZoom(zoom)
             val wX = (viewBlockX + (pMouseX - mapCenterX) / scale).toInt()
             val wZ = (viewBlockZ + (pMouseY - mapCenterY) / scale).toInt()
 
@@ -2303,65 +1900,21 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             val riddenVehicle = localPlayer?.vehicle as? VehicleEntity
             val sourceVehicles = getSelectedVehicles()
             if (sourceVehicles.isNotEmpty()) {
-                // weaponName -> Pair(totalAmmo, displayNameBase)
-                data class GndAgg(val totalAmmo: Int, val displayNameBase: String)
-                val weaponMap = linkedMapOf<String, GndAgg>()
-
-                for (vehicle in sourceVehicles) {
-                    for ((name, gunData) in vehicle.gunDataMap) {
-                        val currentSeekInfo = gunData.get(GunProp.SEEK_WEAPON_INFO)
-                        val hasGroundStrike = if (currentSeekInfo != null &&
-                            (currentSeekInfo.onlyLockBlock || currentSeekInfo.inputBlockPos)
-                        ) {
-                            true
-                        } else {
-                            val consumers = gunData.get(GunProp.AMMO_CONSUMER)
-                            consumers.any { consumer ->
-                                val o = consumer.override ?: return@any false
-                                val seekObj = o.getAsJsonObject("SeekWeaponInfo") ?: return@any false
-                                (seekObj.get("OnlyLockBlock")?.asBoolean == true)
-                                    || (seekObj.get("InputBlockPos")?.asBoolean == true)
-                            }
-                        }
-                        if (!hasGroundStrike) continue
-                        val ammoCost = gunData.get(GunProp.AMMO_COST_PER_SHOOT)
-                        val available = if (ammoCost <= 0) 999
-                            else gunData.currentAvailableAmmo(localPlayer) / ammoCost
-                        if (available <= 0) continue
-                        val rawName = gunData.get(GunProp.NAME) ?: name
-                        val translated = try {
-                            Component.translatable(rawName).string
-                        } catch (_: Exception) { rawName }
-                        val existing = weaponMap[name]
-                        if (existing != null) {
-                            weaponMap[name] = GndAgg(existing.totalAmmo + available, existing.displayNameBase)
-                        } else {
-                            weaponMap[name] = GndAgg(available, translated)
-                        }
-                    }
-                }
-
-                if (weaponMap.isNotEmpty()) {
-                    val weapons = weaponMap.map { (name, agg) ->
-                        val ammoStr = "×${agg.totalAmmo}"
-                        val displayName = if (agg.displayNameBase.contains("%1\$s"))
-                            agg.displayNameBase.replace("%1\$s", ammoStr) else agg.displayNameBase
-                        MapContextMenu.MissileWeaponEntry(name, displayName, agg.totalAmmo)
+                val groundWeapons = MissileWeaponHelper.aggregateWeapons(
+                    sourceVehicles, null, requireLockEntity = false, requireLockBlock = true
+                )
+                if (groundWeapons.isNotEmpty()) {
+                    val weapons = groundWeapons.map {
+                        MapContextMenu.MissileWeaponEntry(it.weaponName,
+                            it.displayNameBase.replace("%1\$s", "×${it.totalAmmo}"), it.totalAmmo)
                     }
                     contextMenu.missileWeapons = weapons
                     contextMenu.onDirectAttack = { weaponName ->
-                        attackMode = AttackMode.DIRECT
-                        attackWeaponName = weaponName
-                        directAttackAmmo = weapons.find { it.weaponName == weaponName }?.ammoCount ?: 0
+                        attackHandler.enterDirectMode(weaponName, weapons.find { it.weaponName == weaponName }?.ammoCount ?: 0)
                     }
                     contextMenu.onQueueAttack = { weaponName ->
-                        attackMode = AttackMode.QUEUE
-                        attackWeaponName = weaponName
-                        attackTargetQueue.clear()
-                        // 从第一个有该武器的载具读取发射间隔
                         val firstVeh = sourceVehicles.firstOrNull { it.gunDataMap.containsKey(weaponName) }
-                        val gd = firstVeh?.gunDataMap?.get(weaponName)
-                        attackFireInterval = gd?.get(GunProp.SHOOT_DELAY_TIME)?.coerceAtLeast(4) ?: 10
+                        attackHandler.enterQueueMode(weaponName, firstVeh)
                     }
                     contextMenu.onMissileStrike = null
                 }
@@ -2407,7 +1960,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             return true
         }
         if (draggingMarker != null && pButton == 0) {
-            val scale = zoom / 5.0
+            val scale = scaleFromZoom(zoom)
             val marker = draggingMarker!!
             val sx = pMouseX + dragOffsetX
             val sy = pMouseY + dragOffsetY
@@ -2419,7 +1972,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             return true
         }
         if (draggingLoiterPoint && pButton == 0) {
-            val scale = zoom / 5.0
+            val scale = scaleFromZoom(zoom)
             val vehicle = localPlayer?.vehicle as? VehicleEntity ?: return true
             val sx = pMouseX + loiterDragOffX
             val sy = pMouseY + loiterDragOffY
@@ -2430,7 +1983,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         if (isDragging && pButton == 0) {
             followPlayer = false
             savedFollowPlayer = false
-            val scale = zoom / 5.0
+            val scale = scaleFromZoom(zoom)
             viewBlockX -= (pMouseX - lastMouseX) / scale
             viewBlockZ -= (pMouseY - lastMouseY) / scale
             lastMouseX = pMouseX
@@ -2444,7 +1997,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         // Finalize area selection
         if (selectionDragging && pButton == 0) {
             selectionDragging = false
-            val scale = zoom / 5.0
+            val scale = scaleFromZoom(zoom)
             val minSX = minOf(selDragStartX, selDragEndX)
             val maxSX = maxOf(selDragStartX, selDragEndX)
             val minSY = minOf(selDragStartY, selDragEndY)
@@ -2504,9 +2057,9 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
 
     override fun mouseScrolled(pMouseX: Double, pMouseY: Double, pScroll: Double): Boolean {
         if (isMouseInPanel(pMouseX, pMouseY)) {
-            val oldScale = zoom / 5.0
+            val oldScale = scaleFromZoom(zoom)
             zoom = (zoom * (1.0 + pScroll * 0.15)).coerceIn(0.05, 20.0)
-            val newScale = zoom / 5.0
+            val newScale = scaleFromZoom(zoom)
             if (!followPlayer) {
                 // Adjust view center so the world point under the mouse stays fixed
                 viewBlockX += (pMouseX - mapCenterX) * (1.0 / oldScale - 1.0 / newScale)
@@ -2527,7 +2080,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         val player = localPlayer ?: return false
         val vehicle = player.vehicle as? VehicleEntity ?: return false
         if (!vehicle.loiterActive || vehicle.computed().engineType != EngineType.AIRCRAFT) return false
-        val scale = zoom / 5.0
+        val scale = scaleFromZoom(zoom)
         val ax = mapCenterX + (vehicle.loiterCenterX - viewBlockX) * scale
         val ay = mapCenterY + (vehicle.loiterCenterZ - viewBlockZ) * scale
         return mx >= ax - 4 && mx <= ax + 4 && my >= ay - 13 && my <= ay
@@ -2611,100 +2164,19 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
     // ═══════════════════════════════════════════════════════════════
 
     private fun renderAttackCursor(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int) {
-        RenderSystem.enableBlend()
-        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
-        // Red when out of ammo, orange when ready
-        if (directAttackAmmo <= 0) {
-            RenderSystem.setShaderColor(0.5f, 0.15f, 0.1f, 0.7f)
-        } else {
-            RenderSystem.setShaderColor(1f, 0.4f, 0.1f, 0.9f)
-        }
-        guiGraphics.blit(ATTACK_CURSOR, mouseX - 8, mouseY - 8, 0f, 0f, 16, 16, 16, 16)
-        RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
-        // Ammo count in top-right corner
-        val font = minecraft!!.font
-        val ammoText = "×$directAttackAmmo"
-        guiGraphics.drawString(font, ammoText,
-            mouseX + 10, mouseY - 12,
-            if (directAttackAmmo > 0) 0xFFFFAA00.toInt() else 0xFFAA3333.toInt(), true)
+        attackHandler.renderAttackCursor(guiGraphics, mouseX, mouseY, minecraft!!.font)
     }
 
     private fun renderQueueTargets(guiGraphics: GuiGraphics, player: Player) {
-        val scale = zoom / 5.0
-        val font = minecraft!!.font
-        RenderSystem.enableBlend()
-        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
-        for ((i, pos) in attackTargetQueue.withIndex()) {
-            val sx = mapCenterX + (pos.x + 0.5 - viewBlockX) * scale
-            val sy = mapCenterY + (pos.z + 0.5 - viewBlockZ) * scale
-            val ix = sx.toFloat() - 8f
-            val iy = sy.toFloat() - 8f
-            RenderSystem.setShaderColor(1f, 0.67f, 0.1f, 0.9f)
-            guiGraphics.blit(TARGET_FRAME, ix.roundToInt(), iy.roundToInt(), 0f, 0f, 16, 16, 16, 16)
-            // Sequence number centered inside the frame
-            val num = "${i + 1}"
-            val nw = font.width(num)
-            guiGraphics.drawString(font, num,
-                (sx - nw / 2f).roundToInt(), (sy - font.lineHeight / 2f).roundToInt(),
-                0xFFFFFFFF.toInt(), false)
-        }
-        RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
+        attackHandler.renderQueueTargets(guiGraphics, viewBlockX, viewBlockZ, mapCenterX, mapCenterY, zoom, minecraft!!.font)
     }
 
     private fun renderQueueMenu(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int) {
-        val font = minecraft!!.font
-        val items = listOf(
-            Component.translatable("context.superbwarfare.tactical_map.sequential_fire").string,
-            Component.translatable("context.superbwarfare.tactical_map.cancel_queue").string,
-        )
-        if (attackTargetQueue.isEmpty()) {
-            // Only show cancel when queue is empty
-            val label = Component.translatable("context.superbwarfare.tactical_map.cancel_queue").string
-            val pw = font.width(label) + 8
-            val ph = 14
-            var mx = queueMenuX + 8
-            var my = queueMenuY
-            if (mx + pw > width) mx = queueMenuX - pw - 8
-            if (my + ph > height) my = height - ph - 4
-            val hovered = mouseX in mx..mx + pw && mouseY in my..my + ph
-            guiGraphics.fill(mx, my, mx + pw, my + ph, 0xEE2A2A2A.toInt())
-            if (hovered) guiGraphics.fill(mx + 1, my, mx + pw - 1, my + ph, 0x66444444)
-            guiGraphics.drawString(font, label, mx + 4, my + 3,
-                if (hovered) 0xFFFF5555.toInt() else 0xFFCC6666.toInt(), false)
-            return
-        }
-        val padding = 4
-        val itemHeight = 12
-        val menuW = items.maxOf { font.width(it) } + padding * 2
-        val menuH = items.size * itemHeight + padding * 2 + 2
-        var mx = queueMenuX + 8
-        var my = queueMenuY
-        if (mx + menuW > width) mx = queueMenuX - menuW - 8
-        if (my + menuH > height) my = height - menuH - 4
-        val noAmmo = currentAttackAmmo() <= 0
-        val disabled = noAmmo || seqFireActive
-        guiGraphics.fill(mx, my, mx + menuW, my + menuH, 0xEE2A2A2A.toInt())
-        for ((i, label) in items.withIndex()) {
-            val iy = my + padding + i * itemHeight
-            val hovered = mouseX in mx..mx + menuW && mouseY in iy..iy + itemHeight
-            val isSeqFire = i == 0
-            val itemColor = if (isSeqFire && disabled) 0xFF666666.toInt()
-                else if (hovered) 0xFFFFFFFF.toInt() else 0xFFCCCCCC.toInt()
-            if (hovered && (!isSeqFire || !disabled)) {
-                guiGraphics.fill(mx + 1, iy, mx + menuW - 1, iy + itemHeight, 0x664444FF)
-            }
-            guiGraphics.drawString(font, label, mx + padding, iy + 2, itemColor, false)
-            if (hovered && isSeqFire && disabled) {
-                val tip = if (seqFireActive)
-                    Component.translatable("context.superbwarfare.tactical_map.firing")
-                else Component.translatable("context.superbwarfare.tactical_map.missile_no_ammo")
-                guiGraphics.renderTooltip(font, listOf(tip), Optional.empty(), mouseX, mouseY)
-            }
-        }
+        attackHandler.renderQueueMenu(guiGraphics, mouseX, mouseY, minecraft!!.font, width, height)
     }
 
     private fun fireMissileAt(worldX: Int, worldY: Int, worldZ: Int) {
-        val name = attackWeaponName ?: return
+        val name = attackHandler.weaponName ?: return
         // 遥控发射：在所有选中载具中找第一个有弹药的
         val shooter = findFirstVehicleWithWeapon(name)
             ?: (localPlayer?.vehicle as? VehicleEntity)
@@ -2725,153 +2197,20 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
     // ═══════════════════════════════════════════════════════════════
 
     private fun handleAttackModeClick(mouseX: Double, mouseY: Double, button: Int): Boolean {
-        if (attackMode == AttackMode.DIRECT) {
-            if (button == 0 && isMouseInPanel(mouseX, mouseY)) {
-                if (currentAttackAmmo() <= 0) return true // no ammo, ignore
-                val wX = (viewBlockX + (mouseX - mapCenterX) / (zoom / 5.0)).toInt()
-                val wZ = (viewBlockZ + (mouseY - mapCenterY) / (zoom / 5.0)).toInt()
-                val level = minecraft!!.player!!.level()
-                val chunk = level.getChunk(wX shr 4, wZ shr 4)
-                val loaded = chunk is LevelChunk && !chunk.isEmpty
-                val wY = if (loaded)
-                    level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, wX, wZ)
-                else TacticalMapCache.getCachedHeight(wX, wZ)?.toInt() ?: minecraft!!.player!!.blockY
-                fireMissileAt(wX, wY, wZ)
-                // Ammo refreshed next tick from actual GunData (tracks reloads)
-                return true
-            }
-            if (button == 1) {
-                attackMode = AttackMode.NONE
-                attackWeaponName = null
-                return true
-            }
-            return true // consume all clicks in direct attack mode
-        }
-
-        if (attackMode == AttackMode.QUEUE) {
-            if (button == 0 && isMouseInPanel(mouseX, mouseY)) {
-                // Use real-time ammo so reloads are respected
-                if (attackTargetQueue.size >= currentAttackAmmo()) return true
-                val wX = (viewBlockX + (mouseX - mapCenterX) / (zoom / 5.0)).toInt()
-                val wZ = (viewBlockZ + (mouseY - mapCenterY) / (zoom / 5.0)).toInt()
-                val level = minecraft!!.player!!.level()
-                val chunk = level.getChunk(wX shr 4, wZ shr 4)
-                val loaded = chunk is LevelChunk && !chunk.isEmpty
-                val wY = if (loaded)
-                    level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, wX, wZ)
-                else TacticalMapCache.getCachedHeight(wX, wZ)?.toInt() ?: minecraft!!.player!!.blockY
-                attackTargetQueue.add(BlockPos(wX, wY, wZ))
-                return true
-            }
-            if (button == 1) {
-                queueMenuX = mouseX.toInt()
-                queueMenuY = mouseY.toInt()
-                queueMenuVisible = true
-                return true
-            }
-            return true // consume all clicks in queue mode
-        }
-        return false
+        return attackHandler.handleClick(mouseX, mouseY, button,
+            isMouseInPanel(mouseX, mouseY),
+            viewBlockX, viewBlockZ, mapCenterX, mapCenterY, zoom,
+            minecraft!!.player!!.level())
     }
 
     private fun handleQueueMenuClick(mouseX: Double, mouseY: Double): Boolean {
-        if (!queueMenuVisible) return false
-        val font = minecraft!!.font
-
-        if (attackTargetQueue.isEmpty()) {
-            val label = Component.translatable("context.superbwarfare.tactical_map.cancel_queue").string
-            val pw = font.width(label) + 8
-            val ph = 14
-            var mx = queueMenuX + 8
-            var my = queueMenuY
-            if (mx + pw > width) mx = queueMenuX - pw - 8
-            if (my + ph > height) my = height - ph - 4
-            if (mouseX in mx.toDouble()..(mx + pw).toDouble() && mouseY in my.toDouble()..(my + ph).toDouble()) {
-                cancelQueueAttack()
-                return true
-            }
-            queueMenuVisible = false
-            return true
-        }
-
-        val items = listOf(
-            Component.translatable("context.superbwarfare.tactical_map.sequential_fire").string,
-            Component.translatable("context.superbwarfare.tactical_map.cancel_queue").string,
-        )
-        val padding = 4
-        val itemHeight = 12
-        val menuW = items.maxOf { font.width(it) } + padding * 2
-        val menuH = items.size * itemHeight + padding * 2 + 2
-        var mx = queueMenuX + 8
-        var my = queueMenuY
-        if (mx + menuW > width) mx = queueMenuX - menuW - 8
-        if (my + menuH > height) my = height - menuH - 4
-
-        for ((i, _) in items.withIndex()) {
-            val iy = my + padding + i * itemHeight
-            if (mouseX in mx.toDouble()..(mx + menuW).toDouble() && mouseY in iy.toDouble()..(iy + itemHeight).toDouble()) {
-                when (i) {
-                    0 -> if (!seqFireActive && currentAttackAmmo() > 0) {
-                        queueMenuVisible = false
-                        startSequentialFire()
-                    }
-                    1 -> {
-                        queueMenuVisible = false
-                        cancelQueueAttack()
-                    }
-                }
-                return true
-            }
-        }
-        queueMenuVisible = false
-        return true
-    }
-
-    private fun startSequentialFire() {
-        if (attackTargetQueue.isEmpty()) return
-        seqFireActive = true
-        seqFireIndex = 0
-        seqFireTimer = 0 // fire first shot immediately next tick
-    }
-
-    private fun cancelQueueAttack() {
-        seqFireActive = false
-        attackMode = AttackMode.NONE
-        attackWeaponName = null
-        attackTargetQueue.clear()
-        seqFireTimer = 0
-        seqFireIndex = 0
-        queueMenuVisible = false
+        return attackHandler.handleQueueMenuClick(mouseX, mouseY, minecraft!!.font, width, height)
     }
 
     /** 所有选中载具（或当前骑乘载具）中指定武器的总弹药数 */
     private fun currentAttackAmmo(): Int {
-        val name = attackWeaponName ?: return 0
-        val vehicles = getSelectedVehicles()
-        if (vehicles.isEmpty()) return 0
-        return vehicles.sumOf { vehicle ->
-            val gd = vehicle.gunDataMap[name] ?: return@sumOf 0
-            val ammoCost = gd.get(GunProp.AMMO_COST_PER_SHOOT)
-            if (ammoCost <= 0) 999 else gd.currentAvailableAmmo(localPlayer) / ammoCost
-        }
-    }
-
-    // Called from tick() for sequential fire
-    private fun tickSequentialFire() {
-        if (seqFireIndex >= attackTargetQueue.size) {
-            seqFireActive = false
-            return
-        }
-        if (seqFireTimer > 0) {
-            seqFireTimer--
-            return
-        }
-        // Guard: don't fire if no ammo (tracks reloads in real-time)
-        if (currentAttackAmmo() <= 0) return
-        val pos = attackTargetQueue[seqFireIndex]
-        fireMissileAt(pos.x, pos.y, pos.z)
-        seqFireIndex++
-        seqFireTimer = attackFireInterval
+        val name = attackHandler.weaponName ?: return 0
+        return MissileWeaponHelper.currentAttackAmmo(name, getSelectedVehicles(), localPlayer)
     }
 
     override fun renderBackground(pGuiGraphics: GuiGraphics) {
