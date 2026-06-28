@@ -22,8 +22,6 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
-import net.minecraftforge.api.distmarker.Dist
-import net.minecraftforge.api.distmarker.OnlyIn
 import org.joml.Math
 
 open class LuckyContainerBlockEntity(pos: BlockPos, state: BlockState) :
@@ -33,8 +31,8 @@ open class LuckyContainerBlockEntity(pos: BlockPos, state: BlockState) :
     var tick: Int = 0
     var opened: Boolean = false
 
-    @OnlyIn(Dist.CLIENT)
-    open val animationInstance: LuckyContainerBlockAnimationInstance? = LuckyContainerBlockAnimationInstance(this)
+    open val animationInstance: LuckyContainerBlockAnimationInstance? =
+        if (this.level?.isClientSide == true) LuckyContainerBlockAnimationInstance(this) else null
 
     fun unpackEntities(): EntityType<*>? {
         if (this.location != null && this.level != null && this.level!!.server != null) {

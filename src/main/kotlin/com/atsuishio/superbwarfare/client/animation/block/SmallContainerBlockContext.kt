@@ -26,8 +26,8 @@ class SmallContainerBlockContext(val entity: SmallContainerBlockEntity) {
     }
 
     fun init(location: ResourceLocation) {
-        val ani = BlockModelReloadListener.getAnimation(location)
-        for (entry in ani!!) {
+        val ani = BlockModelReloadListener.getAnimation(location) ?: return
+        for (entry in ani) {
             animations[entry.name] = entry
         }
     }

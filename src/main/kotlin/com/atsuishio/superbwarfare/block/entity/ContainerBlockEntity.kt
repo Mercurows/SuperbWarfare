@@ -19,14 +19,13 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
-import net.minecraftforge.api.distmarker.Dist
-import net.minecraftforge.api.distmarker.OnlyIn
 import org.joml.Math
 
 open class ContainerBlockEntity(pos: BlockPos, state: BlockState) :
     BlockEntity(ModBlockEntities.CONTAINER.get(), pos, state) {
-    @OnlyIn(Dist.CLIENT)
-    open val animationInstance: ContainerBlockAnimationInstance? = ContainerBlockAnimationInstance(this)
+
+    val animationInstance: ContainerBlockAnimationInstance? =
+        if (this.level?.isClientSide == true) ContainerBlockAnimationInstance(this) else null
 
     @JvmField
     var entityType: EntityType<*>? = null
