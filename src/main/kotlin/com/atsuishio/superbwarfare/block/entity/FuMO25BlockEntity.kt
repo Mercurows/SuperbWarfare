@@ -349,6 +349,7 @@ open class FuMO25BlockEntity(pPos: BlockPos, pBlockState: BlockState) :
                 yRot = blockEntity.tick.toDouble(),
                 searchType = RadarScanner.SearchType.VEHICLES,
                 sourceId = sourceId,
+                affectedByStealthTarget = true
             )
 
             val result = RadarScanner.scan(level, config)

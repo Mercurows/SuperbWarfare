@@ -34,4 +34,8 @@ class RadarInfo {
     @SerializedName("MinTargetHeight")
     @SerialName("MinTargetHeight")
     var minTargetHeight: Double = -64.0
+
+    @SerializedName("AffectedByStealthTarget")
+    @SerialName("AffectedByStealthTarget")
+    var affectedByStealthTarget = true
 }

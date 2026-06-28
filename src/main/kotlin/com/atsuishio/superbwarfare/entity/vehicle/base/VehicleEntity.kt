@@ -2473,6 +2473,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                 shareWithTeammates = radarInfo.shareWithTeammates,
                 showIcon = false,
                 sourceId = "vehicle_${this.id}",
+                affectedByStealthTarget = radarInfo.affectedByStealthTarget
             )
 
             // 每 tick 同步雷达配置（保证旋转流畅）

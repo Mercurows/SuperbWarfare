@@ -95,6 +95,8 @@ object MissileWeaponHelper {
                     keys.firstNotNullOfOrNull { if (has(it)) get(it).asDouble else null }
 
                 val currentSeek = gunData.get(GunProp.SEEK_WEAPON_INFO)
+                // 若 CanGuidedByRadar 为 false，该武器不可由雷达引导，不应出现在可用列表中
+                var canGuidedByRadar = currentSeek?.canGuidedByRadar ?: true
                 var canLockEntity = currentSeek?.onlyLockEntity == true
                 var canGroundStrike = currentSeek?.onlyLockBlock == true || currentSeek?.inputBlockPos == true
                 var minH = if (canLockEntity) currentSeek?.minTargetHeight ?: 0.0 else Double.MAX_VALUE
@@ -105,6 +107,10 @@ object MissileWeaponHelper {
                     val o = c.override ?: continue
                     val seekObj = o.getAsJsonObject("SeekWeaponInfo")
                         ?: o.getAsJsonObject("seekWeaponInfo") ?: continue
+                    // 检查 override 中是否显式禁用了雷达引导
+                    if (seekObj.has("CanGuidedByRadar")) {
+                        canGuidedByRadar = seekObj.get("CanGuidedByRadar").asBoolean
+                    }
                     if (!canLockEntity) {
                         canLockEntity = seekObj.gbool("OnlyLockEntity", "onlyLockEntity")
                         if (canLockEntity) {
@@ -117,6 +123,9 @@ object MissileWeaponHelper {
                             || seekObj.gbool("InputBlockPos", "inputBlockPos")
                     }
                 }
+
+                // 不可由雷达引导的武器直接跳过
+                if (!canGuidedByRadar) continue
 
                 // Apply filters
                 if (requireLockEntity && !canLockEntity && !(requireLockBlock && canGroundStrike)) continue

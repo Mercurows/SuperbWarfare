@@ -65,6 +65,8 @@ object RadarScanner {
         val showIcon: Boolean = true,
         /** 雷达源唯一标识，用于客户端去重。方块用 "block_<pos>"，载具用 "vehicle_<id>" */
         val sourceId: String = "",
+        /** 是否会被隐身目标影响 */
+        val affectedByStealthTarget: Boolean = true,
     ) {
         /** 计算当前 tick 的有效朝向 */
         fun effectiveYRot(currentTick: Int): Double {
@@ -152,7 +154,7 @@ object RadarScanner {
                 if (entry.entityId == config.owner.id) continue
 
                 // 距离检查（隐身载具的 trackDistanceMultiply 减益其被探测距离）
-                val effectiveRangeSq = radiusSq * entry.trackDistanceMultiply * entry.trackDistanceMultiply
+                val effectiveRangeSq = radiusSq * (if (config.affectedByStealthTarget) entry.trackDistanceMultiply * entry.trackDistanceMultiply else 1.0)
                 if (entry.pos.distanceToSqr(config.center) > effectiveRangeSq) continue
 
                 // 查找真实实体
