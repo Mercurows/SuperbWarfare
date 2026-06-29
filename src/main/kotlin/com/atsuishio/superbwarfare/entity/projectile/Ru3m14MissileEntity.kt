@@ -98,14 +98,17 @@ open class Ru3m14MissileEntity(type: EntityType<out Ru3m14MissileEntity>, level:
                 val f = (0.85 + y * 0.000075).coerceAtMost(0.92)
                 this.deltaMovement = this.deltaMovement.multiply(f, f, f)
 
-                if (getTargetPos() != null && distance > 1500 && position().distanceToSqr(getTargetPos()!!) < 1000000) {
-                    this.deltaMovement = this.deltaMovement.multiply(1.1, 1.1, 1.1)
-                    toVec = position().vectorTo(getTargetPos()!!)
+                if (!lostTarget) {
+                    val dis = Mth.clamp(distance * 0.2, 1000.0, 4000.0)
+                    if (getTargetPos() != null && distance > 2000 && position().distanceToSqr(getTargetPos()!!) < dis * dis) {
+                        this.deltaMovement = this.deltaMovement.multiply(1.06, 1.06, 1.06)
+                        toVec = position().vectorTo(getTargetPos()!!)
+                        turn(toVec, 25f)
+                    } else {
+                        turn(toVec, ((tickCount - 10) * 0.1f).coerceIn(0f, 30f))
+                    }
                 }
 
-                if (!lostTarget) {
-                    turn(toVec, ((tickCount - 10) * 0.1f).coerceIn(0f, 30f))
-                }
             }
         } else {
             this.deltaMovement = this.deltaMovement.add(0.0, -0.1, 0.0)
