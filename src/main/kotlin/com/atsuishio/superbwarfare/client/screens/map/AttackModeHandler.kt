@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.screens.map
 
 import com.atsuishio.superbwarfare.client.map.TacticalMapCache
+import com.atsuishio.superbwarfare.client.screens.TacticalMapScreen.Companion.SelBox
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.mojang.blaze3d.systems.RenderSystem
@@ -14,6 +15,7 @@ import net.minecraft.world.phys.Vec3
 import java.util.*
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
+import kotlin.random.Random
 
 /**
  * 战术地图攻击模式控制器。
@@ -23,7 +25,7 @@ import kotlin.math.sqrt
  */
 class AttackModeHandler {
 
-    enum class Mode { NONE, DIRECT, QUEUE }
+    enum class Mode { NONE, DIRECT, QUEUE, BOMBARDMENT }
 
     // ── State (publicly readable; use enter* / exitMode for mutations) ──
     var mode = Mode.NONE
@@ -31,8 +33,12 @@ class AttackModeHandler {
     val targetQueue = mutableListOf<BlockPos>()
     var fireInterval = 0
     var directAmmo = 0
+    var bombardmentAmmo = 0
     var maxGuidedRange = 2048.0
     var sourcePositions: List<Vec3> = emptyList()
+
+    /** The selection box currently hovered by the mouse in BOMBARDMENT mode. Set by the Screen each render frame. */
+    var hoveredBombardBox: SelBox? = null
 
     var queueMenuVisible = false
     var queueMenuX = 0
@@ -61,6 +67,12 @@ class AttackModeHandler {
         fireInterval = firstVehicle?.gunDataMap?.get(name)?.get(GunProp.SHOOT_DELAY_TIME)?.coerceAtLeast(4) ?: 10
     }
 
+    fun enterBombardmentMode(name: String, ammo: Int) {
+        mode = Mode.BOMBARDMENT
+        weaponName = name
+        bombardmentAmmo = ammo
+    }
+
     fun exitMode() {
         seqFireActive = false
         mode = Mode.NONE
@@ -69,6 +81,8 @@ class AttackModeHandler {
         seqFireTimer = 0
         seqFireIndex = 0
         queueMenuVisible = false
+        bombardmentAmmo = 0
+        hoveredBombardBox = null
     }
 
     // ── Tick ──
@@ -78,6 +92,10 @@ class AttackModeHandler {
         // Sync direct attack ammo
         if (mode == Mode.DIRECT && weaponName != null) {
             directAmmo = onGetAmmo?.invoke(weaponName!!) ?: 0
+        }
+        // Sync bombardment ammo
+        if (mode == Mode.BOMBARDMENT && weaponName != null) {
+            bombardmentAmmo = onGetAmmo?.invoke(weaponName!!) ?: 0
         }
         // Sequential fire
         if (seqFireActive) {
@@ -102,6 +120,14 @@ class AttackModeHandler {
     fun renderAttackCursor(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, font: net.minecraft.client.gui.Font,
         viewBlockX: Double, viewBlockZ: Double, mapCenterX: Float, mapCenterY: Float, zoom: Double
     ) {
+        // ── BOMBARDMENT mode: simple ammo counter at cursor, no crosshair ──
+        if (mode == Mode.BOMBARDMENT) {
+            val ammoColor = if (bombardmentAmmo > 0) 0xFFFFAA00.toInt() else 0xFFAA3333.toInt()
+            guiGraphics.drawString(font, "×$bombardmentAmmo",
+                mouseX + 10, mouseY - 12, ammoColor, true)
+            return
+        }
+
         val scale = CoordinateConverter.scaleFromZoom(zoom)
         val wX = CoordinateConverter.screenToWorldX(mouseX.toDouble(), mapCenterX, viewBlockX, scale)
         val wZ = CoordinateConverter.screenToWorldY(mouseY.toDouble(), mapCenterY, viewBlockZ, scale)
@@ -162,6 +188,38 @@ class AttackModeHandler {
 
     private fun formatDist(meters: Double): String {
         return if (meters >= 1000.0) "%.1fkm".format(meters / 1000.0) else "%.1fm".format(meters)
+    }
+
+    /** Renders a highlighted overlay on the currently hovered selection box in BOMBARDMENT mode. */
+    fun renderBombardmentBoxHighlight(guiGraphics: GuiGraphics,
+        viewBlockX: Double, viewBlockZ: Double,
+        mapCenterX: Float, mapCenterY: Float, zoom: Double
+    ) {
+        if (mode != Mode.BOMBARDMENT) return
+        val box = hoveredBombardBox ?: return
+        val scale = CoordinateConverter.scaleFromZoom(zoom)
+        // Match SelectionBoxManager.render coordinate conversion exactly
+        val minSX = CoordinateConverter.worldToScreenX(box.worldMinX, mapCenterX, viewBlockX, scale).toFloat()
+        val maxSX = CoordinateConverter.worldToScreenX(box.worldMaxX, mapCenterX, viewBlockX, scale).toFloat()
+        val minSY = CoordinateConverter.worldToScreenY(box.worldMinZ, mapCenterY, viewBlockZ, scale).toFloat()
+        val maxSY = CoordinateConverter.worldToScreenY(box.worldMaxZ, mapCenterY, viewBlockZ, scale).toFloat()
+
+        // +1 on right/bottom to cover the 1px white border drawn by SelectionBoxManager
+        val l = minSX.toInt()
+        val r = maxSX.toInt() + 1
+        val t = minSY.toInt()
+        val b = maxSY.toInt() + 1
+
+        // Semi-transparent orange fill (matches selection box fill area exactly)
+        guiGraphics.fill(l, t, r, b, 0x28FF6600)
+
+        // Bright orange border (2px thick) drawn inside the exact box edges
+        val borderColor = if (bombardmentAmmo > 0) 0xEEFF6600.toInt() else 0xEE883333.toInt()
+        val thickness = 2
+        guiGraphics.fill(l, t, r, t + thickness, borderColor)
+        guiGraphics.fill(l, b - thickness, r, b, borderColor)
+        guiGraphics.fill(l, t, l + thickness, b, borderColor)
+        guiGraphics.fill(r - thickness, t, r, b, borderColor)
     }
 
     fun renderQueueTargets(guiGraphics: GuiGraphics,
@@ -282,6 +340,27 @@ class AttackModeHandler {
                 queueMenuX = mouseX.toInt()
                 queueMenuY = mouseY.toInt()
                 queueMenuVisible = true
+                return true
+            }
+            return true
+        }
+
+        if (mode == Mode.BOMBARDMENT) {
+            if (button == 0 && isMouseInPanel) {
+                if ((onGetAmmo?.invoke(weaponName ?: "") ?: 0) <= 0) return true
+                val box = hoveredBombardBox ?: return true
+                // Generate random position within the selection box
+                val randX = box.worldMinX + Random.nextDouble() * (box.worldMaxX - box.worldMinX)
+                val randZ = box.worldMinZ + Random.nextDouble() * (box.worldMaxZ - box.worldMinZ)
+                if (isOutOfRange(randX, randZ)) return true
+                val wX = randX.toInt()
+                val wZ = randZ.toInt()
+                val wY = lookupHeight(wX, wZ, level)
+                onFireMissile?.invoke(wX, wY, wZ, weaponName!!)
+                return true
+            }
+            if (button == 1) {
+                exitMode()
                 return true
             }
             return true

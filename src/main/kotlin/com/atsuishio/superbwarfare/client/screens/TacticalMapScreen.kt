@@ -71,6 +71,9 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         private var selBoxIdCounter = 0L
         fun nextSelBoxId() = selBoxIdCounter++
 
+        /** Persistent selected entities (survive GUI close, reset on game restart). */
+        val selectedEntities = mutableListOf<Entity>()
+
         // Textures
         private val COMPASS_ROSE = loc("textures/overlay/tactical_map/compass_rose.png")
         private val PLAYER_MARKER = loc("textures/overlay/tactical_map/player_marker.png")
@@ -168,8 +171,6 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
     private var entityMenuTarget: Entity? = null
     private var entityMenuX = 0
     private var entityMenuY = 0
-    private val selectedEntities = mutableListOf<Entity>()
-
     // Area selection (shift + left-drag)
     private var selectionDragging = false
     private var selDragStartX = 0f
@@ -356,6 +357,10 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         if (attackHandler.mode == AttackModeHandler.Mode.DIRECT && attackHandler.weaponName != null) {
             attackHandler.directAmmo = currentAttackAmmo()
         }
+        // Sync bombardment ammo from actual GunData (tracks reloads)
+        if (attackHandler.mode == AttackModeHandler.Mode.BOMBARDMENT && attackHandler.weaponName != null) {
+            attackHandler.bombardmentAmmo = currentAttackAmmo()
+        }
 
         // Refresh missile weapon ammo counts in open Level 2 menu (tracks reloads)
         if (contextMenu.missileSubMenuVisible && contextMenu.missileWeapons.isNotEmpty()) {
@@ -446,6 +451,11 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             renderQueueTargets(pGuiGraphics, player)
         }
 
+        // Layer 3.8: Bombardment box highlight (when hovering a selection box in BOMBARDMENT mode)
+        if (attackHandler.mode == AttackModeHandler.Mode.BOMBARDMENT) {
+            attackHandler.renderBombardmentBoxHighlight(pGuiGraphics, viewBlockX, viewBlockZ, mapCenterX, mapCenterY, zoom)
+        }
+
         // Layer 4: Player marker
         renderPlayerMarker(pGuiGraphics, player)
 
@@ -474,8 +484,13 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         renderCompassRose(pGuiGraphics)
         renderHudText(pGuiGraphics, player, pMouseX, pMouseY)
 
+        // ── Bombardment hover tracking (unconditional, so highlight updates even with menus open) ──
+        if (attackHandler.mode == AttackModeHandler.Mode.BOMBARDMENT) {
+            attackHandler.hoveredBombardBox = hitTestSelectionBox(pMouseX.toDouble(), pMouseY.toDouble())
+        }
+
         // ── Attack mode overlay (cursor, queue menu) ──
-        if (attackHandler.mode == AttackModeHandler.Mode.DIRECT) {
+        if (attackHandler.mode == AttackModeHandler.Mode.DIRECT || attackHandler.mode == AttackModeHandler.Mode.BOMBARDMENT) {
             renderAttackCursor(pGuiGraphics, pMouseX, pMouseY)
         }
 
@@ -509,6 +524,8 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
                 hoveredMarker = hm
                 hoveredLoiterPoint = hitTestLoiterPoint(pMouseX.toDouble(), pMouseY.toDouble())
                 hoveredSelBox = hitTestSelectionBox(pMouseX.toDouble(), pMouseY.toDouble())
+                // Always update bombardment hover target so highlight renders correctly
+                attackHandler.hoveredBombardBox = hoveredSelBox
                 if (hm != null) {
                     pGuiGraphics.renderTooltip(
                         font, listOf(
@@ -1580,8 +1597,11 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
     )
 
     /** 获取所有被选中的载具（用于遥控打击），若未选中则回退到当前骑乘载具 */
-    private fun getSelectedVehicles(): List<VehicleEntity> =
-        MissileWeaponHelper.getSelectedVehicles(selectedEntities, localPlayer)
+    private fun getSelectedVehicles(): List<VehicleEntity> {
+        // Lazily purge dead entities (survives map close/reopen since selectedEntities is static)
+        selectedEntities.removeAll { it.isRemoved }
+        return MissileWeaponHelper.getSelectedVehicles(selectedEntities, localPlayer)
+    }
 
     /** 在所有选中载具中查找第一个拥有指定武器且有弹药的载具 */
     private fun findFirstVehicleWithWeapon(weaponName: String): VehicleEntity? =
@@ -1703,6 +1723,9 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         } else if (attackHandler.mode == AttackModeHandler.Mode.QUEUE) {
             val hint = Component.translatable("context.superbwarfare.tactical_map.queue_attack_mode").string
             guiGraphics.drawString(font, hint, hintX, textY, 0xFFFFFFFF.toInt(), false)
+        } else if (attackHandler.mode == AttackModeHandler.Mode.BOMBARDMENT) {
+            val hint = Component.translatable("context.superbwarfare.tactical_map.range_bombardment_mode").string
+            guiGraphics.drawString(font, hint, hintX, textY, 0xFFFFFFFF.toInt(), false)
         } else if (connectionMode) {
             val hint = Component.translatable("context.superbwarfare.tactical_map.connect_mode").string
             guiGraphics.drawString(font, hint, hintX, textY, 0xFFFFFFFF.toInt(), false)
@@ -1727,13 +1750,96 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         }
 
         // ── Selection box right-click ──
-        val hitBox = if (pButton == 1) hitTestSelectionBox(pMouseX, pMouseY) else null
+        val hitBox = if (pButton == 1 && isMouseInPanel(pMouseX, pMouseY)) hitTestSelectionBox(pMouseX, pMouseY) else null
         if (hitBox != null) {
-            selMenuTargetBox = hitBox
-            selMenuVisible = true
-            selMenuConfirmClear = false
-            selMenuX = pMouseX.toInt()
-            selMenuY = pMouseY.toInt()
+            val scale = scaleFromZoom(zoom)
+            val wX = (viewBlockX + (pMouseX - mapCenterX) / scale).toInt()
+            val wZ = (viewBlockZ + (pMouseY - mapCenterY) / scale).toInt()
+            val level = minecraft!!.player!!.level()
+            val chunk = level.getChunk(wX shr 4, wZ shr 4)
+            val chunkLoaded = chunk is LevelChunk && !chunk.isEmpty
+            val wY = if (chunkLoaded) {
+                level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, wX, wZ)
+            } else {
+                TacticalMapCache.getCachedHeight(wX, wZ)?.toInt() ?: minecraft!!.player!!.blockY
+            }
+            // ── Missile strike setup (same as empty ground) ──
+            contextMenu.missileWeapons = emptyList()
+            contextMenu.onMissileStrike = null
+            contextMenu.onDirectAttack = null
+            contextMenu.onQueueAttack = null
+            contextMenu.onRangeBombardment = null
+            val riddenVehicle = localPlayer?.vehicle as? VehicleEntity
+            val sourceVehicles = getSelectedVehicles()
+            if (sourceVehicles.isNotEmpty()) {
+                val groundWeapons = MissileWeaponHelper.aggregateWeapons(
+                    sourceVehicles, null, requireLockEntity = false, requireLockBlock = true
+                )
+                if (groundWeapons.isNotEmpty()) {
+                    val weapons = groundWeapons.map {
+                        MapContextMenu.MissileWeaponEntry(it.weaponName,
+                            it.displayNameBase.replace("%1\$s", "×${it.totalAmmo}"), it.totalAmmo)
+                    }
+                    contextMenu.missileWeapons = weapons
+                    contextMenu.onDirectAttack = { weaponName ->
+                        val agg = groundWeapons.find { it.weaponName == weaponName }
+                        attackHandler.maxGuidedRange = agg?.maxGuidedRange ?: 2048.0
+                        attackHandler.sourcePositions = sourceVehicles.map { it.position() }
+                        attackHandler.enterDirectMode(weaponName, weapons.find { it.weaponName == weaponName }?.ammoCount ?: 0)
+                    }
+                    contextMenu.onQueueAttack = { weaponName ->
+                        val firstVeh = sourceVehicles.firstOrNull { it.gunDataMap.containsKey(weaponName) }
+                        val agg = groundWeapons.find { it.weaponName == weaponName }
+                        attackHandler.maxGuidedRange = agg?.maxGuidedRange ?: 2048.0
+                        attackHandler.sourcePositions = sourceVehicles.map { it.position() }
+                        attackHandler.enterQueueMode(weaponName, firstVeh)
+                    }
+                    contextMenu.onRangeBombardment = { weaponName ->
+                        val agg = groundWeapons.find { it.weaponName == weaponName }
+                        attackHandler.maxGuidedRange = agg?.maxGuidedRange ?: 2048.0
+                        attackHandler.sourcePositions = sourceVehicles.map { it.position() }
+                        attackHandler.enterBombardmentMode(weaponName, weapons.find { it.weaponName == weaponName }?.ammoCount ?: 0)
+                    }
+                }
+            }
+            // ── Cruise here setup (same as empty ground) ──
+            contextMenu.canCruiseHere = false
+            contextMenu.onCruiseHere = null
+            if (riddenVehicle != null && riddenVehicle.computed().engineType == EngineType.AIRCRAFT) {
+                contextMenu.canCruiseHere = true
+                contextMenu.onCruiseHere = { worldX, worldZ ->
+                    val cachedH = TacticalMapCache.getCachedHeight(worldX, worldZ)
+                    val (targetY, skipTerrain) = if (cachedH != null) {
+                        (cachedH + 200).toFloat() to true
+                    } else {
+                        0f to false
+                    }
+                    sendPacketToServer(
+                        com.atsuishio.superbwarfare.network.message.send.LoiterConfigMessage(
+                            centerX = worldX.toFloat(),
+                            centerY = targetY,
+                            centerZ = worldZ.toFloat(),
+                            radius = riddenVehicle.loiterRadius.toFloat(),
+                            active = true,
+                            skipTerrain = skipTerrain
+                        )
+                    )
+                }
+            }
+            // ── Selection box actions ──
+            contextMenu.onRemoveSelBox = { selBoxes.remove(hitBox) }
+            contextMenu.canClearSelBoxArea = minecraft?.player?.hasPermissions(2) ?: false
+            contextMenu.onClearSelBoxArea = {
+                val admin = minecraft?.player
+                if (admin != null) {
+                    sendPacketToServer(EntityAreaClearMessage(
+                        hitBox.worldMinX, -64.0, hitBox.worldMinZ,
+                        hitBox.worldMaxX, 320.0, hitBox.worldMaxZ
+                    ))
+                    selBoxes.remove(hitBox)
+                }
+            }
+            contextMenu.openSelBoxMenu(pMouseX.toInt(), pMouseY.toInt(), wX, wY, wZ, hitBox)
             return true
         }
 
@@ -1969,6 +2075,12 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
                         attackHandler.maxGuidedRange = agg?.maxGuidedRange ?: 2048.0
                         attackHandler.sourcePositions = sourceVehicles.map { it.position() }
                         attackHandler.enterQueueMode(weaponName, firstVeh)
+                    }
+                    contextMenu.onRangeBombardment = { weaponName ->
+                        val agg = groundWeapons.find { it.weaponName == weaponName }
+                        attackHandler.maxGuidedRange = agg?.maxGuidedRange ?: 2048.0
+                        attackHandler.sourcePositions = sourceVehicles.map { it.position() }
+                        attackHandler.enterBombardmentMode(weaponName, weapons.find { it.weaponName == weaponName }?.ammoCount ?: 0)
                     }
                     contextMenu.onMissileStrike = null
                 }

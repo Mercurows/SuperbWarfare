@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.map.context
 
 import com.atsuishio.superbwarfare.client.map.context.MapMarker.Companion.getColorRGB
 import com.atsuishio.superbwarfare.client.map.context.MapMarker.Companion.rgbToFloat3
+import com.atsuishio.superbwarfare.client.screens.TacticalMapScreen.Companion.SelBox
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.EditBox
@@ -28,6 +29,8 @@ class MapContextMenu {
         private set
     var ctxTargetMarker: MapMarker? = null
         private set
+    var ctxTargetSelBox: SelBox? = null
+        private set
 
     // ── Edit panel state ──
     var editPanelVisible = false
@@ -50,6 +53,10 @@ class MapContextMenu {
     var onMissileStrike: ((String) -> Unit)? = null
     var onDirectAttack: ((String) -> Unit)? = null
     var onQueueAttack: ((String) -> Unit)? = null
+    var onRangeBombardment: ((String) -> Unit)? = null
+    var onRemoveSelBox: (() -> Unit)? = null
+    var onClearSelBoxArea: (() -> Unit)? = null
+    var canClearSelBoxArea: Boolean = false
     var onCruiseHere: ((Int, Int) -> Unit)? = null
     var canCruiseHere: Boolean = false
 
@@ -106,6 +113,7 @@ class MapContextMenu {
 
     fun openMapMenu(screenX: Int, screenY: Int, worldX: Int, worldY: Int, worldZ: Int) {
         ctxTargetMarker = null
+        ctxTargetSelBox = null
         ctxWorldX = worldX
         ctxWorldY = worldY
         ctxWorldZ = worldZ
@@ -117,9 +125,22 @@ class MapContextMenu {
 
     fun openMarkerMenu(screenX: Int, screenY: Int, marker: MapMarker) {
         ctxTargetMarker = marker
+        ctxTargetSelBox = null
         ctxWorldX = marker.x
         ctxWorldY = marker.y
         ctxWorldZ = marker.z
+        ctxMenuX = screenX
+        ctxMenuY = screenY
+        ctxMenuVisible = true
+        editPanelVisible = false
+    }
+
+    fun openSelBoxMenu(screenX: Int, screenY: Int, worldX: Int, worldY: Int, worldZ: Int, selBox: SelBox) {
+        ctxTargetMarker = null
+        ctxTargetSelBox = selBox
+        ctxWorldX = worldX
+        ctxWorldY = worldY
+        ctxWorldZ = worldZ
         ctxMenuX = screenX
         ctxMenuY = screenY
         ctxMenuVisible = true
@@ -131,6 +152,7 @@ class MapContextMenu {
         missileSubMenuVisible = false
         actionSubMenuVisible = false
         ctxTargetMarker = null
+        ctxTargetSelBox = null
     }
 
     /** Open the missile strike sub-menu at the given screen position. */
@@ -213,6 +235,7 @@ class MapContextMenu {
                 )
             }
         } else {
+            val selBox = ctxTargetSelBox
             buildList {
                 add(
                     ContextMenuItem(
@@ -243,7 +266,7 @@ class MapContextMenu {
                         }
                     )
                 }
-                // Missile strike: only shown when the player's vehicle has lock-on-block weapons
+                // Missile strike: shown for both empty ground and selection boxes
                 if (missileWeapons.isNotEmpty()) {
                     add(
                         ContextMenuItem(
@@ -252,6 +275,27 @@ class MapContextMenu {
                             openMissileSubMenu(ctxMenuX, ctxMenuY, missileWeapons)
                         }
                     )
+                }
+                // Selection-box-specific items
+                if (selBox != null) {
+                    add(
+                        ContextMenuItem(
+                            Component.translatable("context.superbwarfare.tactical_map.sel_menu.remove").string
+                        ) {
+                            onRemoveSelBox?.invoke()
+                            closeMenu()
+                        }
+                    )
+                    if (canClearSelBoxArea) {
+                        add(
+                            ContextMenuItem(
+                                Component.translatable("context.superbwarfare.tactical_map.sel_menu.clear").string
+                            ) {
+                                onClearSelBoxArea?.invoke()
+                                closeMenu()
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -523,6 +567,7 @@ class MapContextMenu {
         val items = listOf(
             Component.translatable("context.superbwarfare.tactical_map.direct_attack").string,
             Component.translatable("context.superbwarfare.tactical_map.queue_attack").string,
+            Component.translatable("context.superbwarfare.tactical_map.range_bombardment").string,
         )
         val padding = 4
         val itemHeight = 12
@@ -562,6 +607,7 @@ class MapContextMenu {
             val items = listOf(
                 Component.translatable("context.superbwarfare.tactical_map.direct_attack").string,
                 Component.translatable("context.superbwarfare.tactical_map.queue_attack").string,
+                Component.translatable("context.superbwarfare.tactical_map.range_bombardment").string,
             )
             val padding = 4
             val itemHeight = 12
@@ -579,6 +625,7 @@ class MapContextMenu {
                     when (i) {
                         0 -> onDirectAttack?.invoke(weapon.weaponName)
                         1 -> onQueueAttack?.invoke(weapon.weaponName)
+                        2 -> onRangeBombardment?.invoke(weapon.weaponName)
                     }
                     ctxMenuVisible = false
                     missileSubMenuVisible = false
