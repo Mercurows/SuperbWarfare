@@ -115,26 +115,25 @@ class MapEntityRenderer {
         val half = iconSize / 2
 
         for (e in entities) {
-            val entity = level.getEntity(e.id) ?: e
-            val screenX = CoordinateConverter.worldToScreenX(entity.x, mapCenterX, viewBlockX, scale).toFloat()
-            val screenY = CoordinateConverter.worldToScreenY(entity.z, mapCenterY, viewBlockZ, scale).toFloat()
+            val screenX = CoordinateConverter.worldToScreenX(e.x, mapCenterX, viewBlockX, scale).toFloat()
+            val screenY = CoordinateConverter.worldToScreenY(e.z, mapCenterY, viewBlockZ, scale).toFloat()
             val (clampedX, clampedY) = CoordinateConverter.clampToMapArea(
                 screenX.toDouble(), screenY.toDouble(), mapLeft, mapTop, mapAreaW, mapAreaH
             )
-            renderMapEntity(entity, level, scale, pPartialTick, guiGraphics, tintColor,
+            renderMapEntity(e, level, scale, pPartialTick, guiGraphics, tintColor,
                 viewBlockX, viewBlockZ, mapCenterX, mapCenterY, mapLeft, mapTop, mapAreaW, mapAreaH,
                 isDraggingLoiter, loiterDragNewX, loiterDragNewZ, loiterDragExpireTime)
 
-            if (selectedEntities.any { it.id == entity.id })
+            if (selectedEntities.any { it.id == e.id })
                 drawSelectedBorder(guiGraphics, clampedX, clampedY)
 
             if (mouseX.toFloat() in (clampedX - half)..(clampedX + half) &&
                 mouseY.toFloat() in (clampedY - half)..(clampedY + half)
             ) {
-                onHover(buildEntityTooltip(entity, level, relationKey), mouseX, mouseY)
+                onHover(buildEntityTooltip(e, level, relationKey), mouseX, mouseY)
             }
 
-            outEntries.add(EntityRenderEntry(entity, clampedX, clampedY, relationKey.removePrefix("context.superbwarfare.tactical_map.relation.")))
+            outEntries.add(EntityRenderEntry(e, clampedX, clampedY, relationKey.removePrefix("context.superbwarfare.tactical_map.relation.")))
         }
     }
 
@@ -266,6 +265,8 @@ class MapEntityRenderer {
 
             val clampedNX = navScreenX.coerceIn((mapLeft + 4).toDouble(), (mapLeft + mapAreaW - 4).toDouble()).toFloat()
             val clampedNY = navScreenY.coerceIn((mapTop + 13).toDouble(), (mapTop + mapAreaH).toDouble()).toFloat()
+            RenderSystem.enableBlend()
+            RenderSystem.defaultBlendFunc()
             val navPose = guiGraphics.pose()
             navPose.pushPose()
             navPose.translate(clampedNX, clampedNY, 0f)

@@ -669,7 +669,7 @@ class MapContextMenu {
     ) {
         val isCreating = editMarker == null
         val panelW = 180
-        val panelH = 170
+        val panelH = 140
         val px = (screenWidth - panelW) / 2
         val py = (screenHeight - panelH) / 2
         editPanelX = px
@@ -710,14 +710,14 @@ class MapContextMenu {
         box.y = py + 40
         box.render(guiGraphics, mouseX, mouseY, 0f)
 
-        // Color picker (4x4 grid)
+        // Color picker (8x2 grid)
         val colorGridX = px + 8
         val colorGridY = py + 62
         val cellSize = 16
         val cellGap = 2
         for (i in 0..15) {
-            val cx = colorGridX + (i % 4) * (cellSize + cellGap)
-            val cy = colorGridY + (i / 4) * (cellSize + cellGap)
+            val cx = colorGridX + (i % 8) * (cellSize + cellGap)
+            val cy = colorGridY + (i / 8) * (cellSize + cellGap)
             val color = getColorRGB(i)
             // Fill with color
             guiGraphics.fill(cx, cy, cx + cellSize, cy + cellSize, 0xFF000000.toInt() or color)
@@ -762,7 +762,7 @@ class MapContextMenu {
         val px = editPanelX
         val py = editPanelY
         val panelW = 180
-        val panelH = 170
+        val panelH = 140
 
         // If click is outside the panel, ignore
         if (mouseX < px || mouseX > px + panelW || mouseY < py || mouseY > py + panelH) {
@@ -775,8 +775,8 @@ class MapContextMenu {
         val cellSize = 16
         val cellGap = 2
         for (i in 0..15) {
-            val cx = colorGridX + (i % 4) * (cellSize + cellGap)
-            val cy = colorGridY + (i / 4) * (cellSize + cellGap)
+            val cx = colorGridX + (i % 8) * (cellSize + cellGap)
+            val cy = colorGridY + (i / 8) * (cellSize + cellGap)
             if (mouseX in cx.toDouble()..(cx + cellSize).toDouble() &&
                 mouseY in cy.toDouble()..(cy + cellSize).toDouble()
             ) {

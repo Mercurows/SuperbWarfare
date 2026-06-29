@@ -42,7 +42,8 @@ object TacticalMapChunkListener {
 
     @SubscribeEvent
     fun onLevelUnload(event: LevelEvent.Unload) {
-        if (!isEnabled()) return
+        // Always clear — config may already be inaccessible during world
+        // teardown, and stale data bleeds into the next world otherwise.
         if (event.level is ClientLevel) {
             TacticalMapCache.clear()
         }

@@ -93,9 +93,15 @@ open class Ru3m14MissileEntity(type: EntityType<out Ru3m14MissileEntity>, level:
                 val lostTarget = (VectorTool.calculateAngle(lookAngle, toVec) > 90 && tickCount > 50)
 
                 this.deltaMovement =
-                    this.deltaMovement.add(lookAngle.scale(Mth.clamp(0.05 * (tickCount - 10), 0.15, 1.5)))
-                val f = (0.84 + y * 0.00005).coerceAtMost(0.86)
+                    this.deltaMovement.add(lookAngle.scale(Mth.clamp(0.06 * (tickCount - 10), 0.15, 2.0)))
+
+                val f = (0.85 + y * 0.000075).coerceAtMost(0.92)
                 this.deltaMovement = this.deltaMovement.multiply(f, f, f)
+
+                if (getTargetPos() != null && distance > 1500 && position().distanceToSqr(getTargetPos()!!) < 1000000) {
+                    this.deltaMovement = this.deltaMovement.multiply(1.1, 1.1, 1.1)
+                    toVec = position().vectorTo(getTargetPos()!!)
+                }
 
                 if (!lostTarget) {
                     turn(toVec, ((tickCount - 10) * 0.1f).coerceIn(0f, 30f))

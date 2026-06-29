@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.client.map
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
-import com.atsuishio.superbwarfare.client.map.TacticalMapCache.drawnChunks
 import com.atsuishio.superbwarfare.client.map.TacticalMapCache.processPendingChunks
 import com.atsuishio.superbwarfare.tools.mc
 import com.mojang.blaze3d.platform.NativeImage
@@ -60,13 +59,28 @@ object TacticalMapCache {
     private val lodTileImages = ConcurrentHashMap<LodTileKey, NativeImage>()
     private val lodTileTextures = ConcurrentHashMap<LodTileKey, DynamicTexture>()
 
+    // LOD tiles are created by sampling at LOD_SAMPLE_SIZE² (128×128)
+    // and nearest-neighbour upscaling to TILE_SIZE² (256×256).
+    // This is 4× faster than a full 256×256 sample (16 384 vs 65 536
+    // hash lookups) and, crucially, the visual difference is negligible
+    // at the low zoom levels where LOD tiles are actually used — the
+    // GPU's bilinear filter smooths both equally when downscaled to
+    // screen resolution.  No refinement pass is needed, so quality
+    // is consistent across all tiles with zero flicker.
+    private const val LOD_SAMPLE_SIZE = 128
+
+    // Deferred LOD invalidation — base tile positions whose LOD levels are
+    // stale.  Processed once per tick by [processDirtyLodTiles] instead of
+    // clearing + recreating LODs on every single chunk update.
+    private val lodDirtyBaseTiles = mutableSetOf<RegionPos>()
+
     // Chunk update queue
     private val chunkUpdateQueue = ConcurrentHashMap<Long, LevelChunk>()
 
     // Chunk surface heights: chunkPos -> 256 shorts (16x16 Y values)
     val chunkHeights = ConcurrentHashMap<Long, ShortArray>()
 
-    private const val MAX_UPDATES_PER_FRAME = 16
+    private const val MAX_UPDATES_PER_FRAME = 256
 
     // Track which chunks have already been drawn this session
     private val drawnChunks = mutableSetOf<Long>()
@@ -87,19 +101,33 @@ object TacticalMapCache {
     private var cachedViewDist = -1
     private var cachedOffsets: List<Pair<Int, Int>> = emptyList()
     private const val RESCAN_INTERVAL = 5L
-    private const val RESCAN_PER_BATCH = 64
+    private const val RESCAN_PER_BATCH = 512
+
+    // Async disk write queue — chunk data is compressed immediately but
+    // written to disk in batches to avoid blocking the render thread.
+    private val pendingDiskChunks = ConcurrentHashMap<Long, ByteArray>()
+    private var lastDiskFlush = 0L
+    private const val DISK_FLUSH_INTERVAL_MS = 25_000L
 
     // Local file persistence per world per dimension
     private var currentWorldId: String? = null
     private var currentDimension: String? = null
     private var cacheDir: File? = null
 
-    /** Build a world-unique identifier for cache separation. */
+    /** Build a world-unique identifier for cache separation.
+     *
+     * Single-player worlds are keyed by `levelName` + world seed so that
+     * two saves with the same display name (e.g. both "新的世界") still
+     * get separate cache directories.  Multiplayer worlds are keyed by a
+     * truncated SHA-256 of the server address. */
     fun getWorldIdentifier(): String {
         val mc = mc
-        // Single player: use integrated server's world data level name
+        // Single player: use level name + world seed for uniqueness
         if (mc.hasSingleplayerServer() && mc.singleplayerServer != null) {
-            return mc.singleplayerServer!!.worldData.levelName
+            val server = mc.singleplayerServer!!
+            val levelName = server.worldData.levelName
+            val seed = server.overworld().seed
+            return "${levelName}_$seed"
         }
         // Multiplayer: hash server address (SHA-256, truncated to 8 bytes hex)
         val server = mc.currentServer
@@ -154,6 +182,8 @@ object TacticalMapCache {
         refreshWaveIndex = 0
         cachedViewDist = -1
         cachedOffsets = emptyList()
+        pendingDiskChunks.clear()
+        lastDiskFlush = 0L
         currentWorldId = null
         currentDimension = null
         cacheDir = null
@@ -168,12 +198,18 @@ object TacticalMapCache {
         }
         lodTileImages.clear()
         lodTileTextures.clear()
+        lodDirtyBaseTiles.clear()
     }
 
     private fun ensureInit(level: Level) {
-        if (currentWorldId == null) {
-            val worldId = getWorldIdentifier()
-            initForDimension(level.dimension().location().toString(), worldId)
+        val worldId = getWorldIdentifier()
+        val dim = level.dimension().location().toString()
+        // Re-init if world/dimension changed OR not yet initialised.
+        // The null check alone is insufficient: when switching saves the
+        // LevelEvent.Unload handler may be skipped (config unavailable
+        // during teardown), leaving stale data keyed to the old world.
+        if (worldId != currentWorldId || dim != currentDimension) {
+            initForDimension(dim, worldId)
         }
     }
 
@@ -186,63 +222,34 @@ object TacticalMapCache {
     }
 
     /**
-     * Two-phase processing, completely independent:
-     *   Phase A - Redraw: drain the update queue directly, closest chunks first.
-     *   Phase B - Initial draw: ring scan for chunks not yet in [drawnChunks].
+     * Drain the chunk update queue directly, closest chunks first.
+     *
+     * New chunks are discovered by [periodicRescan] (every 5 ticks) and by
+     * [TacticalMapChunkListener.onChunkLoad] (event-driven).  Both feed into
+     * [queueChunkUpdate], so this method only needs to drain the queue — no
+     * O(viewDist²) ring scan is needed.
      */
     fun processChunkUpdates(level: Level, playerX: Double, playerZ: Double) {
         ensureInit(level)
         if (level !is ClientLevel) return
 
+        if (chunkUpdateQueue.isEmpty()) return
+
         val pcx = (playerX / CHUNK_SIZE).toInt()
         val pcz = (playerZ / CHUNK_SIZE).toInt()
-        var processed = 0
 
-        // ============================================================
-        // Phase A - REDRAW: drain the queue directly
-        // Every entry in the queue was put there by an explicit request
-        // (block change, periodic refresh, etc.).  No ring scan needed.
-        // ============================================================
-        if (chunkUpdateQueue.isNotEmpty()) {
-            val sorted = chunkUpdateQueue.entries.sortedBy { (key, _) ->
-                val cx = (key shr 32).toInt()
-                val cz = key.toInt()
-                maxOf(kotlin.math.abs(cx - pcx), kotlin.math.abs(cz - pcz))
-            }
-            for ((key, chunk) in sorted) {
-                if (processed >= MAX_UPDATES_PER_FRAME) break
-                chunkUpdateQueue.remove(key)
-                updateChunk(chunk, level)
-                drawnChunks.add(key)
-                processed++
-            }
+        val sorted = chunkUpdateQueue.entries.sortedBy { (key, _) ->
+            val cx = (key shr 32).toInt()
+            val cz = key.toInt()
+            maxOf(kotlin.math.abs(cx - pcx), kotlin.math.abs(cz - pcz))
         }
-
-        // ============================================================
-        // Phase B - INITIAL DRAW: ring scan for chunks never drawn
-        // ============================================================
-        if (processed < MAX_UPDATES_PER_FRAME) {
-            val viewDist = mc.options.renderDistance().get()
-            ringLoop@ for (r in 0..viewDist) {
-                for (dx in -r..r) {
-                    for (dz in -r..r) {
-                        if (dx != r && dx != -r && dz != r && dz != -r) continue
-                        val cx = pcx + dx
-                        val cz = pcz + dz
-                        val key = chunkPosKey(cx, cz)
-                        if (drawnChunks.contains(key)) continue
-                        if (level.hasChunk(cx, cz)) {
-                            val chunk = level.getChunk(cx, cz)
-                            if (chunk is LevelChunk && !chunk.isEmpty) {
-                                updateChunk(chunk, level)
-                                drawnChunks.add(key)
-                                processed++
-                                if (processed >= MAX_UPDATES_PER_FRAME) break@ringLoop
-                            }
-                        }
-                    }
-                }
-            }
+        var processed = 0
+        for ((key, chunk) in sorted) {
+            if (processed >= MAX_UPDATES_PER_FRAME) break
+            chunkUpdateQueue.remove(key)
+            updateChunk(chunk, level)
+            drawnChunks.add(key)
+            processed++
         }
     }
 
@@ -323,9 +330,9 @@ object TacticalMapCache {
             if (refreshWaveIndex >= n) refreshWaveIndex = 0
         }
 
-        // Phase 3: Rapid 1s refresh for the 3x3 chunks immediately around the player.
+        // Phase 3: Rapid refresh for the 3x3 chunks immediately around the player.
         // Guarantees block changes right under the player are visible almost instantly.
-        if (now - lastCloseRefresh >= 1000L) {
+        if (now - lastCloseRefresh >= 5000L) {
             lastCloseRefresh = now
             for (dx in -1..1) {
                 for (dz in -1..1) {
@@ -524,12 +531,10 @@ object TacticalMapCache {
 
     /**
      * Persist a single chunk's color + height data into its parent tile file.
-     * Works for both single-player and dedicated-server clients.
+     * Compression is done immediately, but the actual disk write is deferred
+     * to [flushPendingDiskWrites] to avoid blocking the render thread.
      */
     private fun saveChunkToDisk(cx: Int, cz: Int) {
-        val storageRX = cx shr CHUNKS_PER_TILE_BITS
-        val storageRZ = cz shr CHUNKS_PER_TILE_BITS
-
         // Compress pixel + height data for this chunk
         val minBlockX = cx * CHUNK_SIZE
         val minBlockZ = cz * CHUNK_SIZE
@@ -563,10 +568,49 @@ object TacticalMapCache {
             return
         }
 
-        // Read existing tile, update chunk, write back (single read-write per save)
-        val chunks = readTileFile(storageRX, storageRZ).toMutableMap()
-        chunks[chunkPosKey(cx, cz)] = compressed
-        writeTileFile(storageRX, storageRZ, chunks)
+        // Queue for async flush (latest data wins if chunk is re-saved before flush)
+        pendingDiskChunks[chunkPosKey(cx, cz)] = compressed
+    }
+
+    /**
+     * Flush all pending chunk data to disk, grouped by tile file.
+     * Each tile file is read once, all pending chunks are merged, and the
+     * tile is written once — eliminating per-chunk read-modify-write cycles.
+     */
+    fun flushPendingDiskWrites() {
+        if (pendingDiskChunks.isEmpty()) return
+
+        // Group pending chunks by storage tile
+        val byTile = mutableMapOf<Pair<Int, Int>, MutableMap<Long, ByteArray>>()
+        for ((key, data) in pendingDiskChunks) {
+            val cx = (key shr 32).toInt()
+            val cz = key.toInt()
+            val tileRX = cx shr CHUNKS_PER_TILE_BITS
+            val tileRZ = cz shr CHUNKS_PER_TILE_BITS
+            byTile.getOrPut(tileRX to tileRZ) { mutableMapOf() }[key] = data
+        }
+        pendingDiskChunks.clear()
+
+        for ((tilePos, chunks) in byTile) {
+            try {
+                val existing = readTileFile(tilePos.first, tilePos.second).toMutableMap()
+                existing.putAll(chunks)
+                writeTileFile(tilePos.first, tilePos.second, existing)
+            } catch (_: Exception) {
+            }
+        }
+    }
+
+    /**
+     * Flush pending disk writes if the flush interval has elapsed.
+     * Called every tick — cheap no-op when interval hasn't passed.
+     */
+    fun flushPendingDiskWritesIfNeeded() {
+        if (pendingDiskChunks.isEmpty()) return
+        val now = System.currentTimeMillis()
+        if (now - lastDiskFlush < DISK_FLUSH_INTERVAL_MS) return
+        lastDiskFlush = now
+        flushPendingDiskWrites()
     }
 
     /**
@@ -757,27 +801,49 @@ object TacticalMapCache {
      */
     data class LodTileKey(val factor: Int, val rx: Int, val rz: Int)
 
-    /** Downsample factor x factor base tiles into one 256x256 LOD tile. */
+    /**
+     * Create an LOD tile by sampling at [LOD_SAMPLE_SIZE]² (128×128)
+     * and nearest-neighbour upscaling to [TILE_SIZE]² (256×256).
+     *
+     * This is 4× faster than a full 256×256 sample (16 384 vs 65 536
+     * hash lookups).  The visual difference is negligible at the low zoom
+     * levels where LOD tiles are actually used: the GPU bilinear filter
+     * smooths both equally when displayed at screen resolution.
+     *
+     * Because every LOD tile uses the same consistent quality, there is
+     * no draft→full flicker — tiles are created once at final quality.
+     */
     private fun createLodTile(factor: Int, lodRX: Int, lodRZ: Int): NativeImage {
-        val image = NativeImage(TILE_SIZE, TILE_SIZE, true)
+        val sample = NativeImage(LOD_SAMPLE_SIZE, LOD_SAMPLE_SIZE, true)
         val subStep = TILE_SIZE / factor
+        val sampleStep = TILE_SIZE / LOD_SAMPLE_SIZE
 
-        for (py in 0 until TILE_SIZE) {
-            val baseRZ = lodRZ * factor + py / subStep
-            val srcZ = (py % subStep) * factor + factor / 2
+        for (py in 0 until LOD_SAMPLE_SIZE) {
+            val baseRZ = lodRZ * factor + (py * sampleStep) / subStep
+            val srcZ = ((py * sampleStep) % subStep) * factor + factor / 2
 
-            for (px in 0 until TILE_SIZE) {
-                val baseRX = lodRX * factor + px / subStep
-                val srcX = (px % subStep) * factor + factor / 2
+            for (px in 0 until LOD_SAMPLE_SIZE) {
+                val baseRX = lodRX * factor + (px * sampleStep) / subStep
+                val srcX = ((px * sampleStep) % subStep) * factor + factor / 2
 
                 val baseTile = tileImages[RegionPos(baseRX, baseRZ)] ?: continue
                 val pixel = baseTile.getPixelRGBA(srcX, srcZ)
                 if (pixel != 0) {
-                    image.setPixelRGBA(px, py, pixel)
+                    sample.setPixelRGBA(px, py, pixel)
                 }
             }
         }
-        return image
+
+        // Nearest-neighbour upscale to full tile size
+        val full = NativeImage(TILE_SIZE, TILE_SIZE, true)
+        val scale = TILE_SIZE / LOD_SAMPLE_SIZE
+        for (py in 0 until TILE_SIZE) {
+            val srcY = py / scale
+            for (px in 0 until TILE_SIZE) {
+                full.setPixelRGBA(px, py, sample.getPixelRGBA(px / scale, srcY))
+            }
+        }
+        return full
     }
 
     /** Get or create a GPU texture for an LOD tile. */
@@ -835,24 +901,45 @@ object TacticalMapCache {
         }
     }
 
-    /** Invalidate all LOD tiles that cover the given base tile. */
+    /** Mark all LOD levels that cover the given base tile as dirty.
+     * The actual clear happens later in [processDirtyLodTiles] so that
+     * multiple chunk updates within the same frame only trigger one
+     * LOD rebuild pass instead of one per chunk. */
     private fun invalidateLodTilesForBaseTile(rx: Int, rz: Int) {
-        var factor = 2
-        while (factor <= 64) {
-            val lodRX = Math.floorDiv(rx, factor)
-            val lodRZ = Math.floorDiv(rz, factor)
-            val key = LodTileKey(factor, lodRX, lodRZ)
+        lodDirtyBaseTiles.add(RegionPos(rx, rz))
+    }
 
-            lodTileImages.remove(key)
+    /**
+     * Process dirty LOD tiles: clear all LOD levels for base tiles that were
+     * modified by chunk updates since the last call.  Called once per tick
+     * from [uploadDirtyTextures] — instead of invalidating + recreating LODs
+     * on every single chunk update (up to 32× per frame), we batch all dirty
+     * base tiles and clear their LODs once.
+     */
+    fun processDirtyLodTiles() {
+        if (lodDirtyBaseTiles.isEmpty()) return
 
-            lodTileTextures.remove(key)?.let {
-                try {
-                    val loc = loc("map_lod_${factor}_${lodRX}_${lodRZ}")
-                    mc.textureManager.release(loc)
-                } catch (_: Exception) {
+        val snapshot = lodDirtyBaseTiles.toList()
+        lodDirtyBaseTiles.clear()
+
+        for (pos in snapshot) {
+            var factor = 2
+            while (factor <= 64) {
+                val lodRX = Math.floorDiv(pos.rx, factor)
+                val lodRZ = Math.floorDiv(pos.rz, factor)
+                val key = LodTileKey(factor, lodRX, lodRZ)
+
+                lodTileImages.remove(key)
+
+                lodTileTextures.remove(key)?.let {
+                    try {
+                        val loc = loc("map_lod_${factor}_${lodRX}_${lodRZ}")
+                        mc.textureManager.release(loc)
+                    } catch (_: Exception) {
+                    }
                 }
+                factor = factor shl 1
             }
-            factor = factor shl 1
         }
     }
 
@@ -882,6 +969,10 @@ object TacticalMapCache {
     }
 
     fun uploadDirtyTextures() {
+        // Process batched LOD invalidations first — clears stale LOD levels
+        // once instead of on every single chunk update
+        processDirtyLodTiles()
+
         for (pos in dirtyTiles.toList()) {
             tileTextures[pos]?.upload()
         }

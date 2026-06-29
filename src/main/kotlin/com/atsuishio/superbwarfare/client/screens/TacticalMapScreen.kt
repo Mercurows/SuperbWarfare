@@ -6,11 +6,8 @@ import com.atsuishio.superbwarfare.client.map.TacticalMapCache
 import com.atsuishio.superbwarfare.client.map.context.MapContextMenu
 import com.atsuishio.superbwarfare.client.map.context.MapMarker
 import com.atsuishio.superbwarfare.client.map.context.MarkerPersistence
-import com.atsuishio.superbwarfare.client.screens.map.AttackModeHandler
+import com.atsuishio.superbwarfare.client.screens.map.*
 import com.atsuishio.superbwarfare.client.screens.map.CoordinateConverter.scaleFromZoom
-import com.atsuishio.superbwarfare.client.screens.map.MapEntityRenderer
-import com.atsuishio.superbwarfare.client.screens.map.MissileWeaponHelper
-import com.atsuishio.superbwarfare.client.screens.map.SelectionBoxManager
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
@@ -54,6 +51,8 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             savedViewZ = viewBlockZ
             savedZoom = zoom
         }
+        // Flush any pending chunk data to disk before closing
+        TacticalMapCache.flushPendingDiskWrites()
     }
 
     companion object {
@@ -335,7 +334,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
         val level = player.level()
 
         // 从磁盘加载待处理的区块，按距离玩家最近优先
-        TacticalMapCache.processPendingChunks(viewBlockX, viewBlockZ, 64)
+        TacticalMapCache.processPendingChunks(viewBlockX, viewBlockZ, 512)
 
         TacticalMapCache.processChunkUpdates(level, viewBlockX, viewBlockZ)
 
@@ -344,6 +343,9 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
 
         // Upload dirty tile textures every tick so center-out loading is visible
         TacticalMapCache.uploadDirtyTextures()
+
+        // Async disk flush (batched every 5s, avoids per-chunk read-modify-write)
+        TacticalMapCache.flushPendingDiskWritesIfNeeded()
 
         if (!markersLoaded) {
             loadMarkers()
@@ -1029,6 +1031,19 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             useDragPt, loiterDragNewX, loiterDragNewZ, loiterDragExpireTime
         )
 
+        // 玩家自己骑乘的载具（不在同步实体列表中，需单独渲染）
+        val ownVehicle = player.vehicle
+        if (ownVehicle is VehicleEntity) {
+            entityRenderer.renderMapEntity(ownVehicle, level, scale, pPartialTick, guiGraphics,
+                0xFF7FFFAD.toInt(), viewBlockX, viewBlockZ, mapCenterX, mapCenterY,
+                mapLeft, mapTop, mapAreaW, mapAreaH,
+                useDragPt, loiterDragNewX, loiterDragNewZ, loiterDragExpireTime)
+            val sx = CoordinateConverter.worldToScreenX(ownVehicle.x, mapCenterX, viewBlockX, scale).toFloat()
+            val sy = CoordinateConverter.worldToScreenY(ownVehicle.z, mapCenterY, viewBlockZ, scale).toFloat()
+            entityRenderList.add(MapEntityRenderer.EntityRenderEntry(
+                ownVehicle, sx, sy, "friendly"))
+        }
+
         // 实体已消失则关闭其右键菜单并取消选中
         if (entityMenuTarget != null && entityRenderList.none { it.entity === entityMenuTarget }) {
             entityMenuVisible = false
@@ -1299,6 +1314,7 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             val clampedNY = navScreenY.coerceIn(
                 (mapTop + 13).toDouble(), (mapTop + mapAreaH).toDouble()).toFloat()
             val navPose = guiGraphics.pose()
+
             navPose.pushPose()
             navPose.translate(clampedNX, clampedNY, 0f)
             guiGraphics.blit(CRUISE_MARKER, -4, -13, 0f, 0f, 8, 13, 8, 13)
@@ -2057,10 +2073,9 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
                 val boxMaxZ = maxOf(wMinZ, wMaxZ)
                 val level = minecraft?.player?.level() ?: return true
                 for (e in ClientSyncedEntityHandler.getSyncedFriendlyEntities(level)) {
-                    val entity = level.getEntity(e.id) ?: e
-                    if (entity is VehicleEntity && entity.x in boxMinX..boxMaxX && entity.z in boxMinZ..boxMaxZ) {
-                        if (selectedEntities.none { it.id == entity.id }) {
-                            selectedEntities.add(entity)
+                    if (e is VehicleEntity && e.x in boxMinX..boxMaxX && e.z in boxMinZ..boxMaxZ) {
+                        if (selectedEntities.none { it.id == e.id }) {
+                            selectedEntities.add(e)
                         }
                     }
                 }
