@@ -29,10 +29,12 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.projectile.Projectile
 import net.minecraft.world.entity.vehicle.Boat
 import net.minecraft.world.entity.vehicle.Minecart
+import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.entity.EntityTypeTest
 import net.minecraft.world.level.levelgen.Heightmap
 import net.minecraft.world.phys.AABB
+import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.registries.ForgeRegistries
 import org.joml.Math
@@ -588,24 +590,28 @@ object VehicleMotionUtils {
         val groundY = level.getHeight(Heightmap.Types.MOTION_BLOCKING, vehicle.blockX, vehicle.blockZ).toDouble()
 
         val collisionInfo = vehicle.getCollisionOBBInfo()
-        val maxHalfExtent = if (collisionInfo != null) {
+
+        if (collisionInfo == null) {
+            terrainCompactAABB(vehicle, positions)
+            return
+        }
+
+        val maxHalfExtent = run {
             val s = collisionInfo.size
             max(max(s.x, s.y), s.z)
-        } else {
-            3.0
         }
 
         // 有碰撞OBB时检测整个OBB底部离地高度，无OBB时检测自身AABB底部离地高度
         // 若离地超过阈值则认为悬空，不处理地形贴合
-        val heightAboveGround = if (collisionInfo != null) {
-            (vehicle.y + collisionInfo.position.y - collisionInfo.size.y) - groundY
-        } else {
-            vehicle.boundingBox.minY - groundY
-        }
+        val heightAboveGround = (vehicle.y + collisionInfo.position.y - collisionInfo.size.y) - groundY
         if (heightAboveGround > maxHalfExtent) {
             if (vehicle.isInFluidType) {
                 vehicle.xRot *= 0.9f; vehicle.setZRot(vehicle.roll * 0.9f)
             }
+            return
+        }
+
+        if (getHeightAboveGround(vehicle) > 4) {
             return
         }
 
@@ -781,6 +787,102 @@ object VehicleMotionUtils {
                 }
             }
         }
+    }
+
+    fun terrainCompactAABB(vehicle: VehicleEntity, positions: MutableList<Vec3>) {
+        if (vehicle.onGround()) {
+            val transform = vehicle.getWheelsTransform(1f)
+            for (vec3 in positions) {
+                val vector4d = transformPosition(transform, vec3.x, vec3.y - 0.02, vec3.z)
+                val p = Vec3(vector4d.x, vector4d.y, vector4d.z)
+                val level = vehicle.level()
+                val res = level.clip(
+                    ClipContext(
+                        p, p.add(0.0, -128.0, 0.0),
+                        ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, vehicle
+                    )
+                )
+
+                val heightY: Double
+
+                var blockPos = BlockPos.containing(p)
+                val blockPosUp = BlockPos.containing(p.add(0.0, 1.0, 0.0))
+                if (level.getBlockState(blockPosUp).canOcclude()) {
+                    blockPos = blockPosUp
+                }
+                val state = level.getBlockState(blockPos)
+                val shape = state.getCollisionShape(level, blockPos)
+
+                if (vehicle.level().isClientSide && vehicle.deltaMovement.horizontalDistanceSqr() > 0.01) {
+                    if (state.`is`(BlockTags.SAND) || state.`is`(BlockTags.SNOW)) {
+                        val model = Minecraft.getInstance().modelManager.blockModelShaper.getBlockModel(state)
+                        val sprite = model.particleIcon
+                        val color = SpritePixelHelper.getRandomPixelRGB(sprite, 0)
+                        val speed = Math.min(vehicle.deltaMovement.length(), 0.5).toFloat()
+
+                        val particleOption = CustomCloudOption(color, 70, 1f + 7f * speed + Math.random().toFloat() * 2, Math.random().toFloat() * -0.12f, false, false)
+                        vehicle.addRandomParticle(particleOption, p.add(0.0, 0.2, 0.0).subtract(vehicle.deltaMovement.scale(1.5)), speed, vehicle.level(), 1, vehicle.deltaMovement.scale(60.0))
+                    } else {
+                        val particleData = BlockParticleOption(ParticleTypes.BLOCK, state)
+                        vehicle.addRandomParticle(particleData, p.add(0.0, 0.1, 0.0), 0.2f, vehicle.level(), 0f, 1)
+
+                        if (vehicle.engineInfo is EngineInfo.Track && vehicle.drift() && vehicle.deltaMovement.horizontalDistanceSqr() > 0.0004 && state.`is`(BlockTags.MINEABLE_WITH_PICKAXE)) {
+                            vehicle.addRandomParticle(ModParticleTypes.FIRE_STAR.get(), p.add(0.0, 0.1, 0.0), 0.25f, vehicle.level(), 0.08f, 1)
+                        }
+                    }
+                }
+
+                heightY = if (!shape.isEmpty) {
+                    p.y - (shape.max(Direction.Axis.Y) + blockPos.y)
+                } else if (res.type == HitResult.Type.BLOCK && level.noCollision(AABB(p, p))) {
+                    Mth.clamp(p.y - res.location.y, 0.0, 20.0)
+                } else {
+                    0.0
+                }
+
+                updateTerrainCompact(vehicle, p, heightY)
+            }
+        } else if (vehicle.isInFluidType) {
+            vehicle.xRot *= 0.9f
+            vehicle.setZRot(vehicle.roll * 0.9f)
+        }
+    }
+
+    fun updateTerrainCompact(entity: VehicleEntity, landingTarget: Vec3, heightY: Double) {
+        var currentPos = entity.position()
+        val aabb = entity.boundingBox
+        val aabb1 = AABB(aabb.minX, aabb.minY - 1.0E-6, aabb.minZ, aabb.maxX, aabb.minY, aabb.maxZ)
+        val optional = entity.level().findSupportingBlock(entity, aabb1)
+        if (optional.isPresent) {
+            currentPos = currentPos.add(currentPos.vectorTo(optional.get().center).scale(0.6))
+        }
+        val horizontalOffset = Vec3(
+            landingTarget.x - currentPos.x,
+            0.0,
+            landingTarget.z - currentPos.z
+        )
+
+        val horizontalDistance = horizontalOffset.length()
+        val horizontalDirection = if (horizontalDistance > 0) horizontalOffset.normalize() else Vec3.ZERO
+
+
+        val tiltSmoothingFactor = 0.01f
+
+        val targetTilt =
+            Math.min(heightY * 9 * entity.data().compute().terrainCompatRotateRate * horizontalDistance, 45.0).toFloat()
+
+        val yawRad = Math.toRadians(-entity.yRot)
+        val localDirection = Vec3(
+            horizontalDirection.x * Math.cos(yawRad) - horizontalDirection.z * Math.sin(yawRad),
+            0.0,
+            horizontalDirection.x * Math.sin(yawRad) + horizontalDirection.z * Math.cos(yawRad)
+        )
+
+        val targetXRot = (-localDirection.z * targetTilt).toFloat()
+        val targetZRot = (localDirection.x * targetTilt).toFloat()
+
+        entity.xRot = lerpAngle(entity.xRot, -targetXRot, tiltSmoothingFactor)
+        entity.setZRot(lerpAngle(entity.roll, -targetZRot, tiltSmoothingFactor))
     }
 
     /**

@@ -423,5 +423,5 @@
   "Type": "Helicopter",
   "HudType": "@Helicopter",
   "TerrainCompat": [[-0.963, 0, 1.296], [0.963, 0, 1.296], [0, 0.435, -8.325]],
-  "TerrainCompatRotateRate" : 0.4
+  "TerrainCompatRotateRate" : 0.18
 }
