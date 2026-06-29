@@ -35,8 +35,7 @@ open class SmallContainerBlockEntity(pos: BlockPos, state: BlockState) :
     var player: Player? = null
     var opened: Boolean = false
 
-    val animationInstance: SmallContainerBlockAnimationInstance? =
-        if (this.level?.isClientSide == true) SmallContainerBlockAnimationInstance(this) else null
+    var animationInstance: SmallContainerBlockAnimationInstance? = null
 
     override fun load(compound: CompoundTag) {
         super.load(compound)

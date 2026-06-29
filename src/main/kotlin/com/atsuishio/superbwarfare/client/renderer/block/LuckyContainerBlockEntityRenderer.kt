@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.renderer.block
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.block.LuckyContainerBlock
 import com.atsuishio.superbwarfare.block.entity.LuckyContainerBlockEntity
+import com.atsuishio.superbwarfare.client.animation.block.LuckyContainerBlockAnimationInstance
 import com.atsuishio.superbwarfare.resource.model.BlockModelReloadListener
 import com.maydaymemory.mae.basic.ArrayPoseBuilder
 import com.maydaymemory.mae.basic.ZYXBoneTransformFactory
@@ -25,6 +26,9 @@ class LuckyContainerBlockEntityRenderer : BlockEntityRenderer<LuckyContainerBloc
         packedOverlay: Int
     ) {
         val model = BlockModelReloadListener.getModel(MODEL) ?: return
+        if (blockEntity.animationInstance == null) {
+            blockEntity.animationInstance = LuckyContainerBlockAnimationInstance(blockEntity)
+        }
         val ani = blockEntity.animationInstance ?: return
 
         poseStack.pushPose()

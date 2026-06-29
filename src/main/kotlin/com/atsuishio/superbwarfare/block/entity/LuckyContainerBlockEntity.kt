@@ -31,8 +31,7 @@ open class LuckyContainerBlockEntity(pos: BlockPos, state: BlockState) :
     var tick: Int = 0
     var opened: Boolean = false
 
-    open val animationInstance: LuckyContainerBlockAnimationInstance? =
-        if (this.level?.isClientSide == true) LuckyContainerBlockAnimationInstance(this) else null
+    var animationInstance: LuckyContainerBlockAnimationInstance? = null
 
     fun unpackEntities(): EntityType<*>? {
         if (this.location != null && this.level != null && this.level!!.server != null) {

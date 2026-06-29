@@ -24,8 +24,7 @@ import org.joml.Math
 open class ContainerBlockEntity(pos: BlockPos, state: BlockState) :
     BlockEntity(ModBlockEntities.CONTAINER.get(), pos, state) {
 
-    val animationInstance: ContainerBlockAnimationInstance? =
-        if (this.level?.isClientSide == true) ContainerBlockAnimationInstance(this) else null
+    var animationInstance: ContainerBlockAnimationInstance? = null
 
     @JvmField
     var entityType: EntityType<*>? = null
