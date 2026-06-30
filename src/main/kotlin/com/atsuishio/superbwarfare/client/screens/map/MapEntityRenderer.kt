@@ -115,8 +115,9 @@ class MapEntityRenderer {
         val half = iconSize / 2
 
         for (e in entities) {
-            val screenX = CoordinateConverter.worldToScreenX(e.x, mapCenterX, viewBlockX, scale).toFloat()
-            val screenY = CoordinateConverter.worldToScreenY(e.z, mapCenterY, viewBlockZ, scale).toFloat()
+            val pos = ClientSyncedEntityHandler.getExtrapolatedPos(level, e)
+            val screenX = CoordinateConverter.worldToScreenX(pos.x, mapCenterX, viewBlockX, scale).toFloat()
+            val screenY = CoordinateConverter.worldToScreenY(pos.z, mapCenterY, viewBlockZ, scale).toFloat()
             val (clampedX, clampedY) = CoordinateConverter.clampToMapArea(
                 screenX.toDouble(), screenY.toDouble(), mapLeft, mapTop, mapAreaW, mapAreaH
             )
@@ -142,9 +143,10 @@ class MapEntityRenderer {
         lines.add(Component.translatable(
             "context.superbwarfare.tactical_map.tooltip.name", entity.displayName
         ).withStyle(net.minecraft.ChatFormatting.WHITE))
+        val pos = ClientSyncedEntityHandler.getExtrapolatedPos(level, entity)
         lines.add(Component.translatable(
             "context.superbwarfare.tactical_map.tooltip.pos",
-            entity.x.toInt().toString(), entity.y.toInt().toString(), entity.z.toInt().toString()
+            pos.x.toInt().toString(), pos.y.toInt().toString(), pos.z.toInt().toString()
         ).withStyle(net.minecraft.ChatFormatting.GRAY))
         val teamName = (entity as? LivingEntity)?.team?.name
             ?: (entity as? VehicleEntity)?.lastDriver?.let { (it as? LivingEntity)?.team?.name }
@@ -158,15 +160,10 @@ class MapEntityRenderer {
         lines.add(if (hag >= 0)
             Component.translatable("context.superbwarfare.tactical_map.tooltip.height", "%.1f".format(hag))
             else Component.translatable("context.superbwarfare.tactical_map.tooltip.height_na"))
-        // Missile speed in Mach: delta between current and previous synced position
+        // Missile speed in Mach: computed from per-tick velocity × 20 ticks/s
         if (entity is MissileProjectile) {
-            val pp = syncedEntry?.prevPos
-            val speedMs = if (pp != null) {
-                val dx = entity.x - pp.x
-                val dy = entity.y - pp.y
-                val dz = entity.z - pp.z
-                kotlin.math.sqrt(dx * dx + dy * dy + dz * dz) * 20.0
-            } else 0.0
+            val vel = syncedEntry?.velocity ?: Vec3.ZERO
+            val speedMs = vel.length() * 20.0
             val mach = speedMs / 340.0
             lines.add(Component.translatable("context.superbwarfare.tactical_map.tooltip.speed",
                 "%.1f".format(mach)).withStyle(net.minecraft.ChatFormatting.GOLD))
@@ -196,8 +193,9 @@ class MapEntityRenderer {
         val g = ((tintColor shr 8) and 0xFF) / 255f
         val b = (tintColor and 0xFF) / 255f
 
-        val screenX = CoordinateConverter.worldToScreenX(entity.x, mapCenterX, viewBlockX, scale).toFloat()
-        val screenY = CoordinateConverter.worldToScreenY(entity.z, mapCenterY, viewBlockZ, scale).toFloat()
+        val pos = ClientSyncedEntityHandler.getExtrapolatedPos(level, entity)
+        val screenX = CoordinateConverter.worldToScreenX(pos.x, mapCenterX, viewBlockX, scale).toFloat()
+        val screenY = CoordinateConverter.worldToScreenY(pos.z, mapCenterY, viewBlockZ, scale).toFloat()
         val icon = getVehicleIcon(entity)
         val iconSize = 12
 

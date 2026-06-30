@@ -162,9 +162,10 @@ abstract class MissileProjectile : DestroyableProjectile, ITrackableProjectile, 
                     getTargetPos(),
                     serializeNBT(),
                     yRot,
+                    xRot,
                     heightAboveGround = hag,
                 )
-                val msg = EntitySyncMessage(dim, listOf(synced), true)
+                val msg = EntitySyncMessage(dim, listOf(synced), true, shouldWorldRender = true)
                 for (player in srv.playerList.players) {
                     if (SeekTool.IS_FRIENDLY.test(player, this.owner)) {
                         sendPacketTo(player, msg)

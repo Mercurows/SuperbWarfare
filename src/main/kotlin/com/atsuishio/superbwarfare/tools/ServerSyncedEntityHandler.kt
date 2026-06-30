@@ -35,6 +35,8 @@ object ServerSyncedEntityHandler {
         val pos: Vec3,
         val eyePos: Vec3,
         val yRot: Float,
+        val xRot: Float,
+        val zRot: Float,
         val entityType: ResourceLocation,
         val nbt: CompoundTag,
         /** 实体注册/更新时间戳（系统时间 ms），用于 NBT 序列化间隔判定和过期清理，不受服务器重启影响 */
@@ -86,6 +88,8 @@ object ServerSyncedEntityHandler {
             pos = entity.position(),
             eyePos = entity.eyePosition,
             yRot = entity.yRot,
+            xRot = entity.xRot,
+            zRot = if (entity is VehicleEntity) entity.roll else 0f,
             entityType = ForgeRegistries.ENTITY_TYPES.getKey(entity.type) ?: return,
             nbt = nbt,
             timeStamp = now,

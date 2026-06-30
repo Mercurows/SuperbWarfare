@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client
 
 import com.atsuishio.superbwarfare.config.server.MiscConfig
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage.SyncedEntity
 import com.atsuishio.superbwarfare.network.message.receive.PlayerInfoSyncMessage.SyncedPlayerInfo
 import com.atsuishio.superbwarfare.network.message.receive.RadarSyncMessage
@@ -23,8 +24,10 @@ object ClientSyncedEntityHandler {
         val timeStamp: Long,
         val targetPos: Vec3?,
         val heightAboveGround: Double = -1.0,
-        /** Previous tick position, used for speed computation. */
-        var prevPos: Vec3? = null,
+        /** Per-tick velocity computed from successive sync positions, used for extrapolation. */
+        val velocity: Vec3 = Vec3.ZERO,
+        /** Whether this entity should be rendered in the 3D world beyond view distance. */
+        val shouldWorldRender: Boolean = false,
     )
 
     data class SyncedPlayerKey(val dim: ResourceLocation, val uuid: UUID)
@@ -51,7 +54,7 @@ object ClientSyncedEntityHandler {
 
     @JvmStatic
     @JvmOverloads
-    fun sync(dim: ResourceLocation, list: List<SyncedEntity>, friendly: Boolean, neutral: Boolean = false) {
+    fun sync(dim: ResourceLocation, list: List<SyncedEntity>, friendly: Boolean, neutral: Boolean = false, shouldWorldRender: Boolean = false) {
         val level = mc.level ?: return
         val time = System.currentTimeMillis()
         val targetMap = when {
@@ -67,7 +70,19 @@ object ClientSyncedEntityHandler {
             }
             val existedEntry = targetMap[key]
             var entity: Entity
-            val prevPos = existedEntry?.let { Vec3(it.entity.x, it.entity.y, it.entity.z) }
+
+            // Per-tick velocity: (newPos - oldPos) / ticksSinceLastSync
+            val vel = if (existedEntry != null) {
+                val dt = ((time - existedEntry.timeStamp) / 50.0).coerceAtLeast(0.5)
+                Vec3(
+                    (syncedEntity.pos.x - existedEntry.entity.x) / dt,
+                    (syncedEntity.pos.y - existedEntry.entity.y) / dt,
+                    (syncedEntity.pos.z - existedEntry.entity.z) / dt,
+                )
+            } else {
+                Vec3.ZERO
+            }
+
             if (existedEntry != null) {
                 entity = existedEntry.entity
                 val tag = syncedEntity.tag as? CompoundTag
@@ -79,11 +94,17 @@ object ClientSyncedEntityHandler {
                 entity.load(tag)
                 entity.id = syncedEntity.id
             }
+
             entity.setPos(syncedEntity.pos)
             entity.deltaMovement = syncedEntity.targetPos ?: Vec3.ZERO
+            entity.xRot = syncedEntity.xRot
             entity.yRot = syncedEntity.yRot
-            val entry = ClientSyncedEntity(entity, time, syncedEntity.targetPos, syncedEntity.heightAboveGround)
-            entry.prevPos = prevPos
+            if (entity is VehicleEntity) {
+                entity.roll = syncedEntity.zRot
+            }
+            val entry = ClientSyncedEntity(
+                entity, time, syncedEntity.targetPos, syncedEntity.heightAboveGround, vel, shouldWorldRender
+            )
             targetMap[key] = entry
         }
     }
@@ -136,6 +157,23 @@ object ClientSyncedEntityHandler {
     @JvmStatic
     fun getSyncedPlayerInfo(level: Level): List<ClientSyncedPlayer> =
         SYNCED_PLAYERS.filterKeys { it.dim == level.dimension().location() }.map { it.value }
+
+    /**
+     * 获取实体的外推位置（速度 × 距离上次同步的时间），用于平滑渲染。
+     * 如果实体已在客户端 level 中则返回原位置（由原版插值处理）。
+     */
+    @JvmStatic
+    fun getExtrapolatedPos(level: Level, entity: Entity): Vec3 {
+        if (level.getEntity(entity.id) != null) return entity.position()
+        val entry = getSyncedEntry(level, entity.id) ?: return entity.position()
+        if (entry.velocity.lengthSqr() <= 0.0) return entity.position()
+        val elapsed = ((System.currentTimeMillis() - entry.timeStamp) / 50.0).coerceIn(0.0, 2.0)
+        return Vec3(
+            entity.x + entry.velocity.x * elapsed,
+            entity.y + entry.velocity.y * elapsed,
+            entity.z + entry.velocity.z * elapsed
+        )
+    }
 
     /** 按 ID 查找任一分类中的条目 */
     @JvmStatic

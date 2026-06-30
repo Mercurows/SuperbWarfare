@@ -180,7 +180,7 @@ object RadarScanner {
                 }
 
                 val synced = SyncedEntity(
-                    entry.entityId, entry.entityType, entry.pos, entry.targetPos, entry.nbt, entry.yRot,
+                    entry.entityId, entry.entityType, entry.pos, entry.targetPos, entry.nbt, entry.yRot, entry.xRot, entry.zRot,
                     heightAboveGround = entry.heightAboveGround,
                 )
 
@@ -225,6 +225,8 @@ object RadarScanner {
                         null,
                         it.serializeNBT(),
                         it.yRot,
+                        it.xRot,
+                        0f,
                         heightAboveGround = hag.coerceAtLeast(0.0),
                     )
                     // 根据生物类别分类：敌对生物（怪物）→ hostile，被动生物（动物等）→ neutral

@@ -75,10 +75,11 @@ object IFFOverlay : CommonOverlay("iff") {
                         )
                         RenderSystem.setShaderColor(1f, 1f, 1f, if (checkNoClip(player, teammate, cameraPos)) 1f else 0.4f)
 
-                        var pos = VectorTool.lerpGetEntityBoundingBoxCenter(teammate, partialTick)
-                        if (level.getEntity(e.id) == null) {
-                            pos = teammate.boundingBox.center
-                        }
+                        var pos = if (level.getEntity(e.id) != null)
+                            VectorTool.lerpGetEntityBoundingBoxCenter(teammate, partialTick)
+                        else
+                            ClientSyncedEntityHandler.getExtrapolatedPos(level, teammate)
+                                .add(0.0, teammate.bbHeight / 2.0, 0.0)
 
                         val point = pos.worldToScreen()
                         val xf = point.x.toFloat()
@@ -224,10 +225,11 @@ object IFFOverlay : CommonOverlay("iff") {
                             RenderSystem.setShaderColor(1f, 1f, 1f, 0.4f)
                         }
 
-                        var pos = VectorTool.lerpGetEntityBoundingBoxCenter(enemy, partialTick)
-                        if (level.getEntity(e.id) == null) {
-                            pos = enemy.boundingBox.center
-                        }
+                        var pos = if (level.getEntity(e.id) != null)
+                            VectorTool.lerpGetEntityBoundingBoxCenter(enemy, partialTick)
+                        else
+                            ClientSyncedEntityHandler.getExtrapolatedPos(level, enemy)
+                                .add(0.0, enemy.bbHeight / 2.0, 0.0)
                         val point = pos.worldToScreen()
                         val xf = point.x.toFloat()
                         val yf = point.y.toFloat()
@@ -277,7 +279,11 @@ object IFFOverlay : CommonOverlay("iff") {
                     )
                     RenderSystem.setShaderColor(1f, 1f, 1f, if (checkNoClip(player, neutral, cameraPos)) 1f else 0.4f)
 
-                    val pos = VectorTool.lerpGetEntityBoundingBoxCenter(neutral, partialTick)
+                    val pos = if (level.getEntity(e.id) != null)
+                        VectorTool.lerpGetEntityBoundingBoxCenter(neutral, partialTick)
+                    else
+                        ClientSyncedEntityHandler.getExtrapolatedPos(level, neutral)
+                            .add(0.0, neutral.bbHeight / 2.0, 0.0)
                     val point = pos.worldToScreen()
                     val xf = point.x.toFloat()
                     val yf = point.y.toFloat()

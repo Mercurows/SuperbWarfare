@@ -255,8 +255,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     protected var yO = 0.0
     protected var zO = 0.0
 
-    open var roll = 0f
-    open var prevRoll = 0f
+    open var roll by ROLL
+    open var prevRoll by ROLLO
     open var repairCoolDown = maxRepairCoolDown()
     open var hurtWarnCoolDown = 0
 
@@ -339,9 +339,6 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     open var rightTrackO = 0f
     open var leftTrack = 0f
     open var rightTrack = 0f
-
-    open var propellerRot = 0f
-    open var propellerRotO = 0f
 
     open var recoilShake = 0.0
     open var recoilShakeO = 0.0
@@ -882,12 +879,16 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             define(SELECTED_WEAPON, List(maxPassengers) { 0 })
             define(ENERGY, 0)
             define(SYNCHED_PROPELLER_ROT, 0f)
+            define(PROPELLER_ROT, 0f)
+            define(PROPELLER_ROT_O, 0f)
 
             define(HORN_VOLUME, 0f)
             define(LASER_LENGTH, 0f)
             define(LASER_SCALE, 0f)
             define(LASER_SCALE_O, 0f)
             define(CHARGE_PROGRESS, 0f)
+            define(ROLL, 0f)
+            define(ROLLO, 0f)
             define(IS_WRECK, false)
             define(SYMPATHETIC_DETONATED, false)
             define(TURRET_BURNED, false)
@@ -1404,7 +1405,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         decoyReady = compound.getBoolean("DecoyReady")
         synchedGearRot = compound.getFloat("GearRot")
         gearUp = compound.getBoolean("GearUp")
-        synchedPropellerRot = compound.getFloat("PropellerRot")
+        propellerRot = compound.getFloat("PropellerRot")
+        propellerRotO = compound.getFloat("PropellerRotO")
         chargeProgress = compound.getFloat("ChargeProgress")
         lastAttackerUUID = compound.getString("LastAttacker")
         lastDriverUUID = compound.getString("LastDriver")
@@ -1424,6 +1426,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         serverYaw = compound.getFloat("ServerYaw")
         serverPitch = compound.getFloat("ServerPitch")
+        roll = compound.getFloat("Roll")
+        prevRoll = compound.getFloat("PrevRoll")
 
         isWreck = compound.getBoolean("IsWreck")
         sympatheticDetonated = compound.getBoolean("SympatheticDetonated")
@@ -1531,11 +1535,14 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         compound.putBoolean("DecoyReady", decoyReady)
         compound.putFloat("GearRot", synchedGearRot)
         compound.putBoolean("GearUp", gearUp)
-        compound.putFloat("PropellerRot", synchedPropellerRot)
+        compound.putFloat("PropellerRot", propellerRot)
+        compound.putFloat("PropellerRotO", propellerRotO)
         compound.putFloat("ChargeProgress", chargeProgress)
 
         compound.putFloat("ServerYaw", serverYaw)
         compound.putFloat("ServerPitch", serverPitch)
+        compound.putFloat("Roll", roll)
+        compound.putFloat("PrevRoll", prevRoll)
 
         if (this.maxPassengers > 0) {
             compound.putIntArray("SelectedWeapon", selectedWeapon)
@@ -2103,36 +2110,6 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         this.handleClientSync()
 
-        if (!level().isClientSide && !isWreck && health > 0) {
-            ServerSyncedEntityHandler.register(this)
-
-            // 直接向友方玩家同步自身（不依赖 IffItem）
-            val srv = server
-            if (srv != null) {
-                val dim = level().dimension().location()
-                val surfaceY = level().getHeight(
-                    net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE,
-                    blockX, blockZ
-                )
-                val hag = (y - surfaceY).coerceAtLeast(0.0)
-                val synced = EntitySyncMessage.SyncedEntity(
-                    id,
-                    ForgeRegistries.ENTITY_TYPES.getKey(type)!!,
-                    position(),
-                    null,
-                    serializeNBT(),
-                    yRot,
-                    heightAboveGround = hag,
-                )
-                val msg = EntitySyncMessage(dim, listOf(synced), true)
-                for (player in srv.playerList.players) {
-                    if (player.isAlive && SeekTool.IS_FRIENDLY.test(player, this)) {
-                        sendPacketTo(player, msg)
-                    }
-                }
-            }
-        }
-
         if (this.level() is ServerLevel && this.health <= 0 && !isWreck) {
             isWreck = true
             destroy()
@@ -2314,6 +2291,39 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         this.crushEntities()
         this.setDeltaMovement(this.deltaMovement.add(0.0, -this.computed().gravity, 0.0))
         this.move(MoverType.SELF, this.deltaMovement)
+
+        if (!level().isClientSide && !isWreck && health > 0) {
+            ServerSyncedEntityHandler.register(this)
+
+            // 直接向友方玩家同步自身（不依赖 IffItem）
+            val srv = server
+            if (srv != null) {
+                val dim = level().dimension().location()
+                val surfaceY = level().getHeight(
+                    net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE,
+                    blockX, blockZ
+                )
+                val hag = (y - surfaceY).coerceAtLeast(0.0)
+                val synced = EntitySyncMessage.SyncedEntity(
+                    id,
+                    ForgeRegistries.ENTITY_TYPES.getKey(type)!!,
+                    position(),
+                    null,
+                    serializeNBT(),
+                    yRot,
+                    xRot,
+                    roll,
+                    heightAboveGround = hag,
+                )
+                // TODO shouldWorldRender这里搞配置，服务端or载具json控制
+                val msg = EntitySyncMessage(dim, listOf(synced), true, shouldWorldRender = true)
+                for (player in srv.playerList.players) {
+                    if (player.isAlive && SeekTool.IS_FRIENDLY.test(player, this)) {
+                        sendPacketTo(player, msg)
+                    }
+                }
+            }
+        }
 
         if (this.hasEnergyStorage() && this.tickCount % 20 == 0) {
             for (stack in this.inventory.getItems()) {
@@ -4288,6 +4298,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     open var deltaRot by DELTA_ROT
     open var decoyReady by DECOY_READY
     open var synchedPropellerRot by SYNCHED_PROPELLER_ROT
+    open var propellerRot by PROPELLER_ROT
+    open var propellerRotO by PROPELLER_ROT_O
     open var planeBreak by PLANE_BREAK
     open var synchedGearRot by SYNCHED_GEAR_ROT
     open var gearUp by GEAR_UP
@@ -4607,6 +4619,14 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.FLOAT)
 
         @JvmField
+        val PROPELLER_ROT: EntityDataAccessor<Float> =
+            SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.FLOAT)
+
+        @JvmField
+        val PROPELLER_ROT_O: EntityDataAccessor<Float> =
+            SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.FLOAT)
+
+        @JvmField
         val SYNCHED_GEAR_ROT: EntityDataAccessor<Float> =
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.FLOAT)
 
@@ -4711,5 +4731,14 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         @JvmField
         val LOITER_ACTIVE: EntityDataAccessor<Boolean> =
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.BOOLEAN)
+
+        /** ROLL */
+        @JvmField
+        val ROLL: EntityDataAccessor<Float> =
+            SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.FLOAT)
+
+        @JvmField
+        val ROLLO: EntityDataAccessor<Float> =
+            SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.FLOAT)
     }
 }
