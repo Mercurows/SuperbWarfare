@@ -130,7 +130,6 @@ object RadarScanner {
      * 执行一次雷达扫描。
      * @param level       服务端世界
      * @param config      雷达配置
-     * @param currentTick 当前服务端 tick，用于计算扇面朝向
      */
     fun scan(level: ServerLevel, config: RadarConfig): ScanResult {
         val dim = level.dimension().location()

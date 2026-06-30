@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.client.renderer
 
 import com.atsuishio.superbwarfare.client.ClientSyncedEntityHandler
+import com.atsuishio.superbwarfare.client.renderer.SyncedEntityWorldRenderer.MAX_RENDER_DISTANCE
+import com.atsuishio.superbwarfare.tools.clientLevel
 import com.atsuishio.superbwarfare.tools.mc
 import com.mojang.blaze3d.shaders.FogShape
 import com.mojang.blaze3d.systems.RenderSystem
@@ -8,10 +10,10 @@ import com.mojang.blaze3d.vertex.VertexSorting
 import net.minecraft.client.renderer.LevelRenderer
 import net.minecraft.client.renderer.LightTexture
 import net.minecraft.core.BlockPos
-import net.minecraft.world.entity.Entity
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.client.event.RenderLevelStageEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
+import net.minecraftforge.fml.common.Mod
 import org.joml.Matrix4f
 
 /**
@@ -23,32 +25,29 @@ import org.joml.Matrix4f
  * 3. 渲染未在 clientLevel 中的同步实体
  * 4. 恢复雾和投影矩阵
  */
-@net.minecraftforge.fml.common.Mod.EventBusSubscriber(
-    bus = net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus.FORGE,
-    value = [Dist.CLIENT]
-)
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = [Dist.CLIENT])
 object SyncedEntityWorldRenderer {
     //TODO 需要服务端配置和开关
     private const val MAX_RENDER_DISTANCE = 4096.0
-    private val MAX_RENDER_DISTANCE_SQ = MAX_RENDER_DISTANCE * MAX_RENDER_DISTANCE
+    private const val MAX_RENDER_DISTANCE_SQ = MAX_RENDER_DISTANCE * MAX_RENDER_DISTANCE
 
     @SubscribeEvent
     fun onRenderLevelStage(event: RenderLevelStageEvent) {
         if (event.stage != RenderLevelStageEvent.Stage.AFTER_ENTITIES) return
 
-        val minecraft = mc
-        val level = minecraft.level ?: return
+        val level = clientLevel ?: return
         val camera = event.camera
-        val dispatcher = minecraft.entityRenderDispatcher
-        val bufferSource = minecraft.renderBuffers().bufferSource()
+        val dispatcher = mc.entityRenderDispatcher
+        val bufferSource = mc.renderBuffers().bufferSource()
         val partialTick = event.partialTick
 
-        val allSynced = mutableListOf<Entity>()
-        allSynced.addAll(ClientSyncedEntityHandler.getSyncedFriendlyEntities(level))
-        allSynced.addAll(ClientSyncedEntityHandler.getSyncedHostileEntities(level))
-        allSynced.addAll(ClientSyncedEntityHandler.getSyncedNeutralEntities(level))
+        val allSynced = buildList {
+            addAll(ClientSyncedEntityHandler.getSyncedFriendlyEntities(level))
+            addAll(ClientSyncedEntityHandler.getSyncedHostileEntities(level))
+            addAll(ClientSyncedEntityHandler.getSyncedNeutralEntities(level))
+        }
 
-        val seen = HashSet<Int>()
+        val seen = hashSetOf<Int>()
         val uniqueEntities = allSynced.filter { seen.add(it.id) }
 
         // Save current state
@@ -95,10 +94,20 @@ object SyncedEntityWorldRenderer {
                 val relX = ix - camera.position.x
                 val relY = iy - camera.position.y
                 val relZ = iz - camera.position.z
-                
+
                 // propellerRot / propellerRotO are now EntityData — synced
                 // automatically via NBT, no manual advancement needed.
-                dispatcher.render(entity, relX, relY, relZ, entity.yRot, partialTick, event.poseStack, bufferSource, packedLight)
+                dispatcher.render(
+                    entity,
+                    relX,
+                    relY,
+                    relZ,
+                    entity.yRot,
+                    partialTick,
+                    event.poseStack,
+                    bufferSource,
+                    packedLight
+                )
             }
         } finally {
             bufferSource.endBatch()

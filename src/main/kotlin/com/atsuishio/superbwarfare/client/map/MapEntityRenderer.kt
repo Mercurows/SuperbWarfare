@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.client.screens.map
+package com.atsuishio.superbwarfare.client.map
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.ClientSyncedEntityHandler
@@ -8,7 +8,12 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.mojang.blaze3d.systems.RenderSystem
+import com.mojang.blaze3d.vertex.DefaultVertexFormat
+import com.mojang.blaze3d.vertex.Tesselator
+import com.mojang.blaze3d.vertex.VertexFormat
 import com.mojang.math.Axis
+import net.minecraft.ChatFormatting
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.network.chat.Component
@@ -19,7 +24,7 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.vehicle.Boat
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
-import kotlin.math.atan2
+import kotlin.math.*
 
 /**
  * 战术地图实体图标渲染器。
@@ -58,8 +63,10 @@ class MapEntityRenderer {
         private val ICON_MAID = loc("textures/overlay/tactical_map/vehicle/maid.png")
 
         /** Liang-Barsky 线裁剪到地图可视区域，返回本地虚线坐标范围 */
-        fun clipDashRange(sx: Float, sy: Float, ex: Float, ey: Float,
-                          mapLeft: Int, mapTop: Int, mapAreaW: Int, mapAreaH: Int): Pair<Int, Int>? {
+        fun clipDashRange(
+            sx: Float, sy: Float, ex: Float, ey: Float,
+            mapLeft: Int, mapTop: Int, mapAreaW: Int, mapAreaH: Int
+        ): Pair<Int, Int>? {
             val cx1 = mapLeft.toFloat()
             val cx2 = (mapLeft + mapAreaW).toFloat()
             val cy1 = mapTop.toFloat()
@@ -67,18 +74,21 @@ class MapEntityRenderer {
 
             val edgeP = floatArrayOf(-(ex - sx), ex - sx, -(ey - sy), ey - sy)
             val edgeQ = floatArrayOf(sx - cx1, cx2 - sx, sy - cy1, cy2 - sy)
-            var tMin = 0f; var tMax = 1f
+            var tMin = 0f
+            var tMax = 1f
 
             for (i in 0 until 4) {
-                if (edgeP[i] == 0f) { if (edgeQ[i] < 0) return null }
-                else {
+                if (edgeP[i] == 0f) {
+                    if (edgeQ[i] < 0) return null
+                } else {
                     val t = edgeQ[i] / edgeP[i]
                     if (edgeP[i] < 0) tMin = maxOf(tMin, t) else tMax = minOf(tMax, t)
                 }
             }
             if (tMin > tMax) return null
-            val dx = ex - sx; val dy = ey - sy
-            val len = kotlin.math.sqrt((dx * dx + dy * dy).toDouble()).toFloat()
+            val dx = ex - sx
+            val dy = ey - sy
+            val len = sqrt((dx * dx + dy * dy).toDouble()).toFloat()
             val half = (len / 2f).toInt()
             val lo = (-half + tMin * len).toInt()
             val hi = (-half + tMax * len).toInt()
@@ -121,9 +131,11 @@ class MapEntityRenderer {
             val (clampedX, clampedY) = CoordinateConverter.clampToMapArea(
                 screenX.toDouble(), screenY.toDouble(), mapLeft, mapTop, mapAreaW, mapAreaH
             )
-            renderMapEntity(e, level, scale, pPartialTick, guiGraphics, tintColor,
+            renderMapEntity(
+                e, level, scale, pPartialTick, guiGraphics, tintColor,
                 viewBlockX, viewBlockZ, mapCenterX, mapCenterY, mapLeft, mapTop, mapAreaW, mapAreaH,
-                isDraggingLoiter, loiterDragNewX, loiterDragNewZ, loiterDragExpireTime)
+                isDraggingLoiter, loiterDragNewX, loiterDragNewZ, loiterDragExpireTime
+            )
 
             if (selectedEntities.any { it.id == e.id })
                 drawSelectedBorder(guiGraphics, clampedX, clampedY)
@@ -134,41 +146,60 @@ class MapEntityRenderer {
                 onHover(buildEntityTooltip(e, level, relationKey), mouseX, mouseY)
             }
 
-            outEntries.add(EntityRenderEntry(e, clampedX, clampedY, relationKey.removePrefix("context.superbwarfare.tactical_map.relation.")))
+            outEntries.add(
+                EntityRenderEntry(
+                    e,
+                    clampedX,
+                    clampedY,
+                    relationKey.removePrefix("context.superbwarfare.tactical_map.relation.")
+                )
+            )
         }
     }
 
     private fun buildEntityTooltip(entity: Entity, level: Level, relationKey: String): List<Component> {
         val lines = mutableListOf<Component>()
-        lines.add(Component.translatable(
-            "context.superbwarfare.tactical_map.tooltip.name", entity.displayName
-        ).withStyle(net.minecraft.ChatFormatting.WHITE))
+        lines.add(
+            Component.translatable(
+                "context.superbwarfare.tactical_map.tooltip.name", entity.displayName
+            ).withStyle(ChatFormatting.WHITE)
+        )
         val pos = ClientSyncedEntityHandler.getExtrapolatedPos(level, entity)
-        lines.add(Component.translatable(
-            "context.superbwarfare.tactical_map.tooltip.pos",
-            pos.x.toInt().toString(), pos.y.toInt().toString(), pos.z.toInt().toString()
-        ).withStyle(net.minecraft.ChatFormatting.GRAY))
+        lines.add(
+            Component.translatable(
+                "context.superbwarfare.tactical_map.tooltip.pos",
+                pos.x.toInt().toString(), pos.y.toInt().toString(), pos.z.toInt().toString()
+            ).withStyle(ChatFormatting.GRAY)
+        )
         val teamName = (entity as? LivingEntity)?.team?.name
             ?: (entity as? VehicleEntity)?.lastDriver?.let { (it as? LivingEntity)?.team?.name }
         if (!teamName.isNullOrEmpty()) {
-            lines.add(Component.translatable(
-                "context.superbwarfare.tactical_map.tooltip.team", teamName
-            ).withStyle(net.minecraft.ChatFormatting.AQUA))
+            lines.add(
+                Component.translatable(
+                    "context.superbwarfare.tactical_map.tooltip.team", teamName
+                ).withStyle(ChatFormatting.AQUA)
+            )
         }
         val syncedEntry = ClientSyncedEntityHandler.getSyncedEntry(level, entity.id)
         val hag = syncedEntry?.heightAboveGround ?: -1.0
-        lines.add(if (hag >= 0)
-            Component.translatable("context.superbwarfare.tactical_map.tooltip.height", "%.1f".format(hag))
-            else Component.translatable("context.superbwarfare.tactical_map.tooltip.height_na"))
+        lines.add(
+            if (hag >= 0)
+                Component.translatable("context.superbwarfare.tactical_map.tooltip.height", "%.1f".format(hag))
+            else Component.translatable("context.superbwarfare.tactical_map.tooltip.height_na")
+        )
         // Missile speed in Mach: computed from per-tick velocity × 20 ticks/s
         if (entity is MissileProjectile) {
             val vel = syncedEntry?.velocity ?: Vec3.ZERO
             val speedMs = vel.length() * 20.0
             val mach = speedMs / 340.0
-            lines.add(Component.translatable("context.superbwarfare.tactical_map.tooltip.speed",
-                "%.1f".format(mach)).withStyle(net.minecraft.ChatFormatting.GOLD))
+            lines.add(
+                Component.translatable(
+                    "context.superbwarfare.tactical_map.tooltip.speed",
+                    "%.1f".format(mach)
+                ).withStyle(ChatFormatting.GOLD)
+            )
         }
-        lines.add(Component.translatable(relationKey).withStyle(net.minecraft.ChatFormatting.YELLOW))
+        lines.add(Component.translatable(relationKey).withStyle(ChatFormatting.YELLOW))
         return lines
     }
 
@@ -220,8 +251,10 @@ class MapEntityRenderer {
             val synced = ClientSyncedEntityHandler.getSyncedEntry(level, entity.id)
             val targetPos = synced?.targetPos ?: entity.getTargetPos()
             if (targetPos != null) {
-                renderTargetPos(targetPos, scale, screenX, screenY, guiGraphics, entity,
-                    viewBlockX, viewBlockZ, mapCenterX, mapCenterY, mapLeft, mapTop, mapAreaW, mapAreaH)
+                renderTargetPos(
+                    targetPos, scale, screenX, screenY, guiGraphics, entity,
+                    viewBlockX, viewBlockZ, mapCenterX, mapCenterY, mapLeft, mapTop, mapAreaW, mapAreaH
+                )
             }
         }
 
@@ -236,11 +269,20 @@ class MapEntityRenderer {
 
             val ldx = navScreenX - screenX
             val ldy = navScreenY - screenY
-            val len = kotlin.math.sqrt((ldx * ldx + ldy * ldy).toDouble()).toFloat()
+            val len = sqrt((ldx * ldx + ldy * ldy)).toFloat()
             if (len > 2f) {
-                val range = clipDashRange(screenX, screenY, navScreenX.toFloat(), navScreenY.toFloat(), mapLeft, mapTop, mapAreaW, mapAreaH)
+                val range = clipDashRange(
+                    screenX,
+                    screenY,
+                    navScreenX.toFloat(),
+                    navScreenY.toFloat(),
+                    mapLeft,
+                    mapTop,
+                    mapAreaW,
+                    mapAreaH
+                )
                 if (range != null) {
-                    val angle = atan2(ldy.toDouble(), ldx.toDouble())
+                    val angle = atan2(ldy, ldx)
                     val midX = ((screenX + navScreenX) / 2f).toFloat()
                     val midY = ((screenY + navScreenY) / 2f).toFloat()
                     val dashColor = 0xAACDFFF6.toInt()
@@ -254,10 +296,17 @@ class MapEntityRenderer {
                         ox += 2
                     }
                     linePose.popPose()
-                    val font = net.minecraft.client.Minecraft.getInstance().font
-                    val dist = kotlin.math.sqrt((lx - entity.x) * (lx - entity.x) + (lz - entity.z) * (lz - entity.z))
+                    val font = Minecraft.getInstance().font
+                    val dist = sqrt((lx - entity.x) * (lx - entity.x) + (lz - entity.z) * (lz - entity.z))
                     val label = "${dist.toInt()}m"
-                    guiGraphics.drawString(font, label, (navScreenX + 10).toInt(), (navScreenY + 6).toInt(), 0xFFCDFFF6.toInt(), true)
+                    guiGraphics.drawString(
+                        font,
+                        label,
+                        (navScreenX + 10).toInt(),
+                        (navScreenY + 6).toInt(),
+                        0xFFCDFFF6.toInt(),
+                        true
+                    )
                 }
             }
 
@@ -277,7 +326,8 @@ class MapEntityRenderer {
     //  Player marker
     // ═══════════════════════════════════════════════════════════════
 
-    fun renderPlayerMarker(guiGraphics: GuiGraphics, player: Player,
+    fun renderPlayerMarker(
+        guiGraphics: GuiGraphics, player: Player,
         viewBlockX: Double, viewBlockZ: Double,
         mapCenterX: Float, mapCenterY: Float, scale: Double
     ) {
@@ -294,7 +344,8 @@ class MapEntityRenderer {
         pose.popPose()
     }
 
-    fun renderPlayerOffscreenIndicator(guiGraphics: GuiGraphics, player: Player,
+    fun renderPlayerOffscreenIndicator(
+        guiGraphics: GuiGraphics, player: Player,
         viewBlockX: Double, viewBlockZ: Double,
         mapCenterX: Float, mapCenterY: Float, scale: Double,
         mapLeft: Int, mapTop: Int, mapAreaW: Int, mapAreaH: Int
@@ -303,7 +354,7 @@ class MapEntityRenderer {
         val py = CoordinateConverter.worldToScreenY(player.z, mapCenterY, viewBlockZ, scale).toFloat()
 
         val inBounds = px >= mapLeft && px <= mapLeft + mapAreaW &&
-            py >= mapTop && py <= mapTop + mapAreaH
+                py >= mapTop && py <= mapTop + mapAreaH
         if (inBounds) return
 
         val iconSize = 8
@@ -326,7 +377,8 @@ class MapEntityRenderer {
     //  Radar
     // ═══════════════════════════════════════════════════════════════
 
-    fun renderRadarsIcon(level: Level, scale: Double, guiGraphics: GuiGraphics,
+    fun renderRadarsIcon(
+        level: Level, scale: Double, guiGraphics: GuiGraphics,
         mapCenterX: Float, mapCenterY: Float, viewBlockX: Double, viewBlockZ: Double
     ) {
         val radars = ClientSyncedEntityHandler.getSyncedRadars(level)
@@ -339,15 +391,18 @@ class MapEntityRenderer {
                 val ry = CoordinateConverter.worldToScreenY(radar.pos.z, mapCenterY, viewBlockZ, scale).toFloat()
                 val iconSize = 8
                 RenderSystem.setShaderColor(1f, 1f, 1f, 0.9f)
-                guiGraphics.blit(RADAR_ICON,
+                guiGraphics.blit(
+                    RADAR_ICON,
                     (rx - iconSize / 2).toInt(), (ry - iconSize / 2).toInt(),
-                    0f, 0f, iconSize, iconSize, iconSize, iconSize)
+                    0f, 0f, iconSize, iconSize, iconSize, iconSize
+                )
             }
         }
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
     }
 
-    fun renderRadars(level: Level, scale: Double, guiGraphics: GuiGraphics,
+    fun renderRadars(
+        level: Level, scale: Double, guiGraphics: GuiGraphics,
         mapCenterX: Float, mapCenterY: Float, viewBlockX: Double, viewBlockZ: Double
     ) {
         val radars = ClientSyncedEntityHandler.getSyncedRadars(level)
@@ -365,7 +420,14 @@ class MapEntityRenderer {
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
     }
 
-    fun drawFilledSector(guiGraphics: GuiGraphics, cx: Float, cy: Float, radius: Float, startDeg: Float, sweepDeg: Float) {
+    fun drawFilledSector(
+        guiGraphics: GuiGraphics,
+        cx: Float,
+        cy: Float,
+        radius: Float,
+        startDeg: Float,
+        sweepDeg: Float
+    ) {
         if (radius < 2f || sweepDeg <= 0f) return
         RenderSystem.setShaderColor(0f, 1f, 0f, 0.2f)
 
@@ -373,18 +435,20 @@ class MapEntityRenderer {
         pose.pushPose()
         pose.translate(cx, cy, 0f)
 
-        val tess = com.mojang.blaze3d.vertex.Tesselator.getInstance()
+        val tess = Tesselator.getInstance()
         val buf = tess.builder
-        val arcPixels = sweepDeg / 180f * kotlin.math.PI.toFloat() * radius
+        val arcPixels = sweepDeg / 180f * PI.toFloat() * radius
         val steps = (arcPixels / 30f).toInt().coerceIn(3, 12)
-        buf.begin(com.mojang.blaze3d.vertex.VertexFormat.Mode.TRIANGLE_STRIP,
-            com.mojang.blaze3d.vertex.DefaultVertexFormat.POSITION)
+        buf.begin(
+            VertexFormat.Mode.TRIANGLE_STRIP,
+            DefaultVertexFormat.POSITION
+        )
         val matrix = pose.last().pose()
 
         for (i in 0..steps) {
             val angleRad = Math.toRadians((startDeg + sweepDeg * i / steps).toDouble())
-            val x = (kotlin.math.cos(angleRad) * radius).toFloat()
-            val y = (kotlin.math.sin(angleRad) * radius).toFloat()
+            val x = (cos(angleRad) * radius).toFloat()
+            val y = (sin(angleRad) * radius).toFloat()
             buf.vertex(matrix, x, y, 0f).endVertex()
             buf.vertex(matrix, 0f, 0f, 0f).endVertex()
         }
@@ -396,22 +460,23 @@ class MapEntityRenderer {
     //  Target position (missile target line + breathing icon)
     // ═══════════════════════════════════════════════════════════════
 
-    fun renderTargetPos(targetPos: Vec3, scale: Double, screenX: Float, screenY: Float,
+    fun renderTargetPos(
+        targetPos: Vec3, scale: Double, screenX: Float, screenY: Float,
         guiGraphics: GuiGraphics, entity: Entity,
         viewBlockX: Double, viewBlockZ: Double,
         mapCenterX: Float, mapCenterY: Float,
         mapLeft: Int, mapTop: Int, mapAreaW: Int, mapAreaH: Int
     ) {
-        val tdx = targetPos.x - viewBlockX
-        val tdz = targetPos.z - viewBlockZ
         val targetScreenX = CoordinateConverter.worldToScreenX(targetPos.x, mapCenterX, viewBlockX, scale).toFloat()
         val targetScreenY = CoordinateConverter.worldToScreenY(targetPos.z, mapCenterY, viewBlockZ, scale).toFloat()
 
         val ldx = targetScreenX - screenX
         val ldy = targetScreenY - screenY
-        val len = kotlin.math.sqrt((ldx * ldx + ldy * ldy).toDouble()).toFloat()
+        val len = sqrt((ldx * ldx + ldy * ldy).toDouble()).toFloat()
         if (len > 2f) {
-            val range = clipDashRange(screenX, screenY, targetScreenX, targetScreenY, mapLeft, mapTop, mapAreaW, mapAreaH) ?: return
+            val range =
+                clipDashRange(screenX, screenY, targetScreenX, targetScreenY, mapLeft, mapTop, mapAreaW, mapAreaH)
+                    ?: return
             val angle = atan2(ldy.toDouble(), ldx.toDouble())
             val midX = ((screenX + targetScreenX) / 2f)
             val midY = ((screenY + targetScreenY) / 2f)
@@ -427,16 +492,24 @@ class MapEntityRenderer {
             }
             linePose.popPose()
 
-            val font = net.minecraft.client.Minecraft.getInstance().font
-            val dist = kotlin.math.sqrt((targetPos.x - entity.x) * (targetPos.x - entity.x) + (targetPos.z - entity.z) * (targetPos.z - entity.z))
+            val font = Minecraft.getInstance().font
+            val dist =
+                sqrt((targetPos.x - entity.x) * (targetPos.x - entity.x) + (targetPos.z - entity.z) * (targetPos.z - entity.z))
             val label = "${dist.toInt()}m"
-            guiGraphics.drawString(font, label, (targetScreenX + 10).toInt(), (targetScreenY + 6).toInt(), 0xFFFF0000.toInt(), true)
+            guiGraphics.drawString(
+                font,
+                label,
+                (targetScreenX + 10).toInt(),
+                (targetScreenY + 6).toInt(),
+                0xFFFF0000.toInt(),
+                true
+            )
         }
 
         RenderSystem.setShader { GameRenderer.getPositionTexShader() }
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
         val time = System.currentTimeMillis() / 1000.0
-        val breathScale = (1.0 + 0.25 * kotlin.math.sin(time * 4.0)).toFloat()
+        val breathScale = (1.0 + 0.25 * sin(time * 4.0)).toFloat()
         val targetPose = guiGraphics.pose()
         targetPose.pushPose()
         targetPose.translate(targetScreenX, targetScreenY, 0f)

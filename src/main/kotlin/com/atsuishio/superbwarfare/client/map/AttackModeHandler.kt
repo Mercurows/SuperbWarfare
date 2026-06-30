@@ -1,16 +1,19 @@
-package com.atsuishio.superbwarfare.client.screens.map
+package com.atsuishio.superbwarfare.client.map
 
-import com.atsuishio.superbwarfare.client.map.TacticalMapCache
+import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.screens.TacticalMapScreen.Companion.SelBox
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.mojang.blaze3d.systems.RenderSystem
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.chunk.LevelChunk
+import net.minecraft.world.level.levelgen.Heightmap
 import net.minecraft.world.phys.Vec3
 import java.util.*
 import kotlin.math.roundToInt
@@ -25,9 +28,14 @@ import kotlin.random.Random
  */
 class AttackModeHandler {
 
+    companion object {
+        val ATTACK_CURSOR = loc("textures/overlay/tactical_map/attack.png")
+        val TARGET_FRAME = loc("textures/overlay/tactical_map/target_frame.png")
+    }
+
     enum class Mode { NONE, DIRECT, QUEUE, BOMBARDMENT }
 
-    // ── State (publicly readable; use enter* / exitMode for mutations) ──
+    // ── State (publicly readable use enter* / exitMode for mutations) ──
     var mode = Mode.NONE
     var weaponName: String? = null
     val targetQueue = mutableListOf<BlockPos>()
@@ -117,14 +125,17 @@ class AttackModeHandler {
 
     // ── Rendering ──
 
-    fun renderAttackCursor(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, font: net.minecraft.client.gui.Font,
+    fun renderAttackCursor(
+        guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, font: Font,
         viewBlockX: Double, viewBlockZ: Double, mapCenterX: Float, mapCenterY: Float, zoom: Double
     ) {
         // ── BOMBARDMENT mode: simple ammo counter at cursor, no crosshair ──
         if (mode == Mode.BOMBARDMENT) {
             val ammoColor = if (bombardmentAmmo > 0) 0xFFFFAA00.toInt() else 0xFFAA3333.toInt()
-            guiGraphics.drawString(font, "×$bombardmentAmmo",
-                mouseX + 10, mouseY - 12, ammoColor, true)
+            guiGraphics.drawString(
+                font, "×$bombardmentAmmo",
+                mouseX + 10, mouseY - 12, ammoColor, true
+            )
             return
         }
 
@@ -142,14 +153,16 @@ class AttackModeHandler {
         } else {
             RenderSystem.setShaderColor(1f, 0.4f, 0.1f, 0.9f)
         }
-        val ATTACK_CURSOR = com.atsuishio.superbwarfare.Mod.Companion.loc("textures/overlay/tactical_map/attack.png")
+
         guiGraphics.blit(ATTACK_CURSOR, mouseX - 8, mouseY - 8, 0f, 0f, 16, 16, 16, 16)
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
 
         // Ammo count next to cursor
-        guiGraphics.drawString(font, "×$directAmmo",
+        guiGraphics.drawString(
+            font, "×$directAmmo",
             mouseX + 10, mouseY - 12,
-            if (directAmmo > 0) 0xFFFFAA00.toInt() else 0xFFAA3333.toInt(), true)
+            if (directAmmo > 0) 0xFFFFAA00.toInt() else 0xFFAA3333.toInt(), true
+        )
 
         // Info box at cursor top-right (12px offset)
         val boxX = mouseX + 12
@@ -176,7 +189,8 @@ class AttackModeHandler {
     private fun minSourceDistance(worldX: Double, worldZ: Double): Double {
         if (sourcePositions.isEmpty()) return 0.0
         val minDistSq = sourcePositions.minOf { pos ->
-            val dx = worldX - pos.x; val dz = worldZ - pos.z
+            val dx = worldX - pos.x
+            val dz = worldZ - pos.z
             dx * dx + dz * dz
         }
         return sqrt(minDistSq)
@@ -191,7 +205,8 @@ class AttackModeHandler {
     }
 
     /** Renders a highlighted overlay on the currently hovered selection box in BOMBARDMENT mode. */
-    fun renderBombardmentBoxHighlight(guiGraphics: GuiGraphics,
+    fun renderBombardmentBoxHighlight(
+        guiGraphics: GuiGraphics,
         viewBlockX: Double, viewBlockZ: Double,
         mapCenterX: Float, mapCenterY: Float, zoom: Double
     ) {
@@ -222,12 +237,13 @@ class AttackModeHandler {
         guiGraphics.fill(r - thickness, t, r, b, borderColor)
     }
 
-    fun renderQueueTargets(guiGraphics: GuiGraphics,
+    fun renderQueueTargets(
+        guiGraphics: GuiGraphics,
         viewBlockX: Double, viewBlockZ: Double,
-        mapCenterX: Float, mapCenterY: Float, zoom: Double, font: net.minecraft.client.gui.Font
+        mapCenterX: Float, mapCenterY: Float, zoom: Double, font: Font
     ) {
         val scale = CoordinateConverter.scaleFromZoom(zoom)
-        val TARGET_FRAME = com.atsuishio.superbwarfare.Mod.Companion.loc("textures/overlay/tactical_map/target_frame.png")
+
         RenderSystem.enableBlend()
         RenderSystem.setShader { GameRenderer.getPositionTexShader() }
         for ((i, pos) in targetQueue.withIndex()) {
@@ -239,15 +255,18 @@ class AttackModeHandler {
             guiGraphics.blit(TARGET_FRAME, ix.roundToInt(), iy.roundToInt(), 0f, 0f, 16, 16, 16, 16)
             val num = "${i + 1}"
             val nw = font.width(num)
-            guiGraphics.drawString(font, num,
+            guiGraphics.drawString(
+                font, num,
                 (sx - nw / 2f).roundToInt(), (sy - font.lineHeight / 2f).roundToInt(),
-                0xFFFFFFFF.toInt(), false)
+                0xFFFFFFFF.toInt(), false
+            )
         }
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
     }
 
-    fun renderQueueMenu(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int,
-        font: net.minecraft.client.gui.Font, screenWidth: Int, screenHeight: Int
+    fun renderQueueMenu(
+        guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int,
+        font: Font, screenWidth: Int, screenHeight: Int
     ) {
         val items = listOf(
             Component.translatable("context.superbwarfare.tactical_map.sequential_fire").string,
@@ -264,8 +283,10 @@ class AttackModeHandler {
             val hovered = mouseX in mx..mx + pw && mouseY in my..my + ph
             guiGraphics.fill(mx, my, mx + pw, my + ph, 0xEE2A2A2A.toInt())
             if (hovered) guiGraphics.fill(mx + 1, my, mx + pw - 1, my + ph, 0x66444444)
-            guiGraphics.drawString(font, label, mx + 4, my + 3,
-                if (hovered) 0xFFFF5555.toInt() else 0xFFCC6666.toInt(), false)
+            guiGraphics.drawString(
+                font, label, mx + 4, my + 3,
+                if (hovered) 0xFFFF5555.toInt() else 0xFFCC6666.toInt(), false
+            )
             return
         }
         val padding = 4
@@ -301,7 +322,8 @@ class AttackModeHandler {
     // ── Click handling ──
 
     /** 处理攻击模式下的鼠标点击。返回 true 表示已消费。 */
-    fun handleClick(mouseX: Double, mouseY: Double, button: Int,
+    fun handleClick(
+        mouseX: Double, mouseY: Double, button: Int,
         isMouseInPanel: Boolean,
         viewBlockX: Double, viewBlockZ: Double,
         mapCenterX: Float, mapCenterY: Float, zoom: Double,
@@ -369,8 +391,9 @@ class AttackModeHandler {
     }
 
     /** 处理队列菜单点击。返回 true 表示已消费。 */
-    fun handleQueueMenuClick(mouseX: Double, mouseY: Double,
-        font: net.minecraft.client.gui.Font, screenWidth: Int, screenHeight: Int
+    fun handleQueueMenuClick(
+        mouseX: Double, mouseY: Double,
+        font: Font, screenWidth: Int, screenHeight: Int
     ): Boolean {
         if (!queueMenuVisible) return false
 
@@ -411,7 +434,11 @@ class AttackModeHandler {
                         queueMenuVisible = false
                         startSequentialFire()
                     }
-                    1 -> { queueMenuVisible = false; exitMode() }
+
+                    1 -> {
+                        queueMenuVisible = false
+                        exitMode()
+                    }
                 }
                 return true
             }
@@ -434,8 +461,8 @@ class AttackModeHandler {
     private fun lookupHeight(wX: Int, wZ: Int, level: Level): Int {
         val chunk = level.getChunk(wX shr 4, wZ shr 4)
         return if (chunk is LevelChunk && !chunk.isEmpty)
-            level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, wX, wZ)
+            level.getHeight(Heightmap.Types.WORLD_SURFACE, wX, wZ)
         else TacticalMapCache.getCachedHeight(wX, wZ)?.toInt()
-            ?: (net.minecraft.client.Minecraft.getInstance().player?.blockY ?: 64)
+            ?: (Minecraft.getInstance().player?.blockY ?: 64)
     }
 }

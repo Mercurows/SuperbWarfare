@@ -1,6 +1,7 @@
-package com.atsuishio.superbwarfare.client.screens.map
+package com.atsuishio.superbwarfare.client.map
 
 import com.atsuishio.superbwarfare.client.screens.TacticalMapScreen.Companion.SelBox
+import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.network.chat.Component
 import kotlin.math.abs
@@ -23,7 +24,7 @@ object SelectionBoxManager {
         selectionDragging: Boolean,
         selDragStartX: Float, selDragStartY: Float,
         selDragEndX: Float, selDragEndY: Float,
-        font: net.minecraft.client.gui.Font,
+        font: Font,
         mapLeft: Int, mapTop: Int, mapAreaW: Int, mapAreaH: Int,
     ) {
         val scale = CoordinateConverter.scaleFromZoom(zoom)
@@ -42,10 +43,25 @@ object SelectionBoxManager {
             guiGraphics.fill(maxSX.toInt(), minSY.toInt(), maxSX.toInt() + 1, maxSY.toInt(), bc)
             val wW = abs(box.worldMaxX - box.worldMinX).toInt()
             val wH = abs(box.worldMaxZ - box.worldMinZ).toInt()
-            val labelW = "宽: ${wW}m"; val labelH = "长: ${wH}m"
+            val labelW = "宽: ${wW}m"
+            val labelH = "长: ${wH}m"
             val lw = font.width(labelW)
-            guiGraphics.drawString(font, labelW, ((minSX + maxSX) / 2 - lw / 2).toInt(), minSY.toInt() - 10, 0xFFFFFFFF.toInt(), true)
-            guiGraphics.drawString(font, labelH, maxSX.toInt() + 3, ((minSY + maxSY) / 2 - font.lineHeight / 2).toInt(), 0xFFFFFFFF.toInt(), true)
+            guiGraphics.drawString(
+                font,
+                labelW,
+                ((minSX + maxSX) / 2 - lw / 2).toInt(),
+                minSY.toInt() - 10,
+                0xFFFFFFFF.toInt(),
+                true
+            )
+            guiGraphics.drawString(
+                font,
+                labelH,
+                maxSX.toInt() + 3,
+                ((minSY + maxSY) / 2 - font.lineHeight / 2).toInt(),
+                0xFFFFFFFF.toInt(),
+                true
+            )
         }
 
         // Dashed preview during drag
@@ -54,45 +70,104 @@ object SelectionBoxManager {
             val maxSX = maxOf(selDragStartX, selDragEndX)
             val minSY = minOf(selDragStartY, selDragEndY)
             val maxSY = maxOf(selDragStartY, selDragEndY)
-            renderDashedRect(guiGraphics, minSX, minSY, maxSX, maxSY, 0xCCFFFFFF.toInt(), mapLeft, mapTop, mapAreaW, mapAreaH)
+            renderDashedRect(
+                guiGraphics,
+                minSX,
+                minSY,
+                maxSX,
+                maxSY,
+                0xCCFFFFFF.toInt(),
+                mapLeft,
+                mapTop,
+                mapAreaW,
+                mapAreaH
+            )
         }
     }
 
-    fun renderDashedRect(guiGraphics: GuiGraphics, minSX: Float, minSY: Float, maxSX: Float, maxSY: Float, color: Int,
+    fun renderDashedRect(
+        guiGraphics: GuiGraphics, minSX: Float, minSY: Float, maxSX: Float, maxSY: Float, color: Int,
         mapLeft: Int, mapTop: Int, mapAreaW: Int, mapAreaH: Int
     ) {
-        val cx1 = mapLeft; val cx2 = mapLeft + mapAreaW
-        val cy1 = mapTop; val cy2 = mapTop + mapAreaH
-        val dash = 4; val gap = 3; val dashLen = dash + gap
+        val cx2 = mapLeft + mapAreaW
+        val cy2 = mapTop + mapAreaH
+        val dash = 4
+        val gap = 3
+        val dashLen = dash + gap
         // Top edge
-        if (minSY.toInt() in cy1 until cy2) {
-            val start = maxOf(minSX.toInt(), cx1); val end = minOf(maxSX.toInt(), cx2)
+        if (minSY.toInt() in mapTop until cy2) {
+            val start = maxOf(minSX.toInt(), mapLeft)
+            val end = minOf(maxSX.toInt(), cx2)
             var x = start
-            while (x < end) { val ex = minOf(x + dash, end); guiGraphics.fill(x, minSY.toInt(), ex, minSY.toInt() + 1, color); x += dashLen }
+            while (x < end) {
+                val ex = minOf(x + dash, end)
+                guiGraphics.fill(
+                    x,
+                    minSY.toInt(),
+                    ex,
+                    minSY.toInt() + 1,
+                    color
+                )
+                x += dashLen
+            }
         }
         // Bottom edge
-        if (maxSY.toInt() in cy1 until cy2) {
-            val start = maxOf(minSX.toInt(), cx1); val end = minOf(maxSX.toInt(), cx2)
+        if (maxSY.toInt() in mapTop until cy2) {
+            val start = maxOf(minSX.toInt(), mapLeft)
+            val end = minOf(maxSX.toInt(), cx2)
             var x = start
-            while (x < end) { val ex = minOf(x + dash, end); guiGraphics.fill(x, maxSY.toInt(), ex, maxSY.toInt() + 1, color); x += dashLen }
+            while (x < end) {
+                val ex = minOf(x + dash, end)
+                guiGraphics.fill(
+                    x,
+                    maxSY.toInt(),
+                    ex,
+                    maxSY.toInt() + 1,
+                    color
+                )
+                x += dashLen
+            }
         }
         // Left edge
-        if (minSX.toInt() in cx1 until cx2) {
-            val start = maxOf(minSY.toInt(), cy1); val end = minOf(maxSY.toInt(), cy2)
+        if (minSX.toInt() in mapLeft until cx2) {
+            val start = maxOf(minSY.toInt(), mapTop)
+            val end = minOf(maxSY.toInt(), cy2)
             var y = start
-            while (y < end) { val ey = minOf(y + dash, end); guiGraphics.fill(minSX.toInt(), y, minSX.toInt() + 1, ey, color); y += dashLen }
+            while (y < end) {
+                val ey = minOf(y + dash, end)
+                guiGraphics.fill(
+                    minSX.toInt(),
+                    y,
+                    minSX.toInt() + 1,
+                    ey,
+                    color
+                )
+                y += dashLen
+            }
         }
         // Right edge
-        if (maxSX.toInt() in cx1 until cx2) {
-            val start = maxOf(minSY.toInt(), cy1); val end = minOf(maxSY.toInt(), cy2)
+        if (maxSX.toInt() in mapLeft until cx2) {
+            val start = maxOf(minSY.toInt(), mapTop)
+            val end = minOf(maxSY.toInt(), cy2)
             var y = start
-            while (y < end) { val ey = minOf(y + dash, end); guiGraphics.fill(maxSX.toInt(), y, maxSX.toInt() + 1, ey, color); y += dashLen }
+            while (y < end) {
+                val ey = minOf(y + dash, end)
+                guiGraphics.fill(
+                    maxSX.toInt(),
+                    y,
+                    maxSX.toInt() + 1,
+                    ey,
+                    color
+                )
+                y += dashLen
+            }
         }
     }
 
     // ── Hit-testing ──
 
-    fun screenRectFromBox(box: SelBox,
+    fun screenRectFromBox(
+        box: SelBox,
         viewBlockX: Double, viewBlockZ: Double,
         mapCenterX: Float, mapCenterY: Float, zoom: Double
     ): Rect4f {
@@ -104,7 +179,8 @@ object SelectionBoxManager {
         return Rect4f(minOf(sx, ex), minOf(sy, ey), maxOf(sx, ex), maxOf(sy, ey))
     }
 
-    fun hitTestBox(mouseX: Double, mouseY: Double,
+    fun hitTestBox(
+        mouseX: Double, mouseY: Double,
         selBoxes: List<SelBox>,
         viewBlockX: Double, viewBlockZ: Double,
         mapCenterX: Float, mapCenterY: Float, zoom: Double
@@ -120,7 +196,8 @@ object SelectionBoxManager {
 
     // ── Context menu ──
 
-    fun renderContextMenu(guiGraphics: GuiGraphics, font: net.minecraft.client.gui.Font, mouseX: Int, mouseY: Int,
+    fun renderContextMenu(
+        guiGraphics: GuiGraphics, font: Font, mouseX: Int, mouseY: Int,
         selMenuX: Int, selMenuY: Int, screenWidth: Int, screenHeight: Int,
         isAdmin: Boolean, confirmClear: Boolean
     ) {
@@ -150,8 +227,10 @@ object SelectionBoxManager {
         val ty0 = my + 2
         val hovered0 = mouseX in mx..mx + menuW && mouseY in ty0..ty0 + itemHeight
         if (hovered0) guiGraphics.fill(mx + 1, ty0, mx + menuW - 1, ty0 + itemHeight, 0x664444FF)
-        guiGraphics.drawString(font, removeLabel, mx + 8, ty0 + 3,
-            if (hovered0) 0xFFFFFFFF.toInt() else 0xFFCCCCCC.toInt(), false)
+        guiGraphics.drawString(
+            font, removeLabel, mx + 8, ty0 + 3,
+            if (hovered0) 0xFFFFFFFF.toInt() else 0xFFCCCCCC.toInt(), false
+        )
 
         // Item 1: Clear area (admin only)
         if (isAdmin) {
@@ -174,9 +253,10 @@ object SelectionBoxManager {
      * Handles click on selection context menu.
      * @return Pair(clickConsumed, shouldToggleConfirmClear) — caller manages confirmClear state
      */
-    fun handleMenuClick(mouseX: Double, mouseY: Double,
+    fun handleMenuClick(
+        mouseX: Double, mouseY: Double,
         selMenuX: Int, selMenuY: Int, screenWidth: Int, screenHeight: Int,
-        isAdmin: Boolean, confirmClear: Boolean, font: net.minecraft.client.gui.Font
+        isAdmin: Boolean, confirmClear: Boolean, font: Font
     ): Int { // 0=none, 1=remove, 2=clear
         val removeLabel = Component.translatable("context.superbwarfare.tactical_map.sel_menu.remove").string
         val clearLabel = Component.translatable("context.superbwarfare.tactical_map.sel_menu.clear").string

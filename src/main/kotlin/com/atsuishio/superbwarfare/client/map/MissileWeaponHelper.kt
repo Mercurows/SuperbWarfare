@@ -1,18 +1,22 @@
-package com.atsuishio.superbwarfare.client.screens.map
+package com.atsuishio.superbwarfare.client.map
 
 import com.atsuishio.superbwarfare.client.ClientSyncedEntityHandler
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.google.gson.JsonObject
 import net.minecraft.network.chat.Component
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 
 /**
  * 导弹武器聚合工具。
- * 从多个选中载具中汇总武器弹药信息，消除 [buildEntityMissileWeapons] 与
- * 地面打击右键菜单中的重复武器枚举逻辑。
  */
 object MissileWeaponHelper {
+    fun JsonObject.gsonBool(vararg keys: String) =
+        keys.firstNotNullOfOrNull { if (has(it)) get(it).asBoolean else null } ?: false
+
+    fun JsonObject.gsonDouble(vararg keys: String) =
+        keys.firstNotNullOfOrNull { if (has(it)) get(it).asDouble else null }
 
     /** 单种武器聚合结果 */
     data class AggregatedWeapon(
@@ -85,18 +89,15 @@ object MissileWeaponHelper {
             ClientSyncedEntityHandler.getSyncedEntry(level, targetEntity.id)?.heightAboveGround ?: -1.0
         } else -1.0
 
-        data class InnerAgg(val totalAmmo: Int, val canLockEntity: Boolean, val displayNameBase: String,
-            val maxGuidedRange: Double)
+        data class InnerAgg(
+            val totalAmmo: Int, val canLockEntity: Boolean, val displayNameBase: String,
+            val maxGuidedRange: Double
+        )
+
         val weaponMap = linkedMapOf<String, InnerAgg>()
 
         for (vehicle in vehicles) {
             for ((name, gunData) in vehicle.gunDataMap) {
-                // Helper extensions for JsonObject field access
-                fun com.google.gson.JsonObject.gbool(vararg keys: String) =
-                    keys.firstNotNullOfOrNull { if (has(it)) get(it).asBoolean else null } ?: false
-                fun com.google.gson.JsonObject.gdouble(vararg keys: String) =
-                    keys.firstNotNullOfOrNull { if (has(it)) get(it).asDouble else null }
-
                 val currentSeek = gunData.get(GunProp.SEEK_WEAPON_INFO)
                 // 若 CanGuidedByRadar 为 false，该武器不可由雷达引导，不应出现在可用列表中
                 var canGuidedByRadar = currentSeek?.canGuidedByRadar ?: true
@@ -116,18 +117,18 @@ object MissileWeaponHelper {
                         canGuidedByRadar = seekObj.get("CanGuidedByRadar").asBoolean
                     }
                     if (!canLockEntity) {
-                        canLockEntity = seekObj.gbool("OnlyLockEntity", "onlyLockEntity")
+                        canLockEntity = seekObj.gsonBool("OnlyLockEntity", "onlyLockEntity")
                         if (canLockEntity) {
-                            minH = seekObj.gdouble("MinTargetHeight", "minTargetHeight") ?: 0.0
-                            maxH = seekObj.gdouble("MaxTargetHeight", "maxTargetHeight") ?: 114514.0
+                            minH = seekObj.gsonDouble("MinTargetHeight", "minTargetHeight") ?: 0.0
+                            maxH = seekObj.gsonDouble("MaxTargetHeight", "maxTargetHeight") ?: 114514.0
                         }
                     }
                     if (!canGroundStrike) {
-                        canGroundStrike = seekObj.gbool("OnlyLockBlock", "onlyLockBlock")
-                            || seekObj.gbool("InputBlockPos", "inputBlockPos")
+                        canGroundStrike = seekObj.gsonBool("OnlyLockBlock", "onlyLockBlock")
+                                || seekObj.gsonBool("InputBlockPos", "inputBlockPos")
                     }
                     // override 中的 MaxGuidedRange
-                    val overrideMgr = seekObj.gdouble("MaxGuidedRange", "maxGuidedRange")
+                    val overrideMgr = seekObj.gsonDouble("MaxGuidedRange", "maxGuidedRange")
                     if (overrideMgr != null) maxGuidedRange = overrideMgr
                 }
 
@@ -141,7 +142,7 @@ object MissileWeaponHelper {
                 if (!canLockEntity && !canGroundStrike) continue
 
                 if (requireLockEntity && canLockEntity && heightAboveGround >= 0) {
-                    if (heightAboveGround < minH || heightAboveGround > maxH) canLockEntity = false
+                    if (heightAboveGround !in minH..maxH) canLockEntity = false
                 }
                 if (!canLockEntity && !canGroundStrike) continue
 
@@ -150,12 +151,18 @@ object MissileWeaponHelper {
                 if (available <= 0) continue
 
                 val rawName = gunData.get(GunProp.NAME) ?: name
-                val translated = try { Component.translatable(rawName).string } catch (_: Exception) { rawName }
+                val translated = try {
+                    Component.translatable(rawName).string
+                } catch (_: Exception) {
+                    rawName
+                }
 
                 val existing = weaponMap[name]
                 if (existing != null) {
-                    weaponMap[name] = InnerAgg(existing.totalAmmo + available, existing.canLockEntity,
-                        existing.displayNameBase, minOf(existing.maxGuidedRange, maxGuidedRange))
+                    weaponMap[name] = InnerAgg(
+                        existing.totalAmmo + available, existing.canLockEntity,
+                        existing.displayNameBase, minOf(existing.maxGuidedRange, maxGuidedRange)
+                    )
                 } else {
                     weaponMap[name] = InnerAgg(available, canLockEntity, translated, maxGuidedRange)
                 }

@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.client.screens.map
+package com.atsuishio.superbwarfare.client.map
 
 /**
  * 战术地图坐标转换工具。
