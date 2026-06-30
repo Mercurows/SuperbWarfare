@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.renderer.projectile
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.entity.projectile.BasicGeoProjectileEntity
+import com.atsuishio.superbwarfare.entity.projectile.FastThrowableProjectile
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
 import com.atsuishio.superbwarfare.resource.model.ProjectileModelReloadListener
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
@@ -13,6 +14,7 @@ import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
+import net.minecraft.client.renderer.culling.Frustum
 import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.texture.OverlayTexture
@@ -35,6 +37,16 @@ open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context) :
         return false
     }
 
+    override fun shouldRender(
+        pLivingEntity: T,
+        pCamera: Frustum,
+        pCamX: Double,
+        pCamY: Double,
+        pCamZ: Double
+    ): Boolean {
+        return true
+    }
+
     override fun render(
         entity: T,
         yaw: Float,
@@ -43,7 +55,12 @@ open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context) :
         buffer: MultiBufferSource,
         packedLight: Int
     ) {
-        if (entity.tickCount <= entity.getHiddenTicks()) return
+        if (entity is FastThrowableProjectile) {
+            if (entity.syncedTick <= entity.getHiddenTicks()) return
+        } else {
+            if (entity.tickCount <= entity.getHiddenTicks()) return
+        }
+
         val model = ProjectileModelReloadListener.getModel(getModelLocation(entity)) ?: return
 
         poseStack.pushPose()
@@ -89,7 +106,13 @@ open class BasicProjectileRenderer<T>(manager: EntityRendererProvider.Context) :
             )
         }
 
-        if (flag && entity.tickCount > entity.getFlareHiddenTicks()) {
+        val flag2 = if (entity is FastThrowableProjectile) {
+            entity.syncedTick > entity.getFlareHiddenTicks()
+        } else {
+            entity.tickCount > entity.getFlareHiddenTicks()
+        }
+
+        if (flag && flag2) {
             flare.visible = true
             flare.rotation.rotationZ(2.5f * (Math.random().toFloat() - 0.5f))
             flare.xScale = ((2 * Math.random() - 1) * 0.4f + 1.6).toFloat()
