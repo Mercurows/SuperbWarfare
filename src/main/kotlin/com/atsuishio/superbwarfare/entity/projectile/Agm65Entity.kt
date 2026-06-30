@@ -38,7 +38,7 @@ open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level) : Missil
     override fun tick() {
         super.tick()
 
-        largeTrail()
+        hugeMissileTrail()
 
         val entity = EntityFindUtil.findEntity(this.level(), this.getTargetUUID())
         var toVec = lookAngle

@@ -7,8 +7,6 @@ import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.sendPacket
 import kotlinx.serialization.Serializable
 import net.minecraft.server.level.ServerLevel
-import net.minecraft.server.level.ServerPlayer
-import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 
 @Serializable
@@ -27,7 +25,7 @@ data class ExplosionParticleMessage(
     companion object {
 
         /**
-         * Sends the explosion particle message to all players within 1024 blocks.
+         * Sends the explosion particle message to all players in the same dimension.
          */
         @JvmStatic
         fun sendToNearbyPlayers(
@@ -35,13 +33,10 @@ data class ExplosionParticleMessage(
             type: ParticleTool.ParticleType,
             pos: Vec3
         ) {
-            val center = pos
-            val radius = 1024.0
-            for (player in level.getEntitiesOfClass(
-                ServerPlayer::class.java,
-                AABB(center, center).inflate(radius)
-            ) { true }) {
-                player.sendPacket(ExplosionParticleMessage(type, pos.x, pos.y, pos.z))
+            for (player in level.players()) {
+                if (player.position().distanceToSqr(pos) < 4096 * 4096) {
+                    player.sendPacket(ExplosionParticleMessage(type, pos.x, pos.y, pos.z))
+                }
             }
         }
     }

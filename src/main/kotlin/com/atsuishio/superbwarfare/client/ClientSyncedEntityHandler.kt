@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client
 
 import com.atsuishio.superbwarfare.config.server.MiscConfig
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage.SyncedEntity
 import com.atsuishio.superbwarfare.network.message.receive.PlayerInfoSyncMessage.SyncedPlayerInfo
 import com.atsuishio.superbwarfare.network.message.receive.RadarSyncMessage
@@ -48,6 +47,10 @@ object ClientSyncedEntityHandler {
     /** 中立：FuMO25 / vehicleRadar 同步（无人载具） */
     @JvmField
     val SYNCED_NEUTRAL = ConcurrentHashMap<SyncedKey, ClientSyncedEntity>()
+
+    /** 超视距世界渲染：ServerSyncedEntityHandler 无条件同步，不依赖雷达/IFF */
+    @JvmField
+    val SYNCED_WORLD_RENDER = ConcurrentHashMap<SyncedKey, ClientSyncedEntity>()
 
     @JvmField
     val SYNCED_PLAYERS = ConcurrentHashMap<SyncedPlayerKey, ClientSyncedPlayer>()
@@ -99,9 +102,6 @@ object ClientSyncedEntityHandler {
             entity.deltaMovement = syncedEntity.targetPos ?: Vec3.ZERO
             entity.xRot = syncedEntity.xRot
             entity.yRot = syncedEntity.yRot
-            if (entity is VehicleEntity) {
-                entity.roll = syncedEntity.zRot
-            }
             val entry = ClientSyncedEntity(
                 entity, time, syncedEntity.targetPos, syncedEntity.heightAboveGround, vel, shouldWorldRender
             )
@@ -126,6 +126,7 @@ object ClientSyncedEntityHandler {
         SYNCED_FRIENDLY.values.removeIf { tick - it.timeStamp > expire }
         SYNCED_HOSTILE.values.removeIf { tick - it.timeStamp > expire }
         SYNCED_NEUTRAL.values.removeIf { tick - it.timeStamp > expire }
+        SYNCED_WORLD_RENDER.values.removeIf { tick - it.timeStamp > expire }
         SYNCED_PLAYERS.values.removeIf { tick - it.timeStamp > expire }
         // 雷达过期清理：超过 2 个 sync 周期未更新则移除
         val radarExpire = expire * 2L
@@ -144,15 +145,63 @@ object ClientSyncedEntityHandler {
     fun getSyncedNeutralEntities(level: Level): List<Entity> =
         SYNCED_NEUTRAL.filterKeys { it.dim == level.dimension().location() }.map { it.value.entity }
 
-    /** 返回所有已同步实体（友方+中立，用于 IFFOverlay 和 TacticalMapScreen 友好标记） */
+    /**
+     * 无条件同步实体到超视距世界渲染池。
+     * 由 [BeyondVisualEntitySyncMessage] 调用，不区分敌我，不依赖雷达。
+     */
     @JvmStatic
-    fun getSyncedEntities(level: Level): List<Entity> {
-        val dim = level.dimension().location()
-        val all = mutableListOf<Entity>()
-        SYNCED_FRIENDLY.filterKeys { it.dim == dim }.mapTo(all) { it.value.entity }
-        SYNCED_NEUTRAL.filterKeys { it.dim == dim }.mapTo(all) { it.value.entity }
-        return all
+    fun syncWorldRender(dim: ResourceLocation, list: List<SyncedEntity>) {
+        val level = mc.level ?: return
+        val time = System.currentTimeMillis()
+        for (syncedEntity in list) {
+            val key = SyncedKey(dim, syncedEntity.id)
+            if (syncedEntity.removed) {
+                SYNCED_WORLD_RENDER.remove(key)
+                continue
+            }
+            val existedEntry = SYNCED_WORLD_RENDER[key]
+            val vel = if (existedEntry != null) {
+                val dt = ((time - existedEntry.timeStamp) / 50.0).coerceAtLeast(0.5)
+                Vec3(
+                    (syncedEntity.pos.x - existedEntry.entity.x) / dt,
+                    (syncedEntity.pos.y - existedEntry.entity.y) / dt,
+                    (syncedEntity.pos.z - existedEntry.entity.z) / dt,
+                )
+            } else {
+                Vec3.ZERO
+            }
+
+            val entity: Entity
+            if (existedEntry != null) {
+                entity = existedEntry.entity
+                val tag = syncedEntity.tag as? CompoundTag
+                if (tag != null) entity.load(tag)
+            } else {
+                val type = ForgeRegistries.ENTITY_TYPES.getValue(syncedEntity.type) ?: continue
+                entity = type.create(level) ?: continue
+                val tag = syncedEntity.tag as? CompoundTag ?: continue
+                entity.load(tag)
+                entity.id = syncedEntity.id
+            }
+            entity.setPos(syncedEntity.pos)
+            entity.xRot = syncedEntity.xRot
+            entity.yRot = syncedEntity.yRot
+            SYNCED_WORLD_RENDER[key] = ClientSyncedEntity(
+                entity, time, syncedEntity.targetPos, syncedEntity.heightAboveGround, vel,
+                shouldWorldRender = true
+            )
+        }
     }
+
+    /** 返回超视距世界渲染池中当前维度的所有实体 */
+    @JvmStatic
+    fun getSyncedWorldRenderEntities(level: Level): List<Entity> =
+        SYNCED_WORLD_RENDER.filterKeys { it.dim == level.dimension().location() }.map { it.value.entity }
+
+    /** 按 ID 从世界渲染池中查找条目 */
+    @JvmStatic
+    fun getWorldRenderEntry(level: Level, entityId: Int): ClientSyncedEntity? =
+        SYNCED_WORLD_RENDER[SyncedKey(level.dimension().location(), entityId)]
 
     @JvmStatic
     fun getSyncedPlayerInfo(level: Level): List<ClientSyncedPlayer> =

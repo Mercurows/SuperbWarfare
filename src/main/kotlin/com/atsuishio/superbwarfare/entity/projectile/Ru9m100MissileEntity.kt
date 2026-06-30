@@ -78,7 +78,7 @@ open class Ru9m100MissileEntity(type: EntityType<out Ru9m100MissileEntity>, leve
 
                 if (!isLostTarget()) {
                     turn(toVec, ((tickCount - 1) * 0.5f).coerceIn(0f, 15f))
-                    this.deltaMovement = this.deltaMovement.scale(0.05).add(lookAngle.scale(8.0))
+                    this.deltaMovement = this.deltaMovement.scale(0.05).add(lookAngle.scale(((tickCount - 10) * 0.2).coerceIn(0.0, 40.0)))
                 }
 
                 if (isLostTarget()) {
@@ -127,7 +127,7 @@ open class Ru9m100MissileEntity(type: EntityType<out Ru9m100MissileEntity>, leve
         }
 
         if (this.tickCount > 10) {
-            largeTrail()
+            hugeMissileTrail()
         }
     }
 

@@ -1,7 +1,8 @@
 package com.atsuishio.superbwarfare.client.renderer
 
 import com.atsuishio.superbwarfare.client.ClientSyncedEntityHandler
-import com.atsuishio.superbwarfare.client.renderer.SyncedEntityWorldRenderer.MAX_RENDER_DISTANCE
+import com.atsuishio.superbwarfare.entity.projectile.MissileProjectile
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.tools.clientLevel
 import com.atsuishio.superbwarfare.tools.mc
 import com.mojang.blaze3d.shaders.FogShape
@@ -28,7 +29,7 @@ import org.joml.Matrix4f
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = [Dist.CLIENT])
 object SyncedEntityWorldRenderer {
     //TODO 需要服务端配置和开关
-    private const val MAX_RENDER_DISTANCE = 4096.0
+    private const val MAX_RENDER_DISTANCE = 2048.0
     private const val MAX_RENDER_DISTANCE_SQ = MAX_RENDER_DISTANCE * MAX_RENDER_DISTANCE
 
     @SubscribeEvent
@@ -41,24 +42,14 @@ object SyncedEntityWorldRenderer {
         val bufferSource = mc.renderBuffers().bufferSource()
         val partialTick = event.partialTick
 
-        val allSynced = buildList {
-            addAll(ClientSyncedEntityHandler.getSyncedFriendlyEntities(level))
-            addAll(ClientSyncedEntityHandler.getSyncedHostileEntities(level))
-            addAll(ClientSyncedEntityHandler.getSyncedNeutralEntities(level))
-        }
-
-        val seen = hashSetOf<Int>()
-        val uniqueEntities = allSynced.filter { seen.add(it.id) }
+        // 从无条件同步池获取实体（不依赖雷达/IFF）
+        val uniqueEntities = ClientSyncedEntityHandler.getSyncedWorldRenderEntities(level)
 
         // Save current state
         val savedProj = Matrix4f(RenderSystem.getProjectionMatrix())
         val savedFogStart = RenderSystem.getShaderFogStart()
         val savedFogEnd = RenderSystem.getShaderFogEnd()
         val savedFogShape = RenderSystem.getShaderFogShape()
-
-        // Extend projection far plane so entities beyond default ~2048 clip plane render
-        val extendedProj = createExtendedProjection(savedProj)
-        RenderSystem.setProjectionMatrix(extendedProj, VertexSorting.DISTANCE_TO_ORIGIN)
 
         // Extend fog
         RenderSystem.setShaderFogStart(savedFogEnd)
@@ -67,47 +58,46 @@ object SyncedEntityWorldRenderer {
 
         try {
             for (entity in uniqueEntities) {
-                if (level.getEntity(entity.id) != null) continue
+                if (entity is VehicleEntity || entity is MissileProjectile) {
+                    if (level.getEntity(entity.id) != null) continue
 
-                val dx = entity.x - camera.position.x
-                val dy = entity.y - camera.position.y
-                val dz = entity.z - camera.position.z
-                val distSq = dx * dx + dy * dy + dz * dz
-                if (distSq > MAX_RENDER_DISTANCE_SQ) continue
+                    val dx = entity.x - camera.position.x
+                    val dy = entity.y - camera.position.y
+                    val dz = entity.z - camera.position.z
+                    val distSq = dx * dx + dy * dy + dz * dz
+                    if (distSq > MAX_RENDER_DISTANCE_SQ) continue
 
-                val entry = ClientSyncedEntityHandler.getSyncedEntry(level, entity.id) ?: continue
-                if (!entry.shouldWorldRender) continue
-                val elapsedTicks = ((System.currentTimeMillis() - entry.timeStamp) / 50.0)
-                    .coerceIn(0.0, 2.0)
+                    val entry = ClientSyncedEntityHandler.getWorldRenderEntry(level, entity.id) ?: continue
+                    val elapsedTicks = ((System.currentTimeMillis() - entry.timeStamp) / 50.0)
+                        .coerceIn(0.0, 2.0)
 
-                val ix = entity.x + entry.velocity.x * elapsedTicks
-                val iy = entity.y + entry.velocity.y * elapsedTicks
-                val iz = entity.z + entry.velocity.z * elapsedTicks
+                    val ix = entity.x + entry.velocity.x * elapsedTicks
+                    val iy = entity.y + entry.velocity.y * elapsedTicks
+                    val iz = entity.z + entry.velocity.z * elapsedTicks
 
-                val blockPos = BlockPos.containing(ix, iy, iz)
-                val packedLight = if (level.hasChunkAt(blockPos)) {
-                    LevelRenderer.getLightColor(level, blockPos)
-                } else {
-                    LightTexture.FULL_BRIGHT
+                    val blockPos = BlockPos.containing(ix, iy, iz)
+                    val packedLight = if (level.hasChunkAt(blockPos)) {
+                        LevelRenderer.getLightColor(level, blockPos)
+                    } else {
+                        LightTexture.FULL_BRIGHT
+                    }
+
+                    val relX = ix - camera.position.x
+                    val relY = iy - camera.position.y
+                    val relZ = iz - camera.position.z
+
+                    dispatcher.render(
+                        entity,
+                        relX,
+                        relY,
+                        relZ,
+                        entity.yRot,
+                        partialTick,
+                        event.poseStack,
+                        bufferSource,
+                        packedLight
+                    )
                 }
-
-                val relX = ix - camera.position.x
-                val relY = iy - camera.position.y
-                val relZ = iz - camera.position.z
-
-                // propellerRot / propellerRotO are now EntityData — synced
-                // automatically via NBT, no manual advancement needed.
-                dispatcher.render(
-                    entity,
-                    relX,
-                    relY,
-                    relZ,
-                    entity.yRot,
-                    partialTick,
-                    event.poseStack,
-                    bufferSource,
-                    packedLight
-                )
             }
         } finally {
             bufferSource.endBatch()
@@ -116,26 +106,5 @@ object SyncedEntityWorldRenderer {
             RenderSystem.setShaderFogEnd(savedFogEnd)
             RenderSystem.setShaderFogShape(savedFogShape)
         }
-    }
-
-    /**
-     * 从当前投影矩阵创建扩展远裁剪面的新矩阵。
-     * 保留原有 FOV、aspect、near，仅将 far 替换为 [MAX_RENDER_DISTANCE] + 512。
-     *
-     * 参考 RemoteEntityRenderHandler.createExtendedProjection()。
-     */
-    private fun createExtendedProjection(projection: Matrix4f): Matrix4f {
-        val extended = Matrix4f(projection)
-        // Extract near plane from perspective matrix:
-        //  m22 = -(far + near) / (far - near)
-        //  m32 = -(2 * far * near) / (far - near)
-        //  → near = m32 / (m22 - 1)
-        val m22 = projection.m22()
-        val m32 = projection.m32()
-        val near = m32 / (m22 - 1f)
-        val far = MAX_RENDER_DISTANCE.toFloat() + 512f
-        extended.m22(-(far + near) / (far - near))
-        extended.m32(-(2f * far * near) / (far - near))
-        return extended
     }
 }

@@ -56,13 +56,15 @@ object MissileWeaponHelper {
 
     /**
      * 汇总所有选中载具中指定武器的总弹药数。
+     * 传入 null 作为弹药提供者，仅读取载具同步的 virtualAmmo，
+     * 避免读取玩家背包弹药导致的数值卡住问题。
      */
     fun currentAttackAmmo(weaponName: String, vehicles: List<VehicleEntity>, player: Player?): Int {
         if (vehicles.isEmpty()) return 0
         return vehicles.sumOf { vehicle ->
             val gd = vehicle.gunDataMap[weaponName] ?: return@sumOf 0
             val ammoCost = gd.get(GunProp.AMMO_COST_PER_SHOOT)
-            if (ammoCost <= 0) 999 else gd.currentAvailableAmmo(player) / ammoCost
+            if (ammoCost <= 0) 999 else gd.currentAvailableAmmo(null) / ammoCost
         }
     }
 

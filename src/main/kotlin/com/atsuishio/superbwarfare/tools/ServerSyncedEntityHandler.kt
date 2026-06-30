@@ -4,6 +4,8 @@ import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
 import com.atsuishio.superbwarfare.entity.projectile.MissileProjectile
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.network.message.receive.BeyondVisualEntitySyncMessage
+import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
 import com.atsuishio.superbwarfare.tools.ServerSyncedEntityHandler.cleanAll
 import com.atsuishio.superbwarfare.tools.ServerSyncedEntityHandler.getEntries
 import com.atsuishio.superbwarfare.tools.ServerSyncedEntityHandler.register
@@ -36,7 +38,6 @@ object ServerSyncedEntityHandler {
         val eyePos: Vec3,
         val yRot: Float,
         val xRot: Float,
-        val zRot: Float,
         val entityType: ResourceLocation,
         val nbt: CompoundTag,
         /** 实体注册/更新时间戳（系统时间 ms），用于 NBT 序列化间隔判定和过期清理，不受服务器重启影响 */
@@ -89,7 +90,6 @@ object ServerSyncedEntityHandler {
             eyePos = entity.eyePosition,
             yRot = entity.yRot,
             xRot = entity.xRot,
-            zRot = if (entity is VehicleEntity) entity.roll else 0f,
             entityType = ForgeRegistries.ENTITY_TYPES.getKey(entity.type) ?: return,
             nbt = nbt,
             timeStamp = now,
@@ -156,6 +156,35 @@ object ServerSyncedEntityHandler {
         val server = event.server
         if (server.tickCount % MiscConfig.SERVER_SYNC_CLEAN_INTERVAL.get() == 0) {
             cleanAll(server)
+        }
+        broadcastWorldRender(server)
+    }
+
+    /**
+     * 将 [ServerSyncedEntityHandler] 中所有实体无条件发送给同维度的每个玩家。
+     * 超视距渲染不依赖雷达/IFF，所有载具和导弹都应能被看见。
+     */
+    private fun broadcastWorldRender(server: MinecraftServer) {
+        for (dimLevel in server.allLevels) {
+            val dim = dimLevel.dimension().location()
+            val dimEntries = entities[dim.toString()] ?: continue
+            if (dimEntries.isEmpty()) continue
+
+            val syncedList = dimEntries.values.mapNotNull { entry ->
+                dimLevel.getEntity(entry.entityId) ?: return@mapNotNull null
+                EntitySyncMessage.SyncedEntity(
+                    entry.entityId, entry.entityType, entry.pos, entry.targetPos, entry.nbt,
+                    entry.yRot, entry.xRot,
+                    heightAboveGround = entry.heightAboveGround,
+                )
+            }
+
+            if (syncedList.isNotEmpty()) {
+                val msg = BeyondVisualEntitySyncMessage(dim, syncedList)
+                for (player in dimLevel.players()) {
+                    sendPacketTo(player, msg)
+                }
+            }
         }
     }
 }

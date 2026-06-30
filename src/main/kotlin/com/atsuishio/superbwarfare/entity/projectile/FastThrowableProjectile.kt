@@ -14,6 +14,7 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.weapon.BeastItem.Companion.beastKill
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
+import com.atsuishio.superbwarfare.network.message.receive.MissileTrailParticleMessage
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.world.phys.ExtendedEntityRayTraceResult
 import net.minecraft.core.BlockPos
@@ -608,26 +609,13 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
     }
 
     open fun hugeMissileTrail() {
-        if (level().isClientSide) {
-            val l = deltaMovement.length()
-            var i = 0.0
-            while (i < l) {
-                val startPos = Vec3(xo, yo + bbHeight / 2, zo)
-                val pos = startPos.add(deltaMovement.normalize().scale(-i))
-                val random = 2 * (this.random.nextFloat() - 0.5f)
-                level().addParticle(
-                    CustomFlareOption(
-                        0.5f,
-                        0.43f,
-                        0.36f,
-                        160,
-                        0.93f,
-                        (10 + 8 * random).toInt(),
-                        0.03f
-                    ), pos.x + random * 0.25, pos.y + random * 0.25, pos.z + random * 0.25, 0.0, 0.0, 0.0
-                )
-                i += 2.0
-            }
+        if (level() is ServerLevel) {
+            MissileTrailParticleMessage.sendToNearbyPlayers(
+                level() as ServerLevel,
+                xo, yo, zo,
+                bbHeight.toDouble(),
+                deltaMovement.x, deltaMovement.y, deltaMovement.z
+            )
         }
     }
 

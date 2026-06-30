@@ -30,7 +30,6 @@ data class EntitySyncMessage(
         val tag: SerializedTag,
         val yRot: Float = 0f,
         val xRot: Float = 0f,
-        val zRot: Float = 0f,
         /** 离地高度，-1 表示未计算 */
         val heightAboveGround: Double = -1.0,
         /** 标记为已移除，客户端收到后立即从同步列表中清理 */
