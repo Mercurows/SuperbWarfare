@@ -1126,6 +1126,8 @@
   "superbwarfare.advancement.main.powerful_cooler.des": "武器模组某天更新后不适配这把枪了不该骂吗",
   "superbwarfare.advancement.main.delete_your_gun": "我说你那枪都多余",
   "superbwarfare.advancement.main.delete_your_gun.des": "打载具都不咋掉血，奥对了，你弹药也没了",
+  "superbwarfare.advancement.main.critical_hit": "会心一击！",
+  "superbwarfare.advancement.main.critical_hit.des": "已经到了无法停下的程度，直入脑髓的一击",
 
   "context.superbwarfare.tactical_map.create_marker": "创建标记点",
   "context.superbwarfare.tactical_map.edit_marker": "编辑",

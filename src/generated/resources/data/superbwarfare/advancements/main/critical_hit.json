@@ -1,5 +1,5 @@
 {
-  "parent": "superbwarfare:main/super_container",
+  "parent": "superbwarfare:main/delete_your_gun",
   "criteria": {
     "0": {
       "conditions": {
@@ -13,7 +13,7 @@
             ]
           },
           "dealt": {
-            "max": 0.1
+            "min": 514.0
           }
         }
       },
@@ -23,16 +23,16 @@
   "display": {
     "announce_to_chat": true,
     "description": {
-      "translate": "superbwarfare.advancement.main.delete_your_gun.des"
+      "translate": "superbwarfare.advancement.main.critical_hit.des"
     },
     "frame": "challenge",
     "hidden": true,
     "icon": {
-      "item": "superbwarfare:marlin"
+      "item": "superbwarfare:ntw_20"
     },
     "show_toast": true,
     "title": {
-      "translate": "superbwarfare.advancement.main.delete_your_gun"
+      "translate": "superbwarfare.advancement.main.critical_hit"
     }
   },
   "requirements": [

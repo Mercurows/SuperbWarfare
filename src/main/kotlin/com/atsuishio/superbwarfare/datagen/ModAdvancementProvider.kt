@@ -158,13 +158,13 @@ class ModAdvancementProvider(private val packOutput: PackOutput, private val exi
         }
 
         val deleteYourGun = advancement("delete_your_gun") {
-            it.icon(ModItems.K_98.get())
+            it.icon(ModItems.MARLIN.get())
                 .externalTrigger(
                     VehicleHurtTrigger.TriggerInstance.vehicleHurt(
                         DamagePredicate.Builder.damageInstance()
                             .type(
                                 DamageSourcePredicate.Builder.damageType().tag(
-                                    TagPredicate.`is`(ModTags.DamageTypes.GUN_DAMAGE)
+                                    TagPredicate.`is`(ModTags.DamageTypes.SBW_GUN_FIRE_DAMAGE)
                                 )
                             )
                             .dealtDamage(MinMaxBounds.Doubles.atMost(0.1))
@@ -172,6 +172,22 @@ class ModAdvancementProvider(private val packOutput: PackOutput, private val exi
                 )
                 .type(ModAdvancement.Type.SECRET_CHALLENGE)
                 .parent(superContainer)
+        }
+        val criticalHit = advancement("critical_hit") {
+            it.icon(ModItems.NTW_20.get())
+                .externalTrigger(
+                    VehicleHurtTrigger.TriggerInstance.vehicleHurt(
+                        DamagePredicate.Builder.damageInstance()
+                            .type(
+                                DamageSourcePredicate.Builder.damageType().tag(
+                                    TagPredicate.`is`(ModTags.DamageTypes.SBW_GUN_FIRE_DAMAGE)
+                                )
+                            )
+                            .dealtDamage(MinMaxBounds.Doubles.atLeast(514.0))
+                    )
+                )
+                .type(ModAdvancement.Type.SECRET_CHALLENGE)
+                .parent(deleteYourGun)
         }
     }
 

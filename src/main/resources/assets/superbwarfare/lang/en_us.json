@@ -1126,6 +1126,8 @@
   "superbwarfare.advancement.main.powerful_cooler.des": "When a weapon perk updates and no longer fits this gun, ain't that worth a rant?",
   "superbwarfare.advancement.main.delete_your_gun": "Gun is Just Superfluous, I Said",
   "superbwarfare.advancement.main.delete_your_gun.des": "It does barely any damage to vehicles anyway—oh, and by the way, you're out of ammo too",
+  "superbwarfare.advancement.main.critical_hit": "クリティカルヒット",
+  "superbwarfare.advancement.main.critical_hit.des": "もう止まらないくらい 脳髄まで届くわHit",
 
   "context.superbwarfare.tactical_map.create_marker": "Create Marker",
   "context.superbwarfare.tactical_map.edit_marker": "Edit",
