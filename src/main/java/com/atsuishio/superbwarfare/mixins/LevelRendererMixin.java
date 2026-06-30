@@ -1,5 +1,7 @@
 package com.atsuishio.superbwarfare.mixins;
 
+import com.atsuishio.superbwarfare.entity.projectile.MissileProjectile;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -46,6 +48,11 @@ public class LevelRendererMixin {
             float f = Mth.lerp(pPartialTick, pEntity.yRotO, pEntity.getYRot());
             this.entityRenderDispatcher.render(pEntity, d0 - pCamX, d1 - pCamY, d2 - pCamZ, f, pPartialTick, pPoseStack,
                     pBufferSource, LightTexture.FULL_BRIGHT);
+        }
+        // Cancel vanilla rendering for BVR entities — SyncedEntityWorldRenderer handles them
+        // with fog disabled, both within and beyond vanilla view distance.
+        if (pEntity instanceof VehicleEntity || pEntity instanceof MissileProjectile) {
+            ci.cancel();
         }
     }
 }
