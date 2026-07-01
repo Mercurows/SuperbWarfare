@@ -171,7 +171,8 @@ object ServerSyncedEntityHandler {
             if (dimEntries.isEmpty()) continue
 
             val syncedList = dimEntries.values.mapNotNull { entry ->
-                dimLevel.getEntity(entry.entityId) ?: return@mapNotNull null
+                val entity = dimLevel.getEntity(entry.entityId) ?: return@mapNotNull null
+                if (entity !is VehicleEntity && entity !is MissileProjectile) return@mapNotNull null
                 EntitySyncMessage.SyncedEntity(
                     entry.entityId, entry.entityType, entry.pos, entry.targetPos, entry.nbt,
                     entry.yRot, entry.xRot,

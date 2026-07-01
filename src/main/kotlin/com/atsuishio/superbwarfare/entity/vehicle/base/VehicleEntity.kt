@@ -256,7 +256,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     protected var zO = 0.0
 
     open var roll by ROLL
-    open var prevRoll by ROLLO
+    open var prevRoll = 0f
     open var repairCoolDown = maxRepairCoolDown()
     open var hurtWarnCoolDown = 0
 
@@ -888,7 +888,6 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             define(LASER_SCALE_O, 0f)
             define(CHARGE_PROGRESS, 0f)
             define(ROLL, 0f)
-            define(ROLLO, 0f)
             define(IS_WRECK, false)
             define(SYMPATHETIC_DETONATED, false)
             define(TURRET_BURNED, false)
@@ -1427,7 +1426,6 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         serverYaw = compound.getFloat("ServerYaw")
         serverPitch = compound.getFloat("ServerPitch")
         roll = compound.getFloat("Roll")
-        prevRoll = compound.getFloat("PrevRoll")
 
         isWreck = compound.getBoolean("IsWreck")
         sympatheticDetonated = compound.getBoolean("SympatheticDetonated")
@@ -1542,7 +1540,6 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         compound.putFloat("ServerYaw", serverYaw)
         compound.putFloat("ServerPitch", serverPitch)
         compound.putFloat("Roll", roll)
-        compound.putFloat("PrevRoll", prevRoll)
 
         if (this.maxPassengers > 0) {
             compound.putIntArray("SelectedWeapon", selectedWeapon)
@@ -4734,10 +4731,6 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         /** ROLL */
         @JvmField
         val ROLL: EntityDataAccessor<Float> =
-            SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.FLOAT)
-
-        @JvmField
-        val ROLLO: EntityDataAccessor<Float> =
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.FLOAT)
     }
 }

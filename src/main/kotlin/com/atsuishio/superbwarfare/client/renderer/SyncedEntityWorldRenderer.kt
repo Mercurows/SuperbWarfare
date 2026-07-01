@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer
 
 import com.atsuishio.superbwarfare.client.ClientSyncedEntityHandler
-import com.atsuishio.superbwarfare.entity.projectile.MissileProjectile
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.tools.clientLevel
 import com.atsuishio.superbwarfare.tools.mc
@@ -11,7 +10,6 @@ import com.mojang.blaze3d.vertex.VertexSorting
 import net.minecraft.client.renderer.LevelRenderer
 import net.minecraft.client.renderer.LightTexture
 import net.minecraft.core.BlockPos
-import net.minecraft.util.Mth
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.client.event.RenderLevelStageEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
@@ -43,95 +41,70 @@ object SyncedEntityWorldRenderer {
         val bufferSource = mc.renderBuffers().bufferSource()
         val partialTick = event.partialTick
 
-        // 从无条件同步池获取实体（不依赖雷达/IFF）
         val uniqueEntities = ClientSyncedEntityHandler.getSyncedWorldRenderEntities(level)
 
-        // Flush any pending vanilla entity draw calls BEFORE modifying fog
-        // to prevent them from being drawn with extended BVR fog parameters
         bufferSource.endBatch()
 
-        // Save current state
         val savedProj = Matrix4f(RenderSystem.getProjectionMatrix())
         val savedFogStart = RenderSystem.getShaderFogStart()
         val savedFogEnd = RenderSystem.getShaderFogEnd()
         val savedFogShape = RenderSystem.getShaderFogShape()
 
-        // Extend projection far plane so entities beyond default clip plane render
         val extendedProj = createExtendedProjection(savedProj)
         RenderSystem.setProjectionMatrix(extendedProj, VertexSorting.DISTANCE_TO_ORIGIN)
 
-        // BVR fog: starts at vanilla's far plane (savedFogEnd) so entities
-        // are clear within and at the view-distance boundary, then gradually
-        // fades to fully fogged at MAX_RENDER_DISTANCE.
         RenderSystem.setShaderFogStart(savedFogEnd)
         RenderSystem.setShaderFogEnd(MAX_RENDER_DISTANCE.toFloat())
         RenderSystem.setShaderFogShape(FogShape.SPHERE)
 
         try {
-            // Render ALL synced vehicles/missiles with fog disabled,
-            // regardless of whether they are still in clientLevel.
-            // This ensures BVR entities never have vanilla fog, even within view distance.
             for (entity in uniqueEntities) {
-                if (entity is VehicleEntity || entity is MissileProjectile) {
+                if (level.getEntity(entity.id) != null) continue
 
-                    // Use the real entity from clientLevel when within vanilla view distance,
-                    // otherwise fall back to the synced clone for BVR extrapolation
-                    val realEntity = level.getEntity(entity.id)
-                    val renderEntity = realEntity ?: entity
+                val ix: Double
+                val iy: Double
+                val iz: Double
 
-                    val ix: Double
-                    val iy: Double
-                    val iz: Double
+                val entry = ClientSyncedEntityHandler.getWorldRenderEntry(level, entity.id) ?: continue
+                val elapsedTicks = ((System.currentTimeMillis() - entry.timeStamp) / 50.0)
+                    .coerceIn(0.0, 2.0)
+                ix = entity.x + entry.velocity.x * elapsedTicks
+                iy = entity.y + entry.velocity.y * elapsedTicks
+                iz = entity.z + entry.velocity.z * elapsedTicks
 
-                    val renderYRot: Float
+                val dx = ix - camera.position.x
+                val dy = iy - camera.position.y
+                val dz = iz - camera.position.z
+                val distSq = dx * dx + dy * dy + dz * dz
+                if (distSq > MAX_RENDER_DISTANCE_SQ) continue
 
-                    if (realEntity != null) {
-                        // Within view distance — lerp between ticks for smooth movement,
-                        // matching vanilla's renderEntity behavior
-                        ix = Mth.lerp(partialTick.toDouble(), realEntity.xOld, realEntity.x)
-                        iy = Mth.lerp(partialTick.toDouble(), realEntity.yOld, realEntity.y)
-                        iz = Mth.lerp(partialTick.toDouble(), realEntity.zOld, realEntity.z)
-                        renderYRot = Mth.rotLerp(partialTick, realEntity.yRotO, realEntity.yRot)
-                    } else {
-                        // Beyond view distance — extrapolate from last sync position
-                        val entry = ClientSyncedEntityHandler.getWorldRenderEntry(level, entity.id) ?: continue
-                        val elapsedTicks = ((System.currentTimeMillis() - entry.timeStamp) / 50.0)
-                            .coerceIn(0.0, 2.0)
-                        ix = entity.x + entry.velocity.x * elapsedTicks
-                        iy = entity.y + entry.velocity.y * elapsedTicks
-                        iz = entity.z + entry.velocity.z * elapsedTicks
-                        renderYRot = renderEntity.yRot
-                    }
-
-                    val dx = ix - camera.position.x
-                    val dy = iy - camera.position.y
-                    val dz = iz - camera.position.z
-                    val distSq = dx * dx + dy * dy + dz * dz
-                    if (distSq > MAX_RENDER_DISTANCE_SQ) continue
-
-                    val blockPos = BlockPos.containing(ix, iy, iz)
-                    val packedLight = if (level.hasChunkAt(blockPos)) {
-                        LevelRenderer.getLightColor(level, blockPos)
-                    } else {
-                        LightTexture.FULL_BRIGHT
-                    }
-
-                    val relX = ix - camera.position.x
-                    val relY = iy - camera.position.y
-                    val relZ = iz - camera.position.z
-
-                    dispatcher.render(
-                        renderEntity,
-                        relX,
-                        relY,
-                        relZ,
-                        renderYRot,
-                        partialTick,
-                        event.poseStack,
-                        bufferSource,
-                        packedLight
-                    )
+                val blockPos = BlockPos.containing(ix, iy, iz)
+                val packedLight = if (level.hasChunkAt(blockPos)) {
+                    LevelRenderer.getLightColor(level, blockPos)
+                } else {
+                    LightTexture.FULL_BRIGHT
                 }
+
+                val relX = ix - camera.position.x
+                val relY = iy - camera.position.y
+                val relZ = iz - camera.position.z
+
+                entity.xRotO = entity.xRot
+                if (entity is VehicleEntity) {
+                    entity.prevRoll = entity.roll
+                }
+
+                dispatcher.render(
+                    entity,
+                    relX,
+                    relY,
+                    relZ,
+                    entity.yRot,
+                    partialTick,
+                    event.poseStack,
+                    bufferSource,
+                    packedLight
+                )
             }
         } finally {
             bufferSource.endBatch()

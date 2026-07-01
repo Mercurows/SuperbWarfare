@@ -290,7 +290,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         if (level() is ServerLevel) {
             if (forceLoadChunk() && ProjectileConfig.PROJECTILE_CHUNK_LOADING.get()) {
                 this.keepChunkLoaded(this.position())
-                this.keepChunkLoaded(position().add(this.deltaMovement.normalize().scale(16.0)))
+                this.keepChunkLoaded(position().add(this.deltaMovement.multiply(1.0, 0.0, 1.0)))
             }
         }
     }
