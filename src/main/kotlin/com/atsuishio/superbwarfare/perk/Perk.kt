@@ -89,13 +89,19 @@ open class Perk(val descriptionId: String, val type: Type) : PropertyModifier<Gu
     }
 
     /**
-     * 用于处理武器近战攻击后的逻辑
+     * 用于处理武器近战攻击后的逻辑（命中实体时触发）
      */
     open fun onMeleeAttack(data: GunData, instance: PerkInstance, target: Entity, source: DamageSource) {}
 
+    /**
+     * 用于处理武器按下近战键的逻辑（无论是否命中实体都会触发）
+     */
+    open fun onMeleeSwing(data: GunData, instance: PerkInstance, entity: Entity?) {}
+
+    @Suppress("UnstableApiUsage")
     open fun `is`(tag: TagKey<Perk>): Boolean {
         return RegistryManager.ACTIVE.getRegistry(ModPerks.PERK_KEY).getHolder(this)
-            .map { it.`is`(tag) }.orElse(false)
+            .map { it.`is`(tag) }.orElseGet { false }
     }
 
     enum class Type(val typeName: String, val color: ChatFormatting) {

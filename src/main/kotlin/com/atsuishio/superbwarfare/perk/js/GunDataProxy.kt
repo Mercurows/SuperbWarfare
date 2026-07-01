@@ -53,6 +53,9 @@ class GunDataProxy(private val data: GunData) {
         return data.hasInfiniteBackupAmmo(entity)
     }
 
+    // ── Zoom / Aiming ──
+    fun isZooming(): Boolean = data.zooming.get()
+
     // ── Energy (for Regeneration) ──
     fun getMaxEnergyStored(): Int {
         return data.stack.getCapability(ForgeCapabilities.ENERGY).map { it.maxEnergyStored }.getOrElse { 0 }

@@ -505,6 +505,8 @@
   "des.superbwarfare.powerful_cooler": "增强武器的散热效果，略微降低开火时产生的热量",
   "item.superbwarfare.cast_no_shadows": "光照无影",
   "des.superbwarfare.cast_no_shadows": "造成近战伤害会从备弹中填装部分弹药并治疗自身",
+  "item.superbwarfare.eager_edge": "急切刀锋",
+  "des.superbwarfare.eager_edge": "切换到此武器后，立即按下近战能够向前冲刺",
 
   "item.superbwarfare.kill_clip": "杀戮弹匣",
   "des.superbwarfare.kill_clip": "完成击杀后填装可提升武器伤害",
@@ -536,6 +538,8 @@
   "des.superbwarfare.brain_storm": "增加武器的爆头倍率",
   "item.superbwarfare.battle_of_wits": "唇枪舌剑",
   "des.superbwarfare.battle_of_wits": "发送消息会提升下一次射击的伤害",
+  "item.superbwarfare.target_lock": "勿移视",
+  "des.superbwarfare.target_lock": "随着此武器准星在目标上停留的时间增加伤害",
 
   "item.superbwarfare.empty_perk": "空白模组",
   "item.superbwarfare.shortcut_pack": "捷径包",

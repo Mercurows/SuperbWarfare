@@ -505,6 +505,8 @@
   "des.superbwarfare.powerful_cooler": "Enhances the heat dissipation effect of the weapon and slightly reduces the heat generated during firing.",
   "item.superbwarfare.cast_no_shadows": "Cast No Shadows",
   "des.superbwarfare.cast_no_shadows": "Dealing melee damage loads a certain amount of ammo from reserves and heals you.",
+  "item.superbwarfare.eager_edge": "Eager Edge",
+  "des.superbwarfare.eager_edge": "After switching to this weapon, pressing the melee button immediately performs a forward dash.",
 
   "item.superbwarfare.kill_clip": "Kill Clip",
   "des.superbwarfare.kill_clip": "Increases the damage of weapon after dealing a final blow.",
@@ -536,6 +538,8 @@
   "des.superbwarfare.brain_storm": "Increases the rate of headshot.",
   "item.superbwarfare.battle_of_wits": "Battle of Wits",
   "des.superbwarfare.battle_of_wits": "Sending a message increases damage of next shot.",
+  "item.superbwarfare.target_lock": "Target Lock",
+  "des.superbwarfare.target_lock": "Damage increases the longer this weapon remains on a target.",
 
   "item.superbwarfare.empty_perk": "Empty Perk",
   "item.superbwarfare.shortcut_pack": "Shortcut Pack",

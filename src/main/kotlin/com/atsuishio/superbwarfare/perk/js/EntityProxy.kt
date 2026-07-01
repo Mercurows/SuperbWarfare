@@ -1,8 +1,12 @@
 package com.atsuishio.superbwarfare.perk.js
 
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity
+import com.atsuishio.superbwarfare.network.message.receive.ClientMotionSyncMessage
 import com.atsuishio.superbwarfare.tools.CustomExplosion
 import com.atsuishio.superbwarfare.tools.InventoryTool
+import com.atsuishio.superbwarfare.tools.TraceTool
+import com.atsuishio.superbwarfare.tools.sendPacketTo
+import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.OwnableEntity
@@ -75,6 +79,11 @@ class EntityProxy(val entity: Entity?) {
         return o.isAlliedTo(e)
     }
 
+    fun findLookingEntity(maxDistance: Double): EntityProxy {
+        val lookedAt = TraceTool.findLookingEntity(entity, maxDistance)
+        return EntityProxy(lookedAt)
+    }
+
     fun isSameAs(other: EntityProxy): Boolean {
         return entity != null && entity == other.entity
     }
@@ -107,5 +116,23 @@ class EntityProxy(val entity: Entity?) {
         }
 
         builder.explode()
+    }
+
+    // ── Motion / Velocity ──
+    fun push(x: Double, y: Double, z: Double) {
+        val e = entity ?: return
+        if (e is ServerPlayer) {
+            val newMotion = e.deltaMovement.add(x, y, z)
+            sendPacketTo(e, ClientMotionSyncMessage(e.id, newMotion))
+        } else {
+            e.deltaMovement = e.deltaMovement.add(x, y, z)
+            e.hurtMarked = true
+        }
+    }
+
+    fun pushForward(strength: Double) {
+        val e = entity as? LivingEntity ?: return
+        val look = e.lookAngle
+        push(look.x * strength, look.y * strength, look.z * strength)
     }
 }

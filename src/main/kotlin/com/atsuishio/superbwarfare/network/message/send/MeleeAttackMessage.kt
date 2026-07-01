@@ -1,8 +1,11 @@
 package com.atsuishio.superbwarfare.network.message.send
 
+import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
+import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedUUID
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.sendPacketTo
@@ -29,9 +32,19 @@ data class MeleeAttackMessage(val uuidList: List<SerializedUUID>) : ServerPacket
         if (player.isSpectator) return
 
         val entities = uuidList.mapNotNull { EntityFindUtil.findEntity(player.level(), it.toString()) }
-        if (entities.isEmpty()) return
 
-        attack(player, entities)
+        val stack = player.mainHandItem
+        if (stack.item is GunItem) {
+            val data = GunData.from(stack)
+            for (type in Perk.Type.entries) {
+                val instances = data.perk.getInstances(type)
+                instances.forEach { it.perk.onMeleeSwing(data, it, player) }
+            }
+        }
+
+        if (entities.isNotEmpty()) {
+            attack(player, entities)
+        }
         player.swing(InteractionHand.MAIN_HAND)
     }
 

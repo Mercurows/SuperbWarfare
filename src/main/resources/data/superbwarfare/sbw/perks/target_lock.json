@@ -1,0 +1,4 @@
+{
+  "Type": "damage",
+  "Script": "superbwarfare:scripts/perks/target_lock.js"
+}
