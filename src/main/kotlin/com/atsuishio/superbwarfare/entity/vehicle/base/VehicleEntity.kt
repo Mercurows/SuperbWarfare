@@ -2311,8 +2311,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                     xRot,
                     heightAboveGround = hag,
                 )
-                // TODO shouldWorldRender这里搞配置，服务端or载具json控制
-                val msg = EntitySyncMessage(dim, listOf(synced), true, shouldWorldRender = true)
+                val msg = EntitySyncMessage(dim, listOf(synced), true)
                 for (player in srv.playerList.players) {
                     if (player.isAlive && SeekTool.IS_FRIENDLY.test(player, this)) {
                         sendPacketTo(player, msg)
