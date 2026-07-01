@@ -40,7 +40,7 @@ import com.atsuishio.superbwarfare.item.container.ContainerBlockItem
 import com.atsuishio.superbwarfare.item.misc.VehicleKeyItem
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.network.message.receive.ClientVehicleItemMessage
-import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
+import com.atsuishio.superbwarfare.network.message.receive.EntityRelationSyncMessage
 import com.atsuishio.superbwarfare.network.message.receive.VehicleShootClientMessage
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.OBB.Part.*
@@ -2289,32 +2289,21 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         this.setDeltaMovement(this.deltaMovement.add(0.0, -this.computed().gravity, 0.0))
         this.move(MoverType.SELF, this.deltaMovement)
 
-        if (!level().isClientSide && !isWreck && health > 0) {
-            ServerSyncedEntityHandler.register(this)
+        if (!level().isClientSide) {
+            if(onGround() && isWreck) {
+                ServerSyncedEntityHandler.unregister(this)
+            } else {
+                ServerSyncedEntityHandler.register(this)
 
-            // 直接向友方玩家同步自身（不依赖 IffItem）
-            val srv = server
-            if (srv != null) {
-                val dim = level().dimension().location()
-                val surfaceY = level().getHeight(
-                    net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE,
-                    blockX, blockZ
-                )
-                val hag = (y - surfaceY).coerceAtLeast(0.0)
-                val synced = EntitySyncMessage.SyncedEntity(
-                    id,
-                    ForgeRegistries.ENTITY_TYPES.getKey(type)!!,
-                    position(),
-                    null,
-                    serializeNBT(),
-                    yRot,
-                    xRot,
-                    heightAboveGround = hag,
-                )
-                val msg = EntitySyncMessage(dim, listOf(synced), true)
-                for (player in srv.playerList.players) {
-                    if (player.isAlive && SeekTool.IS_FRIENDLY.test(player, this)) {
-                        sendPacketTo(player, msg)
+                // 向友方玩家同步自身 ID（轻量级，实体状态数据由 BeyondVisualEntitySyncMessage 统一发送）
+                val srv = server
+                if (srv != null) {
+                    val dim = level().dimension().location()
+                    val msg = EntityRelationSyncMessage(dim, friendlyIds = listOf(id))
+                    for (player in srv.playerList.players) {
+                        if (player.isAlive && SeekTool.IS_FRIENDLY.test(player, this)) {
+                            sendPacketTo(player, msg)
+                        }
                     }
                 }
             }

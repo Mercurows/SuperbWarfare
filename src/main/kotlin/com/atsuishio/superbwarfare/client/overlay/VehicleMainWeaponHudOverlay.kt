@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.overlay
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
+import com.atsuishio.superbwarfare.client.ClientSyncedEntityHandler
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.client.overlay.weapon.*
 import com.atsuishio.superbwarfare.data.gun.GunData
@@ -194,15 +195,24 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
             return
         }
 
+        val level = clientLevel
+
         val seekTime = seekInfo.seekTime
 
         if (seekInfo.onlyLockEntity && entities != null) {
             val targetEntity = ClientEventHandler.lockingEntityVehicle
             var nearestEntity = ClientEventHandler.nearestEntityVehicle
 
-            for (e in entities!!) {
+            for (en in entities!!) {
+                val e = level!!.getEntity(en.id) ?: en
                 if (e.type.`is`(ModTags.EntityTypes.DECOY)) continue
-                val pos3 = lerpGetEntityBoundingBoxCenter(e, partialTick)
+
+                val pos3 = if (level.getEntity(e.id) != null)
+                    lerpGetEntityBoundingBoxCenter(e, partialTick)
+                else
+                    ClientSyncedEntityHandler.getExtrapolatedPos(level, e)
+                        .add(0.0, e.bbHeight / 2.0, 0.0)
+
                 val decoy = TraceTool.findLookDecoy(player, cameraPos, cameraPos.vectorTo(pos3).normalize(), seekInfo.seekRange)
 
                 if (decoy == null && pos3.canBeSeen() && !seekInfo.onlyLockBlock) {

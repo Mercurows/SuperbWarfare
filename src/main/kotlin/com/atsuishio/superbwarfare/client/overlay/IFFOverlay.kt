@@ -225,7 +225,7 @@ object IFFOverlay : CommonOverlay("iff") {
                             RenderSystem.setShaderColor(1f, 1f, 1f, 0.4f)
                         }
 
-                        var pos = if (level.getEntity(e.id) != null)
+                        val pos = if (level.getEntity(e.id) != null)
                             VectorTool.lerpGetEntityBoundingBoxCenter(enemy, partialTick)
                         else
                             ClientSyncedEntityHandler.getExtrapolatedPos(level, enemy)

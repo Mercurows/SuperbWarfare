@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.config.server.VehicleConfig
 import com.atsuishio.superbwarfare.entity.projectile.MissileProjectile
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.network.message.receive.BeyondVisualEntitySyncMessage
-import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
 import com.atsuishio.superbwarfare.tools.ServerSyncedEntityHandler.cleanAll
 import com.atsuishio.superbwarfare.tools.ServerSyncedEntityHandler.getEntries
 import com.atsuishio.superbwarfare.tools.ServerSyncedEntityHandler.register
@@ -13,6 +12,7 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.levelgen.Heightmap
 import net.minecraft.world.phys.Vec3
@@ -54,7 +54,7 @@ object ServerSyncedEntityHandler {
 
     /**
      * 注册或更新实体。每 tick 由 VehicleEntity / MissileProjectile / IffItem 调用。
-     * NBT 仅在与上次同步间隔 >= SYNC_ENTITY_INTERVAL 时重新序列化。
+     * NBT 每 tick 重新序列化，保证 [BeyondVisualEntitySyncMessage] 携带最新实体状态。
      */
     @JvmStatic
     @JvmOverloads
@@ -65,20 +65,14 @@ object ServerSyncedEntityHandler {
         level.server ?: return
         if (entity is VehicleEntity && entity.isWreck) return
         if (entity !is VehicleEntity && entity !is MissileProjectile && entity !is Player
+            && entity !is LivingEntity
             && !VehicleConfig.inScanList(entity.type)
         ) return
 
         val dim = level.dimension().location().toString()
         val now = System.currentTimeMillis()
-        val existing = entities[dim]?.get(entity.id)
 
-        val interval = MiscConfig.SYNC_ENTITY_INTERVAL.get()
-        val intervalMs = interval * 50L // ticks → ms
-        val nbt = if (existing == null || now - existing.timeStamp >= intervalMs) {
-            entity.serializeNBT()
-        } else {
-            existing.nbt
-        }
+        val nbt = entity.serializeNBT()
 
         val td = if (entity is VehicleEntity && !entity.isWreck)
             entity.computed().trackDistanceMultiply else 1.0
@@ -172,8 +166,8 @@ object ServerSyncedEntityHandler {
 
             val syncedList = dimEntries.values.mapNotNull { entry ->
                 val entity = dimLevel.getEntity(entry.entityId) ?: return@mapNotNull null
-                if (entity !is VehicleEntity && entity !is MissileProjectile) return@mapNotNull null
-                EntitySyncMessage.SyncedEntity(
+                if (entity !is VehicleEntity && entity !is MissileProjectile && entity !is LivingEntity) return@mapNotNull null
+                BeyondVisualEntitySyncMessage.SyncedEntity(
                     entry.entityId, entry.entityType, entry.pos, entry.targetPos, entry.nbt,
                     entry.yRot, entry.xRot,
                     heightAboveGround = entry.heightAboveGround,

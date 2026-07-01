@@ -2,8 +2,7 @@ package com.atsuishio.superbwarfare.tools
 
 import com.atsuishio.superbwarfare.entity.projectile.MissileProjectile
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
-import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
-import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage.SyncedEntity
+import com.atsuishio.superbwarfare.network.message.receive.EntityRelationSyncMessage
 import com.atsuishio.superbwarfare.network.message.receive.RadarSyncMessage
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.util.Mth
@@ -13,7 +12,6 @@ import net.minecraft.world.entity.MobCategory
 import net.minecraft.world.entity.OwnableEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec3
-import net.minecraftforge.registries.ForgeRegistries
 
 /**
  * 通用雷达扫描器 —— 双端一致的扇面搜索逻辑。
@@ -77,9 +75,8 @@ object RadarScanner {
 
     data class ScanResult(
         val dim: net.minecraft.resources.ResourceLocation,
-        val hostile: List<SyncedEntity>,
-        val neutral: List<SyncedEntity>,
-        val friendly: List<SyncedEntity>,
+        val hostileIds: List<Int>,
+        val neutralIds: List<Int>,
     ) {
         fun sendToClients(owner: Player, level: ServerLevel, shareWithTeammates: Boolean = true) {
             val recipients = level.players()
@@ -89,12 +86,8 @@ object RadarScanner {
                 }
                 .toList()
 
-            if (hostile.isNotEmpty()) {
-                val msg = EntitySyncMessage(dim, hostile, friendly = false, neutral = false)
-                recipients.forEach { sendPacketTo(it, msg) }
-            }
-            if (neutral.isNotEmpty()) {
-                val msg = EntitySyncMessage(dim, neutral, friendly = false, neutral = true)
+            if (hostileIds.isNotEmpty() || neutralIds.isNotEmpty()) {
+                val msg = EntityRelationSyncMessage(dim, hostileIds = hostileIds, neutralIds = neutralIds)
                 recipients.forEach { sendPacketTo(it, msg) }
             }
         }
@@ -143,8 +136,8 @@ object RadarScanner {
             -Mth.cos(angleRad.toFloat()).toDouble()
         )
 
-        val hostileList = mutableListOf<SyncedEntity>()
-        val neutralList = mutableListOf<SyncedEntity>()
+        val hostileList = mutableListOf<Int>()
+        val neutralList = mutableListOf<Int>()
 
         // ── 搜索载具和导弹 ──
         if (config.searchType == SearchType.VEHICLES || config.searchType == SearchType.ALL) {
@@ -178,25 +171,20 @@ object RadarScanner {
                         continue
                 }
 
-                val synced = SyncedEntity(
-                    entry.entityId, entry.entityType, entry.pos, entry.targetPos, entry.nbt, entry.yRot, entry.xRot,
-                    heightAboveGround = entry.heightAboveGround,
-                )
-
                 // 友方导弹由 MissileProjectile.tick() 自行同步，雷达只上报敌方导弹
                 if (entity is MissileProjectile) {
                     val missileOwner = entity.owner
                     if (missileOwner == null || !SeekTool.IS_FRIENDLY.test(config.owner, missileOwner)) {
-                        hostileList.add(synced)
+                        hostileList.add(entry.entityId)
                     }
                     continue
                 }
                 when {
                     // 中立：无驾驶员、无主人、lastDriverUUID 为空
-                    isNeutral(entity) -> neutralList.add(synced)
+                    isNeutral(entity) -> neutralList.add(entry.entityId)
                     // 敌对
-                    !SeekTool.IS_FRIENDLY.test(config.owner, entity) -> hostileList.add(synced)
-                    // 友方不在此处处理（由 IffItem 单独同步）
+                    !SeekTool.IS_FRIENDLY.test(config.owner, entity) -> hostileList.add(entry.entityId)
+                    // 友方不在此处处理（由 IffItem/MissileProjectile/VehicleEntity 单独同步 ID）
                 }
             }
         }
@@ -215,32 +203,21 @@ object RadarScanner {
                 .filter { SeekTool.NOT_IN_SMOKE.test(it) }
                 .filter { !SeekTool.IS_FRIENDLY.test(config.owner, it) }
                 .forEach {
-                    val surfaceY = it.level().getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, it.blockX, it.blockZ)
-                    val hag = it.y - surfaceY
-                    val synced = SyncedEntity(
-                        it.id,
-                        ForgeRegistries.ENTITY_TYPES.getKey(it.type)!!,
-                        it.position(),
-                        null,
-                        it.serializeNBT(),
-                        it.yRot,
-                        it.xRot,
-                        heightAboveGround = hag.coerceAtLeast(0.0),
-                    )
+                    // 注册到 ServerSyncedEntityHandler，使其进入超视距世界渲染广播
+                    ServerSyncedEntityHandler.register(it)
                     // 根据生物类别分类：敌对生物（怪物）→ hostile，被动生物（动物等）→ neutral
                     if (it.type.category == MobCategory.MONSTER) {
-                        hostileList.add(synced)
+                        hostileList.add(it.id)
                     } else {
-                        neutralList.add(synced)
+                        neutralList.add(it.id)
                     }
                 }
         }
 
         return ScanResult(
             dim = dim,
-            hostile = hostileList,
-            neutral = neutralList,
-            friendly = emptyList(),
+            hostileIds = hostileList,
+            neutralIds = neutralList,
         )
     }
 

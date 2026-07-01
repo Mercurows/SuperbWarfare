@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.init.ModSerializers
 import com.atsuishio.superbwarfare.init.ModTags
-import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
+import com.atsuishio.superbwarfare.network.message.receive.EntityRelationSyncMessage
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.SeekTool
 import com.atsuishio.superbwarfare.tools.ServerSyncedEntityHandler
@@ -149,23 +149,11 @@ abstract class MissileProjectile : DestroyableProjectile, ITrackableProjectile, 
             }
             ServerSyncedEntityHandler.register(this, getTargetPos())
 
-            // 直接向友方玩家同步自身（不依赖 IffItem / syncPosition）
+            // 向友方玩家同步自身 ID（轻量级，实体状态数据由 BeyondVisualEntitySyncMessage 统一发送）
             val srv = server
             if (srv != null) {
                 val dim = level().dimension().location()
-                val surfaceY = level().getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.WORLD_SURFACE, blockX, blockZ)
-                val hag = (y - surfaceY).coerceAtLeast(0.0)
-                val synced = EntitySyncMessage.SyncedEntity(
-                    id,
-                    net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES.getKey(type)!!,
-                    position(),
-                    getTargetPos(),
-                    serializeNBT(),
-                    yRot,
-                    xRot,
-                    heightAboveGround = hag,
-                )
-                val msg = EntitySyncMessage(dim, listOf(synced), true)
+                val msg = EntityRelationSyncMessage(dim, friendlyIds = listOf(id))
                 for (player in srv.playerList.players) {
                     if (SeekTool.IS_FRIENDLY.test(player, this.owner)) {
                         sendPacketTo(player, msg)
