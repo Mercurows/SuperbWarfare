@@ -60,6 +60,11 @@ object DistantVehicleManager {
         var lerpSteps = 0
         var lastUpdate = 0L
         var interval = 10
+        // Прошлый снапшот — для эффективной скорости по наблюдаемым позициям
+        var prevSnapX = Double.NaN
+        var prevSnapY = 0.0
+        var prevSnapZ = 0.0
+        var prevSnapTick = 0L
         // Диагностика
         var wasPinned = false
         var lastStep = 0.0
@@ -148,14 +153,27 @@ object DistantVehicleManager {
                 ghost.lerpSteps = 0
             } else {
                 // Проективная цель: снапшот отстаёт от реального времени на
-                // интервал, поэтому целимся в позицию+скорость×интервал — призрак
-                // летит примерно в реальном времени, и передача от ванильного
-                // рендера к призраку на границе tracking range не даёт скачка
-                ghost.targetX = snapshot.x + snapshot.vx * msg.interval
-                ghost.targetY = snapshot.y + snapshot.vy * msg.interval
-                ghost.targetZ = snapshot.z + snapshot.vz * msg.interval
+                // интервал, целимся на интервал вперёд. Скорость берём НЕ из
+                // snapshot.v (deltaMovement врёт: у ускоряющихся ракет и при
+                // троттлинге тиков на подгрузке чанков он сильно больше
+                // фактического сдвига — проекция перелетала и срабатывал SNAP
+                // назад каждые ~20 тиков), а по наблюдаемым позициям снапшотов
+                if (!ghost.prevSnapX.isNaN()) {
+                    val dt = (tickCounter - ghost.prevSnapTick).coerceIn(1L, 60L).toDouble()
+                    ghost.targetX = snapshot.x + (snapshot.x - ghost.prevSnapX) / dt * msg.interval
+                    ghost.targetY = snapshot.y + (snapshot.y - ghost.prevSnapY) / dt * msg.interval
+                    ghost.targetZ = snapshot.z + (snapshot.z - ghost.prevSnapZ) / dt * msg.interval
+                } else {
+                    ghost.targetX = snapshot.x
+                    ghost.targetY = snapshot.y
+                    ghost.targetZ = snapshot.z
+                }
                 ghost.lerpSteps = msg.interval
             }
+            ghost.prevSnapX = snapshot.x
+            ghost.prevSnapY = snapshot.y
+            ghost.prevSnapZ = snapshot.z
+            ghost.prevSnapTick = tickCounter
         }
         // Снаряды НЕ чистим по отсутствию в одном пакете: на переходах чанков
         // снаряд может на пакет выпасть из серверного списка энтити, и удаление
