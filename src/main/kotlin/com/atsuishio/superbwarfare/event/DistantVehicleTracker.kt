@@ -139,31 +139,36 @@ object DistantVehicleTracker {
                         projectile.keepChunkLoaded(projectile.position())
                     }
                 }
+            }
 
-                // Спасение выгрузившихся: пропал из списка энтити, но не старше
-                // 10 с — грузим его последний известный чанк
-                val now = server.tickCount
-                val presentUuids = HashSet<UUID>(projectiles.size)
-                for (projectile in projectiles) {
-                    presentUuids += projectile.uuid
-                    lastSeenProjectiles[projectile.uuid] =
-                        LastSeen(level.dimension(), ChunkPos(projectile.blockPosition()), now)
+            // Учёт последних чанков снарядов: отличает честную гибель (чанк
+            // тикает, а снаряда нет — взорвался, клиентам шлём removed) от
+            // выгрузки с недогенерированным чанком (спасаем тикетом)
+            val now = server.tickCount
+            val presentUuids = HashSet<UUID>(projectiles.size)
+            for (projectile in projectiles) {
+                presentUuids += projectile.uuid
+                lastSeenProjectiles[projectile.uuid] =
+                    LastSeen(level.dimension(), ChunkPos(projectile.blockPosition()), now)
+            }
+            val removedProjectiles = ArrayList<UUID>()
+            val rescueIterator = lastSeenProjectiles.entries.iterator()
+            while (rescueIterator.hasNext()) {
+                val entry = rescueIterator.next()
+                val seen = entry.value
+                if (now - seen.tick > RESCUE_TIMEOUT_TICKS) {
+                    rescueIterator.remove()
+                    continue
                 }
-                val rescueIterator = lastSeenProjectiles.entries.iterator()
-                while (rescueIterator.hasNext()) {
-                    val entry = rescueIterator.next()
-                    val seen = entry.value
-                    if (now - seen.tick > RESCUE_TIMEOUT_TICKS) {
-                        rescueIterator.remove()
-                        continue
-                    }
-                    if (seen.dim != level.dimension() || entry.key in presentUuids) continue
-                    // Чанк уже тикает — снаряд не выгружен, а честно уничтожен
-                    if (!level.isPositionEntityTicking(seen.chunkPos.getMiddleBlockPosition(0))) {
-                        level.chunkSource.addRegionTicket(
-                            FastThrowableProjectile.PROJECTILE_TICKET, seen.chunkPos, 3, seen.chunkPos,
-                        )
-                    }
+                if (seen.dim != level.dimension() || entry.key in presentUuids) continue
+                if (level.isPositionEntityTicking(seen.chunkPos.getMiddleBlockPosition(0))) {
+                    // Чанк тикает, а снаряда нет — честно уничтожен
+                    removedProjectiles += entry.key
+                    rescueIterator.remove()
+                } else if (ProjectileConfig.PROJECTILE_CHUNK_LOADING.get()) {
+                    level.chunkSource.addRegionTicket(
+                        FastThrowableProjectile.PROJECTILE_TICKET, seen.chunkPos, 3, seen.chunkPos,
+                    )
                 }
             }
 
@@ -189,6 +194,8 @@ object DistantVehicleTracker {
                             turretYRot = vehicle.turretYRot,
                             turretXRot = vehicle.turretXRot,
                             skinId = vehicle.skinId,
+                            isWreck = vehicle.isWreck,
+                            sympatheticDetonated = vehicle.sympatheticDetonated,
                         )
                     }
                     .toList()
@@ -214,7 +221,10 @@ object DistantVehicleTracker {
                     .toList()
 
                 // Пустой список тоже шлём: он авторитетно чистит призраков на клиенте
-                sendPacketTo(player, DistantVehiclesMessage(interval, vehicleSnapshots, projectileSnapshots))
+                sendPacketTo(
+                    player,
+                    DistantVehiclesMessage(interval, vehicleSnapshots, projectileSnapshots, removedProjectiles),
+                )
             }
         }
     }

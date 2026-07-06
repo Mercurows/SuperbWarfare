@@ -21,6 +21,8 @@ data class VehicleSnapshot(
     val turretYRot: Float,
     val turretXRot: Float,
     val skinId: String,
+    val isWreck: Boolean,
+    val sympatheticDetonated: Boolean,
 )
 
 @Serializable
@@ -42,6 +44,9 @@ data class DistantVehiclesMessage(
     val interval: Int,
     val vehicles: List<VehicleSnapshot>,
     val projectiles: List<ProjectileSnapshot>,
+    // Честно уничтоженные (взорвавшиеся) снаряды — призрак снимается сразу,
+    // не дожидаясь таймаута
+    val removedProjectiles: List<SerializedUUID>,
 ) : ClientPacketPayload() {
 
     override fun PayloadContext.handler() {

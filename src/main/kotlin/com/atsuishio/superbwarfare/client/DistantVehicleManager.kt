@@ -104,6 +104,8 @@ object DistantVehicleManager {
             ghost.targetTurretX = snapshot.turretXRot
             ghost.lerpSteps = msg.interval
             ghost.entity.skinId = snapshot.skinId
+            ghost.entity.isWreck = snapshot.isWreck
+            ghost.entity.sympatheticDetonated = snapshot.sympatheticDetonated
         }
         // Пакет авторитетный: чего нет в списке — того больше нет в радиусе
         ghostMap.keys.retainAll(seen)
@@ -148,10 +150,13 @@ object DistantVehicleManager {
             ghost.prevSnapZ = snapshot.z
             ghost.prevSnapTick = tickCounter
         }
-        // Снаряды НЕ чистим по отсутствию в одном пакете: на переходах чанков
-        // снаряд может на пакет выпасть из серверного списка энтити, и удаление
-        // с пересозданием давало видимый скачок. Взорвавшиеся уберёт таймаут
-        // (2 интервала, ~1 с) в onClientTick.
+        // Честно уничтоженные (взорвавшиеся) — снимаем сразу; остальных по
+        // отсутствию в одном пакете НЕ чистим: на переходах чанков снаряд может
+        // на пакет выпасть из серверного списка, и пересоздание давало скачок.
+        // Страховкой остаётся таймаут в onClientTick.
+        for (uuid in msg.removedProjectiles) {
+            projectileMap.remove(uuid)
+        }
     }
 
     private fun clearAll() {
@@ -172,6 +177,8 @@ object DistantVehicleManager {
         entity.turretXRot = snapshot.turretXRot
         entity.turretXRotO = snapshot.turretXRot
         entity.skinId = snapshot.skinId
+        entity.isWreck = snapshot.isWreck
+        entity.sympatheticDetonated = snapshot.sympatheticDetonated
         return Ghost(snapshot.entityId, entity)
     }
 
