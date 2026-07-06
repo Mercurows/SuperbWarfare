@@ -60,6 +60,19 @@ object DistantVehicleManager {
         var lerpSteps = 0
         var lastUpdate = 0L
         var interval = 10
+        // Диагностика
+        var wasPinned = false
+        var lastStep = 0.0
+        var lastDx = 0.0
+        var lastDy = 0.0
+        var lastDz = 0.0
+    }
+
+    // ВРЕМЕННАЯ диагностика рывков дальних снарядов: пишет жизнь призраков в лог
+    private const val DEBUG_GHOSTS = true
+
+    private fun debugLog(message: String) {
+        if (DEBUG_GHOSTS) com.atsuishio.superbwarfare.Mod.LOGGER.info("[DistantGhost] {}", message)
     }
 
     // Ключ — UUID энтити: сетевой entityId меняется при выгрузке/загрузке
@@ -104,8 +117,12 @@ object DistantVehicleManager {
         ghostMap.keys.retainAll(seen)
 
         for (snapshot in msg.projectiles) {
+            var created = false
             val ghost = projectileMap[snapshot.uuid]
-                ?: createProjectileGhost(level, snapshot)?.also { projectileMap[snapshot.uuid] = it }
+                ?: createProjectileGhost(level, snapshot)?.also {
+                    projectileMap[snapshot.uuid] = it
+                    created = true
+                }
                 ?: continue
 
             ghost.serverId = snapshot.entityId
@@ -115,8 +132,18 @@ object DistantVehicleManager {
             val errorX = snapshot.x - ghost.entity.x
             val errorY = snapshot.y - ghost.entity.y
             val errorZ = snapshot.z - ghost.entity.z
+            debugLog(
+                "pkt t=$tickCounter id=${snapshot.entityId} created=$created " +
+                    "snap=(%.1f %.1f %.1f) v=(%.2f %.2f %.2f) ghostPos=(%.1f %.1f %.1f) err=%.2f".format(
+                        snapshot.x, snapshot.y, snapshot.z,
+                        snapshot.vx, snapshot.vy, snapshot.vz,
+                        ghost.entity.x, ghost.entity.y, ghost.entity.z,
+                        Math.sqrt(errorX * errorX + errorY * errorY + errorZ * errorZ),
+                    ),
+            )
             if (errorX * errorX + errorY * errorY + errorZ * errorZ > 192.0 * 192.0) {
                 // Большой рассинхрон (телепорт) — снапим сразу
+                debugLog("SNAP t=$tickCounter id=${snapshot.entityId}")
                 ghost.entity.setPos(snapshot.x, snapshot.y, snapshot.z)
                 ghost.lerpSteps = 0
             } else {
@@ -194,6 +221,8 @@ object DistantVehicleManager {
         while (projectileIterator.hasNext()) {
             val ghost = projectileIterator.next()
             if (tickCounter - ghost.lastUpdate > ghost.interval * 3L) {
+                debugLog("EXPIRE t=$tickCounter id=${ghost.serverId} pos=(%.1f %.1f %.1f)"
+                    .format(ghost.entity.x, ghost.entity.y, ghost.entity.z))
                 projectileIterator.remove()
                 continue
             }
@@ -240,6 +269,11 @@ object DistantVehicleManager {
         // к реальной позиции: передача эстафеты на границе будет бесшовной.
         // След не спавним — у настоящего снаряда работает штатный
         val realEntity = level.getEntity(ghost.serverId)
+        if ((realEntity != null) != ghost.wasPinned) {
+            ghost.wasPinned = realEntity != null
+            debugLog("PIN=${ghost.wasPinned} t=$tickCounter id=${ghost.serverId} pos=(%.1f %.1f %.1f)"
+                .format(entity.x, entity.y, entity.z))
+        }
         if (realEntity != null) {
             entity.setPos(realEntity.x, realEntity.y, realEntity.z)
             entity.xo = realEntity.xo
@@ -264,6 +298,24 @@ object DistantVehicleManager {
             entity.setDeltaMovement(dx, dy, dz)
             updateProjectileRotation(entity)
             spawnGhostTrail(entity)
+
+            // Диагностика: резкая смена длины/направления шага = видимый рывок
+            val step = Math.sqrt(dx * dx + dy * dy + dz * dz)
+            val dot = dx * ghost.lastDx + dy * ghost.lastDy + dz * ghost.lastDz
+            if (ghost.lastStep > 0.01 && (step > ghost.lastStep * 2 + 0.5 || step < ghost.lastStep * 0.5 - 0.5 || dot < 0)) {
+                debugLog("STEPJUMP t=$tickCounter id=${ghost.serverId} step=%.2f last=%.2f dot=%.2f pos=(%.1f %.1f %.1f) target=(%.1f %.1f %.1f) lerp=%d"
+                    .format(step, ghost.lastStep, dot, entity.x, entity.y, entity.z, ghost.targetX, ghost.targetY, ghost.targetZ, ghost.lerpSteps))
+            }
+            ghost.lastStep = step
+            ghost.lastDx = dx
+            ghost.lastDy = dy
+            ghost.lastDz = dz
+        } else {
+            if (ghost.lastStep > 0.01) {
+                debugLog("STALL t=$tickCounter id=${ghost.serverId} pos=(%.1f %.1f %.1f)"
+                    .format(entity.x, entity.y, entity.z))
+            }
+            ghost.lastStep = 0.0
         }
     }
 
