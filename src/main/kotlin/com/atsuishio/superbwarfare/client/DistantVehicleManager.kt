@@ -193,7 +193,7 @@ object DistantVehicleManager {
                 projectileIterator.remove()
                 continue
             }
-            tickProjectileGhost(ghost)
+            tickProjectileGhost(ghost, level)
         }
     }
 
@@ -223,7 +223,7 @@ object DistantVehicleManager {
         }
     }
 
-    private fun tickProjectileGhost(ghost: ProjectileGhost) {
+    private fun tickProjectileGhost(ghost: ProjectileGhost, level: ClientLevel) {
         val entity = ghost.entity
         entity.xo = entity.x
         entity.yo = entity.y
@@ -242,7 +242,12 @@ object DistantVehicleManager {
             // Ориентация модели — по фактическому направлению движения
             entity.setDeltaMovement(dx, dy, dz)
             updateProjectileRotation(entity)
-            spawnGhostTrail(entity)
+            // След — только когда рендерится сам призрак. Рядом с игроком снаряд
+            // ведёт ваниль, а отстающая на лаг лерпа голова следа призрака
+            // выглядела как вторая «фейковая» ракета позади настоящей
+            if (level.getEntity(ghost.serverId) == null) {
+                spawnGhostTrail(entity)
+            }
         }
     }
 
