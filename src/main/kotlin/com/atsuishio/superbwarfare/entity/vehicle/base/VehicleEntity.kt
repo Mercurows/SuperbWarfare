@@ -3832,7 +3832,10 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                         this.level().registryAccess(),
                         this,
                         driver ?: this
-                    ), if (isWreck) 0f else (10 * ((lastTickSpeed - 0.4) * (lastTickSpeed - 0.4))).toFloat()
+                    // PJM: усилен урон удара вертолёта о землю (было 10). При MaxHealth техники 250–350
+                    // жёсткое столкновение (lastTickSpeed >= ~1.6) теперь смертельно → wreck → взрыв,
+                    // мягкая посадка на малой скорости по-прежнему безопасна. Значение подбирается на глаз.
+                    ), if (isWreck) 0f else (100 * ((lastTickSpeed - 0.4) * (lastTickSpeed - 0.4))).toFloat()
                 )
                 this.bounceVertical(
                     Direction.getNearest(
