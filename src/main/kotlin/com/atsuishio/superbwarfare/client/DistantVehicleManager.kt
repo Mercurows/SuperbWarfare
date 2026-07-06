@@ -36,22 +36,17 @@ object DistantVehicleManager {
         var interval = 10
     }
 
+    // Та же схема, что у техники: лерп к последней серверной позиции.
+    // Экстраполяция по скорости давала пилу «вперёд-назад», когда снаряд
+    // на сервере притормаживал на подгрузке чанков: клиент улетал вперёд,
+    // а коррекция тянула назад. Лерп к цели реверсов не даёт в принципе.
     class ProjectileGhost(val serverId: Int, val entity: Entity) {
-        var vx = 0.0
-        var vy = 0.0
-        var vz = 0.0
-        var gravity = 0f
+        var targetX = entity.x
+        var targetY = entity.y
+        var targetZ = entity.z
+        var lerpSteps = 0
         var lastUpdate = 0L
         var interval = 10
-        var lastSnapshotX = Double.NaN
-        var lastSnapshotY = Double.NaN
-        var lastSnapshotZ = Double.NaN
-        // Ошибка предсказания досыпается порциями по тикам (аналог lerpSteps),
-        // жёсткий снап на каждом пакете трясёт быстрые снаряды на ±скорость
-        var correctionX = 0.0
-        var correctionY = 0.0
-        var correctionZ = 0.0
-        var correctionSteps = 0
     }
 
     private val ghostMap = LinkedHashMap<Int, Ghost>()
@@ -102,42 +97,18 @@ object DistantVehicleManager {
             ghost.interval = msg.interval
             ghost.lastUpdate = tickCounter
 
-            // Сервер не сдвинул снаряд с прошлого снапшота (чанк ещё грузится,
-            // снаряд там заморожен, но deltaMovement у него ненулевой) — глушим
-            // счисление, иначе призрак ездит вперёд-назад между пакетами
-            val serverFrozen = !ghost.lastSnapshotX.isNaN() &&
-                Math.abs(snapshot.x - ghost.lastSnapshotX) < 0.01 &&
-                Math.abs(snapshot.y - ghost.lastSnapshotY) < 0.01 &&
-                Math.abs(snapshot.z - ghost.lastSnapshotZ) < 0.01
-            if (serverFrozen) {
-                ghost.vx = 0.0
-                ghost.vy = 0.0
-                ghost.vz = 0.0
-                ghost.gravity = 0f
-            } else {
-                ghost.vx = snapshot.vx
-                ghost.vy = snapshot.vy
-                ghost.vz = snapshot.vz
-                ghost.gravity = snapshot.gravity
-            }
-            ghost.lastSnapshotX = snapshot.x
-            ghost.lastSnapshotY = snapshot.y
-            ghost.lastSnapshotZ = snapshot.z
-
-            // Ошибка между счислением и серверной позицией: маленькую размазываем
-            // по следующему интервалу, большую (телепорт/рассинхрон) — снапим
             val errorX = snapshot.x - ghost.entity.x
             val errorY = snapshot.y - ghost.entity.y
             val errorZ = snapshot.z - ghost.entity.z
-            if (errorX * errorX + errorY * errorY + errorZ * errorZ > 64.0 * 64.0) {
+            if (errorX * errorX + errorY * errorY + errorZ * errorZ > 128.0 * 128.0) {
+                // Большой рассинхрон (телепорт) — снапим сразу
                 ghost.entity.setPos(snapshot.x, snapshot.y, snapshot.z)
-                ghost.correctionSteps = 0
+                ghost.lerpSteps = 0
             } else {
-                val steps = msg.interval.coerceAtLeast(1)
-                ghost.correctionX = errorX / steps
-                ghost.correctionY = errorY / steps
-                ghost.correctionZ = errorZ / steps
-                ghost.correctionSteps = steps
+                ghost.targetX = snapshot.x
+                ghost.targetY = snapshot.y
+                ghost.targetZ = snapshot.z
+                ghost.lerpSteps = msg.interval
             }
         }
         // Снаряд пропал из списка — взорвался, убираем сразу
@@ -235,8 +206,6 @@ object DistantVehicleManager {
         }
     }
 
-    // Счисление пути: клиент сам ведёт снаряд по скорости и гравитации,
-    // сервер лишь корректирует позицию раз в interval тиков
     private fun tickProjectileGhost(ghost: ProjectileGhost) {
         val entity = ghost.entity
         entity.xo = entity.x
@@ -246,19 +215,17 @@ object DistantVehicleManager {
         entity.xRotO = entity.xRot
         entity.tickCount++
 
-        ghost.vy -= ghost.gravity
-        var dx = ghost.vx
-        var dy = ghost.vy
-        var dz = ghost.vz
-        if (ghost.correctionSteps > 0) {
-            dx += ghost.correctionX
-            dy += ghost.correctionY
-            dz += ghost.correctionZ
-            ghost.correctionSteps--
+        if (ghost.lerpSteps > 0) {
+            val steps = ghost.lerpSteps.toDouble()
+            val dx = (ghost.targetX - entity.x) / steps
+            val dy = (ghost.targetY - entity.y) / steps
+            val dz = (ghost.targetZ - entity.z) / steps
+            entity.setPos(entity.x + dx, entity.y + dy, entity.z + dz)
+            ghost.lerpSteps--
+            // Ориентация модели — по фактическому направлению движения
+            entity.setDeltaMovement(dx, dy, dz)
+            updateProjectileRotation(entity)
         }
-        entity.setPos(entity.x + dx, entity.y + dy, entity.z + dz)
-        entity.setDeltaMovement(ghost.vx, ghost.vy, ghost.vz)
-        updateProjectileRotation(entity)
     }
 
     // Копия FastThrowableProjectile.updateRotation: BasicProjectileRenderer
