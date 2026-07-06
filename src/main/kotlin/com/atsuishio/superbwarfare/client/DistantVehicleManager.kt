@@ -46,6 +46,12 @@ object DistantVehicleManager {
         var lastSnapshotX = Double.NaN
         var lastSnapshotY = Double.NaN
         var lastSnapshotZ = Double.NaN
+        // Ошибка предсказания досыпается порциями по тикам (аналог lerpSteps),
+        // жёсткий снап на каждом пакете трясёт быстрые снаряды на ±скорость
+        var correctionX = 0.0
+        var correctionY = 0.0
+        var correctionZ = 0.0
+        var correctionSteps = 0
     }
 
     private val ghostMap = LinkedHashMap<Int, Ghost>()
@@ -117,9 +123,22 @@ object DistantVehicleManager {
             ghost.lastSnapshotX = snapshot.x
             ghost.lastSnapshotY = snapshot.y
             ghost.lastSnapshotZ = snapshot.z
-            // Серверная позиция авторитетна: между пакетами позицию ведёт
-            // счисление по скорости, рывок коррекции на дистанции незаметен
-            ghost.entity.setPos(snapshot.x, snapshot.y, snapshot.z)
+
+            // Ошибка между счислением и серверной позицией: маленькую размазываем
+            // по следующему интервалу, большую (телепорт/рассинхрон) — снапим
+            val errorX = snapshot.x - ghost.entity.x
+            val errorY = snapshot.y - ghost.entity.y
+            val errorZ = snapshot.z - ghost.entity.z
+            if (errorX * errorX + errorY * errorY + errorZ * errorZ > 64.0 * 64.0) {
+                ghost.entity.setPos(snapshot.x, snapshot.y, snapshot.z)
+                ghost.correctionSteps = 0
+            } else {
+                val steps = msg.interval.coerceAtLeast(1)
+                ghost.correctionX = errorX / steps
+                ghost.correctionY = errorY / steps
+                ghost.correctionZ = errorZ / steps
+                ghost.correctionSteps = steps
+            }
         }
         // Снаряд пропал из списка — взорвался, убираем сразу
         projectileMap.keys.retainAll(seenProjectiles)
@@ -228,7 +247,16 @@ object DistantVehicleManager {
         entity.tickCount++
 
         ghost.vy -= ghost.gravity
-        entity.setPos(entity.x + ghost.vx, entity.y + ghost.vy, entity.z + ghost.vz)
+        var dx = ghost.vx
+        var dy = ghost.vy
+        var dz = ghost.vz
+        if (ghost.correctionSteps > 0) {
+            dx += ghost.correctionX
+            dy += ghost.correctionY
+            dz += ghost.correctionZ
+            ghost.correctionSteps--
+        }
+        entity.setPos(entity.x + dx, entity.y + dy, entity.z + dz)
         entity.setDeltaMovement(ghost.vx, ghost.vy, ghost.vz)
         updateProjectileRotation(entity)
     }
