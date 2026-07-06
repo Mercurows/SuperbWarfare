@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves
 import com.atsuishio.superbwarfare.client.animation.AnimationTimer
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
+import com.atsuishio.superbwarfare.config.server.MarkerConfig
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo.Aircraft
@@ -220,6 +221,8 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
 
     @JvmStatic
     fun renderKillIndicator(guiGraphics: GuiGraphics?, screenWidth: Float, screenHeight: Float) {
+        // PJM: серверный конфиг ENABLE_HIT_MARKERS также выключает хитмаркеры в технике/авиации
+        if (!MarkerConfig.ENABLE_HIT_MARKERS.get()) return
         val posX = screenWidth / 2f - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
         val posY = screenHeight / 2f - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
         val rate = (40 - CrossHairOverlay.killIndicator * 5) / 5.5f
@@ -251,6 +254,8 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
 
     @JvmStatic
     fun renderKillIndicatorDynamic(guiGraphics: GuiGraphics?, posX: Float, posY: Float) {
+        // PJM: серверный конфиг ENABLE_HIT_MARKERS также выключает хитмаркеры в технике/авиации
+        if (!MarkerConfig.ENABLE_HIT_MARKERS.get()) return
         val rate = (40 - CrossHairOverlay.killIndicator * 5) / 5.5f
 
         if (CrossHairOverlay.hitIndicator > 0) {
