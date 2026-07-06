@@ -20,9 +20,23 @@ data class VehicleSnapshot(
 )
 
 @Serializable
+data class ProjectileSnapshot(
+    val entityId: Int,
+    val type: String,
+    val x: Double,
+    val y: Double,
+    val z: Double,
+    val vx: Double,
+    val vy: Double,
+    val vz: Double,
+    val gravity: Float,
+)
+
+@Serializable
 data class DistantVehiclesMessage(
     val interval: Int,
     val vehicles: List<VehicleSnapshot>,
+    val projectiles: List<ProjectileSnapshot>,
 ) : ClientPacketPayload() {
 
     override fun PayloadContext.handler() {
