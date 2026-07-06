@@ -115,14 +115,18 @@ object DistantVehicleManager {
             val errorX = snapshot.x - ghost.entity.x
             val errorY = snapshot.y - ghost.entity.y
             val errorZ = snapshot.z - ghost.entity.z
-            if (errorX * errorX + errorY * errorY + errorZ * errorZ > 128.0 * 128.0) {
+            if (errorX * errorX + errorY * errorY + errorZ * errorZ > 192.0 * 192.0) {
                 // Большой рассинхрон (телепорт) — снапим сразу
                 ghost.entity.setPos(snapshot.x, snapshot.y, snapshot.z)
                 ghost.lerpSteps = 0
             } else {
-                ghost.targetX = snapshot.x
-                ghost.targetY = snapshot.y
-                ghost.targetZ = snapshot.z
+                // Проективная цель: снапшот отстаёт от реального времени на
+                // интервал, поэтому целимся в позицию+скорость×интервал — призрак
+                // летит примерно в реальном времени, и передача от ванильного
+                // рендера к призраку на границе tracking range не даёт скачка
+                ghost.targetX = snapshot.x + snapshot.vx * msg.interval
+                ghost.targetY = snapshot.y + snapshot.vy * msg.interval
+                ghost.targetZ = snapshot.z + snapshot.vz * msg.interval
                 ghost.lerpSteps = msg.interval
             }
         }
@@ -189,7 +193,7 @@ object DistantVehicleManager {
         val projectileIterator = projectileMap.values.iterator()
         while (projectileIterator.hasNext()) {
             val ghost = projectileIterator.next()
-            if (tickCounter - ghost.lastUpdate > ghost.interval * 2L) {
+            if (tickCounter - ghost.lastUpdate > ghost.interval * 3L) {
                 projectileIterator.remove()
                 continue
             }
@@ -232,6 +236,23 @@ object DistantVehicleManager {
         entity.xRotO = entity.xRot
         entity.tickCount++
 
+        // Пока снаряд ведёт ваниль (в tracking range) — прикалываем призрак
+        // к реальной позиции: передача эстафеты на границе будет бесшовной.
+        // След не спавним — у настоящего снаряда работает штатный
+        val realEntity = level.getEntity(ghost.serverId)
+        if (realEntity != null) {
+            entity.setPos(realEntity.x, realEntity.y, realEntity.z)
+            entity.xo = realEntity.xo
+            entity.yo = realEntity.yo
+            entity.zo = realEntity.zo
+            entity.yRot = realEntity.yRot
+            entity.xRot = realEntity.xRot
+            entity.yRotO = realEntity.yRotO
+            entity.xRotO = realEntity.xRotO
+            entity.setDeltaMovement(realEntity.deltaMovement)
+            return
+        }
+
         if (ghost.lerpSteps > 0) {
             val steps = ghost.lerpSteps.toDouble()
             val dx = (ghost.targetX - entity.x) / steps
@@ -242,12 +263,7 @@ object DistantVehicleManager {
             // Ориентация модели — по фактическому направлению движения
             entity.setDeltaMovement(dx, dy, dz)
             updateProjectileRotation(entity)
-            // След — только когда рендерится сам призрак. Рядом с игроком снаряд
-            // ведёт ваниль, а отстающая на лаг лерпа голова следа призрака
-            // выглядела как вторая «фейковая» ракета позади настоящей
-            if (level.getEntity(ghost.serverId) == null) {
-                spawnGhostTrail(entity)
-            }
+            spawnGhostTrail(entity)
         }
     }
 
