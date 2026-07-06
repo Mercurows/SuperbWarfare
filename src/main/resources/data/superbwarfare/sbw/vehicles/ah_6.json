@@ -124,7 +124,7 @@
       "AmmoType": "superbwarfare:small_shell_he",
       "ShootPos": {
         "Transform": "Vehicle",
-        "ShootPositionForHud": [0, 0.465, 0.6],
+        "ShootPositionForHud": [0.3375, 0.465, 0.6],
         "ShootDirectionForHud": [0, 0.018, 1],
         "Positions": [[-0.863, 0.465, 0.6], [0.863, 0.465, 0.6]],
         "Directions": [[0.003, 0.025, 1], [-0.003, 0.025, 1]]
@@ -151,7 +151,7 @@
       "ProjectileLife": 60,
       "ShootPos": {
         "Transform": "Vehicle",
-        "ShootPositionForHud": [0, 0.465, 0.6],
+        "ShootPositionForHud": [0.3375, 0.465, 0.6],
         "ShootDirectionForHud": [0, 0.018, 1],
         "Positions": [[-1.275, 0.465, 0.6], [1.275, 0.465, 0.6]],
         "Directions": [[0.003, 0.025, 1], [-0.003, 0.025, 1]]
