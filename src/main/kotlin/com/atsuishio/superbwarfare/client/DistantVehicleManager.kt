@@ -1,5 +1,17 @@
 package com.atsuishio.superbwarfare.client
 
+import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
+import com.atsuishio.superbwarfare.client.particle.CustomFlareOption
+import com.atsuishio.superbwarfare.entity.projectile.Agm65Entity
+import com.atsuishio.superbwarfare.entity.projectile.CannonShellEntity
+import com.atsuishio.superbwarfare.entity.projectile.MediumRocketEntity
+import com.atsuishio.superbwarfare.entity.projectile.MissileProjectile
+import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity
+import com.atsuishio.superbwarfare.entity.projectile.Ru3m14MissileEntity
+import com.atsuishio.superbwarfare.entity.projectile.Ru9m100MissileEntity
+import com.atsuishio.superbwarfare.entity.projectile.RpgRocketStandardEntity
+import com.atsuishio.superbwarfare.entity.projectile.RpgRocketTBGEntity
+import com.atsuishio.superbwarfare.entity.projectile.SmallRocketEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.network.message.receive.DistantVehiclesMessage
 import com.atsuishio.superbwarfare.network.message.receive.ProjectileSnapshot
@@ -87,9 +99,7 @@ object DistantVehicleManager {
         // Пакет авторитетный: чего нет в списке — того больше нет в радиусе
         ghostMap.keys.retainAll(seen)
 
-        val seenProjectiles = HashSet<Int>(msg.projectiles.size)
         for (snapshot in msg.projectiles) {
-            seenProjectiles += snapshot.entityId
             val ghost = projectileMap[snapshot.entityId]
                 ?: createProjectileGhost(level, snapshot)?.also { projectileMap[snapshot.entityId] = it }
                 ?: continue
@@ -111,8 +121,10 @@ object DistantVehicleManager {
                 ghost.lerpSteps = msg.interval
             }
         }
-        // Снаряд пропал из списка — взорвался, убираем сразу
-        projectileMap.keys.retainAll(seenProjectiles)
+        // Снаряды НЕ чистим по отсутствию в одном пакете: на переходах чанков
+        // снаряд может на пакет выпасть из серверного списка энтити, и удаление
+        // с пересозданием давало видимый скачок. Взорвавшиеся уберёт таймаут
+        // (2 интервала, ~1 с) в onClientTick.
     }
 
     private fun clearAll() {
@@ -172,7 +184,7 @@ object DistantVehicleManager {
         val projectileIterator = projectileMap.values.iterator()
         while (projectileIterator.hasNext()) {
             val ghost = projectileIterator.next()
-            if (tickCounter - ghost.lastUpdate > ghost.interval * 3L) {
+            if (tickCounter - ghost.lastUpdate > ghost.interval * 2L) {
                 projectileIterator.remove()
                 continue
             }
@@ -225,6 +237,75 @@ object DistantVehicleManager {
             // Ориентация модели — по фактическому направлению движения
             entity.setDeltaMovement(dx, dy, dz)
             updateProjectileRotation(entity)
+            spawnGhostTrail(entity)
+        }
+    }
+
+    // Дымовой/огненный след призраков. Оригинальные *Trail() снаряда спавнят
+    // частицы без force-флага, а ваниль отсекает такие дальше 32 блоков от
+    // камеры (LevelRenderer.addParticleInternal) — поэтому спавним сами с force
+    private fun spawnGhostTrail(entity: Entity) {
+        if (entity.tickCount <= 2) return
+        val level = entity.level() as? ClientLevel ?: return
+
+        if (entity is CannonShellEntity) {
+            spawnShellTrail(level, entity)
+            return
+        }
+        val flareSize = when (entity) {
+            is Ru3m14MissileEntity -> 1.0f
+            is Ru9m100MissileEntity, is Agm65Entity, is MediumRocketEntity -> 0.75f // Kh39 наследует Agm65
+            is SmallRocketEntity -> 0.25f
+            is MissileProjectile, is MortarShellEntity,
+            is RpgRocketStandardEntity, is RpgRocketTBGEntity -> 0.4f
+            else -> return // авиабомбы и прочие — без следа, как в оригинале
+        }
+
+        val motion = entity.deltaMovement
+        val speed = motion.length()
+        if (speed < 1.0e-4) return
+        val direction = motion.normalize()
+        val startX = entity.xo
+        val startY = entity.yo + entity.bbHeight / 2
+        val startZ = entity.zo
+        var i = 0.0
+        while (i < speed) {
+            val random = 2 * (level.random.nextFloat() - 0.5f)
+            level.addParticle(
+                CustomFlareOption(
+                    0.5f, 0.43f, 0.36f, 160, 0.93f,
+                    (10 + 8 * random).toInt(), 0.03f, size = flareSize,
+                ),
+                true,
+                startX - direction.x * i + random * 0.2,
+                startY - direction.y * i + random * 0.2,
+                startZ - direction.z * i + random * 0.2,
+                0.0, 0.0, 0.0,
+            )
+            i += 1.5
+        }
+    }
+
+    private fun spawnShellTrail(level: ClientLevel, entity: Entity) {
+        val motion = entity.deltaMovement
+        val speed = motion.length()
+        if (speed < 1.0e-4) return
+        val direction = motion.normalize()
+        var i = 0.0
+        while (i < speed) {
+            val random = level.random.nextFloat()
+            level.addParticle(
+                CustomCloudOption(
+                    0.6f, 0.58f, 0.57f, (120 + 40 * random).toInt(),
+                    1.5f + 0.5f * random, 0f, cooldown = false, light = false,
+                ),
+                true,
+                entity.xo - direction.x * i + 0.25f * random,
+                entity.yo + entity.bbHeight / 2 - direction.y * i + 0.25f * random,
+                entity.zo - direction.z * i + 0.25f * random,
+                0.0, 0.0, 0.0,
+            )
+            i += 2.0
         }
     }
 
