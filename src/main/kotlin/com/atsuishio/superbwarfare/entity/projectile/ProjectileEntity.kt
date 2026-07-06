@@ -39,6 +39,8 @@ import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.server.level.TicketType
+import net.minecraft.world.level.ChunkPos
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
@@ -426,6 +428,13 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
         }
 
         if (level is ServerLevel) {
+            // PJM: удерживаем чанк загруженным на время полёта пули, иначе в непрогруженных
+            // (не тикающих) чанках vanilla перестаёт тикать сущность и снаряд «зависает».
+            // Гейт — тот же серверный конфиг, что и у ракет/снарядов (FastThrowableProjectile).
+            if (ProjectileConfig.PROJECTILE_CHUNK_LOADING.get()) {
+                val chunkPos = ChunkPos(BlockPos.containing(this.position()))
+                level.chunkSource.addRegionTicket(TicketType.POST_TELEPORT, chunkPos, 2, this.id)
+            }
             if (isInLiquid(level, position())) {
                 this.deltaMovement = this.deltaMovement.multiply(0.75, 0.75, 0.75)
             }
