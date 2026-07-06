@@ -91,6 +91,7 @@ private fun registerPayloads() {
     playToClient<PlayerInfoSyncMessage>()
     playToClient<ClientVehicleItemMessage>()
     playToClient<OpenVehicleSkinScreenMessage>()
+    playToClient<DistantVehiclesMessage>()
 
     playToServer<AdjustMortarAngleMessage>()
     playToServer<AdjustZoomFovMessage>()
