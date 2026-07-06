@@ -26,6 +26,7 @@ object DistantVehicleManager {
         var targetY = entity.y
         var targetZ = entity.z
         var targetYaw = entity.yRot
+        var targetPitch = entity.xRot
         var targetTurretY = entity.turretYRot
         var targetTurretX = entity.turretXRot
         var lerpSteps = 0
@@ -59,6 +60,7 @@ object DistantVehicleManager {
             ghost.targetY = snapshot.y
             ghost.targetZ = snapshot.z
             ghost.targetYaw = snapshot.yaw
+            ghost.targetPitch = snapshot.pitch
             ghost.targetTurretY = snapshot.turretYRot
             ghost.targetTurretX = snapshot.turretXRot
             ghost.lerpSteps = msg.interval
@@ -111,6 +113,7 @@ object DistantVehicleManager {
         entity.yo = entity.y
         entity.zo = entity.z
         entity.yRotO = entity.yRot
+        entity.xRotO = entity.xRot
         entity.turretYRotO = entity.turretYRot
         entity.turretXRotO = entity.turretXRot
         entity.tickCount++
@@ -123,6 +126,7 @@ object DistantVehicleManager {
                 entity.z + (ghost.targetZ - entity.z) / steps,
             )
             entity.yRot += Mth.wrapDegrees(ghost.targetYaw - entity.yRot) / ghost.lerpSteps
+            entity.xRot += (ghost.targetPitch - entity.xRot) / ghost.lerpSteps
             entity.turretYRot += Mth.wrapDegrees(ghost.targetTurretY - entity.turretYRot) / ghost.lerpSteps
             entity.turretXRot += (ghost.targetTurretX - entity.turretXRot) / ghost.lerpSteps
             ghost.lerpSteps--
