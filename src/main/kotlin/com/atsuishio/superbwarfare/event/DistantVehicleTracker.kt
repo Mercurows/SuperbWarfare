@@ -55,12 +55,62 @@ object DistantVehicleTracker {
     private val lastSeenProjectiles = HashMap<UUID, LastSeen>()
     private const val RESCUE_TIMEOUT_TICKS = 200
 
+    // Сколько тиков подряд снаряд ведётся баллистической симуляцией
+    private val simulatedTicks = HashMap<UUID, Int>()
+    private const val MAX_SIMULATED_TICKS = 600
+
+    private fun simulateStalledProjectiles(server: net.minecraft.server.MinecraftServer) {
+        for (level in server.allLevels) {
+            for (entity in level.getAllEntities()) {
+                if (entity !is FastThrowableProjectile || !isDistantSyncProjectile(entity)) continue
+                if (level.isPositionEntityTicking(entity.blockPosition())) {
+                    simulatedTicks.remove(entity.uuid)
+                    continue
+                }
+
+                // Ограничитель: снаряд, слишком долго летящий по несуществующим
+                // чанкам (например, над бесконечным океаном), убираем — иначе он
+                // вечно тянул бы за собой генерацию мира
+                val ticks = (simulatedTicks[entity.uuid] ?: 0) + 1
+                if (ticks > MAX_SIMULATED_TICKS || entity.y < level.minBuildHeight - 64) {
+                    simulatedTicks.remove(entity.uuid)
+                    entity.discard()
+                    continue
+                }
+                simulatedTicks[entity.uuid] = ticks
+
+                val motion = entity.deltaMovement
+                entity.setPos(entity.x + motion.x, entity.y + motion.y, entity.z + motion.z)
+                if (!entity.isNoGravity) {
+                    entity.setDeltaMovement(motion.subtract(0.0, entity.getCustomGravity().toDouble(), 0.0))
+                }
+                // Держим текущий чанк загруженным (не выгрузится из getAllEntities)
+                // и заказываем прогрузку по курсу — как в обычном tick()
+                entity.keepChunkLoaded(entity.position())
+            }
+        }
+        // Чистка ключей уничтоженных снарядов
+        if (simulatedTicks.size > 256) {
+            simulatedTicks.keys.retainAll(
+                server.allLevels.flatMap { lvl -> lvl.getAllEntities().map { it.uuid } }.toSet(),
+            )
+        }
+    }
+
     @SubscribeEvent
     fun onServerTick(event: ServerTickEvent.Post) {
         val radius = VehicleConfig.DISTANT_VEHICLE_SYNC_RADIUS.get()
         if (radius <= 0) return
-        val interval = VehicleConfig.DISTANT_VEHICLE_SYNC_INTERVAL.get()
         val server = event.server
+
+        // КОРЕНЬ рваного полёта: тик снаряда привязан к готовности чанков —
+        // быстрый снаряд обгоняет генерацию и летит рывками (замер/рывок).
+        // Ведём его баллистически каждый тик, пока чанк не дотикал до
+        // entity-ticking: без коллизий (проверять всё равно не по чему),
+        // обычная физика подхватит, как только чанк догрузится
+        simulateStalledProjectiles(server)
+
+        val interval = VehicleConfig.DISTANT_VEHICLE_SYNC_INTERVAL.get()
         if (server.tickCount % interval != 0) return
 
         val radiusSq = radius.toDouble() * radius
