@@ -280,7 +280,20 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         if (level() is ServerLevel) {
             if (forceLoadChunk() && ProjectileConfig.PROJECTILE_CHUNK_LOADING.get()) {
                 this.keepChunkLoaded(this.position())
-                this.keepChunkLoaded(position().add(this.deltaMovement.normalize().scale(16.0)))
+                // Прогружаем чанки по траектории на ~1.5 с полёта вперёд:
+                // загрузка асинхронная, и при lookahead в 1 чанк быстрый снаряд
+                // пересекал границу раньше, чем чанк дотикает до entity-ticking,
+                // после чего tick() переставал вызываться и снаряд зависал
+                val speed = this.deltaMovement.length()
+                if (speed > 1.0e-4) {
+                    val direction = this.deltaMovement.normalize()
+                    val lookahead = (speed * 30.0).coerceIn(32.0, 256.0)
+                    var distance = 16.0
+                    while (distance <= lookahead) {
+                        this.keepChunkLoaded(position().add(direction.scale(distance)))
+                        distance += 16.0
+                    }
+                }
             }
         }
     }
@@ -552,7 +565,8 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
 
     open fun keepChunkLoaded(position: Vec3) {
         val chunkPos = ChunkPos(BlockPos.containing(position))
-        (level() as ServerLevel).chunkSource.addRegionTicket(TicketType.POST_TELEPORT, chunkPos, 3, this.id)
+        // Ключ — сам ChunkPos: тикеты от разных снарядов на один чанк схлопываются
+        (level() as ServerLevel).chunkSource.addRegionTicket(PROJECTILE_TICKET, chunkPos, 3, chunkPos)
     }
 
     override fun isFastMoving(): Boolean {
@@ -764,5 +778,12 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
     companion object {
         var playFlySound: Consumer<FastThrowableProjectile> = Consumer { }
         var playNearFlySound: Consumer<FastThrowableProjectile> = Consumer { }
+
+        // Свой тип тикета с запасом по времени (3 с): POST_TELEPORT живёт всего
+        // 5 тиков — если снаряд влетел в недогруженный чанк и перестал тикать,
+        // тикеты успевали истечь раньше, чем чанк дотикает до entity-ticking
+        @JvmStatic
+        val PROJECTILE_TICKET: TicketType<ChunkPos> =
+            TicketType.create("superbwarfare:projectile", Comparator.comparingLong(ChunkPos::toLong), 60)
     }
 }

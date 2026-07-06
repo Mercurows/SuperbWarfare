@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.event
 
+import com.atsuishio.superbwarfare.config.server.ProjectileConfig
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
 import com.atsuishio.superbwarfare.entity.projectile.AerialBombEntity
 import com.atsuishio.superbwarfare.entity.projectile.CannonShellEntity
@@ -59,6 +60,19 @@ object DistantVehicleTracker {
                 when {
                     entity is VehicleEntity -> vehicles += entity
                     isDistantSyncProjectile(entity) -> projectiles += entity
+                }
+            }
+
+            // Реанимация зависших снарядов: снаряд, влетевший в ещё не дотикавший
+            // до entity-ticking чанк, перестаёт тикать и сам себе чанки больше не
+            // грузит — подкидываем тикет извне, пока он не оживёт
+            if (ProjectileConfig.PROJECTILE_CHUNK_LOADING.get()) {
+                for (projectile in projectiles) {
+                    if (projectile is FastThrowableProjectile &&
+                        !level.isPositionEntityTicking(projectile.blockPosition())
+                    ) {
+                        projectile.keepChunkLoaded(projectile.position())
+                    }
                 }
             }
 
