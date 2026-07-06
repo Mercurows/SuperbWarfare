@@ -20,13 +20,18 @@ import org.joml.Math
 import kotlin.math.min
 
 object VehicleEngineUtils {
+    // PJM: глобальная калибровка скорости вращения колёс/гусениц относительно реальной скорости движения.
+    // < 1.0 замедляет вращение (лечит «пробуксовку» — когда колёса крутятся быстрее, чем едет техника).
+    // Подбирается на глаз: уменьшать, если всё ещё буксует; увеличивать, если проскальзывает.
+    private const val ROT_SPEED_CALIBRATION = 0.7
+
     @JvmStatic
     fun VehicleEntity.trackEngine(engineInfo: EngineInfo.Track) {
         val buoyancy = engineInfo.buoyancy
         val energyCost = (engineInfo.energyCostRate * Mth.abs(power)).toInt()
-        val wheelRotSpeed = engineInfo.wheelRotSpeed
+        val wheelRotSpeed = engineInfo.wheelRotSpeed * ROT_SPEED_CALIBRATION // PJM
         val wheelDifferential = engineInfo.wheelDifferential
-        val trackSpeed = engineInfo.trackRotSpeed
+        val trackSpeed = engineInfo.trackRotSpeed * ROT_SPEED_CALIBRATION // PJM
         val trackDifferential = engineInfo.trackDifferential
         val maxForwardSpeedRate = engineInfo.maxForwardSpeedRate
         val maxBackwardSpeedRate = engineInfo.maxBackwardSpeedRate
@@ -221,7 +226,7 @@ object VehicleEngineUtils {
     fun VehicleEntity.wheelEngine(engineInfo: EngineInfo.Wheel) {
         val buoyancy = engineInfo.buoyancy
         val energyCost = (engineInfo.energyCostRate * Mth.abs(power)).toInt()
-        val wheelRotSpeed = engineInfo.wheelRotSpeed
+        val wheelRotSpeed = engineInfo.wheelRotSpeed * ROT_SPEED_CALIBRATION // PJM
         val wheelDifferential = engineInfo.wheelDifferential
         val maxForwardSpeedRate = engineInfo.maxForwardSpeedRate
         val maxBackwardSpeedRate = engineInfo.maxBackwardSpeedRate
@@ -1231,7 +1236,7 @@ object VehicleEngineUtils {
     fun VehicleEntity.wheelChairEngine(engineInfo: EngineInfo.WheelChair) {
         val buoyancy = engineInfo.buoyancy
         val energyCost = (engineInfo.energyCostRate * Mth.abs(power)).toInt()
-        val wheelRotSpeed = engineInfo.wheelRotSpeed
+        val wheelRotSpeed = engineInfo.wheelRotSpeed * ROT_SPEED_CALIBRATION // PJM
         val wheelDifferential = engineInfo.wheelDifferential.toFloat()
         val maxForwardSpeedRate = engineInfo.maxForwardSpeedRate
         val maxBackwardSpeedRate = engineInfo.maxBackwardSpeedRate
