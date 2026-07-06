@@ -164,6 +164,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         handheldItem(ModItems.RPG_ROCKET_STANDARD)
         handheldItem(ModItems.RPG_ROCKET_TBG)
         simpleItem(ModItems.MORTAR_SHELL_WP)
+        simpleItem(ModItems.MORTAR_SHELL_SMOKE)
         simpleItem(ModItems.WP_HEAD)
         simpleItem(ModItems.TUNGSTEN_ROD)
         simpleItem(ModItems.GRENADE_40MM)
@@ -197,6 +198,8 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.ENLARGEMENT_RESEARCH_MODULE)
         simpleItem(ModItems.EFFECTIVE_RESEARCH_MODULE)
         simpleItem(ModItems.BOOST_RESEARCH_MODULE)
+
+        handheldItem(ModItems.SKIN_SPRAY)
 
         // perk
         simpleItem(ModItems.SHORTCUT_PACK)

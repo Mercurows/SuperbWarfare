@@ -17,7 +17,6 @@ import net.minecraft.world.entity.projectile.Projectile
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.Explosion
 import net.minecraft.world.level.Level
-import net.minecraft.world.level.block.BellBlock
 import net.minecraft.world.level.entity.EntityTypeTest
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
@@ -38,30 +37,17 @@ open class SmallCannonShellEntity(type: EntityType<out SmallCannonShellEntity>, 
         return ModItems.SMALL_SHELL_AP.get()
     }
 
-    override fun onHitEntity(result: EntityHitResult) {
-        super.onHitEntity(result)
-        val entity = result.entity
-        val owner = this.owner
-        if (owner != null && owner.vehicle != null && entity == owner.vehicle) return
+    override fun afterHitEntity(result: EntityHitResult) {
         if (this.level() is ServerLevel) {
-            entity.forceHurt(causeProjectileHitDamage(this.level().registryAccess(), this, owner), damageValue)
-
-            if (entity is LivingEntity) {
-                entity.invulnerableTime = 0
-            }
-
             if (this.tickCount > 0) {
-                causeExplode(result.getLocation(), true)
+                this.causeExplode(result.getLocation(), true)
             }
-            this.discard()
         }
+        this.discard()
     }
 
-    public override fun onHitBlock(result: BlockHitResult) {
-        super.onHitBlock(result)
+    override fun afterHitBlock(result: BlockHitResult) {
         val resultPos = result.blockPos
-        val state = this.level().getBlockState(resultPos)
-
         if (this.level() is ServerLevel) {
             val hardness = this.level().getBlockState(resultPos).block.defaultDestroyTime()
             if (hardness != -1f) {
@@ -72,14 +58,7 @@ open class SmallCannonShellEntity(type: EntityType<out SmallCannonShellEntity>, 
                     }
                 }
             }
-        }
-
-        val block = state.block
-        if (block is BellBlock) {
-            block.attemptToRing(this.level(), resultPos, result.direction)
-        }
-        if (this.level() is ServerLevel) {
-            causeExplode(result.getLocation(), false)
+            this.causeExplode(result.getLocation(), false)
         }
         this.discard()
     }
@@ -90,9 +69,9 @@ open class SmallCannonShellEntity(type: EntityType<out SmallCannonShellEntity>, 
             .damage(explosionDamageValue)
             .radius(explosionRadiusValue)
             .position(vec3)
-            .withParticleType(explosionParticleType(explosionRadiusValue))
+            .beast(this.isBeast())
             .destroyBlock { if (hitEntity) Explosion.BlockInteraction.KEEP else (if (ExplosionConfig.EXPLOSION_DESTROY.get()) Explosion.BlockInteraction.DESTROY else Explosion.BlockInteraction.KEEP) }
-            .damageMultiplier(1.25f)
+            .beast(this.isBeast())
             .explode()
     }
 
@@ -109,7 +88,7 @@ open class SmallCannonShellEntity(type: EntityType<out SmallCannonShellEntity>, 
         }
     }
 
-    fun crushProjectile(velocity: Vec3) {
+    open fun crushProjectile(velocity: Vec3) {
         if (this.level() is ServerLevel) {
             val frontBox = boundingBox.inflate(0.5).expandTowards(velocity)
 

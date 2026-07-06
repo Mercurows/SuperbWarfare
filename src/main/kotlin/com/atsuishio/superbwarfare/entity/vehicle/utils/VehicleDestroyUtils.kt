@@ -28,7 +28,7 @@ object VehicleDestroyUtils {
     fun destroy(vehicle: VehicleEntity) {
         val destroyInfo = vehicle.computed().destroyInfo
 
-        if (vehicle.vehicleType != VehicleType.AIRPLANE && vehicle.vehicleType != VehicleType.HELICOPTER || vehicle.vehicleType == VehicleType.AIRSHIP) {
+        if (vehicle.vehicleType != VehicleType.AIRPLANE && vehicle.vehicleType != VehicleType.HELICOPTER && vehicle.vehicleType != VehicleType.AIRSHIP) {
             if (destroyInfo.explodePassengers) {
                 if (vehicle.crash && destroyInfo.crashPassengers) {
                     crashPassengers(vehicle)
@@ -81,13 +81,11 @@ object VehicleDestroyUtils {
         if (radius > 0) {
             queueServerWork(1) {
                 val damage = destroyInfo.explosionDamage
-                val particleType = destroyInfo.particleType
 
                 val explosion = CustomExplosion.Builder(vehicle)
                     .attacker(vehicle.lastAttacker)
                     .radius(radius)
                     .damage(damage)
-                    .withParticleType(particleType)
 
                 if (!destroyInfo.explodeBlocks) {
                     explosion.keepBlock()

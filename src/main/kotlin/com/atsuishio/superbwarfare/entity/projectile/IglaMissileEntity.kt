@@ -5,10 +5,8 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.RangeTool.calculateFiringSolution
-import com.atsuishio.superbwarfare.tools.SeekTool
 import com.atsuishio.superbwarfare.tools.VectorTool.checkNoClip
 import com.atsuishio.superbwarfare.tools.angleTo
 import net.minecraft.sounds.SoundEvent
@@ -26,14 +24,11 @@ import kotlin.math.max
 
 open class IglaMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
 
-    constructor(type: EntityType<out IglaMissileEntity>, level: Level) : super(type, level) {
-        this.noCulling = true
-    }
+    constructor(type: EntityType<out IglaMissileEntity>, level: Level) : super(type, level)
 
     constructor(entity: Entity?, level: Level, damage: Float, explosionDamage: Float, explosionRadius: Float) : super(
         ModEntities.IGLA_MISSILE.get(), entity, level
     ) {
-        this.noCulling = true
         this.damageValue = damage
         this.explosionDamageValue = explosionDamage
         this.explosionRadiusValue = explosionRadius
@@ -49,19 +44,10 @@ open class IglaMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
 
         mediumTrail()
 
-        val entity = EntityFindUtil.findEntity(this.level(), this.targetUUID)
-        val decoy = SeekTool.seekLivingEntities(this, 32.0, 90.0)
+        val entity = EntityFindUtil.findEntity(this.level(), this.getTargetUUID())
 
-        for (e in decoy) {
-            if (e.type.`is`(ModTags.EntityTypes.DECOY) && !this.distracted) {
-                this.targetUUID = e.getStringUUID()
-                this.distracted = true
-                break
-            }
-        }
-
-        if (entity != null && this.targetUUID != "none") {
-            if ((!entity.getPassengers().isEmpty() || entity is VehicleEntity)
+        if (entity != null && this.getTargetUUID() != "none") {
+            if ((entity.getPassengers().isNotEmpty() || entity is VehicleEntity)
                 && entity.tickCount % (max(0.04 * this.distanceTo(entity), 2.0).toInt()) == 0
             ) {
                 entity.level().playSound(
@@ -88,29 +74,29 @@ open class IglaMissileEntity : MissileProjectile, BasicGeoProjectileEntity {
             )
 
             if (this.tickCount > 1) {
-                lostTarget = deltaMovement.angleTo(toVec) > 120 && !lostTarget
+                setLostTarget(deltaMovement.angleTo(toVec) > 120 && !isLostTarget())
 
                 val owner = this.owner
-                if (owner is Player && owner.mainHandItem.`is`(ModItems.IGLA_9K38.get()) && !lost) {
+                if (owner is Player && owner.mainHandItem.`is`(ModItems.IGLA_9K38.get()) && !isLost()) {
                     val handItem = owner.mainHandItem
                     val data = from(handItem)
-                    lost = !data.zooming.get() || !checkNoClip(owner.eyePosition, targetPos, this.level())
+                    setLost(!data.zooming.get() || !checkNoClip(owner.eyePosition, targetPos, this.level()))
                 }
 
-                if (!lostTarget && !lost) {
+                if (!isLostTarget() && !isLost()) {
                     turn(toVec, ((tickCount - 1) * 0.5f).coerceIn(0f, 15f))
                     this.deltaMovement = this.deltaMovement.scale(0.05).add(lookAngle.scale(8.0))
                 }
 
-                if (lostTarget) {
-                    this.targetUUID = "none"
+                if (isLostTarget()) {
+                    this.setTargetUUID("none")
                 }
             }
         }
 
-        if (lost) {
+        if (isLost()) {
             deltaMovement = deltaMovement.add(0.0, 0.03, 0.0)
-            this.targetUUID = "none"
+            this.setTargetUUID("none")
         }
     }
 

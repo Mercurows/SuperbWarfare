@@ -41,11 +41,11 @@ abstract class BedrockModelReloadListener<T> @JvmOverloads constructor(
                     val existed = map.put(location, pojo)
                     idToModelPaths[id] = location
                     if (existed != null) {
-                        throw IllegalStateException("Duplicate model resource $resource")
+                        throw IllegalStateException("Duplicate model resource $location")
                     }
                 }
             } catch (e: Exception) {
-                Mod.LOGGER.error("Error while reading model $resource", e)
+                Mod.LOGGER.error("Error while reading model $location", e)
             }
         }
 
@@ -62,11 +62,11 @@ abstract class BedrockModelReloadListener<T> @JvmOverloads constructor(
                         val existed = this.animFiles.put(location, file)
                         animPathToIds[location] = id
                         if (existed != null) {
-                            throw IllegalStateException("Duplicate animation resource $resource")
+                            throw IllegalStateException("Duplicate animation resource $location")
                         }
                     }
                 } catch (e: Exception) {
-                    Mod.LOGGER.error("Error while reading animation $resource", e)
+                    Mod.LOGGER.error("Error while reading animation $location", e)
                 }
             }
         }

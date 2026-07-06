@@ -139,6 +139,7 @@ object ModItems {
 
     @JvmField val MORTAR_SHELL = registerAmmo("mortar_shell") { MortarShellItem() }
     @JvmField val MORTAR_SHELL_WP = registerAmmo("mortar_shell_wp") { MortarShellItem() }
+    @JvmField val MORTAR_SHELL_SMOKE = registerAmmo("mortar_shell_smoke") { SmokeMortarShellItem() }
     @JvmField val POTION_MORTAR_SHELL = registerAmmo("potion_mortar_shell") { PotionMortarShellItem() }
     @JvmField val RPG_ROCKET_STANDARD = registerAmmo("rpg_rocket_standard") { RpgRocketStandardItem() }
     @JvmField val RPG_ROCKET_TBG = registerAmmo("rpg_rocket_tbg") { RpgRocketTBGItem() }
@@ -291,6 +292,8 @@ object ModItems {
     @JvmField val MEDICAL_KIT = registerItem("medical_kit") { MedicalKitItem() }
     @JvmField val VEHICLE_DAMAGE_ANALYZER = registerItem("vehicle_damage_analyzer") { VehicleDamageAnalyzerItem() }
     @JvmField val VEHICLE_RESET_KIT = registerItem("vehicle_reset_kit") { VehicleResetKitItem() }
+    @JvmField val SKIN_SPRAY = registerItem("skin_spray") { SkinSprayItem() }
+    @JvmField val VEHICLE_KEY = registerItem("vehicle_key") { VehicleKeyItem() }
 
     @JvmField val TUNGSTEN_ROD = registerItem("tungsten_rod")
 

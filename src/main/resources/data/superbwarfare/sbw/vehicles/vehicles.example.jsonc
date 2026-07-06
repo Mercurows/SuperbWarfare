@@ -59,8 +59,5 @@
   // Explosion radius when been destroyed, when this is not greater than 0, vehicles will not explode when been destroyed
   "ExplosionRadius": 0,
   // Should blocks be destroyed by explosion when vehicle been destroyed
-  "ExplosionDestroyBlockOnDestroy": true,
-  // Which particle type should be used when vehicle been destroyed
-  // can be "Mini", "Small", "Medium", "Huge" and "Giant"
-  "ExplosionParticleType": "Mini"
+  "ExplosionDestroyBlockOnDestroy": true
 }

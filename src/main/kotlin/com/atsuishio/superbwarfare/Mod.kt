@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare
 
 import com.atsuishio.superbwarfare.api.event.RegisterContainersEvent
 import com.atsuishio.superbwarfare.client.MouseMovementHandler
+import com.atsuishio.superbwarfare.client.renderer.ModParticleRenderTypes
 import com.atsuishio.superbwarfare.client.renderer.molang.MolangVariable
 import com.atsuishio.superbwarfare.compat.CompatHolder
 import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper
@@ -29,6 +30,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent
 import net.neoforged.fml.loading.FMLEnvironment
 import net.neoforged.neoforge.client.event.ClientTickEvent
+import net.neoforged.neoforge.client.event.RegisterShadersEvent
 import net.neoforged.neoforge.common.NeoForge
 import net.neoforged.neoforge.event.AddPackFindersEvent
 import net.neoforged.neoforge.event.tick.ServerTickEvent
@@ -78,6 +80,7 @@ class Mod(bus: IEventBus, container: ModContainer) {
         bus.addListener<RegisterPayloadHandlersEvent> { initializeNetwork(it) }
         bus.addListener<AddPackFindersEvent> { onRegisterBuiltInResourcePacks(it) }
         bus.addListener<DataPackRegistryEvent.NewRegistry> { ModDatapackRegistries.onNewRegistry(it) }
+        bus.addListener<RegisterShadersEvent> { ModParticleRenderTypes.onRegisterShaders(it) }
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
             CompatHolder.hasMod(CompatHolder.CLOTH_CONFIG) { ClothConfigHelper.registerScreen() }

@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.serialization.kserializer.SerializedUUID
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedVec3
 import com.atsuishio.superbwarfare.tools.CustomExplosion
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
-import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.forceHurt
 import kotlinx.serialization.Serializable
 import net.minecraft.world.InteractionHand
@@ -48,7 +47,6 @@ data class LungeMineAttackMessage(
                 CustomExplosion.Builder(player)
                     .damage(ExplosionConfig.LUNGE_MINE_EXPLOSION_DAMAGE.get().toFloat())
                     .radius(ExplosionConfig.LUNGE_MINE_EXPLOSION_RADIUS.get().toFloat())
-                    .withParticleType(ParticleTool.ParticleType.MEDIUM)
                     .position(pos)
                     .explode()
             }
@@ -61,7 +59,6 @@ data class LungeMineAttackMessage(
             .damage(ExplosionConfig.LUNGE_MINE_EXPLOSION_DAMAGE.get().toFloat())
             .radius(ExplosionConfig.LUNGE_MINE_EXPLOSION_RADIUS.get().toFloat())
             .attacker(attacker)
-            .withParticleType(ParticleTool.ParticleType.MEDIUM)
             .explode()
     }
 }

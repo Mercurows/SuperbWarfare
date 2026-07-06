@@ -20,6 +20,12 @@ open class SmokeDecoyEntity : Entity {
     var life: Int = 400
     var igniteTime: Int = 4
     var releaseSmoke: Boolean = true
+    var red: Float = 1.0f
+        private set
+    var green: Float = 1.0f
+        private set
+    var blue: Float = 1.0f
+        private set
 
     constructor(type: EntityType<out SmokeDecoyEntity>, level: Level) : super(type, level)
 
@@ -36,11 +42,34 @@ open class SmokeDecoyEntity : Entity {
         if (compoundTag.contains("Life")) {
             this.life = compoundTag.getInt("Life")
         }
+        if (compoundTag.contains("ReleaseSmoke")) {
+            this.releaseSmoke = compoundTag.getBoolean("ReleaseSmoke")
+        }
+        if (compoundTag.contains("RColor")) {
+            this.red = compoundTag.getFloat("RColor")
+        }
+        if (compoundTag.contains("GColor")) {
+            this.green = compoundTag.getFloat("GColor")
+        }
+        if (compoundTag.contains("BColor")) {
+            this.blue = compoundTag.getFloat("BColor")
+        }
     }
 
     override fun addAdditionalSaveData(compoundTag: CompoundTag) {
         compoundTag.putInt("IgniteTime", igniteTime)
         compoundTag.putInt("Life", life)
+        compoundTag.putBoolean("Release", this.releaseSmoke)
+        compoundTag.putFloat("RColor", this.red)
+        compoundTag.putFloat("GColor", this.green)
+        compoundTag.putFloat("BColor", this.blue)
+    }
+
+    fun setColor(r: Float, g: Float, b: Float): SmokeDecoyEntity {
+        this.red = r
+        this.green = g
+        this.blue = b
+        return this
     }
 
     override fun defineSynchedData(builder: SynchedEntityData.Builder) {}
@@ -53,7 +82,7 @@ open class SmokeDecoyEntity : Entity {
                 val level = this.level()
                 if (level is ServerLevel) {
                     ParticleTool.sendParticle(
-                        level, CustomSmokeOption(1f, 1f, 1f), this.xo, this.yo, this.zo,
+                        level, CustomSmokeOption(this.red, this.green, this.blue), this.xo, this.yo, this.zo,
                         50, 0.0, 0.0, 0.0, 0.07, true
                     )
                     ParticleTool.sendParticle(

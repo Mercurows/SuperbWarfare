@@ -95,7 +95,7 @@ object ModEntities {
     )
 
     @JvmField
-    val C4 = register("c4", misc(::C4Entity).setTrackingRange(64).setUpdateInterval(1).sized(0.5f, 0.5f))
+    val C4 = register("c4", misc(::C4Entity).setTrackingRange(64).setUpdateInterval(1).sized(0.25f, 0.25f))
 
     @JvmField
     val MEDICAL_KIT = register(
@@ -209,6 +209,9 @@ object ModEntities {
     @JvmField
     val MK_84 = register("mk_84", fastProjectile(::Mk84Entity).sized(0.8f, 0.8f))
 
+    @JvmField
+    val BOR_57 = register("bor_57", fastProjectile(::Bor57Entity).sized(0.8f, 0.8f))
+
     // Vehicles
     // Turrets
     @JvmField
@@ -302,7 +305,13 @@ object ModEntities {
     val A_10A = register("a_10a", vehicle(::A10Entity).sized(3.375f, 2.625f))
 
     @JvmField
+    val AC_130H = register("ac_130h", vehicle(::Ac130hEntity).sized(24f, 6.8125f))
+
+    @JvmField
     val HAPPIEST_GHAST = register("happiest_ghast", vehicle(::HappiestGhastEntity).sized(4f, 4f))
+
+    @JvmField
+    val KIROV = register("kirov", vehicle(::KirovEntity).sized(22f, 26f))
 
     // Special
     @JvmField

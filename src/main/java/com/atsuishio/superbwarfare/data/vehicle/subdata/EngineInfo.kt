@@ -35,6 +35,9 @@ abstract class EngineInfo {
     @SerialName("EngineSoundVolume")
     var engineSoundVolume: Float = 0.4f
 
+    @SerialName("SprintMultiply")
+    var sprintMultiply: Double = 1.0
+
     abstract fun work(vehicle: VehicleEntity)
 
     @Serializable
@@ -162,6 +165,12 @@ abstract class EngineInfo {
 
         @SerialName("Speed")
         var speed: Float = 1f
+
+        @SerialName("ClampPitch")
+        var clampPitch: Float = 514f
+
+        @SerialName("ClampRoll")
+        var clampRoll: Float = 514f
 
         // 引擎启动音效
         @SerialName("EngineStartSound")

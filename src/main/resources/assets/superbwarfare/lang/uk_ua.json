@@ -1081,6 +1081,7 @@
   "item.superbwarfare.battle_of_wits": "Битва розумів",
   "des.superbwarfare.battle_of_wits": "Надсилання повідомлення збільшує шкоду наступного пострілу",
   "entity.superbwarfare.edd": "Настінна міна",
+  "entity.superbwarfare.kirov": "Дирижабль «Кіров»",
   "des.superbwarfare.edd": "Може бути розміщена тільки на стороні блоку",
   "commands.superbwarfare.ride.fail.passenger": "Обраний пасажир має бути живою сутністю",
   "commands.superbwarfare.ride.fail.vehicle": "Обраний транспорт має бути сутністю транспорту Superb Warfare",

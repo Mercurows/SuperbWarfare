@@ -59,8 +59,10 @@ object ModEntityRenderers {
             registerEntityRenderer(ModEntities.HPJ_11.get(), ::Hpj11Renderer)
             registerEntityRenderer(ModEntities.A_10A.get(), ::A10Renderer)
             registerEntityRenderer(ModEntities.HAPPIEST_GHAST.get(), ::HappiestGhastRenderer)
+            registerEntityRenderer(ModEntities.KIROV.get(), ::KirovRenderer)
             registerEntityRenderer(ModEntities.MK_82.get(), ::BasicProjectileRenderer)
             registerEntityRenderer(ModEntities.MK_84.get(), ::BasicProjectileRenderer)
+            registerEntityRenderer(ModEntities.BOR_57.get(), ::BasicProjectileRenderer)
             registerEntityRenderer(ModEntities.SC_50.get(), ::BasicProjectileRenderer)
             registerEntityRenderer(ModEntities.SC_250.get(), ::BasicProjectileRenderer)
             registerEntityRenderer(ModEntities.AGM_65.get(), ::BasicProjectileRenderer)
@@ -99,6 +101,7 @@ object ModEntityRenderers {
             registerEntityRenderer(ModEntities.LAV_25.get(), ::Lav25Renderer)
             registerEntityRenderer(ModEntities.ZTZ_99A.get(), ::Ztz99aRenderer)
             registerEntityRenderer(ModEntities.EDD.get(), ::EDDRenderer)
+            registerEntityRenderer(ModEntities.AC_130H.get(), ::Ac130hRenderer)
         }
     }
 }

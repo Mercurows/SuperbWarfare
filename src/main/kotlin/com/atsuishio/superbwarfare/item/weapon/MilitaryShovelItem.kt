@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.item.CustomDamageProperty
 import com.atsuishio.superbwarfare.tiers.ModItemTier
+import com.atsuishio.superbwarfare.tools.mc
 import net.minecraft.ChatFormatting
 import net.minecraft.advancements.CriteriaTriggers
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer
@@ -29,15 +30,10 @@ import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent
 import net.neoforged.neoforge.common.ItemAbilities
 import net.neoforged.neoforge.common.ItemAbility
-import software.bernie.geckolib.animatable.GeoItem
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache
-import software.bernie.geckolib.animation.AnimatableManager
-import software.bernie.geckolib.util.GeckoLibUtil
 
 open class MilitaryShovelItem :
-    DiggerItem(
+    AxeItem(
         ModItemTier.CEMENTED_CARBIDE,
-        ModTags.Blocks.MINEABLE_WITH_MILITARY_SHOVEL,
         CustomDamageProperty(810).rarity(Rarity.RARE)
             .component(
                 DataComponents.TOOL, Tool(
@@ -52,8 +48,7 @@ open class MilitaryShovelItem :
                 )
             )
             .attributes(createAttributes(ModItemTier.CEMENTED_CARBIDE, 2f, -2.6f))
-    ), GeoItem {
-    private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
+    ) {
 
     override fun appendHoverText(
         stack: ItemStack,
@@ -155,19 +150,18 @@ open class MilitaryShovelItem :
         return ModItemTier.CEMENTED_CARBIDE.enchantmentValue
     }
 
-    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) {}
-
-    override fun getAnimatableInstanceCache() = this.cache
-
     @EventBusSubscriber
     companion object {
         @SubscribeEvent
         fun registerRenderer(event: RegisterClientExtensionsEvent) {
             event.registerItem(object : IClientItemExtensions {
-                private val renderer: BlockEntityWithoutLevelRenderer = MilitaryShovelRenderer()
+                private var renderer: BlockEntityWithoutLevelRenderer? = null
 
                 override fun getCustomRenderer(): BlockEntityWithoutLevelRenderer {
-                    return renderer
+                    if (renderer == null) {
+                        renderer = MilitaryShovelRenderer(mc.blockEntityRenderDispatcher, mc.entityModels)
+                    }
+                    return renderer!!
                 }
             }, ModItems.MILITARY_SHOVEL.get())
         }

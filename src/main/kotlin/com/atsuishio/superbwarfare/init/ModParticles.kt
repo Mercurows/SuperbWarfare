@@ -12,6 +12,7 @@ object ModParticles {
     fun registerParticles(event: RegisterParticleProvidersEvent) {
         with(event) {
             registerSpriteSet(ModParticleTypes.FIRE_STAR.get()) { FireStarParticle.provider(it) }
+            registerSpriteSet(ModParticleTypes.EXPLOSION_DEBRIS.get()) { ExplosionDebrisParticle.Provider(it) }
             registerSpriteSet(ModParticleTypes.WHITE_STAR.get()) { WhiteStarParticle.provider(it) }
             registerSpriteSet(ModParticleTypes.RISING_SMOKE.get()) { RisingSmokeParticle.provider(it) }
             registerSpecial(ModParticleTypes.BULLET_DECAL.get(), BulletDecalParticle.Provider())

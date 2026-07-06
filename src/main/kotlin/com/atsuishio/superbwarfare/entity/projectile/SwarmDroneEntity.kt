@@ -3,20 +3,17 @@ package com.atsuishio.superbwarfare.entity.projectile
 import com.atsuishio.superbwarfare.client.animation.entity.BasicProjectileAnimationInstance
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.ParticleTool
-import com.atsuishio.superbwarfare.tools.SeekTool
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.util.Mth
-import net.minecraft.world.damagesource.DamageSource
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
-import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.Vec3
 import kotlin.math.abs
 import kotlin.math.cos
@@ -35,43 +32,20 @@ open class SwarmDroneEntity(type: EntityType<out SwarmDroneEntity>, level: Level
         randomFloat = random.nextFloat()
     }
 
-    override fun hurt(source: DamageSource, amount: Float): Boolean {
-        val entity = source.directEntity
-        if (entity is SwarmDroneEntity && entity.owner == this.owner) {
-            return false
-        }
-
-        return super.hurt(source, amount)
-    }
-
     override fun getDefaultItem(): Item {
         return ModItems.SWARM_DRONE.get()
     }
 
-    override fun onHitEntity(result: EntityHitResult) {
-        super.onHitEntity(result)
-        val entity = result.entity
-        if (entity is SwarmDroneEntity) {
-            return
-        }
-        val owner = this.owner
-        if (owner != null && owner.vehicle != null && entity == owner.vehicle) return
-        if (this.level() is ServerLevel) {
-            causeExplode(result.getLocation())
-        }
+    override fun performDamage(
+        entity: Entity,
+        damage: Float,
+        isHeadshot: Boolean
+    ) {
     }
 
     override fun tick() {
         super.tick()
         val entity = EntityFindUtil.findEntity(this.level(), entityData.get(TARGET_UUID))
-        SeekTool.seekLivingEntities(this, 32.0, 90.0).forEach {
-            if (it.type.`is`(ModTags.EntityTypes.DECOY) && !this.distracted) {
-                this.entityData.set(TARGET_UUID, it.getStringUUID())
-                this.distracted = true
-                return@forEach
-            }
-        }
-
         if (this.tickCount == 1) {
             val level = this.level()
             if (level is ServerLevel) {
@@ -106,13 +80,13 @@ open class SwarmDroneEntity(type: EntityType<out SwarmDroneEntity>, level: Level
 
         val owner = this.owner
         if (tickCount > 10 && owner != null) {
-            val targetPos: Vec3
-            if (guideType == 0 && entity != null) {
+            val targetPos: Vec3?
+            if (getGuideType() == 0 && entity != null) {
                 val targetVec = Vec3(entity.deltaMovement.x, 0.0, entity.deltaMovement.z)
                 targetPos = entity.eyePosition.add(targetVec)
-                this.targetPos = targetPos
-            } else if (this.targetPos != null) {
-                targetPos = this.targetPos!!
+                this.setTargetPos(targetPos)
+            } else if (this.getTargetPos() != null) {
+                targetPos = this.getTargetPos()
             } else {
                 val result = owner.level().clip(
                     ClipContext(

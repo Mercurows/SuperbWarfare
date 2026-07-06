@@ -14,6 +14,7 @@ class CustomFlareOption(
     val color: Int,
     val life: Int,
     val fade: Float,
+    val size: Float,
     val animationSpeed: Int,
     val sizeAdd: Float
 ) : ParticleOptions {
@@ -24,11 +25,13 @@ class CustomFlareOption(
         life: Int,
         fade: Float,
         animationSpeed: Int,
-        sizeAdd: Float
+        sizeAdd: Float,
+        size: Float = 1f
     ) : this(
         (r * 255).roundToInt() shl 16 or ((g * 255).roundToInt() shl 8) or (b * 255).roundToInt(),
         life,
         fade,
+        size,
         animationSpeed,
         sizeAdd
     )

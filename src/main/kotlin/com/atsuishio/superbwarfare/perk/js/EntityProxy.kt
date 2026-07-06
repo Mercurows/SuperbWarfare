@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.perk.js
 import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity
 import com.atsuishio.superbwarfare.tools.CustomExplosion
 import com.atsuishio.superbwarfare.tools.InventoryTool
-import com.atsuishio.superbwarfare.tools.ParticleTool
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.OwnableEntity
@@ -20,7 +19,7 @@ class EntityProxy(val entity: Entity?) {
     fun isLivingEntity(): Boolean = entity is LivingEntity
     fun isProjectile(): Boolean = entity is ProjectileEntity
 
-    fun isZoom(): Boolean = (entity as? ProjectileEntity)?.isZoom ?: false
+    fun isZoom(): Boolean = (entity as? ProjectileEntity)?.isZoom() ?: false
 
     // ── Creative / Inventory ──
     fun isCreative(): Boolean = (entity as? Player)?.isCreative == true
@@ -90,7 +89,7 @@ class EntityProxy(val entity: Entity?) {
 
     // ── Projectile ──
     fun getBypassArmorRate(): Double {
-        return (entity as? ProjectileEntity)?.bypassArmorRate?.toDouble() ?: 0.0
+        return (entity as? ProjectileEntity)?.getBypassArmorRate()?.toDouble() ?: 0.0
     }
 
     // ── Explosion ──
@@ -103,8 +102,6 @@ class EntityProxy(val entity: Entity?) {
             .directSource(attacker)
             .source(null)
             .fireTime(fireTime.toInt())
-            .withParticleType(ParticleTool.ParticleType.SMALL)
-
         if (keepBlocks) {
             builder.keepBlock()
         }

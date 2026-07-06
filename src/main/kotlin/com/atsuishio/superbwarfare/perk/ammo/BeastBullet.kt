@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.perk.ammo
 
 import com.atsuishio.superbwarfare.data.gun.GunData
-import com.atsuishio.superbwarfare.entity.projectile.ProjectileEntity
+import com.atsuishio.superbwarfare.entity.projectile.IBulletProperties
 import com.atsuishio.superbwarfare.perk.AmmoPerk
 import com.atsuishio.superbwarfare.perk.PerkInstance
 import net.minecraft.world.entity.Entity
@@ -13,7 +13,7 @@ object BeastBullet : AmmoPerk(Builder("beast_bullet", Type.AMMO).bypassArmorRate
         entity: Entity
     ) {
         super.modifyProjectile(data, instance, entity)
-        if (entity !is ProjectileEntity) return
-        entity.beast()
+        if (entity !is IBulletProperties) return
+        entity.setBeast(true)
     }
 }

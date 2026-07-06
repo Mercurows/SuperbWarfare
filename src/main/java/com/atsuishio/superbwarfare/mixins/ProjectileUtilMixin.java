@@ -30,6 +30,8 @@ import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 @Mixin(ProjectileUtil.class)
 public class ProjectileUtilMixin {
 
+    //TODO 修复对超大载具的obb射线检测
+
     @Inject(method = "getEntityHitResult(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;F)Lnet/minecraft/world/phys/EntityHitResult;",
             at = @At("HEAD"), cancellable = true)
     private static void getEntityHitResult(Level pLevel, Entity pProjectile, Vec3 pStartVec, Vec3 pEndVec, AABB pBoundingBox, Predicate<Entity> pFilter, float pInflationAmount, CallbackInfoReturnable<EntityHitResult> cir) {

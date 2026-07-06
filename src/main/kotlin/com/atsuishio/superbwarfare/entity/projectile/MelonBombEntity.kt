@@ -16,7 +16,6 @@ import net.minecraft.world.phys.Vec3
 
 open class MelonBombEntity(type: EntityType<out MelonBombEntity>, level: Level) : DestroyableProjectile(type, level) {
     init {
-        this.noCulling = true
         this.explosionRadiusValue = 10f
         this.explosionDamageValue = 500f
     }
@@ -25,55 +24,50 @@ open class MelonBombEntity(type: EntityType<out MelonBombEntity>, level: Level) 
         return Items.MELON
     }
 
-    override fun onHitEntity(result: EntityHitResult) {
-        super.onHitEntity(result)
-        val entity = result.entity
-        val owner = this.owner
-        if (entity == owner || (owner != null && entity == owner.vehicle) || entity is MelonBombEntity) return
+    override fun afterHitEntity(result: EntityHitResult) {
+        if (result.entity is MelonBombEntity) return
+
         val level = this.level()
         if (level is ServerLevel) {
             if (ExplosionConfig.EXPLOSION_DESTROY.get() && ExplosionConfig.EXTRA_EXPLOSION_EFFECT.get()) {
-                val aabb = AABB(result.getLocation(), result.getLocation()).inflate(5.0)
+                val aabb = AABB(result.location, result.location).inflate(5.0)
                 BlockPos.betweenClosedStream(aabb).forEach {
                     val hard = level.getBlockState(it).block.defaultDestroyTime()
                     if (hard != -1f && Vec3(
                             it.x.toDouble(),
                             it.y.toDouble(),
                             it.z.toDouble()
-                        ).distanceTo(result.getLocation()) < 3
+                        ).distanceTo(result.location) < 3
                     ) {
                         level.destroyBlock(it, true)
                     }
                 }
             }
-
-            causeExplode(result.getLocation())
-            this.discard()
         }
+
+        super.afterHitEntity(result)
     }
 
-    public override fun onHitBlock(result: BlockHitResult) {
-        super.onHitBlock(result)
+    override fun afterHitBlock(result: BlockHitResult) {
         val level = this.level()
         if (level is ServerLevel) {
             if (ExplosionConfig.EXPLOSION_DESTROY.get() && ExplosionConfig.EXTRA_EXPLOSION_EFFECT.get()) {
-                val aabb = AABB(result.getLocation(), result.getLocation()).inflate(5.0)
+                val aabb = AABB(result.location, result.location).inflate(5.0)
                 BlockPos.betweenClosedStream(aabb).forEach {
                     val hard = level.getBlockState(it).block.defaultDestroyTime()
                     if (hard != -1f && Vec3(
                             it.x.toDouble(),
                             it.y.toDouble(),
                             it.z.toDouble()
-                        ).distanceTo(result.getLocation()) < 3
+                        ).distanceTo(result.location) < 3
                     ) {
                         level.destroyBlock(it, true)
                     }
                 }
             }
-
-            causeExplode(result.getLocation())
-            this.discard()
         }
+
+        super.afterHitBlock(result)
     }
 
     override val maxHealth: Float

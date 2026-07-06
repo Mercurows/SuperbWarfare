@@ -1,13 +1,9 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.config.server.MiscConfig
-import com.atsuishio.superbwarfare.entity.getValue
-import com.atsuishio.superbwarfare.entity.setValue
-import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
-import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
+import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
 import com.atsuishio.superbwarfare.tools.SeekTool
-import com.atsuishio.superbwarfare.tools.forceHurt
 import com.atsuishio.superbwarfare.tools.sendPacketTo
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
@@ -15,34 +11,49 @@ import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.server.level.ServerLevel
-import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
-import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.BlockHitResult
-import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.Vec3
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn
 
-abstract class MissileProjectile : DestroyableProjectile, CustomSyncMotionEntity, IEntityWithComplexSpawn {
-    @JvmField
-    var targetPos: Vec3? = null
+abstract class MissileProjectile : DestroyableProjectile, ITrackableProjectile, IEntityWithComplexSpawn {
+    private var targetPosValue: Vec3? = null
+    override fun getTargetPos(): Vec3? = targetPosValue
+    override fun setTargetPos(value: Vec3?) {
+        targetPosValue = value
+    }
 
-    @JvmField
-    var guideType: Int = 0
+    private var guideTypeValue: Int = 0
+    override fun getGuideType(): Int = guideTypeValue
+    override fun setGuideType(value: Int) {
+        guideTypeValue = value
+    }
 
-    @JvmField
-    var distracted: Boolean = false
+    private var distractedValue: Boolean = false
+    override fun isDistracted(): Boolean = distractedValue
+    override fun setDistracted(value: Boolean) {
+        distractedValue = value
+    }
 
-    @JvmField
-    var lost: Boolean = false
+    private var lostValue: Boolean = false
+    override fun isLost(): Boolean = lostValue
+    override fun setLost(value: Boolean) {
+        lostValue = value
+    }
 
-    @JvmField
-    var lostTarget: Boolean = false
+    private var lostTargetValue: Boolean = false
+    override fun isLostTarget(): Boolean = lostTargetValue
+    override fun setLostTarget(value: Boolean) {
+        lostTargetValue = value
+    }
 
-    open var targetUUID by TARGET_UUID
+    override fun getTargetUUID(): String = entityData.get(TARGET_UUID)
+    override fun setTargetUUID(value: String) {
+        entityData.set(TARGET_UUID, value)
+    }
 
     constructor(pEntityType: EntityType<out ThrowableItemProjectile>, pLevel: Level) : super(pEntityType, pLevel)
 
@@ -55,16 +66,12 @@ abstract class MissileProjectile : DestroyableProjectile, CustomSyncMotionEntity
     }
 
     fun setTargetUuid(uuid: String) {
-        this.targetUUID = uuid
-    }
-
-    fun setGuideType(guideType: Int) {
-        this.guideType = guideType
+        this.setTargetUUID(uuid)
     }
 
     fun setTargetVec(targetPos: Vec3?) {
         if (targetPos != null) {
-            this.targetPos = targetPos
+            this.targetPosValue = targetPos
         }
     }
 
@@ -76,76 +83,22 @@ abstract class MissileProjectile : DestroyableProjectile, CustomSyncMotionEntity
     override fun readAdditionalSaveData(compound: CompoundTag) {
         super.readAdditionalSaveData(compound)
         if (compound.contains("TargetUuid")) {
-            targetUUID = compound.getString("TargetUuid")
+            setTargetUUID(compound.getString("TargetUuid"))
         }
     }
 
     override fun addAdditionalSaveData(compound: CompoundTag) {
         super.addAdditionalSaveData(compound)
-        compound.putString("TargetUuid", this.targetUUID)
+        compound.putString("TargetUuid", this.getTargetUUID())
     }
 
-    public override fun onHitBlock(result: BlockHitResult) {
-        super.onHitBlock(result)
+    override fun afterHitBlock(result: BlockHitResult) {
         if (this.level() is ServerLevel) {
             destroyBlock(result)
         }
     }
 
-    override fun onHitEntity(result: EntityHitResult) {
-        super.onHitEntity(result)
-        if (tickCount < 3) return
-        val entity = result.entity
-        val owner = this.owner
-        if (owner != null && owner.vehicle != null && entity == owner.vehicle) return
-        if (this.level() is ServerLevel) {
-            entity.forceHurt(
-                causeProjectileHitDamage(this.level().registryAccess(), this, owner),
-                this.damageValue
-            )
-
-            if (entity is LivingEntity) {
-                entity.invulnerableTime = 0
-            }
-
-            causeExplode(result.location)
-            this.discard()
-        }
-    }
-
     override fun updateRotation() {
-    }
-
-    fun turn(vec3: Vec3, turnSpeed: Float) {
-        var vec3 = vec3
-        val v0 = deltaMovement.normalize()
-
-        vec3 = vec3.add(v0.scale(-0.4))
-
-        val d0 = vec3.horizontalDistance()
-        val targetAngleY = (-Mth.atan2(vec3.x, vec3.z) * (180f / Math.PI.toFloat()).toDouble()).toFloat()
-        val targetAngleX = (-Mth.atan2(vec3.y, d0) * (180f / Math.PI.toFloat()).toDouble()).toFloat()
-
-        val diffY = Mth.wrapDegrees(targetAngleY - this.yRot)
-        val diffX = Mth.wrapDegrees(targetAngleX - this.xRot)
-
-        deltaMovement = deltaMovement.scale(1 - 0.0004 * VehicleVecUtils.calculateAngle(vec3, v0))
-        this.yRot += (0.95f * diffY).coerceIn(-turnSpeed, turnSpeed)
-        this.xRot += (0.95f * diffX).coerceIn(-turnSpeed, turnSpeed)
-    }
-
-    fun turnYaw(vec3: Vec3, turnSpeed: Float) {
-        var vec3 = vec3
-        val v0 = deltaMovement.normalize()
-
-        vec3 = vec3.add(v0.scale(-0.4))
-
-        val targetAngleY = (-Mth.atan2(vec3.x, vec3.z) * (180f / Math.PI.toFloat()).toDouble()).toFloat()
-        val diffY = Mth.wrapDegrees(targetAngleY - this.yRot)
-
-        deltaMovement = deltaMovement.scale(1 - 0.0004 * VehicleVecUtils.calculateAngle(vec3, v0))
-        this.yRot += (0.95f * diffY).coerceIn(-turnSpeed, turnSpeed)
-
     }
 
     override fun forceLoadChunk(): Boolean {
@@ -156,8 +109,8 @@ abstract class MissileProjectile : DestroyableProjectile, CustomSyncMotionEntity
         return true
     }
 
-    override fun getDefaultGravity(): Double {
-        return 0.0
+    override fun getCustomGravity(): Float {
+        return 0f
     }
 
     companion object {
@@ -168,9 +121,29 @@ abstract class MissileProjectile : DestroyableProjectile, CustomSyncMotionEntity
 
     override fun tick() {
         super.tick()
-        // 给队友同步友方导弹位置
+        this.distractedByDecoy()
+        this.syncPosition()
+    }
 
-        val level = level()
+    open fun distractedByDecoy() {
+        if (this.isDistracted()) return
+
+        val decoy = SeekTool.seekLivingEntities(this, 32.0, 90.0)
+            .asSequence()
+            .filter { it.type.`is`(ModTags.EntityTypes.DECOY) }
+            .toList()
+
+        if (decoy.isNotEmpty()) {
+            this.setTargetUUID(decoy.first().stringUUID)
+            this.setDistracted(true)
+        }
+    }
+
+    /**
+     * 给队友同步友方导弹位置
+     */
+    open fun syncPosition() {
+        val level = this.level()
         if (!MiscConfig.SYNC_ENTITY_OVER_RANGE.get()) return
         if (server != null && server!!.tickCount % MiscConfig.SYNC_ENTITY_INTERVAL.get() != 0) return
 

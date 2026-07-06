@@ -81,6 +81,7 @@ private fun registerPayloads() {
     playToClient<RadarMenuCloseMessage>()
     playToClient<RadarMenuOpenMessage>()
     playToClient<ResetCameraTypeMessage>()
+    playToClient<ExplosionParticleMessage>()
     playToClient<ShakeClientMessage>()
     playToClient<ShootClientMessage>()
     playToClient<SoundClientMessage>()
@@ -89,6 +90,7 @@ private fun registerPayloads() {
     playToClient<EntitySyncMessage>()
     playToClient<PlayerInfoSyncMessage>()
     playToClient<ClientVehicleItemMessage>()
+    playToClient<OpenVehicleSkinScreenMessage>()
 
     playToServer<AdjustMortarAngleMessage>()
     playToServer<AdjustZoomFovMessage>()
@@ -119,6 +121,7 @@ private fun registerPayloads() {
     playToServer<SeekingWeaponWarningMessage>()
     playToServer<SensitivityMessage>()
     playToServer<SetFiringParametersMessage>()
+    playToServer<SetVehicleSkinMessage>()
     playToServer<SetPerkLevelMessage>()
     playToServer<ShootMessage>()
     playToServer<ShowChargingRangeMessage>()

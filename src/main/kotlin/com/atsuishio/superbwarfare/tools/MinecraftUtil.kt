@@ -154,6 +154,7 @@ fun Entity.setOnGroundWithKnownMovement(onGround: Boolean, movement: Vec3) = set
 val ItemStack.isEdible get() = this.get(DataComponents.FOOD) != null
 fun Player.getEntityReach() = entityInteractionRange()
 fun Player.getBlockReach() = blockInteractionRange()
+val ServerPlayer.latency get() = connection.latency()
 val Minecraft.deltaFrameTime get() = timer.gameTimeDeltaTicks
 
 fun ItemStack.hasCustomHoverName() = this.has(DataComponents.CUSTOM_NAME)

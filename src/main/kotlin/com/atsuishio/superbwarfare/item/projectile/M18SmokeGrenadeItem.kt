@@ -4,7 +4,10 @@ import com.atsuishio.superbwarfare.entity.projectile.M18SmokeGrenadeEntity
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.DispenserLaunchable
-import com.atsuishio.superbwarfare.tools.NBTTool
+import com.atsuishio.superbwarfare.item.IDyeableSmokeItem
+import com.atsuishio.superbwarfare.item.IDyeableSmokeItem.Companion.TAG_COLOR
+import com.atsuishio.superbwarfare.tools.getOrCreateTag
+import com.atsuishio.superbwarfare.tools.tag
 import net.minecraft.ChatFormatting
 import net.minecraft.core.Position
 import net.minecraft.core.dispenser.BlockSource
@@ -24,16 +27,13 @@ import net.minecraft.world.level.Level
 import javax.annotation.ParametersAreNonnullByDefault
 import kotlin.math.min
 
-open class M18SmokeGrenadeItem : Item(Properties().rarity(Rarity.UNCOMMON)), DispenserLaunchable {
-    fun setColor(stack: ItemStack, color: Int) {
-        val tag = NBTTool.getTag(stack)
-        tag.putInt(TAG_COLOR, color)
-        NBTTool.saveTag(stack, tag)
+open class M18SmokeGrenadeItem : Item(Properties().rarity(Rarity.UNCOMMON)), DispenserLaunchable, IDyeableSmokeItem {
+    override fun setColor(stack: ItemStack, color: Int) {
+        stack.getOrCreateTag().putInt(TAG_COLOR, color)
     }
 
-    fun getColor(stack: ItemStack): Int {
-        val tag = NBTTool.getTag(stack)
-        return if (tag.contains(TAG_COLOR)) tag.getInt(TAG_COLOR) else 0xFFFFFF
+    override fun getColor(stack: ItemStack): Int {
+        return if (stack.tag != null && stack.tag!!.contains(TAG_COLOR)) stack.tag!!.getInt(TAG_COLOR) else 0xFFFFFF
     }
 
     @ParametersAreNonnullByDefault
@@ -131,10 +131,6 @@ open class M18SmokeGrenadeItem : Item(Properties().rarity(Rarity.UNCOMMON)), Dis
                 source.level.playSound(null, source.pos, ModSounds.GRENADE_THROW.get(), SoundSource.BLOCKS, 1f, 1f)
             }
         }
-    }
-
-    companion object {
-        const val TAG_COLOR: String = "Color"
     }
 }
 

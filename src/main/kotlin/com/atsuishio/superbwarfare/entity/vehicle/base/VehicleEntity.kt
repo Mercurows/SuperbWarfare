@@ -32,8 +32,9 @@ import com.atsuishio.superbwarfare.event.ClientMouseHandler
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.inventory.handler.VehicleContainerHandler
 import com.atsuishio.superbwarfare.inventory.menu.*
+import com.atsuishio.superbwarfare.item.IVehicleInteract
 import com.atsuishio.superbwarfare.item.container.ContainerBlockItem
-import com.atsuishio.superbwarfare.item.curio.DogTagItem
+import com.atsuishio.superbwarfare.item.misc.VehicleKeyItem
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.network.message.receive.ClientVehicleItemMessage
 import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
@@ -260,7 +261,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     open var gunXRotO = 0f
 
     protected var noPassengerTime = 0
-    protected var damageDebugResultReceiver: Player? = null
+    var damageDebugResultReceiver: Player? = null
 
     open var decoyReloadCoolDown = 0
 
@@ -341,9 +342,9 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     var prevMotion: Vec3? = null
 
     var fakePitchO = 0f
-    var fakeRollO= 0f
+    var fakeRollO = 0f
     var fakePitch = 0f
-    var fakeRoll= 0f
+    var fakeRoll = 0f
 
     open var lastDamageSource: DamageSource? = null
         get() {
@@ -419,6 +420,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
     open var mouseMoveSpeedX by MOUSE_SPEED_X
     open var mouseMoveSpeedY by MOUSE_SPEED_Y
+
+    open      var locked by LOCKED
 
     // container start
     val inventory = VehicleContainerHandler(6 * 17, this)
@@ -781,6 +784,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     override fun defineSynchedData(builder: SynchedEntityData.Builder) {
         with(builder) {
             define(OVERRIDE, "")
+            define(SKIN_ID, "")
             define(HEALTH, getMaxHealth())
             define(LAST_ATTACKER_UUID, "undefined")
             define(LAST_DRIVER_UUID, "undefined")
@@ -840,6 +844,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             define(TURRET_BURNED, false)
             define(HOVER_MODE, false)
             define(TURRET_BURN_TIMER, 0)
+            define(LOCKED, false)
         }
     }
 
@@ -1276,6 +1281,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     override fun readAdditionalSaveData(compound: CompoundTag) {
         VehicleData.from(this).update()
         override = compound.getString("Override")
+        skinId = compound.getString("SkinId")
 
         // GunData
         val state = compound.getCompound("WeaponState")
@@ -1367,6 +1373,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             ContainerHelper.loadAllItems(compound, items, level().registryAccess())
             this.inventory.setItems(items)
         }
+
+        locked = compound.getBoolean("Locked")
     }
 
     public override fun addAdditionalSaveData(compound: CompoundTag) {
@@ -1377,6 +1385,11 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         val overrideString = override
         if (!overrideString.isBlank()) {
             compound.putString("Override", overrideString)
+        }
+
+        val skinIdString = skinId
+        if (!skinIdString.isBlank()) {
+            compound.putString("SkinId", skinIdString)
         }
 
         compound.putString("LastAttacker", lastAttackerUUID)
@@ -1445,62 +1458,48 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         this.resizeItems()
         compound.put("Inventory", this.inventory.serializeNBT(level().registryAccess()))
+
+        compound.putBoolean("Locked", locked)
     }
 
     override fun interact(player: Player, hand: InteractionHand): InteractionResult {
         if (player.vehicle === this) return InteractionResult.PASS
 
-        val stack = player.mainHandItem
-        if (player.isShiftKeyDown && stack.`is`(ModItems.DOG_TAG.get())) {
-            this.dogTagIcon = DogTagItem.getColors(stack).map { it.toList() }.toList()
-            return InteractionResult.SUCCESS
+        val mainStack = player.mainHandItem
+        val mainItem = mainStack.item
+
+        if (this.locked && mainItem !is VehicleKeyItem) {
+            player.displayClientMessage(
+                Component.translatable("tips.superbwarfare.vehicle.locked")
+                    .withStyle(ChatFormatting.RED), true
+            )
+            return InteractionResult.FAIL
         }
 
-        if (stack.item is NameTagItem && stack.hasCustomHoverName()) {
-            this.customName = stack.hoverName
-            stack.shrink(1)
+        val mainRes = if (mainStack.`is`(ModTags.Items.TOOLS_CROWBAR)) {
+            this.onCrowbarInteract(mainStack, player, hand)
+        } else if (mainItem is IVehicleInteract) {
+            mainItem.onInteractVehicle(this, mainStack, player, hand)
+        } else null
+        if (mainRes != null) return mainRes
+
+        if (mainStack.item is NameTagItem && mainStack.hasCustomHoverName()) {
+            this.customName = mainStack.hoverName
+            mainStack.shrink(1)
             return InteractionResult.sidedSuccess(this.level().isClientSide())
         }
 
-        if (this.hasMenu() && player.isShiftKeyDown && !stack.`is`(ModTags.Items.TOOLS_CROWBAR)) {
+        if (this.hasMenu() && player.isShiftKeyDown) {
             this.openMenu(player)
             return InteractionResult.sidedSuccess(player.level().isClientSide)
         }
 
-        if (stack.`is`(ModItems.VEHICLE_DAMAGE_ANALYZER.get())) {
-            if (!level().isClientSide) {
-                if (this.damageDebugResultReceiver != null) {
-                    this.damageDebugResultReceiver = null
-                    player.displayClientMessage(
-                        Component.translatable(
-                            "des.superbwarfare.vehicle_damage_analyzer.unbind",
-                            this.displayName
-                        ), true
-                    )
-                } else {
-                    this.damageDebugResultReceiver = player
-                    player.displayClientMessage(
-                        Component.translatable(
-                            "des.superbwarfare.vehicle_damage_analyzer.bind",
-                            this.displayName
-                        ), true
-                    )
-                }
-            }
-            return InteractionResult.SUCCESS
-        }
-
-        if (player.isShiftKeyDown && stack.`is`(ModTags.Items.TOOLS_CROWBAR) && this.getPassengers().isEmpty()) {
-            if (isWreck) {
-                return InteractionResult.PASS
-            } else {
-                for (item in this.getRetrieveItems()) {
-                    ItemHandlerHelper.giveItemToPlayer(player, item)
-                }
-                this.remove(RemovalReason.DISCARDED)
-                this.discard()
-                return InteractionResult.SUCCESS
-            }
+        if (!player.isShiftKeyDown
+            && (mainStack.`is`(ModItems.C4_BOMB.get()) || mainStack.`is`(ModItems.DETONATOR.get()))
+            && this.maxPassengers > 0
+        ) {
+            // Player is holding C4 — don't mount, let the item's use() handle the interaction
+            return InteractionResult.PASS
         } else if (!player.isShiftKeyDown && this.maxPassengers > 0) {
             if (VehicleConfig.SAME_TEAM_ENTER_VEHICLE.get()) {
                 for (passenger in this.getPassengers()) {
@@ -1548,6 +1547,20 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         return InteractionResult.PASS
     }
 
+    open fun onCrowbarInteract(stack: ItemStack, player: Player, hand: InteractionHand): InteractionResult? {
+        if (!player.isShiftKeyDown || this.passengers.isNotEmpty()) return null
+        if (this.isWreck) {
+            return InteractionResult.PASS
+        } else {
+            for (item in this.getRetrieveItems()) {
+                ItemHandlerHelper.giveItemToPlayer(player, item)
+            }
+            this.remove(RemovalReason.DISCARDED)
+            this.discard()
+            return InteractionResult.SUCCESS
+        }
+    }
+
     open val lastDriver: Entity?
         get() = EntityFindUtil.findEntity(level(), lastDriverUUID)
 
@@ -1560,19 +1573,20 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         if (source.`is`(ModTags.DamageTypes.VEHICLE_IMMUNE)) return false
 
         if (DamageTypeTool.isGunDamage(source) && source.entity != null && source.entity!!
-                .vehicle === this
+                .vehicle === this && !source.`is`(ModDamageTypes.CUSTOM_EXPLOSION)
         ) {
             return false
         }
 
         val lastDriver = this.lastDriver
-        if (source.entity != null && lastDriver != null && SeekTool.IS_FRIENDLY.test(
-                lastDriver,
-                source.entity
-            )
-            && lastDriver.team != null && source.entity!!.team != null && source.entity!!
-                .team === lastDriver.team && !source.entity!!.team!!
-                .isAllowFriendlyFire && (source.entity === lastDriver && !source.`is`(ModDamageTypes.VEHICLE_STRIKE))
+        if (source.entity != null && lastDriver != null
+            && SeekTool.IS_FRIENDLY.test(lastDriver, source.entity)
+            && lastDriver.team != null
+            && source.entity!!.team != null
+            && source.entity!!.team === lastDriver.team
+            && !source.entity!!.team!!.isAllowFriendlyFire
+            && (source.entity === lastDriver && !source.`is`(ModDamageTypes.VEHICLE_STRIKE)
+                    && !source.`is`(ModDamageTypes.CUSTOM_EXPLOSION))
         ) {
             return false
         }
@@ -1929,9 +1943,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             if (health <= -getMaxHealth()) {
                 this.discard()
                 createCustomExplosion()
-                    .radius(0f)
-                    .damage(0f)
-                    .withParticleType(ParticleTool.ParticleType.SMALL)
+                    .radius(5f)
+                    .damage(1f)
                     .keepBlock()
                     .explode()
 
@@ -1959,9 +1972,10 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             lastDriverUUID = getFirstPassenger()!!.getStringUUID()
         }
 
+        // 如果没锁车，下车10秒后清空上一个驾驶员UUID
         if (getPassengers().isEmpty()) {
             noPassengerTime++
-            if (noPassengerTime > 200) {
+            if (noPassengerTime > 200 && !this.locked) {
                 lastDriverUUID = "undefined"
             }
         } else {
@@ -2171,14 +2185,16 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                 val targetPitch = (15 * accelForward).toFloat()
                 val omegaP = 2.0f * Math.PI.toFloat() * 2f
                 val zetaP = 0.6f
-                val angularAccelP: Float = omegaP * omegaP * (targetPitch - pitchAngle) - 2 * zetaP * omegaP * pitchVelocity
+                val angularAccelP: Float =
+                    omegaP * omegaP * (targetPitch - pitchAngle) - 2 * zetaP * omegaP * pitchVelocity
                 pitchVelocity += angularAccelP * 0.05f // dt = 0.05s
                 pitchAngle += pitchVelocity * 0.05f
 
                 val targetRoll = (20 * accelRight).toFloat()
                 val omegaR = 2.0f * Math.PI.toFloat() * 2f
                 val zetaR = 0.6f
-                val angularAccelR: Float = omegaR * omegaR * (targetRoll - rollAngle) - 2 * zetaR * omegaR * rollVelocity
+                val angularAccelR: Float =
+                    omegaR * omegaR * (targetRoll - rollAngle) - 2 * zetaR * omegaR * rollVelocity
                 rollVelocity += angularAccelR * 0.05f
                 rollAngle += rollVelocity * 0.05f
 
@@ -2260,6 +2276,12 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
             obb.center.set(Vec3(worldPos.x, worldPos.y, worldPos.z).toVector3d())
             obb.updateRotation(this.getRotationFromString(obbInfo.rotation))
+
+            val rotate = obbInfo.customRotate
+
+            obb.rotation.mul(Quaterniond(Axis.YP.rotationDegrees(rotate.y.toFloat())))
+            obb.rotation.mul(Quaterniond(Axis.XP.rotationDegrees(rotate.x.toFloat())))
+            obb.rotation.mul(Quaterniond(Axis.ZP.rotationDegrees(rotate.z.toFloat())))
         }
     }
 
@@ -3003,6 +3025,12 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             ) * engineInfo.engineSoundVolume
 
             EngineType.HELICOPTER -> synchedPropellerRot * engineInfo.engineSoundVolume
+            EngineType.AIRSHIP -> Mth.clamp(
+                Mth.abs(power) * engineInfo.engineSoundVolume + engineInfo.engineSoundVolume,
+                engineInfo.engineSoundVolume,
+                1.5f
+            )
+
             else -> Mth.abs(power) * engineInfo.engineSoundVolume
         }
     }
@@ -3934,7 +3962,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
     open fun hasDecoy() = computed().hasDecoy
 
-    open fun engineRunning() = Math.abs(power) > 0
+    open fun engineRunning() = if (vehicleType == VehicleType.AIRSHIP) health > 0 else Math.abs(power) > 0
 
     /**
      * 撬棍shift+右键收回载具时返还的物品
@@ -3978,6 +4006,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     open var cannonRecoilForce by CANNON_RECOIL_FORCE
 
     open var override by OVERRIDE
+    open var skinId by SKIN_ID
     open var lastAttackerUUID by LAST_ATTACKER_UUID
     open var lastDriverUUID by LAST_DRIVER_UUID
     open var dogTagIcon by DOG_TAG_ICON
@@ -4056,6 +4085,16 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         return getOBBs().firstOrNull { it.part == COLLISION }
     }
 
+    /**
+     * 获取COLLISION类型OBB的定义信息（局部中心位置与半长）
+     *
+     * 与[getCollisionOBB]不同，这里返回的是数据定义而非世界空间实例，
+     * 因此其局部位置/半长不受车身pitch/roll影响，可用于构建稳定的地形采样footprint
+     */
+    open fun getCollisionOBBInfo(): OBBInfo? {
+        return obb.firstOrNull { it.part == COLLISION }
+    }
+
     open fun getEnergyDataAccessor() = ENERGY
 
     open fun generateWreckageLoot() {
@@ -4071,6 +4110,10 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         @JvmField
         val OVERRIDE: EntityDataAccessor<String> =
+            SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.STRING)
+
+        @JvmField
+        val SKIN_ID: EntityDataAccessor<String> =
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.STRING)
 
         @JvmField
@@ -4300,6 +4343,10 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         @JvmField
         val HOVER_MODE: EntityDataAccessor<Boolean> =
+            SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.BOOLEAN)
+
+        @JvmField
+        val LOCKED: EntityDataAccessor<Boolean> =
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.BOOLEAN)
 
         // Map SeatIndex -> GunData

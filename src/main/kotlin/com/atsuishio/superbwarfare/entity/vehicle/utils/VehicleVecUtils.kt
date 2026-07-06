@@ -11,10 +11,7 @@ import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec3
-import org.joml.Math
-import org.joml.Matrix4d
-import org.joml.Quaternionf
-import org.joml.Vector4d
+import org.joml.*
 
 /**
  * 处理载具相关动量、向量和旋转等数据的工具类
@@ -35,6 +32,37 @@ object VehicleVecUtils {
     @JvmStatic
     fun getSubmergedHeight(entity: Entity) =
         entity.getFluidTypeHeight(entity.level().getFluidState(entity.blockPosition()).fluidType)
+
+    /**
+     * 获取四元数实体的局部Y轴（上方向）在世界空间中的单位向量
+     */
+    @JvmStatic
+    fun getUpVec(q: Quaternionf): Vec3 {
+        val dir = Vector3f()
+        q.positiveY(dir)
+        return Vec3(dir.x.toDouble(), dir.y.toDouble(), dir.z.toDouble())
+    }
+
+    /**
+     * 获取四元数实体的局部Z轴（前方向）在世界空间中的单位向量
+     */
+    @JvmStatic
+    fun getFrontVec(q: Quaternionf): Vec3 {
+        val dir = Vector3f()
+        q.positiveZ(dir)
+        return Vec3(dir.x.toDouble(), dir.y.toDouble(), dir.z.toDouble())
+    }
+
+    /**
+     * 获取四元数实体的局部X轴（右方向）在世界空间中的单位向量（取反，因为模型坐标系X轴朝左）
+     */
+    @JvmStatic
+    fun getRightVec(q: Quaternionf): Vec3 {
+        val dir = Vector3f()
+        q.positiveX(dir)
+        dir.negate()
+        return Vec3(dir.x.toDouble(), dir.y.toDouble(), dir.z.toDouble())
+    }
 
     fun eulerToQuaternion(yaw: Float, pitch: Float, roll: Float): Quaternionf {
         val cy = Math.cos(yaw * 0.5 * Mth.DEG_TO_RAD)

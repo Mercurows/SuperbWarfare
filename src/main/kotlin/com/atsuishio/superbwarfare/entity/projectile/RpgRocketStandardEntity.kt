@@ -1,33 +1,30 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
-import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.tools.ParticleTool
-import com.atsuishio.superbwarfare.tools.forceHurt
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.world.entity.EntityType
-import net.minecraft.world.entity.LivingEntity
-import net.minecraft.world.entity.projectile.ThrowableItemProjectile
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.BlockHitResult
-import net.minecraft.world.phys.EntityHitResult
 
 open class RpgRocketStandardEntity : FastThrowableProjectile, BasicGeoProjectileEntity {
-    constructor(type: EntityType<out RpgRocketStandardEntity>, level: Level) : super(type, level) {
-        this.noCulling = true
+    init {
         this.durability = 50
-        this.damageValue = 340f
-        this.explosionDamageValue = 80f
-        this.explosionRadiusValue = 5f
         this.gravityValue = 0.015f
     }
 
+    constructor(type: EntityType<out RpgRocketStandardEntity>, level: Level) : super(type, level) {
+        this.damageValue = 340f
+        this.explosionDamageValue = 80f
+        this.explosionRadiusValue = 5f
+    }
+
     constructor(
-        pEntityType: EntityType<out ThrowableItemProjectile>,
+        pEntityType: EntityType<out RpgRocketStandardEntity>,
         pX: Double,
         pY: Double,
         pZ: Double,
@@ -36,43 +33,19 @@ open class RpgRocketStandardEntity : FastThrowableProjectile, BasicGeoProjectile
         explosionDamage: Float,
         explosionRadius: Float
     ) : super(pEntityType, pX, pY, pZ, pLevel) {
-        this.noCulling = true
-        this.durability = 50
         this.damageValue = damage
         this.explosionDamageValue = explosionDamage
         this.explosionRadiusValue = explosionRadius
-        this.gravityValue = 0.015f
     }
 
-    override fun getDefaultItem(): Item {
-        return ModItems.RPG_ROCKET_STANDARD.get()
-    }
-
-    public override fun onHitBlock(result: BlockHitResult) {
-        super.onHitBlock(result)
+    override fun afterHitBlock(result: BlockHitResult) {
         if (this.level() is ServerLevel) {
             destroyBlock(result)
         }
     }
 
-    override fun onHitEntity(result: EntityHitResult) {
-        super.onHitEntity(result)
-        val entity = result.entity
-        val owner = this.owner
-        if (owner != null && owner.vehicle != null && entity == owner.vehicle) return
-        if (this.level() is ServerLevel) {
-            entity.forceHurt(
-                causeProjectileHitDamage(this.level().registryAccess(), this, owner),
-                this.damageValue
-            )
-
-            if (entity is LivingEntity) {
-                entity.invulnerableTime = 0
-            }
-
-            causeExplode(result.getLocation())
-            this.discard()
-        }
+    override fun getDefaultItem(): Item {
+        return ModItems.RPG_ROCKET_STANDARD.get()
     }
 
     override fun tick() {

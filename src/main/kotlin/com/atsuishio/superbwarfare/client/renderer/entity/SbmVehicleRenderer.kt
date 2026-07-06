@@ -9,9 +9,13 @@ import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.vehicle.subdata.SeatInfo
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType
+import com.atsuishio.superbwarfare.data.vehicle_skin.VehicleSkin
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleMotionUtils
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
 import com.atsuishio.superbwarfare.event.ClientEventHandler
+import com.atsuishio.superbwarfare.init.ModParticleTypes
 import com.atsuishio.superbwarfare.resource.model.VehicleLODModelReloadListener
 import com.atsuishio.superbwarfare.resource.model.VehicleModelReloadListener
 import com.atsuishio.superbwarfare.resource.vehicle.VehicleModelPojo
@@ -21,6 +25,7 @@ import com.atsuishio.superbwarfare.tools.SpritePixelHelper
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.mulPoseMatrix
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
+import com.github.mcmodderanchor.simplebedrockmodel.v1.common.model.BedrockBone
 import com.maydaymemory.mae.basic.ArrayPoseBuilder
 import com.maydaymemory.mae.basic.ZYXBoneTransformFactory
 import com.maydaymemory.mae.blend.EulerAdditiveBlender
@@ -42,6 +47,8 @@ import net.minecraft.world.phys.Vec3
 import org.joml.Matrix4f
 import org.joml.Quaterniond
 import org.joml.Quaternionf
+import org.joml.Vector3f
+import java.lang.Math
 
 open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
     EntityRenderer<T>(manager) where T : VehicleEntity, T : BasicGeoVehicleEntity {
@@ -94,7 +101,17 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         val modelPath = currentModel.model ?: return
         var texture = currentModel.texture ?: return
 
+        // Apply vehicle skin (only for full-detail models, not LOD)
         val isLOD = currentModel.isLOD()
+        if (!isLOD) {
+            val skinInfo = VehicleSkin.getSkin(entity)
+            if (skinInfo != null) {
+                val skinTexture = ResourceLocation.tryParse(skinInfo.texture)
+                if (skinTexture != null) {
+                    texture = skinTexture
+                }
+            }
+        }
         val model = if (isLOD) {
             VehicleLODModelReloadListener.getModel(modelPath)
         } else {
@@ -183,7 +200,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         if (flareFlag) {
             for (flare in flareBones) {
                 flare.visible = false
-                flare.rotation.rotateZ((0.5 * (Math.random() - 0.5)).toFloat())
+                flare.rotation.rotateZ((0.75 * (Math.random() - 0.5)).toFloat())
             }
         }
 
@@ -193,14 +210,20 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             if (flareModel != null) {
                 for (flare in flareBones) {
                     poseStack.pushPose()
-                    poseStack.mulPose(flare.globalTransform)
+                    poseStack.mulPoseMatrix(flare.globalTransform)
+                    poseStack.translate(0f, 0f, (0.025 * (Math.random() - 0.5)).toFloat())
+                    poseStack.scale(1 + (0.1 * (Math.random() - 0.5)).toFloat(), 1 + (0.1 * (Math.random() - 0.5)).toFloat(), 1 + (0.1 * (Math.random() - 0.5)).toFloat())
                     flareModel.renderToBuffer(
                         poseStack,
                         buffer,
                         ModRenderTypes.MUZZLE_FLASH_TYPE.apply(MUZZLE_FLARE),
                         BedrockModelRenderTypes.polyMeshCutout(MUZZLE_FLARE),
                         packedLight,
-                        OverlayTexture.NO_OVERLAY
+                        OverlayTexture.NO_OVERLAY,
+                        1f,
+                        1f,
+                        1f,
+                        0.5f + (0.25 * (Math.random() - 0.5)).toFloat()
                     )
                     flareModel.applyPose(flareModel.bindPose)
 
@@ -362,6 +385,26 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
                     }
                 }
             }
+
+            for (k in seat.weapons().indices) {
+                val data = vehicle.getGunData(index, k) ?: continue
+                val boundBones = data.get(GunProp.BOUND_BONES) ?: continue
+                if (vehicle.getNthEntity(index) == null) continue
+
+                for (name in boundBones) {
+                    val bone = model.getBone(name)
+                    if (bone != null) {
+                        val (worldPos, worldDir) = getBoneWorldPosAndDirection(vehicle, bone, entityYaw, partialTicks)
+
+                        // 粒子：直接使用世界坐标
+                        vehicle.level().addParticle(
+                            ModParticleTypes.FIRE_STAR.get(),
+                            worldPos.x, worldPos.y, worldPos.z,
+                            worldDir.x * 4, worldDir.y * 4, worldDir.z * 4
+                        )
+                    }
+                }
+            }
         }
     }
 
@@ -507,6 +550,42 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
                 vehicle.passengerWeaponMaxPitch * Mth.DEG_TO_RAD
             )
         )
+
+        // 武器绑定骨骼
+
+        val seats = this.seatsCache ?: vehicle.computed().seats().also { this.seatsCache = it }
+
+        for ((index, seat) in seats.withIndex()) {
+            for (k in seat.weapons().indices) {
+                val data = vehicle.getGunData(index, k) ?: continue
+                val boundBones = data.get(GunProp.BOUND_BONES) ?: continue
+                val targetVec = vehicle.getShootVec(index, partialTicks) ?: continue
+                if (vehicle.getNthEntity(index) == null) continue
+
+                for (name in boundBones) {
+                    val bone = model.getBone(name)
+                    if (bone != null) {
+                        // TODO 正确获取骨骼朝向
+
+                        val (worldPos, worldDir) = getBoneWorldPosAndDirection(vehicle, bone, entityYaw, partialTicks)
+
+                        val diffY = Mth.wrapDegrees(-VehicleVecUtils.getYRotFromVector(targetVec) + VehicleVecUtils.getYRotFromVector(
+                            worldDir
+                        )
+                        ).toFloat()
+                        val diffX = Mth.wrapDegrees(-VehicleVecUtils.getXRotFromVector(targetVec) + VehicleVecUtils.getXRotFromVector(
+                            worldDir
+                        )
+                        ).toFloat()
+
+                        val yawRot = Axis.YP.rotationDegrees(-diffY)
+                        val pitchRot = Axis.XP.rotationDegrees(-diffX)
+                        val quaternion = Quaterniond(yawRot).mul(Quaterniond(pitchRot))
+                        bone.rotation.mul(Quaternionf(quaternion))
+                    }
+                }
+            }
+        }
     }
 
     open fun rotateVehicleAxis(entityIn: T, poseStack: PoseStack, entityYaw: Float, partialTicks: Float) {
@@ -551,7 +630,8 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         } else if (vehicle.noCulling) {
             return true
         } else {
-            var aabb = vehicle.boundingBoxForCulling.inflate(5.0)
+            var aabb = VehicleMotionUtils.calculateCombinedAABBOptimized(vehicle).inflate(3.0)
+
             if (aabb.hasNaN() || aabb.size == 0.0) {
                 aabb = AABB(
                     vehicle.x - 8.0,
@@ -580,6 +660,108 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
     protected fun wrap(value: Float, vehicle: VehicleEntity) = wrap(value, getDefaultWrapRange(vehicle))
 
     fun getDefaultWrapRange(vehicle: VehicleEntity) = vehicle.getTrackAnimationLength()
+
+    /**
+     * 构建实体世界旋转矩阵，与 [SbmVehicleRenderer.rotateVehicleAxis] 的旋转部分完全一致。
+     * 旋转顺序：Z(roll) → X(pitch) → Y(yaw)，即 RZ * RX * RY。
+     */
+    open fun buildWorldRotationMatrix(
+        vehicle: T,
+        entityYaw: Float,
+        partialTicks: Float
+    ): Matrix4f {
+        val pitch = Mth.lerp(partialTicks, vehicle.xRotO + vehicle.fakePitchO, vehicle.xRot + vehicle.fakePitch)
+        val roll = Mth.lerp(partialTicks, vehicle.prevRoll + vehicle.fakeRollO, vehicle.roll + vehicle.fakeRoll)
+        return Matrix4f()
+            .rotateZ(-roll * Mth.DEG_TO_RAD)
+            .rotateX(-pitch * Mth.DEG_TO_RAD)
+            .rotateY((-entityYaw + 180f) * Mth.DEG_TO_RAD)
+    }
+
+    /**
+     * 计算骨骼的世界坐标和完整世界变换矩阵。
+     *
+     * 世界坐标 = 实体世界位置 + pivot + R_world * (modelPos - pivot)
+     * 其中 R_world 与 [SbmVehicleRenderer.rotateVehicleAxis] 的旋转顺序一致：
+     * Z(roll) → X(pitch) → Y(yaw)，即矩阵 RZ * RX * RY。
+     *
+     * 返回的 Matrix4f 是骨骼从模型空间到世界空间的完整旋转变换矩阵 =
+     * R_world * boneRot，可直接用于 transformDirection / transformPosition。
+     * 该矩阵不包含平移分量（m30=m31=m32=0）。
+     *
+     * @return Pair<Vec3, Matrix4f> — (世界坐标, 骨骼世界旋转矩阵)
+     */
+    open fun getBoneWorldTransform(
+        vehicle: T,
+        bone: BedrockBone,
+        entityYaw: Float,
+        partialTicks: Float
+    ): Pair<Vec3, Matrix4f> {
+        // 1. 骨骼在模型空间中的变换（SBM库迭代所有parent累乘得到）
+        val boneTransform = Matrix4f(bone.globalTransform)
+        val modelPos = Vec3(
+            boneTransform.m30().toDouble(),
+            boneTransform.m31().toDouble(),
+            boneTransform.m32().toDouble()
+        )
+
+        // 2. 构建实体世界旋转矩阵
+        val worldRot = buildWorldRotationMatrix(vehicle, entityYaw, partialTicks)
+        val pivotY = vehicle.rotateOffsetHeight
+
+        // 3. 旋转中心偏移：pivot + R * (modelPos - pivot)
+        val relativeToPivot = Vector3f(
+            modelPos.x.toFloat(),
+            (modelPos.y - pivotY).toFloat(),
+            modelPos.z.toFloat()
+        )
+        val rotatedRelative = Vector3f()
+        worldRot.transformPosition(relativeToPivot, rotatedRelative)
+
+        val worldPos = vehicle.position().add(
+            rotatedRelative.x().toDouble(),
+            rotatedRelative.y().toDouble() + pivotY,
+            rotatedRelative.z().toDouble()
+        )
+
+        // 4. 构建骨骼的世界旋转矩阵 = R_world * boneRot
+        //    提取 boneTransform 的纯旋转部分（清除平移列）
+        val boneRot = Matrix4f(boneTransform)
+        boneRot.m30(0f)
+        boneRot.m31(0f)
+        boneRot.m32(0f)
+
+        val worldOrient = Matrix4f(worldRot).mul(boneRot)
+
+        return Pair(worldPos, worldOrient)
+    }
+
+    /**
+     * 计算骨骼的世界坐标和朝向。
+     *
+     * 基于 [getBoneWorldTransform] 的结果，提取前向向量（局部Z轴）在世界空间的朝向。
+     *
+     * @return Pair<Vec3, Vec3> — (世界坐标, 世界朝向单位向量)
+     */
+    open fun getBoneWorldPosAndDirection(
+        vehicle: T,
+        bone: BedrockBone,
+        entityYaw: Float,
+        partialTicks: Float
+    ): Pair<Vec3, Vec3> {
+        val (worldPos, worldOrient) = getBoneWorldTransform(vehicle, bone, entityYaw, partialTicks)
+
+        // 从世界旋转矩阵中提取前向（局部Z轴正方向 = 矩阵第3列）
+        val worldDirVec = Vector3f()
+        worldOrient.transformDirection(Vector3f(0f, 0f, 1f), worldDirVec)
+        val worldDir = Vec3(
+            worldDirVec.x().toDouble(),
+            worldDirVec.y().toDouble(),
+            worldDirVec.z().toDouble()
+        ).normalize()
+
+        return Pair(worldPos, worldDir.scale(-1.0))
+    }
 
     companion object {
         val BLENDER: EulerAdditiveBlender = SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }

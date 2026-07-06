@@ -1,10 +1,6 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
-import com.atsuishio.superbwarfare.init.ModDamageTypes.causeBurnDamage
-import com.atsuishio.superbwarfare.init.ModEntities
-import com.atsuishio.superbwarfare.init.ModItems
-import com.atsuishio.superbwarfare.init.ModMobEffects
-import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.tools.SeekTool
 import com.atsuishio.superbwarfare.tools.forceHurt
@@ -29,77 +25,75 @@ import kotlin.math.max
 open class WhitePhosphorusProjectileEntity : FastThrowableProjectile {
     constructor(type: EntityType<out WhitePhosphorusProjectileEntity>, world: Level) : super(type, world)
 
-    constructor(entity: Entity?, level: Level) : super(ModEntities.WHITE_PHOSPHORUS_PROJECTILE.get(), entity, level) {
-        this.noCulling = true
+    constructor(entity: Entity?, level: Level) : super(ModEntities.WHITE_PHOSPHORUS_PROJECTILE.get(), entity, level)
+
+    init {
+        this.explosionRadiusValue = 5.0f
     }
 
     override fun getDefaultItem(): Item {
         return ModItems.WP_HEAD.get()
     }
 
-    override fun onHitEntity(result: EntityHitResult) {
-        super.onHitEntity(result)
-        val entity = result.entity
-        val owner = this.owner
-        if (owner is ServerPlayer) {
-            owner.level()
-                .playSound(null, owner.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1f, 1f)
-            sendPacketTo(owner, ClientIndicatorMessage(0, 5))
-        }
-        if (entity is LivingEntity) {
-            entity.forceHurt(causeBurnDamage(entity.level().registryAccess(), owner), 1f)
-            entity.invulnerableTime = 0
-            if (entity is Player && entity.isCreative) {
-                return
-            }
-            if (!entity.level().isClientSide()) {
-                entity.addEffect(MobEffectInstance(ModMobEffects.PHOSPHORUS_FIRE, 200, 4), owner)
-            }
-        }
+    override fun performDamage(
+        entity: Entity,
+        damage: Float,
+        isHeadshot: Boolean
+    ) {
+        entity.invulnerableTime = 0
 
-        this.discard()
+        val headShotModifier = if (isHeadshot) this.getHeadShot() else 1f
+        if (damage > 0) {
+            entity.forceHurt(
+                ModDamageTypes.causeBurnDamage(this.level().registryAccess(), this.owner),
+                damage * headShotModifier
+            )
+            entity.invulnerableTime = 0
+        }
     }
 
-    override fun onHitBlock(result: BlockHitResult) {
-        super.onHitBlock(result)
+    override fun afterHitEntity(result: EntityHitResult) {
+        val entity = result.entity
+        if (entity is LivingEntity && !entity.level().isClientSide()) {
+            entity.addEffect(MobEffectInstance(ModMobEffects.PHOSPHORUS_FIRE, 200, 4), owner)
+        }
+        super.afterHitEntity(result)
+    }
+
+    override fun afterHitBlock(result: BlockHitResult) {
         val owner = this.owner
         if (owner != null) {
-            findNearEntity(result.getLocation(), owner)
+            causeWPEffect(result.getLocation(), owner)
         }
         this.discard()
     }
 
-    fun findNearEntity(pos: Vec3, shooter: Entity) {
+    open fun causeWPEffect(pos: Vec3, shooter: Entity) {
         if (this.level() is ServerLevel) {
             val entities = SeekTool.Builder(shooter)
-                .withinRange(pos, 5.0)
+                .withinRange(pos, explosionRadiusValue.toDouble())
                 .notItsVehicle()
                 .baseFilter()
                 .noVehicle()
                 .build()
 
-            for (e in entities) {
-                val dis = pos.distanceTo(e.position())
-
-                if (e is LivingEntity && checkNoClip(e, pos)) {
-                    if (e is Player && e.isCreative) {
-                        return
-                    }
+            entities.asSequence()
+                .filter { it is LivingEntity && !(it is Player && it.isCreative) }
+                .forEach {
+                    val dis = pos.distanceTo(it.position())
+                    if (!checkNoClip(it, pos)) return@forEach
 
                     val owner = this.owner
+                    it.forceHurt(ModDamageTypes.causeBurnDamage(this.level().registryAccess(), owner), 1f)
+                    it.invulnerableTime = 0
 
-                    e.forceHurt(causeBurnDamage(this.level().registryAccess(), owner), 1f)
-                    e.invulnerableTime = 0
-
-                    if (!e.level().isClientSide()) {
-                        e.addEffect(
-                            MobEffectInstance(
-                                ModMobEffects.PHOSPHORUS_FIRE,
-                                (200 - 30 * dis).toInt(),
-                                max(4 - dis, 0.0).toInt()
-                            ), owner
-                        )
-                    }
+                    (it as LivingEntity).addEffect(
+                        MobEffectInstance(
+                            ModMobEffects.PHOSPHORUS_FIRE,
+                            (300 - 30 * dis).toInt(),
+                            max(explosionRadiusValue - dis, 0.0).toInt()
+                        ), this.owner
+                    )
 
                     if (owner is ServerPlayer) {
                         owner.level().playSound(
@@ -113,7 +107,6 @@ open class WhitePhosphorusProjectileEntity : FastThrowableProjectile {
                         sendPacketTo(owner, ClientIndicatorMessage(0, 5))
                     }
                 }
-            }
         }
     }
 

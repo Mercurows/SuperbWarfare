@@ -1084,6 +1084,7 @@
   "item.superbwarfare.battle_of_wits": "Битва умов",
   "des.superbwarfare.battle_of_wits": "Отправка сообщения увеличивает урон следующего выстрела.",
   "entity.superbwarfare.edd": "Настенная мина",
+  "entity.superbwarfare.kirov": "Дирижабль «Киров»",
   "des.superbwarfare.edd": "Может быть размещена только на стороне блока",
   "commands.superbwarfare.ride.fail.passenger": "Выбранный пассажир должен быть живой сущностью",
   "commands.superbwarfare.ride.fail.vehicle": "Выбранный транспорт должен быть сущностью транспорта из Superb Warfare",

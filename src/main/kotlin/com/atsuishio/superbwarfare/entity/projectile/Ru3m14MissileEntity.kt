@@ -11,7 +11,6 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundSource
 import net.minecraft.util.Mth
-import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
@@ -36,15 +35,6 @@ open class Ru3m14MissileEntity(type: EntityType<out Ru3m14MissileEntity>, level:
         this.explosionRadiusValue = 36f
     }
 
-    override fun hurt(source: DamageSource, amount: Float): Boolean {
-        val entity = source.directEntity
-        if (entity is Ru3m14MissileEntity && entity.owner == this.owner) {
-            return false
-        }
-
-        return super.hurt(source, amount)
-    }
-
     override fun getDefaultItem(): Item {
         return ModItems.EXTRA_LARGE_ANTI_GROUND_MISSILE.get()
     }
@@ -55,10 +45,10 @@ open class Ru3m14MissileEntity(type: EntityType<out Ru3m14MissileEntity>, level:
         val level = this.level()
         var toVec = lookAngle
 
-        if (targetPos != null && level is ServerLevel) {
+        if (getTargetPos() != null && level is ServerLevel) {
             if (tickCount == 1) {
                 startPos = position()
-                distance = targetPos!!.vectorTo(position()).horizontalDistance()
+                distance = getTargetPos()!!.vectorTo(position()).horizontalDistance()
             }
             val flyDistance = position().vectorTo(startPos).horizontalDistance()
             val dis = Mth.clamp(flyDistance / distance, 0.0, 1.0)
@@ -71,7 +61,7 @@ open class Ru3m14MissileEntity(type: EntityType<out Ru3m14MissileEntity>, level:
                 0.0
             }
 
-            val d = targetPos!!.vectorTo(position()).horizontalDistance()
+            val d = getTargetPos()!!.vectorTo(position()).horizontalDistance()
 
             if (d < 600) {
                 height = 0.125 * d
@@ -81,14 +71,14 @@ open class Ru3m14MissileEntity(type: EntityType<out Ru3m14MissileEntity>, level:
                 height = 0.0
             }
 
-            var targetPos = this.targetPos!!.add(0.0, height, 0.0)
+            var targetPos = this.getTargetPos()!!.add(0.0, height, 0.0)
             if (targetPos.y > 2048) {
                 targetPos = Vec3(targetPos.x, 2048.0, targetPos.z)
             }
             toVec = position().vectorTo(targetPos)
         }
 
-        if (targetPos == null && tickCount > 200) {
+        if (getTargetPos() == null && tickCount > 200) {
             discard()
             causeExplode(position())
         }
@@ -156,8 +146,8 @@ open class Ru3m14MissileEntity(type: EntityType<out Ru3m14MissileEntity>, level:
         }
     }
 
-    override fun getDefaultGravity(): Double {
-        return if (tickCount < 8) 0.1 else super.getDefaultGravity()
+    override fun getCustomGravity(): Float {
+        return if (tickCount < 8) 0.1f else super.getCustomGravity()
     }
 
     override fun getSound(): SoundEvent {

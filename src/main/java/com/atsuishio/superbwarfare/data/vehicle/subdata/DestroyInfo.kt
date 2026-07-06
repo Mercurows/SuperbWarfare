@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.data.vehicle.subdata
 
-import com.atsuishio.superbwarfare.tools.ParticleTool
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -21,9 +20,6 @@ class DestroyInfo {
     @SerialName("ExplosionRadius")
     var explosionRadius: Float = 0f
 
-    @SerialName("ParticleType")
-    var particleType: ParticleTool.ParticleType = ParticleTool.ParticleType.MINI
-
     @SerialName("SympatheticDetonation")
     var sympatheticDetonation: Boolean = false
 
@@ -41,15 +37,13 @@ class DestroyInfo {
         explodePassengers: Boolean,
         explodeBlocks: Boolean,
         explosionDamage: Float,
-        explosionRadius: Float,
-        particleType: ParticleTool.ParticleType
+        explosionRadius: Float
     ) {
         this.crashPassengers = crashPassengers
         this.explodePassengers = explodePassengers
         this.explodeBlocks = explodeBlocks
         this.explosionDamage = explosionDamage
         this.explosionRadius = explosionRadius
-        this.particleType = particleType
     }
 
     constructor()

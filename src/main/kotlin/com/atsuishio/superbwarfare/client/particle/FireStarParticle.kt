@@ -58,6 +58,7 @@ open class FireStarParticle protected constructor(
         if (!this.removed) {
             this.setSprite(this.spriteSet.get((this.age / 2) % 8 + 1, 8))
         }
+
     }
 
     companion object {

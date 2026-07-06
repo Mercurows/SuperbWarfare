@@ -28,24 +28,16 @@ import net.neoforged.api.distmarker.OnlyIn
 
 @OnlyIn(value = Dist.CLIENT, _interface = ItemSupplier::class)
 open class TaserBulletEntity(type: EntityType<out TaserBulletEntity>, level: Level) : AbstractArrow(type, level),
-    BasicGeoProjectileEntity, CustomDamageProjectile {
+    BasicGeoProjectileEntity {
 
     private var initialPos: Vec3? = null
-    private var damage = 1f
+    var damage = 1f
     var volt: Int = 0
     var wireLength: Int = 0
     private var stopped = false
 
     init {
         this.noCulling = true
-    }
-
-    fun getDamage(): Float {
-        return damage
-    }
-
-    override fun setDamage(damage: Float) {
-        this.damage = damage
     }
 
     override fun playerTouch(pEntity: Player) {

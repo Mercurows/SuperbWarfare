@@ -8,7 +8,6 @@ import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.tools.CustomExplosion
-import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.world.saveddata.TDMSavedData.Companion.enabledTDM
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.syncher.EntityDataAccessor
@@ -56,13 +55,12 @@ open class Blu43Entity : Entity, OwnableEntity {
     }
 
     override fun hurt(source: DamageSource, amount: Float): Boolean {
-        var amount = amount
-        amount = DAMAGE_MODIFIER.compute(this, source, amount)
+        val damage = DAMAGE_MODIFIER.compute(this, source, amount)
         if (source.entity != null) {
             this.entityData.set(LAST_ATTACKER_UUID, source.entity!!.getStringUUID())
         }
-        this.entityData.set(HEALTH, this.entityData.get(HEALTH) - amount)
-        return super.hurt(source, amount)
+        this.entityData.set(HEALTH, this.entityData.get(HEALTH) - damage)
+        return super.hurt(source, damage)
     }
 
     fun setOwnerUUID(pUuid: UUID?) {
@@ -255,7 +253,6 @@ open class Blu43Entity : Entity, OwnableEntity {
             .damage(ExplosionConfig.BLU_43_EXPLOSION_DAMAGE.get().toFloat())
             .radius(ExplosionConfig.BLU_43_EXPLOSION_RADIUS.get().toFloat())
             .keepBlock()
-            .withParticleType(ParticleTool.ParticleType.SMALL)
             .explode()
 
         this.discard()

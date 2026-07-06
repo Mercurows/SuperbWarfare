@@ -9,9 +9,10 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.item.misc.firingParameters
+import com.atsuishio.superbwarfare.network.message.receive.VehicleShootClientMessage
 import com.atsuishio.superbwarfare.tools.DamageHandler
-import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.TraceTool
+import com.atsuishio.superbwarfare.tools.sendPacketToAll
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.network.syncher.EntityDataAccessor
@@ -185,28 +186,11 @@ open class AnnihilatorEntity(type: EntityType<AnnihilatorEntity>, world: Level) 
     private fun causeLaserExplode(vec3: Vec3, gunData: GunData, living: Entity?) {
         val radius = gunData.get(GunProp.EXPLOSION_RADIUS).toFloat()
 
-        val particleType = if (radius < 2.0) {
-            ParticleTool.ParticleType.MINI
-        } else if (radius in 2.0..<4.0) {
-            ParticleTool.ParticleType.SMALL
-        } else if (radius in 4.0..<7.0) {
-            ParticleTool.ParticleType.MEDIUM
-        } else if (radius in 7.0..<10.0) {
-            ParticleTool.ParticleType.LARGE
-        } else if (radius in 10.0..<20.0) {
-            ParticleTool.ParticleType.HUGE
-        } else if (radius in 20.0..<30.0) {
-            ParticleTool.ParticleType.GIANT
-        } else {
-            ParticleTool.ParticleType.EPIC
-        }
-
         createCustomExplosion()
             .damage(gunData.get(GunProp.EXPLOSION_DAMAGE).toFloat())
             .radius(radius)
             .attacker(living)
             .position(vec3)
-            .withParticleType(particleType)
             .explode()
     }
 
@@ -276,6 +260,26 @@ open class AnnihilatorEntity(type: EntityType<AnnihilatorEntity>, world: Level) 
                         1f
                     )
                 }
+            }
+
+            if (living != null) {
+                val shootPos = gunData.get(GunProp.SHOOT_POS)
+                val list = shootPos.positions
+                val size = list.size
+
+                val index: Int = if (shootPos.boundUpWithAmmoAmount) {
+                    Mth.clamp(gunData.ammo.get() - 1, 0, size)
+                } else {
+                    gunData.fireIndex.get() % size
+                }
+
+                sendPacketToAll(
+                    VehicleShootClientMessage(
+                        living.uuid,
+                        this.uuid,
+                        index
+                    )
+                )
             }
 
             gunData.shakePlayers(this)

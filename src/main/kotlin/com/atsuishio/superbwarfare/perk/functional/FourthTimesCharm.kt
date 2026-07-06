@@ -42,7 +42,7 @@ object FourthTimesCharm : Perk("fourth_times_charm", Type.FUNCTIONAL) {
         super.onHurtEntity(damage, data, instance, target, source)
         val projectile = source.directEntity
         if (projectile is ProjectileEntity) {
-            val bypassArmorRate = projectile.bypassArmorRate
+            val bypassArmorRate = projectile.getBypassArmorRate()
             if (bypassArmorRate >= 1 && source.`is`(ModDamageTypes.GUN_FIRE_HEADSHOT_ABSOLUTE)) {
                 handleFourthTimesCharm(data, instance)
             } else if (source.`is`(ModDamageTypes.GUN_FIRE_HEADSHOT)) {

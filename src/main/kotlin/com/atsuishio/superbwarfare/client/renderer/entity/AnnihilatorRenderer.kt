@@ -87,20 +87,20 @@ class AnnihilatorRenderer<T>(manager: EntityRendererProvider.Context) :
             OverlayTexture.NO_OVERLAY, red, green, 0f, 1f
         )
 
-        // glow
-
-        model.renderToBuffer(
-            poseStack,
-            buffer,
-            ModRenderTypes.LASER.apply(TEXTURE_GLOW),
-            BedrockModelRenderTypes.polyMeshCutout(TEXTURE_GLOW),
-            packedLight,
-            OverlayTexture.NO_OVERLAY
-        )
-
-        // laser
-
         if (vehicle.chargeProgress < 1) {
+            // glow
+
+            model.renderToBuffer(
+                poseStack,
+                buffer,
+                ModRenderTypes.LASER.apply(TEXTURE_GLOW),
+                BedrockModelRenderTypes.polyMeshCutout(TEXTURE_GLOW),
+                packedLight,
+                OverlayTexture.NO_OVERLAY
+            )
+
+            // laser
+
             model.renderToBuffer(
                 poseStack,
                 buffer,

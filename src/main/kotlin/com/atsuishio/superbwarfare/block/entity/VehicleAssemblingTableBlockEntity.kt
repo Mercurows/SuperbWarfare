@@ -11,14 +11,9 @@ import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.inventory.ContainerLevelAccess
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
-import software.bernie.geckolib.animatable.GeoBlockEntity
-import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache
-import software.bernie.geckolib.animation.AnimatableManager
-import software.bernie.geckolib.util.GeckoLibUtil
 
 open class VehicleAssemblingTableBlockEntity(pPos: BlockPos, pBlockState: BlockState) :
-    BlockEntity(ModBlockEntities.VEHICLE_ASSEMBLING_TABLE.get(), pPos, pBlockState), MenuProvider, GeoBlockEntity {
-    private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
+    BlockEntity(ModBlockEntities.VEHICLE_ASSEMBLING_TABLE.get(), pPos, pBlockState), MenuProvider {
 
     override fun getDisplayName(): Component {
         return Component.empty()
@@ -30,11 +25,5 @@ open class VehicleAssemblingTableBlockEntity(pPos: BlockPos, pBlockState: BlockS
             pPlayerInventory,
             ContainerLevelAccess.create(pPlayer.level(), this.worldPosition)
         )
-    }
-
-    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) {}
-
-    override fun getAnimatableInstanceCache(): AnimatableInstanceCache {
-        return this.cache
     }
 }

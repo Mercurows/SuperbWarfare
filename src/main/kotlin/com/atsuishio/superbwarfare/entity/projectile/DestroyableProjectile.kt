@@ -13,7 +13,7 @@ import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile
 import net.minecraft.world.level.Level
 
-abstract class DestroyableProjectile : FastThrowableProjectile, CustomSyncMotionEntity {
+abstract class DestroyableProjectile : FastThrowableProjectile {
     constructor(pEntityType: EntityType<out ThrowableItemProjectile>, pLevel: Level) : super(pEntityType, pLevel)
 
     constructor(pEntityType: EntityType<out ThrowableItemProjectile>, pShooter: Entity?, pLevel: Level) : super(
@@ -31,10 +31,12 @@ abstract class DestroyableProjectile : FastThrowableProjectile, CustomSyncMotion
     override fun isPickable() = !this.isRemoved
 
     override fun hurt(source: DamageSource, amount: Float): Boolean {
-        var amount = amount
-        amount = DAMAGE_MODIFIER.compute(this, source, amount)
-        health -= amount
+        val entity = source.directEntity
+        if (entity is DestroyableProjectile && this.javaClass == entity.javaClass) {
+            if (this.owner == entity.owner) return false
+        }
 
+        this.health -= DAMAGE_MODIFIER.compute(this, source, amount)
         return super.hurt(source, amount)
     }
 

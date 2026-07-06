@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.overlay.weapon
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
+import com.atsuishio.superbwarfare.client.overlay.CompassHud
 import com.atsuishio.superbwarfare.client.overlay.VehicleHudOverlay.renderKillIndicatorDynamic
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -53,6 +54,12 @@ object OldAircraftHud {
     private var mouseY = 0f
 
     private var dis = 512.0
+
+    private val compassHud = CompassHud().apply {
+        x = 130f
+        y = -76f  // 距底部 72+4 = 76 像素
+        size = 72f
+    }
 
     @SubscribeEvent
     fun onOldAircraftHudClientTick(event: ClientTickEvent.Post) {
@@ -186,6 +193,9 @@ object OldAircraftHud {
                 return
             }
         }
+
+        // 指南针
+        compassHud.render(guiGraphics, vehicle, screenWidth, screenHeight, partialTick)
 
         poseStack.pushPose()
 

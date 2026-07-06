@@ -7,6 +7,8 @@ import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.sendPacketTo
+import com.atsuishio.superbwarfare.world.phys.ExtendedEntityRayTraceResult
+import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.nbt.CompoundTag
@@ -18,10 +20,8 @@ import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
-import net.minecraft.world.level.block.BellBlock
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
-import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
 import kotlin.math.min
 
@@ -35,27 +35,19 @@ open class M18SmokeGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEn
     var blue: Float = 1.0f
         private set
 
-    constructor(type: EntityType<out M18SmokeGrenadeEntity>, level: Level) : super(type, level) {
-        this.noCulling = true
-    }
+    constructor(type: EntityType<out M18SmokeGrenadeEntity>, level: Level) : super(type, level)
 
-    constructor(type: EntityType<out M18SmokeGrenadeEntity>, x: Double, y: Double, z: Double, world: Level) : super(
-        type,
-        x,
-        y,
-        z,
-        world
-    ) {
-        this.noCulling = true
-    }
+    constructor(type: EntityType<out M18SmokeGrenadeEntity>, x: Double, y: Double, z: Double, world: Level) :
+            super(type, x, y, z, world)
 
-    constructor(entity: LivingEntity?, level: Level, fuse: Int) : super(
-        ModEntities.M18_SMOKE_GRENADE.get(),
-        entity,
-        level
-    ) {
-        this.noCulling = true
+    constructor(entity: LivingEntity?, level: Level, fuse: Int) :
+            super(ModEntities.M18_SMOKE_GRENADE.get(), entity, level) {
         this.fuse = fuse
+    }
+
+    init {
+        this.damageValue = 1f
+        this.headShotValue = 5f
     }
 
     override fun addAdditionalSaveData(compound: CompoundTag) {
@@ -90,85 +82,56 @@ open class M18SmokeGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEn
         return ModItems.M18_SMOKE_GRENADE.get()
     }
 
-    override fun onHit(result: HitResult) {
-        when (result.type) {
-            HitResult.Type.MISS -> {}
-            HitResult.Type.BLOCK -> {
-                val blockResult = result as BlockHitResult
-                val resultPos = blockResult.blockPos
-                val state = this.level().getBlockState(resultPos)
-                val block = state.block
-                val event = block.getSoundType(state, this.level(), resultPos, this).breakSound
-                val speed = this.deltaMovement.length()
-                if (speed > 0.1) {
-                    val volume = min(4f, speed.toFloat() / 4f + 0.5f)
-                    this.level().playSound(
-                        null,
-                        result.getLocation().x,
-                        result.getLocation().y,
-                        result.getLocation().z,
-                        event,
-                        SoundSource.AMBIENT,
-                        volume,
-                        1f
-                    )
-                }
-                this.bounce(blockResult.direction)
-
-                if (block is BellBlock) {
-                    block.attemptToRing(this.level(), resultPos, blockResult.direction)
-                }
-            }
-
-            HitResult.Type.ENTITY -> {
-                val entityResult = result as EntityHitResult
-                val entity = entityResult.entity
-                val owner = this.owner
-                if (entity == owner || entity == this.vehicle) return
-                val speedE = this.deltaMovement.length()
-                if (speedE > 0.1) {
-                    if (owner is LivingEntity) {
-                        if (owner is ServerPlayer) {
-                            owner.level().playSound(
-                                null,
-                                owner.blockPosition(),
-                                ModSounds.INDICATION.get(),
-                                SoundSource.VOICE,
-                                1f,
-                                1f
-                            )
-
-                            sendPacketTo(owner, ClientIndicatorMessage(0, 5))
-                        }
-                    }
-                    entity.hurt(entity.damageSources().thrown(this, owner), 1f)
-                }
-                this.bounce(
-                    Direction.getNearest(
-                        this.deltaMovement.x(),
-                        this.deltaMovement.y(),
-                        this.deltaMovement.z()
-                    ).opposite
+    override fun afterHitEntity(result: EntityHitResult) {
+        if (result !is ExtendedEntityRayTraceResult) return
+        val entity = result.entity
+        val owner = this.owner
+        if (entity == owner || entity == this.vehicle) return
+        val speedE = this.deltaMovement.length()
+        if (speedE > 0.1) {
+            if (owner is ServerPlayer) {
+                owner.level().playSound(
+                    null,
+                    owner.blockPosition(),
+                    ModSounds.INDICATION.get(),
+                    SoundSource.VOICE,
+                    1f,
+                    1f
                 )
-                this.deltaMovement = this.deltaMovement.multiply(0.25, 1.0, 0.25)
-            }
 
-            else -> {}
+                sendPacketTo(owner, ClientIndicatorMessage(0, 5))
+            }
         }
+        this.bounce(
+            Direction.getNearest(
+                this.deltaMovement.x(),
+                this.deltaMovement.y(),
+                this.deltaMovement.z()
+            ).opposite
+        )
+        this.deltaMovement = this.deltaMovement.multiply(0.25, 1.0, 0.25)
     }
 
-    private fun bounce(direction: Direction) {
-        when (direction.axis) {
-            Direction.Axis.X -> this.deltaMovement = this.deltaMovement.multiply(-0.5, 0.75, 0.75)
-            Direction.Axis.Y -> {
-                this.deltaMovement = this.deltaMovement.multiply(0.75, -0.25, 0.75)
-                if (this.deltaMovement.y() < this.getCustomGravity()) {
-                    this.deltaMovement = this.deltaMovement.multiply(1.0, 0.0, 1.0)
-                }
-            }
-
-            Direction.Axis.Z -> this.deltaMovement = this.deltaMovement.multiply(0.75, 0.75, -0.5)
+    override fun afterHitBlock(result: BlockHitResult) {
+        val resultPos = result.blockPos
+        val state = this.level().getBlockState(resultPos)
+        val block = state.block
+        val event = block.getSoundType(state, this.level(), resultPos, this).breakSound
+        val speed = this.deltaMovement.length()
+        if (speed > 0.5) {
+            val volume = min(4f, speed.toFloat() / 4f + 0.5f)
+            this.level().playSound(
+                null,
+                result.getLocation().x,
+                result.getLocation().y,
+                result.getLocation().z,
+                event,
+                SoundSource.AMBIENT,
+                volume,
+                1f
+            )
         }
+        this.bounce(result.direction)
     }
 
     override fun tick() {
@@ -206,19 +169,23 @@ open class M18SmokeGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEn
             }
         }
 
-        if (isInFluidType) {
-            deltaMovement = deltaMovement.scale(0.75)
-        }
-
         if (level is ServerLevel) {
             ParticleTool.sendParticle(
                 level, ParticleTypes.SMOKE, this.xo, this.yo, this.zo,
                 1, 0.0, 0.0, 0.0, 0.01, true
             )
         }
+
+        // 接近静止且下方有固体方块时，彻底停止移动，避免因重力反复微弹跳
+        if (!level.isClientSide && this.deltaMovement.length() < 0.08) {
+            val groundPos = BlockPos.containing(this.position().subtract(0.0, 0.15, 0.0))
+            if (level.getBlockState(groundPos).isSolid) {
+                this.deltaMovement = Vec3.ZERO
+            }
+        }
     }
 
-    fun releaseSmoke() {
+    open fun releaseSmoke() {
         val vec3 = Vec3(1.0, 0.05, 0.0)
 
         for (i in 0..<this.count) {
@@ -229,7 +196,9 @@ open class M18SmokeGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEn
         }
     }
 
-    override fun getDefaultGravity() = 0.07
+    override fun getCustomGravity(): Float {
+        return 0.07f
+    }
 
     fun setColor(r: Float, g: Float, b: Float): M18SmokeGrenadeEntity {
         this.red = r

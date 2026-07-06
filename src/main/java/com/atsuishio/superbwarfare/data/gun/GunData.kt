@@ -764,6 +764,12 @@ class GunData private constructor(
     @JvmField
     val perk: Perks
 
+    @JvmField
+    val weaponPitch: DoubleValue
+
+    @JvmField
+    val weaponYaw: DoubleValue
+
     fun save() {
         val keysToRemove = mutableListOf<String>()
         for (key in perkTag.allKeys) {
@@ -876,6 +882,8 @@ class GunData private constructor(
         shootTimer = IntValue(gunDataTag, "ShootTimer")
         overHeat = BooleanValue(gunDataTag, "OverHeat")
         zooming = BooleanValue(gunDataTag, "Zooming")
+        weaponPitch = DoubleValue(gunDataTag, "weaponPitch")
+        weaponYaw = DoubleValue(gunDataTag, "weaponYaw")
 
         var defaultFireMode = get(GunProp.DEFAULT_FIRE_MODE)
 

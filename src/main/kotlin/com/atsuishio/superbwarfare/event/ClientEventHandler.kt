@@ -2757,6 +2757,10 @@ object ClientEventHandler {
             event.isCanceled = true
         }
 
+        if (vehicle is VehicleEntity && vehicle.banHand(player)) {
+            event.isCanceled = true
+        }
+
         if (stack.`is`(ModItems.MONITOR.get()) && stack.getOrCreateTag().getBoolean("Using")
             && stack.getOrCreateTag().getBoolean("Linked")
         ) {

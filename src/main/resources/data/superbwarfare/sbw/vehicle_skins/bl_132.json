@@ -1,0 +1,18 @@
+{
+  "Skins": [
+    {
+      "Id": "vanilla",
+      "Name": "Vanilla",
+      "Description": "Vanilla",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/bl_132.png",
+      "Priority": 1
+    },
+    {
+      "Id": "black",
+      "Name": "Black",
+      "Description": "Very Black",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/bl_132_black.png",
+      "Priority": 2
+    }
+  ]
+}

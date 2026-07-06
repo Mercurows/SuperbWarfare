@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
 import com.atsuishio.superbwarfare.data.gun.GunProp
+import com.atsuishio.superbwarfare.entity.getValue
+import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
 import com.atsuishio.superbwarfare.init.ModEntities
@@ -37,6 +39,7 @@ import net.minecraft.world.phys.Vec3
 
 open class MortarEntity(type: EntityType<MortarEntity>, level: Level) : ArtilleryEntity(type, level) {
     private var shooter: LivingEntity? = null
+    var intelligent by INTELLIGENT
 
     constructor(level: Level, yRot: Float) : this(ModEntities.MORTAR.get(), level) {
         this.yRot = yRot
