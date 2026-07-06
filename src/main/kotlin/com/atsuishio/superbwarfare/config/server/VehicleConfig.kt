@@ -81,6 +81,20 @@ object VehicleConfig {
     }
 
     @JvmField
+    val DISTANT_VEHICLE_SYNC_RADIUS = buildServerConfig {
+        comment("Radius (in blocks) within which vehicles are synced to clients beyond vanilla tracking range, 0 to disable")
+        comment("超出原版同步范围后，载具向客户端同步的半径（方块），0为禁用")
+        defineInRange("distant_vehicle_sync_radius", 1500, 0, 10000)
+    }
+
+    @JvmField
+    val DISTANT_VEHICLE_SYNC_INTERVAL = buildServerConfig {
+        comment("Interval (in ticks) between distant vehicle sync packets")
+        comment("远处载具同步包的发送间隔（刻）")
+        defineInRange("distant_vehicle_sync_interval", 10, 1, 200)
+    }
+
+    @JvmField
     val SELF_EXPLOSION_DAMAGE = buildServerConfig {
         comment("The damage of self explosion when a vehicle is destroyed")
         comment("载具被击毁时，乘客受到的伤害")
