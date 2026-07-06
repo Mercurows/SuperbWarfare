@@ -41,7 +41,8 @@
     "OverlayTextureMixin",
     "PlayerItemInHandLayerMixin",
     "PlayerRendererMixin",
-    "PostPassMixin"
+    "PostPassMixin",
+    "ScreenEffectRendererMixin"
   ],
   "minVersion": "0.8",
   "injectors": {
