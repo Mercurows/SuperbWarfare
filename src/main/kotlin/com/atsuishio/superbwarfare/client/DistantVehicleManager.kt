@@ -283,26 +283,17 @@ object DistantVehicleManager {
         entity.xRotO = entity.xRot
         entity.tickCount++
 
-        // Пока снаряд ведёт ваниль (в tracking range) — прикалываем призрак
-        // к реальной позиции: передача эстафеты на границе будет бесшовной.
-        // След не спавним — у настоящего снаряда работает штатный
-        val realEntity = level.getEntity(ghost.serverId)
-        if ((realEntity != null) != ghost.wasPinned) {
-            ghost.wasPinned = realEntity != null
-            debugLog("PIN=${ghost.wasPinned} t=$tickCounter id=${ghost.serverId} pos=(%.1f %.1f %.1f)"
+        // Пока снаряд ведёт ваниль (в tracking range) — призрак скрыт рендером,
+        // но продолжает лерпить в фоне: с проективной целью он идёт в реальном
+        // времени, и на передаче нет ни разрыва позиции, ни рывка скорости.
+        // (Жёсткая приколка к реальной энтити давала протухшую цель лерпа и
+        // скачок скорости сразу после отцепления.) След при ванильном рендере
+        // не спавним — у настоящего снаряда работает штатный
+        val vanillaVisible = level.getEntity(ghost.serverId) != null
+        if (vanillaVisible != ghost.wasPinned) {
+            ghost.wasPinned = vanillaVisible
+            debugLog("PIN=$vanillaVisible t=$tickCounter id=${ghost.serverId} pos=(%.1f %.1f %.1f)"
                 .format(entity.x, entity.y, entity.z))
-        }
-        if (realEntity != null) {
-            entity.setPos(realEntity.x, realEntity.y, realEntity.z)
-            entity.xo = realEntity.xo
-            entity.yo = realEntity.yo
-            entity.zo = realEntity.zo
-            entity.yRot = realEntity.yRot
-            entity.xRot = realEntity.xRot
-            entity.yRotO = realEntity.yRotO
-            entity.xRotO = realEntity.xRotO
-            entity.setDeltaMovement(realEntity.deltaMovement)
-            return
         }
 
         if (ghost.lerpSteps > 0) {
@@ -315,7 +306,9 @@ object DistantVehicleManager {
             // Ориентация модели — по фактическому направлению движения
             entity.setDeltaMovement(dx, dy, dz)
             updateProjectileRotation(entity)
-            spawnGhostTrail(entity)
+            if (!vanillaVisible) {
+                spawnGhostTrail(entity)
+            }
 
             // Диагностика: резкая смена длины/направления шага = видимый рывок
             val step = Math.sqrt(dx * dx + dy * dy + dz * dz)

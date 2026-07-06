@@ -11,6 +11,7 @@ import com.atsuishio.superbwarfare.entity.projectile.MissileProjectile
 import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity
 import com.atsuishio.superbwarfare.entity.projectile.RpgRocketStandardEntity
 import com.atsuishio.superbwarfare.entity.projectile.RpgRocketTBGEntity
+import com.atsuishio.superbwarfare.entity.projectile.SmallCannonShellEntity
 import com.atsuishio.superbwarfare.entity.projectile.SmallRocketEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.network.message.receive.DistantVehiclesMessage
@@ -18,8 +19,12 @@ import com.atsuishio.superbwarfare.network.message.receive.ProjectileSnapshot
 import com.atsuishio.superbwarfare.network.message.receive.VehicleSnapshot
 import com.atsuishio.superbwarfare.tools.sendPacketTo
 import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.resources.ResourceKey
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.level.ChunkPos
+import net.minecraft.world.level.Level
 import net.neoforged.bus.api.SubscribeEvent
+import java.util.UUID
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.event.tick.ServerTickEvent
 
@@ -37,8 +42,18 @@ object DistantVehicleTracker {
     private fun isDistantSyncProjectile(entity: Entity): Boolean =
         entity is MissileProjectile || entity is AerialBombEntity || entity is MelonBombEntity ||
             entity is MortarShellEntity || entity is CannonShellEntity ||
+            entity is SmallCannonShellEntity ||
             entity is RpgRocketStandardEntity || entity is RpgRocketTBGEntity ||
             entity is SmallRocketEntity || entity is MediumRocketEntity
+
+    // Последний известный чанк каждого синхронизируемого снаряда: быстрый снаряд
+    // обгоняет генерацию и выгружается ВМЕСТЕ с чанком — из getAllEntities он
+    // пропадает, и обычный реаниматор его не видит. Спасатель тикетит последний
+    // чанк пропавшего, чанк грузится, снаряд оживает и летит дальше
+    private class LastSeen(val dim: ResourceKey<Level>, val chunkPos: ChunkPos, val tick: Int)
+
+    private val lastSeenProjectiles = HashMap<UUID, LastSeen>()
+    private const val RESCUE_TIMEOUT_TICKS = 200
 
     @SubscribeEvent
     fun onServerTick(event: ServerTickEvent.Post) {
@@ -72,6 +87,32 @@ object DistantVehicleTracker {
                         !level.isPositionEntityTicking(projectile.blockPosition())
                     ) {
                         projectile.keepChunkLoaded(projectile.position())
+                    }
+                }
+
+                // Спасение выгрузившихся: пропал из списка энтити, но не старше
+                // 10 с — грузим его последний известный чанк
+                val now = server.tickCount
+                val presentUuids = HashSet<UUID>(projectiles.size)
+                for (projectile in projectiles) {
+                    presentUuids += projectile.uuid
+                    lastSeenProjectiles[projectile.uuid] =
+                        LastSeen(level.dimension(), ChunkPos(projectile.blockPosition()), now)
+                }
+                val rescueIterator = lastSeenProjectiles.entries.iterator()
+                while (rescueIterator.hasNext()) {
+                    val entry = rescueIterator.next()
+                    val seen = entry.value
+                    if (now - seen.tick > RESCUE_TIMEOUT_TICKS) {
+                        rescueIterator.remove()
+                        continue
+                    }
+                    if (seen.dim != level.dimension() || entry.key in presentUuids) continue
+                    // Чанк уже тикает — снаряд не выгружен, а честно уничтожен
+                    if (!level.isPositionEntityTicking(seen.chunkPos.getMiddleBlockPosition(0))) {
+                        level.chunkSource.addRegionTicket(
+                            FastThrowableProjectile.PROJECTILE_TICKET, seen.chunkPos, 3, seen.chunkPos,
+                        )
                     }
                 }
             }
