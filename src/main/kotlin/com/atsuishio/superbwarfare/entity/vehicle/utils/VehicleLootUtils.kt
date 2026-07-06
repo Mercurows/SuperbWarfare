@@ -64,7 +64,11 @@ object VehicleLootUtils {
 
                     if (random > chance) return@forEach
                     val name = entry.name
-                    val item = BuiltInRegistries.ITEM.get(ResourceLocation.withDefaultNamespace(name))
+                    // PJM: name содержит namespace:path (напр. superbwarfare:steel_block) — парсим как id,
+                    // а не суём как path в withDefaultNamespace (иначе minecraft:superbwarfare:steel_block → краш).
+                    // Тот же паттерн, что и для source выше (ResourceLocation.tryParse).
+                    val loc = ResourceLocation.tryParse(name) ?: return@forEach
+                    val item = BuiltInRegistries.ITEM.get(loc)
                     val count = entry.count
                     val entity =
                         ItemEntity(vehicle.level(), vehicle.x, (vehicle.y + 1), vehicle.z, ItemStack(item, count))

@@ -26,8 +26,12 @@ import org.joml.Math
 
 open class ContainerBlockEntity(pos: BlockPos, state: BlockState) :
     BlockEntity(ModBlockEntities.CONTAINER.get(), pos, state) {
-    @OnlyIn(Dist.CLIENT)
-    open val animationInstance: ContainerBlockAnimationInstance? = ContainerBlockAnimationInstance(this)
+    // PJM: BlockEntity не имеет level в конструкторе, поэтому нельзя ограничить создание
+    // клиентом через level.isClientSide. Ленивое создание гарантирует, что инстанс анимации
+    // строится только при рендере (клиент), а не на логическом сервере, где
+    // BlockModelReloadListener.getAnimation() возвращает null и роняет NPE.
+    @get:OnlyIn(Dist.CLIENT)
+    open val animationInstance: ContainerBlockAnimationInstance? by lazy { ContainerBlockAnimationInstance(this) }
 
     @JvmField
     var entityType: EntityType<*>? = null
