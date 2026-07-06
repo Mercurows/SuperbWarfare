@@ -229,15 +229,19 @@ dependencies {
     }
 
     // SBM
+    // Идентификатор в нижнем регистре обязан совпадать с тем, что встраивает TACZ
+    // (com.github.mcmodderanchor:simplebedrockmodel) — иначе JarJar не сравнивает
+    // версии и может выбрать более старую копию из TACZ (crash: NoClassDefFoundError
+    // BedrockModelRenderTypes). flatDir игнорирует group, файл лежит в libs/.
     val sbm = implementation(
-        group = "com.github.MCModderAnchor",
-        name = "SimpleBedrockModel",
+        group = "com.github.mcmodderanchor",
+        name = "simplebedrockmodel",
         version = "2.3.3-neoforge-mc1.21.1",
     )
     jarJar(sbm) {
         version {
             strictly("[2.0,3.0)")
-            prefer("2.3.3")
+            prefer("2.3.3-neoforge-mc1.21.1")
         }
     }
     compileOnly("com.maydaymemory:mae:1.1.2") {
