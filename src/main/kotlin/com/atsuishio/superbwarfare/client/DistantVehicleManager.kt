@@ -43,6 +43,9 @@ object DistantVehicleManager {
         var gravity = 0f
         var lastUpdate = 0L
         var interval = 10
+        var lastSnapshotX = Double.NaN
+        var lastSnapshotY = Double.NaN
+        var lastSnapshotZ = Double.NaN
     }
 
     private val ghostMap = LinkedHashMap<Int, Ghost>()
@@ -92,10 +95,28 @@ object DistantVehicleManager {
 
             ghost.interval = msg.interval
             ghost.lastUpdate = tickCounter
-            ghost.vx = snapshot.vx
-            ghost.vy = snapshot.vy
-            ghost.vz = snapshot.vz
-            ghost.gravity = snapshot.gravity
+
+            // Сервер не сдвинул снаряд с прошлого снапшота (чанк ещё грузится,
+            // снаряд там заморожен, но deltaMovement у него ненулевой) — глушим
+            // счисление, иначе призрак ездит вперёд-назад между пакетами
+            val serverFrozen = !ghost.lastSnapshotX.isNaN() &&
+                Math.abs(snapshot.x - ghost.lastSnapshotX) < 0.01 &&
+                Math.abs(snapshot.y - ghost.lastSnapshotY) < 0.01 &&
+                Math.abs(snapshot.z - ghost.lastSnapshotZ) < 0.01
+            if (serverFrozen) {
+                ghost.vx = 0.0
+                ghost.vy = 0.0
+                ghost.vz = 0.0
+                ghost.gravity = 0f
+            } else {
+                ghost.vx = snapshot.vx
+                ghost.vy = snapshot.vy
+                ghost.vz = snapshot.vz
+                ghost.gravity = snapshot.gravity
+            }
+            ghost.lastSnapshotX = snapshot.x
+            ghost.lastSnapshotY = snapshot.y
+            ghost.lastSnapshotZ = snapshot.z
             // Серверная позиция авторитетна: между пакетами позицию ведёт
             // счисление по скорости, рывок коррекции на дистанции незаметен
             ghost.entity.setPos(snapshot.x, snapshot.y, snapshot.z)
