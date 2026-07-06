@@ -87,6 +87,7 @@ object DistantVehicleTracker {
                     .filter(::inRadius)
                     .map { vehicle ->
                         VehicleSnapshot(
+                            uuid = vehicle.uuid,
                             entityId = vehicle.id,
                             type = BuiltInRegistries.ENTITY_TYPE.getKey(vehicle.type).toString(),
                             x = vehicle.x,
@@ -106,6 +107,7 @@ object DistantVehicleTracker {
                     .map { projectile ->
                         val motion = projectile.deltaMovement
                         ProjectileSnapshot(
+                            uuid = projectile.uuid,
                             entityId = projectile.id,
                             type = BuiltInRegistries.ENTITY_TYPE.getKey(projectile.type).toString(),
                             x = projectile.x,

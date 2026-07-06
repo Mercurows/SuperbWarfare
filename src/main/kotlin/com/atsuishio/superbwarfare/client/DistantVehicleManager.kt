@@ -27,6 +27,7 @@ import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent
 import net.neoforged.neoforge.client.event.ClientTickEvent
+import java.util.UUID
 
 /**
  * Держит клиентские "призраки" дальней техники (за пределами ванильного
@@ -35,7 +36,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent
 @EventBusSubscriber(Dist.CLIENT)
 object DistantVehicleManager {
 
-    class Ghost(val serverId: Int, val entity: VehicleEntity) {
+    class Ghost(var serverId: Int, val entity: VehicleEntity) {
         var targetX = entity.x
         var targetY = entity.y
         var targetZ = entity.z
@@ -52,7 +53,7 @@ object DistantVehicleManager {
     // Экстраполяция по скорости давала пилу «вперёд-назад», когда снаряд
     // на сервере притормаживал на подгрузке чанков: клиент улетал вперёд,
     // а коррекция тянула назад. Лерп к цели реверсов не даёт в принципе.
-    class ProjectileGhost(val serverId: Int, val entity: Entity) {
+    class ProjectileGhost(var serverId: Int, val entity: Entity) {
         var targetX = entity.x
         var targetY = entity.y
         var targetZ = entity.z
@@ -61,8 +62,10 @@ object DistantVehicleManager {
         var interval = 10
     }
 
-    private val ghostMap = LinkedHashMap<Int, Ghost>()
-    private val projectileMap = LinkedHashMap<Int, ProjectileGhost>()
+    // Ключ — UUID энтити: сетевой entityId меняется при выгрузке/загрузке
+    // на границах прогруза, и ключевание по id плодило призраков-клонов
+    private val ghostMap = LinkedHashMap<UUID, Ghost>()
+    private val projectileMap = LinkedHashMap<UUID, ProjectileGhost>()
     private var cachedLevel: ClientLevel? = null
     private var tickCounter = 0L
 
@@ -77,13 +80,14 @@ object DistantVehicleManager {
             cachedLevel = level
         }
 
-        val seen = HashSet<Int>(msg.vehicles.size)
+        val seen = HashSet<UUID>(msg.vehicles.size)
         for (snapshot in msg.vehicles) {
-            seen += snapshot.entityId
-            val ghost = ghostMap[snapshot.entityId]
-                ?: createGhost(level, snapshot)?.also { ghostMap[snapshot.entityId] = it }
+            seen += snapshot.uuid
+            val ghost = ghostMap[snapshot.uuid]
+                ?: createGhost(level, snapshot)?.also { ghostMap[snapshot.uuid] = it }
                 ?: continue
 
+            ghost.serverId = snapshot.entityId
             ghost.interval = msg.interval
             ghost.lastUpdate = tickCounter
             ghost.targetX = snapshot.x
@@ -100,10 +104,11 @@ object DistantVehicleManager {
         ghostMap.keys.retainAll(seen)
 
         for (snapshot in msg.projectiles) {
-            val ghost = projectileMap[snapshot.entityId]
-                ?: createProjectileGhost(level, snapshot)?.also { projectileMap[snapshot.entityId] = it }
+            val ghost = projectileMap[snapshot.uuid]
+                ?: createProjectileGhost(level, snapshot)?.also { projectileMap[snapshot.uuid] = it }
                 ?: continue
 
+            ghost.serverId = snapshot.entityId
             ghost.interval = msg.interval
             ghost.lastUpdate = tickCounter
 
