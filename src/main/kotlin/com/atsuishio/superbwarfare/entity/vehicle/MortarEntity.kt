@@ -158,12 +158,16 @@ open class MortarEntity(type: EntityType<MortarEntity>, level: Level) : Artiller
         if (mainHandItem is MortarShellItem && !player.isShiftKeyDown && this.entityData.get(FIRE_TIME) == 0 && this.getItems()
                 .first().isEmpty
         ) {
-            this.getItems()[0] = stack.copyWithCount(1)
-            if (!player.isCreative) {
-                stack.shrink(1)
+            // PJM: вся мутация состояния и выстрел — только на сервере,
+            // иначе vehicleShoot → sendPacketToAll падает на клиенте (clientbound с клиента)
+            if (level() is ServerLevel) {
+                this.getItems()[0] = stack.copyWithCount(1)
+                if (!player.isCreative) {
+                    stack.shrink(1)
+                }
+                vehicleShoot(player, "Main", targetPos.center)
+                entityData.set(NEED_RESET_TARGET, false)
             }
-            vehicleShoot(player, "Main", targetPos.center)
-            entityData.set(NEED_RESET_TARGET, false)
             return InteractionResult.SUCCESS
         }
 
