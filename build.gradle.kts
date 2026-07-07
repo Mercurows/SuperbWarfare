@@ -244,6 +244,15 @@ dependencies {
             prefer("2.3.3-neoforge-mc1.21.1")
         }
     }
+    // PJM: Accelerated Rendering (GPU-кеш вершин) — только для дев-запусков.
+    // SBM 2.3.3 сам детектит modid "acceleratedrendering" и переключает рендер
+    // костей на его ускоренный путь; в прод-сборку не встраивается — мод кладётся
+    // в клиентский модпак отдельно. flatDir игнорирует group, файл лежит в libs/.
+    "localRuntime"(
+        group = "com.github.argon4w",
+        name = "acceleratedrendering",
+        version = "1.0.11-1.21.1-alpha",
+    )
     compileOnly("com.maydaymemory:mae:1.1.2") {
         exclude("com.google.code.findbugs", "jsr305")
         exclude("it.unimi.dsi", "fastutil")
