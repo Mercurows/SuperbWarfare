@@ -265,7 +265,10 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             }
         }
 
-        this.renderCustomPart(entity, model, poseStack, yaw, partialTick, buffer, packedLight)
+        // PJM: муляжи снарядов не видны на дистанции LOD — не тратим кадр на их рендер
+        if (!isLOD) {
+            this.renderCustomPart(entity, model, poseStack, yaw, partialTick, buffer, packedLight)
+        }
 
         poseStack.popPose()
     }
@@ -334,7 +337,8 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
                 val projectileType = projectileInfo.itemId
 
                 EntityType.byString(projectileType).ifPresent { entityType ->
-                    val entity = entityType.create(vehicle.level()) ?: return@ifPresent
+                    // PJM: не создаём новую сущность каждый кадр — берём муляж из кеша
+                    val entity = DummyEntityRenderCache.get(entityType, vehicle.level()) ?: return@ifPresent
                     entity.tickCount = 1
 
                     val size = data.get(GunProp.SHOOT_POS).positions.size
@@ -597,13 +601,18 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
     open fun getCurrentModel(poseStack: PoseStack, vehicle: T): VehicleModelPojo? {
         val models = VehicleResource.compute(vehicle).getModels()
         if (models.isEmpty()) return null
+        // PJM: выбираем самый грубый подходящий LOD, а не первый в списке — иначе
+        // lod2/lod3 недостижимы (на любой дистанции первым срабатывал lod1)
+        var lod: VehicleModelPojo? = null
         models.forEachIndexed { index, model ->
             if (index == 0) return@forEachIndexed
-            if (RenderDistanceHelper.shouldRenderLOD(poseStack, model.distance.toDouble())) {
-                return model
+            if (model.distance > (lod?.distance ?: 0)
+                && RenderDistanceHelper.shouldRenderLOD(poseStack, model.distance.toDouble())
+            ) {
+                lod = model
             }
         }
-        return models.first()
+        return lod ?: models.first()
     }
 
     override fun shouldRender(vehicle: T, pCamera: Frustum, pCamX: Double, pCamY: Double, pCamZ: Double): Boolean {

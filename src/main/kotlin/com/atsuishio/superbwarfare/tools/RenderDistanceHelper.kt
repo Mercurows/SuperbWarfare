@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.tools
 
+import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.mojang.blaze3d.vertex.PoseStack
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
@@ -21,11 +22,12 @@ object RenderDistanceHelper {
     @JvmStatic
     fun shouldRenderLOD(poseStack: PoseStack, distance: Double): Boolean {
         if (isInGui()) return false
-        // TODO 换成配置项
-        val globalLODDistance = 32
-        if (distance < globalLODDistance) return false
+        if (distance <= 0) return false
+        // PJM: TODO закрыт — базовая дистанция LOD берётся из конфига; авторские
+        // дистанции моделей (32/64/96) масштабируются относительно стандартных 32
+        val scaled = distance * DisplayConfig.VEHICLE_LOD_DISTANCE.get() / 32.0
         val matrix = poseStack.last().pose()
         val viewDistance = matrix.m30() * matrix.m30() + matrix.m31() * matrix.m31() + matrix.m32() * matrix.m32()
-        return viewDistance >= distance * distance
+        return viewDistance >= scaled * scaled
     }
 }

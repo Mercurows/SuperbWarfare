@@ -146,6 +146,14 @@ object DisplayConfig {
         defineInRange("shock_screen_shake", 100, 0, 100)
     }
 
+    // PJM: настраиваемая дистанция переключения техники на LOD-модели
+    @JvmField
+    val VEHICLE_LOD_DISTANCE = buildClientConfig {
+        comment("The distance (in blocks) at which vehicles switch to LOD models, lower = better FPS")
+        comment("载具切换为低模的距离（方块），越低性能越好")
+        defineInRange("vehicle_lod_distance", 32, 8, 512)
+    }
+
     @JvmField
     val ENABLE_VERSION_CHECK_WARNING = buildClientConfig {
         comment("Set true to enable version check warning when version of this mod has been changed")
