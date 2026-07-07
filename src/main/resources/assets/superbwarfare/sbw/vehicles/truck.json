@@ -3,6 +3,11 @@
     {
       "Model": "superbwarfare:models/bedrock/vehicle/truck.geo.json",
       "Texture": "superbwarfare:textures/bedrock/vehicle/truck.png"
+    },
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle_lod/truck.lod1.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/truck.png",
+      "LODDistance": 32
     }
   ]
 }

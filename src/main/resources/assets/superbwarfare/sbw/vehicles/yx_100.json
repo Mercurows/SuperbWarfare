@@ -5,6 +5,12 @@
       "Model": "superbwarfare:models/bedrock/vehicle/yx_100.geo.json",
       "Texture": "superbwarfare:textures/bedrock/vehicle/yx_100.png",
       "EmissiveTexture": "superbwarfare:textures/bedrock/vehicle/yx_100_e.png"
+    },
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle_lod/yx_100.lod1.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/yx_100.png",
+      "LODDistance": 32,
+      "EmissiveTexture": "superbwarfare:textures/bedrock/vehicle/yx_100_e.png"
     }
   ]
 }

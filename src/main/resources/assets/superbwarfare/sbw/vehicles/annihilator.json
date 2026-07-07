@@ -4,6 +4,11 @@
     {
       "Model": "superbwarfare:models/bedrock/vehicle/annihilator.geo.json",
       "Texture": "superbwarfare:textures/bedrock/vehicle/annihilator.png"
+    },
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle_lod/annihilator.lod1.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/annihilator.png",
+      "LODDistance": 32
     }
   ]
 }

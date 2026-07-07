@@ -5,6 +5,12 @@
       "Model": "superbwarfare:models/bedrock/vehicle/t_90a.geo.json",
       "Texture": "superbwarfare:textures/bedrock/vehicle/t_90a.png",
       "EmissiveTexture": "superbwarfare:textures/bedrock/vehicle/t_90a_e.png"
+    },
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle_lod/t_90a.lod1.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/t_90a.png",
+      "LODDistance": 32,
+      "EmissiveTexture": "superbwarfare:textures/bedrock/vehicle/t_90a_e.png"
     }
   ]
 }

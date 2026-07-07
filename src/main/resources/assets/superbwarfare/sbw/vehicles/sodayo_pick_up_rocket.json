@@ -3,6 +3,11 @@
     {
       "Model": "superbwarfare:models/bedrock/vehicle/sodayo_pick_up_rocket.geo.json",
       "Texture": "superbwarfare:textures/bedrock/vehicle/sodayo_pick_up_rocket.png"
+    },
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle_lod/sodayo_pick_up_rocket.lod1.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/sodayo_pick_up_rocket.png",
+      "LODDistance": 32
     }
   ]
 }

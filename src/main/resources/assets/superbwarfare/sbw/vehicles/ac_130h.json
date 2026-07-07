@@ -4,6 +4,11 @@
     {
       "Model": "superbwarfare:models/bedrock/vehicle/ac_130h.geo.json",
       "Texture": "superbwarfare:textures/bedrock/vehicle/ac_130h.png"
+    },
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle_lod/ac_130h.lod1.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/ac_130h.png",
+      "LODDistance": 32
     }
   ]
 }

@@ -265,10 +265,7 @@ open class SbmVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             }
         }
 
-        // PJM: муляжи снарядов не видны на дистанции LOD — не тратим кадр на их рендер
-        if (!isLOD) {
-            this.renderCustomPart(entity, model, poseStack, yaw, partialTick, buffer, packedLight)
-        }
+        this.renderCustomPart(entity, model, poseStack, yaw, partialTick, buffer, packedLight)
 
         poseStack.popPose()
     }

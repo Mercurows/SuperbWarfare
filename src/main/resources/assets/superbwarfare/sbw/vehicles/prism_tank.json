@@ -4,6 +4,12 @@
       "Model": "superbwarfare:models/bedrock/vehicle/prism_tank.geo.json",
       "Texture": "superbwarfare:textures/bedrock/vehicle/prism_tank.png",
       "EmissiveTexture": "superbwarfare:textures/bedrock/vehicle/prism_tank_e.png"
+    },
+    {
+      "Model": "superbwarfare:models/bedrock/vehicle_lod/prism_tank.lod1.geo.json",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/prism_tank.png",
+      "LODDistance": 32,
+      "EmissiveTexture": "superbwarfare:textures/bedrock/vehicle/prism_tank_e.png"
     }
   ]
 }
