@@ -3200,8 +3200,15 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     open fun handleClientSync() {
-        serverYaw = yRot
-        serverPitch = xRot
+        // PJM: публиковать serverYaw/serverPitch только на сервере — на клиенте эти строки
+        // затирали синхронизированное значение локальным yRot/xRot, из-за чего коррекция ниже
+        // (diffY/diffX) всегда была нулевой. Накопленный рассинхрон поворота (например, при
+        // заезде/выезде из воды, где скорость поворота зависит от isInFluidType/onGround)
+        // никогда не исправлялся, и техника визуально «ехала боком».
+        if (!level().isClientSide) {
+            serverYaw = yRot
+            serverPitch = xRot
+        }
 
         if (isControlledByLocalInstance) {
             interpolationSteps = 0
