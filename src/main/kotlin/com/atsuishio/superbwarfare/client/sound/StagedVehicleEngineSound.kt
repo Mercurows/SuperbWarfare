@@ -85,6 +85,12 @@ object StagedVehicleEngineSound {
             z = vehicle.z
         }
 
+        /**
+         * Layers intentionally start muted and fade in on their first ticks. Without this override
+         * SoundEngine rejects them at play time because their initial volume is zero.
+         */
+        override fun canStartSilent(): Boolean = true
+
         override fun tick() {
             val client = Minecraft.getInstance()
             if (vehicle.isRemoved || client.player == null) {
