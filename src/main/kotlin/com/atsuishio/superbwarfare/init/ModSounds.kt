@@ -182,6 +182,15 @@ object ModSounds {
             }
         }
 
+    @JvmField
+    val VEHICLE_ENGINE_TRANSIENT_SOUNDS: Map<String, Map<VehicleEngineTransientSound, DeferredHolder<SoundEvent, SoundEvent>>> =
+        buildMap {
+            listOf("bmp", "bradley", "t90", "abrams", "artillery", "heavy", "lav", "pickup", "truck", "wheel_chair")
+                .forEach { profile ->
+                    put(profile, registerVehicleEngineTransientProfile(profile))
+                }
+        }
+
     @JvmField val ENGINE_FALLBACK_GROUND_DISTANCE = register("engine_fallback_ground_distance")
     @JvmField val ENGINE_FALLBACK_ROTOR_DISTANCE = register("engine_fallback_rotor_distance")
     @JvmField val ENGINE_FALLBACK_TURBINE_DISTANCE = register("engine_fallback_turbine_distance")
@@ -232,6 +241,20 @@ object ModSounds {
         layers: List<VehicleEngineSoundLayer>
     ): Map<VehicleEngineSoundLayer, DeferredHolder<SoundEvent, SoundEvent>> =
         layers.associateWith { layer -> register("engine_${profile}_${layer.id}") }
+
+    private fun registerVehicleEngineTransientProfile(
+        profile: String
+    ): Map<VehicleEngineTransientSound, DeferredHolder<SoundEvent, SoundEvent>> =
+        VehicleEngineTransientSound.entries.associateWith { sound ->
+            register("engine_${profile}_${sound.id}")
+        }
+}
+
+enum class VehicleEngineTransientSound(val id: String) {
+    START_EXTERNAL("start_ext"),
+    START_INTERNAL("start_int"),
+    STOP_EXTERNAL("stop_ext"),
+    STOP_INTERNAL("stop_int")
 }
 
 enum class VehicleEngineSoundLayer(val id: String) {

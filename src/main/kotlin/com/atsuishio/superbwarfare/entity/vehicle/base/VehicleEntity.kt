@@ -271,6 +271,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     open var collisionCoolDown = 0
 
     private var wasEngineRunning = false
+    private var engineSoundSyncTicks = 0
     private var wasHornWorking = false
     private var wasStuka = false
     private var wasHeliCrash = false
@@ -1773,6 +1774,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
     override fun baseTick() {
         val computed = computed()
+        val engineActive = this.engineSoundActive()
         if (this.level().isClientSide) {
             if (prevMotion == null) {
                 prevMotion = this.deltaMovement
@@ -1784,12 +1786,21 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             this.prevPitchAngle = this.pitchAngle
             this.prevRollAngle = this.rollAngle
 
-            if (!this.wasEngineRunning && this.engineSoundActive()) {
+            if (!this.wasEngineRunning && engineActive) {
+                if (this.engineSoundSyncTicks >= ENGINE_SOUND_SYNC_GRACE_TICKS && this.hasManualEngineControl()) {
+                    playEngineStartSound.accept(this)
+                }
                 playEngineSound.accept(this)
                 playSwimSound.accept(this)
                 if (computed.engineType == EngineType.TRACK) {
                     playTrackSound.accept(this)
                 }
+            } else if (this.wasEngineRunning &&
+                !engineActive &&
+                this.engineSoundSyncTicks >= ENGINE_SOUND_SYNC_GRACE_TICKS &&
+                this.hasManualEngineControl()
+            ) {
+                playEngineStopSound.accept(this)
             }
 
             if (!this.wasHornWorking && this.hornWorking()) {
@@ -1816,6 +1827,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             }
 
             this.wasFiring = this.isFiring
+            this.engineSoundSyncTicks++
 
         } else {
             // 枪数据处理
@@ -1829,7 +1841,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             gunDataMap = newMap
         }
 
-        this.wasEngineRunning = this.engineSoundActive()
+        this.wasEngineRunning = engineActive
         this.wasHornWorking = this.hornWorking()
         this.wasStuka = this.stuka()
         this.wasHeliCrash = this.heliCrash()
@@ -4172,6 +4184,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     companion object {
+        private const val ENGINE_SOUND_SYNC_GRACE_TICKS = 5
+
         const val TAG_SEAT_INDEX: String = "SBWSeatIndex"
 
         @JvmField
@@ -4273,6 +4287,12 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         @JvmField
         var playEngineSound: Consumer<VehicleEntity?> = Consumer { }
+
+        @JvmField
+        var playEngineStartSound: Consumer<VehicleEntity?> = Consumer { }
+
+        @JvmField
+        var playEngineStopSound: Consumer<VehicleEntity?> = Consumer { }
 
         @JvmField
         var playSwimSound: Consumer<VehicleEntity?> = Consumer { }

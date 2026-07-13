@@ -26,6 +26,10 @@ object ModSoundInstances {
                     mc.soundManager.play(VehicleSoundInstance.EngineSound(vehicle))
                 }
             }
+        VehicleEntity.playEngineStartSound =
+            Consumer { vehicle -> vehicle?.let(StagedVehicleEngineSound::playStart) }
+        VehicleEntity.playEngineStopSound =
+            Consumer { vehicle -> vehicle?.let(StagedVehicleEngineSound::playStop) }
         VehicleEntity.playSwimSound =
             Consumer { mc.soundManager.play(VehicleSoundInstance.SwimSound(it)) }
         VehicleEntity.playHornSound =

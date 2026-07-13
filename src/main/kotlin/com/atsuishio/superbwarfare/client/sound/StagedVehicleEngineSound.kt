@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.VehicleEngineSoundLayer
+import com.atsuishio.superbwarfare.init.VehicleEngineTransientSound
 import com.atsuishio.superbwarfare.tools.mc
 import net.minecraft.client.CameraType
 import net.minecraft.client.Minecraft
@@ -68,6 +69,52 @@ object StagedVehicleEngineSound {
             }
         }
         return played
+    }
+
+    fun playStart(vehicle: VehicleEntity) = playTransient(vehicle, starting = true)
+
+    fun playStop(vehicle: VehicleEntity) = playTransient(vehicle, starting = false)
+
+    private fun playTransient(vehicle: VehicleEntity, starting: Boolean) {
+        val entityId = BuiltInRegistries.ENTITY_TYPE.getKey(vehicle.type).path
+        val profile = profiles[entityId] ?: return
+        if (profile.kind != Kind.GROUND) return
+
+        val transients = ModSounds.VEHICLE_ENGINE_TRANSIENT_SOUNDS[profile.soundSet] ?: return
+        val layers = ModSounds.VEHICLE_ENGINE_SOUNDS[profile.soundSet]
+        val externalType = if (starting) {
+            VehicleEngineTransientSound.START_EXTERNAL
+        } else {
+            VehicleEngineTransientSound.STOP_EXTERNAL
+        }
+        val internalType = if (starting) {
+            VehicleEngineTransientSound.START_INTERNAL
+        } else {
+            VehicleEngineTransientSound.STOP_INTERNAL
+        }
+
+        val external = resolveTransientSound(transients, layers, externalType, internalType, internal = false)
+        val internal = resolveTransientSound(transients, layers, internalType, externalType, internal = true)
+        external?.let { mc.soundManager.play(TransientSound(it, vehicle, internal = false)) }
+        internal?.let { mc.soundManager.play(TransientSound(it, vehicle, internal = true)) }
+    }
+
+    private fun resolveTransientSound(
+        transients: Map<VehicleEngineTransientSound, DeferredHolder<SoundEvent, SoundEvent>>,
+        layers: Map<VehicleEngineSoundLayer, DeferredHolder<SoundEvent, SoundEvent>>?,
+        preferred: VehicleEngineTransientSound,
+        counterpart: VehicleEngineTransientSound,
+        internal: Boolean
+    ): SoundEvent? {
+        transients[preferred]?.get()?.takeIf(::isAvailable)?.let { return it }
+        transients[counterpart]?.get()?.takeIf(::isAvailable)?.let { return it }
+
+        val idleLayer = if (internal) {
+            VehicleEngineSoundLayer.IDLE_INTERNAL
+        } else {
+            VehicleEngineSoundLayer.IDLE_EXTERNAL
+        }
+        return layers?.get(idleLayer)?.get()?.takeIf(::isAvailable)
     }
 
     /**
@@ -312,6 +359,41 @@ object StagedVehicleEngineSound {
                 close = external * (1f - smoothstep(28f, 72f, distance)),
                 far = external * smoothstep(28f, 72f, distance)
             )
+        }
+    }
+
+    private class TransientSound(
+        sound: SoundEvent,
+        private val vehicle: VehicleEntity,
+        private val internal: Boolean
+    ) : AbstractTickableSoundInstance(sound, SoundSource.AMBIENT, vehicle.random) {
+        init {
+            looping = false
+            delay = 0
+            volume = 0f
+            pitch = 1f
+            x = vehicle.x
+            y = vehicle.y
+            z = vehicle.z
+        }
+
+        override fun canStartSilent(): Boolean = true
+
+        override fun tick() {
+            val client = Minecraft.getInstance()
+            if (vehicle.isRemoved || client.player == null) {
+                stop()
+                return
+            }
+
+            x = vehicle.x
+            y = vehicle.y
+            z = vehicle.z
+
+            val internalView = client.player?.vehicle === vehicle &&
+                    client.options.cameraType == CameraType.FIRST_PERSON
+            val target = if (internal == internalView) max(vehicle.engineInfo?.engineSoundVolume ?: 0.6f, 0.6f) else 0f
+            volume = target
         }
     }
 

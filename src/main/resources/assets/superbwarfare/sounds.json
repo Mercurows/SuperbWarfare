@@ -4598,6 +4598,367 @@
       }
     ]
   },
+  "engine_bmp_start_ext": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/bmp/start_ext"
+      }
+    ]
+  },
+  "engine_bmp_start_int": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/bmp/start_int"
+      }
+    ]
+  },
+  "engine_bmp_stop_ext": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/bmp/stop_ext"
+      }
+    ]
+  },
+  "engine_bmp_stop_int": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/bmp/stop_int"
+      }
+    ]
+  },
+  "engine_bradley_start_ext": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/bradley/start_ext"
+      }
+    ]
+  },
+  "engine_bradley_start_int": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/bradley/start_int"
+      }
+    ]
+  },
+  "engine_bradley_stop_ext": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/bradley/stop_ext"
+      }
+    ]
+  },
+  "engine_bradley_stop_int": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/bradley/stop_int"
+      }
+    ]
+  },
+  "engine_t90_start_ext": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/t90/start_ext"
+      }
+    ]
+  },
+  "engine_t90_start_int": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/t90/start_int"
+      }
+    ]
+  },
+  "engine_t90_stop_ext": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/t90/stop_ext"
+      }
+    ]
+  },
+  "engine_t90_stop_int": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/t90/stop_int"
+      }
+    ]
+  },
+  "engine_abrams_start_ext": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/abrams/start_ext"
+      }
+    ]
+  },
+  "engine_abrams_start_int": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/abrams/start_int"
+      }
+    ]
+  },
+  "engine_abrams_stop_ext": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/abrams/stop_ext"
+      }
+    ]
+  },
+  "engine_abrams_stop_int": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/abrams/stop_int"
+      }
+    ]
+  },
+  "engine_artillery_start_ext": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/artillery/start_ext"
+      }
+    ]
+  },
+  "engine_artillery_start_int": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/artillery/start_int"
+      }
+    ]
+  },
+  "engine_artillery_stop_ext": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/artillery/stop_ext"
+      }
+    ]
+  },
+  "engine_artillery_stop_int": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/artillery/stop_int"
+      }
+    ]
+  },
+  "engine_heavy_start_ext": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/heavy/start_ext"
+      }
+    ]
+  },
+  "engine_heavy_start_int": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/heavy/start_int"
+      }
+    ]
+  },
+  "engine_heavy_stop_ext": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/heavy/stop_ext"
+      }
+    ]
+  },
+  "engine_heavy_stop_int": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/heavy/stop_int"
+      }
+    ]
+  },
+  "engine_lav_start_ext": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/lav/start_ext"
+      }
+    ]
+  },
+  "engine_lav_start_int": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/lav/start_int"
+      }
+    ]
+  },
+  "engine_lav_stop_ext": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/lav/stop_ext"
+      }
+    ]
+  },
+  "engine_lav_stop_int": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/lav/stop_int"
+      }
+    ]
+  },
+  "engine_pickup_start_ext": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/pickup/start_ext"
+      }
+    ]
+  },
+  "engine_pickup_start_int": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/pickup/start_int"
+      }
+    ]
+  },
+  "engine_pickup_stop_ext": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/pickup/stop_ext"
+      }
+    ]
+  },
+  "engine_pickup_stop_int": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/pickup/stop_int"
+      }
+    ]
+  },
+  "engine_truck_start_ext": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/truck/start_ext"
+      }
+    ]
+  },
+  "engine_truck_start_int": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/truck/start_int"
+      }
+    ]
+  },
+  "engine_truck_stop_ext": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/truck/stop_ext"
+      }
+    ]
+  },
+  "engine_truck_stop_int": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/truck/stop_int"
+      }
+    ]
+  },
+  "engine_wheel_chair_start_ext": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/wheel_chair/start_ext"
+      }
+    ]
+  },
+  "engine_wheel_chair_start_int": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/wheel_chair/start_int"
+      }
+    ]
+  },
+  "engine_wheel_chair_stop_ext": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/wheel_chair/stop_ext"
+      }
+    ]
+  },
+  "engine_wheel_chair_stop_int": {
+    "sounds": [
+      {
+        "attenuation_distance": 96,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/wheel_chair/stop_int"
+      }
+    ]
+  },
+
   "engine_fallback_ground_distance": {
     "sounds": [
       {
