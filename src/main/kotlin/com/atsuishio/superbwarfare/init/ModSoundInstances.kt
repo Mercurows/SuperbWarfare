@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.init
 
 import com.atsuishio.superbwarfare.client.sound.FastProjectileSoundInstance
 import com.atsuishio.superbwarfare.client.sound.HornSoundInstance
+import com.atsuishio.superbwarfare.client.sound.StagedVehicleEngineSound
 import com.atsuishio.superbwarfare.client.sound.SteelCoilMoveSoundInstance
 import com.atsuishio.superbwarfare.client.sound.VehicleFireSoundInstance
 import com.atsuishio.superbwarfare.client.sound.VehicleSoundInstance
@@ -19,7 +20,12 @@ object ModSoundInstances {
         VehicleEntity.playTrackSound =
             Consumer { mc.soundManager.play(VehicleSoundInstance.TrackSound(it)) }
         VehicleEntity.playEngineSound =
-            Consumer { mc.soundManager.play(VehicleSoundInstance.EngineSound(it)) }
+            Consumer { vehicle ->
+                vehicle ?: return@Consumer
+                if (!StagedVehicleEngineSound.play(vehicle)) {
+                    mc.soundManager.play(VehicleSoundInstance.EngineSound(vehicle))
+                }
+            }
         VehicleEntity.playSwimSound =
             Consumer { mc.soundManager.play(VehicleSoundInstance.SwimSound(it)) }
         VehicleEntity.playHornSound =

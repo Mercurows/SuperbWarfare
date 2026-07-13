@@ -722,6 +722,11 @@
   "key.superbwarfare.change_fire_mode_backward": "Change Fire Mode Backward",
   "key.superbwarfare.vehicle_seek": "Vehicle Lock Target",
   "key.superbwarfare.active_thermal_imaging": "Active Thermal Imaging",
+  "key.superbwarfare.toggle_vehicle_engine": "Start / Stop Vehicle Engine",
+  "tips.superbwarfare.vehicle_engine.start_hint": "Engine is off — press %1$s to start it",
+  "tips.superbwarfare.vehicle_engine.started": "Engine started",
+  "tips.superbwarfare.vehicle_engine.stopped": "Engine stopped",
+  "tips.superbwarfare.vehicle_engine.no_energy": "Cannot start engine: no energy",
 
   "effect.superbwarfare.shock": "Shock",
   "effect.superbwarfare.burn": "Burn",

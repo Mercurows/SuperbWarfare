@@ -158,6 +158,30 @@ object ModSounds {
     @JvmField val TURRET_BURN = register("turret_burn")
     @JvmField val HELI_CRASH = register("heli_crash")
 
+    /**
+     * Multi-layer engine loops used by the client-side vehicle sound mixer.
+     *
+     * The old EngineSound entries remain registered as a fallback for vehicles which do not
+     * have a staged profile. Keeping the staged events in the normal sound registry also means
+     * resource packs can replace every layer independently.
+     */
+    @JvmField
+    val VEHICLE_ENGINE_SOUNDS: Map<String, Map<VehicleEngineSoundLayer, DeferredHolder<SoundEvent, SoundEvent>>> =
+        buildMap {
+            listOf("bmp", "bradley", "t90", "abrams", "artillery", "heavy", "lav", "pickup", "truck", "wheel_chair")
+                .forEach { profile ->
+                    put(profile, registerVehicleEngineProfile(profile, VehicleEngineSoundLayer.GROUND_LAYERS))
+                }
+
+            listOf("ah6", "mi28").forEach { profile ->
+                put(profile, registerVehicleEngineProfile(profile, VehicleEngineSoundLayer.HELICOPTER_LAYERS))
+            }
+
+            listOf("a10", "ac130", "ju87").forEach { profile ->
+                put(profile, registerVehicleEngineProfile(profile, VehicleEngineSoundLayer.AIRCRAFT_LAYERS))
+            }
+        }
+
     // drone
     @JvmField val DRONE_ENGINE = register("drone_engine")
 
@@ -197,5 +221,49 @@ object ModSounds {
 
     fun register(name: String): DeferredHolder<SoundEvent, SoundEvent> =
         REGISTRY.register(name) { -> SoundEvent.createVariableRangeEvent(Mod.loc(name)) }
+
+    private fun registerVehicleEngineProfile(
+        profile: String,
+        layers: List<VehicleEngineSoundLayer>
+    ): Map<VehicleEngineSoundLayer, DeferredHolder<SoundEvent, SoundEvent>> =
+        layers.associateWith { layer -> register("engine_${profile}_${layer.id}") }
 }
 
+enum class VehicleEngineSoundLayer(val id: String) {
+    IDLE_EXTERNAL("idle_ext"),
+    IDLE_INTERNAL("idle_int"),
+    DRIVE_EXTERNAL("drive_ext"),
+    DRIVE_INTERNAL("drive_int"),
+    RELEASE_EXTERNAL("release_ext"),
+    RELEASE_INTERNAL("release_int"),
+    DISTANCE("distance"),
+
+    ROTOR_EXTERNAL("rotor_ext"),
+    ROTOR_INTERNAL("rotor_int"),
+    ROTOR_DISTANCE("rotor_distance"),
+    TURBINE_EXTERNAL("turbine_ext"),
+    TURBINE_INTERNAL("turbine_int"),
+    TURBINE_DISTANCE("turbine_distance"),
+
+    DISTANCE_FRONT("distance_front"),
+    DISTANCE_MIDDLE("distance_middle"),
+    DISTANCE_REAR("distance_rear");
+
+    companion object {
+        val GROUND_LAYERS = listOf(
+            IDLE_EXTERNAL, IDLE_INTERNAL,
+            DRIVE_EXTERNAL, DRIVE_INTERNAL,
+            RELEASE_EXTERNAL, RELEASE_INTERNAL,
+            DISTANCE
+        )
+        val HELICOPTER_LAYERS = listOf(
+            ROTOR_EXTERNAL, ROTOR_INTERNAL, ROTOR_DISTANCE,
+            TURBINE_EXTERNAL, TURBINE_INTERNAL, TURBINE_DISTANCE
+        )
+        val AIRCRAFT_LAYERS = listOf(
+            IDLE_EXTERNAL, IDLE_INTERNAL,
+            DRIVE_EXTERNAL, DRIVE_INTERNAL,
+            DISTANCE_FRONT, DISTANCE_MIDDLE, DISTANCE_REAR
+        )
+    }
+}

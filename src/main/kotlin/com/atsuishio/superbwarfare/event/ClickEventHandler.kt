@@ -254,6 +254,14 @@ object ClickEventHandler {
         val vehicle = player.vehicle
 
         if (event.action == GLFW.GLFW_PRESS) {
+            if (key == ModKeyMappings.TOGGLE_VEHICLE_ENGINE.key.value) {
+                val drivenVehicle = vehicle as? VehicleEntity
+                if (drivenVehicle != null && drivenVehicle.firstPassenger === player && drivenVehicle.hasManualEngineControl()) {
+                    sendPacketToServer(ToggleVehicleEngineMessage)
+                    return
+                }
+            }
+
             if (key == ModKeyMappings.ACTIVE_THERMAL_IMAGING.key.value) {
                 if (vehicle is VehicleEntity) {
                     val index = vehicle.getSeatIndex(player)

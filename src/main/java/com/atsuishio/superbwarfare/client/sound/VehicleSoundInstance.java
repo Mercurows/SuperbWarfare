@@ -86,7 +86,7 @@ public abstract class VehicleSoundInstance extends AbstractTickableSoundInstance
 
         @Override
         protected boolean canPlay(VehicleEntity mobileVehicle) {
-            return mobileVehicle.engineRunning();
+            return mobileVehicle.engineSoundActive();
         }
 
         @Override
@@ -129,7 +129,7 @@ public abstract class VehicleSoundInstance extends AbstractTickableSoundInstance
 
         @Override
         protected boolean canPlay(VehicleEntity mobileVehicle) {
-            return mobileVehicle.engineRunning();
+            return mobileVehicle.engineSoundActive();
         }
 
         @Override

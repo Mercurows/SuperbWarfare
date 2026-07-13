@@ -110,6 +110,9 @@ object ModKeyMappings {
     @JvmField
     val ACTIVE_THERMAL_IMAGING = registerKey("active_thermal_imaging", GLFW.GLFW_KEY_K)
 
+    @JvmField
+    val TOGGLE_VEHICLE_ENGINE = registerKey("toggle_vehicle_engine", GLFW.GLFW_KEY_I)
+
     private fun registerKey(
         name: String,
         code: Int,

@@ -510,11 +510,32 @@ object ClientEventHandler {
         lockWeaponSeeking(player, stack)
         vehicleWeaponSeeking(player)
         handleThermalImaging(player)
+        handleVehicleEngineHint(player)
         handleHandsomeGoggles(player)
         handleShootDelay(player, stack)
         handleControlVehicle(player, stack)
         handleArtilleryIndicator(player, stack)
         calculateBombHitPos(player)
+    }
+
+    private fun handleVehicleEngineHint(player: Player) {
+        val vehicle = player.vehicle as? VehicleEntity ?: return
+        if (vehicle.firstPassenger !== player || !vehicle.hasManualEngineControl()) return
+        if (vehicle.engineOn) return
+
+        val tryingToMove = ModKeyMappings.MOVE_FORWARD.isDown || ModKeyMappings.MOVE_BACKWARD.isDown
+                || ModKeyMappings.MOVE_LEFT.isDown || ModKeyMappings.MOVE_RIGHT.isDown
+        val reminderDue = player.tickCount % 100 == 0
+        val blockedMoveDue = tryingToMove && player.tickCount % 20 == 0
+        if (!reminderDue && !blockedMoveDue) return
+
+        player.displayClientMessage(
+            Component.translatable(
+                "tips.superbwarfare.vehicle_engine.start_hint",
+                ModKeyMappings.TOGGLE_VEHICLE_ENGINE.translatedKeyMessage
+            ),
+            true
+        )
     }
 
     @JvmStatic

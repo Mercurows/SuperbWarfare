@@ -722,6 +722,11 @@
   "key.superbwarfare.change_fire_mode_backward": "向后切换开火模式",
   "key.superbwarfare.vehicle_seek": "载具锁定目标",
   "key.superbwarfare.active_thermal_imaging": "开启热成像",
+  "key.superbwarfare.toggle_vehicle_engine": "启动/关闭载具引擎",
+  "tips.superbwarfare.vehicle_engine.start_hint": "引擎已关闭——按 %1$s 启动",
+  "tips.superbwarfare.vehicle_engine.started": "引擎已启动",
+  "tips.superbwarfare.vehicle_engine.stopped": "引擎已关闭",
+  "tips.superbwarfare.vehicle_engine.no_energy": "无法启动引擎：能量不足",
 
   "effect.superbwarfare.shock": "电击",
   "effect.superbwarfare.burn": "点燃",
