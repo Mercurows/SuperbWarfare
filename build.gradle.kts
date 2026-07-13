@@ -50,6 +50,13 @@ repositories {
         }
     }
     maven {
+        name = "JourneyMap"
+        url = uri("https://maven.blamejared.com/")
+        content {
+            includeGroup("info.journeymap")
+        }
+    }
+    maven {
         url = uri("https://maven.shedaniel.me/")
         content {
             includeGroup("me.shedaniel.cloth")
@@ -284,6 +291,9 @@ dependencies {
 
     // 真实相机
     compileOnly("curse.maven:real-camera-851574:${project.property("real_camera_id")}")
+
+    // JourneyMap is an optional client-side integration. The API is supplied by JourneyMap at runtime.
+    compileOnly("info.journeymap:journeymap-api-neoforge:2.0.0-1.21.1-SNAPSHOT")
 
 
     // 网络音乐机

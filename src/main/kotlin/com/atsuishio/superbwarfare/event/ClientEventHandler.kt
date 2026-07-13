@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.api.event.ClientVehicleFireEvent
 import com.atsuishio.superbwarfare.client.ClientSyncedEntityHandler
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves
+import com.atsuishio.superbwarfare.client.compat.JourneyMapMinimapCompat
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay
 import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler
@@ -482,6 +483,8 @@ object ClientEventHandler {
     @SubscribeEvent
     fun handleClientTick(event: ClientTickEvent.Post) {
         val player = localPlayer ?: return
+
+        JourneyMapMinimapCompat.update(player.vehicle is VehicleEntity)
 
         val stack = player.mainHandItem
         if (notInGame && !ClickEventHandler.switchZoom) {
