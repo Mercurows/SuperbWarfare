@@ -21,7 +21,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.component.ItemAttributeModifiers
 import net.minecraft.world.level.Level
 
-open class RpgRocketTBGItem : Item(Properties().stacksTo(16)), DispenserLaunchable {
+open class RpgRocketTBGItem : Item(Properties().stacksTo(1)), DispenserLaunchable { // PJM: rockets don't stack
     override fun getDefaultAttributeModifiers(stack: ItemStack): ItemAttributeModifiers {
         val list = ArrayList(super.getDefaultAttributeModifiers(stack).modifiers())
 

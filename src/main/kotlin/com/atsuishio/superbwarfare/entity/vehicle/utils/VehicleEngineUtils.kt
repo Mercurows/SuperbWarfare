@@ -44,6 +44,18 @@ object VehicleEngineUtils {
             deltaMovement = deltaMovement.add(0.0, fluidFloat, 0.0)
         }
 
+        // PJM: наземная техника без плавучести (buoyancy == 0) тонет в глубокой воде — двигатель
+        // глохнет, тяга и рулёжка отключаются. Порог 0.5*bbHeight позволяет форсировать мелководье.
+        val drowned = isInFluidType && buoyancy == 0.0 && VehicleVecUtils.getSubmergedHeight(this) > 0.5 * bbHeight
+        if (drowned) {
+            forwardInputDown = false
+            backInputDown = false
+            leftInputDown = false
+            rightInputDown = false
+            power *= 0.9f
+            deltaRot = 0f
+        }
+
         val rightDrift = if (drift() && rightInputDown) 0f else 1f
         val leftDrift = if (drift() && leftInputDown) 0f else 1f
 
@@ -210,7 +222,9 @@ object VehicleEngineUtils {
 
         yRot = (yRot - (if (isInFluidType && !onGround()) 2.5 else 8.0) * deltaRot - i * s0).toFloat()
 
-        if (isInFluidType || onGround()) {
+        // PJM: тягу в жидкости получают только амфибии (buoyancy != 0); наземная техника тонет.
+        // Глубокое погружение глушит двигатель (drowned) — тяга не даётся даже на дне под водой.
+        if ((onGround() && !drowned) || (buoyancy != 0.0 && isInFluidType)) {
             deltaMovement = deltaMovement.add(getViewVector(1f).scale((if (drift()) 0.03 else 0.15) * targetSpeed * power))
         }
     }
@@ -232,6 +246,18 @@ object VehicleEngineUtils {
         if (buoyancy != 0.0) {
             val fluidFloat = buoyancy * VehicleVecUtils.getSubmergedHeight(this)
             deltaMovement = deltaMovement.add(0.0, fluidFloat, 0.0)
+        }
+
+        // PJM: наземная техника без плавучести (buoyancy == 0) тонет в глубокой воде — двигатель
+        // глохнет, тяга и рулёжка отключаются. Порог 0.5*bbHeight позволяет форсировать мелководье.
+        val drowned = isInFluidType && buoyancy == 0.0 && VehicleVecUtils.getSubmergedHeight(this) > 0.5 * bbHeight
+        if (drowned) {
+            forwardInputDown = false
+            backInputDown = false
+            leftInputDown = false
+            rightInputDown = false
+            power *= 0.9f
+            deltaRot = 0f
         }
 
         if (onGround()) {
@@ -408,7 +434,9 @@ object VehicleEngineUtils {
                 .horizontalDistance(), 0.0
         ) * rudderRot * (if (power > 0) 1 else -1) - i * s0).toFloat()
 
-        if ((isInFluidType || onGround())) {
+        // PJM: тягу в жидкости получают только амфибии (buoyancy != 0); наземная техника тонет.
+        // Глубокое погружение глушит двигатель (drowned) — тяга не даётся даже на дне под водой.
+        if ((onGround() && !drowned) || (buoyancy != 0.0 && isInFluidType)) {
             deltaMovement = deltaMovement.add(getViewVector(1f).scale((if (drift()) 0.02 else 0.15) * targetSpeed * power))
         }
     }

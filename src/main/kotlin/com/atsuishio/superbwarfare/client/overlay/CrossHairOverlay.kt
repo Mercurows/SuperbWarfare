@@ -123,7 +123,8 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
         val finPosY = (screenHeight - finLength) / 2 + moveY
 
         // 第一人称下的准星
-        if (Minecraft.getInstance().options.cameraType == CameraType.FIRST_PERSON) {
+        // PJM: серверный конфиг ENABLE_WEAPON_CROSSHAIR жёстко скрывает прицел оружия у всех
+        if (MarkerConfig.ENABLE_WEAPON_CROSSHAIR.get() && Minecraft.getInstance().options.cameraType == CameraType.FIRST_PERSON) {
             when (crosshair) {
                 CROSSHAIR_GUN_DEFAULT -> renderGunDefaultCrosshair(
                     guiGraphics,
@@ -168,7 +169,8 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
         }
 
         // 第三人称下的准星
-        if (Minecraft.getInstance().options.cameraType == CameraType.THIRD_PERSON_BACK && (ClientEventHandler.zoomTime > 0 || ClientEventHandler.bowPullPos > 0)) {
+        // PJM: серверный конфиг ENABLE_WEAPON_CROSSHAIR жёстко скрывает прицел оружия у всех
+        if (MarkerConfig.ENABLE_WEAPON_CROSSHAIR.get() && Minecraft.getInstance().options.cameraType == CameraType.THIRD_PERSON_BACK && (ClientEventHandler.zoomTime > 0 || ClientEventHandler.bowPullPos > 0)) {
             renderGunDefaultCrosshair(
                 guiGraphics,
                 stack,

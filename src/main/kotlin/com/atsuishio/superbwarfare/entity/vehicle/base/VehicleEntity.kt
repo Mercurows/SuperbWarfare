@@ -299,6 +299,10 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     open var recoilShake = 0.0
     open var recoilShakeO = 0.0
 
+    // PJM: обратный отсчёт быстрого разряда от включённого тепловизора. Обновляется до 6 клиентским
+    // VehicleThermalMessage каждый тик, пока ТПВ включён; иначе затухает до 0. Не сохраняется в NBT.
+    var thermalDrainCooldown = 0
+
     open var flap1LRot = 0f
     open var flap1LRotO = 0f
     open var flap1RRot = 0f
@@ -665,7 +669,9 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     open fun data() = VehicleData.from(this)
     open fun computed() = VehicleData.compute(this)
 
-    override fun maxUpStep() = computed().upStep
+    // PJM: ограничиваем высоту авто-заезда (UpStep) одним блоком, чтобы техника
+    // не заезжала на высокие поверхности (стены/блоки высотой >1).
+    override fun maxUpStep() = minOf(computed().upStep, 1.0f)
 
     override fun getFirstPassenger(): Entity? {
         checkSeatsSize()
@@ -1857,6 +1863,13 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         lastTickVerticalSpeed = this.deltaMovement.y + 0.06
         if (collisionCoolDown > 0) {
             collisionCoolDown--
+        }
+
+        // PJM: пока клиент шлёт VehicleThermalMessage (ТПВ включён) — техника расходует энергию быстрее.
+        // ponytail: делитель 4000 подобрать по игре (полный разряд ~4000 тиков непрерывного ТПВ).
+        if (!level().isClientSide && thermalDrainCooldown > 0) {
+            thermalDrainCooldown--
+            if (hasEnergyStorage()) consumeEnergy(maxOf(1, maxEnergy / 4000))
         }
 
         laserScaleO = laserScale

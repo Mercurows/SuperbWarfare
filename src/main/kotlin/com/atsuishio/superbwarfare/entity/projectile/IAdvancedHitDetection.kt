@@ -56,16 +56,32 @@ import kotlin.math.max
  */
 interface IAdvancedHitDetection {
     /**
+     * PJM: запас (в блоках), на который раздувается broad-phase зона поиска целей, чтобы
+     * поймать технику с OBB-частями, торчащими за ванильный AABB. Дефолт покрывает наземную
+     * технику; тяжёлые снаряды/ракеты переопределяют больше (вертолёты/крупная техника).
+     *
+     * ponytail: константа-потолок — гигантские воздушные суда (kirov ~32, ac_130h ~28)
+     * по самым кончикам крыльев/винтов всё ещё могут не попасть в выборку; их центральный
+     * AABB (22–24) покрывает любой нормальный выстрел, так что это приемлемо. Если понадобится
+     * абсолютная точность по кончикам — считать overhang из OBB конкретной цели, а не константой.
+     */
+    fun hitScanInflation(): Double = 4.0
+
+    /**
      * 在路径上查找所有可命中实体
      */
     fun findEntitiesOnPath(startVec: Vec3, endVec: Vec3): MutableList<EntityResult> {
         if (this !is Projectile) return mutableListOf()
         val hitEntities: MutableList<EntityResult> = arrayListOf()
+        // PJM: broad-phase getEntities отбирает цели по их ванильному AABB, а у техники
+        // OBB-части (корпус/ствол/винты) торчат далеко за AABB (у M1A2 AABB=4.62, но OBB
+        // достаёт до ~5.6 от центра). Без запаса снаряд под косым углом «пролетает сквозь»
+        // танк, т.к. сам танк не попадает в выборку. Раздуваем зону поиска на overhang.
         val entities = this.level().getEntities(
             this,
             this.boundingBox
                 .expandTowards(this.deltaMovement)
-                .inflate(1.0),
+                .inflate(hitScanInflation()),
             PROJECTILE_TARGETS
         )
         for (entity in entities) {

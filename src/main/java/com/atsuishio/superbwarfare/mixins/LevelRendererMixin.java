@@ -41,14 +41,9 @@ public class LevelRendererMixin {
             at = @At("HEAD"), cancellable = true)
     private void renderEntity(Entity pEntity, double pCamX, double pCamY, double pCamZ, float pPartialTick, PoseStack pPoseStack, MultiBufferSource pBufferSource, CallbackInfo ci) {
         // 这里只改实体的亮度
-        if (ClientEventHandler.activeThermalImaging) {
-            ci.cancel();
-            double d0 = Mth.lerp(pPartialTick, pEntity.xOld, pEntity.getX());
-            double d1 = Mth.lerp(pPartialTick, pEntity.yOld, pEntity.getY());
-            double d2 = Mth.lerp(pPartialTick, pEntity.zOld, pEntity.getZ());
-            float f = Mth.lerp(pPartialTick, pEntity.yRotO, pEntity.getYRot());
-            this.entityRenderDispatcher.render(pEntity, d0 - pCamX, d1 - pCamY, d2 - pCamZ, f, pPartialTick, pPoseStack,
-                    pBufferSource, LightTexture.FULL_BRIGHT);
-        }
+        // PJM: старый full-bright ре-рендер сущностей во время тепловизора отключён — его заменил
+        // ThermalShaderHandler (отдельный thermal_buffer / ThermalSampler). Дублирующий рендер той
+        // же сущности в основной буфер с другим partialTick давал «призрак» с рассинхроном позы
+        // (дёрганье голов) и перекрывал анимацию смерти. Оставляем ванильный рендер (ci не отменяем).
     }
 }

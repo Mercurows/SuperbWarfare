@@ -11,11 +11,8 @@ class Type63Renderer<T>(manager: EntityRendererProvider.Context) :
 
     override fun transformCustomModelPart(vehicle: T, model: BedrockVehicleModel, poseStack: PoseStack, entityYaw: Float, partialTicks: Float) {
         super.transformCustomModelPart(vehicle, model, poseStack, entityYaw, partialTicks)
-        val shouLunX = model.getBone("shoulunx")
-        val shouLunY = model.getBone("shouluny")
-
-        shouLunX.rotation.rotationX(-turretXRot * 3)
-        shouLunY.rotation.rotationZ(turretYRot * 6)
+        model.getBone("shoulunx")?.rotation?.rotationX(-turretXRot * 3)
+        model.getBone("shouluny")?.rotation?.rotationZ(turretYRot * 6)
 
         model.shell.forEachIndexed { index, bone ->
             val items = vehicle.entityData.get(Type63Entity.LOADED_AMMO)

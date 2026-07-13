@@ -34,6 +34,13 @@ object MarkerConfig {
     val ENABLE_RPG_LOCK_MARKER = buildServerConfig {
         comment("Set false to hide the RPG lock-on red triangle marker for everyone")
         comment("是否显示RPG锁定目标的红色三角标记")
-        define("enable_rpg_lock_marker", true).also { pop() }
+        define("enable_rpg_lock_marker", true)
+    }
+
+    @JvmField
+    val ENABLE_WEAPON_CROSSHAIR = buildServerConfig {
+        comment("Set false to hide the weapon HUD crosshair (reticle) for everyone")
+        comment("是否显示武器HUD准星")
+        define("enable_weapon_crosshair", true).also { pop() }
     }
 }

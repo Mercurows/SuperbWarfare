@@ -126,6 +126,9 @@ class Mod(bus: IEventBus, container: ModContainer) {
         MouseMovementHandler.init()
         MolangVariable.register()
         event.enqueueWork { ModSoundInstances.init() }
+        // PJM: тепловизор очков — рендер «горячих» сущностей в буфер (RenderLevelStageEvent).
+        // Апстрим-класс существует, но нигде не был подписан на шину → эффект не работал.
+        NeoForge.EVENT_BUS.register(com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler.Companion)
     }
 
     private fun onRegisterBuiltInResourcePacks(event: AddPackFindersEvent) {

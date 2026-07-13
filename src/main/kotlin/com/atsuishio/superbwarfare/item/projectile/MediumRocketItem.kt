@@ -21,7 +21,7 @@ class MediumRocketItem(
     @JvmField val type: MediumRocketEntity.Type,
     private val spreadAmount: Int
 ) : Item(
-    Properties().stacksTo(4)
+    Properties().stacksTo(1) // PJM: rockets don't stack
 ), DispenserLaunchable {
     fun createProjectile(level: Level, pos: Position): MediumRocketEntity {
         return MediumRocketEntity(

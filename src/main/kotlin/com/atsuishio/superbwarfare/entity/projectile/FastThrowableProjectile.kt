@@ -198,24 +198,36 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         }
     }
 
+    // PJM: снаряды пушек/ракеты часто бьют по крупной технике (танки, вертолёты), у которой
+    // OBB торчит далеко за AABB — берём больший запас, чем у пуль. Таких снарядов на поле мало,
+    // поэтому увеличенная зона поиска не бьёт по производительности.
+    override fun hitScanInflation(): Double = 8.0
+
     override fun tick() {
         super.baseTick()
 
         val level = this.level()
-        if (!level.isClientSide() && this.tickCount > this.getNoHitTicks()) {
+        if (!level.isClientSide()) {
             val startVec = this.position()
             val fullEndVec = startVec.add(this.deltaMovement)
 
             // 1. 查找最近的方块碰撞点
+            // PJM: блоки проверяем КАЖДЫЙ тик, включая grace-период. Раньше вся коллизия
+            // (и блоки, и сущности) пропускалась пока tickCount <= getNoHitTicks(), из-за чего
+            // быстрый снаряд, выпущенный вплотную к стене, пролетал её насквозь за grace-тики.
+            // Grace нужен лишь чтобы снаряд покинул пусковую установку (это сущность —
+            // владелец/техника исключаются ниже), поэтому мир (блоки) пропускать не нужно.
             val blockHit = rayTraceBlocks(
                 level,
                 ClipContext(startVec, fullEndVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this),
                 if (this.isPenetrating()) Predicate { true } else Predicate { false }
             ).takeIf { it.type != HitResult.Type.MISS }
 
-            // 2. 在路径上查找实体（仅在方块碰撞点之前）
+            // 2. 在路径上查找实体（仅在方块碰撞点之前）；сущности — только после grace-периода
             val searchEnd = blockHit?.location ?: fullEndVec
-            val entityResults = findEntitiesOnPath(startVec, searchEnd)
+            val entityResults =
+                if (this.tickCount > this.getNoHitTicks()) findEntitiesOnPath(startVec, searchEnd)
+                else mutableListOf()
 
             // 3. 找出最近的单一命中目标（方块或实体，取距离最近者，与原版行为一致）
             var closestHit: HitResult? = blockHit

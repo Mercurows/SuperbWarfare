@@ -5,9 +5,9 @@ import com.atsuishio.superbwarfare.api.event.ClientVehicleFireEvent
 import com.atsuishio.superbwarfare.client.ClientSyncedEntityHandler
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves
 import com.atsuishio.superbwarfare.client.compat.JourneyMapMinimapCompat
+import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay
-import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
@@ -548,6 +548,7 @@ object ClientEventHandler {
     fun handleThermalImaging(player: Player) {
         var hasThermalImagingGoggles = hasThermalImagingGoggles()
         val vehicle = player.vehicle
+        var usingVehicleThermalImaging = false
 
         if (vehicle is VehicleEntity) {
             val index = vehicle.getSeatIndex(player)
@@ -555,8 +556,28 @@ object ClientEventHandler {
                 val seat = vehicle.computed().seats().getOrNull(index)
                 if (seat != null && seat.hasThermalImaging) {
                     hasThermalImagingGoggles = true
+                    usingVehicleThermalImaging = true
                 }
             }
+        }
+
+        ThermalShaderHandler.setVehicleMode(activeThermalImaging && usingVehicleThermalImaging)
+
+        // PJM: интенсивность помех тепловизора техники = пол(всегда) + всплеск от выстрела + рампа по низкому HP.
+        if (activeThermalImaging && usingVehicleThermalImaging && vehicle is VehicleEntity) {
+            val maxHp = vehicle.getMaxHealth()
+            val hpFrac = if (maxHp > 0f) (vehicle.health / maxHp).coerceIn(0f, 1f) else 1f
+            val lowHpRamp = ((0.6f - hpFrac) / 0.6f).coerceIn(0f, 1f)       // 0 выше 60% HP -> 1 при уничтожении
+            // recoilShake — затухающая ЗНАКОПЕРЕМЕННАЯ синусоида (VehicleEntity:2084), берём модуль,
+            // иначе отрицательная полуволна клампилась в 0 и всплеск выстрела почти не читался.
+            // ponytail: множитель 1.5 подобрать по игре, если всплеск слишком слабый/сильный.
+            val shot = (kotlin.math.abs(vehicle.recoilShake).toFloat() * 1.5f).coerceIn(0f, 1f)
+            ThermalShaderHandler.setInterference((0.15f + lowHpRamp * 0.85f + shot).coerceIn(0f, 1.5f))
+
+            // PJM: keep-alive серверу — пока ТПВ включён, техника разряжается быстрее.
+            sendPacketToServer(VehicleThermalMessage())
+        } else {
+            ThermalShaderHandler.setInterference(0f)
         }
 
         if (!activeThermalImaging || !hasThermalImagingGoggles) {
@@ -569,14 +590,24 @@ object ClientEventHandler {
 
     @JvmStatic
     fun turnOnThermalImaging() {
+        val player = localPlayer
+        val vehicle = player?.vehicle as? VehicleEntity
+        val seat = if (player != null && vehicle != null) {
+            vehicle.computed().seats().getOrNull(vehicle.getSeatIndex(player))
+        } else null
+        ThermalShaderHandler.setVehicleMode(seat?.hasThermalImaging == true)
+
+        // PJM: SBW-стиль тепловизора — мир тёмный, ярко «горят» только сущности и техника.
+        // ThermalShaderHandler рендерит «горячие» сущности (LivingEntity/VehicleEntity) в буфер
+        // и композитит через thermal.json с тёмным фоном. seeThroughWalls=false — цели за рельефом
+        // отсекаются по глубине (не видно сквозь стены). Отдельный gameRenderer-эффект не нужен.
+        ThermalShaderHandler.setSeeThroughWalls(false)
         ThermalShaderHandler.setActive(true)
-        mc.gameRenderer.loadEffect(Mod.loc("shaders/post/night_vision.json"))
     }
 
     @JvmStatic
     fun turnOffThermalImaging() {
         if (ThermalShaderHandler.isActive()) {
-            mc.gameRenderer.shutdownEffect()
             ThermalShaderHandler.setActive(false)
         }
     }
