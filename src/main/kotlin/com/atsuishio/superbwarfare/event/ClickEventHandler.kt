@@ -76,6 +76,14 @@ object ClickEventHandler {
         return stack.item is GunItem || (vehicle is VehicleEntity && vehicle.banHand(player) && !stack.isEdible)
     }
 
+    private fun tryToggleVehicleEngine(player: Player): Boolean {
+        val vehicle = player.vehicle as? VehicleEntity ?: return false
+        if (vehicle.firstPassenger !== player || !vehicle.hasManualEngineControl()) return false
+
+        sendPacketToServer(ToggleVehicleEngineMessage)
+        return true
+    }
+
     @SubscribeEvent
     fun onButtonPressed(event: InputEvent.MouseButton.Pre) {
         if (notInGame) return
@@ -91,6 +99,15 @@ object ClickEventHandler {
 
         val stack = player.mainHandItem
         val button = event.button
+
+        val engineKey = ModKeyMappings.TOGGLE_VEHICLE_ENGINE.key
+        if (engineKey.type == InputConstants.Type.MOUSE
+            && engineKey.value == button
+            && tryToggleVehicleEngine(player)
+        ) {
+            event.isCanceled = true
+            return
+        }
 
         val fireKey = ModKeyMappings.FIRE.key
         if (fireKey.type == InputConstants.Type.MOUSE
@@ -254,12 +271,10 @@ object ClickEventHandler {
         val vehicle = player.vehicle
 
         if (event.action == GLFW.GLFW_PRESS) {
-            if (key == ModKeyMappings.TOGGLE_VEHICLE_ENGINE.key.value) {
-                val drivenVehicle = vehicle as? VehicleEntity
-                if (drivenVehicle != null && drivenVehicle.firstPassenger === player && drivenVehicle.hasManualEngineControl()) {
-                    sendPacketToServer(ToggleVehicleEngineMessage)
-                    return
-                }
+            if (ModKeyMappings.TOGGLE_VEHICLE_ENGINE.matches(key, event.scanCode)
+                && tryToggleVehicleEngine(player)
+            ) {
+                return
             }
 
             if (key == ModKeyMappings.ACTIVE_THERMAL_IMAGING.key.value) {

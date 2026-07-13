@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.client.sound
 
+import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.VehicleEngineSoundLayer
@@ -115,8 +116,9 @@ object StagedVehicleEngineSound {
 
         private fun groundVolume(client: Minecraft): Float {
             val context = listenerContext(client)
-            val load = Mth.clamp(abs(vehicle.power), 0f, 1f)
-            val accelerating = vehicle.forwardInputDown || vehicle.backInputDown
+            val load = groundLoad()
+            val turningUnderLoad = vehicle.engineInfo is EngineInfo.Track && abs(vehicle.deltaRot) > 0.02f
+            val accelerating = vehicle.forwardInputDown || vehicle.backInputDown || turningUnderLoad
             val idle = 1f - smoothstep(0.04f, 0.22f, load)
             val release = if (!accelerating) smoothstep(0.06f, 0.36f, load) else 0f
             val drive = smoothstep(0.04f, 0.42f, load) * (1f - 0.72f * release)
@@ -182,10 +184,15 @@ object StagedVehicleEngineSound {
         private fun targetPitch(): Float {
             val load = Mth.clamp(abs(vehicle.power), 0f, 1f)
             return when (kind) {
-                Kind.GROUND -> 0.94f + 0.1f * load
+                Kind.GROUND -> 0.94f + 0.1f * groundLoad()
                 Kind.HELICOPTER -> 0.97f + 0.05f * load
                 Kind.AIRCRAFT -> 0.96f + 0.08f * load
             }
+        }
+
+        private fun groundLoad(): Float {
+            val turningLoad = if (vehicle.engineInfo is EngineInfo.Track) abs(1.4f * vehicle.deltaRot) else 0f
+            return Mth.clamp(max(abs(vehicle.power), turningLoad), 0f, 1f)
         }
 
         private fun baseVolume(): Float = max(vehicle.engineInfo?.engineSoundVolume ?: 0.6f, 0.15f)
