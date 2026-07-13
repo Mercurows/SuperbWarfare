@@ -11,6 +11,7 @@ import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
+import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
 import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.*
@@ -545,6 +546,12 @@ object ClientEventHandler {
         }.orElseGet { false }
     }
 
+    @JvmStatic
+    fun canUseVehicleThermalImaging(vehicle: VehicleEntity, seatHasThermalImaging: Boolean): Boolean {
+        if (!seatHasThermalImaging) return false
+        return vehicle.computed().engineType != EngineType.HELICOPTER || zoomVehicle
+    }
+
     fun handleThermalImaging(player: Player) {
         var hasThermalImagingGoggles = hasThermalImagingGoggles()
         val vehicle = player.vehicle
@@ -554,7 +561,7 @@ object ClientEventHandler {
             val index = vehicle.getSeatIndex(player)
             if (index != -1) {
                 val seat = vehicle.computed().seats().getOrNull(index)
-                if (seat != null && seat.hasThermalImaging) {
+                if (seat != null && canUseVehicleThermalImaging(vehicle, seat.hasThermalImaging)) {
                     hasThermalImagingGoggles = true
                     usingVehicleThermalImaging = true
                 }
@@ -595,7 +602,9 @@ object ClientEventHandler {
         val seat = if (player != null && vehicle != null) {
             vehicle.computed().seats().getOrNull(vehicle.getSeatIndex(player))
         } else null
-        ThermalShaderHandler.setVehicleMode(seat?.hasThermalImaging == true)
+        ThermalShaderHandler.setVehicleMode(
+            seat != null && vehicle != null && canUseVehicleThermalImaging(vehicle, seat.hasThermalImaging)
+        )
 
         // PJM: SBW-стиль тепловизора — мир тёмный, ярко «горят» только сущности и техника.
         // ThermalShaderHandler рендерит «горячие» сущности (LivingEntity/VehicleEntity) в буфер

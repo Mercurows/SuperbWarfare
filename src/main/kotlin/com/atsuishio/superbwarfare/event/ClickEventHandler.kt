@@ -281,7 +281,7 @@ object ClickEventHandler {
                 if (vehicle is VehicleEntity) {
                     val index = vehicle.getSeatIndex(player)
                     val seat = vehicle.computed().seats().getOrNull(index)
-                    if (seat != null && seat.hasThermalImaging) {
+                    if (seat != null && ClientEventHandler.canUseVehicleThermalImaging(vehicle, seat.hasThermalImaging)) {
                         ClientEventHandler.activeThermalImaging = !ClientEventHandler.activeThermalImaging
                         if (ClientEventHandler.activeThermalImaging) {
                             player.playSound(ModSounds.CANNON_ZOOM_IN.get())
