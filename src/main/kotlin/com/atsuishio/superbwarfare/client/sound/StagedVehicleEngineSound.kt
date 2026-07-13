@@ -13,6 +13,7 @@ import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundSource
 import net.minecraft.util.Mth
 import net.minecraft.world.phys.Vec3
+import net.neoforged.neoforge.registries.DeferredHolder
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -59,11 +60,106 @@ object StagedVehicleEngineSound {
         val profile = profiles[entityId] ?: return false
         val sounds = ModSounds.VEHICLE_ENGINE_SOUNDS[profile.soundSet] ?: return false
 
-        sounds.forEach { (layer, holder) ->
-            mc.soundManager.play(LayerSound(holder.get(), vehicle, profile.kind, layer))
+        var played = false
+        sounds.forEach { (layer, _) ->
+            resolveSound(sounds, profile.kind, layer)?.let { sound ->
+                mc.soundManager.play(LayerSound(sound, vehicle, profile.kind, layer))
+                played = true
+            }
         }
-        return true
+        return played
     }
+
+    /**
+     * Resource packs may omit individual layers. Resolve a usable event before constructing the
+     * looping instance so a missing Distant/INT/EXT entry cannot make that part of the mix silent.
+     */
+    private fun resolveSound(
+        sounds: Map<VehicleEngineSoundLayer, DeferredHolder<SoundEvent, SoundEvent>>,
+        kind: Kind,
+        layer: VehicleEngineSoundLayer
+    ): SoundEvent? {
+        sounds[layer]?.get()?.takeIf(::isAvailable)?.let { return it }
+
+        val distanceFallback = when (layer) {
+            VehicleEngineSoundLayer.DISTANCE -> ModSounds.ENGINE_FALLBACK_GROUND_DISTANCE.get()
+            VehicleEngineSoundLayer.ROTOR_DISTANCE -> ModSounds.ENGINE_FALLBACK_ROTOR_DISTANCE.get()
+            VehicleEngineSoundLayer.TURBINE_DISTANCE -> ModSounds.ENGINE_FALLBACK_TURBINE_DISTANCE.get()
+            VehicleEngineSoundLayer.DISTANCE_FRONT,
+            VehicleEngineSoundLayer.DISTANCE_MIDDLE,
+            VehicleEngineSoundLayer.DISTANCE_REAR -> ModSounds.ENGINE_FALLBACK_AIRCRAFT_DISTANCE.get()
+            else -> null
+        }
+        distanceFallback?.takeIf(::isAvailable)?.let { return it }
+
+        return fallbackLayers(kind, layer)
+            .asSequence()
+            .mapNotNull { sounds[it]?.get() }
+            .firstOrNull(::isAvailable)
+    }
+
+    private fun isAvailable(sound: SoundEvent): Boolean =
+        (mc.soundManager.getSoundEvent(sound.location)?.weight ?: 0) > 0
+
+    private fun fallbackLayers(kind: Kind, layer: VehicleEngineSoundLayer): List<VehicleEngineSoundLayer> =
+        when (layer) {
+            VehicleEngineSoundLayer.IDLE_EXTERNAL -> listOf(VehicleEngineSoundLayer.IDLE_INTERNAL)
+            VehicleEngineSoundLayer.IDLE_INTERNAL -> listOf(VehicleEngineSoundLayer.IDLE_EXTERNAL)
+            VehicleEngineSoundLayer.DRIVE_EXTERNAL -> listOf(
+                VehicleEngineSoundLayer.IDLE_EXTERNAL,
+                VehicleEngineSoundLayer.DRIVE_INTERNAL
+            )
+            VehicleEngineSoundLayer.DRIVE_INTERNAL -> listOf(
+                VehicleEngineSoundLayer.IDLE_INTERNAL,
+                VehicleEngineSoundLayer.DRIVE_EXTERNAL
+            )
+            VehicleEngineSoundLayer.RELEASE_EXTERNAL -> listOf(
+                VehicleEngineSoundLayer.DRIVE_EXTERNAL,
+                VehicleEngineSoundLayer.IDLE_EXTERNAL
+            )
+            VehicleEngineSoundLayer.RELEASE_INTERNAL -> listOf(
+                VehicleEngineSoundLayer.DRIVE_INTERNAL,
+                VehicleEngineSoundLayer.IDLE_INTERNAL
+            )
+            VehicleEngineSoundLayer.ROTOR_EXTERNAL -> listOf(
+                VehicleEngineSoundLayer.TURBINE_EXTERNAL,
+                VehicleEngineSoundLayer.ROTOR_INTERNAL
+            )
+            VehicleEngineSoundLayer.ROTOR_INTERNAL -> listOf(
+                VehicleEngineSoundLayer.TURBINE_INTERNAL,
+                VehicleEngineSoundLayer.ROTOR_EXTERNAL
+            )
+            VehicleEngineSoundLayer.TURBINE_EXTERNAL -> listOf(
+                VehicleEngineSoundLayer.ROTOR_EXTERNAL,
+                VehicleEngineSoundLayer.TURBINE_INTERNAL
+            )
+            VehicleEngineSoundLayer.TURBINE_INTERNAL -> listOf(
+                VehicleEngineSoundLayer.ROTOR_INTERNAL,
+                VehicleEngineSoundLayer.TURBINE_EXTERNAL
+            )
+            VehicleEngineSoundLayer.DISTANCE -> listOf(
+                VehicleEngineSoundLayer.DRIVE_EXTERNAL,
+                VehicleEngineSoundLayer.IDLE_EXTERNAL
+            )
+            VehicleEngineSoundLayer.ROTOR_DISTANCE -> listOf(
+                VehicleEngineSoundLayer.ROTOR_EXTERNAL,
+                VehicleEngineSoundLayer.TURBINE_EXTERNAL
+            )
+            VehicleEngineSoundLayer.TURBINE_DISTANCE -> listOf(
+                VehicleEngineSoundLayer.TURBINE_EXTERNAL,
+                VehicleEngineSoundLayer.ROTOR_EXTERNAL
+            )
+            VehicleEngineSoundLayer.DISTANCE_FRONT,
+            VehicleEngineSoundLayer.DISTANCE_MIDDLE,
+            VehicleEngineSoundLayer.DISTANCE_REAR -> when (kind) {
+                Kind.AIRCRAFT -> listOf(
+                    VehicleEngineSoundLayer.DISTANCE_MIDDLE,
+                    VehicleEngineSoundLayer.DRIVE_EXTERNAL,
+                    VehicleEngineSoundLayer.IDLE_EXTERNAL
+                ).filterNot { it == layer }
+                else -> emptyList()
+            }
+        }
 
     private class LayerSound(
         sound: SoundEvent,
@@ -114,7 +210,7 @@ object StagedVehicleEngineSound {
                 Kind.AIRCRAFT -> aircraftVolume(client)
             } * fade
 
-            smoothedVolume = Mth.lerp(0.16f, smoothedVolume, targetVolume)
+            smoothedVolume = Mth.lerp(0.32f, smoothedVolume, targetVolume)
             smoothedPitch = Mth.lerp(0.1f, smoothedPitch, targetPitch())
             volume = smoothedVolume
             pitch = smoothedPitch
@@ -125,9 +221,11 @@ object StagedVehicleEngineSound {
             val load = groundLoad()
             val turningUnderLoad = vehicle.engineInfo is EngineInfo.Track && abs(vehicle.deltaRot) > 0.02f
             val accelerating = vehicle.forwardInputDown || vehicle.backInputDown || turningUnderLoad
-            val idle = 1f - smoothstep(0.04f, 0.22f, load)
-            val release = if (!accelerating) smoothstep(0.06f, 0.36f, load) else 0f
-            val drive = smoothstep(0.04f, 0.42f, load) * (1f - 0.72f * release)
+            val motion = smoothstep(0.02f, 0.1f, load)
+            val releaseMix = if (!accelerating) smoothstep(0.03f, 0.12f, load) else 0f
+            val idle = 1f - motion
+            val release = motion * releaseMix
+            val drive = motion * (1f - releaseMix)
             val base = baseVolume() * (0.78f + 0.28f * load)
 
             return base * when (layer) {
@@ -163,8 +261,8 @@ object StagedVehicleEngineSound {
         private fun aircraftVolume(client: Minecraft): Float {
             val context = listenerContext(client)
             val load = Mth.clamp(abs(vehicle.power), 0f, 1f)
-            val idle = 1f - smoothstep(0.08f, 0.38f, load)
-            val thrust = smoothstep(0.05f, 0.5f, load)
+            val thrust = smoothstep(0.02f, 0.12f, load)
+            val idle = 1f - thrust
             val base = baseVolume()
 
             val cameraPos = client.gameRenderer.mainCamera.position

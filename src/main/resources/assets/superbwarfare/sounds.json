@@ -4598,6 +4598,42 @@
       }
     ]
   },
+  "engine_fallback_ground_distance": {
+    "sounds": [
+      {
+        "attenuation_distance": 256,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/heavy/drive_ext"
+      }
+    ]
+  },
+  "engine_fallback_rotor_distance": {
+    "sounds": [
+      {
+        "attenuation_distance": 256,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/ah6/rotor_ext"
+      }
+    ]
+  },
+  "engine_fallback_turbine_distance": {
+    "sounds": [
+      {
+        "attenuation_distance": 256,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/ah6/turbine_ext"
+      }
+    ]
+  },
+  "engine_fallback_aircraft_distance": {
+    "sounds": [
+      {
+        "attenuation_distance": 256,
+        "stream": true,
+        "name": "superbwarfare:vehicle/engine/a10/drive_ext"
+      }
+    ]
+  },
   "engine_bmp_idle_ext": {
     "sounds": [
       {

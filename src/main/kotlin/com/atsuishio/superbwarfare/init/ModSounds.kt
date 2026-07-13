@@ -182,6 +182,11 @@ object ModSounds {
             }
         }
 
+    @JvmField val ENGINE_FALLBACK_GROUND_DISTANCE = register("engine_fallback_ground_distance")
+    @JvmField val ENGINE_FALLBACK_ROTOR_DISTANCE = register("engine_fallback_rotor_distance")
+    @JvmField val ENGINE_FALLBACK_TURBINE_DISTANCE = register("engine_fallback_turbine_distance")
+    @JvmField val ENGINE_FALLBACK_AIRCRAFT_DISTANCE = register("engine_fallback_aircraft_distance")
+
     // drone
     @JvmField val DRONE_ENGINE = register("drone_engine")
 
