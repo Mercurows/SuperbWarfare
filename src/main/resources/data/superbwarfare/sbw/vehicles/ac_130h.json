@@ -242,7 +242,8 @@
         "Directions": ["Passenger"]
       },
       "SoundInfo": {
-        "FireSoundInstances": "superbwarfare:hpj_11_fire"
+        "FireSoundInstances1P": "superbwarfare:ac_130h_m61_fire_1p",
+        "FireSoundInstances3P": "superbwarfare:ac_130h_m61_fire"
       }
     },
     "Bofors": {
@@ -266,10 +267,10 @@
       "Spread": 0.5,
       "Name": "weapon.superbwarfare.40mm_cannon_he",
       "SoundInfo": {
-        "Fire1P": "superbwarfare:bradley_cannon_fire_1p",
-        "Fire3P": "superbwarfare:bradley_cannon_fire_3p",
-        "Fire3PFar": "superbwarfare:bradley_cannon_far",
-        "Fire3PVeryFar": "superbwarfare:bradley_cannon_veryfar"
+        "Fire1P": "superbwarfare:ac_130h_bofors_fire_1p",
+        "Fire3P": "superbwarfare:ac_130h_bofors_fire_3p",
+        "Fire3PFar": "superbwarfare:ac_130h_bofors_far",
+        "Fire3PVeryFar": "superbwarfare:ac_130h_bofors_veryfar"
       },
       "Crosshair": "@VehicleDynamicCross",
       "SoundRadius": 24,
@@ -300,10 +301,10 @@
       "Spread": 0.5,
       "Name": "weapon.superbwarfare.cannon_he",
       "SoundInfo": {
-        "Fire1P": "superbwarfare:m_1a_2_fire_1p",
-        "Fire3P": "superbwarfare:m_1a_2_fire_3p",
-        "Fire3PFar": "superbwarfare:m_1a_2_far",
-        "Fire3PVeryFar": "superbwarfare:m_1a_2_veryfar",
+        "Fire1P": "superbwarfare:ac_130h_m102_fire_1p",
+        "Fire3P": "superbwarfare:ac_130h_m102_fire_3p",
+        "Fire3PFar": "superbwarfare:ac_130h_m102_far",
+        "Fire3PVeryFar": "superbwarfare:ac_130h_m102_veryfar",
         "VehicleReload": "superbwarfare:m_1a_2_reload",
         "Change": "superbwarfare:into_cannon",
         "CancellableSounds": [

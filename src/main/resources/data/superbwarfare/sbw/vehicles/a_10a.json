@@ -96,7 +96,8 @@
       "Spread": 0.5,
       "Name": "weapon.superbwarfare.30mm_gau_8_a",
       "SoundInfo": {
-        "FireSoundInstances": "superbwarfare:a_10a_fire",
+        "FireSoundInstances1P": "superbwarfare:a_10a_fire_1p",
+        "FireSoundInstances3P": "superbwarfare:a_10a_fire",
         "Change": "superbwarfare:into_cannon"
       },
       "Crosshair": "@AirCraftCommon",

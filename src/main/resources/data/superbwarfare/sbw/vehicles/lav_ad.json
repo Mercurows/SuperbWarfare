@@ -193,7 +193,8 @@
       "CrosshairColor": "0x66FF00",
       "Name": "weapon.superbwarfare.25mm_cannon_aa",
       "SoundInfo": {
-        "FireSoundInstances": "superbwarfare:lav_ad_fire",
+        "FireSoundInstances1P": "superbwarfare:lav_ad_fire_1p",
+        "FireSoundInstances3P": "superbwarfare:lav_ad_fire",
         "Change": "superbwarfare:into_cannon"
       },
       "AmmoType": "superbwarfare:small_shell_aa",

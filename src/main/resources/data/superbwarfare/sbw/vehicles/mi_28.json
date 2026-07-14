@@ -122,7 +122,7 @@
       "Name": "weapon.superbwarfare.30mm_2a42_ap",
       "SoundInfo": {
         "Fire1P": "superbwarfare:mi_28_cannon_fire_1p",
-        "Fire3P": "superbwarfare:bmp_2_cannon_fire_3p",
+        "Fire3P": "superbwarfare:mi_28_cannon_fire_3p",
         "Fire3PFar": "superbwarfare:mi_28_cannon_far",
         "Fire3PVeryFar": "superbwarfare:mi_28_cannon_veryfar",
         "Change": "superbwarfare:into_cannon"

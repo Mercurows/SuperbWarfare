@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.client.sound;
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.sounds.SoundEvent;
@@ -72,7 +74,14 @@ public abstract class VehicleFireSoundInstance extends AbstractTickableSoundInst
     public static class VehicleFireSound extends VehicleSoundInstance {
 
         public VehicleFireSound(VehicleEntity vehicle) {
-            super(vehicle.getShootSoundInstance(), Minecraft.getInstance(), vehicle);
+            super(
+                    vehicle.getShootSoundInstance(Minecraft.getInstance().player != null
+                            && Minecraft.getInstance().player.getVehicle() == vehicle
+                            && (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON
+                            || ClientEventHandler.zoomVehicle)),
+                    Minecraft.getInstance(),
+                    vehicle
+            );
         }
 
         @Override

@@ -68,7 +68,8 @@
         "ViewPosition": [0, 0.45, 2.0]
       },
       "SoundInfo": {
-        "FireSoundInstances": "superbwarfare:hpj_11_fire"
+        "FireSoundInstances1P": "superbwarfare:hpj_11_fire_1p",
+        "FireSoundInstances3P": "superbwarfare:hpj_11_fire"
       }
     }
   },

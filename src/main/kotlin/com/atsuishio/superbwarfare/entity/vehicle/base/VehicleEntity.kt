@@ -2315,30 +2315,33 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     open val shootSoundInstance: SoundEvent?
-        get() {
-            // TODO why 0?
-            val gunData = getGunData(0)
-            if (gunData != null) {
-                val instance = gunData.get(GunProp.SOUND_INFO).fireSoundInstances
-                if (instance != null) return instance
-            } else {
-                return getShootSoundInstance("Main")
-            }
-            return SoundEvents.EMPTY
-        }
+        get() = getShootSoundInstance(false)
+
+    open fun getShootSoundInstance(firstPerson: Boolean): SoundEvent {
+        val gunData = getGunData(0) ?: getGunData("Main") ?: return SoundEvents.EMPTY
+        val soundInfo = gunData.get(GunProp.SOUND_INFO)
+
+        return (if (firstPerson) soundInfo.fireSoundInstances1P else soundInfo.fireSoundInstances3P)
+            ?: soundInfo.fireSoundInstances
+            ?: SoundEvents.EMPTY
+    }
 
     open fun getShootSoundInstance(weaponName: String): SoundEvent {
         val gunData = getGunData(weaponName) ?: return SoundEvents.EMPTY
+        val soundInfo = gunData.get(GunProp.SOUND_INFO)
 
-        return gunData.get(GunProp.SOUND_INFO).fireSoundInstances ?: SoundEvents.EMPTY
+        return soundInfo.fireSoundInstances3P ?: soundInfo.fireSoundInstances ?: SoundEvents.EMPTY
     }
 
     open val isFiring: Boolean
         get() {
             val gunData = getGunData(0)
             return if (gunData != null) {
-                val instance = gunData.get(GunProp.SOUND_INFO).fireSoundInstances
-                if (instance != null) {
+                val soundInfo = gunData.get(GunProp.SOUND_INFO)
+                if (soundInfo.fireSoundInstances != null
+                    || soundInfo.fireSoundInstances1P != null
+                    || soundInfo.fireSoundInstances3P != null
+                ) {
                     gunData.shootTimer.get() > 0
                 } else {
                     false

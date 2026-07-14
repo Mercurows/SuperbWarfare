@@ -251,10 +251,10 @@
       "CrosshairColor": "0x00ff66",
       "Name": "weapon.superbwarfare.30mm_cannon_ap",
       "SoundInfo": {
-        "Fire1P": "superbwarfare:bmp_2_cannon_fire_1p",
-        "Fire3P": "superbwarfare:bmp_2_cannon_fire_3p",
-        "Fire3PFar": "superbwarfare:mi_28_cannon_far",
-        "Fire3PVeryFar": "superbwarfare:mi_28_cannon_veryfar",
+        "Fire1P": "superbwarfare:yx_100_autocannon_fire_1p",
+        "Fire3P": "superbwarfare:yx_100_autocannon_fire_3p",
+        "Fire3PFar": "superbwarfare:yx_100_autocannon_far",
+        "Fire3PVeryFar": "superbwarfare:yx_100_autocannon_veryfar",
         "Change": "superbwarfare:into_missile"
       },
       "SoundRadius": 24,

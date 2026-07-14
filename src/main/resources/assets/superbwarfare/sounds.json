@@ -5921,5 +5921,83 @@
         "name": "superbwarfare:vehicle/engine/ju87/distance_rear"
       }
     ]
+  },
+  "ac_130h_m61_fire": {
+    "sounds": [
+      {
+        "attenuation_distance": 384,
+        "stream": true,
+        "name": "superbwarfare:vehicle/ac_130h/ac_130h_m61_fire"
+      }
+    ]
+  },
+  "ac_130h_bofors_fire_1p": {
+    "sounds": [{"name": "superbwarfare:vehicle/ac_130h/ac_130h_bofors_fire_1p", "stream": false}]
+  },
+  "ac_130h_bofors_fire_3p": {
+    "sounds": [{"name": "superbwarfare:vehicle/ac_130h/ac_130h_bofors_fire_3p", "stream": false}]
+  },
+  "ac_130h_bofors_far": {
+    "sounds": [{"name": "superbwarfare:vehicle/ac_130h/ac_130h_bofors_far", "stream": false}]
+  },
+  "ac_130h_bofors_veryfar": {
+    "sounds": [{"name": "superbwarfare:vehicle/ac_130h/ac_130h_bofors_veryfar", "stream": false}]
+  },
+  "ac_130h_m102_fire_1p": {
+    "sounds": [{"name": "superbwarfare:vehicle/ac_130h/ac_130h_m102_fire_1p", "stream": false}]
+  },
+  "ac_130h_m102_fire_3p": {
+    "sounds": [{"name": "superbwarfare:vehicle/ac_130h/ac_130h_m102_fire_3p", "stream": false}]
+  },
+  "ac_130h_m102_far": {
+    "sounds": [{"name": "superbwarfare:vehicle/ac_130h/ac_130h_m102_far", "stream": false}]
+  },
+  "ac_130h_m102_veryfar": {
+    "sounds": [{"name": "superbwarfare:vehicle/ac_130h/ac_130h_m102_veryfar", "stream": false}]
+  },
+  "bmp_2_cannon_far": {
+    "sounds": [{"name": "superbwarfare:vehicle/bmp_2/bmp_2_cannon_far", "stream": false}]
+  },
+  "bmp_2_cannon_veryfar": {
+    "sounds": [{"name": "superbwarfare:vehicle/bmp_2/bmp_2_cannon_veryfar", "stream": false}]
+  },
+  "mi_28_cannon_fire_3p": {
+    "sounds": [{"name": "superbwarfare:vehicle/mi_28/mi_28_cannon_fire_3p", "stream": false}]
+  },
+  "a_10a_fire_1p": {
+    "sounds": [{"name": "superbwarfare:vehicle/a_10a/a_10a_fire_1p", "stream": true}]
+  },
+  "hpj_11_fire_1p": {
+    "sounds": [{"name": "superbwarfare:hpj11/hpj_11_fire_1p", "stream": true}]
+  },
+  "lav_ad_fire_1p": {
+    "sounds": [{"name": "superbwarfare:vehicle/lav_ad/lav_ad_fire_1p", "stream": true}]
+  },
+  "ac_130h_m61_fire_1p": {
+    "sounds": [{"name": "superbwarfare:vehicle/ac_130h/ac_130h_m61_fire_1p", "stream": true}]
+  },
+  "happiest_ghast_cannon_fire_1p": {
+    "sounds": [{"name": "superbwarfare:vehicle/happiest_ghast/happiest_ghast_cannon_fire_1p", "stream": false}]
+  },
+  "happiest_ghast_cannon_fire_3p": {
+    "sounds": [{"name": "superbwarfare:vehicle/happiest_ghast/happiest_ghast_cannon_fire_3p", "stream": false}]
+  },
+  "happiest_ghast_cannon_far": {
+    "sounds": [{"name": "superbwarfare:vehicle/happiest_ghast/happiest_ghast_cannon_far", "stream": false}]
+  },
+  "happiest_ghast_cannon_veryfar": {
+    "sounds": [{"name": "superbwarfare:vehicle/happiest_ghast/happiest_ghast_cannon_veryfar", "stream": false}]
+  },
+  "yx_100_autocannon_fire_1p": {
+    "sounds": [{"name": "superbwarfare:vehicle/yx_100/yx_100_autocannon_fire_1p", "stream": false}]
+  },
+  "yx_100_autocannon_fire_3p": {
+    "sounds": [{"name": "superbwarfare:vehicle/yx_100/yx_100_autocannon_fire_3p", "stream": false}]
+  },
+  "yx_100_autocannon_far": {
+    "sounds": [{"name": "superbwarfare:vehicle/yx_100/yx_100_autocannon_far", "stream": false}]
+  },
+  "yx_100_autocannon_veryfar": {
+    "sounds": [{"name": "superbwarfare:vehicle/yx_100/yx_100_autocannon_veryfar", "stream": false}]
   }
 }
