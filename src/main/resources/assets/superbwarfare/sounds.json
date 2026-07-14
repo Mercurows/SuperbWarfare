@@ -4962,7 +4962,7 @@
   "engine_fallback_ground_distance": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:vehicle/engine/heavy/drive_ext"
       }
@@ -4971,7 +4971,7 @@
   "engine_fallback_rotor_distance": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:vehicle/engine/ah6/rotor_ext"
       }
@@ -4980,7 +4980,7 @@
   "engine_fallback_turbine_distance": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:vehicle/engine/ah6/turbine_ext"
       }
@@ -4989,7 +4989,7 @@
   "engine_fallback_aircraft_distance": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:vehicle/engine/a10/drive_ext"
       }
@@ -5052,7 +5052,7 @@
   "engine_bmp_distance": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:vehicle/engine/bmp/distance"
       }
@@ -5115,7 +5115,7 @@
   "engine_bradley_distance": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:vehicle/engine/bradley/distance"
       }
@@ -5178,7 +5178,7 @@
   "engine_t90_distance": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:vehicle/engine/t90/distance"
       }
@@ -5241,7 +5241,7 @@
   "engine_abrams_distance": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:vehicle/engine/abrams/distance"
       }
@@ -5304,7 +5304,7 @@
   "engine_artillery_distance": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:vehicle/engine/artillery/distance"
       }
@@ -5367,7 +5367,7 @@
   "engine_heavy_distance": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:vehicle/engine/heavy/distance"
       }
@@ -5430,7 +5430,7 @@
   "engine_lav_distance": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:vehicle/engine/lav/distance"
       }
@@ -5493,7 +5493,7 @@
   "engine_pickup_distance": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:vehicle/engine/pickup/distance"
       }
@@ -5556,7 +5556,7 @@
   "engine_truck_distance": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:vehicle/engine/truck/distance"
       }
@@ -5619,7 +5619,7 @@
   "engine_wheel_chair_distance": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:vehicle/engine/wheel_chair/distance"
       }
@@ -5646,7 +5646,7 @@
   "engine_ah6_rotor_distance": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:vehicle/engine/ah6/rotor_distance"
       }
@@ -5673,7 +5673,7 @@
   "engine_ah6_turbine_distance": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:vehicle/engine/ah6/turbine_distance"
       }
@@ -5700,7 +5700,7 @@
   "engine_mi28_rotor_distance": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:vehicle/engine/mi28/rotor_distance"
       }
@@ -5727,7 +5727,7 @@
   "engine_mi28_turbine_distance": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:vehicle/engine/mi28/turbine_distance"
       }
@@ -5772,7 +5772,7 @@
   "engine_a10_distance_front": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:vehicle/engine/a10/distance_front"
       }
@@ -5781,7 +5781,7 @@
   "engine_a10_distance_middle": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:vehicle/engine/a10/distance_middle"
       }
@@ -5790,7 +5790,7 @@
   "engine_a10_distance_rear": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:vehicle/engine/a10/distance_rear"
       }
@@ -5835,7 +5835,7 @@
   "engine_ac130_distance_front": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:vehicle/engine/ac130/distance_front"
       }
@@ -5844,7 +5844,7 @@
   "engine_ac130_distance_middle": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:vehicle/engine/ac130/distance_middle"
       }
@@ -5853,7 +5853,7 @@
   "engine_ac130_distance_rear": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:vehicle/engine/ac130/distance_rear"
       }
@@ -5898,7 +5898,7 @@
   "engine_ju87_distance_front": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:vehicle/engine/ju87/distance_front"
       }
@@ -5907,7 +5907,7 @@
   "engine_ju87_distance_middle": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:vehicle/engine/ju87/distance_middle"
       }
@@ -5916,7 +5916,7 @@
   "engine_ju87_distance_rear": {
     "sounds": [
       {
-        "attenuation_distance": 256,
+        "attenuation_distance": 384,
         "stream": true,
         "name": "superbwarfare:vehicle/engine/ju87/distance_rear"
       }

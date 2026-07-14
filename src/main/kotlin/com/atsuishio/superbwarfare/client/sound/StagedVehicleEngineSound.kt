@@ -95,8 +95,8 @@ object StagedVehicleEngineSound {
 
         val external = resolveTransientSound(transients, layers, externalType, internalType, internal = false)
         val internal = resolveTransientSound(transients, layers, internalType, externalType, internal = true)
-        external?.let { mc.soundManager.play(TransientSound(it, vehicle, internal = false)) }
-        internal?.let { mc.soundManager.play(TransientSound(it, vehicle, internal = true)) }
+        external?.let { mc.soundManager.play(TransientSound(it, vehicle, internal = false, starting = starting)) }
+        internal?.let { mc.soundManager.play(TransientSound(it, vehicle, internal = true, starting = starting)) }
     }
 
     private fun resolveTransientSound(
@@ -217,6 +217,7 @@ object StagedVehicleEngineSound {
         private var fade = 0f
         private var smoothedVolume = 0f
         private var smoothedPitch = 1f
+        private var driveMix = 0f
 
         init {
             looping = true
@@ -264,25 +265,24 @@ object StagedVehicleEngineSound {
         }
 
         private fun groundVolume(client: Minecraft): Float {
+            if (vehicle.engineStarting()) return 0f
+
             val context = listenerContext(client)
             val load = groundLoad()
             val turningUnderLoad = vehicle.engineInfo is EngineInfo.Track && abs(vehicle.deltaRot) > 0.02f
             val accelerating = vehicle.forwardInputDown || vehicle.backInputDown || turningUnderLoad
-            val motion = smoothstep(0.02f, 0.1f, load)
-            val releaseMix = if (!accelerating) smoothstep(0.03f, 0.12f, load) else 0f
-            val idle = 1f - motion
-            val release = motion * releaseMix
-            val drive = motion * (1f - releaseMix)
+            driveMix = VehicleEngineSoundMix.nextDriveMix(driveMix, accelerating)
+            val mix = VehicleEngineSoundMix.groundMix(driveMix, accelerating)
             val base = baseVolume() * (0.78f + 0.28f * load)
 
             return base * when (layer) {
-                VehicleEngineSoundLayer.IDLE_EXTERNAL -> idle * context.external * context.close
-                VehicleEngineSoundLayer.IDLE_INTERNAL -> idle * context.internal
-                VehicleEngineSoundLayer.DRIVE_EXTERNAL -> drive * context.external * context.close
-                VehicleEngineSoundLayer.DRIVE_INTERNAL -> drive * context.internal
-                VehicleEngineSoundLayer.RELEASE_EXTERNAL -> release * context.external * context.close
-                VehicleEngineSoundLayer.RELEASE_INTERNAL -> release * context.internal
-                VehicleEngineSoundLayer.DISTANCE -> context.far * (0.85f + 0.5f * load) * 1.8f
+                VehicleEngineSoundLayer.IDLE_EXTERNAL -> mix.idle * context.external * context.close
+                VehicleEngineSoundLayer.IDLE_INTERNAL -> mix.idle * context.internal
+                VehicleEngineSoundLayer.DRIVE_EXTERNAL -> mix.drive * context.external * context.close
+                VehicleEngineSoundLayer.DRIVE_INTERNAL -> mix.drive * context.internal
+                VehicleEngineSoundLayer.RELEASE_EXTERNAL -> mix.release * context.external * context.close
+                VehicleEngineSoundLayer.RELEASE_INTERNAL -> mix.release * context.internal
+                VehicleEngineSoundLayer.DISTANCE -> context.far * (0.9f + 0.6f * load) * 3.2f
                 else -> 0f
             }
         }
@@ -297,10 +297,10 @@ object StagedVehicleEngineSound {
             return when (layer) {
                 VehicleEngineSoundLayer.ROTOR_EXTERNAL -> rotor * context.external * context.close
                 VehicleEngineSoundLayer.ROTOR_INTERNAL -> rotor * context.internal
-                VehicleEngineSoundLayer.ROTOR_DISTANCE -> rotor * context.far * 1.85f
+                VehicleEngineSoundLayer.ROTOR_DISTANCE -> rotor * context.far * 3.2f
                 VehicleEngineSoundLayer.TURBINE_EXTERNAL -> turbine * context.external * context.close
                 VehicleEngineSoundLayer.TURBINE_INTERNAL -> turbine * context.internal
-                VehicleEngineSoundLayer.TURBINE_DISTANCE -> turbine * context.far * 1.65f
+                VehicleEngineSoundLayer.TURBINE_DISTANCE -> turbine * context.far * 2.9f
                 else -> 0f
             }
         }
@@ -308,8 +308,9 @@ object StagedVehicleEngineSound {
         private fun aircraftVolume(client: Minecraft): Float {
             val context = listenerContext(client)
             val load = Mth.clamp(abs(vehicle.power), 0f, 1f)
-            val thrust = smoothstep(0.02f, 0.12f, load)
-            val idle = 1f - thrust
+            val demandingThrust = vehicle.forwardInputDown || vehicle.sprintInputDown || load > 0.08f
+            driveMix = VehicleEngineSoundMix.nextDriveMix(driveMix, demandingThrust)
+            val idle = 1f - driveMix
             val base = baseVolume()
 
             val cameraPos = client.gameRenderer.mainCamera.position
@@ -318,13 +319,13 @@ object StagedVehicleEngineSound {
             val front = smoothstep(-0.05f, 0.8f, direction)
             val rear = smoothstep(-0.05f, 0.8f, -direction)
             val middle = 1f - 0.72f * smoothstep(0.12f, 0.88f, abs(direction))
-            val distant = context.far * base * (0.75f + 0.85f * load) * 2.15f
+            val distant = context.far * base * (0.8f + 0.9f * load) * 3.4f
 
             return when (layer) {
                 VehicleEngineSoundLayer.IDLE_EXTERNAL -> base * idle * context.external * context.close
                 VehicleEngineSoundLayer.IDLE_INTERNAL -> base * idle * context.internal
-                VehicleEngineSoundLayer.DRIVE_EXTERNAL -> base * thrust * context.external * context.close
-                VehicleEngineSoundLayer.DRIVE_INTERNAL -> base * thrust * context.internal
+                VehicleEngineSoundLayer.DRIVE_EXTERNAL -> base * driveMix * context.external * context.close
+                VehicleEngineSoundLayer.DRIVE_INTERNAL -> base * driveMix * context.internal
                 VehicleEngineSoundLayer.DISTANCE_FRONT -> distant * front
                 VehicleEngineSoundLayer.DISTANCE_MIDDLE -> distant * middle
                 VehicleEngineSoundLayer.DISTANCE_REAR -> distant * rear
@@ -353,11 +354,12 @@ object StagedVehicleEngineSound {
             val distance = cameraPos.distanceTo(vehicle.position()).toFloat()
             val internal = if (client.player?.vehicle === vehicle && client.options.cameraType == CameraType.FIRST_PERSON) 1f else 0f
             val external = 1f - internal
+            val far = VehicleEngineSoundMix.distantBlend(distance)
             return ListenerContext(
                 internal = internal,
                 external = external,
-                close = external * (1f - smoothstep(28f, 72f, distance)),
-                far = external * smoothstep(28f, 72f, distance)
+                close = external * (1f - far),
+                far = external * far
             )
         }
     }
@@ -365,7 +367,8 @@ object StagedVehicleEngineSound {
     private class TransientSound(
         sound: SoundEvent,
         private val vehicle: VehicleEntity,
-        private val internal: Boolean
+        private val internal: Boolean,
+        private val starting: Boolean
     ) : AbstractTickableSoundInstance(sound, SoundSource.AMBIENT, vehicle.random) {
         init {
             looping = false
@@ -381,7 +384,7 @@ object StagedVehicleEngineSound {
 
         override fun tick() {
             val client = Minecraft.getInstance()
-            if (vehicle.isRemoved || client.player == null) {
+            if (vehicle.isRemoved || client.player == null || starting != vehicle.engineOn) {
                 stop()
                 return
             }

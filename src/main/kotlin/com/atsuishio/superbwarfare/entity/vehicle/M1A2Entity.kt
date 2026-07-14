@@ -11,6 +11,9 @@ import net.minecraft.world.phys.Vec3
 import java.util.*
 
 class M1A2Entity(type: EntityType<M1A2Entity>, world: Level) : VehicleEntity(type, world) {
+    // start_ext.ogg is the longer startup layer at 21.631771 seconds; round up to its end.
+    override fun engineStartupDurationTicks() = 433
+
     override fun vehicleShoot(living: LivingEntity?, uuid: UUID?, targetPos: Vec3?) {
         val level = living?.level()
         if (level is ServerLevel && living == firstPassenger && getWeaponIndex(0) == 0) {

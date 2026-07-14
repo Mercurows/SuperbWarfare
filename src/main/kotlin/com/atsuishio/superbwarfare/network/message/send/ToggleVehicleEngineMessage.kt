@@ -18,15 +18,22 @@ data object ToggleVehicleEngineMessage : ServerPacketPayload() {
             return
         }
 
-        vehicle.engineOn = !vehicle.engineOn
-        if (!vehicle.engineOn) {
+        if (vehicle.engineOn) {
+            vehicle.engineOn = false
+            vehicle.engineStartupTicksRemaining = 0
             vehicle.stopEngineMotion()
+        } else {
+            vehicle.engineOn = true
+            vehicle.engineStartupTicksRemaining = vehicle.engineStartupDurationTicks()
         }
 
         player.displayClientMessage(
             Component.translatable(
-                if (vehicle.engineOn) "tips.superbwarfare.vehicle_engine.started"
-                else "tips.superbwarfare.vehicle_engine.stopped"
+                when {
+                    !vehicle.engineOn -> "tips.superbwarfare.vehicle_engine.stopped"
+                    vehicle.engineStarting() -> "tips.superbwarfare.vehicle_engine.starting"
+                    else -> "tips.superbwarfare.vehicle_engine.started"
+                }
             ),
             true
         )

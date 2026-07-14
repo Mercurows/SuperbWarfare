@@ -49,13 +49,12 @@
     "Fire3PFar": "superbwarfare:mosin_nagant_far",
     "Fire3PVeryFar": "superbwarfare:mosin_nagant_veryfar",
     "ReloadPrepare": "superbwarfare:k_98_prepare",
-    "ReloadPrepareEmpty": "superbwarfare:k_98_prepare_empty",
+    "ReloadPrepareEmpty": "superbwarfare:k_98_prepare",
     "ReloadLoop": "superbwarfare:k_98_loop",
     "ReloadEnd": "superbwarfare:k_98_end",
     "Bolt": "superbwarfare:k_98_bolt",
     "CancellableSounds": [
       "superbwarfare:k_98_prepare",
-      "superbwarfare:k_98_prepare_empty",
       "superbwarfare:k_98_loop",
       "superbwarfare:k_98_end",
       "superbwarfare:k_98_bolt"

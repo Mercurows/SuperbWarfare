@@ -371,7 +371,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     open fun processInput(keys: Short) {
-        val movementEnabled = !hasManualEngineControl() || engineOn
+        val movementEnabled = engineReady()
         leftInputDown =
             movementEnabled && (keys.toInt() and 0b00000001) > 0
         rightInputDown =
@@ -852,6 +852,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             define(TURRET_BURNED, false)
             define(HOVER_MODE, false)
             define(ENGINE_ON, false)
+            define(ENGINE_STARTUP_TICKS_REMAINING, 0)
             define(TURRET_BURN_TIMER, 0)
             define(LOCKED, false)
         }
@@ -1327,6 +1328,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         power = compound.getFloat("Power")
         engineOn = compound.getBoolean("EngineOn")
+        engineStartupTicksRemaining = compound.getInt("EngineStartupTicksRemaining")
         decoyReady = compound.getBoolean("DecoyReady")
         synchedGearRot = compound.getFloat("GearRot")
         gearUp = compound.getBoolean("GearUp")
@@ -1445,6 +1447,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         compound.putFloat("Power", power)
         compound.putBoolean("EngineOn", engineOn)
+        compound.putInt("EngineStartupTicksRemaining", engineStartupTicksRemaining)
         compound.putBoolean("DecoyReady", decoyReady)
         compound.putFloat("GearRot", synchedGearRot)
         compound.putBoolean("GearUp", gearUp)
@@ -1774,6 +1777,21 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
     override fun baseTick() {
         val computed = computed()
+        if (!this.level().isClientSide && this.engineStartupTicksRemaining > 0) {
+            if (!this.engineOn || (this.hasEnergyStorage() && this.energy <= 0)) {
+                this.engineOn = false
+                this.engineStartupTicksRemaining = 0
+                this.stopEngineMotion()
+            } else {
+                this.engineStartupTicksRemaining--
+                if (this.engineStartupTicksRemaining == 0) {
+                    (this.firstPassenger as? ServerPlayer)?.displayClientMessage(
+                        Component.translatable("tips.superbwarfare.vehicle_engine.started"),
+                        true
+                    )
+                }
+            }
+        }
         val engineActive = this.engineSoundActive()
         if (this.level().isClientSide) {
             if (prevMotion == null) {
@@ -3021,7 +3039,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             return
         }
 
-        if (hasManualEngineControl() && !engineOn) {
+        if (hasManualEngineControl() && !engineReady()) {
             stopEngineMotion()
             deltaMovement = if (onGround()) {
                 deltaMovement.multiply(0.72, 1.0, 0.72)
@@ -4029,6 +4047,13 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         else -> false
     }
 
+    /** Duration of the ignition sequence before a manually controlled engine can provide power. */
+    open fun engineStartupDurationTicks(): Int = 0
+
+    open fun engineStarting(): Boolean = engineOn && engineStartupTicksRemaining > 0
+
+    open fun engineReady(): Boolean = !hasManualEngineControl() || (engineOn && !engineStarting())
+
     open fun stopEngineMotion() {
         leftInputDown = false
         rightInputDown = false
@@ -4114,6 +4139,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     open var turretBurnTimer by TURRET_BURN_TIMER
     open var hoverMode by HOVER_MODE
     open var engineOn by ENGINE_ON
+    open var engineStartupTicksRemaining by ENGINE_STARTUP_TICKS_REMAINING
 
     open val hornSound: SoundEvent
         get() = this.computed().hornSound
@@ -4454,6 +4480,10 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         @JvmField
         val ENGINE_ON: EntityDataAccessor<Boolean> =
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.BOOLEAN)
+
+        @JvmField
+        val ENGINE_STARTUP_TICKS_REMAINING: EntityDataAccessor<Int> =
+            SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.INT)
 
         @JvmField
         val LOCKED: EntityDataAccessor<Boolean> =

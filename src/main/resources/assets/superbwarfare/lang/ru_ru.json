@@ -921,6 +921,7 @@
   "key.superbwarfare.active_thermal_imaging": "Активировать тепловизор",
   "key.superbwarfare.toggle_vehicle_engine": "Завести / заглушить двигатель",
   "tips.superbwarfare.vehicle_engine.start_hint": "Двигатель заглушен — нажмите %1$s, чтобы завести его",
+  "tips.superbwarfare.vehicle_engine.starting": "Двигатель запускается…",
   "tips.superbwarfare.vehicle_engine.started": "Двигатель запущен",
   "tips.superbwarfare.vehicle_engine.stopped": "Двигатель заглушен",
   "tips.superbwarfare.vehicle_engine.no_energy": "Нельзя завести двигатель: нет энергии",

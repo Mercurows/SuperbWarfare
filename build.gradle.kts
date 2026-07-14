@@ -211,6 +211,9 @@ configurations {
 }
 
 dependencies {
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
+
     ksp(project(":ksp"))
     implementation(project(":ksp"))
 
@@ -372,6 +375,10 @@ publishing {
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8" // Use the UTF-8 charset for Java compilation
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 tasks.named("createMinecraftArtifacts") {
