@@ -368,15 +368,18 @@ object StagedVehicleEngineSound {
                 1f - coveredCloseMix
             )
 
-            return base * when (layer) {
-                VehicleEngineSoundLayer.IDLE_EXTERNAL -> mix.idle * context.external * context.close
-                VehicleEngineSoundLayer.IDLE_INTERNAL -> mix.idle * context.internal
-                VehicleEngineSoundLayer.DRIVE_EXTERNAL -> mix.drive * context.external * context.close
-                VehicleEngineSoundLayer.DRIVE_INTERNAL -> mix.drive * context.internal
-                VehicleEngineSoundLayer.RELEASE_EXTERNAL -> mix.release * context.external * context.close
-                VehicleEngineSoundLayer.RELEASE_INTERNAL -> mix.release * context.internal
+            return when (layer) {
+                VehicleEngineSoundLayer.IDLE_EXTERNAL -> base * mix.idle * context.external * context.close
+                VehicleEngineSoundLayer.IDLE_INTERNAL -> base * mix.idle * context.internal
+                VehicleEngineSoundLayer.DRIVE_EXTERNAL -> base * mix.drive * context.external * context.close
+                VehicleEngineSoundLayer.DRIVE_INTERNAL -> base * mix.drive * context.internal
+                VehicleEngineSoundLayer.RELEASE_EXTERNAL -> base * mix.release * context.external * context.close
+                VehicleEngineSoundLayer.RELEASE_INTERNAL -> base * mix.release * context.internal
                 VehicleEngineSoundLayer.DISTANCE ->
-                    context.far * (0.9f + 0.6f * load) * 3.2f + missingCloseFallback
+                    context.far * VehicleEngineSoundMix.distantVolume(
+                        base,
+                        VehicleEngineSoundMix.groundDistantGain(load)
+                    ) + base * missingCloseFallback
                 else -> 0f
             }
         }
@@ -391,10 +394,16 @@ object StagedVehicleEngineSound {
             return when (layer) {
                 VehicleEngineSoundLayer.ROTOR_EXTERNAL -> rotor * context.external * context.close
                 VehicleEngineSoundLayer.ROTOR_INTERNAL -> rotor * context.internal
-                VehicleEngineSoundLayer.ROTOR_DISTANCE -> rotor * context.far * 3.2f
+                VehicleEngineSoundLayer.ROTOR_DISTANCE -> context.far * VehicleEngineSoundMix.distantVolume(
+                    rotor,
+                    VehicleEngineSoundMix.rotorDistantGain()
+                )
                 VehicleEngineSoundLayer.TURBINE_EXTERNAL -> turbine * context.external * context.close
                 VehicleEngineSoundLayer.TURBINE_INTERNAL -> turbine * context.internal
-                VehicleEngineSoundLayer.TURBINE_DISTANCE -> turbine * context.far * 2.9f
+                VehicleEngineSoundLayer.TURBINE_DISTANCE -> context.far * VehicleEngineSoundMix.distantVolume(
+                    turbine,
+                    VehicleEngineSoundMix.turbineDistantGain()
+                )
                 else -> 0f
             }
         }
@@ -413,7 +422,10 @@ object StagedVehicleEngineSound {
             val front = smoothstep(-0.05f, 0.8f, direction)
             val rear = smoothstep(-0.05f, 0.8f, -direction)
             val middle = 1f - 0.72f * smoothstep(0.12f, 0.88f, abs(direction))
-            val distant = context.far * base * (0.8f + 0.9f * load) * 3.4f
+            val distant = context.far * VehicleEngineSoundMix.distantVolume(
+                base,
+                VehicleEngineSoundMix.aircraftDistantGain(load)
+            )
 
             return when (layer) {
                 VehicleEngineSoundLayer.IDLE_EXTERNAL -> base * idle * context.external * context.close

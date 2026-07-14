@@ -35,8 +35,11 @@ while IFS= read -r -d '' sound; do
     fi
 done < <(
     for dir in "${shot_dirs[@]}"; do
+        # PJM: interior first-person shots (*_fire_1p) are played locally via player.playSound,
+        # never spatialised, so stereo is allowed for them — exclude from the mono requirement.
         find "$SOUNDS_ROOT/$dir" -type f -name '*.ogg' \
-            \( -iname '*fire*' -o -iname '*far*' \) -print0
+            \( -iname '*fire*' -o -iname '*far*' \) \
+            ! -iname '*fire_1p*' -print0
     done
 )
 

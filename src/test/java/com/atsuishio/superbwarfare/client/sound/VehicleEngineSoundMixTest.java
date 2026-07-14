@@ -51,4 +51,18 @@ class VehicleEngineSoundMixTest {
         assertEquals(0.6f, VehicleEngineSoundMix.missingCloseFallback(0f, 1f, 0.75f), 0.0001f);
         assertEquals(0f, VehicleEngineSoundMix.missingCloseFallback(0f, 1f, 0f), 0.0001f);
     }
+
+    @Test
+    void distantMixStaysAudibleWithoutHittingTheSoundEngineLimiter() {
+        var ground = VehicleEngineSoundMix.distantVolume(0.7f * 1.06f, VehicleEngineSoundMix.groundDistantGain(1f));
+        var rotor = VehicleEngineSoundMix.distantVolume(2f, VehicleEngineSoundMix.rotorDistantGain());
+        var turbine = VehicleEngineSoundMix.distantVolume(2f * 1.1f, VehicleEngineSoundMix.turbineDistantGain());
+        var aircraft = VehicleEngineSoundMix.distantVolume(1.3f, VehicleEngineSoundMix.aircraftDistantGain(1f));
+
+        assertTrue(ground >= 0.45f && ground <= 0.6f);
+        assertTrue(rotor >= 0.45f && rotor <= 0.6f);
+        assertTrue(turbine >= 0.45f && turbine <= 0.6f);
+        assertTrue(aircraft >= 0.45f && aircraft <= 0.6f);
+        assertEquals(0.6f, VehicleEngineSoundMix.distantVolume(10f, 10f), 0.0001f);
+    }
 }

@@ -1642,6 +1642,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         this.lastDamageSource = source
         this.lastDamageStamp = level().gameTime
 
+        VehicleHitSound.onVehicleHurt(this, source) // PJM: звон брони + внутренний удар пассажирам
+
         this.onHurt(computedAmount, source.entity, true)
         return super.hurt(source, computedAmount)
     }

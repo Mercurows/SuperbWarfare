@@ -158,6 +158,11 @@ object ModSounds {
     @JvmField val TURRET_BURN = register("turret_burn")
     @JvmField val HELI_CRASH = register("heli_crash")
 
+    // PJM: попадание по технике — внешний металлический звон (позиционно) + внутренний удар для пассажиров (1-е лицо)
+    @JvmField val VEHICLE_HIT_LIGHT = register("vehicle_hit_light")
+    @JvmField val VEHICLE_HIT_HEAVY = register("vehicle_hit_heavy")
+    @JvmField val VEHICLE_HIT_METAL = register("vehicle_hit_metal")
+
     /**
      * Multi-layer engine loops used by the client-side vehicle sound mixer.
      *

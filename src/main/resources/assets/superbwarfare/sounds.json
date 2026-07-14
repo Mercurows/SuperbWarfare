@@ -2533,7 +2533,171 @@
   "vehicle_strike": {
     "sounds": [
       {
-        "name": "superbwarfare:vehicle/common/vehicle_strike",
+        "name": "superbwarfare:vehicle/crash/vehicle_crash_1",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/crash/vehicle_crash_2",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/crash/vehicle_crash_3",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/crash/vehicle_crash_4",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/crash/vehicle_crash_5",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/crash/vehicle_crash_6",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/crash/vehicle_crash_7",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/crash/vehicle_crash_8",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/crash/vehicle_crash_9",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/crash/vehicle_crash_10",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/crash/vehicle_crash_11",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/crash/vehicle_crash_12",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/crash/vehicle_crash_13",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/crash/vehicle_crash_14",
+        "stream": false
+      }
+    ]
+  },
+  "vehicle_hit_light": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/hit/vehicle_hit_light_1",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/hit/vehicle_hit_light_2",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/hit/vehicle_hit_light_3",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/hit/vehicle_hit_light_4",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/hit/vehicle_hit_light_5",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/hit/vehicle_hit_light_6",
+        "stream": false
+      }
+    ]
+  },
+  "vehicle_hit_heavy": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/hit/vehicle_hit_heavy_1",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/hit/vehicle_hit_heavy_2",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/hit/vehicle_hit_heavy_3",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/hit/vehicle_hit_heavy_4",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/hit/vehicle_hit_heavy_5",
+        "stream": false
+      }
+    ]
+  },
+  "vehicle_hit_metal": {
+    "sounds": [
+      {
+        "name": "superbwarfare:vehicle/hit/vehicle_hit_metal_1",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/hit/vehicle_hit_metal_2",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/hit/vehicle_hit_metal_3",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/hit/vehicle_hit_metal_4",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/hit/vehicle_hit_metal_5",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/hit/vehicle_hit_metal_6",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/hit/vehicle_hit_metal_7",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/hit/vehicle_hit_metal_8",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/hit/vehicle_hit_metal_9",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/hit/vehicle_hit_metal_10",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/hit/vehicle_hit_metal_11",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/hit/vehicle_hit_metal_12",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/hit/vehicle_hit_metal_13",
+        "stream": false
+      },
+      {
+        "name": "superbwarfare:vehicle/hit/vehicle_hit_metal_14",
         "stream": false
       }
     ]

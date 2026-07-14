@@ -4,6 +4,11 @@ package com.atsuishio.superbwarfare.client.sound
 object VehicleEngineSoundMix {
     private const val DRIVE_RISE_PER_TICK = 0.22f
     private const val DRIVE_FALL_PER_TICK = 0.14f
+    private const val GROUND_DISTANT_SCALE = 0.5f
+    private const val ROTOR_DISTANT_SCALE = 0.25f
+    private const val TURBINE_DISTANT_SCALE = 0.23f
+    private const val AIRCRAFT_DISTANT_SCALE = 0.23f
+    private const val MAX_DISTANT_VOLUME = 0.6f
 
     data class GroundMix(val idle: Float, val drive: Float, val release: Float)
 
@@ -36,6 +41,25 @@ object VehicleEngineSoundMix {
     @JvmStatic
     fun missingCloseFallback(internal: Float, externalClose: Float, uncoveredMix: Float): Float =
         (0.55f * internal + 0.8f * externalClose) * uncoveredMix.coerceIn(0f, 1f)
+
+    @JvmStatic
+    fun groundDistantGain(load: Float): Float =
+        (0.9f + 0.6f * load.coerceIn(0f, 1f)) * GROUND_DISTANT_SCALE
+
+    @JvmStatic
+    fun rotorDistantGain(): Float = ROTOR_DISTANT_SCALE
+
+    @JvmStatic
+    fun turbineDistantGain(): Float = TURBINE_DISTANT_SCALE
+
+    @JvmStatic
+    fun aircraftDistantGain(load: Float): Float =
+        (0.8f + 0.9f * load.coerceIn(0f, 1f)) * AIRCRAFT_DISTANT_SCALE
+
+    /** Leaves headroom below Minecraft's 1.0 per-source limiter for future data-driven profiles. */
+    @JvmStatic
+    fun distantVolume(baseVolume: Float, gain: Float): Float =
+        (baseVolume.coerceAtLeast(0f) * gain.coerceAtLeast(0f)).coerceAtMost(MAX_DISTANT_VOLUME)
 
     private fun moveTowards(current: Float, target: Float, step: Float): Float = when {
         current < target -> (current + step).coerceAtMost(target)
