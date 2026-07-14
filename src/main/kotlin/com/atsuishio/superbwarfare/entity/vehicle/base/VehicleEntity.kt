@@ -1813,6 +1813,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                 if (computed.engineType == EngineType.TRACK) {
                     playTrackSound.accept(this)
                 }
+            } else if (engineActive && this.tickCount % 20 == 0) {
+                maintainEngineSound.accept(this)
             } else if (this.wasEngineRunning &&
                 !engineActive &&
                 this.engineSoundSyncTicks >= ENGINE_SOUND_SYNC_GRACE_TICKS &&
@@ -3041,11 +3043,13 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         if (hasManualEngineControl() && !engineReady()) {
             stopEngineMotion()
-            deltaMovement = if (onGround()) {
-                deltaMovement.multiply(0.72, 1.0, 0.72)
-            } else {
-                deltaMovement.multiply(0.99, 0.99, 0.99)
-            }
+            val coasting = VehicleEngineCoasting.coast(
+                deltaMovement.x,
+                deltaMovement.y,
+                deltaMovement.z,
+                onGround()
+            )
+            deltaMovement = Vec3(coasting.x, coasting.y, coasting.z)
             return
         }
 
@@ -4329,6 +4333,9 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         @JvmField
         var playEngineSound: Consumer<VehicleEntity?> = Consumer { }
+
+        @JvmField
+        var maintainEngineSound: Consumer<VehicleEntity?> = Consumer { }
 
         @JvmField
         var playEngineStartSound: Consumer<VehicleEntity?> = Consumer { }

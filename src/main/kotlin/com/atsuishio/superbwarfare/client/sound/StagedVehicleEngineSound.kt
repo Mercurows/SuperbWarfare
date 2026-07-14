@@ -15,6 +15,8 @@ import net.minecraft.sounds.SoundSource
 import net.minecraft.util.Mth
 import net.minecraft.world.phys.Vec3
 import net.neoforged.neoforge.registries.DeferredHolder
+import java.lang.ref.WeakReference
+import java.util.WeakHashMap
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -26,6 +28,8 @@ object StagedVehicleEngineSound {
     private enum class Kind { GROUND, HELICOPTER, AIRCRAFT }
 
     private data class Profile(val soundSet: String, val kind: Kind)
+
+    private val activeSessions = WeakHashMap<VehicleEntity, WeakReference<LayerSession>>()
 
     private val profiles = mapOf(
         // Land vehicles
@@ -61,14 +65,33 @@ object StagedVehicleEngineSound {
         val profile = profiles[entityId] ?: return false
         val sounds = ModSounds.VEHICLE_ENGINE_SOUNDS[profile.soundSet] ?: return false
 
-        var played = false
-        sounds.forEach { (layer, _) ->
-            resolveSound(sounds, profile.kind, layer)?.let { sound ->
-                mc.soundManager.play(LayerSound(sound, vehicle, profile.kind, layer))
-                played = true
-            }
+        val resolvedLayers = sounds.keys.mapNotNull { layer ->
+            resolveSound(sounds, profile.kind, layer)?.let { layer to it }
         }
-        return played
+        if (resolvedLayers.isEmpty()) return false
+
+        // A fast stop/start may happen before the old loops finish fading. Reuse that generation:
+        // stop() releases OpenAL channels asynchronously, so replacing it here could still starve
+        // the new distant layer before the sound thread has returned the old channels to its pool.
+        activeSessions[vehicle]?.get()?.let { session ->
+            session.updateDesiredLayers(resolvedLayers)
+            session.retryMissing()
+            if (session.isActive()) return true
+        }
+        activeSessions.remove(vehicle)
+        val session = LayerSession(vehicle, profile.kind, resolvedLayers)
+        activeSessions[vehicle] = WeakReference(session)
+        session.retryMissing()
+        if (!session.isActive()) {
+            activeSessions.remove(vehicle)
+            return false
+        }
+        return true
+    }
+
+    /** Retries layers which previously could not acquire an audio channel. */
+    fun maintain(vehicle: VehicleEntity) {
+        play(vehicle)
     }
 
     fun playStart(vehicle: VehicleEntity) = playTransient(vehicle, starting = true)
@@ -208,16 +231,65 @@ object StagedVehicleEngineSound {
             }
         }
 
+    private class LayerSession(
+        private val vehicle: VehicleEntity,
+        private val kind: Kind,
+        private var desiredLayers: List<Pair<VehicleEngineSoundLayer, SoundEvent>>
+    ) {
+        private val layers = mutableMapOf<VehicleEngineSoundLayer, LayerSound>()
+        private var driveMix = 0f
+        private var driveMixTick = Int.MIN_VALUE
+
+        fun updateDesiredLayers(layers: List<Pair<VehicleEngineSoundLayer, SoundEvent>>) {
+            desiredLayers = layers
+        }
+
+        fun retryMissing() {
+            layers.entries.removeIf { !mc.soundManager.isActive(it.value) }
+            desiredLayers.forEach { (layer, sound) ->
+                if (layer in layers) return@forEach
+
+                val layerSound = LayerSound(sound, vehicle, kind, layer, this)
+                mc.soundManager.play(layerSound)
+                if (mc.soundManager.isActive(layerSound)) {
+                    layers[layer] = layerSound
+                }
+            }
+        }
+
+        fun remove(layer: VehicleEngineSoundLayer, sound: LayerSound) {
+            layers.remove(layer, sound)
+            if (layers.isEmpty() && activeSessions[vehicle]?.get() === this) {
+                activeSessions.remove(vehicle)
+            }
+        }
+
+        fun isActive(): Boolean = layers.isNotEmpty()
+
+        fun readiness(layer: VehicleEngineSoundLayer): Float = layers[layer]?.readiness ?: 0f
+
+        fun driveMix(accelerating: Boolean): Float {
+            if (driveMixTick != vehicle.tickCount) {
+                driveMix = VehicleEngineSoundMix.nextDriveMix(driveMix, accelerating)
+                driveMixTick = vehicle.tickCount
+            }
+            return driveMix
+        }
+    }
+
     private class LayerSound(
         sound: SoundEvent,
         private val vehicle: VehicleEntity,
         private val kind: Kind,
-        private val layer: VehicleEngineSoundLayer
+        private val layer: VehicleEngineSoundLayer,
+        private val session: LayerSession
     ) : AbstractTickableSoundInstance(sound, SoundSource.AMBIENT, vehicle.random) {
         private var fade = 0f
+        var readiness = 0f
+            private set
         private var smoothedVolume = 0f
         private var smoothedPitch = 1f
-        private var driveMix = 0f
+        private var finished = false
 
         init {
             looping = true
@@ -238,13 +310,14 @@ object StagedVehicleEngineSound {
         override fun tick() {
             val client = Minecraft.getInstance()
             if (vehicle.isRemoved || client.player == null) {
-                stop()
+                finish()
                 return
             }
 
             fade = Mth.clamp(fade + if (vehicle.engineSoundActive()) 0.08f else -0.08f, 0f, 1f)
+            readiness = Mth.lerp(0.32f, readiness, fade)
             if (fade <= 0f && !vehicle.engineSoundActive()) {
-                stop()
+                finish()
                 return
             }
 
@@ -264,6 +337,13 @@ object StagedVehicleEngineSound {
             pitch = smoothedPitch
         }
 
+        private fun finish() {
+            if (finished) return
+            finished = true
+            stop()
+            session.remove(layer, this)
+        }
+
         private fun groundVolume(client: Minecraft): Float {
             if (vehicle.engineStarting()) return 0f
 
@@ -271,9 +351,22 @@ object StagedVehicleEngineSound {
             val load = groundLoad()
             val turningUnderLoad = vehicle.engineInfo is EngineInfo.Track && abs(vehicle.deltaRot) > 0.02f
             val accelerating = vehicle.forwardInputDown || vehicle.backInputDown || turningUnderLoad
-            driveMix = VehicleEngineSoundMix.nextDriveMix(driveMix, accelerating)
-            val mix = VehicleEngineSoundMix.groundMix(driveMix, accelerating)
+            val mix = VehicleEngineSoundMix.groundMix(session.driveMix(accelerating), accelerating)
             val base = baseVolume() * (0.78f + 0.28f * load)
+            val coveredCloseMix = if (context.internal > 0f) {
+                mix.idle * session.readiness(VehicleEngineSoundLayer.IDLE_INTERNAL) +
+                        mix.drive * session.readiness(VehicleEngineSoundLayer.DRIVE_INTERNAL) +
+                        mix.release * session.readiness(VehicleEngineSoundLayer.RELEASE_INTERNAL)
+            } else {
+                mix.idle * session.readiness(VehicleEngineSoundLayer.IDLE_EXTERNAL) +
+                        mix.drive * session.readiness(VehicleEngineSoundLayer.DRIVE_EXTERNAL) +
+                        mix.release * session.readiness(VehicleEngineSoundLayer.RELEASE_EXTERNAL)
+            }
+            val missingCloseFallback = VehicleEngineSoundMix.missingCloseFallback(
+                context.internal,
+                context.close,
+                1f - coveredCloseMix
+            )
 
             return base * when (layer) {
                 VehicleEngineSoundLayer.IDLE_EXTERNAL -> mix.idle * context.external * context.close
@@ -282,7 +375,8 @@ object StagedVehicleEngineSound {
                 VehicleEngineSoundLayer.DRIVE_INTERNAL -> mix.drive * context.internal
                 VehicleEngineSoundLayer.RELEASE_EXTERNAL -> mix.release * context.external * context.close
                 VehicleEngineSoundLayer.RELEASE_INTERNAL -> mix.release * context.internal
-                VehicleEngineSoundLayer.DISTANCE -> context.far * (0.9f + 0.6f * load) * 3.2f
+                VehicleEngineSoundLayer.DISTANCE ->
+                    context.far * (0.9f + 0.6f * load) * 3.2f + missingCloseFallback
                 else -> 0f
             }
         }
@@ -309,7 +403,7 @@ object StagedVehicleEngineSound {
             val context = listenerContext(client)
             val load = Mth.clamp(abs(vehicle.power), 0f, 1f)
             val demandingThrust = vehicle.forwardInputDown || vehicle.sprintInputDown || load > 0.08f
-            driveMix = VehicleEngineSoundMix.nextDriveMix(driveMix, demandingThrust)
+            val driveMix = session.driveMix(demandingThrust)
             val idle = 1f - driveMix
             val base = baseVolume()
 

@@ -51,12 +51,27 @@ done < <(find "$SOUNDS_ROOT/vehicle/engine" -type f -name '*distance*.ogg' -prin
 python3 - "$SOUNDS_JSON" "$SOUNDS_ROOT" "$ROOT" <<'PY' || failures=$((failures + 1))
 import json
 import pathlib
+import re
 import sys
 
 sounds_json = pathlib.Path(sys.argv[1])
 sounds_root = pathlib.Path(sys.argv[2])
 project_root = pathlib.Path(sys.argv[3])
 events = json.loads(sounds_json.read_text(encoding="utf-8"))
+
+streaming_transients = []
+for event_name, event in events.items():
+    if not re.fullmatch(r"engine_.+_(?:start|stop)_(?:ext|int)", event_name):
+        continue
+    if any(isinstance(sound, dict) and sound.get("stream", False) for sound in event.get("sounds", [])):
+        streaming_transients.append(event_name)
+
+streaming_distance_profiles = []
+ground_profiles = ("bmp", "bradley", "t90", "abrams", "artillery", "heavy", "lav", "pickup", "truck", "wheel_chair")
+for profile in ground_profiles:
+    event = events[f"engine_{profile}_distance"]
+    if any(isinstance(sound, dict) and sound.get("stream", False) for sound in event.get("sounds", [])):
+        streaming_distance_profiles.append(profile)
 
 referenced = set()
 bad_distance_events = []
@@ -103,6 +118,14 @@ if missing:
     print("FAIL: sounds.json references missing .ogg files:\n  " + "\n  ".join(map(str, missing)), file=sys.stderr)
 if missing_events:
     print("FAIL: SoundInfo references undefined sound events:\n  " + "\n  ".join(sorted(set(missing_events))), file=sys.stderr)
+if streaming_transients:
+    print("FAIL: one-shot engine transients must use the static sound pool:\n  " + "\n  ".join(sorted(streaming_transients)), file=sys.stderr)
+if streaming_distance_profiles:
+    print(
+        "FAIL: ground distant loops must use the static pool instead of scarce streaming channels:\n  "
+        + "\n  ".join(streaming_distance_profiles),
+        file=sys.stderr,
+    )
 if bad_distance_events:
     print(
         "FAIL: engine distant events must use attenuation_distance >= 384:\n  "
@@ -110,7 +133,7 @@ if bad_distance_events:
         file=sys.stderr,
     )
 
-if orphans or missing or missing_events or bad_distance_events:
+if orphans or missing or missing_events or streaming_transients or streaming_distance_profiles or bad_distance_events:
     raise SystemExit(1)
 PY
 

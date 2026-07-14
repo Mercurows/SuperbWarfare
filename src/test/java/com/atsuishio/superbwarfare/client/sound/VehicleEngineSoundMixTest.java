@@ -1,11 +1,20 @@
 package com.atsuishio.superbwarfare.client.sound;
 
+import com.atsuishio.superbwarfare.init.VehicleEngineSoundLayer;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class VehicleEngineSoundMixTest {
+    @Test
+    void groundMixerPrioritizesResourcePackDistantStreams() {
+        assertEquals(
+                VehicleEngineSoundLayer.DISTANCE,
+                VehicleEngineSoundLayer.Companion.getGROUND_LAYERS().getFirst()
+        );
+    }
+
     @Test
     void driveAndIdleCrossfadeInLessThanHalfASecond() {
         float driveMix = 0f;
@@ -33,5 +42,13 @@ class VehicleEngineSoundMixTest {
         assertEquals(0f, VehicleEngineSoundMix.distantBlend(20f), 0.0001f);
         assertTrue(VehicleEngineSoundMix.distantBlend(38f) > 0.45f);
         assertEquals(1f, VehicleEngineSoundMix.distantBlend(56f), 0.0001f);
+    }
+
+    @Test
+    void staticDistantLayerBacksUpARejectedCloseStream() {
+        assertEquals(0.8f, VehicleEngineSoundMix.missingCloseFallback(0f, 1f, 1f), 0.0001f);
+        assertEquals(0.55f, VehicleEngineSoundMix.missingCloseFallback(1f, 0f, 1f), 0.0001f);
+        assertEquals(0.6f, VehicleEngineSoundMix.missingCloseFallback(0f, 1f, 0.75f), 0.0001f);
+        assertEquals(0f, VehicleEngineSoundMix.missingCloseFallback(0f, 1f, 0f), 0.0001f);
     }
 }

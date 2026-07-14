@@ -32,6 +32,11 @@ object VehicleEngineSoundMix {
     @JvmStatic
     fun distantBlend(distance: Float): Float = smoothstep(20f, 56f, distance)
 
+    /** Keeps an engine audible when the constrained streaming pool rejects its close layer. */
+    @JvmStatic
+    fun missingCloseFallback(internal: Float, externalClose: Float, uncoveredMix: Float): Float =
+        (0.55f * internal + 0.8f * externalClose) * uncoveredMix.coerceIn(0f, 1f)
+
     private fun moveTowards(current: Float, target: Float, step: Float): Float = when {
         current < target -> (current + step).coerceAtMost(target)
         current > target -> (current - step).coerceAtLeast(target)

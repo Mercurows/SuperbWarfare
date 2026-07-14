@@ -279,10 +279,11 @@ enum class VehicleEngineSoundLayer(val id: String) {
 
     companion object {
         val GROUND_LAYERS = listOf(
+            // Keep distant first as a fallback if a resource pack marks it as streaming.
+            DISTANCE,
             IDLE_EXTERNAL, IDLE_INTERNAL,
             DRIVE_EXTERNAL, DRIVE_INTERNAL,
-            RELEASE_EXTERNAL, RELEASE_INTERNAL,
-            DISTANCE
+            RELEASE_EXTERNAL, RELEASE_INTERNAL
         )
         val HELICOPTER_LAYERS = listOf(
             ROTOR_EXTERNAL, ROTOR_INTERNAL, ROTOR_DISTANCE,
