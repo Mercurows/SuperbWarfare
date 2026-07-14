@@ -243,7 +243,9 @@
       },
       "SoundInfo": {
         "FireSoundInstances1P": "superbwarfare:ac_130h_m61_fire_1p",
-        "FireSoundInstances3P": "superbwarfare:ac_130h_m61_fire"
+        "FireSoundInstances3P": "superbwarfare:ac_130h_m61_fire",
+        "FireSoundInstancesFar": "superbwarfare:ac_130h_m61_far",
+        "FireSoundInstancesVeryFar": "superbwarfare:ac_130h_m61_veryfar"
       }
     },
     "Bofors": {

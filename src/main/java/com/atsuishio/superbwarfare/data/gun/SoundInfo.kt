@@ -122,6 +122,14 @@ class SoundInfo {
     @SerialName("FireSoundInstances3P")
     var fireSoundInstances3P: SerializedSoundEvent? = null
 
+    @SerializedName("FireSoundInstancesFar")
+    @SerialName("FireSoundInstancesFar")
+    var fireSoundInstancesFar: SerializedSoundEvent? = null
+
+    @SerializedName("FireSoundInstancesVeryFar")
+    @SerialName("FireSoundInstancesVeryFar")
+    var fireSoundInstancesVeryFar: SerializedSoundEvent? = null
+
     // 切枪时应该被中止播放的音效
     @SerializedName("CancellableSounds")
     @SerialName("CancellableSounds")

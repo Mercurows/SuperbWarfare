@@ -48,7 +48,7 @@ object ModSoundInstances {
 //            }
 //        };
         VehicleEntity.playFireSound =
-            Consumer { mc.soundManager.play(VehicleFireSoundInstance.VehicleFireSound(it)) }
+            Consumer(VehicleFireSoundInstance.VehicleFireSound::play)
         FastThrowableProjectile.playFlySound =
             Consumer { mc.soundManager.play(FastProjectileSoundInstance.FlySound(it)) }
         SteelCoilEntity.playMoveSound =

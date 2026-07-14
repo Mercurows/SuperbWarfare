@@ -5999,5 +5999,29 @@
   },
   "yx_100_autocannon_veryfar": {
     "sounds": [{"name": "superbwarfare:vehicle/yx_100/yx_100_autocannon_veryfar", "stream": false}]
+  },
+  "a_10a_fire_far": {
+    "sounds": [{"attenuation_distance": 512, "name": "superbwarfare:vehicle/a_10a/a_10a_fire_far", "stream": true}]
+  },
+  "a_10a_fire_veryfar": {
+    "sounds": [{"attenuation_distance": 1024, "name": "superbwarfare:vehicle/a_10a/a_10a_fire_veryfar", "stream": true}]
+  },
+  "ac_130h_m61_far": {
+    "sounds": [{"attenuation_distance": 512, "name": "superbwarfare:vehicle/ac_130h/ac_130h_m61_far", "stream": true}]
+  },
+  "ac_130h_m61_veryfar": {
+    "sounds": [{"attenuation_distance": 1024, "name": "superbwarfare:vehicle/ac_130h/ac_130h_m61_veryfar", "stream": true}]
+  },
+  "hpj_11_fire_far": {
+    "sounds": [{"attenuation_distance": 512, "name": "superbwarfare:hpj11/hpj_11_fire_far", "stream": true}]
+  },
+  "hpj_11_fire_veryfar": {
+    "sounds": [{"attenuation_distance": 1024, "name": "superbwarfare:hpj11/hpj_11_fire_veryfar", "stream": true}]
+  },
+  "lav_ad_fire_far": {
+    "sounds": [{"attenuation_distance": 512, "name": "superbwarfare:vehicle/lav_ad/lav_ad_fire_far", "stream": true}]
+  },
+  "lav_ad_fire_veryfar": {
+    "sounds": [{"attenuation_distance": 1024, "name": "superbwarfare:vehicle/lav_ad/lav_ad_fire_veryfar", "stream": true}]
   }
 }

@@ -195,6 +195,8 @@
       "SoundInfo": {
         "FireSoundInstances1P": "superbwarfare:lav_ad_fire_1p",
         "FireSoundInstances3P": "superbwarfare:lav_ad_fire",
+        "FireSoundInstancesFar": "superbwarfare:lav_ad_fire_far",
+        "FireSoundInstancesVeryFar": "superbwarfare:lav_ad_fire_veryfar",
         "Change": "superbwarfare:into_cannon"
       },
       "AmmoType": "superbwarfare:small_shell_aa",

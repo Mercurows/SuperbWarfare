@@ -72,16 +72,21 @@ public abstract class VehicleFireSoundInstance extends AbstractTickableSoundInst
     }
 
     public static class VehicleFireSound extends VehicleSoundInstance {
+        private final int layer;
 
-        public VehicleFireSound(VehicleEntity vehicle) {
-            super(
-                    vehicle.getShootSoundInstance(Minecraft.getInstance().player != null
-                            && Minecraft.getInstance().player.getVehicle() == vehicle
-                            && (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON
-                            || ClientEventHandler.zoomVehicle)),
-                    Minecraft.getInstance(),
-                    vehicle
-            );
+        public VehicleFireSound(VehicleEntity vehicle, int layer) {
+            super(vehicle.getShootSoundInstance(layer), Minecraft.getInstance(), vehicle);
+            this.layer = layer;
+        }
+
+        public static void play(VehicleEntity vehicle) {
+            for (int layer = VehicleEntity.SHOOT_SOUND_INTERNAL;
+                 layer <= VehicleEntity.SHOOT_SOUND_VERY_FAR;
+                 layer++) {
+                if (vehicle.hasShootSoundInstance(layer)) {
+                    Minecraft.getInstance().getSoundManager().play(new VehicleFireSound(vehicle, layer));
+                }
+            }
         }
 
         @Override
@@ -96,7 +101,14 @@ public abstract class VehicleFireSoundInstance extends AbstractTickableSoundInst
 
         @Override
         protected float getVolume(VehicleEntity vehicle) {
-            return vehicle.shootingVolume();
+            var player = Minecraft.getInstance().player;
+            boolean inside = player != null
+                    && player.getVehicle() == vehicle
+                    && (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON
+                    || ClientEventHandler.zoomVehicle);
+            boolean active = layer == VehicleEntity.SHOOT_SOUND_INTERNAL ? inside : !inside;
+
+            return active ? vehicle.shootingVolume() : 0;
         }
     }
 }

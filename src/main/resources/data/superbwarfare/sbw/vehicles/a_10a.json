@@ -98,6 +98,8 @@
       "SoundInfo": {
         "FireSoundInstances1P": "superbwarfare:a_10a_fire_1p",
         "FireSoundInstances3P": "superbwarfare:a_10a_fire",
+        "FireSoundInstancesFar": "superbwarfare:a_10a_fire_far",
+        "FireSoundInstancesVeryFar": "superbwarfare:a_10a_fire_veryfar",
         "Change": "superbwarfare:into_cannon"
       },
       "Crosshair": "@AirCraftCommon",

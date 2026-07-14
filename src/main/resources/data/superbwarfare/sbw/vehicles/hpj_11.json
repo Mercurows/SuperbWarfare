@@ -69,7 +69,9 @@
       },
       "SoundInfo": {
         "FireSoundInstances1P": "superbwarfare:hpj_11_fire_1p",
-        "FireSoundInstances3P": "superbwarfare:hpj_11_fire"
+        "FireSoundInstances3P": "superbwarfare:hpj_11_fire",
+        "FireSoundInstancesFar": "superbwarfare:hpj_11_fire_far",
+        "FireSoundInstancesVeryFar": "superbwarfare:hpj_11_fire_veryfar"
       }
     }
   },

@@ -2315,16 +2315,22 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     open val shootSoundInstance: SoundEvent?
-        get() = getShootSoundInstance(false)
+        get() = getShootSoundInstance(SHOOT_SOUND_CLOSE)
 
-    open fun getShootSoundInstance(firstPerson: Boolean): SoundEvent {
+    open fun getShootSoundInstance(layer: Int): SoundEvent {
         val gunData = getGunData(0) ?: getGunData("Main") ?: return SoundEvents.EMPTY
         val soundInfo = gunData.get(GunProp.SOUND_INFO)
 
-        return (if (firstPerson) soundInfo.fireSoundInstances1P else soundInfo.fireSoundInstances3P)
-            ?: soundInfo.fireSoundInstances
-            ?: SoundEvents.EMPTY
+        return when (layer) {
+            SHOOT_SOUND_INTERNAL -> soundInfo.fireSoundInstances1P ?: soundInfo.fireSoundInstances
+            SHOOT_SOUND_CLOSE -> soundInfo.fireSoundInstances3P ?: soundInfo.fireSoundInstances
+            SHOOT_SOUND_FAR -> soundInfo.fireSoundInstancesFar
+            SHOOT_SOUND_VERY_FAR -> soundInfo.fireSoundInstancesVeryFar
+            else -> null
+        } ?: SoundEvents.EMPTY
     }
+
+    open fun hasShootSoundInstance(layer: Int) = getShootSoundInstance(layer) != SoundEvents.EMPTY
 
     open fun getShootSoundInstance(weaponName: String): SoundEvent {
         val gunData = getGunData(weaponName) ?: return SoundEvents.EMPTY
@@ -2341,6 +2347,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                 if (soundInfo.fireSoundInstances != null
                     || soundInfo.fireSoundInstances1P != null
                     || soundInfo.fireSoundInstances3P != null
+                    || soundInfo.fireSoundInstancesFar != null
+                    || soundInfo.fireSoundInstancesVeryFar != null
                 ) {
                     gunData.shootTimer.get() > 0
                 } else {
@@ -4187,6 +4195,11 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     companion object {
+        const val SHOOT_SOUND_INTERNAL = 0
+        const val SHOOT_SOUND_CLOSE = 1
+        const val SHOOT_SOUND_FAR = 2
+        const val SHOOT_SOUND_VERY_FAR = 3
+
         private const val ENGINE_SOUND_SYNC_GRACE_TICKS = 5
 
         const val TAG_SEAT_INDEX: String = "SBWSeatIndex"
