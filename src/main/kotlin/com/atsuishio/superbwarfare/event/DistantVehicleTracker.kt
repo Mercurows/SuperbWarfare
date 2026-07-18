@@ -1,7 +1,11 @@
 package com.atsuishio.superbwarfare.event
 
+import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
+import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.data.gun.GunProp
+import com.atsuishio.superbwarfare.data.gun.SeekType
 import com.atsuishio.superbwarfare.entity.projectile.AerialBombEntity
 import com.atsuishio.superbwarfare.entity.projectile.CannonShellEntity
 import com.atsuishio.superbwarfare.entity.projectile.FastThrowableProjectile
@@ -14,11 +18,16 @@ import com.atsuishio.superbwarfare.entity.projectile.RpgRocketTBGEntity
 import com.atsuishio.superbwarfare.entity.projectile.SmallCannonShellEntity
 import com.atsuishio.superbwarfare.entity.projectile.SmallRocketEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.network.message.receive.DistantVehiclesMessage
+import com.atsuishio.superbwarfare.network.message.receive.EntitySyncMessage
 import com.atsuishio.superbwarfare.network.message.receive.ProjectileSnapshot
 import com.atsuishio.superbwarfare.network.message.receive.VehicleSnapshot
+import com.atsuishio.superbwarfare.tools.SeekTool
+import com.atsuishio.superbwarfare.tools.VectorTool
 import com.atsuishio.superbwarfare.tools.sendPacketTo
 import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.nbt.CompoundTag
 import net.minecraft.resources.ResourceKey
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.level.ChunkPos
@@ -97,8 +106,55 @@ object DistantVehicleTracker {
         }
     }
 
+    // «Ручной радар» для ПЗРК/ПТРК (Игла, Javelin): пока игрок целится из оружия
+    // с захватом (SeekType != NONE, CanGuidedByRadar), сервер шлёт ему вражескую
+    // технику в радиусе SeekRange через EntitySyncMessage — тот же канал, что у
+    // радара FuMO25 и VehicleEntity.vehicleRadar, поэтому клиентский SeekTool
+    // подхватывает такие цели за пределами прогруза без доработок
+    private fun handheldSeekRadar(server: net.minecraft.server.MinecraftServer) {
+        if (!MiscConfig.SYNC_ENTITY_OVER_RANGE.get()) return
+        if (server.tickCount % MiscConfig.SYNC_ENTITY_INTERVAL.get() != 0) return
+
+        for (level in server.allLevels) {
+            for (player in level.players()) {
+                val stack = player.mainHandItem
+                if (stack.item !is GunItem) continue
+                val data = GunData.from(stack)
+                if (!data.zooming.get()) continue
+                if (data.get(GunProp.SEEK_TYPE) == SeekType.NONE) continue
+                if (!data.get(GunProp.CAN_GUIDED_BY_RADAR)) continue
+
+                val seekRange = data.get(GunProp.SEEK_RANGE)
+                val minTargetHeight = data.get(GunProp.MIN_TARGET_HEIGHT)
+                val maxTargetHeight = data.get(GunProp.MAX_TARGET_HEIGHT)
+
+                val hostileList = level.allEntities
+                    .asSequence()
+                    .mapNotNull {
+                        val flag = (it is VehicleEntity || VehicleConfig.inScanList(it.type))
+                                && SeekTool.NOT_IN_SMOKE.test(it)
+                                && it.distanceToSqr(player) <= seekRange * seekRange
+                                && SeekTool.IN_HEIGHT_RANGE.test(it, minTargetHeight, maxTargetHeight)
+                                && !SeekTool.IS_FRIENDLY.test(player, it)
+                                && VectorTool.checkNoClip(player.eyePosition, it.eyePosition, level)
+                        if (!flag) return@mapNotNull null
+                        EntitySyncMessage.SyncedEntity(
+                            it.id,
+                            BuiltInRegistries.ENTITY_TYPE.getKey(it.type),
+                            it.position(),
+                            it.deltaMovement,
+                            CompoundTag().also { tag -> it.saveWithoutId(tag) }
+                        )
+                    }.toList()
+                sendPacketTo(player, EntitySyncMessage(level.dimension().location(), hostileList, false))
+            }
+        }
+    }
+
     @SubscribeEvent
     fun onServerTick(event: ServerTickEvent.Post) {
+        handheldSeekRadar(event.server)
+
         val radius = VehicleConfig.DISTANT_VEHICLE_SYNC_RADIUS.get()
         if (radius <= 0) return
         val server = event.server

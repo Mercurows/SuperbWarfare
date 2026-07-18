@@ -615,6 +615,8 @@
   "tips.superbwarfare.target.pitch": "Целевой тангаж",
   "tips.superbwarfare.barrel_empty": "ПУСТО",
   "tips.superbwarfare.mortar.out_of_range": "Вне досягаемости",
+  "tips.superbwarfare.mortar.deploying": "Установка миномёта",
+  "tips.superbwarfare.mortar.retrieving": "Разборка миномёта",
   "config.superbwarfare.client.display.enable_heat_bar_hud": "Включить HUD полоски нагрева",
   "config.superbwarfare.client.display.enable_heat_bar_hud.des": "Показывать ли HUD полоски нагрева",
   "config.superbwarfare.client.display.heat_bar_hud_x_offset": "Смещение HUD полоски нагрева по X",

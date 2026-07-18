@@ -16,6 +16,8 @@ import com.atsuishio.superbwarfare.network.message.receive.VehicleShootClientMes
 import com.atsuishio.superbwarfare.tools.*
 import net.minecraft.ChatFormatting
 import net.minecraft.commands.arguments.EntityAnchorArgument
+import net.minecraft.core.particles.BlockParticleOption
+import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.network.syncher.EntityDataAccessor
@@ -36,10 +38,16 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.Vec3
+import net.neoforged.neoforge.items.ItemHandlerHelper
+import java.util.UUID
 
 open class MortarEntity(type: EntityType<MortarEntity>, level: Level) : ArtilleryEntity(type, level) {
     private var shooter: LivingEntity? = null
     var intelligent by INTELLIGENT
+
+    // PJM: кто сейчас разбирает миномёт рукой и сколько тиков уже держит
+    private var retrievePlayer: UUID? = null
+    private var retrieveTicks = 0
 
     constructor(level: Level, yRot: Float) : this(ModEntities.MORTAR.get(), level) {
         this.yRot = yRot
@@ -109,12 +117,28 @@ open class MortarEntity(type: EntityType<MortarEntity>, level: Level) : Artiller
                     null
                 )
             }
+            // PJM: три кольца слышимости (как слои close/mid/far в Squad): вплотную играет
+            // только близкий выстрел, mid- и far-записи шлём лишь тем, кто дальше границы
+            // предыдущего слоя — иначе далёкое эхо орало поверх выстрела в упор
+            val soundRadius = gunData.get(GunProp.SOUND_RADIUS)
             if (soundInfo.fire3PFar != null) {
-                SoundTool.playDistantSound(
+                SoundTool.playDistantSoundBeyond(
                     level,
                     soundInfo.fire3PFar!!,
                     position(),
-                    gunData.get(GunProp.SOUND_RADIUS).toFloat(),
+                    (0.5 * soundRadius).toFloat(),
+                    (0.25 * soundRadius * 16).toFloat(),
+                    random.nextFloat() * 0.1f + 1,
+                    null
+                )
+            }
+            if (soundInfo.fire3PVeryFar != null) {
+                SoundTool.playDistantSoundBeyond(
+                    level,
+                    soundInfo.fire3PVeryFar!!,
+                    position(),
+                    soundRadius.toFloat(),
+                    (0.5 * soundRadius * 16).toFloat(),
                     random.nextFloat() * 0.1f + 1,
                     null
                 )
@@ -174,6 +198,15 @@ open class MortarEntity(type: EntityType<MortarEntity>, level: Level) : Artiller
             return InteractionResult.SUCCESS
         }
 
+        // PJM: разборка миномёта голой рукой — удержание, прогресс в actionbar
+        if (stack.isEmpty && !player.isShiftKeyDown && !isWreck && passengers.isEmpty()) {
+            if (level() is ServerLevel) {
+                retrievePlayer = player.uuid
+                retrieveTicks = 0
+            }
+            return InteractionResult.SUCCESS
+        }
+
         if (player.mainHandItem.item === ModItems.FIRING_PARAMETERS.get()) {
             setTarget(player.mainHandItem, player, "Main")
         }
@@ -203,8 +236,42 @@ open class MortarEntity(type: EntityType<MortarEntity>, level: Level) : Artiller
         return list
     }
 
+    // PJM: тик разборки рукой — игрок должен остаться рядом, смотреть на миномёт и держать руку пустой
+    private fun retrieveTick() {
+        val uuid = retrievePlayer ?: return
+        val player = level().getPlayerByUUID(uuid)
+
+        if (player == null || !player.isAlive
+            || player.distanceToSqr(this) > 25
+            || !player.mainHandItem.isEmpty
+            || TraceTool.findLookingEntity(player, 5.0) !== this
+        ) {
+            retrievePlayer = null
+            return
+        }
+
+        retrieveTicks++
+        ProgressBarTool.show(
+            player,
+            "tips.superbwarfare.mortar.retrieving",
+            retrieveTicks / RETRIEVE_TICKS.toFloat()
+        )
+
+        if (retrieveTicks >= RETRIEVE_TICKS) {
+            for (item in getRetrieveItems()) {
+                ItemHandlerHelper.giveItemToPlayer(player, item)
+            }
+            level().playSound(null, blockPosition(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.5f, 1f)
+            retrievePlayer = null
+            discard()
+        }
+    }
+
     override fun baseTick() {
         super.baseTick()
+        if (level() is ServerLevel) {
+            retrieveTick()
+        }
         if (entityData.get(FIRE_TIME) > 0) {
             entityData.set(FIRE_TIME, entityData.get(FIRE_TIME) - 1)
         }
@@ -238,6 +305,19 @@ open class MortarEntity(type: EntityType<MortarEntity>, level: Level) : Artiller
                     Vec3(this.x, this.eyeY, this.z).add(lookAngle.scale(1.5)),
                     level,
                     this
+                )
+
+                // PJM: выстрел поднимает пыль и выбивает осколки земли вокруг миномёта
+                val groundState = level.getBlockState(this.blockPosBelowThatAffectsMyMovement)
+                if (!groundState.isAir) {
+                    ParticleTool.sendParticle(
+                        level, BlockParticleOption(ParticleTypes.BLOCK, groundState),
+                        this.x, this.y + 0.2, this.z, 40, 1.2, 0.1, 1.2, 0.4, false
+                    )
+                }
+                ParticleTool.sendParticle(
+                    level, ParticleTypes.CAMPFIRE_COSY_SMOKE,
+                    this.x, this.y + 0.3, this.z, 10, 1.8, 0.2, 1.8, 0.01, false
                 )
 
                 this.clearContent()
@@ -411,6 +491,9 @@ open class MortarEntity(type: EntityType<MortarEntity>, level: Level) : Artiller
     }
 
     companion object {
+        // PJM: тиков удержания для разборки рукой
+        const val RETRIEVE_TICKS = 60
+
         @JvmField
         val FIRE_TIME: EntityDataAccessor<Int> =
             SynchedEntityData.defineId(MortarEntity::class.java, EntityDataSerializers.INT)

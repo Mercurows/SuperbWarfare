@@ -76,6 +76,9 @@ object ParticleTool {
         }
     }
 
+    // PJM: слышимая дальность звука = radius * 16 блоков (и клиентский SoundEngine, и фильтр в
+    // playDistantSound считают одинаково). Слой VERY_FAR поднят так, чтобы взрывы было слышно
+    // за 1000+ блоков; HUGE/GIANT/EPIC уже перекрывают эту дистанцию и не тронуты.
     private fun playExplosionSounds(type: ParticleType, level: ServerLevel, pos: Vec3) {
         when (type) {
             ParticleType.MINI -> {
@@ -92,19 +95,19 @@ object ParticleTool {
             ParticleType.SMALL -> {
                 playDistantSound(level, ModSounds.EXPLOSION_CLOSE.get(), pos, 2f, 1f, null)
                 playDistantSound(level, ModSounds.EXPLOSION_FAR.get(), pos, 8f, 1f, null)
-                playDistantSound(level, ModSounds.EXPLOSION_VERY_FAR.get(), pos, 32f, 1f, null)
+                playDistantSound(level, ModSounds.EXPLOSION_VERY_FAR.get(), pos, 70f, 1f, null) // PJM: 512 -> 1120 блоков
             }
 
             ParticleType.MEDIUM -> {
                 playDistantSound(level, ModSounds.EXPLOSION_CLOSE.get(), pos, 4f, 1f, null)
                 playDistantSound(level, ModSounds.EXPLOSION_FAR.get(), pos, 16f, 1f, null)
-                playDistantSound(level, ModSounds.EXPLOSION_VERY_FAR.get(), pos, 32f, 1f, null)
+                playDistantSound(level, ModSounds.EXPLOSION_VERY_FAR.get(), pos, 80f, 1f, null) // PJM: 512 -> 1280 блоков
             }
 
             ParticleType.LARGE -> {
                 playDistantSound(level, ModSounds.HUGE_EXPLOSION_CLOSE.get(), pos, 6f, 1f, null)
                 playDistantSound(level, ModSounds.HUGE_EXPLOSION_FAR.get(), pos, 20f, 1f, null)
-                playDistantSound(level, ModSounds.HUGE_EXPLOSION_VERY_FAR.get(), pos, 64f, 1f, null)
+                playDistantSound(level, ModSounds.HUGE_EXPLOSION_VERY_FAR.get(), pos, 96f, 1f, null) // PJM: 1024 -> 1536 блоков
             }
 
             ParticleType.HUGE -> {

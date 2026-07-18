@@ -744,6 +744,44 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
      */
     open fun getTagSeatIndex(entity: Entity) = entity.persistentData.getInt(TAG_SEAT_INDEX)
 
+    /**
+     * PJM: посадка игрока на конкретное место (для радиального меню PJM-BaseMod).
+     *
+     * Повторяет проверки [interact] (замок / команда / поломка), но позволяет выбрать индекс места.
+     * Если игрок уже сидит в этой технике — просто пересаживает через [changeSeat].
+     * ponytail: дублирует gate из [interact] — единый источник правды на будущее, если interact вынесет проверку.
+     *
+     * @return true при успешной посадке/пересадке
+     */
+    open fun tryEnterSeat(player: Player, index: Int): Boolean {
+        if (index < 0 || index >= this.maxPassengers) return false
+        if (player.vehicle === this) return changeSeat(player, index)
+        if (player is FakePlayer) return false
+        if (this.locked || this.isWreck) return false
+
+        if (VehicleConfig.SAME_TEAM_ENTER_VEHICLE.get()) {
+            for (passenger in this.passengers) {
+                if (passenger.team != null && (TDMSavedData.enabledTDM(passenger) || passenger.team !== player.team)) {
+                    return false
+                }
+            }
+            val ld = this.lastDriver
+            if (ld != null && !SeekTool.IN_SAME_TEAM.test(player, ld) && ld.team != null) {
+                return false
+            }
+        }
+
+        if (getNthEntity(index) != null) return false
+        if (this.level() !is ServerLevel) return false
+
+        if (index == 0) this.setDriverAngle(player)
+        player.isSprinting = false
+        this.entityIndexOverride = Function { e -> if (e === player) index else -1 }
+        val ok = player.startRiding(this)
+        this.entityIndexOverride = null
+        return ok
+    }
+
     open val thirdPersonCameraPosition: Vec3
         get() {
             val pos = computed().thirdPersonCameraPos
@@ -1744,7 +1782,11 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         )
     }
 
+    // PJM: во время вызова из конструктора Entity (Moonrise isHardCollidingUncached) поля ещё не инициализированы — false
+    private val constructed = true
+
     override fun canBeCollidedWith(): Boolean {
+        if (!constructed) return false
         return this.enableAABB()
     }
 
@@ -4198,6 +4240,9 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
     override fun getOBBs(): MutableList<OBB> {
         if (this.obbCache == null) {
+            // PJM: Moonrise вызывает canBeCollidedWith() из конструктора Entity до инициализации полей — obb ещё null
+            @Suppress("SENSELESS_COMPARISON")
+            if (this.obb == null) return mutableListOf()
             this.obbCache = this.obb.asSequence().map { it.getOBB() }.toMutableList()
         }
         return this.obbCache!!

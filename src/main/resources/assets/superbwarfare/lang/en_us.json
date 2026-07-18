@@ -813,6 +813,8 @@
   "tips.superbwarfare.target.pitch": "Target Pitch: ",
   "tips.superbwarfare.barrel_empty": "EMPTY",
   "tips.superbwarfare.mortar.out_of_range": "Out of Range",
+  "tips.superbwarfare.mortar.deploying": "Deploying Mortar",
+  "tips.superbwarfare.mortar.retrieving": "Packing Mortar",
   "tips.superbwarfare.vehicle_assembling_table.warn": "Not enough place to disassemble vehicle",
 
   "tips.superbwarfare.modify_result.function": "[Custom Function]",

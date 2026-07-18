@@ -70,6 +70,10 @@ object StagedVehicleEngineSound {
         }
         if (resolvedLayers.isEmpty()) return false
 
+        // PJM: 环境音量为0时，SoundEngine会回收声道但把实例留在tickingSounds里，isActive会一直返回true。
+        // 此时不要创建实例（否则每次maintain都会泄漏一个僵尸实例），音量恢复后由maintain重新播放。
+        if (isCategoryMuted()) return true
+
         // A fast stop/start may happen before the old loops finish fading. Reuse that generation:
         // stop() releases OpenAL channels asynchronously, so replacing it here could still starve
         // the new distant layer before the sound thread has returned the old channels to its pool.
@@ -171,6 +175,9 @@ object StagedVehicleEngineSound {
     private fun isAvailable(sound: SoundEvent): Boolean =
         (mc.soundManager.getSoundEvent(sound.location)?.weight ?: 0) > 0
 
+    /** Mirrors the category check SoundEngine uses to reclaim channels. */
+    private fun isCategoryMuted(): Boolean = mc.options.getSoundSourceVolume(SoundSource.AMBIENT) <= 0f
+
     private fun fallbackLayers(kind: Kind, layer: VehicleEngineSoundLayer): List<VehicleEngineSoundLayer> =
         when (layer) {
             VehicleEngineSoundLayer.IDLE_EXTERNAL -> listOf(VehicleEngineSoundLayer.IDLE_INTERNAL)
@@ -266,6 +273,8 @@ object StagedVehicleEngineSound {
 
         fun isActive(): Boolean = layers.isNotEmpty()
 
+        fun hasDistant(): Boolean = desiredLayers.any { (layer, _) -> layer == VehicleEngineSoundLayer.DISTANCE }
+
         fun readiness(layer: VehicleEngineSoundLayer): Float = layers[layer]?.readiness ?: 0f
 
         fun driveMix(accelerating: Boolean): Float {
@@ -310,6 +319,13 @@ object StagedVehicleEngineSound {
         override fun tick() {
             val client = Minecraft.getInstance()
             if (vehicle.isRemoved || client.player == null) {
+                finish()
+                return
+            }
+
+            // PJM: 环境音量被调至0时，SoundEngine已经收走了声道，但实例还会继续tick。
+            // 主动结束，把它从session里摘掉，否则isActive一直为true，音量恢复后再也不会重新播放
+            if (isCategoryMuted()) {
                 finish()
                 return
             }
@@ -367,13 +383,15 @@ object StagedVehicleEngineSound {
                 context.close,
                 1f - coveredCloseMix
             )
+            // PJM: 没有远距离层时，近距离层不做距离淡出，否则载具在中距离会完全静音
+            val closeGain = if (session.hasDistant()) context.close else context.external
 
             return when (layer) {
-                VehicleEngineSoundLayer.IDLE_EXTERNAL -> base * mix.idle * context.external * context.close
+                VehicleEngineSoundLayer.IDLE_EXTERNAL -> base * mix.idle * closeGain
                 VehicleEngineSoundLayer.IDLE_INTERNAL -> base * mix.idle * context.internal
-                VehicleEngineSoundLayer.DRIVE_EXTERNAL -> base * mix.drive * context.external * context.close
+                VehicleEngineSoundLayer.DRIVE_EXTERNAL -> base * mix.drive * closeGain
                 VehicleEngineSoundLayer.DRIVE_INTERNAL -> base * mix.drive * context.internal
-                VehicleEngineSoundLayer.RELEASE_EXTERNAL -> base * mix.release * context.external * context.close
+                VehicleEngineSoundLayer.RELEASE_EXTERNAL -> base * mix.release * closeGain
                 VehicleEngineSoundLayer.RELEASE_INTERNAL -> base * mix.release * context.internal
                 VehicleEngineSoundLayer.DISTANCE ->
                     context.far * VehicleEngineSoundMix.distantVolume(

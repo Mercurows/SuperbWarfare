@@ -23,6 +23,9 @@ open class WireGuideMissileEntity(type: EntityType<out WireGuideMissileEntity>, 
         super.tick()
         mediumTrail()
 
+        // PJM: ослеплена КОЭП («Штора-1») — наведение потеряно, летит по инерции
+        if (isLost()) return
+
         val owner = this.owner
         val vehicle = owner?.vehicle
         if (tickCount > 0 && owner != null && vehicle is VehicleEntity) {

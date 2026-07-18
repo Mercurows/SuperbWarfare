@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.SeekTool
+import com.atsuishio.superbwarfare.tools.SoundTool
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
@@ -26,12 +27,14 @@ import net.minecraft.world.item.alchemy.PotionContents
 import net.minecraft.world.item.alchemy.Potions
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.levelgen.Heightmap
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
 import java.util.*
 import kotlin.math.max
+import kotlin.math.sqrt
 
 open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity {
     enum class Type {
@@ -39,6 +42,10 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
     }
 
     private var type: Type? = Type.NORMAL
+    // PJM: свист подлёта уже проигран
+    private var incomingPlayed = false
+    // PJM: точка вылета — чтобы far-петля свиста не играла у ствола и мешалась с выстрелом
+    private var launchPos: Vec3? = null
     private var smokeCount: Int = 12
     private var potion: Potion? = Potions.WATER.value()
     var red: Float = 1.0f
@@ -227,6 +234,8 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
 
     override fun tick() {
         val level = this.level()
+        // PJM: запоминаем точку вылета на первом тике (работает и на клиенте, где играет FlySound)
+        if (launchPos == null) launchPos = position()
         if (tickCount > this.getLife()) {
             if (level is ServerLevel) {
                 this.createAreaCloud(level, position())
@@ -236,6 +245,41 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
         super.tick()
         if (deltaMovement.lengthSqr() > 25) {
             mediumTrail()
+        }
+
+        // PJM: одноразовый свист подлёта. Считаем РЕАЛЬНОЕ время до земли с учётом ускорения
+        // (toGround = v·t + ½·g·t²), а не линейно toGround/v — линейная оценка сразу за апогеем,
+        // пока v мал, огромна, поэтому порог срабатывал лишь у земли и вой (~4с, кульминация в
+        // конце) звучал уже после попадания. Ведём старт так, чтобы вой закончился к удару.
+        // Источник ставим на землю у точки падения, чтобы наземные игроки слышали его без затухания сверху.
+        if (level is ServerLevel && !incomingPlayed && deltaMovement.y < 0) {
+            val groundY = level.getHeight(Heightmap.Types.MOTION_BLOCKING, blockX, blockZ)
+            val toGround = this.y - groundY
+            if (toGround > 0) {
+                val v = -deltaMovement.y
+                val g = getCustomGravity().toDouble()
+                val ticksToImpact = (-v + sqrt(v * v + 2 * g * toGround)) / g
+                if (ticksToImpact < INCOMING_LEAD_TICKS) {
+                    incomingPlayed = true
+                    // radius играет роль громкости: слышно до ~radius*16 блоков, а SoundClientMessage
+                    // ещё и задерживает звук на distance/17 тиков — дальние слышат тот же свист тише и
+                    // позже (это и есть «далёкий» incoming). 9.4 → ~150 блоков.
+                    // Источник — ПРОГНОЗИРУЕМАЯ точка падения (трение в воздухе = 1, горизонтальная
+                    // скорость постоянна): в момент старта воя мина ещё за сотни блоков от цели,
+                    // и свист под её текущей позицией у цели было не слышно вовсе.
+                    val impactX = this.x + deltaMovement.x * ticksToImpact
+                    val impactZ = this.z + deltaMovement.z * ticksToImpact
+                    val impactY = level.getHeight(
+                        Heightmap.Types.MOTION_BLOCKING,
+                        Mth.floor(impactX), Mth.floor(impactZ)
+                    ).toDouble()
+                    SoundTool.playDistantSound(
+                        level, ModSounds.MORTAR_INCOMING.get(),
+                        Vec3(impactX, impactY, impactZ),
+                        INCOMING_RADIUS, random.nextFloat() * 0.1f + 0.95f, null
+                    )
+                }
+            }
         }
 
         if (type == Type.WP) {
@@ -294,14 +338,31 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
     }
 
     override fun getSound(): SoundEvent {
-        return ModSounds.SHELL_FLY.get()
+        // PJM: сквадовская петля свиста мины вместо генерического shell_fly
+        return ModSounds.MORTAR_INCOMING_LOOP.get()
     }
 
     override fun getVolume(): Float {
-        return 0.06f
+        // PJM: far-петля свиста играет только на НИСХОДЯЩЕЙ ветке (фаза подлёта) и вдали от точки
+        // вылета. Вся восходящая ветка у ствола молчит — иначе петля мешается со звуком выстрела рядом.
+        val lp = launchPos ?: return 0f
+        if (deltaMovement.y >= 0 || this.distanceToSqr(lp) < FAR_LOOP_MIN_DIST_SQ) return 0f
+        return 1.2f
     }
 
     override fun forceLoadChunk(): Boolean {
         return true
+    }
+
+    companion object {
+        // PJM: за сколько тиков до попадания стартует свист подлёта. Клип ~4с = ~80 тиков; берём
+        // чуть меньше, чтобы кульминация совпала с ударом. Крутить, если вой звучит рано/поздно.
+        private const val INCOMING_LEAD_TICKS = 75
+
+        // PJM: радиус слышимости свиста подлёта (~radius*16 = ~150 блоков)
+        private const val INCOMING_RADIUS = 9.4f
+
+        // PJM: в этом радиусе от точки вылета far-петля молчит (не мешать выстрелу). Квадрат 50 бл.
+        private const val FAR_LOOP_MIN_DIST_SQ = 50.0 * 50.0
     }
 }

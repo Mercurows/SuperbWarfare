@@ -50,6 +50,9 @@ object ModSounds {
     @JvmField val HEADSHOT = register("headshot")
 
     @JvmField val MORTAR_FIRE = register("mortar_fire")
+    // PJM: свист подлёта миномётной мины (Squad M1937)
+    @JvmField val MORTAR_INCOMING = register("mortar_incoming")
+    @JvmField val MORTAR_INCOMING_LOOP = register("mortar_incoming_loop")
 
     @JvmField val FIRE_RATE = register("firerate")
 
@@ -175,7 +178,7 @@ object ModSounds {
         buildMap {
             listOf("bmp", "bradley", "t90", "abrams", "artillery", "heavy", "lav", "pickup", "truck", "wheel_chair")
                 .forEach { profile ->
-                    put(profile, registerVehicleEngineProfile(profile, VehicleEngineSoundLayer.GROUND_LAYERS))
+                    put(profile, registerVehicleEngineProfile(profile, VehicleEngineSoundLayer.groundLayers(profile)))
                 }
 
             listOf("ah6", "mi28").forEach { profile ->
@@ -290,6 +293,12 @@ enum class VehicleEngineSoundLayer(val id: String) {
             DRIVE_EXTERNAL, DRIVE_INTERNAL,
             RELEASE_EXTERNAL, RELEASE_INTERNAL
         )
+
+        // PJM: 无远距离录音的载具，其近距离层会一直播放到最大衰减距离
+        private val PROFILES_WITHOUT_DISTANCE = setOf("pickup")
+
+        fun groundLayers(profile: String): List<VehicleEngineSoundLayer> =
+            if (profile in PROFILES_WITHOUT_DISTANCE) GROUND_LAYERS - DISTANCE else GROUND_LAYERS
         val HELICOPTER_LAYERS = listOf(
             ROTOR_EXTERNAL, ROTOR_INTERNAL, ROTOR_DISTANCE,
             TURBINE_EXTERNAL, TURBINE_INTERNAL, TURBINE_DISTANCE

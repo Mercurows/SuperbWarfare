@@ -98,6 +98,8 @@ object ClientRenderHandler {
         event.registerBelowAll(HandsomeFrameOverlay.ID, HandsomeFrameOverlay)
         event.registerBelowAll(SpyglassRangeOverlay.ID, SpyglassRangeOverlay)
         event.registerBelowAll(TowOverlay.ID, TowOverlay)
+        // PJM: маркеры союзной техники при езде в технике
+        event.registerBelowAll(FriendlyVehicleMarkerOverlay.ID, FriendlyVehicleMarkerOverlay)
         event.registerBelowAll(MortarInfoOverlay.ID, MortarInfoOverlay)
         event.registerBelowAll(Type63InfoOverlay.ID, Type63InfoOverlay)
         event.registerBelowAll(SodayoRocketInfoOverlay.ID, SodayoRocketInfoOverlay)

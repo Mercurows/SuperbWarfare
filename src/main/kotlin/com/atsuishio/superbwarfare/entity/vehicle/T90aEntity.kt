@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.entity.vehicle.pjm.ShtoraSystem
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.EntityType
@@ -16,6 +17,12 @@ class T90aEntity(type: EntityType<T90aEntity>, world: Level) : VehicleEntity(typ
             ParticleTool.spawnBigCannonMuzzleParticles(getShootVec(living, 1f), getShootPos(living, 1f), level, this)
         }
         super.vehicleShoot(living, uuid, targetPos)
+    }
+
+    // PJM: КОЭП ТШУ-1 «Штора-1»
+    override fun baseTick() {
+        super.baseTick()
+        ShtoraSystem.jamIncomingMissiles(this)
     }
 
     override fun getTurretMaxHealth() = 100f

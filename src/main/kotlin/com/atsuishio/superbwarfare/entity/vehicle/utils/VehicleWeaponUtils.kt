@@ -132,8 +132,18 @@ object VehicleWeaponUtils {
             if (vehicle.decoyReady && vehicle.level() is ServerLevel) {
                 for (i in 0..7) {
                     val smokeDecoyEntity = SmokeDecoyEntity(vehicle.level())
-                    smokeDecoyEntity.setPos(vehicle.x, vehicle.y + vehicle.bbHeight, vehicle.z)
-                    smokeDecoyEntity.decoyShoot(vehicle, vec3.yRot((-78.75f + 22.5f * i) * Mth.DEG_TO_RAD), 4f, 8f)
+                    // PJM: вылет над крышей башни, с наклоном вверх — гранаты выпрыгивают
+                    // из мортирок и летят по дуге, а не выкатываются из-под башни
+                    smokeDecoyEntity.setPos(vehicle.x, vehicle.y + vehicle.bbHeight + 0.75, vehicle.z)
+                    // PJM: завеса веером ±35° перед башней — дым встаёт там, куда повёрнута башня,
+                    // а не полукругом вокруг корпуса; igniteTime — фолбэк, обычно шашка
+                    // срабатывает при падении на землю (~10 блоков впереди)
+                    smokeDecoyEntity.igniteTime = 30
+                    smokeDecoyEntity.decoyShoot(
+                        vehicle,
+                        vec3.yRot((-35f + 10f * i) * Mth.DEG_TO_RAD).add(0.0, 0.3, 0.0),
+                        1.5f, 8f
+                    )
                     vehicle.level().addFreshEntity(smokeDecoyEntity)
                 }
 

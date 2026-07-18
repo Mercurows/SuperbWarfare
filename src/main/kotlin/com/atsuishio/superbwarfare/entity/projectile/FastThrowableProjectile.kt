@@ -64,6 +64,9 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
     protected var penetratingValue: Boolean = false
     protected val effectsValue: MutableSet<MobEffectInstance> = hashSetOf()
 
+    // PJM: последний чанк, для которого ставили тикеты прогрузки траектории
+    private var lastTicketChunk: ChunkPos? = null
+
     override fun getDamage(): Float = damageValue
     override fun setDamage(value: Float) {
         damageValue = value
@@ -291,19 +294,26 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         // 更新区块加载位置
         if (level() is ServerLevel) {
             if (forceLoadChunk() && ProjectileConfig.PROJECTILE_CHUNK_LOADING.get()) {
-                this.keepChunkLoaded(this.position())
-                // Прогружаем чанки по траектории на ~1.5 с полёта вперёд:
-                // загрузка асинхронная, и при lookahead в 1 чанк быстрый снаряд
-                // пересекал границу раньше, чем чанк дотикает до entity-ticking,
-                // после чего tick() переставал вызываться и снаряд зависал
-                val speed = this.deltaMovement.length()
-                if (speed > 1.0e-4) {
-                    val direction = this.deltaMovement.normalize()
-                    val lookahead = (speed * 30.0).coerceIn(32.0, 256.0)
-                    var distance = 16.0
-                    while (distance <= lookahead) {
-                        this.keepChunkLoaded(position().add(direction.scale(distance)))
-                        distance += 16.0
+                // PJM: тикеты живут 3 с, поэтому обновляем их только при входе в новый чанк —
+                // тикет каждый тик у быстрых снарядов заваливал сервер генерацией чанков
+                // по траектории и игроков кикало по таймауту
+                val currentChunk = ChunkPos(this.blockPosition())
+                if (currentChunk != lastTicketChunk) {
+                    lastTicketChunk = currentChunk
+                    this.keepChunkLoaded(this.position())
+                    // Прогружаем чанки по траектории вперёд: загрузка асинхронная,
+                    // и при lookahead в 1 чанк быстрый снаряд пересекал границу раньше,
+                    // чем чанк дотикает до entity-ticking, после чего tick() переставал
+                    // вызываться и снаряд зависал
+                    val speed = this.deltaMovement.length()
+                    if (speed > 1.0e-4) {
+                        val direction = this.deltaMovement.normalize()
+                        val lookahead = (speed * 30.0).coerceIn(32.0, 64.0)
+                        var distance = 16.0
+                        while (distance <= lookahead) {
+                            this.keepChunkLoaded(position().add(direction.scale(distance)))
+                            distance += 16.0
+                        }
                     }
                 }
             }
@@ -577,8 +587,9 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
 
     open fun keepChunkLoaded(position: Vec3) {
         val chunkPos = ChunkPos(BlockPos.containing(position))
-        // Ключ — сам ChunkPos: тикеты от разных снарядов на один чанк схлопываются
-        (level() as ServerLevel).chunkSource.addRegionTicket(PROJECTILE_TICKET, chunkPos, 3, chunkPos)
+        // Ключ — сам ChunkPos: тикеты от разных снарядов на один чанк схлопываются.
+        // Радиус 2 — минимальный уровень (31), при котором чанк снаряда тикает сущности
+        (level() as ServerLevel).chunkSource.addRegionTicket(PROJECTILE_TICKET, chunkPos, 2, chunkPos)
     }
 
     override fun isFastMoving(): Boolean {

@@ -87,4 +87,37 @@ object SoundTool {
             )
         }
     }
+
+    // PJM: как playDistantSound, но слышен только игрокам дальше minDistance блоков —
+    // для far-сэмплов, которые вплотную звучат как далёкое эхо поверх близкого звука
+    @JvmStatic
+    fun playDistantSoundBeyond(
+        serverLevel: ServerLevel,
+        soundEvent: SoundEvent,
+        pos: Vec3,
+        radius: Float,
+        minDistance: Float,
+        pitch: Float,
+        sender: Entity?
+    ) {
+        val minSq = minDistance.toDouble() * minDistance
+        val players = serverLevel.getPlayers {
+            val distSq = it.distanceToSqr(pos)
+            distSq >= minSq && distSq < radius * radius * 256
+        }
+        for (serverPlayer in players) {
+            sendPacketTo(
+                serverPlayer,
+                SoundClientMessage(
+                    soundEvent.location,
+                    pos.x,
+                    pos.y,
+                    pos.z,
+                    radius,
+                    pitch,
+                    if (sender == null) UUID.randomUUID() else sender.getUUID()
+                )
+            )
+        }
+    }
 }

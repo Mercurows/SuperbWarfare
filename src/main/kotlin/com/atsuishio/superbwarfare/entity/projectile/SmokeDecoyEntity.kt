@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModParticleTypes
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.tools.ParticleTool
+import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.syncher.SynchedEntityData
@@ -19,6 +20,7 @@ import net.minecraft.world.phys.Vec3
 open class SmokeDecoyEntity : Entity {
     var life: Int = 400
     var igniteTime: Int = 4
+    private var ignited = false
     var releaseSmoke: Boolean = true
     var red: Float = 1.0f
         private set
@@ -34,6 +36,12 @@ open class SmokeDecoyEntity : Entity {
     }
 
     constructor(level: Level) : super(ModEntities.SMOKE_DECOY.get(), level)
+
+    // PJM: шашка бесфизична с момента создания — иначе OBB-антиклип техники успевает
+    // затереть её стартовую скорость до первого тика (supportEntities идёт раньше tick шашки)
+    init {
+        this.noPhysics = true
+    }
 
     override fun readAdditionalSaveData(compoundTag: CompoundTag) {
         if (compoundTag.contains("IgniteTime")) {
@@ -76,8 +84,38 @@ open class SmokeDecoyEntity : Entity {
 
     override fun tick() {
         super.tick()
+        // PJM: гравитация даёт дугу полёта
+        if (!ignited) {
+            this.deltaMovement = this.deltaMovement.add(0.0, -0.1, 0.0)
+        }
         this.move(MoverType.SELF, this.deltaMovement)
-        if (tickCount == this.igniteTime) {
+
+        // PJM: дымный след аэрозольной гранаты, пока она летит
+        if (!ignited) {
+            val level = this.level()
+            if (level is ServerLevel) {
+                for (j in 0..2) {
+                    val t = j / 3.0
+                    ParticleTool.sendParticle(
+                        level,
+                        ParticleTypes.CAMPFIRE_COSY_SMOKE,
+                        Mth.lerp(t, this.xo, this.x),
+                        Mth.lerp(t, this.yo, this.y),
+                        Mth.lerp(t, this.zo, this.z),
+                        1, 0.0, 0.0, 0.0, 0.0, true
+                    )
+                }
+            }
+        }
+
+        // PJM: срабатывание при приземлении — по блоку под шашкой, т.к. с noPhysics
+        // onGround не выставляется (tickCount > 3 — чтобы шашки M18/миномёта,
+        // стартующие с земли, успели разлететься); igniteTime — фолбэк по таймеру
+        val groundPos = BlockPos.containing(this.x, this.y - 0.25, this.z)
+        if (!ignited && (this.tickCount >= this.igniteTime
+                    || (this.tickCount > 3 && this.level().getBlockState(groundPos).isSolid))
+        ) {
+            ignited = true
             if (releaseSmoke) {
                 val level = this.level()
                 if (level is ServerLevel) {

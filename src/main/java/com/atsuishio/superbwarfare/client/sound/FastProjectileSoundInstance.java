@@ -24,6 +24,9 @@ public abstract class FastProjectileSoundInstance extends AbstractTickableSoundI
         this.entity = entity;
         this.looping = true;
         this.delay = 0;
+        // PJM: стартуем с нулевой громкостью — реальную выставит tick() (fade с 0), иначе один кадр
+        // на дефолтной volume=1.0 даёт «блип» петли у ствола до применения гейта.
+        this.volume = 0.0F;
     }
 
     protected abstract boolean canPlay(FastThrowableProjectile entity);

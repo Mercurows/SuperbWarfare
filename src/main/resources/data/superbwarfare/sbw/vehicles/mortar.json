@@ -16,7 +16,8 @@
       "ShootShake": [8, 6, 14],
       "SoundInfo": {
         "Fire3P": "superbwarfare:mortar_fire",
-        "Fire3PFar": "superbwarfare:mortar_distant",
+        "Fire3PFar": "superbwarfare:mortar_fire_mid",
+        "Fire3PVeryFar": "superbwarfare:mortar_distant",
         "VehicleReload": "superbwarfare:mortar_load"
       },
       "SoundRadius": 32
