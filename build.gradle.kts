@@ -154,7 +154,7 @@ repositories {
     }
 }
 
-//jarJar.enable()
+jarJar.enable()
 
 dependencies {
     implementation("thedarkcolour:kotlinforforge:4.11.0")
@@ -284,10 +284,16 @@ mixin {
 }
 
 tasks.withType<JavaCompile> {
+    // Ensure SRG mappings exist before compilation (needed for Mixin AP)
+    dependsOn("createSrgToMcp")
+
+    options.encoding = "UTF-8"
     options.compilerArgs.addAll(
         listOf(
-            "-Amixin.refmap=mixins.superbwarfare.refmap.json",
-            "-Amixin.defaultRefmap=mixins.superbwarfare.refmap.json"
+            // Correct Mixin AP option: provide SRG file for refmap generation
+            "-AreobfSrgFile=${project.file("build/createSrgToMcp/output.srg").absolutePath}",
+            // Tell AP to use Searge/SRG obfuscation environment
+            "-AdefaultObfuscationEnv=searge"
         )
     )
 }
@@ -335,10 +341,6 @@ tasks.named<Jar>("jarJar") {
 
 java {
     withSourcesJar()
-}
-
-tasks.withType<JavaCompile> {
-    options.encoding = "UTF-8"
 }
 
 // 让 idea 主动下载前置库的源码和 Javadoc
