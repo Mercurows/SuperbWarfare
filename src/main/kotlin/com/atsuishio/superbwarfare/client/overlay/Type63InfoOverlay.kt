@@ -10,9 +10,7 @@ import com.atsuishio.superbwarfare.tools.FormatTool.format1D
 import com.atsuishio.superbwarfare.tools.FormatTool.format2D
 import com.atsuishio.superbwarfare.tools.OBB
 import com.atsuishio.superbwarfare.tools.RangeTool.getRange
-import com.atsuishio.superbwarfare.tools.TraceTool
 import com.atsuishio.superbwarfare.tools.TrajectoryCalculator.calculateLaunchVector
-import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.worldToScreen
 import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
@@ -23,30 +21,16 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.event.TickEvent
-import net.minecraftforge.eventbus.api.SubscribeEvent
-import net.minecraftforge.fml.common.Mod
 import kotlin.math.max
 
 @OnlyIn(Dist.CLIENT)
-@Mod.EventBusSubscriber(Dist.CLIENT)
 object Type63InfoOverlay : CommonOverlay("type_63_info") {
     private val AP by lazy { ItemStack(ModItems.MEDIUM_ROCKET_AP.get()) }
     private val HE by lazy { ItemStack(ModItems.MEDIUM_ROCKET_HE.get()) }
     private val CM by lazy { ItemStack(ModItems.MEDIUM_ROCKET_CM.get()) }
 
-    private var lookingEntity: Type63Entity? = null
-
-    @SubscribeEvent
-    fun tracingEntity(event: TickEvent.ClientTickEvent) {
-        if (event.phase == TickEvent.Phase.START) return
-        val player = localPlayer ?: return
-        val entity = TraceTool.findLookingEntity(player, player.getEntityReach())
-        lookingEntity = entity as? Type63Entity
-    }
-
     override fun RenderContext.render() {
-        val lookingEntity = lookingEntity ?: return
+        val lookingEntity = OverlayTraceHandler.playerReachEntity as? Type63Entity ?: return
 
         val poseStack = guiGraphics.pose()
 

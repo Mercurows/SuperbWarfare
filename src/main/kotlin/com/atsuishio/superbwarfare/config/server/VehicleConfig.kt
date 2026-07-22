@@ -142,7 +142,34 @@ object VehicleConfig {
     val TOW_BREAK_DISTANCE = buildServerConfig {
         comment("Maximum distance that towline breaks when a vehicle is pulling the towed vehicle. Set to 0 to make it unbreakable")
         comment("拖绳会断裂的最大距离（格），设置成0则不会断裂")
-        defineInRange("tow_break_distance", 0, 0, Int.MAX_VALUE).also { pop() }
+        defineInRange("tow_break_distance", 0, 0, Int.MAX_VALUE)
+    }
+
+    @JvmField
+    val TOW_BLACK_LIST = buildServerConfig {
+        comment("List of entity types that can not be towed by vehicle")
+        comment("不能被载具牵引的实体类型名单")
+        defineList(
+            "tow_black_list", listOf(
+                "minecraft:experience_orb",
+                "minecraft:primed_tnt",
+                "minecraft:ender_pearl",
+                "minecraft:interaction",
+                "minecraft:marker",
+                "minecraft:end_crystal",
+                "minecraft:evoker_fangs",
+                "minecraft:eye_of_ender",
+                "minecraft:falling_block",
+                "mts:builder_rendering",
+                "evilcraft:vengeance_spirit",
+                "touhou_little_maid:power_point",
+                "create:carriage_contraption",
+                "create:stationary_contraption",
+                "create:gantry_contraption",
+                "create:super_glue",
+                "zombiekit:flares"
+            )
+        ) { true }.also { pop() }
     }
 
     @JvmField
@@ -161,9 +188,10 @@ object VehicleConfig {
         defineInRange("repair_amount", 0.05, -100000000.0, 100000000.0).also { pop(2) }
     }
 
-    fun inScanList(type: EntityType<*>): Boolean {
+    @JvmStatic
+    fun inConfigList(type: EntityType<*>, list: List<String>): Boolean {
         val path = ForgeRegistries.ENTITY_TYPES.getKey(type) ?: return false
-        SCAN_WHITE_LIST.get().forEach {
+        list.forEach {
             if (it.contains(":*")) {
                 val namespace = it.split(":*")[0]
                 if (path.toString().startsWith(namespace)) return true
@@ -172,5 +200,10 @@ object VehicleConfig {
             }
         }
         return false
+    }
+
+    @JvmStatic
+    fun inScanList(type: EntityType<*>): Boolean {
+        return inConfigList(type, SCAN_WHITE_LIST.get())
     }
 }

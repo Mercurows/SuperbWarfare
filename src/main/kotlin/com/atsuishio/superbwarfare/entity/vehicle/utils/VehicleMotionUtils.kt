@@ -822,14 +822,35 @@ object VehicleMotionUtils {
                         val color = SpritePixelHelper.getRandomPixelRGB(sprite, 0)
                         val speed = Math.min(vehicle.deltaMovement.length(), 0.5).toFloat()
 
-                        val particleOption = CustomCloudOption(color, 70, 1f + 7f * speed + Math.random().toFloat() * 2, Math.random().toFloat() * -0.12f, false, false)
-                        vehicle.addRandomParticle(particleOption, p.add(0.0, 0.2, 0.0).subtract(vehicle.deltaMovement.scale(1.5)), speed, vehicle.level(), 1, vehicle.deltaMovement.scale(60.0))
+                        val particleOption = CustomCloudOption(
+                            color, 70, 1f + 7f * speed + Math.random().toFloat() * 2, Math.random().toFloat() * -0.12f,
+                            cooldown = false,
+                            light = false
+                        )
+                        vehicle.addRandomParticle(
+                            particleOption,
+                            p.add(0.0, 0.2, 0.0).subtract(vehicle.deltaMovement.scale(1.5)),
+                            speed,
+                            vehicle.level(),
+                            1,
+                            vehicle.deltaMovement.scale(60.0)
+                        )
                     } else {
                         val particleData = BlockParticleOption(ParticleTypes.BLOCK, state)
                         vehicle.addRandomParticle(particleData, p.add(0.0, 0.1, 0.0), 0.2f, vehicle.level(), 0f, 1)
 
-                        if (vehicle.engineInfo is EngineInfo.Track && vehicle.drift() && vehicle.deltaMovement.horizontalDistanceSqr() > 0.0004 && state.`is`(BlockTags.MINEABLE_WITH_PICKAXE)) {
-                            vehicle.addRandomParticle(ModParticleTypes.FIRE_STAR.get(), p.add(0.0, 0.1, 0.0), 0.25f, vehicle.level(), 0.08f, 1)
+                        if (vehicle.engineInfo is EngineInfo.Track && vehicle.drift() && vehicle.deltaMovement.horizontalDistanceSqr() > 0.0004 && state.`is`(
+                                BlockTags.MINEABLE_WITH_PICKAXE
+                            )
+                        ) {
+                            vehicle.addRandomParticle(
+                                ModParticleTypes.FIRE_STAR.get(),
+                                p.add(0.0, 0.1, 0.0),
+                                0.25f,
+                                vehicle.level(),
+                                0.08f,
+                                1
+                            )
                         }
                     }
                 }
@@ -1235,5 +1256,121 @@ object VehicleMotionUtils {
         }
 
         return Vec3(rx, ry, rz)
+    }
+
+    // Code based on Dragon Rise
+    @JvmStatic
+    fun towedTick(vehicle: VehicleEntity) {
+        val tower = vehicle.towedByEntity ?: return
+
+        val dist = vehicle.distanceTo(tower)
+        val longestSide = calculateLongestSide(vehicle)
+        val towerLongestSide = calculateLongestSide(tower)
+
+        val minDist = max(
+            VehicleConfig.TOW_PULL_DISTANCE.get().toDouble(),
+            longestSide + towerLongestSide + 4.0
+        )
+        val maxDist = VehicleConfig.TOW_BREAK_DISTANCE.get().toDouble()
+
+        if (dist > maxDist && maxDist > 0) {
+            vehicle.clearTowingInfo()
+            return
+        }
+
+        if (dist <= minDist) return
+
+        val overshoot = dist - minDist
+        val dir = vehicle.position().subtract(tower.position()).normalize()
+        // 使用双方的相对速度，使阻尼更准确
+        val relVelAlong = vehicle.deltaMovement.subtract(tower.deltaMovement).dot(dir)
+
+        val k = 0.2  // 钢索刚性
+        val d = 0.01 // 阻尼
+        val ropeForce = -k * overshoot - d * relVelAlong
+
+        val towerFactor = tower.computed().towForceFactor.toDouble().coerceAtLeast(0.0)
+        val towedMass = vehicle.mass.toDouble().coerceAtLeast(0.01)
+        val towerMass = tower.mass.toDouble().coerceAtLeast(0.01)
+
+        val towForce = towerMass * towerFactor * ropeForce / 6.0
+
+        val maxDeltaV = max(2.0, tower.deltaMovement.length())
+        val towedScalar = (towForce / towedMass).coerceIn(-maxDeltaV, maxDeltaV)
+        val towerScalar = (-ropeForce / towerMass).coerceIn(-maxDeltaV, maxDeltaV)
+
+        var towerDir = dir.scale(towedScalar)
+
+        vehicle.deltaMovement = vehicle.deltaMovement.add(towerDir)
+        tower.deltaMovement = tower.deltaMovement.add(dir.scale(towerScalar))
+
+        if (!vehicle.computed().forwardTowed) towerDir = towerDir.scale(-1.0)
+
+        val diffY = Mth.wrapDegrees(
+            -VehicleVecUtils.getYRotFromVector(towerDir) + VehicleVecUtils.getYRotFromVector(
+                vehicle.getViewVector(1f)
+            )
+        ).toFloat()
+        vehicle.yRot += 0.05f * diffY
+    }
+
+    @JvmStatic
+    fun towingTick(vehicle: VehicleEntity) {
+        val towed = vehicle.towingEntity ?: return
+        if (towed is VehicleEntity) return
+
+        val dist = vehicle.distanceTo(towed)
+        val bb = towed.boundingBox
+        val longestSide = maxOf(bb.xsize, bb.ysize, bb.zsize)
+        val thisLongestSide = calculateLongestSide(vehicle)
+
+        val minDist = max(
+            VehicleConfig.TOW_PULL_DISTANCE.get().toDouble(),
+            longestSide + thisLongestSide + 1.0
+        )
+        val maxDist = VehicleConfig.TOW_BREAK_DISTANCE.get().toDouble()
+
+        if (dist > maxDist && maxDist > 0) {
+            vehicle.clearTowingInfo()
+            return
+        }
+
+        if (dist <= minDist) return
+
+        val overshoot = dist - minDist
+        val dir = vehicle.position().subtract(towed.position()).reverse().normalize()
+        val relVelAlong = towed.deltaMovement.subtract(vehicle.deltaMovement).dot(dir)
+
+        val k = 0.2  // 钢索刚性
+        val d = 0.01 // 阻尼
+        val ropeForce = -k * overshoot - d * relVelAlong
+
+        val maxDeltaV = max(2.0, vehicle.deltaMovement.length())
+        val pullForce = dir.scale((ropeForce / 6.0).coerceIn(-maxDeltaV, maxDeltaV))
+
+        towed.fallDistance = 0f
+        val diffY = Mth.wrapDegrees(
+            -VehicleVecUtils.getYRotFromVector(pullForce) + VehicleVecUtils.getYRotFromVector(
+                towed.getViewVector(1f)
+            )
+        ).toFloat()
+
+        if (towed is Player && towed.level().isClientSide) {
+            towed.deltaMovement = towed.deltaMovement.add(pullForce)
+            towed.yRot += 0.05f * diffY
+        } else {
+            towed.deltaMovement = towed.deltaMovement.add(pullForce)
+            towed.yRot += 0.05f * diffY
+        }
+    }
+
+    @JvmStatic
+    fun calculateLongestSide(vehicle: VehicleEntity): Double {
+        val obb = vehicle.getCollisionOBB()
+        if (obb == null || vehicle.enableAABB()) {
+            val bb = vehicle.boundingBox
+            return maxOf(bb.xsize, bb.ysize, bb.zsize)
+        }
+        return maxOf(obb.extents.x, obb.extents.y, obb.extents.z)
     }
 }

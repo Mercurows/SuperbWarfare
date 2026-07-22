@@ -4,13 +4,13 @@ import com.atsuishio.superbwarfare.api.event.ClientVehicleFireEvent
 import com.atsuishio.superbwarfare.client.ClientSyncedEntityHandler
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay
+import com.atsuishio.superbwarfare.client.overlay.OverlayTraceHandler
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay
 import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
-import com.atsuishio.superbwarfare.entity.vehicle.BasicGeoVehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.item.gun.GunItem
@@ -550,7 +550,7 @@ object ClientEventHandler {
     fun hasThermalImagingGoggles(): Boolean {
         return CuriosApi.getCuriosInventory(localPlayer).map {
             it.findFirstCurio(ModItems.THERMAL_IMAGING_GOGGLES.get()).isPresent
-        }.orElse(false)
+        }.orElseGet { false }
     }
 
     fun handleThermalImaging(player: Player) {
@@ -747,8 +747,8 @@ object ClientEventHandler {
         if (keys != keysCache) {
             // 盘旋模式下阻止操控包发往服务端，但检测双击前进键夺回操控权
             val blockLoiter = vehicle is VehicleEntity
-                && vehicle.loiterActive
-                && vehicle.computed().engineType == EngineType.AIRCRAFT
+                    && vehicle.loiterActive
+                    && vehicle.computed().engineType == EngineType.AIRCRAFT
             if (!blockLoiter) {
                 sendPacketToServer(VehicleMovementMessage(keys))
             } else {
@@ -1344,7 +1344,7 @@ object ClientEventHandler {
         }
 
         if (!targetEntities.isEmpty()) {
-            val list = targetEntities.filter { it != null && it.isAlive && it != lookingEntity }
+            val list = targetEntities.filter { it.isAlive && it != lookingEntity }
                 .sortedBy {
                     player.lookAngle.angleTo(player.eyePosition.vectorTo(it.eyePosition))
                 }
@@ -1363,7 +1363,7 @@ object ClientEventHandler {
         }
 
         if (stack.`is`(ModItems.LUNGE_MINE.get()) && ((lungeAttack >= 9 && lungeAttack <= 10.5) || lungeSprint > 0)) {
-            val lookingEntity = TraceTool.findLookingEntity(player, player.getEntityReach() + 1.5)
+            val lookingEntity = OverlayTraceHandler.playerReachEntity
 
             val result = player.level().clip(
                 ClipContext(
@@ -1669,7 +1669,7 @@ object ClientEventHandler {
         if (item !is GunItem) return
 
         if (item == ModItems.SENTINEL.get()) {
-            val flag = stack.getCapability(ForgeCapabilities.ENERGY).map { it.energyStored > 0 }.orElse(false)
+            val flag = stack.getCapability(ForgeCapabilities.ENERGY).map { it.energyStored > 0 }.orElseGet { false }
             if (flag) {
                 player.playSound(
                     ModSounds.SENTINEL_CHARGE_FIRE_1P.get(),
@@ -1683,7 +1683,7 @@ object ClientEventHandler {
         if (item == ModItems.SECONDARY_CATACLYSM.get()) {
             val hasEnoughEnergy = stack.getCapability(ForgeCapabilities.ENERGY)
                 .map { it.energyStored >= 3000 }
-                .orElse(false)
+                .orElseGet { false }
 
             val isChargedFire = zoom && hasEnoughEnergy
             if (isChargedFire) {
@@ -2899,12 +2899,12 @@ object ClientEventHandler {
 
     @JvmStatic
     fun handleShells(x: Float, y: Float, vararg shells: CoreGeoBone) {
-        for (i in 0..<shells.size) {
+        for ((i, element) in shells.withIndex()) {
             if (i >= 5) break
-            shells[i].posX = (-x * shellIndexTime[i] * ((150 - shellIndexTime[i]) / 150)).toFloat()
-            shells[i].posY = (y * randomShell[0] * shellIndexTime[i] - 0.025 * shellIndexTime[i].pow(2)).toFloat()
-            shells[i].rotX = (randomShell[1] * shellIndexTime[i]).toFloat()
-            shells[i].rotY = (randomShell[2] * shellIndexTime[i]).toFloat()
+            element.posX = (-x * shellIndexTime[i] * ((150 - shellIndexTime[i]) / 150)).toFloat()
+            element.posY = (y * randomShell[0] * shellIndexTime[i] - 0.025 * shellIndexTime[i].pow(2)).toFloat()
+            element.rotX = (randomShell[1] * shellIndexTime[i]).toFloat()
+            element.rotY = (randomShell[2] * shellIndexTime[i]).toFloat()
         }
     }
 
@@ -2912,7 +2912,7 @@ object ClientEventHandler {
         if (aimVillagerCountdown > 0) return
 
         if (zoom) {
-            val entity = TraceTool.findLookingEntity(player, 10.0) as? AbstractVillager ?: return
+            val entity = OverlayTraceHandler.playerReachEntity as? AbstractVillager ?: return
             val entities = SeekTool.seekLivingEntities(entity, 16.0, 120.0)
             for (e in entities) {
                 if (e == player) {
@@ -3044,12 +3044,11 @@ object ClientEventHandler {
         val vehicle = event.entity
         val index = event.index
 
-        // Lighting — called directly since VehicleLightingHandler's
-        // @EventBusSubscriber is not reliably auto-registered
+        // Lighting — called directly since @EventBusSubscriber on
+        // VehicleLightingHandler is not reliably auto-registered
         com.atsuishio.superbwarfare.client.lighting.VehicleLightingHandler
             .onVehicleFire(event)
 
-        // why if its always Vehicle
         val ani = vehicle.getAnimationInstance() ?: return
         val name = event.weaponName
             ?: vehicle.getGunName(vehicle.getSeatIndex(shooter))

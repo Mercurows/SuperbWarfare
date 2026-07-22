@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.overlay.weapon
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
+import com.atsuishio.superbwarfare.client.overlay.OverlayTraceHandler
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay.renderEnergyInfo
 import com.atsuishio.superbwarfare.data.gun.GunProp
@@ -9,7 +10,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.tools.FormatTool.format0D
-import com.atsuishio.superbwarfare.tools.TraceTool
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.math.Axis
@@ -82,9 +82,7 @@ class Ac130GunnerHud {
                     0f
                 )
 
-
                 // 武器名
-
                 VehicleMainWeaponHudOverlay.renderWeaponInfoFirst(
                     guiGraphics,
                     vehicle,
@@ -195,12 +193,7 @@ class Ac130GunnerHud {
                     cachedRange = player.getEyePosition(1f).distanceTo(hitPos)
                     cachedIsEntity = false
 
-                    val lookingEntity = TraceTool.cameraFindLookingEntity(
-                        player,
-                        vehicle.getShootPosForHud(player, 1f),
-                        vehicle.getShootDirectionForHud(player, 1f),
-                        512.0
-                    )
+                    val lookingEntity = OverlayTraceHandler.cameraMaxRangeEntity
                     if (lookingEntity != null) {
                         cachedIsEntity = true
                         cachedRange = player.distanceTo(lookingEntity).toDouble()

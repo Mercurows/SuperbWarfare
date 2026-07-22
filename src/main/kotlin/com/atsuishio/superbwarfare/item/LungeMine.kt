@@ -1,9 +1,12 @@
 package com.atsuishio.superbwarfare.item
 
+import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.renderer.item.LungeMineRenderer
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.tools.localPlayer
+import com.google.common.collect.HashMultimap
+import com.google.common.collect.Multimap
 import net.minecraft.client.model.HumanoidModel
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer
 import net.minecraft.core.BlockPos
@@ -14,8 +17,11 @@ import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResultHolder
 import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.effect.MobEffects
+import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.HumanoidArm
 import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.ai.attributes.Attribute
+import net.minecraft.world.entity.ai.attributes.AttributeModifier
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemDisplayContext
@@ -23,6 +29,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraftforge.client.extensions.common.IClientItemExtensions
+import net.minecraftforge.common.ForgeMod
 import software.bernie.geckolib.animatable.GeoItem
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.core.animation.AnimatableManager
@@ -31,6 +38,7 @@ import software.bernie.geckolib.core.animation.AnimationState
 import software.bernie.geckolib.core.animation.RawAnimation
 import software.bernie.geckolib.core.`object`.PlayState
 import software.bernie.geckolib.util.GeckoLibUtil
+import java.util.*
 import java.util.function.Consumer
 
 // 不要改这个东西，会肘击 YSM
@@ -146,6 +154,26 @@ open class LungeMine : Item(Properties().stacksTo(4)), GeoItem {
 
     override fun canAttackBlock(state: BlockState, level: Level, pos: BlockPos, player: Player): Boolean {
         return false
+    }
+
+    override fun getAttributeModifiers(
+        slot: EquipmentSlot,
+        stack: ItemStack
+    ): Multimap<Attribute, AttributeModifier> {
+        var map = super.getAttributeModifiers(slot, stack)
+        val uuid = UUID(slot.toString().hashCode().toLong(), 0)
+        if (slot != EquipmentSlot.MAINHAND) return map
+
+        map = HashMultimap.create<Attribute, AttributeModifier>(map)
+        map.put(
+            ForgeMod.ENTITY_REACH.get(), AttributeModifier(
+                uuid, Mod.ATTRIBUTE_MODIFIER,
+                1.5,
+                AttributeModifier.Operation.ADDITION
+            )
+        )
+
+        return map
     }
 
     companion object {

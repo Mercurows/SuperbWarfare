@@ -2,20 +2,19 @@ package com.atsuishio.superbwarfare.client.overlay.weapon
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
+import com.atsuishio.superbwarfare.client.overlay.OverlayTraceHandler
 import com.atsuishio.superbwarfare.entity.vehicle.AnnihilatorEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getXRotFromVector
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getYRotFromVector
 import com.atsuishio.superbwarfare.tools.FormatTool
 import com.atsuishio.superbwarfare.tools.FormatTool.format1D
-import com.atsuishio.superbwarfare.tools.TraceTool
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.network.chat.Component
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.ClipContext
-import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.client.gui.overlay.ForgeGui
@@ -37,17 +36,12 @@ object ArtilleryHud {
         screenWidth: Int,
         screenHeight: Int
     ) {
-        val mc = gui.getMinecraft()
-
         if (vehicle.getSeatIndex(player) != vehicle.computed().turretControllerIndex) return
 
         val index = vehicle.getSeatIndex(player)
         vehicle.getGunData(index) ?: return
 
         val poseStack = guiGraphics.pose()
-        val camera = mc.gameRenderer.mainCamera
-        val cameraPos = camera.position
-        val viewVec = Vec3(camera.lookVector)
 
         poseStack.pushPose()
 
@@ -136,7 +130,7 @@ object ArtilleryHud {
             shootPos = vehicle.getZoomPos(player, partialTick)
         }
 
-        val lookingEntity = TraceTool.cameraFindLookingEntity(player, cameraPos, viewVec, 512.0)
+        val lookingEntity = OverlayTraceHandler.cameraMaxRangeEntity
         var lookAtEntity = false
 
         val result = player.level().clip(

@@ -13,8 +13,10 @@ class Type63Renderer(manager: EntityRendererProvider.Context) : BasicVehicleRend
         val shouLunX = model.getBone("shoulunx")
         val shouLunY = model.getBone("shouluny")
 
-        shouLunX.rotation.rotationX(-turretXRot * 3)
-        shouLunY.rotation.rotationZ(turretYRot * 6)
+        if (shouLunX != null && shouLunY != null) {
+            shouLunX.rotation.rotationX(-turretXRot * 3)
+            shouLunY.rotation.rotationZ(turretYRot * 6)
+        }
 
         model.shell.forEachIndexed { index, bone ->
             val items = vehicle.entityData.get(Type63Entity.LOADED_AMMO)

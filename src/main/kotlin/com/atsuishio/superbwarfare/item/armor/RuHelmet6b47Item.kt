@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.init.ModAttributes
 import com.atsuishio.superbwarfare.resource.model.ArmorModelReloadListener
 import com.atsuishio.superbwarfare.tiers.ModArmorMaterial
-import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.GeoArmorRenderer
+import com.github.mcmodderanchor.simplebedrockmodel.v2.client.renderer.GeoArmorRendererV2
 import com.google.common.collect.HashMultimap
 import com.google.common.collect.Multimap
 import net.minecraft.client.model.HumanoidModel
@@ -28,7 +28,7 @@ class RuHelmet6b47Item : ArmorItem(ModArmorMaterial.CEMENTED_CARBIDE, Type.HELME
 
     override fun initializeClient(consumer: Consumer<IClientItemExtensions>) {
         consumer.accept(object : IClientItemExtensions {
-            private var renderer: GeoArmorRenderer? = null
+            private var renderer: GeoArmorRendererV2? = null
 
             override fun getHumanoidArmorModel(
                 livingEntity: LivingEntity?,
@@ -37,8 +37,9 @@ class RuHelmet6b47Item : ArmorItem(ModArmorMaterial.CEMENTED_CARBIDE, Type.HELME
                 original: HumanoidModel<*>?
             ): HumanoidModel<*> {
                 if (this.renderer == null) {
-                    this.renderer = GeoArmorRenderer(
-                        ArmorModelReloadListener.getModel(MODEL),
+                    this.renderer = GeoArmorRendererV2(
+                        ArmorModelReloadListener.getModel(MODEL)!!,
+                        equipmentSlot!!,
                         TEXTURE
                     )
                 }

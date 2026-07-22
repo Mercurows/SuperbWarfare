@@ -859,7 +859,7 @@
 
   "tips.superbwarfare.towline.select_towing": "Selected towing vehicle: %1$s",
   "tips.superbwarfare.towline.target_lost": "Towing target lost! The previously selected vehicle no longer exists",
-  "tips.superbwarfare.towline.same_vehicle": "Cannot link a vehicle to itself!",
+  "tips.superbwarfare.towline.same_entity": "Cannot link an entity to itself!",
   "tips.superbwarfare.towline.already_linked": "One of the vehicles is already in a towing relationship",
   "tips.superbwarfare.towline.too_far": "Too far apart! Distance: %1$s blocks (max: %2$s)",
   "tips.superbwarfare.towline.linked": "Linked: %1$s towing %2$s",

@@ -859,7 +859,7 @@
 
   "tips.superbwarfare.towline.select_towing": "已选择牵引载具: %1$s",
   "tips.superbwarfare.towline.target_lost": "牵引目标丢失！先前选择的载具已不存在",
-  "tips.superbwarfare.towline.same_vehicle": "不能将载具连接到自身！",
+  "tips.superbwarfare.towline.same_entity": "不能将载具连接到自身！",
   "tips.superbwarfare.towline.already_linked": "其中一个载具已在牵引关系中",
   "tips.superbwarfare.towline.too_far": "距离太远！当前距离: %1$s 格 (最大: %2$s)",
   "tips.superbwarfare.towline.linked": "已连接: %1$s 牵引 %2$s",

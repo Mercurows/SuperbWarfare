@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.overlay.weapon
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
+import com.atsuishio.superbwarfare.client.overlay.OverlayTraceHandler
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay.renderEnergyInfo
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -9,7 +10,6 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.init.ModKeyMappings
 import com.atsuishio.superbwarfare.tools.FormatTool.format0D
 import com.atsuishio.superbwarfare.tools.MathTool.getGradientColor
-import com.atsuishio.superbwarfare.tools.TraceTool
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.math.Axis
@@ -21,7 +21,6 @@ import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.ClipContext
-import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.client.gui.overlay.ForgeGui
@@ -59,11 +58,6 @@ object LandVehicleHud {
         if (vehicle.getSeatIndex(player) != vehicle.computed().turretControllerIndex) return
 
         val poseStack = guiGraphics.pose()
-
-        val camera = mc.gameRenderer.mainCamera
-        val cameraPos = camera.position
-        val viewVec = Vec3(camera.lookVector)
-
         val color = vehicle.hudColor
 
         poseStack.pushPose()
@@ -258,7 +252,7 @@ object LandVehicleHud {
             val blockRange = player.getEyePosition(1f).distanceTo(hitPos)
             var entityRange = 0.0
 
-            val lookingEntity = TraceTool.cameraFindLookingEntity(player, cameraPos, viewVec, 512.0)
+            val lookingEntity = OverlayTraceHandler.cameraMaxRangeEntity
             if (lookingEntity != null) {
                 lookAtEntity = true
                 entityRange = player.distanceTo(lookingEntity).toDouble()

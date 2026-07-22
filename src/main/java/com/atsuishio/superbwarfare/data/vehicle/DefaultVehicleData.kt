@@ -185,6 +185,9 @@ class DefaultVehicleData : IDBasedData<DefaultVehicleData> {
     @SerialName("HasLowHealthWarning")
     var hasLowHealthWarning: Boolean = true
 
+    @SerialName("ForwardTowed")
+    var forwardTowed: Boolean = true
+
     @SerialName("RotateOffsetHeight")
     var rotateOffsetHeight: Float = 0f
 

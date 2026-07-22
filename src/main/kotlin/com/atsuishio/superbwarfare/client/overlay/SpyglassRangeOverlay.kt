@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.item.misc.ArtilleryIndicatorItem
 import com.atsuishio.superbwarfare.item.misc.firingParameters
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.FormatTool.format1D
-import com.atsuishio.superbwarfare.tools.TraceTool
 import com.atsuishio.superbwarfare.tools.VectorTool.lerpGetEntityBoundingBoxCenter
 import com.atsuishio.superbwarfare.tools.canBeSeen
 import com.atsuishio.superbwarfare.tools.worldToScreen
@@ -149,7 +148,7 @@ object SpyglassRangeOverlay : CommonOverlay("spyglass_range") {
             val blockRange = player.getEyePosition(1f).distanceTo(hitPos)
 
             var entityRange = 0.0
-            val lookingEntity = TraceTool.findLookingEntity(player, 520.0)
+            val lookingEntity = OverlayTraceHandler.maxRangeEntity
 
             if (lookingEntity is VehicleEntity) return
 

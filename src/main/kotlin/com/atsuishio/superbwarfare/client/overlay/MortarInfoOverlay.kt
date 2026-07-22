@@ -5,8 +5,6 @@ import com.atsuishio.superbwarfare.client.overlay.components.StringComponent
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity
 import com.atsuishio.superbwarfare.tools.FormatTool.format1D
 import com.atsuishio.superbwarfare.tools.RangeTool.getRange
-import com.atsuishio.superbwarfare.tools.TraceTool
-import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.plus
 import net.minecraft.network.chat.Component
 import net.minecraftforge.api.distmarker.Dist
@@ -23,18 +21,8 @@ object MortarInfoOverlay : CommonOverlay("mortar_info") {
         registerComponents(PITCH, YAW, RANGE)
     }
 
-    var mortar: MortarEntity? = null
-
-    override fun shouldRender(): Boolean {
-        if (!super.shouldRender()) return false
-
-        mortar = TraceTool.findLookingEntity(localPlayer, 6.0) as? MortarEntity ?: return false
-
-        return true
-    }
-
     override fun RenderContext.preRender() {
-        val mortar = mortar ?: return
+        val mortar = OverlayTraceHandler.playerReachEntity as? MortarEntity ?: return
 
         PITCH.component =
             Component.translatable("tips.superbwarfare.mortar.pitch") + format1D(-mortar.xRot.toDouble(), "°")

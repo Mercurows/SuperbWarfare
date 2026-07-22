@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.event
 
+import com.atsuishio.superbwarfare.client.overlay.OverlayTraceHandler
 import com.atsuishio.superbwarfare.client.screens.LoiterConfigScreen
 import com.atsuishio.superbwarfare.client.screens.MissilePosInputScreen
 import com.atsuishio.superbwarfare.client.screens.TacticalMapScreen
@@ -238,7 +239,7 @@ object ClickEventHandler {
             event.isCanceled = true
         }
 
-        val looking = TraceTool.findLookingEntity(player, 6.0)
+        val looking = OverlayTraceHandler.playerReachEntity
         if (looking is MortarEntity && player.isShiftKeyDown) {
             sendPacketToServer(AdjustMortarAngleMessage(scroll))
             event.isCanceled = true

@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.client.overlay
 import com.atsuishio.superbwarfare.entity.vehicle.SodayoPickUpRocketEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.tools.OBB
-import com.atsuishio.superbwarfare.tools.TraceTool
 import com.atsuishio.superbwarfare.tools.worldToScreen
 import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.Component
@@ -20,13 +19,12 @@ object SodayoRocketInfoOverlay : CommonOverlay("sodayo_rocket_info") {
     override fun RenderContext.render() {
         val poseStack = guiGraphics.pose()
 
-        val lookingEntity = TraceTool.findLookingEntity(player, player.getEntityReach())
-        if (lookingEntity !is SodayoPickUpRocketEntity) return
+        val lookingEntity = OverlayTraceHandler.playerReachEntity as? SodayoPickUpRocketEntity ?: return
 
         val items = lookingEntity.getEntityData().get(SodayoPickUpRocketEntity.LOADED_AMMO)
         for (i in lookingEntity.barrelObbs.indices) {
             if (OBB.getLookingObb(player, player.getEntityReach()) === lookingEntity.barrelObbs[i]) {
-                val type: Int = items[i]!!
+                val type: Int = items[i]
 
                 val stack = when (type) {
                     0 -> AP

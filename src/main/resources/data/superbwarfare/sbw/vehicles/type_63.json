@@ -205,6 +205,7 @@
     "ExplosionRadius": 2,
     "NoWreck": true
   },
+  "ForwardTowed": false,
   "HasLowHealthWarning": false,
   "SelfHurtPercent": 0,
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/type_63_icon.png",

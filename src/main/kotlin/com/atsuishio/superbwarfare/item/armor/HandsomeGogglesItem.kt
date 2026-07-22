@@ -45,7 +45,7 @@ class HandsomeGogglesItem :
                 original: HumanoidModel<*>?
             ): HumanoidModel<*> {
                 if (this.renderer == null) {
-                    this.renderer = HandsomeGogglesRenderer(ArmorModelReloadListener.getModel(MODEL)!!)
+                    this.renderer = HandsomeGogglesRenderer(ArmorModelReloadListener.getModel(MODEL)!!, equipmentSlot!!)
                 }
 
                 this.renderer!!.preparePose(livingEntity, itemStack, equipmentSlot, original)

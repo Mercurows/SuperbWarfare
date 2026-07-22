@@ -25,11 +25,9 @@ import net.minecraft.world.phys.Vec2
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.fml.common.Mod
 import top.theillusivec4.curios.api.CuriosApi
 
 @OnlyIn(Dist.CLIENT)
-@Mod.EventBusSubscriber(Dist.CLIENT)
 object IFFOverlay : CommonOverlay("iff") {
     val FRIENDLY_INDICATOR = loc("textures/overlay/teammate/friendly_indicator.png")
     val FRIENDLY_AIRCRAFT = loc("textures/overlay/teammate/friendly_aircraft.png")
@@ -48,7 +46,6 @@ object IFFOverlay : CommonOverlay("iff") {
     val FRIENDLY_AIRSHIP = loc("textures/overlay/teammate/friendly_airship.png")
 
     override fun shouldRender() = super.shouldRender() && DisplayConfig.IFF_HUD.get()
-
 
     override fun RenderContext.render() {
         val level = player.level()
@@ -122,7 +119,7 @@ object IFFOverlay : CommonOverlay("iff") {
                 for (otherPlayer in syncedPlayers) {
                     if (otherPlayer.uuid == player.uuid) continue
                     val color = when (otherPlayer.relation) {
-                        "hostile" -> 0xFFBD7F.toInt()
+                        "hostile" -> 0xFFBD7F
                         "neutral" -> -0x1
                         else -> 0x7FFFAD
                     }

@@ -603,58 +603,13 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     open fun clearTowingInfo() {
         if (!this.level().isClientSide) {
             towedByEntity?.towingUUID = ""
-            towingEntity?.towedByUUID = ""
+            val towed = towingEntity
+            if (towed is VehicleEntity) {
+                towed.towedByUUID = ""
+            } else towed?.persistentData?.remove("TowedByUUID")
             towingUUID = ""
             towedByUUID = ""
         }
-    }
-
-    // Code based on Dragon Rise
-    open fun towedTick() {
-        if (this.level().isClientSide) return
-
-        val tower = towedByEntity ?: return
-
-        val dist = this.distanceTo(tower)
-        val bb = this.boundingBox
-        val towerBB = tower.boundingBox
-        val longestSide = maxOf(bb.xsize, bb.ysize, bb.zsize)
-        val towerLongestSide = maxOf(towerBB.xsize, towerBB.ysize, towerBB.zsize)
-
-        val minDist = max(
-            VehicleConfig.TOW_PULL_DISTANCE.get().toDouble(),
-            longestSide + towerLongestSide + 1.0
-        )
-        val maxDist = VehicleConfig.TOW_BREAK_DISTANCE.get().toDouble()
-
-        if (dist > maxDist && maxDist > 0) {
-            this.clearTowingInfo()
-            return
-        }
-
-        if (dist <= minDist) return
-
-        val overshoot = dist - minDist
-        val dir = this.position().subtract(tower.position()).normalize()
-        // 使用双方的相对速度，使阻尼更准确
-        val relVelAlong = this.deltaMovement.subtract(tower.deltaMovement).dot(dir)
-
-        val k = 0.2  // 钢索刚性
-        val d = 0.1  // 阻尼
-        val ropeForce = -k * overshoot - d * relVelAlong
-
-        val towerFactor = tower.computed().towForceFactor.toDouble().coerceAtLeast(0.0)
-        val towedMass = this.mass.toDouble().coerceAtLeast(0.01)
-        val towerMass = tower.mass.toDouble().coerceAtLeast(0.01)
-
-        val towForce = towerMass * towerFactor * ropeForce / 6.0
-
-        val maxDeltaV = max(2.0, tower.deltaMovement.length())
-        val towedScalar = (towForce / towedMass).coerceIn(-maxDeltaV, maxDeltaV)
-        val towerScalar = (-ropeForce / towerMass).coerceIn(-maxDeltaV, maxDeltaV)
-
-        this.deltaMovement = this.deltaMovement.add(dir.scale(towedScalar))
-        tower.deltaMovement = tower.deltaMovement.add(dir.scale(towerScalar))
     }
 
     override fun openCustomInventoryScreen(player: Player) {
@@ -2232,6 +2187,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         this.travel()
         this.towedTick()
+        this.towingTick()
         vehicleRadar()
 
         // 固定翼飞机自动盘旋：空中、引擎启动、有能量、未坠毁、有乘客、盘旋开关已开启
@@ -2532,6 +2488,14 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             this.keepChunkLoaded(this.position())
             this.keepChunkLoaded(position().add(deltaMovement.normalize().scale(16.0)))
         }
+    }
+
+    open fun towedTick() {
+        VehicleMotionUtils.towedTick(this)
+    }
+
+    open fun towingTick() {
+        VehicleMotionUtils.towingTick(this)
     }
 
     fun keepChunkLoaded(position: Vec3) {
@@ -4451,10 +4415,10 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     open var towingUUID by TOWING_UUID
     open var towedByUUID by TOWED_BY_UUID
 
-    open val towingEntity: VehicleEntity?
+    open val towingEntity: Entity?
         get() {
             if (towingUUID.isBlank()) return null
-            return EntityFindUtil.findEntity(level(), towingUUID) as? VehicleEntity
+            return EntityFindUtil.findEntity(level(), towingUUID)
         }
 
     open val towedByEntity: VehicleEntity?
