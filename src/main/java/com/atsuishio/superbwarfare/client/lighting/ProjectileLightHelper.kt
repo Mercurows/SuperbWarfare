@@ -21,7 +21,6 @@ import net.minecraftforge.api.distmarker.OnlyIn
  */
 @OnlyIn(Dist.CLIENT)
 object ProjectileLightHelper {
-
     private const val TRAIL_CULL_SQ   = 128.0 * 128.0
     private const val EXPLODE_CULL_SQ = 192.0 * 192.0
 

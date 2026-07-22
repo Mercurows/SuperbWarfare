@@ -214,10 +214,10 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
             for (obb in entity.getOBBs()) {
                 if (obb.part == OBB.Part.COLLISION) continue
                 val obbVec = obb.clip(startVec.toVector3d(), endVec.toVector3d()).orElse(null) ?: continue
-                
+
                 val pos = obbVec.toVec3()
                 hitPos = pos
-                
+
                 val level = this.level()
                 if (level is ServerLevel) {
                     level.playSound(
@@ -393,10 +393,11 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
 
             this.onHitWater(fluidResult.getLocation(), fluidResult)
             this.setPos(this.x + vec.x, this.y + vec.y, this.z + vec.z)
-            } else {
-                this.setPosRaw(this.x + vec.x, this.y + vec.y, this.z + vec.z)
-                ClientLightingHandler.handleProjectileTick(this)
-            }
+
+        } else {
+            this.setPosRaw(this.x + vec.x, this.y + vec.y, this.z + vec.z)
+            ClientLightingHandler.handleProjectileTick(this)
+        }
 
         this.deltaMovement = this.deltaMovement.add(0.0, -this.gravity.toDouble(), 0.0)
 

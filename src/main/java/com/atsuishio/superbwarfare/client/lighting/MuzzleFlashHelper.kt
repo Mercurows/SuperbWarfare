@@ -88,8 +88,6 @@ object MuzzleFlashHelper {
     @JvmStatic
     fun spawnFlashCone(origin: Vec3, direction: Vec3, params: FlashParams) {
         if (params.maxLevel <= 0) return
-        // Zero-length direction would produce NaN on normalize()
-        if (direction.lengthSqr() < 1e-6) return
 
         val level  = Minecraft.getInstance().level ?: return
         val engine = level.lightEngine

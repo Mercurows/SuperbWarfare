@@ -28,40 +28,43 @@ object ClientLightingHandler {
      * Called every client tick from {@code ProjectileEntity} and
      * {@code FastThrowableProjectile#tick()}.
      *
-     * <p>On tick 1: emits a muzzle-flash cone for the owner's weapon (non-local
-     * players only — local player flash is handled by {@code AnimationHelper}),
-     * and a launch-flash cone for rockets and large shells.
-     * Every tick: updates trail light via {@link ProjectileLightHelper#emitTrailLight}.
-     *
      * @param entity the projectile entity being ticked
      */
-    @JvmStatic
-    fun handleProjectileTick(entity: Entity) {
-        if (entity.tickCount == 1) {
-            val owner = (entity as? net.minecraft.world.entity.projectile.Projectile)?.owner
+     @JvmStatic
+     fun handleProjectileTick(entity: Entity) {
+         if (entity.tickCount == 1) {
+             val owner = (entity as? net.minecraft.world.entity.projectile.Projectile)?.owner
+             val localPlayer = net.minecraft.client.Minecraft.getInstance().player
 
-            // Emit owner's muzzle-flash cone for non-local players.
-            // Local player flash is handled earlier in AnimationHelper.spawnMuzzleLight().
-            if (owner !== Minecraft.getInstance().player && owner is LivingEntity) {
-                val params = MuzzleFlashHelper.calculateFromOwner(owner)
-                if (params != null) {
-                    MuzzleFlashHelper.spawnFlashCone(
-                        entity.position(), entity.deltaMovement, params
-                    )
-                }
-            }
+             if (owner !== localPlayer && owner is LivingEntity) {
+                 val params = MuzzleFlashHelper.calculateFromOwner(owner)
 
-            // Emit launch-flash cone for rockets and large-calibre shells
-            val launchFlash = ProjectileLightHelper.getLaunchFlash(entity)
-            if (launchFlash != null) {
-                MuzzleFlashHelper.spawnFlashCone(
-                    entity.position(), entity.deltaMovement, launchFlash
-                )
-            }
-        }
+                 // Use deltaMovement if available, otherwise use the owner's look angle
+                 val direction = if (entity.deltaMovement.lengthSqr() > 1e-6) {
+                     entity.deltaMovement
+                 } else {
+                     owner.lookAngle
+                 }
 
-        ProjectileLightHelper.emitTrailLight(entity)
-    }
+                 if (params != null) {
+                     MuzzleFlashHelper.spawnFlashCone(entity.position(), direction, params)
+                 }
+             }
+
+             val launchFlash = ProjectileLightHelper.getLaunchFlash(entity)
+             if (launchFlash != null) {
+                 val direction = if (entity.deltaMovement.lengthSqr() > 1e-6) {
+                     entity.deltaMovement
+                 } else {
+                     (entity as? net.minecraft.world.entity.projectile.Projectile)
+                         ?.owner?.lookAngle ?: entity.deltaMovement
+                 }
+                 MuzzleFlashHelper.spawnFlashCone(entity.position(), direction, launchFlash)
+             }
+         }
+
+         ProjectileLightHelper.emitTrailLight(entity)
+     }
 
     /**
      * Called when a projectile entity is removed from the client world.
