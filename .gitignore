@@ -1,6 +1,9 @@
 # User-specific stuff
 .idea/
 .vscode/
+.settings/
+.kotlin
+/.claude/settings.json
 
 *.iml
 *.ipr
@@ -125,6 +128,4 @@ run/
 
 .cache
 
-.kotlin
-/.claude/settings.json
 bin/
