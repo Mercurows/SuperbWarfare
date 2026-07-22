@@ -234,6 +234,11 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         if (!level().isClientSide) syncedTick++
 
         val level = this.level()
+
+        if (level.isClientSide) {
+            com.atsuishio.superbwarfare.client.lighting.ClientLightingHandler.handleProjectileTick(this)
+        }
+
         if (!level.isClientSide() && this.tickCount > this.getNoHitTicks()) {
             val startVec = this.position()
             val fullEndVec = startVec.add(this.deltaMovement)
@@ -608,6 +613,9 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         buffer.writeFloat(motion.x.toFloat())
         buffer.writeFloat(motion.y.toFloat())
         buffer.writeFloat(motion.z.toFloat())
+        // Sync explosion radius so the client can emit a flash in onRemovedFromWorld().
+        // Without this the client always has explosionRadiusValue = 0f.
+        buffer.writeFloat(explosionRadiusValue)
     }
 
     override fun readSpawnData(additionalData: FriendlyByteBuf) {
@@ -616,6 +624,8 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
             additionalData.readFloat().toDouble(),
             additionalData.readFloat().toDouble()
         )
+        // Must match the write order in writeSpawnData()
+        this.explosionRadiusValue = additionalData.readFloat()
     }
 
     open fun getSound(): SoundEvent = SoundEvents.EMPTY
@@ -783,6 +793,13 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
 
         var playFlySound: Consumer<FastThrowableProjectile> = Consumer { }
         var playNearFlySound: Consumer<FastThrowableProjectile> = Consumer { }
+    }
+
+    override fun onRemovedFromWorld() {
+        super.onRemovedFromWorld()
+        if (level().isClientSide) {
+            com.atsuishio.superbwarfare.client.lighting.ClientLightingHandler.handleProjectileRemoved(this)
+        }
     }
 
     /** 独立于原版 tickCount 的计时器，每 tick +1，通过 EntityData 持久化同步 */

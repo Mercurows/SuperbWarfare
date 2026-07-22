@@ -174,13 +174,8 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
             if (texture == null) {
                 val finalCrosshairPath = crosshairPath
                 if (finalCrosshairPath != "@Custom") {
-                    LOGGER.log(
-                        crosshairPath
-                    ) { logger ->
-                        logger!!.error(
-                            "Failed to load crosshair texture for {}",
-                            finalCrosshairPath
-                        )
+                    LOGGER.log(crosshairPath) { logger ->
+                        logger.error("Failed to load crosshair texture for {}", finalCrosshairPath)
                     }
                 }
             } else {
@@ -192,116 +187,36 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
                 val y = p.y.toFloat()
 
                 if (crosshairPath == "@VehicleDynamicCross" && pos.canBeSeen()) {
-                    RenderHelper.blit(
-                        poseStack,
-                        texture,
-                        x - scaledMinWH / 2,
-                        y - scaledMinWH / 2,
-                        0f,
-                        0f,
-                        scaledMinWH,
-                        scaledMinWH,
-                        scaledMinWH,
-                        scaledMinWH,
-                        color
-                    )
-                    renderKillIndicatorDynamic(
-                        guiGraphics,
-                        x - 7.5f + (2 * (Math.random() - 0.5f)).toFloat(),
-                        y - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
-                    )
+                    RenderHelper.blit(poseStack, texture, x - scaledMinWH / 2, y - scaledMinWH / 2, 0f, 0f, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color)
+                    renderKillIndicatorDynamic(guiGraphics, x - 7.5f + (2 * (Math.random() - 0.5f)).toFloat(), y - 7.5f + (2 * (Math.random() - 0.5f)).toFloat())
                     val fixedTexture: ResourceLocation? = CROSSHAIR_MAP["@VehicleFixedPoint"]
-                    RenderHelper.blit(
-                        poseStack,
-                        fixedTexture,
-                        centerW,
-                        centerH,
-                        0f,
-                        0f,
-                        scaledMinWH,
-                        scaledMinWH,
-                        scaledMinWH,
-                        scaledMinWH,
-                        color
-                    )
+                    RenderHelper.blit(poseStack, fixedTexture, centerW, centerH, 0f, 0f, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color)
+
                 } else if ((crosshairPath == "@AirCraftCommon"
                             || crosshairPath == "@VehicleLaserCannon"
                             || crosshairPath == "@VehicleCommonGunDynamic"
                             || crosshairPath == "@AC130Gun"
                             || crosshairPath == "@AC130Cannon"
                         ) && pos.canBeSeen()) {
-                    RenderHelper.blit(
-                        poseStack,
-                        texture,
-                        x - scaledMinWH / 2,
-                        y - scaledMinWH / 2,
-                        0f,
-                        0f,
-                        scaledMinWH,
-                        scaledMinWH,
-                        scaledMinWH,
-                        scaledMinWH,
-                        color
-                    )
-                    renderKillIndicatorDynamic(
-                        guiGraphics,
-                        x - 7.5f + (2 * (Math.random() - 0.5f)).toFloat(),
-                        y - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
-                    )
+                    RenderHelper.blit(poseStack, texture, x - scaledMinWH / 2, y - scaledMinWH / 2, 0f, 0f, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color)
+                    renderKillIndicatorDynamic(guiGraphics, x - 7.5f + (2 * (Math.random() - 0.5f)).toFloat(), y - 7.5f + (2 * (Math.random() - 0.5f)).toFloat())
+
                 } else if (crosshairPath == "@AirCraftNacelle") {
-                    RenderHelper.blit(
-                        poseStack,
-                        texture,
-                        centerW,
-                        centerH,
-                        0f,
-                        0f,
-                        scaledMinWH,
-                        scaledMinWH,
-                        scaledMinWH,
-                        scaledMinWH,
-                        color
-                    )
-                    renderKillIndicator(guiGraphics, screenWidth.toFloat(), screenHeight.toFloat())
+                    RenderHelper.blit(poseStack, texture, centerW, centerH, 0f, 0f, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color)
+                        renderKillIndicator(guiGraphics, screenWidth.toFloat(), screenHeight.toFloat())
 
                     val width = Minecraft.getInstance().font.width(FormatTool.format0D(dis, " m"))
-                    guiGraphics.drawString(
-                        Minecraft.getInstance().font,
-                        Component.literal(FormatTool.format0D(dis, " m")),
-                        screenWidth / 2 - width / 2,
-                        screenHeight / 2 + 30,
-                        color,
-                        false
-                    )
+                    guiGraphics.drawString(Minecraft.getInstance().font, Component.literal(FormatTool.format0D(dis, " m")), screenWidth / 2 - width / 2, screenHeight / 2 + 30, color, false)
 
                     val heat = entity.getWeaponHeat(player)
                     val component = entity.firstPersonAmmoComponent(data, player)
-
-                    guiGraphics.drawString(
-                        font, component, (screenWidth) / 2 - 50 - font.width(component), screenHeight / 2 + 2,
-                        MathTool.getGradientColor(color, 0xFF0000, heat, 2), false
-                    )
+                    guiGraphics.drawString(font, component, (screenWidth) / 2 - 50 - font.width(component), screenHeight / 2 + 2, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false)
 
                 } else if (crosshairPath == "@VehicleCnHpjZooming") {
                     val dynamicTexture: ResourceLocation? = CROSSHAIR_MAP.get("@VehicleDynamicCross")
-                    RenderHelper.blit(
-                        poseStack,
-                        dynamicTexture,
-                        x - scaledMinWH / 2,
-                        y - scaledMinWH / 2,
-                        0f,
-                        0f,
-                        scaledMinWH,
-                        scaledMinWH,
-                        scaledMinWH,
-                        scaledMinWH,
-                        color
-                    )
-                    renderKillIndicatorDynamic(
-                        guiGraphics,
-                        x - 7.5f + (2 * (Math.random() - 0.5f)).toFloat(),
-                        y - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
-                    )
+                    RenderHelper.blit(poseStack, dynamicTexture, x - scaledMinWH / 2, y - scaledMinWH / 2, 0f, 0f, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color)
+                    renderKillIndicatorDynamic(guiGraphics, x - 7.5f + (2 * (Math.random() - 0.5f)).toFloat(), y - 7.5f + (2 * (Math.random() - 0.5f)).toFloat())
+
                 } else if (crosshairPath == "@VehicleCommonCannonZooming") {
                     val fovAdjust = 60f / Minecraft.getInstance().options.fov().get()
                     val f = Math.min(screenWidth, screenHeight).toFloat()
@@ -310,72 +225,30 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
                     val j = Mth.floor(f * f1)
                     val k = (screenWidth - i) / 2
                     val l = (screenHeight - j) / 2
-                    RenderHelper.preciseBlit(
-                        guiGraphics,
-                        texture,
-                        k.toFloat(),
-                        l.toFloat(),
-                        0f,
-                        0f,
-                        i.toFloat(),
-                        j.toFloat(),
-                        i.toFloat(),
-                        j.toFloat()
-                    )
-                    renderKillIndicator(guiGraphics, screenWidth.toFloat(), screenHeight.toFloat())
-                } else if (crosshairPath == "@VehicleCommonSeekMissile" && data.get(GunProp.SEEK_WEAPON_INFO) != null && data.get(
-                        GunProp.SEEK_WEAPON_INFO
-                    )?.onlyLockBlock ?: false
+                    RenderHelper.preciseBlit(guiGraphics, texture, k.toFloat(), l.toFloat(), 0f, 0f, i.toFloat(), j.toFloat(), i.toFloat(), j.toFloat())
+                        renderKillIndicator(guiGraphics, screenWidth.toFloat(), screenHeight.toFloat())
+
+                } else if (crosshairPath == "@VehicleCommonSeekMissile"
+                    && data.get(GunProp.SEEK_WEAPON_INFO) != null
+                    && data.get(GunProp.SEEK_WEAPON_INFO)?.onlyLockBlock ?: false
                 ) {
                     var vec3 = ClientEventHandler.seekingPosVehicle
-                    if (ClientEventHandler.seekingTimeVehicle > 0) {
-                        vec3 = ClientEventHandler.lockingPosVehicle
-                    }
+                    if (ClientEventHandler.seekingTimeVehicle > 0) vec3 = ClientEventHandler.lockingPosVehicle
                     if (vec3 != null) {
                         val string = vec3.toFormattedString()
                         val width = Minecraft.getInstance().font.width(string)
-                        RenderHelper.blit(
-                            poseStack,
-                            texture,
-                            centerW,
-                            centerH,
-                            0f,
-                            0f,
-                            scaledMinWH,
-                            scaledMinWH,
-                            scaledMinWH,
-                            scaledMinWH,
-                            color
-                        )
-                        guiGraphics.drawString(
-                            Minecraft.getInstance().font,
-                            string,
-                            screenWidth.toFloat() / 2 - width.toFloat() / 2,
-                            screenHeight.toFloat() - 73,
-                            color,
-                            false
-                        )
+                        RenderHelper.blit(poseStack, texture, centerW, centerH, 0f, 0f, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color)
+                        guiGraphics.drawString(Minecraft.getInstance().font, string, screenWidth.toFloat() / 2 - width.toFloat() / 2, screenHeight.toFloat() - 73, color, false)
                     }
+
                 } else {
-                    RenderHelper.blit(
-                        poseStack,
-                        texture,
-                        centerW,
-                        centerH,
-                        0f,
-                        0f,
-                        scaledMinWH,
-                        scaledMinWH,
-                        scaledMinWH,
-                        scaledMinWH,
-                        color
-                    )
-                    renderKillIndicator(guiGraphics, screenWidth.toFloat(), screenHeight.toFloat())
+                    RenderHelper.blit(poseStack, texture, centerW, centerH, 0f, 0f, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color)
+                        renderKillIndicator(guiGraphics, screenWidth.toFloat(), screenHeight.toFloat())
                 }
             }
 
             poseStack.popPose()
-        } else if (Minecraft.getInstance().options.cameraType == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle) {
+        } else if (Minecraft.getInstance().options.cameraType == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle && !CrossHairOverlay.combatHudHidden) {
             val seekInfo = data.get(GunProp.SEEK_WEAPON_INFO)
             val flag = seekInfo != null && seekInfo.inputBlockPos
             // 渲染第三人称
@@ -383,29 +256,12 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
                 val x = p.x.toFloat()
                 val y = p.y.toFloat()
 
-                RenderHelper.preciseBlit(
-                    guiGraphics,
-                    CROSSHAIR_THIRD_CAMERA,
-                    x - 12,
-                    y - 12,
-                    0f,
-                    0f,
-                    24f,
-                    24f,
-                    24f,
-                    24f
-                )
-                renderKillIndicatorDynamic(
-                    guiGraphics,
-                    x - 7.5f + (2 * (Math.random() - 0.5f)).toFloat(),
-                    y - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
-                )
+                RenderHelper.preciseBlit(guiGraphics, CROSSHAIR_THIRD_CAMERA, x - 12, y - 12, 0f, 0f, 24f, 24f, 24f, 24f)
+            renderKillIndicatorDynamic(guiGraphics, x - 7.5f + (2 * (Math.random() - 0.5f)).toFloat(), y - 7.5f + (2 * (Math.random() - 0.5f)).toFloat())
 
                 poseStack.pushPose()
-
                 poseStack.translate(x, y, 0f)
                 poseStack.scale(0.75f, 0.75f, 1f)
-
                 renderWeaponInfoThird(guiGraphics, entity, player, data, mc.font)
 
                 if (player === entity.getFirstPassenger()) {

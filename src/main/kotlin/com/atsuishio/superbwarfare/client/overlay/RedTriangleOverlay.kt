@@ -17,6 +17,11 @@ import net.minecraftforge.api.distmarker.OnlyIn
 object RedTriangleOverlay : CommonOverlay("red_triangle") {
     private val TRIANGLE = loc("textures/overlay/rpg/red_triangle.png")
 
+    override fun shouldRender(): Boolean {
+        if (CrossHairOverlay.combatHudHidden) return false;
+        return super.shouldRender()
+    }
+
     override fun RenderContext.render() {
         val poseStack = guiGraphics.pose()
 

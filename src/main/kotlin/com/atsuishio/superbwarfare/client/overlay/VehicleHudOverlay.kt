@@ -219,6 +219,8 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
 
     @JvmStatic
     fun renderKillIndicator(guiGraphics: GuiGraphics?, w: Float, h: Float) {
+        if (CrossHairOverlay.combatHudHidden) return
+
         val posX = w / 2f - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
         val posY = h / 2f - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
         val rate = (40 - CrossHairOverlay.killIndicator * 5) / 5.5f
@@ -250,6 +252,8 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
 
     @JvmStatic
     fun renderKillIndicatorDynamic(guiGraphics: GuiGraphics?, posX: Float, posY: Float) {
+        if (CrossHairOverlay.combatHudHidden) return
+
         val rate = (40 - CrossHairOverlay.killIndicator * 5) / 5.5f
 
         if (CrossHairOverlay.hitIndicator > 0) {

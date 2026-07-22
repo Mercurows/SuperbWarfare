@@ -251,6 +251,11 @@ object VehicleEffectUtils {
      */
     @JvmStatic
     fun lowHealthWarning(vehicle: VehicleEntity) {
+        // Dynamic lighting for burning and wreck effects — runs for ALL vehicles
+        // regardless of hasLowHealthWarning (particles/sounds are separate from light)
+        if (vehicle.level().isClientSide) {
+            com.atsuishio.superbwarfare.client.lighting.VehicleLightingHandler.handleVehicleFireLight(vehicle)
+        }
         if (!vehicle.data().compute().hasLowHealthWarning) return
         if (vehicle.health <= 0.4 * vehicle.getMaxHealth()) {
             addRandomParticle(

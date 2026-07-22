@@ -3,8 +3,17 @@ package com.atsuishio.superbwarfare.tools
 import java.text.DecimalFormat
 import java.util.*
 
+/**
+ * Extension function to convert camelCase string into snake_case.
+ */
 fun String.camelToSnake() = FormatTool.camelToSnake(this)
 
+/**
+ * Utility class for decimal formatting and string modifications.
+ *
+ * @author atsuishio
+ * @since 1.0.0
+ */
 object FormatTool {
     @JvmField
     val DECIMAL_FORMAT_0 = DecimalFormat("##")
@@ -44,15 +53,19 @@ object FormatTool {
     @JvmOverloads
     fun format1DZZ(num: Double, str: String = "") = DECIMAL_FORMAT_1ZZ.format(num) + str
 
+    /**
+     * Converts camelCase string to snake_case format safely.
+     * Use lowercaseChar() for efficient char mutations.
+     */
     fun camelToSnake(camel: String): String {
         if (camel.isEmpty()) return camel
         val result = StringBuilder()
-        result.append(camel[0].lowercase(Locale.ROOT))
+        result.append(camel[0].lowercaseChar())
         for (i in 1 until camel.length) {
             val ch = camel[i]
             if (ch.isUpperCase()) {
                 result.append('_')
-                result.append(ch.lowercase(Locale.ROOT))
+                result.append(ch.lowercaseChar())
             } else {
                 result.append(ch)
             }

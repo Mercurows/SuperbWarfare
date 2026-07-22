@@ -45,8 +45,14 @@ fun Vec3.worldToScreen(): Vec3 {
     val window = mc.window
     val camera = mc.gameRenderer.mainCamera
     val worldPosRel = Vector4d(camera.position.reverse().add(this).toVector3f(), 1.0)
-    worldPosRel.mul(ClientEventHandler.modelViewMatrix)
-    worldPosRel.mul(ClientEventHandler.projectionMatrix)
+    
+    // Handle matrix nullability checks securely before multiplying
+    val modelView = ClientEventHandler.modelViewMatrix
+    val projection = ClientEventHandler.projectionMatrix
+    if (modelView != null && projection != null) {
+        worldPosRel.mul(modelView)
+        worldPosRel.mul(projection)
+    }
 
     val depth = worldPosRel.w
 
@@ -178,7 +184,7 @@ object VectorTool {
         // 将 Vec3 转换为 BlockPos（获取所在方块位置）
         val blockPos = BlockPos.containing(position)
 
-        // 获取该位置的流体状态
+        // 获取该位置 of the block
         val fluidState = level.getFluidState(blockPos)
 
         // 检查流体是否有效且位置低于流体表面
@@ -200,12 +206,7 @@ object VectorTool {
      * @return 反射向量 v2。
      */
     fun calculateReflection(v1: Vec3, v0: Vec3): Vec3 {
-        // 归一化法向量（确保单位长度）
-
-        // 计算点积 v1 · n
-
         val dot = v1.dot(v0)
-
         // 计算反射向量: v2 = v1 - 2 * (v1 · n) * n
         return v1 - v0 * (2 * dot)
     }

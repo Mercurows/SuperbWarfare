@@ -92,6 +92,7 @@ class Mod {
         }
 
         CustomData.load()
+        println("Is my mod bad!")
     }
 
     @SubscribeEvent

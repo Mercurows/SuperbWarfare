@@ -76,6 +76,7 @@ private fun registerPayloads() {
     playToClient<ClientVehicleItemMessage>()
     playToClient<OpenVehicleSkinScreenMessage>()
     playToClient<OpenTacticalMapScreenMessage>()
+    playToClient<CrosshairConfigMessage>()
 
     playToServer<AdjustMortarAngleMessage>()
     playToServer<AdjustZoomFovMessage>()

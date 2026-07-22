@@ -127,3 +127,4 @@ run/
 
 .kotlin
 /.claude/settings.json
+bin/

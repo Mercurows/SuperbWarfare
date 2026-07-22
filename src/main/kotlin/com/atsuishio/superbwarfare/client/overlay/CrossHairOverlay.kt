@@ -69,9 +69,20 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
     @JvmField
     var gunRot: Float = 0f
 
+    /**
+     * Set by [CrosshairConfigMessage] from the server.
+     * When {@code true}, all combat HUD elements are hidden: crosshair,
+     * hit/kill/headshot indicators, lock-on frames, and target triangles.
+     */
+    @JvmField
+    var combatHudHidden: Boolean = false
+
     private var scopeScale = 1f
 
-    override fun shouldRender() = super.shouldRender() && !ClientEventHandler.isEditing
+    override fun shouldRender(): Boolean {
+        if (CrossHairOverlay.combatHudHidden) return false;
+        return super.shouldRender() && !ClientEventHandler.isEditing
+    }
 
     override fun RenderContext.render() {
         val stack = player.mainHandItem
@@ -127,6 +138,7 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
         val finPosX = (screenWidth - finLength) / 2 + moveX
         val finPosY = (screenHeight - finLength) / 2 + moveY
 
+        // Crosshair rendering — skipped entirely when server has disabled it
         // 第一人称下的准星
         if (Minecraft.getInstance().options.cameraType == CameraType.FIRST_PERSON) {
             when (crosshair) {
@@ -173,7 +185,7 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
         }
 
         // 第三人称下的准星
-        if (Minecraft.getInstance().options.cameraType == CameraType.THIRD_PERSON_BACK && (ClientEventHandler.zoomTime > 0 || ClientEventHandler.bowPullPos > 0)) {
+        else if (Minecraft.getInstance().options.cameraType == CameraType.THIRD_PERSON_BACK && (ClientEventHandler.zoomTime > 0 || ClientEventHandler.bowPullPos > 0)) {
             renderGunDefaultCrosshair(
                 guiGraphics,
                 stack,
@@ -188,9 +200,12 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
                 spread
             )
         }
-
-        // 在开启伤害指示器时才进行渲染
-        if (DisplayConfig.KILL_INDICATION.get() && !(vehicle?.type == ModEntities.AH_6.get() && vehicle.firstPassenger === player)) {
+        // Hit/kill indicators — hidden when server disables the crosshair.
+        // If the crosshair is off, showing indicators would reveal target info
+        // that the server operator deliberately wants hidden.
+        else if ( DisplayConfig.KILL_INDICATION.get()
+            && !(vehicle?.type == ModEntities.AH_6.get() && vehicle.firstPassenger === player)
+        ) {
             renderKillIndicatorDynamic(guiGraphics, screenWidth, screenHeight, moveX, moveY)
         }
 

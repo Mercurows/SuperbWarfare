@@ -29,8 +29,6 @@ import kotlin.math.max
 @OnlyIn(Dist.CLIENT)
 @Mod.EventBusSubscriber(Dist.CLIENT)
 object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
-    override fun shouldRender() = super.shouldRender() && DisplayConfig.VEHICLE_INFO.get()
-
     private var lookingEntity: Entity? = null
     private var entityRange = 0.0
     private var lookAtEntity = false
@@ -80,6 +78,10 @@ object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
             lookAtEntity = false
         }
     }
+
+    override fun shouldRender() = super.shouldRender()
+        && DisplayConfig.VEHICLE_INFO.get()
+        && !CrossHairOverlay.combatHudHidden
 
     override fun RenderContext.render() {
         if (!lookAtEntity) return

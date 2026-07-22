@@ -20,6 +20,8 @@ import com.atsuishio.superbwarfare.network.message.send.*
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.atsuishio.superbwarfare.tools.*
+import com.atsuishio.superbwarfare.tools.angleTo
+import com.atsuishio.superbwarfare.tools.camelToSnake
 import com.atsuishio.superbwarfare.world.saveddata.TDMSavedData
 import net.minecraft.ChatFormatting
 import net.minecraft.client.CameraType
@@ -59,6 +61,8 @@ import org.lwjgl.glfw.GLFW
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone
 import software.bernie.geckolib.core.animation.AnimationProcessor
 import top.theillusivec4.curios.api.CuriosApi
+import com.atsuishio.superbwarfare.client.lighting.LightPositionRegistry
+import com.atsuishio.superbwarfare.client.lighting.MuzzleFlashHelper
 import java.util.*
 import kotlin.experimental.or
 import kotlin.math.*
@@ -527,6 +531,19 @@ object ClientEventHandler {
         handleControlVehicle(player, stack)
         handleArtilleryIndicator(player, stack)
         calculateBombHitPos(player)
+
+        // Dynamic lighting: update light engine and expire old sources
+        if (!LightPositionRegistry.isEmpty()) {
+            val clientLevel = Minecraft.getInstance().level
+            if (clientLevel != null) {
+                val engine = clientLevel.lightEngine
+                val iter = LightPositionRegistry.activeIterator()
+                while (iter.hasNext()) {
+                    engine.checkBlock(BlockPos.of(iter.nextLong()))
+                }
+            }
+        }
+        LightPositionRegistry.tick()
     }
 
     @JvmStatic
@@ -2785,6 +2802,21 @@ object ClientEventHandler {
     fun handleRenderCrossHair(event: RenderGuiOverlayEvent.Pre) {
         if (event.overlay != VanillaGuiOverlay.CROSSHAIR.type()) return
         val player = localPlayer ?: return
+
+        // When combat HUD is hidden by server, suppress vanilla crosshair in ALL views
+        if (CrossHairOverlay.combatHudHidden) {
+            val stack = player.mainHandItem
+            if (stack.item is GunItem) {
+                event.isCanceled = true
+                return
+            }
+            val vehicle = player.vehicle
+            if (vehicle is VehicleEntity && vehicle.hasWeapon(vehicle.getSeatIndex(player))) {
+                event.isCanceled = true
+                return
+            }
+        }
+
         if (!mc.options.cameraType.isFirstPerson) return
 
         if (player.isUsingItem && player.useItem.`is`(ModItems.ARTILLERY_INDICATOR.get())) {
@@ -3011,12 +3043,17 @@ object ClientEventHandler {
         val shooter = event.shooter
         val vehicle = event.entity
         val index = event.index
-        if (vehicle is BasicGeoVehicleEntity) {
-            val ani = vehicle.getAnimationInstance() ?: return
-            val name = event.weaponName
-                ?: vehicle.getGunName(vehicle.getSeatIndex(shooter))
-                ?: return
-            ani.fire(name.camelToSnake(), index)
-        }
+
+        // Lighting — called directly since VehicleLightingHandler's
+        // @EventBusSubscriber is not reliably auto-registered
+        com.atsuishio.superbwarfare.client.lighting.VehicleLightingHandler
+            .onVehicleFire(event)
+
+        // why if its always Vehicle
+        val ani = vehicle.getAnimationInstance() ?: return
+        val name = event.weaponName
+            ?: vehicle.getGunName(vehicle.getSeatIndex(shooter))
+            ?: return
+        ani.fire(name.camelToSnake(), index)
     }
 }

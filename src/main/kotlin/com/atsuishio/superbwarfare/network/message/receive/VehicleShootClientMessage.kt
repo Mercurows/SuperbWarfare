@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.localPlayer
 import kotlinx.serialization.Serializable
 import thedarkcolour.kotlinforforge.forge.FORGE_BUS
+import net.minecraft.world.entity.Entity
 
 @Serializable
 data class VehicleShootClientMessage(
@@ -26,7 +27,8 @@ data class VehicleShootClientMessage(
 
         if (v is VehicleEntity) {
             val name = weaponName.ifEmpty { null }
-            FORGE_BUS.post(s?.let { ClientVehicleFireEvent(v, it, index, name) })
+            val resolvedShooter: Entity = s ?: player
+            FORGE_BUS.post(ClientVehicleFireEvent(v, resolvedShooter, index, name))
         }
     }
 }

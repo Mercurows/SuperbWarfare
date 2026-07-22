@@ -155,6 +155,13 @@ object MiscConfig {
     }
 
     @JvmField
+    val HIDE_COMBAT_HUD = buildServerConfig {
+        comment("Set true to hide all combat HUD elements (crosshair, hit markers, kill indicators, lock-on frames)")
+        comment("是否隐藏所有战斗HUD元素（准星、命中标记、击杀指示器、锁定框）")
+        define("hide_combat_hud", false)
+    }
+
+    @JvmField
     val SMOKE_HIDE_TARGET = buildServerConfig {
         comment("Set true to allow smoke to prevent entities from being set as target")
         comment("是否允许烟雾弹消除生物仇恨")

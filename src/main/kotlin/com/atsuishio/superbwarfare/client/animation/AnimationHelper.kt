@@ -33,6 +33,8 @@ import software.bernie.geckolib.core.animatable.model.CoreGeoBone
 import software.bernie.geckolib.core.animation.AnimationProcessor
 import software.bernie.geckolib.util.RenderUtils
 import thedarkcolour.kotlinforforge.forge.FORGE_BUS
+import com.atsuishio.superbwarfare.client.lighting.MuzzleFlashHelper
+import net.minecraft.world.phys.Vec3
 
 @Deprecated("Geckolib will be removed since 0.8.10, use Simple Bedrock Model instead")
 object AnimationHelper {
@@ -184,14 +186,20 @@ object AnimationHelper {
     ) {
         val data = GunData.from(itemStack)
 
-        if (name == "flare" && ClientEventHandler.fireRotTimer > 0 && ClientEventHandler.fireRotTimer < 0.3 && data.attachment.get(AttachmentType.BARREL) != 2) {
+        if (name == "flare"
+            && ClientEventHandler.fireRotTimer > 0
+            && ClientEventHandler.fireRotTimer < 0.3
+            && data.attachment.get(AttachmentType.BARREL) != 2
+        ) {
             bone.scaleX = (size + 0.8 * size * (Math.random() - 0.5)).toFloat()
             bone.scaleY = (size + 0.8 * size * (Math.random() - 0.5)).toFloat()
-            bone.rotZ = (0.5 * (Math.random() - 0.5)).toFloat()
+            bone.rotZ   = (0.5 * (Math.random() - 0.5)).toFloat()
 
             var height = 0f
-
-            if ((data.attachment.get(AttachmentType.SCOPE) == 2 || data.attachment.get(AttachmentType.SCOPE) == 3) && ClientEventHandler.zoom) {
+            if ((data.attachment.get(AttachmentType.SCOPE) == 2
+                        || data.attachment.get(AttachmentType.SCOPE) == 3)
+                && ClientEventHandler.zoom
+            ) {
                 height = -0.07f
             }
 
@@ -202,22 +210,71 @@ object AnimationHelper {
             RenderUtils.rotateMatrixAroundBone(stack, bone)
             RenderUtils.scaleMatrixForBone(stack, bone)
             RenderUtils.translateAwayFromPivotPoint(stack, bone)
-            val pose = stack.last()
-            val poseMatrix = pose.pose()
+
+            val pose         = stack.last()
+            val poseMatrix   = pose.pose()
             val normalMatrix = pose.normal()
-            val consumer = buffer.getBuffer(ModRenderTypes.MUZZLE_FLASH_TYPE.apply(Mod.loc("textures/particle/flare.png")))
+            val consumer = buffer.getBuffer(
+                ModRenderTypes.MUZZLE_FLASH_TYPE.apply(Mod.loc("textures/particle/flare.png"))
+            )
             vertex(consumer, poseMatrix, normalMatrix, packedLightIn, 0f, 0f, 0, 1)
             vertex(consumer, poseMatrix, normalMatrix, packedLightIn, 1f, 0f, 1, 1)
             vertex(consumer, poseMatrix, normalMatrix, packedLightIn, 1f, 1f, 1, 0)
             vertex(consumer, poseMatrix, normalMatrix, packedLightIn, 0f, 1f, 0, 0)
             stack.popPose()
 
+            // Spawn muzzle flash light at computed world-space barrel tip
+            spawnMuzzleLight(itemStack, x, y, z)
+
             lerpTimer = Mth.lerp(
                 Minecraft.getInstance().partialTick.toDouble(),
                 lerpTimer.toDouble(),
-                (ClientEventHandler.fireRotTimer * 0.667f)
+                ClientEventHandler.fireRotTimer * 0.667f
             ).toFloat()
         }
+    }
+
+       /**
+     * Computes the world-space muzzle tip position from the flare offsets and
+     * the local player's eye position + look direction, then registers a
+     * directional cone of dynamic light sources along the barrel axis.
+     *
+     * <p>The flare coordinate system matches the first-person weapon model:
+     * <ul>
+     *   <li>{@code +z} → forward along the barrel (aligns with lookAngle)</li>
+     *   <li>{@code +x} → left in model space (negated → camera right)</li>
+     *   <li>{@code +y} → up (aligns with camera up)</li>
+     * </ul>
+     *
+     * @param itemStack the held weapon stack
+     * @param flareX    lateral offset in blocks (model +x = camera left)
+     * @param flareY    vertical offset in blocks
+     * @param flareZ    forward offset in blocks along barrel
+     */
+    @JvmStatic
+    fun spawnMuzzleLight(itemStack: ItemStack, flareX: Double, flareY: Double, flareZ: Double) {
+        val params = com.atsuishio.superbwarfare.client.lighting.MuzzleFlashHelper
+            .calculateFromStack(itemStack) ?: return
+
+        val player = Minecraft.getInstance().player ?: return
+        val look   = player.lookAngle
+
+        // Build camera-aligned basis vectors.
+        // Right: perpendicular to look direction in the horizontal plane.
+        val worldUp = net.minecraft.world.phys.Vec3(0.0, 1.0, 0.0)
+        val right   = look.cross(worldUp).normalize()
+        // Up: perpendicular to both look and right.
+        val up      = right.cross(look).normalize()
+
+        // Model +x is camera LEFT, so negate for right.
+        val muzzleWorld = player.eyePosition
+            .add(look.scale(flareZ))
+            .add(right.scale(-flareX))
+            .add(up.scale(flareY))
+
+        // Spawn a forward-facing cone of lights instead of a linear chain.
+        com.atsuishio.superbwarfare.client.lighting.MuzzleFlashHelper
+            .spawnFlashCone(muzzleWorld, look, params)
     }
 
     @JvmStatic

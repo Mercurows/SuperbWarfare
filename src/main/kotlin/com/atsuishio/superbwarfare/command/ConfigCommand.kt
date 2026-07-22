@@ -4,6 +4,8 @@ import com.atsuishio.superbwarfare.config.server.*
 import net.minecraft.network.chat.Component
 import net.minecraftforge.common.ForgeConfigSpec
 import kotlin.reflect.KProperty0
+import com.atsuishio.superbwarfare.network.message.receive.CrosshairConfigMessage
+import com.atsuishio.superbwarfare.tools.sendPacket
 
 val CONFIG_COMMAND = buildCommand("config") {
     requirePermission(0)
@@ -34,6 +36,13 @@ val CONFIG_COMMAND = buildCommand("config") {
     booleanConfig(MiscConfig::DROP_AMMO_BOX)
     booleanConfig(MiscConfig::SEND_KILL_FEEDBACK)
     booleanConfig(MiscConfig::MINE_HITBOX_INVISIBLE)
+    booleanConfig(MiscConfig::HIDE_COMBAT_HUD) { value ->
+        val server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer()
+            ?: return@booleanConfig
+        server.playerList.players.forEach { player ->
+            player.sendPacket(CrosshairConfigMessage(value))
+        }
+    }
     booleanConfig(MiscConfig::SMOKE_HIDE_TARGET)
     booleanConfig(MiscConfig::THROW_MEDICAL_KIT)
 

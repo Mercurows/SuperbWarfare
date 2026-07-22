@@ -190,7 +190,10 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
 
         val seekInfo = gunData.get(GunProp.SEEK_WEAPON_INFO)
         val color = gunData.get(GunProp.CROSSHAIR_COLOR).get()
-        if (seekInfo == null) {
+
+        // Lock-on frames, target indicators, and entity labels are part of
+        // the targeting HUD — suppress when server disables crosshair overlay.
+        if (seekInfo == null || CrossHairOverlay.combatHudHidden) {
             poseStack.popPose()
             return
         }
@@ -246,7 +249,7 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
                         if (seekInfo.calculateTrajectory) {
                             val shootVector = calculateFiringSolution(
                                 vehicle.getShootPos(player, partialTick),
-                                lerpGetEntityBoundingBoxCenter(targetEntity, partialTick),
+                                lerpGetEntityBoundingBoxCenter(targetEntity!!, partialTick),
                                 targetEntity.deltaMovement.scale(1.25),
                                 vehicle.getProjectileVelocity(player).toDouble(),
                                 vehicle.getProjectileGravity(player).toDouble()
@@ -624,28 +627,5 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
         val length = font.width(component)
 
         guiGraphics.drawString(font, component, -length / 2, -9, Mth.hsvToRgb(0f, heat, 1f), false)
-    }
-
-    fun getAroundPos(direction: Vec3, center: Vec3, radius: Double): Vec3 {
-        var direction = direction
-        direction = direction.normalize()
-
-        // 构建垂直正交基
-        val randomPerp: Vec3 = getRandomPerpendicular(direction)
-        val u = randomPerp.normalize()
-        val v = direction.cross(u).normalize()
-
-        val theta = 2 * Math.PI
-        val xOffset = radius * (cos(theta) * u.x + sin(theta) * v.x)
-        val yOffset = radius * (cos(theta) * u.y + sin(theta) * v.y)
-        val zOffset = radius * (cos(theta) * u.z + sin(theta) * v.z)
-
-        return center.add(xOffset, yOffset, zOffset)
-    }
-
-    private fun getRandomPerpendicular(dir: Vec3): Vec3 {
-        val candidate1 = Vec3(dir.y, -dir.x, 0.0) // 在XY平面垂直
-        if (candidate1.lengthSqr() > 1e-4) return candidate1
-        return Vec3(0.0, dir.z, -dir.y) // 备用垂直向量
     }
 }
