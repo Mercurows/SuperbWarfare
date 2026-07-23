@@ -787,13 +787,11 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         this.xRotO = this.xRot
     }
 
-    companion object {
-        @JvmField
-        val SYNCED_TICK: EntityDataAccessor<Int> =
-            SynchedEntityData.defineId(FastThrowableProjectile::class.java, EntityDataSerializers.INT)
-
-        var playFlySound: Consumer<FastThrowableProjectile> = Consumer { }
-        var playNearFlySound: Consumer<FastThrowableProjectile> = Consumer { }
+    override fun onAddedToWorld() {
+        super.onAddedToWorld()
+        if (level().isClientSide) {
+            ClientLightingHandler.handleProjectileAdded(this)
+        }
     }
 
     override fun onRemovedFromWorld() {
@@ -801,6 +799,15 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         if (level().isClientSide) {
             ClientLightingHandler.handleProjectileRemoved(this)
         }
+    }
+
+    companion object {
+        @JvmField
+        val SYNCED_TICK: EntityDataAccessor<Int> =
+            SynchedEntityData.defineId(FastThrowableProjectile::class.java, EntityDataSerializers.INT)
+
+        var playFlySound: Consumer<FastThrowableProjectile> = Consumer { }
+        var playNearFlySound: Consumer<FastThrowableProjectile> = Consumer { }
     }
 
     /** 独立于原版 tickCount 的计时器，每 tick +1，通过 EntityData 持久化同步 */

@@ -91,14 +91,28 @@ object LightPositionRegistry {
     fun isEmpty(): Boolean = active.isEmpty()
 
     /**
-     * Advances the internal tick counter and removes expired sources.
-     * Forcefully updates the lighting engine on expired block positions to prevent ghost lighting.
+     * Advances the internal tick counter, refreshes active light sources, and
+     * removes expired ones.
+     *
+     * <p>Active sparks get a fresh {@code checkBlock} call every tick so the
+     * lighting engine never has a chance to serve a stale cached value.
+     * A single {@code checkBlock} at spawn time is not enough — the engine
+     * queues updates internally, and by the time it processes the queue the
+     * spark may already have a lower level or may have expired entirely.
+     * Calling {@code checkBlock} every tick keeps the value authoritative for
+     * the entire lifetime of the spark, regardless of engine scheduling.
+     *
+     * <p>Expired sparks receive one final {@code checkBlock} so the engine
+     * clears the cached non-zero emission and restores the block's natural
+     * light level.
      */
     @JvmStatic
     fun tick() {
         currentTick++
         if (sparks.isEmpty()) return
 
+        val level = Minecraft.getInstance().level ?: return
+        val engine = level.lightEngine
         expiredBuf.clear()
         val curLow = currentTick and 0xFFFFL
 
@@ -108,18 +122,24 @@ object LightPositionRegistry {
             val expiryLow = packed and 0xFFFFL
             val total = (expiryLow - startLow) and 0xFFFFL
             val elapsed = (curLow - startLow) and 0xFFFFL
-            if (elapsed > total) expiredBuf.add(entry.longKey)
+
+            if (elapsed > total) {
+                expiredBuf.add(entry.longKey)
+            } else {
+                // Re-queue a lighting check every tick while the spark is alive.
+                // Without this, the engine may serve a cached value from before
+                // the spark was registered, making the flash invisible.
+                engine.checkBlock(BlockPos.of(entry.longKey))
+            }
         }
 
         if (!expiredBuf.isEmpty) {
-            val level = Minecraft.getInstance().level
-            val engine = level?.lightEngine
             for (i in expiredBuf.indices) {
                 val key = expiredBuf.getLong(i)
                 sparks.remove(key)
                 active.remove(key)
-                // Force a final lighting recalculation on the expired block to clean up the dynamic light
-                engine?.checkBlock(BlockPos.of(key))
+                // Final check forces the engine to clear the cached emission value
+                engine.checkBlock(BlockPos.of(key))
             }
             expiredBuf.clear()
         }

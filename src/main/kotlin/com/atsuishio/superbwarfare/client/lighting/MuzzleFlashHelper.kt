@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.client.lighting
 
+import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
