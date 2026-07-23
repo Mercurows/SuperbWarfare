@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.ClientSyncedEntityHandler
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.client.overlay.weapon.*
+import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -29,8 +30,6 @@ import net.minecraftforge.api.distmarker.OnlyIn
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
-import kotlin.math.cos
-import kotlin.math.sin
 
 /**
  * 控制载具主武器的玩家显示的HUD
@@ -193,7 +192,7 @@ object VehicleMainWeaponHudOverlay : CommonOverlay("vehicle_main_weapon_hud") {
 
         // Lock-on frames, target indicators, and entity labels are part of
         // the targeting HUD — suppress when server disables crosshair overlay.
-        if (seekInfo == null || CrossHairOverlay.combatHudHidden) {
+        if (seekInfo == null || MiscConfig.HIDE_COMBAT_HUD.get()) {
             poseStack.popPose()
             return
         }

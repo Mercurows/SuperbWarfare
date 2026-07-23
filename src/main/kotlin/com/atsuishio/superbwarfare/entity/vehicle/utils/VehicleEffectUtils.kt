@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity.vehicle.utils
 
+import com.atsuishio.superbwarfare.client.lighting.VehicleLightingHandler
 import com.atsuishio.superbwarfare.client.particle.CannonMuzzleFlareOption
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType
@@ -254,7 +255,7 @@ object VehicleEffectUtils {
         // Dynamic lighting for burning and wreck effects — runs for ALL vehicles
         // regardless of hasLowHealthWarning (particles/sounds are separate from light)
         if (vehicle.level().isClientSide) {
-            com.atsuishio.superbwarfare.client.lighting.VehicleLightingHandler.handleVehicleFireLight(vehicle)
+            VehicleLightingHandler.handleVehicleFireLight(vehicle)
         }
         if (!vehicle.data().compute().hasLowHealthWarning) return
         if (vehicle.health <= 0.4 * vehicle.getMaxHealth()) {

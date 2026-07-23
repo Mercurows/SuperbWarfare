@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.api.event.ProjectileHitEvent.HitBlock
 import com.atsuishio.superbwarfare.api.event.ProjectileHitEvent.HitEntity
+import com.atsuishio.superbwarfare.client.lighting.ClientLightingHandler
 import com.atsuishio.superbwarfare.client.particle.BulletDecalOption
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.config.server.ProjectileConfig
@@ -28,8 +29,6 @@ import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.HitboxHelper.getBoundingBox
 import com.atsuishio.superbwarfare.tools.HitboxHelper.getVelocity
 import com.atsuishio.superbwarfare.tools.VectorTool.isInLiquid
-import com.atsuishio.superbwarfare.tools.toVector3d
-import com.atsuishio.superbwarfare.tools.toVec3
 import com.atsuishio.superbwarfare.world.phys.EntityResult
 import com.atsuishio.superbwarfare.world.phys.ExtendedEntityRayTraceResult
 import net.minecraft.core.BlockPos
@@ -67,7 +66,6 @@ import net.minecraftforge.entity.PartEntity
 import java.util.function.Predicate
 import kotlin.math.PI
 import kotlin.math.max
-import com.atsuishio.superbwarfare.client.lighting.ClientLightingHandler
 
 @Suppress("unused")
 open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level: Level) : Projectile(entityType, level),
@@ -209,7 +207,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
     override fun getHitResult(entity: Entity, startVec: Vec3, endVec: Vec3): EntityResult? {
         val expandHeight = if (entity is Player && !entity.isCrouching) 0.0625 else 0.0
 
-      var hitPos: Vec3? = null
+        var hitPos: Vec3? = null
         if (entity is OBBEntity && !entity.enableAABB()) {
             for (obb in entity.getOBBs()) {
                 if (obb.part == OBB.Part.COLLISION) continue
@@ -973,7 +971,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
     override fun onRemovedFromWorld() {
         super.onRemovedFromWorld()
         if (level().isClientSide) {
-            com.atsuishio.superbwarfare.client.lighting.ClientLightingHandler.handleProjectileRemoved(this)
+            ClientLightingHandler.handleProjectileRemoved(this)
         }
     }
 
@@ -1033,7 +1031,7 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
 
         private val IGNORE_LIST = Predicate { input: BlockState ->
             input.`is`(ModTags.Blocks.BULLET_IGNORE) &&
-                !(input.`is`(Blocks.IRON_DOOR) || input.`is`(Blocks.IRON_TRAPDOOR))
+                    !(input.`is`(Blocks.IRON_DOOR) || input.`is`(Blocks.IRON_TRAPDOOR))
         }
     }
 }

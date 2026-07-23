@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.entity.projectile.IBulletProperties
 import net.minecraft.client.Minecraft
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.projectile.Projectile
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
@@ -30,41 +31,41 @@ object ClientLightingHandler {
      *
      * @param entity the projectile entity being ticked
      */
-     @JvmStatic
-     fun handleProjectileTick(entity: Entity) {
-         if (entity.tickCount == 1) {
-             val owner = (entity as? net.minecraft.world.entity.projectile.Projectile)?.owner
-             val localPlayer = net.minecraft.client.Minecraft.getInstance().player
+    @JvmStatic
+    fun handleProjectileTick(entity: Entity) {
+        if (entity.tickCount == 1) {
+            val owner = (entity as? Projectile)?.owner
+            val localPlayer = Minecraft.getInstance().player
 
-             if (owner !== localPlayer && owner is LivingEntity) {
-                 val params = MuzzleFlashHelper.calculateFromOwner(owner)
+            if (owner !== localPlayer && owner is LivingEntity) {
+                val params = MuzzleFlashHelper.calculateFromOwner(owner)
 
-                 // Use deltaMovement if available, otherwise use the owner's look angle
-                 val direction = if (entity.deltaMovement.lengthSqr() > 1e-6) {
-                     entity.deltaMovement
-                 } else {
-                     owner.lookAngle
-                 }
+                // Use deltaMovement if available, otherwise use the owner's look angle
+                val direction = if (entity.deltaMovement.lengthSqr() > 1e-6) {
+                    entity.deltaMovement
+                } else {
+                    owner.lookAngle
+                }
 
-                 if (params != null) {
-                     MuzzleFlashHelper.spawnFlashCone(entity.position(), direction, params)
-                 }
-             }
+                if (params != null) {
+                    MuzzleFlashHelper.spawnFlashCone(entity.position(), direction, params)
+                }
+            }
 
-             val launchFlash = ProjectileLightHelper.getLaunchFlash(entity)
-             if (launchFlash != null) {
-                 val direction = if (entity.deltaMovement.lengthSqr() > 1e-6) {
-                     entity.deltaMovement
-                 } else {
-                     (entity as? net.minecraft.world.entity.projectile.Projectile)
-                         ?.owner?.lookAngle ?: entity.deltaMovement
-                 }
-                 MuzzleFlashHelper.spawnFlashCone(entity.position(), direction, launchFlash)
-             }
-         }
+            val launchFlash = ProjectileLightHelper.getLaunchFlash(entity)
+            if (launchFlash != null) {
+                val direction = if (entity.deltaMovement.lengthSqr() > 1e-6) {
+                    entity.deltaMovement
+                } else {
+                    (entity as? Projectile)
+                        ?.owner?.lookAngle ?: entity.deltaMovement
+                }
+                MuzzleFlashHelper.spawnFlashCone(entity.position(), direction, launchFlash)
+            }
+        }
 
-         ProjectileLightHelper.emitTrailLight(entity)
-     }
+        ProjectileLightHelper.emitTrailLight(entity)
+    }
 
     /**
      * Called when a projectile entity is removed from the client world.

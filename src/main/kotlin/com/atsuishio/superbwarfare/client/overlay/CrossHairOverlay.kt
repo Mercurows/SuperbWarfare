@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.compat.realcamera.RealCameraCompatHolder
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
+import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunProp
@@ -69,18 +70,10 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
     @JvmField
     var gunRot: Float = 0f
 
-    /**
-     * Set by [CrosshairConfigMessage] from the server.
-     * When {@code true}, all combat HUD elements are hidden: crosshair,
-     * hit/kill/headshot indicators, lock-on frames, and target triangles.
-     */
-    @JvmField
-    var combatHudHidden: Boolean = false
-
     private var scopeScale = 1f
 
     override fun shouldRender(): Boolean {
-        if (CrossHairOverlay.combatHudHidden) return false;
+        if (MiscConfig.HIDE_COMBAT_HUD.get()) return false
         return super.shouldRender() && !ClientEventHandler.isEditing
     }
 

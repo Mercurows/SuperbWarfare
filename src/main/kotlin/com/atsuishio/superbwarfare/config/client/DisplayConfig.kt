@@ -157,20 +157,20 @@ object DisplayConfig {
     val ENABLE_VERSION_CHECK_WARNING = buildClientConfig {
         comment("Set true to enable version check warning when version of this mod has been changed")
         comment("是否启用版本检查警告")
-        define("enable_version_check_warning", true).also { pop() }
+        define("enable_version_check_warning", true)
     }
 
     @JvmField
-    val TACTICAL_MAP = buildClientConfig {
-        comment("Set true to enable the tactical map overlay")
-        comment("是否开启战术地图")
-        define("tactical_map", true)
+    val ENABLE_FIRE_FLASH_LIGHT = buildClientConfig {
+        comment("Set true to enable flashlights when firing")
+        comment("是否启用开火时照明效果")
+        define("enable_fire_flash_light", true)
     }
 
     @JvmField
     val TACTICAL_MAP_ZOOM = buildClientConfig {
         comment("Zoom level for the tactical map (1=closest, 10=farthest)")
         comment("战术地图缩放等级")
-        defineInRange("tactical_map_zoom", 5.0, 0.05, 20.0)
+        defineInRange("tactical_map_zoom", 5.0, 0.05, 20.0).also { pop() }
     }
 }

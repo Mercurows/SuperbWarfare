@@ -1086,6 +1086,8 @@
   "config.superbwarfare.client.display.heat_bar_hud_y_offset.des": "过热条HUD位置的竖直方向偏移量",
   "config.superbwarfare.client.display.vehicle_lod_distance": "载具低模渲染距离",
   "config.superbwarfare.client.display.vehicle_lod_distance.des": "渲染载具低模的最小全局距离，设置为-1则不生效",
+  "config.superbwarfare.client.display.enable_fire_flash_light": "开火光效",
+  "config.superbwarfare.client.display.enable_fire_flash_light.des": "是否启用使用武器开火时的光照效果",
   "config.superbwarfare.client.control": "控制配置",
   "config.superbwarfare.client.control.invert_aircraft_control": "飞行器鼠标反转",
   "config.superbwarfare.client.control.invert_aircraft_control.des": "开启飞行器鼠标反转",

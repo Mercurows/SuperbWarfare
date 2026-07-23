@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.projectile
 import com.atsuishio.superbwarfare.Mod.Companion.queueServerWork
 import com.atsuishio.superbwarfare.api.event.ProjectileHitEvent.HitBlock
 import com.atsuishio.superbwarfare.api.event.ProjectileHitEvent.HitEntity
+import com.atsuishio.superbwarfare.client.lighting.ClientLightingHandler
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.client.particle.CustomFlareOption
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
@@ -236,7 +237,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         val level = this.level()
 
         if (level.isClientSide) {
-            com.atsuishio.superbwarfare.client.lighting.ClientLightingHandler.handleProjectileTick(this)
+            ClientLightingHandler.handleProjectileTick(this)
         }
 
         if (!level.isClientSide() && this.tickCount > this.getNoHitTicks()) {
@@ -798,7 +799,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
     override fun onRemovedFromWorld() {
         super.onRemovedFromWorld()
         if (level().isClientSide) {
-            com.atsuishio.superbwarfare.client.lighting.ClientLightingHandler.handleProjectileRemoved(this)
+            ClientLightingHandler.handleProjectileRemoved(this)
         }
     }
 

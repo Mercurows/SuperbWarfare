@@ -36,13 +36,6 @@ for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
 @rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
 set DEFAULT_JVM_OPTS="-Xmx64m" "-Xms64m"
 
-@rem CUSTOM: Check if --stop or clean is requested
-set KILL_JAVA=0
-for %%a in (%*) do (
-    if "%%a"=="--stop" set KILL_JAVA=1
-    if "%%a"=="clean" set KILL_JAVA=1
-)
-
 @rem Find java.exe
 if defined JAVA_HOME goto findJavaFromJavaHome
 
@@ -77,24 +70,6 @@ goto fail
 
 set CLASSPATH=%APP_HOME%\gradle\wrapper\gradle-wrapper.jar
 
-@rem CUSTOM: Kill lingering Java BEFORE clean/stop
-if %KILL_JAVA%==1 (
-    echo [gradlew] Stopping Gradle daemons and killing lingering Java processes...
-    "%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -classpath "%CLASSPATH%" org.gradle.wrapper.GradleWrapperMain --stop >NUL 2>&1
-
-    @rem Give daemons a moment to shut down gracefully
-    timeout /t 2 /nobreak >NUL
-
-    @rem Force kill any remaining java.exe (suppress errors if none found)
-    taskkill /F /IM java.exe >NUL 2>&1
-
-    @rem If the original command was just --stop, we're done
-    for %%a in (%*) do if "%%a"=="--stop" goto mainEnd
-
-    @rem Small delay to let Windows release file locks
-    timeout /t 1 /nobreak >NUL
-    echo [gradlew] All Java processes killed. Proceeding with: %*
-)
 
 @rem Execute Gradle
 "%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -classpath "%CLASSPATH%" org.gradle.wrapper.GradleWrapperMain %*

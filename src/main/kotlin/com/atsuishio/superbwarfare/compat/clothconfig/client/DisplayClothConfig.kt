@@ -276,5 +276,17 @@ object DisplayClothConfig {
                 .setTooltip(Component.translatable("config.superbwarfare.client.display.shock_screen_shake.des"))
                 .build()
         )
+
+        category.addEntry(
+            entryBuilder
+                .startBooleanToggle(
+                    Component.translatable("config.superbwarfare.client.display.enable_fire_flash_light"),
+                    DisplayConfig.ENABLE_FIRE_FLASH_LIGHT.get()
+                )
+                .setDefaultValue(true)
+                .setSaveConsumer { DisplayConfig.ENABLE_FIRE_FLASH_LIGHT.set(it) }
+                .setTooltip(Component.translatable("config.superbwarfare.client.display.enable_fire_flash_light.des"))
+                .build()
+        )
     }
 }

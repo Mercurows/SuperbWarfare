@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.overlay
 
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
+import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimableEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -29,7 +30,7 @@ import kotlin.math.max
 object VehicleTeamOverlay : CommonOverlay("vehicle_team") {
     override fun shouldRender() = super.shouldRender()
       && DisplayConfig.VEHICLE_INFO.get()
-      && !CrossHairOverlay.combatHudHidden
+      && !MiscConfig.HIDE_COMBAT_HUD.get()
 
     override fun RenderContext.render() {
         val lookingEntity = OverlayTraceHandler.cameraEntity as? VehicleEntity ?: return

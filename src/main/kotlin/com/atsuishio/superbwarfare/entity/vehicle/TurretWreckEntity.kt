@@ -1,9 +1,12 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
+import com.atsuishio.superbwarfare.client.lighting.VehicleLightingHandler
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
 import com.atsuishio.superbwarfare.data.loot.WreckageLootData
 import com.atsuishio.superbwarfare.data.loot.WreckageLootDataManager
+import com.atsuishio.superbwarfare.entity.getValue
+import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier.Companion.createDefaultModifier
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
@@ -11,7 +14,8 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModParticleTypes
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.tools.*
+import com.atsuishio.superbwarfare.tools.CustomExplosion
+import com.atsuishio.superbwarfare.tools.ParticleTool
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.particles.ParticleOptions
@@ -68,17 +72,9 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, level: Level) 
             .multiply(0.02f, DamageTypes.EXPLOSION)
     }
 
-    open var quaternion: Quaternionf
-        get() = entityData.get(QUATERNION)
-        set(value) { entityData.set(QUATERNION, value) }
-
-    open var vehicleName: String
-        get() = entityData.get(VEHICLE_NAME)
-        set(value) { entityData.set(VEHICLE_NAME, value) }
-
-    open var health: Float
-        get() = entityData.get(HEALTH)
-        set(value) { entityData.set(HEALTH, value) }
+    open var quaternion by QUATERNION
+    open var vehicleName by VEHICLE_NAME
+    open var health by HEALTH
 
     open var qxO = 0f
     open var qyO = 0f
@@ -165,7 +161,12 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, level: Level) 
     override fun readAdditionalSaveData(compound: CompoundTag) {
         entityData.set(
             QUATERNION,
-            Quaternionf(compound.getFloat("Qx"), compound.getFloat("Qy"), compound.getFloat("Qz"), compound.getFloat("Qw"))
+            Quaternionf(
+                compound.getFloat("Qx"),
+                compound.getFloat("Qy"),
+                compound.getFloat("Qz"),
+                compound.getFloat("Qw")
+            )
         )
         entityData.set(VEHICLE_NAME, compound.getString("VehicleName"))
         entityData.set(HEALTH, compound.getFloat("Health"))
@@ -216,7 +217,7 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, level: Level) 
 
         if (level().isClientSide) {
             // Emit dynamic fire light for flying/tumbling turret wreck
-            com.atsuishio.superbwarfare.client.lighting.VehicleLightingHandler.handleTurretWreckLight(this)
+            VehicleLightingHandler.handleTurretWreckLight(this)
 
             val random = 2 * (this.random.nextFloat() - 0.5f)
             addRandomParticle(
@@ -371,7 +372,8 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, level: Level) 
     }
 
     open fun setQuaternion(quaternion: Quaterniond) {
-        this.quaternion = Quaternionf(quaternion.x.toFloat(), quaternion.y.toFloat(), quaternion.z.toFloat(), quaternion.w.toFloat())
+        this.quaternion =
+            Quaternionf(quaternion.x.toFloat(), quaternion.y.toFloat(), quaternion.z.toFloat(), quaternion.w.toFloat())
     }
 
     open fun getQuaternion(tickDelta: Float) = Quaternionf(
@@ -518,7 +520,7 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, level: Level) 
     override fun onRemovedFromWorld() {
         super.onRemovedFromWorld()
         if (level().isClientSide) {
-            com.atsuishio.superbwarfare.client.lighting.VehicleLightingHandler.handleTurretWreckExplosion(this)
+            VehicleLightingHandler.handleTurretWreckExplosion(this)
         }
     }
 }

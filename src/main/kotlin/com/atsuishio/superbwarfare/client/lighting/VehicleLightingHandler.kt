@@ -1,17 +1,17 @@
 package com.atsuishio.superbwarfare.client.lighting
 
 import com.atsuishio.superbwarfare.api.event.ClientVehicleFireEvent
-import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.TurretWreckEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import net.minecraft.client.Minecraft
 import net.minecraft.core.BlockPos
-import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber
-import java.util.Random
+import java.util.*
+import kotlin.math.PI
+import kotlin.math.sin
 
 /**
  * Client-side handler for vehicle dynamic lighting events including weapon fire,
@@ -33,13 +33,13 @@ object VehicleLightingHandler {
      */
     @JvmStatic
     fun onVehicleFire(event: ClientVehicleFireEvent) {
-        val vehicle: VehicleEntity = event.entity ?: return
+        val vehicle: VehicleEntity = event.vehicle
         if (!vehicle.level().isClientSide) return
 
-        val weaponName: String? = event.weaponName
-        val shooter: Entity? = event.shooter
+        val weaponName = event.weaponName
+        val shooter = event.shooter
 
-        val gunData: GunData = if (!weaponName.isNullOrEmpty()) {
+        val gunData = if (!weaponName.isNullOrEmpty()) {
             vehicle.getGunData(weaponName)
         } else {
             vehicle.getGunData(event.index)
@@ -47,53 +47,51 @@ object VehicleLightingHandler {
             return
         }
 
-        val shootPos: Vec3 = if (shooter != null) {
-            vehicle.getShootPos(shooter, 1f)
-        } else if (!weaponName.isNullOrEmpty()) {
-            vehicle.getShootPos(weaponName, 1f)
-        } else {
-            vehicle.position()
-        }
-
-        var shootVec: Vec3 = if (shooter != null) {
-            vehicle.getShootVec(shooter, 1f)
-        } else if (!weaponName.isNullOrEmpty()) {
-            vehicle.getShootVec(weaponName, 1f)
-        } else {
-            Vec3.ZERO
-        }
+        val shootPos = vehicle.getShootPos(shooter, 1f)
+        var shootVec = vehicle.getShootVec(shooter, 1f)
 
 
         if (shootVec.lengthSqr() < 1e-4) {
-            if (shooter != null) {
-                shootVec = shooter.lookAngle
-            }
+            shootVec = shooter.lookAngle
         }
 
         if (shootVec.lengthSqr() < 1e-4) {
             return
         }
 
-        val damageVal: Any? = gunData.get(GunProp.DAMAGE)
-        val damage: Double = if (damageVal is Number) damageVal.toDouble() else 10.0
+        val damage = gunData.get(GunProp.DAMAGE)
 
         val maxLevel: Int
         val minLevel: Int
         val duration: Int
 
         when {
-            damage >= 30.0 -> { maxLevel = 15; minLevel = 11; duration = 4 }
-            damage >= 12.0 -> { maxLevel = 14; minLevel = 9;  duration = 3 }
-            else           -> { maxLevel = 13; minLevel = 8;  duration = 2 }
+            damage >= 30.0 -> {
+                maxLevel = 15
+                minLevel = 11
+                duration = 4
+            }
+
+            damage >= 12.0 -> {
+                maxLevel = 14
+                minLevel = 9
+                duration = 3
+            }
+
+            else -> {
+                maxLevel = 13
+                minLevel = 8
+                duration = 2
+            }
         }
 
         val params = MuzzleFlashHelper.FlashParams(maxLevel, minLevel, duration)
         MuzzleFlashHelper.spawnFlashCone(shootPos, shootVec, params)
 
-        val dir      = shootVec.normalize()
+        val dir = shootVec.normalize()
         val mountPos = shootPos.subtract(dir.scale(0.8))
-        val mountBp  = BlockPos.containing(mountPos.x, mountPos.y, mountPos.z)
-        val engine   = vehicle.level().lightEngine
+        val mountBp = BlockPos.containing(mountPos.x, mountPos.y, mountPos.z)
+        val engine = vehicle.level().lightEngine
         LightPositionRegistry.putSpark(mountBp.asLong(), (maxLevel - 2).coerceAtLeast(8), 5, duration)
         engine.checkBlock(mountBp)
     }
@@ -119,7 +117,8 @@ object VehicleLightingHandler {
         // 1. Turret Burn / Sympathetic Detonation Fire (High intensity, pulses every 2 ticks)
         if (vehicle.turretBurnTimer > 0 && !vehicle.sympatheticDetonated) {
             if (tick % 2 == 0) {
-                val burnPos = vehicle.turretBurnEffectPos() ?: vehicle.position().add(0.0, vehicle.bbHeight.toDouble(), 0.0)
+                val burnPos =
+                    vehicle.turretBurnEffectPos() ?: vehicle.position().add(0.0, vehicle.bbHeight.toDouble(), 0.0)
                 val upOffset = vehicle.getUpVec(1f).scale(0.8)
                 val lightPoint = burnPos.add(upOffset)
                 val bp = BlockPos.containing(lightPoint.x, lightPoint.y, lightPoint.z)
@@ -175,19 +174,19 @@ object VehicleLightingHandler {
         // Update every 3 ticks — TTL 9 = 3× interval, prevents snap-off gaps
         if (wreck.tickCount % 3 != 0) return
 
-        val mc = net.minecraft.client.Minecraft.getInstance()
+        val mc = Minecraft.getInstance()
         val player = mc.player ?: return
         if (player.distanceToSqr(wreck.x, wreck.y, wreck.z) > 192.0 * 192.0) return
 
         // Sine wave period = 60 ticks (~3 seconds) → smooth breathing cycle
-        val phase  = (wreck.tickCount % 60).toDouble() / 60.0
-        val sine   = kotlin.math.sin(phase * 2.0 * kotlin.math.PI)
+        val phase = (wreck.tickCount % 60).toDouble() / 60.0
+        val sine = sin(phase * 2.0 * PI)
         // Base 10, amplitude ±2 → range [8, 12]
         val maxLvl = (10 + (2.0 * sine).toInt()).coerceIn(8, 12)
         val minLvl = (maxLvl - 1).coerceAtLeast(7)
 
-        val pos = net.minecraft.world.phys.Vec3(wreck.x, wreck.y + wreck.bbHeight * 0.6, wreck.z)
-        val bp  = net.minecraft.core.BlockPos.containing(pos.x, pos.y, pos.z)
+        val pos = Vec3(wreck.x, wreck.y + wreck.bbHeight * 0.6, wreck.z)
+        val bp = BlockPos.containing(pos.x, pos.y, pos.z)
 
         LightPositionRegistry.putSpark(bp.asLong(), maxLvl, minLvl, 9)
         level.lightEngine.checkBlock(bp)

@@ -13,7 +13,6 @@ import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.network.protocol.Packet
 import net.minecraft.server.level.ServerPlayer
-import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Item
@@ -32,10 +31,10 @@ import kotlin.contracts.contract
 val mc: Minecraft get() = Minecraft.getInstance()
 
 @get:OnlyIn(Dist.CLIENT)
-val localPlayer: net.minecraft.client.player.LocalPlayer? get() = mc.player
+val localPlayer get() = mc.player
 
 @get:OnlyIn(Dist.CLIENT)
-val clientLevel: net.minecraft.client.multiplayer.ClientLevel? get() = mc.level
+val clientLevel get() = mc.level
 
 @get:OnlyIn(Dist.CLIENT)
 val font: Font get() = mc.font
@@ -76,6 +75,7 @@ fun Vec3?.toFormattedString(): String {
 
 fun isSameItemStack(a: ItemStack, b: ItemStack) = a sameWith b
 
+// 为空tag添加特判后的比较，专治乱用getOrCreateTag（恼）
 infix fun ItemStack.sameWith(that: ItemStack?): Boolean {
     if (that == null) return false
     if (this.tag == null && that.hasEmptyTag() || that.tag == null && this.hasEmptyTag()) {
@@ -88,6 +88,7 @@ infix fun ItemStack.sameWith(that: ItemStack?): Boolean {
     return ItemStack.isSameItemSameTags(this, that)
 }
 
+// 判断是否tag不为null且内容为空
 private fun ItemStack.hasEmptyTag() = this.tag?.isEmpty ?: false
 
 // Network
@@ -141,13 +142,4 @@ fun ItemStack.`is`(vararg itemsRegistry: RegistryObject<Item>): Boolean {
 
 fun ItemStack.`is`(vararg items: Item): Boolean {
     return items.any { `is`(it) }
-}
-
-/**
- * Forcefully hurts an entity by resetting its invulnerable ticks,
- * bypassing standard damage cooldowns.
- */
-fun Entity.forceHurt(source: DamageSource, amount: Float): Boolean {
-    this.invulnerableTime = 0
-    return this.hurt(source, amount)
 }

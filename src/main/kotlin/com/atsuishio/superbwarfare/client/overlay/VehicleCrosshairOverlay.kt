@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.client.overlay.VehicleHudOverlay.renderKillIn
 import com.atsuishio.superbwarfare.client.overlay.VehicleHudOverlay.renderKillIndicatorDynamic
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay.renderWeaponInfoThird
 import com.atsuishio.superbwarfare.client.overlay.weapon.LandVehicleHud
+import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -199,7 +200,7 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
                     guiGraphics.drawString(font, component, (screenWidth) / 2 - 50 - font.width(component), screenHeight / 2 + 2, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false)
 
                 } else if (crosshairPath == "@VehicleCnHpjZooming") {
-                    val dynamicTexture: ResourceLocation? = CROSSHAIR_MAP.get("@VehicleDynamicCross")
+                    val dynamicTexture: ResourceLocation? = CROSSHAIR_MAP["@VehicleDynamicCross"]
                     RenderHelper.blit(poseStack, dynamicTexture, x - scaledMinWH / 2, y - scaledMinWH / 2, 0f, 0f, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color)
                     renderKillIndicatorDynamic(guiGraphics, x - 7.5f + (2 * (Math.random() - 0.5f)).toFloat(), y - 7.5f + (2 * (Math.random() - 0.5f)).toFloat())
 
@@ -234,7 +235,7 @@ object VehicleCrosshairOverlay : CommonOverlay("vehicle_crosshair") {
             }
 
             poseStack.popPose()
-        } else if (Minecraft.getInstance().options.cameraType == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle && !CrossHairOverlay.combatHudHidden) {
+        } else if (Minecraft.getInstance().options.cameraType == CameraType.THIRD_PERSON_BACK && !ClientEventHandler.zoomVehicle && !MiscConfig.HIDE_COMBAT_HUD.get()) {
             val seekInfo = data.get(GunProp.SEEK_WEAPON_INFO)
             val flag = seekInfo != null && seekInfo.inputBlockPos
             // 渲染第三人称

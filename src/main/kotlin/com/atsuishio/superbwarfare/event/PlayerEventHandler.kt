@@ -13,8 +13,6 @@ import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.tools.InventoryTool
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.TraceTool
-import com.atsuishio.superbwarfare.network.message.receive.CrosshairConfigMessage
-import com.atsuishio.superbwarfare.tools.sendPacket
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
@@ -36,13 +34,9 @@ object PlayerEventHandler {
     @SubscribeEvent
     fun onPlayerLoggedIn(event: PlayerEvent.PlayerLoggedInEvent) {
         val player = event.entity
-        
-        player.mainHandItem.takeIf { it.`is`(ModItems.MONITOR.get()) }?.tag?.apply {
-            if (getBoolean("Using")) putBoolean("Using", false)
-        }
-
-        if (player is ServerPlayer) {
-            player.sendPacket(CrosshairConfigMessage(MiscConfig.HIDE_COMBAT_HUD.get()))
+        val stack = player.mainHandItem
+        if (stack.`is`(ModItems.MONITOR.get()) && stack.getOrCreateTag().getBoolean("Using")) {
+            stack.getOrCreateTag().putBoolean("Using", false)
         }
     }
 

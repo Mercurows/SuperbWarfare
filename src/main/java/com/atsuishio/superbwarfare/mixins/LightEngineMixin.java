@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(BlockLightEngine.class)
 public abstract class LightEngineMixin {
 
-    @Inject(method = "m_284436_", at = @At("HEAD"), cancellable = true, remap = false)
+    @Inject(method = "getEmission(JLnet/minecraft/world/level/block/state/BlockState;)I", at = @At("HEAD"), cancellable = true, remap = false)
     private void sbw$injectDynamicLight(long packedPos, BlockState state,
                                         CallbackInfoReturnable<Integer> cir) {
         int level = LightPositionRegistry.getLevel(packedPos);

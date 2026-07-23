@@ -1,11 +1,12 @@
 package com.atsuishio.superbwarfare.client.lighting
 
+import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.item.gun.GunItem
-import net.minecraft.client.Minecraft
+import com.atsuishio.superbwarfare.tools.clientLevel
 import net.minecraft.core.BlockPos
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.ItemStack
@@ -14,15 +15,15 @@ import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 
 /**
- * Calculates and spawns muzzle flash light sources.
+ * Calculates and spawns muzzle flashlight sources.
  *
- * <p>Uses exactly two block-light nodes per shot:
- * <ol>
- *   <li>A bright node at the muzzle tip (0.3 blocks forward).</li>
- *   <li>A dimmer node further along the barrel (2.0 blocks forward).</li>
- * </ol>
+ * Uses exactly two block-light nodes per shot:
+ *
+ * - A bright node at the muzzle tip (0.3 blocks forward).</li>
+ * - A dimmer node further along the barrel (2.0 blocks forward).</li>
+ *
  * Both nodes share the same TTL so neither outlasts the other —
- * eliminating the "leftover light fragment" artefact caused by
+ * eliminating the "leftover light fragment" artifact caused by
  * mismatched lifetimes.  No rings, no chains, no gradients.
  *
  * @author paralax034
@@ -48,20 +49,20 @@ object MuzzleFlashHelper {
      * Forward offset of the bright near-node along the barrel direction (blocks).
      * Placed just past the muzzle so it illuminates the area directly in front.
      */
-    private const val NEAR_OFFSET  = 0.3
+    private const val NEAR_OFFSET = 0.3
 
     /**
      * Forward offset of the dim far-node (blocks).
      * Provides a hint of depth without creating visible light fragments.
      */
-    private const val FAR_OFFSET   = 2.0
+    private const val FAR_OFFSET = 2.0
 
     /**
      * Intensity multiplier for the far node relative to [FlashParams.maxLevel].
      * Kept low (0.35) so the far node is barely visible — its only job is to
      * slightly extend the perceived cone; it must not outlast the near node.
      */
-    private const val FAR_MULT     = 0.35
+    private const val FAR_MULT = 0.35
 
     /** Items that produce no muzzle flash at all. */
     private val NO_FLASH_ITEMS = setOf(
@@ -77,25 +78,26 @@ object MuzzleFlashHelper {
     /**
      * Spawns two block-light nodes in front of the muzzle along the barrel axis.
      *
-     * <p>Both nodes expire on the same tick, preventing staggered-fade artefacts.
+     * <p>Both nodes expire on the same tick, preventing staggered-fade artifacts.
      * Suppressed weapons (maxLevel &lt; 5) emit only the near node to avoid
      * any visible flash.
      *
      * @param origin    world-space muzzle tip position
-     * @param direction barrel direction vector (does not need to be normalised)
+     * @param direction barrel direction vector (does not need to be normalized)
      * @param params    flash intensity and duration
      */
     @JvmStatic
     fun spawnFlashCone(origin: Vec3, direction: Vec3, params: FlashParams) {
+        if (!DisplayConfig.ENABLE_FIRE_FLASH_LIGHT.get()) return
         if (params.maxLevel <= 0) return
 
-        val level  = Minecraft.getInstance().level ?: return
+        val level = clientLevel ?: return
         val engine = level.lightEngine
-        val dir    = direction.normalize()
+        val dir = direction.normalize()
 
         // --- Node 1: near (bright) ---
         val nearPoint = origin.add(dir.scale(NEAR_OFFSET))
-        val nearBp    = BlockPos.containing(nearPoint.x, nearPoint.y, nearPoint.z)
+        val nearBp = BlockPos.containing(nearPoint.x, nearPoint.y, nearPoint.z)
         LightPositionRegistry.putSpark(nearBp.asLong(), params.maxLevel, params.minLevel, params.duration)
         engine.checkBlock(nearBp)
 
@@ -103,10 +105,10 @@ object MuzzleFlashHelper {
         if (params.maxLevel < 5) return
 
         // --- Node 2: far (dim) ---
-        val farPoint  = origin.add(dir.scale(FAR_OFFSET))
-        val farBp     = BlockPos.containing(farPoint.x, farPoint.y, farPoint.z)
-        val farMax    = (params.maxLevel * FAR_MULT).toInt().coerceAtLeast(1)
-        val farMin    = (params.minLevel * FAR_MULT).toInt().coerceAtLeast(1)
+        val farPoint = origin.add(dir.scale(FAR_OFFSET))
+        val farBp = BlockPos.containing(farPoint.x, farPoint.y, farPoint.z)
+        val farMax = (params.maxLevel * FAR_MULT).toInt().coerceAtLeast(1)
+        val farMin = (params.minLevel * FAR_MULT).toInt().coerceAtLeast(1)
         // Same TTL as near node — they expire together, no stray fragments
         LightPositionRegistry.putSpark(farBp.asLong(), farMax, farMin, params.duration)
         engine.checkBlock(farBp)
@@ -126,10 +128,10 @@ object MuzzleFlashHelper {
     fun calculateFromGunData(data: GunData): FlashParams {
         val barrelType = data.attachment.get(AttachmentType.BARREL)
         return calculateFromStats(
-            damage       = data.get(GunProp.DAMAGE),
-            rpm          = data.get(GunProp.RPM),
-            boltAction   = data.get(GunProp.BOLT_ACTION_TIME),
-            isSilenced   = barrelType == 2,
+            damage = data.get(GunProp.DAMAGE),
+            rpm = data.get(GunProp.RPM),
+            boltAction = data.get(GunProp.BOLT_ACTION_TIME),
+            isSilenced = barrelType == 2,
             isFlashHider = barrelType == 1
         )
     }
@@ -158,10 +160,21 @@ object MuzzleFlashHelper {
 
         // Base tiers derived from damage
         when {
-            damage >= 30 -> { maxLevel = 15; minLevel = 9;  duration = 4 }
-            damage >= 15 -> { maxLevel = 12; minLevel = 7;  duration = 3 }
-            damage >= 8  -> { maxLevel = 9;  minLevel = 4;  duration = 3 }
-            else         -> { maxLevel = 7;  minLevel = 3;  duration = 2 }
+            damage >= 30 -> {
+                maxLevel = 15; minLevel = 9; duration = 4
+            }
+
+            damage >= 15 -> {
+                maxLevel = 12; minLevel = 7; duration = 3
+            }
+
+            damage >= 8 -> {
+                maxLevel = 9; minLevel = 4; duration = 3
+            }
+
+            else -> {
+                maxLevel = 7; minLevel = 3; duration = 2
+            }
         }
 
         // Bolt-action: slower cycle → slightly shorter flash
@@ -173,7 +186,10 @@ object MuzzleFlashHelper {
 
         // Barrel attachments
         when {
-            isSilenced   -> { maxLevel = maxLevel.coerceAtMost(4); minLevel = 1; duration = 1 }
+            isSilenced -> {
+                maxLevel = maxLevel.coerceAtMost(4); minLevel = 1; duration = 1
+            }
+
             isFlashHider -> {
                 maxLevel = (maxLevel * 2 / 3).coerceAtLeast(3)
                 minLevel = (minLevel / 2).coerceAtLeast(1)
@@ -208,6 +224,5 @@ object MuzzleFlashHelper {
      * @return flash parameters, or {@code null} if no flash should be produced
      */
     @JvmStatic
-    fun calculateFromOwner(owner: LivingEntity): FlashParams? =
-        calculateFromStack(owner.mainHandItem)
+    fun calculateFromOwner(owner: LivingEntity): FlashParams? = calculateFromStack(owner.mainHandItem)
 }

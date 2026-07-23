@@ -3,11 +3,14 @@ package com.atsuishio.superbwarfare.event
 import com.atsuishio.superbwarfare.api.event.ClientVehicleFireEvent
 import com.atsuishio.superbwarfare.client.ClientSyncedEntityHandler
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves
+import com.atsuishio.superbwarfare.client.lighting.LightPositionRegistry
+import com.atsuishio.superbwarfare.client.lighting.VehicleLightingHandler
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay
 import com.atsuishio.superbwarfare.client.overlay.OverlayTraceHandler
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay
 import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
+import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
@@ -20,8 +23,6 @@ import com.atsuishio.superbwarfare.network.message.send.*
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.atsuishio.superbwarfare.tools.*
-import com.atsuishio.superbwarfare.tools.angleTo
-import com.atsuishio.superbwarfare.tools.camelToSnake
 import com.atsuishio.superbwarfare.world.saveddata.TDMSavedData
 import net.minecraft.ChatFormatting
 import net.minecraft.client.CameraType
@@ -61,8 +62,6 @@ import org.lwjgl.glfw.GLFW
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone
 import software.bernie.geckolib.core.animation.AnimationProcessor
 import top.theillusivec4.curios.api.CuriosApi
-import com.atsuishio.superbwarfare.client.lighting.LightPositionRegistry
-import com.atsuishio.superbwarfare.client.lighting.MuzzleFlashHelper
 import java.util.*
 import kotlin.experimental.or
 import kotlin.math.*
@@ -534,7 +533,7 @@ object ClientEventHandler {
 
         // Dynamic lighting: update light engine and expire old sources
         if (!LightPositionRegistry.isEmpty()) {
-            val clientLevel = Minecraft.getInstance().level
+            val clientLevel = clientLevel
             if (clientLevel != null) {
                 val engine = clientLevel.lightEngine
                 val iter = LightPositionRegistry.activeIterator()
@@ -2804,7 +2803,7 @@ object ClientEventHandler {
         val player = localPlayer ?: return
 
         // When combat HUD is hidden by server, suppress vanilla crosshair in ALL views
-        if (CrossHairOverlay.combatHudHidden) {
+        if (MiscConfig.HIDE_COMBAT_HUD.get()) {
             val stack = player.mainHandItem
             if (stack.item is GunItem) {
                 event.isCanceled = true
@@ -3041,13 +3040,10 @@ object ClientEventHandler {
     @SubscribeEvent
     fun onClientVehicleFire(event: ClientVehicleFireEvent) {
         val shooter = event.shooter
-        val vehicle = event.entity
+        val vehicle = event.vehicle
         val index = event.index
 
-        // Lighting — called directly since @EventBusSubscriber on
-        // VehicleLightingHandler is not reliably auto-registered
-        com.atsuishio.superbwarfare.client.lighting.VehicleLightingHandler
-            .onVehicleFire(event)
+        VehicleLightingHandler.onVehicleFire(event)
 
         val ani = vehicle.getAnimationInstance() ?: return
         val name = event.weaponName

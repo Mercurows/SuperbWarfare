@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves
 import com.atsuishio.superbwarfare.client.animation.AnimationTimer
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
+import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo.Aircraft
@@ -219,7 +220,7 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
 
     @JvmStatic
     fun renderKillIndicator(guiGraphics: GuiGraphics?, w: Float, h: Float) {
-        if (CrossHairOverlay.combatHudHidden) return
+        if (MiscConfig.HIDE_COMBAT_HUD.get()) return
 
         val posX = w / 2f - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
         val posY = h / 2f - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
@@ -252,7 +253,7 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
 
     @JvmStatic
     fun renderKillIndicatorDynamic(guiGraphics: GuiGraphics?, posX: Float, posY: Float) {
-        if (CrossHairOverlay.combatHudHidden) return
+        if (MiscConfig.HIDE_COMBAT_HUD.get()) return
 
         val rate = (40 - CrossHairOverlay.killIndicator * 5) / 5.5f
 

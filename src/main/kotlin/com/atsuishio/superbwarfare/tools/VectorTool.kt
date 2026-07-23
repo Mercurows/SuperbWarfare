@@ -22,7 +22,6 @@ import java.lang.Math
 import kotlin.math.acos
 import kotlin.math.sqrt
 
-
 operator fun Vec3.plus(other: Vec3): Vec3 = add(other)
 operator fun Vec3.minus(other: Vec3): Vec3 = subtract(other)
 operator fun Vec3.times(factor: Double): Vec3 = scale(factor)
@@ -184,7 +183,7 @@ object VectorTool {
         // 将 Vec3 转换为 BlockPos（获取所在方块位置）
         val blockPos = BlockPos.containing(position)
 
-        // 获取该位置 of the block
+        // 获取该位置的流体状态
         val fluidState = level.getFluidState(blockPos)
 
         // 检查流体是否有效且位置低于流体表面
@@ -205,9 +204,9 @@ object VectorTool {
      * @param v0 平面法向量（朝向向量）。
      * @return 反射向量 v2。
      */
+    @JvmStatic
     fun calculateReflection(v1: Vec3, v0: Vec3): Vec3 {
         val dot = v1.dot(v0)
-        // 计算反射向量: v2 = v1 - 2 * (v1 · n) * n
         return v1 - v0 * (2 * dot)
     }
 

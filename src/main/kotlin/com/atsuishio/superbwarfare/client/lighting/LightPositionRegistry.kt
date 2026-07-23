@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.core.BlockPos
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
+import java.util.*
 
 /**
  * High-performance registry for client-side dynamic block light sources.
@@ -28,7 +29,7 @@ object LightPositionRegistry {
     private val expiredBuf = LongArrayList(128)
 
     private var currentTick = 0L
-    private val random = java.util.Random()
+    private val random = Random()
 
     /**
      * Registers or refreshes a dynamic light source.
@@ -64,21 +65,21 @@ object LightPositionRegistry {
         val packed = sparks.get(packedPos)
         if (packed == 0L) return -1
 
-        val maxLevel  = (packed ushr 48).toInt()
-        val minLevel  = ((packed ushr 32) and 0xFFL).toInt()
-        val startLow  = (packed ushr 16) and 0xFFFFL
+        val maxLevel = (packed ushr 48).toInt()
+        val minLevel = ((packed ushr 32) and 0xFFL).toInt()
+        val startLow = (packed ushr 16) and 0xFFFFL
         val expiryLow = packed and 0xFFFFL
-        val curLow    = currentTick and 0xFFFFL
+        val curLow = currentTick and 0xFFFFL
 
-        val total   = (expiryLow - startLow) and 0xFFFFL
-        val elapsed = (curLow   - startLow) and 0xFFFFL
+        val total = (expiryLow - startLow) and 0xFFFFL
+        val elapsed = (curLow - startLow) and 0xFFFFL
 
         if (elapsed > total) return -1
-        if (total == 0L)     return maxLevel
+        if (total == 0L) return maxLevel
 
         val progress = elapsed.toDouble() / total.toDouble()
-        val decay    = 1.0 - progress * progress
-        val base     = minLevel + ((maxLevel - minLevel) * decay).toInt()
+        val decay = 1.0 - progress * progress
+        val base = minLevel + ((maxLevel - minLevel) * decay).toInt()
 
         return (base + random.nextInt(3) - 1).coerceIn(1, 15)
     }
@@ -102,18 +103,18 @@ object LightPositionRegistry {
         val curLow = currentTick and 0xFFFFL
 
         for (entry in sparks.long2LongEntrySet()) {
-            val packed    = entry.longValue
-            val startLow  = (packed ushr 16) and 0xFFFFL
+            val packed = entry.longValue
+            val startLow = (packed ushr 16) and 0xFFFFL
             val expiryLow = packed and 0xFFFFL
-            val total     = (expiryLow - startLow) and 0xFFFFL
-            val elapsed   = (curLow   - startLow) and 0xFFFFL
+            val total = (expiryLow - startLow) and 0xFFFFL
+            val elapsed = (curLow - startLow) and 0xFFFFL
             if (elapsed > total) expiredBuf.add(entry.longKey)
         }
 
-        if (!expiredBuf.isEmpty()) {
+        if (!expiredBuf.isEmpty) {
             val level = Minecraft.getInstance().level
             val engine = level?.lightEngine
-            for (i in 0 until expiredBuf.size) {
+            for (i in expiredBuf.indices) {
                 val key = expiredBuf.getLong(i)
                 sparks.remove(key)
                 active.remove(key)

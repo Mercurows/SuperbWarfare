@@ -1086,6 +1086,8 @@
   "config.superbwarfare.client.display.heat_bar_hud_y_offset.des": "The vertical offset of heat bar HUD",
   "config.superbwarfare.client.display.vehicle_lod_distance": "Vehicle LOD Distance",
   "config.superbwarfare.client.display.vehicle_lod_distance.des": "The global LOD distance for rendering vehicles. Set -1 to disable this config",
+  "config.superbwarfare.client.display.enable_fire_flash_light": "Fire Flash Light",
+  "config.superbwarfare.client.display.enable_fire_flash_light.des": "Whether to show flash light when you are firing with arms",
   "config.superbwarfare.client.control": "Control Config",
   "config.superbwarfare.client.control.invert_aircraft_control": "Invert Aircraft Control",
   "config.superbwarfare.client.control.invert_aircraft_control.des": "Set TRUE to invert aircraft control",
