@@ -82,6 +82,7 @@ object ModEntityRenderers {
             registerEntityRenderer(ModEntities.RU_9M100_MISSILE.get(), ::BasicProjectileRenderer)
             registerEntityRenderer(ModEntities.RU_3M14_MISSILE.get(), ::BasicProjectileRenderer)
             registerEntityRenderer(ModEntities.TRUCK.get(), ::TruckRenderer)
+            registerEntityRenderer(ModEntities.URAL.get(), ::UralRenderer)
             registerEntityRenderer(ModEntities.SODAYO_PICK_UP.get(), ::SodayoPickUpRenderer)
             registerEntityRenderer(ModEntities.SODAYO_PICK_UP_HMG.get(), ::SodayoPickUpRenderer)
             registerEntityRenderer(ModEntities.SODAYO_PICK_UP_ROCKET.get(), ::SodayoPickUpRenderer)

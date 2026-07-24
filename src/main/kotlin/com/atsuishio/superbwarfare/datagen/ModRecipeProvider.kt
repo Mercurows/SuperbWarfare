@@ -2065,6 +2065,14 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 .require(ModItems.LARGE_MOTOR.get())
                 .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
                 .save(writer, loc(getEntityTypeName(ModEntities.TRUCK.get())))
+            VehicleAssemblingRecipeBuilder.entity(ModEntities.URAL.get(), VehicleAssemblingRecipe.Category.CIVILIAN)
+                .require(ModTags.Items.STORAGE_BLOCK_STEEL, 10)
+                .require(Items.CHEST, 4)
+                .require(ModItems.MEDIUM_BATTERY_PACK.get())
+                .require(ModItems.WHEEL.get(), 6)
+                .require(ModItems.LARGE_MOTOR.get())
+                .unlockedBy(getHasName(ModItems.LARGE_MOTOR.get()), has(ModItems.LARGE_MOTOR.get()))
+                .save(writer, loc(getEntityTypeName(ModEntities.URAL.get())))
             VehicleAssemblingRecipeBuilder.entity(
                 ModEntities.SODAYO_PICK_UP.get(),
                 VehicleAssemblingRecipe.Category.CIVILIAN

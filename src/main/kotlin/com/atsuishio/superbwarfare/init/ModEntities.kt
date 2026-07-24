@@ -340,6 +340,9 @@ object ModEntities {
     val TRUCK = register("truck", vehicle(::TruckEntity).sized(2.6f, 3f))
 
     @JvmField
+    val URAL = register("ural", vehicle(::UralEntity).sized(3.4f, 3.8f))
+
+    @JvmField
     val TURRET_WRECK = register("turret_wreck", vehicle(::TurretWreckEntity).sized(2.4f, 1.2f))
 
     private fun <T : Entity> register(

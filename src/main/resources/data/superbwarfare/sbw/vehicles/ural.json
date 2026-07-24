@@ -1,0 +1,986 @@
+{
+  "MaxHealth": 200,
+  "MaxEnergy": 6000000,
+  "OBB": [
+    {
+      "Part": "Collision",
+      "Size": [1.5, 1.875, 4.75],
+      "Position": [0.125, 2, -0.25],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [1.5, 0.063, 2.5],
+      "Position": [0.125, 1.813, -2.437],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [0.031, 0.313, 2.5],
+      "Position": [1.594, 2.188, -2.437],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [0.031, 0.313, 2.5],
+      "Position": [-1.344, 2.188, -2.437],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [1.438, 0.313, 0.031],
+      "Position": [0.125, 2.188, 0.031],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [0.625, 0.125, 0.819],
+      "Position": [0.125, 2.347, 3.422],
+      "CustomRotate": [-6.75, -180, 0]
+    },
+    {
+      "Size": [0.25, 0.281, 1.018],
+      "Position": [-0.577, 2.094, 3.205],
+      "CustomRotate": [0, -162, 0]
+    },
+    {
+      "Size": [0.25, 0.281, 1.018],
+      "Position": [0.827, 2.094, 3.205],
+      "CustomRotate": [0, 162, 0]
+    },
+    {
+      "Size": [1.125, 0.094, 0.156],
+      "Position": [0.125, 2.469, 2.469],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [1.5, 0.031, 0.563],
+      "Position": [0.125, 2.031, 3.063],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [0.156, 0.03, 0.322],
+      "Position": [-1.082, 2.031, 3.83],
+      "CustomRotate": [0, -151, 0]
+    },
+    {
+      "Size": [1.188, 0.031, 0.281],
+      "Position": [0.125, 2.031, 3.906],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [0.156, 0.03, 0.322],
+      "Position": [1.332, 2.031, 3.83],
+      "CustomRotate": [0, 151, 0]
+    },
+    {
+      "Size": [1.188, 0.031, 0.687],
+      "Position": [0.125, 1.531, 1.624],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [1.125, 0.031, 0.438],
+      "Position": [0.125, 3.344, 1.438],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [1.25, 0.031, 0.531],
+      "Position": [0.125, 3.281, 1.469],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [1.25, 0.906, 0.031],
+      "Position": [0.125, 2.406, 0.906],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [0.2, 0.03, 0.125],
+      "Position": [-0.891, 3.281, 2.028],
+      "CustomRotate": [0, 141.5, 0]
+    },
+    {
+      "Size": [0.938, 0.031, 0.125],
+      "Position": [0.125, 3.281, 2.125],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [0.938, 0.031, 0.125],
+      "Position": [0.125, 3.344, 2],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [0.2, 0.03, 0.125],
+      "Position": [1.141, 3.281, 2.028],
+      "CustomRotate": [0, -141.5, 0]
+    },
+    {
+      "Size": [0.25, 0.031, 2.438],
+      "Position": [1.313, 2.281, -2.437],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [0.25, 0.031, 2.438],
+      "Position": [-1.062, 2.281, -2.437],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [0.094, 0.563, 0.094],
+      "Position": [-1.031, 2.063, 2.219],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [0.094, 0.563, 0.094],
+      "Position": [1.281, 2.063, 2.219],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [1.063, 0.031, 0.156],
+      "Position": [0.125, 1.469, 4.219],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [1.375, 0.125, 0.063],
+      "Position": [0.125, 1.375, 4.438],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [0.063, 0.156, 4.25],
+      "Position": [-0.437, 1.344, -0.187],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [0.063, 0.156, 4.25],
+      "Position": [0.688, 1.344, -0.187],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [0.438, 0.281, 0.531],
+      "Position": [1.188, 1.219, 0.344],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [0.406, 0.25, 0.25],
+      "Position": [0.656, 1.75, 0.563],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [0.623, 0.281, 0.063],
+      "Position": [0.125, 1.763, 4.254],
+      "CustomRotate": [-13, -180, 0]
+    },
+    {
+      "Size": [0.625, 0.187, 0.062],
+      "Position": [0.125, 2.177, 4.255],
+      "CustomRotate": [20, -180, 0]
+    },
+    {
+      "Size": [0.325, 0.188, 0.248],
+      "Position": [-0.986, 1.894, 0.563],
+      "CustomRotate": [0, -180, 45]
+    },
+    {
+      "Size": [0.5, 0.5, 0.219],
+      "Position": [-0.564, 2.284, 0.563],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [0.325, 0.188, 0.25],
+      "Position": [-0.564, 1.719, 0.563],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [0.325, 0.188, 0.248],
+      "Position": [-0.142, 1.894, 0.563],
+      "CustomRotate": [0, -180, -45]
+    },
+    {
+      "Size": [0.325, 0.188, 0.25],
+      "Position": [-1.161, 2.316, 0.563],
+      "CustomRotate": [0, -180, 90]
+    },
+    {
+      "Size": [0.325, 0.188, 0.25],
+      "Position": [0.033, 2.316, 0.563],
+      "CustomRotate": [0, -180, -90]
+    },
+    {
+      "Size": [0.325, 0.187, 0.248],
+      "Position": [-0.142, 2.738, 0.563],
+      "CustomRotate": [0, -180, -135]
+    },
+    {
+      "Size": [0.813, 0.625, 0.313],
+      "Position": [-0.564, 2.127, 0.561],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [0.325, 0.188, 0.25],
+      "Position": [-0.564, 2.913, 0.563],
+      "CustomRotate": [0, -180, 180]
+    },
+    {
+      "Size": [0.325, 0.187, 0.248],
+      "Position": [-0.986, 2.738, 0.563],
+      "CustomRotate": [0, -180, 135]
+    },
+    {
+      "Size": [0.094, 0.125, 2.5],
+      "Position": [-0.406, 1.625, -2.437],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [0.094, 0.125, 2.5],
+      "Position": [0.656, 1.625, -2.437],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [1.5, 0.156, 0.031],
+      "Position": [0.125, 1.344, -4.469],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [0.5, 0.156, 1.313],
+      "Position": [0.125, 1.344, 2.625],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [0.188, 0.031, 0.406],
+      "Position": [1.438, 1.031, 1.531],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [0.217, 0.031, 0.531],
+      "Position": [1.406, 1.609, 2.221],
+      "CustomRotate": [55, -180, 0]
+    },
+    {
+      "Size": [0.188, 0.031, 0.406],
+      "Position": [-1.187, 1.031, 1.531],
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Size": [0.217, 0.031, 0.531],
+      "Position": [-1.156, 1.609, 2.221],
+      "CustomRotate": [55, -180, 0]
+    },
+    {
+      "Size": [1.4375, 0.3125, 0.03125],
+      "Position": [0, 0.3125, 0],
+      "Transform": "ZadHinge",
+      "Rotation": "ZadHinge",
+      "CustomRotate": [0, -180, 0]
+    },
+    { "Size": [0.2188, 0.5, 0.5], "Position": [0, -0.028, 0], "Transform": "WheelTurnL", "Rotation": "WheelTurnL", "CustomRotate": [0, 0, 0], "Part": "WheelLeft" },
+    { "Size": [0.2188, 0.5, 0.5], "Position": [0, -0.028, 0], "Transform": "WheelTurnR", "Rotation": "WheelTurnR", "CustomRotate": [0, 0, 0], "Part": "WheelRight" },
+    { "Size": [0.2188, 0.5, 0.5], "Position": [0, -0.028, 0], "Transform": "WheelRollCenterL", "Rotation": "WheelRollCenterL", "CustomRotate": [0, 0, 0], "Part": "WheelLeft" },
+    { "Size": [0.2188, 0.5, 0.5], "Position": [0, -0.028, 0], "Transform": "WheelRollCenterR", "Rotation": "WheelRollCenterR", "CustomRotate": [0, 0, 0], "Part": "WheelRight" },
+    { "Size": [0.2188, 0.5, 0.5], "Position": [0, -0.028, 0], "Transform": "WheelRollRearL", "Rotation": "WheelRollRearL", "CustomRotate": [0, 0, 0], "Part": "WheelLeft" },
+    { "Size": [0.2188, 0.5, 0.5], "Position": [0, -0.028, 0], "Transform": "WheelRollRearR", "Rotation": "WheelRollRearR", "CustomRotate": [0, 0, 0], "Part": "WheelRight" },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.25, 0.188, 0.325],
+      "Position": [0, 0.601, 0],
+      "Transform": "WheelTurnL",
+      "Rotation": "WheelTurnL",
+      "CustomRotate": [0, 0, 180]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.219, 0.5, 0.5],
+      "Position": [0, -0.028, 0],
+      "Transform": "WheelTurnL",
+      "Rotation": "WheelTurnL",
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.25, 0.188, 0.325],
+      "Position": [0, -0.593, 0],
+      "Transform": "WheelTurnL",
+      "Rotation": "WheelTurnL",
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.248, 0.188, 0.325],
+      "Position": [0, -0.418, -0.423],
+      "Transform": "WheelTurnL",
+      "Rotation": "WheelTurnL",
+      "CustomRotate": [-45, -180, 0]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.25, 0.188, 0.325],
+      "Position": [0, 0.004, -0.598],
+      "Transform": "WheelTurnL",
+      "Rotation": "WheelTurnL",
+      "CustomRotate": [-90, 180, 0]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.248, 0.188, 0.325],
+      "Position": [0, 0.426, -0.423],
+      "Transform": "WheelTurnL",
+      "Rotation": "WheelTurnL",
+      "CustomRotate": [-45, 0, 180]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.248, 0.187, 0.325],
+      "Position": [0, 0.426, 0.423],
+      "Transform": "WheelTurnL",
+      "Rotation": "WheelTurnL",
+      "CustomRotate": [45, 0, 180]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.25, 0.188, 0.325],
+      "Position": [0, 0.004, 0.598],
+      "Transform": "WheelTurnL",
+      "Rotation": "WheelTurnL",
+      "CustomRotate": [90, 180, 0]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.248, 0.187, 0.325],
+      "Position": [0, -0.418, 0.423],
+      "Transform": "WheelTurnL",
+      "Rotation": "WheelTurnL",
+      "CustomRotate": [45, -180, 0]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.25, 0.188, 0.325],
+      "Position": [0, 0.601, 0],
+      "Transform": "WheelTurnR",
+      "Rotation": "WheelTurnR",
+      "CustomRotate": [0, 0, 180]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.219, 0.5, 0.5],
+      "Position": [0, -0.028, 0],
+      "Transform": "WheelTurnR",
+      "Rotation": "WheelTurnR",
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.25, 0.188, 0.325],
+      "Position": [0, -0.593, 0],
+      "Transform": "WheelTurnR",
+      "Rotation": "WheelTurnR",
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.248, 0.188, 0.325],
+      "Position": [0, -0.418, -0.423],
+      "Transform": "WheelTurnR",
+      "Rotation": "WheelTurnR",
+      "CustomRotate": [-45, -180, 0]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.25, 0.188, 0.325],
+      "Position": [0, 0.004, -0.598],
+      "Transform": "WheelTurnR",
+      "Rotation": "WheelTurnR",
+      "CustomRotate": [-90, 180, 0]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.248, 0.188, 0.325],
+      "Position": [0, 0.426, -0.423],
+      "Transform": "WheelTurnR",
+      "Rotation": "WheelTurnR",
+      "CustomRotate": [-45, 0, 180]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.248, 0.187, 0.325],
+      "Position": [0, 0.426, 0.423],
+      "Transform": "WheelTurnR",
+      "Rotation": "WheelTurnR",
+      "CustomRotate": [45, 0, 180]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.25, 0.188, 0.325],
+      "Position": [0, 0.004, 0.598],
+      "Transform": "WheelTurnR",
+      "Rotation": "WheelTurnR",
+      "CustomRotate": [90, 180, 0]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.248, 0.187, 0.325],
+      "Position": [0, -0.418, 0.423],
+      "Transform": "WheelTurnR",
+      "Rotation": "WheelTurnR",
+      "CustomRotate": [45, -180, 0]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.25, 0.188, 0.325],
+      "Position": [0, 0.601, 0],
+      "Transform": "WheelRollCenterL",
+      "Rotation": "WheelRollCenterL",
+      "CustomRotate": [0, 0, 180]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.219, 0.5, 0.5],
+      "Position": [0, -0.028, 0],
+      "Transform": "WheelRollCenterL",
+      "Rotation": "WheelRollCenterL",
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.25, 0.188, 0.325],
+      "Position": [0, -0.593, 0],
+      "Transform": "WheelRollCenterL",
+      "Rotation": "WheelRollCenterL",
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.248, 0.188, 0.325],
+      "Position": [0, -0.418, -0.423],
+      "Transform": "WheelRollCenterL",
+      "Rotation": "WheelRollCenterL",
+      "CustomRotate": [-45, -180, 0]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.25, 0.188, 0.325],
+      "Position": [0, 0.004, -0.598],
+      "Transform": "WheelRollCenterL",
+      "Rotation": "WheelRollCenterL",
+      "CustomRotate": [-90, 180, 0]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.248, 0.188, 0.325],
+      "Position": [0, 0.426, -0.423],
+      "Transform": "WheelRollCenterL",
+      "Rotation": "WheelRollCenterL",
+      "CustomRotate": [-45, 0, 180]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.248, 0.187, 0.325],
+      "Position": [0, 0.426, 0.423],
+      "Transform": "WheelRollCenterL",
+      "Rotation": "WheelRollCenterL",
+      "CustomRotate": [45, 0, 180]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.25, 0.188, 0.325],
+      "Position": [0, 0.004, 0.598],
+      "Transform": "WheelRollCenterL",
+      "Rotation": "WheelRollCenterL",
+      "CustomRotate": [90, 180, 0]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.248, 0.187, 0.325],
+      "Position": [0, -0.418, 0.423],
+      "Transform": "WheelRollCenterL",
+      "Rotation": "WheelRollCenterL",
+      "CustomRotate": [45, -180, 0]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.25, 0.188, 0.325],
+      "Position": [0, 0.601, 0],
+      "Transform": "WheelRollCenterR",
+      "Rotation": "WheelRollCenterR",
+      "CustomRotate": [0, 0, 180]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.219, 0.5, 0.5],
+      "Position": [0, -0.028, 0],
+      "Transform": "WheelRollCenterR",
+      "Rotation": "WheelRollCenterR",
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.25, 0.188, 0.325],
+      "Position": [0, -0.593, 0],
+      "Transform": "WheelRollCenterR",
+      "Rotation": "WheelRollCenterR",
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.248, 0.188, 0.325],
+      "Position": [0, -0.418, -0.423],
+      "Transform": "WheelRollCenterR",
+      "Rotation": "WheelRollCenterR",
+      "CustomRotate": [-45, -180, 0]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.25, 0.188, 0.325],
+      "Position": [0, 0.004, -0.598],
+      "Transform": "WheelRollCenterR",
+      "Rotation": "WheelRollCenterR",
+      "CustomRotate": [-90, 180, 0]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.248, 0.188, 0.325],
+      "Position": [0, 0.426, -0.423],
+      "Transform": "WheelRollCenterR",
+      "Rotation": "WheelRollCenterR",
+      "CustomRotate": [-45, 0, 180]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.248, 0.187, 0.325],
+      "Position": [0, 0.426, 0.423],
+      "Transform": "WheelRollCenterR",
+      "Rotation": "WheelRollCenterR",
+      "CustomRotate": [45, 0, 180]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.25, 0.188, 0.325],
+      "Position": [0, 0.004, 0.598],
+      "Transform": "WheelRollCenterR",
+      "Rotation": "WheelRollCenterR",
+      "CustomRotate": [90, 180, 0]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.248, 0.187, 0.325],
+      "Position": [0, -0.418, 0.423],
+      "Transform": "WheelRollCenterR",
+      "Rotation": "WheelRollCenterR",
+      "CustomRotate": [45, -180, 0]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.25, 0.188, 0.325],
+      "Position": [0, 0.601, 0],
+      "Transform": "WheelRollRearL",
+      "Rotation": "WheelRollRearL",
+      "CustomRotate": [0, 0, 180]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.219, 0.5, 0.5],
+      "Position": [0, -0.028, 0],
+      "Transform": "WheelRollRearL",
+      "Rotation": "WheelRollRearL",
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.25, 0.188, 0.325],
+      "Position": [0, -0.593, 0],
+      "Transform": "WheelRollRearL",
+      "Rotation": "WheelRollRearL",
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.248, 0.188, 0.325],
+      "Position": [0, -0.418, -0.423],
+      "Transform": "WheelRollRearL",
+      "Rotation": "WheelRollRearL",
+      "CustomRotate": [-45, -180, 0]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.25, 0.188, 0.325],
+      "Position": [0, 0.004, -0.598],
+      "Transform": "WheelRollRearL",
+      "Rotation": "WheelRollRearL",
+      "CustomRotate": [-90, 180, 0]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.248, 0.188, 0.325],
+      "Position": [0, 0.426, -0.423],
+      "Transform": "WheelRollRearL",
+      "Rotation": "WheelRollRearL",
+      "CustomRotate": [-45, 0, 180]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.248, 0.187, 0.325],
+      "Position": [0, 0.426, 0.423],
+      "Transform": "WheelRollRearL",
+      "Rotation": "WheelRollRearL",
+      "CustomRotate": [45, 0, 180]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.25, 0.188, 0.325],
+      "Position": [0, 0.004, 0.598],
+      "Transform": "WheelRollRearL",
+      "Rotation": "WheelRollRearL",
+      "CustomRotate": [90, 180, 0]
+    },
+    {
+      "Part": "WheelLeft",
+      "Size": [0.248, 0.187, 0.325],
+      "Position": [0, -0.418, 0.423],
+      "Transform": "WheelRollRearL",
+      "Rotation": "WheelRollRearL",
+      "CustomRotate": [45, -180, 0]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.25, 0.188, 0.325],
+      "Position": [0, 0.601, 0],
+      "Transform": "WheelRollRearR",
+      "Rotation": "WheelRollRearR",
+      "CustomRotate": [0, 0, 180]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.219, 0.5, 0.5],
+      "Position": [0, -0.028, 0],
+      "Transform": "WheelRollRearR",
+      "Rotation": "WheelRollRearR",
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.25, 0.188, 0.325],
+      "Position": [0, -0.593, 0],
+      "Transform": "WheelRollRearR",
+      "Rotation": "WheelRollRearR",
+      "CustomRotate": [0, -180, 0]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.248, 0.188, 0.325],
+      "Position": [0, -0.418, -0.423],
+      "Transform": "WheelRollRearR",
+      "Rotation": "WheelRollRearR",
+      "CustomRotate": [-45, -180, 0]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.25, 0.188, 0.325],
+      "Position": [0, 0.004, -0.598],
+      "Transform": "WheelRollRearR",
+      "Rotation": "WheelRollRearR",
+      "CustomRotate": [-90, 180, 0]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.248, 0.188, 0.325],
+      "Position": [0, 0.426, -0.423],
+      "Transform": "WheelRollRearR",
+      "Rotation": "WheelRollRearR",
+      "CustomRotate": [-45, 0, 180]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.248, 0.187, 0.325],
+      "Position": [0, 0.426, 0.423],
+      "Transform": "WheelRollRearR",
+      "Rotation": "WheelRollRearR",
+      "CustomRotate": [45, 0, 180]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.25, 0.188, 0.325],
+      "Position": [0, 0.004, 0.598],
+      "Transform": "WheelRollRearR",
+      "Rotation": "WheelRollRearR",
+      "CustomRotate": [90, 180, 0]
+    },
+    {
+      "Part": "WheelRight",
+      "Size": [0.248, 0.187, 0.325],
+      "Position": [0, -0.418, 0.423],
+      "Transform": "WheelRollRearR",
+      "Rotation": "WheelRollRearR",
+      "CustomRotate": [45, -180, 0]
+    }
+  ],
+  "Seats": [
+    {
+      "IsEnclosed": true,
+      "Transform": "Vehicle",
+      "Position": [0.700, 1.400, 1.5],
+      "MinPitch": -60,
+      "MaxPitch": 60,
+      "MinYaw": -95,
+      "MaxYaw": 95,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [2.219, 0.156, 1.469]
+      }
+    },
+    {
+      "IsEnclosed": true,
+      "Transform": "Vehicle",
+      "Position": [0.125, 1.400, 1.5],
+      "MinPitch": -60,
+      "MaxPitch": 60,
+      "MinYaw": -95,
+      "MaxYaw": 95,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [-1.969, 0.156, 1.469]
+      }
+    },
+    {
+      "IsEnclosed": true,
+      "Transform": "Vehicle",
+      "Position": [-0.469, 1.400, 1.5],
+      "MinPitch": -60,
+      "MaxPitch": 60,
+      "MinYaw": -95,
+      "MaxYaw": 95,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [-1.969, 0.156, 1.469]
+      }
+    },
+    {
+      "IsEnclosed": true,
+      "Transform": "Vehicle",
+      "Position": [-1.063, 1.750, -0.406],
+      "Orientation": -90,
+      "MinPitch": -60,
+      "MaxPitch": 60,
+      "MinYaw": -95,
+      "MaxYaw": 95,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0.131, 0.156, -5.594]
+      }
+    },
+    {
+      "IsEnclosed": true,
+      "Transform": "Vehicle",
+      "Position": [-1.063, 1.750, -1.219],
+      "Orientation": -90,
+      "MinPitch": -60,
+      "MaxPitch": 60,
+      "MinYaw": -95,
+      "MaxYaw": 95,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0.131, 0.156, -5.594]
+      }
+    },
+    {
+      "IsEnclosed": true,
+      "Transform": "Vehicle",
+      "Position": [-1.063, 1.750, -2.031],
+      "Orientation": -90,
+      "MinPitch": -60,
+      "MaxPitch": 60,
+      "MinYaw": -95,
+      "MaxYaw": 95,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0.131, 0.156, -5.594]
+      }
+    },
+    {
+      "IsEnclosed": true,
+      "Transform": "Vehicle",
+      "Position": [-1.063, 1.750, -2.844],
+      "Orientation": -90,
+      "MinPitch": -60,
+      "MaxPitch": 60,
+      "MinYaw": -95,
+      "MaxYaw": 95,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0.131, 0.156, -5.594]
+      }
+    },
+    {
+      "IsEnclosed": true,
+      "Transform": "Vehicle",
+      "Position": [-1.063, 1.750, -3.656],
+      "Orientation": -90,
+      "MinPitch": -60,
+      "MaxPitch": 60,
+      "MinYaw": -95,
+      "MaxYaw": 95,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0.131, 0.156, -5.594]
+      }
+    },
+    {
+      "IsEnclosed": true,
+      "Transform": "Vehicle",
+      "Position": [-1.063, 1.750, -4.469],
+      "Orientation": -90,
+      "MinPitch": -60,
+      "MaxPitch": 60,
+      "MinYaw": -95,
+      "MaxYaw": 95,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0.131, 0.156, -5.594]
+      }
+    },
+    {
+      "IsEnclosed": true,
+      "Transform": "Vehicle",
+      "Position": [1.312, 1.750, -4.469],
+      "Orientation": 90,
+      "MinPitch": -60,
+      "MaxPitch": 60,
+      "MinYaw": -95,
+      "MaxYaw": 95,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0.131, 0.156, -5.594]
+      }
+    },
+    {
+      "IsEnclosed": true,
+      "Transform": "Vehicle",
+      "Position": [1.312, 1.750, -3.656],
+      "Orientation": 90,
+      "MinPitch": -60,
+      "MaxPitch": 60,
+      "MinYaw": -95,
+      "MaxYaw": 95,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0.131, 0.156, -5.594]
+      }
+    },
+    {
+      "IsEnclosed": true,
+      "Transform": "Vehicle",
+      "Position": [1.312, 1.750, -2.844],
+      "Orientation": 90,
+      "MinPitch": -60,
+      "MaxPitch": 60,
+      "MinYaw": -95,
+      "MaxYaw": 95,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0.131, 0.156, -5.594]
+      }
+    },
+    {
+      "IsEnclosed": true,
+      "Transform": "Vehicle",
+      "Position": [1.312, 1.750, -2.031],
+      "Orientation": 90,
+      "MinPitch": -60,
+      "MaxPitch": 60,
+      "MinYaw": -95,
+      "MaxYaw": 95,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0.131, 0.156, -5.594]
+      }
+    },
+    {
+      "IsEnclosed": true,
+      "Transform": "Vehicle",
+      "Position": [1.312, 1.750, -1.219],
+      "Orientation": 90,
+      "MinPitch": -60,
+      "MaxPitch": 60,
+      "MinYaw": -95,
+      "MaxYaw": 95,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0.131, 0.156, -5.594]
+      }
+    },
+    {
+      "IsEnclosed": true,
+      "Transform": "Vehicle",
+      "Position": [1.312, 1.750, -0.406],
+      "Orientation": 90,
+      "MinPitch": -60,
+      "MaxPitch": 60,
+      "MinYaw": -95,
+      "MaxYaw": 95,
+      "DismountInfo": {
+        "Transform": "Vehicle",
+        "Position": [0.131, 0.156, -5.594]
+      }
+    }
+  ],
+  "EngineType": "Wheel",
+  "EngineInfo": {
+    "Buoyancy": 0,
+    "EnergyCostRate": 80,
+    "WheelRotSpeed": 0.75,
+    "WheelDifferential": 0.5,
+    "MaxForwardSpeedRate": 1.1,
+    "MaxBackwardSpeedRate": 0.65,
+    "Increment": 0.009,
+    "Decrement": 0.008,
+    "SteeringSpeed": 0.045,
+    "EngineSoundVolume": 0.6
+  },
+  "UpStep": 1.5,
+  "Mass": 140,
+  "RotateOffsetHeight": 2.2,
+  "DamageModifiers": [
+    "All - 5",
+    "minecraft:lava + 5",
+    "All * 0.4",
+    "minecraft:arrow * 0.2",
+    "minecraft:trident * 0.4",
+    "minecraft:mob_attack * 0.4",
+    "minecraft:mob_attack_no_aggro * 0.4",
+    "minecraft:mob_projectile * 0.4",
+    "minecraft:player_attack * 0.4",
+    "minecraft:lava * 4",
+    "@minecraft:tnt * 3",
+    "@minecraft:tnt_minecart * 3",
+    "minecraft:explosion * 4",
+    "minecraft:player_explosion * 4",
+    "superbwarfare:projectile_hit * 0.8",
+    "superbwarfare:grapeshot_hit * 0.2",
+    "@#superbwarfare:aerial_bomb * 1.4",
+    "#superbwarfare:projectile * 0.16",
+    "#superbwarfare:projectile_absolute * 0.25",
+    "superbwarfare:vehicle_strike * 0.7",
+    "@superbwarfare:cannon_shell * 0.6",
+    "@superbwarfare:small_cannon_shell * 0.5",
+    "@#superbwarfare:aa_missile * 0.5",
+    "@superbwarfare:gun_grenade * 1.4",
+    "@superbwarfare:rgo_grenade * 3",
+    "@superbwarfare:c4 * 1.5",
+    "@superbwarfare:hand_grenade * 2.5",
+    "@superbwarfare:mortar_shell * 2",
+    "$entity.getSourceAngle(source, 0.25) * damage"
+  ],
+  "VehicleContainerType": "Huge",
+  "DestroyInfo": {
+    "ParticleType": "Huge",
+    "ExplosionDamage": 130,
+    "ExplosionRadius": 7.5
+  },
+  "ThirdPersonCameraPos": [0, 1.2, 7],
+  "VehicleIcon": "superbwarfare:textures/vehicle_icon/ural_icon.png",
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/civilian.png",
+  "Type": "Car",
+  "CollisionLevel": {
+    "Level": 4,
+    "PowerLimits": [
+      [0, 0, true],
+      [0, 0, true],
+      [0.15, 0.09, false],
+      [1, 0.3, false]
+    ]
+  },
+  "EngineSound": "superbwarfare:truck_engine",
+  "HornSound": "superbwarfare:truck_horn",
+  "TerrainCompat": [[1.3125, 0, -2.9375], [-1.0625, 0, -2.9375], [1.3125, 0, 1.5], [-1.0625, 0, 1.5], [1.3125, 0, 3.25], [-1.0625, 0, 3.25]],
+  "InertiaRotateRate": 0.3
+}

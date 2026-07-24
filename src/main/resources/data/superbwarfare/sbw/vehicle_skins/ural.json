@@ -1,0 +1,39 @@
+{
+  "Skins": [
+    {
+      "Id": "sand",
+      "Name": "Sand",
+      "Description": "Desert Camouflage",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/ural_sand.png",
+      "Priority": 1
+    },
+    {
+      "Id": "green",
+      "Name": "Green",
+      "Description": "Woodland Camouflage",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/ural_green.png",
+      "Priority": 2
+    },
+    {
+      "Id": "ua",
+      "Name": "UA",
+      "Description": "Ukrainian Livery",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/ural_ua.png",
+      "Priority": 3
+    },
+    {
+      "Id": "z",
+      "Name": "Z",
+      "Description": "Z Livery",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/ural_z.png",
+      "Priority": 4
+    },
+    {
+      "Id": "v",
+      "Name": "V",
+      "Description": "V Livery",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/ural_v.png",
+      "Priority": 5
+    }
+  ]
+}

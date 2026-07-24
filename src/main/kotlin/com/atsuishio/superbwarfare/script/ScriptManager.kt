@@ -17,6 +17,24 @@ import org.mozillaa.javascript.ScriptableObject
  */
 object ScriptManager {
 
+    /**
+     * 资源重载在 ForkJoinPool worker 线程上并行执行，这些线程的 contextClassLoader 默认是
+     * JVM 的系统/平台类加载器，而不是加载本模组（及其 jarJar 的 Rhino）的 TRANSFORMER 层
+     * 模块类加载器。Rhino 的 [Context] 静态初始化通过 ServiceLoader（依赖 contextClassLoader）
+     * 查找 RegExpLoader 实现，加载器不一致会导致 NoClassDefFoundError /
+     * "not a subtype" 报错。这里在调用 Rhino 前临时切换成本类的类加载器，用后恢复。
+     */
+    private inline fun <T> withCorrectClassLoader(block: () -> T): T {
+        val thread = Thread.currentThread()
+        val previous = thread.contextClassLoader
+        thread.contextClassLoader = ScriptManager::class.java.classLoader
+        try {
+            return block()
+        } finally {
+            thread.contextClassLoader = previous
+        }
+    }
+
     @JvmRecord
     data class CustomScript(
         val name: String,
@@ -26,10 +44,10 @@ object ScriptManager {
         /**
          * 执行脚本，在调用线程上自动管理 Context 生命周期。
          */
-        fun exec(): Any {
+        fun exec(): Any = ScriptManager.withCorrectClassLoader {
             val cx = Context.enter()
             try {
-                return script.exec(cx, scope, scope)
+                script.exec(cx, scope, scope)
             } finally {
                 Context.exit()
             }
@@ -54,11 +72,11 @@ object ScriptManager {
          *
          * 若函数不存在或返回值非 Number，返回 null。
          */
-        fun callFunction(functionName: String, vararg args: Any): Any? {
+        fun callFunction(functionName: String, vararg args: Any): Any? = ScriptManager.withCorrectClassLoader {
             val cx = Context.enter()
             try {
-                val func = scope.get(functionName, scope) as? Function ?: return null
-                return func.call(cx, scope, scope, args.toList().toTypedArray())
+                val func = scope.get(functionName, scope) as? Function ?: return@withCorrectClassLoader null
+                func.call(cx, scope, scope, args.toList().toTypedArray())
             } finally {
                 Context.exit()
             }
@@ -68,13 +86,13 @@ object ScriptManager {
     /**
      * 创建安全脚本（不允许 Java 互操作）。
      */
-    fun createSafeScript(name: String, source: String): CustomScript? {
+    fun createSafeScript(name: String, source: String): CustomScript? = withCorrectClassLoader {
         val cx = Context.enter()
         try {
-            if (!cx.stringIsCompilableUnit(source)) return null
+            if (!cx.stringIsCompilableUnit(source)) return@withCorrectClassLoader null
             val scope = cx.initSafeStandardObjects()
             val script = cx.compileString(source, name, 1, null)
-            return CustomScript(name, scope, script)
+            CustomScript(name, scope, script)
         } finally {
             Context.exit()
         }
@@ -83,13 +101,13 @@ object ScriptManager {
     /**
      * 创建标准脚本（允许 Java 互操作）。
      */
-    fun createScript(name: String, source: String): CustomScript? {
+    fun createScript(name: String, source: String): CustomScript? = withCorrectClassLoader {
         val cx = Context.enter()
         try {
-            if (!cx.stringIsCompilableUnit(source)) return null
+            if (!cx.stringIsCompilableUnit(source)) return@withCorrectClassLoader null
             val scope = cx.initStandardObjects()
             val script = cx.compileString(source, name, 1, null)
-            return CustomScript(name, scope, script)
+            CustomScript(name, scope, script)
         } finally {
             Context.exit()
         }

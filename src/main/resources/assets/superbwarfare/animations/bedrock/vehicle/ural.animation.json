@@ -1,0 +1,57 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.door_l.open": {
+			"loop": false,
+			"animation_length": 1.2,
+			"bones": {
+				"door_l": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"0.4": [0, 70, 0],
+						"0.8": [0, 70, 0],
+						"1.2": [0, 0, 0]
+					}
+				}
+			}
+		},
+		"animation.door_r.open": {
+			"loop": false,
+			"animation_length": 1.2,
+			"bones": {
+				"door_r": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"0.4": [0, -70, 0],
+						"0.8": [0, -70, 0],
+						"1.2": [0, 0, 0]
+					}
+				}
+			}
+		},
+		"animation.zad.open": {
+			"loop": false,
+			"animation_length": 1.0,
+			"bones": {
+				"zad": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"1.0": [-100, 0, 0]
+					}
+				}
+			}
+		},
+		"animation.zad.close": {
+			"loop": false,
+			"animation_length": 1.0,
+			"bones": {
+				"zad": {
+					"rotation": {
+						"0.0": [-100, 0, 0],
+						"1.0": [0, 0, 0]
+					}
+				}
+			}
+		}
+	}
+}
