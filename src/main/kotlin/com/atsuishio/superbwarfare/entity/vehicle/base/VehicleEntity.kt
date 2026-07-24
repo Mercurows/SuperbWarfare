@@ -32,6 +32,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getXRotF
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.getYRotFromVector
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleWeaponUtils.reloadDecoy
 import com.atsuishio.superbwarfare.event.ClientMouseHandler
+import com.atsuishio.superbwarfare.event.GunEventHandler
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.inventory.handler.VehicleContainerHandler
 import com.atsuishio.superbwarfare.inventory.menu.*
@@ -64,6 +65,7 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.IntArrayTag
 import net.minecraft.nbt.IntTag
 import net.minecraft.nbt.ListTag
+import net.minecraft.nbt.Tag
 import net.minecraft.network.chat.Component
 import net.minecraft.network.protocol.game.ClientboundSetPassengersPacket
 import net.minecraft.network.protocol.game.ClientboundSoundPacket
@@ -124,11 +126,13 @@ import javax.annotation.ParametersAreNonnullByDefault
 import kotlin.math.*
 
 open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEntityType, pLevel),
-    VehiclePropertyModifier, HasCustomInventoryScreen, OBBEntity, BasicGeoVehicleEntity {
+    VehiclePropertyModifier, HasCustomInventoryScreen, OBBEntity, BasicGeoVehicleEntity, IBvrSyncableEntity {
     val anim: VehicleAnimationInstance<VehicleEntity>? =
         if (pLevel.isClientSide) VehicleAnimationInstance.create(this) else null
 
     override fun getAnimationInstance() = anim
+
+    // ----- Client-side model entries -----
 
     private val modelEntriesValue: List<VehicleModelEntry> by lazy {
         if (!level().isClientSide) return@lazy emptyList()
@@ -147,33 +151,60 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
     override fun getModelEntries() = modelEntriesValue
 
+    // ----- Server-side per-tick caches -----
+
+    /** Cached environment cooldown rate, recomputed every [ENV_RATE_RECOMPUTE_INTERVAL] ticks. */
+    private var cachedEnvRate: Double = 1.0
+
+    /** Tick on which [cachedEnvRate] was last computed. */
+    private var envRateCachedTick: Int = -ENV_RATE_RECOMPUTE_INTERVAL
+
     private var gunDataMapCache: Map<String, GunData>? = null
     private var gunDataMapWeaponKeys: Set<String>? = null
 
+    /**
+     * Guard flag set to `true` while [baseTick] writes gun states back to [entityData].
+     * Prevents self-originated updates from nullifying [gunDataMapCache] inside [onSyncedDataUpdated].
+     */
+    private var isSelfUpdatingGunData: Boolean = false
+
     open var gunDataMap: Map<String, GunData>
         get() {
-            val cache = gunDataMapCache
-            val currentKeys = computed().weapons().keys
-            if (cache != null && currentKeys == gunDataMapWeaponKeys) {
-                return cache
+            // Fast path: cache is valid — no allocations, no computed() call.
+            if (gunDataMapCache != null && gunDataMapWeaponKeys != null) {
+                return gunDataMapCache!!
             }
 
-            val rawMap = entityData.get(GUN_DATA_MAP)
+            // Slow path: rebuild the weapon map.
+            // computed() is called exactly once here.  Its result is cached by
+            // VehicleData.compute(), so this is effectively O(1) after the first call.
             val weapons = computed().weapons()
+            val rawMap = entityData.get(GUN_DATA_MAP)
             val newMap = linkedMapOf<String, GunData>()
 
             for (kv in weapons.entries) {
-                val oldData = rawMap[kv.key]
-                val stack = oldData?.stack?.copy() ?: ItemStack(ModItems.VEHICLE_GUN.get())
-                newMap[kv.key] = GunData.from(stack) { kv.value }
+                val existing = rawMap[kv.key]
+                if (existing != null) {
+                    // Reuse the existing GunData instance.  Updating the supplier
+                    // preserves the PMC cache — only triggers a structural rebuild
+                    // if the weapon definition actually changed.
+                    existing.updateDefaultDataSupplier { kv.value }
+                    newMap[kv.key] = existing
+                } else {
+                    // First encounter: allocate once, never again for this slot.
+                    newMap[kv.key] = GunData.from(
+                        ItemStack(ModItems.VEHICLE_GUN.get())
+                    ) { kv.value }
+                }
             }
 
             gunDataMapCache = newMap
-            gunDataMapWeaponKeys = currentKeys
+            gunDataMapWeaponKeys = weapons.keys
             return newMap
         }
         set(value) {
             this.entityData.set(GUN_DATA_MAP, value.toMap())
+            // External write — must invalidate cache.
             this.gunDataMapCache = null
             this.gunDataMapWeaponKeys = null
         }
@@ -445,9 +476,13 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
     override fun onSyncedDataUpdated(key: EntityDataAccessor<*>) {
         super.onSyncedDataUpdated(key)
+
         if (key == GUN_DATA_MAP) {
-            gunDataMapCache = null
-            gunDataMapWeaponKeys = null
+            // Skip cache invalidation when update was initiated by our own baseTick()
+            if (!isSelfUpdatingGunData) {
+                gunDataMapCache = null
+                gunDataMapWeaponKeys = null
+            }
         }
     }
 
@@ -1559,17 +1594,26 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         }
         compound.put("DogTagIcon", listTag)
 
+        // FAST NBT SERIALIZATION: Read stack NBT directly and strip BackupAmmoCount.
+        // Completely avoids GunData.copy(), memory allocations, and default suppliers
+        // on every sync tick.
         val tag = CompoundTag()
         for ((weaponName, gunData) in gunDataMap) {
-            val data = gunData.copy()
-            data.backupAmmoCount.reset()
-            data.save()
-
-            val stackTag = data.stack.save(CompoundTag())
+            val stackTag = gunData.stack.save(CompoundTag())
+            
+            // Clean stack payload
             stackTag.remove("id")
-            stackTag.remove("count")
+            stackTag.remove("Count")
+            
+            if (stackTag.contains("tag", Tag.TAG_COMPOUND.toInt())) {
+                val itemTag = stackTag.getCompound("tag")
+                if (itemTag.contains("GunData", Tag.TAG_COMPOUND.toInt())) {
+                    val gunTag = itemTag.getCompound("GunData")
+                    gunTag.remove("BackupAmmoCount")
+                }
+            }
+            
             if (stackTag.isEmpty) continue
-
             tag.put(weaponName, stackTag)
         }
 
@@ -1628,6 +1672,47 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         compound.putString("TowingUUID", towingUUID)
         compound.putString("TowedByUUID", towedByUUID)
+    }
+
+    /**
+     * Direct lightweight BVR serialization for vehicle entities.
+     *
+     * Serializes only network-relevant orientation, position, health, and visual rendering flags,
+     * skipping 102 vehicle inventory slots, energy capabilities, and gun data maps.
+     *
+     * @param tag destination compound tag.
+     */
+    override fun buildBvrSyncNbt(tag: CompoundTag) {
+        val encodeId = this.encodeId ?: return
+        tag.putString("id", encodeId)
+        tag.putInt("EntityId", this.id)
+
+        // Position & Motion
+        tag.putDouble("PosX", x)
+        tag.putDouble("PosY", y)
+        tag.putDouble("PosZ", z)
+        tag.putDouble("MotionX", deltaMovement.x)
+        tag.putDouble("MotionY", deltaMovement.y)
+        tag.putDouble("MotionZ", deltaMovement.z)
+
+        // Rotation
+        tag.putFloat("Yaw", yRot)
+        tag.putFloat("Pitch", xRot)
+        tag.putFloat("Roll", roll)
+
+        // Turrets
+        tag.putFloat("TurretYRot", turretYRot)
+        tag.putFloat("TurretXRot", turretXRot)
+        tag.putFloat("GunYRot", gunYRot)
+        tag.putFloat("GunXRot", gunXRot)
+
+        // Combat & Visual state
+        tag.putFloat("Health", health)
+        tag.putBoolean("IsWreck", isWreck)
+        tag.putBoolean("EngineRunning", engineRunning())
+        tag.putFloat("LaserScale", laserScale)
+
+        tag.putUUID("UUID", this.uuid)
     }
 
     override fun interact(player: Player, hand: InteractionHand): InteractionResult {
@@ -1888,6 +1973,41 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         }
     }
 
+    /**
+     * Throttles vanilla fluid-state scanning for vehicle entities to conserve CPU.
+     *
+     * <p>Vanilla [Entity.baseTick] invokes this method every tick, scanning every block
+     * in the entity's bounding box. For huge vehicle bounding boxes (e.g. KirovEntity airship),
+     * this performs hundreds of block fluid lookups per tick.
+     *
+     * <p>Throttle strategy:
+     * <ul>
+     *   <li><b>Watercraft ([VehicleType.SHIP])</b>: Checked every 1 tick (full accuracy for buoyancy).</li>
+     *   <li><b>Airborne ([VehicleType.AIRPLANE], [VehicleType.HELICOPTER], [VehicleType.AIRSHIP])</b>: Checked every 20 ticks.</li>
+     *   <li><b>Ground vehicles</b>: Checked every 4 ticks (0.2s lag is imperceptible).</li>
+     * </ul>
+     */
+    override fun updateInWaterStateAndDoFluidPushing(): Boolean {
+        // Safety guard: execute standard logic during entity constructor initialization
+        if (!isInitialized) {
+            return super.updateInWaterStateAndDoFluidPushing()
+        }
+
+        val interval = when {
+            engineInfo is EngineInfo.Ship -> 1
+            vehicleType == VehicleType.AIRPLANE ||
+            vehicleType == VehicleType.HELICOPTER ||
+            vehicleType == VehicleType.AIRSHIP -> 20
+            else -> 4
+        }
+
+        if (tickCount % interval != 0) {
+            return isInWater
+        }
+
+        return super.updateInWaterStateAndDoFluidPushing()
+    }
+
     override fun isInFluidType(predicate: BiPredicate<FluidType, Double>): Boolean {
         val collisionOBB = getCollisionOBB() ?: return super.isInFluidType(predicate)
 
@@ -2002,7 +2122,11 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     override fun baseTick() {
+        // Cache computed vehicle data for this tick.
+        // All downstream reads must use this local variable — never call computed() directly
+        // inside baseTick() to avoid redundant DefaultVehicleData lookups.
         val computed = computed()
+
         if (this.level().isClientSide) {
             if (prevMotion == null) {
                 prevMotion = this.deltaMovement
@@ -2054,12 +2178,32 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             }
 
         } else {
-            // 枪数据处理
+            // Server side: tick all gun data with cached environment rate.
+            // Computing fluid state (isInLava, isInWaterOrRain) is expensive for
+            // large vehicles — dozens of block lookups per call. By computing
+            // the environment rate once and passing it to all weapons, we avoid
+            // N redundant fluid scans (where N = number of mounted weapons).
             val map = this.gunDataMap
-            for ((_, gunData) in map) {
-                gunData.tick(this, true)
+            val firstGun = map.values.firstOrNull()
+            if (firstGun != null) {
+                // Recompute environment rate at most once every ENV_RATE_RECOMPUTE_INTERVAL ticks.
+                // isInLava / isInWaterOrRain scan the full bounding box — for large vehicles
+                // (KirovEntity) this can touch hundreds of blocks per call.
+                if (tickCount - envRateCachedTick >= ENV_RATE_RECOMPUTE_INTERVAL) {
+                    cachedEnvRate = map.values.firstOrNull()
+                        ?.let { GunEventHandler.computeEnvironmentRate(this, it) }
+                        ?: 1.0
+                    envRateCachedTick = tickCount
+                }
+
+                for ((_, gunData) in map) {
+                    GunEventHandler.gunTick(this, gunData, true, cachedEnvRate)
+                }
             }
+
+            isSelfUpdatingGunData = true
             this.entityData.set(GUN_DATA_MAP, map, true)
+            isSelfUpdatingGunData = false
         }
 
         this.wasEngineRunning = this.engineRunning()
@@ -2174,7 +2318,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         if (isWreck) {
             if ((vehicleType == VehicleType.AIRPLANE || vehicleType == VehicleType.HELICOPTER || vehicleType == VehicleType.AIRSHIP) && (onGround() || isInFluidType) && !sympatheticDetonated) {
                 sympatheticDetonated = true
-                val destroyInfo = computed().destroyInfo
+                val destroyInfo = computed.destroyInfo
                 if (destroyInfo.explodePassengers) {
                     if (this.crash && destroyInfo.crashPassengers) {
                         crashPassengers()
@@ -2343,7 +2487,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         this.supportEntities()
         this.crushEntities()
-        this.setDeltaMovement(this.deltaMovement.add(0.0, -this.computed().gravity, 0.0))
+        this.setDeltaMovement(this.deltaMovement.add(0.0, -computed.gravity, 0.0))
         this.move(MoverType.SELF, this.deltaMovement)
 
         if (!level().isClientSide && isAlive) {
@@ -2413,7 +2557,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             }
         }
 
-        val terrainCompat = this.computed().terrainCompat
+        val terrainCompat = computed.terrainCompat
         if (terrainCompat.isNotEmpty()) {
             if (!((vehicleType == VehicleType.AIRPLANE || vehicleType == VehicleType.HELICOPTER || vehicleType == VehicleType.AIRSHIP) && isWreck)) {
                 this.terrainCompact(terrainCompat)
@@ -2487,8 +2631,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
                 prevMotion = motion
 
-                fakePitch -= pitchAngle * computed().inertiaRotateRate
-                fakeRoll -= rollAngle * computed().inertiaRotateRate
+                fakePitch -= pitchAngle * computed.inertiaRotateRate
+                fakeRoll -= rollAngle * computed.inertiaRotateRate
             }
         }
 
@@ -2501,7 +2645,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             this.refreshBoundingBoxFromOBBs()
         }
 
-        if (level() is ServerLevel && VehicleConfig.VEHICLE_CHUNK_LOADING.get() && computed().keepChunkLoaded) {
+        if (level() is ServerLevel && VehicleConfig.VEHICLE_CHUNK_LOADING.get() && computed.keepChunkLoaded) {
             this.keepChunkLoaded(this.position())
             this.keepChunkLoaded(position().add(deltaMovement.normalize().scale(16.0)))
         }
@@ -4567,6 +4711,18 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
     companion object {
         const val TAG_SEAT_INDEX: String = "SBWSeatIndex"
+
+        /**
+        * How many ticks between environment-rate recomputations.
+        *
+        * Fluid-state checks ([isInLava], [isInWaterOrRain]) scan every block
+        * in the entity's bounding box — expensive for large vehicles such as
+        * KirovEntity.  Recomputing every 4 ticks introduces at most 0.2 s of
+        * lag when the environment changes (e.g. vehicle drives into lava),
+        * which is imperceptible during gameplay.
+        */
+        private const val ENV_RATE_RECOMPUTE_INTERVAL = 4
+
 
         @JvmField
         val HEALTH: EntityDataAccessor<Float> =

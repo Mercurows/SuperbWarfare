@@ -43,39 +43,99 @@ import java.util.function.Function
 import kotlin.math.max
 import kotlin.math.min
 
-fun ItemStack.isGunItem() = this.item is GunItem
-fun ItemStack.toGunData() = if (isGunItem()) GunData.from(this) else null
+/**
+ * Extension function checking whether an [ItemStack] represents a valid gun item.
+ *
+ * @return `true` if the item is an instance of [GunItem].
+ */
+fun ItemStack.isGunItem(): Boolean = this.item is GunItem
 
+/**
+ * Converts an [ItemStack] to a [GunData] wrapper if applicable.
+ *
+ * @return [GunData] instance, or `null` if stack is not a gun.
+ */
+fun ItemStack.toGunData(): GunData? = if (isGunItem()) GunData.from(this) else null
+
+/**
+ * Core runtime data container and Property Modifier Calculator (PMC) wrapper for firearm items.
+ *
+ * Manages NBT tags, computed properties, fire modes, ammo consumers, perks, attachments,
+ * and state timers. Optimized via [NbtVersion] to distinguish structural NBT changes
+ * (requiring PMC re-calculation) from ephemeral runtime state modifications.
+ *
+ * @author superbwarfare contributors
+ * @since 0.8.9.1
+ */
 class GunData private constructor(
     stack: ItemStack, initialDefaultDataSupplier: (() -> DefaultGunData)? = null
 ) : DefaultDataSupplier<DefaultGunData> {
+
+    /** The target weapon item stack wrapped by this data object. */
     @JvmField
     val stack: ItemStack
 
+    /** The underlying [GunItem] definition for this weapon. */
     @JvmField
     val item: GunItem
 
+    /** The root NBT tag compound attached to the item stack. */
     @JvmField
     val tag: CompoundTag
 
+    /** The primary NBT compound containing gun data properties. */
     @JvmField
     val gunDataTag: CompoundTag
 
+    /** The NBT compound containing active perk configurations. */
     @JvmField
     val perkTag: CompoundTag
 
+    /** The NBT compound containing attachment slot configurations. */
     @JvmField
     val attachmentTag: CompoundTag
 
+    /** JSON override string for dynamically replacing property values. */
     @JvmField
     val propertyOverrideString: StringValue
 
+    /** Unique registry identifier string for the underlying item. */
     @JvmField
     val id: String
 
-    private var defaultDataSupplier: () -> DefaultGunData
+    /** Tracks structural and state NBT mutations for O(1) PMC invalidation. */
+    @JvmField
+    val nbtVersion: NbtVersion = NbtVersion()
+
+    /**
+     * Supplier for the default (unmodified) gun property set.
+     *
+     * Marked as [internal] to allow [VehicleEntity] to update the baseline supplier
+     * without reconstructing the entire [GunData] instance.
+     */
+    @JvmField
+    internal var defaultDataSupplier: () -> DefaultGunData
+
+    /** Cached snapshot of the item stack used for equality checks. */
     var lastTimeStack: ItemStack? = null
 
+    /** Cached result of the last [countBackupAmmo] inventory computation. */
+    @JvmField
+    var cachedBackupAmmo: Int = -1
+
+    /** Game time (in ticks) when [cachedBackupAmmo] was last computed. */
+    @JvmField
+    var cachedBackupAmmoTick: Long = -BACKUP_AMMO_CACHE_TICKS
+
+    /** Combined NBT version snapshot taken at construction time to track mutations O(1). */
+    private val initialCombinedVersion: Int = nbtVersion.structural + nbtVersion.state
+
+    /**
+     * Gets or creates a child [CompoundTag] with the given [name] inside [tag].
+     *
+     * @param name the child tag key name.
+     * @return existing or newly created [CompoundTag].
+     */
     private fun getOrPut(name: String): CompoundTag {
         if (!this.tag.contains(name)) {
             this.tag.put(name, CompoundTag())
@@ -83,38 +143,83 @@ class GunData private constructor(
         return this.tag.getCompound(name)
     }
 
+    /**
+     * Checks if the gun has been properly initialized.
+     *
+     * @return `true` if initialization has occurred.
+     */
     fun initialized(): Boolean {
         return item.isInitialized(this)
     }
 
+    /**
+     * Executes initial setup logic for this weapon item.
+     */
     fun initialize() {
         item.init(this)
     }
 
-    fun item() = item
-    fun stack() = stack
+    /** Returns the underlying [GunItem]. */
+    fun item(): GunItem = item
 
-    fun tag() = tag
-    fun data() = gunDataTag
-    fun perk() = perkTag
-    fun attachment() = attachmentTag
+    /** Returns the wrapped [ItemStack]. */
+    fun stack(): ItemStack = stack
 
-    override fun getDefault() = this.defaultDataSupplier()
+    /** Returns the root NBT [CompoundTag]. */
+    fun tag(): CompoundTag = tag
 
-    fun setTempModifications(modification: Function<DefaultGunData, DefaultGunData>) {
-        tempModifications = modification
+    /** Returns the gun data NBT [CompoundTag]. */
+    fun data(): CompoundTag = gunDataTag
+
+    /** Returns the perk NBT [CompoundTag]. */
+    fun perk(): CompoundTag = perkTag
+
+    /** Returns the attachment NBT [CompoundTag]. */
+    fun attachment(): CompoundTag = attachmentTag
+
+    /** Returns default un-modified [DefaultGunData] baseline for this weapon. */
+    override fun getDefault(): DefaultGunData = this.defaultDataSupplier()
+
+    /**
+     * Updates the default data supplier and invalidates the structural version counter.
+     *
+     * This forces a PMC rebuild on the next [get] access with the updated defaults,
+     * while preserving the existing [GunData] instance, stack, and [NbtVersion] state.
+     *
+     * @param supplier new function supplying updated [DefaultGunData].
+     */
+    fun updateDefaultDataSupplier(supplier: () -> DefaultGunData) {
+        defaultDataSupplier = supplier
+        nbtVersion.invalidateStructural()
     }
 
+    /**
+     * Sets temporary runtime modifications to default weapon data.
+     *
+     * @param modification function modifying default gun data.
+     */
+    fun setTempModifications(modification: Function<DefaultGunData, DefaultGunData>) {
+        tempModifications = modification
+        nbtVersion.invalidateStructural()
+    }
+
+    /** Clears temporary runtime weapon modifications. */
     fun clearTempModifications() {
         tempModifications = null
+        nbtVersion.invalidateStructural()
     }
 
     private val jsonPropModifier = JsonPropertyModifier(GunProp.entries)
-
     private var cache: DefaultGunData? = null
-
     private var tempModifications: Function<DefaultGunData, DefaultGunData>? = null
 
+    /**
+     * Computes modified property values into a standalone [DefaultGunData] snapshot.
+     *
+     * @param useCache whether to re-use cached result if available.
+     * @return computed gun data properties.
+     * @deprecated Use [get] with [GunProp] keys instead for optimized property resolution.
+     */
     @JvmOverloads
     @Deprecated("Use get() instead")
     @ApiStatus.ScheduledForRemoval
@@ -137,13 +242,13 @@ class GunData private constructor(
 //        rawData = selectedAmmoConsumer(rawData.getProcessedAmmoConsumers()).computeProperties(this, rawData)
 //
 //        // perk
-//        for (type in Perk.Type.entries.toTypedArray()) {
+//        for (type in PERK_TYPES) {
 //            val instance = perk.get(type) ?: continue
 //
 //            rawData = instance.computeProperties(this, rawData)
 //        }
 //
-//        // 临时属性修改
+//        // Temporary property modifications
 //        if (tempModifications != null) {
 //            rawData = tempModifications!!.apply(rawData)
 //        }
@@ -156,56 +261,67 @@ class GunData private constructor(
         return rawData
     }
 
-    private var pmc: PMC<GunData, DefaultGunData>? = null
+    private val pmcInstance: PMC<GunData, DefaultGunData> by lazy { PMC(this) }
+    private var cachedStructuralVersion: Int = -1
 
+    /**
+     * Resolves a computed weapon property using lazy PMC caching.
+     *
+     * Utilizes [NbtVersion.structural] to bypass redundant property calculation
+     * when weapon structure (attachments, perks, fire mode, overrides) has not changed.
+     *
+     * @param prop the target weapon property key.
+     * @return calculated value for the given property.
+     */
     @Suppress("unchecked_cast")
-    fun <T> get(prop: GunProp<*, T>): T {
-        val currentStack = this.stack
-        val pmc = if (this.pmc == null || !(currentStack sameWith lastTimeStack)) {
-            PMC(this).also { this.pmc = it }
-        } else {
-            this.pmc!!
+    fun <T> get(prop: GunProp<*, T>): T {        
+        // Fast path: structural version matches cached version -> return cached value
+        if (cachedStructuralVersion == nbtVersion.structural) {
+            return pmcInstance[prop]
         }
 
-        if (!(currentStack sameWith lastTimeStack)) {
-            lastTimeStack = currentStack.copy()
-        } else {
-            // 务必在初始化之后再调用缓存
-            return pmc[prop]
-        }
+        // Structural version mismatch: rebuild property modification pipeline
+        pmcInstance.reset()
 
-        // property override tag
+        // 1. Property override tag
         jsonPropModifier.update(propertyOverrideString.get())
-        jsonPropModifier.modifyProperty(pmc)
+        jsonPropModifier.modifyProperty(pmcInstance)
 
-        // gun modifiers
-        item.modifyProperty(pmc)
+        // 2. Gun item level modifiers
+        item.modifyProperty(pmcInstance)
 
-        // FireMode
-        selectedFireModeInfo(pmc[AVAILABLE_FIRE_MODES]).modifyProperty(pmc)
+        // 3. FireMode modifiers
+        selectedFireModeInfo(pmcInstance[AVAILABLE_FIRE_MODES]).modifyProperty(pmcInstance)
 
-        // AmmoConsumer
-        selectedAmmoConsumer(pmc[AMMO_CONSUMER]).modifyProperty(pmc)
+        // 4. AmmoConsumer modifiers
+        selectedAmmoConsumer(pmcInstance[AMMO_CONSUMER]).modifyProperty(pmcInstance)
 
-        // perk
-        for (type in Perk.Type.entries.toTypedArray()) {
+        // 5. Active Perks
+        for (type in PERK_TYPES) {
             val list = perk.getInstances(type)
             for (instance in list) {
-                instance.perk.modifyProperty(pmc)
+                instance.perk.modifyProperty(pmcInstance)
             }
         }
 
-        // TODO 临时属性修改
+        // TODO Temporary property modifications
 //        if (tempModifications != null) {
 //            rawData = tempModifications!!.apply(rawData)
 //        }
 
-        // limit
-        GunProp.modifyProperty(pmc)
+        // 6. Global property bounds limit
+        GunProp.modifyProperty(pmcInstance)
 
-        return pmc[prop]
+        cachedStructuralVersion = nbtVersion.structural
+        return pmcInstance[prop]
     }
 
+    /**
+     * Checks if the shooter has infinite backup ammunition available.
+     *
+     * @param shooter the entity attempting to fire or reload.
+     * @return `true` if creative mode, infinite consumer, or creative ammo box is present.
+     */
     fun hasInfiniteBackupAmmo(shooter: Entity?): Boolean {
         return shooter is Player && shooter.isCreative
                 || selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.INFINITE
@@ -214,29 +330,50 @@ class GunData private constructor(
     }
 
     /**
-     * 武器是否直接使用背包内弹药
+     * Determines whether the weapon directly consumes ammo from the inventory without reloading.
+     *
+     * @return `true` if magazine capacity is zero or less.
      */
     fun useBackpackAmmo(): Boolean {
         return get(MAGAZINE) <= 0
     }
 
-    // TODO 这什么b scope判断
+    /**
+     * Calculates minimum scope zoom ratio.
+     *
+     * @return minimum allowed zoom value.
+     */
     fun minZoom(): Double {
         val scopeType = this.attachment.get(AttachmentType.SCOPE)
         return if (scopeType == 3) max(getDefault().minZoom, 1.25) else 1.25
     }
 
-    // TODO 这什么b scope判断
+    /**
+     * Calculates maximum scope zoom ratio.
+     *
+     * @return maximum allowed zoom value.
+     */
     fun maxZoom(): Double {
         val scopeType = this.attachment.get(AttachmentType.SCOPE)
         return if (scopeType == 3) getDefault().maxZoom else 114514.0
     }
 
+    /**
+     * Gets current clamped zoom ratio for camera rendering.
+     *
+     * @return clamped zoom magnification level.
+     */
     fun zoom(): Double {
         if (minZoom() >= maxZoom()) return get(DEFAULT_ZOOM)
         return Mth.clamp(get(DEFAULT_ZOOM), minZoom(), maxZoom())
     }
 
+    /**
+     * Retrieves currently selected ammo consumer definition.
+     *
+     * @param consumers list of available consumers, defaults to weapon's computed consumers.
+     * @return active [AmmoConsumer] instance.
+     */
     @JvmOverloads
     fun selectedAmmoConsumer(consumers: List<AmmoConsumer>? = get(AMMO_CONSUMER)): AmmoConsumer {
         if (consumers.isNullOrEmpty()) {
@@ -245,6 +382,12 @@ class GunData private constructor(
         return consumers[this.selectedAmmoType.get().coerceIn(consumers.indices)]
     }
 
+    /**
+     * Switches weapon's active ammo consumer type and handles inventory unloading.
+     *
+     * @param index index of the target ammo consumer in the available list.
+     * @param ammoSupplier entity supplying ammo for inventory operations.
+     */
     fun changeAmmoConsumer(index: Int, ammoSupplier: Entity?) {
         val consumers = get(AMMO_CONSUMER)
         val targetIndex = index.coerceIn(consumers.indices)
@@ -283,6 +426,9 @@ class GunData private constructor(
         resetStatus()
     }
 
+    /**
+     * Resets transient runtime weapon states including reload, charge, and bolt timers.
+     */
     fun resetStatus() {
         this.reload.stage.reset()
         this.reload.setState(ReloadState.NOT_RELOADING)
@@ -293,13 +439,18 @@ class GunData private constructor(
         this.reload.prepareLoadTimer.reset()
         this.reload.reloadStarter.finish()
         this.reload.singleReloadStarter.finish()
-        this.reload.singleReloadStarter.finish()
         this.bolt.actionTimer.reset()
         this.bolt.needed.reset()
         this.charge.starter.finish()
         this.charge.timer.reset()
     }
 
+    /**
+     * Retrieves information about the currently selected fire mode.
+     *
+     * @param fireModes list of available fire modes, defaults to weapon's computed modes.
+     * @return active [FireModeInfo].
+     */
     @JvmOverloads
     fun selectedFireModeInfo(fireModes: List<FireModeInfo>? = get(AVAILABLE_FIRE_MODES)): FireModeInfo {
         if (fireModes.isNullOrEmpty()) {
@@ -308,70 +459,92 @@ class GunData private constructor(
         return fireModes[this.selectedFireMode.get().coerceIn(fireModes.indices)]
     }
 
-    // 开火相关流程开始
+    // Fire process start
+
     /*
-     * 开火相关流程描述
-     * 1. 调用shouldStartReloading和shouldStartBolt查看当前状态是否应该开始换弹或拉栓，是则调用startReloading或startBolt开始换弹/拉栓流程
-     * 2. 调用canShoot(@Nullable Entity shooter)查看当前状态是否能够开火，如果能够开火则调用shootBullet进行开火
-     * 3. 调用tick(@Nullable Entity shooter)执行枪械tick任务，包括换弹流程、过热计算、拉栓等
+     * Fire Process Sequence Description:
+     * 1. Call shouldStartReloading and shouldStartBolt to verify whether reloading or bolt action should start.
+     * If so, call startReload or startBolt.
+     * 2. Call canShoot(@Nullable Entity shooter) to check if shooting conditions are met, then invoke shoot.
+     * 3. Call tick(@Nullable Entity shooter) to execute weapon tick routines (reload timers, heat, bolt, etc.).
      *
-     * 可选项：
-     * 1. 使用GunData.virtualAmmo.set来设置虚拟弹药数量
-     * 2. 传入带有IItemHandler能力的任意Entity来提供额外弹药
-     *
+     * Optional Steps:
+     * 1. Use GunData.virtualAmmo.set to specify virtual ammo count.
+     * 2. Pass an Entity with IItemHandler capability to provide extra ammo.
      */
+
     /**
-     * 是否应该开始换弹
+     * Checks if weapon should initiate reload sequence.
+     *
+     * @param entity the entity holding the weapon.
+     * @return `true` if weapon is empty and backup ammo is available.
      */
     fun shouldStartReloading(entity: Entity?): Boolean {
         return !reloading() && !useBackpackAmmo() && !hasEnoughAmmoToShoot(entity) && hasBackupAmmo(entity)
     }
 
     /**
-     * 是否应该开始换弹
+     * Checks if bolt action process should start.
+     *
+     * @return `true` if bolt timer is zero and bolt is flagged as needed.
      */
     fun shouldStartBolt(): Boolean {
         return this.bolt.actionTimer.get() == 0 && this.bolt.needed.get()
     }
 
-    /**
-     * 开始换弹流程，换弹将在tick内被执行
-     */
+    /** Starts reload sequence in next tick update. */
     fun startReload() {
         this.reload.reloadStarter.markStart()
     }
 
-    /**
-     * 开始拉栓流程，换弹将在tick内被执行
-     */
+    /** Starts manual bolt-action sequence. */
     fun startBolt() {
         this.bolt.actionTimer.set(get(BOLT_ACTION_TIME) + 1)
     }
 
     /**
-     * 是否还有剩余弹药（不考虑枪内弹药）
+     * Checks if backup ammo is available (excluding loaded magazine ammo).
+     *
+     * @param entity the ammo source entity.
+     * @return `true` if backup ammo count > 0.
      */
     fun hasBackupAmmo(entity: Entity?): Boolean {
         return countBackupAmmo(entity) > 0
     }
 
     /**
-     * 计算剩余弹药数量（不考虑枪内弹药）
+     * Calculates total backup ammo quantity available from an entity source.
+     * Caches result for [BACKUP_AMMO_CACHE_TICKS] ticks to avoid iterating inventory slots every tick.
+     *
+     * @param entity the ammo supplier entity; may be null.
+     * @return available backup ammo count.
      */
     fun countBackupAmmo(entity: Entity?): Int {
         if (entity == null) return virtualAmmo.get()
-        if (entity is Player && entity.isCreative || InventoryTool.hasCreativeAmmoBox(entity)) return Int.MAX_VALUE
+        if (entity is Player && entity.isCreative) return Int.MAX_VALUE
+        if (InventoryTool.hasCreativeAmmoBox(entity)) return Int.MAX_VALUE
 
-        return Math.toIntExact(
+        val currentTick = entity.level().gameTime
+        if (cachedBackupAmmo >= 0 && (currentTick - cachedBackupAmmoTick) < BACKUP_AMMO_CACHE_TICKS) {
+            return cachedBackupAmmo
+        }
+
+        val computed = Math.toIntExact(
             min(
                 countBackupAmmoItem(entity).toLong() * this.selectedAmmoConsumer().loadAmount + this.virtualAmmo.get(),
                 Int.MAX_VALUE.toLong()
             )
         )
+        cachedBackupAmmo = computed
+        cachedBackupAmmoTick = currentTick
+        return computed
     }
 
     /**
-     * 计算剩余弹药数量（不考虑枪内弹药）
+     * Calculates total backup ammo quantity available from an item handler.
+     *
+     * @param handler the item handler container; may be null.
+     * @return available backup ammo count.
      */
     fun countBackupAmmo(handler: IItemHandler?): Int {
         if (handler == null) return virtualAmmo.get()
@@ -385,79 +558,90 @@ class GunData private constructor(
         )
     }
 
+    /** Counts raw backup ammo item stacks for entity source. */
     fun countBackupAmmoItem(entity: Entity?): Int {
         return this.selectedAmmoConsumer().count(this, entity)
     }
 
+    /** Counts raw backup ammo item stacks for item handler source. */
     fun countBackupAmmoItem(handler: IItemHandler?): Int {
         return this.selectedAmmoConsumer().count(this, handler)
     }
 
     /**
-     * 消耗额外弹药（不影响枪内弹药）
+     * Consumes backup ammunition without reducing loaded magazine rounds.
+     *
+     * @param entity ammo source entity.
+     * @param count required ammo count.
      */
     fun consumeBackupAmmo(entity: Entity?, count: Int) {
-        var count = count
-        if (count <= 0 || entity is Player && entity.isCreative || InventoryTool.hasCreativeAmmoBox(entity)) return
+        var remaining = count
+        if (remaining <= 0 || entity is Player && entity.isCreative || InventoryTool.hasCreativeAmmoBox(entity)) return
 
         if (virtualAmmo.get() > 0) {
-            val consumed = min(virtualAmmo.get(), count)
+            val consumed = min(virtualAmmo.get(), remaining)
             virtualAmmo.add(-consumed)
-            count -= consumed
+            remaining -= consumed
             save()
         }
-        if (count <= 0 || entity == null) return
+        if (remaining <= 0 || entity == null) return
 
         val consumer = this.selectedAmmoConsumer()
         val loadAmount = consumer.loadAmount
-        if (count % loadAmount != 0) {
-            val required = (count / loadAmount) + 1
+        if (remaining % loadAmount != 0) {
+            val required = (remaining / loadAmount) + 1
             val consumed = consumer.consume(this, entity, required)
-            count -= consumed * loadAmount
+            remaining -= consumed * loadAmount
 
-            // 迫真过载装填
-            if (count <= 0) {
-                this.virtualAmmo.add(-count)
+            // Overload reload logic
+            if (remaining <= 0) {
+                this.virtualAmmo.add(-remaining)
             }
         } else {
-            consumer.consume(this, entity, count / loadAmount)
+            consumer.consume(this, entity, remaining / loadAmount)
         }
     }
 
     /**
-     * 消耗额外弹药（不影响枪内弹药）
+     * Consumes backup ammunition from item handler without reducing loaded magazine rounds.
+     *
+     * @param handler ammo container item handler.
+     * @param count required ammo count.
      */
     fun consumeBackupAmmo(handler: IItemHandler?, count: Int) {
-        var count = count
-        if (count <= 0 || InventoryTool.hasCreativeAmmoBox(handler)) return
+        var remaining = count
+        if (remaining <= 0 || InventoryTool.hasCreativeAmmoBox(handler)) return
 
         if (virtualAmmo.get() > 0) {
-            val consumed = min(virtualAmmo.get(), count)
+            val consumed = min(virtualAmmo.get(), remaining)
             virtualAmmo.add(-consumed)
-            count -= consumed
+            remaining -= consumed
             save()
         }
-        if (count <= 0 || handler == null) return
+        if (remaining <= 0 || handler == null) return
 
         val consumer = selectedAmmoConsumer()
         val loadAmount = consumer.loadAmount
 
-        if (count % loadAmount != 0) {
-            val required = (count / loadAmount) + 1
+        if (remaining % loadAmount != 0) {
+            val required = (remaining / loadAmount) + 1
             val consumed = consumer.consume(this, handler, required)
-            count -= consumed * loadAmount
+            remaining -= consumed * loadAmount
 
-            // 迫真过载装填
-            if (count <= 0) {
-                this.virtualAmmo.add(-count)
+            // Overload reload logic
+            if (remaining <= 0) {
+                this.virtualAmmo.add(-remaining)
             }
         } else {
-            consumer.consume(this, handler, count / loadAmount)
+            consumer.consume(this, handler, remaining / loadAmount)
         }
     }
 
     /**
-     * 当前状态在换弹前的可用射击次数
+     * Calculates remaining shots possible before requiring a reload.
+     *
+     * @param entity the shooter entity.
+     * @return total shot count.
      */
     fun currentAvailableShots(entity: Entity?): Int {
         val ammoCost = get(AMMO_COST_PER_SHOOT)
@@ -467,24 +651,30 @@ class GunData private constructor(
     }
 
     /**
-     * 当前枪内可用弹药数量
+     * Gets ammo count currently available inside gun magazine or inventory.
+     *
+     * @param entity shooter entity.
+     * @return current available ammo quantity.
      */
     fun currentAvailableAmmo(entity: Entity?): Int {
         return if (useBackpackAmmo()) countBackupAmmo(entity) else this.ammo.get()
     }
 
     /**
-     * 当前状态枪内是否拥有足够的弹药进行开火
+     * Checks whether weapon has sufficient magazine/inventory ammo to execute one shot.
+     *
+     * @param entity shooter entity.
+     * @return `true` if available ammo >= cost per shot.
      */
     fun hasEnoughAmmoToShoot(entity: Entity?): Boolean {
         return get(AMMO_COST_PER_SHOOT) <= currentAvailableAmmo(entity)
     }
 
     /**
-     * 换弹完成后装填弹药，在换弹流程完成后调用
-     */
-    /**
-     * 换弹完成后装填弹药，在换弹流程完成后调用
+     * Refills magazine upon completion of reload sequence.
+     *
+     * @param entity shooter entity.
+     * @param extraOne whether to add +1 round in chamber for open-bolt/chambered designs.
      */
     @JvmOverloads
     fun reloadAmmo(entity: Entity?, extraOne: Boolean = false) {
@@ -494,7 +684,7 @@ class GunData private constructor(
         val ammo = this.ammo.get()
         val ammoNeeded = mag - ammo + (if (extraOne) 1 else 0)
 
-        // 空仓换弹的栓动武器应该在换弹后取消待上膛标记
+        // Empty reload bolt-action weapon should cancel bolt-needed flag after reloading
         if (ammo == 0 && get(BOLT_ACTION_TIME) > 0) {
             bolt.needed.set(false)
         }
@@ -510,50 +700,53 @@ class GunData private constructor(
     }
 
     /**
-     * 当前状态能否开火
+     * Verifies if weapon can shoot under current state.
+     *
+     * @param shooter entity firing weapon.
+     * @return `true` if weapon can fire.
      */
     fun canShoot(shooter: Entity?): Boolean {
         return item.canShoot(this, shooter)
     }
 
-    /**
-     * 无实体情况下开火
-     */
+    /** Fires projectile without entity shooter context. */
     fun shoot(level: ServerLevel, shootPosition: Vec3, shootDirection: Vec3, spread: Double, zoom: Boolean) {
         this.item.shoot(level, shootPosition, shootDirection, this, spread, zoom, null)
     }
 
-    /**
-     * 有实体情况下开火
-     */
+    /** Fires projectile with entity shooter context. */
     fun shoot(entity: Entity, spread: Double, zoom: Boolean, uuid: UUID?) {
         this.item.shoot(this, entity, spread, zoom, uuid)
     }
 
+    /** Fires projectile targeting specific world position. */
     fun shoot(entity: Entity, spread: Double, zoom: Boolean, uuid: UUID?, targetPos: Vec3?) {
         this.item.shoot(this, entity, spread, zoom, uuid, targetPos)
     }
 
+    /** Fires projectile using encapsulated parameter structure. */
     fun shoot(parameters: ShootParameters) {
         this.item.shoot(parameters)
     }
 
     /**
-     * 执行tick更新枪械数据
-     * <br></br>
-     * 在玩家背包里时会使用GunItem.inventoryTick自动执行
-     * <br></br>
-     * 若需要在其他地方使用，请手动调用该方法
+     * Updates weapon state and timers during tick.
      *
-     * @param inMainHand 枪械是否在主手上，用于控制部分tick流程是否执行
+     * Automatically invoked via [GunItem.inventoryTick] when in player inventory.
+     *
+     * @param shooter entity holding weapon.
+     * @param inMainHand whether weapon is currently held in main hand.
      */
     fun tick(shooter: Entity?, inMainHand: Boolean) {
         GunEventHandler.gunTick(shooter, this, inMainHand)
     }
 
-    // 开火相关流程结束
+    // Fire process end
+
     /**
-     * 返还弹匣内弹药，在换弹和切换弹匣配件时调用
+     * Withdraws loaded rounds back to entity inventory during reload or attachment modification.
+     *
+     * @param ammoSupplier target entity receiving withdrawn ammo.
      */
     fun withdrawAmmo(ammoSupplier: Entity) {
         val itemAmount = withdrawAmmoCount()
@@ -564,12 +757,15 @@ class GunData private constructor(
         selectedAmmoConsumer().withdraw(ammoSupplier, itemAmount)
     }
 
+    /** Calculates item count returned upon ammo withdrawal. */
     fun withdrawAmmoCount(): Int {
         return (this.virtualAmmo.get() + this.ammo.get()) / selectedAmmoConsumer().loadAmount
     }
 
     /**
-     * 返还弹匣内弹药，在换弹和切换弹匣配件时调用
+     * Withdraws loaded rounds back to item handler container during reload or attachment modification.
+     *
+     * @param handler target container handler.
      */
     fun withdrawAmmo(handler: IItemHandler) {
         val itemAmount = withdrawAmmoCount()
@@ -577,42 +773,50 @@ class GunData private constructor(
         this.virtualAmmo.reset()
         this.ammo.reset()
 
-        // 直接丢弃余数（恼）
+        // Discards remainder when withdrawing to item handler
         selectedAmmoConsumer().withdraw(handler, itemAmount)
     }
 
-    fun availablePerks() = get(AVAILABLE_PERKS)
+    /** Gets list of available perks applicable to weapon. */
+    fun availablePerks(): List<Perk> = get(AVAILABLE_PERKS)
 
-    fun canApplyPerk(perk: Perk) = availablePerks().contains(perk)
+    /** Checks if specific perk can be applied. */
+    fun canApplyPerk(perk: Perk): Boolean = availablePerks().contains(perk)
 
+    /** Raw damage reduction property structure. */
     val rawDamageReduce: DamageReduce
         get() = getDefault().damageReduce
 
+    /** Modified damage reduction rate. */
     val damageReduceRate: Double
         get() {
-            for (type in Perk.Type.entries.toTypedArray()) {
+            for (type in PERK_TYPES) {
                 return this.perk.getInstances(type)
                     .minOfOrNull { it.perk.getModifiedDamageReduceRate(this.rawDamageReduce) } ?: continue
             }
             return this.rawDamageReduce.rate
         }
 
+    /** Modified damage reduction minimum distance. */
     val damageReduceMinDistance: Double
         get() {
-            for (type in Perk.Type.entries.toTypedArray()) {
+            for (type in PERK_TYPES) {
                 return this.perk.getInstances(type)
                     .minOfOrNull { it.perk.getModifiedDamageReduceMinDistance(this.rawDamageReduce) } ?: continue
             }
             return this.rawDamageReduce.minDistance
         }
 
+    /** Checks if weapon is configured strictly for melee attacks. */
     fun meleeOnly(): Boolean {
         return get(PROJECTILE_AMOUNT) <= 0 && get(MELEE_DAMAGE) > 0
     }
 
+    /** Checks if weapon is a shotgun (projectile count > 1). */
     val isShotgun: Boolean
         get() = get(PROJECTILE_AMOUNT) > 1
 
+    /** Returns current barrel fire offset position. */
     fun firePosition(): Vec3 {
         val list = get(SHOOT_POS).positions
         val size = list.size
@@ -627,10 +831,12 @@ class GunData private constructor(
         }
     }
 
+    /** Returns current HUD aiming position override or fire position. */
     fun firePositionForHud(): Vec3 {
         return get(SHOOT_POS).shootPositionForHud ?: firePosition()
     }
 
+    /** Returns fire direction vector definition. */
     fun fireDirection(): StringOrVec3 {
         val list = get(SHOOT_POS).directions
         val size = list.size
@@ -641,14 +847,17 @@ class GunData private constructor(
         return list.getOrNull(this.fireIndex.get() % size) ?: StringOrVec3("Default")
     }
 
+    /** Returns HUD fire direction vector override. */
     fun fireDirectionForHud(): StringOrVec3? {
         return get(SHOOT_POS).shootDirectionForHud
     }
 
+    /** Returns energy capability provider for energy-based weapons. */
     fun getEnergyProvider(ammoSupplier: Entity?): LazyOptional<IEnergyStorage> {
         return this.item.getEnergyProvider(this, ammoSupplier)
     }
 
+    /** Triggers camera shake packet to surrounding players upon firing. */
     fun shakePlayers(source: Entity?) {
         if (source == null) return
 
@@ -657,9 +866,16 @@ class GunData private constructor(
         ShakeClientMessage.sendToNearbyPlayers(source, shootShake.x, shootShake.y, shootShake.z)
     }
 
-    // 可持久化属性开始
+    // Persistent properties start
+
     @JvmField
     val selectedAmmoType: IntValue
+
+    @JvmField
+    val selectedFireMode: IntValue
+
+    @JvmField
+    val level: IntValue
 
     @JvmField
     val ammo: IntValue
@@ -667,7 +883,7 @@ class GunData private constructor(
     @JvmField
     val virtualAmmo: IntValue
 
-    // backup ammo count override
+    // Backup ammo count override
     @JvmField
     val backupAmmoCount: IntValue
 
@@ -678,13 +894,7 @@ class GunData private constructor(
     val burstAmount: IntValue
 
     @JvmField
-    val selectedFireMode: IntValue
-
-    @JvmField
     val fireIndex: IntValue
-
-    @JvmField
-    val level: IntValue
 
     @JvmField
     val exp: DoubleValue
@@ -702,22 +912,23 @@ class GunData private constructor(
     @JvmField
     val overHeat: BooleanValue
 
-    fun canAdjustZoom() = item.canAdjustZoom(this)
+    /** Checks if scope zoom adjustment is supported. */
+    fun canAdjustZoom(): Boolean = item.canAdjustZoom(this)
 
-    fun canSwitchScope() = item.canSwitchScope(this)
+    /** Checks if scope switching is supported. */
+    fun canSwitchScope(): Boolean = item.canSwitchScope(this)
 
     @JvmField
     val reload: Reload
 
-    /**
-     * 是否正在换弹
-     */
-    fun reloading() = reload.state() != ReloadState.NOT_RELOADING
+    /** Checks if weapon is currently reloading. */
+    fun reloading(): Boolean = reload.state() != ReloadState.NOT_RELOADING
 
     @JvmField
     val charge: Charge
 
-    fun charging() = charge.time() > 0
+    /** Checks if energy charging is active. */
+    fun charging(): Boolean = charge.time() > 0
 
     @JvmField
     val isEmpty: BooleanValue
@@ -749,7 +960,8 @@ class GunData private constructor(
     @JvmField
     val zooming: BooleanValue
 
-    // 其他子级属性
+    // Other child subdata properties
+
     @JvmField
     val bolt: Bolt
 
@@ -765,10 +977,15 @@ class GunData private constructor(
     @JvmField
     val weaponYaw: DoubleValue
 
+    /**
+     * Persists pending NBT changes back to the underlying [ItemStack] tag.
+     */
     fun save() {
-        if (stack sameWith originalItemStack) return
+        // Fast-path: If neither structural nor state versions changed, tag is unmodified
+        val currentCombined = nbtVersion.structural + nbtVersion.state
+        if (currentCombined == initialCombinedVersion) return
 
-        // TODO 实现正确的清理空tag的方式
+        // TODO Implement proper empty tag removal
 //        var keysToRemove = new ArrayList<String>();
 //        for (var key : perkTag.getAllKeys()) {
 //            if (perkTag.get(key) instanceof CompoundTag compoundTag && compoundTag.isEmpty()) {
@@ -790,17 +1007,20 @@ class GunData private constructor(
 //        }
     }
 
+    /**
+     * Checks equality between two [GunData] instances based on item stack reference identity.
+     */
     override fun equals(other: Any?): Boolean {
         if (other !is GunData) return false
-
-        return other.stack sameWith this.stack
+        return other.stack === this.stack
     }
 
+    /** Creates duplicate copy of this [GunData]. */
     fun copy(): GunData {
         return GunData(this.stack.copy(), this.defaultDataSupplier)
     }
 
-    // TODO 删了这个，这个是为了临时适配女仆mod用的
+    // TODO Deprecated: temporary adaptation for Touhou Little Maid mod
     @Deprecated("use selectedFireModeInfo() instead", ReplaceWith("selectedFireModeInfo()"))
     @Suppress("unused")
     @JvmField
@@ -815,12 +1035,9 @@ class GunData private constructor(
         }
     }
 
-    private val originalItemStack: ItemStack
-
     init {
         require(stack.item is GunItem) { "stack is not GunItem!" }
 
-        originalItemStack = stack.copy()
         val gunItem = stack.item as GunItem
         this.item = gunItem
         this.stack = stack
@@ -833,26 +1050,27 @@ class GunData private constructor(
         gunDataTag = getOrPut("GunData")
         perkTag = getOrPut("Perks")
         attachmentTag = getOrPut("Attachments")
-        propertyOverrideString = StringValue(this.gunDataTag, "Override")
 
-        selectedAmmoType = IntValue(gunDataTag, "SelectedAmmoType")
-        selectedFireMode = IntValue(gunDataTag, "SelectedFireMode", 0)
-        fireIndex = IntValue(gunDataTag, "FireIndex", 0)
+        // Structural properties -> invalidate PMC pipeline on change
+        propertyOverrideString = StringValue(this.gunDataTag, "Override", onSet = nbtVersion::invalidateStructural)
+        selectedAmmoType = IntValue(gunDataTag, "SelectedAmmoType", onSet = nbtVersion::invalidateStructural)
+        selectedFireMode = IntValue(gunDataTag, "SelectedFireMode", 0, onSet = nbtVersion::invalidateStructural)
+        level = IntValue(gunDataTag, "Level", onSet = nbtVersion::invalidateStructural)
 
-        // 可持久化属性
+        // Subdata handlers
         reload = Reload(this)
         charge = Charge(this)
         bolt = Bolt(this)
         attachment = Attachment(this)
         perk = Perks(this)
 
-        ammo = IntValue(gunDataTag, "Ammo")
-        virtualAmmo = IntValue(gunDataTag, "VirtualAmmo")
+        // Ephemeral state properties -> no structural invalidation
+        fireIndex = IntValue(gunDataTag, "FireIndex", 0)
+        ammo = IntValue(gunDataTag, "Ammo", onSet = { cachedBackupAmmo = -1 })
+        virtualAmmo = IntValue(gunDataTag, "VirtualAmmo", onSet = { cachedBackupAmmo = -1 })
         backupAmmoCount = IntValue(gunDataTag, "BackupAmmoCount")
         ammoSlot = AmmoSlot(gunDataTag)
         burstAmount = IntValue(gunDataTag, "BurstAmount")
-
-        level = IntValue(gunDataTag, "Level")
         exp = DoubleValue(gunDataTag, "Exp")
 
         isEmpty = BooleanValue(gunDataTag, "IsEmpty")
@@ -872,7 +1090,7 @@ class GunData private constructor(
         weaponPitch = DoubleValue(gunDataTag, "weaponPitch")
         weaponYaw = DoubleValue(gunDataTag, "weaponYaw")
 
-        var defaultFireMode = get(GunProp.DEFAULT_FIRE_MODE)
+        val defaultFireMode = get(GunProp.DEFAULT_FIRE_MODE)
 
         val fireModes = get(AVAILABLE_FIRE_MODES)
         for (i in fireModes.indices) {
@@ -884,6 +1102,19 @@ class GunData private constructor(
     }
 
     companion object {
+        /** Tick interval between backup ammo inventory re-computations. */
+        const val BACKUP_AMMO_CACHE_TICKS: Long = 4L
+
+        /**
+         * Cached array of all [Perk.Type] entries.
+         *
+         * Avoids repeated [Array] allocation from [Enum.entries.toTypedArray] inside
+         * hot paths such as [get] and [GunEventHandler.tickPerk].
+         */
+        @JvmField
+        val PERK_TYPES: Array<Perk.Type> = Perk.Type.entries.toTypedArray()
+
+        /** Weak LoadingCache for resolving GunData instances from ItemStack references. */
         @JvmField
         val DATA_CACHE: LoadingCache<ItemStack, GunData> = CacheBuilder.newBuilder()
             .weakKeys()
@@ -894,10 +1125,12 @@ class GunData private constructor(
                 }
             })
 
+        /** Creates a new [GunData] instance from an item definition. */
         fun create(item: Item): GunData {
             return from(ItemStack(item))
         }
 
+        /** Retrieves cached or new [GunData] for an [ItemStack]. */
         @JvmStatic
         @JvmOverloads
         fun from(stack: ItemStack, defaultDataSupplier: (() -> DefaultGunData)? = null): GunData {
@@ -907,12 +1140,14 @@ class GunData private constructor(
             return DATA_CACHE.getUnchecked(stack)
         }
 
+        /** Resolves computed property for given item stack directly. */
         @JvmOverloads
         @JvmStatic
         fun <T> get(stack: ItemStack, prop: GunProp<*, T>, useCache: Boolean = true): T {
             return from(stack).get(prop)
         }
 
+        /** Retrieves default un-modified properties by item registry identifier. */
         @JvmStatic
         fun getDefault(id: String): DefaultGunData {
             val isDefault = !com.atsuishio.superbwarfare.data.CustomData.GUN_DATA.containsKey(id)
@@ -921,14 +1156,17 @@ class GunData private constructor(
             return data
         }
 
+        /** Retrieves default un-modified properties for item stack. */
         fun getDefault(stack: ItemStack): DefaultGunData {
             return getDefault(stack.item)
         }
 
+        /** Retrieves default un-modified properties for item definition. */
         fun getDefault(item: Item): DefaultGunData {
             return getDefault(getRegistryId(item))
         }
 
+        /** Extracts formatted registry ID from item. */
         fun getRegistryId(item: Item): String {
             var id = item.descriptionId
             id = id.substring(id.indexOf(".") + 1).replace('.', ':')
@@ -943,6 +1181,7 @@ class GunData private constructor(
             error("use get() instead!")
         }
 
+        /** Priority mapping helper for perk execution order. */
         fun getPerkPriority(s: String): Int {
             if (s.isEmpty()) return 2
 
@@ -954,5 +1193,5 @@ class GunData private constructor(
         }
     }
 
-    override fun hashCode() = stack.hashCode()
+    override fun hashCode(): Int = stack.hashCode()
 }

@@ -5,9 +5,6 @@ import com.atsuishio.superbwarfare.config.server.VehicleConfig
 import com.atsuishio.superbwarfare.entity.projectile.MissileProjectile
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.network.message.receive.BeyondVisualEntitySyncMessage
-import com.atsuishio.superbwarfare.tools.ServerSyncedEntityHandler.cleanAll
-import com.atsuishio.superbwarfare.tools.ServerSyncedEntityHandler.getEntries
-import com.atsuishio.superbwarfare.tools.ServerSyncedEntityHandler.register
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.MinecraftServer
@@ -23,16 +20,23 @@ import net.minecraftforge.registries.ForgeRegistries
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * 服务端同步实体处理器 —— ClientSyncedEntityHandler 的服务端镜像。
+ * Server-side entity registry and Beyond Visual Range (BVR) sync handler.
  *
- * 载具和导弹每 tick 主动调用 [register] 将自身加入此列表。
- * 雷达/IFF 等消费者调用 [getEntries] 从此列表查询，避免遍历 level.allEntities。
- * 定期调用 [cleanAll] 清理已消失实体的过期条目。
+ * Vehicles, missiles, and radar sources register themselves every tick via [register].
+ * Periodically cleans up expired entries and broadcasts lightweight BVR render snapshots
+ * to all tracking players in the dimension without allocations during idle state.
+ *
+ * @author superbwarfare contributors
+ * @since 0.8.9.1
  */
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
 object ServerSyncedEntityHandler {
 
+    /**
+     * Cache container holding spatial and network properties for a registered BVR entity.
+     */
     data class Entry(
+        val entityRef: Entity,
         val entityId: Int,
         val pos: Vec3,
         val eyePos: Vec3,
@@ -40,24 +44,26 @@ object ServerSyncedEntityHandler {
         val xRot: Float,
         val entityType: ResourceLocation,
         val nbt: CompoundTag,
-        /** 实体注册/更新时间戳（系统时间 ms），用于 NBT 序列化间隔判定和过期清理，不受服务器重启影响 */
+        /** Registration timestamp (system time ms) for expiration checks. */
         val timeStamp: Long,
         val targetPos: Vec3?,
-        /** 隐身减益系数，非载具实体为 1.0 */
+        /** Stealth distance tracking multiplier (1.0 for non-vehicles). */
         val trackDistanceMultiply: Double,
-        /** 实体离地高度 */
+        /** Distance above ground surface. */
         val heightAboveGround: Double,
     )
 
-    // dim string → entityId → Entry
+    // Dimension String -> EntityId -> Entry
     private val entities = ConcurrentHashMap<String, ConcurrentHashMap<Int, Entry>>()
 
-    /** 等待在下一 tick 广播中发送 removed=true 通知给客户端的实体集合 */
+    /** Queue of entity removals waiting to be broadcasted to clients on the next tick. */
     private val pendingRemovals = ConcurrentHashMap<String, MutableSet<Pair<Int, ResourceLocation>>>()
 
     /**
-     * 注册或更新实体。每 tick 由 VehicleEntity / MissileProjectile / IffItem 调用。
-     * NBT 每 tick 重新序列化，保证 [BeyondVisualEntitySyncMessage] 携带最新实体状态。
+     * Registers or updates an entity for BVR long-range synchronization.
+     *
+     * @param entity the target entity to register or update.
+     * @param targetPos optional target position (used by guided missiles).
      */
     @JvmStatic
     @JvmOverloads
@@ -66,19 +72,22 @@ object ServerSyncedEntityHandler {
         val level = entity.level()
         if (level.isClientSide) return
         level.server ?: return
+
         if (entity !is VehicleEntity && entity !is MissileProjectile && entity !is Player
-            && entity !is LivingEntity && !VehicleConfig.inScanList(entity.type)) return
+            && entity !is LivingEntity && !VehicleConfig.inScanList(entity.type)
+        ) return
 
         val dim = level.dimension().location().toString()
         val now = System.currentTimeMillis()
 
+        // Uses lightweight fast-path if IBvrSyncableEntity is implemented
         val nbt = entity.getBvrSyncNbt()
 
-        val td = if (entity is VehicleEntity)
-            entity.computed().trackDistanceMultiply else 1.0
+        val td = if (entity is VehicleEntity) entity.computed().trackDistanceMultiply else 1.0
         val hag = computeHeightAboveGround(entity)
 
         val entry = Entry(
+            entityRef = entity,
             entityId = entity.id,
             pos = entity.position(),
             eyePos = entity.eyePosition,
@@ -95,46 +104,77 @@ object ServerSyncedEntityHandler {
         entities.getOrPut(dim) { ConcurrentHashMap() }[entity.id] = entry
     }
 
+    /**
+     * Unregisters an entity and queues a removal notification packet for connected clients.
+     *
+     * @param entity the entity to remove.
+     */
     @JvmStatic
     fun unregister(entity: Entity) {
         if (entity.level().isClientSide) return
         val dim = entity.level().dimension().location().toString()
         entities[dim]?.remove(entity.id)
-        // 记录待移除实体，下一 tick 广播时通知客户端立即清理
+
         val entityType = ForgeRegistries.ENTITY_TYPES.getKey(entity.type) ?: return
         pendingRemovals.getOrPut(dim) { ConcurrentHashMap.newKeySet() }.add(Pair(entity.id, entityType))
     }
 
+    /**
+     * Retrieves all active BVR sync entries for a dimension.
+     *
+     * @param dim dimension resource location.
+     * @return collection of active entries.
+     */
     @JvmStatic
     fun getEntries(dim: ResourceLocation): Collection<Entry> {
         return entities[dim.toString()]?.values ?: emptyList()
     }
 
-    /** 计算实体离地高度（使用高度图，高效） */
+    /**
+     * Calculates entity height above ground using surface heightmap.
+     * Safe against queries in unloaded chunks.
+     */
     private fun computeHeightAboveGround(entity: Entity): Double {
         val level = entity.level()
+        val blockX = entity.blockX
+        val blockZ = entity.blockZ
+
+        if (!level.hasChunk(blockX shr 4, blockZ shr 4)) return 0.0
+
         val surfaceY = level.getHeight(
             Heightmap.Types.WORLD_SURFACE,
-            entity.blockX,
-            entity.blockZ
+            blockX,
+            blockZ
         )
         return (entity.y - surfaceY).coerceAtLeast(0.0)
     }
 
-    /** 判定实体是否在地下（实体顶部低于地表） */
+    /**
+     * Checks if an entity is currently below ground level.
+     *
+     * @param entity entity to test.
+     * @return `true` if entity bounding box top is below world surface.
+     */
     @JvmStatic
     fun isUnderground(entity: Entity): Boolean {
         val level = entity.level()
+        val blockX = entity.blockX
+        val blockZ = entity.blockZ
+
+        if (!level.hasChunk(blockX shr 4, blockZ shr 4)) return false
+
         val surfaceY = level.getHeight(
             Heightmap.Types.WORLD_SURFACE,
-            entity.blockX,
-            entity.blockZ
+            blockX,
+            blockZ
         )
         return entity.y + entity.bbHeight < surfaceY
     }
 
     /**
-     * 清理已消失实体的过期条目
+     * Purges expired entity entries from dim maps.
+     *
+     * @param server active MinecraftServer instance.
      */
     @JvmStatic
     fun cleanAll(server: MinecraftServer) {
@@ -142,12 +182,14 @@ object ServerSyncedEntityHandler {
         for (dimLevel in server.allLevels) {
             val dimKey = dimLevel.dimension().location().toString()
             val dimEntries = entities[dimKey] ?: continue
+            val expireTime = SyncConfig.SERVER_SYNC_EXPIRE_TIME.get()
+
             val toRemove = dimEntries.values.filter { entry ->
-                dimLevel.getEntity(entry.entityId) == null && now - entry.timeStamp > SyncConfig.SERVER_SYNC_EXPIRE_TIME.get()
+                (!entry.entityRef.isAlive || entry.entityRef.isRemoved) && (now - entry.timeStamp > expireTime)
             }
+
             if (toRemove.isNotEmpty()) {
                 dimEntries.values.removeAll(toRemove.toSet())
-                // 过期清理时也通知客户端移除
                 val pending = pendingRemovals.getOrPut(dimKey) { ConcurrentHashMap.newKeySet() }
                 for (entry in toRemove) {
                     pending.add(Pair(entry.entityId, entry.entityType))
@@ -167,8 +209,10 @@ object ServerSyncedEntityHandler {
     }
 
     /**
-     * 将 [ServerSyncedEntityHandler] 中所有实体无条件发送给同维度的每个玩家。
-     * 超视距渲染不依赖雷达/IFF，所有载具和导弹都应能被看见。
+     * Broadcasts BVR entity positions unconditionally to all players in the same dimension.
+     *
+     * Highly optimized to avoid list filtering, set allocations, and concatenation when
+     * players are not mounted in vehicles or when removal lists are empty.
      */
     private fun broadcastWorldRender(server: MinecraftServer) {
         for (dimLevel in server.allLevels) {
@@ -176,7 +220,7 @@ object ServerSyncedEntityHandler {
             val dimStr = dim.toString()
             val dimEntries = entities[dimStr] ?: continue
 
-            // 收集待移除实体的通知（来自 unregister / cleanAll）
+            // Collect queued removals
             val removedList = mutableListOf<BeyondVisualEntitySyncMessage.SyncedEntity>()
             val pending = pendingRemovals.remove(dimStr)
             if (pending != null) {
@@ -200,9 +244,8 @@ object ServerSyncedEntityHandler {
             val deadIds = mutableListOf<Int>()
 
             for (entry in dimEntries.values) {
-                val entity = dimLevel.getEntity(entry.entityId)
-                if (entity == null) {
-                    // 实体已从世界中移除但条目仍在 map 中，通知客户端清理并移除条目
+                val entity = entry.entityRef
+                if (!entity.isAlive || entity.isRemoved) {
                     deadIds.add(entry.entityId)
                     removedList.add(
                         BeyondVisualEntitySyncMessage.SyncedEntity(
@@ -216,7 +259,9 @@ object ServerSyncedEntityHandler {
                     )
                     continue
                 }
+
                 if (entity !is VehicleEntity && entity !is MissileProjectile && entity !is LivingEntity) continue
+
                 syncedList.add(
                     BeyondVisualEntitySyncMessage.SyncedEntity(
                         entry.entityId, entry.entityType, entry.pos, entry.targetPos, entry.nbt,
@@ -226,30 +271,52 @@ object ServerSyncedEntityHandler {
                 )
             }
 
-            // 从 map 中移除已死实体条目
+            // Clean up removed dead IDs from active tracking map
             for (id in deadIds) {
                 dimEntries.remove(id)
             }
 
-            if (syncedList.isNotEmpty() || removedList.isNotEmpty()) {
-                for (player in dimLevel.players()) {
-                    // 收集玩家乘坐链上所有载具的 ID，无需将载具同步给乘坐在其上的玩家
-                    val ridingIds = mutableSetOf<Int>()
-                    var riding: Entity? = player.vehicle
-                    while (riding != null) {
-                        ridingIds.add(riding.id)
-                        riding = riding.vehicle
-                    }
+            if (syncedList.isEmpty() && removedList.isEmpty()) continue
 
-                    val filtered = if (ridingIds.isEmpty()) {
+            val players = dimLevel.players()
+            if (players.isEmpty()) continue
+
+            for (player in players) {
+                // OPTIMIZATION FAST PATH:
+                // 95% of players walk on foot (player.vehicle == null).
+                // Avoid allocating Set<Int>, running filter lists, or concatenating arrays for non-mounted players.
+                val vehicle = player.vehicle
+                val payload: List<BeyondVisualEntitySyncMessage.SyncedEntity> = if (vehicle == null) {
+                    if (removedList.isEmpty()) {
                         syncedList
                     } else {
-                        syncedList.filter { it.id !in ridingIds }
+                        val combined = ArrayList<BeyondVisualEntitySyncMessage.SyncedEntity>(syncedList.size + removedList.size)
+                        combined.addAll(syncedList)
+                        combined.addAll(removedList)
+                        combined
+                    }
+                } else {
+                    // Slow path: Player is mounted in a vehicle hierarchy. Filter out ridden vehicles.
+                    val ridingIds = mutableSetOf<Int>()
+                    var currentRiding: Entity? = vehicle
+                    while (currentRiding != null) {
+                        ridingIds.add(currentRiding.id)
+                        currentRiding = currentRiding.vehicle
                     }
 
-                    if (filtered.isNotEmpty() || removedList.isNotEmpty()) {
-                        sendPacketTo(player, BeyondVisualEntitySyncMessage(dim, filtered + removedList))
+                    val filtered = syncedList.filter { it.id !in ridingIds }
+                    if (removedList.isEmpty()) {
+                        filtered
+                    } else {
+                        val combined = ArrayList<BeyondVisualEntitySyncMessage.SyncedEntity>(filtered.size + removedList.size)
+                        combined.addAll(filtered)
+                        combined.addAll(removedList)
+                        combined
                     }
+                }
+
+                if (payload.isNotEmpty()) {
+                    sendPacketTo(player, BeyondVisualEntitySyncMessage(dim, payload))
                 }
             }
         }

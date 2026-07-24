@@ -136,21 +136,34 @@ object GunEventHandler {
     }
 
     /**
-     * 更新perk相关属性
+     * Ticks all active perk instances on the given [GunData].
+     *
+     * @param shooter the entity holding the weapon, may be null.
+     * @param data    the gun data whose perks should be ticked.
      */
     fun tickPerk(shooter: Entity?, data: GunData) {
-        for (type in Perk.Type.entries.toTypedArray()) {
+        // GunData.PERK_TYPES is a cached static array — no allocation here.
+        for (type in GunData.PERK_TYPES) {
             val instance = data.perk.getInstances(type)
-            instance.forEach {
-                it.perk.tick(data, it, shooter)
-            }
+            instance.forEach { it.perk.tick(data, it, shooter) }
         }
     }
 
+    /**
+     * Triggers an auto-reload cycle if the weapon is empty and backup ammo is available.
+     *
+     * @param shooter entity holding the weapon.
+     * @param data target gun data container.
+     * @param inMainHand whether weapon is in main hand.
+     */
     fun autoReload(shooter: Entity?, data: GunData, inMainHand: Boolean) {
         val autoReload = data.get(GunProp.AUTO_RELOAD) ?: return
+        if (!inMainHand || !autoReload) return
 
-        if (inMainHand && autoReload && !data.hasEnoughAmmoToShoot(shooter)) {
+        // Throttle check for vehicle weapons: 4-tick interval (5 Hz)
+        if (shooter is VehicleEntity && (shooter.tickCount % 4 != 0)) return
+
+        if (!data.hasEnoughAmmoToShoot(shooter)) {
             tryStartReload(shooter, data, false)
         }
     }
@@ -192,27 +205,53 @@ object GunEventHandler {
     }
 
     /**
-     * 减少过热值
+     * Reduces accumulated barrel heat based on environmental conditions.
+     *
+     * <p><b>Performance note:</b> fluid-state checks ({@code isInLava},
+     * {@code isInWaterOrRain}) are expensive for large vehicles because they
+     * scan every block in the bounding box. Callers should cache the result
+     * per entity per tick and pass it via the [environmentRate] parameter
+     * instead of letting each GunData re-query the entity's fluid state.
+     *
+     * @param shooter         the entity holding the weapon, may be null.
+     * @param data            the gun data whose heat should be reduced.
+     * @param environmentRate pre-computed environment cooldown multiplier
+     *                        (1.0 = normal, or the result of the active
+     *                        environment modifier). When `null`, the method
+     *                        queries the shooter's environment directly
+     *                        (legacy path for non-vehicle callers).
      */
-    fun handleCooldown(shooter: Entity?, data: GunData) {
-        var rate = 1.0
-
-        if (shooter != null) {
-            if (shooter.wasInPowderSnow) {
-                rate = data.get(GunProp.IN_SNOW_COOLDOWN_RATE)
-            } else if (shooter.isInWaterOrRain) {
-                rate = data.get(GunProp.IN_WATER_COOLDOWN_RATE)
-            } else if (shooter.isOnFire) {
-                rate = data.get(GunProp.IN_FIRE_COOLDOWN_RATE)
-            } else if (shooter.isInLava) {
-                rate = data.get(GunProp.IN_LAVA_COOLDOWN_RATE)
-            }
-        }
+    @JvmOverloads
+    fun handleCooldown(shooter: Entity?, data: GunData, environmentRate: Double? = null) {
+        val rate = environmentRate ?: computeEnvironmentRate(shooter, data)
 
         data.heat.set(max(data.heat.get() - data.get(GunProp.NATURAL_COOLDOWN) * rate, 0.0))
 
         if (data.heat.get() < 80 && data.overHeat.get()) {
             data.overHeat.set(false)
+        }
+    }
+
+    /**
+     * Computes the cooldown rate multiplier from the shooter's environment.
+     *
+     * Extracted so that [VehicleEntity] can call this once per tick and reuse
+     * the result across all mounted weapons, avoiding redundant fluid-state
+     * queries for every [GunData].
+     *
+     * @param shooter the entity to query.
+     * @param data    the gun data (used to read environment-specific props).
+     * @return the environment-based cooldown rate multiplier.
+     */
+    fun computeEnvironmentRate(shooter: Entity?, data: GunData): Double {
+        if (shooter == null) return 1.0
+
+        return when {
+            shooter.wasInPowderSnow -> data.get(GunProp.IN_SNOW_COOLDOWN_RATE)
+            shooter.isInWaterOrRain -> data.get(GunProp.IN_WATER_COOLDOWN_RATE)
+            shooter.isOnFire        -> data.get(GunProp.IN_FIRE_COOLDOWN_RATE)
+            shooter.isInLava        -> data.get(GunProp.IN_LAVA_COOLDOWN_RATE)
+            else                    -> 1.0
         }
     }
 
@@ -241,20 +280,48 @@ object GunEventHandler {
         }
     }
 
+    /**
+     * Executes tick update logic for firearm data.
+     *
+     * <p>Automatically called via [com.atsuishio.superbwarfare.item.gun.GunItem.inventoryTick]
+     * when in a player's inventory. When used elsewhere (e.g. vehicles or custom entities),
+     * call this method manually once per tick.
+     *
+     * @param shooter    entity holding the weapon.
+     * @param data       gun data container.
+     * @param inMainHand whether weapon is in main hand, controlling main-hand tick routines.
+     */
     fun gunTick(shooter: Entity?, data: GunData, inMainHand: Boolean) {
+        // Fallback: compute environment rate on-the-fly for single item callers
+        val envRate = computeEnvironmentRate(shooter, data)
+        gunTick(shooter, data, inMainHand, envRate)
+    }
+
+    /**
+     * Overloaded tick update method that accepts a pre-computed environment rate.
+     *
+     * Used by vehicles to avoid redundant fluid-state lookups across multiple weapons.
+     *
+     * @param shooter         entity holding the weapon.
+     * @param data            gun data container.
+     * @param inMainHand      whether weapon is in main hand, controlling main-hand tick routines.
+     * @param environmentRate pre-computed environmental cooldown rate multiplier.
+     */
+    fun gunTick(shooter: Entity?, data: GunData, inMainHand: Boolean, environmentRate: Double) {
         init(shooter, data)
         autoReload(shooter, data, inMainHand)
         tickPerk(shooter, data)
-        handleCooldown(shooter, data)
+        handleCooldown(shooter, data, environmentRate)
         redrawExtraAmmo(shooter, data)
 
+        // Decrement animation and firing cooldown timers
         data.shootAnimationTimer.set(max(data.shootAnimationTimer.get() - 1, 0))
         data.shootTimer.set(max(data.shootTimer.get() - 1, 0))
 
         if (inMainHand) {
             handleGunBolt(data)
 
-            // 启动换弹
+            // Start reload process
             if (data.reload.reloadStarter.start()) {
                 postEvent(ReloadEvent.Pre(shooter, data))
                 startReload(shooter, data)
@@ -281,13 +348,13 @@ object GunEventHandler {
                 }
             }
 
-            // 减少换弹剩余时间
+            // Reduce remaining reload timer
             data.reload.reduce()
 
-            // 执行换弹期间额外行为
+            // Execute extra behaviors during reload duration
             data.item.reloadTimeBehaviors[data.reload.time()]?.accept(data)
 
-            // 换弹完成
+            // Reload complete
             if (data.reload.time() == 1) {
                 finishReload(shooter, data)
             }

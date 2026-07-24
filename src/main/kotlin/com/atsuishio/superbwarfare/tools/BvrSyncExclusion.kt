@@ -1,9 +1,11 @@
 package com.atsuishio.superbwarfare.tools
 
 import com.atsuishio.superbwarfare.annotation.ExcludeBvrSync
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.player.Player;
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -77,14 +79,35 @@ object BvrSyncExclusion {
 }
 
 /**
- * 序列化实体为适用于超视距同步的 NBT：
- * 先调用 [Entity.serializeNBT] 获取完整 NBT，
- * 再移除被 [ExcludeBvrSync] 标记的字段。
+ * Serializes an entity into a lightweight [CompoundTag] for Beyond Visual Range synchronization.
  *
- * 不修改 [Entity.addAdditionalSaveData]，不影响正常的存档到磁盘。
+ * @return lightweight [CompoundTag] for network transmission.
  */
 fun Entity.getBvrSyncNbt(): CompoundTag {
-    val tag = serializeNBT()
-    BvrSyncExclusion.stripExcludedKeys(tag, this::class.java as Class<out Entity>)
-    return tag
+    val tag = CompoundTag()
+
+    // Fast-Path: Custom BVR syncable entity (Vehicles, Missiles, etc.)
+    if (this is IBvrSyncableEntity) {
+        this.buildBvrSyncNbt(tag)
+        return tag
+    }
+
+    // Fast-Path: Player entities (bypasses massive Player profile / inventory / advancement NBT)
+    if (this is Player) {
+        val encodeId = this.encodeId ?: return tag
+        tag.putString("id", encodeId)
+        tag.putInt("EntityId", this.id)
+        tag.putDouble("PosX", x)
+        tag.putDouble("PosY", y)
+        tag.putDouble("PosZ", z)
+        tag.putFloat("Yaw", yRot)
+        tag.putFloat("Pitch", xRot)
+        tag.putUUID("UUID", this.uuid)
+        return tag
+    }
+
+    // Legacy Fallback Path: Standard serialization with key stripping
+    val fullTag = serializeNBT()
+    BvrSyncExclusion.stripExcludedKeys(fullTag, javaClass)
+    return fullTag
 }

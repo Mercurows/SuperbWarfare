@@ -906,7 +906,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             return false
         }
 
-        for (type in Perk.Type.entries.toTypedArray()) {
+        for (type in GunData.PERK_TYPES) {
             val instance = data.perk.getInstances(type)
             instance.forEach {
                 it.perk.modifyProjectile(data, it, entity)

@@ -1095,11 +1095,11 @@ object VehicleMotionUtils {
     }
 
     /**
-     * 使用OBB的世界包围AABB + 原版碰撞逻辑进行载具与世界碰撞检测与解决
-     *
-     * @param vehicle  载具
-     * @param movement 预期移动向量
-     * @return 经过碰撞修正后的实际移动向量
+     * Resolves OBB world collisions for the given [vehicle] using Separating Axis Theorem (SAT).
+     * 
+     * @param vehicle  target vehicle entity.
+     * @param movement intended movement vector (including gravity).
+     * @return corrected movement vector after block/entity collision clipping.
      */
     @JvmStatic
     fun resolveObbWorldCollision(vehicle: VehicleEntity, movement: Vec3): Vec3 {
