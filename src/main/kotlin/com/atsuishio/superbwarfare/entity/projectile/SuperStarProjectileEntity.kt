@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.forceHurt
 import com.atsuishio.superbwarfare.tools.plus
 import com.atsuishio.superbwarfare.tools.sendPacket
+import com.atsuishio.superbwarfare.tools.VectorTool.randomSpreadVec
 import com.atsuishio.superbwarfare.world.phys.ExtendedEntityRayTraceResult
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
@@ -224,11 +225,8 @@ open class SuperStarProjectileEntity(type: EntityType<out SuperStarProjectileEnt
         }
     }
 
-    fun randomVec(vec3: Vec3, spread: Double): Vec3 = vec3.normalize().add(
-        this.random.triangle(0.0, 0.0172275 * spread),
-        this.random.triangle(0.0, 0.0172275 * spread),
-        this.random.triangle(0.0, 0.0172275 * spread)
-    )
+    fun randomVec(vec3: Vec3, spread: Double): Vec3 =
+        randomSpreadVec(this.random, vec3, spread)
 
     override fun tick() {
         tickO = tick

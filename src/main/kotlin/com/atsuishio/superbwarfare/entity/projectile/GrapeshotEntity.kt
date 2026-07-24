@@ -2,8 +2,10 @@ package com.atsuishio.superbwarfare.entity.projectile
 
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.init.*
+import com.atsuishio.superbwarfare.tools.WaterSplashUtil
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.forceHurt
+import com.atsuishio.superbwarfare.tools.VectorTool.randomSpreadVec
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.BlockParticleOption
 import net.minecraft.core.particles.ParticleTypes
@@ -169,90 +171,19 @@ open class GrapeshotEntity : FastThrowableProjectile {
     protected fun onHitWater(location: Vec3, result: BlockHitResult) {
         val level = this.level()
         if (level is ServerLevel) {
-            val pos = result.blockPos
-            val face = result.direction
-            val state = level.getBlockState(pos)
-
-            val vx = face.stepX.toDouble()
-            val vy = face.stepY.toDouble()
-            val vz = face.stepZ.toDouble()
-            val dir = Vec3(vx, vy, vz).add(deltaMovement.normalize().scale(-0.1))
-
-            if (state.block === Blocks.WATER) {
-                if (!isInWater) {
-                    val particleData = CustomCloudOption(1f, 1f, 1f, 80, 0.5f, 1f, cooldown = false, light = false)
-                    for (i in 0..9) {
-                        val vec3 = randomVec(dir, 40.0)
-                        ParticleTool.sendParticle(
-                            level,
-                            particleData,
-                            location.x + 0.12 * i * dir.x,
-                            location.y + 0.12 * i * dir.y,
-                            location.z + 0.12 * i * dir.z,
-                            0,
-                            vec3.x,
-                            vec3.y,
-                            vec3.z,
-                            15.0,
-                            true
-                        )
-                    }
-
-                    ParticleTool.spawnBulletHitWaterParticles(level, location)
-                    level.playSound(
-                        null,
-                        BlockPos(location.x.toInt(), location.y.toInt(), location.z.toInt()),
-                        ModSounds.HIT_WATER.get(),
-                        SoundSource.BLOCKS,
-                        1f,
-                        1f
-                    )
-                    this.discard()
-                }
-            } else if (state.block === Blocks.LAVA) {
-                if (!isInLava) {
-                    val particleData = BlockParticleOption(ParticleTypes.BLOCK, state)
-                    for (i in 0..6) {
-                        val vec3 = randomVec(dir, 20.0)
-                        ParticleTool.sendParticle(
-                            level,
-                            particleData,
-                            location.x + 0.1 * i * dir.x,
-                            location.y + 0.1 * i * dir.y,
-                            location.z + 0.1 * i * dir.z,
-                            0,
-                            vec3.x,
-                            vec3.y,
-                            vec3.z,
-                            10.0,
-                            true
-                        )
-                    }
-                    ParticleTool.sendParticle(
-                        level, ParticleTypes.LAVA, location.x, location.y, location.z,
-                        4, 0.0, 0.0, 0.0, 0.6, true
-                    )
-                    level.playSound(
-                        null,
-                        BlockPos(location.x.toInt(), location.y.toInt(), location.z.toInt()),
-                        SoundEvents.LAVA_POP,
-                        SoundSource.BLOCKS,
-                        1f,
-                        1f
-                    )
-                    this.discard()
-                }
-            }
+            WaterSplashUtil.handleFluidImpact(
+                level = level,
+                projectile = this,
+                location = location,
+                result = result,
+                damage = this.damageValue,
+                discardOnWater = true
+            )
         }
     }
 
-    fun randomVec(vec3: Vec3, spread: Double): Vec3 {
-        return vec3.normalize().add(
-            this.random.triangle(0.0, 0.0172275 * spread),
-            this.random.triangle(0.0, 0.0172275 * spread),
-            this.random.triangle(0.0, 0.0172275 * spread)
-        )
-    }
+    fun randomVec(vec3: Vec3, spread: Double): Vec3 =
+        randomSpreadVec(this.random, vec3, spread)
 
     override fun isFastMoving(): Boolean {
         return false

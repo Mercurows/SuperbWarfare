@@ -31,6 +31,7 @@ import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.VectorTool.isInLiquid
+import com.atsuishio.superbwarfare.tools.VectorTool.randomSpreadVec
 import com.atsuishio.superbwarfare.world.phys.EntityResult
 import com.google.common.collect.HashMultimap
 import com.google.common.collect.Multimap
@@ -1195,13 +1196,8 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         )
     }
 
-    protected fun randomVec(vec3: Vec3, spread: Double): Vec3 {
-        return vec3.normalize().add(
-            random.triangle(0.0, 0.0172275 * spread),
-            this.random.triangle(0.0, 0.0172275 * spread),
-            this.random.triangle(0.0, 0.0172275 * spread)
-        )
-    }
+    protected fun randomVec(vec3: Vec3, spread: Double): Vec3 =
+        randomSpreadVec(this.random, vec3, spread)
 
     open fun canEditAttachments(data: GunData) = data.get(GunProp.AMMO_CONSUMER).size > 1
 

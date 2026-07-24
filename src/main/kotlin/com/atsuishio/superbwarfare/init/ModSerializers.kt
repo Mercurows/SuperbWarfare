@@ -68,7 +68,14 @@ object ModSerializers {
                 buf.writeVarInt(map.size)
                 for (kv in map.entries) {
                     buf.writeUtf(kv.key)
-                    buf.writeNbt(kv.value.stack.shareTag)
+                    // Snapshot the tag before handing it to the Netty IO thread.
+                    // shareTag returns a live reference to the ItemStack's internal
+                    // CompoundTag; if the server thread mutates it concurrently with
+                    // Netty serializing it, a ConcurrentModificationException is thrown
+                    // inside CompoundTag.copy() / NbtIo.write(). The defensive copy
+                    // here is cheap (one weapon's worth of NBT data) and eliminates
+                    // the race entirely.
+                    buf.writeNbt(kv.value.stack.shareTag?.copy())
                 }
             }, { buf ->
                 val length = buf.readVarInt()

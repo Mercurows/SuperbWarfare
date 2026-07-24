@@ -424,6 +424,11 @@ class GunData private constructor(
         this.fireIndex.reset()
 
         resetStatus()
+
+        // Ammo type changed — old backupAmmoCount belongs to previous consumer type.
+        // selectedAmmoType is already updated above, so countBackupAmmo uses NEW consumer.
+        this.cachedBackupAmmo = -1
+        this.backupAmmoCount.set(countBackupAmmo(ammoSupplier))
     }
 
     /**
@@ -593,13 +598,21 @@ class GunData private constructor(
             val consumed = consumer.consume(this, entity, required)
             remaining -= consumed * loadAmount
 
-            // Overload reload logic
             if (remaining <= 0) {
                 this.virtualAmmo.add(-remaining)
             }
         } else {
             consumer.consume(this, entity, remaining / loadAmount)
         }
+
+        // Event-driven: instant display update and cache invalidation.
+        // backupAmmoCount is synced to client via GUN_DATA_MAP entityData each tick.
+        val display = backupAmmoCount.get()
+        if (display in 1 until Int.MAX_VALUE) {
+            backupAmmoCount.set(max(0, display - count))
+        }
+        // Force countBackupAmmo() to rescan on next call — prevents stale reload logic.
+        cachedBackupAmmo = -1
     }
 
     /**
@@ -628,13 +641,19 @@ class GunData private constructor(
             val consumed = consumer.consume(this, handler, required)
             remaining -= consumed * loadAmount
 
-            // Overload reload logic
             if (remaining <= 0) {
                 this.virtualAmmo.add(-remaining)
             }
         } else {
             consumer.consume(this, handler, remaining / loadAmount)
         }
+
+        // ----- Event-driven: instant HUD update on ammo consumption -----
+        val display = backupAmmoCount.get()
+        if (display in 1 until Int.MAX_VALUE) {
+            backupAmmoCount.set(max(0, display - count))
+        }
+        cachedBackupAmmo = -1
     }
 
     /**

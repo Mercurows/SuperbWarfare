@@ -31,7 +31,7 @@ import java.util.*
  * @param part     logical part identifier (see [Part] enum)
  *
  * @author atsuishio
- * @author BoB SuperbWarfare contributors
+ * @author SuperbWarfare contributors
  * @since 0.8.9
  */
 @JvmRecord
@@ -776,7 +776,7 @@ data class OBB(
 
             for (obb in lookingEntity.getOBBs()) {
                 if (obb.part == Part.COLLISION) continue
-                val hitPos: Vec3? = rayIntersect(obb, eyePos, lookEnd) ?: continue
+                val hitPos: Vec3 = rayIntersect(obb, eyePos, lookEnd) ?: continue
                 val distanceSq = eyePos.distanceToSqr(hitPos)
                 if (distanceSq < minDistanceSq) {
                     minDistanceSq = distanceSq

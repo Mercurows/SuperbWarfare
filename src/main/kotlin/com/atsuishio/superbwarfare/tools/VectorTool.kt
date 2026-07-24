@@ -11,6 +11,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec2
 import net.minecraft.world.phys.Vec3
+import net.minecraft.util.RandomSource
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
 import org.joml.Quaterniond
@@ -241,4 +242,22 @@ object VectorTool {
 
         return check1 && check2
     }
+
+    /**
+    * Returns a randomly spread direction vector around [dir].
+    *
+    * Extracted from ProjectileEntity/GrapeshotEntity/GunItem — previously each
+    * class carried its own copy of this identical logic.
+    *
+    * @param rng    random source (use entity.getRandom() or item's random)
+    * @param dir    base direction vector
+    * @param spread spread angle in degrees (0 = no spread, 40 = wide scatter)
+    * @return normalised direction with applied random spread
+    */
+    fun randomSpreadVec(rng: RandomSource, dir: Vec3, spread: Double): Vec3 =
+        dir.normalize().add(
+            rng.triangle(0.0, 0.0172275 * spread),
+            rng.triangle(0.0, 0.0172275 * spread),
+            rng.triangle(0.0, 0.0172275 * spread)
+        )
 }

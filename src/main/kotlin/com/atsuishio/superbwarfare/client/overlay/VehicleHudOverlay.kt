@@ -560,7 +560,12 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
                 )
 
                 var ammoCount = vehicle.getAmmoCount(player)
-                val backUpAmmoCount = data.countBackupAmmo(vehicle)
+                // Read the pre-computed, server-synced counter instead of scanning
+                // inventory directly — eliminates the 4-tick countBackupAmmo cache lag.
+                val backUpAmmoCount = if (data.backupAmmoCount.get() != 0 || data.useBackpackAmmo())
+                    data.backupAmmoCount.get()
+                else
+                    data.countBackupAmmo(vehicle)
 
                 if (ammoCount == Int.MAX_VALUE) {
                     RenderHelper.preciseBlit(

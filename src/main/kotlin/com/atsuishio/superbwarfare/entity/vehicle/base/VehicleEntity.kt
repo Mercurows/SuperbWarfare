@@ -141,13 +141,14 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     private val OBB_GROUND_CACHE_TICKS = 2
 
     /**
-    * Frequency divisor for [updateBackupAmmoCount].
+    * Frequency divisor for the periodic backup-ammo safety-net scan.
     *
-    * Backup-ammo counts change only when a player picks up or drops an item —
-    * a 20 Hz update is wasteful.  5-tick intervals (4 Hz) are imperceptible to
-    * players while cutting the inventory-scan cost by 80%.
+    * With event-driven updates covering all known mutation paths (consumption,
+    * ammo type switch, passenger mount, inventory changes), this periodic scan
+    * serves only as drift correction for unforeseen external modifications
+    * (e.g. mod compat, hopper edge cases). 100-tick (5 s) interval is sufficient.
     */
-    private val BACKUP_AMMO_UPDATE_INTERVAL = 5
+    private val BACKUP_AMMO_UPDATE_INTERVAL = 100
 
     override fun getAnimationInstance() = anim
 
@@ -195,6 +196,9 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
     private var gunDataMapCache: Map<String, GunData>? = null
     private var gunDataMapWeaponKeys: Set<String>? = null
+
+    /** Set to `true` by [setChanged] when vehicle inventory contents are modified. */
+    private var inventoryDirty: Boolean = false
 
     /**
      * Guard flag set to `true` while [baseTick] writes gun states back to [entityData].
@@ -644,6 +648,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
     open fun setChanged() {
         if (this.level().isClientSide) return
+        inventoryDirty = true
+
         val item = itemHandler.resolve().orElse(null) ?: return
         sendPacketToTrackingThis(ClientVehicleItemMessage(this.id, item.serializeNBT()))
     }
@@ -810,6 +816,11 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         this.gameEvent(GameEvent.ENTITY_MOUNT, pPassenger)
 
         this.setChanged()
+
+        // Force immediate backup ammo recount so the HUD never shows "0" on mount.
+        if (!level().isClientSide) {
+            updateBackupAmmoCount()
+        }
     }
 
     override fun removePassenger(pPassenger: Entity) {
@@ -2562,9 +2573,11 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             }
         }
 
-        // Backup ammo counts change only on inventory events — 4 Hz is sufficient
-        // and eliminates 80% of the per-slot capability+scan calls.
-        if (this.level() is ServerLevel && tickCount % BACKUP_AMMO_UPDATE_INTERVAL == 0) {
+        // Event-driven: update immediately when inventory changed (dirty flag from setChanged).
+        // Periodic scan (every 20 ticks) serves only as drift-correction safety net
+        // for external changes (e.g. hopper insertion, player picking up ammo from ground).
+        if (this.level() is ServerLevel && (inventoryDirty || tickCount % BACKUP_AMMO_UPDATE_INTERVAL == 0)) {
+            inventoryDirty = false
             updateBackupAmmoCount()
         }
 
@@ -2946,6 +2959,10 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                 }
                 continue
             }
+
+            // Invalidate scan cache before recount — ensures countBackupAmmo()
+            // always rescans the actual inventory instead of returning a stale result.
+            currentData.cachedBackupAmmo = -1
 
             val count = currentData.countBackupAmmo(this.ammoSupplier)
             if (currentData.backupAmmoCount.get() != count) {
