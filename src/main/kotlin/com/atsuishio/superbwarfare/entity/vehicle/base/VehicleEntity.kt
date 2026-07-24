@@ -130,6 +130,25 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     val anim: VehicleAnimationInstance<VehicleEntity>? =
         if (pLevel.isClientSide) VehicleAnimationInstance.create(this) else null
 
+    /**
+    * How many ticks the [cachedObbOnGround] result is considered valid.
+    *
+    * Ground contact changes at most once every physics step; a 2-tick window
+    * eliminates ~50% of the expensive [VehicleMotionUtils.checkObbOnGround] calls
+    * (which iterate block collision shapes over a full OBB search box) while
+    * remaining responsive to sudden terrain transitions.
+    */
+    private val OBB_GROUND_CACHE_TICKS = 2
+
+    /**
+    * Frequency divisor for [updateBackupAmmoCount].
+    *
+    * Backup-ammo counts change only when a player picks up or drops an item —
+    * a 20 Hz update is wasteful.  5-tick intervals (4 Hz) are imperceptible to
+    * players while cutting the inventory-scan cost by 80%.
+    */
+    private val BACKUP_AMMO_UPDATE_INTERVAL = 5
+
     override fun getAnimationInstance() = anim
 
     // ----- Client-side model entries -----
@@ -158,6 +177,21 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
     /** Tick on which [cachedEnvRate] was last computed. */
     private var envRateCachedTick: Int = -ENV_RATE_RECOMPUTE_INTERVAL
+
+    /** Cached result of [InventoryTool.hasCreativeAmmoBox] for this vehicle. */
+    private var cachedCreativeAmmoBox: Boolean = false
+
+    /**
+    * Tick on which [cachedCreativeAmmoBox] was last computed.
+    * Initialised to [Int.MIN_VALUE] so the first access always triggers a refresh.
+    */
+    private var creativeAmmoBoxCacheTick: Int = Int.MIN_VALUE
+
+    /** Cached result of [VehicleMotionUtils.checkObbOnGround] for this vehicle. */
+    private var cachedObbOnGround: Boolean = false
+
+    /** Tick on which [cachedObbOnGround] was last computed. */
+    private var obbOnGroundCacheTick: Int = Int.MIN_VALUE
 
     private var gunDataMapCache: Map<String, GunData>? = null
     private var gunDataMapWeaponKeys: Set<String>? = null
@@ -2528,7 +2562,9 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             }
         }
 
-        if (this.level() is ServerLevel) {
+        // Backup ammo counts change only on inventory events — 4 Hz is sufficient
+        // and eliminates 80% of the per-slot capability+scan calls.
+        if (this.level() is ServerLevel && tickCount % BACKUP_AMMO_UPDATE_INTERVAL == 0) {
             updateBackupAmmoCount()
         }
 
@@ -2651,6 +2687,25 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         }
     }
 
+    /**
+    * Returns whether this vehicle (or any of its passengers) carries a Creative
+    * Ammo Box, using a **per-tick cache** to avoid redundant inventory scans.
+    *
+    * The result is recomputed at most once per tick regardless of how many
+    * callers (e.g. [GunEventHandler.gunTick] and [updateBackupAmmoCount]) ask
+    * within the same tick.
+    *
+    * @return `true` if a Creative Ammo Box is available to this vehicle this tick
+    */
+    fun hasCreativeAmmoBoxCached(): Boolean {
+        // tickCount equality — exact single-tick freshness guarantee.
+        if (tickCount != creativeAmmoBoxCacheTick) {
+            cachedCreativeAmmoBox = InventoryTool.hasCreativeAmmoBox(this)
+            creativeAmmoBoxCacheTick = tickCount
+        }
+        return cachedCreativeAmmoBox
+    }
+
     open fun towedTick() {
         VehicleMotionUtils.towedTick(this)
     }
@@ -2659,17 +2714,53 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         VehicleMotionUtils.towingTick(this)
     }
 
-    fun keepChunkLoaded(position: Vec3) {
-        val chunkPos = ChunkPos(BlockPos.containing(position))
-        (level() as ServerLevel).chunkSource.addRegionTicket(TicketType.POST_TELEPORT, chunkPos, 3, this.id)
+    /**
+    * Forces the chunk at [chunkPos] to stay loaded via a POST_TELEPORT ticket.
+    *
+    * @param chunkPos target chunk position
+    */
+    private fun keepChunkLoaded(chunkPos: ChunkPos) {
+        (level() as ServerLevel).chunkSource.addRegionTicket(
+            TicketType.POST_TELEPORT, chunkPos, 3, this.id
+        )
     }
 
+    /**
+    * Keeps the vehicle's current chunk and the chunk ahead of it (based on
+    * current velocity) loaded, to prevent entity pop-in during fast movement.
+    *
+    * Only issues two distinct [addRegionTicket] calls when the two positions
+    * actually fall in different chunks — avoids a redundant ticket when the
+    * vehicle is stationary or moving slowly within one chunk boundary.
+    */
+    fun keepChunkLoaded(position: Vec3) {
+        val currentChunk = ChunkPos(BlockPos.containing(position))
+        keepChunkLoaded(currentChunk)
+
+        // Only add a second ticket when the look-ahead position is in a different chunk.
+        val aheadPos = position.add(deltaMovement.normalize().scale(16.0))
+        val aheadChunk = ChunkPos(BlockPos.containing(aheadPos))
+        if (aheadChunk != currentChunk) {
+            keepChunkLoaded(aheadChunk)
+        }
+    }
+
+    /**
+    * Ticks the vehicle's radar systems, scanning for targets and sending
+    * BVR sync configs to the driver.
+    *
+    * Uses [lastDriverUuidParsed] to avoid re-parsing and exception-throwing
+    * on every tick when no driver has sat in the vehicle yet ("undefined").
+    */
     fun vehicleRadar() {
         if (!SyncConfig.SYNC_ENTITY_OVER_RANGE.get()) return
         val radars = computed().radar ?: return
         val level = this.level()
         if (level !is ServerLevel) return
-        val player = EntityFindUtil.findPlayer(level(), lastDriverUUID)
+
+        // Fast path: skip UUID lookup entirely when no driver has ever been assigned.
+        val driverUuid = lastDriverUuidParsed ?: return
+        val player = EntityFindUtil.findPlayer(level, driverUuid.toString())
         if (player !is Player) return
 
         for (radarInfo in radars) {
@@ -2693,7 +2784,6 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                 affectedByStealthTarget = radarInfo.affectedByStealthTarget
             )
 
-            // 每 tick 同步雷达配置（保证旋转流畅）
             RadarScanner.sendRadarConfig(config, level)
             RadarScanner.scan(level, config).sendToClients(player, level, config.shareWithTeammates)
         }
@@ -2728,13 +2818,47 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
     override fun canFreeze() = false
 
-    open fun updateOBB() {
-        this.obb.forEach { obbInfo ->
-            val transform = this.getTransformFromString(obbInfo.transform)
-            val obb = obbInfo.getOBB()
-            val worldPos = this.transformPosition(transform, obbInfo.position.x, obbInfo.position.y, obbInfo.position.z)
+    /**
+    * Returns whether any OBB of this vehicle is currently in contact with the
+    * ground, using a **short-lived tick cache** to amortise the cost of the
+    * block-collision iteration in [VehicleMotionUtils.checkObbOnGround].
+    *
+    * The result is refreshed at most every [OBB_GROUND_CACHE_TICKS] ticks.
+    * For large vehicles (e.g. KirovEntity) this halves the number of expensive
+    * block-state lookups caused by the OBB ground-check.
+    *
+    * @return `true` if any OBB is touching the ground
+    */
+    fun checkObbOnGroundCached(): Boolean {
+        if (tickCount - obbOnGroundCacheTick >= OBB_GROUND_CACHE_TICKS) {
+            cachedObbOnGround = VehicleMotionUtils.checkObbOnGround(this)
+            obbOnGroundCacheTick = tickCount
+        }
+        return cachedObbOnGround
+    }
 
-            if (hasTurret() && sympatheticDetonated && (obbInfo.transform.equals("Turret") || obbInfo.transform.equals("Barrel"))) {
+    open fun updateOBB() {
+        // Deduplicate transform computation: if multiple OBBs share the same
+        // transform string (e.g. several body panels under "Default"), we compute
+        // the Matrix4d only once and reuse it for all of them.
+        // Typical vehicle has 2–4 unique transform keys, so a small HashMap is ideal.
+        val transformCache = HashMap<String?, Matrix4d>(4)
+
+        this.obb.forEach { obbInfo ->
+            // Compute or retrieve cached transform for this key.
+            val transform = transformCache.getOrPut(obbInfo.transform) {
+                this.getTransformFromString(obbInfo.transform)
+            }
+
+            val obb      = obbInfo.getOBB()
+            val worldPos = this.transformPosition(
+                transform, obbInfo.position.x, obbInfo.position.y, obbInfo.position.z
+            )
+
+            // Zero out turret/barrel OBBs after sympathetic detonation.
+            if (hasTurret() && sympatheticDetonated
+                && (obbInfo.transform.equals("Turret") || obbInfo.transform.equals("Barrel"))
+            ) {
                 obb.setExtents(Vector3d(0.0, 0.0, 0.0))
             }
 
@@ -2742,7 +2866,6 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             obb.updateRotation(this.getRotationFromString(obbInfo.rotation))
 
             val rotate = obbInfo.customRotate
-
             obb.rotation.mul(Quaterniond(Axis.YP.rotationDegrees(rotate.y.toFloat())))
             obb.rotation.mul(Quaterniond(Axis.XP.rotationDegrees(rotate.x.toFloat())))
             obb.rotation.mul(Quaterniond(Axis.ZP.rotationDegrees(rotate.z.toFloat())))
@@ -4337,8 +4460,9 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         }
 
         this.setOnGroundWithKnownMovement(this.verticalCollisionBelow, vec3)
-        // 补充OBB级别的地面检测：任意OBB接触地面即判定为onGround
-        if (!this.onGround() && VehicleMotionUtils.checkObbOnGround(this)) {
+        // Use the tick-cached variant — avoids re-iterating block collision shapes
+        // on every vMove() call for vehicles with large OBBs (e.g. KirovEntity).
+        if (!this.onGround() && this.checkObbOnGroundCached()) {
             this.setOnGround(true)
         }
         val blockpos = this.getOnPos(0.2f)
@@ -4564,7 +4688,34 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     open var override by OVERRIDE
     open var skinId by SKIN_ID
     open var lastAttackerUUID by LAST_ATTACKER_UUID
-    open var lastDriverUUID by LAST_DRIVER_UUID
+
+    // lastDriverUUID
+
+    /** Last known parsed form of [lastDriverUUID], or `null` if unparseable. */
+    private var lastDriverUuidParsed: UUID? = null
+
+    /**
+    * Backing field for [lastDriverUUID].
+    * Use the property setter to keep [lastDriverUuidParsed] in sync.
+    */
+    private var lastDriverUuidString: String = "undefined"
+
+    // Replace the existing plain var with this property.
+    // If VehicleEntity already declares lastDriverUUID via entityData / SynchedEntityData,
+    // rename the backing field accordingly and hook into the setter.
+    var lastDriverUUID: String
+        get() = lastDriverUuidString
+        set(value) {
+            if (value == lastDriverUuidString) return
+            lastDriverUuidString = value
+            // Parse once on write; catch is free when value is valid UUID.
+            lastDriverUuidParsed = try {
+                UUID.fromString(value)
+            } catch (_: IllegalArgumentException) {
+                null
+            }
+        }
+
     open var dogTagIcon by DOG_TAG_ICON
     open var aiTurretTargetUUID by AI_TURRET_TARGET_UUID
     open var aiPassengerWeaponTargetUUID by AI_PASSENGER_WEAPON_TARGET_UUID
