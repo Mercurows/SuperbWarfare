@@ -197,6 +197,23 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     private var gunDataMapCache: Map<String, GunData>? = null
     private var gunDataMapWeaponKeys: Set<String>? = null
 
+    /**
+    * Snapshot of each weapon slot's combined [NbtVersion] at the moment of the
+    * last successful [GUN_DATA_MAP] write to [entityData].
+    *
+    * Packed layout (single [Long] per slot):
+    * ```
+    *   bits 63–32  structural version  (Int, upper half)
+    *   bits 31– 0  state     version  (Int, lower half, zero-extended)
+    * ```
+    * Compared every server tick by [isGunDataDirty]; if no slot version has changed
+    * since the previous tick the [GUN_DATA_MAP] write — and the resulting client-side
+    * [onSyncedDataUpdated] cascade — is skipped entirely.
+    *
+    * Server-side only. Never serialized to NBT or sent over the network.
+    */
+    private val lastSyncedGunVersions: HashMap<String, Long> = HashMap()
+
     /** Set to `true` by [setChanged] when vehicle inventory contents are modified. */
     private var inventoryDirty: Boolean = false
 
@@ -252,6 +269,55 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
     open fun getSeat(passenger: Entity?): SeatInfo? {
         return getSeat(getSeatIndex(passenger))
+    }
+
+    /**
+    * Returns `true` if at least one weapon slot's [NbtVersion] has changed since
+    * the last call to [snapshotGunVersions], meaning a [GUN_DATA_MAP] sync is needed.
+    *
+    * Each slot's structural and state counters are packed into a single [Long]
+    * (structural in the upper 32 bits, state in the lower 32 bits) to allow a
+    * single integer comparison per slot instead of two separate reads.
+    *
+    * The check is O(N) in the number of weapon slots (typically 1–3 per vehicle)
+    * and involves no allocations — it is negligibly cheap compared with the
+    * [entityData] write and network packet it replaces when the result is `false`.
+    *
+    * @param map the current weapon data map for this vehicle.
+    * @return `true` if any slot version has changed and a sync should be sent;
+    *         `false` if all slots are unchanged and the sync can be skipped.
+    */
+    private fun isGunDataDirty(map: Map<String, GunData>): Boolean {
+        // Slot count changed — weapons added or removed
+        if (map.size != lastSyncedGunVersions.size) return true
+
+        for ((name, gunData) in map) {
+            // Pack both version counters into a single Long for a one-shot comparison.
+            // NbtVersion.structural changes on attachments/perks/fire-mode swaps;
+            // NbtVersion.state changes on ammo, heat, reload timers, etc.
+            val current = (gunData.nbtVersion.structural.toLong() shl 32) or
+                        (gunData.nbtVersion.state.toLong() and 0xFFFFFFFFL)
+            val last = lastSyncedGunVersions[name]
+            if (last == null || last != current) return true
+        }
+        return false
+    }
+
+    /**
+    * Snapshots the current [NbtVersion] of every weapon slot into [lastSyncedGunVersions].
+    *
+    * Must be called immediately **after** a successful [GUN_DATA_MAP] write to [entityData]
+    * so that the next call to [isGunDataDirty] compares against a fresh baseline.
+    *
+    * @param map the weapon data map whose versions should be recorded.
+    */
+    private fun snapshotGunVersions(map: Map<String, GunData>) {
+        // Clear stale entries for removed weapon slots
+        lastSyncedGunVersions.clear()
+        for ((name, gunData) in map) {
+            lastSyncedGunVersions[name] = (gunData.nbtVersion.structural.toLong() shl 32) or
+                                        (gunData.nbtVersion.state.toLong() and 0xFFFFFFFFL)
+        }
     }
 
     /**
@@ -506,14 +572,24 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         this.obb = data().getDefault().copy().obb.toList()
     }
 
+    /**
+     * Batch synced-data update handler.
+     */
     override fun onSyncedDataUpdated(dataValues: MutableList<DataValue<*>>) {
         super.onSyncedDataUpdated(dataValues)
-
-        data().update()
     }
 
+    /**
+     * Per-key synced-data update handler.
+     */
     override fun onSyncedDataUpdated(key: EntityDataAccessor<*>) {
         super.onSyncedDataUpdated(key)
+
+        if (key == OVERRIDE) {
+            // OVERRIDE is the only synced field that feeds into VehicleData.compute().
+            // Invalidate the cache so the next computed() call re-applies the new JSON.
+            data().update()
+        }
 
         if (key == GUN_DATA_MAP) {
             // Skip cache invalidation when update was initiated by our own baseTick()
@@ -2246,9 +2322,17 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                 }
             }
 
-            isSelfUpdatingGunData = true
-            this.entityData.set(GUN_DATA_MAP, map, true)
-            isSelfUpdatingGunData = false
+            // Conditional sync: skip the entityData write — and the resulting
+            // client-side onSyncedDataUpdated cascade — when no weapon NBT has
+            // changed since the previous tick.  For idle weapons (no shooting,
+            // no reloading) this eliminates the forced packet every tick and
+            // keeps the client-side gunDataMapCache valid indefinitely.
+            if (isGunDataDirty(map)) {
+                isSelfUpdatingGunData = true
+                this.entityData.set(GUN_DATA_MAP, map, true)
+                isSelfUpdatingGunData = false
+                snapshotGunVersions(map)
+            }
         }
 
         this.wasEngineRunning = this.engineRunning()
