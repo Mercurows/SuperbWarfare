@@ -114,8 +114,12 @@ import net.minecraftforge.common.util.LazyOptional
 import net.minecraftforge.energy.IEnergyStorage
 import net.minecraftforge.fluids.FluidType
 import net.minecraftforge.items.ItemHandlerHelper
-import net.minecraftforge.network.NetworkHooks
 import net.minecraftforge.registries.ForgeRegistries
+import net.minecraft.network.FriendlyByteBuf
+import net.minecraft.network.protocol.Packet
+import net.minecraft.network.protocol.game.ClientGamePacketListener
+import net.minecraftforge.entity.IEntityAdditionalSpawnData
+import net.minecraftforge.network.NetworkHooks
 import org.joml.*
 import java.util.*
 import java.util.function.BiConsumer
@@ -126,7 +130,9 @@ import javax.annotation.ParametersAreNonnullByDefault
 import kotlin.math.*
 
 open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEntityType, pLevel),
-    VehiclePropertyModifier, HasCustomInventoryScreen, OBBEntity, BasicGeoVehicleEntity, IBvrSyncableEntity {
+    VehiclePropertyModifier, HasCustomInventoryScreen, OBBEntity, BasicGeoVehicleEntity, IBvrSyncableEntity,
+    IEntityAdditionalSpawnData {
+
     val anim: VehicleAnimationInstance<VehicleEntity>? =
         if (pLevel.isClientSide) VehicleAnimationInstance.create(this) else null
 
@@ -1545,6 +1551,11 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         val newList = selectedWeapon.toMutableList()
         newList[seatIndex] = selectedWeaponIndex
         selectedWeapon = newList
+
+        // Instantly recalculate backup ammo count for the newly selected weapon slot
+        if (!level().isClientSide) {
+            updateBackupAmmoCount()
+        }
     }
 
     /**
@@ -1575,6 +1586,60 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         if (sound != null) {
             this.level().playSound(null, this, sound, this.soundSource, 1f, 1f)
         }
+    }
+
+    /**
+     * Returns the packet required to spawn this entity on the client,
+     * utilizing Forge's network hooks to include additional spawn data.
+     *
+     * @return the clientbound spawning packet.
+     */
+    override fun getAddEntityPacket(): Packet<ClientGamePacketListener> {
+        return NetworkHooks.getEntitySpawningPacket(this)
+    }
+
+    /**
+     * Writes essential initial client-sync states (turret angles, gears, flight modes)
+     * to the spawn packet payload sent when a client starts tracking this entity.
+     *
+     * @param buffer the packet buffer to write into.
+     */
+    override fun writeSpawnData(buffer: FriendlyByteBuf) {
+        buffer.writeFloat(turretYRot)
+        buffer.writeFloat(turretXRot)
+        buffer.writeFloat(gunYRot)
+        buffer.writeFloat(gunXRot)
+        buffer.writeFloat(turretYRotLock)
+
+        buffer.writeFloat(synchedGearRot)
+        buffer.writeBoolean(gearUp)
+        buffer.writeBoolean(hoverMode)
+        buffer.writeBoolean(loiterActive)
+    }
+
+    /**
+     * Reads initial client-sync states from the spawn packet payload on the client.
+     * Instantly updates current and previous rotation frames to prevent rendering glitches.
+     *
+     * @param additionalData the packet buffer to read from.
+     */
+    override fun readSpawnData(additionalData: FriendlyByteBuf) {
+        turretYRot = additionalData.readFloat()
+        turretXRot = additionalData.readFloat()
+        gunYRot = additionalData.readFloat()
+        gunXRot = additionalData.readFloat()
+        turretYRotLock = additionalData.readFloat()
+
+        synchedGearRot = additionalData.readFloat()
+        gearUp = additionalData.readBoolean()
+        hoverMode = additionalData.readBoolean()
+        loiterActive = additionalData.readBoolean()
+
+        // Sync interpolation baseline frames
+        turretYRotO = turretYRot
+        turretXRotO = turretXRot
+        gunYRotO = gunYRot
+        gunXRotO = gunXRot
     }
 
     override fun readAdditionalSaveData(compound: CompoundTag) {
@@ -1639,6 +1704,25 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         serverYaw = compound.getFloat("ServerYaw")
         serverPitch = compound.getFloat("ServerPitch")
         roll = compound.getFloat("Roll")
+
+        // Restore turret & gun orientation from NBT
+        if (compound.contains("TurretYRot")) {
+            turretYRot = compound.getFloat("TurretYRot")
+            turretXRot = compound.getFloat("TurretXRot")
+            gunYRot = compound.getFloat("GunYRot")
+            gunXRot = compound.getFloat("GunXRot")
+            turretYRotLock = compound.getFloat("TurretYRotLock")
+
+            turretYRotO = turretYRot
+            turretXRotO = turretXRot
+            gunYRotO = gunYRot
+            gunXRotO = gunXRot
+        }
+
+        // Restore flight modes from NBT
+        if (compound.contains("HoverMode")) {
+            hoverMode = compound.getBoolean("HoverMode")
+        }
 
         isWreck = compound.getBoolean("IsWreck")
         sympatheticDetonated = compound.getBoolean("SympatheticDetonated")
@@ -1765,6 +1849,16 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         compound.putFloat("ServerYaw", serverYaw)
         compound.putFloat("ServerPitch", serverPitch)
         compound.putFloat("Roll", roll)
+
+        // Save turret & gun orientation to NBT
+        compound.putFloat("TurretYRot", turretYRot)
+        compound.putFloat("TurretXRot", turretXRot)
+        compound.putFloat("GunYRot", gunYRot)
+        compound.putFloat("GunXRot", gunXRot)
+        compound.putFloat("TurretYRotLock", turretYRotLock)
+
+        // Save flight modes to NBT
+        compound.putBoolean("HoverMode", hoverMode)
 
         if (this.maxPassengers > 0) {
             compound.putIntArray("SelectedWeapon", selectedWeapon)
@@ -3197,7 +3291,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         if (seat.transform == "Turret" && turretControllerIndex == getSeatIndex(entity)) {
             if (!entity.level().isClientSide) return
-            if (Minecraft.getInstance().options.cameraType != CameraType.FIRST_PERSON) return
+            if (mc.options.cameraType != CameraType.FIRST_PERSON) return
 
             val f4 = Mth.wrapDegrees(entity.yRot - -getYRotFromVector(vec3)).toFloat()
             val f5 = Mth.clamp(f2, -16f, 16f)
@@ -3356,7 +3450,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     open fun cameraDirection(): Vec3 {
-        return Vec3(Minecraft.getInstance().gameRenderer.mainCamera.lookVector)
+        return Vec3(mc.gameRenderer.mainCamera.lookVector)
     }
 
     open fun getRotationFromString(string: String?): Quaterniond {
@@ -3933,8 +4027,11 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     open fun handleClientSync() {
-        serverYaw = yRot
-        serverPitch = xRot
+        // Dont replace client values
+        if (!level().isClientSide) {
+            serverYaw = yRot
+            serverPitch = xRot
+        }
 
         if (isControlledByLocalInstance) {
             interpolationSteps = 0
@@ -3971,6 +4068,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         this.xO = x
         this.yO = y
         this.zO = z
+        this.serverYaw = yaw
+        this.serverPitch = pitch
         this.interpolationSteps = 10
     }
 
@@ -4239,7 +4338,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     open fun getSensitivity(original: Double, zoom: Boolean, seatIndex: Int, isOnGround: Boolean): Double {
         val seat = computed().seats()[seatIndex]
         val sensitivity = seat.sensitivity
-        return if (zoom) sensitivity.x * original else if (Minecraft.getInstance().options.cameraType
+        return if (zoom) sensitivity.x * original else if (mc.options.cameraType
                 .isFirstPerson
         ) sensitivity.y * original else sensitivity.z * original
     }
