@@ -17,12 +17,14 @@ import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.ShootParameters
 import com.atsuishio.superbwarfare.data.vehicle.VehicleData
+import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData
 import com.atsuishio.superbwarfare.data.vehicle.VehiclePropertyModifier
 import com.atsuishio.superbwarfare.data.vehicle.subdata.*
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo.*
 import com.atsuishio.superbwarfare.entity.OBBEntity
 import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter
+import com.atsuishio.superbwarfare.mixins.EntityOnGroundAccessor
 import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.entity.vehicle.*
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier
@@ -193,12 +195,6 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     * Initialised to [Int.MIN_VALUE] so the first access always triggers a refresh.
     */
     private var creativeAmmoBoxCacheTick: Int = Int.MIN_VALUE
-
-    /** Cached result of [VehicleMotionUtils.checkObbOnGround] for this vehicle. */
-    private var cachedObbOnGround: Boolean = false
-
-    /** Tick on which [cachedObbOnGround] was last computed. */
-    private var obbOnGroundCacheTick: Int = Int.MIN_VALUE
 
     private var gunDataMapCache: Map<String, GunData>? = null
     private var gunDataMapWeaponKeys: Set<String>? = null
@@ -417,6 +413,30 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     private var obbCache: MutableList<OBB>? = null
     private var combinedAabbCache: AABB? = null
     private var combinedAabbCacheTick: Int = -1
+
+    /** Flat array of block AABB coords [x0,y0,z0,x1,y1,z1,...], reused across the tick. */
+    @JvmField internal var blockCollisionCoords: DoubleArray = DoubleArray(0)
+    /** Number of valid entries (each = 6 doubles) in [blockCollisionCoords]. */
+    @JvmField internal var blockCollisionCount: Int = 0
+    @JvmField internal var blockCollisionCacheTick: Int = -1
+
+    /** Holding a strong reference here prevents premature GC */
+    @JvmField
+    internal var vehicleDataStrong: VehicleData? = null
+
+    /** Cached result of [VehicleMotionUtils.checkObbOnGround] for this vehicle. */
+    private var cachedObbOnGround: Boolean = false
+
+    /** Tick on which [cachedObbOnGround] was last computed. */
+    private var obbOnGroundCacheTick: Int = Int.MIN_VALUE
+
+    /**
+     * Set by [vCollide] when a step-up produced only vertical progress (horizontal
+     * still blocked). [vMove] reads it to skip zeroing horizontal deltaMovement so
+     * the vehicle keeps its momentum through a multi-tick climb instead of stalling.
+     */
+    private var verticalStepClippingOnly: Boolean = false
+
     open var obb = listOf<OBBInfo>()
         protected set
 
@@ -771,6 +791,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             }
         }
         this.clearTowingInfo()
+        vehicleDataStrong = null  // Release strong ref, allow GC
         super.remove(reason)
     }
 
@@ -921,8 +942,26 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         this.gameEvent(GameEvent.ENTITY_DISMOUNT, pPassenger)
     }
 
-    open fun data() = VehicleData.from(this)
-    open fun computed() = VehicleData.compute(this)
+    /**
+     * Returns the [VehicleData] for this vehicle, creating it on first access.
+     *
+     * @return the vehicle's [VehicleData] instance
+     */
+    open fun data(): VehicleData {
+        var d = vehicleDataStrong
+        if (d == null) {
+            d = VehicleData.from(this)
+            vehicleDataStrong = d
+        }
+        return d
+    }
+
+    /**
+     * Returns the cached computed [DefaultVehicleData] for this vehicle.
+     *
+     * @return the computed vehicle data for the current tick
+     */
+    open fun computed(): DefaultVehicleData = data().compute()
 
     override fun getStepHeight() = computed().upStep
 
@@ -4550,24 +4589,30 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     open val lastAttacker: Entity?
         get() = EntityFindUtil.findEntity(level(), lastAttackerUUID)
 
-    private var sbwCacheOnGround = false
-
     open fun vCollide(pVec: Vec3): Vec3 {
-        if (ignoreEntityGroundCheckStepping) {
-            sbwCacheOnGround = this.onGround()
-            this.setOnGround(true)
+        // Invalidate block collision cache
+        this.blockCollisionCacheTick = -1
+
+        // Compute effective ground state for the step-up check below without
+        // calling the expensive setOnGround(true) which triggers findSupportingBlock
+        // via checkSupportingBlock.
+        val effectiveOnGround = if (ignoreEntityGroundCheckStepping) {
+            ignoreEntityGroundCheckStepping = false
+            true
+        } else {
+            this.onGround()
         }
 
-        // 使用OBB碰撞解决替代原版AABB碰撞
+        // Use OBB collision resolution instead of vanilla AABB collision
         val vec3 = VehicleMotionUtils.resolveObbWorldCollision(this, pVec)
         val flag = pVec.x != vec3.x
         val flag1 = pVec.y != vec3.y
         val flag2 = pVec.z != vec3.z
-        val flag3 = this.onGround() || flag1 && pVec.y < 0.0
+        val flag3 = effectiveOnGround || flag1 && pVec.y < 0.0
         val stepHeight = stepHeight
 
         if (stepHeight > 0.0f && flag3 && (flag || flag2)) {
-            // 尝试步进
+            // Try step-up
             var vec31 = VehicleMotionUtils.resolveObbWorldCollision(
                 this, Vec3(pVec.x, stepHeight.toDouble(), pVec.z)
             )
@@ -4575,7 +4620,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                 this, Vec3(0.0, stepHeight.toDouble(), 0.0)
             )
             if (vec32.y < stepHeight.toDouble()) {
-                // 头顶有遮挡，尝试先向上移动vec32，再水平移动
+                // Ceiling obstruction — try moving up by vec32, then horizontally
                 val collisionObb = this.getCollisionOBB()
                 val horizPart: Vec3
                 if (collisionObb != null) {
@@ -4593,7 +4638,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             }
 
             if (vec31.horizontalDistanceSqr() > vec3.horizontalDistanceSqr()) {
-                // 步进成功，处理垂直下落
+                // Step-up succeeded — handle vertical step-down
                 val collisionObb = this.getCollisionOBB()
                 var stepDown: Vec3
                 if (collisionObb != null) {
@@ -4602,16 +4647,16 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                         this, Vec3(0.0, -vec31.y + pVec.y, 0.0), stepUpObbs
                     )
 
-                    // 支撑感知：防止OBB步进下落时卡入小坑洞
-                    // 当OBB底面绝大部分有方块支撑时，限制下陷量
+                    // Support-aware: prevent OBB step-down from clipping into small potholes.
+                    // When most of the OBB bottom has block support, limit the sink amount.
                     val steppedObb = stepUpObbs[0].move(stepDown)
                     val (supportRatio, correction) = VehicleMotionUtils.checkBottomSupportRatio(this, steppedObb)
                     if (supportRatio >= 0.75 && correction > 0) {
-                        // 大部分底面有支撑但OBB有部分陷入地表，向上修正
+                        // Most of the bottom has support but the OBB partially sank — correct upward
                         stepDown = Vec3(stepDown.x, stepDown.y + correction, stepDown.z)
                     }
                 } else {
-                    // 无OBB时用偏移AABB模拟步进后位置
+                    // No OBB: simulate step-up position using offset AABB
                     val movedBox = this.boundingBox.move(vec31)
                     val list = level().getEntityCollisions(this, movedBox.expandTowards(0.0, -vec31.y + pVec.y, 0.0))
                     stepDown = collideBoundingBox(this, Vec3(0.0, -vec31.y + pVec.y, 0.0), movedBox, level(), list)
@@ -4621,11 +4666,6 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                     this, vec31.add(stepDown), this.boundingBox, this.level()
                 )
             }
-        }
-
-        if (ignoreEntityGroundCheckStepping) {
-            this.setOnGround(sbwCacheOnGround)
-            ignoreEntityGroundCheckStepping = false
         }
 
         return if (!ValkyrienSkiesCompat.hasMod()) vec3
@@ -4673,7 +4713,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             if (this.horizontalCollision) {
                 val vec31 = this.deltaMovement
                 if (this.minorHorizontalCollision) {
-                    // 微小碰撞：减速而非完全停止
+                    // Minor collision: slow down instead of full stop
                     this.setDeltaMovement(
                         if (flag4) vec31.x * 0.3 else vec31.x,
                         vec31.y,
@@ -4788,6 +4828,24 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             collisionCoolDown = 4
             crash = true
             power *= 0.8f
+        }
+    }
+
+    /**
+     * Overrides the vanilla method to skip the expensive [findSupportingBlock] scan
+     * for OBB-equipped vehicles.
+     * 
+     * @param onGround whether the entity should be considered on the ground
+     * @param movement the movement vector that led to this ground state
+     */
+    override fun setOnGroundWithKnownMovement(onGround: Boolean, movement: Vec3) {
+        if (getCollisionOBBInfo() != null) {
+            // Direct field write via Mixin @Accessor — bypasses Entity.setOnGround()
+            // which would call the private checkSupportingBlock() and trigger a full
+            // block-collision iteration.
+            (this as EntityOnGroundAccessor).`sbw$setOnGroundRaw`(onGround)
+        } else {
+            super.setOnGroundWithKnownMovement(onGround, movement)
         }
     }
 

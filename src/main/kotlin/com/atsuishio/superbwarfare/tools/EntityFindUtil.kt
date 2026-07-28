@@ -27,6 +27,12 @@ object EntityFindUtil {
 
     /**
      * 查找当前已知实体，对ClientLevel和ServerLevel均有效
+     *
+     * Pre-validates the UUID string before calling [UUID.fromString] to avoid
+     * the extremely expensive [IllegalArgumentException] + [Throwable.fillInStackTrace]
+     * path that was observed costing ~900ms cumulative in production profiling.
+     * A valid UUID string is always exactly 36 characters (8-4-4-4-12 with hyphens);
+     * common non-UUID sentinels like "undefined" (length 9) are rejected instantly.
      * 
      * @param level      实体所在世界
      * @param uuidString 目标实体UUID字符串
@@ -34,21 +40,21 @@ object EntityFindUtil {
      */
     @JvmStatic
     fun findEntity(level: Level, uuidString: String?): Entity? {
-        if (uuidString == null) return null
-        try {
-            val uuid = UUID.fromString(uuidString)
-            val target: Entity?
-
-            if (level is ServerLevel) {
-                target = level.getEntity(uuid)
-            } else {
-                val clientLevel = level as ClientLevel
-                target = clientLevel.entities.get(uuid)
-            }
-            return target
-        } catch (_: Exception) {
+        // Fast rejection: a valid UUID is always exactly 36 chars.
+        // This filters "undefined", "", and other non-UUID sentinels
+        // without entering the try/catch + stack-trace-fill path.
+        if (uuidString == null || uuidString.length != 36) return null
+        val uuid = try {
+            UUID.fromString(uuidString)
+        } catch (_: IllegalArgumentException) {
+            return null
         }
-        return null
+
+        return if (level is ServerLevel) {
+            level.getEntity(uuid)
+        } else {
+            (level as ClientLevel).entities.get(uuid)
+        }
     }
 
     @JvmStatic

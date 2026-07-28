@@ -21,7 +21,8 @@
     "ProjectileUtilMixin",
     "SteelPipeFallMixin",
     "VillagerMixin",
-    "tacz.EntityUtilMixin"
+    "tacz.EntityUtilMixin",
+    "EntityOnGroundAccessor"
   ],
   "client": [
     "CameraMixin",

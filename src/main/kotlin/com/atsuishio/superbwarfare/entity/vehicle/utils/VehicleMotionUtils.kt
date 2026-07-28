@@ -553,20 +553,29 @@ object VehicleMotionUtils {
     }
 
     /**
-     * 载具在龙牙上行驶时，减速
+     * Decelerates the vehicle when driving over dragon teeth obstacles.
      *
-     * @param vehicle 载具
+     * @param vehicle the vehicle entity
      */
     @JvmStatic
     fun handleVehicleMoveOnDragonTeeth(vehicle: VehicleEntity) {
-        val aabb = vehicle.boundingBox
-        val aabb1 = AABB(aabb.minX, aabb.minY - 1.0E-6, aabb.minZ, aabb.maxX, aabb.minY, aabb.maxZ)
-        val pos = vehicle.level().findSupportingBlock(vehicle, aabb1).orElse(null) ?: return
+        if (!vehicle.onGround()) return
 
-        val state = vehicle.level().getBlockState(pos)
-        if (state.`is`(ModBlocks.DRAGON_TEETH.get())) {
-            vehicle.power *= 0.8f
-            vehicle.setDeltaMovement(vehicle.deltaMovement.multiply(-0.1, 0.0, -0.1))
+        val aabb = vehicle.boundingBox
+        val y = aabb.minY - 0.01
+        val level = vehicle.level()
+
+        // Sample center + 4 corners of the bottom face — O(5) block lookups
+        val pos = BlockPos.MutableBlockPos()
+        val checkX = doubleArrayOf(vehicle.x, aabb.minX, aabb.maxX, aabb.minX, aabb.maxX)
+        val checkZ = doubleArrayOf(vehicle.z, aabb.minZ, aabb.minZ, aabb.maxZ, aabb.maxZ)
+        for (i in checkX.indices) {
+            pos.set(Mth.floor(checkX[i]), Mth.floor(y), Mth.floor(checkZ[i]))
+            if (level.getBlockState(pos).`is`(ModBlocks.DRAGON_TEETH.get())) {
+                vehicle.power *= 0.8f
+                vehicle.setDeltaMovement(vehicle.deltaMovement.multiply(-0.1, 0.0, -0.1))
+                return
+            }
         }
     }
 
@@ -970,7 +979,7 @@ object VehicleMotionUtils {
      *
      * 仅统计落在垂直窗口 [wy - searchDown, wy + searchUp] 内、且该列水平位置确实位于
      * 方块碰撞盒内的碰撞面，取其中最高的顶部（即车身会贴合到的地面）。
-     * 直接遍历真实方块碰撞盒(toAabbs)而非高度图，因此对台阶/半砖/楼梯等也精确。
+     * 直接遍历真实方块碰撞盒(forAllBoxes)而非高度图，因此对台阶/半砖/楼梯等也精确。
      *
      * @return 命中的地形顶部世界Y；窗口内无任何碰撞面时返回null（深坑/悬崖外）
      */
@@ -993,11 +1002,16 @@ object VehicleMotionUtils {
             if (!state.isAir) {
                 val shape = state.getCollisionShape(level, pos)
                 if (!shape.isEmpty) {
-                    for (box in shape.toAabbs()) {
-                        if (wx >= bx + box.minX - 1e-6 && wx <= bx + box.maxX + 1e-6 &&
-                            wz >= bz + box.minZ - 1e-6 && wz <= bz + box.maxZ + 1e-6
+                    // Zero-allocation iteration: forAllBoxes avoids the List<AABB>
+                    // and individual AABB allocations that toAabbs() would create.
+                    // For 15 sample columns × 91 vehicles this eliminates ~thousands
+                    // of short-lived objects per tick.
+                    val curBy = by  // capture for lambda
+                    shape.forAllBoxes { minX, _, minZ, maxX, maxY, maxZ ->
+                        if (wx >= bx + minX - 1e-6 && wx <= bx + maxX + 1e-6 &&
+                            wz >= bz + minZ - 1e-6 && wz <= bz + maxZ + 1e-6
                         ) {
-                            val boxTop = by + box.maxY
+                            val boxTop = curBy + maxY
                             if (boxTop <= ceil && (best.isNaN() || boxTop > best)) best = boxTop
                         }
                     }
@@ -1151,11 +1165,14 @@ object VehicleMotionUtils {
     }
 
     /**
-     * Resolves OBB world collisions for the given [vehicle] using Separating Axis Theorem (SAT).
-     * 
-     * @param vehicle  target vehicle entity.
-     * @param movement intended movement vector (including gravity).
-     * @return corrected movement vector after block/entity collision clipping.
+     * Resolves OBB-vs-world collisions for [vehicle] using Separating Axis Theorem (SAT).
+     *
+     * Convenience overload that uses the vehicle's single {@link OBB.Part#COLLISION} OBB.
+     * Falls back to vanilla AABB collision when no collision OBB is defined.
+     *
+     * @param vehicle  the vehicle entity
+     * @param movement intended movement vector (gravity already applied by caller)
+     * @return corrected movement vector after collision clipping
      */
     @JvmStatic
     fun resolveObbWorldCollision(vehicle: VehicleEntity, movement: Vec3): Vec3 {
@@ -1172,31 +1189,14 @@ object VehicleMotionUtils {
     }
 
     /**
-    * Resolves OBB-vs-world collisions along all three world axes using an explicit list of
-    * collision OBBs, applying Separating Axis Theorem (SAT) clipping in Y → X → Z order.
-    *
-    * <h3>Performance notes</h3>
-    * Compared to a naive per-candidate SAT approach, this method precomputes each OBB's
-    * world-space axes exactly once per tick via {@link OBB#getAxes()} and reuses them across:
-    * <ul>
-    *   <li>all three movement-resolution passes (Y, then X, then Z), and</li>
-    *   <li>every candidate world AABB tested within each pass.</li>
-    * </ul>
-    * Since translating an OBB never changes its orientation, re-deriving its axes for every
-    * (OBB, candidate AABB) pair - as calling {@link OBB#computeObbAabbMtv(OBB, AABB)} directly
-    * in a loop would do - wastes CPU on redundant quaternion-vector transforms. Profiling under
-    * load showed this redundant work costing several milliseconds per tick on its own; hoisting
-    * the axis derivation out of the loop reduces it to a single, tick-amortized cost per OBB.
-    * <p>
-    * For the same reason, translated world AABBs are computed via [OBB.getTranslatedWorldAABB]
-    * (pure arithmetic over the cached axes) instead of [OBB.move] + [OBB.getWorldAABB], which
-    * would otherwise re-derive all 8 corner vertices of the OBB through rotation for every pass.
-    *
-    * @param vehicle  the target vehicle entity.
-    * @param movement the intended movement vector (including gravity), prior to clipping.
-    * @param obbs     the list of collision-participating OBBs to test against the world.
-    * @return the movement vector after block/entity collision clipping.
-    */
+     * Resolves OBB-vs-world collisions along Y → X → Z axes using SAT clipping.
+     *
+     * @param vehicle  the vehicle entity performing collision resolution
+     * @param movement the intended movement vector (including gravity) prior to clipping
+     * @param obbs     the OBBs to test; must not be empty (caller should handle that)
+     * @return the clipped movement vector; components are reduced but never reversed
+     *         beyond zero (no bouncing)
+     */
     @JvmStatic
     fun resolveObbWorldCollision(vehicle: VehicleEntity, movement: Vec3, obbs: List<OBB>): Vec3 {
         if (movement.lengthSqr() < 1e-7) return movement
@@ -1205,70 +1205,100 @@ object VehicleMotionUtils {
             vehicle.level().getEntityCollisions(vehicle, vehicle.boundingBox.expandTowards(movement))
         )
 
-        // Derive each OBB's world-space axes exactly once per tick; orientation does not change
-        // across the Y/X/Z passes below, only translation does, so this cached array is reused
-        // for every pass and every candidate AABB tested against this OBB.
+        // Derive world-space axes once per OBB per tick; orientation is invariant
+        // under translation, so this array is reused across all three axis passes.
         val obbsWithAxes = obbs.map { it to it.getAxes() }
 
-        // Search range: union of all OBBs' world AABBs expanded towards the intended movement.
-        var sMinX = Double.MAX_VALUE
-        var sMinY = Double.MAX_VALUE
-        var sMinZ = Double.MAX_VALUE
-        var sMaxX = -Double.MAX_VALUE
-        var sMaxY = -Double.MAX_VALUE
-        var sMaxZ = -Double.MAX_VALUE
+        // Build search box: union of all OBB world-AABBs expanded toward movement
+        var sMinX =  Double.MAX_VALUE; var sMinY =  Double.MAX_VALUE; var sMinZ =  Double.MAX_VALUE
+        var sMaxX = -Double.MAX_VALUE; var sMaxY = -Double.MAX_VALUE; var sMaxZ = -Double.MAX_VALUE
         for (obb in obbs) {
-            val obbAabb = OBB.getWorldAABB(obb)
-            val expanded = obbAabb.expandTowards(movement)
-            if (expanded.minX < sMinX) sMinX = expanded.minX
-            if (expanded.minY < sMinY) sMinY = expanded.minY
-            if (expanded.minZ < sMinZ) sMinZ = expanded.minZ
-            if (expanded.maxX > sMaxX) sMaxX = expanded.maxX
-            if (expanded.maxY > sMaxY) sMaxY = expanded.maxY
-            if (expanded.maxZ > sMaxZ) sMaxZ = expanded.maxZ
+            val a = OBB.getWorldAABB(obb).expandTowards(movement)
+            if (a.minX < sMinX) sMinX = a.minX; if (a.minY < sMinY) sMinY = a.minY
+            if (a.minZ < sMinZ) sMinZ = a.minZ; if (a.maxX > sMaxX) sMaxX = a.maxX
+            if (a.maxY > sMaxY) sMaxY = a.maxY; if (a.maxZ > sMaxZ) sMaxZ = a.maxZ
         }
         val searchBox = AABB(sMinX, sMinY, sMinZ, sMaxX, sMaxY, sMaxZ)
             .inflate(0.5)
             .expandTowards(0.0, vehicle.stepHeight.toDouble() + 0.5, 0.0)
 
-        // Collect world collision AABBs (blocks + entities).
-        val allAabbs = mutableListOf<AABB>()
-
-        // Broad-phase: skip the expensive block query entirely when the search box is
-        // guaranteed to be airborne (e.g. an airship cruising well above the terrain).
-        if (!isSearchBoxProvablyAirborne(vehicle.level(), searchBox)) {
-            for (shape in vehicle.level().getBlockCollisions(vehicle, searchBox))
-                for (aabb in shape.toAabbs()) allAabbs.add(aabb)
+        // Collect candidate AABBs
+        //
+        // Block AABBs: tick-level cache stored as a flat DoubleArray
+        // (6 doubles per AABB: x0,y0,z0,x1,y1,z1).  The cache is valid for the
+        // entire vCollide call sequence (base + step-up + step-down) because the
+        // world does not change between these sub-calls within a single tick.
+        //
+        // Entity AABBs: always fresh — cheap (few candidates) and position-sensitive.
+        val cachedCoords: DoubleArray
+        val cachedCount: Int
+        if (vehicle.blockCollisionCacheTick == vehicle.tickCount) {
+            cachedCoords = vehicle.blockCollisionCoords
+            cachedCount  = vehicle.blockCollisionCount
+        } else {
+            var buf = if (vehicle.blockCollisionCoords.size >= 1200) vehicle.blockCollisionCoords
+                      else DoubleArray(1200)
+            var n = 0
+            if (!isSearchBoxProvablyAirborne(vehicle.level(), searchBox)) {
+                for (shape in vehicle.level().getBlockCollisions(vehicle, searchBox)) {
+                    shape.forAllBoxes { x0, y0, z0, x1, y1, z1 ->
+                        if (n + 6 > buf.size) buf = buf.copyOf(buf.size * 2)
+                        buf[n] = x0; buf[n+1] = y0; buf[n+2] = z0
+                        buf[n+3] = x1; buf[n+4] = y1; buf[n+5] = z1
+                        n += 6
+                    }
+                }
+            }
+            vehicle.blockCollisionCoords     = buf
+            vehicle.blockCollisionCount      = n
+            vehicle.blockCollisionCacheTick  = vehicle.tickCount
+            cachedCoords = buf
+            cachedCount  = n
         }
-        for (shape in vehicle.level().getEntityCollisions(vehicle, searchBox))
-            for (aabb in shape.toAabbs()) allAabbs.add(aabb)
+
+        // Combine block cache + fresh entity collisions into a single AABB list.
+        val allAabbs = ArrayList<AABB>(cachedCount / 6 + 4)
+        var ci = 0
+        while (ci < cachedCount) {
+            allAabbs.add(AABB(cachedCoords[ci], cachedCoords[ci+1], cachedCoords[ci+2],
+                              cachedCoords[ci+3], cachedCoords[ci+4], cachedCoords[ci+5]))
+            ci += 6
+        }
+        for (shape in vehicle.level().getEntityCollisions(vehicle, searchBox)) {
+            shape.forAllBoxes { x0, y0, z0, x1, y1, z1 ->
+                allAabbs.add(AABB(x0, y0, z0, x1, y1, z1))
+            }
+        }
         if (allAabbs.isEmpty()) return movement
 
         var rx = movement.x
         var ry = movement.y
         var rz = movement.z
-        val minPenetration = 0.005  // 忽略极小的浮点穿透
-        val maxPenetration = 0.1    // 基础允许陷入量：仅在切向（平行于接触面）方向生效
-        // 法向（MTV方向）始终严格，避免陷入地面/飞天
 
-        // Y轴：将每个OBB按(0, ry, 0)移动后，SAT检测与世界AABB的碰撞，通过MTV裁剪ry
+        // Ignore penetrations smaller than this; suppresses floating-point noise.
+        val minPenetration = 0.005
+        // Base allowed penetration along the tangential direction (parallel to surface).
+        // The normal direction is always strict to prevent sinking or flying.
+        val maxPenetration = 0.1
+
+        // Y-axis pass
+        // Translate each OBB by (0, ry, 0) and SAT-test against all candidates.
         for ((obb, axes) in obbsWithAxes) {
-            val translation = Vec3(0.0, ry, 0.0)
-            val obbAabb = OBB.getTranslatedWorldAABB(obb, axes, translation)
+            val obbAabb    = OBB.getTranslatedWorldAABB(obb, axes, Vec3(0.0, ry, 0.0))
             val testCenter = Vector3d(obb.center.x, obb.center.y + ry, obb.center.z)
             for (aabb in allAabbs) {
-                // 粗过滤：在非解析轴(XZ)上快速排除无重叠的AABB
+                // Coarse rejection: skip AABBs with no XZ overlap (non-resolving axes).
                 if (obbAabb.maxX <= aabb.minX || obbAabb.minX >= aabb.maxX) continue
                 if (obbAabb.maxZ <= aabb.minZ || obbAabb.minZ >= aabb.maxZ) continue
+
                 val mtv = OBB.computeObbAabbMtv(testCenter, axes, obb.extents, aabb) ?: continue
                 if (Math.abs(mtv.y) < minPenetration) continue
+
                 val mtvLen = Math.sqrt(mtv.x * mtv.x + mtv.y * mtv.y + mtv.z * mtv.z)
-                // nY = MTV中Y轴的分量占比，同时用于两个目的：
-                // 1) effectiveMaxPen：法向严格(nY→1则容差→0)，切向软(nY→0则容差→满)
-                // 2) nY作为响应缩放：nY高=地面接触→Y全响应；nY低=墙接触→Y响应趋零，避免突变弹出
+                // nY: how much the MTV points in the Y direction.
+                // • nY → 1: flat ground contact → strict tolerance, full Y response.
+                // • nY → 0: wall contact       → loose tolerance, minimal Y response.
                 val nY = Math.abs(mtv.y) / mtvLen
-                // nY→1(平坦地面接触)时允许1.5cm微小穿透作为稳定缓冲区，防止OBB在接地时微反弹
-                // nY→0(墙面接触)时保持10cm完整容差，让水平碰撞平滑
                 val effectiveMaxPen = maxPenetration * (1.0 - nY * 0.85)
 
                 if (ry > 0 && mtv.y < 0) {
@@ -1279,24 +1309,25 @@ object VehicleMotionUtils {
                     if (excess > 0) ry = Math.min(0.0, ry + excess * nY)
                 } else if (ry <= 0 && mtv.y > 0) {
                     if (mtv.y > effectiveMaxPen) {
-                        val excess = mtv.y - effectiveMaxPen
-                        ry = Math.min(0.0, ry + excess * 0.5 * nY)
+                        ry = Math.min(0.0, ry + (mtv.y - effectiveMaxPen) * 0.5 * nY)
                     }
                 }
             }
         }
 
-        // X轴：将每个OBB按(rx, ry, 0)移动后检测
+        // X-axis pass
+        // Translate each OBB by (rx, ry, 0) and SAT-test against all candidates.
         for ((obb, axes) in obbsWithAxes) {
-            val translation = Vec3(rx, ry, 0.0)
-            val obbAabb = OBB.getTranslatedWorldAABB(obb, axes, translation)
+            val obbAabb    = OBB.getTranslatedWorldAABB(obb, axes, Vec3(rx, ry, 0.0))
             val testCenter = Vector3d(obb.center.x + rx, obb.center.y + ry, obb.center.z)
             for (aabb in allAabbs) {
-                // 粗过滤：在非解析轴(YZ)上快速排除
+                // Coarse rejection: skip AABBs with no YZ overlap.
                 if (obbAabb.maxY <= aabb.minY || obbAabb.minY >= aabb.maxY) continue
                 if (obbAabb.maxZ <= aabb.minZ || obbAabb.minZ >= aabb.maxZ) continue
+
                 val mtv = OBB.computeObbAabbMtv(testCenter, axes, obb.extents, aabb) ?: continue
                 if (Math.abs(mtv.x) < minPenetration) continue
+
                 val mtvLen = Math.sqrt(mtv.x * mtv.x + mtv.y * mtv.y + mtv.z * mtv.z)
                 val nX = Math.abs(mtv.x) / mtvLen
                 val effectiveMaxPen = maxPenetration * (1.0 - nX)
@@ -1311,17 +1342,19 @@ object VehicleMotionUtils {
             }
         }
 
-        // Z轴：将每个OBB按(rx, ry, rz)移动后检测
+        // Z-axis pass
+        // Translate each OBB by (rx, ry, rz) and SAT-test against all candidates.
         for ((obb, axes) in obbsWithAxes) {
-            val translation = Vec3(rx, ry, rz)
-            val obbAabb = OBB.getTranslatedWorldAABB(obb, axes, translation)
+            val obbAabb    = OBB.getTranslatedWorldAABB(obb, axes, Vec3(rx, ry, rz))
             val testCenter = Vector3d(obb.center.x + rx, obb.center.y + ry, obb.center.z + rz)
             for (aabb in allAabbs) {
-                // 粗过滤：在非解析轴(XY)上快速排除
+                // Coarse rejection: skip AABBs with no XY overlap.
                 if (obbAabb.maxX <= aabb.minX || obbAabb.minX >= aabb.maxX) continue
                 if (obbAabb.maxY <= aabb.minY || obbAabb.minY >= aabb.maxY) continue
+
                 val mtv = OBB.computeObbAabbMtv(testCenter, axes, obb.extents, aabb) ?: continue
                 if (Math.abs(mtv.z) < minPenetration) continue
+
                 val mtvLen = Math.sqrt(mtv.x * mtv.x + mtv.y * mtv.y + mtv.z * mtv.z)
                 val nZ = Math.abs(mtv.z) / mtvLen
                 val effectiveMaxPen = maxPenetration * (1.0 - nZ)
