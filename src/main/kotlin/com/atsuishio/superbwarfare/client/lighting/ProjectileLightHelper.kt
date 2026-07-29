@@ -151,30 +151,11 @@ object ProjectileLightHelper {
     }
 
     // -----------------------------------------------------------------
-    // Explosion flash — all explosive projectiles
+    // Explosion flash — all explosive events
     // -----------------------------------------------------------------
 
     /**
      * Spawns a bright, large-radius explosion flash that snaps off sharply.
-     *
-     * <p>Design principles:
-     * <ul>
-     *   <li><b>Large spread</b> — nodes at up to {@code radius * 0.9} blocks fill
-     *       the entire blast area with light.</li>
-     *   <li><b>Uniform short TTL</b> — every node shares the same 3–4 tick
-     *       lifetime, so all nodes expire simultaneously.  No staggered fade,
-     *       no leftover light fragments.</li>
-     *   <li><b>minLevel = maxLevel − 1</b> — light stays at peak until the final
-     *       tick, then snaps off instantly instead of fading.</li>
-     * </ul>
-     *
-     * <p>Node layout (all at the same TTL):
-     * <ol>
-     *   <li>Center node — level 15</li>
-     *   <li>Inner hex ring — 6 nodes at {@code radius * 0.45} blocks</li>
-     *   <li>Outer hex ring — 6 nodes at {@code radius * 0.9} blocks
-     *       (only when {@code radius >= 4})</li>
-     * </ol>
      *
      * @param level   the client level
      * @param center  world-space explosion center
@@ -189,11 +170,8 @@ object ProjectileLightHelper {
         val bp = BlockPos.containing(center.x, center.y, center.z)
         val engine = level.lightEngine
 
-        // All nodes share one TTL so they expire on the exact same tick.
-        // 3 ticks for small blasts, 4 for large — both feel instant.
         val ttl = if (radius >= 5f) 4 else 3
 
-        // minLevel = maxLevel - 1: no smooth fade, just a snap-off on expiry.
         // --- Layer 1: center ---
         LightPositionRegistry.putSpark(bp.asLong(), 15, 14, ttl)
         engine.checkBlock(bp)
@@ -211,9 +189,6 @@ object ProjectileLightHelper {
 
     /**
      * Places 6 light nodes in a flat hexagonal ring around the explosion center.
-     *
-     * <p>The ring lies in the XZ plane at {@code center.y} — explosions are
-     * typically near the ground, so a horizontal ring gives maximum visibility.
      *
      * @param center    world-space explosion center
      * @param centerBp  pre-computed [BlockPos] of [center] (used for dedup check)
@@ -238,29 +213,12 @@ object ProjectileLightHelper {
                 center.x + ringDist * cos(angle),
                 center.y,
                 center.z + sin(angle) * ringDist
+
             )
             // Skip if this maps to the same block as the center node
             if (ringBp == centerBp) continue
             LightPositionRegistry.putSpark(ringBp.asLong(), maxLevel, minLevel, ttl)
             engine.checkBlock(ringBp)
-        }
-    }
-
-    /**
-     * Derives explosion radius from {@link IBulletProperties} and delegates to
-     * {@link #emitExplosionFlashDirect}.
-     *
-     * <p>Uses the interface directly so all current and future projectile types
-     * are handled automatically — no manual type mapping needed.
-     *
-     * @param entity the projectile that exploded
-     * @param center world-space explosion center
-     */
-    @JvmStatic
-    fun emitExplosionFlash(entity: Entity, center: Vec3) {
-        val radius = (entity as? IBulletProperties)?.getExplosionRadius() ?: 0f
-        if (radius > 0f) {
-            emitExplosionFlashDirect(entity.level(), center, radius)
         }
     }
 }

@@ -39,6 +39,7 @@
     "LibraryMixin",
     "LightTextureMixin",
     "LightEngineMixin",
+    "BlockLightEngineMixin",
     "LivingEntityRendererMixin",
     "LocalPlayerMixin",
     "MinecraftMixin",

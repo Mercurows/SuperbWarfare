@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.ClientSyncedEntityHandler
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves
 import com.atsuishio.superbwarfare.client.lighting.LightPositionRegistry
 import com.atsuishio.superbwarfare.client.lighting.VehicleLightingHandler
+import com.atsuishio.superbwarfare.client.lighting.MuzzleFlashHelper
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay
 import com.atsuishio.superbwarfare.client.overlay.OverlayTraceHandler
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay
@@ -531,17 +532,6 @@ object ClientEventHandler {
         handleArtilleryIndicator(player, stack)
         calculateBombHitPos(player)
 
-        // Dynamic lighting: update light engine and expire old sources
-        if (!LightPositionRegistry.isEmpty()) {
-            val clientLevel = clientLevel
-            if (clientLevel != null) {
-                val engine = clientLevel.lightEngine
-                val iter = LightPositionRegistry.activeIterator()
-                while (iter.hasNext()) {
-                    engine.checkBlock(BlockPos.of(iter.nextLong()))
-                }
-            }
-        }
         LightPositionRegistry.tick()
     }
 
@@ -648,6 +638,9 @@ object ClientEventHandler {
 
             if ((holdingFireKey || (zoom && stack.`is`(ModItems.MINIGUN.get()))) && item.canShoot(data, player)) {
                 holdingFireKeyTicks = (holdingFireKeyTicks + 1).coerceAtMost(data.get(GunProp.SHOOT_DELAY) + 1)
+
+                // Spawn light flashes for raycast tools (RepairTool / Taser) when holding fire key
+                MuzzleFlashHelper.spawnToolFlash(player, stack)
 
                 // 加特林特有的旋转音效
                 if (stack.`is`(ModItems.MINIGUN.get())) {
@@ -1639,6 +1632,12 @@ object ClientEventHandler {
             )
         )
         fireRecoilTime = 10.0
+
+        // Spawn dynamic block light muzzle flash for firearms using unified muzzle node
+        val flashParams = MuzzleFlashHelper.calculateFromStack(stack)
+        if (flashParams != null) {
+            MuzzleFlashHelper.spawnFlashCone(player.eyePosition, player.lookAngle, flashParams)
+        }
 
         // 真实后坐（
         if (data.get(GunProp.RECOIL) != 0.0) {

@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.client.animation
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.api.event.RenderPlayerArmEvent
-import com.atsuishio.superbwarfare.client.lighting.MuzzleFlashHelper
 import com.atsuishio.superbwarfare.client.renderer.CustomGunRenderer
 import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes
 import com.atsuishio.superbwarfare.client.renderer.SmartTextureBrightener
@@ -222,58 +221,12 @@ object AnimationHelper {
             vertex(consumer, poseMatrix, normalMatrix, packedLightIn, 0f, 1f, 0, 0)
             stack.popPose()
 
-            // Spawn muzzle flash light at computed world-space barrel tip
-            spawnMuzzleLight(itemStack, x, y, z)
-
             lerpTimer = Mth.lerp(
                 Minecraft.getInstance().partialTick.toDouble(),
                 lerpTimer.toDouble(),
                 ClientEventHandler.fireRotTimer * 0.667f
             ).toFloat()
         }
-    }
-
-    /**
-     * Computes the world-space muzzle tip position from the flare offsets and
-     * the local player's eye position + look direction, then registers a
-     * directional cone of dynamic light sources along the barrel axis.
-     *
-     * <p>The flare coordinate system matches the first-person weapon model:
-     * <ul>
-     *   <li>{@code +z} → forward along the barrel (aligns with lookAngle)</li>
-     *   <li>{@code +x} → left in model space (negated → camera right)</li>
-     *   <li>{@code +y} → up (aligns with camera up)</li>
-     * </ul>
-     *
-     * @param itemStack the held weapon stack
-     * @param flareX    lateral offset in blocks (model +x = camera left)
-     * @param flareY    vertical offset in blocks
-     * @param flareZ    forward offset in blocks along barrel
-     */
-    @JvmStatic
-    fun spawnMuzzleLight(itemStack: ItemStack, flareX: Double, flareY: Double, flareZ: Double) {
-        val params = MuzzleFlashHelper
-            .calculateFromStack(itemStack) ?: return
-
-        val player = Minecraft.getInstance().player ?: return
-        val look = player.lookAngle
-
-        // Build camera-aligned basis vectors.
-        // Right: perpendicular to look direction in the horizontal plane.
-        val worldUp = net.minecraft.world.phys.Vec3(0.0, 1.0, 0.0)
-        val right = look.cross(worldUp).normalize()
-        // Up: perpendicular to both look and right.
-        val up = right.cross(look).normalize()
-
-        // Model +x is camera LEFT, so negate for right.
-        val muzzleWorld = player.eyePosition
-            .add(look.scale(flareZ))
-            .add(right.scale(-flareX))
-            .add(up.scale(flareY))
-
-        // Spawn a forward-facing cone of lights instead of a linear chain.
-        MuzzleFlashHelper
-            .spawnFlashCone(muzzleWorld, look, params)
     }
 
     @JvmStatic

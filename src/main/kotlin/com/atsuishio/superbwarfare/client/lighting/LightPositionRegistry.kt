@@ -11,10 +11,13 @@ import net.minecraftforge.api.distmarker.OnlyIn
 import java.util.*
 
 /**
- * High-performance registry for client-side dynamic block light sources.
+ * High-performance, zero-allocation registry for client-side dynamic block light sources.
  *
- * Each light source is stored as a packed long containing:
- * maxLevel[8] | minLevel[8] | startTick[16] | expiryTick[16]
+ * Data Layout (64-bit Long bitfield per spark):
+ * Bits 63..48 : maxLevel   (8 bits, clamped 1..15)
+ * Bits 47..32 : minLevel   (8 bits, clamped 1..maxLevel)
+ * Bits 31..16 : startTick  (16 bits, unsigned tick timestamp)
+ * Bits 15..0  : expiryTick (16 bits, unsigned tick timestamp)
  *
  * @author paralax034
  * @since 0.8.9.1
@@ -29,10 +32,12 @@ object LightPositionRegistry {
     private val expiredBuf = LongArrayList(128)
 
     private var currentTick = 0L
-    private val random = Random()
 
     /**
      * Registers or refreshes a dynamic light source.
+     *
+     * Resets startTick on each invocation so continuous fire or persistent burning
+     * always refreshes back to peak maxLevel without decaying to zero over time.
      *
      * @param packedPos  [BlockPos.asLong] of the light source
      * @param maxLevel   peak light level (0–15)
@@ -48,6 +53,7 @@ object LightPositionRegistry {
         val clampedMin = minLevel.coerceIn(1, clampedMax)
         val expiry = currentTick + ttlTicks
 
+        // Reset start to currentTick so continuous refresh maintains peak brightness
         val packed = (clampedMax.toLong() shl 48) or
                 (clampedMin.toLong() shl 32) or
                 ((currentTick and 0xFFFFL) shl 16) or
@@ -58,7 +64,48 @@ object LightPositionRegistry {
     }
 
     /**
+     * Registers a dynamic light source with radial distance attenuation.
+     *
+     * @param centerPos  center block pos
+     * @param maxLevel   peak light level at center (1–15)
+     * @param minLevel   minimum level before expiry (≥1)
+     * @param ttlTicks   lifetime in client ticks
+     * @param radius     attenuation radius in blocks
+     */
+    @JvmStatic
+    fun putSparkRadius(centerPos: BlockPos, maxLevel: Int, minLevel: Int, ttlTicks: Int, radius: Int = 3) {
+        if (maxLevel <= 0 || ttlTicks <= 0) return
+        val clampedMax = maxLevel.coerceIn(1, 15)
+        val clampedMin = minLevel.coerceIn(1, clampedMax)
+        val r = radius.coerceIn(0, 5)
+
+        if (r == 0) {
+            putSpark(centerPos.asLong(), clampedMax, clampedMin, ttlTicks)
+            return
+        }
+
+        val cx = centerPos.x
+        val cy = centerPos.y
+        val cz = centerPos.z
+
+        for (dx in -r..r) {
+            for (dy in -r..r) {
+                for (dz in -r..r) {
+                    val dist = kotlin.math.sqrt((dx * dx + dy * dy + dz * dz).toDouble()).toInt()
+                    if (dist <= r) {
+                        val level = (clampedMax - dist).coerceAtLeast(clampedMin)
+                        putSpark(BlockPos.asLong(cx + dx, cy + dy, cz + dz), level, clampedMin, ttlTicks)
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Returns the current computed light level for a packed position.
+     *
+     * @param packedPos packed 64-bit Long coordinate
+     * @return dynamic light level (1–15), or -1 if no active spark exists
      */
     @JvmStatic
     fun getLevel(packedPos: Long): Int {
@@ -81,7 +128,7 @@ object LightPositionRegistry {
         val decay = 1.0 - progress * progress
         val base = minLevel + ((maxLevel - minLevel) * decay).toInt()
 
-        return (base + random.nextInt(3) - 1).coerceIn(1, 15)
+        return base.coerceIn(1, 15)
     }
 
     @JvmStatic
@@ -91,20 +138,7 @@ object LightPositionRegistry {
     fun isEmpty(): Boolean = active.isEmpty()
 
     /**
-     * Advances the internal tick counter, refreshes active light sources, and
-     * removes expired ones.
-     *
-     * <p>Active sparks get a fresh {@code checkBlock} call every tick so the
-     * lighting engine never has a chance to serve a stale cached value.
-     * A single {@code checkBlock} at spawn time is not enough — the engine
-     * queues updates internally, and by the time it processes the queue the
-     * spark may already have a lower level or may have expired entirely.
-     * Calling {@code checkBlock} every tick keeps the value authoritative for
-     * the entire lifetime of the spark, regardless of engine scheduling.
-     *
-     * <p>Expired sparks receive one final {@code checkBlock} so the engine
-     * clears the cached non-zero emission and restores the block's natural
-     * light level.
+     * Advances internal tick counter and purges expired sparks.
      */
     @JvmStatic
     fun tick() {
