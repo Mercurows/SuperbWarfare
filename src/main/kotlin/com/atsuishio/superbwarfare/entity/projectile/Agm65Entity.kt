@@ -48,7 +48,7 @@ open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level) : Missil
             if (this.getTargetUUID() != "none") {
                 if (entity != null) {
                     if (level is ServerLevel) {
-                        if ((!entity.getPassengers().isEmpty() || entity is VehicleEntity)
+                        if ((entity.getPassengers().isNotEmpty() || entity is VehicleEntity)
                             && entity.tickCount % (max(0.04 * this.distanceTo(entity), 2.0).toInt()) == 0
                         ) {
                             level.playSound(
@@ -99,6 +99,8 @@ open class Agm65Entity(type: EntityType<out Agm65Entity>, level: Level) : Missil
             val lostTarget = (VectorTool.calculateAngle(lookAngle, toVec) > 90 && tickCount > 40)
             if (!lostTarget) {
                 turn(toVec, ((tickCount - 8) * 0.5f).coerceIn(0f, 15f))
+            } else {
+                lostTargetTick++
             }
         } else {
             this.deltaMovement = this.deltaMovement.add(0.0, -0.06, 0.0)

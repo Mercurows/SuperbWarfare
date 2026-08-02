@@ -191,6 +191,7 @@
   "TowForceFactor": 2.0,
   "AllowFreeCam": true,
   "HasDecoy": true,
+  "SmokeDecoy": false,
   "DamageModifiers": [
     "All - 2",
     "minecraft:lava + 2",

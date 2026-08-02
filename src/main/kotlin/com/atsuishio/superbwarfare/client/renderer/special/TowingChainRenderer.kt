@@ -86,7 +86,7 @@ object TowingChainRenderer {
         val vehicles = mutableListOf<VehicleEntity>()
         val shuttles = mutableListOf<CatapultShuttleEntity>()
         EntityFindUtil.getEntities(level).get(box) {
-            if (it is VehicleEntity && it.towingUUID.isNotBlank()) {
+            if (it is VehicleEntity && it.towingUUIDs.isNotEmpty()) {
                 vehicles.add(it)
             }
             if (it is CatapultShuttleEntity && it.towingUUID.isNotBlank()) {
@@ -97,8 +97,9 @@ object TowingChainRenderer {
         // --- Vehicle towing chains ---
         val vehicleRenderType = ModRenderTypes.TOW_CHAIN.apply(CHAIN_TEXTURE)
         for (vehicle in vehicles) {
-            val towed = vehicle.towingEntity ?: continue
-            renderTowChain(pose, partialTick, bufferSource, vehicle, towed, vehicleRenderType)
+            for (towed in vehicle.towingEntities) {
+                renderTowChain(pose, partialTick, bufferSource, vehicle, towed, vehicleRenderType)
+            }
         }
 
         // --- Catapult shuttle towing chains ---

@@ -68,10 +68,6 @@ open class SmallRocketEntity(type: EntityType<out SmallRocketEntity>, level: Lev
         }
     }
 
-    override fun forceLoadChunk(): Boolean {
-        return true
-    }
-
     override fun getSound(): SoundEvent {
         return ModSounds.ROCKET_FLY.get()
     }

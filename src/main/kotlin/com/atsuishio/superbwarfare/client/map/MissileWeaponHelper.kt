@@ -46,9 +46,19 @@ object MissileWeaponHelper {
 
     /**
      * 获取所有被选中的载具（用于遥控打击），若未选中则回退到当前骑乘载具。
+     *
+     * **注意**：战术地图渲染/选中的是超视距同步实体（[ClientSyncedEntityHandler.SYNCED_WORLD_RENDER]），
+     * 这类假实体的 `GUN_DATA_MAP` 未随 BVR 包同步，武器弹药数据为空，导致
+     * [queryWeaponAmmo] / [aggregateWeapons] 得到空列表。因此这里会优先把同步实体
+     * 解析回客户端 level 中的真实实体（同一 ID），真实实体的弹药数据才是权威来源。
      */
     fun getSelectedVehicles(selectedEntities: List<Entity>, localPlayer: Player?): List<VehicleEntity> {
-        val sel = selectedEntities.filterIsInstance<VehicleEntity>()
+        val level = localPlayer?.level()
+        val sel = selectedEntities.filterIsInstance<VehicleEntity>().mapNotNull { vehicle ->
+            // 真实实体存在时优先使用真实实体，否则回退到同步实体
+            val real = level?.getEntity(vehicle.id) as? VehicleEntity
+            real ?: vehicle
+        }
         if (sel.isNotEmpty()) return sel
         val ridden = localPlayer?.vehicle as? VehicleEntity
         return if (ridden != null) listOf(ridden) else emptyList()

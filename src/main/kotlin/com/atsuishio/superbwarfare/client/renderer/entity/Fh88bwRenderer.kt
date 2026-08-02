@@ -51,4 +51,9 @@ class Fh88bwRenderer(manager: EntityRendererProvider.Context) : BasicArtilleryRe
         instance.getBone("move_hmg")?.visible =
             !(localPlayer == entity.getNthEntity(2) && (options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle))
     }
+
+    override fun tickVariables(entity: ArtilleryEntity, entityYaw: Float, partialTicks: Float) {
+        super.tickVariables(entity, entityYaw, partialTicks)
+        hideFlare = localPlayer == entity.getNthEntity(2) && (options.cameraType == CameraType.FIRST_PERSON || ClientEventHandler.zoomVehicle)
+    }
 }

@@ -428,7 +428,7 @@
   "des.superbwarfare.vehicle_deployer.fail": "请使用集装箱点击！",
   "block.superbwarfare.aircraft_catapult": "飞行器弹射装置",
   "block.superbwarfare.catapult_controller": "弹射器控制器",
-  "message.superbwarfare.catapult_power": "弹射力度：%s",
+  "message.superbwarfare.catapult_power": "弹射力度：%1$s",
   "block.superbwarfare.superb_item_interface": "卓越物品接口",
   "des.superbwarfare.superb_item_interface": "可快速给指向实体传输物品的全方向漏斗",
   "block.superbwarfare.creative_superb_item_interface": "创造模式卓越物品接口",
@@ -762,6 +762,8 @@
   "key.superbwarfare.launch": "发射",
   "key.superbwarfare.mark": "标记",
   "key.superbwarfare.unload": "卸载子弹",
+  "key.superbwarfare.unload_passengers": "卸载乘客",
+  "key.superbwarfare.disconnect_towing": "断开牵引",
   "key.superbwarfare.change_ammo_forward": "向前切换弹种",
   "key.superbwarfare.change_ammo_backward": "向后切换弹种",
   "key.superbwarfare.change_fire_mode_forward": "向前切换开火模式",
@@ -847,7 +849,7 @@
   "tips.superbwarfare.mortar.target_pos.depressed_trajectory": "低伸弹道",
   "tips.superbwarfare.mortar.target_pos.lofted_trajectory": "传统弹道",
   "tips.superbwarfare.mortar.warn": "%1$s无法瞄准该位置",
-  "tips.superbwarfare.mortar.position": "%1$s位于",
+  "tips.superbwarfare.mortar.position": "位于%2$s的%1$s无法瞄准该位置",
   "tips.superbwarfare.ballistics.warn": "请使用低伸弹道",
   "tips.superbwarfare.ballistics.warn2": "请使用传统弹道",
   "tips.superbwarfare.ballistics.warn3": "超过最大仰角",
@@ -909,6 +911,8 @@
   "tips.superbwarfare.hover_mode_on": "已开启悬停模式",
   "tips.superbwarfare.hover_mode_off": "已关闭悬停模式",
   "tips.superbwarfare.loiter_override_hint": "双击 [%s] 夺回操控权",
+  "tips.superbwarfare.unload_passengers_hint": "双击 [%s] 卸载全部乘客，按住 [%s] 逐位卸载",
+  "tips.superbwarfare.disconnect_towing_hint": "双击 [%s] 断开牵引",
   "tips.superbwarfare.gear_retracted": "已收起起落架",
   "tips.superbwarfare.gear_extended": "已放下起落架",
   "tips.superbwarfare.gear_retracting": "正在收起起落架",
@@ -1145,6 +1149,7 @@
   "des.jade_plugin_superbwarfare.dps_generator.level": "发电机等级：%1$s",
   "des.jade_plugin_superbwarfare.dps_generator.health": "当前最大血量：%1$s",
   "config.jade.plugin_superbwarfare.vehicle_deployer": "载具部署器",
+  "config.jade.plugin_superbwarfare.catapult_controller": "弹射器控制器",
 
   "gamerule.sbwDoGenerateLoots": "生成卓越前线的箱子战利品",
 
@@ -1385,5 +1390,7 @@
   "superbwarfare.page.resources.scheelite.3": "$(thing)钨锭$()只能使用$(thing)高炉$()进行熔炼。",
   "superbwarfare.entry.resources.silver": "银矿石",
   "superbwarfare.page.resources.silver.1": "$(thing)银矿石$()生成于主世界的$(thing)48 ~ 1$()层。",
-  "superbwarfare.page.resources.silver.2": "$(thing)深层银矿石$()生成于主世界的$(thing)0 ~ -64$()层。"
+  "superbwarfare.page.resources.silver.2": "$(thing)深层银矿石$()生成于主世界的$(thing)0 ~ -64$()层。",
+  "tips.superbwarfare.fh77bw.body_tilted": "车体倾斜，无法发射",
+  "tips.superbwarfare.fh77bw.not_stopped": "车未停稳，无法发射"
 }

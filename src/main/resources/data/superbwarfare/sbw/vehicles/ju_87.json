@@ -249,6 +249,7 @@
   "Mass": 5,
   "AllowFreeCam": true,
   "HasDecoy": true,
+  "SmokeDecoy": false,
   "SendHitParticles": false,
   "DamageModifiers": [
     "All - 2",

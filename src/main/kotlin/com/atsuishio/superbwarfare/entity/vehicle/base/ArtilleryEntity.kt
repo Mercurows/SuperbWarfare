@@ -147,8 +147,11 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : VehicleEntity(ty
         )
 
         var component = Component.literal("")
-        val location = Component.translatable("tips.superbwarfare.mortar.position", this.displayName)
-            .append(Component.literal(" X:" + format0D(x) + " Y:" + format0D(y) + " Z:" + format0D(z) + " "))
+        val location = Component.translatable(
+            "tips.superbwarfare.mortar.position",
+            this.displayName,
+            "[${format0D(x)}, ${format0D(y)}, ${format0D(z)}]"
+        )
 
         if (launchVector == null) {
             canAim = false
@@ -161,7 +164,6 @@ open class ArtilleryEntity(type: EntityType<*>, world: Level) : VehicleEntity(ty
                     component = Component.translatable("tips.superbwarfare.ballistics.warn2")
                     canAim = false
                 } else {
-                    component = Component.translatable("tips.superbwarfare.mortar.warn", this.displayName)
                     if (entity is Player) {
                         entity.displayClientMessage(
                             location.copy().append(component).withStyle(ChatFormatting.RED),

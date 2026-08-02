@@ -17,10 +17,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleMotionUtils.isSea
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleMotionUtils.updateTerrainCompact
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils.transformPosition
 import com.atsuishio.superbwarfare.init.*
-import com.atsuishio.superbwarfare.tools.OBB
-import com.atsuishio.superbwarfare.tools.SpritePixelHelper
-import com.atsuishio.superbwarfare.tools.angleTo
-import com.atsuishio.superbwarfare.tools.forceHurt
+import com.atsuishio.superbwarfare.tools.*
 import com.mojang.math.Axis
 import net.minecraft.client.Minecraft
 import net.minecraft.core.BlockPos
@@ -276,19 +273,19 @@ object VehicleMotionUtils {
 
 
     /**
-    * Tests nearby entities for vehicle-crush collisions and applies damage and
-    * impulse to entities that are struck.
-    *
-    * **Performance notes:**
-    * - The previous implementation used `stream().filter(...).toList()`, which
-    *   allocates a `SpinedNodeBuilder` intermediate buffer, a terminal array, and
-    *   a wrapping list — all for a collection that is almost always empty or
-    *   contains 1–3 elements.
-    * - Replaced with an explicit `ArrayList` pre-sized to `getEntities` result
-    *   count and an indexed loop, eliminating all stream-pipeline allocations.
-    *
-    * @param vehicle the vehicle performing the crush check
-    */
+     * Tests nearby entities for vehicle-crush collisions and applies damage and
+     * impulse to entities that are struck.
+     *
+     * **Performance notes:**
+     * - The previous implementation used `stream().filter(...).toList()`, which
+     *   allocates a `SpinedNodeBuilder` intermediate buffer, a terminal array, and
+     *   a wrapping list — all for a collection that is almost always empty or
+     *   contains 1–3 elements.
+     * - Replaced with an explicit `ArrayList` pre-sized to `getEntities` result
+     *   count and an indexed loop, eliminating all stream-pipeline allocations.
+     *
+     * @param vehicle the vehicle performing the crush check
+     */
     @JvmStatic
     fun crushEntities(vehicle: VehicleEntity) {
         if (!vehicle.canCrushEntities()) return
@@ -303,8 +300,8 @@ object VehicleMotionUtils {
                 vehicle.getCombinedAABB()
             ) { entity ->
                 entity !== vehicle
-                    && entity !== vehicle.getFirstPassenger()
-                    && entity.vehicle == null
+                        && entity !== vehicle.getFirstPassenger()
+                        && entity.vehicle == null
             }
         } else {
             vehicle.level().getEntities(
@@ -312,8 +309,8 @@ object VehicleMotionUtils {
                 vehicle.boundingBox.move(vec3)
             ) { entity ->
                 entity !== vehicle
-                    && entity !== vehicle.getFirstPassenger()
-                    && entity.vehicle == null
+                        && entity !== vehicle.getFirstPassenger()
+                        && entity.vehicle == null
             }
         }
 
@@ -329,11 +326,11 @@ object VehicleMotionUtils {
             val inWhitelist = VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString())
 
             val qualifies = entity is VehicleEntity
-                || entity is Boat
-                || entity is Minecart
-                || (entity is TurretWreckEntity && entity.tickCount > 5)
-                || (entity is LivingEntity && !(entity is Player && entity.isSpectator))
-                || inWhitelist
+                    || entity is Boat
+                    || entity is Minecart
+                    || (entity is TurretWreckEntity && entity.tickCount > 5)
+                    || (entity is LivingEntity && !(entity is Player && entity.isSpectator))
+                    || inWhitelist
 
             if (!qualifies) continue
 
@@ -347,7 +344,7 @@ object VehicleMotionUtils {
 
         for (entity in entities) {
             val entitySize = entity.boundingBox.size
-            val thisSize   = vehicle.boundingBox.size
+            val thisSize = vehicle.boundingBox.size
             val f: Double
             val f1: Double
 
@@ -361,10 +358,10 @@ object VehicleMotionUtils {
             }
 
             if (entity is VehicleEntity) {
-                f  = Mth.clamp((entity.mass / vehicle.mass).toDouble(), 0.25, 4.0)
+                f = Mth.clamp((entity.mass / vehicle.mass).toDouble(), 0.25, 4.0)
                 f1 = Mth.clamp((vehicle.mass / entity.mass).toDouble(), 0.25, 4.0)
             } else {
-                f  = Mth.clamp(entitySize / thisSize, 0.25, 4.0)
+                f = Mth.clamp(entitySize / thisSize, 0.25, 4.0)
                 f1 = Mth.clamp(thisSize / entitySize, 0.25, 4.0)
             }
 
@@ -409,14 +406,14 @@ object VehicleMotionUtils {
                 )
 
                 if (!vehicle.enableAABB() && vehicle.isInObb(entity, Vec3.ZERO)) {
-                    var thisPos  = vehicle.position()
+                    var thisPos = vehicle.position()
                     var otherPos = entity.position()
 
                     for (obb in vehicle.getOBBs()) {
                         if (!entity.enableAABB()) {
                             for (obb2 in entity.getOBBs()) {
                                 if (OBB.isColliding(obb, obb2)) {
-                                    thisPos  = OBB.vector3dToVec3(obb.center)
+                                    thisPos = OBB.vector3dToVec3(obb.center)
                                     otherPos = OBB.vector3dToVec3(obb2.center)
                                 }
                             }
@@ -463,7 +460,7 @@ object VehicleMotionUtils {
         val obbList = vehicle.getOBBs()
         if (obbList.isEmpty()) return vehicle.boundingBox
 
-        val min = Vector3d( Double.MAX_VALUE,  Double.MAX_VALUE,  Double.MAX_VALUE)
+        val min = Vector3d(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE)
         val max = Vector3d(-Double.MAX_VALUE, -Double.MAX_VALUE, -Double.MAX_VALUE)
 
         // Reuse a single TL axes buffer across the loop — no per-OBB allocation.
@@ -905,18 +902,18 @@ object VehicleMotionUtils {
     }
 
     /**
-    * Computes the one-time-per-tick "supporting block" position correction used by
-    * [updateTerrainCompact].
-    * <p>
-    * This query only depends on the vehicle's own [net.minecraft.world.entity.Entity#getBoundingBox],
-    * never on the per-wheel/leg sample point, so it must be computed exactly once per tick
-    * instead of once per sample — previously it was re-evaluated for every entry of
-    * {@code positions}, multiplying the cost of [net.minecraft.world.level.CollisionGetter.findSupportingBlock]
-    * (one of the top offenders in profiling) by the wheel/leg count for no behavioural benefit.
-    *
-    * @param entity the vehicle entity.
-    * @return the corrected reference position to use as `currentPos` inside [updateTerrainCompact].
-    */
+     * Computes the one-time-per-tick "supporting block" position correction used by
+     * [updateTerrainCompact].
+     * <p>
+     * This query only depends on the vehicle's own [net.minecraft.world.entity.Entity#getBoundingBox],
+     * never on the per-wheel/leg sample point, so it must be computed exactly once per tick
+     * instead of once per sample — previously it was re-evaluated for every entry of
+     * {@code positions}, multiplying the cost of [net.minecraft.world.level.CollisionGetter.findSupportingBlock]
+     * (one of the top offenders in profiling) by the wheel/leg count for no behavioural benefit.
+     *
+     * @param entity the vehicle entity.
+     * @return the corrected reference position to use as `currentPos` inside [updateTerrainCompact].
+     */
     private fun computeSupportedPosition(entity: VehicleEntity): Vec3 {
         val currentPos = entity.position()
         val aabb = entity.boundingBox
@@ -930,14 +927,14 @@ object VehicleMotionUtils {
     }
 
     /**
-    * Applies terrain-following tilt correction toward [landingTarget].
-    *
-    * @param entity        the vehicle entity.
-    * @param landingTarget  world-space point the sample wheel/leg would land on.
-    * @param heightY        signed ground-clearance value at the sample point.
-    * @param supportedPos   pre-computed reference position from [computeSupportedPosition];
-    *                       shared across all sample points within the same tick.
-    */
+     * Applies terrain-following tilt correction toward [landingTarget].
+     *
+     * @param entity        the vehicle entity.
+     * @param landingTarget  world-space point the sample wheel/leg would land on.
+     * @param heightY        signed ground-clearance value at the sample point.
+     * @param supportedPos   pre-computed reference position from [computeSupportedPosition];
+     *                       shared across all sample points within the same tick.
+     */
     @JvmStatic
     fun updateTerrainCompact(entity: VehicleEntity, landingTarget: Vec3, heightY: Double, supportedPos: Vec3) {
         val horizontalOffset = Vec3(landingTarget.x - supportedPos.x, 0.0, landingTarget.z - supportedPos.z)
@@ -963,11 +960,11 @@ object VehicleMotionUtils {
     }
 
     /**
-    * @deprecated Retained for binary/source compatibility with external call sites that
-    * still call the single-point overload. Prefer [computeSupportedPosition] +
-    * the 4-argument [updateTerrainCompact] when calling in a loop, to avoid repeating
-    * the expensive [net.minecraft.world.level.CollisionGetter.findSupportingBlock] query.
-    */
+     * @deprecated Retained for binary/source compatibility with external call sites that
+     * still call the single-point overload. Prefer [computeSupportedPosition] +
+     * the 4-argument [updateTerrainCompact] when calling in a loop, to avoid repeating
+     * the expensive [net.minecraft.world.level.CollisionGetter.findSupportingBlock] query.
+     */
     @Deprecated(
         message = "Recomputes findSupportingBlock on every call; use the 4-arg overload with a cached supportedPos when calling in a loop.",
         replaceWith = ReplaceWith("updateTerrainCompact(entity, landingTarget, heightY, computeSupportedPosition(entity))")
@@ -1213,8 +1210,12 @@ object VehicleMotionUtils {
         val obbsWithAxes = obbs.map { it to it.getAxes() }
 
         // Build search box: union of all OBB world-AABBs expanded toward movement
-        var sMinX =  Double.MAX_VALUE; var sMinY =  Double.MAX_VALUE; var sMinZ =  Double.MAX_VALUE
-        var sMaxX = -Double.MAX_VALUE; var sMaxY = -Double.MAX_VALUE; var sMaxZ = -Double.MAX_VALUE
+        var sMinX = Double.MAX_VALUE;
+        var sMinY = Double.MAX_VALUE;
+        var sMinZ = Double.MAX_VALUE
+        var sMaxX = -Double.MAX_VALUE;
+        var sMaxY = -Double.MAX_VALUE;
+        var sMaxZ = -Double.MAX_VALUE
         for (obb in obbs) {
             val a = OBB.getWorldAABB(obb).expandTowards(movement)
             if (a.minX < sMinX) sMinX = a.minX; if (a.minY < sMinY) sMinY = a.minY
@@ -1237,34 +1238,38 @@ object VehicleMotionUtils {
         val cachedCount: Int
         if (vehicle.blockCollisionCacheTick == vehicle.tickCount) {
             cachedCoords = vehicle.blockCollisionCoords
-            cachedCount  = vehicle.blockCollisionCount
+            cachedCount = vehicle.blockCollisionCount
         } else {
             var buf = if (vehicle.blockCollisionCoords.size >= 1200) vehicle.blockCollisionCoords
-                      else DoubleArray(1200)
+            else DoubleArray(1200)
             var n = 0
             if (!isSearchBoxProvablyAirborne(vehicle.level(), searchBox)) {
                 for (shape in vehicle.level().getBlockCollisions(vehicle, searchBox)) {
                     shape.forAllBoxes { x0, y0, z0, x1, y1, z1 ->
                         if (n + 6 > buf.size) buf = buf.copyOf(buf.size * 2)
-                        buf[n] = x0; buf[n+1] = y0; buf[n+2] = z0
-                        buf[n+3] = x1; buf[n+4] = y1; buf[n+5] = z1
+                        buf[n] = x0; buf[n + 1] = y0; buf[n + 2] = z0
+                        buf[n + 3] = x1; buf[n + 4] = y1; buf[n + 5] = z1
                         n += 6
                     }
                 }
             }
-            vehicle.blockCollisionCoords     = buf
-            vehicle.blockCollisionCount      = n
-            vehicle.blockCollisionCacheTick  = vehicle.tickCount
+            vehicle.blockCollisionCoords = buf
+            vehicle.blockCollisionCount = n
+            vehicle.blockCollisionCacheTick = vehicle.tickCount
             cachedCoords = buf
-            cachedCount  = n
+            cachedCount = n
         }
 
         // Combine block cache + fresh entity collisions into a single AABB list.
         val allAabbs = ArrayList<AABB>(cachedCount / 6 + 4)
         var ci = 0
         while (ci < cachedCount) {
-            allAabbs.add(AABB(cachedCoords[ci], cachedCoords[ci+1], cachedCoords[ci+2],
-                              cachedCoords[ci+3], cachedCoords[ci+4], cachedCoords[ci+5]))
+            allAabbs.add(
+                AABB(
+                    cachedCoords[ci], cachedCoords[ci + 1], cachedCoords[ci + 2],
+                    cachedCoords[ci + 3], cachedCoords[ci + 4], cachedCoords[ci + 5]
+                )
+            )
             ci += 6
         }
         for (shape in vehicle.level().getEntityCollisions(vehicle, searchBox)) {
@@ -1287,7 +1292,7 @@ object VehicleMotionUtils {
         // Y-axis pass
         // Translate each OBB by (0, ry, 0) and SAT-test against all candidates.
         for ((obb, axes) in obbsWithAxes) {
-            val obbAabb    = OBB.getTranslatedWorldAABB(obb, axes, Vec3(0.0, ry, 0.0))
+            val obbAabb = OBB.getTranslatedWorldAABB(obb, axes, Vec3(0.0, ry, 0.0))
             val testCenter = Vector3d(obb.center.x, obb.center.y + ry, obb.center.z)
             for (aabb in allAabbs) {
                 // Coarse rejection: skip AABBs with no XZ overlap (non-resolving axes).
@@ -1321,7 +1326,7 @@ object VehicleMotionUtils {
         // X-axis pass
         // Translate each OBB by (rx, ry, 0) and SAT-test against all candidates.
         for ((obb, axes) in obbsWithAxes) {
-            val obbAabb    = OBB.getTranslatedWorldAABB(obb, axes, Vec3(rx, ry, 0.0))
+            val obbAabb = OBB.getTranslatedWorldAABB(obb, axes, Vec3(rx, ry, 0.0))
             val testCenter = Vector3d(obb.center.x + rx, obb.center.y + ry, obb.center.z)
             for (aabb in allAabbs) {
                 // Coarse rejection: skip AABBs with no YZ overlap.
@@ -1348,7 +1353,7 @@ object VehicleMotionUtils {
         // Z-axis pass
         // Translate each OBB by (rx, ry, rz) and SAT-test against all candidates.
         for ((obb, axes) in obbsWithAxes) {
-            val obbAabb    = OBB.getTranslatedWorldAABB(obb, axes, Vec3(rx, ry, rz))
+            val obbAabb = OBB.getTranslatedWorldAABB(obb, axes, Vec3(rx, ry, rz))
             val testCenter = Vector3d(obb.center.x + rx, obb.center.y + ry, obb.center.z + rz)
             for (aabb in allAabbs) {
                 // Coarse rejection: skip AABBs with no XY overlap.
@@ -1378,6 +1383,8 @@ object VehicleMotionUtils {
     // Code based on Dragon Rise
     @JvmStatic
     fun towedTick(vehicle: VehicleEntity) {
+        if (vehicle.towedByUUID.isBlank()) return
+
         val tower = vehicle.towedByEntity
 
         if (tower == null) {
@@ -1438,55 +1445,64 @@ object VehicleMotionUtils {
 
     @JvmStatic
     fun towingTick(vehicle: VehicleEntity) {
-        val towed = vehicle.towingEntity
-        if (towed == null) {
-           vehicle.clearTowingInfo()
-            return
-        }
-        if (towed is VehicleEntity) return
+        if (!vehicle.isTowingAny()) return
 
-        val dist = vehicle.distanceTo(towed)
-        val bb = towed.boundingBox
-        val longestSide = maxOf(bb.xsize, bb.ysize, bb.zsize)
+        val maxDist = VehicleConfig.TOW_BREAK_DISTANCE.get().toDouble()
         val thisLongestSide = calculateLongestSide(vehicle)
 
-        val minDist = max(
-            VehicleConfig.TOW_PULL_DISTANCE.get().toDouble(),
-            longestSide + thisLongestSide + 1.0
-        )
-        val maxDist = VehicleConfig.TOW_BREAK_DISTANCE.get().toDouble()
+        for (uuid in vehicle.towingUUIDs.toList()) {
+            val towed = EntityFindUtil.findEntity(vehicle.level(), uuid)
+            if (towed == null) {
+                val filtered = vehicle.towingUUIDs.filter { it != uuid }
+                vehicle.towingUUIDs = filtered.toMutableList()
+                continue
+            }
+            // 载具对载具的牵引由被牵引载具的towedTick处理
+            if (towed is VehicleEntity) continue
 
-        if (dist > maxDist && maxDist > 0) {
-            vehicle.clearTowingInfo()
-            return
-        }
+            val dist = vehicle.distanceTo(towed)
+            val bb = towed.boundingBox
+            val longestSide = maxOf(bb.xsize, bb.ysize, bb.zsize)
 
-        if (dist <= minDist) return
-
-        val overshoot = dist - minDist
-        val dir = vehicle.position().subtract(towed.position()).reverse().normalize()
-        val relVelAlong = towed.deltaMovement.subtract(vehicle.deltaMovement).dot(dir)
-
-        val k = 0.2  // 钢索刚性
-        val d = 0.01 // 阻尼
-        val ropeForce = -k * overshoot - d * relVelAlong
-
-        val maxDeltaV = max(2.0, vehicle.deltaMovement.length())
-        val pullForce = dir.scale((ropeForce / 6.0).coerceIn(-maxDeltaV, maxDeltaV))
-
-        towed.fallDistance = 0f
-        val diffY = Mth.wrapDegrees(
-            -VehicleVecUtils.getYRotFromVector(pullForce) + VehicleVecUtils.getYRotFromVector(
-                towed.getViewVector(1f)
+            val minDist = max(
+                VehicleConfig.TOW_PULL_DISTANCE.get().toDouble(),
+                longestSide + thisLongestSide + 1.0
             )
-        ).toFloat()
 
-        if (towed is Player && towed.level().isClientSide) {
-            towed.deltaMovement = towed.deltaMovement.add(pullForce)
-            towed.yRot += 0.05f * diffY
-        } else {
-            towed.deltaMovement = towed.deltaMovement.add(pullForce)
-            towed.yRot += 0.05f * diffY
+            if (dist > maxDist && maxDist > 0) {
+                val filtered = vehicle.towingUUIDs.filter { it != uuid }
+                vehicle.towingUUIDs = filtered.toMutableList()
+                towed.persistentData.remove("TowedByUUID")
+                continue
+            }
+
+            if (dist <= minDist) continue
+
+            val overshoot = dist - minDist
+            val dir = vehicle.position().subtract(towed.position()).reverse().normalize()
+            val relVelAlong = towed.deltaMovement.subtract(vehicle.deltaMovement).dot(dir)
+
+            val k = 0.2  // 钢索刚性
+            val d = 0.01 // 阻尼
+            val ropeForce = -k * overshoot - d * relVelAlong
+
+            val maxDeltaV = max(2.0, vehicle.deltaMovement.length())
+            val pullForce = dir.scale((ropeForce / 6.0).coerceIn(-maxDeltaV, maxDeltaV))
+
+            towed.fallDistance = 0f
+            val diffY = Mth.wrapDegrees(
+                -VehicleVecUtils.getYRotFromVector(pullForce) + VehicleVecUtils.getYRotFromVector(
+                    towed.getViewVector(1f)
+                )
+            ).toFloat()
+
+            if (towed is Player && towed.level().isClientSide) {
+                towed.deltaMovement = towed.deltaMovement.add(pullForce)
+                towed.yRot += 0.05f * diffY
+            } else {
+                towed.deltaMovement = towed.deltaMovement.add(pullForce)
+                towed.yRot += 0.05f * diffY
+            }
         }
     }
 
@@ -1505,32 +1521,32 @@ object VehicleMotionUtils {
     }
 
     /**
-    * Performs a cheap, exact broad-phase rejection test to determine whether a
-    * vehicle's collision search volume can possibly contain any world block
-    * collision geometry.
-    * <p>
-    * Instead of decomposing every block's [net.minecraft.world.phys.shapes.VoxelShape]
-    * inside the search box (which is what [net.minecraft.world.level.Level.getBlockCollisions]
-    * does internally, and is the single most expensive operation observed in profiling —
-    * see {@code BlockCollisions#computeNext} / {@code BlockStateBase#getCollisionShape}),
-    * this method only performs O(1) [net.minecraft.world.level.levelgen.Heightmap] look-ups
-    * per horizontal column covered by the box.
-    * <p>
-    * The check is <b>exact, not heuristic</b>: {@link Heightmap.Types#MOTION_BLOCKING}
-    * stores the Y of the topmost motion-blocking block per column, so if the search box's
-    * minimum Y is strictly above that value for every column it covers, there is
-    * provably no colliding block inside the box for those columns.
-    * <p>
-    * If any covered chunk is not loaded, the method conservatively returns {@code false}
-    * (i.e. "cannot guarantee airborne") so that the caller falls back to the normal,
-    * fully-correct collision query.
-    *
-    * @param level the level the vehicle resides in.
-    * @param box   the world-space search box that would otherwise be passed to
-    *              {@link net.minecraft.world.level.Level#getBlockCollisions}.
-    * @return {@code true} if it is guaranteed that no block collision shape can be
-    *         present inside [box]; {@code false} otherwise (caller must run the full query).
-    */
+     * Performs a cheap, exact broad-phase rejection test to determine whether a
+     * vehicle's collision search volume can possibly contain any world block
+     * collision geometry.
+     * <p>
+     * Instead of decomposing every block's [net.minecraft.world.phys.shapes.VoxelShape]
+     * inside the search box (which is what [net.minecraft.world.level.Level.getBlockCollisions]
+     * does internally, and is the single most expensive operation observed in profiling —
+     * see {@code BlockCollisions#computeNext} / {@code BlockStateBase#getCollisionShape}),
+     * this method only performs O(1) [net.minecraft.world.level.levelgen.Heightmap] look-ups
+     * per horizontal column covered by the box.
+     * <p>
+     * The check is <b>exact, not heuristic</b>: {@link Heightmap.Types#MOTION_BLOCKING}
+     * stores the Y of the topmost motion-blocking block per column, so if the search box's
+     * minimum Y is strictly above that value for every column it covers, there is
+     * provably no colliding block inside the box for those columns.
+     * <p>
+     * If any covered chunk is not loaded, the method conservatively returns {@code false}
+     * (i.e. "cannot guarantee airborne") so that the caller falls back to the normal,
+     * fully-correct collision query.
+     *
+     * @param level the level the vehicle resides in.
+     * @param box   the world-space search box that would otherwise be passed to
+     *              {@link net.minecraft.world.level.Level#getBlockCollisions}.
+     * @return {@code true} if it is guaranteed that no block collision shape can be
+     *         present inside [box]; {@code false} otherwise (caller must run the full query).
+     */
     private fun isSearchBoxProvablyAirborne(level: Level, box: AABB): Boolean {
         val minBlockX = Mth.floor(box.minX)
         val maxBlockX = Mth.floor(box.maxX)

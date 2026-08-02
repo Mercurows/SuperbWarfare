@@ -44,6 +44,20 @@ public class ModRenderTypes extends RenderType {
         RenderSystem.defaultBlendFunc();
     });
 
+    // 支持半透明和自发光的多边形网格渲染类型，用于载具特效（如枪口火焰）
+    public static final Function<ResourceLocation, RenderType> POLY_MESH_TRANSLUCENT_EMISSIVE = Util.memoize((location) -> {
+        RenderType.CompositeState state = RenderType.CompositeState.builder()
+                .setShaderState(RENDERTYPE_EYES_SHADER)
+                .setTextureState(new RenderStateShard.TextureStateShard(location, false, false))
+                .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                .setCullState(NO_CULL)
+                .setLightmapState(NO_LIGHTMAP)
+                .setOverlayState(OVERLAY)
+                .setWriteMaskState(COLOR_WRITE)
+                .createCompositeState(false);
+        return RenderType.create("poly_mesh_translucent_emissive", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLES, 256, false, true, state);
+    });
+
     public static final Function<ResourceLocation, RenderType> MUZZLE_FLASH_TYPE = Util.memoize((location) -> {
         TextureStateShard shard = new RenderStateShard.TextureStateShard(location, false, false);
         RenderType.CompositeState state = RenderType.CompositeState.builder()

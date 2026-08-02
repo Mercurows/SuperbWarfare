@@ -1049,7 +1049,10 @@ class TacticalMapScreen : Screen(Component.translatable("container.superbwarfare
             .notPlayer()
             .build().toList()
 
-        friendlyEntities = (friendlyEntities + clientEntities).distinctBy { it.id }
+        // 优先使用客户端真实实体：超视距同步实体（假实体）的 GUN_DATA_MAP 未随 BVR 包
+        // 同步，武器弹药数据为空。若假实体排在前面，右键选中/武器聚合会拿到空数据，
+        // 导致导弹打击等远程武器选项消失。真实实体存在时优先使用真实实体。
+        friendlyEntities = (clientEntities + friendlyEntities).distinctBy { it.id }
 
         // 友方（绿色）
         entityRenderer.renderEntityBatch(

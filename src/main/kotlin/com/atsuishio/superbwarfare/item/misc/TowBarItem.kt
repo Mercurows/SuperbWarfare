@@ -207,9 +207,9 @@ open class TowBarItem : Item(Properties().stacksTo(1)), IVehicleInteract {
             return InteractionResult.FAIL
         }
 
-        // If the target is a vehicle, check if it's already in a towing relationship
+        // If the target is a vehicle, check if it's already being towed
         if (targetEntity is VehicleEntity) {
-            if (targetEntity.towingUUID.isNotBlank() || targetEntity.towedByUUID.isNotBlank()) {
+            if (targetEntity.towedByUUID.isNotBlank()) {
                 player.displayClientMessage(
                     Component.translatable("tips.superbwarfare.tow_bar.already_linked")
                         .withStyle(ChatFormatting.RED),

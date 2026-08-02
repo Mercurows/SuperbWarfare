@@ -380,6 +380,7 @@
   "Mass": 12,
   "AllowFreeCam": true,
   "HasDecoy": true,
+  "SmokeDecoy": false,
   "TowForceFactor": 2.0,
   "DamageModifiers": [
     "All - 10",

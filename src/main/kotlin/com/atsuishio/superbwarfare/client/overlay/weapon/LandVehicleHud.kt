@@ -2,12 +2,12 @@ package com.atsuishio.superbwarfare.client.overlay.weapon
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
+import com.atsuishio.superbwarfare.client.overlay.DecoyOverlayHelper
 import com.atsuishio.superbwarfare.client.overlay.OverlayTraceHandler
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay.renderEnergyInfo
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
-import com.atsuishio.superbwarfare.init.ModKeyMappings
 import com.atsuishio.superbwarfare.tools.FormatTool.format0D
 import com.atsuishio.superbwarfare.tools.MathTool.getGradientColor
 import com.mojang.blaze3d.platform.GlStateManager
@@ -304,41 +304,14 @@ object LandVehicleHud {
             )
 
             // 诱饵
-            if (vehicle.hasDecoy() && player === vehicle.getFirstPassenger()) {
-                if (vehicle.decoyCount > 0) {
-                    guiGraphics.drawString(
-                        Minecraft.getInstance().font,
-                        Component.translatable("tips.superbwarfare.smoke.ready").append(
-                            Component.literal(
-                                " " + vehicle.decoyCount + " [" + ModKeyMappings.RELEASE_DECOY.key.displayName.string + "]"
-                            )
-                        ),
-                        screenWidth / 2 - 165,
-                        screenHeight / 2 - 36,
-                        color,
-                        false
-                    )
-                } else {
-                    if (vehicle.decoyItemCount > 0) {
-                        guiGraphics.drawString(
-                            Minecraft.getInstance().font,
-                            Component.translatable("tips.superbwarfare.smoke.reloading"),
-                            screenWidth / 2 - 165,
-                            screenHeight / 2 - 36,
-                            0xFF0000,
-                            false
-                        )
-                    } else {
-                        guiGraphics.drawString(
-                            Minecraft.getInstance().font,
-                            Component.translatable("tips.superbwarfare.smoke.none"),
-                            screenWidth / 2 - 165,
-                            screenHeight / 2 - 36,
-                            0xFF0000,
-                            false
-                        )
-                    }
-                }
+            if (player === vehicle.getFirstPassenger()) {
+                DecoyOverlayHelper.renderThirdPersonDecoyInfo(
+                    vehicle,
+                    guiGraphics,
+                    screenWidth / 2 - 165,
+                    screenHeight / 2 - 36,
+                    color
+                )
             }
 
             VehicleMainWeaponHudOverlay.renderWeaponInfoFirst(

@@ -103,6 +103,10 @@ class DefaultVehicleData : IDBasedData<DefaultVehicleData> {
     @SerialName("HasDecoy")
     var hasDecoy: Boolean = false
 
+    // 用于判断诱饵弹类型是烟雾弹还是干扰弹
+    @SerialName("SmokeDecoy")
+    var smokeDecoy: Boolean = true
+
     @JvmField
     @ServerOnly
     @SerialName("ApplyDefaultDamageModifiers")

@@ -60,6 +60,8 @@ abstract class MissileProjectile : DestroyableProjectile, ITrackableProjectile, 
         entityData.set(TARGET_UUID, value)
     }
 
+    var lostTargetTick = 0
+
     constructor(pEntityType: EntityType<out ThrowableItemProjectile>, pLevel: Level) : super(pEntityType, pLevel)
 
     constructor(pEntityType: EntityType<out ThrowableItemProjectile>, pShooter: Entity?, pLevel: Level) :
@@ -151,10 +153,6 @@ abstract class MissileProjectile : DestroyableProjectile, ITrackableProjectile, 
     override fun updateRotation() {
     }
 
-    override fun forceLoadChunk(): Boolean {
-        return true
-    }
-
     override fun isNoGravity(): Boolean {
         return true
     }
@@ -195,6 +193,11 @@ abstract class MissileProjectile : DestroyableProjectile, ITrackableProjectile, 
                         }
                     }
                 }
+            }
+
+            if (lostTargetTick > 100) {
+                discard()
+                causeExplode(position())
             }
         }
     }

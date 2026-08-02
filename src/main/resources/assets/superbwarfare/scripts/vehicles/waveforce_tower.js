@@ -23,11 +23,20 @@ function transformCustomModelPart(vehicle, model, poseStack, entityYaw, partialT
     renderer.setEnergy0(energy)
 
     for (let i = 1; i <= 7; i++) {
-        let boneName = `move_light_on${i}`
-        let bone = model.getBone(boneName)
+        let visible = energy >= (i / 7.0)
+
+        let lightBone = `move_light_on${i}`
+        let bone = model.getBone(lightBone)
 
         if (bone != null) {
-            bone.visible = energy >= (i / 7.0)
+            bone.visible = visible
+        }
+
+        let offBone = `move_light_off${i}`
+        let off = model.getBone(offBone)
+
+        if (off != null) {
+            off.visible = !visible
         }
     }
 }

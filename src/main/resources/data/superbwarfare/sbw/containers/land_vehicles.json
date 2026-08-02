@@ -56,6 +56,22 @@
       "Type": "superbwarfare:lav_25",
       "Weight": 5
     },
+    {
+      "Type": "superbwarfare:ztz_99a",
+      "Weight": 4
+    },
+    {
+      "Type": "superbwarfare:bradley",
+      "Weight": 5
+    },
+    {
+      "Type": "superbwarfare:m_1a_2",
+      "Weight": 4
+    },
+    {
+      "Type": "superbwarfare:fh_77bw",
+      "Weight": 2
+    },
     "superbwarfare:yx_100"
   ]
 }

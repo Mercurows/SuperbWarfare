@@ -23,6 +23,13 @@
     {
       "Type": "superbwarfare:ju_87",
       "Weight": 2
-    }
+    },
+    {
+      "Type": "superbwarfare:air_sheep",
+      "Weight": 3
+    },
+    "superbwarfare:happiest_ghast",
+    "superbwarfare:kirov",
+    "superbwarfare:ac_130h"
   ]
 }

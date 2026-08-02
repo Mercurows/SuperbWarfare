@@ -68,6 +68,7 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
 
     var hideForTurretControllerWhileZooming = false
     var hideForPassengerWeaponStationControllerWhileZooming = false
+    var hideFlare = false
 
     private var seatsCache: MutableList<SeatInfo>? = null
 
@@ -159,6 +160,15 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             dogTagBones.forEach { it.visible = false }
         }
 
+        val flareBones = boneGroups.flareBones
+        val flareFlag = flareBones.isNotEmpty()
+        if (flareFlag) {
+            for (flare in flareBones) {
+                flare.visible = false
+                flare.rotation.rotateZ((0.15 * (Math.random() - 0.5)).toFloat())
+            }
+        }
+
         instance.renderToBuffer(
             poseStack,
             buffer,
@@ -185,16 +195,7 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             )
         }
 
-        val flareBones = boneGroups.flareBones
-        val flareFlag = flareBones.isNotEmpty()
-        if (flareFlag) {
-            for (flare in flareBones) {
-                flare.visible = false
-                flare.rotation.rotateZ((0.15 * (Math.random() - 0.5)).toFloat())
-            }
-        }
-
-        if (!isLOD && !entity.sympatheticDetonated && flareFlag && !(ClientEventHandler.zoomVehicle && (hideForTurretControllerWhileZooming || hideForPassengerWeaponStationControllerWhileZooming))) {
+        if (!isLOD && !hideFlare && !entity.sympatheticDetonated && flareFlag && !(ClientEventHandler.zoomVehicle && (hideForTurretControllerWhileZooming || hideForPassengerWeaponStationControllerWhileZooming))) {
             val flareModel = flareModelInstance
 
             if (flareModel != null) {
@@ -214,8 +215,8 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
                     flareModel.renderToBuffer(
                         poseStack,
                         buffer,
-                        ModRenderTypes.MUZZLE_FLASH_TYPE.apply(MUZZLE_FLARE),
-                        BedrockModelRenderTypes.polyMeshCutout(MUZZLE_FLARE),
+                        RenderType.entityTranslucentEmissive(MUZZLE_FLARE),
+                        ModRenderTypes.POLY_MESH_TRANSLUCENT_EMISSIVE.apply(MUZZLE_FLARE),
                         packedLight,
                         OverlayTexture.NO_OVERLAY,
                         1f,

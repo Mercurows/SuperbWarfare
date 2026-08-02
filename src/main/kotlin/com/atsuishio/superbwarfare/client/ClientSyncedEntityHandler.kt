@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client
 
 import com.atsuishio.superbwarfare.client.sound.VehicleSoundInstance
 import com.atsuishio.superbwarfare.config.server.SyncConfig
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.network.message.receive.BeyondVisualEntitySyncMessage.SyncedEntity
 import com.atsuishio.superbwarfare.network.message.receive.PlayerInfoSyncMessage.SyncedPlayerInfo
@@ -211,6 +212,25 @@ object ClientSyncedEntityHandler {
             entity.setPos(syncedEntity.pos)
             entity.xRot = syncedEntity.xRot
             entity.yRot = syncedEntity.yRot
+
+            // 把服务器随 BVR 包同步的武器备弹写入假实体，使战术地图能正确聚合
+            // 远程打击武器（超视距假实体本身没有同步的 GUN_DATA_MAP）。
+            if (entity is VehicleEntity) {
+                val tag = syncedEntity.tag as? CompoundTag
+                val gunAmmoTag = tag?.getCompound("GunAmmo")
+                if (gunAmmoTag != null && !gunAmmoTag.isEmpty) {
+                    for (name in gunAmmoTag.allKeys) {
+                        val gd = entity.gunDataMap[name] ?: continue
+                        val shots = gunAmmoTag.getInt(name)
+                        val ammoCost = gd.get(GunProp.AMMO_COST_PER_SHOOT)
+                        // 无限弹药武器由 queryWeaponAmmo 直接返回 999，无需写入
+                        if (ammoCost <= 0) continue
+                        if (gd.useBackpackAmmo()) gd.virtualAmmo.set(shots * ammoCost)
+                        else gd.ammo.set(shots * ammoCost)
+                    }
+                }
+            }
+
             SYNCED_WORLD_RENDER[key] = ClientSyncedEntity(
                 entity, time, syncedEntity.targetPos, syncedEntity.heightAboveGround, vel,
                 shouldWorldRender = true

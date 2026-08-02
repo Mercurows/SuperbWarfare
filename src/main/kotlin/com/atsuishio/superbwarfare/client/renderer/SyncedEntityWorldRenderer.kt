@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.client.renderer
 
 import com.atsuishio.superbwarfare.client.ClientSyncedEntityHandler
 import com.atsuishio.superbwarfare.config.server.SyncConfig
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.tools.clientLevel
 import com.atsuishio.superbwarfare.tools.mc
 import com.mojang.blaze3d.shaders.FogShape
@@ -66,9 +65,6 @@ object SyncedEntityWorldRenderer {
                 if (entry.entity.y < SyncConfig.MIN_RENDER_HEIGHT.get()) continue
 
                 entity.xRotO = entity.xRot
-                if (entity is VehicleEntity) {
-                    entity.prevRoll = entity.roll
-                }
 
                 val elapsedTicks = ((System.currentTimeMillis() - entry.timeStamp) / 50.0)
                     .coerceIn(0.0, 2.0)

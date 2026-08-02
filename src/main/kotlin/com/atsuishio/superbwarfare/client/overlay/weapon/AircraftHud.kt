@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.overlay.weapon
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
+import com.atsuishio.superbwarfare.client.overlay.DecoyOverlayHelper
 import com.atsuishio.superbwarfare.client.overlay.VehicleHudOverlay.renderKillIndicatorDynamic
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay
 import com.atsuishio.superbwarfare.data.gun.GunProp
@@ -9,7 +10,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.Ac130hEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.event.ClientMouseHandler
-import com.atsuishio.superbwarfare.init.ModKeyMappings
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.FormatTool.format0D
 import com.atsuishio.superbwarfare.tools.MathTool.getGradientColor
@@ -337,7 +337,8 @@ object AircraftHud {
             )
             //加速度
             lerpG =
-                Mth.lerp((0.25f * partialTick).toDouble(), lerpG.toDouble(), (400 * vehicle.getAcceleration()) / 9.8).toFloat()
+                Mth.lerp((0.25f * partialTick).toDouble(), lerpG.toDouble(), (400 * vehicle.getAcceleration()) / 9.8)
+                    .toFloat()
             guiGraphics.drawString(mc.font, Component.literal("M"), -105, 70, color, false)
             guiGraphics.drawString(mc.font, Component.literal("0.2"), -96, 70, color, false)
             guiGraphics.drawString(mc.font, Component.literal("G"), -105, 78, color, false)
@@ -351,42 +352,8 @@ object AircraftHud {
             )
 
             // 热诱弹
-            if (vehicle.hasDecoy()) {
-                if (vehicle.decoyCount > 0) {
-                    guiGraphics.drawString(
-                        Minecraft.getInstance().font,
-                        Component.translatable("tips.superbwarfare.flare.ready").append(
-                            Component.literal(
-                                " " + vehicle.decoyCount + " [" + ModKeyMappings.RELEASE_DECOY.key.displayName.string + "]"
-                            )
-                        ),
-                        72,
-                        0,
-                        color,
-                        false
-                    )
-                } else {
-                    if (vehicle.decoyItemCount > 0) {
-                        guiGraphics.drawString(
-                            Minecraft.getInstance().font,
-                            Component.translatable("tips.superbwarfare.flare.reloading"),
-                            72,
-                            0,
-                            0xFF0000,
-                            false
-                        )
-                    } else {
-                        guiGraphics.drawString(
-                            Minecraft.getInstance().font,
-                            Component.translatable("tips.superbwarfare.flare.none"),
-                            72,
-                            0,
-                            0xFF0000,
-                            false
-                        )
-                    }
-                }
-            }
+            DecoyOverlayHelper.renderThirdPersonDecoyInfo(vehicle, guiGraphics, 72, 0, -1)
+
             guiGraphics.drawString(mc.font, Component.literal("TGT"), 76, 78, color, false)
 
             // 武器名
@@ -532,8 +499,10 @@ object AircraftHud {
 
                 mouseX = Mth.lerp(0.1f * partialTick, mouseX, ClientMouseHandler.lerpSpeedX.toFloat())
                 mouseY = Mth.lerp(0.1f * partialTick, mouseY, ClientMouseHandler.lerpSpeedY.toFloat())
-                RenderHelper.preciseBlit(guiGraphics,
-                    HelicopterHud.RING, x - 2 + mouseX, y - 2 + mouseY, 0f, 0f, 4f, 4f, 4f, 4f)
+                RenderHelper.preciseBlit(
+                    guiGraphics,
+                    HelicopterHud.RING, x - 2 + mouseX, y - 2 + mouseY, 0f, 0f, 4f, 4f, 4f, 4f
+                )
 
                 val originPos = Vec3(x.toDouble(), y.toDouble(), 0.0)
                 val ringPos = Vec3(x + mouseX.toDouble(), y + mouseY.toDouble(), 0.0)
@@ -590,8 +559,10 @@ object AircraftHud {
 
                 poseStack.pushPose()
                 poseStack.rotateAround(Axis.ZP.rotationDegrees(vehicle.getRoll(partialTick)), x, y, 0f)
-                RenderHelper.preciseBlit(guiGraphics,
-                    HelicopterHud.CROSSHAIR_3P, x - 34, y - 8.5f, 0f, 0f, 68f, 17f, 68f, 17f)
+                RenderHelper.preciseBlit(
+                    guiGraphics,
+                    HelicopterHud.CROSSHAIR_3P, x - 34, y - 8.5f, 0f, 0f, 68f, 17f, 68f, 17f
+                )
                 renderKillIndicatorDynamic(
                     guiGraphics,
                     x - 7.5f + (2 * (Math.random() - 0.5f)).toFloat(),
@@ -625,7 +596,6 @@ object AircraftHud {
                 poseStack.popPose()
 
                 // 时速
-                //
                 poseStack.pushPose()
                 poseStack.translate(x, y, 0f)
                 poseStack.scale(0.75f, 0.75f, 1f)
@@ -652,41 +622,7 @@ object AircraftHud {
                     VehicleMainWeaponHudOverlay.renderWeaponInfoThirdAir(guiGraphics, vehicle, player, gunData, font)
                 }
 
-                if (vehicle.hasDecoy()) {
-                    if (vehicle.decoyCount > 0) {
-                        val componentReady = Component.translatable("tips.superbwarfare.flare.ready").append(
-                            Component.literal(
-                                " " + vehicle.decoyCount + " [" + ModKeyMappings.RELEASE_DECOY.key.displayName.string + "]"
-                            )
-                        )
-                        val length = font.width(componentReady)
-
-                        guiGraphics.drawString(
-                            Minecraft.getInstance().font,
-                            componentReady,
-                            -length / 2,
-                            1,
-                            -1,
-                            false
-                        )
-                    } else {
-                        var componentReloading = Component.translatable("tips.superbwarfare.flare.reloading")
-                        if (vehicle.decoyItemCount < 1) {
-                            componentReloading = Component.translatable("tips.superbwarfare.flare.none")
-                        }
-
-                        val length = font.width(componentReloading)
-
-                        guiGraphics.drawString(
-                            Minecraft.getInstance().font,
-                            componentReloading,
-                            -length / 2,
-                            1,
-                            0xFF0000,
-                            false
-                        )
-                    }
-                }
+                DecoyOverlayHelper.renderFirstPersonDecoyInfo(vehicle, guiGraphics, 1, -1)
 
                 poseStack.popPose()
             }

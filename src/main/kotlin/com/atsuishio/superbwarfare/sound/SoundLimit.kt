@@ -34,7 +34,7 @@ object SoundLimit {
 
     /** Maximum streaming sound sources */
     @JvmField
-    var maxStreamingSources: Int = 8
+    var maxStreamingSources: Int = 64
 
     private var injected = false
 

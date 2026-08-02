@@ -2980,7 +2980,7 @@
     "sounds": [
       {
         "attenuation_distance": 32,
-        "stream": true,
+        "stream": false,
         "name": "superbwarfare:vehicle/common/wheel_vehicle_skip"
       }
     ]
@@ -2989,7 +2989,7 @@
     "sounds": [
       {
         "attenuation_distance": 32,
-        "stream": true,
+        "stream": false,
         "name": "superbwarfare:vehicle/common/track_vehicle_skip"
       }
     ]
@@ -3201,7 +3201,7 @@
     "sounds": [
       {
         "attenuation_distance": 32,
-        "stream": true,
+        "stream": false,
         "name": "superbwarfare:vehicle/common/track_vehicle_step"
       }
     ]
@@ -3210,7 +3210,7 @@
     "sounds": [
       {
         "attenuation_distance": 128,
-        "stream": true,
+        "stream": false,
         "name": "superbwarfare:rocket_fly"
       }
     ]
@@ -3219,7 +3219,7 @@
     "sounds": [
       {
         "attenuation_distance": 96,
-        "stream": true,
+        "stream": false,
         "name": "superbwarfare:shell_fly"
       }
     ]
@@ -3228,7 +3228,7 @@
     "sounds": [
       {
         "attenuation_distance": 128,
-        "stream": true,
+        "stream": false,
         "name": "superbwarfare:rocket_engine"
       }
     ]

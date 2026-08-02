@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.client.lighting.ClientLightingHandler
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.client.particle.CustomFlareOption
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
-import com.atsuishio.superbwarfare.config.server.ProjectileConfig
 import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.projectile.IAdvancedHitDetection.Companion.rayTraceBlocks
 import com.atsuishio.superbwarfare.entity.setValue
@@ -19,8 +18,6 @@ import com.atsuishio.superbwarfare.network.message.receive.MissileTrailParticleM
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.VectorTool.isInLiquid
 import com.atsuishio.superbwarfare.world.phys.ExtendedEntityRayTraceResult
-import com.atsuishio.superbwarfare.world.saveddata.ProjectileChunkSavedData
-import net.minecraft.core.BlockPos
 import net.minecraft.core.Holder
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.ListTag
@@ -45,7 +42,6 @@ import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile
 import net.minecraft.world.item.alchemy.PotionUtils
-import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.gameevent.GameEvent
@@ -300,22 +296,6 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
             playNearFlySound.accept(this)
         }
         this.isFastMoving = this.isFastMoving()
-
-        // 每 tick 将当前所在区块加入强制加载队列，由 ProjectileChunkManager 在 tick 末尾统一处理
-        if (level is ServerLevel) {
-            if (forceLoadChunk() && ProjectileConfig.PROJECTILE_CHUNK_LOADING.get()) {
-                val currentChunkPos = this.chunkPosition()
-                val nextChunkPos = ChunkPos(BlockPos.containing(position().add(deltaMovement)))
-                val nextNextChunkPos = ChunkPos(BlockPos.containing(position().add(deltaMovement.scale(2.0))))
-                ProjectileChunkSavedData.queueForceLoad(level, currentChunkPos)
-                if (nextChunkPos != currentChunkPos) {
-                    ProjectileChunkSavedData.queueForceLoad(level, nextChunkPos)
-                }
-                if (nextNextChunkPos != nextChunkPos) {
-                    ProjectileChunkSavedData.queueForceLoad(level, nextNextChunkPos)
-                }
-            }
-        }
     }
 
     open fun projectileMove(level: Level) {
@@ -633,8 +613,8 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
 
     open fun getVolume(): Float = 0.5f
 
-    open fun forceLoadChunk(): Boolean {
-        return false
+    override fun isAlwaysTicking(): Boolean {
+        return !this.level().isClientSide
     }
 
     override fun getAddEntityPacket(): Packet<ClientGamePacketListener> {
@@ -657,7 +637,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         if (level() is ServerLevel) {
             MissileTrailParticleMessage.sendToNearbyPlayers(
                 level() as ServerLevel,
-                xo, yo, zo,
+                x, y, z,
                 bbHeight.toDouble(),
                 deltaMovement.x, deltaMovement.y, deltaMovement.z
             )
@@ -791,6 +771,8 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         super.onAddedToWorld()
         if (level().isClientSide) {
             ClientLightingHandler.handleProjectileAdded(this)
+        } else {
+            registerForManualTick(this)
         }
     }
 
@@ -798,6 +780,8 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         super.onRemovedFromWorld()
         if (level().isClientSide) {
             ClientLightingHandler.handleProjectileRemoved(this)
+        } else {
+            unregisterForManualTick(this)
         }
     }
 
@@ -808,6 +792,41 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
 
         var playFlySound: Consumer<FastThrowableProjectile> = Consumer { }
         var playNearFlySound: Consumer<FastThrowableProjectile> = Consumer { }
+
+        // ─────────────────────────────────────────────────────────────
+        //  手动 tick 注册表（服务端）
+        //
+        //  背景：isAlwaysTicking() 只能防止弹体在未加载区块中被移除，但不能
+        //  阻止 vanilla 的 stopTicking（弹体仍会被移出 entityTickList 而冻结，
+        //  且 always-ticking 实体不会再被 updateChunkStatus 重新加入 tick 列表）。
+        //  因此这里在服务端维护一个注册表，由 FastProjectileManualTicker 在
+        //  每 tick 末尾检测：若弹体 tickCount 没有推进（原版系统不再 tick 它），
+        //  就手动调用 tick() 推进其飞行——这样即使不加载沿途区块也不会冻结。
+        // ─────────────────────────────────────────────────────────────
+        private val manualTickSet: MutableSet<FastThrowableProjectile> =
+            java.util.concurrent.ConcurrentHashMap.newKeySet()
+        private val lastTickCounts: MutableMap<Int, Int> =
+            java.util.concurrent.ConcurrentHashMap()
+
+        private fun registerForManualTick(projectile: FastThrowableProjectile) {
+            manualTickSet.add(projectile)
+            lastTickCounts[projectile.id] = projectile.tickCount
+        }
+
+        private fun unregisterForManualTick(projectile: FastThrowableProjectile) {
+            manualTickSet.remove(projectile)
+            lastTickCounts.remove(projectile.id)
+        }
+
+        internal fun manualTickRegistered(): MutableSet<FastThrowableProjectile> = manualTickSet
+        internal fun unregisterForManualTickInternal(projectile: FastThrowableProjectile) {
+            unregisterForManualTick(projectile)
+        }
+
+        internal fun lastManualTickCount(id: Int): Int? = lastTickCounts[id]
+        internal fun setLastManualTickCount(id: Int, value: Int) {
+            lastTickCounts[id] = value
+        }
     }
 
     /** 独立于原版 tickCount 的计时器，每 tick +1，通过 EntityData 持久化同步 */

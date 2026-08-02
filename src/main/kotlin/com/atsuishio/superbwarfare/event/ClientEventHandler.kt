@@ -423,6 +423,34 @@ object ClientEventHandler {
     @JvmField
     var loiterForwardTapCount: Int = 0
 
+    /** 卸载乘客按住：按住卸载乘客键的持续tick，每20tick(1秒)卸载一位乘客 */
+    @JvmField
+    var unloadPassengersHoldTicks: Int = 0
+
+    /** 卸载乘客双击：上次按下卸载乘客键的tick */
+    @JvmField
+    var unloadPassengersLastTapTick: Int = -20
+
+    /** 卸载乘客双击：卸载乘客键连击计数 */
+    @JvmField
+    var unloadPassengersTapCount: Int = 0
+
+    /** 卸载乘客双击：上一帧卸载乘客键是否按下，用于检测上升沿 */
+    @JvmField
+    var wasUnloadPassengersDown: Boolean = false
+
+    /** 断开牵引双击：上次按下断开牵引键的tick */
+    @JvmField
+    var disconnectTowingLastTapTick: Int = -20
+
+    /** 断开牵引双击：断开牵引键连击计数 */
+    @JvmField
+    var disconnectTowingTapCount: Int = 0
+
+    /** 断开牵引双击：上一帧断开牵引键是否按下，用于检测上升沿 */
+    @JvmField
+    var wasDisconnectTowingDown: Boolean = false
+
     @JvmField
     var tdmSavedData: TDMSavedData = TDMSavedData()
 
@@ -776,6 +804,74 @@ object ClientEventHandler {
             }
         } else {
             holdToEjection = 0
+        }
+
+        // 卸载乘客：按住每隔1秒卸载最后一位，双击卸载全部
+        if (vehicle is VehicleEntity && vehicle.firstPassenger == player && vehicle.passengers.size > 1) {
+            val unloadDown = ModKeyMappings.UNLOAD_PASSENGERS.isDown
+            val unloadJustPressed = unloadDown && !wasUnloadPassengersDown
+            wasUnloadPassengersDown = unloadDown
+
+            if (unloadDown) {
+                // 按住：每隔1秒(20tick)卸载序号最靠后的一位乘客
+                unloadPassengersHoldTicks++
+                if (unloadPassengersHoldTicks >= 20) {
+                    sendPacketToServer(VehicleUnloadPassengersMessage(false))
+                    unloadPassengersHoldTicks = 0
+                }
+            } else {
+                unloadPassengersHoldTicks = 0
+            }
+
+            // 双击：在0.5s(10tick)内检测两次按下，卸载全部乘客
+            if (unloadJustPressed) {
+                val currentTick = player.tickCount
+                if (currentTick - unloadPassengersLastTapTick <= 10) {
+                    sendPacketToServer(VehicleUnloadPassengersMessage(true))
+                    unloadPassengersTapCount = 0
+                    unloadPassengersLastTapTick = -20
+                    unloadPassengersHoldTicks = 0
+                } else {
+                    unloadPassengersTapCount = 1
+                    unloadPassengersLastTapTick = currentTick
+                    player.displayClientMessage(
+                        Component.translatable(
+                            "tips.superbwarfare.unload_passengers_hint",
+                            ModKeyMappings.UNLOAD_PASSENGERS.key.displayName.string,
+                            ModKeyMappings.UNLOAD_PASSENGERS.key.displayName.string
+                        ), true
+                    )
+                }
+            }
+        } else {
+            wasUnloadPassengersDown = false
+            unloadPassengersHoldTicks = 0
+        }
+
+        // 检测双击断开牵引键在0.5s(10tick)内，断开载具的牵引关系
+        if (vehicle is VehicleEntity && vehicle.firstPassenger == player) {
+            val towingDown = ModKeyMappings.DISCONNECT_TOWING.isDown
+            val towingJustPressed = towingDown && !wasDisconnectTowingDown
+            wasDisconnectTowingDown = towingDown
+            if (towingJustPressed) {
+                val currentTick = player.tickCount
+                if (currentTick - disconnectTowingLastTapTick <= 10) {
+                    sendPacketToServer(VehicleDisconnectTowingMessage)
+                    disconnectTowingTapCount = 0
+                    disconnectTowingLastTapTick = -20
+                } else {
+                    disconnectTowingTapCount = 1
+                    disconnectTowingLastTapTick = currentTick
+                    player.displayClientMessage(
+                        Component.translatable(
+                            "tips.superbwarfare.disconnect_towing_hint",
+                            ModKeyMappings.DISCONNECT_TOWING.key.displayName.string
+                        ), true
+                    )
+                }
+            }
+        } else {
+            wasDisconnectTowingDown = false
         }
     }
 

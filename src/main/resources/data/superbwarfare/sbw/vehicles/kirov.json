@@ -268,6 +268,7 @@
   "Mass": 400,
   "TowForceFactor": 10.0,
   "HasDecoy": true,
+  "SmokeDecoy": false,
   "DamageModifiers": [
     "All - 15",
     "minecraft:lava + 11",

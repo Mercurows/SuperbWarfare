@@ -40,6 +40,8 @@ val CONFIG_COMMAND = buildCommand("config") {
 
     booleanConfig(SyncConfig::SYNC_ENTITY_OVER_RANGE)
     booleanConfig(SyncConfig::ENABLE_RENDER_SYNCED_ENTITIES)
+
+    booleanConfig(MapConfig::ENABLE_TACTICAL_MAP)
 }
 
 private enum class DestroyType(

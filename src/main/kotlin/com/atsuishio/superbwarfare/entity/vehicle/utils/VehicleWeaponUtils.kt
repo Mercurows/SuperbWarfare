@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.entity.vehicle.utils
 
-import com.atsuishio.superbwarfare.data.vehicle.subdata.VehicleType
 import com.atsuishio.superbwarfare.entity.projectile.FlareDecoyEntity
 import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -145,7 +144,7 @@ object VehicleWeaponUtils {
 
                 vehicle.level()
                     .playSound(null, vehicle, ModSounds.DECOY_RELEASE.get(), vehicle.soundSource, 1f, 1f)
-                vehicle.decoyCount --
+                vehicle.decoyCount--
                 if (vehicle.decoyCount == 0) {
                     vehicle.decoyReloadCoolDown = vehicle.getDecoyReloadTime()
                 }
@@ -207,14 +206,13 @@ object VehicleWeaponUtils {
 
     @JvmStatic
     fun reloadDecoy(vehicle: VehicleEntity) {
-        val type = vehicle.vehicleType
-        if (type == VehicleType.AIRPLANE || type == VehicleType.HELICOPTER || type == VehicleType.AIRSHIP) {
+        if (vehicle.hasSmokeDecoy()) {
+            vehicle.decoyCount = 1
+            InventoryTool.consumeItem(vehicle, ModItems.VEHICLE_SMOKE_AMMO.get(), 1)
+        } else {
             val decoyMagazineCount = vehicle.decoyItemCount.coerceAtMost(vehicle.computed().decoyMagazineSize)
             vehicle.decoyCount += decoyMagazineCount
             InventoryTool.consumeItem(vehicle, ModItems.FLYING_FLARE_AMMO.get(), decoyMagazineCount)
-        } else {
-            vehicle.decoyCount = 1
-            InventoryTool.consumeItem(vehicle, ModItems.VEHICLE_SMOKE_AMMO.get(), 1)
         }
         vehicle.level().playSound(null, vehicle, ModSounds.DECOY_RELOAD.get(), vehicle.soundSource, 2f, 1f)
     }

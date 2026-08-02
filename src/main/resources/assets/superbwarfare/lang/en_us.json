@@ -428,7 +428,7 @@
   "des.superbwarfare.vehicle_deployer.fail": "Please click with a container!",
   "block.superbwarfare.aircraft_catapult": "Aircraft Catapult",
   "block.superbwarfare.catapult_controller": "Catapult Controller",
-  "message.superbwarfare.catapult_power": "Catapult Power: %s",
+  "message.superbwarfare.catapult_power": "Catapult Power: %1$s",
   "block.superbwarfare.superb_item_interface": "Superb Item Interface",
   "des.superbwarfare.superb_item_interface": "A fast omnidirectional hopper for transferring items to targeted entities",
   "block.superbwarfare.creative_superb_item_interface": "Superb Item Interface",
@@ -762,6 +762,8 @@
   "key.superbwarfare.launch": "Launch",
   "key.superbwarfare.mark": "Mark",
   "key.superbwarfare.unload": "Unload",
+  "key.superbwarfare.unload_passengers": "Unload Passengers",
+  "key.superbwarfare.disconnect_towing": "Disconnect Towing",
   "key.superbwarfare.change_ammo_forward": "Change Ammo Forward",
   "key.superbwarfare.change_ammo_backward": "Change Ammo Backward",
   "key.superbwarfare.change_fire_mode_forward": "Change Fire Mode Forward",
@@ -847,7 +849,7 @@
   "tips.superbwarfare.mortar.target_pos.depressed_trajectory": "Depressed Trajectory",
   "tips.superbwarfare.mortar.target_pos.lofted_trajectory": "Lofted Trajectory",
   "tips.superbwarfare.mortar.warn": "%1$s cannot aim at this position",
-  "tips.superbwarfare.mortar.position": "%1$s located in",
+  "tips.superbwarfare.mortar.position": "%1$s located in %2$s cannot aim at this position",
   "tips.superbwarfare.ballistics.warn": "Use Depressed Trajectory Please",
   "tips.superbwarfare.ballistics.warn2": "Use Lofted Trajectory Please",
   "tips.superbwarfare.ballistics.warn3": "Exceeding maximum elevation",
@@ -907,6 +909,8 @@
   "tips.superbwarfare.hover_mode_on": "HOVER ON",
   "tips.superbwarfare.hover_mode_off": "HOVER OFF",
   "tips.superbwarfare.loiter_override_hint": "Double tap [%s] to regain control",
+  "tips.superbwarfare.unload_passengers_hint": "Double tap [%s] to unload all, hold [%s] to unload one by one",
+  "tips.superbwarfare.disconnect_towing_hint": "Double tap [%s] to disconnect towing",
   "tips.superbwarfare.flare.reloading": "FLARE RELOADING",
   "tips.superbwarfare.flare.none": "NO AVAILABLE FLARE AMMO",
   "tips.superbwarfare.gear_retracted": "GEAR RETRACTED",
@@ -1145,6 +1149,7 @@
   "des.jade_plugin_superbwarfare.dps_generator.level": "Generator Level: %1$s",
   "des.jade_plugin_superbwarfare.dps_generator.health": "Maximum Health: %1$s",
   "config.jade.plugin_superbwarfare.vehicle_deployer": "Vehicle Deployer",
+  "config.jade.plugin_superbwarfare.catapult_controller": "Catapult Controller",
 
   "gamerule.sbwDoGenerateLoots": "Generate Superb Warfare Chest Loots",
 
@@ -1385,5 +1390,7 @@
   "superbwarfare.page.resources.scheelite.3": "$(thing)Tungsten Ingot$() can only be blasted by $(thing)Blast Furnace$().",
   "superbwarfare.entry.resources.silver": "Silver Ore",
   "superbwarfare.page.resources.silver.1": "$(thing)Silver Ore$() is generated in the overworld $(thing)from Y=48 to Y=1$().",
-  "superbwarfare.page.resources.silver.2": "$(thing)Deepslate Silver Ore() is generated in the overworld $(thing)from Y=0 to Y=-64$()."
+  "superbwarfare.page.resources.silver.2": "$(thing)Deepslate Silver Ore() is generated in the overworld $(thing)from Y=0 to Y=-64$().",
+  "tips.superbwarfare.fh77bw.body_tilted": "Vehicle body tilted, cannot fire",
+  "tips.superbwarfare.fh77bw.not_stopped": "Vehicle not fully stopped, cannot fire"
 }

@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.client.renderer.entity
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.model.entity.VehicleModelInstance
-import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes
 import com.atsuishio.superbwarfare.entity.vehicle.AnnihilatorEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
@@ -95,7 +94,7 @@ class AnnihilatorRenderer(manager: EntityRendererProvider.Context) : BasicArtill
         instance.renderToBuffer(
             poseStack,
             buffer,
-            ModRenderTypes.LASER.apply(TEXTURE_POWER),
+            RenderType.eyes(TEXTURE_POWER),
             BedrockModelRenderTypes.polyMeshCutout(TEXTURE_POWER),
             packedLight,
             OverlayTexture.NO_OVERLAY, red, green, 0f, 1f
@@ -104,7 +103,7 @@ class AnnihilatorRenderer(manager: EntityRendererProvider.Context) : BasicArtill
         instance.renderToBuffer(
             poseStack,
             buffer,
-            ModRenderTypes.LASER.apply(TEXTURE_GLOW),
+            RenderType.eyes(TEXTURE_GLOW),
             BedrockModelRenderTypes.polyMeshCutout(TEXTURE_GLOW),
             packedLight,
             OverlayTexture.NO_OVERLAY

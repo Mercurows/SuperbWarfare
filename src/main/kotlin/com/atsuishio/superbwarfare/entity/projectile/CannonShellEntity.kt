@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.entity.projectile
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
-import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -102,9 +101,6 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
         val level = this.level()
         if (level !is ServerLevel) return
 
-        val pos = result.blockPos
-        val blockState = level().getBlockState(pos)
-
         if (type == Type.WP && this.owner != null) {
             causeWPEffect(result.location, owner!!)
             causeExplode(result.location)
@@ -116,52 +112,80 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
             this.discard()
         } else {
             if (ExplosionConfig.EXPLOSION_DESTROY.get() && ExplosionConfig.EXTRA_EXPLOSION_EFFECT.get() && this.explosionDestroyValue) {
-                val hardness = level.getBlockState(pos).block.defaultDestroyTime()
+                // AP穿透：沿入射线遍历方块，从近到远执行破坏并消耗穿甲值
+                // 穿甲值不足以破坏下一个方块或检测到的方块为不可破坏的方块时停止
+                val direction = deltaMovement.normalize()
+                var rayPos = result.location.add(direction.scale(0.01))
+                val processedBlocks = mutableSetOf<BlockPos>()
 
-                val resistance = 0.95 - (hardness / 100).coerceIn(0f, 1f)
+                for (step in 0..<30) {
+                    if (durability <= 0) {
+                        causeExplode(rayPos)
+                        discard()
+                        return
+                    }
 
-                if (blockState.canOcclude() || blockState.soundType == SoundType.GLASS) {
-                    durability -= 5 + (hardness).toInt()
+                    val blockPos = BlockPos.containing(rayPos)
+
+                    if (!processedBlocks.add(blockPos)) {
+                        rayPos = rayPos.add(direction.scale(0.5))
+                        continue
+                    }
+
+                    val blockState = level.getBlockState(blockPos)
+                    val hardness = blockState.block.defaultDestroyTime()
+
+                    // 不可破坏的方块，停止穿透并爆炸
+                    if (hardness == -1f) {
+                        causeExplode(rayPos)
+                        discard()
+                        return
+                    }
+
+                    // 跳过空气
+                    if (blockState.isAir) {
+                        rayPos = rayPos.add(direction.scale(0.5))
+                        continue
+                    }
+
+                    // 计算穿甲消耗
+                    var cost = 0
+                    if (blockState.canOcclude() || blockState.soundType == SoundType.GLASS) {
+                        cost += 5 + hardness.toInt()
+                    }
+                    if (blockState.soundType == SoundType.STONE) {
+                        cost += 5
+                    }
+                    if (blockState.soundType == SoundType.METAL || blockState.soundType == SoundType.COPPER || blockState.soundType == SoundType.NETHERITE_BLOCK) {
+                        cost += 25
+                    }
+
+                    // 穿甲值不足，停止穿透并爆炸
+                    if (durability < cost) {
+                        causeExplode(rayPos)
+                        discard()
+                        return
+                    }
+
+                    // 破坏方块
+                    level.destroyBlock(blockPos, true)
+                    durability -= cost
+
+                    // 累积减速和伤害衰减
+                    val resistance = 0.95 - (hardness / 100).coerceIn(0f, 1f)
+                    deltaMovement = deltaMovement.scale(resistance)
+                    setDamage((damageValue * resistance).toFloat())
+                    setExplosionDamage((explosionDamageValue * resistance).toFloat())
+                    setExplosionRadius((explosionRadiusValue * resistance).toFloat())
+
+                    ParticleTool.cannonHitParticles(level, Vec3.atCenterOf(blockPos))
+
+                    // 移动到下一个方块
+                    rayPos = rayPos.add(direction.scale(0.5))
                 }
 
-                if (blockState.soundType == SoundType.STONE) {
-                    durability -= 5
-                }
-
-                if (blockState.soundType == SoundType.METAL || blockState.soundType == SoundType.COPPER || blockState.soundType == SoundType.NETHERITE_BLOCK) {
-                    durability -= 25
-                }
-
-                if (hardness <= durability && hardness != -1f) {
-                    level.destroyBlock(pos, true)
-                }
-
-                if (hardness == -1f || hardness > durability || durability <= 0) {
-                    causeExplode(pos.center)
-                    discard()
-                } else {
-                    ParticleTool.cannonHitParticles(level, result.location)
-                    val cannonShell = CannonShellEntity(ModEntities.CANNON_SHELL.get(), level)
-                    cannonShell.setPos(result.location.add(deltaMovement.normalize().scale(0.99)))
-                    cannonShell.shoot(
-                        deltaMovement.x,
-                        deltaMovement.y,
-                        deltaMovement.z,
-                        (deltaMovement.length() * resistance).toFloat(),
-                        0f
-                    )
-                    cannonShell.owner = owner
-                    cannonShell.durability(durability)
-                    cannonShell.setType(Type.AP)
-                    cannonShell.gravityValue = gravityValue
-                    cannonShell.setLife(lifeValue - tickCount)
-                    cannonShell.setDamage((damageValue * resistance).toFloat())
-                    cannonShell.setExplosionDamage((explosionDamageValue * resistance).toFloat())
-                    cannonShell.setExplosionRadius((explosionRadiusValue * resistance).toFloat())
-                    level.addFreshEntity(cannonShell)
-
-                    this.discard()
-                }
+                // 穿透完毕，重设位置后继续飞行
+                this.setPos(rayPos.x, rayPos.y, rayPos.z)
             } else {
                 destroyBlock(result)
             }
@@ -337,10 +361,6 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
 
     override fun getVolume(): Float {
         return 0.07f
-    }
-
-    override fun forceLoadChunk(): Boolean {
-        return true
     }
 
     fun setType(type: Type?) {

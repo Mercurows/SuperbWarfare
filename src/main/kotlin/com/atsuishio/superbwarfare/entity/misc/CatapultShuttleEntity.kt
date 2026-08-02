@@ -3,6 +3,8 @@ package com.atsuishio.superbwarfare.entity.misc
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.compat.valkyrienskies.ValkyrienSkiesCompat
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
+import com.atsuishio.superbwarfare.entity.getValue
+import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleMotionUtils
 import com.atsuishio.superbwarfare.init.ModEntities
@@ -46,7 +48,7 @@ open class CatapultShuttleEntity(type: EntityType<out CatapultShuttleEntity>, wo
     }
 
     override fun interact(player: Player, hand: InteractionHand): InteractionResult {
-        if (player.isShiftKeyDown && player.getItemInHand(hand).isEmpty) {
+        if (player.isShiftKeyDown && player.mainHandItem.isEmpty) {
             if (!this.level().isClientSide) {
                 clearTowingInfo()
                 this.discard()
@@ -66,9 +68,7 @@ open class CatapultShuttleEntity(type: EntityType<out CatapultShuttleEntity>, wo
         entityData.define(TOWING_UUID, "")
     }
 
-    var towingUUID: String
-        get() = entityData.get(TOWING_UUID)
-        set(value) = entityData.set(TOWING_UUID, value)
+    var towingUUID by TOWING_UUID
 
     val towingEntity: Entity?
         get() {

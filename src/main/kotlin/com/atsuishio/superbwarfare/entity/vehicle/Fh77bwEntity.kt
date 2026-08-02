@@ -7,9 +7,12 @@ import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.entity.vehicle.base.SpArtilleryEntity
 import com.atsuishio.superbwarfare.tools.ParticleTool
+import com.atsuishio.superbwarfare.tools.VectorTool
 import com.atsuishio.superbwarfare.tools.angleTo
 import com.atsuishio.superbwarfare.tools.toVec3
+import net.minecraft.ChatFormatting
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.network.chat.Component
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
@@ -17,7 +20,9 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.Level
+import net.minecraft.world.phys.Vec3
 
 open class Fh77bwEntity(type: EntityType<Fh77bwEntity>, world: Level) : SpArtilleryEntity(type, world) {
     private var wasClose = false
@@ -120,6 +125,30 @@ open class Fh77bwEntity(type: EntityType<Fh77bwEntity>, world: Level) : SpArtill
 
     override val customTurretMinPitch: Float
         get() = if (Mth.abs(turretYRot) < 18 && !lockTurret && shootVec != getViewVec(this, 1f).toVector3f()) 10f * Mth.clamp((18 - Mth.abs(turretYRot)) * 0.4f, 0f, 1f) else 0f
+
+    override fun canShoot(living: LivingEntity?): Boolean {
+        if (living == getNthEntity(1)) {
+            if (VectorTool.calculateAngle(getUpVec(1f), Vec3(0.0, 1.0, 0.0)) > 1) {
+                if (living is Player) {
+                    living.displayClientMessage(
+                        Component.translatable("tips.superbwarfare.fh77bw.body_tilted").withStyle(ChatFormatting.RED),
+                        true
+                    )
+                }
+                return false
+            }
+            if (deltaMovement.lengthSqr() > 0.001) {
+                if (living is Player) {
+                    living.displayClientMessage(
+                        Component.translatable("tips.superbwarfare.fh77bw.not_stopped").withStyle(ChatFormatting.RED),
+                        true
+                    )
+                }
+                return false
+            }
+        }
+        return super.canShoot(living)
+    }
 
     companion object {
         @JvmField

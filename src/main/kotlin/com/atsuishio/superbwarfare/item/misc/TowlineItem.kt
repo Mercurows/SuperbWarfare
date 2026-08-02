@@ -189,8 +189,8 @@ open class TowlineItem : Item(Properties().stacksTo(1)), IVehicleInteract {
             return InteractionResult.FAIL
         }
 
-        // Check if the towing vehicle is already in a towing relationship
-        if (firstVehicle.towingUUID.isNotBlank() || firstVehicle.towedByUUID.isNotBlank()) {
+        // Check if the towing vehicle is being towed (can't tow while being towed)
+        if (firstVehicle.towedByUUID.isNotBlank()) {
             player.displayClientMessage(
                 Component.translatable("tips.superbwarfare.towline.already_linked")
                     .withStyle(ChatFormatting.RED),
@@ -200,9 +200,9 @@ open class TowlineItem : Item(Properties().stacksTo(1)), IVehicleInteract {
             return InteractionResult.FAIL
         }
 
-        // If the target is a vehicle, check if it's already in a towing relationship
+        // If the target is a vehicle, check if it's already being towed
         if (targetEntity is VehicleEntity) {
-            if (targetEntity.towingUUID.isNotBlank() || targetEntity.towedByUUID.isNotBlank()) {
+            if (targetEntity.towedByUUID.isNotBlank()) {
                 player.displayClientMessage(
                     Component.translatable("tips.superbwarfare.towline.already_linked")
                         .withStyle(ChatFormatting.RED),
@@ -230,7 +230,9 @@ open class TowlineItem : Item(Properties().stacksTo(1)), IVehicleInteract {
         }
 
         // Link: firstVehicle tows targetEntity
-        firstVehicle.towingUUID = targetEntity.stringUUID
+        val currentList = firstVehicle.towingUUIDs
+        currentList.add(targetEntity.stringUUID)
+        firstVehicle.towingUUIDs = currentList
         if (targetEntity is VehicleEntity) {
             targetEntity.towedByUUID = firstVehicle.stringUUID
         } else {

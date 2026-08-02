@@ -121,6 +121,8 @@ private fun registerPayloads() {
     playToServer<BlueprintSetIndexMessage>()
     playToServer<LoiterConfigMessage>()
     playToServer<LoiterOverrideMessage>()
+    playToServer<VehicleUnloadPassengersMessage>()
+    playToServer<VehicleDisconnectTowingMessage>()
     playToServer<EntityClearMessage>()
     playToServer<EntityAreaClearMessage>()
 }

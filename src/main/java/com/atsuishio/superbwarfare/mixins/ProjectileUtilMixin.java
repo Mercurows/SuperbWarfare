@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.init.ModParticleTypes;
 import com.atsuishio.superbwarfare.init.ModSounds;
 import com.atsuishio.superbwarfare.tools.OBB;
@@ -33,8 +34,9 @@ public class ProjectileUtilMixin {
     //TODO 修复对超大载具的obb射线检测
 
     @Inject(method = "getEntityHitResult(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;F)Lnet/minecraft/world/phys/EntityHitResult;",
-            at = @At("HEAD"), cancellable = true)
+            at = @At("TAIL"), cancellable = true)
     private static void getEntityHitResult(Level pLevel, Entity pProjectile, Vec3 pStartVec, Vec3 pEndVec, AABB pBoundingBox, Predicate<Entity> pFilter, float pInflationAmount, CallbackInfoReturnable<EntityHitResult> cir) {
+        EntityHitResult vanillaResult = cir.getReturnValue();
         double pDistance = pStartVec.distanceToSqr(pEndVec);
         Vector3d startVec = OBB.vec3ToVector3d(pStartVec);
         Vector3d endVec = OBB.vec3ToVector3d(pEndVec);
@@ -42,9 +44,13 @@ public class ProjectileUtilMixin {
         EntityHitResult bestHit = null;
         double bestDistanceSqr = Double.MAX_VALUE;
         OBB.Part bestPart = null;
+        boolean vanillaHitCollisionObbVehicle = false;
 
         for (var entity : pLevel.getEntities(pProjectile, pBoundingBox.inflate(8), pFilter)) {
             if (entity instanceof OBBEntity obbEntity && !obbEntity.enableAABB()) {
+                boolean isCollisionObbVehicle = entity instanceof VehicleEntity vehicle
+                        && vehicle.getCollisionOBB() != null;
+
                 if (pProjectile instanceof Projectile projectile &&
                         (projectile.getOwner() == entity || entity.getPassengers().contains(projectile.getOwner()))) {
                     continue;
@@ -78,6 +84,11 @@ public class ProjectileUtilMixin {
                         }
                     }
                 }
+
+                // Track if vanilla AABB hit a collision-OBB vehicle
+                if (isCollisionObbVehicle && vanillaResult != null && vanillaResult.getEntity() == entity) {
+                    vanillaHitCollisionObbVehicle = true;
+                }
             }
         }
 
@@ -91,12 +102,20 @@ public class ProjectileUtilMixin {
                 sendParticle(serverLevel, ModParticleTypes.FIRE_STAR.get(), hitPos.x, hitPos.y, hitPos.z, 2, 0, 0, 0, 0.2, false);
                 sendParticle(serverLevel, ParticleTypes.SMOKE, hitPos.x, hitPos.y, hitPos.z, 2, 0, 0, 0, 0.01, false);
             }
+            return;
+        }
+
+        // For collision-OBB vehicles, AABB detection is not allowed.
+        // If vanilla hit one but OBB didn't confirm → invalidate the AABB result.
+        if (vanillaHitCollisionObbVehicle) {
+            cir.setReturnValue(null);
         }
     }
 
     @Inject(method = "getEntityHitResult(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;D)Lnet/minecraft/world/phys/EntityHitResult;",
-            at = @At("HEAD"), cancellable = true)
+            at = @At("TAIL"), cancellable = true)
     private static void getEntityHitResult(Entity pShooter, Vec3 pStartVec, Vec3 pEndVec, AABB pBoundingBox, Predicate<Entity> pFilter, double pDistance, CallbackInfoReturnable<EntityHitResult> cir) {
+        EntityHitResult vanillaResult = cir.getReturnValue();
         Level level = pShooter.level();
         var entities = level.getEntities(pShooter, pBoundingBox.inflate(8), pFilter);
         Vector3d startVec = OBB.vec3ToVector3d(pStartVec);
@@ -104,11 +123,15 @@ public class ProjectileUtilMixin {
 
         EntityHitResult bestHit = null;
         double bestDistanceSqr = Double.MAX_VALUE;
+        boolean vanillaHitCollisionObbVehicle = false;
 
         for (Entity entity : entities) {
             if (!(entity instanceof OBBEntity obbEntity) || obbEntity.enableAABB()) {
                 continue;
             }
+
+            boolean isCollisionObbVehicle = entity instanceof VehicleEntity vehicle
+                    && vehicle.getCollisionOBB() != null;
 
             if (entity.getPassengers().contains(pShooter)) {
                 continue;
@@ -142,10 +165,22 @@ public class ProjectileUtilMixin {
                     }
                 }
             }
+
+            // Track if vanilla AABB hit a collision-OBB vehicle
+            if (isCollisionObbVehicle && vanillaResult != null && vanillaResult.getEntity() == entity) {
+                vanillaHitCollisionObbVehicle = true;
+            }
         }
 
         if (bestHit != null) {
             cir.setReturnValue(bestHit);
+            return;
+        }
+
+        // For collision-OBB vehicles, AABB detection is not allowed.
+        // If vanilla hit one but OBB didn't confirm → invalidate the AABB result.
+        if (vanillaHitCollisionObbVehicle) {
+            cir.setReturnValue(null);
         }
     }
 }

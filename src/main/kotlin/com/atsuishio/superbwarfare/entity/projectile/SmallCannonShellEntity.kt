@@ -129,10 +129,6 @@ open class SmallCannonShellEntity(type: EntityType<out SmallCannonShellEntity>, 
         }
     }
 
-    override fun forceLoadChunk(): Boolean {
-        return true
-    }
-
     fun antiAir(antiAir: Boolean) {
         this.aa = antiAir
     }

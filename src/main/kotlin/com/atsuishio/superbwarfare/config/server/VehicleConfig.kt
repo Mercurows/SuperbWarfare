@@ -176,7 +176,7 @@ object VehicleConfig {
     val TOW_BAR_EXTRA_LENGTH = buildServerConfig {
         comment("The extra length of tow bar")
         comment("牵引杆的额外长度（格）")
-        defineInRange("tow_bar_extra_length", 0, 0, 512).also { pop() }
+        defineInRange("tow_bar_extra_length", 2, 0, 512).also { pop() }
     }
 
     @JvmField

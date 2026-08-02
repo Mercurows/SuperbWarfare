@@ -266,7 +266,7 @@
 					"pivot": [0, 39.66362, -0.53991]
 				},
 				{
-					"name": "light_off1",
+					"name": "move_light_off1",
 					"parent": "off",
 					"pivot": [-0.00002, 57.0169, 42.04904],
 					"cubes": [
@@ -280,7 +280,7 @@
 					]
 				},
 				{
-					"name": "light_off2",
+					"name": "move_light_off2",
 					"parent": "off",
 					"pivot": [-0.00002, 57.0169, 37.53108],
 					"cubes": [
@@ -294,7 +294,7 @@
 					]
 				},
 				{
-					"name": "light_off3",
+					"name": "move_light_off3",
 					"parent": "off",
 					"pivot": [-0.00002, 57.0169, 33.01311],
 					"cubes": [
@@ -308,7 +308,7 @@
 					]
 				},
 				{
-					"name": "light_off4",
+					"name": "move_light_off4",
 					"parent": "off",
 					"pivot": [-0.00002, 57.0169, 28.49515],
 					"cubes": [
@@ -322,7 +322,7 @@
 					]
 				},
 				{
-					"name": "light_off5",
+					"name": "move_light_off5",
 					"parent": "off",
 					"pivot": [-0.00002, 57.0169, 23.97719],
 					"cubes": [
@@ -336,7 +336,7 @@
 					]
 				},
 				{
-					"name": "light_off6",
+					"name": "move_light_off6",
 					"parent": "off",
 					"pivot": [-0.00002, 57.0169, 19.45922],
 					"cubes": [
@@ -350,7 +350,7 @@
 					]
 				},
 				{
-					"name": "light_off7",
+					"name": "move_light_off7",
 					"parent": "off",
 					"pivot": [-0.00002, 57.0169, 14.94126],
 					"cubes": [

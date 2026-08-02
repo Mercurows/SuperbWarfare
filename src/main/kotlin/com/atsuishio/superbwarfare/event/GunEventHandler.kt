@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.data.gun.value.ReloadState
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.tools.InventoryTool
 import com.atsuishio.superbwarfare.tools.SoundTool
 import com.atsuishio.superbwarfare.tools.postEvent
@@ -159,10 +158,6 @@ object GunEventHandler {
     fun autoReload(shooter: Entity?, data: GunData, inMainHand: Boolean) {
         val autoReload = data.get(GunProp.AUTO_RELOAD) ?: return
         if (!inMainHand || !autoReload) return
-
-        // Throttle check for vehicle weapons: 4-tick interval (5 Hz)
-        if (shooter is VehicleEntity && (shooter.tickCount % 4 != 0)) return
-
         if (!data.hasEnoughAmmoToShoot(shooter)) {
             tryStartReload(shooter, data, false)
         }

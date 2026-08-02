@@ -295,8 +295,4 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
     override fun getVolume(): Float {
         return 0.06f
     }
-
-    override fun forceLoadChunk(): Boolean {
-        return true
-    }
 }

@@ -26,11 +26,11 @@ import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineInfo.*
 import com.atsuishio.superbwarfare.entity.IBvrSyncableEntity
 import com.atsuishio.superbwarfare.entity.OBBEntity
 import com.atsuishio.superbwarfare.entity.getValue
+import com.atsuishio.superbwarfare.entity.misc.CatapultShuttleEntity
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter
 import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.entity.vehicle.*
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.Companion.ENV_RATE_RECOMPUTE_INTERVAL
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.Companion.GUN_DATA_MAP
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity.Companion.OBB_GROUND_CACHE_TICKS
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier
 import com.atsuishio.superbwarfare.entity.vehicle.utils.*
@@ -171,39 +171,16 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     private var cachedCreativeAmmoBox: Boolean = false
 
     /**
-    * Tick on which [cachedCreativeAmmoBox] was last computed.
-    * Initialised to [Int.MIN_VALUE] so the first access always triggers a refresh.
-    */
+     * Tick on which [cachedCreativeAmmoBox] was last computed.
+     * Initialised to [Int.MIN_VALUE] so the first access always triggers a refresh.
+     */
     private var creativeAmmoBoxCacheTick: Int = Int.MIN_VALUE
 
     private var gunDataMapCache: Map<String, GunData>? = null
     private var gunDataMapWeaponKeys: Set<String>? = null
 
-    /**
-    * Snapshot of each weapon slot's combined [com.atsuishio.superbwarfare.data.gun.NbtVersion] at the moment of the
-    * last successful [GUN_DATA_MAP] write to [entityData].
-    *
-    * Packed layout (single [Long] per slot):
-    * ```
-    *   bits 63–32  structural version  (Int, upper half)
-    *   bits 31– 0  state     version  (Int, lower half, zero-extended)
-    * ```
-    * Compared every server tick by [isGunDataDirty]; if no slot version has changed
-    * since the previous tick the [GUN_DATA_MAP] write — and the resulting client-side
-    * [onSyncedDataUpdated] cascade — is skipped entirely.
-    *
-    * Server-side only. Never serialized to NBT or sent over the network.
-    */
-    private val lastSyncedGunVersions: HashMap<String, Long> = HashMap()
-
     /** Set to `true` by [setChanged] when vehicle inventory contents are modified. */
     private var inventoryDirty: Boolean = false
-
-    /**
-     * Guard flag set to `true` while [baseTick] writes gun states back to [entityData].
-     * Prevents self-originated updates from nullifying [gunDataMapCache] inside [onSyncedDataUpdated].
-     */
-    private var isSelfUpdatingGunData: Boolean = false
 
     open var gunDataMap: Map<String, GunData>
         get() {
@@ -251,55 +228,6 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
     open fun getSeat(passenger: Entity?): SeatInfo? {
         return getSeat(getSeatIndex(passenger))
-    }
-
-    /**
-    * Returns `true` if at least one weapon slot's [com.atsuishio.superbwarfare.data.gun.NbtVersion] has changed since
-    * the last call to [snapshotGunVersions], meaning a [GUN_DATA_MAP] sync is needed.
-    *
-    * Each slot's structural and state counters are packed into a single [Long]
-    * (structural in the upper 32 bits, state in the lower 32 bits) to allow a
-    * single integer comparison per slot instead of two separate reads.
-    *
-    * The check is O(N) in the number of weapon slots (typically 1–3 per vehicle)
-    * and involves no allocations — it is negligibly cheap compared with the
-    * [entityData] write and network packet it replaces when the result is `false`.
-    *
-    * @param map the current weapon data map for this vehicle.
-    * @return `true` if any slot version has changed and a sync should be sent;
-    *         `false` if all slots are unchanged and the sync can be skipped.
-    */
-    private fun isGunDataDirty(map: Map<String, GunData>): Boolean {
-        // Slot count changed — weapons added or removed
-        if (map.size != lastSyncedGunVersions.size) return true
-
-        for ((name, gunData) in map) {
-            // Pack both version counters into a single Long for a one-shot comparison.
-            // NbtVersion.structural changes on attachments/perks/fire-mode swaps;
-            // NbtVersion.state changes on ammo, heat, reload timers, etc.
-            val current = (gunData.nbtVersion.structural.toLong() shl 32) or
-                        (gunData.nbtVersion.state.toLong() and 0xFFFFFFFFL)
-            val last = lastSyncedGunVersions[name]
-            if (last == null || last != current) return true
-        }
-        return false
-    }
-
-    /**
-    * Snapshots the current [com.atsuishio.superbwarfare.data.gun.NbtVersion] of every weapon slot into [lastSyncedGunVersions].
-    *
-    * Must be called immediately **after** a successful [GUN_DATA_MAP] write to [entityData]
-    * so that the next call to [isGunDataDirty] compares against a fresh baseline.
-    *
-    * @param map the weapon data map whose versions should be recorded.
-    */
-    private fun snapshotGunVersions(map: Map<String, GunData>) {
-        // Clear stale entries for removed weapon slots
-        lastSyncedGunVersions.clear()
-        for ((name, gunData) in map) {
-            lastSyncedGunVersions[name] = (gunData.nbtVersion.structural.toLong() shl 32) or
-                                        (gunData.nbtVersion.state.toLong() and 0xFFFFFFFFL)
-        }
     }
 
     /**
@@ -395,10 +323,14 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     private var combinedAabbCacheTick: Int = -1
 
     /** Flat array of block AABB coords [x0,y0,z0,x1,y1,z1,...], reused across the tick. */
-    @JvmField internal var blockCollisionCoords: DoubleArray = DoubleArray(0)
+    @JvmField
+    internal var blockCollisionCoords: DoubleArray = DoubleArray(0)
+
     /** Number of valid entries (each = 6 doubles) in [blockCollisionCoords]. */
-    @JvmField internal var blockCollisionCount: Int = 0
-    @JvmField internal var blockCollisionCacheTick: Int = -1
+    @JvmField
+    internal var blockCollisionCount: Int = 0
+    @JvmField
+    internal var blockCollisionCacheTick: Int = -1
 
     /** Holding a strong reference here prevents premature GC */
     @JvmField
@@ -420,7 +352,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     protected var yO = 0.0
     protected var zO = 0.0
 
-    open var roll by ROLL
+    open var roll = 0f
     open var prevRoll = 0f
     open var repairCoolDown = maxRepairCoolDown()
     open var hurtWarnCoolDown = 0
@@ -584,11 +516,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         }
 
         if (key == GUN_DATA_MAP) {
-            // Skip cache invalidation when update was initiated by our own baseTick()
-            if (!isSelfUpdatingGunData) {
-                gunDataMapCache = null
-                gunDataMapWeaponKeys = null
-            }
+            gunDataMapCache = null
+            gunDataMapWeaponKeys = null
         }
 
         if (key == IS_WRECK) {
@@ -769,12 +698,23 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
     open fun clearTowingInfo() {
         if (!this.level().isClientSide) {
-            towedByEntity?.towingUUID = ""
-            val towed = towingEntity
-            if (towed is VehicleEntity) {
-                towed.towedByUUID = ""
-            } else towed?.persistentData?.remove("TowedByUUID")
-            towingUUID = ""
+            // 清除所有被牵引实体
+            for (uuid in towingUUIDs.toList()) {
+                val towed = EntityFindUtil.findEntity(level(), uuid)
+                if (towed is VehicleEntity) {
+                    towed.towedByUUID = ""
+                } else {
+                    towed?.persistentData?.remove("TowedByUUID")
+                    towed?.persistentData?.remove(CatapultShuttleEntity.TOWED_BY_SHUTTLE_TAG_KEY)
+                }
+            }
+            towingUUIDs = mutableListOf()
+
+            // 清除牵引我方载具的实体
+            towedByEntity?.let { tower ->
+                val filtered = tower.towingUUIDs.filter { it != this.stringUUID }
+                tower.towingUUIDs = filtered.toMutableList()
+            }
             towedByUUID = ""
         }
     }
@@ -1114,7 +1054,6 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             define(LASER_SCALE, 0f)
             define(LASER_SCALE_O, 0f)
             define(CHARGE_PROGRESS, 0f)
-            define(ROLL, 0f)
             define(LIFT_OFFSET, 0f)
             define(IS_WRECK, false)
             define(SYMPATHETIC_DETONATED, false)
@@ -1124,7 +1063,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             define(LOCKED, false)
             define(LOITER_PARAMS, Quaternionf(0f, 318f, 0f, 400f))
             define(LOITER_ACTIVE, false)
-            define(TOWING_UUID, "")
+            define(TOWING_UUIDS, CompoundTag())
             define(TOWED_BY_UUID, "")
         }
     }
@@ -1715,7 +1654,6 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         serverYaw = compound.getFloat("ServerYaw")
         serverPitch = compound.getFloat("ServerPitch")
-        roll = compound.getFloat("Roll")
 
         // Restore turret & gun orientation from NBT
         if (compound.contains("TurretYRot")) {
@@ -1783,7 +1721,18 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             loiterActive = compound.getBoolean("LoiterActive")
         }
 
-        towingUUID = compound.getString("TowingUUID")
+        // 加载牵引列表：优先新格式，回退旧格式
+        if (compound.contains("TowingUUIDs")) {
+            val listTag = compound.getList("TowingUUIDs", Tag.TAG_STRING.toInt())
+            val list = mutableListOf<String>()
+            for (i in listTag.indices) {
+                list.add(listTag.getString(i))
+            }
+            towingUUIDs = list
+        } else if (compound.contains("TowingUUID")) {
+            val oldUuid = compound.getString("TowingUUID")
+            towingUUIDs = if (oldUuid.isNotBlank()) mutableListOf(oldUuid) else mutableListOf()
+        }
         towedByUUID = compound.getString("TowedByUUID")
     }
 
@@ -1817,11 +1766,11 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         val tag = CompoundTag()
         for ((weaponName, gunData) in gunDataMap) {
             val stackTag = gunData.stack.save(CompoundTag())
-            
+
             // Clean stack payload
             stackTag.remove("id")
             stackTag.remove("Count")
-            
+
             if (stackTag.contains("tag", Tag.TAG_COMPOUND.toInt())) {
                 val itemTag = stackTag.getCompound("tag")
                 if (itemTag.contains("GunData", Tag.TAG_COMPOUND.toInt())) {
@@ -1829,7 +1778,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                     gunTag.remove("BackupAmmoCount")
                 }
             }
-            
+
             if (stackTag.isEmpty) continue
             tag.put(weaponName, stackTag)
         }
@@ -1860,7 +1809,6 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         compound.putFloat("ServerYaw", serverYaw)
         compound.putFloat("ServerPitch", serverPitch)
-        compound.putFloat("Roll", roll)
 
         // Save turret & gun orientation to NBT
         compound.putFloat("TurretYRot", turretYRot)
@@ -1897,6 +1845,12 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         compound.putFloat("LoiterR", lp.w())
         compound.putBoolean("LoiterActive", loiterActive)
 
+        val towingListTag = ListTag()
+        for (uuid in towingUUIDs) {
+            towingListTag.add(StringTag.valueOf(uuid))
+        }
+        compound.put("TowingUUIDs", towingListTag)
+        // 向后兼容：同时保存第一个UUID到旧字段
         compound.putString("TowingUUID", towingUUID)
         compound.putString("TowedByUUID", towedByUUID)
     }
@@ -1925,7 +1879,6 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         // Rotation
         tag.putFloat("Yaw", yRot)
         tag.putFloat("Pitch", xRot)
-        tag.putFloat("Roll", roll)
 
         // Turrets
         tag.putFloat("TurretYRot", turretYRot)
@@ -1938,6 +1891,17 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         tag.putBoolean("IsWreck", isWreck)
         tag.putBoolean("EngineRunning", engineRunning())
         tag.putFloat("LaserScale", laserScale)
+
+        // 同步武器可用射击次数：超视距假实体没有同步的 GUN_DATA_MAP，
+        // 战术地图聚合远程打击武器时需要备弹数据，这里用轻量的
+        // <武器名, 可用射击次数> 映射补齐（弹药消耗系数已在服务器端折算）。
+        val gunAmmoTag = CompoundTag()
+        for ((name, gd) in gunDataMap) {
+            val ammoCost = gd.get(GunProp.AMMO_COST_PER_SHOOT)
+            val shots = if (ammoCost <= 0) 999 else gd.currentAvailableAmmo(null) / ammoCost
+            gunAmmoTag.putInt(name, shots)
+        }
+        tag.put("GunAmmo", gunAmmoTag)
 
         tag.putUUID("UUID", this.uuid)
     }
@@ -2223,8 +2187,9 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         val interval = when {
             engineInfo is Ship -> 1
             vehicleType == VehicleType.AIRPLANE ||
-            vehicleType == VehicleType.HELICOPTER ||
-            vehicleType == VehicleType.AIRSHIP -> 20
+                    vehicleType == VehicleType.HELICOPTER ||
+                    vehicleType == VehicleType.AIRSHIP -> 20
+
             else -> 4
         }
 
@@ -2428,17 +2393,10 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                 }
             }
 
-            // Conditional sync: skip the entityData write — and the resulting
-            // client-side onSyncedDataUpdated cascade — when no weapon NBT has
-            // changed since the previous tick.  For idle weapons (no shooting,
-            // no reloading) this eliminates the forced packet every tick and
-            // keeps the client-side gunDataMapCache valid indefinitely.
-            if (isGunDataDirty(map)) {
-                isSelfUpdatingGunData = true
-                this.entityData.set(GUN_DATA_MAP, map, true)
-                isSelfUpdatingGunData = false
-                snapshotGunVersions(map)
-            }
+            // 每 tick 无条件同步枪械数据：每个服务器 tick 都把最新 map 写入
+            // entityData（force=true），由 SynchedEntityData 在实体同步时自动
+            // 广播给所有追踪客户端，避免手动脏检查漏同步导致两端不同步。
+            this.entityData.set(GUN_DATA_MAP, map, true)
         }
 
         this.wasEngineRunning = this.engineRunning()
@@ -2775,11 +2733,10 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         if (hasDecoy() && level() is ServerLevel) {
             decoyItemCount = countDecoyItem()
-            val type = vehicleType
-            if (type == VehicleType.AIRPLANE || type == VehicleType.HELICOPTER || type == VehicleType.AIRSHIP) {
-                releaseDecoy()
-            } else {
+            if (this.hasSmokeDecoy()) {
                 releaseSmokeDecoy(getTurretVector(1f))
+            } else {
+                releaseDecoy()
             }
 
             if (decoyReloadCoolDown > 0) {
@@ -2788,7 +2745,6 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                 } else {
                     decoyReloadCoolDown = getDecoyReloadTime()
                 }
-
             }
 
             if (decoyReloadCoolDown == 0 && decoyItemCount > 0 && decoyCount == 0) {
@@ -2891,15 +2847,15 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     /**
-    * Returns whether this vehicle (or any of its passengers) carries a Creative
-    * Ammo Box, using a **per-tick cache** to avoid redundant inventory scans.
-    *
-    * The result is recomputed at most once per tick regardless of how many
-    * callers (e.g. [GunEventHandler.gunTick] and [updateBackupAmmoCount]) ask
-    * within the same tick.
-    *
-    * @return `true` if a Creative Ammo Box is available to this vehicle this tick
-    */
+     * Returns whether this vehicle (or any of its passengers) carries a Creative
+     * Ammo Box, using a **per-tick cache** to avoid redundant inventory scans.
+     *
+     * The result is recomputed at most once per tick regardless of how many
+     * callers (e.g. [GunEventHandler.gunTick] and [updateBackupAmmoCount]) ask
+     * within the same tick.
+     *
+     * @return `true` if a Creative Ammo Box is available to this vehicle this tick
+     */
     fun hasCreativeAmmoBoxCached(): Boolean {
         // tickCount equality — exact single-tick freshness guarantee.
         if (tickCount != creativeAmmoBoxCacheTick) {
@@ -2918,10 +2874,10 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     /**
-    * Forces the chunk at [chunkPos] to stay loaded via a POST_TELEPORT ticket.
-    *
-    * @param chunkPos target chunk position
-    */
+     * Forces the chunk at [chunkPos] to stay loaded via a POST_TELEPORT ticket.
+     *
+     * @param chunkPos target chunk position
+     */
     private fun keepChunkLoaded(chunkPos: ChunkPos) {
         (level() as ServerLevel).chunkSource.addRegionTicket(
             TicketType.POST_TELEPORT, chunkPos, 3, this.id
@@ -2929,13 +2885,13 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     /**
-    * Keeps the vehicle's current chunk and the chunk ahead of it (based on
-    * current velocity) loaded, to prevent entity pop-in during fast movement.
-    *
-    * Only issues two distinct [net.minecraft.server.level.ServerChunkCache.addRegionTicket] calls when the two positions
-    * actually fall in different chunks — avoids a redundant ticket when the
-    * vehicle is stationary or moving slowly within one chunk boundary.
-    */
+     * Keeps the vehicle's current chunk and the chunk ahead of it (based on
+     * current velocity) loaded, to prevent entity pop-in during fast movement.
+     *
+     * Only issues two distinct [net.minecraft.server.level.ServerChunkCache.addRegionTicket] calls when the two positions
+     * actually fall in different chunks — avoids a redundant ticket when the
+     * vehicle is stationary or moving slowly within one chunk boundary.
+     */
     open fun keepChunkLoaded(position: Vec3) {
         val currentChunk = ChunkPos(BlockPos.containing(position))
         keepChunkLoaded(currentChunk)
@@ -2948,22 +2904,13 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         }
     }
 
-    /**
-    * Ticks the vehicle's radar systems, scanning for targets and sending
-    * BVR sync configs to the driver.
-    *
-    * Uses [lastDriverUuidParsed] to avoid re-parsing and exception-throwing
-    * on every tick when no driver has sat in the vehicle yet ("undefined").
-    */
     fun vehicleRadar() {
         if (!SyncConfig.SYNC_ENTITY_OVER_RANGE.get()) return
         val radars = computed().radar ?: return
         val level = this.level()
         if (level !is ServerLevel) return
 
-        // Fast path: skip UUID lookup entirely when no driver has ever been assigned.
-        val driverUuid = lastDriverUuidParsed ?: return
-        val player = EntityFindUtil.findPlayer(level, driverUuid.toString())
+        val player = EntityFindUtil.findPlayer(level(), lastDriverUUID)
         if (player !is Player) return
 
         for (radarInfo in radars) {
@@ -3022,16 +2969,16 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     override fun canFreeze() = false
 
     /**
-    * Returns whether any OBB of this vehicle is currently in contact with the
-    * ground, using a **short-lived tick cache** to amortise the cost of the
-    * block-collision iteration in [VehicleMotionUtils.checkObbOnGround].
-    *
-    * The result is refreshed at most every [OBB_GROUND_CACHE_TICKS] ticks.
-    * For large vehicles (e.g. KirovEntity) this halves the number of expensive
-    * block-state lookups caused by the OBB ground-check.
-    *
-    * @return `true` if any OBB is touching the ground
-    */
+     * Returns whether any OBB of this vehicle is currently in contact with the
+     * ground, using a **short-lived tick cache** to amortise the cost of the
+     * block-collision iteration in [VehicleMotionUtils.checkObbOnGround].
+     *
+     * The result is refreshed at most every [OBB_GROUND_CACHE_TICKS] ticks.
+     * For large vehicles (e.g. KirovEntity) this halves the number of expensive
+     * block-state lookups caused by the OBB ground-check.
+     *
+     * @return `true` if any OBB is touching the ground
+     */
     fun checkObbOnGroundCached(): Boolean {
         if (tickCount - obbOnGroundCacheTick >= OBB_GROUND_CACHE_TICKS) {
             cachedObbOnGround = VehicleMotionUtils.checkObbOnGround(this)
@@ -3053,7 +3000,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
                 this.getTransformFromString(obbInfo.transform)
             }
 
-            val obb      = obbInfo.getOBB()
+            val obb = obbInfo.getOBB()
             val worldPos = this.transformPosition(
                 transform, obbInfo.position.x, obbInfo.position.y, obbInfo.position.z
             )
@@ -4295,6 +4242,10 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         return VehicleVecUtils.getZoomDirection(this, entity, partialTicks)
     }
 
+    override fun isAlwaysTicking(): Boolean {
+        return true
+    }
+
     open val mouseSensitivity: Double
         get() = computed().mouseSensitivity
 
@@ -4533,10 +4484,10 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     open fun releaseDecoy() = VehicleWeaponUtils.releaseDecoy(this)
 
     open fun countDecoyItem(): Int {
-        return if (this.vehicleType == VehicleType.AIRPLANE || this.vehicleType == VehicleType.HELICOPTER || vehicleType == VehicleType.AIRSHIP) {
-            InventoryTool.countItem(this, ModItems.FLYING_FLARE_AMMO.get())
-        } else {
+        return if (this.hasSmokeDecoy()) {
             InventoryTool.countItem(this, ModItems.VEHICLE_SMOKE_AMMO.get())
+        } else {
+            InventoryTool.countItem(this, ModItems.FLYING_FLARE_AMMO.get())
         }
     }
 
@@ -4851,6 +4802,8 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
     open fun hasDecoy() = computed().hasDecoy
 
+    open fun hasSmokeDecoy() = computed().smokeDecoy
+
     open fun engineRunning() = if (vehicleType == VehicleType.AIRSHIP) health > 0 else Math.abs(power) > 0
 
     /**
@@ -4904,45 +4857,64 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     open var override by OVERRIDE
     open var skinId by SKIN_ID
     open var lastAttackerUUID by LAST_ATTACKER_UUID
-
-    // lastDriverUUID
-
-    /** Last known parsed form of [lastDriverUUID], or `null` if unparseable. */
-    private var lastDriverUuidParsed: UUID? = null
-
-    /**
-    * Backing field for [lastDriverUUID].
-    * Use the property setter to keep [lastDriverUuidParsed] in sync.
-    */
-    private var lastDriverUuidString: String = "undefined"
-
-    // Replace the existing plain var with this property.
-    // If VehicleEntity already declares lastDriverUUID via entityData / SynchedEntityData,
-    // rename the backing field accordingly and hook into the setter.
-    var lastDriverUUID: String
-        get() = lastDriverUuidString
-        set(value) {
-            if (value == lastDriverUuidString) return
-            lastDriverUuidString = value
-            // Parse once on write; catch is free when value is valid UUID.
-            lastDriverUuidParsed = try {
-                UUID.fromString(value)
-            } catch (_: IllegalArgumentException) {
-                null
-            }
-        }
-
+    open var lastDriverUUID by LAST_DRIVER_UUID
     open var dogTagIcon by DOG_TAG_ICON
     open var aiTurretTargetUUID by AI_TURRET_TARGET_UUID
     open var aiPassengerWeaponTargetUUID by AI_PASSENGER_WEAPON_TARGET_UUID
 
-    open var towingUUID by TOWING_UUID
+    /** 已牵引实体UUID列表（支持多目标），通过TOWING_UUIDS同步 */
+    open var towingUUIDs: MutableList<String>
+        get() {
+            val tag = entityData.get(TOWING_UUIDS)
+            val listTag = tag.getList("list", Tag.TAG_STRING.toInt())
+            val result = mutableListOf<String>()
+            for (i in listTag.indices) {
+                result.add(listTag.getString(i))
+            }
+            return result
+        }
+        set(value) {
+            val tag = CompoundTag()
+            val listTag = ListTag()
+            for (uuid in value) {
+                listTag.add(StringTag.valueOf(uuid))
+            }
+            tag.put("list", listTag)
+            entityData.set(TOWING_UUIDS, tag)
+        }
+
+    /** 向后兼容：返回第一个被牵引实体的UUID，未牵引时返回空字符串 */
+    open var towingUUID: String
+        get() = towingUUIDs.firstOrNull() ?: ""
+        set(value) {
+            if (value.isBlank()) {
+                towingUUIDs = mutableListOf()
+            } else {
+                val current = towingUUIDs
+                if (current.isEmpty()) {
+                    towingUUIDs = mutableListOf(value)
+                } else {
+                    current[0] = value
+                    towingUUIDs = current
+                }
+            }
+        }
+
     open var towedByUUID by TOWED_BY_UUID
 
+    /** 所有被牵引实体列表 */
+    open val towingEntities: List<Entity>
+        get() = towingUUIDs.mapNotNull { uuid ->
+            if (uuid.isBlank()) null
+            else EntityFindUtil.findEntity(level(), uuid)
+        }
+
+    /** 向后兼容：返回第一个被牵引实体 */
     open val towingEntity: Entity?
         get() {
-            if (towingUUID.isBlank()) return null
-            return EntityFindUtil.findEntity(level(), towingUUID)
+            val uuid = towingUUID
+            if (uuid.isBlank()) return null
+            return EntityFindUtil.findEntity(level(), uuid)
         }
 
     open val towedByEntity: VehicleEntity?
@@ -4950,6 +4922,13 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             if (towedByUUID.isBlank()) return null
             return EntityFindUtil.findEntity(level(), towedByUUID) as? VehicleEntity
         }
+
+    /** 检查是否正在牵引指定实体 */
+    open fun isTowing(entity: Entity): Boolean =
+        entity.stringUUID in towingUUIDs
+
+    /** 是否有任何牵引目标 */
+    open fun isTowingAny(): Boolean = towingUUIDs.isNotEmpty()
 
     open var yawWhileShoot by YAW_WHILE_SHOOT
     open var hornVolume by HORN_VOLUME
@@ -5080,14 +5059,14 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         const val TAG_SEAT_INDEX: String = "SBWSeatIndex"
 
         /**
-        * How many ticks between environment-rate recomputations.
-        *
-        * Fluid-state checks ([isInLava], [isInWaterOrRain]) scan every block
-        * in the entity's bounding box — expensive for large vehicles such as
-        * KirovEntity.  Recomputing every 4 ticks introduces at most 0.2 s of
-        * lag when the environment changes (e.g. vehicle drives into lava),
-        * which is imperceptible during gameplay.
-        */
+         * How many ticks between environment-rate recomputations.
+         *
+         * Fluid-state checks ([isInLava], [isInWaterOrRain]) scan every block
+         * in the entity's bounding box — expensive for large vehicles such as
+         * KirovEntity.  Recomputing every 4 ticks introduces at most 0.2 s of
+         * lag when the environment changes (e.g. vehicle drives into lava),
+         * which is imperceptible during gameplay.
+         */
         private const val ENV_RATE_RECOMPUTE_INTERVAL = 4
 
         /**
@@ -5402,20 +5381,15 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         val LOITER_ACTIVE: EntityDataAccessor<Boolean> =
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.BOOLEAN)
 
-        /** 正在牵引的载具UUID */
+        /** 正在牵引的实体UUID列表（支持多目标牵引） */
         @JvmField
-        val TOWING_UUID: EntityDataAccessor<String> =
-            SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.STRING)
+        val TOWING_UUIDS: EntityDataAccessor<CompoundTag> =
+            SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.COMPOUND_TAG)
 
         /** 正在被牵引的载具UUID */
         @JvmField
         val TOWED_BY_UUID: EntityDataAccessor<String> =
             SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.STRING)
-
-        /** ROLL */
-        @JvmField
-        val ROLL: EntityDataAccessor<Float> =
-            SynchedEntityData.defineId(VehicleEntity::class.java, EntityDataSerializers.FLOAT)
 
         /** LIFT_OFFSET */
         @JvmField

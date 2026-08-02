@@ -44,10 +44,6 @@ open class RpgRocketTBGEntity : FastThrowableProjectile, BasicGeoProjectileEntit
         }
     }
 
-    override fun forceLoadChunk(): Boolean {
-        return true
-    }
-
     override fun getDefaultItem(): Item {
         return ModItems.RPG_ROCKET_TBG.get()
     }
