@@ -456,9 +456,8 @@ object GunEventHandler {
         if (reload.singleReloadStarter.start()) {
             postEvent(ReloadEvent.Pre(shooter, data))
 
-            if (data.get(GunProp.PREPARE_LOAD_TIME) != 0 && (!data.hasEnoughAmmoToShoot(shooter) || stack.`is`(
-                    ModItems.SECONDARY_CATACLYSM.get()
-                ))
+            if (data.get(GunProp.PREPARE_LOAD_TIME) != 0 &&
+                (!data.hasEnoughAmmoToShoot(shooter) || stack.`is`(ModItems.SECONDARY_CATACLYSM.get()))
             ) {
                 // 此处判断空仓换弹的时候，是否在准备阶段就需要装填一发，如M870
                 playGunPrepareLoadReloadSounds(shooter, data)
@@ -503,9 +502,8 @@ object GunEventHandler {
 
         // 二阶段
         if ((reload.prepareTimer.get() == 0 || reload.iterativeLoadTimer.get() == 0)
-            && reload.stage() == 2 && reload.iterativeLoadTimer.get() == 0 && !data.stopped.get() && data.ammo.get() < data.get(
-                GunProp.MAGAZINE
-            )
+            && reload.stage() == 2 && reload.iterativeLoadTimer.get() == 0
+            && !data.stopped.get() && data.ammo.get() < data.get(GunProp.MAGAZINE)
         ) {
             playGunLoopReloadSounds(shooter, data)
             val iterativeTime = data.get(GunProp.ITERATIVE_TIME)
@@ -513,6 +511,7 @@ object GunEventHandler {
 
             // 动画播放nbt
             data.loadIndex.set(if (data.loadIndex.get() == 1) 0 else 1)
+            data.nbtVersion.invalidateStructural()
         }
 
         // 装填
@@ -556,6 +555,7 @@ object GunEventHandler {
             reload.setStage(0)
             if (data.get(GunProp.BOLT_ACTION_TIME) > 0) {
                 data.bolt.needed.set(false)
+                data.nbtVersion.invalidateStructural()
             }
             reload.setState(ReloadState.NOT_RELOADING)
             reload.singleReloadStarter.finish()
@@ -568,6 +568,7 @@ object GunEventHandler {
         val required = min(data.get(GunProp.MAGAZINE) - data.ammo.get(), 1)
         val available = min(required, data.countBackupAmmo(shooter))
         data.ammo.add(available)
+        data.nbtVersion.invalidateStructural()
 
         if (!InventoryTool.hasCreativeAmmoBox(shooter)) {
             data.consumeBackupAmmo(shooter, available)
@@ -581,6 +582,7 @@ object GunEventHandler {
         )
         val available = min(required, data.countBackupAmmo(shooter))
         data.ammo.add(available)
+        data.nbtVersion.invalidateStructural()
 
         if (!InventoryTool.hasCreativeAmmoBox(shooter)) {
             if (shooter != null) {
