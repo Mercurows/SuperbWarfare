@@ -392,7 +392,6 @@
   "ThirdPersonCameraPos": [0, 1, 3],
   "VehicleContainerType": "Medium",
   "DestroyInfo": {
-    "ParticleType": "Huge",
     "ExplosionDamage": 160,
     "ExplosionRadius": 8,
     "SympatheticDetonation": true,

@@ -52,7 +52,6 @@
   ],
   "VehicleContainerType": "Empty",
   "DestroyInfo": {
-    "ParticleType": "Medium",
     "ExplosionDamage": 15,
     "ExplosionRadius": 2,
     "ExplodePassengers": false,
@@ -83,13 +82,6 @@
     ]
   },
   "EngineSound": "superbwarfare:tiny_speedboat_engine",
-  "TerrainCompat": [
-    [1.156, 0, 1.875],
-    [-1.156, 0, 1.875],
-    [1.156, 0, 0.875],
-    [-1.156, 0, 0.875],
-    [1.156, 0, -0.875],
-    [-1.156, 0, -0.875]
-  ],
+  "TerrainCompat": [[1.156, 0, 1.875], [-1.156, 0, 1.875], [1.156, 0, 0.875], [-1.156, 0, 0.875], [1.156, 0, -0.875], [-1.156, 0, -0.875]],
   "InertiaRotateRate": 2
 }

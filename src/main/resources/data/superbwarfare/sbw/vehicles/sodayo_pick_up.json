@@ -163,7 +163,7 @@
     "Increment": 0.024,
     "Decrement": 0.012,
     "SteeringSpeed": 0.075,
-    "EngineSoundVolume": 0.6
+    "EngineSoundVolume" : 0.6
   },
   "UpStep": 1.1,
   "Mass": 3,
@@ -201,7 +201,6 @@
   ],
   "VehicleContainerType": "Large",
   "DestroyInfo": {
-    "ParticleType": "Large",
     "ExplosionDamage": 40,
     "ExplosionRadius": 5
   },
@@ -219,6 +218,6 @@
   "EngineSound": "superbwarfare:sodayo_pick_up_engine",
   "HornSound": "superbwarfare:car_horn",
   "TerrainCompat": [[1, 0, 2.875], [-1, 0, 2.875], [1, 0, -1.28], [-1, 0, -1.28]],
-  "TerrainCompatRotateRate": 1.5,
+  "TerrainCompatRotateRate" : 1.5,
   "InertiaRotateRate": 0.6
 }

@@ -390,7 +390,7 @@
     "Increment": 0.02,
     "Decrement": 0.01,
     "SteeringSpeed": 0.1,
-    "EngineSoundVolume": 0.6
+    "EngineSoundVolume" : 0.6
   },
   "TurretPos": [0.0, 2.632, -0.539],
   "BarrelPos": [0.0, 0.704, 0.810],
@@ -436,7 +436,6 @@
     "$entity.getSourceAngle(source, 0.3) * damage"
   ],
   "DestroyInfo": {
-    "ParticleType": "Giant",
     "ExplosionDamage": 200,
     "ExplosionRadius": 16,
     "SympatheticDetonation": true,

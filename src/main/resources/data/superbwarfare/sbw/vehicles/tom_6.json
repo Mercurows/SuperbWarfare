@@ -40,7 +40,6 @@
   ],
   "VehicleContainerType": "Empty",
   "DestroyInfo": {
-    "ParticleType": "Medium",
     "ExplosionDamage": 15,
     "ExplosionRadius": 2,
     "CrashPassengers": true,
@@ -64,6 +63,6 @@
     "SpeedRate": 1
   },
   "TerrainCompat": [[0.562, 0, 0.6375], [-0.562, 0, 0.6375], [0.562, 0, -0.6375], [-0.562, 0, -0.6375]],
-  "TerrainCompatRotateRate": 6,
+  "TerrainCompatRotateRate" : 6,
   "SelfHurtPercent": 0
 }

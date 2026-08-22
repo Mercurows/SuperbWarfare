@@ -26,7 +26,6 @@
   ],
   "VehicleContainerType": "Empty",
   "DestroyInfo": {
-    "ParticleType": "Small",
     "ExplosionDamage": 10,
     "ExplosionRadius": 2,
     "ExplodePassengers": false,
@@ -40,7 +39,7 @@
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/otto.png",
   "Type": "Car",
   "EngineSound": "superbwarfare:wheel_chair_engine",
-  "EngineSoundVolume": 0.1,
+  "EngineSoundVolume" : 0.1,
   "EngineType": "WheelChair",
   "EngineInfo": {
     "Buoyancy": 0.022,

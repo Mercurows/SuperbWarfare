@@ -195,7 +195,7 @@
     "Increment": 0.012,
     "Decrement": 0.007,
     "SteeringSpeed": 0.07,
-    "EngineSoundVolume": 0.7
+    "EngineSoundVolume" : 0.7
   },
   "EngineSound": "superbwarfare:plz_05_engine",
   "ThirdPersonCameraPos": [-0.8669625, 1.5, 5],
@@ -213,7 +213,6 @@
     ]
   },
   "DestroyInfo": {
-    "ParticleType": "Giant",
     "ExplosionDamage": 250,
     "ExplosionRadius": 18,
     "SympatheticDetonation": true,
