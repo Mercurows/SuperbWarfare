@@ -900,6 +900,7 @@
   "tips.superbwarfare.modify_result.tag_key": "[Damage Tag] <%1$s>",
   "tips.superbwarfare.modify_result.entity_type": "[Entity Type] <%1$s>",
   "tips.superbwarfare.modify_result.entity_id": "[Entity ID] <%1$s>",
+  "tips.superbwarfare.modify_result.entity_tag": "[Entity Tag] <%1$s>",
 
   "tips.superbwarfare.category.land": "Land Vehicles",
   "tips.superbwarfare.category.defense": "Fixed Weapon",
