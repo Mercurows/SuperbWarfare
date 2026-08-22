@@ -222,5 +222,11 @@
   "EngineSound": "superbwarfare:prism_tank_engine",
   "HudType": "@Land",
   "TerrainCompat": [[2, 0, 2.375], [-2, 0, 2.375], [2, 0, 1.156], [-2, 0, 1.156], [2, 0, 0], [-2, 0, 0], [2, 0, -1.156], [-2, 0, -1.156], [2, 0, -2.375], [-2, 0, -2.375]],
-  "InertiaRotateRate": 1
+  "InertiaRotateRate": 1,
+  "PartHealth": {
+    "LeftWheel": 100,
+    "RightWheel": 100,
+    "MainEngine": 150,
+    "SubEngine": 150
+  }
 }
