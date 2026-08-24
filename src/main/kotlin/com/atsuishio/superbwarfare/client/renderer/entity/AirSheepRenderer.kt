@@ -47,7 +47,7 @@ class AirSheepRenderer(manager: EntityRendererProvider.Context) :
         }
 
         if (ClientEventHandler.activeThermalImaging) {
-            color = floatArrayOf(1f, 1f, 1f, 1.0f)
+            color = floatArrayOf(1f, 1f, 1f)
             packedLight = LightTexture.FULL_BRIGHT
         }
 
@@ -58,9 +58,9 @@ class AirSheepRenderer(manager: EntityRendererProvider.Context) :
             BedrockModelRenderTypes.polyMeshCutout(emissive),
             packedLight,
             OverlayTexture.NO_OVERLAY,
-            color[0],
-            color[1],
-            color[2],
+            color[0] / 255.0f,
+            color[1] / 255.0f,
+            color[2] / 255.0f,
             1f
         )
     }
