@@ -2212,8 +2212,9 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         val maxZ = Mth.ceil(obbAABB.maxZ)
 
         for (x in minX until maxX) {
-            for (y in minY until maxY) {
-                for (z in minZ until maxZ) {
+            for (z in minZ until maxZ) {
+                if (!level.hasChunk(x shr 4, z shr 4)) continue
+                for (y in minY until maxY) {
                     val pos = BlockPos(x, y, z)
                     val fluidState = level.getFluidState(pos)
                     if (!fluidState.isEmpty) {
