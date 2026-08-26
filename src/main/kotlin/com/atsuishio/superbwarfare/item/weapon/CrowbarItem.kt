@@ -23,7 +23,7 @@ import net.minecraftforge.common.ForgeMod
 import net.minecraftforge.items.ItemHandlerHelper
 import java.util.*
 
-class CrowbarItem : SwordItem(Tiers.IRON, 2, -2f, Properties().durability(400)),
+open class CrowbarItem : SwordItem(Tiers.IRON, 2, -2f, Properties().durability(400)),
     IVehicleInteract {
     override fun getAttributeModifiers(
         slot: EquipmentSlot,
@@ -72,6 +72,7 @@ class CrowbarItem : SwordItem(Tiers.IRON, 2, -2f, Properties().durability(400)),
             if (vehicle.isWreck) {
                 return InteractionResult.PASS
             } else {
+                vehicle.clearTowingInfo()
                 for (item in vehicle.getRetrieveItems()) {
                     ItemHandlerHelper.giveItemToPlayer(player, item)
                 }
