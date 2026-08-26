@@ -5,9 +5,9 @@ import com.atsuishio.superbwarfare.entity.living.DPSGeneratorEntity
 import com.atsuishio.superbwarfare.entity.living.TargetEntity
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter
+import com.atsuishio.superbwarfare.init.ModDataComponents
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.item.misc.TranscriptItem
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.FormatTool.format1D
@@ -20,9 +20,6 @@ import net.minecraft.core.BlockPos
 import net.minecraft.core.BlockPos.MutableBlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.Holder
-import net.minecraft.nbt.CompoundTag
-import net.minecraft.nbt.ListTag
-import net.minecraft.nbt.Tag
 import net.minecraft.network.chat.Component
 import net.minecraft.network.protocol.game.ClientboundSoundPacket
 import net.minecraft.server.level.ServerLevel
@@ -274,26 +271,20 @@ interface IAdvancedHitDetection {
         if (stack.`is`(ModItems.TRANSCRIPT.get())) {
             val size = 10
 
-            val tags = stack.getOrCreateTag().getList(TranscriptItem.TAG_SCORES, Tag.TAG_COMPOUND.toInt())
+            var scores = stack.get(ModDataComponents.TRANSCRIPT_SCORE)
+            if (scores == null) scores = mutableListOf()
 
-            val queue: Queue<CompoundTag> = ArrayDeque<CompoundTag>()
-            for (i in tags.indices) {
-                queue.add(tags.getCompound(i))
-            }
-
-            val tag = CompoundTag()
-            tag.putInt("Score", score)
-            tag.putDouble("Distance", distance)
-            queue.offer(tag)
+            val queue = ArrayDeque(scores)
+            queue.offer(com.mojang.datafixers.util.Pair(score, distance))
 
             while (queue.size > size) {
                 queue.poll()
             }
 
-            val newTags = ListTag()
-            newTags.addAll(queue)
-
-            stack.getOrCreateTag().put(TranscriptItem.TAG_SCORES, newTags)
+            stack.set(
+                ModDataComponents.TRANSCRIPT_SCORE,
+                queue.toList()
+            )
         }
     }
 
@@ -383,7 +374,7 @@ interface IAdvancedHitDetection {
             var blockHit: BlockHitResult? = null
             var fluidAnyHit: BlockHitResult? = null
 
-            val vanillaResult = performRayTrace<Pair<BlockHitResult, BlockHitResult>>(
+            val vanillaResult = performRayTrace(
                 context,
                 { rayTraceContext, blockPos ->
                     val clipResult = clipAt(world, blockStateGetter, rayTraceContext, blockPos, ignorePredicate)

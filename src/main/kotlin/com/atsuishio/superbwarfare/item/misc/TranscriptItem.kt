@@ -2,9 +2,7 @@ package com.atsuishio.superbwarfare.item.misc
 
 import com.atsuishio.superbwarfare.init.ModDataComponents
 import com.atsuishio.superbwarfare.tools.FormatTool
-import com.atsuishio.superbwarfare.tools.NBTTool
 import net.minecraft.ChatFormatting
-import net.minecraft.nbt.ListTag
 import net.minecraft.network.chat.Component
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResultHolder
@@ -60,15 +58,9 @@ open class TranscriptItem : Item(Properties().stacksTo(1)) {
     override fun use(pLevel: Level, pPlayer: Player, pUsedHand: InteractionHand): InteractionResultHolder<ItemStack> {
         if (pPlayer.isCrouching) {
             val stack = pPlayer.getItemInHand(pUsedHand)
-            val tag = NBTTool.getTag(stack)
-            tag.put(TAG_SCORES, ListTag())
-            NBTTool.saveTag(stack, tag)
+            stack.set(ModDataComponents.TRANSCRIPT_SCORE, listOf())
             return InteractionResultHolder.success(stack)
         }
         return super.use(pLevel, pPlayer, pUsedHand)
-    }
-
-    companion object {
-        const val TAG_SCORES: String = "Scores"
     }
 }
