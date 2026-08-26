@@ -122,7 +122,7 @@ open class MortarEntity(type: EntityType<MortarEntity>, level: Level) : Artiller
             }
         }
 
-        if (shooter != null) {
+        if (shooter != null && !level.isClientSide) {
             sendPacketToAll(VehicleShootClientMessage(shooter!!.uuid, this.getUUID(), 0, weaponName))
         }
     }
@@ -159,8 +159,8 @@ open class MortarEntity(type: EntityType<MortarEntity>, level: Level) : Artiller
             return InteractionResult.SUCCESS
         }
 
-        if (mainHandItem is MortarShellItem && !player.isShiftKeyDown && this.entityData.get(FIRE_TIME) == 0 && this.getItems()
-                .first().isEmpty
+        if (mainHandItem is MortarShellItem && !player.isShiftKeyDown && this.entityData.get(FIRE_TIME) == 0
+            && this.getItems().first().isEmpty
         ) {
             this.getItems()[0] = stack.copyWithCount(1)
             if (!player.isCreative) {

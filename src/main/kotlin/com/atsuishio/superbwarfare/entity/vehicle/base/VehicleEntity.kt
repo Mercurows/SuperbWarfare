@@ -1202,6 +1202,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
     open fun vehicleShoot(living: LivingEntity?, weaponName: String, targetPos: Vec3?) {
         if (isWreck) return
+        if (this.level().isClientSide) return
 
         val gunData = getGunData(weaponName)
 
