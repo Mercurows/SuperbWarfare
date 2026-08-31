@@ -7,8 +7,16 @@ import net.minecraftforge.registries.ForgeRegistries
 object VehicleConfig {
 
     @JvmField
-    val COLLISION_DESTROY_SOFT_BLOCKS = buildServerConfig {
+    val PLACE_VEHICLES_DIRECTLY = buildServerConfig {
         push("vehicle")
+
+        comment("允许玩家直接使用集装箱物品部署载具")
+        comment("Allow players to place vehicles directly using containers")
+        define("place_vehicles_directly", false)
+    }
+
+    @JvmField
+    val COLLISION_DESTROY_SOFT_BLOCKS = buildServerConfig {
         push("collision")
 
         comment("Allows vehicles to destroy soft blocks via collision")

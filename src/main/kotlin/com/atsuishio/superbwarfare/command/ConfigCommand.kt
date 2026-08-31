@@ -25,6 +25,7 @@ val CONFIG_COMMAND = buildCommand("config") {
     booleanConfig(ProjectileConfig::PROJECTILE_DESTROY_BLOCKS)
     booleanConfig(ProjectileConfig::PROJECTILE_CHUNK_LOADING)
 
+    booleanConfig(VehicleConfig::PLACE_VEHICLES_DIRECTLY)
     booleanConfig(VehicleConfig::COLLECT_DROPS_BY_CRASHING)
     booleanConfig(VehicleConfig::VEHICLE_ITEM_PICKUP)
     booleanConfig(VehicleConfig::SAME_TEAM_ENTER_VEHICLE)
