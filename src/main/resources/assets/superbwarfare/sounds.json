@@ -1663,10 +1663,50 @@
       }
     ]
   },
-  "k_98_end": {
+  "k_98_finish": {
     "sounds": [
       {
-        "name": "superbwarfare:gun/k_98/k_98_end",
+        "name": "superbwarfare:gun/k_98/k_98_finish",
+        "stream": false
+      }
+    ]
+  },
+  "k_98_bolt_close": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/k_98/k_98_bolt_close",
+        "stream": false
+      }
+    ]
+  },
+  "k_98_bolt_open": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/k_98/k_98_bolt_open",
+        "stream": false
+      }
+    ]
+  },
+  "k_98_clip": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/k_98/k_98_clip",
+        "stream": false
+      }
+    ]
+  },
+  "k_98_clip_out": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/k_98/k_98_clip_out",
+        "stream": false
+      }
+    ]
+  },
+  "k_98_first_bullet_in": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/k_98/k_98_first_bullet_in",
         "stream": false
       }
     ]
