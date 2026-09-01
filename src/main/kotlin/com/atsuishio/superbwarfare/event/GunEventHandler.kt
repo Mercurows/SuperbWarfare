@@ -459,16 +459,16 @@ object GunEventHandler {
                 // 此处判断空仓换弹的时候，是否在准备阶段就需要装填一发，如M870
                 playGunPrepareLoadReloadSounds(shooter, data)
                 val prepareLoadTime = data.get(GunProp.PREPARE_LOAD_TIME)
-                reload.prepareLoadTimer.set(prepareLoadTime + 1)
+                reload.prepareLoadTimer.set(prepareLoadTime)
             } else if (data.get(GunProp.PREPARE_EMPTY_TIME) != 0 && !data.hasEnoughAmmoToShoot(shooter)) {
                 // 此处判断空仓换弹，如莫辛纳甘
                 playGunEmptyPrepareSounds(shooter, data)
                 val prepareEmptyTime = data.get(GunProp.PREPARE_EMPTY_TIME)
-                reload.prepareTimer.set(prepareEmptyTime + 1)
+                reload.prepareTimer.set(prepareEmptyTime)
             } else {
                 playGunPrepareReloadSounds(shooter, data)
                 val prepareTime = data.get(GunProp.PREPARE_TIME)
-                reload.prepareTimer.set(prepareTime + 1)
+                reload.prepareTimer.set(prepareTime)
             }
 
             data.forceStop.set(false)
@@ -542,10 +542,7 @@ object GunEventHandler {
             playGunEndReloadSounds(shooter, data)
         }
 
-        if (stack.item === ModItems.MARLIN.get() && reload.finishTimer.get() == 10) {
-            data.isEmpty.set(false)
-            data.closeStrike.set(false)
-        }
+        data.item.reloadTimeBehaviors[reload.finishTimer.get()]?.accept(data)
 
         // 三阶段结束
         if (reload.finishTimer.get() == 1) {

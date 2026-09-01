@@ -7,12 +7,13 @@
     "Prepare": "animation.marlin.prepare",
     "Iterative": "animation.marlin.iterative_load",
     "Finish": "animation.marlin.finish",
-    "Bolt": "animation.marlin.bolt"
+    "Bolt": "animation.marlin.bolt",
+    "CloseStrike": "animation.marlin.close_strike"
   },
   "ShootRecoil": {
-    "Offset": [1.0, 1.0, 0.5],
+    "Offset": [1.0, 1.0, 3.5],
     "Rotation": [1.1, 0.6, 0.5],
-    "ZoomRate": 0.2,
+    "ZoomRate": 0.1,
     "Speed": 1.0
   },
   "Model": {

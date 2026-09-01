@@ -4262,28 +4262,43 @@
 					]
 				},
 				{
+					"name": "positioning2",
+					"parent": "root",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "flare",
+					"parent": "positioning2",
+					"pivot": [0, 3.32428, -25.65555]
+				},
+				{
+					"name": "scope_pos",
+					"parent": "positioning2",
+					"pivot": [0, 4.79038, 4.95548]
+				},
+				{
 					"name": "positioning",
 					"pivot": [0, 0, 0]
 				},
 				{
 					"name": "camera",
 					"parent": "positioning",
-					"pivot": [3.54415, 7.77986, 12.87998]
+					"pivot": [3.5, 5.5, 15.5]
 				},
 				{
 					"name": "idle_view",
 					"parent": "positioning",
-					"pivot": [3.54415, 7.77986, 12.87998]
+					"pivot": [3.5, 5.5, 15.5]
 				},
 				{
 					"name": "iron_view",
 					"parent": "positioning",
-					"pivot": [0, 4.07529, 12.42227]
+					"pivot": [0, 4.07529, 13.5]
 				},
 				{
 					"name": "thirdperson_hand",
 					"parent": "positioning",
-					"pivot": [0, 1.16698, 1.98818]
+					"pivot": [0, 0.66698, 8.48818]
 				},
 				{
 					"name": "ground",
@@ -4295,10 +4310,6 @@
 					"parent": "positioning",
 					"pivot": [1.2102, 6.22388, -0.30256],
 					"rotation": [0, -90, 0]
-				},
-				{
-					"name": "0",
-					"pivot": [0, 0, 0]
 				}
 			]
 		}

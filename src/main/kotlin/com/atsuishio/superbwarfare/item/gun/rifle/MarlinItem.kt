@@ -12,7 +12,14 @@ object MarlinItem : GeoGunItemV2(Properties()) {
 
     override fun addReloadTimeBehavior(behaviors: MutableMap<Int, Consumer<GunData>?>?) {
         super.addReloadTimeBehavior(behaviors)
+        behaviors?.set(10, Consumer { data: GunData ->
+            data.closeStrike.set(false)
+            data.isEmpty.set(false)
+        })
+    }
 
+    override fun addBoltTimeBehavior(behaviors: MutableMap<Int, Consumer<GunData>?>?) {
+        super.addBoltTimeBehavior(behaviors)
         behaviors?.set(7, Consumer { data: GunData ->
             data.closeStrike.set(
                 false
