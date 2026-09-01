@@ -611,6 +611,9 @@
   "perk.superbwarfare.slot_Functional": "功能模组",
   "perk.superbwarfare.slot_Damage": "伤害模组",
 
+  "item.superbwarfare.meowlencer": "喵音器",
+  "item.superbwarfare.hissilencer": "哈音器",
+
   "death.attack.gunfire": "%1$s被%2$s射爆了",
   "death.attack.gunfire.entity": "%1$s被%2$s射爆了",
   "death.attack.gunfire.item": "%1$s被%2$s用%3$s射爆了",

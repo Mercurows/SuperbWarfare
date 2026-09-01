@@ -56,7 +56,6 @@ class Mod(bus: IEventBus, container: ModContainer) {
         }
 
         ModPerks.register(bus)
-        ModAttachments.register(bus)
         ModSerializers.REGISTRY.register(bus)
         ModSounds.REGISTRY.register(bus)
         ModBlocks.REGISTRY.register(bus)

@@ -64,6 +64,10 @@
     "Magazine": [
       "superbwarfare:magazine_extend",
       "superbwarfare:magazine_extend_pro"
+    ],
+    "Barrel": [
+      "superbwarfare:meowlencer",
+      "superbwarfare:hissilencer"
     ]
   },
   "SoundInfo": {

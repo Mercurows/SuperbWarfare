@@ -28,6 +28,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         gunItem(ModItems.AA_12)
         gunItem(ModItems.AK_12)
         gunItem(ModItems.AK_47)
+        gunItemV2(ModItems.AK_47_V2)
         gunItem(ModItems.BOCEK)
         gunItem(ModItems.DEVOTION)
         gunItemV2(ModItems.GLOCK_17)
@@ -37,6 +38,9 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         gunItem(ModItems.HUNTING_RIFLE)
         gunItem(ModItems.INSIDIOUS)
         gunItem(ModItems.JAVELIN)
+        gunItemV2(ModItems.MARLIN)
+        gunItemV2(ModItems.NAIL_GUN)
+        gunItemV2(ModItems.K_98)
         gunItem(ModItems.M_4)
         gunItem(ModItems.M_60)
         gunItem(ModItems.M_79)
@@ -66,6 +70,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         gunItem(ModItems.REPAIR_TOOL)
         gunItem(ModItems.QL_1031)
         gunItem(ModItems.SUPER_STAR_SHOOTER)
+        gunItemV2(ModItems.REFORGING)
 
         gunItem(ModItems.BEAST_GUN_TEST)
 
@@ -297,6 +302,10 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         gunBlueprintItem(ModItems.IGLA_BLUEPRINT)
         gunBlueprintItem(ModItems.QL_1031_BLUEPRINT)
         gunBlueprintItem(ModItems.SUPER_STAR_SHOOTER_BLUEPRINT)
+
+        // attachments
+        simpleItem(ModItems.MEOWLENCER)
+        simpleItem(ModItems.HISSILENCER)
 
         // blocks
         evenSimplerBlockItem(ModBlocks.BARBED_WIRE)
