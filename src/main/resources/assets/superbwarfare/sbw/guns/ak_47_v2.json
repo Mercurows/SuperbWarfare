@@ -6,8 +6,11 @@
     "Fire": "animation.ak_47.fire",
     "ReloadNormal": "animation.ak_47.reload_normal",
     "ReloadEmpty": "animation.ak_47.reload_empty",
-    "Edit": "animation.ak_47.edit"
+    "Edit": "animation.ak_47.edit",
+    "ReloadNormalDrum": "animation.ak_47.reload_normal_drum",
+    "ReloadEmptyDrum": "animation.ak_47.reload_empty_drum"
   },
+  "DrumLevels": 2,
   "ShootRecoil": {
     "Offset": [1.0, 1.0, 0.5],
     "Rotation": [1.1, 0.6, 0.5],

@@ -3,7 +3,9 @@ package com.atsuishio.superbwarfare.client.animation.gun
 import com.atsuishio.superbwarfare.client.animation.AnimationPlayType
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
+import com.atsuishio.superbwarfare.data.gun.magazineLevel
 import com.atsuishio.superbwarfare.event.ClientEventHandler
+import com.atsuishio.superbwarfare.resource.gun.GunAnimation
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.atsuishio.superbwarfare.resource.model.GunModelReloadListener
 import com.atsuishio.superbwarfare.tools.localPlayer
@@ -78,8 +80,8 @@ open class GeoGunAnimationInstance(
                 data.reload.stage() == 3 && animation.finish != null -> return GunAnimationState.FINISH
             }
             if (animation.reload != null) return GunAnimationState.RELOAD
-            if (animation.reloadNormal != null && data.reload.normal()) return GunAnimationState.RELOAD_NORMAL
-            if (animation.reloadEmpty != null && data.reload.empty()) return GunAnimationState.RELOAD_EMPTY
+            if (data.reload.normal() && normalReloadName(animation) != null) return GunAnimationState.RELOAD_NORMAL
+            if (data.reload.empty() && emptyReloadName(animation) != null) return GunAnimationState.RELOAD_EMPTY
         }
 
         if (animation.melee != null && ClientEventHandler.gunMelee > 0) return GunAnimationState.MELEE
@@ -124,6 +126,26 @@ open class GeoGunAnimationInstance(
         return result
     }
 
+    private fun isDrumLevel(): Boolean {
+        return GunResource.compute(stack).drumLevels.list.contains(GunData.from(stack).magazineLevel())
+    }
+
+    private fun normalReloadName(animation: GunAnimation): String? {
+        if (isDrumLevel()) {
+            val drumName = animation.reloadNormalDrum
+            if (drumName != null && animations.containsKey(drumName)) return drumName
+        }
+        return animation.reloadNormal
+    }
+
+    private fun emptyReloadName(animation: GunAnimation): String? {
+        if (isDrumLevel()) {
+            val drumName = animation.reloadEmptyDrum
+            if (drumName != null && animations.containsKey(drumName)) return drumName
+        }
+        return animation.reloadEmpty
+    }
+
     private fun animationName(state: GunAnimationState): String? {
         val animation = GunResource.compute(stack).animation ?: return null
         return when (state) {
@@ -131,8 +153,8 @@ open class GeoGunAnimationInstance(
             GunAnimationState.EDIT -> animation.edit
             GunAnimationState.BOLT -> animation.bolt
             GunAnimationState.RELOAD -> animation.reload
-            GunAnimationState.RELOAD_NORMAL -> animation.reloadNormal
-            GunAnimationState.RELOAD_EMPTY -> animation.reloadEmpty
+            GunAnimationState.RELOAD_NORMAL -> normalReloadName(animation)
+            GunAnimationState.RELOAD_EMPTY -> emptyReloadName(animation)
             GunAnimationState.PREPARE -> animation.prepare
             GunAnimationState.ITERATIVE -> animation.iterative
             GunAnimationState.ITERATIVE_2 -> animation.iterative

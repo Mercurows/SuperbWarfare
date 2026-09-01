@@ -28,6 +28,14 @@ class GunAnimation {
     var reloadEmpty: String? = null
 
     @JvmField
+    @SerialName("ReloadNormalDrum")
+    var reloadNormalDrum: String? = null
+
+    @JvmField
+    @SerialName("ReloadEmptyDrum")
+    var reloadEmptyDrum: String? = null
+
+    @JvmField
     @SerialName("HoldOpen")
     var holdOpen: String? = null
 
