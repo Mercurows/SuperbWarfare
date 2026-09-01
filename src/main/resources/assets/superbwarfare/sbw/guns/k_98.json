@@ -1,12 +1,44 @@
 {
-  "Model": {
-    "Animation": "superbwarfare:animations/k_98.animation.json",
-    "Model": "superbwarfare:geo/k_98.geo.json",
-    "Texture": "superbwarfare:textures/item/k_98.png",
-    "LODModel": "superbwarfare:geo/lod/k_98.geo.json",
-    "LODTexture": "superbwarfare:textures/item/lod/k_98.png"
+"Icon": "superbwarfare:textures/gun_icon/k_98_icon.png",
+  "SlotIcon": "superbwarfare:textures/item/k_98_icon.png",
+  "Animation": {
+    "Idle": "animation.k_98.idle",
+    "Fire": "animation.k_98.fire",
+    "ReloadEmpty": "animation.k_98.reload_empty",
+    "Prepare": "animation.k_98.prepare",
+    "Iterative": "animation.k_98.iterative_load",
+    "Finish": "animation.k_98.finish",
+    "Bolt": "animation.k_98.bolt",
+    "Edit": "animation.k_98.edit",
+    "CloseStrike": "animation.k_98.close_strike"
   },
-  "FlarePosition": [0, 0, 1.9772],
-  "FlareSize": 0.4,
-  "UseOldHandRenderer": true
+  "ShootRecoil": {
+    "Offset": [1.0, 1.0, 3.5],
+    "Rotation": [1.1, 0.6, 0.5],
+    "ZoomRate": 0.1,
+    "Speed": 1.0
+  },
+  "Model": {
+    "Animation": "superbwarfare:animations/bedrock/gun/k_98.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/k_98.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/k_98.png",
+    "LODModel": "superbwarfare:models/bedrock/gun_lod/k_98.geo.json",
+    "LODTexture": "superbwarfare:textures/bedrock/gun_lod/k_98.png"
+  },
+  "FlareSize": 0.8,
+  "HasSmoke": true,
+  "Smoke": {
+    "Size": 0.25,
+    "Growth": 0.25,
+    "Lifetime": 0.3,
+    "Speed": 0.4,
+    "Count": 2,
+    "Opacity": 0.9,
+    "Drag": 2,
+    "RandomSize": 0.05,
+    "RandomGrowth": 0.2,
+    "RandomLifetime": 0.2,
+    "RandomSpeed": 0.2,
+    "RandomOpacity": 0.1
+  }
 }
