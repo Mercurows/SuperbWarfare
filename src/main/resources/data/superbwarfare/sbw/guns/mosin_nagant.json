@@ -5,7 +5,7 @@
   "RecoilY": 0.063,
   "Damage": 33,
   "Headshot": 3,
-  "Velocity": 42,
+  "Velocity": 25,
   "Magazine": 5,
   "ReloadTypes": [
     "Iterative"

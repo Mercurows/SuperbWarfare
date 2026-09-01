@@ -4,7 +4,7 @@
   "RecoilY": 0.032,
   "Damage": 24,
   "Headshot": 2.5,
-  "Velocity": 24,
+  "Velocity": 14,
   "Magazine": 6,
   "Weight": 2,
   "DrawTime": 9,
@@ -24,7 +24,7 @@
         "Headshot": 2,
         "BypassesArmor": 0.25,
         "ProjectileAmount": 4,
-        "Velocity": 12
+        "Velocity": 10
       }
     }
   ],

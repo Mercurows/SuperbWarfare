@@ -9,7 +9,7 @@
   "Damage": 45,
   "Magazine": 5,
   "Headshot": 3,
-  "Velocity": 70,
+  "Velocity": 30,
   "BoltActionTime": 22,
   "Weight": 7,
   "DrawTime": 14,

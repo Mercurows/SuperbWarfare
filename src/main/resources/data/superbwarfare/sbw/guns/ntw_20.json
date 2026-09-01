@@ -9,7 +9,7 @@
   "Damage": 140,
   "Headshot": 3,
   "ZoomReload": false,
-  "Velocity": 36,
+  "Velocity": 24,
   "Magazine": 3,
   "ZoomSpreadRate": 0.005,
   "BoltActionTime": 37,

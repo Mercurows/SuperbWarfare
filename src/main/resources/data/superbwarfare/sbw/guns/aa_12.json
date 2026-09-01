@@ -6,7 +6,7 @@
   "RecoilY": 0.018,
   "Damage": 2.5,
   "Headshot": 1.5,
-  "Velocity": 17,
+  "Velocity": 10,
   "Magazine": 25,
   "ZoomSpreadRate": 0.75,
   "ProjectileAmount": 12,
