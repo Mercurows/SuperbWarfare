@@ -380,7 +380,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     /**
      * 获取额外音效半径加成
      */
-    open fun getCustomSoundRadius(data: GunData) = if (data.attachment.get(AttachmentType.BARREL) == 2) 0.6 else 1.0
+    open fun getCustomSoundRadius(data: GunData) = if (data.isBarrelSilenced()) 0.6 else 1.0
 
     /**
      * 是否允许缩放
@@ -601,7 +601,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
         val soundRadius = data.get(GunProp.SOUND_RADIUS).toFloat()
         val soundInfo = data.get(GunProp.SOUND_INFO)
-        val isSilent = data.attachment.get(AttachmentType.BARREL) == 2
+        val isSilent = data.isBarrelSilenced()
 
         val sound3p = if (isSilent) soundInfo.fire3PSilent else soundInfo.fire3P
         if (sound3p != null) {

@@ -6,11 +6,15 @@ import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Rarity
 import net.minecraft.world.item.TooltipFlag
 
-class AttachmentItem(private val attachmentId: String) : Item(Properties().stacksTo(1)) {
+open class AttachmentItem @JvmOverloads constructor(
+    private val attachmentId: String,
+    rarity: Rarity = Rarity.COMMON
+) : Item(Properties().rarity(rarity)) {
 
-    fun definition(): AttachmentDefinition? = CustomData.ATTACHMENTS[attachmentId]
+    open fun definition(): AttachmentDefinition? = CustomData.ATTACHMENTS[attachmentId]
 
     override fun appendHoverText(
         stack: ItemStack,

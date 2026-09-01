@@ -2,15 +2,19 @@ package com.atsuishio.superbwarfare.client.renderer.gun
 
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves
 import com.atsuishio.superbwarfare.client.animation.gun.GeoGunAnimationInstance
+import com.atsuishio.superbwarfare.client.model.attachment.BedrockAttachmentModel
 import com.atsuishio.superbwarfare.client.model.gun.GeoGunModel
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.EDIT_FOCUS_Z_OFFSET
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
+import com.atsuishio.superbwarfare.data.CustomData
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.magazineLevel
+import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.resource.ModelResource
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.atsuishio.superbwarfare.resource.gun.pojo.ItemDisplayInfo
+import com.atsuishio.superbwarfare.resource.model.AttachmentModelReloadListener
 import com.atsuishio.superbwarfare.script.GunScriptManager
 import com.atsuishio.superbwarfare.tools.RenderDistanceHelper
 import com.atsuishio.superbwarfare.tools.deltaFrameTime
@@ -243,10 +247,22 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         if (!transformType.firstPerson()) {
             applyModelBonePositioning(poseStack, model, modelResource, transformType)
         }
-        renderAttachments(stack, model, transformType)
+        val attachmentRender = resolveBarrelAttachmentRender(stack)
+        val attachmentMuzzleTransform = attachmentRender?.let {
+            resolveBarrelAttachmentMuzzleTransform(stack, model, it)
+        }
+        val muzzleFlashScale = resolveBarrelAttachmentMuzzleFlashScale(stack)
+        renderAttachments(stack, model, transformType, poseStack, bufferSource, packedLight, packedOverlay)
         model.renderToBuffer(poseStack, bufferSource, texture, packedLight, packedOverlay)
         if (transformType.firstPerson()) {
-            MuzzleFlashRenderer.render(poseStack, model, stack, bufferSource)
+            MuzzleFlashRenderer.render(
+                poseStack,
+                model,
+                stack,
+                bufferSource,
+                attachmentMuzzleTransform,
+                muzzleFlashScale
+            )
 
             val hand = handForContext(transformType)
             ShellCasingFxRenderer.render(poseStack, model, stack, hand, bufferSource, packedLight)
@@ -255,6 +271,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             for (boneName in listOf(FLARE_BONE, MUZZLE_FLASH_BONE)) {
                 model.getGlobalTransform(boneName)?.let { transforms[boneName] = Matrix4f(it) }
             }
+            attachmentMuzzleTransform?.let { transforms[MUZZLE_BONE] = Matrix4f(it) }
         }
         model.resetPose()
     }
@@ -262,16 +279,72 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     open fun renderAttachments(
         stack: ItemStack,
         model: GeoGunModel,
-        transformType: ItemDisplayContext
+        transformType: ItemDisplayContext,
+        poseStack: PoseStack,
+        bufferSource: MultiBufferSource,
+        packedLight: Int,
+        packedOverlay: Int
     ) {
         renderMagazine(stack, model)
+        renderBarrelAttachment(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
     }
 
-    protected open fun renderMagazine(stack: ItemStack, model: GeoGunModel) {
+    open fun renderMagazine(stack: ItemStack, model: GeoGunModel) {
         model.showMagazineBone(resolveMagazineBone(stack))
     }
 
-    private fun resolveMagazineBone(stack: ItemStack): String {
+    open fun renderBarrelAttachment(
+        stack: ItemStack,
+        model: GeoGunModel,
+        poseStack: PoseStack,
+        bufferSource: MultiBufferSource,
+        packedLight: Int,
+        packedOverlay: Int
+    ) {
+        val (attachmentModel, texture) = resolveBarrelAttachmentRender(stack) ?: return
+        val boneName = resolveBarrelAttachmentBone(stack) ?: return
+        val mountTransform = model.getGlobalTransform(boneName) ?: return
+
+        poseStack.pushPose()
+        poseStack.mulPoseMatrix(Matrix4f(mountTransform))
+        attachmentModel.renderToBuffer(poseStack, bufferSource, texture, packedLight, packedOverlay)
+        poseStack.popPose()
+    }
+
+    open fun resolveBarrelAttachmentRender(stack: ItemStack): Pair<BedrockAttachmentModel, ResourceLocation>? {
+        val data = GunData.from(stack)
+        val attachmentId = data.attachment.id(AttachmentType.BARREL) ?: return null
+        val definition = CustomData.ATTACHMENTS[attachmentId.toString()] ?: return null
+        val modelPath = definition.model ?: return null
+        val texture = definition.texture ?: return null
+        val attachmentModel = AttachmentModelReloadListener.getModel(modelPath) ?: return null
+        return Pair(attachmentModel, texture)
+    }
+
+    open fun resolveBarrelAttachmentMuzzleFlashScale(stack: ItemStack): Float {
+        val data = GunData.from(stack)
+        val attachmentId = data.attachment.id(AttachmentType.BARREL) ?: return 1.0f
+        return CustomData.ATTACHMENTS[attachmentId.toString()]?.muzzleFlashScale?.coerceAtLeast(0f) ?: 1.0f
+    }
+
+    open fun resolveBarrelAttachmentBone(stack: ItemStack): String? {
+        val data = GunData.from(stack)
+        val attachmentId = data.attachment.id(AttachmentType.BARREL) ?: return null
+        return CustomData.ATTACHMENTS[attachmentId.toString()]?.bone
+    }
+
+    open fun resolveBarrelAttachmentMuzzleTransform(
+        stack: ItemStack,
+        model: GeoGunModel,
+        renderData: Pair<BedrockAttachmentModel, ResourceLocation>
+    ): Matrix4f? {
+        val attachmentMuzzle = renderData.first.getGlobalTransform(MUZZLE_BONE) ?: return null
+        val boneName = resolveBarrelAttachmentBone(stack) ?: return null
+        val mountTransform = model.getGlobalTransform(boneName) ?: return null
+        return Matrix4f(mountTransform).mul(attachmentMuzzle)
+    }
+
+    open fun resolveMagazineBone(stack: ItemStack): String {
         return when (GunData.from(stack).magazineLevel()) {
             1 -> GeoGunModel.MAGAZINE_EXTEND_BONE
             2 -> GeoGunModel.MAGAZINE_EXTEND_PRO_BONE
@@ -371,6 +444,9 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         data: ParticleEffectData,
         boneTransforms: Map<String, Matrix4f>
     ): String? {
+        if (boneTransforms.containsKey(MUZZLE_BONE)) {
+            return MUZZLE_BONE
+        }
         val locator = data.locator()
         if (locator.isNotBlank() && boneTransforms.containsKey(locator)) {
             return locator

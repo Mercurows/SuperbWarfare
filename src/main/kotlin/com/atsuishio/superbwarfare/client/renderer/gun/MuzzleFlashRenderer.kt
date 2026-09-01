@@ -26,7 +26,9 @@ object MuzzleFlashRenderer {
         poseStack: PoseStack,
         model: GeoGunModel,
         stack: ItemStack,
-        bufferSource: MultiBufferSource
+        bufferSource: MultiBufferSource,
+        attachmentMuzzleTransform: Matrix4f? = null,
+        muzzleFlashScale: Float = 1.0f
     ) {
         val fireRotTimer = ClientEventHandler.fireRotTimer
         if (fireRotTimer <= 0.0 || fireRotTimer >= MAX_VISIBLE_TIME) return
@@ -35,10 +37,12 @@ object MuzzleFlashRenderer {
         val resource = GunResource.compute(stack)
         val flareBone = model.getBone(FLARE_BONE) ?: model.getBone(MUZZLE_FLASH_BONE)
         val flarePosition = resource.flarePosition
-        if (flareBone == null && flarePosition == null) return
+        if (flareBone == null && flarePosition == null && attachmentMuzzleTransform == null) return
 
         poseStack.pushPose()
-        if (flareBone != null) {
+        if (attachmentMuzzleTransform != null) {
+            poseStack.last().pose().mul(attachmentMuzzleTransform)
+        } else if (flareBone != null) {
             model.instance.mulGlobalTransform(poseStack, flareBone.index())
         }
         if (flarePosition != null) {
@@ -47,7 +51,7 @@ object MuzzleFlashRenderer {
 
         val scaleRandom = Math.random().toFloat()
         val rotationRandom = Math.random().toFloat()
-        val size = resource.flareSize * (0.6f + 0.8f * scaleRandom)
+        val size = resource.flareSize * (0.6f + 0.8f * scaleRandom) * muzzleFlashScale.coerceAtLeast(0f)
         poseStack.mulPose(Axis.ZP.rotation(0.5f * (rotationRandom - 0.5f)))
         poseStack.scale(size, size, 1f)
 
