@@ -49,7 +49,7 @@ class EmptyGunItem : GunItem(Properties()) {
             damage = 0.0
             headshot = 0.0
             velocity = 0.0
-            magazine = 0
+            magazine = ObjectToList(0)
             range = 0
             meleeDamage = 0.0
             meleeDuration = 0
@@ -90,17 +90,17 @@ class EmptyGunItem : GunItem(Properties()) {
         )
         useNacelleCamera = false
 
-        normalReloadTime = 0
-        emptyReloadTime = 0
-        boltActionTime = 0
-        prepareTime = 0
-        prepareLoadTime = 0
-        prepareAmmoLoadTime = 0
-        prepareEmptyTime = 0
-        iterativeTime = 0
-        iterativeAmmoLoadTime = 0
+        normalReloadTime = ObjectToList(0)
+        emptyReloadTime = ObjectToList(0)
+        boltActionTime = ObjectToList(0)
+        prepareTime = ObjectToList(0)
+        prepareLoadTime = ObjectToList(0)
+        prepareAmmoLoadTime = ObjectToList(0)
+        prepareEmptyTime = ObjectToList(0)
+        iterativeTime = ObjectToList(0)
+        iterativeAmmoLoadTime = ObjectToList(0)
         iterativeLoadAmount = 0
-        finishTime = 0
+        finishTime = ObjectToList(0)
         burstCooldown = 0
         soundRadius = 0.0
         rpm = 0

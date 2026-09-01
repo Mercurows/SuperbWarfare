@@ -16,9 +16,6 @@ object ModAttachments {
     val OEM_STOCK_STANDARD: RegistryObject<Item> = register("oem_stock_standard")
 
     @JvmField
-    val MAGAZINE_STANDARD: RegistryObject<Item> = register("magazine_standard")
-
-    @JvmField
     val MAGAZINE_EXTEND: RegistryObject<Item> = register("magazine_extend")
 
     @JvmField

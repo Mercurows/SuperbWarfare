@@ -46,6 +46,24 @@ import kotlin.math.max
 import kotlin.math.min
 
 /**
+ * Selects the magazine-level value, falling back to the last configured value
+ * when the list is shorter than the requested level.
+ */
+fun ObjectToList<Int>.atMagazineLevel(level: Int): Int {
+    if (list.isEmpty()) return 0
+    return list[level.coerceAtLeast(0).coerceAtMost(list.lastIndex)]
+}
+
+/**
+ * Resolves the current magazine level from the installed attachment definition.
+ * Level 0 is the no-attachment/original magazine state.
+ */
+fun GunData.magazineLevel(): Int {
+    val id = attachment.id(AttachmentType.MAGAZINE) ?: return 0
+    return CustomData.ATTACHMENTS[id.toString()]?.level?.coerceAtLeast(0) ?: 0
+}
+
+/**
  * Extension function checking whether an [ItemStack] represents a valid gun item.
  *
  * @return `true` if the item is an instance of [GunItem].

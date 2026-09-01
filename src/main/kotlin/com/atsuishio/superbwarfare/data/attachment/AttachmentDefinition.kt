@@ -15,6 +15,9 @@ data class AttachmentDefinition(
     @SerialName("Slot")
     val slot: AttachmentType = AttachmentType.SCOPE,
 
+    @SerialName("Level")
+    val level: Int = 0,
+
     @SerialName("Bone")
     val bone: String? = null,
 

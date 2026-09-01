@@ -1,12 +1,7 @@
 {
   "Slot": "Magazine",
-  "Bone": "magazine_extend_pro",
+  "Level": 2,
   "Modifiers": [
-    {
-      "Prop": "Magazine",
-      "Op": "Add",
-      "Value": 40
-    },
     {
       "Prop": "Weight",
       "Op": "Add",

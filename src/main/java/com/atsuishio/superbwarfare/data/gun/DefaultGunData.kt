@@ -104,7 +104,7 @@ class DefaultGunData : IDBasedData<DefaultGunData> {
     var velocity = 0.0
 
     @SerialName("Magazine")
-    var magazine = 0
+    var magazine: ObjectToList<Int> = ObjectToList(0)
 
     @SerialName("Range")
     var range = 128
@@ -249,41 +249,41 @@ class DefaultGunData : IDBasedData<DefaultGunData> {
         }
 
     @SerialName("NormalReloadTime")
-    var normalReloadTime = 0
+    var normalReloadTime: ObjectToList<Int> = ObjectToList(0)
 
     @SerialName("EmptyReloadTime")
-    var emptyReloadTime = 0
+    var emptyReloadTime: ObjectToList<Int> = ObjectToList(0)
 
     @SerialName("BoltActionTime")
-    var boltActionTime = 0
+    var boltActionTime: ObjectToList<Int> = ObjectToList(0)
 
     @SerialName("PrepareTime")
-    var prepareTime = 0
+    var prepareTime: ObjectToList<Int> = ObjectToList(0)
 
     @SerialName("PrepareLoadTime")
-    var prepareLoadTime = 0
+    var prepareLoadTime: ObjectToList<Int> = ObjectToList(0)
 
     // 单发装填时的上弹时间
     @SerialName("PrepareAmmoLoadTime")
-    var prepareAmmoLoadTime = 1
+    var prepareAmmoLoadTime: ObjectToList<Int> = ObjectToList(1)
 
     @SerialName("PrepareEmptyTime")
-    var prepareEmptyTime = 0
+    var prepareEmptyTime: ObjectToList<Int> = ObjectToList(0)
 
     // 每次单发装填用时的
     @SerialName("IterativeTime")
-    var iterativeTime = 0
+    var iterativeTime: ObjectToList<Int> = ObjectToList(0)
 
     // 单发装填时的上弹时间，在reload.iterativeLoadTimer等于该值时上弹
     @SerialName("IterativeAmmoLoadTime")
-    var iterativeAmmoLoadTime = 1
+    var iterativeAmmoLoadTime: ObjectToList<Int> = ObjectToList(1)
 
     // 单次单发装填上弹数量
     @SerialName("IterativeLoadAmount")
     var iterativeLoadAmount = 1
 
     @SerialName("FinishTime")
-    var finishTime = 0
+    var finishTime: ObjectToList<Int> = ObjectToList(0)
 
     // 连发模式下的射击间隔时间
     @SerialName("BurstCooldown")
@@ -477,9 +477,9 @@ class DefaultGunData : IDBasedData<DefaultGunData> {
         weight = max(1.0, weight)
 
         magazine = if (projectileAmount == 0 && meleeDamage > 0) {
-            0
+            ObjectToList(0)
         } else {
-            max(0, magazine)
+            ObjectToList(magazine.list.map { max(0, it) }.toMutableList())
         }
 
         if (seekType == null) {

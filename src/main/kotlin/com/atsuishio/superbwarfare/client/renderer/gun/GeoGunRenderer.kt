@@ -3,10 +3,10 @@ package com.atsuishio.superbwarfare.client.renderer.gun
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves
 import com.atsuishio.superbwarfare.client.animation.gun.GeoGunAnimationInstance
 import com.atsuishio.superbwarfare.client.model.gun.GeoGunModel
+import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.EDIT_FOCUS_Z_OFFSET
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
-import com.atsuishio.superbwarfare.data.CustomData
 import com.atsuishio.superbwarfare.data.gun.GunData
-import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
+import com.atsuishio.superbwarfare.data.gun.magazineLevel
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.resource.ModelResource
 import com.atsuishio.superbwarfare.resource.gun.GunResource
@@ -270,11 +270,11 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     }
 
     private fun resolveMagazineBone(stack: ItemStack): String {
-        val installedBone = GunData.from(stack)
-            .attachment.id(AttachmentType.MAGAZINE)
-            ?.let { CustomData.ATTACHMENTS[it.toString()]?.bone }
-        return installedBone?.takeIf { it in GeoGunModel.MAGAZINE_BONE_NAMES }
-            ?: GeoGunModel.MAGAZINE_STANDARD_BONE
+        return when (GunData.from(stack).magazineLevel()) {
+            1 -> GeoGunModel.MAGAZINE_EXTEND_BONE
+            2 -> GeoGunModel.MAGAZINE_EXTEND_PRO_BONE
+            else -> GeoGunModel.MAGAZINE_STANDARD_BONE
+        }
     }
 
     open fun applyCustomAnimations(
