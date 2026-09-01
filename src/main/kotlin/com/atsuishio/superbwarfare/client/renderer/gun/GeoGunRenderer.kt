@@ -208,6 +208,8 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
             applyReloadCameraShake(stack, model, hand)
 
+            updateEditFocus(model)
+
             applyFirstPersonPositioningTransform(poseStack, model)
 
             val sprintOffset = resource.sprintOffset
@@ -436,9 +438,25 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
     open fun computeViewTransform(model: GeoGunModel): Matrix4f? {
         val idleViewTransform = model.getGlobalTransform(IDLE_VIEW_BONE) ?: return null
+
         val zoom = AnimationCurves.EASE_IN_OUT_QUINT
             .apply(ClientEventHandler.zoomTime.coerceIn(0.0, 1.0))
             .toFloat()
+
+        val focusOffset = ClientEventHandler.editFocusOffset
+        if (focusOffset.lengthSquared() > 1e-8f && zoom <= 0f) {
+            val idlePos = Vector3f()
+            idleViewTransform.getTranslation(idlePos)
+            val translation = Vector3f(idlePos).add(focusOffset)
+            val rotation = Quaternionf()
+            idleViewTransform.getNormalizedRotation(rotation)
+            val scale = Vector3f()
+            idleViewTransform.getScale(scale)
+            return Matrix4f()
+                .translation(translation)
+                .rotate(rotation)
+                .scale(scale)
+        }
 
         if (zoom <= 0f) {
             return Matrix4f(idleViewTransform)
@@ -446,6 +464,55 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val ironViewTransform = model.getGlobalTransform(IRON_VIEW_BONE)
             ?: return Matrix4f(idleViewTransform)
         return blendViewTransform(Matrix4f(idleViewTransform), Matrix4f(ironViewTransform), zoom)
+    }
+
+    /**
+     * 返回当前正在编辑的配件槽位对应的定位骨骼名；未支持或未选中时返回 null。
+     * 目前支持枪托与弹匣。
+     */
+    open fun attachmentFocusBone(): String? {
+        return when (ClientEventHandler.editingAttachmentType) {
+            0 -> MUZZLE_BONE
+            1 -> SCOPE_BONE
+            2 -> GRIP_BONE
+            3 -> STOCK_BONE
+            4 -> MAGAZINE_BONE
+            5 -> MAGAZINE_BONE
+            else -> null
+        }
+    }
+
+    /**
+     * 每帧将 [com.atsuishio.superbwarfare.event.ClientEventHandler.editFocusOffset] 向
+     * 改装聚焦目标偏移平滑插值，实现槽位切换时的缓动过渡。
+     */
+    private fun updateEditFocus(model: GeoGunModel) {
+        val desired = computeEditFocusOffset(model) ?: Vector3f()
+        val delta = Minecraft.getInstance().deltaFrameTime.coerceAtMost(0.5f)
+        val t = (EDIT_FOCUS_SMOOTHING * delta).coerceIn(0f, 1f)
+        ClientEventHandler.editFocusOffset.lerp(desired, t)
+    }
+
+    /**
+     * 返回改装聚焦的目标偏移（相对 IDLE_VIEW_BONE，模型空间）：聚焦点为当前编辑配件定位点的
+     * 绝对坐标往 Z 轴负方向偏移 [EDIT_FOCUS_Z_OFFSET] 单位，避免视角卡进模型。
+     * 未处于改装状态、未选中配件或对应骨骼不存在时返回 null。
+     */
+    private fun computeEditFocusOffset(model: GeoGunModel): Vector3f? {
+        if (!ClientEventHandler.isEditing) return null
+        val boneName = attachmentFocusBone() ?: return null
+
+        val idleView = model.getGlobalTransform(IDLE_VIEW_BONE) ?: return null
+        val attachment = model.getGlobalTransform(boneName) ?: return null
+
+        val idlePos = Vector3f()
+        idleView.getTranslation(idlePos)
+        val attachmentPos = Vector3f()
+        attachment.getTranslation(attachmentPos)
+
+        // 世界坐标：配件定位点往 Z 轴方向偏移，不使用配件的局部坐标
+        val focusPos = Vector3f(attachmentPos.x, attachmentPos.y, attachmentPos.z + EDIT_FOCUS_Z_OFFSET)
+        return focusPos.sub(idlePos)
     }
 
     open fun blendViewTransform(from: Matrix4f, to: Matrix4f, t: Float): Matrix4f {
@@ -527,6 +594,13 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     companion object {
         private const val IDLE_VIEW_BONE = "idle_view"
         private const val IRON_VIEW_BONE = "iron_view"
+        private const val MUZZLE_BONE = "muzzle"
+        private const val GRIP_BONE = "grip"
+        private const val MAGAZINE_BONE = "magazine"
+        private const val SCOPE_BONE = "scope_pos"
+        private const val STOCK_BONE = "stock"
+        private const val EDIT_FOCUS_Z_OFFSET = 0.8f
+        private const val EDIT_FOCUS_SMOOTHING = 1f
         private const val THIRDPERSON_HAND_BONE = "thirdperson_hand"
         private const val GROUND_BONE = "ground"
         private const val FIXED_BONE = "fixed"
