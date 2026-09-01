@@ -8,6 +8,7 @@
     "Iterative": "animation.marlin.iterative_load",
     "Finish": "animation.marlin.finish",
     "Bolt": "animation.marlin.bolt",
+    "Edit": "animation.marlin.edit",
     "CloseStrike": "animation.marlin.close_strike"
   },
   "ShootRecoil": {
