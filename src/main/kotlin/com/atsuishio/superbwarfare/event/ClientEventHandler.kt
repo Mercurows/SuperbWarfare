@@ -1821,7 +1821,7 @@ object ClientEventHandler {
             player.playSound(ModSounds.HENG.get(), 1f, ((2 * Math.random() - 1) * 0.1f + pitch).toFloat())
         }
 
-        val isSilent = data.attachment.get(AttachmentType.BARREL) == 2
+        val isSilent = data.isBarrelSilenced()
         val fire1p = if (isSilent) soundInfo.fire1PSilent else soundInfo.fire1P
 
         if (fire1p != null) {
@@ -2173,7 +2173,7 @@ object ClientEventHandler {
     private fun handleWeaponMove(entity: LivingEntity) {
         val stack = entity.mainHandItem
         val player = entity as? Player ?: return
-        val item = stack.item as? GunItem ?: return
+        if (stack.item !is GunItem) return
         val data = GunData.from(stack)
         val resource = GunResource.compute(stack)
 

@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.perk.js.PmcProxy
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedGsonObject
+import com.atsuishio.superbwarfare.serialization.kserializer.SerializedResourceLocation
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -26,6 +27,18 @@ data class AttachmentDefinition(
 
     @SerialName("Icon")
     val icon: String? = null,
+
+    @SerialName("Model")
+    val model: SerializedResourceLocation? = null,
+
+    @SerialName("Texture")
+    val texture: SerializedResourceLocation? = null,
+
+    @SerialName("MuzzleFlashScale")
+    val muzzleFlashScale: Float = 1.0f,
+
+    @SerialName("IsSilenced")
+    val isSilenced: Boolean = false,
 
     @SerialName("Modifiers")
     val modifiers: List<AttachmentModifier> = emptyList(),

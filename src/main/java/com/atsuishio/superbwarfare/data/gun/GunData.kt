@@ -64,6 +64,14 @@ fun GunData.magazineLevel(): Int {
 }
 
 /**
+ * Checks whether the installed barrel attachment is configured as a silencer.
+ */
+fun GunData.isBarrelSilenced(): Boolean {
+    val id = attachment.id(AttachmentType.BARREL) ?: return false
+    return CustomData.ATTACHMENTS[id.toString()]?.isSilenced == true
+}
+
+/**
  * Extension function checking whether an [ItemStack] represents a valid gun item.
  *
  * @return `true` if the item is an instance of [GunItem].

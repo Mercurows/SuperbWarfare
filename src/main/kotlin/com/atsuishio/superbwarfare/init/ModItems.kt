@@ -600,16 +600,17 @@ object ModItems {
     @JvmField
     val ATTACHMENTS: ItemRegister = DeferredRegister.create(ForgeRegistries.ITEMS, Mod.MODID)
 
-    private fun register(id: String): RegistryObject<Item> {
-        return ATTACHMENTS.register(id) { AttachmentItem("${Mod.MODID}:$id") }
+    private fun registerAttachment(id: String, rarity: Rarity = Rarity.COMMON): RegistryObject<Item> {
+        return ATTACHMENTS.register(id) { AttachmentItem("${Mod.MODID}:$id", rarity) }
     }
 
     // @formatter:off
-    @JvmField val OEM_STOCK_STANDARD = register("oem_stock_standard")
-    @JvmField val MAGAZINE_EXTEND = register("magazine_extend")
-    @JvmField val MAGAZINE_EXTEND_PRO = register("magazine_extend_pro")
-    @JvmField val MEOWLENCER = register("meowlencer")
-    @JvmField val HISSILENCER = register("hissilencer")
+    @JvmField val OEM_STOCK_STANDARD = registerAttachment("oem_stock_standard")
+    @JvmField val MAGAZINE_EXTEND = registerAttachment("magazine_extend", Rarity.RARE)
+    @JvmField val MAGAZINE_EXTEND_PRO = registerAttachment("magazine_extend_pro", Rarity.EPIC)
+    @JvmField val MEOWLENCER = registerAttachment("meowlencer", Rarity.RARE)
+    @JvmField val HISSILENCER = registerAttachment("hissilencer", Rarity.RARE)
+    @JvmField val RU_SILENCER = registerAttachment("ru_silencer")
     // @formatter:on
 
     fun registerDispenserBehavior() {

@@ -613,6 +613,9 @@
 
   "item.superbwarfare.meowlencer": "喵音器",
   "item.superbwarfare.hissilencer": "哈音器",
+  "item.superbwarfare.ru_silencer": "俄罗斯式消音器",
+  "item.superbwarfare.magazine_extend": "通用扩容弹匣",
+  "item.superbwarfare.magazine_extend_pro": "高级通用扩容弹匣",
 
   "death.attack.gunfire": "%1$s被%2$s射爆了",
   "death.attack.gunfire.entity": "%1$s被%2$s射爆了",
