@@ -32,16 +32,16 @@ class GunAnimation {
     var holdOpen: String? = null
 
     @JvmField
+    @SerialName("CloseStrike")
+    var closeStrike: String? = null
+
+    @JvmField
     @SerialName("Prepare")
     var prepare: String? = null
 
     @JvmField
     @SerialName("Iterative")
     var iterative: String? = null
-
-    @JvmField
-    @SerialName("Iterative2")
-    var iterative2: String? = null
 
     @JvmField
     @SerialName("Finish")

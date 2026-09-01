@@ -35,6 +35,8 @@ open class GeoGunAnimationInstance(
     private var fireRunner: AnimationRunner? = null
     private var holdOpenRunner: AnimationRunner? = null
     private var holdOpenAnimationName: String? = null
+    private var closeStrikeRunner: AnimationRunner? = null
+    private var closeStrikeAnimationName: String? = null
     private var currentState: GunAnimationState? = null
     private var fireSerial = 0
     private var consumedFireSerial = 0
@@ -67,10 +69,7 @@ open class GeoGunAnimationInstance(
             when {
                 data.reload.stage() == 1 && animation.prepare != null -> return GunAnimationState.PREPARE
                 data.reload.stage() == 2 && animation.iterative != null -> {
-                    return if (data.loadIndex.get() == 1
-                        && animation.iterative2 != null
-                        && animations.containsKey(animation.iterative2)
-                    ) {
+                    return if (data.loadIndex.get() == 1) {
                         GunAnimationState.ITERATIVE_2
                     } else {
                         GunAnimationState.ITERATIVE
@@ -136,7 +135,7 @@ open class GeoGunAnimationInstance(
             GunAnimationState.RELOAD_EMPTY -> animation.reloadEmpty
             GunAnimationState.PREPARE -> animation.prepare
             GunAnimationState.ITERATIVE -> animation.iterative
-            GunAnimationState.ITERATIVE_2 -> animation.iterative2 ?: animation.iterative
+            GunAnimationState.ITERATIVE_2 -> animation.iterative
             GunAnimationState.FINISH -> animation.finish
             GunAnimationState.MELEE -> animation.melee
             GunAnimationState.FIRE -> animation.fire
@@ -235,6 +234,22 @@ open class GeoGunAnimationInstance(
         return true
     }
 
+    private fun updateCloseStrike(name: String?): Boolean {
+        val animation = name?.let(animations::get)
+        if (animation == null) {
+            closeStrikeRunner = null
+            closeStrikeAnimationName = null
+            return false
+        }
+        if (closeStrikeRunner != null && closeStrikeAnimationName == name) return false
+
+        closeStrikeAnimationName = name
+        val newRunner = AnimationRunner(animation, AnimationContext(animation.specifiedEndTimeS))
+        newRunner.state = AnimationPlayType.LOOP.state()
+        closeStrikeRunner = newRunner
+        return true
+    }
+
     override fun currentItem(): ItemStack = stack
 
     override fun getPose(): Pose = cachedPose
@@ -247,6 +262,8 @@ open class GeoGunAnimationInstance(
             runner = null
             holdOpenRunner = null
             holdOpenAnimationName = null
+            closeStrikeRunner = null
+            closeStrikeAnimationName = null
             currentState = null
             pendingParticles.clear()
             cachedPose = DummyPose.INSTANCE
@@ -258,6 +275,8 @@ open class GeoGunAnimationInstance(
         val shouldHoldOpen = data.holdOpen.get()
                 && fireRunner == null
         val holdOpenStarted = updateHoldOpen(if (shouldHoldOpen) animation?.holdOpen else null)
+        val shouldCloseStrike = data.closeStrike.get()
+        val closeStrikeStarted = updateCloseStrike(if (shouldCloseStrike) animation?.closeStrike else null)
 
         if (runner == null || currentState != target) {
             play(target)
@@ -281,12 +300,16 @@ open class GeoGunAnimationInstance(
         if (holdOpenRunner != null && !holdOpenStarted) {
             holdOpenRunner?.tick()
         }
+        if (closeStrikeRunner != null && !closeStrikeStarted) {
+            closeStrikeRunner?.tick()
+        }
 
         collectParticleEvents(runner)
         collectParticleEvents(fireRunner)
         collectSoundEvents(runner)
         collectSoundEvents(fireRunner)
         collectSoundEvents(holdOpenRunner)
+        collectSoundEvents(closeStrikeRunner)
 
         if (fireRunner?.state is StopState) {
             fireRunner = null
@@ -294,10 +317,14 @@ open class GeoGunAnimationInstance(
 
         val basePose = runner?.evaluate() ?: DummyPose.INSTANCE
         val holdPose = holdOpenRunner?.evaluate() ?: DummyPose.INSTANCE
+        val closeStrikePose = closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE
         val firePose = fireRunner?.evaluate() ?: DummyPose.INSTANCE
         var pose = basePose
         if (holdPose != DummyPose.INSTANCE) {
             pose = if (pose == DummyPose.INSTANCE) holdPose else BLENDER.blend(pose, holdPose)
+        }
+        if (closeStrikePose != DummyPose.INSTANCE) {
+            pose = if (pose == DummyPose.INSTANCE) closeStrikePose else BLENDER.blend(pose, closeStrikePose)
         }
         if (firePose != DummyPose.INSTANCE) {
             pose = if (pose == DummyPose.INSTANCE) firePose else BLENDER.blend(pose, firePose)
@@ -341,6 +368,8 @@ open class GeoGunAnimationInstance(
         if (itemChanged) {
             holdOpenRunner = null
             holdOpenAnimationName = null
+            closeStrikeRunner = null
+            closeStrikeAnimationName = null
             pendingParticles.clear()
             loadAnimations()
         }
@@ -357,6 +386,8 @@ open class GeoGunAnimationInstance(
         fireRunner = null
         holdOpenRunner = null
         holdOpenAnimationName = null
+        closeStrikeRunner = null
+        closeStrikeAnimationName = null
         currentState = null
         fireSerial = 0
         consumedFireSerial = 0
