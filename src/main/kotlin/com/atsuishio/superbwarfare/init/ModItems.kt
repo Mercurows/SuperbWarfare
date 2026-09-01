@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.item.LungeMine
 import com.atsuishio.superbwarfare.item.RgoGrenade
 import com.atsuishio.superbwarfare.item.ammo.*
 import com.atsuishio.superbwarfare.item.armor.*
+import com.atsuishio.superbwarfare.item.attachment.AttachmentItem
 import com.atsuishio.superbwarfare.item.blockitem.BlueprintResearchTableBlockItem
 import com.atsuishio.superbwarfare.item.blockitem.ChargingStationBlockItem
 import com.atsuishio.superbwarfare.item.blockitem.CreativeChargingStationBlockItem
@@ -593,6 +594,24 @@ object ModItems {
     @JvmField val EMPTY_PERK = registerPerkItem("empty_perk") { Item(Properties()) }
     // @formatter:on
 
+    /**
+     * Attachment Items
+     */
+    @JvmField
+    val ATTACHMENTS: ItemRegister = DeferredRegister.create(ForgeRegistries.ITEMS, Mod.MODID)
+
+    private fun register(id: String): RegistryObject<Item> {
+        return ATTACHMENTS.register(id) { AttachmentItem("${Mod.MODID}:$id") }
+    }
+
+    // @formatter:off
+    @JvmField val OEM_STOCK_STANDARD = register("oem_stock_standard")
+    @JvmField val MAGAZINE_EXTEND = register("magazine_extend")
+    @JvmField val MAGAZINE_EXTEND_PRO = register("magazine_extend_pro")
+    @JvmField val MEOWLENCER = register("meowlencer")
+    @JvmField val HISSILENCER = register("hissilencer")
+    // @formatter:on
+
     fun registerDispenserBehavior() {
         val list = mutableListOf<ItemRegistry>()
         list.addAll(AMMO.entries)
@@ -614,5 +633,6 @@ object ModItems {
         VEHICLES.register(bus)
         registerPerkItems()
         PERKS.register(bus)
+        ATTACHMENTS.register(bus)
     }
 }

@@ -1,12 +1,15 @@
 package com.atsuishio.superbwarfare.data.attachment
 
 import com.atsuishio.superbwarfare.data.IDBasedData
+import com.atsuishio.superbwarfare.data.JsonPropertyModifier
 import com.atsuishio.superbwarfare.data.PMC
 import com.atsuishio.superbwarfare.data.PropertyModifier
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.perk.js.PmcProxy
+import com.atsuishio.superbwarfare.serialization.kserializer.SerializedGsonObject
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -27,12 +30,18 @@ data class AttachmentDefinition(
     @SerialName("Modifiers")
     val modifiers: List<AttachmentModifier> = emptyList(),
 
+    @SerialName("Override")
+    val override: SerializedGsonObject? = null,
+
     @SerialName("Zoom")
     val zoom: AttachmentZoom? = null,
 ) : IDBasedData<AttachmentDefinition>, PropertyModifier<GunData, DefaultGunData> {
 
     @kotlinx.serialization.Transient
     private var attachmentId: String = ""
+
+    @kotlinx.serialization.Transient
+    private val jsonPropModifier = JsonPropertyModifier(GunProp.entries)
 
     override fun getId(): String = attachmentId
 
@@ -43,6 +52,11 @@ data class AttachmentDefinition(
     override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) {
         val pmc = PmcProxy(modifier)
         modifiers.forEach { it.apply(pmc) }
+
+        override?.let {
+            jsonPropModifier.update(it)
+            jsonPropModifier.modifyProperty(modifier)
+        }
 
         val scopeZoom = zoom ?: return
         val current = modifier.data.attachment.getZoom(slot) ?: scopeZoom.default

@@ -1,0 +1,17 @@
+{
+  "Slot": "Barrel",
+  "Level": 1,
+  "Override": {
+    "SoundInfo": {
+      "Fire1P": "minecraft:entity.cat.hiss",
+      "Fire3P": "minecraft:entity.cat.hiss",
+      "Fire3PFar": "minecraft:entity.cat.hiss",
+      "Fire3PVeryFar": "minecraft:entity.cat.hiss",
+      "Fire1PSilent": "minecraft:entity.cat.hiss",
+      "Fire3PSilent": "minecraft:entity.cat.hiss",
+      "Fire3PFarSilent": "minecraft:entity.cat.hiss",
+      "Fire3PVeryFarSilent": "minecraft:entity.cat.hiss",
+      "FireSoundInstances": "minecraft:entity.cat.hiss"
+    }
+  }
+}

@@ -611,6 +611,9 @@
   "perk.superbwarfare.slot_Functional": "Functional Perk",
   "perk.superbwarfare.slot_Damage": "Damage Perk",
 
+  "item.superbwarfare.meowlencer": "Meowlencer",
+  "item.superbwarfare.hissilencer": "Hissilencer",
+
   "death.attack.gunfire": "%1$s was gunned down by %2$s",
   "death.attack.gunfire.entity": "%1$s was gunned down by %2$s",
   "death.attack.gunfire.item": "%1$s was gunned down by %2$s using %3$s",
