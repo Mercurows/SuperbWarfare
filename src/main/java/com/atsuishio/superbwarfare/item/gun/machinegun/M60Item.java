@@ -20,8 +20,6 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
-import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class M60Item extends GunGeoItem {
@@ -82,10 +80,4 @@ public class M60Item extends GunGeoItem {
         return 5;
     }
 
-    @Override
-    public void addReloadTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
-        super.addReloadTimeBehavior(behaviors);
-
-        behaviors.put(55, data -> data.hideBulletChain.reset());
-    }
 }

@@ -13,6 +13,9 @@ class Reload(data: GunData) {
     val reloadTimer = Timer(this.data, "Reload")
 
     @JvmField
+    val totalTicks = IntValue(this.data, "ReloadTotalTime", 0)
+
+    @JvmField
     val prepareTimer = Timer(this.data, "Prepare")
 
     @JvmField
@@ -23,6 +26,9 @@ class Reload(data: GunData) {
 
     @JvmField
     val finishTimer = Timer(this.data, "Finish")
+
+    @JvmField
+    val finishTotalTicks = IntValue(this.data, "ReloadFinishTotalTime", 0)
 
     @JvmField
     val reloadStarter = Starter(this.data, "Reload")
@@ -62,10 +68,36 @@ class Reload(data: GunData) {
     fun time() = reloadTimer.get()
 
     fun setTime(time: Int) {
+        totalTicks.set(time)
         reloadTimer.set(time)
     }
 
     fun reduce() {
         reloadTimer.reduce()
+    }
+
+    fun currentProgress(): Float = progress(reloadTimer.get())
+
+    fun previousProgress(): Float = progress(reloadTimer.get() + 1)
+
+    fun setFinishTime(time: Int) {
+        finishTotalTicks.set(time)
+        finishTimer.set(time)
+    }
+
+    fun finishCurrentProgress(): Float = finishProgress(finishTimer.get())
+
+    fun finishPreviousProgress(): Float = finishProgress(finishTimer.get() + 1)
+
+    private fun progress(remaining: Int): Float {
+        val total = totalTicks.get()
+        if (total <= 0) return 0f
+        return 1f - remaining.toFloat() / total.toFloat()
+    }
+
+    private fun finishProgress(remaining: Int): Float {
+        val total = finishTotalTicks.get()
+        if (total <= 0) return 0f
+        return 1f - remaining.toFloat() / total.toFloat()
     }
 }

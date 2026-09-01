@@ -29,8 +29,6 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
-import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class M2HBItem extends GunGeoItem {
@@ -89,13 +87,6 @@ public class M2HBItem extends GunGeoItem {
     @Override
     public int hideBulletChainBelowShots() {
         return 5;
-    }
-
-    @Override
-    public void addReloadTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
-        super.addReloadTimeBehavior(behaviors);
-
-        behaviors.put(70, data -> data.hideBulletChain.reset());
     }
 
     @OnlyIn(Dist.CLIENT)

@@ -17,6 +17,31 @@
   "ZoomTime": 8,
   "NormalReloadTime": 62,
   "EmptyReloadTime": 80,
+  "ActionSteps": [
+    {
+      "Timeline": "RELOAD_NORMAL",
+      "Progress": 0.70968,
+      "Action": "CLOSE_STRIKE",
+      "Value": false
+    },
+    {
+      "Timeline": "RELOAD_EMPTY",
+      "Progress": 0.775,
+      "Action": "CLOSE_STRIKE",
+      "Value": false
+    },
+    {
+      "Timeline": "BOLT",
+      "Progress": 0.28,
+      "Action": "CLOSE_STRIKE",
+      "Value": false
+    },
+    {
+      "Timeline": "NO_AMMO",
+      "Action": "CLOSE_STRIKE",
+      "Value": true
+    }
+  ],
   "BypassesArmor": 0.8,
   "SoundRadius": 18,
   "GunType": "Sniper",

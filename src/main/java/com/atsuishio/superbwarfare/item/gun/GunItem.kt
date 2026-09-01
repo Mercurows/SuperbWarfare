@@ -77,25 +77,13 @@ import org.joml.Math
 import software.bernie.geckolib.animatable.GeoItem
 import java.util.*
 import java.util.concurrent.atomic.AtomicReference
-import java.util.function.Consumer
 
 @EventBusSubscriber
 abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), ItemScreenProvider,
     PropertyModifier<GunData, DefaultGunData> {
     protected val random: RandomSource = RandomSource.create()
 
-    @JvmField
-    val reloadTimeBehaviors = mutableMapOf<Int, Consumer<GunData>?>()
-
-    @JvmField
-    val boltTimeBehaviors = mutableMapOf<Int, Consumer<GunData>?>()
-
     private var isDamageable = false
-
-    init {
-        addReloadTimeBehavior(this.reloadTimeBehaviors)
-        addBoltTimeBehavior(this.boltTimeBehaviors)
-    }
 
     override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) = with(GunProp) {
         val data = modifier.data
@@ -421,16 +409,6 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     open fun canSwitchScope(data: GunData) = false
 
     /**
-     * 添加达到指定换弹时间时的额外行为
-     */
-    open fun addReloadTimeBehavior(behaviors: MutableMap<Int, Consumer<GunData>?>?) {}
-
-    /**
-     * 添加达到指定拉栓/泵动时间时的额外行为
-     */
-    open fun addBoltTimeBehavior(behaviors: MutableMap<Int, Consumer<GunData>?>?) {}
-
-    /**
      * 判断武器能否开火
      */
     open fun canShoot(data: GunData, shooter: Entity?): Boolean {
@@ -445,7 +423,6 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
     open fun useSpecialFireProcedure(data: GunData) = false
     open fun hideBulletChainBelowShots() = -1
-    open fun whenNoAmmo(data: GunData) {}
 
     /**
      * 服务端在开火前的额外行为
@@ -478,7 +455,6 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
         if (!data.useBackpackAmmo()) {
             data.ammo.set(data.ammo.get() - data.get(GunProp.AMMO_COST_PER_SHOOT))
-            //            data.item.whenNoAmmo(data);
         } else {
             data.consumeBackupAmmo(ammoSupplier, data.get(GunProp.AMMO_COST_PER_SHOOT))
         }

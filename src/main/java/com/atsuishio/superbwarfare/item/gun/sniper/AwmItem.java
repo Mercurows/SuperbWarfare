@@ -21,8 +21,6 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
-import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class AwmItem extends GunGeoItem {
@@ -108,23 +106,6 @@ public class AwmItem extends GunGeoItem {
     @Override
     public boolean canAdjustZoom(GunData data) {
         return data.attachment.get(AttachmentType.SCOPE) == 3;
-    }
-
-    @Override
-    public void whenNoAmmo(GunData data) {
-        data.closeStrike.set(true);
-    }
-
-    @Override
-    public void addReloadTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
-        super.addReloadTimeBehavior(behaviors);
-        behaviors.put(18, data -> data.closeStrike.set(false));
-    }
-
-    @Override
-    public void addBoltTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
-        super.addBoltTimeBehavior(behaviors);
-        behaviors.put(18, data -> data.closeStrike.set(false));
     }
 
     @Override

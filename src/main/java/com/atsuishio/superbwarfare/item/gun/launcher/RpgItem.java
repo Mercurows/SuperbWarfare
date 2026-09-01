@@ -11,8 +11,6 @@ import net.minecraft.world.item.Rarity;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
-import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class RpgItem extends GunGeoItem {
@@ -41,19 +39,6 @@ public class RpgItem extends GunGeoItem {
         }
 
         return true;
-    }
-
-    @Override
-    public void whenNoAmmo(GunData data) {
-        data.isEmpty.set(true);
-        data.closeHammer.set(true);
-    }
-
-    @Override
-    public void addReloadTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
-        super.addReloadTimeBehavior(behaviors);
-        behaviors.put(84, data -> data.isEmpty.set(false));
-        behaviors.put(9, data -> data.closeHammer.set(false));
     }
 
     @Override
