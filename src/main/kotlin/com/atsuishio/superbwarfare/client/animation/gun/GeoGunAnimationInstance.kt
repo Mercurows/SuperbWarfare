@@ -39,6 +39,7 @@ open class GeoGunAnimationInstance(
     private var holdOpenAnimationName: String? = null
     private var closeStrikeRunner: AnimationRunner? = null
     private var closeStrikeAnimationName: String? = null
+    private var editExitRunner: AnimationRunner? = null
     private var currentState: GunAnimationState? = null
     private var fireSerial = 0
     private var consumedFireSerial = 0
@@ -77,6 +78,7 @@ open class GeoGunAnimationInstance(
                         GunAnimationState.ITERATIVE
                     }
                 }
+
                 data.reload.stage() == 3 && animation.finish != null -> return GunAnimationState.FINISH
             }
             if (animation.reload != null) return GunAnimationState.RELOAD
@@ -240,6 +242,46 @@ open class GeoGunAnimationInstance(
         cachedPose = newRunner.evaluate()
     }
 
+    private fun startEditExit() {
+        val animation = GunResource.compute(stack).animation ?: return
+        val editName = animation.edit ?: return
+        val editAnimation = animations[editName] ?: return
+
+        val newRunner = AnimationRunner(editAnimation, AnimationContext(editAnimation.specifiedEndTimeS))
+        newRunner.progress = newRunner.maxProgress
+        val reverseState = PlayingState({ System.nanoTime() }, { StopState() })
+        reverseState.speed = -EDIT_EXIT_SPEED
+        newRunner.state = reverseState
+        editExitRunner = newRunner
+    }
+
+    private fun tickEditExit(target: GunAnimationState?) {
+        val exitRunner = editExitRunner ?: return
+
+        if (ClientEventHandler.isEditing) {
+            editExitRunner = null
+            runner = null
+            currentState = null
+            play(GunAnimationState.EDIT)
+            return
+        }
+
+        exitRunner.tick()
+        if (exitRunner.state is StopState) {
+            editExitRunner = null
+            runner = null
+            currentState = null
+            if (target != null) {
+                play(target)
+            } else {
+                cachedPose = DummyPose.INSTANCE
+            }
+            return
+        }
+
+        cachedPose = exitRunner.evaluate()
+    }
+
     private fun updateHoldOpen(name: String?): Boolean {
         val animation = name?.let(animations::get)
         if (animation == null) {
@@ -280,8 +322,15 @@ open class GeoGunAnimationInstance(
 
     override fun tick(partialTicks: Float) {
         val target = resolveState()
+
+        if (editExitRunner != null) {
+            tickEditExit(target)
+            return
+        }
+
         if (target == null) {
             runner = null
+            editExitRunner = null
             holdOpenRunner = null
             holdOpenAnimationName = null
             closeStrikeRunner = null
@@ -290,6 +339,17 @@ open class GeoGunAnimationInstance(
             pendingParticles.clear()
             cachedPose = DummyPose.INSTANCE
             return
+        }
+
+        if (currentState == GunAnimationState.EDIT
+            && target != GunAnimationState.EDIT
+            && !ClientEventHandler.isEditing
+        ) {
+            startEditExit()
+            if (editExitRunner != null) {
+                cachedPose = editExitRunner!!.evaluate()
+                return
+            }
         }
 
         val data = GunData.from(stack)
@@ -388,6 +448,7 @@ open class GeoGunAnimationInstance(
         val itemChanged = this.stack.item != stack.item
         this.stack = stack
         if (itemChanged) {
+            editExitRunner = null
             holdOpenRunner = null
             holdOpenAnimationName = null
             closeStrikeRunner = null
@@ -405,6 +466,7 @@ open class GeoGunAnimationInstance(
 
     override fun triggerPutAway() {
         runner = null
+        editExitRunner = null
         fireRunner = null
         holdOpenRunner = null
         holdOpenAnimationName = null
@@ -423,6 +485,8 @@ open class GeoGunAnimationInstance(
     }
 
     companion object {
+        private const val EDIT_EXIT_SPEED = 1.5f
+
         private val BLENDER: EulerAdditiveBlender =
             SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }
     }
