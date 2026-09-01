@@ -207,7 +207,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 model.applyPose(BLENDER.blend(model.getBindPose(), pose))
             }
 
-            applyReloadCameraShake(stack, model, hand)
+            applyCameraShake(stack, model, hand)
 
             updateEditFocus(model)
 
@@ -400,10 +400,10 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         }
     }
 
-    open fun applyReloadCameraShake(stack: ItemStack, model: GeoGunModel, hand: InteractionHand) {
+    open fun applyCameraShake(stack: ItemStack, model: GeoGunModel, hand: InteractionHand) {
         val animation = FirstPersonRenderHandler.getActiveAnimationInstance(hand) ?: return
         val camera = model.getCameraBone()
-        if (camera == null || GunData.from(stack).reload.time() <= 0) {
+        if (camera == null) {
             animation.cameraRotation = Quaternionf()
             return
         }
