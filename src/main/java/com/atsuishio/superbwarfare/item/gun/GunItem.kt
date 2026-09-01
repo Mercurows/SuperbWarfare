@@ -105,7 +105,6 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         modifier[DAMAGE] += getCustomDamage(data)
         modifier[HEADSHOT] += getCustomHeadshot(data)
         modifier[BYPASSES_ARMOR] += getCustomBypassArmor(data)
-        modifier[MAGAZINE] += getCustomMagazine(data)
         modifier[DEFAULT_ZOOM] += getCustomZoom(data)
         modifier[RPM] += getCustomRPM(data)
         modifier[WEIGHT] += getCustomWeight(data)

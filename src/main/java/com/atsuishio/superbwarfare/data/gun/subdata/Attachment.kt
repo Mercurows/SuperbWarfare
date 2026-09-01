@@ -102,15 +102,19 @@ class Attachment(private val gun: GunData) {
         val allowed = gun.availableAttachments(type)
         if (allowed.isEmpty()) return false
 
-        val current = id(type)
-        val index = allowed.indexOf(current)
-        val next = if (add) {
-            (index + 1) % allowed.size
+        val optionCount = allowed.size + 1
+        val currentIndex = allowed.indexOf(id(type)) + 1
+        val nextIndex = if (add) {
+            (currentIndex + 1) % optionCount
         } else {
-            (index - 1 + allowed.size) % allowed.size
+            (currentIndex - 1 + optionCount) % optionCount
         }
 
-        set(type, allowed[next])
+        if (nextIndex == 0) {
+            set(type, null)
+        } else {
+            set(type, allowed[nextIndex - 1])
+        }
         return true
     }
 

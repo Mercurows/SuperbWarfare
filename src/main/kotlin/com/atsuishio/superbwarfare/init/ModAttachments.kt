@@ -17,9 +17,6 @@ object ModAttachments {
     val OEM_STOCK_STANDARD: DeferredHolder<Item, out Item> = register("oem_stock_standard")
 
     @JvmField
-    val MAGAZINE_STANDARD: DeferredHolder<Item, out Item> = register("magazine_standard")
-
-    @JvmField
     val MAGAZINE_EXTEND: DeferredHolder<Item, out Item> = register("magazine_extend")
 
     @JvmField

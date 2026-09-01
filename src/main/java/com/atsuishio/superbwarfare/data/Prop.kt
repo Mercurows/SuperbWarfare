@@ -11,7 +11,8 @@ import kotlin.reflect.javaType
 @OptIn(ExperimentalStdlibApi::class)
 abstract class Prop<DATA : DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA, FIELD, RESULT, SELF : Prop<DATA, DEFAULT_DATA, FIELD, RESULT, SELF>> protected constructor(
     val prop: KMutableProperty1<DEFAULT_DATA, FIELD>,
-    val transform: (FIELD) -> RESULT,
+    private val transform: (FIELD) -> RESULT,
+    private val contextTransform: ((DATA, FIELD) -> RESULT)? = null,
 ) {
     @JvmField
     val type: Type = prop.returnType.javaType
@@ -28,12 +29,14 @@ abstract class Prop<DATA : DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA, FIEL
         props.add(this)
     }
 
-    fun getDefault(data: DEFAULT_DATA): RESULT {
-        return transform(prop.get(data))
+    fun getDefault(data: DATA, defaultData: DEFAULT_DATA): RESULT {
+        val field = prop.get(defaultData)
+        return contextTransform?.invoke(data, field) ?: transform(field)
     }
 
-    fun deserialize(element: JsonElement): RESULT {
-        return transform(Json.decodeFromJsonElement(serializer, element))
+    fun deserialize(data: DATA, element: JsonElement): RESULT {
+        val field = Json.decodeFromJsonElement(serializer, element)
+        return contextTransform?.invoke(data, field) ?: transform(field)
     }
 
     companion object {
@@ -50,7 +53,7 @@ class PMC<DATA : DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA>(val data: DATA
 
     @Suppress("UNCHECKED_CAST")
     operator fun <T : Prop<DATA, DEFAULT_DATA, *, RESULT, *>, RESULT> get(prop: T) = currentProps.getOrPut(prop) {
-        prop.getDefault(data.getDefault()) as Any?
+        prop.getDefault(data, data.getDefault()) as Any?
     } as RESULT
 
     operator fun <T : Prop<DATA, DEFAULT_DATA, *, RESULT, *>, RESULT> set(prop: T, value: RESULT) {

@@ -50,7 +50,7 @@ class JsonPropertyModifier<DATA : DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DAT
             val prop = propsMap[key] ?: continue
 
             val deserialized = try {
-                prop.deserialize(value)!!
+                prop.deserialize(modifier.data, value)!!
             } catch (exception: Exception) {
                 Mod.LOGGER.error("Failed to deserialize prop: {}", value, exception)
                 continue
