@@ -4073,7 +4073,7 @@
 				{
 					"name": "stock",
 					"parent": "root",
-					"pivot": [-0.81553, 0.20336, 2.22369]
+					"pivot": [0, 2.65336, 9.22369]
 				},
 				{
 					"name": "oem_stock_standard",
@@ -11173,7 +11173,7 @@
 				{
 					"name": "scope_pos",
 					"parent": "positioning2",
-					"pivot": [0, 4.79038, -1.04452]
+					"pivot": [0, 4.74038, -0.54452]
 				},
 				{
 					"name": "righthand",
@@ -11198,6 +11198,16 @@
 							}
 						}
 					]
+				},
+				{
+					"name": "grip",
+					"parent": "root",
+					"pivot": [0, 1.3, -14]
+				},
+				{
+					"name": "muzzle",
+					"parent": "root",
+					"pivot": [0, 2.98828, -24.7]
 				},
 				{
 					"name": "positioning",
