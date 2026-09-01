@@ -336,7 +336,7 @@ class DefaultGunData : IDBasedData<DefaultGunData> {
     }
 
     @SerialName("AvailableAttachments")
-    var availableAttachments: Map<String, List<String>> = emptyMap()
+    var availableAttachments: Map<String, List<StringToObject<AttachmentOption>>> = emptyMap()
 
     @ServerOnly
     @SerialName("DamageReduce")
