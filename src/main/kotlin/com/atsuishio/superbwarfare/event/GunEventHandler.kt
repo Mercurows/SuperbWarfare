@@ -35,8 +35,8 @@ object GunEventHandler {
 
         data.bolt.actionTimer.reduce()
 
-        // 执行拉栓期间额外行为
-        data.item.boltTimeBehaviors[data.bolt.actionTimer.get()]?.accept(data)
+        // 执行数据驱动的拉栓阶段行为
+        GunActionStepExecutor.tickBolt(data)
 
         if (data.bolt.actionTimer.get() == 1) {
             data.bolt.needed.set(false)
@@ -359,8 +359,8 @@ object GunEventHandler {
             // Reduce remaining reload timer
             data.reload.reduce()
 
-            // Execute extra behaviors during reload duration
-            data.item.reloadTimeBehaviors[data.reload.time()]?.accept(data)
+            // Execute data-driven reload timeline behaviors
+            GunActionStepExecutor.tickReload(data)
 
             // Reload complete
             if (data.reload.time() == 1) {
@@ -376,7 +376,7 @@ object GunEventHandler {
                 data.hideBulletChain.set(true)
             }
             if (!data.hasEnoughAmmoToShoot(shooter)) {
-                data.item.whenNoAmmo(data)
+                GunActionStepExecutor.triggerNoAmmo(data)
             }
         }
 
@@ -540,12 +540,12 @@ object GunEventHandler {
             reload.stage3Starter.finish()
 
             val finishTime = data.get(GunProp.FINISH_TIME)
-            reload.finishTimer.set(finishTime + 2)
+            reload.setFinishTime(finishTime + 2)
 
             playGunEndReloadSounds(shooter, data)
         }
 
-        data.item.reloadTimeBehaviors[reload.finishTimer.get()]?.accept(data)
+        GunActionStepExecutor.tickReloadFinish(data)
 
         // 三阶段结束
         if (reload.finishTimer.get() == 1) {

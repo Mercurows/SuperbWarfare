@@ -16,6 +16,31 @@
   "IterativeTime": 14,
   "IterativeAmmoLoadTime": 3,
   "FinishTime": 19,
+  "ActionSteps": [
+    {
+      "Timeline": "RELOAD_FINISH",
+      "Progress": 0.52381,
+      "Action": "CLOSE_STRIKE",
+      "Value": false
+    },
+    {
+      "Timeline": "RELOAD_FINISH",
+      "Progress": 0.52381,
+      "Action": "EMPTY",
+      "Value": false
+    },
+    {
+      "Timeline": "BOLT",
+      "Progress": 0.22222,
+      "Action": "CLOSE_STRIKE",
+      "Value": false
+    },
+    {
+      "Timeline": "NO_AMMO",
+      "Action": "CLOSE_STRIKE",
+      "Value": true
+    }
+  ],
   "BypassesArmor": 0.3,
   "SoundRadius": 15,
   "BoltActionTime": 8,

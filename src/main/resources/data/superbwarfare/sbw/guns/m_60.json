@@ -13,6 +13,20 @@
   "DefaultFireMode": "Auto",
   "NormalReloadTime": 114,
   "EmptyReloadTime": 133,
+  "ActionSteps": [
+    {
+      "Timeline": "RELOAD_NORMAL",
+      "Progress": 0.51754,
+      "Action": "HIDE_BULLET_CHAIN",
+      "Value": false
+    },
+    {
+      "Timeline": "RELOAD_EMPTY",
+      "Progress": 0.58647,
+      "Action": "HIDE_BULLET_CHAIN",
+      "Value": false
+    }
+  ],
   "BypassesArmor": 0.25,
   "SoundRadius": 15,
   "RPM": 600,

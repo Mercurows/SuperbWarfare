@@ -1,22 +1,7 @@
 package com.atsuishio.superbwarfare.item.gun.handgun
 
-import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.item.gun.GeoGunItemV2
-import java.util.function.Consumer
 
 object Glock17Item : GeoGunItemV2(Properties()) {
 
-    override fun whenNoAmmo(data: GunData) {
-        data.holdOpen.set(true)
-    }
-
-    override fun addReloadTimeBehavior(behaviors: MutableMap<Int, Consumer<GunData>?>?) {
-        super.addReloadTimeBehavior(behaviors)
-
-        behaviors?.set(13, Consumer { data: GunData ->
-            data.holdOpen.set(
-                false
-            )
-        })
-    }
 }

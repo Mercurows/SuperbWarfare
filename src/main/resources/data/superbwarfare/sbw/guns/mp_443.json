@@ -13,6 +13,25 @@
   "ZoomTime": 3,
   "NormalReloadTime": 44,
   "EmptyReloadTime": 47,
+  "ActionSteps": [
+    {
+      "Timeline": "RELOAD_NORMAL",
+      "Progress": 0.79545,
+      "Action": "HOLD_OPEN",
+      "Value": false
+    },
+    {
+      "Timeline": "RELOAD_EMPTY",
+      "Progress": 0.80851,
+      "Action": "HOLD_OPEN",
+      "Value": false
+    },
+    {
+      "Timeline": "NO_AMMO",
+      "Action": "HOLD_OPEN",
+      "Value": true
+    }
+  ],
   "BypassesArmor": 0.15,
   "SoundRadius": 8,
   "RPM": 400,

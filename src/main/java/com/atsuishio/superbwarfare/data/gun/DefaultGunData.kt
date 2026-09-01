@@ -285,6 +285,9 @@ class DefaultGunData : IDBasedData<DefaultGunData> {
     @SerialName("FinishTime")
     var finishTime: ObjectToList<Int> = ObjectToList(0)
 
+    @SerialName("ActionSteps")
+    var actionSteps: ObjectToList<GunActionStep> = ObjectToList()
+
     // 连发模式下的射击间隔时间
     @SerialName("BurstCooldown")
     var burstCooldown = 30

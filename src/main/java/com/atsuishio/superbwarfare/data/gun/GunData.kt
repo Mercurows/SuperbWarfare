@@ -407,7 +407,7 @@ class GunData private constructor(
             this.ammo.set(get(MAGAZINE))
         }
 
-        this.item.whenNoAmmo(this)
+        GunActionStepExecutor.triggerNoAmmo(this)
         this.closeHammer.set(false)
         this.fireIndex.reset()
 
@@ -427,12 +427,15 @@ class GunData private constructor(
         this.reload.setState(ReloadState.NOT_RELOADING)
         this.reload.iterativeLoadTimer.reset()
         this.reload.reloadTimer.reset()
+        this.reload.totalTicks.reset()
         this.reload.finishTimer.reset()
+        this.reload.finishTotalTicks.reset()
         this.reload.prepareTimer.reset()
         this.reload.prepareLoadTimer.reset()
         this.reload.reloadStarter.finish()
         this.reload.singleReloadStarter.finish()
         this.bolt.actionTimer.reset()
+        this.bolt.totalTicks.reset()
         this.bolt.needed.reset()
         this.charge.starter.finish()
         this.charge.timer.reset()
@@ -496,7 +499,7 @@ class GunData private constructor(
 
     /** Starts manual bolt-action sequence. */
     fun startBolt() {
-        this.bolt.actionTimer.set(get(BOLT_ACTION_TIME) + 1)
+        this.bolt.start(get(BOLT_ACTION_TIME) + 1)
 
         nbtVersion.invalidateStructural()
     }

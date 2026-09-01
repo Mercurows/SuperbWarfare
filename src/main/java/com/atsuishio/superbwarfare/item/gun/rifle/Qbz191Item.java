@@ -22,8 +22,6 @@ import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class Qbz191Item extends GunGeoItem {
@@ -189,17 +187,6 @@ public class Qbz191Item extends GunGeoItem {
     @Override
     public boolean hasBipod(GunData data) {
         return data.attachment.get(AttachmentType.GRIP) == 1;
-    }
-
-    @Override
-    public void whenNoAmmo(GunData data) {
-        data.holdOpen.set(true);
-    }
-
-    @Override
-    public void addReloadTimeBehavior(Map<Integer, Consumer<GunData>> behaviors) {
-        super.addReloadTimeBehavior(behaviors);
-        behaviors.put(14, data -> data.holdOpen.set(false));
     }
 
     @Override
