@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.send
 
-import com.atsuishio.superbwarfare.data.CustomData
+import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
 import com.atsuishio.superbwarfare.data.gun.toGunData
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.init.ModItems
@@ -46,7 +46,7 @@ data class AdjustZoomFovMessage(val scroll: Double) : ServerPacketPayload() {
             }
         } else {
             val scopeZoom = gun.attachment.id(AttachmentType.SCOPE)
-                ?.let { CustomData.ATTACHMENTS[it.toString()] }
+                ?.let { AttachmentDefinition.from(it) }
                 ?.zoom
 
             if (scopeZoom != null) {

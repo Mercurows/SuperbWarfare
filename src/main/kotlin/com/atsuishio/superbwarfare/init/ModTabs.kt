@@ -66,7 +66,7 @@ object ModTabs {
     , Supplier {
         builder()
             .title(Component.translatable("item_group.superbwarfare.attachment"))
-            .icon { ItemStack(ModItems.OEM_STOCK_STANDARD.get()) }
+            .icon { ItemStack(ModItems.MAGAZINE_EXTEND_PRO.get()) }
             .withTabsBefore(GUN_TAB.getKey())
             .displayItems { param: ItemDisplayParameters, output: Output ->
                 ModItems.ATTACHMENTS.getEntries().forEach { output.accept(it.get()) }
@@ -81,13 +81,10 @@ object ModTabs {
             builder()
                 .title(Component.translatable("item_group.superbwarfare.perk"))
                 .icon { ItemStack(ModItems.AP_BULLET!!.get()) }
-                .withTabsBefore(GUN_TAB.getKey())
-                .displayItems { param, output ->
+                .withTabsBefore(ATTACHMENT_TAB.getKey())
+                .displayItems { param: ItemDisplayParameters, output: Output ->
                     output.accept(ModItems.REFORGING_TABLE.get())
-
-                    ModItems.PERKS.getEntries().forEach { registryObject ->
-                        output.accept(registryObject.get())
-                    }
+                    ModItems.PERKS.getEntries().forEach { output.accept(it.get()) }
                 }
                 .build()
         })

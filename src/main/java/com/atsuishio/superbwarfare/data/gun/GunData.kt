@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.data.gun
 
 import com.atsuishio.superbwarfare.data.*
+import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.BACKUP_AMMO_CACHE_TICKS
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.get
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.AMMO_CONSUMER
@@ -64,7 +65,7 @@ fun ObjectToList<Int>.atMagazineLevel(level: Int): Int {
  */
 fun GunData.magazineLevel(): Int {
     val id = attachment.id(AttachmentType.MAGAZINE) ?: return 0
-    return CustomData.ATTACHMENTS[id.toString()]?.level?.coerceAtLeast(0) ?: 0
+    return AttachmentDefinition.from(id)?.level?.coerceAtLeast(0) ?: 0
 }
 
 /**
@@ -72,7 +73,7 @@ fun GunData.magazineLevel(): Int {
  */
 fun GunData.isBarrelSilenced(): Boolean {
     val id = attachment.id(AttachmentType.BARREL) ?: return false
-    return CustomData.ATTACHMENTS[id.toString()]?.isSilenced == true
+    return AttachmentDefinition.from(id)?.isSilenced == true
 }
 
 /**
@@ -341,7 +342,7 @@ class GunData private constructor(
      */
     fun minZoom(): Double {
         val zoomDefinition = attachment.id(AttachmentType.SCOPE)
-            ?.let { CustomData.ATTACHMENTS[it.toString()] }
+            ?.let { AttachmentDefinition.from(it) }
             ?.zoom
         if (zoomDefinition == null) return 1.25
         return get(MIN_ZOOM)
@@ -354,7 +355,7 @@ class GunData private constructor(
      */
     fun maxZoom(): Double {
         val zoomDefinition = attachment.id(AttachmentType.SCOPE)
-            ?.let { CustomData.ATTACHMENTS[it.toString()] }
+            ?.let { AttachmentDefinition.from(it) }
             ?.zoom
         if (zoomDefinition == null) return 114514.0
         return get(MAX_ZOOM)
@@ -834,7 +835,7 @@ class GunData private constructor(
     /** Checks whether [id] can be installed in [slot] for this gun. */
     fun canInstall(slot: AttachmentType, id: ResourceLocation): Boolean {
         if (id !in availableAttachments(slot)) return false
-        val definition = CustomData.ATTACHMENTS[id.toString()] ?: return false
+        val definition = AttachmentDefinition.from(id) ?: return false
         return definition.slot == slot
     }
 
@@ -970,7 +971,7 @@ class GunData private constructor(
     /** Checks if the installed scope has data-driven zoom state. */
     fun hasAdjustableScopeZoom(): Boolean {
         return attachment.id(AttachmentType.SCOPE)
-            ?.let { CustomData.ATTACHMENTS[it.toString()] }
+            ?.let { AttachmentDefinition.from(it) }
             ?.zoom != null
     }
 
