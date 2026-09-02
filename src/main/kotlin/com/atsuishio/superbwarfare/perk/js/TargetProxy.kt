@@ -18,6 +18,8 @@ class TargetProxy(val target: Entity) {
 
     fun getHealth(): Float = (target as? LivingEntity)?.health ?: 0f
 
+    fun getMaxHealth(): Float = (target as? LivingEntity)?.maxHealth ?: 0f
+
     // 这里高版本应该使用#aquatic标签判断
     fun isAquatic(): Boolean = target.type.`is`(EntityTypeTags.AQUATIC)
 }
