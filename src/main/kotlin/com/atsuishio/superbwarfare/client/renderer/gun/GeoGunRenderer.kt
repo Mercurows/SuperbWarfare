@@ -46,6 +46,7 @@ import net.minecraftforge.client.event.ViewportEvent
 import org.joml.Matrix4f
 import org.joml.Quaternionf
 import org.joml.Vector3f
+import org.lwjgl.glfw.GLFW
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -524,8 +525,13 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             val idlePos = Vector3f()
             idleViewTransform.getTranslation(idlePos)
             val translation = Vector3f(idlePos).add(focusOffset)
-            val rotation = Quaternionf()
+            var rotation = Quaternionf()
             idleViewTransform.getNormalizedRotation(rotation)
+            val yaw = ClientEventHandler.editFocusYaw
+            val pitch = ClientEventHandler.editFocusPitch
+            if (Mth.abs(pitch) > 1e-5f || Mth.abs(yaw) > 1e-5f) {
+                rotation = Quaternionf().rotateY(yaw).rotateX(pitch).mul(rotation)
+            }
             val scale = Vector3f()
             idleViewTransform.getScale(scale)
             return Matrix4f()
@@ -564,19 +570,25 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
      */
     private fun updateEditFocus(model: GeoGunModel) {
         val desired = computeEditFocusOffset(model) ?: Vector3f()
+        val desiredYaw = computeEditFocusYaw()
+        val desiredPitch = computeEditFocusPitch()
         val delta = Minecraft.getInstance().deltaFrameTime.coerceAtMost(0.5f)
-        val t = (EDIT_FOCUS_SMOOTHING * delta).coerceIn(0f, 1f)
+        val panning = ClientEventHandler.isEditing && attachmentFocusBone() == null
+        val smoothing = if (panning) UNFOCUSED_PAN_SMOOTHING else EDIT_FOCUS_SMOOTHING
+        val t = (smoothing * delta).coerceIn(0f, 1f)
         ClientEventHandler.editFocusOffset.lerp(desired, t)
+        ClientEventHandler.editFocusYaw = Mth.lerp(t, ClientEventHandler.editFocusYaw, desiredYaw)
+        ClientEventHandler.editFocusPitch = Mth.lerp(t, ClientEventHandler.editFocusPitch, desiredPitch)
     }
 
     /**
      * 返回改装聚焦的目标偏移（相对 IDLE_VIEW_BONE，模型空间）：聚焦点为当前编辑配件定位点的
      * 绝对坐标往 Z 轴负方向偏移 [EDIT_FOCUS_Z_OFFSET] 单位，避免视角卡进模型。
-     * 未处于改装状态、未选中配件或对应骨骼不存在时返回 null。
+     * 未选中配件时返回浮动预览的鼠标平移偏移；未处于改装状态或对应骨骼不存在时返回 null。
      */
     private fun computeEditFocusOffset(model: GeoGunModel): Vector3f? {
         if (!ClientEventHandler.isEditing) return null
-        val boneName = attachmentFocusBone() ?: return null
+        val boneName = attachmentFocusBone() ?: return computeUnfocusedPanOffset()
 
         val idleView = model.getGlobalTransform(IDLE_VIEW_BONE) ?: return null
         val attachment = model.getGlobalTransform(boneName) ?: return null
@@ -589,6 +601,61 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         // 世界坐标：配件定位点往 Z 轴方向偏移，不使用配件的局部坐标
         val focusPos = Vector3f(attachmentPos.x, attachmentPos.y, attachmentPos.z + EDIT_FOCUS_Z_OFFSET)
         return focusPos.sub(idlePos)
+    }
+
+    /**
+     * 未聚焦配件时的浮动预览偏移：以屏幕中心为原点，根据鼠标位置动态平移视角定位点的 XY，
+     * 使视角跟随鼠标移动，便于查看超出屏幕范围的长枪。
+     */
+    private fun computeUnfocusedPanOffset(): Vector3f {
+        val mc = Minecraft.getInstance()
+        val window = mc.window
+        val x = doubleArrayOf(0.0)
+        val y = doubleArrayOf(0.0)
+        GLFW.glfwGetCursorPos(window.window, x, y)
+
+        val nx = (x[0] / window.width * 2.0 - 1.0).coerceIn(-1.0, 1.0)
+        val ny = (y[0] / window.height * 2.0 - 1.0).coerceIn(-1.0, 1.0)
+
+        return Vector3f(
+            (nx * UNFOCUSED_PAN_RANGE).toFloat(),
+            (-ny * UNFOCUSED_PAN_RANGE).toFloat() * 0.5f,
+            0f
+        )
+    }
+
+    /**
+     * 返回未聚焦浮动预览绕 Y 轴的旋转角（弧度）：以屏幕中心为原点，鼠标越靠右整体越向逆时针
+     * 方向旋转，越靠左越向顺时针旋转，避免视角平移时卡进模型。聚焦或非改装状态下返回 0。
+     */
+    private fun computeEditFocusYaw(): Float {
+        if (!ClientEventHandler.isEditing || attachmentFocusBone() != null) return 0f
+
+        val mc = Minecraft.getInstance()
+        val window = mc.window
+        val x = doubleArrayOf(0.0)
+        val y = doubleArrayOf(0.0)
+        GLFW.glfwGetCursorPos(window.window, x, y)
+
+        val nx = (x[0] / window.width * 2.0 - 1.0).coerceIn(-1.0, 1.0)
+        return (-nx * UNFOCUSED_PAN_YAW).toFloat()
+    }
+
+    /**
+     * 返回未聚焦浮动预览绕 X 轴的旋转角（弧度）：以屏幕中心为原点，鼠标越靠上整体越向俯视
+     * 方向旋转，越靠下越向仰视方向旋转。聚焦或非改装状态下返回 0。
+     */
+    private fun computeEditFocusPitch(): Float {
+        if (!ClientEventHandler.isEditing || attachmentFocusBone() != null) return 0f
+
+        val mc = Minecraft.getInstance()
+        val window = mc.window
+        val x = doubleArrayOf(0.0)
+        val y = doubleArrayOf(0.0)
+        GLFW.glfwGetCursorPos(window.window, x, y)
+
+        val ny = (y[0] / window.height * 2.0 - 1.0).coerceIn(-1.0, 1.0)
+        return (-ny * UNFOCUSED_PAN_PITCH).toFloat()
     }
 
     open fun blendViewTransform(from: Matrix4f, to: Matrix4f, t: Float): Matrix4f {
@@ -677,6 +744,10 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         private const val STOCK_BONE = "stock"
         private const val EDIT_FOCUS_Z_OFFSET = 0.8f
         private const val EDIT_FOCUS_SMOOTHING = 1f
+        private const val UNFOCUSED_PAN_RANGE = 0.13f
+        private const val UNFOCUSED_PAN_SMOOTHING = 12f
+        private const val UNFOCUSED_PAN_YAW = 0.6f
+        private const val UNFOCUSED_PAN_PITCH = 0.3f
         private const val THIRDPERSON_HAND_BONE = "thirdperson_hand"
         private const val GROUND_BONE = "ground"
         private const val FIXED_BONE = "fixed"

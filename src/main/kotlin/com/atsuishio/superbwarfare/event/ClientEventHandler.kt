@@ -378,6 +378,20 @@ object ClientEventHandler {
     @JvmField
     var editFocusOffset: Vector3f = Vector3f()
 
+    /**
+     * 改装未聚焦时浮动预览绕 Y 轴的旋转角（弧度），
+     * 由 GeoGunRenderer 根据鼠标水平位置计算并插值，避免视角平移时卡进模型。
+     */
+    @JvmField
+    var editFocusYaw: Float = 0f
+
+    /**
+     * 改装未聚焦时浮动预览绕 X 轴的旋转角（弧度），
+     * 由 GeoGunRenderer 根据鼠标垂直位置计算并插值，避免视角平移时卡进模型。
+     */
+    @JvmField
+    var editFocusPitch: Float = 0f
+
     @JvmField
     var shootCoolDown: Int = 0
 
@@ -3129,6 +3143,8 @@ object ClientEventHandler {
         isEditing = false
         editingAttachmentType = -1
         editFocusOffset.set(0f, 0f, 0f)
+        editFocusYaw = 0f
+        editFocusPitch = 0f
         zoomTime = 0.0
     }
 

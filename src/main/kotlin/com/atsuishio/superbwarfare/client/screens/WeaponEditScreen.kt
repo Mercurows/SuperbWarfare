@@ -23,6 +23,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.world.item.ItemStack
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
+import org.lwjgl.glfw.GLFW
 import kotlin.math.min
 
 @OnlyIn(Dist.CLIENT)
@@ -242,6 +243,10 @@ class WeaponEditScreen(private val stack: ItemStack) : Screen(Component.empty())
     override fun keyPressed(pKeyCode: Int, pScanCode: Int, pModifiers: Int): Boolean {
         if (pKeyCode == ModKeyMappings.EDIT_MODE.key.value) {
             this.onClose()
+            return true
+        }
+        if (pKeyCode == GLFW.GLFW_KEY_ESCAPE && editingAttachmentType != -1) {
+            editingAttachmentType = -1
             return true
         }
         return super.keyPressed(pKeyCode, pScanCode, pModifiers)
