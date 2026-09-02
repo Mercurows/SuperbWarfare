@@ -306,6 +306,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         // attachments
         simpleItem(ModItems.MEOWLENCER)
         simpleItem(ModItems.HISSILENCER)
+        simpleItem(ModItems.SILAOWUNCER)
         simpleItem(ModItems.RU_SILENCER)
         simpleItem(ModItems.AR_SILENCER)
         simpleItem(ModItems.HANDGUN_SILENCER)

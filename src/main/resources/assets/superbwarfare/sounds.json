@@ -4765,5 +4765,19 @@
         "name": "superbwarfare:vehicle/fh_77bw/fh_77bw_fire_3p"
       }
     ]
+  },
+  "laowu": {
+    "sounds": [
+      "superbwarfare:laowu/laowu_1",
+      "superbwarfare:laowu/laowu_2",
+      "superbwarfare:laowu/laowu_3"
+    ]
+  },
+  "laowu_single": {
+    "sounds": [
+      "superbwarfare:laowu/laowu_1s",
+      "superbwarfare:laowu/laowu_2s",
+      "superbwarfare:laowu/laowu_3s"
+    ]
   }
 }
