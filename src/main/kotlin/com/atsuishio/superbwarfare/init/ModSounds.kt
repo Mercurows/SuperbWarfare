@@ -193,6 +193,11 @@ object ModSounds {
 
     @JvmField val HAPPIEST_GHAST_DOOR_OPEN = register("happiest_ghast_door_open")
     @JvmField val HAPPIEST_GHAST_DOOR_CLOSE = register("happiest_ghast_door_close")
+
+    // Sounds from Old Wu
+    // https://github.com/FunctionHookTJU/old_wu_java-template-26.2
+    @JvmField val LAOWU = register("laowu")
+    @JvmField val LAOWU_SINGLE = register("laowu_single")
     // @formatter:on
 
     fun register(name: String): RegistryObject<SoundEvent> =
