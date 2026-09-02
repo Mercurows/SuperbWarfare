@@ -128,6 +128,8 @@ object ModPerks {
     lateinit var BRAIN_STORM: PERK
     lateinit var BATTLE_OF_WITS: PERK
     lateinit var TARGET_LOCK: PERK
+    lateinit var SOUL_REAVER: PERK
+    lateinit var STEADY_RESOLVE: PERK
     // @formatter:on
 
     fun register(bus: IEventBus) {
@@ -271,6 +273,12 @@ object ModPerks {
         BATTLE_OF_WITS = autoRegistryObjects["battle_of_wits"] ?: registerDamagePerk("battle_of_wits") { BattleOfWits }
         TARGET_LOCK = autoRegistryObjects["target_lock"] ?: registerDamagePerk("target_lock") {
             EmptyPerk("target_lock", Perk.Type.DAMAGE)
+        }
+        SOUL_REAVER = autoRegistryObjects["soul_reaver"] ?: registerDamagePerk("soul_reaver") {
+            EmptyPerk("soul_reaver", Perk.Type.DAMAGE)
+        }
+        STEADY_RESOLVE = autoRegistryObjects["steady_resolve"] ?: registerDamagePerk("steady_resolve") {
+            EmptyPerk("steady_resolve", Perk.Type.DAMAGE)
         }
     }
 }

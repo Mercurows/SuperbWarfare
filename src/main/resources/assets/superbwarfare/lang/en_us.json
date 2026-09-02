@@ -599,6 +599,10 @@
   "des.superbwarfare.battle_of_wits": "Sending a message increases damage of next shot.",
   "item.superbwarfare.target_lock": "Target Lock",
   "des.superbwarfare.target_lock": "Damage increases the longer this weapon remains on a target.",
+  "item.superbwarfare.soul_reaver": "Soul Reaver",
+  "des.superbwarfare.soul_reaver": "Deals bonus damage to low-health targets, with the bonus increasing proportionally to their current health.",
+  "item.superbwarfare.steady_resolve": "Steady Resolve",
+  "des.superbwarfare.steady_resolve": "Continuously restores Focus. When Focus is full, consumes all Focus to grant a temporary damage bonus.",
 
   "item.superbwarfare.empty_perk": "Empty Perk",
   "item.superbwarfare.shortcut_pack": "Shortcut Pack",

@@ -599,6 +599,10 @@
   "des.superbwarfare.battle_of_wits": "发送消息会提升下一次射击的伤害",
   "item.superbwarfare.target_lock": "勿移视",
   "des.superbwarfare.target_lock": "随着此武器准星在目标上停留的时间增加伤害",
+  "item.superbwarfare.soul_reaver": "摄魂侵魄",
+  "des.superbwarfare.soul_reaver": "对低生命值的生物造成与当前生命值正相关的额外伤害",
+  "item.superbwarfare.steady_resolve": "静心凝势",
+  "des.superbwarfare.steady_resolve": "持续恢复专注值，专注值满时消耗全部专注值并提供一段时间的伤害加成",
 
   "item.superbwarfare.empty_perk": "空白模组",
   "item.superbwarfare.shortcut_pack": "捷径包",
