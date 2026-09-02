@@ -619,6 +619,7 @@ object ModItems {
     @JvmField val HISSILENCER = registerAttachment("hissilencer", Rarity.RARE)
     @JvmField val RU_SILENCER = registerAttachment("ru_silencer")
     @JvmField val AR_SILENCER = registerAttachment("ar_silencer")
+    @JvmField val HANDGUN_SILENCER = registerAttachment("handgun_silencer")
     // @formatter:on
 
     fun registerDispenserBehavior() {

@@ -7,12 +7,12 @@
   "Damage": 5.5,
   "Headshot": 1.5,
   "Velocity": 11,
-  "Magazine": 17,
+  "Magazine": [17, 30, 50],
   "Weight": 1,
   "DrawTime": 7,
   "ZoomTime": 3,
-  "NormalReloadTime": 42,
-  "EmptyReloadTime": 45,
+  "NormalReloadTime": [42, 42, 42],
+  "EmptyReloadTime": [45, 45, 45],
   "ActionSteps": [
     {
       "Timeline": "RELOAD_NORMAL",
@@ -63,10 +63,27 @@
     "!superbwarfare:longer_wire",
     "!superbwarfare:cupid_arrow"
   ],
+  "AvailableAttachments": {
+    "Scope": [
+      "superbwarfare:iron_sight",
+      "superbwarfare:acog_4x"
+    ],
+    "Magazine": [
+      "superbwarfare:magazine_extend",
+      "superbwarfare:magazine_extend_pro"
+    ],
+    "Barrel": [
+      "superbwarfare:meowlencer",
+      "superbwarfare:hissilencer",
+      "superbwarfare:handgun_silencer"
+    ]
+  },
   "SoundInfo": {
     "Fire1P": "superbwarfare:glock_17_fire_1p",
     "Fire3P": "superbwarfare:glock_17_fire_3p",
     "Fire3PFar": "superbwarfare:glock_17_far",
-    "Fire3PVeryFar": "superbwarfare:glock_17_veryfar"
+    "Fire3PVeryFar": "superbwarfare:glock_17_veryfar",
+    "Fire1PSilent": "superbwarfare:glock_17_fire_1p_s",
+    "Fire3PSilent": "superbwarfare:glock_17_fire_3p_s"
   }
 }

@@ -4,6 +4,7 @@
   "Animation": {
     "Idle": "animation.glock_17.idle",
     "Fire": "animation.glock_17.fire",
+    "Edit": "animation.glock_17.edit",
     "ReloadNormal": "animation.glock_17.reload_normal",
     "ReloadEmpty": "animation.glock_17.reload_empty",
     "HoldOpen": "animation.glock_17.hold_open"

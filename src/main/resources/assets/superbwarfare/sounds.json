@@ -1431,6 +1431,22 @@
       }
     ]
   },
+  "glock_17_fire_1p_s": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/glock_17/glock_17_fire_1p_s",
+        "stream": false
+      }
+    ]
+  },
+  "glock_17_fire_3p_s": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/glock_17/glock_17_fire_3p_s",
+        "stream": false
+      }
+    ]
+  },
   "glock_17_far": {
     "sounds": [
       {

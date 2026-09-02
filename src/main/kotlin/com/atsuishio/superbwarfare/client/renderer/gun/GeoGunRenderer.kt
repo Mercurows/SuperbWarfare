@@ -575,8 +575,22 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val desiredYaw = computeEditFocusYaw()
         val desiredPitch = computeEditFocusPitch()
         val delta = Minecraft.getInstance().deltaFrameTime.coerceAtMost(0.5f)
-        val panning = ClientEventHandler.isEditing && attachmentFocusBone() == null
-        val smoothing = if (panning) UNFOCUSED_PAN_SMOOTHING else EDIT_FOCUS_SMOOTHING
+        val focusing = attachmentFocusBone() != null
+        val panning = ClientEventHandler.isEditing && !focusing
+
+        if (focusing) {
+            // 聚焦配件时重置回退缓动时长，供之后 ESC 返回预览使用
+            ClientEventHandler.editFocusReturnTime = EDIT_FOCUS_RETURN_TIME
+        } else if (panning && ClientEventHandler.editFocusReturnTime > 0f) {
+            ClientEventHandler.editFocusReturnTime =
+                (ClientEventHandler.editFocusReturnTime - delta).coerceAtLeast(0f)
+        }
+
+        val smoothing = when {
+            panning && ClientEventHandler.editFocusReturnTime > 0f -> EDIT_FOCUS_RETURN_SMOOTHING
+            panning -> UNFOCUSED_PAN_SMOOTHING
+            else -> EDIT_FOCUS_SMOOTHING
+        }
         val t = (smoothing * delta).coerceIn(0f, 1f)
         ClientEventHandler.editFocusOffset.lerp(desired, t)
         ClientEventHandler.editFocusYaw = Mth.lerp(t, ClientEventHandler.editFocusYaw, desiredYaw)
@@ -746,6 +760,8 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         private const val STOCK_BONE = "stock"
         private const val EDIT_FOCUS_Z_OFFSET = 0.8f
         private const val EDIT_FOCUS_SMOOTHING = 1f
+        private const val EDIT_FOCUS_RETURN_SMOOTHING = 3f
+        private const val EDIT_FOCUS_RETURN_TIME = 0.6f
         private const val UNFOCUSED_PAN_RANGE = 0.13f
         private const val UNFOCUSED_PAN_SMOOTHING = 12f
         private const val UNFOCUSED_PAN_YAW = 0.6f

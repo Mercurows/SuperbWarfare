@@ -1,0 +1,10 @@
+{
+  "Slot": "Barrel",
+  "Level": 1,
+  "Bone": "muzzle",
+  "IsSilenced": true,
+  "SoundRadiusMultiplier": 0.6,
+  "MuzzleFlashScale": 0.35,
+  "Model": "superbwarfare:models/bedrock/attachment/handgun_silencer.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/handgun_silencer.png"
+}
