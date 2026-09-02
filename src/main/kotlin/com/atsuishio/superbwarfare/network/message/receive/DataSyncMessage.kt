@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.network.message.receive
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.DataLoader
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.ClientPacketPayload
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.serialization.kserializer.CompressedString
@@ -10,6 +11,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.serializer
 
 @Serializable
+@RegisterPacket
 data class DataSyncMessage(
     val path: String,
     val jsonData: CompressedString,

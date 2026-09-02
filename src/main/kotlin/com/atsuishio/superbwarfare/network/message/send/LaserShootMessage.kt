@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
@@ -13,6 +14,7 @@ import kotlinx.serialization.Serializable
 import net.minecraft.sounds.SoundSource
 
 @Serializable
+@RegisterPacket
 data class LaserShootMessage(
     val damage: Double,
     val uuid: SerializedUUID,

@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.network.message.send
 import com.atsuishio.superbwarfare.command.resolveSafeY
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import kotlinx.serialization.Serializable
@@ -11,6 +12,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 @Serializable
+@RegisterPacket
 data class LoiterConfigMessage(
     val centerX: Float,
     val centerY: Float,

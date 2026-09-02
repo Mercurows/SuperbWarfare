@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.client.particle
 import com.atsuishio.superbwarfare.init.ModParticleTypes
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedBlockPos
 import com.atsuishio.superbwarfare.tools.asCodecField
-import com.atsuishio.superbwarfare.tools.createStreamCodec
 import com.mojang.serialization.Codec
 import com.mojang.serialization.MapCodec
 import com.mojang.serialization.codecs.RecordCodecBuilder
@@ -39,7 +38,5 @@ class BulletDecalOption @JvmOverloads constructor(
                 BulletDecalOption::blue.asCodecField(),
             ).apply(builder, ::BulletDecalOption)
         }
-
-        val STREAM_CODEC = createStreamCodec<BulletDecalOption>()
     }
 }

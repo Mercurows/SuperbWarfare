@@ -2,6 +2,8 @@ package com.atsuishio.superbwarfare.init
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.particle.*
+import com.atsuishio.superbwarfare.tools.createStreamCodec
+import com.atsuishio.superbwarfare.tools.generateMapCodec
 import com.mojang.serialization.MapCodec
 import net.minecraft.core.particles.ParticleOptions
 import net.minecraft.core.particles.ParticleType
@@ -21,17 +23,7 @@ object ModParticleTypes {
     val FIRE_STAR = registerSimpleParticle("fire_star")
 
     @JvmField
-    val EXPLOSION_DEBRIS: DeferredHolder<ParticleType<*>, ParticleType<ExplosionDebrisOption>> =
-        REGISTRY.register(
-            "explosion_debris",
-            Supplier {
-                createOptions(
-                    ExplosionDebrisOption.CODEC,
-                    true,
-                    ExplosionDebrisOption.STREAM_CODEC
-                )
-            }
-        )
+    val EXPLOSION_DEBRIS = registerParticle("explosion_debris", true, ExplosionDebrisOption.CODEC)
 
     @JvmField
     val WHITE_STAR = registerSimpleParticle("white_star")
@@ -40,50 +32,37 @@ object ModParticleTypes {
     val RISING_SMOKE = registerSimpleParticle("rising_smoke")
 
     @JvmField
-    val BULLET_DECAL: DeferredHolder<ParticleType<*>, ParticleType<BulletDecalOption>> =
-        REGISTRY.register(
-            "bullet_decal",
-            Supplier { createOptions(BulletDecalOption.CODEC, true, BulletDecalOption.STREAM_CODEC) }
-        )
+    val BULLET_DECAL = registerParticle("bullet_decal", true, BulletDecalOption.CODEC)
 
     @JvmField
-    val CUSTOM_SMOKE: DeferredHolder<ParticleType<*>, ParticleType<CustomSmokeOption>> =
-        REGISTRY.register(
-            "custom_smoke",
-            Supplier { createOptions(CustomSmokeOption.CODEC, true, CustomSmokeOption.STREAM_CODEC) }
-        )
+    val CUSTOM_SMOKE = registerParticle<CustomSmokeOption>("custom_smoke")
 
     @JvmField
-    val CANNON_MUZZLE_FLARE: DeferredHolder<ParticleType<*>, ParticleType<CannonMuzzleFlareOption>> =
-        REGISTRY.register(
-            "cannon_muzzle_flare",
-            Supplier { createOptions(CannonMuzzleFlareOption.CODEC, true, CannonMuzzleFlareOption.STREAM_CODEC) }
-        )
+    val CANNON_MUZZLE_FLARE = registerParticle<CannonMuzzleFlareOption>("cannon_muzzle_flare")
 
     @JvmField
-    val CUSTOM_FLARE: DeferredHolder<ParticleType<*>, ParticleType<CustomFlareOption>> =
-        REGISTRY.register(
-            "custom_flare",
-            Supplier { createOptions(CustomFlareOption.CODEC, true, CustomFlareOption.STREAM_CODEC) }
-        )
+    val CUSTOM_FLARE = registerParticle<CustomFlareOption>("custom_flare")
 
     @JvmField
-    val CUSTOM_CLOUD: DeferredHolder<ParticleType<*>, ParticleType<CustomCloudOption>> =
-        REGISTRY.register(
-            "custom_cloud",
-            Supplier { createOptions(CustomCloudOption.CODEC, true, CustomCloudOption.STREAM_CODEC) }
-        )
+    val CUSTOM_CLOUD = registerParticle<CustomCloudOption>("custom_cloud")
+
+    /** Registers a data particle type with fully explicit codecs. */
+    inline fun <reified T : ParticleOptions> registerParticle(
+        name: String,
+        overrideLimiter: Boolean = true,
+        codec: MapCodec<T> = generateMapCodec<T>(),
+        streamCodec: StreamCodec<in RegistryFriendlyByteBuf, T> = createStreamCodec<T>(),
+    ): DeferredHolder<ParticleType<*>, ParticleType<T>> =
+        REGISTRY.register(name, Supplier { createOptions(overrideLimiter, codec, streamCodec) })
 
     fun <T : ParticleOptions> createOptions(
-        codec: MapCodec<T>,
         overrideLimiter: Boolean,
-        streamCodec: StreamCodec<in RegistryFriendlyByteBuf, T>
-    ): ParticleType<T> {
-        return object : ParticleType<T>(overrideLimiter) {
-            override fun codec() = codec
+        codec: MapCodec<T>,
+        streamCodec: StreamCodec<in RegistryFriendlyByteBuf, T>,
+    ) = object : ParticleType<T>(overrideLimiter) {
+        override fun codec() = codec
 
-            override fun streamCodec() = streamCodec
-        }
+        override fun streamCodec() = streamCodec
     }
 
     fun registerSimpleParticle(

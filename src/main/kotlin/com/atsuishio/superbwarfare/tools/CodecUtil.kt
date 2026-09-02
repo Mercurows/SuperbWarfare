@@ -3,7 +3,9 @@ package com.atsuishio.superbwarfare.tools
 import com.atsuishio.superbwarfare.network.decodeFrom
 import com.atsuishio.superbwarfare.network.encodeTo
 import com.mojang.serialization.Codec
+import com.mojang.serialization.MapCodec
 import com.mojang.serialization.codecs.RecordCodecBuilder
+import kotlinx.serialization.serializer
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.codec.StreamCodec
 import kotlin.reflect.KProperty1
@@ -23,7 +25,8 @@ inline fun <reified T : Any> createStreamCodec(): StreamCodec<FriendlyByteBuf, T
     return codec
 }
 
-// TODO 能不能彻底干掉MapCodec全自动生成
+/** Derives a Mojang [MapCodec] from the generated kotlinx.serialization serializer of [T]. */
+inline fun <reified T : Any> generateMapCodec(): MapCodec<T> = serializerToMapCodec(serializer<T>())
 
 @JvmName("asIntCodecField")
 fun <O> KProperty1<O, Int>.asCodecField(name: String? = null) = createCodecField(this, name)

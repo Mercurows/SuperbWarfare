@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.event.GunEventHandler.playGunBoltSounds
 import com.atsuishio.superbwarfare.item.gun.GunItem
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import kotlinx.serialization.Serializable
@@ -15,6 +16,7 @@ import net.minecraft.world.item.ItemStack
  * 开火按键按下/松开时的处理
  */
 @Serializable
+@RegisterPacket
 data class FireKeyMessage(val type: Int, val power: Double, val zoom: Boolean) : ServerPacketPayload() {
 
     override fun PayloadContext.handler() {

@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.init.ModDataComponents
 import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import kotlinx.serialization.Serializable
@@ -9,6 +10,7 @@ import net.minecraft.core.component.DataComponents
 import net.minecraft.network.chat.Component
 
 @Serializable
+@RegisterPacket
 data class DogTagFinishEditMessage(
     val colors: Array<ShortArray>,
     val name: String,

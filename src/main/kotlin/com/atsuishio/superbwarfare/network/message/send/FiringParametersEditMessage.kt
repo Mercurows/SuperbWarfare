@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.item.misc.ArtilleryIndicatorItem
 import com.atsuishio.superbwarfare.item.misc.FiringParametersItem
 import com.atsuishio.superbwarfare.item.misc.firingParameters
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.tools.`is`
@@ -11,6 +12,7 @@ import kotlinx.serialization.Serializable
 import net.minecraft.core.BlockPos
 
 @Serializable
+@RegisterPacket
 data class FiringParametersEditMessage(
     val x: Int, val y: Int, val z: Int,
     val radius: Int, val isDepressed: Boolean, val mainHand: Boolean

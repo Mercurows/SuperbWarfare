@@ -1,11 +1,13 @@
 package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.inventory.menu.BlueprintResearchTableMenu
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import kotlinx.serialization.Serializable
 
 @Serializable
+@RegisterPacket
 data class BlueprintSetIndexMessage(val index: Int) : ServerPacketPayload() {
     override fun PayloadContext.handler() {
         val player = this.sender()

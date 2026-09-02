@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.misc.ArtilleryIndicatorItem
 import com.atsuishio.superbwarfare.item.misc.FiringParametersItem
 import com.atsuishio.superbwarfare.item.misc.firingParameters
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedVector3f
@@ -18,6 +19,7 @@ import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
 
 @Serializable
+@RegisterPacket
 data class DroneFireMessage(val pos: SerializedVector3f) : ServerPacketPayload() {
     override fun PayloadContext.handler() {
         val player = sender()

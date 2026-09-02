@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.network.message.receive
 
 import com.atsuishio.superbwarfare.api.event.ClientVehicleFireEvent
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.ClientPacketPayload
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedUUID
@@ -11,6 +12,7 @@ import com.atsuishio.superbwarfare.tools.postEvent
 import kotlinx.serialization.Serializable
 
 @Serializable
+@RegisterPacket
 data class VehicleShootClientMessage(
     val shooter: SerializedUUID,
     val vehicle: SerializedUUID,

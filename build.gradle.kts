@@ -242,7 +242,7 @@ fun DependencyHandler.jijImplement(dependency: String, maxVersion: String? = nul
 
 dependencies {
     ksp(project(":ksp"))
-    implementation(project(":ksp"))
+    compileOnly(project(":ksp"))
 
     implementation("thedarkcolour:kotlinforforge-neoforge:5.10.0")
 

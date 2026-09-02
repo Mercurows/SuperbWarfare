@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.network.message.receive
 
 import com.atsuishio.superbwarfare.client.particle.CustomFlareOption
 import com.atsuishio.superbwarfare.config.server.SyncConfig
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.ClientPacketPayload
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.tools.localPlayer
@@ -11,6 +12,7 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.phys.Vec3
 
 @Serializable
+@RegisterPacket
 data class MissileTrailParticleMessage(
     val xo: Double,
     val yo: Double,

@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.particle
 
 import com.atsuishio.superbwarfare.init.ModParticleTypes
-import com.atsuishio.superbwarfare.tools.createStreamCodec
 import com.mojang.serialization.Codec
 import com.mojang.serialization.MapCodec
 import com.mojang.serialization.codecs.RecordCodecBuilder
@@ -62,7 +61,5 @@ class ExplosionDebrisOption(
                     Codec.FLOAT.fieldOf("sizeAdd").forGetter { it.sizeAdd }
                 ).apply(builder, ::ExplosionDebrisOption)
             }
-
-        val STREAM_CODEC = createStreamCodec<ExplosionDebrisOption>()
     }
 }

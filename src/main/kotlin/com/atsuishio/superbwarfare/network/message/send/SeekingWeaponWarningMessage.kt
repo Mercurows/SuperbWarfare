@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedUUID
@@ -11,6 +12,7 @@ import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.animal.Pig
 
 @Serializable
+@RegisterPacket
 data class SeekingWeaponWarningMessage(val lockOn: Boolean, val uuid: SerializedUUID) : ServerPacketPayload() {
     override fun PayloadContext.handler() {
         val player = sender()

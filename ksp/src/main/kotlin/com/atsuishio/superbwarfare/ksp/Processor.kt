@@ -3,7 +3,14 @@ package com.atsuishio.superbwarfare.ksp
 import com.google.devtools.ksp.processing.*
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
-import com.google.devtools.ksp.symbol.KSValueParameter
+import com.google.devtools.ksp.symbol.KSFile
+
+private const val REGISTER_PACKET_ANNOTATION =
+    "com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket"
+private const val SERVER_PACKET_PAYLOAD =
+    "com.atsuishio.superbwarfare.network.ServerPacketPayload"
+private const val CLIENT_PACKET_PAYLOAD =
+    "com.atsuishio.superbwarfare.network.ClientPacketPayload"
 
 
 class ProcessorProvider : SymbolProcessorProvider {
@@ -18,84 +25,86 @@ class Processor(
 ) : SymbolProcessor {
 
     override fun process(resolver: Resolver): List<KSAnnotated> {
-        resolver.getSymbolsWithAnnotation("com.atsuishio.superbwarfare.ksp.annotation.GenerateMapCodec")
+        resolver.getSymbolsWithAnnotation(REGISTER_PACKET_ANNOTATION)
             .filterIsInstance<KSClassDeclaration>()
-            .forEach(::processClass)
+            .toList()
+            .let(::generateRegistrations)
 
         return emptyList()
     }
 
-    private fun processClass(classDeclaration: KSClassDeclaration) {
-        val className = classDeclaration.simpleName.asString()
-        val packageName = classDeclaration.packageName.asString()
+    private fun generateRegistrations(declarations: List<KSClassDeclaration>) {
+        val sourceFiles = mutableSetOf<KSFile>()
+        val registrations = mutableListOf<Pair<String, String>>() // qualified name to playTo* function
 
-        logger.info("Processing class $packageName.$className")
+        declarations.forEach { declaration ->
+            declaration.containingFile?.let(sourceFiles::add)
 
-        generateFancyExtension(classDeclaration, packageName, className)
-    }
+            val qualifiedName = declaration.qualifiedName?.asString()
+            if (qualifiedName == null) {
+                logger.error("@RegisterPacket class has no qualified name", declaration)
+                return@forEach
+            }
 
-    private fun generateFancyExtension(
-        classDeclaration: KSClassDeclaration,
-        packageName: String,
-        className: String
-    ) {
+            val function = when {
+                declaration.isSubtypeOf(SERVER_PACKET_PAYLOAD) -> "playToServer"
+                declaration.isSubtypeOf(CLIENT_PACKET_PAYLOAD) -> "playToClient"
+                else -> {
+                    logger.error(
+                        "@RegisterPacket class $qualifiedName must extend ServerPacketPayload or ClientPacketPayload",
+                        declaration
+                    )
+                    return@forEach
+                }
+            }
+
+            registrations += qualifiedName to function
+            logger.info("@RegisterPacket -> $function<$qualifiedName>")
+        }
+
+        if (registrations.isEmpty()) return
+
+        registrations.sortBy { it.first }
+
         val file = codeGenerator.createNewFile(
-            dependencies = Dependencies(false, classDeclaration.containingFile!!),
-            packageName = packageName,
-            fileName = "${className}GeneratedCodec"
+            dependencies = Dependencies(aggregating = true, *sourceFiles.toTypedArray()),
+            packageName = "com.atsuishio.superbwarfare.network",
+            fileName = "GeneratedPayloadRegistrations"
         )
 
-        val parameters = classDeclaration.primaryConstructor?.parameters.orEmpty()
-
-        if (parameters.size !in 1..8) {
-            logger.error(
-                "@GenerateMapCodec class $className must have 1 to 8 primary constructor parameters!",
-                classDeclaration
-            )
-            return
+        val content = buildString {
+            appendLine("// 自动生成文件，请勿手动更改")
+            appendLine()
+            appendLine("package com.atsuishio.superbwarfare.network")
+            appendLine()
+            registrations.forEach { (name, _) -> appendLine("import $name") }
+            appendLine()
+            appendLine("@Suppress(\"unused\")")
+            appendLine("internal fun registerGeneratedPayloads() {")
+            registrations.forEach { (name, function) ->
+                appendLine("    $function<${name.substringAfterLast('.')}>()")
+            }
+            appendLine("}")
         }
 
-        val parameterCodecs = parameters.joinToString(
-            prefix = "\n                        ",
-            separator = ",\n                        ",
-            postfix = "\n                    "
-        ) {
-            generateCodec(it)
-        }
-
-        file.bufferedWriter().use { writer ->
-            writer.write(
-                """
-                // 自动生成文件，请勿手动更改
-                
-                package $packageName
-
-                import com.mojang.serialization.MapCodec
-                import com.mojang.serialization.codecs.RecordCodecBuilder
-
-                val $className.Companion.CODEC: MapCodec<$className> get() = RecordCodecBuilder.mapCodec { builder ->
-                    builder.group($parameterCodecs).apply(builder, ::$className)
-                }
-
-                """.trimIndent()
-            )
-        }
+        file.bufferedWriter().use { writer -> writer.write(content) }
     }
 
-    private fun generateCodec(parameter: KSValueParameter): String {
-        val name = parameter.name!!.asString()
-        return when (val type = parameter.type.resolve().declaration.qualifiedName?.asString()) {
-            "kotlin.Byte" -> """com.mojang.serialization.Codec.BYTE.fieldOf("$name").forGetter { it.$name }"""
-            "kotlin.Short" -> """com.mojang.serialization.Codec.SHORT.fieldOf("$name").forGetter { it.$name }"""
-            "kotlin.Int" -> """com.mojang.serialization.Codec.INT.fieldOf("$name").forGetter { it.$name }"""
-            "kotlin.Long" -> """com.mojang.serialization.Codec.LONG.fieldOf("$name").forGetter { it.$name }"""
-            "kotlin.Float" -> """com.mojang.serialization.Codec.FLOAT.fieldOf("$name").forGetter { it.$name }"""
-            "kotlin.Double" -> """com.mojang.serialization.Codec.DOUBLE.fieldOf("$name").forGetter { it.$name }"""
-            "kotlin.Boolean" -> """com.mojang.serialization.Codec.BOOL.fieldOf("$name").forGetter { it.$name }"""
-            "kotlin.String" -> """com.mojang.serialization.Codec.STRING.fieldOf("$name").forGetter { it.$name }"""
-            "net.minecraft.core.BlockPos" -> """com.mojang.serialization.Codec.LONG.fieldOf("$name").forGetter { it.$name.asLong() }"""
-            "net.minecraft.world.item.crafting.Ingredient" -> """net.minecraft.world.item.crafting.Ingredient.CODEC.optionalFieldOf("$name", Ingredient.EMPTY).forGetter { it.$name }"""
-            else -> error("don't know how to generate codec for $type!")
+    private fun KSClassDeclaration.isSubtypeOf(qualifiedName: String): Boolean {
+        val queue = ArrayDeque<KSClassDeclaration>()
+        val visited = mutableSetOf<String>()
+        queue.addLast(this)
+
+        while (queue.isNotEmpty()) {
+            val current = queue.removeFirst()
+            val currentName = current.qualifiedName?.asString() ?: continue
+            if (!visited.add(currentName)) continue
+            if (currentName == qualifiedName) return true
+
+            current.superTypes
+                .mapNotNull { it.resolve().declaration as? KSClassDeclaration }
+                .forEach(queue::addLast)
         }
+        return false
     }
 }

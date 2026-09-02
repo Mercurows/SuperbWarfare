@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.network.message.receive
 
 import com.atsuishio.superbwarfare.config.client.KillMessageConfig
 import com.atsuishio.superbwarfare.event.KillMessageHandler
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.ClientPacketPayload
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.serialization.kserializer.ResourceLocationSerializer
@@ -19,6 +20,7 @@ import net.minecraft.world.entity.OwnableEntity
 import net.minecraft.world.entity.player.Player
 
 @Serializable
+@RegisterPacket
 data class LivingGunKillMessage(
     val attackerId: Int,
     val targetId: Int,

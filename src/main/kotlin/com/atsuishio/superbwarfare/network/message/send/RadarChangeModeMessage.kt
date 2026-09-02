@@ -1,11 +1,13 @@
 package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.inventory.menu.FuMO25Menu
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import kotlinx.serialization.Serializable
 
 @Serializable
+@RegisterPacket
 data class RadarChangeModeMessage(val mode: Byte) : ServerPacketPayload() {
     override fun PayloadContext.handler() {
         if (mode !in 1..4) return

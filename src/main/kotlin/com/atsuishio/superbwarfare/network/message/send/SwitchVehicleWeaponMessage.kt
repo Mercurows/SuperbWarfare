@@ -1,12 +1,14 @@
 package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import kotlinx.serialization.Serializable
 import net.minecraft.util.Mth
 
 @Serializable
+@RegisterPacket
 data class SwitchVehicleWeaponMessage(
     val index: Int,
     val value: Double,

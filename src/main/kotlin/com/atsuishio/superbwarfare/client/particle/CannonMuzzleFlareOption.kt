@@ -1,14 +1,11 @@
 package com.atsuishio.superbwarfare.client.particle
 
 import com.atsuishio.superbwarfare.init.ModParticleTypes
-import com.atsuishio.superbwarfare.ksp.annotation.GenerateMapCodec
-import com.atsuishio.superbwarfare.tools.createStreamCodec
 import kotlinx.serialization.Serializable
 import net.minecraft.core.particles.ParticleOptions
 import net.minecraft.core.particles.ParticleType
 import kotlin.math.roundToInt
 
-@GenerateMapCodec
 @Serializable
 data class CannonMuzzleFlareOption(
     val color: Int,
@@ -38,8 +35,4 @@ data class CannonMuzzleFlareOption(
     val blue get() = (this.color and 255) / 255f
 
     override fun getType(): ParticleType<*> = ModParticleTypes.CANNON_MUZZLE_FLARE.get()
-
-    companion object {
-        val STREAM_CODEC = createStreamCodec<CannonMuzzleFlareOption>()
-    }
 }

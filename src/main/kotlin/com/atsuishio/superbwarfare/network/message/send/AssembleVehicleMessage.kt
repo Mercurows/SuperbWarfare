@@ -1,12 +1,14 @@
 package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.inventory.menu.VehicleAssemblingMenu
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedResourceLocation
 import kotlinx.serialization.Serializable
 
 @Serializable
+@RegisterPacket
 data class AssembleVehicleMessage(val id: SerializedResourceLocation, val containerId: Int) : ServerPacketPayload() {
     override fun PayloadContext.handler() {
         val player = sender()

@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.receive
 
 import com.atsuishio.superbwarfare.event.ClientEventHandler
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.ClientPacketPayload
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedResourceLocation
@@ -15,6 +16,7 @@ import net.minecraft.sounds.SoundSource
 import net.minecraft.world.phys.Vec3
 
 @Serializable
+@RegisterPacket
 data class SoundClientMessage(
     val location: SerializedResourceLocation,
     val x: Double,

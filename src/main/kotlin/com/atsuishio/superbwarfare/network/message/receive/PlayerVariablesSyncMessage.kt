@@ -2,12 +2,14 @@ package com.atsuishio.superbwarfare.network.message.receive
 
 import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.init.ModDataAttachments
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.ClientPacketPayload
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.tools.clientLevel
 import kotlinx.serialization.Serializable
 
 @Serializable
+@RegisterPacket
 data class PlayerVariablesSyncMessage(
     val target: Int,
     val data: Map<Byte, Int>,

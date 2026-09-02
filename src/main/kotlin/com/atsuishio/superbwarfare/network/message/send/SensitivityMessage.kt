@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.item.gun.GunItem
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import kotlinx.serialization.Serializable
@@ -10,6 +11,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 @Serializable
+@RegisterPacket
 data class SensitivityMessage(val isAdd: Boolean) : ServerPacketPayload() {
     override fun PayloadContext.handler() {
         val player = sender()

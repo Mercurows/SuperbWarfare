@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import kotlinx.serialization.Serializable
@@ -11,6 +12,7 @@ import kotlinx.serialization.Serializable
  * - unloadAll = false：主驾驶按住卸载乘客键时每隔1秒发送，让序号最靠后的一位乘客（非主驾驶）离开载具。
  */
 @Serializable
+@RegisterPacket
 data class VehicleUnloadPassengersMessage(val unloadAll: Boolean = false) : ServerPacketPayload() {
 
     override fun PayloadContext.handler() {

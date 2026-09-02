@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.tools.SoundTool
@@ -10,6 +11,7 @@ import kotlinx.serialization.Serializable
 import net.minecraft.util.Mth
 
 @Serializable
+@RegisterPacket
 data class AdjustMortarAngleMessage(val scroll: Double) : ServerPacketPayload() {
     override fun PayloadContext.handler() {
         val player = sender()

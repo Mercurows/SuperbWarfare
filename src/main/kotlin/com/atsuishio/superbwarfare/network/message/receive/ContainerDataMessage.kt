@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.receive
 
 import com.atsuishio.superbwarfare.inventory.menu.EnergyMenu
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.ClientPacketPayload
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.tools.localPlayer
@@ -15,6 +16,7 @@ import kotlinx.serialization.encoding.Encoder
  * Code based on @GoryMoon's Chargers
  */
 @Serializable
+@RegisterPacket
 data class ContainerDataMessage(
     val containerId: Int,
     val data: List<@Serializable(ContainerDataPairSerializer::class) Pair>
