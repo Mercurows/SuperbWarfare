@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "superbwarfare:item/handgun_silencer"
+    "layer0": "superbwarfare:item/silaowuncer"
   }
 }

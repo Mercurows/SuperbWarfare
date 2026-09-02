@@ -10,8 +10,7 @@
       "Fire1PSilent": "minecraft:entity.cat.hiss",
       "Fire3PSilent": "minecraft:entity.cat.hiss",
       "Fire3PFarSilent": "minecraft:entity.cat.hiss",
-      "Fire3PVeryFarSilent": "minecraft:entity.cat.hiss",
-      "FireSoundInstances": "minecraft:entity.cat.hiss"
+      "Fire3PVeryFarSilent": "minecraft:entity.cat.hiss"
     }
   }
 }
