@@ -312,6 +312,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.HANDGUN_SILENCER)
         simpleItem(ModItems.MAGAZINE_EXTEND)
         simpleItem(ModItems.MAGAZINE_EXTEND_PRO)
+        simpleItem(ModItems.LOUDSPEAKER)
 
         // blocks
         evenSimplerBlockItem(ModBlocks.BARBED_WIRE)
