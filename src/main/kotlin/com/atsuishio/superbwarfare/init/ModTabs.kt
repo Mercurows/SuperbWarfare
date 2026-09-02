@@ -58,7 +58,7 @@ object ModTabs {
     val ATTACHMENT_TAB: RegistryObject<CreativeModeTab> = TABS.register("attachment") {
         CreativeModeTab.builder()
             .title(Component.translatable("item_group.superbwarfare.attachment"))
-            .icon { ItemStack(ModItems.OEM_STOCK_STANDARD.get()) }
+            .icon { ItemStack(ModItems.MAGAZINE_EXTEND_PRO.get()) }
             .withTabsBefore(GUN_TAB.getKey())
             .displayItems { param: CreativeModeTab.ItemDisplayParameters, output: CreativeModeTab.Output ->
                 ModItems.ATTACHMENTS.getEntries().forEach { output.accept(it.get()) }
@@ -71,7 +71,7 @@ object ModTabs {
         CreativeModeTab.builder()
             .title(Component.translatable("item_group.superbwarfare.perk"))
             .icon { ItemStack(ModItems.AP_BULLET!!.get()) }
-            .withTabsBefore(GUN_TAB.getKey())
+            .withTabsBefore(ATTACHMENT_TAB.getKey())
             .displayItems { param: CreativeModeTab.ItemDisplayParameters, output: CreativeModeTab.Output ->
                 output.accept(ModItems.REFORGING_TABLE.get())
                 ModItems.PERKS.getEntries().forEach { output.accept(it.get()) }

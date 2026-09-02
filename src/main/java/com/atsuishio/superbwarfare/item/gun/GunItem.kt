@@ -72,13 +72,11 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities
 import net.minecraftforge.common.capabilities.ICapabilityProvider
 import net.minecraftforge.common.util.LazyOptional
 import net.minecraftforge.energy.IEnergyStorage
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber
 import org.joml.Math
 import software.bernie.geckolib.animatable.GeoItem
 import java.util.*
 import java.util.concurrent.atomic.AtomicReference
 
-@EventBusSubscriber
 abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), ItemScreenProvider,
     PropertyModifier<GunData, DefaultGunData> {
     protected val random: RandomSource = RandomSource.create()
@@ -95,7 +93,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         modifier[RPM] += getCustomRPM(data)
         modifier[WEIGHT] += getCustomWeight(data)
         modifier[VELOCITY] += getCustomVelocity(data)
-        modifier[SOUND_RADIUS] += getCustomSoundRadius(data)
+        modifier[SOUND_RADIUS] *= getCustomSoundRadius(data)
         modifier[BOLT_ACTION_TIME] += getCustomBoltActionTime(data)
     }
 
@@ -394,9 +392,15 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     open fun getCustomVelocity(data: GunData) = 0.0
 
     /**
-     * 获取额外音效半径加成
+     * 获取音效半径倍率；没有配件时为 1.0
      */
-    open fun getCustomSoundRadius(data: GunData) = if (data.isBarrelSilenced()) 0.6 else 1.0
+    open fun getCustomSoundRadius(data: GunData): Double {
+        var multiplier = 1.0
+        for (instance in data.attachment.installed()) {
+            multiplier *= instance.definition.soundRadiusMultiplier
+        }
+        return multiplier
+    }
 
     /**
      * 是否允许缩放

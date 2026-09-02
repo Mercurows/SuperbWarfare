@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.item.attachment
 
-import com.atsuishio.superbwarfare.data.CustomData
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
@@ -15,7 +14,7 @@ open class AttachmentItem @JvmOverloads constructor(
     rarity: Rarity = Rarity.COMMON
 ) : Item(Properties().rarity(rarity)) {
 
-    open fun definition(): AttachmentDefinition? = CustomData.ATTACHMENTS[attachmentId]
+    open fun definition(): AttachmentDefinition? = AttachmentDefinition.from(attachmentId)
 
     override fun appendHoverText(
         stack: ItemStack,

@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.data.gun.subdata
 
-import com.atsuishio.superbwarfare.data.CustomData
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
@@ -84,7 +83,7 @@ class Attachment(private val gun: GunData) {
         if (id(type) == id) return
 
         val tag = CompoundTag().apply { putString("Id", id.toString()) }
-        CustomData.ATTACHMENTS[id.toString()]?.zoom?.let {
+        AttachmentDefinition.from(id)?.zoom?.let {
             tag.putDouble("Zoom", it.default)
         }
 
@@ -131,7 +130,7 @@ class Attachment(private val gun: GunData) {
 
     fun cycleZoom(type: AttachmentType, amount: Double): Double? {
         val id = id(type) ?: return null
-        val definition = CustomData.ATTACHMENTS[id.toString()] ?: return null
+        val definition = AttachmentDefinition.from(id) ?: return null
         val zoomConfig = definition.zoom ?: return null
 
         val current = getZoom(type) ?: zoomConfig.default
@@ -144,7 +143,7 @@ class Attachment(private val gun: GunData) {
         val result = mutableListOf<AttachmentInstance>()
         for (type in AttachmentType.entries) {
             val id = id(type) ?: continue
-            val definition = CustomData.ATTACHMENTS[id.toString()] ?: continue
+            val definition = AttachmentDefinition.from(id) ?: continue
             if (definition.slot != type) continue
             val tag = getTag(type) ?: continue
             result += AttachmentInstance(type, id, tag, definition)

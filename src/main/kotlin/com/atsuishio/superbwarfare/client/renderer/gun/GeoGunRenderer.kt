@@ -6,7 +6,7 @@ import com.atsuishio.superbwarfare.client.model.attachment.BedrockAttachmentMode
 import com.atsuishio.superbwarfare.client.model.gun.GeoGunModel
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.EDIT_FOCUS_Z_OFFSET
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
-import com.atsuishio.superbwarfare.data.CustomData
+import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.magazineLevel
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
@@ -313,7 +313,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     open fun resolveBarrelAttachmentRender(stack: ItemStack): Pair<BedrockAttachmentModel, ResourceLocation>? {
         val data = GunData.from(stack)
         val attachmentId = data.attachment.id(AttachmentType.BARREL) ?: return null
-        val definition = CustomData.ATTACHMENTS[attachmentId.toString()] ?: return null
+        val definition = AttachmentDefinition.from(attachmentId) ?: return null
         val modelPath = definition.model ?: return null
         val texture = definition.texture ?: return null
         val attachmentModel = AttachmentModelReloadListener.getModel(modelPath) ?: return null
@@ -323,13 +323,13 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     open fun resolveBarrelAttachmentMuzzleFlashScale(stack: ItemStack): Float {
         val data = GunData.from(stack)
         val attachmentId = data.attachment.id(AttachmentType.BARREL) ?: return 1.0f
-        return CustomData.ATTACHMENTS[attachmentId.toString()]?.muzzleFlashScale?.coerceAtLeast(0f) ?: 1.0f
+        return AttachmentDefinition.from(attachmentId)?.muzzleFlashScale?.coerceAtLeast(0f) ?: 1.0f
     }
 
     open fun resolveBarrelAttachmentBone(stack: ItemStack): String? {
         val data = GunData.from(stack)
         val attachmentId = data.attachment.id(AttachmentType.BARREL) ?: return null
-        return CustomData.ATTACHMENTS[attachmentId.toString()]?.bone
+        return AttachmentDefinition.from(attachmentId)?.bone
     }
 
     open fun resolveBarrelAttachmentMuzzleTransform(

@@ -1,9 +1,6 @@
 package com.atsuishio.superbwarfare.data.attachment
 
-import com.atsuishio.superbwarfare.data.IDBasedData
-import com.atsuishio.superbwarfare.data.JsonPropertyModifier
-import com.atsuishio.superbwarfare.data.PMC
-import com.atsuishio.superbwarfare.data.PropertyModifier
+import com.atsuishio.superbwarfare.data.*
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
@@ -13,6 +10,7 @@ import com.atsuishio.superbwarfare.serialization.kserializer.SerializedGsonObjec
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedResourceLocation
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import net.minecraft.resources.ResourceLocation
 
 @Serializable
 data class AttachmentDefinition(
@@ -36,6 +34,9 @@ data class AttachmentDefinition(
 
     @SerialName("MuzzleFlashScale")
     val muzzleFlashScale: Float = 1.0f,
+
+    @SerialName("SoundRadiusMultiplier")
+    val soundRadiusMultiplier: Double = 1.0,
 
     @SerialName("IsSilenced")
     val isSilenced: Boolean = false,
@@ -76,6 +77,14 @@ data class AttachmentDefinition(
         pmc.set("DefaultZoom", current)
         pmc.set("MinZoom", scopeZoom.min)
         pmc.set("MaxZoom", scopeZoom.max)
+    }
+
+    companion object {
+        @JvmStatic
+        fun from(id: String): AttachmentDefinition? = CustomData.ATTACHMENTS[id]
+
+        @JvmStatic
+        fun from(id: ResourceLocation): AttachmentDefinition? = CustomData.ATTACHMENTS[id.toString()]
     }
 }
 
