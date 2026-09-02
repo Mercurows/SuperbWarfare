@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.send
 
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import kotlinx.serialization.Serializable
@@ -8,6 +9,7 @@ import net.minecraft.world.entity.npc.AbstractVillager
 import net.minecraft.world.entity.npc.Villager
 import net.minecraft.world.entity.schedule.Activity
 
+@RegisterPacket
 @Serializable
 data class AimVillagerMessage(val villagerId: Int) : ServerPacketPayload() {
     override fun PayloadContext.handler() {

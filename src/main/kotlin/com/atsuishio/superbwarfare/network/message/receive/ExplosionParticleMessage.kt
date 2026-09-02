@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.receive
 
 import com.atsuishio.superbwarfare.client.lighting.ProjectileLightHelper
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.ClientPacketPayload
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.tools.ParticleTool
@@ -19,6 +20,7 @@ import java.util.concurrent.ThreadLocalRandom
  * @author paralax034
  * @since 0.8.9.1
  */
+@RegisterPacket
 @Serializable
 data class ExplosionParticleMessage(
     val type: ParticleTool.ParticleType,

@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedUUID
@@ -8,6 +9,7 @@ import com.atsuishio.superbwarfare.serialization.kserializer.SerializedVector3f
 import kotlinx.serialization.Serializable
 import net.minecraft.world.phys.Vec3
 
+@RegisterPacket
 @Serializable
 data class VehicleFireMessage(
     val uuid: SerializedUUID?,

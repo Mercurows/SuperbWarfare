@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.receive
 
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.ClientPacketPayload
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.tools.clientLevel
@@ -7,6 +8,7 @@ import kotlinx.serialization.Serializable
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.Vec3
 
+@RegisterPacket
 @Serializable
 data class ClientMotionSyncMessage(
     val id: Int,

@@ -1,12 +1,14 @@
 package com.atsuishio.superbwarfare.network.message.receive
 
 import com.atsuishio.superbwarfare.client.screens.VehicleAssemblingScreen
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.ClientPacketPayload
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.mc
 import kotlinx.serialization.Serializable
 
+@RegisterPacket
 @Serializable
 data class FinishAssemblingVehicleMessage(val containerId: Int) : ClientPacketPayload() {
 

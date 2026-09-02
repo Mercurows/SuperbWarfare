@@ -1,12 +1,14 @@
 package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import net.minecraft.core.BlockPos
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.phys.Vec3
 
+@RegisterPacket
 object DoubleJumpMessage : ServerPacketPayload() {
 
     override fun PayloadContext.handler() {

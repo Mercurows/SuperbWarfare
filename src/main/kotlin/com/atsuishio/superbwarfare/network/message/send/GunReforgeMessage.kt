@@ -1,9 +1,11 @@
 package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.inventory.menu.ReforgingTableMenu
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 
+@RegisterPacket
 object GunReforgeMessage : ServerPacketPayload() {
     override fun PayloadContext.handler() {
         val player = sender()

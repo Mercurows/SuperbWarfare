@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.data.gun.toGunData
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.tools.FormatTool.format0D
@@ -14,6 +15,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
 import kotlin.math.roundToInt
 
+@RegisterPacket
 @Serializable
 data class AdjustZoomFovMessage(val scroll: Double) : ServerPacketPayload() {
     override fun PayloadContext.handler() {

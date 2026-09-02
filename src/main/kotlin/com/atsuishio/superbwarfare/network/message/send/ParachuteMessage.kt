@@ -3,11 +3,13 @@ package com.atsuishio.superbwarfare.network.message.send
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.curio.ParachuteItem
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import net.minecraft.sounds.SoundSource
 import top.theillusivec4.curios.api.CuriosApi
 
+@RegisterPacket
 object ParachuteMessage : ServerPacketPayload() {
     override fun PayloadContext.handler() {
         val player = sender()

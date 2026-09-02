@@ -2,11 +2,13 @@ package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import kotlinx.serialization.Serializable
 
+@RegisterPacket
 @Serializable
 data class VehicleMovementMessage(val keys: Short) : ServerPacketPayload() {
     override fun PayloadContext.handler() {

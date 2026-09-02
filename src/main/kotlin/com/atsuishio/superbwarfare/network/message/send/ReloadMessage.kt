@@ -4,9 +4,11 @@ import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.GunEventHandler.tryStartReload
 import com.atsuishio.superbwarfare.item.gun.GunItem
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 
+@RegisterPacket
 object ReloadMessage : ServerPacketPayload() {
     override fun PayloadContext.handler() {
         val player = sender()

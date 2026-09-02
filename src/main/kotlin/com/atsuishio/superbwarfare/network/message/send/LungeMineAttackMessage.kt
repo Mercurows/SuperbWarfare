@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedUUID
@@ -15,6 +16,7 @@ import kotlinx.serialization.Serializable
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.Entity
 
+@RegisterPacket
 @Serializable
 data class LungeMineAttackMessage(
     val type: Int,

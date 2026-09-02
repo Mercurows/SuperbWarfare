@@ -2,12 +2,14 @@ package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.AutoAimableEntity
 import com.atsuishio.superbwarfare.inventory.menu.FuMO25Menu
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedUUID
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import kotlinx.serialization.Serializable
 
+@RegisterPacket
 @Serializable
 data class RadarSetTargetMessage(val target: SerializedUUID) : ServerPacketPayload() {
     override fun PayloadContext.handler() {

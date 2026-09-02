@@ -1,10 +1,12 @@
 package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.item.weapon.BeastItem
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import kotlinx.serialization.Serializable
 
+@RegisterPacket
 @Serializable
 data class EntityClearMessage(val entityId: Int) : ServerPacketPayload() {
     override fun PayloadContext.handler() {

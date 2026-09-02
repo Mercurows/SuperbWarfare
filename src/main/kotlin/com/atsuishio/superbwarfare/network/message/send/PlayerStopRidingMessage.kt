@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod.Companion.queueServerWork
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.network.message.receive.ClientSetMotionMessage
@@ -15,6 +16,7 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.effect.MobEffectInstance
 
+@RegisterPacket
 @Serializable
 data class PlayerStopRidingMessage(val ejection: Boolean) : ServerPacketPayload() {
 

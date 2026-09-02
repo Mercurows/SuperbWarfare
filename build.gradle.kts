@@ -9,6 +9,7 @@ plugins {
     id("org.parchmentmc.librarian.forgegradle") version "1.+"
     id("org.jetbrains.kotlin.jvm") version "2.0.0"
     id("org.jetbrains.kotlin.plugin.serialization") version "2.0.0"
+    id("com.google.devtools.ksp") version "2.0.0-1.0.24"
 }
 
 fun getGitCommitHash(): String {
@@ -192,6 +193,9 @@ fun DependencyHandler.jijImplement(dependency: String, maxVersion: String? = nul
 jarJar.enable()
 
 dependencies {
+    ksp(project(":ksp"))
+    compileOnly(project(":ksp"))
+
     implementation("thedarkcolour:kotlinforforge:4.11.0")
 
     minecraft("net.minecraftforge:forge:1.20.1-47.2.0")

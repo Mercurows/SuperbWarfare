@@ -1,11 +1,13 @@
 package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.item.weapon.BeastItem
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import kotlinx.serialization.Serializable
 import net.minecraft.world.phys.AABB
 
+@RegisterPacket
 @Serializable
 data class EntityAreaClearMessage(
     val minX: Double, val minY: Double, val minZ: Double,

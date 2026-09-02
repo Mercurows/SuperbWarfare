@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.network.message.receive
 
 import com.atsuishio.superbwarfare.client.ClientSyncedEntityHandler
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.ClientPacketPayload
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedResourceLocation
@@ -14,6 +15,7 @@ import kotlinx.serialization.Serializable
  * 客户端将 ID 存入三个轻量 ID 池，渲染时从 [ClientSyncedEntityHandler.SYNCED_WORLD_RENDER]
  * 获取实体状态数据，通过 ID 池判定敌我关系。
  */
+@RegisterPacket
 @Serializable
 data class EntityRelationSyncMessage(
     val dim: SerializedResourceLocation,

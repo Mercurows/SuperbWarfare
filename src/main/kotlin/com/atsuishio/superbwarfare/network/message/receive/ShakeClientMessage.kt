@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler.shakePos
 import com.atsuishio.superbwarfare.event.ClientEventHandler.shakeRadius
 import com.atsuishio.superbwarfare.event.ClientEventHandler.shakeTime
 import com.atsuishio.superbwarfare.event.ClientEventHandler.shakeType
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.ClientPacketPayload
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.tools.*
@@ -17,6 +18,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 
+@RegisterPacket
 @Serializable
 data class ShakeClientMessage(
     var time: Double,

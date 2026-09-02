@@ -7,11 +7,13 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.LivingEventHandler
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.gun.GunItem
+import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.tools.playLocalSound
 import kotlinx.serialization.Serializable
 
+@RegisterPacket
 @Serializable
 data class EditMessage(val type: Int, val add: Boolean, val isVehicle: Boolean) : ServerPacketPayload() {
     override fun PayloadContext.handler() {

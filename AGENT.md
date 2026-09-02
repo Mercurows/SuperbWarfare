@@ -138,7 +138,10 @@ ItemStack NBT ↔ GunData.from(stack) 获取运行时实例
 
 ## 网络通信
 
-在 `network/NetworkRegistry.kt` 注册（`FMLCommonSetupEvent`）。
+网络包通过 KSP 自动注册：消息类加上 `@RegisterPacket` 注解（位于 `ksp` 子模块，处理器源码
+`ksp/src/main/kotlin/.../Processor.kt`）。编译时处理器自动扫描继承 `ServerPacketPayload` / `ClientPacketPayload` 的类，在
+`build/generated/ksp/main/kotlin/.../GeneratedPayloadRegistrations.kt` 生成注册调用，再由 `network/NetworkRegistry.kt` 于
+`FMLCommonSetupEvent`（`Mod.onCommonSetup` → `NetworkRegistry.register()`）执行。
 
 - **客户端→服务端** (`message/send/`): FireKey, Reload, SwitchWeapon, Zoom, AdjustMortar, 蓝图研究等
 - **服务端→客户端** (`message/receive/`): Shoot 效果, 屏幕震动, 击杀指示器, 运动同步, 实体同步, TDM 同步等
@@ -174,7 +177,8 @@ ItemStack NBT ↔ GunData.from(stack) 获取运行时实例
 - **添加新载具**: 创建 VehicleResource JSON + VehicleEntity 子类 + Renderer + Model
 - **添加新弹药类型**: 创建 AmmoBoxItem + 添加 AmmoConsumer 配置
 - **添加新 Perk**: 继承 Perk 基类，注册到 ModPerks，实现 modifyProperty
-- **添加网络包**: 创建 Message 类 + 在 NetworkRegistry 注册
+- **添加网络包**: 创建 Message 类（继承 `ServerPacketPayload` / `ClientPacketPayload`）并在类上标注 `@RegisterPacket`
+  ，无需再手动维护注册列表
 - **配置项**: ClientConfig / CommonConfig / ServerConfig 中定义，Cloth Config 生成 GUI
 
 ## TODO 数量
