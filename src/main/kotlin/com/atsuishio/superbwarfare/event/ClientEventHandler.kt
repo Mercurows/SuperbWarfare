@@ -1829,7 +1829,7 @@ object ClientEventHandler {
         val fire1p = if (isSilent) soundInfo.fire1PSilent else soundInfo.fire1P
 
         if (fire1p != null) {
-            player.playSound(fire1p, 4f, ((2 * Math.random() - 1) * 0.05f + pitch).toFloat())
+            player.playSound(fire1p, 8f, ((2 * Math.random() - 1) * 0.05f + pitch).toFloat())
         }
 
         val shooterHeight = player.eyePosition.distanceTo(

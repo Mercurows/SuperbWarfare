@@ -1,0 +1,9 @@
+{
+  "Slot": "Barrel",
+  "Level": 1,
+  "Bone": "muzzle",
+  "IsSilenced": true,
+  "MuzzleFlashScale": 0.35,
+  "Model": "superbwarfare:models/bedrock/attachment/ar_silencer.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/ar_silencer.png"
+}
