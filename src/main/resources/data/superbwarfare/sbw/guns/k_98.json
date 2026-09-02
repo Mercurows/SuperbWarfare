@@ -73,10 +73,19 @@
     "!superbwarfare:longer_wire",
     "!superbwarfare:cupid_arrow"
   ],
+  "AvailableAttachments": {
+    "Barrel": [
+      "superbwarfare:meowlencer",
+      "superbwarfare:hissilencer",
+      "superbwarfare:ru_silencer"
+    ]
+  },
   "SoundInfo": {
     "Fire1P": "superbwarfare:k_98_fire_1p",
     "Fire3P": "superbwarfare:k_98_fire_3p",
     "Fire3PFar": "superbwarfare:k_98_far",
-    "Fire3PVeryFar": "superbwarfare:k_98_veryfar"
+    "Fire3PVeryFar": "superbwarfare:k_98_veryfar",
+    "Fire1PSilent": "superbwarfare:k_98_fire_1p_s",
+    "Fire3PSilent": "superbwarfare:k_98_fire_3p_s"
   }
 }

@@ -1615,6 +1615,22 @@
       }
     ]
   },
+  "k_98_fire_1p_s": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/k_98/k_98_fire_1p_s",
+        "stream": false
+      }
+    ]
+  },
+  "k_98_fire_3p_s": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/k_98/k_98_fire_3p_s",
+        "stream": false
+      }
+    ]
+  },
   "k_98_far": {
     "sounds": [
       {
