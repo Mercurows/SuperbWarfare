@@ -392,6 +392,14 @@ object ClientEventHandler {
     @JvmField
     var editFocusPitch: Float = 0f
 
+    /**
+     * 改装镜头从配件聚焦回退到浮动预览的剩余缓动时长（秒）。
+     * 聚焦配件时由 GeoGunRenderer 重置为完整时长，按下 ESC 回到预览后逐帧递减；
+     * 期间使用较慢的平滑速度，使镜头平滑回退而非瞬间跳回预览位。
+     */
+    @JvmField
+    var editFocusReturnTime: Float = 0f
+
     @JvmField
     var shootCoolDown: Int = 0
 
@@ -3145,6 +3153,7 @@ object ClientEventHandler {
         editFocusOffset.set(0f, 0f, 0f)
         editFocusYaw = 0f
         editFocusPitch = 0f
+        editFocusReturnTime = 0f
         zoomTime = 0.0
     }
 
@@ -3214,6 +3223,7 @@ object ClientEventHandler {
     fun onCloseEditScreen() {
         isEditing = false
         editingAttachmentType = -1
+        editFocusReturnTime = 0f
     }
 
     @JvmStatic
