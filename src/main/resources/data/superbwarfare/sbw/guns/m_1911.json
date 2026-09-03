@@ -1,28 +1,28 @@
 {
-  "Spread": 2.5,
+  "Spread": 4,
   "OpenBolt": true,
   "HasBarrelBullet": true,
-  "RecoilX": 0.002,
-  "RecoilY": 0.018,
+  "RecoilX": 0.003,
+  "RecoilY": 0.027,
   "Damage": 9.5,
   "Headshot": 1.5,
   "Velocity": 10,
-  "Magazine": 7,
+  "Magazine": [7, 11],
   "Weight": 2,
   "DrawTime": 9,
   "ZoomTime": 4,
-  "NormalReloadTime": 44,
-  "EmptyReloadTime": 47,
+  "NormalReloadTime": [42, 42],
+  "EmptyReloadTime": [45, 45],
   "ActionSteps": [
     {
       "Timeline": "RELOAD_NORMAL",
-      "Progress": 0.79545,
+      "Progress": 0.69048,
       "Action": "HOLD_OPEN",
       "Value": false
     },
     {
       "Timeline": "RELOAD_EMPTY",
-      "Progress": 0.80851,
+      "Progress": 0.71111,
       "Action": "HOLD_OPEN",
       "Value": false
     },
@@ -63,16 +63,23 @@
     "!superbwarfare:longer_wire",
     "!superbwarfare:cupid_arrow"
   ],
+  "AvailableAttachments": {
+    "Magazine": [
+      "superbwarfare:magazine_extend"
+    ],
+    "Barrel": [
+      "superbwarfare:meowlencer",
+      "superbwarfare:hissilencer",
+      "superbwarfare:handgun_silencer",
+      "superbwarfare:loudspeaker"
+    ]
+  },
   "SoundInfo": {
     "Fire1P": "superbwarfare:m_1911_fire_1p",
     "Fire3P": "superbwarfare:m_1911_fire_3p",
     "Fire3PFar": "superbwarfare:m_1911_far",
     "Fire3PVeryFar": "superbwarfare:m_1911_veryfar",
-    "ReloadNormal": "superbwarfare:glock_17_reload_normal",
-    "ReloadEmpty": "superbwarfare:glock_17_reload_empty",
-    "CancellableSounds": [
-      "superbwarfare:glock_17_reload_normal",
-      "superbwarfare:glock_17_reload_empty"
-    ]
+    "Fire1PSilent": "superbwarfare:m_1911_fire_1p_s",
+    "Fire3PSilent": "superbwarfare:m_1911_fire_3p_s"
   }
 }
