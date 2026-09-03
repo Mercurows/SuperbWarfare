@@ -311,7 +311,7 @@
 					]
 				},
 				{
-					"name": "muzzle",
+					"name": "muzzle_pos",
 					"parent": "silencer",
 					"pivot": [0, 0, -7.63047]
 				}

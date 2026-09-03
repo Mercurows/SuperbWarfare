@@ -1,0 +1,10 @@
+{
+  "Slot": "Barrel",
+  "Level": 2,
+  "Bone": "muzzle_pos",
+  "IsSilenced": true,
+  "SoundRadiusMultiplier": 0.4,
+  "MuzzleFlashScale": 0.3,
+  "Model": "superbwarfare:models/bedrock/attachment/osprey_silencer_trachelium.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/osprey_silencer_trachelium.png"
+}
