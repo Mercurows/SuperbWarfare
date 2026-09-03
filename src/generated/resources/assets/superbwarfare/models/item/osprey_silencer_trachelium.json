@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "superbwarfare:item/triangle_grip"
+    "layer0": "superbwarfare:item/osprey_silencer_trachelium"
   }
 }
