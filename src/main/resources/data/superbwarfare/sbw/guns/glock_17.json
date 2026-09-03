@@ -1,9 +1,9 @@
 {
-  "Spread": 2.5,
+  "Spread": 4,
   "OpenBolt": true,
   "HasBarrelBullet": true,
-  "RecoilX": 0.001,
-  "RecoilY": 0.013,
+  "RecoilX": 0.002,
+  "RecoilY": 0.02,
   "Damage": 5.5,
   "Headshot": 1.5,
   "Velocity": 11,
@@ -75,7 +75,8 @@
     "Barrel": [
       "superbwarfare:meowlencer",
       "superbwarfare:hissilencer",
-      "superbwarfare:handgun_silencer"
+      "superbwarfare:handgun_silencer",
+      "superbwarfare:loudspeaker"
     ]
   },
   "SoundInfo": {

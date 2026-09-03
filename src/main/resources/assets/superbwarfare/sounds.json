@@ -1295,6 +1295,22 @@
       }
     ]
   },
+  "marlin_fire_1p_s": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/marlin/marlin_fire_1p_s",
+        "stream": false
+      }
+    ]
+  },
+  "marlin_fire_3p_s": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/marlin/marlin_fire_3p_s",
+        "stream": false
+      }
+    ]
+  },
   "marlin_far": {
     "sounds": [
       {

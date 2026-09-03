@@ -1,7 +1,7 @@
 {
   "Spread": 2,
-  "RecoilX": 0.004,
-  "RecoilY": 0.031,
+  "RecoilX": 0.006,
+  "RecoilY": 0.051,
   "Damage": 16,
   "Headshot": 2.5,
   "Velocity": 17,
@@ -79,9 +79,25 @@
     "!superbwarfare:longer_wire",
     "!superbwarfare:cupid_arrow"
   ],
+  "AvailableAttachments": {
+    "Scope": [
+      "superbwarfare:iron_sight",
+      "superbwarfare:acog_4x"
+    ],
+    "Barrel": [
+      "superbwarfare:meowlencer",
+      "superbwarfare:hissilencer",
+      "superbwarfare:silaowuncer",
+      "superbwarfare:ru_silencer",
+      "superbwarfare:ar_silencer",
+      "superbwarfare:loudspeaker"
+    ]
+  },
   "SoundInfo": {
     "Fire1P": "superbwarfare:marlin_fire_1p",
     "Fire3P": "superbwarfare:marlin_fire_3p",
+    "Fire1PSilent": "superbwarfare:marlin_fire_1p_s",
+    "Fire3PSilent": "superbwarfare:marlin_fire_3p_s",
     "Fire3PFar": "superbwarfare:marlin_far",
     "Fire3PVeryFar": "superbwarfare:marlin_veryfar"
   }
