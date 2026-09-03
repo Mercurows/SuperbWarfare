@@ -14,6 +14,14 @@ class GunAnimation {
     @SerialName("Fire")
     var fire: String? = null
 
+    @JvmField
+    @SerialName("ChangeFireMode")
+    var changeFireMode: String? = null
+
+    @JvmField
+    @SerialName("FireModes")
+    var fireModes: List<String> = emptyList()
+
     // Reload > ReloadNormal | ReloadEmpty
     @JvmField
     @SerialName("Reload")

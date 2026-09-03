@@ -17,6 +17,7 @@ import com.maydaymemory.mae.basic.DummyPose
 import com.maydaymemory.mae.basic.Pose
 import com.maydaymemory.mae.basic.ZYXBoneTransformFactory
 import com.maydaymemory.mae.blend.EulerAdditiveBlender
+import com.maydaymemory.mae.blend.NoAllocMergeBlender
 import com.maydaymemory.mae.blend.SimpleEulerAdditiveBlender
 import com.maydaymemory.mae.control.runner.*
 import net.minecraft.resources.ResourceLocation
@@ -26,6 +27,7 @@ import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.item.ItemStack
 import org.joml.Quaternionf
+import java.util.*
 
 open class GeoGunAnimationInstance(
     private var stack: ItemStack,
@@ -35,6 +37,9 @@ open class GeoGunAnimationInstance(
     private val animations = hashMapOf<String, BedrockAnimation>()
     private var runner: AnimationRunner? = null
     private var fireRunner: AnimationRunner? = null
+    private var fireModeRunner: AnimationRunner? = null
+    private var fireModeAnimationName: String? = null
+    private var fireModeSwitchRunner: AnimationRunner? = null
     private var holdOpenRunner: AnimationRunner? = null
     private var holdOpenAnimationName: String? = null
     private var closeStrikeRunner: AnimationRunner? = null
@@ -43,6 +48,9 @@ open class GeoGunAnimationInstance(
     private var currentState: GunAnimationState? = null
     private var fireSerial = 0
     private var consumedFireSerial = 0
+    private var fireModeSwitchSerial = 0
+    private var consumedFireModeSwitchSerial = 0
+    private var lastFireModeName: String? = null
     private val pendingShellEjects = ArrayList<Int>()
     private val pendingParticles = ArrayList<ParticleEffectData>()
     private var cachedPose: Pose = DummyPose.INSTANCE
@@ -242,6 +250,79 @@ open class GeoGunAnimationInstance(
         cachedPose = newRunner.evaluate()
     }
 
+    private fun currentFireModeAnimation(): BedrockAnimation? {
+        val animation = GunResource.compute(stack).animation ?: return null
+        val modeName = GunData.from(stack).selectedFireModeInfo().name
+        val suffix = modeName.lowercase(Locale.ROOT)
+        return animation.fireModes.asSequence()
+            .mapNotNull(animations::get)
+            .firstOrNull { it.name.endsWith(".fire_mode_$suffix") }
+    }
+
+    private fun syncFireMode(): Boolean {
+        val modeName = GunData.from(stack).selectedFireModeInfo().name
+        if (lastFireModeName != null && lastFireModeName != modeName) {
+            fireModeSwitchSerial++
+        }
+        lastFireModeName = modeName
+        return updateFireModeRunner()
+    }
+
+    private fun updateFireModeRunner(): Boolean {
+        val animation = currentFireModeAnimation() ?: run {
+            fireModeRunner = null
+            fireModeAnimationName = null
+            return false
+        }
+        if (fireModeRunner != null && fireModeAnimationName == animation.name) return false
+
+        fireModeAnimationName = animation.name
+        val newRunner = AnimationRunner(animation, AnimationContext(animation.specifiedEndTimeS))
+        newRunner.state = AnimationPlayType.LOOP.state()
+        fireModeRunner = newRunner
+        return true
+    }
+
+    private fun playFireModeSwitch() {
+        val animation = GunResource.compute(stack).animation ?: return
+        val switchName = animation.changeFireMode ?: return
+        val switchAnimation = animations[switchName] ?: return
+
+        val newRunner = AnimationRunner(switchAnimation, AnimationContext(switchAnimation.specifiedEndTimeS))
+        newRunner.state = AnimationPlayType.PLAY_ONCE_STOP.state()
+        fireModeSwitchRunner = newRunner
+    }
+
+    private fun consumeFireModeSwitch(editing: Boolean): Boolean {
+        if (fireModeSwitchSerial <= consumedFireModeSwitchSerial) return false
+        if (!editing) {
+            playFireModeSwitch()
+        }
+        consumedFireModeSwitchSerial = fireModeSwitchSerial
+        return !editing
+    }
+
+    private fun tickFireModeRunners(fireModeStarted: Boolean, switchStarted: Boolean = false) {
+        if (fireModeRunner != null && !fireModeStarted) {
+            fireModeRunner?.tick()
+        }
+        if (fireModeSwitchRunner != null && !switchStarted) {
+            fireModeSwitchRunner?.tick()
+        }
+        if (fireModeSwitchRunner?.state is StopState) {
+            fireModeSwitchRunner = null
+        }
+    }
+
+    private fun clearFireModeLayers() {
+        fireModeRunner = null
+        fireModeAnimationName = null
+        fireModeSwitchRunner = null
+        fireModeSwitchSerial = 0
+        consumedFireModeSwitchSerial = 0
+        lastFireModeName = null
+    }
+
     private fun startEditExit() {
         val animation = GunResource.compute(stack).animation ?: return
         val editName = animation.edit ?: return
@@ -266,23 +347,34 @@ open class GeoGunAnimationInstance(
             return
         }
 
+        val fireModeStarted = syncFireMode()
         val data = GunData.from(stack)
         val animation = GunResource.compute(stack).animation
         val (holdOpenStarted, closeStrikeStarted) = updateMechanicalRunners(data, animation)
         tickMechanicalRunners(holdOpenStarted, closeStrikeStarted)
+        val switchStarted = consumeFireModeSwitch(false)
+        tickFireModeRunners(fireModeStarted, switchStarted)
 
         collectParticleEvents(fireRunner)
+        collectParticleEvents(fireModeRunner)
+        collectParticleEvents(fireModeSwitchRunner)
         collectSoundEvents(fireRunner)
+        collectSoundEvents(fireModeRunner)
+        collectSoundEvents(fireModeSwitchRunner)
         collectSoundEvents(holdOpenRunner)
         collectSoundEvents(closeStrikeRunner)
         if (fireRunner?.state is StopState) {
             fireRunner = null
         }
 
-        cachedPose = combineLayers(
-            exitRunner.evaluate(),
-            holdOpenRunner?.evaluate() ?: DummyPose.INSTANCE,
-            closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE,
+        cachedPose = combineFireModeSwitch(
+            combineLayers(
+                exitRunner.evaluate(),
+                fireModeRunner?.evaluate() ?: DummyPose.INSTANCE,
+                holdOpenRunner?.evaluate() ?: DummyPose.INSTANCE,
+                closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE
+            ),
+            fireModeSwitchRunner?.evaluate() ?: DummyPose.INSTANCE,
             fireRunner?.evaluate() ?: DummyPose.INSTANCE
         )
     }
@@ -315,6 +407,21 @@ open class GeoGunAnimationInstance(
             result = if (result == null) layer else BLENDER.blend(result, layer)
         }
         return result ?: DummyPose.INSTANCE
+    }
+
+    private fun combineFireModeSwitch(
+        lowerPose: Pose,
+        switchPose: Pose,
+        upperPose: Pose
+    ): Pose {
+        // NoAllocMergeBlender keeps the last occurrence of a bone, so switchPose
+        // must come after lowerPose to override shared bones while it plays.
+        val pose = if (switchPose == DummyPose.INSTANCE) {
+            lowerPose
+        } else {
+            MERGE_BLENDER.blend(listOf(lowerPose, switchPose))
+        }
+        return combineLayers(pose, upperPose)
     }
 
     private fun updateHoldOpen(name: String?): Boolean {
@@ -377,6 +484,7 @@ open class GeoGunAnimationInstance(
             holdOpenAnimationName = null
             closeStrikeRunner = null
             closeStrikeAnimationName = null
+            clearFireModeLayers()
             currentState = null
             pendingParticles.clear()
             cachedPose = DummyPose.INSTANCE
@@ -389,10 +497,14 @@ open class GeoGunAnimationInstance(
         ) {
             startEditExit()
             if (editExitRunner != null) {
-                cachedPose = combineLayers(
-                    editExitRunner!!.evaluate(),
-                    holdOpenRunner?.evaluate() ?: DummyPose.INSTANCE,
-                    closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE,
+                cachedPose = combineFireModeSwitch(
+                    combineLayers(
+                        editExitRunner!!.evaluate(),
+                        fireModeRunner?.evaluate() ?: DummyPose.INSTANCE,
+                        holdOpenRunner?.evaluate() ?: DummyPose.INSTANCE,
+                        closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE
+                    ),
+                    fireModeSwitchRunner?.evaluate() ?: DummyPose.INSTANCE,
                     fireRunner?.evaluate() ?: DummyPose.INSTANCE
                 )
                 return
@@ -402,11 +514,16 @@ open class GeoGunAnimationInstance(
         val editing = ClientEventHandler.isEditing || target == GunAnimationState.EDIT
         if (editing) {
             fireRunner = null
+            fireModeSwitchRunner = null
             if (fireSerial > consumedFireSerial) {
                 consumedFireSerial = fireSerial
             }
+            if (fireModeSwitchSerial > consumedFireModeSwitchSerial) {
+                consumedFireModeSwitchSerial = fireModeSwitchSerial
+            }
         }
 
+        val fireModeStarted = syncFireMode()
         val data = GunData.from(stack)
         val animation = GunResource.compute(stack).animation
         val (holdOpenStarted, closeStrikeStarted) = updateMechanicalRunners(data, animation)
@@ -430,12 +547,18 @@ open class GeoGunAnimationInstance(
         } else if (!editing) {
             fireRunner?.tick()
         }
+        val fireModeSwitchStarted = consumeFireModeSwitch(editing)
+        tickFireModeRunners(fireModeStarted, fireModeSwitchStarted)
         tickMechanicalRunners(holdOpenStarted, closeStrikeStarted)
 
         collectParticleEvents(runner)
         collectParticleEvents(fireRunner)
+        collectParticleEvents(fireModeRunner)
+        collectParticleEvents(fireModeSwitchRunner)
         collectSoundEvents(runner)
         collectSoundEvents(fireRunner)
+        collectSoundEvents(fireModeRunner)
+        collectSoundEvents(fireModeSwitchRunner)
         collectSoundEvents(holdOpenRunner)
         collectSoundEvents(closeStrikeRunner)
 
@@ -443,10 +566,14 @@ open class GeoGunAnimationInstance(
             fireRunner = null
         }
 
-        cachedPose = combineLayers(
-            runner?.evaluate() ?: DummyPose.INSTANCE,
-            holdOpenRunner?.evaluate() ?: DummyPose.INSTANCE,
-            closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE,
+        cachedPose = combineFireModeSwitch(
+            combineLayers(
+                runner?.evaluate() ?: DummyPose.INSTANCE,
+                fireModeRunner?.evaluate() ?: DummyPose.INSTANCE,
+                holdOpenRunner?.evaluate() ?: DummyPose.INSTANCE,
+                closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE
+            ),
+            fireModeSwitchRunner?.evaluate() ?: DummyPose.INSTANCE,
             fireRunner?.evaluate() ?: DummyPose.INSTANCE
         )
     }
@@ -486,6 +613,7 @@ open class GeoGunAnimationInstance(
         this.stack = stack
         if (itemChanged) {
             editExitRunner = null
+            clearFireModeLayers()
             holdOpenRunner = null
             holdOpenAnimationName = null
             closeStrikeRunner = null
@@ -505,6 +633,7 @@ open class GeoGunAnimationInstance(
         runner = null
         editExitRunner = null
         fireRunner = null
+        clearFireModeLayers()
         holdOpenRunner = null
         holdOpenAnimationName = null
         closeStrikeRunner = null
@@ -526,5 +655,7 @@ open class GeoGunAnimationInstance(
 
         private val BLENDER: EulerAdditiveBlender =
             SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }
+
+        private val MERGE_BLENDER = NoAllocMergeBlender()
     }
 }

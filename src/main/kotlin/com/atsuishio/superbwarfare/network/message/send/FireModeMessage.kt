@@ -21,6 +21,7 @@ data class FireModeMessage(val forward: Boolean) : ServerPacketPayload() {
 
         if (stack.item !is GunItem) return
         val data = from(stack)
+        if (data.reloading()) return
 
         val selectedFireMode = data.selectedFireMode.get()
         val fireModes = data.get(GunProp.AVAILABLE_FIRE_MODES)

@@ -972,9 +972,6 @@
 			"loop": true,
 			"animation_length": 0.1,
 			"bones": {
-				"guan": {
-					"rotation": [-2.5, 0, 0]
-				},
 				"bullet": {
 					"scale": 0
 				},

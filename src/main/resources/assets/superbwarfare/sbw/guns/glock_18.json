@@ -4,6 +4,10 @@
   "Animation": {
     "Idle": "animation.glock_18.idle",
     "Fire": "animation.glock_18.fire",
+    "ChangeFireMode": "animation.glock_18.change_fire_mode",
+    "FireModes": [
+      "animation.glock_18.fire_mode_semi"
+    ],
     "Edit": "animation.glock_18.edit",
     "ReloadNormal": "animation.glock_18.reload_normal",
     "ReloadEmpty": "animation.glock_18.reload_empty",
