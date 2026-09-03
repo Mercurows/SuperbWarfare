@@ -1,15 +1,4 @@
 {
-  "base": {
-    "parent": "superbwarfare:item/glock_17_base"
-  },
-  "gui_light": "front",
-  "loader": "neoforge:separate_transforms",
-  "perspectives": {
-    "gui": {
-      "parent": "superbwarfare:item/glock_17_icon"
-    }
-  },
-  "textures": {
-    "particle": "superbwarfare:item/glock_17_icon"
-  }
+  "parent": "minecraft:builtin/entity",
+  "gui_light": "front"
 }

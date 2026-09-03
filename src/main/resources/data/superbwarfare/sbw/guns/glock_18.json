@@ -34,6 +34,7 @@
   ],
   "BypassesArmor": 0.15,
   "SoundRadius": 8,
+  "DefaultFireMode": "Auto",
   "RPM": 1200,
   "GunType": "Handgun",
   "AvailableFireModes": [

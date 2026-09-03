@@ -2630,7 +2630,7 @@ object ClientEventHandler {
         var zoomMultiply = zoomMultiply
         zoomMultiply = zoomMultiply.coerceIn(0f, 1f)
 
-        val zoom = (1 - zoomMultiply * zoomTime).toFloat() * pose
+        val zoom = (1 - (1 - zoomMultiply) * zoomTime).toFloat() * pose
 
         val gunPosX = zoom * x * (recoilHorizon * (0.5f * firePosZ)).toFloat()
         val gunPosY = zoom * y * (getBoneMoveY(firePosTimer.toFloat()) * -0.05 * (1 - 0.25 * zoomTime)).toFloat()
