@@ -638,6 +638,7 @@ object ModItems {
     // Grip
     // @formatter:off
     @JvmField val VERTICAL_GRIP = registerAttachment("vertical_grip")
+    @JvmField val TRIANGLE_GRIP = registerAttachment("triangle_grip")
     // @formatter:on
 
     fun registerDispenserBehavior() {

@@ -68,7 +68,8 @@
       "superbwarfare:magazine_extend_pro"
     ],
     "Grip": [
-      "superbwarfare:vertical_grip"
+      "superbwarfare:vertical_grip",
+      "superbwarfare:triangle_grip"
     ],
     "Stock": [
       "superbwarfare:oem_stock_light",
