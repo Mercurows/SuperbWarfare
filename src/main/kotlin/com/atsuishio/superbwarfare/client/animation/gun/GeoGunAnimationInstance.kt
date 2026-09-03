@@ -255,31 +255,66 @@ open class GeoGunAnimationInstance(
         editExitRunner = newRunner
     }
 
-    private fun tickEditExit(target: GunAnimationState?) {
+    private fun tickEditExit() {
         val exitRunner = editExitRunner ?: return
-
-        if (ClientEventHandler.isEditing) {
-            editExitRunner = null
-            runner = null
-            currentState = null
-            play(GunAnimationState.EDIT)
-            return
-        }
 
         exitRunner.tick()
         if (exitRunner.state is StopState) {
             editExitRunner = null
             runner = null
             currentState = null
-            if (target != null) {
-                play(target)
-            } else {
-                cachedPose = DummyPose.INSTANCE
-            }
             return
         }
 
-        cachedPose = exitRunner.evaluate()
+        val data = GunData.from(stack)
+        val animation = GunResource.compute(stack).animation
+        val (holdOpenStarted, closeStrikeStarted) = updateMechanicalRunners(data, animation)
+        tickMechanicalRunners(holdOpenStarted, closeStrikeStarted)
+
+        collectParticleEvents(fireRunner)
+        collectSoundEvents(fireRunner)
+        collectSoundEvents(holdOpenRunner)
+        collectSoundEvents(closeStrikeRunner)
+        if (fireRunner?.state is StopState) {
+            fireRunner = null
+        }
+
+        cachedPose = combineLayers(
+            exitRunner.evaluate(),
+            holdOpenRunner?.evaluate() ?: DummyPose.INSTANCE,
+            closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE,
+            fireRunner?.evaluate() ?: DummyPose.INSTANCE
+        )
+    }
+
+    private fun updateMechanicalRunners(
+        data: GunData,
+        animation: GunAnimation?
+    ): Pair<Boolean, Boolean> {
+        val shouldHoldOpen = data.holdOpen.get()
+                && fireRunner == null
+        val holdOpenStarted = updateHoldOpen(if (shouldHoldOpen) animation?.holdOpen else null)
+        val shouldCloseStrike = data.closeStrike.get()
+        val closeStrikeStarted = updateCloseStrike(if (shouldCloseStrike) animation?.closeStrike else null)
+        return holdOpenStarted to closeStrikeStarted
+    }
+
+    private fun tickMechanicalRunners(holdOpenStarted: Boolean, closeStrikeStarted: Boolean) {
+        if (holdOpenRunner != null && !holdOpenStarted) {
+            holdOpenRunner?.tick()
+        }
+        if (closeStrikeRunner != null && !closeStrikeStarted) {
+            closeStrikeRunner?.tick()
+        }
+    }
+
+    private fun combineLayers(vararg layers: Pose): Pose {
+        var result: Pose? = null
+        for (layer in layers) {
+            if (layer == DummyPose.INSTANCE) continue
+            result = if (result == null) layer else BLENDER.blend(result, layer)
+        }
+        return result ?: DummyPose.INSTANCE
     }
 
     private fun updateHoldOpen(name: String?): Boolean {
@@ -323,9 +358,16 @@ open class GeoGunAnimationInstance(
     override fun tick(partialTicks: Float) {
         val target = resolveState()
 
+        if (editExitRunner != null && ClientEventHandler.isEditing) {
+            editExitRunner = null
+            runner = null
+            currentState = null
+            play(GunAnimationState.EDIT)
+        }
+
         if (editExitRunner != null) {
-            tickEditExit(target)
-            return
+            tickEditExit()
+            if (editExitRunner != null) return
         }
 
         if (target == null) {
@@ -347,18 +389,27 @@ open class GeoGunAnimationInstance(
         ) {
             startEditExit()
             if (editExitRunner != null) {
-                cachedPose = editExitRunner!!.evaluate()
+                cachedPose = combineLayers(
+                    editExitRunner!!.evaluate(),
+                    holdOpenRunner?.evaluate() ?: DummyPose.INSTANCE,
+                    closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE,
+                    fireRunner?.evaluate() ?: DummyPose.INSTANCE
+                )
                 return
+            }
+        }
+
+        val editing = ClientEventHandler.isEditing || target == GunAnimationState.EDIT
+        if (editing) {
+            fireRunner = null
+            if (fireSerial > consumedFireSerial) {
+                consumedFireSerial = fireSerial
             }
         }
 
         val data = GunData.from(stack)
         val animation = GunResource.compute(stack).animation
-        val shouldHoldOpen = data.holdOpen.get()
-                && fireRunner == null
-        val holdOpenStarted = updateHoldOpen(if (shouldHoldOpen) animation?.holdOpen else null)
-        val shouldCloseStrike = data.closeStrike.get()
-        val closeStrikeStarted = updateCloseStrike(if (shouldCloseStrike) animation?.closeStrike else null)
+        val (holdOpenStarted, closeStrikeStarted) = updateMechanicalRunners(data, animation)
 
         if (runner == null || currentState != target) {
             play(target)
@@ -373,18 +424,13 @@ open class GeoGunAnimationInstance(
             }
         }
 
-        if (fireSerial > consumedFireSerial) {
+        if (!editing && fireSerial > consumedFireSerial) {
             playFire()
             consumedFireSerial = fireSerial
-        } else {
+        } else if (!editing) {
             fireRunner?.tick()
         }
-        if (holdOpenRunner != null && !holdOpenStarted) {
-            holdOpenRunner?.tick()
-        }
-        if (closeStrikeRunner != null && !closeStrikeStarted) {
-            closeStrikeRunner?.tick()
-        }
+        tickMechanicalRunners(holdOpenStarted, closeStrikeStarted)
 
         collectParticleEvents(runner)
         collectParticleEvents(fireRunner)
@@ -397,21 +443,12 @@ open class GeoGunAnimationInstance(
             fireRunner = null
         }
 
-        val basePose = runner?.evaluate() ?: DummyPose.INSTANCE
-        val holdPose = holdOpenRunner?.evaluate() ?: DummyPose.INSTANCE
-        val closeStrikePose = closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE
-        val firePose = fireRunner?.evaluate() ?: DummyPose.INSTANCE
-        var pose = basePose
-        if (holdPose != DummyPose.INSTANCE) {
-            pose = if (pose == DummyPose.INSTANCE) holdPose else BLENDER.blend(pose, holdPose)
-        }
-        if (closeStrikePose != DummyPose.INSTANCE) {
-            pose = if (pose == DummyPose.INSTANCE) closeStrikePose else BLENDER.blend(pose, closeStrikePose)
-        }
-        if (firePose != DummyPose.INSTANCE) {
-            pose = if (pose == DummyPose.INSTANCE) firePose else BLENDER.blend(pose, firePose)
-        }
-        cachedPose = pose
+        cachedPose = combineLayers(
+            runner?.evaluate() ?: DummyPose.INSTANCE,
+            holdOpenRunner?.evaluate() ?: DummyPose.INSTANCE,
+            closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE,
+            fireRunner?.evaluate() ?: DummyPose.INSTANCE
+        )
     }
 
     private fun collectParticleEvents(animationRunner: AnimationRunner?) {
