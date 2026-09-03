@@ -17,11 +17,17 @@
     "Clip",
     "Iterative"
   ],
-  "EmptyReloadTime": 58,
+  "EmptyReloadTime": 59,
   "PrepareTime": 30,
   "IterativeTime": 13,
   "FinishTime": 20,
   "ActionSteps": [
+    {
+      "Timeline": "RELOAD_EMPTY",
+      "Progress": 0.8,
+      "Action": "CLOSE_STRIKE",
+      "Value": false
+    },
     {
       "Timeline": "RELOAD_FINISH",
       "Progress": 0.52381,
@@ -39,11 +45,6 @@
       "Progress": 0.22222,
       "Action": "CLOSE_STRIKE",
       "Value": false
-    },
-    {
-      "Timeline": "NO_AMMO",
-      "Action": "CLOSE_STRIKE",
-      "Value": true
     }
   ],
   "BypassesArmor": 0.5,
