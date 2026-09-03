@@ -149,13 +149,19 @@
 							"lerp_mode": "catmullrom"
 						},
 						"0.0417": {
-							"post": [0, 0, 1.75],
+							"post": [0, 0, 2.25],
 							"lerp_mode": "catmullrom"
 						},
 						"0.1": {
 							"post": [0, 0, 0],
 							"lerp_mode": "catmullrom"
 						}
+					}
+				},
+				"hammer": {
+					"rotation": {
+						"0.0": [60, 0, 0],
+						"0.0083": [0, 0, 0]
 					}
 				}
 			},
@@ -166,20 +172,17 @@
 				}
 			}
 		},
-		"animation.m_1911.close_strike": {
-			"animation_length": 0.1,
-			"bones": {
-				"hammer": {
-					"rotation": [60, 0, 0]
-				}
-			}
-		},
 		"animation.m_1911.hold_open": {
 			"loop": true,
 			"animation_length": 0.1,
 			"bones": {
 				"huatao": {
-					"position": [0, 0, 1.75]
+					"position": {
+						"0.0": {
+							"post": [0, 0, 2.25],
+							"lerp_mode": "catmullrom"
+						}
+					}
 				},
 				"bullet": {
 					"scale": 0
