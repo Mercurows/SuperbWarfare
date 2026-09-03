@@ -1,7 +1,7 @@
 {
   "Slot": "Barrel",
   "Level": 1,
-  "Bone": "muzzle",
+  "Bone": "muzzle_pos",
   "IsSilenced": true,
   "SoundRadiusMultiplier": 0.6,
   "MuzzleFlashScale": 0.35,

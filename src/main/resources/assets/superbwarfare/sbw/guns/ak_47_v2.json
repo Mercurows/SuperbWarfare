@@ -53,5 +53,8 @@
     "RandomAngle": [60, 60, 360],
     "LivingTime": 0.8,
     "MaxActive": 24
+  },
+  "Attachments": {
+    "GripHandGuard": true
   }
 }

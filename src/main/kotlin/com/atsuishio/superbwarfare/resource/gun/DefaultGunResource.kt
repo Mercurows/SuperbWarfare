@@ -6,10 +6,7 @@ import com.atsuishio.superbwarfare.data.ModColor
 import com.atsuishio.superbwarfare.data.ObjectToList
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.resource.ModelResource
-import com.atsuishio.superbwarfare.resource.gun.pojo.ItemDisplayInfo
-import com.atsuishio.superbwarfare.resource.gun.pojo.ShellEjectInfo
-import com.atsuishio.superbwarfare.resource.gun.pojo.ShootRecoilInfo
-import com.atsuishio.superbwarfare.resource.gun.pojo.SmokeInfo
+import com.atsuishio.superbwarfare.resource.gun.pojo.*
 import com.atsuishio.superbwarfare.script.GunScriptManager
 import com.atsuishio.superbwarfare.script.ScriptMath
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedResourceLocation
@@ -159,6 +156,10 @@ class DefaultGunResource : IDBasedData<DefaultGunResource> {
     @JvmField
     @SerialName("MovingTilt")
     var movingTilt: Boolean = true
+
+    @JvmField
+    @SerialName("Attachments")
+    var attachmentInfo: AttachmentInfo = AttachmentInfo()
 
     companion object {
         private val MARKER: Marker = MarkerManager.getMarker("GunResource")

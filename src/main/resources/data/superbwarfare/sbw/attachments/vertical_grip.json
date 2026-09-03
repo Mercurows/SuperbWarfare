@@ -1,0 +1,7 @@
+{
+  "Slot": "Grip",
+  "Level": 1,
+  "Bone": "grip_pos",
+  "Model": "superbwarfare:models/bedrock/attachment/vertical_grip.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/vertical_grip.png"
+}
