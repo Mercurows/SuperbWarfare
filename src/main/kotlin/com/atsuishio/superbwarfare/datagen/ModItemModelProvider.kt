@@ -314,6 +314,9 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.MAGAZINE_EXTEND_PRO)
         simpleItem(ModItems.LOUDSPEAKER)
         simpleItem(ModItems.VERTICAL_GRIP)
+        simpleItem(ModItems.STOCK_UBR)
+        simpleItem(ModItems.OEM_STOCK_LIGHT)
+        simpleItem(ModItems.OEM_STOCK_HEAVY)
 
         // blocks
         evenSimplerBlockItem(ModBlocks.BARBED_WIRE)
