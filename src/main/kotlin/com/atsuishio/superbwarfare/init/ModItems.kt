@@ -611,10 +611,21 @@ object ModItems {
         return ATTACHMENTS.register(id, Supplier { AttachmentItem("${Mod.MODID}:$id", rarity) })
     }
 
+    // Stock
     // @formatter:off
-    @JvmField val OEM_STOCK_STANDARD = registerAttachment("oem_stock_standard")
+    @JvmField val OEM_STOCK_LIGHT = registerAttachment("oem_stock_light")
+    @JvmField val OEM_STOCK_HEAVY = registerAttachment("oem_stock_heavy")
+    @JvmField val STOCK_UBR = registerAttachment("stock_ubr")
+    // @formatter:on
+
+    // Magazine
+    // @formatter:off
     @JvmField val MAGAZINE_EXTEND = registerAttachment("magazine_extend", Rarity.RARE)
     @JvmField val MAGAZINE_EXTEND_PRO = registerAttachment("magazine_extend_pro", Rarity.EPIC)
+    // @formatter:on
+
+    // Barrel
+    // @formatter:off
     @JvmField val MEOWLENCER = registerAttachment("meowlencer", Rarity.RARE)
     @JvmField val HISSILENCER = registerAttachment("hissilencer", Rarity.RARE)
     @JvmField val SILAOWUNCER = registerAttachment("silaowuncer", Rarity.RARE)
@@ -622,6 +633,10 @@ object ModItems {
     @JvmField val AR_SILENCER = registerAttachment("ar_silencer")
     @JvmField val HANDGUN_SILENCER = registerAttachment("handgun_silencer")
     @JvmField val LOUDSPEAKER = registerAttachment("loudspeaker", ModRarities.LEGENDARY)
+    // @formatter:on
+
+    // Grip
+    // @formatter:off
     @JvmField val VERTICAL_GRIP = registerAttachment("vertical_grip")
     // @formatter:on
 

@@ -23,6 +23,9 @@ data class AttachmentDefinition(
     @SerialName("Bone")
     val bone: String? = null,
 
+    @SerialName("UsesGunStock")
+    val usesGunStock: Boolean = false,
+
     @SerialName("Icon")
     val icon: String? = null,
 

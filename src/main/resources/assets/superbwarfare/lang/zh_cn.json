@@ -625,6 +625,9 @@
   "item.superbwarfare.magazine_extend": "通用扩容弹匣",
   "item.superbwarfare.magazine_extend_pro": "高级通用扩容弹匣",
   "item.superbwarfare.vertical_grip": "垂直握把",
+  "item.superbwarfare.oem_stock_light": "通用轻型枪托",
+  "item.superbwarfare.oem_stock_heavy": "通用重型枪托",
+  "item.superbwarfare.stock_ubr": "UBR枪托",
 
   "death.attack.gunfire": "%1$s被%2$s射爆了",
   "death.attack.gunfire.entity": "%1$s被%2$s射爆了",
