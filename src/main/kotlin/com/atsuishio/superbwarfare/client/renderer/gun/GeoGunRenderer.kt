@@ -753,11 +753,11 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     companion object {
         private const val IDLE_VIEW_BONE = "idle_view"
         private const val IRON_VIEW_BONE = "iron_view"
-        private const val MUZZLE_BONE = "muzzle"
-        private const val GRIP_BONE = "grip"
-        private const val MAGAZINE_BONE = "magazine"
+        private const val MUZZLE_BONE = "muzzle_pos"
+        private const val GRIP_BONE = "grip_pos"
+        private const val MAGAZINE_BONE = "magazine_pos"
         private const val SCOPE_BONE = "scope_pos"
-        private const val STOCK_BONE = "stock"
+        private const val STOCK_BONE = "stock_pos"
         private const val EDIT_FOCUS_Z_OFFSET = 0.8f
         private const val EDIT_FOCUS_SMOOTHING = 1f
         private const val EDIT_FOCUS_RETURN_SMOOTHING = 3f

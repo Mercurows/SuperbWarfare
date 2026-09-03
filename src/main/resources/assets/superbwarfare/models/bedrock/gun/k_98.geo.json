@@ -5205,24 +5205,19 @@
 					]
 				},
 				{
-					"name": "muzzle",
+					"name": "scope_pos",
+					"parent": "root",
+					"pivot": [0, 4.41538, -10.94452]
+				},
+				{
+					"name": "muzzle_pos",
 					"parent": "root",
 					"pivot": [0, 3.23828, -41.1]
 				},
 				{
-					"name": "positioning2",
-					"parent": "root",
-					"pivot": [0, 0, 0]
-				},
-				{
 					"name": "flare",
-					"parent": "positioning2",
+					"parent": "root",
 					"pivot": [0, 3.2383, -41.1]
-				},
-				{
-					"name": "scope_pos",
-					"parent": "positioning2",
-					"pivot": [0, 4.41538, -10.94452]
 				},
 				{
 					"name": "positioning",

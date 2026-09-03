@@ -1211,7 +1211,7 @@
 					]
 				},
 				{
-					"name": "muzzle",
+					"name": "muzzle_pos",
 					"parent": "guan",
 					"pivot": [0, 1.55781, -4.90312]
 				},
@@ -2183,13 +2183,13 @@
 					"pivot": [-0.5, 1.65, 0.225]
 				},
 				{
-					"name": "magazine",
+					"name": "magazine_pos",
 					"parent": "root",
 					"pivot": [0, -1.3, 1.8]
 				},
 				{
 					"name": "bullet",
-					"parent": "magazine",
+					"parent": "magazine_pos",
 					"pivot": [0, 1.04506, 1.58179],
 					"cubes": [
 						{
@@ -2232,7 +2232,7 @@
 				},
 				{
 					"name": "lefthand",
-					"parent": "magazine",
+					"parent": "magazine_pos",
 					"pivot": [-6.01875, 18, 0]
 				},
 				{
@@ -2256,7 +2256,7 @@
 				},
 				{
 					"name": "magazine_standard",
-					"parent": "magazine",
+					"parent": "magazine_pos",
 					"pivot": [0.24823, -6.38367, 0.94374],
 					"cubes": [
 						{
@@ -2374,7 +2374,7 @@
 				},
 				{
 					"name": "magazine_extend",
-					"parent": "magazine",
+					"parent": "magazine_pos",
 					"pivot": [0.00015, -4.06797, 3.43704],
 					"cubes": [
 						{
@@ -2489,7 +2489,7 @@
 				},
 				{
 					"name": "magazine_extend_pro",
-					"parent": "magazine",
+					"parent": "magazine_pos",
 					"pivot": [0.24823, -6.38367, 0.94374],
 					"cubes": [
 						{

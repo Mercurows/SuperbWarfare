@@ -330,7 +330,7 @@
 						}
 					}
 				},
-				"magazine": {
+				"magazine_pos": {
 					"rotation": {
 						"0.0": [0, 0, 0],
 						"0.3667": [0, 0, 0],
@@ -630,7 +630,7 @@
 			"animation_length": 3.1667,
 			"override_previous_animation": true,
 			"bones": {
-				"magazine": {
+				"magazine_pos": {
 					"rotation": {
 						"0.0": [0, 0, 0],
 						"0.3667": [0, 0, 0],
@@ -1266,7 +1266,7 @@
 						}
 					}
 				},
-				"magazine": {
+				"magazine_pos": {
 					"rotation": {
 						"0.0": [0, 0, 0],
 						"0.3667": [0, 0, 0],
@@ -1575,7 +1575,7 @@
 			"animation_length": 3.5667,
 			"override_previous_animation": true,
 			"bones": {
-				"magazine": {
+				"magazine_pos": {
 					"rotation": {
 						"0.0": [0, 0, 0],
 						"0.3667": [0, 0, 0],
@@ -2326,7 +2326,7 @@
 						}
 					}
 				},
-				"magazine": {
+				"magazine_pos": {
 					"rotation": {
 						"0.0": [0, 0, 0],
 						"0.3667": [0, 0, 0],
@@ -2744,7 +2744,7 @@
 						}
 					}
 				},
-				"magazine": {
+				"magazine_pos": {
 					"rotation": {
 						"0.0": [0, 0, 0],
 						"0.3667": [0, 0, 0],
@@ -3214,7 +3214,7 @@
 						}
 					}
 				},
-				"magazine": {
+				"magazine_pos": {
 					"rotation": {
 						"0.0": [0, 0, 0],
 						"0.3667": [0, 0, 0],
@@ -3710,7 +3710,7 @@
 						}
 					}
 				},
-				"magazine": {
+				"magazine_pos": {
 					"rotation": {
 						"0.0": [0, 0, 0],
 						"0.3667": [0, 0, 0],

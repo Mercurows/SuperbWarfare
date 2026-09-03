@@ -16,6 +16,16 @@
 					"pivot": [0, 0, 0]
 				},
 				{
+					"name": "scope_pos",
+					"parent": "root",
+					"pivot": [0, 4.41538, 2.70548]
+				},
+				{
+					"name": "muzzle_pos",
+					"parent": "root",
+					"pivot": [0, 3.33828, -25.7]
+				},
+				{
 					"name": "custom_scope_mount",
 					"parent": "root",
 					"pivot": [1.08731, 1.14328, 5.20845],
@@ -4226,21 +4236,6 @@
 					"name": "flare",
 					"parent": "positioning2",
 					"pivot": [0, 3.32428, -25.65555]
-				},
-				{
-					"name": "scope_pos",
-					"parent": "positioning2",
-					"pivot": [0, 4.41538, 2.70548]
-				},
-				{
-					"name": "muzzle",
-					"parent": "root",
-					"pivot": [0, 3.33828, -25.7]
-				},
-				{
-					"name": "grip",
-					"parent": "root",
-					"pivot": [0, 1.05, -3.5]
 				},
 				{
 					"name": "positioning",
