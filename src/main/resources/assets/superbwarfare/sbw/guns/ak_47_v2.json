@@ -14,7 +14,7 @@
   "ShootRecoil": {
     "Offset": [0.7, 1.0, 0.5],
     "Rotation": [0.2, 0.2, 0.5],
-    "ZoomRate": 0.2,
+    "ZoomRate": 0.5,
     "Speed": 1.0
   },
   "Model": {

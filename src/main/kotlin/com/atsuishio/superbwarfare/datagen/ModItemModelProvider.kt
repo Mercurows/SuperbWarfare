@@ -32,7 +32,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         gunItem(ModItems.BOCEK)
         gunItem(ModItems.DEVOTION)
         gunItemV2(ModItems.GLOCK_17)
-        gunItem(ModItems.GLOCK_18, "glock_17")
+        gunItemV2(ModItems.GLOCK_18)
         gunItem(ModItems.HK_416)
         gunItem(ModItems.HOMEMADE_SHOTGUN)
         gunItem(ModItems.HUNTING_RIFLE)
