@@ -12,8 +12,8 @@
   },
   "DrumLevels": 2,
   "ShootRecoil": {
-    "Offset": [1.0, 1.0, 0.5],
-    "Rotation": [0.2, 0.6, 0.5],
+    "Offset": [0.7, 1.0, 0.5],
+    "Rotation": [0.2, 0.2, 0.5],
     "ZoomRate": 0.2,
     "Speed": 1.0
   },

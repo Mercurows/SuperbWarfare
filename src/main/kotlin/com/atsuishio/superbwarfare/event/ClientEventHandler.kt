@@ -1845,10 +1845,10 @@ object ClientEventHandler {
 
         val isSilent = data.isBarrelSilenced()
         val fire1p = if (isSilent) soundInfo.fire1PSilent else soundInfo.fire1P
-        val volumeMultiplier = item.getCustomSoundRadius(data)
+        val volumeMultiplier = item.getCustomSoundRadius(data).coerceAtLeast(1.0)
 
         if (fire1p != null) {
-            player.playSound(fire1p, 8f * volumeMultiplier.toFloat(), ((2 * Math.random() - 1) * 0.05f + pitch).toFloat())
+            player.playSound(fire1p, 0.5f * volumeMultiplier.toFloat(), ((2 * Math.random() - 1) * 0.05f + pitch).toFloat())
         }
 
         val shooterHeight = player.eyePosition.distanceTo(

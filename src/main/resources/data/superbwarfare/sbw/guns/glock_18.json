@@ -1,29 +1,28 @@
 {
-  "Spread": 2.5,
+  "Spread": 4,
   "OpenBolt": true,
   "HasBarrelBullet": true,
-  "RecoilX": 0.001,
-  "RecoilY": 0.013,
+  "RecoilX": 0.002,
+  "RecoilY": 0.02,
   "Damage": 5.5,
   "Headshot": 1.5,
   "Velocity": 11,
-  "Magazine": 17,
+  "Magazine": [17, 30, 50],
   "Weight": 1,
   "DrawTime": 7,
   "ZoomTime": 3,
-  "DefaultFireMode": "Auto",
-  "NormalReloadTime": 42,
-  "EmptyReloadTime": 45,
+  "NormalReloadTime": [42, 42, 42],
+  "EmptyReloadTime": [45, 45, 45],
   "ActionSteps": [
     {
       "Timeline": "RELOAD_NORMAL",
-      "Progress": 0.78571,
+      "Progress": 0.69048,
       "Action": "HOLD_OPEN",
       "Value": false
     },
     {
       "Timeline": "RELOAD_EMPTY",
-      "Progress": 0.8,
+      "Progress": 0.71111,
       "Action": "HOLD_OPEN",
       "Value": false
     },
@@ -35,7 +34,7 @@
   ],
   "BypassesArmor": 0.15,
   "SoundRadius": 8,
-  "RPM": 1300,
+  "RPM": 1200,
   "GunType": "Handgun",
   "AvailableFireModes": [
     "Semi",
@@ -59,7 +58,6 @@
     "superbwarfare:gutshot_straight",
     "superbwarfare:monster_hunter",
     "superbwarfare:vorpal_weapon",
-    "superbwarfare:desperado",
     "superbwarfare:firefly",
     "superbwarfare:fair_means",
     "superbwarfare:brain_storm",
@@ -69,6 +67,22 @@
     "!superbwarfare:longer_wire",
     "!superbwarfare:cupid_arrow"
   ],
+  "AvailableAttachments": {
+    "Scope": [
+      "superbwarfare:iron_sight",
+      "superbwarfare:acog_4x"
+    ],
+    "Magazine": [
+      "superbwarfare:magazine_extend",
+      "superbwarfare:magazine_extend_pro"
+    ],
+    "Barrel": [
+      "superbwarfare:meowlencer",
+      "superbwarfare:hissilencer",
+      "superbwarfare:handgun_silencer",
+      "superbwarfare:loudspeaker"
+    ]
+  },
   "SoundInfo": {
     "Fire1P": "superbwarfare:glock_17_fire_1p",
     "Fire3P": "superbwarfare:glock_17_fire_3p",

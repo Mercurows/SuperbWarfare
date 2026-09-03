@@ -1,10 +1,10 @@
 {
   "MinZoom": 1.25,
   "MaxZoom": 6,
-  "Spread": 4,
+  "Spread": 6,
   "HasBarrelBullet": true,
-  "RecoilX": 0.0018,
-  "RecoilY": 0.012,
+  "RecoilX": 0.0022,
+  "RecoilY": 0.022,
   "Damage": 9,
   "Headshot": 2,
   "Velocity": 18,
