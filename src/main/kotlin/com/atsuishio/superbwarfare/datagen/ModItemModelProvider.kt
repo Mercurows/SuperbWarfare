@@ -313,6 +313,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.MAGAZINE_EXTEND)
         simpleItem(ModItems.MAGAZINE_EXTEND_PRO)
         simpleItem(ModItems.LOUDSPEAKER)
+        simpleItem(ModItems.VERTICAL_GRIP)
 
         // blocks
         evenSimplerBlockItem(ModBlocks.BARBED_WIRE)

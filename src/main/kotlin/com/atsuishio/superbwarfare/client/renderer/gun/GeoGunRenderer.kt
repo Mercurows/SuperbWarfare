@@ -287,11 +287,53 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         packedOverlay: Int
     ) {
         renderMagazine(stack, model)
+        renderGripHandGuard(stack, model)
+        renderGripAttachment(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
         renderBarrelAttachment(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
     }
 
     open fun renderMagazine(stack: ItemStack, model: GeoGunModel) {
         model.showMagazineBone(resolveMagazineBone(stack))
+    }
+
+    open fun renderGripHandGuard(stack: ItemStack, model: GeoGunModel) {
+        val customBone = model.getBone(CUSTOM_HAND_GUARD_BONE) ?: return
+        val gripInstalled = GunData.from(stack).attachment.has(AttachmentType.GRIP)
+        val showCustom = gripInstalled && GunResource.compute(stack).attachmentInfo.gripHandGuard
+        customBone.visible = showCustom
+        model.getBone(OEM_HAND_GUARD_BONE)?.visible = !showCustom
+    }
+
+    open fun renderGripAttachment(
+        stack: ItemStack,
+        model: GeoGunModel,
+        poseStack: PoseStack,
+        bufferSource: MultiBufferSource,
+        packedLight: Int,
+        packedOverlay: Int
+    ) {
+        val (attachmentModel, texture) = resolveGripAttachmentRender(stack) ?: return
+        val boneName = resolveGripAttachmentBone(stack)
+        val mountTransform = model.getGlobalTransform(boneName) ?: return
+
+        poseStack.pushPose()
+        poseStack.mulPoseMatrix(Matrix4f(mountTransform))
+        attachmentModel.renderToBuffer(poseStack, bufferSource, texture, packedLight, packedOverlay)
+        poseStack.popPose()
+    }
+
+    open fun resolveGripAttachmentRender(stack: ItemStack): Pair<BedrockAttachmentModel, ResourceLocation>? {
+        val data = GunData.from(stack)
+        val attachmentId = data.attachment.id(AttachmentType.GRIP) ?: return null
+        val definition = AttachmentDefinition.from(attachmentId) ?: return null
+        val modelPath = definition.model ?: return null
+        val texture = definition.texture ?: return null
+        val attachmentModel = AttachmentModelReloadListener.getModel(modelPath) ?: return null
+        return Pair(attachmentModel, texture)
+    }
+
+    open fun resolveGripAttachmentBone(stack: ItemStack): String {
+        return GRIP_BONE
     }
 
     open fun renderBarrelAttachment(
@@ -751,6 +793,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     }
 
     companion object {
+        // Bone Positions
         private const val IDLE_VIEW_BONE = "idle_view"
         private const val IRON_VIEW_BONE = "iron_view"
         private const val MUZZLE_BONE = "muzzle_pos"
@@ -758,6 +801,14 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         private const val MAGAZINE_BONE = "magazine_pos"
         private const val SCOPE_BONE = "scope_pos"
         private const val STOCK_BONE = "stock_pos"
+        private const val THIRDPERSON_HAND_BONE = "thirdperson_hand"
+        private const val GROUND_BONE = "ground"
+        private const val FIXED_BONE = "fixed"
+        private const val FLARE_BONE = "flare"
+        private const val MUZZLE_FLASH_BONE = "muzzle_flash"
+        private const val CUSTOM_HAND_GUARD_BONE = "custom_hand_guard"
+        private const val OEM_HAND_GUARD_BONE = "oem_hand_guard"
+
         private const val EDIT_FOCUS_Z_OFFSET = 0.8f
         private const val EDIT_FOCUS_SMOOTHING = 1f
         private const val EDIT_FOCUS_RETURN_SMOOTHING = 3f
@@ -766,11 +817,6 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         private const val UNFOCUSED_PAN_SMOOTHING = 12f
         private const val UNFOCUSED_PAN_YAW = 0.6f
         private const val UNFOCUSED_PAN_PITCH = 0.3f
-        private const val THIRDPERSON_HAND_BONE = "thirdperson_hand"
-        private const val GROUND_BONE = "ground"
-        private const val FIXED_BONE = "fixed"
-        private const val FLARE_BONE = "flare"
-        private const val MUZZLE_FLASH_BONE = "muzzle_flash"
 
         private val BLENDER: EulerAdditiveBlender =
             SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }

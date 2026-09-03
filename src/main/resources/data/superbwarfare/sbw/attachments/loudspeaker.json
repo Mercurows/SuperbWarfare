@@ -1,7 +1,7 @@
 {
   "Slot": "Barrel",
   "Level": 3,
-  "Bone": "muzzle",
+  "Bone": "muzzle_pos",
   "MuzzleFlashScale": 0,
   "SoundRadiusMultiplier": 2,
   "Model": "superbwarfare:models/bedrock/attachment/loudspeaker.geo.json",

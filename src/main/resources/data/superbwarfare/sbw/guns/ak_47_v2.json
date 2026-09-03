@@ -67,6 +67,9 @@
       "superbwarfare:magazine_extend",
       "superbwarfare:magazine_extend_pro"
     ],
+    "Grip": [
+      "superbwarfare:vertical_grip"
+    ],
     "Barrel": [
       "superbwarfare:meowlencer",
       "superbwarfare:hissilencer",
