@@ -50,6 +50,13 @@ open class GeoGunModel @JvmOverloads constructor(
         MAGAZINE_EXTEND_PRO_BONE to baseModel.getIndex(MAGAZINE_EXTEND_PRO_BONE)
     ).filterValues { it >= 0 }
 
+    private val stockBones: Map<String, Int> = mapOf(
+        OEM_STOCK_STANDARD_BONE to baseModel.getIndex(OEM_STOCK_STANDARD_BONE),
+        OEM_STOCK_LIGHT_BONE to baseModel.getIndex(OEM_STOCK_LIGHT_BONE),
+        OEM_STOCK_HEAVY_BONE to baseModel.getIndex(OEM_STOCK_HEAVY_BONE),
+        CUSTOM_STOCK_ADAPTER_BONE to baseModel.getIndex(CUSTOM_STOCK_ADAPTER_BONE)
+    ).filterValues { it >= 0 }
+
     protected val rootBoneIndex: Int = baseModel.getIndex(ROOT_BONE)
     protected val cameraBoneIndex: Int = baseModel.getIndex(CAMERA_BONE)
     protected val leftHandBoneIndex: Int = baseModel.getIndex(LEFT_HAND_BONE)
@@ -95,6 +102,17 @@ open class GeoGunModel @JvmOverloads constructor(
             ?: magazineBones[MAGAZINE_STANDARD_BONE]
             ?: return
         for ((_, index) in magazineBones) {
+            instance.getBone(index)?.visible = index == visibleIndex
+        }
+    }
+
+    fun showStockBone(
+        visibleBoneName: String,
+        fallbackBoneName: String = OEM_STOCK_STANDARD_BONE
+    ) {
+        val visibleIndex = stockBones[visibleBoneName]
+            ?: stockBones[fallbackBoneName]
+        for ((_, index) in stockBones) {
             instance.getBone(index)?.visible = index == visibleIndex
         }
     }
@@ -282,11 +300,24 @@ open class GeoGunModel @JvmOverloads constructor(
         const val MAGAZINE_EXTEND_BONE = "magazine_extend"
         const val MAGAZINE_EXTEND_PRO_BONE = "magazine_extend_pro"
 
+        const val OEM_STOCK_STANDARD_BONE = "oem_stock_standard"
+        const val OEM_STOCK_LIGHT_BONE = "oem_stock_light"
+        const val OEM_STOCK_HEAVY_BONE = "oem_stock_heavy"
+        const val CUSTOM_STOCK_ADAPTER_BONE = "custom_stock_adapter"
+
         @JvmField
         val MAGAZINE_BONE_NAMES: Set<String> = setOf(
             MAGAZINE_STANDARD_BONE,
             MAGAZINE_EXTEND_BONE,
             MAGAZINE_EXTEND_PRO_BONE
+        )
+
+        @JvmField
+        val STOCK_BONE_NAMES: Set<String> = setOf(
+            OEM_STOCK_STANDARD_BONE,
+            OEM_STOCK_LIGHT_BONE,
+            OEM_STOCK_HEAVY_BONE,
+            CUSTOM_STOCK_ADAPTER_BONE
         )
 
         private val SHELL_GEOMETRY_PATTERN = Regex("^shells$|^shell\\d+$|^bullet_shell$", RegexOption.IGNORE_CASE)

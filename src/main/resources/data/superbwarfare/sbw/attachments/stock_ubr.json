@@ -1,0 +1,7 @@
+{
+  "Slot": "Stock",
+  "Bone": "custom_stock_adapter",
+  "UsesGunStock": false,
+  "Model": "superbwarfare:models/bedrock/attachment/stock_ubr.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/stock_ubr.png"
+}

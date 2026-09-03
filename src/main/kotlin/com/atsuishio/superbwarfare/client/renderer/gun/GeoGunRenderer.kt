@@ -285,6 +285,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         packedOverlay: Int
     ) {
         renderMagazine(stack, model)
+        renderStock(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
         renderGripHandGuard(stack, model)
         renderGripAttachment(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
         renderBarrelAttachment(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
@@ -292,6 +293,68 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
     open fun renderMagazine(stack: ItemStack, model: GeoGunModel) {
         model.showMagazineBone(resolveMagazineBone(stack))
+    }
+
+    open fun renderStock(
+        stack: ItemStack,
+        model: GeoGunModel,
+        poseStack: PoseStack,
+        bufferSource: MultiBufferSource,
+        packedLight: Int,
+        packedOverlay: Int
+    ) {
+        val definition = resolveStockDefinition(stack)
+        if (definition == null) {
+            model.showStockBone(GeoGunModel.OEM_STOCK_STANDARD_BONE)
+            return
+        }
+
+        if (definition.usesGunStock) {
+            model.showStockBone(
+                definition.bone ?: GeoGunModel.OEM_STOCK_STANDARD_BONE
+            )
+            return
+        }
+
+        model.showStockBone(
+            GeoGunModel.CUSTOM_STOCK_ADAPTER_BONE,
+            GeoGunModel.CUSTOM_STOCK_ADAPTER_BONE
+        )
+        renderStockAttachment(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
+    }
+
+    open fun resolveStockDefinition(stack: ItemStack): AttachmentDefinition? {
+        val data = GunData.from(stack)
+        val attachmentId = data.attachment.id(AttachmentType.STOCK) ?: return null
+        return AttachmentDefinition.from(attachmentId)
+    }
+
+    open fun renderStockAttachment(
+        stack: ItemStack,
+        model: GeoGunModel,
+        poseStack: PoseStack,
+        bufferSource: MultiBufferSource,
+        packedLight: Int,
+        packedOverlay: Int
+    ) {
+        val (attachmentModel, texture) = resolveStockAttachmentRender(stack) ?: return
+        val mountTransform = model.getGlobalTransform(GeoGunModel.CUSTOM_STOCK_ADAPTER_BONE) ?: return
+
+        poseStack.pushPose()
+        poseStack.mulPoseMatrix(Matrix4f(mountTransform))
+        attachmentModel.renderToBuffer(poseStack, bufferSource, texture, packedLight, packedOverlay)
+        poseStack.popPose()
+    }
+
+    open fun resolveStockAttachmentRender(stack: ItemStack): Pair<BedrockAttachmentModel, ResourceLocation>? {
+        val data = GunData.from(stack)
+        val attachmentId = data.attachment.id(AttachmentType.STOCK) ?: return null
+        val definition = AttachmentDefinition.from(attachmentId) ?: return null
+        if (definition.usesGunStock) return null
+        val modelPath = definition.model ?: return null
+        val texture = definition.texture ?: return null
+        val attachmentModel = AttachmentModelReloadListener.getModel(modelPath) ?: return null
+        return Pair(attachmentModel, texture)
     }
 
     open fun renderGripHandGuard(stack: ItemStack, model: GeoGunModel) {
