@@ -872,7 +872,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
         private const val EDIT_FOCUS_Z_OFFSET = 0.8f
         private const val EDIT_FOCUS_SMOOTHING = 1f
-        private const val EDIT_FOCUS_RETURN_SMOOTHING = 3f
+        private const val EDIT_FOCUS_RETURN_SMOOTHING = 0.8f
         private const val EDIT_FOCUS_RETURN_TIME = 0.6f
         private const val UNFOCUSED_PAN_RANGE = 0.13f
         private const val UNFOCUSED_PAN_SMOOTHING = 12f
