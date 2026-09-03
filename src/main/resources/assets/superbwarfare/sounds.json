@@ -1551,6 +1551,22 @@
       }
     ]
   },
+  "m_1911_fire_1p_s": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/m_1911/m_1911_fire_1p_s",
+        "stream": false
+      }
+    ]
+  },
+  "m_1911_fire_3p_s": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/m_1911/m_1911_fire_3p_s",
+        "stream": false
+      }
+    ]
+  },
   "m_1911_far": {
     "sounds": [
       {

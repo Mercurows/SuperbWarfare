@@ -1,21 +1,56 @@
 {
-  "Model": {
-    "Animation": "superbwarfare:animations/glock_17.animation.json",
-    "Model": "superbwarfare:geo/m_1911.geo.json",
-    "Texture": "superbwarfare:textures/item/m_1911.png",
-    "LODModel": "superbwarfare:geo/lod/m_1911.geo.json",
-    "LODTexture": "superbwarfare:textures/item/lod/m_1911.png"
-  },
+  "Icon": "superbwarfare:textures/gun_icon/m_1911_icon.png",
+  "SlotIcon": "superbwarfare:textures/item/m_1911_icon.png",
   "Animation": {
-    "Idle": "animation.glock_17.idle",
-    "ReloadNormal": "animation.glock_17.reload_normal",
-    "ReloadEmpty": "animation.glock_17.reload_empty"
+    "Idle": "animation.m_1911.idle",
+    "Fire": "animation.m_1911.fire",
+    "Edit": "animation.m_1911.edit",
+    "ReloadNormal": "animation.m_1911.reload_normal",
+    "ReloadEmpty": "animation.m_1911.reload_empty",
+    "HoldOpen": "animation.m_1911.hold_open",
+    "CloseStrike": "animation.m_1911.close_strike"
   },
-  "FlarePosition": [
-    0,
-    0,
-    0.442825
-  ],
-  "FlareSize": 0.35,
-  "EjectShell": true
+  "ShootRecoil": {
+    "Offset": [1.0, 1.5, 1.2],
+    "Rotation": [3.4, 1.0, 1.0],
+    "ZoomRate": 0.8,
+    "Speed": 1.0
+  },
+  "Model": {
+    "Animation": "superbwarfare:animations/bedrock/gun/m_1911.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/m_1911.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/m_1911.png",
+    "LODModel": "superbwarfare:models/bedrock/gun_lod/m_1911.geo.json",
+    "LODTexture": "superbwarfare:textures/bedrock/gun_lod/m_1911.png"
+  },
+  "FlareSize": 0.3,
+  "HasSmoke": true,
+  "Smoke": {
+    "Size": 0.15,
+    "Growth": 0.25,
+    "Lifetime": 0.3,
+    "Speed": 0.4,
+    "Count": 2,
+    "Opacity": 0.9,
+    "Drag": 2,
+    "RandomSize": 0.05,
+    "RandomGrowth": 0.2,
+    "RandomLifetime": 0.2,
+    "RandomSpeed": 0.2,
+    "RandomOpacity": 0.1
+  },
+  "EjectShell": true,
+  "ShellEject": {
+    "BoneName": "shell",
+    "ShellModel": "superbwarfare:models/bedrock/shell/handgun_shell.geo.json",
+    "ShellTexture": "superbwarfare:textures/bedrock/shell/handgun_shell.png",
+    "Size": 0.6,
+    "InitialVelocity": [10.8, 5.2, -0.75],
+    "RandomVelocity": [0.7, 0.6, 0.3],
+    "Acceleration": [0, -16, 0],
+    "AngularVelocity": [-1800, -2000, 240],
+    "RandomAngle": [60, 60, 360],
+    "LivingTime": 0.8,
+    "MaxActive": 24
+  }
 }
