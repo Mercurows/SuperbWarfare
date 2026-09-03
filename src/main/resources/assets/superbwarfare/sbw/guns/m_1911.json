@@ -7,8 +7,7 @@
     "Edit": "animation.m_1911.edit",
     "ReloadNormal": "animation.m_1911.reload_normal",
     "ReloadEmpty": "animation.m_1911.reload_empty",
-    "HoldOpen": "animation.m_1911.hold_open",
-    "CloseStrike": "animation.m_1911.close_strike"
+    "HoldOpen": "animation.m_1911.hold_open"
   },
   "ShootRecoil": {
     "Offset": [1.0, 1.5, 1.2],

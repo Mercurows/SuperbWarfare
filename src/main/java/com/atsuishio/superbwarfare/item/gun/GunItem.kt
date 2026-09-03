@@ -467,7 +467,9 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             }
         }
 
-        data.closeStrike.set(true)
+        if (data.get(GunProp.BOLT_ACTION_TIME) > 0) {
+            data.closeStrike.set(true)
+        }
 
         // 真实后坐（
         if (shooter != null && data.get(GunProp.RECOIL) != 0.0) {

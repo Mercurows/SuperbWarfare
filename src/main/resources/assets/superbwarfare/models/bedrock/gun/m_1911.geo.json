@@ -3187,6 +3187,11 @@
 					]
 				},
 				{
+					"name": "muzzle_pos",
+					"parent": "root",
+					"pivot": [0, 1.74219, -6.85]
+				},
+				{
 					"name": "positioning",
 					"pivot": [0, 0, 0]
 				},
