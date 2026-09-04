@@ -634,6 +634,7 @@ object ModItems {
     // Scope / sight
     // @formatter:off
     @JvmField val SCOPE_COYOTE = registerAttachment("scope_coyote")
+    @JvmField val SCOPE_ACOG = registerAttachment("scope_acog", Rarity.RARE)
     // @formatter:on
 
     // Grip
