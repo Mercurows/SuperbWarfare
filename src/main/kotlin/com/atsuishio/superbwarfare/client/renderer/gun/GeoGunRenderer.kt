@@ -30,7 +30,6 @@ import com.maydaymemory.mae.basic.YXZRotationView
 import com.maydaymemory.mae.basic.ZYXBoneTransformFactory
 import com.maydaymemory.mae.blend.EulerAdditiveBlender
 import com.maydaymemory.mae.blend.SimpleEulerAdditiveBlender
-import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
 import net.minecraft.client.Minecraft
@@ -48,7 +47,6 @@ import org.joml.Matrix4f
 import org.joml.Quaternionf
 import org.joml.Vector3f
 import org.lwjgl.glfw.GLFW
-import org.lwjgl.opengl.GL11
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -217,7 +215,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
             updateEditFocus(model)
 
-            applyFirstPersonPositioningTransform(poseStack, stack, model)
+            applyFirstPersonPositioningTransform(poseStack, model)
 
             val sprintOffset = resource.sprintOffset
             ClientEventHandler.gunRootMoveV2(poseStack, sprintOffset.x, sprintOffset.y, sprintOffset.z, false)
@@ -230,7 +228,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 shootRecoil.zoomRate, shootRecoil.speed
             )
 
-            val zoomPivot = computeViewTransform(stack, model)?.let {
+            val zoomPivot = computeViewTransform(model)?.let {
                 val pivot = Vector3f()
                 it.getTranslation(pivot)
                 pivot
@@ -253,38 +251,8 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             resolveBarrelAttachmentMuzzleTransform(stack, model, it)
         }
         val muzzleFlashScale = resolveBarrelAttachmentMuzzleFlashScale(stack)
-        val fullyZoomed = transformType.firstPerson() && ClientEventHandler.zoomPos >= 0.99
-        val scopeData = if (fullyZoomed) resolveScopeAttachmentData(stack, model) else null
-        val scopeInfo = scopeData?.definition?.scope
-        val needsScopeStencil = scopeData != null
-                && scopeInfo?.isScope == true
-                && scopeData.attachmentModel.needsStencil()
-        val stencilScope = if (needsScopeStencil) {
-            renderScopeAttachmentWithStencil(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
-        } else {
-            null
-        }
-        renderAttachments(
-            stack,
-            model,
-            transformType,
-            poseStack,
-            bufferSource,
-            packedLight,
-            packedOverlay,
-            stencilScope != null
-        )
-        val cullsGunInScope = stencilScope != null && stencilScope.attachmentModel.isScope
-        if (cullsGunInScope) {
-            enableGunStencilCulling()
-        }
+        renderAttachments(stack, model, transformType, poseStack, bufferSource, packedLight, packedOverlay)
         model.renderToBuffer(poseStack, bufferSource, texture, packedLight, packedOverlay)
-        if (cullsGunInScope) {
-            finishGunStencilCulling(bufferSource)
-        }
-        if (scopeData != null && scopeInfo?.crosshairIcon != null) {
-            renderScopeCrosshairIcon(scopeData, poseStack, bufferSource, packedLight)
-        }
         if (transformType.firstPerson()) {
             MuzzleFlashRenderer.render(
                 poseStack,
@@ -314,91 +282,13 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         poseStack: PoseStack,
         bufferSource: MultiBufferSource,
         packedLight: Int,
-        packedOverlay: Int,
-        skipScope: Boolean = false
+        packedOverlay: Int
     ) {
         renderMagazine(stack, model)
         renderStock(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
         renderGripHandGuard(stack, model)
         renderGripAttachment(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
         renderBarrelAttachment(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
-        if (!skipScope) {
-            renderScopeAttachment(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
-        }
-    }
-
-    open fun renderScopeAttachment(
-        stack: ItemStack,
-        model: GeoGunModel,
-        poseStack: PoseStack,
-        bufferSource: MultiBufferSource,
-        packedLight: Int,
-        packedOverlay: Int
-    ) {
-        val scope = resolveScopeAttachmentData(stack, model) ?: return
-        poseStack.pushPose()
-        poseStack.mulPoseMatrix(Matrix4f(scope.mountTransform))
-        scope.attachmentModel.renderToBuffer(poseStack, bufferSource, scope.texture, packedLight, packedOverlay)
-        poseStack.popPose()
-    }
-
-    private fun renderScopeCrosshairIcon(
-        scope: ScopeRenderData,
-        poseStack: PoseStack,
-        bufferSource: MultiBufferSource,
-        packedLight: Int
-    ) {
-        val scopeInfo = scope.definition.scope ?: return
-        val crosshairIcon = scopeInfo.crosshairIcon ?: return
-        val bs = bufferSource as? MultiBufferSource.BufferSource ?: return
-        flushBufferSource(bufferSource)
-        poseStack.pushPose()
-        poseStack.mulPoseMatrix(Matrix4f(scope.mountTransform))
-        val colorArgb = scopeInfo.crosshairColor?.get() ?: 0xFFFFFFFF.toInt()
-        scope.attachmentModel.renderCrosshairIcon(poseStack, bs, crosshairIcon, colorArgb, packedLight)
-        poseStack.popPose()
-    }
-
-    open fun renderScopeAttachmentWithStencil(
-        stack: ItemStack,
-        model: GeoGunModel,
-        poseStack: PoseStack,
-        bufferSource: MultiBufferSource,
-        packedLight: Int,
-        packedOverlay: Int
-    ): ScopeRenderData? {
-        val scope = resolveScopeAttachmentData(stack, model) ?: return null
-        val bs = bufferSource as? MultiBufferSource.BufferSource ?: return null
-        if (!scope.attachmentModel.needsStencil()) return null
-
-        val aimingProgress = ClientEventHandler.zoomPos.coerceIn(0.0, 1.0).toFloat()
-        poseStack.pushPose()
-        poseStack.mulPoseMatrix(Matrix4f(scope.mountTransform))
-        scope.attachmentModel.renderWithStencil(poseStack, bs, scope.texture, packedLight, aimingProgress)
-        poseStack.popPose()
-        return scope
-    }
-
-    open fun resolveScopeAttachmentData(stack: ItemStack, model: GeoGunModel): ScopeRenderData? {
-        val attachmentId = GunData.from(stack).attachment.id(AttachmentType.SCOPE) ?: return null
-        val definition = AttachmentDefinition.from(attachmentId) ?: return null
-        val modelPath = definition.model ?: return null
-        val texture = definition.texture ?: return null
-        val attachmentModel = AttachmentModelReloadListener.getModel(modelPath) ?: return null
-        attachmentModel.isScope = definition.isScope
-        attachmentModel.isSight = definition.isSight
-        attachmentModel.scopeViewRadiusModifier = definition.scopeViewRadiusModifier
-        attachmentModel.renderDivisionGeometry = definition.scope?.crosshairIcon == null
-
-        val boneName = definition.bone ?: SCOPE_BONE
-        val mountTransform = model.getGlobalTransform(boneName) ?: return null
-        return ScopeRenderData(definition, attachmentModel, texture, Matrix4f(mountTransform))
-    }
-
-    open fun resolveScopeAimTransform(stack: ItemStack, model: GeoGunModel): Matrix4f? {
-        val scope = resolveScopeAttachmentData(stack, model) ?: return null
-        val scopeView = scope.attachmentModel.getGlobalTransform(SCOPE_VIEW_BONE) ?: return null
-        return Matrix4f(scope.mountTransform).mul(scopeView)
     }
 
     open fun renderMagazine(stack: ItemStack, model: GeoGunModel) {
@@ -723,16 +613,12 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         animation.cameraRotation = Quaternionf().rotateZYX(cameraEuler.z, cameraEuler.y, cameraEuler.x)
     }
 
-    open fun applyFirstPersonPositioningTransform(
-        poseStack: PoseStack,
-        stack: ItemStack,
-        model: GeoGunModel
-    ) {
-        val viewTransform = computeViewTransform(stack, model) ?: return
+    open fun applyFirstPersonPositioningTransform(poseStack: PoseStack, model: GeoGunModel) {
+        val viewTransform = computeViewTransform(model) ?: return
         poseStack.mulPoseMatrix(viewTransform.invert())
     }
 
-    open fun computeViewTransform(stack: ItemStack, model: GeoGunModel): Matrix4f? {
+    open fun computeViewTransform(model: GeoGunModel): Matrix4f? {
         val idleViewTransform = model.getGlobalTransform(IDLE_VIEW_BONE) ?: return null
 
         val zoom = AnimationCurves.EASE_IN_OUT_QUINT
@@ -762,31 +648,9 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         if (zoom <= 0f) {
             return Matrix4f(idleViewTransform)
         }
-        val aimViewTransform = resolveScopeAimTransform(stack, model)
-            ?: model.getGlobalTransform(IRON_VIEW_BONE)
+        val ironViewTransform = model.getGlobalTransform(IRON_VIEW_BONE)
             ?: return Matrix4f(idleViewTransform)
-        return blendViewTransform(Matrix4f(idleViewTransform), Matrix4f(aimViewTransform), zoom)
-    }
-
-    private fun enableGunStencilCulling() {
-        RenderSystem.assertOnRenderThread()
-        Minecraft.getInstance().mainRenderTarget.enableStencil()
-        RenderSystem.enableDepthTest()
-        GL11.glEnable(GL11.GL_STENCIL_TEST)
-        RenderSystem.stencilFunc(GL11.GL_EQUAL, 0, 0xFF)
-        RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP)
-    }
-
-    private fun finishGunStencilCulling(bufferSource: MultiBufferSource) {
-        flushBufferSource(bufferSource)
-        RenderSystem.stencilFunc(GL11.GL_ALWAYS, 0, 0xFF)
-        GL11.glDisable(GL11.GL_STENCIL_TEST)
-        RenderSystem.clearStencil(0)
-        RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT, Minecraft.ON_OSX)
-    }
-
-    private fun flushBufferSource(bufferSource: MultiBufferSource) {
-        (bufferSource as? MultiBufferSource.BufferSource)?.endBatch()
+        return blendViewTransform(Matrix4f(idleViewTransform), Matrix4f(ironViewTransform), zoom)
     }
 
     /**
@@ -993,7 +857,6 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         // Bone Positions
         private const val IDLE_VIEW_BONE = "idle_view"
         private const val IRON_VIEW_BONE = "iron_view"
-        private const val SCOPE_VIEW_BONE = "scope_view"
         private const val MUZZLE_BONE = "muzzle_pos"
         private const val GRIP_BONE = "grip_pos"
         private const val MAGAZINE_BONE = "magazine_pos"
@@ -1019,11 +882,4 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         private val BLENDER: EulerAdditiveBlender =
             SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }
     }
-
-    data class ScopeRenderData(
-        val definition: AttachmentDefinition,
-        val attachmentModel: BedrockAttachmentModel,
-        val texture: ResourceLocation,
-        val mountTransform: Matrix4f
-    )
 }

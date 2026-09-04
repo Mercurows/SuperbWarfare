@@ -60,7 +60,8 @@
   ],
   "AvailableAttachments": {
     "Scope": [
-      "superbwarfare:scope_coyote"
+      "superbwarfare:iron_sight",
+      "superbwarfare:acog_4x"
     ],
     "Magazine": [
       "superbwarfare:magazine_extend",

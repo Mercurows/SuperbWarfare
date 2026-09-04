@@ -321,7 +321,6 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.TRIANGLE_GRIP)
         simpleItem(ModItems.OSPREY_SILENCER)
         simpleItem(ModItems.OSPREY_SILENCER_TRACHELIUM)
-        simpleItem(ModItems.SCOPE_COYOTE)
 
         // blocks
         evenSimplerBlockItem(ModBlocks.BARBED_WIRE)
