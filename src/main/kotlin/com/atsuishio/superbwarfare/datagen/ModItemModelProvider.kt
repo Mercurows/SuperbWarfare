@@ -315,6 +315,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.LOUDSPEAKER)
         simpleItem(ModItems.VERTICAL_GRIP)
         simpleItem(ModItems.STOCK_UBR)
+        simpleItem(ModItems.STOCK_PRS)
         simpleItem(ModItems.OEM_STOCK_LIGHT)
         simpleItem(ModItems.OEM_STOCK_HEAVY)
         simpleItem(ModItems.TRIANGLE_GRIP)

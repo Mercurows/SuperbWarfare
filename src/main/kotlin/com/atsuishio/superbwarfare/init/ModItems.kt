@@ -616,6 +616,7 @@ object ModItems {
     @JvmField val OEM_STOCK_LIGHT = registerAttachment("oem_stock_light")
     @JvmField val OEM_STOCK_HEAVY = registerAttachment("oem_stock_heavy")
     @JvmField val STOCK_UBR = registerAttachment("stock_ubr")
+    @JvmField val STOCK_PRS = registerAttachment("stock_prs")
     // @formatter:on
 
     // Magazine
