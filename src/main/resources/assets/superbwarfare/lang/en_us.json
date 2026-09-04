@@ -629,7 +629,8 @@
   "item.superbwarfare.oem_stock_light": "Universal Light Stock",
   "item.superbwarfare.oem_stock_heavy": "Universal Heavy Stock",
   "item.superbwarfare.stock_ubr": "UBR Stock",
-  "item.superbwarfare.osprey_silencer_trachelium": "Osprey Silencer (Trachelium)",
+  "item.superbwarfare.osprey_silencer": "Osprey Handgun Silencer",
+  "item.superbwarfare.osprey_silencer_trachelium": "Osprey Handgun Silencer (Trachelium)",
 
   "death.attack.gunfire": "%1$s was gunned down by %2$s",
   "death.attack.gunfire.entity": "%1$s was gunned down by %2$s",
