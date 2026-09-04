@@ -632,6 +632,7 @@
   "item.superbwarfare.stock_prs": "PRS Heavy Stock",
   "item.superbwarfare.osprey_silencer": "Osprey Handgun Silencer",
   "item.superbwarfare.osprey_silencer_trachelium": "Osprey Handgun Silencer (Trachelium)",
+  "item.superbwarfare.scope_coyote": "Coyote Sight",
 
   "death.attack.gunfire": "%1$s was gunned down by %2$s",
   "death.attack.gunfire.entity": "%1$s was gunned down by %2$s",
