@@ -52,6 +52,9 @@ data class AttachmentDefinition(
 
     @SerialName("Zoom")
     val zoom: AttachmentZoom? = null,
+
+    @SerialName("ScopeInfo")
+    val scopeInfo: ScopeInfo? = null,
 ) : IDBasedData<AttachmentDefinition>, PropertyModifier<GunData, DefaultGunData> {
 
     @kotlinx.serialization.Transient

@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.compat.oculus
 
 import com.atsuishio.superbwarfare.compat.oculus.OculusCompat.getParticleShader
 import com.atsuishio.superbwarfare.compat.oculus.OculusCompat.getParticleTranslucentShader
+import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.ShaderInstance
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
@@ -65,6 +66,40 @@ object OculusCompat {
             val apiClass = Class.forName("net.irisshaders.iris.api.v0.IrisApi")
             val instance = apiClass.getMethod("getInstance").invoke(null)
             apiClass.getMethod("isRenderingShadowPass").invoke(instance) as? Boolean ?: false
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    /**
+     * Force-flushes a first-person item [MultiBufferSource.BufferSource] when Iris/Oculus
+     * wraps it in its batched rendering pipeline. Vanilla item rendering normally works with
+     * [MultiBufferSource.BufferSource.endBatch], but Iris may pass an unflushable wrapper whose
+     * endBatch methods are no-ops; in that case we unwrap the private `wrapped` source and flush
+     * the real [net.irisshaders.batchedentityrendering.impl.FullyBufferedMultiBufferSource].
+     */
+    fun endBatch(bufferSource: MultiBufferSource.BufferSource): Boolean {
+        if (!isInstalled) return false
+        return try {
+            var target = bufferSource
+            val wrapperClass = Class.forName(
+                "net.irisshaders.batchedentityrendering.impl.FullyBufferedMultiBufferSource\$UnflushableWrapper"
+            )
+            if (wrapperClass.isInstance(target)) {
+                val wrappedField = wrapperClass.getDeclaredField("wrapped")
+                wrappedField.isAccessible = true
+                target = wrappedField.get(target) as MultiBufferSource.BufferSource
+            }
+
+            val fullyBufferedClass = Class.forName(
+                "net.irisshaders.batchedentityrendering.impl.FullyBufferedMultiBufferSource"
+            )
+            if (fullyBufferedClass.isInstance(target)) {
+                target.endBatch()
+                true
+            } else {
+                false
+            }
         } catch (_: Exception) {
             false
         }
