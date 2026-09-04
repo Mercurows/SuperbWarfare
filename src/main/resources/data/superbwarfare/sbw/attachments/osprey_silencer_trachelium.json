@@ -1,6 +1,28 @@
 {
   "Slot": "Barrel",
   "Level": 2,
+  "Modifiers": [
+    {
+      "Prop": "Velocity",
+      "Op": "Add",
+      "Value": 1.5
+    },
+    {
+      "Prop": "Spread",
+      "Op": "Mul",
+      "Value": 0.85
+    },
+    {
+      "Prop": "Damage",
+      "Op": "Add",
+      "Value": 1.0
+    },
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 0.8
+    }
+  ],
   "Bone": "muzzle_pos",
   "IsSilenced": true,
   "SoundRadiusMultiplier": 0.4,

@@ -1,6 +1,23 @@
 {
   "Slot": "Grip",
   "Level": 0,
+  "Modifiers": [
+    {
+      "Prop": "RecoilX",
+      "Op": "Mul",
+      "Value": 0.65
+    },
+    {
+      "Prop": "RecoilY",
+      "Op": "Mul",
+      "Value": 0.9
+    },
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 0.7
+    }
+  ],
   "Bone": "grip_pos",
   "Model": "superbwarfare:models/bedrock/attachment/triangle_grip.geo.json",
   "Texture": "superbwarfare:textures/bedrock/attachment/triangle_grip.png"

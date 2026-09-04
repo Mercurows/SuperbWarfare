@@ -1,6 +1,13 @@
 {
   "Slot": "Barrel",
   "Level": 3,
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 2.0
+    }
+  ],
   "Bone": "muzzle_pos",
   "MuzzleFlashScale": 0,
   "SoundRadiusMultiplier": 2,

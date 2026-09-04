@@ -1,5 +1,12 @@
 {
   "Slot": "Stock",
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 1.0
+    }
+  ],
   "Bone": "custom_stock_adapter",
   "Icon": "superbwarfare:textures/bedrock/attachment/oem_stock_standard.png"
 }
