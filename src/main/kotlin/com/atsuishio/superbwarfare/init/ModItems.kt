@@ -636,6 +636,7 @@ object ModItems {
     @JvmField val OSPREY_SILENCER = registerAttachment("osprey_silencer", Rarity.RARE)
     @JvmField val LOUDSPEAKER = registerAttachment("loudspeaker", ModRarities.LEGENDARY)
     @JvmField val OSPREY_SILENCER_TRACHELIUM = registerAttachment("osprey_silencer_trachelium", ModRarities.VIRTUAL)
+    @JvmField val SILENCER_QINGLAN = registerAttachment("silencer_qinglan", ModRarities.VIRTUAL)
     // @formatter:on
 
     // Scope / sight

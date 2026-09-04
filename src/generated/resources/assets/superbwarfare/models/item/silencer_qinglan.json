@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "superbwarfare:item/scope_acog"
+    "layer0": "superbwarfare:item/silencer_qinglan"
   }
 }

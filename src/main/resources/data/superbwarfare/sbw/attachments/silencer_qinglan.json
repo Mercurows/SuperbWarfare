@@ -1,0 +1,32 @@
+{
+  "Slot": "Barrel",
+  "Level": 2,
+  "Modifiers": [
+    {
+      "Prop": "Velocity",
+      "Op": "Add",
+      "Value": 1.5
+    },
+    {
+      "Prop": "Spread",
+      "Op": "Mul",
+      "Value": 0.6
+    },
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 0.4
+    },
+    {
+      "Prop": "RPM",
+      "Op": "Add",
+      "Value": 50
+    }
+  ],
+  "Bone": "muzzle_pos",
+  "IsSilenced": true,
+  "SoundRadiusMultiplier": 0.4,
+  "MuzzleFlashScale": 0.3,
+  "Model": "superbwarfare:models/bedrock/attachment/silencer_qinglan.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/silencer_qinglan.png"
+}
