@@ -5095,7 +5095,7 @@
 				{
 					"name": "custom_stock_adapter",
 					"parent": "stock_pos",
-					"pivot": [0, 2.612, 9]
+					"pivot": [0, 2.612, 6.9298]
 				},
 				{
 					"name": "bone91",

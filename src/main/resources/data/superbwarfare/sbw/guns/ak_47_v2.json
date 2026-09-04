@@ -74,7 +74,8 @@
     "Stock": [
       "superbwarfare:oem_stock_light",
       "superbwarfare:oem_stock_heavy",
-      "superbwarfare:stock_ubr"
+      "superbwarfare:stock_ubr",
+      "superbwarfare:stock_prs"
     ],
     "Barrel": [
       "superbwarfare:meowlencer",
