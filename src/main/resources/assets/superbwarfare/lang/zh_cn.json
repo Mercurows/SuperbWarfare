@@ -629,7 +629,8 @@
   "item.superbwarfare.oem_stock_light": "通用轻型枪托",
   "item.superbwarfare.oem_stock_heavy": "通用重型枪托",
   "item.superbwarfare.stock_ubr": "UBR枪托",
-  "item.superbwarfare.osprey_silencer_trachelium": "鱼鹰消音器（夕雾花）",
+  "item.superbwarfare.osprey_silencer": "鱼鹰手枪消音器",
+  "item.superbwarfare.osprey_silencer_trachelium": "鱼鹰手枪消音器（夕雾花）",
 
   "death.attack.gunfire": "%1$s被%2$s射爆了",
   "death.attack.gunfire.entity": "%1$s被%2$s射爆了",
