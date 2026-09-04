@@ -26,6 +26,9 @@ data class AttachmentDefinition(
     @SerialName("UsesGunStock")
     val usesGunStock: Boolean = false,
 
+    @SerialName("Scope")
+    val scope: ScopeInfo? = null,
+
     @SerialName("Icon")
     val icon: String? = null,
 
@@ -53,6 +56,10 @@ data class AttachmentDefinition(
     @SerialName("Zoom")
     val zoom: AttachmentZoom? = null,
 ) : IDBasedData<AttachmentDefinition>, PropertyModifier<GunData, DefaultGunData> {
+
+    val isScope: Boolean get() = scope?.isScope ?: false
+    val isSight: Boolean get() = scope?.isSight ?: false
+    val scopeViewRadiusModifier: Float get() = scope?.scopeViewRadiusModifier ?: 1f
 
     @kotlinx.serialization.Transient
     private var attachmentId: String = ""

@@ -637,6 +637,11 @@ object ModItems {
     @JvmField val TRIANGLE_GRIP = registerAttachment("triangle_grip")
     // @formatter:on
 
+    // Grip
+    // @formatter:off
+    @JvmField val SCOPE_COYOTE = registerAttachment("scope_coyote")
+    // @formatter:on
+
     fun registerDispenserBehavior() {
         val list = mutableListOf<ItemRegistry>()
         list.addAll(AMMO.entries)
