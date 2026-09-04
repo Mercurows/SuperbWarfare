@@ -395,6 +395,15 @@ tasks.processResources {
     from("COPYING", "COPYING.LESSER")
 }
 
+// 统一所有 Copy 类任务（processResources / generateModMetadata / jar 等）的过滤字符集。
+// filteringCharset 默认取 Gradle daemon JVM 的默认字符集（命令行可能是 GBK，IDEA 里是 UTF-8），
+// 环境一换就会让任务输入指纹变化，导致没改文件也触发全量重跑，因此显式固定为 UTF-8。
+allprojects {
+    tasks.withType<AbstractCopyTask>().configureEach {
+        filteringCharset = "UTF-8"
+    }
+}
+
 tasks.named("createMinecraftArtifacts") {
     dependsOn(tasks.named("generateModMetadata"))
 }
