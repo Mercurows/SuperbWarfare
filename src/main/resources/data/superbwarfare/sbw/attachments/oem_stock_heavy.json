@@ -1,5 +1,12 @@
 {
   "Slot": "Stock",
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 1.8
+    }
+  ],
   "Bone": "oem_stock_heavy",
   "UsesGunStock": true
 }

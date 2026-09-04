@@ -1,6 +1,13 @@
 {
   "Slot": "Scope",
   "Level": 0,
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 0.4
+    }
+  ],
   "Bone": "scope_pos",
   "Model": "superbwarfare:models/bedrock/attachment/scope_coyote.geo.json",
   "Texture": "superbwarfare:textures/bedrock/attachment/scope_coyote.png",
