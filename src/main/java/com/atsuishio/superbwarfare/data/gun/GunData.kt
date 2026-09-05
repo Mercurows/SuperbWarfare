@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.data.gun
 
-import com.atsuishio.superbwarfare.capability.living.InfinityAmmoCapability
+import com.atsuishio.superbwarfare.capability.living.InfiniteAmmoCapability
 import com.atsuishio.superbwarfare.data.*
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.BACKUP_AMMO_CACHE_TICKS
@@ -322,7 +322,7 @@ class GunData private constructor(
      */
     fun hasInfiniteBackupAmmo(shooter: Entity?): Boolean {
         return shooter is Player && shooter.isCreative
-                || shooter?.let { InfinityAmmoCapability.get(it) }?.hasInfinityAmmo ?: false
+                || shooter?.let { InfiniteAmmoCapability.get(it) }?.hasInfiniteAmmo ?: false
                 || selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.INFINITE
                 || meleeOnly()
                 || InventoryTool.hasCreativeAmmoBox(shooter)

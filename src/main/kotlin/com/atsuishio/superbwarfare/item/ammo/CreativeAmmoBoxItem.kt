@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.item.ammo
 
-import com.atsuishio.superbwarfare.capability.living.InfinityAmmoCapability
-import com.atsuishio.superbwarfare.network.message.receive.ClientInfinityAmmoMessage
+import com.atsuishio.superbwarfare.capability.living.InfiniteAmmoCapability
+import com.atsuishio.superbwarfare.network.message.receive.ClientInfiniteAmmoMessage
 import com.atsuishio.superbwarfare.registerToEventBus
 import com.atsuishio.superbwarfare.tools.sendPacketTo
 import com.atsuishio.superbwarfare.tools.sendPacketToTrackingThis
@@ -37,31 +37,31 @@ object CreativeAmmoBoxItem : Item(Properties().rarity(Rarity.EPIC).stacksTo(1)) 
     }
 
     override fun use(level: Level, player: Player, usedHand: InteractionHand): InteractionResultHolder<ItemStack> {
-        invertInfinityAmmo(player, player)
+        invertInfiniteAmmo(player, player)
         return super.use(level, player, usedHand)
     }
 
     @SubscribeEvent
     fun onEntityInteract(event: PlayerInteractEvent.EntityInteract) {
-        invertInfinityAmmo(event.entity, event.target)
+        invertInfiniteAmmo(event.entity, event.target)
     }
 
-    private fun invertInfinityAmmo(player: Player? = null, entity: Entity) {
+    private fun invertInfiniteAmmo(player: Player? = null, entity: Entity) {
         if (entity.level().isClientSide) return
 
         var hasInfiniteAmmo = false
 
-        InfinityAmmoCapability.modify(entity) {
-            hasInfiniteAmmo = !it.hasInfinityAmmo
-            it.hasInfinityAmmo = hasInfiniteAmmo
+        InfiniteAmmoCapability.modify(entity) {
+            hasInfiniteAmmo = !it.hasInfiniteAmmo
+            it.hasInfiniteAmmo = hasInfiniteAmmo
         }
 
         // TODO message
         player?.displayClientMessage(Component.literal(if (hasInfiniteAmmo) "+ infinity" else "- infinity"), true)
 
         if (entity is Player) {
-            sendPacketTo(entity, ClientInfinityAmmoMessage(entity.id, hasInfiniteAmmo))
+            sendPacketTo(entity, ClientInfiniteAmmoMessage(entity.id, hasInfiniteAmmo))
         }
-        entity.sendPacketToTrackingThis(ClientInfinityAmmoMessage(entity.id, hasInfiniteAmmo))
+        entity.sendPacketToTrackingThis(ClientInfiniteAmmoMessage(entity.id, hasInfiniteAmmo))
     }
 }

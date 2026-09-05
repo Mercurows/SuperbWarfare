@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.init
 
 import com.atsuishio.superbwarfare.Mod
-import com.atsuishio.superbwarfare.capability.living.InfinityAmmoCapability
+import com.atsuishio.superbwarfare.capability.living.InfiniteAmmoCapability
 import com.atsuishio.superbwarfare.capability.living.PhosphorusFireCapability
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable
 import net.minecraft.nbt.CompoundTag
@@ -24,7 +24,7 @@ object ModDataAttachments {
     val PHOSPHORUS_FIRE = register<PhosphorusFireCapability>("phosphorus_fire")
 
     @JvmField
-    val INFINITY_AMMO = register<InfinityAmmoCapability>("infinity_ammo")
+    val INFINITE_AMMO = register<InfiniteAmmoCapability>("infinite_ammo")
 
     private inline fun <reified T : INBTSerializable<CompoundTag>> register(
         name: String,

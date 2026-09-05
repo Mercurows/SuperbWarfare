@@ -7,32 +7,32 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.entity.Entity
 import net.neoforged.neoforge.common.util.INBTSerializable
 
-class InfinityAmmoCapability(var hasInfinityAmmo: Boolean = false) : INBTSerializable<CompoundTag> {
+class InfiniteAmmoCapability(var hasInfiniteAmmo: Boolean = false) : INBTSerializable<CompoundTag> {
 
     override fun serializeNBT(provider: HolderLookup.Provider) = CompoundTag().apply {
-        putBoolean(TAG_INFINITY_AMMO, hasInfinityAmmo)
+        putBoolean(TAG_INFINITE_AMMO, hasInfiniteAmmo)
     }
 
     override fun deserializeNBT(provider: HolderLookup.Provider, nbt: CompoundTag) {
-        if (nbt.contains(TAG_INFINITY_AMMO)) {
-            this.hasInfinityAmmo = nbt.getBoolean(TAG_INFINITY_AMMO)
+        if (nbt.contains(TAG_INFINITE_AMMO)) {
+            this.hasInfiniteAmmo = nbt.getBoolean(TAG_INFINITE_AMMO)
         }
     }
 
     companion object {
-        val ID = loc("infinity_ammo_capability")
-        const val TAG_INFINITY_AMMO = "SbwInfinityAmmo"
+        val ID = loc("infinite_ammo_capability")
+        const val TAG_INFINITE_AMMO = "SbwInfiniteAmmo"
 
         @JvmStatic
-        fun get(entity: Entity): InfinityAmmoCapability {
-            return entity.getData(ModDataAttachments.INFINITY_AMMO)
+        fun get(entity: Entity): InfiniteAmmoCapability {
+            return entity.getData(ModDataAttachments.INFINITE_AMMO)
         }
 
         @JvmStatic
-        fun modify(entity: Entity, modifier: (InfinityAmmoCapability) -> Unit) {
+        fun modify(entity: Entity, modifier: (InfiniteAmmoCapability) -> Unit) {
             val data = get(entity)
             data.apply(modifier)
-            entity.setData(ModDataAttachments.INFINITY_AMMO, data)
+            entity.setData(ModDataAttachments.INFINITE_AMMO, data)
         }
     }
 }

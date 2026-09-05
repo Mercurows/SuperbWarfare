@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.block.entity
 
-import com.atsuishio.superbwarfare.capability.energy.InfinityEnergyStorage
+import com.atsuishio.superbwarfare.capability.energy.InfiniteEnergyStorage
 import com.atsuishio.superbwarfare.init.ModBlockEntities
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
@@ -80,7 +80,7 @@ open class CreativeChargingStationBlockEntity(pos: BlockPos, state: BlockState) 
         }
     }
 
-    private val energyStorage: IEnergyStorage = InfinityEnergyStorage()
+    private val energyStorage: IEnergyStorage = InfiniteEnergyStorage()
 
     fun getEnergyStorage(side: Direction?): IEnergyStorage {
         return energyStorage
