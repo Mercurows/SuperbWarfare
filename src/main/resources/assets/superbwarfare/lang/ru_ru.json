@@ -329,7 +329,7 @@
     "des.superbwarfare.container.fail.empty": "Этот контейнер пуст",
     "des.superbwarfare.container.fail.open": "Недостаточно свободного места",
     "des.superbwarfare.container.info": "Нажмите %1$s чтобы посмотреть информацию",
-    "des.superbwarfare.creative_ammo_box": "Когда находится в инвентаре, снабажает бесконечными боеприпасами",
+    "des.superbwarfare.creative_ammo_box_1": "Когда находится в инвентаре, снабажает бесконечными боеприпасами",
     "des.superbwarfare.creative_charging_station": "Заряжает ближайшие сущности и соседние блоки, также используется как источник энергии",
     "des.superbwarfare.creative_charging_station.charge.success": "Предмет успешно заряжен!",
     "des.superbwarfare.creative_charging_station.extract.success": "Предмет успешно разряжен!",

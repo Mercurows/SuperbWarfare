@@ -179,7 +179,7 @@
     "des.superbwarfare.container.fail.crowbar": "別のツールを試してみてください",
     "des.superbwarfare.container.fail.empty": "コンテナは空です",
     "des.superbwarfare.container.fail.open": "十分なスペースがありません",
-    "des.superbwarfare.creative_ammo_box": "インベントリに配置すると弾薬が無限に供給されます",
+    "des.superbwarfare.creative_ammo_box_1": "インベントリに配置すると弾薬が無限に供給されます",
     "des.superbwarfare.creative_charging_station": "近くのエンティティや隣接するブロックを充電し、電源アイテムとしても使用できます。",
     "des.superbwarfare.creative_charging_station.charge.success": "アイテムは正常に充電されました！",
     "des.superbwarfare.creative_charging_station.extract.success": "アイテムは正常に放電されました！",

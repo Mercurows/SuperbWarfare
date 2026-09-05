@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.command
 
+import com.atsuishio.superbwarfare.capability.entity.InfiniteAmmoCapability
 import com.atsuishio.superbwarfare.command.builder.*
 import com.atsuishio.superbwarfare.config.server.AmmoConfig
 import com.atsuishio.superbwarfare.data.gun.Ammo
@@ -96,6 +97,52 @@ val AMMO_COMMAND = buildCommand("ammo") {
             buildAmmoLimitCommand(true)
         }
     }
+
+    "infinite" {
+        "set" {
+            entitiesArg {
+                boolArg {
+                    execute {
+                        for (entity in entities) {
+                            InfiniteAmmoCapability.modify(entity) {
+                                it.hasInfinityAmmo = boolArg
+                            }
+                        }
+
+                        if (entities.size == 1) {
+                            success {
+                                Component.translatable(
+                                    "commands.superbwarfare.ammo.infinite.set.${if (boolArg) "enabled" else "disabled"}.single",
+                                    entities.iterator().next().displayName
+                                )
+                            }
+                        } else {
+                            success {
+                                Component.translatable(
+                                    "commands.superbwarfare.ammo.infinite.set.${if (boolArg) "enabled" else "disabled"}.multiple",
+                                    entities.size
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        "get" {
+            entityArg {
+                execute {
+                    val res = InfiniteAmmoCapability.get(entity).hasInfinityAmmo
+
+                    success {
+                        Component.translatable(
+                            "commands.superbwarfare.ammo.infinite.get", entity.displayName, res
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
 
 private fun CommandNode.buildAmmoLimitCommand(isAmmoBox: Boolean) {
@@ -106,7 +153,11 @@ private fun CommandNode.buildAmmoLimitCommand(isAmmoBox: Boolean) {
                 val limit = if (isAmmoBox) type.ammoBoxLimit else type.limit
 
                 success {
-                    Component.translatable("commands.superbwarfare.ammo.limit.get", Component.translatable(type.translationKey), limit)
+                    Component.translatable(
+                        "commands.superbwarfare.ammo.limit.get",
+                        Component.translatable(type.translationKey),
+                        limit
+                    )
                 }
             }
         }
@@ -124,7 +175,11 @@ private fun CommandNode.buildAmmoLimitCommand(isAmmoBox: Boolean) {
                     config.save()
 
                     success {
-                        Component.translatable("commands.superbwarfare.ammo.limit.set", Component.translatable(type.translationKey), intArg)
+                        Component.translatable(
+                            "commands.superbwarfare.ammo.limit.set",
+                            Component.translatable(type.translationKey),
+                            intArg
+                        )
                     }
                 }
             }

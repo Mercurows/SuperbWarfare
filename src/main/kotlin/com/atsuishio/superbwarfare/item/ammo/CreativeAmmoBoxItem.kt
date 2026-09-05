@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.tools.sendPacketToTrackingThis
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
 import net.minecraft.world.InteractionHand
+import net.minecraft.world.InteractionResult
 import net.minecraft.world.InteractionResultHolder
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
@@ -32,7 +33,10 @@ object CreativeAmmoBoxItem : Item(Properties().rarity(Rarity.EPIC).stacksTo(1)) 
         pIsAdvanced: TooltipFlag
     ) {
         pTooltipComponents.add(
-            Component.translatable("des.superbwarfare.creative_ammo_box").withStyle(ChatFormatting.GRAY)
+            Component.translatable("des.superbwarfare.creative_ammo_box_1").withStyle(ChatFormatting.GRAY)
+        )
+        pTooltipComponents.add(
+            Component.translatable("des.superbwarfare.creative_ammo_box_2").withStyle(ChatFormatting.GRAY)
         )
     }
 
@@ -46,7 +50,7 @@ object CreativeAmmoBoxItem : Item(Properties().rarity(Rarity.EPIC).stacksTo(1)) 
         if (!event.itemStack.`is`(this)) return
         val res = invertInfinityAmmo(event.entity, event.target)
         if (res) {
-            event.isCanceled = true
+            event.cancellationResult = InteractionResult.FAIL
         }
     }
 
@@ -60,8 +64,13 @@ object CreativeAmmoBoxItem : Item(Properties().rarity(Rarity.EPIC).stacksTo(1)) 
             it.hasInfinityAmmo = hasInfiniteAmmo
         }
 
-        // TODO message
-        player?.displayClientMessage(Component.literal(if (hasInfiniteAmmo) "+ infinity" else "- infinity"), true)
+        player?.displayClientMessage(
+            Component.translatable(
+                "des.superbwarfare.creative_ammo_box.${if (hasInfiniteAmmo) "enabled" else "disabled"}",
+                entity.displayName
+            ).withStyle(if (hasInfiniteAmmo) ChatFormatting.GREEN else ChatFormatting.RED),
+            true
+        )
 
         if (entity is Player) {
             sendPacketTo(entity, ClientInfiniteAmmoMessage(entity.id, hasInfiniteAmmo))
