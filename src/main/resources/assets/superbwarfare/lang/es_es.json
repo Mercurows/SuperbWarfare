@@ -178,7 +178,7 @@
     "des.superbwarfare.container.fail.crowbar": "Quizás intenta con otra herramienta",
     "des.superbwarfare.container.fail.empty": "Este contenedor está vacío",
     "des.superbwarfare.container.fail.open": "No hay suficiente espacio",
-    "des.superbwarfare.creative_ammo_box": "Proporciona munición infinita cuando está en el inventario",
+    "des.superbwarfare.creative_ammo_box_1": "Proporciona munición infinita cuando está en el inventario",
     "des.superbwarfare.creative_charging_station": "Carga entidades cercanas y bloques adyacentes, también puede usarse como fuente de energía",
     "des.superbwarfare.creative_charging_station.charge.success": "¡Ítem cargado exitosamente!",
     "des.superbwarfare.creative_charging_station.extract.success": "¡Energía del ítem limpiada exitosamente!",

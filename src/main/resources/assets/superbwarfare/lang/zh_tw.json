@@ -187,7 +187,7 @@
     "des.superbwarfare.container.fail.crowbar": "或許應該換個工具試試",
     "des.superbwarfare.container.fail.empty": "這個箱子是空的",
     "des.superbwarfare.container.fail.open": "空間不足",
-    "des.superbwarfare.creative_ammo_box": "放置於背包中以提供無限彈藥",
+    "des.superbwarfare.creative_ammo_box_1": "放置於背包中以提供無限彈藥",
     "des.superbwarfare.creative_charging_station": "為附近實體及相鄰方塊充能，亦可作為電源物品使用",
     "des.superbwarfare.creative_charging_station.charge.success": "成功為該物品充能！",
     "des.superbwarfare.creative_charging_station.extract.success": "成功清空該物品的能量！",

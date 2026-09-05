@@ -184,7 +184,7 @@
     "des.superbwarfare.container.fail.crowbar": "다른 도구를 사용해 보세요",
     "des.superbwarfare.container.fail.empty": "이 컨테이너는 비어 있습니다",
     "des.superbwarfare.container.fail.open": "저장 공간 부족",
-    "des.superbwarfare.creative_ammo_box": "인벤토리에 넣으면 탄약이 무한 제공됩니다",
+    "des.superbwarfare.creative_ammo_box_1": "인벤토리에 넣으면 탄약이 무한 제공됩니다",
     "des.superbwarfare.creative_charging_station": "근처 엔티티와 인접 블록을 충전하고 전원 원천 아이템으로도 사용할 수 있습니다",
     "des.superbwarfare.creative_charging_station.charge.success": "이 아이템이 성공적으로 충전되었습니다!",
     "des.superbwarfare.creative_charging_station.extract.success": "이 아이템에서 에너지를 성공적으로 제거했습니다!",

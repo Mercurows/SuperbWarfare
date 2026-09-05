@@ -43,7 +43,7 @@
     "des.superbwarfare.container.fail.crowbar": "Forse prova un altro strumento",
     "des.superbwarfare.container.fail.empty": "Questo contenitore è vuoto",
     "des.superbwarfare.container.fail.open": "Spazio insufficiente",
-    "des.superbwarfare.creative_ammo_box": "Fornisce munizioni infinite quando posizionato nell'inventario",
+    "des.superbwarfare.creative_ammo_box_1": "Fornisce munizioni infinite quando posizionato nell'inventario",
     "des.superbwarfare.field_doctor": "I proiettili curano gli alleati mentre spari senza mirare.",
     "des.superbwarfare.fumo_25.current_pos": "Posizione attuale: %1$s",
     "des.superbwarfare.fumo_25.current_target": "Bersaglio: %1$s",
