@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.item.blockitem
 
-import com.atsuishio.superbwarfare.capability.energy.InfinityEnergyStorage
+import com.atsuishio.superbwarfare.capability.energy.InfiniteEnergyStorage
 import com.atsuishio.superbwarfare.init.ModBlocks
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
@@ -19,7 +19,7 @@ class CreativeChargingStationBlockItem :
             override fun <T> getCapability(cap: Capability<T?>, side: Direction?): LazyOptional<T?> {
                 return ForgeCapabilities.ENERGY.orEmpty<T?>(
                     cap,
-                    LazyOptional.of { InfinityEnergyStorage() }
+                    LazyOptional.of { InfiniteEnergyStorage() }
                 )
             }
         }

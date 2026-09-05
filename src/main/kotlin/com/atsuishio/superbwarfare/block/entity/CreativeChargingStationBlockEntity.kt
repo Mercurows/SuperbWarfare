@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.block.entity
 
-import com.atsuishio.superbwarfare.capability.energy.InfinityEnergyStorage
+import com.atsuishio.superbwarfare.capability.energy.InfiniteEnergyStorage
 import com.atsuishio.superbwarfare.init.ModBlockEntities
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
@@ -22,7 +22,7 @@ open class CreativeChargingStationBlockEntity(pos: BlockPos, state: BlockState) 
     private var energyHandler: LazyOptional<IEnergyStorage>
 
     init {
-        this.energyHandler = LazyOptional.of { InfinityEnergyStorage() }
+        this.energyHandler = LazyOptional.of { InfiniteEnergyStorage() }
     }
 
     private fun chargeEntity() {
@@ -78,7 +78,7 @@ open class CreativeChargingStationBlockEntity(pos: BlockPos, state: BlockState) 
 
     override fun reviveCaps() {
         super.reviveCaps()
-        this.energyHandler = LazyOptional.of { InfinityEnergyStorage() }
+        this.energyHandler = LazyOptional.of { InfiniteEnergyStorage() }
     }
 
     companion object {

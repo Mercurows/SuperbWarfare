@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.capability
 
-import com.atsuishio.superbwarfare.capability.entity.InfinityAmmoCapability
+import com.atsuishio.superbwarfare.capability.entity.InfiniteAmmoCapability
 import com.atsuishio.superbwarfare.capability.living.PhosphorusFireCapability
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable
 import net.minecraftforge.common.capabilities.Capability
@@ -17,6 +17,6 @@ object ModCapabilities {
         CapabilityManager.get(object : CapabilityToken<PhosphorusFireCapability>() {})
 
     @JvmField
-    val INFINITY_AMMO_CAPABILITY: Capability<InfinityAmmoCapability> =
-        CapabilityManager.get(object : CapabilityToken<InfinityAmmoCapability>() {})
+    val INFINITY_AMMO_CAPABILITY: Capability<InfiniteAmmoCapability> =
+        CapabilityManager.get(object : CapabilityToken<InfiniteAmmoCapability>() {})
 }

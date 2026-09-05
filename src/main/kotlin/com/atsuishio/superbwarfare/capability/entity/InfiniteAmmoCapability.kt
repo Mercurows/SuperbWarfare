@@ -8,7 +8,7 @@ import net.minecraftforge.common.capabilities.AutoRegisterCapability
 import net.minecraftforge.common.util.INBTSerializable
 
 @AutoRegisterCapability
-class InfinityAmmoCapability(var hasInfinityAmmo: Boolean = false) : INBTSerializable<CompoundTag> {
+class InfiniteAmmoCapability(var hasInfinityAmmo: Boolean = false) : INBTSerializable<CompoundTag> {
     override fun serializeNBT() = CompoundTag().apply {
         putBoolean(TAG_INFINITY_AMMO, hasInfinityAmmo)
     }
@@ -20,17 +20,17 @@ class InfinityAmmoCapability(var hasInfinityAmmo: Boolean = false) : INBTSeriali
     }
 
     companion object {
-        val ID = Mod.loc("infinity_ammo_capability")
-        const val TAG_INFINITY_AMMO = "SbwInfinityAmmo"
+        val ID = Mod.loc("infinite_ammo_capability")
+        const val TAG_INFINITY_AMMO = "SbwInfiniteAmmo"
 
         @JvmStatic
-        fun get(entity: Entity): InfinityAmmoCapability {
+        fun get(entity: Entity): InfiniteAmmoCapability {
             return entity.getCapability(ModCapabilities.INFINITY_AMMO_CAPABILITY)
-                .orElseGet { InfinityAmmoCapability() }
+                .orElseGet { InfiniteAmmoCapability() }
         }
 
         @JvmStatic
-        fun modify(entity: Entity, modifier: (InfinityAmmoCapability) -> Unit) {
+        fun modify(entity: Entity, modifier: (InfiniteAmmoCapability) -> Unit) {
             val data = get(entity)
             data.apply(modifier)
         }

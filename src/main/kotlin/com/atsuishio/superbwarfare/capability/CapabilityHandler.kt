@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.capability
 
-import com.atsuishio.superbwarfare.capability.entity.InfinityAmmoCapability
+import com.atsuishio.superbwarfare.capability.entity.InfiniteAmmoCapability
 import com.atsuishio.superbwarfare.capability.living.PhosphorusFireCapability
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable
 import com.atsuishio.superbwarfare.data.gun.Ammo
@@ -30,9 +30,9 @@ object CapabilityHandler {
     fun registerCapabilities(event: AttachCapabilitiesEvent<Entity>) {
         val entity = event.getObject()
         event.addCapability(
-            InfinityAmmoCapability.ID,
+            InfiniteAmmoCapability.ID,
             createProvider(
-                LazyOptional.of { InfinityAmmoCapability() },
+                LazyOptional.of { InfiniteAmmoCapability() },
                 ModCapabilities.INFINITY_AMMO_CAPABILITY
             )
         )

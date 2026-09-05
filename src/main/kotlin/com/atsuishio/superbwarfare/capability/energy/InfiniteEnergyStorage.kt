@@ -5,7 +5,7 @@ import net.minecraftforge.energy.IEnergyStorage
 /**
  * 无限供电能力，纯逆天
  */
-class InfinityEnergyStorage : IEnergyStorage {
+class InfiniteEnergyStorage : IEnergyStorage {
     override fun receiveEnergy(maxReceive: Int, simulate: Boolean): Int {
         return 0
     }
