@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.data.gun
 
+import com.atsuishio.superbwarfare.capability.entity.InfinityAmmoCapability
 import com.atsuishio.superbwarfare.data.*
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.BACKUP_AMMO_CACHE_TICKS
@@ -317,6 +318,7 @@ class GunData private constructor(
      */
     fun hasInfiniteBackupAmmo(shooter: Entity?): Boolean {
         return shooter is Player && shooter.isCreative
+                || shooter?.let { InfinityAmmoCapability.get(it) }?.hasInfinityAmmo ?: false
                 || selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.INFINITE
                 || meleeOnly()
                 || InventoryTool.hasCreativeAmmoBox(shooter)
@@ -534,8 +536,7 @@ class GunData private constructor(
      */
     fun countBackupAmmo(entity: Entity?): Int {
         if (entity == null) return virtualAmmo.get()
-        if (entity is Player && entity.isCreative) return Int.MAX_VALUE
-        if (InventoryTool.hasCreativeAmmoBox(entity)) return Int.MAX_VALUE
+        if (hasInfiniteBackupAmmo(entity)) return Int.MAX_VALUE
 
         val currentTick = entity.level().gameTime
         if (cachedBackupAmmo >= 0 && (currentTick - cachedBackupAmmoTick) < BACKUP_AMMO_CACHE_TICKS) {
@@ -589,7 +590,7 @@ class GunData private constructor(
      */
     fun consumeBackupAmmo(entity: Entity?, count: Int) {
         var remaining = count
-        if (remaining <= 0 || entity is Player && entity.isCreative || InventoryTool.hasCreativeAmmoBox(entity)) return
+        if (remaining <= 0 || hasInfiniteBackupAmmo(entity)) return
 
         if (virtualAmmo.get() > 0) {
             val consumed = min(virtualAmmo.get(), remaining)
