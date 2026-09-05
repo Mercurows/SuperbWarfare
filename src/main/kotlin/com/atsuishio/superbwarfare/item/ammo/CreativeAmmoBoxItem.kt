@@ -43,11 +43,15 @@ object CreativeAmmoBoxItem : Item(Properties().rarity(Rarity.EPIC).stacksTo(1)) 
 
     @SubscribeEvent
     fun onEntityInteract(event: PlayerInteractEvent.EntityInteract) {
-        invertInfiniteAmmo(event.entity, event.target)
+        if (event.itemStack.item != this) return
+
+        if (invertInfiniteAmmo(event.entity, event.target)) {
+            event.isCanceled = true
+        }
     }
 
-    private fun invertInfiniteAmmo(player: Player? = null, entity: Entity) {
-        if (entity.level().isClientSide) return
+    private fun invertInfiniteAmmo(player: Player? = null, entity: Entity): Boolean {
+        if (entity.level().isClientSide) return false
 
         var hasInfiniteAmmo = false
 
@@ -63,5 +67,7 @@ object CreativeAmmoBoxItem : Item(Properties().rarity(Rarity.EPIC).stacksTo(1)) 
             sendPacketTo(entity, ClientInfiniteAmmoMessage(entity.id, hasInfiniteAmmo))
         }
         entity.sendPacketToTrackingThis(ClientInfiniteAmmoMessage(entity.id, hasInfiniteAmmo))
+
+        return true
     }
 }
