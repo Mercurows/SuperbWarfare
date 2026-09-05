@@ -9,13 +9,10 @@ import net.minecraft.world.entity.LivingEntity
 import net.neoforged.neoforge.common.util.INBTSerializable
 import javax.annotation.ParametersAreNonnullByDefault
 
-class PhosphorusFireCapability : INBTSerializable<CompoundTag> {
-    var isOnFire: Boolean = false
+class PhosphorusFireCapability(var isOnFire: Boolean = false) : INBTSerializable<CompoundTag> {
 
-    override fun serializeNBT(provider: HolderLookup.Provider): CompoundTag {
-        val tag = CompoundTag()
-        tag.putBoolean(TAG_PHOSPHORUS_FIRE, this.isOnFire)
-        return tag
+    override fun serializeNBT(provider: HolderLookup.Provider) = CompoundTag().apply {
+        putBoolean(TAG_PHOSPHORUS_FIRE, isOnFire)
     }
 
     @ParametersAreNonnullByDefault
