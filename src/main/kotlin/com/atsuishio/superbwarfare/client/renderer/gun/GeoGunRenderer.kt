@@ -70,7 +70,8 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val texture: ResourceLocation,
         val scopeInfo: ScopeInfo,
         val attachmentId: ResourceLocation,
-        val slotTransform: Matrix4f
+        val slotTransform: Matrix4f,
+        val bindSlotTransform: Matrix4f
     )
 
     override fun createAnimationInstance(stack: ItemStack, entity: Entity): IFPAnimationInstance {
@@ -372,7 +373,11 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val attachmentModel = AttachmentModelReloadListener.getModel(modelPath) ?: return null
         val boneName = definition.bone ?: SCOPE_BONE
         val mountTransform = model.getGlobalTransform(boneName) ?: return null
-        return ScopeRenderData(attachmentModel, texture, scopeInfo, attachmentId, Matrix4f(mountTransform))
+        val bindMountTransform = model.getBindGlobalTransform(boneName) ?: return null
+        return ScopeRenderData(
+            attachmentModel, texture, scopeInfo, attachmentId,
+            Matrix4f(mountTransform), Matrix4f(bindMountTransform)
+        )
     }
 
     private fun findStencilScope(stack: ItemStack, model: GeoGunModel): ScopeRenderData? {
@@ -696,12 +701,15 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         }
 
         val zoomTime = ClientEventHandler.zoomTime.coerceIn(0.0, 1.0).toFloat()
-        val rotationScale = (1f - 0.9f * zoomTime).coerceAtLeast(0.05f)
-        val positionScale = (1f - 0.8f * zoomTime).coerceAtLeast(0.05f)
+        val rotationScale = (1f - 0.5f * zoomTime).coerceAtLeast(0.05f)
+        val rotationScaleX = (1f - 0.95f * zoomTime).coerceAtLeast(0.05f)
+        val rotationScaleY = (1f - 0.95f * zoomTime).coerceAtLeast(0.05f)
+        val rotationScaleZ = (1f - 0.7f * zoomTime).coerceAtLeast(0.05f)
+        val positionScale = (1f - 0.85f * zoomTime).coerceAtLeast(0.05f)
 
         val main = model.getRootBone()
         main?.let { bone ->
-            val boneEuler = Vector3f(bone.rotationInEuler).mul(rotationScale)
+            val boneEuler = Vector3f(bone.rotationInEuler).mul(rotationScaleX, rotationScaleY, rotationScaleZ)
             bone.rotation.set(Quaternionf().rotateZYX(boneEuler.z, boneEuler.y, boneEuler.x))
             bone.rotationInEuler.set(boneEuler)
             bone.x *= positionScale
@@ -761,7 +769,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     private fun scopeViewTransform(scopeRender: ScopeRenderData?): Matrix4f? {
         if (scopeRender == null) return null
         val scopeView = scopeRender.model.getGlobalTransform(SCOPE_VIEW_BONE) ?: return null
-        return Matrix4f(scopeRender.slotTransform).mul(scopeView)
+        return Matrix4f(scopeRender.bindSlotTransform).mul(scopeView)
     }
 
     /**
