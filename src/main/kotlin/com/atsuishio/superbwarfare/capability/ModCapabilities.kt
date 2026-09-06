@@ -17,6 +17,6 @@ object ModCapabilities {
         CapabilityManager.get(object : CapabilityToken<PhosphorusFireCapability>() {})
 
     @JvmField
-    val INFINITY_AMMO_CAPABILITY: Capability<InfiniteAmmoCapability> =
+    val INFINITE_AMMO_CAPABILITY: Capability<InfiniteAmmoCapability> =
         CapabilityManager.get(object : CapabilityToken<InfiniteAmmoCapability>() {})
 }

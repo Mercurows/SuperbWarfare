@@ -41,27 +41,27 @@ object CreativeAmmoBoxItem : Item(Properties().rarity(Rarity.EPIC).stacksTo(1)) 
     }
 
     override fun use(level: Level, player: Player, usedHand: InteractionHand): InteractionResultHolder<ItemStack> {
-        invertInfinityAmmo(player, player)
+        invertInfiniteAmmo(player, player)
         return super.use(level, player, usedHand)
     }
 
     @SubscribeEvent
     fun onEntityInteract(event: PlayerInteractEvent.EntityInteract) {
         if (!event.itemStack.`is`(this)) return
-        val res = invertInfinityAmmo(event.entity, event.target)
+        val res = invertInfiniteAmmo(event.entity, event.target)
         if (res) {
             event.cancellationResult = InteractionResult.FAIL
         }
     }
 
-    private fun invertInfinityAmmo(player: Player? = null, entity: Entity): Boolean {
+    private fun invertInfiniteAmmo(player: Player? = null, entity: Entity): Boolean {
         if (entity.level().isClientSide) return false
 
         var hasInfiniteAmmo = false
 
         InfiniteAmmoCapability.modify(entity) {
-            hasInfiniteAmmo = !it.hasInfinityAmmo
-            it.hasInfinityAmmo = hasInfiniteAmmo
+            hasInfiniteAmmo = !it.hasInfiniteAmmo
+            it.hasInfiniteAmmo = hasInfiniteAmmo
         }
 
         player?.displayClientMessage(

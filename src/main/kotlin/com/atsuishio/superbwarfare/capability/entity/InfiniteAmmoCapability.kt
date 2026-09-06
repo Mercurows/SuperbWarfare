@@ -8,24 +8,24 @@ import net.minecraftforge.common.capabilities.AutoRegisterCapability
 import net.minecraftforge.common.util.INBTSerializable
 
 @AutoRegisterCapability
-class InfiniteAmmoCapability(var hasInfinityAmmo: Boolean = false) : INBTSerializable<CompoundTag> {
+class InfiniteAmmoCapability(var hasInfiniteAmmo: Boolean = false) : INBTSerializable<CompoundTag> {
     override fun serializeNBT() = CompoundTag().apply {
-        putBoolean(TAG_INFINITY_AMMO, hasInfinityAmmo)
+        putBoolean(TAG_INFINITE_AMMO, hasInfiniteAmmo)
     }
 
     override fun deserializeNBT(nbt: CompoundTag) {
-        if (nbt.contains(TAG_INFINITY_AMMO)) {
-            this.hasInfinityAmmo = nbt.getBoolean(TAG_INFINITY_AMMO)
+        if (nbt.contains(TAG_INFINITE_AMMO)) {
+            this.hasInfiniteAmmo = nbt.getBoolean(TAG_INFINITE_AMMO)
         }
     }
 
     companion object {
         val ID = Mod.loc("infinite_ammo_capability")
-        const val TAG_INFINITY_AMMO = "SbwInfiniteAmmo"
+        const val TAG_INFINITE_AMMO = "SbwInfiniteAmmo"
 
         @JvmStatic
         fun get(entity: Entity): InfiniteAmmoCapability {
-            return entity.getCapability(ModCapabilities.INFINITY_AMMO_CAPABILITY)
+            return entity.getCapability(ModCapabilities.INFINITE_AMMO_CAPABILITY)
                 .orElseGet { InfiniteAmmoCapability() }
         }
 

@@ -318,7 +318,7 @@ class GunData private constructor(
      */
     fun hasInfiniteBackupAmmo(shooter: Entity?): Boolean {
         return shooter is Player && shooter.isCreative
-                || shooter?.let { InfiniteAmmoCapability.get(it) }?.hasInfinityAmmo ?: false
+                || shooter?.let { InfiniteAmmoCapability.get(it) }?.hasInfiniteAmmo ?: false
                 || selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.INFINITE
                 || meleeOnly()
                 || InventoryTool.hasCreativeAmmoBox(shooter)

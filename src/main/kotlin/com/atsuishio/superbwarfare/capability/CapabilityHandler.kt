@@ -33,7 +33,7 @@ object CapabilityHandler {
             InfiniteAmmoCapability.ID,
             createProvider(
                 LazyOptional.of { InfiniteAmmoCapability() },
-                ModCapabilities.INFINITY_AMMO_CAPABILITY
+                ModCapabilities.INFINITE_AMMO_CAPABILITY
             )
         )
 

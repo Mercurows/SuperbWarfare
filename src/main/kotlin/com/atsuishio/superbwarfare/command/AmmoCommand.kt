@@ -105,7 +105,7 @@ val AMMO_COMMAND = buildCommand("ammo") {
                     execute {
                         for (entity in entities) {
                             InfiniteAmmoCapability.modify(entity) {
-                                it.hasInfinityAmmo = boolArg
+                                it.hasInfiniteAmmo = boolArg
                             }
                         }
 
@@ -132,7 +132,7 @@ val AMMO_COMMAND = buildCommand("ammo") {
         "get" {
             entityArg {
                 execute {
-                    val res = InfiniteAmmoCapability.get(entity).hasInfinityAmmo
+                    val res = InfiniteAmmoCapability.get(entity).hasInfiniteAmmo
 
                     success {
                         Component.translatable(

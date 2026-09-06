@@ -15,7 +15,7 @@ data class ClientInfiniteAmmoMessage(val id: Int, val flag: Boolean) : ClientPac
         val entity = clientLevel?.getEntity(id) ?: return
 
         InfiniteAmmoCapability.modify(entity) {
-            it.hasInfinityAmmo = flag
+            it.hasInfiniteAmmo = flag
         }
     }
 }
