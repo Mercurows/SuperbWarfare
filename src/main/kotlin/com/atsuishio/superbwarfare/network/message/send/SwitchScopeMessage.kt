@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.network.message.send
 
+import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
+import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
@@ -17,8 +19,14 @@ data class SwitchScopeMessage(val scroll: Double) : ServerPacketPayload() {
         if (stack.item !is GunItem) return
 
         val data = from(stack)
-        val tag = data.tag()
-        tag.putBoolean("ScopeAlt", !tag.getBoolean("ScopeAlt"))
+        val scopeId = data.attachment.id(AttachmentType.SCOPE)
+        val definition = scopeId?.let { AttachmentDefinition.from(it) }
+        if (definition?.supportsScopeSwitching() == true) {
+            data.attachment.cycleScopeMode(AttachmentType.SCOPE, scroll)
+        } else {
+            val tag = data.tag()
+            tag.putBoolean("ScopeAlt", !tag.getBoolean("ScopeAlt"))
+        }
         data.save()
     }
 }

@@ -83,8 +83,8 @@ class Attachment(private val gun: GunData) {
         if (id(type) == id) return
 
         val tag = CompoundTag().apply { putString("Id", id.toString()) }
-        AttachmentDefinition.from(id)?.zoom?.let {
-            tag.putDouble("Zoom", it.default)
+        AttachmentDefinition.from(id)?.let {
+            it.scopeZoom(0)?.let { zoom -> tag.putDouble("Zoom", zoom.default) }
         }
 
         attachment.put(type.attachmentName, tag)
@@ -128,10 +128,37 @@ class Attachment(private val gun: GunData) {
         gun.nbtVersion.invalidateStructural()
     }
 
+    fun scopeMode(type: AttachmentType): Int {
+        val tag = getTag(type) ?: return 0
+        return if (tag.contains("Mode")) tag.getInt("Mode").coerceAtLeast(0) else 0
+    }
+
+    fun setScopeMode(type: AttachmentType, mode: Int) {
+        getOrCreateTag(type).putInt("Mode", mode.coerceAtLeast(0))
+        gun.nbtVersion.invalidateStructural()
+    }
+
+    fun cycleScopeMode(type: AttachmentType, scroll: Double): Int {
+        val id = id(type) ?: return 0
+        val definition = AttachmentDefinition.from(id) ?: return 0
+        if (!definition.supportsScopeSwitching()) return scopeMode(type)
+
+        val count = definition.scopeInfo?.modeCount() ?: 1
+        val current = scopeMode(type)
+        val direction = if (scroll >= 0) 1 else -1
+        val next = ((current + direction) % count + count) % count
+
+        val tag = getOrCreateTag(type)
+        tag.putInt("Mode", next)
+        definition.scopeZoom(next)?.let { tag.putDouble("Zoom", it.default) }
+        gun.nbtVersion.invalidateStructural()
+        return next
+    }
+
     fun cycleZoom(type: AttachmentType, amount: Double): Double? {
         val id = id(type) ?: return null
         val definition = AttachmentDefinition.from(id) ?: return null
-        val zoomConfig = definition.zoom ?: return null
+        val zoomConfig = definition.scopeZoom(scopeMode(type)) ?: return null
 
         val current = getZoom(type) ?: zoomConfig.default
         val next = (current + amount * zoomConfig.step).coerceIn(zoomConfig.min, zoomConfig.max)
