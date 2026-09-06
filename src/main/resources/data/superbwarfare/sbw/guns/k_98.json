@@ -75,6 +75,11 @@
     "!superbwarfare:cupid_arrow"
   ],
   "AvailableAttachments": {
+    "Scope": [
+      "superbwarfare:scope_coyote",
+      "superbwarfare:scope_eotech_551",
+      "superbwarfare:scope_acog"
+    ],
     "Barrel": [
       "superbwarfare:meowlencer",
       "superbwarfare:hissilencer",
