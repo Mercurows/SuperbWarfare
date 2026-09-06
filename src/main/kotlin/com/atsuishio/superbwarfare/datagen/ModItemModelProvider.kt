@@ -323,6 +323,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.OSPREY_SILENCER_TRACHELIUM)
         simpleItem(ModItems.SCOPE_COYOTE)
         simpleItem(ModItems.SCOPE_EOTECH_551)
+        simpleItem(ModItems.SCOPE_OKP_7)
         simpleItem(ModItems.SCOPE_ACOG)
         simpleItem(ModItems.SILENCER_QINGLAN)
 
