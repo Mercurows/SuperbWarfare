@@ -5,6 +5,9 @@ import kotlinx.serialization.Serializable
 
 private const val DEFAULT_SCOPE_VIEW_BONE = "scope_view"
 private const val DEFAULT_DIVISION_BONE = "division"
+private const val SCOPE_BODY_NODE = "scope_body"
+private const val OCULAR_NODE = "ocular"
+private const val OCULAR_RING_NODE = "ocular_ring"
 
 @Serializable
 enum class ScopeType {
@@ -38,7 +41,7 @@ data class ScopeInfo(
         if (modes.isNotEmpty()) {
             return modes[index.coerceIn(modes.indices)]
         }
-        return ScopeMode(type, DEFAULT_SCOPE_VIEW_BONE, viewRadiusModifier, DEFAULT_DIVISION_BONE)
+        return ScopeMode(index = 0, type = type, viewRadiusModifier = viewRadiusModifier)
     }
 
     fun modeCount(): Int = if (modes.isEmpty()) 1 else modes.size
@@ -55,21 +58,32 @@ data class ScopeInfo(
  */
 @Serializable
 data class ScopeMode(
+    @SerialName("Index")
+    val index: Int = 0,
+
     @SerialName("Type")
     val type: ScopeType = ScopeType.SIGHT,
-
-    @SerialName("ViewBone")
-    val viewBone: String = DEFAULT_SCOPE_VIEW_BONE,
 
     @SerialName("ViewRadiusModifier")
     val viewRadiusModifier: Float = 1.0f,
 
-    @SerialName("DivisionBone")
-    val divisionBone: String = DEFAULT_DIVISION_BONE,
-
     @SerialName("Zoom")
     val zoom: AttachmentZoom? = null,
 ) {
+    fun viewBone(): String = nameWithIndex(DEFAULT_SCOPE_VIEW_BONE)
+
+    fun divisionBone(): String = nameWithIndex(DEFAULT_DIVISION_BONE)
+
+    fun scopeBodyBone(): String = nameWithIndex(SCOPE_BODY_NODE)
+
+    fun ocularBone(): String = nameWithIndex(OCULAR_NODE)
+
+    fun ocularRingBone(): String = nameWithIndex(OCULAR_RING_NODE)
+
+    private fun nameWithIndex(base: String): String {
+        return if (index > 0) "${base}_$index" else base
+    }
+
     fun isSight(): Boolean = type == ScopeType.SIGHT
 
     fun isScope(): Boolean = type == ScopeType.SCOPE
