@@ -63,7 +63,8 @@
       "superbwarfare:scope_coyote",
       "superbwarfare:scope_eotech_551",
       "superbwarfare:scope_okp_7",
-      "superbwarfare:scope_acog"
+      "superbwarfare:scope_acog",
+      "superbwarfare:scope_hamr"
     ],
     "Magazine": [
       "superbwarfare:magazine_extend",

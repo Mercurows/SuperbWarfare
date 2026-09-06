@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.data.gun
 import com.atsuishio.superbwarfare.capability.entity.InfiniteAmmoCapability
 import com.atsuishio.superbwarfare.data.*
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
+import com.atsuishio.superbwarfare.data.attachment.AttachmentZoom
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.BACKUP_AMMO_CACHE_TICKS
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.get
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.AMMO_CONSUMER
@@ -339,9 +340,7 @@ class GunData private constructor(
      * @return minimum allowed zoom value.
      */
     fun minZoom(): Double {
-        val zoomDefinition = attachment.id(AttachmentType.SCOPE)
-            ?.let { AttachmentDefinition.from(it) }
-            ?.zoom
+        val zoomDefinition = scopeZoomDefinition()
         if (zoomDefinition == null) return 1.25
         return get(MIN_ZOOM)
     }
@@ -352,9 +351,7 @@ class GunData private constructor(
      * @return maximum allowed zoom value.
      */
     fun maxZoom(): Double {
-        val zoomDefinition = attachment.id(AttachmentType.SCOPE)
-            ?.let { AttachmentDefinition.from(it) }
-            ?.zoom
+        val zoomDefinition = scopeZoomDefinition()
         if (zoomDefinition == null) return 114514.0
         return get(MAX_ZOOM)
     }
@@ -367,6 +364,12 @@ class GunData private constructor(
     fun zoom(): Double {
         if (minZoom() >= maxZoom()) return get(DEFAULT_ZOOM)
         return Mth.clamp(get(DEFAULT_ZOOM), minZoom(), maxZoom())
+    }
+
+    private fun scopeZoomDefinition(): AttachmentZoom? {
+        val id = attachment.id(AttachmentType.SCOPE) ?: return null
+        val definition = AttachmentDefinition.from(id) ?: return null
+        return definition.scopeZoom(attachment.scopeMode(AttachmentType.SCOPE))
     }
 
     /**
@@ -967,16 +970,19 @@ class GunData private constructor(
 
     /** Checks if the installed scope has data-driven zoom state. */
     fun hasAdjustableScopeZoom(): Boolean {
-        return attachment.id(AttachmentType.SCOPE)
-            ?.let { AttachmentDefinition.from(it) }
-            ?.zoom != null
+        return scopeZoomDefinition() != null
     }
 
     /** Checks if scope zoom adjustment is supported. */
     fun canAdjustZoom(): Boolean = item.canAdjustZoom(this) || hasAdjustableScopeZoom()
 
     /** Checks if scope switching is supported. */
-    fun canSwitchScope(): Boolean = item.canSwitchScope(this)
+    fun canSwitchScope(): Boolean {
+        val attachmentSupportsSwitching = attachment.id(AttachmentType.SCOPE)
+            ?.let { AttachmentDefinition.from(it)?.supportsScopeSwitching() }
+            ?: false
+        return item.canSwitchScope(this) || attachmentSupportsSwitching
+    }
 
     @JvmField
     val reload: Reload

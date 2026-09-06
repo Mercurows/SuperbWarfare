@@ -78,12 +78,30 @@ data class AttachmentDefinition(
             jsonPropModifier.modifyProperty(modifier)
         }
 
-        val scopeZoom = zoom ?: return
+        val scopeInfo = scopeInfo
+        val scopeZoom = if (scopeInfo != null && scopeInfo.modes.isNotEmpty()) {
+            scopeInfo.mode(modifier.data.attachment.scopeMode(slot)).zoom ?: zoom
+        } else {
+            zoom
+        } ?: return
         val current = modifier.data.attachment.getZoom(slot) ?: scopeZoom.default
         pmc.set("DefaultZoom", current)
         pmc.set("MinZoom", scopeZoom.min)
         pmc.set("MaxZoom", scopeZoom.max)
     }
+
+    fun scopeMode(index: Int): ScopeMode? = scopeInfo?.mode(index)
+
+    fun scopeZoom(index: Int): AttachmentZoom? {
+        val info = scopeInfo
+        return if (info != null && info.modes.isNotEmpty()) {
+            info.mode(index).zoom ?: zoom
+        } else {
+            zoom
+        }
+    }
+
+    fun supportsScopeSwitching(): Boolean = scopeInfo?.supportsModeSwitching() ?: false
 
     companion object {
         @JvmStatic

@@ -638,6 +638,7 @@ object ModItems {
     @JvmField val SCOPE_EOTECH_551 = registerAttachment("scope_eotech_551")
     @JvmField val SCOPE_OKP_7 = registerAttachment("scope_okp_7")
     @JvmField val SCOPE_ACOG = registerAttachment("scope_acog", Rarity.RARE)
+    @JvmField val SCOPE_HAMR = registerAttachment("scope_hamr", Rarity.EPIC)
     // @formatter:on
 
     // Grip

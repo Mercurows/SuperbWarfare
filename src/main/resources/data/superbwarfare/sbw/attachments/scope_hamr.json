@@ -1,0 +1,43 @@
+{
+  "Slot": "Scope",
+  "Level": 2,
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 1.0
+    }
+  ],
+  "Bone": "scope_pos",
+  "Model": "superbwarfare:models/bedrock/attachment/scope_hamr.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/scope_hamr.png",
+  "ScopeInfo": {
+    "Type": "Scope",
+    "Modes": [
+      {
+        "Type": "Scope",
+        "ViewBone": "scope_view_1",
+        "DivisionBone": "division_1",
+        "ViewRadiusModifier": 1.0,
+        "Zoom": {
+          "Min": 3.0,
+          "Max": 3.0,
+          "Default": 3.0,
+          "Step": 1.0
+        }
+      },
+      {
+        "Type": "Sight",
+        "ViewBone": "scope_view_2",
+        "DivisionBone": "division_2",
+        "ViewRadiusModifier": 1.0,
+        "Zoom": {
+          "Min": 1.25,
+          "Max": 1.25,
+          "Default": 1.25,
+          "Step": 1.0
+        }
+      }
+    ]
+  }
+}

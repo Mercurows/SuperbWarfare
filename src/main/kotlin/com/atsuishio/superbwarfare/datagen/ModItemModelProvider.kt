@@ -326,6 +326,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.SCOPE_OKP_7)
         simpleItem(ModItems.SCOPE_ACOG)
         simpleItem(ModItems.SILENCER_QINGLAN)
+        simpleItem(ModItems.SCOPE_HAMR)
 
         // blocks
         evenSimplerBlockItem(ModBlocks.BARBED_WIRE)
