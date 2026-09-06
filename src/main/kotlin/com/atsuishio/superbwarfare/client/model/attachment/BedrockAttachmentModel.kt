@@ -19,16 +19,16 @@ import net.minecraft.util.Mth
 import org.joml.Matrix4f
 import org.joml.Vector3f
 import org.lwjgl.opengl.GL11
-import java.util.*
 import java.util.regex.Pattern
 
 class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
     private val instance: TreeModelInstance = baseModel.createInstance()
 
-    private val scopeBodyIndex: Int
-    private val ocularRingIndex: Int
-    private val ocularIndices = mutableListOf<Int>()
-    private val isScopeOcular = mutableListOf<Boolean>()
+    private val defaultScopeBodyIndex: Int
+    private val ocularRingIndices = mutableMapOf<Int, Int>()
+    private val ocularIndicesByGroup = mutableMapOf<Int, List<Int>>()
+    private val isScopeOcularByGroup = mutableMapOf<Int, List<Boolean>>()
+    private val modeScopeBodyGroups = mutableMapOf<Int, List<Int>>()
     private val divisionGroups = mutableMapOf<String, List<Int>>()
     private val illuminatedBoneIndices: IntArray = baseModel.bones()
         .asSequence()
@@ -40,18 +40,39 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
     init {
         markIlluminatedBones()
 
-        val oculars = TreeMap<Int, OcularEntry>()
+        val ocularsByGroup = mutableMapOf<Int, MutableList<OcularEntry>>()
         for (bone in baseModel.bones()) {
             val matcher = OCULAR_PATTERN.matcher(bone.name())
             if (!matcher.matches()) continue
 
-            val num = matcher.group(3)?.toIntOrNull() ?: 1
+            val num = matcher.group(3)?.toIntOrNull() ?: 0
             val isScope = OCULAR_SCOPE_NODE == matcher.group(1)
-            oculars[num] = OcularEntry(bone.index(), isScope)
+            ocularsByGroup.getOrPut(num) { mutableListOf() } += OcularEntry(bone.index(), isScope)
         }
-        for (entry in oculars.values) {
-            ocularIndices += entry.index
-            isScopeOcular += entry.isScope
+        for ((group, entries) in ocularsByGroup) {
+            ocularIndicesByGroup[group] = entries.map { it.index }
+            isScopeOcularByGroup[group] = entries.map { it.isScope }
+        }
+
+        val ocularRingPattern = Pattern.compile("^${OCULAR_RING_NODE}(_\\d+)?$")
+        for (bone in baseModel.bones()) {
+            val matcher = ocularRingPattern.matcher(bone.name())
+            if (!matcher.matches()) continue
+            val num = matcher.group(1)?.removePrefix("_")?.toIntOrNull() ?: 0
+            ocularRingIndices[num] = bone.index()
+        }
+
+        // Unnumbered scope_body stays common; scope_body_N is selected per mode.
+        val scopeBodyPattern = Pattern.compile("^${SCOPE_BODY_NODE}(_\\d+)?$")
+        for (bone in baseModel.bones()) {
+            val matcher = scopeBodyPattern.matcher(bone.name())
+            if (!matcher.matches()) continue
+            val num = matcher.group(1)?.removePrefix("_")?.toIntOrNull() ?: 0
+            if (num > 0) {
+                val indices = mutableListOf<Int>()
+                collectGeometryBones(bone.index(), indices)
+                modeScopeBodyGroups[num] = indices
+            }
         }
 
         val divisionPattern = Pattern.compile("^${DIVISION_NODE}(_\\d+)?$")
@@ -62,8 +83,22 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
             divisionGroups[bone.name()] = indices
         }
 
-        scopeBodyIndex = baseModel.getIndex(SCOPE_BODY_NODE)
-        ocularRingIndex = baseModel.getIndex(OCULAR_RING_NODE)
+        defaultScopeBodyIndex = baseModel.getIndex(SCOPE_BODY_NODE)
+    }
+
+    private fun collectGeometryBones(boneIndex: Int, out: MutableList<Int>) {
+        if (boneIndex < 0) return
+        val bone = baseModel.bone(boneIndex)
+        if (bone.hasQuads() || bone.hasVertices()) {
+            out += boneIndex
+            return
+        }
+
+        for (child in baseModel.bones()) {
+            if (child.parentIndex() == boneIndex) {
+                collectGeometryBones(child.index(), out)
+            }
+        }
     }
 
     private fun addDivisionGeometry(
@@ -125,7 +160,8 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         )
     }
 
-    fun needsStencil(info: ScopeMode?): Boolean = info != null && ocularIndices.isNotEmpty()
+    fun needsStencil(info: ScopeMode?): Boolean =
+        info != null && ocularIndicesFor(info).isNotEmpty()
 
     fun renderWithStencil(
         poseStack: PoseStack,
@@ -133,7 +169,8 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         texture: ResourceLocation,
         packedLight: Int,
         partialTicks: Float,
-        info: ScopeMode
+        info: ScopeMode,
+        companionSightMode: ScopeMode? = null
     ) {
         markIlluminatedBones()
         val quadType = RenderType.entityCutout(texture)
@@ -148,6 +185,7 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
                 packedLight,
                 info
             )
+
             ScopeType.SCOPE -> renderScope(
                 poseStack,
                 bufferSource,
@@ -159,7 +197,15 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
             )
         }
 
-        renderRemaining(poseStack, bufferSource, quadType, triangleType, packedLight)
+        renderRemaining(
+            poseStack,
+            bufferSource,
+            quadType,
+            triangleType,
+            packedLight,
+            info,
+            companionSightMode
+        )
     }
 
     private fun renderSight(
@@ -174,14 +220,14 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         RenderSystem.clearStencil(0)
         RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT, Minecraft.ON_OSX)
 
-        renderOcularStencil(poseStack, bufferSource, quadType, triangleType, light, false)
+        renderOcularStencil(poseStack, bufferSource, quadType, triangleType, light, false, info)
         renderDivisionOnly(poseStack, bufferSource, quadType, triangleType, light, divisionIndices(info))
 
         RenderSystem.stencilFunc(GL11.GL_ALWAYS, 0, 0xFF)
         ScopeStencilRenderHelper.disableItemEntityStencilTest()
 
-        if (scopeBodyIndex >= 0) {
-            renderBoneImmediate(scopeBodyIndex, poseStack, bufferSource, quadType, triangleType, light)
+        for (bodyIndex in scopeBodyIndices(info)) {
+            renderBoneImmediate(bodyIndex, poseStack, bufferSource, quadType, triangleType, light)
         }
     }
 
@@ -198,17 +244,21 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         RenderSystem.clearStencil(0)
         RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT, Minecraft.ON_OSX)
 
-        if (ocularRingIndex >= 0) {
+        val ringIndex = ocularRingIndex(info)
+        if (ringIndex >= 0) {
             RenderSystem.stencilFunc(GL11.GL_ALWAYS, 0, 0xFF)
             RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP)
-            renderBoneImmediate(ocularRingIndex, poseStack, bufferSource, quadType, triangleType, light)
+            renderBoneImmediate(ringIndex, poseStack, bufferSource, quadType, triangleType, light)
         }
 
-        renderOcularStencil(poseStack, bufferSource, quadType, triangleType, light, false)
+        renderOcularStencil(poseStack, bufferSource, quadType, triangleType, light, false, info)
 
-        if (scopeBodyIndex >= 0) {
+        val bodyIndices = scopeBodyIndices(info)
+        if (bodyIndices.isNotEmpty()) {
             RenderSystem.stencilFunc(GL11.GL_EQUAL, 0, 0xFF)
-            renderBoneImmediate(scopeBodyIndex, poseStack, bufferSource, quadType, triangleType, light)
+            for (bodyIndex in bodyIndices) {
+                renderBoneImmediate(bodyIndex, poseStack, bufferSource, quadType, triangleType, light)
+            }
         }
 
         renderOcularAndDivision(poseStack, bufferSource, quadType, triangleType, light, partialTicks, info, false)
@@ -223,7 +273,30 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         quadType: RenderType,
         triangleType: RenderType,
         light: Int,
-        selectScope: Boolean
+        selectScope: Boolean,
+        info: ScopeMode
+    ) {
+        renderOcularStencilInternal(
+            poseStack,
+            bufferSource,
+            quadType,
+            triangleType,
+            light,
+            selectScope,
+            ocularIndicesFor(info),
+            isScopeOcularFor(info)
+        )
+    }
+
+    private fun renderOcularStencilInternal(
+        poseStack: PoseStack,
+        bufferSource: MultiBufferSource.BufferSource,
+        quadType: RenderType,
+        triangleType: RenderType,
+        light: Int,
+        selectScope: Boolean,
+        ocularIndices: List<Int>,
+        isScopeOcular: List<Boolean>
     ) {
         if (ocularIndices.isEmpty()) return
 
@@ -272,6 +345,34 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         info: ScopeMode,
         selective: Boolean
     ) {
+        renderOcularAndDivisionInternal(
+            poseStack,
+            bufferSource,
+            quadType,
+            triangleType,
+            light,
+            partialTicks,
+            info,
+            ocularIndicesFor(info),
+            isScopeOcularFor(info),
+            divisionIndices(info),
+            selective
+        )
+    }
+
+    private fun renderOcularAndDivisionInternal(
+        poseStack: PoseStack,
+        bufferSource: MultiBufferSource.BufferSource,
+        quadType: RenderType,
+        triangleType: RenderType,
+        light: Int,
+        partialTicks: Float,
+        info: ScopeMode,
+        ocularIndices: List<Int>,
+        isScopeOcular: List<Boolean>,
+        divisions: List<Int>,
+        selective: Boolean
+    ) {
         if (ocularIndices.isEmpty()) return
 
         val builder: BufferBuilder = Tesselator.getInstance().builder
@@ -308,7 +409,6 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         RenderSystem.colorMask(true, true, true, true)
         RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP)
 
-        val divisions = divisionIndices(info)
         for (i in ocularIndices.indices) {
             if (i > Byte.MAX_VALUE) {
                 throw IllegalArgumentException("Index of oculus is out of range for 127")
@@ -330,9 +430,34 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
     }
 
     private fun divisionIndices(info: ScopeMode): List<Int> {
-        return divisionGroups[info.divisionBone]
+        return divisionGroups[info.divisionBone()]
             ?: divisionGroups[DIVISION_NODE]
             ?: emptyList()
+    }
+
+    private fun scopeBodyIndices(info: ScopeMode): List<Int> {
+        modeScopeBodyGroups[info.index]?.let { group ->
+            return if (info.type == ScopeType.SCOPE) {
+                group + listOfNotNull(defaultScopeBodyIndex)
+            } else {
+                group
+            }
+        }
+        return if (modeScopeBodyGroups.isEmpty()) listOfNotNull(defaultScopeBodyIndex) else emptyList()
+    }
+
+    private fun ocularIndicesFor(info: ScopeMode): List<Int> {
+        return ocularIndicesByGroup[info.index] ?: ocularIndicesByGroup[0] ?: emptyList()
+    }
+
+    private fun isScopeOcularFor(info: ScopeMode): List<Boolean> {
+        return isScopeOcularByGroup[info.index] ?: isScopeOcularByGroup[0] ?: emptyList()
+    }
+
+    private fun ocularRingIndex(info: ScopeMode): Int {
+        // Sight optics model their lens without an ocular_ring.
+        if (info.type == ScopeType.SIGHT) return -1
+        return ocularRingIndices[info.index] ?: ocularRingIndices[0] ?: -1
     }
 
     private fun renderRemaining(
@@ -340,12 +465,23 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         bufferSource: MultiBufferSource.BufferSource,
         quadType: RenderType,
         triangleType: RenderType,
-        light: Int
+        light: Int,
+        info: ScopeMode,
+        companion: ScopeMode? = null
     ) {
         val hidden = mutableListOf<Int>()
-        addSpecialIndex(hidden, scopeBodyIndex)
-        addSpecialIndex(hidden, ocularRingIndex)
-        hidden += ocularIndices
+        // Other numbered scope parts stay in the model render; only the active optic group is special.
+        scopeBodyIndices(info).forEach { addSpecialIndex(hidden, it) }
+        if (info.type == ScopeType.SCOPE) {
+            addSpecialIndex(hidden, ocularRingIndex(info))
+        }
+        hidden += ocularIndicesFor(info)
+        if (companion?.isSight() == true) {
+            hidden += ocularIndicesFor(companion)
+            if (ClientEventHandler.zoomTime > 0.15) {
+                scopeBodyIndices(companion).forEach { addSpecialIndex(hidden, it) }
+            }
+        }
         divisionGroups.values.forEach { hidden += it }
 
         val originalVisible = BooleanArray(hidden.size)

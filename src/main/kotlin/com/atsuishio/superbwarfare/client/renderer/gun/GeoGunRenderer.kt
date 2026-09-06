@@ -65,11 +65,22 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
     private var handledScopeAttachment: ResourceLocation? = null
     private var gunStencilCulling = false
+    private val scopeViewSmoothing = mutableMapOf<InteractionHand, ScopeViewSmoothState>()
+
+    private data class ScopeViewSmoothState(
+        var modeIndex: Int = -1,
+        var source: Matrix4f = Matrix4f(),
+        var target: Matrix4f = Matrix4f(),
+        var current: Matrix4f = Matrix4f(),
+        var progress: Float = 1.0f
+    )
 
     data class ScopeRenderData(
         val model: BedrockAttachmentModel,
         val texture: ResourceLocation,
         val scopeMode: ScopeMode,
+        val scopeModeIndex: Int,
+        val companionSightMode: ScopeMode? = null,
         val attachmentId: ResourceLocation,
         val slotTransform: Matrix4f,
         val bindSlotTransform: Matrix4f
@@ -235,7 +246,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             updateEditFocus(model)
 
             val scopeRender = resolveScopeAttachmentRender(stack, model)
-            applyFirstPersonPositioningTransform(poseStack, model, scopeRender)
+            applyFirstPersonPositioningTransform(poseStack, model, scopeRender, hand)
 
             val sprintOffset = resource.sprintOffset
             ClientEventHandler.gunRootMoveV2(poseStack, sprintOffset.x, sprintOffset.y, sprintOffset.z, false)
@@ -248,7 +259,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 shootRecoil.zoomRate, shootRecoil.speed
             )
 
-            val zoomPivot = computeViewTransform(model, scopeRender)?.let {
+            val zoomPivot = computeViewTransform(model, scopeRender, hand)?.let {
                 val pivot = Vector3f()
                 it.getTranslation(pivot)
                 pivot
@@ -287,7 +298,8 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 stencilScope.texture,
                 packedLight,
                 partialTick,
-                stencilScope.scopeMode
+                stencilScope.scopeMode,
+                stencilScope.companionSightMode
             )
             poseStack.popPose()
 
@@ -368,7 +380,13 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val attachmentId = data.attachment.id(AttachmentType.SCOPE) ?: return null
         val definition = AttachmentDefinition.from(attachmentId) ?: return null
         val scopeInfo = definition.scopeInfo ?: return null
-        val scopeMode = scopeInfo.mode(data.attachment.scopeMode(AttachmentType.SCOPE))
+        val scopeModeIndex = data.attachment.scopeMode(AttachmentType.SCOPE)
+        val scopeMode = scopeInfo.mode(scopeModeIndex)
+        val companionSightMode = if (scopeMode.isScope()) {
+            scopeInfo.modes.firstOrNull { it.isSight() }
+        } else {
+            null
+        }
         val modelPath = definition.model ?: return null
         val texture = definition.texture ?: return null
         val attachmentModel = AttachmentModelReloadListener.getModel(modelPath) ?: return null
@@ -376,7 +394,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val mountTransform = model.getGlobalTransform(boneName) ?: return null
         val bindMountTransform = model.getBindGlobalTransform(boneName) ?: return null
         return ScopeRenderData(
-            attachmentModel, texture, scopeMode, attachmentId,
+            attachmentModel, texture, scopeMode, scopeModeIndex, companionSightMode, attachmentId,
             Matrix4f(mountTransform), Matrix4f(bindMountTransform)
         )
     }
@@ -725,13 +743,18 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     open fun applyFirstPersonPositioningTransform(
         poseStack: PoseStack,
         model: GeoGunModel,
-        scopeRender: ScopeRenderData? = null
+        scopeRender: ScopeRenderData? = null,
+        hand: InteractionHand = InteractionHand.MAIN_HAND
     ) {
-        val viewTransform = computeViewTransform(model, scopeRender) ?: return
+        val viewTransform = computeViewTransform(model, scopeRender, hand) ?: return
         mulPoseWithNormal(poseStack, viewTransform.invert())
     }
 
-    open fun computeViewTransform(model: GeoGunModel, scopeRender: ScopeRenderData? = null): Matrix4f? {
+    open fun computeViewTransform(
+        model: GeoGunModel,
+        scopeRender: ScopeRenderData? = null,
+        hand: InteractionHand = InteractionHand.MAIN_HAND
+    ): Matrix4f? {
         val idleViewTransform = model.getGlobalTransform(IDLE_VIEW_BONE) ?: return null
 
         val zoom = AnimationCurves.EASE_IN_OUT_QUINT
@@ -761,18 +784,53 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         if (zoom <= 0f) {
             return Matrix4f(idleViewTransform)
         }
-        val ironViewTransform = scopeViewTransform(scopeRender)
+        val ironViewTransform = scopeViewTransform(scopeRender, hand)
             ?: model.getGlobalTransform(IRON_VIEW_BONE)
             ?: return Matrix4f(idleViewTransform)
         return blendViewTransform(Matrix4f(idleViewTransform), Matrix4f(ironViewTransform), zoom)
     }
 
-    private fun scopeViewTransform(scopeRender: ScopeRenderData?): Matrix4f? {
+    private fun scopeViewTransform(
+        scopeRender: ScopeRenderData?,
+        hand: InteractionHand
+    ): Matrix4f? {
         if (scopeRender == null) return null
-        val scopeView = scopeRender.model.getGlobalTransform(scopeRender.scopeMode.viewBone)
+        val scopeView = scopeRender.model.getGlobalTransform(scopeRender.scopeMode.viewBone())
             ?: scopeRender.model.getGlobalTransform(SCOPE_VIEW_BONE)
             ?: return null
-        return Matrix4f(scopeRender.bindSlotTransform).mul(scopeView)
+        val target = Matrix4f(scopeRender.bindSlotTransform).mul(scopeView)
+        return smoothScopeView(scopeRender, hand, target)
+    }
+
+    private fun smoothScopeView(
+        scopeRender: ScopeRenderData,
+        hand: InteractionHand,
+        target: Matrix4f
+    ): Matrix4f {
+        val state = scopeViewSmoothing.getOrPut(hand) { ScopeViewSmoothState() }
+        if (state.modeIndex != scopeRender.scopeModeIndex) {
+            if (state.modeIndex >= 0) {
+                state.source = Matrix4f(state.current)
+                state.progress = 0.0f
+            } else {
+                state.source = Matrix4f(target)
+                state.progress = 1.0f
+            }
+            state.target = Matrix4f(target)
+            state.modeIndex = scopeRender.scopeModeIndex
+        } else {
+            state.target = Matrix4f(target)
+        }
+
+        if (state.progress < 1.0f) {
+            val delta = Minecraft.getInstance().deltaFrameTime.coerceAtMost(0.08f)
+            state.progress = (state.progress + delta * SCOPE_VIEW_SMOOTHING).coerceAtMost(1.0f)
+            val eased = AnimationCurves.EASE_IN_OUT_QUINT.apply(state.progress.toDouble()).toFloat()
+            state.current = blendViewTransform(state.source, state.target, eased)
+        } else {
+            state.current = Matrix4f(state.target)
+        }
+        return Matrix4f(state.current)
     }
 
     /**
@@ -991,6 +1049,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         private const val MAGAZINE_BONE = "magazine_pos"
         private const val SCOPE_BONE = "scope_pos"
         private const val SCOPE_VIEW_BONE = "scope_view"
+        private const val SCOPE_VIEW_SMOOTHING = 0.45f
         private const val STOCK_BONE = "stock_pos"
         private const val THIRDPERSON_HAND_BONE = "thirdperson_hand"
         private const val GROUND_BONE = "ground"

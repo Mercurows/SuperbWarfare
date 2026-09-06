@@ -15,9 +15,8 @@
     "Type": "Scope",
     "Modes": [
       {
+        "Index": 1,
         "Type": "Scope",
-        "ViewBone": "scope_view_1",
-        "DivisionBone": "division_1",
         "ViewRadiusModifier": 1.0,
         "Zoom": {
           "Min": 3.0,
@@ -27,9 +26,8 @@
         }
       },
       {
+        "Index": 2,
         "Type": "Sight",
-        "ViewBone": "scope_view_2",
-        "DivisionBone": "division_2",
         "ViewRadiusModifier": 1.0,
         "Zoom": {
           "Min": 1.25,
