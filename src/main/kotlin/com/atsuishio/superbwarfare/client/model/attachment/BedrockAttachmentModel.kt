@@ -16,7 +16,6 @@ import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
-import org.joml.Matrix3f
 import org.joml.Matrix4f
 import org.joml.Vector3f
 import org.lwjgl.opengl.GL11
@@ -370,9 +369,7 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         poseStack.pushPose()
         val parentIndex = bone.parentIndex()
         if (parentIndex >= 0) {
-            val parentTransform = instance.getGlobalTransform(parentIndex)
-            poseStack.last().pose().mul(parentTransform)
-            poseStack.last().normal().mul(Matrix3f(parentTransform))
+            instance.mulGlobalTransform(poseStack, parentIndex)
         }
 
         val quadBuffer: VertexConsumer = bufferSource.getBuffer(quadType)
