@@ -140,29 +140,4 @@ public class Ql1031Item extends GunGeoItem {
     public boolean canAdjustZoom(GunData data) {
         return data.attachment.get(AttachmentType.SCOPE) == 3;
     }
-
-    @Override
-    public boolean hasCustomBarrel(GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean hasCustomGrip(GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean hasCustomScope(GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean hasCustomStock(GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean canEditAttachments(GunData data) {
-        return true;
-    }
 }

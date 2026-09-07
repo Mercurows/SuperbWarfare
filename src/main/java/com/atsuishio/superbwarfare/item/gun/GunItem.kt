@@ -264,42 +264,32 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     /**
      * 武器是否能更换枪管配件
      */
-    open fun hasCustomBarrel(data: GunData) = false
-
-    open val validBarrels: IntArray
-        get() = intArrayOf(0, 1, 2)
+    open fun hasCustomBarrel(data: GunData) =
+        data.availableAttachments(AttachmentType.BARREL).isNotEmpty()
 
     /**
      * 武器是否能更换枪托配件
      */
-    open fun hasCustomGrip(data: GunData) = false
-
-    open val validGrips: IntArray
-        get() = intArrayOf(0, 1, 2, 3)
+    open fun hasCustomGrip(data: GunData) =
+        data.availableAttachments(AttachmentType.GRIP).isNotEmpty()
 
     /**
      * 武器是否能更换弹匣配件
      */
-    open fun hasCustomMagazine(data: GunData) = false
-
-    open val validMagazines: IntArray
-        get() = intArrayOf(0, 1, 2)
+    open fun hasCustomMagazine(data: GunData) =
+        data.availableAttachments(AttachmentType.MAGAZINE).isNotEmpty()
 
     /**
      * 武器是否能更换瞄具配件
      */
-    open fun hasCustomScope(data: GunData) = false
-
-    open val validScopes: IntArray
-        get() = intArrayOf(0, 1, 2, 3)
+    open fun hasCustomScope(data: GunData) =
+        data.availableAttachments(AttachmentType.SCOPE).isNotEmpty()
 
     /**
      * 武器是否能更换枪托配件
      */
-    open fun hasCustomStock(data: GunData) = false
-
-    open val validStocks: IntArray
-        get() = intArrayOf(0, 1, 2)
+    open fun hasCustomStock(data: GunData) =
+        data.availableAttachments(AttachmentType.STOCK).isNotEmpty()
 
     /**
      * 武器是否有脚架
@@ -349,42 +339,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     /**
      * 获取额外总重量加成
      */
-    open fun getCustomWeight(data: GunData): Double {
-        val attachment = data.attachment
-
-        val scopeWeight = when (attachment.get(AttachmentType.SCOPE)) {
-            1 -> 0.5
-            2 -> 1.0
-            3 -> 1.5
-            else -> 0.0
-        }
-
-        val barrelWeight = when (attachment.get(AttachmentType.BARREL)) {
-            1 -> 0.5
-            2 -> 1.0
-            else -> 0.0
-        }
-
-        val magazineWeight = when (attachment.get(AttachmentType.MAGAZINE)) {
-            1 -> 1.0
-            2 -> 2.0
-            else -> 0.0
-        }
-
-        val stockWeight = when (attachment.get(AttachmentType.STOCK)) {
-            1 -> -2.0
-            2 -> 1.5
-            else -> 0.0
-        }
-
-        val gripWeight = when (attachment.get(AttachmentType.GRIP)) {
-            1, 2 -> 0.25
-            3 -> 1.0
-            else -> 0.0
-        }
-
-        return scopeWeight + barrelWeight + magazineWeight + stockWeight + gripWeight
-    }
+    open fun getCustomWeight(data: GunData) = 0.0
 
     /**
      * 获取额外弹速加成
@@ -1130,7 +1085,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     protected fun randomVec(vec3: Vec3, spread: Double): Vec3 =
         randomSpreadVec(this.random, vec3, spread)
 
-    open fun canEditAttachments(data: GunData) = data.get(GunProp.AMMO_CONSUMER).size > 1
+    open fun canEditAttachments(data: GunData) = true
 
     open fun enableShootTimer() = false
 
