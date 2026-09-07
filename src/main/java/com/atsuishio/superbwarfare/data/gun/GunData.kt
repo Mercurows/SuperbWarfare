@@ -754,9 +754,17 @@ class GunData private constructor(
         this.item.shoot(this, entity, spread, zoom, uuid)
     }
 
+    fun shoot(entity: Entity, spread: Double, zoom: Boolean, uuid: UUID?, power: Double) {
+        this.item.shoot(this, entity, spread, zoom, uuid, power)
+    }
+
     /** Fires projectile targeting specific world position. */
     fun shoot(entity: Entity, spread: Double, zoom: Boolean, uuid: UUID?, targetPos: Vec3?) {
         this.item.shoot(this, entity, spread, zoom, uuid, targetPos)
+    }
+
+    fun shoot(entity: Entity, spread: Double, zoom: Boolean, uuid: UUID?, targetPos: Vec3?, power: Double) {
+        this.item.shoot(this, entity, spread, zoom, uuid, targetPos, power)
     }
 
     /** Fires projectile using encapsulated parameter structure. */

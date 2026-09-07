@@ -10,13 +10,14 @@ import com.atsuishio.superbwarfare.serialization.kserializer.SerializedVector3f
 import com.atsuishio.superbwarfare.tools.toVec3
 import kotlinx.serialization.Serializable
 
-@Serializable
 @RegisterPacket
-data class ShootMessage(
+@Serializable
+data class ShootMessage @JvmOverloads constructor(
     val spread: Double,
     val zoom: Boolean,
     val uuid: SerializedUUID?,
-    val targetPos: SerializedVector3f?
+    val targetPos: SerializedVector3f?,
+    val power: Double = 1.0
 ) : ServerPacketPayload() {
     override fun PayloadContext.handler() {
         val player = sender()
@@ -24,9 +25,9 @@ data class ShootMessage(
         if (stack.item !is GunItem) return
 
         if (targetPos == null) {
-            from(stack).shoot(player, spread, zoom, uuid)
+            from(stack).shoot(player, spread, zoom, uuid, power)
         } else {
-            from(stack).shoot(player, spread, zoom, uuid, targetPos.toVec3())
+            from(stack).shoot(player, spread, zoom, uuid, targetPos.toVec3(), power)
         }
     }
 }

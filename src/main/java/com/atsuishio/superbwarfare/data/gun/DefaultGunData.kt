@@ -179,6 +179,7 @@ class DefaultGunData : IDBasedData<DefaultGunData> {
     @SerialName("ZoomReload")
     var zoomReload = true
 
+    // TODO(fire-mode): Keep this as legacy compatibility until HOLD uses ChargeInfo reset semantics.
     @SerialName("ClearHoldProgressAfterShoot")
     var clearHoldProgressAfterShoot = false
 

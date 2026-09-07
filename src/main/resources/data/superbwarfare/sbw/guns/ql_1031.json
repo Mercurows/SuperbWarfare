@@ -21,7 +21,6 @@
     "Auto",
     {
       "Mode": "Semi",
-      "Name": "Semi",
       "Override": {
         "RecoilX": 0.004,
         "RecoilY": 0.009,
@@ -47,8 +46,13 @@
       }
     },
     {
-      "Mode": "Semi",
-      "Name": "Hold",
+      "Mode": "Hold",
+      "Charge": {
+        "Duration": 20,
+        "Trigger": "AutoAtFull",
+        "PowerMode": "Full",
+        "MinPower": 1.0
+      },
       "Override": {
         "Spread": 8,
         "RecoilX": 0.01,

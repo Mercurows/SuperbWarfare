@@ -21,6 +21,7 @@ import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessag
 import com.atsuishio.superbwarfare.network.message.receive.DrawClientMessage
 import com.atsuishio.superbwarfare.network.message.receive.LivingGunKillMessage
 import com.atsuishio.superbwarfare.perk.Perk
+import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.atsuishio.superbwarfare.tools.*
 import com.atsuishio.superbwarfare.tools.DamageTypeTool.isGunDamage
 import com.atsuishio.superbwarfare.tools.DamageTypeTool.isHeadshotDamage
@@ -346,6 +347,7 @@ object LivingEventHandler {
                         val oldData = GunData.from(oldStack)
 
                         stopGunReloadSound(entity, oldData)
+                        stopGunChargeSound(entity, oldData)
 
                         if (oldData.get(GunProp.BOLT_ACTION_TIME) > 0) {
                             oldData.bolt.actionTimer.reset()
@@ -445,6 +447,19 @@ object LivingEventHandler {
                     player.connection.send(ClientboundStopSoundPacket(location, SoundSource.PLAYERS))
                 }
             }
+    }
+
+    fun stopGunChargeSound(player: ServerPlayer, data: GunData) {
+        val resource = GunResource.compute(data.stack)
+        val chargeSound = resource.chargeSound
+        if (chargeSound != null) {
+            player.sendPacket(ClientboundStopSoundPacket(chargeSound.location, SoundSource.PLAYERS))
+        }
+
+        val dischargeSound = resource.dischargeSound
+        if (dischargeSound != null) {
+            player.sendPacket(ClientboundStopSoundPacket(dischargeSound.location, SoundSource.PLAYERS))
+        }
     }
 
     /**

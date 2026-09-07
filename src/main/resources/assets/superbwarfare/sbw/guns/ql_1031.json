@@ -7,5 +7,6 @@
   "EnergyBarColor": "0xFFFF00",
   "FlarePosition": [0, 0.025, 2],
   "FlareSize": 0.5,
+  "ChargeSound": "superbwarfare:ql_1031_charge",
   "DischargeSound": "superbwarfare:ql_1031_discharge"
 }

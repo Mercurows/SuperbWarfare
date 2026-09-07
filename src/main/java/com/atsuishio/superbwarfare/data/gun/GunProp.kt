@@ -155,7 +155,9 @@ class GunProp<T, R>(
 
         @JvmField
         val AVAILABLE_FIRE_MODES =
-            complexProp(DefaultGunData::availableFireModes) { it.list.map { l -> l.value } }
+            complexProp(DefaultGunData::availableFireModes) {
+                it.list.map { l -> l.value.also { fireMode -> fireMode.init() } }
+            }
 
         @JvmField
         val MAGAZINE = GunProp(

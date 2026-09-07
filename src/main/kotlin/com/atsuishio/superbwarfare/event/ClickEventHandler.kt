@@ -9,10 +9,7 @@ import com.atsuishio.superbwarfare.compat.CompatHolder
 import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper
 import com.atsuishio.superbwarfare.config.client.ReloadConfig
 import com.atsuishio.superbwarfare.config.server.MapConfig
-import com.atsuishio.superbwarfare.data.gun.FireMode
-import com.atsuishio.superbwarfare.data.gun.GunData
-import com.atsuishio.superbwarfare.data.gun.GunProp
-import com.atsuishio.superbwarfare.data.gun.SeekType
+import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -507,30 +504,26 @@ object ClickEventHandler {
         ) {
             val data = GunData.from(stack)
             val resource = GunResource.compute(stack)
+            val fireModeInfo = data.selectedFireModeInfo()
+            val chargeConfig = fireModeInfo.chargeConfig()
 
-            // TODO 整合特殊处理
-            if (!(stack.`is`(ModItems.BOCEK.get()))) {
-                if (!data.meleeOnly()) {
-                    // 普通枪（？）
-                    if (stack.`is`(ModItems.QL_1031.get()) && data.selectedFireModeInfo().name == "Hold"
-                        && item.canShoot(data, player)
-                    ) {
-                        player.playSound(ModSounds.QL_1031_CHARGE.get(), 1f, 1f)
-                        ClientEventHandler.shouldPlayDischargeSound = true
-                    }
+            if (!data.meleeOnly()) {
+                if (chargeConfig != null && item.canShoot(data, player)) {
+                    ClientEventHandler.chargeActive = true
+                    ClientEventHandler.chargeProgress = 0.0
+                    ClientEventHandler.chargePower = 0.0
+                    ClientEventHandler.holdingFireKeyTicks = 0
+                    ClientEventHandler.shouldPlayDischargeSound = true
 
-                    val triggerSound = resource.triggerSound
-                    if (triggerSound != null && !data.meleeOnly()) {
-                        player.playSound(triggerSound, 1f, 1f)
+                    val chargeSound = resource.chargeSound
+                    if (chargeSound != null) {
+                        player.playSound(chargeSound, 1f, 1f)
                     }
                 }
-            } else {
-                // 波塞克特殊处理
-                ClientEventHandler.bowPower = 0.0
-                ClientEventHandler.holdingFireKey = true
-                player.isSprinting = false
-                if (data.hasEnoughAmmoToShoot(player)) {
-                    return
+
+                val triggerSound = resource.triggerSound
+                if (triggerSound != null) {
+                    player.playSound(triggerSound, 1f, 1f)
                 }
             }
 
@@ -570,28 +563,53 @@ object ClickEventHandler {
     }
 
     fun handleWeaponFireRelease() {
-        sendPacketToServer(FireKeyMessage(1, ClientEventHandler.bowPower, ClientEventHandler.zoom))
-        ClientEventHandler.bowPull = false
-        ClientEventHandler.holdingFireKey = false
-        ClientEventHandler.holdFireVehicle = false
-        ClientEventHandler.isEditing = false
-        ClientEventHandler.customRpm = 0
-
         val player = localPlayer ?: return
         if (player.isSpectator) return
 
         val stack = player.mainHandItem
-
-        if (stack.`is`(ModItems.BOCEK.get())) {
-            sendPacketToServer(ReloadMessage)
+        val data = if (stack.item is GunItem) GunData.from(stack) else null
+        val fireModeInfo = data?.selectedFireModeInfo()
+        val chargeConfig = fireModeInfo?.chargeConfig()
+        val tickProgress = if (chargeConfig != null) {
+            (ClientEventHandler.holdingFireKeyTicks.toDouble() / chargeConfig.duration).coerceIn(0.0, 1.0)
+        } else {
+            0.0
         }
+        val releaseProgress = if (chargeConfig != null) {
+            maxOf(ClientEventHandler.chargeProgress, tickProgress)
+        } else {
+            0.0
+        }
+        val chargePower = chargeConfig?.powerForProgress(releaseProgress) ?: ClientEventHandler.bowPower
 
-        if (stack.item is GunItem) {
-            val data = GunData.from(stack)
+        sendPacketToServer(FireKeyMessage(1, chargePower, ClientEventHandler.zoom))
+        ClientEventHandler.bowPull = false
+        ClientEventHandler.holdingFireKey = false
+        ClientEventHandler.chargeActive = false
+        ClientEventHandler.chargeProgress = 0.0
+        ClientEventHandler.chargePower = 0.0
+        ClientEventHandler.holdingFireKeyTicks = 0
+        ClientEventHandler.holdingFireKeyTicks0 = 0f
+        ClientEventHandler.holdFireVehicle = false
+        ClientEventHandler.isEditing = false
+        ClientEventHandler.customRpm = 0
+
+        if (data != null && fireModeInfo != null) {
             val fireMode = data.selectedFireModeInfo().mode
 
             if (fireMode != FireMode.BURST) {
                 ClientEventHandler.burstFireAmount = 0
+            }
+
+            if (chargeConfig != null) {
+                val releaseAllowed = when (chargeConfig.trigger) {
+                    ChargeTrigger.ON_RELEASE -> releaseProgress > 0.0
+                    ChargeTrigger.ON_FULL_RELEASE -> releaseProgress >= 1.0
+                    ChargeTrigger.AUTO_AT_FULL -> false
+                }
+                if (releaseAllowed && chargePower >= chargeConfig.minPower) {
+                    ClientEventHandler.shootClient(player, chargePower)
+                }
             }
 
             if (data.get(GunProp.SEEK_TYPE) == SeekType.HOLD_FIRE) {

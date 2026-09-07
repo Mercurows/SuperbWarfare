@@ -129,6 +129,10 @@ class DefaultGunResource : IDBasedData<DefaultGunResource> {
     var triggerSound: SerializedSoundEvent? = ModSounds.TRIGGER_CLICK.get()
 
     @JvmField
+    @SerialName("ChargeSound")
+    var chargeSound: SerializedSoundEvent? = null
+
+    @JvmField
     @SerialName("DischargeSound")
     var dischargeSound: SerializedSoundEvent? = null
 
