@@ -17,6 +17,7 @@ data class ClientPhosphorusFireMessage(
 
     override fun PayloadContext.handler() {
         val entity = clientLevel?.getEntity(id) as? LivingEntity ?: return
-        PhosphorusFireCapability.of(entity).isOnFire = flag
+
+        PhosphorusFireCapability.set(entity, flag)
     }
 }

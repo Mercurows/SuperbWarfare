@@ -14,8 +14,6 @@ data class ClientInfiniteAmmoMessage(val id: Int, val flag: Boolean) : ClientPac
     override fun PayloadContext.handler() {
         val entity = clientLevel?.getEntity(id) ?: return
 
-        InfiniteAmmoCapability.modify(entity) {
-            it.hasInfiniteAmmo = flag
-        }
+        InfiniteAmmoCapability.set(entity, flag)
     }
 }

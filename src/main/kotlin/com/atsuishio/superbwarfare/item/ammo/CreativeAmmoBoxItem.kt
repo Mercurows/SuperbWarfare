@@ -57,12 +57,7 @@ object CreativeAmmoBoxItem : Item(Properties().rarity(Rarity.EPIC).stacksTo(1)) 
     private fun invertInfiniteAmmo(player: Player? = null, entity: Entity): Boolean {
         if (entity.level().isClientSide) return false
 
-        var hasInfiniteAmmo = false
-
-        InfiniteAmmoCapability.modify(entity) {
-            hasInfiniteAmmo = !it.hasInfiniteAmmo
-            it.hasInfiniteAmmo = hasInfiniteAmmo
-        }
+        val hasInfiniteAmmo = InfiniteAmmoCapability.toggle(entity)
 
         player?.displayClientMessage(
             Component.translatable(
