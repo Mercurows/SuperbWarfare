@@ -143,8 +143,20 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         bufferSource: MultiBufferSource,
         texture: ResourceLocation,
         packedLight: Int,
-        packedOverlay: Int
+        packedOverlay: Int,
+        companionSightMode: ScopeMode? = null
     ) {
+        val hiddenOculars = if (companionSightMode != null) ocularIndicesFor(companionSightMode) else emptyList()
+        val originalOcularVisibility = BooleanArray(hiddenOculars.size)
+        for (i in hiddenOculars.indices) {
+            val bone = instance.getBone(hiddenOculars[i])
+            if (bone != null) {
+                originalOcularVisibility[i] = bone.visible
+                bone.visible = false
+            }
+        }
+
+        restoreScopeBodyVisibility()
         markIlluminatedBones()
         baseModel.renderToBuffer(
             instance,
@@ -160,6 +172,10 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
             1f,
             true
         )
+
+        for (i in hiddenOculars.indices) {
+            instance.getBone(hiddenOculars[i])?.visible = originalOcularVisibility[i]
+        }
     }
 
     fun needsStencil(info: ScopeMode?): Boolean =
@@ -583,6 +599,15 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
 
     private fun setBoneVisible(boneIndex: Int, visible: Boolean) {
         instance.getBone(boneIndex)?.visible = visible
+    }
+
+    private fun restoreScopeBodyVisibility() {
+        if (defaultScopeBodyIndex >= 0) {
+            setBoneVisible(defaultScopeBodyIndex, true)
+        }
+        modeScopeBodyGroups.values.forEach { group ->
+            group.forEach { setBoneVisible(it, true) }
+        }
     }
 
     private fun markIlluminatedBones() {
