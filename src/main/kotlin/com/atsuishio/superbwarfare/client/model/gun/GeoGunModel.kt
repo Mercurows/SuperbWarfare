@@ -212,7 +212,7 @@ open class GeoGunModel @JvmOverloads constructor(
         renderToBuffer(
             poseStack,
             bufferSource,
-            RenderType.entityCutout(texture),
+            RenderType.entityTranslucent(texture),
             BedrockModelRenderTypes.polyMeshCutout(texture),
             packedLight,
             packedOverlay

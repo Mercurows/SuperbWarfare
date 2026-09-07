@@ -148,7 +148,7 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
             instance,
             poseStack,
             bufferSource,
-            RenderType.entityCutout(texture),
+            RenderType.entityTranslucent(texture),
             BedrockModelRenderTypes.polyMeshCutout(texture),
             packedLight,
             packedOverlay,
@@ -173,7 +173,7 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         companionSightMode: ScopeMode? = null
     ) {
         markIlluminatedBones()
-        val quadType = RenderType.entityCutout(texture)
+        val quadType = RenderType.entityTranslucent(texture)
         val triangleType = BedrockModelRenderTypes.polyMeshCutout(texture)
 
         when (info.type) {
