@@ -6,5 +6,6 @@
     "LODModel": "superbwarfare:geo/lod/bocek.geo.json",
     "LODTexture": "superbwarfare:textures/item/lod/bocek.png"
   },
+  "ChargeSound": "superbwarfare:bocek_pull_1p",
   "TriggerSound": null
 }

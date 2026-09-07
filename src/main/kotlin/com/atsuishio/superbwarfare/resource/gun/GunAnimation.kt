@@ -78,4 +78,22 @@ class GunAnimation {
     @JvmField
     @SerialName("Melee")
     var melee: String? = null
+
+    /*
+     * TODO(V2 render migration):
+     * These fields are intentionally data-only for now. QL1031/BOCEK still use their
+     * legacy GeckoLib controllers, so do not wire them into rendering yet.
+     *
+     * After their V2 migration, GeoGunAnimationInstance should add a CHARGE state and:
+     * 1. Select it when selectedFireModeInfo().isChargeMode() and charge is active.
+     * 2. Play chargeCancel when an unfinished HOLD charge is cancelled.
+     * 3. Keep CHARGE looping/holding at full for CHARGE mode.
+     */
+    @JvmField
+    @SerialName("Charge")
+    var charge: String? = null
+
+    @JvmField
+    @SerialName("ChargeCancel")
+    var chargeCancel: String? = null
 }

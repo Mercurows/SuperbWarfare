@@ -20,7 +20,7 @@ import java.util.*
  * @param targetPos           已锁定位置
  */
 @JvmRecord
-data class ShootParameters(
+data class ShootParameters @JvmOverloads constructor(
     @JvmField val ammoSupplier: Entity?,
     @JvmField val shooter: Entity?,
     @JvmField val level: ServerLevel,
@@ -30,5 +30,6 @@ data class ShootParameters(
     @JvmField val spread: Double,
     @JvmField val zoom: Boolean,
     @JvmField val targetEntityUUID: UUID?,
-    @JvmField val targetPos: Vec3?
+    @JvmField val targetPos: Vec3?,
+    @JvmField val power: Double = 1.0
 )

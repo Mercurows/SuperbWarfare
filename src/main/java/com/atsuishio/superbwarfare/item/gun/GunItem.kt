@@ -22,7 +22,6 @@ import com.atsuishio.superbwarfare.entity.projectile.*
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.init.ModDamageTypes
-import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModPerks
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.ItemScreenProvider
@@ -489,6 +488,26 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         )
     }
 
+    fun shoot(data: GunData, shooter: Entity, spread: Double, zoom: Boolean, uuid: UUID?, power: Double) {
+        val server = shooter.level() as? ServerLevel ?: return
+
+        shoot(
+            ShootParameters(
+                shooter,
+                shooter,
+                server,
+                Vec3(shooter.x, shooter.eyeY, shooter.z),
+                shooter.lookAngle,
+                data,
+                spread,
+                zoom,
+                uuid,
+                null,
+                power
+            )
+        )
+    }
+
     fun shoot(data: GunData, shooter: Entity, spread: Double, zoom: Boolean, uuid: UUID?, pos: Vec3?) {
         val server = shooter.level() as? ServerLevel ?: return
 
@@ -504,6 +523,26 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                 zoom,
                 uuid,
                 pos
+            )
+        )
+    }
+
+    fun shoot(data: GunData, shooter: Entity, spread: Double, zoom: Boolean, uuid: UUID?, pos: Vec3?, power: Double) {
+        val server = shooter.level() as? ServerLevel ?: return
+
+        shoot(
+            ShootParameters(
+                shooter,
+                shooter,
+                server,
+                Vec3(shooter.x, shooter.eyeY, shooter.z),
+                shooter.lookAngle,
+                data,
+                spread,
+                zoom,
+                uuid,
+                pos,
+                power
             )
         )
     }
@@ -603,8 +642,13 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         if (data.reload.prepareTimer.get() == 0 && data.reloading() && data.hasEnoughAmmoToShoot(player)) {
             data.forceStop.set(true)
         }
-        if (player is ServerPlayer && data.stack.`is`(ModItems.QL_1031.get()) && data.selectedFireModeInfo().name == "Hold") {
-            player.connection.send(ClientboundStopSoundPacket(loc("ql_1031_discharge"), SoundSource.PLAYERS))
+        if (player is ServerPlayer) {
+            val dischargeSound = GunResource.compute(data.stack).dischargeSound
+            if (dischargeSound != null) {
+                player.connection.send(
+                    ClientboundStopSoundPacket(dischargeSound.location, SoundSource.PLAYERS)
+                )
+            }
         }
     }
 
@@ -618,8 +662,13 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             val name = origin.substring(origin.lastIndexOf(".") + 1)
             player.connection.send(ClientboundStopSoundPacket(loc(name + "_lock"), SoundSource.PLAYERS))
         }
-        if (player is ServerPlayer && data.stack.`is`(ModItems.QL_1031.get()) && data.selectedFireModeInfo().name == "Hold") {
-            player.connection.send(ClientboundStopSoundPacket(loc("ql_1031_charge"), SoundSource.PLAYERS))
+        if (player is ServerPlayer && data.selectedFireModeInfo().isChargeMode()) {
+            val chargeSound = GunResource.compute(data.stack).chargeSound
+            if (chargeSound != null) {
+                player.connection.send(
+                    ClientboundStopSoundPacket(chargeSound.location, SoundSource.PLAYERS)
+                )
+            }
         }
     }
 
@@ -650,8 +699,8 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         }
 
         val headshot = data.get(GunProp.HEADSHOT)
-        val damage = data.get(GunProp.DAMAGE)
-        var velocity = data.get(GunProp.VELOCITY).toFloat()
+        val damage = data.get(GunProp.DAMAGE) * parameters.power.coerceAtLeast(0.0)
+        var velocity = (data.get(GunProp.VELOCITY) * parameters.power.coerceAtLeast(0.0)).toFloat()
         val bypassArmorRate = data.get(GunProp.BYPASSES_ARMOR)
 
         if (isInLiquid(level, shootPosition)) {

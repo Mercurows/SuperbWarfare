@@ -7,6 +7,18 @@
   "ZoomTime": 5,
   "BypassesArmor": 0.25,
   "Velocity": 24,
+  "DefaultFireMode": "Charge",
+  "AvailableFireModes": [
+    {
+      "Mode": "Charge",
+      "Charge": {
+        "Duration": 25,
+        "Trigger": "OnRelease",
+        "PowerMode": "Current",
+        "MinPower": 0.0
+      }
+    }
+  ],
   "Magazine": 1,
   "EmptyReloadTime": 6,
   "AutoReload": true,
