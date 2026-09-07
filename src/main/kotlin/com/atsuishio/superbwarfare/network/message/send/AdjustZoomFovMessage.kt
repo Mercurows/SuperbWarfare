@@ -50,7 +50,11 @@ data class AdjustZoomFovMessage(val scroll: Double) : ServerPacketPayload() {
                 ?.zoom
 
             if (scopeZoom != null) {
-                gun.attachment.cycleZoom(AttachmentType.SCOPE, scroll)
+                val currentZoom = gun.attachment.getZoom(AttachmentType.SCOPE) ?: scopeZoom.default
+                val nextZoom = gun.attachment.cycleZoom(AttachmentType.SCOPE, scroll)
+                if (nextZoom != null && nextZoom != currentZoom) {
+                    SoundTool.playLocalSound(player, ModSounds.ADJUST_FOV.get(), 1f, 0.7f)
+                }
             } else {
                 val minZoom = gun.minZoom() - 1.25
                 val maxZoom = gun.maxZoom() - 1.25
