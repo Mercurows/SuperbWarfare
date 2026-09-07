@@ -618,10 +618,10 @@
 			},
 			"sound_effects": {
 				"0.4167": {
-					"effect": "superbwarfare:ak_47_mag_out"
+					"effect": "superbwarfare:ak_12_mag_out"
 				},
 				"1.1833": {
-					"effect": "superbwarfare:ak_47_mag_in"
+					"effect": "superbwarfare:ak_12_mag_in"
 				}
 			}
 		},
@@ -957,8 +957,8 @@
 						"0.25": [99.86171, 5.26945, -181.10736],
 						"0.3333": [99.86171, 5.26945, -181.10736],
 						"2.1667": [99.86171, 5.26945, -181.10736],
-						"2.2333": [112.96984, 5.05677, -179.89029],
-						"2.3833": [100.03742, 4.92385, -179.12962]
+						"2.2": [112.96984, 5.05677, -179.89029],
+						"2.3": [100.03742, 4.92385, -179.12962]
 					},
 					"position": {
 						"0.0": [-7.05, -19.2, 1.9],
@@ -967,8 +967,8 @@
 						"0.25": [-8.95, -15.3, -5.7],
 						"0.3333": [-8.95, -15.3, -0.95],
 						"2.1667": [-8.95, -15.3, -0.95],
-						"2.2333": [-7.78, -15.45, 1.25],
-						"2.3833": [-7.05, -19.2, 1.9]
+						"2.2": [-7.78, -15.45, 1.25],
+						"2.3": [-7.05, -19.2, 1.9]
 					}
 				},
 				"lefthand": {
@@ -1008,8 +1008,17 @@
 				}
 			},
 			"sound_effects": {
-				"0.0": {
-					"effect": "ak_12_reload_empty"
+				"0.25": {
+					"effect": "superbwarfare:ak_12_bolt_open"
+				},
+				"0.4833": {
+					"effect": "superbwarfare:ak_12_mag_out_normal"
+				},
+				"1.55": {
+					"effect": "superbwarfare:ak_12_mag_in"
+				},
+				"2.1167": {
+					"effect": "superbwarfare:ak_12_bolt_close"
 				}
 			}
 		},
@@ -1439,10 +1448,10 @@
 			},
 			"sound_effects": {
 				"0.4167": {
-					"effect": "superbwarfare:ak_47_mag_out"
+					"effect": "superbwarfare:ak_12_mag_out"
 				},
 				"1.5833": {
-					"effect": "superbwarfare:ak_47_mag_in"
+					"effect": "superbwarfare:ak_12_mag_in"
 				}
 			}
 		},
@@ -1967,13 +1976,13 @@
 			},
 			"sound_effects": {
 				"0.4167": {
-					"effect": "superbwarfare:ak_47_mag_out"
+					"effect": "superbwarfare:ak_12_mag_out"
 				},
 				"1.5833": {
-					"effect": "superbwarfare:ak_47_mag_in"
+					"effect": "superbwarfare:ak_12_mag_in"
 				},
 				"2.65": {
-					"effect": "superbwarfare:ak_47_bolt"
+					"effect": "superbwarfare:ak_12_bolt"
 				}
 			}
 		}
