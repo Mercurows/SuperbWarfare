@@ -164,16 +164,6 @@ public class TracheliumItem extends GunGeoItem {
     }
 
     @Override
-    public int @NotNull [] getValidStocks() {
-        return new int[]{0, 2};
-    }
-
-    @Override
-    public int @NotNull [] getValidScopes() {
-        return new int[]{0, 1, 2};
-    }
-
-    @Override
     public boolean canSwitchScope(GunData data) {
         return data.attachment.get(AttachmentType.SCOPE) == 2;
     }
@@ -221,30 +211,5 @@ public class TracheliumItem extends GunGeoItem {
             return 0.1;
         }
         return super.getCustomBypassArmor(data);
-    }
-
-    @Override
-    public boolean hasCustomBarrel(@NotNull GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean hasCustomGrip(@NotNull GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean hasCustomScope(@NotNull GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean hasCustomStock(@NotNull GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean canEditAttachments(@NotNull GunData data) {
-        return true;
     }
 }

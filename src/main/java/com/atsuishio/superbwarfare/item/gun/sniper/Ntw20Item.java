@@ -99,24 +99,8 @@ public class Ntw20Item extends GunGeoItem {
             default -> 0;
         };
     }
-
-    @Override
-    public boolean hasCustomMagazine(@NotNull GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean hasCustomScope(@NotNull GunData data) {
-        return true;
-    }
-
     @Override
     public boolean hasBipod(@NotNull GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean canEditAttachments(@NotNull GunData data) {
         return true;
     }
 }

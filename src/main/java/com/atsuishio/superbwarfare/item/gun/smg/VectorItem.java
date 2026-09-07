@@ -85,16 +85,6 @@ public class VectorItem extends GunGeoItem {
     }
 
     @Override
-    public int[] getValidScopes() {
-        return new int[]{0, 1, 2};
-    }
-
-    @Override
-    public int[] getValidGrips() {
-        return new int[]{0, 1, 2};
-    }
-
-    @Override
     public double getCustomZoom(GunData data) {
         int scopeType = data.attachment.get(AttachmentType.SCOPE);
         return scopeType == 2 ? 0.75 : 0;
@@ -108,35 +98,5 @@ public class VectorItem extends GunGeoItem {
             case 2 -> 57;
             default -> 0;
         };
-    }
-
-    @Override
-    public boolean hasCustomBarrel(GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean hasCustomGrip(GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean hasCustomMagazine(GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean hasCustomScope(GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean hasCustomStock(GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean canEditAttachments(GunData data) {
-        return true;
     }
 }

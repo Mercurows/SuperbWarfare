@@ -131,16 +131,6 @@ public class Qbz191Item extends GunGeoItem {
     }
 
     @Override
-    public int[] getValidMagazines() {
-        return new int[]{0, 2};
-    }
-
-    @Override
-    public int[] getValidGrips() {
-        return new int[]{0, 1, 2};
-    }
-
-    @Override
     public int getCustomMagazine(GunData data) {
         int magType = data.attachment.get(AttachmentType.MAGAZINE);
         return magType == 2 ? 45 : 0;
@@ -160,39 +150,8 @@ public class Qbz191Item extends GunGeoItem {
     public boolean canAdjustZoom(GunData data) {
         return data.attachment.get(AttachmentType.SCOPE) == 3;
     }
-
-    @Override
-    public boolean hasCustomBarrel(GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean hasCustomGrip(GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean hasCustomMagazine(GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean hasCustomScope(GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean hasCustomStock(GunData data) {
-        return true;
-    }
-
     @Override
     public boolean hasBipod(GunData data) {
         return data.attachment.get(AttachmentType.GRIP) == 1;
-    }
-
-    @Override
-    public boolean canEditAttachments(GunData data) {
-        return true;
     }
 }

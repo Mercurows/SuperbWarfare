@@ -316,7 +316,7 @@ open class ClientGunImageTooltip(tooltip: GunImageComponent) : ClientTooltipComp
         get() = Component.translatable(
             "des.superbwarfare.guns.edit",
             "[" + ModKeyMappings.EDIT_MODE.key.displayName.string + "]"
-        ).withStyle(ChatFormatting.LIGHT_PURPLE).withStyle(ChatFormatting.ITALIC)
+        ).withStyle(ChatFormatting.LIGHT_PURPLE)
 
     /**
      * 渲染武器模组缩略图

@@ -85,21 +85,6 @@ public class Mp5Item extends GunGeoItem {
     }
 
     @Override
-    public int[] getValidMagazines() {
-        return new int[]{0, 2};
-    }
-
-    @Override
-    public int[] getValidScopes() {
-        return new int[]{0, 1, 2};
-    }
-
-    @Override
-    public int[] getValidGrips() {
-        return new int[]{0, 1, 2};
-    }
-
-    @Override
     public double getCustomZoom(GunData data) {
         int scopeType = data.attachment.get(AttachmentType.SCOPE);
         return scopeType == 2 ? 2.75 : 0;
@@ -109,35 +94,5 @@ public class Mp5Item extends GunGeoItem {
     public int getCustomMagazine(GunData data) {
         int magType = data.attachment.get(AttachmentType.MAGAZINE);
         return magType == 2 ? 20 : 0;
-    }
-
-    @Override
-    public boolean hasCustomBarrel(GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean hasCustomGrip(GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean hasCustomMagazine(GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean hasCustomScope(GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean hasCustomStock(GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean canEditAttachments(GunData data) {
-        return true;
     }
 }

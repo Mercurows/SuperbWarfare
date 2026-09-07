@@ -75,17 +75,6 @@ public class M98bItem extends GunGeoItem {
     }
 
     @Override
-    public int[] getValidMagazines() {
-        return new int[]{0, 1};
-    }
-
-    @Override
-    public int[] getValidBarrels() {
-        return new int[]{0, 2};
-    }
-
-
-    @Override
     public boolean canSwitchScope(GunData data) {
         return data.attachment.get(AttachmentType.SCOPE) == 2;
     }
@@ -110,29 +99,8 @@ public class M98bItem extends GunGeoItem {
     public boolean canAdjustZoom(GunData data) {
         return data.attachment.get(AttachmentType.SCOPE) == 3;
     }
-
-    @Override
-    public boolean hasCustomBarrel(GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean hasCustomScope(GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean hasCustomMagazine(GunData data) {
-        return true;
-    }
-
     @Override
     public boolean hasBipod(GunData data) {
-        return true;
-    }
-
-    @Override
-    public boolean canEditAttachments(GunData data) {
         return true;
     }
 }

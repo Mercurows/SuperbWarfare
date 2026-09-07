@@ -344,8 +344,7 @@ class GunData private constructor(
      * @return minimum allowed zoom value.
      */
     fun minZoom(): Double {
-        val zoomDefinition = scopeZoomDefinition()
-        if (zoomDefinition == null) return 1.25
+        if (scopeZoomDefinition() == null) return 1.25
         return get(MIN_ZOOM)
     }
 
@@ -355,8 +354,7 @@ class GunData private constructor(
      * @return maximum allowed zoom value.
      */
     fun maxZoom(): Double {
-        val zoomDefinition = scopeZoomDefinition()
-        if (zoomDefinition == null) return 114514.0
+        if (scopeZoomDefinition() == null) return 114514.0
         return get(MAX_ZOOM)
     }
 
