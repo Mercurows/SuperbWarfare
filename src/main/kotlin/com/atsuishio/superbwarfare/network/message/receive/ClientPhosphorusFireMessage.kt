@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.receive
 
 import com.atsuishio.superbwarfare.capability.living.PhosphorusFireCapability
-import com.atsuishio.superbwarfare.init.ModDataAttachments
 import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.ClientPacketPayload
 import com.atsuishio.superbwarfare.network.PayloadContext
@@ -18,8 +17,7 @@ data class ClientPhosphorusFireMessage(
 
     override fun PayloadContext.handler() {
         val entity = clientLevel?.getEntity(id) as? LivingEntity ?: return
-        val data = PhosphorusFireCapability.of(entity)
-        data.isOnFire = flag
-        entity.setData(ModDataAttachments.PHOSPHORUS_FIRE, data)
+
+        PhosphorusFireCapability.set(entity, flag)
     }
 }

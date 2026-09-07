@@ -22,7 +22,7 @@ object PhosphorusFireRenderer {
     @SubscribeEvent
     fun onRenderCurseFlame(event: RenderLivingEvent.Pre<LivingEntity, out EntityModel<LivingEntity>>) {
         val entity = event.entity
-        if (!PhosphorusFireCapability.of(entity).isOnFire) return
+        if (!PhosphorusFireCapability.get(entity).isOnFire) return
 
         val stack = event.poseStack
 

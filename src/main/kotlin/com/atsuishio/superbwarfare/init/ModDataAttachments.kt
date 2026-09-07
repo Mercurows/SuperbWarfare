@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.capability.entity.InfiniteAmmoCapability
 import com.atsuishio.superbwarfare.capability.living.PhosphorusFireCapability
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable
+import com.atsuishio.superbwarfare.tools.generateMapCodec
 import net.minecraft.nbt.CompoundTag
 import net.neoforged.neoforge.attachment.AttachmentType
 import net.neoforged.neoforge.common.util.INBTSerializable
@@ -21,15 +22,25 @@ object ModDataAttachments {
     val PLAYER_VARIABLE = register<PlayerVariable>("player_variable")
 
     @JvmField
-    val PHOSPHORUS_FIRE = register<PhosphorusFireCapability>("phosphorus_fire")
+    val PHOSPHORUS_FIRE = registerCodec<PhosphorusFireCapability>("phosphorus_fire")
 
     @JvmField
-    val INFINITE_AMMO = register<InfiniteAmmoCapability>("infinite_ammo")
+    val INFINITE_AMMO = registerCodec<InfiniteAmmoCapability>("infinite_ammo")
 
     private inline fun <reified T : INBTSerializable<CompoundTag>> register(
         name: String,
         noinline supplier: () -> T = { T::class.createInstance() }
     ): DeferredHolder<AttachmentType<*>, AttachmentType<T>> {
         return ATTACHMENT_TYPES.register(name, Supplier { AttachmentType.serializable(supplier).build() })
+    }
+
+    private inline fun <reified T : Any> registerCodec(
+        name: String
+    ): DeferredHolder<AttachmentType<*>, AttachmentType<T>> {
+        return ATTACHMENT_TYPES.register(name, Supplier {
+            AttachmentType.builder(Supplier { T::class.createInstance() })
+                .serialize(generateMapCodec<T>().codec())
+                .build()
+        })
     }
 }

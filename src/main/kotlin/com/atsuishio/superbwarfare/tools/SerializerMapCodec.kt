@@ -1,32 +1,31 @@
 package com.atsuishio.superbwarfare.tools
 
+import com.atsuishio.superbwarfare.serialization.decodeFromCompoundTag
+import com.atsuishio.superbwarfare.serialization.encodeToCompoundTag
+import com.atsuishio.superbwarfare.serialization.serializersModule
 import com.mojang.datafixers.util.Pair
 import com.mojang.serialization.*
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.json.Json
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.NbtOps
 
 /**
  * Derives a Mojang [MapCodec] from a kotlinx.serialization [KSerializer].
  *
- * Encoding: serializer -> kotlinx [JsonObject] -> Gson (JsonOps' element type) -> target [com.mojang.serialization.DynamicOps].
- * Decoding is the reverse. Because JsonOps is used purely as an intermediate
- * representation, the resulting codec works with any DynamicOps (JsonOps, NbtOps, ...).
+ * Encoding: serializer -> NBT [CompoundTag] via the project's own NBT encoder, then converted
+ * into the target [com.mojang.serialization.DynamicOps] element type.
+ * Decoding is the reverse. This works with any DynamicOps (NbtOps, JsonOps, ...) while keeping a
+ * single, native NBT representation for the actual data.
  */
-private val SERIALIZER_JSON = Json {
-    ignoreUnknownKeys = true
-    encodeDefaults = true
-}
-
 fun <T : Any> serializerToMapCodec(serializer: KSerializer<T>): MapCodec<T> {
     val encoder = object : Encoder<T> {
         override fun <U> encode(input: T, ops: DynamicOps<U>, prefix: U): DataResult<U> {
-            val gson = SERIALIZER_JSON.encodeToJsonElement(serializer, input).toGson()
-            if (gson !is GsonObject) {
-                return DataResult.error { "serializerToMapCodec: expected JSON object, got $gson" }
-            }
+            val nbt = encodeToCompoundTag(serializer, input, serializersModule)
 
-            val map = gson.entrySet().associate { (key, value) ->
-                ops.createString(key) to JsonOps.INSTANCE.convertTo(ops, value)
+            val map = HashMap<U, U>()
+            for (key in nbt.allKeys) {
+                val value = nbt.get(key) ?: continue
+                map[ops.createString(key)] = NbtOps.INSTANCE.convertTo(ops, value)
             }
             return ops.mergeToMap(prefix, map)
         }
@@ -34,23 +33,17 @@ fun <T : Any> serializerToMapCodec(serializer: KSerializer<T>): MapCodec<T> {
 
     val decoder = object : Decoder<T> {
         override fun <U> decode(ops: DynamicOps<U>, input: U): DataResult<Pair<T, U>> {
-            return ops.getMap(input).flatMap { mapLike ->
-                val gson = GsonObject()
-                mapLike.entries().forEach { entry ->
-                    val key = entry.first
-                    val value = entry.second
-                    val gsonKey = ops.convertTo(JsonOps.INSTANCE, key)
-                    if (gsonKey.isJsonPrimitive && gsonKey.asJsonPrimitive.isString) {
-                        gson.add(gsonKey.asString, ops.convertTo(JsonOps.INSTANCE, value))
-                    }
-                }
-                try {
-                    DataResult.success(
-                        Pair(SERIALIZER_JSON.decodeFromJsonElement(serializer, gson.toKxJson()), ops.empty())
-                    )
-                } catch (e: Exception) {
-                    DataResult.error { "serializerToMapCodec: ${e.message}" }
-                }
+            val nbt = ops.convertTo(NbtOps.INSTANCE, input)
+            if (nbt !is CompoundTag) {
+                return DataResult.error { "serializerToMapCodec: expected CompoundTag, got ${nbt.type.name}" }
+            }
+
+            return try {
+                DataResult.success(
+                    Pair(decodeFromCompoundTag(serializer, nbt, serializersModule), ops.empty())
+                )
+            } catch (e: Exception) {
+                DataResult.error { "serializerToMapCodec: ${e.message}" }
             }
         }
     }

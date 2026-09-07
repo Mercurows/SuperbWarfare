@@ -104,9 +104,7 @@ val AMMO_COMMAND = buildCommand("ammo") {
                 boolArg {
                     execute {
                         for (entity in entities) {
-                            InfiniteAmmoCapability.modify(entity) {
-                                it.hasInfiniteAmmo = boolArg
-                            }
+                            InfiniteAmmoCapability.set(entity, boolArg)
                         }
 
                         if (entities.size == 1) {

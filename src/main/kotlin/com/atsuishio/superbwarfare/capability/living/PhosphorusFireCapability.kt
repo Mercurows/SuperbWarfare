@@ -2,33 +2,33 @@ package com.atsuishio.superbwarfare.capability.living
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.init.ModDataAttachments
-import net.minecraft.core.HolderLookup
-import net.minecraft.nbt.CompoundTag
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.world.entity.LivingEntity
-import net.neoforged.neoforge.common.util.INBTSerializable
-import javax.annotation.ParametersAreNonnullByDefault
+import net.minecraft.world.entity.Entity
 
-class PhosphorusFireCapability(var isOnFire: Boolean = false) : INBTSerializable<CompoundTag> {
-
-    override fun serializeNBT(provider: HolderLookup.Provider) = CompoundTag().apply {
-        putBoolean(TAG_PHOSPHORUS_FIRE, isOnFire)
-    }
-
-    @ParametersAreNonnullByDefault
-    override fun deserializeNBT(provider: HolderLookup.Provider, nbt: CompoundTag) {
-        if (nbt.contains(TAG_PHOSPHORUS_FIRE)) {
-            this.isOnFire = nbt.getBoolean(TAG_PHOSPHORUS_FIRE)
-        }
-    }
+@Serializable
+data class PhosphorusFireCapability(
+    @SerialName("SbwPhosphorusFire")
+    val isOnFire: Boolean = false
+) {
 
     companion object {
         val ID: ResourceLocation = loc("phosphorus_fire_capability")
-        const val TAG_PHOSPHORUS_FIRE: String = "SbwPhosphorusFire"
 
         @JvmStatic
-        fun of(living: LivingEntity): PhosphorusFireCapability {
-            return living.getData(ModDataAttachments.PHOSPHORUS_FIRE)
+        fun get(entity: Entity): PhosphorusFireCapability {
+            return entity.getData(ModDataAttachments.PHOSPHORUS_FIRE)
+        }
+
+        @JvmStatic
+        fun set(entity: Entity, value: Boolean) {
+            entity.setData(ModDataAttachments.PHOSPHORUS_FIRE, PhosphorusFireCapability(value))
+        }
+
+        @JvmStatic
+        fun set(entity: Entity, value: PhosphorusFireCapability) {
+            entity.setData(ModDataAttachments.PHOSPHORUS_FIRE, value)
         }
     }
 }
