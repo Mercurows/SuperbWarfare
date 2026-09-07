@@ -187,7 +187,7 @@ object ModItems {
     @JvmField val RPG_ROCKET_STANDARD = registerAmmo<RpgRocketStandardItem>("rpg_rocket_standard")
     @JvmField val RPG_ROCKET_TBG = registerAmmo<RpgRocketTBGItem>("rpg_rocket_tbg")
     @JvmField val JAVELIN_MISSILE = registerAmmo("javelin_missile") { Item(Properties().stacksTo(4)) }
-    @JvmField val LUNGE_MINE = registerAmmo<LungeMine>("lunge_mine")
+    @JvmField val LUNGE_MINE = registerAmmo<LungeMineItem>("lunge_mine")
     @JvmField val SMALL_SHELL_AP = registerAmmo("small_shell_ap")
     @JvmField val SMALL_SHELL_HE = registerAmmo("small_shell_he")
     @JvmField val SMALL_SHELL_GS = registerAmmo("small_shell_gs")
@@ -201,8 +201,8 @@ object ModItems {
     @JvmField val LARGE_SHELL_CM = registerAmmo("large_shell_cm") { Item(Properties().rarity(Rarity.RARE)) }
     @JvmField val LARGE_SHELL_GS = registerAmmo("large_shell_gs") { Item(Properties().rarity(Rarity.RARE)) }
     @JvmField val LARGE_SHELL_WP = registerAmmo("large_shell_wp") { Item(Properties().rarity(Rarity.RARE)) }
-    @JvmField val HAND_GRENADE = registerAmmo<HandGrenade>("hand_grenade")
-    @JvmField val RGO_GRENADE = registerAmmo<RgoGrenade>("rgo_grenade")
+    @JvmField val HAND_GRENADE = registerAmmo<HandGrenadeItem>("hand_grenade")
+    @JvmField val RGO_GRENADE = registerAmmo<RgoGrenadeItem>("rgo_grenade")
     @JvmField val M18_SMOKE_GRENADE = registerAmmo<M18SmokeGrenadeItem>("m18_smoke_grenade")
     @JvmField val CLAYMORE_MINE = registerAmmo<ClaymoreMineItem>("claymore_mine")
     @JvmField val TM_62 = registerAmmo<Tm62Item>("tm_62")

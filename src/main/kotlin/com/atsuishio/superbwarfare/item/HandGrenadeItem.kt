@@ -33,7 +33,12 @@ import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent
 import kotlin.math.min
 
-open class HandGrenade : Item(Properties().rarity(Rarity.UNCOMMON)), DispenserLaunchable {
+@Deprecated("reserved for compatibility, DO NOT USE")
+sealed interface HandGrenade
+
+open class HandGrenadeItem : Item(Properties().rarity(Rarity.UNCOMMON)), DispenserLaunchable,
+    @Suppress("DEPRECATION") HandGrenade {
+
     @EventBusSubscriber(modid = Mod.MODID)
     companion object {
         @SubscribeEvent

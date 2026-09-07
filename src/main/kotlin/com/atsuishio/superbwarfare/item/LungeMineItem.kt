@@ -40,15 +40,18 @@ import software.bernie.geckolib.animation.PlayState
 import software.bernie.geckolib.animation.RawAnimation
 import software.bernie.geckolib.util.GeckoLibUtil
 
+@Deprecated("reserved for compatibility, DO NOT USE")
+sealed interface LungeMine
+
 // 不要改这个东西，会肘击 YSM
-open class LungeMine : Item(Properties().stacksTo(4)), GeoItem {
+open class LungeMineItem : Item(Properties().stacksTo(4)), GeoItem, @Suppress("DEPRECATION") LungeMine {
     private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
 
     fun getTransformType(type: ItemDisplayContext?) {
         transformType = type
     }
 
-    private fun idlePredicate(event: AnimationState<LungeMine?>): PlayState? {
+    private fun idlePredicate(event: AnimationState<LungeMineItem?>): PlayState? {
         val player = localPlayer ?: return PlayState.STOP
         if (ClientEventHandler.lungeSprint > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.lunge_mine.sprint"))
@@ -70,7 +73,7 @@ open class LungeMine : Item(Properties().stacksTo(4)), GeoItem {
     }
 
     override fun registerControllers(data: ControllerRegistrar) {
-        val idleController = AnimationController<LungeMine>(
+        val idleController = AnimationController<LungeMineItem>(
             this,
             "idleController",
             2
