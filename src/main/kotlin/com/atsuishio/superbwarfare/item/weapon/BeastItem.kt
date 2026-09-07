@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.entity.mixin.BeastEntityKiller
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModRarities
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.network.message.receive.LivingGunKillMessage
 import com.atsuishio.superbwarfare.tools.TraceTool
@@ -34,6 +35,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.gameevent.GameEvent
 import net.minecraft.world.phys.AABB
 
+@RegistryName("beast")
 open class BeastItem : SwordItem(
     Tiers.NETHERITE, 0, 0f, Properties()
         .stacksTo(1)

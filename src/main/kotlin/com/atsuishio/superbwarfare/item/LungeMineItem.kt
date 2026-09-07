@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.renderer.item.LungeMineRenderer
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.google.common.collect.HashMultimap
 import com.google.common.collect.Multimap
@@ -44,6 +45,7 @@ import java.util.function.Consumer
 @Deprecated("reserved for compatibility, DO NOT USE")
 sealed interface LungeMine
 
+@RegistryName("lunge_mine")
 open class LungeMineItem : Item(Properties().stacksTo(4)), GeoItem, @Suppress("DEPRECATION") LungeMine {
     private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
 

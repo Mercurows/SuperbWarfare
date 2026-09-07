@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.client.TooltipTool
 import com.atsuishio.superbwarfare.config.server.MapConfig
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModKeyMappings
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.network.message.receive.OpenTacticalMapScreenMessage
 import com.atsuishio.superbwarfare.tools.sendPacket
 import net.minecraft.ChatFormatting
@@ -21,6 +22,7 @@ import top.theillusivec4.curios.api.CuriosApi
 import top.theillusivec4.curios.api.SlotContext
 import top.theillusivec4.curios.api.type.capability.ICurioItem
 
+@RegistryName("tactical_terminal")
 open class TacticalTerminalItem : Item(Properties().stacksTo(1).rarity(Rarity.UNCOMMON)), ICurioItem {
     override fun canEquip(slotContext: SlotContext, stack: ItemStack?): Boolean {
         return CuriosApi.getCuriosInventory(slotContext.entity)

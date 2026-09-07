@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.item.misc
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.init.RegistryName
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
 import net.minecraft.world.InteractionHand
@@ -12,6 +13,7 @@ import net.minecraft.world.item.Rarity
 import net.minecraft.world.item.TooltipFlag
 import net.minecraft.world.level.Level
 
+@RegistryName("creative_vehicle_key")
 class CreativeVehicleKeyItem : VehicleKeyItem(Properties().stacksTo(1).rarity(Rarity.EPIC)) {
     override fun appendHoverText(
         stack: ItemStack,

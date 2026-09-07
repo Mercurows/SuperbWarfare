@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.item.DispenserLaunchable
 import net.minecraft.core.BlockSource
 import net.minecraft.core.Position
@@ -22,6 +23,7 @@ import net.minecraftforge.client.event.RegisterColorHandlersEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber
 
+@RegistryName("potion_mortar_shell")
 class PotionMortarShellItem : MortarShellItem(), DispenserLaunchable {
     override fun getDefaultInstance(): ItemStack {
         return PotionUtils.setPotion(super.getDefaultInstance(), Potions.POISON)

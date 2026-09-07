@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModBlockEntities
 import com.atsuishio.superbwarfare.init.ModBlocks
 import com.atsuishio.superbwarfare.init.ModEntities
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.tools.component1
 import com.atsuishio.superbwarfare.tools.component2
 import com.atsuishio.superbwarfare.tools.component3
@@ -40,6 +41,7 @@ import org.joml.Math
 import java.util.function.Consumer
 import kotlin.jvm.optionals.getOrNull
 
+@RegistryName("container")
 class ContainerBlockItem : BlockItem(ModBlocks.CONTAINER.get(), Properties().stacksTo(1).fireResistant()) {
     override fun canBeHurtBy(pDamageSource: DamageSource): Boolean {
         return super.canBeHurtBy(pDamageSource) && !pDamageSource.`is`(DamageTypeTags.IS_EXPLOSION) && !pDamageSource.`is`(

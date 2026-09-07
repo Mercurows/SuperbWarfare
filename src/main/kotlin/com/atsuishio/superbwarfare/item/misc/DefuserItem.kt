@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.item.misc
 
 import com.atsuishio.superbwarfare.entity.projectile.C4Entity
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.tools.FormatTool.format1DZZ
 import com.atsuishio.superbwarfare.tools.TraceTool
 import net.minecraft.ChatFormatting
@@ -14,6 +15,7 @@ import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 
+@RegistryName("defuser")
 open class DefuserItem : Item(Properties().durability(8)) {
     override fun use(pLevel: Level, pPlayer: Player, pUsedHand: InteractionHand): InteractionResultHolder<ItemStack> {
         val stack = pPlayer.getItemInHand(pUsedHand)

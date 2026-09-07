@@ -3,12 +3,14 @@ package com.atsuishio.superbwarfare.item.blockitem
 import com.atsuishio.superbwarfare.client.tooltip.component.ChargingStationImageComponent
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.init.ModBlocks
+import com.atsuishio.superbwarfare.init.RegistryName
 import net.minecraft.world.inventory.tooltip.TooltipComponent
 import net.minecraft.world.item.BlockItem
 import net.minecraft.world.item.ItemStack
 import java.util.*
 import kotlin.math.roundToInt
 
+@RegistryName("charging_station")
 class ChargingStationBlockItem : BlockItem(ModBlocks.CHARGING_STATION.get(), Properties().stacksTo(1)) {
     override fun isBarVisible(pStack: ItemStack): Boolean {
         val tag = getBlockEntityData(pStack)

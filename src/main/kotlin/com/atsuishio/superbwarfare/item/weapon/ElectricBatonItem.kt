@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.tooltip.component.CellImageComponent
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.tiers.ModItemTier
 import net.minecraft.ChatFormatting
 import net.minecraft.nbt.CompoundTag
@@ -25,6 +26,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider
 import org.joml.Math
 import java.util.*
 
+@RegistryName("electric_baton")
 class ElectricBatonItem : SwordItem(ModItemTier.STEEL, 2, -2.5f, Properties().durability(1114)) {
     private val energyCapacity: () -> Int = { MAX_ENERGY }
 

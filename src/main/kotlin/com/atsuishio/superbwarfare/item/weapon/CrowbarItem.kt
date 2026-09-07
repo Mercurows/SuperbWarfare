@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.item.weapon
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.item.IVehicleInteract
 import com.google.common.collect.HashMultimap
 import com.google.common.collect.Multimap
@@ -23,6 +24,7 @@ import net.minecraftforge.common.ForgeMod
 import net.minecraftforge.items.ItemHandlerHelper
 import java.util.*
 
+@RegistryName("crowbar")
 open class CrowbarItem : SwordItem(Tiers.IRON, 2, -2f, Properties().durability(400)),
     IVehicleInteract {
     override fun getAttributeModifiers(

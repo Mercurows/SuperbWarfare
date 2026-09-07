@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.entity.projectile.C4Entity
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.item.DispenserLaunchable
 import net.minecraft.ChatFormatting
 import net.minecraft.core.BlockSource
@@ -24,6 +25,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.DispenserBlock
 import net.minecraft.world.phys.Vec3
 
+@RegistryName("c4_bomb")
 open class C4BombItem : Item(Properties()), DispenserLaunchable {
     override fun use(level: Level, player: Player, hand: InteractionHand): InteractionResultHolder<ItemStack?> {
         val stack = player.getItemInHand(hand)

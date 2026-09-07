@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.client.TooltipTool
 import com.atsuishio.superbwarfare.client.screens.FiringParametersScreen
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.item.IVehicleInteract
 import com.atsuishio.superbwarfare.item.ItemScreenProvider
 import com.atsuishio.superbwarfare.tools.component1
@@ -43,6 +44,7 @@ var ItemStack.firingParameters: FiringParametersItem.Parameters
         tag.putBoolean("IsDepressed", value.isDepressed)
     }
 
+@RegistryName("firing_parameters")
 class FiringParametersItem : Item(Properties().stacksTo(1)), ItemScreenProvider, IVehicleInteract {
     @JvmRecord
     data class Parameters(val pos: BlockPos, val radius: Int, val isDepressed: Boolean) {

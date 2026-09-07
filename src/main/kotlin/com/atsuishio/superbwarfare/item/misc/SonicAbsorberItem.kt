@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.item.misc
 
 import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.registerToEventBus
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.InteractionHand
@@ -15,6 +16,7 @@ import net.minecraft.world.level.Level
 import net.minecraftforge.event.entity.living.LivingHurtEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 
+@RegistryName("sonic_absorber")
 object SonicAbsorberItem : Item(Properties().rarity(Rarity.EPIC)) {
 
     init {

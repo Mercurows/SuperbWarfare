@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.item.gun.special
 import com.atsuishio.superbwarfare.client.GunRendererBuilder
 import com.atsuishio.superbwarfare.client.model.item.BeastGunTestModel
 import com.atsuishio.superbwarfare.init.ModRarities
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem
 import com.atsuishio.superbwarfare.item.weapon.BeastItem.Companion.beastKill
 import com.atsuishio.superbwarfare.tools.TraceTool
@@ -20,6 +21,7 @@ import software.bernie.geckolib.renderer.GeoItemRenderer
 import java.util.function.Supplier
 import javax.annotation.ParametersAreNonnullByDefault
 
+@RegistryName("beast_gun_test")
 open class BeastGunTestItem : GunGeoItem(Properties().rarity(ModRarities.BEAST)) {
     override fun isDamageable(stack: ItemStack?): Boolean {
         return false

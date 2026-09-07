@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.item.misc
 
 import com.atsuishio.superbwarfare.entity.living.DPSGeneratorEntity
 import com.atsuishio.superbwarfare.init.ModEntities
+import com.atsuishio.superbwarfare.init.RegistryName
 import net.minecraft.ChatFormatting
 import net.minecraft.core.Direction
 import net.minecraft.network.chat.Component
@@ -24,6 +25,7 @@ import net.minecraft.world.level.gameevent.GameEvent
 import net.minecraft.world.phys.HitResult
 import java.util.function.Predicate
 
+@RegistryName("dps_generator_deployer")
 class DPSGeneratorDeployerItem : Item(Properties()) {
     override fun appendHoverText(
         pStack: ItemStack,

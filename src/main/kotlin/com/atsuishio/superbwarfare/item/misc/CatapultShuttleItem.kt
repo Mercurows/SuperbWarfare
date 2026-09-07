@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.block.AircraftCatapultBlock
 import com.atsuishio.superbwarfare.compat.valkyrienskies.ValkyrienSkiesCompat
 import com.atsuishio.superbwarfare.entity.misc.CatapultShuttleEntity
 import com.atsuishio.superbwarfare.init.ModBlocks
+import com.atsuishio.superbwarfare.init.RegistryName
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.stats.Stats
@@ -24,6 +25,7 @@ import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
 import kotlin.math.atan2
 
+@RegistryName("catapult_shuttle")
 open class CatapultShuttleItem : AbstractDeployerItem(Properties().rarity(Rarity.COMMON)) {
 
     override fun useOn(context: UseOnContext): InteractionResult {

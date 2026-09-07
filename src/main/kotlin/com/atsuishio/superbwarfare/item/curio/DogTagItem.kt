@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.client.TooltipTool
 import com.atsuishio.superbwarfare.client.screens.DogTagEditorScreen
 import com.atsuishio.superbwarfare.client.tooltip.component.DogTagImageComponent
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.item.IVehicleInteract
 import com.atsuishio.superbwarfare.item.ItemScreenProvider
 import net.minecraft.client.gui.screens.Screen
@@ -23,6 +24,7 @@ import top.theillusivec4.curios.api.SlotContext
 import top.theillusivec4.curios.api.type.capability.ICurioItem
 import java.util.*
 
+@RegistryName("dog_tag")
 open class DogTagItem : Item(Properties().stacksTo(1)), ICurioItem, ItemScreenProvider, IVehicleInteract {
     override fun appendHoverText(
         pStack: ItemStack,

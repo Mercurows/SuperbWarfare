@@ -2,10 +2,12 @@ package com.atsuishio.superbwarfare.item.gun.special
 
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.ShootParameters
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.item.gun.GeoGunItemV2
 import net.minecraft.world.entity.Entity
 import net.minecraftforge.common.capabilities.ForgeCapabilities
 
+@RegistryName("taser")
 object TaserItem : GeoGunItemV2(Properties()) {
 
     override fun afterShoot(parameters: ShootParameters) {

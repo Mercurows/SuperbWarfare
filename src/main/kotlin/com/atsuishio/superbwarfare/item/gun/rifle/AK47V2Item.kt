@@ -1,8 +1,10 @@
 package com.atsuishio.superbwarfare.item.gun.rifle
 
 import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.item.gun.GeoGunItemV2
 
+@RegistryName("ak_47_v2")
 object AK47V2Item : GeoGunItemV2(Properties()) {
 
     override fun hasCustomGrip(data: GunData): Boolean = true

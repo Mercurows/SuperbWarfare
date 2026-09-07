@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.advancement.CriteriaRegister
 import com.atsuishio.superbwarfare.entity.projectile.RpgRocketStandardEntity
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.item.DispenserLaunchable
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.google.common.collect.HashMultimap
@@ -25,6 +26,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 import kotlin.random.Random
 
+@RegistryName("rpg_rocket_standard")
 open class RpgRocketStandardItem : Item(Properties().stacksTo(16)), DispenserLaunchable {
     override fun getAttributeModifiers(
         slot: EquipmentSlot,

@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.block.VehicleAssemblingTableBlock
 import com.atsuishio.superbwarfare.block.property.BlockPart
 import com.atsuishio.superbwarfare.client.renderer.item.VehicleAssemblingTableBlockItemRenderer
 import com.atsuishio.superbwarfare.init.ModBlocks
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.tools.mc
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer
 import net.minecraft.core.BlockPos
@@ -16,6 +17,7 @@ import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraftforge.client.extensions.common.IClientItemExtensions
 import java.util.function.Consumer
 
+@RegistryName("vehicle_assembling_table")
 class VehicleAssemblingTableBlockItem : BlockItem(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get(), Properties()) {
 
     // 多方块额外碰撞检测

@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.entity.projectile.HandGrenadeEntity
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.tools.CustomExplosion
 import com.atsuishio.superbwarfare.tools.mc
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer
@@ -32,6 +33,7 @@ import kotlin.math.min
 @Deprecated("reserved for compatibility, DO NOT USE")
 sealed interface HandGrenade
 
+@RegistryName("hand_grenade")
 open class HandGrenadeItem : Item(Properties().rarity(Rarity.UNCOMMON)), DispenserLaunchable,
     @Suppress("DEPRECATION") HandGrenade {
 

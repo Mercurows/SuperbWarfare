@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.entity.projectile.RgoGrenadeEntity
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.tools.CustomExplosion
 import net.minecraft.core.BlockSource
 import net.minecraft.core.Position
@@ -27,6 +28,7 @@ import kotlin.math.min
 @Deprecated("reserved for compatibility, DO NOT USE")
 sealed interface RgoGrenade
 
+@RegistryName("rgo_grenade")
 open class RgoGrenadeItem : Item(Properties().rarity(Rarity.UNCOMMON)), DispenserLaunchable,
     @Suppress("DEPRECATION") RgoGrenade {
     override fun use(worldIn: Level, playerIn: Player, handIn: InteractionHand): InteractionResultHolder<ItemStack> {

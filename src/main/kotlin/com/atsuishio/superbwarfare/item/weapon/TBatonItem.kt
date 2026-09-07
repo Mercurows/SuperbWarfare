@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.item.weapon
 
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.tiers.ModItemTier
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.LivingEntity
@@ -8,6 +9,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.SwordItem
 import org.joml.Math
 
+@RegistryName("t_baton")
 class TBatonItem : SwordItem(ModItemTier.STEEL, 3, -2f, Properties().durability(1115)) {
     override fun hurtEnemy(pStack: ItemStack, pTarget: LivingEntity, pAttacker: LivingEntity): Boolean {
         pAttacker.level().playSound(

@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.item.projectile
 
 import com.atsuishio.superbwarfare.entity.projectile.EDDEntity
+import com.atsuishio.superbwarfare.init.RegistryName
 import net.minecraft.ChatFormatting
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
@@ -15,6 +16,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.gameevent.GameEvent
 import net.minecraft.world.phys.Vec3
 
+@RegistryName("edd")
 open class EDDItem : Item(Properties()) {
     override fun appendHoverText(
         pStack: ItemStack,

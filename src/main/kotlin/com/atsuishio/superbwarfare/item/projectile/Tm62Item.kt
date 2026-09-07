@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.item.projectile
 import com.atsuishio.superbwarfare.client.renderer.item.Tm62ItemRenderer
 import com.atsuishio.superbwarfare.entity.projectile.Tm62Entity
 import com.atsuishio.superbwarfare.init.ModEntities
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.item.DispenserLaunchable
 import com.atsuishio.superbwarfare.tools.mc
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer
@@ -21,6 +22,7 @@ import net.minecraftforge.client.extensions.common.IClientItemExtensions
 import org.joml.Math
 import java.util.function.Consumer
 
+@RegistryName("tm_62")
 open class Tm62Item : Item(Properties().stacksTo(8)), DispenserLaunchable {
     override fun initializeClient(consumer: Consumer<IClientItemExtensions>) {
         super.initializeClient(consumer)

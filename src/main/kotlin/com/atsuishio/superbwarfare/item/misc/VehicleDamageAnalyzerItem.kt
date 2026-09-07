@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.item.misc
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.item.IVehicleInteract
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
@@ -13,6 +14,7 @@ import net.minecraft.world.item.Rarity
 import net.minecraft.world.item.TooltipFlag
 import net.minecraft.world.level.Level
 
+@RegistryName("vehicle_damage_analyzer")
 class VehicleDamageAnalyzerItem : Item(Properties().stacksTo(1).rarity(Rarity.UNCOMMON)), IVehicleInteract {
     override fun appendHoverText(
         pStack: ItemStack,

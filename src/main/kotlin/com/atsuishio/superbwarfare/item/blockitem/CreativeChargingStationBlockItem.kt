@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.item.blockitem
 
 import com.atsuishio.superbwarfare.capability.energy.InfiniteEnergyStorage
 import com.atsuishio.superbwarfare.init.ModBlocks
+import com.atsuishio.superbwarfare.init.RegistryName
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.item.BlockItem
@@ -12,6 +13,7 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities
 import net.minecraftforge.common.capabilities.ICapabilityProvider
 import net.minecraftforge.common.util.LazyOptional
 
+@RegistryName("creative_charging_station")
 class CreativeChargingStationBlockItem :
     BlockItem(ModBlocks.CREATIVE_CHARGING_STATION.get(), Properties().rarity(Rarity.EPIC).stacksTo(1)) {
     override fun initCapabilities(stack: ItemStack?, tag: CompoundTag?): ICapabilityProvider {

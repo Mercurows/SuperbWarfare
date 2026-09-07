@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.item.weapon
 
 import com.atsuishio.superbwarfare.client.renderer.item.MilitaryShovelRenderer
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.tiers.ModItemTier
 import com.atsuishio.superbwarfare.tools.mc
 import net.minecraft.ChatFormatting
@@ -29,6 +30,7 @@ import net.minecraftforge.common.ToolAction
 import net.minecraftforge.common.ToolActions
 import java.util.function.Consumer
 
+@RegistryName("military_shovel")
 open class MilitaryShovelItem :
     AxeItem(
         ModItemTier.CEMENTED_CARBIDE, 2f, -2.6f,
