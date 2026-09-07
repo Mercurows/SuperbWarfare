@@ -725,6 +725,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val rotationScaleY = (1f - 0.95f * zoomTime).coerceAtLeast(0.05f)
         val rotationScaleZ = (1f - 0.7f * zoomTime).coerceAtLeast(0.05f)
         val positionScale = (1f - 0.85f * zoomTime).coerceAtLeast(0.05f)
+        val positionScaleZ = (1f - 0.92f * zoomTime).coerceAtLeast(0.05f)
 
         val main = model.getRootBone()
         main?.let { bone ->
@@ -733,7 +734,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             bone.rotationInEuler.set(boneEuler)
             bone.x *= positionScale
             bone.y *= positionScale
-            bone.z *= positionScale
+            bone.z *= positionScaleZ
         }
 
         val cameraEuler = Vector3f(camera.rotationInEuler).mul(rotationScale).mul(-strength)
@@ -824,9 +825,13 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
         if (state.progress < 1.0f) {
             val delta = Minecraft.getInstance().deltaFrameTime.coerceAtMost(0.08f)
-            state.progress = (state.progress + delta * SCOPE_VIEW_SMOOTHING).coerceAtMost(1.0f)
-            val eased = AnimationCurves.EASE_IN_OUT_QUINT.apply(state.progress.toDouble()).toFloat()
-            state.current = blendViewTransform(state.source, state.target, eased)
+            // 指数缓动，与 onFovUpdate 中倍率的 customZoom = Mth.lerp(0.6 * delta, ...) 保持一致，
+            // 使主副镜切换时枪械瞄准点与 FOV 倍率以相同速率过渡。
+            state.progress = Mth.lerp(SCOPE_VIEW_SMOOTHING * delta, state.progress, 1f)
+            if (state.progress >= 0.999f) {
+                state.progress = 1f
+            }
+            state.current = blendViewTransform(state.source, state.target, state.progress)
         } else {
             state.current = Matrix4f(state.target)
         }
@@ -1049,7 +1054,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         private const val MAGAZINE_BONE = "magazine_pos"
         private const val SCOPE_BONE = "scope_pos"
         private const val SCOPE_VIEW_BONE = "scope_view"
-        private const val SCOPE_VIEW_SMOOTHING = 0.45f
+        private const val SCOPE_VIEW_SMOOTHING = 0.6f
         private const val STOCK_BONE = "stock_pos"
         private const val THIRDPERSON_HAND_BONE = "thirdperson_hand"
         private const val GROUND_BONE = "ground"
