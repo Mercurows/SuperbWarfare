@@ -70,9 +70,7 @@
   ],
   "AvailableAttachments": {
     "Scope": [
-      "superbwarfare:scope_coyote",
-      "superbwarfare:scope_eotech_551",
-      "superbwarfare:scope_hamr"
+      "superbwarfare:scope_handgun_red_dot"
     ],
     "Magazine": [
       "superbwarfare:magazine_extend",

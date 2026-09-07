@@ -2175,7 +2175,7 @@
 				{
 					"name": "scope_pos",
 					"parent": "huatao",
-					"pivot": [0, 2.075, 2.775]
+					"pivot": [0, 2.075, 2.675]
 				},
 				{
 					"name": "shell",

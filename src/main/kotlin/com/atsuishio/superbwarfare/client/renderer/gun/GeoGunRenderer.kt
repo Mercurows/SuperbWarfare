@@ -347,6 +347,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         packedOverlay: Int
     ) {
         renderMagazine(stack, model)
+        renderScopeMount(stack, model)
         renderScopeAttachment(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
         renderStock(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
         renderGripHandGuard(stack, model)
@@ -356,6 +357,14 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
     open fun renderMagazine(stack: ItemStack, model: GeoGunModel) {
         model.showMagazineBone(resolveMagazineBone(stack))
+    }
+
+    open fun renderScopeMount(stack: ItemStack, model: GeoGunModel) {
+        val bone = model.getBone(CUSTOM_SCOPE_MOUNT_BONE) ?: return
+        val data = GunData.from(stack)
+        val definition = data.attachment.id(AttachmentType.SCOPE)
+            ?.let { AttachmentDefinition.from(it) }
+        bone.visible = definition != null && definition.requiresRail
     }
 
     open fun renderScopeAttachment(
@@ -1063,6 +1072,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         private const val MUZZLE_FLASH_BONE = "muzzle_flash"
         private const val CUSTOM_HAND_GUARD_BONE = "custom_hand_guard"
         private const val OEM_HAND_GUARD_BONE = "oem_hand_guard"
+        private const val CUSTOM_SCOPE_MOUNT_BONE = "custom_scope_mount"
 
         private const val EDIT_FOCUS_Z_OFFSET = 0.8f
         private const val EDIT_FOCUS_SMOOTHING = 1f

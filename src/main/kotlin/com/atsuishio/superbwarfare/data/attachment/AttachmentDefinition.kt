@@ -23,6 +23,10 @@ data class AttachmentDefinition(
     @SerialName("Bone")
     val bone: String? = null,
 
+    // 安装该瞄准镜时是否需要导轨桥架；部分专用瞄准镜通过燕尾槽直装在枪身上
+    @SerialName("RequiresRail")
+    val requiresRail: Boolean = true,
+
     @SerialName("UsesGunStock")
     val usesGunStock: Boolean = false,
 
