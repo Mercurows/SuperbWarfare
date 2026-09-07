@@ -326,6 +326,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.SCOPE_EOTECH_551)
         simpleItem(ModItems.SCOPE_OKP_7)
         simpleItem(ModItems.SCOPE_ACOG)
+        simpleItem(ModItems.SCOPE_LPVO)
         simpleItem(ModItems.SILENCER_QINGLAN)
         simpleItem(ModItems.SCOPE_HAMR)
 

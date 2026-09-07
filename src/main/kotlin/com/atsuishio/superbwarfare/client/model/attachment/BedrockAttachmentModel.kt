@@ -25,6 +25,7 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
     private val instance: TreeModelInstance = baseModel.createInstance()
 
     private val defaultScopeBodyIndex: Int
+    private val dynamicDivisionIndex: Int
     private val ocularRingIndices = mutableMapOf<Int, Int>()
     private val ocularIndicesByGroup = mutableMapOf<Int, List<Int>>()
     private val isScopeOcularByGroup = mutableMapOf<Int, List<Boolean>>()
@@ -84,6 +85,7 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         }
 
         defaultScopeBodyIndex = baseModel.getIndex(SCOPE_BODY_NODE)
+        dynamicDivisionIndex = baseModel.getIndex(DYNAMIC_DIVISION_NODE)
     }
 
     private fun collectGeometryBones(boneIndex: Int, out: MutableList<Int>) {
@@ -173,6 +175,7 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         companionSightMode: ScopeMode? = null
     ) {
         markIlluminatedBones()
+        updateDynamicDivisionScale()
         val quadType = RenderType.entityTranslucent(texture)
         val triangleType = BedrockModelRenderTypes.polyMeshCutout(texture)
 
@@ -588,6 +591,14 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         }
     }
 
+    private fun updateDynamicDivisionScale() {
+        if (dynamicDivisionIndex < 0) return
+        val bone = instance.getBone(dynamicDivisionIndex) ?: return
+        val scale = ClientEventHandler.customZoom.coerceAtLeast(1.0).toFloat()
+        bone.xScale = scale
+        bone.yScale = scale
+    }
+
     private fun addSpecialIndex(list: MutableList<Int>, index: Int) {
         if (index >= 0) list += index
     }
@@ -598,6 +609,7 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         private const val SCOPE_BODY_NODE = "scope_body"
         private const val OCULAR_RING_NODE = "ocular_ring"
         private const val DIVISION_NODE = "division"
+        private const val DYNAMIC_DIVISION_NODE = "dynamic_divison"
         private const val OCULAR_NODE = "ocular"
         private const val OCULAR_SIGHT_NODE = "ocular_sight"
         private const val OCULAR_SCOPE_NODE = "ocular_scope"
