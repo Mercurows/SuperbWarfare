@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.item.weapon
 import com.atsuishio.superbwarfare.client.renderer.item.MilitaryShovelRenderer
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModTags
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.item.CustomDamageProperty
 import com.atsuishio.superbwarfare.tiers.ModItemTier
 import com.atsuishio.superbwarfare.tools.mc
@@ -31,6 +32,7 @@ import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsE
 import net.neoforged.neoforge.common.ItemAbilities
 import net.neoforged.neoforge.common.ItemAbility
 
+@RegistryName("military_shovel")
 open class MilitaryShovelItem :
     AxeItem(
         ModItemTier.CEMENTED_CARBIDE,

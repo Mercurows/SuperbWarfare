@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.item.misc
 
 import com.atsuishio.superbwarfare.entity.projectile.C4Entity
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundSource
@@ -13,6 +14,7 @@ import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 
+@RegistryName("detonator")
 open class DetonatorItem : Item(Properties().stacksTo(1)) {
     override fun use(world: Level, player: Player, hand: InteractionHand): InteractionResultHolder<ItemStack> {
         val stack = player.getItemInHand(hand)

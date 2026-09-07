@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.client.tooltip.component.CellImageComponent
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.item.CustomDamageProperty
 import com.atsuishio.superbwarfare.item.EnergyStorageItem
 import com.atsuishio.superbwarfare.tiers.ModItemTier
@@ -26,6 +27,7 @@ import org.joml.Math
 import java.util.*
 import kotlin.math.roundToInt
 
+@RegistryName("electric_baton")
 class ElectricBatonItem : SwordItem(
     ModItemTier.STEEL, CustomDamageProperty(1114).attributes(createAttributes(ModItemTier.STEEL, 2, -2.5f))
 ), EnergyStorageItem {

@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.client.renderer.item.LuckyContainerBlockItemR
 import com.atsuishio.superbwarfare.init.ModBlockEntities
 import com.atsuishio.superbwarfare.init.ModBlocks
 import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.tools.mc
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer
 import net.minecraft.nbt.CompoundTag
@@ -29,6 +30,7 @@ import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent
 
+@RegistryName("lucky_container")
 class LuckyContainerBlockItem :
     BlockItem(ModBlocks.LUCKY_CONTAINER.get(), Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant()) {
 

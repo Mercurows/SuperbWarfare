@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.entity.projectile.JavelinMissileEntity;
 import com.atsuishio.superbwarfare.init.ModRarities;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.RegistryName;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.network.message.receive.ShootClientMessage;
 import com.atsuishio.superbwarfare.perk.Perk;
@@ -27,6 +28,7 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import java.util.function.Supplier;
 
+@RegistryName("javelin")
 public class JavelinItem extends GunGeoItem {
 
     public JavelinItem() {

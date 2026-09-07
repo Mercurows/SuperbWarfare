@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.item.misc
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModTags
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.tools.NBTTool
 import com.atsuishio.superbwarfare.tools.getOrCreateTag
 import net.minecraft.ChatFormatting
@@ -24,6 +25,7 @@ import net.minecraft.world.item.UseAnim
 import net.minecraft.world.level.Level
 import javax.annotation.ParametersAreNonnullByDefault
 
+@RegistryName("armor_plate")
 open class ArmorPlateItem : Item(Properties()) {
     override fun appendHoverText(
         stack: ItemStack,

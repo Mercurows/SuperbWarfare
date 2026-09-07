@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.item.blockitem
 import com.atsuishio.superbwarfare.client.renderer.item.BlueprintResearchingTableBlockItemRenderer
 import com.atsuishio.superbwarfare.init.ModBlocks
 import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.tools.mc
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer
 import net.minecraft.world.item.BlockItem
@@ -15,6 +16,7 @@ import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache
 import software.bernie.geckolib.animation.AnimatableManager
 import software.bernie.geckolib.util.GeckoLibUtil
 
+@RegistryName("blueprint_research_table")
 class BlueprintResearchTableBlockItem : BlockItem(ModBlocks.BLUEPRINT_RESEARCH_TABLE.get(), Properties()), GeoItem {
     private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
 

@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.client.renderer.gun.Qbz191ItemRenderer;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.atsuishio.superbwarfare.init.RegistryName;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.GunsTool;
@@ -24,6 +25,7 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.function.Supplier;
 
+@RegistryName("qbz_191")
 public class Qbz191Item extends GunGeoItem {
 
     public Qbz191Item() {

@@ -5,10 +5,7 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
-import com.atsuishio.superbwarfare.init.ModDamageTypes;
-import com.atsuishio.superbwarfare.init.ModParticleTypes;
-import com.atsuishio.superbwarfare.init.ModSounds;
-import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.init.*;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
@@ -38,6 +35,7 @@ import java.util.function.Supplier;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
+@RegistryName("repair_tool")
 public class RepairToolItem extends GunGeoItem {
 
     public RepairToolItem() {

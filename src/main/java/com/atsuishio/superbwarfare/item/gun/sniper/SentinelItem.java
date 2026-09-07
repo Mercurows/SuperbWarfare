@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.data.gun.ShootParameters;
 import com.atsuishio.superbwarfare.init.ModSounds;
+import com.atsuishio.superbwarfare.init.RegistryName;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.Minecraft;
@@ -26,6 +27,7 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+@RegistryName("sentinel")
 public class SentinelItem extends GunGeoItem {
 
     public SentinelItem() {

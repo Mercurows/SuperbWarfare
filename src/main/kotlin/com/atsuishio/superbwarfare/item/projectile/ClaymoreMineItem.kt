@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.item.projectile
 
 import com.atsuishio.superbwarfare.entity.projectile.ClaymoreEntity
 import com.atsuishio.superbwarfare.init.ModEntities
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.item.DispenserLaunchable
 import net.minecraft.core.dispenser.BlockSource
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior
@@ -16,6 +17,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.DispenserBlock
 import net.minecraft.world.phys.Vec3
 
+@RegistryName("claymore_mine")
 open class ClaymoreMineItem : Item(Properties()), DispenserLaunchable {
     override fun use(level: Level, player: Player, hand: InteractionHand): InteractionResultHolder<ItemStack> {
         val stack = player.getItemInHand(hand)

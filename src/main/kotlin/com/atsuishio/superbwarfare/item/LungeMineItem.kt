@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.init.ModEnumExtensions
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.tools.localPlayer
 import net.minecraft.client.model.HumanoidModel.ArmPose
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer
@@ -43,7 +44,7 @@ import software.bernie.geckolib.util.GeckoLibUtil
 @Deprecated("reserved for compatibility, DO NOT USE")
 sealed interface LungeMine
 
-// 不要改这个东西，会肘击 YSM
+@RegistryName("lunge_mine")
 open class LungeMineItem : Item(Properties().stacksTo(4)), GeoItem, @Suppress("DEPRECATION") LungeMine {
     private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
 

@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.item.misc
 
 import com.atsuishio.superbwarfare.entity.living.TargetEntity
 import com.atsuishio.superbwarfare.init.ModEntities
+import com.atsuishio.superbwarfare.init.RegistryName
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.server.level.ServerLevel
@@ -22,6 +23,7 @@ import net.minecraft.world.level.gameevent.GameEvent
 import net.minecraft.world.phys.HitResult
 import java.util.function.Predicate
 
+@RegistryName("target_deployer")
 class TargetDeployerItem : Item(Properties()) {
     override fun useOn(pContext: UseOnContext): InteractionResult {
         val level = pContext.level

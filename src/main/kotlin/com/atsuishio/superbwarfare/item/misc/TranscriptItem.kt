@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.item.misc
 
 import com.atsuishio.superbwarfare.init.ModDataComponents
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.tools.FormatTool
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
@@ -12,6 +13,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.TooltipFlag
 import net.minecraft.world.level.Level
 
+@RegistryName("transcript")
 open class TranscriptItem : Item(Properties().stacksTo(1)) {
     override fun appendHoverText(
         stack: ItemStack,

@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.item.misc
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.entity.projectile.MedicalKitEntity
 import com.atsuishio.superbwarfare.init.ModEntities
+import com.atsuishio.superbwarfare.init.RegistryName
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerPlayer
@@ -22,6 +23,7 @@ import net.minecraft.world.item.UseAnim
 import net.minecraft.world.level.Level
 import org.joml.Math
 
+@RegistryName("medical_kit")
 open class MedicalKitItem : Item(Properties().stacksTo(16)) {
     override fun appendHoverText(
         stack: ItemStack,

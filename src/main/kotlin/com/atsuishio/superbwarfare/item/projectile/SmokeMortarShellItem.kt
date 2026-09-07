@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.item.projectile
 import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.item.IDyeableSmokeItem
 import com.atsuishio.superbwarfare.item.IDyeableSmokeItem.Companion.TAG_COLOR
 import com.atsuishio.superbwarfare.tools.getOrCreateTag
@@ -19,6 +20,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.TooltipFlag
 import net.minecraft.world.level.Level
 
+@RegistryName("mortar_shell_smoke")
 class SmokeMortarShellItem : MortarShellItem(), IDyeableSmokeItem {
     override fun setColor(stack: ItemStack, color: Int) {
         stack.getOrCreateTag().putInt(TAG_COLOR, color)

@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.item.ammo
 
 import com.atsuishio.superbwarfare.capability.entity.InfiniteAmmoCapability
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.network.message.receive.ClientInfiniteAmmoMessage
 import com.atsuishio.superbwarfare.registerToEventBus
 import com.atsuishio.superbwarfare.tools.sendPacketTo
@@ -20,6 +21,7 @@ import net.minecraft.world.level.Level
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent
 
+@RegistryName("creative_ammo_box")
 object CreativeAmmoBoxItem : Item(Properties().rarity(Rarity.EPIC).stacksTo(1)) {
 
     init {

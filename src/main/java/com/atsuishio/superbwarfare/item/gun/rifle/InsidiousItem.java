@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.item.gun.rifle;
 
 import com.atsuishio.superbwarfare.client.renderer.gun.InsidiousItemRenderer;
+import com.atsuishio.superbwarfare.init.RegistryName;
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -8,6 +9,7 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 import java.util.function.Supplier;
 
+@RegistryName("insidious")
 public class InsidiousItem extends GunGeoItem {
 
     public InsidiousItem() {

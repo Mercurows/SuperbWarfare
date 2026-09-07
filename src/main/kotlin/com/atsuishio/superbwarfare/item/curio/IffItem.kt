@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.item.curio
 
 import com.atsuishio.superbwarfare.config.server.SyncConfig
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.network.message.receive.EntityRelationSyncMessage
 import com.atsuishio.superbwarfare.network.message.receive.PlayerInfoSyncMessage
 import com.atsuishio.superbwarfare.tools.SeekTool
@@ -18,6 +19,7 @@ import top.theillusivec4.curios.api.CuriosApi
 import top.theillusivec4.curios.api.SlotContext
 import top.theillusivec4.curios.api.type.capability.ICurioItem
 
+@RegistryName("iff")
 open class IffItem : Item(Properties().stacksTo(1)), ICurioItem {
     override fun canEquip(slotContext: SlotContext, stack: ItemStack?): Boolean {
         return CuriosApi.getCuriosInventory(slotContext.entity)

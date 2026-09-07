@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.item.misc
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
 import com.atsuishio.superbwarfare.entity.misc.CatapultShuttleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.item.IVehicleInteract
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.NBTTool
@@ -24,6 +25,7 @@ import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.entity.PartEntity
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent
 
+@RegistryName("towline")
 open class TowlineItem : Item(Properties().stacksTo(1)), IVehicleInteract {
     override fun appendHoverText(
         stack: ItemStack,

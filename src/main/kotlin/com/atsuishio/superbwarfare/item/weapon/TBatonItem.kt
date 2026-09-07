@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.item.weapon
 
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.item.CustomDamageProperty
 import com.atsuishio.superbwarfare.tiers.ModItemTier
 import net.minecraft.sounds.SoundSource
@@ -9,6 +10,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.SwordItem
 import org.joml.Math
 
+@RegistryName("t_baton")
 class TBatonItem : SwordItem(
     ModItemTier.STEEL, CustomDamageProperty(1115).attributes(createAttributes(ModItemTier.STEEL, 3, -2f))
 ) {

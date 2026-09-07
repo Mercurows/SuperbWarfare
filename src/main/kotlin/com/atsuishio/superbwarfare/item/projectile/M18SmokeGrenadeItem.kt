@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.item.projectile
 import com.atsuishio.superbwarfare.entity.projectile.M18SmokeGrenadeEntity
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.item.DispenserLaunchable
 import com.atsuishio.superbwarfare.item.IDyeableSmokeItem
 import com.atsuishio.superbwarfare.item.IDyeableSmokeItem.Companion.TAG_COLOR
@@ -27,6 +28,7 @@ import net.minecraft.world.level.Level
 import javax.annotation.ParametersAreNonnullByDefault
 import kotlin.math.min
 
+@RegistryName("m18_smoke_grenade")
 open class M18SmokeGrenadeItem : Item(Properties().rarity(Rarity.UNCOMMON)), DispenserLaunchable, IDyeableSmokeItem {
     override fun setColor(stack: ItemStack, color: Int) {
         stack.getOrCreateTag().putInt(TAG_COLOR, color)

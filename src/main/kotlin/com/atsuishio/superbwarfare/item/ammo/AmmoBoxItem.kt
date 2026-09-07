@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.init.ModDataAttachments
 import com.atsuishio.superbwarfare.init.ModDataComponents
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.tools.FormatTool.format0D
 import com.atsuishio.superbwarfare.tools.SoundTool
 import com.atsuishio.superbwarfare.tools.plus
@@ -47,6 +48,7 @@ var ItemStack.ammoBoxData: AmmoBoxItem.AmmoBoxData
         }
     }
 
+@RegistryName("ammo_box")
 open class AmmoBoxItem : Item(Properties().stacksTo(1)) {
     data class AmmoBoxData(
         val selectedType: Ammo? = null,

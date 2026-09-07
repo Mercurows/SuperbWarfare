@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.renderer.item.Tm62ItemRenderer
 import com.atsuishio.superbwarfare.entity.projectile.Tm62Entity
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.item.DispenserLaunchable
 import com.atsuishio.superbwarfare.tools.mc
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer
@@ -25,6 +26,7 @@ import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent
 import org.joml.Math
 
+@RegistryName("tm_62")
 open class Tm62Item : Item(Properties().stacksTo(8)), DispenserLaunchable {
     @EventBusSubscriber(modid = Mod.MODID)
     companion object {

@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.client.tooltip.component.ChargingStationImage
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.init.ModBlocks
 import com.atsuishio.superbwarfare.init.ModDataComponents
+import com.atsuishio.superbwarfare.init.RegistryName
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
 import net.minecraft.world.inventory.tooltip.TooltipComponent
@@ -15,6 +16,7 @@ import javax.annotation.ParametersAreNonnullByDefault
 import kotlin.math.max
 import kotlin.math.roundToInt
 
+@RegistryName("charging_station")
 class ChargingStationBlockItem : BlockItem(ModBlocks.CHARGING_STATION.get(), Properties().stacksTo(1)) {
     override fun isBarVisible(stack: ItemStack): Boolean {
         val energy = stack.getOrDefault(ModDataComponents.ENERGY.get(), 0)

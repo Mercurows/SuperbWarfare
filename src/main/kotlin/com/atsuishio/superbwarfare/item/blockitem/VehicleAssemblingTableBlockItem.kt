@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.block.property.BlockPart
 import com.atsuishio.superbwarfare.client.renderer.item.VehicleAssemblingTableBlockItemRenderer
 import com.atsuishio.superbwarfare.init.ModBlocks
 import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.tools.mc
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer
 import net.minecraft.core.BlockPos
@@ -20,6 +21,7 @@ import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent
 
+@RegistryName("vehicle_assembling_table")
 class VehicleAssemblingTableBlockItem : BlockItem(ModBlocks.VEHICLE_ASSEMBLING_TABLE.get(), Properties()) {
 
     // 多方块额外碰撞检测

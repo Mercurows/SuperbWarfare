@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.entity.projectile.RpgRocketTBGEntity
 import com.atsuishio.superbwarfare.init.ModCriteriaTriggers
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.item.DispenserLaunchable
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import net.minecraft.core.Position
@@ -21,6 +22,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.component.ItemAttributeModifiers
 import net.minecraft.world.level.Level
 
+@RegistryName("rpg_rocket_tbg")
 open class RpgRocketTBGItem : Item(Properties().stacksTo(16)), DispenserLaunchable {
     override fun getDefaultAttributeModifiers(stack: ItemStack): ItemAttributeModifiers {
         val list = ArrayList(super.getDefaultAttributeModifiers(stack).modifiers())

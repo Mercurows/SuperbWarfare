@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.item.blockitem
 
 import com.atsuishio.superbwarfare.capability.energy.InfiniteEnergyStorage
 import com.atsuishio.superbwarfare.init.ModBlocks
+import com.atsuishio.superbwarfare.init.RegistryName
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
 import net.minecraft.world.item.BlockItem
@@ -11,6 +12,7 @@ import net.minecraft.world.item.TooltipFlag
 import net.neoforged.neoforge.energy.IEnergyStorage
 import javax.annotation.ParametersAreNonnullByDefault
 
+@RegistryName("creative_charging_station")
 class CreativeChargingStationBlockItem :
     BlockItem(ModBlocks.CREATIVE_CHARGING_STATION.get(), Properties().rarity(Rarity.EPIC).stacksTo(1)) {
     private val energy = InfiniteEnergyStorage()

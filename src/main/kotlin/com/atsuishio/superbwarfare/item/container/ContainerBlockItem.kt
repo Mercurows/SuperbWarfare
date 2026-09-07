@@ -5,10 +5,7 @@ import com.atsuishio.superbwarfare.api.event.RegisterContainersEvent
 import com.atsuishio.superbwarfare.client.renderer.item.ContainerBlockItemRenderer
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
-import com.atsuishio.superbwarfare.init.ModBlockEntities
-import com.atsuishio.superbwarfare.init.ModBlocks
-import com.atsuishio.superbwarfare.init.ModEntities
-import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.tools.component1
 import com.atsuishio.superbwarfare.tools.component2
 import com.atsuishio.superbwarfare.tools.component3
@@ -42,6 +39,7 @@ import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsE
 import org.joml.Math
 import kotlin.jvm.optionals.getOrNull
 
+@RegistryName("container")
 class ContainerBlockItem : BlockItem(ModBlocks.CONTAINER.get(), Properties().stacksTo(1).fireResistant()) {
 
     override fun canBeHurtBy(

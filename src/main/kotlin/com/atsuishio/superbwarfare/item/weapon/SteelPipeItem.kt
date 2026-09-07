@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.item.weapon
 
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.item.CustomDamageProperty
 import com.atsuishio.superbwarfare.tiers.ModItemTier
 import net.minecraft.core.Holder
@@ -12,6 +13,7 @@ import net.minecraft.world.item.Items
 import net.minecraft.world.item.SwordItem
 import org.joml.Math
 
+@RegistryName("steel_pipe")
 class SteelPipeItem : SwordItem(
     ModItemTier.STEEL, CustomDamageProperty(810).attributes(createAttributes(ModItemTier.STEEL, 4, -3f))
 ) {

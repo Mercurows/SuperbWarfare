@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.item.curio
 
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.tools.NBTTool
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundSource
@@ -15,7 +16,8 @@ import top.theillusivec4.curios.api.CuriosApi
 import top.theillusivec4.curios.api.SlotContext
 import top.theillusivec4.curios.api.type.capability.ICurioItem
 
-class ParachuteItem : Item(Properties().stacksTo(1).durability(600)), ICurioItem {
+@RegistryName("parachute")
+open class ParachuteItem : Item(Properties().stacksTo(1).durability(600)), ICurioItem {
     override fun isValidRepairItem(pStack: ItemStack, pRepairCandidate: ItemStack): Boolean {
         return pRepairCandidate.`is`(Items.PHANTOM_MEMBRANE)
     }

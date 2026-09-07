@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.item.material
 
+import com.atsuishio.superbwarfare.init.RegistryName
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
 import net.minecraft.world.item.Item
@@ -8,6 +9,7 @@ import net.minecraft.world.item.Rarity
 import net.minecraft.world.item.TooltipFlag
 import javax.annotation.ParametersAreNonnullByDefault
 
+@RegistryName("vehicle_reset_kit")
 class VehicleResetKitItem : Item(Properties().rarity(Rarity.UNCOMMON).stacksTo(1)) {
     override fun hasCraftingRemainingItem(stack: ItemStack): Boolean {
         return true

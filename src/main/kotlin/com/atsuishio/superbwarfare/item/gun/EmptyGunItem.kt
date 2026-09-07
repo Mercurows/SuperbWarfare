@@ -3,11 +3,13 @@ package com.atsuishio.superbwarfare.item.gun
 import com.atsuishio.superbwarfare.data.ObjectToList
 import com.atsuishio.superbwarfare.data.StringToObject
 import com.atsuishio.superbwarfare.data.gun.*
+import com.atsuishio.superbwarfare.init.RegistryName
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.TooltipFlag
 
+@RegistryName("empty_gun")
 class EmptyGunItem : GunItem(Properties()) {
 
     override fun appendHoverText(

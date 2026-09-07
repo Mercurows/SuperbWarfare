@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.item.misc
 
 import com.atsuishio.superbwarfare.client.renderer.item.SkinSprayRenderer
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.item.IVehicleInteract
 import com.atsuishio.superbwarfare.network.message.receive.OpenVehicleSkinScreenMessage
 import com.atsuishio.superbwarfare.registerToModBus
@@ -16,6 +17,7 @@ import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent
 
+@RegistryName("skin_spray")
 object SkinSprayItem : Item(Properties().stacksTo(1)), IVehicleInteract {
 
     init {

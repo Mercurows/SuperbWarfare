@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.init.ModEnumExtensions
 import com.atsuishio.superbwarfare.init.ModRarities
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.item.gun.GunGeoItem
 import com.atsuishio.superbwarfare.tools.playLocalSound
 import net.minecraft.client.model.HumanoidModel.ArmPose
@@ -19,6 +20,7 @@ import net.minecraft.world.item.ItemStack
 import software.bernie.geckolib.renderer.GeoItemRenderer
 import java.util.function.Supplier
 
+@RegistryName("super_star_shooter")
 class SuperStarShooterItem : GunGeoItem(Properties().rarity(ModRarities.SUPERB)) {
 
     override fun getRenderer(): Supplier<out GeoItemRenderer<*>> =

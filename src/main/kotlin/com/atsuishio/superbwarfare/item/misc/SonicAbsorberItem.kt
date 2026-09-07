@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.item.misc
 
 import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.registerToEventBus
 import com.atsuishio.superbwarfare.tools.getOrCreateTag
 import com.atsuishio.superbwarfare.tools.tag
@@ -17,6 +18,7 @@ import net.minecraft.world.level.Level
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent
 
+@RegistryName("sonic_absorber")
 object SonicAbsorberItem : Item(Properties().rarity(Rarity.EPIC)) {
 
     init {

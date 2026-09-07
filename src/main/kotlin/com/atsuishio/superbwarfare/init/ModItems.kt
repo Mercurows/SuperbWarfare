@@ -36,7 +36,6 @@ import com.atsuishio.superbwarfare.item.projectile.*
 import com.atsuishio.superbwarfare.item.weapon.*
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.tiers.ModItemTier
-import com.atsuishio.superbwarfare.tools.camelToSnake
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries
 import net.minecraft.world.item.*
@@ -85,68 +84,80 @@ object ModItems {
     }
 
     /**
+     * 返回 [T] 上 @RegistryName 注解声明的注册名；
+     * 类上没有该注解时直接抛出异常，避免静默生成一个错误的注册名。
+     */
+    private inline fun <reified T : Any> registryNameOf(): String {
+        return T::class.java.getAnnotation(RegistryName::class.java)?.value
+            ?: error(
+                "No @RegistryName annotation found on ${T::class.java.name}. " +
+                        "Annotate the class with @RegistryName(\"...\") or pass the registry name explicitly."
+            )
+    }
+
+    /**
      * guns
      */
     private inline fun <reified T : GunItem> registerGun(
-        id: String = T::class.java.simpleName.substringBeforeLast("Item").camelToSnake(),
+        id: String? = null,
         noinline gunSupplier: () -> T = { getInstanceOrCreate(T::class) }
-    ) = registerItem(id, GUNS, gunSupplier)
+    ) = registerItem(id ?: registryNameOf<T>(), GUNS, gunSupplier)
 
     @JvmField
     val GUNS: ItemRegister = DeferredRegister.create(BuiltInRegistries.ITEM, Mod.MODID)
 
     // @formatter:off
-    @JvmField val REPAIR_TOOL = registerGun<RepairToolItem>("repair_tool")
-    @JvmField val TASER = registerGun<TaserItem>("taser")
-    @JvmField val GLOCK_17 = registerGun<Glock17Item>("glock_17")
-    @JvmField val GLOCK_18 = registerGun<Glock18Item>("glock_18")
-    @JvmField val MP_443 = registerGun<Mp443Item>("mp_443")
-    @JvmField val M_1911 = registerGun<M1911Item>("m_1911")
-    @JvmField val HOMEMADE_SHOTGUN = registerGun<HomemadeShotgunItem>("homemade_shotgun")
-    @JvmField val NAIL_GUN = registerGun<NailGunItem>("nail_gun")
-    @JvmField val TRACHELIUM = registerGun<TracheliumItem>("trachelium")
-    @JvmField val MP_5 = registerGun<Mp5Item>("mp_5")
-    @JvmField val VECTOR = registerGun<VectorItem>("vector")
-    @JvmField val AK_47 = registerGun<AK47Item>("ak_47")
-    @JvmField val AK_47_V2 = registerGun<AK47V2Item>("ak_47_v2")
-    @JvmField val AK_12 = registerGun<AK12Item>("ak_12")
-    @JvmField val SKS = registerGun<SksItem>("sks")
-    @JvmField val M_4 = registerGun<M4Item>("m_4")
-    @JvmField val HK_416 = registerGun<Hk416Item>("hk_416")
-    @JvmField val QBZ_95 = registerGun<Qbz95Item>("qbz_95")
-    @JvmField val QBZ_191 = registerGun<Qbz191Item>("qbz_191")
-    @JvmField val INSIDIOUS = registerGun<InsidiousItem>("insidious")
-    @JvmField val MK_14 = registerGun<Mk14Item>("mk_14")
-    @JvmField val QL_1031 = registerGun<Ql1031Item>("ql_1031")
-    @JvmField val MARLIN = registerGun<MarlinItem>("marlin")
-    @JvmField val K_98 = registerGun<K98Item>("k_98")
-    @JvmField val MOSIN_NAGANT = registerGun<MosinNagantItem>("mosin_nagant")
-    @JvmField val SVD = registerGun<SvdItem>("svd")
-    @JvmField val AWM = registerGun<AwmItem>("awm")
-    @JvmField val M_98B = registerGun<M98bItem>("m_98b")
-    @JvmField val SENTINEL = registerGun<SentinelItem>("sentinel")
-    @JvmField val HUNTING_RIFLE = registerGun<HuntingRifleItem>("hunting_rifle")
-    @JvmField val NTW_20 = registerGun<Ntw20Item>("ntw_20")
-    @JvmField val M_870 = registerGun<M870Item>("m_870")
-    @JvmField val AA_12 = registerGun<Aa12Item>("aa_12")
-    @JvmField val DEVOTION = registerGun<DevotionItem>("devotion")
-    @JvmField val RPK = registerGun<RpkItem>("rpk")
-    @JvmField val M_60 = registerGun<M60Item>("m_60")
-    @JvmField val M_2_HB = registerGun<M2HBItem>("m_2_hb")
-    @JvmField val MINIGUN = registerGun<MinigunItem>("minigun")
-    @JvmField val M_79 = registerGun<M79Item>("m_79")
-    @JvmField val SECONDARY_CATACLYSM = registerGun<SecondaryCataclysmItem>("secondary_cataclysm")
-    @JvmField val RPG = registerGun<RpgItem>("rpg")
-    @JvmField val JAVELIN = registerGun<JavelinItem>("javelin")
-    @JvmField val IGLA_9K38 = registerGun<IglaItem>("igla_9k38")
-    @JvmField val BOCEK = registerGun<BocekItem>("bocek")
-    @JvmField val SUPER_STAR_SHOOTER = registerGun<SuperStarShooterItem>("super_star_shooter")
-    @JvmField val REFORGING = registerGun<ReforgingItem>("reforging")
+    @JvmField val REPAIR_TOOL = registerGun<RepairToolItem>()
+    @JvmField val TASER = registerGun<TaserItem>()
+    @JvmField val GLOCK_17 = registerGun<Glock17Item>()
+    @JvmField val GLOCK_18 = registerGun<Glock18Item>()
+    @JvmField val MP_443 = registerGun<Mp443Item>()
+    @JvmField val M_1911 = registerGun<M1911Item>()
+    @JvmField val HOMEMADE_SHOTGUN = registerGun<HomemadeShotgunItem>()
+    @JvmField val NAIL_GUN = registerGun<NailGunItem>()
+    @JvmField val TRACHELIUM = registerGun<TracheliumItem>()
+    @JvmField val MP_5 = registerGun<Mp5Item>()
+    @JvmField val VECTOR = registerGun<VectorItem>()
+    @JvmField val AK_47 = registerGun<AK47Item>()
+    @JvmField val AK_47_V2 = registerGun<AK47V2Item>()
+    @JvmField val AK_12 = registerGun<AK12Item>()
+    @JvmField val SKS = registerGun<SksItem>()
+    @JvmField val M_4 = registerGun<M4Item>()
+    @JvmField val HK_416 = registerGun<Hk416Item>()
+    @JvmField val QBZ_95 = registerGun<Qbz95Item>()
+    @JvmField val QBZ_191 = registerGun<Qbz191Item>()
+    @JvmField val INSIDIOUS = registerGun<InsidiousItem>()
+    @JvmField val MK_14 = registerGun<Mk14Item>()
+    @JvmField val QL_1031 = registerGun<Ql1031Item>()
+    @JvmField val MARLIN = registerGun<MarlinItem>()
+    @JvmField val K_98 = registerGun<K98Item>()
+    @JvmField val MOSIN_NAGANT = registerGun<MosinNagantItem>()
+    @JvmField val SVD = registerGun<SvdItem>()
+    @JvmField val AWM = registerGun<AwmItem>()
+    @JvmField val M_98B = registerGun<M98bItem>()
+    @JvmField val SENTINEL = registerGun<SentinelItem>()
+    @JvmField val HUNTING_RIFLE = registerGun<HuntingRifleItem>()
+    @JvmField val NTW_20 = registerGun<Ntw20Item>()
+    @JvmField val M_870 = registerGun<M870Item>()
+    @JvmField val AA_12 = registerGun<Aa12Item>()
+    @JvmField val DEVOTION = registerGun<DevotionItem>()
+    @JvmField val RPK = registerGun<RpkItem>()
+    @JvmField val M_60 = registerGun<M60Item>()
+    @JvmField val M_2_HB = registerGun<M2HBItem>()
+    @JvmField val MINIGUN = registerGun<MinigunItem>()
+    @JvmField val M_79 = registerGun<M79Item>()
+    @JvmField val SECONDARY_CATACLYSM = registerGun<SecondaryCataclysmItem>()
+    @JvmField val RPG = registerGun<RpgItem>()
+    @JvmField val JAVELIN = registerGun<JavelinItem>()
+    @JvmField val IGLA_9K38 = registerGun<IglaItem>()
+    @JvmField val BOCEK = registerGun<BocekItem>()
+    @JvmField val SUPER_STAR_SHOOTER = registerGun<SuperStarShooterItem>()
+    @JvmField val REFORGING = registerGun<ReforgingItem>()
 
-    @JvmField val BEAST_GUN_TEST = registerGun<BeastGunTestItem>("beast_gun_test")
+    @JvmField val BEAST_GUN_TEST = registerGun<BeastGunTestItem>()
 
-    @JvmField val VEHICLE_GUN = registerGun<VehicleGunItem>("vehicle_gun")
-    @JvmField val EMPTY_GUN = registerGun<EmptyGunItem>("empty_gun")
+    @JvmField val VEHICLE_GUN = registerGun<VehicleGunItem>()
+    @JvmField val EMPTY_GUN = registerGun<EmptyGunItem>()
     // @formatter:on
 
     /**
@@ -156,9 +167,9 @@ object ModItems {
 
     @JvmName("registerAmmoByClass")
     private inline fun <reified T : Item> registerAmmo(
-        id: String = T::class.java.simpleName.substringBeforeLast("Item").camelToSnake(),
+        id: String? = null,
         noinline ammo: () -> T = { getInstanceOrCreate(T::class) }
-    ): ItemRegistry<T> = AMMO.register(id, ammo)
+    ): ItemRegistry<T> = AMMO.register(id ?: registryNameOf<T>(), ammo)
 
     @JvmField
     val AMMO: ItemRegister = DeferredRegister.create(BuiltInRegistries.ITEM, Mod.MODID)
@@ -169,25 +180,25 @@ object ModItems {
     @JvmField val SNIPER_AMMO = registerAmmo("sniper_ammo") { AmmoSupplierItem(Ammo.SNIPER, 1, Properties()) }
     @JvmField val SHOTGUN_AMMO = registerAmmo("shotgun_ammo") { AmmoSupplierItem(Ammo.SHOTGUN, 1, Properties()) }
     @JvmField val HEAVY_AMMO = registerAmmo("heavy_ammo") { AmmoSupplierItem(Ammo.HEAVY, 1, Properties()) }
-    @JvmField val HANDGUN_AMMO_BOX = registerAmmo<HandgunAmmoBoxItem>("handgun_ammo_box")
-    @JvmField val RIFLE_AMMO_BOX = registerAmmo<RifleAmmoBoxItem>("rifle_ammo_box")
-    @JvmField val SNIPER_AMMO_BOX = registerAmmo<SniperAmmoBoxItem>("sniper_ammo_box")
-    @JvmField val SHOTGUN_AMMO_BOX = registerAmmo<ShotgunAmmoBoxItem>("shotgun_ammo_box")
-    @JvmField val CREATIVE_AMMO_BOX = registerAmmo<CreativeAmmoBoxItem>("creative_ammo_box")
-    @JvmField val AMMO_BOX = registerAmmo<AmmoBoxItem>("ammo_box")
+    @JvmField val HANDGUN_AMMO_BOX = registerAmmo<HandgunAmmoBoxItem>()
+    @JvmField val RIFLE_AMMO_BOX = registerAmmo<RifleAmmoBoxItem>()
+    @JvmField val SNIPER_AMMO_BOX = registerAmmo<SniperAmmoBoxItem>()
+    @JvmField val SHOTGUN_AMMO_BOX = registerAmmo<ShotgunAmmoBoxItem>()
+    @JvmField val CREATIVE_AMMO_BOX = registerAmmo<CreativeAmmoBoxItem>()
+    @JvmField val AMMO_BOX = registerAmmo<AmmoBoxItem>()
     @JvmField val TASER_ELECTRODE = registerAmmo("taser_electrode")
     @JvmField val GRENADE_40MM = registerAmmo("grenade_40mm")
     @JvmField val FLYING_FLARE_AMMO = registerAmmo("flying_flare_ammo")
     @JvmField val VEHICLE_SMOKE_AMMO = registerAmmo("vehicle_smoke_ammo")
 
-    @JvmField val MORTAR_SHELL = registerAmmo<MortarShellItem>("mortar_shell")
+    @JvmField val MORTAR_SHELL = registerAmmo<MortarShellItem>()
     @JvmField val MORTAR_SHELL_WP = registerAmmo<MortarShellItem>("mortar_shell_wp")
-    @JvmField val MORTAR_SHELL_SMOKE = registerAmmo<SmokeMortarShellItem>("mortar_shell_smoke")
-    @JvmField val POTION_MORTAR_SHELL = registerAmmo<PotionMortarShellItem>("potion_mortar_shell")
-    @JvmField val RPG_ROCKET_STANDARD = registerAmmo<RpgRocketStandardItem>("rpg_rocket_standard")
-    @JvmField val RPG_ROCKET_TBG = registerAmmo<RpgRocketTBGItem>("rpg_rocket_tbg")
+    @JvmField val MORTAR_SHELL_SMOKE = registerAmmo<SmokeMortarShellItem>()
+    @JvmField val POTION_MORTAR_SHELL = registerAmmo<PotionMortarShellItem>()
+    @JvmField val RPG_ROCKET_STANDARD = registerAmmo<RpgRocketStandardItem>()
+    @JvmField val RPG_ROCKET_TBG = registerAmmo<RpgRocketTBGItem>()
     @JvmField val JAVELIN_MISSILE = registerAmmo("javelin_missile") { Item(Properties().stacksTo(4)) }
-    @JvmField val LUNGE_MINE = registerAmmo<LungeMineItem>("lunge_mine")
+    @JvmField val LUNGE_MINE = registerAmmo<LungeMineItem>()
     @JvmField val SMALL_SHELL_AP = registerAmmo("small_shell_ap")
     @JvmField val SMALL_SHELL_HE = registerAmmo("small_shell_he")
     @JvmField val SMALL_SHELL_GS = registerAmmo("small_shell_gs")
@@ -201,15 +212,15 @@ object ModItems {
     @JvmField val LARGE_SHELL_CM = registerAmmo("large_shell_cm") { Item(Properties().rarity(Rarity.RARE)) }
     @JvmField val LARGE_SHELL_GS = registerAmmo("large_shell_gs") { Item(Properties().rarity(Rarity.RARE)) }
     @JvmField val LARGE_SHELL_WP = registerAmmo("large_shell_wp") { Item(Properties().rarity(Rarity.RARE)) }
-    @JvmField val HAND_GRENADE = registerAmmo<HandGrenadeItem>("hand_grenade")
-    @JvmField val RGO_GRENADE = registerAmmo<RgoGrenadeItem>("rgo_grenade")
-    @JvmField val M18_SMOKE_GRENADE = registerAmmo<M18SmokeGrenadeItem>("m18_smoke_grenade")
-    @JvmField val CLAYMORE_MINE = registerAmmo<ClaymoreMineItem>("claymore_mine")
-    @JvmField val TM_62 = registerAmmo<Tm62Item>("tm_62")
-    @JvmField val PTKM_1R = registerAmmo<Ptkm1rItem>("ptkm_1r")
-    @JvmField val C4_BOMB = registerAmmo<C4BombItem>("c4_bomb")
-    @JvmField val BLU_43_MINE = registerAmmo<Blu43MineItem>("blu_43_mine")
-    @JvmField val EDD = registerAmmo<EDDItem>("edd")
+    @JvmField val HAND_GRENADE = registerAmmo<HandGrenadeItem>()
+    @JvmField val RGO_GRENADE = registerAmmo<RgoGrenadeItem>()
+    @JvmField val M18_SMOKE_GRENADE = registerAmmo<M18SmokeGrenadeItem>()
+    @JvmField val CLAYMORE_MINE = registerAmmo<ClaymoreMineItem>()
+    @JvmField val TM_62 = registerAmmo<Tm62Item>()
+    @JvmField val PTKM_1R = registerAmmo<Ptkm1rItem>()
+    @JvmField val C4_BOMB = registerAmmo<C4BombItem>()
+    @JvmField val BLU_43_MINE = registerAmmo<Blu43MineItem>()
+    @JvmField val EDD = registerAmmo<EDDItem>()
     @JvmField val SMALL_ROCKET = registerAmmo("small_rocket") { Item(Properties().stacksTo(16)) }
     @JvmField val MEDIUM_ROCKET_AP =
         registerAmmo("medium_rocket_ap") { MediumRocketItem(500f, 6f, 100f, 0f, 0, MediumRocketEntity.Type.AP, 0) }
@@ -235,11 +246,11 @@ object ModItems {
 
     @JvmName("registerItemByClass")
     private inline fun <reified T : Item> registerItem(
-        id: String = T::class.java.simpleName.substringBeforeLast("Item").camelToSnake(),
+        id: String? = null,
         register: ItemRegister = ITEMS,
         noinline itemSupplier: () -> T = { getInstanceOrCreate(T::class) },
     ): ItemRegistry<T> {
-        return register.register(id, itemSupplier)
+        return register.register(id ?: registryNameOf<T>(), itemSupplier)
     }
 
     private fun registerBlueprint(id: String, rarity: Rarity) = registerItem(id) { BlueprintItem(rarity) }
@@ -269,14 +280,14 @@ object ModItems {
     @JvmField val LARGE_MOTOR = registerItem("large_motor")
     @JvmField val WHEEL = registerItem("wheel")
     @JvmField val TRACK = registerItem("track")
-    @JvmField val DRONE = registerItem<DroneItem>("drone")
+    @JvmField val DRONE = registerItem<DroneItem>()
 
-    @JvmField val MONITOR = registerItem<MonitorItem>("monitor")
-    @JvmField val ARTILLERY_INDICATOR = registerItem<ArtilleryIndicatorItem>("artillery_indicator")
+    @JvmField val MONITOR = registerItem<MonitorItem>()
+    @JvmField val ARTILLERY_INDICATOR = registerItem<ArtilleryIndicatorItem>()
 
-    @JvmField val DETONATOR = registerItem<DetonatorItem>("detonator")
-    @JvmField val TARGET_DEPLOYER = registerItem<TargetDeployerItem>("target_deployer")
-    @JvmField val DPS_GENERATOR_DEPLOYER = registerItem<DPSGeneratorDeployerItem>("dps_generator_deployer")
+    @JvmField val DETONATOR = registerItem<DetonatorItem>()
+    @JvmField val TARGET_DEPLOYER = registerItem<TargetDeployerItem>()
+    @JvmField val DPS_GENERATOR_DEPLOYER = registerItem<DPSGeneratorDeployerItem>()
     @JvmField val KNIFE = registerItem("knife") {
         SwordItem(
             ModItemTier.STEEL,
@@ -288,36 +299,36 @@ object ModItems {
     @JvmField val STEEL_HAMMER = registerItem("steel_hammer") { HammerItem(ModItemTier.STEEL, 9, -3.2f, Properties().durability(600)) }
     @JvmField val DIAMOND_HAMMER = registerItem("diamond_hammer") { HammerItem(Tiers.DIAMOND, 12, -3.2f, Properties().durability(1500)) }
     @JvmField val CEMENTED_CARBIDE_HAMMER = registerItem("cemented_carbide_hammer") { HammerItem(ModItemTier.CEMENTED_CARBIDE, 8, -3.2f, Properties().durability(2000)) }
-    @JvmField val NETHERITE_HAMMER = registerItem<NetheriteHammerItem>("netherite_hammer")
+    @JvmField val NETHERITE_HAMMER = registerItem<NetheriteHammerItem>()
     @JvmField val CEMENTED_CARBIDE_SWORD = registerItem("cemented_carbide_sword") { SwordItem(ModItemTier.CEMENTED_CARBIDE, Properties().attributes(createAttributes(ModItemTier.CEMENTED_CARBIDE, -2, -2.4f))) }
     @JvmField val CEMENTED_CARBIDE_PICKAXE = registerItem("cemented_carbide_pickaxe") { PickaxeItem(ModItemTier.CEMENTED_CARBIDE, Properties().attributes(createAttributes(ModItemTier.CEMENTED_CARBIDE, -4, -2.8f))) }
     @JvmField val CEMENTED_CARBIDE_AXE = registerItem("cemented_carbide_axe") { AxeItem(ModItemTier.CEMENTED_CARBIDE, Properties().attributes(createAttributes(ModItemTier.CEMENTED_CARBIDE,  0f, -3.0f))) }
     @JvmField val CEMENTED_CARBIDE_SHOVEL = registerItem("cemented_carbide_shovel") { ShovelItem(ModItemTier.CEMENTED_CARBIDE, Properties().attributes(createAttributes(ModItemTier.CEMENTED_CARBIDE, -3.5f, -3.0f))) }
     @JvmField val CEMENTED_CARBIDE_HOE = registerItem("cemented_carbide_hoe") { HoeItem(ModItemTier.CEMENTED_CARBIDE, Properties().attributes(createAttributes(ModItemTier.CEMENTED_CARBIDE, -8, 0.0f))) }
 
-    @JvmField val T_BATON = registerItem<TBatonItem>("t_baton")
-    @JvmField val ELECTRIC_BATON = registerItem<ElectricBatonItem>("electric_baton")
-    @JvmField val STEEL_PIPE = registerItem<SteelPipeItem>("steel_pipe")
-    @JvmField val CROWBAR = registerItem<CrowbarItem>("crowbar")
-    @JvmField val MILITARY_SHOVEL = registerItem<MilitaryShovelItem>("military_shovel")
-    @JvmField val DEFUSER = registerItem<DefuserItem>("defuser")
-    @JvmField val ARMOR_PLATE = registerItem<ArmorPlateItem>("armor_plate")
+    @JvmField val T_BATON = registerItem<TBatonItem>()
+    @JvmField val ELECTRIC_BATON = registerItem<ElectricBatonItem>()
+    @JvmField val STEEL_PIPE = registerItem<SteelPipeItem>()
+    @JvmField val CROWBAR = registerItem<CrowbarItem>()
+    @JvmField val MILITARY_SHOVEL = registerItem<MilitaryShovelItem>()
+    @JvmField val DEFUSER = registerItem<DefuserItem>()
+    @JvmField val ARMOR_PLATE = registerItem<ArmorPlateItem>()
 
-    @JvmField val RU_HELMET_6B47 = registerItem<RuHelmet6b47Item>("ru_helmet_6b47")
-    @JvmField val RU_CHEST_6B43 = registerItem<RuChest6b43Item>("ru_chest_6b43")
-    @JvmField val US_HELMET_PASGT = registerItem<UsHelmetPasgtItem>("us_helmet_pasgt")
-    @JvmField val US_CHEST_IOTV = registerItem<UsChestIotvItem>("us_chest_iotv")
-    @JvmField val GE_HELMET_M_35 = registerItem<GeHelmetM35Item>("ge_helmet_m_35")
-    @JvmField val PARACHUTE = registerItem<ParachuteItem>("parachute")
-    @JvmField val THERMAL_IMAGING_GOGGLES = registerItem<ThermalImagingGogglesItem>("thermal_imaging_goggles")
-    @JvmField val HANDSOME_GOGGLES = registerItem<HandsomeGogglesItem>("handsome_goggles")
-    @JvmField val TACTICAL_TERMINAL = registerItem<TacticalTerminalItem>("tactical_terminal")
+    @JvmField val RU_HELMET_6B47 = registerItem<RuHelmet6b47Item>()
+    @JvmField val RU_CHEST_6B43 = registerItem<RuChest6b43Item>()
+    @JvmField val US_HELMET_PASGT = registerItem<UsHelmetPasgtItem>()
+    @JvmField val US_CHEST_IOTV = registerItem<UsChestIotvItem>()
+    @JvmField val GE_HELMET_M_35 = registerItem<GeHelmetM35Item>()
+    @JvmField val PARACHUTE = registerItem<ParachuteItem>()
+    @JvmField val THERMAL_IMAGING_GOGGLES = registerItem<ThermalImagingGogglesItem>()
+    @JvmField val HANDSOME_GOGGLES = registerItem<HandsomeGogglesItem>()
+    @JvmField val TACTICAL_TERMINAL = registerItem<TacticalTerminalItem>()
 
-    @JvmField val SONIC_ABSORBER = registerItem<SonicAbsorberItem>("sonic_absorber")
+    @JvmField val SONIC_ABSORBER = registerItem<SonicAbsorberItem>()
 
-    @JvmField val CRUST = registerItem<CrustItem>("crust")
+    @JvmField val CRUST = registerItem<CrustItem>()
 
-    @JvmField val MORTAR_DEPLOYER = registerItem<MortarDeployerItem>("mortar_deployer")
+    @JvmField val MORTAR_DEPLOYER = registerItem<MortarDeployerItem>()
     @JvmField val MORTAR_BARREL = registerItem("mortar_barrel")
     @JvmField val MORTAR_BASE_PLATE = registerItem("mortar_base_plate")
     @JvmField val MORTAR_BIPOD = registerItem("mortar_bipod")
@@ -354,26 +365,26 @@ object ModItems {
     @JvmField val RAW_SILVER = registerItem("raw_silver")
     @JvmField val RAW_URANIUM = registerItem("raw_uranium")
     @JvmField val SLIME_COVERED_LEATHER = registerItem("slime_covered_leather")
-    @JvmField val DOG_TAG = registerItem<DogTagItem>("dog_tag")
-    @JvmField val IFF = registerItem<IffItem>("iff")
+    @JvmField val DOG_TAG = registerItem<DogTagItem>()
+    @JvmField val IFF = registerItem<IffItem>()
     @JvmField val CELL = registerItem("cell") { BatteryItem(24000, Properties()) }
     @JvmField val BATTERY = registerItem("battery") { BatteryItem(100000, Properties()) }
     @JvmField val SMALL_BATTERY_PACK = registerItem("small_battery_pack") { BatteryItem(500000, Properties()) }
     @JvmField val MEDIUM_BATTERY_PACK = registerItem("medium_battery_pack") { BatteryItem(5000000, Properties()) }
     @JvmField val LARGE_BATTERY_PACK = registerItem("large_battery_pack") { BatteryItem(20000000, Properties()) }
     @JvmField val LASER_UNIT = registerItem("laser_unit")
-    @JvmField val BEAST = registerItem<BeastItem>("beast")
-    @JvmField val TRANSCRIPT = registerItem<TranscriptItem>("transcript")
-    @JvmField val FIRING_PARAMETERS = registerItem<FiringParametersItem>("firing_parameters")
-    @JvmField val MEDICAL_KIT = registerItem<MedicalKitItem>("medical_kit")
-    @JvmField val VEHICLE_DAMAGE_ANALYZER = registerItem<VehicleDamageAnalyzerItem>("vehicle_damage_analyzer")
-    @JvmField val VEHICLE_RESET_KIT = registerItem<VehicleResetKitItem>("vehicle_reset_kit")
-    @JvmField val SKIN_SPRAY = registerItem<SkinSprayItem>("skin_spray")
-    @JvmField val VEHICLE_KEY = registerItem<VehicleKeyItem>("vehicle_key")
-    @JvmField val CREATIVE_VEHICLE_KEY = registerItem<CreativeVehicleKeyItem>("creative_vehicle_key")
-    @JvmField val TOWLINE = registerItem<TowlineItem>("towline")
-    @JvmField val TOW_BAR = registerItem<TowBarItem>("tow_bar")
-    @JvmField val CATAPULT_SHUTTLE = registerItem<CatapultShuttleItem>("catapult_shuttle")
+    @JvmField val BEAST = registerItem<BeastItem>()
+    @JvmField val TRANSCRIPT = registerItem<TranscriptItem>()
+    @JvmField val FIRING_PARAMETERS = registerItem<FiringParametersItem>()
+    @JvmField val MEDICAL_KIT = registerItem<MedicalKitItem>()
+    @JvmField val VEHICLE_DAMAGE_ANALYZER = registerItem<VehicleDamageAnalyzerItem>()
+    @JvmField val VEHICLE_RESET_KIT = registerItem<VehicleResetKitItem>()
+    @JvmField val SKIN_SPRAY = registerItem<SkinSprayItem>()
+    @JvmField val VEHICLE_KEY = registerItem<VehicleKeyItem>()
+    @JvmField val CREATIVE_VEHICLE_KEY = registerItem<CreativeVehicleKeyItem>()
+    @JvmField val TOWLINE = registerItem<TowlineItem>()
+    @JvmField val TOW_BAR = registerItem<TowBarItem>()
+    @JvmField val CATAPULT_SHUTTLE = registerItem<CatapultShuttleItem>()
 
     @JvmField val TUNGSTEN_ROD = registerItem("tungsten_rod")
 
@@ -466,9 +477,9 @@ object ModItems {
 
     @JvmName("registerBlockByClass")
     private inline fun <reified T : BlockItem> registerBlock(
-        id: String = T::class.java.simpleName.substringBeforeLast("BlockItem").camelToSnake(),
+        id: String? = null,
         noinline block: () -> T = { getInstanceOrCreate(T::class) }
-    ): ItemRegistry<T> = BLOCKS.register(id, block)
+    ): ItemRegistry<T> = BLOCKS.register(id ?: registryNameOf<T>(), block)
 
     private fun <T : Block> registerBlock(block: BlockRegistry<T>) =
         registerBlock(block.id.path) { BlockItem(block.get(), Properties()) }
@@ -498,8 +509,8 @@ object ModItems {
     @JvmField val BARBED_WIRE = registerBlock(ModBlocks.BARBED_WIRE)
     @JvmField val DRAGON_TEETH = registerBlock(ModBlocks.DRAGON_TEETH)
     @JvmField val REFORGING_TABLE = registerBlock(ModBlocks.REFORGING_TABLE)
-    @JvmField val CHARGING_STATION = registerBlock<ChargingStationBlockItem>("charging_station")
-    @JvmField val CREATIVE_CHARGING_STATION = registerBlock<CreativeChargingStationBlockItem>("creative_charging_station")
+    @JvmField val CHARGING_STATION = registerBlock<ChargingStationBlockItem>()
+    @JvmField val CREATIVE_CHARGING_STATION = registerBlock<CreativeChargingStationBlockItem>()
     @JvmField val LEAD_BLOCK = registerBlock(ModBlocks.LEAD_BLOCK)
     @JvmField val STEEL_BLOCK = registerBlock(ModBlocks.STEEL_BLOCK)
     @JvmField val TUNGSTEN_BLOCK = registerBlock(ModBlocks.TUNGSTEN_BLOCK)
@@ -518,8 +529,8 @@ object ModItems {
     @JvmField val CREATIVE_SUPERB_ITEM_INTERFACE = registerBlock(ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE.id.path) {
         BlockItem(ModBlocks.CREATIVE_SUPERB_ITEM_INTERFACE.get(), Properties().rarity(Rarity.EPIC))
     }
-    @JvmField val VEHICLE_ASSEMBLING_TABLE = registerBlock<VehicleAssemblingTableBlockItem>("vehicle_assembling_table")
-    @JvmField val BLUEPRINT_RESEARCH_TABLE = registerBlock<BlueprintResearchTableBlockItem>("blueprint_research_table")
+    @JvmField val VEHICLE_ASSEMBLING_TABLE = registerBlock<VehicleAssemblingTableBlockItem>()
+    @JvmField val BLUEPRINT_RESEARCH_TABLE = registerBlock<BlueprintResearchTableBlockItem>()
     @JvmField val BIOGAS_GENERATOR = registerBlock(ModBlocks.BIOGAS_GENERATOR)
     // @formatter:on
 
@@ -530,16 +541,16 @@ object ModItems {
 
     @JvmName("registerVehicleByClass")
     private inline fun <reified T : Item> registerVehicle(
-        id: String = T::class.java.simpleName.substringBeforeLast("Item").camelToSnake(),
+        id: String? = null,
         noinline item: () -> T = { getInstanceOrCreate(T::class) }
-    ): ItemRegistry<T> = VEHICLES.register(id, item)
+    ): ItemRegistry<T> = VEHICLES.register(id ?: registryNameOf<T>(), item)
 
     // @formatter:off
     @JvmField val VEHICLES: ItemRegister = DeferredRegister.create(BuiltInRegistries.ITEM, Mod.MODID)
 
-    @JvmField val CONTAINER = registerVehicle<ContainerBlockItem>("container")
-    @JvmField val SMALL_CONTAINER = registerVehicle<SmallContainerBlockItem>("small_container")
-    @JvmField val LUCKY_CONTAINER = registerVehicle<LuckyContainerBlockItem>("lucky_container")
+    @JvmField val CONTAINER = registerVehicle<ContainerBlockItem>()
+    @JvmField val SMALL_CONTAINER = registerVehicle<SmallContainerBlockItem>()
+    @JvmField val LUCKY_CONTAINER = registerVehicle<LuckyContainerBlockItem>()
     // @formatter:on
 
     @JvmRecord

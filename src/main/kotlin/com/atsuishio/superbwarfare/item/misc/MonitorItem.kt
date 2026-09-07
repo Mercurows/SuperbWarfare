@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.item.misc
 
 import com.atsuishio.superbwarfare.entity.vehicle.DroneEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.network.message.receive.ResetCameraTypeMessage
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.FormatTool.format1D
@@ -31,6 +32,7 @@ import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
 import javax.annotation.ParametersAreNonnullByDefault
 
+@RegistryName("monitor")
 open class MonitorItem : Item(Properties().stacksTo(1)) {
     private fun resetDroneData(drone: DroneEntity?) {
         if (drone == null) return

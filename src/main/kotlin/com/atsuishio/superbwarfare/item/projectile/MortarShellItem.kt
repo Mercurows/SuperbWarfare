@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.entity.projectile.MortarShellEntity
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
+import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.item.DispenserLaunchable
 import com.atsuishio.superbwarfare.item.IDyeableSmokeItem
 import com.atsuishio.superbwarfare.tools.tag
@@ -17,6 +18,7 @@ import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
 
+@RegistryName("mortar_shell")
 open class MortarShellItem : Item(Properties().stacksTo(8)), DispenserLaunchable {
     override fun getLaunchBehavior(): DispenseItemBehavior {
         return object : AbstractProjectileDispenseBehavior() {
