@@ -352,6 +352,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         renderStock(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
         renderGripHandGuard(stack, model)
         renderGripAttachment(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
+        renderOemMuzzle(stack, model)
         renderBarrelAttachment(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
     }
 
@@ -380,7 +381,14 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
         poseStack.pushPose()
         mulPoseWithNormal(poseStack, data.slotTransform)
-        data.model.renderToBuffer(poseStack, bufferSource, data.texture, packedLight, packedOverlay)
+        data.model.renderToBuffer(
+            poseStack,
+            bufferSource,
+            data.texture,
+            packedLight,
+            packedOverlay,
+            data.companionSightMode
+        )
         poseStack.popPose()
     }
 
@@ -410,7 +418,10 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
     private fun findStencilScope(stack: ItemStack, model: GeoGunModel): ScopeRenderData? {
         val data = resolveScopeAttachmentRender(stack, model) ?: return null
-        return if (data.model.needsStencil(data.scopeMode)) data else null
+        if (!data.model.needsStencil(data.scopeMode)) return null
+        // Magnified scopes use the same aiming progress as their ocular rendering.
+        if (data.scopeMode.isScope() && ClientEventHandler.zoomTime <= SCOPE_STENCIL_START_PROGRESS) return null
+        return data
     }
 
     private fun finishStencilCulling(bufferSource: MultiBufferSource) {
@@ -530,6 +541,14 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         return GRIP_BONE
     }
 
+    open fun renderOemMuzzle(stack: ItemStack, model: GeoGunModel) {
+        val bone = model.getBone(OEM_MUZZLE_BONE) ?: return
+        val data = GunData.from(stack)
+        val hasBarrelAttachment = data.attachment.id(AttachmentType.BARREL) != null
+                || data.attachment.get(AttachmentType.BARREL) != 0
+        bone.visible = !hasBarrelAttachment
+    }
+
     open fun renderBarrelAttachment(
         stack: ItemStack,
         model: GeoGunModel,
@@ -597,13 +616,23 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     ) {
     }
 
+    open fun scriptHasScope(stack: ItemStack): Boolean {
+        val data = GunData.from(stack)
+        return data.attachment.id(AttachmentType.SCOPE) != null
+                || data.attachment.get(AttachmentType.SCOPE) != 0
+    }
+
+    open fun scriptFrameDeltaSeconds(): Float {
+        return Minecraft.getInstance().deltaFrameTime.coerceIn(0f, 0.8f)
+    }
+
     open fun applyCustomAnimationsByScript(
         stack: ItemStack,
         model: GeoGunModel,
         transformType: ItemDisplayContext,
         partialTick: Float
     ) {
-        val script = GunResource.compute(stack).getScript() ?: return
+        val script = GunResource.getDefault(stack).getScript() ?: return
         GunScriptManager.invokeTransform(script, stack, model, transformType, partialTick, this)
     }
 
@@ -1072,8 +1101,10 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         private const val MUZZLE_FLASH_BONE = "muzzle_flash"
         private const val CUSTOM_HAND_GUARD_BONE = "custom_hand_guard"
         private const val OEM_HAND_GUARD_BONE = "oem_hand_guard"
+        private const val OEM_MUZZLE_BONE = "oem_muzzle"
         private const val CUSTOM_SCOPE_MOUNT_BONE = "custom_scope_mount"
 
+        private const val SCOPE_STENCIL_START_PROGRESS = 0.2
         private const val EDIT_FOCUS_Z_OFFSET = 0.8f
         private const val EDIT_FOCUS_SMOOTHING = 1f
         private const val EDIT_FOCUS_RETURN_SMOOTHING = 0.8f

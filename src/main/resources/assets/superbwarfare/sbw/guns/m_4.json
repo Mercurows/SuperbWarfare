@@ -24,6 +24,7 @@
     "LODModel": "superbwarfare:models/bedrock/gun_lod/m_4.geo.json",
     "LODTexture": "superbwarfare:textures/bedrock/gun_lod/m_4.png"
   },
+  "Script": "superbwarfare:scripts/guns/m_4.js",
   "FlareSize": 0.3,
   "HasSmoke": true,
   "Smoke": {

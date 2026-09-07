@@ -52,8 +52,9 @@ class DefaultGunResource : IDBasedData<DefaultGunResource> {
         return if (modelValue == null) ModelResource() else modelValue!!
     }
 
+    @JvmField
     @SerialName("Script")
-    private val script: SerializedResourceLocation? = null
+    var script: SerializedResourceLocation? = null
 
     @Transient
     @kotlin.jvm.Transient
