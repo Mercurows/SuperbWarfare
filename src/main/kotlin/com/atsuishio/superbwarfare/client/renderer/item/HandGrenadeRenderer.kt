@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.item
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
-import com.atsuishio.superbwarfare.item.HandGrenade
+import com.atsuishio.superbwarfare.item.HandGrenadeItem
 import com.atsuishio.superbwarfare.resource.model.ItemModelReloadListener
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
 import com.mojang.blaze3d.vertex.PoseStack
@@ -24,7 +24,7 @@ class HandGrenadeRenderer(dispatcher: BlockEntityRenderDispatcher, set: EntityMo
         packedLight: Int,
         packedOverlay: Int
     ) {
-        if (stack.item !is HandGrenade) return
+        if (stack.item !is HandGrenadeItem) return
         val instance = modelInstance ?: return
         poseStack.pushPose()
 

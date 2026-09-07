@@ -41,8 +41,10 @@ import software.bernie.geckolib.util.GeckoLibUtil
 import java.util.*
 import java.util.function.Consumer
 
-// 不要改这个东西，会肘击 YSM
-open class LungeMine : Item(Properties().stacksTo(4)), GeoItem {
+@Deprecated("reserved for compatibility, DO NOT USE")
+sealed interface LungeMine
+
+open class LungeMineItem : Item(Properties().stacksTo(4)), GeoItem, @Suppress("DEPRECATION") LungeMine {
     private val cache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
 
     override fun initializeClient(consumer: Consumer<IClientItemExtensions>) {
@@ -84,7 +86,7 @@ open class LungeMine : Item(Properties().stacksTo(4)), GeoItem {
         transformType = type
     }
 
-    private fun idlePredicate(event: AnimationState<LungeMine?>): PlayState? {
+    private fun idlePredicate(event: AnimationState<LungeMineItem?>): PlayState? {
         val player = localPlayer ?: return PlayState.STOP
         if (ClientEventHandler.lungeSprint > 0) {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.lunge_mine.sprint"))
@@ -106,7 +108,7 @@ open class LungeMine : Item(Properties().stacksTo(4)), GeoItem {
     }
 
     override fun registerControllers(data: AnimatableManager.ControllerRegistrar) {
-        val idleController = AnimationController<LungeMine>(
+        val idleController = AnimationController<LungeMineItem>(
             this,
             "idleController",
             2

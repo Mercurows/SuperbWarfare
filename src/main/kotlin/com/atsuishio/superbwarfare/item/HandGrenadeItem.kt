@@ -29,7 +29,11 @@ import net.minecraftforge.client.extensions.common.IClientItemExtensions
 import java.util.function.Consumer
 import kotlin.math.min
 
-open class HandGrenade : Item(Properties().rarity(Rarity.UNCOMMON)), DispenserLaunchable {
+@Deprecated("reserved for compatibility, DO NOT USE")
+sealed interface HandGrenade
+
+open class HandGrenadeItem : Item(Properties().rarity(Rarity.UNCOMMON)), DispenserLaunchable,
+    @Suppress("DEPRECATION") HandGrenade {
 
     override fun initializeClient(consumer: Consumer<IClientItemExtensions?>) {
         super.initializeClient(consumer)
@@ -44,6 +48,7 @@ open class HandGrenade : Item(Properties().rarity(Rarity.UNCOMMON)), DispenserLa
             }
         })
     }
+
     override fun use(worldIn: Level, playerIn: Player, handIn: InteractionHand): InteractionResultHolder<ItemStack> {
         val stack = playerIn.getItemInHand(handIn)
         playerIn.startUsingItem(handIn)

@@ -24,9 +24,14 @@ import net.minecraft.world.item.UseAnim
 import net.minecraft.world.level.Level
 import kotlin.math.min
 
-open class RgoGrenade : Item(Properties().rarity(Rarity.UNCOMMON)), DispenserLaunchable {
+@Deprecated("reserved for compatibility, DO NOT USE")
+sealed interface RgoGrenade
+
+open class RgoGrenadeItem : Item(Properties().rarity(Rarity.UNCOMMON)), DispenserLaunchable,
+    @Suppress("DEPRECATION") RgoGrenade {
     override fun use(worldIn: Level, playerIn: Player, handIn: InteractionHand): InteractionResultHolder<ItemStack> {
         val stack = playerIn.getItemInHand(handIn)
+
         playerIn.startUsingItem(handIn)
         if (playerIn is ServerPlayer) {
             playerIn.level().playSound(null, playerIn.onPos, ModSounds.GRENADE_PULL.get(), SoundSource.PLAYERS, 1f, 1f)
