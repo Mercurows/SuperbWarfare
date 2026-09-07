@@ -1,0 +1,23 @@
+{
+  "Slot": "Scope",
+  "Level": 1,
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 1.2
+    }
+  ],
+  "Bone": "scope_pos",
+  "Model": "superbwarfare:models/bedrock/attachment/scope_lpvo.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/scope_lpvo.png",
+  "ScopeInfo": {
+    "Type": "Scope"
+  },
+  "Zoom": {
+    "Min": 1,
+    "Max": 6,
+    "Default": 1,
+    "Step": 1.0
+  }
+}

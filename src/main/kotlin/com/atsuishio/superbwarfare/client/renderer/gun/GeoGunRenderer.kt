@@ -734,7 +734,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val rotationScaleY = (1f - 0.95f * zoomTime).coerceAtLeast(0.05f)
         val rotationScaleZ = (1f - 0.7f * zoomTime).coerceAtLeast(0.05f)
         val positionScale = (1f - 0.85f * zoomTime).coerceAtLeast(0.05f)
-        val positionScaleZ = (1f - 0.92f * zoomTime).coerceAtLeast(0.05f)
+        val positionScaleZ = (1f - 0.96f * zoomTime).coerceAtLeast(0.05f)
 
         val main = model.getRootBone()
         main?.let { bone ->
