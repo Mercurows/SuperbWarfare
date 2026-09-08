@@ -511,18 +511,26 @@
       }
     ]
   },
-  "m_4_reload_normal": {
+  "m_4_mag_in": {
     "sounds": [
       {
-        "name": "superbwarfare:gun/m_4/m_4_reload_normal",
+        "name": "superbwarfare:gun/m_4/m_4_mag_in",
         "stream": false
       }
     ]
   },
-  "m_4_reload_empty": {
+  "m_4_mag_out": {
     "sounds": [
       {
-        "name": "superbwarfare:gun/m_4/m_4_reload_empty",
+        "name": "superbwarfare:gun/m_4/m_4_mag_out",
+        "stream": false
+      }
+    ]
+  },
+  "m_4_bolt": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/m_4/m_4_bolt",
         "stream": false
       }
     ]
@@ -899,6 +907,30 @@
     "sounds": [
       {
         "name": "superbwarfare:gun/common/overheat",
+        "stream": false
+      }
+    ]
+  },
+  "common_grab_1": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/common/common_grab_1",
+        "stream": false
+      }
+    ]
+  },
+  "common_grab_2": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/common/common_grab_2",
+        "stream": false
+      }
+    ]
+  },
+  "common_grab_3": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/common/common_grab_3",
         "stream": false
       }
     ]

@@ -91,6 +91,90 @@
 				}
 			}
 		},
+		"animation.ak_12.change_fire_mode": {
+			"animation_length": 0.4,
+			"bones": {
+				"root": {
+					"rotation": {
+						"0.0": {
+							"post": [0, 0, 0],
+							"lerp_mode": "catmullrom"
+						},
+						"0.0833": {
+							"post": [-0.1, 0, -0.2],
+							"lerp_mode": "catmullrom"
+						},
+						"0.1833": {
+							"post": [-1.02396, 0.28209, -0.91269],
+							"lerp_mode": "catmullrom"
+						},
+						"0.225": {
+							"post": [-0.85512, -0.03809, 0.82462],
+							"lerp_mode": "catmullrom"
+						},
+						"0.25": {
+							"post": [-0.76, -0.05, -1.32],
+							"lerp_mode": "catmullrom"
+						},
+						"0.4": {
+							"post": [0, 0, 0],
+							"lerp_mode": "catmullrom"
+						}
+					},
+					"position": {
+						"0.0": {
+							"post": [0, 0, 0],
+							"lerp_mode": "catmullrom"
+						},
+						"0.0583": {
+							"post": [0, -0.01094, 0],
+							"lerp_mode": "catmullrom"
+						},
+						"0.2333": {
+							"post": [0, -0.02, 0],
+							"lerp_mode": "catmullrom"
+						},
+						"0.2583": {
+							"post": [0, -0.3, 0],
+							"lerp_mode": "catmullrom"
+						},
+						"0.3": {
+							"post": [0, -0.13, 0.09],
+							"lerp_mode": "catmullrom"
+						},
+						"0.3417": {
+							"post": [0, 0.01, 0.15891],
+							"lerp_mode": "catmullrom"
+						},
+						"0.4": {
+							"post": [0, 0, 0],
+							"lerp_mode": "catmullrom"
+						}
+					}
+				},
+				"lefthand": {
+					"rotation": [90.4533, -389.73135, -129.57361],
+					"position": [7.4, -17.45, -9.75]
+				},
+				"righthand": {
+					"rotation": {
+						"0.0": [100.03742, 4.92385, -179.12962],
+						"0.1083": [99.70138, 4.1268, -184.35638],
+						"0.1583": [100.00149, 0.98481, -179.82634],
+						"0.2083": [97.78878, 2.08545, -187.75324],
+						"0.3583": [100.03742, 4.92385, -179.12962]
+					},
+					"position": {
+						"0.0": [-7.05, -19.2, 1.9],
+						"0.0333": [-7.8647, -19.49999, -0.03833],
+						"0.1583": [-8.75, -16.25, -2.2],
+						"0.2083": [-8.75, -17, -2.2],
+						"0.2333": [-8.75, -17, -2.2],
+						"0.3583": [-7.05017, -19.19699, 2.20077]
+					}
+				}
+			}
+		},
 		"animation.ak_12.edit": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 0.4083,
@@ -617,17 +701,23 @@
 				}
 			},
 			"sound_effects": {
+				"0.0": {
+					"effect": "superbwarfare:common_grab_3"
+				},
 				"0.4167": {
 					"effect": "superbwarfare:ak_12_mag_out"
 				},
 				"1.1833": {
 					"effect": "superbwarfare:ak_12_mag_in"
+				},
+				"1.8667": {
+					"effect": "superbwarfare:common_grab_1"
 				}
 			}
 		},
 		"animation.ak_12.reload_empty": {
 			"loop": "hold_on_last_frame",
-			"animation_length": 2.9,
+			"animation_length": 2.7333,
 			"override_previous_animation": true,
 			"bones": {
 				"root": {
@@ -1008,17 +1098,26 @@
 				}
 			},
 			"sound_effects": {
+				"0.0833": {
+					"effect": "superbwarfare:common_grab_2"
+				},
 				"0.25": {
 					"effect": "superbwarfare:ak_12_bolt_open"
 				},
 				"0.4833": {
 					"effect": "superbwarfare:ak_12_mag_out_normal"
 				},
+				"0.9833": {
+					"effect": "superbwarfare:common_grab_3"
+				},
 				"1.55": {
 					"effect": "superbwarfare:ak_12_mag_in"
 				},
 				"2.1167": {
 					"effect": "superbwarfare:ak_12_bolt_close"
+				},
+				"2.3667": {
+					"effect": "superbwarfare:common_grab_1"
 				}
 			}
 		},
@@ -1447,11 +1546,20 @@
 				}
 			},
 			"sound_effects": {
+				"0.0": {
+					"effect": "superbwarfare:common_grab_3"
+				},
 				"0.4167": {
 					"effect": "superbwarfare:ak_12_mag_out"
 				},
+				"1.05": {
+					"effect": "superbwarfare:common_grab_2"
+				},
 				"1.5833": {
 					"effect": "superbwarfare:ak_12_mag_in"
+				},
+				"2.3": {
+					"effect": "superbwarfare:common_grab_1"
 				}
 			}
 		},
@@ -1975,14 +2083,23 @@
 				}
 			},
 			"sound_effects": {
+				"0.0": {
+					"effect": "superbwarfare:common_grab_3"
+				},
 				"0.4167": {
 					"effect": "superbwarfare:ak_12_mag_out"
+				},
+				"1.05": {
+					"effect": "superbwarfare:common_grab_2"
 				},
 				"1.5833": {
 					"effect": "superbwarfare:ak_12_mag_in"
 				},
 				"2.65": {
 					"effect": "superbwarfare:ak_12_bolt"
+				},
+				"3.2": {
+					"effect": "superbwarfare:common_grab_1"
 				}
 			}
 		}

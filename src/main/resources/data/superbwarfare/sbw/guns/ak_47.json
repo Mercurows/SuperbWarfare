@@ -1,6 +1,4 @@
 {
-  "MinZoom": 1.25,
-  "MaxZoom": 6,
   "Spread": 6,
   "HasBarrelBullet": true,
   "RecoilX": 0.0022,

@@ -4,6 +4,7 @@
   "Animation": {
     "Idle": "animation.ak_47.idle",
     "Fire": "animation.ak_47.fire",
+    "ChangeFireMode": "animation.ak_47.change_fire_mode",
     "ReloadNormal": "animation.ak_47.reload_normal",
     "ReloadEmpty": "animation.ak_47.reload_empty",
     "Edit": "animation.ak_47.edit",
