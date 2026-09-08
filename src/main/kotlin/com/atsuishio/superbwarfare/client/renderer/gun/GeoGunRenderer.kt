@@ -115,13 +115,20 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         animateRot: Quaternionf,
         partialTicks: Float
     ) {
-        // Avoid the Euler -> Quaternion -> Euler roundtrip while idle/aiming:
-        // at +/-90 degrees pitch it remaps yaw into roll.
-        if (Mth.abs(animateRot.x()) < 1e-5f &&
-            Mth.abs(animateRot.y()) < 1e-5f &&
-            Mth.abs(animateRot.z()) < 1e-5f &&
-            Mth.abs(animateRot.w() - 1f) < 1e-5f
-        ) {
+        val absolutePitch = Mth.abs(Mth.wrapDegrees(event.pitch))
+
+        // At +/-90 degrees pitch the YXZ Euler decomposition is singular: a small
+        // local animation is enough to remap the original yaw into roll. Keep the
+        // current yaw/pitch there and apply only the small animated offset.
+        if (absolutePitch >= VERTICAL_PITCH_START) {
+            val animatedEuler = YXZRotationView(animateRot).asEulerAngle()
+            event.yaw += Mth.RAD_TO_DEG * animatedEuler.y()
+            event.pitch = Mth.clamp(event.pitch + Mth.RAD_TO_DEG * animatedEuler.x(), -90f, 90f)
+            event.roll -= Mth.RAD_TO_DEG * animatedEuler.z()
+            return
+        }
+
+        if (isIdentity(animateRot)) {
             return
         }
 
@@ -138,6 +145,13 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         event.yaw = Mth.RAD_TO_DEG * euler.y()
         event.pitch = Mth.RAD_TO_DEG * euler.x()
         event.roll = -Mth.RAD_TO_DEG * euler.z()
+    }
+
+    private fun isIdentity(rotation: Quaternionf): Boolean {
+        return Mth.abs(rotation.x()) < 1e-5f &&
+                Mth.abs(rotation.y()) < 1e-5f &&
+                Mth.abs(rotation.z()) < 1e-5f &&
+                Mth.abs(Mth.abs(rotation.w()) - 1f) < 1e-5f
     }
 
     override fun applyItemInHandCameraAnimation(
@@ -1114,6 +1128,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         private const val UNFOCUSED_PAN_SMOOTHING = 12f
         private const val UNFOCUSED_PAN_YAW = 0.6f
         private const val UNFOCUSED_PAN_PITCH = 0.3f
+        private const val VERTICAL_PITCH_START = 89.0f
 
         private val BLENDER: EulerAdditiveBlender =
             SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }
