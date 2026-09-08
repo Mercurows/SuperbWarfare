@@ -633,6 +633,7 @@
   "item.superbwarfare.oem_stock_heavy": "Universal Heavy Stock",
   "item.superbwarfare.stock_ubr": "UBR Stock",
   "item.superbwarfare.stock_prs": "PRS Heavy Stock",
+  "item.superbwarfare.stock_ar_tactical": "AR Tactical Stock",
   "item.superbwarfare.osprey_silencer": "Osprey Handgun Silencer",
   "item.superbwarfare.osprey_silencer_trachelium": "Osprey Handgun Silencer (Trachelium)",
   "item.superbwarfare.scope_coyote": "Coyote Sight",
@@ -641,6 +642,7 @@
   "item.superbwarfare.scope_okp_7": "OKP-7 Sight",
   "item.superbwarfare.scope_acog": "ACOG 4x Scope",
   "item.superbwarfare.scope_lpvo": "LPVO 1-6x Variable Scope",
+  "item.superbwarfare.scope_sniper": "4-12x Variable Zoom Sniper Scope",
   "item.superbwarfare.silencer_qinglan": "Silencer (Qinglan)",
   "item.superbwarfare.scope_hamr": "HAMR Combined Scope",
 

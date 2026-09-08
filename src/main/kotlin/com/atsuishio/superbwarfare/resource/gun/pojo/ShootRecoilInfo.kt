@@ -17,7 +17,7 @@ class ShootRecoilInfo {
 
     @JvmField
     @SerialName("ZoomRate")
-    var zoomRate: Float = 0.2f
+    var zoomRate: Float = 0.5f
 
     @JvmField
     @SerialName("Speed")

@@ -60,7 +60,8 @@
       "superbwarfare:scope_okp_7",
       "superbwarfare:scope_acog",
       "superbwarfare:scope_hamr",
-      "superbwarfare:scope_lpvo"
+      "superbwarfare:scope_lpvo",
+      "superbwarfare:scope_sniper"
     ],
     "Magazine": [
       "superbwarfare:magazine_extend",
@@ -72,7 +73,8 @@
     ],
     "Stock": [
       "superbwarfare:stock_ubr",
-      "superbwarfare:stock_prs"
+      "superbwarfare:stock_prs",
+      "superbwarfare:stock_ar_tactical"
     ],
     "Barrel": [
       "superbwarfare:meowlencer",

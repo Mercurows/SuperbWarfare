@@ -34,6 +34,10 @@ data class ScopeInfo(
     @SerialName("ViewRadiusModifier")
     val viewRadiusModifier: Float = 1.0f,
 
+    // 完全瞄准后枪械沿 Z 轴（长度方向）压缩到的比例，默认 0.75
+    @SerialName("ZoomLengthScale")
+    val zoomLengthScale: Float = 0.75f,
+
     @SerialName("Modes")
     val modes: List<ScopeMode> = emptyList(),
 ) {
@@ -41,7 +45,7 @@ data class ScopeInfo(
         if (modes.isNotEmpty()) {
             return modes[index.coerceIn(modes.indices)]
         }
-        return ScopeMode(index = 0, type = type, viewRadiusModifier = viewRadiusModifier)
+        return ScopeMode(index = 0, type = type, viewRadiusModifier = viewRadiusModifier, zoomLengthScale = zoomLengthScale)
     }
 
     fun modeCount(): Int = if (modes.isEmpty()) 1 else modes.size
@@ -66,6 +70,10 @@ data class ScopeMode(
 
     @SerialName("ViewRadiusModifier")
     val viewRadiusModifier: Float = 1.0f,
+
+    // 完全瞄准后枪械沿 Z 轴（长度方向）压缩到的比例，默认 0.75
+    @SerialName("ZoomLengthScale")
+    val zoomLengthScale: Float = 0.75f,
 
     @SerialName("Zoom")
     val zoom: AttachmentZoom? = null,
