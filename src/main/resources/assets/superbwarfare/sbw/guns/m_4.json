@@ -4,6 +4,10 @@
   "Animation": {
     "Idle": "animation.m_4.idle",
     "Fire": "animation.m_4.fire",
+    "ChangeFireMode": "animation.m_4.change_fire_mode",
+    "FireModes": [
+      "animation.m_4.fire_mode_semi"
+    ],
     "ReloadNormal": "animation.m_4.reload_normal",
     "ReloadEmpty": "animation.m_4.reload_empty",
     "Edit": "animation.m_4.edit",
@@ -44,8 +48,8 @@
   "EjectShell": true,
   "ShellEject": {
     "BoneName": "shell",
-    "ShellModel": "superbwarfare:models/bedrock/shell/rifle_shell_steel.geo.json",
-    "ShellTexture": "superbwarfare:textures/bedrock/shell/rifle_shell_steel.png",
+    "ShellModel": "superbwarfare:models/bedrock/shell/rifle_shell.geo.json",
+    "ShellTexture": "superbwarfare:textures/bedrock/shell/rifle_shell.png",
     "Size": 0.6,
     "InitialVelocity": [5.8, 3.2, -0.75],
     "RandomVelocity": [0.7, 0.6, 0.3],

@@ -8050,12 +8050,12 @@
 				{
 					"name": "camera",
 					"parent": "positioning",
-					"pivot": [2.95346, 6.48322, 10.73332]
+					"pivot": [2.4535, 6.4832, 9.4833]
 				},
 				{
 					"name": "idle_view",
 					"parent": "positioning",
-					"pivot": [2.95346, 6.48322, 10.73332]
+					"pivot": [2.4535, 6.4832, 9.4833]
 				},
 				{
 					"name": "iron_view",
