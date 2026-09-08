@@ -193,7 +193,7 @@
   "des.superbwarfare.ammo_supplier": "右击使用以补充弹药",
   "item.superbwarfare.creative_ammo_box": "创造弹药盒",
   "des.superbwarfare.creative_ammo_box_1": "放置在背包中以提供无限的弹药",
-  "des.superbwarfare.creative_ammo_box_2": "右击以切换自身的无限弹药状态，右击任意实体以切换其无限弹药状态",
+  "des.superbwarfare.creative_ammo_box_2": "潜行右击以切换自身的无限弹药状态，右击任意实体以切换其无限弹药状态",
   "des.superbwarfare.creative_ammo_box.enabled": "已为%1$s开启无限弹药模式",
   "des.superbwarfare.creative_ammo_box.disabled": "已为%1$s关闭无限弹药模式",
   "item.superbwarfare.ammo_supplier.supply": "%1$s +%2$s",

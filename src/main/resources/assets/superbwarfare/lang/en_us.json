@@ -193,7 +193,7 @@
   "des.superbwarfare.ammo_supplier": "Right Click to Supply Ammo",
   "item.superbwarfare.creative_ammo_box": "Creative Ammo Box",
   "des.superbwarfare.creative_ammo_box_1": "Provides infinite ammo when placed in inventory",
-  "des.superbwarfare.creative_ammo_box_2": "Right-click to toggle your own infinite ammo mode, right-click any entity to toggle its infinite ammo mode",
+  "des.superbwarfare.creative_ammo_box_2": "Right-click while sneaking to toggle your own infinite ammo mode, right-click any entity to toggle its infinite ammo mode",
   "des.superbwarfare.creative_ammo_box.enabled": "Infinite ammo mode enabled for %1$s",
   "des.superbwarfare.creative_ammo_box.disabled": "Infinite ammo mode disabled for %1$s",
   "item.superbwarfare.ammo_supplier.supply": "%1$s +%2$s",
