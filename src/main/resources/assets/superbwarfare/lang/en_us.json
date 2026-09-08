@@ -1116,6 +1116,15 @@
   "weapon.superbwarfare.laser_auto": "LASER %1$s Auto",
   "weapon.superbwarfare.mortar_shell": "Mortar Shells %1$s",
 
+  "rarity.superbwarfare_legendary": "Legendary",
+  "rarity.superbwarfare_superb": "Superb",
+  "rarity.superbwarfare_virtual": "Virtual",
+  "rarity.superbwarfare_beast": "Beast",
+  "rarity.superbwarfare_legendary.name": "Legendary",
+  "rarity.superbwarfare_superb.name": "Superb",
+  "rarity.superbwarfare_virtual.name": "Virtual",
+  "rarity.superbwarfare_beast.name": "Beast",
+
   "config.superbwarfare.title": "SuperbWarfare: Config",
   "config.superbwarfare.client.reload": "Reload Config",
   "config.superbwarfare.client.reload.left_click_reload": "Rapid Reload",
