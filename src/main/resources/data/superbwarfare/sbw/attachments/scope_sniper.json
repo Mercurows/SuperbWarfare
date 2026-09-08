@@ -1,0 +1,24 @@
+{
+  "Slot": "Scope",
+  "Level": 1,
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 1.2
+    }
+  ],
+  "Bone": "scope_pos",
+  "Model": "superbwarfare:models/bedrock/attachment/scope_sniper.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/scope_sniper.png",
+  "ScopeInfo": {
+    "Type": "Scope",
+    "ZoomLengthScale": 0.3
+  },
+  "Zoom": {
+    "Min": 4,
+    "Max": 12,
+    "Default": 8,
+    "Step": 1.0
+  }
+}
