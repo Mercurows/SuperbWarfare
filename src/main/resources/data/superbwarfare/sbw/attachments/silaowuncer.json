@@ -1,6 +1,7 @@
 {
   "Slot": "Barrel",
   "Level": 1,
+  "Bone": "muzzle_pos",
   "Override": {
     "SoundInfo": {
       "Fire1P": "superbwarfare:laowu",
@@ -12,5 +13,7 @@
       "Fire3PFarSilent": "superbwarfare:laowu_single",
       "Fire3PVeryFarSilent": "superbwarfare:laowu_single"
     }
-  }
+  },
+  "Model": "superbwarfare:models/bedrock/attachment/silaowuncer.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/silaowuncer.png"
 }

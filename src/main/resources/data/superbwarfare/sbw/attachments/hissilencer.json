@@ -1,6 +1,7 @@
 {
   "Slot": "Barrel",
   "Level": 1,
+  "Bone": "muzzle_pos",
   "Override": {
     "SoundInfo": {
       "Fire1P": "minecraft:entity.cat.hiss",
@@ -12,5 +13,7 @@
       "Fire3PFarSilent": "minecraft:entity.cat.hiss",
       "Fire3PVeryFarSilent": "minecraft:entity.cat.hiss"
     }
-  }
+  },
+  "Model": "superbwarfare:models/bedrock/attachment/hissilencer.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/hissilencer.png"
 }
