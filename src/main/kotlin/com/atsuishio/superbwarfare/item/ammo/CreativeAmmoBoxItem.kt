@@ -43,16 +43,23 @@ object CreativeAmmoBoxItem : Item(Properties().rarity(Rarity.EPIC).stacksTo(1)) 
     }
 
     override fun use(level: Level, player: Player, usedHand: InteractionHand): InteractionResultHolder<ItemStack> {
-        invertInfiniteAmmo(player, player)
+        val item = player.getItemInHand(usedHand)
+        if (player.isShiftKeyDown) {
+            invertInfiniteAmmo(player, player)
+            return InteractionResultHolder.success(item)
+        }
         return super.use(level, player, usedHand)
     }
 
     @SubscribeEvent
     fun onEntityInteract(event: PlayerInteractEvent.EntityInteract) {
         if (!event.itemStack.`is`(this)) return
-        val res = invertInfiniteAmmo(event.entity, event.target)
+        val player = event.entity
+        if (player.level().isClientSide) return
+        val res = invertInfiniteAmmo(player, event.target)
         if (res) {
             event.cancellationResult = InteractionResult.FAIL
+            event.isCanceled = true
         }
     }
 
