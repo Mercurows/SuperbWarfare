@@ -1116,6 +1116,15 @@
   "weapon.superbwarfare.laser_auto": "激光炮 %1$s 速射",
   "weapon.superbwarfare.mortar_shell": "迫击炮弹 %1$s",
 
+  "rarity.superbwarfare_legendary": "传说",
+  "rarity.superbwarfare_superb": "卓越",
+  "rarity.superbwarfare_virtual": "虚幻",
+  "rarity.superbwarfare_beast": "野兽",
+  "rarity.superbwarfare_legendary.name": "传说",
+  "rarity.superbwarfare_superb.name": "卓越",
+  "rarity.superbwarfare_virtual.name": "虚幻",
+  "rarity.superbwarfare_beast.name": "野兽",
+
   "config.superbwarfare.title": "卓越前线",
   "config.superbwarfare.client.reload": "换弹配置",
   "config.superbwarfare.client.reload.left_click_reload": "快捷换弹",
