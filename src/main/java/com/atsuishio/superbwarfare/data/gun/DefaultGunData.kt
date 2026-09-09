@@ -149,6 +149,9 @@ class DefaultGunData : IDBasedData<DefaultGunData> {
     @SerialName("ProjectileAmount")
     var projectileAmount = 1
 
+    @SerialName("SpreadPattern")
+    var spreadPattern: ProjectileSpreadPattern? = null
+
     @SerialName("Weight")
     var weight = 1.0
 
