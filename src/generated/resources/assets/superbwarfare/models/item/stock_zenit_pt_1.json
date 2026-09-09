@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "superbwarfare:item/rpk_icon"
+    "layer0": "superbwarfare:item/stock_zenit_pt_1"
   }
 }
