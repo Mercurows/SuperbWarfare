@@ -1,0 +1,23 @@
+{
+  "Slot": "Scope",
+  "Level": 1,
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 1.0
+    }
+  ],
+  "Bone": "scope_pos",
+  "Model": "superbwarfare:models/bedrock/attachment/scope_pkas.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/scope_pkas.png",
+  "ScopeInfo": {
+    "Type": "Scope"
+  },
+  "Zoom": {
+    "Min": 1.25,
+    "Max": 1.25,
+    "Default": 1.25,
+    "Step": 1.0
+  }
+}
