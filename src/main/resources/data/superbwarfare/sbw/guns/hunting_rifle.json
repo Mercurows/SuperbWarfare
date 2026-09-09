@@ -2,9 +2,9 @@
   "Spread": 7,
   "RecoilX": 0.004,
   "RecoilY": 0.04,
-  "Damage": 65,
+  "Damage": 100,
   "Headshot": 3,
-  "Velocity": 18,
+  "Velocity": 28,
   "Magazine": 1,
   "Weight": 5,
   "DrawTime": 12,
@@ -37,14 +37,29 @@
     "!superbwarfare:longer_wire",
     "!superbwarfare:cupid_arrow"
   ],
+  "AvailableAttachments": {
+    "Scope": [
+      "superbwarfare:scope_coyote",
+      "superbwarfare:scope_eotech_551",
+      "superbwarfare:scope_okp_7",
+      "superbwarfare:scope_acog",
+      "superbwarfare:scope_hamr",
+      "superbwarfare:scope_lpvo",
+      "superbwarfare:scope_sniper"
+    ],
+    "Barrel": [
+      "superbwarfare:meowlencer",
+      "superbwarfare:hissilencer",
+      "superbwarfare:silaowuncer",
+      "superbwarfare:silencer_50_cal"
+    ]
+  },
   "SoundInfo": {
     "Fire1P": "superbwarfare:hunting_rifle_fire_1p",
     "Fire3P": "superbwarfare:hunting_rifle_fire_3p",
     "Fire3PFar": "superbwarfare:hunting_rifle_far",
     "Fire3PVeryFar": "superbwarfare:hunting_rifle_veryfar",
-    "ReloadEmpty": "superbwarfare:hunting_rifle_reload_empty",
-    "CancellableSounds": [
-      "superbwarfare:hunting_rifle_reload_empty"
-    ]
+    "Fire1PSilent": "superbwarfare:hunting_rifle_fire_1p_s",
+    "Fire3PSilent": "superbwarfare:hunting_rifle_fire_3p_s"
   }
 }

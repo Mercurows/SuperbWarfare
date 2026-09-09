@@ -111,6 +111,22 @@
       }
     ]
   },
+  "hunting_rifle_fire_1p_s": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/hunting_rifle/hunting_rifle_fire_1p_s",
+        "stream": false
+      }
+    ]
+  },
+  "hunting_rifle_fire_3p_s": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/hunting_rifle/hunting_rifle_fire_3p_s",
+        "stream": false
+      }
+    ]
+  },
   "hunting_rifle_far": {
     "sounds": [
       {
@@ -127,10 +143,26 @@
       }
     ]
   },
-  "hunting_rifle_reload_empty": {
+  "hunting_rifle_bolt_open": {
     "sounds": [
       {
-        "name": "superbwarfare:gun/hunting_rifle/hunting_rifle_reload",
+        "name": "superbwarfare:gun/hunting_rifle/hunting_rifle_bolt_open",
+        "stream": false
+      }
+    ]
+  },
+  "hunting_rifle_bolt_close": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/hunting_rifle/hunting_rifle_bolt_close",
+        "stream": false
+      }
+    ]
+  },
+  "hunting_rifle_bullet_in": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/hunting_rifle/hunting_rifle_bullet_in",
         "stream": false
       }
     ]

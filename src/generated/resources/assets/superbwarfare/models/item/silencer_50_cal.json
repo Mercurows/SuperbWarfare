@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "superbwarfare:item/hunting_rifle_icon"
+    "layer0": "superbwarfare:item/silencer_50_cal"
   }
 }

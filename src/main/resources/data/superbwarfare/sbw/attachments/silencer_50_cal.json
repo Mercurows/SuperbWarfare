@@ -1,0 +1,27 @@
+{
+  "Slot": "Barrel",
+  "Level": 0,
+  "Modifiers": [
+    {
+      "Prop": "Velocity",
+      "Op": "Add",
+      "Value": 1.5
+    },
+    {
+      "Prop": "Spread",
+      "Op": "Mul",
+      "Value": 0.85
+    },
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 1.0
+    }
+  ],
+  "Bone": "muzzle_pos",
+  "IsSilenced": true,
+  "SoundRadiusMultiplier": 0.6,
+  "MuzzleFlashScale": 0.35,
+  "Model": "superbwarfare:models/bedrock/attachment/silencer_50_cal.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/silencer_50_cal.png"
+}
