@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.item.gun.special
+package com.atsuishio.superbwarfare.item.gun.launcher
 
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
