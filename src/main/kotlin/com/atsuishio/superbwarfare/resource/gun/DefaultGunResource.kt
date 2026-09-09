@@ -162,6 +162,11 @@ class DefaultGunResource : IDBasedData<DefaultGunResource> {
     @SerialName("MovingTilt")
     var movingTilt: Boolean = true
 
+    // 是否使用自定义奔跑奔跑动画
+    @JvmField
+    @SerialName("UseCustomSprintAnimation")
+    var useCustomSprintAnimation: Boolean = false
+
     @JvmField
     @SerialName("Attachments")
     var attachmentInfo: AttachmentInfo = AttachmentInfo()

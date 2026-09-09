@@ -263,7 +263,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             applyFirstPersonPositioningTransform(poseStack, model, scopeRender, hand)
 
             val sprintOffset = resource.sprintOffset
-            ClientEventHandler.gunRootMoveV2(poseStack, sprintOffset.x, sprintOffset.y, sprintOffset.z, false)
+            ClientEventHandler.gunRootMoveV2(poseStack, sprintOffset.x, sprintOffset.y, sprintOffset.z, resource.useCustomSprintAnimation)
 
             val shootRecoil = resource.shootRecoil
             ClientEventHandler.handleShootAnimationV2(

@@ -27,8 +27,17 @@ open class GeoGunItemV2(properties: Properties) : GunItem(properties) {
                 hand: InteractionHand,
                 itemStack: ItemStack
             ): HumanoidModel.ArmPose {
-                return PoseTool.pose(entityLiving, hand, itemStack)
+                return armPose(entityLiving, hand, itemStack)
             }
         })
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    open fun armPose(
+        entityLiving: LivingEntity,
+        hand: InteractionHand,
+        itemStack: ItemStack
+    ): HumanoidModel.ArmPose {
+        return PoseTool.pose(entityLiving, hand, itemStack)
     }
 }
