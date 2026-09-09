@@ -1,22 +1,19 @@
 {
-  "MinZoom": 1.25,
-  "MaxZoom": 6,
-  "Spread": 5.5,
-  "OpenBolt": true,
+  "Spread": 7.5,
   "HasBarrelBullet": true,
   "RecoilX": 0.0018,
-  "RecoilY": 0.012,
+  "RecoilY": 0.018,
   "Damage": 9.5,
   "Headshot": 2,
   "Velocity": 20,
-  "Magazine": 40,
+  "Magazine": [40, 60, 100],
   "Weight": 7,
   "DrawTime": 14,
   "ZoomTime": 9,
   "DefaultFireMode": "Auto",
-  "NormalReloadTime": 52,
-  "EmptyReloadTime": 65,
-  "BypassesArmor": 0.23,
+  "NormalReloadTime": [54, 54, 64],
+  "EmptyReloadTime": [69, 69, 80],
+  "BypassesArmor": 0.25,
   "SoundRadius": 14,
   "RPM": 600,
   "GunType": "MachineGun",
@@ -48,20 +45,46 @@
     "!superbwarfare:longer_wire",
     "!superbwarfare:cupid_arrow"
   ],
+  "AvailableAttachments": {
+    "Scope": [
+      "superbwarfare:scope_coyote",
+      "superbwarfare:scope_eotech_551",
+      "superbwarfare:scope_okp_7",
+      "superbwarfare:scope_acog",
+      "superbwarfare:scope_hamr",
+      "superbwarfare:scope_lpvo",
+      "superbwarfare:scope_sniper"
+    ],
+    "Magazine": [
+      "superbwarfare:magazine_extend",
+      "superbwarfare:magazine_extend_pro"
+    ],
+    "Grip": [
+      "superbwarfare:vertical_grip",
+      "superbwarfare:triangle_grip"
+    ],
+    "Stock": [
+      "superbwarfare:stock_ubr",
+      "superbwarfare:stock_prs",
+      "superbwarfare:stock_ar_tactical",
+      "superbwarfare:stock_zenit_pt_1"
+    ],
+    "Barrel": [
+      "superbwarfare:meowlencer",
+      "superbwarfare:hissilencer",
+      "superbwarfare:silaowuncer",
+      "superbwarfare:ru_silencer",
+      "superbwarfare:ar_silencer",
+      "superbwarfare:loudspeaker",
+      "superbwarfare:silencer_qinglan"
+    ]
+  },
   "SoundInfo": {
     "Fire1P": "superbwarfare:rpk_fire_1p",
     "Fire3P": "superbwarfare:rpk_fire_3p",
     "Fire3PFar": "superbwarfare:rpk_far",
     "Fire3PVeryFar": "superbwarfare:rpk_veryfar",
     "Fire1PSilent": "superbwarfare:rpk_fire_1p_s",
-    "Fire3PSilent": "superbwarfare:rpk_fire_3p_s",
-    "Fire3PFarSilent": "superbwarfare:ak_12_far_s",
-    "Fire3PVeryFarSilent": "superbwarfare:ak_12_veryfar_s",
-    "ReloadNormal": "superbwarfare:ak_47_reload_normal",
-    "ReloadEmpty": "superbwarfare:ak_47_reload_empty",
-    "CancellableSounds": [
-      "superbwarfare:ak_47_reload_normal",
-      "superbwarfare:ak_47_reload_empty"
-    ]
+    "Fire3PSilent": "superbwarfare:rpk_fire_3p_s"
   }
 }

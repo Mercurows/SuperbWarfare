@@ -30,6 +30,10 @@ data class AttachmentDefinition(
     @SerialName("UsesGunStock")
     val usesGunStock: Boolean = false,
 
+    // 安装该枪托时是否需要适配器；部分枪托（如泽宁特 PT-1）可直接安装在枪身上
+    @SerialName("RequiresAdapter")
+    val requiresAdapter: Boolean = true,
+
     @SerialName("Icon")
     val icon: String? = null,
 

@@ -1,0 +1,15 @@
+{
+  "Slot": "Stock",
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 1.0
+    }
+  ],
+  "Bone": "custom_stock_adapter",
+  "UsesGunStock": false,
+  "RequiresAdapter": false,
+  "Model": "superbwarfare:models/bedrock/attachment/stock_zenit_pt_1.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/stock_zenit_pt_1.png"
+}

@@ -117,6 +117,12 @@ open class GeoGunModel @JvmOverloads constructor(
         }
     }
 
+    fun hideAllStockBones() {
+        for ((_, index) in stockBones) {
+            instance.getBone(index)?.visible = false
+        }
+    }
+
     /**
      * Global transform for a bone in bind pose, cached by name.
      * This is useful for attachment mounting and other static model-space calculations.
