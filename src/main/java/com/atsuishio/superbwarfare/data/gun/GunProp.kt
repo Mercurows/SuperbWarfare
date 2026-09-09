@@ -147,6 +147,9 @@ class GunProp<T, R>(
         val PROJECTILE_AMOUNT = plainProp(DefaultGunData::projectileAmount)
 
         @JvmField
+        val SPREAD_PATTERN = plainProp(DefaultGunData::spreadPattern)
+
+        @JvmField
         val WEIGHT = plainProp(DefaultGunData::weight)
 
         @JvmField
