@@ -2,10 +2,13 @@ package com.atsuishio.superbwarfare.item.gun
 
 import com.atsuishio.superbwarfare.client.PoseTool
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer
+import net.minecraft.client.model.HumanoidModel
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.ItemStack
+import net.neoforged.api.distmarker.Dist
+import net.neoforged.api.distmarker.OnlyIn
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions
@@ -28,10 +31,19 @@ open class GeoGunItemV2(properties: Properties) : GunItem(properties) {
                         entityLiving: LivingEntity,
                         hand: InteractionHand,
                         itemStack: ItemStack
-                    ) = PoseTool.pose(entityLiving, hand, itemStack)
+                    ) = item.armPose(entityLiving, hand, itemStack)
                 }, item)
             }
         }
 
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    open fun armPose(
+        entityLiving: LivingEntity,
+        hand: InteractionHand,
+        itemStack: ItemStack
+    ): HumanoidModel.ArmPose {
+        return PoseTool.pose(entityLiving, hand, itemStack)
     }
 }

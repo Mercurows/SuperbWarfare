@@ -191,10 +191,26 @@
       }
     ]
   },
-  "super_star_shooter_reload_empty": {
+  "super_star_shooter_reload_1": {
     "sounds": [
       {
-        "name": "superbwarfare:gun/super_star_shooter/super_star_shooter_reload_empty",
+        "name": "superbwarfare:gun/super_star_shooter/super_star_shooter_reload_1",
+        "stream": false
+      }
+    ]
+  },
+  "super_star_shooter_reload_2": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/super_star_shooter/super_star_shooter_reload_2",
+        "stream": false
+      }
+    ]
+  },
+  "super_star_shooter_reload_3": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/super_star_shooter/super_star_shooter_reload_3",
         "stream": false
       }
     ]

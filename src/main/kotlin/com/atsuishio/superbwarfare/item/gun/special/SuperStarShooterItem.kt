@@ -1,14 +1,12 @@
-package com.atsuishio.superbwarfare.item.gun.launcher
+package com.atsuishio.superbwarfare.item.gun.special
 
-import com.atsuishio.superbwarfare.client.GunRendererBuilder
-import com.atsuishio.superbwarfare.client.model.item.SuperStarShooterItemModel
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.init.ModEnumExtensions
 import com.atsuishio.superbwarfare.init.ModRarities
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.RegistryName
-import com.atsuishio.superbwarfare.item.gun.GunGeoItem
+import com.atsuishio.superbwarfare.item.gun.GeoGunItemV2
 import com.atsuishio.superbwarfare.tools.playLocalSound
 import net.minecraft.client.model.HumanoidModel.ArmPose
 import net.minecraft.server.level.ServerPlayer
@@ -17,14 +15,11 @@ import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.ItemStack
-import software.bernie.geckolib.renderer.GeoItemRenderer
-import java.util.function.Supplier
+import net.neoforged.api.distmarker.Dist
+import net.neoforged.api.distmarker.OnlyIn
 
 @RegistryName("super_star_shooter")
-class SuperStarShooterItem : GunGeoItem(Properties().rarity(ModRarities.SUPERB)) {
-
-    override fun getRenderer(): Supplier<out GeoItemRenderer<*>> =
-        GunRendererBuilder.simple { SuperStarShooterItemModel() }
+class SuperStarShooterItem : GeoGunItemV2(Properties().rarity(ModRarities.SUPERB)) {
 
     override fun tick(shooter: Entity?, data: GunData, inMainHand: Boolean) {
         val level = shooter?.level() ?: return
@@ -38,10 +33,12 @@ class SuperStarShooterItem : GunGeoItem(Properties().rarity(ModRarities.SUPERB))
         }
     }
 
-    override fun getArmPose(entityLiving: LivingEntity, hand: InteractionHand, stack: ItemStack): ArmPose {
-        if (!stack.isEmpty && entityLiving.usedItemHand == hand) {
-            return ModEnumExtensions.Client.superStarShooterPose
-        }
-        return ArmPose.EMPTY
+    @OnlyIn(Dist.CLIENT)
+    override fun armPose(
+        entityLiving: LivingEntity,
+        hand: InteractionHand,
+        itemStack: ItemStack
+    ): ArmPose {
+        return if (!itemStack.isEmpty && entityLiving.usedItemHand == hand) ModEnumExtensions.Client.superStarShooterPose else ArmPose.EMPTY
     }
 }

@@ -1,14 +1,38 @@
 {
+  "Icon": "superbwarfare:textures/gun_icon/super_star_shooter_icon.png",
+  "SlotIcon": "superbwarfare:textures/item/super_star_shooter_icon.png",
   "Animation": {
     "Idle": "animation.super_star_shooter.idle",
-    "Reload": "animation.super_star_shooter.reload"
+    "Fire": "animation.super_star_shooter.fire",
+    "ReloadEmpty": "animation.super_star_shooter.reload"
+  },
+  "ShootRecoil": {
+    "Offset": [0.85, 0.8, 0.45],
+    "Rotation": [0.16, 0.28, 0.48],
+    "ZoomRate": 0.5,
+    "Speed": 1.0
   },
   "Model": {
-    "Animation": "superbwarfare:animations/super_star_shooter.animation.json",
-    "Model": "superbwarfare:geo/super_star_shooter.geo.json",
-    "Texture": "superbwarfare:textures/item/super_star_shooter.png"
+    "Animation": "superbwarfare:animations/bedrock/gun/super_star_shooter.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/super_star_shooter.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/super_star_shooter.png"
   },
-  "FlarePosition": [0, 0, 0.59375],
-  "FlareSize": 1,
-  "MovingTilt": false
+  "MovingTilt": false,
+  "UseCustomSprintAnimation": true,
+  "FlareSize": 0.3,
+  "HasSmoke": true,
+  "Smoke": {
+    "Size": 0.15,
+    "Growth": 0.25,
+    "Lifetime": 0.3,
+    "Speed": 0.4,
+    "Count": 2,
+    "Opacity": 0.9,
+    "Drag": 2,
+    "RandomSize": 0.05,
+    "RandomGrowth": 0.2,
+    "RandomLifetime": 0.2,
+    "RandomSpeed": 0.2,
+    "RandomOpacity": 0.1
+  }
 }
