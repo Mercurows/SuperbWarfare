@@ -906,6 +906,13 @@
 							"lerp_mode": "catmullrom"
 						}
 					}
+				},
+				"bullet": {
+					"scale": {
+						"0.0": [0, 0, 0],
+						"0.825": [0, 0, 0],
+						"0.9": [1, 1, 1]
+					}
 				}
 			},
 			"sound_effects": {
