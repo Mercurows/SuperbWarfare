@@ -49,7 +49,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         gunItem(ModItems.MINIGUN)
         gunItem(ModItems.MK_14)
         gunItem(ModItems.MOSIN_NAGANT)
-        gunItem(ModItems.MP_443)
+        gunItemV2(ModItems.MP_443)
         gunItem(ModItems.NTW_20)
         gunItem(ModItems.QBZ_95)
         gunItem(ModItems.RPG)
