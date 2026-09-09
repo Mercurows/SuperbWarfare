@@ -83,6 +83,24 @@ object ModTags {
         @JvmField val RESEARCHABLE_FUNCTIONAL_PERK = modItemTag("perk/researchable/functional")
         @JvmField val RESEARCHABLE_DAMAGE_PERK = modItemTag("perk/researchable/damage")
 
+        @JvmField val RESEARCHABLE_AMMO_PERK_COMMON = modItemTag("perk/researchable/ammo/common")
+        @JvmField val RESEARCHABLE_AMMO_PERK_RARE = modItemTag("perk/researchable/ammo/rare")
+        @JvmField val RESEARCHABLE_AMMO_PERK_EPIC = modItemTag("perk/researchable/ammo/epic")
+        @JvmField val RESEARCHABLE_AMMO_PERK_LEGENDARY = modItemTag("perk/researchable/ammo/legendary")
+        @JvmField val RESEARCHABLE_AMMO_PERK_SUPERB = modItemTag("perk/researchable/ammo/superb")
+
+        @JvmField val RESEARCHABLE_FUNCTIONAL_PERK_COMMON = modItemTag("perk/researchable/functional/common")
+        @JvmField val RESEARCHABLE_FUNCTIONAL_PERK_RARE = modItemTag("perk/researchable/functional/rare")
+        @JvmField val RESEARCHABLE_FUNCTIONAL_PERK_EPIC = modItemTag("perk/researchable/functional/epic")
+        @JvmField val RESEARCHABLE_FUNCTIONAL_PERK_LEGENDARY = modItemTag("perk/researchable/functional/legendary")
+        @JvmField val RESEARCHABLE_FUNCTIONAL_PERK_SUPERB = modItemTag("perk/researchable/functional/superb")
+
+        @JvmField val RESEARCHABLE_DAMAGE_PERK_COMMON = modItemTag("perk/researchable/damage/common")
+        @JvmField val RESEARCHABLE_DAMAGE_PERK_RARE = modItemTag("perk/researchable/damage/rare")
+        @JvmField val RESEARCHABLE_DAMAGE_PERK_EPIC = modItemTag("perk/researchable/damage/epic")
+        @JvmField val RESEARCHABLE_DAMAGE_PERK_LEGENDARY = modItemTag("perk/researchable/damage/legendary")
+        @JvmField val RESEARCHABLE_DAMAGE_PERK_SUPERB = modItemTag("perk/researchable/damage/superb")
+
         @JvmField val HAMMER = modItemTag("hammer")
         @JvmField val WRENCHES = commonItemTag("wrenches")
         @JvmField val TOOLS_WRENCH = commonItemTag("tools/wrench")

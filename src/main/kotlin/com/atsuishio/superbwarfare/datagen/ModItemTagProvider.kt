@@ -11,11 +11,15 @@ import net.minecraft.core.HolderLookup
 import net.minecraft.data.PackOutput
 import net.minecraft.data.tags.ItemTagsProvider
 import net.minecraft.tags.ItemTags
+import net.minecraft.world.item.Item
 import net.minecraft.world.item.Items
 import net.minecraft.world.level.block.Block
 import net.minecraftforge.common.Tags
 import net.minecraftforge.common.data.ExistingFileHelper
+import net.minecraftforge.registries.RegistryObject
 import java.util.concurrent.CompletableFuture
+
+private typealias PerkRegistry = RegistryObject<Perk>
 
 class ModItemTagProvider(
     packOutput: PackOutput,
@@ -363,7 +367,10 @@ class ModItemTagProvider(
         this.tag(ItemTags.HOES).add(ModItems.MILITARY_SHOVEL.get(), ModItems.CEMENTED_CARBIDE_HOE.get())
         this.tag(ItemTags.PICKAXES).add(ModItems.CEMENTED_CARBIDE_PICKAXE.get())
 
+        this.addPerkTags()
+    }
 
+    private fun addPerkTags() {
         ModItems.PERKS.entries.forEach {
             val item = it.get()
             if (item is PerkItem) {
@@ -387,5 +394,82 @@ class ModItemTagProvider(
                 }
             }
         }
+
+        this.tag(ModTags.Items.RESEARCHABLE_AMMO_PERK_COMMON).add(
+            perkItem(ModPerks.AQUA_BULLET),
+            perkItem(ModPerks.POISONOUS_BULLET),
+            perkItem(ModPerks.INCENDIARY_BULLET),
+            perkItem(ModPerks.JHP_BULLET),
+            perkItem(ModPerks.LONGER_WIRE),
+            perkItem(ModPerks.RIOT_BULLET),
+            perkItem(ModPerks.SILVER_BULLET)
+        )
+        this.tag(ModTags.Items.RESEARCHABLE_AMMO_PERK_RARE).add(
+            perkItem(ModPerks.BLADE_BULLET),
+            perkItem(ModPerks.CUPID_ARROW),
+            perkItem(ModPerks.HE_BULLET),
+            perkItem(ModPerks.MICRO_MISSILE),
+            perkItem(ModPerks.AP_BULLET)
+        )
+        this.tag(ModTags.Items.RESEARCHABLE_AMMO_PERK_EPIC).add(
+            perkItem(ModPerks.PHASE_PENETRATING_BULLET),
+            perkItem(ModPerks.PHOSPHORUS_FLAME_BULLET)
+        )
+
+        this.tag(ModTags.Items.RESEARCHABLE_FUNCTIONAL_PERK_COMMON).add(
+            perkItem(ModPerks.CAST_NO_SHADOWS),
+            perkItem(ModPerks.EAGER_EDGE),
+            perkItem(ModPerks.FIELD_DOCTOR),
+            perkItem(ModPerks.TRIPLE_TAP),
+            perkItem(ModPerks.POWERFUL_ATTRACTION),
+            perkItem(ModPerks.QUICKDRAW),
+            perkItem(ModPerks.SNAPSHOT_SIGHTS)
+        )
+        this.tag(ModTags.Items.RESEARCHABLE_FUNCTIONAL_PERK_RARE).add(
+            perkItem(ModPerks.POWERFUL_COOLER),
+            perkItem(ModPerks.SUBSISTENCE),
+            perkItem(ModPerks.FOURTH_TIMES_CHARM),
+            perkItem(ModPerks.HEAL_CLIP),
+            perkItem(ModPerks.REGENERATION)
+        )
+        this.tag(ModTags.Items.RESEARCHABLE_FUNCTIONAL_PERK_EPIC).add(
+            perkItem(ModPerks.BACKPACK_LINKED_MAGAZINE),
+            perkItem(ModPerks.ADRENALINE_RUSH),
+            perkItem(ModPerks.TURBO_CHARGER)
+        )
+        this.tag(ModTags.Items.RESEARCHABLE_FUNCTIONAL_PERK_LEGENDARY).add(
+            perkItem(ModPerks.INTELLIGENT_CHIP)
+        )
+
+        this.tag(ModTags.Items.RESEARCHABLE_DAMAGE_PERK_COMMON).add(
+            perkItem(ModPerks.BRAIN_STORM),
+            perkItem(ModPerks.DESPERADO),
+            perkItem(ModPerks.FIREFLY),
+            perkItem(ModPerks.GUTSHOT_STRAIGHT),
+            perkItem(ModPerks.HEAD_SEEKER),
+            perkItem(ModPerks.HIGH_IMPACT_RESERVES),
+            perkItem(ModPerks.MAGNIFICENT_HOWL),
+            perkItem(ModPerks.VOLT_OVERLOAD)
+        )
+        this.tag(ModTags.Items.RESEARCHABLE_DAMAGE_PERK_RARE).add(
+            perkItem(ModPerks.KILLING_TALLY),
+            perkItem(ModPerks.KILL_CLIP),
+            perkItem(ModPerks.MONSTER_HUNTER),
+            perkItem(ModPerks.ONE_TWO_PUNCH),
+            perkItem(ModPerks.STEADY_RESOLVE),
+            perkItem(ModPerks.VORPAL_WEAPON)
+        )
+        this.tag(ModTags.Items.RESEARCHABLE_DAMAGE_PERK_EPIC).add(
+            perkItem(ModPerks.FAIR_MEANS),
+            perkItem(ModPerks.TARGET_LOCK),
+            perkItem(ModPerks.BATTLE_OF_WITS)
+        )
+        this.tag(ModTags.Items.RESEARCHABLE_DAMAGE_PERK_LEGENDARY).add(
+            perkItem(ModPerks.SOUL_REAVER)
+        )
+    }
+
+    private fun perkItem(perk: PerkRegistry): Item {
+        return ModItems.PERK_ITEMS[perk]!!.get()
     }
 }
