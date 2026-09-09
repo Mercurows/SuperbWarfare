@@ -242,8 +242,8 @@ class ModCustomLootProvider : LootTableSubProvider {
                 ModItems.QBZ_95_BLUEPRINT weighted 30
                 ModItems.RPG_BLUEPRINT weighted 30
                 ModItems.M_2_HB_BLUEPRINT weighted 30
-                ModItems.HUNTING_RIFLE_BLUEPRINT weighted 30
 
+                ModItems.HUNTING_RIFLE_BLUEPRINT weighted 10
                 ModItems.SENTINEL_BLUEPRINT weighted 10
                 ModItems.BOCEK_BLUEPRINT weighted 10
                 ModItems.RPK_BLUEPRINT weighted 10
@@ -354,9 +354,9 @@ class ModCustomLootProvider : LootTableSubProvider {
                 ModItems.AK_12_BLUEPRINT weighted 42
                 ModItems.QBZ_95_BLUEPRINT weighted 42
                 ModItems.RPG_BLUEPRINT weighted 42
-                ModItems.HUNTING_RIFLE_BLUEPRINT weighted 42
                 ModItems.M_2_HB_BLUEPRINT weighted 42
 
+                ModItems.HUNTING_RIFLE_BLUEPRINT weighted 15
                 ModItems.SENTINEL_BLUEPRINT weighted 15
                 ModItems.BOCEK_BLUEPRINT weighted 15
                 ModItems.RPK_BLUEPRINT weighted 15

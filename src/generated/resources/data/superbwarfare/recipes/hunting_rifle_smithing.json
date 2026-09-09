@@ -4,7 +4,7 @@
     "tag": "minecraft:logs"
   },
   "base": {
-    "item": "superbwarfare:rare_material_pack"
+    "item": "superbwarfare:epic_material_pack"
   },
   "result": {
     "item": "superbwarfare:hunting_rifle"

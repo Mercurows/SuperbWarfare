@@ -2384,7 +2384,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
             gunSmithing(
                 writer,
                 ModItems.HUNTING_RIFLE_BLUEPRINT.get(),
-                GunRarity.RARE,
+                GunRarity.EPIC,
                 ItemTags.LOGS,
                 ModItems.HUNTING_RIFLE.get()
             )

@@ -418,7 +418,7 @@ object ModItems {
     @JvmField val GLOCK_17_BLUEPRINT = registerBlueprint("glock_17_blueprint", Rarity.COMMON)
     @JvmField val MP_443_BLUEPRINT = registerBlueprint("mp_443_blueprint", Rarity.COMMON)
     @JvmField val GLOCK_18_BLUEPRINT = registerBlueprint("glock_18_blueprint", Rarity.RARE)
-    @JvmField val HUNTING_RIFLE_BLUEPRINT = registerBlueprint("hunting_rifle_blueprint", Rarity.RARE)
+    @JvmField val HUNTING_RIFLE_BLUEPRINT = registerBlueprint("hunting_rifle_blueprint", Rarity.EPIC)
     @JvmField val M_79_BLUEPRINT = registerBlueprint("m_79_blueprint", Rarity.RARE)
     @JvmField val RPG_BLUEPRINT = registerBlueprint("rpg_blueprint", Rarity.RARE)
     @JvmField val BOCEK_BLUEPRINT = registerBlueprint("bocek_blueprint", Rarity.EPIC)

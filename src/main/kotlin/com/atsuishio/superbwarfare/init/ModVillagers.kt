@@ -288,10 +288,6 @@ object ModVillagers {
                 BasicItemListing(
                     ItemStack(Items.EMERALD, 32),
                     ItemStack(ModItems.AK_12_BLUEPRINT.get()), 10, 25, 0.05f
-                ),
-                BasicItemListing(
-                    ItemStack(Items.EMERALD, 32),
-                    ItemStack(ModItems.HUNTING_RIFLE_BLUEPRINT.get()), 10, 25, 0.05f
                 )
             )
             trades[3].addAll(list3)
@@ -401,6 +397,10 @@ object ModVillagers {
                 BasicItemListing(
                     ItemStack(Items.EMERALD, 64),
                     ItemStack(ModItems.DEVOTION_BLUEPRINT.get()), 10, 30, 0.05f
+                ),
+                BasicItemListing(
+                    ItemStack(Items.EMERALD, 64),
+                    ItemStack(ModItems.HUNTING_RIFLE_BLUEPRINT.get()), 10, 30, 0.05f
                 ),
                 BasicItemListing(
                     ItemStack(Items.EMERALD, 8),
