@@ -1,15 +1,4 @@
 {
-  "base": {
-    "parent": "superbwarfare:item/hk_416_base"
-  },
-  "gui_light": "front",
-  "loader": "forge:separate_transforms",
-  "perspectives": {
-    "gui": {
-      "parent": "superbwarfare:item/hk_416_icon"
-    }
-  },
-  "textures": {
-    "particle": "superbwarfare:item/hk_416_icon"
-  }
+  "parent": "minecraft:builtin/entity",
+  "gui_light": "front"
 }
