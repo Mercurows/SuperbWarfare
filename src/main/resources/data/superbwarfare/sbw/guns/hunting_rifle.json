@@ -1,5 +1,5 @@
 {
-  "Spread": 7,
+  "Spread": 9,
   "RecoilX": 0.004,
   "RecoilY": 0.04,
   "Damage": 100,
@@ -10,8 +10,8 @@
   "DrawTime": 12,
   "ZoomTime": 7,
   "ZoomSpreadRate": 0.005,
-  "EmptyReloadTime": 64,
-  "BypassesArmor": 0.7,
+  "EmptyReloadTime": 60,
+  "BypassesArmor": 1.0,
   "SoundRadius": 20,
   "GunType": "Sniper",
   "DamageReduce": {
@@ -51,6 +51,7 @@
       "superbwarfare:meowlencer",
       "superbwarfare:hissilencer",
       "superbwarfare:silaowuncer",
+      "superbwarfare:loudspeaker",
       "superbwarfare:silencer_50_cal"
     ]
   },

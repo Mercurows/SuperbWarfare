@@ -1,32 +1,30 @@
 {
-  "MinZoom": 1.25,
-  "MaxZoom": 6,
-  "Spread": 3.5,
+  "Spread": 6,
   "OpenBolt": true,
   "HasBarrelBullet": true,
   "RecoilX": 0.0014,
-  "RecoilY": 0.009,
+  "RecoilY": 0.011,
   "Damage": 8,
   "Headshot": 2,
   "Velocity": 21,
-  "Magazine": 30,
+  "Magazine": [30, 40, 60],
   "Weight": 4,
   "DrawTime": 11,
   "ZoomTime": 6,
   "DefaultFireMode": "Auto",
-  "NormalReloadTime": 56,
-  "EmptyReloadTime": 64,
+  "NormalReloadTime": [54, 54, 61],
+  "EmptyReloadTime": [59, 59, 66],
   "BypassesArmor": 0.25,
   "SoundRadius": 14,
-  "RPM": 900,
+  "RPM": 850,
   "GunType": "Rifle",
-  "DamageReduce": {
-    "Type": "Rifle"
-  },
   "AvailableFireModes": [
     "Semi",
     "Auto"
   ],
+  "DamageReduce": {
+    "Type": "Rifle"
+  },
   "AmmoType": "@RifleAmmo",
   "Icon": "superbwarfare:textures/gun_icon/hk_416_icon.png",
   "AvailablePerks": [
@@ -53,20 +51,44 @@
     "!superbwarfare:longer_wire",
     "!superbwarfare:cupid_arrow"
   ],
+  "AvailableAttachments": {
+    "Scope": [
+      "superbwarfare:scope_coyote",
+      "superbwarfare:scope_eotech_551",
+      "superbwarfare:scope_okp_7",
+      "superbwarfare:scope_acog",
+      "superbwarfare:scope_hamr",
+      "superbwarfare:scope_lpvo",
+      "superbwarfare:scope_sniper"
+    ],
+    "Magazine": [
+      "superbwarfare:magazine_extend",
+      "superbwarfare:magazine_extend_pro"
+    ],
+    "Grip": [
+      "superbwarfare:vertical_grip",
+      "superbwarfare:triangle_grip"
+    ],
+    "Stock": [
+      "superbwarfare:stock_ubr",
+      "superbwarfare:stock_prs"
+    ],
+    "Barrel": [
+      "superbwarfare:meowlencer",
+      "superbwarfare:hissilencer",
+      "superbwarfare:silaowuncer",
+      "superbwarfare:ru_silencer",
+      "superbwarfare:ar_silencer",
+      "superbwarfare:loudspeaker",
+      "superbwarfare:silencer_qinglan"
+    ]
+  },
   "SoundInfo": {
     "Fire1P": "superbwarfare:hk_416_fire_1p",
     "Fire3P": "superbwarfare:hk_416_fire_3p",
     "Fire3PFar": "superbwarfare:hk_416_far",
     "Fire3PVeryFar": "superbwarfare:hk_416_veryfar",
     "Fire1PSilent": "superbwarfare:hk_416_fire_1p_s",
-    "Fire3PSilent": "superbwarfare:hk_416_fire_3p_s",
-    "Fire3PFarSilent": "superbwarfare:ak_12_far_s",
-    "Fire3PVeryFarSilent": "superbwarfare:ak_12_veryfar_s",
-    "ReloadNormal": "superbwarfare:hk_416_reload_normal",
-    "ReloadEmpty": "superbwarfare:hk_416_reload_empty",
-    "CancellableSounds": [
-      "superbwarfare:hk_416_reload_normal",
-      "superbwarfare:hk_416_reload_empty"
-    ]
+    "Fire3PSilent": "superbwarfare:hk_416_fire_3p_s"
   }
 }
