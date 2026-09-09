@@ -97,7 +97,7 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:hunting_rifle_blueprint",
-          "weight": 30
+          "weight": 10
         },
         {
           "type": "minecraft:item",

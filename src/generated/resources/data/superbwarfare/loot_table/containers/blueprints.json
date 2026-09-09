@@ -91,13 +91,13 @@
         },
         {
           "type": "minecraft:item",
-          "name": "superbwarfare:hunting_rifle_blueprint",
+          "name": "superbwarfare:m_2_hb_blueprint",
           "weight": 42
         },
         {
           "type": "minecraft:item",
-          "name": "superbwarfare:m_2_hb_blueprint",
-          "weight": 42
+          "name": "superbwarfare:hunting_rifle_blueprint",
+          "weight": 15
         },
         {
           "type": "minecraft:item",

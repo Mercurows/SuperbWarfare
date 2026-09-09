@@ -2413,7 +2413,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
             gunSmithing(
                 writer,
                 ModItems.HUNTING_RIFLE_BLUEPRINT.get(),
-                GunRarity.RARE,
+                GunRarity.EPIC,
                 ItemTags.LOGS,
                 ModItems.HUNTING_RIFLE.get()
             )
