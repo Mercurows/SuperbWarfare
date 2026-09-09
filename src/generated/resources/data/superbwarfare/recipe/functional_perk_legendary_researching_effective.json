@@ -1,0 +1,20 @@
+{
+  "type": "superbwarfare:researching",
+  "addition": {
+    "item": "superbwarfare:legendary_accessory_kit"
+  },
+  "base": {
+    "item": "superbwarfare:empty_perk"
+  },
+  "color": 3,
+  "input": {
+    "item": "superbwarfare:functional_perk_data_chip"
+  },
+  "result": {
+    "tag": "superbwarfare:perk/researchable/functional/legendary"
+  },
+  "special": {
+    "item": "superbwarfare:effective_research_module"
+  },
+  "time": 120
+}

@@ -1,0 +1,16 @@
+{
+  "type": "superbwarfare:researching",
+  "addition": {
+    "item": "superbwarfare:superb_accessory_kit"
+  },
+  "base": {
+    "item": "superbwarfare:empty_perk"
+  },
+  "input": {
+    "item": "superbwarfare:damage_perk_data_chip"
+  },
+  "result": {
+    "tag": "superbwarfare:perk/researchable/damage/superb"
+  },
+  "time": 600
+}

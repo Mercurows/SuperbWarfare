@@ -1,0 +1,21 @@
+{
+  "type": "superbwarfare:researching",
+  "addition": {
+    "item": "superbwarfare:legendary_accessory_kit"
+  },
+  "base": {
+    "item": "superbwarfare:empty_perk"
+  },
+  "color": 2,
+  "input": {
+    "item": "superbwarfare:ammo_perk_data_chip"
+  },
+  "result": {
+    "tag": "superbwarfare:perk/researchable/ammo/legendary"
+  },
+  "selectable": true,
+  "special": {
+    "item": "superbwarfare:directional_research_module"
+  },
+  "time": 600
+}

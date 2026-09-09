@@ -400,6 +400,13 @@ object ModItems {
     @JvmField val SUPERB_MATERIAL_PACK = registerItem("superb_material_pack") { MaterialPackItem(SUPERB) }
     @JvmField val VIRTUAL_MATERIAL_PACK = registerItem("virtual_material_pack") { MaterialPackItem(VIRTUAL) }
 
+    @JvmField val COMMON_ACCESSORY_KIT = registerItem("common_accessory_kit") { MaterialPackItem(Rarity.COMMON) }
+    @JvmField val RARE_ACCESSORY_KIT = registerItem("rare_accessory_kit") { MaterialPackItem(Rarity.RARE) }
+    @JvmField val EPIC_ACCESSORY_KIT = registerItem("epic_accessory_kit") { MaterialPackItem(Rarity.EPIC) }
+    @JvmField val LEGENDARY_ACCESSORY_KIT = registerItem("legendary_accessory_kit") { MaterialPackItem(LEGENDARY) }
+    @JvmField val SUPERB_ACCESSORY_KIT = registerItem("superb_accessory_kit") { MaterialPackItem(SUPERB) }
+    @JvmField val VIRTUAL_ACCESSORY_KIT = registerItem("virtual_accessory_kit") { MaterialPackItem(VIRTUAL) }
+
     @JvmField val LIGHT_ARMAMENT_MODULE = registerItem("light_armament_module") { Item(Properties().rarity(Rarity.RARE)) }
     @JvmField val MEDIUM_ARMAMENT_MODULE = registerItem("medium_armament_module") { Item(Properties().rarity(Rarity.EPIC)) }
     @JvmField val HEAVY_ARMAMENT_MODULE = registerItem("heavy_armament_module") { Item(Properties().rarity(LEGENDARY)) }
