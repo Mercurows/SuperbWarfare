@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.data.CustomData;
 import com.atsuishio.superbwarfare.data.DataLoader;
 import com.atsuishio.superbwarfare.data.DefaultDataSupplier;
 import com.atsuishio.superbwarfare.data.JsonPropertyModifier;
+import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModify;
@@ -15,6 +16,7 @@ import net.minecraft.world.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Map;
 
 public class VehicleData implements DefaultDataSupplier<DefaultVehicleData> {
 
@@ -37,17 +39,56 @@ public class VehicleData implements DefaultDataSupplier<DefaultVehicleData> {
     public DefaultVehicleData compute() {
         if (cache != null) return cache;
 
+        var overrideString = vehicle.isInitialized() ? vehicle.getOverride() : null;
+
+        if (overrideString == null || overrideString.isEmpty()) {
+            // Fast path: no per-vehicle override, so the shared datapack default *is* the result.
+            // It is clamped once when the datapack is loaded (see CustomData.VEHICLE_DATA), which
+            // makes it safe to hand out read-only without the previous GSON deep copy.
+            cache = getDefault();
+            return cache;
+        }
+
         var raw = getDefault().copy();
 
-        if (vehicle.isInitialized()) {
-            jsonPropModifier.update(this.vehicle.getOverride());
-            raw = jsonPropModifier.computeProperties(this, raw);
-        }
+        jsonPropModifier.update(overrideString);
+        raw = jsonPropModifier.computeProperties(this, raw);
 
         raw.limit();
         cache = raw;
 
         return raw;
+    }
+
+    /**
+     * Fully qualified {@link CustomData#GUN_DATA} id of one vehicle weapon's baseline:
+     * {@code <vehicleId>.<weaponKey>} (e.g. {@code superbwarfare:bmp_2.Cannon}).
+     */
+    public static String weaponDefaultDataId(String vehicleId, String weaponKey) {
+        return "vehicle:" + vehicleId + "." + weaponKey;
+    }
+
+    /**
+     * Registers every vehicle weapon's parsed {@link DefaultGunData} into the given gun data map under
+     * {@link #weaponDefaultDataId(String, String)}.
+     *
+     * <p>Vehicle-mounted weapons all share the single {@code superbwarfare:vehicle_gun} item id, so they
+     * cannot resolve their baseline from the item. Registering the per-vehicle weapon baselines lets a
+     * GunData resolve its baseline from its own stack instead of an injected default-data supplier.
+     *
+     * @param gunDataMap the raw {@link CustomData#GUN_DATA} map, which must already have been (re)loaded.
+     */
+    @SuppressWarnings("unchecked")
+    public static void registerWeaponDefaults(Map<String, ?> gunDataMap) {
+        var target = (Map<String, Object>) gunDataMap;
+
+        for (var vehicleData : CustomData.VEHICLE_DATA.values()) {
+            for (var weapon : vehicleData.weapons().entrySet()) {
+                var id = weaponDefaultDataId(vehicleData.getId(), weapon.getKey());
+                weapon.getValue().setId(id);
+                target.put(id, weapon.getValue());
+            }
+        }
     }
 
     public void update() {

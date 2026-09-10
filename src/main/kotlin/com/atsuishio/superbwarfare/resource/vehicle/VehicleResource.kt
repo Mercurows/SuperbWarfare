@@ -8,17 +8,18 @@ import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import net.minecraft.world.entity.EntityType
 
-class VehicleResource private constructor(val vehicle: VehicleEntity) : DefaultDataSupplier<DefaultVehicleResource> {
-    val id: String = getRegistryId(vehicle.type)
-
+class VehicleResource private constructor(val id: String) : DefaultDataSupplier<DefaultVehicleResource> {
     private var cache: DefaultVehicleResource? = null
 
     fun compute(): DefaultVehicleResource {
         if (cache != null) return cache!!
 
-        val defaultResource = getDefault().copy()
-
         // TODO 正确实现属性计算
+        // The datapack default is shared read-only (no per-instance modification exists yet), so it
+        // is returned directly instead of GSON-deep-copying it. Once properties are computed this
+        // must become a projection over the default, like GunProp/PMC.
+        val defaultResource = getDefault()
+
         cache = defaultResource
         return defaultResource
     }
@@ -32,12 +33,15 @@ class VehicleResource private constructor(val vehicle: VehicleEntity) : DefaultD
     }
 
     companion object {
-        val RESOURCE_CACHE: LoadingCache<VehicleEntity, VehicleResource> = CacheBuilder.newBuilder()
-            .weakKeys()
-            .weakValues()
-            .build(object : CacheLoader<VehicleEntity, VehicleResource>() {
-                override fun load(vehicle: VehicleEntity): VehicleResource {
-                    return VehicleResource(vehicle)
+        /**
+         * Keyed by vehicle type id, not by [VehicleEntity] identity: the resource is per type, and an
+         * identity-keyed cache was re-resolved (and re-copied) for every entity.
+         */
+        val RESOURCE_CACHE: LoadingCache<String, VehicleResource> = CacheBuilder.newBuilder()
+            .maximumSize(512)
+            .build(object : CacheLoader<String, VehicleResource>() {
+                override fun load(id: String): VehicleResource {
+                    return VehicleResource(id)
                 }
             })
 
@@ -62,8 +66,8 @@ class VehicleResource private constructor(val vehicle: VehicleEntity) : DefaultD
         }
 
         @JvmStatic
-        fun from(stack: VehicleEntity): VehicleResource {
-            return RESOURCE_CACHE.getUnchecked(stack)
+        fun from(vehicle: VehicleEntity): VehicleResource {
+            return RESOURCE_CACHE.getUnchecked(getRegistryId(vehicle.type))
         }
 
         @JvmStatic
