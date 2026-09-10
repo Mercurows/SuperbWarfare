@@ -12,12 +12,14 @@ object ProjectileSpreadTool {
     private const val EPSILON = 1.0E-6
 
     @JvmStatic
+    @JvmOverloads
     fun generateDirections(
         rng: RandomSource,
         direction: Vec3,
         spread: Double,
         amount: Int,
-        pattern: ProjectileSpreadPattern?
+        pattern: ProjectileSpreadPattern?,
+        rotationDegrees: Double = 0.0
     ): List<Vec3> {
         if (amount <= 0) return emptyList()
 
@@ -37,10 +39,15 @@ object ProjectileSpreadTool {
         val right = forward.cross(up).normalize()
 
         val effectivePattern = pattern ?: ProjectileSpreadPattern()
+        val rotation = Math.toRadians(((rotationDegrees % 360.0) + 360.0) % 360.0)
+        val cosRotation = cos(rotation)
+        val sinRotation = sin(rotation)
         return generateOffsets(rng, effectivePattern, amount).map { offset ->
+            val x = offset.x * cosRotation - offset.y * sinRotation
+            val y = offset.x * sinRotation + offset.y * cosRotation
             val point = forward
-                .add(right.scale(maxTangent * offset.x))
-                .add(up.scale(maxTangent * offset.y))
+                .add(right.scale(maxTangent * x))
+                .add(up.scale(maxTangent * y))
             point.normalize()
         }
     }
@@ -55,8 +62,7 @@ object ProjectileSpreadTool {
             ProjectileSpreadType.UNIFORM_ELLIPSE -> List(amount) { randomEllipseOffset(rng, pattern) }
 
             ProjectileSpreadType.GRID -> gridOffsets(rng, pattern, amount)
-            ProjectileSpreadType.TRIANGLE -> triangleOffsets(rng, pattern, amount, inverted = false)
-            ProjectileSpreadType.INVERTED_TRIANGLE -> triangleOffsets(rng, pattern, amount, inverted = true)
+            ProjectileSpreadType.TRIANGLE -> triangleOffsets(rng, pattern, amount)
             ProjectileSpreadType.STAR -> starOffsets(rng, pattern, amount)
             ProjectileSpreadType.HEART -> heartOffsets(rng, pattern, amount)
             ProjectileSpreadType.X_SHAPE -> xShapeOffsets(rng, pattern, amount)
@@ -120,8 +126,7 @@ object ProjectileSpreadTool {
     private fun triangleOffsets(
         rng: RandomSource,
         pattern: ProjectileSpreadPattern,
-        amount: Int,
-        inverted: Boolean
+        amount: Int
     ): List<Vec3> {
         val rows = if (pattern.rows > 0) pattern.rows else triangleRowsFor(amount)
         val offsets = ArrayList<Vec3>(amount)
@@ -142,8 +147,6 @@ object ProjectileSpreadTool {
             }
             val y = if (rows == 1) {
                 0.0
-            } else if (inverted) {
-                sy - 2.0 * sy * layer / (rows - 1)
             } else {
                 -sy + 2.0 * sy * layer / (rows - 1)
             }

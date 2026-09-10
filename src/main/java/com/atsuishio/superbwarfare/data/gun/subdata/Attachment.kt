@@ -46,7 +46,9 @@ class Attachment(private val gun: GunData) {
         val tag = attachment.get(type.attachmentName) ?: return null
         return when (tag.id) {
             Tag.TAG_STRING -> ResourceLocation.tryParse(attachment.getString(type.attachmentName))
-            Tag.TAG_COMPOUND -> ResourceLocation.tryParse(attachment.getCompound(type.attachmentName).getString("Id"))
+            Tag.TAG_COMPOUND -> ResourceLocation.tryParse(
+                attachment.getCompound(type.attachmentName).readId()
+            )
             else -> null
         }
     }
@@ -67,13 +69,50 @@ class Attachment(private val gun: GunData) {
 
     fun getOrCreateTag(type: AttachmentType): CompoundTag {
         val name = type.attachmentName
-        if (!attachment.contains(name, Tag.TAG_COMPOUND.toInt())) {
-            attachment.put(name, CompoundTag())
+        val current = attachment.get(name)
+        val tag = when (current?.id) {
+            Tag.TAG_COMPOUND -> attachment.getCompound(name)
+            Tag.TAG_STRING -> CompoundTag().apply {
+                putString("Id", attachment.getString(name))
+            }
+
+            else -> CompoundTag()
         }
-        return attachment.getCompound(name)
+        attachment.put(name, tag)
+        return tag
     }
 
     fun has(type: AttachmentType): Boolean = id(type) != null
+
+    fun getRotation(type: AttachmentType): Double {
+        val tag = getTag(type) ?: return 0.0
+        if (!tag.contains("Rotation")) return 0.0
+        return tag.getDouble("Rotation").coerceIn(0.0, 360.0)
+    }
+
+    fun setRotation(type: AttachmentType, rotation: Double) {
+        if (!has(type)) return
+
+        val value = rotation.coerceIn(0.0, 360.0)
+        if (getRotation(type) == value) return
+
+        getOrCreateTag(type).putDouble("Rotation", value)
+        gun.nbtVersion.invalidateStructural()
+    }
+
+    fun getOffset(type: AttachmentType): Double {
+        val tag = getTag(type) ?: return 0.0
+        if (!tag.contains("Offset")) return 0.0
+        return tag.getDouble("Offset")
+    }
+
+    fun setOffset(type: AttachmentType, offset: Double) {
+        if (!has(type)) return
+        if (getOffset(type) == offset) return
+
+        getOrCreateTag(type).putDouble("Offset", offset)
+        gun.nbtVersion.invalidateStructural()
+    }
 
     fun set(type: AttachmentType, id: ResourceLocation?) {
         if (id == null) {
@@ -185,3 +224,8 @@ data class AttachmentInstance(
     val tag: CompoundTag,
     val definition: AttachmentDefinition,
 )
+
+private fun CompoundTag.readId(): String {
+    val id = getString("Id")
+    return id.ifBlank { getString("Name") }
+}

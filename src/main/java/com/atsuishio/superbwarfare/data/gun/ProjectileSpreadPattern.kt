@@ -17,9 +17,6 @@ enum class ProjectileSpreadType {
     @SerialName("Triangle")
     TRIANGLE,
 
-    @SerialName("InvertedTriangle")
-    INVERTED_TRIANGLE,
-
     @SerialName("Star")
     STAR,
 
