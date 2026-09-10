@@ -14,7 +14,7 @@ import net.minecraft.nbt.CompoundTag
  * @param defaultValue default string fallback.
  * @param onSet optional callback invoked when the string changes.
  */
-class StringValue(
+open class StringValue(
     private val tag: CompoundTag,
     private val name: String,
     override val defaultValue: String = "",

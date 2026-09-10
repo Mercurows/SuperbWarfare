@@ -412,16 +412,14 @@ object LivingEventHandler {
     private fun checkCopyGuns(stack: ItemStack, player: Player) {
         val data = GunData.from(stack)
         if (!data.initialized()) return
-        val uuid = data.gunDataTag.getUUID("UUID")
+        val uuid = data.uuid ?: return
 
         for (item in player.inventory.items) {
             if (item.equals(stack)) continue
             if (item.item is GunItem) {
                 val itemData = GunData.from(item)
-                val dataTag = itemData.gunDataTag
-                if (!dataTag.hasUUID("UUID")) continue
-                if (dataTag.getUUID("UUID").equals(uuid)) {
-                    data.gunDataTag.putUUID("UUID", UUID.randomUUID())
+                if (itemData.uuid == uuid) {
+                    data.update { it.copy(uuid = UUID.randomUUID()) }
                     return
                 }
             }

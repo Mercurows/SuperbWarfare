@@ -14,7 +14,7 @@ import net.minecraft.nbt.CompoundTag
  * @param defaultValue default boolean fallback.
  * @param onSet optional callback invoked when the stored boolean changes.
  */
-class BooleanValue(
+open class BooleanValue(
     private val tag: CompoundTag,
     private val name: String,
     override val defaultValue: Boolean = false,

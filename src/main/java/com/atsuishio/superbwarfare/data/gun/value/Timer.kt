@@ -5,14 +5,14 @@ import net.minecraft.nbt.CompoundTag
 /**
  * 针对一种状态的计时器
  */
-class Timer(private val tag: CompoundTag, name: String) {
+open class Timer(private val tag: CompoundTag, name: String) {
     val name: String = name + "Time"
 
-    fun get(): Int {
+    open fun get(): Int {
         return tag.getInt(name)
     }
 
-    fun set(time: Int) {
+    open fun set(time: Int) {
         if (time <= 0) {
             tag.remove(name)
         } else {

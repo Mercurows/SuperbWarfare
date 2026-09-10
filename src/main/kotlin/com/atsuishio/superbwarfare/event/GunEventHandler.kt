@@ -311,6 +311,15 @@ object GunEventHandler {
      * @param environmentRate pre-computed environmental cooldown rate multiplier.
      */
     fun gunTick(shooter: Entity?, data: GunData, inMainHand: Boolean, environmentRate: Double) {
+        // A single tick touches several timers, heat, ammo and reload state; batching turns those into
+        // a single revision bump instead of one per field. Reads — and the gun tag itself — stay
+        // immediate, because the state is written through as it changes.
+        data.batch {
+            gunTickInternal(shooter, data, inMainHand, environmentRate)
+        }
+    }
+
+    private fun gunTickInternal(shooter: Entity?, data: GunData, inMainHand: Boolean, environmentRate: Double) {
         init(shooter, data)
         autoReload(shooter, data, inMainHand)
         tickPerk(shooter, data)

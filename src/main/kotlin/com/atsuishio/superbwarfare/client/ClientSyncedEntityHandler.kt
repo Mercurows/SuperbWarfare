@@ -225,8 +225,13 @@ object ClientSyncedEntityHandler {
                         val ammoCost = gd.get(GunProp.AMMO_COST_PER_SHOOT)
                         // 无限弹药武器由 queryWeaponAmmo 直接返回 999，无需写入
                         if (ammoCost <= 0) continue
-                        if (gd.useBackpackAmmo()) gd.virtualAmmo.set(shots * ammoCost)
-                        else gd.ammo.set(shots * ammoCost)
+                        // 纯客户端视图数据：updateLocal 只改内存，不写 gun stack。
+                        val shotsValue = shots * ammoCost
+                        if (gd.useBackpackAmmo()) {
+                            gd.updateLocal { it.copy(virtualAmmo = shotsValue) }
+                        } else {
+                            gd.updateLocal { it.copy(ammo = shotsValue) }
+                        }
                     }
                 }
             }

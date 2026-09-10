@@ -13,21 +13,21 @@ import net.minecraft.nbt.CompoundTag
  * @param defaultValue default double value fallback.
  * @param onSet optional callback executed on actual value modification.
  */
-class DoubleValue(
+open class DoubleValue(
     private val tag: CompoundTag,
     private val name: String,
     var defaultValue: Double = 0.0,
     private val onSet: (() -> Unit)? = null
 ) {
     /** Returns the stored value, or [defaultValue] if the key is absent. */
-    fun get(): Double = if (tag.contains(name)) tag.getDouble(name) else defaultValue
+    open fun get(): Double = if (tag.contains(name)) tag.getDouble(name) else defaultValue
 
     /**
      * Writes [value] to the tag and triggers [onSet] if changed.
      *
      * Early-exits without any NBT write when [value] equals the current stored value.
      */
-    fun set(value: Double) {
+    open fun set(value: Double) {
         val current = if (tag.contains(name)) tag.getDouble(name) else defaultValue
         if (current == value) return                          // no-op: value unchanged
         if (value == defaultValue) tag.remove(name) else tag.putDouble(name, value)

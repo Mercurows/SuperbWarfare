@@ -1,45 +1,69 @@
 package com.atsuishio.superbwarfare.data.gun.subdata
 
 import com.atsuishio.superbwarfare.data.gun.GunData
-import com.atsuishio.superbwarfare.data.gun.value.IntValue
-import com.atsuishio.superbwarfare.data.gun.value.ReloadState
-import com.atsuishio.superbwarfare.data.gun.value.Starter
-import com.atsuishio.superbwarfare.data.gun.value.Timer
+import com.atsuishio.superbwarfare.data.gun.value.*
 
-class Reload(data: GunData) {
-    private val data = data.data()
-
-    @JvmField
-    val reloadTimer = Timer(this.data, "Reload")
-
-    @JvmField
-    val totalTicks = IntValue(this.data, "ReloadTotalTime", 0)
+/**
+ * Reload state.
+ *
+ * Backed by [com.atsuishio.superbwarfare.data.gun.GunState] instead of reading the gun tag directly:
+ * every field keeps its old type and name, but reads come from the state snapshot and writes land in the
+ * gun stack's tag through `GunData.update`.
+ */
+class Reload(private val gun: GunData) {
 
     @JvmField
-    val prepareTimer = Timer(this.data, "Prepare")
+    val reloadTimer: Timer = StateTimer(
+        gun, { it.reloadTime }, { state, value -> state.copy(reloadTime = value) }, "Reload"
+    )
 
     @JvmField
-    val prepareLoadTimer = Timer(this.data, "PrepareLoad")
+    val totalTicks: IntValue = StateIntValue(
+        gun, { it.reloadTotalTime }, { state, value -> state.copy(reloadTotalTime = value) }
+    )
 
     @JvmField
-    val iterativeLoadTimer = Timer(this.data, "IterativeLoad")
+    val prepareTimer: Timer = StateTimer(
+        gun, { it.prepareTime }, { state, value -> state.copy(prepareTime = value) }, "Prepare"
+    )
 
     @JvmField
-    val finishTimer = Timer(this.data, "Finish")
+    val prepareLoadTimer: Timer = StateTimer(
+        gun, { it.prepareLoadTime }, { state, value -> state.copy(prepareLoadTime = value) }, "PrepareLoad"
+    )
 
     @JvmField
-    val finishTotalTicks = IntValue(this.data, "ReloadFinishTotalTime", 0)
+    val iterativeLoadTimer: Timer = StateTimer(
+        gun, { it.iterativeLoadTime }, { state, value -> state.copy(iterativeLoadTime = value) }, "IterativeLoad"
+    )
 
     @JvmField
-    val reloadStarter = Starter(this.data, "Reload")
+    val finishTimer: Timer = StateTimer(
+        gun, { it.finishTime }, { state, value -> state.copy(finishTime = value) }, "Finish"
+    )
 
     @JvmField
-    val singleReloadStarter = Starter(this.data, "SingleReload")
+    val finishTotalTicks: IntValue = StateIntValue(
+        gun, { it.reloadFinishTotalTime }, { state, value -> state.copy(reloadFinishTotalTime = value) }
+    )
 
     @JvmField
-    val stage3Starter = Starter(this.data, "Stage3Forcefully")
+    val reloadStarter: Starter = StateStarter(
+        gun, { it.startReload }, { state, value -> state.copy(startReload = value) }, "Reload"
+    )
 
-    fun state() = when (data.getInt("ReloadState")) {
+    @JvmField
+    val singleReloadStarter: Starter = StateStarter(
+        gun, { it.startSingleReload }, { state, value -> state.copy(startSingleReload = value) }, "SingleReload"
+    )
+
+    @JvmField
+    val stage3Starter: Starter = StateStarter(
+        gun, { it.startStage3Forcefully }, { state, value -> state.copy(startStage3Forcefully = value) },
+        "Stage3Forcefully"
+    )
+
+    fun state() = when (gun.state.reloadState) {
         1 -> ReloadState.NORMAL_RELOADING
         2 -> ReloadState.EMPTY_RELOADING
         else -> ReloadState.NOT_RELOADING
@@ -50,14 +74,15 @@ class Reload(data: GunData) {
     fun empty() = state() == ReloadState.EMPTY_RELOADING
 
     fun setState(state: ReloadState) {
-        if (state == ReloadState.NOT_RELOADING) {
-            data.remove("ReloadState")
-        } else {
-            data.putInt("ReloadState", state.ordinal)
-        }
+        // NOT_RELOADING is the field default, so the key disappears exactly like the old remove().
+        val value = if (state == ReloadState.NOT_RELOADING) 0 else state.ordinal
+        if (gun.state.reloadState == value) return
+        gun.update { it.copy(reloadState = value) }
     }
 
-    val stage = IntValue(this.data, "ReloadStage", 0)
+    val stage: IntValue = StateIntValue(
+        gun, { it.reloadStage }, { state, value -> state.copy(reloadStage = value) }
+    )
 
     fun stage() = stage.get()
 

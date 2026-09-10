@@ -17,14 +17,14 @@ import net.minecraft.nbt.CompoundTag
  * @param defaultValue the fallback value when key is absent.
  * @param onSet optional callback invoked when value changes.
  */
-class IntValue(
+open class IntValue(
     private val tag: CompoundTag,
     private val name: String,
     var defaultValue: Int = 0,
     private val onSet: (() -> Unit)? = null
 ) {
     /** Returns the stored value, or [defaultValue] if the key is absent. */
-    fun get(): Int = if (tag.contains(name)) tag.getInt(name) else defaultValue
+    open fun get(): Int = if (tag.contains(name)) tag.getInt(name) else defaultValue
 
     /**
      * Writes [value] to the tag and invokes [onSet] if the value changed.
@@ -34,7 +34,7 @@ class IntValue(
      *
      * @param value the new value to store.
      */
-    fun set(value: Int) {
+    open fun set(value: Int) {
         val current = if (tag.contains(name)) tag.getInt(name) else defaultValue
         if (current == value) return
         if (value == defaultValue) tag.remove(name) else tag.putInt(name, value)
