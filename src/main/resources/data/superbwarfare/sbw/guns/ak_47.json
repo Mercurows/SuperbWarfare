@@ -93,7 +93,9 @@
       "superbwarfare:ru_silencer",
       "superbwarfare:ar_silencer",
       "superbwarfare:loudspeaker",
-      "superbwarfare:silencer_qinglan"
+      "superbwarfare:silencer_qinglan",
+      "superbwarfare:triangular_muzzle",
+      "superbwarfare:love_muzzle"
     ]
   },
   "SoundInfo": {

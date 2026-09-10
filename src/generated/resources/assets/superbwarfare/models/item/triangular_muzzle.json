@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "superbwarfare:item/scope_qmk171"
+    "layer0": "superbwarfare:item/triangular_muzzle"
   }
 }

@@ -1,0 +1,12 @@
+{
+  "Slot": "Barrel",
+  "Level": 1,
+  "Bone": "muzzle_pos",
+  "Override": {
+    "SpreadPattern": {
+      "Type": "Triangle"
+    }
+  },
+  "Model": "superbwarfare:models/bedrock/attachment/triangular_muzzle.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/triangular_muzzle.png"
+}
