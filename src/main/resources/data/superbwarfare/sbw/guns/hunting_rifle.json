@@ -40,6 +40,7 @@
   "AvailableAttachments": {
     "Scope": [
       "superbwarfare:scope_coyote",
+      "superbwarfare:scope_aimpoint_t2",
       "superbwarfare:scope_eotech_551",
       "superbwarfare:scope_okp_7",
       "superbwarfare:scope_pkas",
