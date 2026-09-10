@@ -3036,8 +3036,12 @@ object ClientEventHandler {
             }
 
             val data = GunData.from(stack)
+            val baseZoom = data.zoom()
+            val movingZoom = data.movingZoom()
+            val targetZoom =
+                if (zoom && movingZoom != null && isMoving() && !player.isShiftKeyDown) movingZoom else baseZoom
 
-            customZoom = Mth.lerp(0.6 * times, customZoom, data.zoom() + if (breath) 0.75 else 0.0)
+            customZoom = Mth.lerp(0.6 * times, customZoom, targetZoom + if (breath) 0.75 else 0.0)
 
             if (mc.options.cameraType.isFirstPerson) {
                 event.fov /= (1 + p * (customZoom - 1))

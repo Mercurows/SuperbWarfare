@@ -34,6 +34,10 @@ data class ScopeInfo(
     @SerialName("ViewRadiusModifier")
     val viewRadiusModifier: Float = 1.0f,
 
+    // 移动时的瞄准倍率，用于能够自动调整焦距的瞄准镜，设置成null相当于禁用该功能
+    @SerialName("MovingZoom")
+    val movingZoom: Double? = null,
+
     // 完全瞄准后枪械沿 Z 轴（长度方向）压缩到的比例，默认 0.75
     @SerialName("ZoomLengthScale")
     val zoomLengthScale: Float = 0.75f,

@@ -7,7 +7,6 @@ import com.atsuishio.superbwarfare.data.attachment.AttachmentZoom
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.BACKUP_AMMO_CACHE_TICKS
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.DATA_VERSION
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.get
-import com.atsuishio.superbwarfare.data.gun.GunData.Companion.getDefault
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.AMMO_CONSUMER
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.AMMO_COST_PER_SHOOT
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.AVAILABLE_FIRE_MODES
@@ -381,6 +380,16 @@ class GunData private constructor(
     fun zoom(): Double {
         if (minZoom() >= maxZoom()) return get(DEFAULT_ZOOM)
         return Mth.clamp(get(DEFAULT_ZOOM), minZoom(), maxZoom())
+    }
+
+    /**
+     * Gets the configured zoom level to use while aiming and moving.
+     *
+     * @return the movement zoom level, or null when the installed scope does not enable it.
+     */
+    fun movingZoom(): Double? {
+        val id = attachment.id(AttachmentType.SCOPE) ?: return null
+        return AttachmentDefinition.from(id)?.scopeInfo?.movingZoom
     }
 
     private fun scopeZoomDefinition(): AttachmentZoom? {
