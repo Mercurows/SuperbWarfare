@@ -1622,7 +1622,6 @@ object ClientEventHandler {
 
         if (fireModeInfo.isChargeMode()) {
             updateChargeFireState(player, data, fireModeInfo)
-            data.save()
             return
         }
 
@@ -1730,8 +1729,6 @@ object ClientEventHandler {
         if (GunData.from(stack).reload.normal() || GunData.from(stack).reload.empty()) {
             customRpm = 0
         }
-
-        data.save()
     }
 
     private fun updateChargeFireState(player: Player, data: GunData, fireModeInfo: FireModeInfo) {
@@ -1804,6 +1801,8 @@ object ClientEventHandler {
         }
 
         // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
+        // 这是纯客户端预测：只写内存，不 save()。枪械数据由服务端权威修改后同步，客户端的
+        // 本地写入会在下一次同步时被覆盖，因此这里刻意不落盘（也不 bump revision）。
         if (data.get(GunProp.BOLT_ACTION_TIME) > 0 && data.hasEnoughAmmoToShoot(player)) {
             data.bolt.needed.set(true)
         }
