@@ -280,8 +280,8 @@ dependencies {
     implementation("curse.maven:jade-324717:6291517")
 
     // 帕秋莉手册
-    compileOnly("curse.maven:patchouli-306770:6164617")
-    runtimeOnly("curse.maven:patchouli-306770:6164617")
+//    compileOnly("curse.maven:patchouli-306770:6164617")
+//    runtimeOnly("curse.maven:patchouli-306770:6164617")
 
     // Kubejs
     implementation("curse.maven:kubejs-238086:7278501")
