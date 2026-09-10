@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "superbwarfare:item/scope_1p_78"
+    "layer0": "superbwarfare:item/rare_accessory_kit"
   }
 }

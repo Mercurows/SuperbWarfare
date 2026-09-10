@@ -202,6 +202,12 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.LEGENDARY_MATERIAL_PACK)
         simpleItem(ModItems.SUPERB_MATERIAL_PACK)
         simpleItem(ModItems.VIRTUAL_MATERIAL_PACK)
+        simpleItem(ModItems.COMMON_ACCESSORY_KIT)
+        simpleItem(ModItems.RARE_ACCESSORY_KIT)
+        simpleItem(ModItems.EPIC_ACCESSORY_KIT)
+        simpleItem(ModItems.LEGENDARY_ACCESSORY_KIT)
+        simpleItem(ModItems.SUPERB_ACCESSORY_KIT)
+        simpleItem(ModItems.VIRTUAL_ACCESSORY_KIT)
 
         simpleItem(ModItems.DATA_CHIP_SUBSTRATE)
         simpleItem(ModItems.COMMON_BLUEPRINT_DATA_CHIP)
@@ -334,6 +340,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.SCOPE_SNIPER)
         simpleItem(ModItems.SILENCER_QINGLAN)
         simpleItem(ModItems.SCOPE_HAMR)
+        simpleItem(ModItems.SCOPE_1P_78)
 
         // blocks
         evenSimplerBlockItem(ModBlocks.BARBED_WIRE)
