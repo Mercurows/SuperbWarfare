@@ -453,6 +453,16 @@ class GunData private constructor(
         return Mth.clamp(get(DEFAULT_ZOOM), minZoom(), maxZoom())
     }
 
+    /**
+     * Gets the configured zoom level to use while aiming and moving.
+     *
+     * @return the movement zoom level, or null when the installed scope does not enable it.
+     */
+    fun movingZoom(): Double? {
+        val id = attachment.id(AttachmentType.SCOPE) ?: return null
+        return AttachmentDefinition.from(id)?.scopeInfo?.movingZoom
+    }
+
     private fun scopeZoomDefinition(): AttachmentZoom? {
         val id = attachment.id(AttachmentType.SCOPE) ?: return null
         val definition = AttachmentDefinition.from(id) ?: return null

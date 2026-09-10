@@ -303,9 +303,10 @@ object ClientMouseHandler {
         if (stack.item is GunItem) {
             val data = GunData.from(stack)
             val customSens = data.sensitivity.get()
+            val zoom = ClientEventHandler.customZoom.coerceAtLeast(1.0)
 
             if (!player.mainHandItem.isEmpty && mc.options.cameraType == CameraType.FIRST_PERSON) {
-                return original / (1 + (0.2 * (data.zoom() - (0.3 * customSens)) * ClientEventHandler.zoomTime))
+                return original / (1 + (0.2 * (zoom - (0.3 * customSens)) * ClientEventHandler.zoomTime))
                     .coerceAtLeast(0.1) * (ControlConfig.MOUSE_SENSITIVITY.get() / 100f)
             }
         }
