@@ -26,12 +26,24 @@ object CustomData {
     @JvmField
     val VEHICLE_DATA = DataLoader.createData(
         "sbw/vehicles", DefaultVehicleData::class.java, true, isKtData = true
-    ) { _ -> VehicleData.dataCache.invalidateAll() }
+    ) { data ->
+        // Clamp the shared datapack defaults once, so VehicleData.compute() can hand them out
+        // read-only without copying whenever a vehicle has no per-instance override.
+        data.values.forEach { (it as? DefaultVehicleData)?.limit() }
+        GunData.DATA_VERSION++
+        VehicleData.dataCache.invalidateAll()
+    }
 
     @JvmField
     val GUN_DATA = DataLoader.createData(
         "sbw/guns", DefaultGunData::class.java, true, isKtData = true
-    ) { _ -> GunData.DATA_CACHE.invalidateAll() }
+    ) { map ->
+        // Must run after the map itself was (re)loaded: vehicle weapons share one item id and
+        // register their per-weapon baselines here so GunData can resolve them from the stack.
+        VehicleData.registerWeaponDefaults(map)
+        GunData.DATA_VERSION++
+        GunData.DATA_CACHE.invalidateAll()
+    }
 
     @JvmField
     val DRONE_ATTACHMENT = DataLoader.createData("sbw/drone_attachments", DroneAttachmentData::class.java)

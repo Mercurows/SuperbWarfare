@@ -237,6 +237,14 @@ class DefaultVehicleData : IDBasedData<DefaultVehicleData> {
     }
 
     /**
+     * Weapon keys declared by this vehicle, without parsing any per-weapon [DefaultGunData].
+     *
+     * Callers that only need the weapon key set (e.g. building the runtime gun map) should prefer this
+     * over [weapons], which decodes every weapon baseline.
+     */
+    fun weaponKeys(): Set<String> = weapons.keys.toSet()
+
+    /**
      * 碰撞等级，范围是0~4
      * 0 - 无法撞坏方块
      * 1 - 允许撞坏软方块
@@ -315,10 +323,10 @@ class DefaultVehicleData : IDBasedData<DefaultVehicleData> {
         this.maxHealth = max(this.maxHealth, 0f)
         this.repairCooldown = max(this.repairCooldown, 0)
         this.maxEnergy = max(this.maxEnergy, 0)
-        this.obb = this.obb.map {
-            it.limit()
-            it
-        }.toMutableList()
+        // In-place: this runs on the shared datapack default, so avoid re-allocating the list.
+        for (info in this.obb) {
+            info.limit()
+        }
 
         this.collisionLevel.level = this.collisionLevel.level.coerceIn(0, 4)
     }

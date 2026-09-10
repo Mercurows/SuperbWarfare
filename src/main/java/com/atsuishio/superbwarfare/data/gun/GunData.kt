@@ -5,7 +5,9 @@ import com.atsuishio.superbwarfare.data.*
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
 import com.atsuishio.superbwarfare.data.attachment.AttachmentZoom
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.BACKUP_AMMO_CACHE_TICKS
+import com.atsuishio.superbwarfare.data.gun.GunData.Companion.DATA_VERSION
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.get
+import com.atsuishio.superbwarfare.data.gun.GunData.Companion.getDefault
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.AMMO_CONSUMER
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.AMMO_COST_PER_SHOOT
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.AVAILABLE_FIRE_MODES
@@ -35,6 +37,7 @@ import com.google.common.cache.LoadingCache
 import net.minecraft.core.component.DataComponentPatch
 import net.minecraft.core.component.DataComponents
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.Tag
 import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.network.codec.StreamCodec
 import net.minecraft.resources.ResourceLocation
@@ -103,7 +106,7 @@ fun ItemStack.toGunData(): GunData? = if (isGunItem()) GunData.from(this) else n
  * @since 0.8.9.1
  */
 class GunData private constructor(
-    stack: ItemStack, initialDefaultDataSupplier: (() -> DefaultGunData)? = null
+    stack: ItemStack
 ) : DefaultDataSupplier<DefaultGunData> {
 
     /** The target weapon item stack wrapped by this data object. */
@@ -134,6 +137,18 @@ class GunData private constructor(
     @JvmField
     val propertyOverrideString: StringValue
 
+    /**
+     * Optional [DefaultGunData] id override, stored in the gun tag.
+     *
+     * When non-empty, the baseline is resolved from [CustomData.GUN_DATA] by this id instead of the
+     * item's registry id. Vehicle-mounted weapons all share the single `superbwarfare:vehicle_gun`
+     * item, so they stamp `<vehicleId>.<weaponKey>` (composed by `VehicleData.weaponDefaultDataId`)
+     * onto their stack and resolve their per-vehicle weapon baseline from it — no external supplier
+     * injection needed.
+     */
+    @JvmField
+    val defaultDataId: StringValue
+
     /** Unique registry identifier string for the underlying item. */
     @JvmField
     val id: String
@@ -143,13 +158,16 @@ class GunData private constructor(
     val nbtVersion: NbtVersion = NbtVersion()
 
     /**
-     * Supplier for the default (unmodified) gun property set.
+     * Cached [DefaultGunData] baseline, resolved from [defaultDataId] or the gun item itself.
      *
-     * Marked as [internal] to allow [VehicleEntity] to update the baseline supplier
-     * without reconstructing the entire [GunData] instance.
+     * [getDefault] is called once per property read during a PMC rebuild, so the resolution (an NBT
+     * lookup plus a map lookup) is cached here. It is re-resolved when [defaultDataId] changes or when
+     * the datapack data is reloaded ([DATA_VERSION]).
      */
-    @JvmField
-    internal var defaultDataSupplier: () -> DefaultGunData
+    private var cachedDefaultData: DefaultGunData? = null
+
+    /** [DATA_VERSION] snapshot taken when [cachedDefaultData] was resolved. */
+    private var cachedDefaultDataVersion: Int = -1
 
     /** Cached snapshot of the item stack used for equality checks. */
     var lastTimeStack: ItemStack? = null
@@ -214,20 +232,22 @@ class GunData private constructor(
     /** Returns the attachment NBT [CompoundTag]. */
     fun attachment(): CompoundTag = attachmentTag
 
-    /** Returns default un-modified [DefaultGunData] baseline for this weapon. */
-    override fun getDefault(): DefaultGunData = this.defaultDataSupplier()
-
     /**
-     * Updates the default data supplier and invalidates the structural version counter.
+     * Returns the default un-modified [DefaultGunData] baseline for this weapon.
      *
-     * This forces a PMC rebuild on the next [get] access with the updated defaults,
-     * while preserving the existing [GunData] instance, stack, and [NbtVersion] state.
-     *
-     * @param supplier new function supplying updated [DefaultGunData].
+     * Resolution order: [defaultDataId] (stamped on the stack, used by vehicle weapons) and then the
+     * owning [GunItem]'s own baseline (normally the item's registry id).
      */
-    fun updateDefaultDataSupplier(supplier: () -> DefaultGunData) {
-        defaultDataSupplier = supplier
-        nbtVersion.invalidateStructural()
+    override fun getDefault(): DefaultGunData {
+        val cached = cachedDefaultData
+        if (cached != null && cachedDefaultDataVersion == DATA_VERSION) return cached
+
+        val defaultDataId = this.defaultDataId.get()
+        val resolved = if (defaultDataId.isEmpty()) item.getDefaultData(this) else getDefault(defaultDataId)
+
+        cachedDefaultData = resolved
+        cachedDefaultDataVersion = DATA_VERSION
+        return resolved
     }
 
     /**
@@ -248,7 +268,6 @@ class GunData private constructor(
 
     private val jsonPropModifier = JsonPropertyModifier(GunProp.entries)
     private val attachmentJsonPropModifier = JsonPropertyModifier(GunProp.entries)
-    private var cache: DefaultGunData? = null
     private var tempModifications: Function<DefaultGunData, DefaultGunData>? = null
     private val pmcInstance: PMC<GunData, DefaultGunData> by lazy { PMC(this) }
     private var cachedStructuralVersion: Int = -1
@@ -1105,7 +1124,7 @@ class GunData private constructor(
 
     /** Creates duplicate copy of this [GunData]. */
     fun copy(): GunData {
-        return GunData(this.stack.copy(), this.defaultDataSupplier)
+        return GunData(this.stack.copy())
     }
 
     // TODO Deprecated: temporary adaptation for Touhou Little Maid mod
@@ -1131,12 +1150,6 @@ class GunData private constructor(
         this.stack = stack
         this.id = if (useEmptyGunData) EmptyGunItem.EMPTY_GUN_ID else getRegistryId(stack.item)
 
-        this.defaultDataSupplier = if (useEmptyGunData) {
-            { EmptyGunItem.EMPTY_GUN_DATA }
-        } else {
-            initialDefaultDataSupplier ?: { gunItem.getDefaultData(this) }
-        }
-
         if (useEmptyGunData) {
             this.tag = CompoundTag()
         } else {
@@ -1150,6 +1163,10 @@ class GunData private constructor(
 
         // Structural properties -> invalidate PMC pipeline on change
         propertyOverrideString = StringValue(this.gunDataTag, "Override", onSet = nbtVersion::invalidateStructural)
+        defaultDataId = StringValue(this.gunDataTag, KEY_DEFAULT_DATA, onSet = {
+            cachedDefaultData = null
+            nbtVersion.invalidateStructural()
+        })
         selectedAmmoType = IntValue(gunDataTag, "SelectedAmmoType", onSet = nbtVersion::invalidateStructural)
         selectedFireMode = IntValue(gunDataTag, "SelectedFireMode", 0, onSet = nbtVersion::invalidateStructural)
         level = IntValue(gunDataTag, "Level", onSet = nbtVersion::invalidateStructural)
@@ -1202,6 +1219,20 @@ class GunData private constructor(
         /** Tick interval between backup ammo inventory re-computations. */
         const val BACKUP_AMMO_CACHE_TICKS: Long = 10L
 
+        /** Root gun tag key inside [DataComponents.CUSTOM_DATA]. */
+        private const val KEY_GUN_DATA = "GunData"
+
+        /** [defaultDataId] key inside the gun tag. */
+        const val KEY_DEFAULT_DATA = "DefaultData"
+
+        /**
+         * Datapack data version, bumped whenever [CustomData.GUN_DATA] / [CustomData.VEHICLE_DATA]
+         * are (re)loaded. Instances compare it against their own snapshot to re-resolve their cached
+         * [DefaultGunData] baseline after a `/reload`.
+         */
+        @JvmField
+        var DATA_VERSION: Int = 0
+
         /**
          * Cached array of all [Perk.Type] entries.
          *
@@ -1229,12 +1260,36 @@ class GunData private constructor(
 
         /** Retrieves cached or new [GunData] for an [ItemStack]. */
         @JvmStatic
-        @JvmOverloads
-        fun from(stack: ItemStack, defaultDataSupplier: (() -> DefaultGunData)? = null): GunData {
-            if (defaultDataSupplier != null) {
-                return GunData(stack, defaultDataSupplier)
-            }
+        fun from(stack: ItemStack): GunData {
             return DATA_CACHE.getUnchecked(stack)
+        }
+
+        /**
+         * Stamps a [defaultDataId] onto [stack] *before* any [GunData] is created for it.
+         *
+         * Vehicle-mounted weapons all share the single `superbwarfare:vehicle_gun` item id, so they
+         * cannot resolve their baseline from the item alone; this writes the per-vehicle weapon id
+         * (`<vehicleId>.<weaponKey>`, composed by `VehicleData.weaponDefaultDataId`) into the gun tag
+         * so the resulting [GunData] resolves it from its own stack. No-op when already set.
+         */
+        @JvmStatic
+        fun setDefaultDataId(stack: ItemStack, defaultDataId: String) {
+            if (defaultDataId.isEmpty()) return
+
+            val tag = stack.get(DataComponents.CUSTOM_DATA)?.copyTag() ?: CompoundTag()
+            val gunDataTag = if (tag.contains(KEY_GUN_DATA, Tag.TAG_COMPOUND.toInt())) {
+                tag.getCompound(KEY_GUN_DATA)
+            } else {
+                CompoundTag().also { tag.put(KEY_GUN_DATA, it) }
+            }
+
+            if (gunDataTag.getString(KEY_DEFAULT_DATA) == defaultDataId) return
+
+            gunDataTag.putString(KEY_DEFAULT_DATA, defaultDataId)
+            stack.set(
+                DataComponents.CUSTOM_DATA,
+                net.minecraft.world.item.component.CustomData.of(tag)
+            )
         }
 
         /** Resolves computed property for given item stack directly. */
