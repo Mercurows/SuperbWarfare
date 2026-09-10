@@ -553,12 +553,14 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
         // 生成所有子弹
         val spreadPattern = data.get(GunProp.SPREAD_PATTERN)
+        val spreadRotation = data.attachment.getRotation(AttachmentType.BARREL)
         val spreadDirections = ProjectileSpreadTool.generateDirections(
             this.random,
             parameters.shootDirection,
             parameters.spread,
             projectileAmount,
-            spreadPattern
+            spreadPattern,
+            spreadRotation
         )
 
         repeat(projectileAmount) { index ->
