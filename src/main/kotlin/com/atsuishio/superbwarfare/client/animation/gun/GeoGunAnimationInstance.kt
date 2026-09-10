@@ -20,6 +20,7 @@ import com.maydaymemory.mae.blend.EulerAdditiveBlender
 import com.maydaymemory.mae.blend.NoAllocMergeBlender
 import com.maydaymemory.mae.blend.SimpleEulerAdditiveBlender
 import com.maydaymemory.mae.control.runner.*
+import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundSource
@@ -117,7 +118,9 @@ open class GeoGunAnimationInstance(
         }
 
         fireSerial++
-        pendingShellEjects += 0
+        if (isFirstPerson()) {
+            pendingShellEjects += 0
+        }
     }
 
     fun consumePendingShellEjects(): List<Int> {
@@ -579,10 +582,16 @@ open class GeoGunAnimationInstance(
     }
 
     private fun collectParticleEvents(animationRunner: AnimationRunner?) {
+        if (!isFirstPerson()) return
+
         val particles = animationRunner?.clip<ParticleEffectData>(BedrockAnimation.PARTICLE_CHANNEL_NAME) ?: return
         for (keyframe in particles) {
             keyframe?.value?.let { pendingParticles += it }
         }
+    }
+
+    private fun isFirstPerson(): Boolean {
+        return Minecraft.getInstance().options.cameraType.isFirstPerson
     }
 
     private fun collectSoundEvents(animationRunner: AnimationRunner?) {
