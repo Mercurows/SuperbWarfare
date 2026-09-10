@@ -130,6 +130,12 @@ object ProjectileSpreadTool {
     ): List<Vec3> {
         val rows = if (pattern.rows > 0) pattern.rows else triangleRowsFor(amount)
         val offsets = ArrayList<Vec3>(amount)
+        val sx = scaleX(pattern)
+        val sy = scaleY(pattern)
+        val xStep = if (rows <= 1) 0.0 else 2.0 * sx / (rows - 1)
+        val height = sqrt(3.0) * sx * sy
+        val yStep = if (rows <= 1) 0.0 else height / (rows - 1)
+        val startY = -height / 2.0
 
         for (layer in 0 until rows) {
             if (offsets.size >= amount) return offsets
@@ -137,19 +143,8 @@ object ProjectileSpreadTool {
             val rowLength = rows - layer
             val remaining = amount - offsets.size
             val take = minOf(rowLength, remaining)
-            val sx = scaleX(pattern)
-            val sy = scaleY(pattern)
-            val xStep = if (rowLength == 1) 0.0 else 2.0 * sx / (rowLength - 1)
-            val startX = if (take == rowLength) {
-                -sx
-            } else {
-                -xStep * (take - 1) / 2.0
-            }
-            val y = if (rows == 1) {
-                0.0
-            } else {
-                -sy + 2.0 * sy * layer / (rows - 1)
-            }
+            val startX = -xStep * (take - 1) / 2.0
+            val y = startY + yStep * layer
 
             for (index in 0 until take) {
                 offsets += jitteredOffset(rng, pattern, startX + xStep * index, y)

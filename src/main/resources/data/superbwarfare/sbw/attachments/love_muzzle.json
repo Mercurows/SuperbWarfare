@@ -1,0 +1,13 @@
+{
+  "Slot": "Barrel",
+  "Level": 2,
+  "Bone": "muzzle_pos",
+  "Override": {
+    "SpreadPattern": {
+      "Type": "Heart",
+      "Jitter": 0.02
+    }
+  },
+  "Model": "superbwarfare:models/bedrock/attachment/love_muzzle.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/love_muzzle.png"
+}
