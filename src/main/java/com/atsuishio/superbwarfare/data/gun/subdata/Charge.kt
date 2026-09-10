@@ -1,16 +1,23 @@
 package com.atsuishio.superbwarfare.data.gun.subdata
 
 import com.atsuishio.superbwarfare.data.gun.GunData
-import com.atsuishio.superbwarfare.data.gun.value.Starter
-import com.atsuishio.superbwarfare.data.gun.value.Timer
+import com.atsuishio.superbwarfare.data.gun.value.StateStarter
+import com.atsuishio.superbwarfare.data.gun.value.StateTimer
 
-class Charge(data: GunData) {
+/**
+ * Charge-fire state, backed by [com.atsuishio.superbwarfare.data.gun.GunState] instead of the gun tag.
+ */
+class Charge(gun: GunData) {
 
     @JvmField
-    val timer = Timer(data.data(), "Charge")
+    val timer = StateTimer(
+        gun, { it.chargeTime }, { state, value -> state.copy(chargeTime = value) }, "Charge"
+    )
 
     @JvmField
-    val starter = Starter(data.data(), "Charge")
+    val starter = StateStarter(
+        gun, { it.startCharge }, { state, value -> state.copy(startCharge = value) }, "Charge"
+    )
 
     fun time(): Int {
         return timer.get()

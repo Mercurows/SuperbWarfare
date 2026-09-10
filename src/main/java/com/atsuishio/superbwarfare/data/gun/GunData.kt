@@ -161,15 +161,15 @@ class GunData private constructor(
     val defaultDataId: StringValue
 
     /**
-     * Monotonic revision of the persisted gun state, stored in the gun tag.
+     * Monotonic revision of the persisted gun state.
      *
-     * [save] advances it whenever the persisted content actually changes. Together with [uuid] it lets
-     * [from] tell a *newer snapshot of the same gun* (vanilla replaced the client-side [ItemStack])
+     * [persist] advances it whenever the persisted content actually changes. Together with [uuid] it
+     * lets [from] tell a *newer snapshot of the same gun* (vanilla replaced the client-side [ItemStack])
      * apart from an unrelated stack such as a creative-mode copy — a copy carries an equal revision and
-     * must get its own instance.
+     * must get its own instance. See [GunState.isNewerRevision] for the wraparound-safe comparison.
      */
-    @JvmField
-    val revision: IntValue
+    val revision: Long
+        get() = state.revision
 
     /** Unique registry identifier string for the underlying item. */
     @JvmField
@@ -178,6 +178,16 @@ class GunData private constructor(
     /** Tracks structural and state NBT mutations for O(1) PMC invalidation. */
     @JvmField
     val nbtVersion: NbtVersion = NbtVersion()
+
+    /**
+     * Immutable snapshot of this gun's persisted state — the single source of truth for every scalar
+     * field declared below.
+     *
+     * Replaced only through [update] (writes) and [persist]/[rebind] (serialization), so it is never
+     * observed half-updated. Reads should prefer this over the tag-backed mirror.
+     */
+    var state: GunState = GunState.EMPTY
+        private set
 
     /**
      * Cached [DefaultGunData] baseline, resolved from [defaultDataId] or the gun item itself.
@@ -193,6 +203,12 @@ class GunData private constructor(
 
     /** [DATA_VERSION] snapshot taken when [cachedDefaultData] was resolved. */
     private var cachedDefaultDataVersion: Int = -1
+
+    /** Depth of nested [batch] scopes. Writes to the stack are deferred while this is positive. */
+    private var batchDepth: Int = 0
+
+    /** Whether a [batch] (or a deferred [save]) still owes the stack a write. */
+    private var persistPending: Boolean = false
 
     /** Cached snapshot of the item stack used for equality checks. */
     var lastTimeStack: ItemStack? = null
@@ -245,26 +261,38 @@ class GunData private constructor(
     /** Returns the wrapped [ItemStack]. */
     fun stack(): ItemStack = stack
 
-    /** Returns the root NBT [CompoundTag]. */
-    fun tag(): CompoundTag = tag
+    /** Returns the root NBT [CompoundTag]. Flushes any write a [batch] deferred. */
+    fun tag(): CompoundTag {
+        flush()
+        return tag
+    }
 
-    /** Returns the gun data NBT [CompoundTag]. */
-    fun data(): CompoundTag = gunDataTag
+    /** Returns the gun data NBT [CompoundTag]. Flushes any write a [batch] deferred. */
+    fun data(): CompoundTag {
+        flush()
+        return gunDataTag
+    }
 
-    /** Returns the perk NBT [CompoundTag]. */
-    fun perk(): CompoundTag = perkTag
+    /** Returns the perk NBT [CompoundTag]. Flushes any write a [batch] deferred. */
+    fun perk(): CompoundTag {
+        flush()
+        return perkTag
+    }
 
-    /** Returns the attachment NBT [CompoundTag]. */
-    fun attachment(): CompoundTag = attachmentTag
+    /** Returns the attachment NBT [CompoundTag]. Flushes any write a [batch] deferred. */
+    fun attachment(): CompoundTag {
+        flush()
+        return attachmentTag
+    }
 
     /**
-     * Stable identity of this gun, stored in the gun tag, or `null` when the gun was never initialised.
+    /     * Stable identity of this gun, or `null` when the gun was never initialised.
      *
      * Unlike the [ItemStack] reference this stays the same across server syncs, item copies made by
      * vanilla and inventory resyncs, which is what [from] keys the [UUID_CACHE] on.
      */
     val uuid: UUID?
-        get() = if (gunDataTag.hasUUID(KEY_UUID)) gunDataTag.getUUID(KEY_UUID) else null
+        get() = state.uuid
 
     /**
      * Returns the default un-modified [DefaultGunData] baseline for this weapon.
@@ -1111,19 +1139,141 @@ class GunData private constructor(
     val weaponYaw: DoubleValue
 
     /**
-     * Persists pending NBT changes back to the underlying [ItemStack] tag.
+     * Applies [block] to the immutable [state] and writes the result to the stack.
      *
-     * Advances [revision] when the persisted content actually changed, which is what lets a remote copy
-     * of this gun recognise this instance as its predecessor (see [rebind]).
+     * This is the write path for everything the value wrappers used to mutate in place: the returned
+     * state becomes the new snapshot, the change is classified as structural or state-only so the PMC
+     * cache is invalidated only when needed, and the stack is written through automatically. Callers
+     * therefore never have to remember a `save()`.
+     *
+     * Inside a [batch] the stack write is deferred to the end of that scope; [state] itself is always
+     * current, so every read is immediate.
+     */
+    fun update(block: (GunState) -> GunState): GunState {
+        val previous = state
+        val next = block(previous)
+        if (next == previous) return previous
+
+        applyState(previous, next)
+        requestPersist()
+
+        return next
+    }
+
+    /**
+     * Applies [block] to [state] **without** writing the stack.
+     *
+     * For client-side predictions. The gun stack is server-authoritative, so such a write must stay in
+     * memory: persisting it would fight the next server snapshot and, because it advances
+     * [GunState.revision], would also stop this gun from adopting that snapshot. The next sync
+     * overwrites the prediction through [rebind].
+     */
+    fun updateLocal(block: (GunState) -> GunState): GunState {
+        val previous = state
+        val next = block(previous)
+        if (next == previous) return previous
+
+        applyState(previous, next)
+
+        return next
+    }
+
+    /** Installs [next] as the current snapshot and updates caches/invalidation for the change. */
+    private fun applyState(previous: GunState, next: GunState) {
+        state = next
+
+        if (next.structurallyDiffersFrom(previous)) {
+            nbtVersion.invalidateStructural()
+        } else {
+            nbtVersion.invalidateState()
+        }
+
+        // Side effects the old value wrappers performed through their `onSet` callbacks.
+        if (next.ammo != previous.ammo || next.virtualAmmo != previous.virtualAmmo) {
+            cachedBackupAmmo = -1
+        }
+        if (next.defaultDataId != previous.defaultDataId) {
+            cachedDefaultData = null
+            cachedDefaultDataId = null
+        }
+    }
+
+    /**
+     * Groups every write made by [block] into a single write to the stack.
+     *
+     * A tick touches several timers, ammo and heat; without this each of those writes would serialize
+     * the whole state on its own. Writes inside the scope only update [state] (and the version
+     * counters), and the outermost scope exit performs exactly one serialization.
+     *
+     * Nothing can be forgotten: the flush is driven by this scope, not by the callers, and it also runs
+     * when [block] throws. Code that reads the tag directly ([tag], [data], [perk], [attachment]) and
+     * [copy] flush first, so they never observe a half-batched state. A batch must not span ticks —
+     * that is what keeps the pending window inside one synchronous scope.
+     */
+    fun <T> batch(block: () -> T): T {
+        batchDepth++
+        try {
+            return block()
+        } finally {
+            batchDepth--
+            if (batchDepth == 0) flush()
+        }
+    }
+
+    /** Writes any change a [batch] deferred to the stack. No-op when nothing is pending. */
+    fun flush() {
+        if (!persistPending) return
+        persistPending = false
+        persist(compare = true)
+    }
+
+    /**
+     * Outside a [batch], writes immediately and skips the "did the tag change" comparison: [update]
+     * only routes here after the state actually changed, and the serialized form is a pure function of
+     * the state, so the tag is guaranteed to differ.
+     */
+    private fun requestPersist() {
+        if (batchDepth > 0) {
+            persistPending = true
+        } else {
+            persist(compare = false)
+        }
+    }
+
+    /**
+     * Flushes pending tag-backed changes ( `Perks`, `Attachment`, ammo slots, loose keys) to the stack.
+     *
+     * Scalars no longer need this — they persist through [update]. Kept as a public entry point because
+     * the existing call sites use it; calling it when nothing changed is a cheap no-op.
      */
     fun save() {
-        // Fast-path: If neither structural nor state versions changed, tag is unmodified
-        val currentCombined = nbtVersion.structural + nbtVersion.state
-        if (currentCombined == initialCombinedVersion) return
+        if (batchDepth > 0) {
+            persistPending = true
+            return
+        }
+        persist(compare = true)
+    }
+
+    /**
+     * Writes the current [state] plus the tag-backed sections into the stack.
+     *
+     * Advances [GunState.revision] when the persisted content actually changed, which is what lets a
+     * remote copy of this gun recognise this instance as its predecessor (see [rebind]).
+     *
+     * @param compare whether to compare the outgoing tag against the stack's current one first. Needed
+     *   for tag-backed sections, where a mutation may or may not have changed anything; skipped on the
+     *   [update] path, where a change is already known to have happened.
+     */
+    private fun persist(compare: Boolean) {
+        // Fast-path: nothing was ever mutated on this instance, so the tag cannot be out of date.
+        if (nbtVersion.structural + nbtVersion.state == initialCombinedVersion) return
 
         // Make this instance reachable by its own identity, so that a remote snapshot of the same gun
-        // can adopt it (see Companion.from). Covers guns whose UUID was written by initialize().
-        uuid?.let { UUID_CACHE.put(it, this) }
+        // can adopt it (see Companion.from).
+        state.uuid?.let { UUID_CACHE.put(it, this) }
+
+        // Mirror the immutable state into the sub-compound that is still the serialized view.
+        state.writeInto(gunDataTag)
 
         val keysToRemove = mutableListOf<String>()
         for (key in perkTag.allKeys) {
@@ -1148,30 +1298,40 @@ class GunData private constructor(
             cleanedTag.remove(KEY_GUN_DATA)
         }
 
-        if (!tag.isEmpty) {
-            val current = stack.get(DataComponents.CUSTOM_DATA)?.copyTag()
-            if (current == cleanedTag) return
-
-            // Content changed: advance the revision. Done after the comparison above (and mirrored into
-            // the outgoing tag) so that an unchanged state never bumps it.
-            revision.set(revision.get() + 1)
-            cleanedTag.getCompound(KEY_GUN_DATA).putInt(KEY_REVISION, revision.get())
-
-            stack.tag = cleanedTag
-        } else {
+        if (tag.isEmpty) {
             if (!stack.has(DataComponents.CUSTOM_DATA)) return
             stack.remove(DataComponents.CUSTOM_DATA)
+            return
         }
+
+        if (compare) {
+            val current = stack.get(DataComponents.CUSTOM_DATA)?.copyTag()
+            if (current == cleanedTag) return
+        }
+
+        // Content changed: advance the revision, mirrored into the state and both tag representations.
+        // Done after the comparison above so an unchanged state never bumps it.
+        state = state.copy(revision = state.revision + 1)
+        gunDataTag.putLong(KEY_REVISION, state.revision)
+
+        if (cleanedTag.contains(KEY_GUN_DATA, Tag.TAG_COMPOUND.toInt())) {
+            cleanedTag.getCompound(KEY_GUN_DATA).putLong(KEY_REVISION, state.revision)
+        } else {
+            cleanedTag.put(KEY_GUN_DATA, CompoundTag().apply { putLong(KEY_REVISION, state.revision) })
+        }
+
+        stack.tag = cleanedTag
     }
 
     /**
      * Re-binds this instance to [newStack], a newer snapshot of the same logical gun.
      *
      * The persisted tag is re-read into the *same* [CompoundTag] instances ([tag], [gunDataTag],
-     * [perkTag], [attachmentTag]) so every value wrapper and subdata handler stays valid, and the
-     * structural version is invalidated because the persisted content did change. Preserving the
-     * instance itself is the point: it keeps client-side holders (renderers, animation state, tooltips)
-     * and [uuid]-keyed lookups working instead of being invalidated on every [ItemStack] resync.
+     * [perkTag], [attachmentTag]) so every value wrapper and subdata handler stays valid, [state] is
+     * re-decoded from it, and the structural version is invalidated because the persisted content did
+     * change. Preserving the instance itself is the point: it keeps client-side holders (renderers,
+     * animation state, tooltips) and [uuid]-keyed lookups working instead of being invalidated on every
+     * [ItemStack] resync.
      *
      * Must run on the game thread: it mutates an instance other code may already be using. Its only
      * caller is the [DATA_CACHE] loader, which is reachable from main-thread paths (client
@@ -1185,14 +1345,16 @@ class GunData private constructor(
         this.stack = newStack
 
         reloadTagFrom(incoming)
+        state = GunState.fromTag(gunDataTag)
+
+        // The remote snapshot supersedes anything a batch was still holding back.
+        persistPending = false
 
         // Bookkeeping that depends on the previous tag / stack contents.
         this.lastTimeStack = null
         this.cachedBackupAmmo = -1
-        if (cachedDefaultDataId != defaultDataId.get()) {
-            cachedDefaultData = null
-            cachedDefaultDataId = null
-        }
+        cachedDefaultData = null
+        cachedDefaultDataId = null
 
         nbtVersion.invalidateStructural()
     }
@@ -1245,6 +1407,8 @@ class GunData private constructor(
 
     /** Creates duplicate copy of this [GunData]. */
     fun copy(): GunData {
+        // The copy re-decodes the state from the stack, so deferred writes have to land first.
+        flush()
         return GunData(this.stack.copy())
     }
 
@@ -1282,17 +1446,26 @@ class GunData private constructor(
         perkTag = getOrPut(KEY_PERKS)
         attachmentTag = getOrPut(KEY_ATTACHMENTS)
 
+        // The immutable state is the source of truth for every scalar below; the sub-compound above is
+        // kept in sync as its serialized mirror, so sub-data handlers and loose keys still work.
+        state = GunState.fromTag(gunDataTag)
+
         // Structural properties -> invalidate PMC pipeline on change
-        propertyOverrideString = StringValue(this.gunDataTag, "Override", onSet = nbtVersion::invalidateStructural)
-        defaultDataId = StringValue(this.gunDataTag, KEY_DEFAULT_DATA, onSet = {
-            cachedDefaultData = null
-            cachedDefaultDataId = null
-            nbtVersion.invalidateStructural()
-        })
-        revision = IntValue(this.gunDataTag, KEY_REVISION)
-        selectedAmmoType = IntValue(gunDataTag, "SelectedAmmoType", onSet = nbtVersion::invalidateStructural)
-        selectedFireMode = IntValue(gunDataTag, "SelectedFireMode", 0, onSet = nbtVersion::invalidateStructural)
-        level = IntValue(gunDataTag, "Level", onSet = nbtVersion::invalidateStructural)
+        propertyOverrideString = StateStringValue(
+            this, { it.override }, { s, v -> s.copy(override = v) }
+        )
+        defaultDataId = StateStringValue(
+            this, { it.defaultDataId }, { s, v -> s.copy(defaultDataId = v) }
+        )
+        selectedAmmoType = StateIntValue(
+            this, { it.selectedAmmoType }, { s, v -> s.copy(selectedAmmoType = v) }
+        )
+        selectedFireMode = StateDefaultedIntValue(
+            this, { it.selectedFireMode }, { s, v -> s.copy(selectedFireMode = v) }
+        )
+        level = StateIntValue(
+            this, { it.level }, { s, v -> s.copy(level = v) }
+        )
 
         // Subdata handlers
         reload = Reload(this)
@@ -1301,31 +1474,38 @@ class GunData private constructor(
         attachment = Attachment(this)
         perk = Perks(this)
 
-        // Ephemeral state properties -> no structural invalidation
-        fireIndex = IntValue(gunDataTag, "FireIndex", 0)
-        ammo = IntValue(gunDataTag, "Ammo", onSet = { cachedBackupAmmo = -1 })
-        virtualAmmo = IntValue(gunDataTag, "VirtualAmmo", onSet = { cachedBackupAmmo = -1 })
-        backupAmmoCount = IntValue(gunDataTag, "BackupAmmoCount")
+        // Ephemeral state properties -> no structural invalidation (ammo/virtualAmmo excepted: a perk
+        // reads ammo while computing properties, see GunState.structurallyDiffersFrom)
+        fireIndex = StateIntValue(this, { it.fireIndex }, { s, v -> s.copy(fireIndex = v) })
+        ammo = StateIntValue(this, { it.ammo }, { s, v -> s.copy(ammo = v) })
+        virtualAmmo = StateIntValue(this, { it.virtualAmmo }, { s, v -> s.copy(virtualAmmo = v) })
+        backupAmmoCount = StateIntValue(
+            this, { it.backupAmmoCount }, { s, v -> s.copy(backupAmmoCount = v) }
+        )
         ammoSlot = AmmoSlot(gunDataTag)
-        burstAmount = IntValue(gunDataTag, "BurstAmount")
-        exp = DoubleValue(gunDataTag, "Exp")
+        burstAmount = StateIntValue(this, { it.burstAmount }, { s, v -> s.copy(burstAmount = v) })
+        exp = StateDoubleValue(this, { it.exp }, { s, v -> s.copy(exp = v) })
 
-        isEmpty = BooleanValue(gunDataTag, "IsEmpty")
-        closeHammer = BooleanValue(gunDataTag, "CloseHammer")
-        closeStrike = BooleanValue(gunDataTag, "CloseStrike")
-        stopped = BooleanValue(gunDataTag, "Stopped")
-        forceStop = BooleanValue(gunDataTag, "ForceStop")
-        loadIndex = IntValue(gunDataTag, "LoadIndex")
-        holdOpen = BooleanValue(gunDataTag, "HoldOpen")
-        hideBulletChain = BooleanValue(gunDataTag, "HideBulletChain")
-        sensitivity = IntValue(gunDataTag, "Sensitivity")
-        heat = DoubleValue(gunDataTag, "Heat")
-        shootAnimationTimer = IntValue(gunDataTag, "ShootAnimationTimer")
-        shootTimer = IntValue(gunDataTag, "ShootTimer")
-        overHeat = BooleanValue(gunDataTag, "OverHeat")
-        zooming = BooleanValue(gunDataTag, "Zooming")
-        weaponPitch = DoubleValue(gunDataTag, "weaponPitch")
-        weaponYaw = DoubleValue(gunDataTag, "weaponYaw")
+        isEmpty = StateBooleanValue(this, { it.isEmpty }, { s, v -> s.copy(isEmpty = v) })
+        closeHammer = StateBooleanValue(this, { it.closeHammer }, { s, v -> s.copy(closeHammer = v) })
+        closeStrike = StateBooleanValue(this, { it.closeStrike }, { s, v -> s.copy(closeStrike = v) })
+        stopped = StateBooleanValue(this, { it.stopped }, { s, v -> s.copy(stopped = v) })
+        forceStop = StateBooleanValue(this, { it.forceStop }, { s, v -> s.copy(forceStop = v) })
+        loadIndex = StateIntValue(this, { it.loadIndex }, { s, v -> s.copy(loadIndex = v) })
+        holdOpen = StateBooleanValue(this, { it.holdOpen }, { s, v -> s.copy(holdOpen = v) })
+        hideBulletChain = StateBooleanValue(
+            this, { it.hideBulletChain }, { s, v -> s.copy(hideBulletChain = v) }
+        )
+        sensitivity = StateIntValue(this, { it.sensitivity }, { s, v -> s.copy(sensitivity = v) })
+        heat = StateDoubleValue(this, { it.heat }, { s, v -> s.copy(heat = v) })
+        shootAnimationTimer = StateIntValue(
+            this, { it.shootAnimationTimer }, { s, v -> s.copy(shootAnimationTimer = v) }
+        )
+        shootTimer = StateIntValue(this, { it.shootTimer }, { s, v -> s.copy(shootTimer = v) })
+        overHeat = StateBooleanValue(this, { it.overHeat }, { s, v -> s.copy(overHeat = v) })
+        zooming = StateBooleanValue(this, { it.zooming }, { s, v -> s.copy(zooming = v) })
+        weaponPitch = StateDoubleValue(this, { it.weaponPitch }, { s, v -> s.copy(weaponPitch = v) })
+        weaponYaw = StateDoubleValue(this, { it.weaponYaw }, { s, v -> s.copy(weaponYaw = v) })
 
         val defaultFireMode = get(GunProp.DEFAULT_FIRE_MODE)
 
@@ -1351,14 +1531,14 @@ class GunData private constructor(
         /** Attachment tag key inside [DataComponents.CUSTOM_DATA]. */
         private const val KEY_ATTACHMENTS = "Attachments"
 
-        /** [defaultDataId] key inside the gun tag. */
-        const val KEY_DEFAULT_DATA = "DefaultData"
+        /** [GunState.defaultDataId] key inside the gun tag. */
+        const val KEY_DEFAULT_DATA = GunState.KEY_DEFAULT_DATA
 
         /** Identity key inside the gun tag, written by `GunItem.init`. */
-        const val KEY_UUID = "UUID"
+        const val KEY_UUID = GunState.KEY_UUID
 
-        /** [revision] key inside the gun tag. */
-        const val KEY_REVISION = "Revision"
+        /** [GunState.revision] key inside the gun tag. */
+        const val KEY_REVISION = GunState.KEY_REVISION
 
         /**
          * Datapack data version, bumped whenever [CustomData.GUN_DATA] / [CustomData.VEHICLE_DATA]
@@ -1391,18 +1571,18 @@ class GunData private constructor(
 
                     if (uuid != null) {
                         val existing = UUID_CACHE.getIfPresent(uuid)
-                        val incomingRevision = gunTag?.getInt(KEY_REVISION) ?: 0
+                        val incomingRevision = gunTag?.getLong(KEY_REVISION) ?: 0L
 
                         if (existing != null) {
                             if (existing.stack === stack) {
                                 // Same stack instance (e.g. after a datapack-reload flush): reuse it.
                                 return existing
                             }
-                            // Adopt only a *strictly newer* snapshot of the same gun. An equal or lower
-                            // revision means an unrelated stack — a creative-mode copy carries the same
-                            // revision and must get its own instance, or the two would fight over one
-                            // GunData (and over which stack save() writes to).
-                            if (incomingRevision > existing.revision.get()) {
+                            // Adopt only a newer snapshot of the same gun (wraparound-safe comparison).
+                            // An equal or older revision means an unrelated stack — a creative-mode copy
+                            // carries the same revision and must get its own instance, or the two would
+                            // fight over one GunData (and over which stack writes go to).
+                            if (GunState.isNewerRevision(incomingRevision, existing.revision)) {
                                 existing.rebind(stack)
                                 return existing
                             }

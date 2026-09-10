@@ -1801,10 +1801,10 @@ object ClientEventHandler {
         }
 
         // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
-        // 这是纯客户端预测：只写内存，不 save()。枪械数据由服务端权威修改后同步，客户端的
-        // 本地写入会在下一次同步时被覆盖，因此这里刻意不落盘（也不 bump revision）。
+        // 这是纯客户端预测：用 updateLocal 只改内存，不写 stack、也不 bump revision。枪械数据由服务端
+        // 权威修改后同步（GunItem.beforeShoot 会在服务端设同一个字段），本地预测会在下一次同步被覆盖。
         if (data.get(GunProp.BOLT_ACTION_TIME) > 0 && data.hasEnoughAmmoToShoot(player)) {
-            data.bolt.needed.set(true)
+            data.updateLocal { it.copy(needBoltAction = true) }
         }
 
         revolverPreTime = 0.0

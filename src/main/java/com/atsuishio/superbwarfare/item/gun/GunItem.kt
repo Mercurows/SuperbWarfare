@@ -145,10 +145,15 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     open fun init(data: GunData) {
         if (isInitialized(data)) return
 
-        data.gunDataTag.putUUID("UUID", UUID.randomUUID())
+        data.update { it.copy(uuid = UUID.randomUUID()) }
     }
 
-    open fun isInitialized(data: GunData) = data.gunDataTag.hasUUID("UUID")
+    /**
+     * 是否已完成初始化
+     *
+     * 读取 [GunData.state] 而不是 tag：批量写入期间 tag 可能还没落盘，而 state 始终是最新的。
+     */
+    open fun isInitialized(data: GunData) = data.uuid != null
 
     override fun canAttackBlock(pState: BlockState, pLevel: Level, pPos: BlockPos, pPlayer: Player) = false
 
@@ -539,6 +544,14 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
      * @param parameters 开火参数
      */
     open fun shoot(parameters: ShootParameters) {
+        // One shot writes ammo, bolt/close-strike state, the burst counter and the fire index; batching
+        // them into a single gun-stack write. Reads stay immediate (they go through GunData.state).
+        parameters.data.batch {
+            shootInternal(parameters)
+        }
+    }
+
+    private fun shootInternal(parameters: ShootParameters) {
         val data = parameters.data
         val shooter = parameters.shooter
         val ammoSupplier = parameters.ammoSupplier

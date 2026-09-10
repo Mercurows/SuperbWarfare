@@ -49,6 +49,7 @@ class Attachment(private val gun: GunData) {
             Tag.TAG_COMPOUND -> ResourceLocation.tryParse(
                 attachment.getCompound(type.attachmentName).readId()
             )
+
             else -> null
         }
     }
@@ -56,13 +57,14 @@ class Attachment(private val gun: GunData) {
     /**
      * Returns the persisted per-instance NBT tag for [type], if present.
      */
-    fun getTag(type: AttachmentType): CompoundTag? {
+    private fun getTag(type: AttachmentType): CompoundTag? {
         val tag = attachment.get(type.attachmentName) ?: return null
         return when (tag.id) {
             Tag.TAG_COMPOUND -> attachment.getCompound(type.attachmentName)
             Tag.TAG_STRING -> CompoundTag().apply {
                 putString("Id", attachment.getString(type.attachmentName))
             }
+
             else -> null
         }
     }

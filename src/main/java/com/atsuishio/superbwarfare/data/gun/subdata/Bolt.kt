@@ -1,20 +1,34 @@
 package com.atsuishio.superbwarfare.data.gun.subdata
 
 import com.atsuishio.superbwarfare.data.gun.GunData
-import com.atsuishio.superbwarfare.data.gun.value.BooleanValue
-import com.atsuishio.superbwarfare.data.gun.value.IntValue
+import com.atsuishio.superbwarfare.data.gun.value.StateBooleanValue
+import com.atsuishio.superbwarfare.data.gun.value.StateIntValue
+import com.atsuishio.superbwarfare.data.gun.value.StateTimer
 import com.atsuishio.superbwarfare.data.gun.value.Timer
 
-class Bolt(data: GunData) {
+/**
+ * Bolt-action state.
+ *
+ * Backed by [com.atsuishio.superbwarfare.data.gun.GunState] instead of the gun tag: the accessors keep
+ * their old types (so callers and compiled code are unaffected) but every write goes through
+ * `GunData.update`, which persists automatically.
+ */
+class Bolt(gun: GunData) {
 
     @JvmField
-    val needed: BooleanValue = BooleanValue(data.data(), "NeedBoltAction", false)
+    val needed = StateBooleanValue(
+        gun, { it.needBoltAction }, { state, value -> state.copy(needBoltAction = value) }
+    )
 
     @JvmField
-    val actionTimer: Timer = Timer(data.data(), "BoltActionTime")
+    val actionTimer: Timer = StateTimer(
+        gun, { it.boltActionTime }, { state, value -> state.copy(boltActionTime = value) }, "BoltActionTime"
+    )
 
     @JvmField
-    val totalTicks = IntValue(data.data(), "BoltActionTotalTime", 0)
+    val totalTicks = StateIntValue(
+        gun, { it.boltActionTotalTime }, { state, value -> state.copy(boltActionTotalTime = value) }
+    )
 
     fun start(total: Int) {
         actionTimer.set(total)

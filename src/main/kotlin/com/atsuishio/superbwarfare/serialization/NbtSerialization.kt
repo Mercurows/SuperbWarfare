@@ -20,14 +20,20 @@ import net.minecraft.nbt.*
  * Only object-shaped roots are supported, which matches NeoForge data attachments and
  * codec-based registries. [serializersModule] is forwarded so that `@Contextual` fields can
  * resolve custom serializers.
+ *
+ * When [encodeDefaults] is `false`, properties equal to their declared default are left out of the
+ * tag; a missing key decodes back to that default, so the round trip is unchanged while the payload
+ * stays as small as the hand-written `if (value == default) remove(key)` idiom. Elements without a
+ * default are always written.
  */
 fun <T> encodeToCompoundTag(
     serializer: SerializationStrategy<T>,
     value: T,
-    serializersModule: SerializersModule = SerializersModule {}
+    serializersModule: SerializersModule = SerializersModule {},
+    encodeDefaults: Boolean = true
 ): CompoundTag {
     lateinit var result: CompoundTag
-    NbtObjectEncoder(serializersModule) { tag ->
+    NbtObjectEncoder(serializersModule, encodeDefaults) { tag ->
         result = tag as? CompoundTag
             ?: throw SerializationException("NBT encoder root must be a CompoundTag, got ${tag.type.name}")
     }.encodeSerializableValue(serializer, value)
@@ -48,10 +54,23 @@ fun <T> decodeFromCompoundTag(
  */
 private abstract class AbstractNbtEncoder(
     final override val serializersModule: SerializersModule,
+    private val encodeDefaults: Boolean,
     private val nodeConsumer: (Tag) -> Unit
-) : NamedValueEncoder() {
+) : NamedValueEncoder(), NbtRawTagEncoder {
 
     final override fun composeName(parentName: String, childName: String): String = childName
+
+    /**
+     * Optional (defaulted) properties are skipped when [encodeDefaults] is `false`: NBT is
+     * self-describing here, since a missing key decodes back to the property's default.
+     */
+    final override fun shouldEncodeElementDefault(descriptor: SerialDescriptor, index: Int): Boolean =
+        encodeDefaults
+
+    /** Consumes the pending element name, exactly like the built-in primitive encoders do. */
+    final override fun writeRawTag(tag: Tag) {
+        putElement(popTag(), tag)
+    }
 
     protected abstract fun putElement(key: String, element: Tag)
 
@@ -99,7 +118,7 @@ private abstract class AbstractNbtEncoder(
             else { tag -> putElement(currentTag, tag) }
 
         return when (descriptor.kind) {
-            StructureKind.LIST -> NbtListEncoder(serializersModule, consumer)
+            StructureKind.LIST -> NbtListEncoder(serializersModule, encodeDefaults, consumer)
             StructureKind.MAP -> throw SerializationException(
                 "NBT serialization does not support maps (${descriptor.serialName})"
             )
@@ -108,7 +127,7 @@ private abstract class AbstractNbtEncoder(
                 "NBT serialization does not support polymorphic types (${descriptor.serialName})"
             )
 
-            else -> NbtObjectEncoder(serializersModule, consumer)
+            else -> NbtObjectEncoder(serializersModule, encodeDefaults, consumer)
         }
     }
 
@@ -119,8 +138,9 @@ private abstract class AbstractNbtEncoder(
 
 private class NbtObjectEncoder(
     serializersModule: SerializersModule,
+    encodeDefaults: Boolean,
     nodeConsumer: (Tag) -> Unit
-) : AbstractNbtEncoder(serializersModule, nodeConsumer) {
+) : AbstractNbtEncoder(serializersModule, encodeDefaults, nodeConsumer) {
 
     private val content = CompoundTag()
 
@@ -133,8 +153,9 @@ private class NbtObjectEncoder(
 
 private class NbtListEncoder(
     serializersModule: SerializersModule,
+    encodeDefaults: Boolean,
     nodeConsumer: (Tag) -> Unit
-) : AbstractNbtEncoder(serializersModule, nodeConsumer) {
+) : AbstractNbtEncoder(serializersModule, encodeDefaults, nodeConsumer) {
 
     private val content = ArrayList<Tag>()
 
@@ -157,13 +178,16 @@ private class NbtListEncoder(
  */
 private abstract class AbstractNbtDecoder(
     final override val serializersModule: SerializersModule
-) : NamedValueDecoder() {
+) : NamedValueDecoder(), NbtRawTagDecoder {
 
     protected abstract val value: Tag
 
     protected abstract fun currentElement(tag: String): Tag?
 
     final override fun composeName(parentName: String, childName: String): String = childName
+
+    /** Consumes the pending element name, exactly like the built-in primitive decoders do. */
+    final override fun readRawTag(): Tag? = currentElement(popTag())
 
     override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder {
         val current = currentTagOrNull?.let { currentElement(it) } ?: value
