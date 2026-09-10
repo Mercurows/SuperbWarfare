@@ -5,7 +5,10 @@ import com.atsuishio.superbwarfare.data.*
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
 import com.atsuishio.superbwarfare.data.attachment.AttachmentZoom
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.BACKUP_AMMO_CACHE_TICKS
+import com.atsuishio.superbwarfare.data.gun.GunData.Companion.DATA_CACHE
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.DATA_VERSION
+import com.atsuishio.superbwarfare.data.gun.GunData.Companion.UUID_CACHE
+import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.get
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.AMMO_CONSUMER
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.AMMO_COST_PER_SHOOT
@@ -29,6 +32,7 @@ import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.tools.InventoryTool
+import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
@@ -46,6 +50,7 @@ import net.minecraftforge.common.util.LazyOptional
 import net.minecraftforge.energy.IEnergyStorage
 import net.minecraftforge.items.IItemHandler
 import java.util.*
+import java.util.concurrent.TimeUnit
 import java.util.function.Function
 import kotlin.math.max
 import kotlin.math.min
@@ -88,7 +93,7 @@ fun ItemStack.isGunItem(): Boolean = this.item is GunItem
  *
  * @return [GunData] instance, or `null` if stack is not a gun.
  */
-fun ItemStack.toGunData(): GunData? = if (isGunItem()) GunData.from(this) else null
+fun ItemStack.toGunData(): GunData? = if (isGunItem()) from(this) else null
 
 /**
  * Core runtime data container and Property Modifier Calculator (PMC) wrapper for firearm items.
@@ -104,9 +109,15 @@ class GunData private constructor(
     stack: ItemStack
 ) : DefaultDataSupplier<DefaultGunData> {
 
-    /** The target weapon item stack wrapped by this data object. */
+    /**
+     * The target weapon item stack wrapped by this data object.
+     *
+     * Reassigned in place when this instance is adopted for a newer snapshot of the same gun (see
+     * [rebind]); because a [GunData] is looked up by the gun's [uuid], code holding a reference to this
+     * instance keeps working across vanilla's client-side [ItemStack] replacement.
+     */
     @JvmField
-    val stack: ItemStack
+    var stack: ItemStack
 
     /** The underlying [GunItem] definition for this weapon. */
     @JvmField
@@ -144,6 +155,17 @@ class GunData private constructor(
     @JvmField
     val defaultDataId: StringValue
 
+    /**
+     * Monotonic revision of the persisted gun state, stored in the gun tag.
+     *
+     * [save] advances it whenever the persisted content actually changes. Together with [uuid] it lets
+     * [from] tell a *newer snapshot of the same gun* (vanilla replaced the client-side [ItemStack])
+     * apart from an unrelated stack such as a creative-mode copy — a copy carries an equal revision and
+     * must get its own instance.
+     */
+    @JvmField
+    val revision: IntValue
+
     /** Unique registry identifier string for the underlying item. */
     @JvmField
     val id: String
@@ -160,6 +182,9 @@ class GunData private constructor(
      * the datapack data is reloaded ([DATA_VERSION]).
      */
     private var cachedDefaultData: DefaultGunData? = null
+
+    /** [defaultDataId] value that produced [cachedDefaultData]. */
+    private var cachedDefaultDataId: String? = null
 
     /** [DATA_VERSION] snapshot taken when [cachedDefaultData] was resolved. */
     private var cachedDefaultDataVersion: Int = -1
@@ -228,19 +253,32 @@ class GunData private constructor(
     fun attachment(): CompoundTag = attachmentTag
 
     /**
+     * Stable identity of this gun, stored in the gun tag, or `null` when the gun was never initialised.
+     *
+     * Unlike the [ItemStack] reference this stays the same across server syncs, item copies made by
+     * vanilla and inventory resyncs, which is what [from] keys the [UUID_CACHE] on.
+     */
+    val uuid: UUID?
+        get() = if (gunDataTag.hasUUID(KEY_UUID)) gunDataTag.getUUID(KEY_UUID) else null
+
+    /**
      * Returns the default un-modified [DefaultGunData] baseline for this weapon.
      *
      * Resolution order: [defaultDataId] (stamped on the stack, used by vehicle weapons) and then the
      * owning [GunItem]'s own baseline (normally the item's registry id).
      */
     override fun getDefault(): DefaultGunData {
-        val cached = cachedDefaultData
-        if (cached != null && cachedDefaultDataVersion == DATA_VERSION) return cached
-
         val defaultDataId = this.defaultDataId.get()
+
+        val cached = cachedDefaultData
+        if (cached != null && cachedDefaultDataId == defaultDataId && cachedDefaultDataVersion == DATA_VERSION) {
+            return cached
+        }
+
         val resolved = if (defaultDataId.isEmpty()) item.getDefaultData(this) else getDefault(defaultDataId)
 
         cachedDefaultData = resolved
+        cachedDefaultDataId = defaultDataId
         cachedDefaultDataVersion = DATA_VERSION
         return resolved
     }
@@ -1079,6 +1117,9 @@ class GunData private constructor(
 
     /**
      * Persists pending NBT changes back to the underlying [ItemStack] tag.
+     *
+     * Advances [revision] when the persisted content actually changed, which is what lets a remote copy
+     * of this gun recognise this instance as its predecessor (see [rebind]).
      */
     fun save() {
         // Fast-path: If neither structural nor state versions changed, tag is unmodified
@@ -1105,6 +1146,80 @@ class GunData private constructor(
 //        if (gunDataTag.isEmpty()) {
 //            stack.removeTagKey("GunData");
 //        }
+
+        // TODO revision保存实现不一定正确，等待后续修改
+        revision.set(revision.get() + 1)
+    }
+
+    /**
+     * Re-binds this instance to [newStack], a newer snapshot of the same logical gun.
+     *
+     * The persisted tag is re-read into the *same* [CompoundTag] instances ([tag], [gunDataTag],
+     * [perkTag], [attachmentTag]) so every value wrapper and subdata handler stays valid, and the
+     * structural version is invalidated because the persisted content did change. Preserving the
+     * instance itself is the point: it keeps client-side holders (renderers, animation state, tooltips)
+     * and [uuid]-keyed lookups working instead of being invalidated on every [ItemStack] resync.
+     *
+     * Must run on the game thread: it mutates an instance other code may already be using. Its only
+     * caller is the [DATA_CACHE] loader, which is reachable from main-thread paths (client
+     * render/handlers, server gameplay). Codec `decode` implementations that build a [GunData] run on the
+     * netty thread instead, so they must never trigger adoption for a gun that already has a live
+     * instance — vehicle-gun stacks therefore stay UUID-less (VehicleGunItem never writes one).
+     */
+    private fun rebind(newStack: ItemStack) {
+        val incoming = newStack.getOrCreateTag()
+
+        this.stack = newStack
+
+        reloadTagFrom(incoming)
+
+        // Bookkeeping that depends on the previous tag / stack contents.
+        this.lastTimeStack = null
+        this.cachedBackupAmmo = -1
+        if (cachedDefaultDataId != defaultDataId.get()) {
+            cachedDefaultData = null
+            cachedDefaultDataId = null
+        }
+
+        nbtVersion.invalidateStructural()
+    }
+
+    /**
+     * Folds [incoming] into the existing tag instances, preserving their identity.
+     *
+     * Mutating the existing compounds (instead of replacing them) is what keeps every [IntValue] /
+     * [DoubleValue] / subdata handler in this [GunData] pointing at live data.
+     */
+    private fun reloadTagFrom(incoming: CompoundTag) {
+        val incomingGunData = incoming.getCompound(KEY_GUN_DATA)
+        val incomingPerks = incoming.getCompound(KEY_PERKS)
+        val incomingAttachments = incoming.getCompound(KEY_ATTACHMENTS)
+
+        clearTag(tag)
+        clearTag(gunDataTag)
+        clearTag(perkTag)
+        clearTag(attachmentTag)
+
+        gunDataTag.merge(incomingGunData)
+        perkTag.merge(incomingPerks)
+        attachmentTag.merge(incomingAttachments)
+
+        tag.put(KEY_GUN_DATA, gunDataTag)
+        tag.put(KEY_PERKS, perkTag)
+        tag.put(KEY_ATTACHMENTS, attachmentTag)
+
+        // Remaining root entries (other mods' custom data, ScopeAlt, CustomRPM, ...).
+        for (key in incoming.allKeys) {
+            if (key == KEY_GUN_DATA || key == KEY_PERKS || key == KEY_ATTACHMENTS) continue
+            incoming.get(key)?.let { tag.put(key, it) }
+        }
+    }
+
+    /** Removes every entry of [compound] (1.21 [CompoundTag] has no `clear()`). */
+    private fun clearTag(compound: CompoundTag) {
+        for (key in compound.allKeys.toList()) {
+            compound.remove(key)
+        }
     }
 
     /**
@@ -1145,16 +1260,18 @@ class GunData private constructor(
 
         this.tag = if (useEmptyGunData) CompoundTag() else stack.getOrCreateTag()
 
-        gunDataTag = getOrPut("GunData")
-        perkTag = getOrPut("Perks")
-        attachmentTag = getOrPut("Attachments")
+        gunDataTag = getOrPut(KEY_GUN_DATA)
+        perkTag = getOrPut(KEY_PERKS)
+        attachmentTag = getOrPut(KEY_ATTACHMENTS)
 
         // Structural properties -> invalidate PMC pipeline on change
         propertyOverrideString = StringValue(this.gunDataTag, "Override", onSet = nbtVersion::invalidateStructural)
         defaultDataId = StringValue(this.gunDataTag, KEY_DEFAULT_DATA, onSet = {
             cachedDefaultData = null
+            cachedDefaultDataId = null
             nbtVersion.invalidateStructural()
         })
+        revision = IntValue(this.gunDataTag, KEY_REVISION)
         selectedAmmoType = IntValue(gunDataTag, "SelectedAmmoType", onSet = nbtVersion::invalidateStructural)
         selectedFireMode = IntValue(gunDataTag, "SelectedFireMode", 0, onSet = nbtVersion::invalidateStructural)
         level = IntValue(gunDataTag, "Level", onSet = nbtVersion::invalidateStructural)
@@ -1210,8 +1327,20 @@ class GunData private constructor(
         /** Root gun tag key inside [DataComponents.CUSTOM_DATA]. */
         private const val KEY_GUN_DATA = "GunData"
 
+        /** Perk tag key inside [DataComponents.CUSTOM_DATA]. */
+        private const val KEY_PERKS = "Perks"
+
+        /** Attachment tag key inside [DataComponents.CUSTOM_DATA]. */
+        private const val KEY_ATTACHMENTS = "Attachments"
+
         /** [defaultDataId] key inside the gun tag. */
         const val KEY_DEFAULT_DATA = "DefaultData"
+
+        /** Identity key inside the gun tag, written by `GunItem.init`. */
+        const val KEY_UUID = "UUID"
+
+        /** [revision] key inside the gun tag. */
+        const val KEY_REVISION = "Revision"
 
         /**
          * Datapack data version, bumped whenever [CustomData.GUN_DATA] / [CustomData.VEHICLE_DATA]
@@ -1237,9 +1366,58 @@ class GunData private constructor(
             .weakValues()
             .build(object : CacheLoader<ItemStack, GunData>() {
                 override fun load(stack: ItemStack): GunData {
-                    return GunData(stack)
+                    // Vanilla replaces the client-side ItemStack on every sync, so an identity-keyed
+                    // lookup misses there. Fall back to the gun's stable identity.
+                    val gunTag = readGunTag(stack)
+                    val uuid = readUuid(gunTag)
+
+                    if (uuid != null) {
+                        val existing = UUID_CACHE.getIfPresent(uuid)
+                        val incomingRevision = gunTag?.getInt(KEY_REVISION) ?: 0
+
+                        if (existing != null) {
+                            if (existing.stack === stack) {
+                                // Same stack instance (e.g. after a datapack-reload flush): reuse it.
+                                return existing
+                            }
+                            // Adopt only a *strictly newer* snapshot of the same gun. An equal or lower
+                            // revision means an unrelated stack — a creative-mode copy carries the same
+                            // revision and must get its own instance, or the two would fight over one
+                            // GunData (and over which stack save() writes to).
+                            if (incomingRevision > existing.revision.get()) {
+                                existing.rebind(stack)
+                                return existing
+                            }
+                        }
+                    }
+
+                    val created = GunData(stack)
+                    if (uuid != null) UUID_CACHE.put(uuid, created)
+
+                    return created
                 }
             })
+
+        /**
+         * Adoption registry: gun [uuid] -> the live [GunData] instance for that logical gun.
+         *
+         * Strong values on purpose — the instance has to survive between a server sync and the next
+         * client-side lookup for adoption to happen at all. Bounded by size and access expiry so it
+         * cannot grow without limit.
+         */
+        @JvmField
+        val UUID_CACHE: Cache<UUID, GunData> = CacheBuilder.newBuilder()
+            .maximumSize(512)
+            .expireAfterAccess(5, TimeUnit.MINUTES)
+            .build()
+
+        /** Reads the gun sub-tag of [stack] without constructing a [GunData]. */
+        private fun readGunTag(stack: ItemStack): CompoundTag? =
+            stack.getOrCreateTag().getCompound(KEY_GUN_DATA)
+
+        /** Reads the gun identity out of [gunTag], or `null` when the gun was never initialised. */
+        private fun readUuid(gunTag: CompoundTag?): UUID? =
+            if (gunTag != null && gunTag.hasUUID(KEY_UUID)) gunTag.getUUID(KEY_UUID) else null
 
         /** Creates a new [GunData] instance from an item definition. */
         fun create(item: Item): GunData {
