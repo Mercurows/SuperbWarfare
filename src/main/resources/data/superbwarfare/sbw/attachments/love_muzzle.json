@@ -2,6 +2,21 @@
   "Slot": "Barrel",
   "Level": 2,
   "Bone": "muzzle_pos",
+  "Modifiers": [
+    {
+      "Prop": "ProjectileAmount",
+      "Op": "Set",
+      "Value": 20
+    },
+    {
+      "Prop": "Damage",
+      "Op": "Mul",
+      "Value": {
+        "Ref": "ProjectileAmount",
+        "Scale": 0.05
+      }
+    }
+  ],
   "Override": {
     "SpreadPattern": {
       "Type": "Heart",
