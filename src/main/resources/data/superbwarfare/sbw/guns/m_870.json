@@ -17,10 +17,10 @@
   "ReloadTypes": [
     "Iterative"
   ],
-  "PrepareTime": 8,
+  "PrepareTime": 9,
   "PrepareLoadTime": 33,
   "PrepareAmmoLoadTime": 10,
-  "IterativeTime": 10,
+  "IterativeTime": 11,
   "IterativeAmmoLoadTime": 3,
   "FinishTime": 10,
   "BypassesArmor": 0.05,
@@ -92,15 +92,6 @@
     "Fire3PFar": "superbwarfare:m_870_far",
     "Fire3PVeryFar": "superbwarfare:m_870_veryfar",
     "Fire1PSilent": "superbwarfare:m_870_fire_1p_s",
-    "Fire3PSilent": "superbwarfare:m_870_fire_3p_s",
-    "Fire3PFarSilent": "superbwarfare:m_870_far_s",
-    "ReloadPrepareLoad": "superbwarfare:m_870_prepare_load",
-    "ReloadLoop": "superbwarfare:m_870_loop",
-    "Bolt": "superbwarfare:m_870_bolt",
-    "CancellableSounds": [
-      "superbwarfare:m_870_prepare_load",
-      "superbwarfare:m_870_loop",
-      "superbwarfare:m_870_bolt"
-    ]
+    "Fire3PSilent": "superbwarfare:m_870_fire_3p_s"
   }
 }

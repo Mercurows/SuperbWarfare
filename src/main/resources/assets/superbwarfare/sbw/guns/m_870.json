@@ -9,7 +9,8 @@
     "Iterative": "animation.m_870.iterative_load",
     "Finish": "animation.m_870.finish",
     "Bolt": "animation.m_870.bolt",
-    "Edit": "animation.m_870.edit"
+    "Edit": "animation.m_870.edit",
+    "Melee": "animation.m_870.hit"
   },
   "ShootRecoil": {
     "Offset": [1.0, 1.0, 3.5],
