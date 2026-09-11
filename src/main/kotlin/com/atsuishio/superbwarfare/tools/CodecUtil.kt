@@ -26,7 +26,7 @@ inline fun <reified T : Any> createStreamCodec(): StreamCodec<FriendlyByteBuf, T
 }
 
 /** Derives a Mojang [MapCodec] from the generated kotlinx.serialization serializer of [T]. */
-inline fun <reified T : Any> generateMapCodec(): MapCodec<T> = serializerToMapCodec(serializer<T>())
+inline fun <reified T : Any> createMapCodec(): MapCodec<T> = serializerToMapCodec(serializer<T>())
 
 @JvmName("asIntCodecField")
 fun <O> KProperty1<O, Int>.asCodecField(name: String? = null) = createCodecField(this, name)

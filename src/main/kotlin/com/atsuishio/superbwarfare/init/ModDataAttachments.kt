@@ -4,8 +4,8 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.capability.entity.InfiniteAmmoCapability
 import com.atsuishio.superbwarfare.capability.living.PhosphorusFireCapability
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable
+import com.atsuishio.superbwarfare.tools.createMapCodec
 import com.atsuishio.superbwarfare.tools.createStreamCodec
-import com.atsuishio.superbwarfare.tools.generateMapCodec
 import net.minecraft.nbt.CompoundTag
 import net.neoforged.neoforge.attachment.AttachmentType
 import net.neoforged.neoforge.common.util.INBTSerializable
@@ -58,7 +58,7 @@ object ModDataAttachments {
     ): DeferredHolder<AttachmentType<*>, AttachmentType<T>> {
         return ATTACHMENT_TYPES.register(name, Supplier {
             val builder = AttachmentType.builder(Supplier { T::class.createInstance() })
-                .serialize(generateMapCodec<T>().codec())
+                .serialize(createMapCodec<T>().codec())
             (sync?.invoke(builder) ?: builder).build()
         })
     }
