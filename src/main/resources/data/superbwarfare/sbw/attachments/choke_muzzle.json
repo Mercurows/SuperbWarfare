@@ -1,0 +1,13 @@
+{
+  "Slot": "Barrel",
+  "Level": 1,
+  "Bone": "muzzle_pos",
+  "Override": {
+    "SpreadPattern": {
+      "Type": "Grid",
+      "Rows": 1
+    }
+  },
+  "Model": "superbwarfare:models/bedrock/attachment/choke_muzzle.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/choke_muzzle.png"
+}

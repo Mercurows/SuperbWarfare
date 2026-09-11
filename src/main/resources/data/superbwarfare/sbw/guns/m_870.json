@@ -81,7 +81,9 @@
       "superbwarfare:loudspeaker",
       "superbwarfare:triangular_muzzle",
       "superbwarfare:love_muzzle",
-      "superbwarfare:star_muzzle"
+      "superbwarfare:star_muzzle",
+      "superbwarfare:choke_muzzle",
+      "superbwarfare:cross_muzzle"
     ]
   },
   "SoundInfo": {

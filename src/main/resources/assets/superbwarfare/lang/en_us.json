@@ -660,6 +660,8 @@
   "item.superbwarfare.triangular_muzzle": "Triangular Muzzle",
   "item.superbwarfare.star_muzzle": "Star Muzzle",
   "item.superbwarfare.love_muzzle": "Love Muzzle",
+  "item.superbwarfare.choke_muzzle": "Choke Muzzle",
+  "item.superbwarfare.cross_muzzle": "Cross Muzzle",
 
   "death.attack.gunfire": "%1$s was gunned down by %2$s",
   "death.attack.gunfire.entity": "%1$s was gunned down by %2$s",
