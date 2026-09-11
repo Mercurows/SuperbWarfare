@@ -67,7 +67,7 @@ data class AdjustZoomFovMessage(val scroll: Double) : ServerPacketPayload() {
             }
         }
 
-        gun.nbtVersion.invalidateStructural()
+        gun.invalidateProperties()
         gun.save()
     }
 }

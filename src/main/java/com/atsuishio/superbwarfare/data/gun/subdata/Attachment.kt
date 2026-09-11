@@ -36,7 +36,7 @@ class Attachment(private val gun: GunData) {
     fun set(type: AttachmentType, value: Int) {
         if (attachment.getInt(type.attachmentName) == value) return  // no-op: unchanged
         attachment.putInt(type.attachmentName, value)
-        gun.nbtVersion.invalidateStructural()
+        gun.invalidateProperties()
     }
 
     /**
@@ -99,7 +99,7 @@ class Attachment(private val gun: GunData) {
         if (getRotation(type) == value) return
 
         getOrCreateTag(type).putDouble("Rotation", value)
-        gun.nbtVersion.invalidateStructural()
+        gun.invalidateProperties()
     }
 
     fun getOffset(type: AttachmentType): Double {
@@ -113,7 +113,7 @@ class Attachment(private val gun: GunData) {
         if (getOffset(type) == offset) return
 
         getOrCreateTag(type).putDouble("Offset", offset)
-        gun.nbtVersion.invalidateStructural()
+        gun.invalidateProperties()
     }
 
     fun set(type: AttachmentType, id: ResourceLocation?) {
@@ -129,13 +129,13 @@ class Attachment(private val gun: GunData) {
         }
 
         attachment.put(type.attachmentName, tag)
-        gun.nbtVersion.invalidateStructural()
+        gun.invalidateProperties()
     }
 
     fun remove(type: AttachmentType) {
         if (!attachment.contains(type.attachmentName)) return
         attachment.remove(type.attachmentName)
-        gun.nbtVersion.invalidateStructural()
+        gun.invalidateProperties()
     }
 
     fun cycle(type: AttachmentType, add: Boolean): Boolean {
@@ -166,7 +166,7 @@ class Attachment(private val gun: GunData) {
 
     fun setZoom(type: AttachmentType, zoom: Double) {
         getOrCreateTag(type).putDouble("Zoom", zoom)
-        gun.nbtVersion.invalidateStructural()
+        gun.invalidateProperties()
     }
 
     fun scopeMode(type: AttachmentType): Int {
@@ -176,7 +176,7 @@ class Attachment(private val gun: GunData) {
 
     fun setScopeMode(type: AttachmentType, mode: Int) {
         getOrCreateTag(type).putInt("Mode", mode.coerceAtLeast(0))
-        gun.nbtVersion.invalidateStructural()
+        gun.invalidateProperties()
     }
 
     fun cycleScopeMode(type: AttachmentType, scroll: Double): Int {
@@ -192,7 +192,7 @@ class Attachment(private val gun: GunData) {
         val tag = getOrCreateTag(type)
         tag.putInt("Mode", next)
         definition.scopeZoom(next)?.let { tag.putDouble("Zoom", it.default) }
-        gun.nbtVersion.invalidateStructural()
+        gun.invalidateProperties()
         return next
     }
 

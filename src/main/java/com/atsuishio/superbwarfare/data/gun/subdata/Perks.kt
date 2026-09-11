@@ -22,8 +22,8 @@ class Perks(private val gun: GunData) {
 
     private val rootTag: CompoundTag = gun.perk()
 
-    /** Structural invalidation callback — clears the PMC when perk state changes. */
-    private val invalidateStructural: () -> Unit = gun.nbtVersion::invalidateStructural
+    /** Invalidation callback — clears the computed properties when perk state changes. */
+    private val invalidateStructural: () -> Unit = gun::invalidateProperties
 
     companion object {
         /**
@@ -167,7 +167,7 @@ class Perks(private val gun: GunData) {
             })
         }
         rootTag.put(perk.type.typeName, list)
-        gun.nbtVersion.invalidateStructural()
+        gun.invalidateProperties()
     }
 
     fun set(instance: PerkInstance) = set(instance.perk, instance.level)
@@ -186,7 +186,7 @@ class Perks(private val gun: GunData) {
 
         if (removed) {
             if (list.isEmpty()) rootTag.remove(typeName)
-            gun.nbtVersion.invalidateStructural()
+            gun.invalidateProperties()
         }
     }
 
@@ -198,7 +198,7 @@ class Perks(private val gun: GunData) {
     fun removeAll(type: Perk.Type) {
         if (rootTag.contains(type.typeName)) {
             rootTag.remove(type.typeName)
-            gun.nbtVersion.invalidateStructural()
+            gun.invalidateProperties()
         }
     }
 
@@ -247,7 +247,7 @@ class Perks(private val gun: GunData) {
 
         // Invalidate ONLY on status transition (0 -> Active or Active -> 0)
         if ((old <= 0) != (value <= 0)) {
-            gun.nbtVersion.invalidateStructural()
+            gun.invalidateProperties()
         }
     }
 
