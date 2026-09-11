@@ -51,7 +51,6 @@ import net.minecraftforge.common.util.LazyOptional
 import net.minecraftforge.energy.IEnergyStorage
 import net.minecraftforge.items.IItemHandler
 import java.util.*
-import java.util.concurrent.TimeUnit
 import java.util.function.Function
 import kotlin.math.max
 import kotlin.math.min
@@ -171,9 +170,30 @@ class GunData private constructor(
     @JvmField
     val id: String
 
-    /** Tracks structural and state NBT mutations for O(1) PMC invalidation. */
-    @JvmField
-    val nbtVersion: NbtVersion = NbtVersion()
+    /**
+     * Set when something outside [GunState] changed data the computed properties depend on — the
+     * sections that are still tag-backed (`Perks`, `Attachment`, ammo slots) invalidate through
+     * [invalidateProperties].
+     *
+     * State-driven invalidation does not need this: [get] compares the [state] snapshot the cached
+     * properties were derived from.
+     */
+    private var propertiesInvalidated: Boolean = false
+
+    /** Whether anything ever asked for a write, so [persist] cannot take its "never touched" shortcut. */
+    private var mutated: Boolean = false
+
+    /**
+     * Marks the cached computed properties stale.
+     *
+     * For writes that do not go through [update]: the still tag-backed sections (`Perks`, `Attachment`,
+     * ammo slots) and callers that mutate loose keys by hand (see `AdjustZoomFovMessage`). Replaces the
+     * old `nbtVersion.invalidateStructural()`.
+     */
+    fun invalidateProperties() {
+        propertiesInvalidated = true
+        mutated = true
+    }
 
     /**
      * Kotlin-side snapshot of this gun's persisted state — the single source of truth for every scalar
@@ -225,9 +245,6 @@ class GunData private constructor(
     @JvmField
     var cachedBackupAmmoTick: Long = -BACKUP_AMMO_CACHE_TICKS
 
-    /** Combined NBT version snapshot taken at construction time to track mutations O(1). */
-    private val initialCombinedVersion: Int = nbtVersion.structural + nbtVersion.state
-
     /**
      * Gets or creates a child [CompoundTag] with the given [name] inside [tag].
      *
@@ -256,7 +273,7 @@ class GunData private constructor(
     fun initialize() {
         item.init(this)
 
-        nbtVersion.invalidateStructural()
+        invalidateProperties()
     }
 
     /** Returns the underlying [GunItem]. */
@@ -315,38 +332,68 @@ class GunData private constructor(
      */
     fun setTempModifications(modification: Function<DefaultGunData, DefaultGunData>) {
         tempModifications = modification
-        nbtVersion.invalidateStructural()
+        invalidateProperties()
     }
 
     /** Clears temporary runtime weapon modifications. */
     fun clearTempModifications() {
         tempModifications = null
-        nbtVersion.invalidateStructural()
+        invalidateProperties()
     }
 
     private val jsonPropModifier = JsonPropertyModifier(GunProp.entries)
     private val attachmentJsonPropModifier = JsonPropertyModifier(GunProp.entries)
     private var tempModifications: Function<DefaultGunData, DefaultGunData>? = null
     private val pmcInstance: PMC<GunData, DefaultGunData> by lazy { PMC(this) }
-    private var cachedStructuralVersion: Int = -1
+
+    /** [GunState] snapshot the cached properties in [pmcInstance] were derived from. */
+    private var pmcState: GunState? = null
+
+    /** [DATA_VERSION] value the cached properties were derived from. */
+    private var pmcDataVersion: Int = -1
 
     /**
      * Resolves a computed weapon property using lazy PMC caching.
      *
-     * Utilizes [NbtVersion.structural] to bypass redundant property calculation
-     * when weapon structure (attachments, perks, fire mode, overrides) has not changed.
+     * The computed values are cached together with the [GunState] snapshot they were derived from, so
+     * the cache survives every change that cannot affect them:
+     *
+     *  * a state change that is not structural ([GunState.structurallyDiffersFrom]) keeps the values;
+     *  * [NbtVersion.structural] is still the escape hatch for sections that are not modelled by
+     *    [GunState] yet (`Perks`, `Attachment`, ...), which call [invalidateProperties];
+     *  * [DATA_VERSION] covers datapack reloads, without having to recreate any instance.
+     *
+     * The fast path is two field reads and a reference compare.
      *
      * @param prop the target weapon property key.
      * @return calculated value for the given property.
      */
     @Suppress("unchecked_cast")
     fun <T> get(prop: GunProp<*, T>): T {
-        // Fast path: structural version matches cached version -> return cached value
-        if (cachedStructuralVersion == nbtVersion.structural) {
-            return pmcInstance[prop]
+        val current = state
+        val dataVersion = DATA_VERSION
+        val cached = pmcState
+
+        if (cached !== current || propertiesInvalidated || pmcDataVersion != dataVersion) {
+            val rebuild = cached == null ||
+                    propertiesInvalidated ||
+                    pmcDataVersion != dataVersion ||
+                    current.structurallyDiffersFrom(cached)
+
+            if (rebuild) {
+                rebuildProperties()
+            }
+
+            pmcState = current
+            propertiesInvalidated = false
+            pmcDataVersion = dataVersion
         }
 
-        // Structural version mismatch: rebuild property modification pipeline
+        return pmcInstance[prop]
+    }
+
+    /** Runs the property modification pipeline into [pmcInstance]. */
+    private fun rebuildProperties() {
         pmcInstance.reset()
 
         // 1. Property override tag
@@ -387,9 +434,6 @@ class GunData private constructor(
 
         // 7. Global property bounds limit
         GunProp.modifyProperty(pmcInstance)
-
-        cachedStructuralVersion = nbtVersion.structural
-        return pmcInstance[prop]
     }
 
     /**
@@ -545,7 +589,7 @@ class GunData private constructor(
         this.charge.starter.finish()
         this.charge.timer.reset()
 
-        nbtVersion.invalidateStructural()
+        invalidateProperties()
     }
 
     /**
@@ -599,14 +643,14 @@ class GunData private constructor(
     fun startReload() {
         this.reload.reloadStarter.markStart()
 
-        nbtVersion.invalidateStructural()
+        invalidateProperties()
     }
 
     /** Starts manual bolt-action sequence. */
     fun startBolt() {
         this.bolt.start(get(BOLT_ACTION_TIME) + 1)
 
-        nbtVersion.invalidateStructural()
+        invalidateProperties()
     }
 
     /**
@@ -818,7 +862,7 @@ class GunData private constructor(
         reload.setState(ReloadState.NOT_RELOADING)
         this.fireIndex.reset()
 
-        nbtVersion.invalidateStructural()
+        invalidateProperties()
     }
 
     /**
@@ -1181,22 +1225,17 @@ class GunData private constructor(
     }
 
     /**
-     * Installs [next] as the current snapshot and updates caches/invalidation for the change.
+     * Installs [next] as the current snapshot.
      *
-     * Except when [writeTag] is `false` (the [updateLocal] path), the scalars are pushed into
-     * [gunDataTag] right here. That tag is the one held by the stack, so the mutation is live for every
-     * reader and is saved together with the stack — the 1.20 counterpart of 1.21's immutable
-     * data-component write.
+     * No invalidation is needed here: [get] compares the [state] snapshot its cached properties were
+     * derived from, so a structural change is detected by that comparison, and a non-structural one
+     * keeps the computed values.
      */
     private fun applyState(previous: GunState, next: GunState, writeTag: Boolean = true) {
         state = next
+        mutated = true
         if (writeTag) next.writeInto(gunDataTag)
 
-        if (next.structurallyDiffersFrom(previous)) {
-            nbtVersion.invalidateStructural()
-        } else {
-            nbtVersion.invalidateState()
-        }
 
         // Side effects the old value wrappers performed through their `onSet` callbacks.
         if (next.ammo != previous.ammo || next.virtualAmmo != previous.virtualAmmo) {
@@ -1277,7 +1316,7 @@ class GunData private constructor(
      */
     private fun persist(compare: Boolean) {
         // Fast-path: nothing was ever mutated on this instance, so the tag cannot be out of date.
-        if (nbtVersion.structural + nbtVersion.state == initialCombinedVersion) return
+        if (!mutated) return
 
         // Make this instance reachable by its own identity, so that a remote snapshot of the same gun
         // can adopt it (see Companion.from).
@@ -1365,7 +1404,7 @@ class GunData private constructor(
         cachedDefaultData = null
         cachedDefaultDataId = null
 
-        nbtVersion.invalidateStructural()
+        invalidateProperties()
     }
 
     /**
@@ -1561,11 +1600,20 @@ class GunData private constructor(
         @JvmField
         val PERK_TYPES: Array<Perk.Type> = Perk.Type.entries.toTypedArray()
 
-        /** Weak LoadingCache for resolving GunData instances from ItemStack references. */
+        /**
+         * Identity cache resolving a [GunData] per live [ItemStack].
+         *
+         * Uses *soft* values on purpose: a weak value could be collected while its stack is still alive,
+         * and the next lookup would then build a second [GunData] for the same stack. Both instances
+         * would keep their own [state] snapshot and write the whole tag on every change, so they would
+         * overwrite each other's fields — which shows up as gun state that stops updating. Soft values
+         * keep the instance for as long as the JVM is not actually short on memory, and a collection
+         * stays harmless because the stack is the source of truth.
+         */
         @JvmField
         val DATA_CACHE: LoadingCache<ItemStack, GunData> = CacheBuilder.newBuilder()
             .weakKeys()
-            .weakValues()
+            .softValues()
             .build(object : CacheLoader<ItemStack, GunData>() {
                 override fun load(stack: ItemStack): GunData {
                     // Vanilla replaces the client-side ItemStack on every sync, so an identity-keyed
@@ -1579,7 +1627,7 @@ class GunData private constructor(
 
                         if (existing != null) {
                             if (existing.stack === stack) {
-                                // Same stack instance (e.g. after a datapack-reload flush): reuse it.
+                                // Same stack instance: reuse it rather than building a duplicate.
                                 return existing
                             }
                             // Adopt only a newer snapshot of the same gun (wraparound-safe comparison).
@@ -1604,13 +1652,15 @@ class GunData private constructor(
          * Adoption registry: gun [uuid] -> the live [GunData] instance for that logical gun.
          *
          * Strong values on purpose — the instance has to survive between a server sync and the next
-         * client-side lookup for adoption to happen at all. Bounded by size and access expiry so it
-         * cannot grow without limit.
+         * lookup for adoption (and for the "same stack instance" reuse above) to happen at all.
+         *
+         * No access expiry: the identity-cache fast path never touches this cache, so an expiry would
+         * silently drop the entry for a gun that is being used normally, and the next identity-cache miss
+         * would then build a second instance for the same stack. Size-bounded instead.
          */
         @JvmField
         val UUID_CACHE: Cache<UUID, GunData> = CacheBuilder.newBuilder()
-            .maximumSize(512)
-            .expireAfterAccess(5, TimeUnit.MINUTES)
+            .maximumSize(1024)
             .build()
 
         /** Reads the gun sub-tag of [stack] without constructing a [GunData]. */

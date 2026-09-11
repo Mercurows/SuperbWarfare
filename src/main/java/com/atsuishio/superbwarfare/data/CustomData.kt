@@ -41,8 +41,11 @@ object CustomData {
         // Must run after the map itself was (re)loaded: vehicle weapons share one item id and
         // register their per-weapon baselines here so GunData can resolve them from the stack.
         VehicleData.registerWeaponDefaults(map)
+        // Bump the version instead of flushing GunData.DATA_CACHE: recreating instances for stacks that
+        // are still in use would leave two GunData objects writing the same item, each with its own state
+        // snapshot, and their full-tag writes would overwrite each other. Live instances pick the new
+        // data up through DATA_VERSION instead.
         GunData.DATA_VERSION++
-        GunData.DATA_CACHE.invalidateAll()
     }
 
     @JvmField
@@ -51,7 +54,10 @@ object CustomData {
     @JvmField
     val ATTACHMENTS = DataLoader.createData(
         "sbw/attachments", AttachmentDefinition::class.java, true, isKtData = true
-    ) { _ -> GunData.DATA_CACHE.invalidateAll() }
+    ) { _ ->
+        // Attachment definitions feed the computed properties, so live instances must recompute theirs.
+        GunData.DATA_VERSION++
+    }
 
     @JvmField
     val MOB_GUNS = DataLoader.createData(

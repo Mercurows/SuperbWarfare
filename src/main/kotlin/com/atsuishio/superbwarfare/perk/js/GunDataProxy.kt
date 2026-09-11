@@ -57,7 +57,7 @@ class GunDataProxy(private val data: GunData) {
     fun isZooming(): Boolean = data.zooming.get()
 
     fun invalidateProperties() {
-        data.nbtVersion.invalidateStructural()
+        data.invalidateProperties()
     }
 
     // ── Energy (for Regeneration) ──
