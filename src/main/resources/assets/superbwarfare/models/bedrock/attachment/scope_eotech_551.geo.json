@@ -1324,7 +1324,7 @@
 				},
 				{
 					"name": "scope_view",
-					"pivot": [0, 1.59609, 7]
+					"pivot": [0, 1.59609, 6.25]
 				},
 				{
 					"name": "division",
@@ -1333,10 +1333,10 @@
 				{
 					"name": "division_illuminated",
 					"parent": "division",
-					"pivot": [0, 1.63907, -55.55],
+					"pivot": [0, 1.63907, -49.55],
 					"cubes": [
 						{
-							"origin": [-1.5, 0.13907, -55.7],
+							"origin": [-1.5, 0.13907, -49.7],
 							"size": [3, 3, 0.3],
 							"uv": {
 								"south": {"uv": [32, 0], "uv_size": [32, 32]}

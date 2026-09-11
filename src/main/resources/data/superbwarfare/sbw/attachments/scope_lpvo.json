@@ -18,6 +18,6 @@
     "Min": 1,
     "Max": 6,
     "Default": 1,
-    "Step": 1.0
+    "Step": 0.15
   }
 }

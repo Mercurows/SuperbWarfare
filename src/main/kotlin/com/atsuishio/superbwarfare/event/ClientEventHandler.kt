@@ -529,16 +529,19 @@ object ClientEventHandler {
     @JvmField
     var missileLockingPos: BlockPos? = null
 
+    @JvmField
+    var movingZoom: Double = 1.25
+
     @SubscribeEvent
-    fun handleWeaponTurn(event: RenderHandEvent) {
+    fun handleWeaponTurn(event: ComputeFov) {
         val player = localPlayer ?: return
-        val xRotOffset = Mth.lerp(event.partialTick, player.xBobO, player.xBob)
-        val yRotOffset = Mth.lerp(event.partialTick, player.yBobO, player.yBob)
-        val xRot = player.getViewXRot(event.partialTick) - xRotOffset
-        val yRot = player.getViewYRot(event.partialTick) - yRotOffset
-        turnRot[0] = (0.05 * xRot).coerceIn(-5.0, 5.0) * (1 - 0.75 * zoomTime)
-        turnRot[1] = (0.05 * yRot).coerceIn(-10.0, 10.0) * (1 - 0.75 * zoomTime)
-        turnRot[2] = (0.1 * yRot).coerceIn(-10.0, 10.0) * (1 - zoomTime)
+        val xRotOffset = Mth.lerp(event.partialTick.toFloat(), player.xBobO, player.xBob)
+        val yRotOffset = Mth.lerp(event.partialTick.toFloat(), player.yBobO, player.yBob)
+        val xRot = player.getViewXRot(event.partialTick.toFloat()) - xRotOffset
+        val yRot = player.getViewYRot(event.partialTick.toFloat()) - yRotOffset
+        turnRot[0] = (0.05 * xRot).coerceIn(-20.0, 20.0) * (1 - 0.05 * zoomTime)
+        turnRot[1] = (0.025 * yRot).coerceIn(-20.0, 20.0) * (1 - 0.05 * zoomTime)
+        turnRot[2] = (0.05 * yRot).coerceIn(-20.0, 20.0) * (1 - 0.5 * zoomTime)
     }
 
     @JvmStatic
@@ -2424,7 +2427,7 @@ object ClientEventHandler {
         val basicSprintRotZ = (sprintBasicRotZ * 14.7 * Mth.DEG_TO_RAD).toFloat() * i
 
         val gunPosX =
-            (walkPosX + basicSprintPosX + sprintPosX * i + 20 * drawTime + 9.3f * movePosHorizon).toFloat() * (1 - 0.5 * zoomTime).toFloat()
+            (walkPosX + basicSprintPosX + sprintPosX * i + 20 * drawTime + 9.3f * movePosHorizon - 0.5 * turnRot[1]).toFloat() * (1 - 0.5 * zoomTime).toFloat()
         val gunPosY =
             (walkPosY + basicSprintPosY + sprintPosY * i - 40 * drawTime - 2f * velocityY).toFloat() * (1 - 0.5 * zoomTime).toFloat()
         val gunPosZ = (walkPosZ + basicSprintPosZ) * (1 - 1 * zoomTime).toFloat()
@@ -2475,7 +2478,7 @@ object ClientEventHandler {
     }
 
     private fun handleWeaponFire(event: ViewportEvent.ComputeCameraAngles, entity: LivingEntity) {
-        val times = (1.65f * customAnimSpeed * mc.deltaFrameTime.coerceAtMost(0.48f)).toFloat()
+        val times = (1.25f * customAnimSpeed * mc.deltaFrameTime.coerceAtMost(0.48f)).toFloat()
         val stack = entity.mainHandItem
         val data = GunData.from(stack)
         val amplitude = 25000.0 * data.get(GunProp.RECOIL_Y) * data.get(GunProp.RECOIL_X)
@@ -2687,7 +2690,7 @@ object ClientEventHandler {
         val zoom = (1 - (1 - zoomMultiply) * zoomTime).toFloat() * pose
 
         val gunPosX = zoom * x * (recoilHorizon * (0.5f * firePosZ)).toFloat()
-        val gunPosY = zoom * y * (getBoneMoveY(firePosTimer.toFloat()) * -0.05 * (1 - 0.25 * zoomTime)).toFloat()
+        val gunPosY = zoom * y * ((getBoneMoveY(firePosTimer.toFloat()) * 0.1 + 0.07f * firePosZ) * (1 - 0.25 * zoomTime)).toFloat()
         val gunPosZ =
             zoom * z * (getBoneMoveZ(firePosTimer.toFloat()) * 0.03 + 1.1f * firePosZ).toFloat() * (1 - 0.75 * zoomTime).toFloat()
 
@@ -2948,24 +2951,19 @@ object ClientEventHandler {
                 0.0
             }
 
-        var r = 1
 
-        if (mc.options.cameraType != CameraType.FIRST_PERSON) {
-            r = 0
-        }
 
-        event.pitch = (pitch + cameraRot[0] + (if (DisplayConfig.CAMERA_ROTATE.get()) 0.2 else 0.0) * turnRot[0] * r
-                + 3 * velocityY).toFloat()
+        event.pitch = (pitch + cameraRot[0] + 3 * velocityY).toFloat()
         if (mc.options.cameraType == CameraType.THIRD_PERSON_BACK) {
             event.yaw =
-                (yaw + cameraRot[1] + (if (DisplayConfig.CAMERA_ROTATE.get()) 0.8 else 0.0) * turnRot[1] * r - angle * zoomPos).toFloat()
+                (yaw + cameraRot[1] - angle * zoomPos).toFloat()
         } else {
             event.yaw =
-                (yaw + cameraRot[1] + (if (DisplayConfig.CAMERA_ROTATE.get()) 0.8 else 0.0) * turnRot[1] * r).toFloat()
+                (yaw + cameraRot[1]).toFloat()
         }
 
         cameraRoll =
-            (roll + cameraRot[2] + (if (DisplayConfig.CAMERA_ROTATE.get()) 0.35 else 0.0) * turnRot[2] * r).toFloat()
+            (roll + cameraRot[2]).toFloat()
     }
 
     private fun handleBowPullAnimation(entity: LivingEntity, stack: ItemStack) {
@@ -3037,10 +3035,9 @@ object ClientEventHandler {
             val data = GunData.from(stack)
             val baseZoom = data.zoom()
             val movingZoom = data.movingZoom()
-            val targetZoom =
-                if (zoom && movingZoom != null && isMoving() && !player.isShiftKeyDown) movingZoom else baseZoom
 
-            customZoom = Mth.lerp(0.6 * times, customZoom, targetZoom + if (breath) 0.75 else 0.0)
+            this.movingZoom = if (movingZoom != null && !player.isShiftKeyDown) Mth.lerp(0.1 * times, this.movingZoom, if (isMoving() || abs(turnRot[1]) > 0.1 || abs(turnRot[0]) > 0.1) movingZoom else baseZoom) else baseZoom
+            customZoom = Mth.lerp(0.6 * times, customZoom, this.movingZoom + if (breath) 0.75 else 0.0)
 
             if (mc.options.cameraType.isFirstPerson) {
                 event.fov /= (1 + p * (customZoom - 1))

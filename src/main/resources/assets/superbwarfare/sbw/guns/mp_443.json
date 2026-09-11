@@ -13,7 +13,7 @@
     "Offset": [1.0, 1.0, 1.0],
     "Rotation": [3.0, 1.0, 1.0],
     "ZoomRate": 0.8,
-    "Speed": 1.0
+    "Speed": 1.4
   },
   "Model": {
     "Animation": "superbwarfare:animations/bedrock/gun/mp_443.animation.json",

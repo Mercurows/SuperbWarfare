@@ -196,13 +196,23 @@ class Attachment(private val gun: GunData) {
         return next
     }
 
+    /**
+     * Advances the installed scope's zoom by [amount] scroll notches.
+     *
+     * The step is proportional to the current zoom, so zooming is fine-grained at low
+     * magnification and accelerates as magnification increases.
+     *
+     * @param type the attachment slot to adjust.
+     * @param amount scroll direction and count (typically ±1 per notch).
+     * @return the new zoom value, or null when the scope has no configurable zoom.
+     */
     fun cycleZoom(type: AttachmentType, amount: Double): Double? {
         val id = id(type) ?: return null
         val definition = AttachmentDefinition.from(id) ?: return null
         val zoomConfig = definition.scopeZoom(scopeMode(type)) ?: return null
 
         val current = getZoom(type) ?: zoomConfig.default
-        val next = (current + amount * zoomConfig.step).coerceIn(zoomConfig.min, zoomConfig.max)
+        val next = (current * (1.0 + amount * zoomConfig.step)).coerceIn(zoomConfig.min, zoomConfig.max)
         setZoom(type, next)
         return next
     }

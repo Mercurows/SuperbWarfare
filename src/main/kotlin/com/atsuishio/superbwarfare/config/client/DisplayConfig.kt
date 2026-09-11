@@ -98,13 +98,6 @@ object DisplayConfig {
     }
 
     @JvmField
-    val CAMERA_ROTATE = buildClientConfig {
-        comment("Set true to enable camera rotate when holding a gun")
-        comment("是否开启持枪时视角晃动")
-        define("camera_rotate", true)
-    }
-
-    @JvmField
     val ARMOR_PLATE_HUD = buildClientConfig {
         comment("Set true to enable armor plate hud")
         comment("是否开启护甲板HUD")

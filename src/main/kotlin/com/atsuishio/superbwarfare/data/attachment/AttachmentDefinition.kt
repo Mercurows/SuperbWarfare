@@ -171,6 +171,7 @@ data class AttachmentZoom(
     @SerialName("Default")
     val default: Double = 1.25,
 
+    // 每滚一格变化的相对倍率，按当前倍率等比缩放，低倍率时变化小而高倍率时变化大
     @SerialName("Step")
-    val step: Double = 1.0,
+    val step: Double = 0.15,
 )
