@@ -56,6 +56,10 @@ class GunAnimation {
     var prepare: String? = null
 
     @JvmField
+    @SerialName("PrepareLoad")
+    var prepareLoad: String? = null
+
+    @JvmField
     @SerialName("Iterative")
     var iterative: String? = null
 

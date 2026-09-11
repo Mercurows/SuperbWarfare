@@ -1,5 +1,5 @@
 {
-  "Spread": 3,
+  "Spread": 5,
   "RecoilX": 0.003,
   "RecoilY": 0.04,
   "Damage": 3,
@@ -17,12 +17,12 @@
   "ReloadTypes": [
     "Iterative"
   ],
-  "PrepareTime": 6,
-  "PrepareLoadTime": 34,
+  "PrepareTime": 8,
+  "PrepareLoadTime": 33,
   "PrepareAmmoLoadTime": 10,
-  "IterativeTime": 12,
+  "IterativeTime": 10,
   "IterativeAmmoLoadTime": 3,
-  "FinishTime": 12,
+  "FinishTime": 10,
   "BypassesArmor": 0.05,
   "SoundRadius": 16,
   "BoltActionTime": 10,
@@ -54,6 +54,35 @@
     "!superbwarfare:longer_wire",
     "!superbwarfare:cupid_arrow"
   ],
+  "AvailableAttachments": {
+    "Scope": [
+      "superbwarfare:scope_coyote",
+      "superbwarfare:scope_aimpoint_t2",
+      "superbwarfare:scope_eotech_551",
+      "superbwarfare:scope_okp_7",
+      "superbwarfare:scope_pkas",
+      "superbwarfare:scope_1p_78",
+      "superbwarfare:scope_acog",
+      "superbwarfare:scope_qmk171",
+      "superbwarfare:scope_hamr",
+      "superbwarfare:scope_lpvo",
+      "superbwarfare:scope_sniper"
+    ],
+    "Grip": [
+      "superbwarfare:vertical_grip",
+      "superbwarfare:triangle_grip"
+    ],
+    "Barrel": [
+      "superbwarfare:meowlencer",
+      "superbwarfare:hissilencer",
+      "superbwarfare:silaowuncer",
+      "superbwarfare:ru_silencer",
+      "superbwarfare:ar_silencer",
+      "superbwarfare:loudspeaker",
+      "superbwarfare:triangular_muzzle",
+      "superbwarfare:love_muzzle"
+    ]
+  },
   "SoundInfo": {
     "Fire1P": "superbwarfare:m_870_fire_1p",
     "Fire3P": "superbwarfare:m_870_fire_3p",
