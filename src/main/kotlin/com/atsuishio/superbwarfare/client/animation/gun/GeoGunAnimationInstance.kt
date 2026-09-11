@@ -224,6 +224,15 @@ open class GeoGunAnimationInstance(
         }
     }
 
+    private fun meleePlaybackSpeed(animation: BedrockAnimation): Float {
+        val targetSeconds = GunData.from(stack).get(GunProp.MELEE_DURATION).coerceAtLeast(1) / 20.0f
+        return if (animation.specifiedEndTimeS > 0f) {
+            animation.specifiedEndTimeS / targetSeconds
+        } else {
+            1f
+        }
+    }
+
     private fun setAnimationSpeed(state: IAnimationState?, speed: Float) {
         when (state) {
             is PlayingState -> state.speed = speed
@@ -238,6 +247,8 @@ open class GeoGunAnimationInstance(
         val playState = state.playType.state()
         if (state.isReload()) {
             setAnimationSpeed(playState, reloadPlaybackSpeed(state, animation))
+        } else if (state == GunAnimationState.MELEE) {
+            setAnimationSpeed(playState, meleePlaybackSpeed(animation))
         }
         val newRunner = AnimationRunner(animation, AnimationContext(animation.specifiedEndTimeS))
         newRunner.state = playState
@@ -545,6 +556,13 @@ open class GeoGunAnimationInstance(
             val runnerAnimation = runner?.animation as? BedrockAnimation
             if (runnerAnimation != null) {
                 setAnimationSpeed(runner?.state, reloadPlaybackSpeed(currentState!!, runnerAnimation))
+            }
+        }
+        // Melee duration can be changed by properties such as ammo type or perks.
+        if (currentState == GunAnimationState.MELEE) {
+            val runnerAnimation = runner?.animation as? BedrockAnimation
+            if (runnerAnimation != null) {
+                setAnimationSpeed(runner?.state, meleePlaybackSpeed(runnerAnimation))
             }
         }
 
