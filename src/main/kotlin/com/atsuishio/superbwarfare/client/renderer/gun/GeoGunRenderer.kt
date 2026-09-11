@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
 import com.atsuishio.superbwarfare.data.attachment.ScopeMode
 import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.magazineLevel
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.event.ClientEventHandler
@@ -800,12 +801,28 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         }
 
         val zoomTime = ClientEventHandler.zoomTime.coerceIn(0.0, 1.0).toFloat()
-        val rotationScale = (1f - 0.5f * zoomTime).coerceAtLeast(0.05f)
-        val rotationScaleX = (1f - 0.75f * zoomTime).coerceAtLeast(0.05f)
-        val rotationScaleY = (1f - 0.95f * zoomTime).coerceAtLeast(0.05f)
-        val rotationScaleZ = (1f - 0.7f * zoomTime).coerceAtLeast(0.05f)
-        val positionScale = (1f - 0.85f * zoomTime).coerceAtLeast(0.05f)
-        val positionScaleZ = (1f - 0.96f * zoomTime).coerceAtLeast(0.05f)
+        var rotationScale = (1f - 0.5f * zoomTime).coerceAtLeast(0.05f)
+        var rotationScaleX = (1f - 0.97f * zoomTime).coerceAtLeast(0.05f)
+        var rotationScaleY = (1f - 0.97f * zoomTime).coerceAtLeast(0.05f)
+        var rotationScaleZ = (1f - 0.7f * zoomTime).coerceAtLeast(0.05f)
+        var positionScale = (1f - 0.95f * zoomTime).coerceAtLeast(0.05f)
+        var positionScaleZ = (1f - 0.96f * zoomTime).coerceAtLeast(0.05f)
+
+        val data = from(stack)
+        if (!data.reloading()) {
+            rotationScale = (1f - 0.5f * zoomTime).coerceAtLeast(0.05f)
+            rotationScaleX = (1f - 0.55f * zoomTime).coerceAtLeast(0.05f)
+            rotationScaleY = (1f - 0.2f * zoomTime).coerceAtLeast(0.05f)
+            rotationScaleZ = (1f - 0.2f * zoomTime).coerceAtLeast(0.05f)
+            positionScale = (1f - 0.4f * zoomTime).coerceAtLeast(0.05f)
+            positionScaleZ = (1f - 0.9f * zoomTime).coerceAtLeast(0.05f)
+//            rotationScale = 1f
+//            rotationScaleX = 1f
+//            rotationScaleY = 1f
+//            rotationScaleZ = 1f
+//            positionScale = 1f
+//            positionScaleZ = 1f
+        }
 
         val main = model.getRootBone()
         main?.let { bone ->

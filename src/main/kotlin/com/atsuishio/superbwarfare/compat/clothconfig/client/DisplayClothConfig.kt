@@ -179,18 +179,6 @@ object DisplayClothConfig {
         category.addEntry(
             entryBuilder
                 .startBooleanToggle(
-                    Component.translatable("config.superbwarfare.client.display.camera_rotate"),
-                    DisplayConfig.CAMERA_ROTATE.get()
-                )
-                .setDefaultValue(true)
-                .setSaveConsumer(save(DisplayConfig.CAMERA_ROTATE))
-                .setTooltip(Component.translatable("config.superbwarfare.client.display.camera_rotate.des"))
-                .build()
-        )
-
-        category.addEntry(
-            entryBuilder
-                .startBooleanToggle(
                     Component.translatable("config.superbwarfare.client.display.armor_plate_hud"),
                     DisplayConfig.ARMOR_PLATE_HUD.get()
                 )
