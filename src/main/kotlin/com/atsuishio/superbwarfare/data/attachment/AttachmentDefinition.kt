@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.data.attachment
 
+import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.*
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.gun.GunData
@@ -78,8 +79,9 @@ data class AttachmentDefinition(
     }
 
     override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) {
+        val input = captureInputSnapshot(modifier)
         val pmc = PmcProxy(modifier)
-        modifiers.forEach { it.apply(pmc) }
+        modifiers.forEach { it.apply(pmc, input) }
 
         override?.let {
             jsonPropModifier.update(it)
@@ -96,6 +98,34 @@ data class AttachmentDefinition(
         pmc.set("DefaultZoom", current)
         pmc.set("MinZoom", scopeZoom.min)
         pmc.set("MaxZoom", scopeZoom.max)
+    }
+
+    private fun captureInputSnapshot(modifier: PMC<GunData, DefaultGunData>): Map<String, Number> {
+        val refs = modifiers.mapNotNull {
+            (it.value as? AttachmentModifierValue.Reference)?.ref
+        }.toSet()
+        if (refs.isEmpty()) return emptyMap()
+
+        return buildMap {
+            refs.forEach { ref ->
+                val prop = GunProp.entries.firstOrNull { it.serializationName == ref }
+                if (prop == null) {
+                    Mod.LOGGER.error("Unknown attachment modifier reference: {}", ref)
+                    return@forEach
+                }
+
+                val value = modifier.getUnchecked(prop)
+                if (value is Number) {
+                    put(ref, value)
+                } else {
+                    Mod.LOGGER.error(
+                        "Attachment modifier reference '{}' must point to a numeric property, got {}",
+                        ref,
+                        value?.javaClass?.name ?: "null",
+                    )
+                }
+            }
+        }
     }
 
     fun scopeMode(index: Int): ScopeMode? = scopeInfo?.mode(index)
@@ -129,15 +159,30 @@ data class AttachmentModifier(
     val op: AttachmentModifierOp = AttachmentModifierOp.ADD,
 
     @SerialName("Value")
-    val value: Double = 0.0,
+    val value: AttachmentModifierValue = AttachmentModifierValue.Constant(0.0),
 ) {
-    fun apply(pmc: PmcProxy) {
+    fun apply(pmc: PmcProxy, input: Map<String, Number>) {
+        val resolved = value.resolve(input) ?: return
         when (op) {
-            AttachmentModifierOp.ADD -> pmc.add(prop, value)
-            AttachmentModifierOp.MUL -> pmc.mul(prop, value)
-            AttachmentModifierOp.SET -> pmc.set(prop, value)
-            AttachmentModifierOp.CLAMP_MIN -> pmc.clampMin(prop, value)
-            AttachmentModifierOp.CLAMP_MAX -> pmc.clampMax(prop, value)
+            AttachmentModifierOp.ADD -> pmc.add(prop, resolved)
+            AttachmentModifierOp.MUL -> pmc.mul(prop, resolved)
+            AttachmentModifierOp.SET -> pmc.set(prop, resolved)
+            AttachmentModifierOp.CLAMP_MIN -> pmc.clampMin(prop, resolved)
+            AttachmentModifierOp.CLAMP_MAX -> pmc.clampMax(prop, resolved)
+        }
+    }
+
+    private fun AttachmentModifierValue.resolve(input: Map<String, Number>): Double? {
+        return when (this) {
+            is AttachmentModifierValue.Constant -> value
+            is AttachmentModifierValue.Reference -> {
+                val source = input[ref]
+                if (source == null) {
+                    Mod.LOGGER.error("Unable to resolve attachment modifier reference: {}", ref)
+                    return null
+                }
+                source.toDouble() * scale + offset
+            }
         }
     }
 }
