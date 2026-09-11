@@ -165,7 +165,7 @@ object ProjectileSpreadTool {
         if (amount <= 0) return emptyList()
 
         val vertices = List(10) { index ->
-            val angle = -PI / 2.0 + index * PI * 2.0 / 10.0
+            val angle = PI / 2.0 + index * PI * 2.0 / 10.0
             val radius = if (index % 2 == 0) 1.0 else INNER_STAR_RADIUS
             Vec3(cos(angle) * radius, sin(angle) * radius, 0.0)
         }
