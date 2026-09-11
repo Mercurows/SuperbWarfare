@@ -2,7 +2,7 @@
   "type": "create:item_application",
   "ingredients": [
     {
-      "tag": "neoforge:plates/copper"
+      "tag": "c:plates/copper"
     },
     {
       "item": "minecraft:flint"
