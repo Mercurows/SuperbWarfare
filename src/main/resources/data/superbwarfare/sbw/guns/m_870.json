@@ -80,7 +80,8 @@
       "superbwarfare:ar_silencer",
       "superbwarfare:loudspeaker",
       "superbwarfare:triangular_muzzle",
-      "superbwarfare:love_muzzle"
+      "superbwarfare:love_muzzle",
+      "superbwarfare:star_muzzle"
     ]
   },
   "SoundInfo": {
