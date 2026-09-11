@@ -79,6 +79,7 @@ open class GeoGunAnimationInstance(
 
         if (data.reloading()) {
             when {
+                data.reload.stage() == 1 && animation.prepareLoad != null && data.reload.prepareLoadTimer.get() > 0 -> return GunAnimationState.PREPARE_LOAD
                 data.reload.stage() == 1 && animation.prepare != null -> return GunAnimationState.PREPARE
                 data.reload.stage() == 2 && animation.iterative != null -> {
                     return if (data.loadIndex.get() == 1) {
@@ -169,6 +170,7 @@ open class GeoGunAnimationInstance(
             GunAnimationState.RELOAD_NORMAL -> normalReloadName(animation)
             GunAnimationState.RELOAD_EMPTY -> emptyReloadName(animation)
             GunAnimationState.PREPARE -> animation.prepare
+            GunAnimationState.PREPARE_LOAD -> animation.prepareLoad
             GunAnimationState.ITERATIVE -> animation.iterative
             GunAnimationState.ITERATIVE_2 -> animation.iterative
             GunAnimationState.FINISH -> animation.finish
@@ -183,6 +185,7 @@ open class GeoGunAnimationInstance(
                 this == GunAnimationState.RELOAD_NORMAL ||
                 this == GunAnimationState.RELOAD_EMPTY ||
                 this == GunAnimationState.PREPARE ||
+                this == GunAnimationState.PREPARE_LOAD ||
                 this == GunAnimationState.ITERATIVE ||
                 this == GunAnimationState.ITERATIVE_2 ||
                 this == GunAnimationState.FINISH
@@ -196,6 +199,7 @@ open class GeoGunAnimationInstance(
                 if (data.reload.empty()) data.get(GunProp.EMPTY_RELOAD_TIME)
                 else data.get(GunProp.NORMAL_RELOAD_TIME)
 
+            GunAnimationState.PREPARE_LOAD -> data.get(GunProp.PREPARE_LOAD_TIME)
             GunAnimationState.PREPARE -> data.get(GunProp.PREPARE_TIME)
             GunAnimationState.ITERATIVE, GunAnimationState.ITERATIVE_2 -> data.get(GunProp.ITERATIVE_TIME)
             GunAnimationState.FINISH -> data.get(GunProp.FINISH_TIME)
