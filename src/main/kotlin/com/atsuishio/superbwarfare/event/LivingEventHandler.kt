@@ -611,7 +611,6 @@ object LivingEventHandler {
         if (!MiscConfig.DROP_AMMO_BOX.get()) return
 
         val cap = player.getCapability(ModCapabilities.PLAYER_VARIABLE).orElse(PlayerVariable())
-        cap.watch()
 
         val drop = Ammo.entries.sumOf { it.get(cap) } > 0
         if (!drop) return
@@ -625,7 +624,8 @@ object LivingEventHandler {
 
         stack.ammoBoxData = stack.ammoBoxData.asDrop()
 
-        cap.sync(player)
+        // 清空弹药后由 CapabilitySync 自动同步给该玩家
+        PlayerVariable.markDirty(player)
         event.drops += ItemEntity(player.level(), player.x, player.y + 1, player.z, stack)
     }
 

@@ -2,12 +2,15 @@ package com.atsuishio.superbwarfare.capability.player
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.capability.ModCapabilities
+import com.atsuishio.superbwarfare.capability.player.PlayerVariable.Companion.modify
+import com.atsuishio.superbwarfare.capability.sync.CapabilitySync
+import com.atsuishio.superbwarfare.capability.sync.SyncTarget
+import com.atsuishio.superbwarfare.capability.sync.SyncedCapability
 import com.atsuishio.superbwarfare.data.gun.Ammo
-import com.atsuishio.superbwarfare.network.message.receive.PlayerVariablesSyncMessage
-import com.atsuishio.superbwarfare.tools.sendPacketTo
+import com.atsuishio.superbwarfare.serialization.ByteBufDecoder
+import com.atsuishio.superbwarfare.serialization.ByteBufEncoder
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.Entity
 import net.minecraftforge.common.capabilities.AutoRegisterCapability
 import net.minecraftforge.common.util.INBTSerializable
@@ -15,60 +18,56 @@ import java.util.*
 import java.util.function.Consumer
 
 @AutoRegisterCapability
-class PlayerVariable : INBTSerializable<CompoundTag> {
+class PlayerVariable : INBTSerializable<CompoundTag>, SyncedCapability {
     private var old: PlayerVariable? = null
 
     @JvmField
     var ammo: MutableMap<Ammo, Int> = EnumMap(Ammo::class.java)
     var activeThermalImaging: Boolean = false
 
-    fun sync(entity: Entity) {
-        if (!entity.getCapability(ModCapabilities.PLAYER_VARIABLE).isPresent) return
+    /** 玩家变量只对本人有意义 */
+    override val syncTarget: SyncTarget
+        get() = SyncTarget.SELF
 
-        val newVariable: PlayerVariable = getOrDefault(entity)
-        if (old != null && old == newVariable) return
+    /**
+     * 全量同步：先写热成像状态，再按 [Ammo] 的枚举顺序写各弹种的存量。
+     * 前后顺序必须与 [readSync] 一致。
+     */
+    override fun writeSync(encoder: ByteBufEncoder, full: Boolean) {
+        encoder.encodeBoolean(activeThermalImaging)
+        encoder.encodeInt(Ammo.entries.size)
 
-        if (entity is ServerPlayer) {
-            sendPacketTo(entity, PlayerVariablesSyncMessage(entity.id, compareAndUpdate()))
+        for (type in Ammo.entries) {
+            encoder.encodeInt(type.get(this))
         }
     }
 
+    override fun readSync(decoder: ByteBufDecoder, full: Boolean) {
+        activeThermalImaging = decoder.decodeBoolean()
+
+        val size = decoder.decodeInt()
+        for (index in 0 until size) {
+            val count = decoder.decodeInt()
+
+            // 弹种数量以本地枚举为准，多余的数据直接丢弃，避免越界
+            if (index >= Ammo.entries.size) continue
+
+            // 直接写入 map：这里应用的是服务端的权威数据，不能再拿客户端本地的
+            // SERVER 配置上限去校验（Ammo#set 会因上限不符而静默丢弃）
+            ammo[Ammo.entries[index]] = count
+        }
+    }
+
+    /** 记录当前状态，配合 [equals] 判断 [modify] 是否真的产生了变化 */
     fun watch(): PlayerVariable {
         this.old = this.copy()
         return this
     }
 
-    fun forceUpdate(): MutableMap<Byte, Int> {
-        val map = HashMap<Byte, Int>()
-
-        for (type in Ammo.entries) {
-            map[type.ordinal.toByte()] = type.get(this)
-        }
-
-        map[(-1).toByte()] = if (this.activeThermalImaging) 1 else 0
-
-        return map
-    }
-
-    fun compareAndUpdate(): MutableMap<Byte, Int> {
-        val map = HashMap<Byte, Int>()
-        val old = (if (this.old == null) PlayerVariable() else this.old)!!
-
-        for (type in Ammo.entries) {
-            val oldCount = old.ammo.getOrDefault(type, 0)
-            val newCount = type.get(this)
-
-            if (oldCount != newCount) {
-                map[type.ordinal.toByte()] = newCount
-            }
-        }
-
-        if (old.activeThermalImaging != this.activeThermalImaging) {
-            map[(-1).toByte()] = if (this.activeThermalImaging) 1 else 0
-        }
-
-        return map
-    }
+    /**
+     * 是否有未同步的变化。仅在 [watch] 之后调用有意义。
+     */
+    fun changed(): Boolean = old != null && old != this
 
     fun writeToNBT(): CompoundTag {
         val nbt = CompoundTag()
@@ -129,7 +128,17 @@ class PlayerVariable : INBTSerializable<CompoundTag> {
         }
 
         /**
+         * 标记玩家变量已变化，由 [CapabilitySync] 在本 tick 结束时自动同步给该玩家。
+         */
+        @JvmStatic
+        fun markDirty(entity: Entity) {
+            CapabilitySync.markDirty(entity, ID)
+        }
+
+        /**
          * 编辑并自动同步玩家变量
+         *
+         * 数据没有实际变化时不会发包。
          */
         @JvmStatic
         fun modify(entity: Entity, consumer: Consumer<PlayerVariable>) {
@@ -138,7 +147,10 @@ class PlayerVariable : INBTSerializable<CompoundTag> {
 
             cap.watch()
             consumer.accept(cap)
-            cap.sync(entity)
+
+            if (!cap.changed()) return
+
+            markDirty(entity)
         }
     }
 

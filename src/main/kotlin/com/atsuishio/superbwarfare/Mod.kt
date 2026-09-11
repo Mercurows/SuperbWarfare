@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare
 
 import com.atsuishio.superbwarfare.api.event.RegisterContainersEvent
+import com.atsuishio.superbwarfare.capability.sync.ModSyncedCapabilities
 import com.atsuishio.superbwarfare.client.MouseMovementHandler
 import com.atsuishio.superbwarfare.client.molang.MolangVariable
 import com.atsuishio.superbwarfare.client.renderer.ModParticleRenderTypes
@@ -122,6 +123,7 @@ class Mod {
 
     private fun onCommonSetup(event: FMLCommonSetupEvent) {
         NetworkRegistry.register()
+        ModSyncedCapabilities.register()
         MOD_BUS.post(RegisterContainersEvent())
         event.enqueueWork { ModGameRules.bootstrap() }
     }

@@ -1,10 +1,9 @@
 package com.atsuishio.superbwarfare.mobeffect
 
+import com.atsuishio.superbwarfare.capability.living.PhosphorusFireCapability
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModMobEffects
-import com.atsuishio.superbwarfare.network.message.receive.ClientPhosphorusFireMessage
 import com.atsuishio.superbwarfare.tools.forceHurt
-import com.atsuishio.superbwarfare.tools.sendPacketToTrackingThis
 import net.minecraft.world.effect.MobEffect
 import net.minecraft.world.effect.MobEffectCategory
 import net.minecraft.world.effect.MobEffects
@@ -12,9 +11,7 @@ import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.enchantment.EnchantmentHelper
 import net.minecraft.world.item.enchantment.Enchantments
-import net.minecraftforge.event.entity.living.LivingEvent
 import net.minecraftforge.event.entity.living.MobEffectEvent
-import net.minecraftforge.event.entity.player.PlayerEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
 
@@ -74,7 +71,8 @@ object PhosphorusFireMobEffect : MobEffect(MobEffectCategory.HARMFUL, 0xB1C1F2) 
             living.persistentData.putInt(TAG_PHOSPHORUS_FIRE_ATTACKER, source.id)
         }
 
-        living.sendPacketToTrackingThis(ClientPhosphorusFireMessage(living.id, true))
+        // 服务端成为唯一数据源，由 CapabilitySync 自动同步给所有跟踪该实体的客户端
+        PhosphorusFireCapability.set(living, true)
     }
 
     @SubscribeEvent
@@ -86,7 +84,7 @@ object PhosphorusFireMobEffect : MobEffect(MobEffectCategory.HARMFUL, 0xB1C1F2) 
             living.persistentData.remove(TAG_PHOSPHORUS_FIRE_ATTACKER)
             living.persistentData.remove(TAG_PHOSPHORUS_FIRE_COUNT)
 
-            living.sendPacketToTrackingThis(ClientPhosphorusFireMessage(living.id, false))
+            PhosphorusFireCapability.set(living, false)
         }
     }
 
@@ -99,25 +97,7 @@ object PhosphorusFireMobEffect : MobEffect(MobEffectCategory.HARMFUL, 0xB1C1F2) 
             living.persistentData.remove(TAG_PHOSPHORUS_FIRE_ATTACKER)
             living.persistentData.remove(TAG_PHOSPHORUS_FIRE_COUNT)
 
-            living.sendPacketToTrackingThis(ClientPhosphorusFireMessage(living.id, false))
-        }
-    }
-
-    @SubscribeEvent
-    fun onStartTracking(event: PlayerEvent.StartTracking) {
-        val target = event.target
-        if (target is LivingEntity) {
-            if (target.hasEffect(ModMobEffects.PHOSPHORUS_FIRE.get())) {
-                event.entity.sendPacketToTrackingThis(ClientPhosphorusFireMessage(target.id, true))
-            }
-        }
-    }
-
-    @SubscribeEvent
-    fun onLivingTick(event: LivingEvent.LivingTickEvent) {
-        val living = event.entity
-        if (!living.level().isClientSide && living.hasEffect(ModMobEffects.PHOSPHORUS_FIRE.get()) && living.level().gameTime % 1000 == 0.toLong()) {
-            event.entity.sendPacketToTrackingThis(ClientPhosphorusFireMessage(living.id, true))
+            PhosphorusFireCapability.set(living, false)
         }
     }
 }
