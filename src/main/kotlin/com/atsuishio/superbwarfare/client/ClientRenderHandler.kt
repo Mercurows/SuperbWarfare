@@ -16,6 +16,7 @@ import com.atsuishio.superbwarfare.init.ModBlockEntities
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.mojang.blaze3d.vertex.PoseStack
+import net.minecraft.client.Minecraft
 import net.minecraft.world.entity.projectile.Projectile
 import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
@@ -113,6 +114,15 @@ object ClientRenderHandler {
 
     @SubscribeEvent
     fun onClientSetup(event: FMLClientSetupEvent) {
+        event.enqueueWork {
+            val minecraft = Minecraft.getInstance()
+            val stencilWasEnabled = minecraft.mainRenderTarget.isStencilEnabled
+            minecraft.mainRenderTarget.enableStencil()
+            if (!stencilWasEnabled) {
+                // Recreate targets created before the depth format changed to depth-stencil.
+                minecraft.levelRenderer.graphicsChanged()
+            }
+        }
         CuriosRendererRegistry.register(ModItems.PARACHUTE.get()) { ParachuteRenderer() }
         CuriosRendererRegistry.register(ModItems.THERMAL_IMAGING_GOGGLES.get()) { ThermalImagingGogglesRenderer() }
     }

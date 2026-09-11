@@ -32,7 +32,7 @@ import java.util.*
 
 open class GeoGunAnimationInstance(
     private var stack: ItemStack,
-    entity: Entity,
+    entity: Entity?,
     hand: InteractionHand
 ) : IFPAnimationInstance {
     private val animations = hashMapOf<String, BedrockAnimation>()

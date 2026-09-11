@@ -192,7 +192,7 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
     ) {
         markIlluminatedBones()
         updateDynamicDivisionScale()
-        val quadType = RenderType.entityTranslucent(texture)
+        val quadType = RenderType.entityCutout(texture)
         val triangleType = BedrockModelRenderTypes.polyMeshCutout(texture)
 
         when (info.type) {
@@ -394,35 +394,56 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
     ) {
         if (ocularIndices.isEmpty()) return
 
-        val builder = Tesselator.getInstance().begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR)
         RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_INVERT)
         RenderSystem.colorMask(false, false, false, false)
         RenderSystem.depthMask(false)
 
         val aimingProgress = ClientEventHandler.zoomTime.coerceIn(0.0, 1.0).toFloat()
         val rad = 80f * info.viewRadiusModifier * aimingProgress
+        val window = Minecraft.getInstance().window
+        val projectionMatrix = Matrix4f(RenderSystem.getProjectionMatrix())
+        val modelViewMatrix = Matrix4f(RenderSystem.getModelViewMatrix())
 
+        val modelViewStack = RenderSystem.getModelViewStack()
+        modelViewStack.pushMatrix()
+        modelViewStack.identity()
+        RenderSystem.applyModelViewMatrix()
         RenderSystem.setShader(GameRenderer::getPositionColorShader)
         for (i in ocularIndices.indices) {
             if (selective && !isScopeOcular[i]) continue
 
             RenderSystem.stencilFunc(GL11.GL_EQUAL, i + 1, 0xFF)
-            val ocularCenter = getBoneCenter(poseStack, ocularIndices[i])
-            val centerX = ocularCenter.x() * 16f * 90f
-            val centerY = ocularCenter.y() * 16f * 90f
+            val ocularCenter = getBoneCenter(poseStack, ocularIndices[i], modelViewMatrix)
+            val depth = -ocularCenter.z()
+            if (!depth.isFinite() || depth <= 0f) continue
 
+            val radiusX = rad * depth * 2f /
+                    (projectionMatrix.m00() * window.guiScaledWidth)
+            val radiusY = rad * depth * 2f /
+                    (projectionMatrix.m11() * window.guiScaledHeight)
+
+            val builder = Tesselator.getInstance().begin(
+                VertexFormat.Mode.TRIANGLE_FAN,
+                DefaultVertexFormat.POSITION_COLOR
+            )
             builder
-                .addVertex(centerX, centerY, -90.0F)
+                .addVertex(ocularCenter.x(), ocularCenter.y(), ocularCenter.z())
                 .setColor(255, 255, 255, 255)
             for (j in 0..90) {
                 val angle = j * ((Math.PI * 2.0) / 90.0)
                 val sin = Mth.sin(angle.toFloat())
                 val cos = Mth.cos(angle.toFloat())
-                builder.addVertex((centerX + cos * rad), (centerY + sin * rad), -90.0F)
+                builder.addVertex(
+                    ocularCenter.x() + cos * radiusX,
+                    ocularCenter.y() + sin * radiusY,
+                    ocularCenter.z()
+                )
                     .setColor(255, 255, 255, 255)
             }
             BufferUploader.drawWithShader(builder.build()!!)
         }
+        modelViewStack.popMatrix()
+        RenderSystem.applyModelViewMatrix()
 
         RenderSystem.depthMask(true)
         RenderSystem.colorMask(true, true, true, true)
@@ -592,8 +613,14 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
 //        }
     }
 
-    private fun getBoneCenter(poseStack: PoseStack, boneIndex: Int): Vector3f {
-        val matrix = Matrix4f(poseStack.last().pose()).mul(instance.getGlobalTransform(boneIndex))
+    private fun getBoneCenter(
+        poseStack: PoseStack,
+        boneIndex: Int,
+        modelViewMatrix: Matrix4f
+    ): Vector3f {
+        val matrix = Matrix4f(modelViewMatrix)
+            .mul(poseStack.last().pose())
+            .mul(instance.getGlobalTransform(boneIndex))
         return matrix.getTranslation(Vector3f())
     }
 
