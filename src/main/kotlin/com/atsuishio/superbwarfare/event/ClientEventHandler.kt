@@ -2298,7 +2298,7 @@ object ClientEventHandler {
                     Mth.lerp(0.2 * times, moveRotZ, 0.0) * (1 - zoomTime)
                 }
 
-            if (entity.isSprinting && !data.reloading() && (firePosTimer == 0.0 || firePosTimer > 1.0) && !ModKeyMappings.FIRE.isDown && zoomTime < 0.99) {
+            if (entity.isSprinting && !data.reloading() && (firePosTimer == 0.0 || firePosTimer > 1.0) && !ModKeyMappings.FIRE.isDown && zoomTime < 0.99 && gunMelee == 0) {
                 sprintBasicRotX = Mth.lerp(0.3f * times / (customWeight + 4), sprintBasicRotX, 1.0).coerceIn(0.0, 1.0)
                 sprintBasicRotY = Mth.lerp(0.18f * times / (customWeight + 4), sprintBasicRotY, 1.0).coerceIn(0.0, 1.0)
                 sprintBasicRotZ = Mth.lerp(0.3f * times / (customWeight + 4), sprintBasicRotZ, 1.0).coerceIn(0.0, 1.0)
@@ -2325,7 +2325,7 @@ object ClientEventHandler {
             moveFadeTime = Mth.lerp(0.1 * times, moveFadeTime, 0.0)
         }
 
-        if (entity.isSprinting && !data.reloading() && (firePosTimer == 0.0 || firePosTimer > 1.0) && !ModKeyMappings.FIRE.isDown && zoomTime < 0.99) {
+        if (entity.isSprinting && !data.reloading() && (firePosTimer == 0.0 || firePosTimer > 1.0) && !ModKeyMappings.FIRE.isDown && zoomTime < 0.99 && gunMelee == 0) {
             sprintFadeTime = if (entity.onGround()) {
                 Mth.lerp(0.08 * times, sprintFadeTime, 1.0)
             } else {
@@ -2343,8 +2343,8 @@ object ClientEventHandler {
         movePosX = 0.2 * sin(1 * PI * moveTime) * (1 - 0.4 * zoomTime) * moveFadeTime
         movePosY = -0.135 * sin(2 * PI * (moveTime - 0.25)) * (1 - 0.4 * zoomTime) * moveFadeTime
 
-        val left = mc.options.keyLeft.isDown()
-        val right = mc.options.keyRight.isDown()
+        val left = mc.options.keyLeft.isDown
+        val right = mc.options.keyRight.isDown
         var pos = 0.0
         if (left) {
             pos = -0.04
