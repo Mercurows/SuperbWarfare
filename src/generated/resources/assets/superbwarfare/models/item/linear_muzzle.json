@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "superbwarfare:item/choke_muzzle"
+    "layer0": "superbwarfare:item/linear_muzzle"
   }
 }

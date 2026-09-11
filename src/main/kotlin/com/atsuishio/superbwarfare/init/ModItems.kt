@@ -658,7 +658,7 @@ object ModItems {
     @JvmField val OSPREY_SILENCER_TRACHELIUM = registerAttachment("osprey_silencer_trachelium", ModRarities.VIRTUAL)
     @JvmField val SILENCER_QINGLAN = registerAttachment("silencer_qinglan", ModRarities.VIRTUAL)
     @JvmField val TRIANGULAR_MUZZLE = registerAttachment("triangular_muzzle", Rarity.RARE)
-    @JvmField val CHOKE_MUZZLE = registerAttachment("choke_muzzle", Rarity.RARE)
+    @JvmField val LINEAR_MUZZLE = registerAttachment("linear_muzzle", Rarity.RARE)
     @JvmField val CROSS_MUZZLE = registerAttachment("cross_muzzle", Rarity.RARE)
     @JvmField val STAR_MUZZLE = registerAttachment("star_muzzle", Rarity.EPIC)
     @JvmField val LOVE_MUZZLE = registerAttachment("love_muzzle", ModRarities.VIRTUAL)

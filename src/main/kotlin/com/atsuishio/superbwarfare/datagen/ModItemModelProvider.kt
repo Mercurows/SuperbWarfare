@@ -343,7 +343,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.SCOPE_HAMR)
         simpleItem(ModItems.SCOPE_1P_78)
         simpleItem(ModItems.TRIANGULAR_MUZZLE)
-        simpleItem(ModItems.CHOKE_MUZZLE)
+        simpleItem(ModItems.LINEAR_MUZZLE)
         simpleItem(ModItems.CROSS_MUZZLE)
         simpleItem(ModItems.STAR_MUZZLE)
         simpleItem(ModItems.LOVE_MUZZLE)
