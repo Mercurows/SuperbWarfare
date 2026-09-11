@@ -1447,26 +1447,26 @@
       }
     ]
   },
-  "m_870_prepare_load": {
+  "m_870_bolt_open": {
     "sounds": [
       {
-        "name": "superbwarfare:gun/m_870/m_870_prepare_load",
+        "name": "superbwarfare:gun/m_870/m_870_bolt_open",
         "stream": false
       }
     ]
   },
-  "m_870_loop": {
+  "m_870_bolt_close": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/m_870/m_870_bolt_close",
+        "stream": false
+      }
+    ]
+  },
+  "m_870_reload_loop": {
     "sounds": [
       {
         "name": "superbwarfare:gun/m_870/m_870_reload_loop",
-        "stream": false
-      }
-    ]
-  },
-  "m_870_bolt": {
-    "sounds": [
-      {
-        "name": "superbwarfare:gun/m_870/m_870_bolt",
         "stream": false
       }
     ]
