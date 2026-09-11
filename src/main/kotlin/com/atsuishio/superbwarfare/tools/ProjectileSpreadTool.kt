@@ -7,7 +7,6 @@ import net.minecraft.world.phys.Vec3
 import kotlin.math.*
 
 object ProjectileSpreadTool {
-    private val WORLD_UP = Vec3(0.0, 1.0, 0.0)
     private const val INNER_STAR_RADIUS = 0.382
     private const val EPSILON = 1.0E-6
 
@@ -30,13 +29,16 @@ object ProjectileSpreadTool {
         val maxTangent = tan(Math.toRadians(safeSpread))
         if (maxTangent <= EPSILON) return List(amount) { forward }
 
-        val upCandidate = WORLD_UP.subtract(forward.scale(forward.dot(WORLD_UP)))
-        val up = if (upCandidate.lengthSqr() < EPSILON) {
-            Vec3(0.0, 0.0, 1.0)
+        val rightX = -forward.z
+        val rightZ = forward.x
+        val rightLengthSqr = rightX * rightX + rightZ * rightZ
+        val right = if (rightLengthSqr > 0.0) {
+            val inverseLength = 1.0 / sqrt(rightLengthSqr)
+            Vec3(rightX * inverseLength, 0.0, rightZ * inverseLength)
         } else {
-            upCandidate.normalize()
+            Vec3(-1.0, 0.0, 0.0)
         }
-        val right = forward.cross(up).normalize()
+        val up = right.cross(forward).normalize()
 
         val effectivePattern = pattern ?: ProjectileSpreadPattern()
         val rotation = Math.toRadians(((rotationDegrees % 360.0) + 360.0) % 360.0)
