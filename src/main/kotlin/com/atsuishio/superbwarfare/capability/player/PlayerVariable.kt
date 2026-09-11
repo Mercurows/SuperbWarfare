@@ -3,44 +3,38 @@ package com.atsuishio.superbwarfare.capability.player
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.init.ModDataAttachments
-import com.atsuishio.superbwarfare.network.message.receive.PlayerVariablesSyncMessage
+import com.atsuishio.superbwarfare.network.decodeFrom
+import com.atsuishio.superbwarfare.network.encodeTo
 import net.minecraft.core.HolderLookup
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
+import net.neoforged.neoforge.attachment.AttachmentSyncHandler
+import net.neoforged.neoforge.attachment.IAttachmentHolder
 import net.neoforged.neoforge.common.util.INBTSerializable
-import net.neoforged.neoforge.event.entity.player.PlayerEvent.*
-import net.neoforged.neoforge.network.PacketDistributor
+import net.neoforged.neoforge.event.entity.player.PlayerEvent.Clone
 import java.util.*
 import java.util.function.Consumer
 
 class PlayerVariable : INBTSerializable<CompoundTag> {
-    private var old: PlayerVariable? = null
 
     @JvmField
     var ammo: MutableMap<Ammo, Int> = EnumMap(Ammo::class.java)
     var activeThermalImaging: Boolean = false
 
+    /**
+     * 该变量在服务端是就地修改的可变对象，改完之后需要主动通知 NeoForge 重新下发全量数据。
+     */
     fun sync(entity: Entity) {
-        if (!entity.hasData(ModDataAttachments.PLAYER_VARIABLE)) return
-
-        val newVariable = entity.getData(ModDataAttachments.PLAYER_VARIABLE)
-        if (old != null && old == newVariable) return
-
-        if (entity is ServerPlayer) {
-            PacketDistributor.sendToPlayer(entity, PlayerVariablesSyncMessage(entity.id, compareAndUpdate()))
-        }
+        entity.syncData(ModDataAttachments.PLAYER_VARIABLE)
     }
 
-    fun watch(): PlayerVariable {
-        this.old = this.copy()
-        return this
-    }
-
-    fun forceUpdate(): MutableMap<Byte, Int> {
+    /** 用于网络同步的完整快照，-1 表示 [activeThermalImaging]，其余为 [Ammo] 的 ordinal。 */
+    fun snapshot(): Map<Byte, Int> {
         val map = hashMapOf<Byte, Int>()
 
         for (type in Ammo.entries) {
@@ -52,24 +46,14 @@ class PlayerVariable : INBTSerializable<CompoundTag> {
         return map
     }
 
-    fun compareAndUpdate(): MutableMap<Byte, Int> {
-        val map = hashMapOf<Byte, Int>()
-        val old = (if (this.old == null) PlayerVariable() else this.old)!!
-
-        for (type in Ammo.entries) {
-            val oldCount = old.ammo.getOrDefault(type, 0)
-            val newCount = type.get(this)
-
-            if (oldCount != newCount) {
-                map[type.ordinal.toByte()] = newCount
+    fun applySnapshot(snapshot: Map<Byte, Int>) {
+        for ((key, value) in snapshot) {
+            if (key == (-1).toByte()) {
+                this.activeThermalImaging = value == 1
+            } else {
+                Ammo.entries.getOrNull(key.toInt())?.set(this, value)
             }
         }
-
-        if (old.activeThermalImaging != this.activeThermalImaging) {
-            map[(-1).toByte()] = if (this.activeThermalImaging) 1 else 0
-        }
-
-        return map
     }
 
     fun writeToNBT(): CompoundTag {
@@ -122,11 +106,36 @@ class PlayerVariable : INBTSerializable<CompoundTag> {
         readFromNBT(nbt)
     }
 
+    /**
+     * 该数据只对玩家本人有意义，因此更新只下发给持有者自己。
+     *
+     * 初始同步（其他玩家开始追踪该玩家时）不受此限制，见 [ModDataAttachments.PLAYER_VARIABLE] 的注释。
+     */
+    object SyncHandler : AttachmentSyncHandler<PlayerVariable> {
+        override fun sendToPlayer(holder: IAttachmentHolder, to: ServerPlayer): Boolean {
+            return holder === to
+        }
+
+        override fun write(buf: RegistryFriendlyByteBuf, attachment: PlayerVariable, initialSync: Boolean) {
+            encodeTo(buf, attachment.snapshot())
+        }
+
+        override fun read(
+            holder: IAttachmentHolder,
+            buf: RegistryFriendlyByteBuf,
+            previousValue: PlayerVariable?
+        ): PlayerVariable {
+            val variable = previousValue ?: PlayerVariable()
+            variable.applySnapshot(decodeFrom(buf))
+            return variable
+        }
+    }
+
     @EventBusSubscriber(modid = Mod.MODID)
     companion object {
         @JvmStatic
         fun modify(player: Player, consumer: Consumer<PlayerVariable>) {
-            val cap = player.getData(ModDataAttachments.PLAYER_VARIABLE).watch()
+            val cap = player.getData(ModDataAttachments.PLAYER_VARIABLE)
             consumer.accept(cap)
             cap.sync(player)
         }
@@ -137,50 +146,17 @@ class PlayerVariable : INBTSerializable<CompoundTag> {
         }
 
         @SubscribeEvent
-        fun onPlayerLoggedIn(event: PlayerLoggedInEvent) {
-            val player = event.entity
-            if (player !is ServerPlayer) return
-
-            PacketDistributor.sendToPlayer(
-                player,
-                PlayerVariablesSyncMessage(player.id, getOrDefault(player).compareAndUpdate())
-            )
-        }
-
-        @SubscribeEvent
-        fun onPlayerRespawn(event: PlayerRespawnEvent) {
-            val player = event.entity
-            if (player !is ServerPlayer) return
-
-            PacketDistributor.sendToPlayer(
-                player,
-                PlayerVariablesSyncMessage(player.id, getOrDefault(player).compareAndUpdate())
-            )
-        }
-
-        @SubscribeEvent
-        fun onPlayerChangeDimension(event: PlayerChangedDimensionEvent) {
-            val player = event.entity
-            if (player !is ServerPlayer) return
-
-            PacketDistributor.sendToPlayer(
-                player,
-                PlayerVariablesSyncMessage(player.id, getOrDefault(player).forceUpdate())
-            )
-        }
-
-        @SubscribeEvent
         fun clonePlayer(event: Clone) {
             event.original.revive()
             val original = event.original.getData(ModDataAttachments.PLAYER_VARIABLE)
             if (event.entity.level().isClientSide()) return
+            // 复制发生在 PlayerList#respawn 的初始同步之前，客户端会收到复制后的数据
             event.entity.setData(ModDataAttachments.PLAYER_VARIABLE, original.copy())
         }
     }
 
     override fun hashCode(): Int {
         var result = activeThermalImaging.hashCode()
-        result = 31 * result + (old?.hashCode() ?: 0)
         result = 31 * result + ammo.hashCode()
         return result
     }

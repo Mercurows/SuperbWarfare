@@ -2,10 +2,7 @@ package com.atsuishio.superbwarfare.item.ammo
 
 import com.atsuishio.superbwarfare.capability.entity.InfiniteAmmoCapability
 import com.atsuishio.superbwarfare.init.RegistryName
-import com.atsuishio.superbwarfare.network.message.receive.ClientInfiniteAmmoMessage
 import com.atsuishio.superbwarfare.registerToEventBus
-import com.atsuishio.superbwarfare.tools.sendPacketTo
-import com.atsuishio.superbwarfare.tools.sendPacketToTrackingThis
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
 import net.minecraft.world.InteractionHand
@@ -75,11 +72,6 @@ object CreativeAmmoBoxItem : Item(Properties().rarity(Rarity.EPIC).stacksTo(1)) 
             ).withStyle(if (hasInfiniteAmmo) ChatFormatting.GREEN else ChatFormatting.RED),
             true
         )
-
-        if (entity is Player) {
-            sendPacketTo(entity, ClientInfiniteAmmoMessage(entity.id, hasInfiniteAmmo))
-        }
-        entity.sendPacketToTrackingThis(ClientInfiniteAmmoMessage(entity.id, hasInfiniteAmmo))
 
         return true
     }

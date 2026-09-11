@@ -173,10 +173,13 @@ public enum Ammo {
     public boolean set(Entity entity, int count) {
         if (entity.level().isClientSide || count > getLimit()) return false;
 
-        var cap = entity.getData(ModDataAttachments.PLAYER_VARIABLE).watch();
+        // 等值短路：写附件会自动触发同步，值没变时既不写也不发包（开火时每发都会走到这里）
+        int current = entity.hasData(ModDataAttachments.PLAYER_VARIABLE) ? get(entity) : 0;
+        if (current == count) return true;
+
+        var cap = entity.getData(ModDataAttachments.PLAYER_VARIABLE);
         set(cap, count);
         entity.setData(ModDataAttachments.PLAYER_VARIABLE, cap);
-        cap.sync(entity);
 
         return true;
     }

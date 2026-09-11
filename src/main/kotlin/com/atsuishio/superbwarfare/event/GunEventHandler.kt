@@ -272,13 +272,12 @@ object GunEventHandler {
             val count = ammoCount - magazine - (if (hasBulletInBarrel) 1 else 0)
 
             if (shooter is Player) {
-                val capability = shooter.getData(ModDataAttachments.PLAYER_VARIABLE).watch()
+                val capability = shooter.getData(ModDataAttachments.PLAYER_VARIABLE)
                 if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
                     val ammoType = data.selectedAmmoConsumer().playerAmmoType
                     ammoType?.add(capability, count)
                 }
                 shooter.setData(ModDataAttachments.PLAYER_VARIABLE, capability)
-                capability.sync(shooter)
             }
 
             data.ammo.set(magazine + (if (hasBulletInBarrel) 1 else 0))
@@ -591,11 +590,7 @@ object GunEventHandler {
         data.nbtVersion.invalidateStructural()
 
         if (!InventoryTool.hasCreativeAmmoBox(shooter)) {
-            if (shooter != null) {
-                val cap = shooter.getData(ModDataAttachments.PLAYER_VARIABLE)
-                shooter.setData(ModDataAttachments.PLAYER_VARIABLE, cap)
-            }
-            data.consumeBackupAmmo(shooter, available)
+             data.consumeBackupAmmo(shooter, available)
         }
     }
 

@@ -632,7 +632,7 @@ object LivingEventHandler {
         val player = event.entity as? Player ?: return
         if (!MiscConfig.DROP_AMMO_BOX.get()) return
 
-        val cap = player.getData(ModDataAttachments.PLAYER_VARIABLE).watch()
+        val cap = player.getData(ModDataAttachments.PLAYER_VARIABLE)
 
         val drop = Ammo.entries.sumOf { it.get(cap) } > 0
         if (!drop) return
@@ -647,7 +647,6 @@ object LivingEventHandler {
         stack.ammoBoxData = stack.ammoBoxData.asDrop()
 
         player.setData(ModDataAttachments.PLAYER_VARIABLE, cap)
-        cap.sync(player)
 
         event.drops += ItemEntity(player.level(), player.x, player.y + 1, player.z, stack)
     }

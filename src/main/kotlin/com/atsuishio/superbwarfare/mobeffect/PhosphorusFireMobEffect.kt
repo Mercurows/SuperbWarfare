@@ -1,10 +1,10 @@
 package com.atsuishio.superbwarfare.mobeffect
 
+import com.atsuishio.superbwarfare.capability.living.PhosphorusFireCapability
 import com.atsuishio.superbwarfare.init.ModDamageTypes
+import com.atsuishio.superbwarfare.init.ModDataAttachments
 import com.atsuishio.superbwarfare.init.ModMobEffects
-import com.atsuishio.superbwarfare.network.message.receive.ClientPhosphorusFireMessage
 import com.atsuishio.superbwarfare.tools.forceHurt
-import com.atsuishio.superbwarfare.tools.sendPacketToTrackingThis
 import net.minecraft.core.registries.Registries
 import net.minecraft.world.effect.MobEffect
 import net.minecraft.world.effect.MobEffectCategory
@@ -17,7 +17,6 @@ import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.common.EffectCure
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent
-import net.neoforged.neoforge.event.entity.player.PlayerEvent
 import net.neoforged.neoforge.event.tick.EntityTickEvent
 
 @EventBusSubscriber
@@ -85,7 +84,9 @@ object PhosphorusFireMobEffect : MobEffect(MobEffectCategory.HARMFUL, 0xB1C1F2) 
             living.persistentData.putInt(TAG_PHOSPHORUS_FIRE_ATTACKER, source.id)
         }
 
-        living.sendPacketToTrackingThis(ClientPhosphorusFireMessage(living.id, true))
+        if (!living.level().isClientSide) {
+            PhosphorusFireCapability.set(living, true)
+        }
     }
 
     @SubscribeEvent
@@ -97,7 +98,9 @@ object PhosphorusFireMobEffect : MobEffect(MobEffectCategory.HARMFUL, 0xB1C1F2) 
             living.persistentData.remove(TAG_PHOSPHORUS_FIRE_ATTACKER)
             living.persistentData.remove(TAG_PHOSPHORUS_FIRE_COUNT)
 
-            living.sendPacketToTrackingThis(ClientPhosphorusFireMessage(living.id, false))
+            if (!living.level().isClientSide) {
+                PhosphorusFireCapability.set(living, false)
+            }
         }
     }
 
@@ -110,25 +113,27 @@ object PhosphorusFireMobEffect : MobEffect(MobEffectCategory.HARMFUL, 0xB1C1F2) 
             living.persistentData.remove(TAG_PHOSPHORUS_FIRE_ATTACKER)
             living.persistentData.remove(TAG_PHOSPHORUS_FIRE_COUNT)
 
-            living.sendPacketToTrackingThis(ClientPhosphorusFireMessage(living.id, false))
-        }
-    }
-
-    @SubscribeEvent
-    fun onStartTracking(event: PlayerEvent.StartTracking) {
-        val target = event.target
-        if (target is LivingEntity) {
-            if (target.hasEffect(ModMobEffects.PHOSPHORUS_FIRE)) {
-                event.entity.sendPacketToTrackingThis(ClientPhosphorusFireMessage(target.id, true))
+            if (!living.level().isClientSide) {
+                PhosphorusFireCapability.set(living, false)
             }
         }
     }
 
+    /**
+     * 兜底：旧存档或异常情况下效果状态与同步附件不一致时做一次补正。
+     *
+     * 正常流程下新增/过期/移除事件已经把附件写到服务端，玩家开始追踪时由 NeoForge 自动补发。
+     */
     @SubscribeEvent
     fun onLivingTick(event: EntityTickEvent.Post) {
         val living = event.entity as? LivingEntity ?: return
-        if (!living.level().isClientSide && living.hasEffect(ModMobEffects.PHOSPHORUS_FIRE) && living.level().gameTime % 1000 == 0.toLong()) {
-            event.entity.sendPacketToTrackingThis(ClientPhosphorusFireMessage(living.id, true))
+        if (living.level().isClientSide) return
+        if (living.level().gameTime % 1000 != 0L) return
+
+        val onFire = living.hasEffect(ModMobEffects.PHOSPHORUS_FIRE)
+        val synced = living.getExistingDataOrNull(ModDataAttachments.PHOSPHORUS_FIRE)?.isOnFire ?: false
+        if (synced != onFire) {
+            PhosphorusFireCapability.set(living, onFire)
         }
     }
 }
