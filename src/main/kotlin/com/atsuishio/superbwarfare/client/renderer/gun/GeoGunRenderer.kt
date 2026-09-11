@@ -118,14 +118,20 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     ) {
         val absolutePitch = Mth.abs(Mth.wrapDegrees(event.pitch))
 
-        // At +/-90 degrees pitch the YXZ Euler decomposition is singular: a small
-        // local animation is enough to remap the original yaw into roll. Keep the
-        // current yaw/pitch there and apply only the small animated offset.
+        // At +/-90 degrees pitch the YXZ Euler decomposition is singular. Fold
+        // animated yaw into roll instead of changing event.yaw, otherwise the
+        // player's look input gets trapped at the pole while the animation plays.
         if (absolutePitch >= VERTICAL_PITCH_START) {
             val animatedEuler = YXZRotationView(animateRot).asEulerAngle()
-            event.yaw += Mth.RAD_TO_DEG * animatedEuler.y()
+            val animatedYaw = Mth.RAD_TO_DEG * animatedEuler.y()
+            val animatedRoll = Mth.RAD_TO_DEG * animatedEuler.z()
+            val positivePitch = event.pitch >= 0f
             event.pitch = Mth.clamp(event.pitch + Mth.RAD_TO_DEG * animatedEuler.x(), -90f, 90f)
-            event.roll -= Mth.RAD_TO_DEG * animatedEuler.z()
+            event.roll = if (positivePitch) {
+                event.roll - animatedYaw - animatedRoll
+            } else {
+                event.roll + animatedYaw - animatedRoll
+            }
             return
         }
 
