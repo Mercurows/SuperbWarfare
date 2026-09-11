@@ -1288,48 +1288,48 @@ class GunData private constructor(
         // to be written back to the stack afterwards, unlike 1.21's DataComponents.
         state.writeInto(gunDataTag)
 
-        val keysToRemove = mutableListOf<String>()
-        for (key in perkTag.allKeys) {
-            val compoundTag = perkTag.get(key) as? CompoundTag
-            if (compoundTag?.isEmpty ?: false) {
-                keysToRemove.add(key)
-            }
-        }
-        keysToRemove.forEach { key -> perkTag.remove(key) }
+//        val keysToRemove = mutableListOf<String>()
+//        for (key in perkTag.allKeys) {
+//            val compoundTag = perkTag.get(key) as? CompoundTag
+//            if (compoundTag?.isEmpty ?: false) {
+//                keysToRemove.add(key)
+//            }
+//        }
+//        keysToRemove.forEach { key -> perkTag.remove(key) }
+//
+//        val cleanedTag = tag.copy()
+//
+//        if (perkTag.isEmpty) {
+//            cleanedTag.remove(KEY_PERKS)
+//        }
+//
+//        if (attachmentTag.isEmpty) {
+//            cleanedTag.remove(KEY_ATTACHMENTS)
+//        }
+//
+//        if (gunDataTag.isEmpty) {
+//            cleanedTag.remove(KEY_GUN_DATA)
+//        }
+//
+//        if (tag.isEmpty) {
+//            stack.tag = null
+//            return
+//        }
 
-        val cleanedTag = tag.copy()
-
-        if (perkTag.isEmpty) {
-            cleanedTag.remove(KEY_PERKS)
-        }
-
-        if (attachmentTag.isEmpty) {
-            cleanedTag.remove(KEY_ATTACHMENTS)
-        }
-
-        if (gunDataTag.isEmpty) {
-            cleanedTag.remove(KEY_GUN_DATA)
-        }
-
-        if (tag.isEmpty) {
-            stack.tag = null
-            return
-        }
-
-        if (compare) {
-            if (lastTimeStack?.tag == cleanedTag) return
-
-            // Content changed: remember what the persistence is about to look like, so an unchanged
-            // state never bumps the revision on a later call.
-            lastTimeStack = stack.copy()
-        }
+//        if (compare) {
+//            if (lastTimeStack?.tag == cleanedTag) return
+//
+//            // Content changed: remember what the persistence is about to look like, so an unchanged
+//            // state never bumps the revision on a later call.
+//            lastTimeStack = stack.copy()
+//        }
 
         // Content changed: advance the revision, mirrored into the state and the tag. Done after the
         // comparison above so an unchanged state never bumps it.
         state = state.copy(revision = state.revision + 1)
         gunDataTag.putLong(KEY_REVISION, state.revision)
 
-        lastTimeStack?.getOrCreateTag()?.getCompound(KEY_GUN_DATA)?.putLong(KEY_REVISION, state.revision)
+//        lastTimeStack?.getOrCreateTag()?.getCompound(KEY_GUN_DATA)?.putLong(KEY_REVISION, state.revision)
     }
 
     /**
