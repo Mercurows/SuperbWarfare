@@ -9,13 +9,12 @@ import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.descriptors.element
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.json.JsonDecoder
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.*
 import net.minecraft.world.phys.Vec3
 import java.io.IOException
 
@@ -101,12 +100,22 @@ object StringOrVec3Serializer : KSerializer<StringOrVec3> {
     override fun deserialize(decoder: Decoder): StringOrVec3 {
         require(decoder is JsonDecoder) { "only JsonDecoder is supported!" }
 
-        val element = decoder.decodeJsonElement()
+        return when (val element = decoder.decodeJsonElement()) {
+            is JsonPrimitive -> StringOrVec3(element.content)
+            is JsonArray -> {
+                if (element.size < 3) {
+                    throw SerializationException("Expected a 3-element array for StringOrVec3, but had $element")
+                }
+                StringOrVec3(
+                    Vec3(
+                        element[0].jsonPrimitive.double,
+                        element[1].jsonPrimitive.double,
+                        element[2].jsonPrimitive.double
+                    )
+                )
+            }
 
-        return if (element is JsonPrimitive) {
-            StringOrVec3(element.jsonPrimitive.content)
-        } else {
-            StringOrVec3(decoder.decodeSerializableValue(Vec3Serializer))
+            else -> throw SerializationException("Expected a string or a 3-element array for StringOrVec3, but had $element")
         }
     }
 }
