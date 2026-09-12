@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.item.gun.launcher
 
+import com.atsuishio.superbwarfare.client.PoseTool
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.init.ModRarities
@@ -7,14 +8,11 @@ import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.item.gun.GeoGunItemV2
 import com.atsuishio.superbwarfare.tools.playLocalSound
-import net.minecraft.client.model.HumanoidModel
 import net.minecraft.client.model.HumanoidModel.ArmPose
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundSource
-import net.minecraft.util.Mth
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.Entity
-import net.minecraft.world.entity.HumanoidArm
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.ItemStack
 import net.minecraftforge.api.distmarker.Dist
@@ -41,20 +39,6 @@ class SuperStarShooterItem : GeoGunItemV2(Properties().rarity(ModRarities.SUPERB
         hand: InteractionHand,
         itemStack: ItemStack
     ): ArmPose {
-        return if (!itemStack.isEmpty && entityLiving.usedItemHand == hand) POSE else ArmPose.EMPTY
-    }
-
-    companion object {
-        @OnlyIn(Dist.CLIENT)
-        private val POSE: ArmPose = ArmPose.create("SuperStarShooterItem", false) { model: HumanoidModel<*>, entity: LivingEntity?, arm: HumanoidArm ->
-            if (arm != HumanoidArm.LEFT) {
-                model.rightArm.xRot = -70f * Mth.DEG_TO_RAD + model.head.xRot
-                model.rightArm.yRot = 0f
-                model.rightArm.zRot = 0f
-                model.leftArm.xRot = -70f * Mth.DEG_TO_RAD + model.head.xRot
-                model.leftArm.yRot = 0f
-                model.leftArm.zRot = 0f
-            }
-        }
+        return if (!itemStack.isEmpty && entityLiving.usedItemHand == hand) PoseTool.SUPERBWARFARE_SUPER_STAR_SHOOTER_POSE else ArmPose.EMPTY
     }
 }
