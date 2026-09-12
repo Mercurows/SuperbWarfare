@@ -310,7 +310,7 @@ class DefaultGunData : IDBasedData<DefaultGunData> {
     var explosionRadius = 0.0
 
     @SerialName("Gravity")
-    var gravity = 0.05
+    var gravity = 0.03
 
     @SerialName("ShootDelay")
     var shootDelay = 0

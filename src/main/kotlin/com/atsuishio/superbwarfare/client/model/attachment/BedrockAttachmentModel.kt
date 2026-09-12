@@ -12,6 +12,7 @@ import com.mojang.blaze3d.vertex.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Font
 import net.minecraft.client.renderer.GameRenderer
+import net.minecraft.client.renderer.LightTexture
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.texture.OverlayTexture
@@ -181,10 +182,11 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         restoreAmmoBar(ammoBarState)
 
         // After the restore, so nothing is drawn while the model is still carrying the squashed
-        // scales. With a division anchor this lands inside the housing and gets depth tested away,
-        // which is why the text is drawn separately on the aiming path.
+        // scales. A text anchored on the scope body is correct here as-is; one anchored below a
+        // division lands inside the housing and gets depth tested away, which is why the aiming path
+        // draws those itself.
         for (entry in readout.texts) {
-            renderAmmoText(entry, readout.count, poseStack, bufferSource, packedLight)
+            renderAmmoText(entry, readout.count, readout.progress, poseStack, bufferSource)
         }
 
         for (i in hiddenOculars.indices) {
@@ -208,7 +210,7 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         markIlluminatedBones()
         updateDynamicDivisionScale()
         val ammoBarState = applyAmmoBar(readout.bars, readout.progress)
-        val divisionTexts = buildDivisionTexts(readout)
+        val texts = buildAmmoTexts(readout)
         val quadType = RenderType.entityTranslucent(texture)
         val triangleType = BedrockModelRenderTypes.polyMeshCutout(texture)
 
@@ -220,7 +222,7 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
                 triangleType,
                 packedLight,
                 info,
-                divisionTexts
+                texts
             )
 
             ScopeType.SCOPE -> renderScope(
@@ -231,7 +233,7 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
                 packedLight,
                 partialTicks,
                 info,
-                divisionTexts
+                texts
             )
         }
 
@@ -243,7 +245,8 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
             packedLight,
             info,
             companionSightMode,
-            ammoBarState
+            ammoBarState,
+            texts
         )
 
         restoreAmmoBar(ammoBarState)
@@ -370,22 +373,31 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
     }
 
     /**
-     * Picks out the texts that can be drawn alongside a division, i.e. the ones anchored somewhere
-     * inside a `division*` subtree, and remembers which division each of them belongs to.
+     * Resolves every configured text to a bone index plus the division it belongs to, if any.
      *
      * Recomputed per render instead of cached: [readout] is handed in by the caller each frame, and
      * a single instance of this class is shared by every stack using the same model file.
+     *
+     * This is the aiming path only — the whole-model pass draws its texts straight from [readout] — so
+     * [DIVISION_TEXT_MIN_ZOOM] is applied here and nowhere else. It has no bearing off that path
+     * anyway: third person and the inventory draw the entire model, housing included, and the housing
+     * is what hides a text mounted inside the tube from any angle it can be seen from.
      */
-    private fun buildDivisionTexts(readout: AmmoReadout): List<DivisionText> {
+    private fun buildAmmoTexts(readout: AmmoReadout): List<AmmoText> {
         if (readout.texts.isEmpty()) return emptyList()
 
-        val texts = mutableListOf<DivisionText>()
+        val zoom = ClientEventHandler.zoomTime
+        val texts = mutableListOf<AmmoText>()
         for (entry in readout.texts) {
             val index = baseModel.getIndex(entry.bone)
             if (index < 0) continue
-            val anchor = divisionAnchorOf(index)
-            if (anchor < 0) continue
-            texts += DivisionText(entry, readout.count, anchor)
+            val divisionIndex = divisionAnchorOf(index)
+            // -1 is kept rather than filtered out: an anchor outside a division subtree cannot be
+            // drawn alongside a reticle, but it still has to be drawn by renderRemaining, otherwise
+            // it would be visible only in third person and the inventory. Which is also why the gate
+            // below rejects only an anchor that *is* under a division.
+            if (divisionIndex >= 0 && zoom < DIVISION_TEXT_MIN_ZOOM) continue
+            texts += AmmoText(entry, readout.count, readout.progress, divisionIndex)
         }
         return texts
     }
@@ -396,7 +408,8 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
      *
      * This decides how the text becomes visible: a division bone is hidden in the whole-model pass
      * and only drawn where the reticle is drawn separately, so an anchor below one only shows up
-     * while aiming down the sights.
+     * while aiming down the sights. `-1` means the anchor sits elsewhere in the model — usually on
+     * the scope body — and is drawn by [renderRemaining] instead, depth tested against the body.
      */
     private fun divisionAnchorOf(textBoneIndex: Int): Int {
         val anchors = divisionGroups.values.flatten().toHashSet()
@@ -411,13 +424,24 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
     /**
      * Draws one ammo readout line at its anchor bone, which supplies both the position and the
      * facing of the glyphs.
+     *
+     * The glyphs are always drawn at full brightness rather than with the light of the gun they sit
+     * on. `rendertype_text.vsh` computes `vertexColor = Color * texelFetch(Sampler2, UV2 / 16, 0)`,
+     * i.e. the packed light handed to [Font.drawInBatch] is a lightmap texel, so passing the world
+     * light would dim the readout to the point of being unreadable in the dark — and inside a scope
+     * tube there is no sky access to brighten it either. [LightTexture.FULL_BRIGHT] is the corner
+     * texel of the 16x16 lightmap, which is the brightest it can be at the player's own brightness
+     * setting, and is the same coordinate vanilla uses for GUI items.
+     *
+     * Note that the fragment shader never samples a lightmap itself; the multiply happens per vertex,
+     * which is why this cannot be fixed by choosing a different [Font.DisplayMode].
      */
     private fun renderAmmoText(
         entry: AmmoTextEntry,
         count: Int,
+        progress: Float,
         poseStack: PoseStack,
-        bufferSource: MultiBufferSource,
-        light: Int
+        bufferSource: MultiBufferSource
     ) {
         val index = baseModel.getIndex(entry.bone)
         if (index < 0) return
@@ -443,13 +467,13 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
             text,
             0f,
             0f,
-            entry.color.get(),
+            entry.colorAt(progress),
             entry.shadow,
             poseStack.last().pose(),
             bufferSource,
             Font.DisplayMode.NORMAL,
             0,
-            light
+            LightTexture.FULL_BRIGHT
         )
         // drawInBatch queues the glyphs into the caller's own buffer source, and they would sit there
         // until something asks for a different render type. They have to go out now instead: what
@@ -468,7 +492,7 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         triangleType: RenderType,
         light: Int,
         info: ScopeMode,
-        divisionTexts: List<DivisionText>
+        texts: List<AmmoText>
     ) {
         ScopeStencilRenderHelper.enableItemEntityStencilTest()
         RenderSystem.clearStencil(0)
@@ -482,7 +506,7 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
             triangleType,
             light,
             divisionIndices(info),
-            divisionTexts
+            texts
         )
 
         RenderSystem.stencilFunc(GL11.GL_ALWAYS, 0, 0xFF)
@@ -501,7 +525,7 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         light: Int,
         partialTicks: Float,
         info: ScopeMode,
-        divisionTexts: List<DivisionText>
+        texts: List<AmmoText>
     ) {
         ScopeStencilRenderHelper.enableItemEntityStencilTest()
         RenderSystem.clearStencil(0)
@@ -533,7 +557,7 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
             partialTicks,
             info,
             false,
-            divisionTexts
+            texts
         )
 
         RenderSystem.stencilFunc(GL11.GL_ALWAYS, 0, 0xFF)
@@ -597,7 +621,7 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         triangleType: RenderType,
         light: Int,
         divisions: List<Int>,
-        divisionTexts: List<DivisionText> = emptyList()
+        texts: List<AmmoText> = emptyList()
     ) {
         if (divisions.isEmpty()) return
 
@@ -606,9 +630,9 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
             RenderSystem.stencilFunc(GL11.GL_EQUAL, i + 1, 0xFF)
             renderBoneImmediate(divisions[i], poseStack, bufferSource, quadType, triangleType, light)
             // Same stencil value and depth state as the reticle it sits next to.
-            for (text in divisionTexts) {
+            for (text in texts) {
                 if (text.divisionIndex == divisions[i]) {
-                    renderAmmoText(text.entry, text.count, poseStack, bufferSource, light)
+                    renderAmmoText(text.entry, text.count, text.progress, poseStack, bufferSource)
                 }
             }
         }
@@ -624,7 +648,7 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         partialTicks: Float,
         info: ScopeMode,
         selective: Boolean,
-        divisionTexts: List<DivisionText>
+        texts: List<AmmoText>
     ) {
         renderOcularAndDivisionInternal(
             poseStack,
@@ -638,7 +662,7 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
             isScopeOcularFor(info),
             divisionIndices(info),
             selective,
-            divisionTexts
+            texts
         )
     }
 
@@ -654,7 +678,7 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         isScopeOcular: List<Boolean>,
         divisions: List<Int>,
         selective: Boolean,
-        divisionTexts: List<DivisionText> = emptyList()
+        texts: List<AmmoText> = emptyList()
     ) {
         if (ocularIndices.isEmpty()) return
 
@@ -708,9 +732,9 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
                 val b = (i + 1).inv() and 0xFF
                 RenderSystem.stencilFunc(GL11.GL_EQUAL, b, 0xFF)
                 renderBoneImmediate(divisions[i], poseStack, bufferSource, quadType, triangleType, light)
-                for (text in divisionTexts) {
+                for (text in texts) {
                     if (text.divisionIndex == divisions[i]) {
-                        renderAmmoText(text.entry, text.count, poseStack, bufferSource, light)
+                        renderAmmoText(text.entry, text.count, text.progress, poseStack, bufferSource)
                     }
                 }
             }
@@ -756,7 +780,8 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         light: Int,
         info: ScopeMode,
         companion: ScopeMode? = null,
-        ammoBarState: AmmoBarState? = null
+        ammoBarState: AmmoBarState? = null,
+        texts: List<AmmoText> = emptyList()
     ) {
         val hidden = mutableListOf<Int>()
         // Other numbered scope parts stay in the model render; only the active optic group is special.
@@ -800,6 +825,16 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         // skipNormalVisibilityCull = false.
         renderAmmoBar(ammoBarState, poseStack, bufferSource, quadType, triangleType, light, false)
         flush(bufferSource, quadType, triangleType)
+
+        // Texts anchored outside a division subtree. Unlike a reticle text they are not inside the
+        // ocular opening, so they need the depth buffer rather than a stencil window to stay in front
+        // of the housing — and by now the whole body has been drawn into it, on this path and on the
+        // aiming path alike. Drawn last so nothing of the model can overwrite them.
+        for (text in texts) {
+            if (text.divisionIndex < 0) {
+                renderAmmoText(text.entry, text.count, text.progress, poseStack, bufferSource)
+            }
+        }
     }
 
     private fun renderBoneImmediate(
@@ -905,12 +940,20 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
     private data class OcularEntry(val index: Int, val isScope: Boolean)
 
     /**
-     * One text to draw while drawing a division: the line itself, the count to expand it with, and
-     * the index of the division bone it hangs under, which is what the division loop matches on.
+     * One text to draw: the line itself, the count to expand it with, and the index of the division
+     * bone it hangs under, which is what the division loops match on.
+     *
+     * [divisionIndex] is `-1` when the anchor bone is not inside a `division*` subtree. Such a text
+     * cannot be drawn next to a reticle, so it is drawn by [renderRemaining] instead — that is how a
+     * model that hangs its readout off the scope body (rather than off the reticle) still shows the
+     * text while aiming. No division bone ever has index `-1`, so the division guards stay correct
+     * without an extra check.
      */
-    private class DivisionText(
+    private class AmmoText(
         val entry: AmmoTextEntry,
         val count: Int,
+        /** Remaining magazine ratio, which the entry resolves its tiered color against. */
+        val progress: Float,
         val divisionIndex: Int
     )
 
@@ -941,6 +984,19 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
          * but digits.
          */
         private const val GLYPH_BOX_CENTER = -3.5f
+
+        /**
+         * Aiming progress below which a text anchored under a `division*` bone is not drawn.
+         *
+         * The reticle is part of the model and comes up with it, but a division text is drawn with
+         * depth testing off inside the ocular window, so while the scope is still swinging up the
+         * readout would already be sitting in front of it. Holding it back until the zoom is this far
+         * along keeps it attached to the thing it labels.
+         *
+         * A `Double` to match [ClientEventHandler.zoomTime] rather than the font-space floats above,
+         * so the comparison is against exactly 0.4 and not against the `Float` it would be widened to.
+         */
+        private const val DIVISION_TEXT_MIN_ZOOM = 0.4
 
         private const val SCOPE_BODY_NODE = "scope_body"
         private const val OCULAR_RING_NODE = "ocular_ring"

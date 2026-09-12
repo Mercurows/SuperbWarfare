@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.data.ModColor
 import com.atsuishio.superbwarfare.tools.MathTool
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kotlin.math.roundToInt
 
 private const val DEFAULT_SCOPE_VIEW_BONE = "scope_view"
@@ -14,10 +15,10 @@ private const val OCULAR_NODE = "ocular"
 private const val OCULAR_RING_NODE = "ocular_ring"
 
 /** Color map key holding the tint used above every threshold. */
-private const val AMMO_BAR_DEFAULT_COLOR_KEY = "Default"
+private const val AMMO_COLOR_DEFAULT_KEY = "Default"
 
 /** Opaque white, which leaves a bone looking exactly as it does untinted. */
-private const val AMMO_BAR_WHITE = -0x1
+private const val AMMO_COLOR_WHITE = -0x1
 
 /** Alpha bits that [ModColor] forces onto every color it parses. */
 private const val OPAQUE_ALPHA = -0x1000000
@@ -74,54 +75,41 @@ enum class AmmoBarColorMode {
 }
 
 /**
- * One bone whose declared axis is squashed to display the remaining magazine ammo.
+ * The tiered color mechanism shared by [AmmoBarEntry] and [AmmoTextEntry].
  *
- * The scale is applied around the bone's pivot and propagates to its children, so only the
- * bone that should actually be compressed needs to be listed. The value always runs from
- * `1` (full magazine) down to `0` (empty); ammo beyond the magazine capacity also counts as `1`.
+ * Each key of [color] is a threshold (`0`-`1`, e.g. `"0.25"`) and each value the color used once the
+ * remaining ammo reaches it, while the optional `"Default"` key is the color above every threshold.
+ * A configuration with no colors at all resolves to white, which leaves the target looking exactly as
+ * it does untinted — so omitting both `Color` and `ColorMode` is what gives a white readout.
  *
- * [color] optionally tints the bone: each key is a threshold (`0`-`1`, e.g. `"0.25"`) and each
- * value is the color used once the remaining ammo reaches it, while the optional `"Default"` key
- * is the color above every threshold. Leaving [color] empty keeps the bone in the normal model
- * pass, drawn untinted. [colorMode] chooses between snapping and interpolating.
- *
- * Two pitfalls inherited from [ModColor], which is what parses the values:
- * a color is always forced opaque, so alpha cannot be expressed; and because
- * [com.atsuishio.superbwarfare.data.ModColorSerializer] throws on a value it cannot parse, a
- * single misspelled color discards this whole attachment definition rather than just the tint.
+ * Two pitfalls inherited from [ModColor], which is what parses the values: a color is always forced
+ * opaque, so alpha cannot be expressed here; and because
+ * [com.atsuishio.superbwarfare.data.ModColorSerializer] throws on a value it cannot parse, a single
+ * misspelled color discards the whole attachment definition rather than just the tint.
  * `COLOR_PATTERN` only reads the last six hex digits, so an eight digit `"80FF0000"` silently
  * becomes `FF0000`.
  *
- * [colorMode] is just as unforgiving: [com.atsuishio.superbwarfare.data.DataLoader] does not set
+ * [mode] is just as unforgiving: [com.atsuishio.superbwarfare.data.DataLoader] does not set
  * `coerceInputValues`, so a value that is not exactly `"Switch"` or `"Blend"` fails the same way.
+ *
+ * The thresholds are parsed once, on first use, rather than inside [colorAt], because [colorAt] runs
+ * on the render path. [owner] only names the offender in a warning.
  */
-@Serializable
-data class AmmoBarEntry(
-    @SerialName("Bone")
-    val bone: String,
-
-    @SerialName("Axis")
-    val axis: AmmoBarAxis = AmmoBarAxis.Y,
-
-    @SerialName("ColorMode")
-    val colorMode: AmmoBarColorMode = AmmoBarColorMode.SWITCH,
-
-    @SerialName("Color")
-    val color: Map<String, ModColor> = emptyMap(),
+private class AmmoColorTiers(
+    private val mode: AmmoBarColorMode,
+    private val color: Map<String, ModColor>,
+    private val owner: String,
 ) {
-    // Parsed once into ascending threshold order. A delegated property has no backing field, so it
-    // stays out of kotlinx.serialization and out of the generated equals/hashCode/copy. Parsing lives
-    // here rather than in colorAt() because colorAt() runs on the render path.
-    private val thresholds by lazy { parseThresholds() }
+    private val thresholds: List<Pair<Float, Int>> by lazy { parseThresholds() }
 
-    private val fallbackColor by lazy { parseFallbackColor() }
+    private val fallbackColor: Int by lazy { parseFallbackColor() }
 
-    /** Whether this bone should be pulled out of the model pass so it can be drawn with a tint. */
-    fun isTinted(): Boolean = color.isNotEmpty()
+    /** Whether anything was configured at all. False means [colorAt] always returns white. */
+    val isConfigured: Boolean get() = color.isNotEmpty()
 
     /**
      * Resolves the tint for a remaining-ammo ratio of [progress] as an opaque ARGB value.
-     * Entries without a usable color configuration resolve to white, which leaves the bone as-is.
+     * Configurations without a usable color resolve to white, which leaves the target as-is.
      */
     fun colorAt(progress: Float): Int {
         val tiers = thresholds
@@ -129,7 +117,7 @@ data class AmmoBarEntry(
 
         val value = if (progress.isFinite()) progress.coerceIn(0f, 1f) else 1f
 
-        return when (colorMode) {
+        return when (mode) {
             // The lowest threshold still at or above the progress, i.e. the most severe tier reached
             AmmoBarColorMode.SWITCH -> tiers.firstOrNull { value <= it.first }?.second ?: fallbackColor
 
@@ -164,14 +152,14 @@ data class AmmoBarEntry(
     private fun parseThresholds(): List<Pair<Float, Int>> {
         val parsed = ArrayList<Pair<Float, Int>>(color.size)
         for ((key, value) in color) {
-            if (key.equals(AMMO_BAR_DEFAULT_COLOR_KEY, ignoreCase = true)) continue
+            if (key.equals(AMMO_COLOR_DEFAULT_KEY, ignoreCase = true)) continue
 
             val threshold = key.toFloatOrNull()
             if (threshold == null || !threshold.isFinite() || threshold < 0f || threshold > 1f) {
                 Mod.LOGGER.warn(
-                    "Ignoring ammo bar color threshold '{}' on bone '{}': expected a number between 0 and 1",
+                    "Ignoring ammo color threshold '{}' on '{}': expected a number between 0 and 1",
                     key,
-                    bone
+                    owner
                 )
                 continue
             }
@@ -182,9 +170,9 @@ data class AmmoBarEntry(
 
     private fun parseFallbackColor(): Int {
         for ((key, value) in color) {
-            if (key.equals(AMMO_BAR_DEFAULT_COLOR_KEY, ignoreCase = true)) return value.get()
+            if (key.equals(AMMO_COLOR_DEFAULT_KEY, ignoreCase = true)) return value.get()
         }
-        return AMMO_BAR_WHITE
+        return AMMO_COLOR_WHITE
     }
 
     /**
@@ -208,6 +196,47 @@ data class AmmoBarEntry(
         val blended = MathTool.getGradientColor(start and 0xFFFFFF, end and 0xFFFFFF, step, GRADIENT_MODE_HSV)
         return OPAQUE_ALPHA or blended
     }
+}
+
+/**
+ * One bone whose declared axis is squashed to display the remaining magazine ammo.
+ *
+ * The scale is applied around the bone's pivot and propagates to its children, so only the
+ * bone that should actually be compressed needs to be listed. The value always runs from
+ * `1` (full magazine) down to `0` (empty); ammo beyond the magazine capacity also counts as `1`.
+ *
+ * [color] optionally tints the bone and [colorMode] chooses between snapping to a threshold and
+ * interpolating between them; see [AmmoColorTiers] for the map format and its pitfalls. Leaving
+ * [color] empty keeps the bone in the normal model pass, drawn untinted.
+ */
+@Serializable
+data class AmmoBarEntry(
+    @SerialName("Bone")
+    val bone: String,
+
+    @SerialName("Axis")
+    val axis: AmmoBarAxis = AmmoBarAxis.Y,
+
+    @SerialName("ColorMode")
+    val colorMode: AmmoBarColorMode = AmmoBarColorMode.SWITCH,
+
+    @SerialName("Color")
+    val color: Map<String, ModColor> = emptyMap(),
+) {
+    // Transient because kotlinx.serialization would otherwise try to find a serializer for it; this
+    // class is derived from the two properties above, which are already serialized. A body property
+    // never takes part in a data class's generated equals/hashCode/copy either way.
+    @Transient
+    private val tiers = AmmoColorTiers(colorMode, color, bone)
+
+    /** Whether this bone should be pulled out of the model pass so it can be drawn with a tint. */
+    fun isTinted(): Boolean = tiers.isConfigured
+
+    /**
+     * Resolves the tint for a remaining-ammo ratio of [progress] as an opaque ARGB value.
+     * Entries without a usable color configuration resolve to white, which leaves the bone as-is.
+     */
+    fun colorAt(progress: Float): Int = tiers.colorAt(progress)
 }
 
 /**
@@ -242,12 +271,13 @@ enum class TextAlign {
  *   the reticle is drawn separately, i.e. while aiming down the sights.
  * - Anywhere else it renders with the scope body in every context.
  *
- * Two pitfalls inherited from [ModColor], which parses [color]: a color is always forced opaque, so
- * alpha cannot be expressed even though the text render type does honor it; and because
- * [com.atsuishio.superbwarfare.data.ModColorSerializer] throws on a value it cannot parse, a single
- * misspelled color discards this whole attachment definition rather than just the text.
- * [align] is just as unforgiving, since [com.atsuishio.superbwarfare.data.DataLoader] does not set
- * `coerceInputValues` and an unknown enum value fails the same way.
+ * [color] and [colorMode] use the same tiered scheme as [AmmoBarEntry], so the count can change color
+ * as the magazine drains; see [AmmoColorTiers] for the map format and its pitfalls. Both default to
+ * white, and leaving both out is what a plain white readout is written as.
+ *
+ * [align] is unforgiving in the same way the color map is, since
+ * [com.atsuishio.superbwarfare.data.DataLoader] does not set `coerceInputValues` and an unknown enum
+ * value fails the same way: the whole definition is discarded, not just the text.
  */
 @Serializable
 data class AmmoTextEntry(
@@ -260,9 +290,11 @@ data class AmmoTextEntry(
     @SerialName("Align")
     val align: TextAlign = TextAlign.CENTER,
 
-    // No-arg ModColor is opaque white, which is also the default asked for by the scope JSON.
+    @SerialName("ColorMode")
+    val colorMode: AmmoBarColorMode = AmmoBarColorMode.SWITCH,
+
     @SerialName("Color")
-    val color: ModColor = ModColor(),
+    val color: Map<String, ModColor> = emptyMap(),
 
     @SerialName("Shadow")
     val shadow: Boolean = false,
@@ -270,6 +302,15 @@ data class AmmoTextEntry(
     @SerialName("Text")
     val text: String = AMMO_COUNT_PLACEHOLDER,
 ) {
+    @Transient
+    private val tiers = AmmoColorTiers(colorMode, color, bone)
+
+    /**
+     * Resolves the text color for a remaining-ammo ratio of [progress] as an opaque ARGB value.
+     * Entries without a usable color configuration resolve to white.
+     */
+    fun colorAt(progress: Float): Int = tiers.colorAt(progress)
+
     /** Expands [AMMO_COUNT_PLACEHOLDER] in [text]; a template without it is returned unchanged. */
     fun resolve(count: Int): String = text.replace(AMMO_COUNT_PLACEHOLDER, count.toString())
 
