@@ -3435,7 +3435,7 @@
 				{
 					"name": "scope_pos",
 					"parent": "root",
-					"pivot": [0, 3.90366, -4.83358]
+					"pivot": [0.1502, 3.90366, -4.83358]
 				},
 				{
 					"name": "flare",

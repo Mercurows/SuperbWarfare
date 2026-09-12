@@ -46,7 +46,10 @@ enum class ScopeType {
 }
 
 /**
- * Axis an ammo bar bone is squashed along, written as `"X"` or `"Y"` in JSON.
+ * Axis an ammo bar bone is squashed along, written as `"X"`, `"Y"`, `"Z"` or `"NONE"` in JSON.
+ *
+ * `NONE` squashes nothing: the bone keeps the scale the model gives it, which is what an entry that
+ * only wants a tint — or that has its own squash baked into the animation — is written as.
  */
 @Serializable
 enum class AmmoBarAxis {
@@ -55,6 +58,12 @@ enum class AmmoBarAxis {
 
     @SerialName("Y")
     Y,
+
+    @SerialName("Z")
+    Z,
+
+    @SerialName("NONE")
+    NONE,
 }
 
 /**
@@ -215,7 +224,7 @@ data class AmmoBarEntry(
     val bone: String,
 
     @SerialName("Axis")
-    val axis: AmmoBarAxis = AmmoBarAxis.Y,
+    val axis: AmmoBarAxis = AmmoBarAxis.NONE,
 
     @SerialName("ColorMode")
     val colorMode: AmmoBarColorMode = AmmoBarColorMode.SWITCH,
