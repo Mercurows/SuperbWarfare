@@ -344,6 +344,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.SILENCER_QINGLAN)
         simpleItem(ModItems.SCOPE_HAMR)
         simpleItem(ModItems.SCOPE_1P_78)
+        simpleItem(ModItems.SCOPE_PK_A)
         simpleItem(ModItems.TRIANGULAR_MUZZLE)
         simpleItem(ModItems.LINEAR_MUZZLE)
         simpleItem(ModItems.CROSS_MUZZLE)
