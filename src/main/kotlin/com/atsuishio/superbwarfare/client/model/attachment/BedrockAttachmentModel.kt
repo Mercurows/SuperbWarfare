@@ -277,7 +277,7 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         // vertices rather than just the bar, so clamp defensively.
         val scale = if (progress.isFinite()) progress.coerceIn(0f, 1f) else 1f
         val boneIndices = IntArray(entries.size)
-        val savedScales = FloatArray(entries.size * 2)
+        val savedScales = FloatArray(entries.size * SCALES_PER_BONE)
         val savedVisible = BooleanArray(entries.size)
         val tints = IntArray(entries.size) { UNTINTED }
         var anyBone = false
@@ -289,20 +289,33 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
             val bone = instance.getBone(index) ?: continue
 
             anyBone = true
-            savedScales[i * 2] = bone.xScale
-            savedScales[i * 2 + 1] = bone.yScale
+            savedScales[i * SCALES_PER_BONE] = bone.xScale
+            savedScales[i * SCALES_PER_BONE + 1] = bone.yScale
+            savedScales[i * SCALES_PER_BONE + 2] = bone.zScale
             savedVisible[i] = bone.visible
 
             when (entries[i].axis) {
                 AmmoBarAxis.X -> {
                     bone.xScale = scale
                     bone.yScale = 1f
+                    bone.zScale = 1f
                 }
 
                 AmmoBarAxis.Y -> {
                     bone.xScale = 1f
                     bone.yScale = scale
+                    bone.zScale = 1f
                 }
+
+                AmmoBarAxis.Z -> {
+                    bone.xScale = 1f
+                    bone.yScale = 1f
+                    bone.zScale = scale
+                }
+
+                // Nothing is written, so the bone keeps the scale the model gives it. The entry is
+                // still captured and restored above, which is what lets it be tinted on its own.
+                AmmoBarAxis.NONE -> {}
             }
 
             if (entries[i].isTinted()) {
@@ -322,8 +335,9 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
             if (index < 0) continue
             val bone = instance.getBone(index) ?: continue
 
-            bone.xScale = state.savedScales[i * 2]
-            bone.yScale = state.savedScales[i * 2 + 1]
+            bone.xScale = state.savedScales[i * SCALES_PER_BONE]
+            bone.yScale = state.savedScales[i * SCALES_PER_BONE + 1]
+            bone.zScale = state.savedScales[i * SCALES_PER_BONE + 2]
             bone.visible = state.savedVisible[i]
         }
     }
@@ -379,26 +393,27 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
      * Recomputed per render instead of cached: [readout] is handed in by the caller each frame, and
      * a single instance of this class is shared by every stack using the same model file.
      *
-     * This is the aiming path only — the whole-model pass draws its texts straight from [readout] — so
-     * [DIVISION_TEXT_MIN_ZOOM] is applied here and nowhere else. It has no bearing off that path
-     * anyway: third person and the inventory draw the entire model, housing included, and the housing
-     * is what hides a text mounted inside the tube from any angle it can be seen from.
+     * Nothing is filtered out here: which texts end up on screen is decided where they are drawn. A
+     * text under a `division*` root goes out with the reticle, so the zoom gate in [renderDivisionOnly]
+     * and [renderOcularAndDivisionInternal] covers it, and one anchored anywhere else is drawn by
+     * [renderRemaining] regardless.
+     *
+     * This is the aiming path only — the whole-model pass draws its texts straight from [readout].
+     * That has no bearing on the gate above: third person and the inventory draw the entire model,
+     * housing included, and the housing is what hides a text mounted inside the tube from every angle
+     * it can be seen from.
      */
     private fun buildAmmoTexts(readout: AmmoReadout): List<AmmoText> {
         if (readout.texts.isEmpty()) return emptyList()
 
-        val zoom = ClientEventHandler.zoomTime
         val texts = mutableListOf<AmmoText>()
         for (entry in readout.texts) {
             val index = baseModel.getIndex(entry.bone)
             if (index < 0) continue
-            val divisionIndex = divisionAnchorOf(index)
             // -1 is kept rather than filtered out: an anchor outside a division subtree cannot be
             // drawn alongside a reticle, but it still has to be drawn by renderRemaining, otherwise
-            // it would be visible only in third person and the inventory. Which is also why the gate
-            // below rejects only an anchor that *is* under a division.
-            if (divisionIndex >= 0 && zoom < DIVISION_TEXT_MIN_ZOOM) continue
-            texts += AmmoText(entry, readout.count, readout.progress, divisionIndex)
+            // it would be visible only in third person and the inventory.
+            texts += AmmoText(entry, readout.count, readout.progress, divisionAnchorOf(index))
         }
         return texts
     }
@@ -409,8 +424,9 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
      *
      * This decides how the text becomes visible: a division bone is hidden in the whole-model pass
      * and only drawn where the reticle is drawn separately, so an anchor below one only shows up
-     * while aiming down the sights. `-1` means the anchor sits elsewhere in the model — usually on
-     * the scope body — and is drawn by [renderRemaining] instead, depth tested against the body.
+     * while aiming down the sights, and only once the zoom has reached [DIVISION_MIN_ZOOM]. `-1`
+     * means the anchor sits elsewhere in the model — usually on the scope body — and is drawn by
+     * [renderRemaining] instead, depth tested against the body.
      */
     private fun divisionAnchorOf(textBoneIndex: Int): Int {
         val anchors = divisionGroups.values.flatten().toHashSet()
@@ -625,6 +641,9 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         texts: List<AmmoText> = emptyList()
     ) {
         if (divisions.isEmpty()) return
+        // The reticle and its readout are one subtree as far as the viewer is concerned, so both wait
+        // for the zoom. See DIVISION_MIN_ZOOM.
+        if (ClientEventHandler.zoomTime < DIVISION_MIN_ZOOM) return
 
         RenderSystem.disableDepthTest()
         for (i in divisions.indices) {
@@ -738,6 +757,9 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         RenderSystem.colorMask(true, true, true, true)
         RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP)
 
+        // Reticle and readout come in together, so both wait for the zoom. The ocular itself does not:
+        // it is the window, and it is what the reticle is drawn through. See DIVISION_MIN_ZOOM.
+        val divisionDue = ClientEventHandler.zoomTime >= DIVISION_MIN_ZOOM
         for (i in ocularIndices.indices) {
             if (i > Byte.MAX_VALUE) {
                 throw IllegalArgumentException("Index of oculus is out of range for 127")
@@ -745,12 +767,14 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
             if (i >= divisions.size) break
 
             if (selective && !isScopeOcular[i]) {
+                if (!divisionDue) continue
                 RenderSystem.stencilFunc(GL11.GL_EQUAL, i + 1, 0xFF)
                 renderBoneImmediate(divisions[i], poseStack, bufferSource, quadType, triangleType, light)
             } else {
                 RenderSystem.stencilFunc(GL11.GL_EQUAL, i + 1, 0xFF)
                 renderBoneImmediate(ocularIndices[i], poseStack, bufferSource, quadType, triangleType, light)
 
+                if (!divisionDue) continue
                 val b = (i + 1).inv() and 0xFF
                 RenderSystem.stencilFunc(GL11.GL_EQUAL, b, 0xFF)
                 renderBoneImmediate(divisions[i], poseStack, bufferSource, quadType, triangleType, light)
@@ -992,6 +1016,7 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
      */
     private class AmmoBarState(
         val boneIndices: IntArray,
+        /** Flattened `x, y, z` scale per entry — [SCALES_PER_BONE] floats each. */
         val savedScales: FloatArray,
         val savedVisible: BooleanArray,
         val tints: IntArray
@@ -1000,6 +1025,16 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
     companion object {
         // Real tints are opaque ARGB, so the sign bit is free to mark "no tint configured".
         private const val UNTINTED = Int.MIN_VALUE
+
+        /**
+         * Floats [AmmoBarState.savedScales] spends per entry: `x`, `y` and `z`.
+         *
+         * All three are captured even though an entry drives only one of them, because the other two
+         * are written to as well — an entry squashing on X has to be sure the bone was not left
+         * squashed on Y by something else — and a scale that is set but not restored outlives the
+         * frame, since nothing resets the attachment instance's pose.
+         */
+        private const val SCALES_PER_BONE = 3
 
         /**
          * Font-space Y offset that puts the centre of a glyph box on the anchor bone.
@@ -1014,17 +1049,23 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         private const val GLYPH_BOX_CENTER = -3.5f
 
         /**
-         * Aiming progress below which a text anchored under a `division*` bone is not drawn.
+         * Aiming progress below which no `division*` subtree is drawn at all — reticle and readout
+         * alike.
          *
-         * The reticle is part of the model and comes up with it, but a division text is drawn with
-         * depth testing off inside the ocular window, so while the scope is still swinging up the
-         * readout would already be sitting in front of it. Holding it back until the zoom is this far
-         * along keeps it attached to the thing it labels.
+         * The reticle is drawn with depth testing off inside the ocular window, so while the scope is
+         * still swinging up it would already be floating in front of the scope body. Holding the whole
+         * subtree back until the zoom is this far along keeps the readout attached to the thing it
+         * labels, and gets the two on screen at the same moment instead of the text trailing the
+         * reticle in.
+         *
+         * Split into two gates rather than one because a bone's `visible` flag cannot express this:
+         * a text is drawn from its anchor bone's global transform and ignores that flag entirely,
+         * while [renderBoneImmediate] forces the flag on for the bones it draws.
          *
          * A `Double` to match [ClientEventHandler.zoomTime] rather than the font-space floats above,
          * so the comparison is against exactly 0.4 and not against the `Float` it would be widened to.
          */
-        private const val DIVISION_TEXT_MIN_ZOOM = 0.4
+        private const val DIVISION_MIN_ZOOM = 0.4
 
         private const val SCOPE_BODY_NODE = "scope_body"
         private const val OCULAR_RING_NODE = "ocular_ring"

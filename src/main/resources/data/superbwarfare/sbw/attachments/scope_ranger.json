@@ -14,6 +14,17 @@
   "ScopeInfo": {
     "Type": "Sight",
     "ZoomLengthScale": 0.3,
+    "AmmoBar": [
+      {
+        "Bone": "ammo_bar",
+        "ColorMode": "Switch",
+        "Color": {
+          "Default": "A0D7FF",
+          "0.5": "FF6127",
+          "0.25": "FF0000"
+        }
+      }
+    ],
     "TextShow": [
       {
         "Bone": "ammo_count_text",
