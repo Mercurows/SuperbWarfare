@@ -34,6 +34,17 @@ java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }
 
+// 测试用插件 mod（loader test）。它作为"展开目录"参与 dev 加载：
+// ForgeGradle 把 runs { } 里 mods { } 的每个 source set 转成环境变量
+// MOD_CLASSES 中的 <modid>%%<绝对路径> 条目，由 FML 的 ExplodedDirectoryLocator
+// 当作普通 mod 文件加载 —— 改 localmod/ 下的 JSON 后无需打包 jar 即可生效。
+// 注意：run/mods/ 只接受 .jar，目录形式的 mod 必须走这条路径。
+val loaderTest: SourceSet by sourceSets.creating {
+    java.srcDir("localmod/sbwloadertest/java")
+    kotlin.srcDir("localmod/sbwloadertest/kotlin")
+    resources.srcDir("localmod/sbwloadertest/resources")
+}
+
 minecraft {
     mappings("parchment", "2023.08.13-1.20.1") // 直接使用括号和逗号
     accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
@@ -55,6 +66,12 @@ minecraft {
             mods {
                 create(project.property("mod_id").toString()) { // 创建 mod 配置
                     source(sourceSets.main.get())
+                }
+
+                // 测试插件：名字即 modId，需与
+                // localmod/sbwloadertest/resources/META-INF/mods.toml 里的 modId 一致。
+                create("sbwloadertest") {
+                    source(loaderTest)
                 }
             }
         }
@@ -197,6 +214,12 @@ dependencies {
     compileOnly(project(":ksp"))
 
     implementation("thedarkcolour:kotlinforforge:4.11.0")
+
+    // loaderTest 夹具要 import @TestLoaderTarget 注解类：只给编译期可见，
+    // 运行期由 superbwarfare 本体提供（它在游戏的 module path 上）。
+    // 夹具默认用 lowcodefml，不碰 Forge API；要自己写 @Mod 的插件才需要额外
+    // extendsFrom(configurations["minecraft"])。
+    add(loaderTest.compileOnlyConfigurationName, sourceSets.main.get().output)
 
     minecraft("net.minecraftforge:forge:1.20.1-47.2.0")
     annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
@@ -391,5 +414,12 @@ idea {
 kotlin {
     jvmToolchain(17)
 }
+
+// 保证测试插件 mod 的 classes / processResources 输出在启动前就位
+// （ForgeGradle 会把 source set 的输出目录整体塞进 MOD_CLASSES）。
+tasks.matching { it.name in listOf("runClient", "runServer", "runData") }
+    .configureEach {
+        dependsOn(loaderTest.classesTaskName, loaderTest.processResourcesTaskName)
+    }
 
 // 确保 Mixin AP 能在 FG6 的编译管线中正确运行

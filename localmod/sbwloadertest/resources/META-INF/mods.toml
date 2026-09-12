@@ -1,0 +1,36 @@
+modLoader = "lowcodefml"
+loaderVersion = "[47,)"
+license = "WTFPL"
+
+[[mods]]
+modId = "sbwloadertest"
+version = "0.1.0"
+displayName = "SBW Loader Test"
+authors = "Superb Warfare Dev Team"
+description = '''
+Loader?
+'''
+
+[[dependencies.sbwloadertest]]
+modId = "forge"
+mandatory = true
+versionRange = "[47,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.sbwloadertest]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.20.1,1.21)"
+ordering = "NONE"
+side = "BOTH"
+
+# 插件服务的宿主：optional + AFTER，保证 Superb Warfare 先完成自身注册。
+# 版本范围不要写成 [0.8.10,)：Maven 版本序里 0.8.10-snapshot < 0.8.10，
+# 当前 mod_version 正是 0.8.10-snapshot，会被判为不满足而直接崩在 pre-loading。
+[[dependencies.sbwloadertest]]
+modId = "superbwarfare"
+mandatory = false
+versionRange = "[0.8,)"
+ordering = "AFTER"
+side = "BOTH"
