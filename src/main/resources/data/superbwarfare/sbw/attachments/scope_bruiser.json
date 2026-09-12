@@ -31,7 +31,10 @@
         "Bone": "ammo_count_text",
         "Scale": 0.002,
         "Align": "Center",
-        "Color": "FFFFFF",
+        "ColorMode": "Switch",
+        "Color": {
+          "Default": "FFFFFF"
+        },
         "Shadow": false,
         "Text": "%ammo_count%"
       }

@@ -1,0 +1,37 @@
+{
+  "Slot": "Scope",
+  "Level": 0,
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 0.4
+    }
+  ],
+  "Bone": "scope_pos",
+  "Model": "superbwarfare:models/bedrock/attachment/scope_ranger.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/scope_ranger.png",
+  "ScopeInfo": {
+    "Type": "Sight",
+    "ZoomLengthScale": 0.3,
+    "TextShow": [
+      {
+        "Bone": "ammo_count_text",
+        "Scale": 0.0006,
+        "Align": "Center",
+        "ColorMode": "Switch",
+        "Color": {
+          "Default": "FFFFFF", "0.5": "FF6127", "0.25": "FF0000"
+        },
+        "Shadow": false,
+        "Text": "%ammo_count%"
+      }
+    ]
+  },
+  "Zoom": {
+    "Min": 3,
+    "Max": 3,
+    "Default": 3,
+    "Step": 1
+  }
+}
