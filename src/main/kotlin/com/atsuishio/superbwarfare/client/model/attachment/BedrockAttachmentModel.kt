@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.client.model.attachment
 
+import com.atsuishio.superbwarfare.client.renderer.scope.AmmoReadout
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeStencilRenderHelper
-import com.atsuishio.superbwarfare.data.attachment.ScopeMode
-import com.atsuishio.superbwarfare.data.attachment.ScopeType
+import com.atsuishio.superbwarfare.data.attachment.*
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.TreeModelInstance
@@ -10,6 +10,7 @@ import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.tree.TreeBed
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.*
 import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.Font
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
@@ -144,7 +145,8 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         texture: ResourceLocation,
         packedLight: Int,
         packedOverlay: Int,
-        companionSightMode: ScopeMode? = null
+        companionSightMode: ScopeMode? = null,
+        readout: AmmoReadout = AmmoReadout()
     ) {
         val hiddenOculars = if (companionSightMode != null) ocularIndicesFor(companionSightMode) else emptyList()
         val originalOcularVisibility = BooleanArray(hiddenOculars.size)
@@ -158,12 +160,15 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
 
         restoreScopeBodyVisibility()
         markIlluminatedBones()
+        val ammoBarState = applyAmmoBar(readout.bars, readout.progress)
+        val quadType = RenderType.entityTranslucent(texture)
+        val triangleType = BedrockModelRenderTypes.polyMeshCutout(texture)
         baseModel.renderToBuffer(
             instance,
             poseStack,
             bufferSource,
-            RenderType.entityTranslucent(texture),
-            BedrockModelRenderTypes.polyMeshCutout(texture),
+            quadType,
+            triangleType,
             packedLight,
             packedOverlay,
             1f,
@@ -172,6 +177,15 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
             1f,
             true
         )
+        renderAmmoBar(ammoBarState, poseStack, bufferSource, quadType, triangleType, packedLight, true)
+        restoreAmmoBar(ammoBarState)
+
+        // After the restore, so nothing is drawn while the model is still carrying the squashed
+        // scales. With a division anchor this lands inside the housing and gets depth tested away,
+        // which is why the text is drawn separately on the aiming path.
+        for (entry in readout.texts) {
+            renderAmmoText(entry, readout.count, poseStack, bufferSource, packedLight)
+        }
 
         for (i in hiddenOculars.indices) {
             instance.getBone(hiddenOculars[i])?.visible = originalOcularVisibility[i]
@@ -188,10 +202,13 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         packedLight: Int,
         partialTicks: Float,
         info: ScopeMode,
-        companionSightMode: ScopeMode? = null
+        companionSightMode: ScopeMode? = null,
+        readout: AmmoReadout = AmmoReadout()
     ) {
         markIlluminatedBones()
         updateDynamicDivisionScale()
+        val ammoBarState = applyAmmoBar(readout.bars, readout.progress)
+        val divisionTexts = buildDivisionTexts(readout)
         val quadType = RenderType.entityTranslucent(texture)
         val triangleType = BedrockModelRenderTypes.polyMeshCutout(texture)
 
@@ -202,7 +219,8 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
                 quadType,
                 triangleType,
                 packedLight,
-                info
+                info,
+                divisionTexts
             )
 
             ScopeType.SCOPE -> renderScope(
@@ -212,7 +230,8 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
                 triangleType,
                 packedLight,
                 partialTicks,
-                info
+                info,
+                divisionTexts
             )
         }
 
@@ -223,8 +242,223 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
             triangleType,
             packedLight,
             info,
-            companionSightMode
+            companionSightMode,
+            ammoBarState
         )
+
+        restoreAmmoBar(ammoBarState)
+    }
+
+    /**
+     * Squashes every bone in [entries] along its configured axis to [progress] (0-1) and returns the
+     * state to hand back to [restoreAmmoBar] and [renderAmmoBar] once rendering is done.
+     *
+     * Returning the state instead of stashing it in a field keeps this reentrant, which matters
+     * because a single [BedrockAttachmentModel] instance is shared by every stack using the same
+     * model file and can be rendered more than once per frame.
+     *
+     * Entries that carry a color are also hidden here, because they are drawn separately by
+     * [renderAmmoBar] so they can take a tint, and a hidden bone drops its whole subtree from the
+     * model pass. Visibility deliberately has this single owner: [renderSight] and [renderScope] draw
+     * `scope_body*` / `ocular*` through [renderBoneImmediate] long before [renderRemaining] runs, so
+     * hiding only inside [renderRemaining] would let those paths draw an untinted bar.
+     *
+     * Unlike the gun model, the attachment instance is never reset through `resetPose`, so a caller
+     * that skips [restoreAmmoBar] would leak the squashed scale into every later render.
+     */
+    private fun applyAmmoBar(entries: List<AmmoBarEntry>, progress: Float): AmmoBarState? {
+        if (entries.isEmpty()) return null
+
+        // coerceIn passes NaN straight through, and a NaN scale would poison the whole model's
+        // vertices rather than just the bar, so clamp defensively.
+        val scale = if (progress.isFinite()) progress.coerceIn(0f, 1f) else 1f
+        val boneIndices = IntArray(entries.size)
+        val savedScales = FloatArray(entries.size * 2)
+        val savedVisible = BooleanArray(entries.size)
+        val tints = IntArray(entries.size) { UNTINTED }
+        var anyBone = false
+
+        for (i in entries.indices) {
+            val index = baseModel.getIndex(entries[i].bone)
+            boneIndices[i] = index
+            if (index < 0) continue
+            val bone = instance.getBone(index) ?: continue
+
+            anyBone = true
+            savedScales[i * 2] = bone.xScale
+            savedScales[i * 2 + 1] = bone.yScale
+            savedVisible[i] = bone.visible
+
+            when (entries[i].axis) {
+                AmmoBarAxis.X -> {
+                    bone.xScale = scale
+                    bone.yScale = 1f
+                }
+
+                AmmoBarAxis.Y -> {
+                    bone.xScale = 1f
+                    bone.yScale = scale
+                }
+            }
+
+            if (entries[i].isTinted()) {
+                tints[i] = entries[i].colorAt(scale)
+                bone.visible = false
+            }
+        }
+        return if (anyBone) AmmoBarState(boneIndices, savedScales, savedVisible, tints) else null
+    }
+
+    /** Restores everything [applyAmmoBar] captured. */
+    private fun restoreAmmoBar(state: AmmoBarState?) {
+        if (state == null) return
+
+        for (i in state.boneIndices.indices) {
+            val index = state.boneIndices[i]
+            if (index < 0) continue
+            val bone = instance.getBone(index) ?: continue
+
+            bone.xScale = state.savedScales[i * 2]
+            bone.yScale = state.savedScales[i * 2 + 1]
+            bone.visible = state.savedVisible[i]
+        }
+    }
+
+    /**
+     * Draws the subtree of every tinted ammo bar bone with its resolved color.
+     *
+     * This deliberately does not flush, unlike [renderBoneImmediate]. The model pass has already
+     * queued geometry into the same buffers as part of one batch, so flushing here would split that
+     * batch, and on the Oculus path it would drain everything else the caller had buffered up.
+     */
+    private fun renderAmmoBar(
+        state: AmmoBarState?,
+        poseStack: PoseStack,
+        bufferSource: MultiBufferSource,
+        quadType: RenderType,
+        triangleType: RenderType,
+        light: Int,
+        skipNormalVisibilityCull: Boolean
+    ) {
+        if (state == null) return
+
+        for (i in state.boneIndices.indices) {
+            val tint = state.tints[i]
+            val index = state.boneIndices[i]
+            if (tint == UNTINTED || index < 0) continue
+
+            // applyAmmoBar hid this bone so the model pass would skip it, and renderBone bails out on
+            // an invisible bone, so it has to be turned back on for this draw. restoreAmmoBar puts the
+            // original value back.
+            instance.getBone(index)?.visible = true
+
+            instance.renderSingleBone(
+                poseStack,
+                index,
+                bufferSource,
+                quadType,
+                triangleType,
+                light,
+                OverlayTexture.NO_OVERLAY,
+                ((tint shr 16) and 0xFF) / 255f,
+                ((tint shr 8) and 0xFF) / 255f,
+                (tint and 0xFF) / 255f,
+                ((tint ushr 24) and 0xFF) / 255f,
+                skipNormalVisibilityCull
+            )
+        }
+    }
+
+    /**
+     * Picks out the texts that can be drawn alongside a division, i.e. the ones anchored somewhere
+     * inside a `division*` subtree, and remembers which division each of them belongs to.
+     *
+     * Recomputed per render instead of cached: [readout] is handed in by the caller each frame, and
+     * a single instance of this class is shared by every stack using the same model file.
+     */
+    private fun buildDivisionTexts(readout: AmmoReadout): List<DivisionText> {
+        if (readout.texts.isEmpty()) return emptyList()
+
+        val texts = mutableListOf<DivisionText>()
+        for (entry in readout.texts) {
+            val index = baseModel.getIndex(entry.bone)
+            if (index < 0) continue
+            val anchor = divisionAnchorOf(index)
+            if (anchor < 0) continue
+            texts += DivisionText(entry, readout.count, anchor)
+        }
+        return texts
+    }
+
+    /**
+     * Index of the division bone [textBoneIndex] hangs under, or `-1` when it is not inside a
+     * `division*` subtree.
+     *
+     * This decides how the text becomes visible: a division bone is hidden in the whole-model pass
+     * and only drawn where the reticle is drawn separately, so an anchor below one only shows up
+     * while aiming down the sights.
+     */
+    private fun divisionAnchorOf(textBoneIndex: Int): Int {
+        val anchors = divisionGroups.values.flatten().toHashSet()
+        var index = baseModel.bone(textBoneIndex).parentIndex()
+        while (index >= 0) {
+            if (index in anchors) return index
+            index = baseModel.bone(index).parentIndex()
+        }
+        return -1
+    }
+
+    /**
+     * Draws one ammo readout line at its anchor bone, which supplies both the position and the
+     * facing of the glyphs.
+     */
+    private fun renderAmmoText(
+        entry: AmmoTextEntry,
+        count: Int,
+        poseStack: PoseStack,
+        bufferSource: MultiBufferSource,
+        light: Int
+    ) {
+        val index = baseModel.getIndex(entry.bone)
+        if (index < 0) return
+
+        val text = entry.resolve(count)
+        if (text.isEmpty()) return
+
+        val font = Minecraft.getInstance().font
+        poseStack.pushPose()
+        poseStack.mulPoseMatrix(instance.getGlobalTransform(index))
+        // Glyphs are laid out for a space where +y points down, so Y has to be mirrored for the text
+        // to come out upright. That mirroring alone would leave the determinant negative and reverse
+        // the winding of every quad, and RenderType.text never calls setCullState, so it inherits the
+        // default of backface culling and the text would vanish entirely. Mirroring Z as well puts the
+        // determinant back to +scale³, and it costs nothing visually: all four vertices of a glyph
+        // quad share the same z, so the quad is mapped onto itself.
+        poseStack.scale(entry.scale, -entry.scale, -entry.scale)
+        poseStack.translate(entry.offsetX(font.width(text)), GLYPH_BOX_CENTER, 0f)
+        // DisplayMode.NORMAL only picks the glyph atlas and blending; whether depth testing applies is
+        // left to the caller, which is what lets the reticle pass draw the text with depth testing off
+        // while the whole-model pass keeps it on.
+        font.drawInBatch(
+            text,
+            0f,
+            0f,
+            entry.color.get(),
+            entry.shadow,
+            poseStack.last().pose(),
+            bufferSource,
+            Font.DisplayMode.NORMAL,
+            0,
+            light
+        )
+        // drawInBatch queues the glyphs into the caller's own buffer source, and they would sit there
+        // until something asks for a different render type. They have to go out now instead: what
+        // limits where the text is visible is the stencil and depth state around this call, and by the
+        // time the outer endBatch runs that window is long closed. endLastBatch() flushes exactly the
+        // one render type that is currently open, so there is no need to rebuild the RenderType.text
+        // instance, and no dependency on which font atlas a resource pack supplies.
+        if (bufferSource is MultiBufferSource.BufferSource) bufferSource.endLastBatch()
+        poseStack.popPose()
     }
 
     private fun renderSight(
@@ -233,14 +467,23 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         quadType: RenderType,
         triangleType: RenderType,
         light: Int,
-        info: ScopeMode
+        info: ScopeMode,
+        divisionTexts: List<DivisionText>
     ) {
         ScopeStencilRenderHelper.enableItemEntityStencilTest()
         RenderSystem.clearStencil(0)
         RenderSystem.clear(GL11.GL_STENCIL_BUFFER_BIT, Minecraft.ON_OSX)
 
         renderOcularStencil(poseStack, bufferSource, quadType, triangleType, light, false, info)
-        renderDivisionOnly(poseStack, bufferSource, quadType, triangleType, light, divisionIndices(info))
+        renderDivisionOnly(
+            poseStack,
+            bufferSource,
+            quadType,
+            triangleType,
+            light,
+            divisionIndices(info),
+            divisionTexts
+        )
 
         RenderSystem.stencilFunc(GL11.GL_ALWAYS, 0, 0xFF)
         ScopeStencilRenderHelper.disableItemEntityStencilTest()
@@ -257,7 +500,8 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         triangleType: RenderType,
         light: Int,
         partialTicks: Float,
-        info: ScopeMode
+        info: ScopeMode,
+        divisionTexts: List<DivisionText>
     ) {
         ScopeStencilRenderHelper.enableItemEntityStencilTest()
         RenderSystem.clearStencil(0)
@@ -280,7 +524,17 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
             }
         }
 
-        renderOcularAndDivision(poseStack, bufferSource, quadType, triangleType, light, partialTicks, info, false)
+        renderOcularAndDivision(
+            poseStack,
+            bufferSource,
+            quadType,
+            triangleType,
+            light,
+            partialTicks,
+            info,
+            false,
+            divisionTexts
+        )
 
         RenderSystem.stencilFunc(GL11.GL_ALWAYS, 0, 0xFF)
         ScopeStencilRenderHelper.disableItemEntityStencilTest()
@@ -342,7 +596,8 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         quadType: RenderType,
         triangleType: RenderType,
         light: Int,
-        divisions: List<Int>
+        divisions: List<Int>,
+        divisionTexts: List<DivisionText> = emptyList()
     ) {
         if (divisions.isEmpty()) return
 
@@ -350,6 +605,12 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         for (i in divisions.indices) {
             RenderSystem.stencilFunc(GL11.GL_EQUAL, i + 1, 0xFF)
             renderBoneImmediate(divisions[i], poseStack, bufferSource, quadType, triangleType, light)
+            // Same stencil value and depth state as the reticle it sits next to.
+            for (text in divisionTexts) {
+                if (text.divisionIndex == divisions[i]) {
+                    renderAmmoText(text.entry, text.count, poseStack, bufferSource, light)
+                }
+            }
         }
         RenderSystem.enableDepthTest()
     }
@@ -362,7 +623,8 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         light: Int,
         partialTicks: Float,
         info: ScopeMode,
-        selective: Boolean
+        selective: Boolean,
+        divisionTexts: List<DivisionText>
     ) {
         renderOcularAndDivisionInternal(
             poseStack,
@@ -375,7 +637,8 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
             ocularIndicesFor(info),
             isScopeOcularFor(info),
             divisionIndices(info),
-            selective
+            selective,
+            divisionTexts
         )
     }
 
@@ -390,7 +653,8 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         ocularIndices: List<Int>,
         isScopeOcular: List<Boolean>,
         divisions: List<Int>,
-        selective: Boolean
+        selective: Boolean,
+        divisionTexts: List<DivisionText> = emptyList()
     ) {
         if (ocularIndices.isEmpty()) return
 
@@ -444,6 +708,11 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
                 val b = (i + 1).inv() and 0xFF
                 RenderSystem.stencilFunc(GL11.GL_EQUAL, b, 0xFF)
                 renderBoneImmediate(divisions[i], poseStack, bufferSource, quadType, triangleType, light)
+                for (text in divisionTexts) {
+                    if (text.divisionIndex == divisions[i]) {
+                        renderAmmoText(text.entry, text.count, poseStack, bufferSource, light)
+                    }
+                }
             }
         }
     }
@@ -486,7 +755,8 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
         triangleType: RenderType,
         light: Int,
         info: ScopeMode,
-        companion: ScopeMode? = null
+        companion: ScopeMode? = null,
+        ammoBarState: AmmoBarState? = null
     ) {
         val hidden = mutableListOf<Int>()
         // Other numbered scope parts stay in the model render; only the active optic group is special.
@@ -521,11 +791,15 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
             light,
             OverlayTexture.NO_OVERLAY
         )
-        flush(bufferSource, quadType, triangleType)
 
         for (i in hidden.indices) {
             instance.getBone(hidden[i])?.visible = originalVisible[i]
         }
+
+        // This path renders the whole model through the multi-buffer overload, which passes
+        // skipNormalVisibilityCull = false.
+        renderAmmoBar(ammoBarState, poseStack, bufferSource, quadType, triangleType, light, false)
+        flush(bufferSource, quadType, triangleType)
     }
 
     private fun renderBoneImmediate(
@@ -630,7 +904,44 @@ class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
 
     private data class OcularEntry(val index: Int, val isScope: Boolean)
 
+    /**
+     * One text to draw while drawing a division: the line itself, the count to expand it with, and
+     * the index of the division bone it hangs under, which is what the division loop matches on.
+     */
+    private class DivisionText(
+        val entry: AmmoTextEntry,
+        val count: Int,
+        val divisionIndex: Int
+    )
+
+    /**
+     * What [applyAmmoBar] has to give back: the bones it touched (`-1` where the model has no such
+     * bone), the scales and visibility they had, and the resolved tint per bone, with [UNTINTED]
+     * marking the entries that keep rendering as part of the model.
+     */
+    private class AmmoBarState(
+        val boneIndices: IntArray,
+        val savedScales: FloatArray,
+        val savedVisible: BooleanArray,
+        val tints: IntArray
+    )
+
     companion object {
+        // Real tints are opaque ARGB, so the sign bit is free to mark "no tint configured".
+        private const val UNTINTED = Int.MIN_VALUE
+
+        /**
+         * Font-space Y offset that puts the centre of a glyph box on the anchor bone.
+         *
+         * A glyph quad spans `[y, y + height]` around the `y` passed to `drawInBatch`: the sheet
+         * builder subtracts its own baseline adjustment, which for the default font's ascent of 7
+         * leaves the top edge exactly on `y`. Digits are 7 units tall there, so half of that box —
+         * with the sign flipped, because the text is drawn below its origin — is what centres it.
+         * Descenders reach 8 units, which is at worst half a unit off on a readout that is nothing
+         * but digits.
+         */
+        private const val GLYPH_BOX_CENTER = -3.5f
+
         private const val SCOPE_BODY_NODE = "scope_body"
         private const val OCULAR_RING_NODE = "ocular_ring"
         private const val DIVISION_NODE = "division"

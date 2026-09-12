@@ -5,13 +5,17 @@ import com.atsuishio.superbwarfare.client.animation.gun.GeoGunAnimationInstance
 import com.atsuishio.superbwarfare.client.model.attachment.BedrockAttachmentModel
 import com.atsuishio.superbwarfare.client.model.gun.GeoGunModel
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.EDIT_FOCUS_Z_OFFSET
+import com.atsuishio.superbwarfare.client.renderer.scope.AmmoReadout
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeStencilRenderHelper
 import com.atsuishio.superbwarfare.compat.oculus.OculusCompat
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
+import com.atsuishio.superbwarfare.data.attachment.AmmoBarEntry
+import com.atsuishio.superbwarfare.data.attachment.AmmoTextEntry
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
 import com.atsuishio.superbwarfare.data.attachment.ScopeMode
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.magazineLevel
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.event.ClientEventHandler
@@ -84,7 +88,10 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val companionSightMode: ScopeMode? = null,
         val attachmentId: ResourceLocation,
         val slotTransform: Matrix4f,
-        val bindSlotTransform: Matrix4f
+        val bindSlotTransform: Matrix4f,
+        // 弹药显示配置；实际的余弹数与比例在渲染调用点按需计算，避免每次解析配件都走一遍 PMC
+        val ammoBar: List<AmmoBarEntry> = emptyList(),
+        val textShow: List<AmmoTextEntry> = emptyList()
     )
 
     override fun createAnimationInstance(stack: ItemStack, entity: Entity): IFPAnimationInstance {
@@ -321,7 +328,8 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 packedLight,
                 partialTick,
                 stencilScope.scopeMode,
-                stencilScope.companionSightMode
+                stencilScope.companionSightMode,
+                resolveAmmoReadout(stack, stencilScope)
             )
             poseStack.popPose()
 
@@ -410,7 +418,8 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             data.texture,
             packedLight,
             packedOverlay,
-            data.companionSightMode
+            data.companionSightMode,
+            resolveAmmoReadout(stack, data)
         )
         poseStack.popPose()
     }
@@ -435,7 +444,30 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val bindMountTransform = model.getBindGlobalTransform(boneName) ?: return null
         return ScopeRenderData(
             attachmentModel, texture, scopeMode, scopeModeIndex, companionSightMode, attachmentId,
-            Matrix4f(mountTransform), Matrix4f(bindMountTransform)
+            Matrix4f(mountTransform), Matrix4f(bindMountTransform), scopeInfo.ammoBar, scopeInfo.textShow
+        )
+    }
+
+    /**
+     * This frame's ammo readout for the scope described by [data]: the remaining magazine ratio used
+     * to squash its ammo bar bones, and the round count its text anchors display.
+     *
+     * Returns an empty readout when the scope declares no ammo display at all, which also keeps the
+     * [com.atsuishio.superbwarfare.data.gun.GunProp.MAGAZINE] lookup — a full property modifier chain
+     * resolve — off the render path of every other scope in the game.
+     */
+    protected open fun resolveAmmoReadout(stack: ItemStack, data: ScopeRenderData): AmmoReadout {
+        if (data.ammoBar.isEmpty() && data.textShow.isEmpty()) return AmmoReadout()
+
+        val gun = GunData.from(stack)
+        val count = gun.ammo.get()
+        val magazine = gun.get(GunProp.MAGAZINE)
+        if (magazine <= 0) return AmmoReadout(data.ammoBar, data.textShow, 1f, count)
+        return AmmoReadout(
+            data.ammoBar,
+            data.textShow,
+            (count.toFloat() / magazine.toFloat()).coerceIn(0f, 1f),
+            count
         )
     }
 
