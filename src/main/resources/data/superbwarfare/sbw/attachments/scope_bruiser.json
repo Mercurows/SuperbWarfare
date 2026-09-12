@@ -1,0 +1,46 @@
+{
+  "Slot": "Scope",
+  "Level": 0,
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 0.4
+    }
+  ],
+  "Bone": "scope_pos",
+  "Model": "superbwarfare:models/bedrock/attachment/scope_bruiser.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/scope_bruiser.png",
+  "ScopeInfo": {
+    "Type": "Sight",
+    "ZoomLengthScale": 0.5,
+    "AmmoBar": [
+      {
+        "Bone": "ammo_bar",
+        "Axis": "X",
+        "ColorMode": "Switch",
+        "Color": {
+          "Default": "A0D7FF",
+          "0.5": "FF6127",
+          "0.25": "FF0000"
+        }
+      }
+    ],
+    "TextShow": [
+      {
+        "Bone": "ammo_count_text",
+        "Scale": 0.002,
+        "Align": "Center",
+        "Color": "FFFFFF",
+        "Shadow": false,
+        "Text": "%ammo_count%"
+      }
+    ]
+  },
+  "Zoom": {
+    "Min": 2,
+    "Max": 2,
+    "Default": 2,
+    "Step": 1
+  }
+}
