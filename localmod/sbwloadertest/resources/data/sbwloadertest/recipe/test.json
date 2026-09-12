@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "superbwarfare:beast"
+    }
+  ],
+  "result": {
+    "id": "sbwloadertest:test",
+    "count": 1
+  }
+}

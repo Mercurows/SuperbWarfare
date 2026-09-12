@@ -1,3 +1,5 @@
+import org.slf4j.event.Level
+
 plugins {
     idea
     id("java-library")
@@ -112,6 +114,17 @@ val sourcesJar by tasks.registering(Jar::class) {
     group = "build"
 }
 
+// 测试用插件 mod（loader test）。它作为"展开目录"参与 dev 加载：
+// MDG 把 mods { } 里的每个 source set 转成 -Dfml.modFolders=<modid>%%<绝对路径>，
+// 由 NeoForge 的 UserdevLocator 当作普通 mod 文件加载 —— 改 localmod/ 下的
+// JSON 后无需打包 jar 即可生效。
+// 注意：run/mods/ 只接受 .jar，目录形式的 mod 必须走这条路径。
+val loaderTest: SourceSet by sourceSets.creating {
+    java.srcDir("localmod/sbwloadertest/java")
+    kotlin.srcDir("localmod/sbwloadertest/kotlin")
+    resources.srcDir("localmod/sbwloadertest/resources")
+}
+
 neoForge {
     // Specify the version of NeoForge to use.
     version = project.property("neo_version") as String
@@ -183,7 +196,7 @@ neoForge {
             // Recommended logging level for the console
             // You can set various levels here.
             // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
-            logLevel = org.slf4j.event.Level.DEBUG
+            logLevel = Level.DEBUG
         }
     }
 
@@ -194,6 +207,12 @@ neoForge {
         // but multi mod projects should define one per mod
         create(project.property("mod_id") as String) {
             sourceSet(sourceSets.main.get())
+        }
+
+        // 测试插件：名字即 modId，需与
+        // localmod/sbwloadertest/resources/META-INF/neoforge.mods.toml 里的 modId 一致。
+        create("sbwloadertest") {
+            sourceSet(loaderTest)
         }
     }
 }
@@ -245,6 +264,10 @@ dependencies {
     compileOnly(project(":ksp"))
 
     implementation("thedarkcolour:kotlinforforge-neoforge:5.10.0")
+
+    // loaderTest 夹具要 import @LoaderTest 注解类：只给编译期可见，
+    // 运行期由 superbwarfare 本体提供（它在游戏的 module path 上）。
+    add(loaderTest.compileOnlyConfigurationName, sourceSets.main.get().output)
 
     jijImplement("software.bernie.geckolib:geckolib-neoforge-1.21.1:4.7.5")
 
@@ -371,6 +394,13 @@ tasks.register("devBuild") {
 // compilation entry point for all dev workflows.
 tasks.named("runClient") { dependsOn("devBuild") }
 tasks.named("runServer") { dependsOn("devBuild") }
+
+// 保证测试插件 mod 的 classes / processResources 输出在启动前就位
+// （MDG 会把 source set 的输出目录整体塞进 -Dfml.modFolders）。
+tasks.matching { it.name in listOf("runClient", "runServer", "runData", "runGameTestServer") }
+    .configureEach {
+        dependsOn(loaderTest.classesTaskName, loaderTest.processResourcesTaskName)
+    }
 
 // Example configuration to allow publishing using the maven-publish plugin
 publishing {
