@@ -1,5 +1,5 @@
 {
-  "Spread": 5,
+  "Spread": 2.5,
   "RecoilX": 0.003,
   "RecoilY": 0.04,
   "Damage": 3,
@@ -79,8 +79,7 @@
       "superbwarfare:meowlencer",
       "superbwarfare:hissilencer",
       "superbwarfare:silaowuncer",
-      "superbwarfare:ru_silencer",
-      "superbwarfare:ar_silencer",
+      "superbwarfare:silencer_superb_12",
       "superbwarfare:loudspeaker",
       "superbwarfare:triangular_muzzle",
       "superbwarfare:love_muzzle",
