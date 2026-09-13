@@ -31,11 +31,6 @@
         },
         {
           "type": "minecraft:item",
-          "name": "superbwarfare:m_1897_blueprint",
-          "weight": 10
-        },
-        {
-          "type": "minecraft:item",
           "name": "superbwarfare:glock_18_blueprint",
           "weight": 30
         },
@@ -72,6 +67,11 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:m_870_blueprint",
+          "weight": 30
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:m_1897_blueprint",
           "weight": 30
         },
         {

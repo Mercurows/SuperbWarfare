@@ -5,4 +5,4 @@ import com.atsuishio.superbwarfare.item.gun.GeoGunItemV2
 import net.minecraft.world.item.Rarity
 
 @RegistryName("m_1897")
-object M1987Item : GeoGunItemV2(Properties().rarity(Rarity.COMMON))
+object M1987Item : GeoGunItemV2(Properties().rarity(Rarity.RARE))
