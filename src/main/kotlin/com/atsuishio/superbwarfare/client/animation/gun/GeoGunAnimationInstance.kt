@@ -385,15 +385,17 @@ open class GeoGunAnimationInstance(
             fireRunner = null
         }
 
-        cachedPose = combineFireModeSwitch(
-            combineLayers(
-                exitRunner.evaluate(),
-                fireModeRunner?.evaluate() ?: DummyPose.INSTANCE,
-                holdOpenRunner?.evaluate() ?: DummyPose.INSTANCE,
-                closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE
+        cachedPose = combineHoldOpen(
+            combineFireModeSwitch(
+                combineLayers(
+                    exitRunner.evaluate(),
+                    fireModeRunner?.evaluate() ?: DummyPose.INSTANCE,
+                    closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE
+                ),
+                fireModeSwitchRunner?.evaluate() ?: DummyPose.INSTANCE,
+                fireRunner?.evaluate() ?: DummyPose.INSTANCE
             ),
-            fireModeSwitchRunner?.evaluate() ?: DummyPose.INSTANCE,
-            fireRunner?.evaluate() ?: DummyPose.INSTANCE
+            holdOpenRunner?.evaluate() ?: DummyPose.INSTANCE
         )
     }
 
@@ -401,8 +403,9 @@ open class GeoGunAnimationInstance(
         data: GunData,
         animation: GunAnimation?
     ): Pair<Boolean, Boolean> {
+        // The bolt must be held open as soon as the magazine runs dry, even while the
+        // fire animation is still playing, so this is not gated on fireRunner.
         val shouldHoldOpen = data.holdOpen.get()
-                && fireRunner == null
         val holdOpenStarted = updateHoldOpen(if (shouldHoldOpen) animation?.holdOpen else null)
         val shouldCloseStrike = data.closeStrike.get()
         val closeStrikeStarted = updateCloseStrike(if (shouldCloseStrike) animation?.closeStrike else null)
@@ -440,6 +443,16 @@ open class GeoGunAnimationInstance(
             MERGE_BLENDER.blend(listOf(lowerPose, switchPose))
         }
         return combineLayers(pose, upperPose)
+    }
+
+    private fun combineHoldOpen(pose: Pose, holdOpenPose: Pose): Pose {
+        // hold_open drives the same bolt/slide bones that the fire animation cycles,
+        // and both are authored around the closed position, so adding them would send
+        // the bolt twice as far back. Merge instead: the hold-open pose wins over the
+        // fire animation, keeping the bolt back the moment the magazine runs dry.
+        if (holdOpenPose == DummyPose.INSTANCE) return pose
+        if (pose == DummyPose.INSTANCE) return holdOpenPose
+        return MERGE_BLENDER.blend(listOf(pose, holdOpenPose))
     }
 
     private fun updateHoldOpen(name: String?): Boolean {
@@ -515,15 +528,17 @@ open class GeoGunAnimationInstance(
         ) {
             startEditExit()
             if (editExitRunner != null) {
-                cachedPose = combineFireModeSwitch(
-                    combineLayers(
-                        editExitRunner!!.evaluate(),
-                        fireModeRunner?.evaluate() ?: DummyPose.INSTANCE,
-                        holdOpenRunner?.evaluate() ?: DummyPose.INSTANCE,
-                        closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE
+                cachedPose = combineHoldOpen(
+                    combineFireModeSwitch(
+                        combineLayers(
+                            editExitRunner!!.evaluate(),
+                            fireModeRunner?.evaluate() ?: DummyPose.INSTANCE,
+                            closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE
+                        ),
+                        fireModeSwitchRunner?.evaluate() ?: DummyPose.INSTANCE,
+                        fireRunner?.evaluate() ?: DummyPose.INSTANCE
                     ),
-                    fireModeSwitchRunner?.evaluate() ?: DummyPose.INSTANCE,
-                    fireRunner?.evaluate() ?: DummyPose.INSTANCE
+                    holdOpenRunner?.evaluate() ?: DummyPose.INSTANCE
                 )
                 return
             }
@@ -591,15 +606,17 @@ open class GeoGunAnimationInstance(
             fireRunner = null
         }
 
-        cachedPose = combineFireModeSwitch(
-            combineLayers(
-                runner?.evaluate() ?: DummyPose.INSTANCE,
-                fireModeRunner?.evaluate() ?: DummyPose.INSTANCE,
-                holdOpenRunner?.evaluate() ?: DummyPose.INSTANCE,
-                closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE
+        cachedPose = combineHoldOpen(
+            combineFireModeSwitch(
+                combineLayers(
+                    runner?.evaluate() ?: DummyPose.INSTANCE,
+                    fireModeRunner?.evaluate() ?: DummyPose.INSTANCE,
+                    closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE
+                ),
+                fireModeSwitchRunner?.evaluate() ?: DummyPose.INSTANCE,
+                fireRunner?.evaluate() ?: DummyPose.INSTANCE
             ),
-            fireModeSwitchRunner?.evaluate() ?: DummyPose.INSTANCE,
-            fireRunner?.evaluate() ?: DummyPose.INSTANCE
+            holdOpenRunner?.evaluate() ?: DummyPose.INSTANCE
         )
     }
 
