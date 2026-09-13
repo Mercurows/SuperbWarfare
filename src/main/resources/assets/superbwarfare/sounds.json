@@ -1471,6 +1471,94 @@
       }
     ]
   },
+  "m_1897_bolt_close": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/m_1897/m_1897_bolt_close",
+        "stream": false
+      }
+    ]
+  },
+  "m_1897_bolt_open": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/m_1897/m_1897_bolt_open",
+        "stream": false
+      }
+    ]
+  },
+  "m_1897_fire_1p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/m_1897/m_1897_fire_1p",
+        "stream": false
+      }
+    ]
+  },
+  "m_1897_fire_3p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/m_1897/m_1897_fire_3p",
+        "stream": false
+      }
+    ]
+  },
+  "m_1897_reload_cloth": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/m_1897/m_1897_reload_cloth",
+        "stream": false
+      }
+    ]
+  },
+  "m_1897_reload_empty_start": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/m_1897/m_1897_reload_empty_start",
+        "stream": false
+      }
+    ]
+  },
+  "m_1897_reload_end_rotate": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/m_1897/m_1897_reload_end_rotate",
+        "stream": false
+      }
+    ]
+  },
+  "m_1897_reload_end_shoulder": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/m_1897/m_1897_reload_end_shoulder",
+        "stream": false
+      }
+    ]
+  },
+  "m_1897_reload_loop": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/m_1897/m_1897_reload_loop",
+        "stream": false
+      }
+    ]
+  },
+  "m_1897_reload_start": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/m_1897/m_1897_reload_start",
+        "stream": false
+      }
+    ]
+  },
+  "m_1897_shell_impact": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/m_1897/m_1897_shell_impact",
+        "stream": false
+      }
+    ]
+  },
   "glock_17_fire_1p": {
     "sounds": [
       {

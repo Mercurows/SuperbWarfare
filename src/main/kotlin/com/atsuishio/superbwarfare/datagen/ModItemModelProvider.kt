@@ -70,6 +70,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         gunItem(ModItems.QL_1031)
         gunItemV2(ModItems.SUPER_STAR_SHOOTER)
         gunItemV2(ModItems.REFORGING)
+        gunItemV2(ModItems.M_1897)
 
         gunItem(ModItems.BEAST_GUN_TEST)
 
@@ -283,6 +284,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         gunBlueprintItem(ModItems.SVD_BLUEPRINT)
         gunBlueprintItem(ModItems.MARLIN_BLUEPRINT)
         gunBlueprintItem(ModItems.M_870_BLUEPRINT)
+        gunBlueprintItem(ModItems.M_1897_BLUEPRINT)
         gunBlueprintItem(ModItems.AWM_BLUEPRINT)
         gunBlueprintItem(ModItems.M_98B_BLUEPRINT)
         gunBlueprintItem(ModItems.AK_12_BLUEPRINT)

@@ -494,6 +494,9 @@ object GunEventHandler {
             prepareLoad(shooter, data)
         }
 
+        // 执行数据驱动的 PrepareLoad 阶段时间线行为
+        GunActionStepExecutor.tickReloadPrepareLoad(data)
+
         // 一阶段结束，检查备弹，如果有则二阶段启动，无则直接跳到三阶段
         if ((reload.prepareTimer.get() == 1 || reload.prepareLoadTimer.get() == 1)) {
             if (!data.hasBackupAmmo(shooter) || data.ammo.get() >= data.get(GunProp.MAGAZINE)) {

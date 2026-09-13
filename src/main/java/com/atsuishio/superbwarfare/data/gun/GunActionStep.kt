@@ -17,6 +17,15 @@ enum class GunActionTimeline {
     @SerialName("RELOAD_FINISH")
     RELOAD_FINISH,
 
+    /**
+     * 逐发换弹的 `PrepareLoad` 阶段，即在准备阶段就先装填一发（如 M870、M1897）。
+     *
+     * 只有配置了 `PrepareLoadTime` 且空仓装填的枪械才会进入该阶段，见
+     * `GunEventHandler.handleGunSingleReload`。
+     */
+    @SerialName("RELOAD_PREPARE_LOAD")
+    RELOAD_PREPARE_LOAD,
+
     @SerialName("NO_AMMO")
     NO_AMMO,
 

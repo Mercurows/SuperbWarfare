@@ -1,0 +1,104 @@
+{
+  "Spread": 2.5,
+  "RecoilX": 0.003,
+  "RecoilY": 0.04,
+  "Damage": 3,
+  "Headshot": 1.5,
+  "MeleeDamage": 15,
+  "MeleeDuration": 16,
+  "MeleeAngle": 100,
+  "Velocity": 10,
+  "Magazine": 5,
+  "ZoomSpreadRate": 0.75,
+  "ProjectileAmount": 12,
+  "Weight": 4,
+  "DrawTime": 11,
+  "ZoomTime": 6,
+  "ReloadTypes": [
+    "Iterative"
+  ],
+  "PrepareTime": 12,
+  "PrepareLoadTime": 50,
+  "PrepareAmmoLoadTime": 10,
+  "IterativeTime": 16,
+  "IterativeAmmoLoadTime": 3,
+  "FinishTime": 16,
+  "BypassesArmor": 0.05,
+  "SoundRadius": 16,
+  "BoltActionTime": 13,
+  "GunType": "Shotgun",
+  "DamageReduce": {
+    "Type": "Shotgun"
+  },
+  "AmmoType": "@ShotgunAmmo",
+  "Icon": "superbwarfare:textures/gun_icon/m_1897_icon.png",
+  "ActionSteps": [
+    {
+      "Timeline": "RELOAD_PREPARE_LOAD",
+      "Progress": 0.17,
+      "Action": "CLOSE_STRIKE",
+      "Value": false
+    },
+    {
+      "Timeline": "RELOAD_PREPARE_LOAD",
+      "Progress": 0.17,
+      "Action": "EMPTY",
+      "Value": false
+    },
+    {
+      "Timeline": "BOLT",
+      "Progress": 0.22222,
+      "Action": "CLOSE_STRIKE",
+      "Value": false
+    },
+    {
+      "Timeline": "NO_AMMO",
+      "Action": "CLOSE_STRIKE",
+      "Value": true
+    }
+  ],
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:field_doctor",
+    "superbwarfare:heal_clip",
+    "superbwarfare:subsistence",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:backpack_linked_magazine",
+    "superbwarfare:cast_no_shadows",
+    "superbwarfare:eager_edge",
+    "superbwarfare:kill_clip",
+    "superbwarfare:gutshot_straight",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:high_impact_reserves",
+    "superbwarfare:one_two_punch",
+    "superbwarfare:brain_storm",
+    "superbwarfare:target_lock",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:cupid_arrow"
+  ],
+  "AvailableAttachments": {
+    "Barrel": [
+      "superbwarfare:meowlencer",
+      "superbwarfare:hissilencer",
+      "superbwarfare:silaowuncer",
+      "superbwarfare:silencer_superb_12",
+      "superbwarfare:loudspeaker",
+      "superbwarfare:triangular_muzzle",
+      "superbwarfare:love_muzzle",
+      "superbwarfare:star_muzzle",
+      "superbwarfare:linear_muzzle",
+      "superbwarfare:cross_muzzle"
+    ]
+  },
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:m_1897_fire_1p",
+    "Fire3P": "superbwarfare:m_1897_fire_3p",
+    "Fire3PFar": "superbwarfare:m_870_far",
+    "Fire3PVeryFar": "superbwarfare:m_870_veryfar",
+    "Fire1PSilent": "superbwarfare:m_870_fire_1p_s",
+    "Fire3PSilent": "superbwarfare:m_870_fire_3p_s"
+  }
+}

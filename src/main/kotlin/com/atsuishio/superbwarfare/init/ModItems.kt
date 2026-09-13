@@ -24,6 +24,7 @@ import com.atsuishio.superbwarfare.item.gun.machinegun.*
 import com.atsuishio.superbwarfare.item.gun.rifle.*
 import com.atsuishio.superbwarfare.item.gun.shotgun.Aa12Item
 import com.atsuishio.superbwarfare.item.gun.shotgun.HomemadeShotgunItem
+import com.atsuishio.superbwarfare.item.gun.shotgun.M1987Item
 import com.atsuishio.superbwarfare.item.gun.shotgun.M870Item
 import com.atsuishio.superbwarfare.item.gun.smg.Mp5Item
 import com.atsuishio.superbwarfare.item.gun.smg.VectorItem
@@ -114,6 +115,7 @@ object ModItems {
     @JvmField val MP_443 = registerGun<Mp443Item>()
     @JvmField val M_1911 = registerGun<M1911Item>()
     @JvmField val HOMEMADE_SHOTGUN = registerGun<HomemadeShotgunItem>()
+    @JvmField val M_1897 = registerGun<M1987Item>()
     @JvmField val NAIL_GUN = registerGun<NailGunItem>()
     @JvmField val TRACHELIUM = registerGun<TracheliumItem>()
     @JvmField val MP_5 = registerGun<Mp5Item>()
@@ -451,6 +453,7 @@ object ModItems {
     @JvmField val SVD_BLUEPRINT = registerBlueprint("svd_blueprint", Rarity.EPIC)
     @JvmField val MARLIN_BLUEPRINT = registerBlueprint("marlin_blueprint", Rarity.COMMON)
     @JvmField val M_870_BLUEPRINT = registerBlueprint("m_870_blueprint", Rarity.RARE)
+    @JvmField val M_1897_BLUEPRINT = registerBlueprint("m_1897_blueprint", Rarity.COMMON)
     @JvmField val AWM_BLUEPRINT = registerBlueprint("awm_blueprint", Rarity.EPIC)
     @JvmField val M_98B_BLUEPRINT = registerBlueprint("m_98b_blueprint", Rarity.EPIC)
     @JvmField val AK_47_BLUEPRINT = registerBlueprint("ak_47_blueprint", Rarity.RARE)

@@ -1,0 +1,43 @@
+{
+  "Icon": "superbwarfare:textures/gun_icon/m_1897_icon.png",
+  "SlotIcon": "superbwarfare:textures/item/m_1897_icon.png",
+  "Animation": {
+    "Idle": "animation.m_1897.idle",
+    "Edit": "animation.m_1897.edit",
+    "Fire": "animation.m_1897.fire",
+    "Prepare": "animation.m_1897.prepare",
+    "PrepareLoad": "animation.m_1897.prepare_load",
+    "Iterative": "animation.m_1897.iterative_load",
+    "Finish": "animation.m_1897.finish",
+    "Bolt": "animation.m_1897.bolt",
+    "Melee": "animation.m_1897.hit",
+    "CloseStrike": "animation.m_1897.close_strike"
+  },
+  "ShootRecoil": {
+    "Offset": [1.0, 1.0, 3.5],
+    "Rotation": [1.1, 0.6, 0.5],
+    "ZoomRate": 0.9,
+    "Speed": 1.0
+  },
+  "Model": {
+    "Animation": "superbwarfare:animations/bedrock/gun/m_1897.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/m_1897.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/m_1897.png"
+  },
+  "FlareSize": 0.4,
+  "HasSmoke": true,
+  "Smoke": {
+    "Size": 0.15,
+    "Growth": 0.25,
+    "Lifetime": 0.3,
+    "Speed": 0.4,
+    "Count": 2,
+    "Opacity": 0.9,
+    "Drag": 2,
+    "RandomSize": 0.05,
+    "RandomGrowth": 0.2,
+    "RandomLifetime": 0.2,
+    "RandomSpeed": 0.2,
+    "RandomOpacity": 0.1
+  }
+}

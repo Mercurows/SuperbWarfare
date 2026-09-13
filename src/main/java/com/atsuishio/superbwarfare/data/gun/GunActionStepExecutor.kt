@@ -13,6 +13,7 @@ object GunActionStepExecutor {
                 GunActionTimeline.RELOAD_NORMAL -> reload.normal()
                 GunActionTimeline.RELOAD_EMPTY -> reload.empty()
                 GunActionTimeline.RELOAD_FINISH -> false
+                GunActionTimeline.RELOAD_PREPARE_LOAD -> false
                 GunActionTimeline.NO_AMMO -> false
                 GunActionTimeline.BOLT -> false
             }
@@ -34,6 +35,19 @@ object GunActionStepExecutor {
             steps,
             data.reload.finishPreviousProgress(),
             data.reload.finishCurrentProgress(),
+            data,
+        )
+    }
+
+    /** Ticks the `PrepareLoad` stage of an iterative reload; see [GunActionTimeline.RELOAD_PREPARE_LOAD]. */
+    fun tickReloadPrepareLoad(data: GunData) {
+        val steps = data.getDefault().actionSteps.list.filter {
+            it.timeline == GunActionTimeline.RELOAD_PREPARE_LOAD
+        }
+        tick(
+            steps,
+            data.reload.prepareLoadPreviousProgress(),
+            data.reload.prepareLoadCurrentProgress(),
             data,
         )
     }

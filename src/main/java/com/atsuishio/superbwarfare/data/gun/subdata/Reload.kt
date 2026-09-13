@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.data.gun.subdata
 
 import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.value.*
 
 /**
@@ -113,6 +114,27 @@ class Reload(private val gun: GunData) {
     fun finishCurrentProgress(): Float = finishProgress(finishTimer.get())
 
     fun finishPreviousProgress(): Float = finishProgress(finishTimer.get() + 1)
+
+    /**
+     * `PrepareLoad` 阶段的进度，用于逐发换弹中"准备阶段先装一发"的时间线。
+     *
+     * 与 [finishCurrentProgress] 不同，[prepareLoadTimer] 没有把总时长存进
+     * [com.atsuishio.superbwarfare.data.gun.GunState]，而是直接取自枪械的 `PrepareLoadTime`
+     * 属性——这也正是阶段开始时给计时器设置的值。
+     */
+    fun prepareLoadCurrentProgress(): Float = prepareLoadProgress(prepareLoadTimer.get())
+
+    fun prepareLoadPreviousProgress(): Float = prepareLoadProgress(prepareLoadTimer.get() + 1)
+
+    /**
+     * 计时器为 0 时返回 0，因为阶段未运行时 [prepareLoadTimer] 一直是 0，
+     * 而总时长仍是枪械属性值（不像 [finishProgress] 那样会跟着归零），不特判就会在空闲时误触发。
+     */
+    private fun prepareLoadProgress(remaining: Int): Float {
+        val total = gun.get(GunProp.PREPARE_LOAD_TIME)
+        if (total <= 0 || remaining <= 0) return 0f
+        return 1f - remaining.toFloat() / total.toFloat()
+    }
 
     private fun progress(remaining: Int): Float {
         val total = totalTicks.get()
