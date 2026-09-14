@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.mobeffect
 
+import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -7,7 +8,6 @@ import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessag
 import com.atsuishio.superbwarfare.tools.forceHurt
 import com.atsuishio.superbwarfare.tools.sendPacket
 import net.minecraft.core.BlockPos
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundSource
@@ -33,7 +33,7 @@ object ShockMobEffect : MobEffect(MobEffectCategory.HARMFUL, -256) {
     init {
         addAttributeModifier(
             Attributes.MOVEMENT_SPEED,
-            ResourceLocation.withDefaultNamespace("effect.speed"),
+            loc("effect.shock"),
             -10.0,
             AttributeModifier.Operation.ADD_VALUE
         )
