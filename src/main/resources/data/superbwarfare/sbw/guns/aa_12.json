@@ -1,21 +1,20 @@
 {
-  "Spread": 3.5,
+  "Spread": 3,
   "OpenBolt": true,
-  "HasBarrelBullet": true,
   "RecoilX": 0.006,
   "RecoilY": 0.018,
-  "Damage": 2.5,
+  "Damage": 3,
   "Headshot": 1.5,
   "Velocity": 10,
-  "Magazine": 25,
+  "Magazine": [12, 18, 25],
   "ZoomSpreadRate": 0.75,
   "ProjectileAmount": 12,
   "Weight": 7,
   "DrawTime": 14,
   "ZoomTime": 9,
   "DefaultFireMode": "Auto",
-  "NormalReloadTime": 64,
-  "EmptyReloadTime": 85,
+  "NormalReloadTime": [54, 54, 64],
+  "EmptyReloadTime": [70, 70, 80],
   "BypassesArmor": 0.05,
   "SoundRadius": 18,
   "RPM": 360,
@@ -48,16 +47,49 @@
     "!superbwarfare:longer_wire",
     "!superbwarfare:cupid_arrow"
   ],
+  "AvailableAttachments": {
+    "Magazine": [
+      "superbwarfare:magazine_extend_pro"
+    ],
+    "Scope": [
+      "superbwarfare:scope_coyote",
+      "superbwarfare:scope_aimpoint_t2",
+      "superbwarfare:scope_eotech_551",
+      "superbwarfare:scope_okp_7",
+      "superbwarfare:scope_pkas",
+      "superbwarfare:scope_bruiser",
+      "superbwarfare:scope_ranger",
+      "superbwarfare:scope_1p_78",
+      "superbwarfare:scope_pk_a",
+      "superbwarfare:scope_acog",
+      "superbwarfare:scope_qmk171",
+      "superbwarfare:scope_hamr",
+      "superbwarfare:scope_lpvo",
+      "superbwarfare:scope_sniper"
+    ],
+    "Grip": [
+      "superbwarfare:vertical_grip",
+      "superbwarfare:triangle_grip"
+    ],
+    "Barrel": [
+      "superbwarfare:meowlencer",
+      "superbwarfare:hissilencer",
+      "superbwarfare:silaowuncer",
+      "superbwarfare:silencer_superb_12",
+      "superbwarfare:loudspeaker",
+      "superbwarfare:triangular_muzzle",
+      "superbwarfare:love_muzzle",
+      "superbwarfare:star_muzzle",
+      "superbwarfare:linear_muzzle",
+      "superbwarfare:cross_muzzle"
+    ]
+  },
   "SoundInfo": {
     "Fire1P": "superbwarfare:aa_12_fire_1p",
     "Fire3P": "superbwarfare:aa_12_fire_3p",
     "Fire3PFar": "superbwarfare:aa_12_far",
     "Fire3PVeryFar": "superbwarfare:aa_12_veryfar",
-    "ReloadNormal": "superbwarfare:aa_12_reload_normal",
-    "ReloadEmpty": "superbwarfare:aa_12_reload_empty",
-    "CancellableSounds": [
-      "superbwarfare:aa_12_reload_normal",
-      "superbwarfare:aa_12_reload_empty"
-    ]
+    "Fire1PSilent": "superbwarfare:aa_12_fire_1p_s",
+    "Fire3PSilent": "superbwarfare:aa_12_fire_3p_s"
   }
 }
