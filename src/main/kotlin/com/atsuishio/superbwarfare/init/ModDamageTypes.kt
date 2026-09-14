@@ -44,6 +44,7 @@ object ModDamageTypes {
     @JvmField val VEHICLE_EXPLOSION = registerDamageType("vehicle_explosion")
     @JvmField val GRAPESHOT_HIT = registerDamageType("grapeshot_hit")
     @JvmField val PHOSPHORUS_FIRE = registerDamageType("phosphorus_fire")
+    @JvmField val RADIATION = registerDamageType("radiation")
     @JvmField val AMMO_CONSUMPTION = registerDamageType("ammo_consumption")
     // @formatter:on
 
@@ -180,6 +181,11 @@ object ModDamageTypes {
     @JvmStatic
     fun causePhosphorusFireDamage(registryAccess: RegistryAccess, directEntity: Entity?, attacker: Entity?): DamageSource {
         return DamageMessages(registryAccess.registry(Registries.DAMAGE_TYPE).get().getHolderOrThrow(PHOSPHORUS_FIRE), directEntity, attacker)
+    }
+
+    @JvmStatic
+    fun causeRadiationDamage(registryAccess: RegistryAccess, attacker: Entity?): DamageSource {
+        return DamageMessages(registryAccess.registry(Registries.DAMAGE_TYPE).get().getHolderOrThrow(RADIATION), attacker)
     }
 
     @JvmStatic

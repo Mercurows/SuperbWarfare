@@ -378,6 +378,7 @@ object ModItems {
     @JvmField val TRANSCRIPT = registerItem<TranscriptItem>()
     @JvmField val FIRING_PARAMETERS = registerItem<FiringParametersItem>()
     @JvmField val MEDICAL_KIT = registerItem<MedicalKitItem>()
+    @JvmField val RAD_AWAY = registerItem<RadAwayItem>()
     @JvmField val VEHICLE_DAMAGE_ANALYZER = registerItem<VehicleDamageAnalyzerItem>()
     @JvmField val VEHICLE_RESET_KIT = registerItem<VehicleResetKitItem>()
     @JvmField val SKIN_SPRAY = registerItem<SkinSprayItem>()

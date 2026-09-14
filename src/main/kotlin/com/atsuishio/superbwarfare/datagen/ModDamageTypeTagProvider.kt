@@ -73,7 +73,7 @@ class ModDamageTypeTagProvider(
             ModDamageTypes.SUPER_STAR_SLASH,
             ModDamageTypes.PHOSPHORUS_FIRE,
             ModDamageTypes.CUSTOM_EXPLOSION,
-            ModDamageTypes.PROJECTILE_EXPLOSION
+            ModDamageTypes.RADIATION
         )
         this.tag(ModTags.DamageTypes.SBW_GUN_FIRE_DAMAGE).add(
             ModDamageTypes.GUN_FIRE,
@@ -93,7 +93,8 @@ class ModDamageTypeTagProvider(
             ModDamageTypes.REPAIR_TOOL,
             ModDamageTypes.SUPER_STAR_HIT,
             ModDamageTypes.SUPER_STAR_SLASH,
-            ModDamageTypes.PHOSPHORUS_FIRE
+            ModDamageTypes.PHOSPHORUS_FIRE,
+            ModDamageTypes.RADIATION
         )
         this.tag(DamageTypeTags.BYPASSES_ARMOR).add(
             ModDamageTypes.GUN_FIRE_ABSOLUTE,
@@ -111,11 +112,13 @@ class ModDamageTypeTagProvider(
             ModDamageTypes.SUPER_STAR_HIT,
             ModDamageTypes.SUPER_STAR_SLASH,
             ModDamageTypes.PHOSPHORUS_FIRE,
+            ModDamageTypes.RADIATION,
             ModDamageTypes.AMMO_CONSUMPTION
         )
         this.tag(DamageTypeTags.BYPASSES_EFFECTS).add(
             ModDamageTypes.SHOCK,
             ModDamageTypes.PHOSPHORUS_FIRE,
+            ModDamageTypes.RADIATION,
             ModDamageTypes.AMMO_CONSUMPTION
         )
         this.tag(DamageTypeTags.BYPASSES_ENCHANTMENTS).add(
@@ -184,7 +187,8 @@ class ModDamageTypeTagProvider(
             ModDamageTypes.VEHICLE_STRIKE,
             ModDamageTypes.SUPER_STAR_HIT,
             ModDamageTypes.SUPER_STAR_SLASH,
-            ModDamageTypes.PHOSPHORUS_FIRE
+            ModDamageTypes.PHOSPHORUS_FIRE,
+            ModDamageTypes.RADIATION
         )
     }
 
