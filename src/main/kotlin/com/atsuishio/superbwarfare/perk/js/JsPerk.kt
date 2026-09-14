@@ -74,8 +74,8 @@ open class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : 
     }
 
     override fun modifyProjectile(data: GunData, instance: PerkInstance, entity: Entity) {
-        val config = ammoConfig ?: return
-        if (entity is IBulletProperties) {
+        val config = ammoConfig
+        if (config != null && entity is IBulletProperties) {
             val r = config.rgb
             entity.setRGB(floatArrayOf(r[0] / 255f, r[1] / 255f, r[2] / 255f))
             if (config.mobEffects.isNotEmpty()) {
