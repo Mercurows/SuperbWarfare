@@ -6,10 +6,7 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes.causeProjectileHitDamage
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModSounds
-import com.atsuishio.superbwarfare.tools.ParticleTool
-import com.atsuishio.superbwarfare.tools.SeekTool
-import com.atsuishio.superbwarfare.tools.TraceTool
-import com.atsuishio.superbwarfare.tools.forceHurt
+import com.atsuishio.superbwarfare.tools.*
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.server.level.ServerLevel
@@ -256,7 +253,7 @@ open class CannonShellEntity(type: EntityType<out CannonShellEntity>, level: Lev
                 .forEach {
                     val dis = pos.distanceTo(it.position())
                     if (!checkNoClip(it, pos)) return@forEach
-                    (it as LivingEntity).addEffect(
+                    (it as LivingEntity).forceApplyEffect(
                         MobEffectInstance(
                             ModMobEffects.PHOSPHORUS_FIRE,
                             (300 - 30 * dis).toInt(),

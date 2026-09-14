@@ -20,6 +20,13 @@ object MiscConfig {
     }
 
     @JvmField
+    val FORCE_MOB_EFFECT_MODE = buildServerConfig {
+        comment("Set true to bypass mob effect immunity checks for mob effects")
+        comment("是否开启强制施加药水效果模式")
+        define("force_mob_effect_mode", false)
+    }
+
+    @JvmField
     val DROP_AMMO_BOX = buildServerConfig {
         comment("Whether to drop an ammo box after the player dies")
         comment("玩家在死亡时，是否掉落弹药")

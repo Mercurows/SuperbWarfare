@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.resource.model.ProjectileModelReloadListener
 import com.atsuishio.superbwarfare.tools.CustomExplosion
+import com.atsuishio.superbwarfare.tools.forceApplyEffect
 import com.atsuishio.superbwarfare.world.saveddata.TDMSavedData.Companion.enabledTDM
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.syncher.EntityDataAccessor
@@ -220,7 +221,7 @@ open class Blu43Entity : Entity, OwnableEntity {
                             }
                         }
 
-                        entity.addEffect(
+                        entity.forceApplyEffect(
                             MobEffectInstance(
                                 MobEffects.MOVEMENT_SLOWDOWN,
                                 max(baseDuration, 20),
@@ -229,7 +230,7 @@ open class Blu43Entity : Entity, OwnableEntity {
                                 false
                             ), this.owner
                         )
-                        entity.addEffect(
+                        entity.forceApplyEffect(
                             MobEffectInstance(
                                 MobEffects.WEAKNESS,
                                 max(baseDuration, 20),
@@ -238,7 +239,16 @@ open class Blu43Entity : Entity, OwnableEntity {
                                 false
                             ), this.owner
                         )
-                        entity.addEffect(MobEffectInstance(MobEffects.BLINDNESS, 30, 0, false, false), this.owner)
+                        entity.forceApplyEffect(
+                            MobEffectInstance(
+                                MobEffects.BLINDNESS,
+                                30,
+                                0,
+                                false,
+                                false
+                            ),
+                            this.owner
+                        )
                     }
                     break
                 }

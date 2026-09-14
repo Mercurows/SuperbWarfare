@@ -1,16 +1,23 @@
 package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.entity.mixin.DamageAccess;
+import com.atsuishio.superbwarfare.entity.mixin.ForceMobEffectAccess;
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.tools.MinecraftUtil;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
+import org.jetbrains.annotations.NotNull;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -19,10 +26,21 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
+import java.util.Map;
 import java.util.Stack;
 
 @Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin implements ICustomKnockback, DamageAccess {
+public abstract class LivingEntityMixin implements ICustomKnockback, DamageAccess, ForceMobEffectAccess {
+
+    @Shadow
+    @Final
+    private Map<MobEffect, MobEffectInstance> activeEffects;
+
+    @Shadow
+    protected abstract void onEffectAdded(MobEffectInstance instance, @Nullable Entity source);
+
+    @Shadow
+    protected abstract void onEffectUpdated(MobEffectInstance instance, boolean forced, @Nullable Entity source);
 
     @Shadow
     @Nullable
@@ -107,6 +125,35 @@ public abstract class LivingEntityMixin implements ICustomKnockback, DamageAcces
     @Override
     public @Nullable Stack<DamageContainer> superbwarfare$getDamageContainers() {
         return this.damageContainers;
+    }
+
+    @Override
+    public boolean superbWarfare$addEffectUnchecked(
+            @NotNull MobEffectInstance instance,
+            @Nullable Entity source
+    ) {
+        LivingEntity self = (LivingEntity) (Object) this;
+        if (self.level().isClientSide) {
+            return false;
+        }
+
+        MobEffectInstance old = this.activeEffects.get(instance.getEffect().value());
+        MinecraftUtil.postEvent(
+                new MobEffectEvent.Added(self, old, instance, source)
+        );
+
+        if (old == null) {
+            this.activeEffects.put(instance.getEffect().value(), instance);
+            this.onEffectAdded(instance, source);
+            return true;
+        }
+
+        if (old.update(instance)) {
+            this.onEffectUpdated(old, true, source);
+            return true;
+        }
+
+        return false;
     }
 
     @Inject(method = "dismountVehicle", at = @At("RETURN"))

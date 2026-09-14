@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.entity.projectile
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.tools.SeekTool
+import com.atsuishio.superbwarfare.tools.forceApplyEffect
 import com.atsuishio.superbwarfare.tools.forceHurt
 import com.atsuishio.superbwarfare.tools.sendPacketTo
 import net.minecraft.core.particles.ParticleTypes
@@ -55,7 +56,10 @@ open class WhitePhosphorusProjectileEntity : FastThrowableProjectile {
     override fun afterHitEntity(result: EntityHitResult) {
         val entity = result.entity
         if (entity is LivingEntity && !entity.level().isClientSide()) {
-            entity.addEffect(MobEffectInstance(ModMobEffects.PHOSPHORUS_FIRE, 200, 4), owner)
+            entity.forceApplyEffect(
+                MobEffectInstance(ModMobEffects.PHOSPHORUS_FIRE, 200, 4),
+                owner
+            )
         }
         super.afterHitEntity(result)
     }
@@ -87,7 +91,7 @@ open class WhitePhosphorusProjectileEntity : FastThrowableProjectile {
                     it.forceHurt(ModDamageTypes.causeBurnDamage(this.level().registryAccess(), owner), 1f)
                     it.invulnerableTime = 0
 
-                    (it as LivingEntity).addEffect(
+                    (it as LivingEntity).forceApplyEffect(
                         MobEffectInstance(
                             ModMobEffects.PHOSPHORUS_FIRE,
                             (300 - 30 * dis).toInt(),

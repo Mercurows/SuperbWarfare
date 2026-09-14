@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes.causeShockDamage
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
+import com.atsuishio.superbwarfare.tools.forceApplyEffect
 import com.atsuishio.superbwarfare.tools.forceHurt
 import com.atsuishio.superbwarfare.tools.sendPacketTo
 import net.minecraft.server.level.ServerLevel
@@ -72,7 +73,7 @@ open class TaserBulletEntity(type: EntityType<out TaserBulletEntity>, level: Lev
                 if (entity is Creeper) {
                     entity.thunderHit(level, LightningBolt(EntityType.LIGHTNING_BOLT, level))
                 } else {
-                    entity.addEffect(
+                    entity.forceApplyEffect(
                         MobEffectInstance(ModMobEffects.SHOCK, 100 + volt * 30, volt),
                         owner
                     )

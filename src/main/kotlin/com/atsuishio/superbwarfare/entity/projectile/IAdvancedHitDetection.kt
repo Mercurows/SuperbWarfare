@@ -202,7 +202,7 @@ interface IAdvancedHitDetection {
         if (entity.level().isClientSide) return
         if (this.getEffects().isNotEmpty() && entity is LivingEntity) {
             this.getEffects().forEach {
-                entity.addEffect(it)
+                entity.forceApplyEffect(it)
             }
         }
     }

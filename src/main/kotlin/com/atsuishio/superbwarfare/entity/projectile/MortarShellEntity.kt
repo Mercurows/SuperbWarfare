@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.tools.ParticleTool
 import com.atsuishio.superbwarfare.tools.SeekTool
+import com.atsuishio.superbwarfare.tools.forceApplyEffect
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
@@ -200,7 +201,7 @@ open class MortarShellEntity : FastThrowableProjectile, BasicGeoProjectileEntity
                 .forEach {
                     val dis = pos.distanceTo(it.position())
                     if (!checkNoClip(it, pos)) return@forEach
-                    (it as LivingEntity).addEffect(
+                    (it as LivingEntity).forceApplyEffect(
                         MobEffectInstance(
                             ModMobEffects.PHOSPHORUS_FIRE,
                             (300 - 30 * dis).toInt(),
