@@ -335,18 +335,26 @@
       }
     ]
   },
-  "homemade_shotgun_reload_normal": {
+  "homemade_shotgun_bullet_in": {
     "sounds": [
       {
-        "name": "superbwarfare:gun/homemade_shotgun/homemade_shotgun_reload_normal",
+        "name": "superbwarfare:gun/homemade_shotgun/homemade_shotgun_bullet_in",
         "stream": false
       }
     ]
   },
-  "homemade_shotgun_reload_empty": {
+  "homemade_shotgun_bullet_in_2": {
     "sounds": [
       {
-        "name": "superbwarfare:gun/homemade_shotgun/homemade_shotgun_reload_empty",
+        "name": "superbwarfare:gun/homemade_shotgun/homemade_shotgun_bullet_in_2",
+        "stream": false
+      }
+    ]
+  },
+  "homemade_shotgun_stick_in": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/homemade_shotgun/homemade_shotgun_stick_in",
         "stream": false
       }
     ]

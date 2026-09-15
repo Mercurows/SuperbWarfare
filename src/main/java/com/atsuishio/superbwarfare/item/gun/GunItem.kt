@@ -252,6 +252,11 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     open fun hasBulletInBarrel(data: GunData) = data.get(GunProp.HAS_BARREL_BULLET)
 
     /**
+     * 是否允许战术换弹
+     */
+    open fun allowTacticalReload(data: GunData) = data.get(GunProp.TACTICAL_RELOAD)
+
+    /**
      * 武器是否能更换枪管配件
      */
     open fun hasCustomBarrel(data: GunData) =

@@ -204,6 +204,9 @@ class DefaultGunData : IDBasedData<DefaultGunData> {
     @SerialName("HasBarrelBullet")
     var hasBarrelBullet = false
 
+    @SerialName("TacticalReload")
+    var tacticalReload = false
+
     @SerialName("DrawTime")
     var drawTime = 7
 

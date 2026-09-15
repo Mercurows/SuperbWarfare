@@ -2,6 +2,7 @@
   "Spread": 6,
   "OpenBolt": true,
   "HasBarrelBullet": true,
+  "TacticalReload": true,
   "RecoilX": 0.0014,
   "RecoilY": 0.011,
   "Damage": 8,

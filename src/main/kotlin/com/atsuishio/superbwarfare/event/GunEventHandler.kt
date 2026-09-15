@@ -398,7 +398,7 @@ object GunEventHandler {
 
         data.invalidateProperties()
 
-        if (data.item.hasBulletInBarrel(data)) {
+        if (data.item.allowTacticalReload(data)) {
             if (!data.hasEnoughAmmoToShoot(shooter)) {
                 reload.setTime(data.get(GunProp.EMPTY_RELOAD_TIME))
                 reload.setState(ReloadState.EMPTY_RELOADING)

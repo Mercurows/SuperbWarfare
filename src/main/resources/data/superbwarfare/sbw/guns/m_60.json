@@ -1,6 +1,6 @@
 {
   "Spread": 5,
-  "OpenBolt": true,
+  "TacticalReload": true,
   "RecoilX": 0.004,
   "RecoilY": 0.014,
   "Damage": 10,

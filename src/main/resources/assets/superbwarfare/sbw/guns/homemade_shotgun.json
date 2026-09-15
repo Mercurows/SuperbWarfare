@@ -1,15 +1,37 @@
 {
+  "Icon": "superbwarfare:textures/gun_icon/homemade_shotgun_icon.png",
+  "SlotIcon": "superbwarfare:textures/item/homemade_shotgun_icon.png",
   "Animation": {
     "Idle": "animation.homemade_shotgun.idle",
+    "Fire": "animation.homemade_shotgun.fire",
     "ReloadNormal": "animation.homemade_shotgun.reload_normal",
     "ReloadEmpty": "animation.homemade_shotgun.reload_empty"
   },
-  "Model": {
-    "Animation": "superbwarfare:animations/homemade_shotgun.animation.json",
-    "Model": "superbwarfare:geo/homemade_shotgun.geo.json",
-    "Texture": "superbwarfare:textures/item/homemade_shotgun.png",
-    "LODModel": "superbwarfare:geo/lod/homemade_shotgun.geo.json"
+  "ShootRecoil": {
+    "Offset": [1.0, 1.0, 3.5],
+    "Rotation": [1.1, 0.6, 0.5],
+    "ZoomRate": 0.9,
+    "Speed": 1.0
   },
-  "FlarePosition": [0, 0.05, 0.25],
-  "FlareSize": 1.2
+  "Model": {
+    "Animation": "superbwarfare:animations/bedrock/gun/homemade_shotgun.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/homemade_shotgun.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/homemade_shotgun.png"
+  },
+  "FlareSize": 0.6,
+  "HasSmoke": true,
+  "Smoke": {
+    "Size": 0.45,
+    "Growth": 0.25,
+    "Lifetime": 0.3,
+    "Speed": 0.4,
+    "Count": 2,
+    "Opacity": 0.9,
+    "Drag": 2,
+    "RandomSize": 0.05,
+    "RandomGrowth": 0.2,
+    "RandomLifetime": 0.2,
+    "RandomSpeed": 0.2,
+    "RandomOpacity": 0.1
+  }
 }

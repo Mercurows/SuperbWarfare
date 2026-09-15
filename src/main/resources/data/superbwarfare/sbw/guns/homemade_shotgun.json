@@ -1,7 +1,7 @@
 {
   "MaxDurability": 24,
-  "Spread": 4,
-  "OpenBolt": true,
+  "Spread": 4.5,
+  "TacticalReload": true,
   "RecoilX": 0.005,
   "RecoilY": 0.026,
   "Damage": 5,
@@ -14,7 +14,7 @@
   "DrawTime": 7,
   "ZoomTime": 3,
   "NormalReloadTime": 66,
-  "EmptyReloadTime": 83,
+  "EmptyReloadTime": 82,
   "BypassesArmor": 0.01,
   "SoundRadius": 16,
   "RPM": 600,
@@ -45,12 +45,6 @@
     "Fire1P": "superbwarfare:homemade_shotgun_fire_1p",
     "Fire3P": "superbwarfare:homemade_shotgun_fire_3p",
     "Fire3PFar": "superbwarfare:homemade_shotgun_far",
-    "Fire3PVeryFar": "superbwarfare:homemade_shotgun_veryfar",
-    "ReloadNormal": "superbwarfare:homemade_shotgun_reload_normal",
-    "ReloadEmpty": "superbwarfare:homemade_shotgun_reload_empty",
-    "CancellableSounds": [
-      "superbwarfare:homemade_shotgun_reload_normal",
-      "superbwarfare:homemade_shotgun_reload_empty"
-    ]
+    "Fire3PVeryFar": "superbwarfare:homemade_shotgun_veryfar"
   }
 }

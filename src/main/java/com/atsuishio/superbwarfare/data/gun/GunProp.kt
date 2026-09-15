@@ -311,6 +311,9 @@ class GunProp<T, R>(
         val HAS_BARREL_BULLET = plainProp(DefaultGunData::hasBarrelBullet)
 
         @JvmField
+        val TACTICAL_RELOAD = plainProp(DefaultGunData::tacticalReload)
+
+        @JvmField
         val DRAW_TIME = plainProp(DefaultGunData::drawTime)
 
         /**

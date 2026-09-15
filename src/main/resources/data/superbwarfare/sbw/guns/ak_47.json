@@ -1,5 +1,6 @@
 {
   "Spread": 6,
+  "TacticalReload": true,
   "HasBarrelBullet": true,
   "RecoilX": 0.0022,
   "RecoilY": 0.022,

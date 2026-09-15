@@ -2,7 +2,7 @@
   "MinZoom": 1.25,
   "MaxZoom": 6,
   "Spread": 8,
-  "OpenBolt": true,
+  "TacticalReload": true,
   "HasBarrelBullet": true,
   "RecoilX": 0.01,
   "RecoilY": 0.038,
