@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.data.gun
 
 import com.atsuishio.superbwarfare.data.gun.GunState.Companion.isNewerRevision
+import com.atsuishio.superbwarfare.data.gun.GunState.Companion.locked
 import com.atsuishio.superbwarfare.serialization.decodeFromCompoundTag
 import com.atsuishio.superbwarfare.serialization.encodeToCompoundTag
 import com.atsuishio.superbwarfare.serialization.structured.StructuredUUID
@@ -182,18 +183,29 @@ data class GunState(
      * Writes this state into [tag], which is expected to be the live `GunData` sub-compound that also
      * carries the still tag-backed sections.
      *
-     * Own keys are dropped first so that a field returning to its default actually disappears, then the
-     * encoded state is merged in — the tag instance itself must stay alive because sub-data handlers
-     * hold on to it.
+     * Own keys absent from the encoded state are dropped so that a field returning to its default
+     * actually disappears, the rest are written over — the tag instance itself must stay alive because
+     * sub-data handlers hold on to it, and it is the tag the owning stack serializes, so this write is
+     * the save.
+     *
+     * Only entries whose value actually changes are touched. Clearing every own key first and then
+     * refilling them (what this used to do) is not equivalent for a concurrent reader: the decoder
+     * looks a key up twice — once to pick the element, once for the value — so a reader can observe a
+     * key that is present on the first lookup and gone on the second. See [locked] for why more than
+     * one thread reaches this tag at all.
      */
     fun writeInto(tag: CompoundTag) {
-        SERIALIZED_KEYS.forEach {
-            tag.remove(it)
-        }
-
         val encoded = encodeToCompoundTag(serializer(), this, encodeDefaults = false)
-        for (key in encoded.allKeys) {
-            encoded.get(key)?.let { tag.put(key, it) }
+
+        locked(tag) {
+            for (key in SERIALIZED_KEYS) {
+                val value = encoded.get(key)
+                if (value == null) {
+                    tag.remove(key)
+                } else if (tag.get(key) != value) {
+                    tag.put(key, value)
+                }
+            }
         }
     }
 
@@ -235,8 +247,25 @@ data class GunState(
             Array(descriptor.elementsCount) { descriptor.getElementName(it) }
         }
 
+        /**
+         * Runs [block] while holding the lock that guards the state entries of [tag].
+         *
+         * The tag instance is the monitor. A gun's state tag is stable for that gun's whole life —
+         * [writeInto] and `GunData.reloadTagFrom` mutate the compound in place rather than replacing it,
+         * which is what keeps the handlers holding on to it valid — so every reader and writer of one
+         * gun meets on the same object, and two guns never contend.
+         *
+         * It has to be locked at all because the tag is reachable from more than one thread: in
+         * single-player the client and the integrated server run in the same JVM and share `GunData`
+         * through its uuid cache, so a sync handled on one thread writes the tag the other thread is
+         * decoding. Readers that walk a tag they are racing a bulk rewrite of report impossible errors —
+         * `Expected a numeric NBT tag at 'BoltActionTimeTime', got INT`, for a key that really does hold
+         * an `IntTag`.
+         */
+        fun <T> locked(tag: CompoundTag, block: () -> T): T = synchronized(tag, block)
+
         /** Reads a state out of its serialized form; missing keys fall back to the field defaults. */
         @JvmStatic
-        fun fromTag(tag: CompoundTag): GunState = decodeFromCompoundTag(serializer(), tag)
+        fun fromTag(tag: CompoundTag): GunState = locked(tag) { decodeFromCompoundTag(serializer(), tag) }
     }
 }

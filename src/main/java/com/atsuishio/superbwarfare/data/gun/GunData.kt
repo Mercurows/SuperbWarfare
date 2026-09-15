@@ -1399,8 +1399,12 @@ class GunData private constructor(
 
         this.stack = newStack
 
-        reloadTagFrom(incoming)
-        state = GunState.fromTag(gunDataTag)
+        // Reloading and re-decoding are one step: between the clear and the merge the tag is empty, and
+        // a reader on another thread must not observe that (see [GunState.locked]).
+        GunState.locked(gunDataTag) {
+            reloadTagFrom(incoming)
+            state = GunState.fromTag(gunDataTag)
+        }
 
         // The remote snapshot supersedes anything a batch was still holding back.
         persistPending = false
