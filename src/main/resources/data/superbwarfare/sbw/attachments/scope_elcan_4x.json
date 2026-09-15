@@ -1,0 +1,41 @@
+{
+  "Slot": "Scope",
+  "Level": 2,
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 1.0
+    }
+  ],
+  "Bone": "scope_pos",
+  "Model": "superbwarfare:models/bedrock/attachment/scope_elcan_4x.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/scope_elcan_4x.png",
+  "ScopeInfo": {
+    "Type": "Scope",
+    "Modes": [
+      {
+        "Index": 1,
+        "Type": "Scope",
+        "ViewRadiusModifier": 1.0,
+        "Zoom": {
+          "Min": 4.0,
+          "Max": 4.0,
+          "Default": 4.0,
+          "Step": 1.0
+        }
+      },
+      {
+        "Index": 2,
+        "Type": "Sight",
+        "ViewRadiusModifier": 1.0,
+        "Zoom": {
+          "Min": 1.25,
+          "Max": 1.25,
+          "Default": 1.25,
+          "Step": 1.0
+        }
+      }
+    ]
+  }
+}

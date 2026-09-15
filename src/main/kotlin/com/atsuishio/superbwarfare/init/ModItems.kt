@@ -685,6 +685,7 @@ object ModItems {
     @JvmField val SCOPE_RANGER = registerAttachment("scope_ranger", Rarity.EPIC)
     @JvmField val SCOPE_QMK171 = registerAttachment("scope_qmk171", Rarity.EPIC)
     @JvmField val SCOPE_HAMR = registerAttachment("scope_hamr", Rarity.EPIC)
+    @JvmField val SCOPE_ELCAN_4X = registerAttachment("scope_elcan_4x", Rarity.EPIC)
     @JvmField val SCOPE_LPVO = registerAttachment("scope_lpvo", Rarity.EPIC)
     @JvmField val SCOPE_SNIPER = registerAttachment("scope_sniper", Rarity.EPIC)
     // @formatter:on
