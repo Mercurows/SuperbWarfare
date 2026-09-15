@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "superbwarfare:common_accessory_kit"
+    },
+    "b": {
+      "item": "superbwarfare:rare_accessory_kit"
+    },
+    "c": {
+      "item": "superbwarfare:epic_accessory_kit"
+    },
+    "d": {
+      "item": "superbwarfare:legendary_accessory_kit"
+    },
+    "e": {
+      "item": "minecraft:nether_star"
+    }
+  },
+  "pattern": [
+    " a ",
+    "bec",
+    " d "
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:superb_accessory_kit"
+  }
+}

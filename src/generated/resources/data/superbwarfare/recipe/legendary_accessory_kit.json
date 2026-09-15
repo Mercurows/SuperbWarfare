@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "item": "minecraft:netherite_ingot"
+  },
+  "base": {
+    "item": "superbwarfare:epic_accessory_kit"
+  },
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:legendary_accessory_kit"
+  },
+  "template": {
+    "item": "minecraft:netherite_upgrade_smithing_template"
+  }
+}

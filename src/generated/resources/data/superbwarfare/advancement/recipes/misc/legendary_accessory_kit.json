@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_epic_accessory_kit": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:epic_accessory_kit"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_netherite_upgrade_smithing_template": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:netherite_upgrade_smithing_template"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:legendary_accessory_kit"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_netherite_upgrade_smithing_template",
+      "has_epic_accessory_kit"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:legendary_accessory_kit"
+    ]
+  }
+}

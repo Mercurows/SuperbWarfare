@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "tag": "c:plates/plastic"
+    },
+    "b": {
+      "tag": "c:ingots/iron"
+    }
+  },
+  "pattern": [
+    "aba",
+    "b b",
+    "aba"
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:common_accessory_kit"
+  }
+}
