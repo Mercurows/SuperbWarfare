@@ -1,6 +1,5 @@
 {
-  "DefaultZoom": 3.5,
-  "Spread": 4.8,
+  "Spread": 8,
   "RecoilX": 0.002,
   "RecoilY": 0.063,
   "Damage": 33,
@@ -15,16 +14,35 @@
   "DrawTime": 12,
   "ZoomTime": 7,
   "ZoomSpreadRate": 0.005,
-  "PrepareTime": 29,
-  "PrepareEmptyTime": 16,
-  "IterativeTime": 11,
-  "FinishTime": 18,
+  "PrepareTime": 30,
+  "IterativeTime": 13,
+  "FinishTime": 20,
   "BypassesArmor": 0.54,
   "SoundRadius": 18,
   "GunType": "Sniper",
   "DamageReduce": {
     "Type": "Sniper"
   },
+  "ActionSteps": [
+    {
+      "Timeline": "RELOAD_FINISH",
+      "Progress": 0.25,
+      "Action": "CLOSE_STRIKE",
+      "Value": false
+    },
+    {
+      "Timeline": "RELOAD_FINISH",
+      "Progress": 0.25,
+      "Action": "EMPTY",
+      "Value": false
+    },
+    {
+      "Timeline": "BOLT",
+      "Progress": 0.22222,
+      "Action": "CLOSE_STRIKE",
+      "Value": false
+    }
+  ],
   "AmmoType": "@SniperAmmo",
   "Icon": "superbwarfare:textures/gun_icon/mosin_nagant_icon.png",
   "AvailablePerks": [
@@ -46,22 +64,25 @@
     "!superbwarfare:longer_wire",
     "!superbwarfare:cupid_arrow"
   ],
+  "AvailableAttachments": {
+    "Scope": [
+      "superbwarfare:scope_pu"
+    ],
+    "Barrel": [
+      "superbwarfare:meowlencer",
+      "superbwarfare:hissilencer",
+      "superbwarfare:silaowuncer",
+      "superbwarfare:ru_silencer",
+      "superbwarfare:ar_silencer",
+      "superbwarfare:loudspeaker"
+    ]
+  },
   "SoundInfo": {
     "Fire1P": "superbwarfare:mosin_nagant_fire_1p",
     "Fire3P": "superbwarfare:mosin_nagant_fire_3p",
     "Fire3PFar": "superbwarfare:mosin_nagant_far",
     "Fire3PVeryFar": "superbwarfare:mosin_nagant_veryfar",
-    "ReloadPrepare": "superbwarfare:k_98_prepare",
-    "ReloadPrepareEmpty": "superbwarfare:k_98_prepare_empty",
-    "ReloadLoop": "superbwarfare:k_98_loop",
-    "ReloadEnd": "superbwarfare:k_98_end",
-    "Bolt": "superbwarfare:k_98_bolt",
-    "CancellableSounds": [
-      "superbwarfare:k_98_prepare",
-      "superbwarfare:k_98_prepare_empty",
-      "superbwarfare:k_98_loop",
-      "superbwarfare:k_98_end",
-      "superbwarfare:k_98_bolt"
-    ]
+    "Fire1PSilent": "superbwarfare:mosin_nagant_fire_1p_s",
+    "Fire3PSilent": "superbwarfare:mosin_nagant_fire_3p_s"
   }
 }

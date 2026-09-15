@@ -1651,7 +1651,7 @@ object ClientEventHandler {
             if (data.isShotgun || stack.`is`(ModItems.MINIGUN.get())) 1.2 * zoomSpread * (basicDev + 0.2 * (walk + sprint + crouching + prone + jump + ride) + fireSpread)
             else zoomSpread * (0.7 * basicDev + walk + sprint + crouching + prone + jump + ride + 0.8 * fireSpread)
 
-        gunSpread = Mth.lerp(0.14 * times, gunSpread, spread)
+        gunSpread = Mth.lerp(0.5 * times, gunSpread, spread)
 
         // 开火部分
         val weight = data.get(GunProp.WEIGHT)
