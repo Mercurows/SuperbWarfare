@@ -1,12 +1,12 @@
 package com.atsuishio.superbwarfare.item.attachment
 
+import com.atsuishio.superbwarfare.client.tooltip.component.AttachmentImageComponent
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
-import net.minecraft.ChatFormatting
-import net.minecraft.network.chat.Component
+import net.minecraft.world.inventory.tooltip.TooltipComponent
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Rarity
-import net.minecraft.world.item.TooltipFlag
+import java.util.*
 
 open class AttachmentItem @JvmOverloads constructor(
     private val attachmentId: String,
@@ -15,17 +15,11 @@ open class AttachmentItem @JvmOverloads constructor(
 
     open fun definition(): AttachmentDefinition? = AttachmentDefinition.from(attachmentId)
 
-    override fun appendHoverText(
-        stack: ItemStack,
-        context: TooltipContext,
-        tooltipComponents: MutableList<Component>,
-        tooltipFlag: TooltipFlag
-    ) {
-        val definition = definition() ?: return
-        tooltipComponents.add(
-            Component.translatable("attachment.superbwarfare.slot")
-                .withStyle(ChatFormatting.GOLD)
-                .append(Component.literal(definition.slot.attachmentName))
-        )
+    override fun getTooltipImage(stack: ItemStack): Optional<TooltipComponent> {
+        return if (definition() == null) {
+            Optional.empty()
+        } else {
+            Optional.of(AttachmentImageComponent(stack))
+        }
     }
 }

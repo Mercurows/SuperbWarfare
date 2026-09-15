@@ -47,7 +47,7 @@ data class AdjustZoomFovMessage(val scroll: Double) : ServerPacketPayload() {
         } else {
             val scopeZoom = gun.attachment.id(AttachmentType.SCOPE)
                 ?.let { AttachmentDefinition.from(it) }
-                ?.zoom
+                ?.scopeZoom(gun.attachment.scopeMode(AttachmentType.SCOPE))
 
             if (scopeZoom != null) {
                 val currentZoom = gun.attachment.getZoom(AttachmentType.SCOPE) ?: scopeZoom.default

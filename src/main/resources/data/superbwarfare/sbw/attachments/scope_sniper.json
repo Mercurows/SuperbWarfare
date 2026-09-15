@@ -13,12 +13,12 @@
   "Texture": "superbwarfare:textures/bedrock/attachment/scope_sniper.png",
   "ScopeInfo": {
     "Type": "Scope",
-    "ZoomLengthScale": 0.3
-  },
-  "Zoom": {
-    "Min": 4,
-    "Max": 12,
-    "Default": 8,
-    "Step": 0.15
+    "ZoomLengthScale": 0.3,
+    "Zoom": {
+      "Min": 4,
+      "Max": 12,
+      "Default": 8,
+      "Step": 0.15
+    }
   }
 }

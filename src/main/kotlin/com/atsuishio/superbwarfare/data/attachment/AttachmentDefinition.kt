@@ -59,8 +59,9 @@ data class AttachmentDefinition(
     @SerialName("Override")
     val override: SerializedGsonObject? = null,
 
+    // Legacy fallback for datapacks that still use the old top-level Zoom field.
     @SerialName("Zoom")
-    val zoom: AttachmentZoom? = null,
+    val legacyZoom: AttachmentZoom? = null,
 
     @SerialName("ScopeInfo")
     val scopeInfo: ScopeInfo? = null,
@@ -88,12 +89,7 @@ data class AttachmentDefinition(
             jsonPropModifier.modifyProperty(modifier)
         }
 
-        val scopeInfo = scopeInfo
-        val scopeZoom = if (scopeInfo != null && scopeInfo.modes.isNotEmpty()) {
-            scopeInfo.mode(modifier.data.attachment.scopeMode(slot)).zoom ?: zoom
-        } else {
-            zoom
-        } ?: return
+        val scopeZoom = scopeZoom(modifier.data.attachment.scopeMode(slot)) ?: return
         val current = modifier.data.attachment.getZoom(slot) ?: scopeZoom.default
         pmc.set("DefaultZoom", current)
         pmc.set("MinZoom", scopeZoom.min)
@@ -132,10 +128,12 @@ data class AttachmentDefinition(
 
     fun scopeZoom(index: Int): AttachmentZoom? {
         val info = scopeInfo
-        return if (info != null && info.modes.isNotEmpty()) {
-            info.mode(index).zoom ?: zoom
+        if (info == null) return legacyZoom
+
+        return if (info.modes.isNotEmpty()) {
+            info.mode(index).zoom ?: info.zoom ?: legacyZoom
         } else {
-            zoom
+            info.zoom ?: legacyZoom
         }
     }
 

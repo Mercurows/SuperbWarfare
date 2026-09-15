@@ -14,6 +14,12 @@
   "ScopeInfo": {
     "Type": "Sight",
     "ZoomLengthScale": 0.3,
+    "Zoom": {
+      "Min": 3,
+      "Max": 3,
+      "Default": 3,
+      "Step": 1
+    },
     "AmmoBar": [
       {
         "Bone": "ammo_bar",
@@ -38,11 +44,5 @@
         "Text": "%ammo_count%"
       }
     ]
-  },
-  "Zoom": {
-    "Min": 3,
-    "Max": 3,
-    "Default": 3,
-    "Step": 1
   }
 }

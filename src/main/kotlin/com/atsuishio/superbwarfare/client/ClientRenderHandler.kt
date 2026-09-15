@@ -60,6 +60,7 @@ object ClientRenderHandler {
         event.register(SentinelImageComponent::class.java) { ClientSentinelImageTooltip(it) }
         event.register(ChargingStationImageComponent::class.java) { ClientChargingStationImageTooltip(it) }
         event.register(DogTagImageComponent::class.java) { ClientDogTagImageTooltip(it) }
+        event.register(AttachmentImageComponent::class.java) { ClientAttachmentImageTooltip(it) }
     }
 
     @SubscribeEvent

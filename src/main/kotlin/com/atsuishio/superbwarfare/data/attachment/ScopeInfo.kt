@@ -368,6 +368,9 @@ data class ScopeInfo(
     @SerialName("ZoomLengthScale")
     val zoomLengthScale: Float = 0.75f,
 
+    @SerialName("Zoom")
+    val zoom: AttachmentZoom? = null,
+
     @SerialName("Modes")
     val modes: List<ScopeMode> = emptyList(),
 
@@ -383,7 +386,13 @@ data class ScopeInfo(
         if (modes.isNotEmpty()) {
             return modes[index.coerceIn(modes.indices)]
         }
-        return ScopeMode(index = 0, type = type, viewRadiusModifier = viewRadiusModifier, zoomLengthScale = zoomLengthScale)
+        return ScopeMode(
+            index = 0,
+            type = type,
+            viewRadiusModifier = viewRadiusModifier,
+            zoomLengthScale = zoomLengthScale,
+            zoom = zoom,
+        )
     }
 
     fun modeCount(): Int = if (modes.isEmpty()) 1 else modes.size
