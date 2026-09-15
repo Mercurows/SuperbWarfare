@@ -1,0 +1,11 @@
+{
+  "type": "superbwarfare:researching",
+  "input": {
+    "item": "superbwarfare:rare_accessory_kit"
+  },
+  "result": {
+    "tag": "superbwarfare:attachment/researchable/rare"
+  },
+  "selectable": true,
+  "time": 200
+}

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_legendary_accessory_kit": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:legendary_accessory_kit"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:attachment_legendary_researching"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_legendary_accessory_kit"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:attachment_legendary_researching"
+    ]
+  }
+}

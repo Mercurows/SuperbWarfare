@@ -1,0 +1,11 @@
+{
+  "type": "superbwarfare:researching",
+  "input": {
+    "item": "superbwarfare:superb_accessory_kit"
+  },
+  "result": {
+    "tag": "superbwarfare:attachment/researchable/superb"
+  },
+  "selectable": true,
+  "time": 200
+}

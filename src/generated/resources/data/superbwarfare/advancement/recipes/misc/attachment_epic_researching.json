@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_epic_accessory_kit": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:epic_accessory_kit"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:attachment_epic_researching"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_epic_accessory_kit"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:attachment_epic_researching"
+    ]
+  }
+}

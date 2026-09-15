@@ -1,0 +1,11 @@
+{
+  "type": "superbwarfare:researching",
+  "input": {
+    "item": "superbwarfare:virtual_accessory_kit"
+  },
+  "result": {
+    "tag": "superbwarfare:attachment/researchable/virtual"
+  },
+  "selectable": true,
+  "time": 200
+}

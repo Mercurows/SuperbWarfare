@@ -689,6 +689,49 @@ class ModItemTagProvider(
                 ModItems.TRIANGLE_GRIP
             )
         )
+
+        this.tag(ModTags.Items.ATTACHMENT_RESEARCHABLE_COMMON).addTags(
+            ModTags.Items.ATTACHMENT_BARREL_COMMON,
+            ModTags.Items.ATTACHMENT_GRIP_COMMON,
+            ModTags.Items.ATTACHMENT_SCOPE_COMMON,
+            ModTags.Items.ATTACHMENT_STOCK_COMMON,
+            ModTags.Items.ATTACHMENT_MAGAZINE_COMMON
+        )
+        this.tag(ModTags.Items.ATTACHMENT_RESEARCHABLE_RARE).addTags(
+            ModTags.Items.ATTACHMENT_BARREL_RARE,
+            ModTags.Items.ATTACHMENT_GRIP_RARE,
+            ModTags.Items.ATTACHMENT_SCOPE_RARE,
+            ModTags.Items.ATTACHMENT_STOCK_RARE,
+            ModTags.Items.ATTACHMENT_MAGAZINE_RARE
+        )
+        this.tag(ModTags.Items.ATTACHMENT_RESEARCHABLE_EPIC).addTags(
+            ModTags.Items.ATTACHMENT_BARREL_EPIC,
+            ModTags.Items.ATTACHMENT_GRIP_EPIC,
+            ModTags.Items.ATTACHMENT_SCOPE_EPIC,
+            ModTags.Items.ATTACHMENT_STOCK_EPIC,
+            ModTags.Items.ATTACHMENT_MAGAZINE_EPIC
+        )
+        this.tag(ModTags.Items.ATTACHMENT_RESEARCHABLE_LEGENDARY).addTags(
+            ModTags.Items.ATTACHMENT_BARREL_LEGENDARY,
+            ModTags.Items.ATTACHMENT_GRIP_LEGENDARY,
+            ModTags.Items.ATTACHMENT_SCOPE_LEGENDARY,
+            ModTags.Items.ATTACHMENT_STOCK_LEGENDARY,
+            ModTags.Items.ATTACHMENT_MAGAZINE_LEGENDARY
+        )
+        this.tag(ModTags.Items.ATTACHMENT_RESEARCHABLE_SUPERB).addTags(
+            ModTags.Items.ATTACHMENT_BARREL_SUPERB,
+            ModTags.Items.ATTACHMENT_GRIP_SUPERB,
+            ModTags.Items.ATTACHMENT_SCOPE_SUPERB,
+            ModTags.Items.ATTACHMENT_STOCK_SUPERB,
+            ModTags.Items.ATTACHMENT_MAGAZINE_SUPERB
+        )
+        this.tag(ModTags.Items.ATTACHMENT_RESEARCHABLE_VIRTUAL).addTags(
+            ModTags.Items.ATTACHMENT_BARREL_VIRTUAL,
+            ModTags.Items.ATTACHMENT_GRIP_VIRTUAL,
+            ModTags.Items.ATTACHMENT_SCOPE_VIRTUAL,
+            ModTags.Items.ATTACHMENT_STOCK_VIRTUAL,
+            ModTags.Items.ATTACHMENT_MAGAZINE_VIRTUAL
+        )
     }
 
     private fun addAttachmentTypeTags(

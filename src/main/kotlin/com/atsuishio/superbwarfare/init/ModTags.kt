@@ -145,6 +145,13 @@ object ModTags {
         @JvmField val ATTACHMENT_GRIP_SUPERB = modItemTag("attachment/grip/superb")
         @JvmField val ATTACHMENT_GRIP_VIRTUAL = modItemTag("attachment/grip/virtual")
 
+        @JvmField val ATTACHMENT_RESEARCHABLE_COMMON = modItemTag("attachment/researchable/common")
+        @JvmField val ATTACHMENT_RESEARCHABLE_RARE = modItemTag("attachment/researchable/rare")
+        @JvmField val ATTACHMENT_RESEARCHABLE_EPIC = modItemTag("attachment/researchable/epic")
+        @JvmField val ATTACHMENT_RESEARCHABLE_LEGENDARY = modItemTag("attachment/researchable/legendary")
+        @JvmField val ATTACHMENT_RESEARCHABLE_SUPERB = modItemTag("attachment/researchable/superb")
+        @JvmField val ATTACHMENT_RESEARCHABLE_VIRTUAL = modItemTag("attachment/researchable/virtual")
+
         @JvmField val HAMMER = modItemTag("hammer")
         @JvmField val WRENCHES = commonItemTag("wrenches")
         @JvmField val TOOLS_WRENCH = commonItemTag("tools/wrench")

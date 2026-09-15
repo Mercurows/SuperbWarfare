@@ -1,0 +1,11 @@
+{
+  "type": "superbwarfare:researching",
+  "input": {
+    "item": "superbwarfare:legendary_accessory_kit"
+  },
+  "result": {
+    "tag": "superbwarfare:attachment/researchable/legendary"
+  },
+  "selectable": true,
+  "time": 200
+}

@@ -1,0 +1,11 @@
+{
+  "type": "superbwarfare:researching",
+  "input": {
+    "item": "superbwarfare:common_accessory_kit"
+  },
+  "result": {
+    "tag": "superbwarfare:attachment/researchable/common"
+  },
+  "selectable": true,
+  "time": 200
+}
