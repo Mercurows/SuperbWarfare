@@ -74,6 +74,7 @@
     ],
     "Grip": [
       "superbwarfare:vertical_grip",
+      "superbwarfare:grip_rectangle_vertical",
       "superbwarfare:triangle_grip"
     ],
     "Barrel": [
