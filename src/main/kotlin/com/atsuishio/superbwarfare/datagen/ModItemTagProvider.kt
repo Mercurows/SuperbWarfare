@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.datagen
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModPerks
+import com.atsuishio.superbwarfare.init.ModRarities
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.init.ModTags.commonItemTag
 import com.atsuishio.superbwarfare.item.misc.PerkItem
@@ -11,8 +12,10 @@ import net.minecraft.core.HolderLookup
 import net.minecraft.data.PackOutput
 import net.minecraft.data.tags.ItemTagsProvider
 import net.minecraft.tags.ItemTags
+import net.minecraft.tags.TagKey
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.Items
+import net.minecraft.world.item.Rarity
 import net.minecraft.world.level.block.Block
 import net.neoforged.neoforge.common.Tags
 import net.neoforged.neoforge.common.data.ExistingFileHelper
@@ -427,6 +430,7 @@ class ModItemTagProvider(
         )
 
         this.addPerkTags()
+        this.addAttachmentTags()
     }
 
     private fun addPerkTags() {
@@ -530,5 +534,202 @@ class ModItemTagProvider(
 
     private fun perkItem(perk: PerkRegistry): Item {
         return ModItems.PERK_ITEMS[perk]!!.get()
+    }
+
+    private fun addAttachmentTags() {
+        this.tag(ModTags.Items.ATTACHMENT).addTags(
+            ModTags.Items.ATTACHMENT_SCOPE,
+            ModTags.Items.ATTACHMENT_MAGAZINE,
+            ModTags.Items.ATTACHMENT_BARREL,
+            ModTags.Items.ATTACHMENT_STOCK,
+            ModTags.Items.ATTACHMENT_GRIP
+        )
+
+        this.addAttachmentTypeTags(
+            ModTags.Items.ATTACHMENT_STOCK,
+            ModTags.Items.ATTACHMENT_STOCK_COMMON,
+            ModTags.Items.ATTACHMENT_STOCK_RARE,
+            ModTags.Items.ATTACHMENT_STOCK_EPIC,
+            ModTags.Items.ATTACHMENT_STOCK_LEGENDARY,
+            ModTags.Items.ATTACHMENT_STOCK_SUPERB,
+            ModTags.Items.ATTACHMENT_STOCK_VIRTUAL
+        )
+        this.addAttachmentItems(
+            ModTags.Items.ATTACHMENT_STOCK_COMMON,
+            ModTags.Items.ATTACHMENT_STOCK_RARE,
+            ModTags.Items.ATTACHMENT_STOCK_EPIC,
+            ModTags.Items.ATTACHMENT_STOCK_LEGENDARY,
+            ModTags.Items.ATTACHMENT_STOCK_SUPERB,
+            ModTags.Items.ATTACHMENT_STOCK_VIRTUAL,
+            listOf(
+                ModItems.OEM_STOCK_LIGHT,
+                ModItems.OEM_STOCK_HEAVY,
+                ModItems.STOCK_UBR,
+                ModItems.STOCK_PRS,
+                ModItems.STOCK_AR_TACTICAL,
+                ModItems.STOCK_ZENIT_PT_1
+            )
+        )
+
+        this.addAttachmentTypeTags(
+            ModTags.Items.ATTACHMENT_MAGAZINE,
+            ModTags.Items.ATTACHMENT_MAGAZINE_COMMON,
+            ModTags.Items.ATTACHMENT_MAGAZINE_RARE,
+            ModTags.Items.ATTACHMENT_MAGAZINE_EPIC,
+            ModTags.Items.ATTACHMENT_MAGAZINE_LEGENDARY,
+            ModTags.Items.ATTACHMENT_MAGAZINE_SUPERB,
+            ModTags.Items.ATTACHMENT_MAGAZINE_VIRTUAL
+        )
+        this.addAttachmentItems(
+            ModTags.Items.ATTACHMENT_MAGAZINE_COMMON,
+            ModTags.Items.ATTACHMENT_MAGAZINE_RARE,
+            ModTags.Items.ATTACHMENT_MAGAZINE_EPIC,
+            ModTags.Items.ATTACHMENT_MAGAZINE_LEGENDARY,
+            ModTags.Items.ATTACHMENT_MAGAZINE_SUPERB,
+            ModTags.Items.ATTACHMENT_MAGAZINE_VIRTUAL,
+            listOf(
+                ModItems.MAGAZINE_EXTEND,
+                ModItems.MAGAZINE_EXTEND_PRO
+            )
+        )
+
+        this.addAttachmentTypeTags(
+            ModTags.Items.ATTACHMENT_BARREL,
+            ModTags.Items.ATTACHMENT_BARREL_COMMON,
+            ModTags.Items.ATTACHMENT_BARREL_RARE,
+            ModTags.Items.ATTACHMENT_BARREL_EPIC,
+            ModTags.Items.ATTACHMENT_BARREL_LEGENDARY,
+            ModTags.Items.ATTACHMENT_BARREL_SUPERB,
+            ModTags.Items.ATTACHMENT_BARREL_VIRTUAL
+        )
+        this.addAttachmentItems(
+            ModTags.Items.ATTACHMENT_BARREL_COMMON,
+            ModTags.Items.ATTACHMENT_BARREL_RARE,
+            ModTags.Items.ATTACHMENT_BARREL_EPIC,
+            ModTags.Items.ATTACHMENT_BARREL_LEGENDARY,
+            ModTags.Items.ATTACHMENT_BARREL_SUPERB,
+            ModTags.Items.ATTACHMENT_BARREL_VIRTUAL,
+            listOf(
+                ModItems.MEOWLENCER,
+                ModItems.HISSILENCER,
+                ModItems.SILAOWUNCER,
+                ModItems.RU_SILENCER,
+                ModItems.SILENCER_SUPERB_12,
+                ModItems.SILENCER_50_CAL,
+                ModItems.AR_SILENCER,
+                ModItems.HANDGUN_SILENCER,
+                ModItems.OSPREY_SILENCER,
+                ModItems.LOUDSPEAKER,
+                ModItems.OSPREY_SILENCER_TRACHELIUM,
+                ModItems.SILENCER_QINGLAN,
+                ModItems.TRIANGULAR_MUZZLE,
+                ModItems.LINEAR_MUZZLE,
+                ModItems.CROSS_MUZZLE,
+                ModItems.STAR_MUZZLE,
+                ModItems.LOVE_MUZZLE
+            )
+        )
+
+        this.addAttachmentTypeTags(
+            ModTags.Items.ATTACHMENT_SCOPE,
+            ModTags.Items.ATTACHMENT_SCOPE_COMMON,
+            ModTags.Items.ATTACHMENT_SCOPE_RARE,
+            ModTags.Items.ATTACHMENT_SCOPE_EPIC,
+            ModTags.Items.ATTACHMENT_SCOPE_LEGENDARY,
+            ModTags.Items.ATTACHMENT_SCOPE_SUPERB,
+            ModTags.Items.ATTACHMENT_SCOPE_VIRTUAL
+        )
+        this.addAttachmentItems(
+            ModTags.Items.ATTACHMENT_SCOPE_COMMON,
+            ModTags.Items.ATTACHMENT_SCOPE_RARE,
+            ModTags.Items.ATTACHMENT_SCOPE_EPIC,
+            ModTags.Items.ATTACHMENT_SCOPE_LEGENDARY,
+            ModTags.Items.ATTACHMENT_SCOPE_SUPERB,
+            ModTags.Items.ATTACHMENT_SCOPE_VIRTUAL,
+            listOf(
+                ModItems.SCOPE_COYOTE,
+                ModItems.SCOPE_AIMPOINT_T2,
+                ModItems.SCOPE_HANDGUN_RED_DOT,
+                ModItems.SCOPE_EOTECH_551,
+                ModItems.SCOPE_OKP_7,
+                ModItems.SCOPE_PKAS,
+                ModItems.SCOPE_BRUISER,
+                ModItems.SCOPE_ACOG,
+                ModItems.SCOPE_1P_78,
+                ModItems.SCOPE_PU,
+                ModItems.SCOPE_PK_A,
+                ModItems.SCOPE_RANGER,
+                ModItems.SCOPE_QMK171,
+                ModItems.SCOPE_HAMR,
+                ModItems.SCOPE_ELCAN_4X,
+                ModItems.SCOPE_LPVO,
+                ModItems.SCOPE_SNIPER
+            )
+        )
+
+        this.addAttachmentTypeTags(
+            ModTags.Items.ATTACHMENT_GRIP,
+            ModTags.Items.ATTACHMENT_GRIP_COMMON,
+            ModTags.Items.ATTACHMENT_GRIP_RARE,
+            ModTags.Items.ATTACHMENT_GRIP_EPIC,
+            ModTags.Items.ATTACHMENT_GRIP_LEGENDARY,
+            ModTags.Items.ATTACHMENT_GRIP_SUPERB,
+            ModTags.Items.ATTACHMENT_GRIP_VIRTUAL
+        )
+        this.addAttachmentItems(
+            ModTags.Items.ATTACHMENT_GRIP_COMMON,
+            ModTags.Items.ATTACHMENT_GRIP_RARE,
+            ModTags.Items.ATTACHMENT_GRIP_EPIC,
+            ModTags.Items.ATTACHMENT_GRIP_LEGENDARY,
+            ModTags.Items.ATTACHMENT_GRIP_SUPERB,
+            ModTags.Items.ATTACHMENT_GRIP_VIRTUAL,
+            listOf(
+                ModItems.VERTICAL_GRIP,
+                ModItems.GRIP_RECTANGLE_VERTICAL,
+                ModItems.TRIANGLE_GRIP
+            )
+        )
+    }
+
+    private fun addAttachmentTypeTags(
+        typeTag: TagKey<Item>,
+        commonTag: TagKey<Item>,
+        rareTag: TagKey<Item>,
+        epicTag: TagKey<Item>,
+        legendaryTag: TagKey<Item>,
+        superbTag: TagKey<Item>,
+        virtualTag: TagKey<Item>
+    ) {
+        this.tag(typeTag).addTags(commonTag, rareTag, epicTag, legendaryTag, superbTag, virtualTag)
+        this.tag(commonTag)
+        this.tag(rareTag)
+        this.tag(epicTag)
+        this.tag(legendaryTag)
+        this.tag(superbTag)
+        this.tag(virtualTag)
+    }
+
+    private fun addAttachmentItems(
+        commonTag: TagKey<Item>,
+        rareTag: TagKey<Item>,
+        epicTag: TagKey<Item>,
+        legendaryTag: TagKey<Item>,
+        superbTag: TagKey<Item>,
+        virtualTag: TagKey<Item>,
+        attachments: List<DeferredHolder<Item, out Item>>
+    ) {
+        attachments.forEach {
+            val item = it.get()
+            val rarityTag = when (item.defaultInstance.getRarity()) {
+                Rarity.COMMON -> commonTag
+                Rarity.RARE -> rareTag
+                Rarity.EPIC -> epicTag
+                ModRarities.LEGENDARY -> legendaryTag
+                ModRarities.SUPERB -> superbTag
+                ModRarities.VIRTUAL -> virtualTag
+                else -> error("Unsupported attachment rarity: ${item.defaultInstance.getRarity()}")
+            }
+            this.tag(rarityTag).add(item)
+        }
     }
 }

@@ -101,6 +101,50 @@ object ModTags {
         @JvmField val RESEARCHABLE_DAMAGE_PERK_LEGENDARY = modItemTag("perk/researchable/damage/legendary")
         @JvmField val RESEARCHABLE_DAMAGE_PERK_SUPERB = modItemTag("perk/researchable/damage/superb")
 
+        // Attachment tag
+        @JvmField val ATTACHMENT = modItemTag("attachment")
+
+        @JvmField val ATTACHMENT_SCOPE = modItemTag("attachment/scope")
+        @JvmField val ATTACHMENT_MAGAZINE = modItemTag("attachment/magazine")
+        @JvmField val ATTACHMENT_BARREL = modItemTag("attachment/barrel")
+        @JvmField val ATTACHMENT_STOCK = modItemTag("attachment/stock")
+        @JvmField val ATTACHMENT_GRIP = modItemTag("attachment/grip")
+
+        @JvmField val ATTACHMENT_SCOPE_COMMON = modItemTag("attachment/scope/common")
+        @JvmField val ATTACHMENT_SCOPE_RARE = modItemTag("attachment/scope/rare")
+        @JvmField val ATTACHMENT_SCOPE_EPIC = modItemTag("attachment/scope/epic")
+        @JvmField val ATTACHMENT_SCOPE_LEGENDARY = modItemTag("attachment/scope/legendary")
+        @JvmField val ATTACHMENT_SCOPE_SUPERB = modItemTag("attachment/scope/superb")
+        @JvmField val ATTACHMENT_SCOPE_VIRTUAL = modItemTag("attachment/scope/virtual")
+
+        @JvmField val ATTACHMENT_MAGAZINE_COMMON = modItemTag("attachment/magazine/common")
+        @JvmField val ATTACHMENT_MAGAZINE_RARE = modItemTag("attachment/magazine/rare")
+        @JvmField val ATTACHMENT_MAGAZINE_EPIC = modItemTag("attachment/magazine/epic")
+        @JvmField val ATTACHMENT_MAGAZINE_LEGENDARY = modItemTag("attachment/magazine/legendary")
+        @JvmField val ATTACHMENT_MAGAZINE_SUPERB = modItemTag("attachment/magazine/superb")
+        @JvmField val ATTACHMENT_MAGAZINE_VIRTUAL = modItemTag("attachment/magazine/virtual")
+
+        @JvmField val ATTACHMENT_BARREL_COMMON = modItemTag("attachment/barrel/common")
+        @JvmField val ATTACHMENT_BARREL_RARE = modItemTag("attachment/barrel/rare")
+        @JvmField val ATTACHMENT_BARREL_EPIC = modItemTag("attachment/barrel/epic")
+        @JvmField val ATTACHMENT_BARREL_LEGENDARY = modItemTag("attachment/barrel/legendary")
+        @JvmField val ATTACHMENT_BARREL_SUPERB = modItemTag("attachment/barrel/superb")
+        @JvmField val ATTACHMENT_BARREL_VIRTUAL = modItemTag("attachment/barrel/virtual")
+
+        @JvmField val ATTACHMENT_STOCK_COMMON = modItemTag("attachment/stock/common")
+        @JvmField val ATTACHMENT_STOCK_RARE = modItemTag("attachment/stock/rare")
+        @JvmField val ATTACHMENT_STOCK_EPIC = modItemTag("attachment/stock/epic")
+        @JvmField val ATTACHMENT_STOCK_LEGENDARY = modItemTag("attachment/stock/legendary")
+        @JvmField val ATTACHMENT_STOCK_SUPERB = modItemTag("attachment/stock/superb")
+        @JvmField val ATTACHMENT_STOCK_VIRTUAL = modItemTag("attachment/stock/virtual")
+
+        @JvmField val ATTACHMENT_GRIP_COMMON = modItemTag("attachment/grip/common")
+        @JvmField val ATTACHMENT_GRIP_RARE = modItemTag("attachment/grip/rare")
+        @JvmField val ATTACHMENT_GRIP_EPIC = modItemTag("attachment/grip/epic")
+        @JvmField val ATTACHMENT_GRIP_LEGENDARY = modItemTag("attachment/grip/legendary")
+        @JvmField val ATTACHMENT_GRIP_SUPERB = modItemTag("attachment/grip/superb")
+        @JvmField val ATTACHMENT_GRIP_VIRTUAL = modItemTag("attachment/grip/virtual")
+
         @JvmField val HAMMER = modItemTag("hammer")
         @JvmField val WRENCHES = commonItemTag("wrenches")
         @JvmField val TOOLS_WRENCH = commonItemTag("tools/wrench")

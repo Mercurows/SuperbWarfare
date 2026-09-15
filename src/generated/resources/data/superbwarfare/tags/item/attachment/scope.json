@@ -1,0 +1,10 @@
+{
+  "values": [
+    "#superbwarfare:attachment/scope/common",
+    "#superbwarfare:attachment/scope/rare",
+    "#superbwarfare:attachment/scope/epic",
+    "#superbwarfare:attachment/scope/legendary",
+    "#superbwarfare:attachment/scope/superb",
+    "#superbwarfare:attachment/scope/virtual"
+  ]
+}
