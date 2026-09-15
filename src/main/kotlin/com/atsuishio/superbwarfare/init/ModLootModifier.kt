@@ -50,7 +50,7 @@ object ModLootModifier {
         ): ObjectArrayList<ItemStack> {
             if (context.level.gameRules.getBoolean(ModGameRules.MOD_RULE_DO_GENERATE_LOOTS)) {
                 context.resolver.get(Registries.LOOT_TABLE, this.lootTable).ifPresent { table ->
-                    table.value().getRandomItemsRaw(
+                    table.value().getRandomItems(
                         context,
                         LootTable.createStackSplitter(context.level) { generatedLoot.add(it) }
                     )
