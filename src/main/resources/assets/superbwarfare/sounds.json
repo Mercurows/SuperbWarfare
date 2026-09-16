@@ -247,10 +247,34 @@
       }
     ]
   },
-  "m_79_reload_empty": {
+  "m_79_ammo_out": {
     "sounds": [
       {
-        "name": "superbwarfare:gun/m_79/m_79_reload",
+        "name": "superbwarfare:gun/m_79/m_79_ammo_out",
+        "stream": false
+      }
+    ]
+  },
+  "m_79_ammo_in": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/m_79/m_79_ammo_in",
+        "stream": false
+      }
+    ]
+  },
+  "m_79_open": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/m_79/m_79_open",
+        "stream": false
+      }
+    ]
+  },
+  "m_79_close": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/m_79/m_79_close",
         "stream": false
       }
     ]

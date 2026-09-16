@@ -12,7 +12,7 @@
   "Weight": 4,
   "DrawTime": 11,
   "ZoomTime": 6,
-  "EmptyReloadTime": 64,
+  "EmptyReloadTime": 39,
   "RPM": 180,
   "GunType": "CurvedLauncher",
   "AmmoType": "superbwarfare:grenade_40mm",
@@ -31,11 +31,7 @@
     "Fire1P": "superbwarfare:m_79_fire_1p",
     "Fire3P": "superbwarfare:m_79_fire_3p",
     "Fire3PFar": "superbwarfare:m_79_far",
-    "Fire3PVeryFar": "superbwarfare:m_79_veryfar",
-    "ReloadEmpty": "superbwarfare:m_79_reload_empty",
-    "CancellableSounds": [
-      "superbwarfare:m_79_reload_empty"
-    ]
+    "Fire3PVeryFar": "superbwarfare:m_79_veryfar"
   },
   "Crosshair": "@GunGrenade"
 }
