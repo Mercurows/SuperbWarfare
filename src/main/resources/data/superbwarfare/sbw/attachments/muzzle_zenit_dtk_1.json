@@ -1,0 +1,24 @@
+{
+  "Slot": "Barrel",
+  "Level": 1,
+  "Bone": "muzzle_pos",
+  "Modifiers": [
+    {
+      "Prop": "RecoilX",
+      "Op": "Mul",
+      "Value": 0.87
+    },
+    {
+      "Prop": "RecoilY",
+      "Op": "Mul",
+      "Value": 0.73
+    },
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 0.5
+    }
+  ],
+  "Model": "superbwarfare:models/bedrock/attachment/muzzle_zenit_dtk_1.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/muzzle_zenit_dtk_1.png"
+}

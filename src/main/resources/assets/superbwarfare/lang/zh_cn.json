@@ -685,6 +685,7 @@
   "item.superbwarfare.cross_muzzle": "十字形枪口",
   "item.superbwarfare.muzzle_brake_ru": "俄制步枪制退器",
   "item.superbwarfare.muzzle_brake_ar": "AR步枪制退器",
+  "item.superbwarfare.muzzle_zenit_dtk_1": "泽宁特DTK-1补偿器",
 
   "death.attack.gunfire": "%1$s被%2$s射爆了",
   "death.attack.gunfire.entity": "%1$s被%2$s射爆了",
