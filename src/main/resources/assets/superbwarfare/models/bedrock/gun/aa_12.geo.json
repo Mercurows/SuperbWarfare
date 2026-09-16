@@ -23,7 +23,7 @@
 				{
 					"name": "grip_pos",
 					"parent": "root",
-					"pivot": [0, -0.08438, -11.17734],
+					"pivot": [0, -0.08438, -12.17734],
 					"rotation": [-1, 0, 0]
 				},
 				{
@@ -740,7 +740,6 @@
 					"name": "bone9",
 					"parent": "custom_scope_mount",
 					"pivot": [0.00035, 4.93894, -0.73594],
-					"rotation": [0, 0, 0],
 					"cubes": [
 						{
 							"origin": [0.19849, 5.10847, -5.40907],

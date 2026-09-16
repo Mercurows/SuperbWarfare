@@ -5,20 +5,20 @@
     {
       "Prop": "RecoilX",
       "Op": "Mul",
-      "Value": 0.97
+      "Value": 0.95
     },
     {
       "Prop": "RecoilY",
       "Op": "Mul",
-      "Value": 0.88
+      "Value": 0.8
     },
     {
       "Prop": "Weight",
       "Op": "Add",
-      "Value": 0.5
+      "Value": 0.8
     }
   ],
   "Bone": "grip_pos",
-  "Model": "superbwarfare:models/bedrock/attachment/triangle_grip.geo.json",
-  "Texture": "superbwarfare:textures/bedrock/attachment/triangle_grip.png"
+  "Model": "superbwarfare:models/bedrock/attachment/grip_cqr_gen2.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/grip_cqr_gen2.png"
 }

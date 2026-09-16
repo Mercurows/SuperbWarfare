@@ -78,7 +78,8 @@
     "Grip": [
       "superbwarfare:vertical_grip",
       "superbwarfare:grip_rectangle_vertical",
-      "superbwarfare:triangle_grip"
+      "superbwarfare:triangle_grip",
+      "superbwarfare:grip_cqr_gen2"
     ],
     "Stock": [
       "superbwarfare:stock_ubr",

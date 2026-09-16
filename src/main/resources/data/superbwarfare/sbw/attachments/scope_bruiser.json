@@ -5,7 +5,7 @@
     {
       "Prop": "Weight",
       "Op": "Add",
-      "Value": 0.4
+      "Value": 0.9
     }
   ],
   "Bone": "scope_pos",

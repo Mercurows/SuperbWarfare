@@ -2,6 +2,13 @@
   "Slot": "Barrel",
   "Level": 1,
   "Bone": "muzzle_pos",
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 1.0
+    }
+  ],
   "Override": {
     "SpreadPattern": {
       "Type": "Grid",

@@ -2459,7 +2459,8 @@ object ClientEventHandler {
         val stack = player.mainHandItem
         val data = GunData.from(stack)
         val times = getDelta()
-        val duration = data.get(GunProp.ZOOM_TIME).coerceAtLeast(1)
+        val weight = (stack.item as? GunItem)?.getCustomWeight(data) ?: 0.0
+        val duration = data.get(GunProp.ZOOM_TIME).coerceAtLeast(1) + 0.4 * weight
         val stepIn = times / duration
         val stepOut = times / (duration * 0.75f)
         val vehicle = player.vehicle
@@ -3246,8 +3247,10 @@ object ClientEventHandler {
 
     private fun handleWeaponDraw(entity: LivingEntity) {
         val times = getDelta()
-        val data = GunData.from(entity.mainHandItem)
-        val duration = data.get(GunProp.DRAW_TIME).coerceAtLeast(1)
+        val stack = entity.mainHandItem
+        val data = GunData.from(stack)
+        val weight = (stack.item as? GunItem)?.getCustomWeight(data) ?: 0.0
+        val duration = data.get(GunProp.DRAW_TIME).coerceAtLeast(1) + 0.5 * weight
         val decay = ln(100.0) / duration
         drawTime = (drawTime - decay * times * drawTime).coerceAtLeast(0.0)
     }

@@ -331,6 +331,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.OEM_STOCK_LIGHT)
         simpleItem(ModItems.OEM_STOCK_HEAVY)
         simpleItem(ModItems.TRIANGLE_GRIP)
+        simpleItem(ModItems.GRIP_CQR_GEN2)
         simpleItem(ModItems.OSPREY_SILENCER)
         simpleItem(ModItems.OSPREY_SILENCER_TRACHELIUM)
         simpleItem(ModItems.SCOPE_COYOTE)

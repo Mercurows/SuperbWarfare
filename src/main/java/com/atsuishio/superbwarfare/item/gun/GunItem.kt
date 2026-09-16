@@ -96,7 +96,8 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         modifier[BYPASSES_ARMOR] += getCustomBypassArmor(data)
         modifier[DEFAULT_ZOOM] += getCustomZoom(data)
         modifier[RPM] += getCustomRPM(data)
-        modifier[WEIGHT] += getCustomWeight(data)
+        // WEIGHT 不在这里累加：配件等来源的重量加成已经通过各自的 Modifier 进入总重，
+        // getCustomWeight 只用来读取「总重 - 枪身基础重量」的差值，加进来会重复计算
         modifier[VELOCITY] += getCustomVelocity(data)
         modifier[SOUND_RADIUS] *= getCustomSoundRadius(data)
         modifier[BOLT_ACTION_TIME] += getCustomBoltActionTime(data)
@@ -332,9 +333,12 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     open fun getCustomRPM(data: GunData) = 0
 
     /**
-     * 获取额外总重量加成
+     * 获取额外变化的重量，即计算后的总重与枪身基础重量的差值（默认来自配件等的重量加成）
+     *
+     * 只用来读取差值（比如开镜/持枪展开的手感），不要再累加回 [GunProp.WEIGHT]，
+     * 也不能在 [modifyProperty] 里调用，否则会在 PMC 计算中递归读取属性
      */
-    open fun getCustomWeight(data: GunData) = 0.0
+    open fun getCustomWeight(data: GunData): Double = data.get(GunProp.WEIGHT) - data.getDefault().weight
 
     /**
      * 获取额外弹速加成

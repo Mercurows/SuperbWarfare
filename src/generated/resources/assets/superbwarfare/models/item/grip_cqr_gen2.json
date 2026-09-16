@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "superbwarfare:item/grip_cqr_gen2"
+  }
+}

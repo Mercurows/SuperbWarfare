@@ -5,7 +5,7 @@
     {
       "Prop": "Weight",
       "Op": "Add",
-      "Value": 2.0
+      "Value": 2.5
     }
   ],
   "Bone": "muzzle_pos",

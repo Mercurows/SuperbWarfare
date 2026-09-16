@@ -10678,7 +10678,7 @@
 				{
 					"name": "grip_pos",
 					"parent": "root",
-					"pivot": [0, 0.25945, -6.99965]
+					"pivot": [0, 0.25945, -7.99965]
 				},
 				{
 					"name": "muzzle_pos",

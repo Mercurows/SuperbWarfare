@@ -10717,7 +10717,7 @@
 				{
 					"name": "grip_pos",
 					"parent": "root",
-					"pivot": [0, 1.31172, -10.92969]
+					"pivot": [0, 1.31172, -11.92969]
 				},
 				{
 					"name": "righthand",

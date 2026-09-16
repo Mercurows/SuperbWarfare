@@ -686,7 +686,8 @@ class ModItemTagProvider(
             listOf(
                 ModItems.VERTICAL_GRIP,
                 ModItems.GRIP_RECTANGLE_VERTICAL,
-                ModItems.TRIANGLE_GRIP
+                ModItems.TRIANGLE_GRIP,
+                ModItems.GRIP_CQR_GEN2
             )
         )
 

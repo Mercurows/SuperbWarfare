@@ -2,9 +2,19 @@
   "Slot": "Stock",
   "Modifiers": [
     {
+      "Prop": "RecoilX",
+      "Op": "Mul",
+      "Value": 1.07
+    },
+    {
+      "Prop": "RecoilY",
+      "Op": "Mul",
+      "Value": 1.07
+    },
+    {
       "Prop": "Weight",
       "Op": "Add",
-      "Value": 0.8
+      "Value": -0.5
     }
   ],
   "Bone": "oem_stock_light",

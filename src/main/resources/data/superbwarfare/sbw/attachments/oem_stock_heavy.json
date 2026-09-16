@@ -2,6 +2,16 @@
   "Slot": "Stock",
   "Modifiers": [
     {
+      "Prop": "RecoilX",
+      "Op": "Mul",
+      "Value": 0.89
+    },
+    {
+      "Prop": "RecoilY",
+      "Op": "Mul",
+      "Value": 0.89
+    },
+    {
       "Prop": "Weight",
       "Op": "Add",
       "Value": 1.8
