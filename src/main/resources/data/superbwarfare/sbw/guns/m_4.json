@@ -81,6 +81,8 @@
       "superbwarfare:grip_cqr_gen2"
     ],
     "Stock": [
+      "superbwarfare:stock_elite",
+      "superbwarfare:stock_str",
       "superbwarfare:stock_ubr",
       "superbwarfare:stock_prs"
     ],

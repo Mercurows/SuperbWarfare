@@ -567,7 +567,9 @@ class ModItemTagProvider(
                 ModItems.STOCK_UBR,
                 ModItems.STOCK_PRS,
                 ModItems.STOCK_AR_TACTICAL,
-                ModItems.STOCK_ZENIT_PT_1
+                ModItems.STOCK_ZENIT_PT_1,
+                ModItems.STOCK_STR,
+                ModItems.STOCK_ELITE
             )
         )
 

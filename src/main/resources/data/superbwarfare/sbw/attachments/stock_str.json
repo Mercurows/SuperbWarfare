@@ -1,0 +1,24 @@
+{
+  "Slot": "Stock",
+  "Modifiers": [
+    {
+      "Prop": "RecoilX",
+      "Op": "Mul",
+      "Value": 0.96
+    },
+    {
+      "Prop": "RecoilY",
+      "Op": "Mul",
+      "Value": 0.93
+    },
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 0.7
+    }
+  ],
+  "Bone": "custom_stock_adapter",
+  "UsesGunStock": false,
+  "Model": "superbwarfare:models/bedrock/attachment/stock_str.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/stock_str.png"
+}
