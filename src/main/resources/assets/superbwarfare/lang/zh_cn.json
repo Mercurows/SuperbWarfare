@@ -683,6 +683,7 @@
   "des.superbwarfare.love_muzzle": "浓浓的爱意",
   "item.superbwarfare.linear_muzzle": "线性枪口",
   "item.superbwarfare.cross_muzzle": "十字形枪口",
+  "item.superbwarfare.muzzle_brake_ru": "俄制步枪制退器",
 
   "death.attack.gunfire": "%1$s被%2$s射爆了",
   "death.attack.gunfire.entity": "%1$s被%2$s射爆了",
@@ -1401,8 +1402,8 @@
   "prop.superbwarfare.velocity": "子弹初速",
   "prop.superbwarfare.spread": "扩散",
   "prop.superbwarfare.weight": "重量",
-  "prop.superbwarfare.recoil_x": "水平后坐力",
-  "prop.superbwarfare.recoil_y": "竖直后坐力",
+  "prop.superbwarfare.recoil_x": "竖直后坐力",
+  "prop.superbwarfare.recoil_y": "水平后坐力",
   "prop.superbwarfare.recoil": "真实后坐力",
   "prop.superbwarfare.zoom": "放大倍率",
   "prop.superbwarfare.zoom_range": "放大倍率",

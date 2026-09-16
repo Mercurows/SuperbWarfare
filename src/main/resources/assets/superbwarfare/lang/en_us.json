@@ -683,6 +683,7 @@
   "des.superbwarfare.love_muzzle": "Deep affection",
   "item.superbwarfare.linear_muzzle": "Linear Muzzle",
   "item.superbwarfare.cross_muzzle": "Cross Muzzle",
+  "item.superbwarfare.muzzle_brake_ru": "Russian Rifle Muzzle Brake",
 
   "death.attack.gunfire": "%1$s was gunned down by %2$s",
   "death.attack.gunfire.entity": "%1$s was gunned down by %2$s",
@@ -1401,8 +1402,8 @@
   "prop.superbwarfare.velocity": "Velocity",
   "prop.superbwarfare.spread": "Spread",
   "prop.superbwarfare.weight": "Weight",
-  "prop.superbwarfare.recoil_x": "Horizontal Recoil",
-  "prop.superbwarfare.recoil_y": "Vertical Recoil",
+  "prop.superbwarfare.recoil_x": "Vertical Recoil",
+  "prop.superbwarfare.recoil_y": "Horizontal Recoil",
   "prop.superbwarfare.recoil": "True Recoil",
   "prop.superbwarfare.zoom": "Zoom",
   "prop.superbwarfare.zoom_range": "Zoom",

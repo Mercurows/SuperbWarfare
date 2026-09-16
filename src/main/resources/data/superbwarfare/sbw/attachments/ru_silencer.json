@@ -10,12 +10,12 @@
     {
       "Prop": "Spread",
       "Op": "Mul",
-      "Value": 0.85
+      "Value": 0.95
     },
     {
       "Prop": "Weight",
       "Op": "Add",
-      "Value": 1.3
+      "Value": 1.0
     }
   ],
   "Bone": "muzzle_pos",

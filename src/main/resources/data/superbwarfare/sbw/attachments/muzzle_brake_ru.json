@@ -1,0 +1,19 @@
+{
+  "Slot": "Barrel",
+  "Level": 1,
+  "Bone": "muzzle_pos",
+  "Modifiers": [
+    {
+      "Prop": "RecoilY",
+      "Op": "Mul",
+      "Value": 0.7
+    },
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 0.4
+    }
+  ],
+  "Model": "superbwarfare:models/bedrock/attachment/muzzle_brake_ru.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/muzzle_brake_ru.png"
+}

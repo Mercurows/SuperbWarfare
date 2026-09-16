@@ -614,6 +614,7 @@ class ModItemTagProvider(
                 ModItems.HISSILENCER,
                 ModItems.SILAOWUNCER,
                 ModItems.RU_SILENCER,
+                ModItems.MUZZLE_BRAKE_RU,
                 ModItems.SILENCER_SUPERB_12,
                 ModItems.SILENCER_50_CAL,
                 ModItems.AR_SILENCER,

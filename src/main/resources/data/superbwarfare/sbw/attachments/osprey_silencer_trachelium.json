@@ -10,7 +10,7 @@
     {
       "Prop": "Spread",
       "Op": "Mul",
-      "Value": 0.85
+      "Value": 0.95
     },
     {
       "Prop": "Damage",
