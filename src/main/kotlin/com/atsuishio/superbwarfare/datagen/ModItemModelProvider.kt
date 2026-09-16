@@ -318,6 +318,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.MUZZLE_BRAKE_RU)
         simpleItem(ModItems.MUZZLE_BRAKE_AR)
         simpleItem(ModItems.MUZZLE_ZENIT_DTK_1)
+        simpleItem(ModItems.MUZZLE_COMPENSATOR_R_17)
         simpleItem(ModItems.SILENCER_SUPERB_12)
         simpleItem(ModItems.SILENCER_50_CAL)
         simpleItem(ModItems.AR_SILENCER)

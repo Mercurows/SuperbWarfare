@@ -656,6 +656,7 @@ object ModItems {
     @JvmField val MUZZLE_BRAKE_RU = registerAttachment("muzzle_brake_ru")
     @JvmField val MUZZLE_BRAKE_AR = registerAttachment("muzzle_brake_ar")
     @JvmField val MUZZLE_ZENIT_DTK_1 = registerAttachment("muzzle_zenit_dtk_1", Rarity.RARE)
+    @JvmField val MUZZLE_COMPENSATOR_R_17 = registerAttachment("muzzle_compensator_r_17")
     @JvmField val RU_SILENCER = registerAttachment("ru_silencer")
     @JvmField val SILENCER_SUPERB_12 = registerAttachment("silencer_superb_12")
     @JvmField val SILENCER_50_CAL = registerAttachment("silencer_50_cal")
