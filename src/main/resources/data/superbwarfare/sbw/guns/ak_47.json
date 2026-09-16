@@ -99,14 +99,10 @@
       "superbwarfare:silaowuncer",
       "superbwarfare:ru_silencer",
       "superbwarfare:muzzle_brake_ru",
+      "superbwarfare:muzzle_brake_ar",
       "superbwarfare:ar_silencer",
       "superbwarfare:loudspeaker",
-      "superbwarfare:silencer_qinglan",
-      "superbwarfare:triangular_muzzle",
-      "superbwarfare:love_muzzle",
-      "superbwarfare:star_muzzle",
-      "superbwarfare:linear_muzzle",
-      "superbwarfare:cross_muzzle"
+      "superbwarfare:silencer_qinglan"
     ]
   },
   "SoundInfo": {
