@@ -240,8 +240,8 @@ class DefaultGunData : IDBasedData<DefaultGunData> {
                     c.value
                 }
                 .filter { c ->
-                    if (c.type == AmmoConsumer.AmmoConsumeType.INVALID) {
-                        Mod.LOGGER.warn("invalid ammo string {} for {}", c.ammo, this.id)
+                    if (!c.isValid()) {
+                        Mod.LOGGER.warn("invalid ammo string {} for {}", c.ammo.list, this.id)
                         return@filter false
                     }
                     true

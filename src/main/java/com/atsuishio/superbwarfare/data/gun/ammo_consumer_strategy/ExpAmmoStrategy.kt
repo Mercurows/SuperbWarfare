@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.data.gun.ammo_consumer_strategy
 
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
+import com.atsuishio.superbwarfare.data.gun.AmmoSource
 import com.atsuishio.superbwarfare.data.gun.GunData
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
@@ -26,39 +27,39 @@ class ExpAmmoStrategy : AmmoConsumeStrategy() {
             || ammo.lowercase().substringAfter("exp").trimEnd().toFloatOrNull() != null
 
     override fun init(
-        consumer: AmmoConsumer,
+        source: AmmoSource,
         count: Int,
         matchedString: String
     ) {
-        super.init(consumer, count, matchedString)
+        super.init(source, count, matchedString)
         val extracted = matchedString.lowercase().substringAfter("exp").trimEnd().toFloatOrNull()?.coerceAtLeast(0F)
             ?: 1F
         ammoPerXp = if (extracted.isNaN() || extracted == 0F || extracted.isInfinite()) 1F else extracted
     }
 
-    override fun consume(data: GunData, consumer: AmmoConsumer, shooter: Entity, count: Int): Int {
+    override fun consume(data: GunData, source: AmmoSource, shooter: Entity?, count: Int): Int {
         val player = (shooter as? Player) ?: return 0
         val xpToConsume = (count / ammoPerXp).toInt()
         player.totalExperience = (player.totalExperience - xpToConsume).coerceAtLeast(0)
         return xpToConsume
     }
 
-    override fun consume(data: GunData, consumer: AmmoConsumer, handler: IItemHandler, count: Int) = 0
+    override fun consume(data: GunData, source: AmmoSource, handler: IItemHandler, count: Int) = 0
 
-    override fun count(data: GunData, consumer: AmmoConsumer, entity: Entity?) =
+    override fun count(data: GunData, source: AmmoSource, entity: Entity?) =
         floor(((entity as? Player)?.totalExperience?.toFloat() ?: 0F) * ammoPerXp).toInt()
 
-    override fun count(data: GunData, consumer: AmmoConsumer, handler: IItemHandler?) = 0
+    override fun count(data: GunData, source: AmmoSource, handler: IItemHandler?) = 0
 
-    override fun withdraw(consumer: AmmoConsumer, ammoSupplier: Entity, count: Int): Int {
+    override fun withdraw(source: AmmoSource, ammoSupplier: Entity, count: Int): Int {
         val player = (ammoSupplier as? Player) ?: return 0
         val xpToRestore = (count / ammoPerXp).toInt().coerceAtLeast(1)
         player.giveExperiencePoints(xpToRestore)
         return xpToRestore
     }
 
-    override fun withdraw(consumer: AmmoConsumer, handler: IItemHandler, count: Int) = 0
+    override fun withdraw(source: AmmoSource, handler: IItemHandler, count: Int) = 0
 
     @OnlyIn(Dist.CLIENT)
-    override fun getDisplayName(consumer: AmmoConsumer) = "Experience"
+    override fun getDisplayName(source: AmmoSource) = "Experience"
 }

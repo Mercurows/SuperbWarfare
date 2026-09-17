@@ -84,7 +84,7 @@ class EmptyGunItem : GunItem(Properties()) {
             ammoConsumers = ObjectToList(
                 mutableListOf(
                     StringToObject(AmmoConsumer().apply {
-                        ammo = "empty"
+                        ammo = ObjectToList("empty")
                         init()
                     })
                 )

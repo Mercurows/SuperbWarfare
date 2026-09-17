@@ -376,6 +376,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                 && !data.reloading()
                 && !data.charging()
                 && !data.bolt.needed.get()
+                // 含附加弹药来源（如泰瑟枪的电量）
                 && data.hasEnoughAmmoToShoot(shooter)
     }
 
@@ -417,6 +418,9 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         } else {
             data.consumeBackupAmmo(ammoSupplier, data.get(GunProp.AMMO_COST_PER_SHOOT))
         }
+
+        // 消耗每发附加弹药来源（如泰瑟枪的电量）
+        data.selectedAmmoConsumer().consumeExtraAmmo(data, ammoSupplier)
 
         if (!data.hasEnoughAmmoToShoot(ammoSupplier)) {
             data.burstAmount.reset()

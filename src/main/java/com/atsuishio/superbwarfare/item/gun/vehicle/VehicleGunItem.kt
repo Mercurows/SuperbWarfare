@@ -48,6 +48,8 @@ open class VehicleGunItem : GunItem(Properties()) {
                 && !data.charging()
                 && !data.bolt.needed.get()
                 && shooter.getAmmo(data) >= data.get(GunProp.AMMO_COST_PER_SHOOT)
+                // 附加弹药来源（如电量）也必须充足
+                && data.selectedAmmoConsumer().hasEnoughExtraAmmo(data, shooter)
     }
 
     override fun getEnergyProvider(data: GunData, ammoSupplier: Entity?): IEnergyStorage? {

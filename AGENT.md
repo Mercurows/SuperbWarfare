@@ -123,9 +123,23 @@ ProjectileEntity 特色：OBB 支持的自定义射线追踪、爆头/腿伤检�
 `item/gun/vehicle/VehicleGun.kt:23` — 载具武器抽象基类
 
 ### 弹药系统
-- `AmmoConsumer` — 定义弹药消耗方式（弹药类型/槽位/装填量）
+- `AmmoConsumer` — 一个可切换的弹种。`AmmoType` 中每一项即一个 `AmmoConsumer`
+- `AmmoSource` — 单个弹药来源的运行时状态（策略 / ammo 物品 / 数量），由 `AmmoConsumer` 解析 `Ammo` 字符串得到
 - `AmmoBoxItem` — 弹药盒（按弹药种类分类）
 - `CreativeAmmoBoxItem` — 创造模式弹药盒
+
+**多来源弹药**：`Ammo` 字段既可以写单个字符串，也可以写字符串列表；列表表示**同时消耗**的多条来源。
+
+```json
+"AmmoType": { "Ammo": ["superbwarfare:taser_electrode", "400 fe"] }
+```
+
+- 第一条是**主来源**：进弹匣，负责装填、备弹显示与图标（`AmmoConsumer.primary`，旧 API `type/stack()/loadAmount/playerAmmoType/strategy` 全部转发到它）
+- 其余是**附加来源**：不装填，开火前由 `GunData.hasEnoughAmmoToShoot` → `AmmoConsumer.hasEnoughExtraAmmo` 检查，开火后由 `GunItem.afterShoot` 调用 `consumeExtraAmmo` 按前缀数量直接扣除
+- `GunData.shouldStartReloading` 只看主来源（`hasEnoughPrimaryAmmoToShoot`）：弹匣满但附加来源空了不应该一直触发装填，因为装填补不了附加来源
+- 创造模式、创造模式弹药盒、`InfiniteAmmoCapability`、主来源为 INFINITE 等「无限弹药」状态同样覆盖附加来源（走 `GunData.hasInfiniteBackupAmmo`）
+- 前缀含义：主来源是「每个装载单位提供多少弹药」（`"30 @RifleAmmo"`），附加来源是「每发消耗多少」（`"400 fe"`）
+- 泰瑟枪即「电极进弹匣 + 每发 400 FE」，不再需要 `TaserItem` 里硬编码能量逻辑
 
 ## 数据流转
 

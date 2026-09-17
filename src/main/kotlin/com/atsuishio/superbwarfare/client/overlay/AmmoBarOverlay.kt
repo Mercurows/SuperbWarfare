@@ -392,7 +392,6 @@ object AmmoBarOverlay : CommonOverlay("ammo_bar") {
 
     private fun getAmmoDisplayName(data: GunData): String {
         if (data.meleeOnly()) return "Melee"
-        val consumer = data.selectedAmmoConsumer()
-        return consumer.strategy.getDisplayName(consumer)
+        return data.selectedAmmoConsumer().getDisplayName()
     }
 }

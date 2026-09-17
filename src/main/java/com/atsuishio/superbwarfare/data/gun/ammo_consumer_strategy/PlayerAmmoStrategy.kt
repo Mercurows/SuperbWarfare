@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.data.gun.ammo_consumer_strategy
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
+import com.atsuishio.superbwarfare.data.gun.AmmoSource
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.tools.InventoryTool
 import net.minecraft.world.entity.Entity
@@ -25,26 +26,26 @@ object PlayerAmmoStrategy : AmmoConsumeStrategy() {
 
     override fun match(ammo: String) = ammo.startsWith("@") && Ammo.getType(ammo.substringAfter("@")) != null
 
-    override fun init(consumer: AmmoConsumer, count: Int, matchedString: String) {
+    override fun init(source: AmmoSource, count: Int, matchedString: String) {
         // 手动解析: matchedString 形如 "@RifleAmmo"
         val id = matchedString.substringAfter("@").trim()
         val ammoType = Ammo.getType(id)
         if (ammoType == null) {
             Mod.LOGGER.warn("invalid player ammo type: {}", id)
-            consumer.type = AmmoConsumer.AmmoConsumeType.INVALID
+            source.type = AmmoConsumer.AmmoConsumeType.INVALID
             return
         }
-        consumer.playerAmmoType = ammoType
-        consumer.stack = ammoType.itemStack
+        source.playerAmmoType = ammoType
+        source.stack = ammoType.itemStack
     }
 
-    override fun consume(data: GunData, consumer: AmmoConsumer, shooter: Entity, count: Int): Int {
+    override fun consume(data: GunData, source: AmmoSource, shooter: Entity?, count: Int): Int {
         var remaining = count
         var consumed = 0
 
         // 优先消耗玩家身上的弹药数据
         if (shooter is Player) {
-            val ammoType = consumer.playerAmmoType
+            val ammoType = source.playerAmmoType
             if (ammoType != null) {
                 val current = ammoType.get(shooter)
                 consumed = min(current, remaining)
@@ -56,39 +57,39 @@ object PlayerAmmoStrategy : AmmoConsumeStrategy() {
         }
 
         // 如果还有剩余需要消耗的数量，从物品栏消耗
-        val handler = shooter.getCapability(Capabilities.ItemHandler.ENTITY)
+        val handler = shooter?.getCapability(Capabilities.ItemHandler.ENTITY)
         if (handler != null) {
-            return consumed + consume(data, consumer, handler, remaining)
+            return consumed + consume(data, source, handler, remaining)
         } else {
             Mod.LOGGER.warn("consume ammo failed: invalid item handler for entity {}", shooter)
             return consumed
         }
     }
 
-    override fun consume(data: GunData, consumer: AmmoConsumer, handler: IItemHandler, count: Int): Int {
-        val consumed = InventoryTool.consumeAmmoItem(handler, consumer.playerAmmoType, count)
+    override fun consume(data: GunData, source: AmmoSource, handler: IItemHandler, count: Int): Int {
+        val consumed = InventoryTool.consumeAmmoItem(handler, source.playerAmmoType, count)
         val rest = consumed - count
         data.virtualAmmo.add(rest)
         return count
     }
 
-    override fun count(data: GunData, consumer: AmmoConsumer, entity: Entity?): Int {
+    override fun count(data: GunData, source: AmmoSource, entity: Entity?): Int {
         if (entity == null) return 0
         var playerAmmoCount = 0
         if (entity is Player) {
-            playerAmmoCount = consumer.playerAmmoType?.get(entity) ?: 0
+            playerAmmoCount = source.playerAmmoType?.get(entity) ?: 0
         }
-        return playerAmmoCount + count(data, consumer, entity.getCapability(Capabilities.ItemHandler.ENTITY))
+        return playerAmmoCount + count(data, source, entity.getCapability(Capabilities.ItemHandler.ENTITY))
     }
 
-    override fun count(data: GunData, consumer: AmmoConsumer, handler: IItemHandler?): Int {
+    override fun count(data: GunData, source: AmmoSource, handler: IItemHandler?): Int {
         if (handler == null) return 0
-        return InventoryTool.countAmmoItem(handler, consumer.playerAmmoType)
+        return InventoryTool.countAmmoItem(handler, source.playerAmmoType)
     }
 
-    override fun withdraw(consumer: AmmoConsumer, ammoSupplier: Entity, count: Int): Int {
+    override fun withdraw(source: AmmoSource, ammoSupplier: Entity, count: Int): Int {
         if (ammoSupplier is Player) {
-            val ammoType = consumer.playerAmmoType
+            val ammoType = source.playerAmmoType
             if (ammoType != null) {
                 val countToWithdraw = min(count, ammoType.limit - ammoType.get(ammoSupplier))
                 ammoType.add(ammoSupplier, countToWithdraw)
@@ -104,7 +105,7 @@ object PlayerAmmoStrategy : AmmoConsumeStrategy() {
         } else {
             val itemHandler = ammoSupplier.getCapability(Capabilities.ItemHandler.ENTITY)
             if (itemHandler != null) {
-                return withdraw(consumer, itemHandler, count)
+                return withdraw(source, itemHandler, count)
             } else {
                 Mod.LOGGER.warn("withdraw ammo failed: invalid item handler")
             }
@@ -112,13 +113,13 @@ object PlayerAmmoStrategy : AmmoConsumeStrategy() {
         return 0
     }
 
-    override fun withdraw(consumer: AmmoConsumer, handler: IItemHandler, count: Int): Int {
-        val ammoType = consumer.playerAmmoType ?: return 0
+    override fun withdraw(source: AmmoSource, handler: IItemHandler, count: Int): Int {
+        val ammoType = source.playerAmmoType ?: return 0
         return InventoryTool.insertItem(handler, ammoType.itemStack, count)
     }
 
     @OnlyIn(Dist.CLIENT)
-    override fun getDisplayName(consumer: AmmoConsumer): String {
-        return consumer.playerAmmoType?.displayName ?: super.getDisplayName(consumer)
+    override fun getDisplayName(source: AmmoSource): String {
+        return source.playerAmmoType?.displayName ?: super.getDisplayName(source)
     }
 }

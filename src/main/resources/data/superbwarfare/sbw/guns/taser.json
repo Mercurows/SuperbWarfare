@@ -14,7 +14,12 @@
   "RPM": 240,
   "GunType": "Special",
   "Projectile": "superbwarfare:taser_bullet",
-  "AmmoType": "superbwarfare:taser_electrode",
+  "AmmoType": {
+    "Ammo": [
+      "superbwarfare:taser_electrode",
+      "400 fe"
+    ]
+  },
   "Icon": "superbwarfare:textures/gun_icon/taser_icon.png",
   "AvailablePerks": [
     "superbwarfare:longer_wire",

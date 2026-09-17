@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.data.gun.ammo_consumer_strategy
 
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
+import com.atsuishio.superbwarfare.data.gun.AmmoSource
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.ammo_consumer_strategy.AmmoConsumeStrategy.Companion.match
 import net.minecraft.world.entity.Entity
@@ -13,7 +14,7 @@ import net.neoforged.neoforge.items.IItemHandler
  * 各子类通过 [match] 判断是否匹配已去除 count 前缀的 ammo 字符串，
  * 在 [Companion.match] 中按顺序尝试，取首个匹配。
  *
- * count 由 AmmoConsumer 统一解析后传入 [init]。
+ * count 由 [AmmoSource] 统一解析后传入 [init]。
  */
 abstract class AmmoConsumeStrategy {
 
@@ -27,41 +28,41 @@ abstract class AmmoConsumeStrategy {
     abstract fun match(ammo: String): Boolean
 
     /**
-     * 初始化 AmmoConsumer 的状态。
-     * @param consumer 所属 AmmoConsumer
-     * @param count 已由 AmmoConsumer 统一解析的 loadAmount
+     * 初始化 [AmmoSource] 的状态。
+     * @param source 所属弹药来源
+     * @param count 已由 [AmmoSource] 统一解析的 loadAmount
      * @param matchedString 去除 count 前缀后的类型专有字符串，各子类自行手动解析
      */
-    open fun init(consumer: AmmoConsumer, count: Int, matchedString: String) {}
+    open fun init(source: AmmoSource, count: Int, matchedString: String) {}
 
     /**
      * 创建本策略的新实例。默认返回 this（适用于无状态单例策略）。
      * 有状态策略（如 [HealthAmmoStrategy]）应重写此方法返回新实例，
-     * 以避免多消费者共享可变状态。
+     * 以避免多来源共享可变状态。
      */
     open fun create(): AmmoConsumeStrategy = this
 
     /** 从 shooter 实体消耗指定数量的弹药，返回实际消耗的弹药物品数量 */
-    abstract fun consume(data: GunData, consumer: AmmoConsumer, shooter: Entity, count: Int): Int
+    abstract fun consume(data: GunData, source: AmmoSource, shooter: Entity?, count: Int): Int
 
     /** 从 IItemHandler 消耗指定数量的弹药，返回实际消耗的弹药物品数量 */
-    abstract fun consume(data: GunData, consumer: AmmoConsumer, handler: IItemHandler, count: Int): Int
+    abstract fun consume(data: GunData, source: AmmoSource, handler: IItemHandler, count: Int): Int
 
     /** 清点 shooter 实体拥有的原始弹药数量 */
-    abstract fun count(data: GunData, consumer: AmmoConsumer, entity: Entity?): Int
+    abstract fun count(data: GunData, source: AmmoSource, entity: Entity?): Int
 
     /** 清点 IItemHandler 中的原始弹药数量 */
-    abstract fun count(data: GunData, consumer: AmmoConsumer, handler: IItemHandler?): Int
+    abstract fun count(data: GunData, source: AmmoSource, handler: IItemHandler?): Int
 
     /** 向 ammoSupplier 返还指定数量的弹药，返回成功返还的数量 */
-    abstract fun withdraw(consumer: AmmoConsumer, ammoSupplier: Entity, count: Int): Int
+    abstract fun withdraw(source: AmmoSource, ammoSupplier: Entity, count: Int): Int
 
     /** 向 IItemHandler 返还指定数量的弹药，返回成功返还的数量 */
-    abstract fun withdraw(consumer: AmmoConsumer, handler: IItemHandler, count: Int): Int
+    abstract fun withdraw(source: AmmoSource, handler: IItemHandler, count: Int): Int
 
     /** 在武器 AmmoBarOverlay 上显示的弹药信息 */
     @OnlyIn(Dist.CLIENT)
-    open fun getDisplayName(consumer: AmmoConsumer): String = "Invalid"
+    open fun getDisplayName(source: AmmoSource): String = "Invalid"
 
     companion object {
         /**

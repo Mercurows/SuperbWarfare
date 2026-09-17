@@ -650,11 +650,14 @@ class GunData private constructor(
     /**
      * Checks if weapon should initiate reload sequence.
      *
+     * Only the primary source is considered: a weapon whose magazine is full but whose extra
+     * source (e.g. a taser's energy) is empty must not keep reloading — reloading cannot refill it.
+     *
      * @param entity the entity holding the weapon.
      * @return `true` if weapon is empty and backup ammo is available.
      */
     fun shouldStartReloading(entity: Entity?): Boolean {
-        return !reloading() && !useBackpackAmmo() && !hasEnoughAmmoToShoot(entity) && hasBackupAmmo(entity)
+        return !reloading() && !useBackpackAmmo() && !hasEnoughPrimaryAmmoToShoot(entity) && hasBackupAmmo(entity)
     }
 
     /**
@@ -852,13 +855,29 @@ class GunData private constructor(
     }
 
     /**
-     * Checks whether weapon has sufficient magazine/inventory ammo to execute one shot.
+     * Checks whether the primary ammo source (the magazine, or the inventory when the weapon
+     * uses backpack ammo) has enough ammo to execute one shot.
+     *
+     * Extra ammo sources such as a taser's energy are not considered, see [hasEnoughAmmoToShoot].
      *
      * @param entity shooter entity.
      * @return `true` if available ammo >= cost per shot.
      */
-    fun hasEnoughAmmoToShoot(entity: Entity?): Boolean {
+    fun hasEnoughPrimaryAmmoToShoot(entity: Entity?): Boolean {
         return get(AMMO_COST_PER_SHOOT) <= currentAvailableAmmo(entity)
+    }
+
+    /**
+     * Checks whether every ammo source has enough ammo to execute one shot: the primary source
+     * plus all extra sources declared by the selected ammo type (see
+     * [com.atsuishio.superbwarfare.data.gun.AmmoConsumer.hasEnoughExtraAmmo]).
+     *
+     * @param entity shooter entity.
+     * @return `true` if all ammo sources are sufficient.
+     */
+    fun hasEnoughAmmoToShoot(entity: Entity?): Boolean {
+        if (!hasEnoughPrimaryAmmoToShoot(entity)) return false
+        return selectedAmmoConsumer().hasEnoughExtraAmmo(this, entity)
     }
 
     /**

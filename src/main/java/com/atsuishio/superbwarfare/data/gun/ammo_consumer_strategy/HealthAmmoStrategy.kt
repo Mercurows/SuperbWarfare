@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.data.gun.ammo_consumer_strategy
 
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
+import com.atsuishio.superbwarfare.data.gun.AmmoSource
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.tools.forceHurt
@@ -28,17 +29,18 @@ class HealthAmmoStrategy : AmmoConsumeStrategy() {
             || ammo.lowercase().substringAfter("health").trimEnd().toFloatOrNull() != null
 
     override fun init(
-        consumer: AmmoConsumer,
+        source: AmmoSource,
         count: Int,
         matchedString: String
     ) {
-        super.init(consumer, count, matchedString)
+        super.init(source, count, matchedString)
         val extracted = matchedString.lowercase().substringAfter("health").trimEnd().toFloatOrNull()?.coerceAtLeast(0F)
             ?: 1F
         ammoPerHealth = if (extracted.isNaN() || extracted == 0F || extracted.isInfinite()) 1F else extracted
     }
 
-    override fun consume(data: GunData, consumer: AmmoConsumer, shooter: Entity, count: Int): Int {
+    override fun consume(data: GunData, source: AmmoSource, shooter: Entity?, count: Int): Int {
+        if (shooter == null) return 0
         shooter.invulnerableTime = 0
 
         shooter.forceHurt(
@@ -48,18 +50,18 @@ class HealthAmmoStrategy : AmmoConsumeStrategy() {
         return 1
     }
 
-    override fun consume(data: GunData, consumer: AmmoConsumer, handler: IItemHandler, count: Int) = 0
-    override fun count(data: GunData, consumer: AmmoConsumer, entity: Entity?) =
+    override fun consume(data: GunData, source: AmmoSource, handler: IItemHandler, count: Int) = 0
+    override fun count(data: GunData, source: AmmoSource, entity: Entity?) =
         floor(((entity as? LivingEntity)?.health ?: 0F) * ammoPerHealth - 0.00001).toInt()
 
-    override fun count(data: GunData, consumer: AmmoConsumer, handler: IItemHandler?) = 0
-    override fun withdraw(consumer: AmmoConsumer, ammoSupplier: Entity, count: Int): Int {
+    override fun count(data: GunData, source: AmmoSource, handler: IItemHandler?) = 0
+    override fun withdraw(source: AmmoSource, ammoSupplier: Entity, count: Int): Int {
         (ammoSupplier as? LivingEntity)?.heal(count / ammoPerHealth) ?: return 0
         return count
     }
 
-    override fun withdraw(consumer: AmmoConsumer, handler: IItemHandler, count: Int) = 0
+    override fun withdraw(source: AmmoSource, handler: IItemHandler, count: Int) = 0
 
     @OnlyIn(Dist.CLIENT)
-    override fun getDisplayName(consumer: AmmoConsumer) = "Health"
+    override fun getDisplayName(source: AmmoSource) = "Health"
 }
