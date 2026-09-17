@@ -25,7 +25,7 @@ object CustomData {
 
     @JvmField
     val VEHICLE_DATA = DataLoader.createData(
-        "sbw/vehicles", DefaultVehicleData::class.java, true, isKtData = true
+        "sbw/vehicles", DefaultVehicleData::class.java, true
     ) { data ->
         // Clamp the shared datapack defaults once, so VehicleData.compute() can hand them out
         // read-only without copying whenever a vehicle has no per-instance override.
@@ -36,7 +36,7 @@ object CustomData {
 
     @JvmField
     val GUN_DATA = DataLoader.createData(
-        "sbw/guns", DefaultGunData::class.java, true, isKtData = true
+        "sbw/guns", DefaultGunData::class.java, true
     ) { map ->
         // Must run after the map itself was (re)loaded: vehicle weapons share one item id and
         // register their per-weapon baselines here so GunData can resolve them from the stack.
@@ -49,11 +49,12 @@ object CustomData {
     }
 
     @JvmField
-    val DRONE_ATTACHMENT = DataLoader.createData("sbw/drone_attachments", DroneAttachmentData::class.java)
+    val DRONE_ATTACHMENT =
+        DataLoader.createData("sbw/drone_attachments", DroneAttachmentData::class.java)
 
     @JvmField
     val ATTACHMENTS = DataLoader.createData(
-        "sbw/attachments", AttachmentDefinition::class.java, true, isKtData = true
+        "sbw/attachments", AttachmentDefinition::class.java, true
     ) { _ ->
         // Attachment definitions feed the computed properties, so live instances must recompute theirs.
         GunData.DATA_VERSION++
@@ -66,19 +67,19 @@ object CustomData {
 
     @JvmField
     val VEHICLE_SKINS = DataLoader.createData(
-        "sbw/vehicle_skins", VehicleSkinData::class.java, true, isKtData = true
+        "sbw/vehicle_skins", VehicleSkinData::class.java, true
     ) { _ -> VehicleSkin.DATA_CACHE.invalidateAll() }
 
     // Resource
 
     @JvmField
     val GUN_RESOURCE = DataLoader.createResource(
-        "sbw/guns", DefaultGunResource::class.java, isKtData = true
+        "sbw/guns", DefaultGunResource::class.java
     ) { _ -> GunResource.RESOURCE_CACHE.invalidateAll() }
 
     @JvmField
     val VEHICLE_RESOURCE = DataLoader.createResource(
-        "sbw/vehicles", DefaultVehicleResource::class.java, isKtData = true
+        "sbw/vehicles", DefaultVehicleResource::class.java
     ) { _ -> VehicleResource.RESOURCE_CACHE.invalidateAll() }
 
     // 务必在Mod加载时调用该方法，确保上面的静态数据加载成功

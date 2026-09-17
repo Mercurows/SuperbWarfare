@@ -1,15 +1,13 @@
 package com.atsuishio.superbwarfare.data.gun
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
-import com.atsuishio.superbwarfare.annotation.ServerOnly
 import com.atsuishio.superbwarfare.data.*
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer.Companion.INVALID
 import com.atsuishio.superbwarfare.data.gun.ammo_consumer_strategy.AmmoConsumeStrategy
 import com.atsuishio.superbwarfare.data.gun.ammo_consumer_strategy.InvalidAmmoStrategy
-import com.atsuishio.superbwarfare.serialization.kserializer.SerializedGsonObject
-import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonObject
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.item.ItemStack
 import net.neoforged.api.distmarker.Dist
@@ -31,53 +29,48 @@ import net.neoforged.neoforge.items.IItemHandler
  * ```
  *
  * 泰瑟枪即「1 个电极（进弹匣）+ 每发 400 FE」。
+ *
+ * [sources] 是运行时解析结果，不参与序列化：声明为不可变之后改为 lazy 派生，
+ * 因此不再需要 `init()` / `initialized()` 那套手工初始化。
  */
 @STOFactory(AmmoConsumer.AmmoConsumerInstanceBuilder::class)
 @Serializable
-class AmmoConsumer : DeserializeFromString, PropertyModifier<GunData, DefaultGunData> {
+data class AmmoConsumer(
     /** 本弹种的弹药来源列表，首项为主来源，其余为每发附加消耗的来源 */
-    @SerializedName("Ammo")
     @SerialName("Ammo")
-    var ammo: ObjectToList<String> = ObjectToList()
+    val ammo: ObjectToList<String> = ObjectToList(),
 
-    @SerializedName("AmmoSlot")
     @SerialName("AmmoSlot")
-    var ammoSlot: String = "Default"
+    val ammoSlot: String = "Default",
 
-    @ServerOnly
-    @SerializedName("Projectile")
     @SerialName("Projectile")
-    var projectile: StringToObject<ProjectileInfo>? = null
+    val projectile: StringToObject<ProjectileInfo>? = null,
 
     /**
      * Bones of the model that draw this ammo type, overriding [DefaultGunData.projectileBone].
      * A single name or a list of them, so one ammo type can draw several bones at once.
      * Renderer-only, see [com.atsuishio.superbwarfare.client.model.gun.GeoGunModel.showProjectileBone].
      */
-    @SerializedName("ProjectileBone")
     @SerialName("ProjectileBone")
-    var projectileBone = ObjectToList<String>()
+    val projectileBone: ObjectToList<String> = ObjectToList(),
 
-    @SerializedName("Override")
     @SerialName("Override")
-    var override: SerializedGsonObject? = null
+    val override: JsonObject? = null,
 
-    @SerializedName("Icon")
     @SerialName("Icon")
-    var icon: String = loc("textures/overlay/vehicle/weapon/icons/empty.png").toString()
+    val icon: String = loc("textures/overlay/vehicle/weapon/icons/empty.png").toString(),
 
-    @SerializedName("ShouldUnload")
     @SerialName("ShouldUnload")
-    var shouldUnload: Boolean = true
+    val shouldUnload: Boolean = true,
+) : PropertyModifier<GunData, DefaultGunData> {
 
+    /**
+     * 解析出的弹药来源。用显式 [Lazy] 字段而不是 `by lazy`：委托属性没法带字段注解，
+     * 会被 kotlinx 序列化当成普通属性处理。
+     */
     @Transient
     @kotlinx.serialization.Transient
-    var sources: List<AmmoSource> = emptyList()
-        private set
-
-    @Transient
-    @kotlinx.serialization.Transient
-    private var initialized = false
+    private val sourcesLazy: Lazy<List<AmmoSource>> = lazy { ammo.map { AmmoSource().apply { init(it) } } }
 
     // TODO 是否可以考虑移除这玩意了？
     enum class AmmoConsumeType {
@@ -91,6 +84,10 @@ class AmmoConsumer : DeserializeFromString, PropertyModifier<GunData, DefaultGun
     }
 
     // ---------------------------------------------------------------- 主来源
+
+    /** 全部弹药来源（首项为主来源） */
+    val sources: List<AmmoSource>
+        get() = sourcesLazy.value
 
     /** 主来源：进弹匣，负责装填、备弹显示与图标 */
     val primary: AmmoSource
@@ -120,10 +117,6 @@ class AmmoConsumer : DeserializeFromString, PropertyModifier<GunData, DefaultGun
         return primary.stack()
     }
 
-    fun initialized(): Boolean {
-        return this.initialized
-    }
-
     /** 是否所有来源都解析成功 */
     fun isValid(): Boolean {
         return sources.isNotEmpty() && sources.none { it.type == AmmoConsumeType.INVALID }
@@ -137,7 +130,6 @@ class AmmoConsumer : DeserializeFromString, PropertyModifier<GunData, DefaultGun
      * 消耗指定弹药数量（原始数量，不包括虚拟弹药，不考虑count）
      */
     fun consume(data: GunData, shooter: Entity?, count: Int): Int {
-        if (!initialized) init()
         return primary.consume(data, shooter, count)
     }
 
@@ -145,7 +137,6 @@ class AmmoConsumer : DeserializeFromString, PropertyModifier<GunData, DefaultGun
      * 消耗指定弹药数量（原始数量，不包括虚拟弹药，不考虑count）
      */
     fun consume(data: GunData, handler: IItemHandler, count: Int): Int {
-        if (!initialized) init()
         return primary.consume(data, handler, count)
     }
 
@@ -153,7 +144,6 @@ class AmmoConsumer : DeserializeFromString, PropertyModifier<GunData, DefaultGun
      * 清点不包括虚拟弹药在内的原始弹药数量
      */
     fun count(data: GunData, entity: Entity?): Int {
-        if (!initialized) init()
         return primary.count(data, entity)
     }
 
@@ -161,7 +151,6 @@ class AmmoConsumer : DeserializeFromString, PropertyModifier<GunData, DefaultGun
      * 清点不包括虚拟弹药在内的原始弹药数量
      */
     fun count(data: GunData, handler: IItemHandler?): Int {
-        if (!initialized) init()
         return primary.count(data, handler)
     }
 
@@ -173,12 +162,10 @@ class AmmoConsumer : DeserializeFromString, PropertyModifier<GunData, DefaultGun
      * @return 成功返还的弹药数量
      */
     fun withdraw(ammoSupplier: Entity, count: Int): Int {
-        if (!initialized) init()
         return primary.withdraw(ammoSupplier, count)
     }
 
     fun withdraw(handler: IItemHandler, count: Int): Int {
-        if (!initialized) init()
         return primary.withdraw(handler, count)
     }
 
@@ -189,7 +176,6 @@ class AmmoConsumer : DeserializeFromString, PropertyModifier<GunData, DefaultGun
      * 创造模式、创造模式弹药盒、无限弹药等情况下直接视为充足。
      */
     fun hasEnoughExtraAmmo(data: GunData, ammoSupplier: Entity?): Boolean {
-        if (!initialized) init()
         if (extraSources.isEmpty()) return true
         if (data.hasInfiniteBackupAmmo(ammoSupplier)) return true
         return extraSources.all { it.hasEnough(data, ammoSupplier) }
@@ -199,7 +185,6 @@ class AmmoConsumer : DeserializeFromString, PropertyModifier<GunData, DefaultGun
      * 开火后消耗所有附加来源，每个来源扣除自身前缀声明的每发消耗量
      */
     fun consumeExtraAmmo(data: GunData, ammoSupplier: Entity?) {
-        if (!initialized) init()
         if (extraSources.isEmpty()) return
         if (data.hasInfiniteBackupAmmo(ammoSupplier)) return
 
@@ -232,29 +217,10 @@ class AmmoConsumer : DeserializeFromString, PropertyModifier<GunData, DefaultGun
         jsonPropModifier.modifyProperty(modifier)
     }
 
-
-    fun init() {
-        if (this.initialized) return
-
-        if (ammo.isEmpty()) {
-            this.initialized = true
-            return
-        }
-
-        this.sources = ammo.map { AmmoSource().apply { init(it) } }
-        this.initialized = true
-    }
-
-    override fun deserializeFromString(str: String?) {
-        this.ammo = if (str == null) ObjectToList() else ObjectToList(str)
-        init()
-    }
-
     object AmmoConsumerInstanceBuilder : StringInstanceBuilder<AmmoConsumer> {
-        override fun fromString(value: String) = AmmoConsumer().apply {
-            this.ammo = ObjectToList(value)
-            init()
-        }
+        override fun fromString(value: String) = AmmoConsumer(
+            ammo = ObjectToList(value)
+        )
     }
 
     companion object {

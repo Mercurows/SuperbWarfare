@@ -571,7 +571,7 @@ object ClickEventHandler {
         val fireModeInfo = data?.selectedFireModeInfo()
         val chargeConfig = fireModeInfo?.chargeConfig()
         val tickProgress = if (chargeConfig != null) {
-            (ClientEventHandler.holdingFireKeyTicks.toDouble() / chargeConfig.duration).coerceIn(0.0, 1.0)
+            (ClientEventHandler.holdingFireKeyTicks.toDouble() / chargeConfig.effectiveDuration).coerceIn(0.0, 1.0)
         } else {
             0.0
         }
@@ -607,7 +607,7 @@ object ClickEventHandler {
                     ChargeTrigger.ON_FULL_RELEASE -> releaseProgress >= 1.0
                     ChargeTrigger.AUTO_AT_FULL -> false
                 }
-                if (releaseAllowed && chargePower >= chargeConfig.minPower) {
+                if (releaseAllowed && chargePower >= chargeConfig.effectiveMinPower) {
                     ClientEventHandler.shootClient(player, chargePower)
                 }
             }

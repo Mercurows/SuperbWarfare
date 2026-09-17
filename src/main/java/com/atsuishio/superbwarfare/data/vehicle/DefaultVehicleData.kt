@@ -1,18 +1,19 @@
 package com.atsuishio.superbwarfare.data.vehicle
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
-import com.atsuishio.superbwarfare.annotation.ServerOnly
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
 import com.atsuishio.superbwarfare.data.*
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.vehicle.subdata.*
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModify
-import com.atsuishio.superbwarfare.serialization.kserializer.*
-import com.atsuishio.superbwarfare.tools.toKxJson
-import com.google.gson.JsonObject
-import com.google.gson.JsonPrimitive
+import com.atsuishio.superbwarfare.serialization.kserializer.SerializedResourceLocation
+import com.atsuishio.superbwarfare.serialization.kserializer.SerializedSoundEvent
+import com.atsuishio.superbwarfare.serialization.kserializer.SerializedVec2
+import com.atsuishio.superbwarfare.serialization.kserializer.SerializedVec3
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.phys.Vec2
 import net.minecraft.world.phys.Vec3
@@ -43,25 +44,21 @@ class DefaultVehicleData : IDBasedData<DefaultVehicleData> {
     @SerialName("MaxHealth")
     var maxHealth: Float = 50f
 
-    @ServerOnly
     @SerialName("RepairCooldown")
     var repairCooldown: Int = getConfigOrDefault(VehicleConfig.REPAIR_COOLDOWN)
 
-    @ServerOnly
     @SerialName("RepairAmount")
     var repairAmount: Float = getConfigOrDefault(VehicleConfig.REPAIR_AMOUNT).toFloat()
 
     /**
      * 开始自动扣血时的血量比例
      */
-    @ServerOnly
     @SerialName("SelfHurtPercent")
     var selfHurtPercent: Float = 0.1f
 
     /**
      * 自动扣血每tick扣血量
      */
-    @ServerOnly
     @SerialName("SelfHurtAmount")
     var selfHurtAmount: Float = 0.1f
 
@@ -108,36 +105,28 @@ class DefaultVehicleData : IDBasedData<DefaultVehicleData> {
     var smokeDecoy: Boolean = true
 
     @JvmField
-    @ServerOnly
     @SerialName("ApplyDefaultDamageModifiers")
     var applyDefaultDamageModifiers: Boolean = true
 
-    @ServerOnly
     @SerialName("SendHitParticles")
     var sendHitParticles: Boolean = true
 
     @JvmField
-    @ServerOnly
     @SerialName("DamageModifiers")
     var damageModifiers: ObjectToList<StringToObject<DamageModify>> = ObjectToList()
 
-    @ServerOnly
     @SerialName("Mass")
     var mass: Float = 1f
 
-    @ServerOnly
     @SerialName("TowForceFactor")
     var towForceFactor: Float = 1f
 
-    @ServerOnly
     @SerialName("DecoyMagazineSize")
     var decoyMagazineSize: Int = 8
 
-    @ServerOnly
     @SerialName("DecoyReloadTime")
     var decoyReloadTime: Int = 500
 
-    @ServerOnly
     @SerialName("DestroyInfo")
     var destroyInfo: DestroyInfo = DestroyInfo()
 
@@ -172,7 +161,7 @@ class DefaultVehicleData : IDBasedData<DefaultVehicleData> {
     var engineType: EngineType = EngineType.EMPTY
 
     @SerialName("EngineInfo")
-    var engineInfo: SerializedGsonObject = JsonObject()
+    var engineInfo: JsonObject = JsonObject(emptyMap())
 
     // 引擎音效
     @SerialName("EngineSound")
@@ -196,7 +185,7 @@ class DefaultVehicleData : IDBasedData<DefaultVehicleData> {
     var rotateOffsetHeight: Float = 0f
 
     @SerialName("Weapons")
-    private var weapons: MutableMap<String, SerializedGsonObject> = mutableMapOf()
+    private var weapons: MutableMap<String, JsonObject> = mutableMapOf()
 
     @Transient
     @kotlinx.serialization.Transient
@@ -208,27 +197,24 @@ class DefaultVehicleData : IDBasedData<DefaultVehicleData> {
         val map = hashMapOf<String, DefaultGunData>()
 
         for (entry in weapons.entries) {
+            // kotlinx JsonObject 不可变，不需要 deepCopy
             var value = entry.value
-            value = value.deepCopy()
 
-            val primitive = value.get("Template")
+            val template = (value["Template"] as? JsonPrimitive)?.takeIf { it.isString }?.content
 
-            if (primitive is JsonPrimitive && primitive.isString) {
-                value.remove("Template")
-                val templateValue = weapons[primitive.getAsString()]
+            if (template != null) {
+                value = JsonObject(value - "Template")
+                val templateValue = weapons[template]
                 if (templateValue != null) {
-                    val newValue = templateValue.deepCopy()
-                    for (kv in value.entrySet()) {
-                        newValue.add(kv.key, kv.value)
-                    }
-                    value = newValue
+                    // 模板在前、本武器声明的键在后，后者优先
+                    value = JsonObject(templateValue + value)
                 }
             }
 
             map[entry.key] =
                 DataLoader.JSON.decodeFromJsonElement(
                     DefaultGunData.serializer(),
-                    value.asJsonObject.toKxJson()
+                    value
                 )
         }
 

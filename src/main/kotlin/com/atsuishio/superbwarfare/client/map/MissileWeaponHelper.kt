@@ -1,10 +1,15 @@
 package com.atsuishio.superbwarfare.client.map
 
 import com.atsuishio.superbwarfare.client.ClientSyncedEntityHandler
+import com.atsuishio.superbwarfare.client.map.MissileWeaponHelper.aggregateWeapons
 import com.atsuishio.superbwarfare.client.map.MissileWeaponHelper.getSelectedVehicles
+import com.atsuishio.superbwarfare.client.map.MissileWeaponHelper.queryWeaponAmmo
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
-import com.google.gson.JsonObject
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.booleanOrNull
+import kotlinx.serialization.json.doubleOrNull
 import net.minecraft.network.chat.Component
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
@@ -18,11 +23,11 @@ import net.minecraft.world.level.levelgen.Heightmap
  * 弹药统计和目标筛选逻辑。所有战术地图备弹量显示都应使用此类提供的方法。
  */
 object MissileWeaponHelper {
-    fun JsonObject.gsonBool(vararg keys: String) =
-        keys.firstNotNullOfOrNull { if (has(it)) get(it).asBoolean else null } ?: false
+    fun JsonObject.optBool(vararg keys: String) =
+        keys.firstNotNullOfOrNull { (this[it] as? JsonPrimitive)?.booleanOrNull } ?: false
 
-    fun JsonObject.gsonDouble(vararg keys: String) =
-        keys.firstNotNullOfOrNull { if (has(it)) get(it).asDouble else null }
+    fun JsonObject.optDouble(vararg keys: String) =
+        keys.firstNotNullOfOrNull { (this[it] as? JsonPrimitive)?.doubleOrNull }
 
     /** 对客户端 level 中已存在的实体（非超视距同步），使用高度图实时计算离地高度 */
     private fun computeEntityHeightAboveGround(level: Level, entity: Entity): Double {
@@ -152,25 +157,23 @@ object MissileWeaponHelper {
                 val consumers = gunData.get(GunProp.AMMO_CONSUMER)
                 for (c in consumers) {
                     val o = c.override ?: continue
-                    val seekObj = o.getAsJsonObject("SeekWeaponInfo")
-                        ?: o.getAsJsonObject("seekWeaponInfo") ?: continue
+                    val seekObj = o["SeekWeaponInfo"] as? JsonObject
+                        ?: o["seekWeaponInfo"] as? JsonObject ?: continue
                     // 检查 override 中是否显式禁用了雷达引导
-                    if (seekObj.has("CanGuidedByRadar")) {
-                        canGuidedByRadar = seekObj.get("CanGuidedByRadar").asBoolean
-                    }
+                    (seekObj["CanGuidedByRadar"] as? JsonPrimitive)?.booleanOrNull?.let { canGuidedByRadar = it }
                     if (!canLockEntity) {
-                        canLockEntity = seekObj.gsonBool("OnlyLockEntity", "onlyLockEntity")
+                        canLockEntity = seekObj.optBool("OnlyLockEntity", "onlyLockEntity")
                         if (canLockEntity) {
-                            minH = seekObj.gsonDouble("MinTargetHeight", "minTargetHeight") ?: 0.0
-                            maxH = seekObj.gsonDouble("MaxTargetHeight", "maxTargetHeight") ?: 114514.0
+                            minH = seekObj.optDouble("MinTargetHeight", "minTargetHeight") ?: 0.0
+                            maxH = seekObj.optDouble("MaxTargetHeight", "maxTargetHeight") ?: 114514.0
                         }
                     }
                     if (!canGroundStrike) {
-                        canGroundStrike = seekObj.gsonBool("OnlyLockBlock", "onlyLockBlock")
-                                || seekObj.gsonBool("InputBlockPos", "inputBlockPos")
+                        canGroundStrike = seekObj.optBool("OnlyLockBlock", "onlyLockBlock")
+                                || seekObj.optBool("InputBlockPos", "inputBlockPos")
                     }
                     // override 中的 MaxGuidedRange
-                    val overrideMgr = seekObj.gsonDouble("MaxGuidedRange", "maxGuidedRange")
+                    val overrideMgr = seekObj.optDouble("MaxGuidedRange", "maxGuidedRange")
                     if (overrideMgr != null) maxGuidedRange = overrideMgr
                 }
 

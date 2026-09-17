@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.data.vehicle.subdata
 
-import com.atsuishio.superbwarfare.annotation.ServerOnly
 import com.atsuishio.superbwarfare.data.ObjectToList
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedVec3
 import kotlinx.serialization.SerialName
@@ -13,7 +12,6 @@ class SeatInfo {
     var hidePassenger: Boolean = false
 
     @SerialName("IsEnclosed")
-    @ServerOnly
     var isEnclosed: Boolean? = null
 
     @JvmField

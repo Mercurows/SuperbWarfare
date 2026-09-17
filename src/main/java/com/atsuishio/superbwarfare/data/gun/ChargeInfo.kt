@@ -32,29 +32,29 @@ enum class ChargePowerMode {
  * reaching 100% fires once. CHARGE uses [ChargeTrigger.ON_RELEASE]: the charge
  * can be released at any progress. [ChargeTrigger.ON_FULL_RELEASE] is reserved
  * for weapons that may only release after reaching full charge.
+ *
+ * 原实现是在 `init` 里就地钳制 [duration] / [minPower]；改成不可变 value 之后
+ * 改为读时钳制（[effectiveDuration] / [effectiveMinPower]），对外表现一致。
  */
 @Serializable
-class ChargeInfo {
-    @JvmField
+data class ChargeInfo(
     @SerialName("Duration")
-    var duration: Int = 20
+    val duration: Int = 20,
 
-    @JvmField
     @SerialName("Trigger")
-    var trigger: ChargeTrigger = ChargeTrigger.AUTO_AT_FULL
+    val trigger: ChargeTrigger = ChargeTrigger.AUTO_AT_FULL,
 
-    @JvmField
     @SerialName("PowerMode")
-    var powerMode: ChargePowerMode = ChargePowerMode.FULL
+    val powerMode: ChargePowerMode = ChargePowerMode.FULL,
 
-    @JvmField
     @SerialName("MinPower")
-    var minPower: Double = 1.0
+    val minPower: Double = 1.0,
+) {
+    /** 至少 1 tick，等价于原来的 `duration = max(1, duration)` */
+    val effectiveDuration: Int get() = max(1, duration)
 
-    init {
-        duration = max(1, duration)
-        minPower = minPower.coerceIn(0.0, 1.0)
-    }
+    /** 等价于原来的 `minPower = minPower.coerceIn(0.0, 1.0)` */
+    val effectiveMinPower: Double get() = minPower.coerceIn(0.0, 1.0)
 
     fun powerForProgress(progress: Double): Double {
         return when (powerMode) {
@@ -68,22 +68,22 @@ class ChargeInfo {
          * Defaults for QL1031-style HOLD: wait until full, then fire once.
          */
         @JvmStatic
-        fun holdDefaults(): ChargeInfo = ChargeInfo().apply {
-            duration = 20
-            trigger = ChargeTrigger.AUTO_AT_FULL
-            powerMode = ChargePowerMode.FULL
-            minPower = 1.0
-        }
+        fun holdDefaults(): ChargeInfo = ChargeInfo(
+            duration = 20,
+            trigger = ChargeTrigger.AUTO_AT_FULL,
+            powerMode = ChargePowerMode.FULL,
+            minPower = 1.0,
+        )
 
         /**
          * Defaults for Bocek-style CHARGE: release fires at the current power.
          */
         @JvmStatic
-        fun chargeDefaults(): ChargeInfo = ChargeInfo().apply {
-            duration = 20
-            trigger = ChargeTrigger.ON_RELEASE
-            powerMode = ChargePowerMode.CURRENT
-            minPower = 0.0
-        }
+        fun chargeDefaults(): ChargeInfo = ChargeInfo(
+            duration = 20,
+            trigger = ChargeTrigger.ON_RELEASE,
+            powerMode = ChargePowerMode.CURRENT,
+            minPower = 0.0,
+        )
     }
 }

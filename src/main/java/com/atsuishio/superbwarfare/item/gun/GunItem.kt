@@ -852,9 +852,11 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                     entity.load(tag)
                 }
             } else if (CustomData.LAUNCHABLE_ENTITY.containsKey(projectileType)) {
-                val newInfo = ProjectileInfo()
-                newInfo.data = CustomData.LAUNCHABLE_ENTITY[projectileType]!!.data
-                newInfo.itemId = projectileType
+                val newInfo = ProjectileInfo(
+                    data = CustomData.LAUNCHABLE_ENTITY[projectileType]!!.data
+                ).apply {
+                    itemId = projectileType
+                }
 
                 val tag = LaunchableEntityTool.getModifiedTag(
                     newInfo,

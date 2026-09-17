@@ -412,7 +412,7 @@ class GunData private constructor(
         item.modifyProperty(pmcInstance)
 
         // 3. Attachments
-        attachmentJsonPropModifier.update(`object` = null)
+        attachmentJsonPropModifier.update(null as kotlinx.serialization.json.JsonObject?)
         for (instance in attachment.installed()) {
             attachmentOption(instance.slot, instance.id)?.let { option ->
                 attachmentJsonPropModifier.update(option.override)

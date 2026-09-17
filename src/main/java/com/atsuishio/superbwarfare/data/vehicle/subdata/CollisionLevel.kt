@@ -1,9 +1,5 @@
 package com.atsuishio.superbwarfare.data.vehicle.subdata
 
-import com.google.gson.TypeAdapter
-import com.google.gson.stream.JsonReader
-import com.google.gson.stream.JsonToken
-import com.google.gson.stream.JsonWriter
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -13,7 +9,6 @@ import kotlinx.serialization.descriptors.element
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.*
-import java.io.IOException
 
 @Serializable
 class CollisionLevel {
@@ -85,33 +80,4 @@ class CollisionLevel {
         }
     }
 
-    class LimitAdapter : TypeAdapter<Limit>() {
-        @Throws(IOException::class)
-        override fun write(out: JsonWriter, value: Limit?) {
-            if (value == null) {
-                out.nullValue()
-                return
-            }
-
-            out.beginArray()
-            out.value(value.power)
-            out.value(value.motion)
-            out.value(value.equals)
-            out.endArray()
-        }
-
-        @Throws(IOException::class)
-        override fun read(`in`: JsonReader): Limit? {
-            if (`in`.peek() == JsonToken.NULL) {
-                `in`.nextNull()
-                return null
-            }
-
-            `in`.beginArray()
-            val obj = Limit(`in`.nextDouble().toFloat(), `in`.nextDouble().toFloat(), `in`.nextBoolean())
-            `in`.endArray()
-
-            return obj
-        }
-    }
 }

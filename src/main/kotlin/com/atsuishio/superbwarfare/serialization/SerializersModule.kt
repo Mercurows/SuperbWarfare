@@ -9,7 +9,6 @@ import kotlinx.serialization.modules.contextual
 val serializersModule = SerializersModule {
     contextual(BlockPosSerializer)
     contextual(ResourceLocationSerializer)
-    contextual(GsonObjectSerializer)
     contextual(SoundEventSerializer)
     contextual(TagSerializer)
     contextual(UUIDSerializer)

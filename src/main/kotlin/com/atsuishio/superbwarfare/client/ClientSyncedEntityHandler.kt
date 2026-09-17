@@ -8,6 +8,8 @@ import com.atsuishio.superbwarfare.network.message.receive.BeyondVisualEntitySyn
 import com.atsuishio.superbwarfare.network.message.receive.PlayerInfoSyncMessage.SyncedPlayerInfo
 import com.atsuishio.superbwarfare.network.message.receive.RadarSyncMessage
 import com.atsuishio.superbwarfare.tools.mc
+import kotlinx.serialization.json.booleanOrNull
+import kotlinx.serialization.json.jsonPrimitive
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.resources.ResourceLocation
@@ -271,7 +273,7 @@ object ClientSyncedEntityHandler {
 
     /** 为超视距载具假实体创建或移除斯图卡尖啸音效 */
     private fun managePhantomStukaSound(vehicle: VehicleEntity, id: Int) {
-        val hasStukaConfig = vehicle.computed().engineInfo.get("HasStukaSound")?.asBoolean ?: false
+        val hasStukaConfig = vehicle.computed().engineInfo["HasStukaSound"]?.jsonPrimitive?.booleanOrNull ?: false
         if (!hasStukaConfig) {
             phantomStukaSounds.remove(id)?.let { mc.soundManager.stop(it) }
             return

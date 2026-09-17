@@ -5,7 +5,10 @@ import com.atsuishio.superbwarfare.client.tooltip.component.AttachmentImageCompo
 import com.atsuishio.superbwarfare.data.attachment.*
 import com.atsuishio.superbwarfare.item.attachment.AttachmentItem
 import com.atsuishio.superbwarfare.tools.FormatTool
-import com.google.gson.JsonObject
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonPrimitive
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphics
@@ -51,8 +54,8 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
             add(slotLine(definition))
             addAll(scopeLines(definition))
             definition.modifiers.mapNotNullTo(this) { modifierLine(it) }
-            definition.override?.entrySet()?.forEach { entry ->
-                add(overrideLine(entry.key, entry.value))
+            definition.override?.forEach { (key, value) ->
+                add(overrideLine(key, value))
             }
 
             if (definition.isSilenced) {
@@ -121,11 +124,11 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
         }
     }
 
-    open fun overrideLine(prop: String, value: com.google.gson.JsonElement): Component {
+    open fun overrideLine(prop: String, value: JsonElement): Component {
         val line = modifiedPropertyComponent(prop)
         if (prop != "SpreadPattern") return line
 
-        val type = (value as? JsonObject)?.get("Type")?.asString ?: return line
+        val type = (value as? JsonObject)?.get("Type")?.jsonPrimitive?.contentOrNull ?: return line
         val key = "prop.superbwarfare.spread_pattern.${type.lowercase(Locale.ROOT)}"
         val typeName = if (I18n.exists(key)) {
             Component.translatable(key)

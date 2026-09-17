@@ -11,7 +11,6 @@ import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.receive.ExplosionParticleMessage
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage
 import com.atsuishio.superbwarfare.tools.SoundTool.playDistantSound
-import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import net.minecraft.core.BlockPos
@@ -621,31 +620,24 @@ object ParticleTool {
 
     @Serializable
     enum class ParticleType {
-        @SerializedName("Mini")
         @SerialName("Mini")
         MINI,
 
-        @SerializedName("Small")
         @SerialName("Small")
         SMALL,
 
-        @SerializedName("Medium")
         @SerialName("Medium")
         MEDIUM,
 
-        @SerializedName("Large")
         @SerialName("Large")
         LARGE,
 
-        @SerializedName("Huge")
         @SerialName("Huge")
         HUGE,
 
-        @SerializedName("Giant")
         @SerialName("Giant")
         GIANT,
 
-        @SerializedName("Epic")
         @SerialName("Epic")
         EPIC
     }

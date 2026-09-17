@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.entity.OBBEntity
 import com.atsuishio.superbwarfare.tools.OBB.Companion.computeObbAabbMtv
 import com.atsuishio.superbwarfare.tools.OBB.Companion.getWorldAABB
 import com.atsuishio.superbwarfare.tools.OBB.Companion.isColliding
-import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import net.minecraft.world.entity.player.Player
@@ -372,39 +371,30 @@ data class OBB(
      */
     @Serializable
     enum class Part {
-        @SerializedName("Empty")
         @SerialName("Empty")
         EMPTY,
 
-        @SerializedName("WheelLeft")
         @SerialName("WheelLeft")
         WHEEL_LEFT,
 
-        @SerializedName("WheelRight")
         @SerialName("WheelRight")
         WHEEL_RIGHT,
 
-        @SerializedName("Turret")
         @SerialName("Turret")
         TURRET,
 
-        @SerializedName("MainEngine")
         @SerialName("MainEngine")
         MAIN_ENGINE,
 
-        @SerializedName("SubEngine")
         @SerialName("SubEngine")
         SUB_ENGINE,
 
-        @SerializedName("Body")
         @SerialName("Body")
         BODY,
 
-        @SerializedName("Interactive")
         @SerialName("Interactive")
         INTERACTIVE,
 
-        @SerializedName("Collision")
         @SerialName("Collision")
         COLLISION
     }

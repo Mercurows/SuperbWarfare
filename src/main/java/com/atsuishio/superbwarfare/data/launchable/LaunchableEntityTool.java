@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.data.launchable;
 import com.atsuishio.superbwarfare.data.CustomData;
 import com.atsuishio.superbwarfare.data.gun.ProjectileInfo;
 import com.atsuishio.superbwarfare.tools.TagDataParser;
-import com.google.gson.JsonObject;
+import kotlinx.serialization.json.JsonObject;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.NbtUtils;
@@ -21,6 +21,10 @@ public class LaunchableEntityTool {
         } else if (CustomData.LAUNCHABLE_ENTITY.containsKey(projectileInfo.getId())) {
             launchableData = CustomData.LAUNCHABLE_ENTITY.get(projectileInfo.getId()).data;
         } else {
+            return null;
+        }
+
+        if (launchableData == null) {
             return null;
         }
 

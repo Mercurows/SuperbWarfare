@@ -1,32 +1,28 @@
 package com.atsuishio.superbwarfare.data.gun
 
 import com.atsuishio.superbwarfare.data.*
-import com.atsuishio.superbwarfare.serialization.kserializer.SerializedGsonObject
-import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonObject
 
 @STOFactory(FireModeInfo.FireModeInfoInstanceBuilder::class)
 @Serializable
-class FireModeInfo : DeserializeFromString, PropertyModifier<GunData, DefaultGunData> {
+data class FireModeInfo(
     @JvmField
-    @SerializedName("Mode")
     @SerialName("Mode")
-    var mode: FireMode? = FireMode.SEMI
+    val mode: FireMode? = FireMode.SEMI,
 
     @JvmField
-    @SerializedName("Name")
     @SerialName("Name")
-    var name: String = "Semi"
+    val name: String = "Semi",
 
     @JvmField
     @SerialName("Charge")
-    var charge: ChargeInfo? = null
+    val charge: ChargeInfo? = null,
 
-    @SerializedName("Override")
     @SerialName("Override")
-    var override: SerializedGsonObject? = null
-
+    val override: JsonObject? = null,
+) : PropertyModifier<GunData, DefaultGunData> {
     @Transient
     @kotlinx.serialization.Transient
     private val jsonPropModifier = JsonPropertyModifier(GunProp.entries)
@@ -36,20 +32,16 @@ class FireModeInfo : DeserializeFromString, PropertyModifier<GunData, DefaultGun
         jsonPropModifier.modifyProperty(modifier)
     }
 
-    fun init() {
-        if (charge == null) {
-            charge = when (mode) {
-                FireMode.HOLD -> ChargeInfo.holdDefaults()
-                FireMode.CHARGE -> ChargeInfo.chargeDefaults()
-                else -> null
-            }
-        }
-    }
-
     fun isChargeMode(): Boolean {
         return mode == FireMode.HOLD || mode == FireMode.CHARGE
     }
 
+    /**
+     * 该开火模式实际使用的蓄力配置。
+     *
+     * 原实现在 `init()` 里把默认值写回 [charge] 字段；改成不可变之后直接在这里兜底，
+     * 所有调用方本来就只通过本方法读取（`charge` 字段保持 JSON 里的原值）。
+     */
     fun chargeConfig(): ChargeInfo? {
         return when (mode) {
             FireMode.HOLD -> charge ?: ChargeInfo.holdDefaults()
@@ -58,17 +50,10 @@ class FireModeInfo : DeserializeFromString, PropertyModifier<GunData, DefaultGun
         }
     }
 
-    override fun deserializeFromString(str: String) {
-        this.mode = FireMode.tryParse(str)
-        this.name = str
-        init()
-    }
-
     object FireModeInfoInstanceBuilder : StringInstanceBuilder<FireModeInfo> {
-        override fun fromString(value: String) = FireModeInfo().apply {
-            this.mode = FireMode.tryParse(value)
-            this.name = value
-            init()
-        }
+        override fun fromString(value: String) = FireModeInfo(
+            mode = FireMode.tryParse(value),
+            name = value,
+        )
     }
 }

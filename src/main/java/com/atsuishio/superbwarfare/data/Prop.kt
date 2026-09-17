@@ -1,16 +1,15 @@
 package com.atsuishio.superbwarfare.data
 
-import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import java.lang.reflect.Type
-import kotlin.reflect.KMutableProperty1
+import kotlin.reflect.KProperty1
 import kotlin.reflect.javaType
 
 @OptIn(ExperimentalStdlibApi::class)
 abstract class Prop<DATA : DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA, FIELD, RESULT, SELF : Prop<DATA, DEFAULT_DATA, FIELD, RESULT, SELF>> protected constructor(
-    val prop: KMutableProperty1<DEFAULT_DATA, FIELD>,
+    val prop: KProperty1<DEFAULT_DATA, FIELD>,
     private val transform: (FIELD) -> RESULT,
     private val contextTransform: ((DATA, FIELD) -> RESULT)? = null,
 ) {
@@ -22,7 +21,6 @@ abstract class Prop<DATA : DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA, FIEL
     override fun toString() = "Prop[$serializationName]"
 
     val serializationName = prop.annotations.filterIsInstance<SerialName>().singleOrNull()?.value
-        ?: prop.annotations.filterIsInstance<SerializedName>().singleOrNull()?.value
         ?: prop.name
 
     init {

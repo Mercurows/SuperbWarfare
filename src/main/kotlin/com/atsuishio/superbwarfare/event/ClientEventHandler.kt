@@ -718,7 +718,7 @@ object ClientEventHandler {
             lastOperatingGunUUID = uuid
 
             if ((holdingFireKey || (zoom && stack.`is`(ModItems.MINIGUN.get()))) && item.canShoot(data, player)) {
-                val maxHoldTicks = data.selectedFireModeInfo().chargeConfig()?.duration
+                val maxHoldTicks = data.selectedFireModeInfo().chargeConfig()?.effectiveDuration
                     ?: data.get(GunProp.SHOOT_DELAY)
                 holdingFireKeyTicks = (holdingFireKeyTicks + 1).coerceAtMost(maxHoldTicks + 1)
 
@@ -1600,7 +1600,7 @@ object ClientEventHandler {
         val chargeConfig = fireModeInfo.chargeConfig()
         val singleShotMode = mode == FireMode.SEMI
 
-        val chargeDelay = chargeConfig?.duration?.toDouble()
+        val chargeDelay = chargeConfig?.effectiveDuration?.toDouble()
             ?: data.get(GunProp.SHOOT_DELAY).toDouble()
 
         val partialHoldingFireKeyTicks =
@@ -1751,7 +1751,7 @@ object ClientEventHandler {
             return
         }
 
-        val progress = (holdingFireKeyTicks.toDouble() / chargeConfig.duration.toDouble()).coerceIn(0.0, 1.0)
+        val progress = (holdingFireKeyTicks.toDouble() / chargeConfig.effectiveDuration.toDouble()).coerceIn(0.0, 1.0)
         chargeProgress = progress
         chargePower = chargeConfig.powerForProgress(progress)
 

@@ -1,22 +1,12 @@
 package com.atsuishio.superbwarfare.data
 
 import com.atsuishio.superbwarfare.serialization.serializersModule
-import com.google.gson.Gson
-import com.google.gson.TypeAdapter
-import com.google.gson.TypeAdapterFactory
-import com.google.gson.reflect.TypeToken
-import com.google.gson.stream.JsonReader
-import com.google.gson.stream.JsonToken
-import com.google.gson.stream.JsonWriter
 import kotlinx.serialization.*
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonPrimitive
-import java.io.IOException
-import java.lang.reflect.ParameterizedType
-import java.lang.reflect.Type
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.createInstance
@@ -24,54 +14,12 @@ import kotlin.reflect.full.createInstance
 /**
  * 创建一个value的包装类，允许使用字符串创建对象，或者直接以对象形式解析JSON值，在序列化和反序列化时可以将该包装类视为不存在
  * "" -> {}
+ *
+ * 字符串形式依赖类型上的 [STOFactory]；其中 Gson 版 TypeAdapter 还会调用 [DeserializeFromString]
+ * （只有仍在走 Gson 的数据集需要，如移动枪/配方）。
  */
 @Serializable(STOSerializer::class)
-class StringToObject<T : DeserializeFromString>(@JvmField var value: T) {
-    internal class StringOrObjectAdapter<T : DeserializeFromString>(type: Type, private val gson: Gson) :
-        TypeAdapter<StringToObject<T>>() {
-        /**
-         * Type of T
-         */
-        private val type = (type as ParameterizedType).actualTypeArguments[0]
-
-        @Throws(IOException::class)
-        override fun write(jsonWriter: JsonWriter, obj: StringToObject<T>?) {
-            if (obj == null) {
-                jsonWriter.nullValue()
-                return
-            }
-
-            gson.toJson(obj.value, type, jsonWriter)
-        }
-
-        @Throws(IOException::class)
-        override fun read(jsonReader: JsonReader): StringToObject<T> {
-            val token = jsonReader.peek()
-            if (token == JsonToken.NULL) {
-                jsonReader.nextNull()
-                return gson.fromJson<StringToObject<T>>("{}", type)
-            }
-
-            if (token == JsonToken.BEGIN_OBJECT || token == JsonToken.BEGIN_ARRAY) {
-                return StringToObject(gson.fromJson<T>(jsonReader, type))
-            }
-
-            val obj = gson.fromJson<T>("{}", type)
-            obj!!.deserializeFromString(gson.fromJson(jsonReader, String::class.java))
-
-            return StringToObject(obj)
-        }
-    }
-
-    internal class AdapterFactory : TypeAdapterFactory {
-        override fun <T> create(gson: Gson, type: TypeToken<T>): TypeAdapter<T>? {
-            if (StringToObject::class.java.isAssignableFrom(type.getRawType()) && type.type is ParameterizedType) {
-                @Suppress("UNCHECKED_CAST")
-                return StringOrObjectAdapter<DeserializeFromString>(type.type, gson) as TypeAdapter<T>
-            }
-            return null
-        }
-    }
+class StringToObject<T : Any>(@JvmField var value: T) {
 }
 
 private val cachedInstances = mutableMapOf<KClass<*>, Any>()
@@ -82,7 +30,7 @@ private fun <T : Any> KClass<T>.getInstance() = cachedInstances.getOrPut(this) {
     objectInstance ?: createInstance()
 } as T
 
-class STOSerializer<T : DeserializeFromString>(private val serializer: KSerializer<T>) :
+class STOSerializer<T : Any>(private val serializer: KSerializer<T>) :
     KSerializer<StringToObject<T>> {
     override val descriptor = serializer.descriptor
 

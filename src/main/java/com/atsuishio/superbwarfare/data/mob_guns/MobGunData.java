@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.data.mob_guns;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.data.CustomData;
-import com.atsuishio.superbwarfare.data.DataLoader;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.tools.NBTTool;
@@ -95,7 +94,7 @@ public class MobGunData {
         var data = GunData.from(stack);
 
         if (selectedData.override != null) {
-            data.propertyOverrideString.set(DataLoader.GSON.toJson(selectedData.override));
+            data.propertyOverrideString.set(selectedData.override.toString());
         }
         data.save();
         this.gunData = data;

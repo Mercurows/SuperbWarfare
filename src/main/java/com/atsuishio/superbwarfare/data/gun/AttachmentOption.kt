@@ -1,11 +1,10 @@
 package com.atsuishio.superbwarfare.data.gun
 
-import com.atsuishio.superbwarfare.data.DeserializeFromString
 import com.atsuishio.superbwarfare.data.STOFactory
 import com.atsuishio.superbwarfare.data.StringInstanceBuilder
-import com.atsuishio.superbwarfare.serialization.kserializer.SerializedGsonObject
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonObject
 
 /**
  * A weapon-level attachment option declared inside AvailableAttachments.
@@ -15,20 +14,14 @@ import kotlinx.serialization.Serializable
  */
 @STOFactory(AttachmentOption.Builder::class)
 @Serializable
-class AttachmentOption : DeserializeFromString {
+data class AttachmentOption(
     @SerialName("Id")
-    var id: String = ""
+    val id: String = "",
 
     @SerialName("Override")
-    var override: SerializedGsonObject? = null
-
-    override fun deserializeFromString(str: String?) {
-        id = str.orEmpty()
-    }
-
+    val override: JsonObject? = null,
+) {
     object Builder : StringInstanceBuilder<AttachmentOption> {
-        override fun fromString(value: String) = AttachmentOption().apply {
-            id = value
-        }
+        override fun fromString(value: String) = AttachmentOption(id = value)
     }
 }

@@ -36,11 +36,7 @@ class ComplexJsonResourceReloadListener(private val data: MutableMap<String, Dat
                             jsonStr = jsonEvent.jsonStr
                         }
 
-                        var data = if (value.isKtData) {
-                            DataLoader.JSON.decodeFromString(serializer(value.type), jsonStr)
-                        } else {
-                            DataLoader.GSON.fromJson(jsonStr, value.type)
-                        }
+                        var data = DataLoader.JSON.decodeFromString(serializer(value.type), jsonStr)
 
                         if (data is IDBasedData<*>) {
                             data.id = id
@@ -76,6 +72,8 @@ class ComplexJsonResourceReloadListener(private val data: MutableMap<String, Dat
     }
 
     override fun apply(obj: Any, resourceManager: ResourceManager, profiler: ProfilerFiller) {
+        // 开发环境下用严格模式重解析一遍，把 ignoreUnknownKeys 吞掉的键名错误暴露出来
+        DataValidator.validateAndLog(resourceManager, this.data)
     }
 
     companion object {
