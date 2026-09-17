@@ -71,7 +71,7 @@ data class AttachmentDefinition(
     private var attachmentId: String = ""
 
     @kotlinx.serialization.Transient
-    private val jsonPropModifier = JsonPropertyModifier(GunProp.entries)
+    private val jsonPropModifier = JsonOverrideApplier(GunProp.entries)
 
     override fun getId(): String = attachmentId
 

@@ -1,9 +1,9 @@
 package com.atsuishio.superbwarfare.data.gun
 
 import com.atsuishio.superbwarfare.Mod
-import com.atsuishio.superbwarfare.data.ObjectToList
 import com.atsuishio.superbwarfare.data.PMC
 import com.atsuishio.superbwarfare.data.Prop
+import com.atsuishio.superbwarfare.data.SingleOrList
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.getPerkPriority
 import com.atsuishio.superbwarfare.init.ModPerks
 import com.atsuishio.superbwarfare.perk.Perk
@@ -36,8 +36,8 @@ class GunProp<T, R>(
         }
 
         fun leveledIntProp(
-            prop: KProperty1<DefaultGunData, ObjectToList<Int>>,
-        ): GunProp<ObjectToList<Int>, Int> {
+            prop: KProperty1<DefaultGunData, SingleOrList<Int>>,
+        ): GunProp<SingleOrList<Int>, Int> {
             return GunProp(
                 prop,
                 { it.firstOrNull() ?: 0 },

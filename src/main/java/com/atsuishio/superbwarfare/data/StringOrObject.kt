@@ -12,15 +12,13 @@ import kotlin.reflect.KProperty
 import kotlin.reflect.full.createInstance
 
 /**
- * 创建一个value的包装类，允许使用字符串创建对象，或者直接以对象形式解析JSON值，在序列化和反序列化时可以将该包装类视为不存在
- * "" -> {}
+ * 把一个字段的两种 JSON 写法统一成一个值：既可以是字符串简写（走 [StringOrObjectFactory] 指明的 builder），
+ * 也可以是完整对象；序列化/反序列化时这个包装类相当于不存在。
  *
- * 字符串形式依赖类型上的 [STOFactory]；其中 Gson 版 TypeAdapter 还会调用 [DeserializeFromString]
- * （只有仍在走 Gson 的数据集需要，如移动枪/配方）。
+ * 值本身是不可变的（[value] 是 `val`），字段级可变性只存在于持有它的数据类里。
  */
-@Serializable(STOSerializer::class)
-class StringToObject<T : Any>(@JvmField var value: T) {
-}
+@Serializable(StringOrObjectSerializer::class)
+class StringOrObject<T : Any>(@JvmField val value: T)
 
 private val cachedInstances = mutableMapOf<KClass<*>, Any>()
 
@@ -30,40 +28,40 @@ private fun <T : Any> KClass<T>.getInstance() = cachedInstances.getOrPut(this) {
     objectInstance ?: createInstance()
 } as T
 
-class STOSerializer<T : Any>(private val serializer: KSerializer<T>) :
-    KSerializer<StringToObject<T>> {
+class StringOrObjectSerializer<T : Any>(private val serializer: KSerializer<T>) :
+    KSerializer<StringOrObject<T>> {
     override val descriptor = serializer.descriptor
 
-    override fun serialize(encoder: Encoder, value: StringToObject<T>) {
+    override fun serialize(encoder: Encoder, value: StringOrObject<T>) {
         encoder.encodeSerializableValue(serializer, value.value)
     }
 
     @OptIn(ExperimentalSerializationApi::class)
-    override fun deserialize(decoder: Decoder): StringToObject<T> {
+    override fun deserialize(decoder: Decoder): StringOrObject<T> {
         require(decoder is JsonDecoder) { "only JsonDecoder is supported!" }
         val element = decoder.decodeJsonElement()
 
-        if (element !is JsonPrimitive || !element.jsonPrimitive.isString) return StringToObject(
+        if (element !is JsonPrimitive || !element.jsonPrimitive.isString) return StringOrObject(
             decoder.json.decodeFromJsonElement(serializer, element)
         )
 
         @Suppress("UNCHECKED_CAST")
-        val fac = serializer.descriptor.annotations.filterIsInstance<STOFactory>()
+        val fac = serializer.descriptor.annotations.filterIsInstance<StringOrObjectFactory>()
             .singleOrNull()?.factory as KClass<StringInstanceBuilder<T>>?
 
-        requireNotNull(fac) { "No factory found for ${serializer.descriptor.serialName}! Add a @STOFactory annotation to your target class!" }
-        return StringToObject(fac.getInstance().fromString(element.jsonPrimitive.content))
+        requireNotNull(fac) { "No factory found for ${serializer.descriptor.serialName}! Add a @StringOrObjectFactory annotation to your target class!" }
+        return StringOrObject(fac.getInstance().fromString(element.jsonPrimitive.content))
     }
 }
 
 /**
- * 将该注解用于StringToObject<T>的T类上，用于指定生成T实例的StringInstanceBuilder<T>工厂类
+ * 将该注解用于 StringOrObject<T> 的 T 类上，用于指定生成T实例的StringInstanceBuilder<T>工厂类
  */
 @OptIn(ExperimentalSerializationApi::class)
 @Retention(AnnotationRetention.RUNTIME)
 @SerialInfo
 @Target(AnnotationTarget.CLASS)
-annotation class STOFactory(val factory: KClass<out StringInstanceBuilder<*>>)
+annotation class StringOrObjectFactory(val factory: KClass<out StringInstanceBuilder<*>>)
 
 interface StringInstanceBuilder<T> {
     fun fromString(value: String): T

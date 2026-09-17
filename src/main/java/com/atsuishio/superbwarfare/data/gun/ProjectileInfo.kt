@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.data.gun
 
 import com.atsuishio.superbwarfare.data.IDBasedData
-import com.atsuishio.superbwarfare.data.STOFactory
 import com.atsuishio.superbwarfare.data.StringInstanceBuilder
+import com.atsuishio.superbwarfare.data.StringOrObjectFactory
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
@@ -16,7 +16,7 @@ import kotlinx.serialization.json.JsonObject
  *
  * @param data 发射时用于改写弹射物 NBT 的不透明 JSON 数据（`@sbw:xxx` 占位符）
  */
-@STOFactory(ProjectileInfo.ProjectileInfoInstanceBuilder::class)
+@StringOrObjectFactory(ProjectileInfo.ProjectileInfoInstanceBuilder::class)
 @Serializable
 data class ProjectileInfo(
     @JvmField

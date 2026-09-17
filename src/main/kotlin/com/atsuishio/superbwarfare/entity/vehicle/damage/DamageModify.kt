@@ -2,8 +2,8 @@ package com.atsuishio.superbwarfare.entity.vehicle.damage
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.DeserializeFromString
-import com.atsuishio.superbwarfare.data.STOFactory
 import com.atsuishio.superbwarfare.data.StringInstanceBuilder
+import com.atsuishio.superbwarfare.data.StringOrObjectFactory
 import com.atsuishio.superbwarfare.script.ScriptManager
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -20,7 +20,7 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.math.max
 
-@STOFactory(DamageModify.DamageModifyInstanceBuilder::class)
+@StringOrObjectFactory(DamageModify.DamageModifyInstanceBuilder::class)
 @Serializable
 class DamageModify : DeserializeFromString {
     @kotlinx.serialization.Transient

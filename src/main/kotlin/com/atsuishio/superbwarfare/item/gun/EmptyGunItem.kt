@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.item.gun
 
-import com.atsuishio.superbwarfare.data.ObjectToList
-import com.atsuishio.superbwarfare.data.StringToObject
+import com.atsuishio.superbwarfare.data.SingleOrList
+import com.atsuishio.superbwarfare.data.StringOrObject
 import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.init.RegistryName
 import net.minecraft.ChatFormatting
@@ -47,7 +47,7 @@ class EmptyGunItem : GunItem(Properties()) {
             damage = 0.0,
             headshot = 0.0,
             velocity = 0.0,
-            magazine = ObjectToList(0),
+            magazine = SingleOrList(0),
             range = 0,
             meleeDamage = 0.0,
             meleeDuration = 0,
@@ -55,7 +55,7 @@ class EmptyGunItem : GunItem(Properties()) {
             meleeAngle = 0,
             meleeRange = 0.0,
 
-            projectile = StringToObject(ProjectileInfo().apply { itemId = "empty" }),
+            projectile = StringOrObject(ProjectileInfo().apply { itemId = "empty" }),
             shootPos = ShootPos(
                 positions = arrayListOf(),
                 directions = arrayListOf()
@@ -68,7 +68,7 @@ class EmptyGunItem : GunItem(Properties()) {
             weight = 0.0,
 
             defaultFireMode = "",
-            availableFireModes = ObjectToList(),
+            availableFireModes = SingleOrList(),
             reloadTypes = emptySet(),
             seekType = null,
 
@@ -78,24 +78,24 @@ class EmptyGunItem : GunItem(Properties()) {
             clearHoldProgressAfterShoot = false,
             burstAmount = 0,
             bypassesArmor = 0.0,
-            ammoConsumers = ObjectToList(
+            ammoConsumers = SingleOrList(
                 mutableListOf(
-                    StringToObject(AmmoConsumer(ammo = ObjectToList("empty")))
+                    StringOrObject(AmmoConsumer(ammo = SingleOrList("empty")))
                 )
             ),
             useNacelleCamera = false,
 
-            normalReloadTime = ObjectToList(0),
-            emptyReloadTime = ObjectToList(0),
-            boltActionTime = ObjectToList(0),
-            prepareTime = ObjectToList(0),
-            prepareLoadTime = ObjectToList(0),
-            prepareAmmoLoadTime = ObjectToList(0),
-            prepareEmptyTime = ObjectToList(0),
-            iterativeTime = ObjectToList(0),
-            iterativeAmmoLoadTime = ObjectToList(0),
+            normalReloadTime = SingleOrList(0),
+            emptyReloadTime = SingleOrList(0),
+            boltActionTime = SingleOrList(0),
+            prepareTime = SingleOrList(0),
+            prepareLoadTime = SingleOrList(0),
+            prepareAmmoLoadTime = SingleOrList(0),
+            prepareEmptyTime = SingleOrList(0),
+            iterativeTime = SingleOrList(0),
+            iterativeAmmoLoadTime = SingleOrList(0),
             iterativeLoadAmount = 0,
-            finishTime = ObjectToList(0),
+            finishTime = SingleOrList(0),
             burstCooldown = 0,
             soundRadius = 0.0,
             rpm = 0,
@@ -105,7 +105,7 @@ class EmptyGunItem : GunItem(Properties()) {
             shootDelay = 0,
             shootDelayTime = 0,
             heatPerShoot = 0.0,
-            availablePerks = ObjectToList(),
+            availablePerks = SingleOrList(),
 
             naturalCooldown = 0.0,
             inWaterCooldownRate = 0.0,

@@ -63,7 +63,7 @@ import kotlin.math.min
  * Selects the magazine-level value, falling back to the last configured value
  * when the list is shorter than the requested level.
  */
-fun ObjectToList<Int>.atMagazineLevel(level: Int): Int {
+fun SingleOrList<Int>.atMagazineLevel(level: Int): Int {
     if (list.isEmpty()) return 0
     return list[level.coerceAtLeast(0).coerceAtMost(list.lastIndex)]
 }
@@ -349,8 +349,8 @@ class GunData private constructor(
         invalidateProperties()
     }
 
-    private val jsonPropModifier = JsonPropertyModifier(GunProp.entries)
-    private val attachmentJsonPropModifier = JsonPropertyModifier(GunProp.entries)
+    private val jsonPropModifier = JsonOverrideApplier(GunProp.entries)
+    private val attachmentJsonPropModifier = JsonOverrideApplier(GunProp.entries)
     private var tempModifications: Function<DefaultGunData, DefaultGunData>? = null
     private val pmcInstance: PMC<GunData, DefaultGunData> by lazy { PMC(this) }
 

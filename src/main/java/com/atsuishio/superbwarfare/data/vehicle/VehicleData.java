@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.data.vehicle;
 import com.atsuishio.superbwarfare.data.CustomData;
 import com.atsuishio.superbwarfare.data.DataLoader;
 import com.atsuishio.superbwarfare.data.DefaultDataSupplier;
-import com.atsuishio.superbwarfare.data.JsonPropertyModifier;
+import com.atsuishio.superbwarfare.data.JsonOverrideApplier;
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
@@ -28,7 +28,7 @@ public class VehicleData implements DefaultDataSupplier<DefaultVehicleData> {
         this.vehicle = entity;
     }
 
-    private final JsonPropertyModifier<VehicleData, DefaultVehicleData> jsonPropModifier = new JsonPropertyModifier<>();
+    private final JsonOverrideApplier<VehicleData, DefaultVehicleData> jsonPropModifier = new JsonOverrideApplier<>();
 
     public static @NotNull DefaultVehicleData compute(VehicleEntity vehicle) {
         return from(vehicle).compute();

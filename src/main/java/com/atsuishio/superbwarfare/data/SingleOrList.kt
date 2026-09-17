@@ -12,32 +12,32 @@ import kotlinx.serialization.json.JsonDecoder
  * 创建一个List包装类，反序列化时将单个对象解析为单元素List，或直接以List方式进行读取，不影响序列化
  * {} -> [{}]
  */
-@Serializable(OTLSerializer::class)
+@Serializable(SingleOrListSerializer::class)
 @Suppress("DelegationToVarProperty")
-data class ObjectToList<T>(@JvmField var list: MutableList<T>) : List<T> by list {
+data class SingleOrList<T>(@JvmField var list: MutableList<T>) : List<T> by list {
     @SafeVarargs
     constructor(vararg objects: T) : this(mutableListOf(*objects))
 
 }
 
-class OTLSerializer<T>(val elementSerializer: KSerializer<T>) : KSerializer<ObjectToList<T>> {
+class SingleOrListSerializer<T>(val elementSerializer: KSerializer<T>) : KSerializer<SingleOrList<T>> {
     override val descriptor = elementSerializer.descriptor
 
     override fun serialize(
         encoder: Encoder,
-        value: ObjectToList<T>
+        value: SingleOrList<T>
     ) {
         encoder.encodeSerializableValue(ListSerializer(elementSerializer), value.list)
     }
 
-    override fun deserialize(decoder: Decoder): ObjectToList<T> {
+    override fun deserialize(decoder: Decoder): SingleOrList<T> {
         require(decoder is JsonDecoder) { "only JsonDecoder is supported!" }
 
         val element = decoder.decodeJsonElement()
         return if (element is JsonArray) {
-            ObjectToList(element.map { decoder.json.decodeFromJsonElement(elementSerializer, it) }.toMutableList())
+            SingleOrList(element.map { decoder.json.decodeFromJsonElement(elementSerializer, it) }.toMutableList())
         } else {
-            ObjectToList(listOf(decoder.json.decodeFromJsonElement(elementSerializer, element)).toMutableList())
+            SingleOrList(listOf(decoder.json.decodeFromJsonElement(elementSerializer, element)).toMutableList())
         }
     }
 

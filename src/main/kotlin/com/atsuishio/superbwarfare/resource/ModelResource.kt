@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.resource
 
-import com.atsuishio.superbwarfare.data.ObjectToList
+import com.atsuishio.superbwarfare.data.SingleOrList
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedResourceLocation
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -18,7 +18,7 @@ class ModelResource {
     var model: SerializedResourceLocation? = null
 
     @SerialName("LODModel")
-    private var lodModel: ObjectToList<SerializedResourceLocation>? = ObjectToList()
+    private var lodModel: SingleOrList<SerializedResourceLocation>? = SingleOrList()
 
     fun hasLOD(): Boolean {
         return lodModel != null && !lodModel!!.list.isEmpty()
@@ -37,7 +37,7 @@ class ModelResource {
     var texture: SerializedResourceLocation? = null
 
     @SerialName("LODTexture")
-    private var lodTexture: ObjectToList<SerializedResourceLocation>? = null
+    private var lodTexture: SingleOrList<SerializedResourceLocation>? = null
 
     // LOD的最小等级为1
     fun getLODTexture(level: Int): ResourceLocation? {

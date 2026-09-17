@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.data.gun
 
-import com.atsuishio.superbwarfare.data.STOFactory
 import com.atsuishio.superbwarfare.data.StringInstanceBuilder
+import com.atsuishio.superbwarfare.data.StringOrObjectFactory
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
@@ -12,7 +12,7 @@ import kotlinx.serialization.json.JsonObject
  * A plain string remains valid and is converted into [id] by [Builder].
  * Object form can additionally declare a weapon-specific [override].
  */
-@STOFactory(AttachmentOption.Builder::class)
+@StringOrObjectFactory(AttachmentOption.Builder::class)
 @Serializable
 data class AttachmentOption(
     @SerialName("Id")

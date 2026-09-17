@@ -85,13 +85,13 @@ object DataLoader {
     }
 
     /**
-     * 将StringToObject和ObjectToList转换为原始值
+     * 将 StringOrObject 和 SingleOrList 转换为原始值
      */
     @JvmStatic
     fun processValue(value: Any?): Any? {
         return when (value) {
-            is ObjectToList<*> -> value.list.map { value -> processValue(value) }
-            is StringToObject<*> -> processValue(value.value)
+            is SingleOrList<*> -> value.list.map { value -> processValue(value) }
+            is StringOrObject<*> -> processValue(value.value)
             else -> value
         }
     }

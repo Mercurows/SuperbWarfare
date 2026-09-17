@@ -33,18 +33,18 @@ import net.neoforged.neoforge.items.IItemHandler
  * [sources] 是运行时解析结果，不参与序列化：声明为不可变之后改为 lazy 派生，
  * 因此不再需要 `init()` / `initialized()` 那套手工初始化。
  */
-@STOFactory(AmmoConsumer.AmmoConsumerInstanceBuilder::class)
+@StringOrObjectFactory(AmmoConsumer.AmmoConsumerInstanceBuilder::class)
 @Serializable
 data class AmmoConsumer(
     /** 本弹种的弹药来源列表，首项为主来源，其余为每发附加消耗的来源 */
     @SerialName("Ammo")
-    val ammo: ObjectToList<String> = ObjectToList(),
+    val ammo: SingleOrList<String> = SingleOrList(),
 
     @SerialName("AmmoSlot")
     val ammoSlot: String = "Default",
 
     @SerialName("Projectile")
-    val projectile: StringToObject<ProjectileInfo>? = null,
+    val projectile: StringOrObject<ProjectileInfo>? = null,
 
     /**
      * Bones of the model that draw this ammo type, overriding [DefaultGunData.projectileBone].
@@ -52,7 +52,7 @@ data class AmmoConsumer(
      * Renderer-only, see [com.atsuishio.superbwarfare.client.model.gun.GeoGunModel.showProjectileBone].
      */
     @SerialName("ProjectileBone")
-    val projectileBone: ObjectToList<String> = ObjectToList(),
+    val projectileBone: SingleOrList<String> = SingleOrList(),
 
     @SerialName("Override")
     val override: JsonObject? = null,
@@ -202,7 +202,7 @@ data class AmmoConsumer(
 
     @Transient
     @kotlinx.serialization.Transient
-    private val jsonPropModifier = JsonPropertyModifier(GunProp.entries)
+    private val jsonPropModifier = JsonOverrideApplier(GunProp.entries)
 
     override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) {
         if (this.projectile != null) {
@@ -219,7 +219,7 @@ data class AmmoConsumer(
 
     object AmmoConsumerInstanceBuilder : StringInstanceBuilder<AmmoConsumer> {
         override fun fromString(value: String) = AmmoConsumer(
-            ammo = ObjectToList(value)
+            ammo = SingleOrList(value)
         )
     }
 

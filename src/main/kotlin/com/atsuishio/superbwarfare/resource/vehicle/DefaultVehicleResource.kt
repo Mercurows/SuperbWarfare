@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.resource.vehicle
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.IDBasedData
-import com.atsuishio.superbwarfare.data.ObjectToList
+import com.atsuishio.superbwarfare.data.SingleOrList
 import com.atsuishio.superbwarfare.resource.ModelResource
 import com.atsuishio.superbwarfare.script.ScriptMath
 import com.atsuishio.superbwarfare.script.VehicleScriptManager
@@ -39,14 +39,14 @@ class DefaultVehicleResource : IDBasedData<DefaultVehicleResource> {
 
     @Deprecated("Use models instead", ReplaceWith("getModels()"))
     @SerialName("LODDistance")
-    var lodDistance: ObjectToList<Double> = ObjectToList(48.0, 96.0)
+    var lodDistance: SingleOrList<Double> = SingleOrList(48.0, 96.0)
 
     @JvmField
     @SerialName("Animation")
     val animation: SerializedResourceLocation? = null
 
     @SerialName("Models")
-    private val models: ObjectToList<VehicleModelPojo> = ObjectToList()
+    private val models: SingleOrList<VehicleModelPojo> = SingleOrList()
 
     @SerialName("Script")
     private val script: SerializedResourceLocation? = null

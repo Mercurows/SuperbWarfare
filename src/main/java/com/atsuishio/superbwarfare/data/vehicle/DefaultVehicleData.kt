@@ -69,10 +69,10 @@ class DefaultVehicleData : IDBasedData<DefaultVehicleData> {
     var obb: MutableList<OBBInfo> = mutableListOf()
 
     @SerialName("Seats")
-    private var seats: ObjectToList<SeatInfo>? = ObjectToList()
+    private var seats: SingleOrList<SeatInfo>? = SingleOrList()
 
     @SerialName("Radar")
-    var radar: ObjectToList<RadarInfo>? = ObjectToList()
+    var radar: SingleOrList<RadarInfo>? = SingleOrList()
     fun seats(): MutableList<SeatInfo> {
         if (seats == null) return mutableListOf()
         return Collections.unmodifiableList(seats!!.list)
@@ -113,7 +113,7 @@ class DefaultVehicleData : IDBasedData<DefaultVehicleData> {
 
     @JvmField
     @SerialName("DamageModifiers")
-    var damageModifiers: ObjectToList<StringToObject<DamageModify>> = ObjectToList()
+    var damageModifiers: SingleOrList<StringOrObject<DamageModify>> = SingleOrList()
 
     @SerialName("Mass")
     var mass: Float = 1f

@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.data.mob_guns
 
-import com.atsuishio.superbwarfare.data.STOFactory
 import com.atsuishio.superbwarfare.data.StringInstanceBuilder
+import com.atsuishio.superbwarfare.data.StringOrObjectFactory
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
@@ -12,7 +12,7 @@ import kotlinx.serialization.json.JsonObject
  * 原来每个字段都靠 Gson 的 `UPPER_CAMEL_CASE` 策略映射键名，迁移到 kotlinx 之后
  * 必须**逐个显式写 [SerialName]**（kotlinx 没有命名策略）。
  */
-@STOFactory(GunSpawnData.GunSpawnDataInstanceBuilder::class)
+@StringOrObjectFactory(GunSpawnData.GunSpawnDataInstanceBuilder::class)
 @Serializable
 data class GunSpawnData(
     /** 枪械物品的注册 id，必须非空且是 GunItem */

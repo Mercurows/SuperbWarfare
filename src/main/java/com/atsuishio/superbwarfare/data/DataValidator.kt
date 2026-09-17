@@ -80,7 +80,7 @@ object DataValidator {
                 try {
                     val text = entry.value.openAsReader().use { it.readText() }
                     val decoded = STRICT.decodeFromString(serializer, text.withoutToleratedKeys())
-                    // 再往返一次：IDBasedData.copy() 与 JsonPropertyModifier.computeProperties 都依赖
+                    // 再往返一次：IDBasedData.copy() 与 JsonOverrideApplier.computeProperties 都依赖
                     // "编码回 JsonElement 再解析" 这条路，这里顺带保证所有数据类都能往返
                     val roundTripped =
                         STRICT.decodeFromJsonElement(serializer, STRICT.encodeToJsonElement(serializer, decoded))

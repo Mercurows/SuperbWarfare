@@ -7,7 +7,7 @@ import kotlinx.serialization.json.JsonObject
  * 属性覆盖（`Override` 字段 / 枪械 NBT 里的属性覆写字符串）的统一入口。
  */
 // TODO 取代StringPropModifier
-class JsonPropertyModifier<DATA : DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA>(
+class JsonOverrideApplier<DATA : DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA>(
     // TODO 实现VehicleProp后禁止该项为空
     val props: List<Prop<DATA, DEFAULT_DATA, *, *, *>>? = null
 ) : OldPropertyModifier<DATA, DEFAULT_DATA>, PropertyModifier<DATA, DEFAULT_DATA> {

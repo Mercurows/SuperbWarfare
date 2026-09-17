@@ -1,11 +1,10 @@
 package com.atsuishio.superbwarfare.data.gun
 
-import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.data.IDBasedData
 import com.atsuishio.superbwarfare.data.ModColor
-import com.atsuishio.superbwarfare.data.ObjectToList
-import com.atsuishio.superbwarfare.data.StringToObject
+import com.atsuishio.superbwarfare.data.SingleOrList
+import com.atsuishio.superbwarfare.data.StringOrObject
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedResourceLocation
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedVec3
 import kotlinx.serialization.SerialName
@@ -44,11 +43,11 @@ data class DefaultGunData(
     @SerialName("DefaultZoom")
     val defaultZoom: Double = 1.25,
     @SerialName("BoundBones")
-    val boundBones: ObjectToList<String>? = ObjectToList(),
+    val boundBones: SingleOrList<String>? = SingleOrList(),
     @SerialName("BoundBonesYaw")
-    val boundBonesYaw: ObjectToList<String>? = ObjectToList(),
+    val boundBonesYaw: SingleOrList<String>? = SingleOrList(),
     @SerialName("BoundBonesPitch")
-    val boundBonesPitch: ObjectToList<String>? = ObjectToList(),
+    val boundBonesPitch: SingleOrList<String>? = SingleOrList(),
     @SerialName("MinZoom")
     val minZoom: Double = defaultZoom,
     @SerialName("MaxZoom")
@@ -64,7 +63,7 @@ data class DefaultGunData(
     @SerialName("Velocity")
     val velocity: Double = 0.0,
     @SerialName("Magazine")
-    val magazine: ObjectToList<Int> = ObjectToList(0),
+    val magazine: SingleOrList<Int> = SingleOrList(0),
     @SerialName("Range")
     val range: Int = 128,
     @SerialName("MeleeDamage")
@@ -79,7 +78,7 @@ data class DefaultGunData(
     val meleeRange: Double = 0.0,
     @JvmField
     @SerialName("Projectile")
-    val projectile: StringToObject<ProjectileInfo> = StringToObject(ProjectileInfo()),
+    val projectile: StringOrObject<ProjectileInfo> = StringOrObject(ProjectileInfo()),
     /**
     * Bones of the model that draw the round currently loaded in the weapon.
     *
@@ -91,7 +90,7 @@ data class DefaultGunData(
     * hide every bone except the ones of the selected ammo type.
     */
     @SerialName("ProjectileBone")
-    val projectileBone: ObjectToList<String> = ObjectToList<String>(),
+    val projectileBone: SingleOrList<String> = SingleOrList<String>(),
     @SerialName("ShootPos")
     val shootPos: ShootPos = ShootPos(),
     @SerialName("SeekWeaponInfo")
@@ -109,7 +108,7 @@ data class DefaultGunData(
     @SerialName("DefaultFireMode")
     val defaultFireMode: String = FireMode.SEMI.typeName,
     @SerialName("AvailableFireModes")
-    val availableFireModes: ObjectToList<StringToObject<FireModeInfo>> = ObjectToList(StringToObject(FireModeInfo())),
+    val availableFireModes: SingleOrList<StringOrObject<FireModeInfo>> = SingleOrList(StringOrObject(FireModeInfo())),
     @SerialName("ReloadTypes")
     val reloadTypes: Set<ReloadType> = setOf(ReloadType.MAGAZINE),
     @SerialName("SeekType")
@@ -131,7 +130,7 @@ data class DefaultGunData(
     @SerialName("BypassesArmor")
     val bypassesArmor: Double = 0.0,
     @SerialName("AmmoType")
-    val ammoConsumers: ObjectToList<StringToObject<AmmoConsumer>> = ObjectToList(),
+    val ammoConsumers: SingleOrList<StringOrObject<AmmoConsumer>> = SingleOrList(),
     @SerialName("UseNacelleCamera")
     val useNacelleCamera: Boolean = false,
     @SerialName("OpenBolt")
@@ -145,33 +144,33 @@ data class DefaultGunData(
     @SerialName("ZoomTime")
     val zoomTime: Int = 3,
     @SerialName("NormalReloadTime")
-    val normalReloadTime: ObjectToList<Int> = ObjectToList(0),
+    val normalReloadTime: SingleOrList<Int> = SingleOrList(0),
     @SerialName("EmptyReloadTime")
-    val emptyReloadTime: ObjectToList<Int> = ObjectToList(0),
+    val emptyReloadTime: SingleOrList<Int> = SingleOrList(0),
     @SerialName("BoltActionTime")
-    val boltActionTime: ObjectToList<Int> = ObjectToList(0),
+    val boltActionTime: SingleOrList<Int> = SingleOrList(0),
     @SerialName("PrepareTime")
-    val prepareTime: ObjectToList<Int> = ObjectToList(0),
+    val prepareTime: SingleOrList<Int> = SingleOrList(0),
     @SerialName("PrepareLoadTime")
-    val prepareLoadTime: ObjectToList<Int> = ObjectToList(0),
+    val prepareLoadTime: SingleOrList<Int> = SingleOrList(0),
     // 单发装填时的上弹时间
     @SerialName("PrepareAmmoLoadTime")
-    val prepareAmmoLoadTime: ObjectToList<Int> = ObjectToList(1),
+    val prepareAmmoLoadTime: SingleOrList<Int> = SingleOrList(1),
     @SerialName("PrepareEmptyTime")
-    val prepareEmptyTime: ObjectToList<Int> = ObjectToList(0),
+    val prepareEmptyTime: SingleOrList<Int> = SingleOrList(0),
     // 每次单发装填用时的
     @SerialName("IterativeTime")
-    val iterativeTime: ObjectToList<Int> = ObjectToList(0),
+    val iterativeTime: SingleOrList<Int> = SingleOrList(0),
     // 单发装填时的上弹时间，在reload.iterativeLoadTimer等于该值时上弹
     @SerialName("IterativeAmmoLoadTime")
-    val iterativeAmmoLoadTime: ObjectToList<Int> = ObjectToList(1),
+    val iterativeAmmoLoadTime: SingleOrList<Int> = SingleOrList(1),
     // 单次单发装填上弹数量
     @SerialName("IterativeLoadAmount")
     val iterativeLoadAmount: Int = 1,
     @SerialName("FinishTime")
-    val finishTime: ObjectToList<Int> = ObjectToList(0),
+    val finishTime: SingleOrList<Int> = SingleOrList(0),
     @SerialName("ActionSteps")
-    val actionSteps: ObjectToList<GunActionStep> = ObjectToList(),
+    val actionSteps: SingleOrList<GunActionStep> = SingleOrList(),
     // 连发模式下的射击间隔时间
     @SerialName("BurstCooldown")
     val burstCooldown: Int = 30,
@@ -192,7 +191,7 @@ data class DefaultGunData(
     @SerialName("HeatPerShoot")
     val heatPerShoot: Double = 0.0,
     @SerialName("AvailablePerks")
-    val availablePerks: ObjectToList<String> = ObjectToList(
+    val availablePerks: SingleOrList<String> = SingleOrList(
         "@Ammo",
         "superbwarfare:field_doctor",
         "superbwarfare:powerful_attraction",
@@ -204,7 +203,7 @@ data class DefaultGunData(
         "!superbwarfare:cupid_arrow"
     ),
     @SerialName("AvailableAttachments")
-    val availableAttachments: Map<String, List<StringToObject<AttachmentOption>>> = emptyMap(),
+    val availableAttachments: Map<String, List<StringOrObject<AttachmentOption>>> = emptyMap(),
     @SerialName("DamageReduce")
     val damageReduce: DamageReduce = DamageReduce(),
     // 自然情况下每tick减少的热量
@@ -303,26 +302,6 @@ data class DefaultGunData(
 
     @Transient
     @kotlinx.serialization.Transient
-    private var ammoConsumersCache: List<AmmoConsumer>? = null
-
-    fun getProcessedAmmoConsumers(): List<AmmoConsumer> {
-        if (ammoConsumersCache == null) {
-            this.ammoConsumersCache = this.ammoConsumers.list
-                .map { c -> c.value }
-                .filter { c ->
-                    if (!c.isValid()) {
-                        Mod.LOGGER.warn("invalid ammo string {} for {}", c.ammo.list, this.id)
-                        return@filter false
-                    }
-                    true
-                }
-        }
-
-        return this.ammoConsumersCache!!
-    }
-
-    @Transient
-    @kotlinx.serialization.Transient
     private var fireModesCache: List<FireModeInfo>? = null
 
     val fireModes: List<FireModeInfo>
@@ -362,9 +341,9 @@ data class DefaultGunData(
             projectileAmount = clampedProjectileAmount,
             weight = max(1.0, weight),
             magazine = if (clampedProjectileAmount == 0 && meleeDamage > 0) {
-                ObjectToList(0)
+                SingleOrList(0)
             } else {
-                ObjectToList(magazine.list.map { max(0, it) }.toMutableList())
+                SingleOrList(magazine.list.map { max(0, it) }.toMutableList())
             },
             seekType = seekType ?: SeekType.NONE,
             burstAmount = max(0, burstAmount),

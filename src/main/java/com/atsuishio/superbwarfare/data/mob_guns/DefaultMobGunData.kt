@@ -1,8 +1,8 @@
 package com.atsuishio.superbwarfare.data.mob_guns
 
 import com.atsuishio.superbwarfare.data.IDBasedData
-import com.atsuishio.superbwarfare.data.ObjectToList
-import com.atsuishio.superbwarfare.data.StringToObject
+import com.atsuishio.superbwarfare.data.SingleOrList
+import com.atsuishio.superbwarfare.data.StringOrObject
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -26,7 +26,7 @@ data class DefaultMobGunData(
 
     @JvmField
     @SerialName("Guns")
-    val guns: ObjectToList<StringToObject<GunSpawnData>> = ObjectToList(),
+    val guns: SingleOrList<StringOrObject<GunSpawnData>> = SingleOrList(),
 ) : IDBasedData<DefaultMobGunData> {
 
     /** 数据集 id，由加载器按文件路径打戳，不参与序列化 */
