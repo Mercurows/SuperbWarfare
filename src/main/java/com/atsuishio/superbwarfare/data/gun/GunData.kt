@@ -528,6 +528,24 @@ class GunData private constructor(
     }
 
     /**
+     * Every model bone that could draw a loaded round: the weapon's own [GunProp.PROJECTILE_BONE]
+     * plus the one each ammo consumer declares.
+     *
+     * The renderer hides all of them except the currently selected one, so switching ammo types
+     * swaps the round drawn in the model. Guns that declare no projectile bone get an empty list.
+     */
+    fun projectileBoneNames(): List<String> {
+        val names = linkedSetOf<String>()
+        getDefault().projectileBone?.let { names.add(it) }
+
+        for (consumer in get(AMMO_CONSUMER)) {
+            consumer.projectileBone?.let { names.add(it) }
+        }
+
+        return names.toList()
+    }
+
+    /**
      * Switches weapon's active ammo consumer type and handles inventory unloading.
      *
      * @param index index of the target ammo consumer in the available list.

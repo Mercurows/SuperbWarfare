@@ -19,6 +19,7 @@ object ModEntityRenderers {
             registerEntityRenderer(ModEntities.C4.get(), ::C4Renderer)
             registerEntityRenderer(ModEntities.TASER_BULLET.get(), ::BasicProjectileRenderer)
             registerEntityRenderer(ModEntities.GUN_GRENADE.get(), ::BasicProjectileRenderer)
+            registerEntityRenderer(ModEntities.SMOKE_GUN_GRENADE.get(), ::BasicProjectileRenderer)
             registerEntityRenderer(ModEntities.TARGET.get(), ::TargetRenderer)
             registerEntityRenderer(ModEntities.DPS_GENERATOR.get(), ::DPSGeneratorRenderer)
             registerEntityRenderer(ModEntities.RPG_ROCKET_TBG.get(), ::BasicProjectileRenderer)

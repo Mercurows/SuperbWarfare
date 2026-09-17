@@ -181,7 +181,8 @@
   "item.superbwarfare.potion_mortar_shell": "Potion Mortar Shell",
   "item.superbwarfare.mortar_shell_wp": "Mortar White Phosphorus Shell",
   "item.superbwarfare.mortar_shell_smoke": "Mortar Smoke Shell",
-  "item.superbwarfare.grenade_40mm": "40mm Grenade",
+  "item.superbwarfare.smoke_gun_grenade": "Smoke Gun Grenade (Smoke)",
+  "item.superbwarfare.grenade_40mm": "Smoke Gun Grenade (HE)",
   "item.superbwarfare.rpg_rocket_standard": "RPG Rocket PG-7VM",
   "item.superbwarfare.rpg_rocket_tbg": "RPG Rocket Yasin 105 TBG",
   "item.superbwarfare.sniper_ammo": "Sniper Ammo",
@@ -757,6 +758,7 @@
 
   "entity.superbwarfare.projectile": "Bullet",
   "entity.superbwarfare.mortar_shell": "Mortar Shell",
+  "entity.superbwarfare.smoke_gun_grenade": "Smoke Gun Grenade",
   "entity.superbwarfare.gun_grenade": "Gun Grenade",
   "entity.superbwarfare.rpg_rocket_tbg": "RPG Rocket TBG",
   "entity.superbwarfare.rpg_rocket_standard": "RPG Rocket Standard",

@@ -184,6 +184,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.WP_HEAD)
         simpleItem(ModItems.TUNGSTEN_ROD)
         simpleItem(ModItems.GRENADE_40MM)
+        simpleItem(ModItems.SMOKE_GUN_GRENADE)
         simpleItem(ModItems.MEDIUM_SHELL_AP)
         simpleItem(ModItems.MEDIUM_SHELL_HE)
         simpleItem(ModItems.MEDIUM_SHELL_GS)

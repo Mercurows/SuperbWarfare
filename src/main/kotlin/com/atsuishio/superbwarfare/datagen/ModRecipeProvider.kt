@@ -664,6 +664,14 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 .unlockedBy(getHasName(ModItems.MISSILE_ENGINE.get()), has(ModItems.MISSILE_ENGINE.get()))
                 .save(writer, loc(getItemName(ModItems.MEDIUM_ANTI_AIR_MISSILE.get())))
 
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.SMOKE_GUN_GRENADE.get())
+                .requires(ModItems.M18_SMOKE_GRENADE.get())
+                .unlockedBy(
+                    getHasName(ModItems.M18_SMOKE_GRENADE.get()),
+                    has(ModItems.M18_SMOKE_GRENADE.get())
+                )
+                .save(writer, loc(getItemName(ModItems.SMOKE_GUN_GRENADE.get())))
+
             ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.LARGE_ANTI_AIR_MISSILE.get())
                 .requires(ModItems.MEDIUM_ANTI_AIR_MISSILE.get(), 2)
                 .unlockedBy(

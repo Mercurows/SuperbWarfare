@@ -55,6 +55,11 @@
       "owner": "@sbw:owner"
     }
   },
+  /*
+   * Model bone that draws the default round, hidden together with every "ProjectileBone" declared
+   * by AmmoType except the one of the selected ammo type
+   */
+  "ProjectileBone": "bullet",
   // Ammo cost per shoot
   "AmmoCostPerShoot": 1,
   // Projectile amount spawned per shoot, set this to zero will prevent gun from shooting
@@ -108,6 +113,8 @@
       "AmmoSlot": "Default",
       // Projectile info override, same as defined above
       "Projectile": "superbwarfare:projectile",
+      // Model bone override, shown only while this ammo type is selected
+      "ProjectileBone": "bullet",
       // Gun property override, check out GunProp.java for mor info
       "Override": {
         "Damage": 810

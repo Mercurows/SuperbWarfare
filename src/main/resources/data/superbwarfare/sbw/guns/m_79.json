@@ -13,9 +13,22 @@
   "DrawTime": 11,
   "ZoomTime": 6,
   "EmptyReloadTime": 39,
-  "RPM": 180,
   "GunType": "CurvedLauncher",
-  "AmmoType": "superbwarfare:grenade_40mm",
+  "ProjectileBone": "he_head",
+  "Gravity": 0.07,
+  "AmmoType": [
+    "superbwarfare:grenade_40mm",
+    {
+      "Ammo": "superbwarfare:smoke_gun_grenade",
+      "ProjectileBone": "smoke_head",
+      "Projectile": "superbwarfare:smoke_gun_grenade",
+      "Override": {
+        "Damage": 20,
+        "ExplosionDamage": 0,
+        "ExplosionRadius": 0
+      }
+    }
+  ],
   "Icon": "superbwarfare:textures/gun_icon/m_79_icon.png",
   "AvailablePerks": [
     "@Ammo",

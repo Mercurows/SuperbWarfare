@@ -189,6 +189,7 @@ object ModItems {
     @JvmField val AMMO_BOX = registerAmmo<AmmoBoxItem>()
     @JvmField val TASER_ELECTRODE = registerAmmo("taser_electrode")
     @JvmField val GRENADE_40MM = registerAmmo("grenade_40mm")
+    @JvmField val SMOKE_GUN_GRENADE = registerAmmo("smoke_gun_grenade")
     @JvmField val FLYING_FLARE_AMMO = registerAmmo("flying_flare_ammo")
     @JvmField val VEHICLE_SMOKE_AMMO = registerAmmo("vehicle_smoke_ammo")
 

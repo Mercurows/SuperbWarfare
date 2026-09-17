@@ -133,6 +133,16 @@ class DefaultGunData : IDBasedData<DefaultGunData> {
         return projectile.value
     }
 
+    /**
+     * Bone of the model that draws the round currently loaded in the weapon.
+     *
+     * Each ammo consumer may override this with its own bone (see [AmmoConsumer.projectileBone]);
+     * the names of all of them are collected by [GunData.projectileBoneNames] so the renderer can
+     * hide every bone except the selected one.
+     */
+    @SerialName("ProjectileBone")
+    var projectileBone: String? = null
+
     @ServerOnly
     @SerialName("ShootPos")
     var shootPos = ShootPos()

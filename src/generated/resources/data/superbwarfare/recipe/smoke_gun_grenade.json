@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "superbwarfare:m18_smoke_grenade"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:smoke_gun_grenade"
+  }
+}

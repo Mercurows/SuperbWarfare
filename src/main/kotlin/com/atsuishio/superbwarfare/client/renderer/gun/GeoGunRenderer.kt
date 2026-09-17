@@ -377,6 +377,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         packedOverlay: Int
     ) {
         renderMagazine(stack, model)
+        renderProjectileBone(stack, model)
         renderScopeMount(stack, model)
         renderScopeAttachment(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
         renderStock(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
@@ -389,6 +390,18 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
     open fun renderMagazine(stack: ItemStack, model: GeoGunModel) {
         model.showMagazineBone(resolveMagazineBone(stack))
+    }
+
+    /**
+     * Shows the model bone of the loaded ammo type and hides the ones belonging to the ammo types
+     * that are not selected, so the round drawn in the weapon follows the ammo switch.
+     */
+    open fun renderProjectileBone(stack: ItemStack, model: GeoGunModel) {
+        val data = GunData.from(stack)
+        val candidates = data.projectileBoneNames()
+        if (candidates.isEmpty()) return
+
+        model.showProjectileBone(data.get(GunProp.PROJECTILE_BONE), candidates)
     }
 
     open fun renderScopeMount(stack: ItemStack, model: GeoGunModel) {
@@ -977,18 +990,27 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
     /**
      * 返回当前正在编辑的配件槽位对应的定位骨骼名；未支持或未选中时返回 null。
-     * 目前支持枪托与弹匣。
+     * 目前支持枪托、弹匣与弹药类型。
+     *
+     * [model] 是正在渲染的模型：弹药槽位有多个候选骨骼，需要靠它挑出模型实际拥有的那个。
      */
-    open fun attachmentFocusBone(): String? {
+    open fun attachmentFocusBone(model: GeoGunModel): String? {
         return when (ClientEventHandler.editingAttachmentType) {
             0 -> MUZZLE_BONE
             1 -> SCOPE_BONE
             2 -> GRIP_BONE
             3 -> STOCK_BONE
             4 -> MAGAZINE_BONE
-            5 -> MAGAZINE_BONE
+            5 -> ammoFocusBone(model)
             else -> null
         }
+    }
+
+    /**
+     * 弹药槽位的定位骨骼：模型自带 `ammo_pos`（如 m_79）时聚焦到它，否则沿用弹匣的定位骨骼。
+     */
+    private fun ammoFocusBone(model: GeoGunModel): String {
+        return if (model.getIndex(AMMO_BONE) >= 0) AMMO_BONE else MAGAZINE_BONE
     }
 
     /**
@@ -997,10 +1019,10 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
      */
     private fun updateEditFocus(model: GeoGunModel) {
         val desired = computeEditFocusOffset(model) ?: Vector3f()
-        val desiredYaw = computeEditFocusYaw()
-        val desiredPitch = computeEditFocusPitch()
+        val desiredYaw = computeEditFocusYaw(model)
+        val desiredPitch = computeEditFocusPitch(model)
         val delta = Minecraft.getInstance().deltaFrameTime.coerceAtMost(0.5f)
-        val focusing = attachmentFocusBone() != null
+        val focusing = attachmentFocusBone(model) != null
         val panning = ClientEventHandler.isEditing && !focusing
 
         if (focusing) {
@@ -1029,7 +1051,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
      */
     private fun computeEditFocusOffset(model: GeoGunModel): Vector3f? {
         if (!ClientEventHandler.isEditing) return null
-        val boneName = attachmentFocusBone() ?: return computeUnfocusedPanOffset()
+        val boneName = attachmentFocusBone(model) ?: return computeUnfocusedPanOffset()
 
         val idleView = model.getGlobalTransform(IDLE_VIEW_BONE) ?: return null
         val attachment = model.getGlobalTransform(boneName) ?: return null
@@ -1069,8 +1091,8 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
      * 返回未聚焦浮动预览绕 Y 轴的旋转角（弧度）：以屏幕中心为原点，鼠标越靠右整体越向逆时针
      * 方向旋转，越靠左越向顺时针旋转，避免视角平移时卡进模型。聚焦或非改装状态下返回 0。
      */
-    private fun computeEditFocusYaw(): Float {
-        if (!ClientEventHandler.isEditing || attachmentFocusBone() != null) return 0f
+    private fun computeEditFocusYaw(model: GeoGunModel): Float {
+        if (!ClientEventHandler.isEditing || attachmentFocusBone(model) != null) return 0f
 
         val mc = Minecraft.getInstance()
         val window = mc.window
@@ -1086,8 +1108,8 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
      * 返回未聚焦浮动预览绕 X 轴的旋转角（弧度）：以屏幕中心为原点，鼠标越靠上整体越向俯视
      * 方向旋转，越靠下越向仰视方向旋转。聚焦或非改装状态下返回 0。
      */
-    private fun computeEditFocusPitch(): Float {
-        if (!ClientEventHandler.isEditing || attachmentFocusBone() != null) return 0f
+    private fun computeEditFocusPitch(model: GeoGunModel): Float {
+        if (!ClientEventHandler.isEditing || attachmentFocusBone(model) != null) return 0f
 
         val mc = Minecraft.getInstance()
         val window = mc.window
@@ -1189,6 +1211,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         private const val MUZZLE_BONE = "muzzle_pos"
         private const val GRIP_BONE = "grip_pos"
         private const val MAGAZINE_BONE = "magazine_pos"
+        private const val AMMO_BONE = "ammo_pos"
         private const val SCOPE_BONE = "scope_pos"
         private const val SCOPE_VIEW_BONE = "scope_view"
         private const val SCOPE_VIEW_SMOOTHING = 0.6f
