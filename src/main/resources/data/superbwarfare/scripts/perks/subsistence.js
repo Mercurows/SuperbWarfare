@@ -13,7 +13,7 @@ function onKill(tag, level, gunData, target, source) {
     const ammoReload = Math.min(mag, Math.floor(mag * rate))
     const ammoNeed = Math.min(mag - ammo, ammoReload)
 
-    const flag = attacker.isCreative() || attacker.hasCreativeAmmoBox()
+    const flag = gunData.hasInfiniteBackupAmmo(attacker)
     let ammoFinal = Math.min(gunData.countBackupAmmo(attacker), ammoNeed)
 
     if (flag) {

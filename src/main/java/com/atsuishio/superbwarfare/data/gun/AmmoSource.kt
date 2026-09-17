@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.data.gun.ammo_consumer_strategy.InvalidAmmoSt
 import com.atsuishio.superbwarfare.tools.isSameItemStack
 import kotlinx.serialization.Transient
 import net.minecraft.world.entity.Entity
-import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.neoforged.neoforge.items.IItemHandler
 
@@ -75,7 +74,7 @@ class AmmoSource {
      * 消耗指定数量（原始数量，不包括虚拟弹药，不考虑 count）
      */
     fun consume(data: GunData, shooter: Entity?, count: Int): Int {
-        if (count <= 0 || shooter is Player && shooter.isCreative) return 0
+        if (count <= 0 || data.hasInfiniteBackupAmmo(shooter)) return 0
         return strategy.consume(data, this, shooter, count)
     }
 
