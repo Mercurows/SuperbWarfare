@@ -134,14 +134,17 @@ class DefaultGunData : IDBasedData<DefaultGunData> {
     }
 
     /**
-     * Bone of the model that draws the round currently loaded in the weapon.
+     * Bones of the model that draw the round currently loaded in the weapon.
      *
-     * Each ammo consumer may override this with its own bone (see [AmmoConsumer.projectileBone]);
+     * A single name or a list of them, so one ammo type can draw several bones at once (for example
+     * a warhead bone plus its "_dummy" counterpart).
+     *
+     * Each ammo consumer may override this with its own bones (see [AmmoConsumer.projectileBone]);
      * the names of all of them are collected by [GunData.projectileBoneNames] so the renderer can
-     * hide every bone except the selected one.
+     * hide every bone except the ones of the selected ammo type.
      */
     @SerialName("ProjectileBone")
-    var projectileBone: String? = null
+    var projectileBone = ObjectToList<String>()
 
     @ServerOnly
     @SerialName("ShootPos")

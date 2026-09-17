@@ -52,7 +52,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         gunItemV2(ModItems.MP_443)
         gunItem(ModItems.NTW_20)
         gunItemV2(ModItems.QBZ_95)
-        gunItem(ModItems.RPG)
+        gunItemV2(ModItems.RPG)
         gunItemV2(ModItems.RPK)
         gunItem(ModItems.SECONDARY_CATACLYSM)
         gunItem(ModItems.SENTINEL)

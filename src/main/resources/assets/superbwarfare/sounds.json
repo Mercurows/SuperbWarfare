@@ -535,10 +535,50 @@
       }
     ]
   },
-  "rpg_reload_empty": {
+  "rpg_in": {
     "sounds": [
       {
-        "name": "superbwarfare:gun/rpg/rpg_reload",
+        "name": "superbwarfare:gun/rpg/rpg_in",
+        "stream": false
+      }
+    ]
+  },
+  "rpg_in_2": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/rpg/rpg_in_2",
+        "stream": false
+      }
+    ]
+  },
+  "rpg_in_3": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/rpg/rpg_in_3",
+        "stream": false
+      }
+    ]
+  },
+  "rpg_in_4": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/rpg/rpg_in_4",
+        "stream": false
+      }
+    ]
+  },
+  "rpg_deploy": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/rpg/rpg_deploy",
+        "stream": false
+      }
+    ]
+  },
+  "rpg_trigger": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/rpg/rpg_trigger",
         "stream": false
       }
     ]

@@ -13,7 +13,6 @@ import com.atsuishio.superbwarfare.data.attachment.AmmoTextEntry
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
 import com.atsuishio.superbwarfare.data.attachment.ScopeMode
 import com.atsuishio.superbwarfare.data.gun.GunData
-import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.magazineLevel
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
@@ -393,7 +392,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     }
 
     /**
-     * Shows the model bone of the loaded ammo type and hides the ones belonging to the ammo types
+     * Shows the model bones of the loaded ammo type and hides the ones belonging to the ammo types
      * that are not selected, so the round drawn in the weapon follows the ammo switch.
      */
     open fun renderProjectileBone(stack: ItemStack, model: GeoGunModel) {
@@ -860,7 +859,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         var positionScaleX = (1f - 0.95f * zoomTime).coerceAtLeast(0.05f)
         var positionScaleZ = (1f - 0.96f * zoomTime).coerceAtLeast(0.05f)
 
-        val data = from(stack)
+        val data = GunData.from(stack)
         if (!data.reloading()) {
             rotationScale = (1f - 0.5f * zoomTime).coerceAtLeast(0.05f)
             rotationScaleX = (1f - 0.55f * zoomTime).coerceAtLeast(0.05f)

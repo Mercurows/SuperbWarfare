@@ -56,6 +56,9 @@ data class EditMessage(val type: Int, val add: Boolean, val isVehicle: Boolean) 
                         (data.selectedAmmoType.get() + (if (add) 1 else -1) + size) % size,
                         player
                     )
+                    if (!player.isCreative) {
+                        data.closeStrike.set(true)
+                    }
                 }
             }
             data.save()

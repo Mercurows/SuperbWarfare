@@ -529,17 +529,18 @@ class GunData private constructor(
 
     /**
      * Every model bone that could draw a loaded round: the weapon's own [GunProp.PROJECTILE_BONE]
-     * plus the one each ammo consumer declares.
+     * plus the ones each ammo consumer declares.
      *
-     * The renderer hides all of them except the currently selected one, so switching ammo types
-     * swaps the round drawn in the model. Guns that declare no projectile bone get an empty list.
+     * The renderer hides all of them except the ones declared by the currently selected ammo type,
+     * so switching ammo types swaps the round drawn in the model. Guns that declare no projectile
+     * bone get an empty list.
      */
     fun projectileBoneNames(): List<String> {
         val names = linkedSetOf<String>()
-        getDefault().projectileBone?.let { names.add(it) }
+        names.addAll(getDefault().projectileBone)
 
         for (consumer in get(AMMO_CONSUMER)) {
-            consumer.projectileBone?.let { names.add(it) }
+            names.addAll(consumer.projectileBone)
         }
 
         return names.toList()

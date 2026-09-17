@@ -32,12 +32,13 @@ class AmmoConsumer : DeserializeFromString, PropertyModifier<GunData, DefaultGun
     var projectile: StringToObject<ProjectileInfo>? = null
 
     /**
-     * Bone of the model that draws this ammo type, overriding [DefaultGunData.projectileBone].
+     * Bones of the model that draw this ammo type, overriding [DefaultGunData.projectileBone].
+     * A single name or a list of them, so one ammo type can draw several bones at once.
      * Renderer-only, see [com.atsuishio.superbwarfare.client.model.gun.GeoGunModel.showProjectileBone].
      */
     @SerializedName("ProjectileBone")
     @SerialName("ProjectileBone")
-    var projectileBone: String? = null
+    var projectileBone = ObjectToList<String>()
 
     @SerializedName("Override")
     @SerialName("Override")
@@ -162,7 +163,7 @@ class AmmoConsumer : DeserializeFromString, PropertyModifier<GunData, DefaultGun
             modifier[GunProp.PROJECTILE] = projectile!!.value
         }
 
-        if (this.projectileBone != null) {
+        if (this.projectileBone.isNotEmpty()) {
             modifier[GunProp.PROJECTILE_BONE] = projectileBone
         }
 

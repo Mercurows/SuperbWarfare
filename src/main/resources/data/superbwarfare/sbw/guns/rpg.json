@@ -13,29 +13,18 @@
   "Weight": 7,
   "DrawTime": 14,
   "ZoomTime": 9,
-  "EmptyReloadTime": 100,
+  "EmptyReloadTime": 98,
+  "BoltActionTime": 2,
+  "ProjectileBone": [
+    "ammoType0",
+    "ammoType0_dummy"
+  ],
   "ActionSteps": [
     {
       "Timeline": "RELOAD_EMPTY",
-      "Progress": 0.16,
-      "Action": "EMPTY",
+      "Progress": 0.05,
+      "Action": "CLOSE_STRIKE",
       "Value": false
-    },
-    {
-      "Timeline": "RELOAD_EMPTY",
-      "Progress": 0.91,
-      "Action": "CLOSE_HAMMER",
-      "Value": false
-    },
-    {
-      "Timeline": "NO_AMMO",
-      "Action": "EMPTY",
-      "Value": true
-    },
-    {
-      "Timeline": "NO_AMMO",
-      "Action": "CLOSE_HAMMER",
-      "Value": true
     }
   ],
   "RPM": 120,
@@ -46,6 +35,10 @@
     "superbwarfare:rpg_rocket_tbg",
     {
       "Ammo": "superbwarfare:rpg_rocket_standard",
+      "ProjectileBone": [
+        "ammoType1",
+        "ammoType1_dummy"
+      ],
       "Projectile": "superbwarfare:rpg_rocket_standard",
       "Override": {
         "Damage": 450,
@@ -66,14 +59,11 @@
     "superbwarfare:micro_missile",
     "superbwarfare:battle_of_wits"
   ],
+  "SoundRadius": 12,
   "SoundInfo": {
     "Fire1P": "superbwarfare:rpg_fire_1p",
     "Fire3P": "superbwarfare:rpg_fire_3p",
     "Fire3PFar": "superbwarfare:rpg_far",
-    "Fire3PVeryFar": "superbwarfare:rpg_veryfar",
-    "ReloadEmpty": "superbwarfare:rpg_reload_empty",
-    "CancellableSounds": [
-      "superbwarfare:rpg_reload_empty"
-    ]
+    "Fire3PVeryFar": "superbwarfare:rpg_veryfar"
   }
 }

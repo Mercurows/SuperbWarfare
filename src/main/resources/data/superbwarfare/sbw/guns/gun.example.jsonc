@@ -56,8 +56,9 @@
     }
   },
   /*
-   * Model bone that draws the default round, hidden together with every "ProjectileBone" declared
-   * by AmmoType except the one of the selected ammo type
+   * Model bones that draw the default round, hidden together with every "ProjectileBone" declared
+   * by AmmoType except the ones of the selected ammo type.
+   * May be a single name or a list of them, so one ammo type can draw several bones at once.
    */
   "ProjectileBone": "bullet",
   // Ammo cost per shoot
@@ -114,6 +115,7 @@
       // Projectile info override, same as defined above
       "Projectile": "superbwarfare:projectile",
       // Model bone override, shown only while this ammo type is selected
+      // Also accepts a list, e.g. ["bullet", "bullet_dummy"]
       "ProjectileBone": "bullet",
       // Gun property override, check out GunProp.java for mor info
       "Override": {

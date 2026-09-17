@@ -125,16 +125,16 @@ open class GeoGunModel @JvmOverloads constructor(
 
     /**
      * Draws only the round of the ammo type currently loaded: among [candidateBoneNames] — every
-     * bone a gun's ammo types could use — only [visibleBoneName] stays visible.
+     * bone a gun's ammo types could use — only the ones in [visibleBoneNames] stay visible.
      *
      * Names the model does not contain are skipped, and bones outside [candidateBoneNames] keep
      * their default visibility, so a gun that declares no projectile bone renders unchanged.
      */
-    fun showProjectileBone(visibleBoneName: String?, candidateBoneNames: Collection<String>) {
+    fun showProjectileBone(visibleBoneNames: Collection<String>, candidateBoneNames: Collection<String>) {
         for (name in candidateBoneNames) {
             val index = baseModel.getIndex(name)
             if (index < 0) continue
-            instance.getBone(index)?.visible = name == visibleBoneName
+            instance.getBone(index)?.visible = name in visibleBoneNames
         }
     }
 
