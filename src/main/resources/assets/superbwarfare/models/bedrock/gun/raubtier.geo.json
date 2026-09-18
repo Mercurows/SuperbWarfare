@@ -21,6 +21,11 @@
 					"pivot": [0, -10, 10.3]
 				},
 				{
+					"name": "scope_pos",
+					"parent": "z23",
+					"pivot": [0, 13.4, 4.15]
+				},
+				{
 					"name": "body",
 					"parent": "z23",
 					"pivot": [1.3, -1, 6]
@@ -12392,11 +12397,6 @@
 							}
 						}
 					]
-				},
-				{
-					"name": "scope_pos",
-					"parent": "shangmain",
-					"pivot": [0, 13.4, 4.15]
 				},
 				{
 					"name": "xiamove",
