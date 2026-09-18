@@ -718,6 +718,16 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 || data.attachment.get(AttachmentType.SCOPE) != 0
     }
 
+    /**
+     * 脚架展开进度：0 为收起，1 为完全展开。
+     *
+     * 直接复用 `bipod_view` 定位点用的 [ClientEventHandler.bipodViewTime]，这样子骨骼的翻转与
+     * 卧姿视角过渡天然同步，脚本里不需要自己再做一次插值。
+     */
+    open fun scriptBipodProgress(): Double {
+        return ClientEventHandler.bipodViewTime
+    }
+
     open fun scriptFrameDeltaSeconds(): Float {
         return Minecraft.getInstance().deltaFrameTime.coerceIn(0f, 0.8f)
     }

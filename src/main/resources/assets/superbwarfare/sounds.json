@@ -4087,26 +4087,34 @@
       }
     ]
   },
-  "awm_reload_normal": {
+  "awm_bolt_open": {
     "sounds": [
       {
-        "name": "superbwarfare:gun/awm/awm_reload_normal",
+        "name": "superbwarfare:gun/awm/awm_bolt_open",
         "stream": false
       }
     ]
   },
-  "awm_reload_empty": {
+  "awm_bolt_close": {
     "sounds": [
       {
-        "name": "superbwarfare:gun/awm/awm_reload_empty",
+        "name": "superbwarfare:gun/awm/awm_bolt_close",
         "stream": false
       }
     ]
   },
-  "awm_bolt": {
+  "awm_mag_in": {
     "sounds": [
       {
-        "name": "superbwarfare:gun/awm/awm_bolt",
+        "name": "superbwarfare:gun/awm/awm_mag_in",
+        "stream": false
+      }
+    ]
+  },
+  "awm_mag_out": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/awm/awm_mag_out",
         "stream": false
       }
     ]

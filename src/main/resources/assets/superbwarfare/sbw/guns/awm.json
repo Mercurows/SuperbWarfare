@@ -1,11 +1,43 @@
 {
-  "Model": {
-    "Animation": "superbwarfare:animations/awm.animation.json",
-    "Model": "superbwarfare:geo/awm.geo.json",
-    "Texture": "superbwarfare:textures/item/awm.png",
-    "LODModel": "superbwarfare:geo/lod/awm.geo.json",
-    "LODTexture": "superbwarfare:textures/item/lod/awm.png"
+  "Icon": "superbwarfare:textures/gun_icon/awm_icon.png",
+  "SlotIcon": "superbwarfare:textures/item/awm_icon.png",
+  "Animation": {
+    "Idle": "animation.awm.idle",
+    "Fire": "animation.awm.fire",
+    "ReloadNormal": "animation.awm.reload_normal",
+    "ReloadEmpty": "animation.awm.reload_empty",
+    "Bolt": "animation.awm.bolt",
+    "Edit": "animation.awm.edit",
+    "CloseStrike": "animation.awm.close_strike"
   },
-  "FlarePosition": [0, 0.05, 2.15625],
-  "FlareSize": 0.6
+  "ShootRecoil": {
+    "Offset": [1.0, 1.0, 3.5],
+    "Rotation": [1.1, 0.6, 0.5],
+    "ZoomRate": 0.9,
+    "Speed": 1.0
+  },
+  "Model": {
+    "Animation": "superbwarfare:animations/bedrock/gun/awm.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/awm.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/awm.png",
+    "LODModel": "superbwarfare:models/bedrock/gun_lod/awm.geo.json",
+    "LODTexture": "superbwarfare:textures/bedrock/gun_lod/awm.png"
+  },
+  "Script": "superbwarfare:scripts/guns/awm.js",
+  "FlareSize": 1.2,
+  "HasSmoke": true,
+  "Smoke": {
+    "Size": 0.25,
+    "Growth": 0.25,
+    "Lifetime": 0.3,
+    "Speed": 0.4,
+    "Count": 2,
+    "Opacity": 0.9,
+    "Drag": 2,
+    "RandomSize": 0.05,
+    "RandomGrowth": 0.2,
+    "RandomLifetime": 0.2,
+    "RandomSpeed": 0.2,
+    "RandomOpacity": 0.1
+  }
 }

@@ -1,49 +1,37 @@
 {
-  "MinZoom": 4,
-  "MaxZoom": 8,
-  "Spread": 6,
+  "Spread": 8,
   "TacticalReload": true,
   "HasBarrelBullet": true,
+  "HasBipod": true,
   "RecoilX": 0.003,
   "RecoilY": 0.013,
   "Damage": 36,
   "Headshot": 3,
   "Velocity": 27,
-  "Magazine": 5,
+  "Magazine": [5, 10],
   "ZoomSpreadRate": 0.005,
-  "BoltActionTime": 24,
+  "BoltActionTime": 22,
   "Weight": 6,
   "DrawTime": 13,
   "ZoomTime": 8,
-  "NormalReloadTime": 62,
-  "EmptyReloadTime": 80,
+  "NormalReloadTime": 61,
+  "EmptyReloadTime": 75,
   "ActionSteps": [
     {
-      "Timeline": "RELOAD_NORMAL",
-      "Progress": 0.70968,
-      "Action": "CLOSE_STRIKE",
-      "Value": false
-    },
-    {
       "Timeline": "RELOAD_EMPTY",
-      "Progress": 0.775,
+      "Progress": 0.9,
       "Action": "CLOSE_STRIKE",
       "Value": false
     },
     {
       "Timeline": "BOLT",
-      "Progress": 0.28,
+      "Progress": 0.4,
       "Action": "CLOSE_STRIKE",
       "Value": false
-    },
-    {
-      "Timeline": "NO_AMMO",
-      "Action": "CLOSE_STRIKE",
-      "Value": true
     }
   ],
   "BypassesArmor": 0.8,
-  "SoundRadius": 18,
+  "SoundRadius": 24,
   "GunType": "Sniper",
   "DamageReduce": {
     "Type": "Sniper"
@@ -69,20 +57,47 @@
     "!superbwarfare:longer_wire",
     "!superbwarfare:cupid_arrow"
   ],
+  "AvailableAttachments": {
+    "Scope": [
+      "superbwarfare:scope_coyote",
+      "superbwarfare:scope_aimpoint_t2",
+      "superbwarfare:scope_eotech_551",
+      "superbwarfare:scope_okp_7",
+      "superbwarfare:scope_pkas",
+      "superbwarfare:scope_bruiser",
+      "superbwarfare:scope_ranger",
+      "superbwarfare:scope_1p_78",
+      "superbwarfare:scope_pk_a",
+      "superbwarfare:scope_acog",
+      "superbwarfare:scope_qmk171",
+      "superbwarfare:scope_hamr",
+      "superbwarfare:scope_elcan_4x",
+      "superbwarfare:scope_lpvo",
+      "superbwarfare:scope_sniper",
+      "superbwarfare:scope_winefox"
+    ],
+    "Magazine": [
+      "superbwarfare:magazine_extend"
+    ],
+    "Barrel": [
+      "superbwarfare:meowlencer",
+      "superbwarfare:hissilencer",
+      "superbwarfare:silaowuncer",
+      "superbwarfare:ru_silencer",
+      "superbwarfare:muzzle_brake_ru",
+      "superbwarfare:muzzle_brake_ar",
+      "superbwarfare:muzzle_zenit_dtk_1",
+      "superbwarfare:muzzle_compensator_r_17",
+      "superbwarfare:ar_silencer",
+      "superbwarfare:loudspeaker"
+    ]
+  },
   "SoundInfo": {
     "Fire1P": "superbwarfare:awm_fire_1p",
     "Fire3P": "superbwarfare:awm_fire_3p",
     "Fire3PFar": "superbwarfare:awm_far",
     "Fire3PVeryFar": "superbwarfare:awm_veryfar",
     "Fire1PSilent": "superbwarfare:awm_fire_1p_s",
-    "Fire3PSilent": "superbwarfare:awm_fire_3p_s",
-    "ReloadNormal": "superbwarfare:awm_reload_normal",
-    "ReloadEmpty": "superbwarfare:awm_reload_empty",
-    "Bolt": "superbwarfare:awm_bolt",
-    "CancellableSounds": [
-      "superbwarfare:awm_reload_normal",
-      "superbwarfare:awm_reload_empty",
-      "superbwarfare:awm_bolt"
-    ]
+    "Fire3PSilent": "superbwarfare:awm_fire_3p_s"
   }
 }
