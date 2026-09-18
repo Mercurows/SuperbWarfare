@@ -63,7 +63,8 @@
       "superbwarfare:scope_hamr",
       "superbwarfare:scope_elcan_4x",
       "superbwarfare:scope_lpvo",
-      "superbwarfare:scope_sniper"
+      "superbwarfare:scope_sniper",
+      "superbwarfare:scope_winefox"
     ],
     "Magazine": [
       "superbwarfare:magazine_extend",
