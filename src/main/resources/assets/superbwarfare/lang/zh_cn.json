@@ -652,6 +652,7 @@
   "item.superbwarfare.grip_rectangle_vertical": "矩形垂直握把",
   "item.superbwarfare.triangle_grip": "三角握把",
   "item.superbwarfare.grip_cqr_gen2": "共振Gen2握把",
+  "item.superbwarfare.grip_vertical_bipod": "脚架垂直握把",
   "item.superbwarfare.oem_stock_light": "通用轻型枪托",
   "item.superbwarfare.oem_stock_heavy": "通用重型枪托",
   "item.superbwarfare.stock_ubr": "UBR枪托",
@@ -1426,6 +1427,7 @@
   "prop.superbwarfare.spread_pattern.xshape": "十字形",
   "prop.superbwarfare.sound_info": "开火音效",
   "prop.superbwarfare.silenced": "消音",
+  "prop.superbwarfare.bipod": "两脚架",
   "prop.superbwarfare.sound_radius_multiplier": "开火音效范围",
   "prop.superbwarfare.muzzle_flash_scale": "枪口火焰大小",
 

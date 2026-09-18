@@ -13,10 +13,12 @@ import com.atsuishio.superbwarfare.data.attachment.AmmoTextEntry
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
 import com.atsuishio.superbwarfare.data.attachment.ScopeMode
 import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.magazineLevel
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.event.ClientEventHandler
+import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.resource.ModelResource
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.atsuishio.superbwarfare.resource.gun.pojo.ItemDisplayInfo
@@ -24,6 +26,7 @@ import com.atsuishio.superbwarfare.resource.model.AttachmentModelReloadListener
 import com.atsuishio.superbwarfare.script.GunScriptManager
 import com.atsuishio.superbwarfare.tools.RenderDistanceHelper
 import com.atsuishio.superbwarfare.tools.deltaFrameTime
+import com.atsuishio.superbwarfare.tools.localPlayer
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.animation.IFPAnimationInstance
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.handler.FirstPersonRenderHandler
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.ParticleEffectData
@@ -837,6 +840,8 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     }
 
     open fun applyCameraShake(stack: ItemStack, model: GeoGunModel, hand: InteractionHand) {
+        val item = stack.item as? GunItem ?: return
+        val player = localPlayer ?: return
         val animation = FirstPersonRenderHandler.getActiveAnimationInstance(hand) ?: return
         val camera = model.getCameraBone()
         if (camera == null) {
@@ -850,7 +855,10 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             return
         }
 
+        val data = from(stack)
         val zoomTime = ClientEventHandler.zoomTime.coerceIn(0.0, 1.0).toFloat()
+            .coerceAtLeast(ClientEventHandler.bipodViewTime.toFloat())
+
         var rotationScale = (1f - 0.5f * zoomTime).coerceAtLeast(0.05f)
         var rotationScaleX = (1f - 0.97f * zoomTime).coerceAtLeast(0.05f)
         var rotationScaleY = (1f - 0.97f * zoomTime).coerceAtLeast(0.05f)
@@ -859,7 +867,6 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         var positionScaleX = (1f - 0.95f * zoomTime).coerceAtLeast(0.05f)
         var positionScaleZ = (1f - 0.96f * zoomTime).coerceAtLeast(0.05f)
 
-        val data = GunData.from(stack)
         if (!data.reloading()) {
             rotationScale = (1f - 0.5f * zoomTime).coerceAtLeast(0.05f)
             rotationScaleX = (1f - 0.55f * zoomTime).coerceAtLeast(0.05f)
@@ -868,12 +875,6 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             positionScale = (1f - 0.4f * zoomTime).coerceAtLeast(0.05f)
             positionScaleX = (1f - 0.5f * zoomTime).coerceAtLeast(0.05f)
             positionScaleZ = (1f - 0.82f * zoomTime).coerceAtLeast(0.05f)
-//            rotationScale = 1f
-//            rotationScaleX = 1f
-//            rotationScaleY = 1f
-//            rotationScaleZ = 1f
-//            positionScale = 1f
-//            positionScaleZ = 1f
         }
 
         val main = model.getRootBone()
@@ -906,6 +907,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         hand: InteractionHand = InteractionHand.MAIN_HAND
     ): Matrix4f? {
         val idleViewTransform = model.getGlobalTransform(IDLE_VIEW_BONE) ?: return null
+        val hipViewTransform = bipodViewTransform(model, idleViewTransform)
 
         val zoom = AnimationCurves.EASE_IN_OUT_QUINT
             .apply(ClientEventHandler.zoomTime.coerceIn(0.0, 1.0))
@@ -913,18 +915,19 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
         val focusOffset = ClientEventHandler.editFocusOffset
         if (focusOffset.lengthSquared() > 1e-8f && zoom <= 0f) {
-            val idlePos = Vector3f()
-            idleViewTransform.getTranslation(idlePos)
-            val translation = Vector3f(idlePos).add(focusOffset)
+            // 以 hipViewTransform 为基准，保证与未聚焦时的返回值连续（脚架视图退场过程中不会跳变）
+            val basePos = Vector3f()
+            hipViewTransform.getTranslation(basePos)
+            val translation = Vector3f(basePos).add(focusOffset)
             var rotation = Quaternionf()
-            idleViewTransform.getNormalizedRotation(rotation)
+            hipViewTransform.getNormalizedRotation(rotation)
             val yaw = ClientEventHandler.editFocusYaw
             val pitch = ClientEventHandler.editFocusPitch
             if (Mth.abs(pitch) > 1e-5f || Mth.abs(yaw) > 1e-5f) {
                 rotation = Quaternionf().rotateY(yaw).rotateX(pitch).mul(rotation)
             }
             val scale = Vector3f()
-            idleViewTransform.getScale(scale)
+            hipViewTransform.getScale(scale)
             return Matrix4f()
                 .translation(translation)
                 .rotate(rotation)
@@ -932,12 +935,31 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         }
 
         if (zoom <= 0f) {
-            return Matrix4f(idleViewTransform)
+            return hipViewTransform
         }
         val ironViewTransform = scopeViewTransform(scopeRender, hand)
             ?: model.getGlobalTransform(IRON_VIEW_BONE)
+            ?: return hipViewTransform
+        return blendViewTransform(hipViewTransform, Matrix4f(ironViewTransform), zoom)
+    }
+
+    /**
+     * 非瞄准视角的脚架视图：脚架功能启用（卧姿 + 枪械或配件带脚架）时，
+     * 以 [ClientEventHandler.bipodViewTime] 为进度把 `idle_view` 平滑过渡到模型自带的 `bipod_view`。
+     * 模型没有 `bipod_view` 定位点或进度为 0 时保持 `idle_view`。
+     */
+    private fun bipodViewTransform(model: GeoGunModel, idleViewTransform: Matrix4f): Matrix4f {
+        val progress = ClientEventHandler.bipodViewTime
+        if (progress <= 0.0) return Matrix4f(idleViewTransform)
+
+        val bipodViewTransform = model.getGlobalTransform(BIPOD_VIEW_BONE)
             ?: return Matrix4f(idleViewTransform)
-        return blendViewTransform(Matrix4f(idleViewTransform), Matrix4f(ironViewTransform), zoom)
+        if (progress >= 1.0) return Matrix4f(bipodViewTransform)
+
+        val blend = AnimationCurves.EASE_IN_OUT_QUINT
+            .apply(progress.coerceIn(0.0, 1.0))
+            .toFloat()
+        return blendViewTransform(Matrix4f(idleViewTransform), Matrix4f(bipodViewTransform), blend)
     }
 
     private fun scopeViewTransform(
@@ -1206,6 +1228,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     companion object {
         // Bone Positions
         private const val IDLE_VIEW_BONE = "idle_view"
+        private const val BIPOD_VIEW_BONE = "bipod_view"
         private const val IRON_VIEW_BONE = "iron_view"
         private const val MUZZLE_BONE = "muzzle_pos"
         private const val GRIP_BONE = "grip_pos"

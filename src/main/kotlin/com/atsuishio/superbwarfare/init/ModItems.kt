@@ -703,6 +703,7 @@ object ModItems {
     @JvmField val GRIP_RECTANGLE_VERTICAL = registerAttachment("grip_rectangle_vertical")
     @JvmField val TRIANGLE_GRIP = registerAttachment("triangle_grip")
     @JvmField val GRIP_CQR_GEN2 = registerAttachment("grip_cqr_gen2", Rarity.RARE)
+    @JvmField val GRIP_VERTICAL_BIPOD = registerAttachment("grip_vertical_bipod", Rarity.RARE)
     // @formatter:on
 
     fun registerDispenserBehavior() {

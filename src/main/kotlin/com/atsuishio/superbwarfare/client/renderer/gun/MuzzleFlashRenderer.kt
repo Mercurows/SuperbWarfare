@@ -4,7 +4,7 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.model.gun.GeoGunModel
 import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes
 import com.atsuishio.superbwarfare.data.gun.GunData
-import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
+import com.atsuishio.superbwarfare.data.gun.isBarrelSilenced
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.mojang.blaze3d.vertex.PoseStack
@@ -32,7 +32,7 @@ object MuzzleFlashRenderer {
     ) {
         val fireRotTimer = ClientEventHandler.fireRotTimer
         if (fireRotTimer <= 0.0 || fireRotTimer >= MAX_VISIBLE_TIME) return
-        if (GunData.from(stack).attachment.get(AttachmentType.BARREL) == 2) return
+        if (GunData.from(stack).isBarrelSilenced()) return
 
         val resource = GunResource.compute(stack)
         val flareBone = model.getBone(FLARE_BONE) ?: model.getBone(MUZZLE_FLASH_BONE)

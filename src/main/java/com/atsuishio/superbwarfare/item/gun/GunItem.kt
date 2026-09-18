@@ -290,7 +290,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     /**
      * 武器是否有脚架
      */
-    open fun hasBipod(data: GunData) = false
+    open fun hasBipod(data: GunData) = data.get(GunProp.HAS_BIPOD)
 
     /**
      * 武器是否能进行近战攻击

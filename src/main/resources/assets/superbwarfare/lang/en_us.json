@@ -652,6 +652,7 @@
   "item.superbwarfare.grip_rectangle_vertical": "Rectangle Vertical Grip",
   "item.superbwarfare.triangle_grip": "Triangle Grip",
   "item.superbwarfare.grip_cqr_gen2": "CQR GEN2 GRIP",
+  "item.superbwarfare.grip_vertical_bipod": "Bipod Vertical Grip",
   "item.superbwarfare.oem_stock_light": "Universal Light Stock",
   "item.superbwarfare.oem_stock_heavy": "Universal Heavy Stock",
   "item.superbwarfare.stock_ubr": "UBR Stock",
@@ -1426,6 +1427,7 @@
   "prop.superbwarfare.spread_pattern.xshape": "Cross",
   "prop.superbwarfare.sound_info": "Fire Sounds",
   "prop.superbwarfare.silenced": "Silenced",
+  "prop.superbwarfare.bipod": "Bipod",
   "prop.superbwarfare.sound_radius_multiplier": "Fire Sound Radius",
   "prop.superbwarfare.muzzle_flash_scale": "Muzzle Flash Size",
 

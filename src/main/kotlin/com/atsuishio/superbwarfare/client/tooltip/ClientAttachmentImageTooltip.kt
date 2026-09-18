@@ -62,6 +62,10 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
                 add(propertyComponent("silenced").withStyle(ChatFormatting.GREEN))
             }
 
+            if (definition.hasBipod) {
+                add(propertyComponent("bipod").withStyle(ChatFormatting.GREEN))
+            }
+
             soundRadiusLine(definition.soundRadiusMultiplier)?.let(::add)
             muzzleFlashLine(definition.muzzleFlashScale)?.let(::add)
         }

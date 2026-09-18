@@ -53,6 +53,10 @@ data class AttachmentDefinition(
     @SerialName("IsSilenced")
     val isSilenced: Boolean = false,
 
+    // 该配件是否自带脚架（不限于握把，未来其他槽位的配件也可以声明）
+    @SerialName("Bipod")
+    val hasBipod: Boolean = false,
+
     @SerialName("Modifiers")
     val modifiers: List<AttachmentModifier> = emptyList(),
 

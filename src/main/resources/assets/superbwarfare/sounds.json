@@ -3907,18 +3907,26 @@
       }
     ]
   },
-  "qbz_191_reload_normal": {
+  "qbz_191_mag_in": {
     "sounds": [
       {
-        "name": "superbwarfare:gun/qbz_191/qbz_191_reload_normal",
+        "name": "superbwarfare:gun/qbz_191/qbz_191_mag_in",
         "stream": false
       }
     ]
   },
-  "qbz_191_reload_empty": {
+  "qbz_191_mag_out": {
     "sounds": [
       {
-        "name": "superbwarfare:gun/qbz_191/qbz_191_reload_empty",
+        "name": "superbwarfare:gun/qbz_191/qbz_191_mag_out",
+        "stream": false
+      }
+    ]
+  },
+  "qbz_191_bolt": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/qbz_191/qbz_191_bolt",
         "stream": false
       }
     ]

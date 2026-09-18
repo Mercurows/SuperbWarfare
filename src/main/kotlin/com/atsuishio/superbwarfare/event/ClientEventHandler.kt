@@ -16,9 +16,9 @@ import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.data.gun.*
-import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.event.ClientEventHandler.zoomTime
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.item.misc.MonitorItem
@@ -81,6 +81,17 @@ object ClientEventHandler {
 
     @JvmField
     var zoomPosZ: Double = 0.0
+
+    /**
+     * 脚架视图过渡进度：0 为正常持枪视角（`idle_view`），1 为卧姿架设视角（`bipod_view`）。
+     */
+    @JvmField
+    var bipodViewTime: Double = 0.0
+
+    // 脚架视图过渡时长（秒）。getDelta() 返回的是每帧推进的 tick 数（Minecraft#getDeltaFrameTime），
+    // 1 秒累计 TICKS_PER_SECOND，因此换算成内部进度单位需要乘上它。
+    private const val BIPOD_VIEW_DURATION_SECONDS = 0.35f
+    private const val TICKS_PER_SECOND = 20f
 
     @JvmField
     var swayTime: Double = 0.0
@@ -2073,16 +2084,9 @@ object ClientEventHandler {
         val pose: Float = if (player.isCrouching && player.bbHeight >= 1 && !isProne(player)) {
             0.85f
         } else if (isProne(player)) {
-            if (data.attachment.get(AttachmentType.GRIP) == 3 || item.hasBipod(data)) 0f else 0.25f
+            if (data.attachment.hasBipod() || item.hasBipod(data)) 0f else 0.25f
         } else {
             1f
-        }
-
-        val stockType = data.attachment.get(AttachmentType.STOCK)
-        val sway: Double = when (stockType) {
-            1 -> 1.0
-            2 -> 0.55
-            else -> 0.8
         }
 
         val customWeight = data.get(GunProp.WEIGHT).toFloat().coerceIn(1f, 30f)
@@ -2093,7 +2097,7 @@ object ClientEventHandler {
                         RandomSource.create(),
                         0.1,
                         1.0
-                    ) * times * sway * (1 - 0.03 * customWeight)
+                    ) * times * (1 - 0.033 * customWeight)
                     ).toFloat()
             player.xRot = newPitch
             player.xRotO = player.xRot
@@ -2103,7 +2107,7 @@ object ClientEventHandler {
                         RandomSource.create(),
                         0.05,
                         1.25
-                    ) * times * sway * (1 - 0.03 * customWeight)
+                    ) * times * (1 - 0.033 * customWeight)
                     ).toFloat()
             player.yRot = newYaw
             player.yRotO = player.yRot
@@ -2173,6 +2177,7 @@ object ClientEventHandler {
             handleWeaponSway(entity)
             handleWeaponMove(entity)
             handleWeaponZoom(entity)
+            handleWeaponBipodView(entity)
             handleWeaponFire(event, entity)
             handleWeaponShell()
             handleGunRecoil()
@@ -2258,7 +2263,7 @@ object ClientEventHandler {
             if (player.isShiftKeyDown && player.bbHeight >= 1 && isProne(player)) {
                 0.85
             } else if (isProne(player)) {
-                if (data.attachment.get(AttachmentType.GRIP) == 3 || item.hasBipod(data)) 0.0 else 0.25
+                if (data.attachment.hasBipod() || item.hasBipod(data)) 0.0 else 0.25
             } else {
                 1.0
             }
@@ -2292,7 +2297,7 @@ object ClientEventHandler {
 
         if (!isEditing) {
             moveRotZ =
-                if (!entity.isSprinting && mc.options.keyUp.isDown && firePosTimer == 0.0 && resource.movingTilt) {
+                if (!entity.isSprinting && mc.options.keyUp.isDown && firePosTimer == 0.0 && resource.movingTilt && !isProne(player)) {
                     Mth.lerp(0.2 * times, moveRotZ, 0.14) * (1 - zoomTime)
                 } else {
                     Mth.lerp(0.2 * times, moveRotZ, 0.0) * (1 - zoomTime)
@@ -2487,6 +2492,29 @@ object ClientEventHandler {
         zoomPosZ = AnimationCurves.PARABOLA.apply(zoomTime)
     }
 
+    /**
+     * 更新脚架视图过渡进度：卧姿且枪械自带脚架或配件带脚架时移向 `bipod_view`，否则回到 `idle_view`。
+     * 仅影响非瞄准视角，瞄准时由 [zoomTime] 混合的瞄准定位点接管。
+     *
+     * 改装界面打开时同样退回 `idle_view`：改装聚焦以该视角为基准，若不退回，
+     * 鼠标移动触发聚焦的瞬间模型会闪现。
+     */
+    private fun handleWeaponBipodView(entity: LivingEntity) {
+        val player = entity as? Player ?: return
+        val stack = player.mainHandItem
+        val item = stack.item as? GunItem ?: return
+        val data = GunData.from(stack)
+
+        val deployed = !isEditing && isProne(player) && (data.attachment.hasBipod() || item.hasBipod(data))
+        val step = getDelta() / (BIPOD_VIEW_DURATION_SECONDS * TICKS_PER_SECOND)
+
+        bipodViewTime = if (deployed) {
+            (bipodViewTime + step).coerceAtMost(1.0)
+        } else {
+            (bipodViewTime - step).coerceAtLeast(0.0)
+        }
+    }
+
     private fun handleWeaponFire(event: ViewportEvent.ComputeCameraAngles, entity: LivingEntity) {
         val times = (1.25f * customAnimSpeed * mc.deltaFrameTime.coerceAtMost(0.48f)).toFloat()
         val stack = entity.mainHandItem
@@ -2566,72 +2594,6 @@ object ClientEventHandler {
         zoomMultiply: Float,
         customSpeed: Float
     ) {
-        val player = localPlayer ?: return
-        val stack = player.mainHandItem
-        val item = stack.item as? GunItem ?: return
-
-        customAnimSpeed = customSpeed.toDouble()
-
-        val data = GunData.from(stack)
-        val barrelType = data.attachment.get(AttachmentType.BARREL)
-        val gripType = data.attachment.get(AttachmentType.GRIP)
-        val scopeType = data.attachment.get(AttachmentType.SCOPE)
-
-        val recoil = when (barrelType) {
-            1 -> 0.75f
-            2 -> 0.95f
-            else -> 1f
-        }
-
-        val gripRecoilX = when (gripType) {
-            1 -> 0.85f
-            2 -> 0.95f
-            else -> 1f
-        }
-
-        val gripRecoilY = when (gripType) {
-            1 -> 0.95f
-            2 -> 0.85f
-            else -> 1f
-        }
-
-        val zoomRecoil = when (scopeType) {
-            2 -> 1.25f - (zoomTime * 0.8f).toFloat()
-            3 -> 1.25f - zoomTime.toFloat()
-            else -> 1.25f
-        }
-
-        val pose =
-            if (player.isShiftKeyDown && player.bbHeight >= 1 && !isProne(player)) {
-                0.85f
-            } else if (isProne(player)) {
-                if (data.attachment.get(AttachmentType.GRIP) == 3 || item.hasBipod(data)) {
-                    0.5f
-                } else {
-                    0.75f
-                }
-            } else {
-                1f
-            }
-
-        var zoomMultiply = zoomMultiply
-        zoomMultiply = zoomMultiply.coerceIn(0f, 1f)
-
-        val zoom = (1 - zoomMultiply * zoomTime).toFloat() * pose
-
-        bone.posX = zoom * x * (recoilHorizon * (0.5f * firePosZ)).toFloat()
-        bone.posY = zoom * y * (getBoneMoveY(firePosTimer.toFloat()) * 0.25 * (1 - 0.25 * zoomTime)).toFloat()
-        bone.posZ =
-            zoom * z * (getBoneMoveZ(firePosTimer.toFloat()) * 0.05 + 1.1f * firePosZ).toFloat() * (1 - 0.5 * zoomTime).toFloat()
-        bone.rotX =
-            zoom * rotX * (-getBoneRotX(fireRotTimer.toFloat()) * Mth.DEG_TO_RAD * 0.5f + 0.01f * firePosZ).toFloat() * gripRecoilX * recoil *
-                    (1 - 0.85 * zoomTime).toFloat() * zoomRecoil
-        bone.rotY =
-            (3 * zoom * rotY * getBoneRotY(fireRotTimer.toFloat()) * Mth.DEG_TO_RAD * recoilHorizon * gripRecoilY * recoil *
-                    (1 - 0.3 * zoomTime) * zoomRecoil).toFloat()
-        bone.rotZ =
-            (2 * zoom * rotZ * getBoneRotZ(fireRotTimer.toFloat()) * Mth.DEG_TO_RAD * recoilHorizon * gripRecoilY * recoil *
-                    (1 - 0.5 * zoomTime) * zoomRecoil).toFloat()
     }
 
     @JvmStatic
@@ -2653,39 +2615,12 @@ object ClientEventHandler {
         customAnimSpeed = customSpeed.toDouble()
 
         val data = GunData.from(stack)
-        val barrelType = data.attachment.get(AttachmentType.BARREL)
-        val gripType = data.attachment.get(AttachmentType.GRIP)
-        val scopeType = data.attachment.get(AttachmentType.SCOPE)
-
-        val recoil = when (barrelType) {
-            1 -> 0.75f
-            2 -> 0.95f
-            else -> 1f
-        }
-
-        val gripRecoilX = when (gripType) {
-            1 -> 0.85f
-            2 -> 0.95f
-            else -> 1f
-        }
-
-        val gripRecoilY = when (gripType) {
-            1 -> 0.95f
-            2 -> 0.85f
-            else -> 1f
-        }
-
-        val zoomRecoil = when (scopeType) {
-            2 -> 1.25f - (zoomTime * 0.8f).toFloat()
-            3 -> 1.25f - zoomTime.toFloat()
-            else -> 1.25f
-        }
 
         val pose =
             if (player.isShiftKeyDown && player.bbHeight >= 1 && !isProne(player)) {
                 0.85f
             } else if (isProne(player)) {
-                if (data.attachment.get(AttachmentType.GRIP) == 3 || item.hasBipod(data)) {
+                if (data.attachment.hasBipod() || item.hasBipod(data)) {
                     0.5f
                 } else {
                     0.75f
@@ -2705,14 +2640,11 @@ object ClientEventHandler {
             zoom * z * (getBoneMoveZ(firePosTimer.toFloat()) * 0.03 + 1.1f * firePosZ).toFloat() * (1 - 0.75 * zoomTime).toFloat()
 
         val gunRotX =
-            zoom * rotX * (-getBoneRotX(fireRotTimer.toFloat()) * Mth.DEG_TO_RAD * 0.5f + 0.01f * firePosZ).toFloat() * gripRecoilX * recoil *
-                    (1 - 0.85 * zoomTime).toFloat() * zoomRecoil
+            zoom * rotX * (-getBoneRotX(fireRotTimer.toFloat()) * Mth.DEG_TO_RAD * 0.5f + 0.01f * firePosZ).toFloat() * (1 - 0.85 * zoomTime).toFloat()
         val gunRotY =
-            (3 * zoom * rotY * getBoneRotY(fireRotTimer.toFloat()) * Mth.DEG_TO_RAD * recoilHorizon * gripRecoilY * recoil *
-                    (1 - 0.3 * zoomTime) * zoomRecoil).toFloat()
+            (3 * zoom * rotY * getBoneRotY(fireRotTimer.toFloat()) * Mth.DEG_TO_RAD * recoilHorizon * (1 - 0.3 * zoomTime)).toFloat()
         val gunRotZ =
-            (2 * zoom * rotZ * getBoneRotZ(fireRotTimer.toFloat()) * Mth.DEG_TO_RAD * recoilHorizon * gripRecoilY * recoil *
-                    (1 - 0.5 * zoomTime) * zoomRecoil).toFloat()
+            (2 * zoom * rotZ * getBoneRotZ(fireRotTimer.toFloat()) * Mth.DEG_TO_RAD * recoilHorizon * (1 - 0.5 * zoomTime)).toFloat()
 
         poseStack.mulPose(Axis.XP.rotation(gunRotX))
         poseStack.mulPose(Axis.YP.rotation(gunRotY))
@@ -2827,26 +2759,6 @@ object ClientEventHandler {
         val data = GunData.from(stack)
 
         val times = getDelta().coerceAtMost(1.6f)
-        val barrelType = data.attachment.get(AttachmentType.BARREL)
-        val gripType = data.attachment.get(AttachmentType.GRIP)
-
-        val recoil = when (barrelType) {
-            1 -> 1.5
-            2 -> 2.2
-            else -> 2.4
-        }
-
-        val gripRecoilX = when (gripType) {
-            1 -> 1.25
-            2 -> 0.25
-            else -> 1.5
-        }
-
-        val gripRecoilY = when (gripType) {
-            1 -> 0.7
-            2 -> 1.75
-            else -> 2.0
-        }
 
         val customWeight = data.get(GunProp.WEIGHT)
         val gunRecoilX = data.get(GunProp.RECOIL_X)
@@ -2859,7 +2771,7 @@ object ClientEventHandler {
             if (player.isShiftKeyDown && player.bbHeight >= 1 && !isProne(player)) {
                 0.7f
             } else if (isProne(player)) {
-                if (data.attachment.get(AttachmentType.GRIP) == 3 || item.hasBipod(data)) {
+                if (data.attachment.hasBipod() || item.hasBipod(data)) {
                     0.1f
                 } else {
                     0.5f
@@ -2870,14 +2782,13 @@ object ClientEventHandler {
 
         // 水平后坐
         val newYaw =
-            player.yRot - (0.6 * recoilHorizon * pose * times * (0.5 + fireSpread) * recoil * (4 / (customWeight + 4)) * gripRecoilX).toFloat()
+            player.yRot - (0.6 * recoilHorizon * pose * times * (0.5 + fireSpread) * 3.6 * (4 / (customWeight + 4))).toFloat()
         player.yRot = newYaw
         player.yRotO = player.yRot
 
         if (firePosTimer > 0.0) {
             var rotateX =
-                (70 * pose * gunRecoilX * sin(firePosTimer * PI * 2) * (2.2 - firePosTimer) * recoil * (4 / (customWeight + 4))
-                        * gripRecoilY + 2 * recoilForce * recoilForce * gunRecoilX * pose * recoil * (4 / (customWeight + 4))).toFloat() * times
+                (70 * pose * gunRecoilX * sin(firePosTimer * PI * 2) * (2.2 - firePosTimer) * 4.8 * (4 / (customWeight + 4)) + recoilForce * recoilForce * gunRecoilX * pose * 4.8 * (4 / (customWeight + 4))).toFloat() * times
 
             if (rotateX < 0) {
                 rotateX *= 1.8f

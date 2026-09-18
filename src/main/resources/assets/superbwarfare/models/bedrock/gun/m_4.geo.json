@@ -10758,6 +10758,11 @@
 					"pivot": [2.4535, 5.7332, 7.7333]
 				},
 				{
+					"name": "bipod_view",
+					"parent": "positioning",
+					"pivot": [0, 7.2332, 7.7333]
+				},
+				{
 					"name": "iron_view",
 					"parent": "positioning",
 					"pivot": [0, 5.2832, 6.2333]

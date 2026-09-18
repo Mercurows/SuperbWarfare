@@ -122,6 +122,8 @@ data class DefaultGunData(
     val withdrawAmmoWhenChangeSlot: Boolean = false,
     @SerialName("ZoomReload")
     val zoomReload: Boolean = true,
+    @SerialName("HasBipod")
+    val hasBipod: Boolean = false,
     // TODO(fire-mode): Keep this as legacy compatibility until HOLD uses ChargeInfo reset semantics.
     @SerialName("ClearHoldProgressAfterShoot")
     val clearHoldProgressAfterShoot: Boolean = false,

@@ -1,0 +1,25 @@
+{
+  "Slot": "Grip",
+  "Level": 0,
+  "Modifiers": [
+    {
+      "Prop": "RecoilX",
+      "Op": "Mul",
+      "Value": 0.84
+    },
+    {
+      "Prop": "RecoilY",
+      "Op": "Mul",
+      "Value": 0.98
+    },
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 0.75
+    }
+  ],
+  "Bipod": true,
+  "Bone": "grip_pos",
+  "Model": "superbwarfare:models/bedrock/attachment/grip_vertical_bipod.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/grip_vertical_bipod.png"
+}

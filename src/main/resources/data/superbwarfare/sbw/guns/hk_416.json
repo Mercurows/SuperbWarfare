@@ -3,8 +3,8 @@
   "OpenBolt": true,
   "HasBarrelBullet": true,
   "TacticalReload": true,
-  "RecoilX": 0.0014,
-  "RecoilY": 0.011,
+  "RecoilX": 0.0015,
+  "RecoilY": 0.017,
   "Damage": 8,
   "Headshot": 2,
   "Velocity": 21,
@@ -76,6 +76,7 @@
     ],
     "Grip": [
       "superbwarfare:vertical_grip",
+      "superbwarfare:grip_vertical_bipod",
       "superbwarfare:grip_rectangle_vertical",
       "superbwarfare:triangle_grip",
       "superbwarfare:grip_cqr_gen2"

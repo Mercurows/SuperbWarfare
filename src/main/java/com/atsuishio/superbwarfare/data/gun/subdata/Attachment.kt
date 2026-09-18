@@ -86,6 +86,19 @@ class Attachment(private val gun: GunData) {
 
     fun has(type: AttachmentType): Boolean = id(type) != null
 
+    /**
+     * Checks whether any installed attachment declares a built-in bipod.
+     *
+     * Not limited to the grip slot: any slot may host an attachment with the
+     * `Bipod` flag set in its definition.
+     *
+     * @return `true` when at least one installed attachment has a bipod.
+     */
+    fun hasBipod(): Boolean = AttachmentType.entries.any { type ->
+        val id = id(type) ?: return@any false
+        AttachmentDefinition.from(id)?.hasBipod == true
+    }
+
     fun getRotation(type: AttachmentType): Double {
         val tag = getTag(type) ?: return 0.0
         if (!tag.contains("Rotation")) return 0.0

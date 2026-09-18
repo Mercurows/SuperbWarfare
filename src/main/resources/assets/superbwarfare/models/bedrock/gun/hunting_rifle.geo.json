@@ -3457,6 +3457,11 @@
 					"pivot": [2.75, 4.75, 7]
 				},
 				{
+					"name": "idle_view2",
+					"parent": "positioning",
+					"pivot": [0, 6.25, 7]
+				},
+				{
 					"name": "iron_view",
 					"parent": "positioning",
 					"pivot": [0, 3.8839, 5]

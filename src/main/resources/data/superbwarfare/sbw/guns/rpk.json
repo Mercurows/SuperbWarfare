@@ -1,8 +1,10 @@
 {
-  "Spread": 7.5,
+  "Spread": 7,
+  "TacticalReload": true,
   "HasBarrelBullet": true,
-  "RecoilX": 0.0018,
-  "RecoilY": 0.018,
+  "HasBipod": true,
+  "RecoilX": 0.0019,
+  "RecoilY": 0.020,
   "Damage": 9.5,
   "Headshot": 2,
   "Velocity": 20,
@@ -69,6 +71,7 @@
     ],
     "Grip": [
       "superbwarfare:vertical_grip",
+      "superbwarfare:grip_vertical_bipod",
       "superbwarfare:grip_rectangle_vertical",
       "superbwarfare:triangle_grip",
       "superbwarfare:grip_cqr_gen2"

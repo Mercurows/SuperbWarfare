@@ -683,7 +683,7 @@
 					"effect": "superbwarfare:m_4_mag_out"
 				},
 				"1.2083": {
-					"effect": "superbwarfare:m_4_in"
+					"effect": "superbwarfare:m_4_mag_in"
 				},
 				"2.25": {
 					"effect": "superbwarfare:common_grab_1"

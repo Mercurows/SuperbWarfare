@@ -1,11 +1,9 @@
 {
-  "MinZoom": 1.25,
-  "MaxZoom": 6,
-  "Spread": 3.5,
+  "Spread": 5.8,
   "TacticalReload": true,
   "HasBarrelBullet": true,
-  "RecoilX": 0.0015,
-  "RecoilY": 0.01,
+  "RecoilX": 0.0016,
+  "RecoilY": 0.018,
   "Damage": 8.25,
   "Headshot": 2,
   "Velocity": 20,
@@ -77,6 +75,7 @@
     ],
     "Grip": [
       "superbwarfare:vertical_grip",
+      "superbwarfare:grip_vertical_bipod",
       "superbwarfare:grip_rectangle_vertical",
       "superbwarfare:triangle_grip",
       "superbwarfare:grip_cqr_gen2"
