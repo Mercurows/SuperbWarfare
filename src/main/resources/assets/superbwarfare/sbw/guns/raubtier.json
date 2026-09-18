@@ -2,7 +2,8 @@
   "SlotIcon": "superbwarfare:textures/item/raubtier_icon.png",
   "Animation": {
     "Idle": "animation.raubtier.idle",
-    "Reload": "animation.raubtier.reload"
+    "Reload": "animation.raubtier.reload",
+    "Fire": "animation.raubtier.fire"
   },
   "Model": {
     "Animation": "superbwarfare:animations/bedrock/gun/raubtier.animation.json",
