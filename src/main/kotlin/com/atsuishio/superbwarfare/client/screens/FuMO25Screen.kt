@@ -182,7 +182,7 @@ class FuMO25Screen(pMenu: FuMO25Menu, pPlayerInventory: Inventory, pTitle: Compo
             }
 
             guiGraphics.drawString(
-                this.font, Component.translatable("des.superbwarfare.fumo_25.current_target", sb),
+                this.font, Component.translatable("des.superbwarfare.fumo_25.current_target", sb.toString()),
                 i + 173, j + 24, 0xffffff
             )
         }
