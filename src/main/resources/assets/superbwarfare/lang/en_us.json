@@ -681,6 +681,8 @@
   "item.superbwarfare.silencer_qinglan": "Silencer (Qinglan)",
   "item.superbwarfare.scope_hamr": "HAMR Combined Scope",
   "item.superbwarfare.scope_elcan_4x": "Elcan 4x Scope",
+  "item.superbwarfare.scope_winefox": "TLM Winefox Sight",
+  "des.superbwarfare.scope_winefox": "I'll aim where Winefox points. Model: Touhou Little Maid Dev Team, Licensed by CC BY-NC-SA 4.0",
   "item.superbwarfare.triangular_muzzle": "Triangular Muzzle",
   "item.superbwarfare.star_muzzle": "Star Muzzle",
   "item.superbwarfare.love_muzzle": "Love Muzzle",
@@ -1430,6 +1432,7 @@
   "prop.superbwarfare.bipod": "Bipod",
   "prop.superbwarfare.sound_radius_multiplier": "Fire Sound Radius",
   "prop.superbwarfare.muzzle_flash_scale": "Muzzle Flash Size",
+  "prop.superbwarfare.zoom_time": "Zoom Time",
 
   "superbwarfare.book.superb_warfare_manual": "Superb Warfare Manual",
   "superbwarfare.book.superb_warfare_manual.des": "A tutorial on Superb Warfare mod, teaching you how to become a superb soldier (WIP)",

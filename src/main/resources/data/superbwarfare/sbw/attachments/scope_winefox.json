@@ -1,0 +1,22 @@
+{
+  "Slot": "Scope",
+  "Level": 3,
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 1.8
+    },
+    {
+      "Prop": "ZoomTime",
+      "Op": "Mul",
+      "Value": 0.5
+    }
+  ],
+  "Bone": "scope_pos",
+  "Model": "superbwarfare:models/bedrock/attachment/scope_winefox.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/scope_winefox.png",
+  "ScopeInfo": {
+    "Type": "Sight"
+  }
+}

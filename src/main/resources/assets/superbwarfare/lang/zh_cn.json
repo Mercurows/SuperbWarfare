@@ -681,6 +681,8 @@
   "item.superbwarfare.silencer_qinglan": "消音器（轻岚）",
   "item.superbwarfare.scope_hamr": "HAMR 组合式瞄具",
   "item.superbwarfare.scope_elcan_4x": "Elcan4倍瞄准镜",
+  "item.superbwarfare.scope_winefox": "车万女仆 酒狐瞄准镜",
+  "des.superbwarfare.scope_winefox": "酒狐指哪我打哪。模型来自车万女仆制作组，采用CC BY-NC-SA 4.0协议授权",
   "item.superbwarfare.triangular_muzzle": "三角形枪口",
   "item.superbwarfare.star_muzzle": "星形枪口",
   "item.superbwarfare.love_muzzle": "爱心枪口",
@@ -1430,6 +1432,7 @@
   "prop.superbwarfare.bipod": "两脚架",
   "prop.superbwarfare.sound_radius_multiplier": "开火音效范围",
   "prop.superbwarfare.muzzle_flash_scale": "枪口火焰大小",
+  "prop.superbwarfare.zoom_time": "瞄准时间",
 
   "superbwarfare.book.superb_warfare_manual": "卓越单兵手册",
   "superbwarfare.book.superb_warfare_manual.des": "卓越前线模组的教程，教你如何成为一名卓越的士兵（编写中）",
