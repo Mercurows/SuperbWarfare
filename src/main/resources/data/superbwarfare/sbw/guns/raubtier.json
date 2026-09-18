@@ -1,0 +1,39 @@
+{
+  "Spread": 3.5,
+  "RecoilX": 0.004,
+  "RecoilY": 0.023,
+  "Damage": 450,
+  "Projectile": "superbwarfare:cannon_shell",
+  "ExplosionDamage": 120,
+  "ExplosionRadius": 3,
+  "Headshot": 2,
+  "Velocity": 3.75,
+  "Magazine": 2,
+  "Weight": 10,
+  "DrawTime": 11,
+  "ZoomTime": 6,
+  "NormalReloadTime": 100,
+  "EmptyReloadTime": 150,
+  "GunType": "CurvedLauncher",
+  "Gravity": 0.07,
+  "AmmoType": [
+    "superbwarfare:large_shell_ap"
+  ],
+  "Icon": "superbwarfare:textures/gun_icon/raubtier_icon.png",
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:battle_of_wits",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:cupid_arrow"
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:mk_42_fire_1p",
+    "Fire3P": "superbwarfare:mk_42_fire_3p",
+    "Fire3PFar": "superbwarfare:mk_42_far",
+    "Fire3PVeryFar": "superbwarfare:mk_42_veryfar"
+  }
+}

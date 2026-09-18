@@ -71,6 +71,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         gunItemV2(ModItems.SUPER_STAR_SHOOTER)
         gunItemV2(ModItems.REFORGING)
         gunItemV2(ModItems.M_1897)
+        gunItemV2(ModItems.RAUBTIER)
 
         gunItem(ModItems.BEAST_GUN_TEST)
 

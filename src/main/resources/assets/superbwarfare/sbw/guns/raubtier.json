@@ -1,0 +1,12 @@
+{
+  "SlotIcon": "superbwarfare:textures/item/raubtier_icon.png",
+  "Animation": {
+    "Idle": "animation.raubtier.idle",
+    "Reload": "animation.raubtier.reload"
+  },
+  "Model": {
+    "Animation": "superbwarfare:animations/bedrock/gun/raubtier.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/raubtier.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/raubtier.png"
+  }
+}
