@@ -2,7 +2,8 @@
   "SlotIcon": "superbwarfare:textures/item/raubtier_icon.png",
   "Animation": {
     "Idle": "animation.raubtier.idle",
-    "Reload": "animation.raubtier.reload",
+    "ReloadNormal": "animation.raubtier.reload_normal",
+    "ReloadEmpty": "animation.raubtier.reload_empty",
     "Fire": "animation.raubtier.fire"
   },
   "Model": {
