@@ -1,5 +1,6 @@
 {
   "Spread": 3.5,
+  "TacticalReload": true,
   "RecoilX": 0.004,
   "RecoilY": 0.023,
   "Recoil": 0.5,
@@ -13,8 +14,8 @@
   "Weight": 10,
   "DrawTime": 11,
   "ZoomTime": 6,
-  "NormalReloadTime": 100,
-  "EmptyReloadTime": 150,
+  "NormalReloadTime": 120,
+  "EmptyReloadTime": 160,
   "GunType": "CurvedLauncher",
   "Gravity": 0.06,
   "AmmoType": [
