@@ -367,6 +367,11 @@ class GunData private constructor(
     private var tempModifications: Function<DefaultGunData, DefaultGunData>? = null
     private val pmcInstance: PMC<GunData, DefaultGunData> by lazy { PMC(this) }
 
+    /** 正在跑属性计算流水线；用于拦截层内部的重入读取（见 [rebuildProperties]） */
+    @Transient
+    @kotlinx.serialization.Transient
+    private var rebuilding = false
+
     /** [GunState] snapshot the cached properties in [pmcInstance] were derived from. */
     private var pmcState: GunState? = null
 
@@ -415,46 +420,73 @@ class GunData private constructor(
 
     /** Runs the property modification pipeline into [pmcInstance]. */
     private fun rebuildProperties() {
-        pmcInstance.reset()
+        // 重入保护：某一层（尤其是 JS perk，它会回调 GunData/PmcProxy 读属性）在计算过程中再次
+        // 触发 get() 时，上面的 pmcState/propertiesInvalidated 标记要到本方法返回后才更新，
+        // 于是会再次进入这里 → 无限递归（StackOverflowError）。
+        // 重入时直接返回，让嵌套读取拿到当前 PMC 里已有的（部分）结果。
+        if (rebuilding) return
+        rebuilding = true
+        try {
+            pmcInstance.reset()
 
-        // 1. Property override tag
-        jsonPropModifier.update(propertyOverrideString.get())
-        jsonPropModifier.modifyProperty(pmcInstance)
+            // 1. Property override tag
+            jsonPropModifier.update(propertyOverrideString.get())
+            jsonPropModifier.modifyProperty(pmcInstance)
 
-        // 2. Gun item level modifiers
-        item.modifyProperty(pmcInstance)
+            // 2. Gun item level modifiers
+            item.modifyProperty(pmcInstance)
 
-        // 3. Attachments
-        attachmentJsonPropModifier.update(null as kotlinx.serialization.json.JsonObject?)
-        for (instance in attachment.installed()) {
-            attachmentOption(instance.slot, instance.id)?.let { option ->
-                attachmentJsonPropModifier.update(option.override)
-                attachmentJsonPropModifier.modifyProperty(pmcInstance)
+            // 3. Attachments
+            attachmentJsonPropModifier.update(null as kotlinx.serialization.json.JsonObject?)
+            for (instance in attachment.installed()) {
+                attachmentOption(instance.slot, instance.id)?.let { option ->
+                    attachmentJsonPropModifier.update(option.override)
+                    attachmentJsonPropModifier.modifyProperty(pmcInstance)
+                }
+                instance.definition.modifyProperty(pmcInstance)
             }
-            instance.definition.modifyProperty(pmcInstance)
-        }
 
-        // 4. FireMode modifiers
-        selectedFireModeInfo(pmcInstance[AVAILABLE_FIRE_MODES]).modifyProperty(pmcInstance)
+            // 4. FireMode modifiers
+            selectedFireModeInfo(pmcInstance[AVAILABLE_FIRE_MODES]).modifyProperty(pmcInstance)
 
-        // 5. AmmoConsumer modifiers
-        selectedAmmoConsumer(pmcInstance[AMMO_CONSUMER]).modifyProperty(pmcInstance)
+            // 5. AmmoConsumer modifiers
+            selectedAmmoConsumer(pmcInstance[AMMO_CONSUMER]).modifyProperty(pmcInstance)
 
-        // 6. Active Perks
-        for (type in PERK_TYPES) {
-            val list = perk.getInstances(type)
-            for (instance in list) {
-                instance.perk.modifyProperty(pmcInstance)
+            // 6. Active Perks
+            for (type in PERK_TYPES) {
+                val list = perk.getInstances(type)
+                for (instance in list) {
+                    instance.perk.modifyProperty(pmcInstance)
+                }
             }
-        }
 
-        // TODO Temporary property modifications
+            // TODO Temporary property modifications
 //        if (tempModifications != null) {
 //            rawData = tempModifications!!.apply(rawData)
 //        }
 
-        // 7. Global property bounds limit
-        GunProp.modifyProperty(pmcInstance)
+            // 7. Global property bounds limit
+            GunProp.modifyProperty(pmcInstance)
+
+            // 8. 把差量一次性写回一份数据值（一次 copy）。读取仍然优先 diff，所以这一步是行为中性的：
+            //    即使 withOverrides 漏了某个属性，行为也不变，只是这份 computed 值还不完整。
+            pmcInstance.computed = pmcInstance.computed.withOverrides(pmcInstance.diffSnapshot())
+
+            // 诊断（仅开发环境）：记录哪些 GunProp 真的被显式改写，
+            // 这份实测清单就是将来生成 DefaultGunData.withOverrides 的依据
+            if (DataValidator.ENABLED) {
+                for (p in pmcInstance.dirtyProps()) {
+                    if (MODIFIED_PROPS.add(p.serializationName)) {
+                        com.atsuishio.superbwarfare.Mod.LOGGER.info(
+                            "[PropDiag] GunProp modified: {}",
+                            p.serializationName
+                        )
+                    }
+                }
+            }
+        } finally {
+            rebuilding = false
+        }
     }
 
     /**
@@ -1629,6 +1661,10 @@ class GunData private constructor(
     }
 
     companion object {
+        /** 实测被显式改写过的 GunProp 名字（诊断用，见 rebuildProperties） */
+        @JvmField
+        val MODIFIED_PROPS: MutableSet<String> = Collections.synchronizedSet(mutableSetOf<String>())
+
         /** Tick interval between backup ammo inventory re-computations. */
         const val BACKUP_AMMO_CACHE_TICKS: Long = 10L
 
