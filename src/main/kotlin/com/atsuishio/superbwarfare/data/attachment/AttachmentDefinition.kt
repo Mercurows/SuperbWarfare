@@ -67,6 +67,13 @@ data class AttachmentDefinition(
     @SerialName("Zoom")
     val legacyZoom: AttachmentZoom? = null,
 
+    // 弹药显示配置，任意槽位的配件都可以声明；瞄准镜的旧写法 (ScopeInfo.AmmoBar) 仍然生效
+    @SerialName("AmmoBar")
+    val ammoBar: List<AmmoBarEntry> = emptyList(),
+
+    @SerialName("TextShow")
+    val textShow: List<AmmoTextEntry> = emptyList(),
+
     @SerialName("ScopeInfo")
     val scopeInfo: ScopeInfo? = null,
 ) : IDBasedData<AttachmentDefinition>, PropertyModifier<GunData, DefaultGunData> {
@@ -142,6 +149,18 @@ data class AttachmentDefinition(
     }
 
     fun supportsScopeSwitching(): Boolean = scopeInfo?.supportsModeSwitching() ?: false
+
+    /**
+     * The ammo bar bones this attachment drives, top-level first.
+     *
+     * The top-level field is the general form and applies to every slot. [scopeInfo] carries the
+     * original scope-only spelling, which is still honoured so datapacks written before the field was
+     * hoisted keep working — an attachment that declares both wins on the top-level one.
+     */
+    fun effectiveAmmoBar(): List<AmmoBarEntry> = ammoBar.ifEmpty { scopeInfo?.ammoBar ?: emptyList() }
+
+    /** The ammo text anchors this attachment drives. See [effectiveAmmoBar] for the fallback rule. */
+    fun effectiveTextShow(): List<AmmoTextEntry> = textShow.ifEmpty { scopeInfo?.textShow ?: emptyList() }
 
     companion object {
         @JvmStatic

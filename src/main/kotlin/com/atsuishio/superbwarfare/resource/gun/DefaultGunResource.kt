@@ -3,6 +3,8 @@ package com.atsuishio.superbwarfare.resource.gun
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.IDBasedData
 import com.atsuishio.superbwarfare.data.ModColor
+import com.atsuishio.superbwarfare.data.attachment.AmmoBarEntry
+import com.atsuishio.superbwarfare.data.attachment.AmmoTextEntry
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.resource.ModelResource
 import com.atsuishio.superbwarfare.resource.gun.pojo.*
@@ -165,6 +167,16 @@ class DefaultGunResource : IDBasedData<DefaultGunResource> {
     @JvmField
     @SerialName("Attachments")
     var attachmentInfo: AttachmentInfo = AttachmentInfo()
+
+    // 枪身自带的弹药显示：参与压缩的骨骼，空列表表示不启用
+    @JvmField
+    @SerialName("AmmoBar")
+    var ammoBar: List<AmmoBarEntry> = emptyList()
+
+    // 枪身弹药文字的锚点骨骼，空列表表示不启用；写法与瞄准镜的 TextShow 一致
+    @JvmField
+    @SerialName("TextShow")
+    var textShow: List<AmmoTextEntry> = emptyList()
 
     companion object {
         private val MARKER: Marker = MarkerManager.getMarker("GunResource")

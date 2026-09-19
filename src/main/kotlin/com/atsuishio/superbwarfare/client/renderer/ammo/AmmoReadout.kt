@@ -1,10 +1,10 @@
-package com.atsuishio.superbwarfare.client.renderer.scope
+package com.atsuishio.superbwarfare.client.renderer.ammo
 
 import com.atsuishio.superbwarfare.data.attachment.AmmoBarEntry
 import com.atsuishio.superbwarfare.data.attachment.AmmoTextEntry
 
 /**
- * Everything a scope needs to display the current magazine ammo: which bones and text anchors to
+ * Everything a model needs to display the current magazine ammo: which bones and text anchors to
  * drive, and the values they should show.
  *
  * [com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer] resolves this once per render so
@@ -19,6 +19,6 @@ data class AmmoReadout(
     /** Rounds left in the magazine. */
     val count: Int = 0,
 ) {
-    /** True when the scope has no ammo display configured at all. */
+    /** True when the model has no ammo display configured at all. */
     val isEmpty: Boolean get() = bars.isEmpty() && texts.isEmpty()
 }

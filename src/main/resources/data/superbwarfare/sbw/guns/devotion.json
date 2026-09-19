@@ -1,20 +1,18 @@
 {
-  "DefaultZoom": 2,
-  "Spread": 5,
-  "OpenBolt": true,
+  "Spread": 7.5,
   "HasBarrelBullet": true,
-  "RecoilX": 0.0018,
-  "RecoilY": 0.01,
+  "RecoilX": 0.0022,
+  "RecoilY": 0.022,
   "Damage": 9.5,
   "Headshot": 2,
   "Velocity": 20,
-  "Magazine": 55,
+  "Magazine": [40, 60, 80],
   "Weight": 6,
   "DrawTime": 13,
   "ZoomTime": 8,
   "DefaultFireMode": "Auto",
-  "NormalReloadTime": 73,
-  "EmptyReloadTime": 95,
+  "NormalReloadTime": 69,
+  "EmptyReloadTime": 91,
   "BypassesArmor": 0.25,
   "SoundRadius": 13,
   "RPM": 400,
@@ -47,16 +45,53 @@
     "!superbwarfare:longer_wire",
     "!superbwarfare:cupid_arrow"
   ],
+  "AvailableAttachments": {
+    "Scope": [
+      "superbwarfare:scope_coyote",
+      "superbwarfare:scope_aimpoint_t2",
+      "superbwarfare:scope_eotech_551",
+      "superbwarfare:scope_okp_7",
+      "superbwarfare:scope_pkas",
+      "superbwarfare:scope_bruiser",
+      "superbwarfare:scope_ranger",
+      "superbwarfare:scope_1p_78",
+      "superbwarfare:scope_pk_a",
+      "superbwarfare:scope_acog",
+      "superbwarfare:scope_qmk171",
+      "superbwarfare:scope_hamr",
+      "superbwarfare:scope_elcan_4x",
+      "superbwarfare:scope_lpvo",
+      "superbwarfare:scope_sniper",
+      "superbwarfare:scope_winefox"
+    ],
+    "Magazine": [
+      "superbwarfare:magazine_extend",
+      "superbwarfare:magazine_extend_pro"
+    ],
+    "Grip": [
+      "superbwarfare:vertical_grip",
+      "superbwarfare:grip_vertical_bipod",
+      "superbwarfare:grip_rectangle_vertical",
+      "superbwarfare:triangle_grip"
+    ],
+    "Barrel": [
+      "superbwarfare:meowlencer",
+      "superbwarfare:hissilencer",
+      "superbwarfare:silaowuncer",
+      "superbwarfare:ru_silencer",
+      "superbwarfare:muzzle_brake_ru",
+      "superbwarfare:muzzle_brake_ar",
+      "superbwarfare:muzzle_zenit_dtk_1",
+      "superbwarfare:muzzle_compensator_r_17",
+      "superbwarfare:ar_silencer",
+      "superbwarfare:loudspeaker",
+      "superbwarfare:silencer_qinglan"
+    ]
+  },
   "SoundInfo": {
     "Fire1P": "superbwarfare:devotion_fire_1p",
     "Fire3P": "superbwarfare:devotion_fire_3p",
     "Fire3PFar": "superbwarfare:devotion_far",
-    "Fire3PVeryFar": "superbwarfare:devotion_veryfar",
-    "ReloadNormal": "superbwarfare:devotion_reload_normal",
-    "ReloadEmpty": "superbwarfare:devotion_reload_empty",
-    "CancellableSounds": [
-      "superbwarfare:devotion_reload_normal",
-      "superbwarfare:devotion_reload_empty"
-    ]
+    "Fire3PVeryFar": "superbwarfare:devotion_veryfar"
   }
 }

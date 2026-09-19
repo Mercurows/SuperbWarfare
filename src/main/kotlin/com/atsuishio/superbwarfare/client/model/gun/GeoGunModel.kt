@@ -1,5 +1,7 @@
 package com.atsuishio.superbwarfare.client.model.gun
 
+import com.atsuishio.superbwarfare.client.renderer.ammo.AmmoDisplayRenderer
+import com.atsuishio.superbwarfare.client.renderer.ammo.AmmoReadout
 import com.atsuishio.superbwarfare.resource.ModelResource
 import com.atsuishio.superbwarfare.resource.model.GunLODModelReloadListener
 import com.atsuishio.superbwarfare.resource.model.GunModelReloadListener
@@ -36,6 +38,12 @@ open class GeoGunModel @JvmOverloads constructor(
     var renderHand: Boolean = true
 ) {
     val instance: TreeModelInstance = baseModel.createInstance()
+
+    /**
+     * Ammo readout engine, shared with the attachment models. Carries no division bones: a gun model
+     * has no reticle, so every text anchor resolves to "draw it with the rest of the model".
+     */
+    private val ammo = AmmoDisplayRenderer(baseModel, instance)
 
     private val illuminatedBoneIndices: IntArray = baseModel.bones()
         .asSequence()
@@ -228,7 +236,8 @@ open class GeoGunModel @JvmOverloads constructor(
         bufferSource: MultiBufferSource,
         texture: ResourceLocation,
         packedLight: Int,
-        packedOverlay: Int
+        packedOverlay: Int,
+        readout: AmmoReadout = AmmoReadout()
     ) {
         renderToBuffer(
             poseStack,
@@ -236,22 +245,40 @@ open class GeoGunModel @JvmOverloads constructor(
             RenderType.entityTranslucent(texture),
             BedrockModelRenderTypes.polyMeshCutout(texture),
             packedLight,
-            packedOverlay
+            packedOverlay,
+            readout
         )
     }
 
+    /**
+     * Draws the gun, optionally with its ammo readout.
+     *
+     * [readout] travels as a parameter rather than living on the instance because one [GeoGunModel] is
+     * shared by every stack using the same model file, so two guns of the same type can be drawn in
+     * the same frame — two players, or an item frame next to a held gun — and any per-render state
+     * kept on the instance would let them read each other's ammo.
+     *
+     * Bones named by the readout that the model does not contain are skipped, which is what makes this
+     * safe for LOD models: those are baked from a separate `gun_lod` file that generally has no ammo
+     * bones, so a gun simply loses its readout at LOD distance instead of failing to draw.
+     */
     open fun renderToBuffer(
         poseStack: PoseStack,
         bufferSource: MultiBufferSource,
         quadRenderType: RenderType,
         triangleRenderType: RenderType,
         packedLight: Int,
-        packedOverlay: Int
+        packedOverlay: Int,
+        readout: AmmoReadout = AmmoReadout()
     ) {
         hideBone(leftHandBoneIndex)
         hideBone(rightHandBoneIndex)
         hideShellGeometry()
         markIlluminatedBones()
+
+        // Applied before the model pass so the model's own draw skips every bar bone that carries a
+        // tint; those are drawn separately by renderBars so they can take a color.
+        val ammoBarState = ammo.applyBars(readout.bars, readout.progress)
 
         baseModel.renderToBuffer(
             instance,
@@ -270,6 +297,17 @@ open class GeoGunModel @JvmOverloads constructor(
 
         if (renderHand) {
             renderHands(poseStack, packedLight, bufferSource)
+        }
+
+        // skipNormalVisibilityCull = false, matching the multi-buffer model pass above.
+        ammo.renderBars(ammoBarState, poseStack, bufferSource, quadRenderType, triangleRenderType, packedLight, false)
+        ammo.restoreBars(ammoBarState)
+
+        // After the restore, so nothing is drawn while the model is still carrying the squashed
+        // scales. Every anchor resolves to divisionIndex -1 on a gun, since a gun model has no
+        // reticle subtree, so all of them are drawn here rather than by a division pass.
+        for (entry in readout.texts) {
+            ammo.renderText(entry, readout.count, readout.progress, poseStack, bufferSource)
         }
     }
 

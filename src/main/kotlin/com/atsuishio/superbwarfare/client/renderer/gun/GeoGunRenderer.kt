@@ -4,8 +4,8 @@ import com.atsuishio.superbwarfare.client.animation.AnimationCurves
 import com.atsuishio.superbwarfare.client.animation.gun.GeoGunAnimationInstance
 import com.atsuishio.superbwarfare.client.model.attachment.BedrockAttachmentModel
 import com.atsuishio.superbwarfare.client.model.gun.GeoGunModel
+import com.atsuishio.superbwarfare.client.renderer.ammo.AmmoReadout
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.EDIT_FOCUS_Z_OFFSET
-import com.atsuishio.superbwarfare.client.renderer.scope.AmmoReadout
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeStencilRenderHelper
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.attachment.AmmoBarEntry
@@ -20,6 +20,7 @@ import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.resource.ModelResource
+import com.atsuishio.superbwarfare.resource.gun.DefaultGunResource
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.atsuishio.superbwarfare.resource.gun.pojo.ItemDisplayInfo
 import com.atsuishio.superbwarfare.resource.model.AttachmentModelReloadListener
@@ -96,7 +97,21 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val textShow: List<AmmoTextEntry> = emptyList()
     )
 
-    override fun createAnimationInstance(stack: ItemStack, entity: Entity?): IFPAnimationInstance {
+    /**
+     * A resolved attachment model ready to be drawn: the model and texture to use, plus the
+     * definition they came from, which the ammo display configuration is read off.
+     *
+     * The definition travels with the model so the render path does not have to look it up a second
+     * time — [AttachmentDefinition.from] is a map lookup, but the ammo readout needs the definition's
+     * `AmmoBar` / `TextShow` on every frame the attachment is visible.
+     */
+    data class AttachmentRenderData(
+        val model: BedrockAttachmentModel,
+        val texture: ResourceLocation,
+        val definition: AttachmentDefinition,
+    )
+
+    override fun createAnimationInstance(stack: ItemStack, entity: Entity): IFPAnimationInstance {
         return GeoGunAnimationInstance(stack, entity, InteractionHand.MAIN_HAND)
     }
 
@@ -344,7 +359,10 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         }
 
         renderAttachments(stack, model, transformType, poseStack, bufferSource, packedLight, packedOverlay)
-        model.renderToBuffer(poseStack, bufferSource, texture, packedLight, packedOverlay)
+        model.renderToBuffer(
+            poseStack, bufferSource, texture, packedLight, packedOverlay,
+            resolveGunAmmoReadout(stack, resource)
+        )
         if (transformType.firstPerson()) {
             MuzzleFlashRenderer.render(
                 poseStack,
@@ -459,31 +477,57 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val bindMountTransform = model.getBindGlobalTransform(boneName) ?: return null
         return ScopeRenderData(
             attachmentModel, texture, scopeMode, scopeModeIndex, companionSightMode, attachmentId,
-            Matrix4f(mountTransform), Matrix4f(bindMountTransform), scopeInfo.ammoBar, scopeInfo.textShow
+            Matrix4f(mountTransform), Matrix4f(bindMountTransform),
+            definition.effectiveAmmoBar(), definition.effectiveTextShow()
         )
     }
 
-    /**
-     * This frame's ammo readout for the scope described by [data]: the remaining magazine ratio used
-     * to squash its ammo bar bones, and the round count its text anchors display.
-     *
-     * Returns an empty readout when the scope declares no ammo display at all, which also keeps the
-     * [com.atsuishio.superbwarfare.data.gun.GunProp.MAGAZINE] lookup — a full property modifier chain
-     * resolve — off the render path of every other scope in the game.
-     */
+    /** This frame's ammo readout for the scope described by [data]. */
     protected open fun resolveAmmoReadout(stack: ItemStack, data: ScopeRenderData): AmmoReadout {
-        if (data.ammoBar.isEmpty() && data.textShow.isEmpty()) return AmmoReadout()
+        return resolveAmmoReadout(stack, data.ammoBar, data.textShow)
+    }
+
+    /**
+     * This frame's ammo readout for a model carrying [bars] and [texts]: the remaining magazine ratio
+     * used to squash its ammo bar bones, and the round count its text anchors display.
+     *
+     * Returns an empty readout when nothing is configured, which is what keeps the
+     * [com.atsuishio.superbwarfare.data.gun.GunProp.MAGAZINE] lookup — a full property modifier chain
+     * resolve, and one that can rebuild the whole property set after every vanilla stack resync — off
+     * the render path of every gun and attachment in the game that shows no ammo display. That is the
+     * overwhelming majority of them, so the early return has to stay ahead of [GunData.from].
+     */
+    protected open fun resolveAmmoReadout(
+        stack: ItemStack,
+        bars: List<AmmoBarEntry>,
+        texts: List<AmmoTextEntry>,
+    ): AmmoReadout {
+        if (bars.isEmpty() && texts.isEmpty()) return AmmoReadout()
 
         val gun = GunData.from(stack)
         val count = gun.ammo.get()
         val magazine = gun.get(GunProp.MAGAZINE)
-        if (magazine <= 0) return AmmoReadout(data.ammoBar, data.textShow, 1f, count)
+        // No usable magazine: the bar holds at full rather than dividing by zero. Guns whose
+        // effective count lives outside `ammo` — energy weapons, backpack-ammo guns, melee-only guns,
+        // all of which report MAGAZINE <= 0 — therefore read as a full bar showing "0", so an author
+        // should not configure a readout on those.
+        if (magazine <= 0) return AmmoReadout(bars, texts, 1f, count)
         return AmmoReadout(
-            data.ammoBar,
-            data.textShow,
+            bars,
+            texts,
             (count.toFloat() / magazine.toFloat()).coerceIn(0f, 1f),
             count
         )
+    }
+
+    /**
+     * This frame's ammo readout for the gun body itself, resolved from the assets-side gun resource.
+     *
+     * Like the attachment path this returns empty before touching [GunData] when the gun declares no
+     * ammo display, so a gun with no `AmmoBar` / `TextShow` never pays for a magazine resolve.
+     */
+    protected open fun resolveGunAmmoReadout(stack: ItemStack, resource: DefaultGunResource): AmmoReadout {
+        return resolveAmmoReadout(stack, resource.ammoBar, resource.textShow)
     }
 
     private fun findStencilScope(stack: ItemStack, model: GeoGunModel): ScopeRenderData? {
@@ -555,16 +599,19 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         packedLight: Int,
         packedOverlay: Int
     ) {
-        val (attachmentModel, texture) = resolveStockAttachmentRender(stack) ?: return
+        val (attachmentModel, texture, definition) = resolveStockAttachmentRender(stack) ?: return
         val mountTransform = model.getGlobalTransform(GeoGunModel.CUSTOM_STOCK_ADAPTER_BONE) ?: return
 
         poseStack.pushPose()
         mulPoseWithNormal(poseStack, Matrix4f(mountTransform))
-        attachmentModel.renderToBuffer(poseStack, bufferSource, texture, packedLight, packedOverlay)
+        attachmentModel.renderToBuffer(
+            poseStack, bufferSource, texture, packedLight, packedOverlay,
+            null, resolveAmmoReadout(stack, definition.effectiveAmmoBar(), definition.effectiveTextShow())
+        )
         poseStack.popPose()
     }
 
-    open fun resolveStockAttachmentRender(stack: ItemStack): Pair<BedrockAttachmentModel, ResourceLocation>? {
+    open fun resolveStockAttachmentRender(stack: ItemStack): AttachmentRenderData? {
         val data = GunData.from(stack)
         val attachmentId = data.attachment.id(AttachmentType.STOCK) ?: return null
         val definition = AttachmentDefinition.from(attachmentId) ?: return null
@@ -572,7 +619,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val modelPath = definition.model ?: return null
         val texture = definition.texture ?: return null
         val attachmentModel = AttachmentModelReloadListener.getModel(modelPath) ?: return null
-        return Pair(attachmentModel, texture)
+        return AttachmentRenderData(attachmentModel, texture, definition)
     }
 
     open fun renderGripHandGuard(stack: ItemStack, model: GeoGunModel) {
@@ -591,7 +638,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         packedLight: Int,
         packedOverlay: Int
     ) {
-        val (attachmentModel, texture) = resolveGripAttachmentRender(stack) ?: return
+        val (attachmentModel, texture, definition) = resolveGripAttachmentRender(stack) ?: return
         val boneName = resolveGripAttachmentBone(stack)
         val mountTransform = model.getGlobalTransform(boneName) ?: return
 
@@ -600,18 +647,21 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             poseStack,
             Matrix4f(mountTransform).mul(resolveBarrelAttachmentLocalTransform(stack))
         )
-        attachmentModel.renderToBuffer(poseStack, bufferSource, texture, packedLight, packedOverlay)
+        attachmentModel.renderToBuffer(
+            poseStack, bufferSource, texture, packedLight, packedOverlay,
+            null, resolveAmmoReadout(stack, definition.effectiveAmmoBar(), definition.effectiveTextShow())
+        )
         poseStack.popPose()
     }
 
-    open fun resolveGripAttachmentRender(stack: ItemStack): Pair<BedrockAttachmentModel, ResourceLocation>? {
+    open fun resolveGripAttachmentRender(stack: ItemStack): AttachmentRenderData? {
         val data = GunData.from(stack)
         val attachmentId = data.attachment.id(AttachmentType.GRIP) ?: return null
         val definition = AttachmentDefinition.from(attachmentId) ?: return null
         val modelPath = definition.model ?: return null
         val texture = definition.texture ?: return null
         val attachmentModel = AttachmentModelReloadListener.getModel(modelPath) ?: return null
-        return Pair(attachmentModel, texture)
+        return AttachmentRenderData(attachmentModel, texture, definition)
     }
 
     open fun resolveGripAttachmentBone(stack: ItemStack): String {
@@ -642,24 +692,27 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         packedLight: Int,
         packedOverlay: Int
     ) {
-        val (attachmentModel, texture) = resolveBarrelAttachmentRender(stack) ?: return
+        val (attachmentModel, texture, definition) = resolveBarrelAttachmentRender(stack) ?: return
         val boneName = resolveBarrelAttachmentBone(stack) ?: return
         val mountTransform = model.getGlobalTransform(boneName) ?: return
 
         poseStack.pushPose()
         mulPoseWithNormal(poseStack, Matrix4f(mountTransform))
-        attachmentModel.renderToBuffer(poseStack, bufferSource, texture, packedLight, packedOverlay)
+        attachmentModel.renderToBuffer(
+            poseStack, bufferSource, texture, packedLight, packedOverlay,
+            null, resolveAmmoReadout(stack, definition.effectiveAmmoBar(), definition.effectiveTextShow())
+        )
         poseStack.popPose()
     }
 
-    open fun resolveBarrelAttachmentRender(stack: ItemStack): Pair<BedrockAttachmentModel, ResourceLocation>? {
+    open fun resolveBarrelAttachmentRender(stack: ItemStack): AttachmentRenderData? {
         val data = GunData.from(stack)
         val attachmentId = data.attachment.id(AttachmentType.BARREL) ?: return null
         val definition = AttachmentDefinition.from(attachmentId) ?: return null
         val modelPath = definition.model ?: return null
         val texture = definition.texture ?: return null
         val attachmentModel = AttachmentModelReloadListener.getModel(modelPath) ?: return null
-        return Pair(attachmentModel, texture)
+        return AttachmentRenderData(attachmentModel, texture, definition)
     }
 
     open fun resolveBarrelAttachmentMuzzleFlashScale(stack: ItemStack): Float {
@@ -686,9 +739,9 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     open fun resolveBarrelAttachmentMuzzleTransform(
         stack: ItemStack,
         model: GeoGunModel,
-        renderData: Pair<BedrockAttachmentModel, ResourceLocation>
+        renderData: AttachmentRenderData
     ): Matrix4f? {
-        val attachmentMuzzle = renderData.first.getGlobalTransform(MUZZLE_BONE) ?: return null
+        val attachmentMuzzle = renderData.model.getGlobalTransform(MUZZLE_BONE) ?: return null
         val boneName = resolveBarrelAttachmentBone(stack) ?: return null
         val mountTransform = model.getGlobalTransform(boneName) ?: return null
         return Matrix4f(mountTransform)

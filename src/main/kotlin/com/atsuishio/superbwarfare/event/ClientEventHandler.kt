@@ -1810,9 +1810,9 @@ object ClientEventHandler {
             customRpm = instance.maxOfOrNull { it.perk.getModifiedCustomRPM(customRpm, data, it) } ?: customRpm
         }
 
-//        if (stack.`is`(ModItems.DEVOTION.get())) {
-//            customRpm = (customRpm + 15).coerceAtMost(500)
-//        }
+        if (stack.`is`(ModItems.DEVOTION.get())) {
+            customRpm = (customRpm + 15).coerceAtMost(500)
+        }
 
         // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
         // 这是纯客户端预测：用 updateLocal 只改内存，不写 stack、也不 bump revision。枪械数据由服务端
