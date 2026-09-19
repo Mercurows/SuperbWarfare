@@ -3493,6 +3493,11 @@
 					"pivot": [0, 1.0102, -23.0133]
 				},
 				{
+					"name": "scope_pos",
+					"parent": "root",
+					"pivot": [0, 4.7, -4.4]
+				},
+				{
 					"name": "positioning",
 					"pivot": [0, 0, 0]
 				},

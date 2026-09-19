@@ -28,6 +28,11 @@
     "superbwarfare:brain_storm",
     "superbwarfare:target_lock"
   ],
+  "AvailableAttachments": {
+    "Scope": [
+      "superbwarfare:scope_winefox"
+    ]
+  },
   "SoundInfo": {
     "Fire1P": "superbwarfare:star_shoot_1p",
     "Fire3P": "superbwarfare:star_shoot_3p"
