@@ -9,6 +9,7 @@
   "Headshot": 2,
   "Velocity": 20,
   "Magazine": [40, 60, 100],
+  "DrumLevels": 2,
   "Weight": 7,
   "DrawTime": 14,
   "ZoomTime": 9,

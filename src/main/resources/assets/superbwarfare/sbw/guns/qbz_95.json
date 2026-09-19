@@ -12,7 +12,6 @@
     "ReloadEmptyDrum": "animation.qbz_95.reload_empty_drum",
     "HoldOpen": "animation.qbz_95.hold_open"
   },
-  "DrumLevels": 2,
   "ShootRecoil": {
     "Offset": [0.85, 0.8, 0.45],
     "Rotation": [0.16, 0.28, 0.48],

@@ -15,7 +15,6 @@
     "ReloadEmptyDrum": "animation.qbz_191.reload_empty_drum",
     "HoldOpen": "animation.qbz_191.hold_open"
   },
-  "DrumLevels": 2,
   "Script": "superbwarfare:scripts/guns/qbz_191.js",
   "ShootRecoil": {
     "Offset": [0.85, 0.8, 0.45],

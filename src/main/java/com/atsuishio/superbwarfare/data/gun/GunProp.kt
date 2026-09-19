@@ -176,6 +176,10 @@ class GunProp<T, R>(
             }
         ).also { entries.add(it) }
 
+        /** 弹鼓等级列表，供 `GunData.isDrumLevel()` 判断当前等级是否为弹鼓。 */
+        @JvmField
+        val DRUM_LEVELS = complexProp(DefaultGunData::drumLevels) { it }
+
         @JvmField
         val RELOAD_TYPES = complexProp(DefaultGunData::reloadTypes) { it }
 

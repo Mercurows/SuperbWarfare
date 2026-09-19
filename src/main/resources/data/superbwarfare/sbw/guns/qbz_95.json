@@ -9,6 +9,7 @@
   "Headshot": 2,
   "Velocity": 22,
   "Magazine": [30, 40, 75],
+  "DrumLevels": 2,
   "Weight": 4,
   "DrawTime": 11,
   "ZoomTime": 6,
@@ -23,8 +24,20 @@
       "Value": false
     },
     {
+      "Timeline": "RELOAD_NORMAL_DRUM",
+      "Progress": 0.8018,
+      "Action": "HOLD_OPEN",
+      "Value": false
+    },
+    {
       "Timeline": "RELOAD_EMPTY",
       "Progress": 0.81081,
+      "Action": "HOLD_OPEN",
+      "Value": false
+    },
+    {
+      "Timeline": "RELOAD_EMPTY_DRUM",
+      "Progress": 0.8439,
       "Action": "HOLD_OPEN",
       "Value": false
     },

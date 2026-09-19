@@ -14,7 +14,6 @@
     "ReloadNormalDrum": "animation.hk_416.reload_normal_drum",
     "ReloadEmptyDrum": "animation.hk_416.reload_empty_drum"
   },
-  "DrumLevels": 2,
   "ShootRecoil": {
     "Offset": [0.85, 0.8, 0.45],
     "Rotation": [0.16, 0.28, 0.48],

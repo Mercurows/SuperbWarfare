@@ -14,6 +14,19 @@ enum class GunActionTimeline {
     @SerialName("RELOAD_EMPTY")
     RELOAD_EMPTY,
 
+    /**
+     * 弹鼓版的时间线，当前弹匣等级属于枪械的 `DrumLevels` 时生效，用于换弹动画/时长与普通弹匣不同、
+     * 无法共用同一组 `Progress` 的枪械（见 [isDrumLevel]）。
+     *
+     * 某一组时间线只要配了 `_DRUM` 条目，弹鼓状态下就只认 `_DRUM`；没配则回退到普通条目。
+     */
+    @SerialName("RELOAD_NORMAL_DRUM")
+    RELOAD_NORMAL_DRUM,
+
+    /** [RELOAD_NORMAL_DRUM] 的空仓版本，见 [RELOAD_NORMAL_DRUM]。 */
+    @SerialName("RELOAD_EMPTY_DRUM")
+    RELOAD_EMPTY_DRUM,
+
     @SerialName("RELOAD_FINISH")
     RELOAD_FINISH,
 

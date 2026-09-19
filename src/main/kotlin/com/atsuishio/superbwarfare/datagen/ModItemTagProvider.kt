@@ -258,7 +258,7 @@ class ModItemTagProvider(
             ModItems.IGLA_9K38.get()
         )
         this.tag(ModTags.Items.ANIMATED_MG).add(
-            ModItems.DEVOTION.get(),
+//            ModItems.DEVOTION.get(),
             ModItems.RPK.get(),
             ModItems.M_60.get(),
             ModItems.M_2_HB.get()

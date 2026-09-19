@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.resource.gun
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.IDBasedData
 import com.atsuishio.superbwarfare.data.ModColor
-import com.atsuishio.superbwarfare.data.SingleOrList
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.resource.ModelResource
 import com.atsuishio.superbwarfare.resource.gun.pojo.*
@@ -92,10 +91,6 @@ class DefaultGunResource : IDBasedData<DefaultGunResource> {
     @JvmField
     @SerialName("Animation")
     var animation: GunAnimation? = GunAnimation()
-
-    @JvmField
-    @SerialName("DrumLevels")
-    var drumLevels: SingleOrList<Int> = SingleOrList()
 
     @JvmField
     @SerialName("UseOldHandRenderer")

@@ -7,11 +7,21 @@ package com.atsuishio.superbwarfare.data.gun
 object GunActionStepExecutor {
     fun tickReload(data: GunData) {
         val reload = data.reload
-        val steps = data.getDefault().actionSteps.list.filter { step ->
+        val allSteps = data.getDefault().actionSteps.list
+        val drum = data.isDrumLevel()
+
+        // 弹鼓换弹动画与弹匣不同，时间对不上，所以配了 _DRUM 版本时只在弹鼓下用它；
+        // 没配的枪械仍走普通版本，行为保持不变。
+        val drumNormalReload = drum && allSteps.any { it.timeline == GunActionTimeline.RELOAD_NORMAL_DRUM }
+        val drumEmptyReload = drum && allSteps.any { it.timeline == GunActionTimeline.RELOAD_EMPTY_DRUM }
+
+        val steps = allSteps.filter { step ->
             when (step.timeline) {
                 GunActionTimeline.RELOAD -> true
-                GunActionTimeline.RELOAD_NORMAL -> reload.normal()
-                GunActionTimeline.RELOAD_EMPTY -> reload.empty()
+                GunActionTimeline.RELOAD_NORMAL -> reload.normal() && !drumNormalReload
+                GunActionTimeline.RELOAD_NORMAL_DRUM -> reload.normal() && drumNormalReload
+                GunActionTimeline.RELOAD_EMPTY -> reload.empty() && !drumEmptyReload
+                GunActionTimeline.RELOAD_EMPTY_DRUM -> reload.empty() && drumEmptyReload
                 GunActionTimeline.RELOAD_FINISH -> false
                 GunActionTimeline.RELOAD_PREPARE_LOAD -> false
                 GunActionTimeline.NO_AMMO -> false

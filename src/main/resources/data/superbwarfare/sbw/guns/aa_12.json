@@ -7,6 +7,7 @@
   "Headshot": 1.5,
   "Velocity": 10,
   "Magazine": [12, 18, 25],
+  "DrumLevels": 2,
   "ZoomSpreadRate": 0.75,
   "ProjectileAmount": 12,
   "Weight": 7,

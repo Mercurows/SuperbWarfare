@@ -64,6 +64,9 @@ data class DefaultGunData(
     val velocity: Double = 0.0,
     @SerialName("Magazine")
     val magazine: SingleOrList<Int> = SingleOrList(0),
+    // 属于弹鼓的弹匣等级，这些等级使用弹鼓专属的换弹动画与 ActionSteps 时间线
+    @SerialName("DrumLevels")
+    val drumLevels: SingleOrList<Int> = SingleOrList(),
     @SerialName("Range")
     val range: Int = 128,
     @SerialName("MeleeDamage")

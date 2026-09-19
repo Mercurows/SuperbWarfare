@@ -78,6 +78,19 @@ fun GunData.magazineLevel(): Int {
 }
 
 /**
+ * Checks whether the current magazine level is one of the gun's configured `DrumLevels`.
+ *
+ * Drum magazines animate and reload differently from box magazines, so both the animation
+ * selection and the [GunActionTimeline] picker branch on this. It reads the `DrumLevels`
+ * gun property rather than the gun resource, because the resource is client-only and the
+ * reload timeline also ticks on the server.
+ */
+fun GunData.isDrumLevel(): Boolean {
+    val levels = get(GunProp.DRUM_LEVELS).list
+    return levels.isNotEmpty() && levels.contains(magazineLevel())
+}
+
+/**
  * Checks whether the installed barrel attachment is configured as a silencer.
  */
 fun GunData.isBarrelSilenced(): Boolean {

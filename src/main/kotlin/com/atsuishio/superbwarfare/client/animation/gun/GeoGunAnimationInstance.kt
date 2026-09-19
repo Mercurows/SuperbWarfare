@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.client.animation.gun
 import com.atsuishio.superbwarfare.client.animation.AnimationPlayType
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
-import com.atsuishio.superbwarfare.data.gun.magazineLevel
+import com.atsuishio.superbwarfare.data.gun.isDrumLevel
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.resource.gun.GunAnimation
 import com.atsuishio.superbwarfare.resource.gun.GunResource
@@ -141,7 +141,7 @@ open class GeoGunAnimationInstance(
     }
 
     private fun isDrumLevel(): Boolean {
-        return GunResource.compute(stack).drumLevels.list.contains(GunData.from(stack).magazineLevel())
+        return GunData.from(stack).isDrumLevel()
     }
 
     private fun normalReloadName(animation: GunAnimation): String? {
