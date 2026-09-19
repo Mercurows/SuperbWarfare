@@ -1,11 +1,12 @@
 {
-  "Spread": 7.5,
+  "Spread": 6.75,
   "HasBarrelBullet": true,
-  "RecoilX": 0.0022,
-  "RecoilY": 0.022,
+  "HasBipod": true,
+  "RecoilX": 0.0019,
+  "RecoilY": 0.020,
   "Damage": 9.5,
   "Headshot": 2,
-  "Velocity": 20,
+  "Velocity": 22,
   "Magazine": [40, 60, 80],
   "Weight": 6,
   "DrawTime": 13,
@@ -13,7 +14,7 @@
   "DefaultFireMode": "Auto",
   "NormalReloadTime": 69,
   "EmptyReloadTime": 91,
-  "BypassesArmor": 0.25,
+  "BypassesArmor": 0.35,
   "SoundRadius": 13,
   "RPM": 400,
   "GunType": "MachineGun",
@@ -72,7 +73,8 @@
       "superbwarfare:vertical_grip",
       "superbwarfare:grip_vertical_bipod",
       "superbwarfare:grip_rectangle_vertical",
-      "superbwarfare:triangle_grip"
+      "superbwarfare:triangle_grip",
+      "superbwarfare:grip_cqr_gen2"
     ],
     "Barrel": [
       "superbwarfare:meowlencer",
@@ -86,12 +88,21 @@
       "superbwarfare:ar_silencer",
       "superbwarfare:loudspeaker",
       "superbwarfare:silencer_qinglan"
+    ],
+    "Stock": [
+      "superbwarfare:stock_ar_tactical",
+      "superbwarfare:stock_elite",
+      "superbwarfare:stock_str",
+      "superbwarfare:stock_ubr",
+      "superbwarfare:stock_prs"
     ]
   },
   "SoundInfo": {
     "Fire1P": "superbwarfare:devotion_fire_1p",
     "Fire3P": "superbwarfare:devotion_fire_3p",
     "Fire3PFar": "superbwarfare:devotion_far",
-    "Fire3PVeryFar": "superbwarfare:devotion_veryfar"
+    "Fire3PVeryFar": "superbwarfare:devotion_veryfar",
+    "Fire1PSilent": "superbwarfare:devotion_fire_1p_s",
+    "Fire3PSilent": "superbwarfare:devotion_fire_3p_s"
   }
 }

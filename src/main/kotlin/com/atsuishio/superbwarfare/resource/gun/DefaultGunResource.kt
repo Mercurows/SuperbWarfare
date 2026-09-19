@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.resource.ModelResource
 import com.atsuishio.superbwarfare.resource.gun.pojo.*
 import com.atsuishio.superbwarfare.script.GunScriptManager
 import com.atsuishio.superbwarfare.script.ScriptMath
+import com.atsuishio.superbwarfare.script.ScriptState
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedResourceLocation
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedSoundEvent
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedVec3
@@ -79,6 +80,9 @@ class DefaultGunResource : IDBasedData<DefaultGunResource> {
             scope.parentScope = GunScriptManager.SHARED_SCOPE
 
             ScriptableObject.putProperty(scope, "JsMath", ScriptMath)
+            // 需要跨帧记住某个值时用它，别用脚本顶层的 let：顶层变量是每个枪械 id 一份作用域，
+            // 会被世界上所有同型号的枪共用。
+            ScriptableObject.putProperty(scope, "JsState", ScriptState)
             compiled.exec(GunScriptManager.RHINO_CONTEXT, scope, scope)
 
             val func = GunScriptManager.ScriptFunction(compiled, scope)

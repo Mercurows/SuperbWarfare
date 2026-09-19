@@ -313,7 +313,12 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 poseStack.translate(zoomPivot.x, zoomPivot.y, zoomPivot.z)
             }
             val zoomLengthScale = scopeRender?.scopeMode?.zoomLengthScale ?: 0.75f
-            poseStack.scale(1f, 1f, 1f - (1f - zoomLengthScale) * ClientEventHandler.zoomTime.toFloat())
+            // 与定位点混合共用同一条曲线：以前这里直接用线性的 zoomTime，于是推进节奏和枪的位置对不上。
+            // 以 scope_ranger / scope_sniper（zoomLengthScale = 0.3）为例，zoomTime = 0.3 时长度已经缩掉
+            // 总压缩量的 30%（实际长度的 21%），而枪才刚走完 10.8% 的路程，看上去是先"缩一下"再"抬上来"；
+            // 反过来 zoomTime = 0.7 时枪已到位 89.2%，长度却只缩了 70%，收尾阶段长度还在慢慢变。
+            val zoom = aimingProgress(ClientEventHandler.zoomTime)
+            poseStack.scale(1f, 1f, 1f - (1f - zoomLengthScale) * zoom)
             if (zoomPivot != null) {
                 poseStack.translate(-zoomPivot.x, -zoomPivot.y, -zoomPivot.z)
             }
@@ -776,9 +781,19 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
      *
      * 直接复用 `bipod_view` 定位点用的 [ClientEventHandler.bipodViewTime]，这样子骨骼的翻转与
      * 卧姿视角过渡天然同步，脚本里不需要自己再做一次插值。
+     *
+     * 但它描述的是**本地玩家自己**的持枪视角过渡，是客户端全局的一份状态，所以只有他手里那把枪
+     * 能用它。掉落在地上的、摆在展示框里的、别人手里的枪都拿不到"持有者"来问是否趴着
+     * （物品渲染路径只有 [ItemStack]，没有实体），对它们一律返回 0，也就是保持收起——
+     * 否则世界上每一把同型号枪都会跟着本地玩家的卧姿一起展开。
+     *
+     * 判定用对象身份：本地玩家第一人称与第三人称都经 `getMainHandItem()` 拿到同一个 stack 对象，
+     * 副手、展示框、掉落物、其他玩家拿到的都是别的对象。换枪动画的那一两帧渲染的是旧 stack 的
+     * 另一个对象，脚架会直接收起而不是平滑过渡，可以接受。
      */
-    open fun scriptBipodProgress(): Double {
-        return ClientEventHandler.bipodViewTime
+    open fun scriptBipodProgress(stack: ItemStack): Double {
+        val player = Minecraft.getInstance().player ?: return 0.0
+        return if (player.mainHandItem === stack) ClientEventHandler.bipodViewTime else 0.0
     }
 
     open fun scriptFrameDeltaSeconds(): Float {
@@ -919,8 +934,13 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         }
 
         val data = from(stack)
-        val zoomTime = ClientEventHandler.zoomTime.coerceIn(0.0, 1.0).toFloat()
-            .coerceAtLeast(ClientEventHandler.bipodViewTime.toFloat())
+        // 与定位点混合、Z 轴长度压缩共用同一条曲线。以前这里读的是线性的 zoomTime，于是姿态收敛跑在
+        // 枪到位之前：中段枪身的摆动已经被压平了，位置却还没跟上，衔接处会看出"甩一下"。
+        // 卧姿架在脚架上也要求收敛，所以与 bipodViewTime 取较大者；缓动单调，先取 max 再缓动与
+        // 各自缓动后取 max 等价。
+        val zoomTime = aimingProgress(
+            ClientEventHandler.zoomTime.coerceAtLeast(ClientEventHandler.bipodViewTime)
+        )
 
         var rotationScale = (1f - 0.5f * zoomTime).coerceAtLeast(0.05f)
         var rotationScaleX = (1f - 0.97f * zoomTime).coerceAtLeast(0.05f)
@@ -964,6 +984,23 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         mulPoseWithNormal(poseStack, viewTransform.invert())
     }
 
+    /**
+     * 把 0..1 的瞄准进度换算成真正用于插值的值。
+     *
+     * **瞄准过渡里所有按进度推进的量都必须走这里**，否则同一个过渡的不同部分会以不同速度推进：
+     * [computeViewTransform] 的定位点混合（平移与旋转）、`renderModel` 里的 Z 轴长度压缩、
+     * [applyCameraShake] 的姿态收敛，三者只要有一条用了线性的 `zoomTime`，中段就会看出
+     * "长度先缩掉一截 / 姿态先甩到位，枪却还没进来"。
+     *
+     * [AnimationCurves.EASE_IN_OUT_QUINT] 是单调的，所以对若干个驱动量先取较大者再缓动，
+     * 与各自缓动后取较大者等价——[applyCameraShake] 里脚架进度与瞄准进度取 max 就依赖这一点。
+     *
+     * 两个端点固定（0 → 0、1 → 1），所以换成它不会改变"完全未瞄准"和"完全瞄准"两帧的样子，
+     * 只改变中间的推进节奏。
+     */
+    private fun aimingProgress(rawProgress: Double): Float =
+        AnimationCurves.EASE_IN_OUT_QUINT.apply(rawProgress.coerceIn(0.0, 1.0)).toFloat()
+
     open fun computeViewTransform(
         model: GeoGunModel,
         scopeRender: ScopeRenderData? = null,
@@ -972,9 +1009,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val idleViewTransform = model.getGlobalTransform(IDLE_VIEW_BONE) ?: return null
         val hipViewTransform = bipodViewTransform(model, idleViewTransform)
 
-        val zoom = AnimationCurves.EASE_IN_OUT_QUINT
-            .apply(ClientEventHandler.zoomTime.coerceIn(0.0, 1.0))
-            .toFloat()
+        val zoom = aimingProgress(ClientEventHandler.zoomTime)
 
         val focusOffset = ClientEventHandler.editFocusOffset
         if (focusOffset.lengthSquared() > 1e-8f && zoom <= 0f) {

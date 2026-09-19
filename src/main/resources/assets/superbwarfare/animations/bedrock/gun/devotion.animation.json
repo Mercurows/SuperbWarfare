@@ -135,7 +135,7 @@
 			}
 		},
 		"animation.devotion.fire": {
-			"animation_length": 0.3833,
+			"animation_length": 0.3333,
 			"bones": {
 				"root": {
 					"rotation": {
@@ -144,15 +144,15 @@
 							"lerp_mode": "catmullrom"
 						},
 						"0.025": {
-							"post": [-1.63222, 0.14872, -0.23841],
+							"post": [-0.93222, 0.14872, -0.13841],
 							"lerp_mode": "catmullrom"
 						},
 						"0.075": {
-							"post": [-0.11713, -0.1554, 0.70716],
+							"post": [0.03287, -0.1554, 0.05716],
 							"lerp_mode": "catmullrom"
 						},
 						"0.1583": {
-							"post": [-0.55444, 0.12399, -0.22482],
+							"post": [-0.30444, 0.12399, -0.07482],
 							"lerp_mode": "catmullrom"
 						},
 						"0.2917": {
@@ -166,19 +166,19 @@
 							"lerp_mode": "catmullrom"
 						},
 						"0.025": {
-							"post": [0, -0.4, 0.4],
+							"post": [0, -0.3, 0.4],
 							"lerp_mode": "catmullrom"
 						},
 						"0.05": {
-							"post": [0, -0.18, 0.82],
+							"post": [0, -0.08, 0.52],
 							"lerp_mode": "catmullrom"
 						},
 						"0.1083": {
-							"post": [0, -0.1, -0.42],
+							"post": [0, 0, -0.12],
 							"lerp_mode": "catmullrom"
 						},
 						"0.175": {
-							"post": [0, -0.05, 0.06],
+							"post": [0, 0, 0.01],
 							"lerp_mode": "catmullrom"
 						},
 						"0.2917": {
@@ -193,8 +193,8 @@
 							"post": [0, 0, 0],
 							"lerp_mode": "catmullrom"
 						},
-						"0.0417": {
-							"post": [0, 0, 5],
+						"0.0167": {
+							"post": [0, 0, 2.5],
 							"lerp_mode": "catmullrom"
 						},
 						"0.1": {

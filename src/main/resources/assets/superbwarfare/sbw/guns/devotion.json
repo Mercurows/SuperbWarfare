@@ -21,6 +21,7 @@
     "LODModel": "superbwarfare:models/bedrock/gun_lod/devotion.geo.json",
     "LODTexture": "superbwarfare:textures/bedrock/gun_lod/devotion.png"
   },
+  "Script": "superbwarfare:scripts/guns/bipod.js",
   "AmmoBar": [
     {
       "Bone": "ammo_bar_illuminated",

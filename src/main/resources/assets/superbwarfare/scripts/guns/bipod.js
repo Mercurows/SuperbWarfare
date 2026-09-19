@@ -9,7 +9,9 @@ const BIPOD_BONES = ["bipod_l", "bipod_r"]
 const BIPOD_DEPLOY_X_DEG = -90
 
 function transformCustomModelPart(stack, model, transformType, partialTick, renderer) {
-    const progress = renderer.scriptBipodProgress()
+    // 必须把 stack 传进去：scriptBipodProgress 按对象身份判断这是不是本地玩家自己手里那把枪，
+    // 地面掉落物 / 展示框 / 其他玩家手里的枪一律得到 0，保持收起。
+    const progress = renderer.scriptBipodProgress(stack)
     if (progress <= 0) {
         // 收起状态保持 bind 姿态即可，renderer 每帧都会 resetPose
         return

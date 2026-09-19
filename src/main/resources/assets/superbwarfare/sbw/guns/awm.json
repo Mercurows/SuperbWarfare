@@ -23,7 +23,7 @@
     "LODModel": "superbwarfare:models/bedrock/gun_lod/awm.geo.json",
     "LODTexture": "superbwarfare:textures/bedrock/gun_lod/awm.png"
   },
-  "Script": "superbwarfare:scripts/guns/awm.js",
+  "Script": "superbwarfare:scripts/guns/bipod.js",
   "FlareSize": 1.2,
   "HasSmoke": true,
   "Smoke": {
