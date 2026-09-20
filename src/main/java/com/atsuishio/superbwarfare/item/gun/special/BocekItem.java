@@ -143,7 +143,7 @@ public class BocekItem extends GunGeoItem {
             SoundTool.playLocalSound(player, ModSounds.HENG.get(), 4f, 1f);
         }
 
-        data.ammo.set(data.ammo.get() - data.get(GunProp.AMMO_COST_PER_SHOOT));
+        data.ammo.set(data.ammo.get() - data.primaryAmmoCostPerShoot());
         data.invalidateProperties();
         data.save();
     }

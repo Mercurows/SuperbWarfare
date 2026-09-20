@@ -513,6 +513,18 @@ class GunData private constructor(
     }
 
     /**
+     * 是否为「能量弹匣」武器：`Magazine > 0` 的能量类武器。
+     *
+     * 与背包型能量武器（`Magazine <= 0`，如 `ql_1031`）相对：
+     * - 开火只扣弹匣发数，不碰能量；
+     * - 换弹按 `AmmoCostPerShoot` 把能量折算成发数装进弹匣（见 `EnergyAmmoStrategy`）；
+     * - 退弹按当前发数乘 `AmmoCostPerShoot` 把能量还回去（见 [withdrawAmmo]）。
+     */
+    fun isEnergyMagazine(): Boolean {
+        return !useBackpackAmmo() && selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.ENERGY
+    }
+
+    /**
      * Calculates minimum scope zoom ratio.
      *
      * @return minimum allowed zoom value.
@@ -877,13 +889,28 @@ class GunData private constructor(
     }
 
     /**
+     * 每次开火在**主来源口径**上消耗的量。
+     *
+     * 弹匣型能量武器（如改造后的 `devotion`）的一发只扣 1 发弹匣，
+     * `AmmoCostPerShoot` 在那里的含义是「每发折算多少 FE」，只用于换弹装填与退弹结算，
+     * 不能当作开火成本参与比较，否则会拿「每发的 FE 数」去和「弹匣里的发数」比大小
+     * （300 > 40），导致满弹匣也判定为没弹药、左键变成快速换弹。
+     *
+     * 背包型能量武器（如 `ql_1031`）没有弹匣，每发就是直接扣 `AmmoCostPerShoot` 点 FE，
+     * 此时该字段与主来源口径一致，照常返回。
+     */
+    fun primaryAmmoCostPerShoot(): Int {
+        return if (isEnergyMagazine()) 1 else get(AMMO_COST_PER_SHOOT)
+    }
+
+    /**
      * Calculates remaining shots possible before requiring a reload.
      *
      * @param entity the shooter entity.
      * @return total shot count.
      */
     fun currentAvailableShots(entity: Entity?): Int {
-        val ammoCost = get(AMMO_COST_PER_SHOOT)
+        val ammoCost = primaryAmmoCostPerShoot()
         if (ammoCost <= 0) return Int.MAX_VALUE
 
         return currentAvailableAmmo(entity) / ammoCost
@@ -909,7 +936,7 @@ class GunData private constructor(
      * @return `true` if available ammo >= cost per shot.
      */
     fun hasEnoughPrimaryAmmoToShoot(entity: Entity?): Boolean {
-        return get(AMMO_COST_PER_SHOOT) <= currentAvailableAmmo(entity)
+        return primaryAmmoCostPerShoot() <= currentAvailableAmmo(entity)
     }
 
     /**
@@ -1011,9 +1038,24 @@ class GunData private constructor(
     /**
      * Withdraws loaded rounds back to entity inventory during reload or attachment modification.
      *
+     * 弹匣型能量武器（[isEnergyMagazine]）没有实体弹药可退，改为按当前发数乘
+     * `AmmoCostPerShoot` 把能量还给枪械自身的能量存储。
+     *
      * @param ammoSupplier target entity receiving withdrawn ammo.
      */
     fun withdrawAmmo(ammoSupplier: Entity) {
+        // 背包弹药不进弹匣，没有可退的弹药：退弹会把整管能量原样「退回」自己/背包，成为刷能量途径
+        if (useBackpackAmmo()) {
+            this.virtualAmmo.reset()
+            this.ammo.reset()
+            return
+        }
+
+        if (isEnergyMagazine()) {
+            withdrawEnergy()
+            return
+        }
+
         val itemAmount = withdrawAmmoCount()
 
         this.virtualAmmo.reset()
@@ -1030,9 +1072,22 @@ class GunData private constructor(
     /**
      * Withdraws loaded rounds back to item handler container during reload or attachment modification.
      *
+     * 弹匣型能量武器同 [withdrawAmmo]：能量回收到枪械自身，与容器无关。
+     *
      * @param handler target container handler.
      */
     fun withdrawAmmo(handler: IItemHandler) {
+        if (useBackpackAmmo()) {
+            this.virtualAmmo.reset()
+            this.ammo.reset()
+            return
+        }
+
+        if (isEnergyMagazine()) {
+            withdrawEnergy()
+            return
+        }
+
         val itemAmount = withdrawAmmoCount()
 
         this.virtualAmmo.reset()
@@ -1040,6 +1095,26 @@ class GunData private constructor(
 
         // Discards remainder when withdrawing to item handler
         selectedAmmoConsumer().withdraw(handler, itemAmount)
+    }
+
+    /**
+     * 弹匣型能量武器退弹：弹匣发数按 `AmmoCostPerShoot` 折回能量。
+     *
+     * 能量回收到枪械自身的能量存储（[getEnergyProvider]），容量满时多出来的部分丢弃。
+     * 虚拟弹药一并退还后清空，与物品类弹药的退弹行为保持一致。
+     */
+    private fun withdrawEnergy() {
+        val rounds = this.ammo.get() + this.virtualAmmo.get()
+        val perRound = get(AMMO_COST_PER_SHOOT)
+
+        this.virtualAmmo.reset()
+        this.ammo.reset()
+
+        if (rounds <= 0 || perRound <= 0) return
+
+        // 夹到 Int.MAX_VALUE：弹药数与每发消耗都是玩家可控的数据，直接相乘可能溢出成负数
+        val energy = min(rounds.toLong() * perRound, Int.MAX_VALUE.toLong()).toInt()
+        getEnergyProvider(null)?.receiveEnergy(energy, false)
     }
 
     /** Gets list of available perks applicable to weapon. */

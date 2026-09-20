@@ -413,10 +413,12 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
         postEvent(ShootEvent.Post(parameters))
 
+        // 弹匣分支按主来源口径扣（弹匣型能量武器一发只扣 1 发，而不是 AmmoCostPerShoot 点 FE）；
+        // 背包分支没有弹匣，每发就是直接扣 AmmoCostPerShoot 点 FE
         if (!data.useBackpackAmmo()) {
-            data.ammo.set(data.ammo.get() - data.get(GunProp.AMMO_COST_PER_SHOOT))
+            data.ammo.set(data.ammo.get() - data.primaryAmmoCostPerShoot())
         } else {
-            data.consumeBackupAmmo(ammoSupplier, data.get(GunProp.AMMO_COST_PER_SHOOT))
+            data.consumeBackupAmmo(ammoSupplier, data.primaryAmmoCostPerShoot())
         }
 
         // 消耗每发附加弹药来源（如泰瑟枪的电量）

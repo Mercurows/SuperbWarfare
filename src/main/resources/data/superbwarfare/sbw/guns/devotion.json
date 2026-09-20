@@ -28,7 +28,9 @@
   "DamageReduce": {
     "Type": "Rifle"
   },
-  "AmmoType": "@RifleAmmo",
+  "AmmoType": "FE",
+  "AmmoCostPerShoot": 200,
+  "MaxEnergy": 80000,
   "Icon": "superbwarfare:textures/gun_icon/devotion_icon.png",
   "AvailablePerks": [
     "@Ammo",

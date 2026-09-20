@@ -21,6 +21,14 @@ data class DefaultGunData(
     val maxDurability: Int = 0,
     @SerialName("DurabilityPerShoot")
     val durabilityPerShoot: Int = 1,
+    /**
+     * 枪械自身可存储的能量上限（FE）。
+     *
+     * 对能量类武器（`AmmoType` 为 `FE` / `RF` / `energy`）这是唯一的「弹源」：
+     * 背包型直接从这里按 [ammoCostPerShoot] 扣，弹匣型在换弹时按 [ammoCostPerShoot] 折算成
+     * [magazine] 的发数。弹匣型请保证 `maxEnergy >= 单次装填发数 * ammoCostPerShoot`，
+     * 否则一个满弹匣也得靠多次装填凑齐。
+     */
     @SerialName("MaxEnergy")
     val maxEnergy: Int = 0,
     @SerialName("MaxReceiveEnergy")
@@ -62,6 +70,15 @@ data class DefaultGunData(
     @JvmField
     @SerialName("Velocity")
     val velocity: Double = 0.0,
+    /**
+     * 弹匣容量（按弹匣配件等级分档）。
+     *
+     * `<= 0` 表示**背包型**：不使用弹匣，开火时直接从背包（或对能量类武器而言从 [maxEnergy]）
+     * 扣除 [ammoCostPerShoot]，不能换弹，也不能退弹。
+     *
+     * `> 0` 表示**弹匣型**：开火扣弹匣发数，换弹时才按 [ammoCostPerShoot] 把能量折算成发数装填。
+     * 能量类武器即由此字段决定是哪种形态，见 `GunData.useBackpackAmmo` / `GunData.isEnergyMagazine`。
+     */
     @SerialName("Magazine")
     val magazine: SingleOrList<Int> = SingleOrList(0),
     // 属于弹鼓的弹匣等级，这些等级使用弹鼓专属的换弹动画与 ActionSteps 时间线
@@ -100,6 +117,14 @@ data class DefaultGunData(
     val seekWeaponInfo: SeekWeaponInfo? = null,
     @SerialName("ProjectileDummyInfo")
     val projectileDummyInfo: ProjectileDummyInfo? = null,
+    /**
+     * 每次开火消耗的弹药量。
+     *
+     * 能量类武器下的含义随形态变化：
+     * - 背包型（[magazine] `<= 0`）：每次开火直接扣这么多 FE；
+     * - 弹匣型（[magazine] `> 0`）：**每发子弹**折算的 FE，开火时只扣弹匣发数，
+     *   这笔能量在换弹装填时结算，退弹时按同价退还。
+     */
     @SerialName("AmmoCostPerShoot")
     val ammoCostPerShoot: Int = 1,
     @SerialName("ProjectileAmount")

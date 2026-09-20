@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.overlay
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.client.language.ClientLanguageGetter
+import com.atsuishio.superbwarfare.client.overlay.AmmoBarOverlay.getBackupAmmoString
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer.AmmoConsumeType
@@ -455,22 +456,53 @@ object AmmoBarOverlay : CommonOverlay("ammo_bar") {
         return builder.toString()
     }
 
+    /** 枪械自身能量占上限的比例（0.0 ~ 1.0） */
+    private fun getEnergyRate(data: GunData): Double {
+        val storage = data.stack.getCapability(Capabilities.EnergyStorage.ITEM)
+        return if (storage == null) 0.0 else Mth.clamp(
+            storage.energyStored.toDouble() / max(1, storage.maxEnergyStored), 0.0, 1.0
+        )
+    }
+
+    /** 能量百分比文本，如 "80%" */
+    private fun getEnergyPercentString(data: GunData) = format1DZZ(getEnergyRate(data) * 100) + "%"
+
+    /**
+     * 大字（弹药量）。
+     *
+     * 能量弹匣与普通弹匣武器一样只显示发数，能量比例交给下面的小灰字
+     * （[getBackupAmmoString]），这样两行布局与其它武器完全一致。
+     * 无限弹药时也照常显示弹匣发数 —— 弹匣仍是实打实的数字，没必要时换成 ∞。
+     */
     private fun getGunAmmoString(data: GunData, player: Player?): String {
+        if (data.isEnergyMagazine()) {
+            return data.ammo.get().toString()
+        }
         if (data.selectedAmmoConsumer().type == AmmoConsumeType.ENERGY) {
-            val storage = data.stack.getCapability(Capabilities.EnergyStorage.ITEM)
-            val energy = if (storage == null) 0.0 else Mth.clamp(
-                storage.energyStored.toDouble() / max(1, storage.maxEnergyStored), 0.0, 1.0
-            )
-            return format1DZZ(energy * 100) + "%"
+            return getEnergyPercentString(data)
         }
         if (data.meleeOnly() || data.useBackpackAmmo() && data.hasInfiniteBackupAmmo(player)) return "∞"
         return if (data.useBackpackAmmo()) (data.countBackupAmmo(player) - data.virtualAmmo.get()).toString() + "" else data.ammo.get()
             .toString() + ""
     }
 
+    /**
+     * 小灰字（备弹量）。
+     *
+     * 能量弹匣的「备弹」就是枪械自身电量，这里显示能量百分比；
+     * 其它能量武器（背包型）的百分比已经在大字位置，这里留空避免重复。
+     */
     private fun getBackupAmmoString(data: GunData, player: Player?): String {
-        if (data.meleeOnly() || data.useBackpackAmmo() || data.selectedAmmoConsumer().type == AmmoConsumeType.ENERGY) return ""
-        return if (data.hasInfiniteBackupAmmo(player)) "∞" else (data.countBackupAmmo(player) - data.virtualAmmo.get()).toString() + ""
+        if (data.isEnergyMagazine()) {
+            return getEnergyPercentString(data)
+        }
+        if (data.meleeOnly() || data.useBackpackAmmo()
+            || data.selectedAmmoConsumer().type == AmmoConsumeType.ENERGY
+        ) {
+            return ""
+        }
+        return if (data.hasInfiniteBackupAmmo(player)) "∞"
+        else (data.countBackupAmmo(player) - data.virtualAmmo.get()).toString()
     }
 
     private val REPLACE_FORMAT_CODE: Pattern = Pattern.compile("§.")

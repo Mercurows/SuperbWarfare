@@ -100,7 +100,7 @@ public class IglaItem extends GunGeoItem {
             SoundTool.playDistantSound(serverLevel, ModSounds.IGLA_FAR.get(), shooter.position(), 10, 1, shooter);
         }
 
-        data.ammo.set(data.ammo.get() - data.get(GunProp.AMMO_COST_PER_SHOOT));
+        data.ammo.set(data.ammo.get() - data.primaryAmmoCostPerShoot());
         data.invalidateProperties();
         data.save();
     }
