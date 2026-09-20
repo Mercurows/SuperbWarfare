@@ -560,7 +560,7 @@
   "item.superbwarfare.regeneration": "再生",
   "des.superbwarfare.regeneration": "能量武器会缓慢自动回复能量",
   "item.superbwarfare.turbo_charger": "涡轮增压器",
-  "des.superbwarfare.turbo_charger": "装配后减少武器自动射击所需的缓冲时间",
+  "des.superbwarfare.turbo_charger": "自动武器连续开火时逐渐增加射速",
   "item.superbwarfare.powerful_attraction": "强力吸引",
   "des.superbwarfare.powerful_attraction": "击杀目标后掉落的物品和经验会直接转移到自身",
   "item.superbwarfare.intelligent_chip": "智慧芯片",

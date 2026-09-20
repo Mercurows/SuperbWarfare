@@ -3143,6 +3143,8 @@ object ClientEventHandler {
         seekingEntity = null
         lockingPos = null
         isEditing = false
+        // 切枪时清掉上一把枪累积的自定义 rpm，避免加成串到新枪上
+        customRpm = 0
         editingAttachmentType = -1
         editFocusOffset.set(0f, 0f, 0f)
         editFocusYaw = 0f

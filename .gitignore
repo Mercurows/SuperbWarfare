@@ -133,3 +133,13 @@ run/
 .cache
 
 bin/
+
+# Local MCP tooling for Minecraft mod dev - never commit these.
+# .mc-mcp-server  : a workspace-local copy of @mcdxai/minecraft-dev-mcp with
+#                   native modules rebuilt for the harness's Node version.
+# .mc-mcp-cache   : downloaded jars, remapped jars, decompiled sources and
+#                   SQLite search indexes (GBs per Minecraft version).
+# .mc-mcp-cache-test : throwaway scratch area used while wiring the server up.
+.mc-mcp-server/
+.mc-mcp-cache/
+.mc-mcp-cache-test/

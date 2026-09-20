@@ -1,3 +1,4 @@
-function getModifiedCustomRPM(rpm, level, gunData) {
-    return Math.min(1200, rpm + 5 + 3 * level)
+function modifyProperty(pmc, level, perkTag, gunData) {
+    if (!pmc) return
+    pmc.add("RpmAddAfterShoot", 5 + 3 * level)
 }
