@@ -11,6 +11,7 @@
   "Bone": "pso_1_pos",
   "Model": "superbwarfare:models/bedrock/attachment/scope_pso_1.geo.json",
   "Texture": "superbwarfare:textures/bedrock/attachment/scope_pso_1.png",
+  "RequiresRail": false,
   "ScopeInfo": {
     "Type": "Scope",
     "ZoomLengthScale": 0.5,

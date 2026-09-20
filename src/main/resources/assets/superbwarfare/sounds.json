@@ -1375,18 +1375,26 @@
       }
     ]
   },
-  "svd_reload_normal": {
+  "svd_mag_in": {
     "sounds": [
       {
-        "name": "superbwarfare:gun/svd/svd_reload_normal",
+        "name": "superbwarfare:gun/svd/svd_mag_in",
         "stream": false
       }
     ]
   },
-  "svd_reload_empty": {
+  "svd_mag_out": {
     "sounds": [
       {
-        "name": "superbwarfare:gun/svd/svd_reload_empty",
+        "name": "superbwarfare:gun/svd/svd_mag_out",
+        "stream": false
+      }
+    ]
+  },
+  "svd_bolt": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/svd/svd_bolt",
         "stream": false
       }
     ]
