@@ -1587,6 +1587,17 @@ object ClientEventHandler {
         }
     }
 
+    /**
+     * 当前实际射速：`(基础 RPM + 每发累加值) * 全局倍率`。
+     *
+     * - 每发累加值可能为负（[GunProp.CUSTOM_RPM_MIN] 允许负数）、倍率也可能小于 1，
+     *   所以这里必须保证结果 >= 1：rpm <= 0 会让 cooldown 变成非正数，
+     *   下面按 cooldown 递减的开火补帧循环就永远结束不了。
+     * - 开火节奏和 HUD 显示都走这里，避免两处算法跑偏。
+     */
+    fun effectiveRpm(data: GunData): Int =
+        ((data.get(GunProp.RPM) + customRpm) * data.get(GunProp.RPM_MULTIPLIER)).roundToInt().coerceIn(1, 114514)
+
     fun handleGunShoot() {
         if (clientLevel == null) return
         val player = localPlayer ?: return
@@ -1674,7 +1685,7 @@ object ClientEventHandler {
             (fireCooldown - 6 * speed * times).coerceIn(0.0, 40.0)
         }
 
-        val rpm = (data.get(GunProp.RPM) + customRpm).coerceIn(1, 114514)
+        val rpm = effectiveRpm(data)
         val rps = rpm / 60.0
 
         // cooldown in ms
@@ -1810,8 +1821,10 @@ object ClientEventHandler {
             customRpm = instance.maxOfOrNull { it.perk.getModifiedCustomRPM(customRpm, data, it) } ?: customRpm
         }
 
-        val range = data.get(GunProp.CUSTOM_RPM_RANGE)
-        customRpm = Mth.clamp(customRpm + data.get(GunProp.RPM_ADD_AFTER_SHOOT), range.x.toInt(), range.y.toInt())
+        val minCustomRpm = data.get(GunProp.CUSTOM_RPM_MIN)
+        val maxCustomRpm = data.get(GunProp.CUSTOM_RPM_MAX)
+        // 用 Mth.clamp 而不是 coerceIn：数据包写反上下限时也不会抛异常
+        customRpm = Mth.clamp(customRpm + data.get(GunProp.RPM_ADD_AFTER_SHOOT), minCustomRpm, maxCustomRpm)
 
         // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
         // 这是纯客户端预测：用 updateLocal 只改内存，不写 stack、也不 bump revision。枪械数据由服务端

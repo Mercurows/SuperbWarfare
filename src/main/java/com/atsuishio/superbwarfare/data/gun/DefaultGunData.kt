@@ -6,12 +6,10 @@ import com.atsuishio.superbwarfare.data.ModColor
 import com.atsuishio.superbwarfare.data.SingleOrList
 import com.atsuishio.superbwarfare.data.StringOrObject
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedResourceLocation
-import com.atsuishio.superbwarfare.serialization.kserializer.SerializedVec2
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedVec3
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.world.phys.Vec2
 import kotlin.math.max
 import kotlin.math.min
 
@@ -181,14 +179,22 @@ data class DefaultGunData(
     // 连发模式下的射击间隔时间
     @SerialName("BurstCooldown")
     val burstCooldown: Int = 30,
+    // 每次开火后叠加到自定义射速上的增量（可为负）
     @SerialName("RpmAddAfterShoot")
     val rpmAddAfterShoot: Int = 0,
-    @SerialName("CustomRpmRange")
-    val customRpmRange: SerializedVec2 = Vec2(-600f, 600f),
+    // 自定义射速（叠加在 RPM 上的偏移量）的下限，可为负
+    @SerialName("MinCustomRpm")
+    val minCustomRpm: Int = -600,
+    // 自定义射速（叠加在 RPM 上的偏移量）的上限
+    @SerialName("MaxCustomRpm")
+    val maxCustomRpm: Int = 600,
     @SerialName("SoundRadius")
     val soundRadius: Double = 0.0,
     @SerialName("RPM")
     val rpm: Int = 600,
+    // 全局射速倍率：最终射速 = (RPM + 每发累加值) * RpmMultiplier
+    @SerialName("RpmMultiplier")
+    val rpmMultiplier: Double = 1.0,
     @SerialName("ExplosionDamage")
     val explosionDamage: Double = 0.0,
     @SerialName("ExplosionRadius")

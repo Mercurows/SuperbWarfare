@@ -127,6 +127,18 @@ open class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : 
         s.callFunction("tick", perkTag, level, gunDataProxy, entityProxy)
     }
 
+    override fun afterShoot(data: GunData, instance: PerkInstance, shooter: Entity?) {
+        val s = script ?: return
+
+        val tag = data.perk.getTag(this) ?: return
+        val perkTag = PerkTagProxy(tag)
+        val gunDataProxy = GunDataProxy(data)
+        val entityProxy = EntityProxy(shooter)
+        val level = instance.level.toInt()
+
+        s.callFunction("afterShoot", perkTag, level, gunDataProxy, entityProxy)
+    }
+
     override fun onKill(
         data: GunData,
         instance: PerkInstance,

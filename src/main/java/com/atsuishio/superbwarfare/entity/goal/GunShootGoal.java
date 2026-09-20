@@ -90,7 +90,8 @@ public class GunShootGoal<T extends Mob> extends Goal {
         }
 
         if (gunData.canShoot(this.mob) && aimTime >= this.data.aimTime()) {
-            double rps = (double) gunData.get(GunProp.RPM) / 60;
+            // 实际射速 = 基础 RPM * 全局射速倍率（perk / 数据包都可能改这个倍率）
+            double rps = (double) gunData.get(GunProp.RPM) * gunData.get(GunProp.RPM_MULTIPLIER) / 60;
 
             // cooldown in ms
             long cooldown = Math.round(1000 / rps);

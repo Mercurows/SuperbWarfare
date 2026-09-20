@@ -19,7 +19,8 @@
   "SoundRadius": 13,
   "RPM": 400,
   "RpmAddAfterShoot": 15,
-  "CustomRpmRange": [0, 500],
+  "MinCustomRpm": 0,
+  "MaxCustomRpm": 500,
   "GunType": "MachineGun",
   "AvailableFireModes": [
     "Auto"
@@ -41,6 +42,7 @@
     "superbwarfare:monster_hunter",
     "superbwarfare:vorpal_weapon",
     "superbwarfare:turbo_charger",
+    "superbwarfare:stop_gap",
     "superbwarfare:fair_means",
     "superbwarfare:high_impact_reserves",
     "superbwarfare:brain_storm",

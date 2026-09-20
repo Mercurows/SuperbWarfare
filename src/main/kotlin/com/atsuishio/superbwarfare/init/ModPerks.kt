@@ -133,6 +133,7 @@ object ModPerks {
     lateinit var TARGET_LOCK: PERK
     lateinit var SOUL_REAVER: PERK
     lateinit var STEADY_RESOLVE: PERK
+    lateinit var STOP_GAP: PERK
     // @formatter:on
 
     fun register(bus: IEventBus) {
@@ -282,6 +283,9 @@ object ModPerks {
         }
         STEADY_RESOLVE = autoRegistryObjects["steady_resolve"] ?: registerDamagePerk("steady_resolve") {
             EmptyPerk("steady_resolve", Perk.Type.DAMAGE)
+        }
+        STOP_GAP = autoRegistryObjects["stop_gap"] ?: registerDamagePerk("stop_gap") {
+            EmptyPerk("stop_gap", Perk.Type.DAMAGE)
         }
     }
 }

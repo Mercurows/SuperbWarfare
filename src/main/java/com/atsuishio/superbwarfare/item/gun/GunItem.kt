@@ -459,6 +459,14 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         // TODO 这样搞会在远程遥控火炮的时候，无论隔多远都会摇晃屏幕（恼
 //        data.shakePlayers(shooter);
         data.clearTempModifications()
+
+        // 通知所有已装备的 perk：这一发已经打出去了（"每发叠层"类 perk 用）
+        for (type in GunData.PERK_TYPES) {
+            val instance = data.perk.getInstances(type)
+            instance.forEach {
+                it.perk.afterShoot(data, it, shooter)
+            }
+        }
     }
 
     fun shoot(

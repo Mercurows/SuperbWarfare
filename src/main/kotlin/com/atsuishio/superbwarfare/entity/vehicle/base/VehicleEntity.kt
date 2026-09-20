@@ -1165,19 +1165,28 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     open fun vehicleWeaponRpm(living: LivingEntity?): Int {
         val data = getGunData(getSeatIndex(living))
         if (data == null || data.get(GunProp.RPM) <= 0) return 60
-        return data.get(GunProp.RPM)
+        return data.weaponRpm()
     }
 
     open fun vehicleWeaponRpm(seatIndex: Int): Int {
         val data = getGunData(seatIndex)
         if (data == null || data.get(GunProp.RPM) <= 0) return 60
-        return data.get(GunProp.RPM)
+        return data.weaponRpm()
     }
 
     open fun vehicleWeaponRpm(weaponName: String): Int {
         val data = getGunData(weaponName) ?: return 1
-        return data.get(GunProp.RPM).coerceAtLeast(1)
+        return data.weaponRpm()
     }
+
+    /**
+     * 武器实际射速：基础 RPM 乘上全局射速倍率，最小为 1。
+     *
+     * 倍率可能来自数据包或 perk（例如权宜之计把它压到 0.2）；载具这边没有
+     * 手持武器那套每发累加值（customRpm），所以只乘倍率。
+     */
+    private fun GunData.weaponRpm(): Int =
+        (get(GunProp.RPM) * get(GunProp.RPM_MULTIPLIER)).roundToInt().coerceAtLeast(1)
 
     open fun getWeaponHeat(living: LivingEntity?): Int {
         val gunData = getGunData(getSeatIndex(living)) ?: return 0

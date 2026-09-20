@@ -271,13 +271,25 @@ class GunProp<T, R>(
         val RPM_ADD_AFTER_SHOOT = plainProp(DefaultGunData::rpmAddAfterShoot)
 
         @JvmField
-        val CUSTOM_RPM_RANGE = plainProp(DefaultGunData::customRpmRange)
+        val CUSTOM_RPM_MIN = plainProp(DefaultGunData::minCustomRpm)
+
+        @JvmField
+        val CUSTOM_RPM_MAX = plainProp(DefaultGunData::maxCustomRpm)
 
         @JvmField
         val SOUND_RADIUS = plainProp(DefaultGunData::soundRadius)
 
         @JvmField
         val RPM = plainProp(DefaultGunData::rpm)
+
+        /**
+         * 全局射速倍率。
+         *
+         * 作用于**最终射速**（`基础 RPM + 每发累加值`），而不是基础 RPM——
+         * 否则乘法类效果会被 RpmAddAfterShoot 那套加法累加值稀释。
+         */
+        @JvmField
+        val RPM_MULTIPLIER = plainProp(DefaultGunData::rpmMultiplier)
 
         @JvmField
         val EXPLOSION_DAMAGE = plainProp(DefaultGunData::explosionDamage)
@@ -477,6 +489,7 @@ class GunProp<T, R>(
 
             modify(BURST_AMOUNT) { it.coerceAtLeast(0) }
             modify(RPM) { it.coerceIn(1, 114514) }
+            modify(RPM_MULTIPLIER) { it.coerceAtLeast(0.0) }
             modify(UNDERWATER_MOTION_SCALE) { it.coerceIn(0.0f, 1.0f) }
 
             modify(DRAW_TIME) { it.coerceAtLeast(1) }

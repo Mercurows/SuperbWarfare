@@ -8,12 +8,15 @@ import com.atsuishio.superbwarfare.perk.Perk
 
 object TurboCharger : Perk("turbo_charger", Type.FUNCTIONAL) {
     /**
-     * 提升每次开火后叠加的 RPM 增量（5 + 3 * 等级）。
+     * 提升每次开火后叠加的 RPM 增量（5 + 3 * 等级），并同步抬高自定义射速上限。
      *
-     * 该增量会和枪械数据里自身的 [GunProp.RPM_ADD_AFTER_SHOOT] 相加，
-     * 最终由 [GunProp.CUSTOM_RPM_RANGE] 限定上下限，因此这里不需要再自行夹取上限。
+     * 实际射速 = `RPM + 累加值`，累加值被 [GunProp.CUSTOM_RPM_MIN] / [GunProp.CUSTOM_RPM_MAX]
+     * 限定。默认上限只有 600，不抬高的话涡轮的加成没地方发挥；每级 +30，满级 +600，
+     * 正好把默认的 600 顶到 1200（旧版涡轮内置的上限）。
      */
     override fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) = with(GunProp) {
-        modifier[RPM_ADD_AFTER_SHOOT] += 5 + 3 * modifier.data.perk.getLevel(this@TurboCharger)
+        val level = modifier.data.perk.getLevel(this@TurboCharger)
+        modifier[RPM_ADD_AFTER_SHOOT] += 5 + 3 * level
+        modifier[CUSTOM_RPM_MAX] += 30 * level
     }
 }

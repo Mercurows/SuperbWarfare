@@ -27,7 +27,8 @@
     "superbwarfare:monster_hunter",
     "superbwarfare:vorpal_weapon",
     "superbwarfare:brain_storm",
-    "superbwarfare:target_lock"
+    "superbwarfare:target_lock",
+    "superbwarfare:stop_gap"
   ],
   "AvailableAttachments": {
     "Scope": [

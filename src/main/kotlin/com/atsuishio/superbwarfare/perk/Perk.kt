@@ -44,6 +44,14 @@ open class Perk(val descriptionId: String, val type: Type) : PropertyModifier<Gu
      */
     open fun tick(data: GunData, instance: PerkInstance, entity: Entity?) {}
 
+    /**
+     * 服务端每真正打出一发后触发（见 [com.atsuishio.superbwarfare.item.gun.GunItem.afterShoot]）。
+     *
+     * 和 [tick] 的区别：这里只在开枪那一刻触发，适合做"每发叠层"类 perk；
+     * 参数里的 entity 是射手，可能是 null（例如载具/发射器）。
+     */
+    open fun afterShoot(data: GunData, instance: PerkInstance, shooter: Entity?) {}
+
     open fun preReload(data: GunData, instance: PerkInstance, entity: Entity?) {}
 
     open fun postReload(data: GunData, instance: PerkInstance, entity: Entity?) {}
