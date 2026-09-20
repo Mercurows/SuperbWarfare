@@ -6,10 +6,12 @@ import com.atsuishio.superbwarfare.data.ModColor
 import com.atsuishio.superbwarfare.data.SingleOrList
 import com.atsuishio.superbwarfare.data.StringOrObject
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedResourceLocation
+import com.atsuishio.superbwarfare.serialization.kserializer.SerializedVec2
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedVec3
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.phys.Vec2
 import kotlin.math.max
 import kotlin.math.min
 
@@ -179,6 +181,10 @@ data class DefaultGunData(
     // 连发模式下的射击间隔时间
     @SerialName("BurstCooldown")
     val burstCooldown: Int = 30,
+    @SerialName("RpmAddAfterShoot")
+    val rpmAddAfterShoot: Int = 0,
+    @SerialName("CustomRpmRange")
+    val customRpmRange: SerializedVec2 = Vec2(-600f, 600f),
     @SerialName("SoundRadius")
     val soundRadius: Double = 0.0,
     @SerialName("RPM")

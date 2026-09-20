@@ -268,6 +268,12 @@ class GunProp<T, R>(
         val BURST_COOLDOWN = plainProp(DefaultGunData::burstCooldown)
 
         @JvmField
+        val RPM_ADD_AFTER_SHOOT = plainProp(DefaultGunData::rpmAddAfterShoot)
+
+        @JvmField
+        val CUSTOM_RPM_RANGE = plainProp(DefaultGunData::customRpmRange)
+
+        @JvmField
         val SOUND_RADIUS = plainProp(DefaultGunData::soundRadius)
 
         @JvmField

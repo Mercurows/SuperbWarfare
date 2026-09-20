@@ -1,5 +1,6 @@
 {
   "Spread": 6.75,
+  "TacticalReload": true,
   "HasBarrelBullet": true,
   "HasBipod": true,
   "RecoilX": 0.0019,
@@ -12,11 +13,13 @@
   "DrawTime": 13,
   "ZoomTime": 8,
   "DefaultFireMode": "Auto",
-  "NormalReloadTime": 69,
-  "EmptyReloadTime": 91,
+  "NormalReloadTime": 71,
+  "EmptyReloadTime": 86,
   "BypassesArmor": 0.35,
   "SoundRadius": 13,
   "RPM": 400,
+  "RpmAddAfterShoot": 15,
+  "CustomRpmRange": [0, 500],
   "GunType": "MachineGun",
   "AvailableFireModes": [
     "Auto"

@@ -511,6 +511,14 @@
       }
     ]
   },
+  "devotion_mag_in_2": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/devotion/devotion_mag_in_2",
+        "stream": false
+      }
+    ]
+  },
   "devotion_mag_out": {
     "sounds": [
       {
