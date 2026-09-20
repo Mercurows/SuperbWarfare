@@ -662,6 +662,7 @@ class ModItemTagProvider(
                 ModItems.SCOPE_BRUISER,
                 ModItems.SCOPE_ACOG,
                 ModItems.SCOPE_1P_78,
+                ModItems.SCOPE_PSO_1,
                 ModItems.SCOPE_PU,
                 ModItems.SCOPE_PK_A,
                 ModItems.SCOPE_RANGER,

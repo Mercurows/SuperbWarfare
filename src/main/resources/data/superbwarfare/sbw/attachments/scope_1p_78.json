@@ -13,6 +13,7 @@
   "Texture": "superbwarfare:textures/bedrock/attachment/scope_1p_78.png",
   "ScopeInfo": {
     "Type": "Scope",
+    "ZoomLengthScale": 0.6,
     "Zoom": {
       "Min": 2.8,
       "Max": 2.8,
