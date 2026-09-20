@@ -16,6 +16,7 @@
   "ZoomTime": 6,
   "NormalReloadTime": 120,
   "EmptyReloadTime": 160,
+  "RPM": 40,
   "GunType": "CurvedLauncher",
   "Gravity": 0.06,
   "AmmoType": [
