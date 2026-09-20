@@ -5099,5 +5099,13 @@
       "superbwarfare:laowu/laowu_2s",
       "superbwarfare:laowu/laowu_3s"
     ]
+  },
+  "reflections": {
+    "sounds": [
+      "superbwarfare:gun/common/reflections_1",
+      "superbwarfare:gun/common/reflections_2",
+      "superbwarfare:gun/common/reflections_3",
+      "superbwarfare:gun/common/reflections_4"
+    ]
   }
 }

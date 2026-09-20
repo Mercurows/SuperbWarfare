@@ -198,6 +198,7 @@ object ModSounds {
     // https://github.com/FunctionHookTJU/old_wu_java-template-26.2
     @JvmField val LAOWU = register("laowu")
     @JvmField val LAOWU_SINGLE = register("laowu_single")
+    @JvmField val REFLECTIONS = register("reflections")
     // @formatter:on
 
     fun register(name: String): DeferredHolder<SoundEvent, SoundEvent> =
