@@ -10,5 +10,6 @@
     "Animation": "superbwarfare:animations/bedrock/gun/raubtier.animation.json",
     "Model": "superbwarfare:models/bedrock/gun/raubtier.geo.json",
     "Texture": "superbwarfare:textures/bedrock/gun/raubtier.png"
-  }
+  },
+  "HideCrosshairWhenZoom": false
 }

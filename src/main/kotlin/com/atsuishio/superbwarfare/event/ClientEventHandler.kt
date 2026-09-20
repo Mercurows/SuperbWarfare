@@ -1670,7 +1670,7 @@ object ClientEventHandler {
 
         val zoomSpread = 1 - (1 - data.get(GunProp.ZOOM_SPREAD_RATE)) * zoomTime
         val spread =
-            if (data.isShotgun || stack.`is`(ModItems.MINIGUN.get())) 1.2 * zoomSpread * (basicDev + 0.2 * (walk + sprint + crouching + prone + jump + ride) + fireSpread)
+            if (data.isShotgun) 1.2 * zoomSpread * (basicDev + 0.2 * (walk + sprint + crouching + prone + jump + ride) + fireSpread)
             else zoomSpread * (0.7 * basicDev + walk + sprint + crouching + prone + jump + ride + 0.8 * fireSpread)
 
         gunSpread = Mth.lerp(0.5 * times, gunSpread, spread)

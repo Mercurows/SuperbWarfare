@@ -1,0 +1,107 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.minigun.idle": {
+			"animation_length": 0.1,
+			"bones": {
+				"lefthand": {
+					"rotation": [122.5566, -365.76433, -268.05325],
+					"position": [6.93957, -11.49785, 1.6621],
+					"scale": [1, 1.5, 1]
+				},
+				"righthand": {
+					"rotation": [75.08796, 22.76416, -183.8762],
+					"position": [-7.1, -14, 19.5],
+					"scale": [1, 1.5, 1]
+				}
+			}
+		},
+		"animation.minigun.fire": {
+			"animation_length": 0.1667,
+			"bones": {
+				"barrel_rotate": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"0.1667": [0, 0, 60]
+					}
+				},
+				"root": {
+					"rotation": {
+						"0.0": {
+							"post": [0, 0, 0],
+							"lerp_mode": "catmullrom"
+						},
+						"0.0333": {
+							"post": [0.9375, -0.5, 0.625],
+							"lerp_mode": "catmullrom"
+						},
+						"0.0667": {
+							"post": [0.46, 0.5, -0.29],
+							"lerp_mode": "catmullrom"
+						},
+						"0.1": {
+							"post": [-0.125, -0.25, 0.5],
+							"lerp_mode": "catmullrom"
+						},
+						"0.1333": {
+							"post": [-0.1, 0.28, -0.15],
+							"lerp_mode": "catmullrom"
+						},
+						"0.1667": {
+							"post": [0, 0, 0],
+							"lerp_mode": "catmullrom"
+						}
+					},
+					"position": {
+						"0.0": {
+							"post": [0, 0, 0],
+							"lerp_mode": "catmullrom"
+						},
+						"0.0333": {
+							"post": [-0.0625, 0.125, 0.6875],
+							"lerp_mode": "catmullrom"
+						},
+						"0.1": {
+							"post": [0.0625, -0.0625, 0.505],
+							"lerp_mode": "catmullrom"
+						},
+						"0.1667": {
+							"post": [0, 0, 0],
+							"lerp_mode": "catmullrom"
+						}
+					}
+				},
+				"camera": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"0.0333": {
+							"pre": [0, 0, -1],
+							"post": [0, 0, -1],
+							"lerp_mode": "catmullrom"
+						},
+						"0.0667": {
+							"post": [0, 0, 1],
+							"lerp_mode": "catmullrom"
+						},
+						"0.1": {
+							"post": [0, 0, -0.5],
+							"lerp_mode": "catmullrom"
+						},
+						"0.1333": {
+							"post": [0, 0, 0],
+							"lerp_mode": "catmullrom"
+						},
+						"0.1667": [0, 0, 0]
+					}
+				}
+			},
+			"particle_effects": {
+				"0.0": {
+					"effect": "superbwarfare:muzzle_smoke",
+					"locator": "flare"
+				}
+			}
+		}
+	},
+	"geckolib_format_version": 2
+}

@@ -1,12 +1,40 @@
 {
+  "Icon": "superbwarfare:textures/gun_icon/minigun_icon.png",
+  "SlotIcon": "superbwarfare:textures/item/minigun_icon.png",
+  "Animation": {
+    "Idle": "animation.minigun.idle",
+    "Fire": "animation.minigun.fire",
+    "ReloadEmpty": "animation.minigun.reload"
+  },
+  "ShootRecoil": {
+    "Offset": [0.85, 0.8, 0.45],
+    "Rotation": [0.16, 0.28, 0.48],
+    "ZoomRate": 0.5,
+    "Speed": 1.0
+  },
   "Model": {
-    "Animation": "superbwarfare:animations/minigun.animation.json",
-    "Model": "superbwarfare:geo/minigun.geo.json",
-    "Texture": "superbwarfare:textures/item/minigun.png",
-    "LODModel": "superbwarfare:geo/lod/minigun.geo.json",
-    "LODTexture": "superbwarfare:textures/item/lod/minigun.png"
+    "Animation": "superbwarfare:animations/bedrock/gun/minigun.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/minigun.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/minigun.png",
+    "LODModel": "superbwarfare:models/bedrock/gun_lod/minigun.geo.json",
+    "LODTexture": "superbwarfare:textures/bedrock/gun_lod/minigun.png"
   },
   "HideCrosshairWhenZoom": false,
-  "FlarePosition": [0, 0.1, 1.45],
-  "FlareSize": 0.9
+  "MovingTilt": false,
+  "FlareSize": 1.5,
+  "HasSmoke": true,
+  "Smoke": {
+    "Size": 0.45,
+    "Growth": 0.25,
+    "Lifetime": 0.3,
+    "Speed": 0.4,
+    "Count": 2,
+    "Opacity": 0.9,
+    "Drag": 2,
+    "RandomSize": 0.05,
+    "RandomGrowth": 0.2,
+    "RandomLifetime": 0.2,
+    "RandomSpeed": 0.2,
+    "RandomOpacity": 0.1
+  }
 }

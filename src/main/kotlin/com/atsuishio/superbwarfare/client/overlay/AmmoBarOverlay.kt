@@ -66,18 +66,15 @@ object AmmoBarOverlay : CommonOverlay("ammo_bar") {
 
             val font = Minecraft.getInstance().font
 
-            // 渲染开火模式切换按键
-            if (item !== ModItems.MINIGUN.get()) {
-                val str = "[${ModKeyMappings.FIRE_MODE.key.displayName.string}]"
-                guiGraphics.drawString(
-                    font,
-                    str,
-                    (x - 100f) - font.width(str),
-                    (y - 20).toFloat(),
-                    0xFFFFFF,
-                    false
-                )
-            }
+            val str = "[${ModKeyMappings.FIRE_MODE.key.displayName.string}]"
+            guiGraphics.drawString(
+                font,
+                str,
+                (x - 100f) - font.width(str),
+                (y - 20).toFloat(),
+                0xFFFFFF,
+                false
+            )
 
             // 渲染开火模式
             var fireMode: ResourceLocation = getFireMode(data)
@@ -96,53 +93,28 @@ object AmmoBarOverlay : CommonOverlay("ammo_bar") {
                 )
             }
 
-            if (item === ModItems.MINIGUN.get()) {
-                fireMode = MOUSE
-                // 渲染加特林射速
-                guiGraphics.drawString(
-                    font,
-                    data.get(GunProp.RPM).toString() + " RPM",
-                    x - 111f,
-                    (y - 20).toFloat(),
-                    0xFFFFFF,
-                    false
-                )
-
-                guiGraphics.blit(
-                    fireMode,
-                    x - 126,
-                    y - 22,
-                    0f,
-                    0f,
-                    12,
-                    12,
-                    12,
-                    12
-                )
-            } else {
-                guiGraphics.blit(
-                    fireMode,
-                    x - 95,
-                    y - 21,
-                    0f,
-                    0f,
-                    8,
-                    8,
-                    8,
-                    8
-                )
-                guiGraphics.blit(
-                    LINE,
-                    x - 95,
-                    y - 16,
-                    0f,
-                    0f,
-                    8,
-                    8,
-                    8,
-                    8
-                )
-            }
+            guiGraphics.blit(
+                fireMode,
+                x - 95,
+                y - 21,
+                0f,
+                0f,
+                8,
+                8,
+                8,
+                8
+            )
+            guiGraphics.blit(
+                LINE,
+                x - 95,
+                y - 16,
+                0f,
+                0f,
+                8,
+                8,
+                8,
+                8
+            )
 
             // 如果弹药种类大于1，渲染弹种信息
             val size = data.get(GunProp.AMMO_CONSUMER).size
@@ -339,6 +311,127 @@ object AmmoBarOverlay : CommonOverlay("ammo_bar") {
         }
     }
 
+//    private fun finishDrag(doc: Document) {
+//        if (!auiDragging) return
+//        auiDragging = false
+//
+//        // Remove temporary listeners immediately
+//        val body = doc.body
+//        if (body != null) {
+//            if (dragMoveListener != null) body.removeEventListener("mousemove", dragMoveListener, false)
+//            if (dragUpListener != null) body.removeEventListener("mouseup", dragUpListener, false)
+//        }
+//        dragMoveListener = null
+//        dragUpListener = null
+//
+//        DisplayConfig.WEAPON_HUD_X_OFFSET.set(-auiRight.toInt())
+//        DisplayConfig.WEAPON_HUD_Y_OFFSET.set(-auiBottom.toInt())
+//    }
+//
+//    private fun applyAuiPosition(ammoBar: com.sighs.apricityui.init.Element) {
+//        ammoBar.setAttribute(
+//            "style",
+//            "right:${auiRight.toInt()}px;bottom:${auiBottom.toInt()}px;"
+//        )
+//    }
+//
+//    /** Replay scale by briefly switching to reloading then back — same path as reload end. */
+//    private fun triggerScale(el: com.sighs.apricityui.init.Element?) {
+//        if (el == null) return
+//        el.classList.add("reloading")
+//        scaleRestartFrames = 5
+//    }
+//
+//    /**
+//     * Updates the AUI document's DOM elements with current ammo bar data.
+//     */
+//    private fun updateAUIData(doc: Document, data: GunData, player: Player, screenWidth: Int, screenHeight: Int) {
+//        // Ensure body fills the viewport
+//        try {
+//            val body = doc.body
+//            body?.setAttribute("style", "width:${screenWidth}px;height:${screenHeight}px;")
+//        } catch (_: Exception) {}
+//
+//        // Apply current drag position
+//        try {
+//            val ammoBar = doc.getElementById("ammo-bar")
+//            if (ammoBar != null) applyAuiPosition(ammoBar)
+//        } catch (_: Exception) {}
+//
+//        val gunName = getGunDisplayName(data.stack)
+//        val ammoName = REPLACE_FORMAT_CODE.matcher(getAmmoDisplayName(data)).replaceAll("")
+//        val ammoCount = getGunAmmoString(data, player)
+//        val backupAmmo = getBackupAmmoString(data, player)
+//        val virtualAmmo = if (data.virtualAmmo.get() > 0 && !data.meleeOnly()) "+" + data.virtualAmmo.get() else ""
+//        val fireModeKey = "[" + ModKeyMappings.FIRE_MODE.key.displayName.string + "]"
+//
+//        setElementText(doc, "gun-name", gunName)
+//        setElementText(doc, "ammo-name", ammoName)
+//        setElementText(doc, "ammo-count", ammoCount)
+//        setElementText(doc, "backup-ammo", backupAmmo)
+//        setElementText(doc, "virtual-ammo", virtualAmmo)
+//        setElementText(doc, "fire-mode-key", fireModeKey)
+//
+//        // Set gun icon + animation triggers
+//        val icon = (data.stack.item as? GunItem)?.getGunIcon(data)
+//        val iconSrc = icon?.toString() ?: ""
+//        if (icon != null) {
+//            setElementAttr(doc, "gun-icon", "src", iconSrc)
+//        }
+//
+//        val isReloading = data.reloading()
+//        val el = try { doc.getElementById("gun-icon") } catch (_: Exception) { null }
+//
+//        // Reload: toggle .reloading class
+//        if (isReloading && !wasReloading) {
+//            el?.classList?.add("reloading")
+//        } else if (!isReloading && wasReloading) {
+//            el?.classList?.remove("reloading")
+//            triggerScale(el)
+//        }
+//
+//        // Gun switch or first load: trigger scale when icon changes
+//        if (!isReloading && iconSrc.isNotEmpty() && iconSrc != lastGunIconSrc) {
+//            triggerScale(el)
+//        }
+//
+//        wasReloading = isReloading
+//        lastGunIconSrc = iconSrc
+//    }
+//
+//    /**
+//     * Sets an attribute on an element by ID in the given AUI document.
+//     */
+//    private fun setElementAttr(doc: Document, id: String, attr: String, value: String) {
+//        try {
+//            doc.getElementById(id)?.setAttribute(attr, value)
+//        } catch (_: Exception) {}
+//    }
+//
+//    /**
+//     * Sets the inner text of an element by ID in the given AUI document.
+//     */
+//    private fun setElementText(doc: Document, id: String, text: String) {
+//        try {
+//            val element = doc.getElementById(id) ?: return
+//            element.textContent = text
+//        } catch (_: Exception) {
+//            // Silently ignore if the element or method is not available
+//        }
+//    }
+//
+//    /**
+//     * Removes the AUI overlay document if it is currently active.
+//     */
+//    private fun removeAUIOverlay() {
+//        if (auiDocument != null) {
+//            ApricityUI.removeDocument(AUI_AMMO_BAR_PATH)
+//            auiDocument = null
+//            auiDragging = false
+//        }
+//    }
+
+    // ========== Original Rendering Helpers ==========
 
     private fun getFireMode(data: GunData): ResourceLocation {
         return TO_RESOURCE_LOCATION.apply(toUnderScores(data.selectedFireModeInfo().name))

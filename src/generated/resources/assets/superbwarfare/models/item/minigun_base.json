@@ -1,6 +1,0 @@
-{
-  "parent": "superbwarfare:displaysettings/minigun.item",
-  "textures": {
-    "layer0": "superbwarfare:item/minigun"
-  }
-}
