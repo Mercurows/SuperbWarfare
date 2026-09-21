@@ -42,6 +42,12 @@ object AmmoBarOverlay : CommonOverlay("ammo_bar") {
     private val TO_RESOURCE_LOCATION =
         Util.memoize<String, ResourceLocation> { str -> loc("textures/overlay/ammo_bar/fire_mode/$str.png") }
 
+    /**
+     * 图标文件里是 32×32 的这几张（见 [fireModeIconSize]）：RPM 那一组。
+     * 名字就是 [toUnderScores] 转换后的结果，也就是文件名去掉 `.png`。
+     */
+    private val LARGE_FIRE_MODE_ICONS = setOf("rpm600", "rpm1200", "rpm1800")
+
     private const val AUI_AMMO_BAR_PATH = "superbwarfare/ammo_bar.html"
 
     /** The active AUI overlay document, if any. */
@@ -119,7 +125,9 @@ object AmmoBarOverlay : CommonOverlay("ammo_bar") {
             )
 
             // 渲染开火模式
-            var fireMode: ResourceLocation = getFireMode(data)
+            val fireModeName = toUnderScores(data.selectedFireModeInfo().name)
+            val fireMode: ResourceLocation = TO_RESOURCE_LOCATION.apply(fireModeName)
+            val fireModeSize = fireModeIconSize(fireModeName)
 
             val selectedFireMode = data.selectedFireMode.get()
             val fireModes = data.get(GunProp.AVAILABLE_FIRE_MODES)
@@ -135,16 +143,18 @@ object AmmoBarOverlay : CommonOverlay("ammo_bar") {
                 )
             }
 
+            // 大图标往上多占几 pixel，但方块中心仍对着原来 8×8 的那个位置，
+            // 这样下面的下划线（[LINE]）不用跟着动。
             guiGraphics.blit(
                 fireMode,
                 x - 95,
-                y - 21,
+                y - 21 - (fireModeSize - 8) / 2,
                 0f,
                 0f,
-                8,
-                8,
-                8,
-                8
+                fireModeSize,
+                fireModeSize,
+                fireModeSize,
+                fireModeSize
             )
             guiGraphics.blit(
                 LINE,
@@ -490,6 +500,14 @@ object AmmoBarOverlay : CommonOverlay("ammo_bar") {
         setElementText(doc, "virtual-ammo", virtualAmmo)
         setElementText(doc, "fire-mode-key", fireModeKey)
 
+        // 开火模式图标。html 里一直有 `#fire-mode-icon` 这个元素，只是从没人给它填过 src，
+        // 所以创造模式这条 HUD 上那个位置一直是空的。尺寸照 [fireModeIconSize] 走，
+        // 行内样式只覆盖宽高，`.fire-mode-icon` 里的定位照旧。
+        val fireModeName = toUnderScores(data.selectedFireModeInfo().name)
+        val fireModeSize = fireModeIconSize(fireModeName)
+        setElementAttr(doc, "fire-mode-icon", "src", TO_RESOURCE_LOCATION.apply(fireModeName).toString())
+        setElementAttr(doc, "fire-mode-icon", "style", "width:${fireModeSize}px;height:${fireModeSize}px;")
+
         // Set gun icon + animation triggers
         val icon = (data.stack.item as? GunItem)?.getGunIcon(data)
         val iconSrc = icon?.toString() ?: ""
@@ -551,17 +569,28 @@ object AmmoBarOverlay : CommonOverlay("ammo_bar") {
 
     // ========== Original Rendering Helpers ==========
 
-    private fun getFireMode(data: GunData): ResourceLocation {
-        return TO_RESOURCE_LOCATION.apply(toUnderScores(data.selectedFireModeInfo().name))
-    }
+    /**
+     * 图标该画多大。
+     *
+     * 开火模式的图标基本都是 16×16 的图按 8×8 画（0.5 倍，见 [RenderContext.render]），
+     * 但 RPM 那几张是 32×32 的（"1800" 四位数字在 16×16 里塞不下），得按 16×16 画，
+     * 数字才有 7px 高、笔画 1px，和别的那批图标一个粗细。
+     */
+    private fun fireModeIconSize(name: String): Int = if (name in LARGE_FIRE_MODE_ICONS) 16 else 8
 
+    /**
+     * 开火模式名转贴图名：`Auto` → `auto`、`SemiAuto` → `semi_auto`、`RPM600` → `rpm600`。
+     *
+     * 只在小写字母/数字后面跟大写字母的地方断词。连续的缩写整体算一个词——把 `RPM600` 断成
+     * `r_p_m600` 就找不到贴图了，而模式名是图标唯一的依据（`RPM600`/`RPM1800` 是加特林的开火模式名）。
+     */
     private fun toUnderScores(str: String): String {
-        val builder = StringBuilder()
+        val builder = StringBuilder(str.length + 4)
 
-        for ((i, element) in str.withIndex()) {
-            val c = element
+        for ((i, c) in str.withIndex()) {
             if (Character.isUpperCase(c)) {
-                if (i != 0) {
+                val prev = if (i == 0) null else str[i - 1]
+                if (prev != null && (Character.isLowerCase(prev) || Character.isDigit(prev))) {
                     builder.append('_')
                 }
                 builder.append(c.lowercaseChar())

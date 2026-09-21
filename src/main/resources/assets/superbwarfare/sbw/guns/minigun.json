@@ -4,14 +4,16 @@
   "Animation": {
     "Idle": "animation.minigun.idle",
     "Fire": "animation.minigun.fire",
-    "ReloadEmpty": "animation.minigun.reload"
+    "ReloadEmpty": "animation.minigun.reload",
+    "Hold": "animation.minigun.hold"
   },
   "ShootRecoil": {
-    "Offset": [0.85, 0.8, 0.45],
+    "Offset": [0.85, 0.8, 1.45],
     "Rotation": [0.16, 0.28, 0.48],
     "ZoomRate": 0.5,
     "Speed": 1.0
   },
+  "SprintOffset": [4, 0, 0],
   "Model": {
     "Animation": "superbwarfare:animations/bedrock/gun/minigun.animation.json",
     "Model": "superbwarfare:models/bedrock/gun/minigun.geo.json",
@@ -19,6 +21,7 @@
     "LODModel": "superbwarfare:models/bedrock/gun_lod/minigun.geo.json",
     "LODTexture": "superbwarfare:textures/bedrock/gun_lod/minigun.png"
   },
+  "Script": "superbwarfare:scripts/guns/barrel_heat.js",
   "HideCrosshairWhenZoom": false,
   "MovingTilt": false,
   "FlareSize": 1.5,

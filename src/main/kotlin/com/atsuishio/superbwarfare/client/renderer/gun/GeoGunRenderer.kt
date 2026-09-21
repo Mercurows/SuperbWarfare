@@ -796,6 +796,17 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         return if (player.mainHandItem === stack) ClientEventHandler.bipodViewTime else 0.0
     }
 
+    /**
+     * 枪管热量：0 为空，100 为过热阈值（与 `HeatBarOverlay` 的 `heat / 100` 同一刻度）。
+     *
+     * 和 [scriptBipodProgress] 不同，这里**不**按对象身份限制：热量写在枪自己的 tag 里，是逐物品的属性，
+     * 别人手里的、地上躺着的枪读到的都是它自己的热量，而不是本地玩家的。代价是热量只在持有者的 tick 里
+     * 自然冷却（`GunEventHandler.reduceHeat`），一把打到过热再丢在地上的枪会一直保持那个热度。
+     */
+    open fun scriptHeat(stack: ItemStack): Double {
+        return GunData.from(stack).heat.get()
+    }
+
     open fun scriptFrameDeltaSeconds(): Float {
         return Minecraft.getInstance().deltaFrameTime.coerceIn(0f, 0.8f)
     }

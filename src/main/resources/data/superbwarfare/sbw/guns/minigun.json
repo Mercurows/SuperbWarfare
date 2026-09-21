@@ -12,20 +12,23 @@
   "BypassesArmor": 0.3,
   "SoundRadius": 14,
   "RPM": 1200,
-  "DefaultFireMode": "Auto",
+  "DefaultFireMode": "RPM1200",
   "GunType": "MachineGun",
   "AvailableFireModes": [
-    "Auto",
     {
       "Mode": "Auto",
-      "Name": "Auto",
+      "Name": "RPM1200"
+    },
+    {
+      "Mode": "Auto",
+      "Name": "RPM600",
       "Override": {
         "RPM": 600
       }
     },
     {
       "Mode": "Auto",
-      "Name": "Auto",
+      "Name": "RPM1800",
       "Override": {
         "RPM": 1800
       }
