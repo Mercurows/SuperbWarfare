@@ -3,11 +3,13 @@
   "Models": [
     {
       "Model": "superbwarfare:models/bedrock/vehicle/mi_28.geo.json",
-      "Texture": "superbwarfare:textures/bedrock/vehicle/mi_28.png"
+      "Texture": "superbwarfare:textures/bedrock/vehicle/mi_28.png",
+      "EmissiveTexture": "superbwarfare:textures/bedrock/vehicle/mi_28_e.png"
     },
     {
       "Model": "superbwarfare:models/bedrock/vehicle_lod/mi_28.lod1.geo.json",
-      "Texture": "superbwarfare:textures/bedrock/vehicle/mi_28.png"
+      "Texture": "superbwarfare:textures/bedrock/vehicle/mi_28.png",
+      "EmissiveTexture": "superbwarfare:textures/bedrock/vehicle/mi_28_e.png"
     }
   ]
 }
