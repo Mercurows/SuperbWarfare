@@ -75,6 +75,14 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     private var gunStencilCulling = false
     private val scopeViewSmoothing = mutableMapOf<InteractionHand, ScopeViewSmoothState>()
 
+    /**
+     * 当前正在渲染的本地玩家第一人称手；不是第一人称渲染时为 `null`。
+     *
+     * 只有这个入口能确定"这一帧画的是本地玩家自己的手"：第三人称、掉落物、展示框、别人手里的枪
+     * 走的是普通物品渲染，画的是别人的枪。脚本需要区分这两者时用它，见 [scriptBipodProgress]。
+     */
+    private var localFirstPersonHand: InteractionHand? = null
+
     private data class ScopeViewSmoothState(
         var modeIndex: Int = -1,
         var source: Matrix4f = Matrix4f(),
@@ -203,7 +211,14 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         packedLight: Int,
         partialTick: Float
     ) {
-        render(stack, transformType, poseStack, bufferSource, packedLight, OverlayTexture.NO_OVERLAY, partialTick)
+        // 这个入口只会被本地玩家自己的手调用（`FirstPersonRenderHandler` 挂在 `RenderHandEvent` 上），
+        // 所以在这里记下当前手，脚本就能把"自己手里那把枪"和世界上的同型号枪区分开。
+        localFirstPersonHand = handForContext(transformType)
+        try {
+            render(stack, transformType, poseStack, bufferSource, packedLight, OverlayTexture.NO_OVERLAY, partialTick)
+        } finally {
+            localFirstPersonHand = null
+        }
     }
 
     override fun beforeRender(
@@ -787,13 +802,31 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
      * （物品渲染路径只有 [ItemStack]，没有实体），对它们一律返回 0，也就是保持收起——
      * 否则世界上每一把同型号枪都会跟着本地玩家的卧姿一起展开。
      *
-     * 判定用对象身份：本地玩家第一人称与第三人称都经 `getMainHandItem()` 拿到同一个 stack 对象，
-     * 副手、展示框、掉落物、其他玩家拿到的都是别的对象。换枪动画的那一两帧渲染的是旧 stack 的
-     * 另一个对象，脚架会直接收起而不是平滑过渡，可以接受。
+     * 判定**不能只看 ItemStack 对象身份**。第三人称、掉落物、展示框、别人手里的枪确实是别的对象，
+     * 但第一人称不是：`FirstPersonRenderHandler` 渲染时传下来的是动画实例持有的那份 stack
+     * （`GeoGunAnimationInstance.currentItem()`），而它每个客户端 tick 才由 `updateItem` 刷新一次，
+     * 换枪过渡期间渲染的更是上一个实例里的旧对象。服务端每次同步手持槽（开枪改弹药、热量、
+     * 各种计时器）都会把客户端手上的 ItemStack **换成新对象**（见 `GunData.DATA_CACHE` 的注释），
+     * 于是同步之后到下一次 `updateItem` 之间的那几帧里身份对不上，脚本会以为枪不在手上，
+     * 脚架被压回 bind 姿态、下一帧又展开——第一人称看到的就是脚架在收起/展开之间来回横跳。
+     * [GeoGunAnimationInstance.shouldSpin] 早就为同一个坑改成比物品类型了。
+     *
+     * 所以这里分两种情况：对象身份成立（第三人称与正常的第一人称帧）直接用；
+     * 第一人称下额外接受"渲染的是本地玩家主手 + 同一种物品"。第一人称入口只会画本地玩家自己的手，
+     * 所以这个放宽不会波及世界上的同型号枪——掉落物/展示框/别人手里走的是普通物品渲染，
+     * [localFirstPersonHand] 为 `null`，仍然一律返回 0。
+     *
+     * 换枪动画期间渲染的是旧 stack：换了另一种枪时物品对不上、脚架直接收起而不是平滑过渡，
+     * 与之前的行为一致，可以接受。
      */
     open fun scriptBipodProgress(stack: ItemStack): Double {
         val player = Minecraft.getInstance().player ?: return 0.0
-        return if (player.mainHandItem === stack) ClientEventHandler.bipodViewTime else 0.0
+        val held = player.mainHandItem
+        val mine = held === stack
+                || (localFirstPersonHand == InteractionHand.MAIN_HAND
+                && !held.isEmpty
+                && held.item === stack.item)
+        return if (mine) ClientEventHandler.bipodViewTime else 0.0
     }
 
     /**
