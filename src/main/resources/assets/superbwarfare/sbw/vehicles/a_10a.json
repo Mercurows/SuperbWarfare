@@ -3,7 +3,8 @@
   "Models": [
     {
       "Model": "superbwarfare:models/bedrock/vehicle/a_10a.geo.json",
-      "Texture": "superbwarfare:textures/bedrock/vehicle/a_10a.png"
+      "Texture": "superbwarfare:textures/bedrock/vehicle/a_10a.png",
+      "EmissiveTexture": "superbwarfare:textures/bedrock/vehicle/a_10a_e.png"
     }
   ]
 }
