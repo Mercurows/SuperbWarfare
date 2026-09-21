@@ -633,7 +633,8 @@ class ModItemTagProvider(
                 ModItems.LINEAR_MUZZLE,
                 ModItems.CROSS_MUZZLE,
                 ModItems.STAR_MUZZLE,
-                ModItems.LOVE_MUZZLE
+                ModItems.LOVE_MUZZLE,
+                ModItems.STEEL_PIPE_SILENCER
             )
         )
 

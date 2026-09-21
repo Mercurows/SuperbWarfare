@@ -369,6 +369,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.STAR_MUZZLE)
         simpleItem(ModItems.LOVE_MUZZLE)
         simpleItem(ModItems.SCOPE_WINEFOX)
+        simpleItem(ModItems.STEEL_PIPE_SILENCER)
 
         // blocks
         evenSimplerBlockItem(ModBlocks.BARBED_WIRE)
