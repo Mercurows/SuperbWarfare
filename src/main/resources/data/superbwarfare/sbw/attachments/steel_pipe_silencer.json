@@ -1,0 +1,26 @@
+{
+  "Slot": "Barrel",
+  "Level": 1,
+  "Bone": "muzzle_pos",
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 1.0
+    }
+  ],
+  "Override": {
+    "SoundInfo": {
+      "Fire1P": "superbwarfare:steel_pipe_drop",
+      "Fire3P": "superbwarfare:steel_pipe_drop",
+      "Fire3PFar": "superbwarfare:steel_pipe_drop",
+      "Fire3PVeryFar": "superbwarfare:steel_pipe_drop",
+      "Fire1PSilent": "superbwarfare:steel_pipe_drop",
+      "Fire3PSilent": "superbwarfare:steel_pipe_drop",
+      "Fire3PFarSilent": "superbwarfare:steel_pipe_drop",
+      "Fire3PVeryFarSilent": "superbwarfare:steel_pipe_drop"
+    }
+  },
+  "Model": "superbwarfare:models/bedrock/attachment/steel_pipe_silencer.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/steel_pipe_silencer.png"
+}
