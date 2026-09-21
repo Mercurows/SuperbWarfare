@@ -16,19 +16,19 @@ import kotlin.math.min
 /**
  * 能量弹药策略 —— ammo 字符串形如 `"fe"`、`"rf"`、`"energy"`。
  *
- * 同一个 `"FE"` 弹种按 `Magazine` 分成两种截然不同的形态，两者共用本策略，
- * 具体走哪条分支由 `Magazine > 0` 决定：
+ * 同一个 `"FE"` 弹种按「有没有弹匣 + 有没有声明换算比例」分成两种形态，两者共用本策略：
  *
  * ### 背包型（`Magazine <= 0`，如 `ql_1031`、`repair_tool`）
  * 没有弹匣，能量**在开火时**直接按 `AmmoCostPerShoot` 扣除，不参与换弹，也不能退弹。
  * 此时「1 弹药单位 == 1 FE」，[AmmoSource.loadAmount] 不参与换算。
  *
- * ### 弹匣型（`Magazine > 0`，如改造后的 `devotion`）
+ * ### 弹匣型（`Magazine > 0` 且 `FuelPerAmmo > 0`，如改造后的 `devotion`）
  * 弹匣里存的是**发数**，能量只作为备弹：
- * - 开火只扣 `GunData.ammo`（走 `GunItem.afterShoot` 的通用弹匣分支），不碰能量；
- * - 换弹时按 `AmmoCostPerShoot` 把能量折算成发数装进弹匣
- *   （[count] 报「能装几发」，[consume] 扣「发数 × 每发 FE」）；
- * - 退弹由 `GunData.withdrawAmmo` 统一处理（那里才拿得到 `AmmoCostPerShoot`），
+ * - 开火只扣 `GunData.ammo`（走 `GunItem.afterShoot` 的通用弹匣分支，按 `AmmoCostPerShoot` 扣，
+ *   这类武器应当写 `1`），不碰能量；
+ * - 换弹时按 `FuelPerAmmo` 把能量折算成发数装进弹匣
+ *   （[count] 报「能装几发」，[consume] 扣「发数 × FuelPerAmmo」）；
+ * - 退弹由 `GunData.withdrawAmmo` 统一处理（那里才拿得到 `FuelPerAmmo`），
  *   本策略的 [withdraw] 只负责背包型，见该方法的说明。
  *
  * 之所以把「发数 ↔ FE」的换算收在本策略内部，是因为换弹链路
@@ -46,25 +46,34 @@ object EnergyAmmoStrategy : AmmoConsumeStrategy() {
     // ---------------------------------------------------------------- 形态判定
 
     /**
-     * 是否为弹匣型能量武器。
+     * 是否为弹匣型能量武器：有弹匣且声明了 [GunProp.FUEL_PER_AMMO] 换算比例。
      *
-     * 用 [GunData.getDefault] 而不是 `get(MAGAZINE)`：本策略会在 PMC 计算流水线内部被读取
+     * 用 [GunData.getDefault] 而不是 `get(...)`：本策略会在 PMC 计算流水线内部被读取
      * （`AmmoConsumer` 的覆盖层），而重入的 `get()` 受 `GunData.rebuilding` 保护会提前返回
-     * **未完成**的结果。`Magazine` 与 `AmmoCostPerShoot` 都不参与 Perk / 配件改写，读基线即正确值。
+     * **未完成**的结果。`Magazine` / `FuelPerAmmo` 都不参与 Perk / 配件改写，读基线即正确值。
      */
     private fun isMagazine(data: GunData) = (data.getDefault().magazine.firstOrNull() ?: 0) > 0
+            && data.getDefault().fuelPerAmmo > 0
 
-    /** 每发（背包型下为每次开火）折算的 FE，至少为 1 以免除零 */
-    private fun energyPerRound(data: GunData) = data.getDefault().ammoCostPerShoot.coerceAtLeast(1)
+    /**
+     * 「其他类型弹药 → 弹药」的换算比例：1 发弹匣弹药值多少 FE，至少为 1 以免除零。
+     *
+     * 弹匣型读 [GunProp.FUEL_PER_AMMO]；背包型没有弹匣，比例退化为
+     * `AmmoCostPerShoot`（每发就是这么多 FE），这样两条分支共用同一套乘除。
+     */
+    private fun fuelPerAmmo(data: GunData): Int {
+        val fuel = data.getDefault().fuelPerAmmo
+        return if (fuel > 0) fuel else data.getDefault().ammoCostPerShoot.coerceAtLeast(1)
+    }
 
     /**
      * 把弹药单位折算成 FE。
      *
-     * 夹到 `Int.MAX_VALUE`：发数与每发消耗都可能来自数据包，直接相乘会溢出成负数，
+     * 夹到 `Int.MAX_VALUE`：发数与换算比例都可能来自数据包，直接相乘会溢出成负数，
      * 而负数传给 `extractEnergy` 会被当成「请求 0」而静默不扣能量。
      */
     private fun toEnergy(data: GunData, count: Int) =
-        min(count.toLong() * energyPerRound(data), Int.MAX_VALUE.toLong()).toInt()
+        min(count.toLong() * fuelPerAmmo(data), Int.MAX_VALUE.toLong()).toInt()
 
     // ---------------------------------------------------------------- 消耗
 
@@ -74,7 +83,7 @@ object EnergyAmmoStrategy : AmmoConsumeStrategy() {
             return data.getEnergyProvider(shooter).map { it.extractEnergy(count, false) }.orElseGet { 0 }
         }
 
-        val perRound = energyPerRound(data)
+        val perRound = fuelPerAmmo(data)
         val extracted = data.getEnergyProvider(shooter)
             .map { it.extractEnergy(toEnergy(data, count), false) }
             .orElseGet { 0 }
@@ -90,7 +99,7 @@ object EnergyAmmoStrategy : AmmoConsumeStrategy() {
                 .orElseGet { 0 }
         }
 
-        val perRound = energyPerRound(data)
+        val perRound = fuelPerAmmo(data)
         val extracted = data.stack.getCapability(ForgeCapabilities.ENERGY)
             .map { it.extractEnergy(toEnergy(data, count), false) }
             .orElseGet { 0 }
@@ -121,7 +130,7 @@ object EnergyAmmoStrategy : AmmoConsumeStrategy() {
      */
     private fun toAmmoUnits(data: GunData, energy: Int): Int {
         if (!isMagazine(data)) return energy
-        return energy / energyPerRound(data)
+        return energy / fuelPerAmmo(data)
     }
 
     // ---------------------------------------------------------------- 退弹
@@ -129,7 +138,7 @@ object EnergyAmmoStrategy : AmmoConsumeStrategy() {
     /**
      * 退弹。
      *
-     * 弹匣型的能量回流放在 `GunData.withdrawAmmo`：换算需要 `AmmoCostPerShoot`，
+     * 弹匣型的能量回流放在 `GunData.withdrawAmmo`：换算需要 `FuelPerAmmo`，
      * 而本方法签名里拿不到 [GunData]（`AmmoConsumeStrategy.withdraw` 不参与消耗口径换算），
      * 在那里处理既拿得到数据，也省掉一次「策略反查枪械状态」的绕行。
      * 这里只为背包型把关：没有弹匣就退不出东西，避免把整管能量「退回」自己。

@@ -29,7 +29,8 @@
     "Type": "Rifle"
   },
   "AmmoType": "FE",
-  "AmmoCostPerShoot": 200,
+  "AmmoCostPerShoot": 1,
+  "FuelPerAmmo": 200,
   "MaxEnergy": 80000,
   "Icon": "superbwarfare:textures/gun_icon/devotion_icon.png",
   "AvailablePerks": [
