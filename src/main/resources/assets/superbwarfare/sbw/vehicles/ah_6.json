@@ -3,7 +3,8 @@
   "Models": [
     {
       "Model": "superbwarfare:models/bedrock/vehicle/ah_6.geo.json",
-      "Texture": "superbwarfare:textures/bedrock/vehicle/ah_6.png"
+      "Texture": "superbwarfare:textures/bedrock/vehicle/ah_6.png",
+      "EmissiveTexture": "superbwarfare:textures/bedrock/vehicle/ah_6_e.png"
     },
     {
       "Model": "superbwarfare:models/bedrock/vehicle_lod/ah_6.lod1.geo.json",
