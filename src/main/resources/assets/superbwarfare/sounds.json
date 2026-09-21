@@ -959,26 +959,42 @@
       }
     ]
   },
-  "ntw_20_reload_normal": {
+  "ntw_20_mag_in": {
     "sounds": [
       {
-        "name": "superbwarfare:gun/ntw_20/ntw_20_reload_normal",
+        "name": "superbwarfare:gun/ntw_20/ntw_20_mag_in",
         "stream": false
       }
     ]
   },
-  "ntw_20_reload_empty": {
+  "ntw_20_mag_out": {
     "sounds": [
       {
-        "name": "superbwarfare:gun/ntw_20/ntw_20_reload_empty",
+        "name": "superbwarfare:gun/ntw_20/ntw_20_mag_out",
         "stream": false
       }
     ]
   },
-  "ntw_20_bolt": {
+  "ntw_20_bolt_open": {
     "sounds": [
       {
-        "name": "superbwarfare:gun/ntw_20/ntw_20_bolt",
+        "name": "superbwarfare:gun/ntw_20/ntw_20_bolt_open",
+        "stream": false
+      }
+    ]
+  },
+  "ntw_20_bolt_close": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ntw_20/ntw_20_bolt_close",
+        "stream": false
+      }
+    ]
+  },
+  "ntw_20_action_back": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/ntw_20/ntw_20_action_back",
         "stream": false
       }
     ]

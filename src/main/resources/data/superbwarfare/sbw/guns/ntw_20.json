@@ -1,24 +1,23 @@
 {
-  "MinZoom": 1.25,
-  "MaxZoom": 6,
   "Spread": 8,
   "TacticalReload": true,
   "HasBarrelBullet": true,
+  "HasBipod": true,
   "RecoilX": 0.01,
   "RecoilY": 0.038,
   "Damage": 140,
   "Headshot": 3,
   "ZoomReload": false,
   "Velocity": 24,
-  "Magazine": 3,
+  "Magazine": [3, 6, 9],
   "ZoomSpreadRate": 0.005,
-  "BoltActionTime": 37,
+  "BoltActionTime": 34,
   "Weight": 13,
   "DrawTime": 21,
   "ZoomTime": 15,
-  "NormalReloadTime": 84,
-  "EmptyReloadTime": 112,
-  "BypassesArmor": 1,
+  "NormalReloadTime": 82,
+  "EmptyReloadTime": 108,
+  "BypassesArmor": 2.5,
   "SoundRadius": 22,
   "GunType": "Sniper",
   "DamageReduce": {
@@ -46,18 +45,34 @@
     "!superbwarfare:longer_wire",
     "!superbwarfare:cupid_arrow"
   ],
+  "AvailableAttachments": {
+    "Scope": [
+      "superbwarfare:scope_coyote",
+      "superbwarfare:scope_aimpoint_t2",
+      "superbwarfare:scope_eotech_551",
+      "superbwarfare:scope_okp_7",
+      "superbwarfare:scope_pkas",
+      "superbwarfare:scope_bruiser",
+      "superbwarfare:scope_ranger",
+      "superbwarfare:scope_1p_78",
+      "superbwarfare:scope_pk_a",
+      "superbwarfare:scope_acog",
+      "superbwarfare:scope_qmk171",
+      "superbwarfare:scope_hamr",
+      "superbwarfare:scope_elcan_4x",
+      "superbwarfare:scope_lpvo",
+      "superbwarfare:scope_sniper",
+      "superbwarfare:scope_winefox"
+    ],
+    "Magazine": [
+      "superbwarfare:magazine_extend",
+      "superbwarfare:magazine_extend_pro"
+    ]
+  },
   "SoundInfo": {
     "Fire1P": "superbwarfare:ntw_20_fire_1p",
     "Fire3P": "superbwarfare:ntw_20_fire_3p",
     "Fire3PFar": "superbwarfare:ntw_20_far",
-    "Fire3PVeryFar": "superbwarfare:ntw_20_veryfar",
-    "ReloadNormal": "superbwarfare:ntw_20_reload_normal",
-    "ReloadEmpty": "superbwarfare:ntw_20_reload_empty",
-    "Bolt": "superbwarfare:ntw_20_bolt",
-    "CancellableSounds": [
-      "superbwarfare:ntw_20_reload_normal",
-      "superbwarfare:ntw_20_reload_empty",
-      "superbwarfare:ntw_20_bolt"
-    ]
+    "Fire3PVeryFar": "superbwarfare:ntw_20_veryfar"
   }
 }

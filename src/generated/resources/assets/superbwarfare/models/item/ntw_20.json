@@ -1,15 +1,4 @@
 {
-  "base": {
-    "parent": "superbwarfare:item/ntw_20_base"
-  },
-  "gui_light": "front",
-  "loader": "forge:separate_transforms",
-  "perspectives": {
-    "gui": {
-      "parent": "superbwarfare:item/ntw_20_icon"
-    }
-  },
-  "textures": {
-    "particle": "superbwarfare:item/ntw_20_icon"
-  }
+  "parent": "minecraft:builtin/entity",
+  "gui_light": "front"
 }
