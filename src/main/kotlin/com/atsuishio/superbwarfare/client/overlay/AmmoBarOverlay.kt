@@ -3,7 +3,10 @@ package com.atsuishio.superbwarfare.client.overlay
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.client.language.ClientLanguageGetter
+import com.atsuishio.superbwarfare.client.overlay.AmmoBarOverlay.fireModeIconSize
 import com.atsuishio.superbwarfare.client.overlay.AmmoBarOverlay.getBackupAmmoString
+import com.atsuishio.superbwarfare.client.overlay.AmmoBarOverlay.render
+import com.atsuishio.superbwarfare.client.overlay.AmmoBarOverlay.toUnderScores
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer.AmmoConsumeType
@@ -39,7 +42,41 @@ object AmmoBarOverlay : CommonOverlay("ammo_bar") {
     private val TO_RESOURCE_LOCATION =
         Util.memoize<String, ResourceLocation> { str -> loc("textures/overlay/ammo_bar/fire_mode/$str.png") }
 
-    override fun shouldRender() = super.shouldRender() && DisplayConfig.AMMO_HUD.get()
+    /**
+     * 图标文件里是 32×32 的这几张（见 [fireModeIconSize]）：RPM 那一组。
+     * 名字就是 [toUnderScores] 转换后的结果，也就是文件名去掉 `.png`。
+     */
+    private val LARGE_FIRE_MODE_ICONS = setOf("rpm600", "rpm1200", "rpm1800")
+
+    private const val AUI_AMMO_BAR_PATH = "superbwarfare/ammo_bar.html"
+
+    /** The active AUI overlay document, if any. */
+//    private var auiDocument: Document? = null
+
+    // --- Drag state (AUI events, listeners removed outside drag to avoid input interference) ---
+    private var auiDragging = false
+    private var dragStartMouseX = 0.0
+    private var dragStartMouseY = 0.0
+    private var dragStartRight = 0.0
+    private var dragStartBottom = 0.0
+    private var auiRight = 0.0
+    private var auiBottom = 0.0
+    // Stored listener refs for removal after drag
+//    private var dragMoveListener: java.util.function.Consumer<com.sighs.apricityui.event.Event>? = null
+//    private var dragUpListener: java.util.function.Consumer<com.sighs.apricityui.event.Event>? = null
+    // Track reload/gun-switch state for animation triggers
+    private var wasReloading = false
+    private var lastGunIconSrc: String? = null
+    private var scaleRestartFrames = 0  // countdown for restarting scale animation
+
+    override fun shouldRender(): Boolean {
+        val result = super.shouldRender() && DisplayConfig.AMMO_HUD.get()
+        if (!result) {
+            // Clean up AUI overlay when HUD should be hidden (F1, spectator, etc.)
+//            removeAUIOverlay()
+        }
+        return result
+    }
 
     override fun RenderContext.render() {
         val stack = player.mainHandItem
@@ -78,7 +115,9 @@ object AmmoBarOverlay : CommonOverlay("ammo_bar") {
             )
 
             // 渲染开火模式
-            var fireMode: ResourceLocation = getFireMode(data)
+            val fireModeName = toUnderScores(data.selectedFireModeInfo().name)
+            val fireMode: ResourceLocation = TO_RESOURCE_LOCATION.apply(fireModeName)
+            val fireModeSize = fireModeIconSize(fireModeName)
 
             val selectedFireMode = data.selectedFireMode.get()
             val fireModes = data.get(GunProp.AVAILABLE_FIRE_MODES)
@@ -94,16 +133,18 @@ object AmmoBarOverlay : CommonOverlay("ammo_bar") {
                 )
             }
 
+            // 大图标往上多占几 pixel，但方块中心仍对着原来 8×8 的那个位置，
+            // 这样下面的下划线（[LINE]）不用跟着动。
             guiGraphics.blit(
                 fireMode,
                 x - 95,
-                y - 21,
+                y - 21 - (fireModeSize - 8) / 2,
                 0f,
                 0f,
-                8,
-                8,
-                8,
-                8
+                fireModeSize,
+                fireModeSize,
+                fireModeSize,
+                fireModeSize
             )
             guiGraphics.blit(
                 LINE,
@@ -309,8 +350,172 @@ object AmmoBarOverlay : CommonOverlay("ammo_bar") {
             )
 
             poseStack.popPose()
+        } else {
+            // No gun in hand: remove AUI overlay if active
+//            removeAUIOverlay()
         }
     }
+
+    // ========== AUI Creative Mode Rendering ==========
+
+//    /**
+//     * Renders the ammo bar using ApricityUI overlay for creative mode players.
+//     * Creates the document lazily on first call and updates DOM elements every frame.
+//     */
+//    private fun renderWithAUI(data: GunData, player: Player, screenWidth: Int, screenHeight: Int) {
+//        if (auiDocument == null) {
+//            val doc = ApricityUI.createDocument(AUI_AMMO_BAR_PATH)
+//            if (doc != null) {
+//                auiDocument = doc
+//                auiRight = (-DisplayConfig.WEAPON_HUD_X_OFFSET.get()).toDouble().coerceAtLeast(0.0)
+//                auiBottom = (-DisplayConfig.WEAPON_HUD_Y_OFFSET.get()).toDouble().coerceAtLeast(0.0)
+//                setupDrag(doc)
+//            } else {
+//                return
+//            }
+//        }
+//        updateAUIData(auiDocument!!, data, player, screenWidth, screenHeight)
+//
+//        // Restore scale animation after triggerScale's cooldown
+//        if (scaleRestartFrames > 0) {
+//            scaleRestartFrames--
+//            if (scaleRestartFrames == 0) {
+//                val el = try { auiDocument?.getElementById("gun-icon") } catch (_: Exception) { null }
+//                el?.classList?.remove("reloading")
+//            }
+//        }
+//    }
+//
+//    // ========== Drag via AUI events (listeners added only during drag) ==========
+//
+//    private fun setupDrag(doc: Document) {
+//        val ammoBar = doc.getElementById("ammo-bar") ?: return
+//        applyAuiPosition(ammoBar)
+//
+//        // Only permanent listener: mousedown on ammoBar starts the drag
+//        ammoBar.addEventListener("mousedown") { event ->
+//            if (event is com.sighs.apricityui.event.MouseEvent && event.button == 0) {
+//                startDrag(doc, ammoBar, event)
+//            }
+//        }
+//    }
+//
+//    private fun startDrag(doc: Document, ammoBar: com.sighs.apricityui.init.Element, event: com.sighs.apricityui.event.MouseEvent) {
+//        auiDragging = true
+//        dragStartMouseX = event.clientX
+//        dragStartMouseY = event.clientY
+//        dragStartRight = auiRight
+//        dragStartBottom = auiBottom
+//
+//        val body = doc.body ?: return
+//
+//        // Add mousemove listener on body — only during drag
+//        dragMoveListener = java.util.function.Consumer { e ->
+//            if (e is com.sighs.apricityui.event.MouseEvent) {
+//                val dx = e.clientX - dragStartMouseX
+//                val dy = e.clientY - dragStartMouseY
+//                auiRight = (dragStartRight - dx).coerceIn(0.0, 1000.0)
+//                auiBottom = (dragStartBottom - dy).coerceIn(0.0, 1000.0)
+//                applyAuiPosition(ammoBar)
+//            }
+//        }
+//
+//        // Add mouseup listener on body — only during drag
+//        dragUpListener = java.util.function.Consumer {
+//            finishDrag(doc)
+//        }
+//
+//        body.addEventListener("mousemove", dragMoveListener)
+//        body.addEventListener("mouseup", dragUpListener)
+//    }
+//
+//    private fun finishDrag(doc: Document) {
+//        if (!auiDragging) return
+//        auiDragging = false
+//
+//        // Remove temporary listeners immediately
+//        val body = doc.body
+//        if (body != null) {
+//            if (dragMoveListener != null) body.removeEventListener("mousemove", dragMoveListener, false)
+//            if (dragUpListener != null) body.removeEventListener("mouseup", dragUpListener, false)
+//        }
+//        dragMoveListener = null
+//        dragUpListener = null
+//
+//        DisplayConfig.WEAPON_HUD_X_OFFSET.set(-auiRight.toInt())
+//        DisplayConfig.WEAPON_HUD_Y_OFFSET.set(-auiBottom.toInt())
+//    }
+//
+//    private fun applyAuiPosition(ammoBar: com.sighs.apricityui.init.Element) {
+//        ammoBar.setAttribute(
+//            "style",
+//            "right:${auiRight.toInt()}px;bottom:${auiBottom.toInt()}px;"
+//        )
+//    }
+//
+//    /** Replay scale by briefly switching to reloading then back — same path as reload end. */
+//    private fun triggerScale(el: com.sighs.apricityui.init.Element?) {
+//        if (el == null) return
+//        el.classList.add("reloading")
+//        scaleRestartFrames = 5
+//    }
+//
+//    /**
+//     * Updates the AUI document's DOM elements with current ammo bar data.
+//     */
+//    private fun updateAUIData(doc: Document, data: GunData, player: Player, screenWidth: Int, screenHeight: Int) {
+//        // Ensure body fills the viewport
+//        try {
+//            val body = doc.body
+//            body?.setAttribute("style", "width:${screenWidth}px;height:${screenHeight}px;")
+//        } catch (_: Exception) {}
+//
+//        // Apply current drag position
+//        try {
+//            val ammoBar = doc.getElementById("ammo-bar")
+//            if (ammoBar != null) applyAuiPosition(ammoBar)
+//        } catch (_: Exception) {}
+//
+//        val gunName = getGunDisplayName(data.stack)
+//        val ammoName = REPLACE_FORMAT_CODE.matcher(getAmmoDisplayName(data)).replaceAll("")
+//        val ammoCount = getGunAmmoString(data, player)
+//        val backupAmmo = getBackupAmmoString(data, player)
+//        val virtualAmmo = if (data.virtualAmmo.get() > 0 && !data.meleeOnly()) "+" + data.virtualAmmo.get() else ""
+//        val fireModeKey = "[" + ModKeyMappings.FIRE_MODE.key.displayName.string + "]"
+//
+//        setElementText(doc, "gun-name", gunName)
+//        setElementText(doc, "ammo-name", ammoName)
+//        setElementText(doc, "ammo-count", ammoCount)
+//        setElementText(doc, "backup-ammo", backupAmmo)
+//        setElementText(doc, "virtual-ammo", virtualAmmo)
+//        setElementText(doc, "fire-mode-key", fireModeKey)
+//
+//        // 开火模式图标。html 里一直有 `#fire-mode-icon` 这个元素，只是从没人给它填过 src，
+//        // 所以创造模式这条 HUD 上那个位置一直是空的。尺寸照 [fireModeIconSize] 走，
+//        // 行内样式只覆盖宽高，`.fire-mode-icon` 里的定位照旧。
+//        val fireModeName = toUnderScores(data.selectedFireModeInfo().name)
+//        val fireModeSize = fireModeIconSize(fireModeName)
+//        setElementAttr(doc, "fire-mode-icon", "src", TO_RESOURCE_LOCATION.apply(fireModeName).toString())
+//        setElementAttr(doc, "fire-mode-icon", "style", "width:${fireModeSize}px;height:${fireModeSize}px;")
+//
+//        // Set gun icon + animation triggers
+//        val icon = (data.stack.item as? GunItem)?.getGunIcon(data)
+//        val iconSrc = icon?.toString() ?: ""
+//        if (icon != null) {
+//            setElementAttr(doc, "gun-icon", "src", iconSrc)
+//        }
+//
+//        val isReloading = data.reloading()
+//        val el = try { doc.getElementById("gun-icon") } catch (_: Exception) { null }
+//
+//        // Reload: toggle .reloading class
+//        if (isReloading && !wasReloading) {
+//            el?.classList?.add("reloading")
+//        } else if (!isReloading && wasReloading) {
+//            el?.classList?.remove("reloading")
+//            triggerScale(el)
+//        }
+//    }
 
 //    private fun finishDrag(doc: Document) {
 //        if (!auiDragging) return
@@ -434,17 +639,28 @@ object AmmoBarOverlay : CommonOverlay("ammo_bar") {
 
     // ========== Original Rendering Helpers ==========
 
-    private fun getFireMode(data: GunData): ResourceLocation {
-        return TO_RESOURCE_LOCATION.apply(toUnderScores(data.selectedFireModeInfo().name))
-    }
+    /**
+     * 图标该画多大。
+     *
+     * 开火模式的图标基本都是 16×16 的图按 8×8 画（0.5 倍，见 [RenderContext.render]），
+     * 但 RPM 那几张是 32×32 的（"1800" 四位数字在 16×16 里塞不下），得按 16×16 画，
+     * 数字才有 7px 高、笔画 1px，和别的那批图标一个粗细。
+     */
+    private fun fireModeIconSize(name: String): Int = if (name in LARGE_FIRE_MODE_ICONS) 16 else 8
 
+    /**
+     * 开火模式名转贴图名：`Auto` → `auto`、`SemiAuto` → `semi_auto`、`RPM600` → `rpm600`。
+     *
+     * 只在小写字母/数字后面跟大写字母的地方断词。连续的缩写整体算一个词——把 `RPM600` 断成
+     * `r_p_m600` 就找不到贴图了，而模式名是图标唯一的依据（`RPM600`/`RPM1800` 是加特林的开火模式名）。
+     */
     private fun toUnderScores(str: String): String {
-        val builder = StringBuilder()
+        val builder = StringBuilder(str.length + 4)
 
-        for ((i, element) in str.withIndex()) {
-            val c = element
+        for ((i, c) in str.withIndex()) {
             if (Character.isUpperCase(c)) {
-                if (i != 0) {
+                val prev = if (i == 0) null else str[i - 1]
+                if (prev != null && (Character.isLowerCase(prev) || Character.isDigit(prev))) {
                     builder.append('_')
                 }
                 builder.append(c.lowercaseChar())

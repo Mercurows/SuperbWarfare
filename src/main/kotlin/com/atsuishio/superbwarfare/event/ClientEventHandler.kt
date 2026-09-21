@@ -704,6 +704,18 @@ object ClientEventHandler {
     }
 
     /**
+     * 枪管旋转（`GunAnimation.Hold` 那一层）的扳机判据：开火键按着，加特林开镜也算。
+     *
+     * **故意不含 `canShoot`**：旋转是扳机驱动的电机，不是「这一发现在打得出去」。过热（热量到
+     * 100 上锁、降到 80 以下才解锁）、背包弹药打空、换弹这些只该停子弹、不该停枪管——绑在一起
+     * 时，连射到过热枪管就跟着停转、退热后又自己转起来，看着就是「旋转时有时无」。
+     * [GeoGunAnimationInstance] 的旋转层与下面那声旋转音效共用这一个判据，两边不会一个响一个不转。
+     */
+    fun isBarrelSpinTriggered(stack: ItemStack): Boolean {
+        return holdingFireKey || (zoom && stack.`is`(ModItems.MINIGUN.get()))
+    }
+
+    /**
      *  处理武器射击延迟
      */
     fun handleShootDelay(player: Player, stack: ItemStack) {
@@ -728,19 +740,22 @@ object ClientEventHandler {
             }
             lastOperatingGunUUID = uuid
 
-            if ((holdingFireKey || (zoom && stack.`is`(ModItems.MINIGUN.get()))) && item.canShoot(data, player)) {
+            val spinTriggered = isBarrelSpinTriggered(stack)
+
+            // 加特林特有的旋转音效：与旋转层同一个判据，只跟扳机走——过热/空仓时枪管照样转，
+            // 声音就不该断（留在下面的 canShoot 里的话，过热时会出现「枪管在转但没有声音」的错配）
+            if (spinTriggered && stack.`is`(ModItems.MINIGUN.get())) {
+                val rpm = data.get(GunProp.RPM) / 3600F
+                player.playSound(ModSounds.MINIGUN_ROTATE.get(), 1f, 0.7f + rpm)
+            }
+
+            if (spinTriggered && item.canShoot(data, player)) {
                 val maxHoldTicks = data.selectedFireModeInfo().chargeConfig()?.effectiveDuration
                     ?: data.get(GunProp.SHOOT_DELAY)
                 holdingFireKeyTicks = (holdingFireKeyTicks + 1).coerceAtMost(maxHoldTicks + 1)
 
                 // Spawn light flashes for raycast tools (RepairTool / Taser) when holding fire key
                 MuzzleFlashHelper.spawnToolFlash(player, stack)
-
-                // 加特林特有的旋转音效
-                if (stack.`is`(ModItems.MINIGUN.get())) {
-                    val rpm = data.get(GunProp.RPM) / 3600F
-                    player.playSound(ModSounds.MINIGUN_ROTATE.get(), 1f, 0.7f + rpm)
-                }
 
                 // QL特有的樱花特效
                 if (stack.`is`(ModItems.QL_1031.get()) && player.tickCount % 5 == 0) {

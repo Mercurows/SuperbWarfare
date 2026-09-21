@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.resource.gun.GunAnimation
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.atsuishio.superbwarfare.resource.model.GunModelReloadListener
+import com.atsuishio.superbwarfare.tools.deltaFrameTime
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.animation.IFPAnimationInstance
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.BedrockAnimation
@@ -45,6 +46,21 @@ open class GeoGunAnimationInstance(
     private var holdOpenAnimationName: String? = null
     private var closeStrikeRunner: AnimationRunner? = null
     private var closeStrikeAnimationName: String? = null
+
+    /**
+     * 枪管旋转那一层的循环 runner。**一支常驻**：起转、停转都只改播放速度，从不重建，所以
+     * "哪一帧出岔子就把动画推回第一帧"这种毛病从根上没有了——那一层没有别的状态。
+     */
+    private var spinRunner: AnimationRunner? = null
+
+    /**
+     * 已经解析好的 `hold` 片段。动画资源偶尔有一帧取不到（正在重新加载、还没加载完）时继续用这一支，
+     * 免得那一帧把 runner 重建掉、枪管卡在第一帧。
+     */
+    private var spinAnimation: BedrockAnimation? = null
+
+    /** 当前转到几成（0..1），缓入缓出就缓在这里。 */
+    private var spinPower = 0f
     private var editExitRunner: AnimationRunner? = null
     private var currentState: GunAnimationState? = null
     private var fireSerial = 0
@@ -370,6 +386,7 @@ open class GeoGunAnimationInstance(
         val animation = GunResource.compute(stack).animation
         val (holdOpenStarted, closeStrikeStarted) = updateMechanicalRunners(data, animation)
         tickMechanicalRunners(holdOpenStarted, closeStrikeStarted)
+        tickSpinRunner(updateSpinRunner(data, animation))
         val switchStarted = consumeFireModeSwitch(false)
         tickFireModeRunners(fireModeStarted, switchStarted)
 
@@ -390,7 +407,8 @@ open class GeoGunAnimationInstance(
                 combineLayers(
                     exitRunner.evaluate(),
                     fireModeRunner?.evaluate() ?: DummyPose.INSTANCE,
-                    closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE
+                    closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE,
+                    spinRunner?.evaluate() ?: DummyPose.INSTANCE
                 ),
                 fireModeSwitchRunner?.evaluate() ?: DummyPose.INSTANCE,
                 fireRunner?.evaluate() ?: DummyPose.INSTANCE
@@ -419,6 +437,127 @@ open class GeoGunAnimationInstance(
         if (closeStrikeRunner != null && !closeStrikeStarted) {
             closeStrikeRunner?.tick()
         }
+    }
+
+    /**
+     * 推进枪管旋转层，返回本帧是否新建了 runner——与 [updateHoldOpen] 一样，新建的那一帧由
+     * [tickSpinRunner] 跳过 tick（runner 进状态时已经记过时间戳了）。
+     *
+     * 这一层只有一支循环动画（[GunAnimation.hold]），全部状态就是"现在转到几成"（[spinPower]）：
+     *
+     * - **缓入**：按住开火键之后，[spinPower] 用掉这把枪的**蓄力时长**（[spinDurationTicks]，就是
+     *   `handleShootDelay` 里 `holdingFireKeyTicks` 的上限）从 0 升到 1，所以第一发子弹出膛（蓄力满）
+     *   的那一刻枪管刚好到满速。转速再走一道 smoothstep，起步和到顶都是缓的。
+     * - **缓出**：松开扳机之后，按同样的时长平滑退回 0。过热、空仓、换弹都**不**影响这一层：
+     *   那些是子弹的事，枪管跟着扳机走（见 [shouldSpin]）。
+     *   退到 0 只退转速，**相位停在那个角度不动**：枪管是一圈对称的六根，停在哪一相位看着都是装好的，
+     *   而"归位"得把相位倒回去，那是肉眼可见的一顿。所以这一层在速度为 0 时照样每帧求值——不叠这一层
+     *   就等于把枪管摁回绑定姿态，那才是真的跳。
+     * - **满速**：见 [holdSpinSpeed]，默认 1200RPM 是 1×，600 是 0.5×，1800 是 1.5×。
+     *
+     * 射速被开火模式/perk 改掉、蓄力被打断、单帧抖动，全都只体现为转速平滑地跟上或退下来：
+     * 没有状态机、没有按帧重建，也就没有"被某一帧推回起点"的可能。
+     */
+    private fun updateSpinRunner(data: GunData, animation: GunAnimation?): Boolean {
+        // 动画资源这一帧拿不到就沿用上一次解析的结果；实在没有就把相位冻住、让这一层留在原地。
+        // **不能在这里清掉 runner**：清掉等于这一层从合成里消失，枪管会当帧弹回绑定姿态（肉眼可见的
+        // 一顿），下一次拿到资源又从第一帧开始转——这本身就是一种「时有时无」。
+        val hold = if (animation == null) spinAnimation else animation.hold?.let(animations::get)
+        if (hold == null) {
+            spinPower = 0f
+            applySpinSpeed(0f)
+            return false
+        }
+
+        val runner = spinRunner
+        if (runner == null || spinAnimation !== hold) {
+            spinAnimation = hold
+            val newRunner = AnimationRunner(hold, AnimationContext(hold.specifiedEndTimeS))
+            newRunner.state = AnimationPlayType.LOOP.state()
+            spinRunner = newRunner
+            return true
+        }
+
+        val target = if (shouldSpin()) 1f else 0f
+        val durationTicks = spinDurationTicks(data).toFloat()
+        val step = if (durationTicks <= 0f) 1f
+        else Minecraft.getInstance().deltaFrameTime.coerceIn(0f, SPIN_MAX_FRAME_DELTA_TICKS) / durationTicks
+        spinPower = approach(spinPower, target, step)
+
+        // 射速每帧重算：切模式、换 perk 立刻体现在转速上
+        applySpinSpeed(holdSpinSpeed(hold, data) * easeSpin(spinPower))
+        return false
+    }
+
+    private fun tickSpinRunner(started: Boolean) {
+        if (started) return
+        spinRunner?.tick()
+    }
+
+    private fun clearSpinRunner() {
+        spinRunner = null
+        spinAnimation = null
+        spinPower = 0f
+    }
+
+    /**
+     * 这把枪现在该不该转：**只看扳机**——开火键按着（加特林开镜也算），见
+     * [ClientEventHandler.isBarrelSpinTriggered]，与那声旋转音效共用同一个判据。
+     *
+     * 这里**故意不查 `canShoot`**：过热、背包弹药打空、换弹都只该停子弹，不该停枪管。之前把两者
+     * 绑在一起，连射到过热（热量到 100 上锁、降到 80 以下才解锁）时枪管跟着停转、退热后又自己
+     * 转起来，看着就是「旋转时有时无」。
+     *
+     * 只认本地玩家手里正拿着的那把枪。**判据必须比物品类型，不能比 ItemStack 对象身份**：
+     * 每发子弹出膛都会改一次手上这把枪的 NBT（弹药、热量），服务端随之把手持槽同步下来，而
+     * 客户端收到同步是把整个 ItemStack **换成新对象**（见 `GunData.DATA_CACHE` 与 `rebind` 的注释，
+     * `GunResource.RESOURCE_CACHE` 也是为同一件事按物品 id 建键的）。可 instance 里的 `stack` 要等
+     * 下一次客户端 tick 才由 `updateItem` 刷新，中间那几帧身份就对不上——`tick()` 却是**每帧**跑一次
+     * （`FirstPersonRenderHandler` 挂在 RenderTickEvent 上），于是按住扫射时那些帧会把转速推一下、
+     * 下一帧又自己缓回来。
+     *
+     * 比类型不影响原来的意思：副手、展示框、掉落物、别人手里的枪都拿不到本地玩家主手的这个物品，
+     * 只有"双手各一把加特林"这种边角情况会让副手那把也跟着转，而主手是双手武器时副手本来就不渲染。
+     */
+    private fun shouldSpin(): Boolean {
+        val player = localPlayer ?: return false
+        if (player.mainHandItem.item !== stack.item) return false
+        return ClientEventHandler.isBarrelSpinTriggered(stack)
+    }
+
+    /**
+     * 缓入缓出用的时长（tick）：就是这把枪的蓄力时长——蓄力武器看蓄力配置，其余看 `ShootDelay`。
+     * 与 `handleShootDelay` 里 `holdingFireKeyTicks` 的上限同源，所以转速升满、蓄力满、第一发子弹出膛
+     * 是同一个瞬间。
+     */
+    private fun spinDurationTicks(data: GunData): Int {
+        return (data.selectedFireModeInfo().chargeConfig()?.effectiveDuration
+                ?: data.get(GunProp.SHOOT_DELAY)).coerceAtLeast(1)
+    }
+
+    /**
+     * 满速时的播放倍率。六根枪管均分一圈，"每秒转多少度"在数值上就等于 RPM
+     * （1200RPM = 20 发/s × 每发 60° = 1200°/s），所以按射速转 = 每两发之间正好走 1/6 圈。
+     * 动画里枪管在 [BedrockAnimation.specifiedEndTimeS] 秒（= json 的 `animation_length`，
+     * minigun 的 hold 是 0.3s，即 1200°/s）里转满一圈，两者相除就是倍率：
+     * 1200RPM 是 1×，600 是 0.5×，1800 是 1.5×。
+     */
+    private fun holdSpinSpeed(hold: BedrockAnimation, data: GunData): Float {
+        val endTimeS = hold.specifiedEndTimeS
+        if (endTimeS <= 0f) return 1f
+        return ClientEventHandler.effectiveRpm(data).toFloat() / (360f / endTimeS)
+    }
+
+    private fun applySpinSpeed(speed: Float) {
+        setAnimationSpeed(spinRunner?.state, speed)
+    }
+
+    /** smoothstep：起步和到顶都是缓的（缓入缓出）。 */
+    private fun easeSpin(power: Float): Float = power * power * (3f - 2f * power)
+
+    private fun approach(current: Float, target: Float, step: Float): Float {
+        return if (current < target) (current + step).coerceAtMost(target)
+        else (current - step).coerceAtLeast(target)
     }
 
     private fun combineLayers(vararg layers: Pose): Pose {
@@ -533,7 +672,8 @@ open class GeoGunAnimationInstance(
                         combineLayers(
                             editExitRunner!!.evaluate(),
                             fireModeRunner?.evaluate() ?: DummyPose.INSTANCE,
-                            closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE
+                            closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE,
+                            spinRunner?.evaluate() ?: DummyPose.INSTANCE
                         ),
                         fireModeSwitchRunner?.evaluate() ?: DummyPose.INSTANCE,
                         fireRunner?.evaluate() ?: DummyPose.INSTANCE
@@ -590,6 +730,7 @@ open class GeoGunAnimationInstance(
         val fireModeSwitchStarted = consumeFireModeSwitch(editing)
         tickFireModeRunners(fireModeStarted, fireModeSwitchStarted)
         tickMechanicalRunners(holdOpenStarted, closeStrikeStarted)
+        tickSpinRunner(updateSpinRunner(data, animation))
 
         collectParticleEvents(runner)
         collectParticleEvents(fireRunner)
@@ -611,7 +752,8 @@ open class GeoGunAnimationInstance(
                 combineLayers(
                     runner?.evaluate() ?: DummyPose.INSTANCE,
                     fireModeRunner?.evaluate() ?: DummyPose.INSTANCE,
-                    closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE
+                    closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE,
+                    spinRunner?.evaluate() ?: DummyPose.INSTANCE
                 ),
                 fireModeSwitchRunner?.evaluate() ?: DummyPose.INSTANCE,
                 fireRunner?.evaluate() ?: DummyPose.INSTANCE
@@ -666,6 +808,7 @@ open class GeoGunAnimationInstance(
             holdOpenAnimationName = null
             closeStrikeRunner = null
             closeStrikeAnimationName = null
+            clearSpinRunner()
             pendingParticles.clear()
             loadAnimations()
         }
@@ -686,6 +829,7 @@ open class GeoGunAnimationInstance(
         holdOpenAnimationName = null
         closeStrikeRunner = null
         closeStrikeAnimationName = null
+        clearSpinRunner()
         currentState = null
         fireSerial = 0
         consumedFireSerial = 0
@@ -700,6 +844,13 @@ open class GeoGunAnimationInstance(
 
     companion object {
         private const val EDIT_EXIT_SPEED = 1.5f
+
+        /**
+         * 缓入缓出每帧最多吃掉多少 tick。`deltaFrameTime` 单位是 tick（20/s，60FPS 一帧约 0.33），
+         * 卡顿或断点续跑时可能蹦得很大——上面的常数按秒写就会一帧走完。上限照抄
+         * `GeoGunRenderer.scriptFrameDeltaSeconds`，掉帧的时候是"跳帧"而不是"瞬移"。
+         */
+        private const val SPIN_MAX_FRAME_DELTA_TICKS = 0.8f
 
         private val BLENDER: EulerAdditiveBlender =
             SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }

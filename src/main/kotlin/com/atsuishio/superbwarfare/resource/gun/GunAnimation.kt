@@ -51,6 +51,18 @@ class GunAnimation {
     @SerialName("CloseStrike")
     var closeStrike: String? = null
 
+    /**
+     * 加特林式枪管旋转：按住开火键（加特林开镜也算）时把这一支循环叠加上去，播完不摘，只改播放速度。
+     *
+     * 转速按实际射速缩放（默认 1200RPM 是 1×），并**按这把枪的蓄力时长缓入缓出**：按住时从 0 平滑升到
+     * 满速，松手后再平滑降回 0，降到 0 就停在那个角度不回位。详见 `GeoGunAnimationInstance.updateSpinRunner`。
+     *
+     * 不配的枪不参与。
+     */
+    @JvmField
+    @SerialName("Hold")
+    var hold: String? = null
+
     @JvmField
     @SerialName("Prepare")
     var prepare: String? = null
