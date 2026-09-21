@@ -3,7 +3,8 @@
   "Models": [
     {
       "Model": "superbwarfare:models/bedrock/vehicle/ac_130h.geo.json",
-      "Texture": "superbwarfare:textures/bedrock/vehicle/ac_130h.png"
+      "Texture": "superbwarfare:textures/bedrock/vehicle/ac_130h.png",
+      "EmissiveTexture": "superbwarfare:textures/bedrock/vehicle/ac_130h_e.png"
     }
   ],
   "Sponsor": {
