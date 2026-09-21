@@ -13,6 +13,10 @@ import net.minecraftforge.api.distmarker.OnlyIn
 
 @OnlyIn(Dist.CLIENT)
 object PoseTool {
+    // 不要删这个，纯为了加载本类
+    fun init() {
+    }
+
     @JvmStatic
     fun pose(entityLiving: LivingEntity, hand: InteractionHand?, stack: ItemStack): HumanoidModel.ArmPose {
         val data = GunData.from(stack)
