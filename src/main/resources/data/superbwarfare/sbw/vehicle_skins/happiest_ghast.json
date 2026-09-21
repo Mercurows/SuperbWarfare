@@ -1,0 +1,17 @@
+{
+  "Skins": [
+    {
+      "Id": "vanilla",
+      "Name": "Vanilla",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/happiest_ghast.png",
+      "Priority": 1
+    },
+    {
+      "Id": "unhappy",
+      "Name": "Unhappy",
+      "Description": "Component#skin.superbwarfare.happiest_ghast.unhappy",
+      "Texture": "superbwarfare:textures/bedrock/vehicle/unhappy_ghast.png",
+      "Priority": 2
+    }
+  ]
+}
