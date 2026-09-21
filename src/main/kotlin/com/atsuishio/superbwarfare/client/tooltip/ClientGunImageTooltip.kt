@@ -146,7 +146,8 @@ open class ClientGunImageTooltip(tooltip: GunImageComponent) : ClientTooltipComp
                     .withStyle(ChatFormatting.GRAY)
                     .append(Component.empty().withStyle(ChatFormatting.RESET))
                     .append(
-                        Component.literal(format0D(data.get(GunProp.RPM).toDouble())).withStyle(ChatFormatting.GREEN)
+                        Component.literal(format0D((data.get(GunProp.RPM) * data.get(GunProp.RPM_MULTIPLIER))))
+                            .withStyle(ChatFormatting.GREEN)
                     )
             }
             return Component.empty()
