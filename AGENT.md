@@ -141,33 +141,34 @@ ProjectileEntity 特色：OBB 支持的自定义射线追踪、爆头/腿伤检�
 - 前缀含义：主来源是「每个装载单位提供多少弹药」（`"30 @RifleAmmo"`），附加来源是「每发消耗多少」（`"400 fe"`）
 - 泰瑟枪即「电极进弹匣 + 每发 400 FE」，不再需要 `TaserItem` 里硬编码能量逻辑
 
-**能量弹药（`AmmoType: "FE"`）的两种形态**：同一个 `"FE"` 按 `Magazine` 分流，无需额外字段。
-判定入口是 `GunData.useBackpackAmmo()`（`Magazine <= 0`）与 `GunData.isEnergyMagazine()`。
+**能量弹药（`AmmoType: "FE"`）的两种形态**：同一个 `"FE"` 按「有没有弹匣 + 有没有换算比例」分流。
+判定入口是 `GunData.useBackpackAmmo()`（`Magazine <= 0`）与 `GunData.isEnergyMagazine()`
+（`Magazine > 0` 且 `FuelPerAmmo > 0`）。
 
-| | 背包型（`Magazine <= 0`） | 弹匣型（`Magazine > 0`） |
+| | 背包型（`Magazine <= 0`） | 弹匣型（`Magazine > 0` 且 `FuelPerAmmo > 0`） |
 |---|---|---|
 | 例子 | `ql_1031`、`repair_tool` | `devotion` |
+| `AmmoCostPerShoot` | 每发开火直接扣这么多 FE（如 300） | 每发扣这么多**发弹匣弹药**，写 `1` |
+| `FuelPerAmmo` | 不使用 | 1 发弹匣弹药值多少 FE（如 200） |
 | 开火 | 直接扣 `MaxEnergy` 的 `AmmoCostPerShoot` 点 | 只扣弹匣发数，不碰能量 |
-| 换弹 | 不参与（`useBackpackAmmo()` 直接拦截） | 按 `AmmoCostPerShoot` 把 FE 折算成发数装进弹匣 |
-| 退弹 | 禁止（无弹可退） | 发数 × `AmmoCostPerShoot` 折回 FE |
+| 换弹 | 不参与（`useBackpackAmmo()` 直接拦截） | 备弹能量 ÷ `FuelPerAmmo` → 装填发数 |
+| 退弹 | 禁止（无弹可退） | 发数 × `FuelPerAmmo` → 折回 FE |
 
+- **两个 prop 各管一件事**：`AmmoCostPerShoot` 永远是「一次开火扣几个弹药单位」
+  （所有比较/扣除共用 `GunData.primaryAmmoCostPerShoot()`）；
+  `FuelPerAmmo` 只负责「外部资源 ↔ 弹药」的换算，只在换弹/退弹时使用。
+  早期版本让弹匣型的 `AmmoCostPerShoot` 兼任「每发 FE」，导致**比较**（`300 > 40` → 满弹匣判定没弹药
+  → 左键变快速换弹）和**扣除**（`40 - 300 = -260` → 弹匣负数）两类错误，现已分离
 - 换算全部收在 `EnergyAmmoStrategy` 内部：`count()` 在弹匣型下报「还能装几发」，
-  `consume()` 扣「发数 × 每发 FE」，因此换弹链路
+  `consume()` 扣「发数 × `FuelPerAmmo`」，因此换弹链路
   （`reloadAmmo` → `countBackupAmmo`/`consumeBackupAmmo` → `AmmoConsumer.consume`）一行都不用改
-- **`AmmoCostPerShoot` 在弹匣型下是「每发的 FE 数」，不是「每次开火的消耗量」**：
-  开火只扣 1 发。因此**凡是按「主来源口径」扣弹或比较的地方都必须走
-  `GunData.primaryAmmoCostPerShoot()`**（弹匣型返回 1，背包型返回 `AmmoCostPerShoot`），
-  直接读 `GunProp.AMMO_COST_PER_SHOOT` 有两大类错误：
-  1. **比较**（`300 > 40`）→ 满弹匣也判定为没弹药 → **左键变成快速换弹、打不响**
-  2. **扣除**（`40 - 300 = -260`）→ **弹匣被扣成负数**
-  已按此规则修正：`GunItem.afterShoot`、`GunData.hasEnoughPrimaryAmmoToShoot` /
-  `currentAvailableShots`、`VehicleGunItem.canShoot`、`BocekItem` / `JavelinItem` / `IglaItem` 的手工扣弹
-- 退弹的能量回流在 `GunData.withdrawAmmo`（那里才拿得到 `AmmoCostPerShoot`）；
+- 退弹的能量回流在 `GunData.withdrawAmmo`（那里才拿得到 `FuelPerAmmo`）；
   `EnergyAmmoStrategy.withdraw` 只返回 0
-- 策略内读 `Magazine` / `AmmoCostPerShoot` 一律走 `data.getDefault()`：`AmmoConsumer` 的覆盖层
-  会在 PMC 计算链内部被读取，此时重入的 `get()` 受 `GunData.rebuilding` 保护会返回未完成的结果
-- 弹匣型请保证 `MaxEnergy >= 最大档位 Magazine * AmmoCostPerShoot`，否则满弹匣要分多次装填
-- HUD 备弹（`AmmoBarOverlay.getBackupAmmoString`）对能量弹匣显示折合发数
+- 策略内读 `Magazine` / `FuelPerAmmo` / `AmmoCostPerShoot` 一律走 `data.getDefault()`：
+  `AmmoConsumer` 的覆盖层会在 PMC 计算链内部被读取，此时重入的 `get()` 受 `GunData.rebuilding`
+  保护会返回未完成的结果
+- 弹匣型请保证 `MaxEnergy >= 最大档位 Magazine * FuelPerAmmo`，否则满弹匣要分多次装填
+- HUD 备弹（`AmmoBarOverlay.getBackupAmmoString`）对能量弹匣显示能量百分比
 
 ## 数据流转
 

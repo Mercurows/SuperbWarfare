@@ -118,15 +118,29 @@ data class DefaultGunData(
     @SerialName("ProjectileDummyInfo")
     val projectileDummyInfo: ProjectileDummyInfo? = null,
     /**
-     * 每次开火消耗的弹药量。
+     * 每次开火消耗的弹药量（**主来源口径**：一次开火扣几个弹药单位）。
      *
-     * 能量类武器下的含义随形态变化：
-     * - 背包型（[magazine] `<= 0`）：每次开火直接扣这么多 FE；
-     * - 弹匣型（[magazine] `> 0`）：**每发子弹**折算的 FE，开火时只扣弹匣发数，
-     *   这笔能量在换弹装填时结算，退弹时按同价退还。
+     * 物品类武器就是「扣几发子弹」；能量类武器下随形态变化：
+     * - 背包型（[magazine] `<= 0`）：没有弹匣，每发直接扣这么多 FE；
+     * - 弹匣型（[magazine] `> 0` 且 [fuelPerAmmo] `> 0`）：每发扣这么多**发弹匣弹药**，
+     *   能量只在换弹/退弹时按 [fuelPerAmmo] 折算，所以这里应当写 `1`
+     *   —— 不要再拿它当 FE 用量，那是 [fuelPerAmmo] 的职责。
      */
     @SerialName("AmmoCostPerShoot")
     val ammoCostPerShoot: Int = 1,
+    /**
+     * 「其他类型弹药 → 弹药」的换算比例：多少点外部资源折算成 **1 发**弹匣弹药。
+     *
+     * 目前用于能量类武器（`AmmoType` 为 `FE` / `RF` / `energy`）的弹匣形态：
+     * - 换弹时，备弹能量按 `能量 / fuelPerAmmo` 折算成能装填几发；
+     * - 退弹时，弹匣剩余发数按 `发数 * fuelPerAmmo` 折回能量。
+     *
+     * 只有 [magazine] `> 0` 且本字段 `> 0` 才是弹匣型能量武器
+     * （见 `GunData.isEnergyMagazine`）。背包型没有弹匣，不使用本字段，
+     * 它的每发消耗由 [ammoCostPerShoot] 直接表示。
+     */
+    @SerialName("FuelPerAmmo")
+    val fuelPerAmmo: Int = 0,
     @SerialName("ProjectileAmount")
     val projectileAmount: Int = 1,
     @SerialName("SpreadPattern")
@@ -380,6 +394,7 @@ data class DefaultGunData(
             range = max(1, range),
             meleeDamageTime = min(clampedMeleeDuration - 1, meleeDamageTime),
             ammoCostPerShoot = max(0, ammoCostPerShoot),
+            fuelPerAmmo = max(0, fuelPerAmmo),
             projectileAmount = clampedProjectileAmount,
             weight = max(1.0, weight),
             magazine = if (clampedProjectileAmount == 0 && meleeDamage > 0) {

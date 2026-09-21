@@ -17,6 +17,7 @@ import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.AVAILABLE_FIRE_MOD
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.AVAILABLE_PERKS
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.BOLT_ACTION_TIME
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.DEFAULT_ZOOM
+import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.FUEL_PER_AMMO
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.MAGAZINE
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.MAX_ZOOM
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.MELEE_DAMAGE
@@ -513,15 +514,20 @@ class GunData private constructor(
     }
 
     /**
-     * 是否为「能量弹匣」武器：`Magazine > 0` 的能量类武器。
+     * 是否为「能量弹匣」武器：有弹匣、弹种是能量类，且声明了换算比例 [FUEL_PER_AMMO]。
      *
      * 与背包型能量武器（`Magazine <= 0`，如 `ql_1031`）相对：
-     * - 开火只扣弹匣发数，不碰能量；
-     * - 换弹按 `AmmoCostPerShoot` 把能量折算成发数装进弹匣（见 `EnergyAmmoStrategy`）；
-     * - 退弹按当前发数乘 `AmmoCostPerShoot` 把能量还回去（见 [withdrawAmmo]）。
+     * - 开火只扣弹匣发数（`AmmoCostPerShoot`，通常为 1），不碰能量；
+     * - 换弹按 `FuelPerAmmo` 把能量折算成发数装进弹匣（见 `EnergyAmmoStrategy`）；
+     * - 退弹按当前发数乘 `FuelPerAmmo` 把能量还回去（见 [withdrawAmmo]）。
+     *
+     * `FuelPerAmmo` 必须 `> 0`：没有换算比例的「能量 + 弹匣」配置无法确定一发值多少能量，
+     * 会被当成普通弹匣武器（而不是把能量按 1:1 折算）。
      */
     fun isEnergyMagazine(): Boolean {
-        return !useBackpackAmmo() && selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.ENERGY
+        return !useBackpackAmmo()
+                && get(FUEL_PER_AMMO) > 0
+                && selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.ENERGY
     }
 
     /**
@@ -889,18 +895,18 @@ class GunData private constructor(
     }
 
     /**
-     * 每次开火在**主来源口径**上消耗的量。
+     * 每次开火在**主来源口径**上消耗（或要求）的弹药量，即 `AmmoCostPerShoot`。
      *
-     * 弹匣型能量武器（如改造后的 `devotion`）的一发只扣 1 发弹匣，
-     * `AmmoCostPerShoot` 在那里的含义是「每发折算多少 FE」，只用于换弹装填与退弹结算，
-     * 不能当作开火成本参与比较，否则会拿「每发的 FE 数」去和「弹匣里的发数」比大小
-     * （300 > 40），导致满弹匣也判定为没弹药、左键变成快速换弹。
+     * 之所以单独开一个入口而不是到处直接读 prop：这个字段的口径必须始终是
+     * 「一次开火扣几个弹药单位」，所有比较/扣除的调用点共用它才不会各自跑偏。
      *
-     * 背包型能量武器（如 `ql_1031`）没有弹匣，每发就是直接扣 `AmmoCostPerShoot` 点 FE，
-     * 此时该字段与主来源口径一致，照常返回。
+     * 能量类武器请按形态填写（见 [DefaultGunData.ammoCostPerShoot]）：
+     * - 背包型：每发直接扣这么多 FE；
+     * - 弹匣型（[isEnergyMagazine]）：每发扣这么多发弹匣弹药，写 `1`，
+     *   能量换发数的比例交给 [DefaultGunData.fuelPerAmmo]。
      */
     fun primaryAmmoCostPerShoot(): Int {
-        return if (isEnergyMagazine()) 1 else get(AMMO_COST_PER_SHOOT)
+        return get(AMMO_COST_PER_SHOOT)
     }
 
     /**
@@ -1098,21 +1104,21 @@ class GunData private constructor(
     }
 
     /**
-     * 弹匣型能量武器退弹：弹匣发数按 `AmmoCostPerShoot` 折回能量。
+     * 弹匣型能量武器退弹：弹匣发数按 [FUEL_PER_AMMO] 折回能量。
      *
      * 能量回收到枪械自身的能量存储（[getEnergyProvider]），容量满时多出来的部分丢弃。
      * 虚拟弹药一并退还后清空，与物品类弹药的退弹行为保持一致。
      */
     private fun withdrawEnergy() {
         val rounds = this.ammo.get() + this.virtualAmmo.get()
-        val perRound = get(AMMO_COST_PER_SHOOT)
+        val perRound = get(FUEL_PER_AMMO)
 
         this.virtualAmmo.reset()
         this.ammo.reset()
 
         if (rounds <= 0 || perRound <= 0) return
 
-        // 夹到 Int.MAX_VALUE：弹药数与每发消耗都是玩家可控的数据，直接相乘可能溢出成负数
+        // 夹到 Int.MAX_VALUE：弹药数与换算比例都是玩家可控的数据，直接相乘可能溢出成负数
         val energy = min(rounds.toLong() * perRound, Int.MAX_VALUE.toLong()).toInt()
         getEnergyProvider(null)?.receiveEnergy(energy, false)
     }

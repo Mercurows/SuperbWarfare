@@ -146,6 +146,10 @@ class GunProp<T, R>(
         @JvmField
         val AMMO_COST_PER_SHOOT = plainProp(DefaultGunData::ammoCostPerShoot)
 
+        /** 「其他类型弹药 → 弹药」换算比例：多少外部资源（如 FE）折算成 1 发弹匣弹药 */
+        @JvmField
+        val FUEL_PER_AMMO = plainProp(DefaultGunData::fuelPerAmmo)
+
         @JvmField
         val PROJECTILE_AMOUNT = plainProp(DefaultGunData::projectileAmount)
 
@@ -480,6 +484,7 @@ class GunProp<T, R>(
             modify(RANGE) { it.coerceAtLeast(1) }
             modify(MELEE_DAMAGE_TIME) { min(modifier[MELEE_DURATION] - 1, it) }
             modify(AMMO_COST_PER_SHOOT) { it.coerceAtLeast(0) }
+            modify(FUEL_PER_AMMO) { it.coerceAtLeast(0) }
             modify(PROJECTILE_AMOUNT) { it.coerceAtLeast(0) }
             modify(WEIGHT) { it.coerceAtLeast(1.0) }
 

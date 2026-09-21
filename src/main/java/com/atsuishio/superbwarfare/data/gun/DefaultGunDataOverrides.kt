@@ -46,6 +46,7 @@ fun DefaultGunData.withOverrides(diff: Map<out Prop<*, *, *, *, *>, Any?>): Defa
         zoomSpreadRate = num(GunProp.ZOOM_SPREAD_RATE, zoomSpreadRate),
         range = int(GunProp.RANGE, range),
         ammoCostPerShoot = int(GunProp.AMMO_COST_PER_SHOOT, ammoCostPerShoot),
+        fuelPerAmmo = int(GunProp.FUEL_PER_AMMO, fuelPerAmmo),
         projectileAmount = int(GunProp.PROJECTILE_AMOUNT, projectileAmount),
         spreadPattern = if (diff.containsKey(GunProp.SPREAD_PATTERN)) {
             diff[GunProp.SPREAD_PATTERN] as? ProjectileSpreadPattern
