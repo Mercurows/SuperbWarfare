@@ -515,7 +515,8 @@ class ModItemTagProvider(
                 ModItems.STOCK_AR_TACTICAL,
                 ModItems.STOCK_ZENIT_PT_1,
                 ModItems.STOCK_STR,
-                ModItems.STOCK_ELITE
+                ModItems.STOCK_ELITE,
+                ModItems.STEEL_PIPE_STOCK
             )
         )
 

@@ -698,6 +698,7 @@
   "item.superbwarfare.muzzle_zenit_dtk_1": "泽宁特DTK-1补偿器",
   "item.superbwarfare.muzzle_compensator_r_17": "R-17补偿器",
   "item.superbwarfare.steel_pipe_silencer": "钢管消音器",
+  "item.superbwarfare.steel_pipe_stock": "钢管枪托",
 
   "death.attack.gunfire": "%1$s被%2$s射爆了",
   "death.attack.gunfire.entity": "%1$s被%2$s射爆了",
@@ -1439,6 +1440,7 @@
   "prop.superbwarfare.sound_radius_multiplier": "开火音效范围",
   "prop.superbwarfare.muzzle_flash_scale": "枪口火焰大小",
   "prop.superbwarfare.zoom_time": "瞄准时间",
+  "prop.superbwarfare.melee_damage": "近战伤害",
 
   "superbwarfare.book.superb_warfare_manual": "卓越单兵手册",
   "superbwarfare.book.superb_warfare_manual.des": "卓越前线模组的教程，教你如何成为一名卓越的士兵（编写中）",
