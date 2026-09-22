@@ -1183,18 +1183,26 @@
       }
     ]
   },
-  "mk_14_reload_normal": {
+  "mk_14_mag_in": {
     "sounds": [
       {
-        "name": "superbwarfare:gun/mk_14/mk_14_reload_normal",
+        "name": "superbwarfare:gun/mk_14/mk_14_mag_in",
         "stream": false
       }
     ]
   },
-  "mk_14_reload_empty": {
+  "mk_14_mag_out": {
     "sounds": [
       {
-        "name": "superbwarfare:gun/mk_14/mk_14_reload_empty",
+        "name": "superbwarfare:gun/mk_14/mk_14_mag_out",
+        "stream": false
+      }
+    ]
+  },
+  "mk_14_bolt": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/mk_14/mk_14_bolt",
         "stream": false
       }
     ]

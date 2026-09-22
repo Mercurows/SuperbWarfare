@@ -4,7 +4,7 @@
     {
       "Prop": "RecoilX",
       "Op": "Mul",
-      "Value": 0.88
+      "Value": 0.8
     },
     {
       "Prop": "RecoilY",
@@ -14,7 +14,12 @@
     {
       "Prop": "Weight",
       "Op": "Add",
-      "Value": 1.8
+      "Value": 2.2
+    },
+    {
+      "Prop": "ZoomTime",
+      "Op": "Mul",
+      "Value": 1.1
     }
   ],
   "Bone": "custom_stock_adapter",

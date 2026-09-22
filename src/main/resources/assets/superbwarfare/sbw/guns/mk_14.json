@@ -1,16 +1,57 @@
 {
-  "Model": {
-    "Animation": "superbwarfare:animations/mk_14.animation.json",
-    "Model": "superbwarfare:geo/mk_14.geo.json",
-    "Texture": "superbwarfare:textures/item/mk_14.png",
-    "LODModel": "superbwarfare:geo/lod/mk_14.geo.json",
-    "LODTexture": "superbwarfare:textures/item/lod/mk_14.png"
+  "Icon": "superbwarfare:textures/gun_icon/mk_14_icon.png",
+  "SlotIcon": "superbwarfare:textures/item/mk_14_icon.png",
+  "Animation": {
+    "Idle": "animation.mk_14.idle",
+    "Fire": "animation.mk_14.fire",
+    "ReloadNormal": "animation.mk_14.reload_normal",
+    "ReloadEmpty": "animation.mk_14.reload_empty",
+    "Edit": "animation.mk_14.edit",
+    "ReloadNormalDrum": "animation.mk_14.reload_normal_drum",
+    "ReloadEmptyDrum": "animation.mk_14.reload_empty_drum",
+    "HoldOpen": "animation.mk_14.hold_open"
   },
-  "FlarePosition": [
-    0,
-    0,
-    1.475
-  ],
-  "FlareSize": 0.33,
-  "EjectShell": true
+  "ShootRecoil": {
+    "Offset": [0.7, 1.0, 0.5],
+    "Rotation": [0.2, 0.2, 0.5],
+    "ZoomRate": 0.5,
+    "Speed": 1.0
+  },
+  "Model": {
+    "Animation": "superbwarfare:animations/bedrock/gun/mk_14.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/mk_14.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/mk_14.png",
+    "LODModel": "superbwarfare:models/bedrock/gun_lod/mk_14.geo.json",
+    "LODTexture": "superbwarfare:textures/bedrock/gun_lod/mk_14.png"
+  },
+  "FlareSize": 0.5,
+  "HasSmoke": true,
+  "Smoke": {
+    "Size": 0.15,
+    "Growth": 0.25,
+    "Lifetime": 0.3,
+    "Speed": 0.4,
+    "Count": 2,
+    "Opacity": 0.9,
+    "Drag": 2,
+    "RandomSize": 0.05,
+    "RandomGrowth": 0.2,
+    "RandomLifetime": 0.2,
+    "RandomSpeed": 0.2,
+    "RandomOpacity": 0.1
+  },
+  "EjectShell": true,
+  "ShellEject": {
+    "BoneName": "shell",
+    "ShellModel": "superbwarfare:models/bedrock/shell/rifle_shell.geo.json",
+    "ShellTexture": "superbwarfare:textures/bedrock/shell/rifle_shell.png",
+    "Size": 1,
+    "InitialVelocity": [2.8, 6.2, -0.75],
+    "RandomVelocity": [0.7, 0.6, 0.3],
+    "Acceleration": [0, -16, 0],
+    "AngularVelocity": [-1800, -2000, 240],
+    "RandomAngle": [60, 60, 360],
+    "LivingTime": 0.8,
+    "MaxActive": 24
+  }
 }

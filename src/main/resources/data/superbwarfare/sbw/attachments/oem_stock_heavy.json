@@ -15,6 +15,11 @@
       "Prop": "Weight",
       "Op": "Add",
       "Value": 1.8
+    },
+    {
+      "Prop": "ZoomTime",
+      "Op": "Mul",
+      "Value": 1.1
     }
   ],
   "Bone": "oem_stock_heavy",
