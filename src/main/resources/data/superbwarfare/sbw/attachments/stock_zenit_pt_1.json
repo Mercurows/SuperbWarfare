@@ -4,12 +4,12 @@
     {
       "Prop": "RecoilX",
       "Op": "Mul",
-      "Value": 0.93
+      "Value": 0.91
     },
     {
       "Prop": "RecoilY",
       "Op": "Mul",
-      "Value": 0.93
+      "Value": 0.92
     },
     {
       "Prop": "Weight",

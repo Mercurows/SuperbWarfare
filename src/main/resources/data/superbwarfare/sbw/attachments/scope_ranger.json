@@ -6,6 +6,11 @@
       "Prop": "Weight",
       "Op": "Add",
       "Value": 1.3
+    },
+    {
+      "Prop": "ZoomTime",
+      "Op": "Mul",
+      "Value": 0.95
     }
   ],
   "Bone": "scope_pos",

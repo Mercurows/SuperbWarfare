@@ -30,8 +30,8 @@
   },
   "AmmoType": "FE",
   "AmmoCostPerShoot": 1,
-  "FuelPerAmmo": 200,
-  "MaxEnergy": 80000,
+  "FuelPerAmmo": 1000,
+  "MaxEnergy": 100000,
   "Icon": "superbwarfare:textures/gun_icon/devotion_icon.png",
   "AvailablePerks": [
     "@Ammo",
@@ -40,6 +40,7 @@
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",
     "superbwarfare:backpack_linked_magazine",
+    "superbwarfare:regeneration",
     "superbwarfare:killing_tally",
     "superbwarfare:desperado",
     "superbwarfare:monster_hunter",

@@ -5,17 +5,22 @@
     {
       "Prop": "RecoilX",
       "Op": "Mul",
-      "Value": 0.95
+      "Value": 0.89
     },
     {
       "Prop": "RecoilY",
       "Op": "Mul",
-      "Value": 0.8
+      "Value": 0.83
     },
     {
       "Prop": "Weight",
       "Op": "Add",
       "Value": 0.8
+    },
+    {
+      "Prop": "ZoomTime",
+      "Op": "Mul",
+      "Value": 0.96
     }
   ],
   "Bone": "grip_pos",

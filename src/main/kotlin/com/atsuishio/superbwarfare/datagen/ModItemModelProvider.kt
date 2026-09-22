@@ -47,7 +47,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         gunItemV2(ModItems.M_870)
         gunItem(ModItems.M_98B)
         gunItemV2(ModItems.MINIGUN)
-        gunItem(ModItems.MK_14)
+        gunItemV2(ModItems.MK_14)
         gunItemV2(ModItems.MOSIN_NAGANT)
         gunItemV2(ModItems.MP_443)
         gunItemV2(ModItems.NTW_20)
