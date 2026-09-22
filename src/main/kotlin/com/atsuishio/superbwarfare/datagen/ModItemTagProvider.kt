@@ -619,7 +619,8 @@ class ModItemTagProvider(
                 ModItems.SCOPE_ELCAN_4X,
                 ModItems.SCOPE_LPVO,
                 ModItems.SCOPE_SNIPER,
-                ModItems.SCOPE_WINEFOX
+                ModItems.SCOPE_WINEFOX,
+                ModItems.STEEL_PIPE_SCOPE
             )
         )
 
