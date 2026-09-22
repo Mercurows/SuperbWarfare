@@ -699,6 +699,7 @@
   "item.superbwarfare.muzzle_compensator_r_17": "R-17 Compensator",
   "item.superbwarfare.steel_pipe_silencer": "Steel Pipe Silencer",
   "item.superbwarfare.steel_pipe_stock": "Steel Pipe Stock",
+  "item.superbwarfare.steel_pipe_scope": "Steel Pipe Scope",
 
   "death.attack.gunfire": "%1$s was gunned down by %2$s",
   "death.attack.gunfire.entity": "%1$s was gunned down by %2$s",

@@ -1,0 +1,29 @@
+{
+  "Slot": "Scope",
+  "Level": 1,
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 3.0
+    },
+    {
+      "Prop": "ZoomTime",
+      "Op": "Mul",
+      "Value": 1.2
+    }
+  ],
+  "Bone": "scope_pos",
+  "Model": "superbwarfare:models/bedrock/attachment/steel_pipe_scope.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/steel_pipe_scope.png",
+  "ScopeInfo": {
+    "Type": "Scope",
+    "ZoomLengthScale": 0.2,
+    "Zoom": {
+      "Min": 18,
+      "Max": 18,
+      "Default": 18,
+      "Step": 1.0
+    }
+  }
+}

@@ -12,6 +12,11 @@
       "Value": 0.85
     },
     {
+      "Prop": "Recoil",
+      "Op": "Add",
+      "Value": 0.1
+    },
+    {
       "Prop": "Weight",
       "Op": "Add",
       "Value": 1.0
