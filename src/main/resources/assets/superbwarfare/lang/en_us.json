@@ -698,6 +698,7 @@
   "item.superbwarfare.muzzle_zenit_dtk_1": "Zenit DTK-1 Compensator",
   "item.superbwarfare.muzzle_compensator_r_17": "R-17 Compensator",
   "item.superbwarfare.steel_pipe_silencer": "Steel Pipe Silencer",
+  "item.superbwarfare.steel_pipe_stock": "Steel Pipe Stock",
 
   "death.attack.gunfire": "%1$s was gunned down by %2$s",
   "death.attack.gunfire.entity": "%1$s was gunned down by %2$s",
@@ -1439,6 +1440,7 @@
   "prop.superbwarfare.sound_radius_multiplier": "Fire Sound Radius",
   "prop.superbwarfare.muzzle_flash_scale": "Muzzle Flash Size",
   "prop.superbwarfare.zoom_time": "Zoom Time",
+  "prop.superbwarfare.melee_damage": "Melee Damage",
 
   "superbwarfare.book.superb_warfare_manual": "Superb Warfare Manual",
   "superbwarfare.book.superb_warfare_manual.des": "A tutorial on Superb Warfare mod, teaching you how to become a superb soldier (WIP)",
