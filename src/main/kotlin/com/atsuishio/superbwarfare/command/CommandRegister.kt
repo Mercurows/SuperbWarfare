@@ -20,6 +20,7 @@ object CommandRegister {
             add(DISMOUNT_COMMAND)
             add(SKIN_COMMAND)
             add(LOITER_COMMAND)
+            add(ATTACHMENT_COMMAND)
         }
 
         val result = event.dispatcher.register(command as LiteralArgumentBuilder<CommandSourceStack>)
