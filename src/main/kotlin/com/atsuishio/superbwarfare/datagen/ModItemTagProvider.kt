@@ -646,7 +646,8 @@ class ModItemTagProvider(
                 ModItems.GRIP_RECTANGLE_VERTICAL,
                 ModItems.TRIANGLE_GRIP,
                 ModItems.GRIP_CQR_GEN2,
-                ModItems.GRIP_VERTICAL_BIPOD
+                ModItems.GRIP_VERTICAL_BIPOD,
+                ModItems.STEEL_PIPE_GRIP
             )
         )
 
