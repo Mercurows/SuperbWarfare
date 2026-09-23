@@ -5,7 +5,8 @@
     "Idle": "animation.hunting_rifle.idle",
     "Fire": "animation.hunting_rifle.fire",
     "ReloadEmpty": "animation.hunting_rifle.reload",
-    "Edit": "animation.hunting_rifle.edit"
+    "Edit": "animation.hunting_rifle.edit",
+    "Melee": "animation.hunting_rifle.hit"
   },
   "ShootRecoil": {
     "Offset": [1.0, 1.0, 3.5],

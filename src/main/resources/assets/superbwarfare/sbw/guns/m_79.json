@@ -5,7 +5,8 @@
     "Idle": "animation.m_79.idle",
     "Fire": "animation.m_79.fire",
     "ReloadEmpty": "animation.m_79.reload",
-    "Edit": "animation.m_79.edit"
+    "Edit": "animation.m_79.edit",
+    "Melee": "animation.m_79.hit"
   },
   "ShootRecoil": {
     "Offset": [1.0, 0.25, 1.5],

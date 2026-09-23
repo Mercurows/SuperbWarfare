@@ -10,7 +10,8 @@
     "Edit": "animation.qbz_95.edit",
     "ReloadNormalDrum": "animation.qbz_95.reload_normal_drum",
     "ReloadEmptyDrum": "animation.qbz_95.reload_empty_drum",
-    "HoldOpen": "animation.qbz_95.hold_open"
+    "HoldOpen": "animation.qbz_95.hold_open",
+    "Melee": "animation.qbz_95.hit"
   },
   "ShootRecoil": {
     "Offset": [0.85, 0.8, 0.45],

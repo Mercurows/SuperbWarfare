@@ -6,7 +6,8 @@
     "Fire": "animation.devotion.fire",
     "ReloadNormal": "animation.devotion.reload_normal",
     "ReloadEmpty": "animation.devotion.reload_empty",
-    "Edit": "animation.devotion.edit"
+    "Edit": "animation.devotion.edit",
+    "Melee": "animation.devotion.hit"
   },
   "ShootRecoil": {
     "Offset": [0.85, 0.8, 0.45],

@@ -9,7 +9,8 @@
     "Finish": "animation.mosin_nagant.finish",
     "Bolt": "animation.mosin_nagant.bolt",
     "Edit": "animation.mosin_nagant.edit",
-    "CloseStrike": "animation.mosin_nagant.close_strike"
+    "CloseStrike": "animation.mosin_nagant.close_strike",
+    "Melee": "animation.mosin_nagant.hit"
   },
   "ShootRecoil": {
     "Offset": [1.0, 1.0, 3.5],

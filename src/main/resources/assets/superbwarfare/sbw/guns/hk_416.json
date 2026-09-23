@@ -12,7 +12,8 @@
     "ReloadEmpty": "animation.hk_416.reload_empty",
     "Edit": "animation.hk_416.edit",
     "ReloadNormalDrum": "animation.hk_416.reload_normal_drum",
-    "ReloadEmptyDrum": "animation.hk_416.reload_empty_drum"
+    "ReloadEmptyDrum": "animation.hk_416.reload_empty_drum",
+    "Melee": "animation.hk_416.hit"
   },
   "ShootRecoil": {
     "Offset": [0.85, 0.8, 0.45],
