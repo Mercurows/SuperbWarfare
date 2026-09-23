@@ -24,7 +24,7 @@
     {
       "Prop": "MeleeDamage",
       "Op": "Mul",
-      "Value": 1.25
+      "Value": 5
     }
   ],
   "Bone": "custom_stock_adapter",
