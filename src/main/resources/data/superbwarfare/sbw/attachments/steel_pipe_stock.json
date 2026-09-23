@@ -27,6 +27,11 @@
       "Value": 5
     }
   ],
+  "Override": {
+    "MeleeSound": {
+      "Hit": "superbwarfare:steel_pipe_hit"
+    }
+  },
   "Bone": "custom_stock_adapter",
   "UsesGunStock": false,
   "RequiresAdapter": false,

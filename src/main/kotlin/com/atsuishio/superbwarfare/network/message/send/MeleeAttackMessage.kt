@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.data.gun.GunProp
+import com.atsuishio.superbwarfare.data.gun.MeleeSound
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
@@ -36,8 +38,10 @@ data class MeleeAttackMessage(val uuidList: List<SerializedUUID>) : ServerPacket
         val entities = uuidList.mapNotNull { EntityFindUtil.findEntity(player.level(), it.toString()) }
 
         val stack = player.mainHandItem
+        var meleeSound: MeleeSound? = null
         if (stack.item is GunItem) {
             val data = GunData.from(stack)
+            meleeSound = data.get(GunProp.MELEE_SOUND)
             for (type in Perk.Type.entries) {
                 val instances = data.perk.getInstances(type)
                 instances.forEach { it.perk.onMeleeSwing(data, it, player) }
@@ -45,12 +49,12 @@ data class MeleeAttackMessage(val uuidList: List<SerializedUUID>) : ServerPacket
         }
 
         if (entities.isNotEmpty()) {
-            attack(player, entities)
+            attack(player, entities, meleeSound)
         }
         player.swing(InteractionHand.MAIN_HAND)
     }
 
-    fun attack(attacker: Player, targets: List<Entity>) {
+    fun attack(attacker: Player, targets: List<Entity>, meleeSound: MeleeSound?) {
         var hurtCount = 0
         targets.forEachIndexed { index, target ->
             if (!ForgeHooks.onPlayerAttackTarget(attacker, target)) return@forEachIndexed
@@ -121,7 +125,7 @@ data class MeleeAttackMessage(val uuidList: List<SerializedUUID>) : ServerPacket
                     attacker.level().playSound(
                         null,
                         target,
-                        ModSounds.MELEE_HIT.get(),
+                        meleeSound?.hit ?: ModSounds.MELEE_HIT.get(),
                         SoundSource.PLAYERS,
                         1f,
                         ((2 * Random.nextDouble() - 1) * 0.1f + 1.0f).toFloat()

@@ -1450,6 +1450,7 @@
   "prop.superbwarfare.spread_pattern.triangle": "三角形",
   "prop.superbwarfare.spread_pattern.xshape": "十字形",
   "prop.superbwarfare.sound_info": "开火音效",
+  "prop.superbwarfare.melee_sound": "近战音效",
   "prop.superbwarfare.silenced": "消音",
   "prop.superbwarfare.bipod": "两脚架",
   "prop.superbwarfare.sound_radius_multiplier": "开火音效范围",

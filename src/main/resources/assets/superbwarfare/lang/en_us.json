@@ -1450,6 +1450,7 @@
   "prop.superbwarfare.spread_pattern.triangle": "Triangle",
   "prop.superbwarfare.spread_pattern.xshape": "Cross",
   "prop.superbwarfare.sound_info": "Fire Sounds",
+  "prop.superbwarfare.melee_sound": "Melee Sounds",
   "prop.superbwarfare.silenced": "Silenced",
   "prop.superbwarfare.bipod": "Bipod",
   "prop.superbwarfare.sound_radius_multiplier": "Fire Sound Radius",
