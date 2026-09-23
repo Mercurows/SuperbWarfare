@@ -96,6 +96,14 @@ data class DefaultGunData(
     val meleeAngle: Int = 30,
     @SerialName("MeleeRange")
     val meleeRange: Double = 0.0,
+    /**
+     * 近战攻击音效。
+     *
+     * 与 [soundInfo] 分开，是为了让配件/弹药/开火模式能**只**改近战音效：
+     * 属性覆盖的合并粒度是顶层属性，写 `"SoundInfo"` 会整块替换掉开火与换弹音效。
+     */
+    @SerialName("MeleeSound")
+    val meleeSound: MeleeSound = MeleeSound(),
     @JvmField
     @SerialName("Projectile")
     val projectile: StringOrObject<ProjectileInfo> = StringOrObject(ProjectileInfo()),

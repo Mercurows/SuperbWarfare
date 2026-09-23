@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.data.PMC
 import com.atsuishio.superbwarfare.data.Prop
 import com.atsuishio.superbwarfare.data.SingleOrList
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.getPerkPriority
+import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.SOUND_INFO
 import com.atsuishio.superbwarfare.init.ModPerks
 import com.atsuishio.superbwarfare.perk.Perk
 import kotlin.math.min
@@ -102,6 +103,14 @@ class GunProp<T, R>(
 
         @JvmField
         val MELEE_ANGLE = plainProp(DefaultGunData::meleeAngle)
+
+        /**
+         * 近战攻击音效。
+         *
+         * 单独一个属性（而不是挂在 [SOUND_INFO] 下），配件才能只覆盖它而不影响开火/换弹音效。
+         */
+        @JvmField
+        val MELEE_SOUND = complexProp(DefaultGunData::meleeSound) { it }
 
         @JvmField
         val ZOOM_SPREAD_RATE = plainProp(DefaultGunData::zoomSpreadRate)

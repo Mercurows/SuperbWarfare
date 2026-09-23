@@ -78,5 +78,10 @@ fun DefaultGunData.withOverrides(diff: Map<out Prop<*, *, *, *, *>, Any?>): Defa
         } else {
             soundInfo
         },
+        meleeSound = if (diff.containsKey(GunProp.MELEE_SOUND)) {
+            diff[GunProp.MELEE_SOUND] as? MeleeSound ?: meleeSound
+        } else {
+            meleeSound
+        },
     )
 }

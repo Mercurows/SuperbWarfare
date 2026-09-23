@@ -1494,7 +1494,7 @@ object ClientEventHandler {
                 fireCooldown = gunMelee + 4.0
             }
             if (gunMelee == data.get(GunProp.MELEE_DURATION) - data.get(GunProp.MELEE_DAMAGE_TIME)) {
-                doGunMeleeAttack(player, data.get(GunProp.MELEE_ANGLE).toDouble(), data.get(GunProp.MELEE_RANGE))
+                doGunMeleeAttack(player, data)
             }
         }
 
@@ -1503,8 +1503,11 @@ object ClientEventHandler {
         }
     }
 
-    fun doGunMeleeAttack(player: Player, angle: Double, customRange: Double) {
-        player.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 1f, 1f)
+    fun doGunMeleeAttack(player: Player, data: GunData) {
+        player.playSound(data.get(GunProp.MELEE_SOUND).swing, 1f, 1f)
+
+        val angle = data.get(GunProp.MELEE_ANGLE).toDouble()
+        val customRange = data.get(GunProp.MELEE_RANGE)
 
         val lookingEntity = TraceTool.findMeleeEntity(player, player.entityInteractionRange() + customRange)
         val targetEntities =
