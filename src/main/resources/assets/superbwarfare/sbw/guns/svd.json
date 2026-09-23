@@ -7,7 +7,8 @@
     "ReloadNormal": "animation.svd.reload_normal",
     "ReloadEmpty": "animation.svd.reload_empty",
     "Edit": "animation.svd.edit",
-    "HoldOpen": "animation.svd.hold_open"
+    "HoldOpen": "animation.svd.hold_open",
+    "Melee": "animation.svd.hit"
   },
   "ShootRecoil": {
     "Offset": [0.7, 1.0, 0.5],

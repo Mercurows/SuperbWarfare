@@ -20,6 +20,11 @@
       "Prop": "ZoomTime",
       "Op": "Mul",
       "Value": 1.1
+    },
+    {
+      "Prop": "MeleeDamage",
+      "Op": "Mul",
+      "Value": 5
     }
   ],
   "Bone": "custom_stock_adapter",
