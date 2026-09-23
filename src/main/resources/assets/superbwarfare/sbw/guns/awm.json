@@ -8,7 +8,8 @@
     "ReloadEmpty": "animation.awm.reload_empty",
     "Bolt": "animation.awm.bolt",
     "Edit": "animation.awm.edit",
-    "CloseStrike": "animation.awm.close_strike"
+    "CloseStrike": "animation.awm.close_strike",
+    "Melee": "animation.awm.hit"
   },
   "ShootRecoil": {
     "Offset": [1.0, 1.0, 3.5],

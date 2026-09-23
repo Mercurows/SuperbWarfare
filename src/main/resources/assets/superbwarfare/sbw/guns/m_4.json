@@ -12,7 +12,8 @@
     "ReloadEmpty": "animation.m_4.reload_empty",
     "Edit": "animation.m_4.edit",
     "ReloadNormalDrum": "animation.m_4.reload_normal_drum",
-    "ReloadEmptyDrum": "animation.m_4.reload_empty_drum"
+    "ReloadEmptyDrum": "animation.m_4.reload_empty_drum",
+    "Melee": "animation.m_4.hit"
   },
   "ShootRecoil": {
     "Offset": [0.85, 0.8, 0.45],

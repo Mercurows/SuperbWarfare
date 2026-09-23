@@ -9,7 +9,8 @@
     "Finish": "animation.marlin.finish",
     "Bolt": "animation.marlin.bolt",
     "Edit": "animation.marlin.edit",
-    "CloseStrike": "animation.marlin.close_strike"
+    "CloseStrike": "animation.marlin.close_strike",
+    "Melee": "animation.marlin.hit"
   },
   "ShootRecoil": {
     "Offset": [1.0, 1.0, 3.5],

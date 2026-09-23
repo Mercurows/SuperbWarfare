@@ -13,7 +13,8 @@
     ],
     "ReloadNormalDrum": "animation.qbz_191.reload_normal_drum",
     "ReloadEmptyDrum": "animation.qbz_191.reload_empty_drum",
-    "HoldOpen": "animation.qbz_191.hold_open"
+    "HoldOpen": "animation.qbz_191.hold_open",
+    "Melee": "animation.qbz_191.hit"
   },
   "Script": "superbwarfare:scripts/guns/fold_sight.js",
   "ShootRecoil": {

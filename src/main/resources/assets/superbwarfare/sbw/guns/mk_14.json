@@ -9,7 +9,8 @@
     "Edit": "animation.mk_14.edit",
     "ReloadNormalDrum": "animation.mk_14.reload_normal_drum",
     "ReloadEmptyDrum": "animation.mk_14.reload_empty_drum",
-    "HoldOpen": "animation.mk_14.hold_open"
+    "HoldOpen": "animation.mk_14.hold_open",
+    "Melee": "animation.mk_14.hit"
   },
   "ShootRecoil": {
     "Offset": [0.7, 1.0, 0.5],

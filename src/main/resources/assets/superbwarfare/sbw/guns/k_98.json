@@ -10,7 +10,8 @@
     "Finish": "animation.k_98.finish",
     "Bolt": "animation.k_98.bolt",
     "Edit": "animation.k_98.edit",
-    "CloseStrike": "animation.k_98.close_strike"
+    "CloseStrike": "animation.k_98.close_strike",
+    "Melee": "animation.k_98.hit"
   },
   "ShootRecoil": {
     "Offset": [1.0, 1.0, 3.5],
