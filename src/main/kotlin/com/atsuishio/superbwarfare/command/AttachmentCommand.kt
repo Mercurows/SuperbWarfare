@@ -29,34 +29,96 @@ private const val TYPE_ARG = "type"
 private const val ATTACHMENT_ARG = "attachment"
 
 /**
- * `/sbw attachment <entity> <type> <attachment|clear>`
+ * ```
+ * /sbw attachment <entity> set <type> <attachment>
+ * /sbw attachment <entity> clear [<type>]
+ * /sbw attachment <entity> random [<type>]
+ * ```
  *
- * 修改实体主手上枪械的配件：
- * - `entity`：只允许单个实体，其主手物品必须是 [GunItem]，否则指令失败
- * - `type`：配件槽位，取自 [AttachmentType] 的五种类型
- * - `attachment`：配件物品的注册名，其配件数据（[AttachmentDefinition]）的槽位必须与 `type` 相同，
- *   且必须在该枪械数据的 `AvailableAttachments` 列表中
- * - `clear`：清空该槽位上的配件
+ * 三条指令都作用于实体主手的枪械，主手物品不是 [GunItem] 时指令失败：
+ * - `set`：把槽位换成指定配件。物品与配件数据必须存在、配件数据的槽位必须与 `type` 一致，
+ *   并且必须出现在该枪械数据的 `AvailableAttachments` 列表里
+ * - `clear`：清空指定槽位，不写 `type` 时清空全部五种槽位
+ * - `random`：在可用列表里随机抽一个配件装上，不写 `type` 时每个槽位各抽一次
+ *   （该槽位没有可用配件时跳过，因此有可用配件的槽位都会被随机填上）
  */
 val ATTACHMENT_COMMAND = buildCommand("attachment") {
     requirePermission(2)
 
     entityArg(ENTITY_ARG) {
-        enumArg<AttachmentType>(TYPE_ARG) {
-            "clear" {
+        "set" {
+            enumArg<AttachmentType>(TYPE_ARG) {
+                resourceLocationArg(ATTACHMENT_ARG, suggests = attachmentIdSuggestions()) {
+                    execute {
+                        val type = enumArg
+                        val id = resourceLocationArg
+
+                        val data = mainHandGunData(entity) ?: fail { notGunMessage() }
+
+                        val definition = attachmentDefinitionOf(id)
+                            ?: fail {
+                                Component.translatable(
+                                    "commands.superbwarfare.attachment.fail.unknown", id.toString()
+                                )
+                            }
+
+                        if (definition.slot != type) {
+                            fail {
+                                Component.translatable(
+                                    "commands.superbwarfare.attachment.fail.type",
+                                    id.toString(),
+                                    definition.slot.slotName(),
+                                    type.slotName()
+                                )
+                            }
+                        }
+
+                        // 配件必须在这把枪的 AvailableAttachments 里声明可用
+                        if (!data.canInstall(type, id)) {
+                            fail {
+                                Component.translatable(
+                                    "commands.superbwarfare.attachment.fail.unavailable", id.toString()
+                                )
+                            }
+                        }
+
+                        applyAttachment(data, entity, type, id)
+
+                        success {
+                            Component.translatable(
+                                "commands.superbwarfare.attachment.success.set",
+                                entity.displayName,
+                                type.slotName(),
+                                id.toString()
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        "clear" {
+            // 不写 type：清空全部槽位
+            execute {
+                val data = mainHandGunData(entity) ?: fail { notGunMessage() }
+
+                for (type in AttachmentType.entries) {
+                    applyAttachment(data, entity, type, null)
+                }
+
+                success {
+                    Component.translatable(
+                        "commands.superbwarfare.attachment.success.clear.all", entity.displayName
+                    )
+                }
+            }
+
+            enumArg<AttachmentType>(TYPE_ARG) {
                 execute {
                     val type = enumArg
+                    val data = mainHandGunData(entity) ?: fail { notGunMessage() }
 
-                    val data = mainHandGunData(entity)
-                        ?: fail { Component.translatable("commands.superbwarfare.attachment.fail.not_gun") }
-
-                    // 弹匣配件决定弹匣容量，更换前先把已装填的弹药退还给持有者
-                    if (type == AttachmentType.MAGAZINE) {
-                        data.withdrawAmmo(entity)
-                    }
-
-                    data.attachment.remove(type)
-                    data.save()
+                    applyAttachment(data, entity, type, null)
 
                     success {
                         Component.translatable(
@@ -67,53 +129,57 @@ val ATTACHMENT_COMMAND = buildCommand("attachment") {
                     }
                 }
             }
+        }
 
-            resourceLocationArg(ATTACHMENT_ARG, suggests = attachmentIdSuggestions()) {
+        "random" {
+            // 不写 type：每个槽位各抽一次，保证有可用配件的槽位都被随机填上
+            execute {
+                val data = mainHandGunData(entity) ?: fail { notGunMessage() }
+
+                val rolls = AttachmentType.entries.mapNotNull { type ->
+                    randomAttachment(data, type)?.let { type to it }
+                }
+
+                if (rolls.isEmpty()) {
+                    fail { Component.translatable("commands.superbwarfare.attachment.fail.random") }
+                }
+
+                for ((type, id) in rolls) {
+                    applyAttachment(data, entity, type, id)
+                }
+
+                success {
+                    Component.translatable(
+                        "commands.superbwarfare.attachment.success.random.all",
+                        entity.displayName,
+                        rolls.map { (type, id) ->
+                            Component.translatable(
+                                "commands.superbwarfare.attachment.random.entry",
+                                type.slotName(),
+                                id.toString()
+                            )
+                        }.reduce { acc, entry -> acc.append(Component.literal(", ")).append(entry) }
+                    )
+                }
+            }
+
+            enumArg<AttachmentType>(TYPE_ARG) {
                 execute {
                     val type = enumArg
-                    val id = resourceLocationArg
+                    val data = mainHandGunData(entity) ?: fail { notGunMessage() }
 
-                    val data = mainHandGunData(entity)
-                        ?: fail { Component.translatable("commands.superbwarfare.attachment.fail.not_gun") }
-
-                    val definition = attachmentDefinitionOf(id)
+                    val id = randomAttachment(data, type)
                         ?: fail {
                             Component.translatable(
-                                "commands.superbwarfare.attachment.fail.unknown", id.toString()
+                                "commands.superbwarfare.attachment.fail.random.type", type.slotName()
                             )
                         }
 
-                    if (definition.slot != type) {
-                        fail {
-                            Component.translatable(
-                                "commands.superbwarfare.attachment.fail.type",
-                                id.toString(),
-                                definition.slot.slotName(),
-                                type.slotName()
-                            )
-                        }
-                    }
-
-                    // 配件必须在这把枪的 AvailableAttachments 里声明可用
-                    if (!data.canInstall(type, id)) {
-                        fail {
-                            Component.translatable(
-                                "commands.superbwarfare.attachment.fail.unavailable", id.toString()
-                            )
-                        }
-                    }
-
-                    // 弹匣配件决定弹匣容量，更换前先把已装填的弹药退还给持有者
-                    if (type == AttachmentType.MAGAZINE) {
-                        data.withdrawAmmo(entity)
-                    }
-
-                    data.attachment.set(type, id)
-                    data.save()
+                    applyAttachment(data, entity, type, id)
 
                     success {
                         Component.translatable(
-                            "commands.superbwarfare.attachment.success.set",
+                            "commands.superbwarfare.attachment.success.random",
                             entity.displayName,
                             type.slotName(),
                             id.toString()
@@ -124,6 +190,31 @@ val ATTACHMENT_COMMAND = buildCommand("attachment") {
         }
     }
 }
+
+/**
+ * 写入/移除配件，`id` 为 `null` 表示移除该槽位的配件。
+ *
+ * 弹匣槽位决定弹匣容量，换掉之前先把已装填的弹药退还给 [ammoSupplier]；
+ * 槽位内容没有变化时（`set` 同一个配件、`clear` 空槽位）什么都不做。
+ */
+private fun applyAttachment(data: GunData, ammoSupplier: Entity, type: AttachmentType, id: ResourceLocation?) {
+    if (data.attachment.id(type) == id) return
+
+    if (type == AttachmentType.MAGAZINE) {
+        data.withdrawAmmo(ammoSupplier)
+    }
+
+    data.attachment.set(type, id)
+    data.save()
+}
+
+/** 在 [type] 槽位的可用配件里随机抽一个，该槽位没有可用配件时返回 `null` */
+private fun randomAttachment(data: GunData, type: AttachmentType): ResourceLocation? =
+    installableAttachments(data, type).randomOrNull()
+
+/** [data] 的 [type] 槽位里真正装得上的配件：在可用列表里，且配件物品与配件数据都齐全 */
+private fun installableAttachments(data: GunData, type: AttachmentType): List<ResourceLocation> =
+    data.availableAttachments(type).filter { attachmentDefinitionOf(it) != null && data.canInstall(type, it) }
 
 /**
  * 补全可安装的配件；目标实体与槽位都已解析时，只补全这把枪真正支持的配件。
@@ -181,10 +272,7 @@ private fun attachmentDefinitionOf(id: ResourceLocation): AttachmentDefinition? 
 private fun attachmentIds(gun: GunData?, type: AttachmentType?): List<String> {
     if (gun != null && type != null) {
         // 与安装校验用同一套判定，保证补全出来的配件一定能装上
-        return gun.availableAttachments(type)
-            .filter { gun.canInstall(type, it) }
-            .map { it.toString() }
-            .sorted()
+        return installableAttachments(gun, type).map { it.toString() }.sorted()
     }
 
     return ModItems.ATTACHMENTS.entries.mapNotNull { entry ->
@@ -194,6 +282,9 @@ private fun attachmentIds(gun: GunData?, type: AttachmentType?): List<String> {
         id.toString()
     }.sorted()
 }
+
+private fun notGunMessage(): Component =
+    Component.translatable("commands.superbwarfare.attachment.fail.not_gun")
 
 /** 复用配件 tooltip 中的槽位名称，例如 `[Scope Attachment]` / `[瞄准镜配件]` */
 private fun AttachmentType.slotName(): Component =
