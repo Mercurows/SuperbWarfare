@@ -23,7 +23,7 @@
     },
     {
       "Prop": "MeleeDamage",
-      "Op": "Mul",
+      "Op": "Add",
       "Value": 5
     }
   ],
