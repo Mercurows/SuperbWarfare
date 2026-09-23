@@ -92,7 +92,8 @@
       "superbwarfare:scope_lpvo",
       "superbwarfare:scope_sniper",
       "superbwarfare:scope_winefox",
-      "superbwarfare:steel_pipe_scope"
+      "superbwarfare:steel_pipe_scope",
+      "superbwarfare:scope_spyglass"
     ],
     "Barrel": [
       "superbwarfare:meowlencer",
