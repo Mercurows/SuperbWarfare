@@ -1,0 +1,24 @@
+{
+  "Slot": "Grip",
+  "Level": 1,
+  "Modifiers": [
+    {
+      "Prop": "RecoilX",
+      "Op": "Mul",
+      "Value": 0.9
+    },
+    {
+      "Prop": "RecoilY",
+      "Op": "Mul",
+      "Value": 0.95
+    },
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 1.0
+    }
+  ],
+  "Bone": "grip_pos",
+  "Model": "superbwarfare:models/bedrock/attachment/steel_pipe_grip.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/steel_pipe_grip.png"
+}
