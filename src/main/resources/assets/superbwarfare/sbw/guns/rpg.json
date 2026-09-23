@@ -6,7 +6,8 @@
     "Fire": "animation.rpg.fire",
     "ReloadEmpty": "animation.rpg.reload",
     "Edit": "animation.rpg.edit",
-    "CloseStrike": "animation.rpg.empty"
+    "CloseStrike": "animation.rpg.empty",
+    "Melee": "animation.rpg.hit"
   },
   "ShootRecoil": {
     "Offset": [1.0, 0.25, 1.5],
