@@ -72,7 +72,8 @@
       "superbwarfare:scope_elcan_4x",
       "superbwarfare:scope_lpvo",
       "superbwarfare:scope_sniper",
-      "superbwarfare:scope_winefox"
+      "superbwarfare:scope_winefox",
+      "superbwarfare:scope_spyglass"
     ],
     "Magazine": [
       "superbwarfare:magazine_extend",
