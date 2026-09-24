@@ -1,11 +1,26 @@
 package com.atsuishio.superbwarfare.data
 
+import com.atsuishio.superbwarfare.Mod
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import java.lang.reflect.Type
 import kotlin.reflect.KProperty1
 import kotlin.reflect.javaType
+
+/**
+ * 解析 `Override` 里**嵌套对象**用的 Json。
+ *
+ * 与 [DataLoader.JSON] 同配置，唯一区别是错误要落到日志里：
+ * 数据文件本体走宽松解析（`ignoreUnknownKeys = true`），而 override 的嵌套对象此前用的是
+ * kotlinx 默认的 `Json`（`ignoreUnknownKeys = false`）——同一个字段写在数据文件里能容错，
+ * 写在 `Override` 里拼错一个键就**整块静默失效**。近战配置会大量写在 override 里，
+ * 所以这里统一改宽松 + 保留显式日志（拼错键不再是"什么都没发生"，而是一条 warning）。
+ */
+internal val OVERRIDE_JSON = Json(DataLoader.JSON) {
+    ignoreUnknownKeys = true
+    isLenient = true
+}
 
 @OptIn(ExperimentalStdlibApi::class)
 abstract class Prop<DATA : DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA, FIELD, RESULT, SELF : Prop<DATA, DEFAULT_DATA, FIELD, RESULT, SELF>> protected constructor(
@@ -34,8 +49,28 @@ abstract class Prop<DATA : DefaultDataSupplier<DEFAULT_DATA>, DEFAULT_DATA, FIEL
     }
 
     fun deserialize(data: DATA, element: JsonElement): RESULT {
-        val field = Json.decodeFromJsonElement(serializer, element)
+        val field = overrideDeserialize(element)
         return contextTransform?.invoke(data, field) ?: transform(field)
+    }
+
+    /**
+     * 用宽松的 [OVERRIDE_JSON] 解析 override 的字段值。
+     *
+     * 失败时把**属性名 + 原始 JSON** 打出来再抛出，调用方（[JsonOverrideApplier]）会记成一条 error：
+     * 以前是"拼错一个键 → 整块静默失效"，现在至少能在日志里看到是哪个属性、写了什么。
+     */
+    private fun overrideDeserialize(element: JsonElement): FIELD {
+        return try {
+            OVERRIDE_JSON.decodeFromJsonElement(serializer, element)
+        } catch (exception: Exception) {
+            Mod.LOGGER.warn(
+                "Failed to deserialize override value for property '{}': {}",
+                serializationName,
+                element,
+                exception
+            )
+            throw exception
+        }
     }
 
     companion object {

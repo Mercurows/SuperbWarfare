@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.animation.AnimationCurves
 import com.atsuishio.superbwarfare.client.decorator.ContainerItemDecorator
 import com.atsuishio.superbwarfare.client.decorator.LuckyContainerItemDecorator
 import com.atsuishio.superbwarfare.client.decorator.VehicleKeyItemDecorator
+import com.atsuishio.superbwarfare.client.gun.MeleeClientHandler
 import com.atsuishio.superbwarfare.client.model.curio.ParachuteModel
 import com.atsuishio.superbwarfare.client.model.curio.ThermalImagingGogglesModel
 import com.atsuishio.superbwarfare.client.overlay.*
@@ -121,6 +122,9 @@ object ClientRenderHandler {
     fun onClientSetup(event: FMLClientSetupEvent?) {
         CuriosRendererRegistry.register(ModItems.PARACHUTE.get()) { ParachuteRenderer() }
         CuriosRendererRegistry.register(ModItems.THERMAL_IMAGING_GOGGLES.get()) { ThermalImagingGogglesRenderer() }
+
+        // `/sbw melee force` 的客户端实现挂点（判定只在客户端做）
+        MeleeClientHandler.installDebugHooks()
     }
 
     @SubscribeEvent

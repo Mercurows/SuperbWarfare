@@ -21,9 +21,14 @@ import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.MAGAZINE
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.MAX_ZOOM
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.MELEE_DAMAGE
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.MIN_ZOOM
+import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.PROJECTILE
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.PROJECTILE_AMOUNT
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.SHOOT_POS
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.SHOOT_SHAKE
+import com.atsuishio.superbwarfare.data.gun.melee.MeleeAction
+import com.atsuishio.superbwarfare.data.gun.melee.ProjectileMarker
+import com.atsuishio.superbwarfare.data.gun.melee.ResolvedMeleeAction
+import com.atsuishio.superbwarfare.data.gun.melee.normalizeProjectileMarker
 import com.atsuishio.superbwarfare.data.gun.subdata.*
 import com.atsuishio.superbwarfare.data.gun.value.*
 import com.atsuishio.superbwarfare.event.GunEventHandler
@@ -1167,10 +1172,59 @@ class GunData private constructor(
             return this.rawDamageReduce.minDistance
         }
 
-    /** Checks if weapon is configured strictly for melee attacks. */
+    /**
+     * 是否为「近战专属」枪械（`"Projectile": "@melee"`）。
+     *
+     * 显式表达而不是靠 `ProjectileAmount <= 0` 隐式判定：`ProjectileAmount` 是**弹丸数量**，
+     * 让「不发射」由它兼职会在"0 发弹丸的霰弹配置"这类边界上糊掉。
+     */
+    fun projectileIsMelee(): Boolean =
+        get(PROJECTILE).itemId.normalizeProjectileMarker() == ProjectileMarker.MELEE
+
+    /**
+     * Checks if weapon is configured strictly for melee attacks.
+     *
+     * 主判据是显式的 `@melee`；同时保留一个周期的兼容回退
+     * （`ProjectileAmount <= 0 && MeleeDamage > 0`），让 22 把旧枪 json 一行都不用改。
+     * DataValidator 会对靠回退判定的枪提示迁移到 `"Projectile": "@melee"`。
+     */
     fun meleeOnly(): Boolean {
+        if (projectileIsMelee()) return hasMeleeAttack()
         return get(PROJECTILE_AMOUNT) <= 0 && get(MELEE_DAMAGE) > 0
     }
+
+    /** 本枪是否配置了近战动作（`MeleeDamage > 0`） */
+    fun hasMeleeAttack(): Boolean = get(MELEE_DAMAGE) > 0
+
+    /**
+     * 解析后的近战动作表。
+     *
+     * 为空时返回一个**单元素**的默认动作，让调用方不必到处判空。
+     */
+    fun meleeActions(): List<MeleeAction> {
+        val actions = get(GunProp.MELEE_ACTIONS)
+        return actions.ifEmpty { listOf(MeleeAction()) }
+    }
+
+    /**
+     * 把第 [index] 段动作解析成完全展开的判定参数（所有 `?:` 继承都在这里做完）。
+     */
+    fun resolveMeleeAction(index: Int): ResolvedMeleeAction {
+        val actions = meleeActions()
+        val action = actions[((index % actions.size) + actions.size) % actions.size]
+        return action.resolve(
+            defaultDuration = get(GunProp.MELEE_DURATION),
+            defaultHitTime = get(GunProp.MELEE_DAMAGE_TIME),
+            defaultDamage = get(MELEE_DAMAGE),
+            defaultAngle = get(GunProp.MELEE_ANGLE).toDouble(),
+            defaultRange = get(GunProp.MELEE_RANGE),
+            defaultSweep = get(GunProp.MELEE_SWEEP),
+            defaultHitbox = get(GunProp.MELEE_HITBOX),
+        )
+    }
+
+    /** 近战基础距离：`player.getEntityReach()` 由调用方加上 */
+    fun meleeRange(): Double = get(GunProp.MELEE_RANGE)
 
     /** Checks if weapon is a shotgun (projectile count > 1). */
     val isShotgun: Boolean
@@ -1249,6 +1303,15 @@ class GunData private constructor(
 
     @JvmField
     val ammoSlot: AmmoSlot
+
+    /**
+     * 枪械自带的自定义冷却表（近战动作/效果/副武器各占一个键）。
+     *
+     * 与 [perk] 的冷却实现同一套路（写在枪械 NBT 上、服务端逐 tick 递减），
+     * 因此**换一把同型号的枪不会绕过冷却**，也不需要额外的登出清理。
+     */
+    @JvmField
+    val cooldown: Cooldown
 
     @JvmField
     val burstAmount: IntValue
@@ -1693,6 +1756,7 @@ class GunData private constructor(
             this, { it.backupAmmoCount }, { s, v -> s.copy(backupAmmoCount = v) }
         )
         ammoSlot = AmmoSlot(gunDataTag)
+        cooldown = Cooldown(gunDataTag)
         burstAmount = StateIntValue(this, { it.burstAmount }, { s, v -> s.copy(burstAmount = v) })
         exp = StateDoubleValue(this, { it.exp }, { s, v -> s.copy(exp = v) })
 

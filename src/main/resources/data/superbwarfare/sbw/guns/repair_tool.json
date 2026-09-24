@@ -13,7 +13,7 @@
   "RPM": 1200,
   "HeatPerShoot": 1,
   "ShootDelay": 4,
-  "Projectile": "ray",
+  "Projectile": "@ray",
   "DefaultFireMode": "Auto",
   "GunType": "Special",
   "AvailableFireModes": [

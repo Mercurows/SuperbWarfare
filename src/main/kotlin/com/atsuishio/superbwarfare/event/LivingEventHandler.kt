@@ -21,6 +21,7 @@ import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.network.message.receive.DrawClientMessage
 import com.atsuishio.superbwarfare.network.message.receive.LivingGunKillMessage
+import com.atsuishio.superbwarfare.perk.MeleeAttackContext
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.atsuishio.superbwarfare.tools.*
@@ -223,8 +224,8 @@ object LivingEventHandler {
         val data = GunData.from(stack)
         val amount = (0.5f * event.amount).coerceAtMost(entity.maxHealth).toDouble()
 
-        // 判断是不是枪械能造成的伤害
-        if (!DamageTypeTool.isGunDamage(source) && !source.`is`(DamageTypes.PLAYER_ATTACK)) return
+        // 判断是不是枪械/近战能造成的伤害
+        if (!DamageTypeTool.isGunDamage(source) && !DamageTypeTool.isMeleeDamage(source)) return
 
         data.exp.add(amount)
 
@@ -254,8 +255,8 @@ object LivingEventHandler {
         val data = GunData.from(stack)
         val amount = 20 + 2 * entity.maxHealth.toDouble()
 
-        // 判断是不是枪械能造成的伤害
-        if (DamageTypeTool.isGunDamage(source) || source.`is`(DamageTypes.PLAYER_ATTACK)) {
+        // 判断是不是枪械/近战能造成的伤害
+        if (DamageTypeTool.isGunDamage(source) || DamageTypeTool.isMeleeDamage(source)) {
             data.exp.add(amount)
         }
 
@@ -497,7 +498,7 @@ object LivingEventHandler {
 
     private fun handleGunPerksWhenHurt(event: LivingHurtEvent) {
         val source = event.source
-        if (!DamageTypeTool.isGunDamage(source) && !source.`is`(DamageTypes.PLAYER_ATTACK)) return
+        if (!DamageTypeTool.isGunDamage(source) && !DamageTypeTool.isMeleeDamage(source)) return
 
         var attacker: LivingEntity? = null
         val sourceEntity = source.entity
@@ -524,6 +525,8 @@ object LivingEventHandler {
         var damage = event.amount
 
         val data = GunData.from(stack)
+        // 本段动作 + 来源：由 `MeleeAttackMessage` 在同 tick 写入（近战伤害的因果链就在一个 tick 内）
+        val meleeContext = if (attacker is Player) MeleeAttackContext.get(attacker.uuid) else null
         for (type in Perk.Type.entries) {
             val instance = data.perk.getInstances(type)
 
@@ -531,7 +534,8 @@ object LivingEventHandler {
                 if (DamageTypeTool.isGunDamage(source)) {
                     damage = it.perk.getModifiedDamage(damage, data, it, event.entity, source)
                     it.perk.onHurtEntity(damage, data, it, event.entity, source)
-                } else if (source.`is`(DamageTypes.PLAYER_ATTACK)) {
+                } else if (DamageTypeTool.isMeleeDamage(source)) {
+                    it.perk.onMeleeAttack(data, it, event.entity, source, meleeContext)
                     it.perk.onMeleeAttack(data, it, event.entity, source)
                 }
             }

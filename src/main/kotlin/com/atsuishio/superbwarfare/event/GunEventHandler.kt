@@ -329,6 +329,7 @@ object GunEventHandler {
         autoReload(shooter, data, inMainHand)
         tickPerk(shooter, data)
         handleCooldown(shooter, data, environmentRate)
+        data.cooldown.tick()
         redrawExtraAmmo(shooter, data)
 
         // Decrement animation and firing cooldown timers

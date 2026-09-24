@@ -94,7 +94,7 @@
       "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/laser.png",
       "DefaultFireMode": "Semi",
       "AvailableFireModes": "Semi",
-      "Projectile": "ray",
+      "Projectile": "@ray",
       "Range": 512,
       "DefaultZoom": 3,
       "RPM": 30,

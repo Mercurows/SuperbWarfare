@@ -5,6 +5,9 @@ import com.atsuishio.superbwarfare.data.IDBasedData
 import com.atsuishio.superbwarfare.data.ModColor
 import com.atsuishio.superbwarfare.data.SingleOrList
 import com.atsuishio.superbwarfare.data.StringOrObject
+import com.atsuishio.superbwarfare.data.gun.melee.MeleeAction
+import com.atsuishio.superbwarfare.data.gun.melee.MeleeHitbox
+import com.atsuishio.superbwarfare.data.gun.melee.MeleeSweep
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedResourceLocation
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedVec3
 import kotlinx.serialization.SerialName
@@ -96,6 +99,33 @@ data class DefaultGunData(
     val meleeAngle: Int = 30,
     @SerialName("MeleeRange")
     val meleeRange: Double = 0.0,
+    /**
+     * 一段近战动作结束后多少 tick 内再挥击算连招。
+     *
+     * 窗口内再挥击进下一段，超时回到第 0 段。
+     */
+    @SerialName("MeleeComboReset")
+    val meleeComboReset: Int = 15,
+    /**
+     * 近战判定形状（JSON 顶层 `MeleeHitbox`）。
+     *
+     * 不写时走旧的圆锥语义：`MeleeAngle` 总张角、上下不限、距离 = `player.getEntityReach() + MeleeRange`。
+     */
+    @SerialName("MeleeHitbox")
+    val meleeHitbox: MeleeHitbox? = null,
+    /**
+     * 近战横扫采样（JSON 顶层 `MeleeSweep`）。不写 = 静态判定。
+     */
+    @SerialName("MeleeSweep")
+    val meleeSweep: MeleeSweep? = null,
+    /**
+     * 近战动作序列（JSON 顶层 `MeleeActions`）。
+     *
+     * **循环序列**：下标在挥击开始时锁存，越过末尾回到第 0 段；每段可独立指定
+     * 动画/时长/结算 tick/判定/伤害/音效。
+     */
+    @SerialName("MeleeActions")
+    val meleeActions: SingleOrList<MeleeAction> = SingleOrList(),
     /**
      * 近战攻击音效。
      *
@@ -398,6 +428,7 @@ data class DefaultGunData(
             maxExtractEnergy = maxExtractEnergy.coerceIn(-1, clampedMaxEnergy).let { if (it < 0) clampedMaxEnergy else it },
             meleeDuration = clampedMeleeDuration,
             meleeAngle = meleeAngle.coerceIn(1, 180),
+            meleeComboReset = max(0, meleeComboReset),
             zoomSpreadRate = zoomSpreadRate.coerceIn(0.0, 1.0),
             range = max(1, range),
             meleeDamageTime = min(clampedMeleeDuration - 1, meleeDamageTime),

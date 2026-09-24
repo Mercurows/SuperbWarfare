@@ -5,6 +5,9 @@ import com.atsuishio.superbwarfare.api.event.ClientVehicleFireEvent
 import com.atsuishio.superbwarfare.client.ClientSyncedEntityHandler
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves
 import com.atsuishio.superbwarfare.client.animation.gun.GeoGunAnimationInstance
+import com.atsuishio.superbwarfare.client.gun.GunAction
+import com.atsuishio.superbwarfare.client.gun.GunActionLock
+import com.atsuishio.superbwarfare.client.gun.MeleeClientHandler
 import com.atsuishio.superbwarfare.client.lighting.LightPositionRegistry
 import com.atsuishio.superbwarfare.client.lighting.MuzzleFlashHelper
 import com.atsuishio.superbwarfare.client.lighting.VehicleLightingHandler
@@ -17,6 +20,9 @@ import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.event.ClientEventHandler.currentMeleeDuration
+import com.atsuishio.superbwarfare.event.ClientEventHandler.currentMeleeIndex
+import com.atsuishio.superbwarfare.event.ClientEventHandler.isGunMeleeActive
 import com.atsuishio.superbwarfare.event.ClientEventHandler.zoomTime
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.item.gun.GunItem
@@ -297,7 +303,17 @@ object ClientEventHandler {
     @JvmField
     var customRpm: Int = 0
 
+    /**
+     * **旧版 GeckoLib 近战计数器（已废弃，不再由新近战系统驱动）**。
+     *
+     * V2 渲染路径的近战状态按枪隔离存在 [com.atsuishio.superbwarfare.client.gun.GunActionLock] 里，
+     * 这个全局字段只为了让**尚未迁移的旧 GeckoLib 枪械**（`GunGeoItem` / `SecondaryCataclysmItem`）
+     * 继续编译通过，永远是 0——旧枪械的近战动画不会再触发，这是既定取舍（旧路径不迁移）。
+     *
+     * 新代码一律用 [isGunMeleeActive] / [currentMeleeDuration] / [currentMeleeIndex]。
+     */
     @JvmField
+    @Deprecated("Use GunActionLock / ClientEventHandler.isGunMeleeActive instead")
     var gunMelee: Int = 0
 
     // 按住开火键的持续tick
@@ -1473,58 +1489,65 @@ object ClientEventHandler {
         ).canOcclude()
     }
 
+    /**
+     * 近战入口（V 近战 / G 副武器，§9.4）。
+     *
+     * 与旧实现的区别：
+     * - 状态（连招下标 / 动作锁 / 本段时长）按**枪身份隔离**，放在 [com.atsuishio.superbwarfare.client.gun.GunActionLock]
+     *   里，切枪不会拿新枪的数据误触发一次攻击（缺陷 1）；
+     * - 旧的全局 `gunMelee` 计数器已不再被这里驱动（只为旧 GeckoLib 路径保留成编译占位），
+     *   动画状态改问 [isGunMeleeActive]；
+     * - 冷却判断里的原版物品冷却（`player.cooldowns.isOnCooldown(item)`）是死条件，已删（缺陷 11）；
+     * - **动作锁的计时在这里无条件推进**（不只是手上有枪的时候），否则主手切走会让
+     *   `FIRING`/`MELEE` 占用永远挂着。
+     *
+     * @param stack 主手物品
+     */
     fun handleGunMelee(player: Player, stack: ItemStack) {
-        val item = stack.item
-        if (item is GunItem) {
-            val data = GunData.from(stack)
-            val vehicle = player.vehicle
-            if (item.hasMeleeAttack(data) && gunMelee == 0 && drawTime < 0.01
-                && (ModKeyMappings.MELEE.isDown() || (data.meleeOnly() && holdingFireKey))
-                && !(vehicle is VehicleEntity && vehicle.banHand(player))
-                && !holdFireVehicle
-                && !notInGame
-                && !isEditing
-                && !(GunData.from(stack).reload.normal() || GunData.from(stack).reload.empty())
-                && !data.reloading()
-                && !data.charging() && !player.cooldowns.isOnCooldown(item)
-            ) {
-                gunMelee = data.get(GunProp.MELEE_DURATION)
-                fireCooldown = gunMelee + 4.0
-            }
-            if (gunMelee == data.get(GunProp.MELEE_DURATION) - data.get(GunProp.MELEE_DAMAGE_TIME)) {
-                doGunMeleeAttack(player, data)
-            }
-        }
+        // 动作锁计时：只要有活跃的动作状态就推进（帧率无关，每客户端 tick 一次）
+        val gunData = if (GunItem.isHeldWeapon(stack)) GunData.from(stack) else null
+        gunData?.let { GunActionLock.of(it).tick() }
 
-        if (gunMelee > 0) {
-            gunMelee--
-        }
+        if (gunData == null) return
+
+        MeleeClientHandler.tick(
+            player = player,
+            stack = stack,
+            meleeKeyDown = ModKeyMappings.MELEE.isDown(),
+            subWeaponFireKeyDown = ModKeyMappings.SUBWEAPON_FIRE.isDown(),
+            holdingFireKey = holdingFireKey,
+            drawTime = drawTime,
+            canOperate = !holdFireVehicle
+                    && !notInGame
+                    && !isEditing
+                    && !(player.vehicle is VehicleEntity && (player.vehicle as VehicleEntity).banHand(player)),
+            skipStateTick = true,
+        )
     }
 
-    fun doGunMeleeAttack(player: Player, data: GunData) {
-        player.playSound(data.get(GunProp.MELEE_SOUND).swing, 1f, 1f)
+    /**
+     * 这把枪当前是否正在挥击近战（动画状态机用）。
+     *
+     * 旧实现读全局的 `gunMelee` 计数器，现在读按枪隔离的动作状态。
+     */
+    @JvmStatic
+    fun isGunMeleeActive(stack: ItemStack): Boolean {
+        if (stack.item !is GunItem) return false
+        return GunActionLock.of(stack).meleeTicks > 0
+    }
 
-        val angle = data.get(GunProp.MELEE_ANGLE).toDouble()
-        val customRange = data.get(GunProp.MELEE_RANGE)
+    /** 当前这一段挥击的时长（动画按它拉伸） */
+    @JvmStatic
+    fun currentMeleeDuration(stack: ItemStack): Int {
+        if (stack.item !is GunItem) return 0
+        return GunActionLock.of(stack).meleeDuration
+    }
 
-        val lookingEntity = TraceTool.findMeleeEntity(player, player.getEntityReach() + customRange)
-        val targetEntities = SeekTool.seekLivingEntities(player, player.getEntityReach() + customRange, angle / 2)
-        val attackList = mutableListOf<Entity>()
-
-        if (lookingEntity != null) {
-            attackList += lookingEntity
-        }
-
-        if (!targetEntities.isEmpty()) {
-            val list = targetEntities.filter { it.isAlive && it != lookingEntity }
-                .sortedBy {
-                    player.lookAngle.angleTo(player.eyePosition.vectorTo(it.eyePosition))
-                }
-            attackList += list
-        }
-
-        player.swing(InteractionHand.MAIN_HAND)
-        sendPacketToServer(MeleeAttackMessage(attackList.map { it.uuid }))
+    /** 当前这一段挥击锁存的下标（解析 clip 名用） */
+    @JvmStatic
+    fun currentMeleeIndex(stack: ItemStack): Int {
+        if (stack.item !is GunItem) return 0
+        return GunActionLock.of(stack).meleeActionIndex
     }
 
     fun handleLungeAttack(player: Player, stack: ItemStack) {
@@ -1637,6 +1660,14 @@ object ClientEventHandler {
         val mode = fireModeInfo.mode
         val chargeConfig = fireModeInfo.chargeConfig()
         val singleShotMode = mode == FireMode.SEMI
+
+        // 动作互斥：近战/副武器/换弹占用期间不开火（§9.5）。
+        // 这里刻意放在最前面：被拒绝的入口不该产生任何副作用（包括后面的计时器推进）。
+        if (GunActionLock.of(data).blocks(GunAction.FIRING)) {
+            clientTimer.stop()
+            fireSpread = 0.0
+            return
+        }
 
         val chargeDelay = chargeConfig?.effectiveDuration?.toDouble()
             ?: data.get(GunProp.SHOOT_DELAY).toDouble()
@@ -1827,6 +1858,16 @@ object ClientEventHandler {
         if (mode == FireMode.BURST && burstFireAmount == 1) {
             fireCooldown = data.get(GunProp.BURST_COOLDOWN).toDouble()
         }
+
+        // 动作锁：开火占用 = 一个射击周期（§9.5）。连发期间会反复 acquire 同一个动作，
+        // `blocks()` 允许"自己"通过，所以不会卡住连射。
+        val cycleTicks = if (mode == FireMode.BURST && burstFireAmount > 0) {
+            data.get(GunProp.BURST_COOLDOWN)
+        } else {
+            val rpm = effectiveRpm(data)
+            ((60000.0 / rpm.coerceAtLeast(1)) / 50.0).toInt()
+        }
+        GunActionLock.of(data).force(GunAction.FIRING, cycleTicks.coerceAtLeast(1))
 
         if (burstFireAmount > 0) {
             burstFireAmount--
@@ -2327,7 +2368,7 @@ object ClientEventHandler {
                     Mth.lerp(0.2 * times, moveRotZ, 0.0) * (1 - zoomTime)
                 }
 
-            if (entity.isSprinting && !data.reloading() && (firePosTimer == 0.0 || firePosTimer > 1.0) && !ModKeyMappings.FIRE.isDown && zoomTime < 0.99 && gunMelee == 0) {
+            if (entity.isSprinting && !data.reloading() && (firePosTimer == 0.0 || firePosTimer > 1.0) && !ModKeyMappings.FIRE.isDown && zoomTime < 0.99 && !isGunMeleeActive(stack)) {
                 sprintBasicRotX = Mth.lerp(0.3f * times / (customWeight + 4), sprintBasicRotX, 1.0).coerceIn(0.0, 1.0)
                 sprintBasicRotY = Mth.lerp(0.18f * times / (customWeight + 4), sprintBasicRotY, 1.0).coerceIn(0.0, 1.0)
                 sprintBasicRotZ = Mth.lerp(0.3f * times / (customWeight + 4), sprintBasicRotZ, 1.0).coerceIn(0.0, 1.0)
@@ -2354,7 +2395,7 @@ object ClientEventHandler {
             moveFadeTime = Mth.lerp(0.1 * times, moveFadeTime, 0.0)
         }
 
-        if (entity.isSprinting && !data.reloading() && (firePosTimer == 0.0 || firePosTimer > 1.0) && !ModKeyMappings.FIRE.isDown && zoomTime < 0.99 && gunMelee == 0) {
+        if (entity.isSprinting && !data.reloading() && (firePosTimer == 0.0 || firePosTimer > 1.0) && !ModKeyMappings.FIRE.isDown && zoomTime < 0.99 && !isGunMeleeActive(stack)) {
             sprintFadeTime = if (entity.onGround()) {
                 Mth.lerp(0.08 * times, sprintFadeTime, 1.0)
             } else {

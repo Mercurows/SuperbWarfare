@@ -28,6 +28,10 @@ object ModDamageTypes {
     @JvmField val REPAIR_TOOL = registerDamageType("repair_tool")
     @JvmField val SUPER_STAR_HIT = registerDamageType("super_star_hit")
     @JvmField val SUPER_STAR_SLASH = registerDamageType("super_star_slash")
+    /** 枪械近战（枪托/刺刀等）。靠 `#superbwarfare:melee` 标签与 `minecraft:player_attack` 归为一类 */
+    @JvmField val GUN_MELEE = registerDamageType("gun_melee")
+    /** 枪械近战打头 */
+    @JvmField val GUN_MELEE_HEADSHOT = registerDamageType("gun_melee_headshot")
     // @formatter:on
 
     // Other Damage Types
@@ -122,6 +126,23 @@ object ModDamageTypes {
     @JvmStatic
     fun causeSuperStarSlashDamage(registryAccess: RegistryAccess, directEntity: Entity?, attacker: Entity?): DamageSource {
         return DamageMessages(registryAccess.registry(Registries.DAMAGE_TYPE).get().getHolderOrThrow(SUPER_STAR_SLASH), directEntity, attacker)
+    }
+
+    /**
+     * 枪械近战伤害。
+     *
+     * 归属标签是 `#superbwarfare:melee`（与 `minecraft:player_attack` 同一类），
+     * 判定入口是 [com.atsuishio.superbwarfare.tools.DamageTypeTool.isMeleeDamage]。
+     */
+    @JvmStatic
+    fun causeGunMeleeDamage(registryAccess: RegistryAccess, directEntity: Entity?, attacker: Entity?): DamageSource {
+        return DamageMessages(registryAccess.registry(Registries.DAMAGE_TYPE).get().getHolderOrThrow(GUN_MELEE), directEntity, attacker)
+    }
+
+    /** 枪械近战打头伤害 */
+    @JvmStatic
+    fun causeGunMeleeHeadshotDamage(registryAccess: RegistryAccess, directEntity: Entity?, attacker: Entity?): DamageSource {
+        return DamageMessages(registryAccess.registry(Registries.DAMAGE_TYPE).get().getHolderOrThrow(GUN_MELEE_HEADSHOT), directEntity, attacker)
     }
 
     /**

@@ -14,6 +14,8 @@ import com.atsuishio.superbwarfare.data.PropertyModifier
 import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.getDefault
+import com.atsuishio.superbwarfare.data.gun.melee.ProjectileMarker
+import com.atsuishio.superbwarfare.data.gun.melee.normalizeProjectileMarker
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.data.launchable.LaunchableEntityTool
 import com.atsuishio.superbwarfare.data.launchable.ShootData
@@ -310,6 +312,14 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
      * 武器是否能进行近战攻击
      */
     open fun hasMeleeAttack(data: GunData) = data.get(GunProp.MELEE_DAMAGE) > 0
+
+    /**
+     * 手持时是否按"枪械"处理（渲染/视角/输入/属性/HUD）。
+     *
+     * 副武器类配件（`SubWeaponItem`）覆盖为 `false` —— 它只有装在正常枪械上才生效，
+     * 拿在手里时应当按普通物品处理（三期使用；一期恒为 `true`）。
+     */
+    open fun useAsWeaponInHand(): Boolean = true
 
     /**
      * 获取额外伤害加成
@@ -737,12 +747,19 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
         val projectileInfo = data.get(GunProp.PROJECTILE)
         val projectileType = projectileInfo.itemId
-        val projectileTypeStr = projectileType.trim { it <= ' ' }.lowercase()
+        // `@` 前缀统一：`@empty`/`@ray`/`@melee` 是引擎保留标记，`trim().lowercase().removePrefix("@")`
+        // 归一化后，旧数据里的裸写法（`"empty"`/`"ray"`）继续作为兼容别名
+        val projectileTypeStr = projectileType.normalizeProjectileMarker()
 
-        if (projectileTypeStr == "empty") {
+        if (projectileTypeStr == ProjectileMarker.EMPTY) {
             return true
-        } else if (projectileTypeStr == "ray") {
+        } else if (projectileTypeStr == ProjectileMarker.RAY) {
             return this.shootRay(parameters)
+        } else if (projectileTypeStr == ProjectileMarker.MELEE) {
+            // 近战专属枪械（`"Projectile": "@melee"`）：不开火。
+            // 左键在 `ClickEventHandler` 里已经直通近战输入，这里只是防御性早退，
+            // 免得其它入口（脚本 / 载具 / 生物用枪）把它当成"未知弹种"静默吞掉。
+            return false
         }
 
         val headshot = data.get(GunProp.HEADSHOT)
@@ -1206,6 +1223,19 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     }
 
     companion object {
+        /**
+         * 供 Java / Mixin 调用的静态入口：这个栈**手持时是否按"枪械"处理**。
+         *
+         * 与 [useAsWeaponInHand] 配对使用，是"手持边界"的统一谓词：
+         * 渲染/视角/输入/属性/HUD 这些门禁都该问它，而不是直接 `instanceof GunItem`
+         * （副武器物品继承 `GunItem`，但拿在手里时不是枪）。
+         */
+        @JvmStatic
+        fun isHeldWeapon(stack: ItemStack?): Boolean {
+            if (stack == null || stack.isEmpty) return false
+            return (stack.item as? GunItem)?.useAsWeaponInHand() == true
+        }
+
         protected fun getEntityResult(target: Entity, hitBoxPos: Vec3, hitPos: Vec3): EntityResult {
             var headshot = false
             var legShot = false

@@ -21,7 +21,7 @@
     "Main": {
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
-      "Projectile": "ray",
+      "Projectile": "@ray",
       "RPM": 30,
       "Velocity": 6000000000,
       "Gravity": 0,

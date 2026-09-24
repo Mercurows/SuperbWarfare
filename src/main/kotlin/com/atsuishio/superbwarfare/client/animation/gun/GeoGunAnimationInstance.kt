@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.client.animation.gun
 
+import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.animation.AnimationPlayType
+import com.atsuishio.superbwarfare.client.gun.MeleeClientHandler
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.isDrumLevel
@@ -64,6 +66,15 @@ open class GeoGunAnimationInstance(
     private var currentState: GunAnimationState? = null
     private var fireSerial = 0
     private var consumedFireSerial = 0
+
+    /**
+     * 已消费的近战挥击序号。
+     *
+     * 近战是 `PLAY_ONCE_HOLD`：播完停在最后一帧。按住 V 连续挥击时 `currentState` 与
+     * `resolveState()` 的目标都是 `MELEE`，`currentState != target` 不成立 → runner 只会被 `tick()`，
+     * 于是**只有第一段会播**。这里比照开火那套 `fireSerial`，按序号重播。
+     */
+    private var consumedMeleeSerial = 0
     private var fireModeSwitchSerial = 0
     private var consumedFireModeSwitchSerial = 0
     private var lastFireModeName: String? = null
@@ -111,7 +122,7 @@ open class GeoGunAnimationInstance(
             if (data.reload.empty() && emptyReloadName(animation) != null) return GunAnimationState.RELOAD_EMPTY
         }
 
-        if (animation.melee != null && ClientEventHandler.gunMelee > 0) return GunAnimationState.MELEE
+        if (animation.melee != null && ClientEventHandler.isGunMeleeActive(stack)) return GunAnimationState.MELEE
         if (animation.run != null
             && player.isSprinting
             && player.onGround()
@@ -175,6 +186,64 @@ open class GeoGunAnimationInstance(
         return animation.reloadEmpty
     }
 
+    /**
+     * `GunAnimation.Melee` 可以写成字符串（单段，旧数据）或列表（连招各段各一支 clip）。
+     *
+     * 下标来自 `MeleeAction.Animation ?: melee[idx % size]`，**idx 由动作锁在挥击开始时锁存**
+     * （动画状态机只在状态切换那一帧解析 clip 名，中途改下标会让动画和判定对不上）。
+     */
+    private fun meleeName(animation: GunAnimation): String? {
+        val names = animation.melee?.list ?: return null
+        if (names.isEmpty()) return null
+        return names[ClientEventHandler.currentMeleeIndex(stack).mod(names.size)]
+    }
+
+    /** 本段动作自己声明的 clip 名（`MeleeAction.Animation`），优先于 `GunAnimation.Melee` */
+    private fun meleeActionName(): String? {
+        val data = GunData.from(stack)
+        if (!data.hasMeleeAttack()) return null
+        return try {
+            data.meleeActions()[ClientEventHandler.currentMeleeIndex(stack).mod(data.meleeActions().size)].animation
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    /**
+     * 解析 MELEE 状态实际使用的 clip 名。
+     *
+     * 找不到时**打 error 日志并回退到第一支**，而不是旧实现的静默 return
+     * ——静默失败会让"动画没播"变成一个查不出来的问题。
+     */
+    private fun resolveMeleeName(): String? {
+        val animation = GunResource.compute(stack).animation ?: return null
+        val names = animation.melee?.list.orEmpty()
+
+        val explicit = meleeActionName()
+        if (explicit != null) {
+            if (animations.containsKey(explicit)) return explicit
+            Mod.LOGGER.error(
+                "Melee action animation '{}' not found in model animation file for {}; falling back to GunAnimation.Melee[0]",
+                explicit, stack.item
+            )
+        }
+
+        val fallback = meleeName(animation)
+        if (fallback == null) {
+            Mod.LOGGER.error("No melee animation declared (GunAnimation.Melee) for {}", stack.item)
+            return null
+        }
+        if (animations.containsKey(fallback)) return fallback
+
+        // 资源还没加载好 / 名字写错：回退到列表第一支，并记一条 error
+        val first = names.firstOrNull()
+        Mod.LOGGER.error(
+            "Melee animation '{}' not found in model animation file for {}; falling back to '{}'",
+            fallback, stack.item, first
+        )
+        return first?.takeIf { animations.containsKey(it) }
+    }
+
     private fun animationName(state: GunAnimationState): String? {
         val animation = GunResource.compute(stack).animation ?: return null
         return when (state) {
@@ -189,7 +258,7 @@ open class GeoGunAnimationInstance(
             GunAnimationState.ITERATIVE -> animation.iterative
             GunAnimationState.ITERATIVE_2 -> animation.iterative
             GunAnimationState.FINISH -> animation.finish
-            GunAnimationState.MELEE -> animation.melee
+            GunAnimationState.MELEE -> resolveMeleeName()
             GunAnimationState.FIRE -> animation.fire
             GunAnimationState.RUN -> animation.run
         }
@@ -239,8 +308,29 @@ open class GeoGunAnimationInstance(
         }
     }
 
+    /**
+     * 近战动画的播放速度：按**本段动作**的时长拉伸，而不是全局 `MeleeDuration`。
+     *
+     * `playbackSpeed = clip.specifiedEndTimeMs / (action.Duration / 20f)`
+     */
+    /**
+     * 是否新开了一段挥击（每段只返回一次 `true`）。
+     *
+     * 与开火的 `fireSerial > consumedFireSerial` 同一个套路：近战状态一直是 `MELEE` 的时候，
+     * 只有这个序号能告诉动画侧"该从头播了"。
+     */
+    private fun consumeMeleeSwing(): Boolean {
+        val serial = MeleeClientHandler.swingSerial
+        if (serial <= consumedMeleeSerial) return false
+        consumedMeleeSerial = serial
+        return true
+    }
+
     private fun meleePlaybackSpeed(animation: BedrockAnimation): Float {
-        val targetSeconds = GunData.from(stack).get(GunProp.MELEE_DURATION).coerceAtLeast(1) / 20.0f
+        val duration = ClientEventHandler.currentMeleeDuration(stack)
+            .takeIf { it > 0 }
+            ?: GunData.from(stack).get(GunProp.MELEE_DURATION)
+        val targetSeconds = duration.coerceAtLeast(1) / 20.0f
         return if (animation.specifiedEndTimeS > 0f) {
             animation.specifiedEndTimeS / targetSeconds
         } else {
@@ -280,8 +370,7 @@ open class GeoGunAnimationInstance(
         val newRunner = AnimationRunner(fireAnimation, AnimationContext(fireAnimation.specifiedEndTimeS))
         newRunner.state = AnimationPlayType.PLAY_ONCE_STOP.state()
         fireRunner = newRunner
-        cachedPose = newRunner.evaluate()
-    }
+        cachedPose = newRunner.evaluate()    }
 
     private fun currentFireModeAnimation(): BedrockAnimation? {
         val animation = GunResource.compute(stack).animation ?: return null
@@ -700,8 +789,16 @@ open class GeoGunAnimationInstance(
         val animation = GunResource.compute(stack).animation
         val (holdOpenStarted, closeStrikeStarted) = updateMechanicalRunners(data, animation)
 
+        // 是否是新的一次挥击。**必须先于下面的 runner 判定消费掉**：
+        // 第一段挥击走的是 `runner == null` 分支（那里本来就会 play），要是留到这里再判，
+        // 序号没被消费就会在下一帧被当成"又挥了一次"，把动画从头重播一遍。
+        val newMeleeSwing = consumeMeleeSwing()
+
         if (runner == null || currentState != target) {
             play(target)
+        } else if (newMeleeSwing && currentState == GunAnimationState.MELEE) {
+            // 连招/连挥：状态没变但确实开了新的一段，重播一次（不重建状态，只换 runner）
+            play(GunAnimationState.MELEE)
         } else {
             runner?.tick()
         }
