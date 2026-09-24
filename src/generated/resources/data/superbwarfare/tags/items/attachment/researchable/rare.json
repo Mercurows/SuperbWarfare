@@ -1,9 +1,10 @@
 {
   "values": [
-    "#superbwarfare:attachment/barrel/rare",
-    "#superbwarfare:attachment/grip/rare",
     "#superbwarfare:attachment/scope/rare",
+    "#superbwarfare:attachment/magazine/rare",
+    "#superbwarfare:attachment/barrel/rare",
     "#superbwarfare:attachment/stock/rare",
-    "#superbwarfare:attachment/magazine/rare"
+    "#superbwarfare:attachment/grip/rare",
+    "#superbwarfare:attachment/bayonet/rare"
   ]
 }

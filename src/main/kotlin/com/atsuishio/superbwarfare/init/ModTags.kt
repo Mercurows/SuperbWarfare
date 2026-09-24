@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.init
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots
+import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.init.ModTags.DamageTypes.GUN_DAMAGE
 import com.atsuishio.superbwarfare.perk.Perk
 import net.minecraft.core.registries.Registries
@@ -11,6 +13,7 @@ import net.minecraft.tags.TagKey
 import net.minecraft.world.damagesource.DamageType
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.item.Item
+import net.minecraft.world.item.Rarity
 import net.minecraft.world.level.block.Block
 
 object ModTags {
@@ -103,48 +106,32 @@ object ModTags {
         @JvmField val RESEARCHABLE_DAMAGE_PERK_SUPERB = modItemTag("perk/researchable/damage/superb")
 
         // Attachment tag
+        //
+        // 槽位相关的那一大片 tag（`attachment/<桶>` 与 `attachment/<桶>/<稀有度>`）**全部由
+        // `AttachmentSlots` 注册表生成**：新增槽位只需要在注册表里登记一条，
+        // 这里、datagen 与"可研究配件"的汇总都会自动跟上。
         @JvmField val ATTACHMENT = modItemTag("attachment")
 
-        @JvmField val ATTACHMENT_SCOPE = modItemTag("attachment/scope")
-        @JvmField val ATTACHMENT_MAGAZINE = modItemTag("attachment/magazine")
-        @JvmField val ATTACHMENT_BARREL = modItemTag("attachment/barrel")
-        @JvmField val ATTACHMENT_STOCK = modItemTag("attachment/stock")
-        @JvmField val ATTACHMENT_GRIP = modItemTag("attachment/grip")
+        /** 槽位 → 该槽位的 tag（`superbwarfare:attachment/<AttachmentSlot.tagBucket>`） */
+        @JvmField
+        val ATTACHMENT_BY_SLOT: Map<AttachmentType, TagKey<Item>> = AttachmentSlots.ALL
+            .mapNotNull { slot -> slot.tagName?.let { slot.type to modItemTag(it) } }
+            .toMap()
 
-        @JvmField val ATTACHMENT_SCOPE_COMMON = modItemTag("attachment/scope/common")
-        @JvmField val ATTACHMENT_SCOPE_RARE = modItemTag("attachment/scope/rare")
-        @JvmField val ATTACHMENT_SCOPE_EPIC = modItemTag("attachment/scope/epic")
-        @JvmField val ATTACHMENT_SCOPE_LEGENDARY = modItemTag("attachment/scope/legendary")
-        @JvmField val ATTACHMENT_SCOPE_SUPERB = modItemTag("attachment/scope/superb")
-        @JvmField val ATTACHMENT_SCOPE_VIRTUAL = modItemTag("attachment/scope/virtual")
-
-        @JvmField val ATTACHMENT_MAGAZINE_COMMON = modItemTag("attachment/magazine/common")
-        @JvmField val ATTACHMENT_MAGAZINE_RARE = modItemTag("attachment/magazine/rare")
-        @JvmField val ATTACHMENT_MAGAZINE_EPIC = modItemTag("attachment/magazine/epic")
-        @JvmField val ATTACHMENT_MAGAZINE_LEGENDARY = modItemTag("attachment/magazine/legendary")
-        @JvmField val ATTACHMENT_MAGAZINE_SUPERB = modItemTag("attachment/magazine/superb")
-        @JvmField val ATTACHMENT_MAGAZINE_VIRTUAL = modItemTag("attachment/magazine/virtual")
-
-        @JvmField val ATTACHMENT_BARREL_COMMON = modItemTag("attachment/barrel/common")
-        @JvmField val ATTACHMENT_BARREL_RARE = modItemTag("attachment/barrel/rare")
-        @JvmField val ATTACHMENT_BARREL_EPIC = modItemTag("attachment/barrel/epic")
-        @JvmField val ATTACHMENT_BARREL_LEGENDARY = modItemTag("attachment/barrel/legendary")
-        @JvmField val ATTACHMENT_BARREL_SUPERB = modItemTag("attachment/barrel/superb")
-        @JvmField val ATTACHMENT_BARREL_VIRTUAL = modItemTag("attachment/barrel/virtual")
-
-        @JvmField val ATTACHMENT_STOCK_COMMON = modItemTag("attachment/stock/common")
-        @JvmField val ATTACHMENT_STOCK_RARE = modItemTag("attachment/stock/rare")
-        @JvmField val ATTACHMENT_STOCK_EPIC = modItemTag("attachment/stock/epic")
-        @JvmField val ATTACHMENT_STOCK_LEGENDARY = modItemTag("attachment/stock/legendary")
-        @JvmField val ATTACHMENT_STOCK_SUPERB = modItemTag("attachment/stock/superb")
-        @JvmField val ATTACHMENT_STOCK_VIRTUAL = modItemTag("attachment/stock/virtual")
-
-        @JvmField val ATTACHMENT_GRIP_COMMON = modItemTag("attachment/grip/common")
-        @JvmField val ATTACHMENT_GRIP_RARE = modItemTag("attachment/grip/rare")
-        @JvmField val ATTACHMENT_GRIP_EPIC = modItemTag("attachment/grip/epic")
-        @JvmField val ATTACHMENT_GRIP_LEGENDARY = modItemTag("attachment/grip/legendary")
-        @JvmField val ATTACHMENT_GRIP_SUPERB = modItemTag("attachment/grip/superb")
-        @JvmField val ATTACHMENT_GRIP_VIRTUAL = modItemTag("attachment/grip/virtual")
+        /**
+         * 配件稀有度子 tag 的后缀，顺序决定生成文件里子 tag 的排列顺序。
+         *
+         * 稀有度是**物品**的属性（`Item.getRarity`），不是槽位的属性，所以这份表留在这里而不是注册表里。
+         */
+        @JvmField
+        val ATTACHMENT_RARITY_SUFFIXES: List<Pair<Rarity, String>> = listOf(
+            Rarity.COMMON to "common",
+            Rarity.RARE to "rare",
+            Rarity.EPIC to "epic",
+            ModRarities.LEGENDARY to "legendary",
+            ModRarities.SUPERB to "superb",
+            ModRarities.VIRTUAL to "virtual",
+        )
 
         @JvmField val ATTACHMENT_RESEARCHABLE_COMMON = modItemTag("attachment/researchable/common")
         @JvmField val ATTACHMENT_RESEARCHABLE_RARE = modItemTag("attachment/researchable/rare")
@@ -152,6 +139,25 @@ object ModTags {
         @JvmField val ATTACHMENT_RESEARCHABLE_LEGENDARY = modItemTag("attachment/researchable/legendary")
         @JvmField val ATTACHMENT_RESEARCHABLE_SUPERB = modItemTag("attachment/researchable/superb")
         @JvmField val ATTACHMENT_RESEARCHABLE_VIRTUAL = modItemTag("attachment/researchable/virtual")
+
+        /** 可研究配件 tag 按稀有度汇总（各槽位同稀有度的子 tag 的并集） */
+        @JvmField
+        val ATTACHMENT_RESEARCHABLE_BY_RARITY: Map<Rarity, TagKey<Item>> = mapOf(
+            Rarity.COMMON to ATTACHMENT_RESEARCHABLE_COMMON,
+            Rarity.RARE to ATTACHMENT_RESEARCHABLE_RARE,
+            Rarity.EPIC to ATTACHMENT_RESEARCHABLE_EPIC,
+            ModRarities.LEGENDARY to ATTACHMENT_RESEARCHABLE_LEGENDARY,
+            ModRarities.SUPERB to ATTACHMENT_RESEARCHABLE_SUPERB,
+            ModRarities.VIRTUAL to ATTACHMENT_RESEARCHABLE_VIRTUAL,
+        )
+
+        /** 槽位 [type] 在 [rarity] 稀有度下的子 tag（`attachment/<桶>/<后缀>`）；该组合无 tag 时返回 `null` */
+        @JvmStatic
+        fun attachmentRarityTag(type: AttachmentType, rarity: Rarity): TagKey<Item>? {
+            val path = ATTACHMENT_BY_SLOT[type]?.location?.path ?: return null
+            val suffix = ATTACHMENT_RARITY_SUFFIXES.firstOrNull { it.first == rarity }?.second ?: return null
+            return modItemTag("$path/$suffix")
+        }
 
         @JvmField val HAMMER = modItemTag("hammer")
         @JvmField val WRENCHES = commonItemTag("wrenches")

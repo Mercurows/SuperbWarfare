@@ -637,6 +637,7 @@
   "attachment.superbwarfare.slot.barrel": "[枪口配件]",
   "attachment.superbwarfare.slot.stock": "[枪托配件]",
   "attachment.superbwarfare.slot.grip": "[握把配件]",
+  "attachment.superbwarfare.slot.bayonet": "[刺刀配件]",
   "attachment.superbwarfare.modify": "修改",
   "attachment.superbwarfare.scope_mode": "瞄准镜",
 
@@ -704,6 +705,7 @@
   "item.superbwarfare.steel_pipe_stock": "钢管枪托",
   "item.superbwarfare.steel_pipe_scope": "钢管瞄准镜",
   "item.superbwarfare.steel_pipe_grip": "钢管握把",
+  "item.superbwarfare.bayonet_knife": "刺刀",
 
   "death.attack.gunfire": "%1$s被%2$s射爆了",
   "death.attack.gunfire.entity": "%1$s被%2$s射爆了",
@@ -961,6 +963,7 @@
   "commands.superbwarfare.attachment.fail.unknown": "未知的配件：%1$s",
   "commands.superbwarfare.attachment.fail.type": "配件%1$s属于%2$s，无法安装到%3$s",
   "commands.superbwarfare.attachment.fail.unavailable": "该枪械的可用配件列表中没有%1$s",
+  "commands.superbwarfare.attachment.fail.mount": "%1$s已经占用了%2$s挂点",
   "commands.superbwarfare.attachment.fail.random": "该枪械没有可用的配件",
   "commands.superbwarfare.attachment.fail.random.type": "该枪械没有可用的%1$s",
   "commands.superbwarfare.attachment.success.set": "已将%1$s的%2$s设置为%3$s",
@@ -1468,12 +1471,14 @@
   "prop.superbwarfare.spread_pattern.xshape": "十字形",
   "prop.superbwarfare.sound_info": "开火音效",
   "prop.superbwarfare.melee_sound": "近战音效",
+  "prop.superbwarfare.melee_actions": "近战动作",
   "prop.superbwarfare.silenced": "消音",
   "prop.superbwarfare.bipod": "两脚架",
   "prop.superbwarfare.sound_radius_multiplier": "开火音效范围",
   "prop.superbwarfare.muzzle_flash_scale": "枪口火焰大小",
   "prop.superbwarfare.zoom_time": "瞄准时间",
   "prop.superbwarfare.melee_damage": "近战伤害",
+  "prop.superbwarfare.melee_range": "近战距离",
 
   "superbwarfare.book.superb_warfare_manual": "卓越单兵手册",
   "superbwarfare.book.superb_warfare_manual.des": "卓越前线模组的教程，教你如何成为一名卓越的士兵（编写中）",

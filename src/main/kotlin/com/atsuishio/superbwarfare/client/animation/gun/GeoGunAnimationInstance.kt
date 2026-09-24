@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.isDrumLevel
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.resource.gun.GunAnimation
+import com.atsuishio.superbwarfare.resource.gun.GunAnimationNames
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.atsuishio.superbwarfare.resource.model.GunModelReloadListener
 import com.atsuishio.superbwarfare.tools.localPlayer
@@ -78,6 +79,13 @@ open class GeoGunAnimationInstance(
     private var fireModeSwitchSerial = 0
     private var consumedFireModeSwitchSerial = 0
     private var lastFireModeName: String? = null
+
+    /**
+     * 上一次已经打过日志的近战动画解析失败（见 [logMeleeMissOnce]）。
+     *
+     * runner 为空时 [resolveMeleeName] 每个 tick 都会被调一次，不去重的话"clip 名写错"会刷满日志。
+     */
+    private var loggedMeleeMiss: String? = null
     private val pendingShellEjects = ArrayList<Int>()
     private val pendingParticles = ArrayList<ParticleEffectData>()
     private var cachedPose: Pose = DummyPose.INSTANCE
@@ -198,50 +206,89 @@ open class GeoGunAnimationInstance(
         return names[ClientEventHandler.currentMeleeIndex(stack).mod(names.size)]
     }
 
-    /** 本段动作自己声明的 clip 名（`MeleeAction.Animation`），优先于 `GunAnimation.Melee` */
-    private fun meleeActionName(): String? {
+    /** 本段动作自己声明的动画候选链（`MeleeAction.Animation`），优先于 `GunAnimation.Melee` */
+    private fun meleeActionAnimations(): List<String> {
         val data = GunData.from(stack)
-        if (!data.hasMeleeAttack()) return null
+        if (!data.hasMeleeAttack()) return emptyList()
         return try {
-            data.meleeActions()[ClientEventHandler.currentMeleeIndex(stack).mod(data.meleeActions().size)].animation
+            val actions = data.meleeActions()
+            actions[ClientEventHandler.currentMeleeIndex(stack).mod(actions.size)].animationCandidates()
         } catch (_: Exception) {
-            null
+            emptyList()
         }
     }
 
     /**
      * 解析 MELEE 状态实际使用的 clip 名。
      *
-     * 找不到时**打 error 日志并回退到第一支**，而不是旧实现的静默 return
+     * 动作表里是**候选链**，短名会被拼成 `animation.<宿主枪 id>.<短名>`（见 [GunAnimationNames]）：
+     * 动作表所在的枪械数据会被多把枪共用（配件/弹种覆盖），写不了某把枪的完整 clip 名，
+     * 拼出来的候选正好能表达"这把枪有专属动画就用专属的，没有就退回通用的那一支"。
+     *
+     * 候选全部落空时**打 error 日志并回退到 `GunAnimation.Melee`**，而不是静默失败
      * ——静默失败会让"动画没播"变成一个查不出来的问题。
+     *
+     * 注意：runner 为空时本方法**每个 tick 都会被调一次**（`tick()` 里 `runner == null` 就会重播），
+     * 所以失败日志按"这一次的解析结果"去重，不会刷屏。
      */
     private fun resolveMeleeName(): String? {
-        val animation = GunResource.compute(stack).animation ?: return null
+        val resource = GunResource.from(stack)
+        val animation = resource.compute().animation ?: return null
         val names = animation.melee?.list.orEmpty()
 
-        val explicit = meleeActionName()
-        if (explicit != null) {
-            if (animations.containsKey(explicit)) return explicit
-            Mod.LOGGER.error(
-                "Melee action animation '{}' not found in model animation file for {}; falling back to GunAnimation.Melee[0]",
-                explicit, stack.item
-            )
+        val candidates = meleeActionAnimations()
+        if (candidates.isNotEmpty()) {
+            val resolved = GunAnimationNames.resolveFirst(candidates, resource.id) { animations.containsKey(it) }
+            if (resolved != null) {
+                loggedMeleeMiss = null
+                return resolved
+            }
+
+            // 资源还没加载完时（animations 为空）不打日志，下一帧还会再解析一次
+            if (animations.isNotEmpty()) {
+                logMeleeMissOnce(
+                    "candidates=$candidates",
+                    "Melee action animation candidates {} not found in the animation file of {}; " +
+                            "falling back to GunAnimation.Melee[0]",
+                    candidates.map { GunAnimationNames.resolve(it, resource.id) },
+                    stack.item
+                )
+            }
         }
 
         val fallback = meleeName(animation)
         if (fallback == null) {
-            Mod.LOGGER.error("No melee animation declared (GunAnimation.Melee) for {}", stack.item)
+            logMeleeMissOnce(
+                "no-melee-clip",
+                "No melee animation declared (GunAnimation.Melee) for {}", stack.item
+            )
             return null
         }
-        if (animations.containsKey(fallback)) return fallback
+        if (animations.containsKey(fallback)) {
+            loggedMeleeMiss = null
+            return fallback
+        }
 
         // 资源还没加载好 / 名字写错：回退到列表第一支，并记一条 error
         val first = names.firstOrNull()
-        Mod.LOGGER.error(
-            "Melee animation '{}' not found in model animation file for {}; falling back to '{}'",
+        logMeleeMissOnce(
+            "fallback=$fallback",
+            "Melee animation '{}' not found in the animation file of {}; falling back to '{}'",
             fallback, stack.item, first
         )
         return first?.takeIf { animations.containsKey(it) }
+    }
+
+    /**
+     * 同一条解析失败只打一次日志。
+     *
+     * [key] 描述"这次失败的是什么"，连续相同的失败被吞掉；成功解析一次后 key 会被清掉，
+     * 之后再失败仍然会打日志。
+     */
+    private fun logMeleeMissOnce(key: String, message: String, vararg args: Any?) {
+        if (loggedMeleeMiss == key) return
+        loggedMeleeMiss = key
+        Mod.LOGGER.error(message, *args)
     }
 
     private fun animationName(state: GunAnimationState): String? {

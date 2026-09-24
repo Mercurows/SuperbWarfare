@@ -30,7 +30,7 @@ data class MeleeHitbox(
     @SerialName("Type")
     val type: MeleeHitboxType = MeleeHitboxType.CONE,
 
-    /** 判定距离（沿视线向上，或圆锥/胶囊的作用半径）。不写时由 [DefaultGunData.meleeRange] 决定 */
+    /** 判定距离（沿视线向上，或圆锥/胶囊的作用半径）。实际值 = 这里写的 Range + 枪的 `MeleeRange` */
     @SerialName("Range")
     val range: Double = 0.0,
 

@@ -5,7 +5,10 @@ import com.atsuishio.superbwarfare.command.builder.entityArg
 import com.atsuishio.superbwarfare.command.builder.intArg
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
+import com.atsuishio.superbwarfare.data.gun.melee.MeleeAction
 import com.atsuishio.superbwarfare.item.gun.GunItem
+import com.atsuishio.superbwarfare.resource.gun.GunAnimationNames
+import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.mojang.brigadier.context.CommandContext
 import net.minecraft.ChatFormatting
 import net.minecraft.commands.CommandSourceStack
@@ -27,7 +30,7 @@ private const val INDEX_ARG = "index"
  * 三条指令都作用于实体主手的枪械（不写实体时就是执行者自己），主手不是 [GunItem] 时失败。
  *
  * - `info`：打印**解析后**的近战总览（近战判定来源 / 距离 / 形状 / 横扫 / 连招窗口 / 冷却表）
- * - `actions`：逐段打印动作表（`Animation` / `Duration` / `HitTime` / 形状 / 伤害 / 倍率 / 冷却）
+ * - `actions`：逐段打印动作表（`Animation` 候选链及其拼出来的 clip 名 / `Duration` / `HitTime` / 形状 / 伤害 / 倍率 / 冷却）
  * - `force <index>`：把连招下标强制设成 `index` 并**立刻触发一次挥击**——调参时不用先挥两下进第二段
  *
  * 判定体可视化不在服务端：客户端按住 `F3 + B`（原版 hitbox 显示）再持一把能近战的枪即可看到
@@ -80,6 +83,27 @@ private fun mainHandGunData(entity: Entity?): GunData? {
 
 private fun notGunMessage(): Component =
     Component.translatable("commands.superbwarfare.melee.fail.not_gun")
+
+/** 主手枪械的 id（动画 clip 名的前缀就是它），主手不是枪时返回 `null` */
+private fun mainHandGunId(entity: Entity?): String? {
+    val stack = (entity as? LivingEntity)?.mainHandItem ?: return null
+    if (stack.item !is GunItem) return null
+    return GunResource.from(stack).id
+}
+
+/**
+ * 把本段动作的动画候选链打成一行：`hit_bayonet/anim.ak_47.hit_bayonet | hit/anim.ak_47.hit`。
+ *
+ * 短名拼成什么由 [GunAnimationNames] 决定；**具体哪一支存在只有客户端知道**（要读动画文件），
+ * 所以这里只展示"客户端会按顺序试哪些名字"。
+ */
+private fun animationChain(action: MeleeAction, gunId: String?): String {
+    val candidates = action.animationCandidates()
+    if (candidates.isEmpty()) return "<from GunAnimation.Melee>"
+    if (gunId == null) return candidates.joinToString(" | ")
+
+    return candidates.joinToString(" | ") { "$it -> ${GunAnimationNames.resolve(it, gunId)}" }
+}
 
 private fun printMeleeInfo(context: CommandContext<CommandSourceStack>, entity: Entity?): Int {
     val data = mainHandGunData(entity) ?: return context.failWith(notGunMessage())
@@ -139,6 +163,7 @@ private fun printMeleeInfo(context: CommandContext<CommandSourceStack>, entity: 
 
 private fun printActions(context: CommandContext<CommandSourceStack>, entity: Entity?): Int {
     val data = mainHandGunData(entity) ?: return context.failWith(notGunMessage())
+    val gunId = mainHandGunId(entity)
 
     val actions = data.meleeActions()
     context.ok(Component.literal("[Melee] actions = ${actions.size}").withStyle(ChatFormatting.AQUA))
@@ -148,7 +173,7 @@ private fun printActions(context: CommandContext<CommandSourceStack>, entity: En
         val resolved = data.resolveMeleeAction(index)
         context.ok(
             Component.literal(
-                "#$index animation=${raw.animation ?: "<from GunAnimation.Melee>"} " +
+                "#$index animation=${animationChain(raw, gunId)} " +
                         "duration=${resolved.duration} hitTime=${resolved.hitTime} " +
                         "damage=${"%.2f".format(resolved.damage)} " +
                         "hitbox=${resolved.hitbox.type} range=${"%.2f".format(resolved.hitbox.range)} " +

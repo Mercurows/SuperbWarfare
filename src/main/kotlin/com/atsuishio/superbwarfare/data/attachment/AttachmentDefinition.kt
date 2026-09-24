@@ -31,6 +31,16 @@ data class AttachmentDefinition(
     @SerialName("UsesGunStock")
     val usesGunStock: Boolean = false,
 
+    // 挂点组名：覆盖所在槽位的默认值（`AttachmentSlots` 里登记的那个）。
+    // 登记到同一挂点组的槽位互斥 —— 例如把一个转接件声明成 `"Mount": "muzzle_lug"`，
+    // 它就会和刺刀抢同一个位置。
+    @SerialName("Mount")
+    val mount: String? = null,
+
+    // 允许与同一挂点组上的其它配件共存（默认关）。用于"转接座"这类本来就是用来叠装的配件。
+    @SerialName("AllowSharedMount")
+    val allowSharedMount: Boolean = false,
+
     // 安装该枪托时是否需要适配器；部分枪托（如泽宁特 PT-1）可直接安装在枪身上
     @SerialName("RequiresAdapter")
     val requiresAdapter: Boolean = true,

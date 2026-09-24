@@ -1,7 +1,12 @@
 package com.atsuishio.superbwarfare.data
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
+import com.atsuishio.superbwarfare.data.attachment.AttachmentMountBone
+import com.atsuishio.superbwarfare.data.attachment.AttachmentRenderMode
+import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.melee.MeleeHitboxType
 import com.atsuishio.superbwarfare.data.gun.melee.isMeleeProjectileMarker
 import kotlinx.serialization.json.Json
@@ -123,17 +128,56 @@ object DataValidator {
      */
     @JvmOverloads
     private fun validateDerivedState(decoded: Any, warn: (String) -> Unit = {}) {
-        if (decoded !is DefaultGunData) return
+        when (decoded) {
+            is DefaultGunData -> {
+                for (entry in decoded.ammoConsumers) {
+                    // 强制求值 lazy 派生出来的 sources
+                    entry.value.primary.type
+                }
 
-        for (entry in decoded.ammoConsumers) {
-            // 强制求值 lazy 派生出来的 sources
-            entry.value.primary.type
+                decoded.fireModes.size
+                decoded.availablePerks()
+
+                validateMeleeData(decoded, warn)
+            }
+
+            is AttachmentDefinition -> validateAttachmentData(decoded, warn)
+        }
+    }
+
+    /**
+     * 配件数据的校验规则。
+     *
+     * 抓的是几类"写错了不报错、只会静默失效"的问题：
+     * - 槽位没有登记进 `AttachmentSlots`（**致命**：`AttachmentSlots.of` 会直接抛异常）
+     * - 槽位的渲染走注册表通用路径，却没写 `Model`/`Texture`（装了但枪上看不见）
+     * - `Bone` 写在"约定骨骼"槽位上（渲染不看它）
+     * - `Override` 里写了不是枪械属性的键（宽松解析会静默忽略）
+     *
+     * **不做**骨骼是否存在的校验：那要读客户端模型，只能等资源加载完再查。
+     */
+    private fun validateAttachmentData(data: AttachmentDefinition, warn: (String) -> Unit) {
+        val slot = AttachmentSlots.ofOrNull(data.slot)
+            ?: error("Attachment slot ${data.slot} is not registered in AttachmentSlots.ALL")
+
+        if (slot.renderMode == AttachmentRenderMode.GENERIC && (data.model == null || data.texture == null)) {
+            warn(
+                "slot ${data.slot} is rendered generically, but " +
+                        (if (data.model == null) "Model" else "Texture") +
+                        " is missing; the attachment will not show up on the gun"
+            )
         }
 
-        decoded.fireModes.size
-        decoded.availablePerks()
+        val mountBone = slot.mountBone
+        if (mountBone is AttachmentMountBone.Fixed && data.bone != null) {
+            warn("Bone=${data.bone} is ignored: slot ${data.slot} always mounts on '${mountBone.name}'")
+        }
 
-        validateMeleeData(decoded, warn)
+        for (key in data.override?.keys.orEmpty()) {
+            if (GunProp.entries.none { it.serializationName == key }) {
+                warn("Override key '$key' is not a registered gun property and will be ignored")
+            }
+        }
     }
 
     /**
@@ -228,6 +272,15 @@ object DataValidator {
             require(effectiveHitTime <= effectiveDuration) {
                 "MeleeActions[$index] resolves at HitTime=$effectiveHitTime but the swing only lasts " +
                         "Duration=$effectiveDuration ticks; it would never hit"
+            }
+
+            // 动画候选链：空候选会拼出一个毫无意义的名字，只能靠运行时日志发现，这里提前拦掉。
+            // clip **是否存在**查不了（要读客户端的动画文件），那部分仍然靠运行时日志。
+            for (candidate in action.animationCandidates()) {
+                require(candidate.isNotBlank()) {
+                    "MeleeActions[$index].Animation contains a blank clip name; " +
+                            "candidates are tried in order, e.g. [\"hit_bayonet\", \"hit\"]"
+                }
             }
 
             for (effect in action.effects.orEmpty()) {

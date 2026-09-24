@@ -4,6 +4,7 @@
     "#superbwarfare:attachment/magazine",
     "#superbwarfare:attachment/barrel",
     "#superbwarfare:attachment/stock",
-    "#superbwarfare:attachment/grip"
+    "#superbwarfare:attachment/grip",
+    "#superbwarfare:attachment/bayonet"
   ]
 }
