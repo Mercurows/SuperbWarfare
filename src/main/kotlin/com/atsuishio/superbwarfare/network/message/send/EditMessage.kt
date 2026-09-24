@@ -1,8 +1,9 @@
 package com.atsuishio.superbwarfare.network.message.send
 
+import com.atsuishio.superbwarfare.data.attachment.AttachmentEditTarget
+import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunProp
-import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.LivingEventHandler
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -21,7 +22,8 @@ data class EditMessage(val type: Int, val add: Boolean, val isVehicle: Boolean) 
         val vehicle = player.vehicle
 
         if (isVehicle && vehicle is VehicleEntity) {
-            if (type != 5) return
+            // 载具改装只支持弹种切换
+            if (type != AttachmentSlots.AMMO_TYPE_EDIT_INDEX) return
 
             vehicle.modifyGunData(vehicle.getSeatIndex(player)) { data ->
                 val size = data.get(GunProp.AMMO_CONSUMER).size
@@ -40,17 +42,17 @@ data class EditMessage(val type: Int, val add: Boolean, val isVehicle: Boolean) 
             if (item !is GunItem) return
 
             val data = from(stack)
-            when (type) {
-                0 -> data.attachment.cycle(AttachmentType.BARREL, add)
-                1 -> data.attachment.cycle(AttachmentType.SCOPE, add)
-                2 -> data.attachment.cycle(AttachmentType.GRIP, add)
-                3 -> data.attachment.cycle(AttachmentType.STOCK, add)
-                4 -> {
-                    data.withdrawAmmo(player)
-                    data.attachment.cycle(AttachmentType.MAGAZINE, add)
+            // 下标 → 目标 的映射只有 AttachmentSlots.EDIT_ORDER 一份（与改装界面的按钮下标对齐），
+            // 服务端不再自己维护一张 when 表
+            when (val target = AttachmentSlots.EDIT_ORDER.getOrNull(type) ?: return) {
+                is AttachmentEditTarget.Slot -> {
+                    if (target.slot.withdrawAmmoOnChange) {
+                        data.withdrawAmmo(player)
+                    }
+                    data.attachment.cycle(target.slot.type, add)
                 }
 
-                5 -> {
+                AttachmentEditTarget.AmmoType -> {
                     val size = data.get(GunProp.AMMO_CONSUMER).size
                     data.changeAmmoConsumer(
                         (data.selectedAmmoType.get() + (if (add) 1 else -1) + size) % size,

@@ -1,0 +1,48 @@
+{
+  "Slot": "Bayonet",
+  "Bone": "bayonet_pos",
+  "Modifiers": [
+    {
+      "Prop": "MeleeDamage",
+      "Op": "Add",
+      "Value": 10
+    },
+    {
+      "Prop": "MeleeRange",
+      "Op": "Add",
+      "Value": 1.2
+    },
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 0.4
+    }
+  ],
+  "Override": {
+    "MeleeActions": [
+      {
+        "Animation": [
+          "hit_bayonet",
+          "hit"
+        ],
+        "Duration": 16,
+        "HitTime": 6,
+        "Hitbox": {
+          "Type": "Capsule",
+          "Range": 3.3,
+          "Radius": 0.45,
+          "ZFrom": 0.0,
+          "Occlusion": true
+        },
+        "Sweep": {
+          "From": 0,
+          "To": 0
+        },
+        "MaxTargets": 2,
+        "Knockback": 0.3
+      }
+    ]
+  },
+  "Model": "superbwarfare:models/bedrock/attachment/bayonet_knife.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/bayonet_knife.png"
+}

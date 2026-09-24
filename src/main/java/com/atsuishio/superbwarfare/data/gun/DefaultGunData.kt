@@ -97,6 +97,12 @@ data class DefaultGunData(
     val meleeDamageTime: Int = 6,
     @SerialName("MeleeAngle")
     val meleeAngle: Int = 30,
+    /**
+     * 近战距离：**叠加**在 `MeleeHitbox.Range` 之上的额外距离。
+     *
+     * 判定用的总距离是 `Range + MeleeRange + player.getEntityReach()`；形状没写 `Range` 时
+     * 基数取 0，也就是"距离就由这里决定"。配件要加近战距离就是加这个属性。
+     */
     @SerialName("MeleeRange")
     val meleeRange: Double = 0.0,
     /**

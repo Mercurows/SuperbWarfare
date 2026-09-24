@@ -1,9 +1,10 @@
 {
   "values": [
-    "#superbwarfare:attachment/barrel/legendary",
-    "#superbwarfare:attachment/grip/legendary",
     "#superbwarfare:attachment/scope/legendary",
+    "#superbwarfare:attachment/magazine/legendary",
+    "#superbwarfare:attachment/barrel/legendary",
     "#superbwarfare:attachment/stock/legendary",
-    "#superbwarfare:attachment/magazine/legendary"
+    "#superbwarfare:attachment/grip/legendary",
+    "#superbwarfare:attachment/bayonet/legendary"
   ]
 }

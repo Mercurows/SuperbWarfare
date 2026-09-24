@@ -6,7 +6,7 @@ import com.atsuishio.superbwarfare.entity.projectile.MediumRocketEntity
 import com.atsuishio.superbwarfare.item.*
 import com.atsuishio.superbwarfare.item.ammo.*
 import com.atsuishio.superbwarfare.item.armor.*
-import com.atsuishio.superbwarfare.item.attachment.AttachmentItem
+import com.atsuishio.superbwarfare.item.attachment.BasicAttachmentItem
 import com.atsuishio.superbwarfare.item.blockitem.BlueprintResearchTableBlockItem
 import com.atsuishio.superbwarfare.item.blockitem.ChargingStationBlockItem
 import com.atsuishio.superbwarfare.item.blockitem.CreativeChargingStationBlockItem
@@ -630,8 +630,12 @@ object ModItems {
     @JvmField
     val ATTACHMENTS: ItemRegister = DeferredRegister.create(BuiltInRegistries.ITEM, Mod.MODID)
 
-    private fun registerAttachment(id: String, rarity: Rarity = Rarity.COMMON): ItemRegistry<out Item> {
-        return ATTACHMENTS.register(id, Supplier { AttachmentItem("${Mod.MODID}:$id", rarity) })
+    private fun registerAttachment(
+        id: String,
+        rarity: Rarity = Rarity.COMMON,
+        factory: (String, Rarity) -> Item = ::BasicAttachmentItem
+    ): ItemRegistry<out Item> {
+        return ATTACHMENTS.register(id, Supplier { factory("${Mod.MODID}:$id", rarity) })
     }
 
     // Stock
@@ -714,6 +718,11 @@ object ModItems {
     @JvmField val GRIP_CQR_GEN2 = registerAttachment("grip_cqr_gen2", Rarity.RARE)
     @JvmField val GRIP_VERTICAL_BIPOD = registerAttachment("grip_vertical_bipod", Rarity.RARE)
     @JvmField val STEEL_PIPE_GRIP = registerAttachment("steel_pipe_grip", Rarity.RARE)
+    // @formatter:on
+
+    // Bayonet
+    // @formatter:off
+    @JvmField val BAYONET_KNIFE = registerAttachment("bayonet_knife")
     // @formatter:on
 
     fun registerDispenserBehavior() {

@@ -18,7 +18,16 @@ enum class AttachmentType(typeName: String) {
     STOCK("Stock"),
 
     @SerialName("Grip")
-    GRIP("Grip");
+    GRIP("Grip"),
+
+    /**
+     * 刺刀（枪口卡榫）。
+     *
+     * 与枪口槽（[BARREL]，消音器/制退器）**不互斥**：两者登记在不同的挂点组上，
+     * 见 [com.atsuishio.superbwarfare.data.attachment.AttachmentSlots]。
+     */
+    @SerialName("Bayonet")
+    BAYONET("Bayonet");
 
     val attachmentName: String = typeName
 }

@@ -1134,11 +1134,18 @@ class GunData private constructor(
     /** Checks if specific perk can be applied. */
     fun canApplyPerk(perk: Perk): Boolean = availablePerks().contains(perk)
 
-    /** Gets attachments allowed on [slot] from the gun data definition. */
+    /**
+     * Gets attachments allowed on [slot] from the gun data definition.
+     *
+     * 已经装了**同一个挂点组**上其它槽位的配件时，这里会一并过滤掉冲突的配件：
+     * 挂点组由 `AttachmentSlots` 登记，改装界面的"该槽位无可用配件"表现、指令补全与
+     * `Attachment.cycle` 的候选列表都由这一个入口统一。
+     */
     fun availableAttachments(slot: AttachmentType): List<ResourceLocation> {
         return getDefault().availableAttachments[slot.attachmentName]
             .orEmpty()
             .mapNotNull { ResourceLocation.tryParse(it.value.id) }
+            .filter { attachment.mountConflict(slot, AttachmentDefinition.from(it)) == null }
     }
 
     /** Returns the weapon-level option for [id] installed in [slot], if declared. */

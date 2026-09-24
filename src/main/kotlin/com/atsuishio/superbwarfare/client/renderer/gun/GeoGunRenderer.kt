@@ -8,10 +8,7 @@ import com.atsuishio.superbwarfare.client.renderer.ammo.AmmoReadout
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.EDIT_FOCUS_Z_OFFSET
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeStencilRenderHelper
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
-import com.atsuishio.superbwarfare.data.attachment.AmmoBarEntry
-import com.atsuishio.superbwarfare.data.attachment.AmmoTextEntry
-import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
-import com.atsuishio.superbwarfare.data.attachment.ScopeMode
+import com.atsuishio.superbwarfare.data.attachment.*
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunProp
@@ -426,6 +423,52 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         renderOemScope(stack, model)
         renderOemMuzzle(stack, model)
         renderBarrelAttachment(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
+        renderRegisteredAttachments(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
+    }
+
+    /**
+     * 注册表驱动的通用配件渲染。
+     *
+     * `AttachmentSlots` 里 [AttachmentRenderMode.GENERIC] 的槽位都走这里：按槽位登记的挂点骨骼
+     * （约定骨骼，或配件自己的 `AttachmentDefinition.Bone`）把配件的模型画上去。
+     * **新增这类槽位不需要再往 [renderAttachments] 里加一行**，只要在注册表登记一条、
+     * 在数据里写好 `Model`/`Texture` 即可。
+     */
+    open fun renderRegisteredAttachments(
+        stack: ItemStack,
+        model: GeoGunModel,
+        poseStack: PoseStack,
+        bufferSource: MultiBufferSource,
+        packedLight: Int,
+        packedOverlay: Int
+    ) {
+        val data = GunData.from(stack)
+
+        for (slot in AttachmentSlots.ALL) {
+            if (slot.renderMode != AttachmentRenderMode.GENERIC) continue
+
+            val attachmentId = data.attachment.id(slot.type) ?: continue
+            val definition = AttachmentDefinition.from(attachmentId) ?: continue
+            val modelPath = definition.model ?: continue
+            val texture = definition.texture ?: continue
+
+            val boneName = when (val mountBone = slot.mountBone) {
+                is AttachmentMountBone.Fixed -> mountBone.name
+                is AttachmentMountBone.FromDefinition -> definition.bone ?: mountBone.fallback
+                AttachmentMountBone.GunModel -> null
+            } ?: continue
+
+            val mountTransform = model.getGlobalTransform(boneName) ?: continue
+            val attachmentModel = AttachmentModelReloadListener.getModel(modelPath) ?: continue
+
+            poseStack.pushPose()
+            mulPoseWithNormal(poseStack, Matrix4f(mountTransform))
+            attachmentModel.renderToBuffer(
+                poseStack, bufferSource, texture, packedLight, packedOverlay,
+                null, resolveAmmoReadout(stack, definition.effectiveAmmoBar(), definition.effectiveTextShow())
+            )
+            poseStack.popPose()
+        }
     }
 
     open fun renderMagazine(stack: ItemStack, model: GeoGunModel) {
@@ -1153,19 +1196,17 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
     /**
      * 返回当前正在编辑的配件槽位对应的定位骨骼名；未支持或未选中时返回 null。
-     * 目前支持枪托、弹匣与弹药类型。
+     *
+     * 瞄准镜/枪口/握把/枪托/弹匣的定位骨骼都由 `AttachmentSlots` 登记；
+     * 弹药类型不是槽位，另行处理。
      *
      * [model] 是正在渲染的模型：弹药槽位有多个候选骨骼，需要靠它挑出模型实际拥有的那个。
      */
     open fun attachmentFocusBone(model: GeoGunModel): String? {
-        return when (ClientEventHandler.editingAttachmentType) {
-            0 -> MUZZLE_BONE
-            1 -> SCOPE_BONE
-            2 -> GRIP_BONE
-            3 -> STOCK_BONE
-            4 -> MAGAZINE_BONE
-            5 -> ammoFocusBone(model)
-            else -> null
+        return when (val target = AttachmentSlots.EDIT_ORDER.getOrNull(ClientEventHandler.editingAttachmentType)) {
+            is AttachmentEditTarget.Slot -> target.slot.focusBone
+            AttachmentEditTarget.AmmoType -> ammoFocusBone(model)
+            null -> null
         }
     }
 
@@ -1372,14 +1413,16 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         private const val IDLE_VIEW_BONE = "idle_view"
         private const val BIPOD_VIEW_BONE = "bipod_view"
         private const val IRON_VIEW_BONE = "iron_view"
-        private const val MUZZLE_BONE = "muzzle_pos"
-        private const val GRIP_BONE = "grip_pos"
-        private const val MAGAZINE_BONE = "magazine_pos"
+
+        // 槽位相关的定位骨骼名统一登记在 AttachmentSlots.Bones，这里只是给渲染代码用的短别名
+        private const val MUZZLE_BONE = AttachmentSlots.Bones.MUZZLE
+        private const val GRIP_BONE = AttachmentSlots.Bones.GRIP
+        private const val MAGAZINE_BONE = AttachmentSlots.Bones.MAGAZINE
+        private const val SCOPE_BONE = AttachmentSlots.Bones.SCOPE
+        private const val STOCK_BONE = AttachmentSlots.Bones.STOCK
         private const val AMMO_BONE = "ammo_pos"
-        private const val SCOPE_BONE = "scope_pos"
         private const val SCOPE_VIEW_BONE = "scope_view"
         private const val SCOPE_VIEW_SMOOTHING = 0.6f
-        private const val STOCK_BONE = "stock_pos"
         private const val THIRDPERSON_HAND_BONE = "thirdperson_hand"
         private const val GROUND_BONE = "ground"
         private const val FIXED_BONE = "fixed"

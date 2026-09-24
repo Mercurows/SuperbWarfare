@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.data.gun.subdata
 
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
+import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import net.minecraft.nbt.CompoundTag
@@ -85,6 +86,32 @@ class Attachment(private val gun: GunData) {
     }
 
     fun has(type: AttachmentType): Boolean = id(type) != null
+
+    /**
+     * [type] 装到这把枪上时，是否与**已安装的其它槽位**抢同一个挂点组。
+     *
+     * 挂点组名由槽位在 `AttachmentSlots` 里登记（可用 [AttachmentDefinition.mount] 覆盖）；
+     * 登记到不同挂点组的配件可以共存且同时生效（刺刀在枪口卡榫、下挂榴弹在下导轨）。
+     * 任一方声明了 `AllowSharedMount` 就放行 —— 那个字段本来就是为了"转接座"这类叠装件准备的。
+     *
+     * @return 抢占同一个挂点的槽位，没有冲突时返回 `null`。
+     */
+    fun mountConflict(type: AttachmentType, definition: AttachmentDefinition?): AttachmentType? {
+        val mount = AttachmentSlots.mountOf(type, definition)
+        val shared = definition?.allowSharedMount == true
+
+        for (other in AttachmentType.entries) {
+            if (other == type) continue
+
+            val otherId = id(other) ?: continue
+            val otherDefinition = AttachmentDefinition.from(otherId) ?: continue
+            if (shared || otherDefinition.allowSharedMount) continue
+            if (AttachmentSlots.mountOf(other, otherDefinition) != mount) continue
+
+            return other
+        }
+        return null
+    }
 
     /**
      * Checks whether any installed attachment declares a built-in bipod.

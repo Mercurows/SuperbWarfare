@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.data.gun.melee
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.IDBasedData
+import com.atsuishio.superbwarfare.data.SingleOrList
 import com.atsuishio.superbwarfare.data.StringInstanceBuilder
 import com.atsuishio.superbwarfare.data.StringOrObjectFactory
 import com.atsuishio.superbwarfare.data.gun.melee.MeleeAction.Companion.MeleeActionInstanceBuilder
@@ -24,9 +25,18 @@ import kotlinx.serialization.Serializable
 @StringOrObjectFactory(MeleeActionInstanceBuilder::class)
 @Serializable
 data class MeleeAction(
-    /** 本段动画 clip 名；不写时按 `GunAnimation.Melee[idx % size]` 解析 */
+    /**
+     * 本段动画 clip 名的**候选链**；不写时按 `GunAnimation.Melee[idx % size]` 解析。
+     *
+     * - 写字符串 = 单候选（`"hit"` 或 `"animation.ak_47.hit"`）；
+     * - 写列表 = 按顺序取**第一个存在**的 clip。
+     *
+     * 短名会被拼成 `animation.<宿主枪 id>.<短名>`（见 `GunAnimationNames`）——动作表所在的枪械数据
+     * 会被多把枪共用（配件/弹种覆盖），写不了某把枪的完整名字，拼接让"有专属动画就用专属的、
+     * 没有就退回通用的"能用一条数据表达。
+     */
     @SerialName("Animation")
-    val animation: String? = null,
+    val animation: SingleOrList<String>? = null,
 
     /** 本段总 tick（动画按它拉伸）；不写时用 `MeleeDuration` */
     @SerialName("Duration")
@@ -110,6 +120,9 @@ data class MeleeAction(
         this.itemId = id
     }
 
+    /** 本段声明的动画候选链（短名或全名）；没写时为空列表，调用方回退到 `GunAnimation.Melee` */
+    fun animationCandidates(): List<String> = animation?.list.orEmpty()
+
     /** 本段实际使用的判定形状（字段级缺省继承） */
     fun hitboxOr(global: MeleeHitbox?) = hitbox ?: global
 
@@ -133,6 +146,7 @@ data class MeleeAction(
         defaultHitTime: Int,
         defaultDamage: Double,
         defaultAngle: Double,
+        /** 枪的 `MeleeRange`：叠加在形状自己的 `Range` 之上的额外距离 */
         defaultRange: Double,
         defaultSweep: MeleeSweep?,
         defaultHitbox: MeleeHitbox?,
@@ -141,7 +155,9 @@ data class MeleeAction(
         val resolvedDuration = (duration ?: defaultDuration).coerceAtLeast(1)
         return ResolvedMeleeAction(
             hitbox = resolvedHitbox.copy(
-                range = resolvedHitbox.rangeOr(defaultRange),
+                // `MeleeRange` 是**叠加**在形状自己的 Range 之上的额外距离，配件要加近战距离就加它。
+                // 形状没写 Range 时基数取 0，于是退化成"距离由 MeleeRange 决定"，与旧数据行为一致。
+                range = resolvedHitbox.rangeOr(0.0) + defaultRange,
                 angle = resolvedHitbox.angleOr(defaultAngle),
             ),
             sweep = sweep ?: defaultSweep,
@@ -171,7 +187,7 @@ data class MeleeAction(
         /** 打腿倍率的默认值，与投射物保持一致 */
         const val DEFAULT_LEGSHOT: Double = 0.5
 
-        /** `"hit_lr"` 这样的字符串简写 = 只写动画名的动作 */
+        /** `"hit_lr"` 这样的字符串简写 = 只写动画名（单个候选）的动作 */
         object MeleeActionInstanceBuilder : StringInstanceBuilder<MeleeAction> {
             override fun fromString(value: String): MeleeAction {
                 val trimmed = value.trim()
@@ -179,7 +195,7 @@ data class MeleeAction(
                     Mod.LOGGER.warn("Empty melee action string, falling back to a bare MeleeAction")
                     return MeleeAction()
                 }
-                return MeleeAction(animation = trimmed)
+                return MeleeAction(animation = SingleOrList(trimmed))
             }
         }
     }

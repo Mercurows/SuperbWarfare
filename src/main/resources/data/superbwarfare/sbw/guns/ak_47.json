@@ -146,6 +146,9 @@
       "superbwarfare:loudspeaker",
       "superbwarfare:silencer_qinglan",
       "superbwarfare:steel_pipe_silencer"
+    ],
+    "Bayonet": [
+      "superbwarfare:bayonet_knife"
     ]
   },
   "SoundInfo": {

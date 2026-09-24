@@ -260,34 +260,42 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     open fun allowTacticalReload(data: GunData) = data.get(GunProp.TACTICAL_RELOAD)
 
     /**
+     * 武器在 [type] 槽位上是否有可更换的配件。
+     *
+     * 注册表驱动的统一入口：任意槽位都用它判断，不用为每个槽位再加一个 `hasCustomXxx`。
+     */
+    open fun hasCustomAttachment(data: GunData, type: AttachmentType) =
+        data.availableAttachments(type).isNotEmpty()
+
+    /**
      * 武器是否能更换枪管配件
      */
     open fun hasCustomBarrel(data: GunData) =
-        data.availableAttachments(AttachmentType.BARREL).isNotEmpty()
+        hasCustomAttachment(data, AttachmentType.BARREL)
 
     /**
      * 武器是否能更换枪托配件
      */
     open fun hasCustomGrip(data: GunData) =
-        data.availableAttachments(AttachmentType.GRIP).isNotEmpty()
+        hasCustomAttachment(data, AttachmentType.GRIP)
 
     /**
      * 武器是否能更换弹匣配件
      */
     open fun hasCustomMagazine(data: GunData) =
-        data.availableAttachments(AttachmentType.MAGAZINE).isNotEmpty()
+        hasCustomAttachment(data, AttachmentType.MAGAZINE)
 
     /**
      * 武器是否能更换瞄具配件
      */
     open fun hasCustomScope(data: GunData) =
-        data.availableAttachments(AttachmentType.SCOPE).isNotEmpty()
+        hasCustomAttachment(data, AttachmentType.SCOPE)
 
     /**
      * 武器是否能更换枪托配件
      */
     open fun hasCustomStock(data: GunData) =
-        data.availableAttachments(AttachmentType.STOCK).isNotEmpty()
+        hasCustomAttachment(data, AttachmentType.STOCK)
 
     /**
      * 武器是否有脚架

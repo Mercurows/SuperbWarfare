@@ -637,6 +637,7 @@
   "attachment.superbwarfare.slot.barrel": "[Muzzle Attachment]",
   "attachment.superbwarfare.slot.stock": "[Stock Attachment]",
   "attachment.superbwarfare.slot.grip": "[Grip Attachment]",
+  "attachment.superbwarfare.slot.bayonet": "[Bayonet Attachment]",
   "attachment.superbwarfare.modify": "Modify ",
   "attachment.superbwarfare.scope_mode": "Scope",
 
@@ -704,6 +705,7 @@
   "item.superbwarfare.steel_pipe_stock": "Steel Pipe Stock",
   "item.superbwarfare.steel_pipe_scope": "Steel Pipe Scope",
   "item.superbwarfare.steel_pipe_grip": "Steel Pipe Grip",
+  "item.superbwarfare.bayonet_knife": "Bayonet Knife",
 
   "death.attack.gunfire": "%1$s was gunned down by %2$s",
   "death.attack.gunfire.entity": "%1$s was gunned down by %2$s",
@@ -961,6 +963,7 @@
   "commands.superbwarfare.attachment.fail.unknown": "Unknown attachment: %1$s",
   "commands.superbwarfare.attachment.fail.type": "Attachment %1$s is a %2$s attachment, which doesn't fit the %3$s slot",
   "commands.superbwarfare.attachment.fail.unavailable": "The selected gun does not support the attachment: %1$s",
+  "commands.superbwarfare.attachment.fail.mount": "The %1$s already occupies the %2$s mount point",
   "commands.superbwarfare.attachment.fail.random": "The selected gun has no available attachment",
   "commands.superbwarfare.attachment.fail.random.type": "The selected gun has no available %1$s",
   "commands.superbwarfare.attachment.success.set": "Set the %2$s of %1$s to %3$s",
@@ -1468,12 +1471,14 @@
   "prop.superbwarfare.spread_pattern.xshape": "Cross",
   "prop.superbwarfare.sound_info": "Fire Sounds",
   "prop.superbwarfare.melee_sound": "Melee Sounds",
+  "prop.superbwarfare.melee_actions": "Melee Actions",
   "prop.superbwarfare.silenced": "Silenced",
   "prop.superbwarfare.bipod": "Bipod",
   "prop.superbwarfare.sound_radius_multiplier": "Fire Sound Radius",
   "prop.superbwarfare.muzzle_flash_scale": "Muzzle Flash Size",
   "prop.superbwarfare.zoom_time": "Zoom Time",
   "prop.superbwarfare.melee_damage": "Melee Damage",
+  "prop.superbwarfare.melee_range": "Melee Range",
 
   "superbwarfare.book.superb_warfare_manual": "Superb Warfare Manual",
   "superbwarfare.book.superb_warfare_manual.des": "A tutorial on Superb Warfare mod, teaching you how to become a superb soldier (WIP)",

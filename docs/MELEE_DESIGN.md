@@ -1,6 +1,6 @@
 # 枪械近战系统 v6 设计（MeleeActions + MeleeEffect + SubWeapon）
 
-> 状态：**一期已实现**（近战本体），二期（配件 + 刺刀）、三期（`SubWeapon`）**仍未实现**。
+> 状态：**一期（近战本体）与二期（配件体系 + 刺刀）已实现**，三期（`SubWeapon`）**仍未实现**。
 > 本文既是设计稿也是落地记录：
 > - **§11.1** 一期逐项核对表（完成项标注了真实文件路径）
 > - **§11.2** 「正式实现与本文不一致的地方」+ 兼容性确认清单 + 遗留缺口（**实现时按代码为准**，本文相关段落已就地加注）
@@ -200,7 +200,7 @@
 "MeleeActions": [
   "hit_lr",
   { "Animation": "hit_rl", "DamageMultiplier": 1.25 },
-  { "Animation": "stab", "Duration": 22, "HitTime": 9,
+  { "Animation": ["hit_bayonet", "hit"], "Duration": 22, "HitTime": 9,
     "Hitbox": { "Type": "Capsule", "Range": 3.5, "Radius": 0.4 },
     "Effects": ["superbwarfare:heavy_impact"] }
 ]
@@ -208,7 +208,7 @@
 
 | 字段 | 类型 | 缺省 | 语义 |
 |---|---|---|---|
-| `Animation` | String? | `GunAnimation.Melee[idx % size]` | 本段动画 clip 名 |
+| `Animation` | `SingleOrList<String>?`（**候选链**，二期改型） | `GunAnimation.Melee[idx % size]` | 本段动画 clip：写字符串=单候选、写列表=按顺序取第一个存在的；**短名会拼成 `animation.<宿主枪 id>.<短名>`**（§11.5.3-①） |
 | `Duration` | Int? | `MeleeDuration` | 本段总 tick（动画按它拉伸） |
 | `HitTime` | Int? | `MeleeDamageTime` | 从挥击开始算，第几 tick 结算（见下方注） |
 | `Hitbox` / `Sweep` | ? | 全局 | 本段判定 |
@@ -417,18 +417,21 @@ t=Duration meleeTimer 归零，允许下一段（按 MeleeComboReset 决定是�
 | 项 | 现在 | 变化 |
 |---|---|---|
 | `GunAnimation.Melee` | `String?` | `SingleOrList<String>`（写字符串=单段，旧数据零改动） |
-| 名字解析 | `animation.melee` | `action.Animation ?: melee[idx % size]` |
-| 找不到 clip | 静默 return | error 日志 + 回退 `melee[0]`；资源加载后校验 |
+| `MeleeAction.Animation` | `String?`（全名） | `SingleOrList<String>?`（**候选链** + 短名拼接，二期；见 §11.5.3-①） |
+| 名字解析 | `animation.melee` | `action.Animation` 逐个候选（拼接后）→ 全落空才用 `melee[idx % size]` |
+| 找不到 clip | 静默 return | error 日志 + 回退 `melee[0]`（同一条失败只打一次，不刷屏）；资源加载后校验 |
 | 状态 | `MELEE`（`PLAY_ONCE_HOLD`） | 不变，不需要 `MELEE_2/3` |
 | 播放速度 | 全局 `MELEE_DURATION` | 本段 `Duration` |
 | **连挥重播** | — | 新增 `swingSerial` 机制（§5.1 末尾、§11.2-②） |
 
 **可复刻的先例**：弹匣等级 → 鼓式换弹动画（`GunData.kt:71`/`:84` → `GeoGunAnimationInstance.kt:162-176`）。
 
-> **落地补充**：`找不到 clip` 的 error 日志 + 回退**已实现**（`resolveMeleeName()`，先试 `action.Animation`，
-> 失败则回退 `GunAnimation.Melee[0]`）；但"**资源加载后校验**"（在资源 reload 阶段就把所有枪的 melee clip 名核一遍）
-> **未实现**，目前只在运行时第一次播放时才会打日志。另要注意：**名字只能来自 `GunData`（PMC，按 stack）**，
-> `GunResource` 是按物品注册 id 缓存的，配件/弹种覆盖看不到它（§8.6 的坑）。
+> **落地补充**：`找不到 clip` 的 error 日志 + 回退**已实现**（`resolveMeleeName()`：先按顺序试
+> `action.Animation` 的每个候选，全落空才回退 `GunAnimation.Melee[0]`；同一条失败只打一次日志）；
+> 但"**资源加载后校验**"（在资源 reload 阶段就把所有枪的 melee clip 名核一遍）
+> **未实现**，目前只在运行时第一次播放时才会打日志。另要注意：**动作表只能来自 `GunData`（PMC，按 stack）**，
+> `GunResource` 是按物品注册 id 缓存的，配件/弹种覆盖看不到它（§8.6 的坑）——
+> 也正因为如此，动作表里的动画名只能写**短名**再按宿主 id 拼接（§11.5.3-①）。
 
 ### 5.5 第三人称：放弃，用现成的 swingHand
 
@@ -657,15 +660,20 @@ companion object {
 ```jsonc
 "Override": {
   "MeleeActions": [
-    { "Animation": "bayonet_stab", "Duration": 18, "HitTime": 7,
+    { "Animation": ["hit_bayonet", "hit"], "Duration": 18, "HitTime": 7,
       "Hitbox": { "Type": "Capsule", "Range": 3.2, "Radius": 0.4 }, "Sweep": { "From": 0, "To": 0 },
       "DamageMultiplier": 1.4 }
-  ],
-  "MeleeRange": 0.5
+  ]
 }
 ```
 
 装了就换成刺刀的动作表；形状/扫掠/标量不受影响（§3.1 拆字段的回报）。**刺刀不带 `SubWeapon` 定义**——它不是副武器（§9.1）。
+
+> **动画名必须写短名**：动作表住在会被多把枪共用的枪械数据里，写不了某一把枪的完整 clip 名。
+> `"Animation"` 是**候选链**，短名按 `animation.<宿主枪 id>.` 拼接、按顺序取第一个存在的
+> （`["hit_bayonet", "hit"]` = 有刺刀动画就用、没有就用枪自己的挥击）。详见 §11.5.3-①。
+> 二期实际落地时**没有**用这里的 `MeleeRange`：距离由 `Modifiers` 的 `MeleeRange +1.2`
+> 与动作的 `Hitbox.Range` 相加得到，标量统一在 `Modifiers` 里（§11.5.3-②）。
 
 ### 8.5 新增槽位的完整改动清单
 
@@ -861,8 +869,8 @@ companion object {
 | 阶段 | 状态 | 范围 |
 |---|---|---|
 | **一期：近战本体** | ✅ **已完成** | 判定形状/扫掠、连招、命中区域、伤害类型与标签、`@melee`、动作锁、NBT 冷却表、G 键语义、调试工具 |
-| 二期：配件体系 + 刺刀 | ❌ 未开始 | `AttachmentProvider`、槽位注册表、`BAYONET` |
-| 三期：`SubWeapon` | ❌ 未开始 | `SubWeaponInfo`、`SubWeaponItem`、`SubWeaponRuntime`、`UNDERBARREL` |
+| **二期：配件体系 + 刺刀** | ✅ **已完成**（§11.5） | `AttachmentProvider`、槽位注册表 + 挂点组、`BAYONET` + `bayonet_knife`、注册表驱动的通用配件渲染 |
+| **三期：`SubWeapon`** | ❌ 未开始 | `SubWeaponInfo`、`SubWeaponItem`、`SubWeaponRuntime`、`UNDERBARREL` |
 
 一期新增/改动的主要落点：
 
@@ -1142,12 +1150,181 @@ MISS : d = 7.28, 7.37, 7.54, 7.84, 7.92   ← 全部 > 7.2   （[shape]，纯距
 8. 22 把旧枪（没写 MeleeActions/MeleeHitbox）→ 与改版前手感一致（唯一差别见 §11.3）
 ```
 
-### 11.5 二期：配件体系 + 刺刀
-1. **配件物品接口化**：`AttachmentProvider` + `BasicAttachmentItem`（改名）+ `registerAttachment` 加工厂 + 4 处消费点改接口判断（§8.3）。
-2. **槽位注册表化** + 挂点组基建（登记不同 mount、不互斥，§8.1/§8.2）。
-3. `AttachmentType.BAYONET` + 物品/模型/贴图/tag/datagen/lang/tooltip + 渲染（`bayonet_pos`）。
-4. 刺刀动作表落地（`Override.MeleeActions`）+ 手感调优。
-5. （可选）配件自带动画文件（§9.7 二期路线）。
+### 11.5 二期：配件体系 + 刺刀 ✅ 已实现
+
+> **状态：✅ 已完成**（`compileKotlin` / `runData` 跑通；验收步骤见 §11.5.4）。
+> `bayonet_knife` 的 bedrock 模型与贴图由需求方提供；**动作动画尚未制作**，刺刀先用枪自己的 melee clip（§11.5.3-1）。
+> **改装界面（`WeaponEditScreen`）与 HUD 按需求一行未动**：新槽位在界面重写前只能用 `/sbw attachment` 指令安装（§11.5.3-⑤）。
+
+| # | 项 | 状态 | 落点 |
+|---|---|---|---|
+| 1 | **配件物品接口化** | ✅ | 新增 `item/attachment/AttachmentProvider.kt`（接口只声明 `attachmentId`，`definition()` 是扩展函数）；`AttachmentItem.kt` → **`BasicAttachmentItem.kt`，旧文件直接删除、不留别名**；`ModItems.registerAttachment(id, rarity, factory = ::BasicAttachmentItem)`；4 处消费点全部改成接口判断（`ModItems`、`ClientAttachmentImageTooltip:43`、`AttachmentCommand:267`、物品类自身） |
+| 2 | **槽位注册表化 + 挂点组基建** | ✅ | 新增 `data/attachment/AttachmentSlots.kt`：`AttachmentSlot`（`mount`/`tagBucket`/`icon`/`mountBone`/`focusBone`/`renderMode`/`withdrawAmmoOnChange`）、`AttachmentMountBone`（`Fixed`/`FromDefinition`/`GunModel`）、`AttachmentRenderMode`（`CUSTOM`/`GENERIC`）、`EDIT_ORDER`；`AttachmentDefinition` +`Mount`/`AllowSharedMount`；`Attachment.mountConflict()`；`GunData.availableAttachments()` 按挂点过滤；`Attachment.cycle`/指令/补全自动跟着走 |
+| 3 | **`AttachmentType.BAYONET` + 刺刀落地** | ✅ | 枚举 +`Bayonet`；`ModItems.BAYONET_KNIFE`；`data/superbwarfare/sbw/attachments/bayonet_knife.json`；bedrock 模型/贴图（需求方提供）+ `textures/item/bayonet_knife.png`；`Model`/`Texture`/`Modifiers`/`Override` 齐备；tag + datagen（`attachment/bayonet{,/common}`）；`en_us`/`zh_cn` 语言；渲染见 #6 |
+| 4 | **刺刀属性 + 动作表** | ✅ | `bayonet_knife.json`：`Modifiers`（`MeleeDamage ×1.3` / `MeleeRange +1.2` / `Weight +0.4`）**与** `Override.MeleeActions`（单段突刺）并存，分工见 §11.5.3-② |
+| 5 | **动画候选链 + 短名拼接** | ✅ | `MeleeAction.Animation` → `SingleOrList<String>?`；`resource/gun/GunAnimationNames.kt`；`GeoGunAnimationInstance.resolveMeleeName()` 按链解析、失败日志去重；`/sbw melee actions` 打印候选→实际名字。刺刀写 `["hit_bayonet", "hit"]`，动画做出来之前自动落在枪自己的 `hit` 上 |
+| 6 | **渲染：`bayonet_pos` + 注册表分派** | ✅ | `GeoGunRenderer.renderRegisteredAttachments()`（`renderMode = GENERIC` 的槽位走通用路径，骨骼按 `AttachmentMountBone` 解析）；`ak_47.geo.json` 的 `bayonet_pos` 由需求方添加；`attachmentFocusBone` 改由注册表的 `focusBone` 提供 |
+| 7 | 配件自带动画文件（§9.7 二期路线） | ❌ **未做** | 动画尚未制作，按需求留待后续 |
+| — | 改装界面 / HUD | ⛔ **未动** | `WeaponEditScreen.kt` 与改动前一致；未新增 GUI 图标资源 |
+
+#### 11.5.1 新增一个槽位类型要改哪里（注册表化的回报）
+
+按顺序只有 6 步，其中 3 步已经有自动化：
+
+| 步骤 | 位置 | 是否自动 |
+|---|---|---|
+| ① 加枚举常量 | `AttachmentType.kt` | 手写 |
+| ② 登记一条元数据 | `AttachmentSlots.ALL`（`mount`/`tagBucket`/`icon`/`mountBone`/`focusBone`/`renderMode`） | 手写（**新增槽位默认 `renderMode = GENERIC`，不用写渲染代码**） |
+| ③ 注册物品 | `ModItems.registerAttachment("xxx")` | 手写 |
+| ④ 物品 tag（`attachment/<桶>`、`attachment/<桶>/<稀有度>`、可研究汇总） | `ModTags` + `ModItemTagProvider` | **自动**：`ModTags.Items.ATTACHMENT_BY_SLOT` / `attachmentRarityTag()` 与 datagen 的循环都从注册表读；只要把新物品追加到 `ModItemTagProvider.attachmentItemsBySlot()` 对应槽位的列表 |
+| ⑤ 报文下标 / 调试聚焦 | `EditMessage`、`GeoGunRenderer.attachmentFocusBone` | **自动**：都从 `AttachmentSlots.EDIT_ORDER` / `slot.focusBone` 读。**例外**：改装界面不改（§11.5.3-⑤），所以追加在 `EDIT_ORDER` 末尾的槽位暂时没有按钮 |
+| ⑥ 数据 / 模型 / 贴图 / 语言 | `sbw/attachments/<id>.json`、`models/bedrock/attachment/*.geo.json`、`lang/en_us|zh_cn` | 手写（`slot` 枚举名、`attachment.superbwarfare.slot.<小写槽位名>`、`item.superbwarfare.<id>`） |
+
+#### 11.5.2 数据侧新增字段
+
+```jsonc
+// sbw/attachments/<id>.json
+{
+  "Slot": "Bayonet",           // 必填，槽位枚举名
+  "Mount": "muzzle_lug",       // 可选：覆盖槽位默认挂点组
+  "AllowSharedMount": false,   // 可选：允许与同一挂点上的其它配件共存（转接座用）
+  "Bone": "bayonet_pos",       // 只有 FromDefinition 的槽位才吃它
+  "Modifiers": [ ... ], "Override": { ... },
+  "Model": "...", "Texture": "..."   // GENERIC 槽位必填，缺了会在日志里 warning
+}
+```
+
+`DataValidator` 新增 `validateAttachmentData`（§10 的二期部分）：槽位必须登记进注册表（**致命**）、
+`GENERIC` 槽位缺 `Model`/`Texture`、`Bone` 写在 `Fixed` 槽位上（被忽略）、`Override` 里出现未注册的枪械属性名
+（宽松解析会静默忽略）——后三类是 warning。
+**不做**骨骼存在性校验：那要读客户端模型，属资源侧。
+
+#### 11.5.3 与设计稿不一致 / 踩到的地方
+
+**① 动作表里的动画名只能写短名：候选链 + `animation.<枪 id>.` 拼接（二期新增）。**
+动作表住在**枪械数据**里，而一份数据会被多把枪共用（配件/弹种/开火模式都能覆盖它），
+所以它**写不了某一把枪的完整 clip 名**——`animation.ak_47.hit` 里的 `ak_47` 只有运行时才知道
+（`GunResource` 本来就是按物品注册 id 缓存的）。刺刀这种"一把配件装在多把枪上"的场景，
+写死任何一把枪的名字都是错的。
+
+于是 `MeleeAction.Animation` 从 `String?` 改成 **`SingleOrList<String>?`（候选链）**，
+解析规则收在 `GunAnimationNames` 里：
+
+| 写法 | 解析结果 |
+|---|---|
+| `"animation.ak_47.hit"` | 全名，原样使用（**现有数据全是这种，行为不变**） |
+| `"hit"` | 拼成 `animation.<宿主枪 id>.hit` |
+| `["hit_bayonet", "hit"]` | 按顺序取**第一个存在**的：有 `hit_bayonet` 就用它，没有就用 `hit` |
+| 不写 | `GunAnimation.Melee[idx % size]`（旧行为） |
+
+- **短名拼接只用于 `MeleeActions.Animation`**：`GunAnimation.*`（Idle/Fire/Reload/Melee…）仍然写全名
+  （资源文件里本来就在同一把枪的上下文里，没有拼接的必要）。
+- 判定依据是 `animations.containsKey(...)`（该枪的动画文件里有没有这支 clip），
+  已核对**全部 38 把**带 `Animation` 块的枪都是 `animation.<物品注册 id>.` 前缀，缩写的短路规则不会误伤。
+- 刺刀因此写成 `["hit_bayonet", "hit"]`：**现在**（还没做刺刀动画）自动落在 `hit` 上，
+  **将来**只要往各枪的动画文件里加 `animation.<枪>.hit_bayonet`，同一份配件数据不用改就生效。
+- `"hit_lr"` 这种字符串简写（`StringOrObjectFactory`）也走同一条链，即 `"MeleeActions": ["hit"]`
+  等于 `animation.<枪>.hit`。
+- 失败日志：候选全落空打一条 error 并回退 `GunAnimation.Melee[0]`；**同一条失败只打一次**
+  （runner 为空时这个解析每个 tick 都会跑一遍，不去重会刷屏）。
+- `/sbw melee actions` 现在打印"候选 → 拼出来的名字"，调动画时不用猜。
+
+**② 刺刀 = 属性 + 动作表并存。**
+`Modifiers` 与 `Override` 作用在不同层级（前者改标量、后者整块替换 `MeleeActions`），可以同时写：
+
+```jsonc
+"Modifiers": [                                    // 工具提示里看得见的那部分
+  { "Prop": "MeleeDamage", "Op": "Mul", "Value": 1.3 },
+  { "Prop": "MeleeRange",  "Op": "Add", "Value": 1.2 },
+  { "Prop": "Weight",      "Op": "Add", "Value": 0.4 }
+],
+"Override": {
+  "MeleeActions": [{                              // 形状与手感
+    "Animation": ["hit_bayonet", "hit"],
+    "Duration": 16, "HitTime": 6,                 // 与枪自己的挥击一致：动画补上之前手感零变化
+    "Hitbox": { "Type": "Capsule", "Range": 3.3, "Radius": 0.45, "Occlusion": true },
+    "Sweep": { "From": 0, "To": 0 },
+    "MaxTargets": 8, "Knockback": 0.3
+  }]
+}
+```
+
+三条注意事项：
+
+1. **伤害别两处都乘**：`DamageMultiplier` 乘在 PMC 解析后的 `MeleeDamage` 上（已经含配件的 ×1.3）。
+   标量统一放 `Modifiers`（工具提示才显示得出来），动作表只管形状/时长/击退。
+2. **动作表是整段替换**：`MaxTargets`/`Falloff`/`SortBy`/`Knockback`/`Headshot`/`Legshot` **不继承**
+   枪自己的动作（只有 `Hitbox`/`Sweep`/`Duration`/`HitTime`/`Damage` 有缺省继承），
+   所以刺刀里显式写回了 `MaxTargets: 8` / `Knockback: 0.3`，否则击退会从 0.3 掉成 0。
+3. **胶囊的长度会叠加 `MeleeRange`**（见 ③）：`Range: 3.3` + 配件 `+1.2` = 实际 4.5 格。
+   别再写 `Range: 4.5` 又加 `+1.2`（那会变 5.7）——**挑一种表达**。
+
+AK-47 装上刺刀后的实际效果：伤害 15 → 19.5；判定变成一根 **4.5 格长的细胶囊**
+（`Range 3.3 + MeleeRange 1.2`，半径 0.45），对比枪托砸是 4.2 格远的 100° 宽锥；
+出伤 tick 与动画时长不变（动画补上后再一起调）。
+
+**③ ⚠ `MeleeRange` 改成"叠加"，不是"兜底"（二期唯一的判定口径改动）。**
+设计稿 §3.2 写的是"`MeleeRange` = 额外距离（叠加 `player.getEntityReach()`）"，
+但一期把它实现成了 `MeleeHitbox.Range` 的**兜底值**（`rangeOr(defaultRange)`）——
+于是 AK-47 这种显式写了 `"Range": 1.2` 的枪，`MeleeRange` 属性**完全不起作用**，
+配件也就没法用 `Modifiers` 加近战距离。
+
+二期改成 `resolvedHitbox.rangeOr(0.0) + defaultRange`（`MeleeAction.resolve`）：
+
+| 情况 | 改前 | 改后 |
+|---|---|---|
+| 写了 `Range`、没写 `MeleeRange`（除下面那 2 处以外**全部**枪） | `Range` | `Range + 0` = **不变** |
+| 既没写 `Range` 也没写 `MeleeRange`（绝大多数枪） | `0` | `0 + 0` = **不变** |
+| 没写 `Range`、写了 `MeleeRange`（`rpg.json`、`secondary_cataclysm.json` 各 1 处） | `MeleeRange` | `0 + MeleeRange` = **不变** |
+| 写了 `Range` 且有配件加 `MeleeRange`（二期新增场景） | 忽略 | **`Range + MeleeRange`** |
+
+也就是说：**旧数据逐值等价**，换来的是
+"配件加近战距离 = `Modifiers` 里加一条 `MeleeRange`"，不必再让配件去整块覆盖枪的 `MeleeHitbox`。
+判定总距离仍是 `Range + MeleeRange + player.getEntityReach()`；`Capsule` 的线段长度是
+`Range + MeleeRange`（它不吃 `getEntityReach()`），这点没变。
+
+**④ 挂点组默认互不冲突，而且不改改装界面。**
+5 个既有槽位各自登记了独立的 `mount`（`scope_rail` / `magazine_well` / `muzzle_device` / `stock_interface` /
+`grip_rail`），所以**现有行为零变化**；刺刀登记在 `muzzle_lug`，与 `muzzle_device`（枪口配件）不同组，
+**可以共存**（§8.2 的定稿）。握把与将来的下挂（`underbarrel_rail`）物理上是同一根下导轨，但本期
+**没有**合并挂点组——那会让"装了垂直握把就装不了下挂榴弹"，属于玩法改动，等三期落地下挂时再定。
+
+**⑤ 改装界面完全没动，`EDIT_ORDER` 只是"报文下标 ↔ 槽位"的唯一一份定义。**
+界面里 6 个按钮的固定顺序（枪口/瞄具/握把/枪托/弹匣/弹种）与 `EDIT_ORDER` 前 6 项一致，不允许改序；
+刺刀追加在下标 6，**当前界面没有它的按钮**，用
+`/sbw attachment <entity> set Bayonet superbwarfare:bayonet_knife` 安装。
+重写界面时按 `EDIT_ORDER.chunked(2)` 布局即可自动带上新槽位。
+`EditMessage` 里原来的 `when (type) { 0 -> ... 5 -> ... }` 换成了 `EDIT_ORDER[type]`，
+挂点互斥报错也加了独立文案（`commands.superbwarfare.attachment.fail.mount`）。
+
+**⑥ 标签桶全部自动化，生成结果只有"新增"与"重排"。**
+`ModTags.Items` 里原来 30 个手写常量（`ATTACHMENT_SCOPE*` 等）换成
+`ATTACHMENT_BY_SLOT` / `ATTACHMENT_RARITY_SUFFIXES` / `attachmentRarityTag()`，
+`ModItemTagProvider.addAttachmentTags()` 从 ~200 行硬编码变成对注册表的循环。
+`runData` 后生成的 `tags/items/attachment/**` 与改动前**逐项等价**，
+差别只有：新增 `attachment/bayonet{,/common}.json`，以及 `attachment/researchable/*.json` 与
+`attachment.json` 里子 tag 的**排列顺序**（tag 是无序集合，无实际影响）。
+
+**⑦ 注册表读取在"整局游戏"里是 fail-fast，在数据包侧是 fail-soft。**
+`AttachmentSlots.of()` 对未登记的枚举常量直接抛异常（新增枚举忘了登记 -> 立刻发现），
+数据校验/渲染这类只读路径走 `ofOrNull()`，不让数据包把游戏炸掉。
+
+#### 11.5.4 二期验收步骤（手动）
+
+```
+1. 拿一把 AK-47（模型里有 bayonet_pos 骨骼）
+2. /sbw attachment @s set Bayonet superbwarfare:bayonet_knife   → 枪口出现刺刀，与消音器共存
+3. 按 V          → 伤害 19.5、判定变成 4.5 格的细胶囊（更远、更窄）
+                   开 melee_debug_log 看 `reach` 与命中日志；/sbw melee actions 看候选链
+4. 动画：枪的动画文件里**没有** hit_bayonet → 自动播它自己的 `hit`（即第 3 步看到的就是这个）；
+   往 ak_47.animation.json 里加一支 `animation.ak_47.hit_bayonet` 后**不改任何数据**再挥一次 → 应该改播新动画
+5. 装消音器后再装刺刀 → 两个都在（不同挂点组）；先装刺刀再装消音器 → 同样都成功
+6. /sbw attachment @s info（或 clear Bayonet）→ 槽位枚举里出现 Bayonet
+7. DataValidator（开发环境默认开）→ 启动日志里附件数据无 error，无 "Bone is ignored" 之类 warning
+8. 改装界面（EDIT_MODE 键）→ 与原版一致：没有刺刀按钮，其余槽位行为不变
+9. 回归：`rpg` / `secondary_cataclysm` 的近战距离仍是 1（`MeleeRange` 语义改动后逐值等价）；
+   其余枪不写 `Animation` / 写全名 `animation.<枪>.hit` 的行为不变
+```
 
 ### 11.6 三期：`SubWeapon` 体系
 1. `SubWeaponInfo` POJO + `AttachmentDefinition.SubWeapon` 字段 + `DataValidator` 校验（含"默认取物品 id"的解析检查）。
@@ -1160,6 +1337,9 @@ MISS : d = 7.28, 7.37, 7.54, 7.84, 7.92   ← 全部 > 7.2   （[shape]，纯距
 8. 近战副武器形态（Data 写 `@melee`）留给数据包验证，代码不再额外支持。
 
 > 一期是纯近战本体重构（不含配件），二期、三期互不依赖。
+> 三期开工时：`registerSubWeapon(id, rarity) = registerAttachment(id, rarity, ::SubWeaponItem)`
+> 已经在二期备好工厂参数，`AttachmentType.UNDERBARREL` 只差枚举 + 注册表登记一条
+> （按 §11.5.1 的 6 步走）。
 
 ---
 
@@ -1205,6 +1385,20 @@ MISS : d = 7.28, 7.37, 7.54, 7.84, 7.92   ← 全部 > 7.2   （[shape]，纯距
 | 24 | Perk 上下文 | `MeleeAttackContext` 同 tick 传递 + `Perk` 新增带上下文的重载（旧签名照旧调用）（§11.2-⑰） |
 | 25 | 语言文件范围 | 一期只补 **`en_us` + `zh_cn`**（§11.2-⑱） |
 | 26 | 旧 GeckoLib 路径 | **明确不迁移**：只做编译修正，`ClientEventHandler.gunMelee` 退化为恒 0 的 `@Deprecated` 占位（§11.2-⑮） |
+
+### 12.3 二期实现期间补充的决策
+
+| # | 议题 | 结论 |
+|---|---|---|
+| 27 | 槽位注册表的**挂点组默认值** | 5 个既有槽位各自独立（`scope_rail`/`magazine_well`/`muzzle_device`/`stock_interface`/`grip_rail`）→ **现有行为零变化**；刺刀 `muzzle_lug` 与枪口 `muzzle_device` 不同组、可共存。握把与将来的 `underbarrel_rail` **本期不合并**（合并＝玩法改动，等三期下挂落地再定） |
+| 28 | 新增槽位的**默认渲染方式** | `AttachmentRenderMode.GENERIC`：注册表按 `MountBone`（`Fixed` 约定骨骼 / `FromDefinition` 配件自己的 `Bone` / `GunModel` 切枪模型骨骼）自动渲染，新槽位不用写渲染代码。既有 5 个槽位是 `CUSTOM`（瞄具分划、枪托适配器、护木、枪口焰各有专属逻辑） |
+| 29 | `AttachmentItem` 旧名 | **直接删除，不留 `typealias`**：仓库里已无引用，别名只会让旧名字继续扩散 |
+| 30 | 刺刀的属性表达 | **`Modifiers` 管标量、`Override.MeleeActions` 管形状与手感**，两者并存：伤害/距离只写在 `Modifiers` 里（工具提示才显示得出来、也避免两处相乘），动作表只写 `Animation`/`Duration`/`HitTime`/`Hitbox`/`Sweep`/`MaxTargets`/`Knockback`（§11.5.3-②） |
+| 31 | `MeleeRange` 的语义 | 从"`MeleeHitbox.Range` 的兜底值"改成**叠加值**（`rangeOr(0) + MeleeRange`）：旧数据逐值等价，配件从此能用一条 `Modifiers` 加近战距离，不必整块覆盖 `MeleeHitbox`（§11.5.3-③） |
+| 32 | 动作表里的动画名 | **`Animation` 是候选链 + 短名拼接**：`animation.` 开头=全名原样用，其它按 `animation.<宿主枪 id>.` 拼接，列表按顺序取第一个存在的。**只用于 `MeleeActions.Animation`**，`GunAnimation.*` 仍写全名（§11.5.3-①） |
+| 33 | 刺刀的动画 | 写 `["hit_bayonet", "hit"]`：动画做出来之前在**所有枪**上都自动落在枪自己的 `hit` 上；以后往某把枪的动画文件里加 `animation.<枪>.hit_bayonet` 即可生效，**配件数据不用改** |
+| 31 | 改装界面 / HUD | **一行未动**（按需求）。`EditMessage` 与 `GeoGunRenderer.attachmentFocusBone` 改成读 `AttachmentSlots.EDIT_ORDER`，界面按钮下标与它前 6 项保持一致；刺刀在下标 6，暂时只能用指令安装 |
+| 32 | 配件物品 tag 的生成 | 从"每个槽位在 `ModTags`/datagen 里各写一遍"改成**注册表驱动**：`ATTACHMENT_BY_SLOT` / `attachmentRarityTag()` + datagen 循环，新增槽位不再需要手写 tag 常量 |
 
 ---
 

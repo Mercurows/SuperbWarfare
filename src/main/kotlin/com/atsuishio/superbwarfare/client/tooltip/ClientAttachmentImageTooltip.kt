@@ -3,7 +3,8 @@ package com.atsuishio.superbwarfare.client.tooltip
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.tooltip.component.AttachmentImageComponent
 import com.atsuishio.superbwarfare.data.attachment.*
-import com.atsuishio.superbwarfare.item.attachment.AttachmentItem
+import com.atsuishio.superbwarfare.item.attachment.AttachmentProvider
+import com.atsuishio.superbwarfare.item.attachment.definition
 import com.atsuishio.superbwarfare.tools.FormatTool
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -40,7 +41,7 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
     }
 
     open fun buildLines(stack: ItemStack): List<Component> {
-        val definition = (stack.item as? AttachmentItem)?.definition() ?: return emptyList()
+        val definition = (stack.item as? AttachmentProvider)?.definition() ?: return emptyList()
 
         return buildList {
             val attachmentId = definition.getId()
@@ -279,6 +280,7 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
             "RPM",
             "Velocity",
             "MeleeDamage",
+            "MeleeRange",
         )
 
         val LOWER_IS_BETTER = setOf(

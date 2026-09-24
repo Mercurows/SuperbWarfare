@@ -6,10 +6,11 @@ import com.atsuishio.superbwarfare.command.builder.entityArg
 import com.atsuishio.superbwarfare.command.builder.enumArg
 import com.atsuishio.superbwarfare.command.builder.resourceLocationArg
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
+import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.init.ModItems
-import com.atsuishio.superbwarfare.item.attachment.AttachmentItem
+import com.atsuishio.superbwarfare.item.attachment.AttachmentProvider
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.suggestion.SuggestionProvider
@@ -36,9 +37,10 @@ private const val ATTACHMENT_ARG = "attachment"
  * ```
  *
  * 三条指令都作用于实体主手的枪械，主手物品不是 [GunItem] 时指令失败：
- * - `set`：把槽位换成指定配件。物品与配件数据必须存在、配件数据的槽位必须与 `type` 一致，
+ * - `set`：把槽位换成指定配件。物品与配件数据必须存在、配件数据的槽位必须与 `type` 一致、
+ *   不能与该枪上已安装的配件抢同一个挂点组，
  *   并且必须出现在该枪械数据的 `AvailableAttachments` 列表里
- * - `clear`：清空指定槽位，不写 `type` 时清空全部五种槽位
+ * - `clear`：清空指定槽位，不写 `type` 时清空全部槽位（槽位清单来自 `AttachmentSlots.ALL`）
  * - `random`：在可用列表里随机抽一个配件装上，不写 `type` 时每个槽位各抽一次
  *   （该槽位没有可用配件时跳过，因此有可用配件的槽位都会被随机填上）
  */
@@ -69,6 +71,18 @@ val ATTACHMENT_COMMAND = buildCommand("attachment") {
                                     id.toString(),
                                     definition.slot.slotName(),
                                     type.slotName()
+                                )
+                            }
+                        }
+
+                        // 挂点组冲突：同一个挂点上已经装了别的配件，先于"不可用"报出来，
+                        // 否则只会得到一句含糊的"这把枪不支持该配件"
+                        data.attachment.mountConflict(type, definition)?.let { blocker ->
+                            fail {
+                                Component.translatable(
+                                    "commands.superbwarfare.attachment.fail.mount",
+                                    blocker.slotName(),
+                                    AttachmentSlots.mountOf(type, definition)
                                 )
                             }
                         }
@@ -200,7 +214,7 @@ val ATTACHMENT_COMMAND = buildCommand("attachment") {
 private fun applyAttachment(data: GunData, ammoSupplier: Entity, type: AttachmentType, id: ResourceLocation?) {
     if (data.attachment.id(type) == id) return
 
-    if (type == AttachmentType.MAGAZINE) {
+    if (AttachmentSlots.of(type).withdrawAmmoOnChange) {
         data.withdrawAmmo(ammoSupplier)
     }
 
@@ -264,7 +278,7 @@ private fun mainHandGunData(entity: Entity): GunData? {
 
 /** 查找 [id] 对应的配件物品与配件数据，两者缺一不可 */
 private fun attachmentDefinitionOf(id: ResourceLocation): AttachmentDefinition? {
-    if (BuiltInRegistries.ITEM.get(id) !is AttachmentItem) return null
+    if (BuiltInRegistries.ITEM.get(id) !is AttachmentProvider) return null
     return AttachmentDefinition.from(id)
 }
 
