@@ -16,7 +16,7 @@
     "Type": "Cone",
     "Range": 1.2,
     "Angle": 100,
-    "Pitch": 70,
+    "Pitch": 180,
     "Occlusion": true
   },
   "MeleeSweep": {

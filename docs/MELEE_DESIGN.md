@@ -1,6 +1,10 @@
 # 枪械近战系统 v6 设计（MeleeActions + MeleeEffect + SubWeapon）
 
-> 状态：**设计稿，未实现**。只描述目标形态、数据模型、实现路线与分期，不含代码改动。
+> 状态：**一期已实现**（近战本体），二期（配件 + 刺刀）、三期（`SubWeapon`）**仍未实现**。
+> 本文既是设计稿也是落地记录：
+> - **§11.1** 一期逐项核对表（完成项标注了真实文件路径）
+> - **§11.2** 「正式实现与本文不一致的地方」+ 兼容性确认清单 + 遗留缺口（**实现时按代码为准**，本文相关段落已就地加注）
+> - **§12.2** 一期实现期间补充的决策记录
 > **v6 相对 v5 的变化**：
 > 1. **配件物品接口化**：抽出 `AttachmentProvider` 接口，安装/工具提示/命令统一按接口判断；原 `AttachmentItem` 改名 **`BasicAttachmentItem`**（§8.3）；
 > 2. **副武器物品本身就是一把枪**：`SubWeaponItem : GunItem, AttachmentProvider`——同一物品 id 同时拥有 `sbw/attachments/<id>.json`（配件定义）与 `sbw/guns/<id>.json`（枪数据），于是 `SubWeaponInfo.Data` 退化为**可选**（默认用物品自身 id）；
@@ -12,27 +16,31 @@
 
 ## 0. 结论速览
 
-| 议题 | 结论 |
-|---|---|
-| 判定形状 | 双角度限定的 `Cone` / `Box` / `Capsule` + **方向性扫掠采样**；盒体复用 `OBB.isColliding(obb, aabb)` |
-| 判定归属 | **只在客户端做**（与现状相同的信任模型） |
-| 攻击顺序 | `MeleeActions` 循环序列，**触发时锁存下标**；计数存在**客户端按枪隔离的计数器**（不能进 `GunState`，§5.2） |
-| 覆盖语义 | 按「独立可覆盖的轴」拆顶层字段；字段级缺省继承在代码里做 |
-| 命中区域 | 打头复用 `Headshot`（1.5）、打腿复用投射物默认 0.5，**不新增全局字段** |
-| 伤害类型 | 新增 `gun_melee` / `gun_melee_headshot` + 标签 **`#superbwarfare:melee`**（含原版 `minecraft:player_attack`） |
-| 冷却 | **自定义**：仿 Perk 写在**枪械 NBT**，服务端逐 tick 递减；**绝不用原版物品冷却** |
-| 近战专属枪 | 显式 **`"Projectile": "@melee"`**；`empty`/`ray` 统一成 `@empty`/`@ray`（旧裸写法兼容） |
-| **配件物品** | `AttachmentProvider` 接口 + `BasicAttachmentItem`（原 `AttachmentItem`）+ `SubWeaponItem : GunItem`（§8.3） |
-| **副武器手持** | 手持副武器物品时**按普通物品处理**：一个谓词 `useAsWeaponInHand()` + 约 40 处手持门禁（含 6 个改视角的 Mixin），数据层与安装链路不受影响（§8.3.1） |
-| **副武器定义** | `AttachmentDefinition.SubWeapon` POJO——**有它就是副武器**，与槽位无关（§9.1） |
-| **副武器运行时** | 寄生 `GunData`：合成栈用副武器物品本身 + 共享附件子 tag（§9.3） |
-| **G / V 语义** | **V 永远近战**；**G 有副武器则使用副武器（遍历逐个触发），没有则等同 V**（§9.4） |
-| **动作互斥** | `GunActionLock`：开火/换弹/拉栓/近战/副武器 任一占用期间其它入口全部拒绝（§9.5） |
-| 与 Better Combat 的分野 | 它做玩家模型动画 + 按 combo 条件选动画、判定挂原版；我们做武器骨骼动画 + 数据定义的判定几何体（§3.6） |
+| 议题 | 结论 | 一期实现 |
+|---|---|---|
+| 判定形状 | 双角度限定的 `Cone` / `Box` / `Capsule` + **方向性扫掠采样**；盒体复用 `OBB.isColliding(obb, aabb)` | ✅ |
+| 判定归属 | **只在客户端做**（与现状相同的信任模型） | ✅ |
+| 攻击顺序 | `MeleeActions` 循环序列，**触发时锁存下标**；计数存在**客户端按枪隔离的计数器**（不能进 `GunState`，§5.2） | ✅ |
+| 覆盖语义 | 按「独立可覆盖的轴」拆顶层字段；字段级缺省继承在代码里做 | ✅ |
+| 命中区域 | 打头复用 `Headshot`（1.5）、打腿复用投射物默认 0.5，**不新增全局字段** | ✅（打头缺省继承枪的 `Headshot`，§11.2-⑤） |
+| 伤害类型 | 新增 `gun_melee` / `gun_melee_headshot` + 标签 **`#superbwarfare:melee`**（含原版 `minecraft:player_attack`） | ✅ |
+| 冷却 | **自定义**：仿 Perk 写在**枪械 NBT**，服务端逐 tick 递减；**绝不用原版物品冷却** | ✅ |
+| 近战专属枪 | 显式 **`"Projectile": "@melee"`**；`empty`/`ray` 统一成 `@empty`/`@ray`（旧裸写法兼容） | ✅（缺口见 §11.2-⑫） |
+| **MeleeEffect** | `Effects` 数据 + 概率 + 自定义冷却 + 11 个首发行为（§3.8） | ❌ **只有数据与校验，结算未实现**（§11.4-1） |
+| **配件物品** | `AttachmentProvider` 接口 + `BasicAttachmentItem`（原 `AttachmentItem`）+ `SubWeaponItem : GunItem`（§8.3） | ❌ 二期 |
+| **副武器手持** | 手持副武器物品时**按普通物品处理**：一个谓词 `useAsWeaponInHand()` + 约 40 处手持门禁（含 6 个改视角的 Mixin），数据层与安装链路不受影响（§8.3.1） | ⚠ 只有谓词（一期顺势加进 `GunItem`），门禁替换属三期 |
+| **副武器定义** | `AttachmentDefinition.SubWeapon` POJO——**有它就是副武器**，与槽位无关（§9.1） | ❌ 三期 |
+| **副武器运行时** | 寄生 `GunData`：合成栈用副武器物品本身 + 共享附件子 tag（§9.3） | ❌ 三期 |
+| **G / V 语义** | **V 永远近战**；**G 有副武器则使用副武器（遍历逐个触发），没有则等同 V**（§9.4） | ✅ 前半（G = 键位常量 `SUBWEAPON_FIRE`，当前等同 V） |
+| **动作互斥** | `GunActionLock`：开火/换弹/拉栓/近战/副武器 任一占用期间其它入口全部拒绝（§9.5） | ✅（`SUB_WEAPON` 已就位，三期才被占用） |
+| 与 Better Combat 的分野 | 它做玩家模型动画 + 按 combo 条件选动画、判定挂原版；我们做武器骨骼动画 + 数据定义的判定几何体（§3.6） | ✅ |
 
 ---
 
 ## 1. 现状盘点
+
+> **本节描述的是「一期开工前」的代码状态**（保留了原始行号，便于回溯差异）。
+> 一期完成后的链路、以及本节列出的 11 个缺陷的处置结果，见 §11.1（逐项核对表）与 §11.3（行为变化清单）。
 
 ### 1.1 链路
 
@@ -63,6 +71,11 @@
 **`MeleeDamageTime` 的真实语义**：**从挥击开始算，第几 tick 结算**（不是距结束）。它就是 `HitTime`，只搬到动作级。
 
 ### 1.2 需要一并处理的现存缺陷
+
+> **处置结果（一期）**：
+> - 已修：**3 / 4 / 5 / 6 / 7 / 8 / 11**（第 11 项按"不用原版冷却"直接删掉那个死条件）。
+> - 顺带修掉：**1**（`gunMelee` 全局单例 → 状态按枪隔离）、**2**（近战与开火无互斥 → `GunActionLock`）、**9**（三个字段漏写回 → 已补进 `withOverrides`）。
+> - **10**（`meleeOnly()` 隐式判定）已显式化并保留兼容回退，详见 §7.2 与 §11.2-⑬。
 
 | # | 缺陷 | 证据 |
 |---|---|---|
@@ -134,7 +147,6 @@
 > 兼容硬要求：**22 把旧枪 json 一行都不用改**；没有 `MeleeHitbox` 时走旧的圆锥语义。
 
 ### 3.3 `MeleeHitbox` —— 判定形状
-
 ```jsonc
 "MeleeHitbox": {
   "Type": "Cone",        // Cone | Box | Capsule
@@ -153,13 +165,26 @@
 
 | Type | 定义 | 适用 |
 |---|---|---|
-| `Cone` | 目标 AABB 最近点：距离 ≤ `Range`，`\|Δyaw\| ≤ Angle/2`、`\|Δpitch\| ≤ Pitch/2` | 通用挥击（兼容旧行为） |
-| `Box` | OBB（中心 = 眼睛 + (0,`YOffset`,`ZFrom+Length/2`)，半长 = (`Width/2`,`Height/2`,`Length/2`)，绕 Y 旋转 `yaw`）∩ 目标 AABB | 正前方「横扫带」 |
+| `Cone` | 目标 AABB 最近点：距离 ≤ `Range`，`\|Δyaw\| ≤ Angle/2`、`\|Δpitch\| ≤ Pitch/2` | 通用挥击（兼容旧行为） || `Box` | OBB（中心 = 眼睛 + (0,`YOffset`,`ZFrom+Length/2`)，半长 = (`Width/2`,`Height/2`,`Length/2`)，绕 Y 旋转 `yaw`）∩ 目标 AABB | 正前方「横扫带」 |
 | `Capsule` | 线段（沿视线 `ZFrom → ZFrom+Range`）到目标 AABB 最近距离 ≤ `Radius` | 刺刀突刺、枪管戳 |
+
+> **`Box` 的朝向实现成了 yaw + pitch 全姿态**（见 §11.2-㉑）：局部 **+Z** 指向**视线**（含俯仰），
+> 局部 **+X** 是水平右方（与 pitch 无关），局部 **+Y** = `look × right`（与视线垂直的"上"）。
+> `YOffset` 也沿局部 +Y 偏移，不再写死世界 Y —— 所以抬头劈砍时盒子会跟着抬起来，而不是横在头顶。
 
 `Box` 直接用 `OBB`（`tools/OBB.kt:39`）+ `OBB.isColliding(obb, aabb)`（`:486`）。
 
+> **实现注意（踩过坑，§11.2-⑳）**：`Box` 的"绕 Y 旋转 `yaw`"必须用
+> `MeleeQuery.yawPitchQuaternion(yaw, pitch)` ＝ `Quaterniond().rotateY(-yaw).rotateX(+pitch)`。
+> MC 的 yaw 与 JOML 的 `rotateY` **手性相反**（`+yaw` 会让判定体与朝向差 180°），
+> 且 MC 的 pitch **向下为正**、JOML `rotateX(θ>0)` 也朝下，所以是 `+pitch`。
+> 判定与调试渲染**必须共用这一个函数**。
+
 **有意修正**：距离改为「到目标 AABB 最近点」；遮挡由 `Occlusion` 统一；俯仰角可单独限制；角度参照点统一。
+
+> **`Cone` 的 `Pitch` 默认值提醒**：`Pitch` 是**总张角**，`Pitch: 70` 只有 `±35°` 容差，
+> 比旧实现（垂直不限）**紧得多**，会出现"怪就在眼前却打不到"。
+> 要与旧行为等价请写 **`"Pitch": 180`**（或干脆省略）。详见 §11.2-㉓ 的实测日志。
 
 ### 3.4 `MeleeSweep` —— 横扫
 
@@ -185,7 +210,7 @@
 |---|---|---|---|
 | `Animation` | String? | `GunAnimation.Melee[idx % size]` | 本段动画 clip 名 |
 | `Duration` | Int? | `MeleeDuration` | 本段总 tick（动画按它拉伸） |
-| `HitTime` | Int? | `MeleeDamageTime` | 从挥击开始算，第几 tick 结算 |
+| `HitTime` | Int? | `MeleeDamageTime` | 从挥击开始算，第几 tick 结算（见下方注） |
 | `Hitbox` / `Sweep` | ? | 全局 | 本段判定 |
 | `Damage` / `DamageMultiplier` | Double? | `MeleeDamage` / 1.0 | 伤害（二选一） |
 | `MaxTargets` / `Falloff` | Int? / Double? | 0（不限）/ 0.1 | 数量与衰减 |
@@ -194,8 +219,14 @@
 | `Headshot` / `Legshot` | Double? | 1.5 / 0.5 | 本段命中区域倍率 |
 | `Durability` | Int? | 0 | 本段消耗的枪械耐久 |
 | `Cooldown` | Int? | 0 | 本段冷却（§3.7 的枪 NBT 冷却表） |
-| `Swing` / `Hit` | String? | 枪的 `MeleeSound` | 本段音效 |
-| `Effects` | ? | 空 | 本段额外效果（§3.8） |
+| `Swing` / `Hit` | `SerializedSoundEvent?`（**不是 String**，§11.2-④） | 枪的 `MeleeSound` | 本段音效 |
+| `Effects` | `List<MeleeEffectSpec>?` | 空 | 本段额外效果（§3.8；**一期只解析不结算**） |
+
+> **`HitTime` 的判定条件（实现时踩过坑，§11.2-①）**：内部计时器 `meleeTicks` 从 `Duration` 开始、**在每帧开头**递减，
+> 所以「出伤那一帧」的条件是 `meleeTicks <= Duration - HitTime`，**不是** `<= HitTime`。
+> 写成后者会让出伤晚整整 `Duration - 2*HitTime` tick（`Duration=16, HitTime=6` 时是第 11 tick 才打，动画早演完了）。
+> 换算已收进 `ResolvedMeleeAction.hitTickFromStart`，`MeleeClientHandler.tickActiveSwing` 只认它。
+> 另外 `HitTime` 会被夹进 `[0, Duration]`（写超界不再变成"永远不出伤"）。
 
 **作用域**：`MeleeActions`/`MeleeHitbox`/`MeleeSweep`/`MeleeComboReset` **是 PMC 属性**；`MeleeAction` 内字段**不参与 PMC**，读取时 `?:` 继承。
 
@@ -350,9 +381,21 @@ t=HitTime  结算：客户端判定 → 发报文；服务端结算伤害/效果
 t=Duration meleeTimer 归零，允许下一段（按 MeleeComboReset 决定是否重置连招）
 ```
 
+> 落地时的**逐 tick 约定**（`MeleeClientHandler.tickActiveSwing`）：
+> `meleeTicks` 从 `Duration` 起、**每帧开头**递减，出伤条件是 `meleeTicks <= Duration - HitTime`，
+> 即「从挥击开始算第 `HitTime` tick 结算」。等价于旧实现 `gunMelee == MELEE_DURATION - MELEE_DAMAGE_TIME` 那一帧，
+> 22 把旧枪的手感因此零变化。踩过的坑见 §11.2-①。
+
 动画：`playbackSpeed = clip.specifiedEndTimeMs / (action.Duration / 20f)`。
 
 **为什么时间线放在 `MeleeAction` 而不是复用 `ActionSteps`**：`GunActionStepExecutor` 读 `data.getDefault().actionSteps`（`:10`），**不经过 PMC**，配件/弹种覆盖不了——而"刺刀换动作"的核心恰恰是覆盖。
+
+> **实现补充：连续挥击必须让动画重播（§11.2-②）**。
+> 动画状态机只在**状态切换**那一帧重建 runner，而按住 V 连续挥击时 `resolveState()` 的目标与 `currentState` 一直是 `MELEE`
+> ——状态没变，`PLAY_ONCE_HOLD` 的动画就停在上一段的末帧，**只有第一段会播**。
+> 所以 `MeleeClientHandler` 每次触发挥击都 `swingSerial++`，`GeoGunAnimationInstance` 按
+> `swingSerial > consumedMeleeSerial` 重播（与开火那套 `fireSerial` / `consumedFireSerial` 同一套路），
+> 且**序号必须在 runner 判定之前消费**，否则第一段会被重播两次。
 
 ### 5.2 「取下标就可以了吧？」——可以，2 个必须处理的点
 
@@ -360,6 +403,10 @@ t=Duration meleeTimer 归零，允许下一段（按 MeleeComboReset 决定是�
 
 **② 下标不能放进 `GunState`**：`GunState` 全部字段服务端权威，客户端只能 `updateLocal`（不写 NBT、不 bump revision，`GunData.kt:1380-1388`），服务端从不写这个字段 → **任何一次服务端同步都会冲掉客户端计数**。
 → **客户端本地、按枪隔离的连招计数器**（key = 枪 UUID 或 `GunData` 实例；副武器另按 `(枪, 槽位)` 隔离），切枪重置、超时重置；下标随报文发送，服务端只做**越界健壮性**校验。这同时修掉缺陷 1。
+
+> **落地形态**：连招下标、动作锁、本段时长、挥击序号**同住**在一个按枪隔离的 `GunActionLock.State` 里
+> （`WeakHashMap<UUID, State>` + `WeakHashMap<GunData, State>` 兜底），见 `client/gun/GunActionLock.kt`。
+> `ClientEventHandler.gunMelee` 因此**退化成恒为 0 的 `@Deprecated` 占位字段**，只为旧 GeckoLib 路径编译通过（§11.2-⑮）。
 
 ### 5.3 连招重置窗口
 
@@ -374,12 +421,23 @@ t=Duration meleeTimer 归零，允许下一段（按 MeleeComboReset 决定是�
 | 找不到 clip | 静默 return | error 日志 + 回退 `melee[0]`；资源加载后校验 |
 | 状态 | `MELEE`（`PLAY_ONCE_HOLD`） | 不变，不需要 `MELEE_2/3` |
 | 播放速度 | 全局 `MELEE_DURATION` | 本段 `Duration` |
+| **连挥重播** | — | 新增 `swingSerial` 机制（§5.1 末尾、§11.2-②） |
 
 **可复刻的先例**：弹匣等级 → 鼓式换弹动画（`GunData.kt:71`/`:84` → `GeoGunAnimationInstance.kt:162-176`）。
+
+> **落地补充**：`找不到 clip` 的 error 日志 + 回退**已实现**（`resolveMeleeName()`，先试 `action.Animation`，
+> 失败则回退 `GunAnimation.Melee[0]`）；但"**资源加载后校验**"（在资源 reload 阶段就把所有枪的 melee clip 名核一遍）
+> **未实现**，目前只在运行时第一次播放时才会打日志。另要注意：**名字只能来自 `GunData`（PMC，按 stack）**，
+> `GunResource` 是按物品注册 id 缓存的，配件/弹种覆盖看不到它（§8.6 的坑）。
 
 ### 5.5 第三人称：放弃，用现成的 swingHand
 
 沿用原版 `player.swing`。→ 顺带修缺陷 3：改成**只在服务端 swing**。
+
+> **⚠ 落地时改到了另一边：只在「客户端」swing**（`MeleeClientHandler.resolveHit`）。
+> 这样做同样能修掉缺陷 3（双端各调一次 → `onEntitySwing` 触发两次），而且**第三人称动作更跟手**：
+> 服务端那条路径要等报文回来才挥手，客户端本地挥手是零延迟的。
+> 副作用：专用服务端上（无客户端）不会有挥手动作 —— 与"判定只在客户端做"的信任模型一致，可接受。
 
 ---
 
@@ -403,6 +461,12 @@ SubWeaponFireMessage(
 
 服务端：`isSpectator` → 主手是 GunItem → **动作锁检查** → 解析 `source`/`slots` 对应的 `GunData`（副武器时按 §9.3 装配）→ 结算 / 发射。**不做距离/角度/视线复核**。
 
+> **落地差异（§11.2-⑥⑦）**：
+> 1. `targets` 不是 `List<UUID>`，而是 `List<TargetPayload>`，每个元素带 **`hitPos`**（判定体到目标 AABB 的入射点）。
+>    原因是**打头/打腿必须由服务端算**（`gun_melee_headshot` 要选对伤害类型），客户端不能再自己算一遍。
+> 2. 报文里**没有 `MeleeSource` 枚举**，就是一个 `String`：`"MAIN"` / `"SUB:<slot>"`，默认值 `MeleeAttackMessage.SOURCE_MAIN`。
+> 3. 服务端那层"廉价检查"落地为：`data.reloading() || data.bolt.actionTimer.get() > 0` → 直接 return（不结算、不扣耐久）。
+
 ### 6.2 伤害类型与标签
 
 1. 新增 `superbwarfare:gun_melee`（爆头 `gun_melee_headshot`）（`ModDamageTypes.kt:17-55` 的写法）。
@@ -413,6 +477,14 @@ SubWeaponFireMessage(
 6. 打头走 `gun_melee_headshot`；`DamageTypeTool.isHeadshotDamage`（`:25`）加上它。
 7. 伤害数值直接读 `MeleeDamage`；`getAttributeModifiers` 的 `ATTACK_DAMAGE` 加成**保留**。
 8. 穿甲走 `DamageHandler.forceHurt`。
+
+> **落地差异（§11.2-③④⑤）**：
+> - 第 5 条全部保留；但"**击退音效**"与"**无伤害提示音**"按**每次挥击最多各响一次**（旧实现是每个目标都响，缺陷 5）。
+> - 第 6 条实现为 **`MeleeQuery.isHeadshot` / `isLegshot`**（同一套阈值，落在 `tools/MeleeQuery.kt`），服务端按报文里的 `hitPos` 判定。
+> - 第 7 条：`getAttributeModifiers` 的 `ATTACK_DAMAGE` 加成**保留但不再参与近战结算**（见 §11.2-③ 的说明）。
+> - 第 8 条实现为**按 `BypassesArmor` 拆成「护甲段 + 穿甲段」两段伤害**：护甲段 `target.hurt(...)`，
+>   穿甲段 `target.forceHurt(...)`。不用一个 `DamageSource` 打两遍，是因为 `hurt()` 自带 10 tick 无敌帧，
+>   第二段会被 `damage <= lastHurt` 判掉。
 
 ### 6.3 Perk 钩子
 
@@ -764,34 +836,320 @@ companion object {
 | DataValidator | 形状参数、`Effects` 预设/`Type`、`MaxTargets`/`Falloff`/`HitTime`/`Cooldown`、**`SubWeapon.Data`（含默认取物品 id 的情况）能否解析到枪数据**、挂点组冲突、靠 `ProjectileAmount<=0` 隐式判近战的迁移提示 |
 | 资源校验 | `GunAnimation.Melee` 的 clip 名是否存在；`bayonet_pos` 等骨骼是否存在 |
 
+### 10.1 一期实际落地的形态
+
+| 工具 | 实现 | 与上表的差异 |
+|---|---|---|
+| 判定体可视化 | `client/renderer/special/MeleeDebugRenderer.kt`：`RenderLevelStageEvent.AFTER_ENTITIES` 画每个扫掠采样点的 OBB 线框（绿=精确形状 / 黄=圆锥·胶囊近似 / 红=正在挥的那一段） | **未画**朝向箭头、扫掠箭头、打头/打腿高度线；**触发方式**是原版 `F3+B` **或** 配置项 `melee_hitbox_render`（任一即可），不是新键位 |
+| 调试命令 | `/sbw melee info` / `actions` / `force <idx> [entity]`（`command/MeleeCommand.kt`） | **没有 `debug` 子命令**（开日志改用配置项）；`force` 要经 `command/MeleeDebugHooks.kt` 转交客户端执行（判定只在客户端做，而 `/sbw` 是服务端注册的） |
+| 日志 | `DisplayConfig.MELEE_DEBUG_LOG`（`melee_debug_log`，默认 `false`）：挥击（下标/时长/结算 tick/按键来源）、命中（目标数/距离/夹角/打头打腿）、未命中 | **动作锁拒绝原因**目前没打日志（只有 debug 日志里的按键来源） |
+| 判定体外框 | `F3 + B` 或 `DisplayConfig.MELEE_HITBOX_RENDER`（`melee_hitbox_render`，默认 `false`），**任一即可**；主手需为能近战的枪 | 最初误写成"两个条件同时满足"，导致只开一个时看不到（§11.2-⑲） |
+| DataValidator | `DataValidator.validateMeleeData`：形状参数自相矛盾、`MeleeSweep` 跨度、`HitTime > Duration`（永远不会出伤）、`Falloff`/`BypassesArmor`/`Chance` 越界、`Effects` 条目缺 `Effect`/`Type`、**隐式近战迁移提示**（带"该枪有弹种能改回 `ProjectileAmount`"的排除条件） | `SubWeapon.Data` / 挂点组相关的校验属于二·三期 |
+| 资源校验 | 运行时 error 日志 + 回退第一支 clip | **资源加载后校验未实现**（§5.4 注） |
+
+> 命令与可视化的用法示例：
+> ```
+> /sbw melee info        # meleeOnly 判定来源 / 形状 / 横扫 / 连招窗口 / 冷却表
+> /sbw melee actions     # 逐段：animation、duration、hitTime、形状、伤害、倍率、冷却、effects 数量
+> /sbw melee force 0     # 立刻按第 0 段结算一次（不挥、不占锁，方便反复调参）
+> ```
+
 ---
 
 ## 11. 分期落地
 
-### 一期：近战本体（判定 + 连招 + 命中区域 + 伤害类型 + `@melee` + 动作锁 + 冷却基建 + G 键语义）
-1. 数据类：`MeleeHitbox`/`MeleeSweep`/`MeleeAction` + `DefaultGunData` 字段 + `GunProp` 条目 + `withOverrides` 写回（补上漏掉的三个）。
-2. `MeleeQuery`（形状 + 扫掠 + 排序/数量/衰减/命中区域），替换 `doGunMeleeAttack`。
-3. 连招：per-action `Duration`/`HitTime`/`Cooldown`、下标锁存、`MeleeComboReset`、**客户端按枪隔离的计数器**。
-4. 动画：`GunAnimation.Melee` → `SingleOrList<String>`，按本段时长拉伸，名字解析与校验。
-5. 音效：`MeleeSound` 动作级覆盖。
-6. **自定义冷却基建**（枪 NBT 冷却表 + 服务端递减，§3.7）。
-7. **`GunActionLock`**（§9.5）。
-8. 伤害类型：`gun_melee`/`gun_melee_headshot` + `#superbwarfare:melee` + `isMeleeDamage` + 同步改 6 处旧判断。
-9. `Projectile: "@melee"` + `@` 前缀归一化（顺手把 5 处 `ray` 改 `@ray`）+ `meleeOnly()` 显式化 + 兼容回退 + 近战枪缺口。
-10. **G 键 + §9.4 的语义表**（此时还没有副武器，G 只是"没有副武器则等同 V"）。
-11. 修 §1.2 的缺陷 3/4/5/6/7/8/11。
-12. 修复：override 嵌套解析改宽松（§8.7）。
-13. 兼容验证：22 把旧枪 json 一行不改，行为一致（遮挡/距离口径差异单独列确认清单）。
-14. 调试：判定体可视化 + `/sbw melee info`。
+| 阶段 | 状态 | 范围 |
+|---|---|---|
+| **一期：近战本体** | ✅ **已完成** | 判定形状/扫掠、连招、命中区域、伤害类型与标签、`@melee`、动作锁、NBT 冷却表、G 键语义、调试工具 |
+| 二期：配件体系 + 刺刀 | ❌ 未开始 | `AttachmentProvider`、槽位注册表、`BAYONET` |
+| 三期：`SubWeapon` | ❌ 未开始 | `SubWeaponInfo`、`SubWeaponItem`、`SubWeaponRuntime`、`UNDERBARREL` |
 
-### 二期：配件体系 + 刺刀
+一期新增/改动的主要落点：
+
+| 类别 | 文件 |
+|---|---|
+| 数据类（**收在 `data/gun/melee/` 子包**，§11.2-⑯） | `MeleeAction.kt`、`MeleeHitbox.kt`、`MeleeHitboxType.kt`、`MeleeSweep.kt`、`MeleeSortBy.kt`、`MeleeEffectSpec.kt`、`ResolvedMeleeAction.kt`、`ProjectileMarker.kt` |
+| 数据接线 | `DefaultGunData.kt`、`GunProp.kt`、`DefaultGunDataOverrides.kt`、`GunData.kt`、`DataValidator.kt` |
+| 判定 | `tools/MeleeQuery.kt`（**取代 `doGunMeleeAttack`**） |
+| 客户端运行时 | `client/gun/GunActionLock.kt`、`client/gun/MeleeClientHandler.kt`、`client/animation/gun/GeoGunAnimationInstance.kt`、`event/ClientEventHandler.kt`、`event/ClickEventHandler.kt` |
+| 服务端结算 | `network/message/send/MeleeAttackMessage.kt`、`event/LivingEventHandler.kt`、`perk/MeleeAttackContext.kt`、`data/gun/subdata/Cooldown.kt`、`event/GunEventHandler.kt` |
+| 伤害类型 | `init/ModDamageTypes.kt`、`init/ModTags.kt`、`datagen/ModDamageTypeTagProvider.kt`、`tools/DamageTypeTool.kt`、`damage_type/gun_melee{,_headshot}.json`、`tags/damage_type/melee.json`（datagen 产出） |
+| 键位 / 配置 | `init/ModKeyMappings.kt`（`SUBWEAPON_FIRE`）、`config/client/DisplayConfig.kt`（`MELEE_DEBUG_LOG`） |
+| 调试 | `command/MeleeCommand.kt`、`command/MeleeDebugHooks.kt`、`client/renderer/special/MeleeDebugRenderer.kt` |
+| 语言 | `en_us.json`、`zh_cn.json`（**只补这两个**，§11.2-⑱） |
+
+**验收方式**：`./gradlew clean build`（已通过）→ 手动步骤见 §11.4 末尾的「一期验收步骤」。
+
+### 11.1 一期：近战本体（判定 + 连招 + 命中区域 + 伤害类型 + `@melee` + 动作锁 + 冷却基建 + G 键语义）
+
+> **状态：✅ 全部完成**（`clean build` 通过；`runData` 已生成 `tags/damage_type/melee.json`）。
+> 下表逐项对应代码落点；带 ⚠ 的项在 §11.2 有差异说明。
+
+| # | 项 | 状态 | 落点 |
+|---|---|---|---|
+| 1 | 数据类 + `DefaultGunData` 字段 + `GunProp` 条目 + `withOverrides` 写回（补上漏掉的三个） | ✅ | `data/gun/melee/*.kt`；`DefaultGunData.kt`（+`MeleeComboReset`/`MeleeHitbox`/`MeleeSweep`/`MeleeActions`，`clamped()` 同步）；`GunProp.kt`（+`MELEE_COMBO_RESET`/`MELEE_HITBOX`/`MELEE_SWEEP`/`MELEE_ACTIONS`，`modifyProperty` 加钳制）；`DefaultGunDataOverrides.kt`（补 ⚠ `MELEE_DAMAGE`/`MELEE_RANGE`/`MELEE_DAMAGE_TIME` + 4 个新字段） |
+| 2 | `MeleeQuery`（形状 + 扫掠 + 排序/数量/衰减/命中区域），替换 `doGunMeleeAttack` | ✅ | `tools/MeleeQuery.kt`（`Cone`/`Box`(OBB)/`Capsule`、`resolve`、`coarseFilter`、`isHeadshot`/`isLegshot`、`debugBoxes`）；`ClientEventHandler.doGunMeleeAttack` **已删除** |
+| 3 | 连招：per-action `Duration`/`HitTime`/`Cooldown`、下标锁存、`MeleeComboReset`、客户端按枪隔离计数器 | ✅（⚠ ①） | `client/gun/MeleeClientHandler.kt` + `client/gun/GunActionLock.kt`（按 UUID 隔离的 `State`） |
+| 4 | 动画：`GunAnimation.Melee` → `SingleOrList<String>`、按本段时长拉伸、名字解析与校验 | ✅（⚠ ②⑪） | `resource/gun/GunAnimation.kt`（+`firstMeleeName()`）；`GeoGunAnimationInstance.kt`（`resolveMeleeName`/`meleePlaybackSpeed`/`swingSerial` 重播） |
+| 5 | 音效：`MeleeSound` 动作级覆盖 | ✅（⚠ ④） | `MeleeAction.Swing`/`Hit`（`SerializedSoundEvent?`）；客户端播 `Swing`，服务端播 `Hit ?: MeleeSound.Hit ?: MELEE_HIT` |
+| 6 | 自定义冷却基建（枪 NBT 冷却表 + 服务端递减） | ✅（⚠ ⑧） | `data/gun/subdata/Cooldown.kt`（子 tag `MeleeCooldown`）；`GunData.cooldown`；`GunEventHandler.gunTickInternal` 里 `data.cooldown.tick()`；键 `melee:<idx>` / `effect:<id>` / `sub:<slot>` |
+| 7 | `GunActionLock`（§9.5） | ✅（⚠ ⑨） | `client/gun/GunActionLock.kt`（`GunAction` 枚举 + `blocks()`/`acquire()`/`force()`）；开火侧接在 `ClientEventHandler.handleGunShoot`/`shootClient`，换弹/拉栓由 `MeleeClientHandler.syncServerDrivenLocks` 同步进锁 |
+| 8 | 伤害类型 `gun_melee`/`gun_melee_headshot` + `#superbwarfare:melee` + `isMeleeDamage` + 6 处旧判断 | ✅ | `init/ModDamageTypes.kt`（+键 +2 个 `causeXxx`）、`init/ModTags.kt`（`DamageTypes.MELEE`）、`ModDamageTypeTagProvider.kt`、`tools/DamageTypeTool.kt`（`isMeleeDamage`，`isHeadshotDamage` 加 `GUN_MELEE_HEADSHOT`）、`damage_type/gun_melee{,_headshot}.json`、`LivingEventHandler.kt:227/258/500/534`、`PowerfulAttraction.kt:27/48/64` |
+| 9 | `Projectile: "@melee"` + `@` 归一化（5 处 `ray`→`@ray`）+ `meleeOnly()` 显式化 + 兼容回退 + 近战枪缺口 | ✅（⚠ ⑫⑬） | `data/gun/melee/ProjectileMarker.kt`（`normalizeProjectileMarker`/`isMeleeProjectileMarker`）、`GunData.meleeOnly()`、`GunItem.shootBullet` 的 `@melee` 早退、`GunProp.modifyProperty` 的 `MAGAZINE` 钳制、`ClickEventHandler.handleWeaponFirePress` 左键直通 |
+| 10 | **G 键 + §9.4 语义表** | ✅ | `init/ModKeyMappings.kt` → **`SUBWEAPON_FIRE`**（默认 `G`，按需求命名）；`MeleeClientHandler.tick` 里 `fromSubWeaponKey`，无副武器时与 V 共享同一入口与状态 |
+| 11 | 修 §1.2 的缺陷 3/4/5/6/7/8/11 | ✅（缺陷 1/2/9 另见 §11.2-③⑨） | 全在 `MeleeAttackMessage.kt`：3=只在客户端 `swing`；4=`sweepAttack()` 移出循环；5=击退/无伤音效每次挥击最多一次；6=不再把攻击者动量写给受害者；7=主手非枪直接 return；8=衰减读 `Falloff` 字段；11=删掉死掉的原版冷却判断。**缺陷 1**（`gunMelee` 全局单例）=状态按枪隔离；**缺陷 2**（近战/开火无互斥）=`GunActionLock`；**缺陷 9**（三个字段漏写回）=已补 |
+| 12 | override 嵌套解析改宽松（§8.7） | ✅ | `data/Prop.kt`：`OVERRIDE_JSON = Json(DataLoader.JSON)`（`ignoreUnknownKeys = true`），`deserialize` 走它 + 失败打 `warn`（属性名 + 原始 JSON） |
+| 13 | 兼容验证：旧枪 json 一行不改、行为一致 | ✅（⚠ 见 §11.3） | 22 把 `MeleeDamage > 0` 的枪 json **零改动**；`meleeOnly()` 兼容回退；`HitTime` 逐 tick 对齐旧实现；`@ray` 的 5 个文件是等价改写 |
+| 14 | 调试：判定体可视化 + `/sbw melee info` | ✅（⚠ ⑩⑭） | `client/renderer/special/MeleeDebugRenderer.kt`、`command/MeleeCommand.kt`、`command/MeleeDebugHooks.kt`、`DisplayConfig.MELEE_DEBUG_LOG` |
+| — | 语言文件 | ✅ | `en_us.json` / `zh_cn.json`：`death.attack.gun_melee*`、`key.superbwarfare.subweapon_fire`、`commands.superbwarfare.melee.*`、`config...melee_debug_log`（**只补这两个语言**，其余语言按需求保持原样） |
+
+### 11.2 正式实现与本文不一致的地方
+
+标注为「设计 → 实现」；**以代码为准**。带 ⚠ 的项同时是踩过的坑，改代码前务必先读。
+
+**① ⚠ `HitTime` 的判定条件（已修，但语义容易写错）**
+设计：`t=HitTime` 结算。实现：内部 `meleeTicks` 从 `Duration` 起、**每帧开头**递减，出伤条件是 `meleeTicks <= Duration - HitTime`。
+最初的实现写成了 `meleeTicks <= HitTime`，导致 `Duration=16, HitTime=6` 时**第 11 tick 才出伤**（动画早演完，手感明显发粘）。
+现由 `ResolvedMeleeAction.hitTickFromStart = duration - hitTime` 统一换算；另 `HitTime` 会 `coerceIn(0, duration)`。
+
+**② ⚠ 连续挥击的动画重播（设计没写）**
+`PLAY_ONCE_HOLD` + 状态机"只在状态切换那一帧解析 clip"，使得按住 V 连挥时**只有第一段有动画**。
+实现新增 `MeleeClientHandler.swingSerial` + `GeoGunAnimationInstance.consumedMeleeSerial`（照抄 `fireSerial` 套路）。
+序号必须在 runner 判定**之前**消费，否则第一段会被重播两次。
+
+**③ 伤害公式：不再乘 `ATTACK_DAMAGE` 属性**
+设计 §6.2-7「伤害数值直接读 `MeleeDamage`；`getAttributeModifiers` 的 `ATTACK_DAMAGE` 加成保留」。
+实现取前半句：`damage = action.damage * 命中区域倍率 * 衰减`，**`ATTACK_DAMAGE` 只保留属性本身**（对其它系统/显示仍有意义），不参与近战结算。
+理由：再乘一次会让 `MeleeDamage` 被"属性加成"二次放大，与 `MeleeAction.Damage` 的语义打架。
+`ATTACK_KNOCKBACK` 属性仍然照旧参与击退。
+
+**④ `MeleeAction.Swing` / `Hit` 的类型是 `SerializedSoundEvent?`，不是 `String?`**
+理由：与 `MeleeSound` 的字段类型一致，JSON 写法不变，但少了"字符串 → SoundEvent"的一层手工解析。
+
+**⑤ 打腿倍率的缺省值**
+设计 §3.5 表格写 `Legshot` 缺省 `1.5 / 0.5`（即打头 1.5 / 打腿 0.5）。
+实现：**打头不写时继承枪的 `Headshot`**（AK-47 是 2，不是 1.5），打腿缺省 `0.5`。
+这是"全局不新增打头/打腿字段、复用枪的 `Headshot`"（§3.2 注）的必然结果，表格里的 1.5 只是"投射物默认值"的泛称。
+
+**⑥ 报文形状**
+- `targets` 是 `List<TargetPayload>`（`uuid` + `hitX/hitY/hitZ` + `distance`），不是 `List<UUID>`：打头/打腿改由**服务端**按 `hitPos` 判定，才能选对 `gun_melee_headshot`。
+- `source` 是 `String`（`"MAIN"` / `"SUB:<slot>"`），不是 `MeleeSource` 枚举；常量 `MeleeAttackMessage.SOURCE_MAIN`。
+
+**⑦ 击退/无伤音效的粒度**
+设计只要求"修缺陷 5"。实现统一为：**每次挥击，命中音效与无伤害提示音各最多响一次**
+（命中音效落在第一个真正受伤的目标身上，`attacker.crit(target)` 同处）。
+
+**⑧ 冷却键命名**
+设计写 `冷却键 → 剩余 tick` + 副武器用 `sub:<slot>`。实现加了目的前缀以免共享一张表时撞键：
+`melee:<actionIndex>`、`effect:<effectId>`、`sub:<slot>`（`Cooldown.meleeKey/effectKey/subWeaponKey`）。
+
+**⑨ 动作锁的具体接法**
+- 开火：`handleGunShoot` 入口处 `blocks(FIRING)` 早退；`shootClient` 里 `force(FIRING, 一个射击周期)`。
+  用 `force` 而不是 `acquire`，因为连发/LOW-RPM 补帧会在自己的占用还没走完时再次开火。
+- 换弹/拉栓：沿用各自状态机，由 `syncServerDrivenLocks` **每 tick 同步进锁**（状态转假立即释放），不反向控制状态机。
+- `SUB_WEAPON` 语义已就位但三期才会被真正占用。
+
+**⑩ 调试入口与可视化**
+- `/sbw melee debug` **没有**这个子命令；开日志用配置项 `melee_debug_log`。
+- `force` 不是服务端直接打伤害：`/sbw` 是 `RegisterCommandsEvent` 注册的服务端命令，而判定只在客户端做，
+  所以经 `MeleeDebugHooks`（可替换函数字段）转交客户端执行；专用服务端上会明确报 `fail.no_client`。
+- 可视化只画采样盒线框，**朝向箭头 / 扫掠箭头 / 打头打腿高度线未实现**；触发方式是 `F3+B` + 配置项，不加新键位。
+
+**⑪ `GunAnimation.Melee` 的"资源加载后校验"未实现**：目前只在运行时第一次播放失败时打 error 并回退 `melee[0]`。
+
+**⑫ `@melee` 缺口清单只做了一半**：左键直通近战已做；`CanZoom: false` 属于数据侧约定（未强制）；
+`MeleeAction.Durability` 已接；文档未补"近战枪资源只需 `Idle` + `Melee`"这句说明。
+
+**⑬ `meleeOnly()` 的兼容回退仍在用**：22 把旧枪里没有一把写 `ProjectileAmount <= 0`（`beast_gun_test.json` 是唯一一个，
+它是测试枪），所以回退路径目前**没有任何正式枪走**；`DataValidator` 会对真正命中回退的枪发迁移警告
+（额外排除"有弹种能改回 `ProjectileAmount`"的情况，例如 `secondary_cataclysm.json` 的近战弹种，那是合法的）。
+
+**⑭ 迁移提示的排除条件（设计没写）**：`ProjectileAmount <= 0` 在"某个弹种把弹丸数覆盖成 0"的枪上是合法写法，
+所以只有**没有任何弹种能改回 `ProjectileAmount`** 时才提示迁移到 `@melee`。
+
+**⑮ 旧 GeckoLib 路径明确不迁移**（按需求）：`GunGeoItem.kt` / `SecondaryCataclysmItem.java` 只做了
+`GunAnimation.Melee` 改型导致的编译修正；`ClientEventHandler.gunMelee` 退化为**恒为 0 的 `@Deprecated` 占位字段**，
+旧枪械的近战动画不会再触发，其近战伤害照旧（走同一条 `MeleeAttackMessage`）。
+
+**⑯ 代码组织：melee 数据类收进子包**（按需求）
+设计 §3 把 `MeleeHitbox`/`MeleeSweep`/`MeleeAction` 说成"顶层属性"，指的是**JSON 顶层字段**，这一点没变；
+但 Kotlin 类放在 `com.atsuishio.superbwarfare.data.gun.melee` 子包下，不再平铺在 `data/gun/`。
+`MeleeSound`、`Cooldown` 未移动（前者是既有类，后者本就在 `subdata/`）。
+
+**⑰ Perk 上下文的落地方式（设计 §6.3 只说"补上上下文"）**
+实现为 `perk/MeleeAttackContext.kt`：同 tick 传递的 `(actionIndex, source, action)`，
+并给 `Perk` 加了**带上下文的两个新重载**（`onMeleeSwing(data, instance, entity, context)` /
+`onMeleeAttack(data, instance, target, source, context)`）。**旧签名照旧会被调用**（在旧方法之前调用新方法），
+所以既有 `OneTwoPunch`/`CastNoShadows`/`JsPerk` 与 JS 脚本零改动。
+
+**⑱ 语言文件只补 `en_us` + `zh_cn`**（按需求）：其余语言缺失的键在游戏内会显示原始键名。
+
+**⑲ 判定体外框的触发条件（已修）**
+最初实现把"`F3+B` 打开"与"`melee_debug_log` 打开"写成了**同时满足**（`&&`），
+而那个配置项默认 `false` —— 结果只开一个开关时什么都看不到。
+现在拆成两个独立开关：日志 = `melee_debug_log`；线框 = **`F3+B` 或 `melee_hitbox_render`（任一即可）**。
+
+> **顺带发现的既有配置 bug（未修，不属一期范围）**：`config/Config.kt` 的
+> `buildConfig(builder, vararg configs)` **把 `configs` 参数丢掉了**，返回的只是 `builder.build()`。
+> 于是各个 config 对象里的 `push("display")` / `push("control")` **不会在对象之间弹栈**，
+> 后面的对象被嵌进前面对象的 section：客户端配置里 `melee_debug_log`、`melee_hitbox_render`、
+> `enable_gun_lod` … 实际都被写进了 **`[kill_message]`** 段而不是 `[display]`。
+> 修它需要改成 `builder.configure(DisplayConfig::class.java) { it.<field> }`，
+> 会**改变现有配置文件的键路径**（老配置文件里的值会失配、回默认值），所以留作单独一次改动。
+
+**⑳ ⚠ `Box`/调试盒的 yaw 旋转符号写反了（已修，影响判定本身）**
+MC 的 yaw 是**从 +Z 朝 +X** 增加的（`look = (-sin(yaw), 0, cos(yaw))`，yaw 90° 看向 **-X**），
+而 JOML 的 `rotateY(θ)` 是右手系绕 +Y，把局部 +Z 转到 `(sin θ, 0, cos θ)`（θ=90° 指向 **+X**）——
+两者**手性相反**。最初写成 `Quaterniond().rotateY(+yaw)`，导致：
+
+- **可视化**：盒子与人物朝向差 180°（yaw 0/180 时看不出来，45°/90° 最明显）；
+- **判定**：`BoxHitbox` 的 OBB 也歪 180° —— 这是一个**真实的命中 bug**，不是纯显示问题
+  （正面 2.6 格长的盒体实际戳到了身后）。
+
+修正为 `MeleeQuery.yawPitchQuaternion(yaw, pitch) = Quaterniond().rotateY(-yaw).rotateX(+pitch)`
+（㉑ 又补上了 pitch），**判定与调试渲染共用同一个函数**，
+避免"看到的盒子"≠"判定的盒子"。仓库里的同类转换也都是这个符号：`VectorTool.combineRotationsYaw`、
+`VehicleMotionUtils` / `VehicleVecUtils` 的 `Axis.YP.rotationDegrees(-vehicle.yRot)`、`CameraMixin`、
+`C4Entity` 的 `.rotateY(-yaw)`。
+
+> 已用 JOML 1.10.5 实测过符号（yaw ∈ {0, ±45, 90, 135, 180}）：
+> `rotateY(+yaw)` 的局部 +Z 除 0/180 外全部不符，`rotateY(-yaw)` 的局部 +Z（前方）与局部 +X（右方）**全部吻合**。
+
+**㉑ `Box` / `Capsule` 的判定体现在跟随 `pitch` 一起旋转（相对设计稿的功能增强）**
+设计 §3.3 只写了"绕 Y 旋转 `yaw`"——那是个**只能水平转**的盒子（yaw 之外的姿态恒为 0）。
+实现改成**全姿态**：`MeleeQuery.yawPitchQuaternion(yaw, pitch)` =
+`Quaterniond().rotateY(-yaw).rotateX(+pitch)`，三根轴分别是
+**+Z → 视线**、**+X → 水平右方**、**+Y → `look × right`**。
+
+- 枪托/刺刀本来就是「沿视线捅出去」的，抬头砍、低头砸时盒子该跟着转，否则判定和视觉都对不上；
+- `MeleeHitbox.YOffset` 一并从"写死世界 Y"改成"沿局部 +Y 偏移"；
+- `MeleeSweep` 仍然只转水平（在 yaw 上加偏移），这点没变；
+- 旧枪全是 `Cone`，不受影响；只有显式写 `"Type": "Box"` / `"Capsule"` 的枪吃这个改动。
+
+> 实测覆盖 yaw ∈ {0, ±45, 90, 135, 180, 200, -135} × pitch ∈ {-90, -75, -60, -45, -30, 0, 10, 20, 30, 45, 55, 89, 90}：
+> `+Z==lookVector`、`+X==水平右方`、`+Y==look×right`、三轴正交且单位长度，**全部成立**。
+> 符号规则记两条：**yaw 要取负**（MC 手性与 JOML 相反）、**pitch 用正值**（MC 俯仰向下为正，JOML `rotateX(θ>0)` 也朝下）。
+
+**㉒ 目标获取链的两处修复 + 诊断日志**
+排查"判定体罩住了却打不到"时改掉的两处（都属于"近战距离太短"才会暴露的问题）：
+
+1. **`hasLineOfSight` 的射线起点会落在攻击者自己的碰撞箱里**（`MeleeQuery.hasLineOfSight`）。
+   目标贴到脸上时，目标 AABB 的最近点会落在攻击者自身碰撞箱内部，而 `level.clip` 的起点只要在
+   方块里就立刻返回 `BLOCK` → **贴脸砍永远打不中**。现在起点用 `pushOutside()` 沿射线推到自身
+   碰撞箱之外再 `+1e-4`，终点用 `to - dir*1e-4` 内收，避免把终点探到目标背后的方块里。
+2. **粗筛半径没有覆盖形状自身的尺寸**（`MeleeQuery.coarseFilter`）。
+   `Cone`/`Capsule` 只吃 `range`，但 `Box` 用的是 `length`（`range` 不参与判定），
+   粗筛却只按 `reach` 画球 —— `"Length"` 大于 `reach` 时（如 `Length: 8, Range: 0`）
+   盒子前段的目标会被粗筛直接漏掉。现在按形状取 `max(ZFrom + Length, reach)`。
+
+同时加了**诊断日志**：开 `melee_debug_log` 后每次挥击会打印
+`hitbox / reach / occlusion -> hits=N`，以及**每个候选卡在哪一步**：
+
+```
+[Melee] melee hitbox=Cone reach=4.20 occlusion=true -> hits=1 [HIT zombie d=1.83 a=6.4]
+        [shape skeleton d=5.10 a=88.2 dyaw=88.2/50.0 dpitch=1.1/35.0]
+        [occlusion creeper d=2.40 a=12.0]
+        [no entity passed the coarse filter]      ← 一个候选都没有时
+```
+
+> **已经用数值实验排除的两个"看起来很像"的猜测**（别再往这两个方向改）：
+> - ❌ **"`Cone` 的夹角量到了脚底"**：`closestPointInBox` 是把眼睛**夹进** AABB，站着打站着时
+>   y 会被夹到**眼睛高度**，最近点在眼平线上，平视时 `Δpitch = 0`。
+>   （实测：平视 0°、俯视 30° 打胸口都在 `Pitch/2 = 35°` 容差内；
+>   改成"量到 AABB 中心"反而会让俯视 30° 打 1.7 格的目标 `Δpitch` 变成 50.8° → **更容易漏**。）
+> - ❌ **"`OBB.isColliding(obb, aabb)` 本身是错的"**：用 JOML 1.10.5 复刻了 `OBB.isColliding` 的
+>   全部入参顺序，正面 / yaw 45 / yaw 90 / yaw −90 各距离下僵尸 AABB **全部正确相交**，
+>   只有超出盒体长度时才不相交。判定几何没有问题。
+
+**㉓ ⚠ 调试线框在骗人：它画的是"近似盒"，不是真实形状（已改为画真实形状）**
+`debugBoxes` 把三种形状统一成一个盒体近似，`Cone` 画成"宽 `reach×sin(半角)`、长 `reach/2` 的盒子"。
+而 `reach = Range + getEntityReach()` 通常是 **6~7 格**，于是那个盒子**又粗又短**，
+看的人会得出完全错误的结论 —— 实测日志（`latest.log`）里就是这两句：
+
+> "OBB 里面有实体，就是打不到；OBB 没有实体，但是打到了"
+
+**判定其实一直是对的**。日志给出的分界干干净净：
+
+```
+reach = 7.20 (= Range 1.2 + getEntityReach() 6.0)
+HIT  : d = 3.54 ~ 7.18      ← 全部 ≤ 7.2
+MISS : d = 7.28, 7.37, 7.54, 7.84, 7.92   ← 全部 > 7.2   （[shape]，纯距离超限）
+```
+
+`"OBB 里打不到"` 的观感来自近似盒**画得太短**（只有 `reach/2 = 3.6` 长），
+6~7 格处命中的实体自然落在画出来的盒子之外；
+`"OBB 外反而打到"` 则来自近似盒**画得太粗**（末端半径 `reach×sin(50°) ≈ 5.5`，实际末端的
+角度边缘是个锥面，盒子的四个角超出了锥外）。
+
+修正：`MeleeQuery.debugBoxes` → **`MeleeQuery.debugShapes`**，返回一个 `sealed interface DebugShape`
+（`Cone` / `Box` / `Segment`），渲染侧按形状分别画：
+
+| 形状 | 线框 |
+|---|---|
+| `Cone` | 顶点在眼睛 + 末端圆环（半径 `reach×sin(半角)`）+ 母线；`Pitch >= 180` 时垂直不受限，只画球面天线罩 |
+| `Box` | 带 yaw/pitch 姿态的盒体（与判定共用 `yawPitchQuaternion`） |
+| `Capsule` | 沿视线的线段 + 两端端盖圆 |
+
+**同时修了 `ak_47.json` 的数据**：`Pitch: 70` → `180`。
+`Pitch` 是**总张角**，`70` 只有 `±35°` 容差，比旧实现（垂直不限）紧得多 ——
+日志里 `[shape ... dpitch=37.5/35.0]`、`42.9/35.0`、`57.0/35.0`、`67.0/35.0` 这些
+"怪就在眼前却打不到"全是它造成的。旧版垂直方向完全没有限制，要等价请写 `180`。
+
+> **顺带说明 `reach` 为什么能到 7.2**：Forge 的 `getEntityReach()` 是
+> `ENTITY_REACH 属性值 + (创造模式 ? 3 : 0)`。创造模式实测属性 3.0 → 6.0，加上 `Range: 1.2` 就是 7.2；
+> 生存模式是 `3.0 + 1.2 = 4.2`。**在创造模式里试近战范围会得到比生存大一倍的数字，别被它误导。**
+
+### 11.3 兼容性确认清单（行为发生变化的地方）
+
+22 把旧枪 json 一行没改，但下面这些是**有意修正**，手感/结果会与改版前不同：
+
+| 变化 | 旧 | 新 | 影响 |
+|---|---|---|---|
+| 距离口径 | 目标**脚底** `e.position()` 到眼睛 | 判定体到目标 **AABB 最近点** | 贴脸/仰角时更容易打到；远的反而更严格 |
+| 遮挡 | `findMeleeEntity` 无条件用实体结果覆盖方块 pick（方块 pick 是死代码） | `MeleeHitbox.Occlusion`（默认 `true`）统一判定 | **不再能隔墙打人** |
+| 角度参照 | 「眼 → 眼」夹角 vs 视线 | 视线 vs 「眼 → AABB 最近点」 | 命中集合略有位移 |
+| 垂直角 | 3D 圆锥（俯仰与水平耦合） | `Cone` 默认 `Pitch = 180`（不限）→ 与旧版基本等价 | 旧枪缺省行为不变 |
+| `Box`/`Capsule` 姿态 | 无（旧版没有形状判定） | **随 yaw + pitch 全姿态旋转**（§11.2-㉑），`YOffset` 沿局部上方向 | 只有显式写 `Box`/`Capsule` 的枪受影响 |
+| 排序 | 射线目标强占 index 0 | 全部按 `SortBy`（默认 `Angle`） | 主目标更稳定 |
+| 衰减 | `max((10-i)/10, 0.1)` | `max(1 - i*Falloff, 0.1)`，`Falloff` 默认 0.1 | 第 2 个目标 15→13.5（旧版 13.5 一致），第 3 个 15→12（旧版 12 一致） |
+| 伤害基值 | `ATTACK_DAMAGE`（1.0 + `MELEE_DAMAGE`）× 衰减 | `MeleeDamage` × 命中区域 × 衰减 | **少了那个基础 1.0**；`MeleeDamage=15` 从 16 变 15 |
+| 出伤 tick | `gunMelee == DURATION - DAMAGE_TIME` | `meleeTicks <= Duration - HitTime` | **逐 tick 一致**，无变化 |
+| 切枪 | `gunMelee` 不重置，可能误触发一次攻击 | 状态按枪隔离 | 修掉缺陷 1 |
+
+### 11.4 一期遗留 / 已知缺口
+1. **`MeleeEffectSpec` 只有数据与校验**：`ModMeleeEffects` 注册表、`sbw/melee_effects/*.json` 预设、
+   以及 §3.8 那 11 个首发行为（`explosion`/`extra_damage`/`shock`/`potion`/`ignite`/`knockback`/`lightning`/`heal`/`ammo_refund`/`screen_shake`/`sound`·`particle`）**全部未实现**。
+   `Effects` 写在数据里目前**不产生任何效果**（不会被漏读报错，但也不生效）。
+2. **`MeleeAction.Durability`** 在结算处接上了，但只对 `MAX_DURABILITY > 0` 的枪生效（多数枪没有耐久）。
+3. **可视化**：无朝向箭头 / 扫掠箭头 / 打头打腿高度线。
+4. **`ATTACK_DAMAGE` 加成"保留但不用"** 这一点建议后续明确取舍（见 §11.2-③）：要么删掉属性加成，要么把它映射成 `MeleeAction.Damage`。
+5. **`GunAnimation.Melee` 的 clip 名资源加载期校验**未做。
+6. **`@melee` 缺口**：`CanZoom` 约定未强制、`@melee` 枪的右键行为未定义。
+7. **动作锁拒绝原因未打日志**（§10.1）。
+8. **§9.4 的"G 全部不可用时报一声 `TRIGGER_CLICK`"未实现**（没有副武器体系，一期 G 就是近战入口；
+   等到三期真正有"G 被拒"的场景再补）。
+
+#### 一期验收步骤（手动）
+
+```
+1. 给一把能近战的枪写 MeleeActions（例如 ak_47.json 加 { "HitTime": 6 }），进游戏
+2. 单次按 V      → 动画播一次、`HitTime` tick 后出伤
+3. 按住 V       → 每 Duration tick 挥一次，**每段动画都重播**（§11.2-②）
+4. 隔墙对怪按 V  → 打不到（Occlusion，§11.3）
+5. 挥击途中按左键/按 R → 被动作锁拒掉，不产生副作用（§9.5）
+6. 打头 / 打腿   → 伤害倍率分别是枪的 Headshot / 0.5，伤害类型走 gun_melee{,_headshot}
+7. 开 melee_debug_log → 客户端日志出现 `[Melee] melee swing/hit/miss`；按 F3+B（或在配置里开 `melee_hitbox_render`）→ 看到判定体线框；`/sbw melee info|actions|force 0` 输出正常
+8. 22 把旧枪（没写 MeleeActions/MeleeHitbox）→ 与改版前手感一致（唯一差别见 §11.3）
+```
+
+### 11.5 二期：配件体系 + 刺刀
 1. **配件物品接口化**：`AttachmentProvider` + `BasicAttachmentItem`（改名）+ `registerAttachment` 加工厂 + 4 处消费点改接口判断（§8.3）。
 2. **槽位注册表化** + 挂点组基建（登记不同 mount、不互斥，§8.1/§8.2）。
 3. `AttachmentType.BAYONET` + 物品/模型/贴图/tag/datagen/lang/tooltip + 渲染（`bayonet_pos`）。
 4. 刺刀动作表落地（`Override.MeleeActions`）+ 手感调优。
 5. （可选）配件自带动画文件（§9.7 二期路线）。
 
-### 三期：`SubWeapon` 体系
+### 11.6 三期：`SubWeapon` 体系
 1. `SubWeaponInfo` POJO + `AttachmentDefinition.SubWeapon` 字段 + `DataValidator` 校验（含"默认取物品 id"的解析检查）。
 2. `SubWeaponItem : GunItem, AttachmentProvider` + `ModItems.registerSubWeapon` + 物品模型。
 3. **手持行为排除清单**（§8.3.1）：先在 `GunItem` 上加 `useAsWeaponInHand()` + 静态 `isHeldWeapon(stack)`，再逐组替换门禁点（A 六个 Mixin → B 客户端输入 → C HUD → D 物品自身行为 → E 列表/工具类）。
@@ -807,7 +1165,7 @@ companion object {
 
 ## 12. 决策记录
 
-### 已定稿
+### 12.1 已定稿
 
 | # | 议题 | 结论 |
 |---|---|---|
@@ -831,6 +1189,22 @@ companion object {
 | 17 | 长按 V 连挥 / V 键位重复 | 保持现状（有意设计 / 不会同时触发） |
 
 **当前没有待你拍板的开放项。** 实现过程中若遇到与预期不符的既有行为，按"先记进 §12 的决策记录、再改"的方式处理。
+
+> **一期实现期间的补充决策见 §12.2**；与本文不一致的实现细节见 §11.2（共 18 条），遗留缺口见 §11.4。
+
+### 12.2 一期实现期间补充的决策
+
+| # | 议题 | 结论 |
+|---|---|---|
+| 18 | 副武器开火键的名字 | 键位常量命名为 **`SUBWEAPON_FIRE`**（默认 `G`），不用 `SUB_WEAPON`/`G` 之类的临时名 |
+| 19 | 近战数据类的包 | 收在 **`data/gun/melee/`** 子包，不平铺在 `data/gun/`（§11.2-⑯） |
+| 20 | 近战伤害与 `ATTACK_DAMAGE` | **不乘属性加成**，`damage = MeleeDamage × 命中区域 × 衰减`；属性本身保留（§11.2-③） |
+| 21 | 穿甲 | 按 `BypassesArmor` **拆两段**：护甲段 `hurt()` + 穿甲段 `forceHurt()`（§6.2 注） |
+| 22 | `player.swing` 打在哪一端 | **客户端**（不是设计里的服务端）——同样修掉缺陷 3，且第三人称更跟手（§5.5 注） |
+| 23 | 连挥动画重播 | 新增 `swingSerial` / `consumedMeleeSerial`（§5.1 注、§11.2-②） |
+| 24 | Perk 上下文 | `MeleeAttackContext` 同 tick 传递 + `Perk` 新增带上下文的重载（旧签名照旧调用）（§11.2-⑰） |
+| 25 | 语言文件范围 | 一期只补 **`en_us` + `zh_cn`**（§11.2-⑱） |
+| 26 | 旧 GeckoLib 路径 | **明确不迁移**：只做编译修正，`ClientEventHandler.gunMelee` 退化为恒 0 的 `@Deprecated` 占位（§11.2-⑮） |
 
 ---
 
