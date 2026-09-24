@@ -1,0 +1,24 @@
+{
+  "Slot": "Grip",
+  "Level": 0,
+  "Modifiers": [
+    {
+      "Prop": "RecoilX",
+      "Op": "Mul",
+      "Value": 0.88
+    },
+    {
+      "Prop": "RecoilY",
+      "Op": "Mul",
+      "Value": 0.92
+    },
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 0.4
+    }
+  ],
+  "Bone": "grip_pos",
+  "Model": "superbwarfare:models/bedrock/attachment/grip_vertical_pineapple.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/grip_vertical_pineapple.png"
+}
