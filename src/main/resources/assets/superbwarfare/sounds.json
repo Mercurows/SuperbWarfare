@@ -3891,18 +3891,34 @@
       }
     ]
   },
-  "mp_5_reload_normal": {
+  "mp_5_mag_in": {
     "sounds": [
       {
-        "name": "superbwarfare:gun/mp_5/mp_5_reload_normal",
+        "name": "superbwarfare:gun/mp_5/mp_5_mag_in",
         "stream": false
       }
     ]
   },
-  "mp_5_reload_empty": {
+  "mp_5_mag_out": {
     "sounds": [
       {
-        "name": "superbwarfare:gun/mp_5/mp_5_reload_empty",
+        "name": "superbwarfare:gun/mp_5/mp_5_mag_out",
+        "stream": false
+      }
+    ]
+  },
+  "mp_5_bolt_open": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/mp_5/mp_5_bolt_open",
+        "stream": false
+      }
+    ]
+  },
+  "mp_5_bolt_close": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/mp_5/mp_5_bolt_close",
         "stream": false
       }
     ]

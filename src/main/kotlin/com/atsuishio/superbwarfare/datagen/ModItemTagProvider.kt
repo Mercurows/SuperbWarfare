@@ -620,6 +620,7 @@ class ModItemTagProvider(
                 ModItems.RU_SILENCER,
                 ModItems.MUZZLE_BRAKE_RU,
                 ModItems.MUZZLE_BRAKE_AR,
+                ModItems.MUZZLE_BREAK_BIRDCAGE,
                 ModItems.MUZZLE_ZENIT_DTK_1,
                 ModItems.MUZZLE_COMPENSATOR_R_17,
                 ModItems.SILENCER_SUPERB_12,
