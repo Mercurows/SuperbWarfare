@@ -34,7 +34,6 @@
   },
   "Bone": "custom_stock_adapter",
   "UsesGunStock": false,
-  "RequiresAdapter": false,
   "Model": "superbwarfare:models/bedrock/attachment/steel_pipe_stock.geo.json",
   "Texture": "superbwarfare:textures/bedrock/attachment/steel_pipe_stock.png"
 }

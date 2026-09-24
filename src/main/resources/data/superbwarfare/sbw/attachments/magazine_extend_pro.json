@@ -6,6 +6,11 @@
       "Prop": "Weight",
       "Op": "Add",
       "Value": 2.0
+    },
+    {
+      "Prop": "ZoomTime",
+      "Op": "Mul",
+      "Value": 1.2
     }
   ]
 }
