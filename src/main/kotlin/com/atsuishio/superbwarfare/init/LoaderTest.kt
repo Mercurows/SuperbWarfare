@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.init
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.init.TestLoader.parseManifest
+import com.atsuishio.superbwarfare.item.gun.GeoGunItemV2
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -25,6 +26,8 @@ data class LoaderInfo(
     val formatVersion: Int,
     @SerialName("Items")
     val items: Map<String, ItemRegisterInfo>,
+    @SerialName("Guns")
+    val guns: Map<String, ItemRegisterInfo>,
 )
 
 @Serializable
@@ -95,21 +98,31 @@ object TestLoader {
         if (event.registryKey != Registries.ITEM) return
 
         for ((namespace, info) in manifests) {
-            for ((id, item) in info.items) {
-                val location = ResourceLocation(namespace, id)
+            registerItems(namespace, info.items, event)
+            registerItems(namespace, info.guns, event) { GeoGunItemV2(it) }
+        }
+    }
 
-                // 所属 mod 自己注册了同名物品时让给它：我们只是"代注册"，不抢所有权。
-                if (event.getForgeRegistry<Item>()?.containsKey(location) == true) {
-                    Mod.LOGGER.error(
-                        "[sbw-loader] {} already exists, skipping the declaration from mod {} ({})",
-                        location, namespace, MANIFEST_PATH
-                    )
-                    continue
-                }
+    private fun registerItems(
+        namespace: String,
+        itemEntry: Map<String, ItemRegisterInfo>,
+        event: RegisterEvent,
+        itemSupplier: (Item.Properties) -> Item = { Item(it) }
+    ) {
+        for ((id, item) in itemEntry) {
+            val location = ResourceLocation(namespace, id)
 
-                event.register(Registries.ITEM, location) { item.create() }
-                Mod.LOGGER.info("[sbw-loader] registered {} (declared by mod {})", location, namespace)
+            // 所属 mod 自己注册了同名物品时让给它：我们只是"代注册"，不抢所有权。
+            if (event.getForgeRegistry<Item>()?.containsKey(location) == true) {
+                Mod.LOGGER.error(
+                    "[sbw-loader] {} already exists, skipping the declaration from mod {} ({})",
+                    location, namespace, MANIFEST_PATH
+                )
+                continue
             }
+
+            event.register(Registries.ITEM, location) { item.create(itemSupplier) }
+            Mod.LOGGER.info("[sbw-loader] registered {} (declared by mod {})", location, namespace)
         }
     }
 
@@ -227,12 +240,12 @@ object TestLoader {
     }
 
     /** Rarity 已在 [parseManifest] 校验过，这里的 getValue 不会抛。 */
-    private fun ItemRegisterInfo.create(): Item {
+    private fun ItemRegisterInfo.create(itemSupplier: (Item.Properties) -> Item = { Item(it) }): Item {
         val properties = Item.Properties()
             .stacksTo(maxStackSize)
             .rarity(RARITIES.getValue(rarity.lowercase()))
         if (fireResistant) properties.fireResistant()
         durability?.let { properties.durability(it) }
-        return Item(properties)
+        return itemSupplier(properties)
     }
 }
