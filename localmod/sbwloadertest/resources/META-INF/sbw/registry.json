@@ -4,5 +4,8 @@
     "test": {
       "Rarity": "common"
     }
+  },
+  "Guns": {
+    "ak_74": {}
   }
 }

@@ -1,0 +1,61 @@
+{
+  "Icon": "sbwloadertest:textures/gun_icon/ak_74_icon.png",
+  "SlotIcon": "sbwloadertest:textures/item/ak_74_icon.png",
+  "Animation": {
+    "Idle": "animation.ak_74.idle",
+    "Fire": "animation.ak_74.fire",
+    "ChangeFireMode": "animation.ak_74.change_fire_mode",
+    "ReloadNormal": "animation.ak_74.reload_normal",
+    "ReloadEmpty": "animation.ak_74.reload_empty",
+    "Edit": "animation.ak_74.edit",
+    "ReloadNormalDrum": "animation.ak_74.reload_normal_drum",
+    "ReloadEmptyDrum": "animation.ak_74.reload_empty_drum",
+    "Melee": "animation.ak_74.hit"
+  },
+  "ShootRecoil": {
+    "Offset": [0.7, 1.0, 0.5],
+    "Rotation": [0.2, 0.2, 0.5],
+    "ZoomRate": 0.5,
+    "Speed": 1.0
+  },
+  "Model": {
+    "Animation": "sbwloadertest:animations/bedrock/gun/ak_74.animation.json",
+    "Model": "sbwloadertest:models/bedrock/gun/ak_74.geo.json",
+    "Texture": "sbwloadertest:textures/bedrock/gun/ak_74.png",
+    "LODModel": "sbwloadertest:models/bedrock/gun_lod/ak_74.geo.json",
+    "LODTexture": "sbwloadertest:textures/bedrock/gun_lod/ak_74.png"
+  },
+  "FlareSize": 0.3,
+  "HasSmoke": true,
+  "Smoke": {
+    "Size": 0.15,
+    "Growth": 0.25,
+    "Lifetime": 0.3,
+    "Speed": 0.4,
+    "Count": 2,
+    "Opacity": 0.9,
+    "Drag": 2,
+    "RandomSize": 0.05,
+    "RandomGrowth": 0.2,
+    "RandomLifetime": 0.2,
+    "RandomSpeed": 0.2,
+    "RandomOpacity": 0.1
+  },
+  "EjectShell": true,
+  "ShellEject": {
+    "BoneName": "shell",
+    "ShellModel": "sbwloadertest:models/bedrock/shell/rifle_shell_steel.geo.json",
+    "ShellTexture": "sbwloadertest:textures/bedrock/shell/rifle_shell_steel.png",
+    "Size": 0.6,
+    "InitialVelocity": [5.8, 3.2, -0.75],
+    "RandomVelocity": [0.7, 0.6, 0.3],
+    "Acceleration": [0, -16, 0],
+    "AngularVelocity": [-1800, -2000, 240],
+    "RandomAngle": [60, 60, 360],
+    "LivingTime": 0.8,
+    "MaxActive": 24
+  },
+  "Attachments": {
+    "GripHandGuard": true
+  }
+}
