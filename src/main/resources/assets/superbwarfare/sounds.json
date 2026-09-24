@@ -5139,5 +5139,93 @@
       "superbwarfare:gun/common/reflections_3",
       "superbwarfare:gun/common/reflections_4"
     ]
+  },
+  "raubtier_fire_1p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/raubtier/raubtier_fire_1p",
+        "stream": false
+      }
+    ]
+  },
+  "raubtier_fire_3p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/raubtier/raubtier_fire_3p",
+        "stream": false
+      }
+    ]
+  },
+  "raubtier_far": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/raubtier/raubtier_far",
+        "stream": false
+      }
+    ]
+  },
+  "raubtier_veryfar": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/raubtier/raubtier_veryfar",
+        "stream": false
+      }
+    ]
+  },
+  "raubtier_bolt_close": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/raubtier/raubtier_bolt_close",
+        "stream": false
+      }
+    ]
+  },
+  "raubtier_bolt_open": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/raubtier/raubtier_bolt_open",
+        "stream": false
+      }
+    ]
+  },
+  "raubtier_fall": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/raubtier/raubtier_fall",
+        "stream": false
+      }
+    ]
+  },
+  "raubtier_grab": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/raubtier/raubtier_grab",
+        "stream": false
+      }
+    ]
+  },
+  "raubtier_rise": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/raubtier/raubtier_rise",
+        "stream": false
+      }
+    ]
+  },
+  "raubtier_shell_in": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/raubtier/raubtier_shell_in",
+        "stream": false
+      }
+    ]
+  },
+  "raubtier_shell_in_2": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/raubtier/raubtier_shell_in_2",
+        "stream": false
+      }
+    ]
   }
 }
