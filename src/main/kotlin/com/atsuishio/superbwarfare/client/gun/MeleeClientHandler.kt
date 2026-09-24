@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.command.MeleeDebugHooks
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
+import com.atsuishio.superbwarfare.data.gun.melee.MeleeHitboxType
 import com.atsuishio.superbwarfare.data.gun.melee.ResolvedMeleeAction
 import com.atsuishio.superbwarfare.data.gun.subdata.Cooldown
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
@@ -199,7 +200,14 @@ object MeleeClientHandler {
         actionIndex: Int,
     ) {
         val context = MeleeQuery.contextOf(player, action)
-        val hits = MeleeQuery.resolve(player.level(), player, action, context)
+
+        // 开 debug 日志时走带诊断的版本：能直接看到"候选是谁、卡在哪一步"
+        val diag = if (DisplayConfig.MELEE_DEBUG_LOG.get()) {
+            MeleeQuery.resolveDiag(player.level(), player, action, context)
+        } else {
+            null
+        }
+        val hits = diag?.hits ?: MeleeQuery.resolve(player.level(), player, action, context)
 
         // 缺陷 3：`player.swing` 双端各调一次会让一次近战触发两次 `onEntitySwing`。
         //   现在只在**客户端**这里调一次（服务端不再 swing），第三人称动作照旧。
@@ -213,25 +221,48 @@ object MeleeClientHandler {
             )
         )
 
-        debugLog {
-            buildString {
-                append("melee hit: index=").append(actionIndex)
-                append(" hitTime=").append(action.hitTime)
-                append(" targets=").append(hits.size)
-                for (hit in hits) {
-                    append(" [").append(hit.entity.type)
-                    append(" d=%.2f a=%.1f".format(hit.distance, hit.angle))
-                    if (hit.headshot) append(" HEAD")
-                    if (hit.legshot) append(" LEG")
-                    append(']')
-                }
-            }
+        if (diag != null) {
+            debugLog { describeMeleeResult(action, context, hits, diag) }
+        }
+    }
+
+    /**
+     * 一次近战判定的日志：命中列表 + **每个候选卡在哪一步**。
+     *
+     * 排查"盒子明明罩住了却打不到"时，光看命中数是没用的，必须能看到
+     * `shape`（夹角/距离不满足）还是 `occlusion`（被方块挡住）。
+     */
+    private fun describeMeleeResult(
+        action: ResolvedMeleeAction,
+        context: MeleeQuery.Context,
+        hits: List<MeleeQuery.Hit>,
+        diag: MeleeQuery.DiagResult,
+    ): String = buildString {
+        append("melee hitbox=").append(action.hitbox.type)
+        append(" reach=").append("%.2f".format(context.reach))
+        append(" occlusion=").append(action.hitbox.occlusion)
+        append(" -> hits=").append(hits.size)
+
+        for (hit in hits) {
+            append(" [HIT ").append(hit.entity.type)
+            append(" d=%.2f a=%.1f".format(hit.distance, hit.angle))
+            if (hit.headshot) append(" HEAD")
+            if (hit.legshot) append(" LEG")
+            append(']')
         }
 
-        // 动作没命中任何目标也照常挥（音效与动作锁已经处理），只是没有伤害
-        if (hits.isEmpty()) {
-            debugLog { "melee miss: index=$actionIndex hitbox=${action.hitbox.type} range=${action.hitbox.range}" }
+        for (c in diag.candidates) {
+            if (c.reason == MeleeQuery.RejectReason.HIT) continue
+            append(" [").append(c.reason.label).append(' ').append(c.entity.type)
+            append(" d=%.2f a=%.1f".format(c.distance, c.angle))
+            if (c.reason == MeleeQuery.RejectReason.SHAPE && action.hitbox.type == MeleeHitboxType.CONE) {
+                append(" dyaw=%.1f/%.1f".format(c.yawDelta, action.hitbox.angle / 2))
+                append(" dpitch=%.1f/%.1f".format(c.pitchDelta, action.hitbox.pitch / 2))
+            }
+            append(']')
         }
+
+        if (diag.candidates.isEmpty()) append(" [no entity passed the coarse filter]")
     }
 
     private fun MeleeQuery.Hit.toPayload() = MeleeAttackMessage.TargetPayload(

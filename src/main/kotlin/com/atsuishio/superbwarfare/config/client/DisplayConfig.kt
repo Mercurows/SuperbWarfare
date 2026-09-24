@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.config.client
 
 import com.atsuishio.superbwarfare.config.buildClientConfig
+import com.atsuishio.superbwarfare.config.client.DisplayConfig.MELEE_HITBOX_RENDER
 
 object DisplayConfig {
 
@@ -170,12 +171,25 @@ object DisplayConfig {
     /**
      * 近战调试：打印挥击/命中/未命中原因、动作锁拒绝原因。
      *
-     * 只在客户端日志里输出（判定本身就在客户端做）。
+     * 只影响**日志**。判定体外框另有开关，见 [MELEE_HITBOX_RENDER]。
      */
     @JvmField
     val MELEE_DEBUG_LOG = buildClientConfig {
-        comment("Set true to log melee swing/hit details (action index, hitbox, targets, lock rejections)")
-        comment("是否打印近战调试日志（挥击/命中/动作锁拒绝原因）")
-        define("melee_debug_log", false).also { pop() }
+        comment("Set true to log melee swing/hit details (action index, hitbox, targets)")
+        comment("是否打印近战调试日志（挥击/命中详情）")
+        define("melee_debug_log", false)
+    }
+
+    /**
+     * 近战判定体外框常显。
+     *
+     * **不是唯一的开启方式**：原版 `F3 + B`（实体 hitbox 显示）同样能开，
+     * 两者任一即可（见 `MeleeDebugRenderer`）。
+     */
+    @JvmField
+    val MELEE_HITBOX_RENDER = buildClientConfig {
+        comment("Set true to always draw the melee hitbox wireframe without pressing F3+B")
+        comment("是否常显近战判定体外框（不按 F3+B 也显示；按 F3+B 也能显示）")
+        define("melee_hitbox_render", false).also { pop() }
     }
 }

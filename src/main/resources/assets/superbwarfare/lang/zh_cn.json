@@ -1281,6 +1281,8 @@
   "config.superbwarfare.client.display.enable_fire_flash_light.des": "是否启用使用武器开火时的光照效果",
   "config.superbwarfare.client.display.melee_debug_log": "近战调试日志",
   "config.superbwarfare.client.display.melee_debug_log.des": "是否输出近战挥击/命中/动作锁拒绝的日志；开启后按 F3+B 还会显示近战判定体线框",
+  "config.superbwarfare.client.display.melee_hitbox_render": "近战判定体外框",
+  "config.superbwarfare.client.display.melee_hitbox_render.des": "常显近战判定体外框（按 F3+B 也能显示）",
   "config.superbwarfare.client.control": "控制配置",
   "config.superbwarfare.client.control.invert_aircraft_control": "飞行器鼠标反转",
   "config.superbwarfare.client.control.invert_aircraft_control.des": "开启飞行器鼠标反转",
