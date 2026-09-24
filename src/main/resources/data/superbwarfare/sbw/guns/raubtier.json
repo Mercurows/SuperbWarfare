@@ -1,15 +1,16 @@
 {
   "Spread": 3.5,
   "TacticalReload": true,
+  "ZoomReload": false,
   "RecoilX": 0.004,
   "RecoilY": 0.023,
   "Recoil": 0.5,
   "Damage": 450,
   "Projectile": "superbwarfare:cannon_shell",
-  "ExplosionDamage": 120,
-  "ExplosionRadius": 3,
+  "ExplosionDamage": 160,
+  "ExplosionRadius": 5,
   "Headshot": 2,
-  "Velocity": 5,
+  "Velocity": 10,
   "Magazine": 2,
   "Weight": 10,
   "DrawTime": 11,
@@ -19,6 +20,7 @@
   "RPM": 40,
   "GunType": "CurvedLauncher",
   "Gravity": 0.06,
+  "Crosshair": "@GunGrenade",
   "AmmoType": [
     "superbwarfare:large_shell_ap"
   ],
@@ -39,9 +41,9 @@
     ]
   },
   "SoundInfo": {
-    "Fire1P": "superbwarfare:mk_42_fire_1p",
-    "Fire3P": "superbwarfare:mk_42_fire_3p",
-    "Fire3PFar": "superbwarfare:mk_42_far",
-    "Fire3PVeryFar": "superbwarfare:mk_42_veryfar"
+    "Fire1P": "superbwarfare:raubtier_fire_1p",
+    "Fire3P": "superbwarfare:raubtier_fire_3p",
+    "Fire3PFar": "superbwarfare:raubtier_far",
+    "Fire3PVeryFar": "superbwarfare:raubtier_veryfar"
   }
 }
