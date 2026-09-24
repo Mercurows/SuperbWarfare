@@ -3,19 +3,23 @@
   "OpenBolt": true,
   "HasBarrelBullet": true,
   "TacticalReload": true,
-  "RecoilX": 0.001,
+  "RecoilX": 0.0015,
   "RecoilY": 0.018,
   "Damage": 6.5,
   "Headshot": 1.5,
   "Velocity": 12,
-  "Magazine": 30,
+  "Magazine": [30, 40, 50],
+  "DrumLevels": 2,
   "Weight": 3.2,
+  "MeleeDamage": 15,
+  "MeleeDuration": 16,
+  "MeleeAngle": 100,
   "DrawTime": 10,
   "ZoomTime": 5,
   "DefaultFireMode": "Auto",
   "BurstAmount": 3,
-  "NormalReloadTime": 45,
-  "EmptyReloadTime": 68,
+  "NormalReloadTime": 51,
+  "EmptyReloadTime": 74,
   "BypassesArmor": 0.12,
   "SoundRadius": 11,
   "RPM": 900,
@@ -56,19 +60,75 @@
     "!superbwarfare:longer_wire",
     "!superbwarfare:cupid_arrow"
   ],
+  "AvailableAttachments": {
+    "Scope": [
+      "superbwarfare:scope_coyote",
+      "superbwarfare:scope_aimpoint_t2",
+      "superbwarfare:scope_eotech_551",
+      "superbwarfare:scope_okp_7",
+      "superbwarfare:scope_pkas",
+      "superbwarfare:scope_bruiser",
+      "superbwarfare:scope_ranger",
+      "superbwarfare:scope_1p_78",
+      "superbwarfare:scope_pk_a",
+      "superbwarfare:scope_acog",
+      "superbwarfare:scope_qmk171",
+      "superbwarfare:scope_hamr",
+      "superbwarfare:scope_elcan_4x",
+      "superbwarfare:scope_lpvo",
+      "superbwarfare:scope_sniper",
+      "superbwarfare:scope_winefox",
+      "superbwarfare:scope_spyglass",
+      "superbwarfare:steel_pipe_scope"
+    ],
+    "Magazine": [
+      "superbwarfare:magazine_extend",
+      "superbwarfare:magazine_extend_pro"
+    ],
+    "Grip": [
+      "superbwarfare:vertical_grip",
+      "superbwarfare:grip_vertical_pineapple",
+      "superbwarfare:grip_vertical_bipod",
+      "superbwarfare:grip_rectangle_vertical",
+      "superbwarfare:triangle_grip",
+      "superbwarfare:grip_cqr_gen2",
+      "superbwarfare:steel_pipe_grip"
+    ],
+    "Stock": [
+      "superbwarfare:oem_stock_light",
+      "superbwarfare:oem_stock_heavy",
+      "superbwarfare:stock_ubr",
+      "superbwarfare:stock_prs",
+      "superbwarfare:stock_ar_tactical",
+      "superbwarfare:stock_str",
+      "superbwarfare:stock_elite",
+      "superbwarfare:steel_pipe_stock"
+    ],
+    "Barrel": [
+      "superbwarfare:meowlencer",
+      "superbwarfare:hissilencer",
+      "superbwarfare:silaowuncer",
+      "superbwarfare:ru_silencer",
+      "superbwarfare:muzzle_brake_ru",
+      "superbwarfare:muzzle_brake_ar",
+      "superbwarfare:muzzle_break_birdcage",
+      "superbwarfare:muzzle_zenit_dtk_1",
+      "superbwarfare:muzzle_compensator_r_17",
+      "superbwarfare:ar_silencer",
+      "superbwarfare:loudspeaker",
+      "superbwarfare:silencer_qinglan",
+      "superbwarfare:steel_pipe_silencer",
+      "superbwarfare:handgun_silencer",
+      "superbwarfare:osprey_silencer",
+      "superbwarfare:osprey_silencer_trachelium"
+    ]
+  },
   "SoundInfo": {
     "Fire1P": "superbwarfare:mp_5_fire_1p",
     "Fire3P": "superbwarfare:mp_5_fire_3p",
     "Fire3PFar": "superbwarfare:mp_5_far",
     "Fire3PVeryFar": "superbwarfare:mp_5_veryfar",
     "Fire1PSilent": "superbwarfare:mp_5_fire_1p_s",
-    "Fire3PSilent": "superbwarfare:mp_5_fire_3p_s",
-    "Fire3PFarSilent": "superbwarfare:vector_far_s",
-    "ReloadNormal": "superbwarfare:mp_5_reload_normal",
-    "ReloadEmpty": "superbwarfare:mp_5_reload_empty",
-    "CancellableSounds": [
-      "superbwarfare:mp_5_reload_normal",
-      "superbwarfare:mp_5_reload_empty"
-    ]
+    "Fire3PSilent": "superbwarfare:mp_5_fire_3p_s"
   }
 }
