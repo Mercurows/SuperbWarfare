@@ -110,6 +110,16 @@ object ModKeyMappings {
     @JvmField
     val MELEE = registerKey("melee", GLFW.GLFW_KEY_V)
 
+    /**
+     * 副武器开火（G）。
+     *
+     * 语义（§9.4 定稿）：**V 永远近战；G 有副武器就使用副武器，没有则等同 V**。
+     * 一期还没有副武器体系，所以 G 目前只是"第二个近战入口"，与 V 共享同一个入口函数与状态，
+     * 同 tick 内两键同时按下只触发一次。
+     */
+    @JvmField
+    val SUBWEAPON_FIRE = registerKey("subweapon_fire", GLFW.GLFW_KEY_G)
+
     @JvmField
     val VEHICLE_SEEK = registerKey("vehicle_seek", GLFW.GLFW_KEY_X)
 

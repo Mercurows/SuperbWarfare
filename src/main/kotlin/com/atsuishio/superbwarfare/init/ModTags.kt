@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.init
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.init.ModTags.DamageTypes.GUN_DAMAGE
 import com.atsuishio.superbwarfare.perk.Perk
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceLocation
@@ -230,6 +231,15 @@ object ModTags {
         // 能够由枪械造成的伤害，可用于perk效果判定
         @JvmField
         val GUN_DAMAGE = modDamageTag("gun_damage")
+
+        /**
+         * 近战伤害（枪械近战 + 原版 `minecraft:player_attack`）。
+         *
+         * 与 [GUN_DAMAGE] 同一套路，数据包/其它模组可以自行往里加自己的近战伤害类型。
+         * 判定入口是 [com.atsuishio.superbwarfare.tools.DamageTypeTool.isMeleeDamage]。
+         */
+        @JvmField
+        val MELEE = modDamageTag("melee")
 
         // 能够由卓越前线的枪械造成的伤害，可用于进度的伤害类型判断
         @JvmField

@@ -527,6 +527,15 @@ object ClickEventHandler {
                 }
             }
 
+            // 近战专属枪械（`"Projectile": "@melee"`）：左键**直通近战输入**，
+            // 不走进开火/换弹分支。按住左键的连续挥击由 `handleGunMelee` 的
+            // `meleeOnly() && holdingFireKey` 分支负责。
+            if (data.meleeOnly()) {
+                ClientEventHandler.holdingFireKey = true
+                player.setSprinting(false)
+                return
+            }
+
             if (!data.useBackpackAmmo() && !data.meleeOnly() && !data.hasEnoughAmmoToShoot(player) && data.reload.time() == 0) {
                 if (ReloadConfig.LEFT_CLICK_RELOAD.get()) {
                     sendPacketToServer(ReloadMessage)

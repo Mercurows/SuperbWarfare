@@ -11,7 +11,31 @@
   "DrumLevels": 2,
   "MeleeDamage": 15,
   "MeleeDuration": 16,
-  "MeleeAngle": 100,
+  "MeleeComboReset": 15,
+  "MeleeHitbox": {
+    "Type": "Cone",
+    "Range": 1.2,
+    "Angle": 100,
+    "Pitch": 70,
+    "Occlusion": true
+  },
+  "MeleeSweep": {
+    "From": 0,
+    "To": 0
+  },
+  "MeleeActions": [
+    {
+      "Animation": "animation.ak_47.hit",
+      "Duration": 16,
+      "HitTime": 6,
+      "MaxTargets": 8,
+      "Falloff": 0.1,
+      "SortBy": "Angle",
+      "Knockback": 0.3,
+      "Headshot": 2.0,
+      "Legshot": 0.5
+    }
+  ],
   "Weight": 5,
   "DrawTime": 12,
   "ZoomTime": 7,

@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.data.Prop
 import com.atsuishio.superbwarfare.data.SingleOrList
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.getPerkPriority
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.SOUND_INFO
+import com.atsuishio.superbwarfare.data.gun.melee.isMeleeProjectileMarker
 import com.atsuishio.superbwarfare.init.ModPerks
 import com.atsuishio.superbwarfare.perk.Perk
 import kotlin.math.min
@@ -103,6 +104,30 @@ class GunProp<T, R>(
 
         @JvmField
         val MELEE_ANGLE = plainProp(DefaultGunData::meleeAngle)
+
+        /**
+         * 连招重置窗口（tick）：一段近战结束后多少 tick 内再挥击算连招。
+         */
+        @JvmField
+        val MELEE_COMBO_RESET = plainProp(DefaultGunData::meleeComboReset)
+
+        /**
+         * 近战判定形状。不写（null）时走旧的圆锥语义，22 把旧枪 json 一行都不用改。
+         */
+        @JvmField
+        val MELEE_HITBOX = plainProp(DefaultGunData::meleeHitbox)
+
+        /**
+         * 近战横扫采样。不写（null）= 静态判定。
+         */
+        @JvmField
+        val MELEE_SWEEP = plainProp(DefaultGunData::meleeSweep)
+
+        /**
+         * 近战动作序列（循环序列，下标在挥击开始时锁存）。
+         */
+        @JvmField
+        val MELEE_ACTIONS = complexProp(DefaultGunData::meleeActions) { it.list }
 
         /**
          * 近战攻击音效。
@@ -488,6 +513,7 @@ class GunProp<T, R>(
 
             modify(MELEE_DURATION) { it.coerceAtLeast(1) }
             modify(MELEE_ANGLE) { it.coerceIn(1, 180) }
+            modify(MELEE_COMBO_RESET) { it.coerceAtLeast(0) }
             modify(ZOOM_SPREAD_RATE) { it.coerceIn(0.0, 1.0) }
 
             modify(RANGE) { it.coerceAtLeast(1) }
@@ -498,7 +524,15 @@ class GunProp<T, R>(
             modify(WEIGHT) { it.coerceAtLeast(1.0) }
 
             modify(MAGAZINE) {
-                if (modifier[PROJECTILE_AMOUNT] <= 0 && modifier[MELEE_DAMAGE] > 0) 0 else it.coerceAtLeast(0)
+                // 近战专属枪械（显式 `@melee`，或兼容回退的 `ProjectileAmount <= 0 && MeleeDamage > 0`）
+                // 没有弹匣概念：不走开火链路，也不该参与换弹/备弹显示
+                if (modifier[PROJECTILE].itemId.isMeleeProjectileMarker() ||
+                    (modifier[PROJECTILE_AMOUNT] <= 0 && modifier[MELEE_DAMAGE] > 0)
+                ) {
+                    0
+                } else {
+                    it.coerceAtLeast(0)
+                }
             }
 
             modify(BURST_AMOUNT) { it.coerceAtLeast(0) }

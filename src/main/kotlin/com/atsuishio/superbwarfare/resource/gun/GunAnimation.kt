@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.resource.gun
 
+import com.atsuishio.superbwarfare.data.SingleOrList
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -91,9 +92,21 @@ class GunAnimation {
     @SerialName("Run")
     var run: String? = null
 
+    /**
+     * 近战动画 clip 名。
+     *
+     * 写成**字符串**即单段（旧数据零改动）；写成**列表**就是一串可循环的近战 clip，
+     * 下标由 `MeleeAction.Animation ?: melee[idx % size]` 决定。
+     *
+     * 注意动作表本身来自 `GunData`（PMC，按 stack），**不能**从 `GunResource` 取——
+     * `GunResource` 是按物品注册 id 缓存的，配件/弹种覆盖看不到。
+     */
     @JvmField
     @SerialName("Melee")
-    var melee: String? = null
+    var melee: SingleOrList<String>? = null
+
+    /** 第一支近战 clip 名；没配或配成空列表时返回 `null`（老 GeckoLib 路径用） */
+    fun firstMeleeName(): String? = melee?.list?.firstOrNull()
 
     /*
      * TODO(V2 render migration):

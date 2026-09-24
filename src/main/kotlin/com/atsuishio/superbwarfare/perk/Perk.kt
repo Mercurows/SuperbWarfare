@@ -109,6 +109,35 @@ open class Perk(val descriptionId: String, val type: Type) : PropertyModifier<Gu
 
     private val perkKey = ResourceKey.create(ModPerks.PERK_KEY, ResourceLocation.parse(this.descriptionId))
 
+    /**
+     * [onMeleeAttack] 的带上下文版本：本段动作 + 来源（主武器 / 副武器槽位）。
+     *
+     * 与旧签名的关系：**旧方法仍然会被调用**（保持所有既有覆写与 JS 脚本可用），
+     * 这个版本在旧方法**之前**调用，只给需要上下文的 perk 覆写。
+     * 上下文由 [MeleeAttackContext] 在同 tick 传递，见那里的说明。
+     */
+    open fun onMeleeAttack(
+        data: GunData,
+        instance: PerkInstance,
+        target: Entity,
+        source: DamageSource,
+        context: MeleeAttackContext.Entry?,
+    ) {
+    }
+
+    /**
+     * [onMeleeSwing] 的带上下文版本：本段动作 + 来源。
+     *
+     * 同样地，旧签名仍然会被调用。
+     */
+    open fun onMeleeSwing(
+        data: GunData,
+        instance: PerkInstance,
+        entity: Entity?,
+        context: MeleeAttackContext.Entry?,
+    ) {
+    }
+
     open fun `is`(tag: TagKey<Perk>): Boolean {
         return ModPerks.PERK_REGISTRY.getHolder(perkKey).map { it.`is`(tag) }.orElseGet { false }
     }

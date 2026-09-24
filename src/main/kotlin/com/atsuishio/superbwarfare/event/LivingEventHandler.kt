@@ -20,12 +20,10 @@ import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.network.message.receive.DrawClientMessage
 import com.atsuishio.superbwarfare.network.message.receive.LivingGunKillMessage
+import com.atsuishio.superbwarfare.perk.MeleeAttackContext
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.atsuishio.superbwarfare.tools.*
-import com.atsuishio.superbwarfare.tools.DamageTypeTool.isGunDamage
-import com.atsuishio.superbwarfare.tools.DamageTypeTool.isHeadshotDamage
-import com.atsuishio.superbwarfare.tools.DamageTypeTool.isModDamage
 import com.atsuishio.superbwarfare.tools.FormatTool.format1D
 import com.atsuishio.superbwarfare.tools.FormatTool.format2D
 import net.minecraft.network.chat.Component
@@ -158,7 +156,7 @@ object LivingEventHandler {
         val stack = if (sourceEntity is LivingEntity) sourceEntity.mainHandItem else ItemStack.EMPTY
 
         // 距离衰减
-        if (isGunDamage(source) && stack.item is GunItem) {
+        if (DamageTypeTool.isGunDamage(source) && stack.item is GunItem) {
             val data = GunData.from(stack)
             val distance = entity.position().distanceTo(sourceEntity.position())
             damage = reduceDamageByDistance(amount, distance, data.damageReduceRate, data.damageReduceMinDistance)
@@ -227,8 +225,8 @@ object LivingEventHandler {
         val data = GunData.from(stack)
         val amount = (0.5f * event.amount).coerceAtMost(entity.maxHealth).toDouble()
 
-        // 判断是不是枪械能造成的伤害
-        if (!isGunDamage(source) && !source.`is`(DamageTypes.PLAYER_ATTACK)) return
+        // 判断是不是枪械/近战能造成的伤害
+        if (!DamageTypeTool.isGunDamage(source) && !DamageTypeTool.isMeleeDamage(source)) return
 
         data.exp.add(amount)
 
@@ -258,8 +256,8 @@ object LivingEventHandler {
         val data = GunData.from(stack)
         val amount = 20 + 2 * entity.maxHealth.toDouble()
 
-        // 判断是不是枪械能造成的伤害
-        if (isGunDamage(source) || source.`is`(DamageTypes.PLAYER_ATTACK)) {
+        // 判断是不是枪械/近战能造成的伤害
+        if (DamageTypeTool.isGunDamage(source) || DamageTypeTool.isMeleeDamage(source)) {
             data.exp.add(amount)
         }
 
@@ -286,7 +284,7 @@ object LivingEventHandler {
         val sourceEntity = source.entity ?: return
 
         // 如果配置不选择全局伤害提示，则只在伤害类型为mod添加的时显示指示器
-        if (!GameplayConfig.GLOBAL_INDICATION.get() && !isModDamage(source)) {
+        if (!GameplayConfig.GLOBAL_INDICATION.get() && !DamageTypeTool.isModDamage(source)) {
             return
         }
 
@@ -494,31 +492,20 @@ object LivingEventHandler {
         }
 
         if (MiscConfig.SEND_KILL_FEEDBACK.get()) {
-            if (isHeadshotDamage(source)) {
-                sendPacketToAll(
-                    LivingGunKillMessage(
-                        attacker.id,
-                        entity.id,
-                        true,
-                        damageTypeResourceKey
-                    )
+            sendPacketToAll(
+                LivingGunKillMessage(
+                    attacker.id,
+                    entity.id,
+                    DamageTypeTool.isHeadshotDamage(source),
+                    damageTypeResourceKey
                 )
-            } else {
-                sendPacketToAll(
-                    LivingGunKillMessage(
-                        attacker.id,
-                        entity.id,
-                        false,
-                        damageTypeResourceKey
-                    )
-                )
-            }
+            )
         }
     }
 
     private fun handleGunPerksWhenHurt(event: LivingIncomingDamageEvent) {
         val source = event.source
-        if (!isGunDamage(source) && !source.`is`(DamageTypes.PLAYER_ATTACK)) return
+        if (!DamageTypeTool.isGunDamage(source) && !DamageTypeTool.isMeleeDamage(source)) return
 
         var attacker: LivingEntity? = null
         val sourceEntity = source.entity
@@ -545,14 +532,17 @@ object LivingEventHandler {
         var damage = event.amount
 
         val data = GunData.from(stack)
+        // 本段动作 + 来源：由 `MeleeAttackMessage` 在同 tick 写入（近战伤害的因果链就在一个 tick 内）
+        val meleeContext = if (attacker is Player) MeleeAttackContext.get(attacker.uuid) else null
         for (type in Perk.Type.entries) {
             val instance = data.perk.getInstances(type)
 
             instance.forEach {
-                if (isGunDamage(source)) {
+                if (DamageTypeTool.isGunDamage(source)) {
                     damage = it.perk.getModifiedDamage(damage, data, it, event.entity, source)
                     it.perk.onHurtEntity(damage, data, it, event.entity, source)
-                } else if (source.`is`(DamageTypes.PLAYER_ATTACK)) {
+                } else if (DamageTypeTool.isMeleeDamage(source)) {
+                    it.perk.onMeleeAttack(data, it, event.entity, source, meleeContext)
                     it.perk.onMeleeAttack(data, it, event.entity, source)
                 }
             }
@@ -563,7 +553,7 @@ object LivingEventHandler {
 
     private fun handleGunPerksWhenDeath(event: LivingDeathEvent) {
         val source = event.source
-        if (!isGunDamage(source)) return
+        if (!DamageTypeTool.isGunDamage(source)) return
 
         var attacker: LivingEntity? = null
         val sourceEntity = source.entity

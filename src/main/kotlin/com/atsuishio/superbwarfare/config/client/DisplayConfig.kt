@@ -166,4 +166,16 @@ object DisplayConfig {
         comment("战术地图缩放等级")
         defineInRange("tactical_map_zoom", 5.0, 0.05, 20.0).also { pop() }
     }
+
+    /**
+     * 近战调试：打印挥击/命中/未命中原因、动作锁拒绝原因。
+     *
+     * 只在客户端日志里输出（判定本身就在客户端做）。
+     */
+    @JvmField
+    val MELEE_DEBUG_LOG = buildClientConfig {
+        comment("Set true to log melee swing/hit details (action index, hitbox, targets, lock rejections)")
+        comment("是否打印近战调试日志（挥击/命中/动作锁拒绝原因）")
+        define("melee_debug_log", false).also { pop() }
+    }
 }

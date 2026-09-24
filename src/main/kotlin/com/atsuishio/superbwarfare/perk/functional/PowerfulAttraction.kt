@@ -4,7 +4,6 @@ import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.tools.DamageTypeTool
-import net.minecraft.world.damagesource.DamageTypes
 import net.minecraft.world.entity.player.Player
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
@@ -22,7 +21,7 @@ object PowerfulAttraction : Perk("powerful_attraction", Type.FUNCTIONAL) {
         if (stack.item !is GunItem) return
 
         val level = GunData.from(stack).perk.getLevel(this)
-        if (level > 0 && (DamageTypeTool.isGunDamage(source) || source.`is`(DamageTypes.PLAYER_ATTACK))) {
+        if (level > 0 && (DamageTypeTool.isGunDamage(source) || DamageTypeTool.isMeleeDamage(source))) {
             val drops = event.drops
             drops.forEach {
                 val item = it.item
@@ -43,9 +42,25 @@ object PowerfulAttraction : Perk("powerful_attraction", Type.FUNCTIONAL) {
         if (stack.item !is GunItem) return
 
         val level = GunData.from(stack).perk.getLevel(this)
-        if (source != null && level > 0 && (DamageTypeTool.isGunDamage(source) || source.`is`(DamageTypes.PLAYER_ATTACK))) {
+        if (source != null && level > 0 && (DamageTypeTool.isGunDamage(source) || DamageTypeTool.isMeleeDamage(source))) {
             player.giveExperiencePoints((event.droppedExperience * (0.8f + 0.2f * level)).toInt())
             event.isCanceled = true
         }
     }
+
+    // TODO looting level
+//    @SubscribeEvent
+//    fun onLootingLevel(event: LootingLevelEvent) {
+//        val source = event.damageSource ?: return
+//        val sourceEntity = source.entity
+//        if (sourceEntity !is LivingEntity) return
+//
+//        val stack = sourceEntity.mainHandItem
+//        if (stack.item !is GunItem) return
+//
+//        val level = GunData.from(stack).perk.getLevel(this)
+//        if (level > 0 && (DamageTypeTool.isGunDamage(source) || DamageTypeTool.isMeleeDamage(source))) {
+//            event.lootingLevel = level / 4
+//        }
+//    }
 }

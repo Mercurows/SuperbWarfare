@@ -1,6 +1,10 @@
 package com.atsuishio.superbwarfare.data.gun
 
 import com.atsuishio.superbwarfare.data.Prop
+import com.atsuishio.superbwarfare.data.SingleOrList
+import com.atsuishio.superbwarfare.data.gun.melee.MeleeAction
+import com.atsuishio.superbwarfare.data.gun.melee.MeleeHitbox
+import com.atsuishio.superbwarfare.data.gun.melee.MeleeSweep
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedVec3
 
 /**
@@ -11,10 +15,14 @@ import com.atsuishio.superbwarfare.serialization.kserializer.SerializedVec3
  * 只处理能忠实写回的属性（`plainProp`：结果类型 == 字段类型）。以下两类会被跳过：
  * - `leveledIntProp`（`Magazine`、`BoltActionTime` 及各种换弹时间）：结果是按弹匣等级解析出的
  *   单个 Int，而字段是等级表，写回会把多等级数据压平；
- * - 尚未列入本函数的属性（例如 `MeleeDamageTime`）。
+ * - 尚未列入本函数的属性。
  *
  * 跳过**不会改变行为**：读取路径是"先查 diff、再查 computed"，没被写回的值依然生效，
  * 只是这份 computed 值还不完整。
+ *
+ * 近战那一组（`MeleeDamage`/`MeleeRange`/`MeleeDamageTime` + 新增的
+ * `MeleeComboReset`/`MeleeHitbox`/`MeleeSweep`/`MeleeActions`）已经补进本清单——
+ * 它们此前被漏掉，导致「配件/弹种 override 生效过一次之后又被 computed 覆盖回去」这类隐患。
  *
  * TODO 目前跳过的属性是静默的；下一步会把"差量里有、本函数没写回"的属性名在开发环境打成日志，
  * 用来把这份清单补全（也顺手把 KSP 生成的版本替换掉本文件）。
@@ -43,6 +51,26 @@ fun DefaultGunData.withOverrides(diff: Map<out Prop<*, *, *, *, *>, Any?>): Defa
         velocity = num(GunProp.VELOCITY, velocity),
         meleeDuration = int(GunProp.MELEE_DURATION, meleeDuration),
         meleeAngle = int(GunProp.MELEE_ANGLE, meleeAngle),
+        meleeDamage = num(GunProp.MELEE_DAMAGE, meleeDamage),
+        meleeRange = num(GunProp.MELEE_RANGE, meleeRange),
+        meleeDamageTime = int(GunProp.MELEE_DAMAGE_TIME, meleeDamageTime),
+        meleeComboReset = int(GunProp.MELEE_COMBO_RESET, meleeComboReset),
+        meleeHitbox = if (diff.containsKey(GunProp.MELEE_HITBOX)) {
+            diff[GunProp.MELEE_HITBOX] as? MeleeHitbox
+        } else {
+            meleeHitbox
+        },
+        meleeSweep = if (diff.containsKey(GunProp.MELEE_SWEEP)) {
+            diff[GunProp.MELEE_SWEEP] as? MeleeSweep
+        } else {
+            meleeSweep
+        },
+        meleeActions = if (diff.containsKey(GunProp.MELEE_ACTIONS)) {
+            (diff[GunProp.MELEE_ACTIONS] as? List<MeleeAction>)?.let { SingleOrList(it.toMutableList()) }
+                ?: meleeActions
+        } else {
+            meleeActions
+        },
         zoomSpreadRate = num(GunProp.ZOOM_SPREAD_RATE, zoomSpreadRate),
         range = int(GunProp.RANGE, range),
         ammoCostPerShoot = int(GunProp.AMMO_COST_PER_SHOOT, ammoCostPerShoot),
