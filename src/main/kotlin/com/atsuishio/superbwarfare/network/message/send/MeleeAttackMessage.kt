@@ -190,9 +190,9 @@ data class MeleeAttackMessage(
             // 衰减：第 order 个目标乘 max(1 - order * Falloff, 0.1)
             val falloff = if (order == 0) 1.0 else (1.0 - order * action.falloff).coerceAtLeast(0.1)
 
-            // 伤害数值**直接读** `MeleeDamage`（§6.2-7）；`ATTACK_DAMAGE` 属性加成保留在
-            // `GunItem.getAttributeModifiers` 里，但不再参与这里的结算——否则 `MeleeDamage`
-            // 会被"属性加成"二次放大，与 `MeleeAction.Damage` 的语义打架。
+            // 伤害数值 = 枪的 `MeleeDamage` × 本段 `DamageMultiplier`（已在 resolve 里算完）；
+            // `ATTACK_DAMAGE` 属性加成保留在 `GunItem.getAttributeModifiers` 里，但不参与这里的结算
+            // ——否则 `MeleeDamage` 会被"属性加成"二次放大，和动作倍率叠在一起就说不清是谁放大的。
             val damage = action.damage * zoneMultiplier * falloff
             if (damage <= 0) continue
 
