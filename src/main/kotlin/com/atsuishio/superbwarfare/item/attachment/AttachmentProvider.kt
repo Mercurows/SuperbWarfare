@@ -13,7 +13,7 @@ import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
  * （`GunData.item` 要求副武器物品是枪，而一个物品只能继承一个类），所以"配件身份"只能是接口。
  */
 interface AttachmentProvider {
-    /** 该物品对应的配件 id（`namespace:path`），例如 `superbwarfare:bayonet_knife`。 */
+    /** 该物品对应的配件 id（`namespace:path`），例如 `superbwarfare:bayonet_m_9`。 */
     val attachmentId: String
 }
 

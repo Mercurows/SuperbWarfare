@@ -869,7 +869,7 @@ companion object {
 | 阶段 | 状态 | 范围 |
 |---|---|---|
 | **一期：近战本体** | ✅ **已完成** | 判定形状/扫掠、连招、命中区域、伤害类型与标签、`@melee`、动作锁、NBT 冷却表、G 键语义、调试工具 |
-| **二期：配件体系 + 刺刀** | ✅ **已完成**（§11.5） | `AttachmentProvider`、槽位注册表 + 挂点组、`BAYONET` + `bayonet_knife`、注册表驱动的通用配件渲染 |
+| **二期：配件体系 + 刺刀** | ✅ **已完成**（§11.5） | `AttachmentProvider`、槽位注册表 + 挂点组、`BAYONET` + `bayonet_m_9`、注册表驱动的通用配件渲染 |
 | **三期：`SubWeapon`** | ❌ 未开始 | `SubWeaponInfo`、`SubWeaponItem`、`SubWeaponRuntime`、`UNDERBARREL` |
 
 一期新增/改动的主要落点：
@@ -1153,15 +1153,15 @@ MISS : d = 7.28, 7.37, 7.54, 7.84, 7.92   ← 全部 > 7.2   （[shape]，纯距
 ### 11.5 二期：配件体系 + 刺刀 ✅ 已实现
 
 > **状态：✅ 已完成**（`compileKotlin` / `runData` 跑通；验收步骤见 §11.5.4）。
-> `bayonet_knife` 的 bedrock 模型与贴图由需求方提供；**动作动画尚未制作**，刺刀先用枪自己的 melee clip（§11.5.3-1）。
+> `bayonet_m_9` 的 bedrock 模型与贴图由需求方提供（文件名仍是 `bayonet_knife.geo.json` / `bayonet_knife.png`）；**动作动画尚未制作**，刺刀先用枪自己的 melee clip（§11.5.3-1）。
 > **改装界面（`WeaponEditScreen`）与 HUD 按需求一行未动**：新槽位在界面重写前只能用 `/sbw attachment` 指令安装（§11.5.3-⑤）。
 
 | # | 项 | 状态 | 落点 |
 |---|---|---|---|
 | 1 | **配件物品接口化** | ✅ | 新增 `item/attachment/AttachmentProvider.kt`（接口只声明 `attachmentId`，`definition()` 是扩展函数）；`AttachmentItem.kt` → **`BasicAttachmentItem.kt`，旧文件直接删除、不留别名**；`ModItems.registerAttachment(id, rarity, factory = ::BasicAttachmentItem)`；4 处消费点全部改成接口判断（`ModItems`、`ClientAttachmentImageTooltip:43`、`AttachmentCommand:267`、物品类自身） |
 | 2 | **槽位注册表化 + 挂点组基建** | ✅ | 新增 `data/attachment/AttachmentSlots.kt`：`AttachmentSlot`（`mount`/`tagBucket`/`icon`/`mountBone`/`focusBone`/`renderMode`/`withdrawAmmoOnChange`）、`AttachmentMountBone`（`Fixed`/`FromDefinition`/`GunModel`）、`AttachmentRenderMode`（`CUSTOM`/`GENERIC`）、`EDIT_ORDER`；`AttachmentDefinition` +`Mount`/`AllowSharedMount`；`Attachment.mountConflict()`；`GunData.availableAttachments()` 按挂点过滤；`Attachment.cycle`/指令/补全自动跟着走 |
-| 3 | **`AttachmentType.BAYONET` + 刺刀落地** | ✅ | 枚举 +`Bayonet`；`ModItems.BAYONET_KNIFE`；`data/superbwarfare/sbw/attachments/bayonet_knife.json`；bedrock 模型/贴图（需求方提供）+ `textures/item/bayonet_knife.png`；`Model`/`Texture`/`Modifiers`/`Override` 齐备；tag + datagen（`attachment/bayonet{,/common}`）；`en_us`/`zh_cn` 语言；渲染见 #6 |
-| 4 | **刺刀属性 + 动作表** | ✅ | `bayonet_knife.json`：`Modifiers`（`MeleeDamage ×1.3` / `MeleeRange +1.2` / `Weight +0.4`）**与** `Override.MeleeActions`（单段突刺）并存，分工见 §11.5.3-② |
+| 3 | **`AttachmentType.BAYONET` + 刺刀落地** | ✅ | 枚举 +`Bayonet`；`ModItems.BAYONET_M_9`；`data/superbwarfare/sbw/attachments/bayonet_m_9.json`；bedrock 模型/贴图（需求方提供）+ `textures/item/bayonet_m_9.png`；`Model`/`Texture`/`Modifiers`/`Override` 齐备；tag + datagen（`attachment/bayonet{,/common}`）；`en_us`/`zh_cn` 语言；渲染见 #6 |
+| 4 | **刺刀属性 + 动作表** | ✅ | `bayonet_m_9.json`：`Modifiers`（`MeleeDamage ×1.3` / `MeleeRange +1.2` / `Weight +0.4`）**与** `Override.MeleeActions`（单段突刺）并存，分工见 §11.5.3-② |
 | 5 | **动画候选链 + 短名拼接** | ✅ | `MeleeAction.Animation` → `SingleOrList<String>?`；`resource/gun/GunAnimationNames.kt`；`GeoGunAnimationInstance.resolveMeleeName()` 按链解析、失败日志去重；`/sbw melee actions` 打印候选→实际名字。刺刀写 `["hit_bayonet", "hit"]`，动画做出来之前自动落在枪自己的 `hit` 上 |
 | 6 | **渲染：`bayonet_pos` + 注册表分派** | ✅ | `GeoGunRenderer.renderRegisteredAttachments()`（`renderMode = GENERIC` 的槽位走通用路径，骨骼按 `AttachmentMountBone` 解析）；`ak_47.geo.json` 的 `bayonet_pos` 由需求方添加；`attachmentFocusBone` 改由注册表的 `focusBone` 提供 |
 | 7 | 配件自带动画文件（§9.7 二期路线） | ❌ **未做** | 动画尚未制作，按需求留待后续 |
@@ -1292,7 +1292,7 @@ AK-47 装上刺刀后的实际效果：伤害 15 → 19.5；判定变成一根 *
 **⑤ 改装界面完全没动，`EDIT_ORDER` 只是"报文下标 ↔ 槽位"的唯一一份定义。**
 界面里 6 个按钮的固定顺序（枪口/瞄具/握把/枪托/弹匣/弹种）与 `EDIT_ORDER` 前 6 项一致，不允许改序；
 刺刀追加在下标 6，**当前界面没有它的按钮**，用
-`/sbw attachment <entity> set Bayonet superbwarfare:bayonet_knife` 安装。
+`/sbw attachment <entity> set Bayonet superbwarfare:bayonet_m_9` 安装。
 重写界面时按 `EDIT_ORDER.chunked(2)` 布局即可自动带上新槽位。
 `EditMessage` 里原来的 `when (type) { 0 -> ... 5 -> ... }` 换成了 `EDIT_ORDER[type]`，
 挂点互斥报错也加了独立文案（`commands.superbwarfare.attachment.fail.mount`）。
@@ -1313,7 +1313,7 @@ AK-47 装上刺刀后的实际效果：伤害 15 → 19.5；判定变成一根 *
 
 ```
 1. 拿一把 AK-47（模型里有 bayonet_pos 骨骼）
-2. /sbw attachment @s set Bayonet superbwarfare:bayonet_knife   → 枪口出现刺刀，与消音器共存
+2. /sbw attachment @s set Bayonet superbwarfare:bayonet_m_9   → 枪口出现刺刀，与消音器共存
 3. 按 V          → 伤害 19.5、判定变成 4.5 格的细胶囊（更远、更窄）
                    开 melee_debug_log 看 `reach` 与命中日志；/sbw melee actions 看候选链
 4. 动画：枪的动画文件里**没有** hit_bayonet → 自动播它自己的 `hit`（即第 3 步看到的就是这个）；
