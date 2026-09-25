@@ -723,6 +723,7 @@ object ModItems {
     // Bayonet
     // @formatter:off
     @JvmField val BAYONET_M_9 = registerAttachment("bayonet_m_9")
+    @JvmField val BAYONET_6KH2 = registerAttachment("bayonet_6kh2")
     // @formatter:on
 
     fun registerDispenserBehavior() {

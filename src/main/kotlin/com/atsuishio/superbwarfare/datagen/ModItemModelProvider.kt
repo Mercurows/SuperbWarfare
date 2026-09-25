@@ -377,6 +377,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.STEEL_PIPE_SILENCER)
         simpleItem(ModItems.STEEL_PIPE_GRIP)
         simpleItem(ModItems.BAYONET_M_9)
+        simpleItem(ModItems.BAYONET_6KH2)
 
         // blocks
         evenSimplerBlockItem(ModBlocks.BARBED_WIRE)

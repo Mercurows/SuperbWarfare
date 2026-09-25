@@ -619,7 +619,8 @@ class ModItemTagProvider(
             ModItems.STEEL_PIPE_GRIP
         ),
         AttachmentType.BAYONET to listOf(
-            ModItems.BAYONET_M_9
+            ModItems.BAYONET_M_9,
+            ModItems.BAYONET_6KH2
         ),
     )
 

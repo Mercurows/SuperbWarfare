@@ -9,7 +9,7 @@
   "Velocity": 20,
   "Magazine": [30, 40, 70],
   "DrumLevels": 2,
-  "MeleeDamage": 15,
+   "MeleeDamage": 8,
   "MeleeDuration": 16,
   "MeleeAngle": 100,
   "Weight": 4,

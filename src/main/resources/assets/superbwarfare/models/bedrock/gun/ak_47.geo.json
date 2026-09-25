@@ -7916,6 +7916,11 @@
 					"pivot": [0, 2.98828, -24.7]
 				},
 				{
+					"name": "bayonet_pos",
+					"parent": "root",
+					"pivot": [0, 2.9883, -24.7]
+				},
+				{
 					"name": "bolt",
 					"parent": "root",
 					"pivot": [0, 1.80089, -3.24161],
@@ -8483,7 +8488,7 @@
 							}
 						},
 						{
-							"origin": [-0.19623, 2.21141, -18.27582],
+							"origin": [-0.19713, 2.21051, -19.06805],
 							"size": [0.38543, 0.31408, 0.82717],
 							"uv": {
 								"north": {"uv": [13, 77], "uv_size": [0.5, 0.5]},
@@ -11213,11 +11218,6 @@
 					"name": "shell",
 					"parent": "positioning2",
 					"pivot": [0, 3.81789, -3.99798]
-				},
-				{
-					"name": "bayonet_pos",
-					"parent": "root",
-					"pivot": [0, 2.6, -22.1]
 				},
 				{
 					"name": "positioning",
