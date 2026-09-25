@@ -39,10 +39,10 @@ data class ResolvedMeleeAction(
     /** 穿甲占比 */
     val bypassesArmor: Double,
 
-    /** 打头倍率覆盖；null = 用枪的 `Headshot` */
+    /** 打头倍率覆盖；null = 用枪的 `MeleeHeadshot` */
     val headshot: Double?,
 
-    /** 打腿倍率覆盖；null = 用 [MeleeAction.DEFAULT_LEGSHOT] */
+    /** 打腿倍率覆盖；null = 用枪的 `MeleeLegshot` */
     val legshot: Double?,
 
     /** 本段消耗的耐久 */
@@ -67,7 +67,9 @@ data class ResolvedMeleeAction(
      */
     val hitTickFromStart: Int get() = (duration - hitTime).coerceIn(0, duration)
 
+    /** 本段实际生效的打头倍率：本段覆盖 ?: 枪的 `MeleeHeadshot` */
     fun resolvedHeadshot(gunHeadshot: Double) = headshot ?: gunHeadshot
 
-    fun resolvedLegshot() = legshot ?: MeleeAction.DEFAULT_LEGSHOT
+    /** 本段实际生效的打腿倍率：本段覆盖 ?: 枪的 `MeleeLegshot` */
+    fun resolvedLegshot(gunLegshot: Double) = legshot ?: gunLegshot
 }

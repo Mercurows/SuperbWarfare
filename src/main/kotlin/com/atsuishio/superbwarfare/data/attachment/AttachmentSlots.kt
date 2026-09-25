@@ -55,8 +55,8 @@ enum class AttachmentRenderMode {
  * 其余环节（挂点互斥、物品 tag、datagen、改装界面按钮、调试聚焦、通用渲染）都从这张表读。
  *
  * @param type 对应的槽位枚举。
- * @param mount 挂点组名。**登记到同一个 [mount] 的两个槽位互斥**（同时只能装一个）；
- *   不同 [mount] 的槽位可以共存且同时生效（刺刀在枪口卡榫、下挂榴弹在下导轨，两者不冲突）。
+ * @param mount 挂点组名。**登记到同一个 [mount] 的两个槽位互斥**（同时只能装一个），
+ *   例如刺刀与枪口配件都挂在 `muzzle_device` 上；不同 [mount] 的槽位可以共存且同时生效。
  *   配件可以用 [AttachmentDefinition.mount] 覆盖自己所在槽位的默认挂点组。
  * @param tagBucket 物品 tag 的桶名（`superbwarfare:attachment/<tagBucket>`），
  *   `null` 表示这个槽位不生成 tag。生成逻辑见 `ModTags` / `ModItemTagProvider`。
@@ -173,9 +173,11 @@ object AttachmentSlots {
             focusBone = Bones.GRIP,
             renderMode = AttachmentRenderMode.CUSTOM,
         ),
+        // 刺刀和枪口配件（消音器/制退器）抢的是**同一个枪口挂点**：装了其中一个就装不了另一个。
+        // 物理上刺刀是卡在枪口下方的卡榫上，但真枪上也确实不能同时又挂消音器又上刺刀。
         AttachmentSlot(
             type = AttachmentType.BAYONET,
-            mount = "muzzle_lug",
+            mount = "muzzle_device",
             tagBucket = "bayonet",
             icon = "bayonet",
             mountBone = AttachmentMountBone.Fixed(Bones.BAYONET),

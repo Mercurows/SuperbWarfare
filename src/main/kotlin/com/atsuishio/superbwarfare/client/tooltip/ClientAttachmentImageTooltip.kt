@@ -281,6 +281,8 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
             "Velocity",
             "MeleeDamage",
             "MeleeRange",
+            "MeleeHeadshot",
+            "MeleeLegshot",
         )
 
         val LOWER_IS_BETTER = setOf(

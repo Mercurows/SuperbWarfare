@@ -53,6 +53,8 @@ fun DefaultGunData.withOverrides(diff: Map<out Prop<*, *, *, *, *>, Any?>): Defa
         meleeAngle = int(GunProp.MELEE_ANGLE, meleeAngle),
         meleeDamage = num(GunProp.MELEE_DAMAGE, meleeDamage),
         meleeRange = num(GunProp.MELEE_RANGE, meleeRange),
+        meleeHeadshot = num(GunProp.MELEE_HEADSHOT, meleeHeadshot),
+        meleeLegshot = num(GunProp.MELEE_LEGSHOT, meleeLegshot),
         meleeDamageTime = int(GunProp.MELEE_DAMAGE_TIME, meleeDamageTime),
         meleeComboReset = int(GunProp.MELEE_COMBO_RESET, meleeComboReset),
         meleeHitbox = if (diff.containsKey(GunProp.MELEE_HITBOX)) {

@@ -14,6 +14,7 @@
   "MeleeDamage": 19,
   "MeleeDuration": 20,
   "MeleeRange": 1,
+  "MeleeHeadshot": 1,
   "DrawTime": 14,
   "ZoomTime": 9,
   "EmptyReloadTime": 98,

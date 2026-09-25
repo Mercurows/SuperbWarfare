@@ -28,10 +28,10 @@
         "Duration": 16,
         "HitTime": 6,
         "Hitbox": {
-          "Type": "Capsule",
-          "Range": 3.3,
-          "Radius": 0.45,
-          "ZFrom": 0.0,
+          "Type": "Box",
+          "Width": 1.0,
+          "Height": 1.6,
+          "YOffset": -0.3,
           "Occlusion": true
         },
         "Sweep": {

@@ -100,11 +100,27 @@ data class DefaultGunData(
     /**
      * 近战距离：**叠加**在 `MeleeHitbox.Range` 之上的额外距离。
      *
-     * 判定用的总距离是 `Range + MeleeRange + player.getEntityReach()`；形状没写 `Range` 时
-     * 基数取 0，也就是"距离就由这里决定"。配件要加近战距离就是加这个属性。
+     * 判定用的总距离是 `(Range + MeleeRange) × 动作的 RangeMultiplier + player.getEntityReach()`；
+     * 形状没写 `Range` 时基数取 0，也就是"距离就由这里决定"。配件要加近战距离就是加这个属性。
+     *
+     * 默认值 **2.0** 是"枪托砸"的基础触点：生存模式的实际触及距离 =
+     * `(0 + 2.0) + 3.0(实体触及) = 5.0` 格（旧值是 0，只有 3.0 格，和原版空手一样远）。
+     * 枪自己写 `MeleeHitbox.Range` 可以再叠（AK-47 写了 1.2 → 6.2 格）。
      */
     @SerialName("MeleeRange")
-    val meleeRange: Double = 0.0,
+    val meleeRange: Double = 2.0,
+    /**
+     * 近战打头倍率（近战专用，与投射物的 [headshot] 无关）。
+     *
+     * 只对**准星正对的那个目标**生效（见 `MeleeQuery.crosshairTarget`）。
+     */
+    @SerialName("MeleeHeadshot")
+    val meleeHeadshot: Double = 2.0,
+    /**
+     * 近战打腿倍率（近战专用，与投射物的打腿默认值无关）。
+     */
+    @SerialName("MeleeLegshot")
+    val meleeLegshot: Double = 0.5,
     /**
      * 一段近战动作结束后多少 tick 内再挥击算连招。
      *
@@ -115,7 +131,8 @@ data class DefaultGunData(
     /**
      * 近战判定形状（JSON 顶层 `MeleeHitbox`）。
      *
-     * 不写时走旧的圆锥语义：`MeleeAngle` 总张角、上下不限、距离 = `player.getEntityReach() + MeleeRange`。
+     * 不写时按 [MeleeHitbox] 的默认值来：**长方体**，尺寸 1.8×1.8、
+     * 前向长度 = `MeleeRange + player.getEntityReach()`。
      */
     @SerialName("MeleeHitbox")
     val meleeHitbox: MeleeHitbox? = null,
@@ -435,6 +452,8 @@ data class DefaultGunData(
             meleeDuration = clampedMeleeDuration,
             meleeAngle = meleeAngle.coerceIn(1, 180),
             meleeComboReset = max(0, meleeComboReset),
+            meleeHeadshot = max(0.0, meleeHeadshot),
+            meleeLegshot = max(0.0, meleeLegshot),
             zoomSpreadRate = zoomSpreadRate.coerceIn(0.0, 1.0),
             range = max(1, range),
             meleeDamageTime = min(clampedMeleeDuration - 1, meleeDamageTime),

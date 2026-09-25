@@ -22,17 +22,16 @@
     "MeleeActions": [
       {
         "Animation": [
-          "animation.ak_47.bayonet_hit",
-          "animation.ak_12.bayonet_hit",
-          "animation.svd.bayonet_hit"
+          "bayonet_hit",
+          "hit"
         ],
         "Duration": 16,
         "HitTime": 4,
         "Hitbox": {
-          "Type": "Capsule",
-          "Range": 3.3,
-          "Radius": 0.45,
-          "ZFrom": 0.0,
+          "Type": "Box",
+          "Width": 1.0,
+          "Height": 1.6,
+          "YOffset": -0.3,
           "Occlusion": true
         },
         "Sweep": {

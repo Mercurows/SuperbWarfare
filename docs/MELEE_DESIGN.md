@@ -136,41 +136,54 @@
 
 | 字段 | 类型 | 默认 | 语义 |
 |---|---|---|---|
-| `MeleeDamage` | Double | 0 | 有值即代表能近战（`GunItem.hasMeleeAttack`） |
+| `MeleeDamage` | Double | 0 | 有值即代表能近战（`GunItem.hasMeleeAttack`）；**近战伤害的唯一出处** |
 | `MeleeDuration` | Int | 16 | 单段总 tick；动作没写 `Duration` 时用 |
 | `MeleeDamageTime` | Int | 6 | **从挥击开始算，第几 tick 结算**；动作没写 `HitTime` 时用 |
-| `MeleeAngle` | Int | 30 | 没写 `MeleeHitbox` 时的圆锥总张角 |
-| `MeleeRange` | Double | 0 | 额外距离（叠加 `player.getEntityReach()`） |
-| `MeleeComboReset` | Int | 15（新） | 一段结束后多少 tick 内再挥击算连招 |
+| `MeleeRange` | Double | **2.0** | 近战基础距离：叠加在 `MeleeHitbox.Range` 之上（§11.7.6） |
+| `MeleeAngle` | Int | 30 | **只有显式写 `"Type": "Cone"` 时才用**（原来那个"没写 MeleeHitbox 就是圆锥"的兜底已经取消） |
+| `MeleeHeadshot` | Double | 2.0（新） | **近战专用**打头倍率；不再复用投射物的 `Headshot` |
+| `MeleeLegshot` | Double | 0.5（新） | **近战专用**打腿倍率 |
+| `MeleeComboReset` | Int | 15 | 一段结束后多少 tick 内再挥击算连招 |
 
-> **不新增打头/打腿的全局字段**：打头复用 `Headshot`（1.5），打腿复用投射物默认 `0.5`；个别动作可用 `MeleeAction.Headshot`/`Legshot` 覆盖。
-> 兼容硬要求：**22 把旧枪 json 一行都不用改**；没有 `MeleeHitbox` 时走旧的圆锥语义。
+> 打头/打腿的倍率有独立属性了（二期后续调整），不再借用投射物的 `Headshot`：
+> 一把枪的"打身子 15 / 打头 30"和它的"子弹爆头 2 倍"本来就是两回事。
+> 个别动作仍可用 `MeleeAction.Headshot`/`Legshot` 单独覆盖。
 
 ### 3.3 `MeleeHitbox` —— 判定形状
 ```jsonc
 "MeleeHitbox": {
-  "Type": "Cone",        // Cone | Box | Capsule
-  "Range": 3.0,
-  "Angle": 100,          // Cone：水平总张角（度）
-  "Pitch": 60,           // Cone：垂直总张角（度）；180 = 不限
-  "Width": 1.4,          // Box：左右全宽
+  "Type": "Box",         // Box | Cone | Capsule（不写就是 Box）
+  "Range": 1.2,          // 近战基础距离；不写时由枪的 MeleeRange 决定
+  "Width": 1.8,          // Box：左右全宽
   "Height": 1.8,         // Box：上下全高
-  "YOffset": -0.4,       // Box/Capsule：相对眼睛的垂直偏移
-  "Length": 2.5,         // Box：前后长度
+  "YOffset": -0.2,       // Box/Capsule：相对眼睛的垂直偏移（沿视线的"上"方向）
   "ZFrom": 0.0,          // Box/Capsule：沿视线的起点（负值=身后）
+  "Angle": 100,          // Cone：水平总张角（度）
+  "Pitch": 180,          // Cone：垂直总张角（度）；180 = 不限
   "Radius": 0.4,         // Capsule：截面半径
   "Occlusion": true      // 是否要求视线通畅
 }
 ```
 
+**三种形状的前向长度是同一个量** —— "近战触及距离"：
+
+```
+reach = (Range + MeleeRange) × 动作的 RangeMultiplier + player.getEntityReach()
+```
+
+所以盒子**没有 `Length` 字段**（二期后续调整删掉了）：枪的 `MeleeRange`、配件的距离加成、
+动作的距离倍率都直接作用在判定体长度上，不用每个形状各写一套尺寸。
+
 | Type | 定义 | 适用 |
 |---|---|---|
-| `Cone` | 目标 AABB 最近点：距离 ≤ `Range`，`\|Δyaw\| ≤ Angle/2`、`\|Δpitch\| ≤ Pitch/2` | 通用挥击（兼容旧行为） || `Box` | OBB（中心 = 眼睛 + (0,`YOffset`,`ZFrom+Length/2`)，半长 = (`Width/2`,`Height/2`,`Length/2`)，绕 Y 旋转 `yaw`）∩ 目标 AABB | 正前方「横扫带」 |
-| `Capsule` | 线段（沿视线 `ZFrom → ZFrom+Range`）到目标 AABB 最近距离 ≤ `Radius` | 刺刀突刺、枪管戳 |
+| `Box` | OBB（中心 = 眼睛 + 局部上偏移 `YOffset` + 视线 × (`ZFrom` + `reach/2`)，半长 = (`Width/2`,`Height/2`,`reach/2`)）∩ 目标 AABB | **默认形状**，通用挥击 |
+| `Cone` | 目标 AABB 最近点：距离 ≤ `reach`，`\|Δyaw\| ≤ Angle/2`、`\|Δpitch\| ≤ Pitch/2` | 旧形状，保留给数据包 |
+| `Capsule` | 线段（沿视线 `ZFrom → ZFrom+reach`）到目标 AABB 最近距离 ≤ `Radius` | 突刺、枪管戳 |
 
-> **`Box` 的朝向实现成了 yaw + pitch 全姿态**（见 §11.2-㉑）：局部 **+Z** 指向**视线**（含俯仰），
+> **`Box` 的朝向是 yaw + pitch 全姿态**（见 §11.2-㉑）：局部 **+Z** 指向**视线**（含俯仰），
 > 局部 **+X** 是水平右方（与 pitch 无关），局部 **+Y** = `look × right`（与视线垂直的"上"）。
 > `YOffset` 也沿局部 +Y 偏移，不再写死世界 Y —— 所以抬头劈砍时盒子会跟着抬起来，而不是横在头顶。
+
 
 `Box` 直接用 `OBB`（`tools/OBB.kt:39`）+ `OBB.isColliding(obb, aabb)`（`:486`）。
 
@@ -212,15 +225,19 @@
 | `Duration` | Int? | `MeleeDuration` | 本段总 tick（动画按它拉伸） |
 | `HitTime` | Int? | `MeleeDamageTime` | 从挥击开始算，第几 tick 结算（见下方注） |
 | `Hitbox` / `Sweep` | ? | 全局 | 本段判定 |
-| `Damage` / `DamageMultiplier` | Double? | `MeleeDamage` / 1.0 | 伤害（二选一） |
+| `DamageMultiplier` | Double? | 1.0 | **伤害倍率**，乘在枪的 `MeleeDamage` 上（§11.7-②） |
+| `RangeMultiplier` | Double? | 1.0 | **距离倍率**，乘在 `Range + MeleeRange` 上（不缩放 `getEntityReach()`） |
 | `MaxTargets` / `Falloff` | Int? / Double? | 0（不限）/ 0.1 | 数量与衰减 |
 | `SortBy` | enum? | `Angle` | `Angle`/`Distance`/`SweepOrder` |
 | `Knockback` / `BypassesArmor` | Double? | 0.0 | 击退 / 穿甲 |
-| `Headshot` / `Legshot` | Double? | 1.5 / 0.5 | 本段命中区域倍率 |
+| `Headshot` / `Legshot` | Double? | 枪的 `MeleeHeadshot` / `MeleeLegshot` | 本段命中区域倍率**覆盖**（绝对值，不是倍率的倍率） |
 | `Durability` | Int? | 0 | 本段消耗的枪械耐久 |
 | `Cooldown` | Int? | 0 | 本段冷却（§3.7 的枪 NBT 冷却表） |
 | `Swing` / `Hit` | `SerializedSoundEvent?`（**不是 String**，§11.2-④） | 枪的 `MeleeSound` | 本段音效 |
 | `Effects` | `List<MeleeEffectSpec>?` | 空 | 本段额外效果（§3.8；**一期只解析不结算**） |
+
+> **动作表里没有绝对伤害/距离**（二期后续调整）：数值的唯一出处是枪的 `MeleeDamage` / `Range + MeleeRange`，
+> 动作只回答"这一段比别的段重多少、伸多远"。配件改数值走 `Modifiers`，动作改手感走倍率，两边不打架。
 
 > **`HitTime` 的判定条件（实现时踩过坑，§11.2-①）**：内部计时器 `meleeTicks` 从 `Duration` 开始、**在每帧开头**递减，
 > 所以「出伤那一帧」的条件是 `meleeTicks <= Duration - HitTime`，**不是** `<= HitTime`。
@@ -302,15 +319,23 @@ headshot = (target.eyeHeight - 0.25) < hitBoxPos.y < (target.eyeHeight + 0.3)
 legshot  = hitBoxPos.y < 0.33 * target.bbHeight
 ```
 
-复用投射物已验证的阈值（`ProjectileEntity.kt:305-315`、`IAdvancedHitDetection.kt:181-191`）。近战的 `hitPos` = **判定体到目标 AABB 的入射点**（`boundingBox.clip(eyePos, eyePos + look * range)`；已在判定体内时退化为 AABB 中心）。倍率全部复用现有值。
+复用投射物已验证的阈值（`ProjectileEntity.kt:305-315`、`IAdvancedHitDetection.kt:181-191`）。近战的 `hitPos` = **判定体到目标 AABB 的入射点**（`boundingBox.clip(eyePos, eyePos + look * range)`；已在判定体内时退化为 AABB 中心）。
+
+倍率用**近战专用**的 `MeleeHeadshot` / `MeleeLegshot`（§3.2），不再复用枪的投射物 `Headshot`。
+
+> **打头只认准星正对的那一个目标**（二期后续调整，见 §11.7-④）：
+> 横扫会同时打到好几个目标，"入射点落在头部高度"并不等于"瞄着头打"。
+> 客户端沿视线打一条射线取出准星目标（被方块挡住 / 超出 `reach` 时没有），
+> 在报文里给每个目标带上 `aimed` 标记，服务端只在 `aimed` 为真时才算爆头。
+> 打腿仍然是位置判定（所有命中目标都适用）。
 
 ### 3.10 完整示例
 
-**A. AK-47：左右横扫循环 + 前方 120° 扇形**
+**A. AK-47：左右横扫循环 + 前方长方体判定**
 
 ```jsonc
-"MeleeDamage": 15, "MeleeDuration": 16, "MeleeAngle": 100,
-"MeleeHitbox": { "Type": "Cone", "Range": 2.5, "Angle": 120, "Pitch": 70, "Occlusion": true },
+"MeleeDamage": 15, "MeleeDuration": 16, "MeleeRange": 1.2,
+"MeleeHitbox": { "Type": "Box", "Width": 1.8, "Height": 1.8, "YOffset": -0.2, "Occlusion": true },
 "MeleeSweep": { "From": -60, "To": 60 },
 "MeleeComboReset": 12,
 "MeleeActions": [
@@ -324,8 +349,9 @@ legshot  = hitBoxPos.y < 0.33 * target.bbHeight
 ```jsonc
 "MeleeActions": [
   { "Animation": "hit", "Duration": 24, "HitTime": 10,
-    "Hitbox": { "Type": "Capsule", "Range": 3.2, "Radius": 0.45 }, "Sweep": { "From": 0, "To": 0 },
-    "Damage": 19, "Knockback": 0.4, "Cooldown": 40,
+    "Hitbox": { "Type": "Box", "Width": 0.9, "Height": 1.2, "YOffset": -0.2 },
+    "Sweep": { "From": 0, "To": 0 },
+    "RangeMultiplier": 1.3, "Knockback": 0.4, "Cooldown": 40,
     "Effects": [ { "Effect": "superbwarfare:warhead_stab", "Chance": 0.35, "Cooldown": 200 } ] }
 ]
 ```
@@ -1341,6 +1367,145 @@ AK-47 装上刺刀后的实际效果：伤害 15 → 19.5；判定变成一根 *
 > 已经在二期备好工厂参数，`AttachmentType.UNDERBARREL` 只差枚举 + 注册表登记一条
 > （按 §11.5.1 的 6 步走）。
 
+### 11.7 近战手感调整（二期后续，✅ 已实现）
+
+用户实测后提的五条，全部落地：
+
+| # | 项 | 做法 |
+|---|---|---|
+| 1 | **判定体统一成长方体** | `MeleeHitbox.Type` 默认值 `CONE → BOX`（尺寸 1.8×1.8、`YOffset -0.2`）；删掉 `Length` 字段，三种形状的前向长度统一为 `reach`（§11.7-①） |
+| 2 | **`MeleeHeadshot` / `MeleeLegshot`** | 新增两个**近战专用**全局属性（默认 2.0 / 0.5），不再借用投射物的 `Headshot`（§11.7-③） |
+| 3 | **动作表只给倍率** | `MeleeAction.Damage` 删除；`DamageMultiplier` / `RangeMultiplier` 分别乘在 `MeleeDamage` 与 `Range + MeleeRange` 上（§11.7-②） |
+| 4 | **爆头只认准星目标** | 客户端沿视线射线取准星实体，报文里带 `aimed`；服务端只在 `aimed` 时才算爆头（§11.7-④） |
+| 5 | **刺刀与枪口配件互斥** | `AttachmentType.BAYONET` 的挂点组从 `muzzle_lug` 改成与 `BARREL` 相同的 `muzzle_device`（§11.7-⑤） |
+
+#### 11.7.1 判定形状与距离的最终模型
+
+```
+reach = (MeleeHitbox.Range + MeleeRange) × 动作的 RangeMultiplier + player.getEntityReach()
+```
+
+三种形状的前向长度**都是**这个 `reach`：
+
+- `Box`：半长 = `(Width/2, Height/2, reach/2)`，中心 = 眼睛 + 局部上偏移 `YOffset` + 视线 × (`ZFrom` + `reach/2`)
+- `Cone`：`|Δyaw| ≤ Angle/2`、`|Δpitch| ≤ Pitch/2`、距离 ≤ `reach`
+- `Capsule`：线段 `ZFrom → ZFrom + reach`，到目标 AABB 最近距离 ≤ `Radius`
+
+改动带来的直接结果：
+
+- **盒子没有 `Length` 字段了**：枪的 `MeleeRange`、配件的距离加成、动作的 `RangeMultiplier`
+  都直接作用在长度上，不用每个形状各写一套尺寸（旧 `"Length"` 会变成未知键，DataValidator 会报错）。
+- **`Capsule` 不再吃掉 `getEntityReach()`**：旧实现里胶囊的长度是"绝对值"（`Range: 3.3` 就是 3.3 格，
+  与实体触及距离无关），和 `Cone`/`Box` 两套口径；现在统一。
+- **旧枪零改动**：22 把近战枪里只有 AK-47 写了 `MeleeHitbox`，其余全靠默认值 ——
+  默认形状一改，它们**自动**从圆锥变成 1.8×1.8×`reach` 的长方体。
+- `MeleeAngle` 只对显式 `"Type": "Cone"` 生效；20 把枪里留着的 `"MeleeAngle": 100` 现在是**无作用的遗留键**
+  （不影响校验，随时可删）。
+
+**`Cone` 的调试线框原来确实是坏的**（用户实测反馈），一并修掉：
+
+1. 判定本身有**俯仰符号错误**：`targetPitch = asin(delta.y / len)` 是"向上为正"的仰角，
+   而 MC 的 `pitch` 是"向下为正"，两者直接相减 → 抬头/低头时平白多出一个夹角偏差
+   （`Pitch: 180` 不受限时被掩盖，只有显式写小 `Pitch` 才暴露）。已改成取负。
+2. 线框画的是"垂直于视线的平面圆环"（半径 `reach × sin(半角)`），和真实判定体
+   （贴着半径 `reach` 的**球面**、角空间里是个矩形窗口）完全不是一回事。
+   现在 `MeleeQuery.coneDebugShape` 在角空间采样四条边、投到球面上，渲染侧只负责连线。
+
+#### 11.7.2 动作表：伤害与距离改成倍率
+
+```jsonc
+// 之前：动作可以写绝对伤害，还能自己写一个 Hitbox.Range 当绝对距离
+{ "Damage": 19, "Hitbox": { "Type": "Capsule", "Range": 3.2 } }
+
+// 现在：数值只有一个出处（枪的属性），动作只回答"这一段比别的段重多少、伸多远"
+{ "DamageMultiplier": 1.25, "RangeMultiplier": 1.3, "Hitbox": { "Type": "Box", "Width": 0.9 } }
+```
+
+- `MeleeAction.Damage` **删除**（不是弃用）：数值唯一出处是枪的 `MeleeDamage`，
+  配件改数值走 `Modifiers`，动作改手感走倍率，两边不再打架。
+- `RangeMultiplier` 只缩放 `Range + MeleeRange`，**不缩放** `player.getEntityReach()`
+  （那部分是玩家属性，不该被动作放大）。
+- `MeleeAction.Headshot` / `Legshot` 仍是**绝对值覆盖**（它们本身就是倍率，不参与"倍率的倍率"），
+  不写时取枪的 `MeleeHeadshot` / `MeleeLegshot`。
+
+#### 11.7.3 打头/打腿倍率独立
+
+| 属性 | 默认 | 说明 |
+|---|---|---|
+| `MeleeHeadshot` | 2.0 | 近战打头倍率 |
+| `MeleeLegshot` | 0.5 | 近战打腿倍率 |
+
+不再复用投射物的 `Headshot`：一把枪"子弹爆头 3 倍"和"枪托砸头 2 倍"本来就是两回事，
+混用会让改投射物数值时**静默**改掉近战手感。
+
+> **迁移提示**：默认值取的是 2.0（近战枪里最常见的投射物 `Headshot`）。
+> 原来靠投射物 `Headshot` 吃近战的枪里，`awm`/`hunting_rifle`/`k_98`/`mosin_nagant`（3）、
+> `mk_14`/`marlin`/`svd`（2.5）现在是 2.0；`aa_12`/`m_1897`/`mp_5`/`m_870`（1.5）现在是 2.0。
+> 想保持原样的枪自己写一行 `"MeleeHeadshot": <原值>` 即可。`rpg` 已显式写 `"MeleeHeadshot": 1`
+> （它原本 `Headshot: 0`，即"火箭筒砸人不算爆头"）。
+
+#### 11.7.4 爆头只给准星正对的那一个
+
+横扫一次能打到好几个目标，旧实现对**每个**目标独立判断"入射点是否落在头部高度"——
+侧后方的敌人被盒子的边角蹭到头部也算爆头。
+
+现在：
+
+1. 客户端在判定前，从眼睛沿**当前视线**打一条射线（`MeleeQuery.crosshairTarget`）：
+   先 `level.clip` 取方块命中点，再在候选实体里取"最先撞到的那个 AABB"（`AABB.clip`，膨胀 0.1），
+   超出 `reach` 或被方块挡住就是 `null`；
+2. `MeleeQuery.Hit` 带上 `aimed`（是否就是这个实体），调试日志里打 `AIM`；
+3. 报文 `TargetPayload` 带上 `aimed`；
+4. 服务端：`headshot = payload.aimed && isHeadshot(target, zonePos)` —— 几何阈值仍然由服务端算。
+
+打腿没有这个限制（位置判定，所有命中目标都适用）。
+
+> **⚠ 实测踩到的坑：命中区域量错了点，导致"瞄谁谁爆头"。**
+> 一期把入射点定义成 `closestPointInBox(box, eyePos)`（眼睛到目标 AABB 的**最近点**），
+> 而这个点的 y 会被**夹进目标的碰撞箱**：平地上站着打站着时，眼睛高度（1.62）本来就落在
+> 目标 AABB 的 y 区间里，于是入射点恒等于眼睛高度 ——
+> `isHeadshot` 的容差是 `eyeHeight ± (0.25/0.3)`，对人形目标**永远命中**，
+> 打脚、打胸、打头都是爆头。（一期 `Pitch: 180` 掩盖了另一半问题，见 §11.7.1。）
+>
+> 现在命中区域量的是**准星射线到该目标 AABB 的最近点**（`Hit.zonePos`，
+> `closestSegmentToBox(eyePos, eyePos + look × reach, box)`）：
+> 直接瞄准它时就是射线进入碰撞箱的那一点，横扫蹭到时也忠实反映"准星在那个距离上的高度"。
+> 判定体与碰撞箱的**接触点**（`Hit.hitPos`）仍然保留，但只用于遮挡判定与几何诊断 ——
+> 遮挡必须按"这一刀从哪个方向来"算，不能按准星算。
+
+#### 11.7.5 刺刀与枪口配件互斥
+
+`AttachmentSlots` 里 `BAYONET` 的挂点组改成与 `BARREL` 相同的 `muzzle_device`：
+两者**抢同一个枪口挂点**，装了其中一个就装不了另一个。
+`Attachment.mountConflict` → `GunData.availableAttachments` 过滤 → 指令补全 / `Attachment.cycle`
+全部自动跟着走；用 `/sbw attachment set` 硬装时会给一句专门的失败文案
+（`commands.superbwarfare.attachment.fail.mount`）。
+
+> 数据侧除了挂点组，还要注意：**两个刺刀的 `MeleeActions` 覆盖的是整张动作表**，
+> 所以 `MaxTargets`/`Knockback` 这些不继承枪自己的动作，得按需要显式写回（§11.5.3-②）。
+
+#### 11.7.6 枪托近战距离上调 + 刺刀提供额外距离
+
+`MeleeRange` 的**默认值从 0.0 提到 2.0**（`DefaultGunData.meleeRange`）：
+这是所有枪"枪托砸"的基础触点，原来 0 意味着实际触及距离 = 只有玩家自己的 3.0 格实体触及距离
+（和原版空手一样远），近战基本够不着。
+
+生存模式下的实际触及距离（`(Range + MeleeRange) × RangeMultiplier + getEntityReach()`，
+创造模式 `getEntityReach()` 还会 +3，所以不要用创造模式试手感）：
+
+| 枪 | `Hitbox.Range` | `MeleeRange` | 触及距离 |
+|---|---|---|---|
+| 绝大多数枪（没写 `MeleeRange`） | 0（默认） | 2.0（默认） | **5.0** |
+| AK-47（自己写了 `Range: 1.2`） | 1.2 | 2.0 | **6.2** |
+| 任意枪 + 刺刀（`MeleeRange +1.2`） | 同上 | +1.2 | **6.2 / 7.4** |
+| `rpg` / `secondary_cataclysm`（自己写了 `MeleeRange: 1`） | 0 | 1.0 | 4.0（**未变**） |
+
+- 只有一个调节点：枪的 `MeleeRange`（全局默认在 `DefaultGunData`，枪可以单独写）与 `MeleeHitbox.Range`。
+- 刺刀提供的额外距离就是它 `Modifiers` 里的 `{ "Prop": "MeleeRange", "Op": "Add", "Value": 1.2 }`，
+  想让刺刀更长/更短改这一个数即可（改完所有能装刺刀的枪一起变）。
+- `rpg` / `secondary_cataclysm` 显式写了 `MeleeRange: 1`，**比新默认还短**；
+  想让它们也享受新的基础距离，把那两行删掉（或改成 2）就行。
+
 ---
 
 ## 12. 决策记录
@@ -1397,6 +1562,20 @@ AK-47 装上刺刀后的实际效果：伤害 15 → 19.5；判定变成一根 *
 | 31 | `MeleeRange` 的语义 | 从"`MeleeHitbox.Range` 的兜底值"改成**叠加值**（`rangeOr(0) + MeleeRange`）：旧数据逐值等价，配件从此能用一条 `Modifiers` 加近战距离，不必整块覆盖 `MeleeHitbox`（§11.5.3-③） |
 | 32 | 动作表里的动画名 | **`Animation` 是候选链 + 短名拼接**：`animation.` 开头=全名原样用，其它按 `animation.<宿主枪 id>.` 拼接，列表按顺序取第一个存在的。**只用于 `MeleeActions.Animation`**，`GunAnimation.*` 仍写全名（§11.5.3-①） |
 | 33 | 刺刀的动画 | 写 `["hit_bayonet", "hit"]`：动画做出来之前在**所有枪**上都自动落在枪自己的 `hit` 上；以后往某把枪的动画文件里加 `animation.<枪>.hit_bayonet` 即可生效，**配件数据不用改** |
+
+### 12.4 二期后续（手感调整）期间的决策
+
+| # | 议题 | 结论 |
+|---|---|---|
+| 34 | 默认判定形状 | **长方体**（`Type` 默认值改成 `BOX`，1.8×1.8、`YOffset -0.2`）：圆锥的手感不好，而且它的调试线框是坏的（§11.7.1） |
+| 35 | 判定体长度 | **三种形状统一用 `reach`**，删掉 `MeleeHitbox.Length`：盒子/胶囊不再各写一套长度，`MeleeRange`、配件加成、`RangeMultiplier` 才能对每个形状都生效 |
+| 36 | 动作表的伤害/距离 | **只给倍率**（`DamageMultiplier` / `RangeMultiplier`），绝对值只来自枪的属性；`MeleeAction.Damage` 直接删除 |
+| 37 | 近战打头/打腿倍率 | **独立属性** `MeleeHeadshot`（2.0）/ `MeleeLegshot`（0.5），不再复用投射物的 `Headshot` |
+| 38 | 爆头归属 | **只有准星正对的那个目标**能爆头：客户端射线取准星实体 → 报文 `aimed` → 服务端 `aimed && isHeadshot(hitPos)`；打腿不受限 |
+| 39 | 刺刀与枪口配件 | **互斥**（同一挂点组 `muzzle_device`），不做"卡榫与消音器共存" |
+| 40 | `Cone` 的去留 | **保留**（数据包可能还在用），但不再是默认；顺手修掉它的俯仰符号错误与失真的调试线框 |
+| 41 | 命中区域量哪个点 | **准星射线到目标 AABB 的最近点**（`Hit.zonePos`）。一期的"眼睛到 AABB 最近点"会被夹到眼睛高度 → 平地上打哪儿都判爆头（§11.7.4 的坑） |
+| 42 | 枪托近战基础距离 | `MeleeRange` 默认 **0 → 2.0**（生存 3.0 → 5.0 格）；刺刀的额外距离仍走它的 `Modifiers`（§11.7.6） |
 | 31 | 改装界面 / HUD | **一行未动**（按需求）。`EditMessage` 与 `GeoGunRenderer.attachmentFocusBone` 改成读 `AttachmentSlots.EDIT_ORDER`，界面按钮下标与它前 6 项保持一致；刺刀在下标 6，暂时只能用指令安装 |
 | 32 | 配件物品 tag 的生成 | 从"每个槽位在 `ModTags`/datagen 里各写一遍"改成**注册表驱动**：`ATTACHMENT_BY_SLOT` / `attachmentRarityTag()` + datagen 循环，新增槽位不再需要手写 tag 常量 |
 
