@@ -11,7 +11,7 @@
   "Magazine": [30, 40, 75],
   "DrumLevels": 2,
   "Weight": 3.5,
-  "MeleeDamage": 8,
+  "MeleeDamage": 5,
   "MeleeDuration": 16,
   "MeleeAngle": 100,
   "DrawTime": 10,

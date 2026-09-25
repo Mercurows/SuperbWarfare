@@ -12,7 +12,7 @@
   "ZoomSpreadRate": 0.005,
   "BoltActionTime": 22,
   "Weight": 6,
-  "MeleeDamage": 8,
+  "MeleeDamage": 5,
   "MeleeDuration": 16,
   "MeleeAngle": 100,
   "DrawTime": 13,
