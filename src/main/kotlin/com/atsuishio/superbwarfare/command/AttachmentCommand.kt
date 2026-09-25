@@ -41,8 +41,9 @@ private const val ATTACHMENT_ARG = "attachment"
  *   不能与该枪上已安装的配件抢同一个挂点组，
  *   并且必须出现在该枪械数据的 `AvailableAttachments` 列表里
  * - `clear`：清空指定槽位，不写 `type` 时清空全部槽位（槽位清单来自 `AttachmentSlots.ALL`）
- * - `random`：在可用列表里随机抽一个配件装上，不写 `type` 时每个槽位各抽一次
- *   （该槽位没有可用配件时跳过，因此有可用配件的槽位都会被随机填上）
+ * - `random`：在可用列表里随机抽一个配件装上。不写 `type` 时**先清空全部槽位，再按挂点组各抽一个**
+ *   —— 同组槽位互斥（刺刀 / 枪口配件都是 `muzzle_device`），既不能逐槽位抽（会抽出装不上的组合），
+ *   也不能留着旧配件抽（会退化成"重抽已装的那一个"）。见 [clearAllAttachments] / [rollAllSlots]
  */
 val ATTACHMENT_COMMAND = buildCommand("attachment") {
     requirePermission(2)
@@ -116,9 +117,7 @@ val ATTACHMENT_COMMAND = buildCommand("attachment") {
             execute {
                 val data = mainHandGunData(entity) ?: fail { notGunMessage() }
 
-                for (type in AttachmentType.entries) {
-                    applyAttachment(data, entity, type, null)
-                }
+                clearAllAttachments(data, entity)
 
                 success {
                     Component.translatable(
@@ -146,15 +145,21 @@ val ATTACHMENT_COMMAND = buildCommand("attachment") {
         }
 
         "random" {
-            // 不写 type：每个槽位各抽一次，保证有可用配件的槽位都被随机填上
+            // 不写 type：**先清空、再按挂点组各抽一次**，抽出来的就是最终配置
             execute {
                 val data = mainHandGunData(entity) ?: fail { notGunMessage() }
 
-                val rolls = AttachmentType.entries.mapNotNull { type ->
-                    randomAttachment(data, type)?.let { type to it }
-                }
+                // 先清空：挂点组互斥，留着旧配件会把同组其它槽位的候选**全部过滤掉**
+                // （例如已经装着刺刀时，枪口槽位一个候选都抽不到），
+                // 那样抽出来的只是"在原配置上小改"，而不是真正的全量随机。
+                // 清空之后每个组都能从组内全部槽位里挑，最终结果与旧配置无关。
+                clearAllAttachments(data, entity)
+
+                val rolls = rollAllSlots(data)
 
                 if (rolls.isEmpty()) {
+                    // 这把枪一个可用配件都没有（清空是空操作）。注意此时枪上不会剩任何配件，
+                    // 因为能抽的槽位在清空前也只有"已装的那一件"，而它本来就不在可用列表里。
                     fail { Component.translatable("commands.superbwarfare.attachment.fail.random") }
                 }
 
@@ -222,9 +227,37 @@ private fun applyAttachment(data: GunData, ammoSupplier: Entity, type: Attachmen
     data.save()
 }
 
+/** 清空该枪的全部槽位；`clear`（不带 type）与 `random` 抽签前都用它 */
+private fun clearAllAttachments(data: GunData, ammoSupplier: Entity) {
+    for (type in AttachmentType.entries) {
+        applyAttachment(data, ammoSupplier, type, null)
+    }
+}
+
 /** 在 [type] 槽位的可用配件里随机抽一个，该槽位没有可用配件时返回 `null` */
 private fun randomAttachment(data: GunData, type: AttachmentType): ResourceLocation? =
     installableAttachments(data, type).randomOrNull()
+
+/**
+ * 全量随机：**每个挂点组只出一个**。
+ *
+ * 挂点组是互斥的（例如刺刀与枪口配件都挂在 `muzzle_device` 上），
+ * 如果还按"每个槽位各抽一次"，就会把组里两个槽位同时抽上 —— 那是一个装不出来的组合。
+ * 所以先按挂点组分组，每组在**有可用配件的槽位**里随机挑一个槽位，再在该槽位里随机挑配件。
+ *
+ * 调用方**必须先 [clearAllAttachments]**：否则已经装着配件的那一组里，其它槽位的候选会被
+ * `availableAttachments` 的挂点过滤全部干掉，抽签退化成"重抽已经装着的那一个"。
+ *
+ * @return `槽位 to 配件 id`，按挂点组顺序（注册表顺序）；没有任何可用配件时为空列表。
+ */
+private fun rollAllSlots(data: GunData): List<Pair<AttachmentType, ResourceLocation>> =
+    AttachmentType.entries
+        .groupBy { AttachmentSlots.mountOf(it) }
+        .mapNotNull { (_, slots) ->
+            val candidates = slots.filter { installableAttachments(data, it).isNotEmpty() }
+            val type = candidates.randomOrNull() ?: return@mapNotNull null
+            randomAttachment(data, type)?.let { type to it }
+        }
 
 /** [data] 的 [type] 槽位里真正装得上的配件：在可用列表里，且配件物品与配件数据都齐全 */
 private fun installableAttachments(data: GunData, type: AttachmentType): List<ResourceLocation> =
