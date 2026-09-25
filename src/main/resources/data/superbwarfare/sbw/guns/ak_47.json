@@ -9,14 +9,15 @@
   "Velocity": 18,
   "Magazine": [30, 40, 70],
   "DrumLevels": 2,
-    "MeleeDamage": 5,
+  "MeleeDamage": 5,
   "MeleeDuration": 16,
   "MeleeComboReset": 15,
   "MeleeHitbox": {
-    "Type": "Cone",
+    "Type": "Box",
     "Range": 1.2,
-    "Angle": 100,
-    "Pitch": 180,
+    "Width": 1.8,
+    "Height": 1.8,
+    "YOffset": -0.2,
     "Occlusion": true
   },
   "MeleeSweep": {

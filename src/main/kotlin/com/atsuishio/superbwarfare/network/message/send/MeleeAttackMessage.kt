@@ -48,7 +48,7 @@ import kotlin.random.Random
  *
  * 相对旧版（只有 `uuidList`）的三处关键变化：
  * 1. 带上 `actionIndex`——伤害/倍率/冷却全部按**数据字段**算，不再靠「客户端列表下标」（缺陷 8）；
- * 2. 带上每个目标的 `hitPos`——打头/打腿由服务端用同一套阈值判定，客户端与服务端不再各算一遍；
+ * 2. 带上每个目标的命中区域判定点——打头/打腿由服务端用同一套阈值判定，客户端与服务端不再各算一遍；
  * 3. `source` 预留 `SUB:<slot>`——三期的副武器近战形态复用同一条链路（§6.1）。
  */
 @RegisterPacket
@@ -64,10 +64,24 @@ data class MeleeAttackMessage(
     @Serializable
     data class TargetPayload(
         val uuid: SerializedUUID,
+        /**
+         * **命中区域判定点**：客户端算的"准星射线到该目标 AABB 的最近点"。
+         *
+         * 服务端拿它算打头/打腿（`MeleeQuery.isHeadshot`/`isLegshot`）。
+         * 注意它**不是**判定体与碰撞箱的接触点——那个点的 y 会被夹到眼睛高度，
+         * 平地上打哪儿都是爆头（客户端不再发那个点）。
+         */
         val hitX: Double,
         val hitY: Double,
         val hitZ: Double,
         val distance: Double = 0.0,
+        /**
+         * 是否是**准星正对**的那一个目标（客户端沿视线射线取最近的一个）。
+         *
+         * 只有它为 `true` 时才可能打出爆头：横扫会同时打到好几个目标，
+         * 但"入射点落在头部高度"本身并不等于"瞄着头打"。
+         */
+        val aimed: Boolean = false,
     )
 
     override fun PayloadContext.handler() {
@@ -114,7 +128,14 @@ data class MeleeAttackMessage(
 
         try {
             if (targets.isNotEmpty()) {
-                attack(player, action.resolvedHeadshot(data.get(GunProp.HEADSHOT)), action, meleeSound, targets)
+                attack(
+                    player,
+                    action.resolvedHeadshot(data.get(GunProp.MELEE_HEADSHOT)),
+                    action.resolvedLegshot(data.get(GunProp.MELEE_LEGSHOT)),
+                    action,
+                    meleeSound,
+                    targets,
+                )
             }
         } finally {
             // 伤害是在上面的调用栈里打出去的，事件已经跑完，上下文不该留到下一 tick
@@ -132,11 +153,13 @@ data class MeleeAttackMessage(
      *
      * 全部数值读自 [action]（本段数据），不再从「客户端列表下标」推衰减（缺陷 8）。
      *
-     * @param headshotMultiplier 打头倍率（已按「本段覆盖 ?: 枪的 `Headshot`」解析完）
+     * @param headshotMultiplier 打头倍率（已按「本段覆盖 ?: 枪的 `MeleeHeadshot`」解析完）
+     * @param legshotMultiplier 打腿倍率（同上，取枪的 `MeleeLegshot`）
      */
     private fun attack(
         attacker: Player,
         headshotMultiplier: Double,
+        legshotMultiplier: Double,
         action: ResolvedMeleeAction,
         meleeSound: MeleeSound?,
         targets: List<TargetPayload>,
@@ -152,14 +175,16 @@ data class MeleeAttackMessage(
             if (!target.isAttackable) continue
             if (target.skipAttackInteraction(attacker)) continue
 
-            val hitPos = Vec3(payload.hitX, payload.hitY, payload.hitZ)
+            val zonePos = Vec3(payload.hitX, payload.hitY, payload.hitZ)
 
-            // 命中区域 → 伤害倍率（复用投射物已验证的阈值；服务端算，客户端不再算一遍）
-            val headshot = MeleeQuery.isHeadshot(target, hitPos)
-            val legshot = !headshot && MeleeQuery.isLegshot(target, hitPos)
+            // 命中区域 → 伤害倍率（阈值与客户端同一套；服务端算，客户端不再算一遍）。
+            // **爆头只给准星正对的那一个目标**：横扫打到的一片目标里，入射点落在头部高度
+            // 并不等于"瞄着头打"，所以还要客户端在报文里标出 `aimed`。
+            val headshot = payload.aimed && MeleeQuery.isHeadshot(target, zonePos)
+            val legshot = !headshot && MeleeQuery.isLegshot(target, zonePos)
             val zoneMultiplier = when {
                 headshot -> headshotMultiplier
-                legshot -> action.resolvedLegshot()
+                legshot -> legshotMultiplier
                 else -> 1.0
             }
 

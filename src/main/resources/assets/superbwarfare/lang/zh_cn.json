@@ -1480,6 +1480,8 @@
   "prop.superbwarfare.zoom_time": "瞄准时间",
   "prop.superbwarfare.melee_damage": "近战伤害",
   "prop.superbwarfare.melee_range": "近战距离",
+  "prop.superbwarfare.melee_headshot": "近战爆头倍率",
+  "prop.superbwarfare.melee_legshot": "近战打腿倍率",
 
   "superbwarfare.book.superb_warfare_manual": "卓越单兵手册",
   "superbwarfare.book.superb_warfare_manual.des": "卓越前线模组的教程，教你如何成为一名卓越的士兵（编写中）",

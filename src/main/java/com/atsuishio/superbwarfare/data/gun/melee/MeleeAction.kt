@@ -54,13 +54,23 @@ data class MeleeAction(
     @SerialName("Sweep")
     val sweep: MeleeSweep? = null,
 
-    /** 本段伤害（与 [damageMultiplier] 二选一，写了 [damage] 就不再乘倍率） */
-    @SerialName("Damage")
-    val damage: Double? = null,
-
-    /** 本段伤害倍率，乘在 `MeleeDamage` 上 */
+    /**
+     * 本段**伤害倍率**，乘在枪的 `MeleeDamage` 上。
+     *
+     * 动作表里不写绝对伤害：数值的唯一出处是枪的 `MeleeDamage`（配件、弹种都能改它），
+     * 动作只负责"这一段比别的段重多少"。不写 = 1.0。
+     */
     @SerialName("DamageMultiplier")
     val damageMultiplier: Double? = null,
+
+    /**
+     * 本段**距离倍率**，乘在枪的近战距离上（`MeleeHitbox.Range + MeleeRange`）。
+     *
+     * 同理，绝对距离只有一个出处；动作只负责"这一段伸得比别的段远/近多少"。不写 = 1.0。
+     * 注意它**不缩放** `player.getEntityReach()`（那部分在判定时叠加）。
+     */
+    @SerialName("RangeMultiplier")
+    val rangeMultiplier: Double? = null,
 
     /** 最多命中几个目标；`<= 0` 表示不限 */
     @SerialName("MaxTargets")
@@ -82,11 +92,11 @@ data class MeleeAction(
     @SerialName("BypassesArmor")
     val bypassesArmor: Double? = null,
 
-    /** 本段打头倍率；不写时用枪的 `Headshot` */
+    /** 本段打头倍率；不写时用枪的 `MeleeHeadshot` */
     @SerialName("Headshot")
     val headshot: Double? = null,
 
-    /** 本段打腿倍率；不写时用投射物默认的 0.5 */
+    /** 本段打腿倍率；不写时用枪的 `MeleeLegshot` */
     @SerialName("Legshot")
     val legshot: Double? = null,
 
@@ -144,6 +154,7 @@ data class MeleeAction(
     fun resolve(
         defaultDuration: Int,
         defaultHitTime: Int,
+        /** 枪的 `MeleeDamage`：本段伤害的唯一数值出处 */
         defaultDamage: Double,
         defaultAngle: Double,
         /** 枪的 `MeleeRange`：叠加在形状自己的 `Range` 之上的额外距离 */
@@ -153,11 +164,14 @@ data class MeleeAction(
     ): ResolvedMeleeAction {
         val resolvedHitbox = hitbox ?: defaultHitbox ?: MeleeHitbox()
         val resolvedDuration = (duration ?: defaultDuration).coerceAtLeast(1)
+
+        // 距离：形状自己的 Range 与枪的 MeleeRange 叠加，再乘本段的 RangeMultiplier。
+        // `player.getEntityReach()` 不在这一步里，由 MeleeQuery 在判定时叠加。
+        val range = (resolvedHitbox.rangeOr(0.0) + defaultRange) * (rangeMultiplier ?: 1.0)
+
         return ResolvedMeleeAction(
             hitbox = resolvedHitbox.copy(
-                // `MeleeRange` 是**叠加**在形状自己的 Range 之上的额外距离，配件要加近战距离就加它。
-                // 形状没写 Range 时基数取 0，于是退化成"距离由 MeleeRange 决定"，与旧数据行为一致。
-                range = resolvedHitbox.rangeOr(0.0) + defaultRange,
+                range = range,
                 angle = resolvedHitbox.angleOr(defaultAngle),
             ),
             sweep = sweep ?: defaultSweep,
@@ -165,7 +179,8 @@ data class MeleeAction(
             // 与旧的 `GunProp` 全局钳制（`MeleeDamageTime <= MeleeDuration - 1`）同一个道理：
             // 结算 tick 落在挥击之外就永远不会出伤，所以夹进本段时长内。
             hitTime = (hitTime ?: defaultHitTime).coerceIn(0, resolvedDuration),
-            damage = damage ?: (defaultDamage * (damageMultiplier ?: 1.0)),
+            // 伤害同样只有一个出处：枪的 MeleeDamage × 本段倍率
+            damage = defaultDamage * (damageMultiplier ?: 1.0),
             maxTargets = maxTargets ?: 0,
             falloff = falloffOr(),
             sortBy = sortByOr(),
@@ -183,9 +198,6 @@ data class MeleeAction(
     companion object {
         /** 默认伤害衰减：第 i 个目标乘 `max(1 - i * 0.1, 0.1)` */
         const val DEFAULT_FALLOFF: Double = 0.1
-
-        /** 打腿倍率的默认值，与投射物保持一致 */
-        const val DEFAULT_LEGSHOT: Double = 0.5
 
         /** `"hit_lr"` 这样的字符串简写 = 只写动画名（单个候选）的动作 */
         object MeleeActionInstanceBuilder : StringInstanceBuilder<MeleeAction> {

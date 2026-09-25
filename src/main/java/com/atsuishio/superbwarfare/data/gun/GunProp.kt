@@ -102,6 +102,18 @@ class GunProp<T, R>(
         @JvmField
         val MELEE_RANGE = plainProp(DefaultGunData::meleeRange)
 
+        /**
+         * 近战打头倍率（近战专用，与投射物的 `Headshot` 无关）。
+         */
+        @JvmField
+        val MELEE_HEADSHOT = plainProp(DefaultGunData::meleeHeadshot)
+
+        /**
+         * 近战打腿倍率（近战专用）。
+         */
+        @JvmField
+        val MELEE_LEGSHOT = plainProp(DefaultGunData::meleeLegshot)
+
         @JvmField
         val MELEE_ANGLE = plainProp(DefaultGunData::meleeAngle)
 
@@ -112,7 +124,8 @@ class GunProp<T, R>(
         val MELEE_COMBO_RESET = plainProp(DefaultGunData::meleeComboReset)
 
         /**
-         * 近战判定形状。不写（null）时走旧的圆锥语义，22 把旧枪 json 一行都不用改。
+         * 近战判定形状。不写（null）时用 [com.atsuishio.superbwarfare.data.gun.melee.MeleeHitbox]
+         * 的默认值：长方体，前向长度由 `MeleeRange` 决定。
          */
         @JvmField
         val MELEE_HITBOX = plainProp(DefaultGunData::meleeHitbox)
@@ -513,7 +526,10 @@ class GunProp<T, R>(
 
             modify(MELEE_DURATION) { it.coerceAtLeast(1) }
             modify(MELEE_ANGLE) { it.coerceIn(1, 180) }
+            modify(MELEE_RANGE) { it.coerceAtLeast(0.0) }
             modify(MELEE_COMBO_RESET) { it.coerceAtLeast(0) }
+            modify(MELEE_HEADSHOT) { it.coerceAtLeast(0.0) }
+            modify(MELEE_LEGSHOT) { it.coerceAtLeast(0.0) }
             modify(ZOOM_SPREAD_RATE) { it.coerceIn(0.0, 1.0) }
 
             modify(RANGE) { it.coerceAtLeast(1) }

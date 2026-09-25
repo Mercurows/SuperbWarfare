@@ -246,6 +246,7 @@ object MeleeClientHandler {
         for (hit in hits) {
             append(" [HIT ").append(hit.entity.type)
             append(" d=%.2f a=%.1f".format(hit.distance, hit.angle))
+            if (hit.aimed) append(" AIM")
             if (hit.headshot) append(" HEAD")
             if (hit.legshot) append(" LEG")
             append(']')
@@ -267,10 +268,12 @@ object MeleeClientHandler {
 
     private fun MeleeQuery.Hit.toPayload() = MeleeAttackMessage.TargetPayload(
         uuid = entity.uuid,
-        hitX = hitPos.x,
-        hitY = hitPos.y,
-        hitZ = hitPos.z,
+        // 报的是**命中区域判定点**（准星射线到该 AABB 的最近点），服务端按它算打头/打腿
+        hitX = zonePos.x,
+        hitY = zonePos.y,
+        hitZ = zonePos.z,
         distance = distance,
+        aimed = aimed,
     )
 
     /** 换弹/拉栓占用的"安全上限"：真正的释放由状态机自己结束，这里只是别让锁永远占着 */

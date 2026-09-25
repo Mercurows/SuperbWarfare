@@ -128,7 +128,8 @@ private fun printMeleeInfo(context: CommandContext<CommandSourceStack>, entity: 
         Component.literal(
             "MeleeDamage=${data.get(GunProp.MELEE_DAMAGE)}  MeleeDuration=${data.get(GunProp.MELEE_DURATION)}  " +
                     "MeleeDamageTime=${data.get(GunProp.MELEE_DAMAGE_TIME)}  MeleeRange=${data.get(GunProp.MELEE_RANGE)}  " +
-                    "MeleeAngle=${data.get(GunProp.MELEE_ANGLE)}  MeleeComboReset=${data.get(GunProp.MELEE_COMBO_RESET)}"
+                    "MeleeHeadshot=${data.get(GunProp.MELEE_HEADSHOT)}  MeleeLegshot=${data.get(GunProp.MELEE_LEGSHOT)}  " +
+                    "MeleeComboReset=${data.get(GunProp.MELEE_COMBO_RESET)}"
         )
     )
 
@@ -136,12 +137,12 @@ private fun printMeleeInfo(context: CommandContext<CommandSourceStack>, entity: 
     context.ok(
         if (hitbox == null) {
             Component.literal(
-                "MeleeHitbox = <none> -> legacy cone (Angle=${data.get(GunProp.MELEE_ANGLE)}, pitch unlimited)"
+                "MeleeHitbox = <none> -> default Box (Width=1.8, Height=1.8, YOffset=-0.2)"
             ).withStyle(ChatFormatting.GRAY)
         } else {
             Component.literal(
                 "MeleeHitbox = ${hitbox.type} range=${hitbox.range} angle=${hitbox.angle} pitch=${hitbox.pitch} " +
-                        "width=${hitbox.width} height=${hitbox.height} length=${hitbox.length} " +
+                        "width=${hitbox.width} height=${hitbox.height} " +
                         "yOffset=${hitbox.yOffset} zFrom=${hitbox.zFrom} radius=${hitbox.radius} occlusion=${hitbox.occlusion}"
             )
         }
@@ -175,13 +176,16 @@ private fun printActions(context: CommandContext<CommandSourceStack>, entity: En
             Component.literal(
                 "#$index animation=${animationChain(raw, gunId)} " +
                         "duration=${resolved.duration} hitTime=${resolved.hitTime} " +
-                        "damage=${"%.2f".format(resolved.damage)} " +
+                        // 伤害/距离都来自枪的全局属性，动作只给倍率（不写 = ×1.0）
+                        "damage=${"%.2f".format(resolved.damage)} (x${raw.damageMultiplier ?: 1.0} of MeleeDamage) " +
                         "hitbox=${resolved.hitbox.type} range=${"%.2f".format(resolved.hitbox.range)} " +
+                        "(x${raw.rangeMultiplier ?: 1.0} of Range+MeleeRange) " +
                         "angle=${"%.1f".format(resolved.hitbox.angle)} " +
                         "sweep=${resolved.sweep?.let { "${it.from}..${it.to}" } ?: "<static>"} " +
                         "maxTargets=${resolved.maxTargets} falloff=${resolved.falloff} sortBy=${resolved.sortBy} " +
                         "knockback=${resolved.knockback} bypassesArmor=${resolved.bypassesArmor} " +
-                        "headshot=${resolved.headshot ?: "<gun>"} legshot=${resolved.resolvedLegshot()} " +
+                        "headshot=${resolved.resolvedHeadshot(data.get(GunProp.MELEE_HEADSHOT))} " +
+                        "legshot=${resolved.resolvedLegshot(data.get(GunProp.MELEE_LEGSHOT))} " +
                         "durability=${resolved.durability} cooldown=${resolved.cooldown} " +
                         "effects=${raw.effects?.size ?: 0}"
             )

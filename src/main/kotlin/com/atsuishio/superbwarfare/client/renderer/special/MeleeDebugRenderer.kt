@@ -32,9 +32,9 @@ import kotlin.math.sin
  * 前提：**主手是一把能近战的枪**（`hasMeleeAttack()`）。
  *
  * 画的是**真实形状**（见 `MeleeQuery.debugShapes`）：
- * - `Cone` → 顶点在眼睛、末端圆环半径 `reach × sin(半角)`、母线连到顶点；
- *   `Pitch >= 180` 时垂直不受限，只画球面天线罩
- * - `Box` → 带 yaw/pitch 姿态的盒体
+ * - `Box` → 带 yaw/pitch 姿态的盒体（默认形状），前向长度 = 近战触及距离
+ * - `Cone` → 角空间边界（水平 ±半角 × 垂直 ±半仰角）投到半径 `reach` 的**球面**上；
+ *   `Pitch >= 180` 时垂直方向放开
  * - `Capsule` → 沿视线的线段（两端加端盖圆）
  *
  * 颜色：**红 = 当前正在挥的那一段**，其余为 **橙**。
@@ -52,9 +52,6 @@ object MeleeDebugRenderer {
     private const val COLOR_IDLE_R = 1f
     private const val COLOR_IDLE_G = 0.6f
     private const val COLOR_IDLE_B = 0.15f
-
-    /** 圆锥末端圆环的采样点数 */
-    private const val RING_SEGMENTS = 48
 
     /** 胶囊端盖的采样点数 */
     private const val CAP_SEGMENTS = 16
@@ -125,10 +122,10 @@ object MeleeDebugRenderer {
     }
 
     /**
-     * 圆锥线框：顶点 + 末端圆环 + 若干母线。
+     * 圆锥线框：把 [MeleeQuery.DebugShape.Cone.outline] 那圈**球面边界**连起来，再从顶点拉几根母线。
      *
-     * 用一套与[MeleeQuery.yawPitchQuaternion]一致的正交基（轴线 = 视线）把圆环画出来，
-     * 这样俯仰时圆环跟着倾斜，看起来就是个真正的锥体。
+     * 轮廓点已经由 `MeleeQuery.coneDebugShape` 在角空间采样好（判定用的是同一条边界），
+     * 这里只负责连线——不再自己算"垂直于视线的圆环"，那种画法在俯仰时和真实判定体完全对不上。
      */
     private fun renderCone(
         poseStack: PoseStack,
@@ -138,38 +135,14 @@ object MeleeDebugRenderer {
         g: Float,
         b: Float,
     ) {
-        if (cone.reach <= 0.0) return
+        val outline = cone.outline
+        if (outline.size < 2) return
 
-        // 轴线正交基：axis / right / up
-        val axis = cone.axis.normalize()
-        val upHint = if (kotlin.math.abs(axis.y) > 0.99) Vec3(1.0, 0.0, 0.0) else Vec3(0.0, 1.0, 0.0)
-        val right = axis.cross(upHint).normalize()
-        val up = right.cross(axis).normalize()
-
-        val ringCenter = cone.apex.add(axis.scale(cone.reach))
-        val radius = cone.radius
-
-        var prev: Vec3? = null
-        var first: Vec3? = null
-        for (i in 0..RING_SEGMENTS) {
-            val t = (i % RING_SEGMENTS) * (2.0 * Math.PI / RING_SEGMENTS)
-            val point = ringCenter
-                .add(right.scale(radius * cos(t)))
-                .add(up.scale(radius * sin(t)))
-
-            if (first == null) first = point
-            prev?.let { line(poseStack, buffer, it, point, r, g, b) }
-            prev = point
+        for (i in outline.indices) {
+            line(poseStack, buffer, outline[i], outline[(i + 1) % outline.size], r, g, b)
         }
-
-        // 母线：4 条，从顶点连到圆环
-        val spokes = if (cone.verticalCapped) 8 else 4
-        for (i in 0 until spokes) {
-            val t = i * (2.0 * Math.PI / spokes)
-            val point = ringCenter
-                .add(right.scale(radius * cos(t)))
-                .add(up.scale(radius * sin(t)))
-            line(poseStack, buffer, cone.apex, point, r, g, b)
+        for (spoke in cone.spokes) {
+            line(poseStack, buffer, cone.apex, spoke, r, g, b)
         }
     }
 

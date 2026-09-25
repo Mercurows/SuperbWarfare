@@ -1480,6 +1480,8 @@
   "prop.superbwarfare.zoom_time": "Zoom Time",
   "prop.superbwarfare.melee_damage": "Melee Damage",
   "prop.superbwarfare.melee_range": "Melee Range",
+  "prop.superbwarfare.melee_headshot": "Melee Headshot",
+  "prop.superbwarfare.melee_legshot": "Melee Legshot",
 
   "superbwarfare.book.superb_warfare_manual": "Superb Warfare Manual",
   "superbwarfare.book.superb_warfare_manual.des": "A tutorial on Superb Warfare mod, teaching you how to become a superb soldier (WIP)",

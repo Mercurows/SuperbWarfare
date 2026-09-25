@@ -208,16 +208,18 @@ object DataValidator {
                 MeleeHitboxType.BOX -> {
                     require(hitbox.width > 0) { "MeleeHitbox.Width must be > 0 for a Box, got ${hitbox.width}" }
                     require(hitbox.height > 0) { "MeleeHitbox.Height must be > 0 for a Box, got ${hitbox.height}" }
-                    require(hitbox.length > 0) { "MeleeHitbox.Length must be > 0 for a Box, got ${hitbox.length}" }
-                    require(hitbox.zFrom + hitbox.length > 0) {
-                        "MeleeHitbox Box is entirely behind the player: ZFrom=${hitbox.zFrom} + Length=${hitbox.length} <= 0"
+                    // 盒子的前向长度 = 近战触及距离（Range + MeleeRange，再乘动作倍率），没有单独的 Length
+                    require(hitbox.zFrom + hitbox.rangeOr(data.meleeRange) > 0) {
+                        "MeleeHitbox Box is entirely behind the player: " +
+                                "ZFrom=${hitbox.zFrom} + (Range|MeleeRange)=${hitbox.rangeOr(data.meleeRange)} <= 0"
                     }
                 }
 
                 MeleeHitboxType.CAPSULE -> {
                     require(hitbox.radius > 0) { "MeleeHitbox.Radius must be > 0 for a Capsule, got ${hitbox.radius}" }
-                    require(hitbox.zFrom + hitbox.range > 0) {
-                        "MeleeHitbox Capsule is entirely behind the player: ZFrom=${hitbox.zFrom} + Range=${hitbox.range} <= 0"
+                    require(hitbox.zFrom + hitbox.rangeOr(data.meleeRange) > 0) {
+                        "MeleeHitbox Capsule is entirely behind the player: " +
+                                "ZFrom=${hitbox.zFrom} + (Range|MeleeRange)=${hitbox.rangeOr(data.meleeRange)} <= 0"
                     }
                 }
             }
@@ -250,11 +252,11 @@ object DataValidator {
             require(action.durability == null || action.durability >= 0) {
                 "MeleeActions[$index].Durability must be >= 0, got ${action.durability}"
             }
-            require(action.damage == null || action.damage >= 0) {
-                "MeleeActions[$index].Damage must be >= 0, got ${action.damage}"
-            }
             require(action.damageMultiplier == null || action.damageMultiplier >= 0) {
                 "MeleeActions[$index].DamageMultiplier must be >= 0, got ${action.damageMultiplier}"
+            }
+            require(action.rangeMultiplier == null || action.rangeMultiplier >= 0) {
+                "MeleeActions[$index].RangeMultiplier must be >= 0, got ${action.rangeMultiplier}"
             }
             require(action.bypassesArmor == null || action.bypassesArmor in 0.0..1.0) {
                 "MeleeActions[$index].BypassesArmor must be within [0, 1], got ${action.bypassesArmor}"
