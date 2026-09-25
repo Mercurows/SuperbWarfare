@@ -63,7 +63,11 @@ object CustomData {
     @JvmField
     val MOB_GUNS = DataLoader.createData(
         "sbw/mob_guns", DefaultMobGunData::class.java
-    ) { _ -> MobGunData.dataCache.invalidateAll() }
+    ) { map ->
+        // 重建「生物 -> 数据文件」索引、失效每个生物的缓存，并让已加载的生物立刻换上新参数，
+        // 这样 /reload 对已经生成的持枪生物同样生效
+        MobGunData.onDataReload(map)
+    }
 
     @JvmField
     val VEHICLE_SKINS = DataLoader.createData(

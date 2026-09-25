@@ -1,16 +1,26 @@
-// Mob using guns, check out DefaultMobGunData.java for more info
+// Mob using guns, check out DefaultMobGunData.kt / GunSpawnData.kt for more info
 {
-  // Entity ID, MUST not be null or empty
-  "ID": "minecraft:skeleton",
+  // Entities this data applies to, supports entity tags ("#minecraft:raiders").
+  // Leave it empty to fall back to the id derived from the file path, i.e.
+  // data/<namespace>/sbw/mob_guns/<path>.json -> <namespace>:<path>
+  // (that only ever matches a mod's own entities, so vanilla mobs MUST be listed here)
+  "Entities": [
+    "minecraft:skeleton"
+  ],
   // Probability for spawning this mob with guns
   "Probability": 1,
-  // Goal weight for mob to use guns
-  "GoalWeight": 3,
-  // Guns data, check out GunSpawnData.java for more info
+  // Priority of the gun goal, SMALLER IS HIGHER (0 is the highest). It is automatically
+  // pushed ahead of the mob's own MOVE/LOOK goals, so any reasonable value works.
+  "GoalPriority": 3,
+  // Guns data, check out GunSpawnData.kt for more info
   "Guns": [
     {
       // Gun item's registry ID, MUST NOT be null and MUST be GunItem
       "ID": "superbwarfare:m_79",
+      // Stable identity of THIS entry, used to restore the goal after a reload. Only needed
+      // when one file holds several entries of the same gun with different settings;
+      // empty means "<gun id>#<index among entries with that same gun id>"
+      "Key": "",
       // Roll weight for this gun
       "Weight": 1,
       // Aim time in ticks for mobs to aim before shoot
@@ -19,7 +29,14 @@
       "ClearAimTimeWhenLostSight": true,
       // Extra cooldown in microseconds for semi and burst fire mode
       "SemiFireInterval": 200,
-      // Backup ammo count for this gun
+      // Backup ammo count for this gun.
+      // It is stored on the MOB, not on the gun item, so it never drops with the gun.
+      // The unit matches the gun's PRIMARY ammo source:
+      //  - magazine weapons (almost all): a plain round count, e.g. 80 = 80 rounds
+      //  - magazine-less (backpack) weapons: every shot consumes AmmoCostPerShoot directly
+      //    from the pool, e.g. ql_1031 costs 1000 FE per shot so 100000 = 100 shots.
+      //    Too small a value means the mob can never shoot, and a warning is logged on spawn
+      //  - guns with extra sources (e.g. the taser's "400 fe") pay those from the pool too
       "BackupAmmo": 0,
       // Should guns be loaded when mobs spawn
       "SpawnWithLoadedAmmo": false,
@@ -28,9 +45,25 @@
       "Zoom": true,
       // Fire spread
       "Spread": 1,
+      // Drop rules of THIS entry. Every field is optional: what you leave out falls back to
+      // the server config (spawn.mob_gun_drop_chance / spawn.mob_gun_drop_clear_ammo) or to
+      // the built-in default. Delete the whole "Drop" object to use the server config as-is.
+      "Drop": {
+        // Chance to drop this gun on death, 0 = never
+        "Chance": 0.085,
+        // true = only when the mob was killed with player credit (default)
+        "PlayerKillOnly": true,
+        // true = empty the magazine and the overflow reserve before dropping.
+        // A mob's backup ammo is on the mob itself and never drops either way
+        "ClearAmmo": true,
+        // true = strip this entry's "Override" from the dropped gun, so the numbers used to
+        // balance the mob (e.g. "Damage": 1) do not follow the gun into the player's hands
+        "StripOverride": false
+      },
       // Custom NBT data override for gun items
       "Data": {},
-      // Gun property override, check out GunProp.java for more info
+      // Gun property override, check out GunProp.java for more info.
+      // Note: this is written onto the gun item, so it also reaches whoever loots the gun
       "Override": {
         "Damage": 1,
         "ExplosionDamage": 0,

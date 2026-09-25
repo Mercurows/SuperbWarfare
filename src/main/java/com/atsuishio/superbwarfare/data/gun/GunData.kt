@@ -26,12 +26,14 @@ import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.PROJECTILE
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.PROJECTILE_AMOUNT
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.SHOOT_POS
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.SHOOT_SHAKE
+import com.atsuishio.superbwarfare.data.gun.ammo_consumer_strategy.MobAmmoStrategy
 import com.atsuishio.superbwarfare.data.gun.melee.MeleeAction
 import com.atsuishio.superbwarfare.data.gun.melee.ProjectileMarker
 import com.atsuishio.superbwarfare.data.gun.melee.ResolvedMeleeAction
 import com.atsuishio.superbwarfare.data.gun.melee.normalizeProjectileMarker
 import com.atsuishio.superbwarfare.data.gun.subdata.*
 import com.atsuishio.superbwarfare.data.gun.value.*
+import com.atsuishio.superbwarfare.data.mob_guns.MobGunState
 import com.atsuishio.superbwarfare.event.GunEventHandler
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.item.gun.EmptyGunItem
@@ -762,6 +764,20 @@ class GunData private constructor(
     }
 
     /**
+     * 该实体身上的生物备弹池（见 [MobGunState]）。
+     *
+     * 池子默认作为**备弹**参与求和与消耗，无需数据包声明任何弹种；但如果某个弹种的弹药来源
+     * 已经显式写成了 [MobAmmoStrategy]（`"mob"`），这里就不再重复计入，避免翻倍。
+     *
+     * @param entity 弹药供给实体；玩家 / 载具身上没有这个池子，返回 0。
+     */
+    private fun mobAmmoPool(entity: Entity?): Int {
+        if (entity == null) return 0
+        if (selectedAmmoConsumer().primary.strategy === MobAmmoStrategy) return 0
+        return MobGunState.ammo(entity)
+    }
+
+    /**
      * Calculates total backup ammo quantity available from an entity source.
      * Caches result for [BACKUP_AMMO_CACHE_TICKS] ticks to avoid iterating inventory slots every tick.
      *
@@ -779,7 +795,9 @@ class GunData private constructor(
 
         val computed = Math.toIntExact(
             min(
-                countBackupAmmoItem(entity).toLong() * this.selectedAmmoConsumer().loadAmount + this.virtualAmmo.get(),
+                countBackupAmmoItem(entity).toLong() * this.selectedAmmoConsumer().loadAmount
+                        + this.virtualAmmo.get()
+                        + mobAmmoPool(entity),
                 Int.MAX_VALUE.toLong()
             )
         )
@@ -832,6 +850,19 @@ class GunData private constructor(
             remaining -= consumed
             save()
         }
+
+        // 生物备弹池（见 MobGunState）：排在物品自带的溢出备弹之后、实体背包弹药之前。
+        // 它只存在于生物身上，所以掉落的枪不会连备弹一起掉出来。
+        if (remaining > 0 && entity != null) {
+            val pool = mobAmmoPool(entity)
+            if (pool > 0) {
+                val consumed = min(pool, remaining)
+                MobGunState.addAmmo(entity, -consumed)
+                remaining -= consumed
+                cachedBackupAmmo = -1
+            }
+        }
+
         if (remaining <= 0 || entity == null) return
 
         val consumer = this.selectedAmmoConsumer()

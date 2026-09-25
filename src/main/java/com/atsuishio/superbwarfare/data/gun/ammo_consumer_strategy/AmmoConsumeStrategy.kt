@@ -75,6 +75,8 @@ abstract class AmmoConsumeStrategy {
             InfiniteAmmoStrategy,
             EnergyAmmoStrategy,
             PlayerAmmoStrategy,
+            // 生物弹药池：必须在 ItemAmmoStrategy 之前（后者兜底匹配任何非空字符串）
+            MobAmmoStrategy,
             HealthAmmoStrategy(),
             HungerAmmoStrategy(),
             ExpAmmoStrategy(),
