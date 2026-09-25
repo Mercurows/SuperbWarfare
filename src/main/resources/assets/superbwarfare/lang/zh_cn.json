@@ -638,6 +638,7 @@
   "attachment.superbwarfare.slot.stock": "[枪托配件]",
   "attachment.superbwarfare.slot.grip": "[握把配件]",
   "attachment.superbwarfare.slot.bayonet": "[刺刀配件]",
+  "attachment.superbwarfare.slot.subweapon": "[副武器]",
   "attachment.superbwarfare.modify": "修改",
   "attachment.superbwarfare.scope_mode": "瞄准镜",
 
@@ -707,6 +708,7 @@
   "item.superbwarfare.steel_pipe_grip": "钢管握把",
   "item.superbwarfare.bayonet_m_9": "M9军用匕首",
   "item.superbwarfare.bayonet_6kh2": "6KH2军刺",
+  "item.superbwarfare.gp_25": "GP-25下挂榴弹发射器",
 
   "death.attack.gunfire": "%1$s被%2$s射爆了",
   "death.attack.gunfire.entity": "%1$s被%2$s射爆了",

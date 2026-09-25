@@ -7,7 +7,7 @@ import net.minecraft.world.entity.player.Player
 /**
  * `/sbw melee force <index>` 的**客户端实现挂点**。
  *
- * 判定只在客户端做（§4.1），而 `/sbw` 命令是服务端注册的（仓库里没有
+ * 判定只在客户端做，而 `/sbw` 命令是服务端注册的（仓库里没有
  * `RegisterClientCommandsEvent`），所以命令本身只能把请求转交到客户端执行。
  * 客户端在初始化时通过 [install] 装上真正的实现（见 `MeleeClientHandler.installDebugHooks`）；
  * 专用服务端上没装，命令会明确报错而不是静默失败。

@@ -82,8 +82,9 @@ open class ClientGunImageTooltip(tooltip: GunImageComponent) : ClientTooltipComp
     }
 
     protected fun shouldRenderEditTooltip(): Boolean {
-        val item = this.stack.item
-        if (item is GunItem) {
+        val item = this.stack.item as? GunItem
+        // 手持副武器时按普通物品处理
+        if (item != null && GunItem.isHeldWeapon(stack)) {
             return item.canEditAttachments(from(stack))
         }
         return false
@@ -137,7 +138,7 @@ open class ClientGunImageTooltip(tooltip: GunImageComponent) : ClientTooltipComp
          * 获取武器射速的文本组件
          */
         get() {
-            if (this.stack.item !is GunItem) return Component.empty()
+            if (!GunItem.isHeldWeapon(this.stack)) return Component.empty()
             val data =
                 from(this.stack)
             val info = data.selectedFireModeInfo()

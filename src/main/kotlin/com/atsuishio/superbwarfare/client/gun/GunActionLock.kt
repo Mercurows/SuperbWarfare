@@ -5,7 +5,7 @@ import net.minecraft.world.item.ItemStack
 import java.util.*
 
 /**
- * 动作类型。任一动作占用期间，其它入口全部拒绝（§9.5）。
+ * 动作类型。任一动作占用期间，其它入口全部拒绝。
  */
 enum class GunAction {
     NONE,
@@ -27,7 +27,7 @@ enum class GunAction {
 }
 
 /**
- * `GunActionLock` —— 动作互斥层（§9.5）。
+ * `GunActionLock` —— 动作互斥层。
  *
  * 现状是"每类动作各自零散门禁"（`reloading()`/`charging()`/`bolt.actionTimer`），
  * **开火与近战之间是空的**：`fireCooldown` 是帧驱动的 Double、`gunMelee` 是纯 tick 的全局单例，
@@ -39,7 +39,7 @@ enum class GunAction {
  * **为什么是「客户端按枪隔离」而不是全局字段**：
  * - 旧实现 `gunMelee` 是全局单例且切枪不重置 → 切枪会拿新枪数据误触发一次攻击（缺陷 1）；
  * - 状态也不能放进 `GunState`：`GunState` 全部字段服务端权威，客户端只能 `updateLocal`，
- *   任何一次服务端同步都会冲掉客户端计数（§5.2）。
+ *   任何一次服务端同步都会冲掉客户端计数。
  *
  * 所以状态挂在**客户端本地、按枪身份（UUID）隔离**的 [WeakHashMap] 上：切枪天然互不影响，
  * 同一把枪的连招下标也能跟着走。
@@ -66,7 +66,7 @@ object GunActionLock {
         /** 本段近战是否已经结算过（每个动作只结算一次） */
         var meleeHitResolved: Boolean = false
 
-        /** 锁存的连招下标（挥击开始时锁存，§5.2） */
+        /** 锁存的连招下标 */
         var meleeActionIndex: Int = 0
 
         /** 本段动作的持续 tick（动画按它拉伸） */

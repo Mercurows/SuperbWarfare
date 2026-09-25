@@ -187,9 +187,22 @@ private fun printActions(context: CommandContext<CommandSourceStack>, entity: En
                         "headshot=${resolved.resolvedHeadshot(data.get(GunProp.MELEE_HEADSHOT))} " +
                         "legshot=${resolved.resolvedLegshot(data.get(GunProp.MELEE_LEGSHOT))} " +
                         "durability=${resolved.durability} cooldown=${resolved.cooldown} " +
-                        "effects=${raw.effects?.size ?: 0}"
+                        "effects=${resolved.effects.size}"
             )
         )
+
+        // 效果逐条打出来：预设展开后的**实际**行为/概率/触发时机/冷却。
+        // 没展开成功（行为 id 写错、预设找不到）时是空的 —— DataValidator 会在数据包 reload 时报 error。
+        for ((effectIndex, effect) in resolved.effects.withIndex()) {
+            context.ok(
+                Component.literal(
+                    "    effect[$effectIndex] key=${effect.key} type=${effect.type} " +
+                            "chance=${effect.chance} trigger=${effect.trigger} cooldown=${effect.cooldown} " +
+                            "damage=${effect.damage} radius=${effect.radius} count=${effect.count} " +
+                            "duration=${effect.duration} amplifier=${effect.amplifier}"
+                ).withStyle(ChatFormatting.DARK_GRAY)
+            )
+        }
     }
     return 1
 }

@@ -72,14 +72,16 @@ object ClickEventHandler {
 
     private fun cancelFireKey(player: Player, stack: ItemStack): Boolean {
         val vehicle = player.vehicle
-        return stack.item is GunItem || stack.`is`(ModItems.MONITOR.get()) || stack.`is`(ModItems.LUNGE_MINE.get())
+        // 手持副武器时按普通物品处理
+        return GunItem.isHeldWeapon(stack) || stack.`is`(ModItems.MONITOR.get()) || stack.`is`(ModItems.LUNGE_MINE.get())
                 || stack.`is`(ModItems.ARTILLERY_INDICATOR.get()) || player.hasEffect(ModMobEffects.SHOCK.get())
                 || (vehicle is VehicleEntity && vehicle.banHand(player))
     }
 
     private fun cancelZoomKey(player: Player, stack: ItemStack): Boolean {
         val vehicle = player.vehicle
-        return stack.item is GunItem ||
+        // 手持副武器时按普通物品处理
+        return GunItem.isHeldWeapon(stack) ||
                 (vehicle is VehicleEntity && vehicle.banHand(player) && !stack.item.isEdible)
     }
 
@@ -133,7 +135,8 @@ object ClickEventHandler {
             }
         }
 
-        if (stack.item is GunItem
+        // 手持副武器时按普通物品处理
+        if (GunItem.isHeldWeapon(stack)
             || player.vehicle is VehicleEntity
             || stack.`is`(ModItems.MONITOR.get())
             || stack.`is`(ModItems.LUNGE_MINE.get())
@@ -174,7 +177,8 @@ object ClickEventHandler {
     @SubscribeEvent
     fun stopSwing(event: InputEvent.InteractionKeyMappingTriggered) {
         val player = localPlayer ?: return
-        if (player.getItemInHand(event.hand).item is GunItem) {
+        // 手持副武器时按普通物品处理
+        if (GunItem.isHeldWeapon(player.getItemInHand(event.hand))) {
             event.setSwingHand(false)
         }
     }
@@ -213,7 +217,8 @@ object ClickEventHandler {
             event.isCanceled = true
         }
 
-        if (stack.item is GunItem && ClientEventHandler.zoom) {
+        // 手持副武器时按普通物品处理
+        if (GunItem.isHeldWeapon(stack) && ClientEventHandler.zoom) {
             val data = GunData.from(stack)
             if (data.canSwitchScope()) {
                 sendPacketToServer(SwitchScopeMessage(scroll))
@@ -323,7 +328,8 @@ object ClickEventHandler {
                 ClientEventHandler.burstFireAmount = 0
             }
             if (key == ModKeyMappings.INTERACT.key.value) {
-                if (stack.item is GunItem) {
+                // 手持副武器时按普通物品处理
+                if (GunItem.isHeldWeapon(stack)) {
                     KeyMapping.click(mc.options.keyUse.key)
                 } else if (stack.`is`(ModItems.MONITOR.get())) {
                     sendPacketToServer(InteractMessage)
@@ -331,7 +337,7 @@ object ClickEventHandler {
             }
 
             // 玩家手持枪械时，处理卸弹/切换弹种
-            if (stack.item is GunItem) {
+            if (GunItem.isHeldWeapon(stack)) {
                 val data = GunData.from(stack)
                 if (key == ModKeyMappings.UNLOAD.key.value) {
                     if (data.useBackpackAmmo() || data.ammo.get() + data.virtualAmmo.get() <= 0) return
@@ -416,7 +422,8 @@ object ClickEventHandler {
                 sendPacketToServer(SensitivityMessage(false))
             }
 
-            if (stack.item is GunItem
+            // 手持副武器时按普通物品处理
+            if (GunItem.isHeldWeapon(stack)
                 || (vehicle is VehicleEntity && vehicle.firstPassenger == player)
                 || stack.`is`(ModItems.MONITOR.get())
                 || (stack.`is`(Items.SPYGLASS) && player.isScoping && player.offhandItem.`is`(ModItems.FIRING_PARAMETERS.get()))
@@ -499,9 +506,10 @@ object ClickEventHandler {
             ClientEventHandler.usingLunge = true
         }
 
-        val item = stack.item
-        if (item is GunItem
-            && ClientEventHandler.clientTimer.progress == 0L
+        val item = stack.item as? GunItem ?: return
+        // 手持副武器时按普通物品处理
+        if (!GunItem.isHeldWeapon(stack)) return
+        if (ClientEventHandler.clientTimer.progress == 0L
             && !notInGame
         ) {
             val data = GunData.from(stack)
@@ -578,7 +586,7 @@ object ClickEventHandler {
         if (player.isSpectator) return
 
         val stack = player.mainHandItem
-        val data = if (stack.item is GunItem) GunData.from(stack) else null
+        val data = if (GunItem.isHeldWeapon(stack)) GunData.from(stack) else null
         val fireModeInfo = data?.selectedFireModeInfo()
         val chargeConfig = fireModeInfo?.chargeConfig()
         val tickProgress = if (chargeConfig != null) {
@@ -648,7 +656,8 @@ object ClickEventHandler {
             return
         }
 
-        if (stack.item !is GunItem) return
+        // 手持副武器时按普通物品处理
+        if (!GunItem.isHeldWeapon(stack)) return
         if (!GunResource.compute(stack).canZoom) return
 
         val data = GunData.from(stack)

@@ -1,10 +1,7 @@
 package com.atsuishio.superbwarfare.data.gun.melee
 
 import com.atsuishio.superbwarfare.Mod
-import com.atsuishio.superbwarfare.data.IDBasedData
-import com.atsuishio.superbwarfare.data.SingleOrList
-import com.atsuishio.superbwarfare.data.StringInstanceBuilder
-import com.atsuishio.superbwarfare.data.StringOrObjectFactory
+import com.atsuishio.superbwarfare.data.*
 import com.atsuishio.superbwarfare.data.gun.melee.MeleeAction.Companion.MeleeActionInstanceBuilder
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedSoundEvent
 import kotlinx.serialization.SerialName
@@ -116,9 +113,9 @@ data class MeleeAction(
     @SerialName("Hit")
     val hit: SerializedSoundEvent? = null,
 
-    /** 本段额外效果（后续阶段启用，本期只做解析与校验） */
+    /** 本段额外效果。写字符串 = 引用 `sbw/melee_effects` 预设，写对象 = 预设 + 覆盖 */
     @SerialName("Effects")
-    val effects: List<MeleeEffectSpec>? = null,
+    val effects: List<StringOrObject<MeleeEffectSpec>>? = null,
 ) : IDBasedData<MeleeAction> {
 
     @kotlinx.serialization.Transient
@@ -132,6 +129,14 @@ data class MeleeAction(
 
     /** 本段声明的动画候选链（短名或全名）；没写时为空列表，调用方回退到 `GunAnimation.Melee` */
     fun animationCandidates(): List<String> = animation?.list.orEmpty()
+
+    /**
+     * 本段声明的额外效果（已拆掉 `StringOrObject` 包装）。
+     *
+     * **不做预设解析**：解析发生在 [ResolvedMeleeAction.effects]（`by lazy`），
+     * 客户端从不碰它 —— 预设表只存在于服务端，客户端解不出也不该刷日志。
+     */
+    fun effectSpecs(): List<MeleeEffectSpec> = effects.orEmpty().map { it.value }
 
     /** 本段实际使用的判定形状（字段级缺省继承） */
     fun hitboxOr(global: MeleeHitbox?) = hitbox ?: global
@@ -192,6 +197,7 @@ data class MeleeAction(
             cooldown = cooldown ?: 0,
             swing = swing,
             hit = hit,
+            effectSpecs = effectSpecs(),
         )
     }
 

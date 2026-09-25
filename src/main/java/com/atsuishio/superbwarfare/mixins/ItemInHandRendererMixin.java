@@ -15,7 +15,7 @@ public class ItemInHandRendererMixin {
 
     @ModifyVariable(method = "renderArmWithItem", at = @At("HEAD"), argsOnly = true, index = 5)
     private float renderArmWithItem(float value) {
-        if (mainHandItem.getItem() instanceof GunItem) return 0f;
+        if (GunItem.isHeldWeapon(mainHandItem)) return 0f;
         return value;
     }
 }

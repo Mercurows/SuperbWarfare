@@ -3,7 +3,10 @@ package com.atsuishio.superbwarfare.client.overlay
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.client.language.ClientLanguageGetter
+import com.atsuishio.superbwarfare.client.overlay.AmmoBarOverlay.fireModeIconSize
 import com.atsuishio.superbwarfare.client.overlay.AmmoBarOverlay.getBackupAmmoString
+import com.atsuishio.superbwarfare.client.overlay.AmmoBarOverlay.render
+import com.atsuishio.superbwarfare.client.overlay.AmmoBarOverlay.toUnderScores
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer.AmmoConsumeType
@@ -81,8 +84,9 @@ object AmmoBarOverlay : CommonOverlay("ammo_bar") {
     override fun RenderContext.render() {
         val stack = player.mainHandItem
         val vehicle = player.vehicle
-        val item = stack.item
-        if (item is GunItem && !(vehicle is VehicleEntity && vehicle.banHand(player))) {
+        val item = stack.item as? GunItem
+        // 手持副武器时按普通物品处理
+        if (item != null && GunItem.isHeldWeapon(stack) && !(vehicle is VehicleEntity && vehicle.banHand(player))) {
             val data = from(stack)
 
             if (player.isCreative) {

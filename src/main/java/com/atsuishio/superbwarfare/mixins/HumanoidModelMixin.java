@@ -129,7 +129,7 @@ public abstract class HumanoidModelMixin {
         }
 
         // 趴下持枪
-        if (livingEntity.getMainHandItem().getItem() instanceof GunItem && livingEntity.getPose() == Pose.SWIMMING && !livingEntity.isSwimming()) {
+        if (GunItem.isHeldWeapon(livingEntity.getMainHandItem()) && livingEntity.getPose() == Pose.SWIMMING && !livingEntity.isSwimming()) {
             this.hat.xRot = (livingEntity.getViewXRot(1) - 90) * Mth.DEG_TO_RAD;
             this.head.xRot = (livingEntity.getViewXRot(1) - 90) * Mth.DEG_TO_RAD;
             this.hat.yRot = 0;

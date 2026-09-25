@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
+import com.atsuishio.superbwarfare.melee.MeleeEffectDispatcher
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.perk.MeleeAttackContext
@@ -20,6 +21,7 @@ import com.atsuishio.superbwarfare.tools.forceHurt
 import com.atsuishio.superbwarfare.tools.sendPacketTo
 import kotlinx.serialization.Serializable
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
@@ -48,7 +50,7 @@ import kotlin.random.Random
  * 相对旧版（只有 `uuidList`）的三处关键变化：
  * 1. 带上 `actionIndex`——伤害/倍率/冷却全部按**数据字段**算，不再靠「客户端列表下标」（缺陷 8）；
  * 2. 带上每个目标的命中区域判定点——打头/打腿由服务端用同一套阈值判定，客户端与服务端不再各算一遍；
- * 3. `source` 预留 `SUB:<slot>`——三期的副武器近战形态复用同一条链路（§6.1）。
+ * 3. `source` 预留 `SUB:<slot>`——三期的副武器近战形态复用同一条链路。
  */
 @RegisterPacket
 @Serializable
@@ -125,8 +127,14 @@ data class MeleeAttackMessage(
             }
         }
 
+        // 近战额外效果：结算器只看服务端这一侧，`Swing` 触发与是否命中无关，
+        // 所以放在 `targets.isNotEmpty()` 判断之外。
+        val level = player.level() as? ServerLevel
+        val dispatcher = level?.let { MeleeEffectDispatcher(it, player, data, index, action) }
+        dispatcher?.swing()
+
         try {
-            if (targets.isNotEmpty()) {
+            if (targets.isNotEmpty() && dispatcher != null) {
                 attack(
                     player,
                     action.resolvedHeadshot(data.get(GunProp.MELEE_HEADSHOT)),
@@ -134,6 +142,7 @@ data class MeleeAttackMessage(
                     action,
                     meleeSound,
                     targets,
+                    dispatcher,
                 )
             }
         } finally {
@@ -154,6 +163,7 @@ data class MeleeAttackMessage(
      *
      * @param headshotMultiplier 打头倍率（已按「本段覆盖 ?: 枪的 `MeleeHeadshot`」解析完）
      * @param legshotMultiplier 打腿倍率（同上，取枪的 `MeleeLegshot`）
+     * @param effects 近战额外效果的结算器；每个真正受伤的目标都会走一次
      */
     private fun attack(
         attacker: Player,
@@ -162,6 +172,7 @@ data class MeleeAttackMessage(
         action: ResolvedMeleeAction,
         meleeSound: MeleeSound?,
         targets: List<TargetPayload>,
+        effects: MeleeEffectDispatcher,
     ) {
         val level = attacker.level()
         var hurtCount = 0
@@ -173,6 +184,8 @@ data class MeleeAttackMessage(
             if (!ForgeHooks.onPlayerAttackTarget(attacker, target)) continue
             if (!target.isAttackable) continue
             if (target.skipAttackInteraction(attacker)) continue
+
+            val wasAlive = (target as? LivingEntity)?.isAlive == true
 
             val zonePos = Vec3(payload.hitX, payload.hitY, payload.hitZ)
 
@@ -277,6 +290,17 @@ data class MeleeAttackMessage(
 
             if (target is LivingEntity) {
                 attacker.awardStat(Stats.DAMAGE_DEALT, ((currentHealth - target.health) * 10.0F).roundToInt())
+            }
+
+            // 近战额外效果。放在这里而不是伤害之前：
+            //   - `Hit`/`FirstHit` 只在"真的造成了伤害"时才该触发；
+            //   - 效果自己打出伤害（`extra_damage`/`explosion`）时，上面的原版收尾已经跑完，
+            //     不会被后续的 `setLastHurtMob`/`awardStat` 覆盖掉。
+            if (target is LivingEntity) {
+                effects.hit(target, target.position())
+                if (wasAlive && target.isDeadOrDying) {
+                    effects.kill(target, target.position())
+                }
             }
         }
 

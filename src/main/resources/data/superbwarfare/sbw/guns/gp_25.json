@@ -1,0 +1,30 @@
+{
+  "Spread": 4,
+  "RecoilX": 0.005,
+  "RecoilY": 0.024,
+  "Damage": 90,
+  "Projectile": "superbwarfare:gun_grenade",
+  "ExplosionDamage": 70,
+  "ExplosionRadius": 4.5,
+  "Headshot": 1,
+  "Velocity": 3.5,
+  "Magazine": 1,
+  "Weight": 1.0,
+  "DrawTime": 1,
+  "ZoomTime": 1,
+  "EmptyReloadTime": 45,
+  "RPM": 60,
+  "GunType": "CurvedLauncher",
+  "ProjectileBone": "he_head",
+  "Gravity": 0.07,
+  "ProjectileLife": 100,
+  "AmmoType": "superbwarfare:grenade_40mm",
+  "Icon": "superbwarfare:textures/item/steel_pipe_silencer.png",
+  "Crosshair": "@GunGrenade",
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:m_79_fire_1p",
+    "Fire3P": "superbwarfare:m_79_fire_3p",
+    "Fire3PFar": "superbwarfare:m_79_far",
+    "Fire3PVeryFar": "superbwarfare:m_79_veryfar"
+  }
+}

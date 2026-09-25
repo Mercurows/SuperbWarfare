@@ -265,8 +265,7 @@ object MeleeQuery {
      *
      * 过滤器沿用 [SeekTool.BASIC_FILTER] + `NOT_IN_SMOKE` + 同队排除，并排除自己骑的载具。
      *
-     * 三种形状的前向长度都是 [Context.reach]，所以外扩直接用 `reach` 就够
-     * （旧版 Box 用的是独立的 `Length`，粗筛必须单独照顾它，见 §11.2-㉒）。
+     * 三种形状的前向长度都是 [Context.reach]，所以外扩直接用 `reach` 就够。
      */
     @JvmStatic
     @JvmOverloads
@@ -668,7 +667,7 @@ object MeleeQuery {
      * 打头：复用投射物已验证的阈值（`ProjectileEntity` / `IAdvancedHitDetection`）。
      *
      * [zonePos] 必须是**准星射线到目标 AABB 的最近点**（[Hit.zonePos]）：
-     * 用"眼睛到 AABB 的最近点"的话，它的 y 会被夹到眼睛高度，平地上打哪儿都判爆头（§11.7.4）。
+     * 用"眼睛到 AABB 的最近点"的话，它的 y 会被夹到眼睛高度，平地上打哪儿都判爆头。
      */
     @JvmStatic
     fun isHeadshot(target: Entity, zonePos: Vec3): Boolean {
@@ -701,7 +700,7 @@ object MeleeQuery {
      *
      * **必须能如实画出三种形状**，不能再"统一成盒体近似"——那个近似盒长度只有 `reach/2`、
      * 宽度却是 `reach×sin(半角)`，画出来又短又粗，于是"盒子里的怪打不到、盒子外的怪反而挨打"
-     * 这种观感全是这一个假盒子造成的（见 §11.2-㉓）。这里改成：
+     * 这种观感全是这一个假盒子造成的。这里改成：
      *
      * - [Cone]：**球面窗口**的真实轮廓 —— 四种边界（水平 ±半角、垂直 ±半仰角）在角空间采样后
      *   投到半径 `reach` 的球面上，再用母线连回顶点；垂直不限（`Pitch >= 180`）时只受水平角限制

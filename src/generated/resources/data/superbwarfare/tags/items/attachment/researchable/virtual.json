@@ -5,6 +5,7 @@
     "#superbwarfare:attachment/barrel/virtual",
     "#superbwarfare:attachment/stock/virtual",
     "#superbwarfare:attachment/grip/virtual",
-    "#superbwarfare:attachment/bayonet/virtual"
+    "#superbwarfare:attachment/bayonet/virtual",
+    "#superbwarfare:attachment/subweapon/virtual"
   ]
 }

@@ -86,6 +86,14 @@ data class AttachmentDefinition(
 
     @SerialName("ScopeInfo")
     val scopeInfo: ScopeInfo? = null,
+
+    /**
+     * 副武器定义：**有它就是副武器**，与槽位无关。
+     *
+     * 刺刀这类"只改主武器近战动作"的配件不带它。
+     */
+    @SerialName("SubWeapon")
+    val subWeapon: SubWeaponInfo? = null,
 ) : IDBasedData<AttachmentDefinition>, PropertyModifier<GunData, DefaultGunData> {
 
     @kotlinx.serialization.Transient

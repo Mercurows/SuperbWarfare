@@ -56,7 +56,23 @@ data class ResolvedMeleeAction(
 
     /** 本段命中音效覆盖；null = 用枪的 `MeleeSound.Hit` */
     val hit: SerializedSoundEvent?,
+
+    /**
+     * 本段声明的额外效果（**原始条目**，没展开预设）。
+     *
+     * 展开结果见 [effects] —— 那里是 `by lazy` 的：客户端拿到的
+     * [ResolvedMeleeAction] 从来不用 [effects]，而预设表（`sbw/melee_effects`）
+     * 只在服务端加载，客户端展开只会白打一堆"找不到预设"的日志。
+     */
+    val effectSpecs: List<MeleeEffectSpec> = emptyList(),
 ) {
+    /**
+     * 本段实际生效的额外效果（预设 + 内联覆盖已合并）。
+     *
+     * 第一次访问时解析并缓存；解析不出来的条目会被丢掉（数据问题由 `DataValidator` 报）。
+     */
+    val effects: List<ResolvedMeleeEffect> by lazy { effectSpecs.mapNotNull { it.resolve() } }
+
     /**
      * 本段实际生效的结算下标，**从挥击开始算第几 tick**。
      *

@@ -22,7 +22,7 @@ import net.minecraft.world.item.ItemStack
 /**
  * 客户端近战执行器：输入判定 → 连招下标锁存 → 动作锁 → 按本段 `HitTime` 结算 → 发报文。
  *
- * 玩法时间线（§5.1）：
+ * 玩法时间线：
  * ```
  * t=0        触发：锁存 actionIndex，播 swing 音效，meleeTimer = action.Duration
  * t=HitTime  结算：客户端判定 → 发报文；服务端结算伤害/效果/命中音效
@@ -88,8 +88,11 @@ object MeleeClientHandler {
             return
         }
 
-        // G 键在还没有副武器时等同 V（§9.4）；有副武器时走副武器链路（三期）
+        // G 键：装了副武器就用副武器（遍历逐个触发），没装才等同 V。
+        // `tryTrigger` 返回 true = 这次 G 已被副武器消费（含"全在冷却"的反馈），不再落到近战。
         val fromSubWeaponKey = subWeaponFireKeyDown && !meleeKeyDown
+        if (fromSubWeaponKey && SubWeaponClientHandler.tryTrigger(player, data, state)) return
+
         val wantsMelee = meleeKeyDown || fromSubWeaponKey || (data.meleeOnly() && holdingFireKey)
         if (!wantsMelee) return
 
@@ -135,7 +138,7 @@ object MeleeClientHandler {
         state: GunActionLock.State,
         fromSubWeaponKey: Boolean,
     ) {
-        // ① 连招下标：窗口内再挥击进下一段，超时回到第 0 段（§5.3）
+        // ① 连招下标：窗口内再挥击进下一段，超时回到第 0 段
         val actions = data.meleeActions()
         val comboReset = data.get(GunProp.MELEE_COMBO_RESET)
         val inComboWindow = state.sinceLastMelee < comboReset
@@ -143,7 +146,7 @@ object MeleeClientHandler {
 
         val action = data.resolveMeleeAction(index)
 
-        // ② 本段冷却（枪械 NBT 冷却表，§3.7）
+        // ② 本段冷却
         if (action.cooldown > 0 && data.cooldown.isCoolingDown(Cooldown.meleeKey(index))) return
 
         // ③ 动作占用（时长 = 本段 Duration）

@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap
  * 设计上 `Perk.onMeleeSwing` / `onMeleeAttack` 原来的签名只有 `(data, instance, entity/target, source)`，
  * 拿不到"这是第几段动作、是主武器还是副武器打的"。这里用一个轻量的**同 tick 传递**补上：
  *
- * - 写入：`MeleeAttackMessage` 在服务端处理时（§6.1），此时就是服务端 tick 内；
+ * - 写入：`MeleeAttackMessage` 在服务端处理时，此时就是服务端 tick 内；
  * - 读取：紧接着的 `LivingHurtEvent` / `LivingDeathEvent`（伤害是在同一次调用栈里打出去的）；
  * - 清理：对应的 perk 钩子跑完就移除，避免残留。
  *

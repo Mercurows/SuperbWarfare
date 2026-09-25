@@ -57,7 +57,7 @@ public abstract class EntityMixin implements OBBHitter {
     @Inject(method = "turn(DD)V", at = @At("HEAD"), cancellable = true)
     public void turn(double pYRot, double pXRot, CallbackInfo ci) {
         var entity = (Entity) (Object) this;
-        if (entity instanceof Player player && player.getMainHandItem().getItem() instanceof GunItem && player.getPose() == Pose.SWIMMING && !player.isSwimming()) {
+        if (entity instanceof Player player && GunItem.isHeldWeapon(player.getMainHandItem()) && player.getPose() == Pose.SWIMMING && !player.isSwimming()) {
             ci.cancel();
             float f = (float) pXRot * 0.15F;
             float f1 = (float) pYRot * 0.15F;
