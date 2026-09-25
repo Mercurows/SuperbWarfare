@@ -81,13 +81,24 @@ object AmmoBarOverlay : CommonOverlay("ammo_bar") {
     override fun RenderContext.render() {
         val stack = player.mainHandItem
         val vehicle = player.vehicle
-        val item = stack.item
-        if (item is GunItem && !(vehicle is VehicleEntity && vehicle.banHand(player))) {
+        val item = stack.item as? GunItem
+        // 手持副武器时按普通物品处理
+        if (item != null && GunItem.isHeldWeapon(stack) && !(vehicle is VehicleEntity && vehicle.banHand(player))) {
+            val data = from(stack)
+
+//            if (player.isCreative) {
+//                // Creative mode: use ApricityUI overlay
+//                renderWithAUI(data, player, screenWidth, screenHeight)
+//                return
+//            } else {
+//                // Survival mode: ensure AUI overlay is removed
+//                removeAUIOverlay()
+//            }
+
             val x = screenWidth + DisplayConfig.WEAPON_HUD_X_OFFSET.get()
             val y = screenHeight + DisplayConfig.WEAPON_HUD_Y_OFFSET.get()
 
             val poseStack = guiGraphics.pose()
-            val data = from(stack)
 
             // 渲染图标
             guiGraphics.blit(

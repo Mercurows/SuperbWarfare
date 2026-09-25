@@ -79,7 +79,8 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
     override fun RenderContext.render() {
         val stack = player.mainHandItem
         val vehicle = player.vehicle
-        if (stack.item !is GunItem || (vehicle is VehicleEntity && vehicle.banHand(player))) return
+        // 手持副武器时按普通物品处理
+        if (!GunItem.isHeldWeapon(stack) || (vehicle is VehicleEntity && vehicle.banHand(player))) return
 
         val data = from(stack)
 

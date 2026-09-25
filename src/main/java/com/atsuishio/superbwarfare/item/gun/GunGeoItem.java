@@ -100,7 +100,7 @@ public abstract class GunGeoItem extends GunItem implements GeoItem, CustomRende
         }
 
         // Melee
-        // 旧 GeckoLib 路径不迁移（见 MELEE_DESIGN.md §11 一期范围）：`gunMelee` 恒为 0，
+        // 旧 GeckoLib 路径不迁移：`gunMelee` 恒为 0，
         // 这一支永远不会命中。这里只把 `GunAnimation.Melee` 改型（String -> SingleOrList）的
         // 编译问题处理掉，不引入任何新行为。
         var meleeName = animation.firstMeleeName();

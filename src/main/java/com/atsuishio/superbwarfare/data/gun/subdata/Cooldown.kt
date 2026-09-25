@@ -17,9 +17,9 @@ import net.minecraft.nbt.CompoundTag
  * 归零即删键；判定在结算前读一次，`> 0` 则跳过。
  *
  * 键命名约定（见 [Companion]）：
- * - `melee:<actionIndex>`：某一段近战动作的冷却（§3.5 `MeleeAction.Cooldown`）；
- * - `effect:<id>`：某个近战额外效果的冷却（§3.8 `MeleeEffectSpec.Cooldown`）；
- * - `sub:<slot>`：某个副武器槽位的触发冷却（§9.2，三期使用）。
+ * - `melee:<actionIndex>`：某一段近战动作的冷却；
+ * - `effect:<id>`：某个近战额外效果的冷却；
+ * - `sub:<slot>`：某个副武器槽位的触发冷却。
  *
  * @param gunDataTag 枪械自身的 `GunData` 子 tag（[com.atsuishio.superbwarfare.data.gun.GunData.gunDataTag]）
  */

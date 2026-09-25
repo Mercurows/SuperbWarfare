@@ -7,12 +7,18 @@ import com.atsuishio.superbwarfare.data.attachment.AttachmentRenderMode
 import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
+import com.atsuishio.superbwarfare.data.gun.melee.MeleeEffectSpec
 import com.atsuishio.superbwarfare.data.gun.melee.MeleeHitboxType
 import com.atsuishio.superbwarfare.data.gun.melee.isMeleeProjectileMarker
+import com.atsuishio.superbwarfare.init.ModMeleeEffects
+import com.atsuishio.superbwarfare.item.attachment.SubWeaponItem
+import com.atsuishio.superbwarfare.melee.MeleeEffectBehavior
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.serializer
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.FileToIdConverter
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.packs.resources.ResourceManager
 import net.neoforged.fml.loading.FMLEnvironment
 
@@ -142,6 +148,9 @@ object DataValidator {
             }
 
             is AttachmentDefinition -> validateAttachmentData(decoded, warn)
+
+            // `sbw/melee_effects` 里的预设文件本身（枪械数据里的 Effects 条目在 validateMeleeData 里查）
+            is MeleeEffectSpec -> validateMeleeEffectPreset(decoded, warn)
         }
     }
 
@@ -178,10 +187,48 @@ object DataValidator {
                 warn("Override key '$key' is not a registered gun property and will be ignored")
             }
         }
+
+        validateSubWeaponData(data, warn)
     }
 
     /**
-     * 近战相关数据的校验规则（§11.1-14）。
+     * 副武器定义的校验。
+     *
+     * 要抓的是"数据写错了但装了以后什么都不会发生"这类问题：
+     * - 副武器的枪数据解析不出来（**致命**：`SubWeaponItem` 拿不到 `GunData`，G 键会静默失灵）；
+     * - 对应物品不是 `SubWeaponItem`（它是普通配件，装了不受 G 控制）；
+     * - `Cooldown` 为负。
+     *
+     * 注意 `Data` 为空的**正常**含义是"用物品自身 id"，所以这里要按同一条规则去查
+     * `CustomData.GUN_DATA`，不能因为字段为空就跳过。
+     */
+    private fun validateSubWeaponData(data: AttachmentDefinition, warn: (String) -> Unit) {
+        val info = data.subWeapon ?: return
+
+        require(info.cooldown >= 0) { "SubWeapon.Cooldown must be >= 0, got ${info.cooldown}" }
+
+        val attachmentId = data.getId()
+        val gunDataId = info.data?.takeIf { it.isNotBlank() } ?: attachmentId
+        if (CustomData.GUN_DATA[gunDataId] == null) {
+            error(
+                "SubWeapon points at gun data '$gunDataId', which is not present in sbw/guns"
+            )
+        }
+
+        // 物品存在性与类型只能在注册表可用之后查；数据包侧注册表可能还没就绪，查不到就只提示
+        val item = ResourceLocation.tryParse(attachmentId)?.let { BuiltInRegistries.ITEM.get(it) }
+        if (item == null) {
+            warn("attachment '$attachmentId' has no registered item; it cannot be installed")
+        } else if (item !is SubWeaponItem) {
+            warn(
+                "attachment '$attachmentId' declares SubWeapon but its item is " +
+                        "${item.javaClass.simpleName}, not SubWeaponItem; it will not be usable with G"
+            )
+        }
+    }
+
+    /**
+     * 近战相关数据的校验规则。
      *
      * 分两类：
      * - **致命**（抛异常，由调用方记成 `Issue`）：参数自相矛盾到无法判定，比如
@@ -285,16 +332,13 @@ object DataValidator {
                 }
             }
 
-            for (effect in action.effects.orEmpty()) {
-                require(effect.effect != null || effect.type != null) {
-                    "MeleeActions[$index] has an Effects entry with neither 'Effect' nor 'Type'"
-                }
-                require(effect.chance in 0.0..1.0) {
-                    "MeleeActions[$index] has an Effects entry with Chance=${effect.chance}, must be within [0, 1]"
-                }
-                require(effect.cooldown >= 0) {
-                    "MeleeActions[$index] has an Effects entry with Cooldown=${effect.cooldown}, must be >= 0"
-                }
+            for ((effectIndex, effect) in action.effects.orEmpty().withIndex()) {
+                validateMeleeEffectEntry(
+                    effect.value,
+                    "MeleeActions[$index].Effects[$effectIndex]",
+                    fatal = { message -> error(message) },
+                    warn = warn,
+                )
             }
         }
 
@@ -324,6 +368,67 @@ object DataValidator {
                     "engine markers should be written as \"@empty\" / \"@ray\" / \"@melee\""
             )
         }
+    }
+
+    /**
+     * 近战额外效果条目 / 预设的校验规则。
+     *
+     * 抓的是两类问题：
+     * - **致命**：`Effect`/`Type` 都没写，或者写了却**解析不出任何已登记行为**
+     *   （宽松解析会让它静默失效 —— 数据里写了"概率爆炸"结果什么都没发生，是最难查的一类）；
+     * - **警告**：数值越界、行为自己的必填字段缺失（由 [MeleeEffectBehavior.validate] 提供）。
+     *
+     * @param where 出错时的定位前缀，例如 `MeleeActions[2].Effects[0]`
+     * @param fatal 致命问题的回调（条目走 `error`，预设文件同理）
+     */
+    private fun validateMeleeEffectEntry(
+        effect: MeleeEffectSpec,
+        where: String,
+        fatal: (String) -> Unit,
+        warn: (String) -> Unit,
+    ) {
+        if (effect.effect == null && effect.type == null) {
+            fatal("$where has neither 'Effect' (preset id) nor 'Type' (behavior id)")
+            return
+        }
+
+        effect.chance?.let { require(it in 0.0..1.0) { "$where has Chance=$it, must be within [0, 1]" } }
+        effect.cooldown?.let { require(it >= 0) { "$where has Cooldown=$it, must be >= 0" } }
+        effect.damage?.let { require(it >= 0) { "$where has Damage=$it, must be >= 0" } }
+        effect.radius?.let { require(it >= 0) { "$where has Radius=$it, must be >= 0" } }
+        effect.fireTime?.let { require(it >= 0) { "$where has FireTime=$it, must be >= 0" } }
+        effect.knockback?.let { require(it >= 0) { "$where has Knockback=$it, must be >= 0" } }
+        effect.lift?.let { require(it >= 0) { "$where has Lift=$it, must be >= 0" } }
+        effect.duration?.let { require(it >= 0) { "$where has Duration=$it, must be >= 0" } }
+        effect.amplifier?.let { require(it >= 0) { "$where has Amplifier=$it, must be >= 0" } }
+        effect.count?.let { require(it >= 0) { "$where has Count=$it, must be >= 0" } }
+        effect.amplitude?.let { require(it >= 0) { "$where has Amplitude=$it, must be >= 0" } }
+
+        val names = listOfNotNull(effect.effect, effect.type).joinToString(" / ")
+        val resolved = effect.resolve()
+        if (resolved == null) {
+            fatal(
+                "$where ('$names') does not resolve to a registered melee effect; " +
+                        "registered behaviors: ${ModMeleeEffects.ids().joinToString(", ")}"
+            )
+            return
+        }
+
+        ModMeleeEffects.get(resolved.type)?.validate(resolved)?.let { warn("$where ($names) -> $it") }
+    }
+
+    /**
+     * `sbw/melee_effects` 目录下预设文件自身的校验。
+     *
+     * 预设至少要写 `Type`（也可以写 `Effect` 去别名另一个预设）；条目侧引用它时会再做一次同样的校验。
+     */
+    private fun validateMeleeEffectPreset(data: MeleeEffectSpec, warn: (String) -> Unit) {
+        validateMeleeEffectEntry(
+            data,
+            "melee effect preset",
+            fatal = { message -> error(message) },
+            warn = warn,
+        )
     }
 
     /**

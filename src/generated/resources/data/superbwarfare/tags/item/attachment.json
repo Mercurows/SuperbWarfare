@@ -5,6 +5,7 @@
     "#superbwarfare:attachment/barrel",
     "#superbwarfare:attachment/stock",
     "#superbwarfare:attachment/grip",
-    "#superbwarfare:attachment/bayonet"
+    "#superbwarfare:attachment/bayonet",
+    "#superbwarfare:attachment/subweapon"
   ]
 }

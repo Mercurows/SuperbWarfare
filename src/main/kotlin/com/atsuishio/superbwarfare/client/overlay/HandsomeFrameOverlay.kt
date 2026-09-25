@@ -32,7 +32,8 @@ object HandsomeFrameOverlay : CommonOverlay("handsome_frame") {
         val vehicle = player.vehicle
         if (vehicle is VehicleEntity && vehicle.banHand(player)) return
 
-        if (stack.item is GunItem && isFirstPerson) {
+        // 手持副武器时按普通物品处理
+        if (GunItem.isHeldWeapon(stack) && isFirstPerson) {
             val data = from(stack)
             val level = data.perk.getLevel(ModPerks.INTELLIGENT_CHIP).toInt()
             if (level == 0) return

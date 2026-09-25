@@ -622,6 +622,9 @@ class ModItemTagProvider(
             ModItems.BAYONET_M_9,
             ModItems.BAYONET_6KH2
         ),
+        AttachmentType.SUBWEAPON to listOf(
+            ModItems.GP_25
+        ),
     )
 
     private fun addAttachmentTags() {

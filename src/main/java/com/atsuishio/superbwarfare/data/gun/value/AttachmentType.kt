@@ -27,7 +27,17 @@ enum class AttachmentType(typeName: String) {
      * 装了其中一个就装不了另一个，见 [com.atsuishio.superbwarfare.data.attachment.AttachmentSlots]。
      */
     @SerialName("Bayonet")
-    BAYONET("Bayonet");
+    BAYONET("Bayonet"),
+
+    /**
+     * 副武器（下挂榴弹发射器这类）。
+     *
+     * 槽位本身不代表"副武器身份"：**身份由配件数据里的 `SubWeapon` 定义决定**
+     * （`AttachmentDefinition.subWeapon`）——这个槽位只是"下挂件默认住在这里"，
+     * 任何槽位的配件只要写了 `SubWeapon` 就算副武器。
+     */
+    @SerialName("SubWeapon")
+    SUBWEAPON("SubWeapon");
 
     val attachmentName: String = typeName
 }

@@ -1,0 +1,10 @@
+{
+  "values": [
+    "#superbwarfare:attachment/subweapon/common",
+    "#superbwarfare:attachment/subweapon/rare",
+    "#superbwarfare:attachment/subweapon/epic",
+    "#superbwarfare:attachment/subweapon/legendary",
+    "#superbwarfare:attachment/subweapon/superb",
+    "#superbwarfare:attachment/subweapon/virtual"
+  ]
+}

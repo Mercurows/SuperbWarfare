@@ -31,7 +31,7 @@ object HeatBarOverlay : CommonOverlay("heat_bar") {
         val vehicle = player.vehicle
 
         heat = if (ClientEventHandler.isEditing
-            || (player.mainHandItem.item !is GunItem)
+            || !GunItem.isHeldWeapon(player.mainHandItem)  // 手持副武器时按普通物品处理
             || (vehicle is VehicleEntity && vehicle.banHand(player))
         ) {
             0.0

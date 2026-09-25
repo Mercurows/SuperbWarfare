@@ -638,6 +638,7 @@
   "attachment.superbwarfare.slot.stock": "[Stock Attachment]",
   "attachment.superbwarfare.slot.grip": "[Grip Attachment]",
   "attachment.superbwarfare.slot.bayonet": "[Bayonet Attachment]",
+  "attachment.superbwarfare.slot.subweapon": "[Sub Weapon]",
   "attachment.superbwarfare.modify": "Modify ",
   "attachment.superbwarfare.scope_mode": "Scope",
 
@@ -707,6 +708,7 @@
   "item.superbwarfare.steel_pipe_grip": "Steel Pipe Grip",
   "item.superbwarfare.bayonet_m_9": "M9 Bayonet",
   "item.superbwarfare.bayonet_6kh2": "6KH2 Bayonet",
+  "item.superbwarfare.gp_25": "GP-25 Underbarrel Grenade Launcher",
 
   "death.attack.gunfire": "%1$s was gunned down by %2$s",
   "death.attack.gunfire.entity": "%1$s was gunned down by %2$s",

@@ -15,6 +15,35 @@
   "MeleeDuration": 20,
   "MeleeRange": 1,
   "MeleeHeadshot": 1,
+  "MeleeHitbox": {
+    "Type": "Box",
+    "Width": 0.9,
+    "Height": 1.2,
+    "YOffset": -0.2,
+    "Occlusion": true
+  },
+  "MeleeSweep": {
+    "From": 0,
+    "To": 0
+  },
+  "MeleeActions": [
+    {
+      "Animation": "hit",
+      "Duration": 24,
+      "HitTime": 10,
+      "RangeMultiplier": 1.3,
+      "MaxTargets": 1,
+      "Knockback": 0.4,
+      "Cooldown": 40,
+      "Effects": [
+        {
+          "Effect": "superbwarfare:warhead_stab",
+          "Chance": 0.35,
+          "Cooldown": 200
+        }
+      ]
+    }
+  ],
   "DrawTime": 14,
   "ZoomTime": 9,
   "EmptyReloadTime": 98,

@@ -14,7 +14,8 @@ object ItemRendererFixOverlay : CommonOverlay("item_renderer_fix") {
 
     override fun RenderContext.render() {
         val stack = player.mainHandItem
-        if (stack.item !is GunItem) return
+        // 手持副武器时按普通物品处理
+        if (!GunItem.isHeldWeapon(stack)) return
 
         guiGraphics.pose().pushPose()
         guiGraphics.pose().translate(-1145f, 0f, 0f)

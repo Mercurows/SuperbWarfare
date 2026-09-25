@@ -1,0 +1,17 @@
+{
+  "Slot": "SubWeapon",
+  "Level": 1,
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 1.5
+    }
+  ],
+  "SubWeapon": {
+    "AmmoSlot": "SubWeapon",
+    "Cooldown": 0
+  },
+  "Model": "superbwarfare:models/bedrock/attachment/steel_pipe_silencer.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/steel_pipe_silencer.png"
+}

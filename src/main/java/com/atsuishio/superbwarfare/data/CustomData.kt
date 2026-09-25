@@ -1,10 +1,12 @@
 package com.atsuishio.superbwarfare.data
 
+import com.atsuishio.superbwarfare.data.CustomData.ATTACHMENTS
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
 import com.atsuishio.superbwarfare.data.drone_attachment.DroneAttachmentData
 import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.ProjectileInfo
+import com.atsuishio.superbwarfare.data.gun.melee.MeleeEffectSpec
 import com.atsuishio.superbwarfare.data.mob_guns.DefaultMobGunData
 import com.atsuishio.superbwarfare.data.mob_guns.MobGunData
 import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData
@@ -68,6 +70,18 @@ object CustomData {
         // 这样 /reload 对已经生成的持枪生物同样生效
         MobGunData.onDataReload(map)
     }
+
+    /**
+     * 近战额外效果的**预设表**（`sbw/melee_effects/<id>.json`）。
+     *
+     * 与 [ATTACHMENTS] 不同，这里**不参与 PMC**，也不需要同步到客户端 ——
+     * 效果的结算全在服务端（`Chance` 用服务端 `level.random` roll），
+     * 客户端拿到的 `ResolvedMeleeAction.effects` 是 `by lazy` 的，永远不会被求值。
+     */
+    @JvmField
+    val MELEE_EFFECTS = DataLoader.createData(
+        "sbw/melee_effects", MeleeEffectSpec::class.java
+    )
 
     @JvmField
     val VEHICLE_SKINS = DataLoader.createData(

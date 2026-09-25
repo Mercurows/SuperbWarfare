@@ -119,6 +119,9 @@ object AttachmentSlots {
         const val STOCK = "stock_pos"
         const val MAGAZINE = "magazine_pos"
         const val BAYONET = "bayonet_pos"
+
+        /** 副武器（下挂榴弹发射器这类）的约定挂点骨骼 */
+        const val SUBWEAPON = "subweapon_pos"
     }
 
     /**
@@ -184,6 +187,19 @@ object AttachmentSlots {
             focusBone = Bones.BAYONET,
             renderMode = AttachmentRenderMode.GENERIC,
         ),
+        // 副武器（下挂榴弹发射器这类）。挂点组**故意与握把（`grip_rail`）分开**：
+        // 物理上两者共用同一根下导轨，但合并挂点组等于"装了垂直握把就装不了下挂榴弹"，
+        // 那是玩法改动而不是数据整理 —— 三期按"现有行为零变化"处理，需要互斥时把
+        // 这里改成 `"grip_rail"` 即可（`Attachment.mountConflict` 会自动跟着走）。
+        AttachmentSlot(
+            type = AttachmentType.SUBWEAPON,
+            mount = "subweapon_rail",
+            tagBucket = "subweapon",
+            icon = "subweapon",
+            mountBone = AttachmentMountBone.Fixed(Bones.SUBWEAPON),
+            focusBone = Bones.SUBWEAPON,
+            renderMode = AttachmentRenderMode.GENERIC,
+        ),
     )
 
     @JvmField
@@ -207,6 +223,7 @@ object AttachmentSlots {
         AttachmentEditTarget.Slot(of(AttachmentType.MAGAZINE)),
         AttachmentEditTarget.AmmoType,
         AttachmentEditTarget.Slot(of(AttachmentType.BAYONET)),
+        AttachmentEditTarget.Slot(of(AttachmentType.SUBWEAPON)),
     )
 
     /** 弹药类型那一项在 [EDIT_ORDER] 里的下标（车辆改装界面只支持这一项）。 */

@@ -3,10 +3,12 @@ package com.atsuishio.superbwarfare.init
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.entity.projectile.MediumRocketEntity
+import com.atsuishio.superbwarfare.init.ModItems.registerAttachment
 import com.atsuishio.superbwarfare.item.*
 import com.atsuishio.superbwarfare.item.ammo.*
 import com.atsuishio.superbwarfare.item.armor.*
 import com.atsuishio.superbwarfare.item.attachment.BasicAttachmentItem
+import com.atsuishio.superbwarfare.item.attachment.SubWeaponItem
 import com.atsuishio.superbwarfare.item.blockitem.BlueprintResearchTableBlockItem
 import com.atsuishio.superbwarfare.item.blockitem.ChargingStationBlockItem
 import com.atsuishio.superbwarfare.item.blockitem.CreativeChargingStationBlockItem
@@ -638,6 +640,16 @@ object ModItems {
         return ATTACHMENTS.register(id, Supplier { factory("${Mod.MODID}:$id", rarity) })
     }
 
+    /**
+     * 注册一个**副武器**配件：物品类换成 [SubWeaponItem]（`GunItem` + `AttachmentProvider`）。
+     *
+     * 物品注册 id 与配件数据 id 由 [registerAttachment] 保证一致，
+     * 而 `GunData` 又按物品注册 id 解析数据 —— 所以 `sbw/attachments/<id>.json`
+     * 与 `sbw/guns/<id>.json` 同名成对出现即可，不需要 `SubWeaponInfo.Data`。
+     */
+    fun registerSubWeapon(id: String, rarity: Rarity = Rarity.COMMON): ItemRegistry<out Item> =
+        registerAttachment(id, rarity, ::SubWeaponItem)
+
     // Stock
     // @formatter:off
     @JvmField val OEM_STOCK_LIGHT = registerAttachment("oem_stock_light")
@@ -724,6 +736,11 @@ object ModItems {
     // @formatter:off
     @JvmField val BAYONET_M_9 = registerAttachment("bayonet_m_9")
     @JvmField val BAYONET_6KH2 = registerAttachment("bayonet_6kh2")
+    // @formatter:on
+
+    // SubWeapon（副武器：既是配件又是一把真枪）
+    // @formatter:off
+    @JvmField val GP_25 = registerSubWeapon("gp_25", Rarity.RARE)
     // @formatter:on
 
     fun registerDispenserBehavior() {

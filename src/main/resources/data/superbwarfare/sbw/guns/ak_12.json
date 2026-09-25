@@ -117,6 +117,9 @@
     ],
     "Bayonet": [
       "superbwarfare:bayonet_6kh2"
+    ],
+    "SubWeapon": [
+      "superbwarfare:gp_25"
     ]
   },
   "SoundInfo": {

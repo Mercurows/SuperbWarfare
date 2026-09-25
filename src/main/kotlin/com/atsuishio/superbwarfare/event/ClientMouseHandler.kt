@@ -300,7 +300,8 @@ object ClientMouseHandler {
             )
         }
 
-        if (stack.item is GunItem) {
+        // 手持副武器时按普通物品处理
+        if (GunItem.isHeldWeapon(stack)) {
             val data = GunData.from(stack)
             val customSens = data.sensitivity.get()
             val zoom = ClientEventHandler.customZoom.coerceAtLeast(1.0)
