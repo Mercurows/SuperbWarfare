@@ -109,6 +109,9 @@
       "superbwarfare:ar_silencer",
       "superbwarfare:loudspeaker",
       "superbwarfare:silencer_qinglan"
+    ],
+    "Bayonet": [
+      "superbwarfare:bayonet_m_9"
     ]
   },
   "SoundInfo": {
