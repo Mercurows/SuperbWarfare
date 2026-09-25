@@ -43,6 +43,6 @@
       }
     ]
   },
-  "Model": "superbwarfare:models/bedrock/attachment/bayonet_knife.geo.json",
-  "Texture": "superbwarfare:textures/bedrock/attachment/bayonet_knife.png"
+  "Model": "superbwarfare:models/bedrock/attachment/bayonet_m_9.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/bayonet_m_9.png"
 }
