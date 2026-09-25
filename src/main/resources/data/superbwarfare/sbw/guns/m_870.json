@@ -4,7 +4,7 @@
   "RecoilY": 0.04,
   "Damage": 3,
   "Headshot": 1.5,
-  "MeleeDamage": 15,
+  "MeleeDamage": 8,
   "MeleeDuration": 16,
   "MeleeAngle": 100,
   "Velocity": 10,

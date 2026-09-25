@@ -8,7 +8,7 @@
   "Magazine": 5,
   "BoltActionTime": 22,
   "Weight": 5,
-  "MeleeDamage": 15,
+  "MeleeDamage": 8,
   "MeleeDuration": 16,
   "MeleeAngle": 100,
   "DrawTime": 12,

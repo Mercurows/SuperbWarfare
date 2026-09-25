@@ -7,7 +7,7 @@
   "Velocity": 28,
   "Magazine": 1,
   "Weight": 5,
-  "MeleeDamage": 15,
+  "MeleeDamage": 8,
   "MeleeDuration": 16,
   "MeleeAngle": 100,
   "DrawTime": 12,
