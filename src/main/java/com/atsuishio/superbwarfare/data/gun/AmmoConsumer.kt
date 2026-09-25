@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.data.*
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer.Companion.INVALID
 import com.atsuishio.superbwarfare.data.gun.ammo_consumer_strategy.AmmoConsumeStrategy
 import com.atsuishio.superbwarfare.data.gun.ammo_consumer_strategy.InvalidAmmoStrategy
+import com.atsuishio.superbwarfare.data.mob_guns.MobGunState
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
@@ -172,21 +173,48 @@ data class AmmoConsumer(
     // ---------------------------------------------------------------- 附加来源
 
     /**
+     * 附加来源每发的总消耗量。
+     *
+     * 前缀对附加来源的意义就是「每开火一次消耗多少」，所以这些量必须由消耗方另付
+     * （生物由弹药池代付时也按这个数扣）。
+     */
+    fun extraAmmoCost(): Int {
+        if (extraSources.isEmpty()) return 0
+        return extraSources.sumOf { it.loadAmount }.coerceAtLeast(0)
+    }
+
+    /**
      * 开火前检查所有附加来源是否充足。
-     * 创造模式、创造模式弹药盒、无限弹药等情况下直接视为充足。
+     * 创造模式、创造模式弹药盒、无限弹药等情况下直接视为充足；
+     * **生物**（身上有弹药池）没有物品栏也没有电量，附加来源改由池子支付。
      */
     fun hasEnoughExtraAmmo(data: GunData, ammoSupplier: Entity?): Boolean {
         if (extraSources.isEmpty()) return true
         if (data.hasInfiniteBackupAmmo(ammoSupplier)) return true
+
+        val pool = MobGunState.ammo(ammoSupplier ?: return false)
+        if (pool > 0) return pool >= extraAmmoCost()
+
         return extraSources.all { it.hasEnough(data, ammoSupplier) }
     }
 
     /**
-     * 开火后消耗所有附加来源，每个来源扣除自身前缀声明的每发消耗量
+     * 开火后消耗所有附加来源，每个来源扣除自身前缀声明的每发消耗量。
+     *
+     * 生物（有弹药池）由池子一次性扣掉附加来源的总消耗；池子空了则退回原逻辑，
+     * 让枪械因为附加来源不足而停下（与原版行为一致）。
      */
     fun consumeExtraAmmo(data: GunData, ammoSupplier: Entity?) {
         if (extraSources.isEmpty()) return
         if (data.hasInfiniteBackupAmmo(ammoSupplier)) return
+
+        if (ammoSupplier != null) {
+            val cost = extraAmmoCost()
+            if (cost > 0 && MobGunState.ammo(ammoSupplier) > 0) {
+                MobGunState.addAmmo(ammoSupplier, -cost)
+                return
+            }
+        }
 
         for (source in extraSources) {
             source.consume(data, ammoSupplier, source.loadAmount)
