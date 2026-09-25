@@ -10,7 +10,7 @@
   "Velocity": 24,
   "Magazine": [10, 15, 20],
   "Weight": 6,
-  "MeleeDamage": 8,
+  "MeleeDamage": 5,
   "MeleeDuration": 16,
   "MeleeAngle": 100,
   "DrawTime": 12,
@@ -98,6 +98,9 @@
       "superbwarfare:ar_silencer",
       "superbwarfare:loudspeaker",
       "superbwarfare:silencer_qinglan"
+    ],
+    "Bayonet": [
+      "superbwarfare:bayonet_6kh2"
     ]
   },
   "SoundInfo": {

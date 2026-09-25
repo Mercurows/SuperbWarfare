@@ -8000,6 +8000,11 @@
 					"pivot": [0, 2.71875, -25.89531]
 				},
 				{
+					"name": "bayonet_pos",
+					"parent": "root",
+					"pivot": [0, 2.71875, -25.89531]
+				},
+				{
 					"name": "scope_pos",
 					"parent": "root",
 					"pivot": [0, 4.88491, -0.14452]
