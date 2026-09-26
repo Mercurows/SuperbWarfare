@@ -8025,6 +8025,11 @@
 					"pivot": [0, 3.81789, -3.99798]
 				},
 				{
+					"name": "sub_weapon_pos",
+					"parent": "positioning2",
+					"pivot": [0, 1.68516, -10.95]
+				},
+				{
 					"name": "righthand",
 					"parent": "root",
 					"pivot": [5.98125, 18, 0]
