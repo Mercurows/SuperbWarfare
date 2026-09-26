@@ -645,8 +645,9 @@ object ModItems {
      * 注册一个**副武器**配件：物品类换成 [SubWeaponItem]（`GunItem` + `AttachmentProvider`）。
      *
      * 物品注册 id 与配件数据 id 由 [registerAttachment] 保证一致，
-     * 而 `GunData` 又按物品注册 id 解析数据 —— 所以 `sbw/attachments/<id>.json`
-     * 与 `sbw/guns/<id>.json` 同名成对出现即可，不需要 `SubWeaponInfo.Data`。
+     * 而 `GunData` 在 `SubWeapon.Data` 为空时按物品注册 id 解析数据 —— 所以
+     * `sbw/attachments/<id>.json` 与 `sbw/guns/<id>.json` 同名成对出现即可；
+     * 想让多个配件共用一份副武器数据时才需要在配件里写 `Data`。
      */
     fun registerSubWeapon(id: String, rarity: Rarity = Rarity.COMMON): ItemRegistry<out Item> =
         registerAttachment(id, rarity, ::SubWeaponItem)

@@ -381,23 +381,41 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             resolveGunAmmoReadout(stack, resource)
         )
         if (transformType.firstPerson()) {
+            val hand = handForContext(transformType)
+            val animation = FirstPersonRenderHandler.getActiveAnimationInstance(hand) as? GeoGunAnimationInstance
+
+            // 副武器开火期间（枪口焰窗口内，或副武器那一支开火动画正在播）才解析它的枪口骨骼：
+            // 没装副武器 / 不在开火时这段是一个布尔判断，不进下面那次遍历。
+            val subWeaponFire = ClientEventHandler.subWeaponFireRotTimer > 0.0 || animation?.isSubWeaponFire() == true
+            val subWeaponFlare = if (subWeaponFire) resolveSubWeaponFlareTransform(stack, model) else null
+            val subWeaponFlashScale = if (subWeaponFire) resolveSubWeaponMuzzleFlashScale(stack) else 1.0f
+
             MuzzleFlashRenderer.render(
                 poseStack,
                 model,
                 stack,
                 bufferSource,
                 attachmentMuzzleTransform,
-                muzzleFlashScale
+                muzzleFlashScale,
+                subWeaponFlare,
+                subWeaponFlashScale
             )
 
-            val hand = handForContext(transformType)
             ShellCasingFxRenderer.render(poseStack, model, stack, hand, bufferSource, packedLight)
 
-            val transforms = lastBoneTransforms.getOrPut(handForContext(transformType)) { mutableMapOf() }
-            for (boneName in listOf(FLARE_BONE, MUZZLE_FLASH_BONE)) {
-                model.getGlobalTransform(boneName)?.let { transforms[boneName] = Matrix4f(it) }
+            val transforms = lastBoneTransforms.getOrPut(hand) { mutableMapOf() }
+            // 副武器开火时，动画里的枪口定位点（`flare`）改挂副武器模型自己的枪口，
+            // 而且**不注册**枪口配件的 `MUZZLE_BONE` —— `resolveMuzzleLocator` 优先取它，
+            // 留着会把榴弹的枪口烟吸到枪管前端去（同时装了消音器时尤其明显）。
+            val subWeaponMuzzle = subWeaponFlare?.takeIf { animation?.isSubWeaponFire() == true }
+            if (subWeaponMuzzle != null) {
+                transforms[FLARE_BONE] = Matrix4f(subWeaponMuzzle)
+            } else {
+                for (boneName in listOf(FLARE_BONE, MUZZLE_FLASH_BONE)) {
+                    model.getGlobalTransform(boneName)?.let { transforms[boneName] = Matrix4f(it) }
+                }
+                attachmentMuzzleTransform?.let { transforms[MUZZLE_BONE] = Matrix4f(it) }
             }
-            attachmentMuzzleTransform?.let { transforms[MUZZLE_BONE] = Matrix4f(it) }
         }
         gunStencilCulling = gunCulled
         finishStencilCulling(bufferSource)
@@ -452,11 +470,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             val modelPath = definition.model ?: continue
             val texture = definition.texture ?: continue
 
-            val boneName = when (val mountBone = slot.mountBone) {
-                is AttachmentMountBone.Fixed -> mountBone.name
-                is AttachmentMountBone.FromDefinition -> definition.bone ?: mountBone.fallback
-                AttachmentMountBone.GunModel -> null
-            } ?: continue
+            val boneName = AttachmentSlots.mountBoneOf(slot, definition) ?: continue
 
             val mountTransform = model.getGlobalTransform(boneName) ?: continue
             val attachmentModel = AttachmentModelReloadListener.getModel(modelPath) ?: continue
@@ -811,6 +825,47 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             .mul(resolveBarrelAttachmentLocalTransform(stack))
             .mul(attachmentMuzzle)
     }
+
+    /** 枪上装着的副武器：`(槽位, 配件定义)`；没装返回 `null` */
+    private fun findSubWeapon(data: GunData): Pair<AttachmentSlot, AttachmentDefinition>? {
+        for (slot in AttachmentSlots.ALL) {
+            val attachmentId = data.attachment.id(slot.type) ?: continue
+            val definition = AttachmentDefinition.from(attachmentId) ?: continue
+            if (definition.subWeapon != null) return slot to definition
+        }
+        return null
+    }
+
+    /**
+     * 副武器**模型自己**的 `flare` 骨骼在枪姿态空间里的变换。
+     *
+     * 副武器（下挂榴弹发射器这类）开火时，枪口焰与动画关键帧里的枪口烟都该挂在**它的**枪口上，
+     * 而不是主武器的 `flare`：主武器的枪口在另一头，挂上去就成了"枪管前端在喷火、下挂筒在下面发射"。
+     *
+     * 组合方式与渲染那一条路径完全一致（挂点骨骼 × 配件模型里的骨骼变换），
+     * 所以只要配件画得出来，这里就取得动。取不到时返回 `null`
+     * ——调用方**不会**因此退回主武器的 `flare`，而是干脆不画这一簇火焰。
+     */
+    open fun resolveSubWeaponFlareTransform(stack: ItemStack, model: GeoGunModel): Matrix4f? {
+        val (slot, definition) = findSubWeapon(GunData.from(stack)) ?: return null
+
+        val modelPath = definition.model ?: return null
+        val boneName = AttachmentSlots.mountBoneOf(slot, definition) ?: return null
+        val attachmentModel = AttachmentModelReloadListener.getModel(modelPath) ?: return null
+        val mountTransform = model.getGlobalTransform(boneName) ?: return null
+        val flareTransform = attachmentModel.getGlobalTransform(FLARE_BONE) ?: return null
+
+        return Matrix4f(mountTransform).mul(flareTransform)
+    }
+
+    /**
+     * 副武器开火时的枪口焰缩放：配件自己的 `MuzzleFlashScale`。
+     *
+     * 与枪口配件共用同一个字段（同一个 POJO），所以"下挂榴弹的火焰比步枪大一圈"这种调整
+     * 写在副武器配件的 json 里即可，不必再开一个只对这一处生效的字段。
+     */
+    open fun resolveSubWeaponMuzzleFlashScale(stack: ItemStack): Float =
+        findSubWeapon(GunData.from(stack))?.second?.muzzleFlashScale?.coerceAtLeast(0f) ?: 1.0f
 
     open fun resolveMagazineBone(stack: ItemStack): String {
         return when (GunData.from(stack).magazineLevel()) {

@@ -14,7 +14,10 @@ import java.util.*
  * - `sbw/attachments/<id>.json` —— 配件定义（槽位、挂点、模型、`SubWeapon` 定义）；
  * - `sbw/guns/<id>.json` —— 枪数据（`GunData.getDefault()` 在 `defaultDataId` 为空时按物品注册 id 解析）。
  *
- * 所以 `SubWeaponInfo.Data` 是可选的：不写就用物品自身 id。
+ * 所以 `SubWeaponInfo.Data` 是可选的：不写就用物品自身 id（同名成对出现），
+ * 写了就指向**别人那份**枪数据 —— 多个配件共用一个副武器数据时才需要它，
+ * 与"手持形态的那把武器"共用一份 json 一般不是好主意（两份数据的关注点不同，
+ * 详见 `SubWeaponInfo.data` 的说明）。落地见 `SubWeaponRuntime.applyBaselineId`。
  *
  * **手持时必须按普通物品处理**：它只有装在正常枪械上才生效 ——
  * [useAsWeaponInHand] 返回 `false`，所有"手持边界"的门禁都问

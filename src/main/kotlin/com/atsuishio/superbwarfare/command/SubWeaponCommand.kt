@@ -79,7 +79,8 @@ private fun printSubWeapons(context: CommandContext<CommandSourceStack>, entity:
 
         context.ok(
             Component.literal(
-                "slot=${instance.slotName} attachment=${instance.attachmentId} data=${data.id} " +
+                "slot=${instance.slotName} attachment=${instance.attachmentId} " +
+                        "gunData=${instance.baselineId} " +
                         "ammoSlot=${instance.info.ammoSlot} " +
                         "ammo=${data.ammo.get()}/${data.get(GunProp.MAGAZINE)} " +
                         "rpm=${data.get(GunProp.RPM)} projectile=${data.get(GunProp.PROJECTILE).itemId}"

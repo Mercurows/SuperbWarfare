@@ -223,9 +223,9 @@ object DataValidator {
      * 要抓的是"数据写错了但装了以后什么都不会发生"这类问题：
      * - 副武器的枪数据解析不出来（**致命**：`SubWeaponItem` 拿不到 `GunData`，G 键会静默失灵）；
      * - 对应物品不是 `SubWeaponItem`（它是普通配件，装了不受 G 控制）；
-     * - `Cooldown` 为负。
+     * - 开火动画候选链里混进了空名字。
      *
-     * 注意 `Data` 为空的**正常**含义是"用物品自身 id"，所以这里要按同一条规则去查
+     * 注意 `Data` 为空的**正常**含义是"用附件自身 id"，所以这里要按同一条规则去查
      * `CustomData.GUN_DATA`，不能因为字段为空就跳过。
      */
     private fun validateSubWeaponData(data: AttachmentDefinition, warn: (String) -> Unit) {
@@ -237,6 +237,16 @@ object DataValidator {
             error(
                 "SubWeapon points at gun data '$gunDataId', which is not present in sbw/guns"
             )
+        }
+
+        // 动画候选链：空名字会拼出一个毫无意义的 clip 名（`animation.ak_12.`），
+        // 只能靠运行时日志发现，这里提前拦掉。
+        // clip **是否存在**同样查不了（要读客户端的动画文件），那部分仍然靠运行时日志。
+        for (candidate in info.fireAnimationCandidates()) {
+            require(candidate.isNotBlank()) {
+                "SubWeapon.Animation contains a blank clip name; " +
+                        "candidates are tried in order, e.g. [\"fire_sub_weapon\", \"fire\"]"
+            }
         }
 
         // 物品存在性与类型只能在注册表可用之后查；数据包侧注册表可能还没就绪，查不到就只提示

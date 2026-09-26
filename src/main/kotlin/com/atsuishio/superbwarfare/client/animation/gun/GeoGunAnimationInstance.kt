@@ -70,6 +70,24 @@ open class GeoGunAnimationInstance(
     private var consumedFireSerial = 0
 
     /**
+     * 本次开火已经解析好的 clip 名（由 [triggerFire] 写入，[playFire] 读取）。
+     *
+     * 开火是**分层播放**的（叠在状态机之上），所以它不能像近战那样在状态切换那一帧现解析：
+     * 触发与播放之间隔着一次 tick，而候选链的解析需要"这一次是谁在开火"这个信息
+     * ——副武器开火与主武器开火用的是两条不同的候选链。
+     */
+    private var pendingFireAnimation: String? = null
+
+    /**
+     * 当前这一支开火动画是不是**副武器专属**的那一支（`fire_sub_weapon` 这类）。
+     *
+     * 枪口效应据此换骨骼：副武器开火时动画关键帧里的枪口烟挂在副武器模型自己的 `flare` 上，
+     * 而不是主武器的（见 `GeoGunRenderer.resolveSubWeaponFlareTransform`）。
+     * 候选全落空、播的还是 `GunAnimation.Fire` 时它是 `false` —— 那一发视觉上就是主武器在开火。
+     */
+    private var subWeaponFire = false
+
+    /**
      * 已消费的近战挥击序号。
      *
      * 近战是 `PLAY_ONCE_HOLD`：播完停在最后一帧。按住 V 连续挥击时 `currentState` 与
@@ -87,6 +105,9 @@ open class GeoGunAnimationInstance(
      * runner 为空时 [resolveMeleeName] 每个 tick 都会被调一次，不去重的话"clip 名写错"会刷满日志。
      */
     private var loggedMeleeMiss: String? = null
+
+    /** 上一次已经打过日志的开火动画解析失败（见 [logFireMissOnce]） */
+    private var loggedFireMiss: String? = null
     private val pendingShellEjects = ArrayList<Int>()
     private val pendingParticles = ArrayList<ParticleEffectData>()
     private var cachedPose: Pose = DummyPose.INSTANCE
@@ -144,20 +165,43 @@ open class GeoGunAnimationInstance(
         return if (animation.idle != null) GunAnimationState.IDLE else null
     }
 
-    fun triggerFire(stack: ItemStack) {
-        val animation = GunResource.compute(stack).animation ?: return
-        val fireName = animation.fire ?: return
+    /**
+     * 触发一次开火动画。
+     *
+     * @param candidates 本次开火使用的动画**候选链**（`SubWeaponInfo.Animation`）；留空 = 主武器
+     *   自己开火，走宿主枪的 `GunAnimation.Fire`。
+     * @param reportMissing 候选全部落空时是否按**数据写错**报 error。默认候选（没写 `Animation` 时
+     *   那条 `fire_sub_weapon`）落空是正常情况 —— 绝大多数枪就没做这支 clip，
+     *   所以调用方按"这份候选是不是数据里显式写的"传（见 `SubWeaponInfo.hasExplicitFireAnimation`）。
+     */
+    @JvmOverloads
+    fun triggerFire(stack: ItemStack, candidates: List<String> = emptyList(), reportMissing: Boolean = false) {
+        val fireName = resolveFireName(candidates, reportMissing) ?: return
         if (!animations.containsKey(fireName)) return
 
         if (this.stack.item != stack.item) {
             updateItem(stack)
         }
 
+        val gunFire = GunResource.compute(stack).animation?.fire
+        pendingFireAnimation = fireName
+        subWeaponFire = candidates.isNotEmpty() && fireName != gunFire
+
         fireSerial++
-        if (isFirstPerson()) {
+        // 副武器开火**不抛壳**：弹壳模型与 `shell` 骨骼都是主武器自己的 `ShellEject` 配置，
+        // 打出去的却是副武器的弹药 —— 照旧抛壳就成了"榴弹发射时步枪抛壳"。
+        if (isFirstPerson() && !subWeaponFire) {
             pendingShellEjects += 0
         }
     }
+
+    /**
+     * 当前正在播的开火动画是不是副武器专属的那一支（`fire_sub_weapon` 这类）。
+     *
+     * 只在**确实换了动画**时为真：候选链全部落空、播的还是 `GunAnimation.Fire` 时它是 `false`
+     * （那一发在视觉上就是主武器在开火，枪口效应该留在主武器的枪口上）。
+     */
+    fun isSubWeaponFire(): Boolean = subWeaponFire && fireRunner != null
 
     fun consumePendingShellEjects(): List<Int> {
         if (pendingShellEjects.isEmpty()) return emptyList()
@@ -411,14 +455,75 @@ open class GeoGunAnimationInstance(
     }
 
     private fun playFire() {
-        val animation = GunResource.compute(stack).animation ?: return
-        val fireName = animation.fire ?: return
+        val fireName = pendingFireAnimation ?: return
         val fireAnimation = animations[fireName] ?: return
 
         val newRunner = AnimationRunner(fireAnimation, AnimationContext(fireAnimation.specifiedEndTimeS))
         newRunner.state = AnimationPlayType.PLAY_ONCE_STOP.state()
         fireRunner = newRunner
         cachedPose = newRunner.evaluate()    }
+
+    /**
+     * 解析本次开火实际使用的 clip 名。
+     *
+     * 候选链写在**副武器定义**里（`SubWeaponInfo.Animation`），而那份定义是给多把枪共用的，
+     * 写不了某一把枪的完整 clip 名 —— 所以短名在这里按**宿主枪 id** 拼
+     * （`fire_sub_weapon` → `animation.ak_12.fire_sub_weapon`），规则与近战的
+     * `MeleeAction.Animation` 完全同一套，见 [GunAnimationNames]：
+     *
+     * - 候选里**第一个存在**的 clip 胜出（做了 `fire_sub_weapon` 的枪用它）；
+     * - 候选全部落空 → 退回 `GunAnimation.Fire`（"这把枪没做副武器开火动画"）。
+     *
+     * 全部落空会记一条日志 —— 静默失败会让"动画没播"变成查不出来的问题。级别分两种：
+     * **显式写的候选**落空是数据/动画文件写错，报 error；**默认候选**落空只是"这把枪没做这支 clip"，
+     * 退回 `Fire` 本来就是设计的一部分，只打 debug。两个级别都按"这一次的解析结果"去重
+     * （与 [resolveMeleeName] 同一套），不会因为每发都解析而刷屏。
+     *
+     * @param reportMissing 见 [triggerFire]
+     */
+    private fun resolveFireName(candidates: List<String>, reportMissing: Boolean): String? {
+        val resource = GunResource.from(stack)
+        val animation = resource.compute().animation
+
+        if (candidates.isNotEmpty()) {
+            val resolved = GunAnimationNames.resolveFirst(candidates, resource.id) { animations.containsKey(it) }
+            if (resolved != null) {
+                loggedFireMiss = null
+                return resolved
+            }
+
+            // 资源还没加载完时（animations 为空）不打日志，下一帧还会再解析一次
+            if (animations.isNotEmpty()) {
+                logFireMissOnce(
+                    "candidates=$candidates",
+                    reportMissing,
+                    "Fire animation candidates {} not found in the animation file of {}; " +
+                            "falling back to GunAnimation.Fire",
+                    candidates.map { GunAnimationNames.resolve(it, resource.id) },
+                    stack.item
+                )
+            }
+        }
+
+        return animation?.fire
+    }
+
+    /**
+     * 同一条开火动画解析失败只打一次日志（与 [logMeleeMissOnce] 同一套去重）。
+     *
+     * @param fatal 显式写在数据里的候选落空 = 数据或动画文件写错了，报 error；
+     *   默认候选落空只是"这把枪没做这支 clip"（退回 `Fire` 本来就是设计的一部分），留一条 debug ——
+     *   这里报 error 会让一份正常存档的日志看起来像坏了。
+     */
+    private fun logFireMissOnce(key: String, fatal: Boolean, message: String, vararg args: Any?) {
+        if (loggedFireMiss == key) return
+        loggedFireMiss = key
+        if (fatal) {
+            Mod.LOGGER.error(message, *args)
+        } else {
+            Mod.LOGGER.debug(message, *args)
+        }
+    }
 
     private fun currentFireModeAnimation(): BedrockAnimation? {
         val animation = GunResource.compute(stack).animation ?: return null
@@ -977,6 +1082,8 @@ open class GeoGunAnimationInstance(
         currentState = null
         fireSerial = 0
         consumedFireSerial = 0
+        pendingFireAnimation = null
+        subWeaponFire = false
         pendingShellEjects.clear()
         pendingParticles.clear()
         cachedPose = DummyPose.INSTANCE

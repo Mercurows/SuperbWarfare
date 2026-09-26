@@ -23,6 +23,7 @@ import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler.currentMeleeDuration
 import com.atsuishio.superbwarfare.event.ClientEventHandler.currentMeleeIndex
+import com.atsuishio.superbwarfare.event.ClientEventHandler.fireRotTimer
 import com.atsuishio.superbwarfare.event.ClientEventHandler.isGunMeleeActive
 import com.atsuishio.superbwarfare.event.ClientEventHandler.zoomTime
 import com.atsuishio.superbwarfare.init.*
@@ -167,6 +168,20 @@ object ClientEventHandler {
 
     @JvmField
     var fireRotTimer: Double = 0.0
+
+    /**
+     * 副武器（下挂榴弹这类）开火的枪口焰计时。
+     *
+     * 与 [fireRotTimer] 共用一套阈值（`0 < t < 0.3` 期间可见、涨到 3.0 归零），但**刻意不复用**它：
+     * `fireRotTimer` 还会带动整把枪的后坐表现（`handleShootAnimationV2` 读它），而副武器的后坐
+     * 由它自己的开火动画（`fire_sub_weapon`）负责，两边叠加会抖两下。
+     *
+     * 它同时是"这一簇枪口焰属于副武器"的标记：大于 0 时 `MuzzleFlashRenderer` 把火焰画在
+     * **副武器模型自己的 `flare` 骨骼**上，主武器的 `flare` 这段期间一帧都不画
+     * （副武器连 `flare` 骨骼都没有时就什么都不画，不退回主武器的枪口）。
+     */
+    @JvmField
+    var subWeaponFireRotTimer: Double = 0.0
 
     @JvmField
     var boltMove: Double = 0.0
@@ -1918,6 +1933,10 @@ object ClientEventHandler {
         )
         fireRecoilTime = 10.0
 
+        // 主武器自己开火：枪口焰立刻回到**主武器的** flare 骨骼上。
+        // 少了这一行，副武器的枪口焰窗口还没走完时打主武器，火焰会画在榴弹发射器的枪口上。
+        subWeaponFireRotTimer = 0.0
+
         // Spawn dynamic block light muzzle flash for firearms using unified muzzle node
         val flashParams = MuzzleFlashHelper.calculateFromStack(stack)
         if (flashParams != null) {
@@ -2629,6 +2648,14 @@ object ClientEventHandler {
         }
         if (fireRotTimer >= 3.0) {
             fireRotTimer = 0.0
+        }
+
+        // 副武器枪口焰：只推进计时（阈值与 fireRotTimer 一致），**不带任何枪身后坐**
+        if (0.0 < subWeaponFireRotTimer) {
+            subWeaponFireRotTimer += 0.24 * times
+            if (subWeaponFireRotTimer >= 3.0) {
+                subWeaponFireRotTimer = 0.0
+            }
         }
 
         boltMove = if (firePosTimer > 0 && firePosTimer <= 0.5) {

@@ -308,6 +308,22 @@ object AttachmentSlots {
     @JvmStatic
     fun byMount(mount: String): List<AttachmentSlot> = BY_MOUNT[mount].orEmpty()
 
+    /**
+     * [slot]（装的是 [definition]）实际使用的**挂点骨骼名**；`null` = 这个槽位不往枪模型上挂
+     * （[AttachmentMountBone.GunModel] 与"没声明就不渲染"的 `FromDefinition(null)`）。
+     *
+     * 渲染（`GeoGunRenderer.renderRegisteredAttachments`）与"配件骨骼在枪模型里的哪个位置"的查询
+     * （`GeoGunRenderer.resolveSubWeaponFlareTransform`）必须走**同一个**判定，否则会出现
+     * "模型画得出来、枪口焰却找不到挂点"这种只在骨骼名写错时才会暴露的问题。
+     */
+    @JvmStatic
+    fun mountBoneOf(slot: AttachmentSlot, definition: AttachmentDefinition?): String? =
+        when (val mountBone = slot.mountBone) {
+            is AttachmentMountBone.Fixed -> mountBone.name
+            is AttachmentMountBone.FromDefinition -> definition?.bone ?: mountBone.fallback
+            AttachmentMountBone.GunModel -> null
+        }
+
     /** 槽位的物品 tag 名（`attachment/<bucket>`）；该槽位不生成 tag 时返回 `null`。 */
     @JvmStatic
     fun tagNameOf(type: AttachmentType): String? = ofOrNull(type)?.tagName
