@@ -2453,6 +2453,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 ModItems.HUNTING_RIFLE.get()
             )
             gunSmithing(writer, ModItems.M_79_BLUEPRINT.get(), GunRarity.RARE, Items.DISPENSER, ModItems.M_79.get())
+            gunSmithing(writer, ModItems.GP_25_BLUEPRINT.get(), GunRarity.RARE, Items.DISPENSER, ModItems.GP_25.get())
             gunSmithing(writer, ModItems.RPG_BLUEPRINT.get(), GunRarity.RARE, Items.DISPENSER, ModItems.RPG.get())
             gunSmithing(writer, ModItems.BOCEK_BLUEPRINT.get(), GunRarity.EPIC, Items.BOW, ModItems.BOCEK.get())
             gunSmithing(
@@ -2659,6 +2660,7 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
             copyBlueprint(writer, ModItems.GLOCK_18_BLUEPRINT.get())
             copyBlueprint(writer, ModItems.HUNTING_RIFLE_BLUEPRINT.get())
             copyBlueprint(writer, ModItems.M_79_BLUEPRINT.get())
+            copyBlueprint(writer, ModItems.GP_25_BLUEPRINT.get())
             copyBlueprint(writer, ModItems.RPG_BLUEPRINT.get())
             copyBlueprint(writer, ModItems.BOCEK_BLUEPRINT.get())
             copyBlueprint(writer, ModItems.M_4_BLUEPRINT.get())
