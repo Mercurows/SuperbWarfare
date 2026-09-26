@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "superbwarfare:item/gp_25"
+    "layer0": "superbwarfare:item/sub_weapon_gp_25"
   }
 }

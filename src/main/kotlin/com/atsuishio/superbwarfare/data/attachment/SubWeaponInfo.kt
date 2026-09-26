@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.data.attachment
 
+import com.atsuishio.superbwarfare.serialization.kserializer.SerializedSoundEvent
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -29,9 +30,14 @@ import kotlinx.serialization.Serializable
  *   ⚠ 当前实现里副武器的弹匣就是**它自己合成栈上的 `data.ammo`** —— 副武器的状态全部住在
  *   主武器 NBT 里那个附件子 tag 上，与主武器天然隔离，所以这个字段目前只影响
  *   "切换弹种时弹药的搬运槽位"（`GunData` 里 `ammoSlot` 的唯一用途），不影响开火。
- * @param cooldown 触发冷却 tick；`0` = 用副武器数据的 RPM 算一个射击周期。
- *   写在**主武器**的冷却表上（键 `sub:<槽位>`），所以客户端能直接读到。
  * @param animation 副武器自带动画（二期路线，当前未使用；副武器暂时不做动画）
+ * @param reloadSound 换弹**开始**音效。主武器的换弹音效是动画关键帧发的，配件没有动画，
+ *   所以副武器的换弹音效由**配件数据自己声明**，在 `SubWeaponRuntime` 检测到"开始装填"时播放。
+ *   不写就是不发声（不做动画的话自动装填会完全不可见）。
+ * @param reloadEndSound 换弹**完成**音效，同上由配件数据声明。
+ *
+ * **触发冷却不在这里配**：一律按副武器 `sbw/guns/<id>.json` 里的 `RPM` 自动算（`1200 / RPM`），
+ * 与主武器开火同一个口径 —— 数据里只有一个地方定义"这把武器多快"。
  */
 @Serializable
 data class SubWeaponInfo(
@@ -41,11 +47,14 @@ data class SubWeaponInfo(
     @SerialName("AmmoSlot")
     val ammoSlot: String = DEFAULT_AMMO_SLOT,
 
-    @SerialName("Cooldown")
-    val cooldown: Int = 0,
-
     @SerialName("Animation")
     val animation: String? = null,
+
+    @SerialName("ReloadSound")
+    val reloadSound: SerializedSoundEvent? = null,
+
+    @SerialName("ReloadEndSound")
+    val reloadEndSound: SerializedSoundEvent? = null,
 ) {
     companion object {
         /** 副武器默认的弹药槽名 */

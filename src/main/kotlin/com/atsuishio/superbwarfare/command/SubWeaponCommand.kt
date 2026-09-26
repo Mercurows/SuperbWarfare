@@ -56,7 +56,7 @@ private fun printSubWeapons(context: CommandContext<CommandSourceStack>, entity:
     }
 
     val gun = GunData.from(stack)
-    val instances = SubWeaponRuntime.installed(gun)
+    val instances = SubWeaponRuntime.installed(gun, client = false)
 
     context.ok(
         Component.literal("[SubWeapon] ${entity.name.string} / ${gun.id} -> ${instances.size}")

@@ -22,6 +22,7 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.item.ItemStack
 import java.util.*
 
+// TODO 正确移植
 /**
  * 副武器的运行时。
  *
@@ -60,6 +61,7 @@ object SubWeaponRuntime {
      * @param slot 它在主武器上的槽位（也是报文里用的标识：[slotName]）
      * @param attachmentId 配件数据 id（与合成栈根 tag 里的 `Id` 对应）
      * @param info 配件上的 `SubWeapon` 定义
+     * @param clientSide 这份实例属于哪一侧（缓存键的一半，见不变式 ③）
      * @param stack 合成栈：副武器状态的宿主。它不在任何背包里，只被 [CACHE] 强引用着 ——
      *   否则会掉出 `GunData.DATA_CACHE`（weakKeys），下一 tick 又是一个新的 `GunData`。
      * @param mainTag 组装时主武器 `Attachments.<槽位>` 里的那个 compound **实例**。
@@ -72,6 +74,7 @@ object SubWeaponRuntime {
         val slot: AttachmentType,
         val attachmentId: ResourceLocation,
         val info: SubWeaponInfo,
+        val clientSide: Boolean,
         val stack: ItemStack,
         val mainTag: CompoundTag,
         val data: GunData,
@@ -88,7 +91,6 @@ object SubWeaponRuntime {
          * 与主武器开火同一个口径（`1200 / RPM`），且至少 1 tick。
          */
         fun cooldownTicks(): Int {
-            if (info.cooldown > 0) return info.cooldown
             val rpm = data.get(GunProp.RPM).coerceAtLeast(1)
             return (1200 / rpm).coerceAtLeast(1)
         }
@@ -124,7 +126,7 @@ object SubWeaponRuntime {
      * 3. 对应物品是 [SubWeaponItem]（否则拿不到 `GunData`）。
      */
     @JvmStatic
-    fun installed(gun: GunData): List<Instance> {
+    fun installed(gun: GunData, client: Boolean = true): List<Instance> {
         val cache = cacheOf(gun)
         val found = LinkedHashMap<AttachmentType, Instance>()
 
@@ -156,7 +158,7 @@ object SubWeaponRuntime {
                 val stack = ItemStack(item)
                 stack.tag = mainTag.copy()
 
-                Instance(attachment.slot, attachment.id, info, stack, mainTag, GunData.from(stack))
+                Instance(attachment.slot, attachment.id, info, true, stack, mainTag, GunData.from(stack))
                     .also { warnIfNoBaseline(it) }
             }
 
@@ -184,7 +186,7 @@ object SubWeaponRuntime {
 
     /** 按报文里的槽位标识找（`SUBWEAPON` 这样的枚举名） */
     @JvmStatic
-    fun find(gun: GunData, slotName: String): Instance? =
+    fun find(gun: GunData, slotName: String, client: Boolean = true): Instance? =
         installed(gun).firstOrNull { it.slotName == slotName }
 
     // ------------------------------------------------------------------ 回写
@@ -246,7 +248,7 @@ object SubWeaponRuntime {
      * 换弹/拉栓/栓动这些只在 `inMainHand` 分支里跑的流程必须走到。
      */
     @JvmStatic
-    fun tick(shooter: Entity?, gun: GunData) {
+    fun tick(shooter: Entity?, gun: GunData, inMainHand: Boolean = true) {
         if (shooter == null) return
         if (shooter.level().isClientSide) return
         if (gun.item is SubWeaponItem) return

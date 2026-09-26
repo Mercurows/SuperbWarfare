@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.gun
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.gun.MeleeClientHandler.MELEE_SAFE_LOCK_TICKS
+import com.atsuishio.superbwarfare.client.gun.MeleeClientHandler.tick
 import com.atsuishio.superbwarfare.command.MeleeDebugHooks
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.GunData
@@ -52,6 +53,14 @@ object MeleeClientHandler {
         private set
 
     /**
+     * 上一 tick G（副武器开火键）是否按下。
+     *
+     * 副武器是**半自动**：只认按键的上升沿。这个标记必须在 [tick] 的**最开头**更新，
+     * 否则任何一次提前 return 都会让它停在 `true`，下一次真正按下就被当成"一直按着"。
+     */
+    private var subWeaponKeyWasDown: Boolean = false
+
+    /**
      * 本次 tick 的近战入口。
      *
      * @param stack                 主手物品
@@ -72,6 +81,11 @@ object MeleeClientHandler {
         canOperate: Boolean,
         skipStateTick: Boolean = false,
     ) {
+        // G 的**上升沿**要在所有提前 return 之前算出来：只要有一帧没更新这个标记，
+        // 后面松开/再按就会被误判成"一直按着"，半自动就废了。
+        val subWeaponJustPressed = subWeaponFireKeyDown && !subWeaponKeyWasDown
+        subWeaponKeyWasDown = subWeaponFireKeyDown
+
         val item = stack.item as? GunItem ?: return
         if (!GunItem.isHeldWeapon(stack)) return
 
@@ -88,10 +102,18 @@ object MeleeClientHandler {
             return
         }
 
-        // G 键：装了副武器就用副武器（遍历逐个触发），没装才等同 V。
-        // `tryTrigger` 返回 true = 这次 G 已被副武器消费（含"全在冷却"的反馈），不再落到近战。
+        // G 键：装了副武器就用副武器，没装才等同 V。
+        //
+        // **副武器是半自动**：只在按键上升沿触发一次，按住不放不会再打 ——
+        // 单发下挂榴弹本来就不该像自动武器那样连发（弹匣只有 1 发，
+        // 按住只会变成"打完 → 装填 → 又打"，听感上就是音效一直响）。
+        // 但**整段按住期间 G 都被副武器吞掉**，不会掉到近战入口去。
         val fromSubWeaponKey = subWeaponFireKeyDown && !meleeKeyDown
-        if (fromSubWeaponKey && SubWeaponClientHandler.tryTrigger(player, data, state)) return
+        if (fromSubWeaponKey &&
+            SubWeaponClientHandler.tryTrigger(player, data, state, justPressed = subWeaponJustPressed)
+        ) {
+            return
+        }
 
         val wantsMelee = meleeKeyDown || fromSubWeaponKey || (data.meleeOnly() && holdingFireKey)
         if (!wantsMelee) return

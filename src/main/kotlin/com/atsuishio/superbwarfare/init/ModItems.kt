@@ -740,7 +740,7 @@ object ModItems {
 
     // SubWeapon（副武器：既是配件又是一把真枪）
     // @formatter:off
-    @JvmField val GP_25 = registerSubWeapon("gp_25", Rarity.RARE)
+    @JvmField val SUB_WEAPON_GP_25 = registerSubWeapon("sub_weapon_gp_25", Rarity.RARE)
     // @formatter:on
 
     fun registerDispenserBehavior() {
