@@ -5243,5 +5243,37 @@
         "stream": false
       }
     ]
+  },
+  "gp_25_fire_1p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/gp_25/gp_25_fire_1p",
+        "stream": false
+      }
+    ]
+  },
+  "gp_25_fire_3p": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/gp_25/gp_25_fire_3p",
+        "stream": false
+      }
+    ]
+  },
+  "gp_25_reload_1": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/gp_25/gp_25_reload_1",
+        "stream": false
+      }
+    ]
+  },
+  "gp_25_reload_2": {
+    "sounds": [
+      {
+        "name": "superbwarfare:gun/gp_25/gp_25_reload_2",
+        "stream": false
+      }
+    ]
   }
 }

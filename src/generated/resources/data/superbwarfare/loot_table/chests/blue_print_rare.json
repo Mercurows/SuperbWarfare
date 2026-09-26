@@ -41,6 +41,11 @@
         },
         {
           "type": "minecraft:item",
+          "name": "superbwarfare:gp_25_blueprint",
+          "weight": 30
+        },
+        {
+          "type": "minecraft:item",
           "name": "superbwarfare:m_4_blueprint",
           "weight": 30
         },

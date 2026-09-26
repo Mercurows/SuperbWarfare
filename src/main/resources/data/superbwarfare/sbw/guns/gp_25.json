@@ -1,0 +1,53 @@
+{
+  "Spread": 3.5,
+  "RecoilX": 0.004,
+  "RecoilY": 0.023,
+  "Damage": 80,
+  "Projectile": "superbwarfare:gun_grenade",
+  "ExplosionDamage": 80,
+  "ExplosionRadius": 5,
+  "Headshot": 2,
+  "Velocity": 3.25,
+  "Magazine": 1,
+  "Weight": 4,
+  "MeleeDamage": 5,
+  "MeleeDuration": 16,
+  "MeleeAngle": 100,
+  "DrawTime": 11,
+  "ZoomTime": 6,
+  "EmptyReloadTime": 24,
+  "GunType": "CurvedLauncher",
+  "ProjectileBone": "he_head",
+  "Gravity": 0.07,
+  "AmmoType": [
+    "superbwarfare:grenade_40mm",
+    {
+      "Ammo": "superbwarfare:smoke_gun_grenade",
+      "ProjectileBone": "smoke_head",
+      "Projectile": "superbwarfare:smoke_gun_grenade",
+      "Override": {
+        "Damage": 20,
+        "ExplosionDamage": 0,
+        "ExplosionRadius": 0
+      }
+    }
+  ],
+  "Icon": "superbwarfare:textures/gun_icon/gp_25_icon.png",
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:battle_of_wits",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:cupid_arrow"
+  ],
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:gp_25_fire_1p",
+    "Fire3P": "superbwarfare:gp_25_fire_3p",
+    "Fire3PFar": "superbwarfare:m_79_far",
+    "Fire3PVeryFar": "superbwarfare:m_79_veryfar"
+  },
+  "Crosshair": "@GunGrenade"
+}

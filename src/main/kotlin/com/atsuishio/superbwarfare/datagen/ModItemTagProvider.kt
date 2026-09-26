@@ -247,6 +247,7 @@ class ModItemTagProvider(
             ModItems.M_1897.get(),
             ModItems.AA_12.get(),
             ModItems.M_79.get(),
+            ModItems.GP_25.get(),
             ModItems.SECONDARY_CATACLYSM.get()
         )
         this.tag(ModTags.Items.ANIMATED_SMG).add(
@@ -300,7 +301,8 @@ class ModItemTagProvider(
         this.tag(ModTags.Items.MACHINE_GUN).add(ModItems.MINIGUN.get(), ModItems.M_2_HB.get())
         this.tag(ModTags.Items.LAUNCHER).add(
             ModItems.RPG.get(), ModItems.JAVELIN.get(), ModItems.IGLA_9K38.get(),
-            ModItems.M_79.get(), ModItems.SECONDARY_CATACLYSM.get(), ModItems.SUPER_STAR_SHOOTER.get()
+            ModItems.M_79.get(), ModItems.GP_25.get(), ModItems.SECONDARY_CATACLYSM.get(),
+            ModItems.SUPER_STAR_SHOOTER.get()
         )
 
         this.tag(ModTags.Items.MILITARY_ARMOR).add(ModItems.RU_CHEST_6B43.get(), ModItems.US_CHEST_IOTV.get())
@@ -318,6 +320,7 @@ class ModItemTagProvider(
         this.tag(ModTags.Items.RARE_BLUEPRINT).add(
             ModItems.GLOCK_18_BLUEPRINT.get(),
             ModItems.M_79_BLUEPRINT.get(),
+            ModItems.GP_25_BLUEPRINT.get(),
             ModItems.M_4_BLUEPRINT.get(),
             ModItems.SKS_BLUEPRINT.get(),
             ModItems.M_870_BLUEPRINT.get(),

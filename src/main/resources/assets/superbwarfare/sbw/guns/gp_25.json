@@ -1,0 +1,36 @@
+{
+  "SlotIcon": "superbwarfare:textures/item/gp_25.png",
+  "Animation": {
+    "Idle": "animation.gp_25.idle",
+    "Fire": "animation.gp_25.fire",
+    "ReloadEmpty": "animation.gp_25.reload",
+    "Edit": "animation.gp_25.edit"
+  },
+  "ShootRecoil": {
+    "Offset": [1.0, 0.25, 1.5],
+    "Rotation": [1.1, 0.6, 0.5],
+    "ZoomRate": 0.9,
+    "Speed": 1.0
+  },
+  "Model": {
+    "Animation": "superbwarfare:animations/bedrock/gun/gp_25.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/gp_25.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/gp_25.png"
+  },
+  "FlareSize": 0.4,
+  "HasSmoke": true,
+  "Smoke": {
+    "Size": 0.45,
+    "Growth": 0.25,
+    "Lifetime": 0.3,
+    "Speed": 0.4,
+    "Count": 2,
+    "Opacity": 0.9,
+    "Drag": 2,
+    "RandomSize": 0.05,
+    "RandomGrowth": 0.2,
+    "RandomLifetime": 0.2,
+    "RandomSpeed": 0.2,
+    "RandomOpacity": 0.1
+  }
+}
