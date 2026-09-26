@@ -10,7 +10,6 @@ import com.atsuishio.superbwarfare.data.gun.GunData.Companion.DATA_VERSION
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.UUID_CACHE
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.get
-import com.atsuishio.superbwarfare.data.gun.GunData.Companion.getDefault
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.AMMO_CONSUMER
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.AMMO_COST_PER_SHOOT
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.AVAILABLE_FIRE_MODES
@@ -1637,6 +1636,41 @@ class GunData private constructor(
     }
 
     /**
+     * Re-decodes [state] from the live tag after somebody else wrote it.
+     *
+     * [state] is decoded once at construction and then kept up to date by this instance's own writes,
+     * so normally the mirror is authoritative. The exception is a stack that **shares its tag** with
+     * another owner — the secondary weapon (`SubWeaponRuntime`) borrows a child compound of the main
+     * gun's NBT, and the two sides (or two stacks) take turns writing it. Whoever folds newer content
+     * into the tag must re-decode, or this instance would keep reading (and later re-writing) a stale
+     * snapshot. Symptom when it is missed: on the client the secondary weapon's ammo/reload state is
+     * frozen at assembly time, so "can shoot" stays true while the server is still reloading.
+     *
+     * Only the state is re-read: the tag is neither merged nor replaced, and the wrapped stack stays
+     * the same — that is [rebind]'s job.
+     *
+     * Must not be called inside a [batch]: the pending write is dropped (it belongs to the superseded
+     * snapshot anyway).
+     */
+    fun pullFromTag() {
+        GunState.locked(gunDataTag) {
+            state = GunState.fromTag(gunDataTag)
+        }
+
+        // The tag content supersedes anything a batch was still holding back.
+        persistPending = false
+
+        // Bookkeeping that depends on the tag contents.
+        this.lastTimeStack = null
+        this.cachedBackupAmmo = -1
+        this.cachedBackupAmmoTick = -BACKUP_AMMO_CACHE_TICKS
+        cachedDefaultData = null
+        cachedDefaultDataId = null
+
+        invalidateProperties()
+    }
+
+    /**
      * Re-binds this instance to [newStack], a newer snapshot of the same logical gun.
      *
      * The persisted tag is re-read into the *same* [CompoundTag] instances ([tag], [gunDataTag],
@@ -1683,6 +1717,18 @@ class GunData private constructor(
      * [DoubleValue] / subdata handler in this [GunData] pointing at live data.
      */
     private fun reloadTagFrom(incoming: CompoundTag) {
+        // ⚠ 自合并：`incoming` 有可能**就是我们自己的根 tag**。
+        //
+        // 副武器（`SubWeaponRuntime`）那种"借主武器 NBT 里的附件子 compound 当自己的根 tag"
+        // 的栈会走到这里：`stack` 是新建的（所以 `existing.stack !== newStack` 成立），
+        // 但两份栈的根 tag 是同一个对象。此时下面的 `clearTag(tag)` 会把 `incoming` 一并清空，
+        // `merge` 于是变成"把空 tag 并进自己" —— 整个枪械状态（弹药、换弹计时器、栓动、
+        // 连附件 `Id`）被就地抹掉，表现就是"装填走完了却没装进去 / 计时器被打回 0"。
+        //
+        // 这种情况下没有"新内容"需要合并（来源就是自己），按当前 tag 重新解码即可 ——
+        // 调用方紧接着就会做这件事。
+        if (incoming === tag) return
+
         val incomingGunData = incoming.getCompound(KEY_GUN_DATA)
         val incomingPerks = incoming.getCompound(KEY_PERKS)
         val incomingAttachments = incoming.getCompound(KEY_ATTACHMENTS)

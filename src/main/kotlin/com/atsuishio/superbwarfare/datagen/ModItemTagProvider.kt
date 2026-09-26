@@ -566,7 +566,7 @@ class ModItemTagProvider(
             ModItems.BAYONET_6KH2
         ),
         AttachmentType.SUBWEAPON to listOf(
-            ModItems.GP_25
+            ModItems.SUB_WEAPON_GP_25
         ),
     )
 

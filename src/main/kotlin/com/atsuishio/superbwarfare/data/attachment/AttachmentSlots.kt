@@ -119,9 +119,7 @@ object AttachmentSlots {
         const val STOCK = "stock_pos"
         const val MAGAZINE = "magazine_pos"
         const val BAYONET = "bayonet_pos"
-
-        /** 副武器（下挂榴弹发射器这类）的约定挂点骨骼 */
-        const val SUBWEAPON = "subweapon_pos"
+        const val SUBWEAPON = "sub_weapon_pos"
     }
 
     /**
@@ -191,12 +189,18 @@ object AttachmentSlots {
         // 物理上两者共用同一根下导轨，但合并挂点组等于"装了垂直握把就装不了下挂榴弹"，
         // 那是玩法改动而不是数据整理 —— 三期按"现有行为零变化"处理，需要互斥时把
         // 这里改成 `"grip_rail"` 即可（`Attachment.mountConflict` 会自动跟着走）。
+        //
+        // **挂点骨骼走 `FromDefinition` 而不是 `Fixed`**：副武器挂在枪身的哪根骨骼
+        // 由配件自己的 `Bone` 说了算（不同的下挂件可以挂在不同位置，将来加"枪托内置发射器"
+        // 之类也不用再改代码）；配件没写 `Bone` 时才退回约定骨骼 `sub_weapon_pos`。
+        // 用 `Fixed` 的话配件里的 `Bone` 会被**静默忽略**，模型骨骼名一旦和常量差一个字符
+        // （`subweapon_pos` vs `sub_weapon_pos`）就什么都不会渲染，且没有任何报错。
         AttachmentSlot(
             type = AttachmentType.SUBWEAPON,
             mount = "subweapon_rail",
             tagBucket = "subweapon",
             icon = "subweapon",
-            mountBone = AttachmentMountBone.Fixed(Bones.SUBWEAPON),
+            mountBone = AttachmentMountBone.FromDefinition(Bones.SUBWEAPON),
             focusBone = Bones.SUBWEAPON,
             renderMode = AttachmentRenderMode.GENERIC,
         ),

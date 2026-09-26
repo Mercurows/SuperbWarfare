@@ -4,8 +4,6 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
-import com.atsuishio.superbwarfare.event.GunEventHandler
-import com.atsuishio.superbwarfare.event.GunEventHandler.tryStartReload
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
@@ -13,6 +11,7 @@ import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedUUID
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedVector3f
 import com.atsuishio.superbwarfare.subweapon.SubWeaponRuntime
+import com.atsuishio.superbwarfare.tools.playLocalSound
 import com.atsuishio.superbwarfare.tools.toVec3
 import kotlinx.serialization.Serializable
 
@@ -54,7 +53,7 @@ data class SubWeaponFireMessage(
         val gun = GunData.from(stack)
 
         for (slotName in slots) {
-            val instance = SubWeaponRuntime.find(gun, slotName)
+            val instance = SubWeaponRuntime.find(gun, slotName, client = false)
             if (instance == null) {
                 debug { "subweapon '$slotName' is not installed on ${gun.id}" }
                 continue
@@ -70,7 +69,7 @@ data class SubWeaponFireMessage(
                 continue
             }
 
-            // ↓ 开火 / 装填的**唯一**判定点
+            // ↓ 开火的**唯一**判定点（装填已改由 `SubWeaponRuntime.tick` 自动完成，这里不再触发）
             if (subWeapon.canShoot(player)) {
                 if (targetPos == null) {
                     subWeapon.shoot(player, spread, zoom, uuid, power)
@@ -78,36 +77,31 @@ data class SubWeaponFireMessage(
                     subWeapon.shoot(player, spread, zoom, uuid, targetPos.toVec3(), power)
                 }
                 gun.cooldown.set(instance.cooldownKey, instance.cooldownTicks())
+
+                // 第一人称开火音：**服务端拍板、只发给射手一个人**。
+                //
+                // 只有走到这里（`canShoot` 为真、这一发真的打出去了）才会响，
+                // 所以"装填中 / 空仓 / 冷却中按 G"不可能再响开火音 ——
+                // 之前让客户端拿自己那份同步状态去预测，结果就是装填期间空响一发。
+                // 音效参数由 `GunItem.resolveFire1PSounds` 算（与主武器同一套口径），
+                // 播放走 `playLocalSound`（`ClientboundSoundPacket`，只发给这个玩家）。
+                for (sound in subWeapon.item.resolveFire1PSounds(subWeapon)) {
+                    player.playLocalSound(sound.sound, sound.volume, sound.pitch)
+                }
+
+                // 开火屏幕抖动：与载具武器同一个入口，幅度由副武器数据自己的 `ShootShake` 决定
+                // （`[半径, 时长, 幅度]`，三项都 > 0 才生效；没写就不抖）。
+                // 主武器的 `GunItem` 里那一行是**注释掉**的，所以这里得显式调一次。
+                subWeapon.shakePlayers(player)
+
                 debug { "subweapon '$slotName' fired (${subWeapon.id})" }
             } else {
-                // 空仓 / 状态不允许开火 → 走它自己的换弹流程
-                // （`ReloadTypes` / 换弹时间 / 备弹扣除 / 能量换算全都是现成的）
-                val timeBefore = subWeapon.reload.time()
-                tryStartReload(player, subWeapon)
-                val timeAfterTry = subWeapon.reload.time()
-
-                // 换弹是**两段式**的：`startReload()` 只 markStart，真正的状态切换发生在
-                // 下一 tick 该枪自己的 `gunTick` 里。这里立刻推进一 tick，
-                // 好处是**本 tick 内**状态就变成 RELOADING ——
-                // 客户端下一次读状态时不会再把这次触发判成"什么都没发生"。
-                GunEventHandler.gunTick(player, subWeapon, inMainHand = true)
-                val timeAfterTick = subWeapon.reload.time()
-
+                // 打不出去就什么都不做 —— 装填已经由 `SubWeaponRuntime.tick` 的自动装填接管，
+                // 客户端也不会再发"请装填"的请求。这里留一行日志方便对账。
                 debug {
-                    // `inst=` 是 GunData 实例身份：**每次按 G 都在变**就说明
-                    // `SubWeaponRuntime` 的缓存没命中，同一个合成 tag 上会同时存在多个
-                    // GunData（各自的 state 是"解码一次就缓存"的镜像），它们互相覆盖 →
-                    // 换弹计时器会被打回原值，永远走不到 0。
-                    "subweapon '$slotName' reload probe: " +
-                            "t=$timeBefore/$timeAfterTry/$timeAfterTick " +
-                            "inst=${System.identityHashCode(subWeapon)} " +
-                            "state=${subWeapon.reload.state()} " +
-                            "starter=${subWeapon.reload.reloadStarter.shouldStart()} " +
-                            "ammo=${subWeapon.ammo.get()}/${subWeapon.get(GunProp.MAGAZINE)} " +
-                            "backpackAmmo=${subWeapon.useBackpackAmmo()} meleeOnly=${subWeapon.meleeOnly()} " +
-                            "reloadTypes=${subWeapon.get(GunProp.RELOAD_TYPES)} " +
-                            "backupAmmo=${subWeapon.hasBackupAmmo(player)} " +
-                            "emptyBaseline=${subWeapon.getDefault().isDefaultData}"
+                    "subweapon '$slotName' cannot shoot: " +
+                            "state=${subWeapon.reload.state()} ammo=${subWeapon.ammo.get()}/" +
+                            "${subWeapon.get(GunProp.MAGAZINE)} backupAmmo=${subWeapon.hasBackupAmmo(player)}"
                 }
             }
         }

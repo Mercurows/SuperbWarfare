@@ -1671,8 +1671,22 @@ reach = (MeleeHitbox.Range + MeleeRange) × 动作的 RangeMultiplier + player.g
 所以三期真正新增的只有三件事：**装配**（`SubWeaponRuntime`）、**顺手 tick 它**、**G 的路由与冷却**。
 `SubWeaponInfo.AmmoSlot` 也因此不影响开火（见 ⑦）。
 装一把副武器到某把枪上，只要在枪数据的 `AvailableAttachments` 里加一条
-`"SubWeapon": ["superbwarfare:gp_25"]`（键就是 `AttachmentType.SUBWEAPON.attachmentName`），
-再用 `/sbw attachment @s set SubWeapon superbwarfare:gp_25` 装上即可 —— **不需要改任何代码**。
+`"SubWeapon": ["superbwarfare:sub_weapon_gp_25"]`（键就是 `AttachmentType.SUBWEAPON.attachmentName`），
+再用 `/sbw attachment @s set SubWeapon superbwarfare:sub_weapon_gp_25` 装上即可 —— **不需要改任何代码**。
+
+**⑭ 副武器的 id、自动装填与开火抖动（验收后按需求调整）**
+
+| 项 | 结论 |
+|---|---|
+| **配件 id** | `gp_25` → **`sub_weapon_gp_25`**：物品注册 id 同时是配件数据 id 与枪数据 id，所以 `sbw/attachments/sub_weapon_gp_25.json`、`sbw/guns/sub_weapon_gp_25.json`、`textures/item/sub_weapon_gp_25.png` 三者必须同名。**旧的 `gp_25` 附件定义会失效，已装过的枪要重新装一次。** bedrock 模型/贴图（`models/bedrock/attachment/gp_25.geo.json` 等）是配件 json 里显式写路径的，**保持原名不动** |
+| **挂点骨骼** | 约定骨骼常量改成 **`sub_weapon_pos`**（与枪模型里的骨骼名一致），槽位的 `mountBone` 从 `Fixed` 改成 **`FromDefinition`**：优先用配件自己声明的 `Bone`，没写才退回约定骨骼。`Fixed` 会**静默忽略**配件里的 `Bone`，骨骼名差一个字符就什么都不渲染且**没有任何报错**，这个坑不值得再踩第二次 |
+| **自动装填** | **G 只负责开火**：打空了按 G 不会有动作，装填由服务端在 `SubWeaponRuntime.tick` 里自动做（判定就是 `GunData.shouldStartReloading`，与主武器 `autoReload` 同一个谓词；**在 `gunTick` 之前调用**，这样同一 tick 内状态就能切到 RELOADING）。客户端不再发"请装填"的请求 |
+| **装填提示** | 装填期间给玩家发**动作栏文字**（`info.superbwarfare.subweapon.reloading`，带槽位名与百分比），每 4 tick 刷一次。**标记为临时方案** —— 需求方之后会换成 HUD，所以逻辑收在 `SubWeaponRuntime.showReloadingProgress` 一处，换 HUD 时删掉它即可 |
+| **开火抖动** | 开火后显式调一次 `subWeapon.shakePlayers(player)`，幅度由副武器**自己的数据**决定（`"ShootShake": [半径, 时长, 幅度]`，三项都 > 0 才生效）。主武器的 `GunItem` 里那一行是注释掉的，载具武器也是各自显式调用，所以这里必须自己调 |
+| **换弹音效的归属** | **主武器的换弹音效是动画关键帧发的**，配件没有动画 —— 所以副武器的换弹音效由**配件数据 + 服务端**自己负责：`SubWeaponInfo.ReloadSound` / `ReloadEndSound` 由 `SubWeaponRuntime` 在状态跳变时用 `playLocalSound` 播给射手（⚠ 这个跳变必须在**复用的实例**上判断，否则每次状态重建都会再响一遍，见 §11.8.3）。**开火 1P 音**同样由服务端在真的开火之后用 `playLocalSound` 播，参数来自 `GunItem.resolveFire1PSounds`（与主武器同一份口径）；服务端另外只负责 `Fire3P` / `Far` / `VeryFar` |
+| **半自动** | 副武器**只认 G 的上升沿**：按住不放不会再打第二发，但整段按住期间 G 都被副武器吞掉、不会掉到近战入口。边沿检测放在 `MeleeClientHandler.tick` 的**最开头**（任何提前 return 都不能跳过它，否则标记会卡在 `true`） |
+| **触发冷却** | **不在配件数据里配**：一律按副武器 `sbw/guns/<id>.json` 的 `RPM` 自动算（`1200 / RPM`），与主武器开火同一个口径 —— "这把武器多快"只在枪数据里写一次 |
+| **装填的"忙"判定** | **不再自己拼判定**：自动装填走主武器的 `GunData.shouldStartReloading` → `GunEventHandler.tryStartReload`（它自带"正在装填 / 正在拉栓 / 计时器没归零 / 没有备弹 / 弹匣是满的"全部拒绝条件），所以"装填中再按 G 把计时器打回满值"在结构上不可能发生。早期版本自己拼 `busy = reloading() \|\| reload.time() > 0`，那只是在给"状态被另一个 `GunData` 覆盖"的症状打补丁 —— 根因见 §11.8.3 |
 
 #### 11.8.2 三期验收步骤（手动）
 
@@ -1701,6 +1715,96 @@ reach = (MeleeHitbox.Range + MeleeRange) × 动作的 RangeMultiplier + player.g
 8. 改装界面（EDIT_MODE 键）→ 与原版一致：没有副武器按钮，其余槽位行为不变
 9. 回归：没装副武器的枪，G 仍然等同 V；22 把旧枪的近战手感不变
 ```
+
+#### 11.8.3 验收后返修：开火音效 / 按住 G / 装填不可靠
+
+> **状态：✅ 已完成。** 三个症状（开火音效不对、按住 G 音效一直响、装填走完却没装上）
+> **根子是同一个**：副武器的 [Instance] 被反复重建 —— 每次重建都会换一份 `GunData`，
+> 而两个 `GunData` 抢着写同一份 tag。
+
+**症状与日志证据**（`run/logs/latest.log`，`melee_debug_log` 打开）：
+
+```
+20:01:38.755 [Server] reload started: SUBWEAPON
+20:01:38.804 [Server] assembled SUBWEAPON -> ...: cached=true idMatch=true tagMatch=false
+20:01:38.804 [Server] reload started: SUBWEAPON      ← 同一次装填又"开始"了一遍
+20:01:39.604 [Server] assembled ... ; reload started  ← 4.3 秒里响了 12 次
+20:02:02.953 [Server] reload finished: ammo=1/1
+20:02:04.324 [Server] cannot shoot: state=EMPTY_RELOADING ammo=0/1   ← 装填"完成"后状态又回到空仓
+```
+
+| # | 症状 | 根因 | 修法 |
+|---|---|---|---|
+| 1 | 开火音效不对，听不到副武器 `SoundInfo.Fire1P` | 1P 音是**服务端**用 `playLocalSound`（`ClientboundSoundPacket`）补的，与主武器那条"客户端自己播"的链路不同源；而主武器的 3P / Far / VeryFar 在 `SoundRadius` 缺省（0）时是**静音**的，于是这一发只剩自动装填的换弹音 | 1P 音改到**客户端**播：口径收进 `GunItem.resolveFire1PSounds(data)`（主武器 `playGunClientSounds` 与副武器共用同一份参数）。服务端不再补 1P 音 |
+| 1b | 没装填好（空仓/装填中）按 G 仍然响开火音 | 1P 音由**客户端预测**：客户端按自己那份同步过来的副武器状态判断"能不能开火"，而那份状态并不可靠（服务端明明在装填，客户端仍然认为能开火）→ 空响一发 | 改成**服务端拍板**：只有 `canShoot` 为真、这一发真的打出去之后，服务端才用 `player.playLocalSound`（`SoundTool` → `ClientboundSoundPacket`，只发给射手一个人）把 `GunItem.resolveFire1PSounds` 算好的音效播给射手。**没开火就绝不会响**，而音量/音高与主武器逐字一致（同一次函数调用算的参数）。换弹开始/完成音（`ReloadSound` / `ReloadEndSound`）也走同一个 `playLocalSound` |
+| 1c | 客户端那份副武器状态可能是**装配那一刻**的快照 | `GunData.state` 是"构造时解码一次"的镜像；上一轮把实例改成"永远复用"之后，客户端再没人重新解码（旧实现靠每次重建顺带解码） | 新增 `GunData.pullFromTag()`（只重读状态，不合并 tag、不换栈）；`SubWeaponRuntime` 在折进同步内容后调用。客户端那份本来就是权威视图，所以**内容不同就折**（不再拿 `GunState.revision` 当"内容变了"的信号 —— 它只在枪械状态变化时推进，会漏掉真正的同步内容） |
+| 2 | 按住 G 音效一直响 | 不是输入没去抖（`MeleeClientHandler` 的上升沿是对的），而是**换弹音效**在重复：`SubWeaponRuntime` 每次装配失败都新建 `Instance`，`wasReloading` 退回 `false`，下一 tick 就把"正在装填"当成一次新的"装填开始" | 装配改为**永远复用同一个 `Instance`**（见下），跳变标记不再丢失；缓存按客户端/服务端分开（单人游戏里两边共用静态表，会互相把对方的实例挤掉） |
+| 3 | 装填走完提示却没装上 / 按 G 时装填计时被打回 | 两个 `GunData` 同时写一份 tag：主武器 `rebind` 走 `clearTag + merge`，把附件子 tag **换成副本**（`CompoundTag.merge` 对"原来不存在"的键是 `copy()`），缓存因此每 tick 未命中 → 新建 `GunData`；而 `GunData` 的实例收养路径可能把**根 tag 就是自己那份**的栈 rebind 回来，`clearTag` 之后 `merge` 的是刚被清空的自己 → **整份状态被抹掉**（连附件 `Id` 一起） | ①`GunData.reloadTagFrom` 加自合并保护：`incoming === tag` 时直接返回，按当前 tag 重新解码；②`SubWeaponRuntime.installed` 遇到副本**不重建**，而是把副本折进手里那份（只认更新的 revision）再把手里那份用 `Attachment.setTag` **挂回槽位** —— 引用、`GunData`、`Instance` 三者全程不变 |
+
+**装配规则（现在是这个类唯一的规则）**：
+只要槽位里还是同一个配件、而且我们手里那份 tag 里有枪械状态，就永远复用同一个 `Instance`
+（`liveTag` 引用、`GunData`、`wasReloading` / `autoReloadBackoff` 全部连续）。
+只有"从没装配过 / 换成了别的副武器 / 手里那份本来就没状态"才会新建。
+
+**④ 复用实例的代价：`GunData.state` 会冻结 → 折进新内容后必须重新解码**
+
+`GunData.state` 是**构造时解码一次**的镜像，之后只靠本实例自己的写入跟进。
+旧实现每次 resync 都重建 `Instance`，顺带也就重新解码了；改成"永远复用"之后，
+客户端那份 `GunData` 再没人重新解码 —— 于是它一直拿着**装配那一刻**的弹药/装填状态。
+
+修法：`GunData.pullFromTag()`（只重读状态，不合并 tag、不换栈，是 `rebind` 的"轻量版"），
+由 `SubWeaponRuntime` 在折进同步内容之后调用。客户端那份本来就是权威视图，所以**内容不同就折**
+（`foldIncoming(..., force = client)`）—— 不再拿 `GunState.revision` 当"内容变了"的信号：
+那个编号只在**枪械状态**变化时推进，用它当门禁会漏掉真正的同步内容，客户端就永远停在旧快照上。
+服务端反过来：手里那份才是权威，只在副本确实更新时才折，免得被旧快照倒回去。
+
+> **这一条也是"未装填好按 G 却响开火音"的根源之一。** 但最终的修法没有停在"让客户端状态变新"上：
+> 只要第一人称音还是客户端**预测**，就永远存在"客户端以为能打、服务端正在装填"的窗口
+> （同步粒度、时序、以及其它客户端写入都会影响它）。所以开火音改成**服务端拍板**（见上表 1b），
+> 客户端状态是否新鲜不再影响音效正确性。
+
+**音效链路（最终形态）**：
+
+```
+服务端：canShoot 为真 → shoot() → 成功
+        └─ GunItem.resolveFire1PSounds(subWeapon) → player.playLocalSound(...) ──► 射手客户端
+
+主武器：客户端 playGunClientSounds → playGunFire1PSound
+        └─ 同一个 resolveFire1PSounds（客户端本地 player.playSound，天然只有自己听得到）
+
+副武器换弹：SubWeaponRuntime 在"开始 / 完成"跳变时 playLocalSound（ReloadSound / ReloadEndSound）
+```
+
+要点：**① 只有真的开火才会响**（服务端是唯一事实来源）；
+**② 音量/音高口径只有一份**（`GunItem.resolveFire1PSounds`，两条链路共用）。
+播放本身**不需要新报文**：`SoundTool.playLocalSound` 就是"服务端让某个客户端播一条音效"的现成做法
+（`ClientboundSoundPacket` + `Holder.Direct`，因此数据包里按名字写的、不在音效注册表里的音效
+也能正常发过去）。曾经试过"自定义报文 + 客户端 `playSound`"，效果等价但多一层管道，已回退。
+
+> 顺带记一笔排查结论：`playLocalSound` **不是**当初"听不到 1P 音"的原因 ——
+> 那时的真正原因是自动装填的换弹音（音量 1.0）在开火后 2 tick 就响起、并被状态反复重建
+> 触发成一串（一次开火响 2~12 遍），把 0.5 音量的开火音整个盖住了。换弹音重复的根因见第 ② 条。
+
+**顺带（不属于上述三条，但会误导排障）**：`DataValidator` 用**另起一份**解码结果做校验，
+而 `IDBasedData.id` 不是序列化字段，往返一趟会丢 —— 于是 `SubWeapon.Data` 缺省（＝用物品 id，
+正常写法）也会被报成 `SubWeapon points at gun data ''`。现在往返之后会补打 id 戳。
+
+**顺带（复用正常枪械流程）**：自动装填的入口从"自己拼 `busy` 判定"换成主武器那条
+`GunData.shouldStartReloading` → `GunEventHandler.tryStartReload`，与主武器 `autoReload` 完全同一个谓词和入口
+（它自带"正在装填 / 正在拉栓 / 计时器没归零 / 没有备弹 / 弹匣是满的"全部拒绝条件）。
+
+**返修验收**：
+```
+1. /sbw attachment @s set SubWeapon superbwarfare:sub_weapon_gp_25，背包里带上 40mm 榴弹
+2. 按一下 G → 一声 m_79_fire_1p（与手持 m_79 开火同款），弹匣空 → 自动装填（m_79_open）
+3. **按住 G 不放**：全程只响一次开火音 + 一次装填音/完成音；不会一直响
+4. 装填完成 → 绿色完成提示 + ammo=1/1；按 G 立刻能打出下一发（不会"提示走完了却打不出去"）
+5. 装填过程中按 G：什么都不发生（不打断、不重置计时），装填照常走完
+6. **没装填好之前（空仓 / 装填中）连按 G：一声开火音都不该有**（只有冷却时的 trigger_click）
+7. melee_debug_log 打开时，服务端日志里一次装填只应出现**一次** `reload started` 与一次 `reload finished`
+```
+
+
 
 ---
 

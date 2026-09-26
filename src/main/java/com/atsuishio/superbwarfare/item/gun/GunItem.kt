@@ -420,6 +420,52 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     open fun hideBulletChainBelowShots() = -1
 
     /**
+     * 算出这把枪开一枪时**射手自己**该听到的音效（第一人称音），口径与旧的
+     * `ClientEventHandler.playGunClientSounds` 完全一致：`Fire1P` / `Fire1PSilent`（按枪口配件是否消音）、
+     * 音量 `0.5 × 音效半径倍率`、音高按热量衰减、`BEAST_BULLET` perk 的额外音效，以及非消音时的
+     * `REFLECTIONS` 尾音。
+     *
+     * **只算参数、不播放**：主武器的 1P 音在客户端直接播（[com.atsuishio.superbwarfare.event.ClientEventHandler.playGunFire1PSound]），
+     * 而副武器的开火完全发生在服务端 —— 服务端把这里算好的参数发给射手客户端去播
+     * （`LocalSoundMessage`），这样两条链路的口径逐字一致，而且**只有服务端真的开火才会响**。
+     *
+     * @param data 要算音效的枪械数据；主武器传手持栈的，副武器传它自己那份。
+     * @return 按播放顺序排列的音效列表（可能为空：数据里没写 `Fire1P`）。
+     */
+    open fun resolveFire1PSounds(data: GunData): List<LocalSound> {
+        val sounds = ArrayList<LocalSound>(3)
+
+        val soundInfo = data.get(GunProp.SOUND_INFO)
+        val pitch = if (data.heat.get() <= 75) 1f else (1 - 0.02 * Math.abs(75 - data.heat.get())).toFloat()
+
+        if (data.perk.get(Perk.Type.AMMO) === ModPerks.BEAST_BULLET.get()) {
+            sounds += LocalSound(ModSounds.HENG.get(), 1f, ((2 * Math.random() - 1) * 0.1f + pitch).toFloat())
+        }
+
+        val isSilent = data.isBarrelSilenced()
+        val fire1p = if (isSilent) soundInfo.fire1PSilent else soundInfo.fire1P
+        val volumeMultiplier = getCustomSoundRadius(data).coerceAtLeast(1.0)
+
+        if (fire1p != null) {
+            sounds += LocalSound(
+                fire1p,
+                0.5f * volumeMultiplier.toFloat(),
+                ((2 * Math.random() - 1) * 0.05f + pitch).toFloat()
+            )
+
+            if (!isSilent) {
+                sounds += LocalSound(
+                    ModSounds.REFLECTIONS.get(),
+                    0.25f * volumeMultiplier.toFloat(),
+                    ((2 * Math.random() - 1) * 0.05f + pitch).toFloat()
+                )
+            }
+        }
+
+        return sounds
+    }
+
+    /**
      * 服务端在开火前的额外行为
      */
     open fun beforeShoot(parameters: ShootParameters) {

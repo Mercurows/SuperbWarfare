@@ -708,7 +708,10 @@
   "item.superbwarfare.steel_pipe_grip": "Steel Pipe Grip",
   "item.superbwarfare.bayonet_m_9": "M9 Bayonet",
   "item.superbwarfare.bayonet_6kh2": "6KH2 Bayonet",
-  "item.superbwarfare.gp_25": "GP-25 Underbarrel Grenade Launcher",
+  "item.superbwarfare.sub_weapon_gp_25": "GP-25 Underbarrel Grenade Launcher",
+  "info.superbwarfare.subweapon.reloading": "%s Reloading… %s%%",
+  "info.superbwarfare.subweapon.reloaded": "%s Reloaded (%s)",
+  "info.superbwarfare.subweapon.reload_empty": "%s: no ammo to load",
 
   "death.attack.gunfire": "%1$s was gunned down by %2$s",
   "death.attack.gunfire.entity": "%1$s was gunned down by %2$s",

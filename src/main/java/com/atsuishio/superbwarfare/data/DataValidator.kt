@@ -101,6 +101,11 @@ object DataValidator {
                     // "编码回 JsonElement 再解析" 这条路，这里顺带保证所有数据类都能往返
                     val roundTripped =
                         STRICT.decodeFromJsonElement(serializer, STRICT.encodeToJsonElement(serializer, decoded))
+                    // 与 `ComplexJsonResourceReloadListener` 一样，把文件路径打戳进 `IDBasedData`：
+                    // 校验里有依赖 id 的规则（如 `SubWeapon.Data` 缺省时按配件 id 去找枪数据），
+                    // `id` 不是序列化字段，往返一趟会丢掉 —— 不打戳就会报
+                    // "SubWeapon points at gun data ''" 这种假错误。
+                    stampId(roundTripped, id)
                     validateDerivedState(roundTripped) { warning ->
                         warnings += Issue(directory, id, warning)
                     }
@@ -118,6 +123,16 @@ object DataValidator {
         }
 
         return Report(checked, issues)
+    }
+
+    /**
+     * 把文件路径决定的 id 打戳进 [decoded]（见 [IDBasedData]）。
+     *
+     * 数据加载器本来就会做这件事（`ComplexJsonResourceReloadListener`），但校验器是**另起一份**
+     * 解码结果，`id` 又不在序列化字段里 —— 不补这一刀，凡是读 `getId()` 的校验规则都会拿到空串。
+     */
+    private fun stampId(decoded: Any, id: String) {
+        (decoded as? IDBasedData<*>)?.id = id
     }
 
     /**
@@ -204,8 +219,6 @@ object DataValidator {
      */
     private fun validateSubWeaponData(data: AttachmentDefinition, warn: (String) -> Unit) {
         val info = data.subWeapon ?: return
-
-        require(info.cooldown >= 0) { "SubWeapon.Cooldown must be >= 0, got ${info.cooldown}" }
 
         val attachmentId = data.getId()
         val gunDataId = info.data?.takeIf { it.isNotBlank() } ?: attachmentId

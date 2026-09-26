@@ -1,0 +1,19 @@
+{
+  "Slot": "SubWeapon",
+  "Level": 1,
+  "Bone": "sub_weapon_pos",
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 1.5
+    }
+  ],
+  "SubWeapon": {
+    "AmmoSlot": "SubWeapon",
+    "ReloadSound": "superbwarfare:m_79_open",
+    "ReloadEndSound": "superbwarfare:m_79_ammo_in"
+  },
+  "Model": "superbwarfare:models/bedrock/attachment/sub_weapon_gp_25.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/sub_weapon_gp_25.png"
+}

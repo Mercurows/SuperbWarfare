@@ -1982,29 +1982,8 @@ object ClientEventHandler {
         }
 
         val data = GunData.from(stack)
-        val perk = data.perk.get(Perk.Type.AMMO)
-        val soundInfo = data.get(GunProp.SOUND_INFO)
 
-        val pitch = if (data.heat.get() <= 75) 1f else (1 - 0.02 * abs(75 - data.heat.get())).toFloat()
-
-        if (perk == ModPerks.BEAST_BULLET.get()) {
-            player.playSound(ModSounds.HENG.get(), 1f, ((2 * Math.random() - 1) * 0.1f + pitch).toFloat())
-        }
-
-        val isSilent = data.isBarrelSilenced()
-        val fire1p = if (isSilent) soundInfo.fire1PSilent else soundInfo.fire1P
-        val volumeMultiplier = item.getCustomSoundRadius(data).coerceAtLeast(1.0)
-
-        if (fire1p != null) {
-            player.playSound(
-                fire1p,
-                0.5f * volumeMultiplier.toFloat(),
-                ((2 * Math.random() - 1) * 0.05f + pitch).toFloat()
-            )
-            if (!isSilent) {
-                player.playSound(ModSounds.REFLECTIONS.get(), 0.25f * volumeMultiplier.toFloat(), ((2 * Math.random() - 1) * 0.05f + pitch).toFloat())
-            }
-        }
+        playGunFire1PSound(player, data)
 
         val shooterHeight = player.eyePosition.distanceTo(
             (Vec3.atLowerCornerOf(
@@ -2054,6 +2033,23 @@ object ClientEventHandler {
                     )
                 }
             }
+        }
+    }
+
+    /**
+     * 一把枪的**第一人称开火音**（含 `REFLECTIONS` 尾音），口径收在
+     * [com.atsuishio.superbwarfare.item.gun.GunItem.resolveFire1PSounds] 里，与副武器共用同一份参数。
+     *
+     * 抽出来的原因：副武器的开火完全发生在服务端，而本地音必须在客户端播 ——
+     * 服务端算好参数发给射手（`LocalSoundMessage`），客户端只负责出声。
+     * 这样"未装填好按 G"不可能响（服务端根本没开火），音量/音高又与主武器逐字一致。
+     *
+     * @param data 要播开火音的枪械数据；主武器传手持栈的，副武器传它自己那份。
+     */
+    @JvmStatic
+    fun playGunFire1PSound(player: Player, data: GunData) {
+        for (sound in data.item.resolveFire1PSounds(data)) {
+            player.playSound(sound.sound, sound.volume, sound.pitch)
         }
     }
 

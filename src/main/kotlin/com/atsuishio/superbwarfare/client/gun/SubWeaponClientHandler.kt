@@ -3,7 +3,6 @@ package com.atsuishio.superbwarfare.client.gun
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.GunData
-import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.send.SubWeaponFireMessage
@@ -28,7 +27,10 @@ import net.minecraft.world.entity.player.Player
  * 动作占用取所有实际触发者里最长的一个，避免"遍历触发"被动作锁逐个拦掉。
  *
  * **客户端不决定"开火还是装填"**：那是服务端的事（见报文的类注释）。
- * 这里只做三件事 —— 挑出这一次 G 要操作的槽位、按需给一声反馈、上动作锁给个节奏。
+ * 这里只做三件事 —— 挑出这一次 G 要操作的槽位、上动作锁给个节奏、发报文。
+ * **开火音也不在这里播**：服务端在真的打出这一发之后会把音效参数发过来
+ * （`LocalSoundMessage`），客户端只负责用主武器同一套口径出声
+ * （参数来源是 `GunItem.resolveFire1PSounds`）—— 这样"其实在装填，按 G 却响了一声"不可能发生。
  * 冷却也由服务端写（写在主武器冷却表上），客户端只读 —— 单一事实来源，
  * 免得两边各写一次导致"谁都不动"的死角。
  *
@@ -43,15 +45,30 @@ object SubWeaponClientHandler {
     /**
      * 尝试用副武器消费这次 G。
      *
-     * @return `true` = 本次 G 已经归副武器（无论成功开火/装填，还是只给了一声"没反应"的反馈）；
+     * **半自动**：只有 [justPressed]（按键上升沿）为真时才真正开火；
+     * 按住不放的后续 tick 会把这次按键**吞掉但不做任何事**（既不连发，也不掉到近战）。
+     *
+     * **G 只负责"开火"**：装填是服务端自动做的（`SubWeaponRuntime.tick` 里
+     * `shouldStartReloading` → `tryStartReload`），客户端不再发"请装填"的请求。
+     *
+     * @param justPressed 本次 tick 是不是"刚按下"（由 `MeleeClientHandler` 做边沿检测）
+     * @return `true` = 本次 G 已经归副武器（无论成功开火，还是只给了一声"没反应"的反馈）；
      *   `false` = 主武器上**没有任何副武器**，调用方应当把 G 当成 V 走近战入口。
      */
     @JvmStatic
-    fun tryTrigger(player: Player, data: GunData, state: GunActionLock.State): Boolean {
-        val instances = SubWeaponRuntime.installed(data)
+    fun tryTrigger(
+        player: Player,
+        data: GunData,
+        state: GunActionLock.State,
+        justPressed: Boolean = true,
+    ): Boolean {
+        val instances = SubWeaponRuntime.installed(data, client = true)
         if (instances.isEmpty()) return false
 
-        // 有副武器就吞掉这次 G：动作被占用 / 主武器自己在换弹拉栓时什么都不做
+        // 有副武器就吞掉整个按键（包括按住不放的后续 tick）—— 但只在上升沿真正触发一次
+        if (!justPressed) return true
+
+        // 动作被占用 / 主武器自己在换弹拉栓时什么都不做
         if (state.isLocked) return true
         if (data.reloading() || data.charging() || data.bolt.actionTimer.get() > 0) return true
 
@@ -59,43 +76,25 @@ object SubWeaponClientHandler {
         var lockTicks = 0
 
         for (instance in instances) {
-            val subWeapon = instance.data
-
+            // 只看冷却（它写在主武器 NBT 上，同步很及时）。
+            //
+            // **刻意不看客户端的 `canShoot`**：客户端那份副武器状态是同步过来的、永远慢一拍，
+            // 用它当门禁会出现"服务端明明已经装好了、客户端却判定打不出去、连报文都不发"
+            // —— 表现就是"装填结束了按 G 什么都没发生"。
+            // 开火与否交给服务端一个人拍板（`SubWeaponFireMessage` 里那次 `canShoot`）。
             if (data.cooldown.isCoolingDown(instance.cooldownKey)) {
                 debug { "subweapon ${instance.slotName} skipped: cooling down" }
                 continue
             }
 
-            // 已经在装填/拉栓：别再刷报文，等它自己走完
-            if (subWeapon.reloading() || subWeapon.bolt.actionTimer.get() > 0) {
-                debug { "subweapon ${instance.slotName} skipped: busy reloading/bolting" }
-                continue
-            }
-
-            val canShoot = subWeapon.canShoot(player)
-
-            // 打不出去、背包里也没有它要的弹药：给一声反馈，别让这次 G 无声无息地消失
-            if (!canShoot && !subWeapon.hasBackupAmmo(player)) {
-                debug {
-                    "subweapon ${instance.slotName} skipped: no ammo and no backup ammo for " +
-                            subWeapon.get(GunProp.PROJECTILE).itemId
-                }
-                lockTicks = maxOf(lockTicks, MIN_RELOAD_LOCK_TICKS)
-                continue
-            }
-
             slots += instance.slotName
-            // 能开火 → 按射击周期占锁；空仓 → 按它自己的换弹时间占锁（顺带把报文频率压到一次/换弹）
-            lockTicks = maxOf(
-                lockTicks,
-                if (canShoot) instance.cooldownTicks() else reloadLockTicks(subWeapon),
-            )
+            lockTicks = maxOf(lockTicks, instance.cooldownTicks())
         }
 
         if (slots.isEmpty()) {
-            debug { "subweapon: nothing actionable this press (see the per-slot reasons above)" }
-            // 也占一小段锁：否则按住 G 会每 tick 播一声 trigger_click（"没反应"的反馈本身也该有节奏）
-            state.acquire(GunAction.SUB_WEAPON, maxOf(lockTicks, MIN_RELOAD_LOCK_TICKS))
+            debug { "subweapon: every installed sub-weapon is on cooldown" }
+            // 占一小段锁：避免同一帧内被别的入口重复触发
+            state.acquire(GunAction.SUB_WEAPON, MIN_RELOAD_LOCK_TICKS)
             player.playSound(ModSounds.TRIGGER_CLICK.get(), 1f, 1f)
             return true
         }
@@ -111,15 +110,15 @@ object SubWeaponClientHandler {
             )
         )
 
+        // 开火音**不在这里播**：副武器这一发到底打没打出去由服务端拍板（弹匣空 / 正在装填 /
+        // 冷却中都会被拒），而客户端那份副武器状态是同步过来的、可能还停在装配那一刻 ——
+        // 用它当门禁就会出现"其实在装填，按 G 却响了一声开火音"。
+        // 现在由服务端在**真的开火之后**把音效参数发给射手（`LocalSoundMessage`），
+        // 客户端只负责用主武器同一套口径出声（`ClientEventHandler.playGunFire1PSound` 的参数来源
+        // 是 `GunItem.resolveFire1PSounds`）。
+
         debug { "subweapon trigger: slots=$slots lock=$lockTicks gun=${data.id}" }
         return true
-    }
-
-    /** 装填占用时长：取该副武器自己的空仓/常规换弹时间里更长的那个 */
-    private fun reloadLockTicks(data: GunData): Int {
-        val empty = data.get(GunProp.EMPTY_RELOAD_TIME)
-        val normal = data.get(GunProp.NORMAL_RELOAD_TIME)
-        return maxOf(empty, normal, MIN_RELOAD_LOCK_TICKS)
     }
 
     private inline fun debug(message: () -> String) {

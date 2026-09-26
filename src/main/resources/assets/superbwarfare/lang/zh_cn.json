@@ -708,7 +708,10 @@
   "item.superbwarfare.steel_pipe_grip": "钢管握把",
   "item.superbwarfare.bayonet_m_9": "M9军用匕首",
   "item.superbwarfare.bayonet_6kh2": "6KH2军刺",
-  "item.superbwarfare.gp_25": "GP-25下挂榴弹发射器",
+  "item.superbwarfare.sub_weapon_gp_25": "GP-25下挂榴弹发射器",
+  "info.superbwarfare.subweapon.reloading": "%s 装填中… %s%%",
+  "info.superbwarfare.subweapon.reloaded": "%s 装填完成（%s 发）",
+  "info.superbwarfare.subweapon.reload_empty": "%s：没有可装填的弹药",
 
   "death.attack.gunfire": "%1$s被%2$s射爆了",
   "death.attack.gunfire.entity": "%1$s被%2$s射爆了",
