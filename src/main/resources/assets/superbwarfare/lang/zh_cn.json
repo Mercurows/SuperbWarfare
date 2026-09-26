@@ -983,7 +983,7 @@
   "commands.superbwarfare.attachment.fail.unknown": "未知的配件：%1$s",
   "commands.superbwarfare.attachment.fail.type": "配件%1$s属于%2$s，无法安装到%3$s",
   "commands.superbwarfare.attachment.fail.unavailable": "该枪械的可用配件列表中没有%1$s",
-  "commands.superbwarfare.attachment.fail.mount": "%1$s已经占用了%2$s挂点",
+  "commands.superbwarfare.attachment.fail.conflict": "%1$s与它互斥，无法同时安装",
   "commands.superbwarfare.attachment.fail.random": "该枪械没有可用的配件",
   "commands.superbwarfare.attachment.fail.random.type": "该枪械没有可用的%1$s",
   "commands.superbwarfare.attachment.success.set": "已将%1$s的%2$s设置为%3$s",

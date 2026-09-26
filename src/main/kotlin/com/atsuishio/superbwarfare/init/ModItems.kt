@@ -435,7 +435,7 @@ object ModItems {
     @JvmField val GLOCK_18_BLUEPRINT = registerBlueprint("glock_18_blueprint", Rarity.RARE)
     @JvmField val HUNTING_RIFLE_BLUEPRINT = registerBlueprint("hunting_rifle_blueprint", Rarity.EPIC)
     @JvmField val M_79_BLUEPRINT = registerBlueprint("m_79_blueprint", Rarity.RARE)
-    @JvmField val GP_25_BLUEPRINT = registerBlueprint("gp_25_blueprint", Rarity.RARE)
+    @JvmField val GP_25_BLUEPRINT = registerBlueprint("gp_25_blueprint", Rarity.EPIC)
     @JvmField val RPG_BLUEPRINT = registerBlueprint("rpg_blueprint", Rarity.RARE)
     @JvmField val BOCEK_BLUEPRINT = registerBlueprint("bocek_blueprint", Rarity.EPIC)
     @JvmField val M_4_BLUEPRINT = registerBlueprint("m_4_blueprint", Rarity.RARE)
@@ -735,7 +735,7 @@ object ModItems {
 
     // SubWeapon（副武器：既是配件又是一把真枪）
     // @formatter:off
-    @JvmField val SUB_WEAPON_GP_25 = registerSubWeapon("sub_weapon_gp_25", Rarity.RARE)
+    @JvmField val SUB_WEAPON_GP_25 = registerSubWeapon("sub_weapon_gp_25", Rarity.EPIC)
     // @formatter:on
 
     fun registerDispenserBehavior() {

@@ -76,14 +76,13 @@ val ATTACHMENT_COMMAND = buildCommand("attachment") {
                             }
                         }
 
-                        // 挂点组冲突：同一个挂点上已经装了别的配件，先于"不可用"报出来，
-                        // 否则只会得到一句含糊的"这把枪不支持该配件"
-                        data.attachment.mountConflict(type, definition)?.let { blocker ->
+                        // 互斥：挂点组被别人占了，或任一方在 `ConflictsWith` 里点了名。
+                        // 先于"不可用"报出来，否则只会得到一句含糊的"这把枪不支持该配件"
+                        data.attachment.conflict(type, definition)?.let { blocker ->
                             fail {
                                 Component.translatable(
-                                    "commands.superbwarfare.attachment.fail.mount",
-                                    blocker.slotName(),
-                                    AttachmentSlots.mountOf(type, definition)
+                                    "commands.superbwarfare.attachment.fail.conflict",
+                                    blocker.slotName()
                                 )
                             }
                         }
@@ -239,25 +238,39 @@ private fun randomAttachment(data: GunData, type: AttachmentType): ResourceLocat
     installableAttachments(data, type).randomOrNull()
 
 /**
- * 全量随机：**每个挂点组只出一个**。
+ * 全量随机：**每个挂点组只出一个，且抽出来的组合本身必须装得上**。
  *
- * 挂点组是互斥的（例如刺刀与枪口配件都挂在 `muzzle_device` 上），
+ * 挂点组内的槽位互斥（例如刺刀与枪口配件都挂在 `muzzle_device` 上），
  * 如果还按"每个槽位各抽一次"，就会把组里两个槽位同时抽上 —— 那是一个装不出来的组合。
  * 所以先按挂点组分组，每组在**有可用配件的槽位**里随机挑一个槽位，再在该槽位里随机挑配件。
  *
+ * 但"每组一个"还不够：互斥也可以是**跨挂点组**的（副武器与刺刀、副武器与握把互斥，
+ * 而刺刀与握把可以共存 —— 见 `AttachmentSlots.conflicts`）。所以每组抽完还要拿已经抽中的槽位
+ * 再过滤一遍，否则会抽出一个"指令都装不上"的组合（先抽到的组赢，后抽到的组让位）。
+ *
  * 调用方**必须先 [clearAllAttachments]**：否则已经装着配件的那一组里，其它槽位的候选会被
- * `availableAttachments` 的挂点过滤全部干掉，抽签退化成"重抽已经装着的那一个"。
+ * `availableAttachments` 的互斥过滤全部干掉，抽签退化成"重抽已经装着的那一个"。
  *
  * @return `槽位 to 配件 id`，按挂点组顺序（注册表顺序）；没有任何可用配件时为空列表。
  */
-private fun rollAllSlots(data: GunData): List<Pair<AttachmentType, ResourceLocation>> =
-    AttachmentType.entries
-        .groupBy { AttachmentSlots.mountOf(it) }
-        .mapNotNull { (_, slots) ->
-            val candidates = slots.filter { installableAttachments(data, it).isNotEmpty() }
-            val type = candidates.randomOrNull() ?: return@mapNotNull null
-            randomAttachment(data, type)?.let { type to it }
-        }
+private fun rollAllSlots(data: GunData): List<Pair<AttachmentType, ResourceLocation>> {
+    val rolls = mutableListOf<Pair<AttachmentType, ResourceLocation>>()
+
+    for ((_, slots) in AttachmentType.entries.groupBy { AttachmentSlots.mountOf(it) }) {
+        val type = slots.filter { installableAttachments(data, it).isNotEmpty() }.randomOrNull() ?: continue
+
+        val pick = installableAttachments(data, type).filter { id ->
+            val definition = AttachmentDefinition.from(id)
+            rolls.none { (picked, pickedId) ->
+                AttachmentSlots.conflicts(type, definition, picked, AttachmentDefinition.from(pickedId))
+            }
+        }.randomOrNull() ?: continue
+
+        rolls += type to pick
+    }
+
+    return rolls
+}
 
 /** [data] 的 [type] 槽位里真正装得上的配件：在可用列表里，且配件物品与配件数据都齐全 */
 private fun installableAttachments(data: GunData, type: AttachmentType): List<ResourceLocation> =

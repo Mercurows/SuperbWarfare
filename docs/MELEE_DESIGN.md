@@ -1195,7 +1195,7 @@ MISS : d = 7.28, 7.37, 7.54, 7.84, 7.92   ← 全部 > 7.2   （[shape]，纯距
 | # | 项 | 状态 | 落点 |
 |---|---|---|---|
 | 1 | **配件物品接口化** | ✅ | 新增 `item/attachment/AttachmentProvider.kt`（接口只声明 `attachmentId`，`definition()` 是扩展函数）；`AttachmentItem.kt` → **`BasicAttachmentItem.kt`，旧文件直接删除、不留别名**；`ModItems.registerAttachment(id, rarity, factory = ::BasicAttachmentItem)`；4 处消费点全部改成接口判断（`ModItems`、`ClientAttachmentImageTooltip:43`、`AttachmentCommand:267`、物品类自身） |
-| 2 | **槽位注册表化 + 挂点组基建** | ✅ | 新增 `data/attachment/AttachmentSlots.kt`：`AttachmentSlot`（`mount`/`tagBucket`/`icon`/`mountBone`/`focusBone`/`renderMode`/`withdrawAmmoOnChange`）、`AttachmentMountBone`（`Fixed`/`FromDefinition`/`GunModel`）、`AttachmentRenderMode`（`CUSTOM`/`GENERIC`）、`EDIT_ORDER`；`AttachmentDefinition` +`Mount`/`AllowSharedMount`；`Attachment.mountConflict()`；`GunData.availableAttachments()` 按挂点过滤；`Attachment.cycle`/指令/补全自动跟着走 |
+| 2 | **槽位注册表化 + 挂点组基建** | ✅ | 新增 `data/attachment/AttachmentSlots.kt`：`AttachmentSlot`（`mount`/`conflictsWith`/`tagBucket`/`icon`/`mountBone`/`focusBone`/`renderMode`/`withdrawAmmoOnChange`）、`AttachmentMountBone`（`Fixed`/`FromDefinition`/`GunModel`）、`AttachmentRenderMode`（`CUSTOM`/`GENERIC`）、`EDIT_ORDER`；`AttachmentDefinition` +`Mount`/`ConflictsWith`/`AllowSharedMount`；`AttachmentSlots.conflicts()` → `Attachment.conflict()`；`GunData.availableAttachments()` 按挂点 + 显式互斥过滤；`Attachment.cycle`/指令/补全自动跟着走 |
 | 3 | **`AttachmentType.BAYONET` + 刺刀落地** | ✅ | 枚举 +`Bayonet`；`ModItems.BAYONET_M_9`；`data/superbwarfare/sbw/attachments/bayonet_m_9.json`；bedrock 模型/贴图（需求方提供）+ `textures/item/bayonet_m_9.png`；`Model`/`Texture`/`Modifiers`/`Override` 齐备；tag + datagen（`attachment/bayonet{,/common}`）；`en_us`/`zh_cn` 语言；渲染见 #6 |
 | 4 | **刺刀属性 + 动作表** | ✅ | `bayonet_m_9.json`：`Modifiers`（`MeleeDamage ×1.3` / `MeleeRange +1.2` / `Weight +0.4`）**与** `Override.MeleeActions`（单段突刺）并存，分工见 §11.5.3-② |
 | 5 | **动画候选链 + 短名拼接** | ✅ | `MeleeAction.Animation` → `SingleOrList<String>?`；`resource/gun/GunAnimationNames.kt`；`GeoGunAnimationInstance.resolveMeleeName()` 按链解析、失败日志去重；`/sbw melee actions` 打印候选→实际名字。刺刀写 `["hit_bayonet", "hit"]`，动画做出来之前自动落在枪自己的 `hit` 上 |
@@ -1487,9 +1487,11 @@ reach = (MeleeHitbox.Range + MeleeRange) × 动作的 RangeMultiplier + player.g
 
 `AttachmentSlots` 里 `BAYONET` 的挂点组改成与 `BARREL` 相同的 `muzzle_device`：
 两者**抢同一个枪口挂点**，装了其中一个就装不了另一个。
-`Attachment.mountConflict` → `GunData.availableAttachments` 过滤 → 指令补全 / `Attachment.cycle`
-全部自动跟着走；用 `/sbw attachment set` 硬装时会给一句专门的失败文案
-（`commands.superbwarfare.attachment.fail.mount`）。
+`AttachmentSlots.conflicts` → `Attachment.conflict` → `GunData.availableAttachments` 过滤 →
+指令补全 / `Attachment.cycle` 全部自动跟着走；用 `/sbw attachment set` 硬装时会给一句专门的失败文案
+（`commands.superbwarfare.attachment.fail.conflict`）。
+
+> 同一个入口现在还负责**非传递**的显式互斥（副武器 ↔ 刺刀 / 握把，见 §11.8.4）。
 
 > 数据侧除了挂点组，还要注意：**两个刺刀的 `MeleeActions` 覆盖的是整张动作表**，
 > 所以 `MaxTargets`/`Knockback` 这些不继承枪自己的动作，得按需要显式写回（§11.5.3-②）。
@@ -1562,10 +1564,10 @@ reach = (MeleeHitbox.Range + MeleeRange) × 动作的 RangeMultiplier + player.g
 
 **① 槽位与挂点改名（需求方要求）**：`AttachmentType.SUBWEAPON`（不是 `UNDERBARREL`），
 渲染挂点骨骼 `subweapon_pos`（不是配件自己的 `Bone`，所以配件 json 里**不要写 `Bone`**，
-写了会被 `DataValidator` 提示忽略）。挂点组 `subweapon_rail` **故意与握把的 `grip_rail` 分开**：
-物理上两者共用同一根下导轨，但合并等于"装了垂直握把就装不了下挂榴弹"，属于玩法改动；
-需要互斥时把 `AttachmentSlots` 里那条的 `mount` 改成 `"grip_rail"` 即可，
-`Attachment.mountConflict` → `availableAttachments` → 指令补全/`Attachment.cycle` 会自动跟着走。
+写了会被 `DataValidator` 提示忽略）。挂点组 `subweapon_rail` 与握把的 `grip_rail` **仍然分开**，
+但**互斥关系改成显式声明**（`AttachmentSlot.conflictsWith`）：副武器与刺刀、副武器与握把互斥，
+刺刀与握把仍可共存。为什么不直接把 `mount` 改成 `"grip_rail"`：挂点组是**传递**的等价关系，
+合并之后就没法再表达"A 排斥 B、A 排斥 C，但 B 与 C 共存"了 —— 详见 §11.8.4。
 
 **② `MeleeEffectSpec` 的所有字段都改成可空**：同一个类现在**两用** ——
 既是 `MeleeActions[].Effects[]` 的条目，也是 `sbw/melee_effects/<id>.json` 预设文件的数据类。
@@ -1804,6 +1806,53 @@ reach = (MeleeHitbox.Range + MeleeRange) × 动作的 RangeMultiplier + player.g
 7. melee_debug_log 打开时，服务端日志里一次装填只应出现**一次** `reload started` 与一次 `reload finished`
 ```
 
+#### 11.8.4 配件互斥：显式冲突名单（`ConflictsWith`）
+
+> **状态：✅ 已完成**（需求方要求）。目标冲突表：
+>
+> | | 刺刀 BAYONET | 握把 GRIP | 副武器 SUBWEAPON |
+> |---|---|---|---|
+> | **刺刀** | — | 可以共存 | **互斥** |
+> | **握把** | 可以共存 | — | **互斥** |
+> | **副武器** | **互斥** | **互斥** | — |
+>
+> （其余槽位：副武器与枪口配件 BARREL 仍可共存；刺刀与枪口配件、一如既往互斥。）
+
+**为什么不能靠挂点组解决**：挂点组（`AttachmentSlot.mount`）是**传递**的等价关系 ——
+登记到同一个组名就互相排斥，且"同组"会一路传染。合并挂点组只能表达"一组里只能装一个"，
+表达不了上面这张表：副武器要同时排斥两个组，而那两组的成员之间还必须能共存。
+
+**做法**：在挂点组之外加一份**非传递**的显式名单。
+
+| 落点 | 说明 |
+|---|---|
+| `AttachmentSlot.conflictsWith: Set<AttachmentType>` | 槽位登记项上的默认名单。`SUBWEAPON` 登记为 `{BAYONET, GRIP}`（`AttachmentSlots.ALL` 里那一条） |
+| `AttachmentDefinition.ConflictsWith: List<AttachmentType>` | 配件数据可以**追加**自己排斥的槽位（例如某个大号下挂件再排斥瞄具）。未知槽位名会被 `DataValidator` 的严格解析直接报错 |
+| `AttachmentSlots.declaredConflicts(type, definition)` | 上面两份名单的并集 |
+| `AttachmentSlots.conflicts(type, defA, other, defB)` | **唯一判定入口**：挂点组相同 **或** 任一方点名了对方 → 互斥；任一方 `AllowSharedMount` → 放行（转接座的逃生口，两种互斥都适用） |
+| `Attachment.conflict(type, definition)` | `GunData.availableAttachments` / 指令 / `Attachment.cycle` 用的查询（原 `mountConflict`，因为它现在不止管挂点组） |
+
+指令失败文案从 `attachment.fail.mount`（"已经占用了 X 挂点"）改成 `attachment.fail.conflict`
+（"%1$s 与它互斥，无法同时安装"）—— 显式互斥没有"挂点"可报，旧文案会误导。
+
+**`/sbw attachment random all` 也跟着改**：原来只保证"每个挂点组抽一个"，现在每组抽完还要拿已抽中的
+槽位再过滤一遍（同组 + 显式互斥），否则会抽出"指令都装不上"的组合。先抽到的组赢，后抽到的组让位。
+
+**已有存档不受影响**：过滤只作用在"能不能装"上，不会自动拆掉已经同时装着的旧组合
+（比如旧存档里 AK-12 上同时有握把和 `sub_weapon_gp_25`）。想恢复合法状态用
+`/sbw attachment @s clear` 或拆掉其中一个。
+
+**验收**：
+```
+1. AK-12 装 sub_weapon_gp_25 → 再装任意握把 → 失败："GRIP 与它互斥，无法同时安装"
+2. AK-12 装 sub_weapon_gp_25 → 再装刺刀     → 同样失败
+3. AK-12 装握把 → 再装刺刀 → **成功**（这两个仍然共存）
+4. 装刺刀 → 再装枪口配件 → 仍然失败（挂点组 `muzzle_device`，与本期改动无关）
+5. /sbw attachment @s set SubWeapon sub_weapon_gp_25（已有握把时）→ 失败文案是新的 conflict 那条
+6. /sbw attachment @s random all 反复执行 → 不会出现"握把 + 副武器"或"刺刀 + 副武器"的组合
+7. DataValidator：`ConflictsWith` 指向自己的槽位、或与 `AllowSharedMount` 同时写 → 各一条 warning
+```
+
 
 
 ---
@@ -1825,7 +1874,7 @@ reach = (MeleeHitbox.Range + MeleeRange) × 动作的 RangeMultiplier + player.g
 | 8b | 副武器物品手持时 | **按普通物品处理**：`GunItem.useAsWeaponInHand()` + 静态 `isHeldWeapon(stack)`，约 40 处手持门禁（含 6 个改视角的 Mixin）（§8.3.1） |
 | 9 | 多个副武器 | 不做优先级，**遍历一次逐个触发**，动作占用统一持有一次 |
 | 10 | 副武器空仓 | 按 G **尝试装填一次** |
-| 11 | 挂点组 | 保留系统；刺刀与下挂榴弹**不互斥**（不同 mount），可共存 |
+| 11 | 挂点组 | 保留系统；刺刀与下挂榴弹**互斥**（三期返修按需求方要求改的，见 §11.8.4；原结论是"不同 mount 可共存"） |
 | 12 | 打头/打腿倍率 | 全部复用现有值（`Headshot` 1.5 / 打腿 0.5），不新增全局字段 |
 | 13 | 扫掠采样 | 每 15° 一步、上限 8 |
 | 14 | 距离口径 | 改为「到目标 **AABB 最近点**」（接受这一处行为变化） |
@@ -1890,7 +1939,7 @@ reach = (MeleeHitbox.Range + MeleeRange) × 动作的 RangeMultiplier + player.g
 | 47 | `explosion` 的默认破坏性 | `DestroyBlocks` 缺省 **false**。近战触发的爆炸不该拆家；要拆自己写 `true` |
 | 48 | 新增 `Amplitude` 字段 | `screen_shake` 需要"时间/半径/幅度"三个独立数值，设计稿字段表里只有两个，补一个比复用 `Damage`/`Count` 干净 |
 | 49 | 副武器槽位名与挂点 | **`AttachmentType.SUBWEAPON`**（`"SubWeapon"`）+ 约定骨骼 **`subweapon_pos`**，挂点组 `subweapon_rail`（不叫 `UNDERBARREL`、不用配件的 `Bone`）——按需求方要求 |
-| 50 | 副武器挂点组是否与握把合并 | **不合并**（`subweapon_rail` ≠ `grip_rail`）：合并等于"装了垂直握把就装不了下挂榴弹"，属于玩法改动。要互斥时改 `AttachmentSlots` 里那一条的 `mount` 即可 |
+| 50 | 副武器挂点组是否与握把合并 | **不合并挂点组**（`subweapon_rail` ≠ `grip_rail`，挂点组要保持可细分），互斥改成**显式声明**：副武器 `ConflictsWith` 刺刀与握把，而刺刀与握把仍可共存（§11.8.4，按需求方要求） |
 | 51 | 副武器首个载体 | **`gp_25`**（下挂式 40mm 单发榴弹发射器，`Magazine 1`、`RPM 60`、属性参考 `m_79`）；模型与贴图**复用 `steel_pipe_silencer`**，模型做好后只改配件 json 的 `Model`/`Texture` 两行 |
 | 52 | 副武器动画与 HUD | **本期都不做**（按需求）：`SubWeaponInfo.Animation` 只占位不读取；副武器复用主武器开火链路的音效；HUD 与改装界面一行未动，副武器继续用 `/sbw attachment` 安装 |
 | 53 | 副武器状态放哪 | 全部写在自己合成栈的 tag 上，而那个 tag **就是主武器 NBT 里的附件子 tag** → 随主武器持久化，无新存档字段。`SubWeaponInfo.AmmoSlot` 目前不影响开火（见 §11.8.1-⑦） |

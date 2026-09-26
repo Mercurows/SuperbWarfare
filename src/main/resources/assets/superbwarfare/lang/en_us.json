@@ -983,7 +983,7 @@
   "commands.superbwarfare.attachment.fail.unknown": "Unknown attachment: %1$s",
   "commands.superbwarfare.attachment.fail.type": "Attachment %1$s is a %2$s attachment, which doesn't fit the %3$s slot",
   "commands.superbwarfare.attachment.fail.unavailable": "The selected gun does not support the attachment: %1$s",
-  "commands.superbwarfare.attachment.fail.mount": "The %1$s already occupies the %2$s mount point",
+  "commands.superbwarfare.attachment.fail.conflict": "The installed %1$s conflicts with it, so they cannot be mounted together",
   "commands.superbwarfare.attachment.fail.random": "The selected gun has no available attachment",
   "commands.superbwarfare.attachment.fail.random.type": "The selected gun has no available %1$s",
   "commands.superbwarfare.attachment.success.set": "Set the %2$s of %1$s to %3$s",

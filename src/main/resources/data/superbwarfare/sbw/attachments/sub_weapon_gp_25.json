@@ -14,5 +14,5 @@
     "ReloadEndSound": "superbwarfare:gp_25_reload_2"
   },
   "Model": "superbwarfare:models/bedrock/attachment/sub_weapon_gp_25.geo.json",
-  "Texture": "superbwarfare:textures/bedrock/gun/gp_25.png"
+  "Texture": "superbwarfare:textures/bedrock/attachment/sub_weapon_gp_25.png"
 }

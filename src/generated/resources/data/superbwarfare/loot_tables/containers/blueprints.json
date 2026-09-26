@@ -41,11 +41,6 @@
         },
         {
           "type": "minecraft:item",
-          "name": "superbwarfare:gp_25_blueprint",
-          "weight": 42
-        },
-        {
-          "type": "minecraft:item",
           "name": "superbwarfare:m_4_blueprint",
           "weight": 42
         },
@@ -107,6 +102,11 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:hunting_rifle_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:gp_25_blueprint",
           "weight": 15
         },
         {
