@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.client.animation.gun.GeoGunAnimationInstance
 import com.atsuishio.superbwarfare.client.gun.GunAction
 import com.atsuishio.superbwarfare.client.gun.GunActionLock
 import com.atsuishio.superbwarfare.client.gun.MeleeClientHandler
+import com.atsuishio.superbwarfare.client.gun.SubWeaponClientHandler
 import com.atsuishio.superbwarfare.client.lighting.LightPositionRegistry
 import com.atsuishio.superbwarfare.client.lighting.MuzzleFlashHelper
 import com.atsuishio.superbwarfare.client.lighting.VehicleLightingHandler
@@ -1524,9 +1525,19 @@ object ClientEventHandler {
     fun handleGunMelee(player: Player, stack: ItemStack) {
         // 动作锁计时：只要有活跃的动作状态就推进（帧率无关，每客户端 tick 一次）
         val gunData = if (GunItem.isHeldWeapon(stack)) GunData.from(stack) else null
-        gunData?.let { GunActionLock.of(it).tick() }
+        val actionState = gunData?.let { GunActionLock.of(it) }
+        actionState?.tick()
 
-        if (gunData == null) return
+        if (gunData == null || actionState == null) return
+
+        // 副武器：**松开 G 之后没打完的点射也要打完**（主武器同样是这个行为），
+        // 所以它的连发节奏在这里推进 —— 与 G 是否按下无关（`keyDown` 传进去，按住时它会自己让位）
+        SubWeaponClientHandler.tick(
+            player = player,
+            data = gunData,
+            state = actionState,
+            keyDown = ModKeyMappings.SUBWEAPON_FIRE.isDown(),
+        )
 
         MeleeClientHandler.tick(
             player = player,

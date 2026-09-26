@@ -249,6 +249,8 @@ object DataValidator {
             }
         }
 
+        validateSubWeaponReload(gunDataId, warn)
+
         // 物品存在性与类型只能在注册表可用之后查；数据包侧注册表可能还没就绪，查不到就只提示
         val item = ResourceLocation.tryParse(attachmentId)?.let { BuiltInRegistries.ITEM.get(it) }
         if (item == null) {
@@ -257,6 +259,37 @@ object DataValidator {
             warn(
                 "attachment '$attachmentId' declares SubWeapon but its item is " +
                         "${item.javaClass.simpleName}, not SubWeaponItem; it will not be usable with G"
+            )
+        }
+    }
+
+    /**
+     * 副武器**装填**相关的校验：`Magazine > 1` 的副武器最常写歪的两处。
+     *
+     * 两处都能跑起来，但表现不像一把枪（而且不会报任何错），所以在数据侧点出来：
+     * - 没写 `EmptyReloadTime`：打空后的装填是 **0 tick**，瞬间装满；
+     * - 开了 `TacticalReload` 却没写 `NormalReloadTime`：没打空时的装填同样是 0 tick。
+     *
+     * 换弹时长只在 `Magazine > 1` 时才有坑：单发副武器（GP-25 这种）只有"空仓"一种装填。
+     */
+    private fun validateSubWeaponReload(gunDataId: String, warn: (String) -> Unit) {
+        val gunData = CustomData.GUN_DATA[gunDataId] ?: return
+
+        // 数值一律取 0 级（换弹时间是 `SingleOrList`，按枪械等级取值）
+        val magazine = gunData.magazine.list.getOrElse(0) { 0 }
+        if (magazine <= 1) return
+
+        if (gunData.emptyReloadTime.list.getOrElse(0) { 0 } <= 0) {
+            warn(
+                "SubWeapon gun data '$gunDataId' has Magazine=$magazine but no EmptyReloadTime; " +
+                        "reloading an empty magazine would finish instantly"
+            )
+        }
+
+        if (gunData.tacticalReload && gunData.normalReloadTime.list.getOrElse(0) { 0 } <= 0) {
+            warn(
+                "SubWeapon gun data '$gunDataId' turns on TacticalReload but has no NormalReloadTime; " +
+                        "a partial reload would finish instantly"
             )
         }
     }

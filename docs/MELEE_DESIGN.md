@@ -1643,8 +1643,11 @@ reach = (MeleeHitbox.Range + MeleeRange) × 动作的 RangeMultiplier + player.g
 > **顺带修掉的第四个坑**：`SubWeaponRuntime.tick` 原来挂在 `if (inMainHand)` 里。
 > 推进副武器只要求"主武器正在被 tick"，与它是不是主手无关；绑在 `inMainHand` 上时，
 > 只要那个判定为假，副武器的状态机就会被**整段冻住**（症状同样是换弹计时器不递减）。
-> 现在它挂在 `data.item.tick(...)` 之后、**不受 `inMainHand` 约束**，
-> 并带一个 `attachmentTag.isEmpty` 的便宜前置过滤（没装配件的枪直接跳过装配流程）。
+> 现在它挂在 `data.item.tick(...)` 之后，**整段 tick 不受 `inMainHand` 约束**
+> （热量/冷却/perk/计时器照常推进），并带一个 `attachmentTag.isEmpty` 的便宜前置过滤
+> （没装配件的枪直接跳过装配流程）。
+> **（后续）装填与栓动的进度是例外**：它们只在主手拿着这把枪时推进，且切走时直接中断装填
+> ——见 §11.9-E。`inMainHand` 现在原样传给副武器的 `gunTick`，只用来管这两件事和自动装填/提示。
 
 **⑩ G 键的三种归宿**（`SubWeaponClientHandler.tryTrigger` 的返回值就是全部语义）：
 主武器上没有副武器 → 返回 `false`，G 落回近战入口（等同 V）；
@@ -1684,11 +1687,11 @@ reach = (MeleeHitbox.Range + MeleeRange) × 动作的 RangeMultiplier + player.g
 |---|---|
 | **配件 id** | `gp_25` → **`sub_weapon_gp_25`**：物品注册 id 同时是配件数据 id 与枪数据 id，所以 `sbw/attachments/sub_weapon_gp_25.json`、`sbw/guns/sub_weapon_gp_25.json`、`textures/item/sub_weapon_gp_25.png` 三者必须同名。**旧的 `gp_25` 附件定义会失效，已装过的枪要重新装一次。** bedrock 模型/贴图（`models/bedrock/attachment/gp_25.geo.json` 等）是配件 json 里显式写路径的，**保持原名不动** |
 | **挂点骨骼** | 约定骨骼常量改成 **`sub_weapon_pos`**（与枪模型里的骨骼名一致），槽位的 `mountBone` 从 `Fixed` 改成 **`FromDefinition`**：优先用配件自己声明的 `Bone`，没写才退回约定骨骼。`Fixed` 会**静默忽略**配件里的 `Bone`，骨骼名差一个字符就什么都不渲染且**没有任何报错**，这个坑不值得再踩第二次 |
-| **自动装填** | **G 只负责开火**：打空了按 G 不会有动作，装填由服务端在 `SubWeaponRuntime.tick` 里自动做（判定就是 `GunData.shouldStartReloading`，与主武器 `autoReload` 同一个谓词；**在 `gunTick` 之前调用**，这样同一 tick 内状态就能切到 RELOADING）。客户端不再发"请装填"的请求 |
+| **自动装填** | **G 只负责开火**：打空了按 G 不会有动作，装填由服务端在 `SubWeaponRuntime.tick` 里自动做（判定就是 `GunData.shouldStartReloading`，与主武器 `autoReload` 同一个谓词；**在 `gunTick` 之前调用**，这样同一 tick 内状态就能切到 RELOADING）。客户端不再发"请装填"的请求。**装填进度只在持有主武器时推进，切走即中断、切回来从头装**（§11.9-E） |
 | **装填提示** | 装填期间给玩家发**动作栏文字**（`info.superbwarfare.subweapon.reloading`，带槽位名与百分比），每 4 tick 刷一次。**标记为临时方案** —— 需求方之后会换成 HUD，所以逻辑收在 `SubWeaponRuntime.showReloadingProgress` 一处，换 HUD 时删掉它即可 |
 | **开火抖动** | 开火后显式调一次 `subWeapon.shakePlayers(player)`，幅度由副武器**自己的数据**决定（`"ShootShake": [半径, 时长, 幅度]`，三项都 > 0 才生效）。主武器的 `GunItem` 里那一行是注释掉的，载具武器也是各自显式调用，所以这里必须自己调 |
 | **换弹音效的归属** | **主武器的换弹音效是动画关键帧发的**，配件没有动画 —— 所以副武器的换弹音效由**配件数据 + 服务端**自己负责：`SubWeaponInfo.ReloadSound` / `ReloadEndSound` 由 `SubWeaponRuntime` 在状态跳变时用 `playLocalSound` 播给射手（⚠ 这个跳变必须在**复用的实例**上判断，否则每次状态重建都会再响一遍，见 §11.8.3）。**开火 1P 音**同样由服务端在真的开火之后用 `playLocalSound` 播，参数来自 `GunItem.resolveFire1PSounds`（与主武器同一份口径）；服务端另外只负责 `Fire3P` / `Far` / `VeryFar` |
-| **半自动** | 副武器**只认 G 的上升沿**：按住不放不会再打第二发，但整段按住期间 G 都被副武器吞掉、不会掉到近战入口。边沿检测放在 `MeleeClientHandler.tick` 的**最开头**（任何提前 return 都不能跳过它，否则标记会卡在 `true`） |
+| **扣扳机方式** | 当时是**半自动**：只认 G 的上升沿，按住不放不会再打第二发，但整段按住期间 G 都被副武器吞掉、不会掉到近战入口。边沿检测放在 `MeleeClientHandler.tick` 的**最开头**（任何提前 return 都不能跳过它，否则标记会卡在 `true`）。**§11.9-D 之后**：扣扳机方式由副武器自己的开火模式决定（`Semi` 仍是上升沿，`Auto` 按住连发，`Burst` 打完一轮） |
 | **触发冷却** | **不在配件数据里配**：一律按副武器 `sbw/guns/<id>.json` 的 `RPM` 自动算（`1200 / RPM`），与主武器开火同一个口径 —— "这把武器多快"只在枪数据里写一次 |
 | **装填的"忙"判定** | **不再自己拼判定**：自动装填走主武器的 `GunData.shouldStartReloading` → `GunEventHandler.tryStartReload`（它自带"正在装填 / 正在拉栓 / 计时器没归零 / 没有备弹 / 弹匣是满的"全部拒绝条件），所以"装填中再按 G 把计时器打回满值"在结构上不可能发生。早期版本自己拼 `busy = reloading() \|\| reload.time() > 0`，那只是在给"状态被另一个 `GunData` 覆盖"的症状打补丁 —— 根因见 §11.8.3 |
 
@@ -1881,11 +1884,17 @@ reach = (MeleeHitbox.Range + MeleeRange) × 动作的 RangeMultiplier + player.g
 **只有副武器开火（G）走候选链**，主武器开火照旧 `GunAnimation.Fire`：`fire_sub_weapon` 是
 "下挂筒发射"的整枪动画（AK-12 那支长 1.2s），拿它当步枪连发的开火动画是不对的。
 
-**触发点**：`SubWeaponClientHandler.playFireAnimation` → `GeoGunAnimationInstance.triggerFire(stack, candidates)`。
-与近战、主武器开火同一个信任模型（**客户端触发**）：动画是纯客户端表现，这一发成不成由服务端
-报文里的 `canShoot` 拍板，客户端预测与否都不改变判定；代价是服务端拒掉（空仓 / 正在装填）时
-动画已经播了 —— 与近战挥空一致。**开火音仍然只在服务端真的打出这一发之后才响**，两者刻意分开。
-**同时开火多个副武器**是边角情况，而开火动画只有一条：按槽位顺序取**第一个**声明了候选的。
+**触发点**：`SubWeaponFiredMessage`（服务端 → 射手）→ `SubWeaponClientHandler.playFireAnimation`
+→ `GeoGunAnimationInstance.triggerFire(stack, candidates, reportMissing)`。
+
+**开火表现与开火音走同一条口径：服务端确认。** 报文由 `SubWeaponFireMessage.handler()` 在
+`canShoot` 为真、真的打出这一发之后发出（就挨着那声 1P 音），客户端收到才播。
+最早是客户端在按下 G 的那一刻自己播的，于是"副武器**装填期间**按 G 也会演一遍开火动画"
+（动画是纯表现，没有任何判定会兜底 —— 音效早就按这个口径修掉了，动画漏了）。
+现在服务端没打出去就不会有这个报文，这一整类"空演"在结构上不可能发生。
+代价是动画比按键晚一个单程延迟 —— 与服务端那声 1P 音、以及服务端生成的榴弹同步，反而更一致。
+
+**同时开火多个副武器**是边角情况：每个槽位各发一条报文，客户端按报文各播一次。
 
 **不抛壳**：副武器开火不再往 `pendingShellEjects` 里塞一发 —— 弹壳模型与 `shell` 骨骼都是
 **主武器**的 `ShellEject` 配置，打出去的却是副武器的弹药，照旧抛壳就是"榴弹发射时步枪抛壳"。
@@ -1916,6 +1925,39 @@ reach = (MeleeHitbox.Range + MeleeRange) × 动作的 RangeMultiplier + player.g
 | 校验 | `DataValidator`：id 在 `sbw/guns` 里不存在 = **致命**；候选链里的空名字 = **致命**（与动作表同一条规则）。clip **是否存在**查不了（要读客户端的动画文件），仍然靠运行时日志 |
 | 调试 | `/sbw subweapon info` 打印 `gunData=<实际使用的枪数据 id>`；缺基线时的 error 日志也报这个 id |
 
+#### D. 开火模式：`Semi` / `Auto` / `Burst` 都按副武器**自己**的数据走
+
+模式读的是副武器自己那份 `GunData`（`sbw/guns/<id>.json` 里的 `DefaultFireMode` / `AvailableFireModes`），
+与主武器的开火模式完全独立 —— 主武器怎么切都不影响副武器。**没有专门的副武器开火模式字段**：
+`GunData.selectedFireModeInfo()` 本来就走 PMC，模式里的 `Override`（比如某个模式换 RPM）也照常生效。
+⚠ 副武器**没有切换开火模式的入口**（切模式键只作用于手持的那把枪），所以它实际用的永远是数据里的
+`DefaultFireMode`：写 `"DefaultFireMode": "Auto"` + `"AvailableFireModes": ["Auto"]` 就是连发副武器。
+
+| 模式 | 按 G | 说明 |
+|---|---|---|
+| `Semi`（默认） | 一次按键一发 | 上升沿触发，按住不放不会再打（但整个按住期间 G 都归副武器，不掉到近战） |
+| `Auto` | **按住就连发** | 每客户端 tick 都会尝试一次，**节奏由冷却表决定**（见下），射速就是数据里的 `RPM` |
+| `Burst` | 一次按键打 `BurstAmount` 发 | 与主武器一致：**松开 G 之后剩下的也会打完**（`SubWeaponClientHandler.tick` 推进，按键状态无关） |
+| `Hold` / `Charge` | 按半自动处理 | 副武器没有蓄力输入链路（没有 `holdingFireKeyTicks` 那套），蓄力模式在这里没有意义 |
+
+**连发的节奏不自己算**：客户端每 tick 尝试一次，能不能打由**服务端写进主武器冷却表的
+`sub:<槽位>`**（每发 `1200 / RPM`）决定 —— 客户端只读，不往那张表里写。
+于是连发只会**比标称射速略慢**（客户端看到的是同步过来的冷却值，慢一两个 tick），
+永远不会比服务端快（快了也会在 `canShoot` / 冷却那里被拒）。
+连发的每个 tick 还会跳过客户端已知"正在装填/拉栓"的槽位，少发几个注定被拒的报文；
+**首次扣扳机那一下刻意不这么判** —— 客户端那份状态慢一拍，拿它当门禁会把真正打出去的那一发吞掉。
+
+**装填与弹药（`Magazine > 1`）不需要任何额外代码**：开火扣弹药走的是主武器同一条
+`GunItem.afterShoot`（`ammo -= AmmoCostPerShoot`），自动装填走的是主武器同一个谓词
+（`SubWeaponRuntime.tick` → `shouldStartReloading` → `tryStartReload` → `reloadAmmo`），
+弹种、备弹、换代、退弹、能量弹匣全部复用。数据侧要注意的只有换弹时间：
+
+| 数据 | 结论 |
+|---|---|
+| `Magazine = 1`（GP-25 这种） | 只有"空仓装填"一种，写 `EmptyReloadTime` 即可 |
+| `Magazine > 1` | 打空后按 `EmptyReloadTime` 装填；**没写就是 0 tick（瞬间装满）**，`DataValidator` 会警告 |
+| `TacticalReload: true` | 没打空时按 `NormalReloadTime` 装填；**开了却没写这个字段同样是 0 tick**，也会警告 |
+
 **验收**：
 ```
 1. AK-12 装 sub_weapon_gp_25 按 G → 播 animation.ak_12.fire_sub_weapon，枪口焰与烟都在 GP-25 的枪口
@@ -1925,6 +1967,33 @@ reach = (MeleeHitbox.Range + MeleeRange) × 动作的 RangeMultiplier + player.g
 5. 按 G 打榴弹 → **不抛壳**；主武器连发照旧抛壳
 6. /sbw subweapon info → gunData=superbwarfare:sub_weapon_gp_25（配件里写了 Data 就是那个 id）
 7. 配件 json 写 "Data": "superbwarfare:not_exist" → /reload 时 DataValidator 报致命
+8. **装填期间按 G / 按住 G** → 既没有开火音、也没有开火动画与枪口焰（服务端没打出去就没有报文）
+9. 副武器数据写 "DefaultFireMode": "Auto" + "AvailableFireModes": ["Auto"] → 按住 G 持续开火，
+   节奏等于 RPM；松手立刻停
+10. 副武器数据写 BurstAmount: 3 + DefaultFireMode/Modes 为 Burst → 按一下 G 打 3 发（中途松手也会打完），
+    打完要再按一次；Magazine 设 6 → 打空后自动装填，`/sbw subweapon info` 里能看到 ammo 回满
+11. Magazine > 1 且没写 EmptyReloadTime → /reload 时 DataValidator 给一条警告
+```
+
+#### E. 装填进度只在**持有主武器**时推进（切走即中断，切回来从头装）
+
+副武器的装填由服务端在 `SubWeaponRuntime.tick` 里自动做，而这段逻辑原来**无条件把
+`inMainHand = true` 传进 `gunTick`**，于是"只要开了装填就一定会走完"：
+把枪收回背包、切到别的枪，装填照样在背包里跑完，切回来弹药已经满了。
+
+| 项 | 结论 |
+|---|---|
+| 进度推进 | `SubWeaponRuntime.tick` 把主武器的 `inMainHand` **原样**传给副武器的 `gunTick` —— 换弹计时器、栓动计时器、单发装填各阶段只在持有的那些 tick 里走（主武器自己就是这样：那段代码在 `gunTickInternal` 的 `if (inMainHand)` 块里） |
+| 切走 | 主手没拿着这把枪时**直接中断装填**：`reload.setTime(0)` + `NOT_RELOADING` + 单发装填的阶段计时器 + `bolt.actionTimer.reset()`。与主武器切枪时 `LivingEventHandler` 做的是同一件事，所以"装填 3/5 秒时切枪，切回来是从 0 重新装" |
+| 不误报完成 | 中断的那一次**不算"装填结束"**：`Instance.wasReloading` 直接归零，不播完成音效、不发"装填完成"提示（那两样挂在开始/结束的跳变上） |
+| 照常推进的 | 热量、冷却、perk、各种计时器仍然与持有状态无关 —— 它们在同一个 tick 里，只是不在 `inMainHand` 分支内 |
+| 不受影响的 | 自动装填的**判定与退避**（只在持有这把主武器时才触发）、换弹音效、动作栏进度提示 |
+
+**验收**：
+```
+1. 副武器空仓 → 自动装填开始（有开始音效）→ 中途切到别的枪 → 切回来：从 0 重新装，且没有"装填完成"提示
+2. 把带副武器的枪放进副手/背包里放一会儿 → 装填进度不涨、弹药不变（不会自己装满）
+3. 装填走完（持有全程）→ 照旧播完成音效 + 绿色提示，弹药补满
 ```
 
 
@@ -2039,6 +2108,7 @@ reach = (MeleeHitbox.Range + MeleeRange) × 动作的 RangeMultiplier + player.g
 | **副武器状态存放** | `Attachment.getOrCreateTag(slot)` 返回枪 NBT 子 tag 的活引用 | `subdata/Attachment.kt:72-85` |
 | **副武器弹药** | `AmmoSlot.getAmmo/set/reset(slot)` | `subdata/AmmoSlot.kt:17-43` |
 | **副武器开火** | `GunData.shoot(...)` 全部重载 → `GunItem.shootBullet` | `GunData.kt:994-1019`、`GunItem.kt:726-800` |
+| **副武器开火的客户端表现** | **服务端确认**：`SubWeaponFiredMessage`（与那声 1P 音挨着发，`player.sendPacket`）→ 客户端播动画 + 枪口焰（§11.9-A/B） | `network/message/receive/SubWeaponFiredMessage.kt`、`SubWeaponClientHandler.playFireAnimation` |
 | **副武器实例身份** | `DATA_CACHE`（weakKeys 按栈实例）+ `UUID_CACHE` adopt + `rebind` | `GunData.kt:1785-1854`、`:1553-1575` |
 | 冷却计数（写法样板） | `Perks.reduceCooldown(perk, key)`；玩家级用 `persistentData` | `subdata/Perks.kt:217`、`mobeffect/RadiationMobEffect.kt:100-109` |
 | 伤害类型注册 / 标签 | `ModDamageTypes.registerDamageType`/`causeXxxDamage`；`ModTags.DamageTypes` | `init/ModDamageTypes.kt:17-55`、`init/ModTags.kt:206-240` |

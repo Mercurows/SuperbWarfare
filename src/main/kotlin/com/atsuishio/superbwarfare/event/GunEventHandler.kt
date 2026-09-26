@@ -395,11 +395,11 @@ object GunEventHandler {
         // 副武器：合成栈不在背包里，`GunItem.inventoryTick` 不会跑到它，
         // 所以换弹/热量/栓动计时器全靠这里顺带推进。
         //
-        // **状态推进刻意不放进 `if (inMainHand)`**：推进副武器只要求"主武器正在被 tick"，
-        // 与它是不是主手无关；绑在 `inMainHand` 上时，只要那个判定为假（手持判定、
-        // 客户端栈替换等边界），副武器的状态机就会被**整段冻住** ——
-        // 表现为换弹计时器永远停在同一 tick、`canShoot` 永远是 false。
-        // `inMainHand` 只用来控制**自动装填与提示**（背包里的枪不该自己吃备弹、也不该弹提示）。
+        // **`inMainHand` 原样传下去**：装填与栓动的进度只在"这把枪正被持有"时推进
+        // （主武器自己也一样 —— 那些计时器就在上面那个 `if (inMainHand)` 块里），
+        // 主手没拿着时 `SubWeaponRuntime.tick` 还会把装填整个中断掉，切回来从头装。
+        // 热量、冷却、perk 这些与持有无关的仍然照常推进：绑在 `inMainHand` 上会让副武器的
+        // 状态机在那段判定为假时整段冻住（换弹计时器停在同一 tick、`canShoot` 永远 false）。
         SubWeaponRuntime.tick(shooter, data, inMainHand)
 
         data.save()

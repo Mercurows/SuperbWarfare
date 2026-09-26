@@ -8,10 +8,12 @@ import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
+import com.atsuishio.superbwarfare.network.message.receive.SubWeaponFiredMessage
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedUUID
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedVector3f
 import com.atsuishio.superbwarfare.subweapon.SubWeaponRuntime
 import com.atsuishio.superbwarfare.tools.playLocalSound
+import com.atsuishio.superbwarfare.tools.sendPacket
 import com.atsuishio.superbwarfare.tools.toVec3
 import kotlinx.serialization.Serializable
 
@@ -88,6 +90,11 @@ data class SubWeaponFireMessage(
                 for (sound in subWeapon.item.resolveFire1PSounds(subWeapon)) {
                     player.playLocalSound(sound.sound, sound.volume, sound.pitch)
                 }
+
+                // 开火**动画**同样由服务端确认（与上面那声 1P 音同一个口径）：
+                // 动画是纯客户端表现，没有任何判定会兜底，客户端自己预测就会出现
+                // "装填期间按 G 也演一遍开火动画"。这里发报文，客户端收到才播。
+                player.sendPacket(SubWeaponFiredMessage(slotName))
 
                 // 开火屏幕抖动：与载具武器同一个入口，幅度由副武器数据自己的 `ShootShake` 决定
                 // （`[半径, 时长, 幅度]`，三项都 > 0 才生效；没写就不抖）。
