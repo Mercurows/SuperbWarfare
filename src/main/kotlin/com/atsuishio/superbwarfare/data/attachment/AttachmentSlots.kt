@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.data.attachment
 
 import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots.EDIT_ORDER
+import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots.declaredConflicts
+import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots.mountOf
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 
 /**
@@ -58,6 +60,11 @@ enum class AttachmentRenderMode {
  * @param mount 挂点组名。**登记到同一个 [mount] 的两个槽位互斥**（同时只能装一个），
  *   例如刺刀与枪口配件都挂在 `muzzle_device` 上；不同 [mount] 的槽位可以共存且同时生效。
  *   配件可以用 [AttachmentDefinition.mount] 覆盖自己所在槽位的默认挂点组。
+ * @param conflictsWith 额外互斥的槽位（默认空）。**挂点组是传递的等价关系**，表达不了
+ *   "A 与 B 互斥、A 与 C 互斥，但 B 与 C 可以共存"这种非传递组合，
+ *   所以这类规则写在这里（见 [conflicts] 与 `AttachmentType.SUBWEAPON` 的登记项）。
+ *   配件可以用 [AttachmentDefinition.conflictsWith] 追加自己的名单，
+ *   用 [AttachmentDefinition.allowSharedMount] 整体放行。
  * @param tagBucket 物品 tag 的桶名（`superbwarfare:attachment/<tagBucket>`），
  *   `null` 表示这个槽位不生成 tag。生成逻辑见 `ModTags` / `ModItemTagProvider`。
  * @param icon 改装界面上的槽位图标（`textures/gui/attachment/<icon>.png`）。
@@ -75,6 +82,7 @@ data class AttachmentSlot(
     val tagBucket: String?,
     val icon: String,
     val mountBone: AttachmentMountBone,
+    val conflictsWith: Set<AttachmentType> = emptySet(),
     val focusBone: String? = null,
     val renderMode: AttachmentRenderMode = AttachmentRenderMode.GENERIC,
     val withdrawAmmoOnChange: Boolean = false,
@@ -185,10 +193,14 @@ object AttachmentSlots {
             focusBone = Bones.BAYONET,
             renderMode = AttachmentRenderMode.GENERIC,
         ),
-        // 副武器（下挂榴弹发射器这类）。挂点组**故意与握把（`grip_rail`）分开**：
-        // 物理上两者共用同一根下导轨，但合并挂点组等于"装了垂直握把就装不了下挂榴弹"，
-        // 那是玩法改动而不是数据整理 —— 三期按"现有行为零变化"处理，需要互斥时把
-        // 这里改成 `"grip_rail"` 即可（`Attachment.mountConflict` 会自动跟着走）。
+        // 副武器（下挂榴弹发射器这类）。挂点组仍与握把（`grip_rail`）分开 ——
+        // 挂点组是**传递**的等价关系，把副武器并进 `grip_rail` 会顺带把它和"所有 grip_rail 上的槽位"
+        // 绑成一团，将来想再细分就没法表达了。这里要的是**非传递**的互斥：
+        //
+        //     副武器 ↔ 刺刀、副武器 ↔ 握把，但刺刀 ↔ 握把**不**互斥
+        //
+        // 三者物理上都挨着前段导轨/枪口，但"刺刀 + 握把"是能同时装的组合，所以用
+        // [conflictsWith] 显式点名，而不是合并挂点组。
         //
         // **挂点骨骼走 `FromDefinition` 而不是 `Fixed`**：副武器挂在枪身的哪根骨骼
         // 由配件自己的 `Bone` 说了算（不同的下挂件可以挂在不同位置，将来加"枪托内置发射器"
@@ -201,6 +213,7 @@ object AttachmentSlots {
             tagBucket = "subweapon",
             icon = "subweapon",
             mountBone = AttachmentMountBone.FromDefinition(Bones.SUBWEAPON),
+            conflictsWith = setOf(AttachmentType.BAYONET, AttachmentType.GRIP),
             focusBone = Bones.SUBWEAPON,
             renderMode = AttachmentRenderMode.GENERIC,
         ),
@@ -249,6 +262,47 @@ object AttachmentSlots {
     @JvmStatic
     fun mountOf(type: AttachmentType, definition: AttachmentDefinition? = null): String =
         definition?.mount ?: of(type).mount
+
+    /**
+     * [type]（实际装的配件是 [definition]）**显式**声明互斥的槽位：槽位登记项 [AttachmentSlot.conflictsWith]
+     * 与配件自己的 [AttachmentDefinition.conflictsWith] 的并集。
+     *
+     * 与挂点组不同，这份名单**不传递**，所以"副武器排斥刺刀与握把、但刺刀与握把共存"可以表达。
+     */
+    @JvmStatic
+    fun declaredConflicts(type: AttachmentType, definition: AttachmentDefinition? = null): Set<AttachmentType> {
+        val slot = ofOrNull(type)?.conflictsWith.orEmpty()
+        val declared = definition?.conflictsWith.orEmpty()
+        return if (declared.isEmpty()) slot else slot + declared
+    }
+
+    /**
+     * [type] 槽位（装的是 [definition]）与 [other] 槽位（装的是 [otherDefinition]）**是否互斥**。
+     *
+     * 互斥有两个来源，任一成立即互斥：
+     * 1. **挂点组相同**（[mountOf]）—— 传递的等价关系，例如刺刀与枪口配件都占 `muzzle_device`；
+     * 2. **任一方显式点名**了对方（[declaredConflicts]）—— 非传递，例如
+     *    副武器 ↔ 刺刀、副武器 ↔ 握把，但刺刀与握把可以共存。
+     *
+     * 任一方声明了 [AttachmentDefinition.allowSharedMount] 就整体放行 ——
+     * 那是"转接座"这类本来就是用来叠装的配件的逃生口，两种互斥都适用。
+     *
+     * 同一个槽位不算冲突（调用方问的是"两个槽位能不能共存"）。
+     */
+    @JvmStatic
+    fun conflicts(
+        type: AttachmentType,
+        definition: AttachmentDefinition?,
+        other: AttachmentType,
+        otherDefinition: AttachmentDefinition?,
+    ): Boolean {
+        if (type == other) return false
+        if (definition?.allowSharedMount == true || otherDefinition?.allowSharedMount == true) return false
+
+        if (mountOf(type, definition) == mountOf(other, otherDefinition)) return true
+
+        return other in declaredConflicts(type, definition) || type in declaredConflicts(other, otherDefinition)
+    }
 
     /** 登记到 [mount] 这个挂点组上的全部槽位。 */
     @JvmStatic

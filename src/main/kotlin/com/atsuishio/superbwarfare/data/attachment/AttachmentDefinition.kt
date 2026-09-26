@@ -37,7 +37,15 @@ data class AttachmentDefinition(
     @SerialName("Mount")
     val mount: String? = null,
 
-    // 允许与同一挂点组上的其它配件共存（默认关）。用于"转接座"这类本来就是用来叠装的配件。
+    // 额外互斥的槽位（**追加**到所在槽位的默认名单上，不是覆盖）。
+    // 用来表达挂点组表达不了的**非传递**互斥：槽位登记项里副武器默认排斥刺刀与握把
+    // （见 `AttachmentSlots` 的 SUBWEAPON 条目），某个具体配件想再排斥一个槽位就写在这里。
+    // 例如：["Scope"] 表示"装了这个就别装瞄具"。
+    @SerialName("ConflictsWith")
+    val conflictsWith: List<AttachmentType> = emptyList(),
+
+    // 允许与互斥的槽位共存（默认关）。用于"转接座"这类本来就是用来叠装的配件：
+    // 无论是挂点组冲突还是 ConflictsWith 冲突，只要任一方声明了它就放行。
     @SerialName("AllowSharedMount")
     val allowSharedMount: Boolean = false,
 

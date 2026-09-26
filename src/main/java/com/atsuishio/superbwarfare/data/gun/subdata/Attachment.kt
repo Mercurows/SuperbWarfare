@@ -104,27 +104,25 @@ class Attachment(private val gun: GunData) {
     fun has(type: AttachmentType): Boolean = id(type) != null
 
     /**
-     * [type] 装到这把枪上时，是否与**已安装的其它槽位**抢同一个挂点组。
+     * [type] 装到这把枪上时，是否与**已安装的其它槽位**互斥（[AttachmentSlots.conflicts]）。
      *
-     * 挂点组名由槽位在 `AttachmentSlots` 里登记（可用 [AttachmentDefinition.mount] 覆盖）；
-     * 登记到不同挂点组的配件可以共存且同时生效（刺刀在枪口卡榫、下挂榴弹在下导轨）。
-     * 任一方声明了 `AllowSharedMount` 就放行 —— 那个字段本来就是为了"转接座"这类叠装件准备的。
+     * 互斥有两个来源：**挂点组相同**（槽位在 `AttachmentSlots` 里登记，可用
+     * [AttachmentDefinition.mount] 覆盖），或**任一方显式点名**了对方
+     * （[AttachmentSlot.conflictsWith] / [AttachmentDefinition.conflictsWith]）。
+     * 后者用来表达挂点组表达不了的**非传递**规则：副武器排斥刺刀与握把，
+     * 而刺刀与握把可以共存（三者共用前段导轨，但只有那两对装不到一起）。
      *
-     * @return 抢占同一个挂点的槽位，没有冲突时返回 `null`。
+     * 任一方声明了 `AllowSharedMount` 就放行 —— 那个字段本来就是为"转接座"这类叠装件准备的。
+     *
+     * @return 与它互斥的已装槽位，没有冲突时返回 `null`。
      */
-    fun mountConflict(type: AttachmentType, definition: AttachmentDefinition?): AttachmentType? {
-        val mount = AttachmentSlots.mountOf(type, definition)
-        val shared = definition?.allowSharedMount == true
-
+    fun conflict(type: AttachmentType, definition: AttachmentDefinition?): AttachmentType? {
         for (other in AttachmentType.entries) {
             if (other == type) continue
 
             val otherId = id(other) ?: continue
             val otherDefinition = AttachmentDefinition.from(otherId) ?: continue
-            if (shared || otherDefinition.allowSharedMount) continue
-            if (AttachmentSlots.mountOf(other, otherDefinition) != mount) continue
-
-            return other
+            if (AttachmentSlots.conflicts(type, definition, other, otherDefinition)) return other
         }
         return null
     }

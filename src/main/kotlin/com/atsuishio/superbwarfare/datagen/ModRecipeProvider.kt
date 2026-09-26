@@ -2482,7 +2482,7 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 ModItems.HUNTING_RIFLE.get()
             )
             gunSmithing(writer, ModItems.M_79_BLUEPRINT.get(), GunRarity.RARE, Items.DISPENSER, ModItems.M_79.get())
-            gunSmithing(writer, ModItems.GP_25_BLUEPRINT.get(), GunRarity.RARE, Items.DISPENSER, ModItems.GP_25.get())
+            gunSmithing(writer, ModItems.GP_25_BLUEPRINT.get(), GunRarity.EPIC, Items.DISPENSER, ModItems.GP_25.get())
             gunSmithing(writer, ModItems.RPG_BLUEPRINT.get(), GunRarity.RARE, Items.DISPENSER, ModItems.RPG.get())
             gunSmithing(writer, ModItems.BOCEK_BLUEPRINT.get(), GunRarity.EPIC, Items.BOW, ModItems.BOCEK.get())
             gunSmithing(

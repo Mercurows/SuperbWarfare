@@ -203,6 +203,17 @@ object DataValidator {
             }
         }
 
+        if (data.slot in data.conflictsWith) {
+            warn("ConflictsWith contains its own slot ${data.slot}: the entry does nothing")
+        }
+
+        if (data.allowSharedMount && data.conflictsWith.isNotEmpty()) {
+            warn(
+                "AllowSharedMount is set, so ConflictsWith " +
+                        data.conflictsWith.joinToString(", ") { it.name } + " will be ignored"
+            )
+        }
+
         validateSubWeaponData(data, warn)
     }
 
