@@ -290,9 +290,8 @@ object ModItems {
     @JvmField val DETONATOR = registerItem<DetonatorItem>()
     @JvmField val TARGET_DEPLOYER = registerItem<TargetDeployerItem>()
     @JvmField val DPS_GENERATOR_DEPLOYER = registerItem<DPSGeneratorDeployerItem>()
-    @JvmField val KNIFE = registerItem("knife") {
-        SwordItem(ModItemTier.STEEL, 4, -1.8F, Properties().durability(1600))
-    }
+    @JvmField val KNIFE = registerItem<KnifeItem>()
+    @JvmField val KNIFE_6KH2 = registerItem<Knife6kh2Item>()
     @JvmField val HAMMER = registerItem("hammer") { HammerItem(Tiers.IRON, 11, -3.2f, Properties().durability(400)) }
     @JvmField val GOLDEN_HAMMER = registerItem("golden_hammer") { HammerItem(Tiers.GOLD, 11, -3.2f, Properties().durability(150)) }
     @JvmField val STEEL_HAMMER = registerItem("steel_hammer") { HammerItem(ModItemTier.STEEL, 9, -3.2f, Properties().durability(600)) }
