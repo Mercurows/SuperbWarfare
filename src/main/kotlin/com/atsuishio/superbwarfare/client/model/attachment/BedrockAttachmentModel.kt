@@ -72,6 +72,19 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
         .toList()
         .toIntArray()
 
+    /**
+     * 手部骨骼索引，与 `GeoGunModel` 是同一对约定名。
+     *
+     * 副武器模型是从普通枪模型上裁下来的，`lefthand_pos` 上还留着**一整块手部几何**
+     * （`sub_weapon_gp_25.geo.json` 里那块 `4×12×4`）。第一人称下它会和
+     * `GeoGunModel.renderHands` 画的真手臂叠在一起，所以要像渲染主武器那样把它藏掉 ——
+     * `renderBone` 会跳过隐藏骨骼的**整棵子树**。
+     *
+     * 模型里没有这两根骨骼时索引是 -1，[setBoneVisible] 会安静地跳过。
+     */
+    private val leftHandBoneIndex: Int = baseModel.getIndex(LEFT_HAND_BONE)
+    private val rightHandBoneIndex: Int = baseModel.getIndex(RIGHT_HAND_BONE)
+
     init {
         markIlluminatedBones()
 
@@ -191,6 +204,7 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
             }
         }
 
+        hideHandBones()
         restoreScopeBodyVisibility()
         markIlluminatedBones()
         val ammoBarState = ammo.applyBars(readout.bars, readout.progress)
@@ -744,6 +758,18 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
         instance.getBone(boneIndex)?.visible = visible
     }
 
+    /**
+     * 藏掉模型自带的手部几何，与 `GeoGunModel.renderToBuffer` 开头那两句同义。
+     *
+     * 只在**画之前**置位、不还原：这两根骨骼上没有任何一帧需要它们可见的东西
+     * （真手臂由主武器那条链路单独画），而模型实例是同型号附件全局共享的，
+     * 每帧重设只是把 `GeoGunModel` 的写法照搬过来。
+     */
+    private fun hideHandBones() {
+        setBoneVisible(leftHandBoneIndex, false)
+        setBoneVisible(rightHandBoneIndex, false)
+    }
+
     private fun restoreScopeBodyVisibility() {
         if (defaultScopeBodyIndex >= 0) {
             setBoneVisible(defaultScopeBodyIndex, true)
@@ -801,6 +827,10 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
         private const val OCULAR_SIGHT_NODE = "ocular_sight"
         private const val OCULAR_SCOPE_NODE = "ocular_scope"
         private const val ILLUMINATED_SUFFIX = "_illuminated"
+
+        /** 手部骨骼名，与 `GeoGunModel.LEFT_HAND_BONE` / `RIGHT_HAND_BONE` 保持一致 */
+        private const val LEFT_HAND_BONE = "lefthand_pos"
+        private const val RIGHT_HAND_BONE = "righthand_pos"
         private val OCULAR_PATTERN = Pattern.compile(
             "^($OCULAR_NODE|$OCULAR_SIGHT_NODE|$OCULAR_SCOPE_NODE)(_(\\d+))?$"
         )

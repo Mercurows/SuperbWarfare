@@ -1790,7 +1790,8 @@ object ClientEventHandler {
         gunSpread = Mth.lerp(0.5 * times, gunSpread, spread)
 
         // 开火部分
-        val weight = data.get(GunProp.WEIGHT)
+        // 冲刺后恢复开火的快慢按**主武器**的重量（`ActiveGun.handlingData`）—— 这一项是手感不是弹道
+        val weight = (ActiveGun.handlingData(player) ?: data).get(GunProp.WEIGHT)
         val speed = 5 / (weight + 4)
 
         fireCooldown = if (noSprintTicks == 0f && player.isSprinting && !zoom && !holdingFireKey) {
@@ -2248,7 +2249,8 @@ object ClientEventHandler {
             1f
         }
 
-        val customWeight = data.get(GunProp.WEIGHT).toFloat().coerceIn(1f, 30f)
+        // 气息摇摆的幅度按**主武器**的重量（`ActiveGun.handlingData`）：手里那把枪是主武器
+        val customWeight = (ActiveGun.handlingData(player) ?: data).get(GunProp.WEIGHT).toFloat().coerceIn(1f, 30f)
 
         if (!breath && zoom) {
             val newPitch = (
@@ -2456,7 +2458,8 @@ object ClientEventHandler {
                 0.005
             }
 
-        val customWeight = data.get(GunProp.WEIGHT).coerceIn(1.0, 50.0)
+        // 冲刺/行走摇摆的阻尼按**主武器**的重量（`ActiveGun.handlingData`）
+        val customWeight = (ActiveGun.handlingData(player) ?: data).get(GunProp.WEIGHT).coerceIn(1.0, 50.0)
 
         if (!isEditing) {
             moveRotZ =
@@ -2636,8 +2639,13 @@ object ClientEventHandler {
         val stack = ActiveGun.stackOf(player)
         val data = GunData.from(stack)
         val times = getDelta()
-        val weight = (stack.item as? GunItem)?.getCustomWeight(data) ?: 0.0
-        val duration = data.get(GunProp.ZOOM_TIME).coerceAtLeast(1) + 0.4 * weight
+        // ⚠ `ZoomTime` / `Weight` 恒读**主武器**（`ActiveGun.handlingData`）：
+        // 副武器是挂在主武器身上的附件，端在手里的始终是主武器，挂上一支 GP-25
+        // （`Weight 1.5` / `ZoomTime 1`）不该让 AK 的瞄准快到看不见对焦。
+        // 下面 `data` 只留给"副武器正在换弹"这条门槛 —— 那是**动作状态**，跟着操控的枪走。
+        val handling = ActiveGun.handlingData(player) ?: data
+        val weight = (handling.stack.item as? GunItem)?.getCustomWeight(handling) ?: 0.0
+        val duration = handling.get(GunProp.ZOOM_TIME).coerceAtLeast(1) + 0.4 * weight
         val stepIn = times / duration
         val stepOut = times / (duration * 0.75f)
         val vehicle = player.vehicle
@@ -2944,7 +2952,9 @@ object ClientEventHandler {
 
         val times = getDelta().coerceAtMost(1.6f)
 
-        val customWeight = data.get(GunProp.WEIGHT)
+        // 后坐的**重量阻尼**按主武器（`ActiveGun.handlingData`）：后坐是打进来之后被"手里的质量"吃掉的，
+        // 而手里是整把主武器加挂在它身上的副武器。至于后坐**幅度**（`RECOIL_X`）仍然是操控的枪的 —— 那一发是谁打的。
+        val customWeight = (ActiveGun.handlingData(player) ?: data).get(GunProp.WEIGHT)
         val gunRecoilX = data.get(GunProp.RECOIL_X)
 
         recoilHorizon = Mth.lerp(0.2 * times, recoilHorizon, 0.0) + recoilY
@@ -3415,10 +3425,12 @@ object ClientEventHandler {
 
     private fun handleWeaponDraw(entity: LivingEntity) {
         val times = getDelta()
-        val stack = ActiveGun.stackOf(entity)
-        val data = GunData.from(stack)
-        val weight = (stack.item as? GunItem)?.getCustomWeight(data) ?: 0.0
-        val duration = data.get(GunProp.DRAW_TIME).coerceAtLeast(1) + 0.5 * weight
+        // ⚠ `DrawTime` / `Weight` 恒读**主武器**：`drawTime` 是"重新端枪"的进度条，
+        // 而端在手里的始终是主武器（§9.8.8）。读副武器的话挂上 GP-25 之后
+        // 整把 AK 的重新装备只要 `1 + 0.5 * 0` 个 tick，像是瞬移。
+        val handling = ActiveGun.handlingData(entity) ?: return
+        val weight = (handling.stack.item as? GunItem)?.getCustomWeight(handling) ?: 0.0
+        val duration = handling.get(GunProp.DRAW_TIME).coerceAtLeast(1) + 0.5 * weight
         val decay = ln(100.0) / duration
         drawTime = (drawTime - decay * times * drawTime).coerceAtLeast(0.0)
     }

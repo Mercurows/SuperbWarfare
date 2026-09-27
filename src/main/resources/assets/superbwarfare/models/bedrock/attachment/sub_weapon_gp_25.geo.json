@@ -7,8 +7,8 @@
 				"texture_width": 128,
 				"texture_height": 128,
 				"visible_bounds_width": 3,
-				"visible_bounds_height": 2,
-				"visible_bounds_offset": [0, 0, 0]
+				"visible_bounds_height": 3,
+				"visible_bounds_offset": [0, 0.5, 0]
 			},
 			"bones": [
 				{
@@ -3580,6 +3580,16 @@
 							}
 						}
 					]
+				},
+				{
+					"name": "positioning",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "iron_view",
+					"parent": "positioning",
+					"pivot": [5.56276, 5.54298, 13.16534],
+					"rotation": [4.5, 0, 8.5]
 				}
 			]
 		}

@@ -1,7 +1,7 @@
 {
   "Spread": 1,
-  "RecoilX": 0.005,
-  "RecoilY": 0.024,
+  "RecoilX": 0.004,
+  "RecoilY": 0.04,
   "Damage": 80,
   "Projectile": "superbwarfare:gun_grenade",
   "ExplosionDamage": 80,
@@ -29,5 +29,6 @@
     "Fire3P": "superbwarfare:gp_25_fire_3p",
     "Fire3PFar": "superbwarfare:m_79_far",
     "Fire3PVeryFar": "superbwarfare:m_79_veryfar"
-  }
+  },
+  "Crosshair": "@GunGrenade"
 }

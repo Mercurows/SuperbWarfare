@@ -1366,11 +1366,11 @@ Java 侧 70 处**，其中绝大多数是"我正在操作的那把枪"。四期�
 | 开火 | 客户端 `handleGunShoot` → `FireKeyMessage` → 服务端 `onFireKeyPress` → `GunData.shoot` | **同一条链路**，只是 `GunData` 换成副武器的 | 无 |
 | 扣扳机方式 | 读 `data.selectedFireModeInfo()`（主武器数据里的 `DefaultFireMode`/`AvailableFireModes`） | 读**副武器自己那份数据**的模式 → GP-25 是 `Semi`，写成 `Auto` 就是连发 | 无（三期 `SubWeaponClientHandler` 里那套 `Semi`/`Auto`/`Burst` 手写状态机**整块删除**，改由 `handleGunShoot` 现有的模式分支接管） |
 | 换弹 | 按 R → `ReloadMessage` → `tryStartReload` | 同一条链路，装的是副武器的 `AmmoType`、走它自己的 `EmptyReloadTime` | 无（三期的自动装填 + 退避 + 动作栏进度 + 开始/结束音效跳变全部删除） |
-| 瞄准 | 右键 → `ZoomMessage` → `ClientEventHandler.zoom` → `zoomTime/zoomPos` | 同样的 `zoomTime`，只是 `ZOOM_TIME`/`Weight`/`CanZoom` 读副武器的数据 | 无（三期"副武器不抢右键"的隐含约定作废） |
+| 瞄准 | 右键 → `ZoomMessage` → `ClientEventHandler.zoom` → `zoomTime/zoomPos` | 同样的 `zoomTime`，`CanZoom` 读副武器的数据；**`ZOOM_TIME`/`Weight` 仍读主武器**（手感，§9.8.13） | 无（三期"副武器不抢右键"的隐含约定作废） |
 | 开火音 | 客户端 `playGunClientSounds` → `GunItem.resolveFire1PSounds(data)` | 同一个函数、同一处调用，参数是副武器的 | 无 |
 | 弹壳 | `ShellEject` 抛壳 | 副武器**不抛壳**（§11.9-A 的结论保留：弹壳模型与 `shell` 骨骼都是宿主枪的） | 一行判断 |
 | 枪口焰/烟 | 主机枪的 `flare` / 枪口配件 | **副武器模型自己的 `flare`**，整段部署期都归它（§9.8.6） | 条件从"开火窗口"改成"部署中" |
-| 后坐 / 抖动 / 散布 | 读主武器数据 | 读副武器数据 | 无 |
+| 后坐 / 抖动 / 散布 | 读主武器数据 | **幅度**读副武器数据；**重量阻尼**读主武器（手感，§9.8.13） | 无 |
 | Perk / 弹种 / 耐久 / 热量 | 主武器自己的 | 副武器自己那份 `GunData` 的 | 无 |
 
 **宿主枪在副武器激活期间不再被 tick**（`GunItem.inventoryTick` → `gunTick` 只作用于主手物品）：
@@ -1413,35 +1413,49 @@ Java 侧 70 处**，其中绝大多数是"我正在操作的那把枪"。四期�
 ```
 
 ```jsonc
-// sbw/guns/sub_weapon_gp_25.json —— **既是枪数据、也是枪械资源**（两者都从 sbw/guns 加载）
+// data/superbwarfare/sbw/guns/sub_weapon_gp_25.json —— 枪数据（服务端读，CustomData.GUN_DATA）
 {
   "Spread": 1, "Damage": 80, "Magazine": 1, "RPM": 60,
-  "AmmoType": "superbwarfare:grenade_40mm", "Projectile": "superbwarfare:gun_grenade",
-  // …枪数据部分与三期完全一致…
+  "AmmoType": "superbwarfare:grenade_40mm", "Projectile": "superbwarfare:gun_grenade"
+  // …与三期完全一致，四期一个字都不用改…
+}
+```
 
+```jsonc
+// assets/superbwarfare/sbw/guns/sub_weapon_gp_25.json —— 枪械资源（**客户端**读，CustomData.GUN_RESOURCE）
+{
+  "HideCrosshairWhenZoom": false,                  // 【五期返修】原先缺这个文件，瞄准后准星会消失
   "Animation": {
-    "Reload": "animation.sub_weapon_gp_25.reload",   // 【新】副武器**自己**的换弹动画
+    "Reload": "animation.sub_weapon_gp_25.reload", // 【新】副武器**自己**的换弹动画
     "ReloadEmpty": "animation.sub_weapon_gp_25.reload"
-  },
-  "Model": {
-    "Animation": "superbwarfare:animations/bedrock/attachment/sub_weapon_gp_25.animation.json",
-    "Model": "superbwarfare:models/bedrock/attachment/sub_weapon_gp_25.geo.json",
-    "Texture": "superbwarfare:textures/bedrock/attachment/sub_weapon_gp_25.png"
   }
 }
 ```
 
 > **为什么副武器能"有自己的动画"**：这是四期最省事的一点——**副武器物品本身就是 `GunItem`**（三期 §8.3），
 > 所以 `GunResource.compute(副武器合成栈)` 会按**物品注册 id** 解析出 `sbw/guns/sub_weapon_gp_25.json`，
-> 与手持形态的枪走的是**同一套资源机制**（`CustomData.GUN_RESOURCE` 与 `GUN_DATA` 都从 `sbw/guns/<id>.json` 读，
-> `CustomData.kt:40`/`:94`）。于是"副武器换弹播哪支 clip"**不需要任何新字段**，
+> 与手持形态的枪走的是**同一套资源机制**。于是"副武器换弹播哪支 clip"**不需要任何新字段**，
 > 就是它资源里的 `Animation.Reload`。
 >
-> **实测确认（落地时核对过）**：`data/superbwarfare/sbw/guns/sub_weapon_gp_25.json` **已经存在**
-> （三期建的，只有枪数据字段：`Damage 80` / `Magazine 1` / `RPM 60` / `EmptyReloadTime 80` /
-> `DrawTime 1` / `ZoomTime 1` / `AmmoType superbwarfare:grenade_40mm` …）。
-> 所以**四期连这个文件都不用新建** —— 将来只要往里补一个 `Animation.Reload` 指向新的动画文件即可；
-> 不做动画就保持原样（副武器静止挂在枪上，见 §9.8.7 的静默回退）。
+> **⚠ 五期返修：上面两个 `sbw/guns/<id>.json` 是 `data/` 与 `assets/` 下的两个文件，不能共用。**
+> 枪数据与服务端数据包一起注册（`DataLoader.createData` → `AddReloadListenerEvent`，`DataLoader.kt:51`/`:45`），
+> 枪械资源则挂在**客户端**监听器上（`createResource` → `RegisterClientReloadListenersEvent`，
+> `DataLoader.kt:70`/`:136-141`），而客户端的 `ResourceManager` 只按 `CLIENT_RESOURCES` 取包、
+> 只看得见 `assets/`。**两侧目录的 id 集合因此并不一致**（加这个文件之前：
+> `assets/sbw/guns/` 里唯一没有同名 `data/` 文件的是 `nail_gun`，反过来
+> `data/sbw/guns/sub_weapon_gp_25.json` 在 `assets/` 里没有对应物 —— 缺的就是它）。
+> 原先"往数据侧文件里补一个 `Animation.Reload` 即可"的说法是错的：
+> 数据侧写了 `Animation` 会被 `GunData` 当未知键丢掉（`ignoreUnknownKeys = true`），
+> 资源侧则压根读不到这个文件，**静默**落回 `DefaultGunResource` 的默认值，两边都不报错。
+> 这就是"副武器瞄准后准星消失"的根因：`HideCrosshairWhenZoom` 默认为 `true`
+> （`DefaultGunResource.kt:122-123`），而 `CrossHairOverlay.kt:294`/`:400` 就是在
+> `GunResource.compute(stack).hideCrosshairWhenZoom` 为真时提前 return 的。
+>
+> **所以规则是**：凡是要写 `GunResource` 字段（`Animation` / `HideCrosshairWhenZoom` / `EjectShell` /
+> `FlarePosition` …），都必须新建/修改 **`assets/superbwarfare/sbw/guns/<id>.json`**；
+> 写 `DefaultGunData` 字段（`Damage` / `RPM` / `Spread` …）才进 `data/` 那份。
+> 副武器的模型贴图另有归属：由**配件定义**的 `Model` / `Texture` 声明
+> （`sbw/attachments/sub_weapon_gp_25.json:16-17`），不在枪械资源里。
 
 | 字段 | 变更 | 说明 |
 |---|---|---|
@@ -1488,15 +1502,34 @@ val aimTransform = subWeaponAimTransform(...)      // ① 副武器附件模型�
 （副武器是下挂件，它自己的瞄具就在枪身中段）。真正要避免的是**取到宿主枪的 `iron_view` 却
 把副武器模型留在原来的位置**，那会看到"枪抬起来了，榴弹筒还在下面"。
 
-> **⚠ 现状数据付不出 ①**：`sub_weapon_gp_25.geo.json` 的骨骼只有
-> `root` / `gun` / `tube` / `ammo` / `trigger` / `bone2..7` / `flare`，**没有 `iron_view`**。
-> 所以四期刚落地时 GP-25 会走 ②/③（宿主机瞄位形），视觉上是"整枪抬到机瞄位、榴弹筒跟着上去"——
-> 可接受，也不难看。**要给 GP-25 做自己的瞄具位形，只需在附件模型里加一支名为 `iron_view` 的骨骼**，
-> 代码一个字都不用改（骨骼名就是约定，见 `SubWeaponInfo.VIEW_BONE`）。
-> 这把骨骼的存在性校验放在资源侧（§10 已有的"资源校验"一栏）。
+> **① 已经落地**：`sub_weapon_gp_25.geo.json` 现在有 `iron_view` 了（挂在一支顶层的
+> `positioning` 下，`pivot [5.56, 5.54, 13.17]` / `rotation [4.5, 0, 8.5]`），
+> 所以 `subWeaponHasOwnAimPose` 为真，位形与倍率**一起**走 ①（这是加骨骼就自动生效的，
+> 代码一个字都没改）。四期刚落地时它没有这支骨骼，走的是 ②/③。
+> 骨骼的存在性校验放在资源侧（§10 已有的"资源校验"一栏）。
+
+**⚠ 锚点必须取「绑定变换」，不能取当帧的动画变换**（五期返修，见 §9.8.15）。
+这里有一条**必须在代码里兑现、靠摆骨骼摆不出来**的约束：
+
+| 骨骼族 | 位置 | 会不会被动画驱动 |
+|---|---|---|
+| 定位点：`idle_view` / `iron_view` / `scope_view` | **顶层 `positioning` 下**，`positioning` 自己是顶层骨骼 | **从不**（全仓枪械动画文件里 `positioning*` 被驱动的次数 = 0） |
+| 挂点：`scope_pos` / `sub_weapon_pos` | **`root` 下**（`sub_weapon_pos <- positioning2 <- root`） | 会（`fire` / `fire_sub_weapon` 动的就是 `root`） |
+
+挂点**必须**在 `root` 下面 —— 不然枪一动、挂件不跟着走，那就错了。所以"挂件跟着枪动"
+和"相机锚点不跟着动"这两个要求，靠骨骼层级是没法同时满足的，只能在代码里分开：
+**绘制用动画变换、锚点用绑定变换**。瞄具那条路早就这么做了
+（`ScopeRenderData.slotTransform` 绘制 / `bindSlotTransform` 锚点，`GeoGunRenderer.kt:576-577`），
+副武器这条路原来漏了，于是锚点跟着 `root` 的后坐走、整把枪相对屏幕一动不动 —— 见 §9.8.15。
 
 **`zoomTime` 的驱动不动**：`ClientEventHandler.handleWeaponZoom` 只管 `zoomTime/zoomPos` 的进退，
-把读 `stack` 的地方换成 `ActiveGun.stackOf(player)` 即可（`ZOOM_TIME`/`Weight`/`CanZoom` 自动变成副武器的）。
+把读 `stack` 的地方换成 `ActiveGun.stackOf(player)` 即可（`CanZoom` 自动变成副武器的）。
+
+> **⚠ 五期返修（§9.8.13）**：`ZOOM_TIME`/`Weight` **不能**跟着一起变成副武器的。
+> 副武器是**挂在主武器身上的附件**，端在手里的始终是主武器 —— 挂上一支 GP-25
+> （`Weight 1.5` / `DrawTime 1` / `ZoomTime 1`）不该让整把 AK 的瞄准、端枪、摇摆和
+> 冲刺恢复全部变成榴弹筒的。这一个族（`ZoomTime` / `DrawTime` / `Weight`）改读
+> `ActiveGun.handlingData(player)`（恒等于主手那把枪），开火那一族才读 `ActiveGun.dataOf`。
 
 **⚠ 但倍率必须跟着「位形」一起换源**（四期返修，§11.10.10）：位形走了 ②/③（宿主枪的瞄具/机瞄）时，
 **倍率也必须取宿主枪的** —— 包括它装着的瞄具倍率。位形换了、倍率没换就成了
@@ -1526,11 +1559,12 @@ val aimTransform = subWeaponAimTransform(...)      // ① 副武器附件模型�
 **为什么这条路可行**（三条事实核对过）：
 
 1. **副武器本来就有自己的枪械资源。** `GunResource.compute(stack)` 按**物品注册 id**取资源
-   （`GunResource.kt:76-85` 的 `RESOURCE_CACHE` + `idOf(stack)`），而 `CustomData.GUN_RESOURCE`
-   与 `GUN_DATA` **都从 `sbw/guns/<id>.json` 加载**（`CustomData.kt:40`/`:94`）。
+   （`GunResource.kt:76-85` 的 `RESOURCE_CACHE` + `idOf(stack)`）；`CustomData.GUN_RESOURCE`
+   与 `GUN_DATA` 都以 `sbw/guns/<id>.json` 为键（`CustomData.kt:40`/`:94`），
    副武器的合成栈用的是 `SubWeaponItem`（物品 id = `sub_weapon_gp_25`），
-   所以 `GunResource.compute(subStack)` 解出来的就是 `sbw/guns/sub_weapon_gp_25.json` ——
-   **同一份 json 既是枪数据、又是枪械资源**，与所有普通枪完全一致。
+   所以 `GunResource.compute(subStack)` 解出来的就是 `sub_weapon_gp_25` 这份资源。
+   ⚠ **但两侧是两个文件**（`data/…` 给 `GunData`、`assets/…` 给 `GunResource`），
+   别按早期版本"一份 json 两用"的说法去只改一处 —— 详见 §9.8.7 的返修块。
 2. **副武器模型有自己的实例。** `GeoGunRenderer.renderRegisteredAttachments` 通过
    `AttachmentModelReloadListener.getModel(modelPath)` 拿到 `BedrockAttachmentModel`，
    它内部持有 `TreeModelInstance`（`BedrockAttachmentModel.kt:28-29`）——
@@ -1808,6 +1842,95 @@ SubWeaponDeployedMessage(
 
 > 只读主手会怎样：副武器换弹期间主武器"不忙" → 门禁全放行 → **能一边装榴弹一边挥枪托**。
 > 未部署时两者是同一个 `GunData` 实例，所以这一改写对三期行为**逐字等价**。
+
+#### 9.8.13 手感（`ZoomTime` / `DrawTime` / `Weight`）**恒读主武器**（五期返修）
+
+四期让**每一个**读取点都跟着 `ActiveGun` 走，包括瞄准与端枪的时长。结果是挂上一支
+GP-25（它自己那份数据是 `Weight 1.5` / `DrawTime 1` / `ZoomTime 1`）之后，
+**整把 AK 的瞄准、重新端枪、摇摆、气息和后坐阻尼全部退化成榴弹筒的** —— 实测就是
+"开镜快到看不见对焦、切枪像瞬移、枪跟羽毛一样飘"。
+
+判据只有一句：**副武器是挂在主武器身上的附件，端在手里的始终是主武器**（§9.8.2）。
+主/副切换换的是"当前操控的枪"，手里那把枪从未离手 —— 所以描述"这把枪拿在手上什么手感"
+的数值不该跟着换。
+
+于是读取点分成两族：
+
+| 族 | 读什么 | 例子 |
+|---|---|---|
+| **手感** | `ActiveGun.handlingData(player)` —— **恒等于主手那把枪** | `ZoomTime`、`DrawTime`、`Weight` |
+| **开火** | `ActiveGun.dataOf(player)` —— 部署中是副武器 | `Spread`、`RecoilX`/`RecoilY`、`RPM`、弹药、音效、开火动画 |
+
+`handlingData` 就是 `mainGun`（同一件事，拆成两个名字只为让读取点自解释）。落点：
+
+| 函数 | 改读主武器的量 |
+|---|---|
+| `handleWeaponZoom` | `ZOOM_TIME` + `getCustomWeight` |
+| `handleWeaponDraw` | `DRAW_TIME` + `getCustomWeight` |
+| `handleWeaponBreathSway` | `WEIGHT`（气息摇摆幅度） |
+| `handleWeaponMove` | `WEIGHT`（冲刺/行走摇摆阻尼） |
+| `handleGunShoot` | `WEIGHT`（冲刺后恢复开火的快慢） |
+| `handleGunRecoil` | `WEIGHT`（后坐的重量阻尼；后坐**幅度**仍是操控那把枪的） |
+
+**没有跟着改的**（有意）：
+
+- `handleWeaponZoom` 里"换弹中不能开镜"那条门槛仍然看**操控的那把枪** —— 那是动作状态。
+- `SubWeaponClientHandler.onDeployed` 的**切换锁时长**仍然按 `ActiveGun.dataOf` 估。
+  它读 `DRAW_TIME` 但语义不是"这把枪拿在手上什么手感"，而是"切到**新那把**要占多久"，
+  注释里写的就是"按当前操控那把枪的 DrawTime 估"。**代价是切换手感不对称**：
+  切到副武器 `1+4=5` tick、切回主武器 `11+4=15` tick。要改成对称（两个方向都用主武器的）
+  就把它一起换成 `handlingData` —— 这一条**留给需求方定**，先按原样保留。
+- 重量仍然以 **`Modifiers`** 的方式叠加到宿主枪上（`sub_weapon_gp_25.json` 的 `Weight +1.5`）：
+  "挂上榴弹筒整枪变重"是**想要的**，这里修的是"变重之后手感被整套换掉"。
+- `handleWeaponSway` / `handleWeaponBipodView` / `handleWeaponMove` 里的**脚架与 `movingTilt`**
+  仍读操控的那把枪（渲染位形的改归口在 §9.9.4 的五期范围）。
+
+#### 9.8.14 副武器的准星：`HideCrosshairWhenZoom` 改不到（五期返修）
+
+症状：切到副武器后一瞄准，屏幕准星就没了，而且**无处可改** —— `assets/superbwarfare/sbw/guns/`
+下没有 `sub_weapon_gp_25.json`，没法像 minigun 那样写 `"HideCrosshairWhenZoom": false`。
+
+根因与修法在 §9.8.7 的返修块里（一句话：枪械资源只从 `assets/` 读，副武器从来没建过资源侧文件，
+于是永远吃 `DefaultGunResource` 的默认值 `true`）。**已修**：新建
+`assets/superbwarfare/sbw/guns/sub_weapon_gp_25.json`，写 `"HideCrosshairWhenZoom": false`。
+
+两个随之而来的点：
+
+- **藏不藏只看资源字段，与准星样式无关。** `renderGunDefaultCrosshair`（`CrossHairOverlay.kt:294`）
+  与 `renderGrenadeCrosshair`（`:400`）用的是**同一个**条件
+  （`zoomTime > 0.8 && GunResource.compute(stack).hideCrosshairWhenZoom`），
+  所以换准星样式不改变"藏不藏"这件事。
+- **副武器现在画的是通用枪械准星，不是榴弹准星。** 副武器那份枪数据里**没有** `Crosshair`，
+  `GunProp.CROSSHAIR` 的兜底是 `@GunDefault`（`GunProp.kt:461`），而手持的 `gp_25` 用的是
+  `@GunGrenade`。要让部署形态也画榴弹准星，就往**数据侧**的 `data/.../sub_weapon_gp_25.json`
+  加一行 `"Crosshair": "@GunGrenade"` —— 这是**表现选择**，不是 bug，按需求定（注意 `Crosshair`
+  是 `GunData` 字段，必须进 `data/` 那份，写进 `assets/` 那份不生效）。
+
+#### 9.8.15 副武器瞄准后，开火动画「幅度特别小」（五期返修）
+
+症状：切到副武器、**瞄准状态下**开火，动画幅度几乎看不见（不瞄准时幅度正常）。
+根因在 §9.8.6 的锚点那条：`resolveSubWeaponAimTransform` 原来用
+`model.getGlobalTransform(sub_weapon_pos)`（**当帧动画变换**）当相机锚点。而
+`sub_weapon_pos` 在宿主枪的 `root` 底下，`fire_sub_weapon` 动的正是 `root`
+（`ak_12.animation.json`：position 峰值 `[0, -0.75, 4.7]`、rotation 峰值 7.4°）。
+锚点跟着后坐走 → `applyFirstPersonPositioningTransform` 用它的逆变换把模型又搬回屏幕原位
+→ **后坐被精确抵消**，整把枪相对屏幕一动不动。不瞄准时锚点是宿主枪的 `idle_view`
+（顶层 `positioning` 下，动画从不碰）所以正常 —— 这个"只在瞄准时坏"的不对称就是它的指纹。
+
+**已修**（`GeoGunRenderer.kt:1247-1256`）：锚点改用 `model.getBindGlobalTransform(boneName)`，
+与瞄具的 `bindSlotTransform` 同一口径；绘制仍用动画变换（`GeoGunRenderer.kt:482` 不动），
+所以附件的后坐照旧跟着枪身走。改一行。
+
+**这个坑为什么只在 ① 生效后才出现**：位形走 ②/③ 时锚点取的是宿主枪自己的瞄具/机瞄，
+那两个骨骼挂在顶层 `positioning` 下、动画从不驱动，等价于绑定变换，所以当年看不出来。
+给附件模型加 `iron_view` 之后锚点就换到了 `sub_weapon_pos` 上，一按扳机就暴露。
+
+**给模型作者的约定**（代码只兜住挂点这一半）：
+
+- 附件模型自己的 `iron_view` 按惯例挂在顶层 `positioning` 下（GP-25 就是这么做的），
+  这样它自己的动画（换弹）也不会把锚点带走；
+- **将来做副武器的开火动画时，别去驱动 `positioning` / 挂点骨骼** —— 动 `gun` / `tube` / `bolt`
+  这些"枪身内部"的骨骼。动了 `positioning` 就等于把锚点也跟着动，症状与这次一模一样。
 
 ---
 

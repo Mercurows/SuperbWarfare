@@ -86,6 +86,31 @@ object ActiveGun {
     }
 
     /**
+     * **操控手感**（瞄准 / 端枪 / 摇摆 / 气息 / 后坐衰减）该读的那把枪。
+     *
+     * 恒等于 [mainGun]，**副武器被切出来的期间也一样** —— 副武器是**挂在主武器身上的附件**
+     * （§9.8.2），主/副切换换的只是"当前操控的枪"，手里那把枪从未离手。所以 `ZoomTime`、
+     * `DrawTime`、`Weight` 这些描述"这把枪拿在手上什么手感"的数值，必须仍然来自主武器；
+     * 否则挂上一支 GP-25（`Weight 1.5` / `DrawTime 1` / `ZoomTime 1`）之后，
+     * 整把 AK 的瞄准、端枪和摇摆会全部变成榴弹筒的。
+     *
+     * | 读到的东西 | 该用什么 |
+     * |---|---|
+     * | 开火（`Spread` / `RecoilX` / `RecoilY` / `RPM` / 弹药 / 音效 / 开火动画） | [dataOf] —— 你**打**的是哪把枪 |
+     * | 手感（`ZoomTime` / `DrawTime` / `Weight`） | **本函数** —— 你**拿**的是哪把枪 |
+     *
+     * 与 [mainGun] 是同一件事，拆成两个名字只为让读取点自解释。清单见 §9.8.13。
+     */
+    fun handlingData(player: Player): GunData? = mainGun(player)
+
+    /** [handlingData] 的"任何生物"版本；非玩家没有副武器，就是它主手那把枪 */
+    fun handlingData(entity: LivingEntity): GunData? {
+        val main = entity.mainHandItem
+        if (!GunItem.isHeldWeapon(main)) return null
+        return GunData.from(main)
+    }
+
+    /**
      * **当前操控的枪**的合成栈。
      *
      * 主手不是枪 → [ItemStack.EMPTY]；部署了副武器 → 那把副武器的合成栈；否则 → 主手物品。

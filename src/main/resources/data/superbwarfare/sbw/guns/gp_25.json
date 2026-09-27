@@ -1,7 +1,7 @@
 {
   "Spread": 3.5,
   "RecoilX": 0.004,
-  "RecoilY": 0.023,
+  "RecoilY": 0.04,
   "Damage": 80,
   "Projectile": "superbwarfare:gun_grenade",
   "ExplosionDamage": 80,

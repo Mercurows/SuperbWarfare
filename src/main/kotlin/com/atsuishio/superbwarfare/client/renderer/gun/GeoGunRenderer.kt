@@ -1228,11 +1228,15 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
      * 取的顺序：附件模型自己的 `iron_view` × 挂点骨骼。`idle_view` 是**主武器**的持枪位形，
      * 副武器没有它也不需要它（它跟着挂点走）。
      *
-     * 现状：`sub_weapon_gp_25.geo.json` 里还没有 `iron_view`，所以这里返回 `null`，
-     * 瞄准位形回退到宿主枪的瞄具/机瞄 —— 视觉上是"整枪抬到机瞄位、榴弹筒跟着上去"，
-     * 可接受。**给附件模型加一支 `iron_view` 骨骼即可生效，代码一个字都不用改。**
+     * 附件模型里没有 `iron_view` 时返回 `null`，瞄准位形回退到宿主枪的瞄具/机瞄
+     * —— 视觉上是"整枪抬到机瞄位、榴弹筒跟着上去"，可接受。**给附件模型加一支
+     * `iron_view` 骨骼即可生效，代码一个字都不用改**（`sub_weapon_gp_25` 已经这么做了）。
      * 届时 [subWeaponHasOwnAimPose] 也会跟着变成 `true`，倍率自动改用副武器自己的 ——
      * 两条路径共用同一个判据，不会出现"位形换源了、倍率还留在主武器"。
+     *
+     * ⚠ **挂点必须取[绑定][GeoGunModel.getBindGlobalTransform]变换，不能取当帧的动画变换**，理由见函数内注释。
+     * 这也是本仓库对"相机锚点"的统一口径：瞄具走 `ScopeRenderData.bindSlotTransform`
+     * （[scopeViewTransform]），副武器走这里，两者都不跟着动画动；差异只在**绘制**时才用动画变换。
      *
      * 只有在**副武器被切出来**时才该用它（`ActiveGun`）：主武器自己还挂在枪上时，
      * 瞄准位形当然还是主武器的。
@@ -1245,7 +1249,12 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val boneName = AttachmentSlots.mountBoneOf(slot, definition) ?: return null
 
         val aimTransform = attachmentModel.getGlobalTransform(SubWeaponInfo.VIEW_BONE) ?: return null
-        val mountTransform = model.getGlobalTransform(boneName) ?: return null
+        // 挂点骨骼是宿主枪 `root` 的后代（ak_12 是 `sub_weapon_pos <- positioning2 <- root`），
+        // 而 `fire_sub_weapon` 动的正是宿主枪的 `root`（position 峰值 4.7、rotation 峰值 7.4°）。
+        // 用当帧动画变换当锚点 = 相机跟着后坐一起走 → 模型被反变换回屏幕原位，
+        // 整把枪相对屏幕一动不动，开火动画"幅度特别小"甚至看不见。
+        // 取绑定变换后，锚点固定在枪身静止姿态上，后坐就正常显示（与瞄具、与本枪机瞄一致）。
+        val mountTransform = model.getBindGlobalTransform(boneName) ?: return null
 
         return Matrix4f(mountTransform).mul(aimTransform)
     }
