@@ -1130,6 +1130,14 @@
   "container.superbwarfare.loiter_config.loiter_on": "Loiter: ON",
   "container.superbwarfare.loiter_config.loiter_off": "Loiter: OFF",
 
+  "subtitle.superbwarfare.explosion": "Explosion",
+  "subtitle.superbwarfare.ouch": "Beast Senpai: Beautiful Voice",
+  "subtitle.superbwarfare.heng": "Beast Senpai: Hmph",
+  "subtitle.superbwarfare.hengheng": "Beast Senpai: Hmph, hmph",
+  "subtitle.superbwarfare.yarimasune": "Beast Senpai: Yarimasune",
+  "subtitle.superbwarfare.growl": "Beast Senpai: Hmph aaah",
+  "subtitle.superbwarfare.idle": "Beast Senpai: Hmph",
+
   "info.superbwarfare.mod_id": "Superb Warfare",
   "info.superbwarfare.no_info": "[No Info]",
   "info.superbwarfare.prism_tank": "The Prism Tank is a specialized tank capable of firing high-energy lasers at enemies. It accommodates 2 crew members and lacks fording capability.",

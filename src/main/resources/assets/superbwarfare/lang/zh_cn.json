@@ -1130,6 +1130,14 @@
   "container.superbwarfare.loiter_config.loiter_on": "盘旋功能已开启",
   "container.superbwarfare.loiter_config.loiter_off": "盘旋功能已关闭",
 
+  "subtitle.superbwarfare.explosion": "爆炸",
+  "subtitle.superbwarfare.ouch": "野兽先辈：美声",
+  "subtitle.superbwarfare.heng": "野兽先辈：哼",
+  "subtitle.superbwarfare.hengheng": "野兽先辈：哼哼",
+  "subtitle.superbwarfare.yarimasune": "野兽先辈：压力马斯内",
+  "subtitle.superbwarfare.growl": "野兽先辈：哼哼啊啊啊",
+  "subtitle.superbwarfare.idle": "野兽先辈：哼",
+
   "info.superbwarfare.mod_id": "卓越前线",
   "info.superbwarfare.no_info": "[暂无信息]",
   "info.superbwarfare.prism_tank": "光棱坦克是一款能向敌人发射高能激光的特种坦克，可搭载2人，不具备浮渡能力",
