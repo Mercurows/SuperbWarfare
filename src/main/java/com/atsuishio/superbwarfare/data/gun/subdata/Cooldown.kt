@@ -91,8 +91,5 @@ class Cooldown(private val gunDataTag: CompoundTag) {
 
         /** 近战额外效果冷却键 */
         fun effectKey(effectId: String) = "effect:$effectId"
-
-        /** 副武器槽位冷却键 */
-        fun subWeaponKey(slot: String) = "sub:$slot"
     }
 }

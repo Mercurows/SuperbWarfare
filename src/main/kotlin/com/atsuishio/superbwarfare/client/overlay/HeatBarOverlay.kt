@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.item.gun.GunItem
+import com.atsuishio.superbwarfare.tools.ActiveGun
 import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.renderer.GameRenderer
@@ -30,13 +31,15 @@ object HeatBarOverlay : CommonOverlay("heat_bar") {
         val heat: Double
         val vehicle = player.vehicle
 
+        // 当前操控的枪（部署中的副武器也算）：热量条显示的是**正在操作那把**的热量
+        val stack = ActiveGun.stackOf(player)
         heat = if (ClientEventHandler.isEditing
-            || !GunItem.isHeldWeapon(player.mainHandItem)  // 手持副武器时按普通物品处理
+            || !GunItem.isOperable(stack)
             || (vehicle is VehicleEntity && vehicle.banHand(player))
         ) {
             0.0
         } else {
-            from(player.mainHandItem).heat.get()
+            from(stack).heat.get()
         }
 
         val currentTime = System.currentTimeMillis()

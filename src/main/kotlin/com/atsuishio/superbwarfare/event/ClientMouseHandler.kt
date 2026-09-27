@@ -300,13 +300,14 @@ object ClientMouseHandler {
             )
         }
 
-        // 手持副武器时按普通物品处理
-        if (GunItem.isHeldWeapon(stack)) {
-            val data = GunData.from(stack)
+        // 当前操控的枪（部署中的副武器也算）：开镜灵敏度读的是**正在操作那把**的数据
+        val activeStack = ActiveGun.stackOf(player)
+        if (GunItem.isOperable(activeStack)) {
+            val data = GunData.from(activeStack)
             val customSens = data.sensitivity.get()
             val zoom = ClientEventHandler.customZoom.coerceAtLeast(1.0)
 
-            if (!player.mainHandItem.isEmpty && mc.options.cameraType == CameraType.FIRST_PERSON) {
+            if (!activeStack.isEmpty && mc.options.cameraType == CameraType.FIRST_PERSON) {
                 return original / (1 + (0.2 * (zoom - (0.3 * customSens)) * ClientEventHandler.zoomTime))
                     .coerceAtLeast(0.1) * (ControlConfig.MOUSE_SENSITIVITY.get() / 100f)
             }

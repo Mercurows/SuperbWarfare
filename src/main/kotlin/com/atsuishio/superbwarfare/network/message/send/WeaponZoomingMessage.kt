@@ -1,17 +1,18 @@
-package com.atsuishio.superbwarfare.network.message.send
+﻿package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
+import com.atsuishio.superbwarfare.tools.ActiveGun
 import kotlinx.serialization.Serializable
 
 @Serializable
 @RegisterPacket
 data class WeaponZoomingMessage(val zooming: Boolean) : ServerPacketPayload() {
     override fun PayloadContext.handler() {
-        val stack = sender().mainHandItem
+        val stack = ActiveGun.stackOf(sender())
         if (stack.item !is GunItem) return
 
         from(stack).zooming.set(zooming)

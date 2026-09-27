@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.item.attachment
 
 import com.atsuishio.superbwarfare.client.tooltip.component.AttachmentImageComponent
+import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import net.minecraft.world.inventory.tooltip.TooltipComponent
 import net.minecraft.world.item.ItemStack
@@ -33,6 +34,17 @@ open class SubWeaponItem @JvmOverloads constructor(
 
     /** 手持时不是"枪"：不渲染枪身、不改视角、不进输入链路 */
     override fun useAsWeaponInHand(): Boolean = false
+
+    /**
+     * **副武器不具有配件**（四期）：它是装到枪上的一个部件，不是一把可以被改装的枪 ——
+     * 让下挂榴弹自己再挂一个握把没有意义。
+     *
+     * 于是改装界面（`GunItem.getItemScreen` → `canOpenEditScreen` + 这个谓词）对它不打开，
+     * `/sbw attachment` 也只对**主手那把枪**生效（`AttachmentCommand.mainHandGunData`）。
+     * 指令侧的兜底还有一条：`GunData.availableAttachments` 对副武器一律返回空表，
+     * 所以补全不会列出候选、`canInstall` 也会直接失败。
+     */
+    override fun canEditAttachments(data: GunData) = false
 
     /** 不带耐久条 */
     override fun getMaxDamage(stack: ItemStack): Int = 0

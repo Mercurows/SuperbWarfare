@@ -712,9 +712,6 @@
   "item.superbwarfare.bayonet_m_9": "M9军用匕首",
   "item.superbwarfare.bayonet_6kh2": "6KH2军刺",
   "item.superbwarfare.sub_weapon_gp_25": "GP-25下挂榴弹发射器",
-  "info.superbwarfare.subweapon.reloading": "%s 装填中… %s%%",
-  "info.superbwarfare.subweapon.reloaded": "%s 装填完成（%s 发）",
-  "info.superbwarfare.subweapon.reload_empty": "%s：没有可装填的弹药",
 
   "death.attack.gunfire": "%1$s被%2$s射爆了",
   "death.attack.gunfire.entity": "%1$s被%2$s射爆了",
@@ -903,7 +900,7 @@
   "key.superbwarfare.edit_mode": "改装",
   "key.superbwarfare.release_decoy": "释放诱饵",
   "key.superbwarfare.melee": "枪械近战",
-  "key.superbwarfare.subweapon_fire": "副武器开火",
+  "key.superbwarfare.subweapon_fire": "切换副武器",
   "key.superbwarfare.free_camera": "载具自由视角",
   "key.superbwarfare.launch": "发射",
   "key.superbwarfare.mark": "标记",

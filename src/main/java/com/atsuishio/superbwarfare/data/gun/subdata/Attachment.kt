@@ -86,6 +86,24 @@ class Attachment(private val gun: GunData) {
     }
 
     /**
+     * **只读**版：槽位里本来就是 compound 时返回它（活引用），否则返回 `null`。
+     *
+     * 与 [getOrCreateTag] 的区别是它**绝不物化**字符串形式的槽位、也**不写回**任何东西。
+     *
+     * 副武器运行时需要这个：客户端的主手物品每个 tick 都会被换成一份**新的栈对象**，
+     * 而那份栈上的槽位内容在没被实体化之前一直是字符串 —— 用 [getOrCreateTag] 就会
+     * **每帧 materialize 出一个游离的空 compound**，拿它去折进缓存那份就等于每帧清空一次
+     * 副武器状态（四期踩过的坑，见 `SubWeaponRuntime.installed` 的注释）。
+     * 既然我们手里那份已经是完整的活引用，就没有理由每帧去枪上重新造一个。
+     */
+    fun getTagIfCompound(type: AttachmentType): CompoundTag? =
+        if (attachment.get(type.attachmentName)?.id == Tag.TAG_COMPOUND) {
+            attachment.getCompound(type.attachmentName)
+        } else {
+            null
+        }
+
+    /**
      * 把 [type] 槽位的内容直接换成 [tag]（**同一个对象**，不复制）。
      *
      * 只有副武器运行时用得上：它的枪械状态住在附件子 tag 上，而 `GunData` 构造时会把根 tag

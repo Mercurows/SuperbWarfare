@@ -315,7 +315,14 @@ private fun suggestedAttachmentIds(context: CommandContext<CommandSourceStack>):
 private inline fun <reified T> CommandContext<CommandSourceStack>.parsedArgument(name: String): T? =
     if (nodes.any { it.node.name == name }) getArgument(name, T::class.java) else null
 
-/** 取出 [entity] 主手的枪械数据，主手物品不是 [GunItem] 时返回 `null` */
+/**
+ * 取出 [entity] **主手那把枪**的枪械数据，主手物品不是 [GunItem] 时返回 `null`。
+ *
+ * ⚠ **这里刻意看"物理上的主手"，不用 `ActiveGun`**（四期）：配件永远只对**主武器**生效，
+ * 副武器不具有配件（`SubWeaponItem.canEditAttachments` = false，
+ * `GunData.availableAttachments` 对副武器返回空表）。
+ * 所以副武器被 G 切出来时，`/sbw attachment` 操作的仍然是手上那把枪 —— 这正是想要的。
+ */
 private fun mainHandGunData(entity: Entity): GunData? {
     val stack = (entity as? LivingEntity)?.mainHandItem ?: return null
     if (stack.item !is GunItem) return null

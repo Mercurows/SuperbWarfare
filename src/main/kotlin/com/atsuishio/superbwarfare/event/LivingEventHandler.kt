@@ -340,6 +340,14 @@ object LivingEventHandler {
                 ) {
                     sendPacketTo(entity, DrawClientMessage)
 
+                    // 四期：**主手物品真的换了 → 自动收起副武器**（§9.8.10 不变量 2）。
+                    // 部署状态挂在"那一把枪"的 NBT 上，玩家滚轮/丢枪/死亡掉落之后不该留着它 ——
+                    // 否则新拿起的这把枪会从"副武器"开始，而它的副武器可能根本没装。
+                    // 只清状态、不动副武器实例（旧宿主枪已经跟着旧栈走了，这里也拿不到它）。
+                    if (oldStack.item is GunItem) {
+                        ActiveGun.onMainHandChanged(GunData.from(oldStack))
+                    }
+
                     val oldGun = oldStack.item
                     if (oldGun is GunItem) {
                         val oldData = GunData.from(oldStack)

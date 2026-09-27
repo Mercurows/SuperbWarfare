@@ -34,8 +34,11 @@ import com.atsuishio.superbwarfare.data.gun.melee.normalizeProjectileMarker
 import com.atsuishio.superbwarfare.data.gun.subdata.*
 import com.atsuishio.superbwarfare.data.gun.value.*
 import com.atsuishio.superbwarfare.data.mob_guns.MobGunState
+import com.atsuishio.superbwarfare.data.stack.GunStackStorage
+import com.atsuishio.superbwarfare.data.stack.ItemStackStorage
 import com.atsuishio.superbwarfare.event.GunEventHandler
 import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.item.attachment.SubWeaponItem
 import com.atsuishio.superbwarfare.item.gun.EmptyGunItem
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage
@@ -181,6 +184,23 @@ class GunData private constructor(
     val defaultDataId: StringValue
 
     /**
+     * 当前操控的是哪一把枪（四期，§9.8.1）：空 = 主武器，否则是副武器所在的槽位枚举名（`"SUBWEAPON"`）。
+     *
+     * 与 [defaultDataId] 同住枪械状态，因此随宿主枪持久化并同步到客户端。
+     * **只用服务端写**（`SubWeaponDeployMessage` 的 handler），客户端只读。
+     */
+    @JvmField
+    val activeSlot: StringValue
+
+    /**
+     * [activeSlot] 指向的那把副武器所属**宿主枪**的 UUID（标准带连字符形式，与 `UUID.toString()` 一致）。
+     *
+     * 读取侧一律走 `ActiveGun.resolveDeployedSlot`，它在主武器 UUID 与这里不符时把这次部署视为作废。
+     */
+    @JvmField
+    val activeOwner: StringValue
+
+    /**
      * Monotonic revision of the persisted gun state.
      *
      * [persist] advances it whenever the persisted content actually changes. Together with [uuid] it
@@ -274,6 +294,10 @@ class GunData private constructor(
         }
         return this.tag.getCompound(name)
     }
+
+    /** 这份栈的数据载体（根 tag + 身份令牌）；四期起由 [GunStackStorage] 统一提供 */
+    val carrier: GunStackStorage.Carrier
+        get() = GunStackStorage.Carrier(tag, stackStorage.carrierToken(stack))
 
     /**
      * Checks if the gun has been properly initialized.
@@ -1171,8 +1195,16 @@ class GunData private constructor(
      * 已经装了会和它互斥的配件时（同一挂点组，或任一方在 `ConflictsWith` 里点了名），
      * 这里会一并过滤掉：规则收在 `AttachmentSlots.conflicts`，
      * 改装界面的"该槽位无可用配件"表现、指令补全与 `Attachment.cycle` 的候选列表都由这一个入口统一。
+     *
+     * ⚠ **副武器永远没有配件**（四期）：`SubWeaponItem` 虽然是 `GunItem`，但它是**装到枪上的一个部件**，
+     * 不是一把可以被改装的枪 —— 让下挂榴弹自己再挂一个握把是没有意义的。
+     * 所以这里对副武器一律返回空表：改装界面显示"无可用配件"、指令补全不再列出候选、
+     * `/sbw attachment set` 也会因为 `canInstall` 走同一个入口而被拒。
+     * 相关门禁见 `GunItem.canEditAttachments` 与 `SubWeaponItem` 的覆写。
      */
     fun availableAttachments(slot: AttachmentType): List<ResourceLocation> {
+        if (item is SubWeaponItem) return emptyList()
+
         return getDefault().availableAttachments[slot.attachmentName]
             .orEmpty()
             .mapNotNull { ResourceLocation.tryParse(it.value.id) }
@@ -1695,7 +1727,7 @@ class GunData private constructor(
      * instance — vehicle-gun stacks therefore stay UUID-less (VehicleGunItem never writes one).
      */
     private fun rebind(newStack: ItemStack) {
-        val incoming = newStack.get(DataComponents.CUSTOM_DATA)?.copyTag() ?: CompoundTag()
+        val incoming = stackStorage.rootTag(newStack)
 
         this.stack = newStack
 
@@ -1705,6 +1737,9 @@ class GunData private constructor(
             reloadTagFrom(incoming)
             state = GunState.fromTag(gunDataTag)
         }
+
+        // 1.20.1 是空操作（活引用）；1.21.1 侧这才算把改好的那份 tag 落回组件
+        stackStorage.writeRoot(newStack, this.tag)
 
         // The remote snapshot supersedes anything a batch was still holding back.
         persistPending = false
@@ -1806,12 +1841,7 @@ class GunData private constructor(
         this.stack = stack
         this.id = if (useEmptyGunData) EmptyGunItem.EMPTY_GUN_ID else getRegistryId(stack.item)
 
-        if (useEmptyGunData) {
-            this.tag = CompoundTag()
-        } else {
-            val customData = stack.get(DataComponents.CUSTOM_DATA)
-            this.tag = if (customData != null) customData.copyTag() else CompoundTag()
-        }
+        this.tag = if (useEmptyGunData) CompoundTag() else stackStorage.rootTag(stack)
 
         gunDataTag = getOrPut(KEY_GUN_DATA)
         perkTag = getOrPut(KEY_PERKS)
@@ -1827,6 +1857,12 @@ class GunData private constructor(
         )
         defaultDataId = StateStringValue(
             this, { it.defaultDataId }, { s, v -> s.copy(defaultDataId = v) }
+        )
+        activeSlot = StateStringValue(
+            this, { it.activeSlot }, { s, v -> s.copy(activeSlot = v) }
+        )
+        activeOwner = StateStringValue(
+            this, { it.activeOwner }, { s, v -> s.copy(activeOwner = v) }
         )
         selectedAmmoType = StateIntValue(
             this, { it.selectedAmmoType }, { s, v -> s.copy(selectedAmmoType = v) }
@@ -1996,9 +2032,19 @@ class GunData private constructor(
             .maximumSize(1024)
             .build()
 
+        /**
+         * 「物品上的枪械数据」的存取实现 —— **全仓唯一允许碰版本相关 API 的地方**。
+         *
+         * 1.20.1 (Forge) 是 [ItemStackStorage]（数据就是 `ItemStack` 的根 `CompoundTag`）；
+         * 1.21.1 (NeoForge) 换成承载 `CompoundTag` 的 DataComponent 实现即可，
+         * 本类与 `SubWeaponRuntime` 的业务逻辑一行都不用改。详见 [GunStackStorage]。
+         */
+        @JvmField
+        val stackStorage: GunStackStorage = ItemStackStorage
+
         /** Reads the gun sub-tag of [stack] without constructing a [GunData]. */
         private fun readGunTag(stack: ItemStack): CompoundTag? =
-            stack.get(DataComponents.CUSTOM_DATA)?.copyTag()?.getCompound(KEY_GUN_DATA)
+            GunStackStorage.gunStateTagOrNull(stackStorage.rootTag(stack))
 
         /** Reads the gun identity out of [gunTag], or `null` when the gun was never initialised. */
         private fun readUuid(gunTag: CompoundTag?): UUID? =
@@ -2027,20 +2073,15 @@ class GunData private constructor(
         fun setDefaultDataId(stack: ItemStack, defaultDataId: String) {
             if (defaultDataId.isEmpty()) return
 
-            val tag = stack.get(DataComponents.CUSTOM_DATA)?.copyTag() ?: CompoundTag()
-            val gunDataTag = if (tag.contains(KEY_GUN_DATA, Tag.TAG_COMPOUND.toInt())) {
-                tag.getCompound(KEY_GUN_DATA)
-            } else {
-                CompoundTag().also { tag.put(KEY_GUN_DATA, it) }
-            }
+            val tag = stackStorage.rootTag(stack)
+            val gunDataTag = GunStackStorage.gunStateTag(tag)
 
             if (gunDataTag.getString(KEY_DEFAULT_DATA) == defaultDataId) return
 
             gunDataTag.putString(KEY_DEFAULT_DATA, defaultDataId)
-            stack.set(
-                DataComponents.CUSTOM_DATA,
-                net.minecraft.world.item.component.CustomData.of(tag)
-            )
+
+            // 1.20.1 是空操作；1.21.1 侧要靠这一步把改好的 tag 落回组件
+            stackStorage.writeRoot(stack, tag)
         }
 
         /** Resolves computed property for given item stack directly. */

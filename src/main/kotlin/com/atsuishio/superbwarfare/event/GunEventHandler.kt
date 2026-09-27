@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.init.ModDataAttachments
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.subweapon.SubWeaponRuntime
+import com.atsuishio.superbwarfare.tools.ActiveGun
 import com.atsuishio.superbwarfare.tools.InventoryTool
 import com.atsuishio.superbwarfare.tools.SoundTool
 import com.atsuishio.superbwarfare.tools.postEvent
@@ -395,12 +396,13 @@ object GunEventHandler {
         // 副武器：合成栈不在背包里，`GunItem.inventoryTick` 不会跑到它，
         // 所以换弹/热量/栓动计时器全靠这里顺带推进。
         //
-        // **`inMainHand` 原样传下去**：装填与栓动的进度只在"这把枪正被持有"时推进
-        // （主武器自己也一样 —— 那些计时器就在上面那个 `if (inMainHand)` 块里），
-        // 主手没拿着时 `SubWeaponRuntime.tick` 还会把装填整个中断掉，切回来从头装。
-        // 热量、冷却、perk 这些与持有无关的仍然照常推进：绑在 `inMainHand` 上会让副武器的
+        // **四期起入参是"部署槽位 + 宿主枪是否在手上"**（§9.8.3）：
+        // `SubWeaponRuntime` 内部算出"这把副武器是不是当前操控的枪"（= 宿主枪在手上 **且**
+        // 切出来的就是它），装填/栓动的进度只在被操控时推进 —— 与主武器上面那个
+        // `if (inMainHand)` 块完全同一条口径；没被操控时它还会把装填整个中断掉，切回来从头装。
+        // 热量、冷却、perk 这些与持有无关的仍然照常推进：绑在"被操控"上会让副武器的
         // 状态机在那段判定为假时整段冻住（换弹计时器停在同一 tick、`canShoot` 永远 false）。
-        SubWeaponRuntime.tick(shooter, data, inMainHand)
+        SubWeaponRuntime.tick(shooter, data, ActiveGun.activeSlot(data), inMainHand)
 
         data.save()
     }

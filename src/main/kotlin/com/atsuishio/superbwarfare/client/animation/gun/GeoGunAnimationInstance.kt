@@ -7,10 +7,13 @@ import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.isDrumLevel
 import com.atsuishio.superbwarfare.event.ClientEventHandler
+import com.atsuishio.superbwarfare.item.attachment.SubWeaponItem
 import com.atsuishio.superbwarfare.resource.gun.GunAnimation
 import com.atsuishio.superbwarfare.resource.gun.GunAnimationNames
 import com.atsuishio.superbwarfare.resource.gun.GunResource
+import com.atsuishio.superbwarfare.resource.model.AttachmentModelReloadListener
 import com.atsuishio.superbwarfare.resource.model.GunModelReloadListener
+import com.atsuishio.superbwarfare.tools.ActiveGun
 import com.atsuishio.superbwarfare.tools.deltaFrameTime
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.animation.IFPAnimationInstance
@@ -86,6 +89,29 @@ open class GeoGunAnimationInstance(
      * 候选全落空、播的还是 `GunAnimation.Fire` 时它是 `false` —— 那一发视觉上就是主武器在开火。
      */
     private var subWeaponFire = false
+
+    /**
+     * 副武器**自己**的换弹动画 runner（四期，§9.8.7）。
+     *
+     * 副武器是一把独立的枪（有自己的 `GunData` / `GunResource`），所以它的换弹动画写在
+     * **它自己的枪械资源**里（`sbw/guns/<id>.json` 的 `Animation.Reload`），由**它自己的附件模型**播。
+     * 这一支 runner 只负责"把那个 clip 推到第几帧了"，姿态由
+     * `GeoGunRenderer.renderRegisteredAttachments` 取 [subWeaponReloadPose] 应用到附件模型上。
+     *
+     * 为什么状态挂在这里而不是附件模型上：附件模型是**全局共享**的（同一种配件装在多把枪上
+     * 共用一份实例），往它身上挂状态会串台；这个动画实例才是"某一把具体的枪"。
+     *
+     * ⚠ **动画还没做出来时这里全程是空转**：`AttachmentModelReloadListener` 的动画表里
+     * 没有那支 clip → [updateSubWeaponReload] 解析不到 → runner 保持 `null` →
+     * 渲染侧不应用任何姿态（副武器静止挂在枪上）。这是**有意的静默回退**，不是 bug。
+     */
+    private var subWeaponReloadRunner: AnimationRunner? = null
+
+    /** 当前这支副武器换弹动画的 clip 名（用来判断"换了一支动画"要不要重建 runner） */
+    private var subWeaponReloadAnimationName: String? = null
+
+    /** 已经为"解析不到副武器换弹动画"打过日志的副武器 id（同一条失败只打一次） */
+    private var loggedSubWeaponReloadMiss: String? = null
 
     /**
      * 已消费的近战挥击序号。
@@ -176,21 +202,38 @@ open class GeoGunAnimationInstance(
      */
     @JvmOverloads
     fun triggerFire(stack: ItemStack, candidates: List<String> = emptyList(), reportMissing: Boolean = false) {
-        val fireName = resolveFireName(candidates, reportMissing) ?: return
+        // ⚠ 候选链与 `GunAnimation.Fire` 一律按**宿主枪**的资源解析：这个动画实例属于宿主枪的
+        // 模型，`animations` 那张表也是从宿主枪的动画文件加载的。副武器的合成栈没有自己的
+        // 枪械动画文件，拿它去解析只会把表清空（见下面的 `updateItem`）。
+        val hostStack = this.stack
+
+        val fireName = resolveFireName(hostStack, candidates, reportMissing) ?: return
         if (!animations.containsKey(fireName)) return
 
-        if (this.stack.item != stack.item) {
+        // 这一发是不是**副武器**打的。抛壳只认它，与"播了哪支 clip"无关。
+        val subWeaponShot = stack.item is SubWeaponItem
+
+        // 主武器开火：兜底把实例同步到手上这把枪（换枪后渲染路径还没跑到的那个窗口）。
+        //
+        // ⚠ 副武器开火**绝不能**同步：`updateItem` 会重绑实例、按副武器的资源重载 `animations`，
+        // 把宿主枪的动画表**清空** —— 紧接着的 `playFire` 就一张 clip 都找不到，
+        // 表现是"打榴弹时枪的动画卡住一帧/不播"。
+        if (!subWeaponShot && this.stack.item != stack.item) {
             updateItem(stack)
         }
 
-        val gunFire = GunResource.compute(stack).animation?.fire
+        val gunFire = GunResource.compute(hostStack).animation?.fire
         pendingFireAnimation = fireName
         subWeaponFire = candidates.isNotEmpty() && fireName != gunFire
 
         fireSerial++
         // 副武器开火**不抛壳**：弹壳模型与 `shell` 骨骼都是主武器自己的 `ShellEject` 配置，
         // 打出去的却是副武器的弹药 —— 照旧抛壳就成了"榴弹发射时步枪抛壳"。
-        if (isFirstPerson() && !subWeaponFire) {
+        //
+        // 判据是 [subWeaponShot]（**谁打的**）而不是 [subWeaponFire]（**播了哪支 clip**）：
+        // 宿主枪没做 `fire_sub_weapon` 时 `fireName` 会退回它自己的 `Fire`，两者相等、
+        // `subWeaponFire` 为假 —— 但那一发**仍然是副武器打的**，照样不该抛壳。
+        if (isFirstPerson() && !subWeaponShot) {
             pendingShellEjects += 0
         }
     }
@@ -202,6 +245,95 @@ open class GeoGunAnimationInstance(
      * （那一发在视觉上就是主武器在开火，枪口效应该留在主武器的枪口上）。
      */
     fun isSubWeaponFire(): Boolean = subWeaponFire && fireRunner != null
+
+    /**
+     * 副武器**自己**的换弹姿态；没有在换弹、或那支 clip 还没做出来时返回 `null`。
+     *
+     * 渲染侧（`GeoGunRenderer.renderRegisteredAttachments` 的 `SUBWEAPON` 槽位）在画副武器模型前
+     * `BedrockAttachmentModel.applyPose(pose)`、画完 `resetPose()`。
+     *
+     * **宿主枪在此期间照常播它自己的 `idle`/`run`**（`cachedPose` 不受这里影响）——
+     * 两个模型是各自独立的姿势树、骨骼命名空间不重叠，所以"融合"是天然发生的，不需要混合器（§9.8.7）。
+     */
+    fun subWeaponReloadPose(): Pose? = subWeaponReloadRunner?.evaluate()
+
+    /**
+     * 推进副武器的换弹动画（四期，§9.8.7）。
+     *
+     * 触发条件是"**部署中的副武器正在换弹**"：`ActiveGun` 解析出当前操控的是副武器、
+     * 且它 `reloading()`。换弹时长取**副武器数据**的剩余总 tick，据此拉伸播放速度
+     * （与主武器的换弹动画同一套口径）。
+     *
+     * 部署解除、换弹结束、或者副武器自己那份 `GunResource` 里没写 `Animation.Reload` 时，
+     * runner 被清掉、返回 `null` —— 渲染侧于是不应用姿态。
+     */
+    private fun updateSubWeaponReload() {
+        val player = localPlayer
+        // ⚠ 必须显式传 `client = true`：单人游戏里客户端与服务端共享静态缓存表，
+        // 用错一侧的实例会让状态在两边互相覆盖（`SubWeaponRuntime` 的不变式 ③）。
+        val gun = player?.let { GunData.from(it.mainHandItem) }
+        val subStack = gun?.let { ActiveGun.stackOf(it, true) }?.takeIf { it.item !== stack.item }
+        if (subStack == null) {
+            clearSubWeaponReloadRunner()
+            return
+        }
+
+        val subData = GunData.from(subStack)
+        if (!subData.reloading()) {
+            clearSubWeaponReloadRunner()
+            return
+        }
+
+        // clip 名来自**副武器自己的资源**（与普通枪完全同一套：`GunResource` 按物品注册 id 解析）
+        val subResource = GunResource.from(subStack)
+        val clipName = subResource.compute().animation?.let { it.reloadEmpty ?: it.reload }
+        if (clipName == null) {
+            logSubWeaponReloadMissOnce(subResource.id)
+            clearSubWeaponReloadRunner()
+            return
+        }
+
+        // 动画本体来自**附件模型**的动画表：`animations/bedrock/attachment/<id>.animation.json`
+        // 里的 clip 是绑在附件模型骨骼上的，不能拿枪模型动画表里的同名 clip 顶替。
+        val clip = AttachmentModelReloadListener.findAnimation(clipName)
+        if (clip == null) {
+            logSubWeaponReloadMissOnce(subResource.id)
+            clearSubWeaponReloadRunner()
+            return
+        }
+
+        if (subWeaponReloadRunner == null || subWeaponReloadAnimationName != clip.name) {
+            val runner = AnimationRunner(clip, AnimationContext(clip.specifiedEndTimeS))
+            runner.state = AnimationPlayType.PLAY_ONCE_HOLD.state()
+            subWeaponReloadRunner = runner
+            subWeaponReloadAnimationName = clip.name
+        }
+
+        // 与主武器换弹同一套：把 clip 的长度对齐到**数据里的换弹时长**
+        val totalTicks = subData.reload.totalTicks.get().takeIf { it > 0 }
+            ?: subData.get(GunProp.EMPTY_RELOAD_TIME)
+        val targetSeconds = totalTicks.coerceAtLeast(1) / 20.0f
+        if (clip.specifiedEndTimeS > 0f) {
+            setAnimationSpeed(subWeaponReloadRunner?.state, clip.specifiedEndTimeS / targetSeconds)
+        }
+    }
+
+    private fun clearSubWeaponReloadRunner() {
+        subWeaponReloadRunner = null
+        subWeaponReloadAnimationName = null
+    }
+
+    private fun logSubWeaponReloadMissOnce(subId: String) {
+        if (loggedSubWeaponReloadMiss == subId) return
+        loggedSubWeaponReloadMiss = subId
+
+        // debug 而不是 error：**没做这支动画是正常状态**（与 `fire_sub_weapon` 的分档一致）。
+        // 副武器此时静止挂在枪上，换弹的音效与进度仍由数据/服务端负责。
+        Mod.LOGGER.debug(
+            "[SubWeapon] '{}' has no reload animation bound in {}; the sub-weapon stays static while reloading",
+            subId, AttachmentModelReloadListener.animPath,
+        )
+    }
 
     fun consumePendingShellEjects(): List<Int> {
         if (pendingShellEjects.isEmpty()) return emptyList()
@@ -480,8 +612,9 @@ open class GeoGunAnimationInstance(
      * （与 [resolveMeleeName] 同一套），不会因为每发都解析而刷屏。
      *
      * @param reportMissing 见 [triggerFire]
+     * @param stack 用哪把枪的资源拼短名 —— **宿主枪**（动画实例绑定的那把）
      */
-    private fun resolveFireName(candidates: List<String>, reportMissing: Boolean): String? {
+    private fun resolveFireName(stack: ItemStack, candidates: List<String>, reportMissing: Boolean): String? {
         val resource = GunResource.from(stack)
         val animation = resource.compute().animation
 
@@ -980,6 +1113,11 @@ open class GeoGunAnimationInstance(
         tickFireModeRunners(fireModeStarted, fireModeSwitchStarted)
         tickMechanicalRunners(holdOpenStarted, closeStrikeStarted)
         tickSpinRunner(updateSpinRunner(data, animation))
+
+        // 副武器自己的换弹动画（四期，§9.8.7）：它播在**附件模型**上，不进下面这份 `cachedPose`
+        // —— 宿主枪照常播自己的 idle/run，两套骨骼天然不冲突。
+        updateSubWeaponReload()
+        subWeaponReloadRunner?.tick()
 
         collectParticleEvents(runner)
         collectParticleEvents(fireRunner)

@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.gun
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.gun.MeleeClientHandler.MELEE_SAFE_LOCK_TICKS
+import com.atsuishio.superbwarfare.client.gun.MeleeClientHandler.syncServerDrivenLocks
 import com.atsuishio.superbwarfare.client.gun.MeleeClientHandler.tick
 import com.atsuishio.superbwarfare.command.MeleeDebugHooks
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
@@ -14,6 +15,8 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.network.message.send.MeleeAttackMessage
+import com.atsuishio.superbwarfare.subweapon.SubWeaponRuntime
+import com.atsuishio.superbwarfare.tools.ActiveGun
 import com.atsuishio.superbwarfare.tools.MeleeQuery
 import com.atsuishio.superbwarfare.tools.sendPacketToServer
 import net.minecraft.world.InteractionHand
@@ -53,19 +56,32 @@ object MeleeClientHandler {
         private set
 
     /**
-     * 上一 tick G（副武器开火键）是否按下。
+     * 上一 tick G（副武器切换键）是否按下。
      *
-     * 副武器是**半自动**：只认按键的上升沿。这个标记必须在 [tick] 的**最开头**更新，
+     * 切换只认按键的**上升沿**（按住 G 不该连续发请求）。这个标记必须在 [tick] 的**最开头**更新，
      * 否则任何一次提前 return 都会让它停在 `true`，下一次真正按下就被当成"一直按着"。
      */
     private var subWeaponKeyWasDown: Boolean = false
 
     /**
-     * 本次 tick 的近战入口。
+     * 本次 tick 的输入处理入口。
+     *
+     * ## 四期起这里同时管 G（主/副武器切换）
+     *
+     * **G = 在主武器与副武器之间切换**（§9.8.2），不再是"用一次副武器"。
+     * ⚠ **G 与近战完全解耦**：没有副武器时按 G 是**空操作**，不会落回近战 ——
+     * **V 是唯一的近战入口**（三期那条"没有副武器时 G 等同 V"已废除）。
+     *
+     * ## ⚠ 近战恒用**主手**那把枪（四期最容易改错的地方）
+     *
+     * 近战的动画驱动与判定几何体都是**主武器**的（副武器只是挂在 `sub_weapon_pos` 上的挂件，
+     * 它没有也拿不到自己的判定体），所以下文的 `stack` / `data` / `item` **一律保持主手**，
+     * **不能**换成 `ActiveGun`。副武器激活时按 V 的正确行为是：
+     * 主武器做近战动作、主武器结算伤害，副武器挂在枪上不动。
      *
      * @param stack                 主手物品
      * @param meleeKeyDown          近战键（V）是否按下
-     * @param subWeaponFireKeyDown  副武器键（G）是否按下
+     * @param subWeaponFireKeyDown  副武器切换键（G）是否按下
      * @param holdingFireKey        开火键是否按住（`meleeOnly` 枪按住左键也进近战）
      * @param drawTime              切枪进度；未完成时不接受输入
      * @param canOperate            载具禁手 / 非游戏内 / 改装界面等外部门禁是否通过
@@ -82,18 +98,32 @@ object MeleeClientHandler {
         skipStateTick: Boolean = false,
     ) {
         // G 的**上升沿**要在所有提前 return 之前算出来：只要有一帧没更新这个标记，
-        // 后面松开/再按就会被误判成"一直按着"，半自动就废了。
+        // 后面松开/再按就会被误判成"一直按着"。
         val subWeaponJustPressed = subWeaponFireKeyDown && !subWeaponKeyWasDown
         subWeaponKeyWasDown = subWeaponFireKeyDown
 
+        // 切换请求的兜底超时也要在任何提前 return 之前推进（丢一次包不该把 G 永久锁死）
+        SubWeaponClientHandler.tick(data = null)
+
         val item = stack.item as? GunItem ?: return
-        if (!GunItem.isHeldWeapon(stack)) return
+        if (!GunItem.isOperable(stack)) return
 
         val data = GunData.from(stack)
         val state = GunActionLock.of(data)
 
+        // ⚠ **"现在忙不忙"必须看当前操控的枪，不能看主手。**（四期返修，见下面的门禁）
+        //
+        // 部署着副武器时换弹的是**副武器**，而主武器自己的换弹在部署那一刻就被中断了
+        // （`ActiveGun.deploy` → `SubWeaponRuntime.interruptReload`），之后也不会重新开始
+        // （宿主枪被顶替期间不走 `gunTickInternal` 的 `inMainHand` 分支）。
+        // 于是只查主手的话，下面每一条门禁都会放行 —— 表现就是**副武器换弹期间能近战**。
+        //
+        // 未部署时 `operated === data`（同一个栈 → 同一个 `GunData` 实例），
+        // 所以这一改写对三期行为**逐字等价**，22 把旧枪不受影响。
+        val operated = ActiveGun.dataOf(data, player.level().isClientSide)
+
         // 服务端权威状态跟着一起进锁：换弹/拉栓期间其它入口必须被拒
-        syncServerDrivenLocks(data, state)
+        syncServerDrivenLocks(operated, state)
 
         if (!skipStateTick) state.tick()
 
@@ -102,34 +132,67 @@ object MeleeClientHandler {
             return
         }
 
-        // G 键：装了副武器就用副武器，没装才等同 V。
+        // G 键：**在主武器与副武器之间切换**（四期）。
         //
-        // **副武器是半自动**：只在按键上升沿触发一次，按住不放不会再打 ——
-        // 单发下挂榴弹本来就不该像自动武器那样连发（弹匣只有 1 发，
-        // 按住只会变成"打完 → 装填 → 又打"，听感上就是音效一直响）。
-        // 但**整段按住期间 G 都被副武器吞掉**，不会掉到近战入口去。
+        // ⚠ **G 只负责切换，与近战完全解耦**（§9.8.2）：
+        // - 当前操控的是主武器 → 切到枚举顺序里的第一个副武器槽位；
+        // - 当前操控的是副武器   → 切回主武器；
+        // - 一把副武器都没装     → **什么都不做**（不挥砍、不播音、不进动作锁）。
+        //
+        // 三期那条"没有副武器就落回近战入口（等同 V）"的语义**已废除** ——
+        // V 是唯一的近战入口，G 永远不会触发近战。所以这里的 `return` 是无条件的，
+        // 不能被 `request` 的返回值决定（它现在也不再有"没切成"这个返回值）。
+        //
+        // 切换本身**不在这里生效**：请求发给服务端，服务端写 `ActiveSlot` 并回确认，
+        // 客户端收到确认才演切换动作（`SubWeaponDeployedMessage`）。
         val fromSubWeaponKey = subWeaponFireKeyDown && !meleeKeyDown
-        if (fromSubWeaponKey &&
-            SubWeaponClientHandler.tryTrigger(player, data, state, justPressed = subWeaponJustPressed)
-        ) {
+        if (fromSubWeaponKey && subWeaponJustPressed) {
+            val deployed = ActiveGun.activeSlot(data)
+            val target = if (deployed != null) {
+                null // 已经是副武器 → 切回主武器
+            } else {
+                SubWeaponRuntime.installed(data, client = true).firstOrNull()?.slot
+            }
+
+            SubWeaponClientHandler.request(player, data, target)
             return
         }
 
-        val wantsMelee = meleeKeyDown || fromSubWeaponKey || (data.meleeOnly() && holdingFireKey)
+        // V 是唯一的近战入口（外加"近战型枪按住左键"这一条独立路径）
+        val wantsMelee = meleeKeyDown || (data.meleeOnly() && holdingFireKey)
         if (!wantsMelee) return
 
         if (!item.hasMeleeAttack(data)) return
         if (!canOperate) return
         if (drawTime >= 0.01) return
         if (state.isLocked) return
-        if (data.reloading() || data.charging() || data.bolt.actionTimer.get() > 0) return
-        if (data.reload.normal() || data.reload.empty()) return
+        // ⚠ [state] 是**主手那把枪**的动作锁（近战进度记在它上面），但"别人的占用"要两把都查：
+        // 切换确认之后 `SUB_WEAPON` 是占在**副武器**那把锁上的（`onDeployed` 用
+        // `ActiveGun.dataOf(player)` 猜的时长），而 `FIRING` 也占在操控的那把上。
+        // 未部署时两者是同一个对象，这一句在那种情况下不增加任何限制。
+        if (GunActionLock.of(operated).blocks(GunAction.MELEE)) return
+        // ⚠ 查的是 [operated]（当前操控的枪）而不是主手：副武器换弹时主武器自己并没有在换弹
+        if (operated.busyForMelee()) return
 
-        triggerSwing(player, data, state, fromSubWeaponKey)
+        triggerSwing(player, data, state)
     }
 
     /**
+     * 这把枪现在**正忙**（换弹 / 拉栓 / 蓄力），近战入口必须被拒。
+     *
+     * 与 [syncServerDrivenLocks] 是**两层**：那层把服务端权威状态写进动作锁（`state.isLocked`），
+     * 这层是同一 tick 内的直接判定。两层都查是刻意留的冗余 —— 锁里那条是"上一 tick 的状态"，
+     * 而玩家可能正好在换弹开始的那一 tick 按下 V。
+     */
+    private fun GunData.busyForMelee(): Boolean =
+        reloading() || charging() || bolt.actionTimer.get() > 0 || reload.normal() || reload.empty()
+
+    /**
      * 把服务端权威的换弹/拉栓状态同步进动作锁，让"换弹时挥砍"这类边界被统一拒掉。
+     *
+     * ⚠ **[data] 传的是当前操控的枪**（`ActiveGun`），不是主手那把：副武器换弹时
+     * 主武器自己并没有在换弹，传主手就等于把这条门禁整个绕开（见调用处）。
+     * 锁本身仍然挂在主手那把枪上（近战是它的能力），这里只是借它表达"玩家现在忙"。
      *
      * 这两个动作的真实时长由服务端状态机决定，所以这里：
      * - 状态**为真**时用 [MELEE_SAFE_LOCK_TICKS] 兜底占位（真正释放靠下一 tick 的同步）；
@@ -158,7 +221,6 @@ object MeleeClientHandler {
         player: Player,
         data: GunData,
         state: GunActionLock.State,
-        fromSubWeaponKey: Boolean,
     ) {
         // ① 连招下标：窗口内再挥击进下一段，超时回到第 0 段
         val actions = data.meleeActions()
@@ -178,7 +240,6 @@ object MeleeClientHandler {
         state.meleeDuration = action.duration
         state.meleeTicks = action.duration
         state.meleeHitResolved = false
-        state.lastSwingFromSubWeaponKey = fromSubWeaponKey
 
         // ⑥ 通知动画侧"新的一次挥击开始了"。按住 V 连续挥击时状态一直是 MELEE，
         //    光靠状态切换判断的话动画只会播第一段（见 [swingSerial] 的说明）。
@@ -196,7 +257,7 @@ object MeleeClientHandler {
 
         debugLog {
             "melee swing: gun=${data.id} index=$index duration=${action.duration} " +
-                    "hitTime=${action.hitTime} comboWindow=$inComboWindow key=${if (fromSubWeaponKey) "G" else "V"}"
+                    "hitTime=${action.hitTime} comboWindow=$inComboWindow"
         }
     }
 

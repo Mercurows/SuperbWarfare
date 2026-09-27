@@ -11,6 +11,7 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.TreeModelInstance
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.tree.TreeBedrockModel
+import com.maydaymemory.mae.basic.Pose
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.*
 import net.minecraft.client.Minecraft
@@ -25,8 +26,29 @@ import org.joml.Vector3f
 import org.lwjgl.opengl.GL11
 import java.util.regex.Pattern
 
-class BedrockAttachmentModel(private val baseModel: TreeBedrockModel) {
-    private val instance: TreeModelInstance = baseModel.createInstance()
+class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
+    internal val instance: TreeModelInstance = baseModel.createInstance()
+
+    /**
+     * 把一份姿态应用到附件模型上（**四期新增**，§9.8.7）。
+     *
+     * 与 `GeoGunModel.applyPose` 是同一套（底层同为 [TreeModelInstance]），
+     * 缺的只是这一层薄封装 —— 副武器的换弹动画由**它自己的模型**播，
+     * 就是靠这两个方法 + `AttachmentModelReloadListener` 的 `animPath` 才成立的。
+     *
+     * 调用方（`GeoGunRenderer.renderRegisteredAttachments`）必须在渲染后调用 [resetPose]：
+     * 模型实例是**全局共享**的（同一种配件装在多把枪上共用一份实例），
+     * 留着上一帧的姿态会串到别的枪上。
+     */
+    fun applyPose(pose: Pose) {
+        instance.applyPose(pose)
+    }
+
+    /** 复位姿态；与 [applyPose] 成对使用 */
+    fun resetPose() {
+        instance.resetPose()
+        markIlluminatedBones()
+    }
 
     /**
      * Ammo readout engine shared with the gun model. Built lazily because [divisionGroups] is only

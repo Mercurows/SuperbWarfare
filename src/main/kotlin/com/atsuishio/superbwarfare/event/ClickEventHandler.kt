@@ -214,7 +214,10 @@ object ClickEventHandler {
             event.isCanceled = true
         }
 
-        // 手持副武器时按普通物品处理
+        // ⚠ 瞄准镜切换**只对主武器生效**（四期）：副武器不具有配件
+        // （`SubWeaponItem.canEditAttachments` = false，`GunData.availableAttachments` 对副武器返回空表），
+        // 所以这里必须看**物理上的主手**，不能看 `ActiveGun` ——
+        // 否则副武器被 G 切出来时，滚轮会去切一把根本没有瞄具槽的枪（服务端也会照着那把枪去找瞄具）。
         if (GunItem.isHeldWeapon(stack) && ClientEventHandler.zoom) {
             val data = GunData.from(stack)
             if (data.canSwitchScope()) {
@@ -505,14 +508,16 @@ object ClickEventHandler {
             ClientEventHandler.usingLunge = true
         }
 
-        val item = stack.item as? GunItem ?: return
-        // 手持副武器时按普通物品处理
-        if (!GunItem.isHeldWeapon(stack)) return
+        // 当前操控的枪：主手是普通枪时就是主手物品，副武器被切出来时就是那把副武器的合成栈。
+        // 下面的开火/换弹/音效全部读它 —— 这就是四期"不需要单独判断 subweapon"的落点（§9.8.3）。
+        val gunStack = ActiveGun.stackOf(player)
+        val item = gunStack.item as? GunItem ?: return
+        if (!GunItem.isOperable(gunStack)) return
         if (ClientEventHandler.clientTimer.progress == 0L
             && !notInGame
         ) {
-            val data = GunData.from(stack)
-            val resource = GunResource.compute(stack)
+            val data = GunData.from(gunStack)
+            val resource = GunResource.compute(gunStack)
             val fireModeInfo = data.selectedFireModeInfo()
             val chargeConfig = fireModeInfo.chargeConfig()
 
@@ -655,11 +660,12 @@ object ClickEventHandler {
             return
         }
 
-        // 手持副武器时按普通物品处理
-        if (!GunItem.isHeldWeapon(stack)) return
-        if (!GunResource.compute(stack).canZoom) return
+        // 当前操控的枪：`CanZoom` / `ZOOM_TIME` 全部读正在操作那把的数据
+        val gunStack = ActiveGun.stackOf(player)
+        if (!GunItem.isOperable(gunStack)) return
+        if (!GunResource.compute(gunStack).canZoom) return
 
-        val data = GunData.from(stack)
+        val data = GunData.from(gunStack)
         ClientEventHandler.zoom = true
 
         val level = data.perk.getLevel(ModPerks.INTELLIGENT_CHIP)

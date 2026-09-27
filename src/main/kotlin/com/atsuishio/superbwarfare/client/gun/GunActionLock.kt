@@ -22,7 +22,13 @@ enum class GunAction {
     /** 近战：占用时长 = 本段动作的 `Duration` */
     MELEE,
 
-    /** 副武器：占用时长 = `Cooldown` 或副武器数据的 RPM 周期（三期） */
+    /**
+     * 主/副武器切换：占用时长 = `max(两把枪的 DrawTime) + 余量`（四期，§9.8.8）。
+     *
+     * 占用期间**开火/换弹/近战/再次切换全部被拒**。占用由客户端在**服务端确认**后才释放
+     * （`SubWeaponClientHandler.onDeployed`），所以切换失败 / 报文丢失时有一个兜底超时，
+     * 否则这个锁会一直挂着（玩家会看到"什么都按不动"）。
+     */
     SUB_WEAPON,
 }
 
@@ -75,9 +81,6 @@ object GunActionLock {
         /** 距离上一次近战结束过了多少 tick（用于 `MeleeComboReset` 窗口判定） */
         var sinceLastMelee: Int = 0
 
-        /** 本次挥击是否由 G 键触发（用于 debug 与后续副武器语义） */
-        var lastSwingFromSubWeaponKey: Boolean = false
-
         /** 当前是否被 [action] 占用 */
         fun isBusy(action: GunAction = activeAction): Boolean =
             activeAction != GunAction.NONE && (action == GunAction.NONE || activeAction == action)
@@ -129,7 +132,6 @@ object GunActionLock {
             meleeActionIndex = 0
             meleeDuration = 0
             sinceLastMelee = 0
-            lastSwingFromSubWeaponKey = false
         }
 
         /**

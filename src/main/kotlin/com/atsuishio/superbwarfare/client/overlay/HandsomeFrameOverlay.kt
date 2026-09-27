@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.init.ModPerks
 import com.atsuishio.superbwarfare.item.gun.GunItem
+import com.atsuishio.superbwarfare.tools.ActiveGun
 import com.atsuishio.superbwarfare.tools.SeekTool
 import com.atsuishio.superbwarfare.tools.worldToScreen
 import com.mojang.blaze3d.platform.GlStateManager
@@ -26,14 +27,14 @@ object HandsomeFrameOverlay : CommonOverlay("handsome_frame") {
 
     override fun RenderContext.render() {
         val poseStack = guiGraphics.pose()
-        val stack = player.mainHandItem
+        // 当前操控的枪（部署中的副武器也算）：智能芯片的锁定框跟着它走
+        val stack = ActiveGun.stackOf(player)
 
         if (ClientEventHandler.isEditing) return
         val vehicle = player.vehicle
         if (vehicle is VehicleEntity && vehicle.banHand(player)) return
 
-        // 手持副武器时按普通物品处理
-        if (GunItem.isHeldWeapon(stack) && isFirstPerson) {
+        if (GunItem.isOperable(stack) && isFirstPerson) {
             val data = from(stack)
             val level = data.perk.getLevel(ModPerks.INTELLIGENT_CHIP).toInt()
             if (level == 0) return

@@ -17,6 +17,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModKeyMappings
 import com.atsuishio.superbwarfare.item.gun.GunItem
+import com.atsuishio.superbwarfare.tools.ActiveGun
 import com.atsuishio.superbwarfare.tools.FormatTool.format1DZZ
 import net.minecraft.Util
 import net.minecraft.client.Minecraft
@@ -79,11 +80,11 @@ object AmmoBarOverlay : CommonOverlay("ammo_bar") {
     }
 
     override fun RenderContext.render() {
-        val stack = player.mainHandItem
+        // 当前操控的枪（部署中的副武器也算）：弹药条显示的是**正在操作那把**的弹药
+        val stack = ActiveGun.stackOf(player)
         val vehicle = player.vehicle
         val item = stack.item as? GunItem
-        // 手持副武器时按普通物品处理
-        if (item != null && GunItem.isHeldWeapon(stack) && !(vehicle is VehicleEntity && vehicle.banHand(player))) {
+        if (item != null && GunItem.isOperable(stack) && !(vehicle is VehicleEntity && vehicle.banHand(player))) {
             val data = from(stack)
 
 //            if (player.isCreative) {

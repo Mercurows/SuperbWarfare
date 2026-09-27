@@ -15,10 +15,7 @@ import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.perk.MeleeAttackContext
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedUUID
-import com.atsuishio.superbwarfare.tools.EntityFindUtil
-import com.atsuishio.superbwarfare.tools.MeleeQuery
-import com.atsuishio.superbwarfare.tools.forceHurt
-import com.atsuishio.superbwarfare.tools.sendPacketTo
+import com.atsuishio.superbwarfare.tools.*
 import kotlinx.serialization.Serializable
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket
 import net.minecraft.server.level.ServerLevel
@@ -50,12 +47,13 @@ import kotlin.random.Random
  * 相对旧版（只有 `uuidList`）的三处关键变化：
  * 1. 带上 `actionIndex`——伤害/倍率/冷却全部按**数据字段**算，不再靠「客户端列表下标」（缺陷 8）；
  * 2. 带上每个目标的命中区域判定点——打头/打腿由服务端用同一套阈值判定，客户端与服务端不再各算一遍；
- * 3. `source` 预留 `SUB:<slot>`——三期的副武器近战形态复用同一条链路。
+ * 3. 带上 `source`（perk 上下文用）。**四期起只认 `MAIN`**：副武器没有近战，
+ *    三期的 `SUB:<slot>` 链路已删除（§9.8.11）。
  */
 @RegisterPacket
 @Serializable
 data class MeleeAttackMessage(
-    /** `MAIN`（主武器近战）或 `SUB:<slot>`（副武器的近战形态，三期） */
+    /** 只认 `MAIN`（主武器近战）。未知来源一律拒掉 */
     val source: String,
     /** 客户端锁存的连招下标；服务端只做越界校验 */
     val actionIndex: Int,
@@ -89,15 +87,29 @@ data class MeleeAttackMessage(
         val player = sender()
         if (player.isSpectator) return
 
+        // ⚠ **恒用主手那把枪**（四期不变）：近战是主武器的能力，副武器没有近战（§9.8.2 / §9.8.11）。
+        // 部署中的副武器不会从这里进来 —— 客户端 `MeleeClientHandler` 的近战分支也只收主手。
         val stack = player.mainHandItem
         val item = stack.item
         // 缺陷 7：主手不是枪时不该继续往下走（旧实现在这里只判了 `isNotEmpty`）
         if (item !is GunItem || !GunItem.isHeldWeapon(stack)) return
 
+        // 四期：只认主武器近战。副武器没有近战，"副武器的近战形态"这条链路已删除（§9.8.11）
+        if (source.isNotEmpty() && source != SOURCE_MAIN) return
+
         val data = GunData.from(stack)
 
         // 服务端一层廉价检查：自己这边正在换弹/拉栓就拒掉（健壮性，不是反作弊）
+        //
+        // ⚠ **"忙不忙"看的是当前操控的枪，不是主手。** 部署着副武器时换弹的是**副武器**，
+        // 主武器自己的换弹在部署那一刻就被中断了（`ActiveGun.deploy` → `SubWeaponRuntime.interruptReload`），
+        // 所以只查主手会整条放行 —— 表现为"副武器换弹期间能近战"（客户端那侧同样修了，
+        // 见 `MeleeClientHandler.tick` 的 `operated.busyForMelee()`）。
+        // 未部署时 `operated === data`，与三期行为逐字一致。
         if (data.reloading() || data.bolt.actionTimer.get() > 0) return
+
+        val operated = ActiveGun.dataOf(data, false)
+        if (operated !== data && (operated.reloading() || operated.bolt.actionTimer.get() > 0)) return
 
         // 越界健壮性：下标按当前动作表大小取模，而不是直接信任客户端
         val actions = data.meleeActions()

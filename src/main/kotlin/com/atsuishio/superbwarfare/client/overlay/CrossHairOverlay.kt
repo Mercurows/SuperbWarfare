@@ -15,6 +15,7 @@ import com.atsuishio.superbwarfare.perk.AmmoPerk
 import com.atsuishio.superbwarfare.perk.IAmmoStat
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.resource.gun.GunResource
+import com.atsuishio.superbwarfare.tools.ActiveGun
 import com.atsuishio.superbwarfare.tools.TraceTool
 import com.atsuishio.superbwarfare.tools.mc
 import com.mojang.blaze3d.platform.GlStateManager
@@ -77,10 +78,10 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
     }
 
     override fun RenderContext.render() {
-        val stack = player.mainHandItem
+        // 当前操控的枪（部署中的副武器也算）：准心读的是**正在操作那把**的数据
+        val stack = ActiveGun.stackOf(player)
         val vehicle = player.vehicle
-        // 手持副武器时按普通物品处理
-        if (!GunItem.isHeldWeapon(stack) || (vehicle is VehicleEntity && vehicle.banHand(player))) return
+        if (!GunItem.isOperable(stack) || (vehicle is VehicleEntity && vehicle.banHand(player))) return
 
         val data = from(stack)
 

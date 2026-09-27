@@ -147,6 +147,27 @@ data class GunState(
     val chargeTime: Int = 0,
     @SerialName("StartCharge")
     val startCharge: Boolean = false,
+
+    // ---- 副武器「主/副武器切换」（四期，§9.8.1）----
+    /**
+     * 当前操控的是哪一把枪：空 = 主武器，否则是副武器所在的 `AttachmentType` 枚举名（如 `"SUBWEAPON"`）。
+     *
+     * **它写在宿主枪的枪械状态里**，所以随主武器 NBT 持久化、也随主武器同步到客户端 ——
+     * 双端一致、不需要新存档字段、不需要新同步通道。
+     * **由服务端写**（客户端只发切换请求并读确认），见 `SubWeaponDeployMessage` / `SubWeaponDeployedMessage`。
+     */
+    @SerialName("ActiveSlot")
+    val activeSlot: String = "",
+
+    /**
+     * [activeSlot] 指向的那把副武器**所属宿主枪**的 UUID（`UUID.toString()` 的标准带连字符形式）。
+     *
+     * 副武器状态本身就住在宿主枪的附件子 tag 里，这个字段只是把那条隐含约束**显式化**：
+     * 主武器 UUID 与它不符时这次部署自动作废，避免"附件被拆了 / 枪被复制了 / 状态被搬到了
+     * 另一把同型号的枪上"这类边缘情况把玩家永久锁在副武器上。
+     */
+    @SerialName("ActiveOwner")
+    val activeOwner: String = "",
 ) {
 
     /**

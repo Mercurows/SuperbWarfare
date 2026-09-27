@@ -16,18 +16,24 @@ import com.atsuishio.superbwarfare.client.lighting.VehicleLightingHandler
 import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay
 import com.atsuishio.superbwarfare.client.overlay.OverlayTraceHandler
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay
+import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer
 import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.config.server.MiscConfig
+import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
+import com.atsuishio.superbwarfare.data.attachment.SubWeaponInfo
 import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler.currentMeleeDuration
 import com.atsuishio.superbwarfare.event.ClientEventHandler.currentMeleeIndex
 import com.atsuishio.superbwarfare.event.ClientEventHandler.fireRotTimer
+import com.atsuishio.superbwarfare.event.ClientEventHandler.handleWeaponFire
 import com.atsuishio.superbwarfare.event.ClientEventHandler.isGunMeleeActive
+import com.atsuishio.superbwarfare.event.ClientEventHandler.resetGunTransientState
 import com.atsuishio.superbwarfare.event.ClientEventHandler.zoomTime
 import com.atsuishio.superbwarfare.init.*
+import com.atsuishio.superbwarfare.item.attachment.SubWeaponItem
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.item.misc.MonitorItem
 import com.atsuishio.superbwarfare.network.message.send.*
@@ -43,6 +49,7 @@ import net.minecraft.client.CameraType
 import net.minecraft.client.Minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.ParticleTypes
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.sounds.SoundEvents
@@ -169,6 +176,14 @@ object ClientEventHandler {
 
     @JvmField
     var fireRotTimer: Double = 0.0
+
+    /**
+     * 副武器开火窗口的起始值（与三期的 `SUB_WEAPON_FLASH_START` 同一个数）。
+     *
+     * `MuzzleFlashRenderer` 判的是 `0 < t < 0.3`，而 [handleWeaponFire] 每 tick 给它加
+     * `0.24 * times`（`times` 以 tick 计），所以从 0.001 起大约可见 1 tick。
+     */
+    private const val SUB_WEAPON_FLASH_START = 0.001
 
     /**
      * 副武器（下挂榴弹这类）开火的枪口焰计时。
@@ -625,6 +640,9 @@ object ClientEventHandler {
             handleVehicleGunShoot()
         }
 
+        // ⚠ 这里是**主手物品**，四期刻意不改：
+        // `handleGunMelee` 的近战恒用主武器（§9.8.2，副武器没有近战），
+        // `handleLungeAttack` 用的是长矛物品，两者都只认"物理上拿在手里的东西"。
         val stack = player.mainHandItem
         if (notInGame && !ClickEventHandler.switchZoom) {
             zoom = false
@@ -767,6 +785,12 @@ object ClientEventHandler {
             }
 
             // 切枪时记得重置状态
+            //
+            // ⚠ 这里读的是**主手那件物品**的 UUID（上面的 `stack` 就是 `player.mainHandItem`），
+            // 所以它表达的是"玩家真的换了手上的枪" —— 主/副武器切换不会走到这里
+            // （操控对象换了、手里那把没换，§9.8.2）。这是**有意的**：
+            // 副武器没有自己的 UUID（合成栈是凭空造的），拿 `ActiveGun` 的栈来判会一取就是 null，
+            // 于是每次切换都当成"换了把枪"演一次切枪动画。
             if (uuid == null || uuid != lastOperatingGunUUID) {
                 resetGunStatus()
                 resetLungeMineStatus()
@@ -992,8 +1016,8 @@ object ClientEventHandler {
     }
 
     fun lockWeaponSeeking(player: Player, stack: ItemStack) {
-        // 手持副武器时按普通物品处理
-        if (GunItem.isHeldWeapon(stack)) {
+        // 当前操控的枪（部署中的副武器也算）—— 锁定参数读的是**正在操作那把**的数据
+        if (GunItem.isOperable(stack)) {
             val data = GunData.from(stack)
             val lockTime = data.get(GunProp.SEEK_TIME)
             // 搜寻角度
@@ -1411,7 +1435,7 @@ object ClientEventHandler {
     }
 
     fun weaponZooming(stack: ItemStack) {
-        if (GunItem.isHeldWeapon(stack)) {
+        if (GunItem.isOperable(stack)) {
             sendPacketToServer(WeaponZoomingMessage(zoomTime >= 0.7))
         }
     }
@@ -1528,16 +1552,28 @@ object ClientEventHandler {
         val actionState = gunData?.let { GunActionLock.of(it) }
         actionState?.tick()
 
+        // ⚠ **部署中的副武器那把锁也必须推进**（四期返修，§11.10.12）。
+        //
+        // `SubWeaponClientHandler.onDeployed` 是在**当前操控的那把枪**上占用 `SUB_WEAPON` 的，
+        // 而副武器被切出来时"当前操控的那把枪"**就是副武器** —— 上面那句只推进了**主手**那把锁，
+        // 副武器那把是全仓**唯一没有任何人递减**的 `State`，于是 `SUB_WEAPON` 一占就永远挂着：
+        //
+        // - `handleGunShoot` 的 `GunActionLock.of(data).blocks(FIRING)` → **开不了火**；
+        // - 近战门禁的 `GunActionLock.of(operated).blocks(MELEE)` → **近战不了**。
+        //
+        // 这个坑和本方法 KDoc 里那条"动作锁计时要无条件推进，否则主手切走会让 FIRING/MELEE
+        // 永远挂着"是同一个：**任何一个可能被 `force`/`acquire` 的 `State` 都必须有人推进它。**
+        if (gunData != null) {
+            val operated = ActiveGun.dataOf(gunData, player.level().isClientSide)
+            if (operated !== gunData) {
+                GunActionLock.of(operated).tick()
+            }
+        }
+
         if (gunData == null || actionState == null) return
 
-        // 副武器：**松开 G 之后没打完的点射也要打完**（主武器同样是这个行为），
-        // 所以它的连发节奏在这里推进 —— 与 G 是否按下无关（`keyDown` 传进去，按住时它会自己让位）
-        SubWeaponClientHandler.tick(
-            player = player,
-            data = gunData,
-            state = actionState,
-            keyDown = ModKeyMappings.SUBWEAPON_FIRE.isDown(),
-        )
+        // 切换请求的兜底超时（丢一次包不该把 G 永久锁死，也不能让动作锁一直挂着）
+        SubWeaponClientHandler.tick(gunData)
 
         MeleeClientHandler.tick(
             player = player,
@@ -1673,10 +1709,12 @@ object ClientEventHandler {
             holdingFireKey = false
         }
 
-        val stack = player.mainHandItem
+        val stack = ActiveGun.stackOf(player)
         val item = stack.item as? GunItem
-        // 手持副武器时按普通物品处理
-        if (item == null || !GunItem.isHeldWeapon(stack)) {
+        // 主手不是枪（或拿着副武器**物品**本身）时什么都不做。
+        // 注意判据是 `isOperable` 而不是 `isHeldWeapon`：`ActiveGun` 可能返回**部署中的副武器栈**，
+        // 而副武器的 `useAsWeaponInHand()` 是 false（§9.8.1 的坑）。
+        if (item == null || !GunItem.isOperable(stack)) {
             clientTimer.stop()
             fireSpread = 0.0
             gunSpread = 0.0
@@ -1869,9 +1907,9 @@ object ClientEventHandler {
     }
 
     fun shootClient(player: Player, chargePower: Double = 1.0) {
-        val stack = player.mainHandItem
+        val stack = ActiveGun.stackOf(player)
         val item = stack.item as? GunItem ?: return
-        if (!GunItem.isHeldWeapon(stack)) return
+        if (!GunItem.isOperable(stack)) return
 
         val data = GunData.from(stack)
         if (!item.canShoot(data, player) || item.useSpecialFireProcedure(data)) return
@@ -1929,8 +1967,8 @@ object ClientEventHandler {
 
     fun handleClientShoot(chargePower: Double = 1.0) {
         val player = localPlayer ?: return
-        val stack = player.mainHandItem
-        if (!GunItem.isHeldWeapon(stack)) return
+        val stack = ActiveGun.stackOf(player)
+        if (!GunItem.isOperable(stack)) return
         val data = GunData.from(stack)
 
         sendPacketToServer(
@@ -1942,11 +1980,28 @@ object ClientEventHandler {
                 chargePower
             )
         )
-        fireRecoilTime = 10.0
 
-        // 主武器自己开火：枪口焰立刻回到**主武器的** flare 骨骼上。
-        // 少了这一行，副武器的枪口焰窗口还没走完时打主武器，火焰会画在榴弹发射器的枪口上。
-        subWeaponFireRotTimer = 0.0
+        // 开火窗口：**主武器与副武器各有一个，二选一**（§11.9-D）。
+        //
+        // - 副武器开火 → 开 `subWeaponFireRotTimer`：枪口焰画在**副武器模型自己的** `flare` 上
+        //   （`MuzzleFlashRenderer` 的 subWeapon 分支），而且**不驱动整把枪的后坐** ——
+        //   那一发的后坐由副武器自己的 `fire_sub_weapon` 动画负责，两边叠加会抖两下。
+        // - 主武器开火 → 开 `fireRotTimer`，并把副武器的窗口清零：枪口焰立刻回到**主武器的**枪口。
+        //
+        // ⚠ 四期把"设置副武器那个窗口"的一行弄丢了：它原本在三期
+        // `SubWeaponClientHandler.playFireAnimation` 里（`subWeaponFireRotTimer = 0.001`，
+        // 由已删除的 `SubWeaponFiredMessage` 触发），四期删掉那条链路时**只搬来了清零的那一半**
+        // （下面原来那行 `subWeaponFireRotTimer = 0.0`），于是：
+        // 副武器开火时 `fireRotTimer` 照开 → **枪管前端喷火、整把枪跟着做后坐**，
+        // 而榴弹筒自己一帧枪口焰都没有。见 §11.10.11。
+        if (ActiveGun.isSubWeapon(data)) {
+            subWeaponFireRotTimer = SUB_WEAPON_FLASH_START
+            // 副武器的后坐由它自己的开火动画表现，不走主武器那套枪身位形/后坐
+            fireRecoilTime = 0.0
+        } else {
+            subWeaponFireRotTimer = 0.0
+            fireRecoilTime = 10.0
+        }
 
         // Spawn dynamic block light muzzle flash for firearms using unified muzzle node
         val flashParams = MuzzleFlashHelper.calculateFromStack(stack)
@@ -1979,10 +2034,10 @@ object ClientEventHandler {
     }
 
     fun playGunClientSounds(player: Player) {
-        val stack = player.mainHandItem
+        val stack = ActiveGun.stackOf(player)
         val item = stack.item as? GunItem
-        // 手持副武器时按普通物品处理
-        if (item == null || !GunItem.isHeldWeapon(stack)) return
+        // 主手不是枪时什么都不播；部署中的副武器走的是同一条链路（§9.8.3）
+        if (item == null || !GunItem.isOperable(stack)) return
 
         if (item == ModItems.SENTINEL.get()) {
             val cap = stack.getCapability(Capabilities.EnergyStorage.ITEM)
@@ -2174,9 +2229,9 @@ object ClientEventHandler {
     @SubscribeEvent
     fun handleWeaponBreathSway(@Suppress("unused") event: RenderFrameEvent.Pre) {
         val player = localPlayer ?: return
-        val stack = player.mainHandItem
+        val stack = ActiveGun.stackOf(player)
         val item = stack.item as? GunItem ?: return
-        if (!GunItem.isHeldWeapon(stack)) return
+        if (!GunItem.isOperable(stack)) return
         val vehicle = player.vehicle
 
         if (vehicle is VehicleEntity && player == vehicle.firstPassenger && vehicle.hidePassenger(player)) return
@@ -2360,10 +2415,10 @@ object ClientEventHandler {
     }
 
     private fun handleWeaponSway(entity: LivingEntity) {
-        val stack = entity.mainHandItem
         val player = entity as? Player ?: return
+        val stack = ActiveGun.stackOf(player)
         val item = stack.item as? GunItem ?: return
-        if (!GunItem.isHeldWeapon(stack)) return
+        if (!GunItem.isOperable(stack)) return
         val data = GunData.from(stack)
 
         val times = 2 * getDelta().coerceAtMost(0.8f)
@@ -2382,9 +2437,9 @@ object ClientEventHandler {
     }
 
     private fun handleWeaponMove(entity: LivingEntity) {
-        val stack = entity.mainHandItem
         val player = entity as? Player ?: return
-        if (!GunItem.isHeldWeapon(stack)) return
+        val stack = ActiveGun.stackOf(player)
+        if (!GunItem.isOperable(stack)) return
         val data = GunData.from(stack)
         val resource = GunResource.compute(stack)
 
@@ -2405,13 +2460,19 @@ object ClientEventHandler {
 
         if (!isEditing) {
             moveRotZ =
-                if (!entity.isSprinting && mc.options.keyUp.isDown && firePosTimer == 0.0 && resource.movingTilt && !isProne(player)) {
+                if (!entity.isSprinting && mc.options.keyUp.isDown && firePosTimer == 0.0 && resource.movingTilt && !isProne(
+                        player
+                    )
+                ) {
                     Mth.lerp(0.2 * times, moveRotZ, 0.14) * (1 - zoomTime)
                 } else {
                     Mth.lerp(0.2 * times, moveRotZ, 0.0) * (1 - zoomTime)
                 }
 
-            if (entity.isSprinting && !data.reloading() && (firePosTimer == 0.0 || firePosTimer > 1.0) && !ModKeyMappings.FIRE.isDown && zoomTime < 0.99 && !isGunMeleeActive(stack)) {
+            if (entity.isSprinting && !data.reloading() && (firePosTimer == 0.0 || firePosTimer > 1.0) && !ModKeyMappings.FIRE.isDown && zoomTime < 0.99 && !isGunMeleeActive(
+                    stack
+                )
+            ) {
                 sprintBasicRotX = Mth.lerp(0.3f * times / (customWeight + 4), sprintBasicRotX, 1.0).coerceIn(0.0, 1.0)
                 sprintBasicRotY = Mth.lerp(0.18f * times / (customWeight + 4), sprintBasicRotY, 1.0).coerceIn(0.0, 1.0)
                 sprintBasicRotZ = Mth.lerp(0.3f * times / (customWeight + 4), sprintBasicRotZ, 1.0).coerceIn(0.0, 1.0)
@@ -2438,7 +2499,10 @@ object ClientEventHandler {
             moveFadeTime = Mth.lerp(0.1 * times, moveFadeTime, 0.0)
         }
 
-        if (entity.isSprinting && !data.reloading() && (firePosTimer == 0.0 || firePosTimer > 1.0) && !ModKeyMappings.FIRE.isDown && zoomTime < 0.99 && !isGunMeleeActive(stack)) {
+        if (entity.isSprinting && !data.reloading() && (firePosTimer == 0.0 || firePosTimer > 1.0) && !ModKeyMappings.FIRE.isDown && zoomTime < 0.99 && !isGunMeleeActive(
+                stack
+            )
+        ) {
             sprintFadeTime = if (entity.onGround()) {
                 Mth.lerp(0.08 * times, sprintFadeTime, 1.0)
             } else {
@@ -2569,7 +2633,7 @@ object ClientEventHandler {
 
     private fun handleWeaponZoom(entity: LivingEntity) {
         val player = entity as? Player ?: return
-        val stack = player.mainHandItem
+        val stack = ActiveGun.stackOf(player)
         val data = GunData.from(stack)
         val times = getDelta()
         val weight = (stack.item as? GunItem)?.getCustomWeight(data) ?: 0.0
@@ -2609,9 +2673,9 @@ object ClientEventHandler {
      */
     private fun handleWeaponBipodView(entity: LivingEntity) {
         val player = entity as? Player ?: return
-        val stack = player.mainHandItem
+        val stack = ActiveGun.stackOf(player)
         val item = stack.item as? GunItem ?: return
-        if (!GunItem.isHeldWeapon(stack)) return
+        if (!GunItem.isOperable(stack)) return
         val data = GunData.from(stack)
 
         val deployed = !isEditing && isProne(player) && (data.attachment.hasBipod() || item.hasBipod(data))
@@ -2626,7 +2690,7 @@ object ClientEventHandler {
 
     private fun handleWeaponFire(event: ViewportEvent.ComputeCameraAngles, entity: LivingEntity) {
         val times = (1.25f * customAnimSpeed * mc.deltaFrameTime.coerceAtMost(0.48f)).toFloat()
-        val stack = entity.mainHandItem
+        val stack = ActiveGun.stackOf(entity)
         val data = GunData.from(stack)
         val amplitude = 25000.0 * data.get(GunProp.RECOIL_Y) * data.get(GunProp.RECOIL_X)
 
@@ -2726,9 +2790,9 @@ object ClientEventHandler {
         customSpeed: Float
     ) {
         val player = localPlayer ?: return
-        val stack = player.mainHandItem
+        val stack = ActiveGun.stackOf(player)
         val item = stack.item as? GunItem ?: return
-        if (!GunItem.isHeldWeapon(stack)) return
+        if (!GunItem.isOperable(stack)) return
 
         customAnimSpeed = customSpeed.toDouble()
 
@@ -2753,7 +2817,8 @@ object ClientEventHandler {
         val zoom = (1 - (1 - zoomMultiply) * zoomTime).toFloat() * pose
 
         val gunPosX = zoom * x * (recoilHorizon * (0.5f * firePosZ)).toFloat()
-        val gunPosY = zoom * y * ((getBoneMoveY(firePosTimer.toFloat()) * 0.1 + 0.07f * firePosZ) * (1 - 0.25 * zoomTime)).toFloat()
+        val gunPosY =
+            zoom * y * ((getBoneMoveY(firePosTimer.toFloat()) * 0.1 + 0.07f * firePosZ) * (1 - 0.25 * zoomTime)).toFloat()
         val gunPosZ =
             zoom * z * (getBoneMoveZ(firePosTimer.toFloat()) * 0.03 + 1.1f * firePosZ).toFloat() * (1 - 0.75 * zoomTime).toFloat()
 
@@ -2872,9 +2937,9 @@ object ClientEventHandler {
 
     private fun handleGunRecoil() {
         val player = localPlayer ?: return
-        val stack = player.mainHandItem
+        val stack = ActiveGun.stackOf(player)
         val item = stack.item as? GunItem ?: return
-        if (!GunItem.isHeldWeapon(stack)) return
+        if (!GunItem.isOperable(stack)) return
         val data = GunData.from(stack)
 
         val times = getDelta().coerceAtMost(1.6f)
@@ -3044,7 +3109,8 @@ object ClientEventHandler {
             return
         }
 
-        val stack = player.mainHandItem
+        // 当前操控的枪（部署中的副武器也算）—— 准心的抑制规则对两者一致
+        val stack = ActiveGun.stackOf(player)
 
         val factor: Double =
             if (player.isUsingItem && player.useItem.`is`(ModItems.ARTILLERY_INDICATOR.get())
@@ -3059,8 +3125,18 @@ object ClientEventHandler {
 
         event.fov /= artilleryIndicatorZoom
 
-        // 手持副武器时按普通物品处理
-        if (GunItem.isHeldWeapon(stack)) {
+        // ⚠ 判据必须是 `isOperable`（"这个栈能不能被当成一把枪操作"）而**不是** `isHeldWeapon`
+        // （"这件物品拿在手上算不算枪"）。
+        //
+        // `stack` 是 `ActiveGun.stackOf(player)` —— **部署中的副武器**，而 `SubWeaponItem`
+        // 的 `useAsWeaponInHand()` 是 `false`（§8.3.1：手持副武器**物品本身**时按普通物品处理）。
+        // 用 `isHeldWeapon` 会让**整段 FOV/倍率计算被跳过** → 副武器瞄准时**完全没有放大**，
+        // 而瞄准位形照旧生效（那一条走渲染侧的 `computeViewTransform`，早就是 `ActiveGun` 了），
+        // 于是表现成"枪抬起来了、镜头一点没变"（§9.8.1 的那个坑，这里是最后一个漏改的读取点）。
+        //
+        // 手持副武器**物品本身**时不会有副作用：`ActiveGun.stackOf` 对那种情况返回 `EMPTY`，
+        // 下面第一句就挡掉了。
+        if (GunItem.isOperable(stack)) {
             if (!event.usedConfiguredFov()) {
                 lastX = player.xRot
                 lastY = player.yRot
@@ -3074,10 +3150,38 @@ object ClientEventHandler {
             }
 
             val data = GunData.from(stack)
-            val baseZoom = data.zoom()
-            val movingZoom = data.movingZoom()
 
-            this.movingZoom = if (movingZoom != null && !player.isShiftKeyDown) Mth.lerp(0.1 * times, this.movingZoom, if (isMoving() || abs(turnRot[1]) > 0.1 || abs(turnRot[0]) > 0.1) movingZoom else baseZoom) else baseZoom
+            // ⚠ **倍率必须和「瞄准位形」取同一个来源**（§9.8.6）：
+            //
+            // - 副武器模型自己有 `iron_view` → 玩家眼睛贴在**副武器自己的**照门上，倍率也用它自己的；
+            // - 没有（当前 GP-25 就是这种）→ `GeoGunRenderer` 的位形链会回退到**宿主枪**的
+            //   `scope_view`/`iron_view`，那倍率也**必须**用宿主枪的 —— 包括它装着的瞄具倍率。
+            //
+            // 只改位形不改倍率就会变成"眼睛贴着主武器的 4 倍镜、FOV 却是 1 倍"
+            // （四期实现时漏掉的一半，见 §11.10.10）。
+            //
+            // 判据分两步，两步都不能省：
+            // ① **当前操控的是不是副武器** —— 用 `isSubWeapon`（物品是 `SubWeaponItem`），
+            //    **不能**用 `isDeployed(data)`：部署状态写在**宿主枪**的 `ActiveSlot` 上，
+            //    副武器自己那份数据里那个字段永远是空的；
+            // ② **副武器有没有自己的瞄准位形** —— 问的是**宿主枪**（"它身上挂着的那个副武器
+            //    模型有没有 `iron_view`"），与渲染侧共用同一个函数，不会两边各判一套。
+            val hostGun = ActiveGun.mainGun(player)
+            val zoomData =
+                if (ActiveGun.isSubWeapon(data) && hostGun != null && !GeoGunRenderer.subWeaponHasOwnAimPose(hostGun)) {
+                    hostGun
+                } else {
+                    data
+                }
+
+            val baseZoom = zoomData.zoom()
+            val movingZoom = zoomData.movingZoom()
+
+            this.movingZoom = if (movingZoom != null && !player.isShiftKeyDown) Mth.lerp(
+                0.1 * times,
+                this.movingZoom,
+                if (isMoving() || abs(turnRot[1]) > 0.1 || abs(turnRot[0]) > 0.1) movingZoom else baseZoom
+            ) else baseZoom
             customZoom = Mth.lerp(0.6 * times, customZoom, this.movingZoom + if (breath) 0.75 else 0.0)
 
             if (mc.options.cameraType.isFirstPerson) {
@@ -3183,9 +3287,9 @@ object ClientEventHandler {
 
         // When combat HUD is hidden by server, suppress vanilla crosshair in ALL views
         if (MiscConfig.HIDE_COMBAT_HUD.get()) {
-            val stack = player.mainHandItem
-            // 手持副武器时按普通物品处理
-            if (GunItem.isHeldWeapon(stack)) {
+            // 当前操控的枪（部署中的副武器也算）：它有自己的准心，原版准心要收掉
+            val held = ActiveGun.stackOf(player)
+            if (GunItem.isOperable(held)) {
                 event.isCanceled = true
                 return
             }
@@ -3202,9 +3306,9 @@ object ClientEventHandler {
             event.isCanceled = true
         }
 
-        val stack = player.mainHandItem
-        // 手持副武器时按普通物品处理
-        if (GunItem.isHeldWeapon(stack)) {
+        val stack = ActiveGun.stackOf(player)
+        // 主手拿着枪、或副武器被切了出来：都收掉原版准心
+        if (GunItem.isOperable(stack)) {
             event.isCanceled = true
         }
 
@@ -3237,13 +3341,42 @@ object ClientEventHandler {
         }
     }
 
+    /**
+     * **真的换了一把枪**（主手物品变了）：演一次切枪动画，并清掉上一把枪的全部残留。
+     *
+     * ⚠ **主/副武器切换不要调它。** 那种情况下手里那把枪根本没变，换的只是"当前操控的枪"——
+     * 副武器是挂在同一把枪上的附件。调它会让主武器凭空做一次重新装备（`drawTime` 打回 1.0），
+     * 还会把玩家按住的瞄准键作废（`zoom = false`）。那种情况调 [resetGunTransientState]。
+     *
+     * 调用点只有两个：`DrawClientMessage`（服务端在主手物品真换了时发）与
+     * `handleShootDelay` 里的主手 UUID 变化。
+     */
     fun resetGunStatus() {
         drawTime = 1.0
+        zoom = false
+        resetGunTransientState()
+    }
+
+    /**
+     * 只清"上一把枪残留的运行时状态"，**不动 `drawTime`、也不动瞄准意图（`zoom`）**。
+     *
+     * 为什么必须清：下面这些字段在客户端是**全局的、不是按枪存的**（`burstFireAmount`、蓄力、
+     * 自定义 RPM、索敌/锁定、抛壳计时……）。只要"当前操控的枪"换了就得清，
+     * 否则 AK-12 打了一半的三连发会接着算到 GP-25 头上、蓄力进度会跨枪残留。
+     *
+     * 为什么不能顺带演切枪：这些状态归零和"手上的枪换了"是两件事。主/副武器切换只发生前者，
+     * 而 `drawTime = 1.0` 是**重新装备的进度条** —— 副武器是挂在同一把枪上的附件，
+     * 收起/端起来都不该让主武器做一次切枪动作（§9.8.2 / §9.8.8）。
+     *
+     * `zoomTime = 0.0` **留在这一侧**是有意的：瞄准意图（`zoom`）跨切换保留，
+     * 但瞄准**进度**归零 → 切过去之后是"从肩上一路对进新枪的照门"，
+     * 而不是让 FOV 在旧位形上直接跳到新枪的倍率（那一下是硬切，看不出瞄准点变了）。
+     */
+    fun resetGunTransientState() {
         for (i in 0..<5) {
             shellIndexTime[i] = 0.0
         }
         clientTimer.stop()
-        zoom = false
 //        holdingFireKey = false
         holdingFireKeyTicks = 0
         holdingFireKeyTicks0 = 0f
@@ -3282,7 +3415,7 @@ object ClientEventHandler {
 
     private fun handleWeaponDraw(entity: LivingEntity) {
         val times = getDelta()
-        val stack = entity.mainHandItem
+        val stack = ActiveGun.stackOf(entity)
         val data = GunData.from(stack)
         val weight = (stack.item as? GunItem)?.getCustomWeight(data) ?: 0.0
         val duration = data.get(GunProp.DRAW_TIME).coerceAtLeast(1) + 0.5 * weight
@@ -3369,8 +3502,9 @@ object ClientEventHandler {
     @JvmStatic
     fun stopWeaponSeekSound(player: Player?) {
         if (player == null) return
-        val stack = player.mainHandItem
-        if (GunItem.isHeldWeapon(stack)) {
+        // 当前操控的枪：切换主/副武器时要停掉的是**正在操作那把**的锁定音
+        val stack = ActiveGun.stackOf(player)
+        if (GunItem.isOperable(stack)) {
             val gunData = GunData.from(stack)
             val location = gunData.get(GunProp.SOUND_INFO).locking.location
             stopSoundEvent(location, SoundSource.PLAYERS)
@@ -3454,6 +3588,26 @@ object ClientEventHandler {
     fun onClientGunFire(event: ClientGunFireEvent) {
         val instance =
             FirstPersonRenderHandler.getActiveAnimationInstance(event.hand) as? GeoGunAnimationInstance ?: return
-        instance.triggerFire(event.stack)
+
+        // **部署中的副武器开火**：开火动画的候选链写在副武器自己的定义里
+        // （`SubWeaponInfo.Animation`，默认 `["fire_sub_weapon"]`），短名由 `triggerFire`
+        // 按**宿主枪**的 id 拼（`animation.ak_12.fire_sub_weapon`，§11.9-A）。
+        //
+        // ⚠ **这一句不能省。** `triggerFire` 是拿"候选链空不空"判断"开火的是不是副武器"的：
+        // 不传候选 → 判定成主武器开火 → **打榴弹时步枪抛壳**，而且副武器专属的开火动画
+        // 永远解析不到（候选链整条是死代码）。四期把参数留在原地却没接上，见 §11.10.10。
+        val subWeaponInfo = subWeaponInfoOf(event.stack)
+        instance.triggerFire(
+            event.stack,
+            subWeaponInfo?.fireAnimationCandidates() ?: emptyList(),
+            subWeaponInfo?.hasExplicitFireAnimation == true,
+        )
+    }
+
+    /** 这个栈是副武器物品时返回它自己的配件定义（含 `SubWeaponInfo`），否则 `null` */
+    private fun subWeaponInfoOf(stack: ItemStack): SubWeaponInfo? {
+        if (stack.item !is SubWeaponItem) return null
+        val id = BuiltInRegistries.ITEM.getKey(stack.item)
+        return AttachmentDefinition.from(id)?.subWeapon
     }
 }

@@ -1,4 +1,4 @@
-package com.atsuishio.superbwarfare.network.message.send
+﻿package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunProp
@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
+import com.atsuishio.superbwarfare.tools.ActiveGun
 import com.atsuishio.superbwarfare.tools.SoundTool
 import kotlinx.serialization.Serializable
 import net.neoforged.neoforge.capabilities.Capabilities
@@ -17,7 +18,7 @@ import net.neoforged.neoforge.capabilities.Capabilities
 data class FireModeMessage(val forward: Boolean) : ServerPacketPayload() {
     override fun PayloadContext.handler() {
         val player = sender()
-        val stack = player.mainHandItem
+        val stack = ActiveGun.stackOf(player)
 
         if (stack.item !is GunItem) return
         val data = from(stack)
