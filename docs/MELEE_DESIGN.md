@@ -1,14 +1,30 @@
-# 枪械近战系统 v7 设计（MeleeActions + MeleeEffect + SubWeapon + G 键主/副武器切换）
+# 枪械近战系统 v8 设计（MeleeActions + MeleeEffect + SubWeapon 族 + G 键轮换）
 
 > 状态：**一期（近战本体）、二期（配件体系 + 刺刀）、三期（`MeleeEffect` + `SubWeapon`）
-> 与四期（副武器「主/副武器切换」机制）均已实现**。
+> 与四期（副武器「主/副武器切换」机制）均已实现；五期（副武器多槽位族 + G 键轮换）已定稿、待开工**。
 > 本文既是设计稿也是落地记录：
 > - **§11.1** 一期逐项核对表（完成项标注了真实文件路径）
 > - **§11.2** 「正式实现与本文不一致的地方」+ 兼容性确认清单 + 遗留缺口（**实现时按代码为准**，本文相关段落已就地加注）
 > - **§11.5** 二期落地记录；**§11.8** 三期落地记录；**§11.9** 三期后续（副武器开火表现）；**§11.10** 四期落地记录
-> - **§12.2** / **§12.3** / **§12.4** / **§12.5** / **§12.6** 各期实现期间补充的决策记录
+> - **§12.2** / **§12.3** / **§12.4** / **§12.5** / **§12.6** / **§12.7** 各期实现期间补充的决策记录
+> - **§11.11** 五期落地清单（**五期开工前先看这一节**；命名规范见 §9.9）
 > - **§9** 描述的是**三期**的副武器机制（G = 触发一次射击）；**四期把它改成 G = 主/副武器切换**，
->   两者冲突时**以 §9.8 与 §11.10 为准**，§9 保留为历史记录（§9.4 / §9.6 / §11.8.1-⑩⑪⑭ / §11.9 的相应结论已被取代）。
+>   冲突时**以该期规范为准**：三期行为 → §9.8 / §11.10；**五期（槽位族 / 命名 / 轮换）→ §9.9 / §9.10 / §11.11**。
+>   §9.1–§9.7 保留为历史记录（§9.4 / §9.6 / §11.8.1-⑩⑪⑭ / §11.9 的相应结论已被取代）。
+>
+> **v8 相对 v7 的变化（只有一处大主题：副武器从「一个槽位」升级为「一族槽位」）**：
+> 1. **副武器槽位不再唯一**：`AttachmentType.SUBWEAPON` 改名 **`SUBWEAPON_UNDER_BARREL`**
+>    （序列化名 `"SubWeaponUnderBarrel"`、约定骨骼 `sub_weapon_under_barrel_pos`、挂点组
+>    `subweapon_under_barrel_rail`）；同一把枪上可以同时装**多个不同部位**的副武器
+>    （下挂 / 侧挂 / 枪托内置……），它们**互不冲突、各自有物理挂点、各自有独立状态**（§9.9.1）；
+> 2. **G 从「主 ↔ 副」改成「主 → 副#1 → 副#2 → … → 主」的轮换**（§9.10）；
+> 3. **"这个槽位算不算副武器"收进槽位注册表**（`AttachmentSlot.subWeapon`），全仓不再出现
+>    `slot.type == AttachmentType.SUBWEAPON` 这种按单个枚举判副武器的写法（§9.9.2）；
+> 4. **姿势 / 枪口焰 / 瞄准位形 / 换弹动画一律按「部署中的那一把」路由**，
+>    而**所有副武器的模型照常同时渲染**（不同挂点各画各的，这是正确行为，§9.9.3）；
+> 5. **切换一律打断在途状态**：无论主→副、副→副、副→主，被切走的那把与其余所有副武器
+>    全部 `interruptReload`（§9.10.4）；
+> 6. **不做老存档兼容**（开发阶段，无历史存档包袱，§11.11.6）。
 >
 > **v7 相对 v6 的变化（只有一处：副武器的操控方式）**：
 > 1. **G 从「触发一次副武器射击」改成「在主武器与副武器之间切换」**——副武器本身就是一把拥有
@@ -45,6 +61,10 @@
 > 换句话说：**副武器不再和"下挂导轨"这个概念绑定**，`SubWeapon` 定义仍然是唯一身份来源。
 > （⚠ **骨骼名的准确写法是 `sub_weapon_pos`**，`AttachmentSlots.Bones.SUBWEAPON = "sub_weapon_pos"`；
 > 本文 §11.8 / §12.5 里零星写的 `subweapon_pos` 是当时的手误，以代码为准。）
+>
+> ⚠⚠ **以上这段名字已被五期取代**：`SUBWEAPON` / `"SubWeapon"` / `sub_weapon_pos` / `subweapon_rail`
+> 四个名字**全部改名**（新名字见 **§9.9.1** 的对照表）。读 §9.1–§9.8、§11.8、§11.9、§11.10、§12.5
+> 时请把旧名字按那张表替换；这些章节保留为历史记录，**行为描述仍有效，只有名字过期**。
 
 ---
 
@@ -73,6 +93,8 @@
 | **副武器开火/换弹/瞄准** | **零专属代码**：全部走主武器的 `GunData.shoot` / `tryStartReload` / `zoom` 链路，只是 `GunData` 换成了副武器那一份（§9.8.3） | ✅ 四期（§11.10） |
 | **副武器动画** | 副武器**有自己的枪械资源与动画文件**（`GunResource` 按物品 id 解析）：换弹动画就是它资源里的 `Animation.Reload`（`animation.sub_weapon_gp_25.reload`），换弹时它自己动、宿主枪继续播 `idle`，两套骨骼互不干扰（**不需要姿态融合**）；宿主枪侧只保留开火的 `fire_sub_weapon` | ✅ 四期机制（§11.10）｜⚠ **动画与 `iron_view` 骨骼待美术**，未产出时静默回退 |
 | **副武器瞄准位形** | 优先副武器**附件模型自己的** `iron_view`，没有则回退宿主枪的 `scope_view` / `iron_view`（§9.8.6） | ✅ 四期（§11.10） |
+| **副武器多槽位族** | 副武器是一**族**槽位（`SubWeapon<部位>`，如 `SUBWEAPON_UNDER_BARREL` / 将来的 `SUBWEAPON_SIDE`）：同族可共存、各自有物理挂点与独立状态；"算不算副武器"由**槽位注册表**回答（`AttachmentSlot.subWeapon`，§9.9） | ⏳ 五期（§11.11） |
+| **G 键轮换** | `主武器 → 副#1 → 副#2 → … → 主`；顺序 = `AttachmentSlots` 里副武器槽位的登记顺序，双端同源；**切换一律打断双方在途状态**（§9.10） | ⏳ 五期（§11.11） |
 | **双版本（1.20.1 Forge / 1.21.1 NeoForge）** | 抽出 `GunStackStorage` 单一适配点：`CompoundTag`（NBT）↔ `DataComponent` 两个实现，其余逻辑共用（§9.8.9） | ✅ 适配点（§11.10）｜1.21.1 分支移植本身未做 |
 | 与 Better Combat 的分野 | 它做玩家模型动画 + 按 combo 条件选动画、判定挂原版；我们做武器骨骼动画 + 数据定义的判定几何体（§3.6） | ✅ |
 
@@ -786,6 +808,15 @@ companion object {
 > 这条主线已被**四期**取代——**G 改成「主武器 ↔ 副武器切换」**，规范见 **§9.8**，落地方案见 **§11.10**。
 > 冲突时**以 §9.8 / §11.10 为准**。仍然完全有效的部分：§9.1（能力式定义）、§9.3（寄生 GunData 与
 > 五条不变量）、§9.5（`GunActionLock`）、§9.7 的渲染挂点结论。
+>
+> ⚠ **五期提示**：**§9.9 与 §9.10 是五期的规范**（副武器槽位族 + G 键轮换），
+> 它们**排在 §9.8 之前**（为减少改动，没有重排章号）。所以本节的正确打开方式是：
+> | 你要找什么 | 去哪一节 |
+> |---|---|
+> | **当前**的副武器机制（槽位族、命名、轮换、状态中断） | **§9.9 / §9.10** |
+> | 四期的「当前操控的枪」机制（仍然有效，只是名字要按 §9.9.1 替换） | §9.8 |
+> | 三期的历史记录（G = 触发一次射击，已作废） | §9.1–§9.7 |
+> | 落地清单 | 四期 §11.10｜**五期 §11.11** |
 
 ### 9.1 定义：能力式，而不是槽位式
 
@@ -927,6 +958,275 @@ companion object {
 | 一期动画 | 副武器开火走**宿主枪的动画候选链**（`SubWeapon.Animation`，默认 `["fire_sub_weapon"]` → 没有就退回宿主枪的 `Fire`），见 §11.9；刺刀用枪的 melee clip（或 `Override.Animation` 指向枪动画文件里的 clip） |
 | 二期动画 | **配件自带动画文件**：扩展 `AttachmentModelReloadListener`（现在 `animPath` 为空，`:10`）加载 `animations/bedrock/attachment`；给 `BedrockAttachmentModel` 补 `applyPose`/`resetPose`（底层 `TreeModelInstance` 已支持，`GeoGunModel.kt:88` 就是这么用的）；渲染时枪身跑主 runner、配件跑自己的 runner（附件本来就是独立模型挂骨骼渲染，`GeoGunRenderer.kt:576-643`） |
 
+### 9.7.1 【五期修订】命名与多副武器的落点（**读 §9.1–§9.7 前先读这条**）
+
+> 本节只做**指路**，规范在 **§9.9 / §9.10**。
+> §9.1–§9.7 描述的三期机制（能力式定义、寄生 `GunData`、五条不变量、动作锁、渲染挂点）
+> **全部继续有效**，但下面这些名字已过期：
+> `AttachmentType.SUBWEAPON` / `"SubWeapon"` / 骨骼 `sub_weapon_pos` / 挂点组 `subweapon_rail`
+> → 新名字见 **§9.9.1** 的对照表。
+> 另外 §9.4 里"多个副武器遍历逐个触发"的三期写法**已作废两次**（四期改成"取第一个"，
+> 五期改成"轮换"），当前语义见 **§9.10**。
+
+---
+
+## 9.9 【五期】**副武器槽位族**：从"一个槽位"到"一族槽位"
+
+> 这一节与 §9.10 是五期的**规范**。与它冲突的结论（`SUBWEAPON` 单槽位、
+> `sub_weapon_pos` 骨骼、`subweapon_rail` 挂点组、按单个枚举判副武器的写法）
+> **一律作废**。落地清单见 **§11.11**。
+
+### 9.9.1 命名规范（五期定稿）
+
+**副武器是一个槽位族**：每个"部位"一个 `AttachmentType`。同一把枪上，**族内各槽位可以同时安装**、
+各自有独立物理挂点、各自有独立枪械状态；族内不互斥，与其它槽位按各自 `conflictsWith` 判。
+
+| 项 | 下挂式（本期实装） | 侧挂式（示例，等需求） |
+|---|---|---|
+| 枚举 | `AttachmentType.SUBWEAPON_UNDER_BARREL` | `AttachmentType.SUBWEAPON_SIDE` |
+| 序列化 / JSON 的 `Slot` / NBT 槽位键 | `"SubWeaponUnderBarrel"` | `"SubWeaponSide"` |
+| 挂点组 `mount` | `"subweapon_under_barrel_rail"` | `"subweapon_side_rail"` |
+| 约定骨骼 | `"sub_weapon_under_barrel_pos"` | `"sub_weapon_side_pos"` |
+| 语言键 | `attachment.superbwarfare.slot.sub_weapon_under_barrel` | `…slot.sub_weapon_side` |
+
+规则：
+1. **枚举名 == `@SerialName` == JSON 的 `Slot` 值 == NBT 槽位键**。
+   `attachmentName` 有三个身份：NBT 槽位键、`sbw/guns/*.json` 的 `AvailableAttachments` 键、
+   语言键的来源。三者统一成一个字符串，就**不会出现"改了枚举忘了改 json"**。
+2. **名字里带下划线**（`SubWeaponUnderBarrel`），与"部位"这种多词概念一致。
+3. **语言键单独规范**：槽位名 → 语言键尾巴的转换必须**同时**小写化并去掉下划线
+   （`SubWeaponUnderBarrel` → `subweaponunderbarrel`，见 §9.9.3 的 `langKey`）。
+   去下划线之后与可读形式 `sub_weapon_under_barrel` 是**同一个字符串**，
+   所以需求方说的 `attachment.superbwarfare.slot.sub_weapon_under_barrel` 与本实现**等价**；
+   写文档时用带下划线的形式，代码里只留 `langKey` 一个出口。
+4. **`SubWeaponInfo.AmmoSlot` 的默认值 `"SubWeapon"` 保持不动**：它是**弹药槽的存档标识**
+   （`gunDataTag.AmmoSlot.SubWeapon`），与"挂在哪个部位"无关，改名只会白送一次数据迁移。
+5. **`SubWeaponItem` 类名不动**：它是**所有**副武器物品的基类，"哪个部位"由配件数据里
+   `Slot` + `Bone` 决定，不由物品类决定。
+6. **`GunAction.SUB_WEAPON` 不动**：动作锁的语义是"切换中"，是行为不是槽位。
+
+**改名的连带项（一个都不能漏，漏了是静默失效）**：
+
+| 落点 | 旧 | 新 |
+|---|---|---|
+| `sbw/attachments/sub_weapon_gp_25.json` | `"Slot": "SubWeapon"`、`"Bone": "sub_weapon_pos"` | `"Slot": "SubWeaponUnderBarrel"`、`"Bone": "sub_weapon_under_barrel_pos"` |
+| `sbw/guns/ak_12.json` 的 `AvailableAttachments` 键 | `"SubWeapon"` | `"SubWeaponUnderBarrel"`（键就是 `attachmentName`） |
+| 枪模型 `models/bedrock/gun/ak_12.geo.json` | 骨骼 `sub_weapon_pos` | `sub_weapon_under_barrel_pos`（⚠ **全仓只有 AK-12 有这根骨骼**；改漏 = 什么都不渲染且**没有任何报错**） |
+| `en_us.json` / `zh_cn.json` | `attachment.superbwarfare.slot.subweapon` | `attachment.superbwarfare.slot.sub_weapon_under_barrel` |
+| `ModItemTagProvider` | `AttachmentType.SUBWEAPON to listOf(...)` | 新枚举名 |
+
+### 9.9.2 槽位注册表：副武器能力声明
+
+**"这个槽位算不算副武器"必须只有一个答案，而且这个答案在注册表里，不在调用点上。**
+
+```kotlin
+// AttachmentSlots.kt
+/**
+ * 副武器槽位的能力声明。
+ *
+ * 以前"副武器"这件事的判据是 `slot.type == AttachmentType.SUBWEAPON`，散在渲染（姿态、枪口焰）、
+ * 瞄准位形、输入（轮换目标）等 4 处。加第二把副武器时那种写法必然漏一半 ——
+ * 漏掉的表现是"模型画得出来、枪口焰在别处""切过去了、姿态还是上一把的"。
+ * 收进注册表后，**新增一个副武器部位 = 加一个枚举常量 + 登记一条**，调用点不用动。
+ */
+data class SubWeaponSlot(
+    /** 是否允许用附件模型自己的 `iron_view` 骨骼作为瞄准位形（模型里没这根骨骼时自动回退） */
+    val usesIronViewBone: Boolean = true,
+    /** 换弹时是否驱动该附件模型自己的动画 runner（clip 取该副武器自己的 `GunResource`） */
+    val ownReloadAnimation: Boolean = true,
+)
+
+data class AttachmentSlot(
+    ...,
+    /**
+     * 非空 = 这是副武器槽位。
+     * 同族槽位**挂点组各不相同 → 天然互不冲突**（`AttachmentSlots.conflicts` 第一层就放行）；
+     * 与其它槽位的互斥仍由 [conflictsWith] 决定。
+     */
+    val subWeapon: SubWeaponSlot? = null,
+)
+```
+
+配套的**两个唯一入口**（都挂在 `AttachmentSlots` 上）：
+
+```kotlin
+/** 轮换顺序与"所有副武器"查询的唯一出处（= `AttachmentSlots.ALL` 里的登记顺序） */
+fun subWeaponSlots(): List<AttachmentSlot> = ALL.filter { it.subWeapon != null }
+
+/** 这个槽位是不是副武器槽位；未登记的枚举返回 false（不抛异常） */
+fun isSubWeaponSlot(type: AttachmentType): Boolean = ofOrNull(type)?.subWeapon != null
+```
+
+现有 7 个槽位里**只有 `SUBWEAPON_UNDER_BARREL` 声明 `subWeapon`**，其余保持 `null` → **既有行为零变化**。
+
+`conflictsWith` 的摆法：
+- `SUBWEAPON_UNDER_BARREL` 继续 `setOf(BAYONET, GRIP)`（物理上都抢前段导轨，沿用 §11.8.4 的决定）；
+- `SUBWEAPON_SIDE` 等新部位的名单**等美术与玩法定**（侧挂通常不抢下导轨，可以先留空）；
+- **副武器之间不引入"抢电池/热量/弹药"这层玩法规则**：各自的状态本来就在各自的 NBT 子 tag 上，天然独立。
+
+### 9.9.3 语言键的规范化
+
+槽位名带下划线之后，语言键必须统一转换。新增一个**唯一入口**，禁止在调用点手拼：
+
+```kotlin
+// AttachmentType.kt
+/**
+ * 槽位名 → 语言键尾巴：**小写 + 去掉下划线**。
+ *
+ * `SCOPE` → `scope`（与今天的现状逐字相同，所以既有语言文件一个键都不用动）；
+ * `SUBWEAPON_UNDER_BARREL` → `subweaponunderbarrel`。
+ *
+ * ⚠ 注意这里**不是**"把名字原样小写"：`"SubWeaponUnderBarrel"` 直接小写会得到
+ * `subweaponunderbarrel`，而下划线版本 `sub_weapon_under_barrel` 才是可读的键 ——
+ * 但**两者其实是同一个字符串**（去下划线之后完全一样）。所以语言键的名字
+ * `attachment.superbwarfare.slot.sub_weapon_under_barrel` 与 `…slot.subweaponunderbarrel`
+ * **等价**，本函数选后者（与既有 7 个槽位的现状一致：`"Scope"` → `scope`）。
+ * 文档与需求方沟通时写**带下划线的可读形式**，代码里由这一个函数保证两者不会分叉。
+ */
+val langKey: String get() = attachmentName.lowercase(Locale.ROOT).replace("_", "")
+```
+
+⚠ **必须收进这一个函数**：今天是两处各拼一次
+（`ClientAttachmentImageTooltip.kt:76`、`AttachmentCommand.kt:358`），**拼法目前完全一样**，
+但这正是"将来会分叉"的写法 —— 一个槽位名里出现下划线（五期就是第一次）之后，
+任何一处漏掉 `.replace("_", "")` 就会去查一个不存在的键：
+指令那一侧会**直接把 raw key 发给玩家**（没有 `I18n.exists` 兜底），tooltip 那一侧则回退成
+`[SubWeaponUnderBarrel]` 这种半截显示。两处都改走 `langKey`，从结构上消掉这个可能。
+
+### 9.9.4 渲染与动画：一律按「部署中的那一把」路由
+
+**统一入口**（取代 `GeoGunRenderer.findSubWeapon` 的"取第一个装着的副武器"）：
+
+```kotlin
+/**
+ * 当前**部署中**的副武器：`(槽位登记项, 配件定义, 运行时实例)`；没部署/已失效 → `null`。
+ *
+ * ⚠ 三个读取点都必须传**显式**的 `client`：单人游戏里客户端与服务端共享静态缓存表，
+ * 用错一侧的实例会让状态在两边互相覆盖（`SubWeaponRuntime` 的不变式 ③）。
+ * 渲染/输入侧固定传 `true`（客户端）；命令/服务端侧传 `false`。
+ */
+private fun deployedSubWeapon(gun: GunData, client: Boolean): Triple<AttachmentSlot, AttachmentDefinition, Instance>? {
+    val slot = ActiveGun.activeSlot(gun) ?: return null                     // 部署中的槽位
+    val instance = SubWeaponRuntime.find(gun, slot, client) ?: return null
+    val entry = AttachmentSlots.ofOrNull(slot) ?: return null               // 注册表登记项（能力声明）
+    val definition = AttachmentDefinition.from(instance.attachmentId) ?: return null
+    return Triple(entry, definition, instance)
+}
+```
+
+| 调用点 | `client` |
+|---|---|
+| `resolveSubWeaponFlareTransform` / `resolveSubWeaponMuzzleFlashScale` / `resolveSubWeaponAimTransform`（渲染） | `true` |
+| `subWeaponHasOwnAimPose`（被 FOV 那一侧以静态形式调用） | `true` |
+| `/sbw subweapon info`、`ActiveGun.deploy` 附近的诊断 | `false` |
+
+> `Instance` 上有 `slot` / `attachmentId` / `info` / `stack` / `carrier` / `data`，**没有** `definition` ——
+> 定义要经 `AttachmentDefinition.from(attachmentId)` 拿，或者直接用 `instance.info`
+> （`SubWeaponInfo` 就是定义的 `SubWeapon` 块，喷焰/瞄准那几处要的是**定义整体**，
+> 因为 `MuzzleFlashScale` / `Model` / `Bone` 都在外层）。
+
+| 表现 | 现状（四期） | 五期 |
+|---|---|---|
+| 枪口焰挂点 | **装着的第一个**副武器的 `flare` | **部署中**那把的 `flare`；解析不到就不画。（"绝不退回主武器枪口"这条不变，§11.9-B） |
+| 枪口焰缩放 | 第一个的 `MuzzleFlashScale` | 部署中那把的 |
+| 瞄准位形 | 第一个的 `iron_view` | 部署中那把的，**且要求该槽位 `subWeapon.usesIronViewBone == true`** |
+| 开火模式位形 / 倍率判据（`subWeaponHasOwnAimPose`，被 FOV 那一侧调用） | 第一个的 `iron_view` 是否存在 | **同一个 `deployedSubWeapon()`**：位形与倍率**必须共用一份判据**（§9.8.6 的红线），不能各判一套 |
+| 附件模型渲染 | 所有 `GENERIC` 槽位都画 | **不动**。每把副武器挂自己的骨骼，**同时渲染是正确行为** |
+| 换弹动画姿态 | `slot.type == SUBWEAPON` 才应用 | `slotEntry.subWeapon?.ownReloadAnimation == true` **且该槽位 == 部署中** |
+
+⭐ **"所有副武器模型同时渲染"是设计要求，不是缺陷**：它们在**完全不同的物理位置**上
+（下挂 / 侧挂 / 枪托内置），不是同一个挂点上的互斥关系，所以不存在"该不该隐藏"的问题。
+五期要改的恰恰是**反过来的那一半**：姿态、枪口焰、瞄准位形、开火动画这些
+**"某一时刻只属于一把枪"**的表现，必须精确地只给部署中的那一把。
+
+⚠ **姿态必须即时复位**：附件模型实例是**全局共享**的（`AttachmentModelReloadListener`），
+`applyPose` 之后必须在 `finally` 里立刻 `resetPose()` —— 现有代码已经这么做，改动时**不要破坏它**，
+否则姿态会污染其它槽位上"恰好用了同一份模型"的副武器。
+
+**开火表现链路（`subWeaponFireRotTimer` / `isSubWeaponFire()` / `fire_sub_weapon` 候选链）一个字都不用改**：
+它已经由 `ClientGunFireEvent` 携带的 stack（就是部署中那把）驱动，多槽位下自动正确。
+
+---
+
+## 9.10 【五期】**G 键轮换**：主武器 ↔ 副武器列表
+
+### 9.10.1 轮换序列
+
+```
+[ 主武器 ] → 副#1 → 副#2 → … → 副#N → 主武器 → …
+```
+
+- **顺序的唯一出处 = `AttachmentSlots.subWeaponSlots()` 的登记顺序**，双端都从这张表推导，
+  不做本地排序 —— 服务端将来加新部位时，两端顺序自动一致。
+- `EDIT_ORDER` 追加新副武器槽位时**保持同一顺序**（界面的槽位顺序与轮换顺序一致，玩家不必记两套）。
+- 只有一把副武器时，轮换**逐字退化成四期的"主 ↔ 副"**（`主 → 副#1 → 主`），老行为不变。
+- 一把副武器都没装：**G 是空操作**（不挥砍、不播音、不进动作锁），这条四期语义不变（§9.8.2）。
+
+### 9.10.2 客户端：算目标（`SubWeaponClientHandler`）
+
+```kotlin
+/**
+ * 轮换：主武器 → 副武器列表 → 主武器。
+ *
+ * 只表达**意图**：算出来的 `next` 交给服务端拍板（§9.8.10 的信任模型不变）。
+ * `hasAnySubWeapon = false` → 调用方什么都不做（G 是空操作）。
+ */
+fun nextInRotation(gun: GunData, current: AttachmentType?): RotationTarget {
+    val order = SubWeaponRuntime.installed(gun, client = true)
+        .map { it.slot }
+        .sortedBy { slot -> AttachmentSlots.subWeaponSlots().indexOfFirst { it.type == slot } }
+
+    if (order.isEmpty()) return RotationTarget(hasAnySubWeapon = false)
+    val next = when (current) {
+        null -> order.first()                                        // 主 → 副#1
+        else -> order.getOrNull(order.indexOf(current) + 1)           // 副#i → 副#i+1；越界 → null（回主武器）
+    }
+    return RotationTarget(next, hasAnySubWeapon = true)
+}
+```
+
+要改的三处：
+
+1. `MeleeClientHandler.tick` 的 G 分支：把"部署中就回主武器、否则取 `firstOrNull()`"
+   换成上面的轮换计算；
+2. `SubWeaponClientHandler.request`：删掉"已经在目标状态就播 `TRIGGER_CLICK` 并早退"那条 ——
+   轮换里 `current` 不可能是 `target`，留着只会静默吞掉按键；
+3. **记住"当前部署的是哪一把"，不要只记最后一次请求**：新增 `lastDeployed`（由**确认包**更新，
+   含失败包），否则一次服务端拒绝就会让客户端"以为自己切了"，下一次按 G 算出的目标全错。
+
+### 9.10.3 服务端：**不改**
+
+`SubWeaponDeployMessage.handler` 继续收 `slot: String?` 并做权威校验：
+`null` / 空串 = 切回主武器；槽位不存在、不是 `SubWeaponItem`、该槽位没装副武器 → 回 `ok = false`。
+**轮换只是"客户端算目标"，拍板权仍在服务端** —— 报文格式一个字段都不用加。
+建议（非必须）：失败包也回传服务端当前的 `ActiveSlot`，让客户端被拒之后仍然知道"现在在哪一把"。
+
+### 9.10.4 状态中断：切换一律打断（无论切到哪一把）
+
+**原则：不做状态保留。** 任何一次切换（主→副、副→副、副→主），双方在途状态一律清干净
+——与主武器切枪时 `LivingEventHandler` 做的是同一件事（§9.8.4）。
+
+| 对象 | 处理 |
+|---|---|
+| **宿主枪** | `interruptReload(gun)`：副武器顶替期间它不参与开火/换弹 |
+| **离开的那把副武器**（副→副时的副#i） | `interruptReload(oldInstance.data)` |
+| **其余所有副武器** | 一并 `interruptReload`（防御性：避免"上上次切走时留下的半截状态"） |
+| **目标那把副武器** | `interruptReload(instance.data)` + `wasReloading = false`（从头开始） |
+
+双端都要做：
+- **服务端**：`ActiveGun.deploy` / `ActiveGun.holster` 是**唯一**写入方，在这里集中做（代码骨架见本节上面的 `deploy` 块）；
+- **客户端**：`SubWeaponClientHandler.onDeployed` / `onDeployRejected` 里对主机枪 +
+  `SubWeaponRuntime.installed(gun, client = true)` 的**所有**实例调 `interruptReload`
+  （它是 `@JvmStatic` 公开的纯 `GunData` 操作，双端安全），这样玩家按下 G 的那一刻
+  本地弹药/换弹显示就回退，不必等下一次 NBT 同步。
+
+⚠ `interruptReload` 的三个前提在五期仍然必须守住：
+① 只在"确实有东西在走"时动手（`reloading()` 或栓动计时器非 0），否则背包里躺着的枪每 tick 都白跑一遍；
+② 单发装填（`ReloadTypes: ["Iterative"]`）的四个阶段计时器要一起清；
+③ 清完要 `invalidateProperties()`。
+
+---
+
 ### 9.8 【四期】**主/副武器切换**：让"当前操控的枪"变成副武器
 
 > 这一节是四期的**规范**；§9.1–§9.7 与 §11.8 / §11.9 里与它冲突的结论（G 触发一次射击、
@@ -1021,7 +1321,7 @@ Java 侧 70 处**，其中绝大多数是"我正在操作的那把枪"。四期�
 | 只装副武器，当前是副武器 | **主武器**自身近战（副武器没有近战） | **切回主武器** |
 | 刺刀 + 副武器共存，当前是主武器 | 刺刀动作 | **切到副武器** |
 | 刺刀 + 副武器共存，当前是副武器 | **刺刀动作**（主武器的动作表，装了刺刀就是刺刀） | **切回主武器** |
-| 装了多个副武器 | 同上 | 切到**枚举顺序里的第一个**可用槽位（不做优先级/轮换，`AttachmentType.entries` 顺序即结果；正常情况最多一个） |
+| 装了多个副武器 | 同上 | **⚠ 四期是「切到枚举顺序里的第一个」，五期改成「轮换」**：`主 → 副#1 → 副#2 → … → 副#N → 主`，顺序 = 副武器槽位在 `AttachmentSlots` 里的登记顺序（§9.10 / §11.11.4） |
 
 > **V 永远近战，且近战恒用「主武器」的动作表**——副武器没有近战输入，也不参与近战判定。
 > 副武器激活时按 V，主机枪做近战动作、主武器结算伤害，副武器保持挂在枪上不动。
@@ -1551,6 +1851,7 @@ SubWeaponDeployedMessage(
 | **三期后续：副武器开火表现** | ✅ **已完成**（§11.9） | `SubWeapon.Animation` 候选链、枪口焰/烟改挂副武器、`SubWeaponInfo.Data` 落地、`Semi`/`Auto`/`Burst`、装填只在持有主武器时推进 |
 | **四期：副武器「主/副武器切换」机制** | ✅ **已完成**（§11.10） | G = 主/副武器切换；`GunState.ActiveSlot`/`ActiveOwner` + `ActiveGun` 读取入口；副武器走完整开火/换弹/瞄准链路；近战恒用主武器；副武器**自带资源与换弹动画**（附件 animPath + `BedrockAttachmentModel.applyPose`）；副武器不具有配件；`GunStackStorage` 双版本适配 |
 | **四期后续** | ⏳ 未做 | 副武器换弹动画本身与附件模型的 `iron_view` 骨骼（**要美术产出**，代码侧已做静默回退）、副武器专属 HUD/准心、1.21.1 分支的实际移植（按需求由需求方自行推进）、**手动验收**（§11.10.4） |
+| **五期：副武器槽位族 + G 键轮换** | 📝 **已定稿，待开工**（§11.11） | 命名体系改名（`SUBWEAPON` → `SUBWEAPON_UNDER_BARREL` + `sub_weapon_under_barrel_pos` + `subweapon_under_barrel_rail`）；槽位注册表加 `SubWeaponSlot` 能力声明；姿势/枪口焰/瞄准位形/换弹动画改为**按部署中的那一把**路由；G 从"取第一个"改成**轮换**；**切换一律打断双方在途状态**。新增第二个部位（侧挂等）**等需求** |
 
 一期新增/改动的主要落点：
 
@@ -3427,6 +3728,201 @@ if (GunItem.isHeldWeapon(stack)) {           // ← 副武器在这里被判成"
 
 ---
 
+## 11.11 五期：**副武器槽位族 + G 键轮换** 📝 已定稿，待开工
+
+> **规范在 §9.9 / §9.10**，本节是落地清单（文件级改动 + 自检 + 验收）。
+> 一句话概括本期的性质：**四期已经把"多把副武器"所需的一切都留在了正确的位置上**
+> （`installed()` 返回 List、缓存是 `Map<槽位, Instance>`、`tick` 逐把推进、`ActiveSlot` 是槽位名字符串），
+> 本期要补的是**命名体系**（槽位族）、**能力声明**（注册表）、**按部署路由**（渲染/动画）、
+> **轮换**（输入）、**统一打断**（状态）——**`SubWeaponRuntime` 的三条不变量一行都不用碰**。
+
+### 11.11.1 定位与前置
+
+| 项 | 内容 |
+|---|---|
+| **只动什么** | 副武器的**命名、槽位能力、渲染路由、输入轮换、状态打断** |
+| **一行不动** | 近战本体（一期）、配件体系/刺刀（二期）、`MeleeEffect`（三期）、四期的 `ActiveGun` 机制与报文格式、`SubWeaponRuntime` 的装配/缓存/三条不变量 |
+| **不做** | **老存档兼容**（开发阶段，无历史存档包袱）；**第二个副武器部位**（侧挂/枪托内置等**等需求**，含"左右导轨"这种不确定项）；副武器专属 HUD/准心；1.21.1 实际移植 |
+| **与 §11.10 的关系** | 五期是四期的**同一套机制的扩展**，不推翻 §11.10 的任何返修结论（§11.10.6 的对象身份、§11.10.9 的门禁归属、§11.10.11 的窗口、§11.10.12 的锁推进**全部继续有效**） |
+| **开工前先做** | 无。本期没有四期那种"先建适配点"的前置（`GunStackStorage` 已经在了） |
+
+### 11.11.2 改动清单（逐文件）
+
+#### A. 命名迁移（**不能只改枚举**，四处必须同时改）
+
+| # | 文件 | 改动 |
+|---|---|---|
+| 1 | `data/gun/value/AttachmentType.kt` | `SUBWEAPON` → **`SUBWEAPON_UNDER_BARREL`**，`@SerialName` → `"SubWeaponUnderBarrel"`；新增 `langKey`（小写 + 去下划线） |
+| 2 | `data/attachment/AttachmentSlots.kt` | `Bones.SUBWEAPON` → **`SUBWEAPON_UNDER_BARREL = "sub_weapon_under_barrel_pos"`**；登记项 `mount` → `"subweapon_under_barrel_rail"`、`tagBucket` → `"subweapon_under_barrel"`、`icon` → `"subweapon_under_barrel"`；`conflictsWith` 保持 `{BAYONET, GRIP}` |
+| 3 | `resources/data/superbwarfare/sbw/attachments/sub_weapon_gp_25.json` | `"Slot"` → `"SubWeaponUnderBarrel"`，`"Bone"` → `"sub_weapon_under_barrel_pos"`；`SubWeapon` 块**一个字不改** |
+| 4 | `resources/data/superbwarfare/sbw/guns/ak_12.json` | `AvailableAttachments` 的键 `"SubWeapon"` → `"SubWeaponUnderBarrel"` |
+| 5 | `resources/assets/superbwarfare/models/bedrock/gun/ak_12.geo.json` | 骨骼 `sub_weapon_pos` → `sub_weapon_under_barrel_pos`（**全仓唯一一根**；改名是纯字符串替换） |
+| 6 | `datagen/ModItemTagProvider.kt` | `AttachmentType.SUBWEAPON` → 新枚举名（tag 名由 `tagBucket` 自动推导，**不用手改字符串**） |
+| 7 | `en_us.json` / `zh_cn.json` | `attachment.superbwarfare.slot.subweapon` → **`…slot.sub_weapon_under_barrel`**（= 代码里 `langKey` 拼出的 `subweaponunderbarrel`，两者等价；两个语言都要） |
+| 8 | `command/AttachmentCommand.kt:358`、`client/tooltip/ClientAttachmentImageTooltip.kt:76` | 语言键改用 `AttachmentType.langKey`（两处今天拼法相同、**将来会分叉**：槽位名一带下划线就会分叉，见 §9.9.3） |
+| 9 | `data/attachment/SubWeaponInfo.kt` 的 KDoc 示例、`AttachmentSlots` / `SubWeaponRuntime` / `ActiveGun` 里提到旧名字的注释 | 跟随改名（**代码不动的纯注释也要改**，否则下一个人会按注释去写 `"SubWeapon"`） |
+
+> ⚠ **旧的 `AmmoSlot` 默认值 `"SubWeapon"` 不改**（§9.9.1-4）；`SubWeaponItem`、`GunAction.SUB_WEAPON` 不改。
+
+#### B. 槽位能力声明（注册表）
+
+| # | 文件 | 改动 |
+|---|---|---|
+| 10 | `data/attachment/AttachmentSlots.kt` | 新增 `data class SubWeaponSlot(usesIronViewBone, ownReloadAnimation)`；`AttachmentSlot` 加 `subWeapon: SubWeaponSlot? = null`；`SUBWEAPON_UNDER_BARREL` 登记为 `SubWeaponSlot()`；新增 `subWeaponSlots()` / `isSubWeaponSlot(type)` |
+| 11 | `data/DataValidator.kt` | 新增/续用校验：副武器槽位的**骨骼名是否存在**（资源侧，四期就没做，本期仍可只做 debug 提示）；`SubWeapon.Data` 解析（已有，不动） |
+
+#### C. 渲染与动画：按「部署中的那一把」路由（§9.9.4）
+
+| # | 文件 | 改动 |
+|---|---|---|
+| 12 | `client/renderer/gun/GeoGunRenderer.kt` | `findSubWeapon`（取第一个）→ **`deployedSubWeapon(gun, client)`**（取部署中的，签名与 `client` 传法见 §9.9.4）：`ActiveGun.activeSlot` → `SubWeaponRuntime.find` → `AttachmentSlots.ofOrNull` → `AttachmentDefinition.from`。四个调用点全部改走它：`resolveSubWeaponFlareTransform`、`resolveSubWeaponMuzzleFlashScale`、`resolveSubWeaponAimTransform`、`subWeaponHasOwnAimPose` |
+| 13 | 同上（`renderRegisteredAttachments`） | 换弹姿态的判据 `slot.type == AttachmentType.SUBWEAPON` → **`slotEntry.subWeapon?.ownReloadAnimation == true && 该槽位 == 部署中`**；**不要**动模型渲染循环（所有副武器同时渲染是设计要求） |
+| 14 | 同上 | `applyPose` / `resetPose` 的 `finally` 结构**必须保住**（附件模型实例全局共享，姿态漏复位会污染别的槽位） |
+| 15 | `client/animation/gun/GeoGunAnimationInstance.kt` | `subWeaponReloadRunner` 保持单例 + 按 clip 名重建，**逻辑不用改**；只把注释里"那个槽位"的说法改成"部署中的那个槽位" |
+| 16 | `event/ClientEventHandler.kt:3152` | FOV 那一侧的 `subWeaponHasOwnAimPose(hostGun)` **不用改代码**（它内部已改为按部署路由），但要**实测确认**倍率与位形仍然同源 |
+
+#### D. G 键轮换（§9.10）
+
+| # | 文件 | 改动 |
+|---|---|---|
+| 17 | `client/gun/SubWeaponClientHandler.kt` | 新增 `nextInRotation(gun, current)`（§9.10.2）；`request(...)` 收敛成"传目标槽位"；删掉"已在目标状态就播音效并早退"；新增 `lastDeployed`（由确认包更新，**含失败包**）；**修掉 `tick(data = null)` 导致超时兜底永不执行**（`MeleeClientHandler.kt:106` 传真实数据） |
+| 18 | `client/gun/MeleeClientHandler.kt`（G 分支） | `if (deployed != null) null else installed().firstOrNull()?.slot` → `nextInRotation(...)`；`request` 无副武器时的空操作语义**保持不变** |
+| 19 | `client/gun/SubWeaponClientHandler.kt`（`onDeployed` / `onDeployRejected`） | 确认回来后按"新操控的那把枪"重占动作锁（现有逻辑保留）；`lastDeployed` 更新 |
+| 20 | `network/message/send/SubWeaponDeployMessage.kt` / `receive/SubWeaponDeployedMessage.kt` | **不改**（可选：失败包回传服务端当前的 `ActiveSlot`，便于客户端对齐） |
+
+#### E. 状态中断：切换一律打断（§9.10.4）
+
+| # | 文件 | 改动 |
+|---|---|---|
+| 21 | `tools/ActiveGun.kt`（`deploy`） | 记下 `leaving = activeSlot(gun)`；对**宿主枪 + 离开那把 + 其余所有副武器 + 目标那把**全部 `interruptReload`（代码骨架见 §9.10.4）；`instance.wasReloading = false` |
+| 22 | `tools/ActiveGun.kt`（`holster`） | 当前部署那把之外，**其余副武器也一并打断** |
+| 23 | `client/gun/SubWeaponClientHandler.kt` | `onDeployed` / `onDeployRejected` 里对主机枪 + `installed(gun, client = true)` 的所有实例调 `SubWeaponRuntime.interruptReload`（双端安全的 `@JvmStatic` 纯 `GunData` 操作） |
+| 24 | `subweapon/SubWeaponRuntime.kt` | **一行不改**。`tick` 里"未被操控即 `interruptReload`"的既有逻辑继续兜底（`SubWeaponRuntime.kt:490-492`） |
+
+#### F. 调试与文档
+
+| # | 文件 | 改动 |
+|---|---|---|
+| 25 | `command/SubWeaponCommand.kt` | **已经支持多把**（逐把打印 `active=`），只需把输出里加一列**轮换序号**（`#1/#2`），便于实测时对账顺序 |
+| 26 | `en_us.json` / `zh_cn.json` | `key.superbwarfare.subweapon_fire` 文案保持"切换副武器 / Switch Sub-Weapon"即可（轮换后仍准确） |
+| 27 | `docs/MELEE_DESIGN.md` | 本节即落地记录：实现后在本节追加 §11.11.7「实现后返修」（与 §11.10.x 同一套写法） |
+
+### 11.11.3 建议的实施顺序
+
+**每步都能单独编译 + 单独验收**；①②③ 完成时行为应与四期**逐字一致**（纯重构），
+④⑤ 才是行为变化 —— 这样一旦出问题，能立刻判断是"改名改坏了"还是"新功能写错了"。
+
+| 步 | 内容 | 完成后应当观察到 |
+|---|---|---|
+| ① | **命名迁移**（A 组 1–9） | 单把 GP-25 的行为**逐字不变**；`/sbw subweapon info` 打印新槽位名；AK-12 上 GP-25 照常渲染、照常开火 |
+| ② | **槽位能力声明**（B 组 10–11） | 编译通过；`grep -rn "AttachmentType.SUBWEAPON\b" src/` 应为空；行为仍不变 |
+| ③ | **按部署路由**（C 组 12–16） | 单把副武器行为**逐字不变**（回归）；枪口焰 / 瞄准位形 / 换弹姿态指向同一把 |
+| ④ | **状态打断**（E 组 21–23） | 副→副、副→主切换后，被切走那把的装填进度归零、不播完成音；客户端弹药显示立刻回退 |
+| ⑤ | **轮换**（D 组 17–20） | 用 `/sbw attachment` 给一把枪装上**两把不同部位的副武器**（本期只能用指令或临时数据，因为没有第二把副武器的正式资源）→ G 循环 `主→副1→副2→主` |
+| ⑥ | **等需求** | 新部位的枚举 + 注册项 + 模型骨骼 + 数据 + 物品注册 —— **代码侧应当零改动**，这是本方案是否成立的最终判据 |
+
+### 11.11.4 自检（grep 清单）
+
+```bash
+# 1. 旧名字必须清零（含注释）
+grep -rn "SUBWEAPON" src/ | grep -v "SUBWEAPON_UNDER_BARREL" | grep -v "SUBWEAPON_SIDE"
+#   期望为空（旧写法 `AttachmentType.SUBWEAPON`）；注意 `GunAction.SUB_WEAPON` 不受影响
+grep -rn "sub_weapon_pos" src/               # 应为空（旧骨骼名）
+grep -rn '"SubWeapon"' src/main/resources/   # 应为空（Slot 值/AvailableAttachments 键都改过）
+grep -rn '"subweapon_rail"' src/             # 应为空（旧挂点组名）
+grep -rn 'slot.subweapon"' src/main/resources/assets/   # 应为空（旧语言键）
+
+# 2. 按单个枚举判副武器的写法必须清零
+grep -rn "AttachmentType.SUBWEAPON_UNDER_BARREL" src/
+#   期望只剩两处：AttachmentType.kt（枚举声明本身）与 AttachmentSlots.kt（注册项）
+#   渲染 / 输入 / FOV / 命令侧一处都不该有 —— 全部走 isSubWeaponSlot / subWeaponSlots / deployedSubWeapon
+
+# 3. 语言键必须走唯一入口
+grep -rn "slot\.\${\|attachmentName.lowercase" src/main/kotlin/ src/main/java/
+#   期望：命中行必须含 .langKey；裸的 lowercase() 与手拼 "…slot.${…}" 都应为空
+
+# 4. 轮换与打断的落点
+grep -n "nextInRotation" src/main/kotlin/.../MeleeClientHandler.kt src/main/kotlin/.../SubWeaponClientHandler.kt
+grep -n "interruptReload" src/main/kotlin/.../tools/ActiveGun.kt          # 期望 3 处以上（host / leaving / others / target）
+grep -n "SubWeaponClientHandler.tick" src/main/kotlin/.../MeleeClientHandler.kt   # 入参不能再是 null
+
+# 5. 三条不变量不许被碰
+grep -rn "\.tag\b" src/main/kotlin/com/atsuishio/superbwarfare/subweapon/  # 仍应为空
+git diff --stat -- src/main/kotlin/com/atsuishio/superbwarfare/subweapon/SubWeaponRuntime.kt
+#   期望：只有注释/KDoc 的改动；装配、缓存、tick 三段逻辑零差异
+```
+
+编译：`./gradlew compileKotlin compileJava runData`。
+
+### 11.11.5 手动验收
+
+**准备**：一把 AK-12（有 `sub_weapon_under_barrel_pos` 骨骼）+ `superbwarfare:sub_weapon_gp_25` + 40mm 榴弹；
+为了测轮换，**临时**再造一个"第二个部位"的副武器（改一份配件 json 的 `Slot` 指向一个临时槽位即可，
+或直接在数据包里加一个 `SUBWEAPON_SIDE`），**只用于验收，不进入正式资源**。
+
+```
+命名迁移（①，行为必须逐字不变）
+ 1. 装上 GP-25 → 模型出现在枪身下方（骨骼改名没改漏）
+ 2. 按 G → 切到 GP-25；开火 → 榴弹出膛、枪口焰在榴弹筒上、**枪身不抛壳**、不做枪身后坐
+ 3. 按 R → 换弹；宿主枪继续播 idle
+ 4. /sbw subweapon info → 槽位名 = SUBWEAPON_UNDER_BARREL、gunData = superbwarfare:sub_weapon_gp_25、active=true
+ 5. 物品提示 / 改装界面 / 指令补全里的槽位名显示为新语言键（不是 raw key）
+
+按部署路由（③）
+ 6. 装两把不同部位的副武器 → 两把模型**同时**挂在各自位置上（不重叠、不互相隐藏）
+ 7. 切到副#2 → 开火：枪口焰在**副#2**的枪口（不是副#1 的）
+ 8. 切到副#2 → 瞄准：位形/倍率用的**副#2**的 iron_view（副#2 没有则回退宿主枪，与副#1 无关）
+ 9. 切到副#2 → 换弹：动的是**副#2**的模型，副#1 静止
+10. 主武器开火：枪口焰回到**主武器枪口**（副武器窗口被清零）
+
+状态打断（④）
+11. 副#1 换弹到一半 → 按 G 切到副#2 → 再切回副#1：装填**从头开始**，期间没有"装填完成"音效
+12. 副#1 换弹到一半 → 按 G 切回主武器 → 副#1 的装填进度归零（切回来从头装）
+13. 拉栓（BoltAction）中途切换 → 栓动计时器归零，切回来要重新拉栓
+14. 客户端与服务端的弹药显示**同时**回退（不是一边先一边后）
+
+轮换（⑤）
+15. 只有 GP-25：G 循环 = 主 → GP-25 → 主 → …（**与四期行为完全一致**）
+16. 两把副武器：G 循环 = 主 → 副#1 → 副#2 → 主 → …（顺序 = 槽位登记顺序）
+17. 三把：…→ 副#3 → 主（不跳号、不重复）
+18. 拆掉副#2 之后：循环立刻缩短成"主 → 副#1 → 主"，**不残留**副#2
+19. 连按 G：动作锁期间被拒（不抽搐式切换）；确认超时后 G 与动作锁都能恢复
+20. 服务端拒绝后（例如数据包里临时删掉副#2 的配件定义）→ 客户端**仍然知道现在在哪一把**，下一次 G 能正确推进
+21. 刺刀 + GP-25 共存：G 只切副武器；V 恒用主武器动作表（副武器激活时按 V，也是主武器挥砍）
+
+边界
+22. 什么都没装 → 按 G：空操作（不挥砍、不播音、不进动作锁）
+23. 副武器物品**拿在手上**（从背包里拿出来）：按普通物品处理（不渲染成枪、不改视角）
+24. 副武器激活时按 V：主武器做近战、伤害由主武器结算，副武器挂在枪上不动
+```
+
+### 11.11.6 明确不做的事
+
+| 项 | 为什么 |
+|---|---|
+| **老存档 / 旧 NBT 键兼容** | 开发阶段没有历史存档包袱。"旧键迁移表"明确**不写**（旧存档的已装 GP-25 重装一次即可） |
+| **第二个副武器部位（侧挂 / 枪托内置 / 左右导轨）** | **等需求**。左右导轨这种"同一部位两个候选挂点"的表达方式还没定（是加两个槽位、还是给槽位加 `Bone` 变体），本期不预设 |
+| **"多把副武器抢电池/热量/共享弹药"这类玩法规则** | 状态天然独立（各自 NBT 子 tag），要引入共享得先有需求 |
+| **副武器专属 HUD / 准心** | 仍然是"后续自行重写的另一块"（§0 结论速览） |
+| **1.21.1 分支的实际移植** | 按需求由需求方自行推进（§9.8.9） |
+
+### 11.11.7 实现后返修
+
+> 与 §11.10.5–§11.10.12 同一套写法：实现期间若遇到与预期不符的既有行为，
+> 按顺序追加到本节，并同步回写 §9.9 / §9.10 的规范段。
+
+**（暂无 —— 本期尚未开工）**
+
+**开工前已经能从代码读出来的三个坑**（实现时留意，属于"没人报错但会静默失效"那一类）：
+
+| # | 现象 | 根因 | 对策 |
+|---|---|---|---|
+| 1 | 切到副武器后按 G 没反应，等一会儿又好了 | `SubWeaponClientHandler.tick` 被 `MeleeClientHandler.kt:106` 以 `data = null` 调用 → `if (data != null)` 的**兜底释放永远不执行**，一次丢包就把 G 与动作锁挂到超时 | 传真实 `GunData`（清单 17） |
+| 2 | 改完 `Slot` 值之后配件"看上去没装" | `Attachment.installed()` 里 `if (definition.slot != type) continue` —— **配件的 `Slot` 必须与实际槽位一致，否则被静默丢弃**；`DataValidator` 也拦不住 | 改名清单里 `json` 的 `Slot`、`AvailableAttachments` 的键、NBT 键三者必须同一步改完 |
+| 3 | 骨骼名改漏 → 模型不显示且**没有任何日志** | `renderRegisteredAttachments` 里 `getGlobalTransform(boneName) ?: continue`；`renderMode = GENERIC` 已不吃配件的 `Bone`（`FromDefinition` 只用在 `mountBoneOf`） | 验收第 1 条就是查这个；建议顺手加一条 debug 日志（不是 error） |
+
+---
+
 ## 12. 决策记录
 
 ### 12.1 已定稿
@@ -3565,6 +4061,31 @@ if (GunItem.isHeldWeapon(stack)) {           // ← 副武器在这里被判成"
 `animations/bedrock/attachment/sub_weapon_gp_25.animation.json`、`hold_sub_weapon`、
 附件模型的 `iron_view` 骨骼）——三者都做了"缺失时优雅回退"，所以不阻塞代码落地（§11.10.5-⑩）。
 
+### 12.7 五期设计（副武器槽位族 + G 键轮换）期间的决策
+
+> 五期**尚未实现**，本节是设计期的定稿（编号接四期）。实现期间遇到与预期不符的既有行为，
+> 按 §11.11.7 的方式追加返修记录，并把结论回写到 §9.9 / §9.10。
+
+| # | 议题 | 结论 |
+|---|---|---|
+| 89 | 副武器的"多把"怎么表达 | **不做"一个槽位装多把"，做"一族槽位"**：每个部位一个 `AttachmentType`，族内可同时安装。理由：`Attachment.installed()` 有 `definition.slot != type → continue` 的硬门禁，且**每个槽位只能有一份 tag**（`Attachment.getOrCreateTag` 按槽位名取子 tag），"一个槽位装多把"要同时推翻这两条；而"一族槽位"顺着现有结构走，每把天然有独立 NBT 与独立挂点（§9.9.1） |
+| 90 | 命名规范 | **枚举名 == `@SerialName` == JSON 的 `Slot` == NBT 槽位键**：`SUBWEAPON_UNDER_BARREL` / `"SubWeaponUnderBarrel"`。三个身份统一成一个字符串，就不会"改了枚举忘了改 json"。**语言键单独规范**：小写 + 去下划线 → `subweaponunderbarrel`，与可读形式 `attachment.superbwarfare.slot.sub_weapon_under_barrel` **等价**，只留 `langKey` 一个出口（§9.9.1 / §9.9.3） |
+| 91 | 挂点骨骼与挂点组 | 约定骨骼 **`sub_weapon_under_barrel_pos`**（旧 `sub_weapon_pos`）、挂点组 **`subweapon_under_barrel_rail`**（旧 `subweapon_rail`）——挂点组名与骨骼名一致，一处改名两处都跟着读（§9.9.1） |
+| 92 | 哪些名字**不改** | `SubWeaponInfo.AmmoSlot` 的默认值 `"SubWeapon"`（弹药槽的**存档标识**，与挂哪无关）、`SubWeaponItem`（所有副武器物品的基类）、`GunAction.SUB_WEAPON`（行为不是槽位）（§9.9.1-4/5/6） |
+| 93 | "算不算副武器"的判据 | **收进槽位注册表**：`AttachmentSlot.subWeapon: SubWeaponSlot?`，配套 `subWeaponSlots()` / `isSubWeaponSlot(type)`。**禁止**在调用点写 `slot.type == AttachmentType.XXX` —— 四期那种写法散在渲染/瞄准/输入四处，加第二把必然漏一半（§9.9.2） |
+| 94 | 槽位能力声明放什么 | 只放**结构性**的两条：`usesIronViewBone`（允许用附件模型自己的 `iron_view`）、`ownReloadAnimation`（换弹驱动自己的动画 runner）。**`iron_view` 骨骼是否存在这件事不进配置**——模型里有就是有，注册表说"允许用"，没有则静默回退（§9.9.2） |
+| 95 | 多把副武器的模型要不要隐藏 | **不隐藏，全部同时渲染**。它们在**完全不同的物理位置**（下挂/侧挂/枪托内置），不是同一个挂点上的互斥关系。五期要改的是**反过来的那一半**：姿态、枪口焰、瞄准位形、开火动画这些"某一时刻只属于一把枪"的表现，按**部署中的那一把**路由（§9.9.4） |
+| 96 | 姿态 / 枪口焰 / 瞄准位形的统一入口 | 新增 `deployedSubWeapon(gun, client)`（= `ActiveGun.activeSlot` → `SubWeaponRuntime.find` → `AttachmentSlots.ofOrNull` → `AttachmentDefinition.from`），取代 `GeoGunRenderer.findSubWeapon`（"取第一个装着的副武器"）。**瞄准位形与倍率继续共用这一份判据**（§9.8.6 的红线不许破）；`client` 必须显式传（不变式 ③）（§9.9.4） |
+| 97 | G 键语义 | **轮换**：`主武器 → 副#1 → 副#2 → … → 主`。顺序 = `AttachmentSlots` 里副武器槽位的登记顺序，**双端同源**（都从注册表推导，不做本地排序）；只有一把时逐字退化成四期的"主 ↔ 副"；一把都没有时仍是**空操作**（§9.10.1） |
+| 98 | 谁是轮换目标的拍板人 | **仍然只有服务端**（`SubWeaponDeployMessage` 的 handler）。轮换只是"客户端算目标"，报文格式一个字段都不改；客户端必须记住的是**服务端确认的当前部署**（`lastDeployed`，含失败包），而不是"我最后一次请求了什么"（§9.10.2 / §9.10.3） |
+| 99 | 切换时的状态 | **一律打断，不做保留**：主→副、副→副、副→主三种情况，宿主枪 + 离开的那把 + 其余所有副武器 + 目标那把**全部 `interruptReload`**。双端都做：服务端在 `ActiveGun.deploy/holster` 集中做（唯一写入方），客户端在确认/拒绝里做（让本地显示立刻回退）（§9.10.4） |
+| 100 | 老存档兼容 | **不做**。开发阶段没有历史存档包袱，旧 NBT 键（`"SubWeapon"`）与旧骨骼名的迁移表**明确不写**；已装 GP-25 的旧存档重装一次即可（§11.11.6） |
+| 101 | 第二个副武器部位 | **等需求**（侧挂 / 枪托内置 / 左右导轨都还没定）。本期只搭"族"的框架并实装下挂式；新增部位 = 枚举 + 注册项 + 模型骨骼 + 数据 + 物品注册，**代码侧应零改动**——这是框架是否成立的最终判据（§11.11.3 第 ⑥ 步 / §11.11.6） |
+| 102 | 顺手修掉的既有瑕疵 | ① `SubWeaponClientHandler.tick(data = null)` 导致超时兜底永不执行（G 与动作锁可能一次丢包锁到超时）；② 语言键两处各拼一次（今天拼法相同，槽位名一带下划线就会分叉 → 指令侧会把 raw key 发给玩家）。两条都并进五期（§11.11.7） |
+
+**五期唯一的开放项是"第二个部位是什么"**，而它**不阻塞** ①–⑤ 步的落地
+（验收可以临时造一个槽位来跑轮换）。需要外部输入的是**新部位的模型骨骼**（与四期的美术项同一性质）。
+
 ---
 
 ## 13. 附：与现有基建的对应表
@@ -3594,6 +4115,10 @@ if (GunItem.isHeldWeapon(stack)) {           // ← 副武器在这里被判成"
 | **副武器的动画候选链（四期复用三期）** | `GunAnimationNames.resolveFirst(candidates, 宿主枪 id)`（二期为刺刀做的候选链 + 短名拼接） | `resource/gun/GunAnimationNames.kt`、`GeoGunAnimationInstance.resolveFireName` |
 | **副武器开火的客户端表现** | **服务端确认**：`SubWeaponFiredMessage`（与那声 1P 音挨着发，`player.sendPacket`）→ 客户端播动画 + 枪口焰（§11.9-A/B）。⚠ **四期保留"服务端确认"这一条口径，但拍板对象从"这一发打没打出去"变成"这次切没切成"**（`SubWeaponDeployedMessage`）；开火表现回到主武器那套客户端本地播 | `network/message/receive/SubWeaponFiredMessage.kt`、`SubWeaponClientHandler.playFireAnimation` |
 | **副武器实例身份** | `DATA_CACHE`（weakKeys 按栈实例）+ `UUID_CACHE` adopt + `rebind` | `GunData.kt:1785-1854`、`:1553-1575` |
+| **多副武器（五期）** | **不需要新的存储/同步机制**：`SubWeaponRuntime.installed()` 本来就返回 `List`、缓存本来就是 `Map<槽位, Instance>`、`tick` 本来就逐把推进、`GunState.ActiveSlot` 本来就是槽位名字符串 —— **五期一行都不用碰这三条不变量** | `SubWeaponRuntime.kt:160-275`、`:132`、`:481-507`、`GunState.kt:166-177` |
+| **槽位能力声明（五期）** | 槽位注册表已有的模式：`renderMode` / `conflictsWith` / `mountBone` 全是"这个槽位有什么能力"的登记项，加一条 `subWeapon` 即可 | `AttachmentSlots.kt:79-92` |
+| **挂点互斥（五期）** | **不同挂点组天然不冲突**：`AttachmentSlots.conflicts()` 第一层就是 `mountOf(a) == mountOf(b) → true`，所以副武器族内只要挂点组名不同就自动共存，**不需要 `allowSharedMount` 之类的逃生口** | `AttachmentSlots.kt:293-305` |
+| **语言键（五期）** | `AttachmentType.langKey`（小写 + 去下划线）：今天是 `attachmentName.lowercase()`，改成同时去下划线即可，两处调用点统一 | `AttachmentType.kt:42`、`AttachmentCommand.kt:358`、`ClientAttachmentImageTooltip.kt:76` |
 | 冷却计数（写法样板） | `Perks.reduceCooldown(perk, key)`；玩家级用 `persistentData` | `subdata/Perks.kt:217`、`mobeffect/RadiationMobEffect.kt:100-109` |
 | 伤害类型注册 / 标签 | `ModDamageTypes.registerDamageType`/`causeXxxDamage`；`ModTags.DamageTypes` | `init/ModDamageTypes.kt:17-55`、`init/ModTags.kt:206-240` |
 | 强制伤害 / 药水效果 | `DamageHandler.forceHurt`、`LivingEntity.forceApplyEffect` | `tools/DamageHandler.kt:25`、`tools/EffectHandler.kt:10` |
@@ -3609,4 +4134,5 @@ if (GunItem.isHeldWeapon(stack)) {           // ← 副武器在这里被判成"
 | 数据核验 | `DataValidator` | `data/DataValidator.kt` |
 
 **需要自己新写、仓库没有原语的**：`lightning`、`Lift`（垂直上挑）、自定义冷却表、`GunActionLock`、槽位注册表 + 挂点组、`AttachmentProvider` 接口层、`GunItem.useAsWeaponInHand()` + `isHeldWeapon(stack)` 手持谓词、`SubWeaponRuntime`（寄生 GunData 的装配与 tick）；
-**四期追加**：`ActiveGun`（"当前操控的枪"的统一读取入口）、`GunStackStorage`（NBT ↔ DataComponent 的版本适配点）、副武器的 `iron_view` 接进 `computeViewTransform`。
+**四期追加**：`ActiveGun`（"当前操控的枪"的统一读取入口）、`GunStackStorage`（NBT ↔ DataComponent 的版本适配点）、副武器的 `iron_view` 接进 `computeViewTransform`；
+**五期追加**：`AttachmentSlot.subWeapon`（副武器能力声明）+ `subWeaponSlots()` / `isSubWeaponSlot()`（"算不算副武器"的唯一入口）、`AttachmentType.langKey`（语言键的唯一入口）、`deployedSubWeapon(gun, client)`（表现路由的唯一入口）、`SubWeaponClientHandler.nextInRotation()`（轮换）——四条都是**"唯一入口"型**的新原语，配套的纪律是"**调用点不许自己再判一次**"（§9.9.2 / §9.9.3 / §9.9.4 / §9.10.2）。
