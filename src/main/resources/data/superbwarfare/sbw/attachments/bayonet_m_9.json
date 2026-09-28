@@ -22,7 +22,8 @@
     "MeleeActions": [
       {
         "Animation": [
-          "animation.m_4.bayonet_hit"
+          "bayonet_hit",
+          "hit"
         ],
         "Duration": 16,
         "HitTime": 6,
