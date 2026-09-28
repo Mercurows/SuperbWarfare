@@ -3,7 +3,12 @@ package com.atsuishio.superbwarfare.data.attachment
 import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots.EDIT_ORDER
 import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots.declaredConflicts
 import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots.mountOf
+import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots.registeredIds
+import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
+import com.atsuishio.superbwarfare.init.ModItems
+import net.minecraft.resources.ResourceLocation
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * 槽位的挂载骨骼从哪来。
@@ -307,6 +312,41 @@ object AttachmentSlots {
     /** 登记到 [mount] 这个挂点组上的全部槽位。 */
     @JvmStatic
     fun byMount(mount: String): List<AttachmentSlot> = BY_MOUNT[mount].orEmpty()
+
+    /** [registeredIds] 的结果缓存，按 [GunData.DATA_VERSION] 整体失效。 */
+    private val registeredIdsCache = ConcurrentHashMap<AttachmentType, List<ResourceLocation>>()
+
+    /** 缓存对应的 [GunData.DATA_VERSION]；`Int.MIN_VALUE` = 还没算过。 */
+    private var registeredIdsVersion = Int.MIN_VALUE
+
+    /**
+     * [type] 槽位上**已注册**的全部配件 id（配件物品与配件数据都在的那些），按 id 排序。
+     *
+     * 只被「完全自由改装模式」用到（见 `GunData.availableAttachments`）：那一档要无视枪械数据里的
+     * `AvailableAttachments`，把一个槽位能装的东西全部放出来。
+     *
+     * 来源是配件**物品**注册表 [ModItems.ATTACHMENTS]，与 `/sbw attachment` 的校验口径一致
+     * （那条指令要求"配件物品与配件数据缺一不可"）：只认数据表的话，会放出"装得上、但物品栏里
+     * 根本不存在"的幽灵配件。槽位本身以**配件数据**的 `Slot` 为准 —— 物品注册表不记槽位，
+     * 所以数据包改了某个配件的 `Slot` 之后这里会跟着变（也因此需要缓存失效，见下）。
+     *
+     * 结果按 [GunData.DATA_VERSION] 缓存：它会经 `GunItem.hasCustomAttachment` 被**渲染路径每帧查询**，
+     * 而重新枚举几十个配件物品、再逐条查数据表并不便宜。数据包重载会递增那个版本号，正好当失效信号。
+     */
+    @JvmStatic
+    fun registeredIds(type: AttachmentType): List<ResourceLocation> {
+        if (registeredIdsVersion != GunData.DATA_VERSION) {
+            registeredIdsCache.clear()
+            registeredIdsVersion = GunData.DATA_VERSION
+        }
+
+        return registeredIdsCache.getOrPut(type) {
+            ModItems.ATTACHMENTS.entries
+                .map { it.id }
+                .filter { AttachmentDefinition.from(it)?.slot == type }
+                .sorted()
+        }
+    }
 
     /**
      * [slot]（装的是 [definition]）实际使用的**挂点骨骼名**；`null` = 这个槽位不往枪模型上挂
