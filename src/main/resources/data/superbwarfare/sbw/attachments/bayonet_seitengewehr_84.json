@@ -1,0 +1,47 @@
+{
+  "Slot": "Bayonet",
+  "Bone": "bayonet_pos",
+  "Modifiers": [
+    {
+      "Prop": "MeleeDamage",
+      "Op": "Add",
+      "Value": 10
+    },
+    {
+      "Prop": "MeleeRange",
+      "Op": "Add",
+      "Value": 1.6
+    },
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 0.4
+    }
+  ],
+  "Override": {
+    "MeleeActions": [
+      {
+        "Animation": [
+          "animation.k_98.bayonet_hit"
+        ],
+        "Duration": 16,
+        "HitTime": 4,
+        "Hitbox": {
+          "Type": "Box",
+          "Width": 1.0,
+          "Height": 1.6,
+          "YOffset": -0.3,
+          "Occlusion": true
+        },
+        "Sweep": {
+          "From": 0,
+          "To": 0
+        },
+        "MaxTargets": 2,
+        "Knockback": 0.3
+      }
+    ]
+  },
+  "Model": "superbwarfare:models/bedrock/attachment/bayonet_seitengewehr_84.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/bayonet_seitengewehr_84.png"
+}

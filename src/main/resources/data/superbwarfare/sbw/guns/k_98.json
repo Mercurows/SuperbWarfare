@@ -110,6 +110,9 @@
       "superbwarfare:muzzle_compensator_r_17",
       "superbwarfare:ar_silencer",
       "superbwarfare:loudspeaker"
+    ],
+    "Bayonet": [
+      "superbwarfare:bayonet_seitengewehr_84"
     ]
   },
   "SoundInfo": {

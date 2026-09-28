@@ -254,6 +254,7 @@
   "item.superbwarfare.steel_coil_spawn_egg": "Steel Coil Spawn Egg",
   "item.superbwarfare.knife": "M9 Knife",
   "item.superbwarfare.knife_6kh2": "6KH2 Knife",
+  "item.superbwarfare.knife_seitengewehr_84": "Seitengewehr 84 Knife",
   "item.superbwarfare.hammer": "Hammer",
   "des.superbwarfare.hammer": "Crafting Count: %1$s",
   "item.superbwarfare.golden_hammer": "Golden Hammer",
@@ -711,6 +712,7 @@
   "item.superbwarfare.steel_pipe_grip": "Steel Pipe Grip",
   "item.superbwarfare.bayonet_m_9": "M9 Bayonet",
   "item.superbwarfare.bayonet_6kh2": "6KH2 Bayonet",
+  "item.superbwarfare.bayonet_seitengewehr_84": "Seitengewehr 84 Bayonet",
   "item.superbwarfare.sub_weapon_gp_25": "GP-25 Underbarrel Grenade Launcher",
 
   "death.attack.gunfire": "%1$s was gunned down by %2$s",

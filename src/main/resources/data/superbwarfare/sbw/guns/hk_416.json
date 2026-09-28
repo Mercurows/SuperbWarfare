@@ -111,6 +111,9 @@
       "superbwarfare:loudspeaker",
       "superbwarfare:silencer_qinglan"
     ],
+    "Bayonet": [
+      "superbwarfare:bayonet_m_9"
+    ],
     "SubWeapon": [
       "superbwarfare:sub_weapon_gp_25"
     ]

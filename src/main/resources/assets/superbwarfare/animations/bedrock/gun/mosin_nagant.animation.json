@@ -1297,7 +1297,7 @@
 				}
 			},
 			"sound_effects": {
-				"0.0": {
+				"0.025": {
 					"effect": "superbwarfare:k_98_loop"
 				}
 			}

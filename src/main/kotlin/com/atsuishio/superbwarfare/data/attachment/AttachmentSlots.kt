@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap
 sealed interface AttachmentMountBone {
     /**
      * 约定骨骼：这个槽位固定挂在枪模型的这个名字上，与配件自身怎么写无关。
-     * 目前只有刺刀（`bayonet_pos`）走这条。
+     * 目前只有握把（`grip_pos`）走这条。
      */
     data class Fixed(val name: String) : AttachmentMountBone
 
@@ -189,12 +189,18 @@ object AttachmentSlots {
         ),
         // 刺刀和枪口配件（消音器/制退器）抢的是**同一个枪口挂点**：装了其中一个就装不了另一个。
         // 物理上刺刀是卡在枪口下方的卡榫上，但真枪上也确实不能同时又挂消音器又上刺刀。
+        //
+        // **挂点骨骼走 `FromDefinition`（回退 `bayonet_pos`）**：刺刀卡在**枪口**上，而"枪口"
+        // 这根骨骼各枪叫法不同 —— `m_4` / `ak_47` / `ak_12` 有 `bayonet_pos`（pivot 与同枪的
+        // `muzzle_pos` 逐位相同），Kar98K 只有 `muzzle_pos`。配件没写 `Bone` 时退回约定名
+        // `bayonet_pos`，两个既有刺刀数据里都写着它，行为一字不变；若用 `Fixed`，配件里的
+        // `Bone` 会被**静默忽略**，骨骼名对不上就什么都不渲染也不报错（同 `subweapon_rail`）。
         AttachmentSlot(
             type = AttachmentType.BAYONET,
             mount = "muzzle_device",
             tagBucket = "bayonet",
             icon = "bayonet",
-            mountBone = AttachmentMountBone.Fixed(Bones.BAYONET),
+            mountBone = AttachmentMountBone.FromDefinition(Bones.BAYONET),
             focusBone = Bones.BAYONET,
             renderMode = AttachmentRenderMode.GENERIC,
         ),
