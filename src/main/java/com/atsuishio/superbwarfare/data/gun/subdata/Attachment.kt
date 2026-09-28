@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.data.gun.subdata
 
+import com.atsuishio.superbwarfare.config.server.AttachmentConfig
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
 import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots
 import com.atsuishio.superbwarfare.data.gun.GunData
@@ -132,9 +133,18 @@ class Attachment(private val gun: GunData) {
      *
      * 任一方声明了 `AllowSharedMount` 就放行 —— 那个字段本来就是为"转接座"这类叠装件准备的。
      *
+     * 服务端配置开了「自由改装模式」（`AttachmentConfig.FREE_ATTACHMENT_MODE`，
+     * 或蕴含它的「完全自由改装模式」）时**一律返回 `null`**：挂点组与 `ConflictsWith` 都不再拦人，
+     * 同一根枪口挂点上可以同时挂刺刀与消音器，握把 / 刺刀 / 副武器也可以共存。
+     *
+     * 判定只写在**这一处**：`/sbw attachment`、[com.atsuishio.superbwarfare.data.gun.GunData.availableAttachments]
+     * （进而改装界面、指令补全）与 [cycle] 全都经过这个查询，所以配置一开它们自动同步。
+     *
      * @return 与它互斥的已装槽位，没有冲突时返回 `null`。
      */
     fun conflict(type: AttachmentType, definition: AttachmentDefinition?): AttachmentType? {
+        if (AttachmentConfig.freeAttachmentMode) return null
+
         for (other in AttachmentType.entries) {
             if (other == type) continue
 

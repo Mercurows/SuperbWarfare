@@ -1,8 +1,10 @@
 package com.atsuishio.superbwarfare.data.gun
 
 import com.atsuishio.superbwarfare.capability.entity.InfiniteAmmoCapability
+import com.atsuishio.superbwarfare.config.server.AttachmentConfig
 import com.atsuishio.superbwarfare.data.*
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
+import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots
 import com.atsuishio.superbwarfare.data.attachment.AttachmentZoom
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.BACKUP_AMMO_CACHE_TICKS
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.DATA_CACHE
@@ -1196,14 +1198,25 @@ class GunData private constructor(
      * 这里会一并过滤掉：规则收在 `AttachmentSlots.conflicts`，
      * 改装界面的"该槽位无可用配件"表现、指令补全与 `Attachment.cycle` 的候选列表都由这一个入口统一。
      *
+     * 服务端配置开了**自由改装模式**时那个过滤会整体消失（`Attachment.conflict` 恒返回 `null`），
+     * 于是同一个槽位上的互斥配件可以同时装 —— 列表本身还是本枪声明的那一份。
+     *
+     * 开了**完全自由改装模式**时更激进：连本枪的 `AvailableAttachments` 都不看，
+     * 直接换成该槽位**已注册的全部配件**（`AttachmentSlots.registeredIds`）。
+     * 两档配置的差别见 `AttachmentConfig`。
+     *
      * ⚠ **副武器永远没有配件**（四期）：`SubWeaponItem` 虽然是 `GunItem`，但它是**装到枪上的一个部件**，
      * 不是一把可以被改装的枪 —— 让下挂榴弹自己再挂一个握把是没有意义的。
      * 所以这里对副武器一律返回空表：改装界面显示"无可用配件"、指令补全不再列出候选、
      * `/sbw attachment set` 也会因为 `canInstall` 走同一个入口而被拒。
+     * **两档自由改装配置都不会放开这一条**：那两档放宽的是"哪把枪能装什么"，
+     * 而这里问的是"这个物品算不算一把能被改装的枪"。
      * 相关门禁见 `GunItem.canEditAttachments` 与 `SubWeaponItem` 的覆写。
      */
     fun availableAttachments(slot: AttachmentType): List<ResourceLocation> {
         if (item is SubWeaponItem) return emptyList()
+
+        if (AttachmentConfig.fullyFreeAttachmentMode) return AttachmentSlots.registeredIds(slot)
 
         return getDefault().availableAttachments[slot.attachmentName]
             .orEmpty()

@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.command.builder.buildCommand
 import com.atsuishio.superbwarfare.command.builder.entityArg
 import com.atsuishio.superbwarfare.command.builder.enumArg
 import com.atsuishio.superbwarfare.command.builder.resourceLocationArg
+import com.atsuishio.superbwarfare.config.server.AttachmentConfig
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
 import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots
 import com.atsuishio.superbwarfare.data.gun.GunData
@@ -44,6 +45,16 @@ private const val ATTACHMENT_ARG = "attachment"
  * - `random`：在可用列表里随机抽一个配件装上。不写 `type` 时**先清空全部槽位，再按挂点组各抽一个**
  *   —— 同组槽位互斥（刺刀 / 枪口配件都是 `muzzle_device`），既不能逐槽位抽（会抽出装不上的组合），
  *   也不能留着旧配件抽（会退化成"重抽已装的那一个"）。见 [clearAllAttachments] / [rollAllSlots]
+ *
+ * 上面两条限制都会随服务端配置**放宽**（见 `AttachmentConfig`）：
+ * - `FREE_ATTACHMENT_MODE`（自由改装）：挂点组与 `ConflictsWith` 互斥不再拦人，
+ *   同一个枪口挂点上可以同时挂刺刀与消音器，握把 / 刺刀 / 副武器也可以共存；
+ *   `random` 随之从"每个挂点组抽一个"改成"**每个槽位抽一个**"
+ * - `FULLY_FREE_ATTACHMENT_MODE`（完全自由改装）：连 `AvailableAttachments` 都不看，
+ *   任意枪械都能装该槽位已注册的全部配件（含上一条）
+ *
+ * 两档放宽都只走 `Attachment.conflict` / `GunData.availableAttachments` 那两个入口，
+ * 所以补全（[installableAttachments]）与界面用的候选列表会和校验结果保持一致。
  */
 val ATTACHMENT_COMMAND = buildCommand("attachment") {
     requirePermission(2)
@@ -77,7 +88,8 @@ val ATTACHMENT_COMMAND = buildCommand("attachment") {
                         }
 
                         // 互斥：挂点组被别人占了，或任一方在 `ConflictsWith` 里点了名。
-                        // 先于"不可用"报出来，否则只会得到一句含糊的"这把枪不支持该配件"
+                        // 先于"不可用"报出来，否则只会得到一句含糊的"这把枪不支持该配件"。
+                        // 开了自由改装模式时这一步恒不成立（判定收在 `Attachment.conflict` 里）
                         data.attachment.conflict(type, definition)?.let { blocker ->
                             fail {
                                 Component.translatable(
@@ -88,6 +100,7 @@ val ATTACHMENT_COMMAND = buildCommand("attachment") {
                         }
 
                         // 配件必须在这把枪的 AvailableAttachments 里声明可用
+                        // （开了完全自由改装模式时 `availableAttachments` 会给出该槽位已注册的全部配件）
                         if (!data.canInstall(type, id)) {
                             fail {
                                 Component.translatable(
@@ -248,12 +261,23 @@ private fun randomAttachment(data: GunData, type: AttachmentType): ResourceLocat
  * 而刺刀与握把可以共存 —— 见 `AttachmentSlots.conflicts`）。所以每组抽完还要拿已经抽中的槽位
  * 再过滤一遍，否则会抽出一个"指令都装不上"的组合（先抽到的组赢，后抽到的组让位）。
  *
+ * 开了**自由改装模式**时上面那套"保证装得上"的逻辑整个失效 —— 互斥已经不存在了 ——
+ * 于是改成**每个槽位各抽一个**：继续按挂点组抽的话，刺刀 / 枪口这类同组槽位里永远只有一个
+ * 能被抽到，而那正是这一档要放开的东西。
+ *
  * 调用方**必须先 [clearAllAttachments]**：否则已经装着配件的那一组里，其它槽位的候选会被
- * `availableAttachments` 的互斥过滤全部干掉，抽签退化成"重抽已经装着的那一个"。
+ * `availableAttachments` 的互斥过滤全部干掉，抽签退化成"重抽已经装着的那一个"
+ * （自由改装模式下没有这层过滤，但"先清空"仍是"抽签结果与原配置无关"的保证）。
  *
  * @return `槽位 to 配件 id`，按挂点组顺序（注册表顺序）；没有任何可用配件时为空列表。
  */
 private fun rollAllSlots(data: GunData): List<Pair<AttachmentType, ResourceLocation>> {
+    if (AttachmentConfig.freeAttachmentMode) {
+        return AttachmentType.entries.mapNotNull { type ->
+            randomAttachment(data, type)?.let { type to it }
+        }
+    }
+
     val rolls = mutableListOf<Pair<AttachmentType, ResourceLocation>>()
 
     for ((_, slots) in AttachmentType.entries.groupBy { AttachmentSlots.mountOf(it) }) {
@@ -272,7 +296,12 @@ private fun rollAllSlots(data: GunData): List<Pair<AttachmentType, ResourceLocat
     return rolls
 }
 
-/** [data] 的 [type] 槽位里真正装得上的配件：在可用列表里，且配件物品与配件数据都齐全 */
+/**
+ * [data] 的 [type] 槽位里真正装得上的配件：在可用列表里，且配件物品与配件数据都齐全。
+ *
+ * 可用列表本身随自由改装配置变化（见 [GunData.availableAttachments]），所以 `set` 的校验
+ * 与 `random` / 补全的候选**永远共用这一份判定**，不会出现"补全里有、指令说装不上"的分叉。
+ */
 private fun installableAttachments(data: GunData, type: AttachmentType): List<ResourceLocation> =
     data.availableAttachments(type).filter { attachmentDefinitionOf(it) != null && data.canInstall(type, it) }
 
