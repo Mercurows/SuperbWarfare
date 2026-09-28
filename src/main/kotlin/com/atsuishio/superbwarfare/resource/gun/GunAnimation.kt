@@ -108,6 +108,41 @@ class GunAnimation {
     /** 第一支近战 clip 名；没配或配成空列表时返回 `null`（老 GeckoLib 路径用） */
     fun firstMeleeName(): String? = melee?.list?.firstOrNull()
 
+    /**
+     * 换弹 clip 名的**唯一解析口径**。
+     *
+     * 为什么要有这个方法：这套优先级原先在主武器与副武器两条换弹动画链路上**各写了一份**，
+     * 两份的兜底顺序还不一样 ——
+     *
+     * | 场景 | 顺序 | 位置 |
+     * |---|---|---|
+     * | 主武器 | `Reload` → 鼓式 → `ReloadNormal` / `ReloadEmpty` | `GeoGunAnimationInstance.resolveState` |
+     * | 副武器 | `ReloadEmpty` → `Reload` | `GeoGunAnimationInstance.updateSubWeaponReload` |
+     *
+     * 主武器那份是"`Reload` 是通用兜底、`ReloadNormal`/`ReloadEmpty` 是细分"，副武器那份把
+     * `ReloadEmpty` 提到了最前。好在**只配一个 `ReloadEmpty` 时两份结果相同**（GP-25 就是这种），
+     * 所以这个不一致一直没有暴露。这里把副武器那份的口径抽成函数固定下来（**保持它的既有语义**，
+     * 不趁机改行为），至少让"现在到底按哪条规则"只有一个答案。
+     *
+     * 注意它**只回答"数据里写的 clip 名"**，不回答"这支 clip 存不存在"——
+     * 后者要问动画表（副武器问 `AttachmentModelReloadListener`）。
+     *
+     * @param emptyReload 这一次是不是空仓换弹（`data.reload.empty()`）；`false` → 走正常换弹那一支
+     * @param drumLevel 是否鼓式弹匣（`GunData.isDrumLevel()`）
+     */
+    fun reloadClip(emptyReload: Boolean = true, drumLevel: Boolean = false): String? {
+        // ⚠ 这里刻意**逐字保留**副武器原实现的两个分支，不顺手"修"成主武器那种更细的回退：
+        // 主武器会在 `allowTacticalReload` 的枪上走 NORMAL_RELOADING（`GunEventHandler.startReload`），
+        // 副武器的换弹同样可能落进那一支；把正常换弹的兜底顺序改掉就是在改我自己没验证过的路径。
+        // 要动它，先让一把 `allowTacticalReload` 的副武器真的存在并实测。
+        if (!emptyReload) {
+            if (drumLevel) reloadNormalDrum?.let { return it }
+            return reloadNormal
+        }
+        if (drumLevel) reloadEmptyDrum?.let { return it }
+        return reloadEmpty ?: reload
+    }
+
     /*
      * TODO(V2 render migration):
      * These fields are intentionally data-only for now. QL1031/BOCEK still use their
