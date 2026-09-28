@@ -8716,6 +8716,11 @@
 					"pivot": [0, 1.3117, -11.9297]
 				},
 				{
+					"name": "bayonet_pos",
+					"parent": "positioning2",
+					"pivot": [0, 2.41016, -22.81328]
+				},
+				{
 					"name": "righthand",
 					"parent": "root",
 					"pivot": [5.98125, 18, 0]

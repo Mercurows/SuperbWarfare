@@ -292,6 +292,7 @@ object ModItems {
     @JvmField val DPS_GENERATOR_DEPLOYER = registerItem<DPSGeneratorDeployerItem>()
     @JvmField val KNIFE = registerItem<KnifeItem>()
     @JvmField val KNIFE_6KH2 = registerItem<Knife6kh2Item>()
+    @JvmField val KNIFE_SEITENGEWEHR_84 = registerItem<KnifeSeitengewehr84Item>()
     @JvmField val HAMMER = registerItem("hammer") { HammerItem(Tiers.IRON, 11, -3.2f, Properties().durability(400)) }
     @JvmField val GOLDEN_HAMMER = registerItem("golden_hammer") { HammerItem(Tiers.GOLD, 11, -3.2f, Properties().durability(150)) }
     @JvmField val STEEL_HAMMER = registerItem("steel_hammer") { HammerItem(ModItemTier.STEEL, 9, -3.2f, Properties().durability(600)) }
@@ -731,6 +732,7 @@ object ModItems {
     // @formatter:off
     @JvmField val BAYONET_M_9 = registerAttachment("bayonet_m_9")
     @JvmField val BAYONET_6KH2 = registerAttachment("bayonet_6kh2")
+    @JvmField val BAYONET_SEITENGEWEHR_84 = registerAttachment("bayonet_seitengewehr_84")
     // @formatter:on
 
     // SubWeapon（副武器：既是配件又是一把真枪）
