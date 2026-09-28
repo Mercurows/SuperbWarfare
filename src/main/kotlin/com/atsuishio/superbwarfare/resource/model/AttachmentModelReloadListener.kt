@@ -72,6 +72,13 @@ object AttachmentModelReloadListener : BedrockModelReloadListener<BedrockAttachm
      * `animation.` 前缀、再取第一个 `.` 之前的那一段。
      *
      * 找不到就返回 `null`（**动画还没做出来时的正常路径**，调用方静默回退）。
+     *
+     * 这是副武器动画的**唯一**取用口径：clip 名一律来自**副武器自己的数据**
+     * （`sbw/guns/<id>.json` 的 `Animation.Reload*` / `Animation.Idle`），
+     * 两条链路分别是换弹（`GeoGunAnimationInstance.updateSubWeaponReload`）与
+     * 部署期间的手臂锚点（同类的 `updateSubWeaponIdle`，§11.11.7.4）。
+     * 曾经还有一条"按文件名约定"的旁路（`animation.<配件 id>.idle`，给握把接管用），
+     * 已随那次需求的撤销一并删除 —— **不要再加回来**。
      */
     fun findAnimation(clipName: String): BedrockAnimation? {
         val path = clipName.removePrefix("animation.")

@@ -15,6 +15,7 @@
   "MeleeAngle": 100,
   "DrawTime": 11,
   "ZoomTime": 6,
+  "RPM": 120,
   "EmptyReloadTime": 39,
   "GunType": "CurvedLauncher",
   "ProjectileBone": "he_head",

@@ -1,7 +1,7 @@
 {
   "Spread": 3.5,
-  "RecoilX": 0.004,
-  "RecoilY": 0.04,
+  "RecoilX": 0.002,
+  "RecoilY": 0.063,
   "Damage": 80,
   "Projectile": "superbwarfare:gun_grenade",
   "ExplosionDamage": 80,
@@ -15,6 +15,7 @@
   "MeleeAngle": 100,
   "DrawTime": 11,
   "ZoomTime": 6,
+  "RPM": 120,
   "EmptyReloadTime": 24,
   "GunType": "CurvedLauncher",
   "ProjectileBone": "he_head",
@@ -48,6 +49,11 @@
     "Fire3P": "superbwarfare:gp_25_fire_3p",
     "Fire3PFar": "superbwarfare:m_79_far",
     "Fire3PVeryFar": "superbwarfare:m_79_veryfar"
+  },
+  "AvailableAttachments": {
+    "SubWeapon": [
+      "superbwarfare:sub_weapon_gp_25"
+    ]
   },
   "Crosshair": "@GunGrenade"
 }

@@ -551,11 +551,16 @@ object SubWeaponRuntime {
      *
      * 音效走**配件数据自己的** `ReloadSound`。
      *
-     * 四期为什么**仍然**需要它：换弹动画现在归副武器自己的资源
+     * 四期它为什么**曾经**是唯一来源：换弹动画归副武器自己的资源
      * （`sbw/guns/<id>.json` 的 `Animation.Reload`，见设计文档 §9.8.7），
-     * 而那条新增的附件动画播放链路**不接数据包的 `sound_effects` 关键帧** ——
-     * 写在副武器动画里的音效不会响。所以这里保留三期的做法：
-     * 由配件数据声明、在状态跳变时用 `playLocalSound` 播给射手。
+     * 而当时那条附件动画播放链路**不接 `sound_effects` 关键帧** ——
+     * 写在副武器动画里的音效不会响。
+     *
+     * **五期起这条理由不再成立**：附件播放链路（[GeoGunAnimationInstance.subWeaponReloadRunner]）
+     * 现在也收 `sound_effects` 了，和主武器同一支 `collectSoundEvents`（只在**主手**实例上收，
+     * 见其构造参数 `hand`）。于是这里降级为**兜底**：`ReloadSound` 在服务端也会响、
+     * 不依赖动画进度，而动画里的关键帧对得上时间轴。**两边都写会响两遍**，
+     * 见 [SubWeaponInfo.reloadSound] 的说明。
      *
      * 这个回调只应该在"真的开始了一次装填"时响一次 —— 它重复触发意味着实例/状态被重建过
      * （见类 KDoc 的不变式 ①②）。

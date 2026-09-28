@@ -55,10 +55,17 @@ import kotlinx.serialization.Serializable
  *   于是"装了下挂榴弹的枪做了 `fire_sub_weapon` 就用它、没做就照常播 `fire`"由**一条数据**表达，
  *   配件数据一个字都不用管是哪把枪。不写时的默认值见 [DEFAULT_FIRE_ANIMATION]
  *   （写 `[]` 可以显式表示"不要候选、就用 `Fire`"）。
- * @param reloadSound 换弹**开始**音效。四期**仍然需要**：换弹动画现在归副武器自己的资源，
- *   而那条新增的附件动画播放链路**不接数据包的 `sound_effects` 关键帧** ——
- *   写在副武器动画里的音效不会响。所以由配件数据声明、在状态跳变时 `playLocalSound` 播给射手。
+ * @param reloadSound 换弹**开始**音效（在状态跳变时由 `playLocalSound` 播给射手）。
+ *   ⚠ 五期起**只剩"服务端/无动画时的兜底"这一层意义**：副武器换弹动画
+ *   （`Animation.ReloadEmpty`，即 `animation.sub_weapon_gp_25.reload`）走的那条附件播放链路
+ *   现在也收 `sound_effects` 关键帧了，和主武器同一套（`collectSoundEvents`，只在**主手**
+ *   实例上收，见 [com.atsuishio.superbwarfare.client.animation.gun.GeoGunAnimationInstance] 的 `hand`）。
+ *   **两边都写就是同一个音效播两遍** —— 若不是刻意的，把动画里那条关键帧删掉，
+ *   或者把这个字段留空。写在这里的好处是**服务端有声**、与动画进度无关；
+ *   写在动画里的好处是**对得上时间轴**。
  * @param reloadEndSound 换弹**完成**音效，同上。
+ *   ⚠ 当前 `sub_weapon_gp_25.json` 就是两边都写了（这里 `superbwarfare:gp_25_reload_2`，
+ *   动画 `sound_effects` 里 `"0.625"` 也有一条同名关键帧），所以一次换弹会响两下。
  */
 @Serializable
 data class SubWeaponInfo(
@@ -106,6 +113,18 @@ data class SubWeaponInfo(
          * 没有就回退宿主枪的 `scope_view` / `iron_view`（§9.8.6）。
          */
         const val VIEW_BONE: String = "iron_view"
+
+        /**
+         * 副武器**持枪位形**（hip 位形）的**约定骨骼名**（在附件模型里找它）。
+         *
+         * 与 `GeoGunRenderer.IDLE_VIEW_BONE` 同名，语义也完全一样："不瞄准时相机坐在哪里"。
+         * 部署期间由 `GeoGunRenderer.resolveSubWeaponIdleTransform` 取它（× 挂点骨骼的**绑定**变换），
+         * 取代主武器自己的 `idle_view`；切换过程是 3 刻的淡入淡出，与切换左手同速（§11.11.10）。
+         *
+         * 同样**没有配置字段**：附件模型里有这支骨骼就用它，没有就继续用主武器的 `idle_view`
+         * （没做这支骨骼的副武器**一个字的行为都不变**）。
+         */
+        const val IDLE_VIEW_BONE: String = "idle_view"
 
         /**
          * 不写 `Animation` 时的默认候选链：只试 `fire_sub_weapon`。

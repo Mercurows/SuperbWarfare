@@ -40,8 +40,25 @@ import java.util.*
 
 open class GeoGunAnimationInstance(
     private var stack: ItemStack,
-    entity: Entity?,
-    hand: InteractionHand
+    entity: Entity,
+    /**
+     * 这一份实例是**哪只手**的（`FirstPersonRenderHandler` 两手各持一份 `HandRenderState`）。
+     *
+     * 目前只有一个用处：**副武器那套状态只有主手实例该管**（[updateSubWeaponReload] /
+     * [updateSubWeaponIdle] / 它们的 `sound_effects` 关键帧）。理由不是"两手会画出两份"，而是
+     * **解析口径**：`updateSubWeaponReload` 里的副武器是从 `player.mainHandItem` 解析的
+     * （`ActiveGun` 的不变量 ① —— 副武器是**主手**那把枪身上的东西），**与实例自己的 `stack` 无关**。
+     * 所以"这份实例是哪只手的"和"它该不该管副武器"是同一件事，用 `hand` 表达最直接。
+     *
+     * ⚠ **今天这道门禁是"保险"，不是"修 bug"**：库的 `IFPGeoItemRenderer.canRenderInHand`
+     * 默认返回 `hand == MAIN_HAND`，本模组没有覆盖它，于是 `FirstPersonRenderHandler.tickHandAnimation`
+     * 在 `canActuallyRenderInHand` 那一关就把副手实例挡掉了（`ani.tick()` 根本不会被调到）。
+     * 留着它的原因是**这个默认值正是库文档里写明供覆盖的扩展点**（"物品本身决定能否在某只手呈现"，
+     * 用于双手/单手骨架变体）——一旦有人让副手也 tick，副手实例就会照着**同一份**主手副武器数据
+     * 再建一套 runner：姿态上无害（那套 pose 没人读），**但它会把同一支换弹动画的 `sound_effects`
+     * 再收一遍，音效响两遍**。不变式写在代码里，比寄望于库的默认值稳。
+     */
+    private val hand: InteractionHand
 ) : IFPAnimationInstance {
     private val animations = hashMapOf<String, BedrockAnimation>()
     private var runner: AnimationRunner? = null
@@ -72,6 +89,17 @@ open class GeoGunAnimationInstance(
     private var currentState: GunAnimationState? = null
     private var fireSerial = 0
     private var consumedFireSerial = 0
+
+    /**
+     * 本 tick 主武器所处的动画状态（还没解析出状态时为 `null`，等同"没有主武器动画"）。
+     *
+     * 渲染侧要问它一件事：这个状态下主武器会不会**把左手拿开**（[GunAnimationState.takesHandAway]）
+     * —— 部署副武器期间的手臂接管据此决定要不要让位
+     * （`GeoGunRenderer.resolveDeployedSubWeaponArmAnchors`）。
+     * 状态本身由 [tick] 里的状态机推进，一 tick 只变一次，渲染用的 partialTick 不参与。
+     */
+    val currentGunState: GunAnimationState?
+        get() = currentState
 
     /**
      * 本次开火已经解析好的 clip 名（由 [triggerFire] 写入，[playFire] 读取）。
@@ -263,6 +291,15 @@ open class GeoGunAnimationInstance(
     fun subWeaponReloadPose(): Pose? = subWeaponReloadRunner?.evaluate()
 
     /**
+     * 上面那份姿态是哪一支 clip 给的（没在换弹时为 `null`）。
+     *
+     * 渲染侧只用它当"手臂锚点来源变没变"的标识：换一支 clip（正常/空仓/鼓式）要把锚点
+     * 淡过去一小段，而不是硬切（`GeoGunRenderer.resolveArmAnchorsForDraw`）。
+     */
+    val subWeaponReloadClipName: String?
+        get() = subWeaponReloadRunner?.let { subWeaponReloadAnimationName }
+
+    /**
      * 推进副武器的换弹动画（四期，§9.8.7）。
      *
      * 触发条件是"**部署中的副武器正在换弹**"：`ActiveGun` 解析出当前操控的是副武器、
@@ -350,6 +387,63 @@ open class GeoGunAnimationInstance(
         subWeaponReloadRunner = null
         subWeaponReloadAnimationName = null
     }
+
+    /**
+     * 部署中的副武器的 **`Idle` clip**（`sbw/guns/<副武器 id>.json` 的 `Animation.Idle`，
+     * 由**它自己的**附件模型播）；没部署 / 数据里没写 / 动画表里没有时为 `null`。
+     *
+     * 它**不驱动模型**，只用来回答"手臂该抓在哪儿"（§11.11.7.4）：`GeoGunRenderer` 取它在 `t=0`
+     * 的姿态、按附件骨骼算出手臂锚点，于是"G 键把副武器切出来之后，左手一直在发射器上"。
+     * 这也是换弹开始/结束那一下不再跳变的原因 —— 换弹 clip 的两端与这支 idle **逐位重合**（实测 0.0000）。
+     *
+     * ⚠ 解析口径与 [updateSubWeaponReload] 的**第二步完全相同**（同一个 [AttachmentModelReloadListener]
+     * 动画表、同样只认附件模型自己的骨骼），区别只有：①问的是 `Animation.Idle` 而不是 `Reload*`；
+     * ②**不要求**在换弹。所以"数据里写了名字但动画文件里没有"这种配错照样是静默回退。
+     *
+     * ⚠ 千万不要把它混进 [subWeaponReloadPose]：那一个非空意味着"副武器正在做换弹动作"，
+     * `GeoGunRenderer.resolveSubWeaponFollowPose` 会据此**把整把主武器反推着动起来**
+     * （摘 `root` 那套，§11.11.7.2）。idle 是常驻状态，混进去会让枪一直跟着 `root` 抖。
+     */
+    private var subWeaponIdleClip: BedrockAnimation? = null
+
+    /** 上面那支 idle clip 的名字，只用于渲染侧的"锚点来源变没变"标识 */
+    private var subWeaponIdleAnimationName: String? = null
+
+    /**
+     * 部署中的副武器的 `Idle` 姿态（`t=0`；没部署时为 `null`）。
+     *
+     * 取固定的一帧而不是跑一个 runner：这支 clip 回答的是"手抓在哪儿"这个**静态**问题，
+     * 让它动起来对锚点没有意义（运动员是主武器与副武器的换弹 clip）。要让它动也很简单 ——
+     * 换成 runner 即可，但那时得先想清楚"动起来的手"与"换弹 clip 端点重合"这条性质还在不在。
+     */
+    fun subWeaponIdlePose(): Pose? = subWeaponIdleClip?.evaluate(0f)
+
+    /** [subWeaponIdlePose] 是哪一支 clip 给的（没部署时为 `null`） */
+    val subWeaponIdleClipName: String?
+        get() = subWeaponIdleClip?.let { subWeaponIdleAnimationName }
+
+    /**
+     * 解析部署中的副武器的 `Idle` clip（每 tick 一次，与 [updateSubWeaponReload] 同一处调用）。
+     *
+     * 前两步与 [updateSubWeaponReload] 逐字相同（当前操控的是副武器 → 问它自己的资源要 clip 名），
+     * 只是这里连"在不在换弹"都不问：部署了就解析。
+     */
+    private fun updateSubWeaponIdle() {
+        val player = localPlayer
+        val gun = player?.let { GunData.from(it.mainHandItem) }
+        val subStack = gun?.let { ActiveGun.stackOf(it, true) }?.takeIf { it.item !== stack.item }
+        if (subStack == null) {
+            subWeaponIdleClip = null
+            subWeaponIdleAnimationName = null
+            return
+        }
+
+        val clipName = GunResource.from(subStack).compute().animation?.idle
+        val clip = clipName?.let { AttachmentModelReloadListener.findAnimation(it) }
+        subWeaponIdleClip = clip
+        subWeaponIdleAnimationName = clip?.name
+    }
+
 
     /**
      * "这一支副武器换弹动画解析不到"只报一次。
@@ -554,17 +648,6 @@ open class GeoGunAnimationInstance(
         }
     }
 
-    private fun GunAnimationState.isReload(): Boolean {
-        return this == GunAnimationState.RELOAD ||
-                this == GunAnimationState.RELOAD_NORMAL ||
-                this == GunAnimationState.RELOAD_EMPTY ||
-                this == GunAnimationState.PREPARE ||
-                this == GunAnimationState.PREPARE_LOAD ||
-                this == GunAnimationState.ITERATIVE ||
-                this == GunAnimationState.ITERATIVE_2 ||
-                this == GunAnimationState.FINISH
-    }
-
     private fun reloadTicks(state: GunAnimationState, data: GunData): Int {
         val rawTicks = when (state) {
             GunAnimationState.RELOAD_NORMAL -> data.get(GunProp.NORMAL_RELOAD_TIME)
@@ -640,7 +723,7 @@ open class GeoGunAnimationInstance(
         val name = animationName(state) ?: return
         val animation = animations[name] ?: return
         val playState = state.playType.state()
-        if (state.isReload()) {
+        if (state.isReload) {
             setAnimationSpeed(playState, reloadPlaybackSpeed(state, animation))
         } else if (state == GunAnimationState.MELEE) {
             setAnimationSpeed(playState, meleePlaybackSpeed(animation))
@@ -1155,7 +1238,7 @@ open class GeoGunAnimationInstance(
             runner?.tick()
         }
         // Keep the reload animation aligned if perks change the reload prop mid-reload.
-        if (currentState != null && currentState!!.isReload()) {
+        if (currentState != null && currentState!!.isReload) {
             val runnerAnimation = runner?.animation as? BedrockAnimation
             if (runnerAnimation != null) {
                 setAnimationSpeed(runner?.state, reloadPlaybackSpeed(currentState!!, runnerAnimation))
@@ -1182,8 +1265,16 @@ open class GeoGunAnimationInstance(
 
         // 副武器自己的换弹动画（四期，§9.8.7）：它播在**附件模型**上，不进下面这份 `cachedPose`
         // —— 宿主枪照常播自己的 idle/run，两套骨骼天然不冲突。
-        updateSubWeaponReload()
-        subWeaponReloadRunner?.tick()
+        //
+        // ⚠ 整块**只有主手实例跑**（见构造参数 [hand] 的说明）：副武器是主手那把枪身上的东西，
+        // 而两份实例（两手的）解析出来的是同一个 `player.mainHandItem` —— 不挡的话副手实例会在
+        // 同一份数据上再建一套 runner，把同一支换弹动画的音效关键帧再收一遍。
+        if (hand == InteractionHand.MAIN_HAND) {
+            updateSubWeaponReload()
+            subWeaponReloadRunner?.tick()
+            // 常驻的 idle 锚点（§11.11.7.4）：只解析 clip，不跑 runner —— 渲染侧每帧取它的 `t=0`
+            updateSubWeaponIdle()
+        }
 
         collectParticleEvents(runner)
         collectParticleEvents(fireRunner)
@@ -1195,6 +1286,11 @@ open class GeoGunAnimationInstance(
         collectSoundEvents(fireModeSwitchRunner)
         collectSoundEvents(holdOpenRunner)
         collectSoundEvents(closeStrikeRunner)
+        // 副武器换弹动画的**时间轴音效**（五期）：`animation.sub_weapon_gp_25.reload` 里那几条
+        // `sound_effects` 与主武器完全同一套机制（同一个 `BedrockAnimation.SOUND_CHANNEL_NAME`，
+        // 同一支 [collectSoundEvents]），只是先前没人来收 —— 附件动画播放链路当时只取姿态。
+        // 位置就在 [subWeaponReloadRunner] 的 `tick()` 之后，与上面那一排同款。
+        collectSoundEvents(subWeaponReloadRunner)
 
         if (fireRunner?.state is StopState) {
             fireRunner = null

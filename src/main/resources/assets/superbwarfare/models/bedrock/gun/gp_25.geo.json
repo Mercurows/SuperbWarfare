@@ -7336,6 +7336,11 @@
 					]
 				},
 				{
+					"name": "sub_weapon_pos",
+					"parent": "root",
+					"pivot": [0, -2.0914, -6.3]
+				},
+				{
 					"name": "positioning",
 					"pivot": [0, 0, 0]
 				},

@@ -6,12 +6,11 @@
     {
       "Prop": "Weight",
       "Op": "Add",
-      "Value": 1.5
+      "Value": 2.0
     }
   ],
   "SubWeapon": {
-    "AmmoSlot": "SubWeapon",
-    "ReloadEndSound": "superbwarfare:gp_25_reload_2"
+    "AmmoSlot": "SubWeapon"
   },
   "Model": "superbwarfare:models/bedrock/attachment/sub_weapon_gp_25.geo.json",
   "Texture": "superbwarfare:textures/bedrock/attachment/sub_weapon_gp_25.png"

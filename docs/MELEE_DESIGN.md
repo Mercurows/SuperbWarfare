@@ -1390,7 +1390,7 @@ Java 侧 70 处**，其中绝大多数是"我正在操作的那把枪"。四期�
 | 信息反馈 | 靠**现有 HUD**：副武器激活时它就是"当前操控的枪"，弹药条/弹药数/热量条读的就是它（§9.8.8）。三期那三条动作栏临时提示（`info.superbwarfare.subweapon.reloading/reloaded/reload_empty`）删除 |
 | 切换时中断 | 切走（主→副、副→主）时，被切走的那把枪：`reload.setTime(0)` + `NOT_RELOADING` + 单发装填各阶段计时器 + `bolt.actionTimer.reset()`；**不算"装填完成"**，不播完成音。落点复用 `SubWeaponRuntime.interruptReload`（已有）+ `LivingEventHandler` 里切枪那一段的同一套动作 |
 | 换弹动画 | **副武器自己资源里的 `Animation.Reload`**，由它自己的附件模型播（§9.8.7）。宿主枪在此期间照常播 `idle`，两套骨骼不冲突 |
-| 换弹音效 | **保留配件的 `SubWeaponInfo.ReloadSound` / `ReloadEndSound`**（三期实现原样复用）：副武器这支动画走的是新增的附件播放链路，**不接 `sound_effects` 关键帧**，所以音效仍由配件数据 + 状态跳变负责（§9.8.7）。⚠ 与 §12.6-62 的旧结论相反，以本节为准 |
+| 换弹音效 | **保留配件的 `SubWeaponInfo.ReloadSound` / `ReloadEndSound`**（三期实现原样复用）：四期时副武器这支动画走的是新增的附件播放链路，**不接 `sound_effects` 关键帧**，所以音效仍由配件数据 + 状态跳变负责（§9.8.7）。⚠ 与 §12.6-62 的旧结论相反，以本节为准。<br>⚠⚠ **五期起两个来源都在响**：附件播放链路已经接上 `sound_effects` 了（见 §11.11.8），所以这两个字段降级为兜底，**两边都写就是同一发响两遍** —— 当前 `sub_weapon_gp_25.json` 的 `ReloadEndSound` 就踩了这个 |
 | `Magazine: 0`（背包型） | 照旧每发直接从背包扣，不进装填分支（`GunData.useBackpackAmmo()` 现成） |
 | 装填期间切枪 | 允许（动作锁只挡开火/近战，不挡 G）。切回来是**从头装**，与主武器切枪语义一致（三期 §11.9-E 的结论保留） |
 
@@ -1461,7 +1461,7 @@ Java 侧 70 处**，其中绝大多数是"我正在操作的那把枪"。四期�
 |---|---|---|
 | `Data` / `AmmoSlot` | 不变 | §9.2 的语义完全保留 |
 | `Animation` | **语义修订，键名不变** | 三期 =「副武器开火时宿主枪的动画候选链」；四期 =「**副武器激活时**宿主枪的开火动画候选链」。默认值仍是 `["fire_sub_weapon"]`（`SubWeaponInfo.DEFAULT_FIRE_ANIMATION`），**GP-25 的配件 json 一个字都不用改** |
-| `ReloadSound` / `ReloadEndSound` | **保留** | 三期为"配件没有动画"加的补丁，四期**仍然需要**：见 §9.8.7 的音效口径（副武器动画里的 `sound_effects` 关键帧目前不会响） |
+| `ReloadSound` / `ReloadEndSound` | **保留，但降级为兜底** | 三期为"配件没有动画"加的补丁。四期**仍然需要**：见 §9.8.7 的音效口径（副武器动画里的 `sound_effects` 关键帧当时不会响）。**五期起**动画关键帧已经会响了（§11.11.8），所以这两个字段只是"服务端有声、与动画进度无关"的兜底 —— **两个来源同时写会响两遍** |
 | ~~`HoldAnimation`~~ | **不做** | 副武器不做 idle、**持枪态以主武器的 `idle` 为准**（按需求），所以不需要"宿主枪的副武器持枪态"这个字段。将来真要做，往各枪动画文件里加一支 clip 并由宿主枪自己决定即可，不必经过配件数据 |
 | ~~`ViewBone`~~ | **不做** | 瞄具位形用**约定骨骼**：附件模型里有 `iron_view` 就用它，没有就回退宿主枪（§9.8.6）。**不提供配置字段** —— 骨骼名是模型作者与渲染器之间的约定，多一个可覆盖字段只会多一个写错的地方 |
 | ~~`ReloadAnimation`~~ | **不做** | 换弹动画的归属是副武器自己的 `Animation.Reload`（见上），在配件里再放一个同义字段只会让人不知道该改哪个 |
@@ -1480,7 +1480,7 @@ Java 侧 70 处**，其中绝大多数是"我正在操作的那把枪"。四期�
 
 | 骨骼 | 含义 | 现状 |
 |---|---|---|
-| `idle_view` | 非瞄准时的持枪位形 | `GeoGunRenderer.IDLE_VIEW_BONE`：**必需**，拿不到就直接不渲染定位（`computeViewTransform` 返回 `null`） |
+| `idle_view` | 非瞄准时的持枪位形 | `GeoGunRenderer.IDLE_VIEW_BONE`：**必需**，拿不到就直接不渲染定位（`computeViewTransform` 返回 `null`）。⚠ **五期起**：部署副武器时基准换成附件模型的同名骨骼（取不到就回退），并在两者之间 3 刻淡入淡出（§11.11.10） |
 | `iron_view` | 机瞄位形 | `GeoGunRenderer.IRON_VIEW_BONE` |
 | `scope_view` | 瞄具的分划位形（每个瞄具模式可以有自己的 `scope_view_<n>`，`ScopeInfo.viewBone()`） | `GeoGunRenderer.SCOPE_VIEW_BONE` |
 | `bipod_view` | 卧姿脚架位形 | `GeoGunRenderer.BIPOD_VIEW_BONE` |
@@ -1612,9 +1612,9 @@ val aimTransform = subWeaponAimTransform(...)      // ① 副武器附件模型�
 | 要点 | 说明 |
 |---|---|
 | clip 名从哪来 | **副武器自己的资源**：`GunResource.compute(subStack).animation.reload`（走 `reloadNormal`/`reloadEmpty` 的既有分支，与普通枪同一套逻辑）。**没有 `SubWeaponInfo` 字段**，也就没有"该改 json 还是改配件"的歧义 |
-| 时长对齐 | `playbackSpeed = clip.specifiedEndTimeMs / (reloadTotalTicks / 20f)`，与 §5.1 同一套；`reloadTotalTicks` 是**副武器数据**的 `EmptyReloadTime`/`NormalReloadTime`（GP-25 = 80 tick） |
+| 时长对齐 | `playbackSpeed = clip.specifiedEndTimeMs / (reloadTotalTicks / 20f)`，与 §5.1 同一套；`reloadTotalTicks` 是**副武器数据**的 `EmptyReloadTime`/`NormalReloadTime`（GP-25 = **24 tick** = 1.2 s，⚠ 不是 80 —— 实测见 §11.11.8） |
 | 已实装的那支动画 | `animation.gp_25.reload`（1.2s）**可以当参考**，但它是**手持形态**的：驱动 `root`/`righthand`/`lefthand`/`camera`/`head`——那些骨骼名在**附件模型里不存在**，直接拿来用会有一半关键帧落空。所以 `sub_weapon_gp_25.animation.json` 要**按附件模型的骨骼做一份**（`root`/`gun`/`tube`/`ammo`/`trigger`） |
-| 换弹音效 | **保留配件的 `ReloadSound` / `ReloadEndSound`**（三期已有实现）。理由：数据包动画的 `sound_effects` 关键帧目前**只在"枪"的播放链路上会响**（`GunModelReloadListener` 造出来的 `BedrockAnimation` 由 `GeoGunAnimationInstance` 消费，那里才有播关键帧音效的逻辑），副武器这支动画走的是新增的附件播放链路，**不接音效关键帧**。GP-25 的 `animation.gp_25.reload` 里正好有 4 条 `sound_effects`（`common_grab_1` / `gp_25_reload_1` / `gp_25_reload_2` / `common_grab_2`）—— 做新动画时**不要指望它们会响**，要么继续用配件的两个字段，要么四期后续把音效关键帧接进附件链路 |
+| 换弹音效 | **保留配件的 `ReloadSound` / `ReloadEndSound`**（三期已有实现）。四期理由：数据包动画的 `sound_effects` 关键帧那时**只在"枪"的播放链路上会响**（`GunModelReloadListener` 造出来的 `BedrockAnimation` 由 `GeoGunAnimationInstance` 消费，那里才有播关键帧音效的逻辑），副武器这支动画走的是新增的附件播放链路，**不接音效关键帧**。GP-25 的 `animation.gp_25.reload` 里正好有 4 条 `sound_effects`（`common_grab_1` / `gp_25_reload_1` / `gp_25_reload_2` / `common_grab_2`）—— 四期时**不要指望它们会响**。<br>**五期已把音效关键帧接进附件链路**（§11.11.8）：副武器换弹 runner 现在也过同一支 `collectSoundEvents`，**那 4 条会响**；配件那两个字段降级为兜底，**同时写会响两遍** |
 | 找不到 clip | 回退：**宿主枪自己的换弹动画**（等价于三期的观感），并按"附件资源里没做这支 clip"打 **debug** 日志（不是 error —— 没做动画是正常状态，与 §11.9-A 对 `fire_sub_weapon` 的分档一致） |
 | `AttachmentModelReloadListener` **未传 animPath 时** | 现在传了之后，`animations` 表会多出附件动画；**资源包可以只放动画不放模型**（反之亦然），配对是靠"文件名 id 相同"，缺一边就只是那一半为空，不会报错 |
 | 开火 | 宿主枪播 `SubWeaponInfo.Animation` 候选链（默认 `fire_sub_weapon`）——**这条不变**。AK-12 那支 `animation.ak_12.fire_sub_weapon` **长 1.2s、只驱动宿主的 `root`**，是"整枪为下挂筒让位"的动画，并且带一条 `muzzle_smoke` 粒子关键帧（`locator: "flare"`），所以它是**开火专用**、不要拿它当 `HoldAnimation`（1.2s 的一次性动作不能循环当持枪态） |
@@ -1916,6 +1916,8 @@ GP-25（它自己那份数据是 `Weight 1.5` / `DrawTime 1` / `ZoomTime 1`）�
 锚点跟着后坐走 → `applyFirstPersonPositioningTransform` 用它的逆变换把模型又搬回屏幕原位
 → **后坐被精确抵消**，整把枪相对屏幕一动不动。不瞄准时锚点是宿主枪的 `idle_view`
 （顶层 `positioning` 下，动画从不碰）所以正常 —— 这个"只在瞄准时坏"的不对称就是它的指纹。
+⚠ 五期起这句要读成"**未部署时**锚点是宿主枪的 `idle_view`"：部署期间 hip 基准换成了附件模型的
+同名骨骼（同样没人动它，同样稳），仍与当帧动画的挂点无关（§11.11.10）。
 
 **已修**（`GeoGunRenderer.kt:1247-1256`）：锚点改用 `model.getBindGlobalTransform(boneName)`，
 与瞄具的 `bindSlotTransform` 同一口径；绘制仍用动画变换（`GeoGunRenderer.kt:482` 不动），
@@ -3002,7 +3004,7 @@ reach = (MeleeHitbox.Range + MeleeRange) × 动作的 RangeMultiplier + player.g
 | 项 | 结论 |
 |---|---|
 | 枪口焰挂点 | `MuzzleFlashRenderer`：副武器开火期间只画在**副武器模型自己的 `flare` 骨骼**上（`GeoGunRenderer.resolveSubWeaponFlareTransform` = 挂点骨骼 × 配件模型的 `flare` 变换，与渲染那条路径同一个判定）；**解析不到就什么都不画**，绝不退回主武器的枪口（榴弹从下挂筒出去，枪管前端不该喷火） |
-| 窗口 | `ClientEventHandler.subWeaponFireRotTimer`（阈值同 `fireRotTimer`：`0 < t < 0.3` 可见、3.0 归零）。**刻意不复用 `fireRotTimer`**：后者还会带动整把枪的后坐表现（`handleShootAnimationV2` 读它），而副武器的后坐由它自己的开火动画负责，叠加会抖两下。主武器一开火就把这个窗口清零，火焰立刻回到主武器的枪口 |
+| 窗口 | `ClientEventHandler.subWeaponFireRotTimer`（阈值同 `fireRotTimer`：`0 < t < 0.3` 可见、3.0 归零）。**刻意不复用 `fireRotTimer`**：后者还会带动整把枪的后坐表现（`handleShootAnimationV2` 读它），而副武器的**枪身**由它自己的开火动画负责，叠加会抖两下。（**镜头**那一份后坐是五期另开的 `subWeaponRecoilTimer`，§11.11.9 —— 它只喂镜头，与枪身无关。）主武器一开火就把这个窗口清零，火焰立刻回到主武器的枪口 |
 | 消音器 | 副武器开火**不看** `isBarrelSilenced`：枪口配件只消它自己那根枪管 |
 | 缩放 | 用副武器配件的 `MuzzleFlashScale`（与枪口配件共用同一个字段，不必新开一个只对这一处生效的字段） |
 | 枪口烟 | 动画关键帧里的 `muzzle_smoke`（`locator: "flare"`）同样改挂副武器的 `flare`：`GeoGunAnimationInstance.isSubWeaponFire()` 为真时改写 `lastBoneTransforms[FLARE_BONE]`，并且**不注册**枪口配件的 `MUZZLE_BONE`（`resolveMuzzleLocator` 优先取它，留着会把榴弹的烟吸到枪管前端去） |
@@ -3278,11 +3280,17 @@ reach = (MeleeHitbox.Range + MeleeRange) × 动作的 RangeMultiplier + player.g
 |---|---|---|
 | `zoom_view` | 不存在 | — |
 | 瞄准位形 | `iron_view`（机瞄）/ `scope_view`（瞄具分划）/ `bipod_view`（脚架） | 副武器 = 附件模型的约定骨骼 `iron_view` → 宿主枪的 `scope_view` / `iron_view`（**无配置字段**） |
+| 持枪位形（hip） | `idle_view` | **五期补**：部署期间取附件模型的 `idle_view` × 挂点的**绑定**变换，与主武器自己的位形之间 3 刻淡入淡出（**无配置字段**；附件没有这支骨骼就继续用主武器的）。⚠ 与上面那一行不同，切换是**渐变**的（§11.11.10） |
 | 容易被误认成它 | `camera` | 它**只用于屏幕抖动收敛**（`applyCameraShake`），与瞄准位形无关，**不要**拿它当挂点 |
 
 并且现状**付不出**"副武器自己的瞄具位形"：`sub_weapon_gp_25.geo.json` 里**没有 `iron_view`**。
 所以四期刚落地时 GP-25 走的是宿主枪的位形（整枪抬到机瞄、榴弹筒跟着上去，视觉可接受）；
 要做成"贴榴弹筒自己的照门"，**只需在附件模型里加一支 `iron_view` 骨骼**，数据与代码都不用改。
+
+> ⚠ **这两句是四期当时的状态，已过时**：`sub_weapon_gp_25.geo.json` 现在**有** `iron_view` 了
+> （瞄准位形的来源因此从宿主枪变成它自己，§12.6-84），五期又加了 `idle_view`（持枪位形，
+> §11.11.10）。"加骨骼、不动代码"这句话对 `iron_view` 成立，对 `idle_view` 不成立 ——
+> hip 那侧原来根本没有"副武器来源"的读者，是五期新加的。
 
 **④ 需求的第 3 条"副武器只由左手操控，换弹动画也只有左手骨骼会动"——修订为「换弹动画归副武器自己的资源」（本节按修订版写）。**
 原方案（**已作废**）是"把左手换弹做在宿主枪的动画文件里，再用 `MERGE_BLENDER` 覆盖宿主 idle"，
@@ -3304,10 +3312,17 @@ reach = (MeleeHitbox.Range + MeleeRange) × 动作的 RangeMultiplier + player.g
 
 **⑤ 换弹音效：保留配件的 `ReloadSound` / `ReloadEndSound`（与 ④ 连带修订）。**
 原方案说"改由宿主枪换弹动画的关键帧负责、删掉这两个字段"，那是在"动画做在宿主枪上"的前提下成立的。
-现在动画归副武器自己的资源，而**附件播放链路不接 `sound_effects` 关键帧**——
+现在动画归副武器自己的资源，而四期时**附件播放链路不接 `sound_effects` 关键帧**——
 GP-25 的 `animation.gp_25.reload` 里那 4 条 `sound_effects`
-（`common_grab_1`/`gp_25_reload_1`/`gp_25_reload_2`/`common_grab_2`）在新链路里**不会响**。
-所以三期那套"配件声明音效 + 状态跳变时 `playLocalSound`"**原样保留**，是最省事也最不容易出错的选择。
+（`common_grab_1`/`gp_25_reload_1`/`gp_25_reload_2`/`common_grab_2`）在当时的新链路里**不会响**。
+所以三期那套"配件声明音效 + 状态跳变时 `playLocalSound`"**原样保留**。
+
+> ⚠ **五期修订（§11.11.8）**：附件播放链路现在**接上**了 `sound_effects` 关键帧
+> （副武器换弹 runner 与主武器共用同一支 `collectSoundEvents`，且只由主手实例收），
+> 上面那段"不会响"的理由**不再成立**。两个字段保留为**兜底**
+> （服务端有声、不依赖动画进度），但**与动画里的同名关键帧同时存在时会响两遍**——
+> `sub_weapon_gp_25` 的 `ReloadEndSound = superbwarfare:gp_25_reload_2` 与动画 `"0.625"` 那条
+> 就是这种情况，二者删一个。
 
 **⑥ 自动装填删除，玩家自己按 R。**
 需求没有直接说这一条，但它是"让副武器用原本的开火、换弹、瞄准"的**必然推论**：
@@ -3340,7 +3355,7 @@ G 是切换、由动作锁限流，所以宿主枪冷却表上那一类键**没�
 **⑩ 本期不做的**：副武器专属 HUD / 准心（等需求方重写 HUD，四期只保证"读的是当前操控的枪"，
 所以重写时天然支持）、副武器的换弹动画本身与 `hold_sub_weapon`（**要美术产出**，
 代码侧在缺失时优雅回退）、副武器自己的 `iron_view` 骨骼（同上）、
-附件动画的 `sound_effects` 关键帧（§9.8.7 已说明为什么不接）、
+附件动画的 `sound_effects` 关键帧（**四期不做，五期已补，见 §11.11.8**）、
 "下挂筒翻起来"的专属切换动画（需要时往 `GunAnimation` 加一支 `Deploy`）、1.21.1 分支的实际移植。
 
 #### 11.10.6 实现后修复：**`clear + merge` 会杀掉子 compound 的对象身份**（重要，移植时必须带上）
@@ -3735,20 +3750,25 @@ subWeaponFireRotTimer = 0.0      // ← 只清、不开
    明确说要避免的那件事。
 2. **整把枪跟着做后坐。** `fireRecoilTime = 10.0` 照开 → `handleWeaponFire` 推
    `fireRotTimer`/`firePosTimer`/`recoilForce` → `handleShootAnimationV2` 读它们驱动枪身位形。
-   而副武器的后坐本该由它**自己的 `fire_sub_weapon` 动画**表现（§11.9-D：
-   "刻意不复用 `fireRotTimer`，叠加会抖两下"）。
+   而副武器的**枪身**本该由它**自己的 `fire_sub_weapon` 动画**表现（§11.9-D：
+   "刻意不复用 `fireRotTimer`，叠加会抖两下"；**镜头**那一份五期补在了 §11.11.9）。
 
 **修复**（`ClientEventHandler.handleClientShoot`）—— 两个窗口**二选一**：
 
 ```kotlin
 if (ActiveGun.isSubWeapon(data)) {
     subWeaponFireRotTimer = SUB_WEAPON_FLASH_START   // 0.001，与三期同一个数
-    fireRecoilTime = 0.0                             // 后坐交给副武器自己的开火动画
+    fireRecoilTime = 0.0                             // 枪身交给副武器自己的开火动画
 } else {
     subWeaponFireRotTimer = 0.0                      // 火焰立刻回到主武器的枪口
     fireRecoilTime = 10.0
 }
 ```
+
+> ⚠ 上面那段 `fireRecoilTime = 0.0` **只管枪身，管不到镜头**：`firePosTimer` 的开启点就在
+> `fireRecoilTime` 里面，所以镜头后坐（抬枪 + 滚转）会跟着一起断掉，而
+> `RecoilX`/`RecoilY` 恰好只喂这两处 —— 五期补了 `subWeaponRecoilTimer`，见
+> §11.11.9（那里有实测数字与"改前恒 0"的证据）。
 
 > **教训（比这一行本身值钱）**：删一条链路时，要分清"哪几行是**表现**、哪几行是**清理**"。
 > 这里留下的恰好是清理那一半 —— 于是代码看起来"有在管这个计时器"，实际上它永远是 0，
@@ -3759,8 +3779,10 @@ if (ActiveGun.isSubWeapon(data)) {
 
 ```
 11s. AK-12 + GP-25 左键 → 枪口焰/烟在**榴弹筒自己的**枪口上，AK-12 的枪管前端**不喷火**
-11t. 同一发 → 枪身**不**做 `fireRotTimer` 那套后坐（后坐由 `fire_sub_weapon` 动画表现，不抖两下）
+11t. 同一发 → 枪身**不**做 `fireRotTimer` 那套后坐（枪身由 `fire_sub_weapon` 动画表现，不抖两下）
 11u. 紧接着打主武器的子弹 → 枪口焰立刻回到主武器枪口（窗口二选一，不能同时开）
+11v. 同一发 → **镜头**仍要有后坐（抬枪 + 滚转），走的是五期新增的 `subWeaponRecoilTimer`
+     —— 11t 只否掉了"枪身"，没否掉"镜头"（§11.11.9）
 ```
 
 #### 11.10.12 返修：**副武器那把动作锁没有任何人推进** + **FOV 门禁漏改一处**
@@ -3989,7 +4011,8 @@ git diff --stat -- src/main/kotlin/com/atsuishio/superbwarfare/subweapon/SubWeap
 ```
 命名迁移（①，行为必须逐字不变）
  1. 装上 GP-25 → 模型出现在枪身下方（骨骼改名没改漏）
- 2. 按 G → 切到 GP-25；开火 → 榴弹出膛、枪口焰在榴弹筒上、**枪身不抛壳**、不做枪身后坐
+ 2. 按 G → 切到 GP-25；开火 → 榴弹出膛、枪口焰在榴弹筒上、**枪身不抛壳**、枪身只走 `fire_sub_weapon`
+    动画（不做 `fireRotTimer` 那套位形）、而**镜头有后坐**（抬枪 + 一点滚转，§11.11.9）
  3. 按 R → 换弹；宿主枪继续播 idle
  4. /sbw subweapon info → 槽位名 = SUBWEAPON_UNDER_BARREL、gunData = superbwarfare:sub_weapon_gp_25、active=true
  5. 物品提示 / 改装界面 / 指令补全里的槽位名显示为新语言键（不是 raw key）
@@ -4090,7 +4113,7 @@ git diff --stat -- src/main/kotlin/com/atsuishio/superbwarfare/subweapon/SubWeap
 
 1. **文件放 `animations/bedrock/attachment/<附件 id>.animation.json`**，文件名要与 `models/bedrock/attachment/<附件 id>.geo.json` **完全同名**（配对靠文件名 id，没有配置字段）。
 2. **只驱动附件模型里存在的骨骼**。`sub_weapon_gp_25` 的可用骨骼：
-   `root` / `flare` / `projectile` / `lefthand`（在 `projectile` 下）/ `gun` / `tube`（`bone2..bone7` 在它下面）/ `trigger` / `positioning` / `iron_view`。
+   `root` / `flare` / `projectile` / `lefthand`（在 `projectile` 下）/ `gun` / `tube`（`bone2..bone7` 在它下面）/ `trigger` / `positioning` / `idle_view`（持枪位形，五期，§11.11.10）/ `iron_view`（瞄准位形）。
    ⚠ **手部不做**：真手臂由主武器那条链路画（`BedrockAttachmentModel.hideHandBones` 会把模型自带的 `lefthand_pos` 整棵子树藏掉）。
 3. **clip 名写在副武器自己的枪资源里**（`sbw/guns/<id>.json` 的 `Animation.ReloadEmpty` / `Reload`），**附件数据侧一个字段都不用写**。
 4. 调参时打开 `melee_debug_log`：解析不到会有一条 `[SubWeapon] ... is not bound ...` 的日志，直接把"该放哪、该叫什么名字"打出来。
@@ -4103,8 +4126,8 @@ git diff --stat -- src/main/kotlin/com/atsuishio/superbwarfare/subweapon/SubWeap
 > ① 副武器动画只驱动自己 → 主武器与玩家手臂纹丝不动（**已用代码解决**，见下）；
 > ② 玩家第一人称手臂只认**主武器模型**的 `lefthand_pos` / `righthand_pos`，
 > 附件模型里那根同名骨骼**不渲染任何东西**（被 `BedrockAttachmentModel.hideHandBones` 隐藏，
-> 且附件路径根本不调 `renderHands`）→ **"让副武器动画接管玩家的手"这条路已试过并放弃**，
-> 原因与结论见本节末尾。
+> 且附件路径根本不调 `renderHands`）→ 早期结论是"接管无望、只能重导动画"，
+> **该结论已被推翻**：手臂锚点可以改由附件模型供给，见 §11.11.7.3-A。
 
 **三条已确认的代码事实**（改这里之前必须知道）：
 
@@ -4114,13 +4137,15 @@ git diff --stat -- src/main/kotlin/com/atsuishio/superbwarfare/subweapon/SubWeap
 | 2 | 附件模型**从不画手**，而且主动把 `lefthand_pos` 整棵子树隐藏（避免与真手臂重叠） | `BedrockAttachmentModel.hideHandBones` |
 | 3 | **副武器的动画与模型里根本没有右手**（需求方确认）：手部只有左手，右手由主武器那条链路负责 | `sub_weapon_gp_25.geo.json` 只有 `lefthand` / `lefthand_pos`，没有 `righthand` |
 
-**推论**：副武器动画里的手部通道**不可能**带动玩家的手；右手则连通道都不存在
+**推论**：附件自己的渲染链路**不会**画手（事实 2），所以手不能靠"附件画出来"；
+但手臂**锚点**可以从附件模型的骨骼上取下来交给主武器那条链路去画 —— 这才是现在的做法
+（**见 §11.11.7.3-A，已实装**）。右手则连通道都不存在
 （附件模型里的 `righthand` 关键帧属于"模型里不存在的骨骼"，会被
-`createAnimation(file, 模型)` **静默丢弃**）。
+`createAnimation(file, 模型)` **静默丢弃**；把 `righthand_pos` 补进附件模型后即自动生效）。
 
-**已实装的做法：把 `root` 的整体运动换算到主武器空间，主武器跟着走、副武器原地不动。**
+**已实装的做法：把 `root` 的整体运动换算到主武器空间让主武器跟着走，附件那一侧把 `root` 通道摘掉。**
 
-设挂点在主武器骨骼空间里的变换为 `M`（**bind pose** 下算，稳定且可缓存），
+设挂点在主武器 `root` 空间里的变换为 `M`（**bind pose** 下算，稳定且可缓存），
 副武器换弹动画的 `root` 通道为 `A`：
 
 ```
@@ -4130,91 +4155,795 @@ D = M · A · M⁻¹        把"附件空间里的整体运动"换算成"主武�
 | 对象 | 处理 | 效果 |
 |---|---|---|
 | 主武器 `root` | 左乘 `D` | 整枪 + **玩家手臂**（由枪模型渲染）+ 其它配件 + 枪口焰一起跟着动画走 |
-| 副武器 `root` | 左乘 `D⁻¹`（即 `A → D⁻¹·A`） | 抵消子节点侧的同一份位移，下挂筒**仍然贴死在挂点上**；`A` 里其余通道（炮管/扳机/榴弹）照常播 |
+| 副武器 `root` | **摘掉 `root` 通道**（`withoutBone`），其余通道照常播 | 附件渲染时的挂点变换取自**已姿态**的主武器骨骼，主武器一动挂点就跟着动，附件自然焊在轨道上 |
 
-两者在挂点处**精确抵消**（`G·M_bind·D⁻¹·A` 里 `D` 与 `D⁻¹` 相消），所以"下挂件不会脱开枪身"和"枪跟着动画动"同时成立。
+> **不要再写 `D⁻¹·A` 那种手写抵消**：它只在 `A` 与 `M` 可交换时才精确，
+> 而且一旦单位算错就彻底失效（见下面第 2 条）。"摘掉通道"是恒等式的、零近似。
 
 **实现落点**（`GeoGunRenderer`）：
 
 | 项 | 位置 |
 |---|---|
-| `resolveSubWeaponFollowPose(stack, model)` | 算出 `D`、返回 `SubWeaponFollowPose`（"只含主武器 root"的修正姿态 + **抵消过**的副武器姿态） |
+| `resolveSubWeaponFollowPose(stack, model)` | 算出 `D`、返回 `SubWeaponFollowPose`（"只含主武器 root"的修正姿态） |
 | `renderModel` 的 first-person 分支 | 在 `applyPose` **之前**调用它，用 `MERGE_BLENDER` 把修正盖到动画姿态上（没修正时逐字走原路径） |
-| `renderRegisteredAttachments` | 副武器槽位改用 `subWeaponFollow.attachmentPose`（抵消版），不是原始姿态 |
+| `renderRegisteredAttachments` | 副武器槽位改用"摘掉 `root`"的姿态；同时把附件 `lefthand_pos`/`righthand_pos` 的锚点交给 `GeoGunModel.renderHands` |
 
 **四个必须守住的细节**：
 
 1. **`M` 用 bind pose 的挂点变换**（`getBindGlobalTransform`，已缓存）。用 posed 版本会自我反馈：
    我们刚给 `root` 加了 `D`，再去读挂点就会读到被自己顶走的位置。
-2. **`Pose` 只能读不能写**，所以"给主武器 root 加偏移"只能直接写 `BoneState`
-   （`x/y/z` + `rotation` + `rotationInEuler` + `xScale/yScale/zScale`）——
-   `BoneTreeInstance.applyPose` 本身就是这么写的。
-   写回时**必须是"偏移"语义**：`BoneTransform.translation()` 是**相对绑定位置的偏移**
-   （`BoneState.x/y/z` 同理，`reset()` 取的是 `bindX/Y/Z` 而不是 pivot）。
+2. **⚠ 单位：姿态是 Bedrock 单位，模型变换是方块。** `BoneTransform.translation()` 的平移要 **÷16**
+   才是方块（`BoneState.applyCurrentSelfTransform` 就是这么做的），而 `getLocalTransform()` /
+   `getGlobalTransform()` / `getBindGlobalTransform()` 返回的**已经是方块**。两者混着做矩阵乘法，
+   平移差 16 倍 —— `D` 里"绕挂点转"那一项（量级 ≈ 挂点距离 × 转角）会被压到几乎看不见，
+   看上去就像"挂点距离没被排除"（实测 hold 帧 0.2433 → 0.0152 方块，见 §11.11.7.3-C 的实测表）。
+   两头都必须显式换算：`localMatrixOfPose`（姿态→方块）/ `poseTransformOf`（方块→姿态）。
+   `Pose` 只能读不能写，写回用 `BoneTreeInstance.applyPose` 的同一套语义：
+   **姿态值替换** `BoneState.x/y/z`（不是叠加到绑定上，实测已确认），
+   `poseTransformOf` 因此只在"枢轴在原点 + 无绑定旋转 + 无折叠父变换"的骨骼上成立（两根 `root` 都满足）。
 3. **`D` 是单位阵时零副作用**：`A` 没有 `root` 通道、或那一帧 `root` 恰好等于绑定值时，
-   `D = M·I·M⁻¹ = I`，主武器姿态与副武器姿态都与改动前**逐字相同**。
-4. **任一环节解析不到就返回 `null`**（挂点骨骼 / 两根 `root` / 附件模型 / 换弹姿态），
-   整条路径退回原有渲染 —— 与"没有换弹动画"时的静默回退一致。
+   `D = M·I·M⁻¹ = I`，主武器姿态与副武器姿态都与改动前**逐字相同**
+   （实测：`|D.t|` 在 clip 的 0.0 / 1.2 两端都是 **0**，所以连续两次换弹之间主武器不会累积漂移）。
+4. **任一环节解析不到就返回 `null`**（挂点骨骼 / 两根 `root` / 附件模型 / 换弹姿态 / 上面第 2 条的
+   骨骼前提不成立），整条路径退回原有渲染 —— 与"没有换弹动画"时的静默回退一致。
    ⚠ 修正**只写在渲染姿态上**，不写进模型实例（写进去会让本帧后续所有读取都带上偏移）。
 
 ---
 
-#### 11.11.7.3 【实装记录】**"副武器动画接管玩家左手"已放弃 + 炮弹位置未解**
+#### 11.11.7.3 【实装记录】左手接管（**已实现**）+ 炮弹错位（**已定位并修复**）
 
-> **⚠ 当前状态**：`resolveSubWeaponFollowPose` 只做上面那一件事（`root` 反推）。
-> 手部接管与炮弹换基的代码**已全部移除**，不要照着旧思路再写一遍。
+> **⚠ 当前状态**：`resolveSubWeaponFollowPose` 做 `root` 反推（§11.11.7.2）；
+> `renderRegisteredAttachments` 摘掉附件的 `root` 通道、把附件的 `lefthand_pos` 作为
+> **手臂锚点**交给 `GeoGunModel.renderHands`；附件的 `head` / `he_head` 骨骼已补回
+> （炮弹的隐藏通道就打在它上面）；**附件姿态改成与主武器同一口径**
+> （`applyPose(BLENDER.blend(getBindPose(), pose))`，见 C —— 这是"炮弹偏上偏后 + 手臂乱飞"的真正根因）。
+> 本节 A/C 里的**旧结论三处都是误判**，已按实测改写，旧的换基修正代码不要照着重写。
+> **不要再动动画文件里的位置关键帧**（把绑定加回去那种修法只修一半，见 C）。
 
-## A. 左手：为什么放弃（试过三种写法，全部失败）
+## A. 左手：**可以做，而且已经做了**（"骨架差 40 个单位"是误判）
 
-**目标**：副武器换弹时，让玩家的左手按副武器动画的定义摆位（右手按事实 3 不参与）。
+**修正后的诊断**：附件模型的 `lefthand` / `lefthand_pos` 与手持模型（`gun/gp_25.geo.json`）里
+那两根**枢轴完全相同**（`[-6.01875, 18, 0]` → `[-0.01875, 7, 0]`，父级都是 `projectile`），
+cube 的 `origin`/`size` 也逐字节相同。旧结论说的"两套骨架差了约 40 个单位"是把
+**姿态值**（Bedrock 单位，**相对绑定姿势的偏移**）与**绑定位**（`bindX/Y/Z`，绝对值）当成
+同一种语义比较得出的。裸 `applyPose` 确实是"替换"关系（见 §11.11.7.2 细节 2），
+但**渲染路径两边都要先把绑定垫回去**（`BLENDER.blend(bindPose, pose)`），
+垫完之后偏移语义就还原成了绝对语义 —— 这一条是 §C 才查清的，本节表格里的数字已在修复后重测。
 
-**试过并否掉的方案**：
+**真正的障碍只有一条**：真手臂是 `GeoGunModel.renderHands` 按**主武器模型**的
+`lefthand_pos` 画的，附件模型那根同名骨骼根本不参与手臂渲染。所以解法是**换锚点**，
+不是换算：
 
-| # | 方案 | 结果 |
+```
+锚点 = 挂点(已姿态) × 附件模型 getGlobalTransform("lefthand_pos")
+```
+
+附件渲染窗口里（`applyPose` 之后、`resetPose` 之前）取一次，作为 `handAnchors` 参数传给
+`GeoGunModel.renderToBuffer` → `renderHands` 用它代替主武器骨骼（pose 与 normal 都要乘，
+与 `mulPoseWithNormal` 同一套语义）。附件里没有的骨骼（目前 `righthand_pos`）自动退回主武器那一根，
+所以把 `righthand_pos` 补进附件模型后**右手不需要再改代码**。
+
+**实测**（`build/verify/VerifySubWeaponFollow.java`，跑的是真 SBM/MAE；**本表已在 §C 的口径修复后重测**，
+两侧都走 `withoutBone(root)` + `blend(bindPose, pose)`，与渲染路径逐字一致）：
+
+| t | 附件锚点（换算到 ak_12 空间） | 与 ak_12 idle 手的距离 |
 |---|---|---|
-| 1 | 把附件 `lefthand_pos` 的世界变换直接当手臂位形 | 左手消失；矩阵是**相对镜头**的（含 `root` 变换）→ 位移算了两遍 |
-| 2 | 换算成"相对 `root` 当前姿势"再正交化 | 左手仍然错位、光照异常 |
-| 3 | 参照系改成 `root` 的**绑定**姿势（`rootBindLocal⁻¹ · W_hand`）+ 正交化 | 同上 |
+| 0.0 | (0.0383, -0.4162, -0.0149) | **0.4919** |
+| 0.2417 | (-0.0941, -0.4047, 0.4653) | 0.5145 |
+| 0.3 | (-0.3696, -1.1119, -0.4271) | 1.3104 |
+| 0.575 | (-0.2010, -0.2248, -0.5384) | 0.7605 |
+| 1.2 | (0.0383, -0.4162, -0.0149) | **0.4919** |
 
-**根因（数据层，不是渲染层）**：现有动画的 `lefthand` 关键帧是对着**手持形态的骨架**写的 ——
+（对照：ak_12 自己在**同口径**下的 idle 手位 = `(-0.0919, 0.0191, 0.1736)`。
+旧表里的 `(-0.4681, -1.2314, -0.0724)` 是把裸姿态直接套到枪实例上得到的，不是渲染路径的真实取值。）
 
-```
-animation.sub_weapon_gp_25.reload 的 lefthand.position：
-    0.0   = 6.15,  -20.7,   -1.7
-    0.1   = 8.98,  -26.48,  -0.29
-    0.175 = 11.29, -33.32,   7.58
-```
+- 锚点在两端**与 clip 端点一致**（0.0 与 1.2 完全相同）→ 连环换弹不会漂；
+- ⚠ **曾经的唯一残留**：附件坐标系与主武器坐标系相差一个挂点距离（ak_12 上 `(0, 0.105, -0.606)`），
+  所以换弹开始/结束时手会从"主武器 idle 的手位"**落到附件动画的手位**，实测落差 **≈0.49 方块**
+  （不是完整 0.615，因为现有端点是按手持 `idle` 手位调过的）。当时列了两条路：
+  ① 部署期间也用附件的 `idle` clip 驱动手；② 把 `lefthand` 端点值再减去挂点距离的量。
+  **最终走的是 ①** —— 做法比"部署期间"更进一步：见 §11.11.7.4（**部署期间接管**，② 不再需要）。
 
-而附件模型 `lefthand_pos` 的绑定位是 `Y = +7` —— **两套骨架差了约 40 个单位**。
-忠实搬运这个值，手必然被放到视野外。
-
-**结论**：**数据错配不是渲染层能修的**。三轮矩阵变换已经把这个结论验证了两遍，
-所以手部接管整体撤掉（`GeoGunModel.leftHandOverride` / `orthonormalize` /
-`resolveHandRelativeToRoot` 都已删除）。要恢复这个效果，**只能让美术重导动画**（见 B）。
-
-## B. 给美术的动画重导约束（**这一份可以直接转给美术**）
+## B. 给美术的动画约束（**这一份可以直接转给美术**，已按现状更新）
 
 | 项 | 要求 |
 |---|---|
-| 在哪个模型上做 | **直接打开 `models/bedrock/attachment/sub_weapon_gp_25.geo.json`** 做动画，**不要从手持模型复制**（这是问题的根因） |
-| 手部驱动哪根骨骼 | **`lefthand`**。它的子骨骼 `lefthand_pos` 上挂着手部几何，而那棵子树在渲染时被**主动隐藏**（避免与真手臂重叠），所以 key `lefthand_pos` 没有任何效果 |
-| 可用骨骼 | `root` / `flare` / `projectile` / `lefthand` / `gun` / `tube`（`bone2..bone7` 在它下面）/ `trigger` / `positioning` / `iron_view` |
-| **不存在、key 了会被静默丢弃** | `righthand` / `camera` / `head` / `undefined`（现有文件里这四根占了 7 根通道里的 4 根，全是空转） |
-| `root` 的语义 | **整枪在挂点内的位移**。代码会自动把它"反推"到主武器上并让整枪跟着动（这套**已实测可用**，不要改） |
+| 在哪个模型上做 | `models/bedrock/attachment/sub_weapon_gp_25.geo.json`。**可以**从手持模型复制通道（`root`/`projectile` 那些本来就是逐字节照搬的，实测没问题），但手部端点要按 A 的残留问题调 |
+| 手部驱动哪根骨骼 | **`lefthand`**。它的子骨骼 `lefthand_pos` 上挂着手部几何，那棵子树渲染时被**主动隐藏**（避免与真手臂重叠），但**它的变换会被当作手臂锚点读**（`mountTransform · getGlobalTransform("lefthand_pos")`）→ 手臂跟着走。所以正常情况只 key `lefthand`；**要额外挪手就直接 key `lefthand_pos`**（等价于在手部局部再加一层偏移） |
+| 可用骨骼 | `root` / `flare` / `projectile` / `head` / `he_head` / `lefthand` / `gun` / `tube`（`bone2..bone7` 在它下面）/ `trigger` / `positioning` / `idle_view`（持枪位形，五期，§11.11.10）/ `iron_view`（瞄准位形） |
+| **`head.scale` 是承重的，不要删** | 炮弹的显隐就靠它（`0` → 隐藏，`1` → 显示）。见 C |
+| **不存在、key 了会被静默丢弃** | `righthand` / `camera` / `undefined`（现有文件 7 根通道里有 3 根是空转；`righthand` 补进模型后才会生效，届时右手自动跟着走） |
+| `root` 的语义 | **整枪在挂点内的位移**。代码会自动把它"反推"到主武器上并让整枪跟着动（这套**已实测可用**，不要改）；主武器那一侧会被摘掉，所以 `root` 里也不要放"发射器相对枪身"的动作（那种动作该放 `gun`/`tube`） |
 | 文件名 / clip 名 | **一个字符都不用改**（继续用 `animation.sub_weapon_gp_25.reload`），代码侧零改动 |
 
-## C. 炮弹：位置仍未解决
+## C. 炮弹：**错位的真正根因是"原姿态直接套到附件上"，绑定姿势没垫回去**（已修）
 
-- **现象**（需求方实测）：炮弹的**旋转是对的**，但位置**偏上偏后**；
-- **试过的**：一次"把位移从 `root` 空间换基到父骨骼空间"的修正 —— **方向搞反，位置更差**，
-  已撤掉（函数 `resolveProjectilePositionCorrection` 保留在代码里并标注"未调用"）；
-- **已知的模型事实**（调它之前必须先知道）：`projectile` 是 **`root` 的直接子节点**，
-  **不是 `tube` 的子节点** —— 所以 `gun`/`tube` 跟着 `root` 转的时候炮弹**不会**跟着转；
-  它的 position 关键帧是**相对绑定位置的偏移**（`BoneState.x/y/z` 语义），
-  绑定位置 `(0, -1.1743, -6.5436)` 本身就落在炮膛附近。
-- **下一步建议**：不要继续猜变换，先量一个数 —— **静止（绑定姿势）时炮弹相对 `tube` 偏了多少**。
-  有了偏差量，需要什么变换是一步能算出来的；也可以直接在重导动画时把这个偏移做进去。
+- **现象**（需求方实测）：炮弹的**旋转是对的**，但位置**偏上**（原话"偏上偏后"），而且一开场就在。
+- **两件事叠在一起，必须分开看**：
+  1. **炮弹从 t=0 就显形** —— 显隐打的是 clip 里的 **`head.scale`**（`0.0` / `0.2583` 为 `[0,0,0]`，
+     `0.2667` 起 `[1,1,1]`）。crop 附件模型时把 `head` / `he_head` 删掉、`poly_mesh` 直接挂到
+     `projectile` 上，这条通道就**打空**了。**已修**：`head`（`parent: projectile`，pivot 与
+     `projectile` 相同）与 `he_head`（`parent: head`，pivot `[0,0,0]`）补回模型，`poly_mesh` 原样搬回
+     `he_head`。顶点**一个字节都不用改**（顶点是绝对模型坐标，烤制时按各自绝对枢轴减过，骨骼的
+     枢轴夹逼 `T(p)·R·S·T(-p)` 会抵消回来；实测与 `gun/gp_25.geo.json` 逐字节相同）。
+  2. **位置偏上偏后** —— 与 `head` 无关，是**姿态口径**错了（下面详述）。
+- **真正的根因（位置）**：动画文件里写的平移量是**相对绑定姿势的偏移**（`0` = 停在骨骼自己的
+  静止位置），而 `BoneTreeInstance.applyPose` 是**直接写** `BoneState.x/y/z`，**不做任何混合**：
 
+  ```java
+  bone.x = translation.x();   // BoneTreeInstance:147 —— 覆盖，不是叠加
+  ```
+
+  所以 `0` 的真实含义是"**跑到父节点原点**"。主武器那边不会踩到这个坑，因为它套姿态前先垫了绑定：
+
+  ```kotlin
+  model.applyPose(BLENDER.blend(model.getBindPose(), renderPose))   // 🌟 绑定 + 姿态值
+  ```
+
+  `SimpleEulerAdditiveBlender` 对平移是**相加**，于是"偏移口径"被还原成"绝对口径"。**附件这边漏了
+  这一步**（裸 `applyPose(subWeaponPose)`），于是绑定不为 0 的骨骼全线错位。下挂筒的 `projectile`
+  绑定 `(0, -1.1743, -6.5436)` 正是**枪管轴线**，clip 在 `0.0 / 0.2417 / 0.775` 三个键上写 `[0,0,0]`
+  → 整棵子树（**炮弹以及挂在它下面的手**，`lefthand` 的父级就是 `projectile`）被抬到模型原点。
+- **修法（一行）**：附件走与主武器**逐字相同**的口径 ——
+
+  ```kotlin
+  attachmentModel.applyPose(BLENDER.blend(attachmentModel.getBindPose(), subWeaponPose))
+  ```
+
+  ⚠ **不要去改动画文件**（把 `(0,-1.1743,-6.5436)` 加回每个 `projectile.position` 键是"只修炮弹、
+  修不好手"的半吊子修法：`lefthand` 的键同样是偏移口径，只加 `projectile` 会让手跟着漂 0.41 方块）。
+  口径统一之后，**同一份 clip 在手持形态与副武器形态下的解读完全相同**，美术在手持上调好的动作
+  可以原样搬过来（两个 clip 的差异只剩美术在端点上特意改过的 `lefthand` 两通道）。
+- **实测**（`build/verify/VerifyBlendConvention.java` + `VerifyArmMatch.java`，跑的是真 SBM/MAE；
+  裸 `applyPose` = 修复前，`BLEND(bind, pose)` = 修复后，均已剥离 `root` 通道）：
+
+  | t | 裸姿态（修复前）炮弹位置 / 离轴线 | 混合后（修复后）炮弹位置 / 离轴线 |
+  |---|---|---|
+  | 0.00 – 0.24 | `(0, 0, 0)` / **+0.0734** | `(0, -0.0734, -0.4090)` / **±0.0000** |
+  | 0.30 | `(-0.2306, -0.4306, 0.2092)` | `(-0.2306, -0.5040, -0.1998)` |
+  | 0.48 | `(-0.0366, -0.1284, -0.4842)` | `(-0.0366, -0.2018, -0.8932)` |
+  | 0.78 – 1.20（坐膛） | `(0, 0, -0.0000)` / 停在原点 | `(0, -0.0734, -0.4090)` / **正好在膛内** |
+
+  - 静止键上：修复前炮弹停在**模型原点**（偏上 0.0734、偏后 0.4090 方块），修复后**正好落在枪管轴线上**；
+  - `VerifyArmMatch` 逐帧比对副武器与手持形态：**炮弹全程逐位相同**；**手臂在 t=0.24–0.72 逐位相同**
+    （差值 `0.00000`），只有端点差 ≤0.24 方块 —— 那正是美术特意改过的 `lefthand` 端点键
+    （实测两份 clip 除这两个通道外**逐字节相同**），属于有意为之；
+  - **同源现象两处（本次未改动，仅记录备查）**：动画文件里有 **169 个位置键**在"绑定不为 0"的骨骼上写了
+    `0` —— 例如 `hunting_rifle` 的 `gun`（绑定 `-7.955` 单位，`reload` 里写 `[0,0,0]`，实测**整把枪
+    往玩家方向挪 0.497 方块**）、以及几乎每把枪的 `camera`（绑定 ~0.59 方块，多数 clip 里被拉到原点）。
+    主武器路径**一直**在垫绑定，所以这些是美术在游戏里**已经调好的现状**（不是 bug），
+    要动就是全枪械动画一起改，不在本次范围。
+- **配套改动**：`BedrockAttachmentModel.getBindPose()`（供混合用）与
+  `renderRegisteredAttachments` 里那句注释（旧注释把"位置 0 = 停在 pivot"当成了前提，正是这次踩坑的
+  认知来源，已改写为"偏移口径 + 必须垫绑定"）。
+
+#### 11.11.7.4 【五期·规范】**部署副武器期间的手臂接管**（**已实现**）：数据驱动 + 换弹/近战让位 + 淡入淡出
+
+> **一句话**：**只有把副武器切出来（部署）之后**，手臂才挂到副武器自己的锚点上；切回主武器时再
+> 平滑地还回去。主武器自己换弹/近战时让位（⚠ 五期又加了**改装**，见 §11.11.11）；来源切换用 3 tick 插值抹平。
+
+**为什么需要**：真手臂由 `GeoGunModel.renderHands` 画在锚点骨骼 `lefthand_pos` 上。在此之前锚点
+**平时取自主武器**，只有"部署中的副武器正在换弹"时才换成副武器的（§11.11.7.3 的 A）—— 于是换弹
+开始/结束那一帧手会**硬切**，实测（`build/verify/VerifyArmOverlay.java`，宿主 `ak_12` + `sub_weapon_gp_25`）
+是 **0.4919 方块**，就是需求方报的"突变"。
+
+**关键实测数字**（同一支工具，跑的是真 SBM/MAE、且 clip 名从**数据**里读，不是抄的）：
+
+| 量 | 值 | 含义 |
+|---|---|---|
+| `\|副武器 idle 锚点 − 主武器 idle 锚点\|` | **0.4919** | 部署/解除部署那一次换源要淡掉的量 |
+| `\|副武器 reload(t=0) − 副武器 idle\|` | **0.0000** | 美术把 reload 首帧对齐到 idle 了 |
+| `\|副武器 reload(t=1.25) − 副武器 idle\|` | **0.0000** | 末帧也对齐了（中途最远 1.7392，那是美术的动作） |
+| `\|主武器 reload_empty − idle\|` | 最大 **0.7014** | 主武器**自己**换弹时左手必须去抓弹匣 |
+| `ak_12.fire` / `fire_sub_weapon` 的锚点 − idle | **0.4624** | 这两支 clip **根本没 key `lefthand`**，混合后手回到绑定姿势 |
+
+第二、三行合起来说明：**部署期间常驻接管能彻底消掉 idle↔reload 的突变**（两端重合，交接处本来就
+没有落差）；第四行说明主武器换弹时手必须让出去；第五行说明 `FIRE` 这类状态**不能**让位
+（一让位手就弹回绑定姿势）。
+
+> ⚠ **本表的绝对数值已过时，重测值见 §11.11.11-④**（资产动过，且第四行旧值受抽样步长影响）。
+> ⚠ 让位那一行还要再加上**改装**（`EDIT`）—— 五期补的，理由与实测见 §11.11.11。
+
+**⚠ 曾经的"装上就接管"（含非部署状态）已撤销 —— 不要再加回来**
+
+那一版让"任何带约定 idle 的配件"在**任何时候**都接管手臂，实机效果不好：**非部署时主武器的动画在
+中途也可能挪动左手**（不是每支 clip 都像 `ak_12.fire` 那样干脆不 key `lefthand`），常驻接管会把那些
+动作一起压掉 —— 就是需求方说的"主武器左手臂不一定是在动画结尾才归位"。
+
+于是这次收窄成两条：①**只有部署期间接管**；②**不再按"配件"泛化**（握把接管那套整条链路删掉，见 F）。
+被删掉的具体符号：`AttachmentModelReloadListener.animationIdOf` / `findStateAnimation`、
+`GeoGunRenderer.IDLE_SUFFIX` / `resolveAttachmentArmAnchors`、以及"遍历 `AttachmentSlots.ALL` 找约定 clip"
+那段循环。**现在只有副武器会接管，而且只在它被切出来的时候。**
+
+**A. 作用范围：只有 `ActiveGun.isDeployed` 为真时**
+
+| 情形 | 手臂锚点来自 |
+|---|---|
+| 没部署副武器（绝大多数时候） | **主武器自己的骨骼** —— 逐字走改动前的老路径，一行新代码都不经过 |
+| 部署了副武器 | **副武器**的 `Animation.Idle`（常驻接管，直到切回去） |
+| 部署中 + 副武器正在换弹 | **副武器**的换弹 clip（既有逻辑，优先级最高） |
+| 部署中 + 主武器自己换弹 / 近战 / **改装** | **主武器自己**（`GunAnimationState.takesHandAway`，手要去抓弹匣 / 挥刺刀 / 被枪身一起甩进检视姿势） |
+
+优先级：**副武器换弹锚点 > 部署接管 > 主武器骨骼**。
+
+`isReload` 原先只是 `GeoGunAnimationInstance` 里的一个**私有扩展函数**，这次提到了枚举上做成员
+（渲染侧也要问同一个问题）。⚠ 提上来时必须**删掉那个私有扩展**：同名的私有扩展会把成员**遮蔽**掉，
+两处各判一次，改了一处另一处不会跟着变。
+
+**B. 姿态从哪来 —— 数据驱动，没有"约定命名"**
+
+副武器**自己的数据**写 clip 名，动画本体在**附件动画表**里 —— 与换弹那条链路
+（`GeoGunAnimationInstance.updateSubWeaponReload`）**逐字同一套两步解析**，只是①问的是
+`Animation.Idle` 而不是 `Reload*`，②**不要求在换弹**：
+
+```
+① sbw/guns/<副武器 id>.json 的 Animation.Idle   → 例：animation.sub_weapon_gp_25.idle
+② AttachmentModelReloadListener.findAnimation(那个名字)
+   —— 从 clip 名反推**文件 id**（剥掉 animation.、取到第一个 . 为止），再去动画表里取
+```
+
+解析在**动画实例**里每 tick 做一次（`updateSubWeaponIdle`，紧挨着 `updateSubWeaponReload`），
+渲染侧只问 `subWeaponIdlePose()`（取 `t=0` 那一帧）与 clip 名。取固定一帧而不是跑 runner：
+这支 clip 回答的是"手抓在哪儿"这个**静态**问题。
+
+⚠ **千万不要把它混进 `subWeaponReloadPose()`**：那一个非空意味着"副武器正在做换弹动作"，
+`resolveSubWeaponFollowPose` 会据此**把整把主武器反推着动起来**（摘 `root` 那套，§11.11.7.2）。
+idle 是常驻状态，混进去会让枪一直跟着 `root` 抖。所以两者是**两个独立的字段/函数**。
+
+⚠ 两条失败路径（数据里没写 / 动画表里没有）都是**静默回退** —— 症状与"美术还没做这支动画"完全一样。
+`VerifyArmOverlay.java` 的最后一节就是为这个准备的：它把数据里声明的 clip 名逐个走一遍 ②，打印
+`OK` / `NOT FOUND`。
+
+**C. 淡入淡出（`resolveArmAnchorsForDraw` + `fadeAnchor`）**
+
+来源标识（`"idle:<clip名>"` / `"reload:<clip名>"` / `null`＝主武器自己）发生变化时，把**上一帧真正画
+出去的那两个矩阵**记下来，用 `Minecraft.deltaFrameTime`（刻度是 **tick**，20/s）在
+`ARM_ANCHOR_FADE_TICKS = 3`（≈0.15 秒）内插值：平移 `lerp`、旋转 `Quaternionf.nlerp`，用 `smoothstep`
+缓入缓出；进度到 1 就直接用目标矩阵（不留残差，否则手臂会永远差一点点）。单帧步进夹在
+`MAX_FRAME_DELTA_TICKS = 0.8`，避免卡顿时"一帧走完"。
+
+- 真正会用到它的是**切出/切回副武器**那两次换源（0.4919 方块）；
+- 因为 idle 与 reload 两端重合，**换弹进出的淡入淡出实际什么也不做**，不会有副作用；
+- ⚠⚠ **"该不该交空表"的判据必须是插值进度，不能是来源标识**。来源刚变成"无"的那一帧是
+  **淡出开始**（起点＝上一帧画出去的锚点，终点＝主武器自己的骨骼），只看来源标识会把上一帧的
+  矩阵冻住一帧、下一帧直接硬跳到骨骼上 —— 那正是这次要修的那种跳变，只是换了个位置发生
+  （实现时就是这么写错了一次）；
+- ⚠⚠ **换来源时一律从进度 0 开始**，不能"没有上一帧记录就跳过淡入"。非部署时这条路径**根本不画**
+  （直接交空表），"上一帧画出去的矩阵"永远是空的，跳过淡入 ＝ **每次切出副武器都瞬移** ——
+  而"平滑移过去"正是这次改动的全部意义（实现时在这里也写错了一次，两次错法不同、后果一样）；
+- 起点取不到时**退回主武器自己的骨骼**：那正是"还没接管过"（上一帧交的是空表）时 `renderHands`
+  画的位置，所以接管的淡入是从手原来的地方起步，而不是从别的什么地方飞过来；
+- 淡出结束（交空表）时顺手把"上一帧画出去的矩阵"**清掉**，否则"换一把枪再切出副武器"会从
+  **上一把枪**的手位起步；
+- ⚠⚠ 插值必须**连缩放一起插**（平移 `lerp` / 旋转 `nlerp` / 缩放 `lerp`，`translationRotateScale`）——
+  见下面的 C2。第一版写的是 `translationRotate(...)`，把缩放丢了。
+
+**C2. ⚠⚠ 锚点矩阵是**可以带缩放的** —— 丢缩放 = 换弹时手臂"闪现"**
+
+需求方给副武器的手臂**拉了 50% 长度**：在附件动画里给 `lefthand` 加 `scale: [1, 1.5, 1]`
+（idle 与 reload **两支都是常量通道**）。于是只要副武器部署着，手臂锚点矩阵就带着
+`(1, 1.5, 1)` 的缩放 —— **挂点链路"没有缩放"这个前提已经不成立了**。
+
+而 `fadeAnchor` 第一版只重建 `translationRotate(平移, 旋转)`：淡入淡出的那 3 刻里手臂被画回
+**原长**。触发点在换弹的**开始与结束**各一次（锚点来源从 `idle` 切到 `reload` 再切回来），
+所以症状是"换弹时手臂闪现两下"—— 正是需求方报的"长度跳变"。
+
+实测（`build/verify/VerifyArmScale.java`，宿主 `ak_12` idle + `sub_weapon_gp_25`）：
+
+| 量 | 值 |
+|---|---|
+| 锚点矩阵的缩放（3×3 列长） | `(1.0000, 1.5000, 1.0000)`，idle / reload(t=0) / reload(1.25) **都一样** |
+| `\|reload(0) − idle\|`、`\|reload(1.25) − idle\|` | **0.0000 方块**，且**矩阵级** `max diff = 0.000000` |
+| 淡入淡出中途（进度 0.5）**旧**代码给出的缩放 | `(1.0000, 1.0000, 1.0000)` —— 手臂长度回跳 |
+| 同处的视觉误差 | **每方块手臂长度偏 0.5 方块**（缩放 +50% 被打回 0） |
+| TRS 往返（`getUnnormalizedRotation` + `getScale` 重建） | 误差 **1.8e-07**（这条链是干净 TRS，见下） |
+
+⚠ 这一条真正的教训不是"加个 scale 插值"，而是**它破坏了这套机制赖以成立的前提**：
+"idle 与 reload 两端重合，所以换弹进出的淡入淡出什么也不做"。加缩放后两端**仍然完全重合**
+（矩阵级 0.000000）—— 只要插值如实输出目标矩阵，这 3 刻本来就该是**无操作**；
+丢了缩放，插值反而成了唯一的跳变源。
+
+分解口径：`getUnnormalizedRotation` **按列归一化**，正好与 `getScale`（每轴列长）配对。
+这条链上带非均匀缩放的骨骼是线性部分的**最后一个**因子（`R_挂点 · R_lefthand · S`），
+所以是干净的 TRS、往返无损；真出现被旋转夹住的非均匀缩放（剪切）时，中间几帧只能是近似值
+—— 两端（进度 ≥ 1）依然逐字用目标矩阵，不留残差。同文件的 `blendViewTransform`（瞄准位形混合）
+本来就是"平移插值 + 旋转 slerp + 缩放插值"，这次是把它那套口径补到锚点上。
+
+**D. 实现落点**
+
+| 文件 | 改动 |
+|---|---|
+| `client/animation/gun/GeoGunAnimationInstance.kt` | `isReload` 的私有扩展删掉、两处调用点改成属性；新增 `currentGunState` / `subWeaponReloadClipName`；新增 idle 缓存的 `subWeaponIdleClip` 与 `subWeaponIdlePose()` / `subWeaponIdleClipName`（在 `tick` 里由 `updateSubWeaponIdle` 解析） |
+| `client/renderer/gun/GeoGunRenderer.kt` | 新增 `resolveDeployedSubWeaponArmAnchors`（`isDeployed` → 让位判定 → 取 `findSubWeapon` 的挂点与附件模型 → 在**附件实例**上 `applyPose(BLENDER.blend(getBindPose(), pose))` 取 `getGlobalTransform`、`finally` 里 `resetPose()` 配平 —— 附件实例是全局共享的，与 `renderRegisteredAttachments` 同源）、`resolveArmAnchorsForDraw`（优先级合并 + 跨帧插值）、`fadeAnchor`；常量 `ARM_ANCHOR_FADE_TICKS` / `MAX_FRAME_DELTA_TICKS` |
+| `client/animation/gun/GunAnimationState.kt` | `isReload` 提为成员（`takesHandAway = isReload \|\| this == MELEE`；⚠ **五期又加了 `\|\| this == EDIT`**，见 §11.11.11） |
+
+⚠ 跨帧字段（`armAnchorSourceKey` / `armAnchorFade` / `armAnchorFadeFrom` / `armAnchorShown`）只有
+**本地玩家第一人称**会走到（`transformType.firstPerson()` 为假直接返回空表），与既有
+`subWeaponHandAnchors` 的安全性论证相同；"是否部署"（`ActiveGun.isDeployed`）本身也只对本地玩家成立。
+本帧字段在 `renderModel` 开头清空，与既有约定一致。
+
+**D2. ⚠⚠ 采样点必须排在 `applyCameraShake` **之后** —— 否则瞄准射击时手会"飘"**
+
+需求方复查时报："**副武器瞄准射击时，左手并未完全跟随枪身运动，而是随着动画有浮动**"。原因不在插值、
+也不在 clip，而是**锚点的采样顺序**：`resolveDeployedSubWeaponArmAnchors` 原先紧跟 `applyPose`，
+而 `applyCameraShake` 在它**之后**才跑 —— 那一步会**直接改写主武器 `root` 骨骼**：
+
+| `applyCameraShake`（完全瞄准、非换弹分支） | 系数 |
+|---|---|
+| `root` 平移 `x / y / z` | × 0.6 / 0.5 / **0.18** |
+| `root` 欧拉 `x / y / z` | × 0.45 / 0.8 / 0.8 |
+
+也就是"瞄准时把整枪的后坐压下去"。`ak_12.fire_sub_weapon` **只 key 了 `root`**（z 平移峰值 5.205 单位
+＝ 0.325 方块，z 旋转 −7.44°），而 `sub_weapon_pos` 是 `root` 的后代 —— 于是在它**之前**采样的挂点拿到的是
+**没被压缩过的后坐**，枪身画的却是压缩过的：手比枪多走 82% 的 z 行程。
+
+实测（`build/verify/VerifyArmShake.java`，宿主 `ak_12` + `sub_weapon_gp_25`，瞄准满进度）：
+
+| 主武器 clip | `t` | 手离枪的距离 | 对照：主武器**自己**的 `lefthand_pos` 在同样压缩下移动 |
+|---|---|---|---|
+| `idle` | 任意 | **0.0000** | 0.0000（这支 clip 没 key `root`） |
+| `fire` | 0.05 | **0.0259** | 0.0288 |
+| `fire_sub_weapon` | 0.05 | **0.2698** | 0.2880 |
+| `fire_sub_weapon` | 0.40 / 0.80 | 0.0268 / 0.0028 | 0.0166 / 0.0026 |
+
+（绝对值随美术当前的 clip 与挂点远近**在 0.27 上下浮动** —— C2 那次"拉长手臂"就让它从 0.2735 挪到
+0.2698。要精确数字重跑 `run_armshake.sh`；这里要记的是**量级**与"误差随后坐曲线走"这个形状。）
+
+关键旁证：误差**随后坐曲线回落**（0.27 → 0.23 → 0.08 → 0.02 → 0），**腰射时恒为 0.0000**
+（`zoomTime = 0` 时系数全是 1，没有东西可错）—— 这正是"瞄准射击时才飘"的原因。
+
+**修法**：把调用点从 `applyPose` 之后移到 `renderAttachments` 之前（`renderModel` 里，和换弹锚点
+同侧），即"本帧所有会改写主机骨骼的步骤都做完之后"：`applyPose` → `applyCameraShake` → 脚本回调
+（`applyCustomAnimationsByScript`）→ **采样** → `renderAttachments` / `renderToBuffer`。
+换弹那份锚点（`renderRegisteredAttachments` 里）**本来就是对的** —— 它天然排在这些步骤之后。
+
+⚠ 这条是**一般性约束**，不是"下挂筒的怪癖"：以后任何新增的"每帧改写主武器骨骼"的步骤，都必须排在
+采样点之前（或在它之后重采一次）。`renderAttachments` 本身只改 `visible` 标志，不影响变换。
+
+**E. 本次明确不做的（连带删掉的）**
+
+- **握把接管整条链路**：`animationIdOf` / `findStateAnimation` / `IDLE_SUFFIX` /
+  `resolveAttachmentArmAnchors` / `AttachmentSlots.ALL` 那段循环，全部删除，且**不要加回来** ——
+  需求已撤销；
+- 不动任何动画 json、不动任何配件数据（`sbw/guns/sub_weapon_gp_25.json` 里的
+  `Animation.Idle` / `ReloadEmpty` 本来就位，这次是**第一次真的被代码读到**）；
+- 不动副武器换弹那条链路的语义（不摘 `root` 的规则、`resolveSubWeaponFollowPose` 的 `D` 推导）；
+- 不动 `m_79` / `rpg` 等其它副武器数据（它们没写 `Animation.Idle`，于是没有部署接管 —— 静默回退）；
+- ②号方案（把 `lefthand` 端点减掉挂点距离）**不做** —— 它只修下挂筒这一支 clip，
+  且会让"同一份 clip 在手持形态与副武器形态下解读相同"这条性质失效。
+
+**F. 验收（手动）**
+
+| 场景 | 期望 |
+|---|---|
+| ak_12 装下挂筒，**不部署** | 手臂与改动前**逐帧一致**（主武器动画说什么就是什么） |
+| 按下 G 切出下挂筒 | 左手在 ~0.15 秒内**平滑移**到下挂筒上，不是瞬移 |
+| 部署中开火（打榴弹） | 左手一直停在下挂筒上 |
+| 部署中**开镜**瞄着打（`zoomTime` 满） | 左手**整段后坐**都贴在下挂筒上，不随后坐往前/后飘（D2 修的就是这一条） |
+| 部署 + 换弹 | 手从下挂筒上离开去抓炮弹、再回来，全程无跳变（两端与 idle 重合，**含缩放**，见 C2） |
+| 部署（动画里给手臂 key 了 `scale`） | 手臂**长度恒定**：换弹开始/结束那一瞬不闪回原长（C2） |
+| 部署中近战 | 手跟着刺刀走，不留在下挂筒上 |
+| 再按 G 切回主武器 | 左手平滑回到护木 |
+| 不装任何配件 | 手臂表现与改动前逐帧一致 |
+
+
+
+### 11.11.8 【五期·实装】副武器动画的**时间轴音效**（`sound_effects`）接进附件链路
+
+**需求**：*"副武器动画里的音效没有触发，也给加上主武器同款的时间轴触发的特性。"*
+
+**根因**：附件动画播放链路当初只被接上了**姿态**。`GeoGunAnimationInstance` 给副武器换弹
+建的那个 runner（§9.8.7）只被读了 `subWeaponReloadPose()`（= `runner.evaluate()`），
+**从来没有进过 `collectSoundEvents` 那一排** —— 而 `sound_effects` 与姿态是**同一条 clip 上
+的两个通道**（`BedrockAnimation.SOUND_CHANNEL_NAME`），造 runner 的时候就已经在 clip 里了。
+换句话说，那 4 条关键帧一直躺在被 tick 的 runner 上，只是没人来收。
+
+**改动（两处，都极小）**
+
+| 位置 | 改动 |
+|---|---|
+| `client/animation/gun/GeoGunAnimationInstance.kt` | `tick()` 里给 `subWeaponReloadRunner` 补一次 `collectSoundEvents(subWeaponReloadRunner)`，就在它 `tick()` 之后，与其它 runner 那一排同款 |
+| 同上 | 副武器那**整块**（`updateSubWeaponReload` / `subWeaponReloadRunner?.tick()` / `updateSubWeaponIdle`）**加主手门禁** `if (hand == InteractionHand.MAIN_HAND)` |
+
+**为什么要加主手门禁 —— 是"保险"，不是"修 bug"（这条要说清楚，否则下一个人会以为去掉它没事）**
+
+`@param hand` 在构造里原本是个**没用过的参数**（只是签名的一部分）。加门禁的**真正理由**是解析口径：
+`updateSubWeaponReload` 解析宿主枪时读的是 `player.mainHandItem`
+（`ActiveGun` 的不变量 ①：副武器是**主手**那把枪身上的东西），**与实例自己的 `stack` 无关** ——
+所以"这份实例是哪只手的"和"它该不该管副武器"是同一件事，交给 `hand` 表达最直接。
+
+⚠ 但**今天它拦不到任何东西**，因为副手实例压根不会 tick：库的
+`IFPGeoItemRenderer.canRenderInHand(stack, hand)` **默认返回 `hand == MAIN_HAND`**（2.5.6 源码
+`IFPGeoItemRenderer.java:64`），本模组没有覆盖它（`GeoGunRenderer` / `AbstractGeoItemRendererV2`
+都没有这个方法的实现，`javap` 可验），于是 `FirstPersonRenderHandler.tickHandAnimation` 在
+`canActuallyRenderInHand` 那一关就把 `OFF_STATE` 挡掉了 —— `ani.tick()` 根本不会被调到。
+`@param hand` 之所以从"没用过的参数"变成"要判的东西"，是因为**那个默认值正是库文档里写明供覆盖
+的扩展点**（"物品本身决定能否在某只手呈现"，用于双持的双手/单手骨架变体）。一旦有人真的让副手也
+tick，副手实例就会照着**同一份**主手副武器数据再建一套 runner：姿态上无害（那套 pose 没人读），
+**但同一支换弹动画的 `sound_effects` 会被收两遍，音效响两遍**。所以门禁加在**整块**上
+（不只是音效那一行），让这条不变式由代码保证、而不是寄望于库的默认值。
+
+将来若真有"副手也要挂副武器"的需求，得改成"每个实例按自己的 `stack` 解析宿主"，**不是删掉门禁**。
+
+**这几条关键帧会响成什么**
+
+`animation.sub_weapon_gp_25.reload`（clip 长 **1.25 s**）里的 `sound_effects`：
+
+| clip 时间 | 音效 | 换算到换弹进程 |
+|---|---|---|
+| 0.05 | `superbwarfare:common_grab_1` | 0.05 s（换弹一开始） |
+| 0.5917 | `superbwarfare:gp_25_reload_1` | 0.57 s |
+| 0.625 | `superbwarfare:gp_25_reload_2` | 0.60 s |
+| 0.9333 | `superbwarfare:common_grab_2` | 0.90 s（换弹结束前 0.30 s） |
+
+换算的由来：播放速度是 `setAnimationSpeed(state, clip.specifiedEndTimeS / targetSeconds)`，
+`targetSeconds` = 副武器的 `EmptyReloadTime` ÷ 20 = **24 ÷ 20 = 1.2 s**
+（`sbw/guns/sub_weapon_gp_25.json` 里 `EmptyReloadTime: 24` —— ⚠ 这个字段改过：文档早先写的
+80 tick 是旧值；GP-25 只有一个弹位，每次换弹都走 `GunData.tryStartReload` 的空仓分支），
+即 **speed = 1.25 / 1.2 = 1.0417×**，clip 被压回正好 1.2 s —— 与换弹同长，
+所以末条在 runner 被拆掉之前 0.30 s 响完。
+
+⚠ 上表第三列的秒数是**数据算出来的**：`EmptyReloadTime` 一改，整列等比变
+（动画永远铺满整段换弹，clip 与换弹的时长是自动对齐的，见 §9.8.7 的"时长对齐"）。
+要复核就重跑一次那个 harness —— 它的 `EmptyReloadTime` 是**现读数据文件**的，不会过期。
+
+**"每条只响一次"是量过的，不是推的**（`build/verify/VerifySubWeaponSound.java`，
+跑 `sh build/verify/run_subweaponsound.sh`）。它照抄 mod 的建 runner 方式与
+"先 `updateSubWeaponReload()`（每 tick 重写速度）再 `tick()`"的顺序，用可控时钟步进：
+
+| 场景 | 结果 |
+|---|---|
+| A. 直接读 clip 的声音通道 | 4 条，时间与上表一致（`Animation.clip(channel, from, to)` 返回的 `ResourceLocationKeyframe`） |
+| B. 20 Hz 理想客户端 | 每条**恰好一次**，落在第 0 / 11 / 12 / 17 tick（0.05 / 0.57 / 0.60 / 0.90 s） |
+| C. 帧间隔抖动（16 / 33 / 200 / **2000** ms） | 仍然每条**恰好一次** |
+| D. 关键帧正好压在步进边界（合成 clip，0.5 s 与 1.0 s） | 每条**恰好一次**（半开区间，边界那一条归"跨度起点落在它上面"的那一 tick） |
+| E. clip 结束后继续 tick 2000 ms | **0 条**（`PauseState` 不再入队，`clipPlans` 每 tick 清空） |
+
+两个性质支撑上表：
+
+- **区间是半开的**：`Animation.clip(channel, from, to)` 文档写明 `[from, to)`，
+  `ArrayClipChannel` 两端都用 `findIndexBefore(x, /*open*/true)` 实现，所以每 tick 的
+  `[p0,p1) [p1,p2) …` 把整支 clip **恰好划分**一遍 —— 关键帧不会跨 tick 重复；
+- **区间是连续的**：`PlayingState.update` 入队的是 `(本 tick 前的 progress, 本 tick 后的 progress)`，
+  而 `AnimationContext.update` 每次开头 `clipPlans.clear()`。**所以帧率再低也不会漏**：
+  一帧跨过的那几条会在这一帧里**一起**交出来（C 的 2000 ms 就是这种"一次响三条"的爆发）。
+  这不是新问题 —— 主武器的时间轴音效走的就是同一支 `collectSoundEvents` + 同一个 runner 机制，
+  卡顿时同样会"攒着一起响"。
+
+> ⚠ 顺带记一条**改这里时要小心的**：`AnimationRunner.clip(channel)` 每次调用都从
+> `clipPlans` 重新取一个迭代器、**没有"已读"标记**。所以同一 tick 里对**同一个通道**读两次
+> 就会拿到同一批关键帧两遍（音效就响两遍）。现在副武器换弹 runner 只在
+> `collectSoundEvents(subWeaponReloadRunner)` 这一处被读，是安全的；将来若有人再给它加一处
+> 消费（比如把 `particle_effects` 也接上），要么共用一次读取，要么记住这个坑。
+
+**⚠ 遗留：`ReloadEndSound` 现在与动画重复**
+
+`sbw/attachments/sub_weapon_gp_25.json` 里的 `ReloadEndSound = superbwarfare:gp_25_reload_2`
+与动画 `"0.625"` 那条**是同一个音效**（声音文件本来就来自这支动画），
+所以一次换弹会**响两下**（相隔约 0.6 s，听得出重音）。这两个字段（`ReloadSound` /
+`ReloadEndSound`）现在的定位是**兜底**：它们在**服务端**发声（`playLocalSound` → 只发给射手）、
+且不依赖动画进度与相机视角（动画关键帧是纯客户端的，且只有第一人称那份实例活着时才收得到）。
+**要删哪一边由需求方定**，本次**没有替需求方做主**：
+
+- 删数据字段 → 服务端这条链路彻底没声（对"别人换弹"没用，但射手听得最准、与手部动作一致）；
+- 删动画关键帧 → 射手听到的是"状态跳变那一刻"的音，与手部动作对不齐（动画里那条 0.60 s 是
+  "炮弹上膛"的瞬间，而状态跳变在 0 s）。
+
+**本次验证（手动）**
+
+| 场景 | 期望 |
+|---|---|
+| 部署下挂筒 + 按 R | 换弹开始瞬间 `common_grab_1`，中段 `gp_25_reload_1`（0.57 s）与 `gp_25_reload_2`（0.60 s，与数据里的 `ReloadEndSound` 撞车 → 听到重音），结束前 0.30 s `common_grab_2` |
+| 双手各持一把枪（副手也拿枪） | 换弹音**只响一遍**（主手门禁；今天副手实例本来就不 tick，这一格是"没有变差"的确认） |
+| 不部署、普通枪换弹 | 与改动前逐字一致（主武器那一排 `collectSoundEvents` 一个字没动） |
+| 卡顿一下再恢复 | 那一段的关键帧**一起**响（不是漏响）——与主武器同一机制，行为一致即可 |
+| 第三人称 | 时间轴音效**照响**（`collectSoundEvents` 没有 `isFirstPerson()` 守卫，与主武器同一口径；粒子那条有） |
+
+
+
+---
+
+### 11.11.9 【五期·实装】副武器开火的**镜头后坐**（`RecoilX` 读不到的那个洞）
+
+回报："`sub_weapon_gp_25.json` 里的 `RecoilX` / `RecoilY` 似乎没正常工作，副武器射击时的后坐力极小。"
+
+先给结论：**`RecoilX` 一个字节都没被用过**（不是数值小，是整项恒 0）；`RecoilY` 只剩"水平偏"那
+一条通道还活着 —— 所以手感是"**枪不抬头、镜头不晃，只有一点随机侧偏**"。数值本身不小：
+`sub_weapon_gp_25` 是 `0.002 / 0.063`，`amplitude = 25000·X·Y = 3.15`，比 `ak_12` 的 `0.72` 还大。
+
+#### ① 两个消费者，一个共同的洞
+
+`RECOIL_X` / `RECOIL_Y` 在全仓的读取点只有三处，**全在 `ClientEventHandler`**：
+
+| 读点 | 公式 | 干什么 | 通道 |
+|---|---|---|---|
+| `handleWeaponFire`（约 2685） | `amplitude = 25000 · RECOIL_Y · RECOIL_X` | `shake` 的倍率 | **镜头滚转** `cameraRot[2]` |
+| `handleGunRecoil`（约 2939/2966） | `70·pose·RECOIL_X·sin(φ·2π)·(2.2−φ)·4.8·(4/(W+4))` | 抬枪 | **镜头俯仰** `player.xRot` |
+| `handleClientShoot`（约 2016） | `recoilY = ±RECOIL_Y·10` | 塞进 `recoilHorizon` | **镜头水平偏** `player.yRot` |
+
+前两处的相位 `φ` 都是 **`firePosTimer`**，而它只有一个开启点：
+
+```kotlin
+// handleWeaponFire
+if (fireRecoilTime > 0.0) {
+    firePosTimer = 0.001        // ← 全仓唯一的开启点
+    ...
+}
+```
+
+`fireRecoilTime` 又只在 `handleClientShoot` 里赋值，而**副武器那一发刻意是 `0.0`**（§11.10.11：
+枪身位形交给 `fire_sub_weapon` 动画）。于是副武器开火时 `firePosTimer` **恒为 0**，而两处的门禁
+恰好都是"大于 0"。第三处（`recoilHorizon`）**没有门禁**，所以 `RECOIL_Y` 的水平那一半一直在工作。
+
+⚠ 注意滚转那一项还有个更隐蔽的二次归零：`shake ∝ MathTool.decayingOscillation(0.6, 2, 2, φ)`，
+它在 `φ == 0` 处**恰好**是 `a·e⁰·sin(0) == 0` —— 连里面的 `amplitude`（也就是 `RECOIL_X`）都被
+乘以了 0。**读得到、用不上**。
+
+#### ② 顺带查到的一格：枪身位形也是全 0（但这是对的）
+
+`handleShootAnimationV2` 的六项分别读 `firePosTimer` / `fireRotTimer` / `firePosZ`，而
+`getBoneRotX/Y/Z(0)`、`getBoneMoveY/Z(0)` **全是 0**（每张表第一段都从 `0F` 起插值），
+`firePosZ` 又只在同一个死门禁里被喂。所以副武器那一发的枪身位移**恰好**全为 0 ——
+枪身的可见后坐 100% 来自 `fire_sub_weapon` 动画（动的是宿主枪的 `root`，峰值 7.4° / 4.7）。
+这正是 §11.9-D / §11.10.11 想要的，**本次不动它**。
+
+同理，`fireSpread` / `recoilForce` / `boltMove` 对副武器仍是 0 —— 也都是应该的
+（`boltMove` 尤其：如果为了镜头去借 `firePosTimer`，**打榴弹时步枪会拉栓**，
+与 §11.10.10 的"打榴弹时步枪抛壳"同族）。
+
+#### ③ 修法：只给镜头单开一条相位
+
+`ClientEventHandler` 新增 `subWeaponRecoilTimer`（0 → 2.0，与 `firePosTimer` 同一形状
+`+0.16·times`、归零阈值也一样），**只喂镜头**：`shake` 与 `handleGunRecoil` 的抬枪。
+四处改动：
+
+| # | 位置 | 内容 |
+|---|---|---|
+| 1 | 字段区 | 新增 `SUB_WEAPON_RECOIL_START = 0.001` 与 `@JvmField var subWeaponRecoilTimer` |
+| 2 | `handleClientShoot` | 副武器分支开它；**主武器分支清零**（与枪口焰窗口同一条"二选一"规则，否则抬枪抬两次） |
+| 3 | `handleWeaponFire` | 推进它；`shake` 的相位改成 `val recoilPhase = if (firePosTimer > 0) firePosTimer else subWeaponRecoilTimer` |
+| 4 | `handleGunRecoil` | 抬枪那一项的 `if (firePosTimer > 0.0)` 与 `sin/cos` 里的 `firePosTimer` 换成同一个 `recoilPhase` |
+
+两个相位**同进同出**，任何一帧最多一个大于 0，所以不会叠加成"抖两下"。
+
+#### ④ 实测（`build/verify/VerifySubWeaponRecoil.java`，`sh build/verify/run_subweaponrecoil.sh`）
+
+该 harness 把上面四条公式**逐字重抄**一遍（数值从 `sbw/guns/*.json` 现读），按 20 fps 跑 40 帧；
+`HANDLING_WEIGHT = 5.5`（ak_12 的 4 + 配件 `Weight +1.5`），`WEAPON_SCREEN_SHAKE` 取默认 100，
+`partialTick` 取 0.5。⚠ 它验证的是**算式与门禁结构**，不是"线上代码一定这么跑"
+（那条链路要活的 `Minecraft` 实例）。
+
+| 配置 | `amplitude` | 峰值 \|Δ俯仰\| | 峰值 \|滚转\| | Σ 水平偏 |
+|---|---|---|---|---|
+| A. 主武器 `ak_12`（`0.0016 / 0.018`） | 0.720 | 0.566° | 0.313° | −0.262° |
+| B. 副武器，**改前**（`0.002 / 0.063`） | 3.150 | **0.000°** | **0.000°** | −0.716° |
+| C. 副武器，**改后** | 3.150 | 0.724° | 0.530° | −0.716° |
+| D. 副武器，`RecoilX` 提到 `0.008` | 12.600 | 2.895° | 1.737° | −0.716° |
+
+B 那一行的三个 0 就是回报的症状；C 是修完的结果（俯仰已经**略高于** `ak_12` 自身的一发）；
+D 说明现在**调数值真的有效**——想要更强的榴弹感，把 `RecoilX` 往上加即可
+（参考档：`rpg 0.008/0.018`、`m_79 0.004/0.023`、`m_2_hb 0.015/0.020`）。
+`Σ 水平偏` 在 B/C/D 三列完全一样，正是"`RECOIL_Y` 的水平通道从来没坏过"的证据。
+
+#### ⑤ 顺手澄清：`ShootShake` 不是射手自己的镜头
+
+`sub_weapon_gp_25.json` 里的 `ShootShake: [5, 5, 6]` 一直**不影响自己**：
+`GunData`（约 1360）把它发成 `ShakeClientMessage.sendToNearbyPlayers(...)` ——
+**晃的是旁边玩家的镜头**，射手本人被排除在外。射手自己的晃动就是上面那条 `decayingOscillation`
+（受 `DisplayConfig.WEAPON_SCREEN_SHAKE` 控制）。所以"调 `ShootShake` 没感觉"是正常的，
+不要拿它当后坐参数。
+
+#### ⑥ 手动验收
+
+| 场景 | 期望 |
+|---|---|
+| AK-12 装下挂筒、部署、左键打一发 | 镜头**抬一下**再落回（俯仰），并有一点点滚转；不再只是随机侧偏 |
+| 同一发，看枪身 | 与改前**逐帧一致**：枪身只走 `fire_sub_weapon` 动画，**不**额外抖一下（§11.10.11 的 11t 仍然成立） |
+| 同一发，看拉栓 | 宿主枪**不**拉栓（`boltMove` 仍归 `firePosTimer`） |
+| 把 `sub_weapon_gp_25.json` 的 `RecoilX` 从 `0.002` 改成 `0.008` 再打一发 | 抬枪幅度**明显变大**（改前怎么改都没反应） |
+| 打榴弹后紧接着打步枪子弹 | 只有一次抬枪（主武器分支清掉了副武器相位） |
+| 卧姿/下蹲 | 与主武器同一套 `pose` 缩放（0.7 / 0.5 / 1.0） |
+
+### 11.11.10 【五期·实装】副武器的 `idle_view`：**hip 位形的平滑切换**
+
+#### ① 症状：新加的骨骼是死的
+
+在 `models/bedrock/attachment/sub_weapon_gp_25.geo.json` 里给 `positioning` 添了一支 `idle_view`
+（pivot `[5.56, 5.54, 20.17]`，与 `iron_view` 只差一个 Z），部署 / 取消部署时视点**纹丝不动**。
+原因不是"值不对"，而是**没有读者**：`idle_view` 全仓只有三个读取点，
+基准永远是 `computeViewTransform` 里的 `model.getGlobalTransform(IDLE_VIEW_BONE)` ——
+而那个 `model` 是**宿主机枪**的模型，附件模型里的同名骨骼从头到尾没人问过。
+
+这也解释了为什么"仿照 `iron_view` 加一支骨骼"在瞄准那一侧成立（`SubWeaponInfo.VIEW_BONE` 早有读者，
+§9.8.6）、在 hip 这一侧却不成立：hip 基准从来没有"副武器来源"这个概念。
+
+#### ② 一句话做法
+
+**部署期间把 hip 基准换成一个"取不到就回退"的每帧字段；字段由 `renderModel` 每帧推进一次，
+推进速率与切换左手同源。**
+
+| 位置 | 改动 |
+|---|---|
+| `GeoGunRenderer` 字段区 | `idleViewAnchor: Matrix4f?` + **每只手一份**的 `IdleViewFade(key / fade / from / shown)`（两只手共用同一个 renderer 实例，粒度同 `scopeViewSmoothing`） |
+| `resolveSubWeaponIdleTransform`（新增，`open`） | 与 `resolveSubWeaponAimTransform` **逐字同形**，只把骨骼名换成 `idle_view`：`attachmentModel.getGlobalTransform(IDLE_VIEW_BONE)` × `model.getBindGlobalTransform(挂点骨骼)` |
+| `updateSubWeaponIdleView`（新增，`private`） | **唯一**推进点：判来源 → 推 `fade` → 混合 → 写 `idleViewAnchor` |
+| `renderModel` | 开头与 `deployedArmAnchors = emptyMap()` 等一起清空；`applyCameraShake` **之后**、`updateEditFocus` **之前**调一次 |
+| `computeViewTransform` | 基准改读 `idleViewAnchor ?: model.getGlobalTransform(IDLE_VIEW_BONE)` |
+| `computeEditFocusOffset` | 同上（理由见 ⑤） |
+
+`SubWeaponInfo.IDLE_VIEW_BONE = "idle_view"` 与既有 `VIEW_BONE = "iron_view"` 并列 ——
+同样是**约定骨骼名、没有配置字段**：附件模型里有它就自动接管，没有就继续用主武器的 `idle_view`。
+所以除 `sub_weapon_gp_25` 之外的一切副武器（包括模型里没有这支骨骼的）**逐帧不变**。
+
+#### ③ 速率"跟左手一样"是构造出来的
+
+淡入淡出**整条复用左手接管那套**（§11.11.7.4 的 `resolveArmAnchorsForDraw` / `fadeAnchor`），
+包括那个容易被忽略的钳位：
+
+```kotlin
+delta = mc.deltaFrameTime.coerceIn(0f, MAX_FRAME_DELTA_TICKS /* 0.8 */)
+fade += delta / ARM_ANCHOR_FADE_TICKS /* 3f */
+t     = fade * fade * (3f - 2f * fade)          // smoothstep，与左手同一个
+```
+
+所以"同速"不是一个抄来的数字，而是**同一个常量 + 同一个钳位 + 同一条曲线**；
+将来调左手速率，两边一起动。混合走现成的 `blendViewTransform`
+（平移 `lerp` / 旋转 `slerp` / **缩放 `lerp`** —— 缩放的坑见 §11.11.7.4）。
+
+⚠ **3 刻 ≠ 3 帧**：`MAX_FRAME_DELTA_TICKS = 0.8` 会把 20 fps 的整整 1 tick 钳成 0.8，
+于是 `3 / 0.8 = 3.75 → 4 帧`。这是左手**今天就是这个行为**，不是这次改出来的：
+
+| 帧率 | 收敛帧数 | 实际时长 |
+|---|---|---|
+| 20 fps（`delta 1.0` → 钳到 0.8） | 4 | 0.200 s |
+| 40 fps | 6 | 0.150 s |
+| 60 fps | 9 | 0.150 s |
+| >100 fps | 30 | 0.150 s |
+| 卡一下（一帧 3 刻）后回到 20 fps | 4 | 0.600 s |
+
+#### ④ ⚠ 三个必须知道的口径
+
+**（a）挂点取绑定变换，不取当帧动画变换。** 与瞄准那条路径同一个理由
+（`resolveSubWeaponAimTransform` 内已有注释）：`fire_sub_weapon` 会动宿主的 `root`，
+拿当帧挂点建出来的锚点会跟着后坐一起走 —— **相机跟着枪走 = 屏幕上的枪不动**，开火动画白做。实测：
+
+| 挂点来源 | 锚点相对静止基准的最大偏移 |
+|---|---|
+| 当帧动画挂点 | **0.3782** 格（`t = 0.07` 时） |
+| **绑定**挂点（落地实现） | **0.0000**，逐帧 |
+
+同一支 clip 下主武器自己 `idle_view` 的位移是 `0.0000` —— 所以"稳住"就是全部要求，
+绑定挂点正是让副武器锚点也稳住的那个选择。
+
+**（b）推进绝不能写进 `computeViewTransform`。** 它每帧被调**两次**
+（`applyFirstPersonPositioningTransform` 与 `zoomPivot`），推进写在那里 = 线性淡入走两遍，
+3 刻变 1.5 刻，正好毁掉 ③ 的"跟左手一样"。字段每帧只写一次，两个读者拿到的是同一帧的同一个矩阵。
+调用点还必须**早于 `updateEditFocus`**（⑤）。
+
+**（c）收尾判据是 `fade` 而不是 `key`。** 来源刚变回 `null` 的那一帧是"**淡出开始**"而不是"已结束"：
+只看 `key` 会把上一帧的矩阵冻一帧再硬跳（§11.11.7.4 那处踩过同样的坑）。代码里只在
+`key == null && fade >= 1f` 时才把字段交还 `null`。
+
+#### ⑤ 顺带对齐：改装聚焦的基准
+
+`computeEditFocusOffset`（= 配件定位点 − `IDLE_VIEW_BONE`）与 `computeViewTransform`
+（= 把该偏移加回**基准**）是一对，两边必须同源，否则 `基准 + (配件点 − 主武器 idle_view)`
+在部署期间会差 `|副武器 idle_view − 主武器 idle_view|`。改后两边都读同一个 `idleViewAnchor`，
+`基准 + (配件点 − 基准) = 配件点` 与基准无关；未部署时字段为 `null`，逐字等价。
+
+#### ⑥ 实测（`build/verify/VerifySubWeaponIdleView.java`）
+
+用**真实 geo.json** 建真 `SimpleBedrockModel` 取骨骼链，把 `Fade.step` / `blend` / `smoothstep`
+逐字重抄，按 20 fps 跑 15 帧（`delta = 1f` → 钳到 0.8）：
+
+| 场景 | 不淡时那一下硬切 | **有淡入时最大单帧位移** |
+|---|---|---|
+| A / B. 第 3 帧部署、第 9 帧取消 | 0.2090 格 | **0.0783**（0.37×） |
+| C. 第 2 帧（已淡 2/3）打断、立刻取消部署 | 0.2090 格 | **0.0367**（从**已经画出去的位置**续走，不跳回） |
+| D. 附件模型没有 `idle_view` | 0.2090 格 | **0.0000**（`key` 恒为 `null`，整条老路径） |
+
+- 收敛：来源切换后**第 4 帧逐字等于目标**（是"等于"，不是"接近"）。
+- 场景 C 打断的那一帧 `step = 0.0000` —— 锚点停在原地，这就是"从屏上位置续走"的证据。
+
+跑法：`sh build/verify/run_subweaponidleview.sh`（复用 `runtimecp.txt` + MAE jar）。
+
+#### ⑦ 显式不做的三件事
+
+1. **瞄准位形（`iron_view`）不淡** —— 只要求了 `idle_view`。它今天仍是"部署那一帧硬切"
+   （`resolveSubWeaponAimTransform` 由 `null` 变有值，再叠 `zoom` 混合）。要加就是同一个淡入淡出
+   多接一个目标，**一行**；说一声就加。
+2. **脚架混合不动** —— `bipodViewTransform` 照旧叠在基准之上。部署中若同时满足卧姿 + 脚架，
+   仍是"从副武器的 hip 混向主武器的 `bipod_view`"，现状语义，保持不改。
+3. **不动任何 json** —— 副武器 geo / 数据一个字不改；`first_person` 显示变换、LOD 路径、
+   第三人称 `positioningBone`、手臂接管那套全部不碰。
+
+**换副武器也会淡**：`key` 是 `"<挂点骨骼>@<附件模型路径>"`，换掉副武器 = 来源标识变
+= 从当前屏上位置淡向新来源，不需要一行额外代码。
+
+#### ⑧ 手动验收
+
+| 场景 | 期望 |
+|---|---|
+| 腰射状态下部署 / 取消部署副武器 | 视点**平滑移过去**（约 0.2 s），无单帧跳变 |
+| 部署后静止 | 视点停在**副武器**自己的 `idle_view` 上（不是主武器的持枪位形） |
+| 部署中开火 | 相机**不**跟着 `fire_sub_weapon` 的 `root` 抖（锚点走绑定变换） |
+| 部署中进改装、聚焦配件 | 相机仍**精确**对准配件定位点 |
+| 部署中途再按 G（来源打断） | 视点从**当前所在位置**继续走，不跳回主武器再出发 |
+| 没装副武器 / 副武器模型没有 `idle_view` | 与改动前**逐帧一致** |
+
+### 11.11.11 【五期·实装】改装期间手臂**回归主武器**（`EDIT` 加入让位判据）
+
+> **一句话**：部署了副武器的枪在**改装状态**下，手臂交还给主武器；退出改装再接管回来，
+> 两次交接都走既有的 3 刻淡入淡出。判据与 reload / 近战**同一条尺子**（实测位移）。
+
+#### ① 症状与根因
+
+改装动画会把**整枪连手一起**挪进"检视"姿势 —— `ak_12.edit` 同时 key 了 `root` / `lefthand` /
+`righthand`（不是所有状态都这样：`ak_12.fire` 压根没 key `lefthand`）。而部署接管这时还按
+**副武器的挂点**牵着手，于是左手被按在原处、随枪身拉开，**整个改装过程**一直保持这个姿势 ——
+不是闪一下，是"一直错"。
+
+#### ② 判据：实测位移（`build/verify/VerifyEditArmYield.java`，跑 `sh build/verify/run_editarmyield.sh`）
+
+`takesHandAway` 的判据从来都是"主武器自己的手跑了多远"，这次照同一条尺子量
+（宿主 `ak_12` 的 `lefthand_pos` 相对 idle 的最大位移，41 点扫全程）：
+
+| 状态 | 最大位移 | 让位？ |
+|---|---|---|
+| `reload_empty` | 1.55 方块 | ✅（原有） |
+| `hit`（近战） | 1.25 | ✅（原有） |
+| `edit` | **0.93** | ✅ **本次新增** |
+| `fire` | 0.47（`ak_12.fire` 没 key `lefthand`，全来自 `root` 的枪身位移） | ❌ |
+| `change_fire_mode` | 0.02 | ❌ |
+
+不让位时错多少：**0.7477 方块** —— 即 `|接管锚点 − 主武器自己的手|` 在 `edit` 全程的最大值
+（首帧 0.3082，随检视姿势 settle 逐渐拉到 0.7477）。同一个 harness 也把"该不该让位"变成可复算的数，
+而不是"看着别扭"。
+
+#### ③ 改动：一行
+
+`GunAnimationState.takesHandAway`：`isReload || this == MELEE` → 再加 `|| this == EDIT`。
+全仓**唯一**消费者是 `GeoGunRenderer.resolveDeployedSubWeaponArmAnchors`，所以这一行的作用面
+精准地就是"部署接管让位"。
+
+交接不需要新代码：来源标识变成 `null` → `resolveArmAnchorsForDraw` 从**上一帧真正画出去的位置**
+淡到主武器骨骼（3 刻）；退出改装时反向再来一次。实测两端落差 **0.3082 / 0.2082 方块**，
+比"部署/解除部署"那一次的 0.3563 还小。
+
+⚠ 判"改装"用的是**状态**（`currentGunState == EDIT`）而**不是** `ClientEventHandler.isEditing`。
+`resolveState` 里 `EDIT` 要求 `animation.edit != null`，于是**没有 `Animation.Edit` 的枪行为逐帧不变**
+（那种枪改装时不播任何动作，接管本来就不会错位；一刀切成 `isEditing` 反而会让它们凭空多一次手部起落）。
+另外 `editExitRunner` 那一段（退出改装的收尾，此时 `isEditing` 已为 false）`currentState` 仍是 `EDIT`，
+所以让位覆盖**整段收尾**，交接点自然落在动画结束之后。
+
+#### ④ 顺手重测：§11.11.7.4 那张表的数字已经过时
+
+资产动过（`sub_weapon_gp_25.geo.json` 加了 `idle_view` / `iron_view`），重跑 `run_armoverlay.sh`：
+
+| 量 | §11.11.7.4 记的 | 现在 |
+|---|---|---|
+| `\|副武器 idle − 主武器 idle\|` | 0.4919 | **0.3563** |
+| `\|主武器 reload_empty − idle\|` 最大 | 0.7014 | **1.5484** |
+| `ak_12.fire` 的锚点 − idle | 0.4624 | 0.4657 |
+
+第二行**不是资产变了，是采样密了**：旧表打印的是 `t` 步长 0.1 的抽样，真正的最峰落在 1.09 s
+那两步之间。结论不变（换弹时手确实被挪走），但要引用时以新值为准。
+
+#### ⑤ 显式不做
+
+- **副武器自己换弹期间进改装**：那一趟的锚点优先级仍高于接管，手臂照旧跟**副武器**的换弹动画走
+  （那是美术给副武器写的手部编排，放开反而更怪）。要它也一并交还，就是再加一个条件。
+- **`BOLT` / `RUN` 不动**：`ak_12` 没有这两支 clip，没有实测数据支持，维持不让位。
+
+#### ⑥ 手动验收
+
+| 场景 | 期望 |
+|---|---|
+| 部署副武器后打开改装界面 | 左手在约 0.15 s 内回到**主武器**的握把位置，并保持 |
+| 改装界面里浏览配件 / 拖动视角 | 左手始终贴主武器，不再被按在榴弹筒上 |
+| 关闭改装界面（副武器仍部署着） | 左手平滑回到榴弹筒 |
+| 没装副武器 / 副武器没部署 | 逐帧不变 |
+| 改装中部署的枪开火 | 不受影响（`FIRE` 仍不让位） |
 
 ---
 
@@ -4326,6 +5055,10 @@ animation.sub_weapon_gp_25.reload 的 lefthand.position：
 | 84 | 瞄准位形与倍率必须同源 | 副武器**有**自己的 `iron_view` → 位形与倍率都取它自己的；**没有** → 位形回退到宿主枪的瞄具/机瞄，**倍率也一起回退**（含宿主瞄具的倍率）。判据是 `GeoGunRenderer.subWeaponHasOwnAimPose(宿主枪)`，**两条路径共用**，永不会各走各的。⚠ 判"操控的是不是副武器"用 `isSubWeapon`，**不能**用 `isDeployed(副武器的 GunData)` —— `ActiveSlot` 只写在宿主枪上（§9.8.6 / §11.10.10-②） |
 | 85 | 滚轮调整倍率作用于谁 | **主武器**（`player.mainHandItem`），与滚轮切瞄具同一条口径（§9.8.11）。客户端是拿主手那把枪的能力决定发哪条报文的，服务端 handler 必须操作同一把枪 —— 否则报文落在副武器上、写进一个永远不会被读到的 `CustomZoom`（§11.10.10-③） |
 | 86 | 开火表现的两个窗口 | **`fireRotTimer`（主武器）与 `subWeaponFireRotTimer`（副武器）二选一**，每次开火只开一个：副武器那一发开副武器的窗口（枪口焰挂榴弹筒、**不做枪身后坐**），主武器那一发开主武器的窗口并把副武器窗口清零（火焰立刻回到枪管）。⚠ **只"清零"不"开启"就等于这个计时器永远是 0**，而门禁读的正是"大于 0"（§11.10.11） |
+| 86b | 副武器开火的**镜头**后坐 | **枪身与镜头分开供**：枪身由 `fire_sub_weapon` 动画（宿主枪的 `root`），镜头由 `subWeaponRecoilTimer` —— 它只喂 `handleWeaponFire` 的 `shake`（滚转）与 `handleGunRecoil` 的抬枪（俯仰），**不碰**枪身位形/拉栓。⚠ 不能直接借 `firePosTimer`：它的开启点在 `fireRecoilTime` 里（副武器那一发是 `0.0`），而它同时驱动枪身位形与 `boltMove`（借来就会"打榴弹时步枪拉栓"）。借之前 `RecoilX` **一个字节都没被用过**（§11.11.9） |
+| 86c | 「后坐参数」到底有几个 | 射手自己的镜头后坐 = `RecoilX`（抬枪）+ `25000·X·Y`（滚转）+ `RecoilY`（水平偏）。`ShootShake` **不是**射手自己的 —— 它只晃**附近玩家**的镜头（`GunData` 的 `ShakeClientMessage.sendToNearbyPlayers`），调它不会改变自己的手感（§11.11.9-⑤） |
+| 89 | hip 位形（`idle_view`）的主副切换 | **部署期间换成副武器自己的 `idle_view`，3 刻淡入淡出、与切换左手同速** —— 同一个 `ARM_ANCHOR_FADE_TICKS`、同一个 `MAX_FRAME_DELTA_TICKS` 钳位、同一个 `smoothstep`，所以"同速"是构造出来的而不是抄来的。基准是**每帧字段** `idleViewAnchor`，**只在 `renderModel` 里推进一次**：`computeViewTransform` 每帧跑两次（定位 + `zoomPivot`），推进写在那里会把 3 刻走成 1.5 刻。挂点取**绑定**变换（同 84 的瞄准路径），否则相机跟着 `fire_sub_weapon` 的 `root` 漂 **0.3782** 格；改装聚焦的基准必须跟着同源，否则相机偏 **0.2090** 格。附件模型没有这支骨骼 → 字段恒为 `null`、逐帧回到老路径；**`iron_view` 的硬切不动**（§11.11.10） |
+| 90 | 改装状态下的手臂归属 | **`EDIT` 加入 `takesHandAway`：改装期间手臂交还主武器**。判据与 reload / 近战**同一条尺子**（实测 `lefthand_pos` 位移：`reload_empty` 1.55 / 近战 1.25 / **`edit` 0.93** 方块），不让位时左手会被副武器挂点按在原处、随枪身拉开 **0.7477** 方块，而且**持续整个改装过程**。判据用**状态**（`currentGunState == EDIT`）而不是 `isEditing`：没有 `Animation.Edit` 的枪行为逐帧不变。交接复用既有的 3 刻淡入淡出（两端落差 0.31 / 0.21 方块），一行改动（§11.11.11） |
 | 87 | 动作锁的推进责任 | **任何可能被 `force`/`acquire` 的 `GunActionLock.State` 都必须有人 `tick()`**。`State` 是纯客户端的 tick 计数、**没有超时兜底**，漏一个推进点就是永久锁死（症状：切到副武器后开不了火、近战不了）。四期把 `SUB_WEAPON` 从"主手那把锁"挪到了 `ActiveGun.dataOf(player)`（= 副武器那把，没人推），于是引入这个坑（§11.10.12-①） |
 | 88 | 门禁谓词不得回退 | 四期把开火/瞄准/近战/换弹那批门禁从 `isHeldWeapon` 换成了 `isOperable`，但 `onFovUpdate` 的 FOV/倍率块**漏了一处** —— 副武器被 `isHeldWeapon` 判成"不是枪"，整段倍率计算被跳过，表现为"瞄准位形抬起来了、镜头完全没放大"。**凡是"读 `ActiveGun` 拿到的栈"再问"它是不是枪"的地方，一律用 `isOperable`**（§11.10.12-②） |
 | 57 | 为什么不真的换主手物品 | 主手是双端权威槽（客户端改写会被同步冲掉）、副武器栈是"凭空造的合成栈"（丢出去会掉出不该存在的物品）、快捷栏 9 槽与"枪身上的配件"基数不同 → **一律不换物品**，只换"被操控的枪"（§9.8.1） |
@@ -4334,12 +5067,13 @@ animation.sub_weapon_gp_25.reload 的 lefthand.position：
 | 59 | 副武器的开火/换弹/瞄准 | **零专属代码**：`GunData.shoot` / `tryStartReload` / `zoom` 全是纯 `GunData` 驱动，把 `GunData` 换成副武器那份即可；三期的 `SubWeaponFireMessage`、`SubWeaponClientHandler` 的 `Semi`/`Auto`/`Burst` 手写状态机全部删除（§9.8.3） |
 | 60 | 近战 | **恒用主武器**：V 走主手的 `GunData`（装了刺刀就是刺刀动作），副武器没有近战输入也不参与判定；`MeleeAttackMessage` 的 `SUB:<slot>` 链路删除（§9.8.2 / §9.8.11） |
 | 61 | 副武器的换弹 | **玩家按 R**；删除三期全部自动装填（`shouldStartReloading` 轮询、退避、`wasReloading` 跳变、动作栏进度、开始/结束音效）（§9.8.4） |
-| 62 | 换弹音效 | 由**宿主枪换弹动画的关键帧**负责；配件字段 `ReloadSound`/`ReloadEndSound` **删除**（避免两套音源重音）（§9.8.4）→ ⚠ **已推翻，见 §12.6-65c：两字段保留**（动画改成做在副武器自己的资源里之后，附件链路不接音效关键帧）（§11.10.5-⑤） |
+| 62 | 换弹音效 | 由**宿主枪换弹动画的关键帧**负责；配件字段 `ReloadSound`/`ReloadEndSound` **删除**（避免两套音源重音）（§9.8.4）→ ⚠ **已推翻，见 §12.6-65c：两字段保留**（四期时动画改成做在副武器自己的资源里、附件链路不接音效关键帧）（§11.10.5-⑤）。⚠⚠ **五期起附件链路接管了音效关键帧（§12.6-65d），重音问题真的出现了** —— 那条"避免两套音源重音"的原始诉求现在要靠删掉其中一边来满足 |
 | 63 | 副武器开火动画 | **不新增字段**：现有 `SubWeaponInfo.Animation` 就是它（默认 `["fire_sub_weapon"]`），三期"宿主枪播候选链"的实现方式在四期恰好就是想要的；只需把语义从"副武器开火时"修订为"副武器激活时"（§9.8.5 / §11.10.5-②） |
 | 64 | 副武器的换弹动画放哪 | **放副武器自己的枪械资源里**（`sbw/guns/sub_weapon_gp_25.json` 的 `Animation.Reload: animation.sub_weapon_gp_25.reload`）——副武器是独立的 `GunData`，因此天然有独立的 `GunResource`，与普通枪同一套机制。落地三处改动：`AttachmentModelReloadListener` 补 `animPath`、`BedrockAttachmentModel` 补 `applyPose`/`resetPose`、宿主动画实例里给副武器建一个 runner（§9.8.7）。**`SubWeaponInfo.ReloadAnimation` 不新增**（原方案作废） |
 | 65 | 副武器动画怎么与主武器"融合" | **不需要姿态融合**：宿主枪照常播 `idle`、副武器播自己的换弹，两个模型是**各自独立的姿势树**，骨骼命名空间不重叠（副武器的 `root` 是它自己模型的根），所以天然不冲突。原方案（在宿主枪动画文件里做一支只含 `lefthand` 的 clip + `NoAllocMergeBlender` 覆盖宿主 idle）**作废**（§9.8.7 / §11.10.5-④） |
 | 65b | 副武器要不要 idle | **不要**：换弹之外它就是静止挂在枪上，**持枪态以主武器的 idle 为准**（按需求）。因此**没有**"宿主枪的副武器持枪态"配置字段 —— 要做就往宿主枪自己的动画文件里加 clip（§9.8.7） |
-| 65c | 副武器换弹音效 | **保留** `SubWeaponInfo.ReloadSound` / `ReloadEndSound`（三期实现原样复用）：新增的附件动画播放链路**不接 `sound_effects` 关键帧**，数据包里写在副武器动画里的音效不会响（§9.8.7 / §11.10.5-⑤） |
+| 65c | 副武器换弹音效 | **保留** `SubWeaponInfo.ReloadSound` / `ReloadEndSound`（三期实现原样复用）：新增的附件动画播放链路**不接 `sound_effects` 关键帧**，数据包里写在副武器动画里的音效不会响（§9.8.7 / §11.10.5-⑤）。⚠ **前提已被 §12.6-65d 推翻**：动画关键帧现在会响了，这两个字段降级为兜底，**同时写会响两遍** |
+| 65d | 副武器动画的时间轴音效 | **接进附件链路**（五期，§11.11.8）：`GeoGunAnimationInstance` 给副武器换弹 runner 补一次 `collectSoundEvents`（与主武器同一支），整块副武器状态加**主手门禁**。机制本身不需要新代码 —— `sound_effects` 是 clip 的通道，造 runner 时就带着了。⚠ 遗留：`ReloadEndSound` 与动画 `"0.625"` 那条同名，**一次换弹响两下**，删哪边待需求方定 |
 | 66 | 副武器瞄准位形 | 需求里说的 `zoom_view` 在仓库里不存在，落地为**约定骨骼**：附件模型的 **`iron_view`** → 宿主枪的 `scope_view` / `iron_view`。**不提供 `ViewBone` 之类的配置字段**（骨骼名是模型与渲染器之间的约定）。`camera` 骨骼只用于屏幕抖动收敛，**不是**瞄准位形（§9.8.6） |
 | 67 | 枪口焰归属 | 判据从"开火窗口 + 是否播了副武器专属 clip"简化为**一条：部署中 → 火归副武器**（更简单也更准）；`MuzzleFlashScale` 仍用副武器配件的（§11.10.5-⑦） |
 | 68 | 触发冷却 | **删除** `Cooldown.subWeaponKey` / 宿主枪冷却表的 `sub:<slot>` 键：它是"按 G 触发"的限流器，四期不需要（§11.10.5-⑧） |

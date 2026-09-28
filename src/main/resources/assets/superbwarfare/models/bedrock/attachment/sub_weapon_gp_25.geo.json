@@ -23,7 +23,17 @@
 				{
 					"name": "projectile",
 					"parent": "root",
-					"pivot": [0, -1.17428, -6.54364],
+					"pivot": [0, -1.17428, -6.54364]
+				},
+				{
+					"name": "head",
+					"parent": "projectile",
+					"pivot": [0, -1.17428, -6.54364]
+				},
+				{
+					"name": "he_head",
+					"parent": "head",
+					"pivot": [0, 0, 0],
 					"poly_mesh": {
 						"normalized_uvs": true,
 						"positions": [
@@ -3584,6 +3594,12 @@
 				{
 					"name": "positioning",
 					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "idle_view",
+					"parent": "positioning",
+					"pivot": [5.56276, 5.54298, 20.16534],
+					"rotation": [4.5, 0, 4]
 				},
 				{
 					"name": "iron_view",
