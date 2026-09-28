@@ -10676,21 +10676,6 @@
 					]
 				},
 				{
-					"name": "grip_pos",
-					"parent": "root",
-					"pivot": [0, 0.25945, -7.99965]
-				},
-				{
-					"name": "muzzle_pos",
-					"parent": "root",
-					"pivot": [0, 1.99991, -15.23703]
-				},
-				{
-					"name": "scope_pos",
-					"parent": "root",
-					"pivot": [0, 5.90696, 1.88717]
-				},
-				{
 					"name": "lefthand",
 					"parent": "root",
 					"pivot": [-6.01875, 18, 0]
@@ -10728,6 +10713,26 @@
 					"name": "shell",
 					"parent": "positioning2",
 					"pivot": [-0.75, 2.56789, 8.75202]
+				},
+				{
+					"name": "sub_weapon_pos",
+					"parent": "positioning2",
+					"pivot": [0, 0.26699, -4.71]
+				},
+				{
+					"name": "grip_pos",
+					"parent": "positioning2",
+					"pivot": [0, 0.25945, -7.99965]
+				},
+				{
+					"name": "muzzle_pos",
+					"parent": "positioning2",
+					"pivot": [0, 1.99991, -15.23703]
+				},
+				{
+					"name": "scope_pos",
+					"parent": "positioning2",
+					"pivot": [0, 5.90696, 1.88717]
 				},
 				{
 					"name": "positioning",

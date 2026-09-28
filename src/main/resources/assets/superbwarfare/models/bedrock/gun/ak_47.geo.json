@@ -11222,7 +11222,7 @@
 				{
 					"name": "sub_weapon_pos",
 					"parent": "positioning2",
-					"pivot": [0, 1.9586, -11.2]
+					"pivot": [0, 1.31407, -12.66953]
 				},
 				{
 					"name": "positioning",

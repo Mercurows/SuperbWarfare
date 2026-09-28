@@ -1,5 +1,5 @@
 {
-	"format_version": "1.12.0",
+	"format_version": "1.21.20",
 	"minecraft:geometry": [
 		{
 			"description": {
@@ -8697,18 +8697,23 @@
 				},
 				{
 					"name": "scope_pos",
-					"parent": "root",
+					"parent": "positioning2",
 					"pivot": [0, 3.83647, -2.64452]
 				},
 				{
 					"name": "muzzle_pos",
-					"parent": "root",
+					"parent": "positioning2",
 					"pivot": [0, 2.41016, -22.81328]
 				},
 				{
 					"name": "grip_pos",
-					"parent": "root",
+					"parent": "positioning2",
 					"pivot": [0, 1.31172, -11.92969]
+				},
+				{
+					"name": "sub_weapon_pos",
+					"parent": "positioning2",
+					"pivot": [0, 1.3117, -11.9297]
 				},
 				{
 					"name": "righthand",

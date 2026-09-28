@@ -3968,11 +3968,6 @@
 					]
 				},
 				{
-					"name": "grip_pos",
-					"parent": "root",
-					"pivot": [0, 0.49984, -10.41]
-				},
-				{
 					"name": "bolt",
 					"parent": "root",
 					"pivot": [0.81017, 4.72271, -1.10577],
@@ -10815,6 +10810,16 @@
 					"name": "muzzle_pos",
 					"parent": "positioning2",
 					"pivot": [0, 1.8127, -21.61406]
+				},
+				{
+					"name": "grip_pos",
+					"parent": "positioning2",
+					"pivot": [0, 0.49984, -10.41]
+				},
+				{
+					"name": "sub_weapon_pos",
+					"parent": "positioning2",
+					"pivot": [0, 0.4998, -9.66]
 				},
 				{
 					"name": "positioning",

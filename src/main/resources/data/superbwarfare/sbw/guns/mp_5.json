@@ -121,6 +121,9 @@
       "superbwarfare:handgun_silencer",
       "superbwarfare:osprey_silencer",
       "superbwarfare:osprey_silencer_trachelium"
+    ],
+    "SubWeapon": [
+      "superbwarfare:sub_weapon_gp_25"
     ]
   },
   "SoundInfo": {
