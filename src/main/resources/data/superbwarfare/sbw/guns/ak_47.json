@@ -155,7 +155,20 @@
       "superbwarfare:sub_weapon_gp_25"
     ],
     "Charm": [
-      "superbwarfare:charm_fukamizu_fish"
+      "superbwarfare:charm_pig",
+      "superbwarfare:charm_bee",
+      "superbwarfare:charm_chest",
+      "superbwarfare:charm_zombie_head",
+      "superbwarfare:charm_skeleton_skull",
+      "superbwarfare:charm_creeper_head",
+      "superbwarfare:charm_fukamizu_fish",
+      "superbwarfare:charm_wither_skeleton_skull",
+      "superbwarfare:charm_nether_star",
+      "superbwarfare:charm_sept_wolves",
+      "superbwarfare:charm_ancient_cpu",
+      "superbwarfare:charm_senpai",
+      "superbwarfare:charm_chiram_core",
+      "superbwarfare:charm_lily"
     ]
   },
   "SoundInfo": {

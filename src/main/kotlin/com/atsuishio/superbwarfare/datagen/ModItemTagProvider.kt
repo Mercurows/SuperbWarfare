@@ -575,7 +575,20 @@ class ModItemTagProvider(
             ModItems.SUB_WEAPON_GP_25
         ),
         AttachmentType.CHARM to listOf(
-            ModItems.CHARM_FUKAMIZU_FISH
+            ModItems.CHARM_PIG,
+            ModItems.CHARM_BEE,
+            ModItems.CHARM_CHEST,
+            ModItems.CHARM_ZOMBIE_HEAD,
+            ModItems.CHARM_SKELETON_SKULL,
+            ModItems.CHARM_CREEPER_HEAD,
+            ModItems.CHARM_FUKAMIZU_FISH,
+            ModItems.CHARM_WITHER_SKELETON_SKULL,
+            ModItems.CHARM_NETHER_STAR,
+            ModItems.CHARM_SEPT_WOLVES,
+            ModItems.CHARM_ANCIENT_CPU,
+            ModItems.CHARM_SENPAI,
+            ModItems.CHARM_CHIRAM_CORE,
+            ModItems.CHARM_LILY
         ),
     )
 

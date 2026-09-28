@@ -742,7 +742,20 @@ object ModItems {
 
     // Charm（吊坠：纯装饰，第一人称下会摆）
     // @formatter:off
+    @JvmField val CHARM_PIG = registerAttachment("charm_pig")
+    @JvmField val CHARM_BEE = registerAttachment("charm_bee")
+    @JvmField val CHARM_CHEST = registerAttachment("charm_chest")
+    @JvmField val CHARM_ZOMBIE_HEAD = registerAttachment("charm_zombie_head", Rarity.RARE)
+    @JvmField val CHARM_SKELETON_SKULL = registerAttachment("charm_skeleton_skull", Rarity.RARE)
+    @JvmField val CHARM_CREEPER_HEAD = registerAttachment("charm_creeper_head", Rarity.RARE)
     @JvmField val CHARM_FUKAMIZU_FISH = registerAttachment("charm_fukamizu_fish", Rarity.RARE)
+    @JvmField val CHARM_WITHER_SKELETON_SKULL = registerAttachment("charm_wither_skeleton_skull", Rarity.EPIC)
+    @JvmField val CHARM_NETHER_STAR = registerAttachment("charm_nether_star", Rarity.EPIC)
+    @JvmField val CHARM_SEPT_WOLVES = registerAttachment("charm_sept_wolves", ModRarities.LEGENDARY)
+    @JvmField val CHARM_ANCIENT_CPU = registerAttachment("charm_ancient_cpu", ModRarities.LEGENDARY)
+    @JvmField val CHARM_SENPAI = registerAttachment("charm_senpai", ModRarities.SUPERB)
+    @JvmField val CHARM_CHIRAM_CORE = registerAttachment("charm_chiram_core", ModRarities.VIRTUAL)
+    @JvmField val CHARM_LILY = registerAttachment("charm_lily", ModRarities.VIRTUAL)
     // @formatter:on
 
     fun registerDispenserBehavior() {
