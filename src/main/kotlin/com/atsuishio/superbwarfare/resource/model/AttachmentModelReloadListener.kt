@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.resource.model
 
 import com.atsuishio.superbwarfare.client.model.attachment.BedrockAttachmentModel
+import com.atsuishio.superbwarfare.resource.model.AttachmentModelReloadListener.findAnimation
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.BedrockAnimation
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.BedrockModelPOJO
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.tree.TreeBedrockModel
@@ -20,6 +21,21 @@ import net.minecraft.util.profiling.ProfilerFiller
  * `animations/bedrock/attachment/sub_weapon_gp_25.animation.json`
  * 自动绑到 `models/bedrock/attachment/sub_weapon_gp_25.geo.json`。
  * 两边缺一个就只是"那一半为空"，不会报错 —— 所以**动画还没做出来时这段是安全的空转**。
+ *
+ * ## ⚠ 两个"配错了也不报错"的坑（五期实测：GP-25 换弹动画不出效果就是踩了它们）
+ *
+ * 1. **文件必须放在 [animPath] 这个目录下**。放 `animations/bedrock/gun/` 是无效的 ——
+ *    那边是**主武器**动画表（`GunModelReloadListener`），副武器换弹只读本表
+ *    （`updateSubWeaponReload` → [findAnimation]）。两边文件名可以完全一样，放错了却毫无提示。
+ * 2. **clip 必须驱动"附件模型里存在的"骨骼**。本表用 [BedrockAnimation.createAnimation] 把
+ *    clip 绑到**附件模型**上，所以照抄枪模型的骨骼名（`righthand` / `camera` / `head` /
+ *    `undefined`）会被**静默丢弃**；症状是"runner 建起来了、模型纹丝不动"，
+ *    与"压根没做动画"的外观完全一致。
+ *    `sub_weapon_gp_25` 的可用骨骼：`root` / `flare` / `projectile` / `lefthand` /
+ *    `lefthand_pos` / `gun` / `tube`（`bone2..bone7` 在它下面）/ `trigger` / `iron_view`。
+ *
+ * 两条失败路径都会由 `GeoGunAnimationInstance.logSubWeaponReloadMissOnce` 打一条
+ * 带定位信息的日志（`melee_debug_log` 打开时可见）。
  */
 object AttachmentModelReloadListener : BedrockModelReloadListener<BedrockAttachmentModel>(
     "models/bedrock/attachment",

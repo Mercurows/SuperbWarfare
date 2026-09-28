@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.animation.gun
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.animation.AnimationPlayType
 import com.atsuishio.superbwarfare.client.gun.MeleeClientHandler
+import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.isDrumLevel
@@ -94,23 +95,27 @@ open class GeoGunAnimationInstance(
      * 副武器**自己**的换弹动画 runner（四期，§9.8.7）。
      *
      * 副武器是一把独立的枪（有自己的 `GunData` / `GunResource`），所以它的换弹动画写在
-     * **它自己的枪械资源**里（`sbw/guns/<id>.json` 的 `Animation.Reload`），由**它自己的附件模型**播。
-     * 这一支 runner 只负责"把那个 clip 推到第几帧了"，姿态由
-     * `GeoGunRenderer.renderRegisteredAttachments` 取 [subWeaponReloadPose] 应用到附件模型上。
+     * **它自己的枪械资源**里（`sbw/guns/<id>.json` 的 `Animation.Reload*`，口径见
+     * [GunAnimation.reloadClip]），由**它自己的附件模型**播。这一支 runner 只负责
+     * "把那个 clip 推到第几帧了"，姿态由 `GeoGunRenderer.renderRegisteredAttachments`
+     * 取 [subWeaponReloadPose] 应用到附件模型上。
      *
      * 为什么状态挂在这里而不是附件模型上：附件模型是**全局共享**的（同一种配件装在多把枪上
      * 共用一份实例），往它身上挂状态会串台；这个动画实例才是"某一把具体的枪"。
      *
-     * ⚠ **动画还没做出来时这里全程是空转**：`AttachmentModelReloadListener` 的动画表里
-     * 没有那支 clip → [updateSubWeaponReload] 解析不到 → runner 保持 `null` →
-     * 渲染侧不应用任何姿态（副武器静止挂在枪上）。这是**有意的静默回退**，不是 bug。
+     * ⚠ **解析要过两关，任一关不过就全程空转**（[updateSubWeaponReload] 里有详细说明）：
+     * ① 数据里写了 clip 名（`sbw/guns/<id>.json`）；② **附件动画表**里有这支 clip
+     * （`animations/bedrock/attachment/<附件 id>.animation.json`，且骨骼必须是附件模型的）。
+     * 任一条不成立 → runner 保持 `null` → 渲染侧不应用姿态（副武器静止挂在枪上）。
+     * 这是**有意的静默回退**，不是 bug；两条失败路径都会打一条能定位的日志
+     * （见 [logSubWeaponReloadMissOnce]，`melee_debug_log` 打开时可见）。
      */
     private var subWeaponReloadRunner: AnimationRunner? = null
 
     /** 当前这支副武器换弹动画的 clip 名（用来判断"换了一支动画"要不要重建 runner） */
     private var subWeaponReloadAnimationName: String? = null
 
-    /** 已经为"解析不到副武器换弹动画"打过日志的副武器 id（同一条失败只打一次） */
+    /** 已经打过日志的"解析不到副武器换弹动画"（键含副武器 id/原因/clip 名，同一条失败只打一次） */
     private var loggedSubWeaponReloadMiss: String? = null
 
     /**
@@ -264,8 +269,24 @@ open class GeoGunAnimationInstance(
      * 且它 `reloading()`。换弹时长取**副武器数据**的剩余总 tick，据此拉伸播放速度
      * （与主武器的换弹动画同一套口径）。
      *
-     * 部署解除、换弹结束、或者副武器自己那份 `GunResource` 里没写 `Animation.Reload` 时，
-     * runner 被清掉、返回 `null` —— 渲染侧于是不应用姿态。
+     * 部署解除、换弹结束、或者下面两步任一步解析不到时，runner 被清掉、返回 `null` ——
+     * 渲染侧于是不应用姿态。解析分两步，**两步都可能单独失败**：
+     *
+     * 1. **clip 名**：问副武器自己的 `GunResource`（`sbw/guns/<id>.json` 的 `Animation.Reload*`）。
+     *    没写 → 没有 clip 可播（[GunAnimation.reloadClip]）。
+     * 2. **动画本体**：问 [AttachmentModelReloadListener] 的动画表，也就是
+     *    `animations/bedrock/**attachment**/` 那个目录 —— 它**按文件名 id** 与附件模型配对
+     *    （`sub_weapon_gp_25.animation.json` ↔ `sub_weapon_gp_25.geo.json`）。
+     *
+     * ⚠ **第 2 步是本机制最容易配错的地方**（五期实测踩到）：
+     * - 文件放进 `animations/bedrock/**gun**/` 是无效的 —— 那边是主武器动画表，
+     *   副武器换弹只读附件表；
+     * - 就算放对了目录，**clip 也必须驱动附件模型自己的骨骼**（`root` / `gun` / `tube` /
+     *   `trigger` / `projectile` …）。照抄枪模型的 `righthand` / `camera` / `head` /
+     *   `undefined` 会被静默丢弃 —— 症状是"runner 建起来了但模型纹丝不动"，与"没做动画"外观一致。
+     *
+     * 两条失败路径都会经 [logSubWeaponReloadMissOnce] 打一条带定位信息的日志
+     * （只在 `melee_debug_log` 打开时输出）。
      */
     private fun updateSubWeaponReload() {
         val player = localPlayer
@@ -286,9 +307,12 @@ open class GeoGunAnimationInstance(
 
         // clip 名来自**副武器自己的资源**（与普通枪完全同一套：`GunResource` 按物品注册 id 解析）
         val subResource = GunResource.from(subStack)
-        val clipName = subResource.compute().animation?.let { it.reloadEmpty ?: it.reload }
+        val clipName = subResource.compute().animation?.reloadClip(
+            emptyReload = subData.reload.empty(),
+            drumLevel = subData.isDrumLevel(),
+        )
         if (clipName == null) {
-            logSubWeaponReloadMissOnce(subResource.id)
+            logSubWeaponReloadMissOnce(subResource.id, "noClip", subResource.id)
             clearSubWeaponReloadRunner()
             return
         }
@@ -297,10 +321,14 @@ open class GeoGunAnimationInstance(
         // 里的 clip 是绑在附件模型骨骼上的，不能拿枪模型动画表里的同名 clip 顶替。
         val clip = AttachmentModelReloadListener.findAnimation(clipName)
         if (clip == null) {
-            logSubWeaponReloadMissOnce(subResource.id)
+            // ⚠ 走到这里最常见的两种情况，见下面那段"为什么以前是静默的"
+            logSubWeaponReloadMissOnce(subResource.id, "unbound", clipName)
             clearSubWeaponReloadRunner()
             return
         }
+
+        // 这一支终于解析到了：把"缺动画"的记账清掉，下次再缺（数据包改回来了）还能再报一次
+        loggedSubWeaponReloadMiss = null
 
         if (subWeaponReloadRunner == null || subWeaponReloadAnimationName != clip.name) {
             val runner = AnimationRunner(clip, AnimationContext(clip.specifiedEndTimeS))
@@ -323,16 +351,54 @@ open class GeoGunAnimationInstance(
         subWeaponReloadAnimationName = null
     }
 
-    private fun logSubWeaponReloadMissOnce(subId: String) {
-        if (loggedSubWeaponReloadMiss == subId) return
-        loggedSubWeaponReloadMiss = subId
+    /**
+     * "这一支副武器换弹动画解析不到"只报一次。
+     *
+     * ⚠ **这里必须给出足够定位的信息，而且必须真的打得出来。**
+     *
+     * 以前它是一句 `Mod.LOGGER.debug`（默认根本不输出），于是"动画没生效"在客户端**完全无声**：
+     * 表现只是"副武器换弹时纹丝不动"，看不出是数据没写、文件放错目录、还是骨骼名对不上。
+     * 现在拆成两条**互不覆盖**的记账（`noClip` / `unbound`），并把三个答案一起打出来：
+     *
+     * | 问题 | 日志里的答案 |
+     * |---|---|
+     * | 数据里写了 clip 名吗 | `noClip` = 没写（`sbw/guns/<id>.json` 缺 `Animation.Reload*`） |
+     * | clip 名对应的文件在不在 | `unbound` 那条会打印 clip 名与它要求的**文件 id** |
+     * | 文件该放哪个目录 | 两条都打印 [AttachmentModelReloadListener.animPath] |
+     *
+     * **分档是"正常状态"那一档**：没做这支动画本来就是允许的（副武器静止挂在枪上，
+     * 换弹的音效与进度仍由数据/服务端负责），所以用 `info` 且只挂在 `melee_debug_log` 上，
+     * 不是 `error`（与 `fire_sub_weapon` 候选落空的分档一致）。
+     */
+    private fun logSubWeaponReloadMissOnce(subId: String, reason: String, detail: String) {
+        val key = "$subId|$reason|$detail"
+        if (loggedSubWeaponReloadMiss == key) return
+        loggedSubWeaponReloadMiss = key
+        if (!DisplayConfig.MELEE_DEBUG_LOG.get()) return
 
-        // debug 而不是 error：**没做这支动画是正常状态**（与 `fire_sub_weapon` 的分档一致）。
-        // 副武器此时静止挂在枪上，换弹的音效与进度仍由数据/服务端负责。
-        Mod.LOGGER.debug(
-            "[SubWeapon] '{}' has no reload animation bound in {}; the sub-weapon stays static while reloading",
-            subId, AttachmentModelReloadListener.animPath,
-        )
+        when (reason) {
+            "noClip" -> Mod.LOGGER.info(
+                "[SubWeapon] '{}' reload animation is not wired: its gun resource (sbw/guns/{}.json) " +
+                        "has no Animation.Reload / ReloadNormal / ReloadEmpty, so there is no clip to play. " +
+                        "Add one pointing at a clip in {}.",
+                subId, subId, AttachmentModelReloadListener.animPath,
+            )
+
+            else -> {
+                // 从 clip 名反推"它应该在哪个文件里"：`animation.<fileId>.<clip>` → `<fileId>.animation.json`
+                val fileId = detail.removePrefix("animation.").substringBefore('.')
+                Mod.LOGGER.info(
+                    "[SubWeapon] reload clip '{}' of '{}' is not bound: no clip with that name in {} " +
+                            "(expected it to come from {}/{}.animation.json). " +
+                            "⚠ That folder is bound to the ATTACHMENT model by file name, so the clip must " +
+                            "animate bones that exist in the attachment model (root / gun / tube / trigger / " +
+                            "projectile), NOT the gun model's (righthand / camera / head / undefined) — " +
+                            "channels for missing bones are dropped silently, which looks exactly like 'no animation'.",
+                    detail, subId, AttachmentModelReloadListener.animPath,
+                    AttachmentModelReloadListener.animPath, fileId,
+                )
+            }
+        }
     }
 
     fun consumePendingShellEjects(): List<Int> {

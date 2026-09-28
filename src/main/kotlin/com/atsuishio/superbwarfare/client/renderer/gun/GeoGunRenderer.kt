@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.client.model.attachment.BedrockAttachmentMode
 import com.atsuishio.superbwarfare.client.model.gun.GeoGunModel
 import com.atsuishio.superbwarfare.client.renderer.ammo.AmmoReadout
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.EDIT_FOCUS_Z_OFFSET
+import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.MERGE_BLENDER
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.subWeaponHasOwnAimPose
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeStencilRenderHelper
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
@@ -35,10 +36,10 @@ import com.github.mcmodderanchor.simplebedrockmodel.v1.particle.render.CameraSta
 import com.github.mcmodderanchor.simplebedrockmodel.v1.particle.resource.ParticleDefinitionLoader
 import com.github.mcmodderanchor.simplebedrockmodel.v1.particle.runtime.ParticleEmitterInstance
 import com.github.mcmodderanchor.simplebedrockmodel.v2.client.renderer.AbstractGeoItemRendererV2
-import com.maydaymemory.mae.basic.ArrayPoseBuilder
-import com.maydaymemory.mae.basic.YXZRotationView
-import com.maydaymemory.mae.basic.ZYXBoneTransformFactory
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.BoneState
+import com.maydaymemory.mae.basic.*
 import com.maydaymemory.mae.blend.EulerAdditiveBlender
+import com.maydaymemory.mae.blend.NoAllocMergeBlender
 import com.maydaymemory.mae.blend.SimpleEulerAdditiveBlender
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
@@ -260,6 +261,15 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         spawnAndBindMuzzleParticles(poseStack, stack, handForContext(transformType))
     }
 
+    /**
+     * 本帧的副武器"跟随运动"结果（[resolveSubWeaponFollowPose]），由 `renderModel` 算一次、
+     * `renderRegisteredAttachments` 复用。
+     *
+     * 必须是**每次 renderModel 开头清空**的：它绑定了"这一帧用的是哪个主武器模型/哪只手"，
+     * 跨帧留着会把上一帧的修正套到这一帧（两只手、或者第三人称那一遍）上。
+     */
+    private var subWeaponFollow: SubWeaponFollowPose? = null
+
     override fun renderModel(
         poseStack: PoseStack,
         transformType: ItemDisplayContext,
@@ -293,11 +303,23 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         } ?: return
 
         model.renderHand = transformType.firstPerson()
+        subWeaponFollow = null
         if (transformType.firstPerson()) {
             val hand = handForContext(transformType)
             val pose = FirstPersonRenderHandler.getActiveAnimationInstance(hand)?.cachedPose
-            if (pose != null) {
-                model.applyPose(BLENDER.blend(model.getBindPose(), pose))
+            // 副武器换弹：让**主武器（含玩家手臂）**跟着副武器动画的 `root` 运动走（§9.8.7）。
+            // ⚠ 必须在 `applyPose` **之前**算：它会直接改写主武器 `root` 那根骨骼。
+            val follow = resolveSubWeaponFollowPose(stack, model)
+            subWeaponFollow = follow
+
+            // 把"只含主武器 root"的修正盖到动画姿态上；没有修正时逐字走原来的路径
+            val renderPose = when {
+                pose == null -> follow?.gunRoot
+                follow == null -> pose
+                else -> MERGE_BLENDER.blend(listOf(pose, follow.gunRoot))
+            }
+            if (renderPose != null) {
+                model.applyPose(BLENDER.blend(model.getBindPose(), renderPose))
             }
 
             applyCameraShake(stack, model, hand)
@@ -308,7 +330,13 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             applyFirstPersonPositioningTransform(poseStack, model, stack, scopeRender, hand)
 
             val sprintOffset = resource.sprintOffset
-            ClientEventHandler.gunRootMoveV2(poseStack, sprintOffset.x, sprintOffset.y, sprintOffset.z, resource.useCustomSprintAnimation)
+            ClientEventHandler.gunRootMoveV2(
+                poseStack,
+                sprintOffset.x,
+                sprintOffset.y,
+                sprintOffset.z,
+                resource.useCustomSprintAnimation
+            )
 
             val shootRecoil = resource.shootRecoil
             ClientEventHandler.handleShootAnimationV2(
@@ -390,7 +418,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             // 判据从三期的"枪口焰窗口 + 是否播了副武器专属 clip"简化成一条：**谁被切出来，火就归谁**
             // （§11.10.5-⑦）—— 更简单也更准，不会出现"部署着、但这一发播的是宿主 `fire`，
             // 于是火喷在枪管上"的错位。
-            val subWeaponFire = ActiveGun.isDeployed(GunData.from(stack), true) ||
+            val subWeaponFire = ActiveGun.isDeployed(from(stack), true) ||
                     ClientEventHandler.subWeaponFireRotTimer > 0.0 ||
                     animation?.isSubWeaponFire() == true
             val subWeaponFlare = if (subWeaponFire) resolveSubWeaponFlareTransform(stack, model) else null
@@ -447,7 +475,15 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         renderOemScope(stack, model)
         renderOemMuzzle(stack, model)
         renderBarrelAttachment(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
-        renderRegisteredAttachments(stack, model, poseStack, bufferSource, packedLight, packedOverlay, handForContext(transformType))
+        renderRegisteredAttachments(
+            stack,
+            model,
+            poseStack,
+            bufferSource,
+            packedLight,
+            packedOverlay,
+            handForContext(transformType)
+        )
     }
 
     /**
@@ -467,7 +503,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         packedOverlay: Int,
         hand: InteractionHand = InteractionHand.MAIN_HAND
     ) {
-        val data = GunData.from(stack)
+        val data = from(stack)
 
         for (slot in AttachmentSlots.ALL) {
             if (slot.renderMode != AttachmentRenderMode.GENERIC) continue
@@ -484,11 +520,23 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
             // 四期：副武器**自己**的换弹动画（§9.8.7）。它由宿主的动画实例推进
             // （附件模型实例是全局共享的，状态不能挂在它身上），这里只负责取姿态、应用、复位。
-            // 没有那支 clip 时 `subWeaponReloadPose()` 返回 null → 不应用姿态，
-            // 副武器静止挂在枪上（**动画还没做出来时的正常路径**）。
+            //
+            // ⚠ **注意挂点变换与套姿态的先后**：挂点变换取自**宿主枪**模型（不含附件姿态），
+            // 姿态是在挂点矩阵**之内**、按**附件模型自己的骨骼**应用的，两者不会互相污染。
+            // 附件姿态是"绝对局部姿态"（`BoneTreeInstance.applyPose` 直接写 `BoneState`，不做混合），
+            // 所以 keyframe 必须写**该骨骼的绑定值**：几何上"位置 0 / 旋转 0"等价于停在 pivot、
+            // 保持绑定旋转，**但前提是那根骨骼的绑定旋转本来就是 0** —— 一旦给一根带绑定旋转的骨骼
+            // （比如本附件模型的 `iron_view`，绑定旋转 `[4.5, 0, 8.5]`）写了 `0`，它就会被从绑定
+            // 姿势上推开。那正是"动画一播就错位"的成因。
+            // 没被 key 的骨骼保持绑定姿势；`resetPose()` 在 finally 里还原，漏了会串到别的枪上。
+            //
+            // ⚠⚠ **副武器换弹时这里用的是 [subWeaponFollow] 里那份"抵消过"的姿态**，不是原始姿态：
+            // 主武器的 root 已经被 `D` 顶走了（见 [resolveSubWeaponFollowPose]），附件这一侧必须
+            // 左乘 `D⁻¹` 才能继续贴在挂点上，否则下挂筒会被推离枪身两倍的距离。
             val subWeaponPose = if (slot.type == AttachmentType.SUBWEAPON) {
-                (FirstPersonRenderHandler.getActiveAnimationInstance(hand) as? GeoGunAnimationInstance)
-                    ?.subWeaponReloadPose()
+                subWeaponFollow?.takeIf { it.modelPath == modelPath }?.attachmentPose
+                    ?: (FirstPersonRenderHandler.getActiveAnimationInstance(hand) as? GeoGunAnimationInstance)
+                        ?.subWeaponReloadPose()
             } else {
                 null
             }
@@ -517,7 +565,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
      * that are not selected, so the round drawn in the weapon follows the ammo switch.
      */
     open fun renderProjectileBone(stack: ItemStack, model: GeoGunModel) {
-        val data = GunData.from(stack)
+        val data = from(stack)
         val candidates = data.projectileBoneNames()
         if (candidates.isEmpty()) return
 
@@ -526,7 +574,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
     open fun renderScopeMount(stack: ItemStack, model: GeoGunModel) {
         val bone = model.getBone(CUSTOM_SCOPE_MOUNT_BONE) ?: return
-        val data = GunData.from(stack)
+        val data = from(stack)
         val definition = data.attachment.id(AttachmentType.SCOPE)
             ?.let { AttachmentDefinition.from(it) }
         bone.visible = definition != null && definition.requiresRail
@@ -558,7 +606,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     }
 
     open fun resolveScopeAttachmentRender(stack: ItemStack, model: GeoGunModel): ScopeRenderData? {
-        val data = GunData.from(stack)
+        val data = from(stack)
         val attachmentId = data.attachment.id(AttachmentType.SCOPE) ?: return null
         val definition = AttachmentDefinition.from(attachmentId) ?: return null
         val scopeInfo = definition.scopeInfo ?: return null
@@ -604,7 +652,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     ): AmmoReadout {
         if (bars.isEmpty() && texts.isEmpty()) return AmmoReadout()
 
-        val gun = GunData.from(stack)
+        val gun = from(stack)
         val count = gun.ammo.get()
         val magazine = gun.get(GunProp.MAGAZINE)
         // No usable magazine: the bar holds at full rather than dividing by zero. Guns whose
@@ -686,7 +734,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     }
 
     open fun resolveStockDefinition(stack: ItemStack): AttachmentDefinition? {
-        val data = GunData.from(stack)
+        val data = from(stack)
         val attachmentId = data.attachment.id(AttachmentType.STOCK) ?: return null
         return AttachmentDefinition.from(attachmentId)
     }
@@ -712,7 +760,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     }
 
     open fun resolveStockAttachmentRender(stack: ItemStack): AttachmentRenderData? {
-        val data = GunData.from(stack)
+        val data = from(stack)
         val attachmentId = data.attachment.id(AttachmentType.STOCK) ?: return null
         val definition = AttachmentDefinition.from(attachmentId) ?: return null
         if (definition.usesGunStock) return null
@@ -724,7 +772,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
     open fun renderGripHandGuard(stack: ItemStack, model: GeoGunModel) {
         val customBone = model.getBone(CUSTOM_HAND_GUARD_BONE) ?: return
-        val gripInstalled = GunData.from(stack).attachment.has(AttachmentType.GRIP)
+        val gripInstalled = from(stack).attachment.has(AttachmentType.GRIP)
         val showCustom = gripInstalled && GunResource.compute(stack).attachmentInfo.gripHandGuard
         customBone.visible = showCustom
         model.getBone(OEM_HAND_GUARD_BONE)?.visible = !showCustom
@@ -755,7 +803,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     }
 
     open fun resolveGripAttachmentRender(stack: ItemStack): AttachmentRenderData? {
-        val data = GunData.from(stack)
+        val data = from(stack)
         val attachmentId = data.attachment.id(AttachmentType.GRIP) ?: return null
         val definition = AttachmentDefinition.from(attachmentId) ?: return null
         val modelPath = definition.model ?: return null
@@ -770,7 +818,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
     open fun renderOemMuzzle(stack: ItemStack, model: GeoGunModel) {
         val bone = model.getBone(OEM_MUZZLE_BONE) ?: return
-        val data = GunData.from(stack)
+        val data = from(stack)
         val hasBarrelAttachment = data.attachment.id(AttachmentType.BARREL) != null
                 || data.attachment.get(AttachmentType.BARREL) != 0
         bone.visible = !hasBarrelAttachment
@@ -778,7 +826,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
     open fun renderOemScope(stack: ItemStack, model: GeoGunModel) {
         val bone = model.getBone(OEM_SCOPE_BONE) ?: return
-        val data = GunData.from(stack)
+        val data = from(stack)
         val hasScope = data.attachment.id(AttachmentType.SCOPE) != null
                 || data.attachment.get(AttachmentType.SCOPE) != 0
         bone.visible = !hasScope
@@ -806,7 +854,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     }
 
     open fun resolveBarrelAttachmentRender(stack: ItemStack): AttachmentRenderData? {
-        val data = GunData.from(stack)
+        val data = from(stack)
         val attachmentId = data.attachment.id(AttachmentType.BARREL) ?: return null
         val definition = AttachmentDefinition.from(attachmentId) ?: return null
         val modelPath = definition.model ?: return null
@@ -816,19 +864,19 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     }
 
     open fun resolveBarrelAttachmentMuzzleFlashScale(stack: ItemStack): Float {
-        val data = GunData.from(stack)
+        val data = from(stack)
         val attachmentId = data.attachment.id(AttachmentType.BARREL) ?: return 1.0f
         return AttachmentDefinition.from(attachmentId)?.muzzleFlashScale?.coerceAtLeast(0f) ?: 1.0f
     }
 
     open fun resolveBarrelAttachmentBone(stack: ItemStack): String? {
-        val data = GunData.from(stack)
+        val data = from(stack)
         val attachmentId = data.attachment.id(AttachmentType.BARREL) ?: return null
         return AttachmentDefinition.from(attachmentId)?.bone
     }
 
     open fun resolveBarrelAttachmentLocalTransform(stack: ItemStack): Matrix4f {
-        val data = GunData.from(stack)
+        val data = from(stack)
         val offset = data.attachment.getOffset(AttachmentType.BARREL)
         val rotation = data.attachment.getRotation(AttachmentType.BARREL).toFloat()
         return Matrix4f()
@@ -850,6 +898,199 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     }
 
     /**
+     * 【副武器换弹：让**主武器**跟着副武器动】把副武器动画的 `root` 运动"反推"到主武器上。
+     *
+     * ## 要解决的问题
+     *
+     * 副武器是挂在主武器骨骼上的**子节点**，正常情况下它只能"在主武器身上动"。
+     * 而美术做的换弹动画（原手持形态那把枪的 `animation.gp_25.reload`）里，
+     * **整把武器的位移与摇晃写在 `root` 通道上** —— 那是"这把枪在手里怎么动"。
+     * 直接放到附件模型上播，就变成"下挂榴弹自己在枪身上甩来甩去"，而主武器纹丝不动，
+     * 手（由**主武器**模型渲染，见 `GeoGunModel.renderHands`）也不会跟。
+     *
+     * ## 做法（不需要改动画文件）
+     *
+     * 设挂点在主武器骨骼空间里的变换为 `M`（bind pose 下算，稳定、不受姿态影响），
+     * 副武器动画的 `root` 通道为 `A`。那么真正该动的是这个量：
+     *
+     * ```
+     * D = M · A · M⁻¹        ← 把"附件空间里的整体运动"换算成"主武器空间里的整体运动"
+     * ```
+     *
+     * 于是：
+     * - **主武器**的 `root` 左乘 `D` → 整枪（含手臂、其它配件、枪口焰）一起跟着动；
+     * - **副武器**的 `root` 左乘 `D⁻¹` → 抵消掉子节点侧的同一份位移，
+     *   让它**仍然死死贴在挂点上**（`A` 里除 `root` 以外的通道 —— 炮管、扳机、榴弹 —— 照常播）。
+     *
+     * 两者相乘后在挂点处精确抵消，所以"下挂筒不会从枪身上脱开"，同时"枪和手跟着动画走"。
+     * 推导（挂点世界变换记为 `W`，主武器原姿态的 root 记为 `G`）：
+     *
+     * ```
+     * 现在：  attach = W · A             gun = G
+     * 目标：  attach = W · A（不动）      gun = M·A·M⁻¹ · G
+     * 实现：  gun' = D·G                 attach' = (D·G)·M_bind·(D⁻¹·A)
+     *        = D·G·M_bind·D⁻¹·A = (D·M_bind·D⁻¹)·(G·M_bind⁻¹)·(M_bind·A) = W·A  ✅
+     * ```
+     *
+     * ## 边界
+     *
+     * - 只在"副武器被切出来 + 正在换弹"时生效（[GeoGunAnimationInstance.subWeaponReloadPose] 非空）；
+     * - `A` 是单位阵时 `D` 也是单位阵 → **完全无副作用**，绝大部分帧走的就是这条；
+     * - 挂点骨骼 / `root` 骨骼 / 附件模型任一解析不到 → 返回 `null`，退回原有渲染；
+     * - 返回的 [SubWeaponFollowPose.gunRoot] 由调用方 merge 到主武器姿态上，
+     *   [SubWeaponFollowPose.attachmentPose] 则要在渲染副武器附件模型时**代替**原始姿态使用。
+     */
+    open fun resolveSubWeaponFollowPose(stack: ItemStack, model: GeoGunModel): SubWeaponFollowPose? {
+        val (slot, definition) = findSubWeapon(from(stack)) ?: return null
+
+        val modelPath = definition.model ?: return null
+        val boneName = AttachmentSlots.mountBoneOf(slot, definition) ?: return null
+        val attachmentModel = AttachmentModelReloadListener.getModel(modelPath) ?: return null
+
+        // 本帧的副武器换弹姿态（换弹之外恒为 null，这条路径也就整个跳过）
+        val attachmentPose = (FirstPersonRenderHandler.getActiveAnimationInstance(InteractionHand.MAIN_HAND)
+                as? GeoGunAnimationInstance)
+            ?.subWeaponReloadPose() ?: return null
+
+        val rootIndex = attachmentModel.baseModel.getIndex(ATTACHMENT_ROOT_BONE)
+        if (rootIndex < 0) return null
+        val attachmentRoot = attachmentPose.findTransform(rootIndex) ?: return null
+
+        val gunRootIndex = model.getIndex(GUN_ROOT_BONE)
+        if (gunRootIndex < 0) return null
+        val gunRoot = model.getBone(gunRootIndex)?.getLocalTransform() ?: return null
+
+        // ⚠ 用 **bind pose** 的挂点变换：它只取决于骨骼静态父子关系，不受主武器姿态影响，
+        // 因此可以缓存、也不会和"我们刚给 root 加的 D"互相纠缠（用 posed 版本会自反馈）。
+        val mountBind = model.getBindGlobalTransform(boneName) ?: return null
+        val gunRootBind = model.getBindGlobalTransform(GUN_ROOT_BONE) ?: return null
+
+        // M = 挂点在主武器空间里的变换
+        val mount = Matrix4f(gunRootBind).invert().mul(mountBind)
+        val mountInv = Matrix4f(mount).invert()
+
+        val rootLocal = matrixOf(attachmentRoot)
+        // D = M · A · M⁻¹：把附件空间里的整体运动换算成主武器空间里的整体运动
+        val worldOffset = Matrix4f(mount).mul(rootLocal).mul(mountInv)
+
+        // 副武器 root：A → D⁻¹ · A（抵消子节点侧的同一份位移，让它留在挂点上）
+        val cancelLocal = Matrix4f(worldOffset).invert().mul(rootLocal)
+        val attachmentRootFinal = MERGE_BLENDER.blend(
+            listOf(attachmentPose, singleBonePose(rootIndex, cancelLocal))
+        )
+
+        // 玩家手臂：**不由副武器接管**（附件的手部骨骼不参与手臂渲染）。
+        // 理由见 `SubWeaponFollowPose` 的说明：手臂位形读的是**主武器模型**的 `lefthand_pos`，
+        // 附件模型那根同名骨骼既不渲染手臂、也被主动隐藏；而现有换弹动画是对着手持形态的
+        // 骨架做的，直接搬过来会让手消失、光照错乱。
+
+        // 炮弹：**不做任何修正**（试过的换基版方向反了、更差，已连同死代码一起删掉）。
+        // 记录与下一步建议见上面那段注释、以及设计文档 §11.11.7.3-C。
+
+        // 主武器 root 的修正：G → D · G。这里**只算**、不写进模型实例 ——
+        // 真正的"主武器跟着动"由 `renderModel` 把 [SubWeaponFollowPose.gunRoot] 叠加到渲染姿态上完成；
+        // 在这里改实例只会让本帧后续所有从实例读出来的骨骼都带上这份偏移。
+        val newGunRootLocal = Matrix4f(worldOffset).mul(gunRoot)
+
+        return SubWeaponFollowPose(
+            modelPath,
+            singleBonePose(gunRootIndex, newGunRootLocal),
+            attachmentRootFinal,
+        )
+    }
+
+    /**
+     * 炮弹位置：**当前不做任何修正**。
+     *
+     * 这里曾经有一个 `resolveProjectilePositionCorrection`（把炮弹的位移从 `root` 空间换基到
+     * 父骨骼空间）。实测它**方向搞反** —— 修正后炮弹"偏上偏后"，比不修更差，所以撤掉了，
+     * 连同它需要的 `BedrockAttachmentModel.getBindGlobalTransform` 一起删干净。
+     *
+     * 留着这段注释而不是留一段死代码，是因为它的价值只在"别再照那个思路试一遍"：
+     *
+     * | 事实 | 说明 |
+     * |---|---|
+     * | 炮弹**旋转是对的** | 需求方实测确认，不要动旋转那部分 |
+     * | 位置**偏上偏后** | 换基修正没能修好，方向反而反了 |
+     * | position 关键帧是**偏移** | `BoneState.x/y/z` 语义（相对绑定位置），不是绝对值 |
+     * | `projectile` 挂在 **`root`** 下 | **不是 `tube` 的子节点** —— 所以 `gun`/`tube` 跟着 `root` 转时炮弹不跟着转 |
+     *
+     * 下一步不要继续猜变换：先量**"静止（绑定姿势）时炮弹相对 `tube` 偏了多少"**，
+     * 有偏差量之后需要什么变换是一步能算出来的。完整记录见设计文档 §11.11.7.3-C。
+     */
+
+    /** [resolveSubWeaponFollowPose] 的产物，见那个函数的说明 */
+    data class SubWeaponFollowPose(
+        /** 这份修正属于哪个附件模型；渲染时用它确认"这个槽位的附件就是被修正的那一个" */
+        val modelPath: ResourceLocation,
+        /**
+         * 只含主武器 `root` 一根骨骼的修正姿态。
+         *
+         * ⚠ 调用方必须在**渲染姿态**里 merge 它（`renderModel` 就是这么做的）。
+         * 本函数**不会**把 `D` 留在模型实例上 —— 量完手部位形就还原了，
+         * 否则这一帧后续所有从实例读出来的骨骼都会带上这份偏移。
+         */
+        val gunRoot: Pose,
+        /** 抵消过的副武器换弹姿态；渲染附件模型时**代替**原始姿态使用 */
+        val attachmentPose: Pose,
+    )
+
+    /** 从 `BoneTransform` 取出它的局部变换矩阵（平移 → 旋转 → 缩放，与 `BoneState` 同一套组合顺序） */
+    private fun matrixOf(transform: BoneTransform): Matrix4f =
+        Matrix4f()
+            .translate(transform.translation())
+            .rotate(transform.rotation().asQuaternion())
+            .scale(transform.scale())
+
+    /**
+     * 从姿态里取出**指定骨骼下标**的那一条变换。
+     *
+     * `Pose` 只有 `getBoneTransforms()` 这一个读接口（没有按下标取的方法），所以这里遍历一次；
+     * 一帧里最多两次调用、骨骼数量级是几十，可以忽略。
+     */
+    private fun Pose.findTransform(boneIndex: Int): BoneTransform? =
+        getBoneTransforms().firstOrNull { it.boneIndex() == boneIndex }
+
+    /**
+     * 把 [matrix] 写回某根骨骼。
+     *
+     * `BoneTreeInstance.applyPose` 就是直接写这几个字段，`Pose` 接口**只能读不能写**，
+     * 所以"给主武器 root 加一个偏移"这件事没别的做法。
+     *
+     * ⚠ 欧拉角取 **ZYX**（与 `BoneState` / `ZYXRotationView` / `BLENDER` 同一套约定），
+     * 不能图省事只看四元数：姿态的应用顺序在这套引擎里是按欧拉角定的，
+     * 换一套顺序会让 Z 轴之外的分量转错方向。
+     */
+    private fun writeLocalTransform(bone: BoneState, matrix: Matrix4f) {
+        val translation = matrix.getTranslation(Vector3f())
+        val scale = matrix.getScale(Vector3f())
+        val rotation = matrix.getUnnormalizedRotation(Quaternionf())
+
+        bone.x = translation.x
+        bone.y = translation.y
+        bone.z = translation.z
+        bone.rotation.set(rotation)
+        bone.rotationInEuler.set(rotation.getEulerAnglesZYX(Vector3f()))
+        bone.xScale = scale.x
+        bone.yScale = scale.y
+        bone.zScale = scale.z
+    }
+
+    /** 构造一个"只含某一根骨骼"的姿态，供 [MERGE_BLENDER] 覆盖到别的姿态上 */
+    private fun singleBonePose(boneIndex: Int, matrix: Matrix4f): Pose {
+        val builder = ArrayPoseBuilder()
+        builder.addBoneTransform(
+            BoneTransform(
+                boneIndex,
+                matrix.getTranslation(Vector3f()),
+                ZYXRotationView(matrix.getUnnormalizedRotation(Quaternionf()).getEulerAnglesZYX(Vector3f())),
+                matrix.getScale(Vector3f()),
+            )
+        )
+        return builder.toPose()
+    }
+
+    /**
      * 副武器**模型自己**的 `flare` 骨骼在枪姿态空间里的变换。
      *
      * 副武器（下挂榴弹发射器这类）开火时，枪口焰与动画关键帧里的枪口烟都该挂在**它的**枪口上，
@@ -858,9 +1099,12 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
      * 组合方式与渲染那一条路径完全一致（挂点骨骼 × 配件模型里的骨骼变换），
      * 所以只要配件画得出来，这里就取得动。取不到时返回 `null`
      * ——调用方**不会**因此退回主武器的 `flare`，而是干脆不画这一簇火焰。
+     *
+     * ⚠ 副武器换弹时主武器的 `root` 会在**渲染姿态**里被 [resolveSubWeaponFollowPose] 顶走，
+     * 那一帧这里读到的挂点变换会**跟着偏移** —— 这是对的（枪口焰该跟着枪走）。
      */
     open fun resolveSubWeaponFlareTransform(stack: ItemStack, model: GeoGunModel): Matrix4f? {
-        val (slot, definition) = findSubWeapon(GunData.from(stack)) ?: return null
+        val (slot, definition) = findSubWeapon(from(stack)) ?: return null
 
         val modelPath = definition.model ?: return null
         val boneName = AttachmentSlots.mountBoneOf(slot, definition) ?: return null
@@ -878,10 +1122,10 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
      * 写在副武器配件的 json 里即可，不必再开一个只对这一处生效的字段。
      */
     open fun resolveSubWeaponMuzzleFlashScale(stack: ItemStack): Float =
-        findSubWeapon(GunData.from(stack))?.second?.muzzleFlashScale?.coerceAtLeast(0f) ?: 1.0f
+        findSubWeapon(from(stack))?.second?.muzzleFlashScale?.coerceAtLeast(0f) ?: 1.0f
 
     open fun resolveMagazineBone(stack: ItemStack): String {
-        return when (GunData.from(stack).magazineLevel()) {
+        return when (from(stack).magazineLevel()) {
             1 -> GeoGunModel.MAGAZINE_EXTEND_BONE
             2 -> GeoGunModel.MAGAZINE_EXTEND_PRO_BONE
             else -> GeoGunModel.MAGAZINE_STANDARD_BONE
@@ -897,7 +1141,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     }
 
     open fun scriptHasScope(stack: ItemStack): Boolean {
-        val data = GunData.from(stack)
+        val data = from(stack)
         return data.attachment.id(AttachmentType.SCOPE) != null
                 || data.attachment.get(AttachmentType.SCOPE) != 0
     }
@@ -948,7 +1192,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
      * 自然冷却（`GunEventHandler.reduceHeat`），一把打到过热再丢在地上的枪会一直保持那个热度。
      */
     open fun scriptHeat(stack: ItemStack): Double {
-        return GunData.from(stack).heat.get()
+        return from(stack).heat.get()
     }
 
     open fun scriptFrameDeltaSeconds(): Float {
@@ -1073,8 +1317,8 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     }
 
     open fun applyCameraShake(stack: ItemStack, model: GeoGunModel, hand: InteractionHand) {
-        val item = stack.item as? GunItem ?: return
-        val player = localPlayer ?: return
+        if (stack.item !is GunItem) return
+        if (localPlayer == null) return
         val animation = FirstPersonRenderHandler.getActiveAnimationInstance(hand) ?: return
         val camera = model.getCameraBone()
         if (camera == null) {
@@ -1214,8 +1458,8 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
      * 由服务端写好同步过来（§9.8.10）。
      */
     private fun playerDeployedSubWeapon(stack: ItemStack): Boolean {
-        val player = localPlayer ?: return false
-        val gun = GunData.from(stack)
+        if (localPlayer == null) return false
+        val gun = from(stack)
         return ActiveGun.isDeployed(gun, true)
     }
 
@@ -1242,7 +1486,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
      * 瞄准位形当然还是主武器的。
      */
     open fun resolveSubWeaponAimTransform(stack: ItemStack, model: GeoGunModel): Matrix4f? {
-        val (slot, definition) = findSubWeapon(GunData.from(stack)) ?: return null
+        val (slot, definition) = findSubWeapon(from(stack)) ?: return null
 
         val modelPath = definition.model ?: return null
         val attachmentModel = AttachmentModelReloadListener.getModel(modelPath) ?: return null
@@ -1558,8 +1802,6 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         /**
          * 部署中的副武器**有没有自己的瞄准位形** —— 也就是 `resolveSubWeaponAimTransform` 会不会给出结果。
          *
-         * ⚠ **这是"瞄准位形跟谁走"与"倍率跟谁走"共用的唯一判据，别在别处重写一份**（§9.8.6）。
-         *
          * | 副武器有自己的 `iron_view` | 位形 | 倍率 |
          * |---|---|---|
          * | 有 | 副武器模型自己的 `iron_view` | 副武器自己的 `Zoom` |
@@ -1601,6 +1843,13 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         private const val MUZZLE_FLASH_BONE = "muzzle_flash"
         private const val CUSTOM_HAND_GUARD_BONE = "custom_hand_guard"
         private const val OEM_HAND_GUARD_BONE = "oem_hand_guard"
+
+        /** **主武器**模型里的整体骨骼。副武器换弹时"反推"过来的运动加在它上面（见 [resolveSubWeaponFollowPose]） */
+        private const val GUN_ROOT_BONE = "root"
+
+        /** **配件**模型里的整体骨骼。美术的换弹动画把"整把武器在手里怎么动"写在这一根上 */
+        private const val ATTACHMENT_ROOT_BONE = "root"
+
         private const val OEM_MUZZLE_BONE = "oem_muzzle"
         private const val OEM_SCOPE_BONE = "oem_scope"
         private const val CUSTOM_SCOPE_MOUNT_BONE = "custom_scope_mount"
@@ -1618,5 +1867,14 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
         private val BLENDER: EulerAdditiveBlender =
             SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }
+
+        /**
+         * 按骨骼下标叠加姿态，**上层覆盖下层**（与 `GeoGunAnimationInstance.MERGE_BLENDER` 同一套）。
+         *
+         * 副武器换弹的"跟随运动"（见 [resolveSubWeaponFollowPose]）用它把"只含枪模型 `root` 一根骨骼"
+         * 的修正姿态盖到主武器的动画姿态上：没被修正碰到的骨骼原样保留，所以主武器自己的 idle/run
+         * 照常播。
+         */
+        private val MERGE_BLENDER = NoAllocMergeBlender()
     }
 }

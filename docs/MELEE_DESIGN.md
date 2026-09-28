@@ -4046,6 +4046,175 @@ git diff --stat -- src/main/kotlin/com/atsuishio/superbwarfare/subweapon/SubWeap
 
 ---
 
+#### 11.11.7.1 【实装记录】美术产出第一支副武器换弹动画时踩到的坑（已修）
+
+> 这一节是**五期开工前**的实装记录（比 §11.11.3 的第 ① 步还早）：
+> 美术把 `sub_weapon_gp_25` 的换弹动画做出来了，但进游戏**换弹时什么都没发生**。
+> 排查结论是**两处配置放错 + 一处静默丢弃**，代码侧的搬运逻辑本身没问题。
+> 记录在这里是因为**第二个副武器会一模一样地再踩一遍**。
+
+**现象**：切到 GP-25 → 按 R → 换弹进度、音效、弹药结算全部正常，**但榴弹筒纹丝不动**。
+
+**数据流**（四期已实现，两段缺一不可）：
+
+```
+副武器 GunData.reloading()
+  └─ clip 名 ← GunResource.compute(副武器合成栈).animation.reloadClip()   ① 数据里写的名字
+       └─ 动画本体 ← AttachmentModelReloadListener.findAnimation(clipName) ② 附件动画表里有没有这支
+            └─ AnimationRunner(...) 每 tick 推进 → subWeaponReloadPose()
+                 └─ GeoGunRenderer.renderRegisteredAttachments 把姿态应用到附件模型
+```
+
+**三个原因**：
+
+| # | 原因 | 为什么它"什么都不报" |
+|---|---|---|
+| 1 | 动画文件放在了 **`animations/bedrock/gun/`**（主武器动画表），而副武器换弹**只读 `animations/bedrock/attachment/`**（附件动画表） | 两个目录的文件名可以完全一样，放错了没人管；`findAnimation` 只是返回 `null` |
+| 2 | 文件里的骨骼是 **`righthand` / `camera` / `head` / `undefined` / `lefthand`** —— 全是**枪模型**的骨骼（那份文件是从 `gp_25.animation.json` 的 `animation.gp_25.reload` 复制来的）；附件模型里只有 `lefthand` 存在 | clip 是用 `BedrockAnimation.createAnimation(file, model)` 绑到**附件模型**上的，**模型里没有的骨骼其通道被静默丢弃** —— runner 建得起来、`specifiedEndTimeS` 也正常，只是没有任何一根骨头在动 |
+| 3 | 失败日志是 `Mod.LOGGER.debug`（Forge 默认不输出） | 客户端**完全无声**：看不出是数据没写、目录放错、还是骨骼名不匹配 |
+
+**修了什么**：
+
+| 落点 | 改动 |
+|---|---|
+| `assets/.../animations/bedrock/attachment/sub_weapon_gp_25.animation.json` | **新建**（从 `gun/` 那份移过来并重做骨骼定向）：只驱动附件模型自己的 `gun` / `tube` / `trigger`。⚠ 当前动作是**占位内容**，等美术正式产出后整体替换，**换文件不用改代码或数据** |
+| `assets/.../animations/bedrock/gun/sub_weapon_gp_25.animation.json` | **删除**。它没有任何 gun resource 引用（属于死资源），留着只会让人继续往错的目录里加动画 |
+| `resource/gun/GunAnimation.kt` | 新增 **`reloadClip(emptyReload, drumLevel)`**：把"换弹 clip 名怎么选"抽成一个函数。原先主武器与副武器**各写了一份、顺序还不一样**（主武器 `Reload` → 细分；副武器 `ReloadEmpty` → `Reload`）；只配一个 `ReloadEmpty` 时两份结果相同，所以一直没暴露。这里**保持副武器的既有语义**（不趁机改行为），只让"按哪条规则"有一个答案 |
+| `client/animation/gun/GeoGunAnimationInstance.kt` | `updateSubWeaponReload` 改调 `reloadClip(...)`；失败日志拆成**互不覆盖**的两条（`noClip` = 数据没写 / `unbound` = clip 名解析不到文件），并打印 clip 名、它要求的**文件 id**、以及 `AttachmentModelReloadListener.animPath`；解析成功后清掉记账，数据包改回来还能再报一次 |
+| `resource/model/AttachmentModelReloadListener.kt` | KDoc 补上"两个配错了也不报错的坑"（目录、骨骼），并列出 `sub_weapon_gp_25` 的可用骨骼 |
+
+**给下一个副武器（以及美术）的三条硬规则**：
+
+1. **文件放 `animations/bedrock/attachment/<附件 id>.animation.json`**，文件名要与 `models/bedrock/attachment/<附件 id>.geo.json` **完全同名**（配对靠文件名 id，没有配置字段）。
+2. **只驱动附件模型里存在的骨骼**。`sub_weapon_gp_25` 的可用骨骼：
+   `root` / `flare` / `projectile` / `lefthand`（在 `projectile` 下）/ `gun` / `tube`（`bone2..bone7` 在它下面）/ `trigger` / `positioning` / `iron_view`。
+   ⚠ **手部不做**：真手臂由主武器那条链路画（`BedrockAttachmentModel.hideHandBones` 会把模型自带的 `lefthand_pos` 整棵子树藏掉）。
+3. **clip 名写在副武器自己的枪资源里**（`sbw/guns/<id>.json` 的 `Animation.ReloadEmpty` / `Reload`），**附件数据侧一个字段都不用写**。
+4. 调参时打开 `melee_debug_log`：解析不到会有一条 `[SubWeapon] ... is not bound ...` 的日志，直接把"该放哪、该叫什么名字"打出来。
+
+---
+
+#### 11.11.7.2 【五期·规范】副武器换弹：**用代码把动画"反推"到主武器**（不动动画文件）
+
+> 这一节记录**五期实装时暴露出来的两个问题**以及各自的结论：
+> ① 副武器动画只驱动自己 → 主武器与玩家手臂纹丝不动（**已用代码解决**，见下）；
+> ② 玩家第一人称手臂只认**主武器模型**的 `lefthand_pos` / `righthand_pos`，
+> 附件模型里那根同名骨骼**不渲染任何东西**（被 `BedrockAttachmentModel.hideHandBones` 隐藏，
+> 且附件路径根本不调 `renderHands`）→ **"让副武器动画接管玩家的手"这条路已试过并放弃**，
+> 原因与结论见本节末尾。
+
+**三条已确认的代码事实**（改这里之前必须知道）：
+
+| # | 事实 | 位置 |
+|---|---|---|
+| 1 | 玩家手臂由**主武器模型**渲染：读枪模型自己的 `lefthand_pos` / `righthand_pos` → `mulGlobalTransform` → 画真手臂 | `GeoGunModel.renderHands`（`:332-345`），由枪身画完后调用 |
+| 2 | 附件模型**从不画手**，而且主动把 `lefthand_pos` 整棵子树隐藏（避免与真手臂重叠） | `BedrockAttachmentModel.hideHandBones` |
+| 3 | **副武器的动画与模型里根本没有右手**（需求方确认）：手部只有左手，右手由主武器那条链路负责 | `sub_weapon_gp_25.geo.json` 只有 `lefthand` / `lefthand_pos`，没有 `righthand` |
+
+**推论**：副武器动画里的手部通道**不可能**带动玩家的手；右手则连通道都不存在
+（附件模型里的 `righthand` 关键帧属于"模型里不存在的骨骼"，会被
+`createAnimation(file, 模型)` **静默丢弃**）。
+
+**已实装的做法：把 `root` 的整体运动换算到主武器空间，主武器跟着走、副武器原地不动。**
+
+设挂点在主武器骨骼空间里的变换为 `M`（**bind pose** 下算，稳定且可缓存），
+副武器换弹动画的 `root` 通道为 `A`：
+
+```
+D = M · A · M⁻¹        把"附件空间里的整体运动"换算成"主武器空间里的整体运动"
+```
+
+| 对象 | 处理 | 效果 |
+|---|---|---|
+| 主武器 `root` | 左乘 `D` | 整枪 + **玩家手臂**（由枪模型渲染）+ 其它配件 + 枪口焰一起跟着动画走 |
+| 副武器 `root` | 左乘 `D⁻¹`（即 `A → D⁻¹·A`） | 抵消子节点侧的同一份位移，下挂筒**仍然贴死在挂点上**；`A` 里其余通道（炮管/扳机/榴弹）照常播 |
+
+两者在挂点处**精确抵消**（`G·M_bind·D⁻¹·A` 里 `D` 与 `D⁻¹` 相消），所以"下挂件不会脱开枪身"和"枪跟着动画动"同时成立。
+
+**实现落点**（`GeoGunRenderer`）：
+
+| 项 | 位置 |
+|---|---|
+| `resolveSubWeaponFollowPose(stack, model)` | 算出 `D`、返回 `SubWeaponFollowPose`（"只含主武器 root"的修正姿态 + **抵消过**的副武器姿态） |
+| `renderModel` 的 first-person 分支 | 在 `applyPose` **之前**调用它，用 `MERGE_BLENDER` 把修正盖到动画姿态上（没修正时逐字走原路径） |
+| `renderRegisteredAttachments` | 副武器槽位改用 `subWeaponFollow.attachmentPose`（抵消版），不是原始姿态 |
+
+**四个必须守住的细节**：
+
+1. **`M` 用 bind pose 的挂点变换**（`getBindGlobalTransform`，已缓存）。用 posed 版本会自我反馈：
+   我们刚给 `root` 加了 `D`，再去读挂点就会读到被自己顶走的位置。
+2. **`Pose` 只能读不能写**，所以"给主武器 root 加偏移"只能直接写 `BoneState`
+   （`x/y/z` + `rotation` + `rotationInEuler` + `xScale/yScale/zScale`）——
+   `BoneTreeInstance.applyPose` 本身就是这么写的。
+   写回时**必须是"偏移"语义**：`BoneTransform.translation()` 是**相对绑定位置的偏移**
+   （`BoneState.x/y/z` 同理，`reset()` 取的是 `bindX/Y/Z` 而不是 pivot）。
+3. **`D` 是单位阵时零副作用**：`A` 没有 `root` 通道、或那一帧 `root` 恰好等于绑定值时，
+   `D = M·I·M⁻¹ = I`，主武器姿态与副武器姿态都与改动前**逐字相同**。
+4. **任一环节解析不到就返回 `null`**（挂点骨骼 / 两根 `root` / 附件模型 / 换弹姿态），
+   整条路径退回原有渲染 —— 与"没有换弹动画"时的静默回退一致。
+   ⚠ 修正**只写在渲染姿态上**，不写进模型实例（写进去会让本帧后续所有读取都带上偏移）。
+
+---
+
+#### 11.11.7.3 【实装记录】**"副武器动画接管玩家左手"已放弃 + 炮弹位置未解**
+
+> **⚠ 当前状态**：`resolveSubWeaponFollowPose` 只做上面那一件事（`root` 反推）。
+> 手部接管与炮弹换基的代码**已全部移除**，不要照着旧思路再写一遍。
+
+## A. 左手：为什么放弃（试过三种写法，全部失败）
+
+**目标**：副武器换弹时，让玩家的左手按副武器动画的定义摆位（右手按事实 3 不参与）。
+
+**试过并否掉的方案**：
+
+| # | 方案 | 结果 |
+|---|---|---|
+| 1 | 把附件 `lefthand_pos` 的世界变换直接当手臂位形 | 左手消失；矩阵是**相对镜头**的（含 `root` 变换）→ 位移算了两遍 |
+| 2 | 换算成"相对 `root` 当前姿势"再正交化 | 左手仍然错位、光照异常 |
+| 3 | 参照系改成 `root` 的**绑定**姿势（`rootBindLocal⁻¹ · W_hand`）+ 正交化 | 同上 |
+
+**根因（数据层，不是渲染层）**：现有动画的 `lefthand` 关键帧是对着**手持形态的骨架**写的 ——
+
+```
+animation.sub_weapon_gp_25.reload 的 lefthand.position：
+    0.0   = 6.15,  -20.7,   -1.7
+    0.1   = 8.98,  -26.48,  -0.29
+    0.175 = 11.29, -33.32,   7.58
+```
+
+而附件模型 `lefthand_pos` 的绑定位是 `Y = +7` —— **两套骨架差了约 40 个单位**。
+忠实搬运这个值，手必然被放到视野外。
+
+**结论**：**数据错配不是渲染层能修的**。三轮矩阵变换已经把这个结论验证了两遍，
+所以手部接管整体撤掉（`GeoGunModel.leftHandOverride` / `orthonormalize` /
+`resolveHandRelativeToRoot` 都已删除）。要恢复这个效果，**只能让美术重导动画**（见 B）。
+
+## B. 给美术的动画重导约束（**这一份可以直接转给美术**）
+
+| 项 | 要求 |
+|---|---|
+| 在哪个模型上做 | **直接打开 `models/bedrock/attachment/sub_weapon_gp_25.geo.json`** 做动画，**不要从手持模型复制**（这是问题的根因） |
+| 手部驱动哪根骨骼 | **`lefthand`**。它的子骨骼 `lefthand_pos` 上挂着手部几何，而那棵子树在渲染时被**主动隐藏**（避免与真手臂重叠），所以 key `lefthand_pos` 没有任何效果 |
+| 可用骨骼 | `root` / `flare` / `projectile` / `lefthand` / `gun` / `tube`（`bone2..bone7` 在它下面）/ `trigger` / `positioning` / `iron_view` |
+| **不存在、key 了会被静默丢弃** | `righthand` / `camera` / `head` / `undefined`（现有文件里这四根占了 7 根通道里的 4 根，全是空转） |
+| `root` 的语义 | **整枪在挂点内的位移**。代码会自动把它"反推"到主武器上并让整枪跟着动（这套**已实测可用**，不要改） |
+| 文件名 / clip 名 | **一个字符都不用改**（继续用 `animation.sub_weapon_gp_25.reload`），代码侧零改动 |
+
+## C. 炮弹：位置仍未解决
+
+- **现象**（需求方实测）：炮弹的**旋转是对的**，但位置**偏上偏后**；
+- **试过的**：一次"把位移从 `root` 空间换基到父骨骼空间"的修正 —— **方向搞反，位置更差**，
+  已撤掉（函数 `resolveProjectilePositionCorrection` 保留在代码里并标注"未调用"）；
+- **已知的模型事实**（调它之前必须先知道）：`projectile` 是 **`root` 的直接子节点**，
+  **不是 `tube` 的子节点** —— 所以 `gun`/`tube` 跟着 `root` 转的时候炮弹**不会**跟着转；
+  它的 position 关键帧是**相对绑定位置的偏移**（`BoneState.x/y/z` 语义），
+  绑定位置 `(0, -1.1743, -6.5436)` 本身就落在炮膛附近。
+- **下一步建议**：不要继续猜变换，先量一个数 —— **静止（绑定姿势）时炮弹相对 `tube` 偏了多少**。
+  有了偏差量，需要什么变换是一步能算出来的；也可以直接在重导动画时把这个偏移做进去。
+
+
+---
+
 ## 12. 决策记录
 
 ### 12.1 已定稿

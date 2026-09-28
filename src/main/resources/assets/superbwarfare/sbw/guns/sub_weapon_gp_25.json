@@ -5,5 +5,9 @@
     "ZoomRate": 0.9,
     "Speed": 1.0
   },
-  "HideCrosshairWhenZoom": false
+  "HideCrosshairWhenZoom": false,
+  "Animation": {
+    "Idle": "animation.sub_weapon_gp_25.idle",
+    "ReloadEmpty": "animation.sub_weapon_gp_25.reload"
+  }
 }
