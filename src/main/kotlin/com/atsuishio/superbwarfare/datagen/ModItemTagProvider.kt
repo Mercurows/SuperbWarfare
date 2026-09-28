@@ -662,6 +662,7 @@ class ModItemTagProvider(
         for ((rarity, researchable) in ModTags.Items.ATTACHMENT_RESEARCHABLE_BY_RARITY) {
             this.tag(researchable).addTags(
                 *AttachmentSlots.ALL
+                    .filter { it.researchable }
                     .mapNotNull { ModTags.Items.attachmentRarityTag(it.type, rarity) }
                     .toTypedArray()
             )

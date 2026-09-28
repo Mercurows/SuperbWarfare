@@ -37,7 +37,8 @@ class SmallContainerBlockItem : BlockItem(ModBlocks.SMALL_CONTAINER.get(), Prope
         @JvmField
         val SMALL_CONTAINERS: MutableList<() -> ItemStack> = mutableListOf(
             { createInstance(loc("containers/blueprints")) },
-            { createInstance(loc("containers/common")) }
+            { createInstance(loc("containers/common")) },
+            { createInstance(loc("containers/charms")) }
         )
 
         @JvmOverloads

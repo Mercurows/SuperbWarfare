@@ -6,7 +6,6 @@
     "#superbwarfare:attachment/stock/common",
     "#superbwarfare:attachment/grip/common",
     "#superbwarfare:attachment/bayonet/common",
-    "#superbwarfare:attachment/subweapon/common",
-    "#superbwarfare:attachment/charm/common"
+    "#superbwarfare:attachment/subweapon/common"
   ]
 }

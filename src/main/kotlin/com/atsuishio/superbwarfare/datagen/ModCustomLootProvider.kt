@@ -389,6 +389,10 @@ class ModCustomLootProvider() : LootTableSubProvider {
             }
         }
 
+        output += buildLootTable(containers("charms")) {
+            addSingleItem(ModItems.CHARM_FUKAMIZU_FISH.get(), 5)
+        }
+
         output += buildLootTable(containers("common")) {
             addMultiItems(1f, 0f, {
                 ModItems.EPIC_MATERIAL_PACK weighted 2
