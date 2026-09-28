@@ -20,6 +20,7 @@ import net.minecraft.client.renderer.entity.EntityRenderDispatcher
 import net.minecraft.client.renderer.entity.player.PlayerRenderer
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.HumanoidArm
+import org.joml.Matrix3f
 import org.joml.Matrix4f
 import org.joml.Vector3f
 import java.util.*
@@ -237,7 +238,8 @@ open class GeoGunModel @JvmOverloads constructor(
         texture: ResourceLocation,
         packedLight: Int,
         packedOverlay: Int,
-        readout: AmmoReadout = AmmoReadout()
+        readout: AmmoReadout = AmmoReadout(),
+        handAnchors: Map<HumanoidArm, Matrix4f> = emptyMap()
     ) {
         renderToBuffer(
             poseStack,
@@ -246,7 +248,8 @@ open class GeoGunModel @JvmOverloads constructor(
             BedrockModelRenderTypes.polyMeshCutout(texture),
             packedLight,
             packedOverlay,
-            readout
+            readout,
+            handAnchors
         )
     }
 
@@ -261,6 +264,12 @@ open class GeoGunModel @JvmOverloads constructor(
      * Bones named by the readout that the model does not contain are skipped, which is what makes this
      * safe for LOD models: those are baked from a separate `gun_lod` file that generally has no ammo
      * bones, so a gun simply loses its readout at LOD distance instead of failing to draw.
+     *
+     * [handAnchors] replaces the arm anchor bones for this draw only, and travels as a parameter for
+     * the same shared-instance reason as [readout]: during a sub-weapon reload the arms have to follow
+     * the *attachment* model's `lefthand_pos`/`righthand_pos` instead of the gun's (see
+     * `GeoGunRenderer.resolveSubWeaponHandAnchors`). An arm missing from the map keeps following the
+     * gun, so callers that do not know about sub-weapons can leave it empty.
      */
     open fun renderToBuffer(
         poseStack: PoseStack,
@@ -269,7 +278,8 @@ open class GeoGunModel @JvmOverloads constructor(
         triangleRenderType: RenderType,
         packedLight: Int,
         packedOverlay: Int,
-        readout: AmmoReadout = AmmoReadout()
+        readout: AmmoReadout = AmmoReadout(),
+        handAnchors: Map<HumanoidArm, Matrix4f> = emptyMap()
     ) {
         hideBone(leftHandBoneIndex)
         hideBone(rightHandBoneIndex)
@@ -296,7 +306,7 @@ open class GeoGunModel @JvmOverloads constructor(
         )
 
         if (renderHand) {
-            renderHands(poseStack, packedLight, bufferSource)
+            renderHands(poseStack, packedLight, bufferSource, handAnchors)
         }
 
         // skipNormalVisibilityCull = false, matching the multi-buffer model pass above.
@@ -329,22 +339,55 @@ open class GeoGunModel @JvmOverloads constructor(
         }
     }
 
-    private fun renderHands(poseStack: PoseStack, packedLight: Int, bufferSource: MultiBufferSource) {
+    /**
+     * Draws the real player arms at the model's hand anchor bones.
+     *
+     * [handAnchors] takes over the anchor for the arms it names — used while a sub-weapon plays its own
+     * reload animation, where the hands are posed by the *attachment* model and would otherwise stay
+     * glued to the gun. Anything missing from it keeps using this model's own bone.
+     */
+    private fun renderHands(
+        poseStack: PoseStack,
+        packedLight: Int,
+        bufferSource: MultiBufferSource,
+        handAnchors: Map<HumanoidArm, Matrix4f>
+    ) {
         val player = localPlayer ?: return
 
-        if (leftHandBoneIndex >= 0) {
+        val leftAnchor = handAnchors[HumanoidArm.LEFT]
+        if (leftAnchor != null) {
+            poseStack.pushPose()
+            mulTransformWithNormal(poseStack, leftAnchor)
+            renderFirstPersonArm(player, bufferSource, HumanoidArm.LEFT, poseStack, packedLight)
+            poseStack.popPose()
+        } else if (leftHandBoneIndex >= 0) {
             poseStack.pushPose()
             instance.mulGlobalTransform(poseStack, leftHandBoneIndex)
             renderFirstPersonArm(player, bufferSource, HumanoidArm.LEFT, poseStack, packedLight)
             poseStack.popPose()
         }
 
-        if (rightHandBoneIndex >= 0) {
+        val rightAnchor = handAnchors[HumanoidArm.RIGHT]
+        if (rightAnchor != null) {
+            poseStack.pushPose()
+            mulTransformWithNormal(poseStack, rightAnchor)
+            renderFirstPersonArm(player, bufferSource, HumanoidArm.RIGHT, poseStack, packedLight)
+            poseStack.popPose()
+        } else if (rightHandBoneIndex >= 0) {
             poseStack.pushPose()
             instance.mulGlobalTransform(poseStack, rightHandBoneIndex)
             renderFirstPersonArm(player, bufferSource, HumanoidArm.RIGHT, poseStack, packedLight)
             poseStack.popPose()
         }
+    }
+
+    /**
+     * Same contract as `GeoGunRenderer.mulPoseWithNormal`: `PoseStack.mulPoseMatrix` only updates the
+     * pose, but the arm's lighting reads the normal matrix, so both have to be multiplied.
+     */
+    private fun mulTransformWithNormal(poseStack: PoseStack, matrix: Matrix4f) {
+        poseStack.last().normal().mul(Matrix3f(matrix).invert().transpose())
+        poseStack.last().pose().mul(matrix)
     }
 
     companion object {

@@ -44,6 +44,19 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
         instance.applyPose(pose)
     }
 
+    /**
+     * 绑定姿势，与 `GeoGunModel.getBindPose` 是同一个东西（同一个底层模型）。
+     *
+     * ⚠ **不要拿 clip 的原始姿态直接 [applyPose]**：`BoneTreeInstance.applyPose` 是**直接写**
+     * `BoneState.x/y/z`，而动画文件里的平移量是"**相对绑定姿势的偏移**"（`0` = 停在骨骼自己的
+     * 静止位置）。主武器那边正是靠 `BLENDER.blend(bindPose, pose)` 把绑定垫回去的
+     * （见 `GeoGunRenderer` 里应用主武器姿态那一行），所以附件也必须走同一套 ——
+     * 否则**绑定不为 0 的骨骼会跑到父节点原点**去。下挂筒的炮弹就是这样错的：
+     * `projectile` 绑定 `(0, -1.1743, -6.5436)`（枪管轴线），clip 里写 `[0,0,0]` 时
+     * 整棵子树（炮弹**和**手）被抬到模型原点，实测偏上 0.0734、偏后 0.4090 方块。
+     */
+    fun getBindPose(): Pose = baseModel.bindPose
+
     /** 复位姿态；与 [applyPose] 成对使用 */
     fun resetPose() {
         instance.resetPose()

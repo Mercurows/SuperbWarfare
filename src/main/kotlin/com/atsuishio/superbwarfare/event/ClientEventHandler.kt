@@ -190,11 +190,21 @@ object ClientEventHandler {
     private const val SUB_WEAPON_FLASH_START = 0.001
 
     /**
+     * 副武器开火时**镜头后坐**相位的起始值（与 `SUB_WEAPON_FLASH_START` 同一个数：同一发里两条
+     * 窗口一起开）。
+     *
+     * 形状照抄 [firePosTimer] —— `handleWeaponFire` 每 tick 加 `0.16 * times`、涨到 2.0 归零，
+     * 于是正好扫过 `decayingOscillation(0.6, 2, 2, ·)` 的四又三分之一周期。
+     */
+    private const val SUB_WEAPON_RECOIL_START = 0.001
+
+    /**
      * 副武器（下挂榴弹这类）开火的枪口焰计时。
      *
      * 与 [fireRotTimer] 共用一套阈值（`0 < t < 0.3` 期间可见、涨到 3.0 归零），但**刻意不复用**它：
-     * `fireRotTimer` 还会带动整把枪的后坐表现（`handleShootAnimationV2` 读它），而副武器的后坐
-     * 由它自己的开火动画（`fire_sub_weapon`）负责，两边叠加会抖两下。
+     * `fireRotTimer` 还会带动整把枪的后坐表现（`handleShootAnimationV2` 读它），而副武器的**枪身**
+     * 由它自己的开火动画（`fire_sub_weapon`）负责，两边叠加会抖两下。（**镜头**那一份后坐是另一条
+     * 与枪身无关的相位：[subWeaponRecoilTimer]。）
      *
      * 它同时是"这一簇枪口焰属于副武器"的标记：大于 0 时 `MuzzleFlashRenderer` 把火焰画在
      * **副武器模型自己的 `flare` 骨骼**上，主武器的 `flare` 这段期间一帧都不画
@@ -202,6 +212,28 @@ object ClientEventHandler {
      */
     @JvmField
     var subWeaponFireRotTimer: Double = 0.0
+
+    /**
+     * 副武器开火时**镜头后坐**的相位计时（0 → 2.0，与 [firePosTimer] 同一形状）。
+     *
+     * ## 为什么不能直接借 [firePosTimer]
+     *
+     * 那是**一物三用**的：枪身位形（`handleShootAnimationV2`）、拉栓（[boltMove]）、
+     * 以及镜头（抬枪 + [cameraRot] 滚转）。副武器那一发的**枪身**两样都由宿主枪自己的开火动画
+     * 表现（`fire_sub_weapon`，动的是宿主枪的 `root`，峰值 7.4° / 4.7），借它会连拉栓一起借来
+     * ——**打榴弹时步枪拉栓**，与 §11.10.10 的"打榴弹时步枪抛壳"同族。
+     *
+     * 所以这里只留"相位"这**一个**语义：`RECOIL_X` / `RECOIL_Y` 打在哪，镜头就跟着动多少 ——
+     * 抬枪那一项（`handleGunRecoil`）与滚转那一项（[handleWeaponFire] 的 `shake`，幅度是
+     * `25000 · RECOIL_X · RECOIL_Y`）。⚠ 这两个消费者**此前都挂在 `firePosTimer > 0` 上**，
+     * 而副武器那一发 `fireRecoilTime == 0.0` → `firePosTimer` 恒为 0 → `RECOIL_X` 一个字节都
+     * 读不到（`RecoilY` 只剩"水平偏 `player.yRot`"那一条还活着）。
+     *
+     * 与 [subWeaponFireRotTimer] 同进同出（同一发一起开、主武器一开火一起清零），
+     * 于是 `handleGunRecoil` / [handleWeaponFire] 里两个相位**二选一**，不会叠加成"抖两下"。
+     */
+    @JvmField
+    var subWeaponRecoilTimer: Double = 0.0
 
     @JvmField
     var boltMove: Double = 0.0
@@ -1995,10 +2027,14 @@ object ClientEventHandler {
         // 而榴弹筒自己一帧枪口焰都没有。见 §11.10.11。
         if (ActiveGun.isSubWeapon(data)) {
             subWeaponFireRotTimer = SUB_WEAPON_FLASH_START
-            // 副武器的后坐由它自己的开火动画表现，不走主武器那套枪身位形/后坐
+            // 枪身位形与拉栓由副武器自己的开火动画（宿主枪的 `fire_sub_weapon`）表现，
+            // 但**镜头**要有后坐 —— 另开一个只驱动镜头的相位窗口（见 `subWeaponRecoilTimer`）
+            subWeaponRecoilTimer = SUB_WEAPON_RECOIL_START
             fireRecoilTime = 0.0
         } else {
             subWeaponFireRotTimer = 0.0
+            // 镜头后坐回到主武器那一套：两个相位窗口不能同时开（否则抬枪抬两次）
+            subWeaponRecoilTimer = 0.0
             fireRecoilTime = 10.0
         }
 
@@ -2723,6 +2759,16 @@ object ClientEventHandler {
             }
         }
 
+        // 副武器的**镜头**后坐相位：与 `firePosTimer` 同一形状（+0.16/tick、2.0 归零），
+        // 但它只喂下面那个 `shake` 与 `handleGunRecoil` 的抬枪 —— 枪身位形与拉栓仍属
+        // `fire_sub_weapon` 动画（见 `subWeaponRecoilTimer` 的 KDoc）
+        if (0.0 < subWeaponRecoilTimer) {
+            subWeaponRecoilTimer += 0.16 * times
+            if (subWeaponRecoilTimer >= 2.0) {
+                subWeaponRecoilTimer = 0.0
+            }
+        }
+
         boltMove = if (firePosTimer > 0 && firePosTimer <= 0.5) {
             1.2 * Mth.sin(2 * Mth.PI * firePosTimer.toFloat()).toDouble()
         } else {
@@ -2735,12 +2781,19 @@ object ClientEventHandler {
 
         if (entity is Player && entity.isSpectator) return
 
+        // 镜头后坐的两个相位**二选一**（同一时刻最多一个 > 0，开火时见 handleClientShoot）：
+        // 主武器用 `firePosTimer`，副武器用 `subWeaponRecoilTimer`。
+        // ⚠ 副武器那一发以前读的是 `firePosTimer` —— 它恒为 0，而 `decayingOscillation` 在
+        // `elapsedTime == 0` 处**恰好**是 `sin(0) == 0`，于是整项，连同里面的 `amplitude`
+        // （`25000 · RECOIL_X · RECOIL_Y`），永远是 0：`RecoilX` 一个字节都读不到。
+        val recoilPhase = if (firePosTimer > 0.0) firePosTimer else subWeaponRecoilTimer
+
         var shake = (
                 MathTool.decayingOscillation(
                     0.6f,
                     2f,
                     2f,
-                    firePosTimer.toFloat()
+                    recoilPhase.toFloat()
                 ) * (1 + amplitude) * (DisplayConfig.WEAPON_SCREEN_SHAKE.get() / 100.0).toFloat()
                 )
 
@@ -2961,9 +3014,17 @@ object ClientEventHandler {
         player.yRot = newYaw
         player.yRotO = player.yRot
 
-        if (firePosTimer > 0.0) {
+        // 抬枪（俯仰）的相位与 `handleWeaponFire` 里的 `shake` 同源、同一条"二选一"规则：
+        // 主武器是 `firePosTimer`，副武器是 `subWeaponRecoilTimer`。
+        // ⚠ 副武器那一发曾经**恒不满足** `firePosTimer > 0`（它由 `fireRecoilTime` 打开，而副武器
+        // 那一发 `fireRecoilTime == 0.0`），于是 `RECOIL_X` 整项都是死代码 —— 只剩下面那条水平偏
+        // 还在消费 `RECOIL_Y`。（第二项里的 `recoilForce` 对副武器仍是 0：它的 `+= 0.5` 同样挂在
+        // `fireRecoilTime` 上；副武器开火的 `RecoilX` 在 0.002 这一档，这一项本就只有 ~0.004°。）
+        val recoilPhase = if (firePosTimer > 0.0) firePosTimer else subWeaponRecoilTimer
+
+        if (recoilPhase > 0.0) {
             var rotateX =
-                (70 * pose * gunRecoilX * sin(firePosTimer * PI * 2) * (2.2 - firePosTimer) * 4.8 * (4 / (customWeight + 4)) + recoilForce * recoilForce * gunRecoilX * pose * 4.8 * (4 / (customWeight + 4))).toFloat() * times
+                (70 * pose * gunRecoilX * sin(recoilPhase * PI * 2) * (2.2 - recoilPhase) * 4.8 * (4 / (customWeight + 4)) + recoilForce * recoilForce * gunRecoilX * pose * 4.8 * (4 / (customWeight + 4))).toFloat() * times
 
             if (rotateX < 0) {
                 rotateX *= 1.8f
