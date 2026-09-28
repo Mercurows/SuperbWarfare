@@ -390,7 +390,28 @@ class ModCustomLootProvider() : LootTableSubProvider {
         }
 
         output += buildLootTable(containers("charms")) {
-            addSingleItem(ModItems.CHARM_FUKAMIZU_FISH.get(), 5)
+            addMultiItems(1f, 0f) {
+                // 权重按稀有度：普通 52 / 稀有 25 / 史诗 15 / 传说 5 / 卓越 1 / 虚幻 2
+                ModItems.CHARM_FUKAMIZU_FISH weighted 25
+                ModItems.CHARM_ZOMBIE_HEAD weighted 25
+                ModItems.CHARM_SKELETON_SKULL weighted 25
+                ModItems.CHARM_CREEPER_HEAD weighted 25
+
+                ModItems.CHARM_PIG weighted 52
+                ModItems.CHARM_BEE weighted 52
+                ModItems.CHARM_CHEST weighted 52
+
+                ModItems.CHARM_WITHER_SKELETON_SKULL weighted 15
+                ModItems.CHARM_NETHER_STAR weighted 15
+
+                ModItems.CHARM_SEPT_WOLVES weighted 5
+                ModItems.CHARM_ANCIENT_CPU weighted 5
+
+                ModItems.CHARM_SENPAI weighted 1
+
+                ModItems.CHARM_CHIRAM_CORE weighted 2
+                ModItems.CHARM_LILY weighted 2
+            }
         }
 
         output += buildLootTable(containers("common")) {
