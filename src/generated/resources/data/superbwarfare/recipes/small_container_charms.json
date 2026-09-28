@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "tag": "forge:plates/copper"
+    },
+    "b": {
+      "item": "superbwarfare:common_accessory_kit"
+    }
+  },
+  "pattern": [
+    "a",
+    "b"
+  ],
+  "result": {
+    "item": "superbwarfare:small_container",
+    "nbt": {
+      "BlockEntityTag": {
+        "LootTable": "superbwarfare:containers/charms",
+        "id": "superbwarfare:small_container"
+      }
+    }
+  },
+  "show_notification": true
+}

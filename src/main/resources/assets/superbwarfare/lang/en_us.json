@@ -447,6 +447,7 @@
   "des.superbwarfare.small_container.special": "Random SUI-pplies",
   "des.superbwarfare.small_container.loot.blueprints": "Gun Blueprints",
   "des.superbwarfare.small_container.loot.common": "Common Supplies",
+  "des.superbwarfare.small_container.loot.charms": "Random Charms",
   "block.superbwarfare.vehicle_deployer": "Vehicle Deployer",
   "des.superbwarfare.vehicle_deployer": "Right click with a container to set vehicle info. Summon a vehicle when triggered",
   "des.superbwarfare.vehicle_deployer.success": "Vehicle info set successfully!",

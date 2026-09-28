@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.datagen.builder.VehicleAssemblingRecipeBuilde
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.init.ModItems.Materials
 import com.atsuishio.superbwarfare.init.ModTags.commonItemTag
+import com.atsuishio.superbwarfare.item.container.SmallContainerBlockItem
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.recipe.vehicle.VehicleAssemblingRecipe
 import net.minecraft.data.PackOutput
@@ -2018,6 +2019,17 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .define('a', INGOTS_URANIUM)
                 .unlockedBy(getHasName(ModItems.URANIUM_INGOT.get()), has(INGOTS_URANIUM))
                 .save(writer, loc(getItemName(ModItems.URANIUM_BLOCK.get())))
+            NBTShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.SMALL_CONTAINER.get())
+                .withNBT(SmallContainerBlockItem.createInstance(loc("containers/charms")).orCreateTag)
+                .pattern("a")
+                .pattern("b")
+                .define('a', PLATES_COPPER)
+                .define('b', ModItems.COMMON_ACCESSORY_KIT.get())
+                .unlockedBy(
+                    getHasName(ModItems.COMMON_ACCESSORY_KIT.get()),
+                    has(ModItems.COMMON_ACCESSORY_KIT.get())
+                )
+                .save(writer, loc(getItemName(ModItems.SMALL_CONTAINER.get()) + "_charms"))
         }
 
         private fun buildVehicleRecipes(writer: Consumer<FinishedRecipe>) {
