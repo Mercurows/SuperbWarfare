@@ -382,6 +382,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.BAYONET_6KH2)
         simpleItem(ModItems.BAYONET_SEITENGEWEHR_84)
         simpleItem(ModItems.SUB_WEAPON_GP_25)
+        simpleItem(ModItems.CHARM_FUKAMIZU_FISH)
 
         // blocks
         evenSimplerBlockItem(ModBlocks.BARBED_WIRE)

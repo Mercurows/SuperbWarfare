@@ -153,6 +153,9 @@
     ],
     "SubWeapon": [
       "superbwarfare:sub_weapon_gp_25"
+    ],
+    "Charm": [
+      "superbwarfare:charm_fukamizu_fish"
     ]
   },
   "SoundInfo": {

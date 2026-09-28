@@ -37,7 +37,21 @@ enum class AttachmentType(typeName: String) {
      * 任何槽位的配件只要写了 `SubWeapon` 就算副武器。
      */
     @SerialName("SubWeapon")
-    SUBWEAPON("SubWeapon");
+    SUBWEAPON("SubWeapon"),
+
+    /**
+     * 吊坠 / 挂件。
+     *
+     * 与其它槽位最大的区别是**它会在第一人称下摆动**：配件模型按
+     * `fixed`（固定件）/ `string`（连接绳）/ `charm`（挂件本体）三组约定制作，
+     * 后两组绕 `charm_pos` 摆点做摆锤运动，物理参数见
+     * [com.atsuishio.superbwarfare.data.attachment.CharmInfo]。
+     *
+     * 它挂在**自己的挂点组**（`charm_loop`）上，与瞄具/刺刀/握把都不互斥 ——
+     * 吊坠本来就是挂在枪身侧面的一个小环上。
+     */
+    @SerialName("Charm")
+    CHARM("Charm");
 
     val attachmentName: String = typeName
 }

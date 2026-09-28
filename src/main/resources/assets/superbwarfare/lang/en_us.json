@@ -643,6 +643,7 @@
   "attachment.superbwarfare.slot.grip": "[Grip Attachment]",
   "attachment.superbwarfare.slot.bayonet": "[Bayonet Attachment]",
   "attachment.superbwarfare.slot.subweapon": "[Sub Weapon]",
+  "attachment.superbwarfare.slot.charm": "[Charm]",
   "attachment.superbwarfare.modify": "Modify ",
   "attachment.superbwarfare.scope_mode": "Scope",
 
@@ -714,6 +715,8 @@
   "item.superbwarfare.bayonet_6kh2": "6KH2 Bayonet",
   "item.superbwarfare.bayonet_seitengewehr_84": "Seitengewehr 84 Bayonet",
   "item.superbwarfare.sub_weapon_gp_25": "GP-25 Underbarrel Grenade Launcher",
+  "item.superbwarfare.charm_fukamizu_fish": "Fukamizu Fish Charm",
+  "des.superbwarfare.charm_fukamizu_fish": "A smart fish, maybe",
 
   "death.attack.gunfire": "%1$s was gunned down by %2$s",
   "death.attack.gunfire.entity": "%1$s was gunned down by %2$s",
