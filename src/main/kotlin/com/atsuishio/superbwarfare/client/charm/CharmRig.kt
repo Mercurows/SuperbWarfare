@@ -9,7 +9,6 @@ import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.tree.TreeBon
 import org.joml.Matrix4f
 import org.joml.Quaternionf
 import org.joml.Vector3f
-import kotlin.math.abs
 
 /**
  * 吊坠模型里与摆动有关的那部分结构。
@@ -32,7 +31,7 @@ import kotlin.math.abs
  * ## 几何量怎么来的
  *
  * - [pivot]：`string` 子树**绑定包围盒的顶部中心** —— 绳子挂在枪上的那一点；
- * - [length]：`string` 骨骼相对父级的 Y 偏移（就是绳长），见
+ * - [length]：`string` 分组**绑定包围盒的高度**（就是绳长：挂点到挂件的距离），见
  *   [com.atsuishio.superbwarfare.data.attachment.CharmInfo] 里的说明；
  * - [restDir]：`charm` 子树绑定包围盒中心相对 [pivot] 的方向（绑定姿态下的"垂下方向"）。
  *   它只用来算"从绑定方向转到解算方向"的最短弧旋转，不参与动力学。
@@ -167,7 +166,16 @@ class CharmRig(
                 (stringBounds[2] + stringBounds[5]) * 0.5f,
             )
 
-            val length = abs(base.bone(stringIndex).bindY()) / 16f
+            // 摆长 = 绳子自己的**几何长度**（挂点到挂件的距离），就是 `string` 分组绑定包围盒的高度。
+            //
+            // ⚠ 不要用 `definition.bindY()`（骨骼**相对父级**的 Y 偏移）：模型的骨架层级一变它就失真。
+            // `charm_chiram_core` 的 `string` 骨骼绝对位置和别的吊坠一样是 -0.3，但它的父级是 `bone2`
+            // （在 y=-0.296），相对偏移只剩 -0.004 —— 摆长被算成 0.0003 方块，`g = L·ω²` 跟着趋近于 0，
+            // 吊坠一甩就贴住最大摆角且回不来。`charm_senpai`（+3.658 → 0.23 方块）同理偏大。
+            //
+            // 包围盒口径同时还有一个好处：它和 [pivot]（包围盒顶部）取自同一把尺子，
+            // "挂在顶部、长度等于绳子"天然自洽。实测全部 14 个吊坠的绳子几何都是 0.300 px = 0.0188 方块。
+            val length = (stringBounds[4] - stringBounds[1]).coerceAtLeast(MIN_LENGTH)
 
             val restCenter = Vector3f(
                 (charmBounds[0] + charmBounds[3]) * 0.5f,

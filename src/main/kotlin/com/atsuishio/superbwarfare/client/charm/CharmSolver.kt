@@ -310,7 +310,7 @@ class CharmSolver {
  * 每个 (手, 配件) 只保留一份、逐帧原地更新。
  */
 class CharmParams {
-    /** 摆长（方块），来自 `string` 骨骼自身的 Y 偏移 */
+    /** 摆长（方块），来自 `string` 分组的绑定包围盒高度 */
     @JvmField
     var length: Float = 0.02f
 

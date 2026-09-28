@@ -149,7 +149,7 @@ object AttachmentSlots {
          *
          * 后两组的**骨骼枢轴 (pivot) 不参与计算** —— 摆点由代码从
          * `string` 分组的绑定包围盒顶部推导（`CharmRig.resolve`），
-         * 摆长由 `string` 骨骼自身的 Y 偏移给出（`CharmRig.length`）。
+         * 摆长由 `string` 分组的绑定包围盒高度给出（`CharmRig.length`）。
          * 动力学与每帧驱动分别在 `CharmSolver` / `CharmRuntime` 里。
          */
         const val CHARM_FIXED = "fixed"
