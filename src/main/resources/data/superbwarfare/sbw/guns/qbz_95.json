@@ -134,6 +134,9 @@
       "superbwarfare:ar_silencer",
       "superbwarfare:loudspeaker",
       "superbwarfare:silencer_qinglan"
+    ],
+    "SubWeapon": [
+      "superbwarfare:sub_weapon_gp_25"
     ]
   },
   "SoundInfo": {

@@ -4947,6 +4947,93 @@ t     = fade * fade * (3f - 2f * fade)          // smoothstep，与左手同一�
 
 ---
 
+### 11.11.12 【五期·实装】装副武器时**也要换护木**（`custom_hand_guard` / `oem_hand_guard`）
+
+> **一句话**：前护木导轨上装了下挂副武器，和装握把一样要**把原厂护木换成带导轨的那一支**
+> —— 判据从"装了握把"扩成"导轨被占（握把**或**副武器）"，展示的那对骨骼一字不改。
+
+#### ① 症状与根因
+
+`renderGripHandGuard` 只看 `AttachmentType.GRIP`。副武器挂在**同一段导轨**上（它的挂点骨骼
+`sub_weapon_pos` 挂在 `root` / `positioning2` 下，与护木**没有父子关系**，所以既不会跟着护木被隐藏、
+也不会因为护木的变换而移动），于是装了下挂武器的枪仍然画着**原厂护木**：美术按"挂在导轨上"做的
+榴弹筒，被安在一截没有导轨的护木上；原厂护木网格与导轨处于同一段空间的枪（ak_47 / rpk 那种
+"木护木 ↔ 导轨护木"整支二选一的）会**直接穿模**。
+
+#### ② 实测（`build/verify/VerifyHandGuardSwap.java`，跑 `sh build/verify/run_handguard.sh`）
+
+**谁能看到变化**：需要 `custom_hand_guard` 骨骼（没有就直接 `return`，两根骨骼都不碰）**且**
+assets 侧枪 json 的 `Attachments.GripHandGuard == true`。写这节时能装 GP-25 的枪
+（数据侧 `AvailableAttachments.SubWeapon` 里列了它）**10 把**：
+
+| 枪 | `custom_hand_guard` | `oem_hand_guard` | `GripHandGuard` | 装副武器的效果 |
+|---|---|---|---|---|
+| `aa_12` | 有（6 骨骼 / 143 立方体） | **没有这根骨骼** | `true` | ✅ 导轨护木出现（原先只有装握把才出现） |
+| `ak_47` | 有（18 / 266） | 有（8 / 56） | `true` | ✅ 木护木 → 导轨护木 |
+| `qbz_95` | 有（2 / 46） | 有，但**子树一个立方体都没有** | `true` | ✅ 导轨护木出现；"隐藏 OEM"在这把枪上是空操作 |
+| `mp_5` | 有（42 / 155） | 有（3 / 22） | `true` | ⚠ 护木会换，但**榴弹筒画不出来**（这把枪还没有 `sub_weapon_pos` 骨骼，见下） |
+| `ak_12` / `gp_25` / `hk_416` / `m_4` / `mk_14` / `qbz_191` | 没有 | 没有 | 未设 | ⬜ 护木无变化（要效果就得补骨骼 + 打开开关，是**美术项**） |
+
+⚠ **有护木对、但还没有副武器挂点骨骼的枪**（工作区里 `mp_5` 已经放开 `AvailableAttachments.SubWeapon`，
+`rpk` 还没放开）：交换**照样会触发**（判据是"装了什么"，不是"模型有没有骨骼"），于是会出现
+"导轨护木出现、**榴弹筒看不见**"——`renderRegisteredAttachments` 拿不到 `sub_weapon_pos`
+就直接 `continue`（§12.8-108-② 的静默不渲染）。这是**数据先于模型**的中间态：补上骨骼即正确，
+不需要代码改动，也不该拿代码去兜（服务端没有模型，兜不住）。
+
+**"该不该换"的量**：harness 还从 `TreeModelInstance` 的绑定姿势里打印了挂点与两根护木骨骼的位置
+（先自证单位：**1998/1998** 条"整条祖先链无旋转"的骨骼满足
+`G(bind) = T((-px/16, py/16, pz/16))` —— 即该库的全局变换以**方块**为单位、x 做了 Bedrock→MC 的
+手性翻转，翻转是等距变换，所以距离就是美术坐标里的距离）：
+
+| 枪 | 挂点 | 距 `oem_hand_guard` 最近骨骼 | 距 `custom_hand_guard` 最近骨骼 |
+|---|---|---|---|
+| `ak_47` | `(0, 0.082, −0.792)` | `xiahumu` 0.235 方块 | `bone7` 0.137 方块 |
+| `aa_12` | `(0, −0.005, −0.636)` | （无此骨骼） | `bone16` 0.207 方块 |
+| `qbz_95` | `(0, 0.017, −0.294)` | `oem_hand_guard` 0.512 方块 | `custom_hand_guard` 0.220 方块 |
+
+⚠ **没有**算网格级重叠体积，别把上表当成"穿模多少"的证据：该库的 `getRenderBoundingBox()` 是
+geo 描述里**声明的** `visible_bounds_*`（`aa_12` 声明 9 方块宽），与几何无关；要自己算包围盒就得
+先定死"立方体角点"的约定（立方体的 `origin`/`size` 是模型绝对坐标，再由骨骼帧补偿），而带旋转的
+骨骼那条**没有第三方可校对**。所以"该不该换"的理由是**结构性的**（同一段导轨 / 同一对骨骼的
+两套网格）+ 上面的**邻近度**，最后一眼留给游戏内。
+
+#### ③ 改动：一行判据 + 注释
+
+```kotlin
+val gun = from(stack)
+val railOccupied = gun.attachment.has(AttachmentType.GRIP) || findSubWeapon(gun) != null
+val showCustom = railOccupied && GunResource.compute(stack).attachmentInfo.gripHandGuard
+```
+
+- 副武器的判据用 **`findSubWeapon`**（"配件数据里写了 `SubWeapon` 定义"），与渲染副武器本体、
+  瞄准位形、枪口焰用的是**同一个身份判据**；**不是** `attachment.has(AttachmentType.SUBWEAPON)`
+  —— 槽位只说明"下挂件默认住哪儿"，`AttachmentType` 的 KDoc 已经把这条写死了。
+- 开关继续共用 `Attachments.GripHandGuard`：它问的是"**这把枪有没有带导轨的护木可选**"，
+  与装上的是哪一种导轨件无关。字段名（`gripHandGuard`）是历史遗留，为不动现有 json 而不改名，
+  改名的话 5 把枪的 assets json 都得跟着动，收益为零。
+
+#### ④ 显式不做
+
+- **不加"副武器专用"的新开关**：今天两档能同时满足的枪里没有一个需要它。真出现"要副武器换护木、
+  但不要握把换护木"的枪，再加一个字段 + 一个 `||`，是一行的事。
+- **不因为"没装护木换的枪"报警**：`custom_hand_guard` 不存在时静默 `return`（原样保留），
+  与其它"模型缺骨骼 → 静默不渲染"的口径一致（§12.8-108-②）。缺骨骼是美术项，不是代码能补的。
+- **不管"护木被换掉之后副武器挂点会不会跟着动"**：挂点骨骼与护木**无父子关系**（见 ①），
+  换护木不会移动副武器，所以这层不需要联动。
+
+#### ⑤ 手动验收
+
+| 场景 | 期望 |
+|---|---|
+| 在 `ak_47` 上装 GP-25（不装握把） | 木护木消失、导轨护木出现，榴弹筒贴在导轨上 |
+| 同一把枪**卸掉** GP-25 | 回到木护木 |
+| 同时装握把 + GP-25，再卸掉其中一个 | 护木保持导轨形态；两个都卸掉才回到木护木 |
+| 在 `hk_416` / `m_4` / `mk_14` / `qbz_191` / `ak_12` / `gp_25` 上装 GP-25 | 外观**无变化**（模型里没有 `custom_hand_guard`），榴弹筒照常挂在 `sub_weapon_pos` |
+| 在 `aa_12` 上装 GP-25 | 导轨护木出现（这把枪没有 OEM 护木骨骼，装副武器前是"没有护木"的样子） |
+| `qbz_95` 装/卸 GP-25 | 导轨护木出现/消失；"隐藏 OEM"无可见效果（那根骨骼是空的） |
+
+---
+
 ## 12. 决策记录
 
 ### 12.1 已定稿
@@ -4996,7 +5083,7 @@ t     = fade * fade * (3f - 2f * fade)          // smoothstep，与左手同一�
 | # | 议题 | 结论 |
 |---|---|---|
 | 27 | 槽位注册表的**挂点组默认值** | 5 个既有槽位各自独立（`scope_rail`/`magazine_well`/`muzzle_device`/`stock_interface`/`grip_rail`）→ **现有行为零变化**；刺刀 `muzzle_lug` 与枪口 `muzzle_device` 不同组、可共存。握把与将来的 `underbarrel_rail` **本期不合并**（合并＝玩法改动，等三期下挂落地再定） |
-| 28 | 新增槽位的**默认渲染方式** | `AttachmentRenderMode.GENERIC`：注册表按 `MountBone`（`Fixed` 约定骨骼 / `FromDefinition` 配件自己的 `Bone` / `GunModel` 切枪模型骨骼）自动渲染，新槽位不用写渲染代码。既有 5 个槽位是 `CUSTOM`（瞄具分划、枪托适配器、护木、枪口焰各有专属逻辑） |
+| 28 | 新增槽位的**默认渲染方式** | `AttachmentRenderMode.GENERIC`：注册表按 `MountBone`（`Fixed` 约定骨骼 / `FromDefinition` 配件自己的 `Bone` / `GunModel` 切枪模型骨骼）自动渲染，新槽位不用写渲染代码。既有 5 个槽位是 `CUSTOM`（瞄具分划、枪托适配器、护木、枪口焰各有专属逻辑）。⚠ 其中"护木"那条（`renderGripHandGuard`）在五期起**同时被下挂副武器触发**（§11.11.12） |
 | 29 | `AttachmentItem` 旧名 | **直接删除，不留 `typealias`**：仓库里已无引用，别名只会让旧名字继续扩散 |
 | 30 | 刺刀的属性表达 | **`Modifiers` 管标量、`Override.MeleeActions` 管形状与手感**，两者并存：伤害/距离只写在 `Modifiers` 里（工具提示才显示得出来、也避免两处相乘），动作表只写 `Animation`/`Duration`/`HitTime`/`Hitbox`/`Sweep`/`MaxTargets`/`Knockback`（§11.5.3-②） |
 | 31 | `MeleeRange` 的语义 | 从"`MeleeHitbox.Range` 的兜底值"改成**叠加值**（`rangeOr(0) + MeleeRange`）：旧数据逐值等价，配件从此能用一条 `Modifiers` 加近战距离，不必整块覆盖 `MeleeHitbox`（§11.5.3-③） |
@@ -5111,6 +5198,7 @@ t     = fade * fade * (3f - 2f * fade)          // smoothstep，与左手同一�
 | 100 | 老存档兼容 | **不做**。开发阶段没有历史存档包袱，旧 NBT 键（`"SubWeapon"`）与旧骨骼名的迁移表**明确不写**；已装 GP-25 的旧存档重装一次即可（§11.11.6） |
 | 101 | 第二个副武器部位 | **等需求**（侧挂 / 枪托内置 / 左右导轨都还没定）。本期只搭"族"的框架并实装下挂式；新增部位 = 枚举 + 注册项 + 模型骨骼 + 数据 + 物品注册，**代码侧应零改动**——这是框架是否成立的最终判据（§11.11.3 第 ⑥ 步 / §11.11.6） |
 | 102 | 顺手修掉的既有瑕疵 | ① `SubWeaponClientHandler.tick(data = null)` 导致超时兜底永不执行（G 与动作锁可能一次丢包锁到超时）；② 语言键两处各拼一次（今天拼法相同，槽位名一带下划线就会分叉 → 指令侧会把 raw key 发给玩家）。两条都并进五期（§11.11.7） |
+| 109 | 装副武器要不要换护木 | **要**：前护木导轨被"握把**或**下挂副武器"占用时都换成带导轨的那一支（`custom_hand_guard` 显示、`oem_hand_guard` 隐藏）。判据取 `findSubWeapon`（配件数据里的 `SubWeapon` 定义）而不是槽位，与渲染副武器本体的身份判据同源；开关继续共用 assets 侧枪 json 的 `Attachments.GripHandGuard`（字段名是历史遗留，不改名以免动 5 把枪的 json）。能装 GP-25 的枪里只有 `aa_12` / `ak_47` / `mp_5` / `qbz_95` 有 `custom_hand_guard` 骨骼；其中 `aa_12` / `ak_47` / `qbz_95` 同时有 `sub_weapon_pos`，效果完整可见，`mp_5` 只有护木会换（还没有挂点骨骼），其余枪静默无变化（补骨骼是美术项）（§11.11.12） |
 
 **五期唯一的开放项是"第二个部位是什么"**，而它**不阻塞** ①–⑤ 步的落地
 （验收可以临时造一个槽位来跑轮换）。需要外部输入的是**新部位的模型骨骼**（与四期的美术项同一性质）。

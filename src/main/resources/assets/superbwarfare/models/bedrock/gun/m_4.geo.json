@@ -10705,23 +10705,28 @@
 					"pivot": [-0.65, 2.81789, -3.44798]
 				},
 				{
+					"name": "sub_weapon_pos",
+					"parent": "positioning2",
+					"pivot": [0, 1.3117, -11.9297]
+				},
+				{
 					"name": "scope_pos",
-					"parent": "root",
+					"parent": "positioning2",
 					"pivot": [0, 3.73647, -2.64452]
 				},
 				{
 					"name": "muzzle_pos",
-					"parent": "root",
+					"parent": "positioning2",
 					"pivot": [0, 2.41016, -24.06328]
 				},
 				{
 					"name": "bayonet_pos",
-					"parent": "root",
+					"parent": "positioning2",
 					"pivot": [0, 2.41016, -24.06328]
 				},
 				{
 					"name": "grip_pos",
-					"parent": "root",
+					"parent": "positioning2",
 					"pivot": [0, 1.31172, -11.92969]
 				},
 				{
