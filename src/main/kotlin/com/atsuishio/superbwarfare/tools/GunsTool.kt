@@ -10,16 +10,13 @@ object GunsTool {
     }
 
     fun getGunDoubleTag(stack: ItemStack, name: String, defaultValue: Double): Double {
-        val data = stack.getOrCreateTag().getCompound("GunData")
+        val data = stack.getTagElement("GunData") ?: return defaultValue
         if (!data.contains(name)) return defaultValue
         return data.getDouble(name)
     }
 
     fun getGunUUID(stack: ItemStack): UUID? {
-        val tag = stack.tag ?: return null
-        if (!tag.contains("GunData")) return null
-
-        val data = tag.getCompound("GunData")
+        val data = stack.getTagElement("GunData") ?: return null
         if (!data.hasUUID("UUID")) return null
         return data.getUUID("UUID")
     }
