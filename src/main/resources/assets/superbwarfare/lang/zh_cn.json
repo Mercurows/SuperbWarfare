@@ -643,6 +643,7 @@
   "attachment.superbwarfare.slot.grip": "[握把配件]",
   "attachment.superbwarfare.slot.bayonet": "[刺刀配件]",
   "attachment.superbwarfare.slot.subweapon": "[副武器]",
+  "attachment.superbwarfare.slot.charm": "[吊坠]",
   "attachment.superbwarfare.modify": "修改",
   "attachment.superbwarfare.scope_mode": "瞄准镜",
 
@@ -714,6 +715,8 @@
   "item.superbwarfare.bayonet_6kh2": "6KH2军刺",
   "item.superbwarfare.bayonet_seitengewehr_84": "Seitengewehr-84军刺",
   "item.superbwarfare.sub_weapon_gp_25": "GP-25下挂榴弹发射器",
+  "item.superbwarfare.charm_fukamizu_fish": "深水鱼吊坠",
+  "des.superbwarfare.charm_fukamizu_fish": "一条看起来很聪明的鱼",
 
   "death.attack.gunfire": "%1$s被%2$s射爆了",
   "death.attack.gunfire.entity": "%1$s被%2$s射爆了",

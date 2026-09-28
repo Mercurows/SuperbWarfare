@@ -1,5 +1,7 @@
 package com.atsuishio.superbwarfare.client.model.attachment
 
+import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.client.charm.CharmRig
 import com.atsuishio.superbwarfare.client.renderer.ammo.AmmoDisplayRenderer
 import com.atsuishio.superbwarfare.client.renderer.ammo.AmmoDisplayRenderer.AmmoBarState
 import com.atsuishio.superbwarfare.client.renderer.ammo.AmmoDisplayRenderer.AmmoText
@@ -197,6 +199,37 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
         val index = baseModel.getIndex(boneName)
         return if (index >= 0) instance.getGlobalTransform(index) else null
     }
+
+    /**
+     * 吊坠骨架：`string` / `charm` 两根分组骨骼 + 摆点/摆长/静止方向。
+     *
+     * **懒解析、结果挂在本对象上**：模型对象在数据包重载时会被整个换掉，
+     * 所以缓存在这里天然随重载失效 —— 换成"按模型路径缓存"就会一直用旧模型的骨骼下标。
+     * 模型里没有这两个分组时返回 `null`（正常配件都会走这条，只有吊坠不是）。
+     *
+     * 解析结果**打一条日志**（每个模型一次）：吊坠不摆的原因只有两种 —— "没找到分组"和
+     * "找到了但几何量离谱"，两种都表现为**画面上什么都不发生**，不留一行字就只能靠猜。
+     */
+    fun charmRig(): CharmRig? {
+        if (!charmRigResolved) {
+            charmRigResolved = true
+            charmRig = CharmRig.resolve(this)
+            val rig = charmRig
+            if (rig == null) {
+                Mod.LOGGER.warn("Charm model has no usable 'string'/'charm' bone groups, it will not swing")
+            } else {
+                Mod.LOGGER.info(
+                    "Charm rig resolved: pivot=({}, {}, {}) length={} restDir=({}, {}, {})",
+                    rig.pivot.x, rig.pivot.y, rig.pivot.z, rig.length,
+                    rig.restDir.x, rig.restDir.y, rig.restDir.z
+                )
+            }
+        }
+        return charmRig
+    }
+
+    private var charmRigResolved = false
+    private var charmRig: CharmRig? = null
 
     fun renderToBuffer(
         poseStack: PoseStack,

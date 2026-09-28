@@ -1,0 +1,10 @@
+{
+  "values": [
+    "#superbwarfare:attachment/charm/common",
+    "#superbwarfare:attachment/charm/rare",
+    "#superbwarfare:attachment/charm/epic",
+    "#superbwarfare:attachment/charm/legendary",
+    "#superbwarfare:attachment/charm/superb",
+    "#superbwarfare:attachment/charm/virtual"
+  ]
+}

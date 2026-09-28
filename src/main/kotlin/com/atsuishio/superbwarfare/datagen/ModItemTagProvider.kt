@@ -574,6 +574,9 @@ class ModItemTagProvider(
         AttachmentType.SUBWEAPON to listOf(
             ModItems.SUB_WEAPON_GP_25
         ),
+        AttachmentType.CHARM to listOf(
+            ModItems.CHARM_FUKAMIZU_FISH
+        ),
     )
 
     private fun addAttachmentTags() {

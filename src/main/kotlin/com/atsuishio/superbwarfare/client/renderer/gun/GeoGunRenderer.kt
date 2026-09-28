@@ -2,11 +2,17 @@ package com.atsuishio.superbwarfare.client.renderer.gun
 
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves
 import com.atsuishio.superbwarfare.client.animation.gun.GeoGunAnimationInstance
+import com.atsuishio.superbwarfare.client.charm.CharmRuntime
+import com.atsuishio.superbwarfare.client.charm.CharmSnapshot
 import com.atsuishio.superbwarfare.client.model.attachment.BedrockAttachmentModel
 import com.atsuishio.superbwarfare.client.model.gun.GeoGunModel
 import com.atsuishio.superbwarfare.client.renderer.ammo.AmmoReadout
+import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.ARM_ANCHOR_FADE_TICKS
+import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.CUSTOM_HAND_GUARD_BONE
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.EDIT_FOCUS_Z_OFFSET
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.MERGE_BLENDER
+import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.OEM_HAND_GUARD_BONE
+import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.findSubWeapon
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.subWeaponHasOwnAimPose
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeStencilRenderHelper
 import com.atsuishio.superbwarfare.compat.oculus.OculusCompat
@@ -674,8 +680,19 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 clipPose
             }
 
+            // 吊坠摆动：**只有本地玩家自己的第一人称**才推进物理。
+            //
+            // 判据用 [localFirstPersonHand] 而不是 `transformType`：这个入口拿不到 `transformType`，
+            // 而那个字段正好就是"这一帧画的是本地玩家自己的手"的既有标记（见它的注释）。
+            // 第三人称 / 掉落物 / 展示框 / GUI 都拿不到它，于是吊坠静静地垂着；
+            // 阴影 pass 也不推进，免得一帧被推进两次。
+            val charm = slot.type == AttachmentType.CHARM &&
+                    localFirstPersonHand != null &&
+                    !OculusCompat.isRenderingShadowPass()
+
             poseStack.pushPose()
             mulPoseWithNormal(poseStack, Matrix4f(mountTransform))
+            var charmSnapshot: CharmSnapshot? = null
             try {
                 if (subWeaponPose != null) {
                     attachmentModel.applyPose(BLENDER.blend(attachmentModel.getBindPose(), subWeaponPose))
@@ -687,11 +704,26 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                     subWeaponHandAnchors = resolveSubWeaponHandAnchors(attachmentModel, mountTransform)
                     subWeaponAnchorKey = subWeaponAnimation?.subWeaponReloadClipName
                 }
+                // 摆动姿态必须在这之前写进骨骼：它改的是 `string` / `charm` 两根骨骼的
+                // `x/y/z + rotation`，`renderToBuffer` 只是照着画。
+                // ⚠ 挂点变换已经乘在 `poseStack` 上了，所以这里交出去的正是"模型局部 → 视图空间"。
+                if (charm) {
+                    charmSnapshot = CharmRuntime.apply(
+                        attachmentModel,
+                        definition,
+                        boneName,
+                        poseStack.last().pose(),
+                        cameraRotationInverse(),
+                        hand
+                    )
+                }
                 attachmentModel.renderToBuffer(
                     poseStack, bufferSource, texture, packedLight, packedOverlay,
                     null, resolveAmmoReadout(stack, definition.effectiveAmmoBar(), definition.effectiveTextShow())
                 )
             } finally {
+                // 附件模型实例是全局共享的，写进去的摆动姿态必须还原
+                if (charmSnapshot != null) CharmRuntime.revert(attachmentModel, charmSnapshot)
                 if (subWeaponPose != null) attachmentModel.resetPose()
             }
             poseStack.popPose()

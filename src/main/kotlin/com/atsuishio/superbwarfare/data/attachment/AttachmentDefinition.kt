@@ -102,6 +102,16 @@ data class AttachmentDefinition(
      */
     @SerialName("SubWeapon")
     val subWeapon: SubWeaponInfo? = null,
+
+    /**
+     * 吊坠物理参数。
+     *
+     * **槽位与它无关**：任何槽位的配件只要模型里有 `string` / `charm` 两组，
+     * 第一人称下就会摆 —— 这个块只是用来调手感的。
+     * 不写时用 [CharmInfo.DEFAULT]，几何量全部从模型推导（见 [CharmInfo] 的说明）。
+     */
+    @SerialName("Charm")
+    val charm: CharmInfo? = null,
 ) : IDBasedData<AttachmentDefinition>, PropertyModifier<GunData, DefaultGunData> {
 
     @kotlinx.serialization.Transient
@@ -187,6 +197,14 @@ data class AttachmentDefinition(
 
     /** The ammo text anchors this attachment drives. See [effectiveAmmoBar] for the fallback rule. */
     fun effectiveTextShow(): List<AmmoTextEntry> = textShow.ifEmpty { scopeInfo?.textShow ?: emptyList() }
+
+    /**
+     * 吊坠摆动参数；配件没写 `Charm` 块时退回 [CharmInfo.DEFAULT]（全部默认手感）。
+     *
+     * 与 [effectiveAmmoBar] 那种"两块数据择一"不同，这里没有第二处写法：
+     * 吊坠参数只可能来自 `Charm` 块本身。
+     */
+    fun charmInfo(): CharmInfo = charm ?: CharmInfo.DEFAULT
 
     companion object {
         @JvmStatic

@@ -1,5 +1,8 @@
 package com.atsuishio.superbwarfare.data.attachment
 
+import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots.Bones.CHARM_CHARM
+import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots.Bones.CHARM_FIXED
+import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots.Bones.CHARM_STRING
 import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots.EDIT_ORDER
 import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots.declaredConflicts
 import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots.mountOf
@@ -133,6 +136,24 @@ object AttachmentSlots {
         const val MAGAZINE = "magazine_pos"
         const val BAYONET = "bayonet_pos"
         const val SUBWEAPON = "sub_weapon_pos"
+        const val CHARM = "charm_pos"
+
+        /**
+         * **配件模型内部**的三个分组名（吊坠专用），不是枪模型上的骨骼。
+         *
+         * 吊坠模型的约定结构：
+         * - [CHARM_FIXED] 固定件（挂环、卡扣），始终静止；
+         * - [CHARM_STRING] 连接绳，绕摆点刚性旋转；
+         * - [CHARM_CHARM] 挂件本体，与绳子同步旋转。
+         *
+         * 后两组的**骨骼枢轴 (pivot) 不参与计算** —— 摆点由代码从
+         * `string` 分组的绑定包围盒顶部推导（`CharmRig.resolve`），
+         * 摆长由 `string` 骨骼自身的 Y 偏移给出（`CharmRig.length`）。
+         * 动力学与每帧驱动分别在 `CharmSolver` / `CharmRuntime` 里。
+         */
+        const val CHARM_FIXED = "fixed"
+        const val CHARM_STRING = "string"
+        const val CHARM_CHARM = "charm"
     }
 
     /**
@@ -228,6 +249,25 @@ object AttachmentSlots {
             focusBone = Bones.SUBWEAPON,
             renderMode = AttachmentRenderMode.GENERIC,
         ),
+        // 吊坠。**独占挂点组 `charm_loop`**：枪身上那个小环只挂吊坠，
+        // 与瞄具/刺刀/握把/枪口都不冲突，可以同时装。
+        //
+        // 挂点骨骼走 `FromDefinition`（回退 `charm_pos`）：与刺刀/副武器同一条理由 ——
+        // 用 `Fixed` 的话配件数据里的 `Bone` 会被**静默忽略**，骨骼名对不上就什么都不渲染也不报错。
+        // 吊坠将来完全可能挂在不同枪的不同位置（枪托背带环、护木挂环），留这个口子。
+        //
+        // 渲染走 [AttachmentRenderMode.GENERIC]，但**摆动姿态是在通用渲染之前注入的**
+        // （见 `GeoGunRenderer.renderRegisteredAttachments` 与 `CharmRuntime`），
+        // 所以这里不需要一个新的 renderMode。
+        AttachmentSlot(
+            type = AttachmentType.CHARM,
+            mount = "charm_loop",
+            tagBucket = "charm",
+            icon = "charm",
+            mountBone = AttachmentMountBone.FromDefinition(Bones.CHARM),
+            focusBone = Bones.CHARM,
+            renderMode = AttachmentRenderMode.GENERIC,
+        ),
     )
 
     @JvmField
@@ -252,6 +292,7 @@ object AttachmentSlots {
         AttachmentEditTarget.AmmoType,
         AttachmentEditTarget.Slot(of(AttachmentType.BAYONET)),
         AttachmentEditTarget.Slot(of(AttachmentType.SUBWEAPON)),
+        AttachmentEditTarget.Slot(of(AttachmentType.CHARM)),
     )
 
     /** 弹药类型那一项在 [EDIT_ORDER] 里的下标（车辆改装界面只支持这一项）。 */

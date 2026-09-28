@@ -740,6 +740,11 @@ object ModItems {
     @JvmField val SUB_WEAPON_GP_25 = registerSubWeapon("sub_weapon_gp_25", Rarity.EPIC)
     // @formatter:on
 
+    // Charm（吊坠：纯装饰，第一人称下会摆）
+    // @formatter:off
+    @JvmField val CHARM_FUKAMIZU_FISH = registerAttachment("charm_fukamizu_fish", Rarity.RARE)
+    // @formatter:on
+
     fun registerDispenserBehavior() {
         val list = mutableListOf<ItemRegistry>()
         list.addAll(AMMO.entries)
