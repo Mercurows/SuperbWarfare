@@ -40,11 +40,17 @@ private const val ATTACHMENT_ARG = "attachment"
  * 三条指令都作用于实体主手的枪械，主手物品不是 [GunItem] 时指令失败：
  * - `set`：把槽位换成指定配件。物品与配件数据必须存在、配件数据的槽位必须与 `type` 一致、
  *   不能与该枪上已安装的配件抢同一个挂点组，
- *   并且必须出现在该枪械数据的 `AvailableAttachments` 列表里
+ *   并且必须被该枪械数据的 `AvailableAttachments` 解析出来
  * - `clear`：清空指定槽位，不写 `type` 时清空全部槽位（槽位清单来自 `AttachmentSlots.ALL`）
  * - `random`：在可用列表里随机抽一个配件装上。不写 `type` 时**先清空全部槽位，再按挂点组各抽一个**
  *   —— 同组槽位互斥（刺刀 / 枪口配件都是 `muzzle_device`），既不能逐槽位抽（会抽出装不上的组合），
  *   也不能留着旧配件抽（会退化成"重抽已装的那一个"）。见 [clearAllAttachments] / [rollAllSlots]
+ *
+ * `AvailableAttachments` 现在支持 `#物品标签` 与 `!排除` 两种写法
+ * （见 [com.atsuishio.superbwarfare.data.attachment.AvailableAttachments]），
+ * 但**指令这一侧不需要知道**：校验与补全都只读 [installableAttachments]，
+ * 而它读的是已经展开成具体 id 的 [GunData.availableAttachments] ——
+ * 所以标签里新增一个配件，`set` 立刻就能装、补全立刻就能列出，两边不会分叉。
  *
  * 上面两条限制都会随服务端配置**放宽**（见 `AttachmentConfig`）：
  * - `FREE_ATTACHMENT_MODE`（自由改装）：挂点组与 `ConflictsWith` 互斥不再拦人，

@@ -10,7 +10,9 @@ import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.melee.MeleeEffectSpec
 import com.atsuishio.superbwarfare.data.gun.melee.MeleeHitboxType
 import com.atsuishio.superbwarfare.data.gun.melee.isMeleeProjectileMarker
+import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.init.ModMeleeEffects
+import com.atsuishio.superbwarfare.item.attachment.AttachmentProvider
 import com.atsuishio.superbwarfare.item.attachment.SubWeaponItem
 import com.atsuishio.superbwarfare.melee.MeleeEffectBehavior
 import kotlinx.serialization.json.Json
@@ -19,6 +21,7 @@ import kotlinx.serialization.serializer
 import net.minecraft.resources.FileToIdConverter
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.packs.resources.ResourceManager
+import net.minecraft.tags.ItemTags
 import net.minecraftforge.fml.loading.FMLEnvironment
 import net.minecraftforge.registries.ForgeRegistries
 
@@ -158,6 +161,7 @@ object DataValidator {
 
                 decoded.fireModes.size
                 decoded.availablePerks()
+                validateAvailableAttachments(decoded, warn)
 
                 validateMeleeData(decoded, warn)
             }
@@ -166,6 +170,104 @@ object DataValidator {
 
             // `sbw/melee_effects` 里的预设文件本身（枪械数据里的 Effects 条目在 validateMeleeData 里查）
             is MeleeEffectSpec -> validateMeleeEffectPreset(decoded, warn)
+        }
+    }
+
+    /**
+     * `AvailableAttachments` 的校验规则。
+     *
+     * 要抓的是"写错了不报错、只是这个配件再也不出现在改装界面里"这类问题：
+     * - 槽位键不在 [AttachmentType] 里（键写错＝整条声明没人读）
+     * - 条目既不是合法 id、也不是合法标签 id
+     * - `#标签` 指向一个**不存在或为空**的物品标签（展开成空表）
+     * - 展开后一条配件都不剩（全是 `!` 排除，或标签全空）
+     *
+     * 这里**刻意重写一遍** [com.atsuishio.superbwarfare.data.attachment.AvailableAttachments]
+     * 的展开逻辑，而不是调它：校验器跑在"数据刚解码、还没打戳 id"的时刻，而那一层要按枪械数据 id 做缓存，
+     * 在校验期调它只会把半成品灌进缓存。两边必须保持"按声明顺序、`!` 只影响它前面的条目"这**同一条**语义
+     * （否则会出现"校验说解析不出东西、实际能用"这种自相矛盾的报告）。
+     *
+     * **不做**的是"这个物品是不是该槽位的配件"：标签本来就允许混装，
+     * 真装错的话 `GunData.canInstall` 会在运行时挡掉，不必在这里重复一遍。
+     */
+    private fun validateAvailableAttachments(data: DefaultGunData, warn: (String) -> Unit) {
+        for ((slotKey, declarations) in data.availableAttachments) {
+            if (AttachmentType.entries.none { it.attachmentName == slotKey }) {
+                warn(
+                    "AvailableAttachments key '$slotKey' is not a known attachment slot " +
+                            "(${AttachmentType.entries.joinToString(", ") { it.attachmentName }}); " +
+                            "the whole declaration is ignored"
+                )
+            }
+
+            val accepted = mutableSetOf<ResourceLocation>()
+            val excluded = mutableSetOf<ResourceLocation>()
+            var declared = 0
+
+            for (declaration in declarations) {
+                val raw = declaration.value.id.trim()
+                if (raw.isEmpty()) {
+                    warn("AvailableAttachments['$slotKey'] contains an empty entry")
+                    continue
+                }
+                declared++
+
+                val negated = raw.startsWith("!")
+                val body = (if (negated) raw.substring(1) else raw).trim()
+                val tagged = body.startsWith("#")
+                val target = (if (tagged) body.substring(1) else body).trim()
+
+                val id = ResourceLocation.tryParse(target)
+                if (id == null) {
+                    warn(
+                        "AvailableAttachments['$slotKey'] entry '$raw' is not a valid " +
+                                (if (tagged) "item tag id" else "item id")
+                    )
+                    continue
+                }
+
+                val members = if (tagged) {
+                    val tag = runCatching { ForgeRegistries.ITEMS.tags()?.getTag(ItemTags.create(id)) }
+                        .getOrNull()
+                    if (tag == null || tag.isEmpty) {
+                        warn(
+                            "AvailableAttachments['$slotKey'] entry '$raw' points at an empty or " +
+                                    "missing item tag; it contributes nothing"
+                        )
+                        continue
+                    }
+                    tag.mapNotNull { ForgeRegistries.ITEMS.getKey(it) }
+                } else {
+                    val item = ForgeRegistries.ITEMS.getValue(id)
+                    if (item == null) {
+                        warn("AvailableAttachments['$slotKey'] entry '$raw' is not a registered item")
+                        continue
+                    }
+                    if (item !is AttachmentProvider) {
+                        warn(
+                            "AvailableAttachments['$slotKey'] entry '$raw' is not an attachment item " +
+                                    "(no attachment data can be resolved from it)"
+                        )
+                        continue
+                    }
+                    listOf(id)
+                }
+
+                for (member in members) {
+                    if (negated) {
+                        accepted -= member
+                        excluded += member
+                    } else if (member !in excluded) {
+                        accepted += member
+                    }
+                }
+            }
+
+            // 全被 `!` 排除掉、或者标签全空时，这个槽位在改装界面上会显示成"无可用配件"，
+            // 而数据里明明写了一大段 —— 这是最难自己发现的一种写法错误
+            if (accepted.isEmpty() && declared > 0) {
+                warn("AvailableAttachments['$slotKey'] resolves to nothing after exclusions")
+            }
         }
     }
 
