@@ -10,7 +10,7 @@
     {
       "Prop": "MeleeRange",
       "Op": "Add",
-      "Value": 1.2
+      "Value": 1.0
     },
     {
       "Prop": "Weight",
@@ -39,9 +39,14 @@
           "To": 0
         },
         "MaxTargets": 2,
-        "Knockback": 0.3
+        "Knockback": 0.3,
+        "Headshot": 1.25,
+        "Legshot": 0.75
       }
-    ]
+    ],
+    "MeleeSound": {
+      "Hit": "superbwarfare:bayonet_hit"
+    }
   },
   "Model": "superbwarfare:models/bedrock/attachment/bayonet_6kh2.geo.json",
   "Texture": "superbwarfare:textures/bedrock/attachment/bayonet_6kh2.png"

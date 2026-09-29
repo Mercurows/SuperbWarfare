@@ -14,7 +14,7 @@
   "MeleeComboReset": 15,
   "MeleeHitbox": {
     "Type": "Box",
-    "Range": 1.2,
+    "Range": 1.5,
     "Width": 1.8,
     "Height": 1.8,
     "YOffset": -0.2,
@@ -26,15 +26,15 @@
   },
   "MeleeActions": [
     {
-      "Animation": "animation.ak_47.hit",
+      "Animation": "animation.ak_12.hit",
       "Duration": 16,
       "HitTime": 6,
       "MaxTargets": 8,
       "Falloff": 0.1,
       "SortBy": "Angle",
       "Knockback": 0.3,
-      "Headshot": 2.0,
-      "Legshot": 0.5
+      "Headshot": 1.25,
+      "Legshot": 0.75
     }
   ],
   "Weight": 5,

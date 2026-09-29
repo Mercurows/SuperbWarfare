@@ -51,6 +51,7 @@ class ModSoundProvider(output: PackOutput, existingFileHelper: ExistingFileHelpe
         root("bomb_release", "missile_start", "bomb_reload")
         register("dps_generator_evolve") { attenuationDistance(16).volume(0.7f) }
         register("melee_hit", "melee_hit_01", "melee_hit_02", "melee_hit_03", "melee_hit_04", "melee_hit_05")
+        register("bayonet_hit", "bayonet_hit_1", "bayonet_hit_2", "bayonet_hit_3")
         root("steel_pipe_hit", "steel_pipe_drop", "smoke_grenade_release", "ptkm_1r_deploy", "night_vision_activate")
         register("car_horn") { stream(true).attenuationDistance(96) }
         register("steel_coil_move") { attenuationDistance(48) }

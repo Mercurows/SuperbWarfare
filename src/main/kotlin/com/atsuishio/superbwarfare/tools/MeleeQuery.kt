@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.tools
 
 import com.atsuishio.superbwarfare.data.gun.melee.*
+import com.atsuishio.superbwarfare.tools.MeleeQuery.DebugShape.*
 import com.atsuishio.superbwarfare.tools.MeleeQuery.LOS_EPSILON
 import com.atsuishio.superbwarfare.tools.MeleeQuery.SEGMENT_SAMPLES
 import com.atsuishio.superbwarfare.tools.MeleeQuery.boxHit
@@ -85,7 +86,7 @@ object MeleeQuery {
             eyePos = player.eyePosition,
             yaw = player.yRot,
             pitch = player.xRot,
-            reach = action.hitbox.range + player.getEntityReach(),
+            reach = action.hitbox.range,
         )
     }
 
