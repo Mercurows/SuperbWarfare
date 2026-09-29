@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.data.*
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
 import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots
 import com.atsuishio.superbwarfare.data.attachment.AttachmentZoom
+import com.atsuishio.superbwarfare.data.attachment.AvailableAttachments
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.BACKUP_AMMO_CACHE_TICKS
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.DATA_CACHE
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.DATA_VERSION
@@ -1194,6 +1195,10 @@ class GunData private constructor(
     /**
      * Gets attachments allowed on [slot] from the gun data definition.
      *
+     * 声明本身支持四种写法（`#标签` / `!排除` / 覆写对象，见 [AvailableAttachments]），
+     * 但**解析只发生在一处**：这个方法拿到的是已经展开成具体配件 id 的列表，
+     * 所以调用方（改装界面、指令、`Attachment.cycle`）完全不必关心数据里写的是哪一种。
+     *
      * 已经装了会和它互斥的配件时（同一挂点组，或任一方在 `ConflictsWith` 里点了名），
      * 这里会一并过滤掉：规则收在 `AttachmentSlots.conflicts`，
      * 改装界面的"该槽位无可用配件"表现、指令补全与 `Attachment.cycle` 的候选列表都由这一个入口统一。
@@ -1218,19 +1223,21 @@ class GunData private constructor(
 
         if (AttachmentConfig.fullyFreeAttachmentMode) return AttachmentSlots.registeredIds(slot)
 
-        return getDefault().availableAttachments[slot.attachmentName]
-            .orEmpty()
-            .mapNotNull { ResourceLocation.tryParse(it.value.id) }
+        return AvailableAttachments.resolve(this, slot)
+            .map { it.id }
             .filter { attachment.conflict(slot, AttachmentDefinition.from(it)) == null }
     }
 
-    /** Returns the weapon-level option for [id] installed in [slot], if declared. */
+    /**
+     * Returns the weapon-level option for [id] installed in [slot], if declared.
+     *
+     * 条目可以来自 `AvailableAttachments` 里的**直接声明**，也可以来自 `#标签` 展开
+     * （见 [AvailableAttachments]）—— 两种写法在这里没有区别，标签展开出来的条目
+     * 没有自己的覆写，所以只会命中 [AttachmentOption.override] 为 `null` 的那一份。
+     */
     fun attachmentOption(slot: AttachmentType, id: ResourceLocation): AttachmentOption? {
-        val idString = id.toString()
-        return getDefault().availableAttachments[slot.attachmentName]
-            .orEmpty()
-            .firstOrNull { it.value.id == idString }
-            ?.value
+        val entry = AvailableAttachments.resolve(this, slot).firstOrNull { it.id == id } ?: return null
+        return AttachmentOption(id.toString(), entry.override)
     }
 
     /** Checks whether [id] can be installed in [slot] for this gun. */
