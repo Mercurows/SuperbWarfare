@@ -135,6 +135,10 @@ object CharmRuntime {
 
         val anchorView = Vector3f()
         val direction = Vector3f()
+
+        /** 模型局部 +X → 视图空间 的草稿（软限位的侧别参考轴） */
+        val sideAxisLocal = Vector3f()
+
         val swing = Quaternionf()
         val rawOmega = Vector3f()
         val snapshot = CharmSnapshot()
@@ -202,6 +206,17 @@ object CharmRuntime {
         // 「视图 ← 世界」也在这里备好，重力/角速度/相机加速度都要用它换基。
         state.viewFromWorld.set(worldFromView).invert()
         modelToView.transformPosition(rig.pivot, state.anchorView)
+
+        // 模型局部 +X（= 用 [CharmInfo.lateralAngle] 声明"枪身侧"时用的那条尺子）转到视图空间，
+        // 交给解算器区分"枪身侧/无遮挡侧"（见 `CharmSolver.swingLimit`）。
+        // ⚠ 必须归一化：挂点变换里带着缩放（手臂锚点就是这么带 scale 的）。
+        // ⚠ 和 [clampLateral] 用的是**同一个** `modelToView`，两边对"左右"的定义天然一致。
+        modelToView.transformDirection(1f, 0f, 0f, state.sideAxisLocal)
+        if (state.sideAxisLocal.lengthSquared() < 1.0e-8f) {
+            state.frame.sideAxis.set(1f, 0f, 0f)
+        } else {
+            state.frame.sideAxis.set(state.sideAxisLocal).normalize()
+        }
 
         val frameDt = (mc.deltaFrameTime / 20f).coerceIn(MIN_FRAME_DT, MAX_FRAME_DT)
         if (!state.hasAnchor) {
@@ -369,6 +384,13 @@ object CharmRuntime {
 
         clampLateral(state.direction, state.params.lateralLimitSin)
 
+        // ⚠ 最短弧旋转在 `direction ≈ −restDir` 处退化（叉积为零，"最短弧"没有定义）：
+        // 方向在它附近来回抖就会逐帧翻面。开侧上限放宽到 90° 之后，硬夹逼**不再是**充分的保护 ——
+        // 夹逼锥的轴在模型局部是"挂点变换求逆后的世界下方向"，而挂点会被收枪/冲刺/开镜动画转走，
+        // 余量（`180° − β − 上限`）会缩水。这里干脆放弃这一帧的更新、保持上一次的结果，
+        // 比翻面好看得多，而且方向一旦离开就会自己接上。
+        if (state.direction.dot(rig.restDir) < -0.999f) return false
+
         // 从"绑定垂下方向"转到"解算方向"的最短弧旋转，就是两根分组骨骼要绕摆点转的角度
         state.swing.rotationTo(rig.restDir, state.direction)
         return true
@@ -378,7 +400,7 @@ object CharmRuntime {
      * 侧向限位：把绳方向在模型局部 X 上的分量钳到 [limitSin]，Y/Z 等比缩放保持单位长度。
      *
      * 只卡一个方向（[limitSin] 的符号决定是哪一边），因为吊坠只挂在枪身**一侧**：
-     * 朝枪身那一边摆会扫进模型里，朝外侧摆是自由的（上限由 `MaxAngle` 的锥形管）。
+     * 朝枪身那一边摆会扫进模型里，朝外侧摆是自由的（上限交给 `MaxAngleFree` 与软限位）。
      *
      * 钳的是**方向**而不是物理状态：解算在视图空间里跑，模型局部的约束在那里表达不出来。
      * 表现上就是"贴住一面斜墙滑动"——顶住时角度停住、不抖，推力消失后自然弹回来。
@@ -421,12 +443,21 @@ object CharmRuntime {
             params.applyFrequency(info.frequency)
         }
         params.damping = info.damping.coerceAtLeast(0.0).toFloat()
+        // ⚠ 顺序有意义：开侧上限要钳到"不小于枪身侧"，所以先设枪身侧
         params.setMaxAngleDegrees(info.maxAngle)
+        params.setMaxAngleFreeDegrees(info.maxAngleFree)
+        params.limitStiffness = info.limitStiffness.coerceIn(0.0, MAX_LIMIT_STIFFNESS).toFloat()
         params.idleSway = Math.toRadians(info.idleSway).toFloat()
         params.smoothing = info.smoothing.coerceAtLeast(0.0).toFloat()
 
         val lateral = info.lateralAngle.coerceIn(-89.0, 89.0)
         params.lateralLimitSin = if (lateral == 0.0) 0f else sin(Math.toRadians(lateral)).toFloat()
+        // 侧别跟着 [lateralLimitSin] 的符号走：0 = 没声明，开侧上限不生效（见 `CharmSolver.swingLimit`）
+        params.blockedAxisSign = when {
+            params.lateralLimitSin > 0f -> 1f
+            params.lateralLimitSin < 0f -> -1f
+            else -> 0f
+        }
 
         state.baseResponse = info.response.coerceIn(0.0, 1.0).toFloat()
         state.baseTurnResponse = info.turnResponse.coerceIn(0.0, 1.0).toFloat()
@@ -458,6 +489,12 @@ object CharmRuntime {
 
     /** 相机线加速度上限（方块/秒²，约 5g）：只用来挡住传送这类异常的帧间跳变 */
     private const val MAX_CAM_ACCEL = 50f
+
+    /**
+     * 软限位强度上限。再大，壁面附近的等效频率 `ω_eff ≈ sqrt(g/L · 2k/上限)` 就逼近
+     * Verlet 的稳定边界（`ω·dt < 2`），30Hz 下摆动会开始发颤。
+     */
+    private const val MAX_LIMIT_STIFFNESS = 8.0
 
     /** 两帧间隔超过它就重新归位（纳秒） */
     private const val RESET_GAP_NANOS = 250_000_000L
