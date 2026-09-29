@@ -10,8 +10,8 @@
   "Velocity": 15,
   "Magazine": 100,
   "Weight": 17,
-  "DrawTime": 26,
-  "ZoomTime": 19,
+  "DrawTime": 18,
+  "ZoomTime": 12,
   "ZoomSpreadRate": 0.1,
   "DefaultFireMode": "Auto",
   "NormalReloadTime": 100,
@@ -65,10 +65,37 @@
     "!superbwarfare:longer_wire",
     "!superbwarfare:cupid_arrow"
   ],
+  "AvailableAttachments": {
+    "Barrel": [
+      "superbwarfare:meowlencer",
+      "superbwarfare:hissilencer",
+      "superbwarfare:silaowuncer",
+      "superbwarfare:loudspeaker",
+      "superbwarfare:silencer_50_cal"
+    ],
+    "Charm": [
+      "superbwarfare:charm_pig",
+      "superbwarfare:charm_bee",
+      "superbwarfare:charm_chest",
+      "superbwarfare:charm_zombie_head",
+      "superbwarfare:charm_skeleton_skull",
+      "superbwarfare:charm_creeper_head",
+      "superbwarfare:charm_fukamizu_fish",
+      "superbwarfare:charm_wither_skeleton_skull",
+      "superbwarfare:charm_nether_star",
+      "superbwarfare:charm_sept_wolves",
+      "superbwarfare:charm_ancient_cpu",
+      "superbwarfare:charm_senpai",
+      "superbwarfare:charm_chiram_core",
+      "superbwarfare:charm_lily"
+    ]
+  },
   "SoundInfo": {
     "Fire1P": "superbwarfare:m_2_hb_fire_1p",
     "Fire3P": "superbwarfare:m_2_hb_fire_3p",
     "Fire3PFar": "superbwarfare:m_2_hb_far",
-    "Fire3PVeryFar": "superbwarfare:m_2_hb_veryfar"
+    "Fire3PVeryFar": "superbwarfare:m_2_hb_veryfar",
+    "Fire1PSilent": "superbwarfare:hunting_rifle_fire_1p_s",
+    "Fire3PSilent": "superbwarfare:hunting_rifle_fire_3p_s"
   }
 }
