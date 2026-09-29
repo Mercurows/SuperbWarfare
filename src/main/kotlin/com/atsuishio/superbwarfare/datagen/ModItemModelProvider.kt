@@ -314,6 +314,9 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         gunBlueprintItem(ModItems.IGLA_BLUEPRINT)
         gunBlueprintItem(ModItems.QL_1031_BLUEPRINT)
         gunBlueprintItem(ModItems.SUPER_STAR_SHOOTER_BLUEPRINT)
+        gunBlueprintItem(ModItems.RAUBTIER_BLUEPRINT)
+        gunBlueprintItem(ModItems.REFORGING_BLUEPRINT)
+        gunBlueprintItem(ModItems.NAIL_GUN_BLUEPRINT)
 
         // attachments
         simpleItem(ModItems.MEOWLENCER)
