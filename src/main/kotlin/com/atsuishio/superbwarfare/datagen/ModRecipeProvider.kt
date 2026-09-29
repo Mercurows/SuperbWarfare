@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.datagen
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
+import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.datagen.builder.NBTShapedRecipeBuilder
 import com.atsuishio.superbwarfare.datagen.builder.ResearchingRecipeBuilder
 import com.atsuishio.superbwarfare.datagen.builder.VehicleAssemblingRecipeBuilder
@@ -2030,6 +2031,17 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                     has(ModItems.COMMON_ACCESSORY_KIT.get())
                 )
                 .save(writer, loc(getItemName(ModItems.SMALL_CONTAINER.get()) + "_charms"))
+            NBTShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.SMALL_CONTAINER.get())
+                .withNBT(SmallContainerBlockItem.createInstance(loc("containers/charms")).orCreateTag)
+                .pattern(" a ")
+                .pattern("a a")
+                .pattern(" a ")
+                .define('a', ModTags.Items.ATTACHMENT_BY_SLOT[AttachmentType.CHARM]!!)
+                .unlockedBy(
+                    getHasName(ModItems.CHARM_BEE.get()),
+                    has(ModTags.Items.ATTACHMENT_BY_SLOT[AttachmentType.CHARM]!!)
+                )
+                .save(writer, loc(getItemName(ModItems.SMALL_CONTAINER.get()) + "_charms_recycle"))
         }
 
         private fun buildVehicleRecipes(writer: Consumer<FinishedRecipe>) {

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "tag": "superbwarfare:attachment/charm"
+    }
+  },
+  "pattern": [
+    " a ",
+    "a a",
+    " a "
+  ],
+  "result": {
+    "item": "superbwarfare:small_container",
+    "nbt": {
+      "BlockEntityTag": {
+        "LootTable": "superbwarfare:containers/charms",
+        "id": "superbwarfare:small_container"
+      }
+    }
+  },
+  "show_notification": true
+}
