@@ -12,10 +12,6 @@ class PmcProxy(private val pmc: PMC<GunData, DefaultGunData>) {
             ?: throw IllegalArgumentException("Unknown GunProp serializationName: '$key'")
     }
 
-    private fun shouldIgnoreMagazineModifier(key: String): Boolean {
-        return key == "Magazine" && pmc.data.getDefault().magazine.list.size > 1
-    }
-
     /**
      * Coerce a Number value to the correct type for the given property.
      * JS numbers always arrive as Double, but Int props need Int values.
@@ -36,7 +32,6 @@ class PmcProxy(private val pmc: PMC<GunData, DefaultGunData>) {
     fun get(key: String): Any? = pmc.getUnchecked(findGunProp(key))
 
     fun set(key: String, value: Any?) {
-        if (shouldIgnoreMagazineModifier(key)) return
         val prop = findGunProp(key)
         pmc.setUnchecked(prop, coerceValue(prop, value))
     }
@@ -44,7 +39,6 @@ class PmcProxy(private val pmc: PMC<GunData, DefaultGunData>) {
     fun add(key: String, amount: Number): Number {
         val prop = findGunProp(key)
         val current = (pmc.getUnchecked(prop) as Number).toDouble()
-        if (shouldIgnoreMagazineModifier(key)) return current
         val result = current + amount.toDouble()
         val coerced = coerceValue(prop, result)
         pmc.setUnchecked(prop, coerced)
@@ -54,7 +48,6 @@ class PmcProxy(private val pmc: PMC<GunData, DefaultGunData>) {
     fun mul(key: String, factor: Number): Number {
         val prop = findGunProp(key)
         val current = (pmc.getUnchecked(prop) as Number).toDouble()
-        if (shouldIgnoreMagazineModifier(key)) return current
         val result = current * factor.toDouble()
         val coerced = coerceValue(prop, result)
         pmc.setUnchecked(prop, coerced)
@@ -64,7 +57,6 @@ class PmcProxy(private val pmc: PMC<GunData, DefaultGunData>) {
     fun clampMin(key: String, min: Number): Number {
         val prop = findGunProp(key)
         val current = (pmc.getUnchecked(prop) as Number).toDouble()
-        if (shouldIgnoreMagazineModifier(key)) return current
         val result = maxOf(current, min.toDouble())
         val coerced = coerceValue(prop, result)
         pmc.setUnchecked(prop, coerced)
@@ -74,7 +66,6 @@ class PmcProxy(private val pmc: PMC<GunData, DefaultGunData>) {
     fun clampMax(key: String, max: Number): Number {
         val prop = findGunProp(key)
         val current = (pmc.getUnchecked(prop) as Number).toDouble()
-        if (shouldIgnoreMagazineModifier(key)) return current
         val result = minOf(current, max.toDouble())
         val coerced = coerceValue(prop, result)
         pmc.setUnchecked(prop, coerced)
