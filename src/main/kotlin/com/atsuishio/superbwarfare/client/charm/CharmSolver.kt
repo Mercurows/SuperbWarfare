@@ -41,6 +41,7 @@ import kotlin.math.*
  * v   = dR · damp + dA · (1 - Response)        // 自身动量 + 枪身运动的携带
  * a   = 重力 - Response·相机加速度 + 伪力       // 总加速度
  * a  -= n̂·(n̂·a)                                // 扣掉径向（= 刚性杆的约束力）
+ * a  += 横向偏离方向 ·(g · k · r²)              // 额外回正（软限位，见下）
  * bob = bob + v + a · dt²
  * bob = anchor + normalize(bob - anchor) · L   // 球面约束（收拾二阶残差）
  * ```
@@ -64,6 +65,24 @@ import kotlin.math.*
  *      每步只剩 12%，一秒 30 步就剩 0 —— 吊坠完全不荡，只能"缓慢回归原位"。
  *
  * 现在只对相对速度施加真正的物理阻尼，配合 [CharmParams.damping] 就能得到欠阻尼的**振荡**。
+ *
+ * ## 限位：只有朝枪身那一个方位收紧，且越偏离越难推
+ *
+ * [clampSwingAngle] 的圆锥夹逼是**兜底**，真正决定手感的是 [applySoftLimit] 这一项：
+ *
+ * - **上限只有朝枪身侧那一个方向是紧的**。吊坠挂在枪身一侧，只有朝**枪身**摆才会扫进模型里，
+ *   朝别的方向都是空的。所以本步的上限只在这个方位收到 [CharmParams.maxAngle]，其余方位
+ *   （无遮挡侧、正前、正后）一律是 [CharmParams.maxAngleFree] —— 单边过渡，
+ *   `w = max(0, 偏离方向在 [CharmFrame.sideAxis] 上的横向分量)`。
+ *   哪一侧是枪身侧由 [CharmParams.blockedAxisSign] 给出。
+ * - **越偏离越硬**。额外回正 = `k·r²` 倍的重力回正（`r = θ/上限`，`k = [CharmParams.limitStiffness]`）：
+ *   `r→0` 时为零（静止、余摆都不受影响），接近上限时迅速变硬，把质点**减速**在限位之前，
+ *   而不是让它撞上硬墙再"啪"地贴住。稳态解是 `tan θ = 驱动力/(g·(1 + k·r²))` ——
+ *   所以上限只是**动态过冲的天花板**，稳态永远到不了（θ→90° 时驱动力 `∝cosθ` 先归零）。
+ *
+ * 这一项是**回正力**，不是伪力：它在 [CharmParams.turnResponse] 缩放之后才加进去，不参与那个系数。
+ * 它是纯切向的（`ĝ - n̂(n̂·ĝ)`，模长正好是 `sinθ`），所以在"扣掉径向"之后加、不需要归一化、
+ * 也不会在 `θ=0` 处退化。
  */
 class CharmSolver {
 
@@ -81,6 +100,9 @@ class CharmSolver {
 
     /** 重力方向（单位向量，视图空间，指向下） */
     private val gravityDir = Vector3f(0f, -1f, 0f)
+
+    /** 本帧 [CharmFrame.sideAxis] 的副本：软限位要用的"横向"参考轴（模型局部 +X 在视图空间的方向） */
+    private val sideAxis = Vector3f(1f, 0f, 0f)
 
     /** 参考系内的绳向量（单位向量，指向挂件） */
     val rope = Vector3f(0f, -1f, 0f)
@@ -146,6 +168,12 @@ class CharmSolver {
             gravityDir.set(0f, -1f, 0f)
         } else {
             gravityDir.normalize()
+        }
+        sideAxis.set(frame.sideAxis)
+        if (sideAxis.lengthSquared() < EPSILON) {
+            sideAxis.set(1f, 0f, 0f)
+        } else {
+            sideAxis.normalize()
         }
 
         if (!initialized) {
@@ -224,6 +252,8 @@ class CharmSolver {
         val ny = bob.y - anchor.y
         val nz = bob.z - anchor.z
         val nLen = sqrt(nx * nx + ny * ny + nz * nz)
+        // 本步的摆角上限（按偏离方位定，见 [applySoftLimit]）；退化时退回枪身侧的值
+        var limit = p.maxAngle
         if (nLen > EPSILON) {
             val inv = 1f / nLen
             val ux = nx * inv
@@ -233,6 +263,10 @@ class CharmSolver {
             accel.x -= ux * radial
             accel.y -= uy * radial
             accel.z -= uz * radial
+
+            // ⚠ 软限位必须在这之后（它已经是纯切向的），且在伪力的 turnResponse 缩放之后 ——
+            // 它是回正力，不是伪力，不参与那个系数。
+            limit = applySoftLimit(p, ux, uy, uz)
         }
 
         bobPrev.set(bob)
@@ -247,11 +281,83 @@ class CharmSolver {
         )
 
         projectToRope(p)
-        clampSwingAngle(p)
+        clampSwingAngle(p, limit)
         buildRope()
         applyIdleSway(p, dt)
 
         return true
+    }
+
+    /**
+     * 本步的摆角上限（弧度）：**只有朝枪身侧**才收到 [CharmParams.maxAngle]，
+     * 其余方位（无遮挡侧、正前、正后）一律是 [CharmParams.maxAngleFree]。
+     *
+     * `n̂` 是绳方向（单位向量），`ĝ` 是重力方向。侧别取的是**绳方向的横向分量**
+     * `n̂ - ĝ(n̂·ĝ)` 在 [sideAxis] 上的投影，而不是绳方向自己的 X 分量 ——
+     * 相机俯仰/侧倾时 `ĝ` 在视图空间本来就带 X 分量，用绳方向会把它一起算进去；
+     * 用横向分量时相机转动对 `sideAxis` 和 `ĝ` 同时生效、正好抵消，剩下的才是"枪身局部方位角"。
+     *
+     * 过渡是**单边**的：`w = max(0, 分量)`，`w = 1`（正对枪身侧）取 [CharmParams.maxAngle]、
+     * `w = 0`（正前、正后、无遮挡侧）取 [CharmParams.maxAngleFree] —— 正前方**不在**两者中点上，
+     * 而是和无遮挡侧一样放到最宽。收紧只在枪身那一侧发生。
+     *
+     * ⚠ 侧别由 [CharmParams.blockedAxisSign] 给出，为 `0`（数据里没写 `LateralAngle`，
+     * 等于没声明哪一侧被挡住）时**整条过渡都不生效**，退回对称圆锥的旧行为。
+     */
+    private fun swingLimit(p: CharmParams, nx: Float, ny: Float, nz: Float): Float {
+        if (p.blockedAxisSign == 0f || p.maxAngleFree <= p.maxAngle) return p.maxAngle
+
+        // 偏离方向 = 绳方向**自己的**横向分量（n̂ 扣掉沿 ĝ 的分量），模长 sinθ
+        //
+        // ⚠ 不能拿重力的横向分量 `ĝ - n̂(n̂·ĝ)` 来当这个用：那个向量是"回正方向"，
+        // 它在 [sideAxis] 上的投影是 `cosθ` 而不是 ±1 —— 越偏离越小，55° 时只剩一半，
+        // 于是"哪一侧"会随着摆角模糊掉（实测表现为摆角在 70° 附近被莫名收住）。
+        val cos = nx * gravityDir.x + ny * gravityDir.y + nz * gravityDir.z
+        val tx = nx - gravityDir.x * cos
+        val ty = ny - gravityDir.y * cos
+        val tz = nz - gravityDir.z * cos
+        val tLen = sqrt(tx * tx + ty * ty + tz * tz)
+        // θ ≈ 0（或 ≈180°）：方位角没有意义，但那里上限也不起作用
+        if (tLen < EPSILON) return p.maxAngle
+
+        val sideComp = (tx * sideAxis.x + ty * sideAxis.y + tz * sideAxis.z) / tLen
+        // 单边：只有横向分量落在枪身侧（w > 0）才从 maxAngleFree 往 maxAngle 收，
+        // 落在正前/正后（≈0）或另一侧（< 0）时 w 削到 0，一律取最宽的 maxAngleFree
+        val w = (p.blockedAxisSign * sideComp).coerceIn(0f, 1f)
+        return p.maxAngleFree + (p.maxAngle - p.maxAngleFree) * w
+    }
+
+    /**
+     * 软限位：偏离越远，额外回正越强（把质点**减速**在限位之前，而不是撞上硬墙）。
+     *
+     * 额外回正 = `k·r²` 倍的重力回正，方向取纯切向的 `ĝ - n̂(n̂·ĝ)`（模长 `sinθ`），
+     * 所以等价于把该方向上的等效重力放大 `1 + k·r²` 倍：`θ→0` 时为零（静止与余摆不受影响），
+     * 接近上限时迅速变硬。稳态解因此是 `tan θ = 驱动力 / (g·(1 + k·r²))` ——
+     * 上限只是**动态过冲的天花板**，稳态永远到不了（`θ→90°` 时驱动力 `∝cosθ` 先归零）。
+     *
+     * 稳定性：壁面附近的等效刚度来自 `r²` 的梯度，`ω_eff ≈ sqrt(g/L · 2k/limit)`；
+     * 默认值（`k=3`、上限 90°、摆长 1.9 厘米）下约 18 rad/s，`ω_eff·dt ≈ 0.61`，
+     * 远在 Verlet 的稳定域（`ω·dt < 2`）内。改大 [CharmParams.limitStiffness] 时留意这一点。
+     *
+     * @return 本步的摆角上限（弧度），交给 [clampSwingAngle] 用同一个值兜底
+     */
+    private fun applySoftLimit(p: CharmParams, nx: Float, ny: Float, nz: Float): Float {
+        val limit = swingLimit(p, nx, ny, nz)
+        val k = p.limitStiffness
+        if (k <= 0f) return limit
+
+        val cos = nx * gravityDir.x + ny * gravityDir.y + nz * gravityDir.z
+        val dx = gravityDir.x - nx * cos
+        val dy = gravityDir.y - ny * cos
+        val dz = gravityDir.z - nz * cos
+        if (dx * dx + dy * dy + dz * dz < EPSILON) return limit
+
+        val r = (acos(cos.coerceIn(-1f, 1f)) / limit).coerceIn(0f, 1f)
+        val scale = p.gravity * k * r * r
+        accel.x += dx * scale
+        accel.y += dy * scale
+        accel.z += dz * scale
+        return limit
     }
 
     /** 球面约束：把质点拉回"以悬挂点为球心、摆长为半径"的球面上 */
@@ -276,15 +382,19 @@ class CharmSolver {
     }
 
     /**
-     * 以**重力方向**为轴的锥形夹逼。
+     * 以**重力方向**为轴的锥形夹逼。这是**兜底**：正常手感由 [applySoftLimit] 的渐进回正负责，
+     * 这里只防止极端帧步把质点甩出限位。
      *
-     * 两个作用：不让吊坠甩进枪身/手臂里；以及让方向**永远远离"与重力相反"那一点** ——
-     * 最短弧旋转（[Quaternionf.rotationTo]）在那一处会因为叉积为零而翻面。
+     * 作用：不让吊坠甩进枪身/手臂里。它**不再**是奇异点保护的唯一手段 ——
+     * 开侧上限放宽到 90° 之后，余量会随着挂点被枪身动画转走而缩水，
+     * "方向与静止方向相反"那一点由 `CharmRuntime.solveSwing` 里的护栏单独处理。
      *
      * ⚠ 夹逼的"正下方"必须取 [gravityDir] 而不是视图空间的 `(0,-1,0)`：相机抬头时
      * 视图空间的"下"是枪的下，而吊坠吊的是世界的下。用错的话一抬头吊坠就顶在限位上。
+     *
+     * @param limit 本步的摆角上限（弧度），由 [applySoftLimit] 按方向算好
      */
-    private fun clampSwingAngle(p: CharmParams) {
+    private fun clampSwingAngle(p: CharmParams, limit: Float) {
         val ox = bob.x - anchor.x
         val oy = bob.y - anchor.y
         val oz = bob.z - anchor.z
@@ -297,7 +407,7 @@ class CharmSolver {
 
         // 与重力方向的夹角余弦
         val cos = nx * gravityDir.x + ny * gravityDir.y + nz * gravityDir.z
-        if (cos >= p.maxAngleCos) return
+        if (cos >= cos(limit)) return
 
         // 旋转轴 = n × ĝ
         var ax = ny * gravityDir.z - nz * gravityDir.y
@@ -325,7 +435,7 @@ class CharmSolver {
             az /= axisLen
         }
 
-        val excess = acos(cos.coerceIn(-1f, 1f)) - p.maxAngle
+        val excess = acos(cos.coerceIn(-1f, 1f)) - limit
         if (excess <= 0f) return
 
         val q = Quaternionf().fromAxisAngleRad(ax, ay, az, excess)
@@ -373,7 +483,7 @@ class CharmSolver {
 }
 
 /**
- * 一帧的相机运动量，**全部在视图空间**、带符号、按秒计。
+ * 一帧的解算输入，**全部在视图空间**（相机运动量带符号、按秒计）。
  *
  * ⚠ 必须**按帧**算一次、各个物理子步共用同一个值，不能按子步算：
  * 角速度是拿"这一帧的视图旋转"和"上一帧的视图旋转"差分出来的，而一帧之内视图旋转根本没变 ——
@@ -389,6 +499,18 @@ class CharmFrame {
      */
     @JvmField
     val gravity: Vector3f = Vector3f(0f, -9.8f, 0f)
+
+    /**
+     * **附件模型局部 +X 在视图空间里的方向**（单位向量）。
+     *
+     * 视图空间里没有"左右"，而限位必须知道哪一侧是枪身：这个轴就是那把尺子，
+     * 软限位拿它和偏离方向点乘得到横向分量（见 [CharmSolver.swingLimit]）。
+     * 由 `CharmRuntime` 每帧从 `modelToView` 的 X 列算出（挂点变换含缩放，所以要归一化）。
+     *
+     * 默认 `(1,0,0)`：离线测试台不设置它时等价于"模型 +X 就是视图 +X"。
+     */
+    @JvmField
+    val sideAxis: Vector3f = Vector3f(1f, 0f, 0f)
 
     /** 相机线加速度（视图空间，方块/秒²），来自相机世界坐标的差分 */
     @JvmField
@@ -480,13 +602,53 @@ class CharmParams {
     @JvmField
     var lateralLimitSin: Float = 0f
 
-    /** 最大摆角（弧度） */
+    /**
+     * **枪身侧**（[blockedAxisSign] 指向的那一侧）的最大摆角（弧度），默认 35°。
+     *
+     * ⚠ 它只限制**朝枪身这一侧**的偏离：偏离到别的方位（无遮挡侧、正前、正后）时上限换成
+     * [maxAngleFree]，过渡是单边的（正前/正后**不在**中点，而是和最宽的一侧一样）。
+     * 旧的对称圆锥只剩兜底作用（见 [CharmSolver.clampSwingAngle]）。
+     */
     @JvmField
     var maxAngle: Float = 0.611f
 
-    /** [maxAngle] 的余弦，夹逼时直接比较，省一次 `acos` */
+    /**
+     * [maxAngle] 的余弦。
+     *
+     * ⚠ 现在**解算器不再读它**（上限逐帧在变，只能比角度）。保留是为了不破坏外部引用
+     * （离线测试台会读），[setMaxAngleDegrees] 仍会同步维护它。
+     */
     @JvmField
     var maxAngleCos: Float = 0.819f
+
+    /**
+     * **非枪身侧**的最大摆角（弧度），默认 90°：无遮挡侧、正前、正后都用它。
+     *
+     * 只在 [blockedAxisSign] 不为 0（数据里写了 `LateralAngle`，即声明了哪一侧被枪身挡住）
+     * 时生效 —— 没声明侧别时无从谈起"哪一侧更窄"，圆锥保持对称的旧行为。
+     *
+     * ⚠ 它是**动态过冲的天花板，不是平衡点**：接近它时软限位已经把回正力放大到
+     * `1 + k` 倍，而驱动力 `∝cosθ` 还在变小，稳态解到不了这里（见 [CharmSolver.applySoftLimit]）。
+     */
+    @JvmField
+    var maxAngleFree: Float = (Math.PI / 2).toFloat()
+
+    /**
+     * 软限位强度 `k`（默认 3，`0` = 关闭，行为回到只有硬夹逼的旧版）。
+     *
+     * 偏离角 `θ` 处的额外回正 = `k·(θ/上限)²` 倍的重力回正 —— 越偏离越硬，
+     * 把质点减速在限位之前。上限别写太大：壁面附近的等效频率
+     * `ω_eff ≈ sqrt(g/L · 2k/上限)`，`k` 越大越接近 Verlet 的稳定边界（`ω·dt < 2`）。
+     */
+    @JvmField
+    var limitStiffness: Float = 3f
+
+    /**
+     * 哪一侧是"被枪身挡住的那一侧"：`+1` = 模型局部 **+X**（屏幕右，[lateralLimitSin] 为正时），
+     * `-1` = −X，`0`（默认）= 没声明 —— 此时 [maxAngleFree] 不生效。
+     */
+    @JvmField
+    var blockedAxisSign: Float = 0f
 
     /** 静止余摆幅度（弧度） */
     @JvmField
@@ -496,6 +658,17 @@ class CharmParams {
         val rad = Math.toRadians(degrees.coerceIn(0.0, 179.0)).toFloat()
         maxAngle = rad
         maxAngleCos = cos(rad)
+    }
+
+    /**
+     * 无遮挡侧的上限（度）。会钳到 `[maxAngle, 179°]`：比枪身侧还小等于没有开侧，
+     * 反而让过渡倒挂。
+     *
+     * ⚠ 必须在 [setMaxAngleDegrees] **之后**调用（它依赖 [maxAngle]）。
+     */
+    fun setMaxAngleFreeDegrees(degrees: Double) {
+        val rad = Math.toRadians(degrees.coerceIn(0.0, 179.0)).toFloat()
+        maxAngleFree = rad.coerceAtLeast(maxAngle)
     }
 
     /**

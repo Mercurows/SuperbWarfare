@@ -40,7 +40,9 @@ import kotlinx.serialization.Serializable
  * | 平移（起步、急停、坐载具） | [response] | 起步往后甩、停下荡回来 |
  * | 枪身动画（走路摇晃、收枪、开镜、后坐） | [response] 的"携带"项 | 枪自己晃，吊坠跟着荡 |
  *
- * [maxAngle] 只是兜底的上限，[frequency]/[gravity] 管的是"摆得快不快、回弹利不利索"。
+ * 摆角上限只有**朝枪身侧**那一个方位是紧的（[maxAngle]），其余方位 —— 无遮挡侧、正前、正后 ——
+ * 一律按 [maxAngleFree] 放到最宽；[limitStiffness] 让回正力随偏离增长 —— 越接近上限越难推；
+ * [frequency]/[gravity] 管的是"摆得快不快、回弹利不利索"。
  *
  * @param frequency 自然摆动频率（Hz），默认 1.5（周期约 0.67 秒）。
  *   **与摆长无关**：等效重力由 `g = L·(2πf)²` 反推，所以换一个更大/更小的吊坠模型观感不变。
@@ -70,9 +72,30 @@ import kotlinx.serialization.Serializable
  *   其中 `R` 是挂件到相机的水平距离（约 0.5 方块）、`g` 是等效重力（默认约 1.67）。
  *   ω = 2 rad/s（约 115°/秒）时：0.15 → 10°、0.3 → 20°、0.5 → 31°、0.7 → 40°（顶到 [maxAngle]）。
  *   想更夸张就往上写，但超过约 0.6 之后正常转身也会被顶在最大摆角上。
- * @param maxAngle 最大摆角（度），默认 35。以**世界下方**为 0° 的锥形夹逼：
- *   既防止吊坠甩到枪身/手臂里，也让它永远远离"方向与静止方向相反"的旋转奇异点
- *   （最短弧旋转在那一处会翻面）。
+ * @param maxAngle 最大摆角（度），默认 35。它只限制**朝枪身侧**（[lateralAngle] 指向的那一侧）
+ *   的偏离，以**世界下方**为 0°，防止吊坠甩进枪身/手臂里。
+ *
+ *   ⚠ 它已经不是"整圈的圆锥"了：过渡是**单边**的 —— 偏离方向带枪身侧分量时才从 [maxAngleFree]
+ *   往这个值收，落在正前、正后或另一侧时一概保持 [maxAngleFree]。只在没写 [lateralAngle]
+ *   （等于没声明哪一侧被挡住）时，它才是整圈的对称上限。
+ * @param maxAngleFree **非枪身侧**的最大摆角（度），默认 90：无遮挡侧、正前、正后都用它。
+ *
+ *   吊坠挂在枪身一侧，只有朝枪身摆才会扫进模型里，朝别的方向都是空的 —— 那些方向的上限
+ *   可以放到 90°。哪一侧是"枪身侧"由 [lateralAngle] 的符号决定；
+ *   [lateralAngle] 为 0（默认）时这一项**不生效**，圆锥保持对称。
+ *
+ *   ⚠ 它是**动态过冲的天花板，不是平衡点**：越接近它，[limitStiffness] 给出的额外回正越强，
+ *   而驱动力（离心力那一路）随着方向趋于水平而变小，所以稳态永远到不了 90° ——
+ *   只有起转那一下的欧拉冲量能把它甩得更近。想让转向时甩得更远就调大它。
+ * @param limitStiffness **软限位强度** `k`，默认 3.0；`0` = 关闭（行为回到只有硬夹逼的旧版）。
+ *
+ *   额外回正 = `k·(偏离角/该侧上限)²` 倍的重力回正，方向是切向、`偏离角→0` 时为零。
+ *   于是偏离越远回正越强、越接近上限越难再偏转 —— 表现上是"靠近上限时明显减速"，
+ *   而不是撞上一堵硬墙再"啪"地贴住。值越大越硬越早：`1` 只在接近上限时有点感觉，
+ *   `3`（默认）中段就开始变紧，`6` 以上会明显缩短余摆并让摆动变"利索"。
+ *
+ *   ⚠ 别写太大：壁面附近的等效频率 `ω_eff ≈ sqrt(g/L · 2k/上限)`，`k` 越大越接近
+ *   30Hz 固定步长的稳定边界（代码里钳到 8）。
  * @param aimResponseScale 开镜时 [response] 与 [turnResponse] 的缩放（默认 0.08）。
  *   瞄准时吊坠还在晃会干扰视线，这里按 `zoomTime` 在 1 与它之间插值。
  * @param idleSway 站立不动时的余摆幅度（度），默认 0.4。
@@ -83,6 +106,7 @@ import kotlinx.serialization.Serializable
  *   吊坠通常挂在枪身一侧，本体比绳子长得多，只要往枪身那边摆一点就会扫进模型里。
  *   这个限位是**按方向而不是按摆角**卡的：把绳方向在局部 X 上的分量钳到 `sin(lateralAngle)`，
  *   Y/Z 按比例缩放保持单位长度，于是"贴住"时是顺着一个斜面滑动，不会抖也不会跳。
+ *   它的**符号**还决定了哪一侧算"枪身侧"，也就是 [maxAngle] / [maxAngleFree] 的过渡朝哪边收。
  *   ⚠ 模型烘焙时 **X 轴取负**（Bedrock 与渲染空间的约定），所以这里说的 +X 对应
  *   Blockbench 里的 −X —— 拿不准就先填 15 进游戏看一眼摆哪边。
  * @param smoothing 输入平滑时间常数（秒），默认 0.06；0 = 关闭。
@@ -107,10 +131,16 @@ data class CharmInfo(
     val response: Double = 0.15,
 
     @SerialName("TurnResponse")
-    val turnResponse: Double = 0.30,
+    val turnResponse: Double = 0.02,
 
     @SerialName("MaxAngle")
     val maxAngle: Double = 35.0,
+
+    @SerialName("MaxAngleFree")
+    val maxAngleFree: Double = 90.0,
+
+    @SerialName("LimitStiffness")
+    val limitStiffness: Double = 6.0,
 
     @SerialName("AimResponseScale")
     val aimResponseScale: Double = 0.08,
