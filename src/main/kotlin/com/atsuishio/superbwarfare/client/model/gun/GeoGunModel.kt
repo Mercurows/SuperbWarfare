@@ -53,6 +53,23 @@ open class GeoGunModel @JvmOverloads constructor(
         .toList()
         .toIntArray()
 
+    /**
+     * 弹链上的子弹：`(第几发, 骨骼下标)`，按名字里的序号排好序 —— 弹链有多长由它决定。
+     *
+     * 约定 `bullet_N` 的子树里**只有第 N 发**那点几何（见 m_2_hb：`bullet_N` 挂着那一发的两段
+     * 模型，链节骨骼 `bulletN` 才是串起整条弹链的父级），所以按剩余弹量逐个 `visible = false`
+     * 就是一发一发从弹链上消失。空列表 = 这枪没有弹链，[showBulletChainBones] 什么都不做。
+     */
+    private val bulletChainBones: List<Pair<Int, Int>> = baseModel.bones()
+        .asSequence()
+        .mapNotNull { bone ->
+            BULLET_CHAIN_PATTERN.matchEntire(bone.name())
+                ?.groupValues?.get(1)?.toIntOrNull()
+                ?.let { it to bone.index() }
+        }
+        .sortedBy { it.first }
+        .toList()
+
     private val magazineBones: Map<String, Int> = mapOf(
         MAGAZINE_STANDARD_BONE to baseModel.getIndex(MAGAZINE_STANDARD_BONE),
         MAGAZINE_EXTEND_BONE to baseModel.getIndex(MAGAZINE_EXTEND_BONE),
@@ -144,6 +161,22 @@ open class GeoGunModel @JvmOverloads constructor(
             val index = baseModel.getIndex(name)
             if (index < 0) continue
             instance.getBone(index)?.visible = name in visibleBoneNames
+        }
+    }
+
+    /**
+     * 按剩余弹量画弹链：第 N 发的模型 `bullet_N` 只在子弹还剩 `N` 发（及以上）时显示，于是
+     * 打得越少弹链上剩下的子弹越少，最先没的是序号最大的那一发。
+     *
+     * [keepAllVisible] 为 true 时**不隐藏任何一发** —— 换弹动画走过 `HIDE_BULLET_CHAIN` 之后
+     * 弹链整条换新，此时枪里的子弹数还没回满也不会露出空链。
+     *
+     * 每帧对每根骨骼都显式写一次 `visible`，所以不需要谁去还原。没有 `bullet_N` 命名骨骼的枪
+     * 这里一根也扫不到，渲染不变。
+     */
+    fun showBulletChainBones(ammo: Int, keepAllVisible: Boolean) {
+        for ((order, index) in bulletChainBones) {
+            instance.getBone(index)?.visible = keepAllVisible || ammo >= order
         }
     }
 
@@ -423,6 +456,9 @@ open class GeoGunModel @JvmOverloads constructor(
         )
 
         private val SHELL_GEOMETRY_PATTERN = Regex("^shells$|^shell\\d+$|^bullet_shell$", RegexOption.IGNORE_CASE)
+
+        /** 弹链上第 N 发子弹的骨骼名：`bullet_1`、`bullet_2`……序号从 1 开始。 */
+        private val BULLET_CHAIN_PATTERN = Regex("^bullet_(\\d+)$", RegexOption.IGNORE_CASE)
 
         @JvmStatic
         fun create(modelPath: ResourceLocation): GeoGunModel? {

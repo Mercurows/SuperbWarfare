@@ -1,46 +1,18 @@
 {
-  "Spread": 5,
-  "OpenBolt": true,
-  "HasBarrelBullet": true,
-  "RecoilX": 0.015,
-  "RecoilY": 0.02,
+  "Spread": 8,
+  "TacticalReload": true,
+  "RecoilX": 0.005,
+  "RecoilY": 0.015,
   "Recoil": 0.15,
   "Damage": 40,
   "Headshot": 2.0,
+  "ZoomReload": false,
   "Velocity": 15,
   "Magazine": 100,
   "Weight": 17,
   "DrawTime": 26,
   "ZoomTime": 19,
-  "MeleeDamage": 5,
-  "MeleeDuration": 16,
-  "MeleeComboReset": 15,
-  "MeleeHitbox": {
-    "Type": "Box",
-    "Range": 1.5,
-    "Width": 1.8,
-    "Height": 1.8,
-    "YOffset": -0.2,
-    "Occlusion": true
-  },
-  "MeleeSweep": {
-    "From": 0,
-    "To": 0
-  },
-  "MeleeActions": [
-    {
-      "Animation": "hit",
-      "Duration": 16,
-      "HitTime": 6,
-      "MaxTargets": 8,
-      "Falloff": 0.1,
-      "SortBy": "Angle",
-      "Knockback": 0.3,
-      "Headshot": 1.25,
-      "Legshot": 0.75
-    }
-  ],
-  "ZoomSpreadRate": 0.005,
+  "ZoomSpreadRate": 0.1,
   "DefaultFireMode": "Auto",
   "NormalReloadTime": 100,
   "EmptyReloadTime": 124,
@@ -97,12 +69,6 @@
     "Fire1P": "superbwarfare:m_2_hb_fire_1p",
     "Fire3P": "superbwarfare:m_2_hb_fire_3p",
     "Fire3PFar": "superbwarfare:m_2_hb_far",
-    "Fire3PVeryFar": "superbwarfare:m_2_hb_veryfar",
-    "ReloadNormal": "superbwarfare:m_2_hb_reload_normal",
-    "ReloadEmpty": "superbwarfare:m_2_hb_reload_empty",
-    "CancellableSounds": [
-      "superbwarfare:m_2_hb_reload_normal",
-      "superbwarfare:m_2_hb_reload_empty"
-    ]
+    "Fire3PVeryFar": "superbwarfare:m_2_hb_veryfar"
   }
 }

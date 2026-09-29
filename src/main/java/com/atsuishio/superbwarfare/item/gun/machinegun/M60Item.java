@@ -77,9 +77,4 @@ public class M60Item extends GunGeoItem {
         data.add(idleController);
     }
 
-    @Override
-    public int hideBulletChainBelowShots() {
-        return 5;
-    }
-
 }

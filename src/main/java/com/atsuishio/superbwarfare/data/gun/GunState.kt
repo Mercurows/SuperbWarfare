@@ -97,8 +97,17 @@ data class GunState(
     val loadIndex: Int = 0,
     @SerialName("HoldOpen")
     val holdOpen: Boolean = false,
+    /**
+     * 弹链**不是**刚换上的那一条：渲染时按剩余弹量把 `bullet_N` 逐发藏掉
+     * （见 [com.atsuishio.superbwarfare.client.model.gun.GeoGunModel.showBulletChainBones]）。
+     *
+     * 默认 true —— "打得少了弹链上就该少几发"本来就是常态。换弹动画走到 `HIDE_BULLET_CHAIN`
+     * 那个动作点时置 false（整条弹链换新，此后的子弹数不再影响画法），换弹一结束再置回 true。
+     * 于是这把枪**不需要**再声明"打到几发以下开始藏"：能藏几发是模型里 `bullet_*` 骨骼的条数决定的，
+     * 什么时刻换新是换弹动画的时间轴决定的。
+     */
     @SerialName("HideBulletChain")
-    val hideBulletChain: Boolean = false,
+    val hideBulletChain: Boolean = true,
     @SerialName("Sensitivity")
     val sensitivity: Int = 0,
     @SerialName("Heat")

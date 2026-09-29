@@ -151,6 +151,9 @@
   //   A *_DRUM timeline only fires while the installed magazine level is listed in "DrumLevels", and
   //   whenever such an entry exists it replaces its non-drum counterpart for drum levels.
   // "Action": "HOLD_OPEN", "CLOSE_STRIKE", "CLOSE_HAMMER", "EMPTY", "HIDE_BULLET_CHAIN".
+  //   HIDE_BULLET_CHAIN marks where the reload animation has attached the new belt: set it to false
+  //   at that point and the belt is drawn full again. Everywhere else (state true) the belt is drawn
+  //   from the remaining ammo, one `bullet_N` bone per round — no per-gun threshold needed.
   "ActionSteps": [],
   // Sound radius in blocks
   "SoundRadius": 0,

@@ -60,6 +60,11 @@ enum class GunStateAction {
     @SerialName("EMPTY")
     EMPTY,
 
+    /**
+     * 弹链换新的时刻：置 false 表示"这条弹链是刚换上的"，渲染时不再按剩余弹量少画子弹
+     * （见 [com.atsuishio.superbwarfare.client.model.gun.GeoGunModel.showBulletChainBones]）。
+     * 什么时候算换新由各枪的换弹动画决定，别的时候这个状态都是 true。
+     */
     @SerialName("HIDE_BULLET_CHAIN")
     HIDE_BULLET_CHAIN,
 }

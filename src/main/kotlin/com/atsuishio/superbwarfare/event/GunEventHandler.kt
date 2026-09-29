@@ -387,9 +387,9 @@ object GunEventHandler {
         }
 
         if (inMainHand && !data.reloading()) {
-            if (data.currentAvailableShots(shooter) <= data.item.hideBulletChainBelowShots()) {
-                data.hideBulletChain.set(true)
-            }
+            // 弹链只在"换弹动画里已经换上新链"那一段算例外（`HIDE_BULLET_CHAIN` 置 false），
+            // 换弹一结束就回到常态：按剩余弹量画，能不能少画几发交给渲染那边看模型有几发。
+            data.hideBulletChain.set(true)
             if (!data.hasEnoughAmmoToShoot(shooter)) {
                 GunActionStepExecutor.triggerNoAmmo(data)
             }
