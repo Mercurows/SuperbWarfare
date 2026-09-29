@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "item": "superbwarfare:engineering_plastic"
+  },
+  "base": {
+    "item": "superbwarfare:rare_material_pack"
+  },
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:nail_gun"
+  },
+  "template": {
+    "item": "superbwarfare:nail_gun_blueprint"
+  }
+}

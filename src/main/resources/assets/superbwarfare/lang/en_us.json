@@ -67,6 +67,7 @@
   "item.superbwarfare.super_star_shooter": "Super Star Shooter",
   "item.superbwarfare.reforging": "Reforging",
   "item.superbwarfare.raubtier": "Custom-made Companion Rigging Raubtier",
+  "item.superbwarfare.nail_gun": "Nail Gun",
 
   "item.superbwarfare.vehicle_gun": "Vehicle Gun",
   "des.superbwarfare.vehicle_gun": "You should not have got this",
@@ -144,6 +145,9 @@
   "item.superbwarfare.igla_9k38_blueprint": "IGLA-9K38 MANPADS Blueprint",
   "item.superbwarfare.ql_1031_blueprint": "QL-1031 \"Qinglan\" Blueprint",
   "item.superbwarfare.super_star_shooter_blueprint": "Super Star Shooter Blueprint",
+  "item.superbwarfare.raubtier_blueprint": "Custom-made Companion Rigging Raubtier Blueprint",
+  "item.superbwarfare.reforging_blueprint": "Reforging Blueprint",
+  "item.superbwarfare.nail_gun_blueprint": "Nail Gun Blueprint",
 
   "item.superbwarfare.common_material_pack": "Common Material Pack",
   "item.superbwarfare.rare_material_pack": "Rare Material Pack",

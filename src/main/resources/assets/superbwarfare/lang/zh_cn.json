@@ -67,6 +67,7 @@
   "item.superbwarfare.super_star_shooter": "超级星星炮",
   "item.superbwarfare.reforging": "重塑",
   "item.superbwarfare.raubtier": "特制舰装铁血兽Raubtier",
+  "item.superbwarfare.nail_gun": "射钉枪",
 
   "item.superbwarfare.vehicle_gun": "载具武器",
   "des.superbwarfare.vehicle_gun": "你不应该拿到这个的",
@@ -144,6 +145,9 @@
   "item.superbwarfare.igla_9k38_blueprint": "IGLA-9K38便携式地空导弹发射器蓝图",
   "item.superbwarfare.ql_1031_blueprint": "QL-1031 “轻岚”蓝图",
   "item.superbwarfare.super_star_shooter_blueprint": "超级星星炮蓝图",
+  "item.superbwarfare.raubtier_blueprint": "特制舰装铁血兽Raubtier蓝图",
+  "item.superbwarfare.reforging_blueprint": "重塑蓝图",
+  "item.superbwarfare.nail_gun_blueprint": "射钉枪蓝图",
 
   "item.superbwarfare.common_material_pack": "普通枪械材料包",
   "item.superbwarfare.rare_material_pack": "稀有枪械材料包",

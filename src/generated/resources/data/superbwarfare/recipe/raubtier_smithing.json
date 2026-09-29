@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "item": "superbwarfare:cannon_core"
+  },
+  "base": {
+    "item": "superbwarfare:superb_material_pack"
+  },
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:raubtier"
+  },
+  "template": {
+    "item": "superbwarfare:raubtier_blueprint"
+  }
+}

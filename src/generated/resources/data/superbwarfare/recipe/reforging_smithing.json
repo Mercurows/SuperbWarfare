@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "item": "superbwarfare:reforging_table"
+  },
+  "base": {
+    "item": "superbwarfare:superb_material_pack"
+  },
+  "result": {
+    "count": 1,
+    "id": "superbwarfare:reforging"
+  },
+  "template": {
+    "item": "superbwarfare:reforging_blueprint"
+  }
+}
