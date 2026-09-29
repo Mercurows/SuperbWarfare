@@ -276,10 +276,10 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         data.availableAttachments(type).isNotEmpty()
 
     /**
-     * 武器是否能更换枪管配件
+     * 武器是否能更换枪口配件（消音器 / 制退器）
      */
-    open fun hasCustomBarrel(data: GunData) =
-        hasCustomAttachment(data, AttachmentType.BARREL)
+    open fun hasCustomMuzzle(data: GunData) =
+        hasCustomAttachment(data, AttachmentType.MUZZLE)
 
     /**
      * 武器是否能更换枪托配件
@@ -660,7 +660,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
         // 生成所有子弹
         val spreadPattern = data.get(GunProp.SPREAD_PATTERN)
-        val spreadRotation = data.attachment.getRotation(AttachmentType.BARREL)
+        val spreadRotation = data.attachment.getRotation(AttachmentType.MUZZLE)
         val spreadDirections = ProjectileSpreadTool.generateDirections(
             this.random,
             parameters.shootDirection,

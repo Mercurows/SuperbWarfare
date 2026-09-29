@@ -104,10 +104,10 @@ fun GunData.isDrumLevel(): Boolean {
 }
 
 /**
- * Checks whether the installed barrel attachment is configured as a silencer.
+ * Checks whether the installed muzzle attachment is configured as a silencer.
  */
 fun GunData.isBarrelSilenced(): Boolean {
-    val id = attachment.id(AttachmentType.BARREL) ?: return false
+    val id = attachment.id(AttachmentType.MUZZLE) ?: return false
     return AttachmentDefinition.from(id)?.isSilenced == true
 }
 

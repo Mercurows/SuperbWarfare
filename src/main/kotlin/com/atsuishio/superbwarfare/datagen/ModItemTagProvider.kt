@@ -575,7 +575,7 @@ class ModItemTagProvider(
             ModItems.MAGAZINE_EXTEND,
             ModItems.MAGAZINE_EXTEND_PRO
         ),
-        AttachmentType.BARREL to listOf(
+        AttachmentType.MUZZLE to listOf(
             ModItems.MEOWLENCER,
             ModItems.HISSILENCER,
             ModItems.SILAOWUNCER,

@@ -106,10 +106,11 @@ public class Ql1031ItemModel extends CustomGunModel<Ql1031Item> {
 
         CrossHairOverlay.gunRot = shen.getRotZ();
 
-        GeoBone flare = getAnimationProcessor().getBone("flare");
-        int BarrelType = data.attachment.get(AttachmentType.BARREL);
+        var flare = getAnimationProcessor().getBone("flare");
+        // 0 = 无枪口配件，1 = 制退器（模型里对应的骨骼仍叫 BarrelN，见 ItemModelHelper）
+        int muzzleType = GunData.from(stack).attachment.get(AttachmentType.MUZZLE);
 
-        if (BarrelType == 1) {
+        if (muzzleType == 1) {
             flare.setPosZ(-2);
         }
 

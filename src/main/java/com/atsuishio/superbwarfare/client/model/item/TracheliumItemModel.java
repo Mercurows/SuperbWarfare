@@ -48,7 +48,8 @@ public class TracheliumItemModel extends CustomGunModel<TracheliumItem> {
 
         var data = GunData.from(stack);
         int stockType = data.attachment.get(AttachmentType.STOCK);
-        int barrelType = data.attachment.get(AttachmentType.BARREL);
+        // 模型里这两根骨骼名字就叫 Barrel1 / Barrel2（旧 GeckoLib 资产），这里泛指枪口配件位
+        int muzzleType = data.attachment.get(AttachmentType.MUZZLE);
         int scopeType = data.attachment.get(AttachmentType.SCOPE);
         int gripType = data.attachment.get(AttachmentType.GRIP);
 
@@ -134,12 +135,12 @@ public class TracheliumItemModel extends CustomGunModel<TracheliumItem> {
         float flarePosZ = 0;
 
         if (scopeType > 0 || gripType > 0) {
-            if (barrelType == 1) {
+            if (muzzleType == 1) {
                 flarePosZ = -21;
             } else {
                 flarePosZ = -18;
             }
-        } else if (barrelType == 1) {
+        } else if (muzzleType == 1) {
             flarePosZ = -3;
         }
 

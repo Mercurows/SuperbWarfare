@@ -109,13 +109,13 @@ object MuzzleFlashHelper {
      */
     @JvmStatic
     fun calculateFromGunData(data: GunData): FlashParams {
-        val barrelType = data.attachment.get(AttachmentType.BARREL)
+        val muzzleType = data.attachment.get(AttachmentType.MUZZLE)
         return calculateFromStats(
             damage = data.get(GunProp.DAMAGE),
             rpm = data.get(GunProp.RPM),
             boltAction = data.get(GunProp.BOLT_ACTION_TIME),
-            isSilenced = barrelType == 2,
-            isFlashHider = barrelType == 1,
+            isSilenced = muzzleType == 2,
+            isFlashHider = muzzleType == 1,
             projectileAmount = data.get(GunProp.PROJECTILE_AMOUNT),
             stack = data.stack
         )

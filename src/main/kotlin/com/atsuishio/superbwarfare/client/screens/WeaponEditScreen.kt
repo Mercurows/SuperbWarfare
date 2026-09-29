@@ -87,8 +87,8 @@ class WeaponEditScreen(private val stack: ItemStack) : Screen(Component.empty())
 
         val data = from(stack)
 
-        RenderHelper.preciseBlit(pGuiGraphics, BARREL, posX1.toFloat(), posY1.toFloat(), 0f, 0f, 24f, 24f, 24f, 24f)
-        if (!item.hasCustomBarrel(data)) {
+        RenderHelper.preciseBlit(pGuiGraphics, MUZZLE, posX1.toFloat(), posY1.toFloat(), 0f, 0f, 24f, 24f, 24f, 24f)
+        if (!item.hasCustomMuzzle(data)) {
             RenderHelper.preciseBlit(
                 pGuiGraphics,
                 INVALID,
@@ -318,7 +318,7 @@ class WeaponEditScreen(private val stack: ItemStack) : Screen(Component.empty())
             val data = from(stack)
 
             return when (this.type) {
-                0 -> item.hasCustomBarrel(data)
+                0 -> item.hasCustomMuzzle(data)
                 1 -> item.hasCustomScope(data)
                 2 -> item.hasCustomGrip(data)
                 3 -> item.hasCustomStock(data)
@@ -334,7 +334,7 @@ class WeaponEditScreen(private val stack: ItemStack) : Screen(Component.empty())
 
     companion object {
         // 六个改装位置，大小128*128
-        private val BARREL = loc("textures/gui/attachment/barrel.png")
+        private val MUZZLE = loc("textures/gui/attachment/muzzle.png")
         private val SCOPE = loc("textures/gui/attachment/scope.png")
         private val GRIP = loc("textures/gui/attachment/grip.png")
         private val STOCK = loc("textures/gui/attachment/stock.png")

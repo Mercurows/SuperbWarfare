@@ -11,8 +11,8 @@ enum class AttachmentType(typeName: String) {
     @SerialName("Magazine")
     MAGAZINE("Magazine"),
 
-    @SerialName("Barrel")
-    BARREL("Barrel"),
+    @SerialName("Muzzle")
+    MUZZLE("Muzzle"),
 
     @SerialName("Stock")
     STOCK("Stock"),
@@ -23,7 +23,7 @@ enum class AttachmentType(typeName: String) {
     /**
      * 刺刀
      *
-     * 与枪口槽（[BARREL]，消音器/制退器）**互斥**：两者登记在同一个挂点组上，
+     * 与枪口槽（[MUZZLE]，消音器/制退器）**互斥**：两者登记在同一个挂点组上，
      * 装了其中一个就装不了另一个，见 [com.atsuishio.superbwarfare.data.attachment.AttachmentSlots]。
      */
     @SerialName("Bayonet")
