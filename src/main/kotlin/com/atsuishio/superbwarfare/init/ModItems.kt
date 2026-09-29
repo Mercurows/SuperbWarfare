@@ -680,6 +680,7 @@ object ModItems {
     @JvmField val MEOWLENCER = registerAttachment("meowlencer", Rarity.RARE)
     @JvmField val HISSILENCER = registerAttachment("hissilencer", Rarity.RARE)
     @JvmField val SILAOWUNCER = registerAttachment("silaowuncer", Rarity.RARE)
+    @JvmField val MILENCER = registerAttachment("milencer", ModRarities.VIRTUAL)
     @JvmField val MUZZLE_BRAKE_RU = registerAttachment("muzzle_brake_ru")
     @JvmField val MUZZLE_BRAKE_AR = registerAttachment("muzzle_brake_ar")
     @JvmField val MUZZLE_BREAK_BIRDCAGE = registerAttachment("muzzle_break_birdcage")

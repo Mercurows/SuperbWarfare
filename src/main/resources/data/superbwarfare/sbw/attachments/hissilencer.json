@@ -9,6 +9,7 @@
       "Value": 1.0
     }
   ],
+  "IsSilenced": true,
   "Override": {
     "SoundInfo": {
       "Fire1P": "minecraft:entity.cat.hiss",

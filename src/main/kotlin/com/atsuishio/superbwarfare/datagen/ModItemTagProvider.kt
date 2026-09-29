@@ -579,6 +579,7 @@ class ModItemTagProvider(
             ModItems.MEOWLENCER,
             ModItems.HISSILENCER,
             ModItems.SILAOWUNCER,
+            ModItems.MILENCER,
             ModItems.RU_SILENCER,
             ModItems.MUZZLE_BRAKE_RU,
             ModItems.MUZZLE_BRAKE_AR,
