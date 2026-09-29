@@ -1783,6 +1783,11 @@
 					"pivot": [0, 2.01563, -0.42205]
 				},
 				{
+					"name": "charm_pos",
+					"parent": "huatao",
+					"pivot": [0.51134, 1.69285, 3.21306]
+				},
+				{
 					"name": "hammer",
 					"parent": "root",
 					"pivot": [0, 0.8855, 3.57196],

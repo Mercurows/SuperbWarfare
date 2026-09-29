@@ -1480,6 +1480,11 @@
 					]
 				},
 				{
+					"name": "charm_pos",
+					"parent": "barrel_1",
+					"pivot": [2.125, 0.4802, -20.3]
+				},
+				{
 					"name": "body",
 					"parent": "root",
 					"pivot": [-8, 6, 8]

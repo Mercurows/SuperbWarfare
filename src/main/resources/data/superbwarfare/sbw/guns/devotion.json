@@ -135,6 +135,9 @@
       "superbwarfare:stock_str",
       "superbwarfare:stock_ubr",
       "superbwarfare:stock_prs"
+    ],
+    "Charm": [
+      "#superbwarfare:attachment/charm"
     ]
   },
   "SoundInfo": {

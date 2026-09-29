@@ -28,6 +28,11 @@
     "superbwarfare:intelligent_chip",
     "superbwarfare:volt_overload"
   ],
+  "AvailableAttachments": {
+    "Charm": [
+      "#superbwarfare:attachment/charm"
+    ]
+  },
   "SoundInfo": {
     "Fire1P": "superbwarfare:taser_fire_1p",
     "Fire3P": "superbwarfare:taser_fire_3p"

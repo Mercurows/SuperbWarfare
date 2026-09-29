@@ -6354,6 +6354,11 @@
 					"pivot": [0, 1.81789, 0.00202]
 				},
 				{
+					"name": "charm_pos",
+					"parent": "positioning2",
+					"pivot": [0.79248, 2.22059, 3.83347]
+				},
+				{
 					"name": "sub_weapon_pos",
 					"parent": "root",
 					"pivot": [0, -0.0844, -10.1773],

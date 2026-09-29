@@ -140,6 +140,9 @@
     ],
     "SubWeapon": [
       "superbwarfare:sub_weapon_gp_25"
+    ],
+    "Charm": [
+      "#superbwarfare:attachment/charm"
     ]
   },
   "SoundInfo": {

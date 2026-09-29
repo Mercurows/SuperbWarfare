@@ -126,6 +126,9 @@
     ],
     "Bayonet": [
       "superbwarfare:bayonet_6kh2"
+    ],
+    "Charm": [
+      "#superbwarfare:attachment/charm"
     ]
   },
   "SoundInfo": {
