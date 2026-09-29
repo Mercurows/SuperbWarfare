@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_charm_bee": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#superbwarfare:attachment/charm"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:small_container_charms_recycle"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_charm_bee"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:small_container_charms_recycle"
+    ]
+  }
+}
