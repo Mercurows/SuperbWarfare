@@ -182,6 +182,10 @@ class DefaultGunResource : IDBasedData<DefaultGunResource> {
     @SerialName("TextShow")
     var textShow: List<AmmoTextEntry> = emptyList()
 
+    @JvmField
+    @SerialName("ZoomingTranslateMultiply")
+    var zoomingTranslateMultiply: Float = 0f
+
     companion object {
         private val MARKER: Marker = MarkerManager.getMarker("GunResource")
     }

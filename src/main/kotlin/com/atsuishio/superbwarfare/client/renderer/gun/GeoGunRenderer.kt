@@ -1772,22 +1772,24 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             ClientEventHandler.zoomTime.coerceAtLeast(ClientEventHandler.bipodViewTime)
         )
 
-        var rotationScale = (1f - 0.5f * zoomTime).coerceAtLeast(0.05f)
-        var rotationScaleX = (1f - 0.97f * zoomTime).coerceAtLeast(0.05f)
-        var rotationScaleY = (1f - 0.97f * zoomTime).coerceAtLeast(0.05f)
-        var rotationScaleZ = (1f - 0.7f * zoomTime).coerceAtLeast(0.05f)
-        var positionScale = (1f - 0.95f * zoomTime).coerceAtLeast(0.05f)
-        var positionScaleX = (1f - 0.95f * zoomTime).coerceAtLeast(0.05f)
-        var positionScaleZ = (1f - 0.96f * zoomTime).coerceAtLeast(0.05f)
+        val multiply = 1 - Mth.clamp(GunResource.compute(stack).zoomingTranslateMultiply, 0f, 1f)
+
+        var rotationScale = (1f - 0.5f * zoomTime * multiply).coerceAtLeast(0.05f)
+        var rotationScaleX = (1f - 0.97f * zoomTime * multiply).coerceAtLeast(0.05f)
+        var rotationScaleY = (1f - 0.97f * zoomTime * multiply).coerceAtLeast(0.05f)
+        var rotationScaleZ = (1f - 0.7f * zoomTime * multiply).coerceAtLeast(0.05f)
+        var positionScale = (1f - 0.95f * zoomTime * multiply).coerceAtLeast(0.05f)
+        var positionScaleX = (1f - 0.95f * zoomTime * multiply).coerceAtLeast(0.05f)
+        var positionScaleZ = (1f - 0.96f * zoomTime * multiply).coerceAtLeast(0.05f)
 
         if (!data.reloading()) {
-            rotationScale = (1f - 0.5f * zoomTime).coerceAtLeast(0.05f)
-            rotationScaleX = (1f - 0.55f * zoomTime).coerceAtLeast(0.05f)
-            rotationScaleY = (1f - 0.2f * zoomTime).coerceAtLeast(0.05f)
-            rotationScaleZ = (1f - 0.2f * zoomTime).coerceAtLeast(0.05f)
-            positionScale = (1f - 0.4f * zoomTime).coerceAtLeast(0.05f)
-            positionScaleX = (1f - 0.5f * zoomTime).coerceAtLeast(0.05f)
-            positionScaleZ = (1f - 0.82f * zoomTime).coerceAtLeast(0.05f)
+            rotationScale = (1f - 0.5f * zoomTime * multiply).coerceAtLeast(0.05f)
+            rotationScaleX = (1f - 0.55f * zoomTime * multiply).coerceAtLeast(0.05f)
+            rotationScaleY = (1f - 0.2f * zoomTime * multiply).coerceAtLeast(0.05f)
+            rotationScaleZ = (1f - 0.2f * zoomTime * multiply).coerceAtLeast(0.05f)
+            positionScale = (1f - 0.4f * zoomTime * multiply).coerceAtLeast(0.05f)
+            positionScaleX = (1f - 0.5f * zoomTime * multiply).coerceAtLeast(0.05f)
+            positionScaleZ = (1f - 0.82f * zoomTime * multiply).coerceAtLeast(0.05f)
         }
 
         val main = model.getRootBone()

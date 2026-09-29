@@ -6,6 +6,7 @@
     "ReloadEmpty": "animation.raubtier.reload_empty",
     "Fire": "animation.raubtier.fire"
   },
+  "ZoomingTranslateMultiply": 1.0,
   "Model": {
     "Animation": "superbwarfare:animations/bedrock/gun/raubtier.animation.json",
     "Model": "superbwarfare:models/bedrock/gun/raubtier.geo.json",

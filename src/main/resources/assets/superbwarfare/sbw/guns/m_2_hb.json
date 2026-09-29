@@ -15,6 +15,7 @@
     "ZoomRate": 1.0,
     "Speed": 1.0
   },
+  "ZoomingTranslateMultiply": 1.0,
   "Model": {
     "Animation": "superbwarfare:animations/bedrock/gun/m_2_hb.animation.json",
     "Model": "superbwarfare:models/bedrock/gun/m_2_hb.geo.json",
@@ -48,7 +49,7 @@
     "InitialVelocity": [5.8, 3.2, -0.75],
     "RandomVelocity": [0.7, 0.6, 0.3],
     "Acceleration": [0, -16, 0],
-    "AngularVelocity": [-1800, -2000, 240],
+    "AngularVelocity": [-900, -1000, 120],
     "RandomAngle": [60, 60, 360],
     "LivingTime": 0.8,
     "MaxActive": 24
