@@ -1,5 +1,5 @@
 {
-	"format_version": "1.21.20",
+	"format_version": "1.21.110",
 	"minecraft:geometry": [
 		{
 			"description": {
@@ -8719,6 +8719,11 @@
 					"name": "bayonet_pos",
 					"parent": "positioning2",
 					"pivot": [0, 2.41016, -22.81328]
+				},
+				{
+					"name": "charm_pos",
+					"parent": "positioning2",
+					"pivot": [0.8284, 2.39339, 1.75676]
 				},
 				{
 					"name": "righthand",

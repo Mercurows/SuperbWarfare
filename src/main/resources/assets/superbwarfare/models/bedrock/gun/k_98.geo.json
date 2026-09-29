@@ -5225,6 +5225,11 @@
 					"pivot": [0, 3.2383, -41.1]
 				},
 				{
+					"name": "charm_pos",
+					"parent": "root",
+					"pivot": [1.01309, 2.48369, -0.23739]
+				},
+				{
 					"name": "positioning",
 					"pivot": [0, 0, 0]
 				},

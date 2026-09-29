@@ -76,6 +76,9 @@
       "superbwarfare:osprey_silencer",
       "superbwarfare:osprey_silencer_trachelium",
       "superbwarfare:steel_pipe_silencer"
+    ],
+    "Charm": [
+      "#superbwarfare:attachment/charm"
     ]
   },
   "SoundInfo": {

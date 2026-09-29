@@ -1539,6 +1539,11 @@
 					]
 				},
 				{
+					"name": "charm_pos",
+					"parent": "humu",
+					"pivot": [0.67008, 2.81278, 1.32426]
+				},
+				{
 					"name": "qiangshen",
 					"parent": "gun",
 					"pivot": [-0.00078, 3.1725, 3.15822],

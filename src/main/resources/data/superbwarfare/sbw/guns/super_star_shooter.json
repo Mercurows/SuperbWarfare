@@ -33,6 +33,9 @@
   "AvailableAttachments": {
     "Scope": [
       "superbwarfare:scope_winefox"
+    ],
+    "Charm": [
+      "#superbwarfare:attachment/charm"
     ]
   },
   "SoundInfo": {

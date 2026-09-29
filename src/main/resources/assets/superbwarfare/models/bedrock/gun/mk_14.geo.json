@@ -1,5 +1,5 @@
 {
-	"format_version": "1.21.20",
+	"format_version": "1.21.110",
 	"minecraft:geometry": [
 		{
 			"description": {
@@ -7498,6 +7498,11 @@
 					"name": "sub_weapon_pos",
 					"parent": "root",
 					"pivot": [0, -0.1062, -14.1297]
+				},
+				{
+					"name": "charm_pos",
+					"parent": "root",
+					"pivot": [0.77109, 2.14565, -0.10373]
 				},
 				{
 					"name": "positioning",

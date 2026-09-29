@@ -10899,6 +10899,11 @@
 					"pivot": [0, 1.41656, -10]
 				},
 				{
+					"name": "charm_pos",
+					"parent": "body",
+					"pivot": [1.23454, 1.45958, 5.26224]
+				},
+				{
 					"name": "righthand",
 					"parent": "root",
 					"pivot": [5.98125, 18, 0]

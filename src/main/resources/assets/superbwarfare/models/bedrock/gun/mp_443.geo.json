@@ -2492,6 +2492,11 @@
 					"pivot": [0, 2.1, -0.375]
 				},
 				{
+					"name": "charm_pos",
+					"parent": "huatao",
+					"pivot": [0.625, 2.15, 3.2]
+				},
+				{
 					"name": "flare",
 					"parent": "root",
 					"pivot": [-0.01172, 1.98789, -5.43516]

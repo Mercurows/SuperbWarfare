@@ -50,6 +50,11 @@
   "AvailableFireModes": [
     "Auto"
   ],
+  "AvailableAttachments": {
+    "Charm": [
+      "#superbwarfare:attachment/charm"
+    ]
+  },
   "AmmoType": "@RifleAmmo",
   "Icon": "superbwarfare:textures/gun_icon/reforging_icon.png"
 }

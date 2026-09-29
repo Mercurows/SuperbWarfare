@@ -138,6 +138,9 @@
     ],
     "Bayonet": [
       "superbwarfare:bayonet_seitengewehr_84"
+    ],
+    "Charm": [
+      "#superbwarfare:attachment/charm"
     ]
   },
   "SoundInfo": {

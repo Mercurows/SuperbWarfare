@@ -132,6 +132,9 @@
       "superbwarfare:ar_silencer",
       "superbwarfare:loudspeaker",
       "superbwarfare:silencer_qinglan"
+    ],
+    "Charm": [
+      "#superbwarfare:attachment/charm"
     ]
   },
   "SoundInfo": {

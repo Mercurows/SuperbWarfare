@@ -1556,6 +1556,11 @@
 					]
 				},
 				{
+					"name": "charm_pos",
+					"parent": "gun",
+					"pivot": [1.40609, 1.16, 1.79095]
+				},
+				{
 					"name": "righthand",
 					"parent": "root",
 					"pivot": [5.98125, 15, -1]

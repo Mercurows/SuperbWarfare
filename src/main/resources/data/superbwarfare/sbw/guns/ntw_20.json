@@ -97,6 +97,9 @@
     "Magazine": [
       "superbwarfare:magazine_extend",
       "superbwarfare:magazine_extend_pro"
+    ],
+    "Charm": [
+      "#superbwarfare:attachment/charm"
     ]
   },
   "SoundInfo": {

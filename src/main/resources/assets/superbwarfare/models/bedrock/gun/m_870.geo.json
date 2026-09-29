@@ -5808,6 +5808,11 @@
 					"pivot": [0, 3.32428, -25.65555]
 				},
 				{
+					"name": "charm_pos",
+					"parent": "positioning2",
+					"pivot": [0.95073, 1.50441, 1.1089]
+				},
+				{
 					"name": "scope_pos",
 					"parent": "root",
 					"pivot": [0, 3.0521, -2.61874]

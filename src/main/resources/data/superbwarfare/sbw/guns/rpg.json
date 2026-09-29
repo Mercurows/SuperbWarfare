@@ -92,6 +92,11 @@
     "superbwarfare:micro_missile",
     "superbwarfare:battle_of_wits"
   ],
+  "AvailableAttachments": {
+    "Charm": [
+      "#superbwarfare:attachment/charm"
+    ]
+  },
   "SoundRadius": 12,
   "SoundInfo": {
     "Fire1P": "superbwarfare:rpg_fire_1p",
