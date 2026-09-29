@@ -29,7 +29,7 @@
   },
   "MeleeActions": [
     {
-      "Animation": "animation.ak_12.hit",
+      "Animation": "hit",
       "Duration": 16,
       "HitTime": 6,
       "MaxTargets": 8,
