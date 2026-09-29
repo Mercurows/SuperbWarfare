@@ -481,11 +481,11 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         if (!transformType.firstPerson()) {
             applyModelBonePositioning(poseStack, model, modelResource, transformType)
         }
-        val attachmentRender = resolveBarrelAttachmentRender(stack)
+        val attachmentRender = resolveMuzzleAttachmentRender(stack)
         val attachmentMuzzleTransform = attachmentRender?.let {
-            resolveBarrelAttachmentMuzzleTransform(stack, model, it)
+            resolveMuzzleAttachmentMuzzleTransform(stack, model, it)
         }
-        val muzzleFlashScale = resolveBarrelAttachmentMuzzleFlashScale(stack)
+        val muzzleFlashScale = resolveMuzzleAttachmentMuzzleFlashScale(stack)
 
         val canStencil = transformType.firstPerson()
                 && !OculusCompat.isRenderingShadowPass()
@@ -603,7 +603,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         renderGripAttachment(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
         renderOemScope(stack, model)
         renderOemMuzzle(stack, model)
-        renderBarrelAttachment(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
+        renderMuzzleAttachment(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
         renderRegisteredAttachments(
             stack,
             model,
@@ -999,7 +999,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         poseStack.pushPose()
         mulPoseWithNormal(
             poseStack,
-            Matrix4f(mountTransform).mul(resolveBarrelAttachmentLocalTransform(stack))
+            Matrix4f(mountTransform).mul(resolveMuzzleAttachmentLocalTransform(stack))
         )
         attachmentModel.renderToBuffer(
             poseStack, bufferSource, texture, packedLight, packedOverlay,
@@ -1025,9 +1025,9 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     open fun renderOemMuzzle(stack: ItemStack, model: GeoGunModel) {
         val bone = model.getBone(OEM_MUZZLE_BONE) ?: return
         val data = from(stack)
-        val hasBarrelAttachment = data.attachment.id(AttachmentType.BARREL) != null
-                || data.attachment.get(AttachmentType.BARREL) != 0
-        bone.visible = !hasBarrelAttachment
+        val hasMuzzleAttachment = data.attachment.id(AttachmentType.MUZZLE) != null
+                || data.attachment.get(AttachmentType.MUZZLE) != 0
+        bone.visible = !hasMuzzleAttachment
     }
 
     open fun renderOemScope(stack: ItemStack, model: GeoGunModel) {
@@ -1038,7 +1038,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         bone.visible = !hasScope
     }
 
-    open fun renderBarrelAttachment(
+    open fun renderMuzzleAttachment(
         stack: ItemStack,
         model: GeoGunModel,
         poseStack: PoseStack,
@@ -1046,8 +1046,8 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         packedLight: Int,
         packedOverlay: Int
     ) {
-        val (attachmentModel, texture, definition) = resolveBarrelAttachmentRender(stack) ?: return
-        val boneName = resolveBarrelAttachmentBone(stack) ?: return
+        val (attachmentModel, texture, definition) = resolveMuzzleAttachmentRender(stack) ?: return
+        val boneName = resolveMuzzleAttachmentBone(stack) ?: return
         val mountTransform = model.getGlobalTransform(boneName) ?: return
 
         poseStack.pushPose()
@@ -1059,9 +1059,9 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         poseStack.popPose()
     }
 
-    open fun resolveBarrelAttachmentRender(stack: ItemStack): AttachmentRenderData? {
+    open fun resolveMuzzleAttachmentRender(stack: ItemStack): AttachmentRenderData? {
         val data = from(stack)
-        val attachmentId = data.attachment.id(AttachmentType.BARREL) ?: return null
+        val attachmentId = data.attachment.id(AttachmentType.MUZZLE) ?: return null
         val definition = AttachmentDefinition.from(attachmentId) ?: return null
         val modelPath = definition.model ?: return null
         val texture = definition.texture ?: return null
@@ -1069,37 +1069,37 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         return AttachmentRenderData(attachmentModel, texture, definition)
     }
 
-    open fun resolveBarrelAttachmentMuzzleFlashScale(stack: ItemStack): Float {
+    open fun resolveMuzzleAttachmentMuzzleFlashScale(stack: ItemStack): Float {
         val data = from(stack)
-        val attachmentId = data.attachment.id(AttachmentType.BARREL) ?: return 1.0f
+        val attachmentId = data.attachment.id(AttachmentType.MUZZLE) ?: return 1.0f
         return AttachmentDefinition.from(attachmentId)?.muzzleFlashScale?.coerceAtLeast(0f) ?: 1.0f
     }
 
-    open fun resolveBarrelAttachmentBone(stack: ItemStack): String? {
+    open fun resolveMuzzleAttachmentBone(stack: ItemStack): String? {
         val data = from(stack)
-        val attachmentId = data.attachment.id(AttachmentType.BARREL) ?: return null
+        val attachmentId = data.attachment.id(AttachmentType.MUZZLE) ?: return null
         return AttachmentDefinition.from(attachmentId)?.bone
     }
 
-    open fun resolveBarrelAttachmentLocalTransform(stack: ItemStack): Matrix4f {
+    open fun resolveMuzzleAttachmentLocalTransform(stack: ItemStack): Matrix4f {
         val data = from(stack)
-        val offset = data.attachment.getOffset(AttachmentType.BARREL)
-        val rotation = data.attachment.getRotation(AttachmentType.BARREL).toFloat()
+        val offset = data.attachment.getOffset(AttachmentType.MUZZLE)
+        val rotation = data.attachment.getRotation(AttachmentType.MUZZLE).toFloat()
         return Matrix4f()
             .translate(0f, 0f, offset.toFloat())
             .rotateZ(Mth.DEG_TO_RAD * rotation)
     }
 
-    open fun resolveBarrelAttachmentMuzzleTransform(
+    open fun resolveMuzzleAttachmentMuzzleTransform(
         stack: ItemStack,
         model: GeoGunModel,
         renderData: AttachmentRenderData
     ): Matrix4f? {
         val attachmentMuzzle = renderData.model.getGlobalTransform(MUZZLE_BONE) ?: return null
-        val boneName = resolveBarrelAttachmentBone(stack) ?: return null
+        val boneName = resolveMuzzleAttachmentBone(stack) ?: return null
         val mountTransform = model.getGlobalTransform(boneName) ?: return null
         return Matrix4f(mountTransform)
-            .mul(resolveBarrelAttachmentLocalTransform(stack))
+            .mul(resolveMuzzleAttachmentLocalTransform(stack))
             .mul(attachmentMuzzle)
     }
 

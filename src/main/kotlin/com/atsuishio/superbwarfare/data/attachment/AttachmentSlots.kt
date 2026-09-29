@@ -76,8 +76,8 @@ enum class AttachmentRenderMode {
  * @param tagBucket 物品 tag 的桶名（`superbwarfare:attachment/<tagBucket>`），
  *   `null` 表示这个槽位不生成 tag。生成逻辑见 `ModTags` / `ModItemTagProvider`。
  * @param icon 改装界面上的槽位图标（`textures/gui/attachment/<icon>.png`）。
- *   **当前界面（`WeaponEditScreen`）本期不改、还没读它**，登记在这里是为了让界面重写时
- *   "槽位 → 图标"不必再散在界面代码里。
+ *   `WeaponEditScreen` 目前仍是自己硬编码的一份贴图常量（槽位顺序与 [EDIT_ORDER] 对齐），
+ *   登记在这里是为了让界面重写时"槽位 → 图标"不必再散在界面代码里。
  * @param mountBone 挂载骨骼来源，只被 [AttachmentRenderMode.GENERIC] 的渲染用到。
  * @param focusBone 改装界面聚焦到该槽位时用的骨骼；`null` 表示该槽位不聚焦。
  * @param renderMode 渲染分派方式。
@@ -181,10 +181,10 @@ object AttachmentSlots {
             withdrawAmmoOnChange = true,
         ),
         AttachmentSlot(
-            type = AttachmentType.BARREL,
+            type = AttachmentType.MUZZLE,
             mount = "muzzle_device",
-            tagBucket = "barrel",
-            icon = "barrel",
+            tagBucket = "muzzle",
+            icon = "muzzle",
             mountBone = AttachmentMountBone.FromDefinition(),
             focusBone = Bones.MUZZLE,
             renderMode = AttachmentRenderMode.CUSTOM,
@@ -286,7 +286,7 @@ object AttachmentSlots {
      */
     @JvmField
     val EDIT_ORDER: List<AttachmentEditTarget> = listOf(
-        AttachmentEditTarget.Slot(of(AttachmentType.BARREL)),
+        AttachmentEditTarget.Slot(of(AttachmentType.MUZZLE)),
         AttachmentEditTarget.Slot(of(AttachmentType.SCOPE)),
         AttachmentEditTarget.Slot(of(AttachmentType.GRIP)),
         AttachmentEditTarget.Slot(of(AttachmentType.STOCK)),

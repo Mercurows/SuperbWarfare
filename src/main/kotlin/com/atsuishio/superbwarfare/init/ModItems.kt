@@ -668,7 +668,7 @@ object ModItems {
     @JvmField val MAGAZINE_EXTEND_PRO = registerAttachment("magazine_extend_pro", Rarity.EPIC)
     // @formatter:on
 
-    // Barrel
+    // Muzzle
     // @formatter:off
     @JvmField val MEOWLENCER = registerAttachment("meowlencer", Rarity.RARE)
     @JvmField val HISSILENCER = registerAttachment("hissilencer", Rarity.RARE)

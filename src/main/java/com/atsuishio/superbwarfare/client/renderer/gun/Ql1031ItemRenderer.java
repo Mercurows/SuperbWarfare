@@ -80,6 +80,7 @@ public class Ql1031ItemRenderer extends CustomGunRenderer<Ql1031Item> {
                     if (data.attachment.get(AttachmentType.SCOPE) == 2 && !itemStack.getOrCreateTag().getBoolean("ScopeAlt") && (name.equals("hidden") || name.equals("qianzhunxingzu"))) {
                         bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
                     }
+                    // 这里的 "Barrel" 是旧 GeckoLib 模型里的骨骼名（枪口配件位），不是槽位标识
                     if (data.attachment.get(AttachmentType.SCOPE) == 3 && (bone.getName().endsWith("_hide3") || name.equals("qianzhunxingzu") || name.equals("Barrel"))) {
                         bone.setHidden(ClientEventHandler.zoomPos > 0.7 && ClientEventHandler.zoom);
                     }

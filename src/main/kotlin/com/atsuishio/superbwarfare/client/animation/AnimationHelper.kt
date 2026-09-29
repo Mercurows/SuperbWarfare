@@ -188,7 +188,7 @@ object AnimationHelper {
         if (name == "flare"
             && ClientEventHandler.fireRotTimer > 0
             && ClientEventHandler.fireRotTimer < 0.3
-            && data.attachment.get(AttachmentType.BARREL) != 2
+            && data.attachment.get(AttachmentType.MUZZLE) != 2
         ) {
             bone.scaleX = (size + 0.8 * size * (Math.random() - 0.5)).toFloat()
             bone.scaleY = (size + 0.8 * size * (Math.random() - 0.5)).toFloat()
