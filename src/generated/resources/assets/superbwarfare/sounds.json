@@ -323,6 +323,13 @@
       "superbwarfare:gun/awm/awm_veryfar"
     ]
   },
+  "bayonet_hit": {
+    "sounds": [
+      "superbwarfare:bayonet_hit_1",
+      "superbwarfare:bayonet_hit_2",
+      "superbwarfare:bayonet_hit_3"
+    ]
+  },
   "bl_132_fire_1p": {
     "sounds": [
       "superbwarfare:bl_132/bl_132_fire_1p_01",
