@@ -322,6 +322,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.MEOWLENCER)
         simpleItem(ModItems.HISSILENCER)
         simpleItem(ModItems.SILAOWUNCER)
+        simpleItem(ModItems.MILENCER)
         simpleItem(ModItems.RU_SILENCER)
         simpleItem(ModItems.MUZZLE_BRAKE_RU)
         simpleItem(ModItems.MUZZLE_BRAKE_AR)

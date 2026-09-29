@@ -1906,6 +1906,14 @@
       "superbwarfare:warning/missile"
     ]
   },
+  "miya": {
+    "sounds": [
+      "superbwarfare:miya/a",
+      "superbwarfare:miya/mi",
+      "superbwarfare:miya/nya",
+      "superbwarfare:miya/ya"
+    ]
+  },
   "mk_14_bolt": {
     "sounds": [
       "superbwarfare:gun/mk_14/mk_14_bolt"

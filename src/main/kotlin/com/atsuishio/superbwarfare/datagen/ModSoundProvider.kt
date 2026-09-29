@@ -149,6 +149,9 @@ class ModSoundProvider(output: PackOutput, existingFileHelper: ExistingFileHelpe
         register("laowu", "laowu/laowu_1", "laowu/laowu_2", "laowu/laowu_3")
         register("laowu_single", "laowu/laowu_1s", "laowu/laowu_2s", "laowu/laowu_3s")
 
+        // -------------------- miya --------------------
+        register("miya", "miya/a", "miya/mi", "miya/nya", "miya/ya")
+
         // -------------------- mk_42 --------------------
         register(
             "mk_42_fire_1p", "mk_42/mk_42_fire_1p_1", "mk_42/mk_42_fire_1p_2", "mk_42/mk_42_fire_1p_3",

@@ -1,0 +1,25 @@
+{
+  "Slot": "Muzzle",
+  "Level": 1,
+  "Bone": "muzzle_pos",
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 1.0
+    }
+  ],
+  "IsSilenced": true,
+  "Override": {
+    "SoundInfo": {
+      "Fire1P": "superbwarfare:miya",
+      "Fire3P": "superbwarfare:miya",
+      "Fire3PFar": "superbwarfare:miya",
+      "Fire3PVeryFar": "superbwarfare:miya",
+      "Fire1PSilent": "superbwarfare:miya",
+      "Fire3PSilent": "superbwarfare:miya",
+      "Fire3PFarSilent": "superbwarfare:miya",
+      "Fire3PVeryFarSilent": "superbwarfare:miya"
+    }
+  }
+}
