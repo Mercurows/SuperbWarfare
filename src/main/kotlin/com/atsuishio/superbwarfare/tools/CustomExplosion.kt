@@ -141,11 +141,15 @@ open class CustomExplosion @JvmOverloads constructor(
     }
 
     override fun explode() {
-        this.level.gameEvent(this.entity, GameEvent.EXPLODE, Vec3(this.x, this.y, this.z))
         if (ExplosionConfig.EXPLOSION_DESTROY.get() && this.interactsWithBlocks()) {
-            explodeBlocks()
+            this.level.gameEvent(this.entity, GameEvent.EXPLODE, Vec3(this.x, this.y, this.z))
+
+            if (this.interactsWithBlocks()) {
+                explodeBlocks()
+            }
+
+            damageEntities()
         }
-        damageEntities()
     }
 
     /**
@@ -154,7 +158,6 @@ open class CustomExplosion @JvmOverloads constructor(
      * 从 [explode] 拆出来是为了让"是否允许破坏方块"只在一处判断：
      * 调用方已经确认过 [interactsWithBlocks]。
      */
-    @Suppress("DEPRECATION")
     open fun explodeBlocks() {
         val center = Vec3(this.x, this.y, this.z)
         val random = level.random
@@ -283,7 +286,7 @@ open class CustomExplosion @JvmOverloads constructor(
                     val dz = (blockpos.center.z - center.z).toFloat()
                     val flattenedDistSqr = (dx * dx + dz * dz) + dy * dy * 3.0f
                     val distanceSqr = dx * dx + dy * dy + dz * dz
-                    var force = this@CustomExplosion.radius * (0.25f + random.nextFloat() * 0.15f) * 0.02f * damage
+                    var force = this.radius * (0.25f + random.nextFloat() * 0.15f) * 0.02f * damage
 
                     if (distanceSqr > radius * radius * 0.15) {
                         effectiveRadius += (random.nextDouble() - 0.5) * radius * 0.2
@@ -291,7 +294,8 @@ open class CustomExplosion @JvmOverloads constructor(
                     val flattenedRadius = effectiveRadius * 1.2f
                     if (flattenedDistSqr > flattenedRadius * flattenedRadius) continue
 
-                    val blockState = this@CustomExplosion.level.getBlockState(blockpos)
+                    val actualPos = blockpos
+                    val blockState = this.level.getBlockState(actualPos)
                     var resistance = blockState.block.defaultDestroyTime()
                     if (blockState.soundType === SoundType.METAL || blockState.soundType === SoundType.COPPER || blockState.soundType === SoundType.NETHERITE_BLOCK) {
                         resistance *= 3f
@@ -301,12 +305,12 @@ open class CustomExplosion @JvmOverloads constructor(
                         1.0
                     )).toFloat()
 
-                    if (resistance != -1f && force > resistance && this@CustomExplosion.damageCalculator.shouldBlockExplode(
-                            this@CustomExplosion, this@CustomExplosion.level, blockpos, blockState, force
+                    if (resistance != -1f && force > resistance && this.damageCalculator.shouldBlockExplode(
+                            this, this.level, actualPos, blockState, force
                         )
                     ) {
-                        this@CustomExplosion.toBlow.add(blockpos.immutable())
-                        qualified.add(blockpos.immutable())
+                        this.toBlow.add(actualPos.immutable())
+                        qualified.add(actualPos.immutable())
                     }
                 }
 
@@ -314,7 +318,7 @@ open class CustomExplosion @JvmOverloads constructor(
                 processBlockList(qualified)
 
                 // Clear toBlow so the next tier starts fresh
-                this@CustomExplosion.toBlow.clear()
+                this.toBlow.clear()
             }
 
             if (tier <= 0) {
@@ -339,7 +343,7 @@ open class CustomExplosion @JvmOverloads constructor(
 
     /** 范围内的实体伤害与冲击波；与是否破坏方块无关。 */
     open fun damageEntities() {
-        val diameter = this.radius * 2f
+        val diameter = this.radius * 2
         val x0 = Mth.floor(this.x - diameter.toDouble() - 1)
         val x1 = Mth.floor(this.x + diameter.toDouble() + 1)
         val y0 = Mth.floor(this.y - diameter.toDouble() - 1)
