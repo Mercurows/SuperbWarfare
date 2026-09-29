@@ -1195,9 +1195,8 @@ class GunData private constructor(
     /**
      * Gets attachments allowed on [slot] from the gun data definition.
      *
-     * 声明本身支持四种写法（`#标签` / `!排除` / 覆写对象，见 [AvailableAttachments]），
-     * 但**解析只发生在一处**：这个方法拿到的是已经展开成具体配件 id 的列表，
-     * 所以调用方（改装界面、指令、`Attachment.cycle`）完全不必关心数据里写的是哪一种。
+     * 声明支持 `#标签` / `!排除` / 覆写对象（见 [AvailableAttachments]），但解析只发生在一处，
+     * 这里给出的已经是展开后的具体 id 列表。
      *
      * 已经装了会和它互斥的配件时（同一挂点组，或任一方在 `ConflictsWith` 里点了名），
      * 这里会一并过滤掉：规则收在 `AttachmentSlots.conflicts`，
@@ -1228,13 +1227,7 @@ class GunData private constructor(
             .filter { attachment.conflict(slot, AttachmentDefinition.from(it)) == null }
     }
 
-    /**
-     * Returns the weapon-level option for [id] installed in [slot], if declared.
-     *
-     * 条目可以来自 `AvailableAttachments` 里的**直接声明**，也可以来自 `#标签` 展开
-     * （见 [AvailableAttachments]）—— 两种写法在这里没有区别，标签展开出来的条目
-     * 没有自己的覆写，所以只会命中 [AttachmentOption.override] 为 `null` 的那一份。
-     */
+    /** Returns the weapon-level option for [id] installed in [slot], if declared. */
     fun attachmentOption(slot: AttachmentType, id: ResourceLocation): AttachmentOption? {
         val entry = AvailableAttachments.resolve(this, slot).firstOrNull { it.id == id } ?: return null
         return AttachmentOption(id.toString(), entry.override)

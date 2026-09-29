@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.data.gun.ammo_consumer_strategy
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
 import com.atsuishio.superbwarfare.data.gun.AmmoSource
 import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.ammo_consumer_strategy.EnergyAmmoStrategy.consume
 import com.atsuishio.superbwarfare.data.gun.ammo_consumer_strategy.EnergyAmmoStrategy.count
 import com.atsuishio.superbwarfare.data.gun.ammo_consumer_strategy.EnergyAmmoStrategy.withdraw
@@ -45,25 +46,19 @@ object EnergyAmmoStrategy : AmmoConsumeStrategy() {
 
     // ---------------------------------------------------------------- 形态判定
 
-    /**
-     * 是否为弹匣型能量武器：有弹匣且声明了 [GunProp.FUEL_PER_AMMO] 换算比例。
-     *
-     * 用 [GunData.getDefault] 而不是 `get(...)`：本策略会在 PMC 计算流水线内部被读取
-     * （`AmmoConsumer` 的覆盖层），而重入的 `get()` 受 `GunData.rebuilding` 保护会提前返回
-     * **未完成**的结果。`Magazine` / `FuelPerAmmo` 都不参与 Perk / 配件改写，读基线即正确值。
-     */
-    private fun isMagazine(data: GunData) = (data.getDefault().magazine.firstOrNull() ?: 0) > 0
-            && data.getDefault().fuelPerAmmo > 0
+    /** 是否为弹匣型能量武器：有弹匣且声明了 [GunProp.FUEL_PER_AMMO] 换算比例。 */
+    private fun isMagazine(data: GunData) = data.get(GunProp.MAGAZINE) > 0
+            && data.get(GunProp.FUEL_PER_AMMO) > 0
 
     /**
      * 「其他类型弹药 → 弹药」的换算比例：1 发弹匣弹药值多少 FE，至少为 1 以免除零。
      *
      * 弹匣型读 [GunProp.FUEL_PER_AMMO]；背包型没有弹匣，比例退化为
-     * `AmmoCostPerShoot`（每发就是这么多 FE），这样两条分支共用同一套乘除。
+     * [GunProp.AMMO_COST_PER_SHOOT]（每发就是这么多 FE），这样两条分支共用同一套乘除。
      */
     private fun fuelPerAmmo(data: GunData): Int {
-        val fuel = data.getDefault().fuelPerAmmo
-        return if (fuel > 0) fuel else data.getDefault().ammoCostPerShoot.coerceAtLeast(1)
+        val fuel = data.get(GunProp.FUEL_PER_AMMO)
+        return if (fuel > 0) fuel else data.get(GunProp.AMMO_COST_PER_SHOOT).coerceAtLeast(1)
     }
 
     /**
