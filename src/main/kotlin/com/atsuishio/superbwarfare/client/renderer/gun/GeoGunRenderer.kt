@@ -594,6 +594,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         packedOverlay: Int
     ) {
         renderMagazine(stack, model)
+        renderBulletChain(stack, model)
         renderProjectileBone(stack, model)
         renderScopeMount(stack, model)
         renderScopeAttachment(stack, model, poseStack, bufferSource, packedLight, packedOverlay)
@@ -732,6 +733,21 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
     open fun renderMagazine(stack: ItemStack, model: GeoGunModel) {
         model.showMagazineBone(resolveMagazineBone(stack))
+    }
+
+    /**
+     * 按剩余弹量画弹链上的子弹（`bullet_1`……）：模型里有几发 `bullet_*` 骨骼，打到只剩几发就藏掉几发，
+     * 所以枪只需要在模型里把弹链子弹按 `bullet_1` 起编号，**不用**自己声明"打到几发以下开始藏"。
+     *
+     * 换弹动画的时间轴只管一件事：`HIDE_BULLET_CHAIN` 那个动作点之后整条弹链换新、重新画满
+     * （`HideBulletChain` 置 false）。它与 [GunData.reloading] 相与，是因为那个状态也可能停在
+     * false（换弹中途被打断）而"弹链是新换的"只在换弹过程中成立 —— 非换弹时一律按弹量算，
+     * 状态卡住也不会让空弹链看着是满的。
+     */
+    open fun renderBulletChain(stack: ItemStack, model: GeoGunModel) {
+        val data = from(stack)
+        val freshBelt = data.reloading() && !data.hideBulletChain.get()
+        model.showBulletChainBones(data.ammo.get(), freshBelt)
     }
 
     /**

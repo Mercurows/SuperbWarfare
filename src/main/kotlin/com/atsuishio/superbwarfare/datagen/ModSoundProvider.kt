@@ -315,8 +315,8 @@ class ModSoundProvider(output: PackOutput, existingFileHelper: ExistingFileHelpe
 
         // -------------------- gun/m_2_hb --------------------
         group(
-            "gun/m_2_hb", "m_2_hb_fire_1p", "m_2_hb_fire_3p", "m_2_hb_far", "m_2_hb_veryfar", "m_2_hb_reload_normal",
-            "m_2_hb_reload_empty",
+            "gun/m_2_hb", "m_2_hb_fire_1p", "m_2_hb_fire_3p", "m_2_hb_far", "m_2_hb_veryfar", "m_2_hb_mag_in",
+            "m_2_hb_mag_out", "m_2_hb_open", "m_2_hb_close", "m_2_hb_bullet_in", "m_2_hb_bolt",
         )
 
         // -------------------- gun/m_4 --------------------

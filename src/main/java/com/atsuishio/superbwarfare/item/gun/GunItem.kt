@@ -407,7 +407,6 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     }
 
     open fun useSpecialFireProcedure(data: GunData) = false
-    open fun hideBulletChainBelowShots() = -1
 
     /**
      * 算出这把枪开一枪时**射手自己**该听到的音效（第一人称音），口径与旧的
@@ -469,9 +468,9 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             data.bolt.needed.set(true)
         }
 
-        if (data.currentAvailableShots(ammoSupplier) <= hideBulletChainBelowShots()) {
-            data.hideBulletChain.set(true)
-        }
+        // 打完这一发，弹链就不再是换弹动画里刚换上的那一条了：渲染那边重新按剩余弹量画
+        // （弹量够时这个状态本来就藏不了任何一发，所以这里不需要判阈值）。
+        data.hideBulletChain.set(true)
     }
 
     /**

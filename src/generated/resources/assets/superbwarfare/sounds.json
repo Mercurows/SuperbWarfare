@@ -1470,6 +1470,21 @@
       "superbwarfare:vehicle/m_1a_2/m_1a_2_veryfar"
     ]
   },
+  "m_2_hb_bolt": {
+    "sounds": [
+      "superbwarfare:gun/m_2_hb/m_2_hb_bolt"
+    ]
+  },
+  "m_2_hb_bullet_in": {
+    "sounds": [
+      "superbwarfare:gun/m_2_hb/m_2_hb_bullet_in"
+    ]
+  },
+  "m_2_hb_close": {
+    "sounds": [
+      "superbwarfare:gun/m_2_hb/m_2_hb_close"
+    ]
+  },
   "m_2_hb_far": {
     "sounds": [
       "superbwarfare:gun/m_2_hb/m_2_hb_far"
@@ -1485,14 +1500,19 @@
       "superbwarfare:gun/m_2_hb/m_2_hb_fire_3p"
     ]
   },
-  "m_2_hb_reload_empty": {
+  "m_2_hb_mag_in": {
     "sounds": [
-      "superbwarfare:gun/m_2_hb/m_2_hb_reload_empty"
+      "superbwarfare:gun/m_2_hb/m_2_hb_mag_in"
     ]
   },
-  "m_2_hb_reload_normal": {
+  "m_2_hb_mag_out": {
     "sounds": [
-      "superbwarfare:gun/m_2_hb/m_2_hb_reload_normal"
+      "superbwarfare:gun/m_2_hb/m_2_hb_mag_out"
+    ]
+  },
+  "m_2_hb_open": {
+    "sounds": [
+      "superbwarfare:gun/m_2_hb/m_2_hb_open"
     ]
   },
   "m_2_hb_veryfar": {

@@ -1,17 +1,56 @@
 {
-  "Model": {
-    "Animation": "superbwarfare:animations/m_2_hb.animation.json",
-    "Model": "superbwarfare:geo/m_2_hb.geo.json",
-    "Texture": "superbwarfare:textures/item/m_2_hb.png",
-    "LODModel": "superbwarfare:geo/lod/m_2_hb.geo.json",
-    "LODTexture": "superbwarfare:textures/item/lod/m_2_hb.png"
+  "Icon": "superbwarfare:textures/gun_icon/m_2_hb_icon.png",
+  "SlotIcon": "superbwarfare:textures/item/m_2_hb_icon.png",
+  "Animation": {
+    "Idle": "animation.m_2_hb.idle",
+    "Fire": "animation.m_2_hb.fire",
+    "ReloadNormal": "animation.m_2_hb.reload_normal",
+    "ReloadEmpty": "animation.m_2_hb.reload_empty",
+    "Edit": "animation.m_2_hb.edit",
+    "Melee": "animation.m_2_hb.hit"
   },
+  "ShootRecoil": {
+    "Offset": [1.0, 1.0, 1.5],
+    "Rotation": [0.8, 0.6, 0.5],
+    "ZoomRate": 1.0,
+    "Speed": 1.0
+  },
+  "Model": {
+    "Animation": "superbwarfare:animations/bedrock/gun/m_2_hb.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/m_2_hb.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/m_2_hb.png",
+    "LODModel": "superbwarfare:models/bedrock/gun_lod/m_2_hb.geo.json",
+    "LODTexture": "superbwarfare:textures/bedrock/gun_lod/m_2_hb.png"
+  },
+  "FlareSize": 1.7,
   "HideCrosshairWhenZoom": false,
-  "FlarePosition": [
-    0,
-    0.27,
-    2.95
-  ],
-  "FlareSize": 1.2,
-  "EjectShell": true
+  "HasSmoke": true,
+  "Smoke": {
+    "Size": 0.45,
+    "Growth": 0.25,
+    "Lifetime": 0.3,
+    "Speed": 0.4,
+    "Count": 2,
+    "Opacity": 0.9,
+    "Drag": 2,
+    "RandomSize": 0.05,
+    "RandomGrowth": 0.2,
+    "RandomLifetime": 0.2,
+    "RandomSpeed": 0.2,
+    "RandomOpacity": 0.1
+  },
+  "EjectShell": true,
+  "ShellEject": {
+    "BoneName": "shell",
+    "ShellModel": "superbwarfare:models/bedrock/shell/cal_50_shell.geo.json",
+    "ShellTexture": "superbwarfare:textures/bedrock/shell/cal_50_shell.png",
+    "Size": 1.0,
+    "InitialVelocity": [5.8, 3.2, -0.75],
+    "RandomVelocity": [0.7, 0.6, 0.3],
+    "Acceleration": [0, -16, 0],
+    "AngularVelocity": [-1800, -2000, 240],
+    "RandomAngle": [60, 60, 360],
+    "LivingTime": 0.8,
+    "MaxActive": 24
+  }
 }
