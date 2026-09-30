@@ -59,7 +59,7 @@ object GunEmissiveTextures : SimplePreparableReloadListener<Unit>() {
         val path = texture.path
         if (!path.endsWith(EXTENSION)) return null
 
-        val emissive = ResourceLocation(
+        val emissive = ResourceLocation.fromNamespaceAndPath(
             texture.namespace,
             path.substring(0, path.length - EXTENSION.length) + SUFFIX + EXTENSION
         )

@@ -1,15 +1,43 @@
 {
-  "Model": {
-    "Animation": "superbwarfare:animations/secondary_cataclysm.animation.json",
-    "Model": "superbwarfare:geo/secondary_cataclysm.geo.json",
-    "Texture": "superbwarfare:textures/item/secondary_cataclysm.png",
-    "LODModel": "superbwarfare:geo/lod/secondary_cataclysm.geo.json",
-    "LODTexture": "superbwarfare:textures/item/lod/secondary_cataclysm.png"
+  "Icon": "superbwarfare:textures/gun_icon/secondary_cataclysm_icon.png",
+  "SlotIcon": "superbwarfare:textures/item/secondary_cataclysm_icon.png",
+  "Animation": {
+    "Idle": "animation.secondary_cataclysm.idle",
+    "Fire": "animation.secondary_cataclysm.fire",
+    "Prepare": "animation.secondary_cataclysm.prepare",
+    "Iterative": "animation.secondary_cataclysm.iterative_load",
+    "Finish": "animation.secondary_cataclysm.finish",
+    "Edit": "animation.secondary_cataclysm.edit",
+    "Melee": "animation.secondary_cataclysm.bayonet_hit"
   },
-  "FlarePosition": [
-    0,
-    0,
-    1.10375
-  ],
-  "FlareSize": 0.6
+  "ShootRecoil": {
+    "Offset": [1.0, 1.0, 3.5],
+    "Rotation": [1.1, 0.6, 0.5],
+    "ZoomRate": 0.9,
+    "Speed": 1.0
+  },
+  "ZoomingTranslateMultiply": 0.8,
+  "Model": {
+    "Animation": "superbwarfare:animations/bedrock/gun/secondary_cataclysm.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/secondary_cataclysm.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/secondary_cataclysm.png",
+    "LODModel": "superbwarfare:models/bedrock/gun_lod/secondary_cataclysm.geo.json",
+    "LODTexture": "superbwarfare:textures/bedrock/gun_lod/secondary_cataclysm.png"
+  },
+  "FlareSize": 0.4,
+  "HasSmoke": true,
+  "Smoke": {
+    "Size": 0.15,
+    "Growth": 0.25,
+    "Lifetime": 0.3,
+    "Speed": 0.4,
+    "Count": 2,
+    "Opacity": 0.9,
+    "Drag": 2,
+    "RandomSize": 0.05,
+    "RandomGrowth": 0.2,
+    "RandomLifetime": 0.2,
+    "RandomSpeed": 0.2,
+    "RandomOpacity": 0.1
+  }
 }

@@ -2665,6 +2665,11 @@
       "superbwarfare:gun/rpk/rpk_veryfar"
     ]
   },
+  "secondary_cataclysm_ammo_in": {
+    "sounds": [
+      "superbwarfare:gun/secondary_cataclysm/secondary_cataclysm_ammo_in"
+    ]
+  },
   "secondary_cataclysm_end": {
     "sounds": [
       "superbwarfare:gun/secondary_cataclysm/secondary_cataclysm_end"
@@ -2700,14 +2705,14 @@
       "superbwarfare:gun/secondary_cataclysm/secondary_cataclysm_charge_fire_3p"
     ]
   },
-  "secondary_cataclysm_loop": {
+  "secondary_cataclysm_handle_1": {
     "sounds": [
-      "superbwarfare:gun/secondary_cataclysm/secondary_cataclysm_loop"
+      "superbwarfare:gun/secondary_cataclysm/secondary_cataclysm_handle_1"
     ]
   },
-  "secondary_cataclysm_prepare_load": {
+  "secondary_cataclysm_handle_2": {
     "sounds": [
-      "superbwarfare:gun/secondary_cataclysm/secondary_cataclysm_start"
+      "superbwarfare:gun/secondary_cataclysm/secondary_cataclysm_handle_2"
     ]
   },
   "secondary_cataclysm_veryfar": {
