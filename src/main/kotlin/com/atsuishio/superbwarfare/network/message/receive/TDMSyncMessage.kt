@@ -11,6 +11,6 @@ import kotlinx.serialization.Serializable
 @RegisterPacket
 data class TDMSyncMessage(@JvmField val data: Set<String>) : ClientPacketPayload() {
     override fun PayloadContext.handler() {
-        ClientEventHandler.tdmSavedData = TDMSavedData(data)
+        enqueueWork { ClientEventHandler.tdmSavedData = TDMSavedData(data) }
     }
 }

@@ -60,7 +60,7 @@ class TDMSavedData : SavedData {
 
     fun sync() {
         this.setDirty()
-        sendPacketToAll(TDMSyncMessage(this.entities))
+        sendPacketToAll(TDMSyncMessage(Sets.newHashSet(this.entities)))
     }
 
     @EventBusSubscriber
@@ -105,7 +105,8 @@ class TDMSavedData : SavedData {
                 ), FILE_ID
             )
             if (data == null) return
-            sendPacketTo(player, TDMSyncMessage(data.entities))
+            // 同样传快照：玩家登录时若刚好有人在跑 /sbw tdm，活集合可能在编码期间被改动
+            sendPacketTo(player, TDMSyncMessage(Sets.newHashSet(data.entities)))
         }
     }
 }
