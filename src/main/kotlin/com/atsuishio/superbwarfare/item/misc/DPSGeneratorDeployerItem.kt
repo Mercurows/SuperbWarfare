@@ -66,16 +66,18 @@ class DPSGeneratorDeployerItem : Item(Properties()) {
                 return InteractionResult.FAIL
             }
 
-            if (ModEntities.DPS_GENERATOR.get().spawn(
-                    level,
-                    itemstack,
-                    pContext.player,
-                    pos,
-                    MobSpawnType.SPAWN_EGG,
-                    true,
-                    blockpos != pos && direction == Direction.UP
-                ) != null
-            ) {
+            val entity = ModEntities.DPS_GENERATOR.get().spawn(
+                level,
+                itemstack,
+                pContext.player,
+                pos,
+                MobSpawnType.SPAWN_EGG,
+                true,
+                blockpos != pos && direction == Direction.UP
+            )
+            if (entity != null) {
+                // 放置后让它面朝玩家（EntityType.create 里默认是随机朝向）
+                pContext.player?.let { entity.facePlayer(it) }
                 itemstack.shrink(1)
                 level.gameEvent(pContext.player, GameEvent.ENTITY_PLACE, blockpos)
             }
@@ -117,6 +119,7 @@ class DPSGeneratorDeployerItem : Item(Properties()) {
                 if (entity == null) {
                     return InteractionResultHolder.pass<ItemStack?>(itemstack)
                 } else {
+                    entity.facePlayer(player)
                     if (!player.abilities.instabuild) {
                         itemstack.shrink(1)
                     }
