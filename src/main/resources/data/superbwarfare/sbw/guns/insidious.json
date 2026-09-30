@@ -1,7 +1,7 @@
 {
-  "Spread": 4,
+  "Spread": 5,
   "RecoilX": 0.0015,
-  "RecoilY": 0.015,
+  "RecoilY": 0.008,
   "Damage": 11,
   "Headshot": 1.5,
   "Velocity": 20,
@@ -39,11 +39,11 @@
   ],
   "DefaultFireMode": "Burst",
   "BurstAmount": 4,
-  "EmptyReloadTime": 56,
+  "EmptyReloadTime": 54,
   "BypassesArmor": 0.4,
   "SoundRadius": 12,
   "RPM": 900,
-  "BurstCooldown": 25,
+  "BurstCooldown": 20,
   "GunType": "Rifle",
   "AvailableFireModes": [
     "Burst"
@@ -77,15 +77,15 @@
     "!superbwarfare:longer_wire",
     "!superbwarfare:cupid_arrow"
   ],
+  "AvailableAttachments": {
+    "Charm": [
+      "#superbwarfare:attachment/charm"
+    ]
+  },
   "SoundInfo": {
     "Fire1P": "superbwarfare:insidious_fire_1p",
     "Fire3P": "superbwarfare:insidious_fire_3p",
     "Fire3PFar": "superbwarfare:insidious_far",
-    "Fire3PVeryFar": "superbwarfare:insidious_veryfar",
-    "ReloadNormal": "superbwarfare:insidious_reload_empty",
-    "ReloadEmpty": "superbwarfare:insidious_reload_empty",
-    "CancellableSounds": [
-      "superbwarfare:insidious_reload_empty"
-    ]
+    "Fire3PVeryFar": "superbwarfare:insidious_veryfar"
   }
 }

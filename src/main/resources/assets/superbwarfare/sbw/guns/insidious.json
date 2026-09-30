@@ -1,19 +1,41 @@
 {
-  "Model": {
-    "Animation": "superbwarfare:animations/insidious.animation.json",
-    "Model": "superbwarfare:geo/insidious.geo.json",
-    "Texture": "superbwarfare:textures/item/insidious.png",
-    "LODModel": "superbwarfare:geo/lod/insidious.geo.json",
-    "LODTexture": "superbwarfare:textures/item/lod/insidious.png"
-  },
+  "Icon": "superbwarfare:textures/gun_icon/insidious_icon.png",
+  "SlotIcon": "superbwarfare:textures/item/insidious_icon.png",
   "Animation": {
     "Idle": "animation.insidious.idle",
-    "Reload": "animation.insidious.reload"
+    "Fire": "animation.insidious.fire",
+    "ReloadEmpty": "animation.insidious.reload",
+    "Edit": "animation.insidious.edit",
+    "Melee": "animation.insidious.hit"
   },
-  "FlarePosition": [
-    0,
-    0,
-    1
-  ],
-  "FlareSize": 0.38
+  "ShootRecoil": {
+    "Offset": [0.7, 1.0, 0.5],
+    "Rotation": [0.2, 0.2, 0.5],
+    "ZoomRate": 0.5,
+    "Speed": 1.0
+  },
+  "Model": {
+    "Animation": "superbwarfare:animations/bedrock/gun/insidious.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/insidious.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/insidious.png",
+    "LODModel": "superbwarfare:models/bedrock/gun_lod/insidious.geo.json",
+    "LODTexture": "superbwarfare:textures/bedrock/gun_lod/insidious.png"
+  },
+  "Script": "superbwarfare:scripts/guns/insidious.js",
+  "FlareSize": 0.3,
+  "HasSmoke": true,
+  "Smoke": {
+    "Size": 0.15,
+    "Growth": 0.25,
+    "Lifetime": 0.3,
+    "Speed": 0.4,
+    "Count": 2,
+    "Opacity": 0.9,
+    "Drag": 2,
+    "RandomSize": 0.05,
+    "RandomGrowth": 0.2,
+    "RandomLifetime": 0.2,
+    "RandomSpeed": 0.2,
+    "RandomOpacity": 0.1
+  }
 }
