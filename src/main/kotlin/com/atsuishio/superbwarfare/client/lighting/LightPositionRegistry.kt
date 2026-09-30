@@ -138,6 +138,49 @@ object LightPositionRegistry {
     fun isEmpty(): Boolean = active.isEmpty()
 
     /**
+     * Immediately removes the dynamic light at a position.
+     *
+     * Used when a projectile disappears so its own trail light does not linger
+     * at the position where it was removed.
+     *
+     * @param packedPos [BlockPos.asLong] of the light source
+     */
+    @JvmStatic
+    fun removeSpark(packedPos: Long) {
+        val removed = sparks.remove(packedPos)
+        val wasActive = active.remove(packedPos)
+        if (removed == 0L && !wasActive) return
+        // Force the engine to drop the cached emission value
+        Minecraft.getInstance().level?.lightEngine?.checkBlock(BlockPos.of(packedPos))
+    }
+
+    /**
+     * Immediately removes all dynamic lights within [radius] blocks of [center].
+     *
+     * @param center center block pos
+     * @param radius removal radius in blocks (0 removes only the center)
+     */
+    @JvmStatic
+    fun removeAround(center: BlockPos, radius: Int) {
+        val r = radius.coerceAtLeast(0)
+        if (r == 0) {
+            removeSpark(center.asLong())
+            return
+        }
+
+        for (dx in -r..r) {
+            for (dy in -r..r) {
+                for (dz in -r..r) {
+                    val dist = kotlin.math.sqrt((dx * dx + dy * dy + dz * dz).toDouble()).toInt()
+                    if (dist <= r) {
+                        removeSpark(BlockPos.asLong(center.x + dx, center.y + dy, center.z + dz))
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Advances internal tick counter and purges expired sparks.
      */
     @JvmStatic
@@ -145,8 +188,9 @@ object LightPositionRegistry {
         currentTick++
         if (sparks.isEmpty()) return
 
-        val level = Minecraft.getInstance().level ?: return
-        val engine = level.lightEngine
+        // 注意：即使当前拿不到客户端世界（切换维度 / 退出世界等），过期光源也必须继续清理，
+        // 否则它们会一直留在表里被光照读取命中，表现为"凭空多出来的光源"。
+        val engine = Minecraft.getInstance().level?.lightEngine
         expiredBuf.clear()
         val curLow = currentTick and 0xFFFFL
 
@@ -163,7 +207,7 @@ object LightPositionRegistry {
                 // Re-queue a lighting check every tick while the spark is alive.
                 // Without this, the engine may serve a cached value from before
                 // the spark was registered, making the flash invisible.
-                engine.checkBlock(BlockPos.of(entry.longKey))
+                engine?.checkBlock(BlockPos.of(entry.longKey))
             }
         }
 
@@ -173,7 +217,7 @@ object LightPositionRegistry {
                 sparks.remove(key)
                 active.remove(key)
                 // Final check forces the engine to clear the cached emission value
-                engine.checkBlock(BlockPos.of(key))
+                engine?.checkBlock(BlockPos.of(key))
             }
             expiredBuf.clear()
         }
