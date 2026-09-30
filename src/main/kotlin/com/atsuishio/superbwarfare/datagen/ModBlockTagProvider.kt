@@ -67,6 +67,7 @@ class ModBlockTagProvider(
             .addTag(BlockTags.MINEABLE_WITH_SHOVEL)
             .addTag(BlockTags.MINEABLE_WITH_AXE)
             .addTag(BlockTags.MINEABLE_WITH_HOE)
+            .addTag(BlockTags.SWORD_EFFICIENT)
 
         this.tag(ModTags.Blocks.SOFT_COLLISION)
             .addTag(BlockTags.LEAVES)

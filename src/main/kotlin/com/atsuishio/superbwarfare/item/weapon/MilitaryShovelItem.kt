@@ -21,6 +21,7 @@ import net.minecraft.world.item.*
 import net.minecraft.world.item.component.Tool
 import net.minecraft.world.item.context.UseOnContext
 import net.minecraft.world.level.block.Block
+import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.LevelEvent
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.gameevent.GameEvent
@@ -32,8 +33,9 @@ import net.neoforged.neoforge.common.ItemAbilities
 import net.neoforged.neoforge.common.ItemAbility
 
 open class MilitaryShovelItem :
-    AxeItem(
+    DiggerItem(
         ModItemTier.CEMENTED_CARBIDE,
+        ModTags.Blocks.MINEABLE_WITH_MILITARY_SHOVEL,
         CustomDamageProperty(810).rarity(Rarity.RARE)
             .component(
                 DataComponents.TOOL, Tool(
@@ -61,6 +63,20 @@ open class MilitaryShovelItem :
         )
     }
 
+    override fun getDestroySpeed(stack: ItemStack, state: BlockState): Float {
+        val speed = if (state.`is`(ModTags.Blocks.MINEABLE_WITH_MILITARY_SHOVEL)) {
+            ModItemTier.CEMENTED_CARBIDE.speed
+        } else {
+            1f
+        }
+        return speed * (if (state.`is`(Blocks.COBWEB)) 3f else 1f)
+    }
+
+    override fun isCorrectToolForDrops(stack: ItemStack, state: BlockState): Boolean {
+        return state.`is`(ModTags.Blocks.MINEABLE_WITH_MILITARY_SHOVEL) &&
+                !state.`is`(ModItemTier.CEMENTED_CARBIDE.incorrectBlocksForDrops)
+    }
+
     override fun canPerformAction(
         stack: ItemStack,
         itemAbility: ItemAbility
@@ -75,50 +91,61 @@ open class MilitaryShovelItem :
         val level = context.level
         val blockpos = context.clickedPos
         val player = context.player ?: return InteractionResult.PASS
-
         val blockstate = level.getBlockState(blockpos)
-        var resultToSet = getAxeResult(blockstate, context)
 
-        if (resultToSet == null) {
-            if (player.isShiftKeyDown) {
-                val hoeRes = level.getBlockState(blockpos).getToolModifiedState(context, ItemAbilities.HOE_TILL, false)
-                    ?: return InteractionResult.PASS
+        // 斧：去皮 / 刮削 / 去蜡（音效已在 getAxeResult 内按原版方式播放）
+        getAxeResult(blockstate, context)?.let { return applyModifiedState(context, it) }
 
-                level.playSound(player, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0f, 1.0f)
-                if (!level.isClientSide) {
-                    HoeItem.changeIntoState(hoeRes).accept(context)
-                }
-            } else {
-                if (context.clickedFace == Direction.DOWN) {
-                    return InteractionResult.PASS
-                }
-                val foundResult = blockstate.getToolModifiedState(context, ItemAbilities.SHOVEL_FLATTEN, false)
-                if (foundResult != null && level.isEmptyBlock(blockpos.above())) {
-                    level.playSound(player, blockpos, SoundEvents.SHOVEL_FLATTEN, SoundSource.BLOCKS, 1.0F, 1.0F)
-                    resultToSet = foundResult
-                } else {
-                    resultToSet = blockstate.getToolModifiedState(context, ItemAbilities.SHOVEL_DOUSE, false)
-                    if (resultToSet != null && !level.isClientSide) {
-                        level.levelEvent(null, LevelEvent.SOUND_EXTINGUISH_FIRE, blockpos, 0)
-                    }
-                }
+        if (player.isShiftKeyDown) {
+            // 锄：耕地
+            val hoeRes = blockstate.getToolModifiedState(context, ItemAbilities.HOE_TILL, false)
+                ?: return InteractionResult.PASS
 
-                if (resultToSet == null) {
-                    return InteractionResult.PASS
-                }
+            level.playSound(player, blockpos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0f, 1.0f)
+            if (!level.isClientSide) {
+                HoeItem.changeIntoState(hoeRes).accept(context)
+                context.itemInHand.hurtAndBreak(1, player, LivingEntity.getSlotForHand(context.hand))
+            }
+            return InteractionResult.sidedSuccess(level.isClientSide)
+        }
 
-                if (!level.isClientSide) {
-                    val stack = context.itemInHand
-                    if (player is ServerPlayer) {
-                        CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger(player, blockpos, stack)
-                    }
-                    level.setBlock(blockpos, resultToSet, Block.UPDATE_ALL_IMMEDIATE)
-                    level.gameEvent(GameEvent.BLOCK_CHANGE, blockpos, GameEvent.Context.of(player, resultToSet))
-                    stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(context.hand))
-                }
+        // 铲：铲平土路 / 熄灭营火
+        if (context.clickedFace == Direction.DOWN) {
+            return InteractionResult.PASS
+        }
+        var resultToSet = blockstate.getToolModifiedState(context, ItemAbilities.SHOVEL_FLATTEN, false)
+        if (resultToSet != null && level.isEmptyBlock(blockpos.above())) {
+            level.playSound(player, blockpos, SoundEvents.SHOVEL_FLATTEN, SoundSource.BLOCKS, 1.0F, 1.0F)
+        } else {
+            resultToSet = blockstate.getToolModifiedState(context, ItemAbilities.SHOVEL_DOUSE, false)
+            if (resultToSet != null && !level.isClientSide) {
+                level.levelEvent(null, LevelEvent.SOUND_EXTINGUISH_FIRE, blockpos, 0)
             }
         }
 
+        return resultToSet?.let { applyModifiedState(context, it) } ?: InteractionResult.PASS
+    }
+
+    /**
+     * 真正把方块替换掉，并补上进度触发、游戏事件与耐久消耗。
+     *
+     * 之前这里是写成 if (resultToSet == null) { ... } 的：斧头分支拿到 resultToSet 后
+     * 直接跳过了整段逻辑，所以原木只播了去皮音效、方块根本没变（锄头/铲平正常是因为它们走的是那个分支）。
+     */
+    private fun applyModifiedState(context: UseOnContext, state: BlockState): InteractionResult {
+        val level = context.level
+        if (!level.isClientSide) {
+            val stack = context.itemInHand
+            val player = context.player
+            if (player is ServerPlayer) {
+                CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger(player, context.clickedPos, stack)
+            }
+            level.setBlock(context.clickedPos, state, Block.UPDATE_ALL_IMMEDIATE)
+            level.gameEvent(GameEvent.BLOCK_CHANGE, context.clickedPos, GameEvent.Context.of(player, state))
+            if (player != null) {
+                stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(context.hand))
+            }
+        }
         return InteractionResult.sidedSuccess(level.isClientSide)
     }
 

@@ -13,10 +13,25 @@ enum class ModItemTier(
     private val speed: Float,
     private val damage: Float,
     private val enchantmentValue: Int,
-    private val repairIngredient: Supplier<Ingredient>
+    private val repairIngredient: Supplier<Ingredient>,
+    private val denyTag: TagKey<Block>,
 ) : Tier {
-    STEEL(400, 6F, 5F, 15, { Ingredient.of(ModItems.STEEL_INGOT.get()) }),
-    CEMENTED_CARBIDE(2000, 8F, 8F, 18, { Ingredient.of(ModItems.CEMENTED_CARBIDE_INGOT.get()) });
+    STEEL(
+        400,
+        6F,
+        5F,
+        15,
+        { Ingredient.of(ModItems.STEEL_INGOT.get()) },
+        BlockTags.INCORRECT_FOR_IRON_TOOL
+    ),
+    CEMENTED_CARBIDE(
+        2000,
+        8F,
+        8F,
+        18,
+        { Ingredient.of(ModItems.CEMENTED_CARBIDE_INGOT.get()) },
+        BlockTags.INCORRECT_FOR_DIAMOND_TOOL
+    );
 
     val ingredient by lazy { repairIngredient.get() }
 
@@ -37,7 +52,7 @@ enum class ModItemTier(
     }
 
     override fun getIncorrectBlocksForDrops(): TagKey<Block> {
-        return BlockTags.INCORRECT_FOR_IRON_TOOL
+        return denyTag
     }
 
     override fun getRepairIngredient(): Ingredient {

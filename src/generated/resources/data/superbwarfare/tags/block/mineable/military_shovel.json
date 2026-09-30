@@ -3,6 +3,7 @@
     "minecraft:cobweb",
     "#minecraft:mineable/shovel",
     "#minecraft:mineable/axe",
-    "#minecraft:mineable/hoe"
+    "#minecraft:mineable/hoe",
+    "#minecraft:sword_efficient"
   ]
 }
