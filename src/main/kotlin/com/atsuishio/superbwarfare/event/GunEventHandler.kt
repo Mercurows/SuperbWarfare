@@ -562,6 +562,16 @@ object GunEventHandler {
 
             postEvent(ReloadEvent.Post(shooter, data))
         }
+
+        // 临时修复（后续版本会重做这里）：单发装填流程的状态（各阶段计时器、stage、
+        // starter 标记）都只写在 GunData 的临时 tag 上，只有 save() 才会写回物品，
+        // 而 save() 在版本号没变化时会直接 return。主计时器 reload.time() 恒为 0 的
+        // 这类武器（如 Secondary Cataclysm）原本没有别的地方会一直顶版本号，
+        // 于是每 tick 的计时器推进可能整帧都不落盘，状态机就会卡在换弹里。
+        // 这里保证流程进行中每 tick 至少标脏一次，让 gunTick 末尾的 save() 真正写回。
+        if (reload.state() != ReloadState.NOT_RELOADING || reload.singleReloadStarter.shouldStart()) {
+            data.nbtVersion.invalidateState()
+        }
     }
 
     fun prepareLoad(shooter: Entity?, data: GunData) {
