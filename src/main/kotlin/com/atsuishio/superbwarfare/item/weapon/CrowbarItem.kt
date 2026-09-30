@@ -45,7 +45,7 @@ private val TIER = object : Tier {
     }
 }
 
-class CrowbarItem : SwordItem(
+open class CrowbarItem : SwordItem(
     TIER, Properties().stacksTo(1)
         .attributes(
             createAttributes(TIER, 2, -2f)
@@ -87,6 +87,7 @@ class CrowbarItem : SwordItem(
             if (vehicle.isWreck) {
                 return InteractionResult.PASS
             } else {
+                vehicle.clearTowingInfo()
                 for (item in vehicle.getRetrieveItems()) {
                     ItemHandlerHelper.giveItemToPlayer(player, item)
                 }
