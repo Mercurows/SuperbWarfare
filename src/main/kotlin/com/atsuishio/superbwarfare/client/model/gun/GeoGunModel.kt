@@ -1,7 +1,9 @@
 package com.atsuishio.superbwarfare.client.model.gun
 
+import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes
 import com.atsuishio.superbwarfare.client.renderer.ammo.AmmoDisplayRenderer
 import com.atsuishio.superbwarfare.client.renderer.ammo.AmmoReadout
+import com.atsuishio.superbwarfare.client.renderer.gun.GunEmissiveTextures
 import com.atsuishio.superbwarfare.resource.ModelResource
 import com.atsuishio.superbwarfare.resource.model.GunLODModelReloadListener
 import com.atsuishio.superbwarfare.resource.model.GunModelReloadListener
@@ -272,7 +274,8 @@ open class GeoGunModel @JvmOverloads constructor(
         packedLight: Int,
         packedOverlay: Int,
         readout: AmmoReadout = AmmoReadout(),
-        handAnchors: Map<HumanoidArm, Matrix4f> = emptyMap()
+        handAnchors: Map<HumanoidArm, Matrix4f> = emptyMap(),
+        emissiveTexture: ResourceLocation? = null
     ) {
         renderToBuffer(
             poseStack,
@@ -282,7 +285,8 @@ open class GeoGunModel @JvmOverloads constructor(
             packedLight,
             packedOverlay,
             readout,
-            handAnchors
+            handAnchors,
+            emissiveTexture
         )
     }
 
@@ -303,6 +307,11 @@ open class GeoGunModel @JvmOverloads constructor(
      * the *attachment* model's `lefthand_pos`/`righthand_pos` instead of the gun's (see
      * `GeoGunRenderer.resolveSubWeaponHandAnchors`). An arm missing from the map keeps following the
      * gun, so callers that do not know about sub-weapons can leave it empty.
+     *
+     * [emissiveTexture] is the gun's optional `_e` glow mask (see [GunEmissiveTextures]). When present
+     * the whole model is drawn a second time with `RenderType.eyes`, so only the texels the mask paints
+     * brighten. It is a texture rather than a pair of RenderTypes because the glow layer is always this
+     * one eyes pass; `null` (no `_e` file) draws exactly what the gun drew before the feature existed.
      */
     open fun renderToBuffer(
         poseStack: PoseStack,
@@ -312,7 +321,8 @@ open class GeoGunModel @JvmOverloads constructor(
         packedLight: Int,
         packedOverlay: Int,
         readout: AmmoReadout = AmmoReadout(),
-        handAnchors: Map<HumanoidArm, Matrix4f> = emptyMap()
+        handAnchors: Map<HumanoidArm, Matrix4f> = emptyMap(),
+        emissiveTexture: ResourceLocation? = null
     ) {
         hideBone(leftHandBoneIndex)
         hideBone(rightHandBoneIndex)
@@ -337,6 +347,29 @@ open class GeoGunModel @JvmOverloads constructor(
             1f,
             true
         )
+
+        // 自发光层：同一份几何、同一份骨骼姿态，只是换一套 RenderType 再画一遍，所以手臂遮蔽、弹链、
+        // 弹匣之类的可见性判断不必重做——上面那几处 `visible` 还留在骨骼上，`renderBone` 会照样跳过。
+        // 位置紧贴基础层是有意的：`BufferSource` 取到新的 RenderType 就会把上一段冲刷掉，
+        // 这两遍的四种 RenderType 互不相同，于是发光层一定**后画**、盖在基础层之上
+        // （`RenderType.eyes` 只写颜色、不写深度，不会把后面的东西挡掉）。
+        // 手臂、弹药条、弹药文字的绘制都排在这之后，仍然压在发光层上面。
+        if (emissiveTexture != null) {
+            baseModel.renderToBuffer(
+                instance,
+                poseStack,
+                bufferSource,
+                RenderType.eyes(emissiveTexture),
+                ModRenderTypes.polyMeshEyes(emissiveTexture),
+                packedLight,
+                packedOverlay,
+                1f,
+                1f,
+                1f,
+                1f,
+                true
+            )
+        }
 
         if (renderHand) {
             renderHands(poseStack, packedLight, bufferSource, handAnchors)

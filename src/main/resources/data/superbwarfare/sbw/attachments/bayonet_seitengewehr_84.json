@@ -41,7 +41,7 @@
         },
         "MaxTargets": 2,
         "Knockback": 0.3,
-        "Headshot": 1.25,
+        "Headshot": 1.5,
         "Legshot": 0.75
       }
     ],
