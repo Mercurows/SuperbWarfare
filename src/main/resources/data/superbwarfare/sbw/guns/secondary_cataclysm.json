@@ -67,6 +67,29 @@
         "ExplosionDamage": 0,
         "ExplosionRadius": 0
       }
+    },
+    {
+      "Ammo": "@ShotgunAmmo",
+      "AmmoSlot": "Default",
+      "Projectile": "superbwarfare:projectile",
+      "ProjectileBone": "grape_head",
+      "Override": {
+        "Spread": 3,
+        "ZoomSpreadRate": 0.8,
+        "Damage": 10,
+        "BypassesArmor": 0.2,
+        "ExplosionDamage": 0,
+        "ExplosionRadius": 0,
+        "ProjectileAmount": 8,
+        "Velocity": 10,
+        "RecoilX": 0.009,
+        "RecoilY": 0.018,
+        "Crosshair": "@GunDefault",
+        "GunType": "Shotgun",
+        "DamageReduce": {
+          "Type": "Shotgun"
+        }
+      }
     }
   ],
   "Icon": "superbwarfare:textures/gun_icon/secondary_cataclysm_icon.png",
