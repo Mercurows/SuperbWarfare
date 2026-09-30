@@ -89,6 +89,7 @@ open class CrowbarItem : SwordItem(
             if (vehicle.isWreck) {
                 return InteractionResult.PASS
             } else {
+                vehicle.clearTowingInfo()
                 for (item in vehicle.getRetrieveItems()) {
                     ItemHandlerHelper.giveItemToPlayer(player, item)
                 }
