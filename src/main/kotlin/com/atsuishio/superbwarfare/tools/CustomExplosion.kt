@@ -46,7 +46,7 @@ import kotlin.math.floor
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-class CustomExplosion @JvmOverloads constructor(
+open class CustomExplosion @JvmOverloads constructor(
     private val level: Level,
     private val entity: Entity?,
     source: DamageSource?,
@@ -140,192 +140,209 @@ class CustomExplosion @JvmOverloads constructor(
         return this
     }
 
-    @Suppress("DEPRECATION")
     override fun explode() {
         if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
             this.level.gameEvent(this.entity, GameEvent.EXPLODE, Vec3(this.x, this.y, this.z))
 
-            val center = Vec3(this.x, this.y, this.z)
-            val random = level.random
-
-            // ================================================================
-            // Pre-compute decreasing tier boundaries to keep block count per
-            // tick balanced. Outer shells have 4πr² more volume, so they need
-            // smaller tier sizes. Tier sizes: 25, 23, 21, …, min 5.
-            // ================================================================
-            val initialTierSize = 25.0
-            val tierDecrease = 2.0
-            val minTierSize = 2.0
-
-            val tierBoundaries = mutableListOf(0.0)
-            var currentBoundary = 0.0
-            var currentSize = initialTierSize
-            while (currentBoundary < radius * 2.0) {
-                currentBoundary += currentSize
-                tierBoundaries.add(currentBoundary)
-                currentSize = (currentSize - tierDecrease).coerceAtLeast(minTierSize)
+            if (this.interactsWithBlocks()) {
+                explodeBlocks()
             }
 
-            // ================================================================
-            // Compute shared search parameters once (same for all tiers).
-            // ================================================================
-            val aabb = AABB(
-                x - 0.6 * radius,
-                y - 0.3 * radius,
-                z - 0.6 * radius,
-                x + 0.6 * radius,
-                y + 0.3 * radius,
-                z + 0.6 * radius
-            )
-            val minPos = BlockPos(
-                floor(aabb.minX).toInt(),
-                floor(aabb.minY).toInt(),
-                floor(aabb.minZ).toInt()
-            )
-            val maxPos = BlockPos(
-                floor(aabb.maxX).toInt(),
-                floor(aabb.maxY).toInt(),
-                floor(aabb.maxZ).toInt()
-            )
+            damageEntities()
+        }
+    }
 
-            val maxEffectiveRadius = 0.4 * radius + 0.5 * radius * 0.2
-            val maxFlattenedRadius = maxEffectiveRadius * 1.2f
+    /**
+     * 分层搜索并清除范围内的方块。
+     *
+     * 从 [explode] 拆出来是为了让"是否允许破坏方块"只在一处判断：
+     * 调用方已经确认过 [interactsWithBlocks]。
+     */
+    @Suppress("DEPRECATION")
+    open fun explodeBlocks() {
+        val center = Vec3(this.x, this.y, this.z)
+        val random = level.random
 
-            val numRays = 32 + random.nextInt(17)
-            val coreRadius = 0.4f * radius
-            val flattenedCoreRadius = coreRadius * 1.2f
-            val beltHalfHeight = (radius * 0.34).toInt().coerceAtLeast(1)
-            val beltYMin = (floor(center.y) - beltHalfHeight).toInt()
-            val beltYMax = (floor(center.y) + beltHalfHeight).toInt()
+        // ================================================================
+        // Pre-compute decreasing tier boundaries to keep block count per
+        // tick balanced. Outer shells have 4πr² more volume, so they need
+        // smaller tier sizes. Tier sizes: 25, 23, 21, …, min 5.
+        // ================================================================
+        val initialTierSize = 25.0
+        val tierDecrease = 2.0
+        val minTierSize = 2.0
 
-            val numTiers = tierBoundaries.size - 1
+        val tierBoundaries = mutableListOf(0.0)
+        var currentBoundary = 0.0
+        var currentSize = initialTierSize
+        while (currentBoundary < radius * 2.0) {
+            currentBoundary += currentSize
+            tierBoundaries.add(currentBoundary)
+            currentSize = (currentSize - tierDecrease).coerceAtLeast(minTierSize)
+        }
 
-            // ================================================================
-            // Process each tier: search → filter → destroy → clear toBlow.
-            // Tier 0 runs immediately, tier N is delayed by N ticks.
-            // Each tier only searches within its own distance ring to avoid
-            // scanning the full AABB on a single tick.
-            // ================================================================
-            for (tier in 0 until numTiers) {
-                val minDist = tierBoundaries[tier]
-                val maxDist = tierBoundaries[tier + 1]
+        // ================================================================
+        // Compute shared search parameters once (same for all tiers).
+        // ================================================================
+        val aabb = AABB(
+            x - 0.6 * radius,
+            y - 0.3 * radius,
+            z - 0.6 * radius,
+            x + 0.6 * radius,
+            y + 0.3 * radius,
+            z + 0.6 * radius
+        )
+        val minPos = BlockPos(
+            floor(aabb.minX).toInt(),
+            floor(aabb.minY).toInt(),
+            floor(aabb.minZ).toInt()
+        )
+        val maxPos = BlockPos(
+            floor(aabb.maxX).toInt(),
+            floor(aabb.maxY).toInt(),
+            floor(aabb.maxZ).toInt()
+        )
 
-                val task = Runnable {
-                    // ---- Search this tier's distance ring ----
-                    val candidates = hashSetOf<BlockPos>()
+        val maxEffectiveRadius = 0.4 * radius + 0.5 * radius * 0.2
+        val maxFlattenedRadius = maxEffectiveRadius * 1.2f
 
-                    // AABB sweep: only collect blocks whose Euclidean distance is in [minDist, maxDist)
-                    BlockPos.betweenClosedStream(minPos, maxPos).forEach { blockpos ->
-                        val dx = (blockpos.center.x - center.x).toFloat()
-                        val dy = (blockpos.center.y - center.y).toFloat()
-                        val dz = (blockpos.center.z - center.z).toFloat()
-                        val flattenedDistSqr = (dx * dx + dz * dz) + dy * dy * 3.0f
-                        val distSqr = dx * dx + dy * dy + dz * dz
+        val numRays = 32 + random.nextInt(17)
+        val coreRadius = 0.4f * radius
+        val flattenedCoreRadius = coreRadius * 1.2f
+        val beltHalfHeight = (radius * 0.34).toInt().coerceAtLeast(1)
+        val beltYMin = (floor(center.y) - beltHalfHeight).toInt()
+        val beltYMax = (floor(center.y) + beltHalfHeight).toInt()
 
-                        if (level.isInWorldBounds(blockpos)
-                            && distSqr >= minDist * minDist
-                            && distSqr < maxDist * maxDist
-                            && flattenedDistSqr <= maxFlattenedRadius * maxFlattenedRadius
-                        ) {
+        val numTiers = tierBoundaries.size - 1
+
+        // ================================================================
+        // Process each tier: search → filter → destroy → clear toBlow.
+        // Tier 0 runs immediately, tier N is delayed by N ticks.
+        // Each tier only searches within its own distance ring to avoid
+        // scanning the full AABB on a single tick.
+        // ================================================================
+        for (tier in 0 until numTiers) {
+            val minDist = tierBoundaries[tier]
+            val maxDist = tierBoundaries[tier + 1]
+
+            val task = Runnable {
+                // ---- Search this tier's distance ring ----
+                val candidates = hashSetOf<BlockPos>()
+
+                // AABB sweep: only collect blocks whose Euclidean distance is in [minDist, maxDist)
+                BlockPos.betweenClosedStream(minPos, maxPos).forEach { blockpos ->
+                    val dx = (blockpos.center.x - center.x).toFloat()
+                    val dy = (blockpos.center.y - center.y).toFloat()
+                    val dz = (blockpos.center.z - center.z).toFloat()
+                    val flattenedDistSqr = (dx * dx + dz * dz) + dy * dy * 3.0f
+                    val distSqr = dx * dx + dy * dy + dz * dz
+
+                    if (level.isInWorldBounds(blockpos)
+                        && distSqr >= minDist * minDist
+                        && distSqr < maxDist * maxDist
+                        && flattenedDistSqr <= maxFlattenedRadius * maxFlattenedRadius
+                    ) {
+                        candidates.add(blockpos.immutable())
+                    }
+                }
+
+                // Radial spikes: only search where distance is in [minDist, maxDist)
+                for (r in 0 until numRays) {
+                    val angle = 2.0 * Math.PI * r / numRays + (random.nextDouble() - 0.5) * 0.25
+                    val spikeLength = flattenedCoreRadius * (1.0f + random.nextFloat() * 1.1f)
+
+                    val dx = cos(angle)
+                    val dz = sin(angle)
+
+                    var dist = (flattenedCoreRadius * 0.35f).coerceAtLeast(minDist.toFloat())
+                    while (dist < spikeLength && dist < maxDist) {
+                        val bx = floor(center.x + dx * dist).toInt()
+                        val bz = floor(center.z + dz * dist).toInt()
+
+                        for (dy in beltYMin..beltYMax) {
+                            val blockpos = BlockPos(bx, dy, bz)
+
+                            if (!level.isInWorldBounds(blockpos) || blockpos in candidates) continue
+
+                            val fdx = (blockpos.center.x - center.x).toFloat()
+                            val fdy = (blockpos.center.y - center.y).toFloat()
+                            val fdz = (blockpos.center.z - center.z).toFloat()
+                            val flattenedDistSqr = (fdx * fdx + fdz * fdz) + fdy * fdy * 3.0f
+                            if (flattenedDistSqr > spikeLength * spikeLength) continue
+
                             candidates.add(blockpos.immutable())
                         }
+
+                        dist += 1.2f
                     }
-
-                    // Radial spikes: only search where distance is in [minDist, maxDist)
-                    for (r in 0 until numRays) {
-                        val angle = 2.0 * Math.PI * r / numRays + (random.nextDouble() - 0.5) * 0.25
-                        val spikeLength = flattenedCoreRadius * (1.0f + random.nextFloat() * 1.1f)
-
-                        val dx = cos(angle)
-                        val dz = sin(angle)
-
-                        var dist = (flattenedCoreRadius * 0.35f).coerceAtLeast(minDist.toFloat())
-                        while (dist < spikeLength && dist < maxDist) {
-                            val bx = floor(center.x + dx * dist).toInt()
-                            val bz = floor(center.z + dz * dist).toInt()
-
-                            for (dy in beltYMin..beltYMax) {
-                                val blockpos = BlockPos(bx, dy, bz)
-
-                                if (!level.isInWorldBounds(blockpos) || blockpos in candidates) continue
-
-                                val fdx = (blockpos.center.x - center.x).toFloat()
-                                val fdy = (blockpos.center.y - center.y).toFloat()
-                                val fdz = (blockpos.center.z - center.z).toFloat()
-                                val flattenedDistSqr = (fdx * fdx + fdz * fdz) + fdy * fdy * 3.0f
-                                if (flattenedDistSqr > spikeLength * spikeLength) continue
-
-                                candidates.add(blockpos.immutable())
-                            }
-
-                            dist += 1.2f
-                        }
-                    }
-
-                    // ---- Filter and destroy ----
-                    val qualified = mutableListOf<BlockPos>()
-
-                    for (blockpos in candidates) {
-                        var effectiveRadius = 0.4 * radius
-                        val dx = (blockpos.center.x - center.x).toFloat()
-                        val dy = (blockpos.center.y - center.y).toFloat()
-                        val dz = (blockpos.center.z - center.z).toFloat()
-                        val flattenedDistSqr = (dx * dx + dz * dz) + dy * dy * 3.0f
-                        val distanceSqr = dx * dx + dy * dy + dz * dz
-                        var force = this@CustomExplosion.radius * (0.25f + random.nextFloat() * 0.15f) * 0.02f * damage
-
-                        if (distanceSqr > radius * radius * 0.15) {
-                            effectiveRadius += (random.nextDouble() - 0.5) * radius * 0.2
-                        }
-                        val flattenedRadius = effectiveRadius * 1.2f
-                        if (flattenedDistSqr > flattenedRadius * flattenedRadius) continue
-
-                        val blockState = this@CustomExplosion.level.getBlockState(blockpos)
-                        var resistance = blockState.block.defaultDestroyTime()
-                        if (blockState.soundType === SoundType.METAL || blockState.soundType === SoundType.COPPER || blockState.soundType === SoundType.NETHERITE_BLOCK) {
-                            resistance *= 3f
-                        }
-                        force *= ((1f - (flattenedDistSqr / (flattenedRadius * flattenedRadius))).coerceIn(
-                            0.0,
-                            1.0
-                        )).toFloat()
-
-                        if (resistance != -1f && force > resistance && this@CustomExplosion.damageCalculator.shouldBlockExplode(
-                                this@CustomExplosion, this@CustomExplosion.level, blockpos, blockState, force
-                            )
-                        ) {
-                            this@CustomExplosion.toBlow.add(blockpos.immutable())
-                            qualified.add(blockpos.immutable())
-                        }
-                    }
-
-                    // Destroy qualified blocks for this tier
-                    processBlockList(qualified)
-
-                    // Clear toBlow so the next tier starts fresh
-                    this@CustomExplosion.toBlow.clear()
                 }
 
-                if (tier <= 0) {
-                    task.run()
-                } else {
-                    Mod.queueServerWork(tier, task)
+                // ---- Filter and destroy ----
+                val qualified = mutableListOf<BlockPos>()
+
+                for (blockpos in candidates) {
+                    var effectiveRadius = 0.4 * radius
+                    val dx = (blockpos.center.x - center.x).toFloat()
+                    val dy = (blockpos.center.y - center.y).toFloat()
+                    val dz = (blockpos.center.z - center.z).toFloat()
+                    val flattenedDistSqr = (dx * dx + dz * dz) + dy * dy * 3.0f
+                    val distanceSqr = dx * dx + dy * dy + dz * dz
+                    var force = this@CustomExplosion.radius * (0.25f + random.nextFloat() * 0.15f) * 0.02f * damage
+
+                    if (distanceSqr > radius * radius * 0.15) {
+                        effectiveRadius += (random.nextDouble() - 0.5) * radius * 0.2
+                    }
+                    val flattenedRadius = effectiveRadius * 1.2f
+                    if (flattenedDistSqr > flattenedRadius * flattenedRadius) continue
+
+                    val blockState = this@CustomExplosion.level.getBlockState(blockpos)
+                    var resistance = blockState.block.defaultDestroyTime()
+                    if (blockState.soundType === SoundType.METAL || blockState.soundType === SoundType.COPPER || blockState.soundType === SoundType.NETHERITE_BLOCK) {
+                        resistance *= 3f
+                    }
+                    force *= ((1f - (flattenedDistSqr / (flattenedRadius * flattenedRadius))).coerceIn(
+                        0.0,
+                        1.0
+                    )).toFloat()
+
+                    if (resistance != -1f && force > resistance && this@CustomExplosion.damageCalculator.shouldBlockExplode(
+                            this@CustomExplosion, this@CustomExplosion.level, blockpos, blockState, force
+                        )
+                    ) {
+                        this@CustomExplosion.toBlow.add(blockpos.immutable())
+                        qualified.add(blockpos.immutable())
+                    }
                 }
+
+                // Destroy qualified blocks for this tier
+                processBlockList(qualified)
+
+                // Clear toBlow so the next tier starts fresh
+                this@CustomExplosion.toBlow.clear()
             }
 
-            // 处理Sable物理结构（SubLevel）上的方块爆炸破坏
-            if (SableCompatHandler.hasMod()) {
-                SableCompatHandler.processExplosionOnSubLevels(
-                    this.level,
-                    Vec3(this.x, this.y, this.z),
-                    this.radius,
-                    this.damage,
-                    this,
-                    this.damageCalculator
-                )
+            if (tier <= 0) {
+                task.run()
+            } else {
+                Mod.queueServerWork(tier, task)
             }
         }
 
+        // 处理Sable物理结构（SubLevel）上的方块爆炸破坏
+        if (SableCompatHandler.hasMod()) {
+            SableCompatHandler.processExplosionOnSubLevels(
+                this.level,
+                Vec3(this.x, this.y, this.z),
+                this.radius,
+                this.damage,
+                this,
+                this.damageCalculator
+            )
+        }
+    }
+
+    /** 范围内的实体伤害与冲击波；与是否破坏方块无关。 */
+    open fun damageEntities() {
         val diameter = this.radius * 2f
         val x0 = Mth.floor(this.x - diameter.toDouble() - 1)
         val x1 = Mth.floor(this.x + diameter.toDouble() + 1)
