@@ -13,6 +13,7 @@
     "ZoomRate": 0.9,
     "Speed": 1.0
   },
+  "ZoomingTranslateMultiply": 1.0,
   "Model": {
     "Animation": "superbwarfare:animations/bedrock/gun/homemade_shotgun.animation.json",
     "Model": "superbwarfare:models/bedrock/gun/homemade_shotgun.geo.json",

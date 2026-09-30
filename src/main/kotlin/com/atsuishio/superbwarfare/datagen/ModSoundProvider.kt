@@ -450,10 +450,9 @@ class ModSoundProvider(output: PackOutput, existingFileHelper: ExistingFileHelpe
         // -------------------- gun/secondary_cataclysm --------------------
         group(
             "gun/secondary_cataclysm", "secondary_cataclysm_fire_1p", "secondary_cataclysm_fire_3p",
-            "secondary_cataclysm_far", "secondary_cataclysm_veryfar", "secondary_cataclysm_loop",
+            "secondary_cataclysm_far", "secondary_cataclysm_veryfar", "secondary_cataclysm_end", "secondary_cataclysm_handle_1",
+            "secondary_cataclysm_handle_2", "secondary_cataclysm_ammo_in",
         )
-        register("secondary_cataclysm_prepare_load", "gun/secondary_cataclysm/secondary_cataclysm_start")
-        group("gun/secondary_cataclysm", "secondary_cataclysm_end")
         register("secondary_cataclysm_fire_1p_charge", "gun/secondary_cataclysm/secondary_cataclysm_charge_fire_1p")
         register("secondary_cataclysm_fire_3p_charge", "gun/secondary_cataclysm/secondary_cataclysm_charge_fire_3p")
         register("secondary_cataclysm_far_charge", "gun/secondary_cataclysm/secondary_cataclysm_charge_far")

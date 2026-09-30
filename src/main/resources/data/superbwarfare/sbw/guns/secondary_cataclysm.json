@@ -1,12 +1,10 @@
 {
   "Spread": 5,
+  "ZoomReload": false,
   "RecoilX": 0.004,
   "RecoilY": 0.023,
   "MaxEnergy": 24000,
   "Damage": 80,
-  "MeleeDamage": 19,
-  "MeleeDuration": 20,
-  "MeleeRange": 1,
   "ExplosionDamage": 50,
   "ExplosionRadius": 5,
   "Headshot": 2,
@@ -18,38 +16,56 @@
   "ReloadTypes": [
     "Iterative"
   ],
-  "PrepareTime": 31,
-  "PrepareLoadTime": 31,
-  "PrepareAmmoLoadTime": 3,
+  "PrepareTime": 16,
   "IterativeTime": 18,
-  "FinishTime": 22,
+  "FinishTime": 18,
+
+  "MeleeDamage": 15,
+  "MeleeActions": [
+    {
+      "Animation": [
+        "bayonet_hit",
+        "hit"
+      ],
+      "Duration": 16,
+      "HitTime": 4,
+      "Hitbox": {
+        "Type": "Box",
+        "Range": 2.0,
+        "Width": 1.0,
+        "Height": 1.6,
+        "YOffset": -0.3,
+        "Occlusion": true
+      },
+      "Sweep": {
+        "From": 0,
+        "To": 0
+      },
+      "MaxTargets": 2,
+      "Knockback": 0.3,
+      "Headshot": 1.5,
+      "Legshot": 0.75
+    }
+  ],
+  "MeleeSound": {
+    "Hit": "superbwarfare:bayonet_hit"
+  },
+
   "SoundRadius": 8,
   "RPM": 300,
   "Projectile": "superbwarfare:gun_grenade",
   "GunType": "CurvedLauncher",
+  "ProjectileBone": "he_head",
   "AmmoType": [
     "superbwarfare:grenade_40mm",
     {
-      "Ammo": "@ShotgunAmmo",
-      "AmmoSlot": "Default",
-      "Projectile": "superbwarfare:projectile",
+      "Ammo": "superbwarfare:smoke_gun_grenade",
+      "ProjectileBone": "smoke_head",
+      "Projectile": "superbwarfare:smoke_gun_grenade",
       "Override": {
-        "Damage": 10,
-        "BypassesArmor": 0.2,
+        "Damage": 30,
         "ExplosionDamage": 0,
-        "ProjectileAmount": 6,
-        "Velocity": 10,
-        "RecoilX": 0.006,
-        "RecoilY": 0.018,
-        "Crosshair": "@GunDefault"
-      }
-    },
-    {
-      "AmmoSlot": "Melee",
-      "Override": {
-        "ProjectileAmount": 0,
-        "MeleeDuration": 15,
-        "Crosshair": "@GunDefault"
+        "ExplosionRadius": 0
       }
     }
   ],
@@ -66,19 +82,36 @@
     "superbwarfare:cast_no_shadows",
     "superbwarfare:battle_of_wits"
   ],
+  "AvailableAttachments": {
+    "Scope": [
+      "superbwarfare:scope_coyote",
+      "superbwarfare:scope_aimpoint_t2",
+      "superbwarfare:scope_eotech_551",
+      "superbwarfare:scope_okp_7",
+      "superbwarfare:scope_pkas",
+      "superbwarfare:scope_bruiser",
+      "superbwarfare:scope_ranger",
+      "superbwarfare:scope_1p_78",
+      "superbwarfare:scope_pk_a",
+      "superbwarfare:scope_acog",
+      "superbwarfare:scope_qmk171",
+      "superbwarfare:scope_hamr",
+      "superbwarfare:scope_elcan_4x",
+      "superbwarfare:scope_lpvo",
+      "superbwarfare:scope_sniper",
+      "superbwarfare:scope_winefox",
+      "superbwarfare:steel_pipe_scope",
+      "superbwarfare:scope_spyglass"
+    ],
+    "Charm": [
+      "#superbwarfare:attachment/charm"
+    ]
+  },
   "SoundInfo": {
     "Fire1P": "superbwarfare:secondary_cataclysm_fire_1p",
     "Fire3P": "superbwarfare:secondary_cataclysm_fire_3p",
     "Fire3PFar": "superbwarfare:secondary_cataclysm_far",
-    "Fire3PVeryFar": "superbwarfare:secondary_cataclysm_veryfar",
-    "ReloadPrepareLoad": "superbwarfare:secondary_cataclysm_prepare_load",
-    "ReloadLoop": "superbwarfare:secondary_cataclysm_loop",
-    "ReloadEnd": "superbwarfare:secondary_cataclysm_end",
-    "CancellableSounds": [
-      "superbwarfare:secondary_cataclysm_prepare_load",
-      "superbwarfare:secondary_cataclysm_loop",
-      "superbwarfare:secondary_cataclysm_end"
-    ]
+    "Fire3PVeryFar": "superbwarfare:secondary_cataclysm_veryfar"
   },
   "Crosshair": "@GunGrenade"
 }

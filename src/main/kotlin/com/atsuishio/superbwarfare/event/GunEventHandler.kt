@@ -482,8 +482,7 @@ object GunEventHandler {
         if (reload.singleReloadStarter.start()) {
             postEvent(ReloadEvent.Pre(shooter, data))
 
-            if (data.get(GunProp.PREPARE_LOAD_TIME) != 0 && (!data.hasEnoughAmmoToShoot(shooter) || stack.`is`(
-                    ModItems.SECONDARY_CATACLYSM.get()))) {
+            if (data.get(GunProp.PREPARE_LOAD_TIME) != 0 && (!data.hasEnoughAmmoToShoot(shooter))) {
                 // 此处判断空仓换弹的时候，是否在准备阶段就需要装填一发，如M870
                 playGunPrepareLoadReloadSounds(shooter, data)
                 val prepareLoadTime = data.get(GunProp.PREPARE_LOAD_TIME)
