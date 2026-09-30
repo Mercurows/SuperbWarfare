@@ -1095,7 +1095,7 @@
   },
   "insidious_reload_empty": {
     "sounds": [
-      "superbwarfare:gun/insidious/insidious_reload"
+      "superbwarfare:gun/insidious/insidious_reload_empty"
     ]
   },
   "insidious_veryfar": {

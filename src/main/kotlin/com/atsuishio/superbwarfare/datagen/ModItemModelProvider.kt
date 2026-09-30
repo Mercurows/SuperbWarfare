@@ -35,7 +35,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         gunItemV2(ModItems.HK_416)
         gunItemV2(ModItems.HOMEMADE_SHOTGUN)
         gunItemV2(ModItems.HUNTING_RIFLE)
-        gunItem(ModItems.INSIDIOUS)
+        gunItemV2(ModItems.INSIDIOUS)
         gunItem(ModItems.JAVELIN)
         gunItemV2(ModItems.MARLIN)
         gunItemV2(ModItems.NAIL_GUN)

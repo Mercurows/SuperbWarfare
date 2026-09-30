@@ -1578,41 +1578,78 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     }
 
     /**
+     * 渲染的 `stack` 是不是**本地玩家自己手里**那把枪（主手）。
+     *
+     * 掉落在地上的、摆在展示框里的、别人手里的枪都是别的对象，好办；麻烦的是第一人称：
+     * `FirstPersonRenderHandler` 渲染时传下来的是动画实例持有的那份 stack
+     * （`GeoGunAnimationInstance.currentItem()`），而它每个客户端 tick 才由 `updateItem` 刷新一次，
+     * 换枪过渡期间渲染的更是上一个实例里的旧对象。服务端每次同步手持槽（开枪改弹药、热量、
+     * 各种计时器）都会把客户端手上的 ItemStack **换成新对象**（见 `GunData.DATA_CACHE` 的注释），
+     * 于是同步之后到下一次 `updateItem` 之间的那几帧里身份对不上——只看对象身份的脚本会以为
+     * 枪不在手上，脚架被压回 bind 姿态、下一帧又展开，第一人称看到的就是在收起/展开之间横跳。
+     * [GeoGunAnimationInstance.shouldSpin] 早就为同一个坑改成比物品类型了。
+     *
+     * 所以分两种情况：对象身份成立（第三人称与正常的第一人称帧）直接用；
+     * 第一人称下额外接受"渲染的是本地玩家主手 + 同一种物品"。第一人称入口只会画本地玩家自己的手，
+     * 所以这个放宽不会波及世界上的同型号枪——掉落物/展示框/别人手里走的是普通物品渲染，
+     * [localFirstPersonHand] 为 `null`，仍然一律判否。
+     *
+     * 换枪动画期间渲染的是旧 stack：换了另一种枪时物品对不上、直接判否而不是平滑过渡，
+     * 与之前的行为一致，可以接受。
+     *
+     * 凡是读**客户端全局状态**（只描述本地玩家自己的视角，不写在枪自己的 tag 里）的脚本钩子都要过这一关，
+     * 否则世界上每一把同型号枪都会跟着本地玩家的动作一起动。逐物品的属性（如 [scriptHeat]）不需要。
+     */
+    private fun isLocalPlayerGun(stack: ItemStack): Boolean {
+        val player = Minecraft.getInstance().player ?: return false
+        val held = player.mainHandItem
+        return held === stack
+                || (localFirstPersonHand == InteractionHand.MAIN_HAND
+                && !held.isEmpty
+                && held.item === stack.item)
+    }
+
+    /**
      * 脚架展开进度：0 为收起，1 为完全展开。
      *
      * 直接复用 `bipod_view` 定位点用的 [ClientEventHandler.bipodViewTime]，这样子骨骼的翻转与
      * 卧姿视角过渡天然同步，脚本里不需要自己再做一次插值。
      *
      * 但它描述的是**本地玩家自己**的持枪视角过渡，是客户端全局的一份状态，所以只有他手里那把枪
-     * 能用它。掉落在地上的、摆在展示框里的、别人手里的枪都拿不到"持有者"来问是否趴着
-     * （物品渲染路径只有 [ItemStack]，没有实体），对它们一律返回 0，也就是保持收起——
-     * 否则世界上每一把同型号枪都会跟着本地玩家的卧姿一起展开。
-     *
-     * 判定**不能只看 ItemStack 对象身份**。第三人称、掉落物、展示框、别人手里的枪确实是别的对象，
-     * 但第一人称不是：`FirstPersonRenderHandler` 渲染时传下来的是动画实例持有的那份 stack
-     * （`GeoGunAnimationInstance.currentItem()`），而它每个客户端 tick 才由 `updateItem` 刷新一次，
-     * 换枪过渡期间渲染的更是上一个实例里的旧对象。服务端每次同步手持槽（开枪改弹药、热量、
-     * 各种计时器）都会把客户端手上的 ItemStack **换成新对象**（见 `GunData.DATA_CACHE` 的注释），
-     * 于是同步之后到下一次 `updateItem` 之间的那几帧里身份对不上，脚本会以为枪不在手上，
-     * 脚架被压回 bind 姿态、下一帧又展开——第一人称看到的就是脚架在收起/展开之间来回横跳。
-     * [GeoGunAnimationInstance.shouldSpin] 早就为同一个坑改成比物品类型了。
-     *
-     * 所以这里分两种情况：对象身份成立（第三人称与正常的第一人称帧）直接用；
-     * 第一人称下额外接受"渲染的是本地玩家主手 + 同一种物品"。第一人称入口只会画本地玩家自己的手，
-     * 所以这个放宽不会波及世界上的同型号枪——掉落物/展示框/别人手里走的是普通物品渲染，
-     * [localFirstPersonHand] 为 `null`，仍然一律返回 0。
-     *
-     * 换枪动画期间渲染的是旧 stack：换了另一种枪时物品对不上、脚架直接收起而不是平滑过渡，
-     * 与之前的行为一致，可以接受。
+     * 能读到，别的枪一律返回 0、也就是保持收起——否则世界上每一把同型号枪都会跟着本地玩家的卧姿
+     * 一起展开。判定见 [isLocalPlayerGun]。
      */
     open fun scriptBipodProgress(stack: ItemStack): Double {
-        val player = Minecraft.getInstance().player ?: return 0.0
-        val held = player.mainHandItem
-        val mine = held === stack
-                || (localFirstPersonHand == InteractionHand.MAIN_HAND
-                && !held.isEmpty
-                && held.item === stack.item)
-        return if (mine) ClientEventHandler.bipodViewTime else 0.0
+        return if (isLocalPlayerGun(stack)) ClientEventHandler.bipodViewTime else 0.0
+    }
+
+    /**
+     * 瞄准推进度：0 为腰射，1 为完全瞄准，就是 [ClientEventHandler.zoomTime] 的**线性**原值。
+     *
+     * ⚠ 不要再对它套 `aimingProgress`（EASE_IN_OUT_QUINT）：[GeoGunRenderer] 内部读同一个量时套了
+     * 曲线，脚本里写的门槛（"0.3 之后才出现"）要按这里的原值来定。
+     *
+     * 和 [scriptBipodProgress] 同理，它描述的是本地玩家自己的视角过渡，只有他手里那把枪能读到，
+     * 别的枪一律返回 0——否则本地玩家一按瞄准键，世界上每一把同型号枪都会跟着亮起来。
+     */
+    open fun scriptZoomTime(stack: ItemStack): Double {
+        return if (isLocalPlayerGun(stack)) ClientEventHandler.zoomTime else 0.0
+    }
+
+    /**
+     * 单调推进的游戏时间，单位 **tick**（`level.gameTime` 加上本帧的 `frameTime` 做帧间插值，
+     * 20 tick = 1 秒）。给脚本算"随时间匀速自转"这类效果用。
+     *
+     * 之所以给的是时间轴而不是像 [scriptHeat] 那样的逐帧增量：自转角度算成时间的函数就不需要任何记忆，
+     * 于是既不用担心顶层变量是全世界同型号枪共用的一份，也不用担心 JsState 按 ItemStack 对象身份
+     * 记忆会在每次服务端同步（换对象）时被清零，还顺带免疫"同一帧被画几次就走几倍"。
+     *
+     * 时间是**世界时间**：单人游戏暂停时它停住，自转也跟着停，符合直觉。
+     */
+    open fun scriptGameTime(): Double {
+        val mc = Minecraft.getInstance()
+        val level = mc.level ?: return 0.0
+        return level.gameTime + mc.timer.gameTimeDeltaTicks.toDouble()
     }
 
     /**

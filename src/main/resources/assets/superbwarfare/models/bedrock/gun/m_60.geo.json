@@ -9086,6 +9086,11 @@
 					"pivot": [0, 5.18065, 8.71577]
 				},
 				{
+					"name": "charm_pos",
+					"parent": "caps",
+					"pivot": [1.88309, 4.47308, 10.97239]
+				},
+				{
 					"name": "bipod",
 					"parent": "root",
 					"pivot": [0, 4.01762, -3.18584]

@@ -288,8 +288,7 @@ class ModSoundProvider(output: PackOutput, existingFileHelper: ExistingFileHelpe
         group("gun/igla_9k38", "igla_9k38_locking", "igla_9k38_locked")
 
         // -------------------- gun/insidious --------------------
-        group("gun/insidious", "insidious_fire_1p", "insidious_fire_3p", "insidious_far", "insidious_veryfar")
-        register("insidious_reload_empty", "gun/insidious/insidious_reload")
+        group("gun/insidious", "insidious_fire_1p", "insidious_fire_3p", "insidious_far", "insidious_veryfar", "insidious_reload_empty")
 
         // -------------------- gun/javelin --------------------
         group("gun/javelin", "javelin_fire_1p", "javelin_fire_3p", "javelin_far")
