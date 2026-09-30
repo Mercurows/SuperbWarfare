@@ -330,8 +330,8 @@ class ModSoundProvider(output: PackOutput, existingFileHelper: ExistingFileHelpe
 
         // -------------------- gun/m_60 --------------------
         group(
-            "gun/m_60", "m_60_fire_1p", "m_60_fire_3p", "m_60_far", "m_60_veryfar", "m_60_reload_normal",
-            "m_60_reload_empty",
+            "gun/m_60", "m_60_fire_1p", "m_60_fire_3p", "m_60_far", "m_60_veryfar", "m_60_mag_out",
+            "m_60_mag_in", "m_60_open", "m_60_close", "m_60_bolt", "m_60_ammo_in",
         )
 
         // -------------------- gun/m_79 --------------------
