@@ -10,7 +10,7 @@
     {
       "Prop": "MeleeRange",
       "Op": "Add",
-      "Value": 1.0
+      "Value": 0.5
     },
     {
       "Prop": "Weight",
@@ -29,6 +29,7 @@
         "HitTime": 4,
         "Hitbox": {
           "Type": "Box",
+          "Range": 2.0,
           "Width": 1.0,
           "Height": 1.6,
           "YOffset": -0.3,

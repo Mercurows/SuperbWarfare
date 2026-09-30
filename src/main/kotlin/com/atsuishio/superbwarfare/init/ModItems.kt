@@ -744,6 +744,7 @@ object ModItems {
     @JvmField val BAYONET_M_9 = registerAttachment("bayonet_m_9")
     @JvmField val BAYONET_6KH2 = registerAttachment("bayonet_6kh2")
     @JvmField val BAYONET_SEITENGEWEHR_84 = registerAttachment("bayonet_seitengewehr_84")
+    @JvmField val BAYONET_M_91_30 = registerAttachment("bayonet_m_91_30")
     // @formatter:on
 
     // SubWeapon（副武器：既是配件又是一把真枪）
