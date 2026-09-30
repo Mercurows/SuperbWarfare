@@ -141,15 +141,11 @@ open class CustomExplosion @JvmOverloads constructor(
     }
 
     override fun explode() {
-        if (ExplosionConfig.EXPLOSION_DESTROY.get()) {
-            this.level.gameEvent(this.entity, GameEvent.EXPLODE, Vec3(this.x, this.y, this.z))
-
-            if (this.interactsWithBlocks()) {
-                explodeBlocks()
-            }
-
-            damageEntities()
+        this.level.gameEvent(this.entity, GameEvent.EXPLODE, Vec3(this.x, this.y, this.z))
+        if (ExplosionConfig.EXPLOSION_DESTROY.get() && this.interactsWithBlocks()) {
+            explodeBlocks()
         }
+        damageEntities()
     }
 
     /**
