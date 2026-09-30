@@ -536,7 +536,11 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             resolveGunAmmoReadout(stack, resource),
             // ⚠ 必须在 `renderAttachments` **之后**算：副武器换弹那份锚点是在里面填的，
             // 而它的优先级高于常驻接管（见 [resolveArmAnchorsForDraw]）。
-            resolveArmAnchorsForDraw(model, transformType)
+            resolveArmAnchorsForDraw(model, transformType),
+            // 同目录下的 `<贴图名>_e.png`，没有就返回 null（绝大多数枪都是这样），枪照旧只画一遍。
+            // 按**最终选中的那张贴图**推，所以 LOD 贴图会自动去找 `gun_lod/` 里的 `_e`，
+            // 不需要为两套贴图各写一份配置（见 [GunEmissiveTextures]）。
+            GunEmissiveTextures.get(texture)
         )
         if (transformType.firstPerson()) {
             val hand = handForContext(transformType)
