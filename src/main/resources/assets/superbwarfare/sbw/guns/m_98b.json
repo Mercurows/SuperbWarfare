@@ -1,15 +1,42 @@
 {
-  "Model": {
-    "Animation": "superbwarfare:animations/m_98b.animation.json",
-    "Model": "superbwarfare:geo/m_98b.geo.json",
-    "Texture": "superbwarfare:textures/item/m_98b.png",
-    "LODModel": "superbwarfare:geo/lod/m_98b.geo.json",
-    "LODTexture": "superbwarfare:textures/item/lod/m_98b.png"
+  "Icon": "superbwarfare:textures/gun_icon/m_98b_icon.png",
+  "SlotIcon": "superbwarfare:textures/item/m_98b_icon.png",
+  "Animation": {
+    "Idle": "animation.m_98b.idle",
+    "Fire": "animation.m_98b.fire",
+    "ReloadNormal": "animation.m_98b.reload_normal",
+    "ReloadEmpty": "animation.m_98b.reload_empty",
+    "Bolt": "animation.m_98b.bolt",
+    "Edit": "animation.m_98b.edit",
+    "Melee": "animation.m_98b.hit"
   },
-  "FlarePosition": [
-    0,
-    0,
-    2.15625
-  ],
-  "FlareSize": 0.6
+  "ShootRecoil": {
+    "Offset": [1.0, 1.0, 3.5],
+    "Rotation": [1.1, 0.6, 0.5],
+    "ZoomRate": 0.9,
+    "Speed": 1.0
+  },
+  "Model": {
+    "Animation": "superbwarfare:animations/bedrock/gun/m_98b.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/m_98b.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/m_98b.png",
+    "LODModel": "superbwarfare:models/bedrock/gun_lod/m_98b.geo.json",
+    "LODTexture": "superbwarfare:textures/bedrock/gun_lod/m_98b.png"
+  },
+  "FlareSize": 1.2,
+  "HasSmoke": true,
+  "Smoke": {
+    "Size": 0.25,
+    "Growth": 0.25,
+    "Lifetime": 0.3,
+    "Speed": 0.4,
+    "Count": 2,
+    "Opacity": 0.9,
+    "Drag": 2,
+    "RandomSize": 0.05,
+    "RandomGrowth": 0.2,
+    "RandomLifetime": 0.2,
+    "RandomSpeed": 0.2,
+    "RandomOpacity": 0.1
+  }
 }

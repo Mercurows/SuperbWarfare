@@ -1680,9 +1680,14 @@
       "superbwarfare:gun/m_870/m_870_veryfar"
     ]
   },
-  "m_98b_bolt": {
+  "m_98b_bolt_close": {
     "sounds": [
-      "superbwarfare:gun/m_98b/m_98b_bolt"
+      "superbwarfare:gun/m_98b/m_98b_bolt_close"
+    ]
+  },
+  "m_98b_bolt_open": {
+    "sounds": [
+      "superbwarfare:gun/m_98b/m_98b_bolt_open"
     ]
   },
   "m_98b_far": {
@@ -1710,14 +1715,14 @@
       "superbwarfare:gun/m_98b/m_98b_fire_3p_s"
     ]
   },
-  "m_98b_reload_empty": {
+  "m_98b_mag_in": {
     "sounds": [
-      "superbwarfare:gun/m_98b/m_98b_reload_empty"
+      "superbwarfare:gun/m_98b/m_98b_mag_in"
     ]
   },
-  "m_98b_reload_normal": {
+  "m_98b_mag_out": {
     "sounds": [
-      "superbwarfare:gun/m_98b/m_98b_reload_normal"
+      "superbwarfare:gun/m_98b/m_98b_mag_out"
     ]
   },
   "m_98b_veryfar": {
