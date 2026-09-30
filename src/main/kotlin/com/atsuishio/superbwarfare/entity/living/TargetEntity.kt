@@ -101,6 +101,20 @@ open class TargetEntity(type: EntityType<TargetEntity>, level: Level) : LivingEn
 
     override fun isPickable() = downTime == 0
 
+    /**
+     * 让实体面朝指定的水平位置（抬头归零）。
+     * 玩家用放置器放下来、以及右键瞄准，都走这套朝向逻辑。
+     */
+    fun faceTowards(x: Double, z: Double) {
+        this.lookAt(EntityAnchorArgument.Anchor.EYES, Vec3(x, this.y, z))
+        this.xRot = 0f
+        this.xRotO = this.xRot
+        this.yHeadRotO = this.yRot
+        this.yBodyRotO = this.yRot
+    }
+
+    fun facePlayer(player: Player) = faceTowards(player.x, player.z)
+
     override fun interact(player: Player, hand: InteractionHand): InteractionResult {
         if (!player.mainHandItem.isEmpty && !player.mainHandItem.`is`(ModTags.Items.TOOLS_CROWBAR)) {
             return InteractionResult.PASS
@@ -115,9 +129,7 @@ open class TargetEntity(type: EntityType<TargetEntity>, level: Level) : LivingEn
                 player.addItem(ItemStack(ModItems.TARGET_DEPLOYER.get()))
             }
         } else {
-            this.lookAt(EntityAnchorArgument.Anchor.EYES, Vec3((player.x), this.y, (player.z)))
-            this.xRot = 0f
-            this.xRotO = this.xRot
+            this.facePlayer(player)
             downTime = 0
         }
 
@@ -126,6 +138,19 @@ open class TargetEntity(type: EntityType<TargetEntity>, level: Level) : LivingEn
 
     override fun tick() {
         super.tick()
+
+        // 模型渲染用的是 getViewYRot（即 yHeadRot），而存档里只存了 yRot（Rotation 标签）。
+        // 这两个实体直接继承 LivingEntity 而不是 Mob，EntityType 生成实体时
+        // 只有 Mob 分支会把 yHeadRot/yBodyRot 对齐到 yRot，所以"看到的朝向"和存进存档的朝向
+        // 会不一致 —— 重新进入世界时 Entity.load 把它们对齐到 yRot，看起来就像朝向被偏转了一下。
+        // 这里每 tick 对齐一次，保证看到的方向就是被保存下来的方向。
+        if (this.yHeadRot != this.yRot || this.yBodyRot != this.yRot) {
+            this.yHeadRot = this.yRot
+            this.yBodyRot = this.yRot
+            this.yHeadRotO = this.yRot
+            this.yBodyRotO = this.yRot
+        }
+
         if (downTime > 0) {
             downTime -= 1
         }

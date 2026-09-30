@@ -51,16 +51,18 @@ class TargetDeployerItem : Item(Properties()) {
                 return InteractionResult.FAIL
             }
 
-            if (ModEntities.TARGET.get().spawn(
-                    level,
-                    itemstack,
-                    pContext.player,
-                    pos,
-                    MobSpawnType.SPAWN_EGG,
-                    true,
-                    blockpos != pos && direction == Direction.UP
-                ) != null
-            ) {
+            val entity = ModEntities.TARGET.get().spawn(
+                level,
+                itemstack,
+                pContext.player,
+                pos,
+                MobSpawnType.SPAWN_EGG,
+                true,
+                blockpos != pos && direction == Direction.UP
+            )
+            if (entity != null) {
+                // 放置后让它面朝玩家（EntityType.create 里默认是随机朝向）
+                pContext.player?.let { entity.facePlayer(it) }
                 itemstack.shrink(1)
                 level.gameEvent(pContext.player, GameEvent.ENTITY_PLACE, blockpos)
             }
@@ -102,6 +104,7 @@ class TargetDeployerItem : Item(Properties()) {
                 if (entity == null) {
                     return InteractionResultHolder.pass<ItemStack?>(itemstack)
                 } else {
+                    entity.facePlayer(pPlayer)
                     if (!pPlayer.abilities.instabuild) {
                         itemstack.shrink(1)
                     }

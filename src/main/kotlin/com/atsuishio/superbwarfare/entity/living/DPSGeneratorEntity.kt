@@ -133,6 +133,20 @@ open class DPSGeneratorEntity(type: EntityType<DPSGeneratorEntity>, level: Level
 
     override fun isPickable() = downTime == 0
 
+    /**
+     * 让实体面朝指定的水平位置（抬头归零）。
+     * 玩家用放置器放下来、以及右键瞄准，都走这套朝向逻辑。
+     */
+    fun faceTowards(x: Double, z: Double) {
+        this.lookAt(EntityAnchorArgument.Anchor.EYES, Vec3(x, this.y, z))
+        this.xRot = 0f
+        this.xRotO = this.xRot
+        this.yHeadRotO = this.yRot
+        this.yBodyRotO = this.yRot
+    }
+
+    fun facePlayer(player: Player) = faceTowards(player.x, player.z)
+
     override fun interact(player: Player, hand: InteractionHand): InteractionResult {
         if (!player.mainHandItem.isEmpty && !player.mainHandItem.`is`(ModTags.Items.TOOLS_CROWBAR)) {
             return InteractionResult.PASS
@@ -147,9 +161,7 @@ open class DPSGeneratorEntity(type: EntityType<DPSGeneratorEntity>, level: Level
                 player.addItem(ItemStack(ModItems.DPS_GENERATOR_DEPLOYER.get()))
             }
         } else {
-            this.lookAt(EntityAnchorArgument.Anchor.EYES, Vec3((player.x), this.y, (player.z)))
-            this.xRot = 0f
-            this.xRotO = this.xRot
+            this.facePlayer(player)
             downTime = 0
         }
 
@@ -158,6 +170,17 @@ open class DPSGeneratorEntity(type: EntityType<DPSGeneratorEntity>, level: Level
 
     override fun tick() {
         super.tick()
+
+        // 同 TargetEntity：模型用的是 getViewYRot（yHeadRot），存档里只存 yRot。
+        // 这两个实体不是 Mob，生成时不会像 Mob 那样把 yHeadRot/yBodyRot 对齐到 yRot，
+        // 重新进入世界后 Entity.load 一对齐，看起来就像朝向被偏转了一下。
+        if (this.yHeadRot != this.yRot || this.yBodyRot != this.yRot) {
+            this.yHeadRot = this.yRot
+            this.yBodyRot = this.yRot
+            this.yHeadRotO = this.yRot
+            this.yBodyRotO = this.yRot
+        }
+
         if (downTime > 0) {
             downTime -= 1
         }
