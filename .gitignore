@@ -129,3 +129,5 @@ run/
 .cache
 
 bin/
+/.mc-mcp-cache/
+/.mc-mcp-server/
