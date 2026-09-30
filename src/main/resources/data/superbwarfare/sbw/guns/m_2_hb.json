@@ -8,14 +8,14 @@
   "Headshot": 2.0,
   "ZoomReload": false,
   "Velocity": 15,
-  "Magazine": 100,
+  "Magazine": [50, 100, 200],
   "Weight": 17,
   "DrawTime": 18,
   "ZoomTime": 12,
   "ZoomSpreadRate": 0.1,
   "DefaultFireMode": "Auto",
-  "NormalReloadTime": 100,
-  "EmptyReloadTime": 124,
+  "NormalReloadTime": [100, 100, 120],
+  "EmptyReloadTime": [124, 124, 144],
   "ActionSteps": [
     {
       "Timeline": "RELOAD_NORMAL",
@@ -70,8 +70,11 @@
       "superbwarfare:meowlencer",
       "superbwarfare:hissilencer",
       "superbwarfare:silaowuncer",
-      "superbwarfare:loudspeaker",
-      "superbwarfare:silencer_50_cal"
+      "superbwarfare:loudspeaker"
+    ],
+    "Magazine": [
+      "superbwarfare:magazine_extend",
+      "superbwarfare:magazine_extend_pro"
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"
@@ -81,8 +84,6 @@
     "Fire1P": "superbwarfare:m_2_hb_fire_1p",
     "Fire3P": "superbwarfare:m_2_hb_fire_3p",
     "Fire3PFar": "superbwarfare:m_2_hb_far",
-    "Fire3PVeryFar": "superbwarfare:m_2_hb_veryfar",
-    "Fire1PSilent": "superbwarfare:hunting_rifle_fire_1p_s",
-    "Fire3PSilent": "superbwarfare:hunting_rifle_fire_3p_s"
+    "Fire3PVeryFar": "superbwarfare:m_2_hb_veryfar"
   }
 }
