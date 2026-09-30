@@ -579,7 +579,8 @@ class ModItemTagProvider(
         AttachmentType.BAYONET to listOf(
             ModItems.BAYONET_M_9,
             ModItems.BAYONET_6KH2,
-            ModItems.BAYONET_SEITENGEWEHR_84
+            ModItems.BAYONET_SEITENGEWEHR_84,
+            ModItems.BAYONET_M_91_30
         ),
         AttachmentType.SUBWEAPON to listOf(
             ModItems.SUB_WEAPON_GP_25

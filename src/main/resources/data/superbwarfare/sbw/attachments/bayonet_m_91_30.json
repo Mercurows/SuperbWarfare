@@ -10,7 +10,7 @@
     {
       "Prop": "MeleeRange",
       "Op": "Add",
-      "Value": 0.5
+      "Value": 0.75
     },
     {
       "Prop": "Weight",
@@ -29,7 +29,7 @@
         "HitTime": 4,
         "Hitbox": {
           "Type": "Box",
-          "Range": 2.0,
+          "Range": 2.25,
           "Width": 1.0,
           "Height": 1.6,
           "YOffset": -0.3,
@@ -49,6 +49,6 @@
       "Hit": "superbwarfare:bayonet_hit"
     }
   },
-  "Model": "superbwarfare:models/bedrock/attachment/bayonet_m_9.geo.json",
-  "Texture": "superbwarfare:textures/bedrock/attachment/bayonet_m_9.png"
+  "Model": "superbwarfare:models/bedrock/attachment/bayonet_m_91_30.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/bayonet_m_91_30.png"
 }
