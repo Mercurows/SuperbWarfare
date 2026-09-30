@@ -25,14 +25,14 @@ import java.util.function.Predicate
 
 @RegistryName("target_deployer")
 class TargetDeployerItem : Item(Properties()) {
-    override fun useOn(pContext: UseOnContext): InteractionResult {
-        val level = pContext.level
+    override fun useOn(context: UseOnContext): InteractionResult {
+        val level = context.level
         if (level !is ServerLevel) {
             return InteractionResult.SUCCESS
         } else {
-            val itemstack = pContext.itemInHand
-            val blockpos = pContext.clickedPos
-            val direction = pContext.clickedFace
+            val itemstack = context.itemInHand
+            val blockpos = context.clickedPos
+            val direction = context.clickedFace
             val blockstate = level.getBlockState(blockpos)
             val pos: BlockPos?
             if (blockstate.getCollisionShape(level, blockpos).isEmpty) {
@@ -54,7 +54,7 @@ class TargetDeployerItem : Item(Properties()) {
             val entity = ModEntities.TARGET.get().spawn(
                 level,
                 itemstack,
-                pContext.player,
+                context.player,
                 pos,
                 MobSpawnType.SPAWN_EGG,
                 true,
@@ -62,9 +62,9 @@ class TargetDeployerItem : Item(Properties()) {
             )
             if (entity != null) {
                 // 放置后让它面朝玩家（EntityType.create 里默认是随机朝向）
-                pContext.player?.let { entity.facePlayer(it) }
+                context.player?.let { entity.facePlayer(it) }
                 itemstack.shrink(1)
-                level.gameEvent(pContext.player, GameEvent.ENTITY_PLACE, blockpos)
+                level.gameEvent(context.player, GameEvent.ENTITY_PLACE, blockpos)
             }
 
             return InteractionResult.CONSUME

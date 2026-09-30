@@ -162,7 +162,7 @@ open class DPSGeneratorEntity(type: EntityType<DPSGeneratorEntity>, level: Level
             }
         } else {
             this.facePlayer(player)
-            downTime = 0
+            this.downTime = 0
         }
 
         return InteractionResult.sidedSuccess(this.level().isClientSide())
@@ -181,8 +181,8 @@ open class DPSGeneratorEntity(type: EntityType<DPSGeneratorEntity>, level: Level
             this.yBodyRotO = this.yRot
         }
 
-        if (downTime > 0) {
-            downTime -= 1
+        if (this.downTime > 0) {
+            this.downTime -= 1
         }
 
         // 每秒恢复生命并充能下方方块

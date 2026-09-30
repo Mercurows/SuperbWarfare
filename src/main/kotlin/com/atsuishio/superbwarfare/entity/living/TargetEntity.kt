@@ -130,7 +130,7 @@ open class TargetEntity(type: EntityType<TargetEntity>, level: Level) : LivingEn
             }
         } else {
             this.facePlayer(player)
-            downTime = 0
+            this.downTime = 0
         }
 
         return InteractionResult.sidedSuccess(this.level().isClientSide())
@@ -138,6 +138,18 @@ open class TargetEntity(type: EntityType<TargetEntity>, level: Level) : LivingEn
 
     override fun tick() {
         super.tick()
+
+        // 模型渲染用的是 getViewYRot（即 yHeadRot），而存档里只存了 yRot（Rotation 标签）。
+        // 这两个实体直接继承 LivingEntity 而不是 Mob，EntityType 生成实体时
+        // 只有 Mob 分支会把 yHeadRot/yBodyRot 对齐到 yRot，所以"看到的朝向"和存进存档的朝向
+        // 会不一致 —— 重新进入世界时 Entity.load 把它们对齐到 yRot，看起来就像朝向被偏转了一下。
+        // 这里每 tick 对齐一次，保证看到的方向就是被保存下来的方向。
+        if (this.yHeadRot != this.yRot || this.yBodyRot != this.yRot) {
+            this.yHeadRot = this.yRot
+            this.yBodyRot = this.yRot
+            this.yHeadRotO = this.yRot
+            this.yBodyRotO = this.yRot
+        }
 
         // 模型渲染用的是 getViewYRot（即 yHeadRot），而存档里只存了 yRot（Rotation 标签）。
         // 这两个实体直接继承 LivingEntity 而不是 Mob，EntityType 生成实体时
