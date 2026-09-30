@@ -53,7 +53,10 @@ val TDM_COMMAND = buildCommand("tdm") {
 
                 if (entities.size == 1) {
                     success {
-                        Component.translatable("commands.superbwarfare.tdm.remove.single", entities.iterator().next())
+                        Component.translatable(
+                            "commands.superbwarfare.tdm.remove.single",
+                            entities.iterator().next().displayName
+                        )
                     }
                 } else {
                     success { Component.translatable("commands.superbwarfare.tdm.remove.multiple", entities.size) }
