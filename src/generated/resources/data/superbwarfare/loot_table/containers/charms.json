@@ -127,6 +127,11 @@
           "type": "minecraft:item",
           "name": "superbwarfare:charm_lily",
           "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_hiru_head",
+          "weight": 2
         }
       ],
       "rolls": 1.0
