@@ -577,7 +577,9 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         // 已经画过它们了，`renderBoneImmediate` 会临时把 `visible` 打开再还原，所以这里不藏的话会在
         // `GL_EQUAL 0` 的剔除区间里被**再画一遍**（配件侧由 `renderRemaining` 的隐藏逻辑承担同一职责）。
         // 腰射时它们是枪上真实存在的镜筒本体，要照常画出来。
-        // ⚠ `model.resetPose()` **不还原 `visible`**（它只重置姿态），所以这一对必须自己配对。
+        // ⚠ 这一对必须自己配对，即使在正常帧里收尾的 `model.resetPose()` 也会把 `visible` 复位
+        // （`BoneState.reset()` 里有 `visible = true`）：藏与还原之间夹着 `renderToBuffer`，
+        // **中途抛异常**就会跳过那个复位，共享实例上的这几根骨骼会一直留在 hidden 直到下次资源重载。
         val savedOcularBones = if (builtinScopeActive) model.builtinScopeRenderer.hideOcularBones() else null
         try {
             model.renderToBuffer(

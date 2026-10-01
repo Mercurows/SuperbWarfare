@@ -5,10 +5,11 @@
   "Weight": 10,
   "DrawTime": 18,
   "ZoomTime": 12,
-  "EmptyReloadTime": 78,
+  "EmptyReloadTime": 80,
   "Damage": 650,
   "ExplosionDamage": 120,
   "ExplosionRadius": 9,
+  "Velocity": 3,
   "Headshot": 2.0,
   "ZoomReload": false,
   "SeekTime": 20,
@@ -34,15 +35,19 @@
     "superbwarfare:vorpal_weapon",
     "superbwarfare:battle_of_wits"
   ],
+  "SoundRadius": 12,
+  "AvailableAttachments": {
+    "Charm": [
+      "#superbwarfare:attachment/charm"
+    ]
+  },
   "SoundInfo": {
     "Fire1P": "superbwarfare:javelin_fire_1p",
     "Fire3P": "superbwarfare:javelin_fire_3p",
     "Fire3PFar": "superbwarfare:javelin_far",
-    "ReloadEmpty": "superbwarfare:javelin_reload_empty",
     "Locking": "superbwarfare:javelin_locking",
     "Locked": "superbwarfare:javelin_locked",
     "CancellableSounds": [
-      "superbwarfare:javelin_reload_empty",
       "superbwarfare:javelin_locking",
       "superbwarfare:javelin_locked"
     ]

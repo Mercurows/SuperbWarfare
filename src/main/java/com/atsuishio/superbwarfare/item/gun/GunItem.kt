@@ -803,6 +803,18 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     }
 
     /**
+     * 弹射物实体建好之后、进世界之前的最后一道定制点。
+     *
+     * 默认什么都不做。留给那些**在标准配置之外还需要设一个自家字段**的枪：走这里而不是整个
+     * 重写 [shootBullet]，才能原样拿到弹种解析、`IBulletProperties` 那一串标准属性、perk 回调
+     * 与发射逻辑（`javelin` 的顶攻标记就是这么设的 —— 它的 `isTop` 只服务于那一把枪，
+     * 不适合塞进上面的 `if (entity is ...)` 链里）。
+     *
+     * ⚠ 调用点在 `setPos` / `shoot` **之后**、`addFreshEntity` **之前**，此时实体尚未进世界。
+     */
+    open fun onProjectileCreated(data: GunData, entity: Entity) {}
+
+    /**
      * 服务端发射单发子弹
      */
     open fun shootBullet(parameters: ShootParameters): Boolean {
@@ -1029,6 +1041,9 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             entity.yRotO = entity.yRot
             entity.xRotO = entity.xRot
         }
+
+        // 进世界前的最后一道定制点，见 [onProjectileCreated]
+        onProjectileCreated(data, entity)
 
         level.addFreshEntity(entity)
         return true
