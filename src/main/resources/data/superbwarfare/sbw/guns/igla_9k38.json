@@ -32,6 +32,11 @@
     "superbwarfare:battle_of_wits"
   ],
   "SoundRadius": 12,
+  "AvailableAttachments": {
+    "Charm": [
+      "#superbwarfare:attachment/charm"
+    ]
+  },
   "SoundInfo": {
     "Fire1P": "superbwarfare:igla_9k38_fire_1p",
     "Fire3P": "superbwarfare:igla_9k38_fire_3p",

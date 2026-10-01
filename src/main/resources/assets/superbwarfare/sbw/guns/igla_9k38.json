@@ -4,8 +4,7 @@
   "Animation": {
     "Idle": "animation.igla_9k38.idle",
     "Fire": "animation.igla_9k38.fire",
-    "ReloadEmpty": "animation.igla_9k38.reload",
-    "Edit": "animation.igla_9k38.edit"
+    "ReloadEmpty": "animation.igla_9k38.reload"
   },
   "ShootRecoil": {
     "Offset": [1.0, 0.25, 1.5],
