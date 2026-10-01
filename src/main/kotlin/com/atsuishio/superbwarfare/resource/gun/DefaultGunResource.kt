@@ -150,6 +150,12 @@ class DefaultGunResource : IDBasedData<DefaultGunResource> {
     @SerialName("CanZoom")
     var canZoom: Boolean = true
 
+    // 枪自带的瞄具（镜筒窗口）。为 null 表示这把枪没有 —— 绝大多数枪都是 null。
+    // geo 里有没有 `ocular` 骨骼是另一道独立的闸，两道都过才会开窗，见 BuiltinScopeInfo。
+    @JvmField
+    @SerialName("BuiltinScope")
+    var builtinScope: BuiltinScopeInfo? = null
+
     @JvmField
     @SerialName("SprintOffset")
     var sprintOffset: SerializedVector3f = Vector3f(0f, 0f, 0f)

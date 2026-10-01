@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes
 import com.atsuishio.superbwarfare.client.renderer.ammo.AmmoDisplayRenderer
 import com.atsuishio.superbwarfare.client.renderer.ammo.AmmoReadout
 import com.atsuishio.superbwarfare.client.renderer.gun.GunEmissiveTextures
+import com.atsuishio.superbwarfare.client.renderer.scope.BuiltinGunScopeRenderer
 import com.atsuishio.superbwarfare.resource.ModelResource
 import com.atsuishio.superbwarfare.resource.model.GunLODModelReloadListener
 import com.atsuishio.superbwarfare.resource.model.GunModelReloadListener
@@ -47,6 +48,14 @@ open class GeoGunModel @JvmOverloads constructor(
      * has no reticle, so every text anchor resolves to "draw it with the rest of the model".
      */
     private val ammo = AmmoDisplayRenderer(baseModel, instance)
+
+    /**
+     * 枪自带瞄具的镜筒窗口渲染器。扫一遍骨骼名就定下来了，所以懒加载。
+     *
+     * 和 [ammo] 不同，它**不**只服务于某一把枪：任何 geo 里带 `ocular` 的枪都能用，
+     * 没有这根骨骼时 [BuiltinGunScopeRenderer.available] 为假，整条路径直接关闭。
+     */
+    val builtinScopeRenderer: BuiltinGunScopeRenderer by lazy { BuiltinGunScopeRenderer(baseModel, instance) }
 
     private val illuminatedBoneIndices: IntArray = baseModel.bones()
         .asSequence()

@@ -28,6 +28,7 @@ import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.resource.ModelResource
 import com.atsuishio.superbwarfare.resource.gun.DefaultGunResource
 import com.atsuishio.superbwarfare.resource.gun.GunResource
+import com.atsuishio.superbwarfare.resource.gun.pojo.BuiltinScopeInfo
 import com.atsuishio.superbwarfare.resource.gun.pojo.ItemDisplayInfo
 import com.atsuishio.superbwarfare.resource.model.AttachmentModelReloadListener
 import com.atsuishio.superbwarfare.script.GunScriptManager
@@ -36,6 +37,7 @@ import com.atsuishio.superbwarfare.tools.RenderDistanceHelper
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.animation.IFPAnimationInstance
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.handler.FirstPersonRenderHandler
+import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.ParticleEffectData
 import com.github.mcmodderanchor.simplebedrockmodel.v1.particle.firstperson.FirstPersonParticleSystem
 import com.github.mcmodderanchor.simplebedrockmodel.v1.particle.render.CameraStateCache
@@ -54,6 +56,7 @@ import com.mojang.math.Axis
 import net.minecraft.client.Minecraft
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.client.renderer.MultiBufferSource
+import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
@@ -465,7 +468,11 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             if (zoomPivot != null) {
                 poseStack.translate(zoomPivot.x, zoomPivot.y, zoomPivot.z)
             }
-            val zoomLengthScale = scopeRender?.scopeMode?.zoomLengthScale ?: 0.75f
+            // 枪自带瞄具（BuiltinScope）也参与同一个压缩，否则它会用 0.75 而配件用自己那一档，
+            // 切来切去枪身的推进距离对不上。
+            val zoomLengthScale = scopeRender?.scopeMode?.zoomLengthScale
+                ?: resource.builtinScope?.zoomLengthScale
+                ?: 0.75f
             // 与定位点混合共用同一条曲线：以前这里直接用线性的 zoomTime，于是推进节奏和枪的位置对不上。
             // 以 scope_ranger / scope_sniper（zoomLengthScale = 0.3）为例，zoomTime = 0.3 时长度已经缩掉
             // 总压缩量的 30%（实际长度的 21%），而枪才刚走完 10.8% 的路程，看上去是先"缩一下"再"抬上来"；
@@ -492,6 +499,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 && bufferSource is MultiBufferSource.BufferSource
         val stencilScope = if (canStencil) findStencilScope(stack, model) else null
         var gunCulled = false
+        var builtinScopeActive = false
         if (stencilScope != null) {
             handledScopeAttachment = stencilScope.attachmentId
             poseStack.pushPose()
@@ -514,6 +522,33 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP)
                 gunCulled = true
             }
+        } else if (canStencil) {
+            // **枪自带瞄具**（geo 里有 `ocular` 的枪，目前只有 igla_9k38）。
+            // 装了镜配件就轮不到它，见 [findBuiltinScope]；两条路径互斥，同一帧只可能走一条。
+            val builtinScope = findBuiltinScope(stack, model, resource)
+            if (builtinScope != null) {
+                builtinScopeActive = true
+
+                // ⚠ 这里**不做任何额外变换** —— 用的就是下面画枪身那一个 poseStack。
+                // 窗口、准星、被剔除的枪身三者靠共用同一份变换才咬得死，Z 轴压缩量怎么变都不会错位。
+                poseStack.pushPose()
+                model.builtinScopeRenderer.renderWithStencil(
+                    poseStack,
+                    bufferSource as MultiBufferSource.BufferSource,
+                    RenderType.entityTranslucent(texture),
+                    BedrockModelRenderTypes.polyMeshCutout(texture),
+                    packedLight,
+                    builtinScope
+                )
+                poseStack.popPose()
+
+                // 与上面配件那一支逐字相同的三行：接下来画的枪身只在窗口**之外**留下。
+                // 那圈几何体本身就是黑色外框，仓库里没有任何 2D 遮罩贴图。
+                ScopeStencilRenderHelper.enableItemEntityStencilTest()
+                RenderSystem.stencilFunc(GL11.GL_EQUAL, 0, 0xFF)
+                RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP)
+                gunCulled = true
+            }
         }
 
         // **部署副武器期间的手臂接管**（§11.11.7.4）：只有副武器被切出来时手臂才挂到它自己
@@ -531,17 +566,36 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         }
 
         renderAttachments(stack, model, transformType, poseStack, bufferSource, packedLight, packedOverlay)
-        model.renderToBuffer(
-            poseStack, bufferSource, texture, packedLight, packedOverlay,
-            resolveGunAmmoReadout(stack, resource),
-            // ⚠ 必须在 `renderAttachments` **之后**算：副武器换弹那份锚点是在里面填的，
-            // 而它的优先级高于常驻接管（见 [resolveArmAnchorsForDraw]）。
-            resolveArmAnchorsForDraw(model, transformType),
-            // 同目录下的 `<贴图名>_e.png`，没有就返回 null（绝大多数枪都是这样），枪照旧只画一遍。
-            // 按**最终选中的那张贴图**推，所以 LOD 贴图会自动去找 `gun_lod/` 里的 `_e`，
-            // 不需要为两套贴图各写一份配置（见 [GunEmissiveTextures]）。
-            GunEmissiveTextures.get(texture)
-        )
+
+        // 内置瞄具的准星板：**任何时候**都要藏（腰射、GUI、第三人称、展示框全都走这里），
+        // 否则 `renderToBuffer` 会把它那块 200×200 的透明大板当普通几何体画出来 —— 看上去
+        // 就是一块十字准星飘在枪前方半空中。见 [BuiltinGunScopeRenderer.hideDivisionBones]。
+        val savedDivisionBones = model.builtinScopeRenderer.hideDivisionBones()
+
+        // `ocular` / `ocular_ring` 则是另一回事：它们只在**走模板那一路**时才需要藏 —— 上面那一遍
+        // 已经画过它们了，`renderBoneImmediate` 会临时把 `visible` 打开再还原，所以这里不藏的话会在
+        // `GL_EQUAL 0` 的剔除区间里被**再画一遍**（配件侧由 `renderRemaining` 的隐藏逻辑承担同一职责）。
+        // 腰射时它们是枪上真实存在的镜筒本体，要照常画出来。
+        // ⚠ `model.resetPose()` **不还原 `visible`**（它只重置姿态），所以这一对必须自己配对。
+        val savedOcularBones = if (builtinScopeActive) model.builtinScopeRenderer.hideOcularBones() else null
+        try {
+            model.renderToBuffer(
+                poseStack, bufferSource, texture, packedLight, packedOverlay,
+                resolveGunAmmoReadout(stack, resource),
+                // ⚠ 必须在 `renderAttachments` **之后**算：副武器换弹那份锚点是在里面填的，
+                // 而它的优先级高于常驻接管（见 [resolveArmAnchorsForDraw]）。
+                resolveArmAnchorsForDraw(model, transformType),
+                // 同目录下的 `<贴图名>_e.png`，没有就返回 null（绝大多数枪都是这样），枪照旧只画一遍。
+                // 按**最终选中的那张贴图**推，所以 LOD 贴图会自动去找 `gun_lod/` 里的 `_e`，
+                // 不需要为两套贴图各写一份配置（见 [GunEmissiveTextures]）。
+                GunEmissiveTextures.get(texture)
+            )
+        } finally {
+            // 与上面 [resolveDeployedSubWeaponArmAnchors] 同一条约定：可见性是写在**共享**模型实例上的，
+            // 中间抛异常也必须还原 —— 否则这几根骨骼会一直留在 hidden，直到下一次资源重载。
+            if (savedOcularBones != null) model.builtinScopeRenderer.restoreOcularBones(savedOcularBones)
+            model.builtinScopeRenderer.restoreDivisionBones(savedDivisionBones)
+        }
         if (transformType.firstPerson()) {
             val hand = handForContext(transformType)
             val animation = FirstPersonRenderHandler.getActiveAnimationInstance(hand) as? GeoGunAnimationInstance
@@ -878,6 +932,29 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         // Magnified scopes use the same aiming progress as their ocular rendering.
         if (data.scopeMode.isScope() && ClientEventHandler.zoomTime <= SCOPE_STENCIL_START_PROGRESS) return null
         return data
+    }
+
+    /**
+     * 本帧要不要给这把枪的**自带瞄具**开镜筒窗口。
+     *
+     * 三道闸，任何一道不过就返回 null（绝大多数枪在第一道就出去了，一次 `RenderSystem` 调用都不会多）：
+     *
+     * 1. 枪的 assets json 里声明了 `BuiltinScope`；
+     * 2. **没有装镜配件** —— 装了就让配件赢。绝不两个瞄具同时出现。igla 根本没配镜槽，
+     *    这一条纯属防御，但少了它，将来谁给某把枪既配了镜槽又加了 `ocular`，画面就会同时出现两个窗口；
+     * 3. geo 里真有 `ocular` 骨骼（[BuiltinGunScopeRenderer.available]），且开镜进度过了
+     *    [SCOPE_STENCIL_START_PROGRESS] —— 与配件瞄准镜同一个门槛，开镜起手时才张开。
+     */
+    private fun findBuiltinScope(
+        stack: ItemStack,
+        model: GeoGunModel,
+        resource: DefaultGunResource
+    ): BuiltinScopeInfo? {
+        val info = resource.builtinScope ?: return null
+        if (from(stack).attachment.id(AttachmentType.SCOPE) != null) return null
+        if (!model.builtinScopeRenderer.available) return null
+        if (ClientEventHandler.zoomTime <= SCOPE_STENCIL_START_PROGRESS) return null
+        return info
     }
 
     private fun finishStencilCulling(bufferSource: MultiBufferSource) {
