@@ -645,13 +645,32 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         }
     }
 
+    /**
+     * 服务端开火的外层：先过 [GunData.canShoot]，再决定本发要不要走充能射击。
+     *
+     * 充能档位（`ChargeAction`）只在这一个调用栈里有效，用完立刻复位，因此不会写进 NBT，
+     * 也不会污染之后的属性计算。
+     */
     private fun shootInternal(parameters: ShootParameters) {
+        val data = parameters.data
+
+        if (!data.canShoot(parameters.ammoSupplier)) return
+
+        // 电量够（且按数据要求开着镜）时选中一档充能射击；选不中就是 null，走普通射击
+        val chargeAction = data.chargeActionFor(parameters.zoom, parameters.ammoSupplier)
+        data.setChargeAction(chargeAction)
+        try {
+            doShoot(parameters, chargeAction)
+        } finally {
+            data.setChargeAction(null)
+        }
+    }
+
+    private fun doShoot(parameters: ShootParameters, chargeAction: ChargeAction?) {
         val data = parameters.data
         val shooter = parameters.shooter
         val ammoSupplier = parameters.ammoSupplier
         val zoom = parameters.zoom
-
-        if (!data.canShoot(ammoSupplier)) return
 
         // 开火前事件
         data.item.beforeShoot(parameters)
@@ -702,6 +721,13 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
         // 开火后事件
         data.item.afterShoot(parameters)
+
+        // 充能射击成功后才扣电：能走到这里说明子弹确实打出去了
+        // （`shootBullet` 返回 false 会在上面的循环里提前 return，那种情况不扣）。
+        // 每次扣扳机只算一发，不随 ProjectileAmount 放大。
+        if (chargeAction != null) {
+            data.getEnergyProvider(ammoSupplier)?.extractEnergy(chargeAction.cost, false)
+        }
 
         data.save()
     }

@@ -236,6 +236,17 @@ data class DefaultGunData(
     val bypassesArmor: Double = 0.0,
     @SerialName("AmmoType")
     val ammoConsumers: SingleOrList<StringOrObject<AmmoConsumer>> = SingleOrList(),
+    /**
+     * 充能射击档位。
+     *
+     * 开火时若某一档的条件满足（开镜 + 电量够，见 [ChargeAction]），则这一发按其 `Override`
+     * 覆写属性，并从枪械自身能量存储额外扣一次 FE。按数组顺序取第一个满足的；都不满足就
+     * 退回普通射击，不扣电也不覆写。
+     *
+     * 空列表 = 该枪没有充能射击。
+     */
+    @SerialName("ChargeAction")
+    val chargeActions: SingleOrList<ChargeAction> = SingleOrList(),
     @SerialName("UseNacelleCamera")
     val useNacelleCamera: Boolean = false,
     @SerialName("OpenBolt")
@@ -361,6 +372,8 @@ data class DefaultGunData(
     val soundInfo: SoundInfo = SoundInfo(),
     @SerialName("ShootAnimationTime")
     val shootAnimationTime: Int = 0,
+    @SerialName("ShootAnimation")
+    val shootAnimation: String? = null,
     @SerialName("SpreadAmount")
     val spreadAmount: Int = 10,
     @SerialName("ApDurability")

@@ -285,6 +285,12 @@ class GunProp<T, R>(
             DefaultGunData::ammoConsumers
         ) { it.list.map { l -> l.value } }
 
+        /** 充能射击档位（见 [ChargeAction]）。按数组顺序取第一个条件满足的那一档。 */
+        @JvmField
+        val CHARGE_ACTION = complexProp(
+            DefaultGunData::chargeActions
+        ) { it.list }
+
         @JvmField
         val NORMAL_RELOAD_TIME = leveledIntProp(DefaultGunData::normalReloadTime)
 
@@ -486,6 +492,20 @@ class GunProp<T, R>(
 
         @JvmField
         val SHOOT_ANIMATION_TIME = plainProp(DefaultGunData::shootAnimationTime)
+
+        /**
+         * 本发开火改用哪支动画 clip；`null` = 照常按枪自己的 `Animation.Fire`。
+         *
+         * 开火动画平时是从**资源侧**（assets 的 `sbw/guns/<id>.json` 的 `Animation.Fire`）解析的，
+         * 而 `GunResource` 按物品注册 id 缓存 —— 也就是说它**看不到任何按 stack 生效的覆盖**
+         * （弹种 / 配件 / 本档充能）。需要"某一种射击换一支开火动画"时只能从这里走：
+         * 目前唯一的用法就是 [ChargeAction] 的 `Override`（充能射击播 `*_charge` 那支）。
+         *
+         * 写法与近战动作表同一个口径（见 `GunAnimationNames`）：`animation.` 开头当全名，
+         * 否则当短名按**宿主枪 id** 拼。由 `GeoGunAnimationInstance.triggerFire` 消费。
+         */
+        @JvmField
+        val SHOOT_ANIMATION = plainProp(DefaultGunData::shootAnimation)
 
         @JvmField
         val SPREAD_AMOUNT = plainProp(DefaultGunData::spreadAmount)

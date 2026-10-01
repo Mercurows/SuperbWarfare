@@ -16,6 +16,27 @@
   "ReloadTypes": [
     "Iterative"
   ],
+  "ChargeAction": [
+    {
+      "OneShotCost": 3000,
+      "OnlyZooming": true,
+      "Override": {
+        "Damage": 160,
+        "ExplosionDamage": 60,
+        "ExplosionRadius": 6,
+        "Velocity": 20,
+        "RecoilX": 0.012,
+        "RecoilY": 0.05,
+        "ShootAnimation": "animation.secondary_cataclysm.fire_charge",
+        "SoundInfo": {
+          "Fire1P": "superbwarfare:secondary_cataclysm_fire_1p_charge",
+          "Fire3P": "superbwarfare:secondary_cataclysm_fire_3p_charge",
+          "Fire3PFar": "superbwarfare:secondary_cataclysm_far_charge",
+          "Fire3PVeryFar": "superbwarfare:secondary_cataclysm_veryfar_charge"
+        }
+      }
+    }
+  ],
   "PrepareTime": 16,
   "IterativeTime": 18,
   "FinishTime": 18,
@@ -52,7 +73,7 @@
   },
 
   "SoundRadius": 8,
-  "RPM": 300,
+  "RPM": 240,
   "Projectile": "superbwarfare:gun_grenade",
   "GunType": "CurvedLauncher",
   "ProjectileBone": "he_head",
@@ -65,7 +86,26 @@
       "Override": {
         "Damage": 30,
         "ExplosionDamage": 0,
-        "ExplosionRadius": 0
+        "ExplosionRadius": 0,
+        "ChargeAction": [
+          {
+            "OneShotCost": 3000,
+            "OnlyZooming": true,
+            "Override": {
+              "Damage": 60,
+              "Velocity": 20,
+              "RecoilX": 0.012,
+              "RecoilY": 0.05,
+              "ShootAnimation": "animation.secondary_cataclysm.fire_charge",
+              "SoundInfo": {
+                "Fire1P": "superbwarfare:secondary_cataclysm_fire_1p_charge",
+                "Fire3P": "superbwarfare:secondary_cataclysm_fire_3p_charge",
+                "Fire3PFar": "superbwarfare:secondary_cataclysm_far_charge",
+                "Fire3PVeryFar": "superbwarfare:secondary_cataclysm_veryfar_charge"
+              }
+            }
+          }
+        ]
       }
     },
     {
@@ -84,6 +124,28 @@
         "Velocity": 10,
         "RecoilX": 0.009,
         "RecoilY": 0.018,
+        "ChargeAction": [
+          {
+            "OneShotCost": 3000,
+            "OnlyZooming": true,
+            "Override": {
+              "Damage": 20,
+              "Velocity": 13,
+              "RecoilX": 0.0016,
+              "RecoilY": 0.018,
+              "BypassesArmor": 0.6,
+              "ZoomSpreadRate": 0.1,
+              "Headshot": 2,
+              "ShootAnimation": "animation.secondary_cataclysm.fire_charge",
+              "SoundInfo": {
+                "Fire1P": "superbwarfare:secondary_cataclysm_fire_1p_charge",
+                "Fire3P": "superbwarfare:secondary_cataclysm_fire_3p_charge",
+                "Fire3PFar": "superbwarfare:secondary_cataclysm_far_charge",
+                "Fire3PVeryFar": "superbwarfare:secondary_cataclysm_veryfar_charge"
+              }
+            }
+          }
+        ],
         "Crosshair": "@GunDefault",
         "GunType": "Shotgun",
         "DamageReduce": {
