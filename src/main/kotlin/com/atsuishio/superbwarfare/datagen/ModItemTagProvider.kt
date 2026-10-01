@@ -595,6 +595,7 @@ class ModItemTagProvider(
             ModItems.CHARM_FUKAMIZU_FISH,
             ModItems.CHARM_WITHER_SKELETON_SKULL,
             ModItems.CHARM_NETHER_STAR,
+            ModItems.CHARM_CONDUIT,
             ModItems.CHARM_SEPT_WOLVES,
             ModItems.CHARM_ANCIENT_CPU,
             ModItems.CHARM_SENPAI,

@@ -402,6 +402,7 @@ class ModCustomLootProvider : LootTableSubProvider {
 
                 ModItems.CHARM_WITHER_SKELETON_SKULL weighted 10
                 ModItems.CHARM_NETHER_STAR weighted 10
+                ModItems.CHARM_CONDUIT weighted 10
 
                 ModItems.CHARM_SEPT_WOLVES weighted 5
                 ModItems.CHARM_ANCIENT_CPU weighted 5

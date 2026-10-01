@@ -51,6 +51,11 @@
         },
         {
           "type": "minecraft:item",
+          "name": "superbwarfare:charm_conduit",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
           "name": "superbwarfare:charm_sept_wolves",
           "weight": 5
         },
