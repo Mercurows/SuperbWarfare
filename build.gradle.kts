@@ -258,6 +258,9 @@ dependencies {
 
     // 可选 mod 依赖
 
+    // 加速渲染
+    compileOnly(fg.deobf("curse.maven:accelerated-rendering-1314021:7342975"))
+
     // JEI相关
     // compile against the JEI API but do not include it at runtime
     compileOnly(fg.deobf("mezz.jei:jei-${project.property("minecraft_version")}-common-api:${project.property("jei_version")}"))

@@ -723,33 +723,13 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
             instance.mulGlobalTransform(poseStack, parentIndex)
         }
 
-        val quadBuffer: VertexConsumer = bufferSource.getBuffer(quadType)
         baseModel.renderBone(
-            instance,
-            boneIndex,
-            poseStack,
-            quadBuffer,
-            light,
-            OverlayTexture.NO_OVERLAY,
-            1f,
-            1f,
-            1f,
-            1f,
-            true
+            instance, boneIndex, poseStack, bufferSource.getBuffer(quadType),
+            light, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f, true
         )
-        val triangleBuffer: VertexConsumer = bufferSource.getBuffer(triangleType)
         baseModel.renderBone(
-            instance,
-            boneIndex,
-            poseStack,
-            triangleBuffer,
-            light,
-            OverlayTexture.NO_OVERLAY,
-            1f,
-            1f,
-            1f,
-            1f,
-            false
+            instance, boneIndex, poseStack, bufferSource.getBuffer(triangleType),
+            light, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f, false
         )
         flush(bufferSource, quadType, triangleType)
 
