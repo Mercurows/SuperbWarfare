@@ -394,11 +394,13 @@ class ModCustomLootProvider : LootTableSubProvider {
                 ModItems.CHARM_PIG weighted 25
                 ModItems.CHARM_BEE weighted 25
                 ModItems.CHARM_CHEST weighted 25
+                ModItems.CHARM_AXOLOTL weighted 25
 
                 ModItems.CHARM_FUKAMIZU_FISH weighted 15
                 ModItems.CHARM_ZOMBIE_HEAD weighted 15
                 ModItems.CHARM_SKELETON_SKULL weighted 15
                 ModItems.CHARM_CREEPER_HEAD weighted 15
+                ModItems.CHARM_AXOLOTL_BLUE weighted 15
 
                 ModItems.CHARM_WITHER_SKELETON_SKULL weighted 10
                 ModItems.CHARM_NETHER_STAR weighted 10

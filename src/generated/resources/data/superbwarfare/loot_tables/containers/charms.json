@@ -21,6 +21,11 @@
         },
         {
           "type": "minecraft:item",
+          "name": "superbwarfare:charm_axolotl",
+          "weight": 25
+        },
+        {
+          "type": "minecraft:item",
           "name": "superbwarfare:charm_fukamizu_fish",
           "weight": 15
         },
@@ -37,6 +42,11 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:charm_creeper_head",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_axolotl_blue",
           "weight": 15
         },
         {
