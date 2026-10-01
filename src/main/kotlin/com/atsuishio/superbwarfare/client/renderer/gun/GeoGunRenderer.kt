@@ -16,6 +16,7 @@ import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.findSubWeapon
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.subWeaponHasOwnAimPose
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeStencilRenderHelper
+import com.atsuishio.superbwarfare.compat.acceleratedrendering.AcceleratedRenderingCompat
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.attachment.*
 import com.atsuishio.superbwarfare.data.gun.GunData
@@ -501,104 +502,122 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val stencilScope = if (canStencil) findStencilScope(stack, model) else null
         var gunCulled = false
         var builtinScopeActive = false
-        if (stencilScope != null) {
-            handledScopeAttachment = stencilScope.attachmentId
-            poseStack.pushPose()
-            mulPoseWithNormal(poseStack, stencilScope.slotTransform)
-            stencilScope.model.renderWithStencil(
-                poseStack,
-                bufferSource as MultiBufferSource.BufferSource,
-                stencilScope.texture,
-                packedLight,
-                partialTick,
-                stencilScope.scopeMode,
-                stencilScope.companionSightMode,
-                resolveAmmoReadout(stack, stencilScope)
-            )
-            poseStack.popPose()
-
-            if (stencilScope.scopeMode.isScope()) {
-                ScopeStencilRenderHelper.enableItemEntityStencilTest()
-                RenderSystem.stencilFunc(GL11.GL_EQUAL, 0, 0xFF)
-                RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP)
-                gunCulled = true
-            }
-        } else if (canStencil) {
-            // **枪自带瞄具**（geo 里有 `ocular` 的枪，目前只有 igla_9k38）。
-            // 装了镜配件就轮不到它，见 [findBuiltinScope]；两条路径互斥，同一帧只可能走一条。
-            val builtinScope = findBuiltinScope(stack, model, resource)
-            if (builtinScope != null) {
-                builtinScopeActive = true
-
-                // ⚠ 这里**不做任何额外变换** —— 用的就是下面画枪身那一个 poseStack。
-                // 窗口、准星、被剔除的枪身三者靠共用同一份变换才咬得死，Z 轴压缩量怎么变都不会错位。
+        // 装了加速渲染时，下面这一整段（瞄具 + 枪身 + 收尾）都要让 AR 走**原版管线**：
+        // AR 会把顶点收进缓存、推迟到这一帧的 flush 才画，而模板蒙版要求"写模板 → 裁镜身 →
+        // 画遮罩与分划"三步按顺序真正落到帧缓冲上 —— 只要中间有一步被推迟，语义就不成立了。
+        // 关掉加速之后这些几何立刻出图，顺序与本模组不含 AR 时**逐字一致**。
+        // 代价只有"瞄准时这一小段几何不参与加速"；不瞄的时候一切照旧。
+        // AR 内部是栈语义（push / pop），所以这里的 try / finally 是配平且可嵌套的。
+        val vanillaAcceleration = AcceleratedRenderingCompat.shouldAccelerate
+        if (vanillaAcceleration) {
+            AcceleratedRenderingCompat.beginVanillaAcceleration()
+        }
+        try {
+            if (stencilScope != null) {
+                handledScopeAttachment = stencilScope.attachmentId
                 poseStack.pushPose()
-                model.builtinScopeRenderer.renderWithStencil(
+                mulPoseWithNormal(poseStack, stencilScope.slotTransform)
+                stencilScope.model.renderWithStencil(
                     poseStack,
                     bufferSource as MultiBufferSource.BufferSource,
-                    RenderType.entityTranslucent(texture),
-                    BedrockModelRenderTypes.polyMeshCutout(texture),
+                    stencilScope.texture,
                     packedLight,
-                    builtinScope
+                    partialTick,
+                    stencilScope.scopeMode,
+                    stencilScope.companionSightMode,
+                    resolveAmmoReadout(stack, stencilScope)
                 )
                 poseStack.popPose()
 
-                // 与上面配件那一支逐字相同的三行：接下来画的枪身只在窗口**之外**留下。
-                // 那圈几何体本身就是黑色外框，仓库里没有任何 2D 遮罩贴图。
-                ScopeStencilRenderHelper.enableItemEntityStencilTest()
-                RenderSystem.stencilFunc(GL11.GL_EQUAL, 0, 0xFF)
-                RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP)
-                gunCulled = true
+                if (stencilScope.scopeMode.isScope()) {
+                    ScopeStencilRenderHelper.enableItemEntityStencilTest()
+                    RenderSystem.stencilFunc(GL11.GL_EQUAL, 0, 0xFF)
+                    RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP)
+                    gunCulled = true
+                }
+            } else if (canStencil) {
+                // **枪自带瞄具**（geo 里有 `ocular` 的枪，目前只有 igla_9k38）。
+                // 装了镜配件就轮不到它，见 [findBuiltinScope]；两条路径互斥，同一帧只可能走一条。
+                val builtinScope = findBuiltinScope(stack, model, resource)
+                if (builtinScope != null) {
+                    builtinScopeActive = true
+
+                    // ⚠ 这里**不做任何额外变换** —— 用的就是下面画枪身那一个 poseStack。
+                    // 窗口、准星、被剔除的枪身三者靠共用同一份变换才咬得死，Z 轴压缩量怎么变都不会错位。
+                    poseStack.pushPose()
+                    model.builtinScopeRenderer.renderWithStencil(
+                        poseStack,
+                        bufferSource as MultiBufferSource.BufferSource,
+                        RenderType.entityTranslucent(texture),
+                        BedrockModelRenderTypes.polyMeshCutout(texture),
+                        packedLight,
+                        builtinScope
+                    )
+                    poseStack.popPose()
+
+                    // 与上面配件那一支逐字相同的三行：接下来画的枪身只在窗口**之外**留下。
+                    // 那圈几何体本身就是黑色外框，仓库里没有任何 2D 遮罩贴图。
+                    ScopeStencilRenderHelper.enableItemEntityStencilTest()
+                    RenderSystem.stencilFunc(GL11.GL_EQUAL, 0, 0xFF)
+                    RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP)
+                    gunCulled = true
+                }
+            }
+
+            // **部署副武器期间的手臂接管**（§11.11.7.4）：只有副武器被切出来时手臂才挂到它自己
+            // 那两根骨骼上。
+            //
+            // ⚠ **采样点必须尽可能晚**，和 `renderAttachments` 里那份换弹锚点对齐：挂点变换取自
+            // 「本帧最终的主武器骨骼」，而这一帧里改写骨骼的步骤不止一处 —— `applyPose`、`applyCameraShake`
+            // （瞄准时把 `root` 的平移按 (0.6, 0.5, 0.18)、欧拉角按 (0.45, 0.8, 0.8) 压缩）、以及脚本回调
+            // `applyCustomAnimationsByScript`。在它们之前采样，手臂跟上的是**没被压缩过的**后坐，而枪身画的是
+            // 压缩过的：实测 `ak_12.fire_sub_weapon` 瞄准射击时手会离枪 **≈0.27 方块**（27 厘米；随美术当前 clip 浮动），
+            // 且误差随后坐曲线回落（0.27→0.23→0.08→0.02），看上去就是"左手随着动画飘"；
+            // 腰射时压缩系数为 1，误差恰好 0.0000。见 `build/verify/VerifyArmShake.java`。
+            if (transformType.firstPerson()) {
+                resolveDeployedSubWeaponArmAnchors(stack, model, handForContext(transformType))
+            }
+
+            renderAttachments(stack, model, transformType, poseStack, bufferSource, packedLight, packedOverlay)
+
+            // 内置瞄具的准星板：**任何时候**都要藏（腰射、GUI、第三人称、展示框全都走这里），
+            // 否则 `renderToBuffer` 会把它那块 200×200 的透明大板当普通几何体画出来 —— 看上去
+            // 就是一块十字准星飘在枪前方半空中。见 [BuiltinGunScopeRenderer.hideDivisionBones]。
+            val savedDivisionBones = model.builtinScopeRenderer.hideDivisionBones()
+
+            // `ocular` / `ocular_ring` 则是另一回事：它们只在**走模板那一路**时才需要藏 —— 上面那一遍
+            // 已经画过它们了，`renderBoneImmediate` 会临时把 `visible` 打开再还原，所以这里不藏的话会在
+            // `GL_EQUAL 0` 的剔除区间里被**再画一遍**（配件侧由 `renderRemaining` 的隐藏逻辑承担同一职责）。
+            // 腰射时它们是枪上真实存在的镜筒本体，要照常画出来。
+            // ⚠ 这一对必须自己配对，即使在正常帧里收尾的 `model.resetPose()` 也会把 `visible` 复位
+            // （`BoneState.reset()` 里有 `visible = true`）：藏与还原之间夹着 `renderToBuffer`，
+            // **中途抛异常**就会跳过那个复位，共享实例上的这几根骨骼会一直留在 hidden 直到下次资源重载。
+            val savedOcularBones = if (builtinScopeActive) model.builtinScopeRenderer.hideOcularBones() else null
+            try {
+                model.renderToBuffer(
+                    poseStack, bufferSource, texture, packedLight, packedOverlay,
+                    resolveGunAmmoReadout(stack, resource),
+                    // ⚠ 必须在 `renderAttachments` **之后**算：副武器换弹那份锚点是在里面填的，
+                    // 而它的优先级高于常驻接管（见 [resolveArmAnchorsForDraw]）。
+                    resolveArmAnchorsForDraw(model, transformType),
+                    // 同目录下的 `<贴图名>_e.png`，没有就返回 null（绝大多数枪都是这样），枪照旧只画一遍。
+                    // 按**最终选中的那张贴图**推，所以 LOD 贴图会自动去找 `gun_lod/` 里的 `_e`，
+                    // 不需要为两套贴图各写一份配置（见 [GunEmissiveTextures]）。
+                    GunEmissiveTextures.get(texture)
+                )
+            } finally {
+                // 与上面 [resolveDeployedSubWeaponArmAnchors] 同一条约定：可见性是写在**共享**模型实例上的，
+                // 中间抛异常也必须还原 —— 否则这几根骨骼会一直留在 hidden，直到下一次资源重载。
+                if (savedOcularBones != null) model.builtinScopeRenderer.restoreOcularBones(savedOcularBones)
+                model.builtinScopeRenderer.restoreDivisionBones(savedDivisionBones)
+            }
+
+        } finally {
+            if (vanillaAcceleration) {
+                AcceleratedRenderingCompat.endVanillaAcceleration()
             }
         }
 
-        // **部署副武器期间的手臂接管**（§11.11.7.4）：只有副武器被切出来时手臂才挂到它自己
-        // 那两根骨骼上。
-        //
-        // ⚠ **采样点必须尽可能晚**，和 `renderAttachments` 里那份换弹锚点对齐：挂点变换取自
-        // 「本帧最终的主武器骨骼」，而这一帧里改写骨骼的步骤不止一处 —— `applyPose`、`applyCameraShake`
-        // （瞄准时把 `root` 的平移按 (0.6, 0.5, 0.18)、欧拉角按 (0.45, 0.8, 0.8) 压缩）、以及脚本回调
-        // `applyCustomAnimationsByScript`。在它们之前采样，手臂跟上的是**没被压缩过的**后坐，而枪身画的是
-        // 压缩过的：实测 `ak_12.fire_sub_weapon` 瞄准射击时手会离枪 **≈0.27 方块**（27 厘米；随美术当前 clip 浮动），
-        // 且误差随后坐曲线回落（0.27→0.23→0.08→0.02），看上去就是"左手随着动画飘"；
-        // 腰射时压缩系数为 1，误差恰好 0.0000。见 `build/verify/VerifyArmShake.java`。
-        if (transformType.firstPerson()) {
-            resolveDeployedSubWeaponArmAnchors(stack, model, handForContext(transformType))
-        }
-
-        renderAttachments(stack, model, transformType, poseStack, bufferSource, packedLight, packedOverlay)
-
-        // 内置瞄具的准星板：**任何时候**都要藏（腰射、GUI、第三人称、展示框全都走这里），
-        // 否则 `renderToBuffer` 会把它那块 200×200 的透明大板当普通几何体画出来 —— 看上去
-        // 就是一块十字准星飘在枪前方半空中。见 [BuiltinGunScopeRenderer.hideDivisionBones]。
-        val savedDivisionBones = model.builtinScopeRenderer.hideDivisionBones()
-
-        // `ocular` / `ocular_ring` 则是另一回事：它们只在**走模板那一路**时才需要藏 —— 上面那一遍
-        // 已经画过它们了，`renderBoneImmediate` 会临时把 `visible` 打开再还原，所以这里不藏的话会在
-        // `GL_EQUAL 0` 的剔除区间里被**再画一遍**（配件侧由 `renderRemaining` 的隐藏逻辑承担同一职责）。
-        // 腰射时它们是枪上真实存在的镜筒本体，要照常画出来。
-        // ⚠ 这一对必须自己配对，即使在正常帧里收尾的 `model.resetPose()` 也会把 `visible` 复位
-        // （`BoneState.reset()` 里有 `visible = true`）：藏与还原之间夹着 `renderToBuffer`，
-        // **中途抛异常**就会跳过那个复位，共享实例上的这几根骨骼会一直留在 hidden 直到下次资源重载。
-        val savedOcularBones = if (builtinScopeActive) model.builtinScopeRenderer.hideOcularBones() else null
-        try {
-            model.renderToBuffer(
-                poseStack, bufferSource, texture, packedLight, packedOverlay,
-                resolveGunAmmoReadout(stack, resource),
-                // ⚠ 必须在 `renderAttachments` **之后**算：副武器换弹那份锚点是在里面填的，
-                // 而它的优先级高于常驻接管（见 [resolveArmAnchorsForDraw]）。
-                resolveArmAnchorsForDraw(model, transformType),
-                // 同目录下的 `<贴图名>_e.png`，没有就返回 null（绝大多数枪都是这样），枪照旧只画一遍。
-                // 按**最终选中的那张贴图**推，所以 LOD 贴图会自动去找 `gun_lod/` 里的 `_e`，
-                // 不需要为两套贴图各写一份配置（见 [GunEmissiveTextures]）。
-                GunEmissiveTextures.get(texture)
-            )
-        } finally {
-            // 与上面 [resolveDeployedSubWeaponArmAnchors] 同一条约定：可见性是写在**共享**模型实例上的，
-            // 中间抛异常也必须还原 —— 否则这几根骨骼会一直留在 hidden，直到下一次资源重载。
-            if (savedOcularBones != null) model.builtinScopeRenderer.restoreOcularBones(savedOcularBones)
-            model.builtinScopeRenderer.restoreDivisionBones(savedDivisionBones)
-        }
         if (transformType.firstPerson()) {
             val hand = handForContext(transformType)
             val animation = FirstPersonRenderHandler.getActiveAnimationInstance(hand) as? GeoGunAnimationInstance

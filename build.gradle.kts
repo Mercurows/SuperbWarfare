@@ -302,6 +302,8 @@ dependencies {
     runtimeOnly("mezz.jei:jei-${project.property("minecraft_version")}-neoforge:${project.property("jei_version")}")
     implementation("curse.maven:jade-324717:6291517")
 
+    compileOnly("curse.maven:accelerated-rendering-1314021:8448200")
+
     // 帕秋莉手册
 //    compileOnly("curse.maven:patchouli-306770:6164617")
 //    runtimeOnly("curse.maven:patchouli-306770:6164617")
