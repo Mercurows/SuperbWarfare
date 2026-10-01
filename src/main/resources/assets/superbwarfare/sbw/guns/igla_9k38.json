@@ -1,11 +1,41 @@
 {
-  "Model": {
-    "Animation": "superbwarfare:animations/igla_9k38.animation.json",
-    "Model": "superbwarfare:geo/igla_9k38.geo.json",
-    "Texture": "superbwarfare:textures/item/igla_9k38.png"
-  },
+  "Icon": "superbwarfare:textures/gun_icon/igla_9k38_icon.png",
+  "SlotIcon": "superbwarfare:textures/item/igla_9k38_icon.png",
   "Animation": {
     "Idle": "animation.igla_9k38.idle",
-    "Reload": "animation.igla_9k38.reload"
+    "Fire": "animation.igla_9k38.fire",
+    "ReloadEmpty": "animation.igla_9k38.reload",
+    "Edit": "animation.igla_9k38.edit"
+  },
+  "ShootRecoil": {
+    "Offset": [1.0, 0.25, 1.5],
+    "Rotation": [1.1, 0.6, 0.5],
+    "ZoomRate": 0.9,
+    "Speed": 1.0
+  },
+  "Model": {
+    "Animation": "superbwarfare:animations/bedrock/gun/igla_9k38.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/igla_9k38.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/igla_9k38.png"
+  },
+  "BuiltinScope": {
+    "ViewRadiusModifier": 1.0,
+    "ZoomLengthScale": 0.75
+  },
+  "FlareSize": 2,
+  "HasSmoke": true,
+  "Smoke": {
+    "Size": 0.45,
+    "Growth": 0.25,
+    "Lifetime": 0.3,
+    "Speed": 0.4,
+    "Count": 2,
+    "Opacity": 0.9,
+    "Drag": 2,
+    "RandomSize": 0.05,
+    "RandomGrowth": 0.2,
+    "RandomLifetime": 0.2,
+    "RandomSpeed": 0.2,
+    "RandomOpacity": 0.1
   }
 }

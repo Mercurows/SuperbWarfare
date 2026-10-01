@@ -17,10 +17,8 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
-import net.minecraft.world.phys.Vec3
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
-import kotlin.math.min
 
 @OnlyIn(Dist.CLIENT)
 object IglaHudOverlay : CommonOverlay("igla_9k38_hud") {
@@ -31,7 +29,6 @@ object IglaHudOverlay : CommonOverlay("igla_9k38_hud") {
     private val PART_4 = loc("textures/overlay/igla_9k38/part_4.png")
     private val HOLD = loc("textures/overlay/igla_9k38/hold.png")
     private val SHOOT = loc("textures/overlay/igla_9k38/shoot.png")
-    private val IGLA_SCOPE = loc("textures/overlay/igla_9k38/igla_scope.png")
 
     private var scopeScale = 1f
     private var lerpSeeking = 1f
@@ -49,56 +46,6 @@ object IglaHudOverlay : CommonOverlay("igla_9k38_hud") {
             val data = from(stack)
 
             poseStack.pushPose()
-
-            val moveX =
-                (-32 * ClientEventHandler.turnRot[1] - (if (player.isSprinting) 100 else 67) * ClientEventHandler.movePosX + 3 * ClientEventHandler.cameraRot[2]).toFloat()
-            val moveY =
-                (-32 * ClientEventHandler.turnRot[0] + 100 * ClientEventHandler.velocityY.toFloat() - (if (player.isSprinting) 100 else 67) * ClientEventHandler.movePosY - 12 * ClientEventHandler.boltMove + 3 * ClientEventHandler.cameraRot[1]).toFloat()
-            scopeScale = Mth.lerp(
-                (0.5f * deltaFrame).toDouble(),
-                scopeScale.toDouble(),
-                1.35f + (0.2f * ClientEventHandler.boltMove)
-            ).toFloat()
-            val f = min(screenWidth, screenHeight).toFloat()
-            val f1: Float = min(screenWidth.toFloat() / f, screenHeight.toFloat() / f) * scopeScale
-            val i = Mth.floor(f * f1).toFloat()
-            val j = Mth.floor(f * f1).toFloat()
-            val pCross = (camera.position.add(Vec3(camera.lookVector))).worldToScreen()
-            val x0 = pCross.x.toFloat() + 4 * moveX
-            val y0 = pCross.y.toFloat() + 4 * moveY
-
-            val blockPos = player.blockPosition()
-            val combinedLightLevel = player.level().getMaxLocalRawBrightness(blockPos)
-
-            RenderSystem.disableDepthTest()
-            RenderSystem.depthMask(false)
-            RenderSystem.enableBlend()
-            RenderSystem.setShader { GameRenderer.getPositionTexShader() }
-            RenderSystem.blendFuncSeparate(
-                GlStateManager.SourceFactor.SRC_ALPHA,
-                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
-                GlStateManager.SourceFactor.ONE,
-                GlStateManager.DestFactor.ZERO
-            )
-            RenderSystem.setShaderColor(
-                combinedLightLevel.toFloat() / 15,
-                combinedLightLevel.toFloat() / 15,
-                combinedLightLevel.toFloat() / 15,
-                1f
-            )
-
-            RenderHelper.preciseBlit(
-                guiGraphics,
-                IGLA_SCOPE,
-                x0 - 1.5f * i,
-                y0 - 1.5f * j,
-                0f,
-                0f,
-                3 * i,
-                3 * j,
-                3 * i,
-                3 * j
-            )
 
             RenderSystem.disableDepthTest()
             RenderSystem.depthMask(false)
