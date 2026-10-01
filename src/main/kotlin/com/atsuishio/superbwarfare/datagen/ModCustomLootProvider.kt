@@ -421,6 +421,7 @@ class ModCustomLootProvider : LootTableSubProvider {
 
                 ModItems.CHARM_CHIRAM_CORE weighted 2
                 ModItems.CHARM_LILY weighted 2
+                ModItems.CHARM_HIRU_HEAD weighted 2
             }
         }
 
