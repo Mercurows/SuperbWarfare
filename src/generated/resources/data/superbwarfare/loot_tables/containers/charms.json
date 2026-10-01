@@ -26,6 +26,16 @@
         },
         {
           "type": "minecraft:item",
+          "name": "superbwarfare:charm_cow",
+          "weight": 25
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_snowgolem",
+          "weight": 25
+        },
+        {
+          "type": "minecraft:item",
           "name": "superbwarfare:charm_fukamizu_fish",
           "weight": 15
         },
@@ -51,6 +61,16 @@
         },
         {
           "type": "minecraft:item",
+          "name": "superbwarfare:charm_mooshroom",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_piglin_head",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
           "name": "superbwarfare:charm_wither_skeleton_skull",
           "weight": 10
         },
@@ -72,6 +92,11 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:charm_winefox_tail",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_elder_guardian",
           "weight": 10
         },
         {
