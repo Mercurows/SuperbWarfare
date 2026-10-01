@@ -108,6 +108,11 @@ fun DefaultGunData.withOverrides(diff: Map<out Prop<*, *, *, *, *>, Any?>): Defa
         } else {
             soundInfo
         },
+        shootAnimation = if (diff.containsKey(GunProp.SHOOT_ANIMATION)) {
+            diff[GunProp.SHOOT_ANIMATION] as? String
+        } else {
+            shootAnimation
+        },
         meleeSound = if (diff.containsKey(GunProp.MELEE_SOUND)) {
             diff[GunProp.MELEE_SOUND] as? MeleeSound ?: meleeSound
         } else {

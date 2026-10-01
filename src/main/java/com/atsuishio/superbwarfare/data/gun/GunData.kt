@@ -387,6 +387,67 @@ class GunData private constructor(
         invalidateProperties()
     }
 
+    /**
+     * 本发正在生效的充能射击档位（[ChargeAction]），`null` 表示按普通射击算。
+     *
+     * 只活在**一次开火的调用栈**里：[com.atsuishio.superbwarfare.item.gun.GunItem.shootInternal]
+     * 开火前设、开火后清，所以既不写 NBT、也不会影响其它枪。
+     */
+    @Transient
+    @kotlinx.serialization.Transient
+    private var activeChargeAction: ChargeAction? = null
+
+    /**
+     * 设置本发的充能射击档位，传 `null` 复位为普通射击。
+     *
+     * 会强制下次 [get] 重跑属性流水线，使该档位的 `Override` 生效。
+     * 调用方**必须**在开火结束后传 `null`，否则这把枪会一直按强化数值计算。
+     */
+    fun setChargeAction(action: ChargeAction?) {
+        // 档位是数据里共享的不可变对象，用引用比较即可（同一次开火里连着设同一个值不重复触发重算）
+        if (activeChargeAction === action) return
+        activeChargeAction = action
+        invalidateProperties()
+    }
+
+    /**
+     * 选出本次开火适用的充能射击档位；没有满足条件的就返回 `null`，按普通射击处理。
+     *
+     * 按数据里的数组顺序取第一个满足的：开镜条件（[ChargeAction.onlyZooming]）成立，
+     * 且枪械当前 FE 不少于 [ChargeAction.cost]。
+     *
+     * 客户端也用同一个方法判断（1P 音效要换成强化那套），两边都以本次开火的 `zoom` 为准。
+     *
+     * @param zoom 本次开火是否处于开镜状态。
+     * @param ammoSupplier 弹药提供者，用来定位能量存储（载具枪走载具，普通枪走物品栈）。
+     */
+    fun chargeActionFor(zoom: Boolean, ammoSupplier: Entity?): ChargeAction? {
+        val actions = get(GunProp.CHARGE_ACTION)
+        if (actions.isEmpty()) return null
+
+        val energy = getEnergyProvider(ammoSupplier).map { it.energyStored }.orElseGet { 0 }
+        return actions.firstOrNull { (!it.onlyZooming || zoom) && energy >= it.cost }
+    }
+
+    /**
+     * 「如果现在开火」时 [GunProp.ZOOM_SPREAD_RATE] 会是多少 —— 命中充能档位就取它覆写的值。
+     *
+     * 为什么要单独开一个方法，而不是把档位套上流水线再读：散布是**逐帧**消费的
+     * （`ClientEventHandler.handleGunShoot` 用它算准星与弹道，见那边的 `zoomSpread`），
+     * 而 [setChargeAction] 的覆写是**按发**的瞬态状态。为了逐帧读一个数字就
+     * `setChargeAction` + `get` + 复位，等于每帧重建两次属性流水线（配件/弹种/perk 全链），
+     * 不值当 —— 所以直接读档位 `Override` 里的原始数字（[ChargeAction.numericOverride]）。
+     *
+     * 命中档位但没写这一项时回落普通值，与流水线的语义一致：没被覆写的属性照旧。
+     * 判定口径与 [chargeActionFor] 完全同一个（`zoom` + 电量），所以准星显示的和真打出去的
+     * 用的是同一档。
+     */
+    fun zoomSpreadRateFor(zoom: Boolean, ammoSupplier: Entity?): Double {
+        val normal = get(GunProp.ZOOM_SPREAD_RATE)
+        val action = chargeActionFor(zoom, ammoSupplier) ?: return normal
+        return action.numericOverride(GunProp.ZOOM_SPREAD_RATE) ?: normal
+    }
+
     private val jsonPropModifier = JsonOverrideApplier(GunProp.entries)
     private val attachmentJsonPropModifier = JsonOverrideApplier(GunProp.entries)
     private var tempModifications: Function<DefaultGunData, DefaultGunData>? = null
@@ -476,6 +537,11 @@ class GunData private constructor(
 
             // 5. AmmoConsumer modifiers
             selectedAmmoConsumer(pmcInstance[AMMO_CONSUMER]).modifyProperty(pmcInstance)
+
+            // 5.5 充能射击：本发按 ChargeAction 的 Override 覆写。
+            //     刻意排在弹种 Override 之后（两者都写同一属性时充能档胜出）、perk 之前
+            //     （perk 的加成照旧叠在覆写值之上，与弹种 Override 的语义一致）。
+            activeChargeAction?.modifyProperty(pmcInstance)
 
             // 6. Active Perks
             for (type in PERK_TYPES) {

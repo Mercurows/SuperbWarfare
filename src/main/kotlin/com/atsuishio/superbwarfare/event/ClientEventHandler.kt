@@ -252,6 +252,39 @@ object ClientEventHandler {
     @JvmField
     var recoilForce: Double = 0.0
 
+    /**
+     * 上一发**充能射击**覆写后的后坐（`ChargeAction.Override` 里的 `RECOIL_X` / `RECOIL_Y`）。
+     * 普通射击为 `null`，表示照常读枪械数据。
+     *
+     * 为什么不能直接用瞬时覆写：后坐是**逐帧**消费的 —— 相机抖动
+     * （[handleWeaponFire]，`25000 · RECOIL_X · RECOIL_Y`）和抬枪（[handleGunRecoil]）每帧都要重新读，
+     * 而 `ChargeAction` 的覆写只在开火那一帧的调用栈里有效（见 `GunData.setChargeAction`）。
+     * 所以开火时把值抄在这里，由每次开火整体刷新。
+     */
+    private var chargedRecoilX: Double? = null
+    private var chargedRecoilY: Double? = null
+
+    /**
+     * 记下的值是否该生效。
+     *
+     * 门禁在 `fireRecoilTime`（主武器开火才置位，见 [handleClientShoot]）而不是后坐相位上：
+     * 副武器的镜头后坐走的是 `subWeaponRecoilTimer`，但它读的 `RECOIL_*` 是**操控的主武器**的，
+     * 不加这道门禁就会把上一发主武器充能射击的后坐串到副武器那一发上。
+     */
+    private fun chargedRecoilActive() = fireRecoilTime > 0.0
+
+    /** 本发实际生效的 `RECOIL_X`：主武器充能射击取开火时记下的值，否则取枪械数据。 */
+    private fun effectiveRecoilX(data: GunData): Double {
+        val charged = chargedRecoilX
+        return if (charged != null && chargedRecoilActive()) charged else data.get(GunProp.RECOIL_X)
+    }
+
+    /** 本发实际生效的 `RECOIL_Y`：主武器充能射击取开火时记下的值，否则取枪械数据。 */
+    private fun effectiveRecoilY(data: GunData): Double {
+        val charged = chargedRecoilY
+        return if (charged != null && chargedRecoilActive()) charged else data.get(GunProp.RECOIL_Y)
+    }
+
     @JvmField
     var droneFov: Double = 1.0
 
@@ -1812,7 +1845,10 @@ object ClientEventHandler {
         val jump = if (player.onGround()) 0.0 else 0.35 * basicDev
         val ride = if (player.onGround()) -0.25 * basicDev else 0.0
 
-        val zoomSpread = 1 - (1 - data.get(GunProp.ZOOM_SPREAD_RATE)) * zoomTime
+        // 这里的值同时决定**准星大小**和**实际弹道**（`gunSpread` 会随 `ShootMessage` 发给服务端），
+        // 所以充能射击那一档的 `ZoomSpreadRate` 必须在这一层就生效 —— 它走的是
+        // `zoomSpreadRateFor` 而不是普通 `get`，理由见那个方法的注释。
+        val zoomSpread = 1 - (1 - data.zoomSpreadRateFor(zoom, player)) * zoomTime
         val spread =
             if (data.isShotgun) 1.2 * zoomSpread * (basicDev + 0.2 * (walk + sprint + crouching + prone + jump + ride) + fireSpread)
             else zoomSpread * (0.7 * basicDev + walk + sprint + crouching + prone + jump + ride + 0.8 * fireSpread)
@@ -1991,8 +2027,22 @@ object ClientEventHandler {
         revolverPreTime = 0.0
         revolverWheelPreTime = 0.0
 
-        playGunClientSounds(player)
-        handleClientShoot(chargePower)
+        // 充能射击：本地音与本地后坐都在客户端自己算，服务端管不到，所以这里按与服务端同一套
+        // 判据（开镜 + 电量，见 `GunData.chargeActionFor`）判一次，命中就把本发属性换成
+        // ChargeAction 的 Override，让下面两次调用读到强化后的 SoundInfo / RECOIL_*。
+        val chargeAction = data.chargeActionFor(zoom, player)
+        data.setChargeAction(chargeAction)
+        try {
+            // RECOIL_Y 在 handleClientShoot 里当场读，包进窗口即可；RECOIL_X/Y 的逐帧消费
+            // （相机抖动、抬枪）撑不到这里，所以开火时先记下来。
+            chargedRecoilX = if (chargeAction != null) data.get(GunProp.RECOIL_X) else null
+            chargedRecoilY = if (chargeAction != null) data.get(GunProp.RECOIL_Y) else null
+
+            playGunClientSounds(player)
+            handleClientShoot(chargePower)
+        } finally {
+            data.setChargeAction(null)
+        }
     }
 
     fun handleClientShoot(chargePower: Double = 1.0) {
@@ -2717,7 +2767,8 @@ object ClientEventHandler {
         val times = (1.25f * customAnimSpeed * mc.deltaFrameTime.coerceAtMost(0.48f)).toFloat()
         val stack = ActiveGun.stackOf(entity)
         val data = GunData.from(stack)
-        val amplitude = 25000.0 * data.get(GunProp.RECOIL_Y) * data.get(GunProp.RECOIL_X)
+        // 充能射击的后坐逐帧消费，取开火那一帧记下的值（见 chargedRecoilX / effectiveRecoilX）
+        val amplitude = 25000.0 * effectiveRecoilY(data) * effectiveRecoilX(data)
 
         if (fireRecoilTime > 0.0) {
             firePosTimer = 0.001
@@ -2986,7 +3037,8 @@ object ClientEventHandler {
         // 后坐的**重量阻尼**按主武器（`ActiveGun.handlingData`）：后坐是打进来之后被"手里的质量"吃掉的，
         // 而手里是整把主武器加挂在它身上的副武器。至于后坐**幅度**（`RECOIL_X`）仍然是操控的枪的 —— 那一发是谁打的。
         val customWeight = (ActiveGun.handlingData(player) ?: data).get(GunProp.WEIGHT)
-        val gunRecoilX = data.get(GunProp.RECOIL_X)
+        // 同上：抬枪是逐帧算的，充能射击要取开火时记下的 RECOIL_X
+        val gunRecoilX = effectiveRecoilX(data)
 
         recoilHorizon = Mth.lerp(0.2 * times, recoilHorizon, 0.0) + recoilY
         recoilY = 0.0
@@ -3648,7 +3700,24 @@ object ClientEventHandler {
             event.stack,
             subWeaponInfo?.fireAnimationCandidates() ?: emptyList(),
             subWeaponInfo?.hasExplicitFireAnimation == true,
+            shootAnimationOf(event.stack),
         )
+    }
+
+    /**
+     * 本发要改用哪支开火动画（`GunProp.SHOOT_ANIMATION`），没写时返回 `null`。
+     *
+     * 这个属性平时是 `null`：开火动画按物品从资源侧 `Animation.Fire` 解析，只有"某一种射击
+     * 换一支动画"才写它 —— 目前唯一来源是充能射击的 `ChargeAction.Override.ShootAnimation`。
+     *
+     * ⚠ 它读得到值，靠的是**开火窗口**：`event.stack` 就是 `shootClient` 判档用的那个栈
+     * （`ActiveGun.stackOf`），而 `postEvent` 是在 `handleClientShoot` 末尾**同步**发出的，
+     * 此刻那把枪的 `GunData` 上正挂着本次的充能档位（`GunData.setChargeAction`）。
+     * 窗口关掉之后再读就只是普通值（`null`），所以从别处补发这个事件不会误换动画。
+     */
+    private fun shootAnimationOf(stack: ItemStack): String? {
+        if (stack.isEmpty) return null
+        return GunData.from(stack).get(GunProp.SHOOT_ANIMATION)
     }
 
     /** 这个栈是副武器物品时返回它自己的配件定义（含 `SubWeaponInfo`），否则 `null` */

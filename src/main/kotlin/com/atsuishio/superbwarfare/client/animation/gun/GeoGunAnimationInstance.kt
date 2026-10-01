@@ -166,6 +166,15 @@ open class GeoGunAnimationInstance(
 
     /** 上一次已经打过日志的开火动画解析失败（见 [logFireMissOnce]） */
     private var loggedFireMiss: String? = null
+
+    /**
+     * 上一次已经打过日志的 [GunProp.SHOOT_ANIMATION] 解析失败（见 [resolveOverrideFireName]）。
+     *
+     * 与 [loggedFireMiss] **分开存**：两者在同一次开火里都会跑，共用一个槽位时
+     * 后者成功会把前者的去重标记清掉（`resolveFireName` 命中就 `loggedFireMiss = null`），
+     * 于是"显式动画名写错"又变成每发一条。
+     */
+    private var loggedOverrideFireMiss: String? = null
     private val pendingShellEjects = ArrayList<Int>()
     private val pendingParticles = ArrayList<ParticleEffectData>()
     private var cachedPose: Pose = DummyPose.INSTANCE
@@ -231,15 +240,26 @@ open class GeoGunAnimationInstance(
      * @param reportMissing 候选全部落空时是否按**数据写错**报 error。默认候选（没写 `Animation` 时
      *   那条 `fire_sub_weapon`）落空是正常情况 —— 绝大多数枪就没做这支 clip，
      *   所以调用方按"这份候选是不是数据里显式写的"传（见 `SubWeaponInfo.hasExplicitFireAnimation`）。
+     * @param overrideAnimation **显式指定**本发用的 clip（`GunProp.SHOOT_ANIMATION`），留空走原有解析。
+     *   它是"这一发放哪支 clip"的直接答案，所以**优先于候选链与 `Fire` 兜底** —— 充能射击就是靠它
+     *   换成 `*_charge` 那支的。名字同样是全名/短名两可（见 [GunAnimationNames]），
+     *   拼出来不存在时退回原有解析并记一条日志（静默退回会让"动画没换"变成查不出来的问题）。
      */
     @JvmOverloads
-    fun triggerFire(stack: ItemStack, candidates: List<String> = emptyList(), reportMissing: Boolean = false) {
+    fun triggerFire(
+        stack: ItemStack,
+        candidates: List<String> = emptyList(),
+        reportMissing: Boolean = false,
+        overrideAnimation: String? = null,
+    ) {
         // ⚠ 候选链与 `GunAnimation.Fire` 一律按**宿主枪**的资源解析：这个动画实例属于宿主枪的
         // 模型，`animations` 那张表也是从宿主枪的动画文件加载的。副武器的合成栈没有自己的
         // 枪械动画文件，拿它去解析只会把表清空（见下面的 `updateItem`）。
         val hostStack = this.stack
 
-        val fireName = resolveFireName(hostStack, candidates, reportMissing) ?: return
+        val fireName = resolveOverrideFireName(hostStack, overrideAnimation)
+            ?: resolveFireName(hostStack, candidates, reportMissing)
+            ?: return
         if (!animations.containsKey(fireName)) return
 
         // 这一发是不是**副武器**打的。抛壳只认它，与"播了哪支 clip"无关。
@@ -742,6 +762,40 @@ open class GeoGunAnimationInstance(
         newRunner.state = AnimationPlayType.PLAY_ONCE_STOP.state()
         fireRunner = newRunner
         cachedPose = newRunner.evaluate()    }
+
+    /**
+     * 解析**显式指定**的开火 clip（`GunProp.SHOOT_ANIMATION`），没写或解析不出来时返回 `null`。
+     *
+     * 名字口径与候选链完全一致（[GunAnimationNames]：`animation.` 开头当全名，否则按**宿主枪 id**
+     * 拼短名），但这里**只认这一支**——没有候选可言，解析出来不存在就交给调用方退回原有解析。
+     *
+     * 解析失败是"数据或动画文件写错了"（写这个名字的目的就是要换动画，结果没换成），
+     * 所以报 error，并按解析结果去重（每发都解析，不去重会刷屏）。
+     *
+     * @param stack 宿主枪 —— 与 [resolveFireName] 一样，短名要按**宿主的 id** 拼
+     */
+    private fun resolveOverrideFireName(stack: ItemStack, overrideAnimation: String?): String? {
+        if (overrideAnimation.isNullOrBlank()) return null
+
+        val name = GunAnimationNames.resolve(overrideAnimation, GunResource.from(stack).id)
+        if (animations.containsKey(name)) {
+            loggedOverrideFireMiss = null
+            return name
+        }
+
+        // 资源还没加载完时（animations 为空）不打日志，下一帧还会再解析一次
+        if (animations.isNotEmpty() && loggedOverrideFireMiss != overrideAnimation) {
+            loggedOverrideFireMiss = overrideAnimation
+            Mod.LOGGER.error(
+                "ShootAnimation '{}' (resolved to '{}') not found in the animation file of {}; " +
+                        "falling back to the normal fire animation",
+                overrideAnimation,
+                name,
+                stack.item
+            )
+        }
+        return null
+    }
 
     /**
      * 解析本次开火实际使用的 clip 名。
