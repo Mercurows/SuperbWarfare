@@ -600,6 +600,7 @@ class ModItemTagProvider(
             ModItems.CHARM_WINEFOX_TAIL,
             ModItems.CHARM_SEPT_WOLVES,
             ModItems.CHARM_ANCIENT_CPU,
+            ModItems.CHARM_DRAGON_HEAD,
             ModItems.CHARM_SENPAI,
             ModItems.CHARM_CHIRAM_CORE,
             ModItems.CHARM_LILY
