@@ -56,6 +56,11 @@
         },
         {
           "type": "minecraft:item",
+          "name": "superbwarfare:charm_rice_cake_fox_lolita",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
           "name": "superbwarfare:charm_sept_wolves",
           "weight": 5
         },
