@@ -758,6 +758,7 @@ object ModItems {
     @JvmField val CHARM_WITHER_SKELETON_SKULL = registerAttachment("charm_wither_skeleton_skull", Rarity.EPIC)
     @JvmField val CHARM_NETHER_STAR = registerAttachment("charm_nether_star", Rarity.EPIC)
     @JvmField val CHARM_CONDUIT = registerAttachment("charm_conduit", Rarity.EPIC)
+    @JvmField val CHARM_RICE_CAKE_FOX_LOLITA = registerAttachment("charm_rice_cake_fox_lolita", Rarity.EPIC)
     @JvmField val CHARM_SEPT_WOLVES = registerAttachment("charm_sept_wolves", ModRarities.LEGENDARY)
     @JvmField val CHARM_ANCIENT_CPU = registerAttachment("charm_ancient_cpu", ModRarities.LEGENDARY)
     @JvmField val CHARM_SENPAI = registerAttachment("charm_senpai", ModRarities.SUPERB)

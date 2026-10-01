@@ -1,0 +1,15 @@
+{
+  "Slot": "Charm",
+  "Model": "superbwarfare:models/bedrock/attachment/charm_rice_cake_fox_lolita.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/charm_rice_cake_fox_lolita.png",
+  "Charm": {
+    "LateralAngle": 15.0
+  },
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 0.05
+    }
+  ]
+}
