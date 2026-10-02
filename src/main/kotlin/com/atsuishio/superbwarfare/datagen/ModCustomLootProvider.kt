@@ -422,6 +422,7 @@ class ModCustomLootProvider : LootTableSubProvider {
                 ModItems.CHARM_SEPT_WOLVES weighted 5
                 ModItems.CHARM_ANCIENT_CPU weighted 5
                 ModItems.CHARM_DRAGON_HEAD weighted 5
+                ModItems.CHARM_THE_EMPERORS_NEW_CHARM weighted 5
 
                 ModItems.CHARM_SENPAI weighted 1
                 ModItems.CHARM_MRAHC weighted 1
