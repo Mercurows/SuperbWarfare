@@ -13,76 +13,46 @@ import com.atsuishio.superbwarfare.init.ModItems
 import net.minecraft.resources.ResourceLocation
 import java.util.concurrent.ConcurrentHashMap
 
-/**
- * 槽位的挂载骨骼从哪来。
- *
- * @see AttachmentSlot.mountBone
- */
+/** 槽位的挂载骨骼从哪来，见 [AttachmentSlot.mountBone] */
 sealed interface AttachmentMountBone {
-    /**
-     * 约定骨骼：这个槽位固定挂在枪模型的这个名字上，与配件自身怎么写无关。
-     * 目前只有握把（`grip_pos`）走这条。
-     */
+    /** 约定骨骼：这个槽位固定挂在枪模型的这个名字上，配件自己怎么写都不看，目前只有握把走这条 */
     data class Fixed(val name: String) : AttachmentMountBone
 
-    /**
-     * 用配件自己在 [AttachmentDefinition.bone] 里声明的骨骼；没声明时退回 [fallback]
-     * （为 `null` 表示"没声明就不渲染"）。枪口槽就是这么用的。
-     */
+    /** 用配件在 [AttachmentDefinition.bone] 里声明的骨骼，没声明时退回 [fallback]（null = 不渲染） */
     data class FromDefinition(val fallback: String? = null) : AttachmentMountBone
 
-    /**
-     * 不是"往枪上挂一个模型"，而是**切换枪模型自带的骨骼**（弹匣这类：
-     * `magazine_standard` / `magazine_extend` / `magazine_extend_pro` 都是枪模型里的骨骼）。
-     */
+    /** 不挂模型，而是切换枪模型自带的骨骼（弹匣的 `magazine_standard` / `magazine_extend` 等） */
     data object GunModel : AttachmentMountBone
 }
 
-/**
- * 槽位的渲染分派方式。
- */
+/** 槽位的渲染分派方式 */
 enum class AttachmentRenderMode {
-    /**
-     * 由 `GeoGunRenderer` 里该槽位的专属代码渲染。
-     *
-     * 现有五个槽位都有各自的特殊表现（瞄具要分划/模板、枪托要适配器、握把要护木、枪口要枪口焰），
-     * 单独写比塞进通用流程更清楚。
-     */
+    /** 由 `GeoGunRenderer` 里该槽位的专属代码渲染（瞄具分划、枪托适配器、握把护木、枪口焰） */
     CUSTOM,
 
     /**
      * 走注册表驱动的通用渲染：按 [AttachmentDefinition.model] / [AttachmentDefinition.texture]
-     * 取模型与贴图，挂到 [AttachmentSlot.mountBone] 上画。**新增槽位默认走这条**。
+     * 取模型与贴图，挂到 [AttachmentSlot.mountBone] 上画，新增槽位默认走这条
      */
     GENERIC,
 }
 
 /**
- * 一个配件槽位的全部元数据。
+ * 一个配件槽位的全部元数据
  *
- * 「槽位」原先散落在 8 处硬编码（渲染分派、编辑界面按钮、焦点骨骼、标签桶、挂点组……），
- * 这里收成一条登记项：**新增一个槽位类型 = 加一个 [AttachmentType] 枚举常量 + 在这里登记一条**，
- * 其余环节（挂点互斥、物品 tag、datagen、改装界面按钮、调试聚焦、通用渲染）都从这张表读。
+ * 槽位相关的规则都从这张表读：挂点互斥、物品 tag、datagen、改装界面按钮、调试聚焦、通用渲染，
+ * 新增一种槽位 = 加一个 [AttachmentType] 枚举常量 + 在这里登记一条
  *
- * @param type 对应的槽位枚举。
- * @param mount 挂点组名。**登记到同一个 [mount] 的两个槽位互斥**（同时只能装一个），
- *   例如刺刀与枪口配件都挂在 `muzzle_device` 上；不同 [mount] 的槽位可以共存且同时生效。
- *   配件可以用 [AttachmentDefinition.mount] 覆盖自己所在槽位的默认挂点组。
- * @param conflictsWith 额外互斥的槽位（默认空）。**挂点组是传递的等价关系**，表达不了
- *   "A 与 B 互斥、A 与 C 互斥，但 B 与 C 可以共存"这种非传递组合，
- *   所以这类规则写在这里（见 [conflicts] 与 `AttachmentType.SUBWEAPON` 的登记项）。
- *   配件可以用 [AttachmentDefinition.conflictsWith] 追加自己的名单，
- *   用 [AttachmentDefinition.allowSharedMount] 整体放行。
- * @param tagBucket 物品 tag 的桶名（`superbwarfare:attachment/<tagBucket>`），
- *   `null` 表示这个槽位不生成 tag。生成逻辑见 `ModTags` / `ModItemTagProvider`。
- * @param icon 改装界面上的槽位图标（`textures/gui/attachment/<icon>.png`）。
- *   `WeaponEditScreen` 目前仍是自己硬编码的一份贴图常量（槽位顺序与 [EDIT_ORDER] 对齐），
- *   登记在这里是为了让界面重写时"槽位 → 图标"不必再散在界面代码里。
- * @param mountBone 挂载骨骼来源，只被 [AttachmentRenderMode.GENERIC] 的渲染用到。
- * @param focusBone 改装界面聚焦到该槽位时用的骨骼；`null` 表示该槽位不聚焦。
- * @param renderMode 渲染分派方式。
- * @param withdrawAmmoOnChange 换这个槽位的配件前，是否需要先把已装填的弹药退还给玩家
- *   （只有弹匣槽位需要：配件会改变弹匣容量）。
+ * @param mount 挂点组名，登记到同一组的槽位互斥（例如刺刀与枪口配件都在 `muzzle_device`），
+ *   不同组的槽位可以共存，配件可以用 [AttachmentDefinition.mount] 覆盖所在槽位的默认值
+ * @param conflictsWith 额外互斥的槽位，挂点组是传递的等价关系，表达不了"副武器排斥刺刀与握把、
+ *   但刺刀与握把可以共存"这种非传递组合，所以这类规则写在这里
+ * @param tagBucket 物品 tag 的桶名（`superbwarfare:attachment/<tagBucket>`），null 表示不生成 tag
+ * @param icon 改装界面上的槽位图标（`textures/gui/attachment/<icon>.png`），界面目前还自己硬编码贴图，
+ *   这里是给界面重写预留的槽位 → 图标映射
+ * @param mountBone 挂载骨骼来源，只有 [AttachmentRenderMode.GENERIC] 的渲染会用到
+ * @param focusBone 改装界面聚焦到该槽位时用的骨骼，null 表示不聚焦
+ * @param withdrawAmmoOnChange 换这个槽位的配件前是否要先把已装填的弹药退给玩家（只有弹匣槽位需要）
  */
 data class AttachmentSlot(
     val type: AttachmentType,
@@ -96,39 +66,27 @@ data class AttachmentSlot(
     val withdrawAmmoOnChange: Boolean = false,
     val researchable: Boolean = true,
 ) {
-    /** 槽位的物品 tag 名，例如 `attachment/bayonet`。 */
+    /** 槽位的物品 tag 名，例如 `attachment/bayonet` */
     val tagName: String? get() = tagBucket?.let { "attachment/$it" }
 }
 
-/**
- * 改装界面里的一个可编辑项：某个槽位，或者"弹药类型"这种非槽位项。
- */
+/** 改装界面里的一个可编辑项：某个槽位，或者"弹药类型"这种非槽位项 */
 sealed interface AttachmentEditTarget {
     data class Slot(val slot: AttachmentSlot) : AttachmentEditTarget
 
-    /** 弹种切换（对应 `GunProp.AMMO_CONSUMER` 列表），不是配件槽位。 */
+    /** 弹种切换（对应 `GunProp.AMMO_CONSUMER` 列表），不是配件槽位 */
     data object AmmoType : AttachmentEditTarget
 }
 
 /**
- * 配件槽位注册表。
+ * 配件槽位注册表，见 [AttachmentSlot]
  *
- * 「槽位」原先散落在 8 处硬编码（渲染分派、编辑界面按钮、焦点骨骼、标签桶、挂点组……），
- * 这里收成一条登记项。**新增一个槽位类型 = 加一个 [AttachmentType] 枚举常量 + 在这里登记一条**，
- * 其余环节（挂点互斥、物品 tag、datagen、调试聚焦、通用渲染）都从这张表读；
- * 剩下要手写的只有：物品注册、`sbw/attachments/<id>.json`、模型/贴图、语言文件。
- *
- * **不含改装界面**：`WeaponEditScreen` 暂不接入注册表，它的按钮顺序与 [EDIT_ORDER] 对齐；
- * 追加在 [EDIT_ORDER] 末尾的新槽位没有界面按钮，用 `/sbw attachment` 指令安装。
+ * 新增槽位后还要手写：物品注册、`sbw/attachments/<id>.json`、模型与贴图、语言文件
+ * 改装界面暂未接入这张表，追加在 [EDIT_ORDER] 末尾的槽位没有界面按钮，只能用 `/sbw attachment` 安装
  */
 object AttachmentSlots {
 
-    /**
-     * 枪模型里的约定骨骼名。
-     *
-     * 只新增了刺刀的 `bayonet_pos` 一个约定骨骼；其它槽位/配件一律走配件自己的
-     * `AttachmentDefinition.Bone`（枪口槽一直是这么用的）。
-     */
+    /** 枪模型与配件模型里的约定骨骼名 */
     object Bones {
         const val MUZZLE = "muzzle_pos"
         const val SCOPE = "scope_pos"
@@ -140,26 +98,18 @@ object AttachmentSlots {
         const val CHARM = "charm_pos"
 
         /**
-         * **配件模型内部**的三个分组名（吊坠专用），不是枪模型上的骨骼。
+         * **配件模型内部**的三个分组名（吊坠专用），不是枪模型上的骨骼
          *
-         * 吊坠模型的约定结构：
-         * - [CHARM_FIXED] 固定件（挂环、卡扣），始终静止；
-         * - [CHARM_STRING] 连接绳，绕摆点刚性旋转；
-         * - [CHARM_CHARM] 挂件本体，与绳子同步旋转。
-         *
-         * 后两组的**骨骼枢轴 (pivot) 不参与计算** —— 摆点由代码从
-         * `string` 分组的绑定包围盒顶部推导（`CharmRig.resolve`），
-         * 摆长由 `string` 分组的绑定包围盒高度给出（`CharmRig.length`）。
-         * 动力学与每帧驱动分别在 `CharmSolver` / `CharmRuntime` 里。
+         * [CHARM_FIXED] 是固定件（挂环、卡扣），始终静止，[CHARM_STRING] 连接绳与 [CHARM_CHARM] 挂件本体
+         * 一起绕摆点旋转，这两组的骨骼枢轴不参与计算：摆点取 `string` 分组包围盒的顶部中心，
+         * 摆长取它的高度，见 `CharmRig` 与 `CharmSolver`
          */
         const val CHARM_FIXED = "fixed"
         const val CHARM_STRING = "string"
         const val CHARM_CHARM = "charm"
     }
 
-    /**
-     * 全部槽位。顺序决定配件物品 tag 的排列顺序（仅影响生成文件的可读性）。
-     */
+    /** 全部槽位，顺序决定配件物品 tag 的排列顺序（只影响生成文件的可读性） */
     val ALL: List<AttachmentSlot> = listOf(
         AttachmentSlot(
             type = AttachmentType.SCOPE,
@@ -198,8 +148,8 @@ object AttachmentSlots {
             focusBone = Bones.STOCK,
             renderMode = AttachmentRenderMode.CUSTOM,
         ),
-        // 握把与将来的下挂（`underbarrel_rail`）物理上是同一根下导轨，但本期**不合并挂点组**：
-        // 合并会让"装了垂直握把就装不了下挂榴弹"，那是玩法改动，等三期落地下挂时再单独决定。
+        // 握把与将来的下挂（underbarrel_rail）物理上是同一根下导轨，但这里不合并挂点组：
+        // 合并会让"装了垂直握把就装不了下挂榴弹"，那是玩法改动
         AttachmentSlot(
             type = AttachmentType.GRIP,
             mount = "grip_rail",
@@ -209,14 +159,9 @@ object AttachmentSlots {
             focusBone = Bones.GRIP,
             renderMode = AttachmentRenderMode.CUSTOM,
         ),
-        // 刺刀和枪口配件（消音器/制退器）抢的是**同一个枪口挂点**：装了其中一个就装不了另一个。
-        // 物理上刺刀是卡在枪口下方的卡榫上，但真枪上也确实不能同时又挂消音器又上刺刀。
-        //
-        // **挂点骨骼走 `FromDefinition`（回退 `bayonet_pos`）**：刺刀卡在**枪口**上，而"枪口"
-        // 这根骨骼各枪叫法不同 —— `m_4` / `ak_47` / `ak_12` 有 `bayonet_pos`（pivot 与同枪的
-        // `muzzle_pos` 逐位相同），Kar98K 只有 `muzzle_pos`。配件没写 `Bone` 时退回约定名
-        // `bayonet_pos`，两个既有刺刀数据里都写着它，行为一字不变；若用 `Fixed`，配件里的
-        // `Bone` 会被**静默忽略**，骨骼名对不上就什么都不渲染也不报错（同 `subweapon_rail`）。
+        // 刺刀与枪口配件（消音器/制退器）抢同一个枪口挂点，装了其中一个就装不了另一个
+        // 挂载骨骼用 FromDefinition：刺刀卡在枪口上，而"枪口"这根骨骼各枪叫法不同
+        //（有的叫 bayonet_pos，有的只有 muzzle_pos）
         AttachmentSlot(
             type = AttachmentType.BAYONET,
             mount = "muzzle_device",
@@ -226,20 +171,9 @@ object AttachmentSlots {
             focusBone = Bones.BAYONET,
             renderMode = AttachmentRenderMode.GENERIC,
         ),
-        // 副武器（下挂榴弹发射器这类）。挂点组仍与握把（`grip_rail`）分开 ——
-        // 挂点组是**传递**的等价关系，把副武器并进 `grip_rail` 会顺带把它和"所有 grip_rail 上的槽位"
-        // 绑成一团，将来想再细分就没法表达了。这里要的是**非传递**的互斥：
-        //
-        //     副武器 ↔ 刺刀、副武器 ↔ 握把，但刺刀 ↔ 握把**不**互斥
-        //
-        // 三者物理上都挨着前段导轨/枪口，但"刺刀 + 握把"是能同时装的组合，所以用
-        // [conflictsWith] 显式点名，而不是合并挂点组。
-        //
-        // **挂点骨骼走 `FromDefinition` 而不是 `Fixed`**：副武器挂在枪身的哪根骨骼
-        // 由配件自己的 `Bone` 说了算（不同的下挂件可以挂在不同位置，将来加"枪托内置发射器"
-        // 之类也不用再改代码）；配件没写 `Bone` 时才退回约定骨骼 `sub_weapon_pos`。
-        // 用 `Fixed` 的话配件里的 `Bone` 会被**静默忽略**，模型骨骼名一旦和常量差一个字符
-        // （`subweapon_pos` vs `sub_weapon_pos`）就什么都不会渲染，且没有任何报错。
+        // 副武器（下挂榴弹发射器这类），挂点组与握把分开：挂点组是传递的等价关系，
+        // 并进 grip_rail 会把它和"所有 grip_rail 上的槽位"绑成一团，这里要的是非传递互斥 ——
+        // 副武器排斥刺刀与握把，但刺刀与握把可以共存，所以用 conflictsWith 显式点名
         AttachmentSlot(
             type = AttachmentType.SUBWEAPON,
             mount = "subweapon_rail",
@@ -250,16 +184,8 @@ object AttachmentSlots {
             focusBone = Bones.SUBWEAPON,
             renderMode = AttachmentRenderMode.GENERIC,
         ),
-        // 吊坠。**独占挂点组 `charm_loop`**：枪身上那个小环只挂吊坠，
-        // 与瞄具/刺刀/握把/枪口都不冲突，可以同时装。
-        //
-        // 挂点骨骼走 `FromDefinition`（回退 `charm_pos`）：与刺刀/副武器同一条理由 ——
-        // 用 `Fixed` 的话配件数据里的 `Bone` 会被**静默忽略**，骨骼名对不上就什么都不渲染也不报错。
-        // 吊坠将来完全可能挂在不同枪的不同位置（枪托背带环、护木挂环），留这个口子。
-        //
-        // 渲染走 [AttachmentRenderMode.GENERIC]，但**摆动姿态是在通用渲染之前注入的**
-        // （见 `GeoGunRenderer.renderRegisteredAttachments` 与 `CharmRuntime`），
-        // 所以这里不需要一个新的 renderMode。
+        // 吊坠独占挂点组 charm_loop，与其它槽位都不冲突，可以同时装
+        // 走通用渲染，但摆动姿态是在通用渲染之前注入的（见 `GeoGunRenderer` 与 `CharmRuntime`）
         AttachmentSlot(
             type = AttachmentType.CHARM,
             mount = "charm_loop",
@@ -275,14 +201,11 @@ object AttachmentSlots {
     @JvmField
     val BY_TYPE: Map<AttachmentType, AttachmentSlot> = ALL.associateBy { it.type }
 
-    private val BY_MOUNT: Map<String, List<AttachmentSlot>> = ALL.groupBy { it.mount }
-
     /**
-     * 改装界面 / 报文里的编辑项顺序：**下标就是 `EditMessage.type`**，客户端与服务端共用这一份。
+     * 改装界面与报文里的编辑项顺序，**下标就是 `EditMessage.type`**，客户端与服务端共用这一份
      *
-     * 前 6 项是既有改装界面按钮的固定排布（枪口 / 瞄具 / 握把 / 枪托 / 弹匣 / 弹种），顺序不能动；
-     * 新增槽位追加在末尾 —— 本期界面不改（要重写），所以追加的槽位暂时没有按钮，
-     * 用 `/sbw attachment <entity> set <type> <id>` 安装，重写后的界面按这份顺序布局即可自动带上。
+     * 前 6 项是既有改装界面按钮的固定排布（枪口 / 瞄具 / 握把 / 枪托 / 弹匣 / 弹种），顺序不能动，
+     * 新增槽位追加在末尾，界面重写后按这份顺序布局即可自动带上
      */
     @JvmField
     val EDIT_ORDER: List<AttachmentEditTarget> = listOf(
@@ -297,31 +220,28 @@ object AttachmentSlots {
         AttachmentEditTarget.Slot(of(AttachmentType.CHARM)),
     )
 
-    /** 弹药类型那一项在 [EDIT_ORDER] 里的下标（车辆改装界面只支持这一项）。 */
+    /** 弹药类型那一项在 [EDIT_ORDER] 里的下标（车辆改装界面只支持这一项） */
     @JvmField
     val AMMO_TYPE_EDIT_INDEX: Int = EDIT_ORDER.indexOf(AttachmentEditTarget.AmmoType)
 
-    /** 取出 [type] 的登记项；未登记（新增枚举但忘了登记）时抛异常，早失败好过静默失效。 */
+    /** 取出 [type] 的登记项，未登记（新增枚举但忘了登记）时抛异常，早失败好过静默失效 */
     @JvmStatic
     fun of(type: AttachmentType): AttachmentSlot =
         BY_TYPE[type] ?: error("Attachment slot $type is not registered in AttachmentSlots.ALL")
 
-    /** [type] 的登记项，未登记时返回 `null`（数据包侧只读查询用，不要让它把整局游戏炸掉）。 */
+    /** [type] 的登记项，未登记时返回 null，供只读查询使用 */
     @JvmStatic
     fun ofOrNull(type: AttachmentType): AttachmentSlot? = BY_TYPE[type]
 
-    /**
-     * [type] 实际使用的挂点组名：配件可以用 [AttachmentDefinition.mount] 覆盖槽位默认值。
-     */
+    /** [type] 实际使用的挂点组名，配件可以用 [AttachmentDefinition.mount] 覆盖槽位默认值 */
     @JvmStatic
     fun mountOf(type: AttachmentType, definition: AttachmentDefinition? = null): String =
         definition?.mount ?: of(type).mount
 
     /**
-     * [type]（实际装的配件是 [definition]）**显式**声明互斥的槽位：槽位登记项 [AttachmentSlot.conflictsWith]
-     * 与配件自己的 [AttachmentDefinition.conflictsWith] 的并集。
+     * [type]（实际装的是 [definition]）显式声明互斥的槽位：槽位登记项与配件声明的并集
      *
-     * 与挂点组不同，这份名单**不传递**，所以"副武器排斥刺刀与握把、但刺刀与握把共存"可以表达。
+     * 与挂点组不同，这份名单不传递，所以"副武器排斥刺刀与握把、但刺刀与握把共存"可以表达
      */
     @JvmStatic
     fun declaredConflicts(type: AttachmentType, definition: AttachmentDefinition? = null): Set<AttachmentType> {
@@ -331,17 +251,11 @@ object AttachmentSlots {
     }
 
     /**
-     * [type] 槽位（装的是 [definition]）与 [other] 槽位（装的是 [otherDefinition]）**是否互斥**。
+     * [type] 槽位（装的是 [definition]）与 [other] 槽位（装的是 [otherDefinition]）是否互斥
      *
-     * 互斥有两个来源，任一成立即互斥：
-     * 1. **挂点组相同**（[mountOf]）—— 传递的等价关系，例如刺刀与枪口配件都占 `muzzle_device`；
-     * 2. **任一方显式点名**了对方（[declaredConflicts]）—— 非传递，例如
-     *    副武器 ↔ 刺刀、副武器 ↔ 握把，但刺刀与握把可以共存。
-     *
-     * 任一方声明了 [AttachmentDefinition.allowSharedMount] 就整体放行 ——
-     * 那是"转接座"这类本来就是用来叠装的配件的逃生口，两种互斥都适用。
-     *
-     * 同一个槽位不算冲突（调用方问的是"两个槽位能不能共存"）。
+     * 两种情况互斥：挂点组相同（[mountOf]），或者任一方显式点名了对方（[declaredConflicts]）
+     * 任一方声明了 [AttachmentDefinition.allowSharedMount] 就整体放行，那是"转接座"这类
+     * 本来就是用来叠装的配件的逃生口，同一个槽位不算冲突
      */
     @JvmStatic
     fun conflicts(
@@ -358,29 +272,21 @@ object AttachmentSlots {
         return other in declaredConflicts(type, definition) || type in declaredConflicts(other, otherDefinition)
     }
 
-    /** 登记到 [mount] 这个挂点组上的全部槽位。 */
-    @JvmStatic
-    fun byMount(mount: String): List<AttachmentSlot> = BY_MOUNT[mount].orEmpty()
-
-    /** [registeredIds] 的结果缓存，按 [GunData.DATA_VERSION] 整体失效。 */
+    /** [registeredIds] 的结果缓存，按 [GunData.DATA_VERSION] 整体失效 */
     private val registeredIdsCache = ConcurrentHashMap<AttachmentType, List<ResourceLocation>>()
 
-    /** 缓存对应的 [GunData.DATA_VERSION]；`Int.MIN_VALUE` = 还没算过。 */
+    /** 缓存对应的 [GunData.DATA_VERSION]，`Int.MIN_VALUE` = 还没算过 */
     private var registeredIdsVersion = Int.MIN_VALUE
 
     /**
-     * [type] 槽位上**已注册**的全部配件 id（配件物品与配件数据都在的那些），按 id 排序。
+     * [type] 槽位上已注册的全部配件 id（配件物品与配件数据都在的那些），按 id 排序
      *
-     * 只被「完全自由改装模式」用到（见 `GunData.availableAttachments`）：那一档要无视枪械数据里的
-     * `AvailableAttachments`，把一个槽位能装的东西全部放出来。
+     * 只被「完全自由改装模式」用到：那一档要无视枪械数据里的 `AvailableAttachments`，
+     * 把一个槽位能装的东西全部放出来，来源是配件物品注册表 [ModItems.ATTACHMENTS]，
+     * 槽位以配件数据的 `Slot` 为准，所以数据包改了 `Slot` 之后结果会跟着变
      *
-     * 来源是配件**物品**注册表 [ModItems.ATTACHMENTS]，与 `/sbw attachment` 的校验口径一致
-     * （那条指令要求"配件物品与配件数据缺一不可"）：只认数据表的话，会放出"装得上、但物品栏里
-     * 根本不存在"的幽灵配件。槽位本身以**配件数据**的 `Slot` 为准 —— 物品注册表不记槽位，
-     * 所以数据包改了某个配件的 `Slot` 之后这里会跟着变（也因此需要缓存失效，见下）。
-     *
-     * 结果按 [GunData.DATA_VERSION] 缓存：它会经 `GunItem.hasCustomAttachment` 被**渲染路径每帧查询**，
-     * 而重新枚举几十个配件物品、再逐条查数据表并不便宜。数据包重载会递增那个版本号，正好当失效信号。
+     * 结果按 [GunData.DATA_VERSION] 缓存：它会经 `GunItem.hasCustomAttachment` 被渲染路径每帧查询，
+     * 而枚举几十个配件物品再逐条查数据表并不便宜
      */
     @JvmStatic
     fun registeredIds(type: AttachmentType): List<ResourceLocation> {
@@ -398,12 +304,10 @@ object AttachmentSlots {
     }
 
     /**
-     * [slot]（装的是 [definition]）实际使用的**挂点骨骼名**；`null` = 这个槽位不往枪模型上挂
-     * （[AttachmentMountBone.GunModel] 与"没声明就不渲染"的 `FromDefinition(null)`）。
+     * [slot]（装的是 [definition]）实际使用的挂载骨骼名，null 表示这个槽位不往枪模型上挂
+     * （[AttachmentMountBone.GunModel] 与"没声明就不渲染"的 `FromDefinition(null)`）
      *
-     * 渲染（`GeoGunRenderer.renderRegisteredAttachments`）与"配件骨骼在枪模型里的哪个位置"的查询
-     * （`GeoGunRenderer.resolveSubWeaponFlareTransform`）必须走**同一个**判定，否则会出现
-     * "模型画得出来、枪口焰却找不到挂点"这种只在骨骼名写错时才会暴露的问题。
+     * 渲染与"配件骨骼在枪模型里的哪个位置"的查询必须走同一个判定
      */
     @JvmStatic
     fun mountBoneOf(slot: AttachmentSlot, definition: AttachmentDefinition?): String? =
@@ -412,8 +316,4 @@ object AttachmentSlots {
             is AttachmentMountBone.FromDefinition -> definition?.bone ?: mountBone.fallback
             AttachmentMountBone.GunModel -> null
         }
-
-    /** 槽位的物品 tag 名（`attachment/<bucket>`）；该槽位不生成 tag 时返回 `null`。 */
-    @JvmStatic
-    fun tagNameOf(type: AttachmentType): String? = ofOrNull(type)?.tagName
 }

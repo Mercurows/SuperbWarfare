@@ -9,13 +9,13 @@ import kotlinx.serialization.Serializable
  * 写在**枪的 assets 侧 json**（`assets/superbwarfare/sbw/guns/<id>.json`）里，与服务端无关：
  * 模板（stencil）窗口纯属客户端渲染，服务端连这份资源都加载不到。
  *
- * 判定完全靠**骨骼名**，与配件瞄准镜同一套约定（见 `ScopeMode` 的 `ocularBone()` / `divisionBone()`）：
+ * 判定完全靠**骨骼名**，与配件瞄准镜同一套约定（见 `ScopeMode.divisionBone()` 与 BedrockAttachmentModel）：
  * geo 里只要有 `ocular`（或 `ocular_sight` / `ocular_scope`）骨骼，这把枪就自动获得镜筒窗口；
  * 有 `ocular_ring` 就框一圈镜圈；有 `division` 就在窗口里画准星。
  * 换句话说 [BuiltinScopeInfo] 只负责"**开不开、多大、拉多近**"这三个旋钮，形状全在 geo 里。
  *
- * **不复用 `ScopeInfo` / `ScopeMode`**：那是配件的 schema，带模式切换（`Modes`）、弹药读数
- * （`AmmoBar` / `TextShow`）与 `Zoom`，内置瞄具一个都用不上 —— 枪自己已有 `AmmoBar` / `TextShow`，
+ * **不复用 `ScopeInfo` / `ScopeMode`**：那是配件的 schema，带模式切换（`Modes`）与 `Zoom`，
+ * 内置瞄具一个都用不上 —— 枪自己已有 `AmmoBar` / `TextShow`，
  * 而放大倍率来自数据侧的 `GunProp.DefaultZoom`（`ScopeMode.Zoom` 在这里会是永不生效的死字段），
  * 写进来只会误导后来者。
  *

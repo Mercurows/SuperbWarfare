@@ -24,30 +24,30 @@
       "Max": 3,
       "Default": 3,
       "Step": 1
-    },
-    "AmmoBar": [
-      {
-        "Bone": "ammo_bar",
-        "ColorMode": "Switch",
-        "Color": {
-          "Default": "A0D7FF",
-          "0.5": "FF6127",
-          "0.25": "FF0000"
-        }
+    }
+  },
+  "AmmoBar": [
+    {
+      "Bone": "ammo_bar",
+      "ColorMode": "Switch",
+      "Color": {
+        "Default": "A0D7FF",
+        "0.5": "FF6127",
+        "0.25": "FF0000"
       }
-    ],
-    "TextShow": [
-      {
-        "Bone": "ammo_count_text",
-        "Scale": 0.0006,
-        "Align": "Center",
-        "ColorMode": "Switch",
-        "Color": {
-          "Default": "FFFFFF", "0.5": "FF6127", "0.25": "FF0000"
-        },
-        "Shadow": false,
-        "Text": "%ammo_count%"
-      }
-    ]
-  }
+    }
+  ],
+  "TextShow": [
+    {
+      "Bone": "ammo_count_text",
+      "Scale": 0.0006,
+      "Align": "Center",
+      "ColorMode": "Switch",
+      "Color": {
+        "Default": "FFFFFF", "0.5": "FF6127", "0.25": "FF0000"
+      },
+      "Shadow": false,
+      "Text": "%ammo_count%"
+    }
+  ]
 }
