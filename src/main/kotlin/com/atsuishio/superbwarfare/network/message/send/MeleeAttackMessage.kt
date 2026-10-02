@@ -295,14 +295,9 @@ data class MeleeAttackMessage(
             }
 
             attacker.setLastHurtMob(target)
-            val level = attacker.level()
-            if (level is ServerLevel) {
-                val source = attacker.damageSources().playerAttack(attacker)
-                if (target is LivingEntity) {
-                    EnchantmentHelper.doPostAttackEffects(level, target, source)
-                }
-                // TODO 该source是否正确
-                EnchantmentHelper.doPostAttackEffects(level, attacker, source)
+            // 1.21 这一次调用已合并 1.20 的 doPostHurtEffects + doPostDamageEffects，对 attacker 再调一遍会让他吃自己的附魔
+            if (target is LivingEntity && level is ServerLevel) {
+                EnchantmentHelper.doPostAttackEffects(level, target, attacker.damageSources().playerAttack(attacker))
             }
 
             if (target is LivingEntity) {

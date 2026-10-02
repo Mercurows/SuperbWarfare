@@ -28,19 +28,25 @@ class Cooldown(private val gunDataTag: CompoundTag) {
     private val table: CompoundTag
         get() = gunDataTag.getCompound(COOLDOWN)
 
+    /** 写用：键不存在时 `getCompound` 返回的是游离 tag，写进去不会留在父 tag 上 */
+    private fun writableTable(): CompoundTag {
+        if (!gunDataTag.contains(COOLDOWN)) gunDataTag.put(COOLDOWN, CompoundTag())
+        return gunDataTag.getCompound(COOLDOWN)
+    }
+
     /** 该键剩余的冷却 tick；没有该键时为 0（= 不在冷却中） */
     fun get(key: String): Int = table.getInt(key)
 
     /** 是否仍在冷却中 */
     fun isCoolingDown(key: String): Boolean = get(key) > 0
 
-    /** 写入冷却（取值与 0 取大；写入 0 等同清除，因为 [reduce] 会把归零的键删掉） */
+    /** 写入冷却（取值与 0 取大；写入 0 等同清除，因为 [tick] 会把归零的键删掉） */
     fun set(key: String, ticks: Int) {
         if (ticks <= 0) {
             clear(key)
             return
         }
-        table.putInt(key, ticks)
+        writableTable().putInt(key, ticks)
     }
 
     fun clear(key: String) {
