@@ -615,6 +615,7 @@ class ModItemTagProvider(
             ModItems.CHARM_ANCIENT_CPU,
             ModItems.CHARM_DRAGON_HEAD,
             ModItems.CHARM_THE_EMPERORS_NEW_CHARM,
+            ModItems.CHARM_BEAST,
             ModItems.CHARM_SENPAI,
             ModItems.CHARM_MRAHC,
             ModItems.CHARM_CHIRAM_CORE,
