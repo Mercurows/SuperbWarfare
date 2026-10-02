@@ -32,6 +32,10 @@ open class GunGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity 
 
     override fun tick() {
         super.tick()
+        trail()
+    }
+
+    open fun trail() {
         shellTrail()
     }
 
@@ -40,4 +44,10 @@ open class GunGrenadeEntity : FastThrowableProjectile, BasicGeoProjectileEntity 
     }
 
     override fun getHiddenTicks() = 1
+
+    /** 枪榴弹爆炸消失后分裂成小榴弹 */
+    override fun canSplit(): Boolean = true
+
+    override fun createSplitProjectile(level: Level): FastThrowableProjectile =
+        SmallGrenadeEntity(this.owner, level)
 }

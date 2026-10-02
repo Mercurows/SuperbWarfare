@@ -903,6 +903,8 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                     setVelocity(finalVelocity)
                     setUnderwaterMotionScale(data.get(GunProp.UNDERWATER_MOTION_SCALE))
                     setExplosionDestroy(data.get(GunProp.EXPLOSION_DESTROY))
+                    setProjectileSplitCount(data.get(GunProp.PROJECTILE_SPLIT_COUNT))
+                    setProjectileSplitAmount(data.get(GunProp.PROJECTILE_SPLIT_AMOUNT))
                 }
             }
 

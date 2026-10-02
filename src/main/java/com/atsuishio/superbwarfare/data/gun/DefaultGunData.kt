@@ -384,6 +384,12 @@ data class DefaultGunData(
     val shellType: String = "Default",
     @SerialName("ProjectileLife")
     val projectileLife: Int = 400,
+    // 投射物分裂次数：爆炸消失后分裂出的产物再减一，0 表示不分裂
+    @SerialName("ProjectileSplitCount")
+    val projectileSplitCount: Int = 0,
+    // 每次分裂出的产物个数
+    @SerialName("ProjectileSplitAmount")
+    val projectileSplitAmount: Int = 4,
     @SerialName("AddShooterDeltaMovement")
     val addShooterDeltaMovement: Boolean = false,
     @SerialName("Icon")
