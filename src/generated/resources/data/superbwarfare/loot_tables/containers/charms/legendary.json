@@ -1,0 +1,36 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_sept_wolves"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_ancient_cpu"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_dragon_head"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_the_emperors_new_charm"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_beast"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_crystal_popcorn"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "superbwarfare:containers/charms/legendary"
+}

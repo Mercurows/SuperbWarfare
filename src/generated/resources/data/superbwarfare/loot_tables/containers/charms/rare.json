@@ -1,0 +1,48 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_fukamizu_fish"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_zombie_head"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_skeleton_skull"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_creeper_head"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_axolotl_blue"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_mooshroom"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_piglin_head"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_container"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_m67_grenade"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "superbwarfare:containers/charms/rare"
+}

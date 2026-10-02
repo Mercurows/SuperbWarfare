@@ -1,0 +1,48 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_wither_skeleton_skull"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_nether_star"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_conduit"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_rice_cake_fox_lolita"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_winefox_tail"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_elder_guardian"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_sui_container"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_stars_il"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_mk_82"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "superbwarfare:containers/charms/epic"
+}
