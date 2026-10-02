@@ -39,6 +39,10 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:charm_m67_grenade"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_spider_head"
         }
       ],
       "rolls": 1.0
