@@ -120,6 +120,10 @@
         },
         {
           "type": "minecraft:item",
+          "name": "superbwarfare:charm_mrahc"
+        },
+        {
+          "type": "minecraft:item",
           "name": "superbwarfare:charm_chiram_core",
           "weight": 2
         },
