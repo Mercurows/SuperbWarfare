@@ -16,7 +16,7 @@
       "minecraft:container_loot": {
         "loot_table": "superbwarfare:containers/charms"
       },
-      "minecraft:custom_data": {}
+      "superbwarfare:item_tag": {}
     },
     "count": 1,
     "id": "superbwarfare:small_container"

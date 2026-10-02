@@ -390,49 +390,97 @@ class ModCustomLootProvider() : LootTableSubProvider {
         }
 
         output += buildLootTable(containers("charms")) {
+            addMultiItems(1f, 0f, {}) {
+                add(NestedLootTable.lootTableReference(containers("charms/common")).setWeight(52))
+                add(NestedLootTable.lootTableReference(containers("charms/rare")).setWeight(25))
+                add(NestedLootTable.lootTableReference(containers("charms/epic")).setWeight(15))
+                add(NestedLootTable.lootTableReference(containers("charms/legendary")).setWeight(5))
+                add(NestedLootTable.lootTableReference(containers("charms/superb")).setWeight(1))
+                add(NestedLootTable.lootTableReference(containers("charms/virtual")).setWeight(2))
+            }
+        }
+
+        output += buildLootTable(containers("charms/common")) {
             addMultiItems(1f, 0f) {
-                // 权重按稀有度：普通 25 / 稀有 15 / 史诗 10 / 传说 5 / 卓越 1 / 虚幻 2
-                ModItems.CHARM_PIG weighted 25
-                ModItems.CHARM_BEE weighted 25
-                ModItems.CHARM_CHEST weighted 25
-                ModItems.CHARM_AXOLOTL weighted 25
-                ModItems.CHARM_COW weighted 25
-                ModItems.CHARM_SNOWGOLEM weighted 25
-                ModItems.CHARM_SMALL_CONTAINER weighted 25
+                withWeight(
+                    1,
+                    ModItems.CHARM_PIG,
+                    ModItems.CHARM_BEE,
+                    ModItems.CHARM_CHEST,
+                    ModItems.CHARM_AXOLOTL,
+                    ModItems.CHARM_COW,
+                    ModItems.CHARM_SNOWGOLEM,
+                    ModItems.CHARM_SMALL_CONTAINER,
+                )
+            }
+        }
 
-                ModItems.CHARM_FUKAMIZU_FISH weighted 15
-                ModItems.CHARM_ZOMBIE_HEAD weighted 15
-                ModItems.CHARM_SKELETON_SKULL weighted 15
-                ModItems.CHARM_CREEPER_HEAD weighted 15
-                ModItems.CHARM_AXOLOTL_BLUE weighted 15
-                ModItems.CHARM_MOOSHROOM weighted 15
-                ModItems.CHARM_PIGLIN_HEAD weighted 15
-                ModItems.CHARM_CONTAINER weighted 15
-                ModItems.CHARM_M67_GRENADE weighted 15
+        output += buildLootTable(containers("charms/rare")) {
+            addMultiItems(1f, 0f) {
+                withWeight(
+                    1,
+                    ModItems.CHARM_FUKAMIZU_FISH,
+                    ModItems.CHARM_ZOMBIE_HEAD,
+                    ModItems.CHARM_SKELETON_SKULL,
+                    ModItems.CHARM_CREEPER_HEAD,
+                    ModItems.CHARM_AXOLOTL_BLUE,
+                    ModItems.CHARM_MOOSHROOM,
+                    ModItems.CHARM_PIGLIN_HEAD,
+                    ModItems.CHARM_CONTAINER,
+                    ModItems.CHARM_M67_GRENADE,
+                )
+            }
+        }
 
-                ModItems.CHARM_WITHER_SKELETON_SKULL weighted 10
-                ModItems.CHARM_NETHER_STAR weighted 10
-                ModItems.CHARM_CONDUIT weighted 10
-                ModItems.CHARM_RICE_CAKE_FOX_LOLITA weighted 10
-                ModItems.CHARM_WINEFOX_TAIL weighted 10
-                ModItems.CHARM_ELDER_GUARDIAN weighted 10
-                ModItems.CHARM_SUI_CONTAINER weighted 10
-                ModItems.CHARM_STARS_IL weighted 10
-                ModItems.CHARM_MK_82 weighted 10
+        output += buildLootTable(containers("charms/epic")) {
+            addMultiItems(1f, 0f) {
+                withWeight(
+                    1,
+                    ModItems.CHARM_WITHER_SKELETON_SKULL,
+                    ModItems.CHARM_NETHER_STAR,
+                    ModItems.CHARM_CONDUIT,
+                    ModItems.CHARM_RICE_CAKE_FOX_LOLITA,
+                    ModItems.CHARM_WINEFOX_TAIL,
+                    ModItems.CHARM_ELDER_GUARDIAN,
+                    ModItems.CHARM_SUI_CONTAINER,
+                    ModItems.CHARM_STARS_IL,
+                    ModItems.CHARM_MK_82,
+                )
+            }
+        }
 
-                ModItems.CHARM_SEPT_WOLVES weighted 5
-                ModItems.CHARM_ANCIENT_CPU weighted 5
-                ModItems.CHARM_DRAGON_HEAD weighted 5
-                ModItems.CHARM_THE_EMPERORS_NEW_CHARM weighted 5
-                ModItems.CHARM_BEAST weighted 5
-                ModItems.CHARM_CRYSTAL_POPCORN weighted 5
+        output += buildLootTable(containers("charms/legendary")) {
+            addMultiItems(1f, 0f) {
+                withWeight(
+                    1,
+                    ModItems.CHARM_SEPT_WOLVES,
+                    ModItems.CHARM_ANCIENT_CPU,
+                    ModItems.CHARM_DRAGON_HEAD,
+                    ModItems.CHARM_THE_EMPERORS_NEW_CHARM,
+                    ModItems.CHARM_BEAST,
+                    ModItems.CHARM_CRYSTAL_POPCORN,
+                )
+            }
+        }
 
-                ModItems.CHARM_SENPAI weighted 1
-                ModItems.CHARM_MRAHC weighted 1
+        output += buildLootTable(containers("charms/superb")) {
+            addMultiItems(1f, 0f) {
+                withWeight(
+                    1,
+                    ModItems.CHARM_SENPAI,
+                    ModItems.CHARM_MRAHC,
+                )
+            }
+        }
 
-                ModItems.CHARM_CHIRAM_CORE weighted 2
-                ModItems.CHARM_LILY weighted 2
-                ModItems.CHARM_HIRU_HEAD weighted 2
+        output += buildLootTable(containers("charms/virtual")) {
+            addMultiItems(1f, 0f) {
+                withWeight(
+                    1,
+                    ModItems.CHARM_CHIRAM_CORE,
+                    ModItems.CHARM_LILY,
+                    ModItems.CHARM_HIRU_HEAD,
+                )
             }
         }
 

@@ -16,7 +16,7 @@
   ],
   "result": {
     "components": {
-      "minecraft:custom_data": {
+      "superbwarfare:item_tag": {
         "Control": 1
       }
     },

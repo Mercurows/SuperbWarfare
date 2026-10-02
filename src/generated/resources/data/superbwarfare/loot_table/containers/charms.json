@@ -5,181 +5,32 @@
       "bonus_rolls": 0.0,
       "entries": [
         {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_pig",
+          "type": "minecraft:loot_table",
+          "value": "superbwarfare:containers/charms/common",
+          "weight": 52
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "superbwarfare:containers/charms/rare",
           "weight": 25
         },
         {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_bee",
-          "weight": 25
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_chest",
-          "weight": 25
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_axolotl",
-          "weight": 25
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_cow",
-          "weight": 25
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_snowgolem",
-          "weight": 25
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_small_container",
-          "weight": 25
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_fukamizu_fish",
+          "type": "minecraft:loot_table",
+          "value": "superbwarfare:containers/charms/epic",
           "weight": 15
         },
         {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_zombie_head",
-          "weight": 15
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_skeleton_skull",
-          "weight": 15
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_creeper_head",
-          "weight": 15
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_axolotl_blue",
-          "weight": 15
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_mooshroom",
-          "weight": 15
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_piglin_head",
-          "weight": 15
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_container",
-          "weight": 15
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_m67_grenade",
-          "weight": 15
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_wither_skeleton_skull",
-          "weight": 10
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_nether_star",
-          "weight": 10
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_conduit",
-          "weight": 10
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_rice_cake_fox_lolita",
-          "weight": 10
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_winefox_tail",
-          "weight": 10
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_elder_guardian",
-          "weight": 10
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_sui_container",
-          "weight": 10
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_stars_il",
-          "weight": 10
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_mk_82",
-          "weight": 10
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_sept_wolves",
+          "type": "minecraft:loot_table",
+          "value": "superbwarfare:containers/charms/legendary",
           "weight": 5
         },
         {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_ancient_cpu",
-          "weight": 5
+          "type": "minecraft:loot_table",
+          "value": "superbwarfare:containers/charms/superb"
         },
         {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_dragon_head",
-          "weight": 5
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_the_emperors_new_charm",
-          "weight": 5
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_beast",
-          "weight": 5
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_crystal_popcorn",
-          "weight": 5
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_senpai"
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_mrahc"
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_chiram_core",
-          "weight": 2
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_lily",
-          "weight": 2
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_hiru_head",
+          "type": "minecraft:loot_table",
+          "value": "superbwarfare:containers/charms/virtual",
           "weight": 2
         }
       ],
