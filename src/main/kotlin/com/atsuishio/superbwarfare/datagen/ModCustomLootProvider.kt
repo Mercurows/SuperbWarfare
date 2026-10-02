@@ -411,6 +411,9 @@ class ModCustomLootProvider() : LootTableSubProvider {
                     ModItems.CHARM_COW,
                     ModItems.CHARM_SNOWGOLEM,
                     ModItems.CHARM_SMALL_CONTAINER,
+                    ModItems.CHARM_SHEEP,
+                    ModItems.CHARM_CHICKEN,
+                    ModItems.CHARM_PUFFERFISH,
                 )
             }
         }
@@ -428,6 +431,7 @@ class ModCustomLootProvider() : LootTableSubProvider {
                     ModItems.CHARM_PIGLIN_HEAD,
                     ModItems.CHARM_CONTAINER,
                     ModItems.CHARM_M67_GRENADE,
+                    ModItems.CHARM_SPIDER_HEAD,
                 )
             }
         }

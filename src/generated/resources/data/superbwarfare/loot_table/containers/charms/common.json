@@ -31,6 +31,18 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:charm_small_container"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_sheep"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_chicken"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_pufferfish"
         }
       ],
       "rolls": 1.0
