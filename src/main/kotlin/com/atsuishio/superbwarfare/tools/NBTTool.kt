@@ -1,32 +1,26 @@
 package com.atsuishio.superbwarfare.tools
 
-import net.minecraft.core.component.DataComponents
+import com.atsuishio.superbwarfare.data.stack.ItemStackStorage
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.item.component.CustomData
 import net.neoforged.neoforge.registries.DeferredHolder
 import java.util.function.Consumer
 
 object NBTTool {
 
     @JvmStatic
-    fun getTag(stack: ItemStack): CompoundTag {
-        val data = stack.get(DataComponents.CUSTOM_DATA)
-        if (data != null) return data.copyTag()
-
-        return CompoundTag()
-    }
+    fun getTag(stack: ItemStack): CompoundTag = ItemStackStorage.rootTagOrNull(stack) ?: CompoundTag()
 
     /**
      * 警告：请勿使用该方法保存任何枪械NBT数据！请统一使用GunData.save()保存枪械数据
      */
     @JvmStatic
     fun saveTag(stack: ItemStack, tag: CompoundTag) {
-        val data = stack.get(DataComponents.CUSTOM_DATA)
-        val oldTag = if (data != null) data.copyTag() else CompoundTag()
-        val newTag = oldTag.merge(tag)
-        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(newTag))
+        // 旧语义是 `oldTag.merge(tag)`（只增不删），所以先在外面合好再整体写回
+        val merged = (ItemStackStorage.rootTagOrNull(stack) ?: CompoundTag()).copy()
+        merged.merge(tag)
+        ItemStackStorage.writeRoot(stack, merged)
     }
 
     @JvmStatic

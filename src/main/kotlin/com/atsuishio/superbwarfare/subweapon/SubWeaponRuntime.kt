@@ -16,7 +16,6 @@ import com.atsuishio.superbwarfare.subweapon.SubWeaponRuntime.applyBaselineId
 import com.atsuishio.superbwarfare.subweapon.SubWeaponRuntime.onReloadStarted
 import com.atsuishio.superbwarfare.subweapon.SubWeaponRuntime.tick
 import com.atsuishio.superbwarfare.tools.playLocalSound
-import com.atsuishio.superbwarfare.tools.tag
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.Tag
@@ -264,7 +263,10 @@ object SubWeaponRuntime {
                 // `incoming` 在"手里那份有状态"的分支里可能是 null（枪上还是字符串形式），
                 // 走到这里说明没得复用，必须实体化一次。
                 val root = incoming ?: gun.attachment.getOrCreateTag(attachment.slot)
-                assemble(attachment.slot, attachment.id, info, item, client, root, GunStackStorage.tokenOf(root))
+                val assembled = assemble(attachment.slot, attachment.id, info, item, client, root)
+                // 把栈自己那份活引用挂回槽位：两边从这一 tick 起就是同一个对象
+                gun.attachment.setTag(attachment.slot, assembled.root)
+                assembled
             }
 
             found[attachment.slot] = instance
@@ -286,13 +288,14 @@ object SubWeaponRuntime {
         installed(gun, client).firstOrNull { it.slotName == slotName }
 
     /**
-     * 真正新建一份 [Instance]：合成栈必须**原样持有** [root]。
+     * 真正新建一份 [Instance]：合成栈的根 tag **就是** [root] 的内容，二者必须是同一个对象。
      *
-     * 不假设 `ItemStack(ItemLike, int, CompoundTag)` 一定原样持有这份 tag：
-     * 只要拿回来的不是同一个对象，就通过 [GunStackStorage.writeRoot] 显式覆盖回去。
-     * `GunData` 在构造时会把根 tag 与它的子 compound 全部**捕获成 `val`**，
-     * 一旦栈里挂的是副本，副武器的所有状态都会写进一个和主武器 NBT 无关的角落
-     * —— 症状就是"换弹启动了但计时器永远停在原地、下次读又是 0"。
+     * `GunData` 构造时会把根 tag 与它的子 compound 全部**捕获成 `val`**，而 [Instance.carrier]
+     * 也要拿同一份 —— 只要栈里挂的是副本，副武器的所有状态都会写进一个和主武器 NBT 无关的角落
+     * （症状：能切出来、能瞄准，但装填与开火全部无效）。
+     *
+     * 所以先 [GunStackStorage.writeRoot] 把内容折进栈自己那份（必要时才创建），**再读回来**当载体：
+     * 栈里那份才是活引用，[root] 只是内容来源。
      */
     private fun assemble(
         slot: AttachmentType,
@@ -301,16 +304,16 @@ object SubWeaponRuntime {
         item: SubWeaponItem,
         client: Boolean,
         root: CompoundTag,
-        token: Long,
     ): Instance {
         val stack = ItemStack(item, 1)
-            .also { it.tag = root }
         GunData.stackStorage.writeRoot(stack, root)
+
+        val liveRoot = GunData.stackStorage.rootTag(stack)
 
         // ⚠ 必须在 `GunData.from(stack)` **之前**：`GunData` 构造时就把 `defaultDataId` 解码进状态
         applyBaselineId(stack, attachmentId, info)
 
-        val carrier = GunStackStorage.Carrier(root, token)
+        val carrier = GunStackStorage.Carrier(liveRoot, GunStackStorage.tokenOf(liveRoot))
         val instance = Instance(slot, attachmentId, info, client, stack, carrier, GunData.from(stack))
         warnIfNoBaseline(instance)
 
@@ -400,37 +403,9 @@ object SubWeaponRuntime {
         // 恰恰用"键消失"表达"这个字段回到默认值"（`encodeDefaults = false`）——
         // 少了删除这一步，`Ammo` 从 5 回到 0 时会留在 target 里变成 5。
         // 所以两件事都要做，且删除必须**递归到每一层**。
-        mergePreservingIdentity(target, source)
+        GunStackStorage.mergePreservingIdentity(target, source)
 
         return true
-    }
-
-    /**
-     * 把 [source] 的内容合并进 [target]，**两层要求同时满足**：
-     *
-     * 1. **深度上内容相等** —— 包括"source 里没有的键必须从 target 删掉"
-     *    （`GunState.writeInto` 用键消失表达"回到默认值"）；
-     * 2. **两边都存在的 compound 保持 [target] 那一侧的对象身份** —— `GunData` 及其子数据处理器
-     *    都是靠引用活着的（见调用处的长注释），换掉对象 = 状态永久脱钩。
-     *
-     * 只有"target 里没有这个键"或"类型对不上"时才真的落一份 [Tag.copy] 进去。
-     */
-    private fun mergePreservingIdentity(target: CompoundTag, source: CompoundTag) {
-        // ① 删：source 里没有的键，target 里不能留
-        for (key in target.allKeys.toList()) {
-            if (!source.contains(key)) target.remove(key)
-        }
-
-        // ② 合并：两边都是 compound 就递归下去，否则整体替换
-        for (key in source.allKeys) {
-            val incoming = source.get(key) ?: continue
-            val existing = target.get(key)
-            if (incoming is CompoundTag && existing is CompoundTag) {
-                mergePreservingIdentity(existing, incoming)
-            } else {
-                target.put(key, incoming.copy())
-            }
-        }
     }
 
     /** 根 tag 里的枪械状态子 tag；`null` = 这个槽位还没被装配过 */

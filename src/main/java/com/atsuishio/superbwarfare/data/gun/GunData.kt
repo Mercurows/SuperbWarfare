@@ -13,7 +13,6 @@ import com.atsuishio.superbwarfare.data.gun.GunData.Companion.DATA_VERSION
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.UUID_CACHE
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.get
-import com.atsuishio.superbwarfare.data.gun.GunData.Companion.getDefault
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.AMMO_CONSUMER
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.AMMO_COST_PER_SHOOT
 import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.AVAILABLE_FIRE_MODES
@@ -53,7 +52,6 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import net.minecraft.core.component.DataComponentPatch
-import net.minecraft.core.component.DataComponents
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.Tag
 import net.minecraft.network.RegistryFriendlyByteBuf
@@ -1715,29 +1713,27 @@ class GunData private constructor(
         }
         keysToRemove.forEach { key -> perkTag.remove(key) }
 
+        // ⚠ 三个结构性子 compound 必须**一直挂在根上**（哪怕为空）：它们就是本实例、以及
+        // `Attachment` / PMC 捕获的那几个对象。键一旦从根上消失，后面的写入就落到一份
+        // **和根脱钩**的 compound 上 —— 属性还能算（对象还在），但根 tag 里再也不会出现
+        // `Attachments`/`Perks`，同步到客户端的那份就是空的（表现：配件属性对、模型不渲染）。
+        tag.put(KEY_GUN_DATA, gunDataTag)
+        tag.put(KEY_PERKS, perkTag)
+        tag.put(KEY_ATTACHMENTS, attachmentTag)
+
         val cleanedTag = tag.copy()
 
-        if (perkTag.isEmpty) {
-            cleanedTag.remove(KEY_PERKS)
-        }
-
-        if (attachmentTag.isEmpty) {
-            cleanedTag.remove(KEY_ATTACHMENTS)
-        }
-
-        if (gunDataTag.isEmpty) {
-            cleanedTag.remove(KEY_GUN_DATA)
-        }
-
         if (tag.isEmpty) {
-            if (!stack.has(DataComponents.CUSTOM_DATA)) return
-            stack.remove(DataComponents.CUSTOM_DATA)
+            if (!stackStorage.hasData(stack)) return
+            stackStorage.clearRoot(stack)
             return
         }
 
         if (compare) {
-            val current = stack.get(DataComponents.CUSTOM_DATA)?.copyTag()
-            if (current == cleanedTag) return
+            // 比的是**上一次写回时那份快照**，不是当前 tag 自己：副武器的状态住在主武器 tag 的
+            // 子 compound 里，主武器一个字段都没写、内容也会变（`ItemStackStorage.lastWrittenTagOrNull`）。
+            val current = stackStorage.lastWrittenTagOrNull(stack)
+            if (current != null && current == cleanedTag) return
         }
 
         // Content changed: advance the revision, mirrored into the state and both tag representations.
@@ -2013,13 +2009,13 @@ class GunData private constructor(
         /** Tick interval between backup ammo inventory re-computations. */
         const val BACKUP_AMMO_CACHE_TICKS: Long = 10L
 
-        /** Root gun tag key inside [DataComponents.CUSTOM_DATA]. */
+        /** Root gun tag key inside `superbwarfare:item_tag`. */
         private const val KEY_GUN_DATA = "GunData"
 
-        /** Perk tag key inside [DataComponents.CUSTOM_DATA]. */
+        /** Perk tag key inside `superbwarfare:item_tag`. */
         private const val KEY_PERKS = "Perks"
 
-        /** Attachment tag key inside [DataComponents.CUSTOM_DATA]. */
+        /** Attachment tag key inside `superbwarfare:item_tag`. */
         private const val KEY_ATTACHMENTS = "Attachments"
 
         /** [GunState.defaultDataId] key inside the gun tag. */

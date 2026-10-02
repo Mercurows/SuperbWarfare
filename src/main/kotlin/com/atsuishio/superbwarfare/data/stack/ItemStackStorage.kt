@@ -1,50 +1,70 @@
 package com.atsuishio.superbwarfare.data.stack
 
-import com.atsuishio.superbwarfare.data.stack.ItemStackStorage.carrierToken
-import com.atsuishio.superbwarfare.data.stack.ItemStackStorage.rootTag
-import com.atsuishio.superbwarfare.data.stack.ItemStackStorage.writeRoot
-import com.atsuishio.superbwarfare.tools.tag
+import com.atsuishio.superbwarfare.init.ModDataComponents
+import net.minecraft.core.component.DataComponents
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.item.ItemStack
 
 /**
- * 1.20.1 (Forge) 的 [GunStackStorage] 实现：**数据就是 `ItemStack` 的根 [CompoundTag]**。
+ * 1.21.1 的 [GunStackStorage] 实现：数据是自注册的 `superbwarfare:item_tag` 组件。
  *
- * 这一份实现是"活引用"语义的原点：
- * - [rootTag] 返回的就是 `stack.getOrCreateTag()` 那个对象，**改它就是改栈**；
- * - [writeRoot] 因此是**空操作**（除非栈上挂的不是同一份 —— 那种情况下补一刀，
- *   与三期 `SubWeaponRuntime.assemble` 里那句 `if (stack.tag !== liveTag) stack.tag = liveTag` 等价）；
- * - [carrierToken] 用根 tag 的引用哈希：它回答的是"这份 tag 还是不是挂在栈上的那一份"。
+ * 两条互相拉扯的要求，这里同时满足：
  *
- * ## 1.21.1 分支要写什么
+ * 1. **读出来的必须是活引用** —— `GunData` 把根 tag 与三个子 compound 捕获成 `val`，副武器
+ *    （`SubWeaponRuntime`）还要求"装配时那份"与"之后写回的那份"是同一个对象；
+ * 2. **内容变了必须让 MC 看得见** —— 槽位同步靠 `ItemStack.matches` 比对组件值，而
+ *    `ItemStack.copy()` 只共享组件值，所以就地改 tag 之后比对永远相等，服务端一个字节都不会
+ *    发给客户端（弹药不减 / 装假火 / 副武器切不动，都是这一条）。
  *
- * `ItemStack` 在那边没有物品 NBT 了，实现应当是：自注册一个承载 [CompoundTag] 的 `DataComponent`，
- * [rootTag] 走 `stack.get(COMPONENT)`、[writeRoot] 走 `stack.set(COMPONENT, root)`、
- * [carrierToken] 返回组件的写入序号。**业务逻辑（`SubWeaponRuntime` / `GunData` / 附件与弹药子 tag）
- * 一行都不用改** —— 这正是把差异收进这个接口的目的。
+ * 办法：写入时**折内容**（保住对象身份）并**换一个新的组件值实例**
+ * （[ModDataComponents.ItemTag]，身份判等），让"变了"这件事看得见。
  *
- * ⚠ 那条分支开工前必须先验证一件事：`GunData` 会把根 tag 与三个子 compound 捕获成 `val`，
- * 所以"装配时拿到的那份 tag"与"后续写回时用的那份"必须是**同一个实例**。
- * 1.20.1 靠活引用天然成立；1.21.1 侧要在组件读写路径上做等价的事，否则三期 §11.8.3 的
- * 三个症状（装填走完没装上 / 按住 G 音效一直响 / 按 G 完全没反应）会原样复现。
+ * 旧存档与配方结果把数据写在 `minecraft:custom_data`，这里只做**只读兜底**：
+ * 第一次写入时把内容复制进新组件，旧组件原样留着。
  */
 object ItemStackStorage : GunStackStorage {
 
-    override fun rootTag(stack: ItemStack): CompoundTag = stack.tag ?: CompoundTag()
+    private fun component(stack: ItemStack): ModDataComponents.ItemTag? =
+        stack.get(ModDataComponents.ITEM_TAG.get())
 
-    override fun rootTagOrNull(stack: ItemStack): CompoundTag? =
-        if (stack.tag == null) null else stack.tag
+    /** 活引用：新组件优先；旧存档退回 `custom_data`（只读，不共用对象） */
+    private fun liveTag(stack: ItemStack): CompoundTag? = component(stack)?.tag ?: legacyTag(stack)
 
-    override fun hasData(stack: ItemStack): Boolean = stack.tag != null
+    @Suppress("DEPRECATION")
+    private fun legacyTag(stack: ItemStack): CompoundTag? =
+        stack.get(DataComponents.CUSTOM_DATA)?.unsafe
 
-    override fun writeRoot(stack: ItemStack, root: CompoundTag) {
-        // 活引用：正常情况下什么都不用做。`ItemStack(item, count, tag)` 不保证原样持有传进去的
-        // tag（三期实测过），所以这里补一刀，成本是一次引用比较。
-        if (stack.tag !== root) {
-            stack.tag = root
-        }
+    override fun rootTag(stack: ItemStack): CompoundTag {
+        component(stack)?.let { return it.tag }
+
+        val created = CompoundTag()
+        legacyTag(stack)?.let { GunStackStorage.mergePreservingIdentity(created, it) }
+        attach(stack, created)
+        return created
     }
 
-    override fun carrierToken(stack: ItemStack): Long =
-        GunStackStorage.tokenOf(rootTag(stack))
+    override fun rootTagOrNull(stack: ItemStack): CompoundTag? = liveTag(stack)
+
+    override fun hasData(stack: ItemStack): Boolean = liveTag(stack) != null
+
+    override fun writeRoot(stack: ItemStack, root: CompoundTag) {
+        val live = rootTag(stack)
+        if (live !== root) {
+            GunStackStorage.mergePreservingIdentity(live, root)
+        }
+        attach(stack, live)
+    }
+
+    override fun carrierToken(stack: ItemStack): Long = GunStackStorage.tokenOf(rootTag(stack))
+
+    override fun lastWrittenTagOrNull(stack: ItemStack): CompoundTag? = component(stack)?.written
+
+    override fun clearRoot(stack: ItemStack) {
+        stack.remove(ModDataComponents.ITEM_TAG.get())
+        stack.remove(DataComponents.CUSTOM_DATA)
+    }
+
+    private fun attach(stack: ItemStack, tag: CompoundTag) {
+        stack.set(ModDataComponents.ITEM_TAG.get(), ModDataComponents.ItemTag(tag))
+    }
 }

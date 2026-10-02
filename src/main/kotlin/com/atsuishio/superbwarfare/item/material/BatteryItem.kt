@@ -2,10 +2,9 @@ package com.atsuishio.superbwarfare.item.material
 
 import com.atsuishio.superbwarfare.client.tooltip.component.CellImageComponent
 import com.atsuishio.superbwarfare.item.EnergyStorageItem
+import com.atsuishio.superbwarfare.tools.getOrCreateTag
 import com.atsuishio.superbwarfare.tools.tag
 import net.minecraft.ChatFormatting
-import net.minecraft.core.component.DataComponents
-import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.SlotAccess
@@ -122,9 +121,7 @@ open class BatteryItem(var maxEnergy: Int, properties: Properties) : Item(proper
         access: SlotAccess
     ): Boolean {
         if (other.isEmpty && action == ClickAction.SECONDARY) {
-            val tag = stack.tag ?: CompoundTag()
-            tag.putBoolean(TAG_ENABLED, !tag.getBoolean(TAG_ENABLED))
-            stack.set(DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(tag))
+            stack.getOrCreateTag().let { it.putBoolean(TAG_ENABLED, !it.getBoolean(TAG_ENABLED)) }
             return true
         }
         return super.overrideOtherStackedOnMe(stack, other, slot, action, player, access)
