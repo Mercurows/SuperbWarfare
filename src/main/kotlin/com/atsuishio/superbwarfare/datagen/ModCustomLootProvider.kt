@@ -407,6 +407,7 @@ class ModCustomLootProvider : LootTableSubProvider {
                 ModItems.CHARM_MOOSHROOM weighted 15
                 ModItems.CHARM_PIGLIN_HEAD weighted 15
                 ModItems.CHARM_CONTAINER weighted 15
+                ModItems.CHARM_M67_GRENADE weighted 15
 
                 ModItems.CHARM_WITHER_SKELETON_SKULL weighted 10
                 ModItems.CHARM_NETHER_STAR weighted 10
@@ -416,6 +417,7 @@ class ModCustomLootProvider : LootTableSubProvider {
                 ModItems.CHARM_ELDER_GUARDIAN weighted 10
                 ModItems.CHARM_SUI_CONTAINER weighted 10
                 ModItems.CHARM_STARS_IL weighted 10
+                ModItems.CHARM_MK_82 weighted 10
 
                 ModItems.CHARM_SEPT_WOLVES weighted 5
                 ModItems.CHARM_ANCIENT_CPU weighted 5
