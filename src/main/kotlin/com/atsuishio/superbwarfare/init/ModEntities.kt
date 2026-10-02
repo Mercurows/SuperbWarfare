@@ -158,6 +158,9 @@ object ModEntities {
     val GUN_GRENADE = register("gun_grenade", fastProjectile(::GunGrenadeEntity).sized(0.5f, 0.5f))
 
     @JvmField
+    val SMALL_GRENADE = register("small_grenade", fastProjectile(::SmallGrenadeEntity).sized(0.25f, 0.25f))
+
+    @JvmField
     val GRAPESHOT = register("grapeshot", fastProjectile(::GrapeshotEntity).sized(0.5f, 0.5f))
 
     @JvmField

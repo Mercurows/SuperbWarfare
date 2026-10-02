@@ -40,7 +40,6 @@
   "PrepareTime": 16,
   "IterativeTime": 18,
   "FinishTime": 18,
-
   "MeleeDamage": 15,
   "MeleeActions": [
     {
@@ -71,10 +70,10 @@
   "MeleeSound": {
     "Hit": "superbwarfare:bayonet_hit"
   },
-
   "SoundRadius": 8,
   "RPM": 240,
   "Projectile": "superbwarfare:gun_grenade",
+  "ProjectileSplitCount": 1,
   "GunType": "CurvedLauncher",
   "ProjectileBone": "he_head",
   "AmmoType": [

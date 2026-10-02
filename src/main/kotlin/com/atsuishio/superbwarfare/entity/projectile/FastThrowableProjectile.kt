@@ -55,6 +55,10 @@ import net.neoforged.neoforge.entity.IEntityWithComplexSpawn
 import net.neoforged.neoforge.entity.PartEntity
 import java.util.function.Consumer
 import java.util.function.Predicate
+import kotlin.math.abs
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSync, IEntityWithComplexSpawn,
     IBulletProperties, IAdvancedHitDetection {
@@ -73,6 +77,8 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
     protected val effectsValue: MutableSet<MobEffectInstance> = hashSetOf()
     protected var underwaterMotionScaleValue = 0.75f
     protected var explosionDestroyValue = true
+    protected var projectileSplitCountValue = 0
+    protected var projectileSplitAmountValue = DEFAULT_SPLIT_AMOUNT
 
     override fun getDamage(): Float = damageValue
     override fun setDamage(value: Float) {
@@ -134,6 +140,16 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         explosionDestroyValue = value
     }
 
+    override fun getProjectileSplitCount(): Int = projectileSplitCountValue
+    override fun setProjectileSplitCount(value: Int) {
+        projectileSplitCountValue = value
+    }
+
+    override fun getProjectileSplitAmount(): Int = projectileSplitAmountValue
+    override fun setProjectileSplitAmount(value: Int) {
+        projectileSplitAmountValue = value
+    }
+
     private var isFastMoving = false
 
     var exploded: Boolean = false
@@ -188,6 +204,12 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         if (compound.contains("ExplosionDestroy")) {
             this.explosionDestroyValue = compound.getBoolean("ExplosionDestroy")
         }
+        if (compound.contains("ProjectileSplitCount")) {
+            this.projectileSplitCountValue = compound.getInt("ProjectileSplitCount")
+        }
+        if (compound.contains("ProjectileSplitAmount")) {
+            this.projectileSplitAmountValue = compound.getInt("ProjectileSplitAmount")
+        }
 
         val listTag = compound.getList("CustomPotionEffects", 10)
         for (i in listTag.indices) {
@@ -224,6 +246,13 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
             compound.putFloat("UnderwaterMotionScale", this.underwaterMotionScaleValue)
         }
         compound.putBoolean("ExplosionDestroy", this.explosionDestroyValue)
+
+        if (this.projectileSplitCountValue > 0) {
+            compound.putInt("ProjectileSplitCount", this.projectileSplitCountValue)
+        }
+        if (this.projectileSplitAmountValue > 0) {
+            compound.putInt("ProjectileSplitAmount", this.projectileSplitAmountValue)
+        }
 
         if (!this.effectsValue.isEmpty()) {
             val list = ListTag()
@@ -622,11 +651,71 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         if (!exploded) {
             exploded = true
             buildExplosion(vec3).explode()
+            splitProjectiles(vec3)
         }
 
         if (discardAfterExplode()) {
             this.discard()
         }
+    }
+
+    open fun canSplit(): Boolean = false
+
+    open fun createSplitProjectile(level: Level): FastThrowableProjectile? = null
+
+    open fun splitProjectiles(pos: Vec3) {
+        if (!canSplit() || this.level().isClientSide) return
+
+        val count = getProjectileSplitCount().coerceIn(0, MAX_SPLIT_COUNT)
+        if (count <= 0) return
+
+        val level = this.level()
+        val amount = getProjectileSplitAmount().coerceIn(0, MAX_SPLIT_AMOUNT)
+        if (amount <= 0) return
+
+        val (backward, sideA, sideB) = splitBasis()
+        val fanOffset = random.nextDouble() * 2 * Math.PI
+
+        repeat(amount) { index ->
+            val child = createSplitProjectile(level) ?: return
+
+            child.owner = this.owner
+            child.setPos(pos.x, pos.y + child.bbHeight / 2, pos.z)
+            child.setDamage(getDamage() * SPLIT_INHERIT_RATE)
+            child.setExplosionDamage(getExplosionDamage() * SPLIT_INHERIT_RATE)
+            child.setExplosionRadius(getExplosionRadius() * SPLIT_INHERIT_RATE)
+            child.setLife(getLife())
+            child.setExplosionDestroy(hasExplosionDestroy())
+            child.setBeast(isBeast())
+            child.setCustomGravity(getCustomGravity())
+            child.setEffects(getEffects().toList())
+            child.setProjectileSplitCount(count - 1)
+            child.setProjectileSplitAmount(getProjectileSplitAmount())
+
+            val angle = fanOffset + index * (2 * Math.PI / amount) + (random.nextDouble() - 0.5) * SPLIT_ANGLE_NOISE
+            val spread = SPLIT_SPREAD * (0.6 + 0.8 * random.nextDouble())
+            val direction = backward
+                .add(sideA.scale(cos(angle) * spread))
+                .add(sideB.scale(sin(angle) * spread))
+                .normalize()
+            child.shoot(direction.x, direction.y, direction.z, splitSpeed(getExplosionRadius()), 0f)
+
+            level.addFreshEntity(child)
+        }
+    }
+
+    open fun splitBasis(): Triple<Vec3, Vec3, Vec3> {
+        val motion = this.deltaMovement
+        val backward = if (motion.lengthSqr() > 1.0E-6) motion.normalize().scale(-1.0) else Vec3(0.0, -1.0, 0.0)
+        val reference = if (abs(backward.y) > 0.99) Vec3(1.0, 0.0, 0.0) else Vec3(0.0, 1.0, 0.0)
+        val sideA = backward.cross(reference).normalize()
+        return Triple(backward, sideA, backward.cross(sideA).normalize())
+    }
+
+    open fun splitSpeed(radius: Float): Float {
+        val gravity = getCustomGravity().toDouble()
+        if (radius <= 0f || gravity <= 0.0) return MIN_SPLIT_SPEED
+        return sqrt(radius.toDouble() * gravity).toFloat() * 2f
     }
 
     open fun discardAfterExplode(): Boolean {
@@ -858,6 +947,27 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         @JvmField
         val SYNCED_TICK: EntityDataAccessor<Int> =
             SynchedEntityData.defineId(FastThrowableProjectile::class.java, EntityDataSerializers.INT)
+
+        /** 不写 `ProjectileSplitAmount` 时的分裂产物个数 */
+        const val DEFAULT_SPLIT_AMOUNT: Int = 4
+
+        /** 分裂产物的伤害、爆炸伤害与爆炸半径相对上一级的比例 */
+        private const val SPLIT_INHERIT_RATE = 0.5f
+
+        /** 算不出有效初速度（重力为 0 或爆炸半径为 0）时的兜底 */
+        private const val MIN_SPLIT_SPEED = 0.3f
+
+        /** 垂直平面上的偏移量相对反方向的大小，越大分得越开 */
+        private const val SPLIT_SPREAD = 0.6
+
+        /** 分裂方向的角度噪声（弧度），实际会在均分角附近摆动这么多 */
+        private const val SPLIT_ANGLE_NOISE = 0.6
+
+        /** 单次分裂的产物个数上限 */
+        private const val MAX_SPLIT_AMOUNT = 8
+
+        /** 分裂次数上限：产物是按个数成倍增长的，层级太深会瞬间堆出成百上千个实体 */
+        private const val MAX_SPLIT_COUNT = 3
 
         var playFlySound: Consumer<FastThrowableProjectile> = Consumer { }
         var playNearFlySound: Consumer<FastThrowableProjectile> = Consumer { }
