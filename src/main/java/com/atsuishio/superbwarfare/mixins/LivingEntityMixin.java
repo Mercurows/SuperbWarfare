@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.MinecraftUtil;
+import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
@@ -34,7 +35,7 @@ public abstract class LivingEntityMixin implements ICustomKnockback, DamageAcces
 
     @Shadow
     @Final
-    private Map<MobEffect, MobEffectInstance> activeEffects;
+    private Map<Holder<MobEffect>, MobEffectInstance> activeEffects;
 
     @Shadow
     protected abstract void onEffectAdded(MobEffectInstance instance, @Nullable Entity source);
@@ -137,23 +138,24 @@ public abstract class LivingEntityMixin implements ICustomKnockback, DamageAcces
             return false;
         }
 
-        MobEffectInstance old = this.activeEffects.get(instance.getEffect().value());
+        MobEffectInstance old = this.activeEffects.get(instance.getEffect());
         MinecraftUtil.postEvent(
                 new MobEffectEvent.Added(self, old, instance, source)
         );
 
+        boolean applied = false;
         if (old == null) {
-            this.activeEffects.put(instance.getEffect().value(), instance);
+            this.activeEffects.put(instance.getEffect(), instance);
             this.onEffectAdded(instance, source);
-            return true;
-        }
-
-        if (old.update(instance)) {
+            instance.onEffectAdded(self);
+            applied = true;
+        } else if (old.update(instance)) {
             this.onEffectUpdated(old, true, source);
-            return true;
+            applied = true;
         }
 
-        return false;
+        instance.onEffectStarted(self);
+        return applied;
     }
 
     @Inject(method = "dismountVehicle", at = @At("RETURN"))
