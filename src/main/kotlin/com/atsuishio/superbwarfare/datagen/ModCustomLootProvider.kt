@@ -397,6 +397,7 @@ class ModCustomLootProvider : LootTableSubProvider {
                 ModItems.CHARM_AXOLOTL weighted 25
                 ModItems.CHARM_COW weighted 25
                 ModItems.CHARM_SNOWGOLEM weighted 25
+                ModItems.CHARM_SMALL_CONTAINER weighted 25
 
                 ModItems.CHARM_FUKAMIZU_FISH weighted 15
                 ModItems.CHARM_ZOMBIE_HEAD weighted 15
@@ -405,6 +406,7 @@ class ModCustomLootProvider : LootTableSubProvider {
                 ModItems.CHARM_AXOLOTL_BLUE weighted 15
                 ModItems.CHARM_MOOSHROOM weighted 15
                 ModItems.CHARM_PIGLIN_HEAD weighted 15
+                ModItems.CHARM_CONTAINER weighted 15
 
                 ModItems.CHARM_WITHER_SKELETON_SKULL weighted 10
                 ModItems.CHARM_NETHER_STAR weighted 10
@@ -412,6 +414,8 @@ class ModCustomLootProvider : LootTableSubProvider {
                 ModItems.CHARM_RICE_CAKE_FOX_LOLITA weighted 10
                 ModItems.CHARM_WINEFOX_TAIL weighted 10
                 ModItems.CHARM_ELDER_GUARDIAN weighted 10
+                ModItems.CHARM_SUI_CONTAINER weighted 10
+                ModItems.CHARM_STARS_IL weighted 10
 
                 ModItems.CHARM_SEPT_WOLVES weighted 5
                 ModItems.CHARM_ANCIENT_CPU weighted 5

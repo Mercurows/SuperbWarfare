@@ -36,6 +36,11 @@
         },
         {
           "type": "minecraft:item",
+          "name": "superbwarfare:charm_small_container",
+          "weight": 25
+        },
+        {
+          "type": "minecraft:item",
           "name": "superbwarfare:charm_fukamizu_fish",
           "weight": 15
         },
@@ -71,6 +76,11 @@
         },
         {
           "type": "minecraft:item",
+          "name": "superbwarfare:charm_container",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
           "name": "superbwarfare:charm_wither_skeleton_skull",
           "weight": 10
         },
@@ -97,6 +107,16 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:charm_elder_guardian",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_sui_container",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_stars_il",
           "weight": 10
         },
         {
