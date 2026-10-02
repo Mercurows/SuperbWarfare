@@ -40,7 +40,7 @@ import java.util.*
 
 open class GeoGunAnimationInstance(
     private var stack: ItemStack,
-    entity: Entity,
+    entity: Entity?,
     /**
      * 这一份实例是**哪只手**的（`FirstPersonRenderHandler` 两手各持一份 `HandRenderState`）。
      *

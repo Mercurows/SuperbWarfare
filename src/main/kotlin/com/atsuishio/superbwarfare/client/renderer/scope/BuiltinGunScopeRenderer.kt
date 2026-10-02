@@ -6,13 +6,13 @@ import com.atsuishio.superbwarfare.resource.gun.pojo.BuiltinScopeInfo
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.TreeModelInstance
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.tree.TreeBedrockModel
 import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.vertex.PoseStack
-import com.mojang.blaze3d.vertex.Tesselator
+import com.mojang.blaze3d.vertex.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.texture.OverlayTexture
+import net.minecraft.util.Mth
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
 import org.joml.Matrix4f
@@ -221,41 +221,55 @@ class BuiltinGunScopeRenderer(
     /**
      * 在屏幕空间画一个大圆盘，用 `GL_INVERT` 把窗口**内部**的模板值翻成 `~(i + 1)`。
      *
-     * 圆盘不写颜色也不写深度，坐标系是**合成**出来的：圆心取 `ocular` 在模型里的位置（方块）
-     * 乘 `16 × 90`，半径 `80 × 倍率 × 开镜进度`，整片贴在 z = -90 上。这么做的意义是让窗口成为
-     * 一个**正圆**——镜筒口本身是八边形，直接拿轮廓当窗口会是个八边形洞。开镜进度决定它的大小，
-     * 所以窗口是"随开镜张开"的。
+     * 圆盘贴在 `ocular` 所在的深度上，半径 = `80 × 倍率 × 开镜进度 / 90 × 深度`，也就是 1.20 那个
+     * `atan(80 × 倍率 / 90)` 的视角：倍率 1.0 推满时约 41.6°，比屏幕还大，于是**整片镜筒口**都被翻成
+     * 窗口，镜片与镜筒壁的贴图一张都画不出来，外框只剩枪身自己的几何。倍率调小才会在窗口边缘留一圈。
      */
     private fun carveDisc(poseStack: PoseStack, info: BuiltinScopeInfo) {
-        val builder = Tesselator.getInstance()
         RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_INVERT)
         RenderSystem.colorMask(false, false, false, false)
         RenderSystem.depthMask(false)
 
         val aimingProgress = ClientEventHandler.zoomTime.coerceIn(0.0, 1.0).toFloat()
         val rad = 80f * info.viewRadiusModifier * aimingProgress
+        val modelViewMatrix = Matrix4f(RenderSystem.getModelViewMatrix())
 
+        val modelViewStack = RenderSystem.getModelViewStack()
+        modelViewStack.pushMatrix()
+        modelViewStack.identity()
+        RenderSystem.applyModelViewMatrix()
         RenderSystem.setShader(GameRenderer::getPositionColorShader)
         for (i in ocularIndices.indices) {
             RenderSystem.stencilFunc(GL11.GL_EQUAL, i + 1, 0xFF)
-            val center = getBoneCenter(poseStack, ocularIndices[i])
-            val centerX = center.x() * 16f * 90f
-            val centerY = center.y() * 16f * 90f
+            val center = getBoneCenter(poseStack, ocularIndices[i], modelViewMatrix)
+            // 圆心在相机背后时这根 `ocular` 不参与：透视除法会把圆盘翻到屏幕另一侧去。
+            val depth = -center.z()
+            if (!depth.isFinite() || depth <= 0f) continue
 
-            // TODO 如何绘制
-//            builder.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR)
-//            builder.vertex(centerX.toDouble(), centerY.toDouble(), DISC_Z.toDouble())
-//                .color(255, 255, 255, 255).endVertex()
-//            for (j in 0..90) {
-//                val angle = j * ((Math.PI * 2.0) / 90.0)
-//                val sin = Mth.sin(angle.toFloat())
-//                val cos = Mth.cos(angle.toFloat())
-//                builder.vertex((centerX + cos * rad).toDouble(), (centerY + sin * rad).toDouble(), DISC_Z.toDouble())
-//                    .color(255, 255, 255, 255)
-//                    .endVertex()
-//            }
-//            BufferUploader.drawWithShader(builder.end())
+            val radius = rad * depth / DISC_DISTANCE
+
+            val builder = Tesselator.getInstance().begin(
+                VertexFormat.Mode.TRIANGLE_FAN,
+                DefaultVertexFormat.POSITION_COLOR
+            )
+            builder
+                .addVertex(center.x(), center.y(), center.z())
+                .setColor(255, 255, 255, 255)
+            for (j in 0..90) {
+                val angle = j * ((Math.PI * 2.0) / 90.0)
+                val sin = Mth.sin(angle.toFloat())
+                val cos = Mth.cos(angle.toFloat())
+                builder.addVertex(
+                    center.x() + cos * radius,
+                    center.y() + sin * radius,
+                    center.z()
+                )
+                    .setColor(255, 255, 255, 255)
+            }
+            BufferUploader.drawWithShader(builder.build()!!)
         }
+        modelViewStack.popMatrix()
+        RenderSystem.applyModelViewMatrix()
 
         RenderSystem.depthMask(true)
         RenderSystem.colorMask(true, true, true, true)
@@ -330,20 +344,21 @@ class BuiltinGunScopeRenderer(
         bone.visible = originalVisible
     }
 
+    /** 立刻出图：模板测试在**绘制时**求值，留在缓冲里会全部堆到帧尾、按最后一条 `stencilFunc` 画一遍。 */
     private fun flush(
         bufferSource: MultiBufferSource.BufferSource,
         quadType: RenderType,
         triangleType: RenderType
     ) {
-//        if (!OculusCompat.endBatch(bufferSource)) {
-//            bufferSource.endBatch(quadType)
-//            bufferSource.endBatch(triangleType)
-//        }
+        bufferSource.endBatch(quadType)
+        bufferSource.endBatch(triangleType)
     }
 
-    /** 骨骼在**当前 poseStack**下的原点位置（方块）。圆盘的圆心就是这么来的。 */
-    private fun getBoneCenter(poseStack: PoseStack, boneIndex: Int): Vector3f {
-        val matrix = Matrix4f(poseStack.last().pose()).mul(instance.getGlobalTransform(boneIndex))
+    /** 骨骼原点在**相机空间**里的位置（方块），圆盘的圆心与深度都从这里来。 */
+    private fun getBoneCenter(poseStack: PoseStack, boneIndex: Int, modelViewMatrix: Matrix4f): Vector3f {
+        val matrix = Matrix4f(modelViewMatrix)
+            .mul(poseStack.last().pose())
+            .mul(instance.getGlobalTransform(boneIndex))
         return matrix.getTranslation(Vector3f())
     }
 
@@ -356,9 +371,7 @@ class BuiltinGunScopeRenderer(
          * 免得比较的是被拓宽后的 `Float`。
          */
         private const val DIVISION_MIN_ZOOM = 0.4
-
-        /** 圆盘所贴的深度。只是个"够靠前"的常量，不参与任何几何计算。 */
-        private const val DISC_Z = -90.0
+        private const val DISC_DISTANCE = 90f
 
         private const val OCULAR_RING_NODE = "ocular_ring"
         private const val DIVISION_NODE = "division"
