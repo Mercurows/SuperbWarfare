@@ -43,6 +43,10 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:charm_pufferfish"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_dog_tag"
         }
       ],
       "rolls": 1.0

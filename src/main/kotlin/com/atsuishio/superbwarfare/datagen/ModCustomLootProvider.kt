@@ -413,6 +413,7 @@ class ModCustomLootProvider : LootTableSubProvider {
                     ModItems.CHARM_SHEEP,
                     ModItems.CHARM_CHICKEN,
                     ModItems.CHARM_PUFFERFISH,
+                    ModItems.CHARM_DOG_TAG,
                 )
             }
         }
