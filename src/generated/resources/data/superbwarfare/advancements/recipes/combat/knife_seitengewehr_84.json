@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_bayonet_m_9": {
+    "has_bayonet_seitengewehr_84": {
       "conditions": {
         "items": [
           {
             "items": [
-              "superbwarfare:bayonet_m_9"
+              "superbwarfare:bayonet_seitengewehr_84"
             ]
           }
         ]
@@ -15,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:knife"
+        "recipe": "superbwarfare:knife_seitengewehr_84"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_bayonet_m_9",
+      "has_bayonet_seitengewehr_84",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:knife"
+      "superbwarfare:knife_seitengewehr_84"
     ]
   },
   "sends_telemetry_event": false

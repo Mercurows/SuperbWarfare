@@ -3,10 +3,10 @@
   "category": "equipment",
   "ingredients": [
     {
-      "item": "superbwarfare:bayonet_m_9"
+      "item": "superbwarfare:bayonet_6kh2"
     }
   ],
   "result": {
-    "item": "superbwarfare:knife"
+    "item": "superbwarfare:knife_6kh2"
   }
 }
