@@ -8,10 +8,7 @@ import com.atsuishio.superbwarfare.init.ModDataAttachments
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.subweapon.SubWeaponRuntime
-import com.atsuishio.superbwarfare.tools.ActiveGun
-import com.atsuishio.superbwarfare.tools.InventoryTool
-import com.atsuishio.superbwarfare.tools.SoundTool
-import com.atsuishio.superbwarfare.tools.postEvent
+import com.atsuishio.superbwarfare.tools.*
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundSource
 import net.minecraft.util.Mth
@@ -19,7 +16,9 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.phys.Vec3
+import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.neoforge.capabilities.Capabilities
+import net.neoforged.neoforge.event.tick.ServerTickEvent
 import kotlin.math.max
 import kotlin.math.min
 
@@ -221,13 +220,14 @@ object GunEventHandler {
      *                        environment modifier). When `null`, the method
      *                        queries the shooter's environment directly
      *                        (legacy path for non-vehicle callers).
+     * @param ticks           how many ticks this call covers.
      */
     @JvmOverloads
-    fun handleCooldown(shooter: Entity?, data: GunData, environmentRate: Double? = null) {
+    fun handleCooldown(shooter: Entity?, data: GunData, environmentRate: Double? = null, ticks: Int = 1) {
         val rate = environmentRate ?: computeEnvironmentRate(shooter, data)
 
         val heatO = data.heat.get()
-        val heat = max(heatO - data.get(GunProp.NATURAL_COOLDOWN) * rate, 0.0)
+        val heat = max(heatO - data.get(GunProp.NATURAL_COOLDOWN) * rate * ticks, 0.0)
         if (heat != heatO) {
             data.invalidateProperties()
             data.heat.set(heat)
@@ -323,68 +323,28 @@ object GunEventHandler {
     }
 
     private fun gunTickInternal(shooter: Entity?, data: GunData, inMainHand: Boolean, environmentRate: Double) {
+        val budget = ActionTickClock.budget
+
         init(shooter, data)
         autoReload(shooter, data, inMainHand)
         tickPerk(shooter, data)
-        handleCooldown(shooter, data, environmentRate)
-        data.cooldown.tick()
+        handleCooldown(shooter, data, environmentRate, budget)
+        data.cooldown.tick(budget)
         redrawExtraAmmo(shooter, data)
 
         // Decrement animation and firing cooldown timers
-        data.shootAnimationTimer.set(max(data.shootAnimationTimer.get() - 1, 0))
-        data.shootTimer.set(max(data.shootTimer.get() - 1, 0))
+        data.shootAnimationTimer.set(max(data.shootAnimationTimer.get() - budget, 0))
+        data.shootTimer.set(max(data.shootTimer.get() - budget, 0))
 
         if (inMainHand) {
-            handleGunBolt(data)
-
-            // Start reload process
-            if (data.reload.reloadStarter.start()) {
-                postEvent(ReloadEvent.Pre(shooter, data))
-                startReload(shooter, data)
+            // 带相等判断的计时器必须逐 1 推进 一次跳多格会跳过换弹上弹与音效的触发点
+            for (i in 0 until budget) {
+                tickActionTimeline(shooter, data)
+                if (!hasActiveAction(data)) break
             }
-
-            val soundInfo = data.get(GunProp.SOUND_INFO)
-            val sound1p = soundInfo.vehicleReload
-
-            if (data.reload.time() == (if (soundInfo.vehicleReloadSoundTime != 0) Mth.clamp(
-                    soundInfo.vehicleReloadSoundTime,
-                    1,
-                    data.get(GunProp.EMPTY_RELOAD_TIME) - 1
-                ) else data.get(GunProp.EMPTY_RELOAD_TIME) - 1)
-            ) {
-                if (shooter is VehicleEntity) {
-                    for (passenger in shooter.getPassengers()) {
-                        if (passenger is ServerPlayer) {
-                            SoundTool.playLocalSound(passenger, sound1p, 3f, 1f)
-                        }
-                    }
-
-                    val sound = soundInfo.vehicleReload3p
-                    shooter.level().playSound(shooter, shooter.onPos, sound, SoundSource.PLAYERS, 2f, 1f)
-                }
-            }
-
-            if (data.reload.time() > 0) {
-                data.invalidateProperties()
-            }
-            // Reduce remaining reload timer
-            data.reload.reduce()
-
-            // Execute data-driven reload timeline behaviors
-            GunActionStepExecutor.tickReload(data)
-
-            // Reload complete
-            if (data.reload.time() == 1) {
-                finishReload(shooter, data)
-            }
-
-            handleGunSingleReload(shooter, data)
-            handleSentinelCharge(shooter!!, data)
         }
 
         if (inMainHand && !data.reloading()) {
-            // 弹链只在"换弹动画里已经换上新链"那一段算例外（`HIDE_BULLET_CHAIN` 置 false），
-            // 换弹一结束就回到常态：按剩余弹量画，能不能少画几发交给渲染那边看模型有几发。
             data.hideBulletChain.set(true)
             if (!data.hasEnoughAmmoToShoot(shooter)) {
                 GunActionStepExecutor.triggerNoAmmo(data)
@@ -393,18 +353,61 @@ object GunEventHandler {
 
         data.item.tick(shooter, data, inMainHand)
 
-        // 副武器：合成栈不在背包里，`GunItem.inventoryTick` 不会跑到它，
-        // 所以换弹/热量/栓动计时器全靠这里顺带推进。
-        //
-        // **四期起入参是"部署槽位 + 宿主枪是否在手上"**（§9.8.3）：
-        // `SubWeaponRuntime` 内部算出"这把副武器是不是当前操控的枪"（= 宿主枪在手上 **且**
-        // 切出来的就是它），装填/栓动的进度只在被操控时推进 —— 与主武器上面那个
-        // `if (inMainHand)` 块完全同一条口径；没被操控时它还会把装填整个中断掉，切回来从头装。
-        // 热量、冷却、perk 这些与持有无关的仍然照常推进：绑在"被操控"上会让副武器的
-        // 状态机在那段判定为假时整段冻住（换弹计时器停在同一 tick、`canShoot` 永远 false）。
         SubWeaponRuntime.tick(shooter, data, ActiveGun.activeSlot(data), inMainHand)
 
         data.save()
+    }
+
+    private fun hasActiveAction(data: GunData): Boolean =
+        data.reloading() || data.bolt.actionTimer.get() > 0 ||
+            data.charge.timer.get() > 0 || data.reload.reloadStarter.shouldStart()
+
+    private fun tickActionTimeline(shooter: Entity?, data: GunData) {
+        handleGunBolt(data)
+
+        // Start reload process
+        if (data.reload.reloadStarter.start()) {
+            postEvent(ReloadEvent.Pre(shooter, data))
+            startReload(shooter, data)
+        }
+
+        val soundInfo = data.get(GunProp.SOUND_INFO)
+        val sound1p = soundInfo.vehicleReload
+
+        if (data.reload.time() == (if (soundInfo.vehicleReloadSoundTime != 0) Mth.clamp(
+                soundInfo.vehicleReloadSoundTime,
+                1,
+                data.get(GunProp.EMPTY_RELOAD_TIME) - 1
+            ) else data.get(GunProp.EMPTY_RELOAD_TIME) - 1)
+        ) {
+            if (shooter is VehicleEntity) {
+                for (passenger in shooter.getPassengers()) {
+                    if (passenger is ServerPlayer) {
+                        SoundTool.playLocalSound(passenger, sound1p, 3f, 1f)
+                    }
+                }
+
+                val sound = soundInfo.vehicleReload3p
+                shooter.level().playSound(shooter, shooter.onPos, sound, SoundSource.PLAYERS, 2f, 1f)
+            }
+        }
+
+        if (data.reload.time() > 0) {
+            data.invalidateProperties()
+        }
+        // Reduce remaining reload timer
+        data.reload.reduce()
+
+        // Execute data-driven reload timeline behaviors
+        GunActionStepExecutor.tickReload(data)
+
+        // Reload complete
+        if (data.reload.time() == 1) {
+            finishReload(shooter, data)
+        }
+
+        handleGunSingleReload(shooter, data)
+        handleSentinelCharge(shooter!!, data)
     }
 
     private fun startReload(shooter: Entity?, data: GunData) {
@@ -524,9 +527,11 @@ object GunEventHandler {
         }
 
         // 二阶段
-        if ((reload.prepareTimer.get() == 0 || reload.iterativeLoadTimer.get() == 0)
-            && reload.stage() == 2 && reload.iterativeLoadTimer.get() == 0
-            && !data.stopped.get() && data.ammo.get() < data.get(GunProp.MAGAZINE)
+        if (data.get(GunProp.ITERATIVE_TIME) > 0
+            && (reload.prepareTimer.get() == 0 || reload.iterativeLoadTimer.get() == 0)
+            && reload.stage() == 2 && reload.iterativeLoadTimer.get() == 0 && !data.stopped.get() && data.ammo.get() < data.get(
+                GunProp.MAGAZINE
+            )
         ) {
             playGunLoopReloadSounds(shooter, data)
             val iterativeTime = data.get(GunProp.ITERATIVE_TIME)
@@ -816,6 +821,16 @@ object GunEventHandler {
                 cellStorage.extractEnergy(received, false)
             }
         }
+    }
+
+    /**
+     * 在实体 tick 之前折算本 tick 应推进的伪 tick 数
+     *
+     * 必须用 START 阶段 inventoryTick 与载具 gunTick 都发生在实体 tick 阶段
+     */
+    @SubscribeEvent
+    fun onServerTick(event: ServerTickEvent.Pre) {
+        ActionTickClock.advance()
     }
 
     // TODO 正确实现更新注册名
