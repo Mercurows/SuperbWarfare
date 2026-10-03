@@ -74,6 +74,7 @@
   "RPM": 240,
   "Projectile": "superbwarfare:gun_grenade",
   "ProjectileSplitCount": 1,
+  "ProjectileSplitAmount": 6,
   "GunType": "CurvedLauncher",
   "ProjectileBone": "he_head",
   "AmmoType": [

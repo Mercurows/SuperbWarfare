@@ -698,7 +698,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
     open fun splitSpeed(radius: Float): Float {
         val gravity = getCustomGravity().toDouble()
         if (radius <= 0f || gravity <= 0.0) return MIN_SPLIT_SPEED
-        return sqrt(radius.toDouble() * gravity).toFloat() * 2f
+        return sqrt(radius.toDouble() * gravity).toFloat() * 1.5f
     }
 
     open fun discardAfterExplode(): Boolean {
