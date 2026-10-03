@@ -12,7 +12,7 @@
   "Weight": 7,
   "DrawTime": 14,
   "ZoomTime": 9,
-  "RPM": 60,
+  "RPM": 120,
   "MeleeDamage": 5,
   "MeleeDuration": 16,
   "MeleeComboReset": 15,

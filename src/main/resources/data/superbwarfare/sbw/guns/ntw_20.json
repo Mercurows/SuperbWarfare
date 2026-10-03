@@ -7,7 +7,7 @@
   "RecoilY": 0.038,
   "Damage": 140,
   "Headshot": 3,
-  "RPM": 50,
+  "RPM": 120,
   "ZoomReload": false,
   "Velocity": 24,
   "Magazine": [3, 6, 9],

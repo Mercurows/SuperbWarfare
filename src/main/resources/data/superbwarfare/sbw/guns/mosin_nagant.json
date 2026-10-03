@@ -6,7 +6,7 @@
   "Headshot": 3,
   "Velocity": 25,
   "Magazine": 5,
-  "RPM": 60,
+  "RPM": 120,
   "ReloadTypes": [
     "Iterative"
   ],

@@ -7,7 +7,7 @@
   "Velocity": 28,
   "Magazine": 1,
   "Weight": 5,
-  "RPM": 60,
+  "RPM": 120,
   "MeleeDamage": 5,
   "MeleeDuration": 16,
   "MeleeComboReset": 15,

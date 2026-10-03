@@ -9,7 +9,7 @@
   "Damage": 650,
   "ExplosionDamage": 120,
   "ExplosionRadius": 9,
-  "RPM": 60,
+  "RPM": 120,
   "Velocity": 3,
   "Headshot": 2.0,
   "ZoomReload": false,
