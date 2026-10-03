@@ -3,11 +3,11 @@
   "category": "equipment",
   "ingredients": [
     {
-      "item": "superbwarfare:bayonet_m_9"
+      "item": "superbwarfare:bayonet_seitengewehr_84"
     }
   ],
   "result": {
     "count": 1,
-    "id": "superbwarfare:knife"
+    "id": "superbwarfare:knife_seitengewehr_84"
   }
 }

@@ -290,13 +290,6 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 .unlockedBy(getHasName(Items.LIGHTNING_ROD), has(Items.LIGHTNING_ROD))
                 .unlockedBy(getHasName(ModItems.BATTERY.get()), has(ModItems.BATTERY.get()))
                 .save(writer, loc(getItemName(ModItems.ELECTRIC_BATON.get())))
-            ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.KNIFE.get())
-                .pattern(" a")
-                .pattern("b ")
-                .define('a', INGOTS_STEEL)
-                .define('b', Items.STICK)
-                .unlockedBy(getHasName(ModItems.STEEL_INGOT.get()), has(INGOTS_STEEL))
-                .save(writer, loc(getItemName(ModItems.KNIFE.get())))
             ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.MONITOR.get())
                 .pattern("a a")
                 .pattern("beb")
@@ -348,6 +341,21 @@ class ModRecipeProvider(output: PackOutput, registries: CompletableFuture<Holder
                 .define('c', Items.ARMOR_STAND)
                 .unlockedBy(getHasName(Items.TARGET), has(Items.TARGET))
                 .save(writer, loc(getItemName(ModItems.TARGET_DEPLOYER.get())))
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.KNIFE.get())
+                .requires(ModItems.BAYONET_M_9.get())
+                .unlockedBy(getHasName(ModItems.BAYONET_M_9.get()), has(ModItems.BAYONET_M_9.get()))
+                .save(writer, loc(getItemName(ModItems.KNIFE.get())))
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.KNIFE_6KH2.get())
+                .requires(ModItems.BAYONET_6KH2.get())
+                .unlockedBy(getHasName(ModItems.BAYONET_6KH2.get()), has(ModItems.BAYONET_6KH2.get()))
+                .save(writer, loc(getItemName(ModItems.KNIFE_6KH2.get())))
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.KNIFE_SEITENGEWEHR_84.get())
+                .requires(ModItems.BAYONET_SEITENGEWEHR_84.get())
+                .unlockedBy(
+                    getHasName(ModItems.BAYONET_SEITENGEWEHR_84.get()),
+                    has(ModItems.BAYONET_SEITENGEWEHR_84.get())
+                )
+                .save(writer, loc(getItemName(ModItems.KNIFE_SEITENGEWEHR_84.get())))
         }
 
         private fun buildArmorRecipes(writer: RecipeOutput) {

@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_bayonet_m_9": {
+    "has_bayonet_6kh2": {
       "conditions": {
         "items": [
           {
-            "items": "superbwarfare:bayonet_m_9"
+            "items": "superbwarfare:bayonet_6kh2"
           }
         ]
       },
@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:knife"
+        "recipe": "superbwarfare:knife_6kh2"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -21,12 +21,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_bayonet_m_9"
+      "has_bayonet_6kh2"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:knife"
+      "superbwarfare:knife_6kh2"
     ]
   }
 }
