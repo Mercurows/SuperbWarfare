@@ -3,6 +3,7 @@
   "RecoilX": 0.003,
   "RecoilY": 0.04,
   "Damage": 4,
+  "RPM": 80,
   "Headshot": 1.5,
   "MeleeDamage": 5,
   "MeleeDuration": 16,
@@ -33,7 +34,7 @@
     }
   ],
   "Velocity": 10,
-  "Magazine": 5,
+  "Magazine": 6,
   "ZoomSpreadRate": 0.75,
   "ProjectileAmount": 10,
   "Weight": 4,

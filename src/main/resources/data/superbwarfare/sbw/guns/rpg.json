@@ -11,6 +11,7 @@
   "Velocity": 4,
   "Magazine": 1,
   "Weight": 7,
+  "RPM": 60,
   "MeleeDamage": 5,
   "MeleeDuration": 16,
   "MeleeComboReset": 15,
@@ -60,7 +61,6 @@
       "Value": false
     }
   ],
-  "RPM": 120,
   "Gravity": 0.03,
   "ProjectileLife": 100,
   "GunType": "DirectLauncher",

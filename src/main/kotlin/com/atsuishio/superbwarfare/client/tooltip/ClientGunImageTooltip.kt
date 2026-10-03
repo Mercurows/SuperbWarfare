@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.tooltip
 
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent
-import com.atsuishio.superbwarfare.data.gun.FireMode
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunProp
@@ -138,20 +137,14 @@ open class ClientGunImageTooltip(tooltip: GunImageComponent) : ClientTooltipComp
          */
         get() {
             if (!GunItem.isHeldWeapon(this.stack)) return Component.empty()
-            val data =
-                from(this.stack)
-            val info = data.selectedFireModeInfo()
-
-            if (info.mode == FireMode.AUTO || info.mode == FireMode.BURST) {
-                return Component.translatable("des.superbwarfare.guns.rpm")
-                    .withStyle(ChatFormatting.GRAY)
-                    .append(Component.empty().withStyle(ChatFormatting.RESET))
-                    .append(
-                        Component.literal(format0D((data.get(GunProp.RPM) * data.get(GunProp.RPM_MULTIPLIER))))
-                            .withStyle(ChatFormatting.GREEN)
-                    )
-            }
-            return Component.empty()
+            val data = from(this.stack)
+            return Component.translatable("des.superbwarfare.guns.rpm")
+                .withStyle(ChatFormatting.GRAY)
+                .append(Component.empty().withStyle(ChatFormatting.RESET))
+                .append(
+                    Component.literal(format0D((data.get(GunProp.RPM) * data.get(GunProp.RPM_MULTIPLIER))))
+                        .withStyle(ChatFormatting.GREEN)
+                )
         }
 
     /**

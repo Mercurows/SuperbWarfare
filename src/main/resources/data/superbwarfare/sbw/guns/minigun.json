@@ -17,20 +17,6 @@
   "AvailableFireModes": [
     {
       "Mode": "Auto",
-      "Name": "RPM600",
-      "Override": {
-        "RPM": 600
-      }
-    },
-    {
-      "Mode": "Auto",
-      "Name": "RPM1145",
-      "Override": {
-        "RPM": 1145
-      }
-    },
-    {
-      "Mode": "Auto",
       "Name": "RPM1200"
     },
     {
@@ -45,6 +31,20 @@
       "Name": "RPM2400",
       "Override": {
         "RPM": 2400
+      }
+    },
+    {
+      "Mode": "Auto",
+      "Name": "RPM600",
+      "Override": {
+        "RPM": 600
+      }
+    },
+    {
+      "Mode": "Auto",
+      "Name": "RPM1145",
+      "Override": {
+        "RPM": 1145
       }
     }
   ],
