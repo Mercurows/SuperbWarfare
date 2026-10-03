@@ -654,6 +654,7 @@ class ModItemTagProvider(
             ModItems.CHARM_SHEEP,
             ModItems.CHARM_CHICKEN,
             ModItems.CHARM_PUFFERFISH,
+            ModItems.CHARM_DOG_TAG,
             ModItems.CHARM_ZOMBIE_HEAD,
             ModItems.CHARM_SKELETON_SKULL,
             ModItems.CHARM_CREEPER_HEAD,
