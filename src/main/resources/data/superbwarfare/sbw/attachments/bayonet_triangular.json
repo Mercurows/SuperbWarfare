@@ -1,0 +1,54 @@
+{
+  "Slot": "Bayonet",
+  "Bone": "bayonet_pos",
+  "Modifiers": [
+    {
+      "Prop": "MeleeDamage",
+      "Op": "Add",
+      "Value": 10
+    },
+    {
+      "Prop": "MeleeRange",
+      "Op": "Add",
+      "Value": 0.75
+    },
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 0.4
+    }
+  ],
+  "Override": {
+    "MeleeActions": [
+      {
+        "Animation": [
+          "bayonet_hit",
+          "hit"
+        ],
+        "Duration": 16,
+        "HitTime": 4,
+        "Hitbox": {
+          "Type": "Box",
+          "Range": 2.25,
+          "Width": 1.0,
+          "Height": 1.6,
+          "YOffset": -0.3,
+          "Occlusion": true
+        },
+        "Sweep": {
+          "From": 0,
+          "To": 0
+        },
+        "MaxTargets": 2,
+        "Knockback": 0.3,
+        "Headshot": 1.5,
+        "Legshot": 0.75
+      }
+    ],
+    "MeleeSound": {
+      "Hit": "superbwarfare:bayonet_hit"
+    }
+  },
+  "Model": "superbwarfare:models/bedrock/attachment/bayonet_triangular.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/bayonet_triangular.png"
+}

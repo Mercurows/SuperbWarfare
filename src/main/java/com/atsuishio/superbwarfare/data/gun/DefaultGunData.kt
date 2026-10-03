@@ -351,7 +351,7 @@ data class DefaultGunData(
     val inLavaCooldownRate: Double = 0.2,
     // 瞄准时的扩散比例
     @SerialName("ZoomSpreadRate")
-    val zoomSpreadRate: Double = 0.1,
+    val zoomSpreadRate: Double = 0.01,
     @SerialName("SeekTime")
     val seekTime: Int = 20,
     @SerialName("SeekAngle")

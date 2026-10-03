@@ -28,7 +28,6 @@ import com.atsuishio.superbwarfare.item.gun.handgun.TracheliumItem
 import com.atsuishio.superbwarfare.item.gun.launcher.*
 import com.atsuishio.superbwarfare.item.gun.machinegun.M2HBItem
 import com.atsuishio.superbwarfare.item.gun.machinegun.MinigunItem
-import com.atsuishio.superbwarfare.item.gun.rifle.SksItem
 import com.atsuishio.superbwarfare.item.gun.shotgun.HomemadeShotgunItem
 import com.atsuishio.superbwarfare.item.gun.smg.VectorItem
 import com.atsuishio.superbwarfare.item.gun.sniper.Ql1031Item
@@ -127,7 +126,7 @@ object ModItems {
     @JvmField val VECTOR = registerGun<VectorItem>()
     @JvmField val AK_47 = registerGun("ak_47") { GeoGunItemV2(Properties().rarity(Rarity.RARE)) }
     @JvmField val AK_12 = registerGun("ak_12") { GeoGunItemV2(Properties().rarity(Rarity.RARE)) }
-    @JvmField val SKS = registerGun<SksItem>()
+    @JvmField val SKS = registerGun("sks") { GeoGunItemV2(Properties().rarity(Rarity.RARE)) }
     @JvmField val M_4 = registerGun("m_4") { GeoGunItemV2(Properties().rarity(Rarity.RARE)) }
     @JvmField val HK_416 = registerGun("hk_416") { GeoGunItemV2(Properties().rarity(Rarity.RARE)) }
     @JvmField val QBZ_95 = registerGun("qbz_95") { GeoGunItemV2(Properties().rarity(Rarity.RARE)) }
@@ -746,6 +745,7 @@ object ModItems {
     @JvmField val BAYONET_6KH2 = registerAttachment("bayonet_6kh2")
     @JvmField val BAYONET_SEITENGEWEHR_84 = registerAttachment("bayonet_seitengewehr_84")
     @JvmField val BAYONET_M_91_30 = registerAttachment("bayonet_m_91_30")
+    @JvmField val BAYONET_TRIANGULAR = registerAttachment("bayonet_triangular")
     // @formatter:on
 
     // SubWeapon（副武器：既是配件又是一把真枪）
