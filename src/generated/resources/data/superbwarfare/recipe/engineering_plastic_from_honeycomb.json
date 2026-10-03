@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:honeycomb"
+    },
+    {
+      "item": "superbwarfare:nitrocellulose"
+    },
+    {
+      "item": "superbwarfare:nitrocellulose"
+    },
+    {
+      "item": "superbwarfare:nitrocellulose"
+    },
+    {
+      "item": "superbwarfare:nitrocellulose"
+    }
+  ],
+  "result": {
+    "count": 4,
+    "id": "superbwarfare:engineering_plastic"
+  }
+}
