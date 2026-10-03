@@ -72,7 +72,7 @@
   ],
   "BypassesArmor": 0.3,
   "SoundRadius": 15,
-  "BoltActionTime": 8,
+  "BoltActionTime": 10,
   "GunType": "Rifle",
   "DamageReduce": {
     "Type": "Rifle"
