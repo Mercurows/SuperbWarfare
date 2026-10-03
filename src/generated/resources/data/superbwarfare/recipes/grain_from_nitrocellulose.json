@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "tag": "forge:plates/copper"
+    },
+    "b": {
+      "item": "superbwarfare:nitrocellulose"
+    },
+    "c": {
+      "item": "superbwarfare:primer"
+    }
+  },
+  "pattern": [
+    "aba",
+    "aba",
+    " c "
+  ],
+  "result": {
+    "count": 16,
+    "item": "superbwarfare:grain"
+  },
+  "show_notification": true
+}
