@@ -2830,6 +2830,11 @@
       "superbwarfare:gpws/sink_rate"
     ]
   },
+  "sks_bolt": {
+    "sounds": [
+      "superbwarfare:gun/sks/sks_bolt"
+    ]
+  },
   "sks_far": {
     "sounds": [
       "superbwarfare:gun/sks/sks_far"
@@ -2840,19 +2845,29 @@
       "superbwarfare:gun/sks/sks_fire_1p"
     ]
   },
+  "sks_fire_1p_s": {
+    "sounds": [
+      "superbwarfare:gun/sks/sks_fire_1p_s"
+    ]
+  },
   "sks_fire_3p": {
     "sounds": [
       "superbwarfare:gun/sks/sks_fire_3p"
     ]
   },
-  "sks_reload_empty": {
+  "sks_fire_3p_s": {
     "sounds": [
-      "superbwarfare:gun/sks/sks_reload_empty"
+      "superbwarfare:gun/sks/sks_fire_3p_s"
     ]
   },
-  "sks_reload_normal": {
+  "sks_mag_in": {
     "sounds": [
-      "superbwarfare:gun/sks/sks_reload_normal"
+      "superbwarfare:gun/sks/sks_mag_in"
+    ]
+  },
+  "sks_mag_out": {
+    "sounds": [
+      "superbwarfare:gun/sks/sks_mag_out"
     ]
   },
   "sks_veryfar": {

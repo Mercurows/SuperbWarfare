@@ -18,6 +18,7 @@
     "ZoomRate": 0.5,
     "Speed": 1.0
   },
+  "ZoomingTranslateMultiply": 0.5,
   "Model": {
     "Animation": "superbwarfare:animations/bedrock/gun/mk_14.animation.json",
     "Model": "superbwarfare:models/bedrock/gun/mk_14.geo.json",

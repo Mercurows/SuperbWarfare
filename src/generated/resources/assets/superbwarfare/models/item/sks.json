@@ -1,15 +1,4 @@
 {
-  "base": {
-    "parent": "superbwarfare:item/sks_base"
-  },
-  "gui_light": "front",
-  "loader": "forge:separate_transforms",
-  "perspectives": {
-    "gui": {
-      "parent": "superbwarfare:item/sks_icon"
-    }
-  },
-  "textures": {
-    "particle": "superbwarfare:item/sks_icon"
-  }
+  "parent": "minecraft:builtin/entity",
+  "gui_light": "front"
 }
