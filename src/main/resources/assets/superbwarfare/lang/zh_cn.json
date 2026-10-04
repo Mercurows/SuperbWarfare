@@ -654,6 +654,7 @@
   "attachment.superbwarfare.slot.upperrail": "[上导轨配件]",
   "attachment.superbwarfare.slot.leftrail": "[左导轨配件]",
   "attachment.superbwarfare.slot.rightrail": "[右导轨配件]",
+  "attachment.superbwarfare.additional_slots": "可以作为 %1$s 使用",
   "attachment.superbwarfare.modify": "修改",
   "attachment.superbwarfare.scope_mode": "瞄准镜",
 

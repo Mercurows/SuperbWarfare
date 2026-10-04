@@ -39,7 +39,7 @@ private const val ATTACHMENT_ARG = "attachment"
  *
  * 三条指令都作用于实体主手的枪械，主手物品不是 [GunItem] 时指令失败：
  * - `set`：把槽位换成指定配件。物品与配件数据必须存在、
- *   配件数据必须接受 `type` 这个槽位（`Slot` + `Slots`，见 [AttachmentDefinition.acceptedSlots]）、
+ *   配件数据必须接受 `type` 这个槽位（`Slot` + `ExtraSlots`，见 [AttachmentDefinition.acceptedSlots]）、
  *   不能与该枪上已安装的配件抢同一个挂点组，
  *   并且必须被该枪械数据的 `AvailableAttachments` 解析出来
  * - `clear`：清空指定槽位，不写 `type` 时清空全部槽位（槽位清单来自 `AttachmentSlots.ALL`）
@@ -397,7 +397,7 @@ private fun AttachmentType.slotName(): Component =
 
 /**
  * 一件配件能装的全部槽位名，用 ` / ` 连接，例如 `[上导轨配件] / [下导轨配件] / [左导轨配件]`。
- * 多槽位配件（`Slots`，如导轨上的激光指示器）不止一个位置，
+ * 多槽位配件（`ExtraSlots`，如导轨上的激光指示器）不止一个位置，
  * 只报 `definition.slot` 会让玩家以为装错了，这里全部列出来。
  */
 private fun acceptedSlotNames(definition: AttachmentDefinition): Component {
