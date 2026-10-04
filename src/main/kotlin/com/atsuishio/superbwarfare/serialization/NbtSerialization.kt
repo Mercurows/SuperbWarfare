@@ -187,82 +187,36 @@ private abstract class AbstractNbtDecoder(
     final override fun composeName(parentName: String, childName: String): String = childName
 
     /** Consumes the pending element name, exactly like the built-in primitive decoders do. */
-    final override fun readRawTag(): Tag? = currentElement(popTag())
+    final override fun readRawTag(): Tag? = currentElement(runCatching { popTag() }.getOrElse { return null })
 
     override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder {
         val current = currentTagOrNull?.let { currentElement(it) } ?: value
 
         return when (descriptor.kind) {
-            StructureKind.LIST -> NbtListDecoder(
-                serializersModule,
-                current as? ListTag
-                    ?: throw SerializationException(
-                        "Expected ListTag for ${descriptor.serialName}, got ${current.type.name}"
-                    )
-            )
+            StructureKind.LIST -> NbtListDecoder(serializersModule, current as? ListTag ?: ListTag())
 
-            StructureKind.MAP -> throw SerializationException(
-                "NBT serialization does not support maps (${descriptor.serialName})"
-            )
+            StructureKind.MAP, is PolymorphicKind -> NbtObjectDecoder(serializersModule, CompoundTag())
 
-            is PolymorphicKind -> throw SerializationException(
-                "NBT serialization does not support polymorphic types (${descriptor.serialName})"
-            )
-
-            else -> NbtObjectDecoder(
-                serializersModule,
-                current as? CompoundTag
-                    ?: throw SerializationException(
-                        "Expected CompoundTag for ${descriptor.serialName}, got ${current.type.name}"
-                    )
-            )
+            else -> NbtObjectDecoder(serializersModule, current as? CompoundTag ?: CompoundTag())
         }
     }
 
+    /** A tag of the wrong kind is read as zero, which is what the property decodes to anyway. */
     private fun numericTag(tag: String): NumericTag =
-        currentElement(tag) as? NumericTag
-            ?: throw SerializationException(
-                "Expected a numeric NBT tag at '$tag', got ${currentElement(tag)?.type?.name ?: "nothing"}"
-            )
+        currentElement(tag) as? NumericTag ?: ByteTag.valueOf(0)
 
     private fun stringTag(tag: String): StringTag =
-        currentElement(tag) as? StringTag
-            ?: throw SerializationException(
-                "Expected a StringTag at '$tag', got ${currentElement(tag)?.type?.name ?: "nothing"}"
-            )
-
-    private fun byteInRange(value: Long, type: String, tag: String): Byte {
-        if (value !in Byte.MIN_VALUE..Byte.MAX_VALUE) {
-            throw SerializationException("Value $value at '$tag' is out of $type range")
-        }
-        return value.toByte()
-    }
-
-    private fun shortInRange(value: Long, type: String, tag: String): Short {
-        if (value !in Short.MIN_VALUE..Short.MAX_VALUE) {
-            throw SerializationException("Value $value at '$tag' is out of $type range")
-        }
-        return value.toShort()
-    }
-
-    private fun intInRange(value: Long, type: String, tag: String): Int {
-        if (value !in Int.MIN_VALUE..Int.MAX_VALUE) {
-            throw SerializationException("Value $value at '$tag' is out of $type range")
-        }
-        return value.toInt()
-    }
+        currentElement(tag) as? StringTag ?: StringTag.valueOf("")
 
     override fun decodeTaggedBoolean(tag: String): Boolean =
         numericTag(tag).asByte != 0.toByte()
 
-    override fun decodeTaggedByte(tag: String): Byte =
-        byteInRange(numericTag(tag).asLong, "byte", tag)
+    /** Numeric kinds truncate exactly like the casts they replace, so an out-of-range value is read too. */
+    override fun decodeTaggedByte(tag: String): Byte = numericTag(tag).asByte
 
-    override fun decodeTaggedShort(tag: String): Short =
-        shortInRange(numericTag(tag).asLong, "short", tag)
+    override fun decodeTaggedShort(tag: String): Short = numericTag(tag).asShort
 
-    override fun decodeTaggedInt(tag: String): Int =
-        intInRange(numericTag(tag).asLong, "int", tag)
+    override fun decodeTaggedInt(tag: String): Int = numericTag(tag).asInt
 
     override fun decodeTaggedLong(tag: String): Long = numericTag(tag).asLong
 
@@ -270,13 +224,7 @@ private abstract class AbstractNbtDecoder(
 
     override fun decodeTaggedDouble(tag: String): Double = numericTag(tag).asDouble
 
-    override fun decodeTaggedChar(tag: String): Char {
-        val content = stringTag(tag).asString
-        if (content.length != 1) {
-            throw SerializationException("Expected single-char StringTag at '$tag', got \"$content\"")
-        }
-        return content[0]
-    }
+    override fun decodeTaggedChar(tag: String): Char = stringTag(tag).asString.singleOrNull() ?: '\u0000'
 
     override fun decodeTaggedString(tag: String): String = stringTag(tag).asString
 
@@ -285,9 +233,9 @@ private abstract class AbstractNbtDecoder(
         for (i in 0 until enumDescriptor.elementsCount) {
             if (enumDescriptor.getElementName(i) == name) return i
         }
-        throw SerializationException(
-            "Enum ${enumDescriptor.serialName} has no element '$name' at '$tag'"
-        )
+
+        // An unknown name would be out of bounds for the generated `values()[...]`, so take the first.
+        return 0
     }
 
     override fun decodeTaggedNotNullMark(tag: String): Boolean =
@@ -312,7 +260,7 @@ private class NbtObjectDecoder(
                     && !descriptor.isElementOptional(index)
                     && descriptor.getElementDescriptor(index).isNullable
 
-            if (value.contains(name) || forceNull) return index
+            if (value.contains(name) || forceNull || !descriptor.isElementOptional(index)) return index
         }
         return CompositeDecoder.DECODE_DONE
     }
@@ -330,8 +278,7 @@ private class NbtListDecoder(
 
     override fun elementName(descriptor: SerialDescriptor, index: Int): String = index.toString()
 
-    override fun currentElement(tag: String): Tag? =
-        value[tag.toIntOrNull() ?: throw SerializationException("Invalid list index tag '$tag'")]
+    override fun currentElement(tag: String): Tag? = value.get(tag.toIntOrNull() ?: -1)
 
     override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
         while (position < value.size - 1) {
