@@ -42,6 +42,7 @@ class SbwJEIPlugin : IModPlugin {
 
     override fun registerCategories(registration: IRecipeCategoryRegistration) {
         registration.addRecipeCategories(GunPerksCategory(registration.jeiHelpers.guiHelper))
+        registration.addRecipeCategories(GunPerkUsagesCategory(registration.jeiHelpers.guiHelper))
         registration.addRecipeCategories(GunAttachmentsCategory(registration.jeiHelpers.guiHelper))
         registration.addRecipeCategories(GunAttachmentUsagesCategory(registration.jeiHelpers.guiHelper))
         registration.addRecipeCategories(VehicleAssemblingCategory(registration.jeiHelpers.guiHelper))
@@ -50,6 +51,7 @@ class SbwJEIPlugin : IModPlugin {
 
     override fun registerRecipeCatalysts(registration: IRecipeCatalystRegistration) {
         registration.addRecipeCatalyst(ItemStack(ModItems.REFORGING_TABLE.get()), GunPerksCategory.TYPE)
+        registration.addRecipeCatalyst(ItemStack(ModItems.REFORGING_TABLE.get()), GunPerkUsagesCategory.TYPE)
         registration.addRecipeCatalyst(
             ItemStack(ModItems.VEHICLE_ASSEMBLING_TABLE.get()),
             VehicleAssemblingCategory.TYPE
@@ -69,6 +71,7 @@ class SbwJEIPlugin : IModPlugin {
             .map { obj -> obj.defaultInstance }.toList()
 
         registration.addRecipes(GunPerksCategory.TYPE, guns)
+        registration.addRecipes(GunPerkUsagesCategory.TYPE, GunPerkUsagesCategory.createRecipes(guns))
         registration.addRecipes(GunAttachmentsCategory.TYPE, GunAttachmentsCategory.createRecipes(guns))
         registration.addRecipes(GunAttachmentUsagesCategory.TYPE, GunAttachmentUsagesCategory.createRecipes(guns))
         registration.addRecipes(
