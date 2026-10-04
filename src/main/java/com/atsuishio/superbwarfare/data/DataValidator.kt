@@ -310,12 +310,12 @@ object DataValidator {
      * - 槽位的渲染走注册表通用路径，却没写 `Model`/`Texture`（装了但枪上看不见）
      * - `Bone` 写在"约定骨骼"槽位上（渲染不看它）
      * - `Override` 里写了不是枪械属性的键（宽松解析会静默忽略）
-     * - `Slots` 里的槽位没登记，或各槽位解析挂载骨骼的方式不一致（同一条 `Bone` 会被解释成不同骨骼）
+     * - `ExtraSlots` 里的槽位没登记，或各槽位解析挂载骨骼的方式不一致（同一条 `Bone` 会被解释成不同骨骼）
      *
      * **不做**骨骼是否存在的校验：那要读客户端模型，只能等资源加载完再查。
      */
     private fun validateAttachmentData(data: AttachmentDefinition, warn: (String) -> Unit) {
-        // `Slots` 里的名字写错就是"这件配件在那根导轨上永远装不上"，所以和主槽位一样是致命的
+        // `ExtraSlots` 里的名字写错就是"这件配件在那根导轨上永远装不上"，所以和主槽位一样是致命的
         for (type in data.acceptedSlots) {
             if (AttachmentSlots.ofOrNull(type) == null) {
                 error("Attachment slot $type is not registered in AttachmentSlots.ALL")
@@ -331,7 +331,7 @@ object DataValidator {
             )
         }
 
-        // 逐个槽位查：多槽位配件的主槽位可能不是 Fixed，但 `Slots` 里那个是
+        // 逐个槽位查：多槽位配件的主槽位可能不是 Fixed，但 `ExtraSlots` 里那个是
         val acceptedMounts = data.acceptedSlots.mapNotNull { AttachmentSlots.ofOrNull(it)?.mountBone }
         for (mountBone in acceptedMounts) {
             if (mountBone is AttachmentMountBone.Fixed && data.bone != null) {
@@ -340,7 +340,7 @@ object DataValidator {
             }
         }
 
-        // `Bone` 只有单个值，而 `Slots` 里的槽位可能一个走"约定骨骼"、一个走配件自己声明的骨骼 ——
+        // `Bone` 只有单个值，而 `ExtraSlots` 里的槽位可能一个走"约定骨骼"、一个走配件自己声明的骨骼 ——
         // 那时同一条 `Bone` 会在不同槽位上被解释成不同的东西，只能靠人确认
         if (acceptedMounts.distinctBy { it::class }.size > 1) {
             warn(

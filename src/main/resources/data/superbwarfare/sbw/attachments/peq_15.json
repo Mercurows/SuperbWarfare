@@ -1,6 +1,6 @@
 {
   "Slot": "UpperRail",
-  "Slots": [
+  "ExtraSlots": [
     "LowerRail",
     "LeftRail",
     "RightRail"

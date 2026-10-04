@@ -54,6 +54,7 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
             }
 
             add(slotLine(definition))
+            additionalSlotsLine(definition)?.let(::add)
             addAll(scopeLines(definition))
             definition.modifiers.mapNotNullTo(this) { modifierLine(it) }
             definition.override?.forEach { (key, value) ->
@@ -74,19 +75,37 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
     }
 
     /**
-     * 槽位名那一行。
+     * 槽位名那一行：**只报主槽位**（[AttachmentDefinition.slot]），也就是这件配件"定义在哪个槽位上"。
      *
-     * 一件配件可以同时声明多个可装槽位（`Slots`，例如激光指示器上下左右四根导轨都能装），
-     * 所以这里把 `acceptedSlots` **全部**列出来，而不是只显示主槽位 —— 否则玩家看到
-     * `[下导轨配件]` 会以为它装不上别的导轨。多个槽位之间用 `/` 分隔。
+     * 这是玩家判断"这东西是干什么用的"的依据（`Bone` 没写时的挂载骨骼、`ScopeInfo` 的取值下标都取自它），
+     * 所以它单独占一行、用亮金色标出来，额外能装的槽位另起一行见 [additionalSlotsLine]。
      */
-    open fun slotLine(definition: AttachmentDefinition): MutableComponent {
-        val text = Component.empty()
-        definition.acceptedSlots.sortedBy { it.ordinal }.forEachIndexed { index, type ->
-            if (index > 0) text.append(Component.literal(" / "))
-            text.append(slotName(type))
+    open fun slotLine(definition: AttachmentDefinition): MutableComponent =
+        slotName(definition.slot).withStyle(ChatFormatting.GOLD)
+
+    /**
+     * "也可以作为 [XX配件] 使用"那一行，只在配件声明了 `ExtraSlots` 时出现。
+     *
+     * 槽位名走 **`%1$s` 占位符**传进去，不拼在标签后面：不同语言里这一句的语序不一样
+     * （中文"也可以作为 X 使用"、英文"Can also be used as X"），把列表交给翻译自己摆，
+     * 翻译才写得对；拼在后面就等于锁死了标签必须在前的语序。
+     *
+     * `ExtraSlots` 是"顺便也能装"的槽位，不是平级关系，所以这一行比主槽位那行弱：标签用灰色、
+     * 槽位名用暗一档的金色。不列出来的话，玩家看到 `[上导轨配件]` 会以为它装不上别的导轨。
+     */
+    open fun additionalSlotsLine(definition: AttachmentDefinition): Component? {
+        val extra = definition.extraSlots
+        if (extra.isEmpty()) return null
+
+        // 先拼成一整个 Component，再作为 `%1$s` 传进译文，这样槽位名的颜色能跟着参数一起走
+        val names = Component.empty()
+        extra.sortedBy { it.ordinal }.forEachIndexed { index, type ->
+            if (index > 0) names.append(Component.literal(" / ").withStyle(ChatFormatting.GRAY))
+            names.append(slotName(type).withStyle { it.withColor(ADDITIONAL_SLOT_COLOR) })
         }
-        return text.withStyle(ChatFormatting.GOLD)
+
+        return Component.translatable("attachment.superbwarfare.additional_slots", names)
+            .withStyle(ChatFormatting.GRAY)
     }
 
     /** 单个槽位的显示名，例如 `[Scope Attachment]` / `[瞄准镜配件]`；没有翻译时退回枚举名 */
@@ -286,6 +305,9 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
         const val SCOPE_MODE_COLOR = 0xB99CFF
         val MODIFICATION_COLOR = ChatFormatting.AQUA
         val SCOPE_COLOR = ChatFormatting.YELLOW
+
+        /** 额外可装槽位的槽位名：比主槽位那行的 `GOLD`（`0xFFAA00`）暗一档，主次分明 */
+        const val ADDITIONAL_SLOT_COLOR = 0xE0A84B
 
         val HIGHER_IS_BETTER = setOf(
             "Damage",

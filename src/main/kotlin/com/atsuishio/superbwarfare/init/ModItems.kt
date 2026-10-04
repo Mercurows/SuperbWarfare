@@ -739,7 +739,7 @@ object ModItems {
     // @formatter:on
 
     // 导轨类配件（上/下/左/右四根导轨通用）：激光指示器、战术手电这类不分方向的东西，
-    // 靠配件数据的 `Slots` 声明自己能装进哪几个导轨槽位
+    // 靠配件数据的 `ExtraSlots` 声明自己能装进哪几个导轨槽位
     // @formatter:off
     @JvmField val PEQ_15 = registerAttachment("peq_15")
     // @formatter:on

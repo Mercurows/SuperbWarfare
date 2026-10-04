@@ -654,6 +654,7 @@
   "attachment.superbwarfare.slot.upperrail": "[Upper Rail Attachment]",
   "attachment.superbwarfare.slot.leftrail": "[Left Rail Attachment]",
   "attachment.superbwarfare.slot.rightrail": "[Right Rail Attachment]",
+  "attachment.superbwarfare.additional_slots": "Can also be used as %1$s",
   "attachment.superbwarfare.modify": "Modify ",
   "attachment.superbwarfare.scope_mode": "Scope",
 
