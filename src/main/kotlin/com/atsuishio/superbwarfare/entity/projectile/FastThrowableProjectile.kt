@@ -537,7 +537,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
 
     open fun afterHitEntity(result: EntityHitResult) {
         if (this.explosionDamageValue > 0) {
-            this.causeExplode(result.location)
+            this.causeExplode(result.location, DEFAULT_SPLIT_AXIS)
             this.causeRangedEffects(result.location)
         }
         this.discard()
@@ -545,7 +545,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
 
     open fun afterHitBlock(result: BlockHitResult) {
         if (this.explosionDamageValue > 0) {
-            this.causeExplode(result.location)
+            this.causeExplode(result.location, surfaceNormal(result))
             this.causeRangedEffects(result.location)
         }
         this.discard()
@@ -576,7 +576,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         val hardness = this.level().getBlockState(resultPos).block.defaultDestroyTime()
         if (hardness != -1f) {
             if (firstHit) {
-                causeExplode(blockHitResult.location)
+                causeExplode(blockHitResult.location, surfaceNormal(blockHitResult))
                 firstHit = false
                 queueServerWork(3) { this.discard() }
             }
@@ -584,10 +584,12 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
                 this.level().destroyBlock(resultPos, true)
             }
         } else {
-            causeExplode(blockHitResult.location)
+            causeExplode(blockHitResult.location, surfaceNormal(blockHitResult))
             this.discard()
         }
     }
+
+    protected fun surfaceNormal(result: BlockHitResult): Vec3 = Vec3.atLowerCornerOf(result.direction.normal)
 
     open fun buildExplosion(vec3: Vec3): CustomExplosion.Builder {
         return CustomExplosion.Builder(this)
@@ -630,11 +632,12 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         }
     }
 
-    open fun causeExplode(vec3: Vec3) {
+    @JvmOverloads
+    open fun causeExplode(vec3: Vec3, splitNormal: Vec3? = null) {
         if (!exploded) {
             exploded = true
             buildExplosion(vec3).explode()
-            splitProjectiles(vec3)
+            splitProjectiles(vec3, splitNormal)
         }
 
         if (discardAfterExplode()) {
@@ -646,7 +649,8 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
 
     open fun createSplitProjectile(level: Level): FastThrowableProjectile? = null
 
-    open fun splitProjectiles(pos: Vec3) {
+    @JvmOverloads
+    open fun splitProjectiles(pos: Vec3, splitNormal: Vec3? = null) {
         if (!canSplit() || this.level().isClientSide) return
 
         val count = getProjectileSplitCount().coerceIn(0, MAX_SPLIT_COUNT)
@@ -656,14 +660,15 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         val amount = getProjectileSplitAmount().coerceIn(0, MAX_SPLIT_AMOUNT)
         if (amount <= 0) return
 
-        val (backward, sideA, sideB) = splitBasis()
+        val (axis, sideA, sideB) = splitBasis(splitNormal)
         val fanOffset = random.nextDouble() * 2 * Math.PI
+        val spawnPos = pos.add(axis.scale(SPLIT_SPAWN_OFFSET))
 
         repeat(amount) { index ->
             val child = createSplitProjectile(level) ?: return
 
             child.owner = this.owner
-            child.setPos(pos.x, pos.y + child.bbHeight / 2, pos.z)
+            child.setPos(spawnPos.x, spawnPos.y + child.bbHeight / 2, spawnPos.z)
             child.setDamage(getDamage() * SPLIT_INHERIT_RATE)
             child.setExplosionDamage(getExplosionDamage() * SPLIT_INHERIT_RATE)
             child.setExplosionRadius(getExplosionRadius() * SPLIT_INHERIT_RATE)
@@ -677,7 +682,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
 
             val angle = fanOffset + index * (2 * Math.PI / amount) + (random.nextDouble() - 0.5) * SPLIT_ANGLE_NOISE
             val spread = SPLIT_SPREAD * (0.6 + 0.8 * random.nextDouble())
-            val direction = backward
+            val direction = axis
                 .add(sideA.scale(cos(angle) * spread))
                 .add(sideB.scale(sin(angle) * spread))
                 .normalize()
@@ -687,18 +692,17 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         }
     }
 
-    open fun splitBasis(): Triple<Vec3, Vec3, Vec3> {
-        val motion = this.deltaMovement
-        val backward = if (motion.lengthSqr() > 1.0E-6) motion.normalize().scale(-1.0) else Vec3(0.0, -1.0, 0.0)
-        val reference = if (abs(backward.y) > 0.99) Vec3(1.0, 0.0, 0.0) else Vec3(0.0, 1.0, 0.0)
-        val sideA = backward.cross(reference).normalize()
-        return Triple(backward, sideA, backward.cross(sideA).normalize())
+    open fun splitBasis(splitNormal: Vec3? = null): Triple<Vec3, Vec3, Vec3> {
+        val axis = splitNormal?.takeIf { it.lengthSqr() > 1.0E-6 }?.normalize() ?: DEFAULT_SPLIT_AXIS
+        val reference = if (abs(axis.y) > 0.99) Vec3(1.0, 0.0, 0.0) else Vec3(0.0, 1.0, 0.0)
+        val sideA = axis.cross(reference).normalize()
+        return Triple(axis, sideA, axis.cross(sideA).normalize())
     }
 
     open fun splitSpeed(radius: Float): Float {
         val gravity = getCustomGravity().toDouble()
         if (radius <= 0f || gravity <= 0.0) return MIN_SPLIT_SPEED
-        return sqrt(radius.toDouble() * gravity).toFloat() * 1.5f
+        return sqrt(radius.toDouble() * gravity).toFloat() * 1.25f
     }
 
     open fun discardAfterExplode(): Boolean {
@@ -944,7 +948,13 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         /** 算不出有效初速度（重力为 0 或爆炸半径为 0）时的兜底 */
         private const val MIN_SPLIT_SPEED = 0.3f
 
-        /** 垂直平面上的偏移量相对反方向的大小，越大分得越开 */
+        /** 没有命中面法线时的分裂中轴（命中实体、自爆、到寿）：默认朝正上方散开 */
+        private val DEFAULT_SPLIT_AXIS: Vec3 = Vec3(0.0, 1.0, 0.0)
+
+        /** 分裂产物沿中轴外移的距离：避免生成在方块内部、落地即引爆 */
+        private const val SPLIT_SPAWN_OFFSET = 0.4
+
+        /** 垂直平面上的偏移量相对中轴的大小，越大分得越开 */
         private const val SPLIT_SPREAD = 0.6
 
         /** 分裂方向的角度噪声（弧度），实际会在均分角附近摆动这么多 */
