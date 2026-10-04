@@ -391,6 +391,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.BAYONET_SEITENGEWEHR_84)
         simpleItem(ModItems.BAYONET_M_91_30)
         simpleItem(ModItems.BAYONET_TRIANGULAR)
+        simpleItem(ModItems.BAYONET_M1917)
         simpleItem(ModItems.SUB_WEAPON_GP_25)
         simpleItem(ModItems.CHARM_FUKAMIZU_FISH)
         simpleItem(ModItems.CHARM_PIG)

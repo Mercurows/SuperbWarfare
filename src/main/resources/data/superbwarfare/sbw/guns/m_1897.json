@@ -122,6 +122,9 @@
       "superbwarfare:linear_muzzle",
       "superbwarfare:cross_muzzle"
     ],
+    "Bayonet": [
+      "superbwarfare:bayonet_m1917"
+    ],
     "Charm": [
       "#superbwarfare:attachment/charm"
     ]
