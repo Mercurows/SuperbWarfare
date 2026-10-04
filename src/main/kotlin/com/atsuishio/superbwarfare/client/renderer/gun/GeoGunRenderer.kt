@@ -13,6 +13,8 @@ import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.EDIT_FOCUS_Z_OFFSET
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.MERGE_BLENDER
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.OEM_HAND_GUARD_BONE
+import com.atsuishio.superbwarfare.client.renderer.laser.LaserSightCapture
+import com.atsuishio.superbwarfare.client.renderer.laser.LaserSightRenderer
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeStencilRenderHelper
 import com.atsuishio.superbwarfare.compat.acceleratedrendering.AcceleratedRenderingCompat
 import com.atsuishio.superbwarfare.compat.oculus.OculusCompat
@@ -331,6 +333,8 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         handledScopeAttachment = null
         if (transformType.firstPerson()) {
             lastBoneTransforms[handForContext(transformType)]?.clear()
+            // 激光束的生命周期 = 这一次绘制：采集与绘制都在本次调用里完成，不留跨帧状态
+            LaserSightCapture.beginFrame()
         }
 
         val resource = GunResource.compute(stack)
@@ -586,9 +590,47 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 attachmentMuzzleTransform?.let { transforms[MUZZLE_BONE] = Matrix4f(it) }
             }
         }
+
         gunStencilCulling = gunCulled
+        // 瞄具模板的裁切窗口在这里结束（里面那句 `endBatch` 把枪身整批落盘）
         finishStencilCulling(bufferSource)
         model.resetPose()
+
+        if (transformType.firstPerson()) {
+            LaserSightRenderer.render(poseStack, bufferSource)
+        }
+    }
+
+    /**
+     * 取一件激光配件的出光口，排在**该配件几何真正被画出来之前**调用。
+     *
+     * [poseMatrix] 必须是画该配件几何用的那份 `poseStack.last().pose()` —— 与画面同源，
+     * 所以不需要在这里另拼 `poseStack × mount × rotation`（渲染路径的变换次序一旦与它分叉，
+     * 出光口就会离骨骼一截）。方向与落点由 [LaserSightCapture] / [LaserSightRenderer] 负责。
+     */
+    private fun captureLaserSight(
+        poseMatrix: Matrix4f,
+        attachmentModel: BedrockAttachmentModel,
+        definition: AttachmentDefinition,
+        slot: AttachmentType,
+        stack: ItemStack,
+    ) {
+        val info = definition.laser ?: return
+        // 只有本地玩家第一人称才画激光（这个方法在第三人称 / 其他玩家 / GUI 上也会跑）
+        if (localFirstPersonHand == null) return
+        // 阴影 pass 里画激光只会往阴影贴图里写颜色（与吊坠那边同一个判据）
+        if (OculusCompat.isRenderingShadowPass()) return
+
+        val data = from(stack)
+        // 副武器被切出来时显示的是副武器模型，画激光反而突兀
+        if (ActiveGun.isDeployed(data, true)) return
+
+        LaserSightCapture.capture(
+            info = info,
+            colorRgb = info.resolveColorRgb(data.attachment.getLaserColor(slot)),
+            poseMatrix = poseMatrix,
+            locatorTransform = attachmentModel.getLocatorTransform(info.locator),
+        )
     }
 
     open fun renderAttachments(
@@ -707,6 +749,16 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                         hand
                     )
                 }
+                // 激光出光口：排在这件配件的**全部骨骼姿态写完、几何真正落笔之前**，
+                // 用的是画它几何的那份矩阵与此刻的 locator（脚架翻下去、副武器换弹这些
+                // 改了骨骼的动画都会被算进去），所以光束永远咬在模型的出光口上。
+                captureLaserSight(
+                    poseStack.last().pose(),
+                    attachmentModel,
+                    definition,
+                    slot.type,
+                    stack,
+                )
                 attachmentModel.renderToBuffer(
                     poseStack, bufferSource, texture, packedLight, packedOverlay,
                     null, attachmentReadout(stack, definition, hand)

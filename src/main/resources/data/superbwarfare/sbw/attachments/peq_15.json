@@ -19,5 +19,13 @@
     }
   ],
   "Model": "superbwarfare:models/bedrock/attachment/peq_15.geo.json",
-  "Texture": "superbwarfare:textures/bedrock/attachment/peq_15.png"
+  "Texture": "superbwarfare:textures/bedrock/attachment/peq_15.png",
+  "Laser": {
+    "Bone": "laser",
+    "Locator": "laser_muzzle",
+    "Range": 64.0,
+    "CoreWidth": 0.010,
+    "GlowWidth": 0.028,
+    "Color": "0xFF0000"
+  }
 }

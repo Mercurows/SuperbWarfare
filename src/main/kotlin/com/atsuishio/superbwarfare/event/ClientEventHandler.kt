@@ -24,12 +24,19 @@ import com.atsuishio.superbwarfare.data.attachment.SubWeaponInfo
 import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
+import com.atsuishio.superbwarfare.event.ClientEventHandler.boltMove
+import com.atsuishio.superbwarfare.event.ClientEventHandler.cameraRot
 import com.atsuishio.superbwarfare.event.ClientEventHandler.currentMeleeDuration
 import com.atsuishio.superbwarfare.event.ClientEventHandler.currentMeleeIndex
+import com.atsuishio.superbwarfare.event.ClientEventHandler.firePosTimer
 import com.atsuishio.superbwarfare.event.ClientEventHandler.fireRotTimer
+import com.atsuishio.superbwarfare.event.ClientEventHandler.handleClientShoot
+import com.atsuishio.superbwarfare.event.ClientEventHandler.handleGunRecoil
 import com.atsuishio.superbwarfare.event.ClientEventHandler.handleWeaponFire
 import com.atsuishio.superbwarfare.event.ClientEventHandler.isGunMeleeActive
 import com.atsuishio.superbwarfare.event.ClientEventHandler.resetGunTransientState
+import com.atsuishio.superbwarfare.event.ClientEventHandler.subWeaponFireRotTimer
+import com.atsuishio.superbwarfare.event.ClientEventHandler.subWeaponRecoilTimer
 import com.atsuishio.superbwarfare.event.ClientEventHandler.zoomTime
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.item.attachment.SubWeaponItem
@@ -632,6 +639,9 @@ object ClientEventHandler {
     // 原VectorUtil的属性
     @JvmField
     var fov: Double = 70.0
+
+    @JvmField
+    var handFov: Double = 70.0
 
     @JvmField
     var modelViewMatrix: Matrix4f? = null
@@ -3163,8 +3173,12 @@ object ClientEventHandler {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     fun captureFov(event: ComputeFov) {
+        // 这个事件两条渲染路径都会发：世界 pass 带玩家的 FOV 设置（并吃到开镜倍率），
+        // 手部 pass 带的是它自己的固定基准。排在 LOWEST 才能拿到"所有处理都跑完"的最终值。
         if (event.usedConfiguredFov()) {
             fov = event.fov
+        } else {
+            handFov = event.fov
         }
     }
 

@@ -201,6 +201,11 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
     }
 
     /**
+     * 骨骼上某个 locator 的全局变换（模型空间，单位是**方块**）
+     */
+    fun getLocatorTransform(locatorName: String): Matrix4f? = instance.getLocatorTransform(locatorName)
+
+    /**
      * 吊坠骨架：`string` / `charm` 两根分组骨骼 + 摆点/摆长/静止方向。
      *
      * **懒解析、结果挂在本对象上**：模型对象在数据包重载时会被整个换掉，

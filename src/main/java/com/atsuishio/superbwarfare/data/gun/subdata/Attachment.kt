@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.config.server.AttachmentConfig
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
 import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots
 import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.data.gun.subdata.Attachment.Companion.NO_LASER_COLOR
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.Tag
@@ -198,6 +199,40 @@ class Attachment(private val gun: GunData) {
         gun.invalidateProperties()
     }
 
+    /**
+     * 读该槽位激光颜色的覆盖值。
+     *
+     * 与 [getRotation] / [getOffset] 同契约：**只读、不物化** ——
+     * 槽位还是旧字符串形式、或没有 `LaserColor` 键时返回 [NO_LASER_COLOR]，绝不 `getOrCreateTag`。
+     * 负数与带 alpha 的 ARGB 都当"没设过"，非法值一律在读侧丢弃。
+     */
+    fun getLaserColor(type: AttachmentType): Int {
+        val tag = getTag(type) ?: return NO_LASER_COLOR
+        if (!tag.contains("LaserColor")) return NO_LASER_COLOR
+
+        val color = tag.getInt("LaserColor")
+        return if (color in 0..LASER_COLOR_MASK) color else NO_LASER_COLOR
+    }
+
+    /**
+     * 写该槽位激光颜色的覆盖值。
+     *
+     * 传 `null` 或负数表示清掉覆盖：走 `getTag(...).remove(...)` 让键消失，而不是留一个 `-1`。
+     * **不调 `gun.invalidateProperties()`** —— 颜色是纯表现量，不参与 PMC。
+     */
+    fun setLaserColor(type: AttachmentType, color: Int?) {
+        if (!has(type)) return
+
+        if (color == null || color < 0) {
+            if (getLaserColor(type) == NO_LASER_COLOR) return
+            getTag(type)?.remove("LaserColor")
+        } else {
+            val value = color and LASER_COLOR_MASK
+            if (getLaserColor(type) == value) return
+            getOrCreateTag(type).putInt("LaserColor", value)
+        }
+    }
+
     fun set(type: AttachmentType, id: ResourceLocation?) {
         if (id == null) {
             remove(type)
@@ -310,6 +345,14 @@ class Attachment(private val gun: GunData) {
             result += AttachmentInstance(type, id, tag, definition)
         }
         return result
+    }
+
+    companion object {
+        /** 没设过颜色的哨兵值，回退配件数据里的 `Laser.Color` */
+        const val NO_LASER_COLOR: Int = -1
+
+        /** 颜色合法域上限（`0xRRGGBB`，不含 alpha） */
+        const val LASER_COLOR_MASK: Int = 0xFFFFFF
     }
 }
 

@@ -131,6 +131,16 @@ data class AttachmentDefinition(
     /** 吊坠摆动参数，不写就用 [CharmInfo.DEFAULT] */
     @SerialName("Charm")
     val charm: CharmInfo? = null,
+
+    /**
+     * 激光瞄准器定义（见 [LaserInfo]）：**带上它就说明这件配件会发光束**。
+     *
+     * 这是"给配件加一个能力"，**不是"新增一类配件"** —— 它不参与 [slot] / [extraSlots] 的槽位声明，
+     * 也不影响 [modifiers]：一件普通的导轨配件可以既改属性、又发光束。
+     * 装在四条导轨上的任意一条都走同一份配置（方向从枪模型的挂点骨骼继承）。
+     */
+    @SerialName("Laser")
+    val laser: LaserInfo? = null,
 ) : IDBasedData<AttachmentDefinition>, PropertyModifier<GunData, DefaultGunData> {
 
     /**
@@ -225,8 +235,39 @@ data class AttachmentDefinition(
 
         @JvmStatic
         fun from(id: ResourceLocation): AttachmentDefinition? = CustomData.ATTACHMENTS[id.toString()]
+
+        /**
+         * 列出该枪上全部会发光束的配件。
+         *
+         * 返回槽位是为了让调用方按槽位读颜色覆盖（`Attachment.getLaserColor(slot)`）。
+         * 必须是复数：四条导轨互不互斥，一把枪可以同时装好几件，那几束都要画。
+         */
+        @JvmStatic
+        fun findLaserEmitters(gun: GunData?): List<LaserEmitter> {
+            if (gun == null) return emptyList()
+
+            val result = mutableListOf<LaserEmitter>()
+            for (slot in AttachmentSlots.ALL) {
+                val attachmentId = gun.attachment.id(slot.type) ?: continue
+                val definition = from(attachmentId) ?: continue
+                val info = definition.laser ?: continue
+                result += LaserEmitter(slot, definition, info)
+            }
+            return result
+        }
     }
 }
+
+/**
+ * 一件装着的激光配件。
+ *
+ * @param slot 装在哪条导轨上，既是挂点骨骼的依据，也是颜色覆盖的键
+ */
+data class LaserEmitter(
+    val slot: AttachmentSlot,
+    val definition: AttachmentDefinition,
+    val info: LaserInfo,
+)
 
 @Serializable
 data class AttachmentModifier(
