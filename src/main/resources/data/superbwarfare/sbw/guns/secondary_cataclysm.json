@@ -190,6 +190,12 @@
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"
+    ],
+    "UpperRail": [
+      "superbwarfare:peq_15"
+    ],
+    "LeftRail": [
+      "superbwarfare:peq_15"
     ]
   },
   "SoundInfo": {

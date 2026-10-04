@@ -6359,6 +6359,18 @@
 					"pivot": [0.79248, 2.22059, 3.83347]
 				},
 				{
+					"name": "right_rail_pos",
+					"parent": "positioning2",
+					"pivot": [-1.09141, 1.1835, -16.96493],
+					"rotation": [0, 0, 90]
+				},
+				{
+					"name": "left_rail_pos",
+					"parent": "positioning2",
+					"pivot": [1.09141, 1.1835, -16.96493],
+					"rotation": [0, 0, -90]
+				},
+				{
 					"name": "sub_weapon_pos",
 					"parent": "root",
 					"pivot": [0, -0.0844, -10.1773],
