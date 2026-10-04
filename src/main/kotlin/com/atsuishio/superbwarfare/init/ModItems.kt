@@ -751,6 +751,12 @@ object ModItems {
     @JvmField val PEQ_15 = registerAttachment("peq_15")
     // @formatter:on
 
+    // LeftRail 专用：测距仪这类**有朝向**的东西只做了左导轨那一版，
+    // 所以不写 `ExtraSlots`，模型朝向由配件数据的 `Rotation` 补正
+    // @formatter:off
+    @JvmField val RANGE_FINDER = registerAttachment("range_finder", Rarity.RARE)
+    // @formatter:on
+
     // Bayonet
     // @formatter:off
     @JvmField val BAYONET_M_9 = registerAttachment("bayonet_m_9")

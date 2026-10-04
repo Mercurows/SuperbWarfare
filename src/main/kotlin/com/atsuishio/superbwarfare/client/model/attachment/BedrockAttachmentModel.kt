@@ -278,7 +278,7 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
         // division lands inside the housing and gets depth tested away, which is why the aiming path
         // draws those itself.
         for (entry in readout.texts) {
-            ammo.renderText(entry, readout.count, readout.progress, poseStack, bufferSource)
+            ammo.renderText(entry, readout.count, readout.progress, readout.range, poseStack, bufferSource)
         }
 
         for (i in hiddenOculars.indices) {
@@ -302,7 +302,7 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
         markIlluminatedBones()
         updateDynamicDivisionScale()
         val ammoBarState = ammo.applyBars(readout.bars, readout.progress)
-        val texts = ammo.buildTexts(readout.texts, readout.count, readout.progress)
+        val texts = ammo.buildTexts(readout.texts, readout.count, readout.progress, readout.range)
         val quadType = RenderType.entityTranslucent(texture)
         val triangleType = BedrockModelRenderTypes.polyMeshCutout(texture)
 

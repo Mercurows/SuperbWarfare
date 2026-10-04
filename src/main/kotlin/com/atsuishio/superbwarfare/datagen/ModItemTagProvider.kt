@@ -694,7 +694,8 @@ class ModItemTagProvider(
             ModItems.PEQ_15
         ),
         AttachmentType.LEFT_RAIL to listOf(
-            ModItems.PEQ_15
+            ModItems.PEQ_15,
+            ModItems.RANGE_FINDER
         ),
         AttachmentType.RIGHT_RAIL to listOf(
             ModItems.PEQ_15

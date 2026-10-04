@@ -203,7 +203,8 @@ internal class AmmoDisplayRenderer(
     fun buildTexts(
         entries: List<AmmoTextEntry>,
         count: Int,
-        progress: Float
+        progress: Float,
+        range: Int = AmmoTextEntry.NO_RANGE
     ): List<AmmoText> {
         if (entries.isEmpty()) return emptyList()
 
@@ -214,14 +215,14 @@ internal class AmmoDisplayRenderer(
             // -1 is kept rather than filtered out: an anchor outside a division subtree cannot be
             // drawn alongside a reticle, but it still has to be drawn by the remaining pass, otherwise
             // it would be visible only in third person and the inventory.
-            texts += AmmoText(entry, count, progress, divisionAnchorOf(index))
+            texts += AmmoText(entry, count, progress, range, divisionAnchorOf(index))
         }
         return texts
     }
 
     /** Draws [text] at its anchor bone. See the entry overload for the transform details. */
     fun renderText(text: AmmoText, poseStack: PoseStack, bufferSource: MultiBufferSource) {
-        renderText(text.entry, text.count, text.progress, poseStack, bufferSource)
+        renderText(text.entry, text.count, text.progress, text.range, poseStack, bufferSource)
     }
 
     /**
@@ -243,6 +244,7 @@ internal class AmmoDisplayRenderer(
         entry: AmmoTextEntry,
         count: Int,
         progress: Float,
+        range: Int,
         poseStack: PoseStack,
         bufferSource: MultiBufferSource
     ) {
@@ -250,7 +252,7 @@ internal class AmmoDisplayRenderer(
         if (index < 0) return
         if (!visibleInModel(index, includeSelf = true)) return
 
-        val text = entry.resolve(count)
+        val text = entry.resolve(count, range)
         if (text.isEmpty()) return
 
         val font = Minecraft.getInstance().font
@@ -359,6 +361,8 @@ internal class AmmoDisplayRenderer(
         val count: Int,
         /** Remaining magazine ratio, which the entry resolves its tiered color against. */
         val progress: Float,
+        /** Distance to what the shooter looks at, in blocks; [AmmoTextEntry.NO_RANGE] if unmeasured. */
+        val range: Int,
         val divisionIndex: Int
     )
 

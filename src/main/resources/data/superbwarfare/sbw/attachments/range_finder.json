@@ -1,0 +1,40 @@
+{
+  "Slot": "LeftRail",
+  "Level": 0,
+  "Rotation": {
+    "Z": 90
+  },
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 1.5
+    }
+  ],
+  "Model": "superbwarfare:models/bedrock/attachment/range_finder.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/range_finder.png",
+  "TextShow": [
+    {
+      "Bone": "range_count_text",
+      "Scale": 0.0035,
+      "Align": "Center",
+      "ColorMode": "Switch",
+      "Color": {
+        "Default": "FFFFFF"
+      },
+      "Shadow": false,
+      "Text": "%range%"
+    },
+    {
+      "Bone": "ammo_count_text",
+      "Scale": 0.0035,
+      "Align": "Center",
+      "ColorMode": "Switch",
+      "Color": {
+        "Default": "FFFFFF", "0.5": "FF6127", "0.25": "FF0000"
+      },
+      "Shadow": false,
+      "Text": "%ammo_count%"
+    }
+  ]
+}

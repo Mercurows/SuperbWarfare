@@ -78,6 +78,22 @@ data class AttachmentDefinition(
     @SerialName("Texture")
     val texture: SerializedResourceLocation? = null,
 
+    /**
+     * 配件的基础三轴旋转（度）：乘在挂点变换**之内**，也就是"挂上去之后再整件转一下"。
+     *
+     * 三个分量与 geo 里骨骼的 `rotation` **是同一套写法**（换算见 `TreeBedrockModelBaker`：
+     * X、Y 取负、Z 不取负，按 `ZYX` 顺序合成），所以美术在 Blockbench 里量到多少度，这里就写多少度。
+     * 不写、或三个分量都是 `0`，等于没有这个字段（渲染路径会整段跳过）。
+     *
+     * 存在的理由是"同一件配件要装在朝向不同的挂点上"：四条导轨的挂点骨骼各自带
+     * ±90° / 180° 的 Z 轴旋转（见 [AttachmentSlots.Bones]），而配件模型只可能照其中一根的方向去建模，
+     * 换到别的导轨上就用这个字段补正，不必再让美术多出一份模型。
+     *
+     * **瞄准镜会忽略它**：镜筒的挂点变换还兼着开镜窗口（`ocular`）的定位，旋转光学瞄具本身也没有意义。
+     */
+    @SerialName("Rotation")
+    val rotation: AttachmentRotation? = null,
+
     @SerialName("MuzzleFlashScale")
     val muzzleFlashScale: Float = 1.0f,
 
@@ -265,6 +281,27 @@ enum class AttachmentModifierOp {
 
     @SerialName("ClampMax")
     CLAMP_MAX,
+}
+
+/**
+ * 配件的基础三轴旋转（见 [AttachmentDefinition.rotation]），单位是度
+ *
+ * 三个分量分别省略时为 `0`；[isIdentity] 为 `true` 时渲染路径整个跳过，
+ * 既不建矩阵也不乘进 `PoseStack` —— 绝大多数配件都不写这个字段。
+ */
+@Serializable
+data class AttachmentRotation(
+    @SerialName("X")
+    val x: Float = 0f,
+
+    @SerialName("Y")
+    val y: Float = 0f,
+
+    @SerialName("Z")
+    val z: Float = 0f,
+) {
+    /** 三个分量都是 `0`，等价于不写（没有背衬字段，本来就不会被序列化） */
+    val isIdentity: Boolean get() = x == 0f && y == 0f && z == 0f
 }
 
 @Serializable
