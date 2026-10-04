@@ -17,7 +17,6 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.phys.Vec3
-import net.minecraftforge.common.capabilities.ForgeCapabilities
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
@@ -172,8 +171,7 @@ object GunEventHandler {
     fun tryStartReload(shooter: Entity?, data: GunData, save: Boolean = true) {
         if (data.useBackpackAmmo() || data.meleeOnly()) return
 
-        if ((shooter == null || !shooter.isSpectator)
-            && !data.charging() && !data.reloading() && data.reload.time() == 0 && data.bolt.actionTimer.get() == 0
+        if ((shooter == null || !shooter.isSpectator) && !data.reloading() && data.reload.time() == 0 && data.bolt.actionTimer.get() == 0
         ) {
             // 检查备弹
             if (!data.hasBackupAmmo(shooter)) return
@@ -362,8 +360,7 @@ object GunEventHandler {
     }
 
     private fun hasActiveAction(data: GunData): Boolean =
-        data.reloading() || data.bolt.actionTimer.get() > 0 ||
-            data.charge.timer.get() > 0 || data.reload.reloadStarter.shouldStart()
+        data.reloading() || data.bolt.actionTimer.get() > 0 || data.reload.reloadStarter.shouldStart()
 
     private fun tickActionTimeline(shooter: Entity?, data: GunData) {
         handleGunBolt(data)
@@ -410,7 +407,6 @@ object GunEventHandler {
         }
 
         handleGunSingleReload(shooter, data)
-        handleSentinelCharge(shooter!!, data)
     }
 
     private fun startReload(shooter: Entity?, data: GunData) {
@@ -422,16 +418,13 @@ object GunEventHandler {
             if (!data.hasEnoughAmmoToShoot(shooter)) {
                 reload.setTime(data.get(GunProp.EMPTY_RELOAD_TIME))
                 reload.setState(ReloadState.EMPTY_RELOADING)
-                playGunEmptyReloadSounds(shooter, data)
             } else {
                 reload.setTime(data.get(GunProp.NORMAL_RELOAD_TIME))
                 reload.setState(ReloadState.NORMAL_RELOADING)
-                playGunNormalReloadSounds(shooter, data)
             }
         } else {
             reload.setTime(data.get(GunProp.EMPTY_RELOAD_TIME))
             reload.setState(ReloadState.EMPTY_RELOADING)
-            playGunEmptyReloadSounds(shooter, data)
         }
     }
 
@@ -443,28 +436,6 @@ object GunEventHandler {
     fun finishGunEmptyReload(shooter: Entity?, data: GunData) {
         data.reloadAmmo(shooter)
         postEvent(ReloadEvent.Post(shooter, data))
-    }
-
-    fun playGunEmptyReloadSounds(shooter: Entity?, data: GunData) {
-        if (shooter !is ServerPlayer) return
-
-        val soundInfo = data.get(GunProp.SOUND_INFO)
-        val sound = soundInfo.reloadEmpty
-
-        if (sound != null) {
-            SoundTool.playLocalSound(shooter, sound, 8f, 1f)
-        }
-    }
-
-    fun playGunNormalReloadSounds(shooter: Entity?, data: GunData) {
-        if (shooter !is ServerPlayer) return
-
-        val soundInfo = data.get(GunProp.SOUND_INFO)
-        val sound = soundInfo.reloadNormal
-
-        if (sound != null) {
-            SoundTool.playLocalSound(shooter, sound, 8f, 1f)
-        }
     }
 
     /**
@@ -486,16 +457,13 @@ object GunEventHandler {
 
             if (data.get(GunProp.PREPARE_LOAD_TIME) != 0 && (!data.hasEnoughAmmoToShoot(shooter))) {
                 // 此处判断空仓换弹的时候，是否在准备阶段就需要装填一发，如M870
-                playGunPrepareLoadReloadSounds(shooter, data)
                 val prepareLoadTime = data.get(GunProp.PREPARE_LOAD_TIME)
                 reload.prepareLoadTimer.set(prepareLoadTime)
             } else if (data.get(GunProp.PREPARE_EMPTY_TIME) != 0 && !data.hasEnoughAmmoToShoot(shooter)) {
                 // 此处判断空仓换弹，如莫辛纳甘
-                playGunEmptyPrepareSounds(shooter, data)
                 val prepareEmptyTime = data.get(GunProp.PREPARE_EMPTY_TIME)
                 reload.prepareTimer.set(prepareEmptyTime)
             } else {
-                playGunPrepareReloadSounds(shooter, data)
                 val prepareTime = data.get(GunProp.PREPARE_TIME)
                 reload.prepareTimer.set(prepareTime)
             }
@@ -536,7 +504,6 @@ object GunEventHandler {
                 GunProp.MAGAZINE
             )
         ) {
-            playGunLoopReloadSounds(shooter, data)
             val iterativeTime = data.get(GunProp.ITERATIVE_TIME)
             reload.iterativeLoadTimer.set(iterativeTime)
 
@@ -572,8 +539,6 @@ object GunEventHandler {
 
             val finishTime = data.get(GunProp.FINISH_TIME)
             reload.setFinishTime(finishTime + 2)
-
-            playGunEndReloadSounds(shooter, data)
         }
 
         GunActionStepExecutor.tickReloadFinish(data)
@@ -614,223 +579,6 @@ object GunEventHandler {
 
         if (!InventoryTool.hasCreativeAmmoBox(shooter)) {
             data.consumeBackupAmmo(shooter, available)
-        }
-    }
-
-    fun playGunPrepareReloadSounds(shooter: Entity?, data: GunData) {
-        if (shooter !is ServerPlayer) return
-
-        val soundInfo = data.get(GunProp.SOUND_INFO)
-        val sound = soundInfo.reloadPrepare
-
-        if (sound != null) {
-            SoundTool.playLocalSound(shooter, sound, 10f, 1f)
-        }
-    }
-
-    fun playGunEmptyPrepareSounds(shooter: Entity?, data: GunData) {
-        if (shooter !is ServerPlayer) return
-
-        val soundInfo = data.get(GunProp.SOUND_INFO)
-        val sound = soundInfo.reloadPrepareEmpty
-
-        if (sound != null) {
-            SoundTool.playLocalSound(shooter, sound, 10f, 1f)
-        }
-
-        val shooterHeight = shooter.eyePosition.distanceTo(
-            Vec3.atLowerCornerOf(
-                shooter.level().clip(
-                    ClipContext(
-                        shooter.eyePosition, shooter.eyePosition.add(Vec3(0.0, -1.0, 0.0).scale(10.0)),
-                        ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, shooter
-                    )
-                ).blockPos
-            )
-        )
-
-        com.atsuishio.superbwarfare.Mod.queueServerWork((data.get(GunProp.PREPARE_EMPTY_TIME) / 2.0 + 3 + 1.5 * shooterHeight).toInt()) {
-            if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
-                val ammoType = data.selectedAmmoConsumer().playerAmmoType
-                when (ammoType) {
-                    Ammo.SHOTGUN -> SoundTool.playLocalSound(
-                        shooter,
-                        ModSounds.SHELL_CASING_SHOTGUN.get(),
-                        max(0.75 - 0.12 * shooterHeight, 0.0).toFloat(),
-                        1f
-                    )
-
-                    Ammo.SNIPER, Ammo.HEAVY -> SoundTool.playLocalSound(
-                        shooter,
-                        ModSounds.SHELL_CASING_50CAL.get(),
-                        max(1 - 0.15 * shooterHeight, 0.0).toFloat(),
-                        1f
-                    )
-
-                    else -> SoundTool.playLocalSound(
-                        shooter,
-                        ModSounds.SHELL_CASING_NORMAL.get(),
-                        max(1.5 - 0.2 * shooterHeight, 0.0).toFloat(),
-                        1f
-                    )
-                }
-            } else {
-                SoundTool.playLocalSound(
-                    shooter,
-                    ModSounds.SHELL_CASING_NORMAL.get(),
-                    max(1.5 - 0.2 * shooterHeight, 0.0).toFloat(),
-                    1f
-                )
-            }
-        }
-    }
-
-    fun playGunPrepareLoadReloadSounds(shooter: Entity?, data: GunData) {
-        if (shooter !is ServerPlayer) return
-
-        val soundInfo = data.get(GunProp.SOUND_INFO)
-        val sound = soundInfo.reloadPrepareLoad
-
-        if (sound != null) {
-            SoundTool.playLocalSound(shooter, sound, 10f, 1f)
-        }
-
-        val shooterHeight = shooter.eyePosition.distanceTo(
-            Vec3.atLowerCornerOf(
-                shooter.level().clip(
-                    ClipContext(
-                        shooter.eyePosition, shooter.eyePosition.add(Vec3(0.0, -1.0, 0.0).scale(10.0)),
-                        ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, shooter
-                    )
-                ).blockPos
-            )
-        )
-
-        com.atsuishio.superbwarfare.Mod.queueServerWork((8 + 1.5 * shooterHeight).toInt()) {
-            if (data.selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.PLAYER_AMMO) {
-                val ammoType = data.selectedAmmoConsumer().playerAmmoType
-                when (ammoType) {
-                    Ammo.SHOTGUN -> SoundTool.playLocalSound(
-                        shooter,
-                        ModSounds.SHELL_CASING_SHOTGUN.get(),
-                        max(0.75 - 0.12 * shooterHeight, 0.0).toFloat(),
-                        1f
-                    )
-
-                    Ammo.SNIPER, Ammo.HEAVY -> SoundTool.playLocalSound(
-                        shooter,
-                        ModSounds.SHELL_CASING_50CAL.get(),
-                        max(1 - 0.15 * shooterHeight, 0.0).toFloat(),
-                        1f
-                    )
-
-                    else -> SoundTool.playLocalSound(
-                        shooter,
-                        ModSounds.SHELL_CASING_NORMAL.get(),
-                        max(1.5 - 0.2 * shooterHeight, 0.0).toFloat(),
-                        1f
-                    )
-                }
-            } else {
-                SoundTool.playLocalSound(
-                    shooter,
-                    ModSounds.SHELL_CASING_NORMAL.get(),
-                    max(1.5 - 0.2 * shooterHeight, 0.0).toFloat(),
-                    1f
-                )
-            }
-        }
-    }
-
-    fun playGunLoopReloadSounds(shooter: Entity?, data: GunData) {
-        if (shooter !is ServerPlayer) return
-
-        val soundInfo = data.get(GunProp.SOUND_INFO)
-        val sound = soundInfo.reloadLoop
-
-        if (sound != null) {
-            SoundTool.playLocalSound(shooter, sound, 10f, 1f)
-        }
-    }
-
-    fun playGunEndReloadSounds(shooter: Entity?, data: GunData) {
-        if (shooter !is ServerPlayer) return
-
-        val soundInfo = data.get(GunProp.SOUND_INFO)
-        val sound = soundInfo.reloadEnd
-
-        if (sound != null) {
-            SoundTool.playLocalSound(shooter, sound, 10f, 1f)
-        }
-
-        val shooterHeight = shooter.eyePosition.distanceTo(
-            Vec3.atLowerCornerOf(
-                shooter.level().clip(
-                    ClipContext(
-                        shooter.eyePosition, shooter.eyePosition.add(Vec3(0.0, -1.0, 0.0).scale(10.0)),
-                        ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, shooter
-                    )
-                ).blockPos
-            )
-        )
-
-        // TODO 为什么要特判这个
-        if (data.stack.`is`(ModItems.MARLIN.get())) {
-            com.atsuishio.superbwarfare.Mod.queueServerWork((5 + 1.5 * shooterHeight).toInt()) {
-                SoundTool.playLocalSound(
-                    shooter,
-                    ModSounds.SHELL_CASING_NORMAL.get(),
-                    max(1.5 - 0.2 * shooterHeight, 0.0).toFloat(),
-                    1f
-                )
-            }
-        }
-    }
-
-    /**
-     * 哨兵充能
-     */
-    private fun handleSentinelCharge(entity: Entity, data: GunData) {
-        // 启动充能
-        if (data.charge.starter.start()) {
-            data.charge.timer.set(127)
-
-            if (entity is ServerPlayer) {
-                SoundTool.playLocalSound(entity, ModSounds.SENTINEL_CHARGE.get(), 2f, 1f)
-            }
-        }
-
-        data.charge.timer.reduce()
-        if (data.charge.timer.get() != 17) return
-
-        val cap = entity.getCapability(ForgeCapabilities.ITEM_HANDLER)
-        if (cap.resolve().isEmpty) return
-        val itemHandler = cap.resolve().get()
-
-        for (i in 0..<itemHandler.slots) {
-            val cell = itemHandler.getStackInSlot(i)
-            if (!cell.`is`(ModItems.CELL.get())) continue
-
-            val stackCap = data.stack().getCapability(ForgeCapabilities.ENERGY)
-            if (!stackCap.isPresent) continue
-
-            val stackStorage = stackCap.resolve().get()
-
-            val stackMaxEnergy = stackStorage.maxEnergyStored
-            val stackEnergy = stackStorage.energyStored
-
-            val cellCap = cell.getCapability(ForgeCapabilities.ENERGY)
-            if (!cellCap.isPresent) continue
-
-            val cellStorage = cellCap.resolve().get()
-            val cellEnergy = cellStorage.energyStored
-
-            val stackEnergyNeed = min(cellEnergy, stackMaxEnergy - stackEnergy)
-
-            if (cellEnergy > 0) {
-                val received = stackStorage.receiveEnergy(stackEnergyNeed, false)
-                cellStorage.extractEnergy(received, false)
-            }
         }
     }
 

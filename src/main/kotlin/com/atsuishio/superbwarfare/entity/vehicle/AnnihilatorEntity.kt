@@ -4,6 +4,8 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
+import com.atsuishio.superbwarfare.data.gun.melee.ProjectileMarker
+import com.atsuishio.superbwarfare.data.gun.melee.normalizeProjectileMarker
 import com.atsuishio.superbwarfare.entity.vehicle.base.ArtilleryEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.item.misc.firingParameters
@@ -94,10 +96,12 @@ open class AnnihilatorEntity(type: EntityType<AnnihilatorEntity>, world: Level) 
         if (data != null) {
             val projectileInfo = data.get(GunProp.PROJECTILE)
             val projectileType = projectileInfo.getId()
-            val projectileTypeStr = projectileType.trim { it <= ' ' }.lowercase()
+            // 与 `AutoAimableEntity.autoAim()` 同一个坑：数据里写的是 `"@ray"`，
+            // 必须去掉 `@` 才能和引擎标记比较，否则充能永远停在 0。
+            val projectileTypeStr = projectileType.normalizeProjectileMarker()
             val rpm = Math.ceil(20f / (vehicleWeaponRpm(weaponName).toFloat() / 60)).toInt()
 
-            if (projectileTypeStr == "ray" && chargeProgress < 1 && energy > data.get(GunProp.AMMO_COST_PER_SHOOT)) {
+            if (projectileTypeStr == ProjectileMarker.RAY && chargeProgress < 1 && energy > data.get(GunProp.AMMO_COST_PER_SHOOT)) {
                 val chargeSpeed = 1f / rpm
                 chargeProgress = Mth.clamp(chargeProgress + chargeSpeed, 0f, 1f)
             }

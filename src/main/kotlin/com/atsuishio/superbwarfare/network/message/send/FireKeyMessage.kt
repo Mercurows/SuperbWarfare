@@ -47,7 +47,6 @@ data class FireKeyMessage(val type: Int, val power: Double, val zoom: Boolean) :
             && data.hasEnoughAmmoToShoot(player)
             && data.bolt.actionTimer.get() == 0
             && !data.reloading()
-            && !data.charging()
         ) {
             if (!player.cooldowns.isOnCooldown(stack.item) && data.bolt.needed.get()) {
                 data.startBolt()
