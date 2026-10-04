@@ -150,7 +150,7 @@ class Attachment(private val gun: GunData) {
 
             val otherId = id(other) ?: continue
             val otherDefinition = AttachmentDefinition.from(otherId) ?: continue
-            if (AttachmentSlots.conflicts(type, definition, other, otherDefinition)) return other
+            if (AttachmentSlots.conflicts(type, definition, other, otherDefinition, gun)) return other
         }
         return null
     }

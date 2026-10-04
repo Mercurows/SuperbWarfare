@@ -383,6 +383,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.SCOPE_WINEFOX)
         simpleItem(ModItems.STEEL_PIPE_SILENCER)
         simpleItem(ModItems.STEEL_PIPE_GRIP)
+        simpleItem(ModItems.LOWER_RAIL_BIPOD)
         simpleItem(ModItems.BAYONET_M_9)
         simpleItem(ModItems.BAYONET_6KH2)
         simpleItem(ModItems.BAYONET_SEITENGEWEHR_84)

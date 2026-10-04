@@ -332,6 +332,20 @@ data class DefaultGunData(
     ),
     @SerialName("AvailableAttachments")
     val availableAttachments: Map<String, List<StringOrObject<AttachmentOption>>> = emptyMap(),
+    /**
+     * 本枪**额外**声明的槽位互斥，键与值都写 [AttachmentType.attachmentName]
+     * （例如 `{"Grip": ["LowerRail"]}`）。
+     *
+     * 存在的理由是"这段导轨物理上装不下两个"：下导轨与握把抢的是护木下方同一段导轨，
+     * 护木够长的枪上两者都能装，但 AK47 / AK12 / MP5 / QBZ191 这类导轨过短的枪同时挂上会互相穿模。
+     * 全局规则（挂点组 / `ConflictsWith`）表达不了这种**只有某些枪**的限制，只能写进枪械数据。
+     *
+     * 判据见 [com.atsuishio.superbwarfare.data.attachment.AttachmentSlots.gunConflicts]：
+     * 单边声明、**对称**生效（写 `Grip` → `LowerRail` 与反过来写等价），与 `ConflictsWith` 一致。
+     * 自由改装模式下与其它互斥规则一起失效；配件声明了 `AllowSharedMount` 也能放行它。
+     */
+    @SerialName("AttachmentConflicts")
+    val attachmentConflicts: Map<String, List<String>> = emptyMap(),
     @SerialName("DamageReduce")
     val damageReduce: DamageReduce = DamageReduce(),
     // 自然情况下每tick减少的热量

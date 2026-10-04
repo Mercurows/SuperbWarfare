@@ -1239,6 +1239,11 @@
 					"pivot": [0, 2.13114, -33.3509]
 				},
 				{
+					"name": "lower_rail_pos",
+					"parent": "positioning2",
+					"pivot": [0, 0.34673, -17.80321]
+				},
+				{
 					"name": "bolt",
 					"parent": "root",
 					"pivot": [0, -0.93132, -0.36479]

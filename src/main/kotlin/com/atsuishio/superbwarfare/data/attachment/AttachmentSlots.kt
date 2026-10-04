@@ -98,6 +98,15 @@ object AttachmentSlots {
         const val CHARM = "charm_pos"
 
         /**
+         * 下导轨的约定挂点（护木下方的导轨），目前只有 SVD 的模型上有这根骨骼。
+         *
+         * 与 [GRIP] 的 `grip_pos` 一样走 [AttachmentMountBone.Fixed]：导轨在枪上的位置由**枪模型**
+         * 决定，配件自己声明不了 —— 这正是"导轨"的含义，也让 SVD 之外新支持下导轨的枪只需在
+         * 模型里加一根同名骨骼即可
+         */
+        const val LOWER_RAIL = "lower_rail_pos"
+
+        /**
          * **配件模型内部**的三个分组名（吊坠专用），不是枪模型上的骨骼
          *
          * [CHARM_FIXED] 是固定件（挂环、卡扣），始终静止，[CHARM_STRING] 连接绳与 [CHARM_CHARM] 挂件本体
@@ -173,14 +182,16 @@ object AttachmentSlots {
         ),
         // 副武器（下挂榴弹发射器这类），挂点组与握把分开：挂点组是传递的等价关系，
         // 并进 grip_rail 会把它和"所有 grip_rail 上的槽位"绑成一团，这里要的是非传递互斥 ——
-        // 副武器排斥刺刀与握把，但刺刀与握把可以共存，所以用 conflictsWith 显式点名
+        // 副武器排斥刺刀、握把与下导轨，但这三者彼此可以共存，所以用 conflictsWith 显式点名。
+        // 下导轨（脚架）算进来是因为它和副武器抢的是护木下方同一块位置，物理上装不下两个；
+        // `conflicts` 是对称判定的（任一方点名即互斥），所以只在这一侧登记就够了
         AttachmentSlot(
             type = AttachmentType.SUBWEAPON,
             mount = "subweapon_rail",
             tagBucket = "subweapon",
             icon = "subweapon",
             mountBone = AttachmentMountBone.FromDefinition(Bones.SUBWEAPON),
-            conflictsWith = setOf(AttachmentType.BAYONET, AttachmentType.GRIP),
+            conflictsWith = setOf(AttachmentType.BAYONET, AttachmentType.GRIP, AttachmentType.LOWER_RAIL),
             focusBone = Bones.SUBWEAPON,
             renderMode = AttachmentRenderMode.GENERIC,
         ),
@@ -195,6 +206,19 @@ object AttachmentSlots {
             focusBone = Bones.CHARM,
             renderMode = AttachmentRenderMode.GENERIC,
             researchable = false,
+        ),
+        // 下导轨与握把（GRIP）物理上是同一根导轨，但沿用上面那条理由：挂点组分开，
+        // 于是两者既不互斥也不共享挂点，装了垂直握把照样能装脚架
+        // 与副武器（SUBWEAPON）互斥 —— 由 SUBWEAPON 那一侧的 conflictsWith 点名，不在这里重复
+        // 挂载骨骼走 Fixed（导轨由枪模型定，见 [Bones.LOWER_RAIL]），所以配件数据里**不要**写 `Bone`
+        AttachmentSlot(
+            type = AttachmentType.LOWER_RAIL,
+            mount = "lower_rail",
+            tagBucket = "lower_rail",
+            icon = "lower_rail",
+            mountBone = AttachmentMountBone.Fixed(Bones.LOWER_RAIL),
+            focusBone = Bones.LOWER_RAIL,
+            renderMode = AttachmentRenderMode.GENERIC,
         ),
     )
 
@@ -218,6 +242,7 @@ object AttachmentSlots {
         AttachmentEditTarget.Slot(of(AttachmentType.BAYONET)),
         AttachmentEditTarget.Slot(of(AttachmentType.SUBWEAPON)),
         AttachmentEditTarget.Slot(of(AttachmentType.CHARM)),
+        AttachmentEditTarget.Slot(of(AttachmentType.LOWER_RAIL)),
     )
 
     /** 弹药类型那一项在 [EDIT_ORDER] 里的下标（车辆改装界面只支持这一项） */
@@ -251,21 +276,53 @@ object AttachmentSlots {
     }
 
     /**
-     * [type] 槽位（装的是 [definition]）与 [other] 槽位（装的是 [otherDefinition]）是否互斥
+     * [gun] 的**枪械数据**里单独声明的槽位互斥（`AttachmentConflicts`）。
      *
-     * 两种情况互斥：挂点组相同（[mountOf]），或者任一方显式点名了对方（[declaredConflicts]）
-     * 任一方声明了 [AttachmentDefinition.allowSharedMount] 就整体放行，那是"转接座"这类
-     * 本来就是用来叠装的配件的逃生口，同一个槽位不算冲突
+     * 与 [declaredConflicts] 同一套语义（单边声明、**对称**生效、不传递），区别只在于规则挂在**某一
+     * 把枪**上而不是全局：下导轨与握把抢的是护木下方同一段导轨，护木够长的枪上两者都能装，
+     * 但 AK47 / AK12 / MP5 / QBZ191 这类导轨过短的枪同时挂上会互相穿模 —— 这种"只有某些枪"的
+     * 限制用挂点组表达不了（挂点组是全体的），只能写进枪械数据。
+     *
+     * 键与值都按 [AttachmentType.attachmentName] 比对，认不出来的名字当作没写
+     * （`DataValidator.validateAttachmentConflicts` 会把它报出来）。
      */
     @JvmStatic
+    fun gunConflicts(gun: GunData?, type: AttachmentType, other: AttachmentType): Boolean {
+        if (gun == null || type == other) return false
+
+        val declared = gun.getDefault().attachmentConflicts
+        if (declared.isEmpty()) return false
+
+        return other.attachmentName in declared[type.attachmentName].orEmpty() ||
+                type.attachmentName in declared[other.attachmentName].orEmpty()
+    }
+
+    /**
+     * [type] 槽位（装的是 [definition]）与 [other] 槽位（装的是 [otherDefinition]）是否互斥
+     *
+     * 三种情况互斥：这把枪自己声明了这对槽位互斥（[gunConflicts]，见 `AttachmentConflicts`）、
+     * 挂点组相同（[mountOf]），或者任一方显式点名了对方（[declaredConflicts]）
+     * 任一方声明了 [AttachmentDefinition.allowSharedMount] 就整体放行，那是"转接座"这类
+     * 本来就是用来叠装的配件的逃生口，同一个槽位不算冲突
+     *
+     * 枪械数据那条规则是**物理**限制（这段导轨装不下两个），但 [AttachmentDefinition.allowSharedMount]
+     * 依然能放行它：那个字段的含义是"这件配件本身就是设计来叠装的"，优先级高于几何限制。
+     *
+     * @param gun 装这些配件的枪；不传时只判全局规则（枪械数据那条无从判断）
+     */
+    @JvmStatic
+    @JvmOverloads
     fun conflicts(
         type: AttachmentType,
         definition: AttachmentDefinition?,
         other: AttachmentType,
         otherDefinition: AttachmentDefinition?,
+        gun: GunData? = null,
     ): Boolean {
         if (type == other) return false
         if (definition?.allowSharedMount == true || otherDefinition?.allowSharedMount == true) return false
+
+        if (gunConflicts(gun, type, other)) return true
 
         if (mountOf(type, definition) == mountOf(other, otherDefinition)) return true
 

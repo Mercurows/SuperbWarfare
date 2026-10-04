@@ -733,6 +733,11 @@ object ModItems {
     @JvmField val STEEL_PIPE_GRIP = registerAttachment("steel_pipe_grip", Rarity.RARE)
     // @formatter:on
 
+    // LowerRail（下导轨：脚架这类挂在护木下方导轨上的配件，与握把各自独立、不互斥）
+    // @formatter:off
+    @JvmField val LOWER_RAIL_BIPOD = registerAttachment("lower_rail_bipod", Rarity.RARE)
+    // @formatter:on
+
     // Bayonet
     // @formatter:off
     @JvmField val BAYONET_M_9 = registerAttachment("bayonet_m_9")

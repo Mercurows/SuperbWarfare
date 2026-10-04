@@ -162,6 +162,7 @@ object DataValidator {
                 decoded.fireModes.size
                 decoded.availablePerks()
                 validateAvailableAttachments(decoded, warn)
+                validateAttachmentConflicts(decoded, warn)
 
                 validateMeleeData(decoded, warn)
             }
@@ -267,6 +268,36 @@ object DataValidator {
             // 而数据里明明写了一大段 —— 这是最难自己发现的一种写法错误
             if (accepted.isEmpty() && declared > 0) {
                 warn("AvailableAttachments['$slotKey'] resolves to nothing after exclusions")
+            }
+        }
+    }
+
+    /**
+     * `AttachmentConflicts` 的校验规则。
+     *
+     * 抓的还是"写错了不报错、只是这条互斥永远不生效"：键和值都得是 `AttachmentType` 的名字，
+     * 指向自己等于什么都没写。判据见 `AttachmentSlots.gunConflicts`，那边对认不出来的名字是静默跳过，
+     * 所以这里报出来是唯一能发现手滑的地方。
+     *
+     * **不做**的是"这两个槽位是不是真的装得下两个"：那是几何问题，读不到模型就判不了。
+     */
+    private fun validateAttachmentConflicts(data: DefaultGunData, warn: (String) -> Unit) {
+        val known = AttachmentType.entries.joinToString(", ") { it.attachmentName }
+
+        for ((slotKey, others) in data.attachmentConflicts) {
+            if (AttachmentType.entries.none { it.attachmentName == slotKey }) {
+                warn(
+                    "AttachmentConflicts key '$slotKey' is not a known attachment slot ($known); " +
+                            "the entry is ignored"
+                )
+            }
+
+            for (other in others) {
+                if (AttachmentType.entries.none { it.attachmentName == other }) {
+                    warn("AttachmentConflicts['$slotKey'] names '$other', which is not a known attachment slot ($known)")
+                } else if (other == slotKey) {
+                    warn("AttachmentConflicts['$slotKey'] names its own slot; the entry does nothing")
+                }
             }
         }
     }

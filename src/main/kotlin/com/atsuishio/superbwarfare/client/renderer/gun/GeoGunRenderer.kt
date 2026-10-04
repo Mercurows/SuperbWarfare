@@ -12,7 +12,6 @@ import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.EDIT_FOCUS_Z_OFFSET
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.MERGE_BLENDER
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.OEM_HAND_GUARD_BONE
-import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.SCOPE_STENCIL_START_PROGRESS
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.findSubWeapon
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.subWeaponHasOwnAimPose
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeStencilRenderHelper
@@ -774,9 +773,17 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             poseStack.pushPose()
             mulPoseWithNormal(poseStack, Matrix4f(mountTransform))
             var charmSnapshot: CharmSnapshot? = null
+            var bipodSnapshot: BipodSnapshot? = null
             try {
                 if (subWeaponPose != null) {
                     attachmentModel.applyPose(BLENDER.blend(attachmentModel.getBindPose(), subWeaponPose))
+                }
+                // 下挂脚架：配件自带 `bipod_l` / `bipod_r` 两条腿时（`"Bipod": true`），
+                // 按卧姿架设进度把它们向后翻下去。走的是和吊坠同一条路子 —— 写骨骼、画、在
+                // `finally` 里还原 —— 只是姿态是进度的纯函数，没有跨帧状态，理由见 [BipodDeploy]。
+                // 放在 `applyPose` 之后是为了让快照/还原严格配对：快照拍到的正是这次写入覆盖掉的那份值。
+                if (definition.hasBipod) {
+                    bipodSnapshot = BipodDeploy.apply(attachmentModel, scriptBipodProgress(stack).toFloat())
                 }
                 // 手臂锚点要在**姿态还在实例上**的时候取（下面 `finally` 里就 `resetPose()` 了）。
                 // 取到之后由 `GeoGunModel.renderHands` 用它代替主武器的同名骨骼 ——
@@ -803,7 +810,13 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                     null, resolveAmmoReadout(stack, definition.ammoBar, definition.textShow)
                 )
             } finally {
-                // 附件模型实例是全局共享的，写进去的摆动姿态必须还原
+                // 附件模型实例是全局共享的，写进去的姿态必须还原
+                //
+                // ⚠ 脚架的还原要排在 `resetPose()` **之前**：它的快照是"本帧 `applyPose` 之后"的骨骼值，
+                // 先把快照写回去、再让 `resetPose()` 把整个模型按回绑定姿势，
+                // 无论那份快照里是不是副武器姿态都不会留在实例上；反过来（先 `resetPose()` 再还原）
+                // 一旦快照里带着副武器的姿态，就会被原样写回共享实例、串给下一把枪
+                BipodDeploy.revert(attachmentModel, bipodSnapshot)
                 if (charmSnapshot != null) CharmRuntime.revert(attachmentModel, charmSnapshot)
                 if (subWeaponPose != null) attachmentModel.resetPose()
             }
@@ -1066,22 +1079,27 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     /**
      * 护木的"原厂 / 导轨"二选一：导轨上挂着东西就换 [CUSTOM_HAND_GUARD_BONE]、藏 [OEM_HAND_GUARD_BONE]。
      *
-     * 占用导轨的来源有**两个**，任一成立都要换：[AttachmentType.GRIP] 握把，以及下挂副武器
+     * 占用导轨的来源有**三个**，任一成立都要换：[AttachmentType.GRIP] 握把、
+     * [AttachmentType.LOWER_RAIL] 下导轨（脚架这类，虽然登记在独立槽位、与握把不互斥，
+     * 但它同样坐在护木下方的导轨上，原厂护木会盖住脚架的底座），以及下挂副武器
      * （`AttachmentDefinition.subWeapon != null`，判据与渲染副武器本体时用的 [findSubWeapon] 同一个
      * —— 副武器的身份来自配件数据里的 `SubWeapon` 定义，不看它住在哪个槽位）。副武器挂在同一段
      * 导轨上，原厂护木会盖住它的身管与导轨座，所以它和握把一样要求换成带导轨的那一支。
      *
-     * 两者共用枪 json 里同一个 `Attachments.GripHandGuard` 开关
+     * 三者共用枪 json 里同一个 `Attachments.GripHandGuard` 开关
      * （`assets/.../sbw/guns/<id>.json`，见 [com.atsuishio.superbwarfare.resource.gun.pojo.AttachmentInfo]）：
      * 那个开关问的是"这把枪有没有带导轨的护木可选"，与装的是哪一种导轨件无关。
      *
      * 模型里没有 `custom_hand_guard` 骨骼就直接返回 —— 没做护木替换的枪一字不变
-     * （当前有这根骨骼的 5 把：aa_12 / ak_47 / mp_5 / qbz_95 / rpk，其中 mp_5 与 rpk 还没有副武器挂点）。
+     * （当前有这根骨骼的 6 把：aa_12 / ak_47 / mp_5 / qbz_95 / rpk / sks，
+     * 其中 mp_5 与 rpk 还没有副武器挂点）。
      */
     open fun renderGripHandGuard(stack: ItemStack, model: GeoGunModel) {
         val customBone = model.getBone(CUSTOM_HAND_GUARD_BONE) ?: return
         val gun = from(stack)
-        val railOccupied = gun.attachment.has(AttachmentType.GRIP) || findSubWeapon(gun) != null
+        val railOccupied = gun.attachment.has(AttachmentType.GRIP) ||
+                gun.attachment.has(AttachmentType.LOWER_RAIL) ||
+                findSubWeapon(gun) != null
         val showCustom = railOccupied && GunResource.compute(stack).attachmentInfo.gripHandGuard
         customBone.visible = showCustom
         model.getBone(OEM_HAND_GUARD_BONE)?.visible = !showCustom

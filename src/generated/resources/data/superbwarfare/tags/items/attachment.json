@@ -7,6 +7,7 @@
     "#superbwarfare:attachment/grip",
     "#superbwarfare:attachment/bayonet",
     "#superbwarfare:attachment/subweapon",
-    "#superbwarfare:attachment/charm"
+    "#superbwarfare:attachment/charm",
+    "#superbwarfare:attachment/lower_rail"
   ]
 }

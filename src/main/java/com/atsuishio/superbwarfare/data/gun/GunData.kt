@@ -1252,7 +1252,8 @@ class GunData private constructor(
      * 声明支持 `#标签` / `!排除` / 覆写对象（见 [AvailableAttachments]），但解析只发生在一处，
      * 这里给出的已经是展开后的具体 id 列表。
      *
-     * 已经装了会和它互斥的配件时（同一挂点组，或任一方在 `ConflictsWith` 里点了名），
+     * 已经装了会和它互斥的配件时（本枪声明的 `AttachmentConflicts`、同一挂点组，
+     * 或任一方在 `ConflictsWith` 里点了名），
      * 这里会一并过滤掉：规则收在 `AttachmentSlots.conflicts`，
      * 改装界面的"该槽位无可用配件"表现、指令补全与 `Attachment.cycle` 的候选列表都由这一个入口统一。
      *

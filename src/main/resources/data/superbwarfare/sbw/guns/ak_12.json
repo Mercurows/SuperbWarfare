@@ -148,6 +148,14 @@
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"
+    ],
+    "LowerRail": [
+      "superbwarfare:lower_rail_bipod"
+    ]
+  },
+  "AttachmentConflicts": {
+    "Grip": [
+      "LowerRail"
     ]
   },
   "SoundInfo": {

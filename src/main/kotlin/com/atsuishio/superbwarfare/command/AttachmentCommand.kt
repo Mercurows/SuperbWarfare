@@ -93,7 +93,8 @@ val ATTACHMENT_COMMAND = buildCommand("attachment") {
                             }
                         }
 
-                        // 互斥：挂点组被别人占了，或任一方在 `ConflictsWith` 里点了名。
+                        // 互斥：这把枪自己声明了这对槽位互斥（`AttachmentConflicts`）、
+                        // 挂点组被别人占了，或任一方在 `ConflictsWith` 里点了名。
                         // 先于"不可用"报出来，否则只会得到一句含糊的"这把枪不支持该配件"。
                         // 开了自由改装模式时这一步恒不成立（判定收在 `Attachment.conflict` 里）
                         data.attachment.conflict(type, definition)?.let { blocker ->
@@ -264,7 +265,8 @@ private fun randomAttachment(data: GunData, type: AttachmentType): ResourceLocat
  * 所以先按挂点组分组，每组在**有可用配件的槽位**里随机挑一个槽位，再在该槽位里随机挑配件。
  *
  * 但"每组一个"还不够：互斥也可以是**跨挂点组**的（副武器与刺刀、副武器与握把互斥，
- * 而刺刀与握把可以共存 —— 见 `AttachmentSlots.conflicts`）。所以每组抽完还要拿已经抽中的槽位
+ * 而刺刀与握把可以共存；还有"这把枪的导轨太短"这类只在本枪成立的互斥 —— 见
+ * `AttachmentSlots.conflicts`）。所以每组抽完还要拿已经抽中的槽位
  * 再过滤一遍，否则会抽出一个"指令都装不上"的组合（先抽到的组赢，后抽到的组让位）。
  *
  * 开了**自由改装模式**时上面那套"保证装得上"的逻辑整个失效 —— 互斥已经不存在了 ——
@@ -292,7 +294,7 @@ private fun rollAllSlots(data: GunData): List<Pair<AttachmentType, ResourceLocat
         val pick = installableAttachments(data, type).filter { id ->
             val definition = AttachmentDefinition.from(id)
             rolls.none { (picked, pickedId) ->
-                AttachmentSlots.conflicts(type, definition, picked, AttachmentDefinition.from(pickedId))
+                AttachmentSlots.conflicts(type, definition, picked, AttachmentDefinition.from(pickedId), data)
             }
         }.randomOrNull() ?: continue
 
