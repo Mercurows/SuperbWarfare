@@ -61,7 +61,33 @@ enum class AttachmentType(typeName: String) {
      * 那是玩法改动，见 [com.atsuishio.superbwarfare.data.attachment.AttachmentSlots]。
      */
     @SerialName("LowerRail")
-    LOWER_RAIL("LowerRail");
+    LOWER_RAIL("LowerRail"),
+
+    /**
+     * 上导轨配件（挂在护木/机匣上方的导轨上，常见的是激光指示器、战术手电这类）。
+     *
+     * 占自己的挂点组 `upper_rail`，与其它任何槽位都不互斥 —— 上下左右四根导轨在枪上是四个
+     * 互不相干的位置（见 [LOWER_RAIL] 的说明，挂点组只表示"占的是同一处"）。
+     * **目前还没有任何配件住在这些导轨槽位上**，槽位先建好，等配件做出来直接往里放即可。
+     */
+    @SerialName("UpperRail")
+    UPPER_RAIL("UpperRail"),
+
+    /**
+     * 左导轨配件（挂在护木左侧的导轨上）。
+     *
+     * 与 [RIGHT_RAIL] 分属两个挂点组（`left_rail` / `right_rail`），**左右不互斥**：它们是护木两侧
+     * 两个独立的位置，同时装一个是正常玩法。目前还没有配件住在这些槽位上。
+     */
+    @SerialName("LeftRail")
+    LEFT_RAIL("LeftRail"),
+
+    /**
+     * 右导轨配件（挂在护木右侧的导轨上）。与 [LEFT_RAIL] 对称，两者可以共存。
+     * 目前还没有配件住在这些槽位上。
+     */
+    @SerialName("RightRail")
+    RIGHT_RAIL("RightRail");
 
     val attachmentName: String = typeName
 }

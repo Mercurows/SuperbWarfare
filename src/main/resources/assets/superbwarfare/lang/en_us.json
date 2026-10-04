@@ -651,6 +651,9 @@
   "attachment.superbwarfare.slot.subweapon": "[Sub Weapon]",
   "attachment.superbwarfare.slot.charm": "[Charm]",
   "attachment.superbwarfare.slot.lowerrail": "[Lower Rail Attachment]",
+  "attachment.superbwarfare.slot.upperrail": "[Upper Rail Attachment]",
+  "attachment.superbwarfare.slot.leftrail": "[Left Rail Attachment]",
+  "attachment.superbwarfare.slot.rightrail": "[Right Rail Attachment]",
   "attachment.superbwarfare.modify": "Modify ",
   "attachment.superbwarfare.scope_mode": "Scope",
 

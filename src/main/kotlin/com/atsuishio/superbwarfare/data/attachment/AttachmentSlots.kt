@@ -100,13 +100,29 @@ object AttachmentSlots {
         const val CHARM = "charm_pos"
 
         /**
-         * 下导轨的约定挂点（护木下方的导轨），目前只有 SVD 的模型上有这根骨骼。
+         * 下导轨的约定挂点（护木下方的导轨）。多数步枪模型上本来就有这根骨骼
+         * （aa_12 / ak_12 / ak_47 / hk_416 / hunting_rifle / m_4 / m_98b / mk_14 / qbz_191 /
+         * qbz_95 / sks / svd），它总是与 `grip_pos` 等高、沿 −Z 往前偏几个单位。
          *
          * 与 [GRIP] 的 `grip_pos` 一样走 [AttachmentMountBone.Fixed]：导轨在枪上的位置由**枪模型**
-         * 决定，配件自己声明不了 —— 这正是"导轨"的含义，也让 SVD 之外新支持下导轨的枪只需在
-         * 模型里加一根同名骨骼即可
+         * 决定，配件自己声明不了 —— 这正是"导轨"的含义，也让新支持下导轨的枪只需在模型里加一根
+         * 同名骨骼即可（缺这根骨骼的枪上配件能装、数值生效，但模型不会渲染，且不报错）
          */
         const val LOWER_RAIL = "lower_rail_pos"
+
+        /**
+         * 上方导轨的约定挂点，与 [LOWER_RAIL] 同一套规矩（[AttachmentMountBone.Fixed]，位置由枪模型定）。
+         *
+         * **目前没有任何枪模型带这根骨骼**，也就是说现在装上导轨槽位的配件什么都不会渲染 ——
+         * 这是有意的：槽位先建好，等配件做出来再往模型里加同名骨骼
+         */
+        const val UPPER_RAIL = "upper_rail_pos"
+
+        /** 护木左侧导轨的约定挂点，同 [UPPER_RAIL]，目前模型里还没有这根骨骼 */
+        const val LEFT_RAIL = "left_rail_pos"
+
+        /** 护木右侧导轨的约定挂点，同 [UPPER_RAIL]，目前模型里还没有这根骨骼 */
+        const val RIGHT_RAIL = "right_rail_pos"
 
         /**
          * **配件模型内部**的三个分组名（吊坠专用），不是枪模型上的骨骼
@@ -222,6 +238,41 @@ object AttachmentSlots {
             focusBone = Bones.LOWER_RAIL,
             renderMode = AttachmentRenderMode.GENERIC,
         ),
+        // 上 / 左 / 右三根导轨：与下导轨同一套做法（各占自己的挂点组、挂点走 Fixed 的
+        // `*_rail_pos`、走通用渲染），但**三者之间以及与其它槽位都不互斥** ——
+        // 枪上这四根导轨是四个互不相干的位置，同时装满是正常玩法
+        //
+        // 槽位先建好、目前一个配件都没有：`AvailableAttachments` 会解析成空表，改装界面显示
+        // "无可用配件"，只有等配件物品做出来往 `ModItemTagProvider.attachmentItemsBySlot()`
+        // 里登记之后才会真的出现。tag 那条链倒是现在就通了（见 `ModItemTagProvider.addAttachmentTags`
+        // 是按 `AttachmentSlots.ALL` 遍历的，空桶也会把 tag 文件声明出来）
+        AttachmentSlot(
+            type = AttachmentType.UPPER_RAIL,
+            mount = "upper_rail",
+            tagBucket = "upper_rail",
+            icon = "upper_rail",
+            mountBone = AttachmentMountBone.Fixed(Bones.UPPER_RAIL),
+            focusBone = Bones.UPPER_RAIL,
+            renderMode = AttachmentRenderMode.GENERIC,
+        ),
+        AttachmentSlot(
+            type = AttachmentType.LEFT_RAIL,
+            mount = "left_rail",
+            tagBucket = "left_rail",
+            icon = "left_rail",
+            mountBone = AttachmentMountBone.Fixed(Bones.LEFT_RAIL),
+            focusBone = Bones.LEFT_RAIL,
+            renderMode = AttachmentRenderMode.GENERIC,
+        ),
+        AttachmentSlot(
+            type = AttachmentType.RIGHT_RAIL,
+            mount = "right_rail",
+            tagBucket = "right_rail",
+            icon = "right_rail",
+            mountBone = AttachmentMountBone.Fixed(Bones.RIGHT_RAIL),
+            focusBone = Bones.RIGHT_RAIL,
+            renderMode = AttachmentRenderMode.GENERIC,
+        ),
     )
 
     @JvmField
@@ -245,6 +296,9 @@ object AttachmentSlots {
         AttachmentEditTarget.Slot(of(AttachmentType.SUBWEAPON)),
         AttachmentEditTarget.Slot(of(AttachmentType.CHARM)),
         AttachmentEditTarget.Slot(of(AttachmentType.LOWER_RAIL)),
+        AttachmentEditTarget.Slot(of(AttachmentType.UPPER_RAIL)),
+        AttachmentEditTarget.Slot(of(AttachmentType.LEFT_RAIL)),
+        AttachmentEditTarget.Slot(of(AttachmentType.RIGHT_RAIL)),
     )
 
     /** 弹药类型那一项在 [EDIT_ORDER] 里的下标（车辆改装界面只支持这一项） */

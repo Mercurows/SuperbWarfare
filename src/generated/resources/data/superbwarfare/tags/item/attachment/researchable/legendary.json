@@ -7,6 +7,9 @@
     "#superbwarfare:attachment/grip/legendary",
     "#superbwarfare:attachment/bayonet/legendary",
     "#superbwarfare:attachment/subweapon/legendary",
-    "#superbwarfare:attachment/lower_rail/legendary"
+    "#superbwarfare:attachment/lower_rail/legendary",
+    "#superbwarfare:attachment/upper_rail/legendary",
+    "#superbwarfare:attachment/left_rail/legendary",
+    "#superbwarfare:attachment/right_rail/legendary"
   ]
 }
