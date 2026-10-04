@@ -641,6 +641,9 @@ object ClientEventHandler {
     var fov: Double = 70.0
 
     @JvmField
+    var handFov: Double = 70.0
+
+    @JvmField
     var modelViewMatrix: Matrix4f? = null
 
     @JvmField
@@ -3187,8 +3190,12 @@ object ClientEventHandler {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     fun captureFov(event: ViewportEvent.ComputeFov) {
+        // 这个事件两条渲染路径都会发：世界 pass 带玩家的 FOV 设置（并吃到开镜倍率），
+        // 手部 pass 带的是它自己的固定基准。排在 LOWEST 才能拿到"所有处理都跑完"的最终值。
         if (event.usedConfiguredFov()) {
             fov = event.fov
+        } else {
+            handFov = event.fov
         }
     }
 
