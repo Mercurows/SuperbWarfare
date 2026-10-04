@@ -837,11 +837,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     }
 
     /**
-     * 某件通用配件（[AttachmentRenderMode.GENERIC] 的槽位）本帧的读数：弹药条 / 弹药文字，
-     * 外加文字模板里写了 `%range%` 时的测距。
-     *
-     * 测距只在**本地玩家自己第一人称手里那把枪**上取：读数本来就是"玩家自己在测"，
-     * 别人手里、掉落物、展示框、改装界面都不该跟着本地玩家的视线跳数。
+     * 配件弹药条 / 弹药文字 / 测距仪读数
      */
     private fun attachmentReadout(
         stack: ItemStack,
@@ -850,14 +846,14 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     ): AmmoReadout {
         val texts = definition.textShow
         val range = if (hand == localFirstPersonHand && texts.any { it.usesRange }) {
-            this.measure(localPlayer)
+            this.measureRange(localPlayer)
         } else {
             AmmoTextEntry.NO_RANGE
         }
         return resolveAmmoReadout(stack, definition.ammoBar, texts, range)
     }
 
-    fun measure(player: Player?): Int {
+    open fun measureRange(player: Player?): Int {
         if (player == null) return AmmoTextEntry.NO_RANGE
 
         val lookingEntity = OverlayTraceHandler.maxRangeEntity
