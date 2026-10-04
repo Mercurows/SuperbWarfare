@@ -240,12 +240,6 @@ data class AmmoTextEntry(
     @Transient
     private val tiers = AmmoColorTiers(colorMode, color, bone)
 
-    /**
-     * 这行文字要用的测距读数。
-     *
-     * 渲染路径靠它决定**要不要真去测一次** —— 测距是一条 512 格的射线，而绝大多数配件（以及
-     * 同一把枪上的绝大多数文字）根本用不上，没有这一位就得每帧白跑一遍
-     */
     @Transient
     val usesRange: Boolean = text.contains(RANGE_PLACEHOLDER)
 
@@ -269,15 +263,7 @@ data class AmmoTextEntry(
     }
 
     companion object {
-        /**
-         * "这一帧没有有效测距读数"，[resolve] 遇到它就把 `%range%` 换成 [NO_RANGE_TEXT]。
-         *
-         * 用负数而不是 `0`：`0` 是一个合法的读数（贴脸），拿它当哨兵会让"没有读数"和"距离为零"
-         * 长得一模一样。距离本身不可能为负，所以这是安全的。
-         */
         const val NO_RANGE = -1
-
-        /** 没有读数时画出来的东西，与 `SpyglassRangeOverlay` 超出量程时显示的 `---` 一致 */
         const val NO_RANGE_TEXT = "---"
     }
 }

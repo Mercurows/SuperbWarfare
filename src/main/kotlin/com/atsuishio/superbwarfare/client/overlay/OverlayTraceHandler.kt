@@ -36,6 +36,9 @@ object OverlayTraceHandler {
     @JvmField
     var blockMaxRangeResult: BlockHitResult? = null
 
+    @JvmField
+    var playerViewBlockResult: BlockHitResult? = null
+
     @SubscribeEvent
     fun onOverlayTraceClientTick(event: ClientTickEvent.Post) {
         val player = localPlayer
@@ -50,6 +53,14 @@ object OverlayTraceHandler {
 
     @JvmStatic
     fun handlePlayerTrace(player: Player) {
+        playerViewBlockResult = player.level().clip(
+            ClipContext(
+                player.eyePosition,
+                player.eyePosition.add(player.getViewVector(1f).scale(MAX_TRACE_DISTANCE)),
+                ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player
+            )
+        )
+
         val reachDistance = player.getEntityReach()
         val reachEntity = TraceTool.findLookingEntity(player, reachDistance)
         playerReachEntity = reachEntity
@@ -84,7 +95,7 @@ object OverlayTraceHandler {
 
         blockMaxRangeResult = player.level().clip(
             ClipContext(
-                viewPos, viewPos.add(viewVec.scale(512.0)),
+                viewPos, viewPos.add(viewVec.scale(MAX_TRACE_DISTANCE)),
                 ClipContext.Block.OUTLINE, ClipContext.Fluid.ANY, player
             )
         )
@@ -104,7 +115,7 @@ object OverlayTraceHandler {
             return
         }
 
-        val maxRangeRes = TraceTool.cameraFindLookingEntity(player, viewPos, viewVec, 512.0)
+        val maxRangeRes = TraceTool.cameraFindLookingEntity(player, viewPos, viewVec, MAX_TRACE_DISTANCE)
         maxRangeEntity = maxRangeRes
     }
 
@@ -113,7 +124,10 @@ object OverlayTraceHandler {
         playerReachEntity = null
         maxRangeEntity = null
         cameraEntity = null
-        maxRangeEntity = null
+        cameraMaxRangeEntity = null
         blockMaxRangeResult = null
+        playerViewBlockResult = null
     }
+
+    private const val MAX_TRACE_DISTANCE = 512.0
 }
