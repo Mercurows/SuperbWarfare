@@ -23,6 +23,23 @@ data class AttachmentDefinition(
     @SerialName("Slot")
     val slot: AttachmentType = AttachmentType.SCOPE,
 
+    /**
+     * 除 [slot] 之外**还能**装进哪些槽位（`"Slots": ["LowerRail", "LeftRail", "RightRail"]`）。
+     *
+     * 存在的理由是同一件东西在好几根导轨上都装得下：激光指示器 / 战术手电这类不分上下左右，
+     * 而四条导轨在 `AttachmentSlots` 里各占一个槽位（只有这样它们才能互不冲突），
+     * 于是"一件配件、多个槽位"只能由配件数据自己表达。
+     *
+     * 装上以后一律以**实际安装的槽位**为准 —— 挂载骨骼（[AttachmentSlots.mountBoneOf]）、互斥判定、
+     * 渲染都取那个槽位，[slot] 只是"首选槽位"，同时也是 [scopeMode] / [scopeZoom] 这类
+     * **按槽位下标取值**的数据的取值依据。所以多槽位的配件请**不要**带 `ScopeInfo`：
+     * 同一份模式表会在不同槽位上被解释成不同的档位。
+     *
+     * 值里不必重复写 [slot]（[acceptedSlots] 会自动并上），写重了也无害。
+     */
+    @SerialName("Slots")
+    val extraSlots: List<AttachmentType> = emptyList(),
+
     /** 配件等级，如果类型是弹匣则用于弹匣等级，`GunData.magazineLevel()` 靠它从 `DrumLevels` 与分级换弹时间里取值 */
     @SerialName("Level")
     val level: Int = 0,
@@ -98,6 +115,18 @@ data class AttachmentDefinition(
     @SerialName("Charm")
     val charm: CharmInfo? = null,
 ) : IDBasedData<AttachmentDefinition>, PropertyModifier<GunData, DefaultGunData> {
+
+    /**
+     * [slot] 与 [extraSlots] 的并集：这件配件能装进的全部槽位。
+     *
+     * 判定装得上与否的地方（`GunData.canInstall`、`Attachment.installed`、指令补全、
+     * `AttachmentSlots.registeredIds`）一律走这里，不要再单独比 [slot]。
+     *
+     * 在构造期算好而不是每次现算：`availableAttachments` 会在改装界面每帧的候选过滤里被反复调用
+     */
+    @kotlinx.serialization.Transient
+    val acceptedSlots: Set<AttachmentType> =
+        if (extraSlots.isEmpty()) setOf(slot) else extraSlots.toSet() + slot
 
     @kotlinx.serialization.Transient
     private var attachmentId: String = ""

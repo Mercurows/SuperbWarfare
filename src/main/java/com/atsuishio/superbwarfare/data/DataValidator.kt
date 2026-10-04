@@ -310,13 +310,19 @@ object DataValidator {
      * - 槽位的渲染走注册表通用路径，却没写 `Model`/`Texture`（装了但枪上看不见）
      * - `Bone` 写在"约定骨骼"槽位上（渲染不看它）
      * - `Override` 里写了不是枪械属性的键（宽松解析会静默忽略）
+     * - `Slots` 里的槽位没登记，或各槽位解析挂载骨骼的方式不一致（同一条 `Bone` 会被解释成不同骨骼）
      *
      * **不做**骨骼是否存在的校验：那要读客户端模型，只能等资源加载完再查。
      */
     private fun validateAttachmentData(data: AttachmentDefinition, warn: (String) -> Unit) {
-        val slot = AttachmentSlots.ofOrNull(data.slot)
-            ?: error("Attachment slot ${data.slot} is not registered in AttachmentSlots.ALL")
+        // `Slots` 里的名字写错就是"这件配件在那根导轨上永远装不上"，所以和主槽位一样是致命的
+        for (type in data.acceptedSlots) {
+            if (AttachmentSlots.ofOrNull(type) == null) {
+                error("Attachment slot $type is not registered in AttachmentSlots.ALL")
+            }
+        }
 
+        val slot = AttachmentSlots.of(data.slot)
         if (slot.renderMode == AttachmentRenderMode.GENERIC && (data.model == null || data.texture == null)) {
             warn(
                 "slot ${data.slot} is rendered generically, but " +
@@ -325,9 +331,22 @@ object DataValidator {
             )
         }
 
-        val mountBone = slot.mountBone
-        if (mountBone is AttachmentMountBone.Fixed && data.bone != null) {
-            warn("Bone=${data.bone} is ignored: slot ${data.slot} always mounts on '${mountBone.name}'")
+        // 逐个槽位查：多槽位配件的主槽位可能不是 Fixed，但 `Slots` 里那个是
+        val acceptedMounts = data.acceptedSlots.mapNotNull { AttachmentSlots.ofOrNull(it)?.mountBone }
+        for (mountBone in acceptedMounts) {
+            if (mountBone is AttachmentMountBone.Fixed && data.bone != null) {
+                warn("Bone=${data.bone} is ignored: slot ${data.slot} also mounts on the convention bone '${mountBone.name}'")
+                break
+            }
+        }
+
+        // `Bone` 只有单个值，而 `Slots` 里的槽位可能一个走"约定骨骼"、一个走配件自己声明的骨骼 ——
+        // 那时同一条 `Bone` 会在不同槽位上被解释成不同的东西，只能靠人确认
+        if (acceptedMounts.distinctBy { it::class }.size > 1) {
+            warn(
+                "slots ${data.acceptedSlots.joinToString(", ") { it.name }} resolve their mount bone " +
+                        "differently (some Fixed, some FromDefinition); a single 'Bone' cannot mean both"
+            )
         }
 
         for (key in data.override?.keys.orEmpty()) {
@@ -336,8 +355,10 @@ object DataValidator {
             }
         }
 
-        if (data.slot in data.conflictsWith) {
-            warn("ConflictsWith contains its own slot ${data.slot}: the entry does nothing")
+        // 点名自己装的槽位是空转的（`AttachmentSlots.conflicts` 第一行就把 type == other 排除掉了）
+        val selfConflict = data.conflictsWith.filter { it in data.acceptedSlots }
+        if (selfConflict.isNotEmpty()) {
+            warn("ConflictsWith contains its own slot(s) ${selfConflict.joinToString(", ") { it.name }}: the entry does nothing")
         }
 
         if (data.allowSharedMount && data.conflictsWith.isNotEmpty()) {

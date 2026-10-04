@@ -630,7 +630,20 @@ class ModItemTagProvider(
             ModItems.CHARM_HIRU_HEAD
         ),
         AttachmentType.LOWER_RAIL to listOf(
-            ModItems.LOWER_RAIL_BIPOD
+            ModItems.LOWER_RAIL_BIPOD,
+            ModItems.PEQ_15
+        ),
+        // 四根导轨都把同一件配件列一遍：tag 是按槽位桶生成的，`Slots` 只在运行时决定"装得上与否"，
+        // 不会自动把物品塞进别家桶里。多槽位配件在这里要**逐个桶**列全，否则某个导轨桶里没有它，
+        // 用它做 `#标签` 声明的枪就拿不到这件配件
+        AttachmentType.UPPER_RAIL to listOf(
+            ModItems.PEQ_15
+        ),
+        AttachmentType.LEFT_RAIL to listOf(
+            ModItems.PEQ_15
+        ),
+        AttachmentType.RIGHT_RAIL to listOf(
+            ModItems.PEQ_15
         ),
     )
 
