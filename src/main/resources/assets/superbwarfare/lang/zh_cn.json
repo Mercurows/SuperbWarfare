@@ -650,6 +650,7 @@
   "attachment.superbwarfare.slot.bayonet": "[刺刀配件]",
   "attachment.superbwarfare.slot.subweapon": "[副武器]",
   "attachment.superbwarfare.slot.charm": "[吊坠]",
+  "attachment.superbwarfare.slot.lowerrail": "[下导轨配件]",
   "attachment.superbwarfare.modify": "修改",
   "attachment.superbwarfare.scope_mode": "瞄准镜",
 
@@ -669,6 +670,7 @@
   "item.superbwarfare.triangle_grip": "三角握把",
   "item.superbwarfare.grip_cqr_gen2": "共振Gen2握把",
   "item.superbwarfare.grip_vertical_bipod": "脚架垂直握把",
+  "item.superbwarfare.lower_rail_bipod": "下导轨脚架",
   "item.superbwarfare.grip_vertical_pineapple": "菠萝垂直握把",
   "item.superbwarfare.oem_stock_light": "通用轻型枪托",
   "item.superbwarfare.oem_stock_heavy": "通用重型枪托",

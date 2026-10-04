@@ -1,0 +1,15 @@
+{
+  "Slot": "LowerRail",
+  "Level": 0,
+  "Bone": "lower_rail_pos",
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 1.5
+    }
+  ],
+  "Bipod": true,
+  "Model": "superbwarfare:models/bedrock/attachment/lower_rail_bipod.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/lower_rail_bipod.png"
+}

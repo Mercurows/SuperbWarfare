@@ -650,6 +650,7 @@
   "attachment.superbwarfare.slot.bayonet": "[Bayonet Attachment]",
   "attachment.superbwarfare.slot.subweapon": "[Sub Weapon]",
   "attachment.superbwarfare.slot.charm": "[Charm]",
+  "attachment.superbwarfare.slot.lowerrail": "[Lower Rail Attachment]",
   "attachment.superbwarfare.modify": "Modify ",
   "attachment.superbwarfare.scope_mode": "Scope",
 
@@ -669,6 +670,7 @@
   "item.superbwarfare.triangle_grip": "Triangle Grip",
   "item.superbwarfare.grip_cqr_gen2": "CQR GEN2 GRIP",
   "item.superbwarfare.grip_vertical_bipod": "Bipod Vertical Grip",
+  "item.superbwarfare.lower_rail_bipod": "Lower Rail Bipod",
   "item.superbwarfare.grip_vertical_pineapple": "Pineapple Vertical Grip",
   "item.superbwarfare.oem_stock_light": "Universal Light Stock",
   "item.superbwarfare.oem_stock_heavy": "Universal Heavy Stock",

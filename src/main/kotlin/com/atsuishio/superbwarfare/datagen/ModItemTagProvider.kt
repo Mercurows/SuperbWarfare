@@ -686,6 +686,9 @@ class ModItemTagProvider(
             ModItems.CHARM_LILY,
             ModItems.CHARM_HIRU_HEAD
         ),
+        AttachmentType.LOWER_RAIL to listOf(
+            ModItems.LOWER_RAIL_BIPOD
+        ),
     )
 
     private fun addAttachmentTags() {

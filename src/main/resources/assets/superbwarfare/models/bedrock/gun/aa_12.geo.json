@@ -6365,6 +6365,12 @@
 					"rotation": [-1, 0, 0]
 				},
 				{
+					"name": "lower_rail_pos",
+					"parent": "root",
+					"pivot": [0, 0.03503, -18.01822],
+					"rotation": [-1, 0, 0]
+				},
+				{
 					"name": "positioning",
 					"pivot": [0, 0, 0]
 				},

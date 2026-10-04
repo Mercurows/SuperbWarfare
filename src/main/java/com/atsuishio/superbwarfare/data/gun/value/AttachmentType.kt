@@ -51,7 +51,17 @@ enum class AttachmentType(typeName: String) {
      * 吊坠本来就是挂在枪身侧面的一个小环上。
      */
     @SerialName("Charm")
-    CHARM("Charm");
+    CHARM("Charm"),
+
+    /**
+     * 下导轨配件（脚架这类挂在护木下方导轨上的东西）。
+     *
+     * 与 [GRIP] 物理上是同一根下导轨，但**各自登记在自己的挂点组上**（`lower_rail` / `grip_rail`），
+     * 所以两者不互斥、可以同时装 —— 合并挂点组会让"装了垂直握把就装不了脚架"，
+     * 那是玩法改动，见 [com.atsuishio.superbwarfare.data.attachment.AttachmentSlots]。
+     */
+    @SerialName("LowerRail")
+    LOWER_RAIL("LowerRail");
 
     val attachmentName: String = typeName
 }

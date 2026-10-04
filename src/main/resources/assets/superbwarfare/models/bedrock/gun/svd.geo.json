@@ -18,12 +18,17 @@
 				{
 					"name": "muzzle_pos",
 					"parent": "root",
-					"pivot": [0.003, 1.9522, -35.0329]
+					"pivot": [0, 1.9522, -35.0329]
+				},
+				{
+					"name": "lower_rail_pos",
+					"parent": "root",
+					"pivot": [0, 0.87408, -19.56806]
 				},
 				{
 					"name": "scope_pos",
 					"parent": "root",
-					"pivot": [0.003, 3.80679, -0.94296]
+					"pivot": [0, 3.80679, -0.94296]
 				},
 				{
 					"name": "pso_1_pos",
