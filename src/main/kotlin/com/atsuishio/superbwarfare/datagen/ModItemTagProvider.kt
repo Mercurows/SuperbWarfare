@@ -375,6 +375,7 @@ class ModItemTagProvider(
             ModItems.KNIFE.get(),
             ModItems.KNIFE_6KH2.get(),
             ModItems.KNIFE_SEITENGEWEHR_84.get(),
+            ModItems.KNIFE_M1917.get(),
             ModItems.T_BATON.get(),
             ModItems.ELECTRIC_BATON.get(),
             ModItems.STEEL_PIPE.get(),
@@ -581,7 +582,8 @@ class ModItemTagProvider(
             ModItems.BAYONET_6KH2,
             ModItems.BAYONET_SEITENGEWEHR_84,
             ModItems.BAYONET_M_91_30,
-            ModItems.BAYONET_TRIANGULAR
+            ModItems.BAYONET_TRIANGULAR,
+            ModItems.BAYONET_M1917
         ),
         AttachmentType.SUBWEAPON to listOf(
             ModItems.SUB_WEAPON_GP_25
