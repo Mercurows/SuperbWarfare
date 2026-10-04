@@ -11426,6 +11426,12 @@
 					"pivot": [0.7279, 3.54241, 3.34361]
 				},
 				{
+					"name": "upper_rail_pos",
+					"parent": "positioning2",
+					"pivot": [0, 4.97173, -13.66493],
+					"rotation": [0, 0, -180]
+				},
+				{
 					"name": "righthand",
 					"parent": "root",
 					"pivot": [5.98125, 18, 0]

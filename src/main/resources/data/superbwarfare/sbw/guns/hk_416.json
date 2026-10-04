@@ -146,7 +146,17 @@
       "#superbwarfare:attachment/charm"
     ],
     "LowerRail": [
-      "superbwarfare:lower_rail_bipod"
+      "superbwarfare:lower_rail_bipod",
+      "superbwarfare:peq_15"
+    ],
+    "UpperRail": [
+      "superbwarfare:peq_15"
+    ],
+    "LeftRail": [
+      "superbwarfare:peq_15"
+    ],
+    "RightRail": [
+      "superbwarfare:peq_15"
     ]
   },
   "SoundInfo": {

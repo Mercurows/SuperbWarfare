@@ -48,7 +48,7 @@
     "ShellModel": "superbwarfare:models/bedrock/shell/rifle_shell.geo.json",
     "ShellTexture": "superbwarfare:textures/bedrock/shell/rifle_shell.png",
     "Size": 1,
-    "InitialVelocity": [2.8, 6.2, -0.75],
+    "InitialVelocity": [3.8, 3.2, -0.75],
     "RandomVelocity": [0.7, 0.6, 0.3],
     "Acceleration": [0, -16, 0],
     "AngularVelocity": [-1800, -2000, 240],

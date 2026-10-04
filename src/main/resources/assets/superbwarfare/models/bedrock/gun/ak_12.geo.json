@@ -8098,6 +8098,24 @@
 					"pivot": [0, 1.66704, -12.91806]
 				},
 				{
+					"name": "right_rail_pos",
+					"parent": "positioning2",
+					"pivot": [-0.94297, 4.05738, -12.91571],
+					"rotation": [0, 0, 90]
+				},
+				{
+					"name": "left_rail_pos",
+					"parent": "positioning2",
+					"pivot": [0.94297, 4.05738, -12.91571],
+					"rotation": [0, 0, -90]
+				},
+				{
+					"name": "upper_rail_pos",
+					"parent": "positioning2",
+					"pivot": [0, 4.88579, -8.36493],
+					"rotation": [0, 0, -180]
+				},
+				{
 					"name": "righthand",
 					"parent": "root",
 					"pivot": [5.98125, 18, 0]

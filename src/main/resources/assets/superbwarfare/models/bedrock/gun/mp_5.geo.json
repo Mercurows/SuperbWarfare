@@ -8080,7 +8080,19 @@
 				{
 					"name": "lower_rail_pos",
 					"parent": "root",
-					"pivot": [0, 2.4522, -11.42587]
+					"pivot": [0, 2.4522, -10.92587]
+				},
+				{
+					"name": "right_rail_pos",
+					"parent": "root",
+					"pivot": [-0.98594, 3.65894, -9.91571],
+					"rotation": [0, 0, 90]
+				},
+				{
+					"name": "left_rail_pos",
+					"parent": "root",
+					"pivot": [0.98594, 3.65894, -9.91571],
+					"rotation": [0, 0, -90]
 				},
 				{
 					"name": "positioning",

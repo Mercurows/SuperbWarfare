@@ -10,12 +10,12 @@
     {
       "Prop": "Spread",
       "Op": "Mul",
-      "Value": 0.7
+      "Value": 0.75
     },
     {
       "Prop": "Weight",
       "Op": "Add",
-      "Value": 0.75
+      "Value": 1.25
     }
   ],
   "Model": "superbwarfare:models/bedrock/attachment/peq_15.geo.json",
