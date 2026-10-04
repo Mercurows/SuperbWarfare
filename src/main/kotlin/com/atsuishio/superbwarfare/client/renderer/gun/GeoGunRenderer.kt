@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.client.charm.CharmSnapshot
 import com.atsuishio.superbwarfare.client.model.attachment.BedrockAttachmentModel
 import com.atsuishio.superbwarfare.client.model.gun.GeoGunModel
 import com.atsuishio.superbwarfare.client.renderer.ammo.AmmoReadout
+import com.atsuishio.superbwarfare.client.renderer.ammo.RangeReadout
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.ARM_ANCHOR_FADE_TICKS
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.CUSTOM_HAND_GUARD_BONE
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.EDIT_FOCUS_Z_OFFSET
@@ -770,8 +771,14 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                     localFirstPersonHand != null &&
                     !OculusCompat.isRenderingShadowPass()
 
+            // 挂点变换 + 配件自己的基础旋转，合成一份。**手臂锚点也必须用它**
+            // （下面的 `resolveSubWeaponHandAnchors`）：那份矩阵表示"配件模型局部 → 视图空间"，
+            // 和画模型用的是同一份，拿了没转的那份手臂就会从转了的那件配件上脱开。
+            val mount = Matrix4f(mountTransform)
+            attachmentRotation(definition)?.let { mount.mul(it) }
+
             poseStack.pushPose()
-            mulPoseWithNormal(poseStack, Matrix4f(mountTransform))
+            mulPoseWithNormal(poseStack, mount)
             var charmSnapshot: CharmSnapshot? = null
             var bipodSnapshot: BipodSnapshot? = null
             try {
@@ -789,7 +796,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 // 取到之后由 `GeoGunModel.renderHands` 用它代替主武器的同名骨骼 ——
                 // 它**优先于**常驻接管（[resolveArmAnchorsForDraw] 里的优先级说明）。
                 if (subWeaponPose != null) {
-                    subWeaponHandAnchors = resolveSubWeaponHandAnchors(attachmentModel, mountTransform)
+                    subWeaponHandAnchors = resolveSubWeaponHandAnchors(attachmentModel, mount)
                     subWeaponAnchorKey = subWeaponAnimation?.subWeaponReloadClipName
                 }
                 // 摆动姿态必须在这之前写进骨骼：它改的是 `string` / `charm` 两根骨骼的
@@ -807,7 +814,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 }
                 attachmentModel.renderToBuffer(
                     poseStack, bufferSource, texture, packedLight, packedOverlay,
-                    null, resolveAmmoReadout(stack, definition.ammoBar, definition.textShow)
+                    null, attachmentReadout(stack, definition, hand)
                 )
             } finally {
                 // 附件模型实例是全局共享的，写进去的姿态必须还原
@@ -932,6 +939,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         stack: ItemStack,
         bars: List<AmmoBarEntry>,
         texts: List<AmmoTextEntry>,
+        range: Int = AmmoTextEntry.NO_RANGE,
     ): AmmoReadout {
         if (bars.isEmpty() && texts.isEmpty()) return AmmoReadout()
 
@@ -942,13 +950,40 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         // effective count lives outside `ammo` — energy weapons, backpack-ammo guns, melee-only guns,
         // all of which report MAGAZINE <= 0 — therefore read as a full bar showing "0", so an author
         // should not configure a readout on those.
-        if (magazine <= 0) return AmmoReadout(bars, texts, 1f, count)
+        if (magazine <= 0) return AmmoReadout(bars, texts, 1f, count, range)
         return AmmoReadout(
             bars,
             texts,
             (count.toFloat() / magazine.toFloat()).coerceIn(0f, 1f),
-            count
+            count,
+            range
         )
+    }
+
+    /**
+     * 某件**注册表驱动的通用配件**（[AttachmentRenderMode.GENERIC] 的槽位，导轨上的东西都走这条）
+     * 本帧的读数：弹药条 / 弹药文字的数值，外加 `%range%` 要用的测距。
+     *
+     * 测距只在**本地玩家自己第一人称手里那把枪**上算，两个理由缺一不可：
+     *
+     * - 一次读数就是一条 512 格的射线，别人手里的枪、掉落物、展示框、改装界面没必要每帧付这个钱；
+     * - 读数本来就是"**玩家自己**在测"，第三人称里看着别人的枪也会跟着自己的视线跳数，那是错的。
+     *
+     * 判据用 [localFirstPersonHand]（与吊坠、脚架同源，见它的注释），并且**只有模板里真写了
+     * `%range%`** 才去测 —— 一件配件上往往挂着好几行字，其中一行要测距不该让整件配件都去跑射线。
+     */
+    private fun attachmentReadout(
+        stack: ItemStack,
+        definition: AttachmentDefinition,
+        hand: InteractionHand,
+    ): AmmoReadout {
+        val texts = definition.textShow
+        val range = if (hand == localFirstPersonHand && texts.any { it.usesRange }) {
+            RangeReadout.measure(localPlayer)
+        } else {
+            AmmoTextEntry.NO_RANGE
+        }
+        return resolveAmmoReadout(stack, definition.ammoBar, texts, range)
     }
 
     /**
@@ -1058,6 +1093,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
         poseStack.pushPose()
         mulPoseWithNormal(poseStack, Matrix4f(mountTransform))
+        mulAttachmentRotation(poseStack, definition)
         attachmentModel.renderToBuffer(
             poseStack, bufferSource, texture, packedLight, packedOverlay,
             null, resolveAmmoReadout(stack, definition.ammoBar, definition.textShow)
@@ -1122,6 +1158,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             poseStack,
             Matrix4f(mountTransform).mul(resolveMuzzleAttachmentLocalTransform(stack))
         )
+        mulAttachmentRotation(poseStack, definition)
         attachmentModel.renderToBuffer(
             poseStack, bufferSource, texture, packedLight, packedOverlay,
             null, resolveAmmoReadout(stack, definition.ammoBar, definition.textShow)
@@ -1173,6 +1210,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
         poseStack.pushPose()
         mulPoseWithNormal(poseStack, Matrix4f(mountTransform))
+        mulAttachmentRotation(poseStack, definition)
         attachmentModel.renderToBuffer(
             poseStack, bufferSource, texture, packedLight, packedOverlay,
             null, resolveAmmoReadout(stack, definition.ammoBar, definition.textShow)
@@ -2472,6 +2510,37 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val normal = Matrix3f(matrix).invert().transpose()
         poseStack.last().normal().mul(normal)
         poseStack.last().pose().mul(matrix)
+    }
+
+    /**
+     * 配件数据里的基础三轴旋转（[AttachmentDefinition.rotation]）矩阵；不转时返回 `null`。
+     *
+     * ⚠ **这个矩阵要乘在挂点变换之后**（`mount.mul(rotation)`）—— 字段的含义是
+     * "挂到挂点上之后再整件转一下"，先转再挂就变成绕枪身原点转了。
+     *
+     * ⚠ 换算与模型加载时**逐字一致**（`TreeBedrockModelBaker` 里
+     * `bindRotation.rotateZYX(rotation[2], rotation[1], rotation[0])`，其中 X、Y 已经取过负、Z 没有），
+     * 所以这里同样 X、Y 取负、Z 不取负、按 `ZYX` 顺序合成。只有这样，
+     * "Blockbench 里给那根骨骼写多少度"和"这里写多少度"才是同一个方向。
+     *
+     * 没写或全 `0` 返回 `null`：绝大多数配件因此一个矩阵都不建。
+     */
+    fun attachmentRotation(definition: AttachmentDefinition): Matrix4f? {
+        val rotation = definition.rotation ?: return null
+        if (rotation.isIdentity) return null
+
+        return Matrix4f().rotate(
+            Quaternionf().rotateZYX(
+                rotation.z * Mth.DEG_TO_RAD,
+                -rotation.y * Mth.DEG_TO_RAD,
+                -rotation.x * Mth.DEG_TO_RAD,
+            )
+        )
+    }
+
+    /** [attachmentRotation] 直接乘进 `PoseStack` 的写法，给不需要那份矩阵本身的那几条渲染路径用 */
+    fun mulAttachmentRotation(poseStack: PoseStack, definition: AttachmentDefinition) {
+        attachmentRotation(definition)?.let { mulPoseWithNormal(poseStack, it) }
     }
 
     open fun displayKey(transformType: ItemDisplayContext): String {

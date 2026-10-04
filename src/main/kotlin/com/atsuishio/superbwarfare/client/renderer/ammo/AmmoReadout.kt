@@ -18,6 +18,13 @@ data class AmmoReadout(
     val progress: Float = 1f,
     /** Rounds left in the magazine. */
     val count: Int = 0,
+    /**
+     * Distance to whatever the shooter is looking at, in blocks — what a `%range%` text anchor
+     * expands to. [AmmoTextEntry.NO_RANGE] means "no reading this frame", which is the default:
+     * only the local player's own held gun in first person measures anything, and only when one of
+     * its text anchors actually asks for it (see `GeoGunRenderer.attachmentReadout`).
+     */
+    val range: Int = AmmoTextEntry.NO_RANGE,
 ) {
     /** True when the model has no ammo display configured at all. */
     val isEmpty: Boolean get() = bars.isEmpty() && texts.isEmpty()
