@@ -7,6 +7,9 @@
     "#superbwarfare:attachment/grip/superb",
     "#superbwarfare:attachment/bayonet/superb",
     "#superbwarfare:attachment/subweapon/superb",
-    "#superbwarfare:attachment/lower_rail/superb"
+    "#superbwarfare:attachment/lower_rail/superb",
+    "#superbwarfare:attachment/upper_rail/superb",
+    "#superbwarfare:attachment/left_rail/superb",
+    "#superbwarfare:attachment/right_rail/superb"
   ]
 }

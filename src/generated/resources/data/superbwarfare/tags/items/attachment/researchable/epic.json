@@ -7,6 +7,9 @@
     "#superbwarfare:attachment/grip/epic",
     "#superbwarfare:attachment/bayonet/epic",
     "#superbwarfare:attachment/subweapon/epic",
-    "#superbwarfare:attachment/lower_rail/epic"
+    "#superbwarfare:attachment/lower_rail/epic",
+    "#superbwarfare:attachment/upper_rail/epic",
+    "#superbwarfare:attachment/left_rail/epic",
+    "#superbwarfare:attachment/right_rail/epic"
   ]
 }

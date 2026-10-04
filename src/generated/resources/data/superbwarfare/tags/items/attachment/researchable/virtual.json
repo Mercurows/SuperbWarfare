@@ -7,6 +7,9 @@
     "#superbwarfare:attachment/grip/virtual",
     "#superbwarfare:attachment/bayonet/virtual",
     "#superbwarfare:attachment/subweapon/virtual",
-    "#superbwarfare:attachment/lower_rail/virtual"
+    "#superbwarfare:attachment/lower_rail/virtual",
+    "#superbwarfare:attachment/upper_rail/virtual",
+    "#superbwarfare:attachment/left_rail/virtual",
+    "#superbwarfare:attachment/right_rail/virtual"
   ]
 }
