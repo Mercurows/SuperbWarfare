@@ -185,7 +185,7 @@ object MeleeClientHandler {
      * 而玩家可能正好在换弹开始的那一 tick 按下 V。
      */
     private fun GunData.busyForMelee(): Boolean =
-        reloading() || charging() || bolt.actionTimer.get() > 0 || reload.normal() || reload.empty()
+        reloading() || bolt.actionTimer.get() > 0 || reload.normal() || reload.empty()
 
     /**
      * 把服务端权威的换弹/拉栓状态同步进动作锁，让"换弹时挥砍"这类边界被统一拒掉。

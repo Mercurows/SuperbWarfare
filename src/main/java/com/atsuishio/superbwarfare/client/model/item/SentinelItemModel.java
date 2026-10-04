@@ -55,7 +55,7 @@ public class SentinelItemModel extends CustomGunModel<SentinelItem> {
         float numR = (float) (1 - 0.9 * zt);
         float numP = (float) (1 - 0.98 * zt);
 
-        if (data.reload.time() > 0 || data.charging()) {
+        if (data.reload.time() > 0) {
             main.setRotX(numR * main.getRotX());
             main.setRotY(numR * main.getRotY());
             main.setRotZ(numR * main.getRotZ());

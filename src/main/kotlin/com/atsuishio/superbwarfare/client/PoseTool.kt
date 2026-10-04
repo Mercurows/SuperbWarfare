@@ -17,7 +17,6 @@ object PoseTool {
             || data.reload.empty()
             || data.reload.normal()
             || data.reloading()
-            || data.charging()
         ) {
             HumanoidModel.ArmPose.CROSSBOW_CHARGE
         } else {

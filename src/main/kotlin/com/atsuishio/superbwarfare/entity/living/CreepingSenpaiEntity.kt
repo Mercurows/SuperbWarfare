@@ -14,10 +14,7 @@ import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.util.Mth
 import net.minecraft.world.damagesource.DamageSource
-import net.minecraft.world.entity.Entity
-import net.minecraft.world.entity.EntityType
-import net.minecraft.world.entity.Mob
-import net.minecraft.world.entity.MoverType
+import net.minecraft.world.entity.*
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier
 import net.minecraft.world.entity.ai.attributes.Attributes
 import net.minecraft.world.entity.ai.control.MoveControl
@@ -66,6 +63,42 @@ open class CreepingSenpaiEntity(type: EntityType<CreepingSenpaiEntity>, level: L
 
     override fun createNavigation(level: Level): PathNavigation {
         return CreepingSenpaiNavigation(this, level)
+    }
+
+    override fun getEyeY(): Double =
+        if (isDeadOrDying) DEAD_DIMENSIONS.height * 0.85 else 0.65
+
+    /**
+     * 死亡后把碰撞箱压到贴地。
+     *
+     * 爬行先辈死后尸体同样要在地上躺满 27 秒（`tickDeath()` 到 `deathTime == 540` 才 `remove()`），
+     * 存活时 1.0×0.9 的箱子（注册值见 `ModEntities`）立在那儿整段时间都在挡路 ——
+     * 死亡动画里它早就翻倒躺平了（`upper` 绕 Z 转到 183°）。
+     *
+     * 箱子只变矮不变宽，且实体的 Y 是箱子底面（脚底），所以新箱子恒为旧箱子的子集，
+     * 不会因为变矮卡进上方方块里。`baseTick()` 本来就每 tick 调 `refreshDimensions()`，
+     * 尺寸变化会立刻生效；双端都算得出来（`isDeadOrDying()` 读的是同步过的血量）。
+     *
+     * ⚠ 贴天花板（`attachedFace == DOWN`）时 `aiStep()` 里的 `maintainSurfaceAttachment()`
+     * 会用 `bbHeight` 反推贴地高度，但那个分支第一行就判断了 `attachedFace != Direction.DOWN` 直接返回，
+     * 而 `updateSurfaceAttachment()` 在 `isDeadOrDying` 时会把 `attachedFace` 归回 `UP`，
+     * 所以死亡后不会出现"箱子变矮 → 尸体自己往上飘"。
+     */
+    override fun getDefaultDimensions(pose: Pose): EntityDimensions =
+        if (isDeadOrDying) DEAD_DIMENSIONS.scale(scale) else super.getDimensions(pose)
+
+    /**
+     * 死亡后不再推开其他实体。
+     *
+     * `LivingEntity.aiStep()` → `pushEntities()` 每 tick 把周围 `isPushable()` 的实体挑出来交给
+     * `doPush()`，默认实现是 `entityIn.push(this)` —— 也就是**尸体把玩家/生物推走**。
+     * 反方向（玩家推尸体）本来就不会发生：尸体 `isAlive()` 为 false，`isPushable()` 跟着为 false，
+     * `EntitySelector.pushableBy()` 压根不会把尸体选进来。所以只要堵住这一边。
+     *
+     * 存活时保持原版行为（会推挤别人），只在死亡后才吞掉。
+     */
+    override fun doPush(entityIn: Entity) {
+        if (!isDeadOrDying) super.doPush(entityIn)
     }
 
     override fun registerGoals() {
@@ -314,6 +347,9 @@ open class CreepingSenpaiEntity(type: EntityType<CreepingSenpaiEntity>, level: L
                 .add(Attributes.FOLLOW_RANGE, 64.0)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.0)
         }
+
+        /** 死亡后贴地的碰撞箱（注册时的存活箱是 1.0×0.9）。 */
+        val DEAD_DIMENSIONS: EntityDimensions = EntityDimensions.scalable(1.0f, 0.4f)
 
         val MODEL = loc("models/bedrock/entity/creeping_senpai.geo.json")
     }

@@ -272,7 +272,23 @@ data class MeleeAttackMessage(
                 }
 
                 attacker.deltaMovement = attackerMotion.multiply(0.6, 1.0, 0.6)
-                attacker.isSprinting = false
+
+                // ⚠ **绝不能在这里 `attacker.isSprinting = false`。**
+                //
+                // 原版冲刺攻击确实会顺手停疾跑，但那是 `Player.attack` 在**双端各跑一次**的结果，
+                // 客户端自己也停了；枪械近战只有服务端这一侧。
+                //
+                // 服务端这一停会顺着 DataTracker 的共享标志（`Entity.getFlag(3)`，
+                // `EntityTrackerEntry.sendSyncPacket` 对 `ServerPlayer` 会把更新直接发回玩家自己）
+                // 打回客户端，把 LocalPlayer 的疾跑标志按成 false；而客户端
+                // `ClientPlayerEntity.tickMovement` 只要还按着疾跑键就会立刻重新起跑 ——
+                // 两边互相打架的结果就是"卡在疾跑与非疾跑之间"。
+                //
+                // 原版 FOV 倍率来自 `MOVEMENT_SPEED` 属性（`AbstractClientPlayerEntity.getFovMultiplier`），
+                // 属性跟着疾跑标志一加一减，`GameRenderer` 再按帧 lerp，就表现为近战结束后 FOV 抽搐。
+                //
+                // 所以枪械近战**不打断疾跑**：速度与 FOV 全程不受影响。
+                // 冲刺击退加成（上面的 `if (attacker.isSprinting) knockback += 1.0`）保留。
             }
 
             if (target is ServerPlayer && target.hurtMarked) {

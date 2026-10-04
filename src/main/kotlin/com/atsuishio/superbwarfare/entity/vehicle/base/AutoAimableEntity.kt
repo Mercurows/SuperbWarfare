@@ -2,6 +2,8 @@ package com.atsuishio.superbwarfare.entity.vehicle.base
 
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
+import com.atsuishio.superbwarfare.data.gun.melee.ProjectileMarker
+import com.atsuishio.superbwarfare.data.gun.melee.normalizeProjectileMarker
 import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.projectile.DestroyableProjectile
 import com.atsuishio.superbwarfare.entity.projectile.SmallCannonShellEntity
@@ -199,10 +201,15 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : VehicleEntity(
 
         val projectileInfo = data.get(GunProp.PROJECTILE)
         val projectileType = projectileInfo.itemId
-        val projectileTypeStr = projectileType.trim().lowercase()
+        // ⚠ 必须走 `normalizeProjectileMarker()`（`trim().lowercase().removePrefix("@")`）。
+        // 引擎保留标记在数据里写作 `"@ray"`（见 `ProjectileMarker` 的约定），
+        // 只 trim+lowercase 会得到 `"@ray"`，下面所有与 `ProjectileMarker.RAY` 的比较全部落空：
+        // chargeProgress 永远到不了 1，`rayShoot` 永不触发 —— 表现为炮塔能索敌、能转炮，
+        // 但一发都不打。`GunItem` 那边用的是归一化后的写法，这里当初漏改了。
+        val projectileTypeStr = projectileType.normalizeProjectileMarker()
         val rpm = Math.ceil(20f / (vehicleWeaponRpm(weaponName).toFloat() / 60)).toInt()
 
-        if (projectileTypeStr == "ray" && chargeProgress < 1 && energy > data.get(GunProp.AMMO_COST_PER_SHOOT)) {
+        if (projectileTypeStr == ProjectileMarker.RAY && chargeProgress < 1 && energy > data.get(GunProp.AMMO_COST_PER_SHOOT)) {
             val chargeSpeed = 1f / rpm
             chargeProgress = Mth.clamp(chargeProgress + chargeSpeed, 0f, 1f)
         }
@@ -263,7 +270,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : VehicleEntity(
         val targetPos = target.boundingBox.center
         val targetVel = target.deltaMovement
 
-        val targetVec = if (projectileTypeStr == "ray") {
+        val targetVec = if (projectileTypeStr == ProjectileMarker.RAY) {
             barrelRootPos.vectorTo(targetPos).normalize()
         } else {
             calculateFiringSolution(
@@ -280,7 +287,7 @@ open class AutoAimableEntity(type: EntityType<*>, world: Level) : VehicleEntity(
             if (calculateAngle(getShootVec(weaponName, 1f), targetVec) < 1) {
                 if (checkNoClip(target, barrelRootPos) && !data.overHeat.get()) {
                     if (level() is ServerLevel) {
-                        if (projectileTypeStr == "ray" && chargeProgress == 1f) {
+                        if (projectileTypeStr == ProjectileMarker.RAY && chargeProgress == 1f) {
                             rayShoot(owner, target, data)
                             changeTargetTimer = 0
                         } else if (getAmmoCount(weaponName) > 0 && tickCount % rpm == 0) {

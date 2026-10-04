@@ -60,10 +60,6 @@ public class SentinelItem extends GunGeoItem {
             return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sentinel.reload_normal"));
         }
 
-        if (data.charging()) {
-            return event.setAndContinue(RawAnimation.begin().thenPlay("animation.sentinel.charge"));
-        }
-
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.sentinel.idle"));
     }
 

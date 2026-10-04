@@ -400,7 +400,6 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                 && !data.overHeat.get()
                 && data.get(GunProp.HEAT_PER_SHOOT) <= (100 + data.get(GunProp.HEAT_PER_SHOOT) - data.heat.get())
                 && !data.reloading()
-                && !data.charging()
                 && !data.bolt.needed.get()
                 // 含附加弹药来源（如泰瑟枪的电量）
                 && data.hasEnoughAmmoToShoot(shooter)

@@ -3582,7 +3582,7 @@ val data = GunData.from(stack)          // ← 主手（by design：近战是主
 syncServerDrivenLocks(data, state)      // ← 也读主手
 ...
 if (state.isLocked) return
-if (data.reloading() || data.charging() || data.bolt.actionTimer.get() > 0) return
+if (data.reloading()|| data.bolt.actionTimer.get() > 0) return
 if (data.reload.normal() || data.reload.empty()) return
 ```
 
