@@ -32,6 +32,8 @@ class SbwJEIPlugin : IModPlugin {
 
     override fun registerCategories(registration: IRecipeCategoryRegistration) {
         registration.addRecipeCategories(GunPerksCategory(registration.jeiHelpers.guiHelper))
+        registration.addRecipeCategories(GunAttachmentsCategory(registration.jeiHelpers.guiHelper))
+        registration.addRecipeCategories(GunAttachmentUsagesCategory(registration.jeiHelpers.guiHelper))
         registration.addRecipeCategories(VehicleAssemblingCategory(registration.jeiHelpers.guiHelper))
         registration.addRecipeCategories(ResearchingCategory(registration.jeiHelpers.guiHelper))
     }
@@ -54,7 +56,10 @@ class SbwJEIPlugin : IModPlugin {
 
         val guns = ForgeRegistries.ITEMS.getValues().stream().filter { it is GunItem }
             .map { obj -> obj.defaultInstance }.toList()
+
         registration.addRecipes(GunPerksCategory.TYPE, guns)
+        registration.addRecipes(GunAttachmentsCategory.TYPE, GunAttachmentsCategory.createRecipes(guns))
+        registration.addRecipes(GunAttachmentUsagesCategory.TYPE, GunAttachmentUsagesCategory.createRecipes(guns))
         registration.addRecipes(
             VehicleAssemblingCategory.TYPE,
             recipeManager.getAllRecipesFor(ModRecipes.VEHICLE_ASSEMBLING_TYPE.get())
