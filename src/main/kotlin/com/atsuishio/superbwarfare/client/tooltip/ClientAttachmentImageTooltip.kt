@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.tooltip
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.tooltip.component.AttachmentImageComponent
 import com.atsuishio.superbwarfare.data.attachment.*
+import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.item.attachment.AttachmentProvider
 import com.atsuishio.superbwarfare.item.attachment.definition
 import com.atsuishio.superbwarfare.tools.FormatTool
@@ -72,15 +73,30 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
         }
     }
 
+    /**
+     * 槽位名那一行。
+     *
+     * 一件配件可以同时声明多个可装槽位（`Slots`，例如激光指示器上下左右四根导轨都能装），
+     * 所以这里把 `acceptedSlots` **全部**列出来，而不是只显示主槽位 —— 否则玩家看到
+     * `[下导轨配件]` 会以为它装不上别的导轨。多个槽位之间用 `/` 分隔。
+     */
     open fun slotLine(definition: AttachmentDefinition): MutableComponent {
-        val type = definition.slot.attachmentName.lowercase(Locale.ROOT)
-        val key = "attachment.superbwarfare.slot.$type"
-        val text: MutableComponent = if (I18n.exists(key)) {
-            Component.translatable(key)
-        } else {
-            Component.literal("[${definition.slot.attachmentName}]")
+        val text = Component.empty()
+        definition.acceptedSlots.sortedBy { it.ordinal }.forEachIndexed { index, type ->
+            if (index > 0) text.append(Component.literal(" / "))
+            text.append(slotName(type))
         }
         return text.withStyle(ChatFormatting.GOLD)
+    }
+
+    /** 单个槽位的显示名，例如 `[Scope Attachment]` / `[瞄准镜配件]`；没有翻译时退回枚举名 */
+    open fun slotName(type: AttachmentType): MutableComponent {
+        val key = "attachment.superbwarfare.slot.${type.attachmentName.lowercase(Locale.ROOT)}"
+        return if (I18n.exists(key)) {
+            Component.translatable(key)
+        } else {
+            Component.literal("[${type.attachmentName}]")
+        }
     }
 
     open fun modifierLine(modifier: AttachmentModifier): Component? {

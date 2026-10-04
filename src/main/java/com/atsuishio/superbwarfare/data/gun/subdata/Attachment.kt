@@ -304,7 +304,8 @@ class Attachment(private val gun: GunData) {
         for (type in AttachmentType.entries) {
             val id = id(type) ?: continue
             val definition = AttachmentDefinition.from(id) ?: continue
-            if (definition.slot != type) continue
+            // 装进来的槽位必须在这件配件声明的可装槽位里（多槽位配件见 `AttachmentDefinition.extraSlots`）
+            if (type !in definition.acceptedSlots) continue
             val tag = getTag(type) ?: continue
             result += AttachmentInstance(type, id, tag, definition)
         }

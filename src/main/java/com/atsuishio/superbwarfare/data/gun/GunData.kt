@@ -1301,7 +1301,8 @@ class GunData private constructor(
     fun canInstall(slot: AttachmentType, id: ResourceLocation): Boolean {
         if (id !in availableAttachments(slot)) return false
         val definition = AttachmentDefinition.from(id) ?: return false
-        return definition.slot == slot
+        // 按 `acceptedSlots` 判定，不是 `definition.slot`：一件配件可以同时装进多根导轨（`Slots`）
+        return slot in definition.acceptedSlots
     }
 
     /** Raw damage reduction property structure. */
