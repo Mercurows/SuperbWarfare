@@ -18,6 +18,17 @@ class AttachmentInfo {
     @SerialName("GripHandGuard")
     var gripHandGuard: Boolean = false
 
+    /**
+     * **四面导轨（下 / 上 / 左 / 右）任一件**或**下挂副武器**装了东西时，是否换成带导轨的护木
+     * （`custom_hand_guard` / `oem_hand_guard`，见 `GeoGunRenderer.shouldShowCustomHandGuard`）。
+     *
+     * 与 [gripHandGuard] 分开，是因为有的枪**握把并不长在那支护木上**（Vector）：靠"装握把"永远
+     * 换不出它，只能看导轨上有没有挂东西。两个开关互不影响，都设成 true 就是"握把或导轨任一个都换"。
+     */
+    @JvmField
+    @SerialName("RailHandGuard")
+    var railHandGuard: Boolean = false
+
     // 装备瞄准镜的时候是否需要渲染新的护木
     @JvmField
     @SerialName("ScopeHandGuard")

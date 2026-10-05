@@ -29,7 +29,6 @@ import com.atsuishio.superbwarfare.item.gun.launcher.*
 import com.atsuishio.superbwarfare.item.gun.machinegun.M2HBItem
 import com.atsuishio.superbwarfare.item.gun.machinegun.MinigunItem
 import com.atsuishio.superbwarfare.item.gun.shotgun.HomemadeShotgunItem
-import com.atsuishio.superbwarfare.item.gun.smg.VectorItem
 import com.atsuishio.superbwarfare.item.gun.sniper.Ql1031Item
 import com.atsuishio.superbwarfare.item.gun.sniper.SentinelItem
 import com.atsuishio.superbwarfare.item.gun.special.BeastGunTestItem
@@ -123,7 +122,7 @@ object ModItems {
     @JvmField val NAIL_GUN = registerGun("nail_gun") { GeoGunItemV2(Properties().rarity(Rarity.RARE)) }
     @JvmField val TRACHELIUM = registerGun<TracheliumItem>()
     @JvmField val MP_5 = registerGun("mp_5") { GeoGunItemV2(Properties().rarity(Rarity.RARE)) }
-    @JvmField val VECTOR = registerGun<VectorItem>()
+    @JvmField val VECTOR = registerGun("vector") { GeoGunItemV2(Properties().rarity(Rarity.EPIC)) }
     @JvmField val AK_47 = registerGun("ak_47") { GeoGunItemV2(Properties().rarity(Rarity.RARE)) }
     @JvmField val AK_12 = registerGun("ak_12") { GeoGunItemV2(Properties().rarity(Rarity.RARE)) }
     @JvmField val SKS = registerGun("sks") { GeoGunItemV2(Properties().rarity(Rarity.RARE)) }
