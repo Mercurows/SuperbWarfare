@@ -4,6 +4,8 @@ import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots.Bones.CHARM_C
 import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots.Bones.CHARM_FIXED
 import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots.Bones.CHARM_STRING
 import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots.Bones.GRIP
+import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots.Bones.LOWER_RAIL
+import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots.Bones.UPPER_RAIL
 import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots.EDIT_ORDER
 import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots.declaredConflicts
 import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots.gunConflicts
@@ -111,12 +113,16 @@ object AttachmentSlots {
         const val LOWER_RAIL = "lower_rail_pos"
 
         /**
-         * 上方导轨的约定挂点，与 [LOWER_RAIL] 同一套规矩（[AttachmentMountBone.Fixed]，位置由枪模型定）。
-         *
-         * **目前没有任何枪模型带这根骨骼**，也就是说现在装上导轨槽位的配件什么都不会渲染 ——
-         * 这是有意的：槽位先建好，等配件做出来再往模型里加同名骨骼
+         * 上方导轨的约定挂点，与 [LOWER_RAIL] 同一套规矩（[AttachmentMountBone.Fixed]，位置由枪模型定）
          */
         const val UPPER_RAIL = "upper_rail_pos"
+
+        /**
+         * **配件模型内部**的盾面骨骼名（枪盾专用），不是枪模型上的骨骼。
+         *
+         * 耐久归零时整棵子树会被隐藏，见 `GeoGunRenderer.renderRegisteredAttachments`
+         */
+        const val SHIELD = "shield"
 
         /** 护木左侧导轨的约定挂点，同 [UPPER_RAIL]，目前模型里还没有这根骨骼 */
         const val LEFT_RAIL = "left_rail_pos"
@@ -225,10 +231,7 @@ object AttachmentSlots {
             renderMode = AttachmentRenderMode.GENERIC,
             researchable = false,
         ),
-        // 下导轨与握把（GRIP）物理上是同一根导轨，但沿用上面那条理由：挂点组分开，
-        // 于是两者既不互斥也不共享挂点，装了垂直握把照样能装脚架
-        // 与副武器（SUBWEAPON）互斥 —— 由 SUBWEAPON 那一侧的 conflictsWith 点名，不在这里重复
-        // 挂载骨骼走 Fixed（导轨由枪模型定，见 [Bones.LOWER_RAIL]），所以配件数据里**不要**写 `Bone`
+        // 导轨
         AttachmentSlot(
             type = AttachmentType.LOWER_RAIL,
             mount = "lower_rail",
@@ -238,14 +241,6 @@ object AttachmentSlots {
             focusBone = Bones.LOWER_RAIL,
             renderMode = AttachmentRenderMode.GENERIC,
         ),
-        // 上 / 左 / 右三根导轨：与下导轨同一套做法（各占自己的挂点组、挂点走 Fixed 的
-        // `*_rail_pos`、走通用渲染），但**三者之间以及与其它槽位都不互斥** ——
-        // 枪上这四根导轨是四个互不相干的位置，同时装满是正常玩法
-        //
-        // 槽位先建好、目前一个配件都没有：`AvailableAttachments` 会解析成空表，改装界面显示
-        // "无可用配件"，只有等配件物品做出来往 `ModItemTagProvider.attachmentItemsBySlot()`
-        // 里登记之后才会真的出现。tag 那条链倒是现在就通了（见 `ModItemTagProvider.addAttachmentTags`
-        // 是按 `AttachmentSlots.ALL` 遍历的，空桶也会把 tag 文件声明出来）
         AttachmentSlot(
             type = AttachmentType.UPPER_RAIL,
             mount = "upper_rail",

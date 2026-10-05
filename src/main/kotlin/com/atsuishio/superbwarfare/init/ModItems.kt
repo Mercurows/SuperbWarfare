@@ -740,27 +740,26 @@ object ModItems {
     @JvmField val STEEL_PIPE_GRIP = registerAttachment("steel_pipe_grip", Rarity.RARE)
     // @formatter:on
 
-    // LowerRail（下导轨：脚架这类挂在护木下方导轨上的配件，与握把各自独立、不互斥）
+    // UpperRail
     // @formatter:off
-    @JvmField val LOWER_RAIL_BIPOD = registerAttachment("lower_rail_bipod", Rarity.RARE)
-    // @formatter:on
-
-    // 导轨类配件（上/下/左/右四根导轨通用）：激光指示器、战术手电这类不分方向的东西，
-    // 靠配件数据的 `ExtraSlots` 声明自己能装进哪几个导轨槽位
-    // @formatter:off
+    @JvmField val SHIELD_TEST = registerAttachment("shield_test")
     @JvmField val PEQ_15 = registerAttachment("peq_15")
     // @formatter:on
 
-    // 手枪激光：定义在下导轨上（手枪唯一的导轨就在枪管下方），但和其它方向的三根导轨通用，
-    // 靠配件数据的 `ExtraSlots` 声明。与脚架各占自己的挂点组、可以同时存在
+    // LowerRail
     // @formatter:off
     @JvmField val PISTOL_LASER = registerAttachment("pistol_laser")
+    @JvmField val LOWER_RAIL_BIPOD = registerAttachment("lower_rail_bipod", Rarity.RARE)
     // @formatter:on
 
-    // LeftRail 专用：测距仪这类**有朝向**的东西只做了左导轨那一版，
-    // 所以不写 `ExtraSlots`，模型朝向由配件数据的 `Rotation` 补正
+    // LeftRail
     // @formatter:off
     @JvmField val RANGE_FINDER = registerAttachment("range_finder", Rarity.RARE)
+    // @formatter:on
+
+    // RightRail
+    // @formatter:off
+
     // @formatter:on
 
     // Bayonet

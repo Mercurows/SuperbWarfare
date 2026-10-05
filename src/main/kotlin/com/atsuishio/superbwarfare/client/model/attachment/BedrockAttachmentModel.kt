@@ -789,6 +789,18 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
         instance.getBone(boneIndex)?.visible = visible
     }
 
+    /** 按名字设置骨骼可见性，找不到这根骨骼时静默跳过 */
+    fun setBoneVisible(boneName: String, visible: Boolean) {
+        setBoneVisible(baseModel.getIndex(boneName), visible)
+    }
+
+    /** 按名字读骨骼可见性，找不到这根骨骼时返回 `true` */
+    fun isBoneVisible(boneName: String): Boolean {
+        val index = baseModel.getIndex(boneName)
+        if (index < 0) return true
+        return instance.getBone(index)?.visible ?: true
+    }
+
     /**
      * 藏掉模型自带的手部几何，与 `GeoGunModel.renderToBuffer` 开头那两句同义。
      *

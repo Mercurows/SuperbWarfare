@@ -141,6 +141,12 @@ data class AttachmentDefinition(
      */
     @SerialName("Laser")
     val laser: LaserInfo? = null,
+
+    /**
+     * 枪盾定义（见 [ShieldInfo]）：**带上它就说明这件配件会挡投射物**
+     */
+    @SerialName("Shield")
+    val shield: ShieldInfo? = null,
 ) : IDBasedData<AttachmentDefinition>, PropertyModifier<GunData, DefaultGunData> {
 
     /**
@@ -255,6 +261,21 @@ data class AttachmentDefinition(
             }
             return result
         }
+
+        /** 列出该枪上全部装了枪盾的槽位，按 [AttachmentType.entries] 的顺序，也就是吸收伤害的顺序 */
+        @JvmStatic
+        fun findShields(gun: GunData?): List<ShieldEmitter> {
+            if (gun == null) return emptyList()
+
+            val result = mutableListOf<ShieldEmitter>()
+            for (slot in AttachmentSlots.ALL) {
+                val attachmentId = gun.attachment.id(slot.type) ?: continue
+                val definition = from(attachmentId) ?: continue
+                val info = definition.shield ?: continue
+                result += ShieldEmitter(slot, definition, info)
+            }
+            return result
+        }
     }
 }
 
@@ -267,6 +288,17 @@ data class LaserEmitter(
     val slot: AttachmentSlot,
     val definition: AttachmentDefinition,
     val info: LaserInfo,
+)
+
+/**
+ * 一件装着的枪盾。
+ *
+ * @param slot 装在哪个槽位上，也是耐久状态的键
+ */
+data class ShieldEmitter(
+    val slot: AttachmentSlot,
+    val definition: AttachmentDefinition,
+    val info: ShieldInfo,
 )
 
 @Serializable

@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundSource
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.phys.Vec3
@@ -349,6 +350,9 @@ object GunEventHandler {
         }
 
         data.item.tick(shooter, data, inMainHand)
+
+        // 枪盾回充：需要一个"持有者"来计时，非生物持有者（载具炮）不参与
+        if (shooter is LivingEntity) ShieldRuntime.tick(shooter, data)
 
         SubWeaponRuntime.tick(shooter, data, ActiveGun.activeSlot(data), inMainHand)
 
