@@ -3,6 +3,7 @@
     "superbwarfare:ap_bullet",
     "superbwarfare:aqua_bullet",
     "superbwarfare:blade_bullet",
+    "superbwarfare:cluster_bomb",
     "superbwarfare:he_bullet",
     "superbwarfare:incendiary_bullet",
     "superbwarfare:jhp_bullet",
@@ -13,6 +14,7 @@
     "superbwarfare:poisonous_bullet",
     "superbwarfare:riot_bullet",
     "superbwarfare:silver_bullet",
+    "superbwarfare:super_heavy_bullet",
     "superbwarfare:cupid_arrow"
   ]
 }

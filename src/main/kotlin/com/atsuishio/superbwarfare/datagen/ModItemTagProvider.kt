@@ -488,11 +488,13 @@ class ModItemTagProvider(
             perkItem(ModPerks.CUPID_ARROW),
             perkItem(ModPerks.HE_BULLET),
             perkItem(ModPerks.MICRO_MISSILE),
-            perkItem(ModPerks.AP_BULLET)
+            perkItem(ModPerks.AP_BULLET),
+            perkItem(ModPerks.SUPER_HEAVY_BULLET)
         )
         this.tag(ModTags.Items.RESEARCHABLE_AMMO_PERK_EPIC).add(
             perkItem(ModPerks.PHASE_PENETRATING_BULLET),
-            perkItem(ModPerks.PHOSPHORUS_FLAME_BULLET)
+            perkItem(ModPerks.PHOSPHORUS_FLAME_BULLET),
+            perkItem(ModPerks.CLUSTER_BOMB)
         )
 
         this.tag(ModTags.Items.RESEARCHABLE_FUNCTIONAL_PERK_COMMON).add(
