@@ -24,9 +24,9 @@
     "Bone": "laser",
     "Locator": "laser_muzzle",
     "Length": 64.0,
-    "Width": 0.012,
+    "Width": 0.01,
     "ThirdPersonLength": 2.0,
-    "ThirdPersonWidth": 0.012,
+    "ThirdPersonWidth": 0.01,
     "Color": "0xFF0000"
   }
 }

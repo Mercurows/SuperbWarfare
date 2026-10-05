@@ -8,7 +8,7 @@
     "Hold": "animation.minigun.hold"
   },
   "ShootRecoil": {
-    "Offset": [0.85, 0.8, 0.55],
+    "Offset": [0.85, 0.8, 1.05],
     "Rotation": [0.16, 0.28, 0.48],
     "ZoomRate": 0.5,
     "Speed": 1.0
