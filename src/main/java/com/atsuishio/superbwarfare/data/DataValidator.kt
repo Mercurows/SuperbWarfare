@@ -150,7 +150,6 @@ object DataValidator {
      *
      * @param warn 非致命问题的回调（例如"能跑但建议迁移"的写法）。不传就当没有。
      */
-    @JvmOverloads
     private fun validateDerivedState(decoded: Any, warn: (String) -> Unit = {}) {
         when (decoded) {
             is DefaultGunData -> {
