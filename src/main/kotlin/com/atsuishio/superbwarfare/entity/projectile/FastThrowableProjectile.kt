@@ -678,7 +678,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
             child.setCustomGravity(getCustomGravity())
             child.setEffects(getEffects().toList())
             child.setProjectileSplitCount(count - 1)
-            child.setProjectileSplitAmount(getProjectileSplitAmount())
+            child.setProjectileSplitAmount(getProjectileSplitAmount() - 1)
 
             val angle = fanOffset + index * (2 * Math.PI / amount) + (random.nextDouble() - 0.5) * SPLIT_ANGLE_NOISE
             val spread = SPLIT_SPREAD * (0.6 + 0.8 * random.nextDouble())
@@ -961,7 +961,7 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
         private const val SPLIT_ANGLE_NOISE = 0.6
 
         /** 单次分裂的产物个数上限 */
-        private const val MAX_SPLIT_AMOUNT = 8
+        private const val MAX_SPLIT_AMOUNT = 10
 
         /** 分裂次数上限：产物是按个数成倍增长的，层级太深会瞬间堆出成百上千个实体 */
         private const val MAX_SPLIT_COUNT = 3
