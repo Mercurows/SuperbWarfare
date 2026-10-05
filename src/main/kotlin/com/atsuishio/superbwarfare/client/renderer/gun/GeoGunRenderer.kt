@@ -334,8 +334,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         if (transformType.firstPerson()) {
             lastBoneTransforms[handForContext(transformType)]?.clear()
         }
-        // 激光束的生命周期 = 这一次绘制：采集与绘制都在本次调用里完成，不留跨帧状态。
-        // 第一人称 + 第三人称右手都画（后者同 TACZ：固定长度的渐隐短光束）。
+
         if (transformType.firstPerson() || transformType == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
             LaserSightCapture.beginFrame()
         }
@@ -613,17 +612,6 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         model.resetPose()
     }
 
-    /**
-     * 取一件激光配件的出光口，排在**该配件几何真正被画出来之前**调用。
-     *
-     * [poseMatrix] 必须是画该配件几何用的那份 `poseStack.last().pose()` —— 与画面同源，
-     * 所以不需要在这里另拼 `poseStack × mount × rotation`（渲染路径的变换次序一旦与它分叉，
-     * 出光口就会离骨骼一截）。光束的方向、长度、渐隐全由 [LaserSightCapture] /
-     * [LaserSightRenderer] 从这份矩阵的本地 −Z 推。
-     *
-     * 只有两种上下文采集：本地玩家的**第一人称**手部 pass，以及**第三人称右手**
-     * （后者对任何持有者都采集，同 TACZ 的短光束）。这个方法在 GUI / 其他显示上下文上也会跑。
-     */
     private fun captureLaserSight(
         transformType: ItemDisplayContext,
         poseMatrix: Matrix4f,
@@ -690,10 +678,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     }
 
     /**
-     * 注册表驱动的通用配件渲染：按槽位登记的挂点骨骼（约定骨骼，或配件自己的 `Bone`）把配件模型画上去。
-     *
-     * `AttachmentSlots` 里 [AttachmentRenderMode.GENERIC] 的槽位都走这里，
-     * **新增这类槽位不用改 [renderAttachments]**，只要登记一条、数据里写好 `Model`/`Texture` 即可。
+     * 注册表驱动的通用配件渲染
      */
     open fun renderRegisteredAttachments(
         stack: ItemStack,
@@ -775,9 +760,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                         hand
                     )
                 }
-                // 激光出光口：排在这件配件的**全部骨骼姿态写完、几何真正落笔之前**，
-                // 用的是画它几何的那份矩阵与此刻的 locator（脚架翻下去、副武器换弹这些
-                // 改了骨骼的动画都会被算进去），所以光束永远咬在模型的出光口上。
+                // 激光出光口
                 captureLaserSight(
                     transformType,
                     poseStack.last().pose(),
@@ -1766,20 +1749,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         mulPoseWithNormal(poseStack, viewTransform.invert())
     }
 
-    /**
-     * 把 0..1 的瞄准进度换算成真正用于插值的值。
-     *
-     * **瞄准过渡里所有按进度推进的量都必须走这里**，否则同一个过渡的不同部分会以不同速度推进：
-     * [computeViewTransform] 的定位点混合（平移与旋转）、`renderModel` 里的 Z 轴长度压缩、
-     * [applyCameraShake] 的姿态收敛，三者只要有一条用了线性的 `zoomTime`，中段就会看出
-     * "长度先缩掉一截 / 姿态先甩到位，枪却还没进来"。
-     *
-     * [AnimationCurves.EASE_IN_OUT_QUINT] 是单调的，所以对若干个驱动量先取较大者再缓动，
-     * 与各自缓动后取较大者等价——[applyCameraShake] 里脚架进度与瞄准进度取 max 就依赖这一点。
-     *
-     * 两个端点固定（0 → 0、1 → 1），所以换成它不会改变"完全未瞄准"和"完全瞄准"两帧的样子，
-     * 只改变中间的推进节奏。
-     */
+    /** 把 0..1 的瞄准进度换算成真正用于插值的值 */
     private fun aimingProgress(rawProgress: Double): Float =
         AnimationCurves.EASE_IN_OUT_QUINT.apply(rawProgress.coerceIn(0.0, 1.0)).toFloat()
 
@@ -1840,12 +1810,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         return ActiveGun.isDeployed(gun, true)
     }
 
-    /**
-     * 副武器自己的瞄准位形：附件模型的 `iron_view`（约定骨骼，无配置字段）× 挂点骨骼。
-     *
-     * 附件模型里没有这支骨骼时返回 `null`，让调用方回退到宿主枪的瞄具/机瞄；
-     * ⚠ 挂点必须取 bind 变换，用当帧动画变换会让相机跟着后坐一起走、开火动画看不见。
-     */
+    /** 副武器自己的瞄准位形：附件模型的 `iron_view`（约定骨骼，无配置字段）× 挂点骨骼 */
     open fun resolveSubWeaponAimTransform(stack: ItemStack, model: GeoGunModel): Matrix4f? {
         val (slot, definition) = findSubWeapon(from(stack)) ?: return null
 
