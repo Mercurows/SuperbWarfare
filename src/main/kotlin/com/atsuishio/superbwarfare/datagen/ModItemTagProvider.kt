@@ -690,17 +690,21 @@ class ModItemTagProvider(
         ),
         AttachmentType.LOWER_RAIL to listOf(
             ModItems.LOWER_RAIL_BIPOD,
-            ModItems.PEQ_15
+            ModItems.PEQ_15,
+            ModItems.PISTOL_LASER
         ),
         AttachmentType.UPPER_RAIL to listOf(
-            ModItems.PEQ_15
+            ModItems.PEQ_15,
+            ModItems.PISTOL_LASER
         ),
         AttachmentType.LEFT_RAIL to listOf(
             ModItems.PEQ_15,
+            ModItems.PISTOL_LASER,
             ModItems.RANGE_FINDER
         ),
         AttachmentType.RIGHT_RAIL to listOf(
-            ModItems.PEQ_15
+            ModItems.PEQ_15,
+            ModItems.PISTOL_LASER
         ),
     )
 

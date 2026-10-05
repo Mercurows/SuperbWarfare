@@ -752,6 +752,12 @@ object ModItems {
     @JvmField val PEQ_15 = registerAttachment("peq_15")
     // @formatter:on
 
+    // 手枪激光：定义在下导轨上（手枪唯一的导轨就在枪管下方），但和其它方向的三根导轨通用，
+    // 靠配件数据的 `ExtraSlots` 声明。与脚架各占自己的挂点组、可以同时存在
+    // @formatter:off
+    @JvmField val PISTOL_LASER = registerAttachment("pistol_laser")
+    // @formatter:on
+
     // LeftRail 专用：测距仪这类**有朝向**的东西只做了左导轨那一版，
     // 所以不写 `ExtraSlots`，模型朝向由配件数据的 `Rotation` 补正
     // @formatter:off

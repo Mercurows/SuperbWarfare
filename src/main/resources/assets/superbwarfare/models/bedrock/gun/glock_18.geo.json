@@ -3462,6 +3462,11 @@
 					"pivot": [-0.01172, 1.53789, -4.83516]
 				},
 				{
+					"name": "lower_rail_pos",
+					"parent": "positioning2",
+					"pivot": [0, 0.39063, -3.75]
+				},
+				{
 					"name": "positioning",
 					"pivot": [0, 0, 0]
 				},
