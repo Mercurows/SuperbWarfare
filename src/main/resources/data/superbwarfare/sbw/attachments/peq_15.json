@@ -23,9 +23,10 @@
   "Laser": {
     "Bone": "laser",
     "Locator": "laser_muzzle",
-    "Range": 64.0,
-    "CoreWidth": 0.010,
-    "GlowWidth": 0.028,
+    "Length": 64.0,
+    "Width": 0.012,
+    "ThirdPersonLength": 2.0,
+    "ThirdPersonWidth": 0.012,
     "Color": "0xFF0000"
   }
 }

@@ -28,24 +28,60 @@ public class ModRenderTypes extends RenderType {
     });
 
     /**
-     * 枪械激光瞄准器的光束 / 落点光斑
+     * 激光束的附加混合：`SRC_ALPHA / ONE`，且**不写目的 alpha**（TACZ 的 `LIGHTNING_ADDITIVE_TRANSPARENCY`）。
+     *
+     * ⚠ 不能用原版的 {@link RenderStateShard#ADDITIVE_TRANSPARENCY}：那是 `ONE / ONE`，
+     * 混合完全忽略顶点的 alpha —— 沿光束长度的渐隐（第三人称短光束靠它淡出）会整个失效，
+     * 只剩一根硬边管子。
      */
-    public static final Function<ResourceLocation, RenderType> LASER_SIGHT = Util.memoize((location) -> {
-        TextureStateShard shard = new RenderStateShard.TextureStateShard(location, false, false);
-        RenderType.CompositeState state = RenderType.CompositeState.builder()
-                .setShaderState(RENDERTYPE_EYES_SHADER)
-                .setTextureState(shard)
-                .setTransparencyState(ADDITIVE_TRANSPARENCY)
-                .setCullState(NO_CULL)
-                .setLightmapState(NO_LIGHTMAP)
-                .setOverlayState(NO_OVERLAY)
-                .setWriteMaskState(COLOR_WRITE)
-                .createCompositeState(false);
-        return RenderType.create("laser_sight", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, false, true, state);
+    public static final TransparencyStateShard LASER_BEAM_ADDITIVE = new TransparencyStateShard("laser_beam_additive", () -> {
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE,
+                GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+    }, () -> {
+        RenderSystem.disableBlend();
+        RenderSystem.defaultBlendFunc();
     });
 
-    public static RenderType laserSight(ResourceLocation location) {
-        return LASER_SIGHT.apply(location);
+    /**
+     * 枪械激光瞄准器的光束（TACZ 风格的单层方管）。
+     *
+     * 用不 discard 低 alpha 的实体自发光着色器：顶点 alpha 才能沿光束长度平滑渐隐到 0
+     * （EYES 着色器会在 alpha &lt; 0.1 处硬切，第三人称短光束的渐隐会变成截断）。
+     *
+     * 有三项状态是照搬 TACZ 的做法，缺一不可：
+     *
+     * - **{@code ITEM_ENTITY_TARGET}**（输出状态）：把几何送进"物品 / 实体"那一个渲染目标。
+     *   光影（Oculus / Iris）是**按输出状态 + 着色器**给渲染类型挑 pass 的，本模组自定义的
+     *   `laser_beam` 不在原版那批已知实体类型里，不显式声明就会被丢进一个光影不认识的 pass：
+     *   开光影时光束会被云、地形按错误的深度关系挡住（关光影时看不出来），也不参与瞄具模板的裁切
+     *   ——枪身走的就是这个目标，只有同目标才在同一个批次里被同一个模板状态覆盖。
+     * - **{@code VIEW_OFFSET_Z_LAYERING}**：多边形偏移把光束朝相机方向拉一点，出光口贴着配件表面
+     *   也不会被枪管 / 瞄具 / 手臂切掉最近那一小截，于是**不需要**再手动关深度测试
+     *   （手动关掉的那一版既会漏到别的 pass，也把深度写关没了）。
+     * - **{@link #LASER_BEAM_ADDITIVE}**：顶点 alpha 必须真的参与混合，渐隐才有意义。
+     *
+     * 光照贴图 / 覆盖层跟着 TACZ 一起打开（`LIGHTMAP` + `OVERLAY`）：顶点写的是全亮 0xF000F0 与
+     * `NO_OVERLAY`，等价于不受光照与受伤红屏影响，但着色器采样器有对应的绑定。
+     */
+    public static final Function<ResourceLocation, RenderType> LASER_BEAM = Util.memoize((location) -> {
+        TextureStateShard shard = new RenderStateShard.TextureStateShard(location, false, false);
+        RenderType.CompositeState state = RenderType.CompositeState.builder()
+                .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_EMISSIVE_SHADER)
+                .setTextureState(shard)
+                .setLayeringState(VIEW_OFFSET_Z_LAYERING)
+                .setTransparencyState(LASER_BEAM_ADDITIVE)
+                .setOutputState(ITEM_ENTITY_TARGET)
+                .setCullState(NO_CULL)
+                .setLightmapState(LIGHTMAP)
+                .setOverlayState(OVERLAY)
+                .setWriteMaskState(COLOR_DEPTH_WRITE)
+                .createCompositeState(false);
+        return RenderType.create("laser_beam", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, true, state);
+    });
+
+    public static RenderType laserBeam(ResourceLocation location) {
+        return LASER_BEAM.apply(location);
     }
 
     public static final Function<ResourceLocation, RenderType> ILLUMINATED = Util.memoize((location) -> {
