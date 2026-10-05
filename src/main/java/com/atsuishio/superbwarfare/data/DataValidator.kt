@@ -368,6 +368,48 @@ object DataValidator {
         }
 
         validateSubWeaponData(data, warn)
+        validateShieldData(data, warn)
+    }
+
+    /**
+     * 枪盾定义的校验
+     */
+    private fun validateShieldData(data: AttachmentDefinition, warn: (String) -> Unit) {
+        val info = data.shield ?: return
+
+        if (AttachmentType.UPPER_RAIL !in data.acceptedSlots) {
+            warn("attachment ${data.getId()} declares Shield but is not installable on UpperRail")
+        }
+        if (info.durability <= 0.0) {
+            warn("Shield.Durability must be > 0, got ${info.durability}")
+        }
+        if (info.resist !in 0.0..100.0) {
+            warn("Shield.Resist is clamped to 0~100, got ${info.resist}")
+        }
+        if (info.coverAngle !in 0.0..180.0) {
+            warn("Shield.CoverAngle is clamped to 0~180, got ${info.coverAngle}")
+        }
+        if (info.rechargeRate < 0.0) {
+            warn("Shield.RechargeRate must be >= 0, got ${info.rechargeRate}")
+        }
+        if (info.rechargeDelay < 0) {
+            warn("Shield.RechargeDelay must be >= 0, got ${info.rechargeDelay}")
+        }
+        if (info.brokenLockout < 0) {
+            warn("Shield.BrokenLockout must be >= 0, got ${info.brokenLockout}")
+        }
+        if (info.energyPerCharge < 0.0) {
+            warn("Shield.EnergyPerCharge must be >= 0, got ${info.energyPerCharge}")
+        }
+        if (info.breakOverflow !in 0.0..100.0) {
+            warn("Shield.BreakOverflow is clamped to 0~100, got ${info.breakOverflow}")
+        }
+        if (info.energyPerCharge > 0.0 && data.modifiers.none { it.prop == GunProp.MAX_ENERGY.serializationName }) {
+            warn("attachment ${data.getId()} charges FE but grants no MaxEnergy; it can only recharge from other sources")
+        }
+        if (data.model == null || data.texture == null) {
+            warn("attachment ${data.getId()} declares Shield but has no Model/Texture, so the shield face cannot be hidden")
+        }
     }
 
     /**

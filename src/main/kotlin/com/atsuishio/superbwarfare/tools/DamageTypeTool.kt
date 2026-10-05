@@ -47,6 +47,9 @@ object DamageTypeTool {
             || source.`is`(ModDamageTypes.LASER)
 
     @JvmStatic
+    fun isArmorPiercingDamage(source: DamageSource) = source.`is`(ModTags.DamageTypes.PROJECTILE_ABSOLUTE)
+
+    @JvmStatic
     fun isModDamage(source: DamageSource): Boolean =
         source.typeHolder().unwrapKey().map { it.location().namespace.equals(Mod.MODID) }.orElseGet { false }
 

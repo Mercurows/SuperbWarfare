@@ -1,0 +1,24 @@
+{
+  "Slot": "UpperRail",
+  "Level": 0,
+  "Modifiers": [
+    {
+      "Prop": "MaxEnergy",
+      "Op": "Add",
+      "Value": 5000
+    }
+  ],
+  "Model": "superbwarfare:models/bedrock/attachment/shield_test.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/shield_test.png",
+  "Shield": {
+    "Durability": 20.0,
+    "Resist": 100.0,
+    "CoverAngle": 80.0,
+    "RechargeRate": 1.2,
+    "RechargeDelay": 60,
+    "BrokenLockout": 40,
+    "EnergyPerCharge": 50,
+    "BreakOverflow": 0.0,
+    "RechargeSound": "superbwarfare:bullet_supply"
+  }
+}

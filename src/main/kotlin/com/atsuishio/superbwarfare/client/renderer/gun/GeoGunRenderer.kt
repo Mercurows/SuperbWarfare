@@ -11,8 +11,11 @@ import com.atsuishio.superbwarfare.client.renderer.ammo.AmmoReadout
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.ARM_ANCHOR_FADE_TICKS
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.CUSTOM_HAND_GUARD_BONE
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.EDIT_FOCUS_Z_OFFSET
+import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.FLARE_BONE
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.MERGE_BLENDER
+import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.MUZZLE_BONE
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.OEM_HAND_GUARD_BONE
+import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer.Companion.OEM_MUZZLE_BONE
 import com.atsuishio.superbwarfare.client.renderer.laser.LaserSightCapture
 import com.atsuishio.superbwarfare.client.renderer.laser.LaserSightRenderer
 import com.atsuishio.superbwarfare.client.renderer.scope.ScopeStencilRenderHelper
@@ -27,6 +30,7 @@ import com.atsuishio.superbwarfare.data.gun.magazineLevel
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
+import com.atsuishio.superbwarfare.event.ShieldRuntime
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.resource.ModelResource
 import com.atsuishio.superbwarfare.resource.gun.DefaultGunResource
@@ -734,6 +738,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             mulPoseWithNormal(poseStack, mount)
             var charmSnapshot: CharmSnapshot? = null
             var bipodSnapshot: BipodSnapshot? = null
+            var shieldHidden = false
             try {
                 if (subWeaponPose != null) {
                     attachmentModel.applyPose(BLENDER.blend(attachmentModel.getBindPose(), subWeaponPose))
@@ -769,6 +774,8 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                     slot.type,
                     stack,
                 )
+                // 枪盾：耐久空的破损态藏掉盾面骨骼
+                shieldHidden = definition.shield != null && hideBrokenShield(attachmentModel, stack)
                 attachmentModel.renderToBuffer(
                     poseStack, bufferSource, texture, packedLight, packedOverlay,
                     null, attachmentReadout(stack, definition, hand)
@@ -776,12 +783,22 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             } finally {
                 // 附件模型实例是全局共享的，写进去的姿态必须还原；
                 // 快照还原要排在 `resetPose()` 之前，否则快照里带的副武器姿态会被写回共享实例
+                if (shieldHidden) attachmentModel.setBoneVisible(AttachmentSlots.Bones.SHIELD, true)
                 BipodDeploy.revert(attachmentModel, bipodSnapshot)
                 if (charmSnapshot != null) CharmRuntime.revert(attachmentModel, charmSnapshot)
                 if (subWeaponPose != null) attachmentModel.resetPose()
             }
             poseStack.popPose()
         }
+    }
+
+    /** 枪盾耐久为空时藏掉盾面骨骼，返回是否真的藏了（调用方负责还原） */
+    private fun hideBrokenShield(model: BedrockAttachmentModel, stack: ItemStack): Boolean {
+        val broken = ShieldRuntime.of(from(stack)).any { it.charge <= 0.0 }
+        if (!broken) return false
+
+        model.setBoneVisible(AttachmentSlots.Bones.SHIELD, false)
+        return true
     }
 
     open fun renderMagazine(stack: ItemStack, model: GeoGunModel) {
