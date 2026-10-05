@@ -92,6 +92,9 @@
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"
+    ],
+    "LowerRail": [
+      "superbwarfare:pistol_laser"
     ]
   },
   "SoundInfo": {

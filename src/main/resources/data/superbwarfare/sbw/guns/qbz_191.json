@@ -163,17 +163,21 @@
     ],
     "LowerRail": [
       "superbwarfare:lower_rail_bipod",
-      "superbwarfare:peq_15"
+      "superbwarfare:peq_15",
+      "superbwarfare:pistol_laser"
     ],
     "UpperRail": [
-      "superbwarfare:peq_15"
+      "superbwarfare:peq_15",
+      "superbwarfare:pistol_laser"
     ],
     "LeftRail": [
       "superbwarfare:peq_15",
-      "superbwarfare:range_finder"
+      "superbwarfare:range_finder",
+      "superbwarfare:pistol_laser"
     ],
     "RightRail": [
-      "superbwarfare:peq_15"
+      "superbwarfare:peq_15",
+      "superbwarfare:pistol_laser"
     ]
   },
   "AttachmentConflicts": {
