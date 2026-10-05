@@ -61,7 +61,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         gunItemV2(ModItems.SVD)
         gunItemV2(ModItems.TASER)
         gunItem(ModItems.TRACHELIUM)
-        gunItem(ModItems.VECTOR)
+        gunItemV2(ModItems.VECTOR)
         gunItemV2(ModItems.MP_5)
         gunItemV2(ModItems.M_2_HB)
         gunItemV2(ModItems.QBZ_191)
