@@ -551,21 +551,22 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
                     15, 0.1, 0.1, 0.1, 0.05, true
                 )
             } else {
-                val bulletDecalOption = BulletDecalOption(
-                    result.direction, result.blockPos,
-                    this.entityData.get(COLOR_R),
-                    this.entityData.get(COLOR_G),
-                    this.entityData.get(COLOR_B)
-                )
+                var red = this.entityData.get(COLOR_R)
+                var green = this.entityData.get(COLOR_G)
+                var blue = this.entityData.get(COLOR_B)
+                if (red == DEFAULT_R && green == DEFAULT_G && blue == DEFAULT_B) {
+                    red = 0.9f
+                    green = 0f
+                    blue = 0f
+                }
+
+                val bulletDecalOption = BulletDecalOption(result.direction, result.blockPos, red, green, blue)
                 ParticleTool.sendParticle(
                     level, bulletDecalOption,
                     location.x, location.y, location.z,
                     1, 0.0, 0.0, 0.0, 0.0, true
                 )
                 summonVectorParticle(level, state, location, dir)
-                // Explosion flash is emitted client-side via onRemovedFromWorld()
-                // when discard() propagates the removal packet to the client.
-                // The dead-code "if (level.isClientSide)" block has been removed.
             }
             level.playSound(
                 null,
