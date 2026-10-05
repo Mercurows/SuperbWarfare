@@ -14,7 +14,11 @@ data class LaserInfo(
     @SerialName("Locator")
     val locator: String = "laser_muzzle",
 
-    /** 第一人称光束长度（米）。纯视觉量：光束不做射线、不会被方块截断，只是一直画到这里并渐隐 */
+    /**
+     * 第一人称光束长度（米）——射线的最远距离，也是光束没打中东西时画满的长度。
+     *
+     * 打中方块时会被截断到命中点（光斑画在那里），但不会短于 [minLength]。
+     */
     @SerialName("Length")
     val length: Float = DEFAULT_LENGTH,
 
@@ -29,6 +33,19 @@ data class LaserInfo(
     /** 第三人称右手短光束的全宽（米） */
     @SerialName("ThirdPersonWidth")
     val thirdPersonWidth: Float = DEFAULT_THIRD_PERSON_WIDTH,
+
+    /**
+     * **被方块截断之后**的绘制长度下限（米）。
+     *
+     * 贴脸对着墙时命中距离会趋近 0，方管被压成一小截、几乎看不见（激光存在的意义就是那条线），
+     * 有了这个下限，方管最短也画到这么长。**光斑跟着方管末端一起走** —— 两者必须一致，
+     * 否则近处会出现"方管穿出墙外、光斑单独留在墙上"的断层。
+     *
+     * 只在**有命中**时才起作用（第三人称那条短光束不做射线，永远画满 [thirdPersonLength]），
+     * 而且下限本身还会被本次的配置长度压住，不会让光束超过自己声明的长度。
+     */
+    @SerialName("MinLength")
+    val minLength: Float = DEFAULT_MIN_LENGTH,
 
     /** 默认颜色，可被槽位 tag 的 `LaserColor` 覆盖 */
     @SerialName("Color")
@@ -70,5 +87,8 @@ data class LaserInfo(
 
         const val DEFAULT_THIRD_PERSON_LENGTH: Float = 2f
         const val DEFAULT_THIRD_PERSON_WIDTH: Float = 0.008f
+
+        /** 截断后绘制长度的默认下限（米） */
+        const val DEFAULT_MIN_LENGTH: Float = 2f
     }
 }

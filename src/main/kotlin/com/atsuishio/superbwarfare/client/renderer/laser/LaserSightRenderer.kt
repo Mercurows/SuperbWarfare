@@ -48,7 +48,8 @@ import kotlin.math.roundToInt
  *
  * 每帧仍然对世界做一次方块射线（只有第一人称做），但射线结果只被当成一个**标量长度**：
  * 命中就画短一点，没命中就画满 [LaserInfo.length]。管的两端始终是本地 `(0,0,0)` 与 `(0,0,−d)`，
- * 方向永远是本地 −Z。
+ * 方向永远是本地 −Z。截断还有一个下限（[LaserInfo.minLength]，默认 3 米）：贴脸对着墙时方管不会
+ * 缩成看不见的一小截，光斑跟着方管末端一起走。
  *
  * ⚠ 这里曾经把远端当成"世界里的一个点"来画：端点按 `projectionScale` 折算（手部 pass 投影固定
  * 70°，开镜倍率只除在世界 pass 上）。那条路有个很隐蔽的方向偏差 —— 只缩放端点 x/y 而 z 不动是
@@ -162,6 +163,9 @@ object LaserSightRenderer {
      *
      * 命中方块时只把**长度**换成长度更小的命中距离（截断），方向不动；命中处再补一个落在该平面上的
      * 光斑。光斑不分层：它只有一片、位置就在截断面上，套白芯反而会在近处的墙上糊出一圈同心方框。
+     *
+     * 截断有下限（[LaserInfo.minLength]，默认 3 米）：方管最短也画这么长，**光斑跟着方管末端走**，
+     * 两者不会一个在墙外、一个留在墙上。
      */
     private fun emitBeam(
         consumer: VertexConsumer,
@@ -175,7 +179,14 @@ object LaserSightRenderer {
         val half = resolveHalfWidth(info, beam.firstPerson)
         if (half <= 0.0) return
 
-        val drawn = if (beam.hasHit) beam.hitDistance.coerceIn(0.0, configured) else configured
+        // 截断长度：命中距离（没命中就是配置长度）
+        val truncated = if (beam.hasHit) beam.hitDistance.coerceIn(0.0, configured) else configured
+
+        // 实际绘制长度：不短于 [LaserInfo.minLength]。贴脸对着墙时命中距离趋近 0，方管会被压成
+        // 看不见的一小截 —— 激光存在的意义就是那条线，所以给它一个下限。下限本身再被本次的配置长度
+        // 压住（超不过自己声明的长度），所以第三人称那条约两格的短光束不受影响
+        //（何况它根本不射线，[truncated] 恒等于 configured）。
+        val drawn = truncated.coerceAtLeast(resolveMinLength(info)).coerceAtMost(configured)
         if (drawn <= 0.0) return
 
         val r = (beam.colorRgb shr 16) and 0xFF
@@ -184,6 +195,8 @@ object LaserSightRenderer {
 
         // 亮度按"每米衰减率"均匀：截断到 d 时保留头段该有的亮度（1 − d/L）。
         // 若末端一律取 0，近距离的墙会让光束在墙前就淡没、只剩一个亮光斑，扫过墙角时还会整根跳暗。
+        // ⚠ 这里用的是**方管**的长度（[drawn]，可能因下限而长于命中距离）：alpha 表达的是
+        // "光走到这个位置还剩多少亮度"，所以必须跟着方管自己的末端走，否则下限会让末端亮度突变。
         val endAlpha = (255.0 * (1.0 - drawn / configured)).roundToInt().coerceIn(0, 255)
 
         // Blockbench 约定模型正前方是 −Z，截面就在本地 XY 平面上
@@ -209,6 +222,8 @@ object LaserSightRenderer {
             r, g, b, 255, endAlpha,
         )
 
+        // 光斑画在**方管末端**（[drawn]，含下限），不画在真实命中点上：两者必须一致，
+        // 否则近处会出现"方管穿出墙外、光斑单独留在墙上"的断层
         if (beam.hasHit) {
             emitDot(consumer, pose, drawn, beam.axisScale, r, g, b)
         }
@@ -222,6 +237,13 @@ object LaserSightRenderer {
         }
         val max = if (firstPerson) LaserInfo.MAX_LENGTH else LaserInfo.MAX_THIRD_PERSON_LENGTH
         return raw.coerceAtMost(max).toDouble()
+    }
+
+    /** 截断后的绘制长度下限（米）：非正数 / 非有限值视为 0（不设下限） */
+    private fun resolveMinLength(info: LaserInfo): Double {
+        val raw = info.minLength
+        if (!raw.isFinite() || raw <= 0f) return 0.0
+        return raw.coerceAtMost(LaserInfo.MAX_LENGTH).toDouble()
     }
 
     /** 半宽（米）：全宽的一半，数据异常时回退到 0（这一束就不画了） */

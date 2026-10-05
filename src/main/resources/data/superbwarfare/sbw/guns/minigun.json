@@ -73,6 +73,10 @@
   "AvailableAttachments": {
     "Charm": [
       "#superbwarfare:attachment/charm"
+    ],
+    "UpperRail": [
+      "superbwarfare:peq_15",
+      "superbwarfare:pistol_laser"
     ]
   },
   "SoundInfo": {
