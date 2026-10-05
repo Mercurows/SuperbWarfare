@@ -333,7 +333,10 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         handledScopeAttachment = null
         if (transformType.firstPerson()) {
             lastBoneTransforms[handForContext(transformType)]?.clear()
-            // 激光束的生命周期 = 这一次绘制：采集与绘制都在本次调用里完成，不留跨帧状态
+        }
+        // 激光束的生命周期 = 这一次绘制：采集与绘制都在本次调用里完成，不留跨帧状态。
+        // 第一人称 + 第三人称右手都画（后者同 TACZ：固定长度的渐隐短光束）。
+        if (transformType.firstPerson() || transformType == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
             LaserSightCapture.beginFrame()
         }
 
@@ -547,6 +550,19 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 model.builtinScopeRenderer.restoreDivisionBones(savedDivisionBones)
             }
 
+            // 激光束：本地玩家第一人称 + 第三人称右手（出光口已在 `renderAttachments` 里采完）。
+            //
+            // ⚠ 位置就在**模板窗口内部**（上面那句 `GL_EQUAL 0` 还生效，收尾的
+            // `finishStencilCulling` 排在下面）：高倍镜（`scope`）里枪身与出光的那件配件都被
+            // 从镜内剔掉，光束跟着一起被剔掉才是对的 —— 否则镜片里会剩下一截看不出从哪来的亮管。
+            // 镜外那部分照旧由已经写进深度缓冲的枪身 / 镜筒按深度遮挡。
+            //
+            // ⚠ 必须**留在上面那个 `vanillaAcceleration` 块内部**：光束的格式（`ITEM_ENTITY_TARGET`
+            // 那一族）正好落在 AR 会加速的那批格式里 —— 走出这个块，它的顶点会被 AR 推迟到帧尾，
+            // 那时模板状态早就换了，光束就会整根盖到镜筒里外。
+            if (transformType.firstPerson() || transformType == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
+                LaserSightRenderer.render(poseStack, bufferSource)
+            }
         } finally {
             if (vanillaAcceleration) {
                 AcceleratedRenderingCompat.endVanillaAcceleration()
@@ -592,13 +608,9 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         }
 
         gunStencilCulling = gunCulled
-        // 瞄具模板的裁切窗口在这里结束（里面那句 `endBatch` 把枪身整批落盘）
+        // 瞄具模板的裁切窗口在这里结束（里面那句 `endBatch` 把枪身与光束整批落盘）
         finishStencilCulling(bufferSource)
         model.resetPose()
-
-        if (transformType.firstPerson()) {
-            LaserSightRenderer.render(poseStack, bufferSource)
-        }
     }
 
     /**
@@ -606,9 +618,14 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
      *
      * [poseMatrix] 必须是画该配件几何用的那份 `poseStack.last().pose()` —— 与画面同源，
      * 所以不需要在这里另拼 `poseStack × mount × rotation`（渲染路径的变换次序一旦与它分叉，
-     * 出光口就会离骨骼一截）。方向与落点由 [LaserSightCapture] / [LaserSightRenderer] 负责。
+     * 出光口就会离骨骼一截）。光束的方向、长度、渐隐全由 [LaserSightCapture] /
+     * [LaserSightRenderer] 从这份矩阵的本地 −Z 推。
+     *
+     * 只有两种上下文采集：本地玩家的**第一人称**手部 pass，以及**第三人称右手**
+     * （后者对任何持有者都采集，同 TACZ 的短光束）。这个方法在 GUI / 其他显示上下文上也会跑。
      */
     private fun captureLaserSight(
+        transformType: ItemDisplayContext,
         poseMatrix: Matrix4f,
         attachmentModel: BedrockAttachmentModel,
         definition: AttachmentDefinition,
@@ -616,8 +633,13 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         stack: ItemStack,
     ) {
         val info = definition.laser ?: return
-        // 只有本地玩家第一人称才画激光（这个方法在第三人称 / 其他玩家 / GUI 上也会跑）
-        if (localFirstPersonHand == null) return
+
+        val firstPerson = transformType.firstPerson()
+        if (firstPerson) {
+            if (localFirstPersonHand == null) return
+        } else if (transformType != ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
+            return
+        }
         // 阴影 pass 里画激光只会往阴影贴图里写颜色（与吊坠那边同一个判据）
         if (OculusCompat.isRenderingShadowPass()) return
 
@@ -628,6 +650,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         LaserSightCapture.capture(
             info = info,
             colorRgb = info.resolveColorRgb(data.attachment.getLaserColor(slot)),
+            firstPerson = firstPerson,
             poseMatrix = poseMatrix,
             locatorTransform = attachmentModel.getLocatorTransform(info.locator),
         )
@@ -656,6 +679,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         renderRegisteredAttachments(
             stack,
             model,
+            transformType,
             poseStack,
             bufferSource,
             packedLight,
@@ -673,6 +697,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     open fun renderRegisteredAttachments(
         stack: ItemStack,
         model: GeoGunModel,
+        transformType: ItemDisplayContext,
         poseStack: PoseStack,
         bufferSource: MultiBufferSource,
         packedLight: Int,
@@ -753,6 +778,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 // 用的是画它几何的那份矩阵与此刻的 locator（脚架翻下去、副武器换弹这些
                 // 改了骨骼的动画都会被算进去），所以光束永远咬在模型的出光口上。
                 captureLaserSight(
+                    transformType,
                     poseStack.last().pose(),
                     attachmentModel,
                     definition,

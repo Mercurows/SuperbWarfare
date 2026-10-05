@@ -14,17 +14,21 @@ data class LaserInfo(
     @SerialName("Locator")
     val locator: String = "laser_muzzle",
 
-    /** 射程（米），未命中时画到这里 */
-    @SerialName("Range")
-    val range: Float = 64f,
+    /** 第一人称光束长度（米）。纯视觉量：光束不做射线、不会被方块截断，只是一直画到这里并渐隐 */
+    @SerialName("Length")
+    val length: Float = DEFAULT_LENGTH,
 
-    /** 内芯半宽（米） */
-    @SerialName("CoreWidth")
-    val coreWidth: Float = DEFAULT_CORE_WIDTH,
+    /** 光束全宽（米，单层方管的边长，TACZ 语义） */
+    @SerialName("Width")
+    val width: Float = DEFAULT_WIDTH,
 
-    /** 辉光半宽（米） */
-    @SerialName("GlowWidth")
-    val glowWidth: Float = DEFAULT_GLOW_WIDTH,
+    /** 第三人称右手短光束的长度（米） */
+    @SerialName("ThirdPersonLength")
+    val thirdPersonLength: Float = DEFAULT_THIRD_PERSON_LENGTH,
+
+    /** 第三人称右手短光束的全宽（米） */
+    @SerialName("ThirdPersonWidth")
+    val thirdPersonWidth: Float = DEFAULT_THIRD_PERSON_WIDTH,
 
     /** 默认颜色，可被槽位 tag 的 `LaserColor` 覆盖 */
     @SerialName("Color")
@@ -49,13 +53,22 @@ data class LaserInfo(
         /** 谁都没配时用的红色 */
         const val FALLBACK_COLOR_RGB: Int = 0xFF0000
 
-        /** 射程上限，防数据包写出离谱值 */
-        const val MAX_RANGE: Float = 256f
+        /** 第一人称光束长度上限，防数据包写出离谱值 */
+        const val MAX_LENGTH: Float = 256f
 
-        /** 光束半宽上限（米） */
-        const val MAX_HALF_WIDTH: Float = 0.25f
+        /** 第一人称光束默认长度（米），与旧的射程默认值一致 */
+        const val DEFAULT_LENGTH: Float = 64f
 
-        const val DEFAULT_CORE_WIDTH: Float = 0.010f
-        const val DEFAULT_GLOW_WIDTH: Float = 0.028f
+        /** 光束全宽上限（米） */
+        const val MAX_WIDTH: Float = 0.5f
+
+        /** 第三人称短光束长度上限（米） */
+        const val MAX_THIRD_PERSON_LENGTH: Float = 16f
+
+        /** 单层方管默认全宽（米），取自 TACZ 的 `width` 默认值 */
+        const val DEFAULT_WIDTH: Float = 0.008f
+
+        const val DEFAULT_THIRD_PERSON_LENGTH: Float = 2f
+        const val DEFAULT_THIRD_PERSON_WIDTH: Float = 0.008f
     }
 }
