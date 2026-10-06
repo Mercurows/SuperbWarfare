@@ -449,6 +449,7 @@ class ModCustomLootProvider : LootTableSubProvider {
                     ModItems.CHARM_SUI_CONTAINER,
                     ModItems.CHARM_STARS_IL,
                     ModItems.CHARM_MK_82,
+                    ModItems.CHARM_ORANGE_PLUSHIE,
                 )
             }
         }

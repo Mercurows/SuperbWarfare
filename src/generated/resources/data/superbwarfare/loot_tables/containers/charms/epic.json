@@ -39,6 +39,10 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:charm_mk_82"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_orange_plushie"
         }
       ],
       "rolls": 1.0

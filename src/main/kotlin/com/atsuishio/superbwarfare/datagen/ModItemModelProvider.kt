@@ -424,6 +424,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.CHARM_SUI_CONTAINER)
         simpleItem(ModItems.CHARM_STARS_IL)
         simpleItem(ModItems.CHARM_MK_82)
+        simpleItem(ModItems.CHARM_ORANGE_PLUSHIE)
         simpleItem(ModItems.CHARM_SEPT_WOLVES)
         simpleItem(ModItems.CHARM_ANCIENT_CPU)
         simpleItem(ModItems.CHARM_DRAGON_HEAD)
