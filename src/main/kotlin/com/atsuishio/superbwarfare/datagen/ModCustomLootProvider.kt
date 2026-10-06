@@ -414,6 +414,8 @@ class ModCustomLootProvider : LootTableSubProvider {
                     ModItems.CHARM_CHICKEN,
                     ModItems.CHARM_PUFFERFISH,
                     ModItems.CHARM_DOG_TAG,
+                    ModItems.CHARM_CONTAINER,
+                    ModItems.CHARM_M67_GRENADE,
                 )
             }
         }
@@ -429,9 +431,10 @@ class ModCustomLootProvider : LootTableSubProvider {
                     ModItems.CHARM_AXOLOTL_BLUE,
                     ModItems.CHARM_MOOSHROOM,
                     ModItems.CHARM_PIGLIN_HEAD,
-                    ModItems.CHARM_CONTAINER,
-                    ModItems.CHARM_M67_GRENADE,
                     ModItems.CHARM_SPIDER_HEAD,
+                    ModItems.CHARM_WITHER_SKELETON_SKULL,
+                    ModItems.CHARM_ELDER_GUARDIAN,
+                    ModItems.CHARM_MK_82,
                 )
             }
         }
@@ -440,15 +443,9 @@ class ModCustomLootProvider : LootTableSubProvider {
             addMultiItems(1f, 0f) {
                 withWeight(
                     1,
-                    ModItems.CHARM_WITHER_SKELETON_SKULL,
-                    ModItems.CHARM_NETHER_STAR,
-                    ModItems.CHARM_CONDUIT,
                     ModItems.CHARM_RICE_CAKE_FOX_LOLITA,
                     ModItems.CHARM_WINEFOX_TAIL,
-                    ModItems.CHARM_ELDER_GUARDIAN,
-                    ModItems.CHARM_SUI_CONTAINER,
                     ModItems.CHARM_STARS_IL,
-                    ModItems.CHARM_MK_82,
                     ModItems.CHARM_ORANGE_PLUSHIE,
                 )
             }
@@ -464,6 +461,8 @@ class ModCustomLootProvider : LootTableSubProvider {
                     ModItems.CHARM_THE_EMPERORS_NEW_CHARM,
                     ModItems.CHARM_BEAST,
                     ModItems.CHARM_CRYSTAL_POPCORN,
+                    ModItems.CHARM_NETHER_STAR,
+                    ModItems.CHARM_CONDUIT,
                 )
             }
         }
@@ -485,6 +484,7 @@ class ModCustomLootProvider : LootTableSubProvider {
                     ModItems.CHARM_CHIRAM_CORE,
                     ModItems.CHARM_LILY,
                     ModItems.CHARM_HIRU_HEAD,
+                    ModItems.CHARM_SUI_CONTAINER,
                 )
             }
         }
