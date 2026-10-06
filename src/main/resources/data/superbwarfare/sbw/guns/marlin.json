@@ -11,6 +11,7 @@
   "MeleeDamage": 5,
   "MeleeDuration": 16,
   "MeleeComboReset": 15,
+  "ZoomSpreadRate": 0.005,
   "MeleeHitbox": {
     "Type": "Box",
     "Range": 1.5,

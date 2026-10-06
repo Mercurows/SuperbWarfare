@@ -13,6 +13,7 @@
   "Weight": 3,
   "DrawTime": 10,
   "ZoomTime": 5,
+  "ZoomSpreadRate": 0.15,
   "MeleeDamage": 5,
   "MeleeDuration": 16,
   "MeleeComboReset": 15,

@@ -10,6 +10,7 @@
   "Velocity": 23,
   "Magazine": [20, 30, 50],
   "Weight": 5,
+  "ZoomSpreadRate": 0.01,
   "MeleeDamage": 5,
   "MeleeDuration": 16,
   "MeleeComboReset": 15,
