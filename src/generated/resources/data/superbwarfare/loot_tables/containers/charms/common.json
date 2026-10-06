@@ -47,6 +47,14 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:charm_dog_tag"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_container"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_m67_grenade"
         }
       ],
       "rolls": 1.0

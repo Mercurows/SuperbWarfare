@@ -27,6 +27,14 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:charm_crystal_popcorn"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_nether_star"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_conduit"
         }
       ],
       "rolls": 1.0
