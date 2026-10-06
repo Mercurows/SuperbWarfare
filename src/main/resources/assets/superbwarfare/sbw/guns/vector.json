@@ -4,11 +4,11 @@
   "Animation": {
     "Idle": "animation.vector.idle",
     "Fire": "animation.vector.fire",
-    "ChangeFireMode": "animation.vector.change_fire_mode",
     "ReloadNormal": "animation.vector.reload_normal",
     "ReloadEmpty": "animation.vector.reload_empty",
     "Edit": "animation.vector.edit",
     "FireModes": [
+      "animation.vector.fire_mode_burst",
       "animation.vector.fire_mode_semi"
     ],
     "ReloadNormalDrum": "animation.vector.reload_normal_drum",

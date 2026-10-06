@@ -13,6 +13,7 @@
   "ZoomTime": 8,
   "Magazine": [10, 20, 50],
   "DrumLevels": 2,
+  "ZoomSpreadRate": 0.05,
   "MeleeDamage": 5,
   "MeleeDuration": 16,
   "MeleeComboReset": 15,
