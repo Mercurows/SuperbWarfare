@@ -34,15 +34,19 @@
         },
         {
           "type": "minecraft:item",
-          "name": "superbwarfare:charm_container"
-        },
-        {
-          "type": "minecraft:item",
-          "name": "superbwarfare:charm_m67_grenade"
-        },
-        {
-          "type": "minecraft:item",
           "name": "superbwarfare:charm_spider_head"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_wither_skeleton_skull"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_elder_guardian"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_mk_82"
         }
       ],
       "rolls": 1.0
