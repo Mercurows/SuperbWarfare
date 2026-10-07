@@ -400,6 +400,7 @@
   "item.superbwarfare.towline": "Towline",
   "des.superbwarfare.towline.hint": "Right-click a vehicle to select towing target. Shift+Right-click to unlink",
   "des.superbwarfare.towline.target_selected": "Towing target selected",
+  "item.superbwarfare.type_88_cluster_grenades": "Type 88 Cluster Grenades",
 
   "item.superbwarfare.tow_bar": "Tow Bar",
   "des.superbwarfare.tow_bar.hint": "Right-click a catapult shuttle to select towing target. Shift+Right-click to unlink",
@@ -882,6 +883,8 @@
   "entity.superbwarfare.taser_bullet": "Taser Electrode",
   "entity.superbwarfare.hand_grenade": "Exploding M67 Grenade",
   "entity.superbwarfare.rgo_grenade": "Exploding RGO Grenade",
+  "entity.superbwarfare.type_88_cluster_grenades": "Exploding Type 88 Cluster Grenades",
+  "entity.superbwarfare.split_type_88_grenade": "Type 88 Cluster Grenade Bomblet",
   "entity.superbwarfare.cannon_shell": "Cannon Shell",
   "entity.superbwarfare.catapult_shuttle": "Catapult Shuttle",
   "entity.superbwarfare.javelin_missile": "Javelin Missile",

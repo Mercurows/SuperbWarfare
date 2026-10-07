@@ -400,6 +400,7 @@
   "item.superbwarfare.towline": "拖绳",
   "des.superbwarfare.towline.hint": "右键载具选择牵引目标，Shift+右键清除连接",
   "des.superbwarfare.towline.target_selected": "已选择牵引目标",
+  "item.superbwarfare.type_88_cluster_grenades": "88式集束手雷",
 
   "item.superbwarfare.tow_bar": "牵引杆",
   "des.superbwarfare.tow_bar.hint": "右键弹射器滑块选择拖拽目标，Shift+右键清除连接",
@@ -882,6 +883,8 @@
   "entity.superbwarfare.taser_bullet": "泰瑟枪电极",
   "entity.superbwarfare.hand_grenade": "快爆炸的M67手榴弹",
   "entity.superbwarfare.rgo_grenade": "快爆炸的RGO手榴弹",
+  "entity.superbwarfare.type_88_cluster_grenades": "快爆炸的88式集束手雷",
+  "entity.superbwarfare.split_type_88_grenade": "88式集束手雷子弹药",
   "entity.superbwarfare.cannon_shell": "炮弹",
   "entity.superbwarfare.catapult_shuttle": "弹射器滑块",
   "entity.superbwarfare.javelin_missile": "标枪导弹",

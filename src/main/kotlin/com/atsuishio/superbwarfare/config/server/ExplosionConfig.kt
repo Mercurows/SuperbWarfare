@@ -184,6 +184,59 @@ object ExplosionConfig {
     }
 
     @JvmField
+    val TYPE_88_CLUSTER_GRENADE_EXPLOSION_DAMAGE = buildServerConfig {
+        push("Type 88 Cluster Grenades")
+
+        comment("The explosion damage of Type 88 cluster grenades")
+        comment("88式集束手雷的爆炸伤害")
+        defineInRange("type_88_cluster_grenade_explosion_damage", 200, 1, 10000000)
+    }
+
+    @JvmField
+    val TYPE_88_CLUSTER_GRENADE_EXPLOSION_RADIUS = buildServerConfig {
+        comment("The explosion radius of Type 88 cluster grenades")
+        comment("88式集束手雷的爆炸半径")
+        defineInRange("type_88_cluster_grenade_explosion_radius", 6, 1, 50)
+    }
+
+    @JvmField
+    val TYPE_88_CLUSTER_GRENADE_FUSE = buildServerConfig {
+        comment("The fuse ticks of Type 88 cluster grenades")
+        comment("88式集束手雷的引信时长（tick）")
+        defineInRange("type_88_cluster_grenade_fuse", 100, 1, Int.MAX_VALUE)
+    }
+
+    @JvmField
+    val TYPE_88_CLUSTER_GRENADE_SPLIT_AMOUNT = buildServerConfig {
+        comment("The amount of split projectiles spawned by Type 88 cluster grenades")
+        comment("88式集束手雷爆炸后分裂出的子弹药数量")
+        defineInRange("type_88_cluster_grenade_split_amount", 6, 1, 10).also { pop() }
+    }
+
+    @JvmField
+    val SPLIT_TYPE_88_GRENADE_EXPLOSION_DAMAGE = buildServerConfig {
+        push("Split Type 88 Grenade")
+
+        comment("The explosion damage of split Type 88 grenades")
+        comment("88式集束手雷子弹药的爆炸伤害")
+        defineInRange("split_type_88_grenade_explosion_damage", 200, 1, 10000000)
+    }
+
+    @JvmField
+    val SPLIT_TYPE_88_GRENADE_EXPLOSION_RADIUS = buildServerConfig {
+        comment("The explosion radius of split Type 88 grenades")
+        comment("88式集束手雷子弹药的爆炸半径")
+        defineInRange("split_type_88_grenade_explosion_radius", 6, 1, 50)
+    }
+
+    @JvmField
+    val SPLIT_TYPE_88_GRENADE_FUSE = buildServerConfig {
+        comment("The fuse ticks of split Type 88 grenades")
+        comment("88式集束手雷子弹药的引信时长（tick）")
+        defineInRange("split_type_88_grenade_fuse", 20, 1, Int.MAX_VALUE).also { pop() }
+    }
+
+    @JvmField
     val PTKM_1R_EXPLOSION_DAMAGE = buildServerConfig {
         push("Ptkm 1r")
 

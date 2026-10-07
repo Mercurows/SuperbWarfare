@@ -222,6 +222,7 @@ object ModItems {
     @JvmField val LARGE_SHELL_WP = registerAmmo("large_shell_wp") { Item(Properties().rarity(Rarity.RARE)) }
     @JvmField val HAND_GRENADE = registerAmmo<HandGrenadeItem>()
     @JvmField val RGO_GRENADE = registerAmmo<RgoGrenadeItem>()
+    @JvmField val TYPE_88_CLUSTER_GRENADES = registerAmmo<Type88ClusterGrenadesItem>()
     @JvmField val M18_SMOKE_GRENADE = registerAmmo<M18SmokeGrenadeItem>()
     @JvmField val CLAYMORE_MINE = registerAmmo<ClaymoreMineItem>()
     @JvmField val TM_62 = registerAmmo<Tm62Item>()
