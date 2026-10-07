@@ -424,13 +424,13 @@ class ModCustomLootProvider : LootTableSubProvider {
             addMultiItems(1f, 0f) {
                 withWeight(
                     1,
-                    ModItems.CHARM_FUKAMIZU_FISH,
                     ModItems.CHARM_ZOMBIE_HEAD,
                     ModItems.CHARM_SKELETON_SKULL,
                     ModItems.CHARM_CREEPER_HEAD,
                     ModItems.CHARM_AXOLOTL_BLUE,
                     ModItems.CHARM_MOOSHROOM,
                     ModItems.CHARM_PIGLIN_HEAD,
+                    ModItems.CHARM_FUKAMIZU_FISH,
                     ModItems.CHARM_SPIDER_HEAD,
                     ModItems.CHARM_WITHER_SKELETON_SKULL,
                     ModItems.CHARM_ELDER_GUARDIAN,
@@ -447,6 +447,11 @@ class ModCustomLootProvider : LootTableSubProvider {
                     ModItems.CHARM_WINEFOX_TAIL,
                     ModItems.CHARM_STARS_IL,
                     ModItems.CHARM_ORANGE_PLUSHIE,
+                    ModItems.CHARM_HAKUREI_REIMU,
+                    ModItems.CHARM_KIRISAME_MARISA,
+                    ModItems.CHARM_FLANDRE_SCARLET,
+                    ModItems.CHARM_SAIGYOUJI_YUYUKO,
+                    ModItems.CHARM_HOURAISAN_KAGUYA,
                 )
             }
         }

@@ -6,10 +6,6 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "superbwarfare:charm_fukamizu_fish"
-        },
-        {
-          "type": "minecraft:item",
           "name": "superbwarfare:charm_zombie_head"
         },
         {
@@ -31,6 +27,10 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:charm_piglin_head"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_fukamizu_fish"
         },
         {
           "type": "minecraft:item",
