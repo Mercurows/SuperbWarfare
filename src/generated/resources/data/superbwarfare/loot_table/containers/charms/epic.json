@@ -19,6 +19,26 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:charm_orange_plushie"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_hakurei_reimu"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_kirisame_marisa"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_flandre_scarlet"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_saigyouji_yuyuko"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_houraisan_kaguya"
         }
       ],
       "rolls": 1.0
