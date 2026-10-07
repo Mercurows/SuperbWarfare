@@ -1,8 +1,5 @@
 package com.atsuishio.superbwarfare.item.gun.special
 
-import com.atsuishio.superbwarfare.client.PoseTool
-import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer
-import com.atsuishio.superbwarfare.client.renderer.gun.RepairToolRenderer
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback
@@ -32,15 +29,6 @@ import net.neoforged.api.distmarker.OnlyIn
 @RegistryName("repair_tool")
 class RepairToolItem : GeoGunItemV2(Properties()) {
 
-    /**
-     * 修理工具是唯一需要特殊渲染的 V2 枪：枪口那簇火焰要逐帧切换，见 [RepairToolRenderer]。
-     */
-    @OnlyIn(Dist.CLIENT)
-    override fun createRenderer(): GeoGunRenderer = RepairToolRenderer()
-
-    /**
-     * 端工具的手势和别的枪（[PoseTool.pose]）不一样，所以不能走 V2 的默认实现。
-     */
     @OnlyIn(Dist.CLIENT)
     override fun armPose(
         entityLiving: LivingEntity,
@@ -95,42 +83,71 @@ class RepairToolItem : GeoGunItemV2(Properties()) {
         )
 
         // 修理实体（多重含义）
-        if (target is VehicleEntity) {
-            val lastDriver = EntityFindUtil.findEntity(level, target.lastDriverUUID)
-            if ((lastDriver != null && !SeekTool.IN_SAME_TEAM.test(
-                    shooter,
-                    lastDriver
-                ) && lastDriver.team != null) || shiftDown
-            ) {
-                target.hurt(ModDamageTypes.causeRepairToolDamage(level.registryAccess(), shooter), 0.5f)
-                if (shooter is ServerPlayer) {
-                    shooter.level().playSound(
-                        null,
-                        shooter.blockPosition(),
-                        ModSounds.INDICATION.get(),
-                        SoundSource.VOICE,
-                        0.1f,
-                        1f
+        when (target) {
+            is VehicleEntity -> {
+                val lastDriver = EntityFindUtil.findEntity(level, target.lastDriverUUID)
+                if ((lastDriver != null && !SeekTool.IN_SAME_TEAM.test(
+                        shooter,
+                        lastDriver
+                    ) && lastDriver.team != null) || shiftDown
+                ) {
+                    target.hurt(ModDamageTypes.causeRepairToolDamage(level.registryAccess(), shooter), 0.5f)
+                    if (shooter is ServerPlayer) {
+                        shooter.level().playSound(
+                            null,
+                            shooter.blockPosition(),
+                            ModSounds.INDICATION.get(),
+                            SoundSource.VOICE,
+                            0.1f,
+                            1f
+                        )
+                        shooter.sendPacket(ClientIndicatorMessage(0, 5))
+                    }
+                } else if (!target.isWreck) {
+                    target.heal(0.5f + 0.0025f * target.getMaxHealth())
+                } else {
+                    target.hurt(
+                        ModDamageTypes.causeRepairToolDamage(level.registryAccess(), shooter),
+                        0.5f + 0.0025f * target.getMaxHealth()
                     )
-                    shooter.sendPacket(ClientIndicatorMessage(0, 5))
                 }
-            } else if (!target.isWreck) {
-                target.heal(0.5f + 0.0025f * target.getMaxHealth())
-            } else {
-                target.hurt(
-                    ModDamageTypes.causeRepairToolDamage(level.registryAccess(), shooter),
-                    0.5f + 0.0025f * target.getMaxHealth()
-                )
+
+                summonRayHitParticle(level, null, pos, dir)
             }
 
-            summonRayHitParticle(level, null, pos, dir)
-        } else if (target is LivingEntity) {
-            if (target.type.`is`(ModTags.EntityTypes.CAN_REPAIR) && !shiftDown) {
-                target.heal(0.5f + 0.0025f * target.getMaxHealth())
-            } else {
-                val iCustomKnockback = ICustomKnockback.getInstance(target)
-                iCustomKnockback.`superbWarfare$setKnockbackStrength`(0.0)
+            is LivingEntity -> {
+                if (target.type.`is`(ModTags.EntityTypes.CAN_REPAIR) && !shiftDown) {
+                    target.heal(0.5f + 0.0025f * target.maxHealth)
+                } else {
+                    val iCustomKnockback = ICustomKnockback.getInstance(target)
+                    iCustomKnockback.`superbWarfare$setKnockbackStrength`(0.0)
 
+                    val damage = data.get(GunProp.DAMAGE).toFloat()
+                    DamageHandler.doDamage(
+                        target,
+                        ModDamageTypes.causeRepairToolDamage(level.registryAccess(), shooter),
+                        damage
+                    )
+                    target.invulnerableTime = 0
+
+                    iCustomKnockback.`superbWarfare$resetKnockbackStrength`()
+
+                    if (shooter is ServerPlayer) {
+                        shooter.level().playSound(
+                            null,
+                            shooter.blockPosition(),
+                            ModSounds.INDICATION.get(),
+                            SoundSource.VOICE,
+                            0.1f,
+                            1f
+                        )
+                        shooter.sendPacket(ClientIndicatorMessage(0, 5))
+                    }
+                }
+                summonRayHitParticle(level, null, pos, dir)
+            }
+
+            else -> {
                 val damage = data.get(GunProp.DAMAGE).toFloat()
                 DamageHandler.doDamage(
                     target,
@@ -139,8 +156,6 @@ class RepairToolItem : GeoGunItemV2(Properties()) {
                 )
                 target.invulnerableTime = 0
 
-                iCustomKnockback.`superbWarfare$resetKnockbackStrength`()
-
                 if (shooter is ServerPlayer) {
                     shooter.level().playSound(
                         null,
@@ -152,30 +167,9 @@ class RepairToolItem : GeoGunItemV2(Properties()) {
                     )
                     shooter.sendPacket(ClientIndicatorMessage(0, 5))
                 }
-            }
-            summonRayHitParticle(level, null, pos, dir)
-        } else {
-            val damage = data.get(GunProp.DAMAGE).toFloat()
-            DamageHandler.doDamage(
-                target,
-                ModDamageTypes.causeRepairToolDamage(level.registryAccess(), shooter),
-                damage
-            )
-            target.invulnerableTime = 0
 
-            if (shooter is ServerPlayer) {
-                shooter.level().playSound(
-                    null,
-                    shooter.blockPosition(),
-                    ModSounds.INDICATION.get(),
-                    SoundSource.VOICE,
-                    0.1f,
-                    1f
-                )
-                shooter.sendPacket(ClientIndicatorMessage(0, 5))
+                summonRayHitParticle(level, null, pos, dir)
             }
-
-            summonRayHitParticle(level, null, pos, dir)
         }
     }
 
@@ -237,12 +231,5 @@ class RepairToolItem : GeoGunItemV2(Properties()) {
         }
     }
 
-    /**
-     * 火星的飞溅方向 = 射线方向取反。
-     *
-     * 父类签名里 `shootDirection` 是可空的（`GunItem.onRayHitEntity` 一脉相承），
-     * 真为空时退化成零向量 —— [Vec3.normalize] 对零向量返回零向量，粒子就原地散开，不会抛异常。
-     */
-    private fun sparkDirection(shootDirection: Vec3?): Vec3 =
-        (shootDirection ?: Vec3.ZERO).scale(-1.0).normalize()
+    private fun sparkDirection(shootDirection: Vec3?): Vec3 = (shootDirection ?: Vec3.ZERO).scale(-1.0).normalize()
 }

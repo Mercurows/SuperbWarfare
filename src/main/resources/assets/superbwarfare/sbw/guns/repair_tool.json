@@ -11,6 +11,7 @@
     "Model": "superbwarfare:models/bedrock/gun/repair_tool.geo.json",
     "Texture": "superbwarfare:textures/bedrock/gun/repair_tool.png"
   },
+  "Script": "superbwarfare:scripts/guns/repair_tool.js",
   "Animation": {
     "Idle": "animation.repair_tool.idle",
     "FireLoop": "animation.repair_tool.fire_loop",

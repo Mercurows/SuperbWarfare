@@ -1,5 +1,6 @@
 ﻿package com.atsuishio.superbwarfare.network.message.send
 
+import com.atsuishio.superbwarfare.data.gun.ActiveGun
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
@@ -7,7 +8,6 @@ import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedUUID
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedVector3f
-import com.atsuishio.superbwarfare.tools.ActiveGun
 import com.atsuishio.superbwarfare.tools.toVec3
 import kotlinx.serialization.Serializable
 

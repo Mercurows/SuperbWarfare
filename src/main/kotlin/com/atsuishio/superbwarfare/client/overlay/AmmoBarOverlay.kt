@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.client.overlay.AmmoBarOverlay.getBackupAmmoSt
 import com.atsuishio.superbwarfare.client.overlay.AmmoBarOverlay.render
 import com.atsuishio.superbwarfare.client.overlay.AmmoBarOverlay.toUnderScores
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
+import com.atsuishio.superbwarfare.data.gun.ActiveGun
 import com.atsuishio.superbwarfare.data.gun.Ammo
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer.AmmoConsumeType
 import com.atsuishio.superbwarfare.data.gun.GunData
@@ -17,7 +18,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModKeyMappings
 import com.atsuishio.superbwarfare.item.gun.GunItem
-import com.atsuishio.superbwarfare.tools.ActiveGun
 import com.atsuishio.superbwarfare.tools.FormatTool.format1DZZ
 import net.minecraft.Util
 import net.minecraft.client.Minecraft

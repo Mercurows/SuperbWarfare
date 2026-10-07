@@ -2,15 +2,15 @@ package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
+import com.atsuishio.superbwarfare.data.gun.ActiveGun
 import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.data.gun.subweapon.SubWeaponRuntime
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.network.message.receive.SubWeaponDeployedMessage
-import com.atsuishio.superbwarfare.subweapon.SubWeaponRuntime
-import com.atsuishio.superbwarfare.tools.ActiveGun
 import com.atsuishio.superbwarfare.tools.sendPacket
 import kotlinx.serialization.Serializable
 

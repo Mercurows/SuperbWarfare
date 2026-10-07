@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.client.RenderHelper
 import com.atsuishio.superbwarfare.compat.realcamera.RealCameraCompatHolder
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.config.server.MiscConfig
+import com.atsuishio.superbwarfare.data.gun.ActiveGun
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunProp
@@ -15,7 +16,6 @@ import com.atsuishio.superbwarfare.perk.AmmoPerk
 import com.atsuishio.superbwarfare.perk.IAmmoStat
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.resource.gun.GunResource
-import com.atsuishio.superbwarfare.tools.ActiveGun
 import com.atsuishio.superbwarfare.tools.TraceTool
 import com.atsuishio.superbwarfare.tools.mc
 import com.mojang.blaze3d.platform.GlStateManager
