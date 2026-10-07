@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.animation.gun
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.animation.AnimationPlayType
+import com.atsuishio.superbwarfare.client.animation.gun.GeoGunAnimationInstance.Companion.BLENDER
 import com.atsuishio.superbwarfare.client.gun.MeleeClientHandler
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.GunData
@@ -20,13 +21,8 @@ import com.atsuishio.superbwarfare.tools.localPlayer
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.animation.IFPAnimationInstance
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.BedrockAnimation
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.ParticleEffectData
-import com.maydaymemory.mae.basic.ArrayPoseBuilder
-import com.maydaymemory.mae.basic.DummyPose
-import com.maydaymemory.mae.basic.Pose
-import com.maydaymemory.mae.basic.ZYXBoneTransformFactory
-import com.maydaymemory.mae.blend.EulerAdditiveBlender
-import com.maydaymemory.mae.blend.NoAllocMergeBlender
-import com.maydaymemory.mae.blend.SimpleEulerAdditiveBlender
+import com.maydaymemory.mae.basic.*
+import com.maydaymemory.mae.blend.*
 import com.maydaymemory.mae.control.runner.*
 import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation
@@ -85,6 +81,29 @@ open class GeoGunAnimationInstance(
 
     /** 当前转到几成（0..1），缓入缓出就缓在这里。 */
     private var spinPower = 0f
+
+    /**
+     * 循环开火那一层（[GunAnimation.fireLoop]）的 runner。
+     *
+     * 和 [spinRunner] 一样**一支常驻**：按住扳机时不清不建，只改权重，所以这一层不会有
+     * "被某一帧推回起点"的抖动 —— 火焰要的是连续燃烧，不是每发重启一次。
+     */
+    private var fireLoopRunner: AnimationRunner? = null
+
+    /** 已经解析好的循环开火片段（理由同 [spinAnimation]：拿不到资源的那一帧别把 runner 重建掉） */
+    private var fireLoopAnimation: BedrockAnimation? = null
+
+    /**
+     * 循环开火层现在亮到几成（0..1）。
+     *
+     * 注意它**不是**一个"叠加权重"：这一层是按这个权重从当前合成姿态**插值**过去的
+     * （见 [applyFireLoop]），所以权重 0 是"这一层完全不存在"，1 是"这支 clip 说了算"。
+     */
+    private var fireLoopPower = 0f
+
+    /** 淡入 / 淡出时长（tick），来自 [GunAnimation.fireLoopFadeIn] / [fireLoopFadeOut] 的秒数 */
+    private var fireLoopFadeInTicks = 0f
+    private var fireLoopFadeOutTicks = 0f
     private var editExitRunner: AnimationRunner? = null
     private var currentState: GunAnimationState? = null
     private var fireSerial = 0
@@ -964,6 +983,8 @@ open class GeoGunAnimationInstance(
         val (holdOpenStarted, closeStrikeStarted) = updateMechanicalRunners(data, animation)
         tickMechanicalRunners(holdOpenStarted, closeStrikeStarted)
         tickSpinRunner(updateSpinRunner(data, animation))
+        // 编辑收尾期间火焰照旧按扳机淡出（这时候玩家手上就是平常拿着枪，没有"在编辑"这回事）
+        tickFireLoopRunner(updateFireLoopRunner(animation))
         val switchStarted = consumeFireModeSwitch(false)
         tickFireModeRunners(fireModeStarted, switchStarted)
 
@@ -1062,7 +1083,7 @@ open class GeoGunAnimationInstance(
         spinPower = approach(spinPower, target, step)
 
         // 射速每帧重算：切模式、换 perk 立刻体现在转速上
-        applySpinSpeed(holdSpinSpeed(hold, data) * easeSpin(spinPower))
+        applySpinSpeed(holdSpinSpeed(hold, data) * smoothstep(spinPower))
         return false
     }
 
@@ -1075,6 +1096,127 @@ open class GeoGunAnimationInstance(
         spinRunner = null
         spinAnimation = null
         spinPower = 0f
+    }
+
+    /**
+     * 推进循环开火层，返回本帧是否新建了 runner（新建那一帧由 [tickFireLoopRunner] 跳过 tick，
+     * 与 [updateSpinRunner] 同理）。
+     *
+     * 与枪管旋转那一层（[updateSpinRunner]）是同一套骨架：一支循环 runner + 一个 0..1 的权重，
+     * 权重按帧长的比例缓动。三处**刻意的不同**：
+     *
+     * - 权重含义不同。旋转那层的权重是**播放速度**，权重为 0 时那一层照样求值（枪管要停在那个角度，
+     *   撤掉就等于把它摁回绑定姿态，肉眼可见地一顿）；这一层的权重是**对齐度**，归零时必须让整层消失，
+     *   否则一支看不见的循环动画会一直跑着（还会一直收它的音效关键帧）。
+     * - 淡入淡出是**两个**时长（[GunAnimation.fireLoopFadeIn] / [fireLoopFadeOut]）：往上走用前者、
+     *   往下走用后者，"烧起来慢、灭得快"这种东西数据里就能调。
+     * - 判据是 [shouldFireLoop]（扳机），不是射速/蓄力，跟转动那层一样只跟扳机走。
+     */
+    private fun updateFireLoopRunner(animation: GunAnimation?): Boolean {
+        // 动画资源这一帧拿不到（正在 reload）时沿用上一次解析到的片段；数据里本来就没写 `FireLoop`、
+        // 或者动画文件里根本没这支 clip 的枪，两次都解析不出来 → 这一层不参与。
+        val loop = if (animation == null) fireLoopAnimation else animation.fireLoop?.let(animations::get)
+        val runner = fireLoopRunner
+
+        // 不需要亮、又没有活着的 runner 时**连 runner 都不建**：这一层淡出到底后会被摘掉，
+        // 要是"配了 FireLoop 就建"，就会变成每帧「建一支 → 权重 0 → 摘掉」地空转（白分配对象）。
+        // 所以建 runner 的条件是"已经在亮"或者"这一帧该开始亮了"。
+        if (loop == null || (runner == null && !shouldFireLoop())) {
+            clearFireLoopRunner()
+            return false
+        }
+
+        // 时长每帧重算：`/reload` 改了秒数立刻生效，不用等下一次重建 runner
+        if (animation != null) {
+            fireLoopFadeInTicks = secondsToTicks(animation.fireLoopFadeIn)
+            fireLoopFadeOutTicks = secondsToTicks(animation.fireLoopFadeOut)
+        }
+
+        if (runner == null || fireLoopAnimation !== loop) {
+            fireLoopAnimation = loop
+            val newRunner = AnimationRunner(loop, AnimationContext(loop.specifiedEndTimeS))
+            newRunner.state = AnimationPlayType.LOOP.state()
+            fireLoopRunner = newRunner
+            // 换了一支片段就从 0 重新淡入：接着上一支的权重会闪一下
+            fireLoopPower = 0f
+            return true
+        }
+
+        val target = if (shouldFireLoop()) 1f else 0f
+        val fadeTicks = if (target > fireLoopPower) fireLoopFadeInTicks else fireLoopFadeOutTicks
+        val step = if (fadeTicks <= 0f) 1f
+        else Minecraft.getInstance().deltaFrameTime.coerceIn(0f, SPIN_MAX_FRAME_DELTA_TICKS) / fadeTicks
+        fireLoopPower = approach(fireLoopPower, target, step)
+
+        // 淡出到底、扳机也松了 → 整层摘掉（此刻权重已经是 0，摘掉看不出任何变化）
+        if (fireLoopPower <= 0f && target <= 0f) {
+            clearFireLoopRunner()
+        }
+        return false
+    }
+
+    private fun tickFireLoopRunner(started: Boolean) {
+        if (started) return
+        fireLoopRunner?.tick()
+    }
+
+    private fun clearFireLoopRunner() {
+        fireLoopRunner = null
+        fireLoopAnimation = null
+        fireLoopPower = 0f
+        fireLoopFadeInTicks = 0f
+        fireLoopFadeOutTicks = 0f
+    }
+
+    /** 数据里的**秒** → tick。缓动要的步长单位是 tick（`deltaFrameTime` 就是 tick，20/s）。 */
+    private fun secondsToTicks(seconds: Float): Float =
+        if (seconds <= 0f) 0f else seconds * TICKS_PER_SECOND
+
+    /**
+     * 把循环开火层按 [fireLoopPower]**交叉淡入/淡出**到 [lowerPose] 上。
+     *
+     * 为什么是插值而不是"叠加一个权重"：这一层要能把一块骨骼**从没有变成有**
+     * （修理工具的火焰就是 idle 里 `flame_illuminated: scale 0` → 这支 clip 里 scale 3），
+     * 而"叠加"（加/乘）只会让 0 永远是 0。这也是为什么旧 GeckoLib 渲染器里那簇火焰
+     * 只能靠"逐帧切显隐"来做 —— 切显隐是二元跳变，没有成长的过程。插值天然解决这件事：
+     * 权重 0 = 原样不动，权重 1 = 这支 clip 说了算，中间就是"火焰慢慢长出来"。
+     *
+     * **逐骨骼**插值（而不是整份姿态插一次）的理由：这一层是**稀疏**的，只写了它关心的骨骼。
+     * 整份插值会把这一层没写到的骨骼（比如 idle 写的 `righthand`）一起往单位姿态拉，
+     * 淡入的那几百毫秒里枪就会自己飘回手上。
+     *
+     * [GunAnimation.fire] 不受影响：它照样是叠加在下面的层（见 [tick] 末尾的合成），
+     * 所以"循环开火"与"每一发的开火动画"同帧共存、各管各的骨骼，互不挤掉。
+     */
+    private fun applyFireLoop(lowerPose: Pose): Pose {
+        val runner = fireLoopRunner ?: return lowerPose
+        val weight = smoothstep(fireLoopPower)
+        if (weight <= 0f) return lowerPose
+
+        val loopPose = runner.evaluate()
+        return CROSSFADE_BLENDER.combine(lowerPose, loopPose) { lower, loop ->
+            // 单位变换的 boneIndex 是 -1（见 BiPoseCombiner 的说明），出现它就说明这一层
+            // 压根没写这块骨骼 —— 那种骨骼必须原样保留下面那层的值
+            if (loop.boneIndex() < 0) lower
+            else SimpleInterpolatorBlender.leanerLerpTransforms(
+                lower, loop, weight, maxOf(lower.boneIndex(), loop.boneIndex()), TRANSFORM_FACTORY
+            )
+        }
+    }
+
+    /**
+     * 这一层现在该不该亮：**只看扳机** —— 本地玩家手里正拿着这把枪、并且按着开火键
+     * （[ClientEventHandler.holdingFireKey]）。判据与枪管旋转（[shouldSpin]）完全同源，
+     * 也就同样"必须比物品类型、不能比 ItemStack 对象身份"（理由见 [shouldSpin] 的说明：
+     * 服务端每发同步一次手持栈，客户端收到的永远是**新对象**，instance 里的 `stack` 要等下一 tick 才刷新）。
+     *
+     * 这里同样**故意不查 `canShoot`**：它回答的是"扳机按着没有"，不是"这一发打不打得出去"。
+     * 要按"这一发现在真的在工作"来亮（比如没电了火焰就该灭），那是数据侧口径的事，不该由这一层替它猜。
+     */
+    private fun shouldFireLoop(): Boolean {
+        val player = localPlayer ?: return false
+        if (player.mainHandItem.item !== stack.item) return false
+        return ClientEventHandler.holdingFireKey
     }
 
     /**
@@ -1130,7 +1272,7 @@ open class GeoGunAnimationInstance(
     }
 
     /** smoothstep：起步和到顶都是缓的（缓入缓出）。 */
-    private fun easeSpin(power: Float): Float = power * power * (3f - 2f * power)
+    private fun smoothstep(power: Float): Float = power * power * (3f - 2f * power)
 
     private fun approach(current: Float, target: Float, step: Float): Float {
         return if (current < target) (current + step).coerceAtMost(target)
@@ -1232,6 +1374,9 @@ open class GeoGunAnimationInstance(
             closeStrikeRunner = null
             closeStrikeAnimationName = null
             clearFireModeLayers()
+            // 循环开火层也一并摘掉：它没有"停在那个角度"这种需要保留的相位（对比枪管旋转），
+            // 留着只会让下次亮起来时从一个旧权重接着走
+            clearFireLoopRunner()
             currentState = null
             pendingParticles.clear()
             cachedPose = DummyPose.INSTANCE
@@ -1245,15 +1390,17 @@ open class GeoGunAnimationInstance(
             startEditExit()
             if (editExitRunner != null) {
                 cachedPose = combineHoldOpen(
-                    combineFireModeSwitch(
-                        combineLayers(
-                            editExitRunner!!.evaluate(),
-                            fireModeRunner?.evaluate() ?: DummyPose.INSTANCE,
-                            closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE,
-                            spinRunner?.evaluate() ?: DummyPose.INSTANCE
-                        ),
-                        fireModeSwitchRunner?.evaluate() ?: DummyPose.INSTANCE,
-                        fireRunner?.evaluate() ?: DummyPose.INSTANCE
+                    applyFireLoop(
+                        combineFireModeSwitch(
+                            combineLayers(
+                                editExitRunner!!.evaluate(),
+                                fireModeRunner?.evaluate() ?: DummyPose.INSTANCE,
+                                closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE,
+                                spinRunner?.evaluate() ?: DummyPose.INSTANCE
+                            ),
+                            fireModeSwitchRunner?.evaluate() ?: DummyPose.INSTANCE,
+                            fireRunner?.evaluate() ?: DummyPose.INSTANCE
+                        )
                     ),
                     holdOpenRunner?.evaluate() ?: DummyPose.INSTANCE
                 )
@@ -1316,6 +1463,7 @@ open class GeoGunAnimationInstance(
         tickFireModeRunners(fireModeStarted, fireModeSwitchStarted)
         tickMechanicalRunners(holdOpenStarted, closeStrikeStarted)
         tickSpinRunner(updateSpinRunner(data, animation))
+        tickFireLoopRunner(updateFireLoopRunner(animation))
 
         // 副武器自己的换弹动画（四期，§9.8.7）：它播在**附件模型**上，不进下面这份 `cachedPose`
         // —— 宿主枪照常播自己的 idle/run，两套骨骼天然不冲突。
@@ -1346,20 +1494,33 @@ open class GeoGunAnimationInstance(
         // 位置就在 [subWeaponReloadRunner] 的 `tick()` 之后，与上面那一排同款。
         collectSoundEvents(subWeaponReloadRunner)
 
+        // 循环开火层的音效/粒子**只在它亮着的时候收**：这一层的权重是插值出来的，
+        // 权重为 0 时它整层都不参与合成（见 [applyFireLoop]），循环音效却照响，
+        // 就成了"看不见的地方一直在烧"。淡出的那几百毫秒里权重仍然 > 0，声音跟着一起收尾。
+        if (fireLoopPower > 0f) {
+            collectParticleEvents(fireLoopRunner)
+            collectSoundEvents(fireLoopRunner)
+        }
+
         if (fireRunner?.state is StopState) {
             fireRunner = null
         }
 
+        // 循环开火层放在**最外层合成之前**、`holdOpen` 之下：它是"从下面这一整份姿态插值过去"，
+        // 所以必须拿到已经叠完的那一份（状态机 + 开火模式 + 每一发的开火动画 + 枪管旋转）。
+        // `holdOpen` 留在它外面，因为拉开的枪机是"这一帧必须在这儿"的覆盖，不该被插值拉走。
         cachedPose = combineHoldOpen(
-            combineFireModeSwitch(
-                combineLayers(
-                    runner?.evaluate() ?: DummyPose.INSTANCE,
-                    fireModeRunner?.evaluate() ?: DummyPose.INSTANCE,
-                    closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE,
-                    spinRunner?.evaluate() ?: DummyPose.INSTANCE
-                ),
-                fireModeSwitchRunner?.evaluate() ?: DummyPose.INSTANCE,
-                fireRunner?.evaluate() ?: DummyPose.INSTANCE
+            applyFireLoop(
+                combineFireModeSwitch(
+                    combineLayers(
+                        runner?.evaluate() ?: DummyPose.INSTANCE,
+                        fireModeRunner?.evaluate() ?: DummyPose.INSTANCE,
+                        closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE,
+                        spinRunner?.evaluate() ?: DummyPose.INSTANCE
+                    ),
+                    fireModeSwitchRunner?.evaluate() ?: DummyPose.INSTANCE,
+                    fireRunner?.evaluate() ?: DummyPose.INSTANCE
+                )
             ),
             holdOpenRunner?.evaluate() ?: DummyPose.INSTANCE
         )
@@ -1412,6 +1573,7 @@ open class GeoGunAnimationInstance(
             closeStrikeRunner = null
             closeStrikeAnimationName = null
             clearSpinRunner()
+            clearFireLoopRunner()
             pendingParticles.clear()
             loadAnimations()
         }
@@ -1433,6 +1595,7 @@ open class GeoGunAnimationInstance(
         closeStrikeRunner = null
         closeStrikeAnimationName = null
         clearSpinRunner()
+        clearFireLoopRunner()
         currentState = null
         fireSerial = 0
         consumedFireSerial = 0
@@ -1457,9 +1620,23 @@ open class GeoGunAnimationInstance(
          */
         private const val SPIN_MAX_FRAME_DELTA_TICKS = 0.8f
 
+        /** 一秒的 tick 数：数据里的秒（`FireLoopFadeIn` 这类）换算成缓动要的 tick */
+        private const val TICKS_PER_SECOND = 20f
+
+        private val TRANSFORM_FACTORY: BoneTransformFactory = ZYXBoneTransformFactory()
+
         private val BLENDER: EulerAdditiveBlender =
-            SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }
+            SimpleEulerAdditiveBlender(TRANSFORM_FACTORY) { ArrayPoseBuilder() }
 
         private val MERGE_BLENDER = NoAllocMergeBlender()
+
+        /**
+         * 循环开火层那一次逐骨骼插值（[applyFireLoop]）。
+         *
+         * 与 [BLENDER] 不同，它**不做加法**：这块骨骼在这个权重下"应该长什么样"是插值出来的
+         * （所以 0 → 有 的骨骼能被拉出来）。同一时刻只有一个线程在跑 tick，实例也是每把枪一份，
+         * 不共享中间结果，所以这个 combiner 可以常驻复用。
+         */
+        private val CROSSFADE_BLENDER = BiPoseCombiner { ArrayPoseBuilder() }
     }
 }

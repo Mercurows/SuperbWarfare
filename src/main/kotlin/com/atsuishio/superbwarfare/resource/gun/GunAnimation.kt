@@ -64,6 +64,40 @@ class GunAnimation {
     @SerialName("Hold")
     var hold: String? = null
 
+    /**
+     * 循环开火动画：**按住开火键期间一直循环**的那一层（枪口火焰、连射线束这类"开着火就没停过"的东西）。
+     *
+     * 与 [fire] **不互斥**：两者同帧生效，各管各的骨骼。[fire] 是叠加层（加在状态机之上）；
+     * 这一层则是**按 [fireLoopFadeIn] / [fireLoopFadeOut] 从当前合成姿态交叉淡入淡出**
+     * （见 `GeoGunAnimationInstance.updateFireLoopRunner`）——
+     * 淡入就是"从现在的姿态插值到这支 clip"，所以**淡入的起点由状态动画自己给**：
+     * idle 里把某块骨骼压成 0（修理工具的 `flame_illuminated: scale 0`）正好成为淡入的起点，
+     * 不需要为了这一层另写一份"姿势为 0"的数据。
+     *
+     * 这一层**只在第一人称的本地玩家手里**有意义：它是"按住扳机"驱动的，3P 的别人看不到，
+     * 而 V2 本来也只在 1P 应用姿态。
+     *
+     * 不配的枪不参与。
+     */
+    @JvmField
+    @SerialName("FireLoop")
+    var fireLoop: String? = null
+
+    /**
+     * [fireLoop] 的淡入时长，单位**秒**（与 `animation_length` 同一口径，`0.1` = 2 tick）。`0` = 立刻满权重。
+     *
+     * ⚠ 注意与 `sbw/guns/<id>.json` 里别的时长（`ShootDelay`、`NormalReloadTime` 这些）**不同单位**：
+     * 那些是 tick，这两个是**秒** —— 它们和动画片长是一套时间，跟着动画文件走。
+     */
+    @JvmField
+    @SerialName("FireLoopFadeIn")
+    var fireLoopFadeIn: Float = 0f
+
+    /** [fireLoop] 的淡出时长，单位**秒**。松手之后这一层按它平滑退回当前姿态 */
+    @JvmField
+    @SerialName("FireLoopFadeOut")
+    var fireLoopFadeOut: Float = 0f
+
     @JvmField
     @SerialName("Prepare")
     var prepare: String? = null

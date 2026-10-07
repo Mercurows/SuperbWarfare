@@ -10,6 +10,8 @@ import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.texture.OverlayTexture
+import net.minecraft.world.entity.projectile.Projectile
+import net.minecraft.world.entity.projectile.ProjectileUtil
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
@@ -45,11 +47,11 @@ object LaserSightRenderer {
     private val TEXTURE = loc("textures/entity/white.png")
 
     /** 渲染本帧采集到的全部激光束 */
-    fun render(poseStack: PoseStack, bufferSource: MultiBufferSource) {
+    fun render(poseStack: PoseStack, bufferSource: MultiBufferSource, partialTick: Float) {
         val beams = LaserSightCapture.beams()
         if (beams.isEmpty()) return
 
-        castFirstPersonBeams(beams)
+        castFirstPersonBeams(beams, partialTick)
 
         poseStack.pushPose()
         try {
@@ -65,7 +67,22 @@ object LaserSightRenderer {
         }
     }
 
-    private fun castFirstPersonBeams(beams: List<LaserSightCapture.Beam>) {
+    /**
+     * 第一人称光束的截断：**从玩家眼睛**沿配件自身轴打一条射线，命中方块或实体都算数。
+     *
+     * 起点为什么不是出光口：出光口长在枪口上，比眼睛靠前约半米，贴着墙 / 站在拐角时它可能已经被方块
+     * 包住（或者正好压在墙沿外侧），射线一下就打回来，光束被截成几乎看不见的一小截 —— 而玩家的视线
+     * 明明是通的。从眼睛出发没有这个问题，也和 `OverlayTraceHandler` 那套眼睛射线（`TraceTool`）同一个口径。
+     *
+     * 方向仍然取**配件自身轴**（与画出来的光束严格同向），所以这条射线和光束是"平行、错开半米"的两条线：
+     * 命中点落在眼睛射线上，得投影回光束轴（`dot(命中点 − 出光口, 轴)`）才是"从出光口量出去有多长" ——
+     * 直接拿眼睛到命中点的距离去画，近处光斑会陷进墙里半米。
+     *
+     * 实体过滤沿用枪的射线那套（`GunItem.shoot`）：旁观、死者、自己和自己的载具都不挡光；
+     * 另外**弹射物一律排除** —— 刚打出去的子弹就飞在枪口前方几厘米处，不排除的话每开一枪激光都会被
+     * 自己的子弹截断一下。飞行中的子弹也不该是"挡光的东西"。
+     */
+    private fun castFirstPersonBeams(beams: List<LaserSightCapture.Beam>, partialTick: Float) {
         val firstPerson = beams.filter { it.firstPerson }
         if (firstPerson.isEmpty()) return
 
@@ -74,26 +91,41 @@ object LaserSightRenderer {
         val camera = mc.gameRenderer.mainCamera
 
         val viewToWorld = BedrockBoneCoordinateTool.cameraRotationInverse(camera)
+        val eye = player.getEyePosition(partialTick)
 
         for (beam in firstPerson) {
             // 相机在渲染空间的原点，所以渲染空间的点就是"相对相机的世界偏移"
-            val startWorld = camera.position.add(rotate(viewToWorld, beam.viewOrigin))
+            val muzzleWorld = camera.position.add(rotate(viewToWorld, beam.viewOrigin))
             val directionWorld = rotate(viewToWorld, beam.viewDirection).normalize()
             // 本地单位 → 世界米：骨骼带 scale 时本地一单位不是一格
             val rangeWorld = resolveLength(beam.info, true) * beam.axisScale
+            val rayEnd = eye.add(directionWorld.scale(rangeWorld))
 
-            val hit = level.clip(
-                ClipContext(
-                    startWorld,
-                    startWorld.add(directionWorld.scale(rangeWorld)),
-                    ClipContext.Block.COLLIDER,
-                    ClipContext.Fluid.NONE,
-                    player,
-                )
-            )
-            if (hit.type != HitResult.Type.BLOCK) continue
+            val blockLocation = level.clip(
+                ClipContext(eye, rayEnd, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player)
+            ).takeIf { it.type == HitResult.Type.BLOCK }?.location
 
-            beam.hitDistance = hit.location.distanceTo(startWorld) / beam.axisScale
+            val entityLocation = ProjectileUtil.getEntityHitResult(
+                player,
+                eye,
+                rayEnd,
+                player.boundingBox.expandTowards(directionWorld.scale(rangeWorld)).inflate(1.0),
+                { !it.isSpectator && it.isAlive && it !== player && it !== player.vehicle && it !is Projectile },
+                // 第六个参数是距离的平方（和 `GunItem.shoot` 里同一个口径）
+                rangeWorld * rangeWorld,
+            )?.location
+
+            // 方块和实体取更近的那个；都没命中就不截断，光束画满配置长度
+            val hit = when {
+                blockLocation == null -> entityLocation
+                entityLocation == null -> blockLocation
+                blockLocation.distanceToSqr(eye) <= entityLocation.distanceToSqr(eye) -> blockLocation
+                else -> entityLocation
+            } ?: continue
+
+            // 命中点投影回光束轴，换算回本地单位（`emitBeam` 的口径）；出光口已越过命中面时夹到 0，由 MinLength 兜底
+            beam.hitDistance =
+                (hit.subtract(muzzleWorld).dot(directionWorld) / beam.axisScale).coerceAtLeast(0.0)
             beam.hasHit = true
         }
     }
@@ -110,7 +142,7 @@ object LaserSightRenderer {
         val half = resolveHalfWidth(info, beam.firstPerson)
         if (half <= 0.0) return
 
-        // 截断长度：命中距离（没命中就是配置长度）
+        // 截断长度：命中距离（方块或实体；没命中就是配置长度）
         val truncated = if (beam.hasHit) beam.hitDistance.coerceIn(0.0, configured) else configured
 
         val drawn = truncated.coerceAtLeast(resolveMinLength(info)).coerceAtMost(configured)

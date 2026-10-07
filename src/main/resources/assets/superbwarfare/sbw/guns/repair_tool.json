@@ -1,12 +1,38 @@
 {
+  "SlotIcon": "superbwarfare:textures/item/repair_tool_icon.png",
+  "ShootRecoil": {
+    "Offset": [0, 0, 0],
+    "Rotation": [0, 0, 0],
+    "ZoomRate": 1.0,
+    "Speed": 1.0
+  },
   "Model": {
-    "Animation": "superbwarfare:animations/repair_tool.animation.json",
-    "Model": "superbwarfare:geo/repair_tool.geo.json",
-    "Texture": "superbwarfare:textures/item/repair_tool.png"
+    "Animation": "superbwarfare:animations/bedrock/gun/repair_tool.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/repair_tool.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/repair_tool.png"
   },
   "Animation": {
     "Idle": "animation.repair_tool.idle",
-    "Fire": "animation.repair_tool.fire"
+    "FireLoop": "animation.repair_tool.fire_loop",
+    "FireLoopFadeIn": 0.1,
+    "FireLoopFadeOut": 0.3,
+    "Edit": "animation.repair_tool.edit"
+  },
+  "HasSmoke": true,
+  "FlareSize": 0.1,
+  "Smoke": {
+    "Size": 0.45,
+    "Growth": 0.25,
+    "Lifetime": 0.3,
+    "Speed": 0.4,
+    "Count": 2,
+    "Opacity": 0.9,
+    "Drag": 2,
+    "RandomSize": 0.05,
+    "RandomGrowth": 0.2,
+    "RandomLifetime": 0.2,
+    "RandomSpeed": 0.2,
+    "RandomOpacity": 0.1
   },
   "EnergyBarColor": "0xFFFF00",
   "CanZoom": false

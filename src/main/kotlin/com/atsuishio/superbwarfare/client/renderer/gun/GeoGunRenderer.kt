@@ -568,7 +568,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             // 那一族）正好落在 AR 会加速的那批格式里 —— 走出这个块，它的顶点会被 AR 推迟到帧尾，
             // 那时模板状态早就换了，光束就会整根盖到镜筒里外。
             if (transformType.firstPerson() || transformType == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
-                LaserSightRenderer.render(poseStack, bufferSource)
+                LaserSightRenderer.render(poseStack, bufferSource, partialTick)
             }
         } finally {
             if (vanillaAcceleration) {

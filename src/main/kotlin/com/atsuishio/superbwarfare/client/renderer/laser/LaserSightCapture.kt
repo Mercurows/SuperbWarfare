@@ -73,10 +73,15 @@ object LaserSightCapture {
         /** 矩阵沿出光轴的缩放：本地长度 × 它 = 世界米。正常骨骼是 1 */
         val axisScale: Float,
     ) {
-        /** 命中点距出光口的距离 */
+        /**
+         * 命中点**投影到光束轴**之后、走出光口量出去的长度，本地单位（世界米 ÷ [axisScale]）。
+         *
+         * 射线是`LaserSightRenderer.castFirstPersonBeams` 从**玩家眼睛**打出去的，和这条光束平行、
+         * 错开半米，所以不能拿眼睛到命中点的距离直接用，见那边的注释。
+         */
         var hitDistance: Double = 0.0
 
-        /** 是否命中了方块（没命中就不截断、也不画落点光斑） */
+        /** 是否命中了东西（方块或实体，弹射物不算；没命中就不截断、也不画落点光斑） */
         var hasHit: Boolean = false
     }
 }

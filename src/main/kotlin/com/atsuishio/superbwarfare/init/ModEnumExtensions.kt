@@ -140,5 +140,20 @@ object ModEnumExtensions {
 
         val superStarShooterPose: ArmPose
             get() = SUPERBWARFARE_SUPER_STAR_SHOOTER_POSE.getValue()
+
+        @JvmField
+        val REPAIR_TOOL_POSE: EnumProxy<ArmPose> = EnumProxy(
+            ArmPose::class.java,
+            false,
+            IArmPoseTransformer { model, _, arm ->
+                if (arm != HumanoidArm.LEFT) {
+                    model.rightArm.xRot = -67.5f * Mth.DEG_TO_RAD + model.head.xRot + 0.05f * model.rightArm.xRot
+                    model.rightArm.yRot = 5f * Mth.DEG_TO_RAD + model.head.yRot
+                }
+            }
+        )
+
+        val repairToolPose: ArmPose
+            get() = REPAIR_TOOL_POSE.getValue()
     }
 }
