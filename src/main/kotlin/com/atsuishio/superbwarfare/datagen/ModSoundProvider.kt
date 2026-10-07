@@ -498,7 +498,7 @@ class ModSoundProvider(output: PackOutput, existingFileHelper: ExistingFileHelpe
         // -------------------- gun/vector --------------------
         group(
             "gun/vector", "vector_fire_1p", "vector_fire_3p", "vector_far", "vector_veryfar", "vector_fire_1p_s",
-            "vector_fire_3p_s", "vector_reload_normal", "vector_reload_empty",
+            "vector_fire_3p_s", "vector_mag_out", "vector_mag_in", "vector_bolt",
         )
 
         // ==================== 载具 ====================

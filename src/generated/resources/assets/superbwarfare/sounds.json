@@ -3215,6 +3215,11 @@
       "superbwarfare:type63/ty63_reload"
     ]
   },
+  "vector_bolt": {
+    "sounds": [
+      "superbwarfare:gun/vector/vector_bolt"
+    ]
+  },
   "vector_far": {
     "sounds": [
       "superbwarfare:gun/vector/vector_far"
@@ -3240,14 +3245,14 @@
       "superbwarfare:gun/vector/vector_fire_3p_s"
     ]
   },
-  "vector_reload_empty": {
+  "vector_mag_in": {
     "sounds": [
-      "superbwarfare:gun/vector/vector_reload_empty"
+      "superbwarfare:gun/vector/vector_mag_in"
     ]
   },
-  "vector_reload_normal": {
+  "vector_mag_out": {
     "sounds": [
-      "superbwarfare:gun/vector/vector_reload_normal"
+      "superbwarfare:gun/vector/vector_mag_out"
     ]
   },
   "vector_veryfar": {

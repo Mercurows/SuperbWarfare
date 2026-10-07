@@ -1307,7 +1307,7 @@ class GunData private constructor(
                 return this.perk.getInstances(type)
                     .minOfOrNull { it.perk.getModifiedDamageReduceRate(this.rawDamageReduce) } ?: continue
             }
-            return this.rawDamageReduce.rate
+            return this.rawDamageReduce.getDamageRate()
         }
 
     /** Modified damage reduction minimum distance. */
@@ -1317,7 +1317,7 @@ class GunData private constructor(
                 return this.perk.getInstances(type)
                     .minOfOrNull { it.perk.getModifiedDamageReduceMinDistance(this.rawDamageReduce) } ?: continue
             }
-            return this.rawDamageReduce.minDistance
+            return this.rawDamageReduce.getDamageMinDistance()
         }
 
     /**
