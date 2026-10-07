@@ -33,7 +33,7 @@ import net.minecraftforge.common.ForgeConfigSpec
  *   枪数据里没声明过配件的槽位在界面上仍是"不可用"，此时用指令安装。
  *
  * ⚠ **关掉配置不会回收已经装上的配件**：两档都只管**新安装**（判定挂在写入路径 `set` / `cycle` 上）。
- * 开着自由改装装出"刺刀 + 消音器"之后再关掉，那把枪**仍然保持**那个组合，只是之后改不回同样的组合；
+ * 开着自由改装装出"握把 + 副武器"之后再关掉，那把枪**仍然保持**那个组合，只是之后改不回同样的组合；
  * 要清掉就用 `/sbw attachment clear`。
  */
 object AttachmentConfig {
@@ -41,8 +41,8 @@ object AttachmentConfig {
     /**
      * 自由改装模式（默认关）：
      *
-     * 忽略配件**挂点组互斥**与配件数据里的 `ConflictsWith`，例如刺刀与枪口配件（消音器/制退器）
-     * 可以同时装、握把/刺刀/副武器三者可以同时装。
+     * 忽略配件**挂点组互斥**与配件数据里的 `ConflictsWith`，例如握把与副武器可以同时装
+     * （刺刀是枪口配件的一种，同样能与副武器共存）。
      *
      * 配件**仍然必须**出现在这把枪数据的 `AvailableAttachments` 里 —— 这一档只解决
      * "同一根导轨上抢位置"的问题，不解决"这把枪根本没有这个槽位"的问题，
@@ -52,8 +52,8 @@ object AttachmentConfig {
     val FREE_ATTACHMENT_MODE = buildServerConfig {
         push("attachment")
 
-        comment("Set true to ignore attachment mount conflicts (e.g. bayonet + muzzle device, grip/bayonet + sub-weapon)")
-        comment("是否开启自由改装模式：忽略配件挂点组互斥，例如刺刀与枪口配件、握把/刺刀/副武器可以同时安装")
+        comment("Set true to ignore attachment mount conflicts (e.g. grip/bayonet + sub-weapon)")
+        comment("是否开启自由改装模式：忽略配件挂点组互斥，例如握把与副武器、刺刀与副武器可以同时安装")
         define("free_attachment_mode", false)
     }
 
@@ -63,7 +63,7 @@ object AttachmentConfig {
      * 任意枪械都能安装该槽位**已注册的全部配件**，即使它的 `AvailableAttachments` 里一条都没写。
      *
      * ⚠ 这一档是给整合包作者 / 调试 / 沙盒玩法准备的，代价是**表现与数值都可能不合理**：
-     * - 枪模型里没有对应骨骼（`scope_pos` / `muzzle_pos` / `bayonet_pos` …）时配件**静默不渲染**，
+     * - 枪模型里没有对应骨骼（`scope_pos` / `muzzle_pos` / `grip_pos` …）时配件**静默不渲染**，
      *   只有数值生效；
      * - 挂上副武器（`SubWeapon` 配件）会真的装配出第二把枪（`SubWeaponRuntime`），
      *   但它的枪口焰/瞄准位形依赖宿主枪模型里的挂点骨骼；

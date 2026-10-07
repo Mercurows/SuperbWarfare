@@ -107,6 +107,17 @@ data class AttachmentDefinition(
     @SerialName("Bipod")
     val hasBipod: Boolean = false,
 
+    /**
+     * 刺刀型枪口配件。
+     *
+     * 刺刀已经并入枪口槽（[AttachmentType.MUZZLE]），槽位本身不再区分它——这个标记只负责两件事：
+     * 在tooltip里标出"枪刺功能"，以及与副武器（[AttachmentType.SUBWEAPON]）互斥
+     * （两者抢的是前段同一处导轨，见 [AttachmentSlots.declaredConflicts]）。
+     * 除这两点外，它的外观与行为与普通枪口配件完全一致。
+     */
+    @SerialName("IsBayonet")
+    val isBayonet: Boolean = false,
+
     @SerialName("Modifiers")
     val modifiers: List<AttachmentModifier> = emptyList(),
 

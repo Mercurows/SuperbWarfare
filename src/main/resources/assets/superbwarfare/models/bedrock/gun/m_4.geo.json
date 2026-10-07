@@ -10720,11 +10720,6 @@
 					"pivot": [0, 2.41016, -24.06328]
 				},
 				{
-					"name": "bayonet_pos",
-					"parent": "positioning2",
-					"pivot": [0, 2.41016, -24.06328]
-				},
-				{
 					"name": "grip_pos",
 					"parent": "positioning2",
 					"pivot": [0, 1.31172, -11.92969]

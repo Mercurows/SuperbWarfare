@@ -545,7 +545,14 @@ class ModItemTagProvider(
             ModItems.CROSS_MUZZLE,
             ModItems.STAR_MUZZLE,
             ModItems.LOVE_MUZZLE,
-            ModItems.STEEL_PIPE_SILENCER
+            ModItems.STEEL_PIPE_SILENCER,
+            // 刺刀是枪口配件的一种（`IsBayonet`），住同一个 tag
+            ModItems.BAYONET_M_9,
+            ModItems.BAYONET_6KH2,
+            ModItems.BAYONET_SEITENGEWEHR_84,
+            ModItems.BAYONET_M_91_30,
+            ModItems.BAYONET_TRIANGULAR,
+            ModItems.BAYONET_M1917
         ),
         AttachmentType.SCOPE to listOf(
             ModItems.SCOPE_COYOTE,
@@ -578,14 +585,6 @@ class ModItemTagProvider(
             ModItems.GRIP_CQR_GEN2,
             ModItems.GRIP_VERTICAL_BIPOD,
             ModItems.STEEL_PIPE_GRIP
-        ),
-        AttachmentType.BAYONET to listOf(
-            ModItems.BAYONET_M_9,
-            ModItems.BAYONET_6KH2,
-            ModItems.BAYONET_SEITENGEWEHR_84,
-            ModItems.BAYONET_M_91_30,
-            ModItems.BAYONET_TRIANGULAR,
-            ModItems.BAYONET_M1917
         ),
         AttachmentType.SUBWEAPON to listOf(
             ModItems.SUB_WEAPON_GP_25

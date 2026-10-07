@@ -7916,11 +7916,6 @@
 					"pivot": [0, 2.98828, -24.7]
 				},
 				{
-					"name": "bayonet_pos",
-					"parent": "root",
-					"pivot": [0, 2.9883, -24.7]
-				},
-				{
 					"name": "bolt",
 					"parent": "root",
 					"pivot": [0, 1.80089, -3.24161],
