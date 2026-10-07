@@ -85,16 +85,21 @@ open class Perk(val descriptionId: String, val type: Type) : PropertyModifier<Gu
 
     /**
      * 用于处理武器伤害衰减比率
+     *
+     * 未覆盖时回落到 [DamageReduce.getDamageRate]，即 `Type` 的预设值——
+     * 直接读 `rate` 会让所有只写了 `Type` 的枪（绝大多数）衰减率变成 0。
      */
     open fun getModifiedDamageReduceRate(reduce: DamageReduce?): Double {
-        return reduce?.rate ?: 0.0
+        return reduce?.getDamageRate() ?: 0.0
     }
 
     /**
      * 用于处理武器伤害衰减最小距离
+     *
+     * 未覆盖时回落到 [DamageReduce.getDamageMinDistance]，理由同上。
      */
     open fun getModifiedDamageReduceMinDistance(reduce: DamageReduce?): Double {
-        return reduce?.minDistance ?: 0.0
+        return reduce?.getDamageMinDistance() ?: 0.0
     }
 
     /**
