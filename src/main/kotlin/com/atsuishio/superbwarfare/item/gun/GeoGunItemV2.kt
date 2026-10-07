@@ -18,7 +18,7 @@ open class GeoGunItemV2(properties: Properties) : GunItem(properties) {
     override fun initializeClient(consumer: Consumer<IClientItemExtensions>) {
         super.initializeClient(consumer)
         consumer.accept(object : IClientItemExtensions {
-            private val renderer by lazy { GeoGunRenderer() }
+            private val renderer by lazy { createRenderer() }
 
             override fun getCustomRenderer() = renderer
 
@@ -31,6 +31,13 @@ open class GeoGunItemV2(properties: Properties) : GunItem(properties) {
             }
         })
     }
+
+    /**
+     * 这个物品用哪个渲染器。需要特殊渲染的枪（比如修理工具的逐帧火焰）覆写它换成自己的子类，
+     * 别的枪一律走 [GeoGunRenderer] 的常规路径，不需要知道这个方法存在。
+     */
+    @OnlyIn(Dist.CLIENT)
+    open fun createRenderer(): GeoGunRenderer = GeoGunRenderer()
 
     @OnlyIn(Dist.CLIENT)
     open fun armPose(
