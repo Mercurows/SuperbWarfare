@@ -1,18 +1,7 @@
 package com.atsuishio.superbwarfare.resource.gun
 
 /**
- * 近战动作动画名（`MeleeActions.Animation`）的拼接规则。
- *
- * 动作表写在**枪械数据**里，而一份数据会被多把枪共用（配件、弹种、开火模式都能覆盖它），
- * 所以动作表里**写不了某一把枪的完整 clip 名**——`animation.ak_47.hit` 里的 `ak_47`
- * 只有运行时才知道（`GunResource` 本来就是按物品注册 id 缓存的）。
- *
- * 于是约定：
- * - 以 `animation.` 开头 → 当成**全名**，原样使用（现有数据全是这种写法，行为不变）；
- * - 其它 → 当成**短名**，拼成 `animation.<枪 id 的 path>.<短名>`。
- *
- * 这样配件就能写 `"Animation": ["hit_bayonet", "hit"]`：哪把枪做了 `hit_bayonet` 就用专属动画，
- * 没做的自动退回它自己的 `hit`，配件数据一个字都不用改。
+ * 近战动作动画名（`MeleeActions.Animation`）的拼接规则
  */
 object GunAnimationNames {
 

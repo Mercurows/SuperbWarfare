@@ -3,15 +3,15 @@ package com.atsuishio.superbwarfare.client.gun
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.gun.SubWeaponClientHandler.tick
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
+import com.atsuishio.superbwarfare.data.gun.ActiveGun
 import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.data.gun.subweapon.SubWeaponRuntime
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.network.message.send.SubWeaponDeployMessage
 import com.atsuishio.superbwarfare.resource.gun.GunResource
-import com.atsuishio.superbwarfare.subweapon.SubWeaponRuntime
-import com.atsuishio.superbwarfare.tools.ActiveGun
 import com.atsuishio.superbwarfare.tools.sendPacketToServer
 import net.minecraft.world.entity.player.Player
 
