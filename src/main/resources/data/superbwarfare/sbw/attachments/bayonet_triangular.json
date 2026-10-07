@@ -1,6 +1,7 @@
 {
-  "Slot": "Bayonet",
-  "Bone": "bayonet_pos",
+  "Slot": "Muzzle",
+  "Bone": "muzzle_pos",
+  "IsBayonet": true,
   "Modifiers": [
     {
       "Prop": "MeleeDamage",

@@ -69,6 +69,12 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
                 add(propertyComponent("bipod").withStyle(ChatFormatting.GREEN))
             }
 
+            // 刺刀并入枪口槽后，槽位名与普通枪口配件相同（`[枪口配件]`），
+            // 靠这一行把"枪刺功能"标出来
+            if (definition.isBayonet) {
+                add(propertyComponent("bayonet").withStyle(ChatFormatting.GREEN))
+            }
+
             soundRadiusLine(definition.soundRadiusMultiplier)?.let(::add)
             muzzleFlashLine(definition.muzzleFlashScale)?.let(::add)
         }

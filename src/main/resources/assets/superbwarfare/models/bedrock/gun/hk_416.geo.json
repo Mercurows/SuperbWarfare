@@ -8716,11 +8716,6 @@
 					"pivot": [0, 1.3117, -11.9297]
 				},
 				{
-					"name": "bayonet_pos",
-					"parent": "positioning2",
-					"pivot": [0, 2.41016, -22.81328]
-				},
-				{
 					"name": "charm_pos",
 					"parent": "positioning2",
 					"pivot": [0.8284, 2.39339, 1.75676]

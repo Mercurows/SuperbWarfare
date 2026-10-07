@@ -47,10 +47,11 @@ enum class AttachmentRenderMode {
  * 槽位相关的规则都从这张表读：挂点互斥、物品 tag、datagen、改装界面按钮、调试聚焦、通用渲染，
  * 新增一种槽位 = 加一个 [AttachmentType] 枚举常量 + 在这里登记一条
  *
- * @param mount 挂点组名，登记到同一组的槽位互斥（例如刺刀与枪口配件都在 `muzzle_device`），
+ * @param mount 挂点组名，登记到同一组的槽位互斥（例如上下左右四根导轨各占一组），
  *   不同组的槽位可以共存，配件可以用 [AttachmentDefinition.mount] 覆盖所在槽位的默认值
  * @param conflictsWith 额外互斥的槽位，挂点组是传递的等价关系，表达不了"副武器排斥刺刀与握把、
- *   但刺刀与握把可以共存"这种非传递组合，所以这类规则写在这里
+ *   但刺刀与握把可以共存"这种非传递组合，所以这类规则写在这里（刺刀那一侧由配件自己的
+ *   [AttachmentDefinition.isBayonet] 在 [declaredConflicts] 里补上，因为刺刀已并入枪口槽）
  * @param tagBucket 物品 tag 的桶名（`superbwarfare:attachment/<tagBucket>`），null 表示不生成 tag
  * @param icon 改装界面上的槽位图标（`textures/gui/attachment/<icon>.png`），界面目前还自己硬编码贴图，
  *   这里是给界面重写预留的槽位 → 图标映射
@@ -70,7 +71,7 @@ data class AttachmentSlot(
     val withdrawAmmoOnChange: Boolean = false,
     val researchable: Boolean = true,
 ) {
-    /** 槽位的物品 tag 名，例如 `attachment/bayonet` */
+    /** 槽位的物品 tag 名，例如 `attachment/muzzle` */
     val tagName: String? get() = tagBucket?.let { "attachment/$it" }
 }
 
@@ -97,7 +98,6 @@ object AttachmentSlots {
         const val GRIP = "grip_pos"
         const val STOCK = "stock_pos"
         const val MAGAZINE = "magazine_pos"
-        const val BAYONET = "bayonet_pos"
         const val SUBWEAPON = "sub_weapon_pos"
         const val CHARM = "charm_pos"
 
@@ -163,6 +163,8 @@ object AttachmentSlots {
             renderMode = AttachmentRenderMode.CUSTOM,
             withdrawAmmoOnChange = true,
         ),
+        // 枪口槽同时收留刺刀：刺刀不再是独立槽位，而是"带 `IsBayonet` 标记的枪口配件"，
+        // 于是它与消音器/制退器的互斥由"同一个槽位"自动成立，挂点也与它们一样用 `muzzle_pos`
         AttachmentSlot(
             type = AttachmentType.MUZZLE,
             mount = "muzzle_device",
@@ -192,21 +194,10 @@ object AttachmentSlots {
             focusBone = Bones.GRIP,
             renderMode = AttachmentRenderMode.CUSTOM,
         ),
-        // 刺刀与枪口配件（消音器/制退器）抢同一个枪口挂点，装了其中一个就装不了另一个
-        // 挂载骨骼用 FromDefinition：刺刀卡在枪口上，而"枪口"这根骨骼各枪叫法不同
-        //（有的叫 bayonet_pos，有的只有 muzzle_pos）
-        AttachmentSlot(
-            type = AttachmentType.BAYONET,
-            mount = "muzzle_device",
-            tagBucket = "bayonet",
-            icon = "bayonet",
-            mountBone = AttachmentMountBone.FromDefinition(Bones.BAYONET),
-            focusBone = Bones.BAYONET,
-            renderMode = AttachmentRenderMode.GENERIC,
-        ),
         // 副武器（下挂榴弹发射器这类），挂点组与握把分开：挂点组是传递的等价关系，
         // 并进 grip_rail 会把它和"所有 grip_rail 上的槽位"绑成一团，这里要的是非传递互斥 ——
         // 副武器排斥刺刀、握把与下导轨，但这三者彼此可以共存，所以用 conflictsWith 显式点名。
+        // 刺刀已并入枪口槽，那一侧不在这里登记：由 `declaredConflicts` 按配件的 `IsBayonet` 推出。
         // 下导轨（脚架）算进来是因为它和副武器抢的是护木下方同一块位置，物理上装不下两个；
         // `conflicts` 是对称判定的（任一方点名即互斥），所以只在这一侧登记就够了
         AttachmentSlot(
@@ -215,7 +206,7 @@ object AttachmentSlots {
             tagBucket = "subweapon",
             icon = "subweapon",
             mountBone = AttachmentMountBone.FromDefinition(Bones.SUBWEAPON),
-            conflictsWith = setOf(AttachmentType.BAYONET, AttachmentType.GRIP, AttachmentType.LOWER_RAIL),
+            conflictsWith = setOf(AttachmentType.GRIP, AttachmentType.LOWER_RAIL),
             focusBone = Bones.SUBWEAPON,
             renderMode = AttachmentRenderMode.GENERIC,
         ),
@@ -287,7 +278,6 @@ object AttachmentSlots {
         AttachmentEditTarget.Slot(of(AttachmentType.STOCK)),
         AttachmentEditTarget.Slot(of(AttachmentType.MAGAZINE)),
         AttachmentEditTarget.AmmoType,
-        AttachmentEditTarget.Slot(of(AttachmentType.BAYONET)),
         AttachmentEditTarget.Slot(of(AttachmentType.SUBWEAPON)),
         AttachmentEditTarget.Slot(of(AttachmentType.CHARM)),
         AttachmentEditTarget.Slot(of(AttachmentType.LOWER_RAIL)),
@@ -315,15 +305,17 @@ object AttachmentSlots {
         definition?.mount ?: of(type).mount
 
     /**
-     * [type]（实际装的是 [definition]）显式声明互斥的槽位：槽位登记项与配件声明的并集
+     * [type]（实际装的是 [definition]）显式声明互斥的槽位：槽位登记项、配件声明的与 [AttachmentDefinition.isBayonet] 推出的并集
      *
-     * 与挂点组不同，这份名单不传递，所以"副武器排斥刺刀与握把、但刺刀与握把共存"可以表达
+     * 与挂点组不同，这份名单不传递，所以"副武器排斥刺刀与握把、但刺刀与握把共存"可以表达。
+     * 刺刀那一侧不写在槽位登记项里：它现在是枪口槽的配件，互斥与否由配件自己的 [AttachmentDefinition.isBayonet] 决定
      */
     @JvmStatic
     fun declaredConflicts(type: AttachmentType, definition: AttachmentDefinition? = null): Set<AttachmentType> {
         val slot = ofOrNull(type)?.conflictsWith.orEmpty()
         val declared = definition?.conflictsWith.orEmpty()
-        return if (declared.isEmpty()) slot else slot + declared
+        val bayonet = if (definition?.isBayonet == true) setOf(AttachmentType.SUBWEAPON) else emptySet()
+        return slot + declared + bayonet
     }
 
     /**

@@ -3822,11 +3822,6 @@
 					"pivot": [0, 2.6641, -42.6625]
 				},
 				{
-					"name": "bayonet_pos",
-					"parent": "root",
-					"pivot": [0, 2.6641, -42.6625]
-				},
-				{
 					"name": "flare",
 					"parent": "root",
 					"pivot": [0, 2.66408, -42.6625]

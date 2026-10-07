@@ -56,11 +56,6 @@
 					"pivot": [0, 2.1311, -33.3509]
 				},
 				{
-					"name": "bayonet_pos",
-					"parent": "positioning2",
-					"pivot": [0, 2.1311, -33.3509]
-				},
-				{
 					"name": "custom_hand_guard",
 					"parent": "positioning2",
 					"pivot": [0, 0.37099, -15.63643],
