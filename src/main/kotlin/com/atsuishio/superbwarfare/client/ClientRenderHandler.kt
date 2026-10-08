@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.client
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.client.ClientRenderHandler.OFFSET_TTL
+import com.atsuishio.superbwarfare.client.ClientRenderHandler.bulletRenderOffset
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves
 import com.atsuishio.superbwarfare.client.decorator.ContainerItemDecorator
 import com.atsuishio.superbwarfare.client.decorator.LuckyContainerItemDecorator
@@ -33,6 +35,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 import org.joml.Vector2f
 import org.joml.Vector3f
 import top.theillusivec4.curios.api.client.CuriosRendererRegistry
+import kotlin.math.atan2
 import kotlin.math.min
 
 @net.minecraftforge.fml.common.Mod.EventBusSubscriber(
@@ -46,21 +49,6 @@ object ClientRenderHandler {
 
     /**
      * 本地玩家**枪口相对视角定位点的偏移**（世界轴向量），由枪械渲染在开火窗口里写进来
-     * （`GeoGunRenderer.submitMuzzleOffset`）。
-     *
-     * 子弹是按服务器给的坐标画的，而服务器把它从 `Vec3(x, eyeY, z)` —— **眼睛**上打出去
-     * （`GunItem.shoot`），所以刚出膛那几帧它画在脸上而不是枪管上。补上"枪口 − 视角定位点"
-     * 这段偏差，它就正好落在枪管上：定位点每帧被 `applyFirstPersonPositioningTransform`
-     * 钉在相机原点上，所以这段差值就是枪口相对玩家视角的位置。
-     *
-     * ⚠ 存的是**偏移量（向量）而不是枪口的世界坐标**，这是它和"记一个目标点再蹭过去"的关键区别。
-     * 枪口长在跟着视角转的枪上，一旦换算成世界坐标，那个点就在开火那一瞬间定死了：玩家一转头，
-     * 子弹就被拽向一个固定的世界位置 —— 看上去正是"没在枪口上，而且随视角上下左右转乱跑"。
-     * 偏移量不会：它跟着枪走，加到子弹自己的位置上，永远只补那一段固定偏差。
-     * 同一条教训见 `LaserSightCapture.Beam`：挂在枪上的东西留在渲染空间里用，只有向量/标量才去过世界坐标。
-     *
-     * 只给"刚出膛"的弹射物用，所以带有效期：开火窗口一过枪械渲染就不再刷新它，
-     * 这份偏移会在 [OFFSET_TTL] 内过期作废，免得把不相干的弹射物（别人打的、自己扔的手雷）也挪过去。
      */
     var bulletRenderOffset: Vec3? = null
         set(value) {
@@ -125,8 +113,8 @@ object ClientRenderHandler {
         if (front <= 1e-6f) return null
 
         return Vector2f(
-            Math.atan2(view.x.toDouble(), front.toDouble()).toFloat(),
-            Math.atan2(view.y.toDouble(), front.toDouble()).toFloat()
+            atan2(view.x.toDouble(), front.toDouble()).toFloat(),
+            atan2(view.y.toDouble(), front.toDouble()).toFloat()
         )
     }
 

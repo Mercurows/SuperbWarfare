@@ -1,5 +1,6 @@
 ﻿package com.atsuishio.superbwarfare.network.message.send
 
+import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.data.gun.ActiveGun
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.item.gun.GunItem
@@ -26,9 +27,12 @@ data class ShootMessage @JvmOverloads constructor(
         val stack = ActiveGun.stackOf(player)
         if (stack.item !is GunItem) return
 
-        // 客户端采到的"枪管此刻指向哪儿"（`ClientRenderHandler.muzzleDirection`，
-        // 由 `GeoGunRenderer.submitMuzzleSample` 每帧刷新）。拿不到就是 null，
-        // `GunItem.shoot` 会退回 `player.lookAngle` —— 服务端历来用的就是它。
-        from(stack).shoot(player, spread, zoom, uuid, targetPos?.toVec3(), power, direction?.toVec3())
+        val flag = try {
+            MiscConfig.REALISTIC_SHOOT_MODE.get()
+        } catch (_: Exception) {
+            false
+        }
+        val muzzleDirection = if (flag) direction?.toVec3() else null
+        from(stack).shoot(player, spread, zoom, uuid, targetPos?.toVec3(), power, muzzleDirection)
     }
 }

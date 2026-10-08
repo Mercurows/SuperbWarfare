@@ -27,8 +27,7 @@ import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModPerks
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.ItemScreenProvider
-import com.atsuishio.superbwarfare.item.gun.GunItem.Companion.isHeldWeapon
-import com.atsuishio.superbwarfare.item.gun.GunItem.Companion.isOperable
+import com.atsuishio.superbwarfare.item.gun.GunItem.Companion.resolveShootDirection
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.resource.gun.GunResource
@@ -1304,12 +1303,6 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     protected fun randomVec(vec3: Vec3, spread: Double): Vec3 =
         randomSpreadVec(this.random, vec3, spread)
 
-    /**
-     * 这把枪能不能打开改装界面。
-     *
-     * `SubWeaponItem` 覆写为 `false`：**副武器不具有配件**（四期）—— 它是装到枪上的一个部件，
-     * 让下挂榴弹自己再挂一个握把没有意义。改装界面与 `/sbw attachment` 都只对**主武器**生效。
-     */
     open fun canEditAttachments(data: GunData) = true
 
     open fun enableShootTimer() = false
@@ -1344,11 +1337,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
     companion object {
         /**
-         * 供 Java / Mixin 调用的静态入口：这个栈**手持时是否按"枪械"处理**。
-         *
-         * 与 [useAsWeaponInHand] 配对使用，是"手持边界"的统一谓词：
-         * 渲染/视角/输入/属性/HUD 这些门禁都该问它，而不是直接 `instanceof GunItem`
-         * （副武器物品继承 `GunItem`，但拿在手里时不是枪）。
+         * 这个物品算不算一把枪
          */
         @JvmStatic
         fun isHeldWeapon(stack: ItemStack?): Boolean {
@@ -1357,25 +1346,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         }
 
         /**
-         * 供 Java / Mixin 调用的静态入口：**这个栈现在能不能被当成一把枪来操作**
-         * （开火 / 换弹 / 瞄准 / 近战 / 动画状态机）。
-         *
-         * ### 为什么必须与 [isHeldWeapon] 分开（四期）
-         *
-         * 四期把"当前操控的枪"从主手物品解耦成了 `ActiveGun`，它**可以返回副武器的合成栈**；
-         * 而 `SubWeaponItem.useAsWeaponInHand()` 是 `false`（手持副武器**物品**时按普通物品处理），
-         * 于是所有 `if (!isHeldWeapon(stack)) return` 式的门禁都会把副武器整个挡在门外 ——
-         * 整套机制直接失效。
-         *
-         * 两个谓词的分工：
-         *
-         * | 谓词 | 回答的问题 | 用在哪 |
-         * |---|---|---|
-         * | [isHeldWeapon] | 这件**物品**被玩家拿在手里时算不算枪 | 渲染 / 视角 / HUD / 属性 / `inventoryTick` |
-         * | [isOperable] | 这个**栈**现在能不能被当枪操作 | 所有**已经通过 `ActiveGun` 解析出栈之后**的门禁 |
-         *
-         * ⚠ `inventoryTick` 那一侧**必须留在 [isHeldWeapon]**：它跑的是"拿在手上的枪"的状态机，
-         * 而副武器栈的状态由 `SubWeaponRuntime.tick` 显式推进 —— 换成这个谓词会让副武器被 tick 两遍。
+         * 这个物品现在能不能被当成一把枪来操作
          */
         @JvmStatic
         fun isOperable(stack: ItemStack?): Boolean {

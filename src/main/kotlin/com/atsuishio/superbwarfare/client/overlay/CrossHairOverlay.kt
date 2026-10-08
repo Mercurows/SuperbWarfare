@@ -122,24 +122,32 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
             }
         }
 
-        val rawOffset = if (mc.options.cameraType == CameraType.FIRST_PERSON) {
-            ClientRenderHandler.shotAimOffset()
-        } else {
-            null
+        val flag = try {
+            MiscConfig.REALISTIC_SHOOT_MODE.get()
+        } catch (_: Exception) {
+            false
         }
-        filterTrajectoryOffset(rawOffset?.x ?: 0f, rawOffset?.y ?: 0f)
 
-        if (filteredTrajectoryX != 0f || filteredTrajectoryY != 0f) {
-            // 参考距离处弹道偏了多少格（横向 / 垂直）
-            val driftAtRange = TRAJECTORY_REFERENCE_RANGE * tan(filteredTrajectoryX.toDouble())
-            val riseAtRange = TRAJECTORY_REFERENCE_RANGE * tan(filteredTrajectoryY.toDouble())
-            // 折算屏幕位移：MC 的 fov 是**垂直** fov，"参考距离处偏 h 格"在屏幕上就是
-            // h / 参考距离 / tan(fov/2) 个半屏高；横向共用同一个系数（投影的宽高比把它约掉）
-            val perBlock = 1.0 / TRAJECTORY_REFERENCE_RANGE /
-                    tan(Math.toRadians(ClientEventHandler.fov / 2.0)) * (screenHeight / 2.0)
-            moveX += (driftAtRange * perBlock).toFloat()
-            // GUI 的 y 向下为正，弹道偏上 = moveY 减小
-            moveY -= (riseAtRange * perBlock).toFloat()
+        if (flag) {
+            val rawOffset = if (mc.options.cameraType == CameraType.FIRST_PERSON) {
+                ClientRenderHandler.shotAimOffset()
+            } else {
+                null
+            }
+            filterTrajectoryOffset(rawOffset?.x ?: 0f, rawOffset?.y ?: 0f)
+
+            if (filteredTrajectoryX != 0f || filteredTrajectoryY != 0f) {
+                // 参考距离处弹道偏了多少格（横向 / 垂直）
+                val driftAtRange = TRAJECTORY_REFERENCE_RANGE * tan(filteredTrajectoryX.toDouble())
+                val riseAtRange = TRAJECTORY_REFERENCE_RANGE * tan(filteredTrajectoryY.toDouble())
+                // 折算屏幕位移：MC 的 fov 是**垂直** fov，"参考距离处偏 h 格"在屏幕上就是
+                // h / 参考距离 / tan(fov/2) 个半屏高；横向共用同一个系数（投影的宽高比把它约掉）
+                val perBlock = 1.0 / TRAJECTORY_REFERENCE_RANGE /
+                        tan(Math.toRadians(ClientEventHandler.fov / 2.0)) * (screenHeight / 2.0)
+                moveX += (driftAtRange * perBlock).toFloat()
+                // GUI 的 y 向下为正，弹道偏上 = moveY 减小
+                moveY -= (riseAtRange * perBlock).toFloat()
+            }
         }
 
         RenderSystem.disableDepthTest()
