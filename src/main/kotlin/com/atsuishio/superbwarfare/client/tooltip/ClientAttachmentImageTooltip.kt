@@ -341,6 +341,8 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
             "ReloadTime",
             "SoundRadius",
             "Spread",
+            // 瞄准时的呼吸晃动幅度：`Mul 0.8` 是"晃得轻了"，所以越小越好（绿色 -20%）
+            "Sway",
             "Weight",
             "ZoomTime",
         )

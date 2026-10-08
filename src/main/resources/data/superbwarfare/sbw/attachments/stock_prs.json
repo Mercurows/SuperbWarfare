@@ -12,6 +12,11 @@
       "Value": 0.88
     },
     {
+      "Prop": "Sway",
+      "Op": "Mul",
+      "Value": 0.8
+    },
+    {
       "Prop": "Weight",
       "Op": "Add",
       "Value": 2.2

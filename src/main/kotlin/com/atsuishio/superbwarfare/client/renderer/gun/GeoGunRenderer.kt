@@ -86,6 +86,7 @@ import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL11
 import java.lang.Math
 import java.util.*
+import kotlin.math.atan2
 import kotlin.math.roundToInt
 
 open class GeoGunRenderer : AbstractGeoItemRendererV2() {
@@ -609,6 +610,11 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             // 枪口焰刚从这个挂点钻出来，顺手把同一个挂点交给子弹：
             // 每帧交一份"枪管现在指向哪儿"，开火窗口里再交一份"虚拟出膛点"的偏移
             submitMuzzleSample(poseStack.last().pose(), model, stack, subWeaponFlare, attachmentMuzzleTransform)
+
+            val rootTransform = model.getRootBone()?.let { model.getGlobalTransform(it.index()) } ?: Matrix4f()
+            val rootUp = Matrix4f(poseStack.last().pose()).mul(rootTransform)
+                .transformDirection(0f, 1f, 0f, Vector3f())
+            ClientRenderHandler.gunRoll = atan2(rootUp.x, rootUp.y)
 
             ShellCasingFxRenderer.render(poseStack, model, stack, hand, bufferSource, packedLight)
 

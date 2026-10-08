@@ -30,7 +30,6 @@ import org.joml.Matrix3f
 import org.joml.Matrix4f
 import software.bernie.geckolib.cache.`object`.GeoBone
 import software.bernie.geckolib.core.animatable.model.CoreGeoBone
-import software.bernie.geckolib.core.animation.AnimationProcessor
 import software.bernie.geckolib.util.RenderUtils
 import thedarkcolour.kotlinforforge.forge.FORGE_BUS
 
@@ -114,17 +113,6 @@ object AnimationHelper {
         model.xRot = 0.0f
         model.yRot = 180 * Mth.DEG_TO_RAD
         model.zRot = 180 * Mth.DEG_TO_RAD
-    }
-
-    @JvmStatic
-    fun handleShellsAnimation(animationProcessor: AnimationProcessor<*>, x: Float, y: Float) {
-        val shell1 = animationProcessor.getBone("shell1")
-        val shell2 = animationProcessor.getBone("shell2")
-        val shell3 = animationProcessor.getBone("shell3")
-        val shell4 = animationProcessor.getBone("shell4")
-        val shell5 = animationProcessor.getBone("shell5")
-
-        ClientEventHandler.handleShells(x, y, shell1, shell2, shell3, shell4, shell5)
     }
 
     @JvmStatic

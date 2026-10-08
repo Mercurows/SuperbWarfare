@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
 import com.atsuishio.superbwarfare.client.animation.AnimationHelper;
-import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -98,21 +97,6 @@ public class TracheliumItemModel extends CustomGunModel<TracheliumItem> {
         }
 
         ClientEventHandler.handleShootAnimation(shen, 1.25f, -2f, 1.85f, 3.5f, 1.3f, 1f, 0.2f, 0.75f);
-
-        CrossHairOverlay.gunRot = shen.getRotZ();
-
-        hammer.setRotX(50 * Mth.DEG_TO_RAD * (float) ClientEventHandler.revolverPreTime);
-        lun.setRotZ(-60 * Mth.DEG_TO_RAD * (float) ClientEventHandler.revolverWheelPreTime);
-        CoreGeoBone ammo = getAnimationProcessor().getBone("ammo");
-        CoreGeoBone ammohole = getAnimationProcessor().getBone("ammohole");
-        ammo.setRotZ(60 * Mth.DEG_TO_RAD * (float) ClientEventHandler.revolverWheelPreTime);
-        ammohole.setRotZ(-60 * Mth.DEG_TO_RAD * (float) ClientEventHandler.revolverWheelPreTime);
-
-        if (data.reload.empty()) {
-            lun.setRotZ(0);
-            ammo.setRotZ(0);
-            ammohole.setRotZ(0);
-        }
 
         ClientEventHandler.gunRootMove(getAnimationProcessor(), 2, 0, 3, false);
 

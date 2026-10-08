@@ -1608,6 +1608,7 @@
   "prop.superbwarfare.sound_radius_multiplier": "开火音效范围",
   "prop.superbwarfare.muzzle_flash_scale": "枪口火焰大小",
   "prop.superbwarfare.zoom_time": "瞄准时间",
+  "prop.superbwarfare.sway": "瞄准晃动",
   "prop.superbwarfare.melee_damage": "近战伤害",
   "prop.superbwarfare.melee_range": "近战距离",
   "prop.superbwarfare.melee_headshot": "近战爆头倍率",

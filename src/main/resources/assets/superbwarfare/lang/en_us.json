@@ -1608,6 +1608,7 @@
   "prop.superbwarfare.sound_radius_multiplier": "Fire Sound Radius",
   "prop.superbwarfare.muzzle_flash_scale": "Muzzle Flash Size",
   "prop.superbwarfare.zoom_time": "Zoom Time",
+  "prop.superbwarfare.sway": "Aiming Sway",
   "prop.superbwarfare.melee_damage": "Melee Damage",
   "prop.superbwarfare.melee_range": "Melee Range",
   "prop.superbwarfare.melee_headshot": "Melee Headshot",

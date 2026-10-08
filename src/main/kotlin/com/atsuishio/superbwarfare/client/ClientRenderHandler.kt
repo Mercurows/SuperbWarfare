@@ -96,6 +96,22 @@ object ClientRenderHandler {
 
     private const val RETICLE_TTL = 200_000_000L
 
+    private var gunRollTime: Long = 0L
+
+    var gunRoll: Float = 0f
+        set(value) {
+            field = value
+            gunRollTime = System.nanoTime()
+        }
+
+    @JvmStatic
+    fun freshGunRoll(): Float? {
+        if (System.nanoTime() - gunRollTime > GUN_ROLL_TTL) return null
+        return gunRoll
+    }
+
+    private const val GUN_ROLL_TTL = 200_000_000L
+
     @JvmStatic
     fun shotAimOffset(): Vector2f? {
         val player = Minecraft.getInstance().player ?: return null

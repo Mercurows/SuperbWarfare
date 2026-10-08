@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.item.gun.special.BocekItem;
 import net.minecraft.client.Minecraft;
@@ -70,7 +69,6 @@ public class BocekItemModel extends CustomGunModel<BocekItem> {
 
         rightHand.setPosZ(rightHandPosZ);
 
-        CrossHairOverlay.gunRot = shen.getRotZ();
         ClientEventHandler.gunRootMove(getAnimationProcessor(), 0, 0, 0, true);
 
         CoreGeoBone camera = getAnimationProcessor().getBone("camera");

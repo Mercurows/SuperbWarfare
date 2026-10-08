@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.model.item;
 
-import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
@@ -104,7 +103,6 @@ public class Ql1031ItemModel extends CustomGunModel<Ql1031Item> {
             }
         }
 
-        CrossHairOverlay.gunRot = shen.getRotZ();
 
         CoreGeoBone flare = getAnimationProcessor().getBone("flare");
         // 0 = 无枪口配件，1 = 制退器（模型里对应的骨骼仍叫 BarrelN，见 ItemModelHelper）

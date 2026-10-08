@@ -25,19 +25,13 @@ import com.atsuishio.superbwarfare.data.attachment.SubWeaponInfo
 import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
-import com.atsuishio.superbwarfare.event.ClientEventHandler.boltMove
-import com.atsuishio.superbwarfare.event.ClientEventHandler.cameraRot
 import com.atsuishio.superbwarfare.event.ClientEventHandler.currentMeleeDuration
 import com.atsuishio.superbwarfare.event.ClientEventHandler.currentMeleeIndex
-import com.atsuishio.superbwarfare.event.ClientEventHandler.firePosTimer
-import com.atsuishio.superbwarfare.event.ClientEventHandler.fireRotTimer
 import com.atsuishio.superbwarfare.event.ClientEventHandler.handleClientShoot
 import com.atsuishio.superbwarfare.event.ClientEventHandler.handleGunRecoil
 import com.atsuishio.superbwarfare.event.ClientEventHandler.handleWeaponFire
 import com.atsuishio.superbwarfare.event.ClientEventHandler.isGunMeleeActive
 import com.atsuishio.superbwarfare.event.ClientEventHandler.resetGunTransientState
-import com.atsuishio.superbwarfare.event.ClientEventHandler.subWeaponFireRotTimer
-import com.atsuishio.superbwarfare.event.ClientEventHandler.subWeaponRecoilTimer
 import com.atsuishio.superbwarfare.event.ClientEventHandler.zoomTime
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.item.attachment.SubWeaponItem
@@ -108,14 +102,9 @@ object ClientEventHandler {
     @JvmField
     var zoomPosZ: Double = 0.0
 
-    /**
-     * 脚架视图过渡进度：0 为正常持枪视角（`idle_view`），1 为卧姿架设视角（`bipod_view`）。
-     */
     @JvmField
     var bipodViewTime: Double = 0.0
 
-    // 脚架视图过渡时长（秒）。getDelta() 返回的是每帧推进的 tick 数（Minecraft#getDeltaFrameTime），
-    // 1 秒累计 TICKS_PER_SECOND，因此换算成内部进度单位需要乘上它。
     private const val BIPOD_VIEW_DURATION_SECONDS = 0.35f
     private const val TICKS_PER_SECOND = 20f
 
@@ -188,57 +177,13 @@ object ClientEventHandler {
     @JvmField
     var fireRotTimer: Double = 0.0
 
-    /**
-     * 副武器开火窗口的起始值（与三期的 `SUB_WEAPON_FLASH_START` 同一个数）。
-     *
-     * `MuzzleFlashRenderer` 判的是 `0 < t < 0.3`，而 [handleWeaponFire] 每 tick 给它加
-     * `0.24 * times`（`times` 以 tick 计），所以从 0.001 起大约可见 1 tick。
-     */
     private const val SUB_WEAPON_FLASH_START = 0.001
 
-    /**
-     * 副武器开火时**镜头后坐**相位的起始值（与 `SUB_WEAPON_FLASH_START` 同一个数：同一发里两条
-     * 窗口一起开）。
-     *
-     * 形状照抄 [firePosTimer] —— `handleWeaponFire` 每 tick 加 `0.16 * times`、涨到 2.0 归零，
-     * 于是正好扫过 `decayingOscillation(0.6, 2, 2, ·)` 的四又三分之一周期。
-     */
     private const val SUB_WEAPON_RECOIL_START = 0.001
 
-    /**
-     * 副武器（下挂榴弹这类）开火的枪口焰计时。
-     *
-     * 与 [fireRotTimer] 共用一套阈值（`0 < t < 0.3` 期间可见、涨到 3.0 归零），但**刻意不复用**它：
-     * `fireRotTimer` 还会带动整把枪的后坐表现（`handleShootAnimationV2` 读它），而副武器的**枪身**
-     * 由它自己的开火动画（`fire_sub_weapon`）负责，两边叠加会抖两下。（**镜头**那一份后坐是另一条
-     * 与枪身无关的相位：[subWeaponRecoilTimer]。）
-     *
-     * 它同时是"这一簇枪口焰属于副武器"的标记：大于 0 时 `MuzzleFlashRenderer` 把火焰画在
-     * **副武器模型自己的 `flare` 骨骼**上，主武器的 `flare` 这段期间一帧都不画
-     * （副武器连 `flare` 骨骼都没有时就什么都不画，不退回主武器的枪口）。
-     */
     @JvmField
     var subWeaponFireRotTimer: Double = 0.0
 
-    /**
-     * 副武器开火时**镜头后坐**的相位计时（0 → 2.0，与 [firePosTimer] 同一形状）。
-     *
-     * ## 为什么不能直接借 [firePosTimer]
-     *
-     * 那是**一物三用**的：枪身位形（`handleShootAnimationV2`）、拉栓（[boltMove]）、
-     * 以及镜头（抬枪 + [cameraRot] 滚转）。副武器那一发的**枪身**两样都由宿主枪自己的开火动画
-     * 表现（`fire_sub_weapon`，动的是宿主枪的 `root`，峰值 7.4° / 4.7），借它会连拉栓一起借来
-     * ——**打榴弹时步枪拉栓**，与 §11.10.10 的"打榴弹时步枪抛壳"同族。
-     *
-     * 所以这里只留"相位"这**一个**语义：`RECOIL_X` / `RECOIL_Y` 打在哪，镜头就跟着动多少 ——
-     * 抬枪那一项（`handleGunRecoil`）与滚转那一项（[handleWeaponFire] 的 `shake`，幅度是
-     * `25000 · RECOIL_X · RECOIL_Y`）。⚠ 这两个消费者**此前都挂在 `firePosTimer > 0` 上**，
-     * 而副武器那一发 `fireRecoilTime == 0.0` → `firePosTimer` 恒为 0 → `RECOIL_X` 一个字节都
-     * 读不到（`RecoilY` 只剩"水平偏 `player.yRot`"那一条还活着）。
-     *
-     * 与 [subWeaponFireRotTimer] 同进同出（同一发一起开、主武器一开火一起清零），
-     * 于是 `handleGunRecoil` / [handleWeaponFire] 里两个相位**二选一**，不会叠加成"抖两下"。
-     */
     @JvmField
     var subWeaponRecoilTimer: Double = 0.0
 
@@ -332,15 +277,6 @@ object ClientEventHandler {
 
     @JvmField
     var drawTime: Double = 1.0
-
-    @JvmField
-    var shellIndex: Int = 0
-
-    @JvmField
-    var shellIndexTime = doubleArrayOf(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
-
-    @JvmField
-    var randomShell = doubleArrayOf(0.0, 0.0, 0.0)
 
     @JvmField
     var customZoom: Double = 0.0
@@ -2011,8 +1947,6 @@ object ClientEventHandler {
             fireCooldown = data.get(GunProp.BURST_COOLDOWN).toDouble()
         }
 
-        // 动作锁：开火占用 = 一个射击周期。连发期间会反复 acquire 同一个动作，
-        // `blocks()` 允许"自己"通过，所以不会卡住连射。
         val cycleTicks = if (mode == FireMode.BURST && burstFireAmount > 0) {
             data.get(GunProp.BURST_COOLDOWN)
         } else {
@@ -2032,27 +1966,15 @@ object ClientEventHandler {
 
         val minCustomRpm = data.get(GunProp.CUSTOM_RPM_MIN)
         val maxCustomRpm = data.get(GunProp.CUSTOM_RPM_MAX)
-        // 用 Mth.clamp 而不是 coerceIn：数据包写反上下限时也不会抛异常
         customRpm = Mth.clamp(customRpm + data.get(GunProp.RPM_ADD_AFTER_SHOOT), minCustomRpm, maxCustomRpm)
 
-        // 判断是否为栓动武器（BoltActionTime > 0），并在开火后给一个需要上膛的状态
-        // 这是纯客户端预测：用 updateLocal 只改内存，不写 stack、也不 bump revision。枪械数据由服务端
-        // 权威修改后同步（GunItem.beforeShoot 会在服务端设同一个字段），本地预测会在下一次同步被覆盖。
         if (data.get(GunProp.BOLT_ACTION_TIME) > 0 && data.hasEnoughAmmoToShoot(player)) {
             data.updateLocal { it.copy(needBoltAction = true) }
         }
 
-        revolverPreTime = 0.0
-        revolverWheelPreTime = 0.0
-
-        // 充能射击：本地音与本地后坐都在客户端自己算，服务端管不到，所以这里按与服务端同一套
-        // 判据（开镜 + 电量，见 `GunData.chargeActionFor`）判一次，命中就把本发属性换成
-        // ChargeAction 的 Override，让下面两次调用读到强化后的 SoundInfo / RECOIL_*。
         val chargeAction = data.chargeActionFor(zoom, player)
         data.setChargeAction(chargeAction)
         try {
-            // RECOIL_Y 在 handleClientShoot 里当场读，包进窗口即可；RECOIL_X/Y 的逐帧消费
-            // （相机抖动、抬枪）撑不到这里，所以开火时先记下来。
             chargedRecoilX = if (chargeAction != null) data.get(GunProp.RECOIL_X) else null
             chargedRecoilY = if (chargeAction != null) data.get(GunProp.RECOIL_Y) else null
 
@@ -2076,33 +1998,16 @@ object ClientEventHandler {
                 if (lockedEntity != null) lockedEntity!!.getUUID() else null,
                 null,
                 chargePower,
-                // 枪管此刻指向哪儿（上一帧采的位形 = 这一发的后坐顶上来之前），服务端拿它当开火方向
                 ClientRenderHandler.freshMuzzleDirection()
             )
         )
 
-        // 开火窗口：**主武器与副武器各有一个，二选一**（§11.9-D）。
-        //
-        // - 副武器开火 → 开 `subWeaponFireRotTimer`：枪口焰画在**副武器模型自己的** `flare` 上
-        //   （`MuzzleFlashRenderer` 的 subWeapon 分支），而且**不驱动整把枪的后坐** ——
-        //   那一发的后坐由副武器自己的 `fire_sub_weapon` 动画负责，两边叠加会抖两下。
-        // - 主武器开火 → 开 `fireRotTimer`，并把副武器的窗口清零：枪口焰立刻回到**主武器的**枪口。
-        //
-        // ⚠ 四期把"设置副武器那个窗口"的一行弄丢了：它原本在三期
-        // `SubWeaponClientHandler.playFireAnimation` 里（`subWeaponFireRotTimer = 0.001`，
-        // 由已删除的 `SubWeaponFiredMessage` 触发），四期删掉那条链路时**只搬来了清零的那一半**
-        // （下面原来那行 `subWeaponFireRotTimer = 0.0`），于是：
-        // 副武器开火时 `fireRotTimer` 照开 → **枪管前端喷火、整把枪跟着做后坐**，
-        // 而榴弹筒自己一帧枪口焰都没有。见 §11.10.11。
         if (ActiveGun.isSubWeapon(data)) {
             subWeaponFireRotTimer = SUB_WEAPON_FLASH_START
-            // 枪身位形与拉栓由副武器自己的开火动画（宿主枪的 `fire_sub_weapon`）表现，
-            // 但**镜头**要有后坐 —— 另开一个只驱动镜头的相位窗口（见 `subWeaponRecoilTimer`）
             subWeaponRecoilTimer = SUB_WEAPON_RECOIL_START
             fireRecoilTime = 0.0
         } else {
             subWeaponFireRotTimer = 0.0
-            // 镜头后坐回到主武器那一套：两个相位窗口不能同时开（否则抬枪抬两次）
             subWeaponRecoilTimer = 0.0
             fireRecoilTime = 10.0
         }
@@ -2121,18 +2026,7 @@ object ClientEventHandler {
         val gunRecoilY = data.get(GunProp.RECOIL_Y) * 10
 
         recoilY = (2 * Math.random() - 1).toFloat() * gunRecoilY
-
-        if (shellIndex < 5) {
-            shellIndex++
-        }
-
         noSprintTicks = 7f
-
-        shellIndexTime[shellIndex] = 0.001
-
-        randomShell[0] = (1 + 0.2 * (Math.random() - 0.5))
-        randomShell[1] = (0.2 + (Math.random() - 0.5))
-        randomShell[2] = (0.7 + (Math.random() - 0.5))
 
         postEvent(ClientGunFireEvent(player, stack))
     }
@@ -2413,7 +2307,6 @@ object ClientEventHandler {
             handleWeaponZoom(entity)
             handleWeaponBipodView(entity)
             handleWeaponFire(event, entity)
-            handleWeaponShell()
             handleGunRecoil()
             handleBowPullAnimation(entity, stack)
             handleWeaponDraw(entity)
@@ -2499,9 +2392,11 @@ object ClientEventHandler {
                 1.0
             }
 
-        swayTime += 0.05 * times
-        swayX = pose * -0.008 * sin(swayTime) * (1 - 0.95 * zoomTime)
-        swayY = pose * 0.125 * sin(swayTime - 1.585) * (1 - 0.95 * zoomTime) - 3 * moveRotZ
+        val amplitude = pose * data.get(GunProp.SWAY)
+
+        swayTime += amplitude * 0.05 * times
+        swayX = amplitude * -0.008 * sin(swayTime) * (1 - 0.95 * zoomTime)
+        swayY = amplitude * 0.125 * sin(swayTime - 1.585) * (1 - 0.95 * zoomTime) - 3 * moveRotZ
     }
 
     private fun handleWeaponMove(entity: LivingEntity) {
@@ -2995,26 +2890,6 @@ object ClientEventHandler {
         }
     }
 
-    private fun handleWeaponShell() {
-        if (localPlayer == null) return
-
-        val times = getDelta().coerceAtMost(0.8f)
-
-        if (shellIndex >= 5) {
-            shellIndex = 0
-            shellIndexTime[0] = 0.001
-        }
-
-        for (i in 0..<5) {
-            if (shellIndexTime[i] > 0) {
-                shellIndexTime[i] = (shellIndexTime[i] + 8 * times).coerceAtMost(50.0)
-            }
-            if (shellIndexTime[i] == 50.0) {
-                shellIndexTime[i] = 0.0
-            }
-        }
-    }
-
     private fun handleGunRecoil() {
         val player = localPlayer ?: return
         val stack = ActiveGun.stackOf(player)
@@ -3464,9 +3339,6 @@ object ClientEventHandler {
      * 而不是让 FOV 在旧位形上直接跳到新枪的倍率（那一下是硬切，看不出瞄准点变了）。
      */
     fun resetGunTransientState() {
-        for (i in 0..<5) {
-            shellIndexTime[i] = 0.0
-        }
         clientTimer.stop()
 //        holdingFireKey = false
         holdingFireKeyTicks = 0
@@ -3514,17 +3386,6 @@ object ClientEventHandler {
         val duration = handling.get(GunProp.DRAW_TIME).coerceAtLeast(1) + 0.5 * weight
         val decay = ln(100.0) / duration
         drawTime = (drawTime - decay * times * drawTime).coerceAtLeast(0.0)
-    }
-
-    @JvmStatic
-    fun handleShells(x: Float, y: Float, vararg shells: CoreGeoBone) {
-        for ((i, element) in shells.withIndex()) {
-            if (i >= 5) break
-            element.posX = (-x * shellIndexTime[i] * ((150 - shellIndexTime[i]) / 150)).toFloat()
-            element.posY = (y * randomShell[0] * shellIndexTime[i] - 0.025 * shellIndexTime[i].pow(2)).toFloat()
-            element.rotX = (randomShell[1] * shellIndexTime[i]).toFloat()
-            element.rotY = (randomShell[2] * shellIndexTime[i]).toFloat()
-        }
     }
 
     fun aimAtVillager(player: Player) {

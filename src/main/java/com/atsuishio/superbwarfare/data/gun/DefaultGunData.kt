@@ -51,6 +51,17 @@ data class DefaultGunData(
     // x:范围，y：振动时长，z：振幅
     @SerialName("ShootShake")
     val shootShake: SerializedVec3? = null,
+    /**
+     * 瞄准时"呼吸晃动"的幅度倍率（`1.0` = 原样，越小晃得越轻）。
+     *
+     * 只压 `ClientEventHandler.handleWeaponSway` 里那一项呼吸摆动，**不碰**移动/转身带来的
+     * 摆动（`movePosY` / `moveRotZ` / 行走摆动那几条）。
+     *
+     * 这就是配件的"瞄准稳定性"：重型枪托用 `{"Prop": "Sway", "Op": "Mul", "Value": 0.8}`
+     * 让晃动幅度降低 20%。
+     */
+    @SerialName("Sway")
+    val sway: Double = 1.0,
     @SerialName("DefaultZoom")
     val defaultZoom: Double = 1.25,
     @SerialName("BoundBones")

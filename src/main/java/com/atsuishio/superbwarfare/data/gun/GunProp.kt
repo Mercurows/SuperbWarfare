@@ -82,6 +82,13 @@ class GunProp<T, R>(
         @JvmField
         val SHOOT_SHAKE = plainProp(DefaultGunData::shootShake)
 
+        /**
+         * 瞄准时呼吸晃动的幅度倍率（`1.0` = 原样）。配件的"瞄准稳定性"就改它，
+         * 消费方在客户端 `ClientEventHandler.handleWeaponSway`。
+         */
+        @JvmField
+        val SWAY = plainProp(DefaultGunData::sway)
+
         @JvmField
         val SPREAD = plainProp(DefaultGunData::spread)
 
@@ -573,6 +580,8 @@ class GunProp<T, R>(
             modify(PROJECTILE_SPLIT_COUNT) { it.coerceAtLeast(0) }
             modify(PROJECTILE_SPLIT_AMOUNT) { it.coerceAtLeast(0) }
             modify(WEIGHT) { it.coerceAtLeast(1.0) }
+            // 晃动倍率：负值会让呼吸摆动反向（晃动反而"变大"），钳到 0（完全无呼吸摆动）
+            modify(SWAY) { it.coerceAtLeast(0.0) }
 
             modify(MAGAZINE) {
                 // 近战专属枪械（显式 `@melee`，或兼容回退的 `ProjectileAmount <= 0 && MeleeDamage > 0`）
