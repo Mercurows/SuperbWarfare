@@ -144,3 +144,4 @@ bin/
 .mc-mcp-server/
 .mc-mcp-cache/
 .mc-mcp-cache-test/
+/.claude/

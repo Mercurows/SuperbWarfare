@@ -17,6 +17,7 @@ import com.atsuishio.superbwarfare.client.overlay.CrossHairOverlay
 import com.atsuishio.superbwarfare.client.overlay.OverlayTraceHandler
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer
+import com.atsuishio.superbwarfare.client.shader.RadiationShaderHandler
 import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.config.server.MiscConfig
@@ -37,6 +38,7 @@ import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.item.attachment.SubWeaponItem
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.item.misc.MonitorItem
+import com.atsuishio.superbwarfare.mobeffect.RadiationMobEffect
 import com.atsuishio.superbwarfare.network.message.send.*
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.resource.gun.GunResource
@@ -643,9 +645,22 @@ object ClientEventHandler {
     }
 
     @SubscribeEvent
+    fun renderRadiationShader(event: RenderLevelStageEvent) {
+        RadiationShaderHandler.render(event)
+    }
+
+    @SubscribeEvent
     fun handleClientTick(event: TickEvent.ClientTickEvent) {
-        val player = localPlayer ?: return
+        val player = localPlayer ?: run {
+            RadiationShaderHandler.setLevel(0)
+            return
+        }
         if (event.phase == TickEvent.Phase.START) return
+
+        val radiationLevel = RadiationMobEffect.getLevel(player)
+        RadiationShaderHandler.setLevel(
+            if (mc.options.cameraType == CameraType.FIRST_PERSON) radiationLevel else 0
+        )
 
         if (mc.fps <= 20) {
             handleGunShoot()

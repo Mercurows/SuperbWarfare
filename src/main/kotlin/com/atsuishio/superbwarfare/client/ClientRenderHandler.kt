@@ -14,6 +14,7 @@ import com.atsuishio.superbwarfare.client.overlay.*
 import com.atsuishio.superbwarfare.client.renderer.block.*
 import com.atsuishio.superbwarfare.client.renderer.curio.ParachuteRenderer
 import com.atsuishio.superbwarfare.client.renderer.curio.ThermalImagingGogglesRenderer
+import com.atsuishio.superbwarfare.client.renderer.special.RadiationGlowRenderer
 import com.atsuishio.superbwarfare.client.tooltip.*
 import com.atsuishio.superbwarfare.client.tooltip.component.*
 import com.atsuishio.superbwarfare.init.ModBlockEntities
@@ -23,6 +24,11 @@ import com.atsuishio.superbwarfare.tools.BedrockBoneCoordinateTool
 import com.atsuishio.superbwarfare.tools.toVec3
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
+import net.minecraft.client.model.EntityModel
+import net.minecraft.client.renderer.entity.LivingEntityRenderer
+import net.minecraft.client.renderer.entity.player.PlayerRenderer
+import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.projectile.Projectile
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
@@ -32,6 +38,7 @@ import net.minecraftforge.client.event.RegisterGuiOverlaysEvent
 import net.minecraftforge.client.event.RegisterItemDecorationsEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
+import net.minecraftforge.registries.ForgeRegistries
 import org.joml.Vector2f
 import org.joml.Vector3f
 import top.theillusivec4.curios.api.client.CuriosRendererRegistry
@@ -179,6 +186,32 @@ object ClientRenderHandler {
         event.register(ChargingStationImageComponent::class.java) { ClientChargingStationImageTooltip(it) }
         event.register(DogTagImageComponent::class.java) { ClientDogTagImageTooltip(it) }
         event.register(AttachmentImageComponent::class.java) { ClientAttachmentImageTooltip(it) }
+    }
+
+    @SubscribeEvent
+    @Suppress("UNCHECKED_CAST")
+    fun addRadiationGlowLayers(event: EntityRenderersEvent.AddLayers) {
+        val renderers = ForgeRegistries.ENTITY_TYPES.values
+            .map { it as EntityType<out LivingEntity> }
+            .toList()
+        renderers.forEach { attachRadiationGlowLayer(it, event) }
+
+        for (skin in event.skins) {
+            val renderer = event.getSkin<PlayerRenderer>(skin) ?: continue
+            renderer.addLayer(RadiationGlowRenderer(renderer))
+        }
+    }
+
+    @JvmStatic
+    @Suppress("UNCHECKED_CAST")
+    fun attachRadiationGlowLayer(type: EntityType<out LivingEntity>, event: EntityRenderersEvent.AddLayers) {
+        if (type == EntityType.ENDER_DRAGON) return
+        val renderer = try {
+            event.getRenderer(type) as? LivingEntityRenderer<LivingEntity, EntityModel<LivingEntity>>
+        } catch (_: Exception) {
+            null
+        }
+        renderer?.addLayer(RadiationGlowRenderer(renderer))
     }
 
     @SubscribeEvent
