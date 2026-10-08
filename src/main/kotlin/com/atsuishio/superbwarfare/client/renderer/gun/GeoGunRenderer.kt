@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.client.renderer.gun
 
+import com.atsuishio.superbwarfare.client.ClientRenderHandler
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves
 import com.atsuishio.superbwarfare.client.animation.gun.GeoGunAnimationInstance
 import com.atsuishio.superbwarfare.client.charm.CharmRuntime
@@ -39,6 +40,7 @@ import com.atsuishio.superbwarfare.resource.gun.pojo.BuiltinScopeInfo
 import com.atsuishio.superbwarfare.resource.gun.pojo.ItemDisplayInfo
 import com.atsuishio.superbwarfare.resource.model.AttachmentModelReloadListener
 import com.atsuishio.superbwarfare.script.GunScriptManager
+import com.atsuishio.superbwarfare.tools.BedrockBoneCoordinateTool
 import com.atsuishio.superbwarfare.tools.RenderDistanceHelper
 import com.atsuishio.superbwarfare.tools.deltaFrameTime
 import com.atsuishio.superbwarfare.tools.localPlayer
@@ -73,6 +75,7 @@ import net.minecraft.world.entity.HumanoidArm
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemDisplayContext
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.phys.Vec3
 import net.neoforged.neoforge.client.event.ViewportEvent
 import org.joml.Matrix3f
 import org.joml.Matrix4f
@@ -597,6 +600,9 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 subWeaponFlare,
                 subWeaponFlashScale
             )
+
+            // 枪口焰刚从这个挂点钻出来，顺手把同一个挂点交给"子弹的虚拟出膛点"
+            submitMuzzleOffset(poseStack.last().pose(), model, stack, subWeaponFlare, attachmentMuzzleTransform)
 
             ShellCasingFxRenderer.render(poseStack, model, stack, hand, bufferSource, packedLight)
 
@@ -1849,6 +1855,64 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     ) {
         val viewTransform = computeViewTransform(model, stack, scopeRender, hand) ?: return
         mulPoseWithNormal(poseStack, viewTransform.invert())
+    }
+
+    /**
+     * 采一份"枪口相对相机的偏移"给刚出膛的子弹用（[ClientRenderHandler.bulletRenderOffset]，
+     * 消费者是 `ClientRenderHandler.transformVirtualRenderPosition`）。
+     *
+     * 弹体是按服务器给的坐标画的，而服务器把它从 `Vec3(x, eyeY, z)` —— **眼睛**上打出去
+     * （`GunItem.shootBullet`），所以刚出膛那几帧它画在脸上。这里量出"视角定位点 → 枪口"这一段差值：
+     * 定位点被 [applyFirstPersonPositioningTransform] 钉在相机原点上（相机空间的点就是"相对相机
+     * 的偏移"，同 `LaserSightRenderer.castFirstPersonBeams`），所以量出来的正是玩家眼里枪口相对
+     * 自己的位置。把它加在弹体上，弹体就落在枪管上。
+     *
+     * 取的是**当前姿态下的枪口**：`poseMatrix` 里已经叠进了冲刺摆动、后坐、开镜压缩与脚本动画，
+     * 所以子弹从"这一刻真正画出来的那根枪管"里出来；挂点解析与枪口焰共用
+     * [MuzzleFlashRenderer.resolveFlareTransform]、连矩阵乘法都是同一句，两者必然重合 ——
+     * 火焰从哪一格钻出来，弹体就从哪一格钻出来。
+     *
+     * ⚠ 唯一的换算是 FOV：手部 pass 有它自己的固定基准 FOV，而弹体画在**世界 pass** 里（吃玩家
+     * 的 FOV 设置与开镜倍率），同一个相机空间点在两套投影下落在不同像素上；不补的话开镜时子弹
+     * 会飘到枪管外侧。补法是**只动 z**（[BedrockBoneCoordinateTool.adjustViewDepthForFov]），
+     * 因为它要的是"落在同一个像素上"，不是"同一个位置"。
+     *
+     * 只在开火窗口里采样（[MuzzleFlashRenderer.isFiring]）：只有刚开过枪的那几帧，枪口才代表弹体
+     * 该出现的位置。存的是**向量**（相机 → 枪口），消费者把它加在弹体自己的位置上，所以它跟着枪走，
+     * 不会像"记一个世界坐标再蹭过去"那样把子弹拽向一个定死的点
+     * （[ClientRenderHandler.bulletRenderOffset] 里有这条教训的完整版）。
+     */
+    private fun submitMuzzleOffset(
+        poseMatrix: Matrix4f,
+        model: GeoGunModel,
+        stack: ItemStack,
+        subWeaponFlare: Matrix4f?,
+        attachmentMuzzleTransform: Matrix4f?,
+    ) {
+        if (!MuzzleFlashRenderer.isFiring()) return
+
+        val flareTransform = MuzzleFlashRenderer.resolveFlareTransform(
+            model,
+            stack,
+            attachmentMuzzleTransform,
+            subWeaponFlare
+        ) ?: return
+
+        // 枪口在相机空间里的位置（⚠ 先拷贝再乘：`poseMatrix` 是 pose stack 顶上那一份活的矩阵）
+        val muzzle = Matrix4f(poseMatrix).mul(flareTransform).getTranslation(Vector3f())
+
+        val adjusted = BedrockBoneCoordinateTool.adjustViewDepthForFov(
+            Vec3(muzzle.x.toDouble(), muzzle.y.toDouble(), muzzle.z.toDouble()),
+            ClientEventHandler.handFov.toFloat(),
+            ClientEventHandler.fov.toFloat()
+        )
+
+        // `PoseStack.translate` 加的是**世界轴**上的位移（相机旋转在更外层），所以把这段偏移转到世界轴
+        val offset = cameraRotationInverse().transformPosition(
+            Vector3f(adjusted.x.toFloat(), adjusted.y.toFloat(), adjusted.z.toFloat())
+        )
+        ClientRenderHandler.bulletRenderOffset =
+            Vec3(offset.x.toDouble(), offset.y.toDouble(), offset.z.toDouble())
     }
 
     /** 把 0..1 的瞄准进度换算成真正用于插值的值 */
