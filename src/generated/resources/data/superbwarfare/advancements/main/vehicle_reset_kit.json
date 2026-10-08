@@ -1,0 +1,38 @@
+{
+  "parent": "superbwarfare:main/super_container",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:vehicle_reset_kit"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "superbwarfare.advancement.main.vehicle_reset_kit.des"
+    },
+    "frame": "challenge",
+    "hidden": false,
+    "icon": {
+      "item": "superbwarfare:vehicle_reset_kit"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "superbwarfare.advancement.main.vehicle_reset_kit"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

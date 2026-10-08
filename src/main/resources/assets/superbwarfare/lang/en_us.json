@@ -1512,6 +1512,8 @@
   "superbwarfare.advancement.main.eat_crust.des": "Who wouldn't want to pilot a flying pie?",
   "superbwarfare.advancement.main.too_handsome": "A bit too handsome, right?",
   "superbwarfare.advancement.main.too_handsome.des": "And now you're acting all superior. I just want to put you on right now",
+  "superbwarfare.advancement.main.vehicle_reset_kit": "Can you explain in more detail?",
+  "superbwarfare.advancement.main.vehicle_reset_kit.des": "I've never used this thing. How am I supposed to know exactly how to use it?",
 
   "context.superbwarfare.tactical_map.create_marker": "Create Marker",
   "context.superbwarfare.tactical_map.edit_marker": "Edit",

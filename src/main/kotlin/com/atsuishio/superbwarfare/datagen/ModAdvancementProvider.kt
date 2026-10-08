@@ -68,6 +68,12 @@ class ModAdvancementProvider(private val packOutput: PackOutput, private val exi
                 .whenIconCollected()
                 .parent(vehicleAssembling)
         }
+        val vehicleResetKit = advancement("vehicle_reset_kit") {
+            it.icon(ModItems.VEHICLE_RESET_KIT.get())
+                .whenIconCollected()
+                .type(ModAdvancement.Type.DEFAULT_CHALLENGE)
+                .parent(superContainer)
+        }
 
         // 蓝图
         val blueprint = advancement("blueprint") {

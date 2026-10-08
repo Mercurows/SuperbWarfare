@@ -1512,6 +1512,8 @@
   "superbwarfare.advancement.main.eat_crust.des": "谁不想驾驶一张会飞的饼呢？",
   "superbwarfare.advancement.main.too_handsome": "疑似有点酷炫了",
   "superbwarfare.advancement.main.too_handsome.des": "还搞起优越感了，我现在就想戴上你",
+  "superbwarfare.advancement.main.vehicle_reset_kit": "你能说详细点？",
+  "superbwarfare.advancement.main.vehicle_reset_kit.des": "我没玩过这玩意我咋知道这具体咋用？",
 
   "context.superbwarfare.tactical_map.create_marker": "创建标记点",
   "context.superbwarfare.tactical_map.edit_marker": "编辑",
