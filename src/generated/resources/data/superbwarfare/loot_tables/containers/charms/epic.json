@@ -39,6 +39,14 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:charm_houraisan_kaguya"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_moon_heart"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_type_88_cluster_grenades"
         }
       ],
       "rolls": 1.0

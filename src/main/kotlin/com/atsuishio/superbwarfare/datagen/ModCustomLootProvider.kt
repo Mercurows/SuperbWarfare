@@ -452,6 +452,8 @@ class ModCustomLootProvider : LootTableSubProvider {
                     ModItems.CHARM_FLANDRE_SCARLET,
                     ModItems.CHARM_SAIGYOUJI_YUYUKO,
                     ModItems.CHARM_HOURAISAN_KAGUYA,
+                    ModItems.CHARM_MOON_HEART,
+                    ModItems.CHARM_TYPE_88_CLUSTER_GRENADES,
                 )
             }
         }
