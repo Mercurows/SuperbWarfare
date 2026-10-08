@@ -429,6 +429,8 @@ data class DefaultGunData(
     val underwaterMotionScale: Float = 0.75f,
     @SerialName("ExplosionDestroy")
     val explosionDestroy: Boolean = true,
+    @SerialName("Knockback")
+    val knockback: Float = 0.05f,
 ) : IDBasedData<DefaultGunData> {
     @Transient
     @kotlinx.serialization.Transient

@@ -19,6 +19,10 @@ class ProjectileProxy(private val entity: Entity) {
         projectile?.setBeast(true)
     }
 
+    fun forceKnockback() {
+        projectile?.setForceKnockback(true)
+    }
+
     fun fireBullet(fireLevel: Number, dragonBreath: Boolean) {
         projectile?.setFireLevel(fireLevel.toInt())
         projectile?.setDragonBreath(dragonBreath)

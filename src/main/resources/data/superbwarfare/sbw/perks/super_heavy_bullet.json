@@ -1,7 +1,6 @@
 {
   "Type": "ammo",
   "Script": "superbwarfare:scripts/perks/super_heavy_bullet.js",
-  "BypassArmorRate": 0.2,
   "Slug": true,
   "RGB": [195, 195, 195]
 }

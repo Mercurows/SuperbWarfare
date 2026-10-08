@@ -132,6 +132,7 @@ class EmptyGunItem : GunItem(Properties()) {
             addShooterDeltaMovement = false,
             underwaterMotionScale = 0f,
             explosionDestroy = false,
+            knockback = 0f,
         ).apply {
             // 这两项是不参与序列化的运行时状态，data class 里留在类体中
             itemId = EMPTY_GUN_ID

@@ -563,7 +563,7 @@
   "item.superbwarfare.cluster_bomb": "集束炸弹",
   "des.superbwarfare.cluster_bomb": "引爆弹药时会释放出集束炸弹",
   "item.superbwarfare.super_heavy_bullet": "超重弹",
-  "des.superbwarfare.super_heavy_bullet": "发射受更大的重力影响的重型子弹",
+  "des.superbwarfare.super_heavy_bullet": "发射受更大的重力影响的重型子弹，能够造成强力击退效果",
 
   "item.superbwarfare.heal_clip": "治疗弹匣",
   "des.superbwarfare.heal_clip": "最后一击后短时间内填装，可治疗自身和附近队友",

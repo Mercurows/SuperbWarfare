@@ -538,6 +538,9 @@ class GunProp<T, R>(
         @JvmField
         val EXPLOSION_DESTROY = plainProp(DefaultGunData::explosionDestroy)
 
+        @JvmField
+        val KNOCKBACK = plainProp(DefaultGunData::knockback)
+
         // TODO 会不会有点屎...
         fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) = with(modifier) {
             modify(MAX_DURABILITY) { it.coerceAtLeast(0) }
@@ -587,6 +590,7 @@ class GunProp<T, R>(
             modify(RPM) { it.coerceIn(1, 114514) }
             modify(RPM_MULTIPLIER) { it.coerceAtLeast(0.0) }
             modify(UNDERWATER_MOTION_SCALE) { it.coerceIn(0.0f, 1.0f) }
+            modify(KNOCKBACK) { it.coerceIn(-10.0f, 10.0f) }
 
             modify(DRAW_TIME) { it.coerceAtLeast(1) }
             modify(ZOOM_TIME) { it.coerceAtLeast(1) }

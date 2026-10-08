@@ -563,7 +563,7 @@
   "item.superbwarfare.cluster_bomb": "Cluster Bomb",
   "des.superbwarfare.cluster_bomb": "Projectiles spawn cluster bombs upon detonation.",
   "item.superbwarfare.super_heavy_bullet": "Super Heavy Bullet",
-  "des.superbwarfare.super_heavy_bullet": "Launch heavy bullets that are influenced by stronger gravity.",
+  "des.superbwarfare.super_heavy_bullet": "Launch heavy bullets that are influenced by stronger gravity, with stronger knockback force.",
 
   "item.superbwarfare.heal_clip": "Heal Clip",
   "des.superbwarfare.heal_clip": "Reloading after defeating a mob will heal you and your nearby allies.",

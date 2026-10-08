@@ -911,6 +911,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                     setZoom(zoom)
                     setBypassArmorRate(bypassArmorRate.toFloat())
                     setVelocity(finalVelocity)
+                    setKnockback(data.get(GunProp.KNOCKBACK).toFloat())
                     setUnderwaterMotionScale(data.get(GunProp.UNDERWATER_MOTION_SCALE))
                     setExplosionDestroy(data.get(GunProp.EXPLOSION_DESTROY))
                     setProjectileSplitCount(data.get(GunProp.PROJECTILE_SPLIT_COUNT))
