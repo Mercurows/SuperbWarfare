@@ -200,6 +200,11 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
         return if (index >= 0) instance.getGlobalTransform(index) else null
     }
 
+    fun getBonePivot(boneName: String): Vector3f? {
+        val definition = instance.getBone(boneName)?.definition() ?: return null
+        return Vector3f(definition.pivotX(), definition.pivotY(), definition.pivotZ())
+    }
+
     /**
      * 骨骼上某个 locator 的全局变换（模型空间，单位是**方块**）
      */
@@ -816,24 +821,8 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
     private data class OcularEntry(val index: Int, val isScope: Boolean)
 
     companion object {
-        /**
-         * Aiming progress below which no `division*` subtree is drawn at all — reticle and readout
-         * alike.
-         *
-         * The reticle is drawn with depth testing off inside the ocular window, so while the scope is
-         * still swinging up it would already be floating in front of the scope body. Holding the whole
-         * subtree back until the zoom is this far along keeps the readout attached to the thing it
-         * labels, and gets the two on screen at the same moment instead of the text trailing the
-         * reticle in.
-         *
-         * Split into two gates rather than one because a bone's `visible` flag cannot express this:
-         * a text is drawn from its anchor bone's global transform and ignores that flag entirely,
-         * while [renderBoneImmediate] forces the flag on for the bones it draws.
-         *
-         * A `Double` to match [ClientEventHandler.zoomTime] rather than the font-space floats above,
-         * so the comparison is against exactly 0.4 and not against the `Float` it would be widened to.
-         */
-        private const val DIVISION_MIN_ZOOM = 0.4
+
+        internal const val DIVISION_MIN_ZOOM = 0.4
 
         private const val SCOPE_BODY_NODE = "scope_body"
         private const val OCULAR_RING_NODE = "ocular_ring"

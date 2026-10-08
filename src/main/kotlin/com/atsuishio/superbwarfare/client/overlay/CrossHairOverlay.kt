@@ -1,7 +1,9 @@
 package com.atsuishio.superbwarfare.client.overlay
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
+import com.atsuishio.superbwarfare.client.ClientRenderHandler
 import com.atsuishio.superbwarfare.client.RenderHelper
+import com.atsuishio.superbwarfare.client.model.attachment.BedrockAttachmentModel
 import com.atsuishio.superbwarfare.compat.realcamera.RealCameraCompatHolder
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.config.server.MiscConfig
@@ -29,8 +31,11 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
+import org.joml.Vector2f
+import kotlin.math.exp
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.tan
 
 @OnlyIn(Dist.CLIENT)
 object CrossHairOverlay : CommonOverlay("cross_hair") {
@@ -69,8 +74,14 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
     // TODO 删了这个
     @JvmField
     var gunRot: Float = 0f
-
     private var scopeScale = 1f
+    private const val TRAJECTORY_REFERENCE_RANGE = 64.0
+    private var filteredTrajectoryX = 0f
+    private var filteredTrajectoryY = 0f
+    private var trajectoryFilterNanos = 0L
+    private const val MIN_FRAME_DT = 1.0 / 240.0
+    private const val MAX_FRAME_DT = 0.1
+    private const val FILTER_RESET_GAP_NANOS = 250_000_000L
 
     override fun shouldRender(): Boolean {
         if (MiscConfig.HIDE_COMBAT_HUD.get()) return false
@@ -109,6 +120,26 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
                 moveX = RealCameraCompatHolder.getCompatMoveX(moveX)
                 moveY = RealCameraCompatHolder.getCompatMoveY(moveY)
             }
+        }
+
+        val rawOffset = if (mc.options.cameraType == CameraType.FIRST_PERSON) {
+            ClientRenderHandler.shotAimOffset()
+        } else {
+            null
+        }
+        filterTrajectoryOffset(rawOffset?.x ?: 0f, rawOffset?.y ?: 0f)
+
+        if (filteredTrajectoryX != 0f || filteredTrajectoryY != 0f) {
+            // 参考距离处弹道偏了多少格（横向 / 垂直）
+            val driftAtRange = TRAJECTORY_REFERENCE_RANGE * tan(filteredTrajectoryX.toDouble())
+            val riseAtRange = TRAJECTORY_REFERENCE_RANGE * tan(filteredTrajectoryY.toDouble())
+            // 折算屏幕位移：MC 的 fov 是**垂直** fov，"参考距离处偏 h 格"在屏幕上就是
+            // h / 参考距离 / tan(fov/2) 个半屏高；横向共用同一个系数（投影的宽高比把它约掉）
+            val perBlock = 1.0 / TRAJECTORY_REFERENCE_RANGE /
+                    tan(Math.toRadians(ClientEventHandler.fov / 2.0)) * (screenHeight / 2.0)
+            moveX += (driftAtRange * perBlock).toFloat()
+            // GUI 的 y 向下为正，弹道偏上 = moveY 减小
+            moveY -= (riseAtRange * perBlock).toFloat()
         }
 
         RenderSystem.disableDepthTest()
@@ -174,7 +205,14 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
                     spread
                 )
 
-                CROSSHAIR_GUN_GRENADE -> renderGrenadeCrosshair(guiGraphics, stack, screenWidth, screenHeight)
+                CROSSHAIR_GUN_GRENADE -> renderGrenadeCrosshair(
+                    guiGraphics,
+                    stack,
+                    screenWidth,
+                    screenHeight,
+                    moveX,
+                    moveY
+                )
             }
         }
 
@@ -196,7 +234,14 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
         }
 
         if (DisplayConfig.KILL_INDICATION.get()) {
-            renderKillIndicatorDynamic(guiGraphics, screenWidth, screenHeight, moveX, moveY)
+            renderKillIndicatorDynamic(
+                guiGraphics,
+                screenWidth,
+                screenHeight,
+                moveX,
+                moveY,
+                reticleScreen()
+            )
         }
 
         RenderSystem.depthMask(true)
@@ -396,23 +441,79 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
         }
     }
 
-    fun renderGrenadeCrosshair(guiGraphics: GuiGraphics, stack: ItemStack, screenWidth: Int, screenHeight: Int) {
+    fun renderGrenadeCrosshair(
+        guiGraphics: GuiGraphics,
+        stack: ItemStack,
+        screenWidth: Int,
+        screenHeight: Int,
+        moveX: Float,
+        moveY: Float
+    ) {
         if (ClientEventHandler.zoomTime > 0.8 && GunResource.compute(stack).hideCrosshairWhenZoom) return
 
-        guiGraphics.blit(REX, screenWidth / 2 - 16, screenHeight / 2 - 16, 0f, 0f, 32, 32, 32, 32)
+        RenderHelper.preciseBlit(
+            guiGraphics,
+            REX,
+            screenWidth / 2f - 16 + moveX,
+            screenHeight / 2f - 16 + moveY,
+            0f,
+            0f,
+            32f,
+            32f,
+            32f,
+            32f
+        )
     }
 
-    private fun renderKillIndicatorDynamic(guiGraphics: GuiGraphics?, w: Int, h: Int, moveX: Float, moveY: Float) {
-        val posX = w / 2f - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
-        val posY = h / 2f - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
+    private fun filterTrajectoryOffset(x: Float, y: Float) {
+        val now = System.nanoTime()
+        val tau = DisplayConfig.CROSSHAIR_TRAJECTORY_SMOOTHING.get().toFloat()
+
+        val k = if (tau <= 0f || now - trajectoryFilterNanos > FILTER_RESET_GAP_NANOS) {
+            1f
+        } else {
+            // mc.deltaFrameTime 的累加单位是 tick（20 次/秒），不是秒
+            val frameDt = (mc.deltaFrameTime / 20.0).coerceIn(MIN_FRAME_DT, MAX_FRAME_DT)
+            (1.0 - exp(-frameDt / tau.toDouble())).toFloat()
+        }
+
+        trajectoryFilterNanos = now
+        filteredTrajectoryX += (x - filteredTrajectoryX) * k
+        filteredTrajectoryY += (y - filteredTrajectoryY) * k
+    }
+
+    private fun reticleScreen(): Vector2f? {
+        if (mc.options.cameraType != CameraType.FIRST_PERSON) return null
+        if (ClientEventHandler.zoomTime < BedrockAttachmentModel.DIVISION_MIN_ZOOM) return null
+        return ClientRenderHandler.freshScopeReticleScreen()
+    }
+
+    private fun renderKillIndicatorDynamic(
+        guiGraphics: GuiGraphics?,
+        w: Int,
+        h: Int,
+        moveX: Float,
+        moveY: Float,
+        reticle: Vector2f?
+    ) {
+        // 基准点：分划的位置，或者屏幕正中
+        val baseX = reticle?.x ?: (w / 2f)
+        val baseY = reticle?.y ?: (h / 2f)
+        // ⚠ 挂到分划上时**不再叠加 moveX/moveY**：那份偏移量的正是"枪被动画拧到哪儿"，
+        // 而分划自己就是被拧着的那块几何 —— 再加一次是重复计算。
+        val offsetX = if (reticle != null) 0f else moveX
+        val offsetY = if (reticle != null) 0f else moveY
+
+        val posX = baseX - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
+        val posY = baseY - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
         val rate: Float = (40 - killIndicator * 5) / 5.5f
 
         if (hitIndicator > 0) {
             RenderHelper.preciseBlit(
                 guiGraphics,
                 HIT_MARKER,
-                posX + moveX,
-                posY + moveY,
+                posX + offsetX,
+                posY + offsetY,
                 0f,
                 0f,
                 16f,
@@ -426,8 +527,8 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
             RenderHelper.preciseBlit(
                 guiGraphics,
                 HIT_MARKER_VEHICLE,
-                posX + moveX,
-                posY + moveY,
+                posX + offsetX,
+                posY + offsetY,
                 0f,
                 0f,
                 16f,
@@ -441,8 +542,8 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
             RenderHelper.preciseBlit(
                 guiGraphics,
                 HEADSHOT_MARKER,
-                posX + moveX,
-                posY + moveY,
+                posX + offsetX,
+                posY + offsetY,
                 0f,
                 0f,
                 16f,
@@ -453,10 +554,10 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
         }
 
         if (killIndicator > 0) {
-            val posX1 = w / 2f - 7.5f - 2 + rate + moveX
-            val posY1 = h / 2f - 7.5f - 2 + rate + moveY
-            val posX2 = w / 2f - 7.5f + 2 - rate + moveX
-            val posY2 = h / 2f - 7.5f + 2 - rate + moveY
+            val posX1 = baseX - 7.5f - 2 + rate + offsetX
+            val posY1 = baseY - 7.5f - 2 + rate + offsetY
+            val posX2 = baseX - 7.5f + 2 - rate + offsetX
+            val posY2 = baseY - 7.5f + 2 - rate + offsetY
 
             RenderHelper.preciseBlit(guiGraphics, KILL_MARKER_1, posX1, posY1, 0f, 0f, 16f, 16f, 16f, 16f)
             RenderHelper.preciseBlit(guiGraphics, KILL_MARKER_2, posX2, posY1, 0f, 0f, 16f, 16f, 16f, 16f)

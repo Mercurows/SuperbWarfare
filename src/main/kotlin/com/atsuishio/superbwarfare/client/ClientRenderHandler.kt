@@ -16,6 +16,9 @@ import com.atsuishio.superbwarfare.client.tooltip.*
 import com.atsuishio.superbwarfare.client.tooltip.component.*
 import com.atsuishio.superbwarfare.init.ModBlockEntities
 import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.item.gun.GunItem
+import com.atsuishio.superbwarfare.tools.BedrockBoneCoordinateTool
+import com.atsuishio.superbwarfare.tools.toVec3
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
 import net.minecraft.world.entity.projectile.Projectile
@@ -27,6 +30,8 @@ import net.minecraftforge.client.event.RegisterGuiOverlaysEvent
 import net.minecraftforge.client.event.RegisterItemDecorationsEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
+import org.joml.Vector2f
+import org.joml.Vector3f
 import top.theillusivec4.curios.api.client.CuriosRendererRegistry
 import kotlin.math.min
 
@@ -63,25 +68,70 @@ object ClientRenderHandler {
             bulletRenderOffsetTime = System.nanoTime()
         }
 
-    /** 偏移样本的有效期：够覆盖一次"开火 → 弹射物同步到客户端"，短到换个动作拿就会作废 */
     private const val OFFSET_TTL = 300_000_000L
 
-    /** 偏移的淡出时长（tick）：这段时间里弹射物从枪管上滑回它自己的真实位置 */
+    private var muzzleDirectionTime: Long = 0L
+
+    var muzzleDirection: Vec3? = null
+        set(value) {
+            field = value
+            muzzleDirectionTime = System.nanoTime()
+        }
+
+    @JvmStatic
+    fun freshMuzzleDirection(): Vector3f? {
+        val direction = muzzleDirection ?: return null
+        if (System.nanoTime() - muzzleDirectionTime > DIRECTION_TTL) return null
+        if (direction.lengthSqr() < 1e-8) return null
+        return Vector3f(
+            direction.x.toFloat(),
+            direction.y.toFloat(),
+            direction.z.toFloat()
+        ).normalize()
+    }
+
+    private const val DIRECTION_TTL = 200_000_000L
+    private var scopeReticleScreenTime: Long = 0L
+
+    var scopeReticleScreen: Vector2f? = null
+        set(value) {
+            field = value
+            scopeReticleScreenTime = System.nanoTime()
+        }
+
+    @JvmStatic
+    fun freshScopeReticleScreen(): Vector2f? {
+        val screen = scopeReticleScreen ?: return null
+        if (System.nanoTime() - scopeReticleScreenTime > RETICLE_TTL) return null
+        return screen
+    }
+
+    private const val RETICLE_TTL = 200_000_000L
+
+    @JvmStatic
+    fun shotAimOffset(): Vector2f? {
+        val player = Minecraft.getInstance().player ?: return null
+        val shot = GunItem.resolveShootDirection(freshMuzzleDirection()?.toVec3(), player)
+
+        val view = BedrockBoneCoordinateTool
+            .cameraRotationInverse(Minecraft.getInstance().gameRenderer.mainCamera)
+            .invert()
+            .transformDirection(
+                shot.x.toFloat(), shot.y.toFloat(), shot.z.toFloat(), Vector3f()
+            )
+
+        val front = -view.z
+        // 60° 的夹子已经挡住背向，这里只是兜底（前向分量非正时 atan2 的符号没有意义）
+        if (front <= 1e-6f) return null
+
+        return Vector2f(
+            Math.atan2(view.x.toDouble(), front.toDouble()).toFloat(),
+            Math.atan2(view.y.toDouble(), front.toDouble()).toFloat()
+        )
+    }
+
     private const val FADE_TICKS = 5.0
 
-    /**
-     * 这一帧"虚拟出膛"的强度：1 = 完全贴在枪管的延长线上（开火那一帧，也就是它恰好画在枪口上的那一帧），
-     * 0 = 完全按弹射物自己的真实位置画。
-     *
-     * **第 0 个 tick 整段保持满强度**：弹体本来该画的位置是"枪口 + t·v"，而服务器给的是"眼睛 + t·v"，
-     * 两者差的正是这一份偏移 —— 它在整个第 0 tick 里都是**常量**，所以这一 tick 里任何一帧减弱它都是错的
-     * （错的地方不是"淡得太慢"，而是"淡早了"）。之后用 `EASE_OUT_CIRC` 在剩下 4 个 tick 里从 1 掉到 0：
-     * 先慢后快，看着像弹体自己从枪口蹿出去，而不是被硬拉过去；也顺手让偏移在枪的位形开始过时
-     * （玩家转头 / 收枪）时退场。偏移本身只有几十厘米，远距离下这点残差肉眼看不出来，淡出到这里就够了。
-     *
-     * ⚠ 淡出结束正好是 [FADE_TICKS]（第 5 个 tick 起强度为 0），和弹体渲染器那句 `tickCount >= 5`
-     * 的"离玩家太近就先别画"严丝合缝：破例开的窗口和偏移存在的窗口是同一个。
-     */
     @JvmStatic
     fun virtualOffsetRate(projectile: Projectile, partialTick: Float): Double {
         if (!isOwnFreshProjectile(projectile)) return 0.0
@@ -91,13 +141,6 @@ object ClientRenderHandler {
         return 1 - AnimationCurves.EASE_OUT_CIRC.apply(min(1.0, age / (FADE_TICKS - 1)))
     }
 
-    /**
-     * 这个弹射物这一帧是不是被"虚拟出膛"接管了。
-     *
-     * 让"离玩家太近就先别画"的那几个弹体渲染器（`ProjectileEntityRenderer` 之类）在窗口里破例：
-     * 弹体此刻并不在玩家身上，而在枪管上，藏它的理由不成立；不破例的话强度为 1 的那一帧
-     * （唯一一帧它真的画在枪口上）会被它们过滤掉，效果永远看不到。
-     */
     @JvmStatic
     fun hasVirtualOffset(projectile: Projectile, partialTick: Float): Boolean {
         return virtualOffsetRate(projectile, partialTick) > 0.0
@@ -113,15 +156,6 @@ object ClientRenderHandler {
         return player.getUUID() == owner.getUUID()
     }
 
-    /**
-     * 修改子弹类实体的虚拟渲染位置：把刚出膛的弹射物按 [bulletRenderOffset] 挪到枪管上，
-     * 再在 [FADE_TICKS] 内滑回它自己的真实位置。
-     *
-     * 这里加的是**偏移量**，不读弹射物自己的位置：`PoseStack.translate` 加在世界轴上，
-     * 而这份偏移正是从这个视角、这个枪口姿态下算出来的，两者一加就是枪口。
-     * 也正因为是**常量位移**（而不是"朝某个目标点靠过去"），弹体飞得再远也只是整体平移这一小段 ——
-     * 偏差是固定的，它在画面上的相对影响随距离自己变小，不存在"越飞越被拽回来"这回事。
-     */
     @JvmStatic
     fun transformVirtualRenderPosition(stack: PoseStack, projectile: Projectile, partialTick: Float) {
         val offset = bulletRenderOffset ?: return

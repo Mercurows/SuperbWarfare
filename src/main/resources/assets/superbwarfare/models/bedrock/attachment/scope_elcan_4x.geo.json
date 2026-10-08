@@ -671,6 +671,11 @@
 					]
 				},
 				{
+					"name": "division_2",
+					"parent": "scope_body",
+					"pivot": [0, 3.02891, -1.73047]
+				},
+				{
 					"name": "scope_hide2",
 					"parent": "scope_body",
 					"pivot": [0, 1.92, 3.925],
@@ -2044,7 +2049,7 @@
 				},
 				{
 					"name": "division_1",
-					"pivot": [-0.00458, 0.63362, -131.875],
+					"pivot": [0, 1.68362, -131.875],
 					"cubes": [
 						{
 							"origin": [-47.75, -46.26296, -133.875],

@@ -80,9 +80,11 @@ import net.minecraftforge.client.event.ViewportEvent
 import org.joml.Matrix3f
 import org.joml.Matrix4f
 import org.joml.Quaternionf
+import org.joml.Vector2f
 import org.joml.Vector3f
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL11
+import java.lang.Math
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -475,6 +477,9 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 handledScopeAttachment = stencilScope.attachmentId
                 poseStack.pushPose()
                 mulPoseWithNormal(poseStack, stencilScope.slotTransform)
+                // 命中提示 HUD 要挂在分划上就得知道分划画在屏幕哪儿。采样点只能在这里：
+                // poseStack 已经乘上这个瞄具的槽位变换（相机空间），分划模型也还挂在同一份姿态上
+                submitScopeReticleSample(poseStack, stencilScope)
                 stencilScope.model.renderWithStencil(
                     poseStack,
                     bufferSource as MultiBufferSource.BufferSource,
@@ -601,8 +606,9 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 subWeaponFlashScale
             )
 
-            // 枪口焰刚从这个挂点钻出来，顺手把同一个挂点交给"子弹的虚拟出膛点"
-            submitMuzzleOffset(poseStack.last().pose(), model, stack, subWeaponFlare, attachmentMuzzleTransform)
+            // 枪口焰刚从这个挂点钻出来，顺手把同一个挂点交给子弹：
+            // 每帧交一份"枪管现在指向哪儿"，开火窗口里再交一份"虚拟出膛点"的偏移
+            submitMuzzleSample(poseStack.last().pose(), model, stack, subWeaponFlare, attachmentMuzzleTransform)
 
             ShellCasingFxRenderer.render(poseStack, model, stack, hand, bufferSource, packedLight)
 
@@ -1857,48 +1863,106 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     }
 
     /**
-     * 采一份"枪口相对相机的偏移"给刚出膛的子弹用（[ClientRenderHandler.bulletRenderOffset]，
-     * 消费者是 `ClientRenderHandler.transformVirtualRenderPosition`）。
+     * 采一份**分划骨骼（`division`）在屏幕上的位置**交给命中提示 HUD
+     * （[ClientRenderHandler.scopeReticleScreen]，消费方 `CrossHairOverlay`）。
      *
-     * 弹体是按服务器给的坐标画的，而服务器把它从 `Vec3(x, eyeY, z)` —— **眼睛**上打出去
-     * （`GunItem.shootBullet`），所以刚出膛那几帧它画在脸上。这里量出"视角定位点 → 枪口"这一段差值：
-     * 定位点被 [applyFirstPersonPositioningTransform] 钉在相机原点上（相机空间的点就是"相对相机
-     * 的偏移"，同 `LaserSightRenderer.castFirstPersonBeams`），所以量出来的正是玩家眼里枪口相对
-     * 自己的位置。把它加在弹体上，弹体就落在枪管上。
+     * ## 为什么要它
+     * 开火动画（还有代码后坐、枪身晃动）拧的是**枪**，座在枪上的分划跟着被拧走；而命中提示一直钉在
+     * 屏幕正中。连射时玩家看到的是"分划在这儿、命中提示在那儿"两个点各画各的。把提示挪到分划骨骼上，
+     * 两者就重新咬合 —— 这也和准星的弹道偏移同源：分划本来就在告诉玩家"枪现在指着哪儿"。
      *
-     * 取的是**当前姿态下的枪口**：`poseMatrix` 里已经叠进了冲刺摆动、后坐、开镜压缩与脚本动画，
-     * 所以子弹从"这一刻真正画出来的那根枪管"里出来；挂点解析与枪口焰共用
-     * [MuzzleFlashRenderer.resolveFlareTransform]、连矩阵乘法都是同一句，两者必然重合 ——
-     * 火焰从哪一格钻出来，弹体就从哪一格钻出来。
+     * ## 锚点 = `division` 骨骼**关节**（pivot）的当前位形
+     * 骨骼名取自 `ScopeMode.divisionBone()`（多档镜是 `division_<index>`）。
      *
-     * ⚠ 唯一的换算是 FOV：手部 pass 有它自己的固定基准 FOV，而弹体画在**世界 pass** 里（吃玩家
-     * 的 FOV 设置与开镜倍率），同一个相机空间点在两套投影下落在不同像素上；不补的话开镜时子弹
-     * 会飘到枪管外侧。补法是**只动 z**（[BedrockBoneCoordinateTool.adjustViewDepthForFov]），
-     * 因为它要的是"落在同一个像素上"，不是"同一个位置"。
+     * 写法是 `getGlobalTransform(name).transformPosition(Vector3f(0f, 0f, 0f))` —— **骨骼本地原点**，
+     * 也就是那份变换的平移列。树模型（SBM v2）里几何是按"**相对自己的 pivot**"烘出来的
+     * （`TreeBedrockModelBaker.createCubes` 里 `(origin − absolutePivot)/16`），骨骼局部变换是
+     * `T(pos/16)·R·S`（`TreeBoneDefinition.rotateAroundPivot()` 恒为 `false`，根本没有 pivot 项），
+     * 而 `pos` 取的是 `bind = absolutePivot − parentAbsolutePivot` 逐级套上去的 ——
+     * 于是本地原点的像就是 pivot 的当前位形，旋转也是绕它转的。
      *
-     * 只在开火窗口里采样（[MuzzleFlashRenderer.isFiring]）：只有刚开过枪的那几帧，枪口才代表弹体
-     * 该出现的位置。存的是**向量**（相机 → 枪口），消费者把它加在弹体自己的位置上，所以它跟着枪走，
-     * 不会像"记一个世界坐标再蹭过去"那样把子弹拽向一个定死的点
-     * （[ClientRenderHandler.bulletRenderOffset] 里有这条教训的完整版）。
+     * ⚠ **不要**喂 `getBonePivot(name)`：那是 pivot 在**模型空间**的绝对坐标，而这份矩阵期望的是
+     * pivot **相对**坐标（本地原点）。两者相加等于把 pivot 的偏移算两遍，锚点会漂到
+     * `translation + p`（bind 姿态下正好是 pivot 的**两倍**）。`scope_pu` 就是被这个坑中的：
+     * 它的 pivot 在 (0, 0.2845, −1.3873) —— 分划面就在 1.39 格处 —— 于是提示被顶到光轴上方
+     * 0.28 格、深度翻倍，投到屏幕上就是镜筒上沿那一带。
+     * 另外这也解释了为什么"改 pivot 修不好"：改 pivot 时**分划几何跟着一起挪**（几何按 pivot 相对烘），
+     * 而锚点挪的是两倍，越改越偏。
+     *
+     * ⚠ 这个点是**骨骼的关节**，不保证落在分划图案的几何中心上：美术给 `division` 摆 pivot 时有一半
+     * （eotech / red dot / ranger / bruiser / okp_7）摆在了模型原点，ACOG 摆在 z = −1.55 而分划面在
+     * −6.18，sniper 摆在 −27.93。要让提示正好压在准星上，得改模型的 pivot —— 这是美术侧的活，
+     * 代码这边按"division 骨骼在哪儿，提示就画在哪儿"执行。
+     *
+     * ## 为什么这里能直接给出像素
+     * 用的是**采样这一刻生效的投影矩阵**（`RenderSystem.getProjectionMatrix()`）——分划就是它画出来的，
+     * 手部 pass 那个固定基准 FOV 已经在里面了。存像素而不是存骨骼位姿，消费方就不必再挑 fov 或矩阵
+     * （对比 [submitMuzzleSample] 存向量、由世界 pass 那边补 FOV 的做法）。
+     *
+     * @param poseStack 已经乘上这个瞄具**槽位变换**的 pose stack —— 也就是画分划时的那一份
+     * （相机空间 = 附件模型空间的外层）
+     * @param scope 本帧真正在走模板的那一档瞄具，锚点骨骼名取自它的 `divisionBone()`
      */
-    private fun submitMuzzleOffset(
+    private fun submitScopeReticleSample(poseStack: PoseStack, scope: ScopeRenderData) {
+        // 分划是这个时候才开始画的：没画出来就没有"分划位置"可言（腰射、还没抬到位）。
+        // 这里只是**不采样**，样本会自己按 TTL 过期；"松开右键那几帧"由消费方把关（同一个常量）。
+        if (ClientEventHandler.zoomTime < BedrockAttachmentModel.DIVISION_MIN_ZOOM) return
+
+        val boneName = scope.scopeMode.divisionBone()
+        val boneTransform = scope.model.getGlobalTransform(boneName) ?: return
+
+        val screen = BedrockBoneCoordinateTool.firstPersonBonePointToScreen(
+            poseStack,
+            boneTransform,
+            // 骨骼本地原点 = pivot 的当前位形（几何就是按"相对 pivot"烘的，见上面的 KDoc）。
+            // 这里**不能**换成模型空间那根 pivot 绝对坐标，否则等于算两遍偏移。
+            Vector3f(),
+            RenderSystem.getProjectionMatrix(),
+            Minecraft.getInstance().window.guiScaledWidth,
+            Minecraft.getInstance().window.guiScaledHeight
+        )
+
+        // 分划骨骼自己都在屏幕外时不给样本：命中提示跟着飞出屏幕，等于把命中反馈弄丢了，
+        // 还不如退回屏幕中心（样本过期 → 消费方走原逻辑）
+        if (screen == null || !screen.visible) return
+
+        ClientRenderHandler.scopeReticleScreen = Vector2f(screen.x, screen.y)
+    }
+
+    private fun submitMuzzleSample(
         poseMatrix: Matrix4f,
         model: GeoGunModel,
         stack: ItemStack,
         subWeaponFlare: Matrix4f?,
         attachmentMuzzleTransform: Matrix4f?,
     ) {
-        if (!MuzzleFlashRenderer.isFiring()) return
-
         val flareTransform = MuzzleFlashRenderer.resolveFlareTransform(
             model,
             stack,
             attachmentMuzzleTransform,
             subWeaponFlare
-        ) ?: return
+        ) ?: run {
+            ClientRenderHandler.muzzleDirection = null
+            return
+        }
+        val muzzleTransform = Matrix4f(poseMatrix).mul(flareTransform)
+        val axis = muzzleTransform.transformDirection(0f, 0f, -1f, Vector3f())
+        val axisScale = axis.length()
+        if (axisScale < 1e-6f) {
+            ClientRenderHandler.muzzleDirection = null
+        } else {
+            // 相机空间 → 世界轴。两份矩阵都只有旋转，单位向量换算过去还是单位向量
+            val worldAxis = cameraRotationInverse().transformDirection(
+                axis.x / axisScale, axis.y / axisScale, axis.z / axisScale, Vector3f()
+            )
+            ClientRenderHandler.muzzleDirection =
+                Vec3(worldAxis.x.toDouble(), worldAxis.y.toDouble(), worldAxis.z.toDouble())
+        }
 
-        // 枪口在相机空间里的位置（⚠ 先拷贝再乘：`poseMatrix` 是 pose stack 顶上那一份活的矩阵）
-        val muzzle = Matrix4f(poseMatrix).mul(flareTransform).getTranslation(Vector3f())
+        if (!MuzzleFlashRenderer.isFiring()) return
+
+        // 枪口在相机空间里的位置
+        val muzzle = muzzleTransform.getTranslation(Vector3f())
 
         val adjusted = BedrockBoneCoordinateTool.adjustViewDepthForFov(
             Vec3(muzzle.x.toDouble(), muzzle.y.toDouble(), muzzle.z.toDouble()),

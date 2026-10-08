@@ -18,17 +18,17 @@ data class ShootMessage @JvmOverloads constructor(
     val zoom: Boolean,
     val uuid: SerializedUUID?,
     val targetPos: SerializedVector3f?,
-    val power: Double = 1.0
+    val power: Double = 1.0,
+    val direction: SerializedVector3f? = null
 ) : ServerPacketPayload() {
     override fun PayloadContext.handler() {
         val player = sender()
         val stack = ActiveGun.stackOf(player)
         if (stack.item !is GunItem) return
 
-        if (targetPos == null) {
-            from(stack).shoot(player, spread, zoom, uuid, power)
-        } else {
-            from(stack).shoot(player, spread, zoom, uuid, targetPos.toVec3(), power)
-        }
+        // 客户端采到的"枪管此刻指向哪儿"（`ClientRenderHandler.muzzleDirection`，
+        // 由 `GeoGunRenderer.submitMuzzleSample` 每帧刷新）。拿不到就是 null，
+        // `GunItem.shoot` 会退回 `player.lookAngle` —— 服务端历来用的就是它。
+        from(stack).shoot(player, spread, zoom, uuid, targetPos?.toVec3(), power, direction?.toVec3())
     }
 }

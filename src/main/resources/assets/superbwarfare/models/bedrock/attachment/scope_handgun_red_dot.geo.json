@@ -509,12 +509,12 @@
 				},
 				{
 					"name": "division",
-					"pivot": [0, -2.48828, 1]
+					"pivot": [0, 0.6428, -94.8313]
 				},
 				{
 					"name": "division_illuminated",
 					"parent": "division",
-					"pivot": [0, 0.64277, -94.83125],
+					"pivot": [0.00001, 0.64277, -94.83125],
 					"cubes": [
 						{
 							"origin": [-0.27343, 0.5306, -94.8678],
