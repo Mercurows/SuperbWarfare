@@ -15,6 +15,7 @@ import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.getDefault
 import com.atsuishio.superbwarfare.data.gun.melee.ProjectileMarker
+import com.atsuishio.superbwarfare.data.gun.melee.isEngineProjectileMarker
 import com.atsuishio.superbwarfare.data.gun.melee.normalizeProjectileMarker
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.data.launchable.LaunchableEntityTool
@@ -24,6 +25,7 @@ import com.atsuishio.superbwarfare.entity.projectile.*
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.init.ModDamageTypes
+import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModPerks
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.ItemScreenProvider
@@ -419,18 +421,22 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     open fun useSpecialFireProcedure(data: GunData) = false
 
     /**
-     * 算出这把枪开一枪时**射手自己**该听到的音效（第一人称音），口径与旧的
-     * `ClientEventHandler.playGunClientSounds` 完全一致：`Fire1P` / `Fire1PSilent`（按枪口配件是否消音）、
-     * 音量 `0.5 × 音效半径倍率`、音高按热量衰减、`BEAST_BULLET` perk 的额外音效，以及非消音时的
-     * `REFLECTIONS` 尾音。
+     * 这次开火打出去的算不算「子弹」。
      *
-     * **只算参数、不播放**：主武器的 1P 音在客户端直接播（[com.atsuishio.superbwarfare.event.ClientEventHandler.playGunFire1PSound]），
-     * 而副武器的开火完全发生在服务端 —— 服务端把这里算好的参数发给射手客户端去播
-     * （`LocalSoundMessage`），这样两条链路的口径逐字一致，而且**只有服务端真的开火才会响**。
+     * 判据是 [GunProp.PROJECTILE] 解析出来的实体类型就是 [ModEntities.PROJECTILE]
+     * （`superbwarfare:projectile`，也就是 [ProjectileEntity]，SBW 枪械的常规弹丸）：
+     * 榴弹、火箭弹、炮弹、泰瑟针、超星弹这些「打出去的是别的东西」的武器不算，
+     * `@empty` / `@ray` / `@melee` 这类压根没有实体的引擎标记也不算。
      *
-     * @param data 要算音效的枪械数据；主武器传手持栈的，副武器传它自己那份。
-     * @return 按播放顺序排列的音效列表（可能为空：数据里没写 `Fire1P`）。
+     * 解析方式和 [shootBullet] 保持一致（`EntityType.byString`）而不是比字符串，是为了跟真正生成的那个
+     * 实体对齐；同理读 [GunProp.PROJECTILE] 而不读 `DefaultGunData`，因为配件/弹药可以改弹种。
      */
+    open fun isBulletProjectile(data: GunData): Boolean {
+        val projectileType = data.get(GunProp.PROJECTILE).itemId
+        if (projectileType.isEngineProjectileMarker()) return false
+        return EntityType.byString(projectileType).orElse(null) == ModEntities.PROJECTILE.get()
+    }
+
     open fun resolveFire1PSounds(data: GunData): List<LocalSound> {
         val sounds = ArrayList<LocalSound>(3)
 
@@ -452,7 +458,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                 ((2 * Math.random() - 1) * 0.05f + pitch).toFloat()
             )
 
-            if (!isSilent) {
+            if (!isSilent && isBulletProjectile(data)) {
                 sounds += LocalSound(
                     ModSounds.REFLECTIONS.get(),
                     0.25f * volumeMultiplier.toFloat(),

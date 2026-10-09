@@ -611,8 +611,11 @@ object ClickEventHandler {
         ClientEventHandler.chargeActive = false
         ClientEventHandler.chargeProgress = 0.0
         ClientEventHandler.chargePower = 0.0
-        ClientEventHandler.holdingFireKeyTicks = 0
-        ClientEventHandler.holdingFireKeyTicks0 = 0f
+
+        if (!ClientEventHandler.hasBarrelSpin(stack)) {
+            ClientEventHandler.holdingFireKeyTicks = 0
+            ClientEventHandler.holdingFireKeyTicks0 = 0f
+        }
         ClientEventHandler.holdFireVehicle = false
         ClientEventHandler.isEditing = false
         ClientEventHandler.customRpm = 0
