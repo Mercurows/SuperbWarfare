@@ -5,20 +5,20 @@
     {
       "Prop": "MaxEnergy",
       "Op": "Add",
-      "Value": 5000
+      "Value": 10000
     }
   ],
-  "Model": "superbwarfare:models/bedrock/attachment/shield_test.geo.json",
-  "Texture": "superbwarfare:textures/bedrock/attachment/shield_test.png",
+  "Model": "superbwarfare:models/bedrock/attachment/standard_gun_shield.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/standard_gun_shield.png",
   "Shield": {
-    "Durability": 20.0,
+    "Durability": 50.0,
     "Resist": 100.0,
-    "CoverAngle": 80.0,
-    "RechargeRate": 1.2,
+    "CoverAngle": 120.0,
+    "RechargeRate": 10.0,
     "RechargeDelay": 60,
     "BrokenLockout": 40,
     "EnergyPerCharge": 50,
-    "BreakOverflow": 0.0,
+    "BreakOverflow": 0.8,
     "RechargeSound": "superbwarfare:bullet_supply"
   }
 }

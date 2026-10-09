@@ -23,7 +23,7 @@ data class ShieldInfo(
     @SerialName("CoverAngle")
     val coverAngle: Double = 70.0,
 
-    /** 每 tick 回充量 */
+    /** 每秒恢复的耐久 */
     @SerialName("RechargeRate")
     val rechargeRate: Double = 1.0,
 

@@ -805,6 +805,7 @@
   "item.superbwarfare.charm_hiru_head": "灯瑠头吊坠",
   "des.superbwarfare.charm_hiru_head": "某不明生物的头，非常大",
   "item.superbwarfare.milencer": "弥音器",
+  "item.superbwarfare.standard_gun_shield": "基础枪盾",
 
   "death.attack.gunfire": "%1$s被%2$s射爆了",
   "death.attack.gunfire.entity": "%1$s被%2$s射爆了",
@@ -1620,6 +1621,7 @@
   "prop.superbwarfare.melee_range": "近战距离",
   "prop.superbwarfare.melee_headshot": "近战爆头倍率",
   "prop.superbwarfare.melee_legshot": "近战打腿倍率",
+  "prop.superbwarfare.max_energy": "最大能量",
 
   "superbwarfare.book.superb_warfare_manual": "卓越单兵手册",
   "superbwarfare.book.superb_warfare_manual.des": "卓越前线模组的教程，教你如何成为一名卓越的士兵（编写中）",

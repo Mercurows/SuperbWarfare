@@ -80,30 +80,13 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
         }
     }
 
-    /**
-     * 槽位名那一行：**只报主槽位**（[AttachmentDefinition.slot]），也就是这件配件"定义在哪个槽位上"。
-     *
-     * 这是玩家判断"这东西是干什么用的"的依据（`Bone` 没写时的挂载骨骼、`ScopeInfo` 的取值下标都取自它），
-     * 所以它单独占一行、用亮金色标出来，额外能装的槽位另起一行见 [additionalSlotsLine]。
-     */
     open fun slotLine(definition: AttachmentDefinition): MutableComponent =
         slotName(definition.slot).withStyle(ChatFormatting.GOLD)
 
-    /**
-     * "也可以作为 [XX配件] 使用"那一行，只在配件声明了 `ExtraSlots` 时出现。
-     *
-     * 槽位名走 **`%1$s` 占位符**传进去，不拼在标签后面：不同语言里这一句的语序不一样
-     * （中文"也可以作为 X 使用"、英文"Can also be used as X"），把列表交给翻译自己摆，
-     * 翻译才写得对；拼在后面就等于锁死了标签必须在前的语序。
-     *
-     * `ExtraSlots` 是"顺便也能装"的槽位，不是平级关系，所以这一行比主槽位那行弱：标签用灰色、
-     * 槽位名用暗一档的金色。不列出来的话，玩家看到 `[上导轨配件]` 会以为它装不上别的导轨。
-     */
     open fun additionalSlotsLine(definition: AttachmentDefinition): Component? {
         val extra = definition.extraSlots
         if (extra.isEmpty()) return null
-
-        // 先拼成一整个 Component，再作为 `%1$s` 传进译文，这样槽位名的颜色能跟着参数一起走
+        
         val names = Component.empty()
         extra.sortedBy { it.ordinal }.forEachIndexed { index, type ->
             if (index > 0) names.append(Component.literal(" / ").withStyle(ChatFormatting.GRAY))
@@ -114,7 +97,6 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
             .withStyle(ChatFormatting.GRAY)
     }
 
-    /** 单个槽位的显示名，例如 `[Scope Attachment]` / `[瞄准镜配件]`；没有翻译时退回枚举名 */
     open fun slotName(type: AttachmentType): MutableComponent {
         val key = "attachment.superbwarfare.slot.${type.attachmentName.lowercase(Locale.ROOT)}"
         return if (I18n.exists(key)) {
@@ -327,6 +309,7 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
             "MeleeRange",
             "MeleeHeadshot",
             "MeleeLegshot",
+            "MaxEnergy",
         )
 
         val LOWER_IS_BETTER = setOf(
@@ -341,7 +324,6 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
             "ReloadTime",
             "SoundRadius",
             "Spread",
-            // 瞄准时的呼吸晃动幅度：`Mul 0.8` 是"晃得轻了"，所以越小越好（绿色 -20%）
             "Sway",
             "Weight",
             "ZoomTime",

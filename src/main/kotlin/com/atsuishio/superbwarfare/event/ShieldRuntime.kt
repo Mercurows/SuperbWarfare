@@ -23,6 +23,7 @@ object ShieldRuntime {
     private const val LAST_HIT = "LastHit"
     private const val BROKEN_AT = "BrokenAt"
     private const val RECOVERED = "Recovered"
+    private const val TICKS_PER_SECOND = 20.0
 
     /** 一件装着枪盾的全部状态，[tag] 是槽位 compound 的活引用 */
     class Instance(
@@ -39,14 +40,14 @@ object ShieldRuntime {
                 tag.putDouble(CHARGE, value.coerceIn(0.0, info.durability))
             }
 
-        /** 上次吸收到伤害的时刻 */
+        /** 上次吸收到伤害时的世界时间（`level.gameTime`，不是实体的 `tickCount`） */
         var lastHit: Long
             get() = tag.getLong(LAST_HIT)
             set(value) {
                 tag.putLong(LAST_HIT, value)
             }
 
-        /** 破碎时刻，0 = 未破碎 */
+        /** 破碎时的世界时间，0 = 未破碎 */
         var brokenAt: Long
             get() = tag.getLong(BROKEN_AT)
             set(value) {
@@ -140,20 +141,26 @@ object ShieldRuntime {
     fun tick(holder: LivingEntity, gun: GunData) {
         val stack = gun.stack
         if (stack.isEmpty) return
-        if (holder.level().isClientSide) return
+        val level = holder.level()
+        if (level.isClientSide) return
 
-        val now = holder.tickCount.toLong()
+        val now = level.gameTime
         for (shield in of(gun)) {
             val max = shield.maxCharge()
             if (shield.sync() >= max) continue
-            if (now - shield.lastHit < shield.info.rechargeDelay.toLong()) continue
+
+            val elapsed = (now - shield.lastHit).coerceAtLeast(0L)
+            if (elapsed < shield.info.rechargeDelay.toLong()) continue
 
             if (shield.broken) {
-                if (now - shield.brokenAt < shield.info.brokenLockout.toLong()) continue
+                val locked = (now - shield.brokenAt).coerceAtLeast(0L)
+                if (locked < shield.info.brokenLockout.toLong()) continue
                 shield.brokenAt = 0L
             }
 
-            val amount = shield.info.rechargeRate.coerceAtLeast(0.0).coerceAtMost(max - shield.charge)
+            // `RechargeRate` 是每秒恢复的耐久，按 20 tick/秒折算到这一 tick
+            val rate = shield.info.rechargeRate.coerceAtLeast(0.0) / TICKS_PER_SECOND
+            val amount = rate.coerceAtMost(max - shield.charge)
             if (amount <= 0.0) continue
             if (!consume(stack, amount * shield.info.energyPerCharge.coerceAtLeast(0))) continue
 

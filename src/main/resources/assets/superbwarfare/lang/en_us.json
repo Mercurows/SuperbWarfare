@@ -805,6 +805,7 @@
   "item.superbwarfare.charm_hiru_head": "Hiru's Head Charm",
   "des.superbwarfare.charm_hiru_head": "The head of some unknown creature, very large",
   "item.superbwarfare.milencer": "Milencer",
+  "item.superbwarfare.standard_gun_shield": "Standard Gun Shield",
 
   "death.attack.gunfire": "%1$s was gunned down by %2$s",
   "death.attack.gunfire.entity": "%1$s was gunned down by %2$s",
@@ -1620,6 +1621,7 @@
   "prop.superbwarfare.melee_range": "Melee Range",
   "prop.superbwarfare.melee_headshot": "Melee Headshot",
   "prop.superbwarfare.melee_legshot": "Melee Legshot",
+  "prop.superbwarfare.max_energy": "Max Energy",
 
   "superbwarfare.book.superb_warfare_manual": "Superb Warfare Manual",
   "superbwarfare.book.superb_warfare_manual.des": "A tutorial on Superb Warfare mod, teaching you how to become a superb soldier (WIP)",

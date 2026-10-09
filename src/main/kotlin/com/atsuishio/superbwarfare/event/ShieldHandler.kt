@@ -92,7 +92,7 @@ object ShieldHandler {
     ): AbsorbResult? {
         if (damage <= 0f) return null
 
-        val now = victim.tickCount.toLong()
+        val now = victim.level().gameTime
         for (shield in ShieldRuntime.of(gun)) {
             if (shield.broken || shield.sync() <= 0.0) continue
             if (!ShieldRuntime.inCover(victim, shield, travel, from)) continue

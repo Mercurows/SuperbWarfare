@@ -31,44 +31,17 @@ import java.util.regex.Pattern
 class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
     internal val instance: TreeModelInstance = baseModel.createInstance()
 
-    /**
-     * 把一份姿态应用到附件模型上（**四期新增**，§9.8.7）。
-     *
-     * 与 `GeoGunModel.applyPose` 是同一套（底层同为 [TreeModelInstance]），
-     * 缺的只是这一层薄封装 —— 副武器的换弹动画由**它自己的模型**播，
-     * 就是靠这两个方法 + `AttachmentModelReloadListener` 的 `animPath` 才成立的。
-     *
-     * 调用方（`GeoGunRenderer.renderRegisteredAttachments`）必须在渲染后调用 [resetPose]：
-     * 模型实例是**全局共享**的（同一种配件装在多把枪上共用一份实例），
-     * 留着上一帧的姿态会串到别的枪上。
-     */
     fun applyPose(pose: Pose) {
         instance.applyPose(pose)
     }
 
-    /**
-     * 绑定姿势，与 `GeoGunModel.getBindPose` 是同一个东西（同一个底层模型）。
-     *
-     * ⚠ **不要拿 clip 的原始姿态直接 [applyPose]**：`BoneTreeInstance.applyPose` 是**直接写**
-     * `BoneState.x/y/z`，而动画文件里的平移量是"**相对绑定姿势的偏移**"（`0` = 停在骨骼自己的
-     * 静止位置）。主武器那边正是靠 `BLENDER.blend(bindPose, pose)` 把绑定垫回去的
-     * （见 `GeoGunRenderer` 里应用主武器姿态那一行），所以附件也必须走同一套 ——
-     * 否则**绑定不为 0 的骨骼会跑到父节点原点**去。下挂筒的炮弹就是这样错的：
-     * `projectile` 绑定 `(0, -1.1743, -6.5436)`（枪管轴线），clip 里写 `[0,0,0]` 时
-     * 整棵子树（炮弹**和**手）被抬到模型原点，实测偏上 0.0734、偏后 0.4090 方块。
-     */
     fun getBindPose(): Pose = baseModel.bindPose
 
-    /** 复位姿态；与 [applyPose] 成对使用 */
     fun resetPose() {
         instance.resetPose()
         markIlluminatedBones()
     }
 
-    /**
-     * Ammo readout engine shared with the gun model. Built lazily because [divisionGroups] is only
-     * populated once the constructor's bone scan has run.
-     */
     private val ammo: AmmoDisplayRenderer by lazy {
         AmmoDisplayRenderer(baseModel, instance, divisionGroups.values.flatten().toHashSet())
     }
@@ -88,14 +61,7 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
         .toIntArray()
 
     /**
-     * 手部骨骼索引，与 `GeoGunModel` 是同一对约定名。
-     *
-     * 副武器模型是从普通枪模型上裁下来的，`lefthand_pos` 上还留着**一整块手部几何**
-     * （`sub_weapon_gp_25.geo.json` 里那块 `4×12×4`）。第一人称下它会和
-     * `GeoGunModel.renderHands` 画的真手臂叠在一起，所以要像渲染主武器那样把它藏掉 ——
-     * `renderBone` 会跳过隐藏骨骼的**整棵子树**。
-     *
-     * 模型里没有这两根骨骼时索引是 -1，[setBoneVisible] 会安静地跳过。
+     * 手部骨骼索引，与 `GeoGunModel` 是同一对约定名
      */
     private val leftHandBoneIndex: Int = baseModel.getIndex(LEFT_HAND_BONE)
     private val rightHandBoneIndex: Int = baseModel.getIndex(RIGHT_HAND_BONE)
@@ -211,14 +177,7 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
     fun getLocatorTransform(locatorName: String): Matrix4f? = instance.getLocatorTransform(locatorName)
 
     /**
-     * 吊坠骨架：`string` / `charm` 两根分组骨骼 + 摆点/摆长/静止方向。
-     *
-     * **懒解析、结果挂在本对象上**：模型对象在数据包重载时会被整个换掉，
-     * 所以缓存在这里天然随重载失效 —— 换成"按模型路径缓存"就会一直用旧模型的骨骼下标。
-     * 模型里没有这两个分组时返回 `null`（正常配件都会走这条，只有吊坠不是）。
-     *
-     * 解析结果**打一条日志**（每个模型一次）：吊坠不摆的原因只有两种 —— "没找到分组"和
-     * "找到了但几何量离谱"，两种都表现为**画面上什么都不发生**，不留一行字就只能靠猜。
+     * 吊坠骨架：`string` / `charm` 两根分组骨骼 + 摆点/摆长/静止方向
      */
     fun charmRig(): CharmRig? {
         if (!charmRigResolved) {
@@ -283,12 +242,16 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
         ammo.renderBars(ammoBarState, poseStack, bufferSource, quadType, triangleType, packedLight, true)
         ammo.restoreBars(ammoBarState)
 
-        // After the restore, so nothing is drawn while the model is still carrying the squashed
-        // scales. A text anchored on the scope body is correct here as-is; one anchored below a
-        // division lands inside the housing and gets depth tested away, which is why the aiming path
-        // draws those itself.
         for (entry in readout.texts) {
-            ammo.renderText(entry, readout.count, readout.progress, readout.range, readout.heat, poseStack, bufferSource)
+            ammo.renderText(
+                entry,
+                readout.count,
+                readout.progress,
+                readout.range,
+                readout.heat,
+                poseStack,
+                bufferSource
+            )
         }
 
         for (i in hiddenOculars.indices) {
@@ -495,8 +458,6 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
         texts: List<AmmoText> = emptyList()
     ) {
         if (divisions.isEmpty()) return
-        // The reticle and its readout are one subtree as far as the viewer is concerned, so both wait
-        // for the zoom. See DIVISION_MIN_ZOOM.
         if (ClientEventHandler.zoomTime < DIVISION_MIN_ZOOM) return
 
         RenderSystem.disableDepthTest()
@@ -705,10 +666,6 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
         ammo.renderBars(ammoBarState, poseStack, bufferSource, quadType, triangleType, light, false)
         flush(bufferSource, quadType, triangleType)
 
-        // Texts anchored outside a division subtree. Unlike a reticle text they are not inside the
-        // ocular opening, so they need the depth buffer rather than a stencil window to stay in front
-        // of the housing — and by now the whole body has been drawn into it, on this path and on the
-        // aiming path alike. Drawn last so nothing of the model can overwrite them.
         for (text in texts) {
             if (text.divisionIndex < 0) {
                 ammo.renderText(text, poseStack, bufferSource)
@@ -782,11 +739,7 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
     }
 
     /**
-     * 藏掉模型自带的手部几何，与 `GeoGunModel.renderToBuffer` 开头那两句同义。
-     *
-     * 只在**画之前**置位、不还原：这两根骨骼上没有任何一帧需要它们可见的东西
-     * （真手臂由主武器那条链路单独画），而模型实例是同型号附件全局共享的，
-     * 每帧重设只是把 `GeoGunModel` 的写法照搬过来。
+     * 藏掉模型自带的手部几何。
      */
     private fun hideHandBones() {
         setBoneVisible(leftHandBoneIndex, false)
@@ -823,7 +776,6 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
     private data class OcularEntry(val index: Int, val isScope: Boolean)
 
     companion object {
-
         internal const val DIVISION_MIN_ZOOM = 0.4
 
         private const val SCOPE_BODY_NODE = "scope_body"
@@ -834,8 +786,6 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
         private const val OCULAR_SIGHT_NODE = "ocular_sight"
         private const val OCULAR_SCOPE_NODE = "ocular_scope"
         private const val ILLUMINATED_SUFFIX = "_illuminated"
-
-        /** 手部骨骼名，与 `GeoGunModel.LEFT_HAND_BONE` / `RIGHT_HAND_BONE` 保持一致 */
         private const val LEFT_HAND_BONE = "lefthand_pos"
         private const val RIGHT_HAND_BONE = "righthand_pos"
         private val OCULAR_PATTERN = Pattern.compile(
