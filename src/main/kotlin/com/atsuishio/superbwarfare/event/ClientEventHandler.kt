@@ -33,7 +33,6 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler.handleGunRecoil
 import com.atsuishio.superbwarfare.event.ClientEventHandler.handleWeaponFire
 import com.atsuishio.superbwarfare.event.ClientEventHandler.isGunMeleeActive
 import com.atsuishio.superbwarfare.event.ClientEventHandler.resetGunTransientState
-import com.atsuishio.superbwarfare.event.ClientEventHandler.zoomTime
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.item.attachment.SubWeaponItem
 import com.atsuishio.superbwarfare.item.gun.GunItem
@@ -99,12 +98,6 @@ object ClientEventHandler {
     var zoomTime: Double = 0.0
 
     @JvmField
-    var zoomPos: Double = 0.0
-
-    @JvmField
-    var zoomPosZ: Double = 0.0
-
-    @JvmField
     var bipodViewTime: Double = 0.0
 
     private const val BIPOD_VIEW_DURATION_SECONDS = 0.35f
@@ -133,6 +126,9 @@ object ClientEventHandler {
 
     @JvmField
     var moveRotZ: Double = 0.0
+
+    @JvmField
+    var moveRotateRate: Double = 0.0
 
     @JvmField
     var sprintBasicRotX: Double = 0.0
@@ -250,15 +246,6 @@ object ClientEventHandler {
     var currentFov: Double = 0.0
 
     @JvmField
-    var bowPullTimer: Double = 0.0
-
-    @JvmField
-    var bowPower: Double = 0.0
-
-    @JvmField
-    var bowPullPos: Double = 0.0
-
-    @JvmField
     var gunSpread: Double = 0.0
 
     @JvmField
@@ -299,8 +286,6 @@ object ClientEventHandler {
     @JvmField
     var holdingFireKey: Boolean = false
 
-    @JvmField
-    var bowPull: Boolean = false
 
     @JvmField
     var chargeActive: Boolean = false
@@ -2317,7 +2302,6 @@ object ClientEventHandler {
             handleWeaponBipodView(entity)
             handleWeaponFire(event, entity)
             handleGunRecoil()
-            handleBowPullAnimation(entity, stack)
             handleWeaponDraw(entity)
             handlePlayerCamera(event)
         }
@@ -2590,9 +2574,9 @@ object ClientEventHandler {
 
         poseStack.translate(-gunPosX / 16, gunPosY / 16, gunPosZ / 16)
 
-        poseStack.mulPose(Axis.XP.rotation(gunRotX * if (firePosTimer != 0.0) 0.1f else 1.0f))
-        poseStack.mulPose(Axis.YP.rotation(gunRotY * if (firePosTimer != 0.0) 0.1f else 1.0f))
-        poseStack.mulPose(Axis.ZP.rotation(gunRotZ * if (firePosTimer != 0.0) 0.1f else 1.0f))
+        poseStack.mulPose(Axis.XP.rotation(gunRotX))
+        poseStack.mulPose(Axis.YP.rotation(gunRotY))
+        poseStack.mulPose(Axis.ZP.rotation(gunRotZ))
     }
 
     private fun handleWeaponZoom(entity: LivingEntity) {
@@ -2600,10 +2584,7 @@ object ClientEventHandler {
         val stack = ActiveGun.stackOf(player)
         val data = GunData.from(stack)
         val times = getDelta()
-        // ⚠ `ZoomTime` / `Weight` 恒读**主武器**（`ActiveGun.handlingData`）：
-        // 副武器是挂在主武器身上的附件，端在手里的始终是主武器，挂上一支 GP-25
-        // （`Weight 1.5` / `ZoomTime 1`）不该让 AK 的瞄准快到看不见对焦。
-        // 下面 `data` 只留给"副武器正在换弹"这条门槛 —— 那是**动作状态**，跟着操控的枪走。
+
         val handling = ActiveGun.handlingData(player) ?: data
         val weight = (handling.stack.item as? GunItem)?.getCustomWeight(handling) ?: 0.0
         val duration = handling.get(GunProp.ZOOM_TIME).coerceAtLeast(1) + 0.4 * weight
@@ -2625,21 +2606,11 @@ object ClientEventHandler {
             zoomTime = (zoomTime - stepOut).coerceIn(0.0, 1.0)
         }
 
-        if (zoomPos > 0.8) {
+        if (zoomTime > 0.8) {
             noSprintTicks = 5f
         }
-
-        zoomPos = AnimationCurves.EASE_IN_OUT_QUINT.apply(zoomTime)
-        zoomPosZ = AnimationCurves.PARABOLA.apply(zoomTime)
     }
 
-    /**
-     * 更新脚架视图过渡进度：卧姿且枪械自带脚架或配件带脚架时移向 `bipod_view`，否则回到 `idle_view`。
-     * 仅影响非瞄准视角，瞄准时由 [zoomTime] 混合的瞄准定位点接管。
-     *
-     * 改装界面打开时同样退回 `idle_view`：改装聚焦以该视角为基准，若不退回，
-     * 鼠标移动触发聚焦的瞬间模型会闪现。
-     */
     private fun handleWeaponBipodView(entity: LivingEntity) {
         val player = entity as? Player ?: return
         val stack = ActiveGun.stackOf(player)
@@ -3036,7 +3007,7 @@ object ClientEventHandler {
         event.pitch = (pitch + cameraRot[0] + 3 * velocityY).toFloat()
         if (mc.options.cameraType == CameraType.THIRD_PERSON_BACK) {
             event.yaw =
-                (yaw + cameraRot[1] - angle * zoomPos).toFloat()
+                (yaw + cameraRot[1] - angle * zoomTime).toFloat()
         } else {
             event.yaw =
                 (yaw + cameraRot[1]).toFloat()
@@ -3044,25 +3015,6 @@ object ClientEventHandler {
 
         cameraRoll =
             (roll + cameraRot[2]).toFloat()
-    }
-
-    private fun handleBowPullAnimation(entity: LivingEntity, stack: ItemStack) {
-        val times = 4 * getDelta().coerceAtMost(0.8f)
-        val data = GunData.from(stack)
-        val fireModeInfo = data.selectedFireModeInfo()
-        if (!fireModeInfo.isChargeMode()) return
-
-        if (chargeActive && fireModeInfo.mode == FireMode.CHARGE) {
-            bowPull = true
-            bowPower = chargePower
-            bowPullTimer = chargeProgress * 1.4
-        } else {
-            bowPull = false
-            bowPullTimer = (bowPullTimer - 0.021 * times).coerceAtLeast(0.0)
-            bowPower = (bowPower - 0.04 * times).coerceAtLeast(0.0)
-        }
-
-        bowPullPos = 0.5 * cos(PI * (bowPullTimer.coerceIn(0.0, 1.0).pow(2) - 1).pow(2)) + 0.5
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -3122,29 +3074,9 @@ object ClientEventHandler {
                 return
             }
 
-            val p = if (stack.`is`(ModItems.BOCEK.get())) {
-                bowPullPos * zoomTime
-            } else {
-                zoomPos
-            }
+            val p = zoomTime
 
             val data = GunData.from(stack)
-
-            // ⚠ **倍率必须和「瞄准位形」取同一个来源**（§9.8.6）：
-            //
-            // - 副武器模型自己有 `iron_view` → 玩家眼睛贴在**副武器自己的**照门上，倍率也用它自己的；
-            // - 没有（当前 GP-25 就是这种）→ `GeoGunRenderer` 的位形链会回退到**宿主枪**的
-            //   `scope_view`/`iron_view`，那倍率也**必须**用宿主枪的 —— 包括它装着的瞄具倍率。
-            //
-            // 只改位形不改倍率就会变成"眼睛贴着主武器的 4 倍镜、FOV 却是 1 倍"
-            // （四期实现时漏掉的一半，见 §11.10.10）。
-            //
-            // 判据分两步，两步都不能省：
-            // ① **当前操控的是不是副武器** —— 用 `isSubWeapon`（物品是 `SubWeaponItem`），
-            //    **不能**用 `isDeployed(data)`：部署状态写在**宿主枪**的 `ActiveSlot` 上，
-            //    副武器自己那份数据里那个字段永远是空的；
-            // ② **副武器有没有自己的瞄准位形** —— 问的是**宿主枪**（"它身上挂着的那个副武器
-            //    模型有没有 `iron_view`"），与渲染侧共用同一个函数，不会两边各判一套。
             val hostGun = ActiveGun.mainGun(player)
             val zoomData =
                 if (ActiveGun.isSubWeapon(data) && hostGun != null && !GeoGunRenderer.subWeaponHasOwnAimPose(hostGun)) {
@@ -3354,10 +3286,6 @@ object ClientEventHandler {
         holdingFireKeyTicks0 = 0f
         ClickEventHandler.switchZoom = false
         burstFireAmount = 0
-        bowPull = false
-        bowPullTimer = 0.0
-        bowPower = 0.0
-        bowPullPos = 0.0
         chargeActive = false
         chargeProgress = 0.0
         chargePower = 0.0

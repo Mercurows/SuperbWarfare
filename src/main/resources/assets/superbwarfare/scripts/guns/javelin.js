@@ -1,5 +1,5 @@
 
-const JAVELIN_HIDE_ROOT_ZOOM_OVER = 0.7
+const JAVELIN_HIDE_ROOT_ZOOM_OVER = 0.8
 
 function transformCustomModelPart(stack, model, transformType, partialTick, renderer) {
     const root = model.getBone("root")

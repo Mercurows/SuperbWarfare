@@ -64,10 +64,6 @@ public class BocekItem extends GunGeoItem {
         if (event.getData(DataTickets.ITEM_RENDER_PERSPECTIVE) != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
             return event.setAndContinue(RawAnimation.begin().thenLoop("animation.bocek.idle"));
 
-        if (ClientEventHandler.bowPull) {
-            return event.setAndContinue(RawAnimation.begin().thenPlayAndHold("animation.bocek.pull"));
-        }
-
         if (player.isSprinting() && player.onGround() && ClientEventHandler.noSprintTicks == 0 && ClientEventHandler.drawTime < 0.01) {
             return event.setAndContinue(RawAnimation.begin().thenLoop("animation.bocek.run"));
         }

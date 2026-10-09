@@ -562,7 +562,7 @@ object ClickEventHandler {
                     ClientEventHandler.lockingPos = null
                 }
             } else {
-                sendPacketToServer(FireKeyMessage(0, ClientEventHandler.bowPower, ClientEventHandler.zoom))
+                sendPacketToServer(FireKeyMessage(0, ClientEventHandler.chargePower, ClientEventHandler.zoom))
                 if (ClientEventHandler.drawTime < 0.01) {
                     val fireMode = data.selectedFireModeInfo().mode
                     if (fireMode == FireMode.BURST) {
@@ -604,10 +604,9 @@ object ClickEventHandler {
         } else {
             0.0
         }
-        val chargePower = chargeConfig?.powerForProgress(releaseProgress) ?: ClientEventHandler.bowPower
+        val chargePower = chargeConfig?.powerForProgress(releaseProgress) ?: ClientEventHandler.chargePower
 
         sendPacketToServer(FireKeyMessage(1, chargePower, ClientEventHandler.zoom))
-        ClientEventHandler.bowPull = false
         ClientEventHandler.holdingFireKey = false
         ClientEventHandler.chargeActive = false
         ClientEventHandler.chargeProgress = 0.0
