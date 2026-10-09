@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.event
 
 import com.atsuishio.superbwarfare.api.event.ClientGunFireEvent
 import com.atsuishio.superbwarfare.api.event.ClientVehicleFireEvent
+import com.atsuishio.superbwarfare.capability.living.RadiationCapability
 import com.atsuishio.superbwarfare.client.ClientRenderHandler
 import com.atsuishio.superbwarfare.client.ClientSyncedEntityHandler
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves
@@ -37,7 +38,6 @@ import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.item.attachment.SubWeaponItem
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.item.misc.MonitorItem
-import com.atsuishio.superbwarfare.mobeffect.RadiationMobEffect
 import com.atsuishio.superbwarfare.network.message.send.*
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.resource.gun.GunResource
@@ -637,14 +637,13 @@ object ClientEventHandler {
     @SubscribeEvent
     fun handleClientTick(event: TickEvent.ClientTickEvent) {
         val player = localPlayer ?: run {
-            RadiationShaderHandler.setLevel(0)
+            RadiationShaderHandler.setDosage(0f)
             return
         }
         if (event.phase == TickEvent.Phase.START) return
 
-        val radiationLevel = RadiationMobEffect.getLevel(player)
-        RadiationShaderHandler.setLevel(
-            if (mc.options.cameraType == CameraType.FIRST_PERSON) radiationLevel else 0
+        RadiationShaderHandler.setDosage(
+            if (mc.options.cameraType == CameraType.FIRST_PERSON) RadiationCapability.getDosage(player).toFloat() else 0f
         )
 
         if (mc.fps <= 20) {

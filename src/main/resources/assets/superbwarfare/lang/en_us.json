@@ -1105,6 +1105,9 @@
   "commands.superbwarfare.ammo.infinite.set.enabled.multiple": "Infinite ammo mode enabled for %1$s entities",
   "commands.superbwarfare.ammo.infinite.set.disabled.multiple": "Infinite ammo mode disabled for %1$s entities",
   "commands.superbwarfare.ammo.infinite.get": "Infinite ammo mode for entity %1$s is %2$s",
+  "commands.superbwarfare.radiation.get": "Radiation dosage of %1$s is %2$s mSv",
+  "commands.superbwarfare.radiation.set": "Radiation dosage of %1$s set to %2$s mSv",
+  "commands.superbwarfare.radiation.invalid": "Target entity is not a living entity that can carry radiation dosage",
 
   "tips.superbwarfare.sensitivity": "Current Sensitivity of This Gun: %1$s",
   "tips.superbwarfare.monitor.linked": "Connect!",

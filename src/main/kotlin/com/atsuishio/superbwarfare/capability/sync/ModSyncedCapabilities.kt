@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.capability.sync
 import com.atsuishio.superbwarfare.capability.ModCapabilities
 import com.atsuishio.superbwarfare.capability.entity.InfiniteAmmoCapability
 import com.atsuishio.superbwarfare.capability.living.PhosphorusFireCapability
+import com.atsuishio.superbwarfare.capability.living.RadiationCapability
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable
 import kotlin.jvm.optionals.getOrNull
 
@@ -22,6 +23,10 @@ object ModSyncedCapabilities {
 
         CapabilitySync.register(PhosphorusFireCapability.ID) { entity ->
             entity.getCapability(ModCapabilities.PHOSPHORUS_FIRE_CAPABILITY).resolve().getOrNull()
+        }
+
+        CapabilitySync.register(RadiationCapability.ID) { entity ->
+            entity.getCapability(ModCapabilities.RADIATION_CAPABILITY).resolve().getOrNull()
         }
 
         CapabilitySync.register(PlayerVariable.ID) { entity ->

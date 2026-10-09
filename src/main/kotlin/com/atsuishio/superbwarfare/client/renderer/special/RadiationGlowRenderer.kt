@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.client.renderer.special
 
-import com.atsuishio.superbwarfare.init.ModMobEffects
+import com.atsuishio.superbwarfare.capability.living.RadiationCapability
+import com.atsuishio.superbwarfare.mobeffect.RadiationMobEffect
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.mc
 import com.mojang.blaze3d.vertex.PoseStack
@@ -31,16 +32,17 @@ class RadiationGlowRenderer<T : LivingEntity, M : EntityModel<T>>(
         netHeadYaw: Float,
         headPitch: Float
     ) {
-        if (!entity.hasEffect(ModMobEffects.RADIATION.get())) return
-        val instance = entity.getEffect(ModMobEffects.RADIATION.get()) ?: return
-        val level = instance.amplifier
-        if (level <= 0 || entity.isInvisible) return
+        val dose = RadiationCapability.getDosage(entity)
+        if (dose < RadiationMobEffect.DOSE_SYMPTOM_THRESHOLD || entity.isInvisible) return
 
         if (entity is Player && entity == localPlayer && mc.options.cameraType == CameraType.FIRST_PERSON) return
 
-        val strength = (level - 1) / 19.0f
+        val strength = ((dose - RadiationMobEffect.DOSE_SYMPTOM_THRESHOLD) /
+                (RadiationMobEffect.DOSE_LETHAL_THRESHOLD - RadiationMobEffect.DOSE_SYMPTOM_THRESHOLD))
+            .coerceIn(0f, 1f)
         val pulse = 0.92f + 0.08f * sin(ageInTicks * 0.08f)
-        val alpha = (0.55f + 0.4f * strength) * pulse
+        val alpha = (0.15f + 0.65f * strength) * pulse
+        val green = 0.45f + 0.55f * strength
         val glowTexture = livingRenderer.getTextureLocation(entity)
 
         parentModel.renderToBuffer(
@@ -48,9 +50,9 @@ class RadiationGlowRenderer<T : LivingEntity, M : EntityModel<T>>(
             buffer.getBuffer(RenderType.entityTranslucentEmissive(glowTexture, false)),
             0xF000F0,
             OverlayTexture.NO_OVERLAY,
-            0.05f,
-            1.0f,
-            0.08f,
+            0.05f * (1f - strength),
+            green,
+            0.08f * (1f - strength),
             alpha
         )
     }

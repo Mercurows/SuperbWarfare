@@ -1105,6 +1105,9 @@
   "commands.superbwarfare.ammo.infinite.set.enabled.multiple": "已为%1$s个实体开启无限弹药模式",
   "commands.superbwarfare.ammo.infinite.set.disabled.multiple": "已为%1$s个实体关闭无限弹药模式",
   "commands.superbwarfare.ammo.infinite.get": "实体%1$s的无限弹药模式为%2$s",
+  "commands.superbwarfare.radiation.get": "实体%1$s的辐射剂量为%2$s mSv",
+  "commands.superbwarfare.radiation.set": "已将实体%1$s的辐射剂量设为%2$s mSv",
+  "commands.superbwarfare.radiation.invalid": "目标实体不是可承载辐射剂量的生物",
 
   "tips.superbwarfare.sensitivity": "当前枪械的灵敏度为：%1$s",
   "tips.superbwarfare.monitor.linked": "连接成功！",
