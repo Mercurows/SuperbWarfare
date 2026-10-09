@@ -218,22 +218,14 @@ class BuiltinGunScopeRenderer(
         RenderSystem.colorMask(true, true, true, true)
     }
 
-    /**
-     * 在屏幕空间画一个大圆盘，用 `GL_INVERT` 把窗口**内部**的模板值翻成 `~(i + 1)`。
-     *
-     * 圆盘不写颜色也不写深度，坐标系是**合成**出来的：圆心取 `ocular` 在模型里的位置（方块）
-     * 乘 `16 × 90`，半径 `80 × 倍率 × 开镜进度`，整片贴在 z = -90 上。这么做的意义是让窗口成为
-     * 一个**正圆**——镜筒口本身是八边形，直接拿轮廓当窗口会是个八边形洞。开镜进度决定它的大小，
-     * 所以窗口是"随开镜张开"的。
-     */
     private fun carveDisc(poseStack: PoseStack, info: BuiltinScopeInfo) {
         val builder: BufferBuilder = Tesselator.getInstance().builder
         RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_INVERT)
         RenderSystem.colorMask(false, false, false, false)
         RenderSystem.depthMask(false)
 
-        val aimingProgress = ClientEventHandler.zoomTime.coerceIn(0.0, 1.0).toFloat()
-        val rad = 80f * info.viewRadiusModifier * aimingProgress
+        val progress = ClientEventHandler.aimingProgress(ClientEventHandler.zoomTime)
+        val rad = 80f * info.viewRadiusModifier * progress
 
         RenderSystem.setShader(GameRenderer::getPositionColorShader)
         for (i in ocularIndices.indices) {

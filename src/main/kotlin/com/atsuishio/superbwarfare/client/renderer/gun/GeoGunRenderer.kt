@@ -414,7 +414,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             )
 
             val shootRecoil = resource.shootRecoil
-            ClientEventHandler.handleShootAnimationV2(
+            ClientEventHandler.handleShootAnimation(
                 poseStack,
                 shootRecoil.offset.x, shootRecoil.offset.y, shootRecoil.offset.z,
                 shootRecoil.rotation.x, shootRecoil.rotation.y, shootRecoil.rotation.z,
@@ -438,7 +438,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             // 以 scope_ranger / scope_sniper（zoomLengthScale = 0.3）为例，zoomTime = 0.3 时长度已经缩掉
             // 总压缩量的 30%（实际长度的 21%），而枪才刚走完 10.8% 的路程，看上去是先"缩一下"再"抬上来"；
             // 反过来 zoomTime = 0.7 时枪已到位 89.2%，长度却只缩了 70%，收尾阶段长度还在慢慢变。
-            val zoom = aimingProgress(ClientEventHandler.zoomTime)
+            val zoom = ClientEventHandler.aimingProgress(ClientEventHandler.zoomTime)
             poseStack.scale(1f, 1f, 1f - (1f - zoomLengthScale) * zoom)
             if (zoomPivot != null) {
                 poseStack.translate(-zoomPivot.x, -zoomPivot.y, -zoomPivot.z)
@@ -1670,8 +1670,8 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     /**
      * 瞄准推进度：0 为腰射，1 为完全瞄准，就是 [ClientEventHandler.zoomTime] 的**线性**原值。
      *
-     * ⚠ 不要再对它套 `aimingProgress`（EASE_IN_OUT_QUINT）：[GeoGunRenderer] 内部读同一个量时套了
-     * 曲线，脚本里写的门槛（"0.3 之后才出现"）要按这里的原值来定。
+     * ⚠ 不要再对它套 [ClientEventHandler.aimingProgress]（EASE_IN_OUT_QUINT）：渲染内部读同一个量时
+     * 套了曲线，脚本里写的门槛（"0.3 之后才出现"）要按这里的**线性原值**来定。
      *
      * 和 [scriptBipodProgress] 同理，它描述的是本地玩家自己的视角过渡，只有他手里那把枪能读到，
      * 别的枪一律返回 0——否则本地玩家一按瞄准键，世界上每一把同型号枪都会跟着亮起来。
@@ -1885,7 +1885,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         // 枪到位之前：中段枪身的摆动已经被压平了，位置却还没跟上，衔接处会看出"甩一下"。
         // 卧姿架在脚架上也要求收敛，所以与 bipodViewTime 取较大者；缓动单调，先取 max 再缓动与
         // 各自缓动后取 max 等价。
-        val zoomTime = aimingProgress(
+        val zoomTime = ClientEventHandler.aimingProgress(
             ClientEventHandler.zoomTime.coerceAtLeast(ClientEventHandler.bipodViewTime)
         )
 
@@ -2050,10 +2050,6 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             Vec3(offset.x.toDouble(), offset.y.toDouble(), offset.z.toDouble())
     }
 
-    /** 把 0..1 的瞄准进度换算成真正用于插值的值 */
-    private fun aimingProgress(rawProgress: Double): Float =
-        AnimationCurves.EASE_IN_OUT_QUINT.apply(rawProgress.coerceIn(0.0, 1.0)).toFloat()
-
     open fun computeViewTransform(
         model: GeoGunModel,
         stack: ItemStack,
@@ -2065,7 +2061,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val idleViewTransform = idleViewAnchor ?: model.getGlobalTransform(IDLE_VIEW_BONE) ?: return null
         val hipViewTransform = bipodViewTransform(model, idleViewTransform)
 
-        val zoom = aimingProgress(ClientEventHandler.zoomTime)
+        val zoom = ClientEventHandler.aimingProgress(ClientEventHandler.zoomTime)
 
         val focusOffset = ClientEventHandler.editFocusOffset
         if (focusOffset.lengthSquared() > 1e-8f && zoom <= 0f) {

@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.client.ClientRenderHandler
 import com.atsuishio.superbwarfare.client.ClientSyncedEntityHandler
 import com.atsuishio.superbwarfare.client.animation.AnimationCurves
 import com.atsuishio.superbwarfare.client.animation.gun.GeoGunAnimationInstance
+import com.atsuishio.superbwarfare.client.animation.gun.GunDrawAnimation
 import com.atsuishio.superbwarfare.client.gun.GunAction
 import com.atsuishio.superbwarfare.client.gun.GunActionLock
 import com.atsuishio.superbwarfare.client.gun.MeleeClientHandler
@@ -80,10 +81,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.registries.ForgeRegistries
 import org.joml.Matrix4f
+import org.joml.Quaternionf
 import org.joml.Vector3f
 import org.lwjgl.glfw.GLFW
-import software.bernie.geckolib.core.animatable.model.CoreGeoBone
-import software.bernie.geckolib.core.animation.AnimationProcessor
 import top.theillusivec4.curios.api.CuriosApi
 import java.util.*
 import kotlin.experimental.or
@@ -96,6 +96,19 @@ import kotlin.math.*
 object ClientEventHandler {
     @JvmField
     var zoomTime: Double = 0.0
+
+    /**
+     * 把 `zoomTime`（0 腰射 → 1 完全瞄准）换算成真正用于插值的值，走 `EASE_IN_OUT_QUINT`。
+     *
+     * 凡是"随开镜连续变化"的东西都该读这个，而不是 [zoomTime] 原值：枪的姿态、开镜倍率、相机拉近、
+     * 镜筒窗口……只要有一处用线性原值，那一处的推进节奏就会和其余的对不上（枪到位了、它还在慢慢爬）。
+     *
+     * 反过来，"到什么程度算瞄好了"这类**门槛**（`zoomTime > 0.8` 藏准星、`scriptZoomTime` 给脚本的
+     * 门槛值）仍然读原值——它们是二值判定，不是插值。
+     */
+    @JvmStatic
+    fun aimingProgress(rawProgress: Double): Float =
+        AnimationCurves.EASE_IN_OUT_QUINT.apply(rawProgress.coerceIn(0.0, 1.0)).toFloat()
 
     @JvmField
     var bipodViewTime: Double = 0.0
@@ -2342,7 +2355,7 @@ object ClientEventHandler {
 
         if (event.hand == rightHand) {
             // 手持副武器时按普通物品处理
-            if (GunItem.isHeldWeapon(rightHandItem) && drawTime > 0.15) {
+            if (GunItem.isHeldWeapon(rightHandItem) && drawTime > 0.95) {
                 event.isCanceled = true
             }
             if (player.isUsingItem && player.useItem.`is`(ModItems.ARTILLERY_INDICATOR.get())) {
@@ -2486,52 +2499,8 @@ object ClientEventHandler {
         velocityY = (Mth.lerp(0.23 * times, velocityY, velocity) * (1 - 0.5 * zoomTime)).coerceIn(-0.8, 0.8)
     }
 
-    @JvmStatic
-    fun gunRootMove(
-        animationProcessor: AnimationProcessor<*>,
-        customX: Float,
-        customY: Float,
-        customZ: Float,
-        useCustomAnim: Boolean
-    ) {
-        val root = animationProcessor.getBone("root")
-        val walkPosX = movePosX.toFloat()
-        val walkPosY = (swayY + movePosY).toFloat()
-        val walkPosZ = 0f
-        val walkRotX = swayX.toFloat()
-        val walkRotY = (0.2f * movePosX).toFloat()
-        val walkRotZ = (0.2f * movePosX).toFloat()
-
-        val i = if (useCustomAnim) 0 else 1
-
-        val basicSprintPosX = (sprintBasicPosX * (1.5 + customX)).toFloat() * i
-        val basicSprintPosY =
-            (sprintBasicPosY * (-2.35 + customY - 8 * AnimationCurves.PARABOLA.apply(sprintBasicPosY))).toFloat() * i
-        val basicSprintPosZ = (sprintBasicPosZ * (-0.55 + customZ)).toFloat() * i
-
-        val basicSprintRotX = (sprintBasicRotX * 39 * Mth.DEG_TO_RAD).toFloat() * i
-        val basicSprintRotY = (sprintBasicRotY * 35.6 * Mth.DEG_TO_RAD).toFloat() * i
-        val basicSprintRotZ = (sprintBasicRotZ * 34.7 * Mth.DEG_TO_RAD).toFloat() * i
-
-        val gunPosX =
-            (walkPosX + basicSprintPosX + sprintPosX * i + 20 * drawTime + 9.3f * movePosHorizon).toFloat() * (1 - 0.5 * zoomTime).toFloat()
-        val gunPosY =
-            (walkPosY + basicSprintPosY + sprintPosY * i - 40 * drawTime - 2f * velocityY).toFloat() * (1 - 0.5 * zoomTime).toFloat()
-        val gunPosZ = (walkPosZ + basicSprintPosZ) * (1 - 1 * zoomTime).toFloat()
-        val gunRotX =
-            ((walkRotX + basicSprintRotX - Mth.DEG_TO_RAD * 60 * drawTime - 0.15f * velocityY) * (1 - 0.5 * zoomTime) + Mth.DEG_TO_RAD * turnRot[0]).toFloat()
-        val gunRotY =
-            ((walkRotY + basicSprintRotY + (0.2f * sprintBasicPosX * i) + Mth.DEG_TO_RAD * 300 * drawTime) * (1 - 0.75 * zoomTime) + Mth.DEG_TO_RAD * turnRot[1]).toFloat()
-        val gunRotZ =
-            ((walkRotZ + basicSprintRotZ + moveRotZ + Mth.DEG_TO_RAD * 90 * drawTime + 2.7f * movePosHorizon) * (1 - 0.5 * zoomTime) + Mth.DEG_TO_RAD * turnRot[2]).toFloat()
-
-        root.posX = gunPosX
-        root.posY = gunPosY
-        root.posZ = gunPosZ
-        root.rotX = gunRotX
-        root.rotY = gunRotY
-        root.rotZ = gunRotZ
-    }
+    private val drawAnimRotation = Vector3f()
+    private val drawAnimPosition = Vector3f()
 
     @JvmStatic
     fun gunRootMoveV2(
@@ -2559,20 +2528,29 @@ object ClientEventHandler {
         val basicSprintRotY = (sprintBasicRotY * 35.6 * Mth.DEG_TO_RAD).toFloat() * i
         val basicSprintRotZ = (sprintBasicRotZ * 14.7 * Mth.DEG_TO_RAD).toFloat() * i
 
+        val drawAnimT = GunDrawAnimation.timeAt(drawTime)
+        GunDrawAnimation.rotationAt(drawAnimT, drawAnimRotation)
+        GunDrawAnimation.positionAt(drawAnimT, drawAnimPosition)
+
         val gunPosX =
-            (walkPosX + basicSprintPosX + sprintPosX * i + 20 * drawTime + 9.3f * movePosHorizon - 0.5 * turnRot[1]).toFloat() * (1 - 0.5 * zoomTime).toFloat()
+            (walkPosX + basicSprintPosX + sprintPosX * i + 9.3f * movePosHorizon - 0.5 * turnRot[1]).toFloat() * (1 - 0.5 * zoomTime).toFloat()
         val gunPosY =
-            (walkPosY + basicSprintPosY + sprintPosY * i - 40 * drawTime - 2f * velocityY).toFloat() * (1 - 0.5 * zoomTime).toFloat()
+            (walkPosY + basicSprintPosY + sprintPosY * i - 2f * velocityY).toFloat() * (1 - 0.5 * zoomTime).toFloat()
         val gunPosZ = (walkPosZ + basicSprintPosZ) * (1 - 1 * zoomTime).toFloat()
         val gunRotX =
-            ((walkRotX + basicSprintRotX - Mth.DEG_TO_RAD * 60 * drawTime - 0.15f * velocityY) * (1 - 0.5 * zoomTime) + Mth.DEG_TO_RAD * turnRot[0]).toFloat()
+            ((walkRotX + basicSprintRotX - 0.15f * velocityY) * (1 - 0.5 * zoomTime) + Mth.DEG_TO_RAD * turnRot[0]).toFloat()
         val gunRotY =
-            ((walkRotY + basicSprintRotY + (0.2f * sprintBasicPosX * i) + Mth.DEG_TO_RAD * 300 * drawTime) * (1 - 0.75 * zoomTime) + Mth.DEG_TO_RAD * turnRot[1]).toFloat()
+            ((walkRotY + basicSprintRotY + (0.2f * sprintBasicPosX * i)) * (1 - 0.75 * zoomTime) + Mth.DEG_TO_RAD * turnRot[1]).toFloat()
         val gunRotZ =
-            ((walkRotZ + basicSprintRotZ + moveRotZ + Mth.DEG_TO_RAD * 90 * drawTime + 2.7f * movePosHorizon) * (1 - 0.5 * zoomTime) + Mth.DEG_TO_RAD * turnRot[2]).toFloat()
+            ((walkRotZ + basicSprintRotZ + moveRotZ + 2.7f * movePosHorizon) * (1 - 0.5 * zoomTime) + Mth.DEG_TO_RAD * turnRot[2]).toFloat()
 
-        poseStack.translate(-gunPosX / 16, gunPosY / 16, gunPosZ / 16)
+        poseStack.translate(
+            -(gunPosX + drawAnimPosition.x) / 16,
+            (gunPosY + drawAnimPosition.y) / 16,
+            (gunPosZ + drawAnimPosition.z) / 16
+        )
 
+        poseStack.mulPose(Quaternionf().rotateZYX(drawAnimRotation.z, drawAnimRotation.y, drawAnimRotation.x))
         poseStack.mulPose(Axis.XP.rotation(gunRotX))
         poseStack.mulPose(Axis.YP.rotation(gunRotY))
         poseStack.mulPose(Axis.ZP.rotation(gunRotZ))
@@ -2722,20 +2700,6 @@ object ClientEventHandler {
 
     @JvmStatic
     fun handleShootAnimation(
-        bone: CoreGeoBone,
-        x: Float,
-        y: Float,
-        z: Float,
-        rotX: Float,
-        rotY: Float,
-        rotZ: Float,
-        zoomMultiply: Float,
-        customSpeed: Float
-    ) {
-    }
-
-    @JvmStatic
-    fun handleShootAnimationV2(
         poseStack: PoseStack,
         x: Float,
         y: Float,
@@ -2771,19 +2735,22 @@ object ClientEventHandler {
         var zoomMultiply = zoomMultiply
         zoomMultiply = zoomMultiply.coerceIn(0f, 1f)
 
-        val zoom = (1 - (1 - zoomMultiply) * zoomTime).toFloat() * pose
+        // 开镜抑制走瞄准曲线，和枪的姿态收敛（GeoGunRenderer 里那一组 rotationScale/positionScale）同一条
+        val zt = aimingProgress(zoomTime)
+
+        val zoom = (1 - (1 - zoomMultiply) * zt).toFloat() * pose
 
         val gunPosX = zoom * x * (recoilHorizon * (0.5f * firePosZ)).toFloat()
-        val gunPosY = zoom * y * ((getBoneMoveY(firePosTimer.toFloat()) * 0.1 + 0.07f * firePosZ) * (1 - 0.25 * zoomTime)).toFloat()
+        val gunPosY = zoom * y * ((getBoneMoveY(firePosTimer.toFloat()) * 0.1 + 0.07f * firePosZ) * (1 - 0.25 * zt)).toFloat()
         val gunPosZ =
-            zoom * z * (getBoneMoveZ(firePosTimer.toFloat()) * 0.03 + 1.1f * firePosZ).toFloat() * (1 - 0.75 * zoomTime).toFloat()
+            zoom * z * (getBoneMoveZ(firePosTimer.toFloat()) * 0.03 + 1.1f * firePosZ).toFloat() * (1 - 0.75 * zt).toFloat()
 
         val gunRotX =
-            zoom * rotX * (-getBoneRotX(fireRotTimer.toFloat()) * Mth.DEG_TO_RAD * 0.5f + 0.01f * firePosZ).toFloat() * (1 - 0.85 * zoomTime).toFloat()
+            zoom * rotX * (-getBoneRotX(fireRotTimer.toFloat()) * Mth.DEG_TO_RAD * 0.5f + 0.01f * firePosZ).toFloat() * (1 - 0.85 * zt).toFloat()
         val gunRotY =
-            (3 * zoom * rotY * getBoneRotY(fireRotTimer.toFloat()) * Mth.DEG_TO_RAD * recoilHorizon * (1 - 0.3 * zoomTime)).toFloat()
+            (3 * zoom * rotY * getBoneRotY(fireRotTimer.toFloat()) * Mth.DEG_TO_RAD * recoilHorizon * (1 - 0.3 * zt)).toFloat()
         val gunRotZ =
-            (2 * zoom * rotZ * getBoneRotZ(fireRotTimer.toFloat()) * Mth.DEG_TO_RAD * recoilHorizon * (1 - 0.5 * zoomTime)).toFloat()
+            (2 * zoom * rotZ * getBoneRotZ(fireRotTimer.toFloat()) * Mth.DEG_TO_RAD * recoilHorizon * (1 - 0.5 * zt)).toFloat()
 
         poseStack.mulPose(Axis.XP.rotation(gunRotX))
         poseStack.mulPose(Axis.YP.rotation(gunRotY))
@@ -3055,17 +3022,6 @@ object ClientEventHandler {
 
         event.fov /= artilleryIndicatorZoom
 
-        // ⚠ 判据必须是 `isOperable`（"这个栈能不能被当成一把枪操作"）而**不是** `isHeldWeapon`
-        // （"这件物品拿在手上算不算枪"）。
-        //
-        // `stack` 是 `ActiveGun.stackOf(player)` —— **部署中的副武器**，而 `SubWeaponItem`
-        // 的 `useAsWeaponInHand()` 是 `false`（§8.3.1：手持副武器**物品本身**时按普通物品处理）。
-        // 用 `isHeldWeapon` 会让**整段 FOV/倍率计算被跳过** → 副武器瞄准时**完全没有放大**，
-        // 而瞄准位形照旧生效（那一条走渲染侧的 `computeViewTransform`，早就是 `ActiveGun` 了），
-        // 于是表现成"枪抬起来了、镜头一点没变"（§9.8.1 的那个坑，这里是最后一个漏改的读取点）。
-        //
-        // 手持副武器**物品本身**时不会有副作用：`ActiveGun.stackOf` 对那种情况返回 `EMPTY`，
-        // 下面第一句就挡掉了。
         if (GunItem.isOperable(stack)) {
             if (!event.usedConfiguredFov()) {
                 lastX = player.xRot
@@ -3073,7 +3029,7 @@ object ClientEventHandler {
                 return
             }
 
-            val p = zoomTime
+            val p = aimingProgress(zoomTime).toDouble()
 
             val data = GunData.from(stack)
             val hostGun = ActiveGun.mainGun(player)
@@ -3314,9 +3270,6 @@ object ClientEventHandler {
 
     private fun handleWeaponDraw(entity: LivingEntity) {
         val times = getDelta()
-        // ⚠ `DrawTime` / `Weight` 恒读**主武器**：`drawTime` 是"重新端枪"的进度条，
-        // 而端在手里的始终是主武器（§9.8.8）。读副武器的话挂上 GP-25 之后
-        // 整把 AK 的重新装备只要 `1 + 0.5 * 0` 个 tick，像是瞬移。
         val handling = ActiveGun.handlingData(entity) ?: return
         val weight = (handling.stack.item as? GunItem)?.getCustomWeight(handling) ?: 0.0
         val duration = handling.get(GunProp.DRAW_TIME).coerceAtLeast(1) + 0.5 * weight

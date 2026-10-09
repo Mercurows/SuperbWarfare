@@ -561,8 +561,8 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
         RenderSystem.colorMask(false, false, false, false)
         RenderSystem.depthMask(false)
 
-        val aimingProgress = ClientEventHandler.zoomTime.coerceIn(0.0, 1.0).toFloat()
-        val rad = 80f * info.viewRadiusModifier * aimingProgress
+        val progress = ClientEventHandler.aimingProgress(ClientEventHandler.zoomTime)
+        val rad = 80f * info.viewRadiusModifier * progress
 
         RenderSystem.setShader(GameRenderer::getPositionColorShader)
         for (i in ocularIndices.indices) {
