@@ -35,6 +35,7 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler.handleGunRecoil
 import com.atsuishio.superbwarfare.event.ClientEventHandler.handleWeaponFire
 import com.atsuishio.superbwarfare.event.ClientEventHandler.isGunMeleeActive
 import com.atsuishio.superbwarfare.event.ClientEventHandler.resetGunTransientState
+import com.atsuishio.superbwarfare.event.ClientEventHandler.zoomTime
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.item.attachment.SubWeaponItem
 import com.atsuishio.superbwarfare.item.gun.GunItem
@@ -643,8 +644,13 @@ object ClientEventHandler {
     }
 
     @SubscribeEvent
-    fun renderRadiationShader(event: RenderLevelStageEvent) {
+    fun renderRadiationShader(event: RenderGuiEvent.Post) {
         RadiationShaderHandler.render(event)
+    }
+
+    @SubscribeEvent
+    fun renderRadiationShaderOnHiddenGui(event: RenderLevelStageEvent) {
+        RadiationShaderHandler.renderLevel(event)
     }
 
     @SubscribeEvent
