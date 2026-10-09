@@ -120,15 +120,6 @@ class GunAnimation {
         return reloadEmpty ?: reload
     }
 
-    /**
-     * 蓄力片段。
-     *
-     * 只在**蓄力开火模式**（`FireMode.HOLD` / `CHARGE`，即 `isChargeMode()`）里播：
-     * 按下蓄力键正向播放；蓄力中途松手（没到发射标准）就**从当前姿势缓出**回基础状态；
-     * 真打出去了就立刻摘掉换成开火动画。
-     * 由 `GeoGunAnimationInstance.updateChargeRunner` 驱动，是一条**叠在基础状态上的层**
-     * ——这支片段只 key 了 `root`（和 `Fire` 一路），手部锚点得留给基础状态里的 `Idle`。
-     */
     @JvmField
     @SerialName("Charge")
     var charge: String? = null

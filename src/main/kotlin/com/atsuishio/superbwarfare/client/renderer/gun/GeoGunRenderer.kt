@@ -25,6 +25,7 @@ import com.atsuishio.superbwarfare.compat.oculus.OculusCompat
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.attachment.*
 import com.atsuishio.superbwarfare.data.gun.ActiveGun
+import com.atsuishio.superbwarfare.data.gun.AmmoConsumer.AmmoConsumeType
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunProp
@@ -901,21 +902,12 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         )
     }
 
-    /** 本帧的弹药读数：弹药条要用的余弹比例，与弹药文字要用的余弹数。 */
+    /** 本帧的弹药读数：弹药条要用的余弹比例，与弹药文字要用的余弹数、热量、测距距离 */
     protected open fun resolveAmmoReadout(stack: ItemStack, data: ScopeRenderData): AmmoReadout {
         return resolveAmmoReadout(stack, data.ammoBar, data.textShow)
     }
 
-    /**
-     * 本帧的弹药读数：弹药条要用的余弹比例，与弹药文字要用的余弹数、热量。
-     *
-     * 没配弹药显示时提前返回空读数 —— [GunProp.MAGAZINE] 是一次完整的属性修改链解析，
-     * 必须挡在 [from] 之前，否则每一把不显示弹药数的枪与配件都要每帧白算一遍。
-     *
-     * 这里是**所有**弹药条 / 弹药文字的必经之路（枪身自己的 `AmmoBar` / `TextShow`、
-     * 瞄准镜与测距仪等配件上的那一套，见 [attachmentReadout]），所以「能量即弹药」的换算
-     * 放在这里一处即可全部生效。
-     */
+    /** 本帧的弹药读数：弹药条要用的余弹比例，与弹药文字要用的余弹数、热量 */
     protected open fun resolveAmmoReadout(
         stack: ItemStack,
         bars: List<AmmoBarEntry>,
@@ -925,14 +917,27 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         if (bars.isEmpty() && texts.isEmpty()) return AmmoReadout()
 
         val gun = from(stack)
-        // 热量同样只在真的有文字要显示它时才读，温度读数与余弹一样是枪自己的状态
+        // 热量只在真的有文字要显示它时才读，温度读数与余弹一样是枪自己的状态
         val heat = if (texts.any { it.usesHeat }) gun.heat.get().roundToInt() else 0
 
-        // 能量即弹药的背包型能量武器（如 ql_1031）没有弹匣，弹匣那套数字对它没有意义：
-        // `ammo` 恒为 0，`MAGAZINE <= 0` 又让弹药条按满算 —— 也就是永远「满条 + 0」。
-        // 换成电量百分比 + 当前射击模式下的可开火次数（见 [GunData.energyAmmoReadout]）。
-        gun.energyAmmoReadout()?.let { energy ->
-            return AmmoReadout(bars, texts, energy.ratio, energy.shots, range, heat)
+        val consumer = gun.selectedAmmoConsumer()
+        if (gun.useBackpackAmmo() && consumer.type == AmmoConsumeType.ENERGY) {
+            // 能量即弹药的枪（ql_1031 等）没有弹匣，弹匣那套数字对它没有意义：`ammo` 恒为 0、
+            // `MAGAZINE <= 0` 又会让弹药条按满算，也就是永远「满条 + 0」。改报电量百分比，
+            // 发数按当前射击模式（`AvailableFireModes[].Override`）的 `AmmoCostPerShoot` 折算。
+            val storage = stack.getCapability(ForgeCapabilities.ENERGY).resolve().orElse(null)
+            val stored = storage?.energyStored ?: 0
+            val capacity = storage?.maxEnergyStored ?: 0
+            // 每发 0 FE 等于永远打不完，夹到 1 让发数退化成剩余能量点数，也避免除零
+            val cost = gun.primaryAmmoCostPerShoot().coerceAtLeast(1)
+            return AmmoReadout(
+                bars,
+                texts,
+                (stored.toFloat() / max(1, capacity)).coerceIn(0f, 1f),
+                stored / cost,
+                range,
+                heat
+            )
         }
 
         val count = gun.ammo.get()

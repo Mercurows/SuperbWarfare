@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.renderer.ammo
 
-import com.atsuishio.superbwarfare.client.renderer.ammo.AmmoDisplayRenderer.AmmoBarState
 import com.atsuishio.superbwarfare.data.attachment.AmmoBarAxis
 import com.atsuishio.superbwarfare.data.attachment.AmmoBarEntry
 import com.atsuishio.superbwarfare.data.attachment.AmmoTextEntry
@@ -14,50 +13,15 @@ import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.texture.OverlayTexture
 
-/**
- * Drives the ammo bar and ammo text readouts of a single bedrock model instance.
- *
- * Shared by every model that can carry a readout — [com.atsuishio.superbwarfare.client.model.attachment.BedrockAttachmentModel]
- * for scopes and the other attachment slots, and [com.atsuishio.superbwarfare.client.model.gun.GeoGunModel]
- * for the gun body itself. Both wrap the same [TreeBedrockModel] + [TreeModelInstance] pair, so the
- * whole mechanism is model-agnostic: it only ever looks bones up by name and reads the
- * [AmmoBarEntry] / [AmmoTextEntry] configuration handed to it.
- *
- * [divisionBones] is the one piece of model knowledge this class needs up front. It holds every bone
- * under a `division*` root, i.e. the reticle subtree of a scope. A text anchored below one of those
- * is only drawn where the reticle is drawn separately, which is what makes a reticle readout appear
- * only while aiming down the sights. Models without a reticle pass an empty set and every text
- * resolves to `-1`, meaning "draw it with the rest of the model" — which is exactly what a gun body
- * or a grip/stock/barrel attachment wants.
- *
- * Nothing here caches per-frame state on the instance: [applyBars] hands back an [AmmoBarState] that
- * the caller must pass to [restoreBars]. That matters because a single model instance is shared by
- * every stack using the same model file and can be rendered more than once per frame.
- */
+/** 驱动一个 bedrock 模型实例上的弹药条与弹药文字 */
 internal class AmmoDisplayRenderer(
     private val baseModel: TreeBedrockModel,
     private val instance: TreeModelInstance,
-    /** Indices of every bone under a `division*` root; empty for models without a reticle. */
+    /** 所有 `division*` 根下的骨骼下标；没有准星的模型传空集 */
     private val divisionBones: Set<Int> = emptySet(),
 ) {
 
-    /**
-     * Squashes every bone in [entries] along its configured axis to [progress] (0-1) and returns the
-     * state to hand back to [restoreBars] and [renderBars] once rendering is done.
-     *
-     * Returning the state instead of stashing it in a field keeps this reentrant, which matters
-     * because a single model instance is shared by every stack using the same model file and can be
-     * rendered more than once per frame.
-     *
-     * Entries that carry a color are also hidden here, because they are drawn separately by
-     * [renderBars] so they can take a tint, and a hidden bone drops its whole subtree from the model
-     * pass. Visibility deliberately has this single owner: a scope draws `scope_body*` / `ocular*`
-     * through its own immediate-bone helper long before the remaining pass runs, so hiding only
-     * inside that pass would let those paths draw an untinted bar.
-     *
-     * Unlike the gun model, the attachment instances are never reset through `resetPose`, so a caller
-     * that skips [restoreBars] would leak the squashed scale into every later render.
-     */
+    /** 按 [progress] 压扁 [entries] 里的每条弹药条，返回要交给 [restoreBars] 的状态 */
     fun applyBars(entries: List<AmmoBarEntry>, progress: Float): AmmoBarState? {
         if (entries.isEmpty()) return null
 
@@ -101,8 +65,7 @@ internal class AmmoDisplayRenderer(
                     bone.zScale = scale
                 }
 
-                // Nothing is written, so the bone keeps the scale the model gives it. The entry is
-                // still captured and restored above, which is what lets it be tinted on its own.
+                // 不写任何缩放，骨骼保持模型给的；上面对它的记录与还原仍然要做，这样它才能被单独上色
                 AmmoBarAxis.NONE -> {}
             }
 
@@ -114,7 +77,7 @@ internal class AmmoDisplayRenderer(
         return if (anyBone) AmmoBarState(boneIndices, savedScales, savedVisible, tints) else null
     }
 
-    /** Restores everything [applyBars] captured. */
+    /** 还原 [applyBars] 记录的一切 */
     fun restoreBars(state: AmmoBarState?) {
         if (state == null) return
 
@@ -130,14 +93,7 @@ internal class AmmoDisplayRenderer(
         }
     }
 
-    /**
-     * Draws the subtree of every tinted ammo bar bone with its resolved color.
-     *
-     * This deliberately does not flush, unlike the per-bone immediate path a scope uses. The model
-     * pass has already queued geometry into the same buffers as part of one batch, so flushing here
-     * would split that batch, and on the Oculus path it would drain everything else the caller had
-     * buffered up.
-     */
+    /** 用各自解析出的颜色单独画出每条带颜色的弹药条 */
     fun renderBars(
         state: AmmoBarState?,
         poseStack: PoseStack,
@@ -154,15 +110,13 @@ internal class AmmoDisplayRenderer(
             val index = state.boneIndices[i]
             if (tint == UNTINTED || index < 0) continue
 
-            // The readout has to come off screen with the rest of its subtree when an ancestor is
-            // hidden — a gun hides `oem_scope` once a scope attachment is fitted, and the bar is
-            // several levels below it. The bone's own flag cannot answer that, because applyBars
-            // cleared it a moment ago on purpose so the model pass would leave the bar out.
+            // 祖先骨骼被隐藏时整棵子树都不该出现（比如装上瞄准镜后枪会隐藏 `oem_scope`，
+            // 弹药条在它下面好几层），而骨骼自己的标记答不了这个问题 —— applyBars 刚刚
+            // 特意清掉它，好让模型那一遍跳过这条弹药条
             if (!visibleInModel(index, includeSelf = false)) continue
 
-            // applyBars hid this bone so the model pass would skip it, and the per-bone render bails
-            // out on an invisible bone, so it has to be turned back on for this draw. restoreBars puts
-            // the original value back.
+            // applyBars 把它藏了起来，而按骨骼单独画的那条路径遇到不可见的骨骼会直接返回，
+            // 所以这一遍得先打开，restoreBars 再把原值放回去
             instance.getBone(index)?.visible = true
 
             instance.renderSingleBone(
@@ -182,22 +136,7 @@ internal class AmmoDisplayRenderer(
         }
     }
 
-    /**
-     * Resolves every configured text to a bone index plus the division it belongs to, if any.
-     *
-     * Recomputed per render instead of cached: the readout is handed in by the caller each frame, and
-     * a single instance of the owning model class is shared by every stack using the same model file.
-     *
-     * Nothing is filtered out here beyond a missing bone: which texts end up on screen is decided
-     * where they are drawn. A text under a `division*` root goes out with the reticle, so the zoom
-     * gate in the scope's division loops covers it, and one anchored anywhere else is drawn by the
-     * scope's remaining pass — or, for a model with no reticle at all, by its only pass — regardless.
-     *
-     * On the scope aiming path this same list is what the division loops match on; the whole-model
-     * pass draws its texts straight from the entries. That has no bearing on the gate above: third
-     * person and the inventory draw the entire model, housing included, and the housing is what hides
-     * a text mounted inside the tube from every angle it can be seen from.
-     */
+    /** 把每条配置的文字解析成骨骼下标与它所属的 division，骨骼不存在的不计入 */
     fun buildTexts(
         entries: List<AmmoTextEntry>,
         count: Int,
@@ -211,34 +150,19 @@ internal class AmmoDisplayRenderer(
         for (entry in entries) {
             val index = baseModel.getIndex(entry.bone)
             if (index < 0) continue
-            // -1 is kept rather than filtered out: an anchor outside a division subtree cannot be
-            // drawn alongside a reticle, but it still has to be drawn by the remaining pass, otherwise
-            // it would be visible only in third person and the inventory.
+            // -1 保留、不过滤：不在 division 子树下的锚点没法跟着准星画，但仍要由剩下那一遍画出来，
+            // 否则它只会在第三人称和物品栏里可见
             texts += AmmoText(entry, count, progress, range, heat, divisionAnchorOf(index))
         }
         return texts
     }
 
-    /** Draws [text] at its anchor bone. See the entry overload for the transform details. */
+    /** 在 [text] 的锚点骨骼上把它画出来 */
     fun renderText(text: AmmoText, poseStack: PoseStack, bufferSource: MultiBufferSource) {
         renderText(text.entry, text.count, text.progress, text.range, text.heat, poseStack, bufferSource)
     }
 
-    /**
-     * Draws one ammo readout line at its anchor bone, which supplies both the position and the
-     * facing of the glyphs.
-     *
-     * The glyphs are always drawn at full brightness rather than with the light of the gun they sit
-     * on. `rendertype_text.vsh` computes `vertexColor = Color * texelFetch(Sampler2, UV2 / 16, 0)`,
-     * i.e. the packed light handed to [Font.drawInBatch] is a lightmap texel, so passing the world
-     * light would dim the readout to the point of being unreadable in the dark — and inside a scope
-     * tube there is no sky access to brighten it either. [LightTexture.FULL_BRIGHT] is the corner
-     * texel of the 16x16 lightmap, which is the brightest it can be at the player's own brightness
-     * setting, and is the same coordinate vanilla uses for GUI items.
-     *
-     * Note that the fragment shader never samples a lightmap itself; the multiply happens per vertex,
-     * which is why this cannot be fixed by choosing a different [Font.DisplayMode].
-     */
+    /** 在锚点骨骼上画一行弹药文字，位置与朝向都由该骨骼给出 */
     fun renderText(
         entry: AmmoTextEntry,
         count: Int,
@@ -291,29 +215,7 @@ internal class AmmoDisplayRenderer(
         poseStack.popPose()
     }
 
-    /**
-     * Whether the model pass would draw the subtree that contains [boneIndex].
-     *
-     * [TreeBedrockModel.renderBone] bails out on an invisible bone *before* recursing into children,
-     * so hiding an ancestor takes the whole subtree off the model. That is exactly how a gun removes
-     * its built-in readout once a scope attachment is fitted — `GeoGunRenderer.renderOemScope` hides
-     * `oem_scope` and every ammo bone the devotion declares sits below it. Neither of the two draw
-     * helpers here inherits the rule, though: [renderText] builds its glyphs straight from the
-     * anchor's transform without asking anything, and [renderBars] goes through
-     * [TreeModelInstance.renderSingleBone], which tests the target bone's own flag and stops there.
-     * Both therefore have to ask.
-     *
-     * The walk *stops* at a `division*` bone rather than testing it. Those are hidden the moment the
-     * model is parsed, deliberately, so that the model pass leaves the reticle out — it is drawn later
-     * through an immediate path that force-shows it. Reading that flag as "hidden" here would drop
-     * every reticle-anchored readout, and on a scope the reticle is the thing that is supposed to be
-     * visible while aiming. What gates those is the `divisionIndex` match plus the zoom check on the
-     * aiming path, not this.
-     *
-     * [includeSelf] is `false` for a bar, whose own flag [applyBars] clears on purpose so the model
-     * pass skips it and it can be drawn separately with a tint. Only its ancestors mean anything
-     * there.
-     */
+    /** 模型那一遍会不会画出包含 [boneIndex] 的子树 */
     private fun visibleInModel(boneIndex: Int, includeSelf: Boolean): Boolean {
         var index = if (includeSelf) boneIndex else baseModel.bone(boneIndex).parentIndex()
         while (index >= 0) {
@@ -325,17 +227,7 @@ internal class AmmoDisplayRenderer(
         return true
     }
 
-    /**
-     * Index of the division bone [textBoneIndex] hangs under, or `-1` when it is not inside a
-     * `division*` subtree.
-     *
-     * This decides how the text becomes visible: a division bone is hidden in the whole-model pass
-     * and only drawn where the reticle is drawn separately, so an anchor below one only shows up
-     * while aiming down the sights, and only once the zoom has reached the scope's minimum. `-1`
-     * means the anchor sits elsewhere in the model — usually on the scope body, or anywhere at all in
-     * a model that has no reticle — and is drawn by the remaining pass instead, depth tested against
-     * the body.
-     */
+    /** [textBoneIndex] 所属的 division 骨骼下标，不在 `division*` 子树下时为 `-1` */
     private fun divisionAnchorOf(textBoneIndex: Int): Int {
         if (divisionBones.isEmpty()) return -1
         var index = baseModel.bone(textBoneIndex).parentIndex()
@@ -346,40 +238,19 @@ internal class AmmoDisplayRenderer(
         return -1
     }
 
-    /**
-     * One text to draw: the line itself, the values to expand it with, and the index of the division
-     * bone it hangs under, which is what the scope's division loops match on.
-     *
-     * Whatever the entry does not ask for is simply ignored, so all of them are carried on every
-     * text rather than branching per entry: a `%ammo_count%` line reads `count`, a `%range%` line
-     * reads `range`, and a `%heat%` line reads `heat`.
-     *
-     * [divisionIndex] is `-1` when the anchor bone is not inside a `division*` subtree. Such a text
-     * cannot be drawn next to a reticle, so it is drawn by the remaining pass instead — that is how a
-     * model that hangs its readout off the scope body (rather than off the reticle) still shows the
-     * text while aiming, and how a model with no reticle at all shows it everywhere. No division bone
-     * ever has index `-1`, so the division guards stay correct without an extra check.
-     */
+    /** 一条要画的文字：内容、展开用的数值，以及它所属的 division 骨骼下标 */
     internal class AmmoText(
         val entry: AmmoTextEntry,
         val count: Int,
-        /** Remaining magazine ratio, which the entry resolves its tiered color against. */
         val progress: Float,
-        /** Distance to what the shooter looks at, in blocks; [AmmoTextEntry.NO_RANGE] if unmeasured. */
         val range: Int,
-        /** Weapon heat, `0`-`100`; what a `%heat%` line shows and reads its colors against. */
         val heat: Int,
         val divisionIndex: Int
     )
 
-    /**
-     * What [applyBars] has to give back: the bones it touched (`-1` where the model has no such
-     * bone), the scales and visibility they had, and the resolved tint per bone, with [UNTINTED]
-     * marking the entries that keep rendering as part of the model.
-     */
+    /** [applyBars] 要交还的东西：它动过的骨骼、这些骨骼原来的缩放与可见性、每条解析出的颜色 */
     internal class AmmoBarState(
         val boneIndices: IntArray,
-        /** Flattened `x, y, z` scale per entry — [SCALES_PER_BONE] floats each. */
         val savedScales: FloatArray,
         val savedVisible: BooleanArray,
         val tints: IntArray
@@ -389,26 +260,10 @@ internal class AmmoDisplayRenderer(
         // Real tints are opaque ARGB, so the sign bit is free to mark "no tint configured".
         private const val UNTINTED = Int.MIN_VALUE
 
-        /**
-         * Floats [AmmoBarState.savedScales] spends per entry: `x`, `y` and `z`.
-         *
-         * All three are captured even though an entry drives only one of them, because the other two
-         * are written to as well — an entry squashing on X has to be sure the bone was not left
-         * squashed on Y by something else — and a scale that is set but not restored outlives the
-         * frame, since nothing resets an attachment instance's pose.
-         */
+        /** [AmmoBarState.savedScales] 每条弹药条占用的浮点数：`x`、`y`、`z` */
         private const val SCALES_PER_BONE = 3
 
-        /**
-         * Font-space Y offset that puts the centre of a glyph box on the anchor bone.
-         *
-         * A glyph quad spans `[y, y + height]` around the `y` passed to `drawInBatch`: the sheet
-         * builder subtracts its own baseline adjustment, which for the default font's ascent of 7
-         * leaves the top edge exactly on `y`. Digits are 7 units tall there, so half of that box —
-         * with the sign flipped, because the text is drawn below its origin — is what centres it.
-         * Descenders reach 8 units, which is at worst half a unit off on a readout that is nothing
-         * but digits.
-         */
+        /** 让字形方块的中心落在锚点骨骼上的字体空间 Y 偏移 */
         private const val GLYPH_BOX_CENTER = -3.5f
     }
 }

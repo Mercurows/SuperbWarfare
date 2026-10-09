@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.animation.gun
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.animation.AnimationPlayType
+import com.atsuishio.superbwarfare.client.animation.gun.GeoGunAnimationInstance.Companion.CHARGE_CANCEL_FADE_TICKS
 import com.atsuishio.superbwarfare.client.gun.MeleeClientHandler
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.ActiveGun
@@ -75,22 +76,12 @@ open class GeoGunAnimationInstance(
     private var chargeAnimation: BedrockAnimation? = null
 
     /**
-     * 蓄力层现在亮到几成（0..1）。
-     *
-     * 正向播放期间恒为 1（按下就播，不淡入），没到发射标准就松手时退到 0 —— 权重退到 0 再摘层，
-     * 所以摘掉那一帧看不出任何变化。同 [fireLoopPower] / [spinPower]。
+     * 蓄力层现在亮到几成（0..1）
      */
     private var chargePower = 0f
-
-    /**
-     * 上一帧这层是不是在"正在蓄力"。
-     *
-     * `ClientEventHandler.chargeActive` 是个逐帧重算的布尔量，而蓄力"是怎么结束的"
-     * 只在**结束那一帧**看得出来：打出去了还是没到发射标准就松手。跳变要自己抓。
-     */
     private var chargeWasActive = false
 
-    /** 淡入 / 淡出时长（tick），来自 [GunAnimation.fireLoopFadeIn] / [fireLoopFadeOut] 的秒数 */
+    /** 淡入 / 淡出时长（tick） */
     private var fireLoopFadeInTicks = 0f
     private var fireLoopFadeOutTicks = 0f
     private var editExitRunner: AnimationRunner? = null
