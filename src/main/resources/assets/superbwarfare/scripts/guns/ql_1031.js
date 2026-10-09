@@ -7,7 +7,7 @@ const HUD_BONES = ["front_hud_pos_illuminated", "back_hud_pos_illuminated"]
 const HUD_SHOW_ZOOM = 0.8
 const BIPOD_BONES = ["bipod_l", "bipod_r"]
 
-const BIPOD_DEPLOY_X_DEG = 90
+const BIPOD_DEPLOY_X_DEG = -90
 
 const CHARGE_BAR_PREFIX = "charge_bar_"
 // 40 段（一边 20 段，一档 4.5°）：比蓄力模式 20 tick 的 `Duration` 细一倍，是为了让弧走得平滑
