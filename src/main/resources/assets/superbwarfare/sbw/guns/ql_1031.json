@@ -1,12 +1,40 @@
 {
-  "Model": {
-    "Animation": "superbwarfare:animations/ql_1031.animation.json",
-    "Model": "superbwarfare:geo/ql_1031.geo.json",
-    "Texture": "superbwarfare:textures/item/ql_1031.png"
+  "Icon": "superbwarfare:textures/gun_icon/ql_1031_icon.png",
+  "SlotIcon": "superbwarfare:textures/item/ql_1031_icon.png",
+  "Animation": {
+    "Idle": "animation.ql_1031.idle",
+    "Fire": "animation.ql_1031.fire",
+    "Edit": "animation.ql_1031.edit",
+    "Melee": "animation.ql_1031.hit",
+    "Charge": "animation.ql_1031.charge"
   },
-  "EnergyBarColor": "0xFFFF00",
-  "FlarePosition": [0, 0.025, 2],
-  "FlareSize": 0.5,
+  "ShootRecoil": {
+    "Offset": [0.7, 1.0, 0.5],
+    "Rotation": [0.2, 0.2, 0.5],
+    "ZoomRate": 0.5,
+    "Speed": 1.0
+  },
+  "Model": {
+    "Animation": "superbwarfare:animations/bedrock/gun/ql_1031.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/ql_1031.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/ql_1031.png"
+  },
+  "TextShow": [
+    {
+      "Bone": "heat_count_text",
+      "Scale": 0.002,
+      "Align": "Center",
+      "ColorMode": "Switch",
+      "Color": {
+        "Default": "FFFFFF",
+        "80": "FF0000"
+      },
+      "Shadow": false,
+      "Text": "%heat%"
+    }
+  ],
+  "Script": "superbwarfare:scripts/guns/ql_1031.js",
+  "FlareSize": 0.45,
   "ChargeSound": "superbwarfare:ql_1031_charge",
   "DischargeSound": "superbwarfare:ql_1031_discharge"
 }

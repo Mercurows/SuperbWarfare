@@ -392,7 +392,7 @@ open class GeoGunModel @JvmOverloads constructor(
         // scales. Every anchor resolves to divisionIndex -1 on a gun, since a gun model has no
         // reticle subtree, so all of them are drawn here rather than by a division pass.
         for (entry in readout.texts) {
-            ammo.renderText(entry, readout.count, readout.progress, readout.range, poseStack, bufferSource)
+            ammo.renderText(entry, readout.count, readout.progress, readout.range, readout.heat, poseStack, bufferSource)
         }
     }
 

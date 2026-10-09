@@ -1791,18 +1791,6 @@ object ClientEventHandler {
             burstFireAmount = 0
         }
 
-        if (fireModeInfo.isChargeMode()) {
-            updateChargeFireState(player, data, fireModeInfo)
-            return
-        }
-
-        if (!item.canShoot(data, player)) {
-//            if (!data.meleeOnly()) {
-//                holdingFireKey = false
-//            }
-            burstFireAmount = 0
-        }
-
         // 精准度
         val times = getDelta().coerceAtMost(0.8f)
 
@@ -1814,15 +1802,21 @@ object ClientEventHandler {
         val jump = if (player.onGround()) 0.0 else 0.35 * basicDev
         val ride = if (player.onGround()) -0.25 * basicDev else 0.0
 
-        // 这里的值同时决定**准星大小**和**实际弹道**（`gunSpread` 会随 `ShootMessage` 发给服务端），
-        // 所以充能射击那一档的 `ZoomSpreadRate` 必须在这一层就生效 —— 它走的是
-        // `zoomSpreadRateFor` 而不是普通 `get`，理由见那个方法的注释。
         val zoomSpread = 1 - (1 - data.zoomSpreadRateFor(zoom, player)) * zoomTime
         val spread =
             if (data.isShotgun) 1.2 * zoomSpread * (basicDev + 0.2 * (walk + sprint + crouching + prone + jump + ride) + fireSpread)
             else zoomSpread * (0.7 * basicDev + walk + sprint + crouching + prone + jump + ride + 0.8 * fireSpread)
 
         gunSpread = Mth.lerp(0.5 * times, gunSpread, spread)
+
+        if (fireModeInfo.isChargeMode()) {
+            updateChargeFireState(player, data, fireModeInfo)
+            return
+        }
+
+        if (!item.canShoot(data, player)) {
+            burstFireAmount = 0
+        }
 
         // 开火部分
         // 冲刺后恢复开火的快慢按**主武器**的重量（`ActiveGun.handlingData`）—— 这一项是手感不是弹道

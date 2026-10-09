@@ -20,6 +20,15 @@ private const val OPAQUE_ALPHA = -0x1000000
 private const val GRADIENT_MODE_HSV = 2
 private const val AMMO_COUNT_PLACEHOLDER = "%ammo_count%"
 private const val RANGE_PLACEHOLDER = "%range%"
+private const val HEAT_PLACEHOLDER = "%heat%"
+
+/**
+ * 热量的上限，`HeatPerShoot` 攒到这里就过热
+ *
+ * 写了 `%heat%` 的文字阈值直接按热量本身的数值写（`"80"` 就是热量 80），取值范围就靠这个常量，
+ * 阈值表本身不区分"这个数字是几进制或者比例"
+ */
+private const val HEAT_MAX = 100f
 private const val DEFAULT_TEXT_SCALE = 0.0625f
 
 @Serializable
@@ -62,14 +71,22 @@ enum class AmmoBarColorMode {
 /**
  * [AmmoBarEntry] 与 [AmmoTextEntry] 共用的分级染色表
  *
- * [color] 的键是阈值（0~1），值是弹药降到该阈值后使用的颜色，可选的 `"Default"` 是阈值以上的颜色，
+ * [color] 的键是阈值，值是读数经过该阈值后使用的颜色，可选的 `"Default"` 是阈值以外的颜色，
  * 一个颜色都没配就返回白色，等于不染色，颜色一律被 [ModColor] 强制不透明，写不出 alpha
  * 阈值在首次使用时解析并缓存，因为 [colorAt] 跑在渲染路径上
+ *
+ * 默认读的是"越大越好"的余弹比例：阈值写成 0~1，读数**跌到**该档才换成那一档的颜色。
+ * [ascending] 打开后改读"越大越糟"的量（热量），阈值按 [scale] 尺度上的实际数值写，
+ * 读数**升到**该档才换成那一档的颜色：实现上把读数和阈值一起镜像到降序轴上，两边的取色逻辑只用一套
  */
 private class AmmoColorTiers(
     private val mode: AmmoBarColorMode,
     private val color: Map<String, ModColor>,
     private val owner: String,
+    /** 读数是"升到阈值换色"（热量）还是"跌到阈值换色"（余弹） */
+    private val ascending: Boolean = false,
+    /** 读数与阈值的取值范围上限，余弹是 1，热量是 [HEAT_MAX] */
+    private val scale: Float = 1f,
 ) {
     private val thresholds: List<Pair<Float, Int>> by lazy { parseThresholds() }
 
@@ -78,30 +95,35 @@ private class AmmoColorTiers(
     /** 是否配了颜色，false 表示 [colorAt] 恒返回白色 */
     val isConfigured: Boolean get() = color.isNotEmpty()
 
-    /** 按剩余弹药比例 [progress] 取色，返回不透明 ARGB */
-    fun colorAt(progress: Float): Int {
+    /** 按读数 [raw] 取色，返回不透明 ARGB */
+    fun colorAt(raw: Float): Int {
         val tiers = thresholds
         if (tiers.isEmpty()) return fallbackColor
 
-        val value = if (progress.isFinite()) progress.coerceIn(0f, 1f) else 1f
+        // 升序量先镜像到降序轴：scale 是 100 时热量 90 等价于降序读数的 10
+        val value = if (raw.isFinite()) {
+            (if (ascending) scale - raw else raw).coerceIn(0f, scale)
+        } else {
+            scale
+        }
 
         return when (mode) {
-            // 仍不低于当前弹药的最低档，也就是已经跌到的最严重那一档
+            // 仍不低于当前读数的最低档，也就是已经跌到的最严重那一档
             AmmoBarColorMode.SWITCH -> tiers.firstOrNull { value <= it.first }?.second ?: fallbackColor
 
             AmmoBarColorMode.BLEND -> blendAt(tiers, value)
         }
     }
 
-    /** 相邻档位之间渐变，最高档到满弹之间用默认色补齐 */
+    /** 相邻档位之间渐变，最高档到读数上限之间用默认色补齐 */
     private fun blendAt(tiers: List<Pair<Float, Int>>, value: Float): Int {
         val lowest = tiers.first()
         if (value <= lowest.first) return lowest.second
 
         val highest = tiers.last()
         if (value >= highest.first) {
-            // 默认色锚在满弹处，最高阈值已经是 1 时没有可插值的区间，直接保持
-            val span = 1f - highest.first
+            // 默认色锚在读数上限处，最高阈值已经是上限时没有可插值的区间，直接保持
+            val span = scale - highest.first
             if (span <= 0f) return highest.second
             return blend(highest.second, fallbackColor, (value - highest.first) / span)
         }
@@ -116,22 +138,23 @@ private class AmmoColorTiers(
         return blend(lowerColor, upperColor, (value - lowerThreshold) / span)
     }
 
-    /** 解析阈值，跳过默认色与非法键 */
+    /** 解析阈值，跳过默认色与非法键。升序量在解析时一并镜像，[colorAt] 就只剩一套逻辑 */
     private fun parseThresholds(): List<Pair<Float, Int>> {
         val parsed = ArrayList<Pair<Float, Int>>(color.size)
         for ((key, value) in color) {
             if (key.equals(AMMO_COLOR_DEFAULT_KEY, ignoreCase = true)) continue
 
             val threshold = key.toFloatOrNull()
-            if (threshold == null || !threshold.isFinite() || threshold < 0f || threshold > 1f) {
+            if (threshold == null || !threshold.isFinite() || threshold < 0f || threshold > scale) {
                 Mod.LOGGER.warn(
-                    "Ignoring ammo color threshold '{}' on '{}': expected a number between 0 and 1",
+                    "Ignoring ammo color threshold '{}' on '{}': expected a number between 0 and {}",
                     key,
-                    owner
+                    owner,
+                    scale
                 )
                 continue
             }
-            parsed += threshold to value.get()
+            parsed += (if (ascending) scale - threshold else threshold) to value.get()
         }
         return parsed.sortedBy { it.first }
     }
@@ -209,10 +232,12 @@ enum class TextAlign {
  *
  * 骨骼只作为锚点（不需要自带方块），位置与朝向都取自它的全局变换，[scale] 是"每字体像素占多少模型单位"
  * [text] 里的 [AMMO_COUNT_PLACEHOLDER] 会换成当前弹匣数量、`%range%` 换成当前测距读数（单位：格，
- * 无有效读数时是 `---`），不含占位符就原样绘制（例如固定标签 `"AMMO"`）
+ * 无有效读数时是 `---`）、`%heat%` 换成当前热量（整数，0~100），不含占位符就原样绘制（例如固定标签 `"AMMO"`）
  * 可见性由骨骼的祖先决定：挂在 `division*` 下时只随分划出现（即开镜时），挂在别处则随镜身常驻
  *
- * [color] 与 [colorMode] 的分级规则同 [AmmoBarEntry]，[align] 或颜色写错会让整份配件数据解析失败
+ * [color] 与 [colorMode] 的分级规则同 [AmmoBarEntry]，[align] 或颜色写错会让整份配件数据解析失败。
+ * 写了 `%heat%` 的条目改读热量：阈值直接写成热量的数值（`"80"` 就是热量 80），方向也反过来 ——
+ * 热量**升到**阈值才换成那一档的颜色，因为热量和余弹不一样，是越大越糟
  */
 @Serializable
 data class AmmoTextEntry(
@@ -237,20 +262,33 @@ data class AmmoTextEntry(
     @SerialName("Text")
     val text: String = AMMO_COUNT_PLACEHOLDER,
 ) {
+    /** 文字里写了 `%heat%`：这一条读的是热量而不是余弹，取色的方向和量程也跟着换 */
     @Transient
-    private val tiers = AmmoColorTiers(colorMode, color, bone)
+    val usesHeat: Boolean = text.contains(HEAT_PLACEHOLDER)
+
+    @Transient
+    private val tiers = AmmoColorTiers(
+        colorMode,
+        color,
+        bone,
+        ascending = usesHeat,
+        scale = if (usesHeat) HEAT_MAX else 1f,
+    )
 
     @Transient
     val usesRange: Boolean = text.contains(RANGE_PLACEHOLDER)
 
-    /** 按剩余弹药比例 [progress] 取色，返回不透明 ARGB，没配颜色则返回白色 */
-    fun colorAt(progress: Float): Int = tiers.colorAt(progress)
+    /** 按剩余弹药比例 [progress] 取色，[usesHeat] 的条目改按热量 [heat]（0~100）取色；没配颜色则返回白色 */
+    fun colorAt(progress: Float, heat: Int = 0): Int = tiers.colorAt(if (usesHeat) heat.toFloat() else progress)
 
-    /** 把 [AMMO_COUNT_PLACEHOLDER] / `%range%` 换成实际数值 */
-    fun resolve(count: Int, range: Int = NO_RANGE): String {
-        val resolved = text.replace(AMMO_COUNT_PLACEHOLDER, count.toString())
-        if (!usesRange) return resolved
-        return resolved.replace(RANGE_PLACEHOLDER, if (range < 0) NO_RANGE_TEXT else range.toString())
+    /** 把 [AMMO_COUNT_PLACEHOLDER] / `%range%` / `%heat%` 换成实际数值 */
+    fun resolve(count: Int, range: Int = NO_RANGE, heat: Int = 0): String {
+        var resolved = text.replace(AMMO_COUNT_PLACEHOLDER, count.toString())
+        if (usesRange) {
+            resolved = resolved.replace(RANGE_PLACEHOLDER, if (range < 0) NO_RANGE_TEXT else range.toString())
+        }
+        if (!usesHeat) return resolved
+        return resolved.replace(HEAT_PLACEHOLDER, heat.toString())
     }
 
     /** 让 [width] 宽的文字按 [align] 对齐、原点仍留在骨骼上的水平偏移 */

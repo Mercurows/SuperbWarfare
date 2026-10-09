@@ -202,7 +202,8 @@ internal class AmmoDisplayRenderer(
         entries: List<AmmoTextEntry>,
         count: Int,
         progress: Float,
-        range: Int = AmmoTextEntry.NO_RANGE
+        range: Int = AmmoTextEntry.NO_RANGE,
+        heat: Int = 0
     ): List<AmmoText> {
         if (entries.isEmpty()) return emptyList()
 
@@ -213,14 +214,14 @@ internal class AmmoDisplayRenderer(
             // -1 is kept rather than filtered out: an anchor outside a division subtree cannot be
             // drawn alongside a reticle, but it still has to be drawn by the remaining pass, otherwise
             // it would be visible only in third person and the inventory.
-            texts += AmmoText(entry, count, progress, range, divisionAnchorOf(index))
+            texts += AmmoText(entry, count, progress, range, heat, divisionAnchorOf(index))
         }
         return texts
     }
 
     /** Draws [text] at its anchor bone. See the entry overload for the transform details. */
     fun renderText(text: AmmoText, poseStack: PoseStack, bufferSource: MultiBufferSource) {
-        renderText(text.entry, text.count, text.progress, text.range, poseStack, bufferSource)
+        renderText(text.entry, text.count, text.progress, text.range, text.heat, poseStack, bufferSource)
     }
 
     /**
@@ -243,6 +244,7 @@ internal class AmmoDisplayRenderer(
         count: Int,
         progress: Float,
         range: Int,
+        heat: Int,
         poseStack: PoseStack,
         bufferSource: MultiBufferSource
     ) {
@@ -250,7 +252,7 @@ internal class AmmoDisplayRenderer(
         if (index < 0) return
         if (!visibleInModel(index, includeSelf = true)) return
 
-        val text = entry.resolve(count, range)
+        val text = entry.resolve(count, range, heat)
         if (text.isEmpty()) return
 
         val font = Minecraft.getInstance().font
@@ -271,7 +273,7 @@ internal class AmmoDisplayRenderer(
             text,
             0f,
             0f,
-            entry.colorAt(progress),
+            entry.colorAt(progress, heat),
             entry.shadow,
             poseStack.last().pose(),
             bufferSource,
@@ -345,8 +347,12 @@ internal class AmmoDisplayRenderer(
     }
 
     /**
-     * One text to draw: the line itself, the count to expand it with, and the index of the division
+     * One text to draw: the line itself, the values to expand it with, and the index of the division
      * bone it hangs under, which is what the scope's division loops match on.
+     *
+     * Whatever the entry does not ask for is simply ignored, so all of them are carried on every
+     * text rather than branching per entry: a `%ammo_count%` line reads `count`, a `%range%` line
+     * reads `range`, and a `%heat%` line reads `heat`.
      *
      * [divisionIndex] is `-1` when the anchor bone is not inside a `division*` subtree. Such a text
      * cannot be drawn next to a reticle, so it is drawn by the remaining pass instead — that is how a
@@ -361,6 +367,8 @@ internal class AmmoDisplayRenderer(
         val progress: Float,
         /** Distance to what the shooter looks at, in blocks; [AmmoTextEntry.NO_RANGE] if unmeasured. */
         val range: Int,
+        /** Weapon heat, `0`-`100`; what a `%heat%` line shows and reads its colors against. */
+        val heat: Int,
         val divisionIndex: Int
     )
 

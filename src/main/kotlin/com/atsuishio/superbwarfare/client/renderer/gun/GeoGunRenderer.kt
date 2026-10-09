@@ -30,7 +30,6 @@ import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.magazineLevel
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.event.ShieldRuntime
 import com.atsuishio.superbwarfare.item.gun.GunItem
@@ -77,6 +76,7 @@ import net.minecraft.world.item.ItemDisplayContext
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.client.event.ViewportEvent
+import net.minecraftforge.common.capabilities.ForgeCapabilities
 import org.joml.Matrix3f
 import org.joml.Matrix4f
 import org.joml.Quaternionf
@@ -87,6 +87,7 @@ import org.lwjgl.opengl.GL11
 import java.lang.Math
 import java.util.*
 import kotlin.math.atan2
+import kotlin.math.max
 import kotlin.math.roundToInt
 
 open class GeoGunRenderer : AbstractGeoItemRendererV2() {
@@ -906,10 +907,14 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     }
 
     /**
-     * 本帧的弹药读数：弹药条要用的余弹比例，与弹药文字要用的余弹数。
+     * 本帧的弹药读数：弹药条要用的余弹比例，与弹药文字要用的余弹数、热量。
      *
      * 没配弹药显示时提前返回空读数 —— [GunProp.MAGAZINE] 是一次完整的属性修改链解析，
      * 必须挡在 [from] 之前，否则每一把不显示弹药数的枪与配件都要每帧白算一遍。
+     *
+     * 这里是**所有**弹药条 / 弹药文字的必经之路（枪身自己的 `AmmoBar` / `TextShow`、
+     * 瞄准镜与测距仪等配件上的那一套，见 [attachmentReadout]），所以「能量即弹药」的换算
+     * 放在这里一处即可全部生效。
      */
     protected open fun resolveAmmoReadout(
         stack: ItemStack,
@@ -920,16 +925,27 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         if (bars.isEmpty() && texts.isEmpty()) return AmmoReadout()
 
         val gun = from(stack)
+        // 热量同样只在真的有文字要显示它时才读，温度读数与余弹一样是枪自己的状态
+        val heat = if (texts.any { it.usesHeat }) gun.heat.get().roundToInt() else 0
+
+        // 能量即弹药的背包型能量武器（如 ql_1031）没有弹匣，弹匣那套数字对它没有意义：
+        // `ammo` 恒为 0，`MAGAZINE <= 0` 又让弹药条按满算 —— 也就是永远「满条 + 0」。
+        // 换成电量百分比 + 当前射击模式下的可开火次数（见 [GunData.energyAmmoReadout]）。
+        gun.energyAmmoReadout()?.let { energy ->
+            return AmmoReadout(bars, texts, energy.ratio, energy.shots, range, heat)
+        }
+
         val count = gun.ammo.get()
         val magazine = gun.get(GunProp.MAGAZINE)
-        // 没有可用弹匣：弹药条按满算而不是除以零（能量武器、背包弹药等 `MAGAZINE <= 0` 的枪因此显示满条 + "0"）
-        if (magazine <= 0) return AmmoReadout(bars, texts, 1f, count, range)
+        // 其余没有可用弹匣的枪（背包弹药等）保持原样：弹药条按满算，而不是除以零
+        if (magazine <= 0) return AmmoReadout(bars, texts, 1f, count, range, heat)
         return AmmoReadout(
             bars,
             texts,
             (count.toFloat() / magazine.toFloat()).coerceIn(0f, 1f),
             count,
-            range
+            range,
+            heat
         )
     }
 
@@ -950,11 +966,20 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         return resolveAmmoReadout(stack, definition.ammoBar, texts, range)
     }
 
+    /**
+     * 玩家准星正对着的东西有多远，单位是格；没有有效读数时返回 [AmmoTextEntry.NO_RANGE]。
+     *
+     * 实体优先于方块（`OverlayTraceHandler.maxRangeEntity` 这一 tick 锁到谁就是谁），**载具和生
+     * 物一视同仁**。原先这里对 `VehicleEntity` 一刀切地不报读数（望远镜当年就是这么写的），结果
+     * 看别人的车时明明有距离却读不出来。
+     *
+     * 自己正乘坐的那辆不用在这里排除：[TraceTool.findLookingEntity] 和
+     * [TraceTool.cameraFindLookingEntity] 的实体过滤里本来就带着 `it !== player.vehicle`。
+     */
     open fun measureRange(player: Player?): Int {
         if (player == null) return AmmoTextEntry.NO_RANGE
 
         val lookingEntity = OverlayTraceHandler.maxRangeEntity
-        if (lookingEntity is VehicleEntity) return AmmoTextEntry.NO_RANGE
         if (lookingEntity != null) return player.distanceTo(lookingEntity).roundToInt()
 
         val result = OverlayTraceHandler.playerViewBlockResult ?: return AmmoTextEntry.NO_RANGE
@@ -1675,6 +1700,42 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
      */
     open fun scriptHeat(stack: ItemStack): Double {
         return from(stack).heat.get()
+    }
+
+    /**
+     * 能量武器的电量比例：0 为耗尽，1 为满电。
+     *
+     * 读法与 `AmmoBarOverlay.getEnergyRate` 完全一致（能量存在枪自己 NBT 的 `Energy` 里，
+     * 由手持槽同步下发给客户端），所以模型上的能量条与 HUD 上的百分比永远对得上。
+     *
+     * 和 [scriptHeat] 一样是**逐物品**的属性，因此不按 [isLocalPlayerGun] 限制：别人手里的、
+     * 地上躺着的枪读到的都是它自己的电量；`maxEnergyStored` 为 0 的非能量武器一律返回 0。
+     */
+    open fun scriptEnergyRatio(stack: ItemStack): Double {
+        return stack.getCapability(ForgeCapabilities.ENERGY).map { storage ->
+            (storage.energyStored.toDouble() / max(1, storage.maxEnergyStored)).coerceIn(0.0, 1.0)
+        }.orElse(0.0)
+    }
+
+    /**
+     * 蓄力进度：0 为没在蓄力，1 为蓄满（`ClientEventHandler.chargeProgress`，它就是 `0..1`）。
+     *
+     * 三个条件缺一不可，缺了就必然是"显示错了"而不是"少显示了"：
+     *
+     * - 本地玩家自己的蓄力是**客户端全局状态**（不写在枪的 tag 里），不限住 [isLocalPlayerGun] 的话，
+     *   世界上每一把同型号枪都会跟着他的蓄力一起亮（同 [scriptBipodProgress]）。
+     * - 当前射击模式不是蓄力模式（`isChargeMode()`）时这把枪根本不该有这个条。
+     * - `chargeProgress` 平时恒为 0，所以这条早退顺手当了开销闸门：没人在蓄力时这里连 [GunData] 都不碰。
+     *
+     * 返回 0 是**默认值**也是常态，所以模型里没有 `charge_bar_*` 骨骼的枪完全不受影响——脚本那边
+     * 只管按这个值点亮前若干段，值是多少它都只动自己的那几段。
+     */
+    open fun scriptChargeProgress(stack: ItemStack): Double {
+        val progress = ClientEventHandler.chargeProgress
+        if (progress <= 0.0) return 0.0
+        if (!isLocalPlayerGun(stack)) return 0.0
+        if (!from(stack).selectedFireModeInfo().isChargeMode()) return 0.0
+        return progress
     }
 
     open fun scriptFrameDeltaSeconds(): Float {

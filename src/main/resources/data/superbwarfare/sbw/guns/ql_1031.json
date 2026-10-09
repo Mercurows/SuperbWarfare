@@ -1,14 +1,11 @@
 {
-  "MinZoom": 1.25,
-  "MaxZoom": 6,
-  "Spread": 4,
-  "HasBarrelBullet": true,
-  "RecoilX": 0.002,
-  "RecoilY": 0.012,
+  "Spread": 6,
+  "RecoilX": 0.0016,
+  "RecoilY": 0.018,
   "Damage": 9,
   "Headshot": 2,
   "Velocity": 20,
-  "Weight": 4,
+  "Weight": 5.5,
   "DrawTime": 11,
   "ZoomTime": 6,
   "MeleeDamage": 5,
@@ -44,7 +41,11 @@
   "SoundRadius": 8,
   "RPM": 700,
   "HeatPerShoot": 1.25,
+  "ZoomSpreadRate": 0.05,
   "GunType": "Sniper",
+  "DamageReduce": {
+    "Type": "Sniper"
+  },
   "AvailableFireModes": [
     "Auto",
     {
@@ -52,15 +53,17 @@
       "Override": {
         "RecoilX": 0.004,
         "RecoilY": 0.009,
-        "Spread": 6,
+        "Spread": 7,
         "Damage": 19.5,
         "SoundRadius": 12,
         "Headshot": 2.5,
-        "Velocity": 23,
+        "Velocity": 25,
         "BypassesArmor": 0.7,
         "HeatPerShoot": 5,
         "RPM": 300,
         "AmmoCostPerShoot": 2500,
+        "ZoomSpreadRate": 0.01,
+        "ShootAnimation": "animation.ql_1031.fire_semi",
         "SoundInfo": {
           "Fire1P": "superbwarfare:ql_1031_fire_1p_semi",
           "Fire3P": "superbwarfare:ql_1031_fire_3p_semi",
@@ -75,6 +78,7 @@
     },
     {
       "Mode": "Hold",
+      "Name": "HOLD",
       "Charge": {
         "Duration": 20,
         "Trigger": "AutoAtFull",
@@ -90,10 +94,12 @@
         "Damage": 100,
         "SoundRadius": 16,
         "Headshot": 3,
-        "Velocity": 30,
+        "Velocity": 50,
         "BypassesArmor": 1.3,
         "HeatPerShoot": 20,
         "AmmoCostPerShoot": 10000,
+        "ZoomSpreadRate": 0.0005,
+        "ShootAnimation": "animation.ql_1031.fire_hold",
         "RPM": 1200,
         "SoundInfo": {
           "Fire1P": "superbwarfare:ql_1031_fire_1p_hold",
@@ -108,9 +114,6 @@
       }
     }
   ],
-  "DamageReduce": {
-    "Type": "Sniper"
-  },
   "AmmoType": "FE",
   "AmmoCostPerShoot": 1000,
   "MaxEnergy": 100000,
@@ -146,5 +149,82 @@
     "Fire3PSilent": "superbwarfare:ql_1031_fire_3p_s_auto",
     "Fire3PFarSilent": "superbwarfare:ql_1031_far_s_auto",
     "Fire3PVeryFarSilent": "superbwarfare:ql_1031_veryfar_s_auto"
+  },
+  "AvailableAttachments": {
+    "Scope": [
+      "superbwarfare:scope_coyote",
+      "superbwarfare:scope_aimpoint_t2",
+      "superbwarfare:scope_eotech_551",
+      "superbwarfare:scope_okp_7",
+      "superbwarfare:scope_pkas",
+      "superbwarfare:scope_bruiser",
+      "superbwarfare:scope_ranger",
+      "superbwarfare:scope_1p_78",
+      "superbwarfare:scope_pk_a",
+      "superbwarfare:scope_acog",
+      "superbwarfare:scope_qmk171",
+      "superbwarfare:scope_hamr",
+      "superbwarfare:scope_elcan_4x",
+      "superbwarfare:scope_lpvo",
+      "superbwarfare:scope_sniper",
+      "superbwarfare:scope_winefox",
+      "superbwarfare:scope_spyglass",
+      "superbwarfare:steel_pipe_scope"
+    ],
+    "Grip": [
+      "superbwarfare:vertical_grip",
+      "superbwarfare:grip_vertical_pineapple",
+      "superbwarfare:grip_vertical_bipod",
+      "superbwarfare:grip_rectangle_vertical",
+      "superbwarfare:triangle_grip",
+      "superbwarfare:grip_cqr_gen2"
+    ],
+    "Stock": [
+      "superbwarfare:oem_stock_light",
+      "superbwarfare:oem_stock_heavy",
+      "superbwarfare:stock_ar_tactical",
+      "superbwarfare:stock_str",
+      "superbwarfare:steel_pipe_stock"
+    ],
+    "Muzzle": [
+      "superbwarfare:meowlencer",
+      "superbwarfare:hissilencer",
+      "superbwarfare:silaowuncer",
+      "superbwarfare:ru_silencer",
+      "superbwarfare:muzzle_brake_ru",
+      "superbwarfare:muzzle_brake_ar",
+      "superbwarfare:muzzle_break_birdcage",
+      "superbwarfare:muzzle_zenit_dtk_1",
+      "superbwarfare:muzzle_compensator_r_17",
+      "superbwarfare:ar_silencer",
+      "superbwarfare:loudspeaker",
+      "superbwarfare:silencer_qinglan"
+    ],
+    "Charm": [
+      "#superbwarfare:attachment/charm"
+    ],
+    "LowerRail": [
+      "superbwarfare:peq_15",
+      "superbwarfare:pistol_laser"
+    ],
+    "UpperRail": [
+      "superbwarfare:peq_15",
+      "superbwarfare:shield_test",
+      "superbwarfare:pistol_laser"
+    ],
+    "LeftRail": [
+      "superbwarfare:peq_15",
+      "superbwarfare:range_finder",
+      "superbwarfare:pistol_laser"
+    ],
+    "RightRail": [
+      "superbwarfare:peq_15",
+      "superbwarfare:pistol_laser"
+    ]
+  },
+  "AttachmentConflicts": {
+    "Grip": [
+      "LowerRail"
+    ]
   }
 }

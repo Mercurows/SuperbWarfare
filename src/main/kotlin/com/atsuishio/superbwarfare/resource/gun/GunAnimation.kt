@@ -120,15 +120,14 @@ class GunAnimation {
         return reloadEmpty ?: reload
     }
 
-    /*
-     * TODO(V2 render migration):
-     * These fields are intentionally data-only for now. QL1031/BOCEK still use their
-     * legacy GeckoLib controllers, so do not wire them into rendering yet.
+    /**
+     * 蓄力片段。
      *
-     * After their V2 migration, GeoGunAnimationInstance should add a CHARGE state and:
-     * 1. Select it when selectedFireModeInfo().isChargeMode() and charge is active.
-     * 2. Play chargeCancel when an unfinished HOLD charge is cancelled.
-     * 3. Keep CHARGE looping/holding at full for CHARGE mode.
+     * 只在**蓄力开火模式**（`FireMode.HOLD` / `CHARGE`，即 `isChargeMode()`）里播：
+     * 按下蓄力键正向播放；蓄力中途松手（没到发射标准）就**从当前姿势缓出**回基础状态；
+     * 真打出去了就立刻摘掉换成开火动画。
+     * 由 `GeoGunAnimationInstance.updateChargeRunner` 驱动，是一条**叠在基础状态上的层**
+     * ——这支片段只 key 了 `root`（和 `Fire` 一路），手部锚点得留给基础状态里的 `Idle`。
      */
     @JvmField
     @SerialName("Charge")

@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.client.overlay
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.RenderHelper
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.item.misc.ArtilleryIndicatorItem
@@ -141,9 +140,11 @@ object SpyglassRangeOverlay : CommonOverlay("spyglass_range") {
                 ?: Double.MAX_VALUE
 
             var entityRange = 0.0
-            val lookingEntity = OverlayTraceHandler.maxRangeEntity
 
-            if (lookingEntity is VehicleEntity) return
+            // 载具和生物一视同仁：原先这里对 VehicleEntity 一刀切地 return，看别人的车时明明
+            // 有距离却一句都不显示。自己正乘坐的那辆不用在这里排除，追踪本身已经过滤掉了
+            // （见 TraceTool.findLookingEntity 的 `it !== player.vehicle`）。
+            val lookingEntity = OverlayTraceHandler.maxRangeEntity
 
             if (lookingEntity != null) {
                 lookAtEntity = true

@@ -288,7 +288,7 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
         // division lands inside the housing and gets depth tested away, which is why the aiming path
         // draws those itself.
         for (entry in readout.texts) {
-            ammo.renderText(entry, readout.count, readout.progress, readout.range, poseStack, bufferSource)
+            ammo.renderText(entry, readout.count, readout.progress, readout.range, readout.heat, poseStack, bufferSource)
         }
 
         for (i in hiddenOculars.indices) {

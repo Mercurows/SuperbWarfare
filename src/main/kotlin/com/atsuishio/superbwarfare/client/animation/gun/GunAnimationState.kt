@@ -16,6 +16,17 @@ enum class GunAnimationState(val playType: AnimationPlayType) {
     FINISH(AnimationPlayType.PLAY_ONCE_HOLD),
     MELEE(AnimationPlayType.PLAY_ONCE_HOLD),
     FIRE(AnimationPlayType.PLAY_ONCE_STOP),
+
+    /**
+     * 蓄力片段（`GunAnimation.Charge`）。**不参与** [resolveState] 的选状态，
+     * 和 [FIRE] 一样是一条叠在基础状态上的层（见 `GeoGunAnimationInstance.updateChargeRunner`）。
+     *
+     * `PLAY_ONCE_HOLD` 对上去就是资源里那句 `"loop": "hold_on_last_frame"`：正向播到末帧停住，
+     * 不循环。喷满到自动开火就是"停住"那一刻；中途松手则不走这条完结态，由
+     * `updateChargeRunner` 冻住相位、把权重淡到 0（见 `applyCharge`）。
+     */
+    CHARGE(AnimationPlayType.PLAY_ONCE_HOLD),
+
     RUN(AnimationPlayType.LOOP);
 
     /**

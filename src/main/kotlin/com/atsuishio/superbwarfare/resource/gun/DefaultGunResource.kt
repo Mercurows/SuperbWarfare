@@ -183,7 +183,8 @@ class DefaultGunResource : IDBasedData<DefaultGunResource> {
     @SerialName("AmmoBar")
     var ammoBar: List<AmmoBarEntry> = emptyList()
 
-    // 枪身弹药文字的锚点骨骼，空列表表示不启用；写法与瞄准镜的 TextShow 一致
+    // 枪身弹药文字 / 热量文字的锚点骨骼，空列表表示不启用；写法与瞄准镜的 TextShow 一致，
+    // 写了 `%heat%` 的条目改读枪身热量（见 AmmoTextEntry）
     @JvmField
     @SerialName("TextShow")
     var textShow: List<AmmoTextEntry> = emptyList()

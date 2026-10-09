@@ -68,6 +68,28 @@ open class GeoGunAnimationInstance(
      */
     private var fireLoopPower = 0f
 
+    // 蓄力层 runner
+    private var chargeRunner: AnimationRunner? = null
+
+    /** 已经解析好的蓄力片段 */
+    private var chargeAnimation: BedrockAnimation? = null
+
+    /**
+     * 蓄力层现在亮到几成（0..1）。
+     *
+     * 正向播放期间恒为 1（按下就播，不淡入），没到发射标准就松手时退到 0 —— 权重退到 0 再摘层，
+     * 所以摘掉那一帧看不出任何变化。同 [fireLoopPower] / [spinPower]。
+     */
+    private var chargePower = 0f
+
+    /**
+     * 上一帧这层是不是在"正在蓄力"。
+     *
+     * `ClientEventHandler.chargeActive` 是个逐帧重算的布尔量，而蓄力"是怎么结束的"
+     * 只在**结束那一帧**看得出来：打出去了还是没到发射标准就松手。跳变要自己抓。
+     */
+    private var chargeWasActive = false
+
     /** 淡入 / 淡出时长（tick），来自 [GunAnimation.fireLoopFadeIn] / [fireLoopFadeOut] 的秒数 */
     private var fireLoopFadeInTicks = 0f
     private var fireLoopFadeOutTicks = 0f
@@ -489,8 +511,17 @@ open class GeoGunAnimationInstance(
         Mod.LOGGER.error(message, *args)
     }
 
-    private fun animationName(state: GunAnimationState): String? {
-        val animation = GunResource.compute(stack).animation ?: return null
+    private fun animationName(state: GunAnimationState): String? =
+        animationName(GunResource.compute(stack).animation, state)
+
+    /**
+     * 与 [animationName] 同一张表，但让调用方把已经取到的 [GunAnimation] 递进来。
+     *
+     * 蓄力层不在 [resolveState] 的状态机里（它是一条层，见 [updateChargeRunner]），
+     * 只借这张表查 clip 名 —— 拆成重载是为了不把 `Charge` 那一支抄第二遍。
+     */
+    private fun animationName(animation: GunAnimation?, state: GunAnimationState): String? {
+        if (animation == null) return null
         return when (state) {
             GunAnimationState.IDLE -> animation.idle
             GunAnimationState.EDIT -> animation.edit
@@ -505,6 +536,7 @@ open class GeoGunAnimationInstance(
             GunAnimationState.FINISH -> animation.finish
             GunAnimationState.MELEE -> resolveMeleeName()
             GunAnimationState.FIRE -> animation.fire
+            GunAnimationState.CHARGE -> animation.charge
             GunAnimationState.RUN -> animation.run
         }
     }
@@ -920,6 +952,126 @@ open class GeoGunAnimationInstance(
         fireLoopFadeOutTicks = 0f
     }
 
+    /**
+     * 推进蓄力层（`GunAnimation.Charge`）。
+     *
+     * **这是一条层，不是基础状态** —— 与 [GunAnimationState.FIRE] 同理：`ql_1031.charge` 只
+     * key 了 `root`，而 `righthand` / `lefthand` 两个手部锚点的姿势是基础状态的 `Idle` 给的
+     * （那支只有一帧，`scale = [1, 1.2, 1]`，见 `GunAnimation.idle` 的注释与
+     * `VerifyArmScale`）。把它当基础状态播，这 1 秒里双臂锚点会掉回绑定姿势，枪会被"甩出去"。
+     *
+     * 三种结局：
+     * 1. 按下蓄力 → 正向播放（`PLAY_ONCE_HOLD`，播到末帧停住）；
+     * 2. 没到发射标准就松手 → 相位冻在原地，权重（[chargePower]）在
+     *    [CHARGE_CANCEL_FADE_TICKS] 里退到 0，也就是**从当前姿势缓出**回基础状态；
+     * 3. 打出去了 → 整层立刻摘掉，让位给开火动画。
+     *
+     * 第 2 条曾经是"2 倍速倒放回原点"，改成了缓出：倒放等于把刚做过的动作再倒着演一遍，
+     * 而缓出只让姿势**散掉**，松手的感觉是"松劲儿"而不是"倒带"。
+     *
+     * @param firedThisFrame 这一帧有没有真的打出去。调用方必须在 [playFire] **消费 `fireSerial`
+     *   之前**读出来传进来（松开蓄力那一帧 `chargeActive` 已经归零，"打出去了"只剩这一个信号）。
+     * @return 是否**新建**了 runner（新建的这一帧不能再 tick，否则同一帧走两步）
+     */
+    private fun updateChargeRunner(animation: GunAnimation?, firedThisFrame: Boolean): Boolean {
+        val clip = animationName(animation, GunAnimationState.CHARGE)?.let(animations::get)
+        val active = clip != null && isCharging()
+        val runner = chargeRunner
+        val wasActive = chargeWasActive
+        chargeWasActive = active
+
+        // 没配片段，或者从来没起过层 → 什么都不用做
+        if (clip == null || (runner == null && !active)) {
+            clearChargeRunner()
+            return false
+        }
+
+        // 打出去了 → 立刻摘掉，让位给开火动画。
+        // 判在 [active] **之前**：常见的自动开火/松手开火那一帧 `chargeActive` 确实已经归零，
+        // 但服务端驱动的开火（`ShootClientMessage` 那一类）打进来时 `chargeActive` 还立着，
+        // 排在后面就会漏掉，蓄力动画会一直挂在枪上。
+        if (firedThisFrame) {
+            clearChargeRunner()
+            return false
+        }
+
+        if (active) {
+            // 按下就是满权重：蓄力动画当场开始，不淡入
+            chargePower = 1f
+            // 头一帧建层；缓出到一半又按下去时（`!wasActive`）也是重建 —— 从第 0 帧重来才和
+            // 游戏里的 `chargeProgress` 同步，接着缓出的相位往前播会让动画和蓄力进度对不上
+            if (runner == null || chargeAnimation !== clip || !wasActive) {
+                chargeAnimation = clip
+                val newRunner = AnimationRunner(clip, AnimationContext(clip.specifiedEndTimeS))
+                val playState = GunAnimationState.CHARGE.playType.state()
+                setAnimationSpeed(playState, chargePlaybackSpeed(clip, GunData.from(stack)))
+                newRunner.state = playState
+                chargeRunner = newRunner
+                return true
+            }
+            return false
+        }
+
+        // 松手那一帧：起点是满权重，从**下一帧**才开始退，退到 0 再摘层
+        if (wasActive) {
+            chargePower = 1f
+            return false
+        }
+
+        chargePower = approach(
+            chargePower, 0f,
+            Minecraft.getInstance().deltaFrameTime.coerceIn(0f, SPIN_MAX_FRAME_DELTA_TICKS) /
+                    CHARGE_CANCEL_FADE_TICKS
+        )
+        if (chargePower <= 0f) clearChargeRunner()
+        return false
+    }
+
+    private fun tickChargeRunner(started: Boolean) {
+        if (started) return
+        // 缓出期间冻住相位：只让权重退，不让枪继续做蓄力动作
+        if (!chargeWasActive) return
+        chargeRunner?.tick()
+    }
+
+    private fun clearChargeRunner() {
+        chargeRunner = null
+        chargeAnimation = null
+        chargePower = 0f
+        chargeWasActive = false
+    }
+
+    /**
+     * 这把枪此刻是不是"正在蓄力"。
+     *
+     * 先认**本地玩家手里的这把枪**：[ClientEventHandler.chargeActive] 是全局字段，
+     * 副手那把枪、别人手里的同一把枪都会读到它，不认枪的话它们会跟着一起抖
+     * （同 [shouldFireLoop] / [shouldSpin]）。
+     */
+    private fun isCharging(): Boolean {
+        val player = localPlayer ?: return false
+        if (player.mainHandItem.item !== stack.item) return false
+        if (!ClientEventHandler.chargeActive) return false
+        return GunData.from(stack).selectedFireModeInfo().isChargeMode()
+    }
+
+    /**
+     * 蓄力动画的播放倍率：让片段自己的时长对上蓄力模式的 `Duration`。
+     *
+     * 算法同 [reloadPlaybackSpeed] —— MAE 按真实时间推进，倍率就是"片段时长 / 数据时长"。
+     * `ql_1031` 两者都是 1 秒（`Duration = 20` tick，`animation_length = 1`），所以是 `1.0`；
+     * 以后改 `Duration` 或换一支片段都不用回来手调这个常数。
+     */
+    private fun chargePlaybackSpeed(animation: BedrockAnimation, data: GunData): Float {
+        val seconds = (data.selectedFireModeInfo().chargeConfig()?.effectiveDuration ?: return 1f) /
+                TICKS_PER_SECOND
+        return if (animation.specifiedEndTimeS > 0f && seconds > 0f) {
+            animation.specifiedEndTimeS / seconds
+        } else {
+            1f
+        }
+    }
+
     /** 数据里的**秒** → tick。缓动要的步长单位是 tick（`deltaFrameTime` 就是 tick，20/s）。 */
     private fun secondsToTicks(seconds: Float): Float =
         if (seconds <= 0f) 0f else seconds * TICKS_PER_SECOND
@@ -980,6 +1132,26 @@ open class GeoGunAnimationInstance(
 
     private fun applySpinSpeed(speed: Float) {
         setAnimationSpeed(spinRunner?.state, speed)
+    }
+
+    /**
+     * 把蓄力层按 [chargePower]**交叉淡出**到 [lowerPose] 上（[applyFireLoop] 的蓄力版）。
+     *
+     * 权重恒为 1 的时候就是个 nlerp 到 1，等价于直接盖住；只有"没到发射标准就松手"那段
+     * 权重才会从 1 退到 0，把当前姿势溶回基础状态。
+     */
+    private fun applyCharge(lowerPose: Pose): Pose {
+        val runner = chargeRunner ?: return lowerPose
+        val weight = smoothstep(chargePower)
+        if (weight <= 0f) return lowerPose
+
+        val chargePose = runner.evaluate()
+        return CROSSFADE_BLENDER.combine(lowerPose, chargePose) { lower, charge ->
+            if (charge.boneIndex() < 0) lower
+            else SimpleInterpolatorBlender.leanerLerpTransforms(
+                lower, charge, weight, maxOf(lower.boneIndex(), charge.boneIndex()), TRANSFORM_FACTORY
+            )
+        }
     }
 
     /** smoothstep：起步和到顶都是缓的（缓入缓出）。 */
@@ -1059,6 +1231,12 @@ open class GeoGunAnimationInstance(
     override fun tick(partialTicks: Float) {
         val target = resolveState()
 
+        // 编辑/改装里不该有蓄力（`chargeActive` 本来就要求 `!isEditing`）。这一句是防"蓄力收到
+        // 一半就进编辑"：那条路走的是下面的提前 return，蓄力层会没人摘，一直挂着抖。
+        if (ClientEventHandler.isEditing) {
+            clearChargeRunner()
+        }
+
         if (editExitRunner != null && ClientEventHandler.isEditing) {
             editExitRunner = null
             runner = null
@@ -1082,6 +1260,7 @@ open class GeoGunAnimationInstance(
             // 循环开火层也一并摘掉：它没有"停在那个角度"这种需要保留的相位（对比枪管旋转），
             // 留着只会让下次亮起来时从一个旧权重接着走
             clearFireLoopRunner()
+            clearChargeRunner()
             currentState = null
             pendingParticles.clear()
             cachedPose = DummyPose.INSTANCE
@@ -1128,6 +1307,11 @@ open class GeoGunAnimationInstance(
         val fireModeStarted = syncFireMode()
         val data = GunData.from(stack)
         val animation = GunResource.compute(stack).animation
+
+        // 蓄力层收尾要判"这一发打出去没有"。**必须在下面 [playFire] 消费 `fireSerial` 之前读**：
+        // 松开蓄力那一帧 `chargeActive` 已经归零，"是打出去了还是没到发射标准"只剩这一个信号。
+        val firedThisFrame = fireSerial > consumedFireSerial
+
         val (holdOpenStarted, closeStrikeStarted) = updateMechanicalRunners(data, animation)
 
         // 是否是新的一次挥击。**必须先于下面的 runner 判定消费掉**：
@@ -1169,6 +1353,7 @@ open class GeoGunAnimationInstance(
         tickMechanicalRunners(holdOpenStarted, closeStrikeStarted)
         tickSpinRunner(updateSpinRunner(data, animation))
         tickFireLoopRunner(updateFireLoopRunner(animation))
+        tickChargeRunner(updateChargeRunner(animation, firedThisFrame))
 
         if (hand == InteractionHand.MAIN_HAND) {
             updateSubWeaponReload()
@@ -1202,7 +1387,10 @@ open class GeoGunAnimationInstance(
             applyFireLoop(
                 combineFireModeSwitch(
                     combineLayers(
-                        runner?.evaluate() ?: DummyPose.INSTANCE,
+                        // 蓄力层压在基础状态上、垫在开火层下面：它只 key `root`（枪身），
+                        // 手部锚点仍由基础状态的 `Idle` 给，两者合起来才是"枪在手里抖"。
+                        // 它是按权重交叉淡出出来的，所以基础状态单独先合一次。
+                        applyCharge(runner?.evaluate() ?: DummyPose.INSTANCE),
                         fireModeRunner?.evaluate() ?: DummyPose.INSTANCE,
                         closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE,
                         spinRunner?.evaluate() ?: DummyPose.INSTANCE
@@ -1263,6 +1451,7 @@ open class GeoGunAnimationInstance(
             closeStrikeAnimationName = null
             clearSpinRunner()
             clearFireLoopRunner()
+            clearChargeRunner()
             pendingParticles.clear()
             loadAnimations()
         }
@@ -1285,6 +1474,7 @@ open class GeoGunAnimationInstance(
         closeStrikeAnimationName = null
         clearSpinRunner()
         clearFireLoopRunner()
+        clearChargeRunner()
         currentState = null
         fireSerial = 0
         consumedFireSerial = 0
@@ -1301,6 +1491,14 @@ open class GeoGunAnimationInstance(
 
     companion object {
         private const val EDIT_EXIT_SPEED = 1.5f
+
+        /**
+         * 蓄力没到发射标准就松手时，姿势缓出回基础状态的时长（tick）。
+         *
+         * 0.2 秒：够看出是"松劲儿"而不是硬切，又短到不会和紧跟着的下一次蓄力撞上
+         * （同 `takesHandAway` 那套副武器手臂交接用的 3 tick 量级）。
+         */
+        private const val CHARGE_CANCEL_FADE_TICKS = 4f
 
         /**
          * 缓入缓出每帧最多吃掉多少 tick。`deltaFrameTime` 单位是 tick（20/s，60FPS 一帧约 0.33），

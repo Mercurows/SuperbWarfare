@@ -59,6 +59,7 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.phys.Vec3
+import net.minecraftforge.common.capabilities.ForgeCapabilities
 import net.minecraftforge.common.util.LazyOptional
 import net.minecraftforge.energy.IEnergyStorage
 import net.minecraftforge.items.IItemHandler
@@ -618,6 +619,34 @@ class GunData private constructor(
         return !useBackpackAmmo()
                 && get(FUEL_PER_AMMO) > 0
                 && selectedAmmoConsumer().type == AmmoConsumer.AmmoConsumeType.ENERGY
+    }
+
+    /**
+     * 「能量即弹药」的背包型能量武器的弹药读数；不是这类武器时返回 `null`，调用方照常走弹匣那套数字。
+     *
+     * 判定见 [EnergyAmmoReadout]：没有弹匣（[useBackpackAmmo]）且主弹种直接是能量。
+     * 泰瑟枪那种「1 个电极 + 每发 400 FE」的主来源是**物品**，所以不算 —— 它的弹匣发数是真数字。
+     *
+     * 每发消耗读 [AMMO_COST_PER_SHOOT]，走的是完整的属性修改流水线，因此拿到的是
+     * **当前射击模式**（`AvailableFireModes[].Override`）覆写之后的值：`ql_1031` 的
+     * Auto / Semi / Hold 三档分别是 1000 / 2500 / 10000，同一管电因此报出 100 / 40 / 10 发。
+     *
+     * 能量与 [EnergyAmmoStrategy.count] 同口径，取自枪自身的能力；没有能量能力时按 `0` 处理。
+     */
+    fun energyAmmoReadout(): EnergyAmmoReadout? {
+        if (!useBackpackAmmo() || selectedAmmoConsumer().type != AmmoConsumer.AmmoConsumeType.ENERGY) {
+            return null
+        }
+
+        val energy = stack.getCapability(ForgeCapabilities.ENERGY)
+        val stored = energy.map { it.energyStored }.orElseGet { 0 }
+        val capacity = energy.map { it.maxEnergyStored }.orElseGet { 0 }
+
+        // 每发 0 FE 等于永远打不完，这时「还能开几发」没有意义：夹到 1 让它退化成剩余能量点数，
+        // 至少还是个单调的数字，也不会因为除零炸掉（AMMO_COST_PER_SHOOT 只保证 >= 0）。
+        val cost = get(AMMO_COST_PER_SHOOT).coerceAtLeast(1)
+
+        return EnergyAmmoReadout(stored, capacity, stored / cost)
     }
 
     /**
