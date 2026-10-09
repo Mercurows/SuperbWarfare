@@ -353,7 +353,7 @@
   "item.superbwarfare.medical_kit": "Medical Kit",
   "des.superbwarfare.medical_kit": "Right-click while sneaking to throw it, hold right mouse button to heal when health is not full",
   "item.superbwarfare.rad_away": "Rad Away",
-  "des.superbwarfare.rad_away": "Reduces radiation by one level. Removes it at level I",
+  "des.superbwarfare.rad_away": "Reduces radiation by one level and 500 mSv of dosage. Removes it at level I",
   "item.superbwarfare.vehicle_damage_analyzer": "Vehicle Damage Analyzer",
   "des.superbwarfare.vehicle_damage_analyzer": "Right-click a vehicle to start tracking its damage situation, right-click again to stop tracking",
   "des.superbwarfare.vehicle_damage_analyzer.bind": "Start analyzing damage situation of %1$s",

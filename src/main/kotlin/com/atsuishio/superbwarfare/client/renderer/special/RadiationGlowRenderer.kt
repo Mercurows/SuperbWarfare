@@ -33,12 +33,12 @@ class RadiationGlowRenderer<T : LivingEntity, M : EntityModel<T>>(
         headPitch: Float
     ) {
         val dose = RadiationCapability.getDosage(entity)
-        if (dose < RadiationMobEffect.DOSE_SYMPTOM_THRESHOLD || entity.isInvisible) return
+        val symptomThreshold = RadiationMobEffect.getSymptomThreshold()
+        if (dose < symptomThreshold || entity.isInvisible) return
 
         if (entity is Player && entity == localPlayer && mc.options.cameraType == CameraType.FIRST_PERSON) return
 
-        val strength = ((dose - RadiationMobEffect.DOSE_SYMPTOM_THRESHOLD) /
-                (RadiationMobEffect.DOSE_LETHAL_THRESHOLD - RadiationMobEffect.DOSE_SYMPTOM_THRESHOLD))
+        val strength = ((dose - symptomThreshold) / (RadiationMobEffect.getLethalThreshold() - symptomThreshold))
             .coerceIn(0f, 1f)
         val pulse = 0.92f + 0.08f * sin(ageInTicks * 0.08f)
         val alpha = (0.15f + 0.65f * strength) * pulse
