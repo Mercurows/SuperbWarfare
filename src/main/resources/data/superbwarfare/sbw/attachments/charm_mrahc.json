@@ -10,6 +10,21 @@
       "Prop": "Weight",
       "Op": "Add",
       "Value": 0.05
+    },
+    {
+      "Prop": "RecoilX",
+      "Op": "Mul",
+      "Value": 0.95
+    },
+    {
+      "Prop": "RecoilY",
+      "Op": "Mul",
+      "Value": 0.95
+    },
+    {
+      "Prop": "Recoil",
+      "Op": "Mul",
+      "Value": 0.95
     }
   ]
 }

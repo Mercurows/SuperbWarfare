@@ -24,19 +24,7 @@ data class AttachmentDefinition(
     val slot: AttachmentType = AttachmentType.SCOPE,
 
     /**
-     * 除 [slot] 之外**还能**装进哪些槽位（`"ExtraSlots": ["LowerRail", "LeftRail", "RightRail"]`）。
-     *
-     * 名字里的 `Extra` 是要紧的：[slot] 是这件配件**定义在哪个槽位**上，这里列的只是"顺便也能装"，
-     * 两者不是平级关系 —— 装上以后一律以**实际安装的槽位**为准（挂载骨骼 [AttachmentSlots.mountBoneOf]、
-     * 互斥判定、渲染都取那个槽位），[slot] 同时还是 [scopeMode] / [scopeZoom] 这类
-     * **按槽位下标取值**的数据的取值依据。所以多槽位的配件请**不要**带 `ScopeInfo`：
-     * 同一份模式表会在不同槽位上被解释成不同的档位。
-     *
-     * 存在的理由是同一件东西在好几根导轨上都装得下：激光指示器 / 战术手电这类不分上下左右，
-     * 而四条导轨在 `AttachmentSlots` 里各占一个槽位（只有这样它们才能互不冲突），
-     * 于是"一件配件、多个槽位"只能由配件数据自己表达。
-     *
-     * 值里不必重复写 [slot]（[acceptedSlots] 会自动并上），写重了也无害。
+     * 还能装进哪些槽位
      */
     @SerialName("ExtraSlots")
     val extraSlots: List<AttachmentType> = emptyList(),
@@ -79,17 +67,7 @@ data class AttachmentDefinition(
     val texture: SerializedResourceLocation? = null,
 
     /**
-     * 配件的基础三轴旋转（度）：乘在挂点变换**之内**，也就是"挂上去之后再整件转一下"。
-     *
-     * 三个分量与 geo 里骨骼的 `rotation` **是同一套写法**（换算见 `TreeBedrockModelBaker`：
-     * X、Y 取负、Z 不取负，按 `ZYX` 顺序合成），所以美术在 Blockbench 里量到多少度，这里就写多少度。
-     * 不写、或三个分量都是 `0`，等于没有这个字段（渲染路径会整段跳过）。
-     *
-     * 存在的理由是"同一件配件要装在朝向不同的挂点上"：四条导轨的挂点骨骼各自带
-     * ±90° / 180° 的 Z 轴旋转（见 [AttachmentSlots.Bones]），而配件模型只可能照其中一根的方向去建模，
-     * 换到别的导轨上就用这个字段补正，不必再让美术多出一份模型。
-     *
-     * **瞄准镜会忽略它**：镜筒的挂点变换还兼着开镜窗口（`ocular`）的定位，旋转光学瞄具本身也没有意义。
+     * 配件的基础三轴旋转（度）
      */
     @SerialName("Rotation")
     val rotation: AttachmentRotation? = null,
@@ -108,12 +86,7 @@ data class AttachmentDefinition(
     val hasBipod: Boolean = false,
 
     /**
-     * 刺刀型枪口配件。
-     *
-     * 刺刀已经并入枪口槽（[AttachmentType.MUZZLE]），槽位本身不再区分它——这个标记只负责两件事：
-     * 在tooltip里标出"枪刺功能"，以及与副武器（[AttachmentType.SUBWEAPON]）互斥
-     * （两者抢的是前段同一处导轨，见 [AttachmentSlots.declaredConflicts]）。
-     * 除这两点外，它的外观与行为与普通枪口配件完全一致。
+     * 刺刀型枪口配件
      */
     @SerialName("IsBayonet")
     val isBayonet: Boolean = false,
@@ -144,11 +117,7 @@ data class AttachmentDefinition(
     val charm: CharmInfo? = null,
 
     /**
-     * 激光瞄准器定义（见 [LaserInfo]）：**带上它就说明这件配件会发光束**。
-     *
-     * 这是"给配件加一个能力"，**不是"新增一类配件"** —— 它不参与 [slot] / [extraSlots] 的槽位声明，
-     * 也不影响 [modifiers]：一件普通的导轨配件可以既改属性、又发光束。
-     * 装在四条导轨上的任意一条都走同一份配置（方向从枪模型的挂点骨骼继承）。
+     * 激光瞄准器定义：**带上它就说明这件配件会发光束**
      */
     @SerialName("Laser")
     val laser: LaserInfo? = null,
@@ -161,12 +130,7 @@ data class AttachmentDefinition(
 ) : IDBasedData<AttachmentDefinition>, PropertyModifier<GunData, DefaultGunData> {
 
     /**
-     * [slot] 与 [extraSlots] 的并集：这件配件能装进的全部槽位。
-     *
-     * 判定装得上与否的地方（`GunData.canInstall`、`Attachment.installed`、指令补全、
-     * `AttachmentSlots.registeredIds`）一律走这里，不要再单独比 [slot]。
-     *
-     * 在构造期算好而不是每次现算：`availableAttachments` 会在改装界面每帧的候选过滤里被反复调用
+     * 这件配件能装进的全部槽位
      */
     @kotlinx.serialization.Transient
     val acceptedSlots: Set<AttachmentType> =
@@ -291,9 +255,7 @@ data class AttachmentDefinition(
 }
 
 /**
- * 一件装着的激光配件。
- *
- * @param slot 装在哪条导轨上，既是挂点骨骼的依据，也是颜色覆盖的键
+ * 一件装着的激光配件
  */
 data class LaserEmitter(
     val slot: AttachmentSlot,
@@ -302,9 +264,7 @@ data class LaserEmitter(
 )
 
 /**
- * 一件装着的枪盾。
- *
- * @param slot 装在哪个槽位上，也是耐久状态的键
+ * 一件装着的枪盾
  */
 data class ShieldEmitter(
     val slot: AttachmentSlot,
@@ -368,10 +328,7 @@ enum class AttachmentModifierOp {
 }
 
 /**
- * 配件的基础三轴旋转（见 [AttachmentDefinition.rotation]），单位是度
- *
- * 三个分量分别省略时为 `0`；[isIdentity] 为 `true` 时渲染路径整个跳过，
- * 既不建矩阵也不乘进 `PoseStack` —— 绝大多数配件都不写这个字段。
+ * 配件的基础三轴旋转，单位是度
  */
 @Serializable
 data class AttachmentRotation(

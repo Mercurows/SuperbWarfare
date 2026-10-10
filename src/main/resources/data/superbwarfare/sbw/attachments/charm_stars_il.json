@@ -10,6 +10,11 @@
       "Prop": "Weight",
       "Op": "Add",
       "Value": 0.05
+    },
+    {
+      "Prop": "RPM",
+      "Op": "Mul",
+      "Value": 1.05
     }
   ]
 }

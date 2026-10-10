@@ -10,6 +10,11 @@
       "Prop": "Weight",
       "Op": "Add",
       "Value": 0.05
+    },
+    {
+      "Prop": "ReloadTime",
+      "Op": "Mul",
+      "Value": 0.95
     }
   ]
 }

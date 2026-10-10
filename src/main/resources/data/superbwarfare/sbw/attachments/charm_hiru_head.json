@@ -10,6 +10,16 @@
       "Prop": "Weight",
       "Op": "Add",
       "Value": 0.05
+    },
+    {
+      "Prop": "UnderwaterMotionScale",
+      "Op": "Mul",
+      "Value": 1.05
+    },
+    {
+      "Prop": "InWaterCooldownRate",
+      "Op": "Mul",
+      "Value": 1.05
     }
   ]
 }

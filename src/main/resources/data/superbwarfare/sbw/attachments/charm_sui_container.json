@@ -10,6 +10,16 @@
       "Prop": "Weight",
       "Op": "Add",
       "Value": 0.05
+    },
+    {
+      "Prop": "MaxDurability",
+      "Op": "Mul",
+      "Value": 1.05
+    },
+    {
+      "Prop": "MaxEnergy",
+      "Op": "Mul",
+      "Value": 1.05
     }
   ]
 }

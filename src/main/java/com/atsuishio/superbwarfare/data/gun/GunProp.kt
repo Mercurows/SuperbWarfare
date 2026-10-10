@@ -5,7 +5,6 @@ import com.atsuishio.superbwarfare.data.PMC
 import com.atsuishio.superbwarfare.data.Prop
 import com.atsuishio.superbwarfare.data.SingleOrList
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.getPerkPriority
-import com.atsuishio.superbwarfare.data.gun.GunProp.Companion.SOUND_INFO
 import com.atsuishio.superbwarfare.data.gun.melee.isMeleeProjectileMarker
 import com.atsuishio.superbwarfare.init.ModPerks
 import com.atsuishio.superbwarfare.perk.Perk
@@ -48,7 +47,6 @@ class GunProp<T, R>(
             ).also { entries.add(it) }
         }
 
-
         @JvmField
         val MAX_DURABILITY = plainProp(DefaultGunData::maxDurability)
 
@@ -82,10 +80,6 @@ class GunProp<T, R>(
         @JvmField
         val SHOOT_SHAKE = plainProp(DefaultGunData::shootShake)
 
-        /**
-         * 瞄准时呼吸晃动的幅度倍率（`1.0` = 原样）。配件的"瞄准稳定性"就改它，
-         * 消费方在客户端 `ClientEventHandler.handleWeaponSway`。
-         */
         @JvmField
         val SWAY = plainProp(DefaultGunData::sway)
 
@@ -110,51 +104,27 @@ class GunProp<T, R>(
         @JvmField
         val MELEE_RANGE = plainProp(DefaultGunData::meleeRange)
 
-        /**
-         * 近战打头倍率（近战专用，与投射物的 `Headshot` 无关）。
-         */
         @JvmField
         val MELEE_HEADSHOT = plainProp(DefaultGunData::meleeHeadshot)
 
-        /**
-         * 近战打腿倍率（近战专用）。
-         */
         @JvmField
         val MELEE_LEGSHOT = plainProp(DefaultGunData::meleeLegshot)
 
         @JvmField
         val MELEE_ANGLE = plainProp(DefaultGunData::meleeAngle)
 
-        /**
-         * 连招重置窗口（tick）：一段近战结束后多少 tick 内再挥击算连招。
-         */
         @JvmField
         val MELEE_COMBO_RESET = plainProp(DefaultGunData::meleeComboReset)
 
-        /**
-         * 近战判定形状。不写（null）时用 [com.atsuishio.superbwarfare.data.gun.melee.MeleeHitbox]
-         * 的默认值：长方体，前向长度由 `MeleeRange` 决定。
-         */
         @JvmField
         val MELEE_HITBOX = plainProp(DefaultGunData::meleeHitbox)
 
-        /**
-         * 近战横扫采样。不写（null）= 静态判定。
-         */
         @JvmField
         val MELEE_SWEEP = plainProp(DefaultGunData::meleeSweep)
 
-        /**
-         * 近战动作序列（循环序列，下标在挥击开始时锁存）。
-         */
         @JvmField
         val MELEE_ACTIONS = complexProp(DefaultGunData::meleeActions) { it.list }
 
-        /**
-         * 近战攻击音效。
-         *
-         * 单独一个属性（而不是挂在 [SOUND_INFO] 下），配件才能只覆盖它而不影响开火/换弹音效。
-         */
         @JvmField
         val MELEE_SOUND = complexProp(DefaultGunData::meleeSound) { it }
 
@@ -201,7 +171,6 @@ class GunProp<T, R>(
         @JvmField
         val AMMO_COST_PER_SHOOT = plainProp(DefaultGunData::ammoCostPerShoot)
 
-        /** 「其他类型弹药 → 弹药」换算比例：多少外部资源（如 FE）折算成 1 发弹匣弹药 */
         @JvmField
         val FUEL_PER_AMMO = plainProp(DefaultGunData::fuelPerAmmo)
 
@@ -238,7 +207,6 @@ class GunProp<T, R>(
             }
         ).also { entries.add(it) }
 
-        /** 弹鼓等级列表，供 `GunData.isDrumLevel()` 判断当前等级是否为弹鼓。 */
         @JvmField
         val DRUM_LEVELS = complexProp(DefaultGunData::drumLevels) { it }
 
@@ -293,7 +261,6 @@ class GunProp<T, R>(
             DefaultGunData::ammoConsumers
         ) { it.list.map { l -> l.value } }
 
-        /** 充能射击档位（见 [ChargeAction]）。按数组顺序取第一个条件满足的那一档。 */
         @JvmField
         val CHARGE_ACTION = complexProp(
             DefaultGunData::chargeActions
@@ -350,12 +317,6 @@ class GunProp<T, R>(
         @JvmField
         val RPM = plainProp(DefaultGunData::rpm)
 
-        /**
-         * 全局射速倍率。
-         *
-         * 作用于**最终射速**（`基础 RPM + 每发累加值`），而不是基础 RPM——
-         * 否则乘法类效果会被 RpmAddAfterShoot 那套加法累加值稀释。
-         */
         @JvmField
         val RPM_MULTIPLIER = plainProp(DefaultGunData::rpmMultiplier)
 
@@ -413,13 +374,6 @@ class GunProp<T, R>(
         @JvmField
         val DEPLOYABLE = plainProp(DefaultGunData::deployable)
 
-        /**
-         * 武器进入瞄准的时间，单位是tick
-         *
-         * 主创否定了将进入瞄准和退出瞄准时间分离的设计，现在ZOOM_OUT_TIME = ZOOM_TIME * 0.75f
-         * 这导致无法制作瞄准时间1秒，退出瞄准时间需要10秒的池沼瞄准镜
-         * 如果以后哪天要做这种功能了，记得带上这段注释来打脸
-         */
         @JvmField
         val ZOOM_TIME = plainProp(DefaultGunData::zoomTime)
 
@@ -504,17 +458,6 @@ class GunProp<T, R>(
         @JvmField
         val SHOOT_ANIMATION_TIME = plainProp(DefaultGunData::shootAnimationTime)
 
-        /**
-         * 本发开火改用哪支动画 clip；`null` = 照常按枪自己的 `Animation.Fire`。
-         *
-         * 开火动画平时是从**资源侧**（assets 的 `sbw/guns/<id>.json` 的 `Animation.Fire`）解析的，
-         * 而 `GunResource` 按物品注册 id 缓存 —— 也就是说它**看不到任何按 stack 生效的覆盖**
-         * （弹种 / 配件 / 本档充能）。需要"某一种射击换一支开火动画"时只能从这里走：
-         * 目前唯一的用法就是 [ChargeAction] 的 `Override`（充能射击播 `*_charge` 那支）。
-         *
-         * 写法与近战动作表同一个口径（见 `GunAnimationNames`）：`animation.` 开头当全名，
-         * 否则当短名按**宿主枪 id** 拼。由 `GeoGunAnimationInstance.triggerFire` 消费。
-         */
         @JvmField
         val SHOOT_ANIMATION = plainProp(DefaultGunData::shootAnimation)
 
@@ -583,12 +526,9 @@ class GunProp<T, R>(
             modify(PROJECTILE_SPLIT_COUNT) { it.coerceAtLeast(0) }
             modify(PROJECTILE_SPLIT_AMOUNT) { it.coerceAtLeast(0) }
             modify(WEIGHT) { it.coerceAtLeast(1.0) }
-            // 晃动倍率：负值会让呼吸摆动反向（晃动反而"变大"），钳到 0（完全无呼吸摆动）
             modify(SWAY) { it.coerceAtLeast(0.0) }
 
             modify(MAGAZINE) {
-                // 近战专属枪械（显式 `@melee`，或兼容回退的 `ProjectileAmount <= 0 && MeleeDamage > 0`）
-                // 没有弹匣概念：不走开火链路，也不该参与换弹/备弹显示
                 if (modifier[PROJECTILE].itemId.isMeleeProjectileMarker() ||
                     (modifier[PROJECTILE_AMOUNT] <= 0 && modifier[MELEE_DAMAGE] > 0)
                 ) {

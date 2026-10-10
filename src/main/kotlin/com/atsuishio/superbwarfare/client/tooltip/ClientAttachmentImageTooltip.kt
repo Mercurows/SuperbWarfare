@@ -126,8 +126,8 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
                 if (constant != null && constant.value == 0.0) return null
                 when {
                     constant == null -> "+"
-                    constant.value > 0 -> "+" + FormatTool.format1D(abs(constant.value))
-                    constant.value < 0 -> "-" + FormatTool.format1D(abs(constant.value))
+                    constant.value > 0 -> "+" + FormatTool.format2D(abs(constant.value))
+                    constant.value < 0 -> "-" + FormatTool.format2D(abs(constant.value))
                     else -> null
                 }
             }
@@ -135,8 +135,8 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
             AttachmentModifierOp.MUL -> when {
                 constant == null -> "×"
                 constant.value == 1.0 -> null
-                constant.value > 1 -> "+" + FormatTool.format1D(abs(1 - constant.value) * 100) + "%"
-                constant.value in 0.0..<1.0 -> "-" + FormatTool.format1D(abs(1 - constant.value) * 100) + "%"
+                constant.value > 1 -> "+" + FormatTool.format2D(abs(1 - constant.value) * 100) + "%"
+                constant.value in 0.0..<1.0 -> "-" + FormatTool.format2D(abs(1 - constant.value) * 100) + "%"
                 else -> "×"
             }
 
@@ -310,6 +310,11 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
             "MeleeHeadshot",
             "MeleeLegshot",
             "MaxEnergy",
+            "ExplosionDamage",
+            "ExplosionRadius",
+            "UnderwaterMotionScale",
+            "InWaterCooldownRate",
+            "MaxDurability",
         )
 
         val LOWER_IS_BETTER = setOf(
@@ -327,6 +332,9 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
             "Sway",
             "Weight",
             "ZoomTime",
+            "DrawTime",
+            "Gravity",
+            "ReloadTime",
         )
     }
 }
