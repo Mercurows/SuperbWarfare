@@ -67,7 +67,8 @@
     "superbwarfare:vorpal_weapon",
     "superbwarfare:battle_of_wits",
     "!superbwarfare:longer_wire",
-    "!superbwarfare:cupid_arrow"
+    "!superbwarfare:cupid_arrow",
+    "!superbwarfare:shatter_caps"
   ],
   "AvailableAttachments": {
     "Charm": [

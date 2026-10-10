@@ -53,7 +53,9 @@
   ],
   "SoundInfo": {
     "Fire1P": "superbwarfare:bocek_zoom_fire_1p",
-    "Fire3P": "superbwarfare:bocek_zoom_fire_3p"
+    "Fire3P": "superbwarfare:bocek_zoom_fire_3p",
+    "Fire1PShatter": "superbwarfare:bocek_shatter_cap_fire_1p",
+    "Fire3PShatter": "superbwarfare:bocek_shatter_cap_fire_3p"
   },
   "SoundRadius": 2,
   "AvailableAttachments": {

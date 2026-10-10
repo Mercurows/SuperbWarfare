@@ -42,6 +42,9 @@ data class GunState(
     @SerialName("Level")
     val level: Int = 0,
 
+    @SerialName("Zooming")
+    val zooming: Boolean = false,
+
     // ---- runtime state ----
     @SerialName("Ammo")
     val ammo: Int = 0,
@@ -81,8 +84,6 @@ data class GunState(
     val shootTimer: Int = 0,
     @SerialName("OverHeat")
     val overHeat: Boolean = false,
-    @SerialName("Zooming")
-    val zooming: Boolean = false,
     @SerialName("weaponPitch")
     val weaponPitch: Double = 0.0,
     @SerialName("weaponYaw")
@@ -145,11 +146,14 @@ data class GunState(
         val level: Int,
         val ammo: Int,
         val virtualAmmo: Int,
+        val zooming: Boolean,
     )
 
     /** Read-only view of the fields that can invalidate the PMC cache; see [Structural]. */
     val structural: Structural
-        get() = Structural(override, defaultDataId, selectedAmmoType, selectedFireMode, level, ammo, virtualAmmo)
+        get() = Structural(
+            override, defaultDataId, selectedAmmoType, selectedFireMode, level, ammo, virtualAmmo, zooming
+        )
 
     /**
      * Whether going from [other] to this state can change computed gun properties, i.e. whether the PMC

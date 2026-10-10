@@ -36,6 +36,12 @@ data class SoundInfo(
     @SerialName("Fire3PVeryFarSilent")
     val fire3PVeryFarSilent: SerializedSoundEvent? = null,
 
+    @SerialName("Fire1PShatter")
+    val fire1PShatter: SerializedSoundEvent? = null,
+
+    @SerialName("Fire3PShatter")
+    val fire3PShatter: SerializedSoundEvent? = null,
+
     // 换弹音效
     @SerialName("ReloadNormal")
     val reloadNormal: SerializedSoundEvent? = null,

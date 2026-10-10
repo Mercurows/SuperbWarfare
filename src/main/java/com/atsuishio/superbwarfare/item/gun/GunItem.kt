@@ -461,6 +461,8 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         return EntityType.byString(projectileType).orElse(null) == ModEntities.PROJECTILE.get()
     }
 
+    open fun isShatterShot(data: GunData): Boolean = data.get(GunProp.PROJECTILE_AMOUNT) > 1
+
     open fun resolveFire1PSounds(data: GunData, stack: ItemStack): List<LocalSound> {
         val sounds = ArrayList<LocalSound>(3)
 
@@ -472,7 +474,11 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         }
 
         val isSilent = data.isBarrelSilenced()
-        val fire1p = if (isSilent) soundInfo.fire1PSilent else soundInfo.fire1P
+        val fire1p = when {
+            isSilent -> soundInfo.fire1PSilent
+            isShatterShot(data) -> soundInfo.fire1PShatter ?: soundInfo.fire1P
+            else -> soundInfo.fire1P
+        }
         val volumeMultiplier = getCustomSoundRadius(data).coerceAtLeast(1.0)
 
         if (fire1p != null) {
@@ -805,7 +811,11 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         val soundInfo = data.get(GunProp.SOUND_INFO)
         val isSilent = data.isBarrelSilenced()
 
-        val sound3p = if (isSilent) soundInfo.fire3PSilent else soundInfo.fire3P
+        val sound3p = when {
+            isSilent -> soundInfo.fire3PSilent
+            isShatterShot(data) -> soundInfo.fire3PShatter ?: soundInfo.fire3P
+            else -> soundInfo.fire3P
+        }
         if (sound3p != null) {
             shooter.playSound(sound3p, soundRadius * 0.4f, pitch)
         }
