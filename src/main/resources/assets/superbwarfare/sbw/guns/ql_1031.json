@@ -1,6 +1,22 @@
 {
   "Icon": "superbwarfare:textures/gun_icon/ql_1031_icon.png",
   "SlotIcon": "superbwarfare:textures/item/ql_1031_icon.png",
+  "HasSmoke": true,
+  "Smoke": {
+    "Size": 0.10,
+    "Growth": 0.0,
+    "Lifetime": 1.0,
+    "Speed": 5.0,
+    "Count": 1,
+    "Opacity": 1.0,
+    "Drag": 0.6,
+    "RandomSize": 0.0,
+    "RandomGrowth": 0.0,
+    "RandomLifetime": 0.2,
+    "RandomSpeed": 0.7,
+    "RandomCount": 0.0,
+    "RandomOpacity": 0.0
+  },
   "Animation": {
     "Idle": "animation.ql_1031.idle",
     "Fire": "animation.ql_1031.fire",

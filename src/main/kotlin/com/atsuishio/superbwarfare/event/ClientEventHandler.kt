@@ -31,7 +31,6 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler.SPRINT_EASE_MAX_DELTA_TICKS
 import com.atsuishio.superbwarfare.event.ClientEventHandler.SPRINT_EASE_POS_Y_IN
 import com.atsuishio.superbwarfare.event.ClientEventHandler.SPRINT_EASE_ROT_Y_IN
-import com.atsuishio.superbwarfare.event.ClientEventHandler.resetGunTransientState
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.item.attachment.SubWeaponItem
 import com.atsuishio.superbwarfare.item.gun.GunItem
@@ -48,7 +47,6 @@ import net.minecraft.ChatFormatting
 import net.minecraft.client.CameraType
 import net.minecraft.client.Minecraft
 import net.minecraft.core.BlockPos
-import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.sounds.SoundEvents
@@ -657,7 +655,7 @@ object ClientEventHandler {
         if (event.phase == TickEvent.Phase.START) return
 
         RadiationShaderHandler.setDosage(
-            if (mc.options.cameraType == CameraType.FIRST_PERSON) RadiationCapability.getDosage(player).toFloat() else 0f
+            if (mc.options.cameraType == CameraType.FIRST_PERSON) RadiationCapability.getDosage(player) else 0f
         )
 
         if (mc.fps <= 20) {
@@ -818,20 +816,6 @@ object ClientEventHandler {
 
             if (spinTriggered && item.canShoot(data, player)) {
                 MuzzleFlashHelper.spawnToolFlash(player, stack)
-
-                // QL特有的樱花特效
-                if (stack.`is`(ModItems.QL_1031.get()) && player.tickCount % 5 == 0) {
-                    val random = (Math.random() - 0.5) * 2
-                    player.level().addParticle(
-                        ParticleTypes.CHERRY_LEAVES,
-                        player.x + random,
-                        player.eyeY + 0.5 * random,
-                        player.z + random,
-                        0.0,
-                        0.0,
-                        0.0
-                    )
-                }
             }
         } else {
             lastOperatingGunUUID = null
@@ -2689,7 +2673,7 @@ object ClientEventHandler {
         // 开镜抑制走瞄准曲线，和枪的姿态收敛（GeoGunRenderer 里那一组 rotationScale/positionScale）同一条
         val zt = aimingProgress(zoomTime)
 
-        val zoom = (1 - (1 - zoomMultiply) * zt).toFloat() * pose
+        val zoom = (1 - (1 - zoomMultiply) * zt) * pose
 
         val gunPosX = zoom * x * (recoilHorizon * (0.5f * firePosZ)).toFloat()
         val gunPosY = zoom * y * ((getBoneMoveY(firePosTimer.toFloat()) * 0.1 + 0.07f * firePosZ) * (1 - 0.25 * zt)).toFloat()
@@ -2919,8 +2903,6 @@ object ClientEventHandler {
                 0.0
             }
 
-
-
         event.pitch = (pitch + cameraRot[0] + 3 * velocityY).toFloat()
         if (mc.options.cameraType == CameraType.THIRD_PERSON_BACK) {
             event.yaw =
@@ -2936,8 +2918,6 @@ object ClientEventHandler {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     fun captureFov(event: ComputeFov) {
-        // 这个事件两条渲染路径都会发：世界 pass 带玩家的 FOV 设置（并吃到开镜倍率），
-        // 手部 pass 带的是它自己的固定基准。排在 LOWEST 才能拿到"所有处理都跑完"的最终值。
         if (event.usedConfiguredFov()) {
             fov = event.fov
         } else {
@@ -3149,16 +3129,6 @@ object ClientEventHandler {
         }
     }
 
-    /**
-     * **真的换了一把枪**（主手物品变了）：演一次切枪动画，并清掉上一把枪的全部残留。
-     *
-     * ⚠ **主/副武器切换不要调它。** 那种情况下手里那把枪根本没变，换的只是"当前操控的枪"——
-     * 副武器是挂在同一把枪上的附件。调它会让主武器凭空做一次重新装备（`drawTime` 打回 1.0），
-     * 还会把玩家按住的瞄准键作废（`zoom = false`）。那种情况调 [resetGunTransientState]。
-     *
-     * 调用点只有两个：`DrawClientMessage`（服务端在主手物品真换了时发）与
-     * `handleShootDelay` 里的主手 UUID 变化。
-     */
     fun resetGunStatus() {
         drawTime = 1.0
         zoom = false

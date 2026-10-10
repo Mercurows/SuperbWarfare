@@ -571,7 +571,7 @@
 			},
 			"particle_effects": {
 				"0.0": {
-					"effect": "superbwarfare:muzzle_smoke",
+					"effect": "superbwarfare:cherry_blossom",
 					"locator": "flare"
 				}
 			}
@@ -692,13 +692,19 @@
 			},
 			"particle_effects": {
 				"0.0": {
-					"effect": "superbwarfare:muzzle_smoke",
+					"effect": "superbwarfare:cherry_blossom",
 					"locator": "flare"
 				}
 			}
 		},
 		"animation.ql_1031.fire_hold": {
 			"animation_length": 0.9,
+			"particle_effects": {
+				"0.0": {
+					"effect": "superbwarfare:cherry_blossom",
+					"locator": "flare"
+				}
+			},
 			"bones": {
 				"root": {
 					"rotation": {
