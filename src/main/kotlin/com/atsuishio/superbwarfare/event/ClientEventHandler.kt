@@ -28,14 +28,10 @@ import com.atsuishio.superbwarfare.data.attachment.SubWeaponInfo
 import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
-import com.atsuishio.superbwarfare.event.ClientEventHandler.currentMeleeDuration
-import com.atsuishio.superbwarfare.event.ClientEventHandler.currentMeleeIndex
-import com.atsuishio.superbwarfare.event.ClientEventHandler.handleClientShoot
-import com.atsuishio.superbwarfare.event.ClientEventHandler.handleGunRecoil
-import com.atsuishio.superbwarfare.event.ClientEventHandler.handleWeaponFire
-import com.atsuishio.superbwarfare.event.ClientEventHandler.isGunMeleeActive
+import com.atsuishio.superbwarfare.event.ClientEventHandler.SPRINT_EASE_MAX_DELTA_TICKS
+import com.atsuishio.superbwarfare.event.ClientEventHandler.SPRINT_EASE_POS_Y_IN
+import com.atsuishio.superbwarfare.event.ClientEventHandler.SPRINT_EASE_ROT_Y_IN
 import com.atsuishio.superbwarfare.event.ClientEventHandler.resetGunTransientState
-import com.atsuishio.superbwarfare.event.ClientEventHandler.zoomTime
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.item.attachment.SubWeaponItem
 import com.atsuishio.superbwarfare.item.gun.GunItem
@@ -99,13 +95,7 @@ object ClientEventHandler {
     var zoomTime: Double = 0.0
 
     /**
-     * 把 `zoomTime`（0 腰射 → 1 完全瞄准）换算成真正用于插值的值，走 `EASE_IN_OUT_QUINT`。
-     *
-     * 凡是"随开镜连续变化"的东西都该读这个，而不是 [zoomTime] 原值：枪的姿态、开镜倍率、相机拉近、
-     * 镜筒窗口……只要有一处用线性原值，那一处的推进节奏就会和其余的对不上（枪到位了、它还在慢慢爬）。
-     *
-     * 反过来，"到什么程度算瞄好了"这类**门槛**（`zoomTime > 0.8` 藏准星、`scriptZoomTime` 给脚本的
-     * 门槛值）仍然读原值——它们是二值判定，不是插值。
+     * 把 `zoomTime`（0 腰射 → 1 完全瞄准）换算成真正用于插值的值，走 `EASE_IN_OUT_QUINT`
      */
     @JvmStatic
     fun aimingProgress(rawProgress: Double): Float =
@@ -142,9 +132,6 @@ object ClientEventHandler {
     var moveRotZ: Double = 0.0
 
     @JvmField
-    var moveRotateRate: Double = 0.0
-
-    @JvmField
     var sprintBasicRotX: Double = 0.0
 
     @JvmField
@@ -168,15 +155,7 @@ object ClientEventHandler {
     @JvmField
     var sprintBasicPosZ: Double = 0.0
 
-    // ── 奔跑姿势的缓入缓出速率 ────────────────────────────────────────────────
-    //
-    // 程序性奔跑（[handleWeaponMove] 里那六个 `sprintBasic*`）和枪模型**自带**的奔跑动画
-    // （`GeoGunAnimationInstance` 的 `Animation.Run` 层）共用这一组数字：前者把姿势乘上权重、
-    // 后者拿权重去混合两套姿势，速率同源两边才对得上。改这里就是两边一起改。
-    //
-    // 入（摆出奔跑姿势）按 `(重量 + 4)` 缩放、出（收回）按重量缩放 —— 重的枪入得慢、出得快，
-    // 这是手感。旋转、位移各一档，Y 轴比 X/Z 慢一档；动画层每个通道只有一条权重，取的是 X/Z 那档。
-
+    // 奔跑姿势的缓入缓出速率
     /** 旋转入：X/Z 用这档，Y 用 [SPRINT_EASE_ROT_Y_IN] */
     const val SPRINT_EASE_ROT_IN = 0.3f
     const val SPRINT_EASE_ROT_Y_IN = 0.18f
@@ -206,12 +185,7 @@ object ClientEventHandler {
         SPRINT_EASE_TIMES * deltaFrameTime.coerceAtMost(SPRINT_EASE_MAX_DELTA_TICKS)
 
     /**
-     * 奔跑姿势**每帧**的插值系数（配合 `Mth.lerp` 用）。
-     *
-     * [entering] 为真（摆出奔跑姿势）时按 `(重量 + 4)` 缩放、为假（收回）时按重量缩放。
-     * `base` 取上面那一组 `SPRINT_EASE_*`。
-     *
-     * 返回 `Double`：程序性奔跑那六个 `sprintBasic*` 就是 `Double`，直接喂 `Mth.lerp` 不用转换。
+     * 奔跑姿势**每帧**的插值系数
      */
     @JvmStatic
     fun sprintEaseAlpha(base: Float, times: Float, weight: Double, entering: Boolean): Double =
@@ -267,24 +241,11 @@ object ClientEventHandler {
     var recoilForce: Double = 0.0
 
     /**
-     * 上一发**充能射击**覆写后的后坐（`ChargeAction.Override` 里的 `RECOIL_X` / `RECOIL_Y`）。
-     * 普通射击为 `null`，表示照常读枪械数据。
-     *
-     * 为什么不能直接用瞬时覆写：后坐是**逐帧**消费的 —— 相机抖动
-     * （[handleWeaponFire]，`25000 · RECOIL_X · RECOIL_Y`）和抬枪（[handleGunRecoil]）每帧都要重新读，
-     * 而 `ChargeAction` 的覆写只在开火那一帧的调用栈里有效（见 `GunData.setChargeAction`）。
-     * 所以开火时把值抄在这里，由每次开火整体刷新。
+     * 上一发**充能射击**覆写后的后坐
      */
     private var chargedRecoilX: Double? = null
     private var chargedRecoilY: Double? = null
 
-    /**
-     * 记下的值是否该生效。
-     *
-     * 门禁在 `fireRecoilTime`（主武器开火才置位，见 [handleClientShoot]）而不是后坐相位上：
-     * 副武器的镜头后坐走的是 `subWeaponRecoilTimer`，但它读的 `RECOIL_*` 是**操控的主武器**的，
-     * 不加这道门禁就会把上一发主武器充能射击的后坐串到副武器那一发上。
-     */
     private fun chargedRecoilActive() = fireRecoilTime > 0.0
 
     /** 本发实际生效的 `RECOIL_X`：主武器充能射击取开火时记下的值，否则取枪械数据。 */
@@ -349,7 +310,6 @@ object ClientEventHandler {
     @JvmField
     var holdingFireKey: Boolean = false
 
-
     @JvmField
     var chargeActive: Boolean = false
 
@@ -392,15 +352,7 @@ object ClientEventHandler {
     @JvmField
     var customRpm: Int = 0
 
-    /**
-     * **旧版 GeckoLib 近战计数器（已废弃，不再由新近战系统驱动）**。
-     *
-     * V2 渲染路径的近战状态按枪隔离存在 [com.atsuishio.superbwarfare.client.gun.GunActionLock] 里，
-     * 这个全局字段只为了让**尚未迁移的旧 GeckoLib 枪械**（`GunGeoItem` / `SecondaryCataclysmItem`）
-     * 继续编译通过，永远是 0——旧枪械的近战动画不会再触发，这是既定取舍（旧路径不迁移）。
-     *
-     * 新代码一律用 [isGunMeleeActive] / [currentMeleeDuration] / [currentMeleeIndex]。
-     */
+    // TODO 删了这个
     @JvmField
     @Deprecated("Use GunActionLock / ClientEventHandler.isGunMeleeActive instead")
     var gunMelee: Int = 0
@@ -490,37 +442,31 @@ object ClientEventHandler {
     var isEditing: Boolean = false
 
     /**
-     * 改装状态下当前正在编辑的配件槽位，与 [com.atsuishio.superbwarfare.client.screens.WeaponEditScreen.EditButton] 的 type 一致，
-     * -1 表示未选中任何配件。
+     * 改装状态下当前正在编辑的配件槽位
      */
     @JvmField
     var editingAttachmentType: Int = -1
 
     /**
-     * 改装时视线聚焦的平滑偏移量（相对 IDLE_VIEW_BONE，模型空间），
-     * 由 GeoGunRenderer 每帧向目标偏移插值。
+     * 改装时视线聚焦的平滑偏移量
      */
     @JvmField
     var editFocusOffset: Vector3f = Vector3f()
 
     /**
-     * 改装未聚焦时浮动预览绕 Y 轴的旋转角（弧度），
-     * 由 GeoGunRenderer 根据鼠标水平位置计算并插值，避免视角平移时卡进模型。
+     * 改装未聚焦时浮动预览绕 Y 轴的旋转角（弧度）
      */
     @JvmField
     var editFocusYaw: Float = 0f
 
     /**
-     * 改装未聚焦时浮动预览绕 X 轴的旋转角（弧度），
-     * 由 GeoGunRenderer 根据鼠标垂直位置计算并插值，避免视角平移时卡进模型。
+     * 改装未聚焦时浮动预览绕 X 轴的旋转角（弧度）
      */
     @JvmField
     var editFocusPitch: Float = 0f
 
     /**
-     * 改装镜头从配件聚焦回退到浮动预览的剩余缓动时长（秒）。
-     * 聚焦配件时由 GeoGunRenderer 重置为完整时长，按下 ESC 回到预览后逐帧递减；
-     * 期间使用较慢的平滑速度，使镜头平滑回退而非瞬间跳回预览位。
+     * 改装镜头从配件聚焦回退到浮动预览的剩余缓动时长（秒）
      */
     @JvmField
     var editFocusReturnTime: Float = 0f
@@ -719,9 +665,6 @@ object ClientEventHandler {
             handleVehicleGunShoot()
         }
 
-        // ⚠ 这里是**主手物品**，四期刻意不改：
-        // `handleGunMelee` 的近战恒用主武器（§9.8.2，副武器没有近战），
-        // `handleLungeAttack` 用的是长矛物品，两者都只认"物理上拿在手里的东西"。
         val stack = player.mainHandItem
         if (notInGame && !ClickEventHandler.switchZoom) {
             zoom = false
@@ -1600,18 +1543,7 @@ object ClientEventHandler {
     }
 
     /**
-     * 近战入口。
-     *
-     * 与旧实现的区别：
-     * - 状态（连招下标 / 动作锁 / 本段时长）按**枪身份隔离**，放在 [com.atsuishio.superbwarfare.client.gun.GunActionLock]
-     *   里，切枪不会拿新枪的数据误触发一次攻击（缺陷 1）；
-     * - 旧的全局 `gunMelee` 计数器已不再被这里驱动（只为旧 GeckoLib 路径保留成编译占位），
-     *   动画状态改问 [isGunMeleeActive]；
-     * - 冷却判断里的原版物品冷却（`player.cooldowns.isOnCooldown(item)`）是死条件，已删（缺陷 11）；
-     * - **动作锁的计时在这里无条件推进**（不只是手上有枪的时候），否则主手切走会让
-     *   `FIRING`/`MELEE` 占用永远挂着。
-     *
-     * @param stack 主手物品
+     * 近战入口
      */
     fun handleGunMelee(player: Player, stack: ItemStack) {
         // 动作锁计时：只要有活跃的动作状态就推进（帧率无关，每客户端 tick 一次）
@@ -1619,17 +1551,6 @@ object ClientEventHandler {
         val actionState = gunData?.let { GunActionLock.of(it) }
         actionState?.tick()
 
-        // ⚠ **部署中的副武器那把锁也必须推进**（四期返修，§11.10.12）。
-        //
-        // `SubWeaponClientHandler.onDeployed` 是在**当前操控的那把枪**上占用 `SUB_WEAPON` 的，
-        // 而副武器被切出来时"当前操控的那把枪"**就是副武器** —— 上面那句只推进了**主手**那把锁，
-        // 副武器那把是全仓**唯一没有任何人递减**的 `State`，于是 `SUB_WEAPON` 一占就永远挂着：
-        //
-        // - `handleGunShoot` 的 `GunActionLock.of(data).blocks(FIRING)` → **开不了火**；
-        // - 近战门禁的 `GunActionLock.of(operated).blocks(MELEE)` → **近战不了**。
-        //
-        // 这个坑和本方法 KDoc 里那条"动作锁计时要无条件推进，否则主手切走会让 FIRING/MELEE
-        // 永远挂着"是同一个：**任何一个可能被 `force`/`acquire` 的 `State` 都必须有人推进它。**
         if (gunData != null) {
             val operated = ActiveGun.dataOf(gunData, player.level().isClientSide)
             if (operated !== gunData) {
@@ -1637,7 +1558,7 @@ object ClientEventHandler {
             }
         }
 
-        if (gunData == null || actionState == null) return
+        if (gunData == null) return
 
         // 切换请求的兜底超时（丢一次包不该把 G 永久锁死，也不能让动作锁一直挂着）
         SubWeaponClientHandler.tick(gunData)
@@ -1759,12 +1680,7 @@ object ClientEventHandler {
     }
 
     /**
-     * 当前实际射速：`(基础 RPM + 每发累加值) * 全局倍率`。
-     *
-     * - 每发累加值可能为负（[GunProp.CUSTOM_RPM_MIN] 允许负数）、倍率也可能小于 1，
-     *   所以这里必须保证结果 >= 1：rpm <= 0 会让 cooldown 变成非正数，
-     *   下面按 cooldown 递减的开火补帧循环就永远结束不了。
-     * - 开火节奏和 HUD 显示都走这里，避免两处算法跑偏。
+     * 当前实际射速：`(基础 RPM + 每发累加值) * 全局倍率`
      */
     fun effectiveRpm(data: GunData): Int =
         ((data.get(GunProp.RPM) + customRpm) * data.get(GunProp.RPM_MULTIPLIER)).roundToInt().coerceIn(1, 114514)
@@ -1779,9 +1695,7 @@ object ClientEventHandler {
 
         val stack = ActiveGun.stackOf(player)
         val item = stack.item as? GunItem
-        // 主手不是枪（或拿着副武器**物品**本身）时什么都不做。
-        // 注意判据是 `isOperable` 而不是 `isHeldWeapon`：`ActiveGun` 可能返回**部署中的副武器栈**，
-        // 而副武器的 `useAsWeaponInHand()` 是 false（§9.8.1 的坑）。
+        // 主手不是枪或拿着副武器物品本身时什么都不做
         if (item == null || !GunItem.isOperable(stack)) {
             clientTimer.stop()
             fireSpread = 0.0
@@ -2079,7 +1993,6 @@ object ClientEventHandler {
     fun playGunClientSounds(player: Player) {
         val stack = ActiveGun.stackOf(player)
         val item = stack.item as? GunItem
-        // 主手不是枪时什么都不播；部署中的副武器走的是同一条链路（§9.8.3）
         if (item == null || !GunItem.isOperable(stack)) return
         val data = GunData.from(stack)
         playGunFire1PSound(player, data, stack)
@@ -3253,19 +3166,7 @@ object ClientEventHandler {
     }
 
     /**
-     * 只清"上一把枪残留的运行时状态"，**不动 `drawTime`、也不动瞄准意图（`zoom`）**。
-     *
-     * 为什么必须清：下面这些字段在客户端是**全局的、不是按枪存的**（`burstFireAmount`、蓄力、
-     * 自定义 RPM、索敌/锁定、抛壳计时……）。只要"当前操控的枪"换了就得清，
-     * 否则 AK-12 打了一半的三连发会接着算到 GP-25 头上、蓄力进度会跨枪残留。
-     *
-     * 为什么不能顺带演切枪：这些状态归零和"手上的枪换了"是两件事。主/副武器切换只发生前者，
-     * 而 `drawTime = 1.0` 是**重新装备的进度条** —— 副武器是挂在同一把枪上的附件，
-     * 收起/端起来都不该让主武器做一次切枪动作（§9.8.2 / §9.8.8）。
-     *
-     * `zoomTime = 0.0` **留在这一侧**是有意的：瞄准意图（`zoom`）跨切换保留，
-     * 但瞄准**进度**归零 → 切过去之后是"从肩上一路对进新枪的照门"，
-     * 而不是让 FOV 在旧位形上直接跳到新枪的倍率（那一下是硬切，看不出瞄准点变了）。
+     * 只清"上一把枪残留的运行时状态"
      */
     fun resetGunTransientState() {
         clientTimer.stop()
@@ -3465,13 +3366,6 @@ object ClientEventHandler {
         val instance =
             FirstPersonRenderHandler.getActiveAnimationInstance(event.hand) as? GeoGunAnimationInstance ?: return
 
-        // **部署中的副武器开火**：开火动画的候选链写在副武器自己的定义里
-        // （`SubWeaponInfo.Animation`，默认 `["fire_sub_weapon"]`），短名由 `triggerFire`
-        // 按**宿主枪**的 id 拼（`animation.ak_12.fire_sub_weapon`，§11.9-A）。
-        //
-        // ⚠ **这一句不能省。** `triggerFire` 是拿"候选链空不空"判断"开火的是不是副武器"的：
-        // 不传候选 → 判定成主武器开火 → **打榴弹时步枪抛壳**，而且副武器专属的开火动画
-        // 永远解析不到（候选链整条是死代码）。四期把参数留在原地却没接上，见 §11.10.10。
         val subWeaponInfo = subWeaponInfoOf(event.stack)
         instance.triggerFire(
             event.stack,
@@ -3482,15 +3376,7 @@ object ClientEventHandler {
     }
 
     /**
-     * 本发要改用哪支开火动画（`GunProp.SHOOT_ANIMATION`），没写时返回 `null`。
-     *
-     * 这个属性平时是 `null`：开火动画按物品从资源侧 `Animation.Fire` 解析，只有"某一种射击
-     * 换一支动画"才写它 —— 目前唯一来源是充能射击的 `ChargeAction.Override.ShootAnimation`。
-     *
-     * ⚠ 它读得到值，靠的是**开火窗口**：`event.stack` 就是 `shootClient` 判档用的那个栈
-     * （`ActiveGun.stackOf`），而 `postEvent` 是在 `handleClientShoot` 末尾**同步**发出的，
-     * 此刻那把枪的 `GunData` 上正挂着本次的充能档位（`GunData.setChargeAction`）。
-     * 窗口关掉之后再读就只是普通值（`null`），所以从别处补发这个事件不会误换动画。
+     * 本发要改用哪支开火动画（`GunProp.SHOOT_ANIMATION`），没写时返回 `null`
      */
     private fun shootAnimationOf(stack: ItemStack): String? {
         if (stack.isEmpty) return null

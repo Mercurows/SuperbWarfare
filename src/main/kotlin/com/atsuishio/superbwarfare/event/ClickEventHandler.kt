@@ -509,8 +509,7 @@ object ClickEventHandler {
             ClientEventHandler.usingLunge = true
         }
 
-        // 当前操控的枪：主手是普通枪时就是主手物品，副武器被切出来时就是那把副武器的合成栈。
-        // 下面的开火/换弹/音效全部读它 —— 这就是四期"不需要单独判断 subweapon"的落点（§9.8.3）。
+        // 当前操控的枪
         val gunStack = ActiveGun.stackOf(player)
         val item = gunStack.item as? GunItem ?: return
         if (!GunItem.isOperable(gunStack)) return

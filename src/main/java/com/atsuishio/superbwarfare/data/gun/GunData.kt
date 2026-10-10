@@ -67,57 +67,28 @@ import java.util.function.Function
 import kotlin.math.max
 import kotlin.math.min
 
-/**
- * Selects the magazine-level value, falling back to the last configured value
- * when the list is shorter than the requested level.
- */
 fun SingleOrList<Int>.atMagazineLevel(level: Int): Int {
     if (list.isEmpty()) return 0
     return list[level.coerceAtLeast(0).coerceAtMost(list.lastIndex)]
 }
 
-/**
- * Resolves the current magazine level from the installed attachment definition.
- * Level 0 is the no-attachment/original magazine state.
- */
 fun GunData.magazineLevel(): Int {
     val id = attachment.id(AttachmentType.MAGAZINE) ?: return 0
     return AttachmentDefinition.from(id)?.level?.coerceAtLeast(0) ?: 0
 }
 
-/**
- * Checks whether the current magazine level is one of the gun's configured `DrumLevels`.
- *
- * Drum magazines animate and reload differently from box magazines, so both the animation
- * selection and the [GunActionTimeline] picker branch on this. It reads the `DrumLevels`
- * gun property rather than the gun resource, because the resource is client-only and the
- * reload timeline also ticks on the server.
- */
 fun GunData.isDrumLevel(): Boolean {
     val levels = get(GunProp.DRUM_LEVELS).list
     return levels.isNotEmpty() && levels.contains(magazineLevel())
 }
 
-/**
- * Checks whether the installed muzzle attachment is configured as a silencer.
- */
 fun GunData.isBarrelSilenced(): Boolean {
     val id = attachment.id(AttachmentType.MUZZLE) ?: return false
     return AttachmentDefinition.from(id)?.isSilenced == true
 }
 
-/**
- * Extension function checking whether an [ItemStack] represents a valid gun item.
- *
- * @return `true` if the item is an instance of [GunItem].
- */
 fun ItemStack.isGunItem(): Boolean = this.item is GunItem
 
-/**
- * Converts an [ItemStack] to a [GunData] wrapper if applicable.
- *
- * @return [GunData] instance, or `null` if stack is not a gun.
- */
 fun ItemStack.toGunData(): GunData? = if (isGunItem()) from(this) else null
 
 /**
@@ -181,29 +152,19 @@ class GunData private constructor(
     val defaultDataId: StringValue
 
     /**
-     * 当前操控的是哪一把枪（四期，§9.8.1）：空 = 主武器，否则是副武器所在的槽位枚举名（`"SUBWEAPON"`）。
-     *
-     * 与 [defaultDataId] 同住枪械状态，因此随宿主枪持久化并同步到客户端。
-     * **只用服务端写**（`SubWeaponDeployMessage` 的 handler），客户端只读。
+     * 当前操控的是哪一把枪
      */
     @JvmField
     val activeSlot: StringValue
 
     /**
-     * [activeSlot] 指向的那把副武器所属**宿主枪**的 UUID（标准带连字符形式，与 `UUID.toString()` 一致）。
-     *
-     * 读取侧一律走 `ActiveGun.resolveDeployedSlot`，它在主武器 UUID 与这里不符时把这次部署视为作废。
+     * [activeSlot] 指向的那把副武器所属**宿主枪**的 UUID（标准带连字符形式，与 `UUID.toString()` 一致）
      */
     @JvmField
     val activeOwner: StringValue
 
     /**
-     * Monotonic revision of the persisted gun state.
-     *
-     * [persist] advances it whenever the persisted content actually changes. Together with [uuid] it
-     * lets [from] tell a *newer snapshot of the same gun* (vanilla replaced the client-side [ItemStack])
-     * apart from an unrelated stack such as a creative-mode copy — a copy carries an equal revision and
-     * must get its own instance. See [GunState.isNewerRevision] for the wraparound-safe comparison.
+     * Monotonic revision of the persisted gun state
      */
     val revision: Long
         get() = state.revision
@@ -240,12 +201,6 @@ class GunData private constructor(
     /**
      * Kotlin-side snapshot of this gun's persisted state — the single source of truth for every scalar
      * field declared below, for both reads and writes.
-     *
-     * In 1.20 there are no immutable data components: the storage is the mutable [CompoundTag] on the
-     * stack, and a write into that tag is immediately live *and* saved. [state] is therefore the
-     * decoded mirror of [gunDataTag]: [update] applies a change to it and then writes it straight back
-     * into the tag, and the lazily decoded value is dropped whenever the tag is re-read ([rebind]) so
-     * the mirror can never be observed half-updated or out of sync.
      */
     private var decodedState: GunState? = null
 

@@ -22,40 +22,17 @@ enum class GunAction {
     /** 近战：占用时长 = 本段动作的 `Duration` */
     MELEE,
 
-    /**
-     * 主/副武器切换：占用时长 = `max(两把枪的 DrawTime) + 余量`（四期，§9.8.8）。
-     *
-     * 占用期间**开火/换弹/近战/再次切换全部被拒**。占用由客户端在**服务端确认**后才释放
-     * （`SubWeaponClientHandler.onDeployed`），所以切换失败 / 报文丢失时有一个兜底超时，
-     * 否则这个锁会一直挂着（玩家会看到"什么都按不动"）。
-     */
+    /** 主/副武器切换：占用时长 = `max(两把枪的 DrawTime) + 余量` */
     SUB_WEAPON,
 }
 
 /**
- * `GunActionLock` —— 动作互斥层。
- *
- * 现状是"每类动作各自零散门禁"（`reloading()`/`charging()`/`bolt.actionTimer`），
- * **开火与近战之间是空的**：`fireCooldown` 是帧驱动的 Double、`gunMelee` 是纯 tick 的全局单例，
- * 于是"换弹时挥砍"、"挥砍时开火"这类边界都能穿过去。
- *
- * 这里补上一层统一的占用标记：进入任一动作前检查 [GunAction.NONE]，
- * 占用期间其它入口**不产生任何副作用**（副作用只在真正进入动作后发生）。
- *
- * **为什么是「客户端按枪隔离」而不是全局字段**：
- * - 旧实现 `gunMelee` 是全局单例且切枪不重置 → 切枪会拿新枪数据误触发一次攻击（缺陷 1）；
- * - 状态也不能放进 `GunState`：`GunState` 全部字段服务端权威，客户端只能 `updateLocal`，
- *   任何一次服务端同步都会冲掉客户端计数。
- *
- * 所以状态挂在**客户端本地、按枪身份（UUID）隔离**的 [WeakHashMap] 上：切枪天然互不影响，
- * 同一把枪的连招下标也能跟着走。
+ * 动作互斥层
  */
 object GunActionLock {
 
     /**
-     * 一把枪在客户端本地的动作状态。
-     *
-     * 不放进 [com.atsuishio.superbwarfare.data.gun.GunData]，也不写 NBT。
+     * 一把枪在客户端本地的动作状态
      */
     class State {
         /** 当前占用的动作 */
@@ -88,12 +65,6 @@ object GunActionLock {
         /** 是否有任何动作正在占用 */
         val isLocked: Boolean get() = activeAction != GunAction.NONE
 
-        /**
-         * [action] 这个入口现在是否该被别的动作挡住。
-         *
-         * **同一个动作不算阻塞自己**：连发/连挥期间会反复 acquire 同一个动作，
-         * 若把"自己"也算成占用，第二次就会永远进不来。
-         */
         fun blocks(action: GunAction): Boolean =
             activeAction != GunAction.NONE && activeAction != action
 
@@ -113,12 +84,6 @@ object GunActionLock {
             }
         }
 
-        /**
-         * 无条件占用 [action] 并把计时**重置**成 [ticks]。
-         *
-         * 用于"高频重复进入的同一个动作"（连发的射击周期）：用 [acquire] 的话
-         * 第二个射击周期会被自己的剩余占用挡住。
-         */
         fun force(action: GunAction, ticks: Int) {
             activeAction = action
             actionTicks = ticks.coerceAtLeast(1)
@@ -134,11 +99,6 @@ object GunActionLock {
             sinceLastMelee = 0
         }
 
-        /**
-         * 每 tick 递减。
-         *
-         * 归零时回 [GunAction.NONE]；近战结束的那一 tick 把 [sinceLastMelee] 归零开始计时。
-         */
         fun tick() {
             if (meleeTicks > 0) {
                 meleeTicks--
@@ -175,19 +135,6 @@ object GunActionLock {
     @JvmStatic
     fun of(stack: ItemStack): State = of(GunData.from(stack))
 
-    /**
-     * 切枪时清理**全局**层面的痕迹。
-     *
-     * 旧实现的 `gunMelee` 是全局单例、切枪不重置，会在切枪后拿新枪的数据误触发一次攻击。
-     * 现在状态按枪隔离，切枪不需要搬运任何东西——这里只负责把"上一把枪留下的动画时间轴"停掉。
-     */
-    @JvmStatic
-    fun onGunSwitched() {
-        // 状态本身按枪隔离，无需迁移；保留这个入口是为了让调用点语义清晰，
-        // 将来若有全局的动画/音效收尾需求也落在这里。
-    }
-
-    /** 仅供调试 / 重载资源时清空 */
     @JvmStatic
     fun clearAll() {
         states.clear()

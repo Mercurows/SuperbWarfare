@@ -107,8 +107,6 @@ object ActiveGun {
             return Deployed.Holstered(staleState = true)
         }
 
-        // ActiveOwner 是"这次部署属于哪把枪"的显式约束（§9.8.1）。
-        // 主武器 UUID 与它不符 → 状态是从别的枪上搬过来的/被复制过，作废。
         val owner = gun.activeOwner.get()
         val self = gun.uuid?.toString()
         if (owner.isNotEmpty() && (self == null || !owner.equals(self, ignoreCase = true))) {

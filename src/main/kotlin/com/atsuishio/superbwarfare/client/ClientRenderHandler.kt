@@ -180,7 +180,6 @@ object ClientRenderHandler {
     @SubscribeEvent
     fun registerTooltip(event: RegisterClientTooltipComponentFactoriesEvent) {
         event.register(GunImageComponent::class.java) { ClientGunImageTooltip(it) }
-        event.register(BocekImageComponent::class.java) { ClientBocekImageTooltip(it) }
         event.register(CellImageComponent::class.java) { ClientCellImageTooltip(it) }
         event.register(SentinelImageComponent::class.java) { ClientSentinelImageTooltip(it) }
         event.register(ChargingStationImageComponent::class.java) { ClientChargingStationImageTooltip(it) }
