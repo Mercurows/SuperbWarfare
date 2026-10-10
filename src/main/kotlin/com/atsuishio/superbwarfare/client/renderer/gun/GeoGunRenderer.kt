@@ -105,6 +105,8 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     // 当前正在渲染的本地玩家第一人称手
     private var localFirstPersonHand: InteractionHand? = null
 
+    private val defaultItemDisplay = ItemDisplayInfo()
+
     private data class ScopeViewSmoothState(
         var modeIndex: Int = -1,
         var source: Matrix4f = Matrix4f(),
@@ -252,6 +254,9 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             applyItemDisplayTransform(poseStack, display)
         }
         super.beforeRender(poseStack, transformType, stack, partialTick)
+        if (usesModelBone) {
+            applyItemDisplayScale(poseStack, display ?: defaultItemDisplay)
+        }
     }
 
     override fun updateParticleEmitterTransforms(
@@ -2432,6 +2437,11 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
         val scale = display.scale
         poseStack.scale(scale[0], scale[1], scale[2])
+    }
+
+    open fun applyItemDisplayScale(poseStack: PoseStack, display: ItemDisplayInfo) {
+        val scale = display.scale
+        poseStack.scale(scale.x, scale.y, scale.z)
     }
 
     open fun positioningBone(transformType: ItemDisplayContext): String? {
