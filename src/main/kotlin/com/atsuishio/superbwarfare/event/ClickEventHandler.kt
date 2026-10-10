@@ -333,6 +333,12 @@ object ClickEventHandler {
             if (key == ModKeyMappings.DEPLOY_WEAPON.key.value) {
                 sendPacketToServer(DeployWeaponMessage)
             }
+            // 部署状态下按跳跃/潜行键直接解除部署，效果等同再按一次部署键
+            if ((key == mc.options.keyJump.key.value || key == mc.options.keyShift.key.value)
+                && DeployedWeaponHandler.isDeployed(player)
+            ) {
+                sendPacketToServer(DeployWeaponMessage)
+            }
             if (key == ModKeyMappings.INTERACT.key.value) {
                 // 手持副武器时按普通物品处理
                 if (GunItem.isHeldWeapon(stack)) {
