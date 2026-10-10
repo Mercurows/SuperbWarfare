@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.tools.SoundTool
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.damagesource.DamageSource
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
@@ -65,7 +66,6 @@ object ShieldRuntime {
 
         fun maxCharge(): Double = info.durability
 
-        /** 把超出上限的耐久夹回去，返回夹取后的值（数据包改小了 `Durability` 时才用得上） */
         fun sync(): Double {
             val max = maxCharge()
             if (charge <= max) return charge
@@ -91,9 +91,6 @@ object ShieldRuntime {
         return of(GunData.from(stack))
     }
 
-    /**
-     * 判定用的位置：投射物这一 tick 的位移线段 `[from, from + travel]` 上离眼睛最近的点
-     */
     @JvmStatic
     fun coverPoint(entity: LivingEntity, travel: Vec3, from: Vec3): Vec3 {
         val lenSqr = travel.lengthSqr()
@@ -104,9 +101,6 @@ object ShieldRuntime {
         return from.add(travel.scale(t.coerceIn(0.0, 1.0)))
     }
 
-    /**
-     * 这一发是否落在 [entity] 视线的防护锥内
-     */
     @JvmStatic
     fun inCover(entity: LivingEntity, shield: Instance, travel: Vec3, from: Vec3): Boolean {
         val axis = entity.getViewVector(1f)
@@ -118,20 +112,22 @@ object ShieldRuntime {
         return axis.normalize().dot(to.normalize()) >= shield.info.coverCos()
     }
 
-    /** 投射物这一 tick 的位移，也是"反推 1 tick 的起点"的依据 */
     @JvmStatic
-    fun travelOf(source: DamageSource): Vec3 {
-        val projectile = source.directEntity ?: return Vec3.ZERO
-        return projectile.position().subtract(projectile.xo, projectile.yo, projectile.zo)
-    }
+    fun travelAt(entity: Entity): Vec3 = entity.position().subtract(entity.xo, entity.yo, entity.zo)
 
-    /** 从伤害来源推出投射物的"上一 tick 位置"；取不到时退回射手位置 */
+    @JvmStatic
+    fun originAt(entity: Entity): Vec3 = Vec3(entity.xo, entity.yo, entity.zo)
+
+    @JvmStatic
+    fun travelOf(source: DamageSource): Vec3 =
+        source.directEntity?.let { travelAt(it) } ?: Vec3.ZERO
+
     @JvmStatic
     fun originOf(source: DamageSource): Vec3? {
         val projectile = source.directEntity
         if (projectile != null) {
-            val travel = travelOf(source)
-            if (travel.lengthSqr() > 1.0E-6) return projectile.position().subtract(travel)
+            val travel = travelAt(projectile)
+            if (travel.lengthSqr() > 1.0E-6) return originAt(projectile)
         }
 
         return source.entity?.position()

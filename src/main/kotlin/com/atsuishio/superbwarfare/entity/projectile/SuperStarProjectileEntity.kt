@@ -7,10 +7,10 @@ import com.atsuishio.superbwarfare.init.ModParticleTypes
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.tools.ParticleTool
+import com.atsuishio.superbwarfare.tools.VectorTool.randomSpreadVec
 import com.atsuishio.superbwarfare.tools.forceHurt
 import com.atsuishio.superbwarfare.tools.plus
 import com.atsuishio.superbwarfare.tools.sendPacket
-import com.atsuishio.superbwarfare.tools.VectorTool.randomSpreadVec
 import com.atsuishio.superbwarfare.world.phys.ExtendedEntityRayTraceResult
 import net.minecraft.core.BlockPos
 import net.minecraft.server.level.ServerLevel
@@ -72,6 +72,10 @@ open class SuperStarProjectileEntity(type: EntityType<out SuperStarProjectileEnt
     override fun afterHitEntity(result: EntityHitResult) {
         if (result !is ExtendedEntityRayTraceResult) return
         this.hitAndSlash(result.entity, result.headshot)
+    }
+
+    override fun afterShieldBlock(result: EntityHitResult) {
+        this.currentTarget = null
     }
 
     @JvmOverloads

@@ -18,6 +18,7 @@ import com.atsuishio.superbwarfare.entity.projectile.IBulletProperties.Companion
 import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ShieldHandler
+import com.atsuishio.superbwarfare.event.ShieldRuntime
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeGunFireAbsoluteDamage
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeGunFireDamage
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeGunFireHeadshotAbsoluteDamage
@@ -672,6 +673,12 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
 
         this.damageValue *= (deltaMovement.length() / velocityValue).coerceIn(0.0, 1.0).toFloat()
 
+        this.damageValue -= shieldAbsorb(entity, result.location, this.damageValue)
+        if (this.damageValue <= 0f) {
+            this.afterShieldBlock(result)
+            return
+        }
+
         val shooter = this.owner
         if (headshot) {
             if (shooter is ServerPlayer) {
@@ -738,18 +745,30 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
             }
         }
 
+        this.afterHitEntity(result)
+    }
+
+    open fun afterHitEntity(result: EntityHitResult) {
+        this.causeImpact(result.location)
+        this.discard()
+    }
+
+    open fun afterShieldBlock(result: EntityHitResult) {
+        this.causeImpact(result.location)
+        this.discard()
+    }
+
+    private fun causeImpact(location: Vec3) {
         if (this.explosionDamageValue > 0) {
             CustomExplosion.Builder(this)
-                .attacker(shooter)
+                .attacker(this.owner)
                 .damage(this.explosionDamageValue)
                 .radius(this.explosionRadiusValue)
-                .position(result.location)
+                .position(location)
                 .beast(this.isBeast())
                 .destroyBlock(this.explosionDestroyValue)
                 .explode()
         }
-
-        this.discard()
     }
 
     open fun shoot(living: LivingEntity?, vecX: Double, vecY: Double, vecZ: Double, velocity: Float, spread: Float) {
@@ -778,12 +797,10 @@ open class ProjectileEntity(entityType: EntityType<out ProjectileEntity>, level:
         this.xRotO = this.xRot
     }
 
-    /** 命中枪盾时在命中点溅一次火花；判定本身在 `ShieldHandler` 的事件层 */
     private fun hitShield(target: LivingEntity, pos: Vec3) {
-        // 反推 1 tick 的位置，与 `ShieldHandler` 用同一套来向口径
-        val travel = position().subtract(xo, yo, zo)
+        val travel = ShieldRuntime.travelAt(this)
         if (travel.lengthSqr() < 1.0E-6) return
-        if (!ShieldHandler.willCover(target, travel, position().subtract(travel))) return
+        if (!ShieldHandler.willCover(target, travel, ShieldRuntime.originAt(this))) return
 
         val level = this.level() as? ServerLevel ?: return
         val now = level.gameTime

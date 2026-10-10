@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.entity.projectile
 
+import com.atsuishio.superbwarfare.event.ShieldHandler
 import com.atsuishio.superbwarfare.init.ModDamageTypes.causeShockDamage
 import com.atsuishio.superbwarfare.init.ModMobEffects
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -59,6 +60,16 @@ open class TaserBulletEntity(type: EntityType<out TaserBulletEntity>, level: Lev
         val entity = result.entity
         val owner = this.owner
         if (owner != null && owner.vehicle != null && entity == owner.vehicle) return
+
+        val victim = entity as? LivingEntity
+        if (victim != null) {
+            this.damage -= ShieldHandler.deflect(victim, this, result.location, this.damage)
+            if (this.damage <= 0f) {
+                this.discard()
+                return
+            }
+        }
+
         if (owner is ServerPlayer) {
             owner.level()
                 .playSound(null, owner.blockPosition(), ModSounds.INDICATION.get(), SoundSource.VOICE, 1f, 1f)

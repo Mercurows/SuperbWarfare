@@ -460,6 +460,12 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
             }
         }
 
+        this.damageValue -= shieldAbsorb(entity, result.location, this.damageValue)
+        if (this.damageValue <= 0f) {
+            this.afterShieldBlock(result)
+            return
+        }
+
         val shooter = this.owner
         if (headshot) {
             if (shooter is ServerPlayer) {
@@ -536,11 +542,20 @@ abstract class FastThrowableProjectile : ThrowableItemProjectile, IFastMotionSyn
     }
 
     open fun afterHitEntity(result: EntityHitResult) {
-        if (this.explosionDamageValue > 0) {
-            this.causeExplode(result.location, DEFAULT_SPLIT_AXIS)
-            this.causeRangedEffects(result.location)
-        }
+        this.causeImpact(result.location)
         this.discard()
+    }
+
+    open fun afterShieldBlock(result: EntityHitResult) {
+        this.causeImpact(result.location)
+        this.discard()
+    }
+
+    private fun causeImpact(location: Vec3) {
+        if (this.explosionDamageValue > 0) {
+            this.causeExplode(location, DEFAULT_SPLIT_AXIS)
+            this.causeRangedEffects(location)
+        }
     }
 
     open fun afterHitBlock(result: BlockHitResult) {
