@@ -11,6 +11,10 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:charm_mrahc"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_experience_bottle"
         }
       ],
       "rolls": 1.0

@@ -480,6 +480,7 @@ class ModCustomLootProvider : LootTableSubProvider {
                     1,
                     ModItems.CHARM_SENPAI,
                     ModItems.CHARM_MRAHC,
+                    ModItems.CHARM_EXPERIENCE_BOTTLE,
                 )
             }
         }

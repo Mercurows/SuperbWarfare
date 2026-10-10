@@ -1,0 +1,20 @@
+{
+  "Slot": "Charm",
+  "Model": "superbwarfare:models/bedrock/attachment/charm_experience_bottle.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/charm_experience_bottle.png",
+  "Charm": {
+    "LateralAngle": 15.0
+  },
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 0.05
+    },
+    {
+      "Prop": "ExpMultiplier",
+      "Op": "Mul",
+      "Value": 1.15
+    }
+  ]
+}

@@ -637,6 +637,7 @@ class ModItemTagProvider(
             ModItems.CHARM_CRYSTAL_POPCORN,
             ModItems.CHARM_SENPAI,
             ModItems.CHARM_MRAHC,
+            ModItems.CHARM_EXPERIENCE_BOTTLE,
             ModItems.CHARM_CHIRAM_CORE,
             ModItems.CHARM_LILY,
             ModItems.CHARM_HIRU_HEAD
