@@ -802,6 +802,7 @@
   "des.superbwarfare.charm_hiru_head": "某不明生物的头，非常大",
   "item.superbwarfare.milencer": "弥音器",
   "item.superbwarfare.standard_gun_shield": "基础枪盾",
+  "item.superbwarfare.handgun_shield": "手枪枪盾",
 
   "death.attack.gunfire": "%1$s被%2$s射爆了",
   "death.attack.gunfire.entity": "%1$s被%2$s射爆了",

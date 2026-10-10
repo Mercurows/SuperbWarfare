@@ -6,6 +6,11 @@
       "Prop": "MaxEnergy",
       "Op": "Add",
       "Value": 10000
+    },
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 1.0
     }
   ],
   "Model": "superbwarfare:models/bedrock/attachment/standard_gun_shield.geo.json",

@@ -643,7 +643,8 @@ class ModItemTagProvider(
         AttachmentType.LOWER_RAIL to listOf(
             ModItems.LOWER_RAIL_BIPOD,
             ModItems.PEQ_15,
-            ModItems.PISTOL_LASER
+            ModItems.PISTOL_LASER,
+            ModItems.HANDGUN_SHIELD
         ),
         AttachmentType.UPPER_RAIL to listOf(
             ModItems.PEQ_15,

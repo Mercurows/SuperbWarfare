@@ -738,6 +738,7 @@ object ModItems {
     // UpperRail
     // @formatter:off
     @JvmField val STANDARD_GUN_SHIELD = registerAttachment("standard_gun_shield")
+    @JvmField val HANDGUN_SHIELD = registerAttachment("handgun_shield")
     @JvmField val PEQ_15 = registerAttachment("peq_15")
     // @formatter:on
 
