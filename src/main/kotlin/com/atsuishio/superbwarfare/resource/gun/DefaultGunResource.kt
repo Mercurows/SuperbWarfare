@@ -99,8 +99,8 @@ class DefaultGunResource : IDBasedData<DefaultGunResource> {
     var animation: GunAnimation? = GunAnimation()
 
     @JvmField
-    @SerialName("UseOldHandRenderer")
-    var useOldHandRenderer: Boolean = false
+    @SerialName("HasReflectionSound")
+    var hasReflectionSound: Boolean = true
 
     @JvmField
     @SerialName("FlarePosition")

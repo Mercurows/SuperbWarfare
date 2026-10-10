@@ -243,7 +243,7 @@ class ModSoundProvider(output: PackOutput, existingFileHelper: ExistingFileHelpe
         // -------------------- gun/bocek --------------------
         group(
             "gun/bocek", "bocek_zoom_fire_1p", "bocek_zoom_fire_3p", "bocek_shatter_cap_fire_1p",
-            "bocek_shatter_cap_fire_3p", "bocek_pull_1p", "bocek_pull_3p",
+            "bocek_shatter_cap_fire_3p", "bocek_start_pull", "bocek_pulling", "bocek_full_pull",
         )
 
         // -------------------- gun/devotion --------------------

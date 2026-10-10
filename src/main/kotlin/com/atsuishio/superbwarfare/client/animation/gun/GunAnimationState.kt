@@ -16,8 +16,7 @@ enum class GunAnimationState(val playType: AnimationPlayType) {
     FINISH(AnimationPlayType.PLAY_ONCE_HOLD),
     MELEE(AnimationPlayType.PLAY_ONCE_HOLD),
     FIRE(AnimationPlayType.PLAY_ONCE_STOP),
-    CHARGE(AnimationPlayType.PLAY_ONCE_HOLD),
-    RUN(AnimationPlayType.LOOP);
+    CHARGE(AnimationPlayType.PLAY_ONCE_HOLD);
 
     val isReload: Boolean
         get() = this == RELOAD ||

@@ -64,7 +64,7 @@ object PlayerEventHandler {
         val stack = player.mainHandItem
         val data = GunData.from(stack)
 
-        if ((stack.`is`(ModItems.RPG.get()) || stack.`is`(ModItems.BOCEK.get())) && data.hasEnoughAmmoToShoot(player)) {
+        if (data.hasEnoughAmmoToShoot(player)) {
             data.isEmpty.set(false)
         }
     }

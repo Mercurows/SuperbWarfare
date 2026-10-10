@@ -2,7 +2,6 @@ package com.atsuishio.superbwarfare.client.animation.gun
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.animation.AnimationPlayType
-import com.atsuishio.superbwarfare.client.animation.gun.GeoGunAnimationInstance.Companion.CHARGE_CANCEL_FADE_TICKS
 import com.atsuishio.superbwarfare.client.gun.MeleeClientHandler
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.ActiveGun
@@ -23,14 +22,17 @@ import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.Part
 import com.maydaymemory.mae.basic.*
 import com.maydaymemory.mae.blend.*
 import com.maydaymemory.mae.control.runner.*
+import com.maydaymemory.mae.util.MathUtil
 import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundSource
+import net.minecraft.util.Mth
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.item.ItemStack
 import org.joml.Quaternionf
+import org.joml.Vector3f
 import java.util.*
 
 open class GeoGunAnimationInstance(
@@ -68,6 +70,20 @@ open class GeoGunAnimationInstance(
      * 循环开火层现在亮到几成（0..1）
      */
     private var fireLoopPower = 0f
+
+    // 自定义奔跑层（`Animation.Run`）runner
+    private var customSprintRunner: AnimationRunner? = null
+
+    /** 已经解析好的自定义奔跑片段 */
+    private var customSprintAnimation: BedrockAnimation? = null
+
+    /**
+     * 自定义奔跑层现在亮到几成（0..1）。**位移与旋转各一条**：程序性奔跑的姿势权重本来就是两档
+     * （位移入 0.8、旋转入 0.3，见 [ClientEventHandler.sprintEaseAlpha]），只给一条权重的话
+     * 总有一边差两倍多。
+     */
+    private var customSprintPosPower = 0f
+    private var customSprintRotPower = 0f
 
     // 蓄力层 runner
     private var chargeRunner: AnimationRunner? = null
@@ -146,7 +162,8 @@ open class GeoGunAnimationInstance(
     }
 
     private fun resolveState(): GunAnimationState? {
-        val player = localPlayer ?: return null
+        // 没有本地玩家（还没进世界）就没有主武器动画
+        if (localPlayer == null) return null
         val animation = GunResource.compute(stack).animation ?: return null
         val data = GunData.from(stack)
 
@@ -173,16 +190,26 @@ open class GeoGunAnimationInstance(
         }
 
         if (animation.melee != null && ClientEventHandler.isGunMeleeActive(stack)) return GunAnimationState.MELEE
-        if (animation.run != null
-            && player.isSprinting
-            && player.onGround()
-            && ClientEventHandler.noSprintTicks == 0f
-            && ClientEventHandler.drawTime < 0.01
-        ) {
-            return GunAnimationState.RUN
-        }
 
         return if (animation.idle != null) GunAnimationState.IDLE else null
+    }
+
+    /**
+     * 这一帧要不要把**自定义奔跑动画**（`Animation.Run`）亮起来。
+     *
+     * 判据就是它以前当基础状态时的判据（见 [GunAnimationState] 的旧 `RUN`）：
+     * 在跑、在地面上、没被"禁止冲刺"压住、也没在掏枪。另外它现在是一条**层**，
+     * 得有个基础状态垫着 —— 所以还要求解析出来的是 `Idle`；换弹/近战/改装那些
+     * 本来就把 `Run` 挤掉的状态照旧挤掉，只是改成了**缓出**而不是硬切。
+     */
+    private fun wantsCustomSprint(target: GunAnimationState?, animation: GunAnimation?): Boolean {
+        val player = localPlayer ?: return false
+        if (animation?.run == null) return false
+        if (target != GunAnimationState.IDLE) return false
+        return player.isSprinting
+                && player.onGround()
+                && ClientEventHandler.noSprintTicks == 0f
+                && ClientEventHandler.drawTime < 0.01
     }
 
     /**
@@ -528,7 +555,6 @@ open class GeoGunAnimationInstance(
             GunAnimationState.MELEE -> resolveMeleeName()
             GunAnimationState.FIRE -> animation.fire
             GunAnimationState.CHARGE -> animation.charge
-            GunAnimationState.RUN -> animation.run
         }
     }
 
@@ -1125,6 +1151,127 @@ open class GeoGunAnimationInstance(
         setAnimationSpeed(spinRunner?.state, speed)
     }
 
+    // ── 自定义奔跑层（`Animation.Run`）──────────────────────────────────────────
+
+    /**
+     * 推进自定义奔跑层。
+     *
+     * 它是**层**不是基础状态：以前 `Run` 是个状态，进/出都是硬切 —— 0.6 秒一个周期的摆动会
+     * 在半途"啪"地开始/停住。现在基础状态始终是 `Idle`，它按权重混上去，权重沿
+     * [ClientEventHandler.sprintEaseAlpha] 的速率缓入缓出，和 [ClientEventHandler.handleWeaponMove]
+     * 里程序性奔跑那六个 `sprintBasic*` 同源（连"重枪入得慢、出得快"都是同一套系数）。
+     *
+     * 它只 key `root`（枪身），手是钉死的，所以混上去不会动到手臂锚点。
+     *
+     * @return 是否**新建**了 runner（新建的这一帧不能再 tick，否则同一帧走两步）
+     */
+    private fun updateCustomSprint(animation: GunAnimation?, active: Boolean): Boolean {
+        val clip = animation?.run?.let(animations::get)
+        if (clip == null) {
+            clearCustomSprint()
+            return false
+        }
+
+        val runner = customSprintRunner
+        if (runner == null) {
+            if (!active) {
+                clearCustomSprint()
+                return false
+            }
+            customSprintAnimation = clip
+            val newRunner = AnimationRunner(clip, AnimationContext(clip.specifiedEndTimeS))
+            newRunner.state = AnimationPlayType.LOOP.state()
+            customSprintRunner = newRunner
+            return true
+        }
+
+        // 资源重载换了片段：权重留在原地，只换 runner（不然重载那一帧姿势会跳）
+        if (customSprintAnimation !== clip) {
+            customSprintAnimation = clip
+            val newRunner = AnimationRunner(clip, AnimationContext(clip.specifiedEndTimeS))
+            newRunner.state = AnimationPlayType.LOOP.state()
+            customSprintRunner = newRunner
+            return true
+        }
+
+        updateCustomSprintPower(active)
+        return false
+    }
+
+    private fun updateCustomSprintPower(active: Boolean) {
+        // 和 `handleWeaponMove` 的 `customWeight` 取**同一个来源**（`ActiveGun.handlingData`
+        // 兜底才轮到手上这把枪），不然两边的缓动速率会差一个重量档
+        val data = GunData.from(stack)
+        val weight = (localPlayer?.let { ActiveGun.handlingData(it) } ?: data)
+            .get(GunProp.WEIGHT)
+            .coerceIn(1.0, 50.0)
+        val times = ClientEventHandler.sprintEaseTimes(Minecraft.getInstance().deltaFrameTime)
+        val rotBase =
+            if (active) ClientEventHandler.SPRINT_EASE_ROT_IN else ClientEventHandler.SPRINT_EASE_ROT_OUT
+        val posBase =
+            if (active) ClientEventHandler.SPRINT_EASE_POS_IN else ClientEventHandler.SPRINT_EASE_POS_OUT
+        val target = if (active) 1f else 0f
+
+        customSprintRotPower = Mth.lerp(
+            ClientEventHandler.sprintEaseAlpha(rotBase, times, weight, active).toFloat(),
+            customSprintRotPower,
+            target
+        )
+        customSprintPosPower = Mth.lerp(
+            ClientEventHandler.sprintEaseAlpha(posBase, times, weight, active).toFloat(),
+            customSprintPosPower,
+            target
+        )
+
+        // lerp 是渐近的，永远到不了 0；退到看不见就收层（[CUSTOM_SPRINT_MIN_POWER] 时残留不到千分之一）
+        if (!active
+            && customSprintRotPower <= CUSTOM_SPRINT_MIN_POWER
+            && customSprintPosPower <= CUSTOM_SPRINT_MIN_POWER
+        ) {
+            clearCustomSprint()
+        }
+    }
+
+    private fun tickCustomSprint(started: Boolean) {
+        if (started) return
+        customSprintRunner?.tick()
+    }
+
+    private fun clearCustomSprint() {
+        customSprintRunner = null
+        customSprintAnimation = null
+        customSprintPosPower = 0f
+        customSprintRotPower = 0f
+    }
+
+    /**
+     * 把自定义奔跑层按 [customSprintPosPower] / [customSprintRotPower] 混到 [lowerPose] 上。
+     *
+     * 位移和旋转**分开给权重**：程序性奔跑那边位移本来就比旋转先到位（见
+     * [ClientEventHandler.SPRINT_EASE_POS_IN] / [ClientEventHandler.SPRINT_EASE_ROT_IN]），
+     * 一条权重总有一边差两倍多。
+     */
+    private fun applyCustomSprint(lowerPose: Pose): Pose {
+        val runner = customSprintRunner ?: return lowerPose
+        val posWeight = customSprintPosPower
+        val rotWeight = customSprintRotPower
+        if (posWeight <= 0f && rotWeight <= 0f) return lowerPose
+
+        val sprintPose = runner.evaluate()
+        return CROSSFADE_BLENDER.combine(lowerPose, sprintPose) { lower, sprint ->
+            if (sprint.boneIndex() < 0) lower
+            else TRANSFORM_FACTORY.createBoneTransform(
+                maxOf(lower.boneIndex(), sprint.boneIndex()),
+                lower.translation().lerp(sprint.translation(), posWeight, Vector3f()),
+                // 旋转和缩放走旋转那一档：这条片段里它们本来就是同一个节奏（`righthand` 的 1.6 倍缩放）
+                MathUtil.nlerpShortestPath(
+                    lower.rotation().asQuaternion(), sprint.rotation().asQuaternion(), rotWeight
+                ),
+                lower.scale().lerp(sprint.scale(), rotWeight, Vector3f())
+            )
+        }
+    }
+
     /**
      * 把蓄力层按 [chargePower]**交叉淡出**到 [lowerPose] 上（[applyFireLoop] 的蓄力版）。
      *
@@ -1252,6 +1399,7 @@ open class GeoGunAnimationInstance(
             // 留着只会让下次亮起来时从一个旧权重接着走
             clearFireLoopRunner()
             clearChargeRunner()
+            clearCustomSprint()
             currentState = null
             pendingParticles.clear()
             cachedPose = DummyPose.INSTANCE
@@ -1345,6 +1493,7 @@ open class GeoGunAnimationInstance(
         tickSpinRunner(updateSpinRunner(data, animation))
         tickFireLoopRunner(updateFireLoopRunner(animation))
         tickChargeRunner(updateChargeRunner(animation, firedThisFrame))
+        tickCustomSprint(updateCustomSprint(animation, wantsCustomSprint(target, animation)))
 
         if (hand == InteractionHand.MAIN_HAND) {
             updateSubWeaponReload()
@@ -1364,10 +1513,19 @@ open class GeoGunAnimationInstance(
         collectSoundEvents(holdOpenRunner)
         collectSoundEvents(closeStrikeRunner)
         collectSoundEvents(subWeaponReloadRunner)
+        // 蓄力层也是一条独立的时间轴，`sound_effects` 得跟着一起收，不然枪的蓄力动画里
+        // 写的时间轴音效永远不响
+        collectSoundEvents(chargeRunner)
 
         if (fireLoopPower > 0f) {
             collectParticleEvents(fireLoopRunner)
             collectSoundEvents(fireLoopRunner)
+        }
+
+        // 自定义奔跑层只在亮着的时候收事件（它跟循环开火层一样是 loop 片段）
+        if (customSprintRunner != null && (customSprintPosPower > 0f || customSprintRotPower > 0f)) {
+            collectParticleEvents(customSprintRunner)
+            collectSoundEvents(customSprintRunner)
         }
 
         if (fireRunner?.state is StopState) {
@@ -1381,7 +1539,9 @@ open class GeoGunAnimationInstance(
                         // 蓄力层压在基础状态上、垫在开火层下面：它只 key `root`（枪身），
                         // 手部锚点仍由基础状态的 `Idle` 给，两者合起来才是"枪在手里抖"。
                         // 它是按权重交叉淡出出来的，所以基础状态单独先合一次。
-                        applyCharge(runner?.evaluate() ?: DummyPose.INSTANCE),
+                        // 自定义奔跑层在最底下（`Idle` 之上、其余层之下）：蓄力/开火那类"正在做动作"
+                        // 的层要压得住它，而它自己得盖住 `Idle` 的枪身。
+                        applyCharge(applyCustomSprint(runner?.evaluate() ?: DummyPose.INSTANCE)),
                         fireModeRunner?.evaluate() ?: DummyPose.INSTANCE,
                         closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE,
                         spinRunner?.evaluate() ?: DummyPose.INSTANCE
@@ -1443,6 +1603,7 @@ open class GeoGunAnimationInstance(
             clearSpinRunner()
             clearFireLoopRunner()
             clearChargeRunner()
+            clearCustomSprint()
             pendingParticles.clear()
             loadAnimations()
         }
@@ -1466,6 +1627,7 @@ open class GeoGunAnimationInstance(
         clearSpinRunner()
         clearFireLoopRunner()
         clearChargeRunner()
+        clearCustomSprint()
         currentState = null
         fireSerial = 0
         consumedFireSerial = 0
@@ -1500,6 +1662,14 @@ open class GeoGunAnimationInstance(
 
         /** 一秒的 tick 数：数据里的秒（`FireLoopFadeIn` 这类）换算成缓动要的 tick */
         private const val TICKS_PER_SECOND = 20f
+
+        /**
+         * 自定义奔跑层退到这个权重以下就收掉。
+         *
+         * 权重是渐近的 lerp，永远到不了 0；这条片段满权重也就 ±10° / 0.19 格，千分之一
+         * （0.01° / 0.0002 格）已经看不见了。
+         */
+        private const val CUSTOM_SPRINT_MIN_POWER = 0.001f
 
         private val TRANSFORM_FACTORY: BoneTransformFactory = ZYXBoneTransformFactory()
 

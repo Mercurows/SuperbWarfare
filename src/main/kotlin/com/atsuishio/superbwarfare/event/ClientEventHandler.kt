@@ -168,6 +168,55 @@ object ClientEventHandler {
     @JvmField
     var sprintBasicPosZ: Double = 0.0
 
+    // ── 奔跑姿势的缓入缓出速率 ────────────────────────────────────────────────
+    //
+    // 程序性奔跑（[handleWeaponMove] 里那六个 `sprintBasic*`）和枪模型**自带**的奔跑动画
+    // （`GeoGunAnimationInstance` 的 `Animation.Run` 层）共用这一组数字：前者把姿势乘上权重、
+    // 后者拿权重去混合两套姿势，速率同源两边才对得上。改这里就是两边一起改。
+    //
+    // 入（摆出奔跑姿势）按 `(重量 + 4)` 缩放、出（收回）按重量缩放 —— 重的枪入得慢、出得快，
+    // 这是手感。旋转、位移各一档，Y 轴比 X/Z 慢一档；动画层每个通道只有一条权重，取的是 X/Z 那档。
+
+    /** 旋转入：X/Z 用这档，Y 用 [SPRINT_EASE_ROT_Y_IN] */
+    const val SPRINT_EASE_ROT_IN = 0.3f
+    const val SPRINT_EASE_ROT_Y_IN = 0.18f
+
+    /** 位移入：X/Z 用这档，Y 用 [SPRINT_EASE_POS_Y_IN] */
+    const val SPRINT_EASE_POS_IN = 0.8f
+    const val SPRINT_EASE_POS_Y_IN = 0.25f
+
+    /** 旋转出 */
+    const val SPRINT_EASE_ROT_OUT = 1.4f
+    const val SPRINT_EASE_ROT_Y_OUT = 0.96f
+
+    /** 位移出（三轴同速） */
+    const val SPRINT_EASE_POS_OUT = 0.8f
+
+    /** 缓动的时间尺度：`3.7 * deltaFrameTime` */
+    const val SPRINT_EASE_TIMES = 3.7f
+
+    /** 单帧 delta 的上限（tick）：掉帧时不要一步跳完 */
+    const val SPRINT_EASE_MAX_DELTA_TICKS = 0.8f
+
+    /**
+     * 奔跑姿势缓动的时间尺度：`3.7 * deltaFrameTime`，单帧 delta 钳在 [SPRINT_EASE_MAX_DELTA_TICKS] 里。
+     */
+    @JvmStatic
+    fun sprintEaseTimes(deltaFrameTime: Float): Float =
+        SPRINT_EASE_TIMES * deltaFrameTime.coerceAtMost(SPRINT_EASE_MAX_DELTA_TICKS)
+
+    /**
+     * 奔跑姿势**每帧**的插值系数（配合 `Mth.lerp` 用）。
+     *
+     * [entering] 为真（摆出奔跑姿势）时按 `(重量 + 4)` 缩放、为假（收回）时按重量缩放。
+     * `base` 取上面那一组 `SPRINT_EASE_*`。
+     *
+     * 返回 `Double`：程序性奔跑那六个 `sprintBasic*` 就是 `Double`，直接喂 `Mth.lerp` 不用转换。
+     */
+    @JvmStatic
+    fun sprintEaseAlpha(base: Float, times: Float, weight: Double, entering: Boolean): Double =
+        base.toDouble() * times / (if (entering) weight + 4.0 else weight)
+
     @JvmField
     var movePosHorizon: Double = 0.0
 
@@ -2033,7 +2082,7 @@ object ClientEventHandler {
         // 主手不是枪时什么都不播；部署中的副武器走的是同一条链路（§9.8.3）
         if (item == null || !GunItem.isOperable(stack)) return
         val data = GunData.from(stack)
-        playGunFire1PSound(player, data)
+        playGunFire1PSound(player, data, stack)
 
         val shooterHeight = player.eyePosition.distanceTo(
             (Vec3.atLowerCornerOf(
@@ -2087,8 +2136,8 @@ object ClientEventHandler {
     }
 
     @JvmStatic
-    fun playGunFire1PSound(player: Player, data: GunData) {
-        for (sound in data.item.resolveFire1PSounds(data)) {
+    fun playGunFire1PSound(player: Player, data: GunData, stack: ItemStack) {
+        for (sound in data.item.resolveFire1PSounds(data, stack)) {
             player.playSound(sound.sound, sound.volume, sound.pitch)
         }
     }
@@ -2391,7 +2440,7 @@ object ClientEventHandler {
         val data = GunData.from(stack)
         val resource = GunResource.compute(stack)
 
-        val times = 3.7f * getDelta().coerceAtMost(0.8f)
+        val times = sprintEaseTimes(getDelta())
         val moveSpeed = entity.deltaMovement.horizontalDistance()
         val animSpeed =
             if (entity.onGround()) {
@@ -2416,21 +2465,30 @@ object ClientEventHandler {
                 }
 
             if (entity.isSprinting && !data.reloading() && (firePosTimer == 0.0 || firePosTimer > 1.0) && !ModKeyMappings.FIRE.isDown && zoomTime < 0.99 && !isGunMeleeActive(stack)) {
-                sprintBasicRotX = Mth.lerp(0.3f * times / (customWeight + 4), sprintBasicRotX, 1.0).coerceIn(0.0, 1.0)
-                sprintBasicRotY = Mth.lerp(0.18f * times / (customWeight + 4), sprintBasicRotY, 1.0).coerceIn(0.0, 1.0)
-                sprintBasicRotZ = Mth.lerp(0.3f * times / (customWeight + 4), sprintBasicRotZ, 1.0).coerceIn(0.0, 1.0)
+                val rotEase = sprintEaseAlpha(SPRINT_EASE_ROT_IN, times, customWeight, true)
+                val rotYEase = sprintEaseAlpha(SPRINT_EASE_ROT_Y_IN, times, customWeight, true)
+                val posEase = sprintEaseAlpha(SPRINT_EASE_POS_IN, times, customWeight, true)
+                val posYEase = sprintEaseAlpha(SPRINT_EASE_POS_Y_IN, times, customWeight, true)
 
-                sprintBasicPosX = Mth.lerp(0.8f * times / (customWeight + 4), sprintBasicPosX, 1.0).coerceIn(0.0, 1.0)
-                sprintBasicPosY = Mth.lerp(0.25f * times / (customWeight + 4), sprintBasicPosY, 1.0).coerceIn(0.0, 1.0)
-                sprintBasicPosZ = Mth.lerp(0.8f * times / (customWeight + 4), sprintBasicPosZ, 1.0).coerceIn(0.0, 1.0)
+                sprintBasicRotX = Mth.lerp(rotEase, sprintBasicRotX, 1.0).coerceIn(0.0, 1.0)
+                sprintBasicRotY = Mth.lerp(rotYEase, sprintBasicRotY, 1.0).coerceIn(0.0, 1.0)
+                sprintBasicRotZ = Mth.lerp(rotEase, sprintBasicRotZ, 1.0).coerceIn(0.0, 1.0)
+
+                sprintBasicPosX = Mth.lerp(posEase, sprintBasicPosX, 1.0).coerceIn(0.0, 1.0)
+                sprintBasicPosY = Mth.lerp(posYEase, sprintBasicPosY, 1.0).coerceIn(0.0, 1.0)
+                sprintBasicPosZ = Mth.lerp(posEase, sprintBasicPosZ, 1.0).coerceIn(0.0, 1.0)
             } else {
-                sprintBasicRotX = Mth.lerp(1.4f * times / customWeight, sprintBasicRotX, 0.0).coerceIn(0.0, 1.0)
-                sprintBasicRotY = Mth.lerp(0.96f * times / customWeight, sprintBasicRotY, 0.0).coerceIn(0.0, 1.0)
-                sprintBasicRotZ = Mth.lerp(1.4f * times / customWeight, sprintBasicRotZ, 0.0).coerceIn(0.0, 1.0)
+                val rotEase = sprintEaseAlpha(SPRINT_EASE_ROT_OUT, times, customWeight, false)
+                val rotYEase = sprintEaseAlpha(SPRINT_EASE_ROT_Y_OUT, times, customWeight, false)
+                val posEase = sprintEaseAlpha(SPRINT_EASE_POS_OUT, times, customWeight, false)
 
-                sprintBasicPosX = Mth.lerp(0.8f * times / customWeight, sprintBasicPosX, 0.0).coerceIn(0.0, 1.0)
-                sprintBasicPosY = Mth.lerp(0.8f * times / customWeight, sprintBasicPosY, 0.0).coerceIn(0.0, 1.0)
-                sprintBasicPosZ = Mth.lerp(0.8f * times / customWeight, sprintBasicPosZ, 0.0).coerceIn(0.0, 1.0)
+                sprintBasicRotX = Mth.lerp(rotEase, sprintBasicRotX, 0.0).coerceIn(0.0, 1.0)
+                sprintBasicRotY = Mth.lerp(rotYEase, sprintBasicRotY, 0.0).coerceIn(0.0, 1.0)
+                sprintBasicRotZ = Mth.lerp(rotEase, sprintBasicRotZ, 0.0).coerceIn(0.0, 1.0)
+
+                sprintBasicPosX = Mth.lerp(posEase, sprintBasicPosX, 0.0).coerceIn(0.0, 1.0)
+                sprintBasicPosY = Mth.lerp(posEase, sprintBasicPosY, 0.0).coerceIn(0.0, 1.0)
+                sprintBasicPosZ = Mth.lerp(posEase, sprintBasicPosZ, 0.0).coerceIn(0.0, 1.0)
             }
         }
 
@@ -3055,12 +3113,7 @@ object ClientEventHandler {
                             val playerVec = player.getEyePosition(event.partialTick.toFloat())
 
                             val hasGravity = data.perk.getLevel(ModPerks.MICRO_MISSILE) <= 0
-                            val velocity =
-                                if (stack.`is`(ModItems.BOCEK.get())) {
-                                    zoomTime * 24
-                                } else {
-                                    data.get(GunProp.VELOCITY)
-                                }
+                            val velocity = data.get(GunProp.VELOCITY)
 
                             val toVec = RangeTool.calculateFiringSolution(
                                 playerVec,

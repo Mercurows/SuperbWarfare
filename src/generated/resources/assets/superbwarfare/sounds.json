@@ -380,14 +380,14 @@
       "superbwarfare:vehicle/bmp_2/bmp_2_missile_fire_3p"
     ]
   },
-  "bocek_pull_1p": {
+  "bocek_full_pull": {
     "sounds": [
-      "superbwarfare:gun/bocek/bocek_pull_1p"
+      "superbwarfare:gun/bocek/bocek_full_pull"
     ]
   },
-  "bocek_pull_3p": {
+  "bocek_pulling": {
     "sounds": [
-      "superbwarfare:gun/bocek/bocek_pull_3p"
+      "superbwarfare:gun/bocek/bocek_pulling"
     ]
   },
   "bocek_shatter_cap_fire_1p": {
@@ -398,6 +398,11 @@
   "bocek_shatter_cap_fire_3p": {
     "sounds": [
       "superbwarfare:gun/bocek/bocek_shatter_cap_fire_3p"
+    ]
+  },
+  "bocek_start_pull": {
+    "sounds": [
+      "superbwarfare:gun/bocek/bocek_start_pull"
     ]
   },
   "bocek_zoom_fire_1p": {
