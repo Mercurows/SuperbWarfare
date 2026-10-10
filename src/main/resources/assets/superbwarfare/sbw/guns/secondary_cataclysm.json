@@ -1,6 +1,13 @@
 {
   "Icon": "superbwarfare:textures/gun_icon/secondary_cataclysm_icon.png",
   "SlotIcon": "superbwarfare:textures/item/secondary_cataclysm_icon.png",
+  "Description": [
+    {
+      "Text": "Component#des.superbwarfare.secondary_cataclysm",
+      "Color": "0xAAAAAA",
+      "Italic": true
+    }
+  ],
   "Animation": {
     "Idle": "animation.secondary_cataclysm.idle",
     "Fire": "animation.secondary_cataclysm.fire",

@@ -47,6 +47,10 @@ class DefaultGunResource : IDBasedData<DefaultGunResource> {
     var itemDisplay: MutableMap<String, ItemDisplayInfo> = hashMapOf()
 
     @JvmField
+    @SerialName("Description")
+    var description: List<ComponentInfo> = emptyList()
+
+    @JvmField
     @SerialName("Model")
     var modelValue: ModelResource? = ModelResource()
 

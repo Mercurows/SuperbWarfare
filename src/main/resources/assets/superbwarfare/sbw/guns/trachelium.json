@@ -1,4 +1,15 @@
 {
+  "Description": [
+    {
+      "Text": "Component#des.superbwarfare.trachelium_1",
+      "Color": "0xAAAAAA",
+      "Italic": true
+    },
+    {
+      "Text": "Component#des.superbwarfare.trachelium_2",
+      "Color": "0xAAAAAA"
+    }
+  ],
   "Model": {
     "Animation": "superbwarfare:animations/trachelium.animation.json",
     "Model": "superbwarfare:geo/trachelium.geo.json",

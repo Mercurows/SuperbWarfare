@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.api.event.ShootEvent
 import com.atsuishio.superbwarfare.capability.energy.ItemEnergyProvider
 import com.atsuishio.superbwarfare.capability.energy.ItemEnergyStorage
+import com.atsuishio.superbwarfare.client.TooltipTool
 import com.atsuishio.superbwarfare.client.particle.BulletDecalOption
 import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent
@@ -42,6 +43,7 @@ import com.google.common.collect.Multimap
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.network.chat.Component
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
@@ -64,6 +66,7 @@ import net.minecraft.world.entity.projectile.ProjectileUtil
 import net.minecraft.world.inventory.tooltip.TooltipComponent
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.TooltipFlag
 import net.minecraft.world.item.enchantment.Enchantment
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
@@ -245,6 +248,27 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
     override fun getTooltipImage(pStack: ItemStack): Optional<TooltipComponent> {
         return Optional.of(GunImageComponent(pStack))
+    }
+
+    override fun appendHoverText(
+        stack: ItemStack,
+        level: Level?,
+        list: MutableList<Component>,
+        flag: TooltipFlag
+    ) {
+        super.appendHoverText(stack, level, list, flag)
+
+        val description = GunResource.compute(stack).description
+        if (description.isEmpty()) return
+
+        list.add(Component.empty())
+        for (info in description) {
+            if (info.hidden) {
+                TooltipTool.addHideText(list, info.asComponent())
+            } else {
+                list.add(info.asComponent())
+            }
+        }
     }
 
     open fun getGunIcon(stack: ItemStack) = getGunIcon(from(stack))
