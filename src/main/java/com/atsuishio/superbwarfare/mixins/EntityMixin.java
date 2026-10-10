@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.event.DeployedWeaponHandler;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.atsuishio.superbwarfare.item.gun.launcher.SuperStarShooterItem;
 import com.atsuishio.superbwarfare.tools.OBB;
@@ -57,6 +58,21 @@ public abstract class EntityMixin implements OBBHitter {
     @Inject(method = "turn(DD)V", at = @At("HEAD"), cancellable = true)
     public void turn(double pYRot, double pXRot, CallbackInfo ci) {
         var entity = (Entity) (Object) this;
+
+        if (entity instanceof Player player && DeployedWeaponHandler.isDeployed(player)) {
+            ci.cancel();
+            float f = (float) pXRot * 0.15F;
+            float f1 = (float) pYRot * 0.15F;
+            player.setXRot(player.getXRot() + f);
+            player.setYRot(player.getYRot() + f1);
+            player.setXRot(Mth.clamp(player.getXRot(), -DeployedWeaponHandler.PITCH_LIMIT, DeployedWeaponHandler.PITCH_LIMIT));
+            player.xRotO += f;
+            player.yRotO += f1;
+            player.xRotO = Mth.clamp(player.xRotO, -DeployedWeaponHandler.PITCH_LIMIT, DeployedWeaponHandler.PITCH_LIMIT);
+            DeployedWeaponHandler.applyOrbit(player);
+            return;
+        }
+
         if (entity instanceof Player player && GunItem.isHeldWeapon(player.getMainHandItem()) && player.getPose() == Pose.SWIMMING && !player.isSwimming()) {
             ci.cancel();
             float f = (float) pXRot * 0.15F;

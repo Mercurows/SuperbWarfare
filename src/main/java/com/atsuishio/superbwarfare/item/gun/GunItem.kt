@@ -25,6 +25,7 @@ import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback
 import com.atsuishio.superbwarfare.entity.projectile.*
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
+import com.atsuishio.superbwarfare.event.DeployedWeaponHandler
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModPerks
@@ -347,6 +348,8 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
      */
     open fun hasBipod(data: GunData) = data.get(GunProp.HAS_BIPOD)
 
+    open fun deployable(data: GunData) = data.get(GunProp.DEPLOYABLE)
+
     /**
      * 武器是否能进行近战攻击
      */
@@ -564,8 +567,9 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             data.closeStrike.set(true)
         }
 
-        // 真实后坐（
-        if (shooter != null && data.get(GunProp.RECOIL) != 0.0) {
+        if (shooter != null && data.get(GunProp.RECOIL) != 0.0 &&
+            !(shooter is Player && DeployedWeaponHandler.isDeployed(shooter))
+        ) {
             shooter.deltaMovement =
                 shooter.deltaMovement.add(shooter.getViewVector(1f).scale(-data.get(GunProp.RECOIL)))
         }

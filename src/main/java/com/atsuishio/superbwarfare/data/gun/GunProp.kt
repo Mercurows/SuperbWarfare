@@ -410,6 +410,9 @@ class GunProp<T, R>(
         @JvmField
         val HAS_BIPOD = plainProp(DefaultGunData::hasBipod)
 
+        @JvmField
+        val DEPLOYABLE = plainProp(DefaultGunData::deployable)
+
         /**
          * 武器进入瞄准的时间，单位是tick
          *

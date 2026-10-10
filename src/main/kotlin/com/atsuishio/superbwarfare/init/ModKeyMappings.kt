@@ -43,6 +43,9 @@ object ModKeyMappings {
     val FIRE_MODE = registerKey("fire_mode", GLFW.GLFW_KEY_N)
 
     @JvmField
+    val DEPLOY_WEAPON = registerKey("deploy_weapon", GLFW.GLFW_KEY_P)
+
+    @JvmField
     val SENSITIVITY_INCREASE = registerKey("sensitivity_increase", GLFW.GLFW_KEY_PAGE_UP)
 
     @JvmField

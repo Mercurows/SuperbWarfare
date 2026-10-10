@@ -32,6 +32,7 @@ import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.magazineLevel
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.event.ClientEventHandler
+import com.atsuishio.superbwarfare.event.DeployedWeaponHandler
 import com.atsuishio.superbwarfare.event.ShieldRuntime
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.resource.ModelResource
@@ -1625,29 +1626,6 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 || data.attachment.get(AttachmentType.SCOPE) != 0
     }
 
-    /**
-     * 渲染的 `stack` 是不是**本地玩家自己手里**那把枪（主手）。
-     *
-     * 掉落在地上的、摆在展示框里的、别人手里的枪都是别的对象，好办；麻烦的是第一人称：
-     * `FirstPersonRenderHandler` 渲染时传下来的是动画实例持有的那份 stack
-     * （`GeoGunAnimationInstance.currentItem()`），而它每个客户端 tick 才由 `updateItem` 刷新一次，
-     * 换枪过渡期间渲染的更是上一个实例里的旧对象。服务端每次同步手持槽（开枪改弹药、热量、
-     * 各种计时器）都会把客户端手上的 ItemStack **换成新对象**（见 `GunData.DATA_CACHE` 的注释），
-     * 于是同步之后到下一次 `updateItem` 之间的那几帧里身份对不上——只看对象身份的脚本会以为
-     * 枪不在手上，脚架被压回 bind 姿态、下一帧又展开，第一人称看到的就是在收起/展开之间横跳。
-     * [GeoGunAnimationInstance.shouldSpin] 早就为同一个坑改成比物品类型了。
-     *
-     * 所以分两种情况：对象身份成立（第三人称与正常的第一人称帧）直接用；
-     * 第一人称下额外接受"渲染的是本地玩家主手 + 同一种物品"。第一人称入口只会画本地玩家自己的手，
-     * 所以这个放宽不会波及世界上的同型号枪——掉落物/展示框/别人手里走的是普通物品渲染，
-     * [localFirstPersonHand] 为 `null`，仍然一律判否。
-     *
-     * 换枪动画期间渲染的是旧 stack：换了另一种枪时物品对不上、直接判否而不是平滑过渡，
-     * 与之前的行为一致，可以接受。
-     *
-     * 凡是读**客户端全局状态**（只描述本地玩家自己的视角，不写在枪自己的 tag 里）的脚本钩子都要过这一关，
-     * 否则世界上每一把同型号枪都会跟着本地玩家的动作一起动。逐物品的属性（如 [scriptHeat]）不需要。
-     */
     private fun isLocalPlayerGun(stack: ItemStack): Boolean {
         val player = Minecraft.getInstance().player ?: return false
         val held = player.mainHandItem
@@ -1657,88 +1635,31 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 && held.item === stack.item)
     }
 
-    /**
-     * 脚架展开进度：0 为收起，1 为完全展开。
-     *
-     * 直接复用 `bipod_view` 定位点用的 [ClientEventHandler.bipodViewTime]，这样子骨骼的翻转与
-     * 卧姿视角过渡天然同步，脚本里不需要自己再做一次插值。
-     *
-     * 但它描述的是**本地玩家自己**的持枪视角过渡，是客户端全局的一份状态，所以只有他手里那把枪
-     * 能读到，别的枪一律返回 0、也就是保持收起——否则世界上每一把同型号枪都会跟着本地玩家的卧姿
-     * 一起展开。判定见 [isLocalPlayerGun]。
-     */
     open fun scriptBipodProgress(stack: ItemStack): Double {
         return if (isLocalPlayerGun(stack)) ClientEventHandler.bipodViewTime else 0.0
     }
 
-    /**
-     * 瞄准推进度：0 为腰射，1 为完全瞄准，就是 [ClientEventHandler.zoomTime] 的**线性**原值。
-     *
-     * ⚠ 不要再对它套 [ClientEventHandler.aimingProgress]（EASE_IN_OUT_QUINT）：渲染内部读同一个量时
-     * 套了曲线，脚本里写的门槛（"0.3 之后才出现"）要按这里的**线性原值**来定。
-     *
-     * 和 [scriptBipodProgress] 同理，它描述的是本地玩家自己的视角过渡，只有他手里那把枪能读到，
-     * 别的枪一律返回 0——否则本地玩家一按瞄准键，世界上每一把同型号枪都会跟着亮起来。
-     */
     open fun scriptZoomTime(stack: ItemStack): Double {
         return if (isLocalPlayerGun(stack)) ClientEventHandler.zoomTime else 0.0
     }
 
-    /**
-     * 单调推进的游戏时间，单位 **tick**（`level.gameTime` 加上本帧的 `frameTime` 做帧间插值，
-     * 20 tick = 1 秒）。给脚本算"随时间匀速自转"这类效果用。
-     *
-     * 之所以给的是时间轴而不是像 [scriptHeat] 那样的逐帧增量：自转角度算成时间的函数就不需要任何记忆，
-     * 于是既不用担心顶层变量是全世界同型号枪共用的一份，也不用担心 JsState 按 ItemStack 对象身份
-     * 记忆会在每次服务端同步（换对象）时被清零，还顺带免疫"同一帧被画几次就走几倍"。
-     *
-     * 时间是**世界时间**：单人游戏暂停时它停住，自转也跟着停，符合直觉。
-     */
     open fun scriptGameTime(): Double {
         val mc = Minecraft.getInstance()
         val level = mc.level ?: return 0.0
         return level.gameTime + mc.frameTime.toDouble()
     }
 
-    /**
-     * 枪管热量：0 为空，100 为过热阈值（与 `HeatBarOverlay` 的 `heat / 100` 同一刻度）。
-     *
-     * 和 [scriptBipodProgress] 不同，这里**不**按对象身份限制：热量写在枪自己的 tag 里，是逐物品的属性，
-     * 别人手里的、地上躺着的枪读到的都是它自己的热量，而不是本地玩家的。代价是热量只在持有者的 tick 里
-     * 自然冷却（`GunEventHandler.reduceHeat`），一把打到过热再丢在地上的枪会一直保持那个热度。
-     */
     open fun scriptHeat(stack: ItemStack): Double {
         return from(stack).heat.get()
     }
 
-    /**
-     * 能量武器的电量比例：0 为耗尽，1 为满电。
-     *
-     * 读法与 `AmmoBarOverlay.getEnergyRate` 完全一致（能量存在枪自己 NBT 的 `Energy` 里，
-     * 由手持槽同步下发给客户端），所以模型上的能量条与 HUD 上的百分比永远对得上。
-     *
-     * 和 [scriptHeat] 一样是**逐物品**的属性，因此不按 [isLocalPlayerGun] 限制：别人手里的、
-     * 地上躺着的枪读到的都是它自己的电量；`maxEnergyStored` 为 0 的非能量武器一律返回 0。
-     */
     open fun scriptEnergyRatio(stack: ItemStack): Double {
         return stack.getCapability(ForgeCapabilities.ENERGY).map { storage ->
             (storage.energyStored.toDouble() / max(1, storage.maxEnergyStored)).coerceIn(0.0, 1.0)
         }.orElse(0.0)
     }
 
-    /**
-     * 蓄力进度：0 为没在蓄力，1 为蓄满（`ClientEventHandler.chargeProgress`，它就是 `0..1`）。
-     *
-     * 三个条件缺一不可，缺了就必然是"显示错了"而不是"少显示了"：
-     *
-     * - 本地玩家自己的蓄力是**客户端全局状态**（不写在枪的 tag 里），不限住 [isLocalPlayerGun] 的话，
-     *   世界上每一把同型号枪都会跟着他的蓄力一起亮（同 [scriptBipodProgress]）。
-     * - 当前射击模式不是蓄力模式（`isChargeMode()`）时这把枪根本不该有这个条。
-     * - `chargeProgress` 平时恒为 0，所以这条早退顺手当了开销闸门：没人在蓄力时这里连 [GunData] 都不碰。
-     *
-     * 返回 0 是**默认值**也是常态，所以模型里没有 `charge_bar_*` 骨骼的枪完全不受影响——脚本那边
-     * 只管按这个值点亮前若干段，值是多少它都只动自己的那几段。
-     */
+
     open fun scriptChargeProgress(stack: ItemStack): Double {
         val progress = ClientEventHandler.chargeProgress
         if (progress <= 0.0) return 0.0
@@ -1870,7 +1791,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
     open fun applyCameraShake(stack: ItemStack, model: GeoGunModel, hand: InteractionHand) {
         if (stack.item !is GunItem) return
-        if (localPlayer == null) return
+        val player = localPlayer ?: return
         val animation = FirstPersonRenderHandler.getActiveAnimationInstance(hand) ?: return
         val camera = model.getCameraBone()
         if (camera == null) {
@@ -1904,13 +1825,24 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         var positionScaleZ = (1f - 0.96f * zoomTime * multiply).coerceAtLeast(0.05f)
 
         if (!data.reloading()) {
-            rotationScale = (1f - 0.5f * zoomTime * multiply).coerceAtLeast(0.05f)
-            rotationScaleX = (1f - 0.55f * zoomTime * multiply).coerceAtLeast(0.05f)
-            rotationScaleY = (1f - 0.2f * zoomTime * multiply).coerceAtLeast(0.05f)
-            rotationScaleZ = (1f - 0.2f * zoomTime * multiply).coerceAtLeast(0.05f)
-            positionScale = (1f - 0.4f * zoomTime * multiply).coerceAtLeast(0.05f)
-            positionScaleX = (1f - 0.5f * zoomTime * multiply).coerceAtLeast(0.05f)
-            positionScaleZ = (1f - 0.82f * zoomTime * multiply).coerceAtLeast(0.05f)
+            if (DeployedWeaponHandler.isDeployed(player)) {
+                rotationScale = (1f - 0.75f * zoomTime * multiply).coerceAtLeast(0.05f)
+                rotationScaleX = (1f - 0.85f * zoomTime * multiply).coerceAtLeast(0.05f)
+                rotationScaleY = (1f - 0.4f * zoomTime * multiply).coerceAtLeast(0.05f)
+                rotationScaleZ = (1f - 0.4f * zoomTime * multiply).coerceAtLeast(0.05f)
+                positionScale = (1f - 0.8f * zoomTime * multiply).coerceAtLeast(0.05f)
+                positionScaleX = (1f - 0.85f * zoomTime * multiply).coerceAtLeast(0.05f)
+                positionScaleZ = (1f - 0.96f * zoomTime * multiply).coerceAtLeast(0.05f)
+            } else {
+                rotationScale = (1f - 0.5f * zoomTime * multiply).coerceAtLeast(0.05f)
+                rotationScaleX = (1f - 0.55f * zoomTime * multiply).coerceAtLeast(0.05f)
+                rotationScaleY = (1f - 0.2f * zoomTime * multiply).coerceAtLeast(0.05f)
+                rotationScaleZ = (1f - 0.2f * zoomTime * multiply).coerceAtLeast(0.05f)
+                positionScale = (1f - 0.4f * zoomTime * multiply).coerceAtLeast(0.05f)
+                positionScaleX = (1f - 0.5f * zoomTime * multiply).coerceAtLeast(0.05f)
+                positionScaleZ = (1f - 0.82f * zoomTime * multiply).coerceAtLeast(0.05f)
+            }
+
         }
 
         val main = model.getRootBone()
@@ -2097,7 +2029,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val deployed = playerDeployedSubWeapon(stack)
         val ironViewTransform = (if (deployed) resolveSubWeaponAimTransform(stack, model) else null)
             ?: scopeViewTransform(scopeRender, hand)
-            ?: model.getGlobalTransform(IRON_VIEW_BONE)
+            ?: bipodIronViewTransform(model)
             ?: return hipViewTransform
         return blendViewTransform(hipViewTransform, Matrix4f(ironViewTransform), zoom)
     }
@@ -2224,6 +2156,21 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             .apply(progress.coerceIn(0.0, 1.0))
             .toFloat()
         return blendViewTransform(Matrix4f(idleViewTransform), Matrix4f(bipodViewTransform), blend)
+    }
+
+    private fun bipodIronViewTransform(model: GeoGunModel): Matrix4f? {
+        val iron = model.getGlobalTransform(IRON_VIEW_BONE)
+        val bipodIron = model.getGlobalTransform(BIPOD_IRON_VIEW_BONE)
+        if (bipodIron == null) return iron
+
+        val progress = ClientEventHandler.bipodViewTime
+        if (progress <= 0.0) return iron ?: Matrix4f(bipodIron)
+        if (progress >= 1.0) return Matrix4f(bipodIron)
+
+        val blend = AnimationCurves.EASE_IN_OUT_QUINT
+            .apply(progress.coerceIn(0.0, 1.0))
+            .toFloat()
+        return blendViewTransform(Matrix4f(iron ?: bipodIron), Matrix4f(bipodIron), blend)
     }
 
     private fun scopeViewTransform(
@@ -2542,6 +2489,8 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         private const val IDLE_VIEW_BONE = "idle_view"
         private const val BIPOD_VIEW_BONE = "bipod_view"
         private const val IRON_VIEW_BONE = "iron_view"
+
+        private const val BIPOD_IRON_VIEW_BONE = "bipod_iron_view"
 
         // 槽位相关的定位骨骼名统一登记在 AttachmentSlots.Bones，这里只是给渲染代码用的短别名
         private const val MUZZLE_BONE = AttachmentSlots.Bones.MUZZLE

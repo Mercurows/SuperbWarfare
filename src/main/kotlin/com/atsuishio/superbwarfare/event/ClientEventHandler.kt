@@ -102,8 +102,17 @@ object ClientEventHandler {
     @JvmField
     var bipodViewTime: Double = 0.0
 
-    private const val BIPOD_VIEW_DURATION_SECONDS = 0.35f
+
+    internal const val BIPOD_VIEW_DURATION_SECONDS = 0.35f
     private const val TICKS_PER_SECOND = 20f
+
+    private const val BIPOD_RECOIL_POSE = 0.1f
+
+
+    private const val DEPLOYED_RECOIL_POSE = BIPOD_RECOIL_POSE * 0.1f
+
+    @JvmStatic
+    fun bipodViewStep(): Double = getDelta().toDouble() / (BIPOD_VIEW_DURATION_SECONDS * TICKS_PER_SECOND)
 
     @JvmField
     var swayTime: Double = 0.0
@@ -676,6 +685,7 @@ object ClientEventHandler {
 
         ClientSyncedEntityHandler.clean()
         isProne(player)
+        DeployedWeaponHandler.clientTick(player)
         handleVariableDecrease(stack)
         aimAtVillager(player)
         CrossHairOverlay.handleRenderDamageIndicator()
@@ -1508,6 +1518,7 @@ object ClientEventHandler {
     @JvmStatic
     fun isProne(player: Player): Boolean {
         val level = player.level()
+        if (DeployedWeaponHandler.isDeployed(player)) return true
         if (player.pose == Pose.SWIMMING && !player.isSwimming) return true
         val forward = Vec3(player.lookAngle.x, 0.0, player.lookAngle.z).normalize()
         return player.isCrouching && level.getBlockState(
@@ -1524,6 +1535,10 @@ object ClientEventHandler {
                 player.z + 0.7 * forward.z
             )
         ).canOcclude()
+    }
+
+    private fun isGunSupported(player: Player, data: GunData, item: GunItem): Boolean {
+        return DeployedWeaponHandler.isDeployed(player) || data.attachment.hasBipod() || item.hasBipod(data)
     }
 
     /**
@@ -1729,17 +1744,19 @@ object ClientEventHandler {
         val times = getDelta().coerceAtMost(0.8f)
 
         val basicDev = data.get(GunProp.SPREAD)
+
         val walk = if (isMoving()) 0.3 * basicDev else 0.0
         val sprint = if (player.isSprinting) 0.25 * basicDev else 0.0
         val crouching = if (player.isCrouching) -0.15 * basicDev else 0.0
         val prone = if (isProne(player)) -0.3 * basicDev else 0.0
         val jump = if (player.onGround()) 0.0 else 0.35 * basicDev
         val ride = if (player.onGround()) -0.25 * basicDev else 0.0
+        val deployed = if (DeployedWeaponHandler.isDeployed(player)) -0.5 * basicDev else 0.0
 
         val zoomSpread = 1 - (1 - data.zoomSpreadRateFor(zoom, player)) * zoomTime
         val spread =
-            if (data.isShotgun) 1.2 * zoomSpread * (basicDev + 0.2 * (walk + sprint + crouching + prone + jump + ride) + fireSpread)
-            else zoomSpread * (0.7 * basicDev + walk + sprint + crouching + prone + jump + ride + 0.8 * fireSpread)
+            if (data.isShotgun) 1.2 * zoomSpread * (basicDev + 0.2 * (walk + sprint + crouching + prone + jump + ride + deployed) + fireSpread)
+            else zoomSpread * (0.7 * basicDev + walk + sprint + crouching + prone + jump + ride + deployed + 0.8 * fireSpread)
 
         gunSpread = Mth.lerp(0.5 * times, gunSpread, spread)
 
@@ -2142,7 +2159,7 @@ object ClientEventHandler {
         val pose: Float = if (player.isCrouching && player.bbHeight >= 1 && !isProne(player)) {
             0.85f
         } else if (isProne(player)) {
-            if (data.attachment.hasBipod() || item.hasBipod(data)) 0f else 0.25f
+            if (isGunSupported(player, data, item)) 0f else 0.25f
         } else {
             1f
         }
@@ -2318,7 +2335,7 @@ object ClientEventHandler {
             if (player.isShiftKeyDown && player.bbHeight >= 1 && isProne(player)) {
                 0.85
             } else if (isProne(player)) {
-                if (data.attachment.hasBipod() || item.hasBipod(data)) 0.0 else 0.25
+                if (isGunSupported(player, data, item)) 0.0 else 0.25
             } else {
                 1.0
             }
@@ -2530,8 +2547,11 @@ object ClientEventHandler {
         if (!GunItem.isOperable(stack)) return
         val data = GunData.from(stack)
 
-        val deployed = !isEditing && isProne(player) && (data.attachment.hasBipod() || item.hasBipod(data))
-        val step = getDelta() / (BIPOD_VIEW_DURATION_SECONDS * TICKS_PER_SECOND)
+        val deployed = !isEditing && (
+                DeployedWeaponHandler.isDeployed(player) ||
+                        (isProne(player) && (data.attachment.hasBipod() || item.hasBipod(data)))
+                )
+        val step = bipodViewStep()
 
         bipodViewTime = if (deployed) {
             (bipodViewTime + step).coerceAtMost(1.0)
@@ -2794,8 +2814,10 @@ object ClientEventHandler {
             if (player.isShiftKeyDown && player.bbHeight >= 1 && !isProne(player)) {
                 0.7f
             } else if (isProne(player)) {
-                if (data.attachment.hasBipod() || item.hasBipod(data)) {
-                    0.1f
+                if (DeployedWeaponHandler.isDeployed(player)) {
+                    DEPLOYED_RECOIL_POSE
+                } else if (data.attachment.hasBipod() || item.hasBipod(data)) {
+                    BIPOD_RECOIL_POSE
                 } else {
                     0.5f
                 }

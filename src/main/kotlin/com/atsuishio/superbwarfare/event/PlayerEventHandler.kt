@@ -57,7 +57,14 @@ object PlayerEventHandler {
             if (stack.item is GunItem) {
                 handleSpecialWeaponAmmo(player)
             }
+
+            DeployedWeaponHandler.serverTick(player)
         }
+    }
+
+    @SubscribeEvent
+    fun onPlayerChangedDimension(event: PlayerEvent.PlayerChangedDimensionEvent) {
+        DeployedWeaponHandler.undeploy(event.entity)
     }
 
     private fun handleSpecialWeaponAmmo(player: Player) {

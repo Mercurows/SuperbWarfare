@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.isDrumLevel
 import com.atsuishio.superbwarfare.event.ClientEventHandler
+import com.atsuishio.superbwarfare.event.DeployedWeaponHandler
 import com.atsuishio.superbwarfare.item.attachment.SubWeaponItem
 import com.atsuishio.superbwarfare.resource.gun.GunAnimation
 import com.atsuishio.superbwarfare.resource.gun.GunAnimationNames
@@ -84,6 +85,10 @@ open class GeoGunAnimationInstance(
      */
     private var customSprintPosPower = 0f
     private var customSprintRotPower = 0f
+
+    private var deployIdleRunner: AnimationRunner? = null
+    private var deployIdleAnimation: BedrockAnimation? = null
+    private var deployIdlePower = 0f
 
     // 蓄力层 runner
     private var chargeRunner: AnimationRunner? = null
@@ -206,6 +211,7 @@ open class GeoGunAnimationInstance(
         val player = localPlayer ?: return false
         if (animation?.run == null) return false
         if (target != GunAnimationState.IDLE) return false
+        if (isDeployedGun()) return false
         return player.isSprinting
                 && player.onGround()
                 && ClientEventHandler.noSprintTicks == 0f
@@ -430,6 +436,10 @@ open class GeoGunAnimationInstance(
     }
 
     private fun normalReloadName(animation: GunAnimation): String? {
+        if (isDeployedGun()) {
+            val deployName = animation.reloadNormalDeploy
+            if (deployName != null && animations.containsKey(deployName)) return deployName
+        }
         if (isDrumLevel()) {
             val drumName = animation.reloadNormalDrum
             if (drumName != null && animations.containsKey(drumName)) return drumName
@@ -438,11 +448,20 @@ open class GeoGunAnimationInstance(
     }
 
     private fun emptyReloadName(animation: GunAnimation): String? {
+        if (isDeployedGun()) {
+            val deployName = animation.reloadEmptyDeploy
+            if (deployName != null && animations.containsKey(deployName)) return deployName
+        }
         if (isDrumLevel()) {
             val drumName = animation.reloadEmptyDrum
             if (drumName != null && animations.containsKey(drumName)) return drumName
         }
         return animation.reloadEmpty
+    }
+
+    private fun isDeployedGun(): Boolean {
+        val player = localPlayer ?: return false
+        return DeployedWeaponHandler.isDeployed(player)
     }
 
     /**
@@ -1272,6 +1291,82 @@ open class GeoGunAnimationInstance(
         }
     }
 
+    private fun updateDeployIdle(animation: GunAnimation?, active: Boolean): Boolean {
+        val clip = animation?.idleDeploy?.let(animations::get)
+        if (clip == null) {
+            clearDeployIdle()
+            return false
+        }
+
+        val runner = deployIdleRunner
+        if (runner == null) {
+            if (!active) {
+                clearDeployIdle()
+                return false
+            }
+            deployIdleAnimation = clip
+            val newRunner = AnimationRunner(clip, AnimationContext(clip.specifiedEndTimeS))
+            newRunner.state = AnimationPlayType.LOOP.state()
+            deployIdleRunner = newRunner
+            return true
+        }
+
+        if (deployIdleAnimation !== clip) {
+            deployIdleAnimation = clip
+            val newRunner = AnimationRunner(clip, AnimationContext(clip.specifiedEndTimeS))
+            newRunner.state = AnimationPlayType.LOOP.state()
+            deployIdleRunner = newRunner
+            return true
+        }
+
+        deployIdlePower = if (active) {
+            ClientEventHandler.bipodViewTime.toFloat().coerceIn(0f, 1f)
+        } else {
+            approach(deployIdlePower, 0f, ClientEventHandler.bipodViewStep().toFloat())
+        }
+
+        if (!active && deployIdlePower <= CUSTOM_SPRINT_MIN_POWER) {
+            clearDeployIdle()
+        }
+        return false
+    }
+
+    private fun tickDeployIdle(started: Boolean) {
+        if (started) return
+        deployIdleRunner?.tick()
+    }
+
+    private fun clearDeployIdle() {
+        deployIdleRunner = null
+        deployIdleAnimation = null
+        deployIdlePower = 0f
+    }
+
+    private fun applyDeployIdle(lowerPose: Pose): Pose {
+        val runner = deployIdleRunner ?: return lowerPose
+        val weight = smoothstep(deployIdlePower.coerceIn(0f, 1f))
+        if (weight <= 0f) return lowerPose
+
+        val deployPose = runner.evaluate()
+        return CROSSFADE_BLENDER.combine(lowerPose, deployPose) { lower, deploy ->
+            if (deploy.boneIndex() < 0) lower
+            else TRANSFORM_FACTORY.createBoneTransform(
+                maxOf(lower.boneIndex(), deploy.boneIndex()),
+                lower.translation().lerp(deploy.translation(), weight, Vector3f()),
+                MathUtil.nlerpShortestPath(
+                    lower.rotation().asQuaternion(), deploy.rotation().asQuaternion(), weight
+                ),
+                lower.scale().lerp(deploy.scale(), weight, Vector3f())
+            )
+        }
+    }
+
+    private fun wantsDeployIdle(target: GunAnimationState?, animation: GunAnimation?): Boolean {
+        if (animation?.idleDeploy == null) return false
+        if (!isDeployedGun()) return false
+        return target == GunAnimationState.IDLE
+    }
+
     /**
      * 把蓄力层按 [chargePower]**交叉淡出**到 [lowerPose] 上（[applyFireLoop] 的蓄力版）。
      *
@@ -1400,6 +1495,7 @@ open class GeoGunAnimationInstance(
             clearFireLoopRunner()
             clearChargeRunner()
             clearCustomSprint()
+            clearDeployIdle()
             currentState = null
             pendingParticles.clear()
             cachedPose = DummyPose.INSTANCE
@@ -1494,6 +1590,7 @@ open class GeoGunAnimationInstance(
         tickFireLoopRunner(updateFireLoopRunner(animation))
         tickChargeRunner(updateChargeRunner(animation, firedThisFrame))
         tickCustomSprint(updateCustomSprint(animation, wantsCustomSprint(target, animation)))
+        tickDeployIdle(updateDeployIdle(animation, wantsDeployIdle(target, animation)))
 
         if (hand == InteractionHand.MAIN_HAND) {
             updateSubWeaponReload()
@@ -1528,6 +1625,11 @@ open class GeoGunAnimationInstance(
             collectSoundEvents(customSprintRunner)
         }
 
+        if (deployIdleRunner != null && deployIdlePower > 0f) {
+            collectParticleEvents(deployIdleRunner)
+            collectSoundEvents(deployIdleRunner)
+        }
+
         if (fireRunner?.state is StopState) {
             fireRunner = null
         }
@@ -1541,7 +1643,7 @@ open class GeoGunAnimationInstance(
                         // 它是按权重交叉淡出出来的，所以基础状态单独先合一次。
                         // 自定义奔跑层在最底下（`Idle` 之上、其余层之下）：蓄力/开火那类"正在做动作"
                         // 的层要压得住它，而它自己得盖住 `Idle` 的枪身。
-                        applyCharge(applyCustomSprint(runner?.evaluate() ?: DummyPose.INSTANCE)),
+                        applyCharge(applyDeployIdle(applyCustomSprint(runner?.evaluate() ?: DummyPose.INSTANCE))),
                         fireModeRunner?.evaluate() ?: DummyPose.INSTANCE,
                         closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE,
                         spinRunner?.evaluate() ?: DummyPose.INSTANCE

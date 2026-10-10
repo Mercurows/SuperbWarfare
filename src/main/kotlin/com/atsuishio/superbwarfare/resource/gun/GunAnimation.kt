@@ -45,6 +45,18 @@ class GunAnimation {
     var reloadEmptyDrum: String? = null
 
     @JvmField
+    @SerialName("IdleDeploy")
+    var idleDeploy: String? = null
+
+    @JvmField
+    @SerialName("ReloadNormalDeploy")
+    var reloadNormalDeploy: String? = null
+
+    @JvmField
+    @SerialName("ReloadEmptyDeploy")
+    var reloadEmptyDeploy: String? = null
+
+    @JvmField
     @SerialName("HoldOpen")
     var holdOpen: String? = null
 

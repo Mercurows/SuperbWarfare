@@ -6911,14 +6911,19 @@
 					"pivot": [7, 8, 18]
 				},
 				{
-					"name": "bipod_view",
-					"parent": "positioning",
-					"pivot": [0, 10, 18]
-				},
-				{
 					"name": "iron_view",
 					"parent": "positioning",
 					"pivot": [7, 8, 18]
+				},
+				{
+					"name": "bipod_view",
+					"parent": "positioning",
+					"pivot": [0, 10, 36]
+				},
+				{
+					"name": "bipod_iron_view",
+					"parent": "positioning",
+					"pivot": [0, 10, 36]
 				},
 				{
 					"name": "ground",

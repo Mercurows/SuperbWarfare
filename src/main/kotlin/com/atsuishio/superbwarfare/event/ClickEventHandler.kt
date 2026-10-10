@@ -330,6 +330,9 @@ object ClickEventHandler {
                 sendPacketToServer(FireModeMessage(true))
                 ClientEventHandler.burstFireAmount = 0
             }
+            if (key == ModKeyMappings.DEPLOY_WEAPON.key.value) {
+                sendPacketToServer(DeployWeaponMessage)
+            }
             if (key == ModKeyMappings.INTERACT.key.value) {
                 // 手持副武器时按普通物品处理
                 if (GunItem.isHeldWeapon(stack)) {
@@ -381,6 +384,8 @@ object ClickEventHandler {
             }
 
             if (key == ModKeyMappings.EDIT_MODE.key.value) {
+                if (DeployedWeaponHandler.isDeployed(player)) return
+
                 if (vehicle is VehicleEntity) {
                     val data = vehicle.getGunData(player)
                     if (data != null) {
