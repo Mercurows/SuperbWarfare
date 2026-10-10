@@ -561,7 +561,7 @@
   "item.superbwarfare.super_heavy_bullet": "Super Heavy Bullet",
   "des.superbwarfare.super_heavy_bullet": "Launch heavy bullets that are influenced by stronger gravity, with stronger knockback force.",
   "item.superbwarfare.shatter_caps": "Shatter Caps",
-  "des.superbwarfare.shatter_caps": "Hip firing shatters each bullet into 4 pellets, gaining one more pellet every 3 levels. Their combined damage starts at the original damage and grows by 20 percent per level.",
+  "des.superbwarfare.shatter_caps": "Hip firing shatters the bullet into several pellets that deals lower damage.",
 
   "item.superbwarfare.heal_clip": "Heal Clip",
   "des.superbwarfare.heal_clip": "Reloading after defeating a mob will heal you and your nearby allies.",
