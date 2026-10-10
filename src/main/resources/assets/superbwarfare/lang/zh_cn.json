@@ -1631,6 +1631,9 @@
   "prop.superbwarfare.underwater_motion_scale": "子弹水下动量",
   "prop.superbwarfare.in_water_cooldown_rate": "水中冷却速率",
   "prop.superbwarfare.max_durability": "最大耐久值",
+  "prop.superbwarfare.exp_multiplier": "经验获取倍率",
+  "prop.superbwarfare.projectile_lifesteal": "子弹生命汲取",
+  "prop.superbwarfare.melee_lifesteal": "近战生命汲取",
 
   "superbwarfare.book.superb_warfare_manual": "卓越单兵手册",
   "superbwarfare.book.superb_warfare_manual.des": "卓越前线模组的教程，教你如何成为一名卓越的士兵（编写中）",

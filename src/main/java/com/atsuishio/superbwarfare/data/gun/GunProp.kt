@@ -494,6 +494,15 @@ class GunProp<T, R>(
         @JvmField
         val KNOCKBACK = plainProp(DefaultGunData::knockback)
 
+        @JvmField
+        val EXP_MULTIPLIER = plainProp(DefaultGunData::expMultiplier)
+
+        @JvmField
+        val PROJECTILE_LIFESTEAL = plainProp(DefaultGunData::projectileLifesteal)
+
+        @JvmField
+        val MELEE_LIFESTEAL = plainProp(DefaultGunData::meleeLifesteal)
+
         // TODO 会不会有点屎...
         fun modifyProperty(modifier: PMC<GunData, DefaultGunData>) = with(modifier) {
             modify(MAX_DURABILITY) { it.coerceAtLeast(0) }
@@ -546,6 +555,10 @@ class GunProp<T, R>(
 
             modify(DRAW_TIME) { it.coerceAtLeast(1) }
             modify(ZOOM_TIME) { it.coerceAtLeast(1) }
+
+            modify(EXP_MULTIPLIER) { it.coerceAtLeast(0.0) }
+            modify(PROJECTILE_LIFESTEAL) { it.coerceAtLeast(0.0) }
+            modify(MELEE_LIFESTEAL) { it.coerceAtLeast(0.0) }
         }
     }
 }

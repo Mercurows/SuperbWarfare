@@ -315,6 +315,9 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
             "UnderwaterMotionScale",
             "InWaterCooldownRate",
             "MaxDurability",
+            "ExpMultiplier",
+            "ProjectileLifesteal",
+            "MeleeLifesteal",
         )
 
         val LOWER_IS_BETTER = setOf(

@@ -324,6 +324,15 @@ data class DefaultGunData(
     val explosionDestroy: Boolean = true,
     @SerialName("Knockback")
     val knockback: Float = 0.05f,
+    // 经验获取倍率：结算枪械经验时乘上这个值
+    @SerialName("ExpMultiplier")
+    val expMultiplier: Double = 1.0,
+    // 投射物生命汲取：枪械投射物伤害命中生物时，按此比例给发射者回血
+    @SerialName("ProjectileLifesteal")
+    val projectileLifesteal: Double = 0.0,
+    // 近战生命汲取：枪械近战伤害命中生物时，按此比例给攻击者回血
+    @SerialName("MeleeLifesteal")
+    val meleeLifesteal: Double = 0.0,
 ) : IDBasedData<DefaultGunData> {
     @Transient
     @kotlinx.serialization.Transient
@@ -393,6 +402,9 @@ data class DefaultGunData(
             burstAmount = max(0, burstAmount),
             rpm = rpm.coerceIn(1, 114514),
             underwaterMotionScale = underwaterMotionScale.coerceIn(0.0f, 1.0f),
+            expMultiplier = max(0.0, expMultiplier),
+            projectileLifesteal = max(0.0, projectileLifesteal),
+            meleeLifesteal = max(0.0, meleeLifesteal),
         )
     }
 

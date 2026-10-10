@@ -120,5 +120,8 @@ fun DefaultGunData.withOverrides(diff: Map<out Prop<*, *, *, *, *>, Any?>): Defa
         } else {
             meleeSound
         },
+        expMultiplier = num(GunProp.EXP_MULTIPLIER, expMultiplier),
+        projectileLifesteal = num(GunProp.PROJECTILE_LIFESTEAL, projectileLifesteal),
+        meleeLifesteal = num(GunProp.MELEE_LIFESTEAL, meleeLifesteal),
     )
 }

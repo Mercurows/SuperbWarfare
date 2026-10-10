@@ -1631,6 +1631,9 @@
   "prop.superbwarfare.underwater_motion_scale": "Projectile Underwater Motion Scale",
   "prop.superbwarfare.in_water_cooldown_rate": "In Water Cooldown Rate",
   "prop.superbwarfare.max_durability": "Max Durability",
+  "prop.superbwarfare.exp_multiplier": "EXP Multiplier",
+  "prop.superbwarfare.projectile_lifesteal": "Projectile Lifesteal",
+  "prop.superbwarfare.melee_lifesteal": "Melee Lifesteal",
 
   "superbwarfare.book.superb_warfare_manual": "Superb Warfare Manual",
   "superbwarfare.book.superb_warfare_manual.des": "A tutorial on Superb Warfare mod, teaching you how to become a superb soldier (WIP)",
