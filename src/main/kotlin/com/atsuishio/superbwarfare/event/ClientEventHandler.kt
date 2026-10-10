@@ -1962,7 +1962,7 @@ object ClientEventHandler {
         }
 
         // 真实后坐（
-        if (data.get(GunProp.RECOIL) != 0.0) {
+        if (data.get(GunProp.RECOIL) != 0.0 && !(player.isCrouching || isProne(player))) {
             player.deltaMovement = player.deltaMovement.add(player.getViewVector(1f).scale(-data.get(GunProp.RECOIL)))
         }
 

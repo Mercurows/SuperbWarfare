@@ -24,14 +24,6 @@ data class DefaultGunData(
     val maxDurability: Int = 0,
     @SerialName("DurabilityPerShoot")
     val durabilityPerShoot: Int = 1,
-    /**
-     * 枪械自身可存储的能量上限（FE）。
-     *
-     * 对能量类武器（`AmmoType` 为 `FE` / `RF` / `energy`）这是唯一的「弹源」：
-     * 背包型直接从这里按 [ammoCostPerShoot] 扣，弹匣型在换弹时按 [ammoCostPerShoot] 折算成
-     * [magazine] 的发数。弹匣型请保证 `maxEnergy >= 单次装填发数 * ammoCostPerShoot`，
-     * 否则一个满弹匣也得靠多次装填凑齐。
-     */
     @SerialName("MaxEnergy")
     val maxEnergy: Int = 0,
     @SerialName("MaxReceiveEnergy")
@@ -51,15 +43,6 @@ data class DefaultGunData(
     // x:范围，y：振动时长，z：振幅
     @SerialName("ShootShake")
     val shootShake: SerializedVec3? = null,
-    /**
-     * 瞄准时"呼吸晃动"的幅度倍率（`1.0` = 原样，越小晃得越轻）。
-     *
-     * 只压 `ClientEventHandler.handleWeaponSway` 里那一项呼吸摆动，**不碰**移动/转身带来的
-     * 摆动（`movePosY` / `moveRotZ` / 行走摆动那几条）。
-     *
-     * 这就是配件的"瞄准稳定性"：重型枪托用 `{"Prop": "Sway", "Op": "Mul", "Value": 0.8}`
-     * 让晃动幅度降低 20%。
-     */
     @SerialName("Sway")
     val sway: Double = 1.0,
     @SerialName("DefaultZoom")
@@ -84,15 +67,6 @@ data class DefaultGunData(
     @JvmField
     @SerialName("Velocity")
     val velocity: Double = 0.0,
-    /**
-     * 弹匣容量（按弹匣配件等级分档）。
-     *
-     * `<= 0` 表示**背包型**：不使用弹匣，开火时直接从背包（或对能量类武器而言从 [maxEnergy]）
-     * 扣除 [ammoCostPerShoot]，不能换弹，也不能退弹。
-     *
-     * `> 0` 表示**弹匣型**：开火扣弹匣发数，换弹时才按 [ammoCostPerShoot] 把能量折算成发数装填。
-     * 能量类武器即由此字段决定是哪种形态，见 `GunData.useBackpackAmmo` / `GunData.isEnergyMagazine`。
-     */
     @SerialName("Magazine")
     val magazine: SingleOrList<Int> = SingleOrList(0),
     // 属于弹鼓的弹匣等级，这些等级使用弹鼓专属的换弹动画与 ActionSteps 时间线
@@ -108,79 +82,25 @@ data class DefaultGunData(
     val meleeDamageTime: Int = 6,
     @SerialName("MeleeAngle")
     val meleeAngle: Int = 30,
-    /**
-     * 近战距离：**叠加**在 `MeleeHitbox.Range` 之上的额外距离。
-     *
-     * 判定用的总距离是 `(Range + MeleeRange) × 动作的 RangeMultiplier + player.getEntityReach()`；
-     * 形状没写 `Range` 时基数取 0，也就是"距离就由这里决定"。配件要加近战距离就是加这个属性。
-     *
-     * 默认值 **2.0** 是"枪托砸"的基础触点：生存模式的实际触及距离 =
-     * `(0 + 2.0) + 3.0(实体触及) = 5.0` 格（旧值是 0，只有 3.0 格，和原版空手一样远）。
-     * 枪自己写 `MeleeHitbox.Range` 可以再叠（AK-47 写了 1.2 → 6.2 格）。
-     */
     @SerialName("MeleeRange")
     val meleeRange: Double = 2.0,
-    /**
-     * 近战打头倍率（近战专用，与投射物的 [headshot] 无关）。
-     *
-     * 只对**准星正对的那个目标**生效（见 `MeleeQuery.crosshairTarget`）。
-     */
     @SerialName("MeleeHeadshot")
     val meleeHeadshot: Double = 2.0,
-    /**
-     * 近战打腿倍率（近战专用，与投射物的打腿默认值无关）。
-     */
     @SerialName("MeleeLegshot")
     val meleeLegshot: Double = 0.5,
-    /**
-     * 一段近战动作结束后多少 tick 内再挥击算连招。
-     *
-     * 窗口内再挥击进下一段，超时回到第 0 段。
-     */
     @SerialName("MeleeComboReset")
     val meleeComboReset: Int = 15,
-    /**
-     * 近战判定形状（JSON 顶层 `MeleeHitbox`）。
-     *
-     * 不写时按 [MeleeHitbox] 的默认值来：**长方体**，尺寸 1.8×1.8、
-     * 前向长度 = `MeleeRange + player.getEntityReach()`。
-     */
     @SerialName("MeleeHitbox")
     val meleeHitbox: MeleeHitbox? = null,
-    /**
-     * 近战横扫采样（JSON 顶层 `MeleeSweep`）。不写 = 静态判定。
-     */
     @SerialName("MeleeSweep")
     val meleeSweep: MeleeSweep? = null,
-    /**
-     * 近战动作序列（JSON 顶层 `MeleeActions`）。
-     *
-     * **循环序列**：下标在挥击开始时锁存，越过末尾回到第 0 段；每段可独立指定
-     * 动画/时长/结算 tick/判定/伤害/音效。
-     */
     @SerialName("MeleeActions")
     val meleeActions: SingleOrList<MeleeAction> = SingleOrList(),
-    /**
-     * 近战攻击音效。
-     *
-     * 与 [soundInfo] 分开，是为了让配件/弹药/开火模式能**只**改近战音效：
-     * 属性覆盖的合并粒度是顶层属性，写 `"SoundInfo"` 会整块替换掉开火与换弹音效。
-     */
     @SerialName("MeleeSound")
     val meleeSound: MeleeSound = MeleeSound(),
     @JvmField
     @SerialName("Projectile")
     val projectile: StringOrObject<ProjectileInfo> = StringOrObject(ProjectileInfo()),
-    /**
-    * Bones of the model that draw the round currently loaded in the weapon.
-    *
-    * A single name or a list of them, so one ammo type can draw several bones at once (for example
-    * a warhead bone plus its "_dummy" counterpart).
-    *
-    * Each ammo consumer may override this with its own bones (see [AmmoConsumer.projectileBone]);
-    * the names of all of them are collected by [GunData.projectileBoneNames] so the renderer can
-    * hide every bone except the ones of the selected ammo type.
-    */
     @SerialName("ProjectileBone")
     val projectileBone: SingleOrList<String> = SingleOrList<String>(),
     @SerialName("ShootPos")
@@ -189,28 +109,8 @@ data class DefaultGunData(
     val seekWeaponInfo: SeekWeaponInfo? = null,
     @SerialName("ProjectileDummyInfo")
     val projectileDummyInfo: ProjectileDummyInfo? = null,
-    /**
-     * 每次开火消耗的弹药量（**主来源口径**：一次开火扣几个弹药单位）。
-     *
-     * 物品类武器就是「扣几发子弹」；能量类武器下随形态变化：
-     * - 背包型（[magazine] `<= 0`）：没有弹匣，每发直接扣这么多 FE；
-     * - 弹匣型（[magazine] `> 0` 且 [fuelPerAmmo] `> 0`）：每发扣这么多**发弹匣弹药**，
-     *   能量只在换弹/退弹时按 [fuelPerAmmo] 折算，所以这里应当写 `1`
-     *   —— 不要再拿它当 FE 用量，那是 [fuelPerAmmo] 的职责。
-     */
     @SerialName("AmmoCostPerShoot")
     val ammoCostPerShoot: Int = 1,
-    /**
-     * 「其他类型弹药 → 弹药」的换算比例：多少点外部资源折算成 **1 发**弹匣弹药。
-     *
-     * 目前用于能量类武器（`AmmoType` 为 `FE` / `RF` / `energy`）的弹匣形态：
-     * - 换弹时，备弹能量按 `能量 / fuelPerAmmo` 折算成能装填几发；
-     * - 退弹时，弹匣剩余发数按 `发数 * fuelPerAmmo` 折回能量。
-     *
-     * 只有 [magazine] `> 0` 且本字段 `> 0` 才是弹匣型能量武器
-     * （见 `GunData.isEnergyMagazine`）。背包型没有弹匣，不使用本字段，
-     * 它的每发消耗由 [ammoCostPerShoot] 直接表示。
-     */
     @SerialName("FuelPerAmmo")
     val fuelPerAmmo: Int = 0,
     @SerialName("ProjectileAmount")
@@ -247,15 +147,6 @@ data class DefaultGunData(
     val bypassesArmor: Double = 0.0,
     @SerialName("AmmoType")
     val ammoConsumers: SingleOrList<StringOrObject<AmmoConsumer>> = SingleOrList(),
-    /**
-     * 充能射击档位。
-     *
-     * 开火时若某一档的条件满足（开镜 + 电量够，见 [ChargeAction]），则这一发按其 `Override`
-     * 覆写属性，并从枪械自身能量存储额外扣一次 FE。按数组顺序取第一个满足的；都不满足就
-     * 退回普通射击，不扣电也不覆写。
-     *
-     * 空列表 = 该枪没有充能射击。
-     */
     @SerialName("ChargeAction")
     val chargeActions: SingleOrList<ChargeAction> = SingleOrList(),
     @SerialName("UseNacelleCamera")
@@ -468,12 +359,7 @@ data class DefaultGunData(
     fun availablePerks(): List<String> {
         return availablePerks.list
     }
-    /**
-     * 返回一份收敛到合法区间的副本。
-     *
-     * 原实现是就地修改字段；改成不可变 value 之后只能返回新实例。当前仓库内没有调用方，
-     * 保留是为了不丢掉这段收敛逻辑（IDBasedData.limit() 的默认实现是空操作）。
-     */
+
     fun clamped(): DefaultGunData {
         val clampedMaxEnergy = max(0, maxEnergy)
         val clampedMeleeDuration = max(1, meleeDuration)
