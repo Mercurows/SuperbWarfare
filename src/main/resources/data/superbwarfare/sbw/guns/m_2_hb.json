@@ -35,6 +35,7 @@
   "RPM": 360,
   "HeatPerShoot": 2,
   "GunType": "MachineGun",
+ "Deployable": true,
   "AvailableFireModes": [
     "Semi",
     "Auto"

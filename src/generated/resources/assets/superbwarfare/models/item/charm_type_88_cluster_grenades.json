@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "superbwarfare:item/charm_type_88_cluster_grenades"
+  }
+}

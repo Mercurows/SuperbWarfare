@@ -3,6 +3,7 @@
   "RecoilX": 0.003,
   "RecoilY": 0.04,
   "Damage": 4,
+  "RPM": 120,
   "Headshot": 1.5,
   "MeleeDamage": 5,
   "MeleeDuration": 16,
@@ -33,7 +34,7 @@
     }
   ],
   "Velocity": 10,
-  "Magazine": 5,
+  "Magazine": 6,
   "ZoomSpreadRate": 0.75,
   "ProjectileAmount": 10,
   "Weight": 4,
@@ -106,7 +107,8 @@
     "superbwarfare:target_lock",
     "!superbwarfare:micro_missile",
     "!superbwarfare:longer_wire",
-    "!superbwarfare:cupid_arrow"
+    "!superbwarfare:cupid_arrow",
+    "!superbwarfare:shatter_caps"
   ],
   "AvailableAttachments": {
     "Muzzle": [
@@ -119,7 +121,8 @@
       "superbwarfare:love_muzzle",
       "superbwarfare:star_muzzle",
       "superbwarfare:linear_muzzle",
-      "superbwarfare:cross_muzzle"
+      "superbwarfare:cross_muzzle",
+      "superbwarfare:bayonet_m1917"
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"

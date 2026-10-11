@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.entity.living.DPSGeneratorEntity
 import com.atsuishio.superbwarfare.entity.living.TargetEntity
 import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback
 import com.atsuishio.superbwarfare.entity.mixin.OBBHitter
+import com.atsuishio.superbwarfare.event.ShieldHandler
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.misc.TranscriptItem
@@ -209,6 +210,12 @@ interface IAdvancedHitDetection {
                 entity.forceApplyEffect(it)
             }
         }
+    }
+
+    fun shieldAbsorb(entity: Entity, hitVec: Vec3, damage: Float): Float {
+        if (this !is Projectile || this.level().isClientSide) return 0f
+        val target = entity as? LivingEntity ?: return 0f
+        return ShieldHandler.deflect(target, this, hitVec, damage)
     }
 
     /**

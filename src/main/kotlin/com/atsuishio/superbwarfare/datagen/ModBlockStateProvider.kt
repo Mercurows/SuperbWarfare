@@ -133,6 +133,7 @@ class ModBlockStateProvider(output: PackOutput, exFileHelper: ExistingFileHelper
         blockWithItem(ModBlocks.RAW_URANIUM_BLOCK)
 
         simpleBlock(ModBlocks.FUMO_25.get(), UncheckedModelFile(modLoc("block/fumo_25")))
+        simpleBlock(ModBlocks.TRIPOD.get(), UncheckedModelFile(modLoc("block/tripod")))
     }
 
     private fun name(block: Block): String {

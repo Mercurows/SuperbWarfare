@@ -17,5 +17,5 @@ class ItemDisplayInfo {
 
     @JvmField
     @SerialName("scale")
-    var scale: SerializedVector3f = Vector3f(0f, 0f, 0f)
+    var scale: SerializedVector3f = Vector3f(0.65f, 0.65f, 0.65f)
 }

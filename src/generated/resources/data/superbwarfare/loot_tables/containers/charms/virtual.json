@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_chiram_core"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_lily"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_hiru_head"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:charm_sui_container"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "superbwarfare:containers/charms/virtual"
+}

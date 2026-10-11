@@ -78,6 +78,8 @@ fun DefaultGunData.withOverrides(diff: Map<out Prop<*, *, *, *, *>, Any?>): Defa
         ammoCostPerShoot = int(GunProp.AMMO_COST_PER_SHOOT, ammoCostPerShoot),
         fuelPerAmmo = int(GunProp.FUEL_PER_AMMO, fuelPerAmmo),
         projectileAmount = int(GunProp.PROJECTILE_AMOUNT, projectileAmount),
+        projectileSplitCount = int(GunProp.PROJECTILE_SPLIT_COUNT, projectileSplitCount),
+        projectileSplitAmount = int(GunProp.PROJECTILE_SPLIT_AMOUNT, projectileSplitAmount),
         spreadPattern = if (diff.containsKey(GunProp.SPREAD_PATTERN)) {
             diff[GunProp.SPREAD_PATTERN] as? ProjectileSpreadPattern
         } else {
@@ -108,10 +110,18 @@ fun DefaultGunData.withOverrides(diff: Map<out Prop<*, *, *, *, *>, Any?>): Defa
         } else {
             soundInfo
         },
+        shootAnimation = if (diff.containsKey(GunProp.SHOOT_ANIMATION)) {
+            diff[GunProp.SHOOT_ANIMATION] as? String
+        } else {
+            shootAnimation
+        },
         meleeSound = if (diff.containsKey(GunProp.MELEE_SOUND)) {
             diff[GunProp.MELEE_SOUND] as? MeleeSound ?: meleeSound
         } else {
             meleeSound
         },
+        expMultiplier = num(GunProp.EXP_MULTIPLIER, expMultiplier),
+        projectileLifesteal = num(GunProp.PROJECTILE_LIFESTEAL, projectileLifesteal),
+        meleeLifesteal = num(GunProp.MELEE_LIFESTEAL, meleeLifesteal),
     )
 }

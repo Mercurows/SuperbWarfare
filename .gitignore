@@ -119,6 +119,9 @@ gradle-app.setting
 
 **/build/
 
+.gradle-home/
+.gradle-build/
+
 # Common working directory
 run/
 
@@ -141,3 +144,4 @@ bin/
 .mc-mcp-server/
 .mc-mcp-cache/
 .mc-mcp-cache-test/
+/.claude/

@@ -8,7 +8,6 @@ import net.minecraft.client.Minecraft
 import net.minecraft.core.BlockPos
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.api.distmarker.OnlyIn
-import java.util.*
 
 /**
  * High-performance, zero-allocation registry for client-side dynamic block light sources.
@@ -28,10 +27,17 @@ object LightPositionRegistry {
     private const val MAX_ACTIVE_LIGHTS = 2048
 
     private val sparks = Long2LongOpenHashMap(512).also { it.defaultReturnValue(0L) }
+
+    @Volatile
+    private var snapshot = Long2LongOpenHashMap(16).also { it.defaultReturnValue(0L) }
+
+    @Volatile
+    private var currentTick = 0L
+
+    private var snapshotStale = false
+
     private val active = LongOpenHashSet(512)
     private val expiredBuf = LongArrayList(128)
-
-    private var currentTick = 0L
 
     /**
      * Registers or refreshes a dynamic light source.
@@ -61,6 +67,7 @@ object LightPositionRegistry {
 
         sparks.put(packedPos, packed)
         active.add(packedPos)
+        snapshotStale = true
     }
 
     /**
@@ -109,7 +116,7 @@ object LightPositionRegistry {
      */
     @JvmStatic
     fun getLevel(packedPos: Long): Int {
-        val packed = sparks.get(packedPos)
+        val packed = readableSparks().get(packedPos)
         if (packed == 0L) return -1
 
         val maxLevel = (packed ushr 48).toInt()
@@ -131,6 +138,14 @@ object LightPositionRegistry {
         return base.coerceIn(1, 15)
     }
 
+    private fun readableSparks(): Long2LongOpenHashMap =
+        if (Minecraft.getInstance().isSameThread) sparks else snapshot
+
+    private fun publishSnapshot() {
+        snapshot = Long2LongOpenHashMap(sparks).also { it.defaultReturnValue(0L) }
+        snapshotStale = false
+    }
+
     @JvmStatic
     fun activeIterator(): LongIterator = active.iterator()
 
@@ -138,15 +153,61 @@ object LightPositionRegistry {
     fun isEmpty(): Boolean = active.isEmpty()
 
     /**
+     * Immediately removes the dynamic light at a position.
+     *
+     * Used when a projectile disappears so its own trail light does not linger
+     * at the position where it was removed.
+     *
+     * @param packedPos [BlockPos.asLong] of the light source
+     */
+    @JvmStatic
+    fun removeSpark(packedPos: Long) {
+        val removed = sparks.remove(packedPos)
+        val wasActive = active.remove(packedPos)
+        if (removed == 0L && !wasActive) return
+        snapshotStale = true
+        // Force the engine to drop the cached emission value
+        Minecraft.getInstance().level?.lightEngine?.checkBlock(BlockPos.of(packedPos))
+    }
+
+    /**
+     * Immediately removes all dynamic lights within [radius] blocks of [center].
+     *
+     * @param center center block pos
+     * @param radius removal radius in blocks (0 removes only the center)
+     */
+    @JvmStatic
+    fun removeAround(center: BlockPos, radius: Int) {
+        val r = radius.coerceAtLeast(0)
+        if (r == 0) {
+            removeSpark(center.asLong())
+            return
+        }
+
+        for (dx in -r..r) {
+            for (dy in -r..r) {
+                for (dz in -r..r) {
+                    val dist = kotlin.math.sqrt((dx * dx + dy * dy + dz * dz).toDouble()).toInt()
+                    if (dist <= r) {
+                        removeSpark(BlockPos.asLong(center.x + dx, center.y + dy, center.z + dz))
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Advances internal tick counter and purges expired sparks.
      */
     @JvmStatic
     fun tick() {
+        if (snapshotStale) publishSnapshot()
         currentTick++
         if (sparks.isEmpty()) return
 
-        val level = Minecraft.getInstance().level ?: return
-        val engine = level.lightEngine
+        // 注意：即使当前拿不到客户端世界（切换维度 / 退出世界等），过期光源也必须继续清理，
+        // 否则它们会一直留在表里被光照读取命中，表现为"凭空多出来的光源"。
+        val engine = Minecraft.getInstance().level?.lightEngine
         expiredBuf.clear()
         val curLow = currentTick and 0xFFFFL
 
@@ -163,17 +224,18 @@ object LightPositionRegistry {
                 // Re-queue a lighting check every tick while the spark is alive.
                 // Without this, the engine may serve a cached value from before
                 // the spark was registered, making the flash invisible.
-                engine.checkBlock(BlockPos.of(entry.longKey))
+                engine?.checkBlock(BlockPos.of(entry.longKey))
             }
         }
 
         if (!expiredBuf.isEmpty) {
+            snapshotStale = true
             for (i in expiredBuf.indices) {
                 val key = expiredBuf.getLong(i)
                 sparks.remove(key)
                 active.remove(key)
                 // Final check forces the engine to clear the cached emission value
-                engine.checkBlock(BlockPos.of(key))
+                engine?.checkBlock(BlockPos.of(key))
             }
             expiredBuf.clear()
         }
@@ -185,5 +247,6 @@ object LightPositionRegistry {
         active.clear()
         expiredBuf.clear()
         currentTick = 0L
+        publishSnapshot()
     }
 }

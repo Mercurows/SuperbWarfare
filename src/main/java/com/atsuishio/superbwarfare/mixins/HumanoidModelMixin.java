@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.event.DeployedWeaponHandler;
 import com.atsuishio.superbwarfare.item.curio.ParachuteItem;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import net.minecraft.client.model.HumanoidModel;
@@ -8,6 +9,7 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -126,6 +128,18 @@ public abstract class HumanoidModelMixin {
                 this.rightLeg.yRot = 0 * Mth.DEG_TO_RAD;
                 this.rightLeg.zRot = 0 * Mth.DEG_TO_RAD;
             }
+        }
+
+        if (livingEntity instanceof Player player && DeployedWeaponHandler.isDeployed(player)) {
+            var x = -45;
+
+            this.leftArm.xRot = x * Mth.DEG_TO_RAD;
+            this.leftArm.yRot = 0 * Mth.DEG_TO_RAD;
+            this.leftArm.zRot = 0 * Mth.DEG_TO_RAD;
+
+            this.rightArm.xRot = x * Mth.DEG_TO_RAD;
+            this.rightArm.yRot = 0 * Mth.DEG_TO_RAD;
+            this.rightArm.zRot = 0 * Mth.DEG_TO_RAD;
         }
 
         // 趴下持枪

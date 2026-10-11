@@ -21,7 +21,9 @@ abstract class BounceProjectile : FastThrowableProjectile {
         val vec = this.deltaMovement
 
         // 更新朝向（在 deltaMovement 可能被 onHit/反弹 修改之后）
-        this.updateRotation()
+        if (vec.length() >= STOP_SPEED) {
+            this.updateRotation()
+        }
 
         // 5. 对当前 deltaMovement（已包含反弹等修改）施加摩擦力和重力
         val friction = if (this.isInWater) 0.8 else 1.0
@@ -47,7 +49,7 @@ abstract class BounceProjectile : FastThrowableProjectile {
 
     open fun bounce(direction: Direction) {
         val speed = this.deltaMovement.length()
-        if (speed < 0.15) {
+        if (speed < STOP_SPEED) {
             this.deltaMovement = Vec3.ZERO
             return
         }
@@ -63,5 +65,9 @@ abstract class BounceProjectile : FastThrowableProjectile {
 
             Direction.Axis.Z -> this.deltaMovement = this.deltaMovement.multiply(0.8, 0.8, -0.6)
         }
+    }
+
+    companion object {
+        private const val STOP_SPEED = 0.15
     }
 }

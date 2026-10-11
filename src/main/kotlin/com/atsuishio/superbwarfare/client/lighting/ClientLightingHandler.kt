@@ -74,6 +74,8 @@ object ClientLightingHandler {
      */
     @JvmStatic
     fun handleProjectileRemoved(entity: Entity) {
+        LightPositionRegistry.removeAround(entity.blockPosition(), 2)
+
         val radius = getExplosionRadius(entity)
         if (radius > 0f) {
             ProjectileLightHelper.emitExplosionFlashDirect(

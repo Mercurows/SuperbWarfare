@@ -116,6 +116,10 @@ class TowEntity(type: EntityType<TowEntity>, world: Level) : VehicleEntity(type,
         val ab = AABB(pos, pos).inflate(0.75).move(barrelVector.scale(-2.0)).expandTowards(barrelVector.scale(-5.0))
         val coolDown = Math.ceil(20f / (vehicleWeaponRpm(0).toFloat() / 60)).toInt()
         reloadCooldown = coolDown
+        // 开火后弹仓已空：必须把装填状态清掉，
+        // 否则下一次右键会落进 interact 里的 "已装填 → 未装填" 分支被静默吃掉，
+        // 玩家要点两次才开始装填（没有创造弹药盒时就表现为"装不上弹"）。
+        loaded = false
 
         // 尾焰伤害
         for (entity in level().getEntities(

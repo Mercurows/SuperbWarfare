@@ -12,6 +12,7 @@
   "Weight": 1,
   "DrawTime": 7,
   "ZoomTime": 3,
+  "ZoomSpreadRate": 0.2,
   "NormalReloadTime": [42, 42, 42],
   "EmptyReloadTime": [45, 45, 45],
   "ActionSteps": [

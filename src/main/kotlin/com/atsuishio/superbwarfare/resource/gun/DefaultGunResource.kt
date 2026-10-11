@@ -47,6 +47,10 @@ class DefaultGunResource : IDBasedData<DefaultGunResource> {
     var itemDisplay: MutableMap<String, ItemDisplayInfo> = hashMapOf()
 
     @JvmField
+    @SerialName("Description")
+    var description: List<ComponentInfo> = emptyList()
+
+    @JvmField
     @SerialName("Model")
     var modelValue: ModelResource? = ModelResource()
 
@@ -99,8 +103,8 @@ class DefaultGunResource : IDBasedData<DefaultGunResource> {
     var animation: GunAnimation? = GunAnimation()
 
     @JvmField
-    @SerialName("UseOldHandRenderer")
-    var useOldHandRenderer: Boolean = false
+    @SerialName("HasReflectionSound")
+    var hasReflectionSound: Boolean = true
 
     @JvmField
     @SerialName("FlarePosition")
@@ -150,6 +154,12 @@ class DefaultGunResource : IDBasedData<DefaultGunResource> {
     @SerialName("CanZoom")
     var canZoom: Boolean = true
 
+    // 枪自带的瞄具（镜筒窗口）。为 null 表示这把枪没有 —— 绝大多数枪都是 null。
+    // geo 里有没有 `ocular` 骨骼是另一道独立的闸，两道都过才会开窗，见 BuiltinScopeInfo。
+    @JvmField
+    @SerialName("BuiltinScope")
+    var builtinScope: BuiltinScopeInfo? = null
+
     @JvmField
     @SerialName("SprintOffset")
     var sprintOffset: SerializedVector3f = Vector3f(0f, 0f, 0f)
@@ -177,7 +187,8 @@ class DefaultGunResource : IDBasedData<DefaultGunResource> {
     @SerialName("AmmoBar")
     var ammoBar: List<AmmoBarEntry> = emptyList()
 
-    // 枪身弹药文字的锚点骨骼，空列表表示不启用；写法与瞄准镜的 TextShow 一致
+    // 枪身弹药文字 / 热量文字的锚点骨骼，空列表表示不启用；写法与瞄准镜的 TextShow 一致，
+    // 写了 `%heat%` 的条目改读枪身热量（见 AmmoTextEntry）
     @JvmField
     @SerialName("TextShow")
     var textShow: List<AmmoTextEntry> = emptyList()

@@ -330,10 +330,20 @@ object ClickEventHandler {
                 sendPacketToServer(FireModeMessage(true))
                 ClientEventHandler.burstFireAmount = 0
             }
+            // 部署状态下按跳跃/潜行键直接解除部署，效果等同再按一次交互键
+            if ((key == mc.options.keyJump.key.value || key == mc.options.keyShift.key.value)
+                && DeployedWeaponHandler.isDeployed(player)
+            ) {
+                sendPacketToServer(DeployWeaponMessage)
+            }
             if (key == ModKeyMappings.INTERACT.key.value) {
                 // 手持副武器时按普通物品处理
                 if (GunItem.isHeldWeapon(stack)) {
-                    KeyMapping.click(mc.options.keyUse.key)
+                    if (DeployedWeaponHandler.isDeployed(player) || DeployedWeaponHandler.deployTarget(player) != null) {
+                        sendPacketToServer(DeployWeaponMessage)
+                    } else {
+                        KeyMapping.click(mc.options.keyUse.key)
+                    }
                 } else if (stack.`is`(ModItems.MONITOR.get())) {
                     sendPacketToServer(InteractMessage)
                 }
@@ -381,6 +391,8 @@ object ClickEventHandler {
             }
 
             if (key == ModKeyMappings.EDIT_MODE.key.value) {
+                if (DeployedWeaponHandler.isDeployed(player)) return
+
                 if (vehicle is VehicleEntity) {
                     val data = vehicle.getGunData(player)
                     if (data != null) {
@@ -509,8 +521,7 @@ object ClickEventHandler {
             ClientEventHandler.usingLunge = true
         }
 
-        // 当前操控的枪：主手是普通枪时就是主手物品，副武器被切出来时就是那把副武器的合成栈。
-        // 下面的开火/换弹/音效全部读它 —— 这就是四期"不需要单独判断 subweapon"的落点（§9.8.3）。
+        // 当前操控的枪
         val gunStack = ActiveGun.stackOf(player)
         val item = gunStack.item as? GunItem ?: return
         if (!GunItem.isOperable(gunStack)) return
@@ -562,7 +573,7 @@ object ClickEventHandler {
                     ClientEventHandler.lockingPos = null
                 }
             } else {
-                sendPacketToServer(FireKeyMessage(0, ClientEventHandler.bowPower, ClientEventHandler.zoom))
+                sendPacketToServer(FireKeyMessage(0, ClientEventHandler.chargePower, ClientEventHandler.zoom))
                 if (ClientEventHandler.drawTime < 0.01) {
                     val fireMode = data.selectedFireModeInfo().mode
                     if (fireMode == FireMode.BURST) {
@@ -604,16 +615,18 @@ object ClickEventHandler {
         } else {
             0.0
         }
-        val chargePower = chargeConfig?.powerForProgress(releaseProgress) ?: ClientEventHandler.bowPower
+        val chargePower = chargeConfig?.powerForProgress(releaseProgress) ?: ClientEventHandler.chargePower
 
         sendPacketToServer(FireKeyMessage(1, chargePower, ClientEventHandler.zoom))
-        ClientEventHandler.bowPull = false
         ClientEventHandler.holdingFireKey = false
         ClientEventHandler.chargeActive = false
         ClientEventHandler.chargeProgress = 0.0
         ClientEventHandler.chargePower = 0.0
-        ClientEventHandler.holdingFireKeyTicks = 0
-        ClientEventHandler.holdingFireKeyTicks0 = 0f
+
+        if (!ClientEventHandler.hasBarrelSpin(stack)) {
+            ClientEventHandler.holdingFireKeyTicks = 0
+            ClientEventHandler.holdingFireKeyTicks0 = 0f
+        }
         ClientEventHandler.holdFireVehicle = false
         ClientEventHandler.isEditing = false
         ClientEventHandler.customRpm = 0

@@ -108,6 +108,14 @@ object ModBlockEntities {
     }
 
     @JvmField
+    val TRIPOD = registerBlockEntity("tripod") {
+        BlockEntityType.Builder.of(
+            { pos, state -> TripodBlockEntity(pos, state) },
+            ModBlocks.TRIPOD.get()
+        ).build(null)
+    }
+
+    @JvmField
     val BIOGAS_GENERATOR = registerBlockEntity("biogas_generator") {
         BlockEntityType.Builder.of(
             { pos, state -> BiogasGeneratorBlockEntity(pos, state) },

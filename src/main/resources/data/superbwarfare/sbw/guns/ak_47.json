@@ -66,6 +66,7 @@
     "superbwarfare:intelligent_chip",
     "superbwarfare:backpack_linked_magazine",
     "superbwarfare:turbo_charger",
+    "superbwarfare:regeneration",
     "superbwarfare:adrenaline_rush",
     "superbwarfare:quickdraw",
     "superbwarfare:snapshot_sights",
@@ -147,9 +148,7 @@
       "superbwarfare:loudspeaker",
       "superbwarfare:silencer_qinglan",
       "superbwarfare:steel_pipe_silencer",
-      "superbwarfare:milencer"
-    ],
-    "Bayonet": [
+      "superbwarfare:milencer",
       "superbwarfare:bayonet_6kh2"
     ],
     "SubWeapon": [
@@ -157,6 +156,21 @@
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"
+    ],
+    "LowerRail": [
+      "superbwarfare:lower_rail_bipod",
+      "superbwarfare:peq_15",
+      "superbwarfare:pistol_laser"
+    ],
+    "UpperRail": [
+      "superbwarfare:peq_15",
+      "superbwarfare:standard_gun_shield",
+      "superbwarfare:pistol_laser"
+    ]
+  },
+  "AttachmentConflicts": {
+    "Grip": [
+      "LowerRail"
     ]
   },
   "SoundInfo": {

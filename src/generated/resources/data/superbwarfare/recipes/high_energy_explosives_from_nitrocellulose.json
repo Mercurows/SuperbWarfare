@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "item": "superbwarfare:nitrocellulose"
+    },
+    "b": {
+      "item": "minecraft:sugar"
+    },
+    "c": {
+      "tag": "forge:sand"
+    }
+  },
+  "pattern": [
+    "aba",
+    "c c",
+    "aba"
+  ],
+  "result": {
+    "count": 8,
+    "item": "superbwarfare:high_energy_explosives"
+  },
+  "show_notification": true
+}

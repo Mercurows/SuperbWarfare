@@ -67,6 +67,7 @@
     "superbwarfare:intelligent_chip",
     "superbwarfare:backpack_linked_magazine",
     "superbwarfare:turbo_charger",
+    "superbwarfare:regeneration",
     "superbwarfare:kill_clip",
     "superbwarfare:gutshot_straight",
     "superbwarfare:monster_hunter",
@@ -133,9 +134,7 @@
       "superbwarfare:muzzle_compensator_r_17",
       "superbwarfare:ar_silencer",
       "superbwarfare:loudspeaker",
-      "superbwarfare:silencer_qinglan"
-    ],
-    "Bayonet": [
+      "superbwarfare:silencer_qinglan",
       "superbwarfare:bayonet_m_9"
     ],
     "SubWeapon": [
@@ -143,6 +142,25 @@
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"
+    ],
+    "LowerRail": [
+      "superbwarfare:lower_rail_bipod",
+      "superbwarfare:peq_15",
+      "superbwarfare:pistol_laser"
+    ],
+    "UpperRail": [
+      "superbwarfare:peq_15",
+      "superbwarfare:standard_gun_shield",
+      "superbwarfare:pistol_laser"
+    ],
+    "LeftRail": [
+      "superbwarfare:peq_15",
+      "superbwarfare:range_finder",
+      "superbwarfare:pistol_laser"
+    ],
+    "RightRail": [
+      "superbwarfare:peq_15",
+      "superbwarfare:pistol_laser"
     ]
   },
   "SoundInfo": {

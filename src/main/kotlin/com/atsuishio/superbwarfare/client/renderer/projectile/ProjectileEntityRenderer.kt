@@ -45,7 +45,7 @@ class ProjectileEntityRenderer(manager: EntityRendererProvider.Context) : Entity
 
         ClientRenderHandler.transformVirtualRenderPosition(poseStack, entity, partialTick)
 
-        val width = 0.3f
+        val width = Math.min(entity.tickCount * 0.15f, 0.6f)
         val position = entity.getPosition(partialTick)
         val distance = position.distanceTo(eyePos)
         val length = 0.7 * entity.deltaMovement.length()
@@ -54,7 +54,7 @@ class ProjectileEntityRenderer(manager: EntityRendererProvider.Context) : Entity
         poseStack.mulPose(Axis.XP.rotationDegrees(-VehicleVecUtils.getXRotFromVector(entity.deltaMovement).toFloat()))
         poseStack.scale(width, width, length.toFloat())
 
-        if (entity.tickCount >= 5 || distance > 6.0) {
+        if (entity.tickCount >= 2 || distance > 4.0) {
             val type = RenderType.energySwirl(TEXTURE, 15.0f, 15.0f)
             instance.renderToBuffer(
                 poseStack,

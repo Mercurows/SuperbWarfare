@@ -150,7 +150,6 @@ object DataValidator {
      *
      * @param warn 非致命问题的回调（例如"能跑但建议迁移"的写法）。不传就当没有。
      */
-    @JvmOverloads
     private fun validateDerivedState(decoded: Any, warn: (String) -> Unit = {}) {
         when (decoded) {
             is DefaultGunData -> {
@@ -162,6 +161,7 @@ object DataValidator {
                 decoded.fireModes.size
                 decoded.availablePerks()
                 validateAvailableAttachments(decoded, warn)
+                validateAttachmentConflicts(decoded, warn)
 
                 validateMeleeData(decoded, warn)
             }
@@ -272,6 +272,36 @@ object DataValidator {
     }
 
     /**
+     * `AttachmentConflicts` 的校验规则。
+     *
+     * 抓的还是"写错了不报错、只是这条互斥永远不生效"：键和值都得是 `AttachmentType` 的名字，
+     * 指向自己等于什么都没写。判据见 `AttachmentSlots.gunConflicts`，那边对认不出来的名字是静默跳过，
+     * 所以这里报出来是唯一能发现手滑的地方。
+     *
+     * **不做**的是"这两个槽位是不是真的装得下两个"：那是几何问题，读不到模型就判不了。
+     */
+    private fun validateAttachmentConflicts(data: DefaultGunData, warn: (String) -> Unit) {
+        val known = AttachmentType.entries.joinToString(", ") { it.attachmentName }
+
+        for ((slotKey, others) in data.attachmentConflicts) {
+            if (AttachmentType.entries.none { it.attachmentName == slotKey }) {
+                warn(
+                    "AttachmentConflicts key '$slotKey' is not a known attachment slot ($known); " +
+                            "the entry is ignored"
+                )
+            }
+
+            for (other in others) {
+                if (AttachmentType.entries.none { it.attachmentName == other }) {
+                    warn("AttachmentConflicts['$slotKey'] names '$other', which is not a known attachment slot ($known)")
+                } else if (other == slotKey) {
+                    warn("AttachmentConflicts['$slotKey'] names its own slot; the entry does nothing")
+                }
+            }
+        }
+    }
+
+    /**
      * 配件数据的校验规则。
      *
      * 抓的是几类"写错了不报错、只会静默失效"的问题：
@@ -279,13 +309,19 @@ object DataValidator {
      * - 槽位的渲染走注册表通用路径，却没写 `Model`/`Texture`（装了但枪上看不见）
      * - `Bone` 写在"约定骨骼"槽位上（渲染不看它）
      * - `Override` 里写了不是枪械属性的键（宽松解析会静默忽略）
+     * - `ExtraSlots` 里的槽位没登记，或各槽位解析挂载骨骼的方式不一致（同一条 `Bone` 会被解释成不同骨骼）
      *
      * **不做**骨骼是否存在的校验：那要读客户端模型，只能等资源加载完再查。
      */
     private fun validateAttachmentData(data: AttachmentDefinition, warn: (String) -> Unit) {
-        val slot = AttachmentSlots.ofOrNull(data.slot)
-            ?: error("Attachment slot ${data.slot} is not registered in AttachmentSlots.ALL")
+        // `ExtraSlots` 里的名字写错就是"这件配件在那根导轨上永远装不上"，所以和主槽位一样是致命的
+        for (type in data.acceptedSlots) {
+            if (AttachmentSlots.ofOrNull(type) == null) {
+                error("Attachment slot $type is not registered in AttachmentSlots.ALL")
+            }
+        }
 
+        val slot = AttachmentSlots.of(data.slot)
         if (slot.renderMode == AttachmentRenderMode.GENERIC && (data.model == null || data.texture == null)) {
             warn(
                 "slot ${data.slot} is rendered generically, but " +
@@ -294,9 +330,22 @@ object DataValidator {
             )
         }
 
-        val mountBone = slot.mountBone
-        if (mountBone is AttachmentMountBone.Fixed && data.bone != null) {
-            warn("Bone=${data.bone} is ignored: slot ${data.slot} always mounts on '${mountBone.name}'")
+        // 逐个槽位查：多槽位配件的主槽位可能不是 Fixed，但 `ExtraSlots` 里那个是
+        val acceptedMounts = data.acceptedSlots.mapNotNull { AttachmentSlots.ofOrNull(it)?.mountBone }
+        for (mountBone in acceptedMounts) {
+            if (mountBone is AttachmentMountBone.Fixed && data.bone != null) {
+                warn("Bone=${data.bone} is ignored: slot ${data.slot} also mounts on the convention bone '${mountBone.name}'")
+                break
+            }
+        }
+
+        // `Bone` 只有单个值，而 `ExtraSlots` 里的槽位可能一个走"约定骨骼"、一个走配件自己声明的骨骼 ——
+        // 那时同一条 `Bone` 会在不同槽位上被解释成不同的东西，只能靠人确认
+        if (acceptedMounts.distinctBy { it::class }.size > 1) {
+            warn(
+                "slots ${data.acceptedSlots.joinToString(", ") { it.name }} resolve their mount bone " +
+                        "differently (some Fixed, some FromDefinition); a single 'Bone' cannot mean both"
+            )
         }
 
         for (key in data.override?.keys.orEmpty()) {
@@ -305,8 +354,10 @@ object DataValidator {
             }
         }
 
-        if (data.slot in data.conflictsWith) {
-            warn("ConflictsWith contains its own slot ${data.slot}: the entry does nothing")
+        // 点名自己装的槽位是空转的（`AttachmentSlots.conflicts` 第一行就把 type == other 排除掉了）
+        val selfConflict = data.conflictsWith.filter { it in data.acceptedSlots }
+        if (selfConflict.isNotEmpty()) {
+            warn("ConflictsWith contains its own slot(s) ${selfConflict.joinToString(", ") { it.name }}: the entry does nothing")
         }
 
         if (data.allowSharedMount && data.conflictsWith.isNotEmpty()) {
@@ -317,6 +368,48 @@ object DataValidator {
         }
 
         validateSubWeaponData(data, warn)
+        validateShieldData(data, warn)
+    }
+
+    /**
+     * 枪盾定义的校验
+     */
+    private fun validateShieldData(data: AttachmentDefinition, warn: (String) -> Unit) {
+        val info = data.shield ?: return
+
+        if (AttachmentType.UPPER_RAIL !in data.acceptedSlots) {
+            warn("attachment ${data.getId()} declares Shield but is not installable on UpperRail")
+        }
+        if (info.durability <= 0.0) {
+            warn("Shield.Durability must be > 0, got ${info.durability}")
+        }
+        if (info.resist !in 0.0..100.0) {
+            warn("Shield.Resist is clamped to 0~100, got ${info.resist}")
+        }
+        if (info.coverAngle !in 0.0..180.0) {
+            warn("Shield.CoverAngle is clamped to 0~180, got ${info.coverAngle}")
+        }
+        if (info.rechargeRate < 0.0) {
+            warn("Shield.RechargeRate must be >= 0, got ${info.rechargeRate}")
+        }
+        if (info.rechargeDelay < 0) {
+            warn("Shield.RechargeDelay must be >= 0, got ${info.rechargeDelay}")
+        }
+        if (info.brokenLockout < 0) {
+            warn("Shield.BrokenLockout must be >= 0, got ${info.brokenLockout}")
+        }
+        if (info.energyPerCharge < 0.0) {
+            warn("Shield.EnergyPerCharge must be >= 0, got ${info.energyPerCharge}")
+        }
+        if (info.breakOverflow !in 0.0..100.0) {
+            warn("Shield.BreakOverflow is clamped to 0~100, got ${info.breakOverflow}")
+        }
+        if (info.energyPerCharge > 0.0 && data.modifiers.none { it.prop == GunProp.MAX_ENERGY.serializationName }) {
+            warn("attachment ${data.getId()} charges FE but grants no MaxEnergy; it can only recharge from other sources")
+        }
+        if (data.model == null || data.texture == null) {
+            warn("attachment ${data.getId()} declares Shield but has no Model/Texture, so the shield face cannot be hidden")
+        }
     }
 
     /**

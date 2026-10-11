@@ -27,6 +27,15 @@ object MiscConfig {
     }
 
     @JvmField
+    val REALISTIC_SHOOT_MODE = buildServerConfig {
+        comment("Set true to enable realistic shoot mode, where bullets will gain the same angle as the gun instead of player's sights angle")
+        comment("The shoot angle of this mode is affected by client resources, please enable it with caution")
+        comment("是否开启拟真开火模式，开启后子弹会按照枪口方向射出，而不是原版的玩家视线方向")
+        comment("本模式的开火角度会受客户端资源影响，请慎重开启")
+        define("realistic_shoot_mode", false)
+    }
+
+    @JvmField
     val DROP_AMMO_BOX = buildServerConfig {
         comment("Whether to drop an ammo box after the player dies")
         comment("玩家在死亡时，是否掉落弹药")

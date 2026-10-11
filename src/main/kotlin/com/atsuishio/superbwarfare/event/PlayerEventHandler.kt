@@ -57,14 +57,21 @@ object PlayerEventHandler {
             if (stack.item is GunItem) {
                 handleSpecialWeaponAmmo(player)
             }
+
+            DeployedWeaponHandler.serverTick(player)
         }
+    }
+
+    @SubscribeEvent
+    fun onPlayerChangedDimension(event: PlayerEvent.PlayerChangedDimensionEvent) {
+        DeployedWeaponHandler.undeploy(event.entity)
     }
 
     private fun handleSpecialWeaponAmmo(player: Player) {
         val stack = player.mainHandItem
         val data = GunData.from(stack)
 
-        if ((stack.`is`(ModItems.RPG.get()) || stack.`is`(ModItems.BOCEK.get())) && data.hasEnoughAmmoToShoot(player)) {
+        if (data.hasEnoughAmmoToShoot(player)) {
             data.isEmpty.set(false)
         }
     }

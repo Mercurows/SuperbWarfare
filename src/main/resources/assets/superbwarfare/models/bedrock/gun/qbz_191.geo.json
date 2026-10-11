@@ -10827,6 +10827,29 @@
 					"pivot": [0.75098, 1.76987, 3.03984]
 				},
 				{
+					"name": "lower_rail_pos",
+					"parent": "positioning2",
+					"pivot": [0, 0.49126, -12.36415]
+				},
+				{
+					"name": "right_rail_pos",
+					"parent": "positioning2",
+					"pivot": [-1.13047, 1.50689, -12.70087],
+					"rotation": [0, 0, 90]
+				},
+				{
+					"name": "left_rail_pos",
+					"parent": "positioning2",
+					"pivot": [1.13047, 1.50689, -12.70087],
+					"rotation": [0, 0, -90]
+				},
+				{
+					"name": "upper_rail_pos",
+					"parent": "positioning2",
+					"pivot": [0, 3.15923, -9.96259],
+					"rotation": [0, 0, -180]
+				},
+				{
 					"name": "positioning",
 					"pivot": [0, 0, 0]
 				},

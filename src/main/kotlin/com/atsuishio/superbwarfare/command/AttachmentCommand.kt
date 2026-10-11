@@ -1,14 +1,13 @@
 package com.atsuishio.superbwarfare.command
 
 import com.atsuishio.superbwarfare.Mod
-import com.atsuishio.superbwarfare.command.builder.buildCommand
-import com.atsuishio.superbwarfare.command.builder.entityArg
-import com.atsuishio.superbwarfare.command.builder.enumArg
-import com.atsuishio.superbwarfare.command.builder.resourceLocationArg
+import com.atsuishio.superbwarfare.command.builder.*
 import com.atsuishio.superbwarfare.config.server.AttachmentConfig
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
 import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots
+import com.atsuishio.superbwarfare.data.attachment.LaserInfo
 import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.data.gun.subdata.Attachment
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.item.attachment.AttachmentProvider
@@ -25,43 +24,17 @@ import net.minecraft.world.entity.LivingEntity
 import net.minecraftforge.registries.ForgeRegistries
 import java.util.*
 
-// 参数名同时被补全逻辑用来从上下文里取出已解析的参数
 private const val ENTITY_ARG = "entity"
 private const val TYPE_ARG = "type"
 private const val ATTACHMENT_ARG = "attachment"
+private const val COLOR_ARG = "color"
 
-/**
- * ```
- * /sbw attachment <entity> set <type> <attachment>
- * /sbw attachment <entity> clear [<type>]
- * /sbw attachment <entity> random [<type>]
- * ```
- *
- * 三条指令都作用于实体主手的枪械，主手物品不是 [GunItem] 时指令失败：
- * - `set`：把槽位换成指定配件。物品与配件数据必须存在、配件数据的槽位必须与 `type` 一致、
- *   不能与该枪上已安装的配件抢同一个挂点组，
- *   并且必须被该枪械数据的 `AvailableAttachments` 解析出来
- * - `clear`：清空指定槽位，不写 `type` 时清空全部槽位（槽位清单来自 `AttachmentSlots.ALL`）
- * - `random`：在可用列表里随机抽一个配件装上。不写 `type` 时**先清空全部槽位，再按挂点组各抽一个**
- *   —— 同组槽位互斥（刺刀 / 枪口配件都是 `muzzle_device`），既不能逐槽位抽（会抽出装不上的组合），
- *   也不能留着旧配件抽（会退化成"重抽已装的那一个"）。见 [clearAllAttachments] / [rollAllSlots]
- *
- * `AvailableAttachments` 现在支持 `#物品标签` 与 `!排除` 两种写法
- * （见 [com.atsuishio.superbwarfare.data.attachment.AvailableAttachments]），
- * 但**指令这一侧不需要知道**：校验与补全都只读 [installableAttachments]，
- * 而它读的是已经展开成具体 id 的 [GunData.availableAttachments] ——
- * 所以标签里新增一个配件，`set` 立刻就能装、补全立刻就能列出，两边不会分叉。
- *
- * 上面两条限制都会随服务端配置**放宽**（见 `AttachmentConfig`）：
- * - `FREE_ATTACHMENT_MODE`（自由改装）：挂点组与 `ConflictsWith` 互斥不再拦人，
- *   同一个枪口挂点上可以同时挂刺刀与消音器，握把 / 刺刀 / 副武器也可以共存；
- *   `random` 随之从"每个挂点组抽一个"改成"**每个槽位抽一个**"
- * - `FULLY_FREE_ATTACHMENT_MODE`（完全自由改装）：连 `AvailableAttachments` 都不看，
- *   任意枪械都能装该槽位已注册的全部配件（含上一条）
- *
- * 两档放宽都只走 `Attachment.conflict` / `GunData.availableAttachments` 那两个入口，
- * 所以补全（[installableAttachments]）与界面用的候选列表会和校验结果保持一致。
- */
+/** `laserColor` 的 `<hex>` 传这个值表示清掉颜色覆盖 */
+private const val LASER_COLOR_RESET = "reset"
+
+/** `RRGGBB` / `#RRGGBB` / `0xRRGGBB` */
+private val RGB_PATTERN = Regex("^(?:#|0x)?([A-Fa-f0-9]{6})$", RegexOption.IGNORE_CASE)
+
 val ATTACHMENT_COMMAND = buildCommand("attachment") {
     requirePermission(2)
 
@@ -82,18 +55,19 @@ val ATTACHMENT_COMMAND = buildCommand("attachment") {
                                 )
                             }
 
-                        if (definition.slot != type) {
+                        if (type !in definition.acceptedSlots) {
                             fail {
                                 Component.translatable(
                                     "commands.superbwarfare.attachment.fail.type",
                                     id.toString(),
-                                    definition.slot.slotName(),
+                                    acceptedSlotNames(definition),
                                     type.slotName()
                                 )
                             }
                         }
 
-                        // 互斥：挂点组被别人占了，或任一方在 `ConflictsWith` 里点了名。
+                        // 互斥：这把枪自己声明了这对槽位互斥（`AttachmentConflicts`）、
+                        // 挂点组被别人占了，或任一方在 `ConflictsWith` 里点了名。
                         // 先于"不可用"报出来，否则只会得到一句含糊的"这把枪不支持该配件"。
                         // 开了自由改装模式时这一步恒不成立（判定收在 `Attachment.conflict` 里）
                         data.attachment.conflict(type, definition)?.let { blocker ->
@@ -225,6 +199,73 @@ val ATTACHMENT_COMMAND = buildCommand("attachment") {
                 }
             }
         }
+
+        "laserColor" {
+            enumArg<AttachmentType>(TYPE_ARG) {
+                execute {
+                    val type = enumArg
+                    val data = mainHandGunData(entity) ?: fail { notGunMessage() }
+                    val info = laserInfoAt(data, type) ?: fail { notLaserMessage(type) }
+
+                    val override = data.attachment.getLaserColor(type)
+                    val source = if (override >= 0) {
+                        "commands.superbwarfare.attachment.laser_color.source.override"
+                    } else {
+                        "commands.superbwarfare.attachment.laser_color.source.default"
+                    }
+
+                    success {
+                        Component.translatable(
+                            "commands.superbwarfare.attachment.laser_color",
+                            entity.displayName,
+                            type.slotName(),
+                            String.format("%06X", info.resolveColorRgb(override)),
+                            Component.translatable(source)
+                        )
+                    }
+                }
+
+                stringWordArg(COLOR_ARG) {
+                    execute {
+                        val type = enumArg
+                        val raw = wordArg
+                        val data = mainHandGunData(entity) ?: fail { notGunMessage() }
+                        val info = laserInfoAt(data, type) ?: fail { notLaserMessage(type) }
+
+                        val reset = raw.equals(LASER_COLOR_RESET, ignoreCase = true)
+                        val rgb = if (reset) {
+                            Attachment.NO_LASER_COLOR
+                        } else {
+                            parseRgb(raw) ?: fail {
+                                Component.translatable(
+                                    "commands.superbwarfare.attachment.fail.laser_color", raw
+                                )
+                            }
+                        }
+
+                        data.attachment.setLaserColor(type, rgb)
+                        data.save()
+
+                        success {
+                            if (reset) {
+                                Component.translatable(
+                                    "commands.superbwarfare.attachment.success.laser_color.reset",
+                                    entity.displayName,
+                                    type.slotName()
+                                )
+                            } else {
+                                Component.translatable(
+                                    "commands.superbwarfare.attachment.success.laser_color",
+                                    entity.displayName,
+                                    type.slotName(),
+                                    String.format("%06X", info.resolveColorRgb(rgb))
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -252,6 +293,25 @@ private fun clearAllAttachments(data: GunData, ammoSupplier: Entity) {
     }
 }
 
+/** 取该槽位上的激光配置，槽位空或配件没有 `Laser` 段时返回 null */
+private fun laserInfoAt(data: GunData, type: AttachmentType): LaserInfo? {
+    val id = data.attachment.id(type) ?: return null
+    val definition = AttachmentDefinition.from(id) ?: return null
+    if (type !in definition.acceptedSlots) return null
+    return definition.laser
+}
+
+/** 该槽位没有激光配件时的报错消息 */
+private fun notLaserMessage(type: AttachmentType) = Component.translatable(
+    "commands.superbwarfare.attachment.fail.laser", type.slotName()
+)
+
+/** 解析 `RRGGBB` / `#RRGGBB` / `0xRRGGBB`，非法返回 null */
+private fun parseRgb(raw: String): Int? {
+    val match = RGB_PATTERN.matchEntire(raw.trim()) ?: return null
+    return match.groupValues[1].toInt(16)
+}
+
 /** 在 [type] 槽位的可用配件里随机抽一个，该槽位没有可用配件时返回 `null` */
 private fun randomAttachment(data: GunData, type: AttachmentType): ResourceLocation? =
     installableAttachments(data, type).randomOrNull()
@@ -264,7 +324,8 @@ private fun randomAttachment(data: GunData, type: AttachmentType): ResourceLocat
  * 所以先按挂点组分组，每组在**有可用配件的槽位**里随机挑一个槽位，再在该槽位里随机挑配件。
  *
  * 但"每组一个"还不够：互斥也可以是**跨挂点组**的（副武器与刺刀、副武器与握把互斥，
- * 而刺刀与握把可以共存 —— 见 `AttachmentSlots.conflicts`）。所以每组抽完还要拿已经抽中的槽位
+ * 而刺刀与握把可以共存；还有"这把枪的导轨太短"这类只在本枪成立的互斥 —— 见
+ * `AttachmentSlots.conflicts`）。所以每组抽完还要拿已经抽中的槽位
  * 再过滤一遍，否则会抽出一个"指令都装不上"的组合（先抽到的组赢，后抽到的组让位）。
  *
  * 开了**自由改装模式**时上面那套"保证装得上"的逻辑整个失效 —— 互斥已经不存在了 ——
@@ -292,7 +353,7 @@ private fun rollAllSlots(data: GunData): List<Pair<AttachmentType, ResourceLocat
         val pick = installableAttachments(data, type).filter { id ->
             val definition = AttachmentDefinition.from(id)
             rolls.none { (picked, pickedId) ->
-                AttachmentSlots.conflicts(type, definition, picked, AttachmentDefinition.from(pickedId))
+                AttachmentSlots.conflicts(type, definition, picked, AttachmentDefinition.from(pickedId), data)
             }
         }.randomOrNull() ?: continue
 
@@ -380,7 +441,7 @@ private fun attachmentIds(gun: GunData?, type: AttachmentType?): List<String> {
     return ModItems.ATTACHMENTS.entries.mapNotNull { entry ->
         val id = entry.id
         val definition = AttachmentDefinition.from(id) ?: return@mapNotNull null
-        if (type != null && definition.slot != type) return@mapNotNull null
+        if (type != null && type !in definition.acceptedSlots) return@mapNotNull null
         id.toString()
     }.sorted()
 }
@@ -391,3 +452,17 @@ private fun notGunMessage(): Component =
 /** 复用配件 tooltip 中的槽位名称，例如 `[Scope Attachment]` / `[瞄准镜配件]` */
 private fun AttachmentType.slotName(): Component =
     Component.translatable("attachment.superbwarfare.slot.${attachmentName.lowercase(Locale.ROOT)}")
+
+/**
+ * 一件配件能装的全部槽位名，用 ` / ` 连接，例如 `[上导轨配件] / [下导轨配件] / [左导轨配件]`。
+ * 多槽位配件（`ExtraSlots`，如导轨上的激光指示器）不止一个位置，
+ * 只报 `definition.slot` 会让玩家以为装错了，这里全部列出来。
+ */
+private fun acceptedSlotNames(definition: AttachmentDefinition): Component {
+    val text = Component.empty()
+    definition.acceptedSlots.sortedBy { it.ordinal }.forEachIndexed { index, type ->
+        if (index > 0) text.append(Component.literal(" / "))
+        text.append(type.slotName())
+    }
+    return text
+}

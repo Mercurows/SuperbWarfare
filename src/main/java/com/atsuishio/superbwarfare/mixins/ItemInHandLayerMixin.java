@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.mixins;
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.event.DeployedWeaponHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -24,9 +25,13 @@ public class ItemInHandLayerMixin {
     @Inject(method = "renderArmWithItem(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
             at = @At(value = "HEAD"), cancellable = true)
     private void renderArmWithItemHead(LivingEntity entity, ItemStack stack, ItemDisplayContext display, HumanoidArm arm, PoseStack poseStack, MultiBufferSource source, int light, CallbackInfo ci) {
-        if (entity.getType() == EntityType.PLAYER) {
+        if (entity.getType() == EntityType.PLAYER && entity instanceof Player player) {
+            if (DeployedWeaponHandler.isDeployed(player)) {
+                ci.cancel();
+                return;
+            }
             if (arm == HumanoidArm.LEFT || arm == HumanoidArm.RIGHT) {
-                if (entity instanceof Player player && player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player)) {
+                if (player.getVehicle() instanceof VehicleEntity vehicle && vehicle.banHand(player)) {
                     ci.cancel();
                 }
             }

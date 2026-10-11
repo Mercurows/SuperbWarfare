@@ -22,19 +22,6 @@ import org.joml.Vector3f
  * | `fixed` | 固定件（挂环、卡扣） | 不摆，正常渲染 |
  * | `string` | 连接绳 | 摆（绕[摆点][pivot]刚性旋转） |
  * | `charm` | 挂件本体 | 摆（同上） |
- *
- * `string` / `charm` 两组的**骨骼枢轴不参与计算**：旋转统一绕 [pivot]，由本类算出的变换矩阵
- * 写进两根骨骼的 `x/y/z + rotation`（[apply]）。这样美术把这根骨骼的枢轴放在哪儿都不影响结果 ——
- * 当前这个鱼吊坠的 `string` 枢轴在绳子的**下端**、`charm` 枢轴在鱼肚子中间，
- * 直接转骨骼枢轴会得到"绳子绕自己的尾巴转"这种明显错误的结果。
- *
- * ## 几何量怎么来的
- *
- * - [pivot]：`string` 子树**绑定包围盒的顶部中心** —— 绳子挂在枪上的那一点；
- * - [length]：`string` 分组**绑定包围盒的高度**（就是绳长：挂点到挂件的距离），见
- *   [com.atsuishio.superbwarfare.data.attachment.CharmInfo] 里的说明；
- * - [restDir]：`charm` 子树绑定包围盒中心相对 [pivot] 的方向（绑定姿态下的"垂下方向"）。
- *   它只用来算"从绑定方向转到解算方向"的最短弧旋转，不参与动力学。
  */
 class CharmRig(
     private val stringIndex: Int,
@@ -64,11 +51,7 @@ class CharmRig(
     private val scratchRotation = Quaternionf()
 
     /**
-     * 把摆角写进两根骨骼，并把原值存进 [snapshot]。
-     *
-     * `swing` 是**模型局部空间**里的旋转（绕 [pivot]）。
-     * 调用方必须在画完之后调用 [restore] —— 附件模型的实例是全局共享的，
-     * 留着姿态会串到下一把枪上。
+     * 把摆角写进两根骨骼，并把原值存进 [snapshot]
      */
     fun apply(instance: TreeModelInstance, swing: Quaternionf, snapshot: CharmSnapshot) {
         // W = T(P) · R · T(-P)：模型局部空间里"绕摆点转"
@@ -92,17 +75,6 @@ class CharmRig(
         snapshot.charm.restore(instance.getBone(charmIndex))
     }
 
-    /**
-     * 目标全局变换 = `W · 绑定全局变换`，反解出这根骨骼的局部姿态。
-     *
-     * 骨骼的局部矩阵形如 `T(x/16) · T(p) · R · S · T(-p)`（[BoneState.translateAndRotateAndScale]），
-     * 所以已知目标局部矩阵 `L'` 时：
-     * - 旋转就是 `L'` 的旋转部分；
-     * - 平移由 `L' · M⁻¹` 取出（`M = T(p)·R·T(-p)`），再乘 16 换回 Bedrock 单位。
-     *   `x/y/z` 仍然是 Bedrock 单位，这一点和动画通道一致。
-     *
-     * @param parentGlobalInverse 传进来的必须是**已被求逆**的父级绑定全局变换（见 `resolve`）
-     */
     private fun writeBone(
         instance: TreeModelInstance,
         index: Int,
@@ -166,15 +138,7 @@ class CharmRig(
                 (stringBounds[2] + stringBounds[5]) * 0.5f,
             )
 
-            // 摆长 = 绳子自己的**几何长度**（挂点到挂件的距离），就是 `string` 分组绑定包围盒的高度。
-            //
-            // ⚠ 不要用 `definition.bindY()`（骨骼**相对父级**的 Y 偏移）：模型的骨架层级一变它就失真。
-            // `charm_chiram_core` 的 `string` 骨骼绝对位置和别的吊坠一样是 -0.3，但它的父级是 `bone2`
-            // （在 y=-0.296），相对偏移只剩 -0.004 —— 摆长被算成 0.0003 方块，`g = L·ω²` 跟着趋近于 0，
-            // 吊坠一甩就贴住最大摆角且回不来。`charm_senpai`（+3.658 → 0.23 方块）同理偏大。
-            //
-            // 包围盒口径同时还有一个好处：它和 [pivot]（包围盒顶部）取自同一把尺子，
-            // "挂在顶部、长度等于绳子"天然自洽。实测全部 14 个吊坠的绳子几何都是 0.300 px = 0.0188 方块。
+            // 摆长 = 绳子自己的几何长度（挂点到挂件的距离），就是 `string` 分组绑定包围盒的高度
             val length = (stringBounds[4] - stringBounds[1]).coerceAtLeast(MIN_LENGTH)
 
             val restCenter = Vector3f(
@@ -224,10 +188,7 @@ class CharmRig(
         }
 
         /**
-         * 某个骨骼**整棵子树**在绑定姿态下的包围盒：`[minX, minY, minZ, maxX, maxY, maxZ]`（方块）。
-         *
-         * 每个骨骼的 `ownCubeBounds()` 是相对**它自己的枢轴**的，所以要乘上它的绑定全局变换；
-         * 立方体自身的旋转已经包含在 `ownCubeBounds` 里了。
+         * 某个骨骼**整棵子树**在绑定姿态下的包围盒：`[minX, minY, minZ, maxX, maxY, maxZ]`（方块）
          */
         private fun bindBounds(model: BedrockAttachmentModel, rootIndex: Int): FloatArray? {
             val base = model.baseModel
@@ -271,13 +232,6 @@ class CharmRig(
     }
 }
 
-/**
- * [CharmRig.apply] 写进骨骼的那几个字段的快照。
- *
- * **必须逐个字段存取，不能用 `BoneState.reset()`**：`reset()` 会把 `visible` 也一起还原，
- * 而渲染路径（`BedrockAttachmentModel.renderToBuffer` 的藏手、隐藏 ocular 等）
- * 在同一个窗口里正在改它。
- */
 class CharmSnapshot {
     @JvmField
     val string = CharmBoneSnapshot()

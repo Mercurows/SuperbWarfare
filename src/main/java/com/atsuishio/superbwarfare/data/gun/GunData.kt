@@ -67,57 +67,28 @@ import java.util.function.Function
 import kotlin.math.max
 import kotlin.math.min
 
-/**
- * Selects the magazine-level value, falling back to the last configured value
- * when the list is shorter than the requested level.
- */
 fun SingleOrList<Int>.atMagazineLevel(level: Int): Int {
     if (list.isEmpty()) return 0
     return list[level.coerceAtLeast(0).coerceAtMost(list.lastIndex)]
 }
 
-/**
- * Resolves the current magazine level from the installed attachment definition.
- * Level 0 is the no-attachment/original magazine state.
- */
 fun GunData.magazineLevel(): Int {
     val id = attachment.id(AttachmentType.MAGAZINE) ?: return 0
     return AttachmentDefinition.from(id)?.level?.coerceAtLeast(0) ?: 0
 }
 
-/**
- * Checks whether the current magazine level is one of the gun's configured `DrumLevels`.
- *
- * Drum magazines animate and reload differently from box magazines, so both the animation
- * selection and the [GunActionTimeline] picker branch on this. It reads the `DrumLevels`
- * gun property rather than the gun resource, because the resource is client-only and the
- * reload timeline also ticks on the server.
- */
 fun GunData.isDrumLevel(): Boolean {
     val levels = get(GunProp.DRUM_LEVELS).list
     return levels.isNotEmpty() && levels.contains(magazineLevel())
 }
 
-/**
- * Checks whether the installed muzzle attachment is configured as a silencer.
- */
 fun GunData.isBarrelSilenced(): Boolean {
     val id = attachment.id(AttachmentType.MUZZLE) ?: return false
     return AttachmentDefinition.from(id)?.isSilenced == true
 }
 
-/**
- * Extension function checking whether an [ItemStack] represents a valid gun item.
- *
- * @return `true` if the item is an instance of [GunItem].
- */
 fun ItemStack.isGunItem(): Boolean = this.item is GunItem
 
-/**
- * Converts an [ItemStack] to a [GunData] wrapper if applicable.
- *
- * @return [GunData] instance, or `null` if stack is not a gun.
- */
 fun ItemStack.toGunData(): GunData? = if (isGunItem()) from(this) else null
 
 /**
@@ -181,29 +152,19 @@ class GunData private constructor(
     val defaultDataId: StringValue
 
     /**
-     * 当前操控的是哪一把枪（四期，§9.8.1）：空 = 主武器，否则是副武器所在的槽位枚举名（`"SUBWEAPON"`）。
-     *
-     * 与 [defaultDataId] 同住枪械状态，因此随宿主枪持久化并同步到客户端。
-     * **只用服务端写**（`SubWeaponDeployMessage` 的 handler），客户端只读。
+     * 当前操控的是哪一把枪
      */
     @JvmField
     val activeSlot: StringValue
 
     /**
-     * [activeSlot] 指向的那把副武器所属**宿主枪**的 UUID（标准带连字符形式，与 `UUID.toString()` 一致）。
-     *
-     * 读取侧一律走 `ActiveGun.resolveDeployedSlot`，它在主武器 UUID 与这里不符时把这次部署视为作废。
+     * [activeSlot] 指向的那把副武器所属**宿主枪**的 UUID（标准带连字符形式，与 `UUID.toString()` 一致）
      */
     @JvmField
     val activeOwner: StringValue
 
     /**
-     * Monotonic revision of the persisted gun state.
-     *
-     * [persist] advances it whenever the persisted content actually changes. Together with [uuid] it
-     * lets [from] tell a *newer snapshot of the same gun* (vanilla replaced the client-side [ItemStack])
-     * apart from an unrelated stack such as a creative-mode copy — a copy carries an equal revision and
-     * must get its own instance. See [GunState.isNewerRevision] for the wraparound-safe comparison.
+     * Monotonic revision of the persisted gun state
      */
     val revision: Long
         get() = state.revision
@@ -240,12 +201,6 @@ class GunData private constructor(
     /**
      * Kotlin-side snapshot of this gun's persisted state — the single source of truth for every scalar
      * field declared below, for both reads and writes.
-     *
-     * In 1.20 there are no immutable data components: the storage is the mutable [CompoundTag] on the
-     * stack, and a write into that tag is immediately live *and* saved. [state] is therefore the
-     * decoded mirror of [gunDataTag]: [update] applies a change to it and then writes it straight back
-     * into the tag, and the lazily decoded value is dropped whenever the tag is re-read ([rebind]) so
-     * the mirror can never be observed half-updated or out of sync.
      */
     private var decodedState: GunState? = null
 
@@ -387,6 +342,67 @@ class GunData private constructor(
         invalidateProperties()
     }
 
+    /**
+     * 本发正在生效的充能射击档位（[ChargeAction]），`null` 表示按普通射击算。
+     *
+     * 只活在**一次开火的调用栈**里：[com.atsuishio.superbwarfare.item.gun.GunItem.shootInternal]
+     * 开火前设、开火后清，所以既不写 NBT、也不会影响其它枪。
+     */
+    @Transient
+    @kotlinx.serialization.Transient
+    private var activeChargeAction: ChargeAction? = null
+
+    /**
+     * 设置本发的充能射击档位，传 `null` 复位为普通射击。
+     *
+     * 会强制下次 [get] 重跑属性流水线，使该档位的 `Override` 生效。
+     * 调用方**必须**在开火结束后传 `null`，否则这把枪会一直按强化数值计算。
+     */
+    fun setChargeAction(action: ChargeAction?) {
+        // 档位是数据里共享的不可变对象，用引用比较即可（同一次开火里连着设同一个值不重复触发重算）
+        if (activeChargeAction === action) return
+        activeChargeAction = action
+        invalidateProperties()
+    }
+
+    /**
+     * 选出本次开火适用的充能射击档位；没有满足条件的就返回 `null`，按普通射击处理。
+     *
+     * 按数据里的数组顺序取第一个满足的：开镜条件（[ChargeAction.onlyZooming]）成立，
+     * 且枪械当前 FE 不少于 [ChargeAction.cost]。
+     *
+     * 客户端也用同一个方法判断（1P 音效要换成强化那套），两边都以本次开火的 `zoom` 为准。
+     *
+     * @param zoom 本次开火是否处于开镜状态。
+     * @param ammoSupplier 弹药提供者，用来定位能量存储（载具枪走载具，普通枪走物品栈）。
+     */
+    fun chargeActionFor(zoom: Boolean, ammoSupplier: Entity?): ChargeAction? {
+        val actions = get(GunProp.CHARGE_ACTION)
+        if (actions.isEmpty()) return null
+
+        val energy = getEnergyProvider(ammoSupplier).map { it.energyStored }.orElseGet { 0 }
+        return actions.firstOrNull { (!it.onlyZooming || zoom) && energy >= it.cost }
+    }
+
+    /**
+     * 「如果现在开火」时 [GunProp.ZOOM_SPREAD_RATE] 会是多少 —— 命中充能档位就取它覆写的值。
+     *
+     * 为什么要单独开一个方法，而不是把档位套上流水线再读：散布是**逐帧**消费的
+     * （`ClientEventHandler.handleGunShoot` 用它算准星与弹道，见那边的 `zoomSpread`），
+     * 而 [setChargeAction] 的覆写是**按发**的瞬态状态。为了逐帧读一个数字就
+     * `setChargeAction` + `get` + 复位，等于每帧重建两次属性流水线（配件/弹种/perk 全链），
+     * 不值当 —— 所以直接读档位 `Override` 里的原始数字（[ChargeAction.numericOverride]）。
+     *
+     * 命中档位但没写这一项时回落普通值，与流水线的语义一致：没被覆写的属性照旧。
+     * 判定口径与 [chargeActionFor] 完全同一个（`zoom` + 电量），所以准星显示的和真打出去的
+     * 用的是同一档。
+     */
+    fun zoomSpreadRateFor(zoom: Boolean, ammoSupplier: Entity?): Double {
+        val normal = get(GunProp.ZOOM_SPREAD_RATE)
+        val action = chargeActionFor(zoom, ammoSupplier) ?: return normal
+        return action.numericOverride(GunProp.ZOOM_SPREAD_RATE) ?: normal
+    }
+
     private val jsonPropModifier = JsonOverrideApplier(GunProp.entries)
     private val attachmentJsonPropModifier = JsonOverrideApplier(GunProp.entries)
     private var tempModifications: Function<DefaultGunData, DefaultGunData>? = null
@@ -476,6 +492,11 @@ class GunData private constructor(
 
             // 5. AmmoConsumer modifiers
             selectedAmmoConsumer(pmcInstance[AMMO_CONSUMER]).modifyProperty(pmcInstance)
+
+            // 5.5 充能射击：本发按 ChargeAction 的 Override 覆写。
+            //     刻意排在弹种 Override 之后（两者都写同一属性时充能档胜出）、perk 之前
+            //     （perk 的加成照旧叠在覆写值之上，与弹种 Override 的语义一致）。
+            activeChargeAction?.modifyProperty(pmcInstance)
 
             // 6. Active Perks
             for (type in PERK_TYPES) {
@@ -700,8 +721,6 @@ class GunData private constructor(
         this.bolt.actionTimer.reset()
         this.bolt.totalTicks.reset()
         this.bolt.needed.reset()
-        this.charge.starter.finish()
-        this.charge.timer.reset()
 
         invalidateProperties()
     }
@@ -1075,6 +1094,13 @@ class GunData private constructor(
         this.item.shoot(this, entity, spread, zoom, uuid, targetPos, power)
     }
 
+    fun shoot(
+        entity: Entity, spread: Double, zoom: Boolean, uuid: UUID?, targetPos: Vec3?, power: Double,
+        muzzleDirection: Vec3?
+    ) {
+        this.item.shoot(this, entity, spread, zoom, uuid, targetPos, power, muzzleDirection)
+    }
+
     /** Fires projectile using encapsulated parameter structure. */
     fun shoot(parameters: ShootParameters) {
         this.item.shoot(parameters)
@@ -1188,7 +1214,8 @@ class GunData private constructor(
      * 声明支持 `#标签` / `!排除` / 覆写对象（见 [AvailableAttachments]），但解析只发生在一处，
      * 这里给出的已经是展开后的具体 id 列表。
      *
-     * 已经装了会和它互斥的配件时（同一挂点组，或任一方在 `ConflictsWith` 里点了名），
+     * 已经装了会和它互斥的配件时（本枪声明的 `AttachmentConflicts`、同一挂点组，
+     * 或任一方在 `ConflictsWith` 里点了名），
      * 这里会一并过滤掉：规则收在 `AttachmentSlots.conflicts`，
      * 改装界面的"该槽位无可用配件"表现、指令补全与 `Attachment.cycle` 的候选列表都由这一个入口统一。
      *
@@ -1227,7 +1254,8 @@ class GunData private constructor(
     fun canInstall(slot: AttachmentType, id: ResourceLocation): Boolean {
         if (id !in availableAttachments(slot)) return false
         val definition = AttachmentDefinition.from(id) ?: return false
-        return definition.slot == slot
+        // 按 `acceptedSlots` 判定，不是 `definition.slot`：一件配件可以同时装进多根导轨（`ExtraSlots`）
+        return slot in definition.acceptedSlots
     }
 
     /** Raw damage reduction property structure. */
@@ -1241,7 +1269,7 @@ class GunData private constructor(
                 return this.perk.getInstances(type)
                     .minOfOrNull { it.perk.getModifiedDamageReduceRate(this.rawDamageReduce) } ?: continue
             }
-            return this.rawDamageReduce.rate
+            return this.rawDamageReduce.getDamageRate()
         }
 
     /** Modified damage reduction minimum distance. */
@@ -1251,7 +1279,7 @@ class GunData private constructor(
                 return this.perk.getInstances(type)
                     .minOfOrNull { it.perk.getModifiedDamageReduceMinDistance(this.rawDamageReduce) } ?: continue
             }
-            return this.rawDamageReduce.minDistance
+            return this.rawDamageReduce.getDamageMinDistance()
         }
 
     /**
@@ -1438,12 +1466,6 @@ class GunData private constructor(
 
     /** Checks if weapon is currently reloading. */
     fun reloading(): Boolean = reload.state() != ReloadState.NOT_RELOADING
-
-    @JvmField
-    val charge: Charge
-
-    /** Checks if energy charging is active. */
-    fun charging(): Boolean = charge.time() > 0
 
     @JvmField
     val isEmpty: BooleanValue
@@ -1880,7 +1902,6 @@ class GunData private constructor(
 
         // Subdata handlers
         reload = Reload(this)
-        charge = Charge(this)
         bolt = Bolt(this)
         attachment = Attachment(this)
         perk = Perks(this)

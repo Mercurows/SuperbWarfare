@@ -9,9 +9,9 @@
   "Weight": 1,
   "DrawTime": 7,
   "ZoomTime": 3,
+  "RPM": 60,
   "Headshot": 0,
   "EmptyReloadTime": 58,
-  "RPM": 240,
   "GunType": "Special",
   "Projectile": "superbwarfare:taser_bullet",
   "AmmoType": {

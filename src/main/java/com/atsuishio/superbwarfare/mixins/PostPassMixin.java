@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.mixins;
 
+import com.atsuishio.superbwarfare.client.shader.RadiationShaderHandler;
 import com.mojang.blaze3d.shaders.Uniform;
 import net.minecraft.client.renderer.EffectInstance;
 import net.minecraft.client.renderer.PostPass;
@@ -23,6 +24,41 @@ public class PostPassMixin {
 
     @Unique
     private static float superbwarfare$rainbowSeconds = 0;
+
+    @Unique
+    private static long superbwarfare$radiationLastMillis = 0;
+
+    @Unique
+    private static float superbwarfare$radiationSeconds = 0;
+
+    /**
+     * Sets time-dependent uniforms for post-processing shaders when they are present.
+     */
+    @Inject(method = "process(F)V", at = @At("HEAD"))
+    private void setRadiationUniforms(float partialTicks, CallbackInfo ci) {
+        Uniform strength = this.effect.getUniform("RadiationStrength");
+        Uniform time = this.effect.getUniform("RadiationTime");
+        if (strength == null && time == null) {
+            return;
+        }
+
+        if (strength != null) {
+            strength.set(RadiationShaderHandler.getStrength());
+        }
+
+        if (time != null) {
+            long now = System.currentTimeMillis();
+            if (superbwarfare$radiationLastMillis == 0) {
+                superbwarfare$radiationLastMillis = now;
+            }
+            superbwarfare$radiationSeconds += (now - superbwarfare$radiationLastMillis) / 1000.0f;
+            superbwarfare$radiationLastMillis = now;
+            if (superbwarfare$radiationSeconds > 7200.0f) {
+                superbwarfare$radiationSeconds -= 7200.0f;
+            }
+            time.set(superbwarfare$radiationSeconds);
+        }
+    }
 
     /**
      * Sets the RainbowTime uniform to a continuously increasing value in seconds.

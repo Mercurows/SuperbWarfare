@@ -86,6 +86,14 @@ interface IBulletProperties {
     fun hasExplosionDestroy(): Boolean = true
     fun setExplosionDestroy(value: Boolean) {}
 
+    // 投射物分裂次数，爆炸消失后分裂出的产物再减一，0 表示不分裂
+    fun getProjectileSplitCount(): Int = 0
+    fun setProjectileSplitCount(value: Int) {}
+
+    // 每次分裂出的产物个数
+    fun getProjectileSplitAmount(): Int = 4
+    fun setProjectileSplitAmount(value: Int) {}
+
     // tickCount 小于这个值时，不触发 onHit 判定
     fun getNoHitTicks(): Int = 0
 

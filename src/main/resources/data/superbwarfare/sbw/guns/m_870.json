@@ -4,6 +4,7 @@
   "RecoilY": 0.04,
   "Damage": 3,
   "Headshot": 1.5,
+  "RPM": 120,
   "MeleeDamage": 5,
   "MeleeDuration": 16,
   "MeleeComboReset": 15,
@@ -77,7 +78,8 @@
     "superbwarfare:target_lock",
     "!superbwarfare:micro_missile",
     "!superbwarfare:longer_wire",
-    "!superbwarfare:cupid_arrow"
+    "!superbwarfare:cupid_arrow",
+    "!superbwarfare:shatter_caps"
   ],
   "AvailableAttachments": {
     "Scope": [

@@ -4,59 +4,41 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.animation.AnimationPlayType
 import com.atsuishio.superbwarfare.client.gun.MeleeClientHandler
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
+import com.atsuishio.superbwarfare.data.gun.ActiveGun
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.isDrumLevel
 import com.atsuishio.superbwarfare.event.ClientEventHandler
+import com.atsuishio.superbwarfare.event.DeployedWeaponHandler
 import com.atsuishio.superbwarfare.item.attachment.SubWeaponItem
 import com.atsuishio.superbwarfare.resource.gun.GunAnimation
 import com.atsuishio.superbwarfare.resource.gun.GunAnimationNames
 import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.atsuishio.superbwarfare.resource.model.AttachmentModelReloadListener
 import com.atsuishio.superbwarfare.resource.model.GunModelReloadListener
-import com.atsuishio.superbwarfare.tools.ActiveGun
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.github.mcmodderanchor.simplebedrockmodel.v1.client.animation.IFPAnimationInstance
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.BedrockAnimation
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.resource.pojo.ParticleEffectData
-import com.maydaymemory.mae.basic.ArrayPoseBuilder
-import com.maydaymemory.mae.basic.DummyPose
-import com.maydaymemory.mae.basic.Pose
-import com.maydaymemory.mae.basic.ZYXBoneTransformFactory
-import com.maydaymemory.mae.blend.EulerAdditiveBlender
-import com.maydaymemory.mae.blend.NoAllocMergeBlender
-import com.maydaymemory.mae.blend.SimpleEulerAdditiveBlender
+import com.maydaymemory.mae.basic.*
+import com.maydaymemory.mae.blend.*
 import com.maydaymemory.mae.control.runner.*
+import com.maydaymemory.mae.util.MathUtil
 import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundSource
+import net.minecraft.util.Mth
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.item.ItemStack
 import org.joml.Quaternionf
+import org.joml.Vector3f
 import java.util.*
 
 open class GeoGunAnimationInstance(
     private var stack: ItemStack,
-    entity: Entity,
-    /**
-     * 这一份实例是**哪只手**的（`FirstPersonRenderHandler` 两手各持一份 `HandRenderState`）。
-     *
-     * 目前只有一个用处：**副武器那套状态只有主手实例该管**（[updateSubWeaponReload] /
-     * [updateSubWeaponIdle] / 它们的 `sound_effects` 关键帧）。理由不是"两手会画出两份"，而是
-     * **解析口径**：`updateSubWeaponReload` 里的副武器是从 `player.mainHandItem` 解析的
-     * （`ActiveGun` 的不变量 ① —— 副武器是**主手**那把枪身上的东西），**与实例自己的 `stack` 无关**。
-     * 所以"这份实例是哪只手的"和"它该不该管副武器"是同一件事，用 `hand` 表达最直接。
-     *
-     * ⚠ **今天这道门禁是"保险"，不是"修 bug"**：库的 `IFPGeoItemRenderer.canRenderInHand`
-     * 默认返回 `hand == MAIN_HAND`，本模组没有覆盖它，于是 `FirstPersonRenderHandler.tickHandAnimation`
-     * 在 `canActuallyRenderInHand` 那一关就把副手实例挡掉了（`ani.tick()` 根本不会被调到）。
-     * 留着它的原因是**这个默认值正是库文档里写明供覆盖的扩展点**（"物品本身决定能否在某只手呈现"，
-     * 用于双手/单手骨架变体）——一旦有人让副手也 tick，副手实例就会照着**同一份**主手副武器数据
-     * 再建一套 runner：姿态上无害（那套 pose 没人读），**但它会把同一支换弹动画的 `sound_effects`
-     * 再收一遍，音效响两遍**。不变式写在代码里，比寄望于库的默认值稳。
-     */
+    entity: Entity?,
     private val hand: InteractionHand
 ) : IFPAnimationInstance {
     private val animations = hashMapOf<String, BedrockAnimation>()
@@ -70,72 +52,82 @@ open class GeoGunAnimationInstance(
     private var closeStrikeRunner: AnimationRunner? = null
     private var closeStrikeAnimationName: String? = null
 
-    /**
-     * 枪管旋转那一层的循环 runner。**一支常驻**：起转、停转都只改播放速度，从不重建，所以
-     * "哪一帧出岔子就把动画推回第一帧"这种毛病从根上没有了——那一层没有别的状态。
-     */
+    // 枪管旋转的循环 runner
     private var spinRunner: AnimationRunner? = null
 
-    /**
-     * 已经解析好的 `hold` 片段。动画资源偶尔有一帧取不到（正在重新加载、还没加载完）时继续用这一支，
-     * 免得那一帧把 runner 重建掉、枪管卡在第一帧。
-     */
+    // 已经解析好的 `hold` 片段
     private var spinAnimation: BedrockAnimation? = null
 
     /** 当前转到几成（0..1），缓入缓出就缓在这里。 */
     private var spinPower = 0f
+
+    // 循环开火 runner
+    private var fireLoopRunner: AnimationRunner? = null
+
+    /** 已经解析好的循环开火片段*/
+    private var fireLoopAnimation: BedrockAnimation? = null
+
+    /**
+     * 循环开火层现在亮到几成（0..1）
+     */
+    private var fireLoopPower = 0f
+
+    // 自定义奔跑层（`Animation.Run`）runner
+    private var customSprintRunner: AnimationRunner? = null
+
+    /** 已经解析好的自定义奔跑片段 */
+    private var customSprintAnimation: BedrockAnimation? = null
+
+    /**
+     * 自定义奔跑层现在亮到几成（0..1）。**位移与旋转各一条**：程序性奔跑的姿势权重本来就是两档
+     * （位移入 0.8、旋转入 0.3，见 [ClientEventHandler.sprintEaseAlpha]），只给一条权重的话
+     * 总有一边差两倍多。
+     */
+    private var customSprintPosPower = 0f
+    private var customSprintRotPower = 0f
+
+    private var deployIdleRunner: AnimationRunner? = null
+    private var deployIdleAnimation: BedrockAnimation? = null
+    private var deployIdlePower = 0f
+
+    // 蓄力层 runner
+    private var chargeRunner: AnimationRunner? = null
+
+    /** 已经解析好的蓄力片段 */
+    private var chargeAnimation: BedrockAnimation? = null
+
+    /**
+     * 蓄力层现在亮到几成（0..1）
+     */
+    private var chargePower = 0f
+    private var chargeWasActive = false
+
+    /** 淡入 / 淡出时长（tick） */
+    private var fireLoopFadeInTicks = 0f
+    private var fireLoopFadeOutTicks = 0f
     private var editExitRunner: AnimationRunner? = null
     private var currentState: GunAnimationState? = null
     private var fireSerial = 0
     private var consumedFireSerial = 0
 
     /**
-     * 本 tick 主武器所处的动画状态（还没解析出状态时为 `null`，等同"没有主武器动画"）。
-     *
-     * 渲染侧要问它一件事：这个状态下主武器会不会**把左手拿开**（[GunAnimationState.takesHandAway]）
-     * —— 部署副武器期间的手臂接管据此决定要不要让位
-     * （`GeoGunRenderer.resolveDeployedSubWeaponArmAnchors`）。
-     * 状态本身由 [tick] 里的状态机推进，一 tick 只变一次，渲染用的 partialTick 不参与。
+     * 本 tick 主武器所处的动画状态（还没解析出状态时为 `null`，等同"没有主武器动画"）
      */
     val currentGunState: GunAnimationState?
         get() = currentState
 
     /**
      * 本次开火已经解析好的 clip 名（由 [triggerFire] 写入，[playFire] 读取）。
-     *
-     * 开火是**分层播放**的（叠在状态机之上），所以它不能像近战那样在状态切换那一帧现解析：
-     * 触发与播放之间隔着一次 tick，而候选链的解析需要"这一次是谁在开火"这个信息
-     * ——副武器开火与主武器开火用的是两条不同的候选链。
      */
     private var pendingFireAnimation: String? = null
 
     /**
-     * 当前这一支开火动画是不是**副武器专属**的那一支（`fire_sub_weapon` 这类）。
-     *
-     * 枪口效应据此换骨骼：副武器开火时动画关键帧里的枪口烟挂在副武器模型自己的 `flare` 上，
-     * 而不是主武器的（见 `GeoGunRenderer.resolveSubWeaponFlareTransform`）。
-     * 候选全落空、播的还是 `GunAnimation.Fire` 时它是 `false` —— 那一发视觉上就是主武器在开火。
+     * 当前这一支开火动画是不是**副武器专属**的那一支
      */
     private var subWeaponFire = false
 
     /**
-     * 副武器**自己**的换弹动画 runner（四期，§9.8.7）。
-     *
-     * 副武器是一把独立的枪（有自己的 `GunData` / `GunResource`），所以它的换弹动画写在
-     * **它自己的枪械资源**里（`sbw/guns/<id>.json` 的 `Animation.Reload*`，口径见
-     * [GunAnimation.reloadClip]），由**它自己的附件模型**播。这一支 runner 只负责
-     * "把那个 clip 推到第几帧了"，姿态由 `GeoGunRenderer.renderRegisteredAttachments`
-     * 取 [subWeaponReloadPose] 应用到附件模型上。
-     *
-     * 为什么状态挂在这里而不是附件模型上：附件模型是**全局共享**的（同一种配件装在多把枪上
-     * 共用一份实例），往它身上挂状态会串台；这个动画实例才是"某一把具体的枪"。
-     *
-     * ⚠ **解析要过两关，任一关不过就全程空转**（[updateSubWeaponReload] 里有详细说明）：
-     * ① 数据里写了 clip 名（`sbw/guns/<id>.json`）；② **附件动画表**里有这支 clip
-     * （`animations/bedrock/attachment/<附件 id>.animation.json`，且骨骼必须是附件模型的）。
-     * 任一条不成立 → runner 保持 `null` → 渲染侧不应用姿态（副武器静止挂在枪上）。
-     * 这是**有意的静默回退**，不是 bug；两条失败路径都会打一条能定位的日志
-     * （见 [logSubWeaponReloadMissOnce]，`melee_debug_log` 打开时可见）。
+     * 副武器**自己**的换弹动画 runner
      */
     private var subWeaponReloadRunner: AnimationRunner? = null
 
@@ -146,26 +138,17 @@ open class GeoGunAnimationInstance(
     private var loggedSubWeaponReloadMiss: String? = null
 
     /**
-     * 已消费的近战挥击序号。
-     *
-     * 近战是 `PLAY_ONCE_HOLD`：播完停在最后一帧。按住 V 连续挥击时 `currentState` 与
-     * `resolveState()` 的目标都是 `MELEE`，`currentState != target` 不成立 → runner 只会被 `tick()`，
-     * 于是**只有第一段会播**。这里比照开火那套 `fireSerial`，按序号重播。
+     * 已消费的近战挥击序号
      */
     private var consumedMeleeSerial = 0
     private var fireModeSwitchSerial = 0
     private var consumedFireModeSwitchSerial = 0
     private var lastFireModeName: String? = null
 
-    /**
-     * 上一次已经打过日志的近战动画解析失败（见 [logMeleeMissOnce]）。
-     *
-     * runner 为空时 [resolveMeleeName] 每个 tick 都会被调一次，不去重的话"clip 名写错"会刷满日志。
-     */
     private var loggedMeleeMiss: String? = null
-
-    /** 上一次已经打过日志的开火动画解析失败（见 [logFireMissOnce]） */
     private var loggedFireMiss: String? = null
+    private var loggedOverrideFireMiss: String? = null
+
     private val pendingShellEjects = ArrayList<Int>()
     private val pendingParticles = ArrayList<ParticleEffectData>()
     private var cachedPose: Pose = DummyPose.INSTANCE
@@ -184,7 +167,8 @@ open class GeoGunAnimationInstance(
     }
 
     private fun resolveState(): GunAnimationState? {
-        val player = localPlayer ?: return null
+        // 没有本地玩家（还没进世界）就没有主武器动画
+        if (localPlayer == null) return null
         val animation = GunResource.compute(stack).animation ?: return null
         val data = GunData.from(stack)
 
@@ -211,16 +195,27 @@ open class GeoGunAnimationInstance(
         }
 
         if (animation.melee != null && ClientEventHandler.isGunMeleeActive(stack)) return GunAnimationState.MELEE
-        if (animation.run != null
-            && player.isSprinting
-            && player.onGround()
-            && ClientEventHandler.noSprintTicks == 0f
-            && ClientEventHandler.drawTime < 0.01
-        ) {
-            return GunAnimationState.RUN
-        }
 
         return if (animation.idle != null) GunAnimationState.IDLE else null
+    }
+
+    /**
+     * 这一帧要不要把**自定义奔跑动画**（`Animation.Run`）亮起来。
+     *
+     * 判据就是它以前当基础状态时的判据（见 [GunAnimationState] 的旧 `RUN`）：
+     * 在跑、在地面上、没被"禁止冲刺"压住、也没在掏枪。另外它现在是一条**层**，
+     * 得有个基础状态垫着 —— 所以还要求解析出来的是 `Idle`；换弹/近战/改装那些
+     * 本来就把 `Run` 挤掉的状态照旧挤掉，只是改成了**缓出**而不是硬切。
+     */
+    private fun wantsCustomSprint(target: GunAnimationState?, animation: GunAnimation?): Boolean {
+        val player = localPlayer ?: return false
+        if (animation?.run == null) return false
+        if (target != GunAnimationState.IDLE) return false
+        if (isDeployedGun()) return false
+        return player.isSprinting
+                && player.onGround()
+                && ClientEventHandler.noSprintTicks == 0f
+                && ClientEventHandler.drawTime < 0.01
     }
 
     /**
@@ -231,25 +226,27 @@ open class GeoGunAnimationInstance(
      * @param reportMissing 候选全部落空时是否按**数据写错**报 error。默认候选（没写 `Animation` 时
      *   那条 `fire_sub_weapon`）落空是正常情况 —— 绝大多数枪就没做这支 clip，
      *   所以调用方按"这份候选是不是数据里显式写的"传（见 `SubWeaponInfo.hasExplicitFireAnimation`）。
+     * @param overrideAnimation **显式指定**本发用的 clip（`GunProp.SHOOT_ANIMATION`），留空走原有解析。
+     *   它是"这一发放哪支 clip"的直接答案，所以**优先于候选链与 `Fire` 兜底** —— 充能射击就是靠它
+     *   换成 `*_charge` 那支的。名字同样是全名/短名两可（见 [GunAnimationNames]），
+     *   拼出来不存在时退回原有解析并记一条日志（静默退回会让"动画没换"变成查不出来的问题）。
      */
     @JvmOverloads
-    fun triggerFire(stack: ItemStack, candidates: List<String> = emptyList(), reportMissing: Boolean = false) {
-        // ⚠ 候选链与 `GunAnimation.Fire` 一律按**宿主枪**的资源解析：这个动画实例属于宿主枪的
-        // 模型，`animations` 那张表也是从宿主枪的动画文件加载的。副武器的合成栈没有自己的
-        // 枪械动画文件，拿它去解析只会把表清空（见下面的 `updateItem`）。
+    fun triggerFire(
+        stack: ItemStack,
+        candidates: List<String> = emptyList(),
+        reportMissing: Boolean = false,
+        overrideAnimation: String? = null,
+    ) {
         val hostStack = this.stack
 
-        val fireName = resolveFireName(hostStack, candidates, reportMissing) ?: return
+        val fireName = resolveOverrideFireName(hostStack, overrideAnimation)
+            ?: resolveFireName(hostStack, candidates, reportMissing)
+            ?: return
         if (!animations.containsKey(fireName)) return
 
-        // 这一发是不是**副武器**打的。抛壳只认它，与"播了哪支 clip"无关。
+        // 这一发是不是副武器打的
         val subWeaponShot = stack.item is SubWeaponItem
-
-        // 主武器开火：兜底把实例同步到手上这把枪（换枪后渲染路径还没跑到的那个窗口）。
-        //
-        // ⚠ 副武器开火**绝不能**同步：`updateItem` 会重绑实例、按副武器的资源重载 `animations`，
-        // 把宿主枪的动画表**清空** —— 紧接着的 `playFire` 就一张 clip 都找不到，
-        // 表现是"打榴弹时枪的动画卡住一帧/不播"。
         if (!subWeaponShot && this.stack.item != stack.item) {
             updateItem(stack)
         }
@@ -259,75 +256,33 @@ open class GeoGunAnimationInstance(
         subWeaponFire = candidates.isNotEmpty() && fireName != gunFire
 
         fireSerial++
-        // 副武器开火**不抛壳**：弹壳模型与 `shell` 骨骼都是主武器自己的 `ShellEject` 配置，
-        // 打出去的却是副武器的弹药 —— 照旧抛壳就成了"榴弹发射时步枪抛壳"。
-        //
-        // 判据是 [subWeaponShot]（**谁打的**）而不是 [subWeaponFire]（**播了哪支 clip**）：
-        // 宿主枪没做 `fire_sub_weapon` 时 `fireName` 会退回它自己的 `Fire`，两者相等、
-        // `subWeaponFire` 为假 —— 但那一发**仍然是副武器打的**，照样不该抛壳。
+        // 副武器开火不抛壳
         if (isFirstPerson() && !subWeaponShot) {
             pendingShellEjects += 0
         }
     }
 
     /**
-     * 当前正在播的开火动画是不是副武器专属的那一支（`fire_sub_weapon` 这类）。
-     *
-     * 只在**确实换了动画**时为真：候选链全部落空、播的还是 `GunAnimation.Fire` 时它是 `false`
-     * （那一发在视觉上就是主武器在开火，枪口效应该留在主武器的枪口上）。
+     * 当前正在播的开火动画是不是副武器专属的那一支
      */
     fun isSubWeaponFire(): Boolean = subWeaponFire && fireRunner != null
 
     /**
-     * 副武器**自己**的换弹姿态；没有在换弹、或那支 clip 还没做出来时返回 `null`。
-     *
-     * 渲染侧（`GeoGunRenderer.renderRegisteredAttachments` 的 `SUBWEAPON` 槽位）在画副武器模型前
-     * `BedrockAttachmentModel.applyPose(pose)`、画完 `resetPose()`。
-     *
-     * **宿主枪在此期间照常播它自己的 `idle`/`run`**（`cachedPose` 不受这里影响）——
-     * 两个模型是各自独立的姿势树、骨骼命名空间不重叠，所以"融合"是天然发生的，不需要混合器（§9.8.7）。
+     * 副武器的换弹姿态
      */
     fun subWeaponReloadPose(): Pose? = subWeaponReloadRunner?.evaluate()
 
     /**
-     * 上面那份姿态是哪一支 clip 给的（没在换弹时为 `null`）。
-     *
-     * 渲染侧只用它当"手臂锚点来源变没变"的标识：换一支 clip（正常/空仓/鼓式）要把锚点
-     * 淡过去一小段，而不是硬切（`GeoGunRenderer.resolveArmAnchorsForDraw`）。
+     * 上面那份姿态是哪一支 clip 给的
      */
     val subWeaponReloadClipName: String?
         get() = subWeaponReloadRunner?.let { subWeaponReloadAnimationName }
 
     /**
-     * 推进副武器的换弹动画（四期，§9.8.7）。
-     *
-     * 触发条件是"**部署中的副武器正在换弹**"：`ActiveGun` 解析出当前操控的是副武器、
-     * 且它 `reloading()`。换弹时长取**副武器数据**的剩余总 tick，据此拉伸播放速度
-     * （与主武器的换弹动画同一套口径）。
-     *
-     * 部署解除、换弹结束、或者下面两步任一步解析不到时，runner 被清掉、返回 `null` ——
-     * 渲染侧于是不应用姿态。解析分两步，**两步都可能单独失败**：
-     *
-     * 1. **clip 名**：问副武器自己的 `GunResource`（`sbw/guns/<id>.json` 的 `Animation.Reload*`）。
-     *    没写 → 没有 clip 可播（[GunAnimation.reloadClip]）。
-     * 2. **动画本体**：问 [AttachmentModelReloadListener] 的动画表，也就是
-     *    `animations/bedrock/**attachment**/` 那个目录 —— 它**按文件名 id** 与附件模型配对
-     *    （`sub_weapon_gp_25.animation.json` ↔ `sub_weapon_gp_25.geo.json`）。
-     *
-     * ⚠ **第 2 步是本机制最容易配错的地方**（五期实测踩到）：
-     * - 文件放进 `animations/bedrock/**gun**/` 是无效的 —— 那边是主武器动画表，
-     *   副武器换弹只读附件表；
-     * - 就算放对了目录，**clip 也必须驱动附件模型自己的骨骼**（`root` / `gun` / `tube` /
-     *   `trigger` / `projectile` …）。照抄枪模型的 `righthand` / `camera` / `head` /
-     *   `undefined` 会被静默丢弃 —— 症状是"runner 建起来了但模型纹丝不动"，与"没做动画"外观一致。
-     *
-     * 两条失败路径都会经 [logSubWeaponReloadMissOnce] 打一条带定位信息的日志
-     * （只在 `melee_debug_log` 打开时输出）。
+     * 推进副武器的换弹动画
      */
     private fun updateSubWeaponReload() {
         val player = localPlayer
-        // ⚠ 必须显式传 `client = true`：单人游戏里客户端与服务端共享静态缓存表，
-        // 用错一侧的实例会让状态在两边互相覆盖（`SubWeaponRuntime` 的不变式 ③）。
         val gun = player?.let { GunData.from(it.mainHandItem) }
         val subStack = gun?.let { ActiveGun.stackOf(it, true) }?.takeIf { it.item !== stack.item }
         if (subStack == null) {
@@ -388,20 +343,7 @@ open class GeoGunAnimationInstance(
     }
 
     /**
-     * 部署中的副武器的 **`Idle` clip**（`sbw/guns/<副武器 id>.json` 的 `Animation.Idle`，
-     * 由**它自己的**附件模型播）；没部署 / 数据里没写 / 动画表里没有时为 `null`。
-     *
-     * 它**不驱动模型**，只用来回答"手臂该抓在哪儿"（§11.11.7.4）：`GeoGunRenderer` 取它在 `t=0`
-     * 的姿态、按附件骨骼算出手臂锚点，于是"G 键把副武器切出来之后，左手一直在发射器上"。
-     * 这也是换弹开始/结束那一下不再跳变的原因 —— 换弹 clip 的两端与这支 idle **逐位重合**（实测 0.0000）。
-     *
-     * ⚠ 解析口径与 [updateSubWeaponReload] 的**第二步完全相同**（同一个 [AttachmentModelReloadListener]
-     * 动画表、同样只认附件模型自己的骨骼），区别只有：①问的是 `Animation.Idle` 而不是 `Reload*`；
-     * ②**不要求**在换弹。所以"数据里写了名字但动画文件里没有"这种配错照样是静默回退。
-     *
-     * ⚠ 千万不要把它混进 [subWeaponReloadPose]：那一个非空意味着"副武器正在做换弹动作"，
-     * `GeoGunRenderer.resolveSubWeaponFollowPose` 会据此**把整把主武器反推着动起来**
-     * （摘 `root` 那套，§11.11.7.2）。idle 是常驻状态，混进去会让枪一直跟着 `root` 抖。
+     * 部署中的副武器的 **`Idle` clip**
      */
     private var subWeaponIdleClip: BedrockAnimation? = null
 
@@ -409,11 +351,7 @@ open class GeoGunAnimationInstance(
     private var subWeaponIdleAnimationName: String? = null
 
     /**
-     * 部署中的副武器的 `Idle` 姿态（`t=0`；没部署时为 `null`）。
-     *
-     * 取固定的一帧而不是跑一个 runner：这支 clip 回答的是"手抓在哪儿"这个**静态**问题，
-     * 让它动起来对锚点没有意义（运动员是主武器与副武器的换弹 clip）。要让它动也很简单 ——
-     * 换成 runner 即可，但那时得先想清楚"动起来的手"与"换弹 clip 端点重合"这条性质还在不在。
+     * 部署中的副武器的 `Idle` 姿态
      */
     fun subWeaponIdlePose(): Pose? = subWeaponIdleClip?.evaluate(0f)
 
@@ -443,25 +381,8 @@ open class GeoGunAnimationInstance(
         subWeaponIdleAnimationName = clip?.name
     }
 
-
     /**
-     * "这一支副武器换弹动画解析不到"只报一次。
-     *
-     * ⚠ **这里必须给出足够定位的信息，而且必须真的打得出来。**
-     *
-     * 以前它是一句 `Mod.LOGGER.debug`（默认根本不输出），于是"动画没生效"在客户端**完全无声**：
-     * 表现只是"副武器换弹时纹丝不动"，看不出是数据没写、文件放错目录、还是骨骼名对不上。
-     * 现在拆成两条**互不覆盖**的记账（`noClip` / `unbound`），并把三个答案一起打出来：
-     *
-     * | 问题 | 日志里的答案 |
-     * |---|---|
-     * | 数据里写了 clip 名吗 | `noClip` = 没写（`sbw/guns/<id>.json` 缺 `Animation.Reload*`） |
-     * | clip 名对应的文件在不在 | `unbound` 那条会打印 clip 名与它要求的**文件 id** |
-     * | 文件该放哪个目录 | 两条都打印 [AttachmentModelReloadListener.animPath] |
-     *
-     * **分档是"正常状态"那一档**：没做这支动画本来就是允许的（副武器静止挂在枪上，
-     * 换弹的音效与进度仍由数据/服务端负责），所以用 `info` 且只挂在 `melee_debug_log` 上，
-     * 不是 `error`（与 `fire_sub_weapon` 候选落空的分档一致）。
+     * "这一支副武器换弹动画解析不到"只报一次
      */
     private fun logSubWeaponReloadMissOnce(subId: String, reason: String, detail: String) {
         val key = "$subId|$reason|$detail"
@@ -515,6 +436,10 @@ open class GeoGunAnimationInstance(
     }
 
     private fun normalReloadName(animation: GunAnimation): String? {
+        if (isDeployedGun()) {
+            val deployName = animation.reloadNormalDeploy
+            if (deployName != null && animations.containsKey(deployName)) return deployName
+        }
         if (isDrumLevel()) {
             val drumName = animation.reloadNormalDrum
             if (drumName != null && animations.containsKey(drumName)) return drumName
@@ -523,11 +448,20 @@ open class GeoGunAnimationInstance(
     }
 
     private fun emptyReloadName(animation: GunAnimation): String? {
+        if (isDeployedGun()) {
+            val deployName = animation.reloadEmptyDeploy
+            if (deployName != null && animations.containsKey(deployName)) return deployName
+        }
         if (isDrumLevel()) {
             val drumName = animation.reloadEmptyDrum
             if (drumName != null && animations.containsKey(drumName)) return drumName
         }
         return animation.reloadEmpty
+    }
+
+    private fun isDeployedGun(): Boolean {
+        val player = localPlayer ?: return false
+        return DeployedWeaponHandler.isDeployed(player)
     }
 
     /**
@@ -555,17 +489,7 @@ open class GeoGunAnimationInstance(
     }
 
     /**
-     * 解析 MELEE 状态实际使用的 clip 名。
-     *
-     * 动作表里是**候选链**，短名会被拼成 `animation.<宿主枪 id>.<短名>`（见 [GunAnimationNames]）：
-     * 动作表所在的枪械数据会被多把枪共用（配件/弹种覆盖），写不了某把枪的完整 clip 名，
-     * 拼出来的候选正好能表达"这把枪有专属动画就用专属的，没有就退回通用的那一支"。
-     *
-     * 候选全部落空时**打 error 日志并回退到 `GunAnimation.Melee`**，而不是静默失败
-     * ——静默失败会让"动画没播"变成一个查不出来的问题。
-     *
-     * 注意：runner 为空时本方法**每个 tick 都会被调一次**（`tick()` 里 `runner == null` 就会重播），
-     * 所以失败日志按"这一次的解析结果"去重，不会刷屏。
+     * 解析 MELEE 状态实际使用的 clip 名
      */
     private fun resolveMeleeName(): String? {
         val resource = GunResource.from(stack)
@@ -616,10 +540,7 @@ open class GeoGunAnimationInstance(
     }
 
     /**
-     * 同一条解析失败只打一次日志。
-     *
-     * [key] 描述"这次失败的是什么"，连续相同的失败被吞掉；成功解析一次后 key 会被清掉，
-     * 之后再失败仍然会打日志。
+     * 同一条解析失败只打一次日志
      */
     private fun logMeleeMissOnce(key: String, message: String, vararg args: Any?) {
         if (loggedMeleeMiss == key) return
@@ -627,8 +548,17 @@ open class GeoGunAnimationInstance(
         Mod.LOGGER.error(message, *args)
     }
 
-    private fun animationName(state: GunAnimationState): String? {
-        val animation = GunResource.compute(stack).animation ?: return null
+    private fun animationName(state: GunAnimationState): String? =
+        animationName(GunResource.compute(stack).animation, state)
+
+    /**
+     * 与 [animationName] 同一张表，但让调用方把已经取到的 [GunAnimation] 递进来。
+     *
+     * 蓄力层不在 [resolveState] 的状态机里（它是一条层，见 [updateChargeRunner]），
+     * 只借这张表查 clip 名 —— 拆成重载是为了不把 `Charge` 那一支抄第二遍。
+     */
+    private fun animationName(animation: GunAnimation?, state: GunAnimationState): String? {
+        if (animation == null) return null
         return when (state) {
             GunAnimationState.IDLE -> animation.idle
             GunAnimationState.EDIT -> animation.edit
@@ -643,7 +573,7 @@ open class GeoGunAnimationInstance(
             GunAnimationState.FINISH -> animation.finish
             GunAnimationState.MELEE -> resolveMeleeName()
             GunAnimationState.FIRE -> animation.fire
-            GunAnimationState.RUN -> animation.run
+            GunAnimationState.CHARGE -> animation.charge
         }
     }
 
@@ -681,15 +611,7 @@ open class GeoGunAnimationInstance(
     }
 
     /**
-     * 近战动画的播放速度：按**本段动作**的时长拉伸，而不是全局 `MeleeDuration`。
-     *
-     * `playbackSpeed = clip.specifiedEndTimeMs / (action.Duration / 20f)`
-     */
-    /**
-     * 是否新开了一段挥击（每段只返回一次 `true`）。
-     *
-     * 与开火的 `fireSerial > consumedFireSerial` 同一个套路：近战状态一直是 `MELEE` 的时候，
-     * 只有这个序号能告诉动画侧"该从头播了"。
+     * 是否新开了一段挥击（每段只返回一次 `true`）
      */
     private fun consumeMeleeSwing(): Boolean {
         val serial = MeleeClientHandler.swingSerial
@@ -741,26 +663,37 @@ open class GeoGunAnimationInstance(
         val newRunner = AnimationRunner(fireAnimation, AnimationContext(fireAnimation.specifiedEndTimeS))
         newRunner.state = AnimationPlayType.PLAY_ONCE_STOP.state()
         fireRunner = newRunner
-        cachedPose = newRunner.evaluate()    }
+        cachedPose = newRunner.evaluate()
+    }
 
     /**
-     * 解析本次开火实际使用的 clip 名。
-     *
-     * 候选链写在**副武器定义**里（`SubWeaponInfo.Animation`），而那份定义是给多把枪共用的，
-     * 写不了某一把枪的完整 clip 名 —— 所以短名在这里按**宿主枪 id** 拼
-     * （`fire_sub_weapon` → `animation.ak_12.fire_sub_weapon`），规则与近战的
-     * `MeleeAction.Animation` 完全同一套，见 [GunAnimationNames]：
-     *
-     * - 候选里**第一个存在**的 clip 胜出（做了 `fire_sub_weapon` 的枪用它）；
-     * - 候选全部落空 → 退回 `GunAnimation.Fire`（"这把枪没做副武器开火动画"）。
-     *
-     * 全部落空会记一条日志 —— 静默失败会让"动画没播"变成查不出来的问题。级别分两种：
-     * **显式写的候选**落空是数据/动画文件写错，报 error；**默认候选**落空只是"这把枪没做这支 clip"，
-     * 退回 `Fire` 本来就是设计的一部分，只打 debug。两个级别都按"这一次的解析结果"去重
-     * （与 [resolveMeleeName] 同一套），不会因为每发都解析而刷屏。
-     *
-     * @param reportMissing 见 [triggerFire]
-     * @param stack 用哪把枪的资源拼短名 —— **宿主枪**（动画实例绑定的那把）
+     * 解析显式指定的开火 clip（`GunProp.SHOOT_ANIMATION`），没写或解析不出来时返回 `null`
+     */
+    private fun resolveOverrideFireName(stack: ItemStack, overrideAnimation: String?): String? {
+        if (overrideAnimation.isNullOrBlank()) return null
+
+        val name = GunAnimationNames.resolve(overrideAnimation, GunResource.from(stack).id)
+        if (animations.containsKey(name)) {
+            loggedOverrideFireMiss = null
+            return name
+        }
+
+        // 资源还没加载完时（animations 为空）不打日志，下一帧还会再解析一次
+        if (animations.isNotEmpty() && loggedOverrideFireMiss != overrideAnimation) {
+            loggedOverrideFireMiss = overrideAnimation
+            Mod.LOGGER.error(
+                "ShootAnimation '{}' (resolved to '{}') not found in the animation file of {}; " +
+                        "falling back to the normal fire animation",
+                overrideAnimation,
+                name,
+                stack.item
+            )
+        }
+        return null
+    }
+
+    /**
+     * 解析本次开火实际使用的 clip 名
      */
     private fun resolveFireName(stack: ItemStack, candidates: List<String>, reportMissing: Boolean): String? {
         val resource = GunResource.from(stack)
@@ -790,11 +723,7 @@ open class GeoGunAnimationInstance(
     }
 
     /**
-     * 同一条开火动画解析失败只打一次日志（与 [logMeleeMissOnce] 同一套去重）。
-     *
-     * @param fatal 显式写在数据里的候选落空 = 数据或动画文件写错了，报 error；
-     *   默认候选落空只是"这把枪没做这支 clip"（退回 `Fire` 本来就是设计的一部分），留一条 debug ——
-     *   这里报 error 会让一份正常存档的日志看起来像坏了。
+     * 同一条开火动画解析失败只打一次日志（与 [logMeleeMissOnce] 同一套去重）
      */
     private fun logFireMissOnce(key: String, fatal: Boolean, message: String, vararg args: Any?) {
         if (loggedFireMiss == key) return
@@ -909,6 +838,8 @@ open class GeoGunAnimationInstance(
         val (holdOpenStarted, closeStrikeStarted) = updateMechanicalRunners(data, animation)
         tickMechanicalRunners(holdOpenStarted, closeStrikeStarted)
         tickSpinRunner(updateSpinRunner(data, animation))
+        // 编辑收尾期间火焰照旧按扳机淡出（这时候玩家手上就是平常拿着枪，没有"在编辑"这回事）
+        tickFireLoopRunner(updateFireLoopRunner(animation))
         val switchStarted = consumeFireModeSwitch(false)
         tickFireModeRunners(fireModeStarted, switchStarted)
 
@@ -962,28 +893,9 @@ open class GeoGunAnimationInstance(
     }
 
     /**
-     * 推进枪管旋转层，返回本帧是否新建了 runner——与 [updateHoldOpen] 一样，新建的那一帧由
-     * [tickSpinRunner] 跳过 tick（runner 进状态时已经记过时间戳了）。
-     *
-     * 这一层只有一支循环动画（[GunAnimation.hold]），全部状态就是"现在转到几成"（[spinPower]）：
-     *
-     * - **缓入**：按住开火键之后，[spinPower] 用掉这把枪的**蓄力时长**（[spinDurationTicks]，就是
-     *   `handleShootDelay` 里 `holdingFireKeyTicks` 的上限）从 0 升到 1，所以第一发子弹出膛（蓄力满）
-     *   的那一刻枪管刚好到满速。转速再走一道 smoothstep，起步和到顶都是缓的。
-     * - **缓出**：松开扳机之后，按同样的时长平滑退回 0。过热、空仓、换弹都**不**影响这一层：
-     *   那些是子弹的事，枪管跟着扳机走（见 [shouldSpin]）。
-     *   退到 0 只退转速，**相位停在那个角度不动**：枪管是一圈对称的六根，停在哪一相位看着都是装好的，
-     *   而"归位"得把相位倒回去，那是肉眼可见的一顿。所以这一层在速度为 0 时照样每帧求值——不叠这一层
-     *   就等于把枪管摁回绑定姿态，那才是真的跳。
-     * - **满速**：见 [holdSpinSpeed]，默认 1200RPM 是 1×，600 是 0.5×，1800 是 1.5×。
-     *
-     * 射速被开火模式/perk 改掉、蓄力被打断、单帧抖动，全都只体现为转速平滑地跟上或退下来：
-     * 没有状态机、没有按帧重建，也就没有"被某一帧推回起点"的可能。
+     * 推进枪管旋转层
      */
     private fun updateSpinRunner(data: GunData, animation: GunAnimation?): Boolean {
-        // 动画资源这一帧拿不到就沿用上一次解析的结果；实在没有就把相位冻住、让这一层留在原地。
-        // **不能在这里清掉 runner**：清掉等于这一层从合成里消失，枪管会当帧弹回绑定姿态（肉眼可见的
-        // 一顿），下一次拿到资源又从第一帧开始转——这本身就是一种「时有时无」。
         val hold = if (animation == null) spinAnimation else animation.hold?.let(animations::get)
         if (hold == null) {
             spinPower = 0f
@@ -1007,7 +919,7 @@ open class GeoGunAnimationInstance(
         spinPower = approach(spinPower, target, step)
 
         // 射速每帧重算：切模式、换 perk 立刻体现在转速上
-        applySpinSpeed(holdSpinSpeed(hold, data) * easeSpin(spinPower))
+        applySpinSpeed(holdSpinSpeed(hold, data) * smoothstep(spinPower))
         return false
     }
 
@@ -1023,23 +935,211 @@ open class GeoGunAnimationInstance(
     }
 
     /**
-     * 这把枪现在该不该转：**只看扳机**——开火键按着（加特林开镜也算），见
-     * [ClientEventHandler.isBarrelSpinTriggered]，与那声旋转音效共用同一个判据。
+     * 推进循环开火层
+     */
+    private fun updateFireLoopRunner(animation: GunAnimation?): Boolean {
+        val loop = if (animation == null) fireLoopAnimation else animation.fireLoop?.let(animations::get)
+        val runner = fireLoopRunner
+
+        if (loop == null || (runner == null && !shouldFireLoop())) {
+            clearFireLoopRunner()
+            return false
+        }
+
+        // 时长每帧重算：`/reload` 改了秒数立刻生效，不用等下一次重建 runner
+        if (animation != null) {
+            fireLoopFadeInTicks = secondsToTicks(animation.fireLoopFadeIn)
+            fireLoopFadeOutTicks = secondsToTicks(animation.fireLoopFadeOut)
+        }
+
+        if (runner == null || fireLoopAnimation !== loop) {
+            fireLoopAnimation = loop
+            val newRunner = AnimationRunner(loop, AnimationContext(loop.specifiedEndTimeS))
+            newRunner.state = AnimationPlayType.LOOP.state()
+            fireLoopRunner = newRunner
+            // 换了一支片段就从 0 重新淡入：接着上一支的权重会闪一下
+            fireLoopPower = 0f
+            return true
+        }
+
+        val target = if (shouldFireLoop()) 1f else 0f
+        val fadeTicks = if (target > fireLoopPower) fireLoopFadeInTicks else fireLoopFadeOutTicks
+        val step = if (fadeTicks <= 0f) 1f
+        else Minecraft.getInstance().deltaFrameTime.coerceIn(0f, SPIN_MAX_FRAME_DELTA_TICKS) / fadeTicks
+        fireLoopPower = approach(fireLoopPower, target, step)
+
+        // 淡出到底、扳机也松了 → 整层摘掉（此刻权重已经是 0，摘掉看不出任何变化）
+        if (fireLoopPower <= 0f && target <= 0f) {
+            clearFireLoopRunner()
+        }
+        return false
+    }
+
+    private fun tickFireLoopRunner(started: Boolean) {
+        if (started) return
+        fireLoopRunner?.tick()
+    }
+
+    private fun clearFireLoopRunner() {
+        fireLoopRunner = null
+        fireLoopAnimation = null
+        fireLoopPower = 0f
+        fireLoopFadeInTicks = 0f
+        fireLoopFadeOutTicks = 0f
+    }
+
+    /**
+     * 推进蓄力层（`GunAnimation.Charge`）。
      *
-     * 这里**故意不查 `canShoot`**：过热、背包弹药打空、换弹都只该停子弹，不该停枪管。之前把两者
-     * 绑在一起，连射到过热（热量到 100 上锁、降到 80 以下才解锁）时枪管跟着停转、退热后又自己
-     * 转起来，看着就是「旋转时有时无」。
+     * **这是一条层，不是基础状态** —— 与 [GunAnimationState.FIRE] 同理：`ql_1031.charge` 只
+     * key 了 `root`，而 `righthand` / `lefthand` 两个手部锚点的姿势是基础状态的 `Idle` 给的
+     * （那支只有一帧，`scale = [1, 1.2, 1]`，见 `GunAnimation.idle` 的注释与
+     * `VerifyArmScale`）。把它当基础状态播，这 1 秒里双臂锚点会掉回绑定姿势，枪会被"甩出去"。
      *
-     * 只认本地玩家手里正拿着的那把枪。**判据必须比物品类型，不能比 ItemStack 对象身份**：
-     * 每发子弹出膛都会改一次手上这把枪的 NBT（弹药、热量），服务端随之把手持槽同步下来，而
-     * 客户端收到同步是把整个 ItemStack **换成新对象**（见 `GunData.DATA_CACHE` 与 `rebind` 的注释，
-     * `GunResource.RESOURCE_CACHE` 也是为同一件事按物品 id 建键的）。可 instance 里的 `stack` 要等
-     * 下一次客户端 tick 才由 `updateItem` 刷新，中间那几帧身份就对不上——`tick()` 却是**每帧**跑一次
-     * （`FirstPersonRenderHandler` 挂在 RenderTickEvent 上），于是按住扫射时那些帧会把转速推一下、
-     * 下一帧又自己缓回来。
+     * 三种结局：
+     * 1. 按下蓄力 → 正向播放（`PLAY_ONCE_HOLD`，播到末帧停住）；
+     * 2. 没到发射标准就松手 → 相位冻在原地，权重（[chargePower]）在
+     *    [CHARGE_CANCEL_FADE_TICKS] 里退到 0，也就是**从当前姿势缓出**回基础状态；
+     * 3. 打出去了 → 整层立刻摘掉，让位给开火动画。
      *
-     * 比类型不影响原来的意思：副手、展示框、掉落物、别人手里的枪都拿不到本地玩家主手的这个物品，
-     * 只有"双手各一把加特林"这种边角情况会让副手那把也跟着转，而主手是双手武器时副手本来就不渲染。
+     * 第 2 条曾经是"2 倍速倒放回原点"，改成了缓出：倒放等于把刚做过的动作再倒着演一遍，
+     * 而缓出只让姿势**散掉**，松手的感觉是"松劲儿"而不是"倒带"。
+     *
+     * @param firedThisFrame 这一帧有没有真的打出去。调用方必须在 [playFire] **消费 `fireSerial`
+     *   之前**读出来传进来（松开蓄力那一帧 `chargeActive` 已经归零，"打出去了"只剩这一个信号）。
+     * @return 是否**新建**了 runner（新建的这一帧不能再 tick，否则同一帧走两步）
+     */
+    private fun updateChargeRunner(animation: GunAnimation?, firedThisFrame: Boolean): Boolean {
+        val clip = animationName(animation, GunAnimationState.CHARGE)?.let(animations::get)
+        val active = clip != null && isCharging()
+        val runner = chargeRunner
+        val wasActive = chargeWasActive
+        chargeWasActive = active
+
+        // 没配片段，或者从来没起过层 → 什么都不用做
+        if (clip == null || (runner == null && !active)) {
+            clearChargeRunner()
+            return false
+        }
+
+        // 打出去了 → 立刻摘掉，让位给开火动画。
+        // 判在 [active] **之前**：常见的自动开火/松手开火那一帧 `chargeActive` 确实已经归零，
+        // 但服务端驱动的开火（`ShootClientMessage` 那一类）打进来时 `chargeActive` 还立着，
+        // 排在后面就会漏掉，蓄力动画会一直挂在枪上。
+        if (firedThisFrame) {
+            clearChargeRunner()
+            return false
+        }
+
+        if (active) {
+            // 按下就是满权重：蓄力动画当场开始，不淡入
+            chargePower = 1f
+            // 头一帧建层；缓出到一半又按下去时（`!wasActive`）也是重建 —— 从第 0 帧重来才和
+            // 游戏里的 `chargeProgress` 同步，接着缓出的相位往前播会让动画和蓄力进度对不上
+            if (runner == null || chargeAnimation !== clip || !wasActive) {
+                chargeAnimation = clip
+                val newRunner = AnimationRunner(clip, AnimationContext(clip.specifiedEndTimeS))
+                val playState = GunAnimationState.CHARGE.playType.state()
+                setAnimationSpeed(playState, chargePlaybackSpeed(clip, GunData.from(stack)))
+                newRunner.state = playState
+                chargeRunner = newRunner
+                return true
+            }
+            return false
+        }
+
+        // 松手那一帧：起点是满权重，从**下一帧**才开始退，退到 0 再摘层
+        if (wasActive) {
+            chargePower = 1f
+            return false
+        }
+
+        chargePower = approach(
+            chargePower, 0f,
+            Minecraft.getInstance().deltaFrameTime.coerceIn(0f, SPIN_MAX_FRAME_DELTA_TICKS) /
+                    CHARGE_CANCEL_FADE_TICKS
+        )
+        if (chargePower <= 0f) clearChargeRunner()
+        return false
+    }
+
+    private fun tickChargeRunner(started: Boolean) {
+        if (started) return
+        // 缓出期间冻住相位：只让权重退，不让枪继续做蓄力动作
+        if (!chargeWasActive) return
+        chargeRunner?.tick()
+    }
+
+    private fun clearChargeRunner() {
+        chargeRunner = null
+        chargeAnimation = null
+        chargePower = 0f
+        chargeWasActive = false
+    }
+
+    /**
+     * 这把枪此刻是不是"正在蓄力"。
+     *
+     * 先认**本地玩家手里的这把枪**：[ClientEventHandler.chargeActive] 是全局字段，
+     * 副手那把枪、别人手里的同一把枪都会读到它，不认枪的话它们会跟着一起抖
+     * （同 [shouldFireLoop] / [shouldSpin]）。
+     */
+    private fun isCharging(): Boolean {
+        val player = localPlayer ?: return false
+        if (player.mainHandItem.item !== stack.item) return false
+        if (!ClientEventHandler.chargeActive) return false
+        return GunData.from(stack).selectedFireModeInfo().isChargeMode()
+    }
+
+    /**
+     * 蓄力动画的播放倍率：让片段自己的时长对上蓄力模式的 `Duration`。
+     *
+     * 算法同 [reloadPlaybackSpeed] —— MAE 按真实时间推进，倍率就是"片段时长 / 数据时长"。
+     * `ql_1031` 两者都是 1 秒（`Duration = 20` tick，`animation_length = 1`），所以是 `1.0`；
+     * 以后改 `Duration` 或换一支片段都不用回来手调这个常数。
+     */
+    private fun chargePlaybackSpeed(animation: BedrockAnimation, data: GunData): Float {
+        val seconds = (data.selectedFireModeInfo().chargeConfig()?.effectiveDuration ?: return 1f) /
+                TICKS_PER_SECOND
+        return if (animation.specifiedEndTimeS > 0f && seconds > 0f) {
+            animation.specifiedEndTimeS / seconds
+        } else {
+            1f
+        }
+    }
+
+    /** 数据里的**秒** → tick。缓动要的步长单位是 tick（`deltaFrameTime` 就是 tick，20/s）。 */
+    private fun secondsToTicks(seconds: Float): Float =
+        if (seconds <= 0f) 0f else seconds * TICKS_PER_SECOND
+
+    /**
+     * 把循环开火层按 [fireLoopPower]**交叉淡入/淡出**到 [lowerPose] 上
+     */
+    private fun applyFireLoop(lowerPose: Pose): Pose {
+        val runner = fireLoopRunner ?: return lowerPose
+        val weight = smoothstep(fireLoopPower)
+        if (weight <= 0f) return lowerPose
+
+        val loopPose = runner.evaluate()
+        return CROSSFADE_BLENDER.combine(lowerPose, loopPose) { lower, loop ->
+            if (loop.boneIndex() < 0) lower
+            else SimpleInterpolatorBlender.leanerLerpTransforms(
+                lower, loop, weight, maxOf(lower.boneIndex(), loop.boneIndex()), TRANSFORM_FACTORY
+            )
+        }
+    }
+
+    /**
+     * 是否循环播放开火
+     */
+    private fun shouldFireLoop(): Boolean {
+        val player = localPlayer ?: return false
+        if (player.mainHandItem.item !== stack.item) return false
+        return ClientEventHandler.holdingFireKey
+    }
+
+    /**
+     * 这把枪现在该不该转
      */
     private fun shouldSpin(): Boolean {
         val player = localPlayer ?: return false
@@ -1054,15 +1154,11 @@ open class GeoGunAnimationInstance(
      */
     private fun spinDurationTicks(data: GunData): Int {
         return (data.selectedFireModeInfo().chargeConfig()?.effectiveDuration
-                ?: data.get(GunProp.SHOOT_DELAY)).coerceAtLeast(1)
+            ?: data.get(GunProp.SHOOT_DELAY)).coerceAtLeast(1)
     }
 
     /**
-     * 满速时的播放倍率。六根枪管均分一圈，"每秒转多少度"在数值上就等于 RPM
-     * （1200RPM = 20 发/s × 每发 60° = 1200°/s），所以按射速转 = 每两发之间正好走 1/6 圈。
-     * 动画里枪管在 [BedrockAnimation.specifiedEndTimeS] 秒（= json 的 `animation_length`，
-     * minigun 的 hold 是 0.3s，即 1200°/s）里转满一圈，两者相除就是倍率：
-     * 1200RPM 是 1×，600 是 0.5×，1800 是 1.5×。
+     * 满速时的播放倍率
      */
     private fun holdSpinSpeed(hold: BedrockAnimation, data: GunData): Float {
         val endTimeS = hold.specifiedEndTimeS
@@ -1074,8 +1170,225 @@ open class GeoGunAnimationInstance(
         setAnimationSpeed(spinRunner?.state, speed)
     }
 
+    // ── 自定义奔跑层（`Animation.Run`）──────────────────────────────────────────
+
+    /**
+     * 推进自定义奔跑层。
+     *
+     * 它是**层**不是基础状态：以前 `Run` 是个状态，进/出都是硬切 —— 0.6 秒一个周期的摆动会
+     * 在半途"啪"地开始/停住。现在基础状态始终是 `Idle`，它按权重混上去，权重沿
+     * [ClientEventHandler.sprintEaseAlpha] 的速率缓入缓出，和 [ClientEventHandler.handleWeaponMove]
+     * 里程序性奔跑那六个 `sprintBasic*` 同源（连"重枪入得慢、出得快"都是同一套系数）。
+     *
+     * 它只 key `root`（枪身），手是钉死的，所以混上去不会动到手臂锚点。
+     *
+     * @return 是否**新建**了 runner（新建的这一帧不能再 tick，否则同一帧走两步）
+     */
+    private fun updateCustomSprint(animation: GunAnimation?, active: Boolean): Boolean {
+        val clip = animation?.run?.let(animations::get)
+        if (clip == null) {
+            clearCustomSprint()
+            return false
+        }
+
+        val runner = customSprintRunner
+        if (runner == null) {
+            if (!active) {
+                clearCustomSprint()
+                return false
+            }
+            customSprintAnimation = clip
+            val newRunner = AnimationRunner(clip, AnimationContext(clip.specifiedEndTimeS))
+            newRunner.state = AnimationPlayType.LOOP.state()
+            customSprintRunner = newRunner
+            return true
+        }
+
+        // 资源重载换了片段：权重留在原地，只换 runner（不然重载那一帧姿势会跳）
+        if (customSprintAnimation !== clip) {
+            customSprintAnimation = clip
+            val newRunner = AnimationRunner(clip, AnimationContext(clip.specifiedEndTimeS))
+            newRunner.state = AnimationPlayType.LOOP.state()
+            customSprintRunner = newRunner
+            return true
+        }
+
+        updateCustomSprintPower(active)
+        return false
+    }
+
+    private fun updateCustomSprintPower(active: Boolean) {
+        // 和 `handleWeaponMove` 的 `customWeight` 取**同一个来源**（`ActiveGun.handlingData`
+        // 兜底才轮到手上这把枪），不然两边的缓动速率会差一个重量档
+        val data = GunData.from(stack)
+        val weight = (localPlayer?.let { ActiveGun.handlingData(it) } ?: data)
+            .get(GunProp.WEIGHT)
+            .coerceIn(1.0, 50.0)
+        val times = ClientEventHandler.sprintEaseTimes(Minecraft.getInstance().deltaFrameTime)
+        val rotBase =
+            if (active) ClientEventHandler.SPRINT_EASE_ROT_IN else ClientEventHandler.SPRINT_EASE_ROT_OUT
+        val posBase =
+            if (active) ClientEventHandler.SPRINT_EASE_POS_IN else ClientEventHandler.SPRINT_EASE_POS_OUT
+        val target = if (active) 1f else 0f
+
+        customSprintRotPower = Mth.lerp(
+            ClientEventHandler.sprintEaseAlpha(rotBase, times, weight, active).toFloat(),
+            customSprintRotPower,
+            target
+        )
+        customSprintPosPower = Mth.lerp(
+            ClientEventHandler.sprintEaseAlpha(posBase, times, weight, active).toFloat(),
+            customSprintPosPower,
+            target
+        )
+
+        // lerp 是渐近的，永远到不了 0；退到看不见就收层（[CUSTOM_SPRINT_MIN_POWER] 时残留不到千分之一）
+        if (!active
+            && customSprintRotPower <= CUSTOM_SPRINT_MIN_POWER
+            && customSprintPosPower <= CUSTOM_SPRINT_MIN_POWER
+        ) {
+            clearCustomSprint()
+        }
+    }
+
+    private fun tickCustomSprint(started: Boolean) {
+        if (started) return
+        customSprintRunner?.tick()
+    }
+
+    private fun clearCustomSprint() {
+        customSprintRunner = null
+        customSprintAnimation = null
+        customSprintPosPower = 0f
+        customSprintRotPower = 0f
+    }
+
+    /**
+     * 把自定义奔跑层按 [customSprintPosPower] / [customSprintRotPower] 混到 [lowerPose] 上。
+     *
+     * 位移和旋转**分开给权重**：程序性奔跑那边位移本来就比旋转先到位（见
+     * [ClientEventHandler.SPRINT_EASE_POS_IN] / [ClientEventHandler.SPRINT_EASE_ROT_IN]），
+     * 一条权重总有一边差两倍多。
+     */
+    private fun applyCustomSprint(lowerPose: Pose): Pose {
+        val runner = customSprintRunner ?: return lowerPose
+        val posWeight = customSprintPosPower
+        val rotWeight = customSprintRotPower
+        if (posWeight <= 0f && rotWeight <= 0f) return lowerPose
+
+        val sprintPose = runner.evaluate()
+        return CROSSFADE_BLENDER.combine(lowerPose, sprintPose) { lower, sprint ->
+            if (sprint.boneIndex() < 0) lower
+            else TRANSFORM_FACTORY.createBoneTransform(
+                maxOf(lower.boneIndex(), sprint.boneIndex()),
+                lower.translation().lerp(sprint.translation(), posWeight, Vector3f()),
+                // 旋转和缩放走旋转那一档：这条片段里它们本来就是同一个节奏（`righthand` 的 1.6 倍缩放）
+                MathUtil.nlerpShortestPath(
+                    lower.rotation().asQuaternion(), sprint.rotation().asQuaternion(), rotWeight
+                ),
+                lower.scale().lerp(sprint.scale(), rotWeight, Vector3f())
+            )
+        }
+    }
+
+    private fun updateDeployIdle(animation: GunAnimation?, active: Boolean): Boolean {
+        val clip = animation?.idleDeploy?.let(animations::get)
+        if (clip == null) {
+            clearDeployIdle()
+            return false
+        }
+
+        val runner = deployIdleRunner
+        if (runner == null) {
+            if (!active) {
+                clearDeployIdle()
+                return false
+            }
+            deployIdleAnimation = clip
+            val newRunner = AnimationRunner(clip, AnimationContext(clip.specifiedEndTimeS))
+            newRunner.state = AnimationPlayType.LOOP.state()
+            deployIdleRunner = newRunner
+            return true
+        }
+
+        if (deployIdleAnimation !== clip) {
+            deployIdleAnimation = clip
+            val newRunner = AnimationRunner(clip, AnimationContext(clip.specifiedEndTimeS))
+            newRunner.state = AnimationPlayType.LOOP.state()
+            deployIdleRunner = newRunner
+            return true
+        }
+
+        deployIdlePower = if (active) {
+            ClientEventHandler.bipodViewTime.toFloat().coerceIn(0f, 1f)
+        } else {
+            approach(deployIdlePower, 0f, ClientEventHandler.bipodViewStep().toFloat())
+        }
+
+        if (!active && deployIdlePower <= CUSTOM_SPRINT_MIN_POWER) {
+            clearDeployIdle()
+        }
+        return false
+    }
+
+    private fun tickDeployIdle(started: Boolean) {
+        if (started) return
+        deployIdleRunner?.tick()
+    }
+
+    private fun clearDeployIdle() {
+        deployIdleRunner = null
+        deployIdleAnimation = null
+        deployIdlePower = 0f
+    }
+
+    private fun applyDeployIdle(lowerPose: Pose): Pose {
+        val runner = deployIdleRunner ?: return lowerPose
+        val weight = smoothstep(deployIdlePower.coerceIn(0f, 1f))
+        if (weight <= 0f) return lowerPose
+
+        val deployPose = runner.evaluate()
+        return CROSSFADE_BLENDER.combine(lowerPose, deployPose) { lower, deploy ->
+            if (deploy.boneIndex() < 0) lower
+            else TRANSFORM_FACTORY.createBoneTransform(
+                maxOf(lower.boneIndex(), deploy.boneIndex()),
+                lower.translation().lerp(deploy.translation(), weight, Vector3f()),
+                MathUtil.nlerpShortestPath(
+                    lower.rotation().asQuaternion(), deploy.rotation().asQuaternion(), weight
+                ),
+                lower.scale().lerp(deploy.scale(), weight, Vector3f())
+            )
+        }
+    }
+
+    private fun wantsDeployIdle(target: GunAnimationState?, animation: GunAnimation?): Boolean {
+        if (animation?.idleDeploy == null) return false
+        if (!isDeployedGun()) return false
+        return target == GunAnimationState.IDLE
+    }
+
+    /**
+     * 把蓄力层按 [chargePower]**交叉淡出**到 [lowerPose] 上（[applyFireLoop] 的蓄力版）。
+     *
+     * 权重恒为 1 的时候就是个 nlerp 到 1，等价于直接盖住；只有"没到发射标准就松手"那段
+     * 权重才会从 1 退到 0，把当前姿势溶回基础状态。
+     */
+    private fun applyCharge(lowerPose: Pose): Pose {
+        val runner = chargeRunner ?: return lowerPose
+        val weight = smoothstep(chargePower)
+        if (weight <= 0f) return lowerPose
+
+        val chargePose = runner.evaluate()
+        return CROSSFADE_BLENDER.combine(lowerPose, chargePose) { lower, charge ->
+            if (charge.boneIndex() < 0) lower
+            else SimpleInterpolatorBlender.leanerLerpTransforms(
+                lower, charge, weight, maxOf(lower.boneIndex(), charge.boneIndex()), TRANSFORM_FACTORY
+            )
+        }
+    }
+
     /** smoothstep：起步和到顶都是缓的（缓入缓出）。 */
-    private fun easeSpin(power: Float): Float = power * power * (3f - 2f * power)
+    private fun smoothstep(power: Float): Float = power * power * (3f - 2f * power)
 
     private fun approach(current: Float, target: Float, step: Float): Float {
         return if (current < target) (current + step).coerceAtMost(target)
@@ -1096,8 +1409,6 @@ open class GeoGunAnimationInstance(
         switchPose: Pose,
         upperPose: Pose
     ): Pose {
-        // NoAllocMergeBlender keeps the last occurrence of a bone, so switchPose
-        // must come after lowerPose to override shared bones while it plays.
         val pose = if (switchPose == DummyPose.INSTANCE) {
             lowerPose
         } else {
@@ -1107,10 +1418,6 @@ open class GeoGunAnimationInstance(
     }
 
     private fun combineHoldOpen(pose: Pose, holdOpenPose: Pose): Pose {
-        // hold_open drives the same bolt/slide bones that the fire animation cycles,
-        // and both are authored around the closed position, so adding them would send
-        // the bolt twice as far back. Merge instead: the hold-open pose wins over the
-        // fire animation, keeping the bolt back the moment the magazine runs dry.
         if (holdOpenPose == DummyPose.INSTANCE) return pose
         if (pose == DummyPose.INSTANCE) return holdOpenPose
         return MERGE_BLENDER.blend(listOf(pose, holdOpenPose))
@@ -1157,6 +1464,12 @@ open class GeoGunAnimationInstance(
     override fun tick(partialTicks: Float) {
         val target = resolveState()
 
+        // 编辑/改装里不该有蓄力（`chargeActive` 本来就要求 `!isEditing`）。这一句是防"蓄力收到
+        // 一半就进编辑"：那条路走的是下面的提前 return，蓄力层会没人摘，一直挂着抖。
+        if (ClientEventHandler.isEditing) {
+            clearChargeRunner()
+        }
+
         if (editExitRunner != null && ClientEventHandler.isEditing) {
             editExitRunner = null
             runner = null
@@ -1177,6 +1490,12 @@ open class GeoGunAnimationInstance(
             closeStrikeRunner = null
             closeStrikeAnimationName = null
             clearFireModeLayers()
+            // 循环开火层也一并摘掉：它没有"停在那个角度"这种需要保留的相位（对比枪管旋转），
+            // 留着只会让下次亮起来时从一个旧权重接着走
+            clearFireLoopRunner()
+            clearChargeRunner()
+            clearCustomSprint()
+            clearDeployIdle()
             currentState = null
             pendingParticles.clear()
             cachedPose = DummyPose.INSTANCE
@@ -1190,15 +1509,17 @@ open class GeoGunAnimationInstance(
             startEditExit()
             if (editExitRunner != null) {
                 cachedPose = combineHoldOpen(
-                    combineFireModeSwitch(
-                        combineLayers(
-                            editExitRunner!!.evaluate(),
-                            fireModeRunner?.evaluate() ?: DummyPose.INSTANCE,
-                            closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE,
-                            spinRunner?.evaluate() ?: DummyPose.INSTANCE
-                        ),
-                        fireModeSwitchRunner?.evaluate() ?: DummyPose.INSTANCE,
-                        fireRunner?.evaluate() ?: DummyPose.INSTANCE
+                    applyFireLoop(
+                        combineFireModeSwitch(
+                            combineLayers(
+                                editExitRunner!!.evaluate(),
+                                fireModeRunner?.evaluate() ?: DummyPose.INSTANCE,
+                                closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE,
+                                spinRunner?.evaluate() ?: DummyPose.INSTANCE
+                            ),
+                            fireModeSwitchRunner?.evaluate() ?: DummyPose.INSTANCE,
+                            fireRunner?.evaluate() ?: DummyPose.INSTANCE
+                        )
                     ),
                     holdOpenRunner?.evaluate() ?: DummyPose.INSTANCE
                 )
@@ -1221,6 +1542,11 @@ open class GeoGunAnimationInstance(
         val fireModeStarted = syncFireMode()
         val data = GunData.from(stack)
         val animation = GunResource.compute(stack).animation
+
+        // 蓄力层收尾要判"这一发打出去没有"。**必须在下面 [playFire] 消费 `fireSerial` 之前读**：
+        // 松开蓄力那一帧 `chargeActive` 已经归零，"是打出去了还是没到发射标准"只剩这一个信号。
+        val firedThisFrame = fireSerial > consumedFireSerial
+
         val (holdOpenStarted, closeStrikeStarted) = updateMechanicalRunners(data, animation)
 
         // 是否是新的一次挥击。**必须先于下面的 runner 判定消费掉**：
@@ -1261,17 +1587,14 @@ open class GeoGunAnimationInstance(
         tickFireModeRunners(fireModeStarted, fireModeSwitchStarted)
         tickMechanicalRunners(holdOpenStarted, closeStrikeStarted)
         tickSpinRunner(updateSpinRunner(data, animation))
+        tickFireLoopRunner(updateFireLoopRunner(animation))
+        tickChargeRunner(updateChargeRunner(animation, firedThisFrame))
+        tickCustomSprint(updateCustomSprint(animation, wantsCustomSprint(target, animation)))
+        tickDeployIdle(updateDeployIdle(animation, wantsDeployIdle(target, animation)))
 
-        // 副武器自己的换弹动画（四期，§9.8.7）：它播在**附件模型**上，不进下面这份 `cachedPose`
-        // —— 宿主枪照常播自己的 idle/run，两套骨骼天然不冲突。
-        //
-        // ⚠ 整块**只有主手实例跑**（见构造参数 [hand] 的说明）：副武器是主手那把枪身上的东西，
-        // 而两份实例（两手的）解析出来的是同一个 `player.mainHandItem` —— 不挡的话副手实例会在
-        // 同一份数据上再建一套 runner，把同一支换弹动画的音效关键帧再收一遍。
         if (hand == InteractionHand.MAIN_HAND) {
             updateSubWeaponReload()
             subWeaponReloadRunner?.tick()
-            // 常驻的 idle 锚点（§11.11.7.4）：只解析 clip，不跑 runner —— 渲染侧每帧取它的 `t=0`
             updateSubWeaponIdle()
         }
 
@@ -1279,32 +1602,55 @@ open class GeoGunAnimationInstance(
         collectParticleEvents(fireRunner)
         collectParticleEvents(fireModeRunner)
         collectParticleEvents(fireModeSwitchRunner)
+
         collectSoundEvents(runner)
         collectSoundEvents(fireRunner)
         collectSoundEvents(fireModeRunner)
         collectSoundEvents(fireModeSwitchRunner)
         collectSoundEvents(holdOpenRunner)
         collectSoundEvents(closeStrikeRunner)
-        // 副武器换弹动画的**时间轴音效**（五期）：`animation.sub_weapon_gp_25.reload` 里那几条
-        // `sound_effects` 与主武器完全同一套机制（同一个 `BedrockAnimation.SOUND_CHANNEL_NAME`，
-        // 同一支 [collectSoundEvents]），只是先前没人来收 —— 附件动画播放链路当时只取姿态。
-        // 位置就在 [subWeaponReloadRunner] 的 `tick()` 之后，与上面那一排同款。
         collectSoundEvents(subWeaponReloadRunner)
+        // 蓄力层也是一条独立的时间轴，`sound_effects` 得跟着一起收，不然枪的蓄力动画里
+        // 写的时间轴音效永远不响
+        collectSoundEvents(chargeRunner)
+
+        if (fireLoopPower > 0f) {
+            collectParticleEvents(fireLoopRunner)
+            collectSoundEvents(fireLoopRunner)
+        }
+
+        // 自定义奔跑层只在亮着的时候收事件（它跟循环开火层一样是 loop 片段）
+        if (customSprintRunner != null && (customSprintPosPower > 0f || customSprintRotPower > 0f)) {
+            collectParticleEvents(customSprintRunner)
+            collectSoundEvents(customSprintRunner)
+        }
+
+        if (deployIdleRunner != null && deployIdlePower > 0f) {
+            collectParticleEvents(deployIdleRunner)
+            collectSoundEvents(deployIdleRunner)
+        }
 
         if (fireRunner?.state is StopState) {
             fireRunner = null
         }
 
         cachedPose = combineHoldOpen(
-            combineFireModeSwitch(
-                combineLayers(
-                    runner?.evaluate() ?: DummyPose.INSTANCE,
-                    fireModeRunner?.evaluate() ?: DummyPose.INSTANCE,
-                    closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE,
-                    spinRunner?.evaluate() ?: DummyPose.INSTANCE
-                ),
-                fireModeSwitchRunner?.evaluate() ?: DummyPose.INSTANCE,
-                fireRunner?.evaluate() ?: DummyPose.INSTANCE
+            applyFireLoop(
+                combineFireModeSwitch(
+                    combineLayers(
+                        // 蓄力层压在基础状态上、垫在开火层下面：它只 key `root`（枪身），
+                        // 手部锚点仍由基础状态的 `Idle` 给，两者合起来才是"枪在手里抖"。
+                        // 它是按权重交叉淡出出来的，所以基础状态单独先合一次。
+                        // 自定义奔跑层在最底下（`Idle` 之上、其余层之下）：蓄力/开火那类"正在做动作"
+                        // 的层要压得住它，而它自己得盖住 `Idle` 的枪身。
+                        applyCharge(applyDeployIdle(applyCustomSprint(runner?.evaluate() ?: DummyPose.INSTANCE))),
+                        fireModeRunner?.evaluate() ?: DummyPose.INSTANCE,
+                        closeStrikeRunner?.evaluate() ?: DummyPose.INSTANCE,
+                        spinRunner?.evaluate() ?: DummyPose.INSTANCE
+                    ),
+                    fireModeSwitchRunner?.evaluate() ?: DummyPose.INSTANCE,
+                    fireRunner?.evaluate() ?: DummyPose.INSTANCE
+                )
             ),
             holdOpenRunner?.evaluate() ?: DummyPose.INSTANCE
         )
@@ -1357,6 +1703,9 @@ open class GeoGunAnimationInstance(
             closeStrikeRunner = null
             closeStrikeAnimationName = null
             clearSpinRunner()
+            clearFireLoopRunner()
+            clearChargeRunner()
+            clearCustomSprint()
             pendingParticles.clear()
             loadAnimations()
         }
@@ -1378,6 +1727,9 @@ open class GeoGunAnimationInstance(
         closeStrikeRunner = null
         closeStrikeAnimationName = null
         clearSpinRunner()
+        clearFireLoopRunner()
+        clearChargeRunner()
+        clearCustomSprint()
         currentState = null
         fireSerial = 0
         consumedFireSerial = 0
@@ -1396,15 +1748,41 @@ open class GeoGunAnimationInstance(
         private const val EDIT_EXIT_SPEED = 1.5f
 
         /**
+         * 蓄力没到发射标准就松手时，姿势缓出回基础状态的时长（tick）。
+         *
+         * 0.2 秒：够看出是"松劲儿"而不是硬切，又短到不会和紧跟着的下一次蓄力撞上
+         * （同 `takesHandAway` 那套副武器手臂交接用的 3 tick 量级）。
+         */
+        private const val CHARGE_CANCEL_FADE_TICKS = 4f
+
+        /**
          * 缓入缓出每帧最多吃掉多少 tick。`deltaFrameTime` 单位是 tick（20/s，60FPS 一帧约 0.33），
          * 卡顿或断点续跑时可能蹦得很大——上面的常数按秒写就会一帧走完。上限照抄
          * `GeoGunRenderer.scriptFrameDeltaSeconds`，掉帧的时候是"跳帧"而不是"瞬移"。
          */
         private const val SPIN_MAX_FRAME_DELTA_TICKS = 0.8f
 
+        /** 一秒的 tick 数：数据里的秒（`FireLoopFadeIn` 这类）换算成缓动要的 tick */
+        private const val TICKS_PER_SECOND = 20f
+
+        /**
+         * 自定义奔跑层退到这个权重以下就收掉。
+         *
+         * 权重是渐近的 lerp，永远到不了 0；这条片段满权重也就 ±10° / 0.19 格，千分之一
+         * （0.01° / 0.0002 格）已经看不见了。
+         */
+        private const val CUSTOM_SPRINT_MIN_POWER = 0.001f
+
+        private val TRANSFORM_FACTORY: BoneTransformFactory = ZYXBoneTransformFactory()
+
         private val BLENDER: EulerAdditiveBlender =
-            SimpleEulerAdditiveBlender(ZYXBoneTransformFactory()) { ArrayPoseBuilder() }
+            SimpleEulerAdditiveBlender(TRANSFORM_FACTORY) { ArrayPoseBuilder() }
 
         private val MERGE_BLENDER = NoAllocMergeBlender()
+
+        /**
+         * 循环开火层那一次逐骨骼插值
+         */
+        private val CROSSFADE_BLENDER = BiPoseCombiner { ArrayPoseBuilder() }
     }
 }

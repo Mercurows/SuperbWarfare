@@ -1,6 +1,5 @@
 package com.atsuishio.superbwarfare.client.renderer;
 
-import com.atsuishio.superbwarfare.Mod;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
@@ -26,6 +25,36 @@ public class ModRenderTypes extends RenderType {
         return RenderType.create("laser", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, false, state);
     });
 
+    /** 激光束的附加混合 */
+    public static final TransparencyStateShard LASER_BEAM_ADDITIVE = new TransparencyStateShard("laser_beam_additive", () -> {
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE,
+                GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+    }, () -> {
+        RenderSystem.disableBlend();
+        RenderSystem.defaultBlendFunc();
+    });
+
+    /** 枪械激光瞄准器的光束 */
+    public static final Function<ResourceLocation, RenderType> LASER_BEAM = Util.memoize((location) -> {
+        TextureStateShard shard = new RenderStateShard.TextureStateShard(location, false, false);
+        RenderType.CompositeState state = RenderType.CompositeState.builder()
+                .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_EMISSIVE_SHADER)
+                .setTextureState(shard)
+                .setLayeringState(VIEW_OFFSET_Z_LAYERING)
+                .setTransparencyState(LASER_BEAM_ADDITIVE)
+                .setOutputState(ITEM_ENTITY_TARGET)
+                .setCullState(NO_CULL)
+                .setLightmapState(LIGHTMAP)
+                .setOverlayState(OVERLAY)
+                .setWriteMaskState(COLOR_DEPTH_WRITE)
+                .createCompositeState(false);
+        return RenderType.create("laser_beam", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, true, state);
+    });
+
+    public static RenderType laserBeam(ResourceLocation location) {
+        return LASER_BEAM.apply(location);
+    }
 
     public static final Function<ResourceLocation, RenderType> ILLUMINATED = Util.memoize((location) -> {
         TextureStateShard shard = new RenderStateShard.TextureStateShard(location, false, false);
@@ -57,6 +86,27 @@ public class ModRenderTypes extends RenderType {
                 .createCompositeState(false);
         return RenderType.create("poly_mesh_translucent_emissive", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLES, 256, false, true, state);
     });
+
+    // 自发光多边形网格：与 net.minecraft.client.renderer.RenderType.eyes 同一套状态
+    // （rendertype_eyes 着色器、加法混合、无光照、只写颜色），只是换成 TRIANGLES + NO_CULL，
+    // 好和 polyMeshCutout 那一遍的剪影对齐（那一遍就是 NO_CULL）。
+    // 枪械的自发光层（_e 贴图）就是靠它 + RenderType.eyes 把模型再画一遍，见 GunEmissiveTextures。
+    public static final Function<ResourceLocation, RenderType> POLY_MESH_EYES = Util.memoize((location) -> {
+        RenderType.CompositeState state = RenderType.CompositeState.builder()
+                .setShaderState(RENDERTYPE_EYES_SHADER)
+                .setTextureState(new RenderStateShard.TextureStateShard(location, false, false))
+                .setTransparencyState(ADDITIVE_TRANSPARENCY)
+                .setCullState(NO_CULL)
+                .setLightmapState(NO_LIGHTMAP)
+                .setOverlayState(NO_OVERLAY)
+                .setWriteMaskState(COLOR_WRITE)
+                .createCompositeState(false);
+        return RenderType.create("poly_mesh_eyes", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLES, 256, false, true, state);
+    });
+
+    public static RenderType polyMeshEyes(ResourceLocation location) {
+        return POLY_MESH_EYES.apply(location);
+    }
 
     public static final Function<ResourceLocation, RenderType> MUZZLE_FLASH_TYPE = Util.memoize((location) -> {
         TextureStateShard shard = new RenderStateShard.TextureStateShard(location, false, false);
@@ -101,31 +151,4 @@ public class ModRenderTypes extends RenderType {
                     .setLightmapState(NO_LIGHTMAP)
                     .setWriteMaskState(COLOR_WRITE)
                     .createCompositeState(false));
-
-    // 方法1：使用白色纹理贴图
-    public static final RenderType WHITE_SOLID = RenderType.create(
-            "white_entity_solid",
-            DefaultVertexFormat.NEW_ENTITY,
-            VertexFormat.Mode.QUADS,
-            256,
-            false,
-            true,
-            RenderType.CompositeState.builder()
-                    .setShaderState(RenderStateShard.RENDERTYPE_ENTITY_TRANSLUCENT_EMISSIVE_SHADER)
-                    .setTextureState(new RenderStateShard.TextureStateShard(
-                            createWhiteTextureLocation(), // 白色纹理
-                            false,
-                            false
-                    ))
-                    .setTransparencyState(RenderStateShard.NO_TRANSPARENCY)
-                    .setCullState(RenderStateShard.CULL)
-                    .setLightmapState(RenderStateShard.LIGHTMAP)
-                    .setOverlayState(RenderStateShard.OVERLAY)
-                    .createCompositeState(false)
-    );
-
-    // 获取白色纹理位置
-    private static net.minecraft.resources.ResourceLocation createWhiteTextureLocation() {
-        return Mod.loc("textures/entity/white.png");
-    }
 }

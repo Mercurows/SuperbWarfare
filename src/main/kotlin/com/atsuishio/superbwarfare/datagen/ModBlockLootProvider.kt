@@ -40,6 +40,7 @@ class ModBlockLootProvider : BlockLootSubProvider(mutableSetOf<Item>(), FeatureF
         this.dropSelf(ModBlocks.URANIUM_BLOCK.get())
         this.dropSelf(ModBlocks.CREATIVE_CHARGING_STATION.get())
         this.dropSelf(ModBlocks.FUMO_25.get())
+        this.dropSelf(ModBlocks.TRIPOD.get())
         this.dropSelf(ModBlocks.VEHICLE_DEPLOYER.get())
         this.dropSelf(ModBlocks.AIRCRAFT_CATAPULT.get())
         this.dropSelf(ModBlocks.CATAPULT_CONTROLLER.get())

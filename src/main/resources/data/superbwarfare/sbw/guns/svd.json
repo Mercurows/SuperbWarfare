@@ -122,13 +122,16 @@
       "superbwarfare:muzzle_compensator_r_17",
       "superbwarfare:ar_silencer",
       "superbwarfare:loudspeaker",
-      "superbwarfare:silencer_qinglan"
-    ],
-    "Bayonet": [
+      "superbwarfare:silencer_qinglan",
       "superbwarfare:bayonet_6kh2"
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"
+    ],
+    "LowerRail": [
+      "superbwarfare:lower_rail_bipod",
+      "superbwarfare:peq_15",
+      "superbwarfare:pistol_laser"
     ]
   },
   "SoundInfo": {

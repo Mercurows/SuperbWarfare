@@ -18,7 +18,7 @@ open class GeoGunItemV2(properties: Properties) : GunItem(properties) {
     override fun initializeClient(consumer: Consumer<IClientItemExtensions>) {
         super.initializeClient(consumer)
         consumer.accept(object : IClientItemExtensions {
-            private val renderer by lazy { GeoGunRenderer() }
+            private val renderer by lazy { createRenderer() }
 
             override fun getCustomRenderer() = renderer
 
@@ -31,6 +31,9 @@ open class GeoGunItemV2(properties: Properties) : GunItem(properties) {
             }
         })
     }
+
+    @OnlyIn(Dist.CLIENT)
+    open fun createRenderer(): GeoGunRenderer = GeoGunRenderer()
 
     @OnlyIn(Dist.CLIENT)
     open fun armPose(

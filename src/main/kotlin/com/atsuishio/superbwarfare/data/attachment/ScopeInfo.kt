@@ -14,26 +14,21 @@ private const val SCOPE_BODY_NODE = "scope_body"
 private const val OCULAR_NODE = "ocular"
 private const val OCULAR_RING_NODE = "ocular_ring"
 
-/** Color map key holding the tint used above every threshold. */
 private const val AMMO_COLOR_DEFAULT_KEY = "Default"
-
-/** Opaque white, which leaves a bone looking exactly as it does untinted. */
 private const val AMMO_COLOR_WHITE = -0x1
-
-/** Alpha bits that [ModColor] forces onto every color it parses. */
 private const val OPAQUE_ALPHA = -0x1000000
-
-/** `MathTool.getGradientColor` mode selecting the HSV interpolation over the HSL one. */
 private const val GRADIENT_MODE_HSV = 2
-
-/** Placeholder in [AmmoTextEntry.text] replaced with the current magazine count. */
 private const val AMMO_COUNT_PLACEHOLDER = "%ammo_count%"
+private const val RANGE_PLACEHOLDER = "%range%"
+private const val HEAT_PLACEHOLDER = "%heat%"
 
 /**
- * Model units per font pixel used when [AmmoTextEntry.scale] is not written.
- * One model unit is one BlockBench unit, i.e. 1/16 of a block, so an 8px tall digit comes out at
- * half a unit — the same ratio TACZ ships for its `ammo_count_text` bones.
+ * 热量的上限，`HeatPerShoot` 攒到这里就过热
+ *
+ * 写了 `%heat%` 的文字阈值直接按热量本身的数值写（`"80"` 就是热量 80），取值范围就靠这个常量，
+ * 阈值表本身不区分"这个数字是几进制或者比例"
  */
+private const val HEAT_MAX = 100f
 private const val DEFAULT_TEXT_SCALE = 0.0625f
 
 @Serializable
@@ -45,12 +40,7 @@ enum class ScopeType {
     SCOPE,
 }
 
-/**
- * Axis an ammo bar bone is squashed along, written as `"X"`, `"Y"`, `"Z"` or `"NONE"` in JSON.
- *
- * `NONE` squashes nothing: the bone keeps the scale the model gives it, which is what an entry that
- * only wants a tint — or that has its own squash baked into the animation — is written as.
- */
+/** 弹药条骨骼被压缩的轴向，写成 `"NONE"` 表示只染色、不改缩放 */
 @Serializable
 enum class AmmoBarAxis {
     @SerialName("X")
@@ -66,89 +56,79 @@ enum class AmmoBarAxis {
     NONE,
 }
 
-/**
- * How an ammo bar picks a color as the magazine drains.
- */
+/** 弹药条随弹药减少而变色的方式 */
 @Serializable
 enum class AmmoBarColorMode {
-    /** Snaps to the color of the lowest threshold the remaining ammo has dropped to. */
+    /** 直接跳到剩余弹药所处的档位颜色 */
     @SerialName("Switch")
     SWITCH,
 
-    /**
-     * Interpolates between adjacent thresholds instead of snapping, travelling through HSV so the
-     * colors in between stay vivid rather than washing out to grey.
-     */
+    /** 在相邻档位之间渐变（走 HSV，中间色不会发灰） */
     @SerialName("Blend")
     BLEND,
 }
 
 /**
- * The tiered color mechanism shared by [AmmoBarEntry] and [AmmoTextEntry].
+ * [AmmoBarEntry] 与 [AmmoTextEntry] 共用的分级染色表
  *
- * Each key of [color] is a threshold (`0`-`1`, e.g. `"0.25"`) and each value the color used once the
- * remaining ammo reaches it, while the optional `"Default"` key is the color above every threshold.
- * A configuration with no colors at all resolves to white, which leaves the target looking exactly as
- * it does untinted — so omitting both `Color` and `ColorMode` is what gives a white readout.
+ * [color] 的键是阈值，值是读数经过该阈值后使用的颜色，可选的 `"Default"` 是阈值以外的颜色，
+ * 一个颜色都没配就返回白色，等于不染色，颜色一律被 [ModColor] 强制不透明，写不出 alpha
+ * 阈值在首次使用时解析并缓存，因为 [colorAt] 跑在渲染路径上
  *
- * Two pitfalls inherited from [ModColor], which is what parses the values: a color is always forced
- * opaque, so alpha cannot be expressed here; and because
- * [com.atsuishio.superbwarfare.data.ModColorSerializer] throws on a value it cannot parse, a single
- * misspelled color discards the whole attachment definition rather than just the tint.
- * `COLOR_PATTERN` only reads the last six hex digits, so an eight digit `"80FF0000"` silently
- * becomes `FF0000`.
- *
- * [mode] is just as unforgiving: [com.atsuishio.superbwarfare.data.DataLoader] does not set
- * `coerceInputValues`, so a value that is not exactly `"Switch"` or `"Blend"` fails the same way.
- *
- * The thresholds are parsed once, on first use, rather than inside [colorAt], because [colorAt] runs
- * on the render path. [owner] only names the offender in a warning.
+ * 默认读的是"越大越好"的余弹比例：阈值写成 0~1，读数**跌到**该档才换成那一档的颜色。
+ * [ascending] 打开后改读"越大越糟"的量（热量），阈值按 [scale] 尺度上的实际数值写，
+ * 读数**升到**该档才换成那一档的颜色：实现上把读数和阈值一起镜像到降序轴上，两边的取色逻辑只用一套
  */
 private class AmmoColorTiers(
     private val mode: AmmoBarColorMode,
     private val color: Map<String, ModColor>,
     private val owner: String,
+    /** 读数是"升到阈值换色"（热量）还是"跌到阈值换色"（余弹） */
+    private val ascending: Boolean = false,
+    /** 读数与阈值的取值范围上限，余弹是 1，热量是 [HEAT_MAX] */
+    private val scale: Float = 1f,
 ) {
     private val thresholds: List<Pair<Float, Int>> by lazy { parseThresholds() }
 
     private val fallbackColor: Int by lazy { parseFallbackColor() }
 
-    /** Whether anything was configured at all. False means [colorAt] always returns white. */
+    /** 是否配了颜色，false 表示 [colorAt] 恒返回白色 */
     val isConfigured: Boolean get() = color.isNotEmpty()
 
-    /**
-     * Resolves the tint for a remaining-ammo ratio of [progress] as an opaque ARGB value.
-     * Configurations without a usable color resolve to white, which leaves the target as-is.
-     */
-    fun colorAt(progress: Float): Int {
+    /** 按读数 [raw] 取色，返回不透明 ARGB */
+    fun colorAt(raw: Float): Int {
         val tiers = thresholds
         if (tiers.isEmpty()) return fallbackColor
 
-        val value = if (progress.isFinite()) progress.coerceIn(0f, 1f) else 1f
+        // 升序量先镜像到降序轴：scale 是 100 时热量 90 等价于降序读数的 10
+        val value = if (raw.isFinite()) {
+            (if (ascending) scale - raw else raw).coerceIn(0f, scale)
+        } else {
+            scale
+        }
 
         return when (mode) {
-            // The lowest threshold still at or above the progress, i.e. the most severe tier reached
+            // 仍不低于当前读数的最低档，也就是已经跌到的最严重那一档
             AmmoBarColorMode.SWITCH -> tiers.firstOrNull { value <= it.first }?.second ?: fallbackColor
 
             AmmoBarColorMode.BLEND -> blendAt(tiers, value)
         }
     }
 
+    /** 相邻档位之间渐变，最高档到读数上限之间用默认色补齐 */
     private fun blendAt(tiers: List<Pair<Float, Int>>, value: Float): Int {
         val lowest = tiers.first()
         if (value <= lowest.first) return lowest.second
 
         val highest = tiers.last()
         if (value >= highest.first) {
-            // The fallback color is anchored at a full magazine; a threshold already at 1 leaves no
-            // room to interpolate into, so it just holds.
-            val span = 1f - highest.first
+            // 默认色锚在读数上限处，最高阈值已经是上限时没有可插值的区间，直接保持
+            val span = scale - highest.first
             if (span <= 0f) return highest.second
             return blend(highest.second, fallbackColor, (value - highest.first) / span)
         }
 
-        // Ascending order and a value strictly between the lowest and highest threshold guarantee
-        // that both neighbours exist.
+        // 阈值升序且 value 落在最低与最高之间，两个邻居一定都存在
         val upperIndex = tiers.indexOfFirst { it.first >= value }
         val (lowerThreshold, lowerColor) = tiers[upperIndex - 1]
         val (upperThreshold, upperColor) = tiers[upperIndex]
@@ -158,21 +138,23 @@ private class AmmoColorTiers(
         return blend(lowerColor, upperColor, (value - lowerThreshold) / span)
     }
 
+    /** 解析阈值，跳过默认色与非法键。升序量在解析时一并镜像，[colorAt] 就只剩一套逻辑 */
     private fun parseThresholds(): List<Pair<Float, Int>> {
         val parsed = ArrayList<Pair<Float, Int>>(color.size)
         for ((key, value) in color) {
             if (key.equals(AMMO_COLOR_DEFAULT_KEY, ignoreCase = true)) continue
 
             val threshold = key.toFloatOrNull()
-            if (threshold == null || !threshold.isFinite() || threshold < 0f || threshold > 1f) {
+            if (threshold == null || !threshold.isFinite() || threshold < 0f || threshold > scale) {
                 Mod.LOGGER.warn(
-                    "Ignoring ammo color threshold '{}' on '{}': expected a number between 0 and 1",
+                    "Ignoring ammo color threshold '{}' on '{}': expected a number between 0 and {}",
                     key,
-                    owner
+                    owner,
+                    scale
                 )
                 continue
             }
-            parsed += threshold to value.get()
+            parsed += (if (ascending) scale - threshold else threshold) to value.get()
         }
         return parsed.sortedBy { it.first }
     }
@@ -185,22 +167,16 @@ private class AmmoColorTiers(
     }
 
     /**
-     * Blends two opaque ARGB colors through HSV, the same interpolation the vehicle HUDs use for
-     * their health readout.
+     * 两个不透明 ARGB 颜色之间的 HSV 插值，与载具 HUD 的血量读数同一套做法
      *
-     * Interpolating the RGB channels directly would run a straight line through the inside of the
-     * color cube, which drains the saturation out of every mid tone and leaves it grey. Travelling
-     * around the hue wheel instead keeps the intermediate colors vivid.
+     * 直接插 RGB 会在颜色立方体里走直线，中间色调掉饱和度、变成灰色，绕色相环走则保持鲜艳
      */
     private fun blend(start: Int, end: Int, t: Float): Int {
-        // The RGB -> HSV -> RGB round trip can land a level off, so the two ends are pinned to the
-        // configured colors instead of being approached through the interpolation.
+        // RGB → HSV → RGB 往返可能差一级，两端直接返回配置色
         if (t <= 0f) return start
         if (t >= 1f) return end
 
-        // getGradientColor takes RGB and a whole-percent progress, while ModColor always forces the
-        // alpha opaque, so the alpha bits are masked off here and put back afterwards. A percent is
-        // 2.55 levels per channel, well below what the texture shading can show.
+        // getGradientColor 收 RGB 和整数百分比进度，而 ModColor 的颜色带不透明 alpha，这里先摘掉再补回
         val step = (t.coerceIn(0f, 1f) * 100f).roundToInt()
         val blended = MathTool.getGradientColor(start and 0xFFFFFF, end and 0xFFFFFF, step, GRADIENT_MODE_HSV)
         return OPAQUE_ALPHA or blended
@@ -208,15 +184,10 @@ private class AmmoColorTiers(
 }
 
 /**
- * One bone whose declared axis is squashed to display the remaining magazine ammo.
+ * 一根用来显示剩余弹药的骨骼：按 [axis] 把骨骼压缩到"剩余弹药 / 弹匣容量"
  *
- * The scale is applied around the bone's pivot and propagates to its children, so only the
- * bone that should actually be compressed needs to be listed. The value always runs from
- * `1` (full magazine) down to `0` (empty); ammo beyond the magazine capacity also counts as `1`.
- *
- * [color] optionally tints the bone and [colorMode] chooses between snapping to a threshold and
- * interpolating between them; see [AmmoColorTiers] for the map format and its pitfalls. Leaving
- * [color] empty keeps the bone in the normal model pass, drawn untinted.
+ * 缩放绕骨骼枢轴施加并传递给子骨骼，所以只列出真正要压缩的那根即可，比例从 1（满弹）到 0（空），
+ * 超出弹匣容量的弹药也算 1，[color] 可以为骨骼染色（见 [AmmoColorTiers]），不配颜色就只做缩放
  */
 @Serializable
 data class AmmoBarEntry(
@@ -232,25 +203,18 @@ data class AmmoBarEntry(
     @SerialName("Color")
     val color: Map<String, ModColor> = emptyMap(),
 ) {
-    // Transient because kotlinx.serialization would otherwise try to find a serializer for it; this
-    // class is derived from the two properties above, which are already serialized. A body property
-    // never takes part in a data class's generated equals/hashCode/copy either way.
+    // 派生自上面两个属性，本身不参与序列化，也不参与 data class 的 equals/hashCode/copy
     @Transient
     private val tiers = AmmoColorTiers(colorMode, color, bone)
 
-    /** Whether this bone should be pulled out of the model pass so it can be drawn with a tint. */
+    /** 该骨骼是否需要从模型渲染里单独拿出来染色 */
     fun isTinted(): Boolean = tiers.isConfigured
 
-    /**
-     * Resolves the tint for a remaining-ammo ratio of [progress] as an opaque ARGB value.
-     * Entries without a usable color configuration resolve to white, which leaves the bone as-is.
-     */
+    /** 按剩余弹药比例 [progress] 取色，返回不透明 ARGB，没配颜色则返回白色 */
     fun colorAt(progress: Float): Int = tiers.colorAt(progress)
 }
 
-/**
- * Horizontal alignment of an [AmmoTextEntry] relative to its bone's origin.
- */
+/** 文字相对骨骼原点的水平对齐方式 */
 @Serializable
 enum class TextAlign {
     @SerialName("Left")
@@ -264,29 +228,16 @@ enum class TextAlign {
 }
 
 /**
- * One line of text drawn at a bone, mirroring TACZ's `text_show` display block.
+ * 画在骨骼上的一行弹药文字，写法对齐 TACZ 的 `text_show`
  *
- * The bone is used purely as an anchor: it needs no cubes of its own, and its global transform
- * supplies both the position and the orientation of the text. [scale] is expressed in model units
- * per font pixel (see [DEFAULT_TEXT_SCALE]), so lowering it shrinks the glyphs.
+ * 骨骼只作为锚点（不需要自带方块），位置与朝向都取自它的全局变换，[scale] 是"每字体像素占多少模型单位"
+ * [text] 里的 [AMMO_COUNT_PLACEHOLDER] 会换成当前弹匣数量、`%range%` 换成当前测距读数（单位：格，
+ * 无有效读数时是 `---`）、`%heat%` 换成当前热量（整数，0~100），不含占位符就原样绘制（例如固定标签 `"AMMO"`）
+ * 可见性由骨骼的祖先决定：挂在 `division*` 下时只随分划出现（即开镜时），挂在别处则随镜身常驻
  *
- * [text] is a template where [AMMO_COUNT_PLACEHOLDER] expands to the current magazine count;
- * a string without the placeholder is drawn literally, which is how a static label like `"AMMO"`
- * is written.
- *
- * Where the text ends up being visible is decided entirely by the bone's ancestry, because a hidden
- * bone drops its whole subtree:
- * - Under a `division*` root, the bone is hidden along with the reticle and only comes back where
- *   the reticle is drawn separately, i.e. while aiming down the sights.
- * - Anywhere else it renders with the scope body in every context.
- *
- * [color] and [colorMode] use the same tiered scheme as [AmmoBarEntry], so the count can change color
- * as the magazine drains; see [AmmoColorTiers] for the map format and its pitfalls. Both default to
- * white, and leaving both out is what a plain white readout is written as.
- *
- * [align] is unforgiving in the same way the color map is, since
- * [com.atsuishio.superbwarfare.data.DataLoader] does not set `coerceInputValues` and an unknown enum
- * value fails the same way: the whole definition is discarded, not just the text.
+ * [color] 与 [colorMode] 的分级规则同 [AmmoBarEntry]，[align] 或颜色写错会让整份配件数据解析失败。
+ * 写了 `%heat%` 的条目改读热量：阈值直接写成热量的数值（`"80"` 就是热量 80），方向也反过来 ——
+ * 热量**升到**阈值才换成那一档的颜色，因为热量和余弹不一样，是越大越糟
  */
 @Serializable
 data class AmmoTextEntry(
@@ -311,22 +262,36 @@ data class AmmoTextEntry(
     @SerialName("Text")
     val text: String = AMMO_COUNT_PLACEHOLDER,
 ) {
+    /** 文字里写了 `%heat%`：这一条读的是热量而不是余弹，取色的方向和量程也跟着换 */
     @Transient
-    private val tiers = AmmoColorTiers(colorMode, color, bone)
+    val usesHeat: Boolean = text.contains(HEAT_PLACEHOLDER)
 
-    /**
-     * Resolves the text color for a remaining-ammo ratio of [progress] as an opaque ARGB value.
-     * Entries without a usable color configuration resolve to white.
-     */
-    fun colorAt(progress: Float): Int = tiers.colorAt(progress)
+    @Transient
+    private val tiers = AmmoColorTiers(
+        colorMode,
+        color,
+        bone,
+        ascending = usesHeat,
+        scale = if (usesHeat) HEAT_MAX else 1f,
+    )
 
-    /** Expands [AMMO_COUNT_PLACEHOLDER] in [text]; a template without it is returned unchanged. */
-    fun resolve(count: Int): String = text.replace(AMMO_COUNT_PLACEHOLDER, count.toString())
+    @Transient
+    val usesRange: Boolean = text.contains(RANGE_PLACEHOLDER)
 
-    /**
-     * Horizontal offset in font pixels that puts [width] worth of glyphs in the configured
-     * alignment, with the origin staying at the bone.
-     */
+    /** 按剩余弹药比例 [progress] 取色，[usesHeat] 的条目改按热量 [heat]（0~100）取色；没配颜色则返回白色 */
+    fun colorAt(progress: Float, heat: Int = 0): Int = tiers.colorAt(if (usesHeat) heat.toFloat() else progress)
+
+    /** 把 [AMMO_COUNT_PLACEHOLDER] / `%range%` / `%heat%` 换成实际数值 */
+    fun resolve(count: Int, range: Int = NO_RANGE, heat: Int = 0): String {
+        var resolved = text.replace(AMMO_COUNT_PLACEHOLDER, count.toString())
+        if (usesRange) {
+            resolved = resolved.replace(RANGE_PLACEHOLDER, if (range < 0) NO_RANGE_TEXT else range.toString())
+        }
+        if (!usesHeat) return resolved
+        return resolved.replace(HEAT_PLACEHOLDER, heat.toString())
+    }
+
+    /** 让 [width] 宽的文字按 [align] 对齐、原点仍留在骨骼上的水平偏移 */
     fun offsetX(width: Int): Float {
         return when (align) {
             TextAlign.LEFT -> 0f
@@ -334,23 +299,22 @@ data class AmmoTextEntry(
             TextAlign.RIGHT -> -width.toFloat()
         }
     }
+
+    companion object {
+        const val NO_RANGE = -1
+        const val NO_RANGE_TEXT = "---"
+    }
 }
 
 /**
- * Scope and sight rendering configuration.
+ * 瞄准镜与机瞄的渲染配置
  *
- * Bone names follow a fixed convention in [com.atsuishio.superbwarfare.client.model.attachment.BedrockAttachmentModel]:
- * `scope_body`, `ocular_ring`, `ocular*`, and `division*`.
- * `modes` lets a single attachment expose multiple selectable optics without changing existing single-mode JSON.
- * Modes may point to different `scope_view`/`division` groups while sharing the ocular geometry.
+ * 骨骼名沿用 [com.atsuishio.superbwarfare.client.model.attachment.BedrockAttachmentModel] 的约定：
+ * `scope_body`、`ocular_ring`、`ocular*`、`division*`，[modes] 让一个配件带多档光学，
+ * 不做多档时用 [type] / [zoom] 这组单档字段即可
  *
- * Ammo bar bones are configured freely through [ammoBar], but they must stay visible whenever the
- * scope renders: the stencil pass hides `scope_body*`, `ocular*`, `ocular_ring*` and `division*`,
- * and a hidden bone skips its entire subtree. Bones parented under those nodes therefore disappear
- * while aiming down the sights even though they render correctly in every other context.
- *
- * Text anchors in [textShow] follow the same rule, with one nuance: a `division*` anchor is only
- * meaningful while aiming, because that is the only time the reticle subtree is drawn at all.
+ * 模板渲染会连同整棵子树隐藏 `scope_body*`、`ocular*`、`ocular_ring*` 和 `division*`，
+ * 所以 [AttachmentDefinition.ammoBar] / [AttachmentDefinition.textShow] 的骨骼不要挂在这些节点下面
  */
 @Serializable
 data class ScopeInfo(
@@ -368,19 +332,12 @@ data class ScopeInfo(
     @SerialName("ZoomLengthScale")
     val zoomLengthScale: Float = 0.75f,
 
+    /** 单档配置的倍率，写了 [modes] 时以各档自己的为准 */
     @SerialName("Zoom")
     val zoom: AttachmentZoom? = null,
 
     @SerialName("Modes")
     val modes: List<ScopeMode> = emptyList(),
-
-    // 参与弹药显示的骨骼，空列表表示不启用；骨骼名可自由书写，多模式镜可用 ammo_bar_1 等显式区分
-    @SerialName("AmmoBar")
-    val ammoBar: List<AmmoBarEntry> = emptyList(),
-
-    // 显示当前弹药数的文字锚点，空列表表示不启用；写法对齐 TACZ 的 text_show
-    @SerialName("TextShow")
-    val textShow: List<AmmoTextEntry> = emptyList(),
 ) {
     fun mode(index: Int = 0): ScopeMode {
         if (modes.isNotEmpty()) {
@@ -398,17 +355,12 @@ data class ScopeInfo(
     fun modeCount(): Int = if (modes.isEmpty()) 1 else modes.size
 
     fun supportsModeSwitching(): Boolean = modes.size > 1
-
-    fun isSight(): Boolean = mode().type == ScopeType.SIGHT
-
-    fun isScope(): Boolean = mode().type == ScopeType.SCOPE
 }
 
-/**
- * One selectable optic inside a multi-mode scope attachment.
- */
+/** 多档瞄具里的一档，未声明的字段沿用 [ScopeInfo] 上的单档配置 */
 @Serializable
 data class ScopeMode(
+    /** 骨骼组号，决定 `scope_view_<n>` / `division_<n>` 这类带编号的骨骼名 */
     @SerialName("Index")
     val index: Int = 0,
 

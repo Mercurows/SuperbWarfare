@@ -46,6 +46,7 @@ val CONFIG_COMMAND = buildCommand("config") {
     booleanConfig(MiscConfig::HIDE_COMBAT_HUD)
     booleanConfig(MiscConfig::SMOKE_HIDE_TARGET)
     booleanConfig(MiscConfig::THROW_MEDICAL_KIT)
+    booleanConfig(MiscConfig::REALISTIC_SHOOT_MODE)
 
     booleanConfig(SyncConfig::SYNC_ENTITY_OVER_RANGE)
     booleanConfig(SyncConfig::ENABLE_RENDER_SYNCED_ENTITIES)

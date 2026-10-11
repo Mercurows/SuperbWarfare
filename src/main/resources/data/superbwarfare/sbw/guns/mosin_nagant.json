@@ -6,6 +6,7 @@
   "Headshot": 3,
   "Velocity": 25,
   "Magazine": 5,
+  "RPM": 120,
   "ReloadTypes": [
     "Iterative"
   ],
@@ -107,7 +108,8 @@
       "superbwarfare:muzzle_zenit_dtk_1",
       "superbwarfare:muzzle_compensator_r_17",
       "superbwarfare:ar_silencer",
-      "superbwarfare:loudspeaker"
+      "superbwarfare:loudspeaker",
+      "superbwarfare:bayonet_m_91_30"
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"

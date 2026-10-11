@@ -281,13 +281,6 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .unlockedBy(getHasName(Items.LIGHTNING_ROD), has(Items.LIGHTNING_ROD))
                 .unlockedBy(getHasName(ModItems.BATTERY.get()), has(ModItems.BATTERY.get()))
                 .save(writer, loc(getItemName(ModItems.ELECTRIC_BATON.get())))
-            ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.KNIFE.get())
-                .pattern(" a")
-                .pattern("b ")
-                .define('a', INGOTS_STEEL)
-                .define('b', Items.STICK)
-                .unlockedBy(getHasName(ModItems.STEEL_INGOT.get()), has(INGOTS_STEEL))
-                .save(writer, loc(getItemName(ModItems.KNIFE.get())))
             ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.MONITOR.get())
                 .pattern("a a")
                 .pattern("beb")
@@ -339,6 +332,28 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .define('c', Items.ARMOR_STAND)
                 .unlockedBy(getHasName(Items.TARGET), has(Items.TARGET))
                 .save(writer, loc(getItemName(ModItems.TARGET_DEPLOYER.get())))
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.KNIFE.get())
+                .requires(ModItems.BAYONET_M_9.get())
+                .unlockedBy(getHasName(ModItems.BAYONET_M_9.get()), has(ModItems.BAYONET_M_9.get()))
+                .save(writer, loc(getItemName(ModItems.KNIFE.get())))
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.KNIFE_6KH2.get())
+                .requires(ModItems.BAYONET_6KH2.get())
+                .unlockedBy(getHasName(ModItems.BAYONET_6KH2.get()), has(ModItems.BAYONET_6KH2.get()))
+                .save(writer, loc(getItemName(ModItems.KNIFE_6KH2.get())))
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.KNIFE_SEITENGEWEHR_84.get())
+                .requires(ModItems.BAYONET_SEITENGEWEHR_84.get())
+                .unlockedBy(
+                    getHasName(ModItems.BAYONET_SEITENGEWEHR_84.get()),
+                    has(ModItems.BAYONET_SEITENGEWEHR_84.get())
+                )
+                .save(writer, loc(getItemName(ModItems.KNIFE_SEITENGEWEHR_84.get())))
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.COMBAT, ModItems.KNIFE_M1917.get())
+                .requires(ModItems.BAYONET_M1917.get())
+                .unlockedBy(
+                    getHasName(ModItems.BAYONET_M1917.get()),
+                    has(ModItems.BAYONET_M1917.get())
+                )
+                .save(writer, loc(getItemName(ModItems.KNIFE_M1917.get())))
         }
 
         private fun buildArmorRecipes(writer: Consumer<FinishedRecipe>) {
@@ -1804,6 +1819,41 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 .define('e', Items.NETHER_STAR)
                 .unlockedBy(getHasName(Items.NETHER_STAR), has(Items.NETHER_STAR))
                 .save(writer, loc(getItemName(ModItems.SUPERB_ACCESSORY_KIT.get())))
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.NITROCELLULOSE.get(), 8)
+                .requires(DUSTS_SULFUR)
+                .requires(GEMS_NITER)
+                .requires(Items.PAPER, 4)
+                .unlockedBy(getHasName(ModItems.SULFUR.get()), has(DUSTS_SULFUR))
+                .unlockedBy(getHasName(ModItems.NITER.get()), has(GEMS_NITER))
+                .save(writer, loc(getItemName(ModItems.NITROCELLULOSE.get())))
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.ENGINEERING_PLASTIC.get(), 4)
+                .requires(Items.HONEYCOMB)
+                .requires(ModItems.NITROCELLULOSE.get(), 4)
+                .unlockedBy(getHasName(ModItems.NITROCELLULOSE.get()), has(ModItems.NITROCELLULOSE.get()))
+                .save(writer, loc("${getItemName(ModItems.ENGINEERING_PLASTIC.get())}_from_honeycomb"))
+            ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.ENGINEERING_PLASTIC.get(), 2)
+                .requires(ItemTags.WOOL)
+                .requires(ModItems.NITROCELLULOSE.get(), 8)
+                .unlockedBy(getHasName(ModItems.NITROCELLULOSE.get()), has(ModItems.NITROCELLULOSE.get()))
+                .save(writer, loc("${getItemName(ModItems.ENGINEERING_PLASTIC.get())}_from_wool"))
+            ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.HIGH_ENERGY_EXPLOSIVES.get(), 8)
+                .pattern("aba")
+                .pattern("c c")
+                .pattern("aba")
+                .define('a', ModItems.NITROCELLULOSE.get())
+                .define('b', Items.SUGAR)
+                .define('c', Tags.Items.SAND)
+                .unlockedBy(getHasName(ModItems.NITROCELLULOSE.get()), has(ModItems.NITROCELLULOSE.get()))
+                .save(writer, loc("${getItemName(ModItems.HIGH_ENERGY_EXPLOSIVES.get())}_from_nitrocellulose"))
+            ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.GRAIN.get(), 16)
+                .pattern("aba")
+                .pattern("aba")
+                .pattern(" c ")
+                .define('a', PLATES_COPPER)
+                .define('b', ModItems.NITROCELLULOSE.get())
+                .define('c', ModItems.PRIMER.get())
+                .unlockedBy(getHasName(ModItems.PRIMER.get()), has(ModItems.PRIMER.get()))
+                .save(writer, loc("${getItemName(ModItems.GRAIN.get())}_from_nitrocellulose"))
         }
 
         private fun buildBlockRecipes(writer: Consumer<FinishedRecipe>) {
@@ -2477,7 +2527,13 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                 ModItems.HUNTING_RIFLE.get()
             )
             gunSmithing(writer, ModItems.M_79_BLUEPRINT.get(), GunRarity.RARE, Items.DISPENSER, ModItems.M_79.get())
-            gunSmithing(writer, ModItems.GP_25_BLUEPRINT.get(), GunRarity.EPIC, Items.DISPENSER, ModItems.GP_25.get())
+            gunSmithing(
+                writer,
+                ModItems.GP_25_BLUEPRINT.get(),
+                GunRarity.EPIC,
+                ModItems.SUB_WEAPON_GP_25.get(),
+                ModItems.GP_25.get()
+            )
             gunSmithing(writer, ModItems.RPG_BLUEPRINT.get(), GunRarity.RARE, Items.DISPENSER, ModItems.RPG.get())
             gunSmithing(writer, ModItems.BOCEK_BLUEPRINT.get(), GunRarity.EPIC, Items.BOW, ModItems.BOCEK.get())
             gunSmithing(

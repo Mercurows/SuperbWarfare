@@ -7,9 +7,11 @@
   "Velocity": 17,
   "Magazine": 8,
   "Weight": 3,
+  "RPM": 120,
   "MeleeDamage": 5,
   "MeleeDuration": 16,
   "MeleeComboReset": 15,
+  "ZoomSpreadRate": 0.005,
   "MeleeHitbox": {
     "Type": "Box",
     "Range": 1.5,
@@ -71,7 +73,7 @@
   ],
   "BypassesArmor": 0.3,
   "SoundRadius": 15,
-  "BoltActionTime": 8,
+  "BoltActionTime": 10,
   "GunType": "Rifle",
   "DamageReduce": {
     "Type": "Rifle"

@@ -35,6 +35,7 @@ class PlayerVariable : INBTSerializable<CompoundTag>, SyncedCapability {
      */
     override fun writeSync(encoder: ByteBufEncoder, full: Boolean) {
         encoder.encodeBoolean(activeThermalImaging)
+
         encoder.encodeInt(Ammo.entries.size)
 
         for (type in Ammo.entries) {
@@ -108,7 +109,9 @@ class PlayerVariable : INBTSerializable<CompoundTag>, SyncedCapability {
             if (type.get(this) != type.get(other)) return false
         }
 
-        return activeThermalImaging == other.activeThermalImaging
+        if (activeThermalImaging != other.activeThermalImaging) return false
+
+        return true
     }
 
     override fun serializeNBT(): CompoundTag {

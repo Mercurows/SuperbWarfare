@@ -1,6 +1,7 @@
 {
   "Spread": 4.5,
   "ZoomSpreadRate": 0.5,
+  "Deployable": true,
   "RecoilX": 0.003,
   "RecoilY": 0.02,
   "Damage": 8,
@@ -15,20 +16,6 @@
   "DefaultFireMode": "RPM1200",
   "GunType": "MachineGun",
   "AvailableFireModes": [
-    {
-      "Mode": "Auto",
-      "Name": "RPM600",
-      "Override": {
-        "RPM": 600
-      }
-    },
-    {
-      "Mode": "Auto",
-      "Name": "RPM1145",
-      "Override": {
-        "RPM": 1145
-      }
-    },
     {
       "Mode": "Auto",
       "Name": "RPM1200"
@@ -46,6 +33,20 @@
       "Override": {
         "RPM": 2400
       }
+    },
+    {
+      "Mode": "Auto",
+      "Name": "RPM600",
+      "Override": {
+        "RPM": 600
+      }
+    },
+    {
+      "Mode": "Auto",
+      "Name": "RPM1145",
+      "Override": {
+        "RPM": 1145
+      }
     }
   ],
   "AmmoType": "@RifleAmmo",
@@ -62,6 +63,7 @@
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",
     "superbwarfare:powerful_cooler",
+    "superbwarfare:regeneration",
     "superbwarfare:monster_hunter",
     "superbwarfare:vorpal_weapon",
     "superbwarfare:fair_means",
@@ -73,6 +75,11 @@
   "AvailableAttachments": {
     "Charm": [
       "#superbwarfare:attachment/charm"
+    ],
+    "UpperRail": [
+      "superbwarfare:peq_15",
+      "superbwarfare:standard_gun_shield",
+      "superbwarfare:pistol_laser"
     ]
   },
   "SoundInfo": {

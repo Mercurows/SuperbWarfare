@@ -243,7 +243,7 @@ class ModSoundProvider(output: PackOutput, existingFileHelper: ExistingFileHelpe
         // -------------------- gun/bocek --------------------
         group(
             "gun/bocek", "bocek_zoom_fire_1p", "bocek_zoom_fire_3p", "bocek_shatter_cap_fire_1p",
-            "bocek_shatter_cap_fire_3p", "bocek_pull_1p", "bocek_pull_3p",
+            "bocek_shatter_cap_fire_3p", "bocek_start_pull", "bocek_pulling", "bocek_full_pull",
         )
 
         // -------------------- gun/devotion --------------------
@@ -450,10 +450,9 @@ class ModSoundProvider(output: PackOutput, existingFileHelper: ExistingFileHelpe
         // -------------------- gun/secondary_cataclysm --------------------
         group(
             "gun/secondary_cataclysm", "secondary_cataclysm_fire_1p", "secondary_cataclysm_fire_3p",
-            "secondary_cataclysm_far", "secondary_cataclysm_veryfar", "secondary_cataclysm_loop",
+            "secondary_cataclysm_far", "secondary_cataclysm_veryfar", "secondary_cataclysm_end", "secondary_cataclysm_handle_1",
+            "secondary_cataclysm_handle_2", "secondary_cataclysm_ammo_in",
         )
-        register("secondary_cataclysm_prepare_load", "gun/secondary_cataclysm/secondary_cataclysm_start")
-        group("gun/secondary_cataclysm", "secondary_cataclysm_end")
         register("secondary_cataclysm_fire_1p_charge", "gun/secondary_cataclysm/secondary_cataclysm_charge_fire_1p")
         register("secondary_cataclysm_fire_3p_charge", "gun/secondary_cataclysm/secondary_cataclysm_charge_fire_3p")
         register("secondary_cataclysm_far_charge", "gun/secondary_cataclysm/secondary_cataclysm_charge_far")
@@ -469,7 +468,7 @@ class ModSoundProvider(output: PackOutput, existingFileHelper: ExistingFileHelpe
 
         // -------------------- gun/sks --------------------
         group(
-            "gun/sks", "sks_fire_1p", "sks_fire_3p", "sks_reload_normal", "sks_reload_empty", "sks_far",
+            "gun/sks", "sks_fire_1p", "sks_fire_3p", "sks_fire_1p_s", "sks_fire_3p_s", "sks_mag_in", "sks_mag_out", "sks_bolt", "sks_far",
             "sks_veryfar",
         )
 
@@ -499,7 +498,7 @@ class ModSoundProvider(output: PackOutput, existingFileHelper: ExistingFileHelpe
         // -------------------- gun/vector --------------------
         group(
             "gun/vector", "vector_fire_1p", "vector_fire_3p", "vector_far", "vector_veryfar", "vector_fire_1p_s",
-            "vector_fire_3p_s", "vector_reload_normal", "vector_reload_empty",
+            "vector_fire_3p_s", "vector_mag_out", "vector_mag_in", "vector_bolt",
         )
 
         // ==================== 载具 ====================

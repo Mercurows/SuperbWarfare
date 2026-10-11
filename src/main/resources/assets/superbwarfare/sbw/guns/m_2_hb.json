@@ -7,7 +7,10 @@
     "ReloadNormal": "animation.m_2_hb.reload_normal",
     "ReloadEmpty": "animation.m_2_hb.reload_empty",
     "Edit": "animation.m_2_hb.edit",
-    "Melee": "animation.m_2_hb.hit"
+    "Melee": "animation.m_2_hb.hit",
+    "IdleDeploy": "animation.m_2_hb.idle_deploy",
+    "ReloadNormalDeploy": "animation.m_2_hb.reload_normal_deploy",
+    "ReloadEmptyDeploy": "animation.m_2_hb.reload_empty_deploy"
   },
   "ShootRecoil": {
     "Offset": [1.0, 1.0, 1.5],

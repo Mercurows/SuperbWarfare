@@ -1,4 +1,4 @@
-const SIGHT_FOLD_BONES = ["sight1fold", "sight2fold"]
+const SIGHT_FOLD_BONES = ["sight1fold", "sight2fold", "sight3fold", "sight4fold"]
 
 /** 装上瞄准镜后机械瞄具向后倒下的角度。 */
 const SIGHT_FOLD_DEG = 90

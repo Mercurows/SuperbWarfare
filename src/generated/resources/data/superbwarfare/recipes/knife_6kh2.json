@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "superbwarfare:bayonet_6kh2"
+    }
+  ],
+  "result": {
+    "item": "superbwarfare:knife_6kh2"
+  }
+}

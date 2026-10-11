@@ -3,22 +3,19 @@ package com.atsuishio.superbwarfare.client.renderer.ammo
 import com.atsuishio.superbwarfare.data.attachment.AmmoBarEntry
 import com.atsuishio.superbwarfare.data.attachment.AmmoTextEntry
 
-/**
- * Everything a model needs to display the current magazine ammo: which bones and text anchors to
- * drive, and the values they should show.
- *
- * [com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer] resolves this once per render so
- * the render path never has to walk the gun's property modifier chain itself, and [bars] and [texts]
- * travel together so the rendering functions can take one extra parameter instead of two.
- */
+/** 本帧模型上所有弹药条 / 弹药文字要显示的数值 */
 data class AmmoReadout(
     val bars: List<AmmoBarEntry> = emptyList(),
     val texts: List<AmmoTextEntry> = emptyList(),
-    /** Remaining magazine ratio from `1` (full) down to `0`. */
+    /** 弹药条的进度，`1` 为满、`0` 为空 */
     val progress: Float = 1f,
-    /** Rounds left in the magazine. */
+    /** `%ammo_count%` 展开成的数字 */
     val count: Int = 0,
+    /** `%range%` 展开成的距离，单位格；[AmmoTextEntry.NO_RANGE] 表示本帧没有读数 */
+    val range: Int = AmmoTextEntry.NO_RANGE,
+    /** `%heat%` 展开成的热量，`0` ~ `100` */
+    val heat: Int = 0,
 ) {
-    /** True when the model has no ammo display configured at all. */
+    /** 模型没配任何弹药显示时为 `true` */
     val isEmpty: Boolean get() = bars.isEmpty() && texts.isEmpty()
 }

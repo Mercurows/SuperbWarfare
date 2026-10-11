@@ -11,5 +11,6 @@
       "Op": "Add",
       "Value": 0.05
     }
-  ]
+  ],
+  "SoundRadiusMultiplier": 1.14
 }

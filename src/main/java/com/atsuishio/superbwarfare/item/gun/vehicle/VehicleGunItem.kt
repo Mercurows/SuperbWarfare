@@ -46,7 +46,6 @@ open class VehicleGunItem : GunItem(Properties()) {
                 && !data.overHeat.get()
                 && data.get(GunProp.HEAT_PER_SHOOT) <= (100 + data.get(GunProp.HEAT_PER_SHOOT) - data.heat.get())
                 && !data.reloading()
-                && !data.charging()
                 && !data.bolt.needed.get()
                 && shooter.getAmmo(data) >= data.primaryAmmoCostPerShoot()
                 // 附加弹药来源（如电量）也必须充足

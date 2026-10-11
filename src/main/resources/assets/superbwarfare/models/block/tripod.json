@@ -1,0 +1,6 @@
+{
+  "parent": "superbwarfare:item/tripod",
+  "textures": {
+    "particle": "minecraft:block/iron_block"
+  }
+}

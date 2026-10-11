@@ -2,6 +2,8 @@ package com.atsuishio.superbwarfare.capability
 
 import com.atsuishio.superbwarfare.capability.entity.InfiniteAmmoCapability
 import com.atsuishio.superbwarfare.capability.living.PhosphorusFireCapability
+import com.atsuishio.superbwarfare.capability.living.RadiationCapability
+import com.atsuishio.superbwarfare.capability.player.PlayerDeployState
 import com.atsuishio.superbwarfare.capability.player.PlayerVariable
 import com.atsuishio.superbwarfare.data.gun.Ammo
 import net.minecraft.core.Direction
@@ -40,6 +42,14 @@ object CapabilityHandler {
                     ModCapabilities.PHOSPHORUS_FIRE_CAPABILITY
                 )
             )
+
+            event.addCapability(
+                RadiationCapability.ID,
+                createProvider(
+                    LazyOptional.of { RadiationCapability() },
+                    ModCapabilities.RADIATION_CAPABILITY
+                )
+            )
         }
 
         if (entity !is Player) return
@@ -50,6 +60,14 @@ object CapabilityHandler {
                 createProvider(
                     LazyOptional.of { PlayerVariable() },
                     ModCapabilities.PLAYER_VARIABLE
+                )
+            )
+
+            event.addCapability(
+                PlayerDeployState.ID,
+                createProvider(
+                    LazyOptional.of { PlayerDeployState() },
+                    ModCapabilities.PLAYER_DEPLOY_STATE
                 )
             )
         }

@@ -1,0 +1,6 @@
+{
+  "Type": "ammo",
+  "Script": "superbwarfare:scripts/perks/super_heavy_bullet.js",
+  "Slug": true,
+  "RGB": [195, 195, 195]
+}

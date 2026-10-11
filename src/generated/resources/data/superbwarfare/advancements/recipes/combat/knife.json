@@ -1,11 +1,13 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_steel_ingot": {
+    "has_bayonet_m_9": {
       "conditions": {
         "items": [
           {
-            "tag": "forge:ingots/steel"
+            "items": [
+              "superbwarfare:bayonet_m_9"
+            ]
           }
         ]
       },
@@ -20,7 +22,7 @@
   },
   "requirements": [
     [
-      "has_steel_ingot",
+      "has_bayonet_m_9",
       "has_the_recipe"
     ]
   ],

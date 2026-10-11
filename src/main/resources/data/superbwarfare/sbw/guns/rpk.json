@@ -65,6 +65,7 @@
     "superbwarfare:intelligent_chip",
     "superbwarfare:backpack_linked_magazine",
     "superbwarfare:turbo_charger",
+    "superbwarfare:regeneration",
     "superbwarfare:killing_tally",
     "superbwarfare:desperado",
     "superbwarfare:monster_hunter",
@@ -135,6 +136,16 @@
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"
+    ],
+    "LowerRail": [
+      "superbwarfare:lower_rail_bipod",
+      "superbwarfare:peq_15",
+      "superbwarfare:pistol_laser"
+    ],
+    "UpperRail": [
+      "superbwarfare:peq_15",
+      "superbwarfare:standard_gun_shield",
+      "superbwarfare:pistol_laser"
     ]
   },
   "SoundInfo": {

@@ -76,7 +76,8 @@
     "superbwarfare:stop_gap",
     "!superbwarfare:micro_missile",
     "!superbwarfare:longer_wire",
-    "!superbwarfare:cupid_arrow"
+    "!superbwarfare:cupid_arrow",
+    "!superbwarfare:shatter_caps"
   ],
   "AvailableAttachments": {
     "Magazine": [
@@ -128,6 +129,20 @@
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"
+    ],
+    "LowerRail": [
+      "superbwarfare:lower_rail_bipod",
+      "superbwarfare:peq_15",
+      "superbwarfare:pistol_laser"
+    ],
+    "LeftRail": [
+      "superbwarfare:peq_15",
+      "superbwarfare:range_finder",
+      "superbwarfare:pistol_laser"
+    ],
+    "RightRail": [
+      "superbwarfare:peq_15",
+      "superbwarfare:pistol_laser"
     ]
   },
   "SoundInfo": {

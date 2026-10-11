@@ -1,7 +1,6 @@
 package com.atsuishio.superbwarfare.client.charm
 
 import com.atsuishio.superbwarfare.client.charm.CharmRuntime.apply
-import com.atsuishio.superbwarfare.client.charm.CharmRuntime.revert
 import com.atsuishio.superbwarfare.client.model.attachment.BedrockAttachmentModel
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
 import com.atsuishio.superbwarfare.data.attachment.CharmInfo
@@ -15,45 +14,6 @@ import kotlin.math.exp
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-/**
- * 吊坠摆动运行时。
- *
- * 每帧在**第一人称**渲染 `Charm` 槽位配件时被调用一次，负责：
- *
- * 1. 采集悬挂点在**视图空间**的位置，并算出本帧的相机运动量（[CharmFrame]）；
- * 2. 按**固定步长**推进 [CharmSolver]；
- * 3. 在两次解算之间插值，得到本帧真正要用的摆角；
- * 4. 把绳方向换算回**附件模型局部空间**，算出绕摆点的旋转并写进 `string` / `charm` 两根骨骼。
- *
- * 解算整个跑在视图空间（相机原点 + 相机轴）里，理由见 [CharmSolver] 的说明：悬挂点在那个
- * 参考系里相对相机是**静止**的，于是"转头"与"枪自己动"能被彻底拆开，各自用正确的方式驱动。
- *
- * ## 为什么是固定步长 + 插值
- *
- * 物理本身**不需要**跟着渲染帧率跑：吊坠的自然频率只有一赫兹出头，30Hz 的步长已经足够精确，
- * 而高帧率下每帧算一次纯属浪费。固定步长还带来两个好处：
- *
- * - **帧率无关**：144fps 和 30fps 下摆动的快慢、幅度完全一致（变步长 Verlet 做不到这一点）；
- * - **更稳更顺**：步长恒定，积分误差不随帧率漂移；渲染侧对两次解算结果做球面插值，
- *   看上去是连续运动而不是"每帧跳一下"。
- *
- * 代价是**一个步长的延迟**（1/30 秒），对一个挂件来说无关紧要。
- *
- * ⚠ 相机运动量（[CharmFrame]）反过来**必须按帧算**：它靠"这一帧和上一帧的差分"得到，
- * 一帧之内根本没有变化，按子步算只会得到一串零和一帧一次的尖峰。
- *
- * ## 为什么状态挂在这里而不是模型上
- *
- * 附件模型实例是**全局共享**的（`AttachmentModelReloadListener` 按路径只存一份），
- * 所以摆动状态只能挂在"这一帧是谁在渲染"上 —— 也就是 `(手, 配件, 挂点骨骼)` 三元组。
- * 同一把枪两只手同时拿（`renderModel` 一帧跑两遍）时它们各有一份状态，不会互相踩。
- *
- * ## 只在第一人称
- *
- * 调用点只在 `transformType.firstPerson()` 且非阴影 pass 时进入；第三人称/掉落物/展示框/GUI
- * 一律**不推进**物理，吊坠保持绑定姿态垂下 —— 既符合"仅第一人称生效"的设定，
- * 也顺带避免了"别人手里的枪跟着我晃"。
- */
 object CharmRuntime {
 
     /** 一个 (手, 配件, 挂点) 的摆动状态 */
@@ -84,20 +44,14 @@ object CharmRuntime {
         var camZ = 0.0
 
         /**
-         * 相机世界速度（方块/秒）的一阶低通与上一帧的值。
-         *
-         * ⚠ 为什么非低通不可：玩家坐标是**按 tick 插值**的折线，它的导数是阶梯状的，
-         * 二阶差分因此在每个 tick 边界上打一个脉冲。直接拿它当惯性伪力，就是一串 20Hz 的踢 ——
-         * 这正是走路/飞行时吊坠高频抖动的来源。低通之后再差分，剩下的才是"真在加速"那部分。
+         * 相机世界速度（方块/秒）的一阶低通与上一帧的值
          */
         val camVelocity = DoubleArray(3)
         val camVelocityPrev = DoubleArray(3)
         var hasCamera = false
 
         /**
-         * 「视图 ← 世界」旋转（[apply] 收到的那个矩阵的逆）。
-         *
-         * 重力方向、相机线加速度、角速度全都要在这套轴向里表达，所以每帧备一份。
+         * 「视图 ← 世界」旋转（[apply] 收到的那个矩阵的逆）
          */
         val viewFromWorld = Matrix4f()
 
@@ -115,15 +69,7 @@ object CharmRuntime {
         var hasAnchor = false
 
         /**
-         * 低通之后的悬挂点（**视图空间**）。
-         *
-         * ⚠ 走路/飞行时枪的步行摇晃、第一人称动画姿态里都混着 tick（20Hz）量化出来的台阶，
-         * 而绳长只有一两厘米 —— 逐帧直接拿这些台阶当输入，摆角会以 20Hz 抖几十度。
-         * 悬挂点先过一道一阶低通（时间常数见 [CharmInfo.smoothing]），台阶就没了，
-         * 走路的摇晃本身（一点几赫兹）几乎不受影响。
-         *
-         * 顺带一提：在视图空间里做这道低通是**安全**的 —— 悬挂点不随转头移动，
-         * 低通不会像旧版（世界轴参考系）那样把"转头的圆弧"也一起拖出滞后。
+         * 低通之后的悬挂点（**视图空间**）
          */
         val anchorFiltered = Vector3f()
 
@@ -153,15 +99,7 @@ object CharmRuntime {
     private val states = HashMap<CharmKey, CharmState>()
 
     /**
-     * 解算并把摆动姿态写进模型。
-     *
-     * @param model 附件模型（由它提供 `string` / `charm` 分组与摆点摆长）
-     * @param definition 配件定义（提供 [CharmInfo] 手感参数）
-     * @param mountBone 实际使用的挂点骨骼名，只用来区分状态
-     * @param modelToView `poseStack.last().pose()`，**已经乘过挂点变换**，即"附件模型局部 → 视图空间"
-     * @param worldFromView `GeoGunRenderer.cameraRotationInverse()`，即"视图空间 → 世界轴"（纯旋转）；
-     *   这里取它的逆用（解算在视图空间里跑，见 [CharmSolver]）
-     * @return 需要交给 [revert] 还原的快照；这个模型不是吊坠（没有那两个分组）时返回 `null`
+     * 解算并把摆动姿态写进模型
      */
     @JvmStatic
     fun apply(

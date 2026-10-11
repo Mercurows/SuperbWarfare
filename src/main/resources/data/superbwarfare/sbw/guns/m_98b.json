@@ -12,6 +12,7 @@
   "Weight": 7,
   "DrawTime": 14,
   "ZoomTime": 9,
+  "RPM": 120,
   "MeleeDamage": 5,
   "MeleeDuration": 16,
   "MeleeComboReset": 15,
@@ -59,6 +60,7 @@
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",
     "superbwarfare:backpack_linked_magazine",
+    "superbwarfare:regeneration",
     "superbwarfare:kill_clip",
     "superbwarfare:monster_hunter",
     "superbwarfare:vorpal_weapon",
@@ -110,6 +112,25 @@
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"
+    ],
+    "LowerRail": [
+      "superbwarfare:lower_rail_bipod",
+      "superbwarfare:peq_15",
+      "superbwarfare:pistol_laser"
+    ],
+    "UpperRail": [
+      "superbwarfare:peq_15",
+      "superbwarfare:standard_gun_shield",
+      "superbwarfare:pistol_laser"
+    ],
+    "LeftRail": [
+      "superbwarfare:peq_15",
+      "superbwarfare:range_finder",
+      "superbwarfare:pistol_laser"
+    ],
+    "RightRail": [
+      "superbwarfare:peq_15",
+      "superbwarfare:pistol_laser"
     ]
   },
   "SoundInfo": {

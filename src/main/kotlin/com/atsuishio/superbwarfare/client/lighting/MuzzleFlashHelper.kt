@@ -42,7 +42,7 @@ object MuzzleFlashHelper {
 
     /** Items that produce no muzzle flash at all. */
     private val NO_FLASH_ITEMS = setOf(
-        ModItems.BOCEK
+        ModItems.BOCEK, ModItems.TASER
     )
 
     // -----------------------------

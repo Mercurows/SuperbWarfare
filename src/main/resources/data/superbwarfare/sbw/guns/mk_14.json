@@ -1,5 +1,5 @@
 {
-  "Spread": 5,
+  "Spread": 6.5,
   "OpenBolt": true,
   "HasBarrelBullet": true,
   "TacticalReload": true,
@@ -10,6 +10,7 @@
   "Velocity": 23,
   "Magazine": [20, 30, 50],
   "Weight": 5,
+  "ZoomSpreadRate": 0.01,
   "MeleeDamage": 5,
   "MeleeDuration": 16,
   "MeleeComboReset": 15,
@@ -86,6 +87,7 @@
     "superbwarfare:intelligent_chip",
     "superbwarfare:backpack_linked_magazine",
     "superbwarfare:turbo_charger",
+    "superbwarfare:regeneration",
     "superbwarfare:kill_clip",
     "superbwarfare:gutshot_straight",
     "superbwarfare:monster_hunter",
@@ -160,6 +162,25 @@
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"
+    ],
+    "LowerRail": [
+      "superbwarfare:lower_rail_bipod",
+      "superbwarfare:peq_15",
+      "superbwarfare:pistol_laser"
+    ],
+    "UpperRail": [
+      "superbwarfare:peq_15",
+      "superbwarfare:standard_gun_shield",
+      "superbwarfare:pistol_laser"
+    ],
+    "LeftRail": [
+      "superbwarfare:peq_15",
+      "superbwarfare:range_finder",
+      "superbwarfare:pistol_laser"
+    ],
+    "RightRail": [
+      "superbwarfare:peq_15",
+      "superbwarfare:pistol_laser"
     ]
   },
   "SoundInfo": {

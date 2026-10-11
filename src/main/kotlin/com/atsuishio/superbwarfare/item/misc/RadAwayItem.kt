@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.item.misc
 
+import com.atsuishio.superbwarfare.capability.living.RadiationCapability
 import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.mobeffect.RadiationMobEffect
 import net.minecraft.ChatFormatting
@@ -29,15 +30,19 @@ class RadAwayItem : Item(Properties().stacksTo(16)) {
 
     override fun use(level: Level, player: Player, hand: InteractionHand): InteractionResultHolder<ItemStack> {
         val stack = player.getItemInHand(hand)
-        if (RadiationMobEffect.getLevel(player) <= 0) return InteractionResultHolder.fail(stack)
+        if (RadiationCapability.getDosage(player) <= 0f) return InteractionResultHolder.fail(stack)
 
         player.startUsingItem(hand)
         return InteractionResultHolder.consume(stack)
     }
 
     override fun finishUsingItem(stack: ItemStack, level: Level, entity: LivingEntity): ItemStack {
-        if (level.isClientSide || !RadiationMobEffect.reduceLevel(entity))
+        if (level.isClientSide) {
             return super.finishUsingItem(stack, level, entity)
+        }
+
+        RadiationMobEffect.reduceLevel(entity)
+        RadiationCapability.addDosage(entity, -500f)
 
         level.playSound(
             null,

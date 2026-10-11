@@ -18,11 +18,8 @@
   "Gravity": 0.07,
   "ProjectileLife": 100,
   "AmmoType": "superbwarfare:grenade_40mm",
-  "ShootShake": [
-    5.0,
-    5.0,
-    6.0
-  ],
+  "ShootShake": [5.0, 5.0, 6.0],
+  "AvailablePerks": [],
   "Icon": "superbwarfare:textures/gun_icon/gp_25_icon.png",
   "SoundInfo": {
     "Fire1P": "superbwarfare:gp_25_fire_1p",

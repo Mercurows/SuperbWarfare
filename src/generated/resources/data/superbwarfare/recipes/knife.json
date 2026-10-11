@@ -1,20 +1,12 @@
 {
-  "type": "minecraft:crafting_shaped",
+  "type": "minecraft:crafting_shapeless",
   "category": "equipment",
-  "key": {
-    "a": {
-      "tag": "forge:ingots/steel"
-    },
-    "b": {
-      "item": "minecraft:stick"
+  "ingredients": [
+    {
+      "item": "superbwarfare:bayonet_m_9"
     }
-  },
-  "pattern": [
-    " a",
-    "b "
   ],
   "result": {
     "item": "superbwarfare:knife"
-  },
-  "show_notification": true
+  }
 }

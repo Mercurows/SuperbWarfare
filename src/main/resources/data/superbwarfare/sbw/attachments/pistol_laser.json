@@ -1,0 +1,32 @@
+{
+  "Slot": "LowerRail",
+  "ExtraSlots": [
+    "UpperRail",
+    "LeftRail",
+    "RightRail"
+  ],
+  "Level": 0,
+  "Modifiers": [
+    {
+      "Prop": "Spread",
+      "Op": "Mul",
+      "Value": 0.85
+    },
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 0.5
+    }
+  ],
+  "Model": "superbwarfare:models/bedrock/attachment/pistol_laser.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/pistol_laser.png",
+  "Laser": {
+    "Bone": "laser",
+    "Locator": "laser_muzzle",
+    "Length": 64.0,
+    "Width": 0.01,
+    "ThirdPersonLength": 2.0,
+    "ThirdPersonWidth": 0.01,
+    "Color": "0xFF0000"
+  }
+}

@@ -2,11 +2,11 @@ package com.atsuishio.superbwarfare.command
 
 import com.atsuishio.superbwarfare.command.builder.buildCommand
 import com.atsuishio.superbwarfare.command.builder.entityArg
+import com.atsuishio.superbwarfare.data.gun.ActiveGun
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
+import com.atsuishio.superbwarfare.data.gun.subweapon.SubWeaponRuntime
 import com.atsuishio.superbwarfare.item.gun.GunItem
-import com.atsuishio.superbwarfare.subweapon.SubWeaponRuntime
-import com.atsuishio.superbwarfare.tools.ActiveGun
 import com.mojang.brigadier.context.CommandContext
 import net.minecraft.ChatFormatting
 import net.minecraft.commands.CommandSourceStack

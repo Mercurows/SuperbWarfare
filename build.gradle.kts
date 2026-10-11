@@ -245,7 +245,7 @@ dependencies {
     }
 
     // SBM
-    jijImplement("com.github.mcmodderanchor:simplebedrockmodel:2.5.6-forge-mc1.20.1")
+    jijImplement("com.github.mcmodderanchor:simplebedrockmodel:2.5.7-forge-mc1.20.1")
     compileOnly("com.maydaymemory:mae:1.1.2") {
         exclude("com.google.code.findbugs", "jsr305")
         exclude("it.unimi.dsi", "fastutil")
@@ -265,6 +265,9 @@ dependencies {
     jijImplement("com.sighs:ApricityUI-forge-1.20.1:1.2.3")
 
     // 可选 mod 依赖
+
+    // 加速渲染
+    compileOnly(fg.deobf("curse.maven:accelerated-rendering-1314021:7342975"))
 
     // JEI相关
     // compile against the JEI API but do not include it at runtime

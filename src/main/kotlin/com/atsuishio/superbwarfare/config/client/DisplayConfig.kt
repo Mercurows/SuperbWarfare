@@ -99,6 +99,13 @@ object DisplayConfig {
     }
 
     @JvmField
+    val CROSSHAIR_TRAJECTORY_SMOOTHING = buildClientConfig {
+        comment("Time constant (in seconds) of the low-pass filter applied to the crosshair trajectory offset. Larger = steadier crosshair while firing, but it follows the real impact point more slowly. 0 disables the filter")
+        comment("准星弹道偏移的低通滤波时间常数（秒）。越大，连射时准星越稳，但跟着真实弹着点走也越慢；0 = 关闭滤波")
+        defineInRange("crosshair_trajectory_smoothing", 0.06, 0.0, 0.5)
+    }
+
+    @JvmField
     val ARMOR_PLATE_HUD = buildClientConfig {
         comment("Set true to enable armor plate hud")
         comment("是否开启护甲板HUD")

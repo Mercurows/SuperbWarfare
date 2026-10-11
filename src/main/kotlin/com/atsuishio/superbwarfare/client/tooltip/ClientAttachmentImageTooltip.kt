@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.tooltip
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.tooltip.component.AttachmentImageComponent
 import com.atsuishio.superbwarfare.data.attachment.*
+import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.item.attachment.AttachmentProvider
 import com.atsuishio.superbwarfare.item.attachment.definition
 import com.atsuishio.superbwarfare.tools.FormatTool
@@ -53,6 +54,7 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
             }
 
             add(slotLine(definition))
+            additionalSlotsLine(definition)?.let(::add)
             addAll(scopeLines(definition))
             definition.modifiers.mapNotNullTo(this) { modifierLine(it) }
             definition.override?.forEach { (key, value) ->
@@ -67,20 +69,41 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
                 add(propertyComponent("bipod").withStyle(ChatFormatting.GREEN))
             }
 
+            // 刺刀并入枪口槽后，槽位名与普通枪口配件相同（`[枪口配件]`），
+            // 靠这一行把"枪刺功能"标出来
+            if (definition.isBayonet) {
+                add(propertyComponent("bayonet").withStyle(ChatFormatting.GREEN))
+            }
+
             soundRadiusLine(definition.soundRadiusMultiplier)?.let(::add)
             muzzleFlashLine(definition.muzzleFlashScale)?.let(::add)
         }
     }
 
-    open fun slotLine(definition: AttachmentDefinition): MutableComponent {
-        val type = definition.slot.attachmentName.lowercase(Locale.ROOT)
-        val key = "attachment.superbwarfare.slot.$type"
-        val text: MutableComponent = if (I18n.exists(key)) {
+    open fun slotLine(definition: AttachmentDefinition): MutableComponent =
+        slotName(definition.slot).withStyle(ChatFormatting.GOLD)
+
+    open fun additionalSlotsLine(definition: AttachmentDefinition): Component? {
+        val extra = definition.extraSlots
+        if (extra.isEmpty()) return null
+        
+        val names = Component.empty()
+        extra.sortedBy { it.ordinal }.forEachIndexed { index, type ->
+            if (index > 0) names.append(Component.literal(" / ").withStyle(ChatFormatting.GRAY))
+            names.append(slotName(type).withStyle { it.withColor(ADDITIONAL_SLOT_COLOR) })
+        }
+
+        return Component.translatable("attachment.superbwarfare.additional_slots", names)
+            .withStyle(ChatFormatting.GRAY)
+    }
+
+    open fun slotName(type: AttachmentType): MutableComponent {
+        val key = "attachment.superbwarfare.slot.${type.attachmentName.lowercase(Locale.ROOT)}"
+        return if (I18n.exists(key)) {
             Component.translatable(key)
         } else {
-            Component.literal("[${definition.slot.attachmentName}]")
+            Component.literal("[${type.attachmentName}]")
         }
-        return text.withStyle(ChatFormatting.GOLD)
     }
 
     open fun modifierLine(modifier: AttachmentModifier): Component? {
@@ -103,8 +126,8 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
                 if (constant != null && constant.value == 0.0) return null
                 when {
                     constant == null -> "+"
-                    constant.value > 0 -> "+" + FormatTool.format1D(abs(constant.value))
-                    constant.value < 0 -> "-" + FormatTool.format1D(abs(constant.value))
+                    constant.value > 0 -> "+" + FormatTool.format2D(abs(constant.value))
+                    constant.value < 0 -> "-" + FormatTool.format2D(abs(constant.value))
                     else -> null
                 }
             }
@@ -112,8 +135,8 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
             AttachmentModifierOp.MUL -> when {
                 constant == null -> "×"
                 constant.value == 1.0 -> null
-                constant.value > 1 -> "+" + FormatTool.format1D(abs(1 - constant.value) * 100) + "%"
-                constant.value in 0.0..<1.0 -> "-" + FormatTool.format1D(abs(1 - constant.value) * 100) + "%"
+                constant.value > 1 -> "+" + FormatTool.format2D(abs(1 - constant.value) * 100) + "%"
+                constant.value in 0.0..<1.0 -> "-" + FormatTool.format2D(abs(1 - constant.value) * 100) + "%"
                 else -> "×"
             }
 
@@ -271,6 +294,9 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
         val MODIFICATION_COLOR = ChatFormatting.AQUA
         val SCOPE_COLOR = ChatFormatting.YELLOW
 
+        /** 额外可装槽位的槽位名：比主槽位那行的 `GOLD`（`0xFFAA00`）暗一档，主次分明 */
+        const val ADDITIONAL_SLOT_COLOR = 0xE0A84B
+
         val HIGHER_IS_BETTER = setOf(
             "Damage",
             "Headshot",
@@ -283,6 +309,15 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
             "MeleeRange",
             "MeleeHeadshot",
             "MeleeLegshot",
+            "MaxEnergy",
+            "ExplosionDamage",
+            "ExplosionRadius",
+            "UnderwaterMotionScale",
+            "InWaterCooldownRate",
+            "MaxDurability",
+            "ExpMultiplier",
+            "ProjectileLifesteal",
+            "MeleeLifesteal",
         )
 
         val LOWER_IS_BETTER = setOf(
@@ -297,8 +332,12 @@ open class ClientAttachmentImageTooltip(tooltip: AttachmentImageComponent) : Cli
             "ReloadTime",
             "SoundRadius",
             "Spread",
+            "Sway",
             "Weight",
             "ZoomTime",
+            "DrawTime",
+            "Gravity",
+            "ReloadTime",
         )
     }
 }

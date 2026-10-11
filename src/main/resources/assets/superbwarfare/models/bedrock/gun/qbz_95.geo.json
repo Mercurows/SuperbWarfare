@@ -10705,6 +10705,11 @@
 					"pivot": [0, 0, 0]
 				},
 				{
+					"name": "lower_rail_pos",
+					"parent": "positioning2",
+					"pivot": [0, 0.26079, -11.7329]
+				},
+				{
 					"name": "flare",
 					"parent": "positioning2",
 					"pivot": [0, 1.9999, -17.637]
@@ -10722,7 +10727,7 @@
 				{
 					"name": "grip_pos",
 					"parent": "positioning2",
-					"pivot": [0, 0.25945, -7.99965]
+					"pivot": [0, 0.25945, -7.49965]
 				},
 				{
 					"name": "muzzle_pos",
@@ -10738,6 +10743,12 @@
 					"name": "charm_pos",
 					"parent": "positioning2",
 					"pivot": [0.9307, 1.97151, 3.15172]
+				},
+				{
+					"name": "upper_rail_pos",
+					"parent": "positioning2",
+					"pivot": [0, 4.59673, -7.20399],
+					"rotation": [0, 0, -180]
 				},
 				{
 					"name": "positioning",

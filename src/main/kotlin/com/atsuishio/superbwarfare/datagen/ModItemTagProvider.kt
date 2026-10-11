@@ -375,6 +375,7 @@ class ModItemTagProvider(
             ModItems.KNIFE.get(),
             ModItems.KNIFE_6KH2.get(),
             ModItems.KNIFE_SEITENGEWEHR_84.get(),
+            ModItems.KNIFE_M1917.get(),
             ModItems.T_BATON.get(),
             ModItems.ELECTRIC_BATON.get(),
             ModItems.STEEL_PIPE.get(),
@@ -430,11 +431,14 @@ class ModItemTagProvider(
             perkItem(ModPerks.CUPID_ARROW),
             perkItem(ModPerks.HE_BULLET),
             perkItem(ModPerks.MICRO_MISSILE),
-            perkItem(ModPerks.AP_BULLET)
+            perkItem(ModPerks.AP_BULLET),
+            perkItem(ModPerks.SUPER_HEAVY_BULLET),
+            perkItem(ModPerks.SHATTER_CAPS)
         )
         this.tag(ModTags.Items.RESEARCHABLE_AMMO_PERK_EPIC).add(
             perkItem(ModPerks.PHASE_PENETRATING_BULLET),
-            perkItem(ModPerks.PHOSPHORUS_FLAME_BULLET)
+            perkItem(ModPerks.PHOSPHORUS_FLAME_BULLET),
+            perkItem(ModPerks.CLUSTER_BOMB)
         )
 
         this.tag(ModTags.Items.RESEARCHABLE_FUNCTIONAL_PERK_COMMON).add(
@@ -542,7 +546,14 @@ class ModItemTagProvider(
             ModItems.CROSS_MUZZLE,
             ModItems.STAR_MUZZLE,
             ModItems.LOVE_MUZZLE,
-            ModItems.STEEL_PIPE_SILENCER
+            ModItems.STEEL_PIPE_SILENCER,
+            // 刺刀是枪口配件的一种（`IsBayonet`），住同一个 tag
+            ModItems.BAYONET_M_9,
+            ModItems.BAYONET_6KH2,
+            ModItems.BAYONET_SEITENGEWEHR_84,
+            ModItems.BAYONET_M_91_30,
+            ModItems.BAYONET_TRIANGULAR,
+            ModItems.BAYONET_M1917
         ),
         AttachmentType.SCOPE to listOf(
             ModItems.SCOPE_COYOTE,
@@ -576,11 +587,6 @@ class ModItemTagProvider(
             ModItems.GRIP_VERTICAL_BIPOD,
             ModItems.STEEL_PIPE_GRIP
         ),
-        AttachmentType.BAYONET to listOf(
-            ModItems.BAYONET_M_9,
-            ModItems.BAYONET_6KH2,
-            ModItems.BAYONET_SEITENGEWEHR_84
-        ),
         AttachmentType.SUBWEAPON to listOf(
             ModItems.SUB_WEAPON_GP_25
         ),
@@ -588,17 +594,73 @@ class ModItemTagProvider(
             ModItems.CHARM_PIG,
             ModItems.CHARM_BEE,
             ModItems.CHARM_CHEST,
+            ModItems.CHARM_AXOLOTL,
+            ModItems.CHARM_COW,
+            ModItems.CHARM_SNOWGOLEM,
+            ModItems.CHARM_SMALL_CONTAINER,
+            ModItems.CHARM_SHEEP,
+            ModItems.CHARM_CHICKEN,
+            ModItems.CHARM_PUFFERFISH,
+            ModItems.CHARM_DOG_TAG,
             ModItems.CHARM_ZOMBIE_HEAD,
             ModItems.CHARM_SKELETON_SKULL,
             ModItems.CHARM_CREEPER_HEAD,
+            ModItems.CHARM_AXOLOTL_BLUE,
+            ModItems.CHARM_MOOSHROOM,
+            ModItems.CHARM_PIGLIN_HEAD,
+            ModItems.CHARM_CONTAINER,
+            ModItems.CHARM_M67_GRENADE,
+            ModItems.CHARM_SPIDER_HEAD,
             ModItems.CHARM_FUKAMIZU_FISH,
             ModItems.CHARM_WITHER_SKELETON_SKULL,
             ModItems.CHARM_NETHER_STAR,
+            ModItems.CHARM_CONDUIT,
+            ModItems.CHARM_RICE_CAKE_FOX_LOLITA,
+            ModItems.CHARM_WINEFOX_TAIL,
+            ModItems.CHARM_ELDER_GUARDIAN,
+            ModItems.CHARM_SUI_CONTAINER,
+            ModItems.CHARM_STARS_IL,
+            ModItems.CHARM_MK_82,
+            ModItems.CHARM_ORANGE_PLUSHIE,
+            ModItems.CHARM_HAKUREI_REIMU,
+            ModItems.CHARM_KIRISAME_MARISA,
+            ModItems.CHARM_FLANDRE_SCARLET,
+            ModItems.CHARM_SAIGYOUJI_YUYUKO,
+            ModItems.CHARM_HOURAISAN_KAGUYA,
+            ModItems.CHARM_MOON_HEART,
+            ModItems.CHARM_TYPE_88_CLUSTER_GRENADES,
             ModItems.CHARM_SEPT_WOLVES,
             ModItems.CHARM_ANCIENT_CPU,
+            ModItems.CHARM_DRAGON_HEAD,
+            ModItems.CHARM_THE_EMPERORS_NEW_CHARM,
+            ModItems.CHARM_BEAST,
+            ModItems.CHARM_CRYSTAL_POPCORN,
             ModItems.CHARM_SENPAI,
+            ModItems.CHARM_MRAHC,
+            ModItems.CHARM_EXPERIENCE_BOTTLE,
             ModItems.CHARM_CHIRAM_CORE,
-            ModItems.CHARM_LILY
+            ModItems.CHARM_LILY,
+            ModItems.CHARM_HIRU_HEAD
+        ),
+        AttachmentType.LOWER_RAIL to listOf(
+            ModItems.LOWER_RAIL_BIPOD,
+            ModItems.PEQ_15,
+            ModItems.PISTOL_LASER,
+            ModItems.HANDGUN_SHIELD
+        ),
+        AttachmentType.UPPER_RAIL to listOf(
+            ModItems.PEQ_15,
+            ModItems.PISTOL_LASER,
+            ModItems.STANDARD_GUN_SHIELD
+        ),
+        AttachmentType.LEFT_RAIL to listOf(
+            ModItems.PEQ_15,
+            ModItems.PISTOL_LASER,
+            ModItems.RANGE_FINDER
+        ),
+        AttachmentType.RIGHT_RAIL to listOf(
+            ModItems.PEQ_15,
+            ModItems.PISTOL_LASER
         ),
     )
 

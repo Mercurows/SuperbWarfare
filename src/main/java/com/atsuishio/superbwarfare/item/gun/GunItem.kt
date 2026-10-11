@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.api.event.ShootEvent
 import com.atsuishio.superbwarfare.capability.energy.ItemEnergyProvider
 import com.atsuishio.superbwarfare.capability.energy.ItemEnergyStorage
+import com.atsuishio.superbwarfare.client.TooltipTool
 import com.atsuishio.superbwarfare.client.particle.BulletDecalOption
 import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen
 import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent
@@ -15,6 +16,7 @@ import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.getDefault
 import com.atsuishio.superbwarfare.data.gun.melee.ProjectileMarker
+import com.atsuishio.superbwarfare.data.gun.melee.isEngineProjectileMarker
 import com.atsuishio.superbwarfare.data.gun.melee.normalizeProjectileMarker
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.data.launchable.LaunchableEntityTool
@@ -23,12 +25,13 @@ import com.atsuishio.superbwarfare.entity.mixin.ICustomKnockback
 import com.atsuishio.superbwarfare.entity.projectile.*
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
+import com.atsuishio.superbwarfare.event.DeployedWeaponHandler
 import com.atsuishio.superbwarfare.init.ModDamageTypes
+import com.atsuishio.superbwarfare.init.ModEntities
 import com.atsuishio.superbwarfare.init.ModPerks
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.ItemScreenProvider
-import com.atsuishio.superbwarfare.item.gun.GunItem.Companion.isHeldWeapon
-import com.atsuishio.superbwarfare.item.gun.GunItem.Companion.isOperable
+import com.atsuishio.superbwarfare.item.gun.GunItem.Companion.resolveShootDirection
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.resource.gun.GunResource
@@ -41,6 +44,7 @@ import com.google.common.collect.Multimap
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.network.chat.Component
 import net.minecraft.network.protocol.game.ClientboundStopSoundPacket
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
@@ -63,6 +67,7 @@ import net.minecraft.world.entity.projectile.ProjectileUtil
 import net.minecraft.world.inventory.tooltip.TooltipComponent
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.TooltipFlag
 import net.minecraft.world.item.enchantment.Enchantment
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
@@ -246,6 +251,27 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         return Optional.of(GunImageComponent(pStack))
     }
 
+    override fun appendHoverText(
+        stack: ItemStack,
+        level: Level?,
+        list: MutableList<Component>,
+        flag: TooltipFlag
+    ) {
+        super.appendHoverText(stack, level, list, flag)
+
+        val description = GunResource.compute(stack).description
+        if (description.isEmpty()) return
+
+        list.add(Component.empty())
+        for (info in description) {
+            if (info.hidden) {
+                TooltipTool.addHideText(list, info.asComponent())
+            } else {
+                list.add(info.asComponent())
+            }
+        }
+    }
+
     open fun getGunIcon(stack: ItemStack) = getGunIcon(from(stack))
 
     open fun getGunIcon(data: GunData) = data.get(GunProp.ICON)
@@ -321,6 +347,8 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
      * 武器是否有脚架
      */
     open fun hasBipod(data: GunData) = data.get(GunProp.HAS_BIPOD)
+
+    open fun deployable(data: GunData) = data.get(GunProp.DEPLOYABLE)
 
     /**
      * 武器是否能进行近战攻击
@@ -412,7 +440,6 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                 && !data.overHeat.get()
                 && data.get(GunProp.HEAT_PER_SHOOT) <= (100 + data.get(GunProp.HEAT_PER_SHOOT) - data.heat.get())
                 && !data.reloading()
-                && !data.charging()
                 && !data.bolt.needed.get()
                 // 含附加弹药来源（如泰瑟枪的电量）
                 && data.hasEnoughAmmoToShoot(shooter)
@@ -421,19 +448,25 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     open fun useSpecialFireProcedure(data: GunData) = false
 
     /**
-     * 算出这把枪开一枪时**射手自己**该听到的音效（第一人称音），口径与旧的
-     * `ClientEventHandler.playGunClientSounds` 完全一致：`Fire1P` / `Fire1PSilent`（按枪口配件是否消音）、
-     * 音量 `0.5 × 音效半径倍率`、音高按热量衰减、`BEAST_BULLET` perk 的额外音效，以及非消音时的
-     * `REFLECTIONS` 尾音。
+     * 这次开火打出去的算不算「子弹」。
      *
-     * **只算参数、不播放**：主武器的 1P 音在客户端直接播（[com.atsuishio.superbwarfare.event.ClientEventHandler.playGunFire1PSound]），
-     * 而副武器的开火完全发生在服务端 —— 服务端把这里算好的参数发给射手客户端去播
-     * （`LocalSoundMessage`），这样两条链路的口径逐字一致，而且**只有服务端真的开火才会响**。
+     * 判据是 [GunProp.PROJECTILE] 解析出来的实体类型就是 [ModEntities.PROJECTILE]
+     * （`superbwarfare:projectile`，也就是 [ProjectileEntity]，SBW 枪械的常规弹丸）：
+     * 榴弹、火箭弹、炮弹、泰瑟针、超星弹这些「打出去的是别的东西」的武器不算，
+     * `@empty` / `@ray` / `@melee` 这类压根没有实体的引擎标记也不算。
      *
-     * @param data 要算音效的枪械数据；主武器传手持栈的，副武器传它自己那份。
-     * @return 按播放顺序排列的音效列表（可能为空：数据里没写 `Fire1P`）。
+     * 解析方式和 [shootBullet] 保持一致（`EntityType.byString`）而不是比字符串，是为了跟真正生成的那个
+     * 实体对齐；同理读 [GunProp.PROJECTILE] 而不读 `DefaultGunData`，因为配件/弹药可以改弹种。
      */
-    open fun resolveFire1PSounds(data: GunData): List<LocalSound> {
+    open fun isBulletProjectile(data: GunData): Boolean {
+        val projectileType = data.get(GunProp.PROJECTILE).itemId
+        if (projectileType.isEngineProjectileMarker()) return false
+        return EntityType.byString(projectileType).orElse(null) == ModEntities.PROJECTILE.get()
+    }
+
+    open fun isShatterShot(data: GunData): Boolean = data.get(GunProp.PROJECTILE_AMOUNT) > 1
+
+    open fun resolveFire1PSounds(data: GunData, stack: ItemStack): List<LocalSound> {
         val sounds = ArrayList<LocalSound>(3)
 
         val soundInfo = data.get(GunProp.SOUND_INFO)
@@ -444,7 +477,11 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         }
 
         val isSilent = data.isBarrelSilenced()
-        val fire1p = if (isSilent) soundInfo.fire1PSilent else soundInfo.fire1P
+        val fire1p = when {
+            isSilent -> soundInfo.fire1PSilent
+            isShatterShot(data) -> soundInfo.fire1PShatter ?: soundInfo.fire1P
+            else -> soundInfo.fire1P
+        }
         val volumeMultiplier = getCustomSoundRadius(data).coerceAtLeast(1.0)
 
         if (fire1p != null) {
@@ -454,7 +491,9 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                 ((2 * Math.random() - 1) * 0.05f + pitch).toFloat()
             )
 
-            if (!isSilent) {
+            val resource = GunResource.compute(stack)
+
+            if (!isSilent && isBulletProjectile(data) && resource.hasReflectionSound) {
                 sounds += LocalSound(
                     ModSounds.REFLECTIONS.get(),
                     0.25f * volumeMultiplier.toFloat(),
@@ -528,8 +567,9 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             data.closeStrike.set(true)
         }
 
-        // 真实后坐（
-        if (shooter != null && data.get(GunProp.RECOIL) != 0.0) {
+        if (shooter != null && data.get(GunProp.RECOIL) != 0.0 &&
+            !(shooter is Player && DeployedWeaponHandler.isDeployed(shooter))
+        ) {
             shooter.deltaMovement =
                 shooter.deltaMovement.add(shooter.getViewVector(1f).scale(-data.get(GunProp.RECOIL)))
         }
@@ -624,7 +664,19 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         )
     }
 
-    fun shoot(data: GunData, shooter: Entity, spread: Double, zoom: Boolean, uuid: UUID?, pos: Vec3?, power: Double) {
+    fun shoot(data: GunData, shooter: Entity, spread: Double, zoom: Boolean, uuid: UUID?, pos: Vec3?, power: Double) =
+        shoot(data, shooter, spread, zoom, uuid, pos, power, null)
+
+    fun shoot(
+        data: GunData,
+        shooter: Entity,
+        spread: Double,
+        zoom: Boolean,
+        uuid: UUID?,
+        pos: Vec3?,
+        power: Double,
+        muzzleDirection: Vec3?
+    ) {
         val server = shooter.level() as? ServerLevel ?: return
 
         shoot(
@@ -633,7 +685,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                 shooter,
                 server,
                 Vec3(shooter.x, shooter.eyeY, shooter.z),
-                shooter.lookAngle,
+                resolveShootDirection(muzzleDirection, shooter),
                 data,
                 spread,
                 zoom,
@@ -658,13 +710,32 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         }
     }
 
+    /**
+     * 服务端开火的外层：先过 [GunData.canShoot]，再决定本发要不要走充能射击。
+     *
+     * 充能档位（`ChargeAction`）只在这一个调用栈里有效，用完立刻复位，因此不会写进 NBT，
+     * 也不会污染之后的属性计算。
+     */
     private fun shootInternal(parameters: ShootParameters) {
+        val data = parameters.data
+
+        if (!data.canShoot(parameters.ammoSupplier)) return
+
+        // 电量够（且按数据要求开着镜）时选中一档充能射击；选不中就是 null，走普通射击
+        val chargeAction = data.chargeActionFor(parameters.zoom, parameters.ammoSupplier)
+        data.setChargeAction(chargeAction)
+        try {
+            doShoot(parameters, chargeAction)
+        } finally {
+            data.setChargeAction(null)
+        }
+    }
+
+    private fun doShoot(parameters: ShootParameters, chargeAction: ChargeAction?) {
         val data = parameters.data
         val shooter = parameters.shooter
         val ammoSupplier = parameters.ammoSupplier
         val zoom = parameters.zoom
-
-        if (!data.canShoot(ammoSupplier)) return
 
         // 开火前事件
         data.item.beforeShoot(parameters)
@@ -716,6 +787,14 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         // 开火后事件
         data.item.afterShoot(parameters)
 
+        // 充能射击成功后才扣电：能走到这里说明子弹确实打出去了
+        // （`shootBullet` 返回 false 会在上面的循环里提前 return，那种情况不扣）。
+        // 每次扣扳机只算一发，不随 ProjectileAmount 放大。
+        if (chargeAction != null) {
+            data.getEnergyProvider(ammoSupplier)
+                .ifPresent { it.extractEnergy(chargeAction.cost, false) }
+        }
+
         data.save()
     }
 
@@ -736,7 +815,11 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         val soundInfo = data.get(GunProp.SOUND_INFO)
         val isSilent = data.isBarrelSilenced()
 
-        val sound3p = if (isSilent) soundInfo.fire3PSilent else soundInfo.fire3P
+        val sound3p = when {
+            isSilent -> soundInfo.fire3PSilent
+            isShatterShot(data) -> soundInfo.fire3PShatter ?: soundInfo.fire3P
+            else -> soundInfo.fire3P
+        }
         if (sound3p != null) {
             shooter.playSound(sound3p, soundRadius * 0.4f, pitch)
         }
@@ -788,6 +871,18 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             }
         }
     }
+
+    /**
+     * 弹射物实体建好之后、进世界之前的最后一道定制点。
+     *
+     * 默认什么都不做。留给那些**在标准配置之外还需要设一个自家字段**的枪：走这里而不是整个
+     * 重写 [shootBullet]，才能原样拿到弹种解析、`IBulletProperties` 那一串标准属性、perk 回调
+     * 与发射逻辑（`javelin` 的顶攻标记就是这么设的 —— 它的 `isTop` 只服务于那一把枪，
+     * 不适合塞进上面的 `if (entity is ...)` 链里）。
+     *
+     * ⚠ 调用点在 `setPos` / `shoot` **之后**、`addFreshEntity` **之前**，此时实体尚未进世界。
+     */
+    open fun onProjectileCreated(data: GunData, entity: Entity) {}
 
     /**
      * 服务端发射单发子弹
@@ -862,8 +957,11 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                     setZoom(zoom)
                     setBypassArmorRate(bypassArmorRate.toFloat())
                     setVelocity(finalVelocity)
+                    setKnockback(data.get(GunProp.KNOCKBACK).toFloat())
                     setUnderwaterMotionScale(data.get(GunProp.UNDERWATER_MOTION_SCALE))
                     setExplosionDestroy(data.get(GunProp.EXPLOSION_DESTROY))
+                    setProjectileSplitCount(data.get(GunProp.PROJECTILE_SPLIT_COUNT))
+                    setProjectileSplitAmount(data.get(GunProp.PROJECTILE_SPLIT_AMOUNT))
                 }
             }
 
@@ -1016,6 +1114,9 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             entity.yRotO = entity.yRot
             entity.xRotO = entity.xRot
         }
+
+        // 进世界前的最后一道定制点，见 [onProjectileCreated]
+        onProjectileCreated(data, entity)
 
         level.addFreshEntity(entity)
         return true
@@ -1249,12 +1350,6 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     protected fun randomVec(vec3: Vec3, spread: Double): Vec3 =
         randomSpreadVec(this.random, vec3, spread)
 
-    /**
-     * 这把枪能不能打开改装界面。
-     *
-     * `SubWeaponItem` 覆写为 `false`：**副武器不具有配件**（四期）—— 它是装到枪上的一个部件，
-     * 让下挂榴弹自己再挂一个握把没有意义。改装界面与 `/sbw attachment` 都只对**主武器**生效。
-     */
     open fun canEditAttachments(data: GunData) = true
 
     open fun enableShootTimer() = false
@@ -1289,11 +1384,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
 
     companion object {
         /**
-         * 供 Java / Mixin 调用的静态入口：这个栈**手持时是否按"枪械"处理**。
-         *
-         * 与 [useAsWeaponInHand] 配对使用，是"手持边界"的统一谓词：
-         * 渲染/视角/输入/属性/HUD 这些门禁都该问它，而不是直接 `instanceof GunItem`
-         * （副武器物品继承 `GunItem`，但拿在手里时不是枪）。
+         * 这个物品算不算一把枪
          */
         @JvmStatic
         fun isHeldWeapon(stack: ItemStack?): Boolean {
@@ -1302,31 +1393,30 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         }
 
         /**
-         * 供 Java / Mixin 调用的静态入口：**这个栈现在能不能被当成一把枪来操作**
-         * （开火 / 换弹 / 瞄准 / 近战 / 动画状态机）。
-         *
-         * ### 为什么必须与 [isHeldWeapon] 分开（四期）
-         *
-         * 四期把"当前操控的枪"从主手物品解耦成了 `ActiveGun`，它**可以返回副武器的合成栈**；
-         * 而 `SubWeaponItem.useAsWeaponInHand()` 是 `false`（手持副武器**物品**时按普通物品处理），
-         * 于是所有 `if (!isHeldWeapon(stack)) return` 式的门禁都会把副武器整个挡在门外 ——
-         * 整套机制直接失效。
-         *
-         * 两个谓词的分工：
-         *
-         * | 谓词 | 回答的问题 | 用在哪 |
-         * |---|---|---|
-         * | [isHeldWeapon] | 这件**物品**被玩家拿在手里时算不算枪 | 渲染 / 视角 / HUD / 属性 / `inventoryTick` |
-         * | [isOperable] | 这个**栈**现在能不能被当枪操作 | 所有**已经通过 `ActiveGun` 解析出栈之后**的门禁 |
-         *
-         * ⚠ `inventoryTick` 那一侧**必须留在 [isHeldWeapon]**：它跑的是"拿在手上的枪"的状态机，
-         * 而副武器栈的状态由 `SubWeaponRuntime.tick` 显式推进 —— 换成这个谓词会让副武器被 tick 两遍。
+         * 这个物品现在能不能被当成一把枪来操作
          */
         @JvmStatic
         fun isOperable(stack: ItemStack?): Boolean {
             if (stack == null || stack.isEmpty) return false
             return stack.item is GunItem
         }
+
+        @JvmStatic
+        fun resolveShootDirection(muzzleDirection: Vec3?, shooter: Entity): Vec3 {
+            val aim = shooter.lookAngle
+            if (muzzleDirection == null) return aim
+            if (!muzzleDirection.x.isFinite() || !muzzleDirection.y.isFinite() || !muzzleDirection.z.isFinite()) return aim
+            if (muzzleDirection.lengthSqr() < 1e-8) return aim
+
+            val direction = muzzleDirection.normalize()
+            return if (direction.dot(aim) < MIN_MUZZLE_ALIGNMENT) aim else direction
+        }
+
+        /** [resolveShootDirection] 的夹角上限（度）：只是"样本是不是疯了"的兜底，见那边的注释 */
+        private const val MAX_MUZZLE_DEVIATION_DEGREES = 60.0
+
+        /** 上面那个角度换算成的余弦阈值（`lookAngle` 是单位向量，点积就是夹角余弦） */
+        private val MIN_MUZZLE_ALIGNMENT = Math.cos(Math.toRadians(MAX_MUZZLE_DEVIATION_DEGREES))
 
         protected fun getEntityResult(target: Entity, hitBoxPos: Vec3, hitPos: Vec3): EntityResult {
             var headshot = false

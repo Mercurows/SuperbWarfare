@@ -7,6 +7,7 @@
   "Velocity": 28,
   "Magazine": 1,
   "Weight": 5,
+  "RPM": 120,
   "MeleeDamage": 5,
   "MeleeDuration": 16,
   "MeleeComboReset": 15,
@@ -94,6 +95,11 @@
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"
+    ],
+    "LowerRail": [
+      "superbwarfare:lower_rail_bipod",
+      "superbwarfare:peq_15",
+      "superbwarfare:pistol_laser"
     ]
   },
   "SoundInfo": {

@@ -1,0 +1,29 @@
+{
+  "Slot": "LowerRail",
+  "Level": 0,
+  "Modifiers": [
+    {
+      "Prop": "MaxEnergy",
+      "Op": "Add",
+      "Value": 6000
+    },
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 1.0
+    }
+  ],
+  "Model": "superbwarfare:models/bedrock/attachment/handgun_shield.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/handgun_shield.png",
+  "Shield": {
+    "Durability": 30.0,
+    "Resist": 100.0,
+    "CoverAngle": 45.0,
+    "RechargeRate": 6.0,
+    "RechargeDelay": 80,
+    "BrokenLockout": 30,
+    "EnergyPerCharge": 40,
+    "BreakOverflow": 0.5,
+    "RechargeSound": "superbwarfare:bullet_supply"
+  }
+}
