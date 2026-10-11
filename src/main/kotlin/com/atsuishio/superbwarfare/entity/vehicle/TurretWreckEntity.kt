@@ -1,5 +1,8 @@
 package com.atsuishio.superbwarfare.entity.vehicle
 
+import com.atsuishio.superbwarfare.physics.VehiclePhysics
+import cn.solarmoon.spark_core.physics.SkipDefaultPawn
+
 import com.atsuishio.superbwarfare.client.lighting.VehicleLightingHandler
 import com.atsuishio.superbwarfare.client.particle.CustomCloudOption
 import com.atsuishio.superbwarfare.config.server.VehicleConfig
@@ -51,7 +54,7 @@ import org.joml.Quaterniond
 import org.joml.Quaternionf
 import kotlin.random.Random
 
-open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, level: Level) : Entity(type, level) {
+open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, level: Level) : Entity(type, level), SkipDefaultPawn {
     companion object {
         @JvmField
         val QUATERNION: EntityDataAccessor<Quaternionf> =
@@ -159,6 +162,7 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, level: Level) 
     }
 
     override fun readAdditionalSaveData(compound: CompoundTag) {
+        VehiclePhysics.load(this, compound)
         entityData.set(
             QUATERNION,
             Quaternionf(
@@ -173,6 +177,7 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, level: Level) 
     }
 
     override fun addAdditionalSaveData(compound: CompoundTag) {
+        VehiclePhysics.save(this, compound)
         val q = entityData.get(QUATERNION)
         compound.putFloat("Qx", q.x())
         compound.putFloat("Qy", q.y())
@@ -183,6 +188,7 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, level: Level) 
     }
 
     override fun baseTick() {
+        VehiclePhysics.begin(this)
         qxO = quaternion.x()
         qyO = quaternion.y()
         qzO = quaternion.z()
@@ -195,25 +201,6 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, level: Level) 
         }
 
         super.baseTick()
-
-        this.move(MoverType.SELF, this.deltaMovement)
-        var f = 0.98f
-        if (this.onGround() || supportByVehicle) {
-            val pos = this.blockPosBelowThatAffectsMyMovement
-            f = level().getBlockState(pos).getFriction(this.level(), pos, this) * 0.98f
-
-            var rot = 0.6f
-
-            if (getUpVec(1f).y < 0) {
-                rot = -0.6f
-            }
-
-            setQuaternion(Quaterniond(getQuaternion(1f).rotateX(rot * getFrontVec(1f).y.toFloat())))
-            setQuaternion(Quaterniond(getQuaternion(1f).rotateZ(rot * getRightVec(1f).y.toFloat())))
-            supportByVehicle = false
-        } else {
-            setQuaternion(Quaterniond(getQuaternion(1f).rotateX(0.015f + 0.002f * deltaMovement.y.toFloat())))
-        }
 
         if (level().isClientSide) {
             // Emit dynamic fire light for flying/tumbling turret wreck
@@ -275,7 +262,7 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, level: Level) 
             this.level().playSound(null, this.onPos, SoundEvents.FIRE_AMBIENT, SoundSource.PLAYERS, 1f, 1f)
         }
 
-        this.deltaMovement = deltaMovement.multiply(f.toDouble(), 0.98, f.toDouble()).add(0.0, -0.04, 0.0)
+        // Spark integrates the wreck, including gravity and angular motion.
         health -= 0.05f
 
         if (health <= 0) {
@@ -390,6 +377,7 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, level: Level) 
     open fun getRightVec(ticks: Float) = VehicleVecUtils.getRightVec(getQuaternion(ticks))
 
     override fun move(movementType: MoverType, movement: Vec3) {
+        if (VehiclePhysics.isManaged(this)) return
         super.move(movementType, movement)
 
         if (lastTickSpeed < 0.3 || collisionCoolDown > 0) return
@@ -421,6 +409,12 @@ open class TurretWreckEntity(type: EntityType<TurretWreckEntity>, level: Level) 
                 this.level().playSound(null, this, ModSounds.VEHICLE_STRIKE.get(), this.soundSource, 1f, 1f)
             }
         }
+    }
+
+    override fun setDeltaMovement(movement: Vec3) {
+        if (!movement.x.isFinite() || !movement.y.isFinite() || !movement.z.isFinite()) return
+        VehiclePhysics.velocityChanged(this, deltaMovement, movement)
+        super.setDeltaMovement(movement)
     }
 
     fun bounceHorizontal(direction: Direction) {

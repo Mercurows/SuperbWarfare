@@ -4,6 +4,10 @@ plugins {
     id("com.google.devtools.ksp") version "2.0.0-1.0.24"
 }
 
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+}
+
 repositories {
     mavenCentral()
 }

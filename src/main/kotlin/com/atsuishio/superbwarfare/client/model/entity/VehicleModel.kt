@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
+import com.atsuishio.superbwarfare.physics.VehiclePhysics
 import com.atsuishio.superbwarfare.resource.vehicle.DefaultVehicleResource
 import com.atsuishio.superbwarfare.resource.vehicle.VehicleResource
 import com.atsuishio.superbwarfare.tools.RenderDistanceHelper
@@ -306,8 +307,11 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
         leftWheelRot = Mth.lerp(partialTick, vehicle.leftWheelRotO, vehicle.leftWheelRot)
         rightWheelRot = Mth.lerp(partialTick, vehicle.rightWheelRotO, vehicle.rightWheelRot)
 
-        leftTrack = Mth.lerp(partialTick, vehicle.leftTrackO, vehicle.leftTrack)
-        rightTrack = Mth.lerp(partialTick, vehicle.rightTrackO, vehicle.rightTrack)
+        val physicsRender = VehiclePhysics.renderState(vehicle)
+        leftTrack = if (VehiclePhysics.hasBody(vehicle)) physicsRender.leftTrackPhase
+        else Mth.lerp(partialTick, vehicle.leftTrackO, vehicle.leftTrack)
+        rightTrack = if (VehiclePhysics.hasBody(vehicle)) physicsRender.rightTrackPhase
+        else Mth.lerp(partialTick, vehicle.rightTrackO, vehicle.rightTrack)
 
         turretYRot = Mth.lerp(partialTick, vehicle.turretYRotO, vehicle.turretYRot)
         turretXRot = Mth.lerp(partialTick, vehicle.turretXRotO, vehicle.turretXRot)

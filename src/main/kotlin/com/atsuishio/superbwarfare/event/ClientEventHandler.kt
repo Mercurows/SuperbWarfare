@@ -934,13 +934,17 @@ object ClientEventHandler {
             }
         }
 
-        if (keys != keysCache) {
+        if (keys != keysCache || vehicle is VehicleEntity || stack.`is`(ModItems.MONITOR.get())) {
             // 盘旋模式下阻止操控包发往服务端，但检测双击前进键夺回操控权
             val blockLoiter = vehicle is VehicleEntity
                     && vehicle.loiterActive
                     && vehicle.computed().engineType == EngineType.AIRCRAFT
             if (!blockLoiter) {
-                sendPacketToServer(VehicleMovementMessage(keys))
+                val controlled = vehicle as? VehicleEntity ?: EntityFindUtil.findDrone(player.level(), stack.tag?.getString("LinkedDrone") ?: "")
+                if (controlled != null) {
+                    val sequence = com.atsuishio.superbwarfare.physics.VehiclePhysics.localInput(controlled, keys)
+                    sendPacketToServer(VehicleMovementMessage(keys, sequence))
+                }
             } else {
                 // 检测双击前进键(W)在0.5s(10tick)内夺回操控权
                 val forwardBit = 0b000000100

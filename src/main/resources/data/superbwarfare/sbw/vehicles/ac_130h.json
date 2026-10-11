@@ -5,6 +5,7 @@
   "DecoyMagazineSize": 32,
   "DecoyReloadTime": 600,
   "OBB": [
+    {"Part": "Collision", "Size": [28.0625, 8.21888, 22.21905], "Position": [0.0, 8.21888, -3.96855]},
     {
       "Size": [28.0625, 0.625, 3.531],
       "Position": [0, 6, -1.094]

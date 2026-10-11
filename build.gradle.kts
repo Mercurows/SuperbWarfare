@@ -85,6 +85,10 @@ minecraft {
             property("forge.enabledGameTestNamespaces", project.property("mod_id").toString())
         }
 
+        create("gameTestServer") {
+            property("forge.enabledGameTestNamespaces", project.property("mod_id").toString())
+        }
+
         create("data") {
             args(
                 "--mod",
@@ -221,7 +225,11 @@ dependencies {
     // extendsFrom(configurations["minecraft"])。
     add(loaderTest.compileOnlyConfigurationName, sourceSets.main.get().output)
 
-    minecraft("net.minecraftforge:forge:1.20.1-47.2.0")
+    minecraft("net.minecraftforge:forge:${project.property("minecraft_version")}-${project.property("forge_version")}")
+    val sparkCore = dependencies.create("cn.solarmoon:spark_core:${project.property("spark_core_version")}") {
+        isTransitive = false
+    }
+    implementation(fg.deobf(sparkCore))
     annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
 
     jijImplement("top.theillusivec4.curios:curios-forge:5.14.1+1.20.1")
@@ -294,7 +302,7 @@ dependencies {
 
     // 测试用mod
     // 这俩是仅客户端mod
-    if (!project.gradle.startParameter.taskNames.any { it.contains("runServer") }) {
+    if (!project.gradle.startParameter.taskNames.any { it.contains("runServer") || it.contains("runGameTestServer") }) {
         runtimeOnly(fg.deobf("curse.maven:oculus-581495:6020952"))
         runtimeOnly(fg.deobf("curse.maven:embeddium-908741:5681725"))
     }
@@ -307,7 +315,7 @@ dependencies {
     implementation(fg.deobf("curse.maven:create-power-loader-936020:6549987"))
 
     // vs
-    compileOnly("org.valkyrienskies.core:api:1.1.0+") {
+    compileOnly("org.valkyrienskies.core:api:1.1.0+cf208d8b56") {
         exclude("org.joml", "joml")
     }
     implementation(fg.deobf("curse.maven:valkyrien-skies-258371:7906689"))

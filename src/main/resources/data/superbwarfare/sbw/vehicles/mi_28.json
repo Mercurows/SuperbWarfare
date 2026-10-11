@@ -7,6 +7,7 @@
   "BarrelPos": [0, -0.413, -0.038],
   "TurretControllerIndex": 1,
   "OBB": [
+    {"Part": "Collision", "Size": [2.578, 2.039, 7.031], "Position": [0.0, 2.039, -2.578]},
     {
       "Size": [0.938, 0.563, 2.06],
       "Position": [0, 1.312, -0.422]

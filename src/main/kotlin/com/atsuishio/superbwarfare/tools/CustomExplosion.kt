@@ -400,6 +400,7 @@ open class CustomExplosion(
 
                         val applyShockwaveDamage = Runnable {
                             if (!entity.isRemoved) {
+                                com.atsuishio.superbwarfare.physics.VehiclePhysics.explosion(entity, position, capturedDamageFinal.toDouble())
                                 entity.forceHurt(capturedDamageSource, capturedDamageFinal.toFloat())
 
                                 if (this.beast && entity != this.damageSource.entity) {

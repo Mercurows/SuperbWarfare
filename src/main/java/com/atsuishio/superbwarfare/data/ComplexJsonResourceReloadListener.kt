@@ -24,6 +24,10 @@ class ComplexJsonResourceReloadListener(private val data: MutableMap<String, Dat
             for (entry in converter.listMatchingResources(resourceManager).entries) {
                 val location = entry.key
                 val pathLocation = converter.fileToId(location)
+                if (name == "sbw/vehicles" && pathLocation.toString() !in com.atsuishio.superbwarfare.physics.BuiltinVehicles.ids) {
+                    Mod.LOGGER.warn("Ignoring unsupported external vehicle {}", pathLocation)
+                    continue
+                }
 
                 try {
                     entry.value.openAsReader().use { reader ->

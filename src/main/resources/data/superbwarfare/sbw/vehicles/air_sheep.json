@@ -3,6 +3,7 @@
   "MaxEnergy": 500000,
   "Gravity": 0,
   "OBB": [
+    {"Part": "Collision", "Size": [1.6875, 2.625, 1.90625], "Position": [0.0, 2.625, 0.03125]},
     {
       "Size": [0.6875, 0.25, 0.6875],
       "Position": [0, 0.25, 0]

@@ -72,3 +72,10 @@ mandatory = false
 versionRange = "[0.7.0-beta,)"
 ordering = "NONE"
 side = "CLIENT"
+
+[[dependencies.superbwarfare]]
+modId = "spark_core"
+mandatory = true
+versionRange = "[1.20.1-1.1.5,)"
+ordering = "AFTER"
+side = "BOTH"

@@ -68,6 +68,13 @@ class DefaultVehicleData : IDBasedData<DefaultVehicleData> {
     @SerialName("OBB")
     var obb: MutableList<OBBInfo> = mutableListOf()
 
+    /**
+     * Explicit wheel / track stations. When empty, the physics layer falls back
+     * to deriving wheel points from the authored `WheelLeft`/`WheelRight` OBBs.
+     */
+    @SerialName("Wheels")
+    var wheels: MutableList<WheelInfo> = mutableListOf()
+
     @SerialName("Seats")
     private var seats: SingleOrList<SeatInfo>? = SingleOrList()
 
@@ -114,6 +121,9 @@ class DefaultVehicleData : IDBasedData<DefaultVehicleData> {
     @JvmField
     @SerialName("DamageModifiers")
     var damageModifiers: SingleOrList<StringOrObject<DamageModify>> = SingleOrList()
+
+    @SerialName("Physics")
+    var physics: com.atsuishio.superbwarfare.physics.VehiclePhysicsSettings = com.atsuishio.superbwarfare.physics.VehiclePhysicsSettings()
 
     @SerialName("Mass")
     var mass: Float = 1f
@@ -312,6 +322,9 @@ class DefaultVehicleData : IDBasedData<DefaultVehicleData> {
         // In-place: this runs on the shared datapack default, so avoid re-allocating the list.
         for (info in this.obb) {
             info.limit()
+        }
+        for (wheel in this.wheels) {
+            wheel.limit()
         }
 
         this.collisionLevel.level = this.collisionLevel.level.coerceIn(0, 4)

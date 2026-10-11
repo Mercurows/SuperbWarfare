@@ -1,4 +1,5 @@
 {
+  "OBB": [{"Part": "Collision", "Size": [0.3, 0.1, 0.3], "Position": [0, 0.1, 0]}],
   "MaxHealth": 5,
   "MaxEnergy": 0,
   "Mass": 0.0005,

@@ -112,6 +112,7 @@ object VehicleMotionUtils {
 
         for (entity in entities) {
             if (!entity.isAlive) continue
+            if (com.atsuishio.superbwarfare.physics.VehiclePhysics.isManaged(entity)) continue
             if (entity is Player && entity.isSpectator) continue
 
             // 玩家：客户端和服务端都处理（客户端保证响应，服务端保证权威位置不被拉回）
@@ -321,6 +322,7 @@ object VehicleMotionUtils {
         val entities = ArrayList<Entity>(candidates.size)
         for (entity in candidates) {
             if (!entity.isAlive) continue
+            if (com.atsuishio.superbwarfare.physics.VehiclePhysics.isManaged(entity)) continue
 
             val type = ForgeRegistries.ENTITY_TYPES.getKey(entity.type)
             val inWhitelist = VehicleConfig.COLLISION_ENTITY_WHITELIST.get().contains(type.toString())
@@ -1428,7 +1430,13 @@ object VehicleMotionUtils {
                 vehicle.getViewVector(1f)
             )
         ).toFloat()
-        vehicle.yRot += 0.05f * diffY
+        if (com.atsuishio.superbwarfare.physics.VehiclePhysics.isManaged(vehicle)) {
+            com.atsuishio.superbwarfare.physics.VehiclePhysics.angularImpulse(
+                vehicle, Vec3(0.0, Math.toRadians((0.05f * diffY).toDouble()) * 20.0, 0.0)
+            )
+        } else {
+            vehicle.yRot += 0.05f * diffY
+        }
     }
 
     @JvmStatic

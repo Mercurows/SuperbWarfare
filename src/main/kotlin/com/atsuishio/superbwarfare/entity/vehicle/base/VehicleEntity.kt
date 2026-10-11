@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.entity.vehicle.base
 
 import com.atsuishio.superbwarfare.Mod
+import com.atsuishio.superbwarfare.physics.VehiclePhysics
+import cn.solarmoon.spark_core.physics.SkipDefaultPawn
 import com.atsuishio.superbwarfare.Mod.Companion.queueServerWork
 import com.atsuishio.superbwarfare.advancement.CriteriaRegister
 import com.atsuishio.superbwarfare.annotation.ExcludeBvrSync
@@ -135,7 +137,7 @@ import kotlin.math.*
 
 open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEntityType, pLevel),
     VehiclePropertyModifier, HasCustomInventoryScreen, OBBEntity, BasicGeoVehicleEntity, IBvrSyncableEntity,
-    IEntityAdditionalSpawnData {
+    IEntityAdditionalSpawnData, SkipDefaultPawn {
 
     val anim: VehicleAnimationInstance<VehicleEntity>? =
         if (pLevel.isClientSide) VehicleAnimationInstance.create(this) else null
@@ -1362,6 +1364,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     open fun afterShoot(gunData: GunData?, shootVec: Vec3) {
+        if (gunData != null) VehiclePhysics.impulse(this, shootVec.normalize().scale(-gunData.get(GunProp.RECOIL_FORCE) * computed().physics.recoilScale), getShootPos(firstPassenger as? LivingEntity, 1f))
         if (gunData != null) {
             val recoilTime = gunData.get(GunProp.RECOIL_TIME)
             if (recoilTime > 0) {
@@ -1613,6 +1616,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     override fun readAdditionalSaveData(compound: CompoundTag) {
+        VehiclePhysics.load(this, compound)
         VehicleData.from(this).update()
         override = compound.getString("Override")
         skinId = compound.getString("SkinId")
@@ -1769,6 +1773,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     public override fun addAdditionalSaveData(compound: CompoundTag) {
+        VehiclePhysics.save(this, compound)
         checkSeatsSize()
 
         compound.putFloat("Health", health)
@@ -1896,6 +1901,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
      * @param tag destination compound tag.
      */
     override fun buildBvrSyncNbt(tag: CompoundTag) {
+        VehiclePhysics.save(this, tag)
         val encodeId = this.encodeId ?: return
         tag.putString("id", encodeId)
         tag.putInt("EntityId", this.id)
@@ -2347,6 +2353,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     override fun baseTick() {
+        VehiclePhysics.begin(this)
         // Cache computed vehicle data for this tick.
         // All downstream reads must use this local variable — never call computed() directly
         // inside baseTick() to avoid redundant DefaultVehicleData lookups.
@@ -2572,7 +2579,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             }
         }
 
-        this.travel()
+        VehiclePhysics.control(this) { this.travel() }
         this.towedTick()
         this.towingTick()
         vehicleRadar()
@@ -2582,7 +2589,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             && getPassengers().isNotEmpty() && computed.engineType == EngineType.AIRCRAFT
             && loiterActive
         ) {
-            aircraftLoiter()
+            VehiclePhysics.control(this) { aircraftLoiter() }
         }
 
         if (this.health <= computed.selfHurtPercent * this.getMaxHealth()) {
@@ -2713,8 +2720,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
 
         this.supportEntities()
         this.crushEntities()
-        this.setDeltaMovement(this.deltaMovement.add(0.0, -computed.gravity, 0.0))
-        this.move(MoverType.SELF, this.deltaMovement)
+        // Spark owns integration, gravity and contact resolution.
 
         if (!level().isClientSide && isAlive) {
             if (onGround() && isWreck) {
@@ -4021,6 +4027,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     open fun handleClientSync() {
+        if (VehiclePhysics.isManaged(this)) return
         // Dont replace client values
         if (!level().isClientSide) {
             serverYaw = yRot
@@ -4286,37 +4293,13 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         get() = computed().mass
 
     override fun setDeltaMovement(pDeltaMovement: Vec3) {
-        val currentMomentum = this.deltaMovement
-
-        // 计算当前速度和新速度的标量大小
-        val currentSpeedSq = currentMomentum.lengthSqr()
-        val newSpeedSq = pDeltaMovement.lengthSqr()
-
-        // 只在新速度大于当前速度时（加速过程）进行检查
-        if (newSpeedSq > currentSpeedSq) {
-            // 计算加速度向量
-            val acceleration = pDeltaMovement.subtract(currentMomentum)
-
-            // 检查加速度大小是否超过阈值
-            if (acceleration.lengthSqr() > 8) {
-                // 限制加速度不超过阈值
-                val limitedAcceleration = acceleration.normalize().scale(0.125)
-                val finalMomentum = currentMomentum.add(limitedAcceleration)
-
-                super.setDeltaMovement(finalMomentum)
-                return
-            }
-        }
-        // 对于减速或允许的加速，直接设置新动量
+        if (!pDeltaMovement.x.isFinite() || !pDeltaMovement.y.isFinite() || !pDeltaMovement.z.isFinite()) return
+        VehiclePhysics.velocityChanged(this, deltaMovement, pDeltaMovement)
         super.setDeltaMovement(pDeltaMovement)
     }
 
     override fun addDeltaMovement(pAddend: Vec3) {
-        var pAddend = pAddend
-        val length = pAddend.length()
-        if (length > 0.1) pAddend = pAddend.scale(0.1 / length)
-
-        super.addDeltaMovement(pAddend)
+        setDeltaMovement(deltaMovement.add(pAddend))
     }
 
     /**
@@ -4522,7 +4505,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     open fun terrainCompact(positions: MutableList<Vec3>) {
-        VehicleMotionUtils.terrainCompact(this, positions)
+        // Whole-chassis step assistance runs on the Spark physics thread.
     }
 
     open fun getWheelsTransform(partialTicks: Float): Matrix4d {
@@ -4530,7 +4513,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     open fun moveOnDragonTeeth() {
-        VehicleMotionUtils.handleVehicleMoveOnDragonTeeth(this)
+        // Dragon teeth use their block collision shape.
     }
 
     open fun collideBlocks() {
@@ -4692,6 +4675,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     override fun move(movementType: MoverType, movement: Vec3) {
+        if (VehiclePhysics.isManaged(this)) return
         if (!this.level().isClientSide()) {
             ignoreEntityGroundCheckStepping = true
         }
@@ -4797,7 +4781,7 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
     }
 
     open fun preventStacking() {
-        VehicleMotionUtils.preventStacking(this)
+        // Stacking is resolved by the rigid-body solver.
     }
 
     open fun pushNew(pX: Double, pY: Double, pZ: Double) {

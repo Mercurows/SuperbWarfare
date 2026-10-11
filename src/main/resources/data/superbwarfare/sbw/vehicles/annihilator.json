@@ -8,6 +8,7 @@
   "LaserColor": "0x00FF00",
   "LaserScale": 0.2,
   "OBB": [
+    {"Part": "Collision", "Size": [6.5, 2.1, 6.5], "Position": [0, 2.1, 0]},
     {
       "Size": [6.4375, 1.875, 3.3125],
       "Position": [0, 1.875, 0],

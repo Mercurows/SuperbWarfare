@@ -19,6 +19,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleMotionUtils
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
 import com.atsuishio.superbwarfare.event.ClientEventHandler
+import com.atsuishio.superbwarfare.physics.VehiclePhysics
 import com.atsuishio.superbwarfare.resource.model.VehicleModelReloadListener
 import com.atsuishio.superbwarfare.resource.vehicle.VehicleResource
 import com.atsuishio.superbwarfare.script.VehicleScriptManager
@@ -394,8 +395,11 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         leftWheelRot = Mth.lerp(partialTicks, entity.leftWheelRotO, entity.leftWheelRot)
         rightWheelRot = Mth.lerp(partialTicks, entity.rightWheelRotO, entity.rightWheelRot)
 
-        leftTrack = Mth.lerp(partialTicks, entity.leftTrackO, entity.leftTrack)
-        rightTrack = Mth.lerp(partialTicks, entity.rightTrackO, entity.rightTrack)
+        val physicsRender = VehiclePhysics.renderState(entity)
+        leftTrack = if (VehiclePhysics.hasBody(entity)) physicsRender.leftTrackPhase
+        else Mth.lerp(partialTicks, entity.leftTrackO, entity.leftTrack)
+        rightTrack = if (VehiclePhysics.hasBody(entity)) physicsRender.rightTrackPhase
+        else Mth.lerp(partialTicks, entity.rightTrackO, entity.rightTrack)
 
         turretYRot = Mth.lerp(partialTicks, entity.turretYRotO, entity.turretYRot)
         turretXRot = Mth.lerp(partialTicks, entity.turretXRotO, entity.turretXRot)
@@ -498,19 +502,38 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         partialTicks: Float
     ) {
         val boneGroups = instance.boneGroups
+        val suspension = VehiclePhysics.renderState(entity)
+        val leftSuspensionOffset = suspension.leftTravel * 16f
+        val rightSuspensionOffset = suspension.rightTravel * 16f
+        val leftTrackRoot = instance.getBone("TrackL") ?: instance.getBone("trackL")
+        val rightTrackRoot = instance.getBone("TrackR") ?: instance.getBone("trackR")
+
+        // Move each track assembly once. TrackRot remains a child of the
+        // animated track segment and must never receive a second offset or a
+        // compensating scale, otherwise the belt visibly tears apart.
+        leftTrackRoot?.let { root ->
+            root.y = root.definition().pivotY() * 16f + leftSuspensionOffset
+        }
+        rightTrackRoot?.let { root ->
+            root.y = root.definition().pivotY() * 16f + rightSuspensionOffset
+        }
 
         // 车轮
         boneGroups.leftWheels.forEach {
+            it.y = it.definition().pivotY() * 16f + leftSuspensionOffset
             it.rotation.rotationX(1.5f * leftWheelRot)
         }
         boneGroups.rightWheels.forEach {
+            it.y = it.definition().pivotY() * 16f + rightSuspensionOffset
             it.rotation.rotationX(1.5f * rightWheelRot)
         }
         boneGroups.leftWheelsTurn.forEach {
+            it.y = it.definition().pivotY() * 16f + leftSuspensionOffset
             it.rotation.rotationY(Mth.lerp(partialTicks, entity.rudderRotO, entity.rudderRot))
             it.rotation.rotateX(1.5f * leftWheelRot)
         }
         boneGroups.rightWheelsTurn.forEach {
+            it.y = it.definition().pivotY() * 16f + rightSuspensionOffset
             it.rotation.rotationY(Mth.lerp(partialTicks, entity.rudderRotO, entity.rudderRot))
             it.rotation.rotateX(1.5f * rightWheelRot)
         }
@@ -519,14 +542,16 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             val t = wrap(leftTrack + getTrackDistance() * index, entity)
             val bd = bone.definition()
             // Fold pivot into y/z — translateAndRotateAndScale discards pivot for unrotated bones
-            bone.y = bd.pivotY() * 16f + getBoneMoveY(t)
+            bone.y = bd.pivotY() * 16f + getBoneMoveY(t) +
+                if (leftTrackRoot == null) leftSuspensionOffset else 0f
             bone.z = bd.pivotZ() * 16f + getBoneMoveZ(t)
         }
 
         boneGroups.rightTrackMove.forEachIndexed { index, bone ->
             val t = wrap(rightTrack + getTrackDistance() * index, entity)
             val bd = bone.definition()
-            bone.y = bd.pivotY() * 16f + getBoneMoveY(t)
+            bone.y = bd.pivotY() * 16f + getBoneMoveY(t) +
+                if (rightTrackRoot == null) rightSuspensionOffset else 0f
             bone.z = bd.pivotZ() * 16f + getBoneMoveZ(t)
         }
 

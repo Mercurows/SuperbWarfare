@@ -3,6 +3,7 @@
   "MaxEnergy": 500000,
   "MouseSensitivity": 0.25,
   "OBB": [
+    {"Part": "Collision", "Size": [0.84375, 0.590625, 0.78107], "Position": [0.0, 0.590625, -0.10918]},
     {
       "Size": [0.4375, 0.4375, 0.734],
       "Position": [0, 0.6875, -0.15625]

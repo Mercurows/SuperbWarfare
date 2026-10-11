@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 
 @RegisterPacket
 @Serializable
-data class VehicleMovementMessage(val keys: Short) : ServerPacketPayload() {
+data class VehicleMovementMessage(val keys: Short, val sequence: Long = 0) : ServerPacketPayload() {
     override fun PayloadContext.handler() {
         val player = sender()
         val entity = player.vehicle
@@ -26,6 +26,6 @@ data class VehicleMovementMessage(val keys: Short) : ServerPacketPayload() {
             EntityFindUtil.findDrone(player.level(), tag.getString("LinkedDrone")) ?: return
         } else return
 
-        vehicle.processInput(keys)
+        com.atsuishio.superbwarfare.physics.VehiclePhysics.serverInput(vehicle, keys, sequence, player)
     }
 }

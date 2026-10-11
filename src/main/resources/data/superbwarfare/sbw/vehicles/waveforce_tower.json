@@ -1,4 +1,5 @@
 {
+  "OBB": [{"Part": "Collision", "Size": [0.875, 1.65, 0.875], "Position": [0, 1.65, 0]}],
   "MaxHealth": 400,
   "MaxEnergy": 10000000,
   "TurretPos": [0, 2.052, -0.05995],
