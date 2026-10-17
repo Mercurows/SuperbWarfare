@@ -1,4 +1,24 @@
 {
+  "Wheels": [
+    {"Side":"Left", "Role":"IdlerGuide", "Index":0, "Position":[1.876534,1.041764,3.552412], "Radius":0.419414, "Width":0.25},
+    {"Side":"Left", "Role":"Support", "Index":1, "Position":[1.876745,0.47465,2.246422], "Radius":0.419414, "Width":0.25},
+    {"Side":"Left", "Role":"Support", "Index":2, "Position":[1.876745,0.47465,1.110847], "Radius":0.419414, "Width":0.25},
+    {"Side":"Left", "Role":"Support", "Index":3, "Position":[1.876745,0.47465,0.186913], "Radius":0.419414, "Width":0.25},
+    {"Side":"Left", "Role":"Support", "Index":4, "Position":[1.876745,0.47465,-0.737119], "Radius":0.419414, "Width":0.25},
+    {"Side":"Left", "Role":"Support", "Index":5, "Position":[1.876534,0.474764,-1.651978], "Radius":0.419414, "Width":0.25},
+    {"Side":"Left", "Role":"Support", "Index":6, "Position":[1.876745,0.47465,-2.584988], "Radius":0.419414, "Width":0.25},
+    {"Side":"Left", "Role":"Support", "Index":7, "Position":[1.876745,0.47465,-3.509021], "Radius":0.419414, "Width":0.25},
+    {"Side":"Left", "Role":"DriveGuide", "Index":8, "Position":[1.772458,1.080371,-4.499657], "Radius":0.375392, "Width":0.25},
+    {"Side":"Right", "Role":"IdlerGuide", "Index":0, "Position":[-1.876534,1.041764,3.552412], "Radius":0.419414, "Width":0.25},
+    {"Side":"Right", "Role":"Support", "Index":1, "Position":[-1.876745,0.47465,2.246422], "Radius":0.419414, "Width":0.25},
+    {"Side":"Right", "Role":"Support", "Index":2, "Position":[-1.876745,0.47465,1.110847], "Radius":0.419414, "Width":0.25},
+    {"Side":"Right", "Role":"Support", "Index":3, "Position":[-1.876744,0.47465,0.186913], "Radius":0.419414, "Width":0.25},
+    {"Side":"Right", "Role":"Support", "Index":4, "Position":[-1.876744,0.47465,-0.737119], "Radius":0.419414, "Width":0.25},
+    {"Side":"Right", "Role":"Support", "Index":5, "Position":[-1.876534,0.474764,-1.651978], "Radius":0.419414, "Width":0.25},
+    {"Side":"Right", "Role":"Support", "Index":6, "Position":[-1.876744,0.47465,-2.584988], "Radius":0.419414, "Width":0.25},
+    {"Side":"Right", "Role":"Support", "Index":7, "Position":[-1.876744,0.47465,-3.509021], "Radius":0.419414, "Width":0.25},
+    {"Side":"Right", "Role":"DriveGuide", "Index":8, "Position":[-1.772458,1.080371,-4.499657], "Radius":0.375392, "Width":0.25}
+  ],
   "MaxHealth": 500,
   "MaxEnergy": 10000000,
   "OBB": [

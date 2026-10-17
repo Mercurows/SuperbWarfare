@@ -1,4 +1,20 @@
 {
+  "Wheels": [
+    {"Side":"Left", "Role":"IdlerGuide", "Index":0, "Position":[2.14375,1.11875,3.4], "Radius":0.499437, "Width":0.25},
+    {"Side":"Left", "Role":"Support", "Index":1, "Position":[2.19375,0.6125,2.3375], "Radius":0.51, "Width":0.25},
+    {"Side":"Left", "Role":"Support", "Index":2, "Position":[2.19375,0.6125,1.1625], "Radius":0.51, "Width":0.25},
+    {"Side":"Left", "Role":"Support", "Index":3, "Position":[2.19375,0.6125,-0.0125], "Radius":0.51, "Width":0.25},
+    {"Side":"Left", "Role":"Support", "Index":4, "Position":[2.19375,0.6125,-1.1875], "Radius":0.51, "Width":0.25},
+    {"Side":"Left", "Role":"Support", "Index":5, "Position":[2.19375,0.6125,-2.36875], "Radius":0.51, "Width":0.25},
+    {"Side":"Left", "Role":"DriveGuide", "Index":6, "Position":[2.19375,1.06875,-3.4], "Radius":0.4, "Width":0.25},
+    {"Side":"Right", "Role":"IdlerGuide", "Index":0, "Position":[-2.14375,1.11875,3.4], "Radius":0.499437, "Width":0.25},
+    {"Side":"Right", "Role":"Support", "Index":1, "Position":[-2.19375,0.6125,2.3375], "Radius":0.51, "Width":0.25},
+    {"Side":"Right", "Role":"Support", "Index":2, "Position":[-2.19375,0.6125,1.1625], "Radius":0.51, "Width":0.25},
+    {"Side":"Right", "Role":"Support", "Index":3, "Position":[-2.19375,0.6125,-0.0125], "Radius":0.51, "Width":0.25},
+    {"Side":"Right", "Role":"Support", "Index":4, "Position":[-2.19375,0.6125,-1.1875], "Radius":0.51, "Width":0.25},
+    {"Side":"Right", "Role":"Support", "Index":5, "Position":[-2.19375,0.6125,-2.36875], "Radius":0.51, "Width":0.25},
+    {"Side":"Right", "Role":"DriveGuide", "Index":6, "Position":[-2.19375,1.06875,-3.4], "Radius":0.4, "Width":0.25}
+  ],
   "MaxHealth": 400,
   "MaxEnergy": 20000000,
   "LaserColor": "0x2FF6FF",

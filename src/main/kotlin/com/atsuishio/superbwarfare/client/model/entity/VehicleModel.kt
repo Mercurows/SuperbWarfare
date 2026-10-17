@@ -2,9 +2,11 @@ package com.atsuishio.superbwarfare.client.model.entity
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.Mod.Companion.loc
+import com.atsuishio.superbwarfare.data.vehicle.subdata.WheelSide
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.physics.VehiclePhysics
+import com.atsuishio.superbwarfare.physics.WheelRenderState
 import com.atsuishio.superbwarfare.resource.vehicle.DefaultVehicleResource
 import com.atsuishio.superbwarfare.resource.vehicle.VehicleResource
 import com.atsuishio.superbwarfare.tools.RenderDistanceHelper
@@ -31,6 +33,25 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
     protected var rightWheelRot = 0f
     protected var leftTrack = 0f
     protected var rightTrack = 0f
+
+    /** Authoritative per-wheel projections published by the Spark physics layer. */
+    protected var wheelRenderStates: Map<kotlin.Pair<Int, WheelSide>, WheelRenderState> = emptyMap()
+
+    /** JSON track phase spacing override for the legacy Geckolib model path. */
+    protected var resolvedTrackDistance = 2f
+    private var preparedTrackAnimation: TrackAnimationProfile? = null
+    private var leftSuspensionOffset = 0f
+    private var rightSuspensionOffset = 0f
+    private var hasLeftTrackRoot = false
+    private var hasRightTrackRoot = false
+
+    private fun trackAnimationProfile(vehicle: T): TrackAnimationProfile {
+        val cycle = vehicle.getTrackAnimationLength()
+        val old = preparedTrackAnimation
+        if (old != null && old.cycle == cycle) return old
+        return TrackAnimationProfile(cycle, ::getBoneRotX, ::getBoneMoveY, ::getBoneMoveZ)
+            .also { preparedTrackAnimation = it }
+    }
 
     protected var turretYRot = 0f
 
@@ -128,6 +149,12 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
     protected val TRANSFORMS = mutableListOf<Pair<String, TransformContext<T>>>()
 
     open fun collectTransform(boneName: String): TransformContext<T>? {
+        if (boneName == "TrackL" || boneName == "trackL") {
+            return TransformContext { bone, _, _ -> bone.posY = leftSuspensionOffset }
+        }
+        if (boneName == "TrackR" || boneName == "trackR") {
+            return TransformContext { bone, _, _ -> bone.posY = rightSuspensionOffset }
+        }
         // 瞄准时隐藏车体
         if (boneName == "root" && hideForTurretControllerWhileZooming()) {
             return TransformContext { bone, _, _ ->
@@ -240,26 +267,28 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
                 return if (isL) {
                     TransformContext { bone, vehicle, _ ->
                         val t = wrap(leftTrack + getTrackDistance() * index, vehicle)
-                        bone.rotX = -getBoneRotX(t) * Mth.DEG_TO_RAD
+                        bone.rotX = -trackAnimationProfile(vehicle).rotation(t) * Mth.DEG_TO_RAD
                     }
                 } else {
                     TransformContext { bone, vehicle, _ ->
                         val t2 = wrap(rightTrack + getTrackDistance() * index, vehicle)
-                        bone.rotX = -getBoneRotX(t2) * Mth.DEG_TO_RAD
+                        bone.rotX = -trackAnimationProfile(vehicle).rotation(t2) * Mth.DEG_TO_RAD
                     }
                 }
             } else {
                 return if (isL) {
                     TransformContext { bone, vehicle, _ ->
                         val t = wrap(leftTrack + getTrackDistance() * index, vehicle)
-                        bone.posY = getBoneMoveY(t)
-                        bone.posZ = getBoneMoveZ(t)
+                        val trajectory = trackAnimationProfile(vehicle)
+                        bone.posY = trajectory.height(t) + if (hasLeftTrackRoot) 0f else leftSuspensionOffset
+                        bone.posZ = trajectory.length(t)
                     }
                 } else {
                     TransformContext { bone, vehicle, _ ->
                         val t2 = wrap(rightTrack + getTrackDistance() * index, vehicle)
-                        bone.posY = getBoneMoveY(t2)
-                        bone.posZ = getBoneMoveZ(t2)
+                        val trajectory = trackAnimationProfile(vehicle)
+                        bone.posY = trajectory.height(t2) + if (hasRightTrackRoot) 0f else rightSuspensionOffset
+                        bone.posZ = trajectory.length(t2)
                     }
                 }
             }
@@ -268,14 +297,31 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
         val wheelMatcher: Matcher = WHEEL_PATTERN.matcher(boneName)
         if (wheelMatcher.matches()) {
             val isL = wheelMatcher.group("direction") == "L"
+            val side = if (isL) WheelSide.LEFT else WheelSide.RIGHT
+            // WHEEL uses front-first side-local ordinals. TRACK uses the
+            // explicit authored bone id (YX-100, for example, is not ordered).
+            val id = WHEEL_INDEX_PATTERN.matcher(boneName).let { matcher ->
+                if (matcher.matches()) matcher.group(1)?.toIntOrNull() ?: -1 else -1
+            }
+
+            fun spin(fallback: Float) = wheelRenderStates[id to side]?.spin ?: fallback
+            // Only stations the physics layer actually steers override the
+            // authored rudder; multi-axle steering bones keep turning even when
+            // only the front-most station has an independent body.
+            fun steering(fallback: Float) =
+                wheelRenderStates[id to side]?.takeIf { it.steerable }?.steeringAngle ?: fallback
 
             return if (boneName.endsWith("Turn")) {
                 TransformContext { bone, vehicle, state ->
-                    bone.rotX = 1.5f * (if (isL) leftWheelRot else rightWheelRot)
-                    bone.rotY = Mth.lerp(state.partialTick, vehicle.rudderRotO, vehicle.rudderRot)
+                    wheelRenderStates[id to side]?.let { bone.posY = it.suspensionTravel * 16f }
+                    bone.rotX = spin(1.5f * (if (isL) leftWheelRot else rightWheelRot))
+                    bone.rotY = steering(Mth.lerp(state.partialTick, vehicle.rudderRotO, vehicle.rudderRot))
                 }
             } else {
-                TransformContext { bone, _, _ -> bone.rotX = 1.5f * (if (isL) leftWheelRot else rightWheelRot) }
+                TransformContext { bone, _, _ ->
+                    wheelRenderStates[id to side]?.let { bone.posY = it.suspensionTravel * 16f }
+                    bone.rotX = spin(1.5f * (if (isL) leftWheelRot else rightWheelRot))
+                }
             }
         }
 
@@ -308,6 +354,17 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
         rightWheelRot = Mth.lerp(partialTick, vehicle.rightWheelRotO, vehicle.rightWheelRot)
 
         val physicsRender = VehiclePhysics.renderState(vehicle)
+        leftSuspensionOffset = physicsRender.leftTravel * 16f
+        rightSuspensionOffset = physicsRender.rightTravel * 16f
+        hasLeftTrackRoot = animationProcessor.getBone("TrackL") != null || animationProcessor.getBone("trackL") != null
+        hasRightTrackRoot = animationProcessor.getBone("TrackR") != null || animationProcessor.getBone("trackR") != null
+        wheelRenderStates = physicsRender.wheels.associateBy { it.index to it.side }
+        // Same JSON-first spacing as Bedrock, derived from authored segment
+        // counts otherwise; no hard-coded 100-step cycle for YX-100.
+        val trackBones = animationProcessor.registeredBones.count { it.name.startsWith("trackMovL") }
+        resolvedTrackDistance = vehicle.computed().trackAnimationDistance?.toFloat()
+            ?.takeIf { it.isFinite() && it > 0f }
+            ?: if (trackBones > 1) vehicle.getTrackAnimationLength().toFloat() / trackBones else 2f
         leftTrack = if (VehiclePhysics.hasBody(vehicle)) physicsRender.leftTrackPhase
         else Mth.lerp(partialTick, vehicle.leftTrackO, vehicle.leftTrack)
         rightTrack = if (VehiclePhysics.hasBody(vehicle)) physicsRender.rightTrackPhase
@@ -340,7 +397,7 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
     open fun getBoneRotX(t: Float) = t
     open fun getBoneMoveY(t: Float) = t
     open fun getBoneMoveZ(t: Float) = t
-    open fun getTrackDistance() = 2f
+    open fun getTrackDistance() = resolvedTrackDistance
 
     protected fun wrap(value: Float, range: Int) = ((value % range) + range) % range
 
@@ -355,5 +412,6 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
 
         val TRACK_PATTERN: Pattern = Pattern.compile("^track(?<type>Mov|Rot)(?<direction>[LR])(?<id>\\d+)$")
         val WHEEL_PATTERN: Pattern = Pattern.compile("^wheel(?<direction>[LR]).*$")
+        val WHEEL_INDEX_PATTERN: Pattern = Pattern.compile("^(?:wheel[LR]|w_[lLrR])(\\d+).*$")
     }
 }

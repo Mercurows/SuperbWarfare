@@ -23,6 +23,18 @@ object ControlClothConfig {
 
         category.addEntry(
             entryBuilder
+                .startBooleanToggle(
+                    Component.translatable("config.superbwarfare.client.control.controllable_compat"),
+                    ControlConfig.CONTROLLABLE_COMPAT.get()
+                )
+                .setDefaultValue(true)
+                .setSaveConsumer { ControlConfig.CONTROLLABLE_COMPAT.set(it) }
+                .setTooltip(Component.translatable("config.superbwarfare.client.control.controllable_compat.des"))
+                .build()
+        )
+
+        category.addEntry(
+            entryBuilder
                 .startIntSlider(
                     Component.translatable("config.superbwarfare.client.control.mouse_sensitivity"),
                     ControlConfig.MOUSE_SENSITIVITY.get(),

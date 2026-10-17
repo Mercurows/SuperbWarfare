@@ -18,6 +18,19 @@ data class VehicleModelBoneGroups(
     val laserBones: List<BoneState>,
     val dogTagBones: List<BoneState>,
 ) {
+    /**
+     * Phase spacing that distributes the authored track bones evenly across the
+     * vehicle's track animation loop. This reproduces the previously hand-tuned
+     * per-vehicle constants (for example `100 / 37 ≈ 2.70` for the ZTZ-99A and
+     * `80 / 41 ≈ 1.95` for the YX-100) directly from the model, so a track
+     * profile no longer has to be duplicated in every renderer.
+     */
+    fun derivedTrackDistance(wrapLength: Int): Float {
+        val count = maxOf(leftTrackMove.size, rightTrackMove.size)
+        if (count <= 1 || wrapLength <= 0) return 2f
+        return wrapLength.toFloat() / count
+    }
+
     companion object {
         val WHEEL_PATTERN: Pattern = Pattern.compile("^wheel(?<direction>[LR]).*$")
         val W_PATTERN: Pattern = Pattern.compile("^w_(?<direction>[lLrR]).*$")
@@ -147,11 +160,23 @@ data class VehicleModelBoneGroups(
                 }
             }
 
+            fun wheelOrder(bone: BoneState): Pair<Int, String> {
+                val match = Pattern.compile("(?:wheel[LR]|w_[lLrR])(?<id>\\d+).*").matcher(bone.name())
+                return (if (match.matches()) match.group("id").toInt() else Int.MAX_VALUE) to bone.name()
+            }
+
+            val wheelComparator = Comparator<BoneState> { a, b ->
+                val orderA = wheelOrder(a)
+                val orderB = wheelOrder(b)
+                val indexCompare = orderA.first.compareTo(orderB.first)
+                if (indexCompare != 0) indexCompare else orderA.second.compareTo(orderB.second)
+            }
+
             return VehicleModelBoneGroups(
-                leftWheels = leftWheels,
-                rightWheels = rightWheels,
-                leftWheelsTurn = leftWheelsTurn,
-                rightWheelsTurn = rightWheelsTurn,
+                leftWheels = leftWheels.sortedWith(wheelComparator),
+                rightWheels = rightWheels.sortedWith(wheelComparator),
+                leftWheelsTurn = leftWheelsTurn.sortedWith(wheelComparator),
+                rightWheelsTurn = rightWheelsTurn.sortedWith(wheelComparator),
                 leftTrackMove = leftTrackMove.toSortedMap().values.toMutableList(),
                 leftTrackRot = leftTrackRot.toSortedMap().values.toMutableList(),
                 rightTrackMove = rightTrackMove.toSortedMap().values.toMutableList(),

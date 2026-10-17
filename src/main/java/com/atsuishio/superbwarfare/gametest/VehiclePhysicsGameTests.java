@@ -18,6 +18,12 @@ import net.minecraftforge.gametest.PrefixGameTestTemplate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Acceptance tests for the server-authoritative Spark/Bullet physics of the
+ * conventional ground roster. Special engines, aircraft, ships, TOM6, FIXED
+ * and WHEELCHAIR vehicles are intentionally outside the physics layer and are
+ * verified to stay outside it rather than falling back to legacy movement.
+ */
 @GameTestHolder(Mod.MODID)
 @PrefixGameTestTemplate(false)
 public final class VehiclePhysicsGameTests {
@@ -57,13 +63,28 @@ public final class VehiclePhysicsGameTests {
         }
     }
 
-    @GameTest(template = "empty", timeoutTicks = 320)
+    private static void assertLanded(GameTestHelper helper, VehicleEntity vehicle, String label) {
+        double floorTop = terrainTop(helper);
+        double minY = vehicle.getBoundingBox().minY;
+        helper.assertTrue(minY > floorTop - .25 && minY < floorTop + 4.0,
+            label + " did not settle on the terrain: y=" + vehicle.getY() + ", minY=" + minY + ", floorTop=" + floorTop);
+    }
+
+    private static void mountRider(GameTestHelper helper, VehicleEntity vehicle) {
+        Pig rider = EntityType.PIG.create(helper.getLevel());
+        helper.assertTrue(rider != null, "Test rider could not be created");
+        rider.setPos(vehicle.getX(), vehicle.getY(), vehicle.getZ());
+        helper.getLevel().addFreshEntity(rider);
+        helper.assertTrue(rider.startRiding(vehicle, true), "Test rider could not mount vehicle");
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 400)
     public static void everyGroundVehicleGetsReadyBody(GameTestHelper helper) {
         BlockPos floor = helper.absolutePos(BlockPos.ZERO);
-        for (int x = -40; x <= 40; x++) for (int z = -8; z <= 8; z++)
+        for (int x = -16; x <= 144; x++) for (int z = -8; z <= 8; z++)
             helper.getLevel().setBlock(floor.offset(x, 0, z), Blocks.STONE.defaultBlockState(), 3);
         List<VehicleEntity> vehicles = new ArrayList<>();
-        vehicles.add(spawn(helper, ModEntities.WHEEL_CHAIR.get(), 0, 0));
+        vehicles.add(spawn(helper, ModEntities.LAV_150.get(), 0, 0));
         vehicles.add(spawn(helper, ModEntities.LAV_25.get(), 1, 0));
         vehicles.add(spawn(helper, ModEntities.BMP_2.get(), 2, 0));
         vehicles.add(spawn(helper, ModEntities.BRADLEY.get(), 3, 0));
@@ -73,6 +94,13 @@ public final class VehiclePhysicsGameTests {
         vehicles.add(spawn(helper, ModEntities.YX_100.get(), 7, 0));
         vehicles.add(spawn(helper, ModEntities.PRISM_TANK.get(), 8, 0));
         vehicles.add(spawn(helper, ModEntities.PLZ_05.get(), 9, 0));
+        vehicles.add(spawn(helper, ModEntities.TRUCK.get(), 10, 0));
+        vehicles.add(spawn(helper, ModEntities.LAV_AD.get(), 11, 0));
+        vehicles.add(spawn(helper, ModEntities.FH_77BW.get(), 12, 0));
+        vehicles.add(spawn(helper, ModEntities.SODAYO_PICK_UP.get(), 13, 0));
+        vehicles.add(spawn(helper, ModEntities.SODAYO_PICK_UP_HMG.get(), 14, 0));
+        vehicles.add(spawn(helper, ModEntities.SODAYO_PICK_UP_ROCKET.get(), 15, 0));
+        vehicles.add(spawn(helper, ModEntities.SODAYO_PICK_UP_TOW.get(), 16, 0));
         helper.startSequence().thenWaitUntil(() -> {
             for (VehicleEntity vehicle : vehicles) {
                 helper.assertTrue(VehiclePhysics.INSTANCE.hasBody(vehicle),
@@ -80,49 +108,51 @@ public final class VehiclePhysicsGameTests {
             }
         }).thenWaitUntil(() -> {
             for (VehicleEntity vehicle : vehicles) {
-                double floorTop = terrainTop(helper);
-                double minY = vehicle.getBoundingBox().minY;
-                helper.assertTrue(minY > floorTop - .25 && minY < floorTop + 4.0,
-                    "Vehicle passed through terrain: " + vehicle.getType()
-                        + " y=" + vehicle.getY() + ", minY=" + minY + ", floorTop=" + floorTop);
+                assertLanded(helper, vehicle, vehicle.getType().toString());
             }
         }).thenSucceed();
     }
 
     @GameTest(template = "empty", timeoutTicks = 320)
-    public static void wheelChairFallsOntoTerrain(GameTestHelper helper) {
+    public static void wheeledVehicleFallsOntoTerrain(GameTestHelper helper) {
         prepareFlatFloor(helper, 5);
-        VehicleEntity vehicle = spawn(helper, ModEntities.WHEEL_CHAIR.get());
+        VehicleEntity vehicle = spawn(helper, ModEntities.SODAYO_PICK_UP.get());
         double startY = vehicle.getY();
         double floorTop = terrainTop(helper);
         helper.startSequence().thenWaitUntil(() -> {
-            helper.assertTrue(VehiclePhysics.INSTANCE.hasBody(vehicle), "Wheelchair has no Spark body");
-            helper.assertTrue(vehicle.getY() < floorTop + .25, "Gravity did not move the wheelchair: y="
+            helper.assertTrue(VehiclePhysics.INSTANCE.hasBody(vehicle), "Wheeled vehicle has no Spark body");
+            helper.assertTrue(vehicle.getY() < floorTop + .25, "Gravity did not move the wheeled vehicle: y="
                 + vehicle.getY() + ", floorTop=" + floorTop + ", start=" + startY);
-            helper.assertTrue(vehicle.getY() > floorTop - .2, "Wheelchair passed through terrain");
+            helper.assertTrue(vehicle.getY() > floorTop - .2, "Wheeled vehicle passed through terrain");
+        }).thenSucceed();
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 320)
+    public static void trackedVehicleFallsOntoTerrain(GameTestHelper helper) {
+        prepareFlatFloor(helper, 5);
+        VehicleEntity vehicle = spawn(helper, ModEntities.BMP_2.get());
+        double startY = vehicle.getY();
+        double floorTop = terrainTop(helper);
+        helper.startSequence().thenWaitUntil(() -> {
+            helper.assertTrue(VehiclePhysics.INSTANCE.hasBody(vehicle), "Tracked vehicle has no Spark body");
+            helper.assertTrue(vehicle.getY() < floorTop + .25, "Gravity did not move the tracked vehicle: y="
+                + vehicle.getY() + ", floorTop=" + floorTop + ", start=" + startY);
+            helper.assertTrue(vehicle.getY() > floorTop - .2, "Tracked vehicle passed through terrain");
         }).thenSucceed();
     }
 
     @GameTest(template = "empty", timeoutTicks = 400)
-    public static void wheelChairSettlesWithoutBounceOrSpin(GameTestHelper helper) {
-        prepareFlatFloor(helper, 5);
-        VehicleEntity vehicle = spawn(helper, ModEntities.WHEEL_CHAIR.get());
+    public static void groundVehicleSettlesWithoutBounceOrSpin(GameTestHelper helper) {
+        prepareFlatFloor(helper, 6);
+        VehicleEntity vehicle = spawn(helper, ModEntities.ZTZ_99A.get());
         helper.startSequence().thenWaitUntil(() -> {
-            helper.assertTrue(VehiclePhysics.INSTANCE.hasBody(vehicle), "Wheelchair has no Spark body");
+            helper.assertTrue(VehiclePhysics.INSTANCE.hasBody(vehicle), "Tracked vehicle has no Spark body");
+            helper.assertTrue(vehicle.onGround(), "Vehicle is still falling, not settled");
+            helper.assertTrue(vehicle.getY() < terrainTop(helper) + .5, "Vehicle did not reach terrain");
             helper.assertTrue(Math.abs(vehicle.getDeltaMovement().y) < .15,
                 "Suspension did not settle vertically: " + vehicle.getDeltaMovement().y);
             helper.assertTrue(Math.abs(vehicle.getRoll()) < 5f,
                 "Vehicle acquired a persistent roll: " + vehicle.getRoll());
-        }).thenSucceed();
-    }
-
-    @GameTest(template = "empty", timeoutTicks = 100)
-    public static void fixedTurretStaysAnchored(GameTestHelper helper) {
-        VehicleEntity turret = spawn(helper, ModEntities.MORTAR.get());
-        double startY = turret.getY();
-        helper.startSequence().thenIdle(60).thenExecute(() -> {
-            helper.assertTrue(VehiclePhysics.INSTANCE.hasBody(turret), "Fixed turret has no Spark body");
-            helper.assertTrue(Math.abs(turret.getY() - startY) < .05, "Fixed turret drifted from its anchor");
         }).thenSucceed();
     }
 
@@ -141,28 +171,50 @@ public final class VehiclePhysicsGameTests {
     }
 
     @GameTest(template = "empty", batch = "vehicle_drive", timeoutTicks = 400)
-    public static void inputAcceleratesWheelChair(GameTestHelper helper) {
+    public static void inputAcceleratesWheeledVehicle(GameTestHelper helper) {
         BlockPos floor = helper.absolutePos(BlockPos.ZERO);
-        prepareFlatFloor(helper, 5);
-        VehicleEntity vehicle = spawn(helper, ModEntities.WHEEL_CHAIR.get());
+        prepareFlatFloor(helper, 6);
+        VehicleEntity vehicle = spawn(helper, ModEntities.SODAYO_PICK_UP.get());
         vehicle.setEnergy(vehicle.getMaxEnergy());
-        // Place the vehicle half a block above the actual visible top.  The
-        // template anchor can contain a structure block plus an offset stone
-        // layer, so deriving this from the block column avoids embedding the
-        // chassis in the first frame.
         vehicle.setPos(floor.getX() + .5, terrainTop(helper) + .5, floor.getZ() + .5);
-        Pig rider = EntityType.PIG.create(helper.getLevel());
-        helper.assertTrue(rider != null, "Test rider could not be created");
-        rider.setPos(vehicle.getX(), vehicle.getY(), vehicle.getZ());
-        helper.getLevel().addFreshEntity(rider);
-        helper.assertTrue(rider.startRiding(vehicle, true), "Test rider could not mount wheelchair");
+        mountRider(helper, vehicle);
         helper.startSequence().thenWaitUntil(() -> {
-            helper.assertTrue(vehicle.onGround(), "Wheelchair was not grounded before acceleration: y="
+            helper.assertTrue(vehicle.onGround(), "Wheeled vehicle was not grounded before acceleration: y="
                 + vehicle.getY() + ", vy=" + vehicle.getDeltaMovement().y);
             vehicle.processInput((short) 0b00000100);
         }).thenWaitUntil(() -> {
             double horizontal = Math.hypot(vehicle.getX() - floor.getX() - .5, vehicle.getZ() - floor.getZ() - .5);
-            helper.assertTrue(horizontal > .5, "Input did not accelerate the Spark rigid body: " + horizontal);
+            helper.assertTrue(horizontal > .5, "Input did not accelerate the wheeled Spark rigid body: " + horizontal);
+        }).thenSucceed();
+    }
+
+    @GameTest(template = "empty", batch = "vehicle_drive", timeoutTicks = 400)
+    public static void inputAcceleratesTrackedVehicle(GameTestHelper helper) {
+        BlockPos floor = helper.absolutePos(BlockPos.ZERO);
+        prepareFlatFloor(helper, 6);
+        VehicleEntity vehicle = spawn(helper, ModEntities.BMP_2.get());
+        vehicle.setEnergy(vehicle.getMaxEnergy());
+        vehicle.setPos(floor.getX() + .5, terrainTop(helper) + .5, floor.getZ() + .5);
+        mountRider(helper, vehicle);
+        helper.startSequence().thenWaitUntil(() -> {
+            helper.assertTrue(vehicle.onGround(), "Tracked vehicle was not grounded before acceleration: y="
+                + vehicle.getY() + ", vy=" + vehicle.getDeltaMovement().y);
+            vehicle.processInput((short) 0b00000100);
+        }).thenWaitUntil(() -> {
+            double horizontal = Math.hypot(vehicle.getX() - floor.getX() - .5, vehicle.getZ() - floor.getZ() - .5);
+            helper.assertTrue(horizontal > .5, "Input did not accelerate the tracked Spark rigid body: " + horizontal);
+        }).thenSucceed();
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 100)
+    public static void outOfScopeVehicleStaysOutsidePhysics(GameTestHelper helper) {
+        prepareFlatFloor(helper, 5);
+        VehicleEntity vehicle = spawn(helper, ModEntities.WHEEL_CHAIR.get());
+        helper.startSequence().thenIdle(20).thenExecute(() -> {
+            helper.assertFalse(VehiclePhysics.INSTANCE.isManaged(vehicle),
+                "Wheelchair must not be claimed by the conventional ground physics layer");
+            helper.assertFalse(VehiclePhysics.INSTANCE.hasBody(vehicle),
+                "Wheelchair must not receive a Spark body");
         }).thenSucceed();
     }
 }

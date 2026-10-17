@@ -69,8 +69,8 @@ class DefaultVehicleData : IDBasedData<DefaultVehicleData> {
     var obb: MutableList<OBBInfo> = mutableListOf()
 
     /**
-     * Explicit wheel / track stations. When empty, the physics layer falls back
-     * to deriving wheel points from the authored `WheelLeft`/`WheelRight` OBBs.
+     * Explicit wheel / track stations. WHEEL may derive points from legacy
+     * OBBs; TRACK must enumerate every road wheel and the two guide stations.
      */
     @SerialName("Wheels")
     var wheels: MutableList<WheelInfo> = mutableListOf()
@@ -91,6 +91,14 @@ class DefaultVehicleData : IDBasedData<DefaultVehicleData> {
     @JvmField
     @SerialName("TrackDistanceMultiply")
     var trackDistanceMultiply: Double = 1.0
+
+    /**
+     * Optional track animation phase spacing. When absent the renderer derives
+     * the spacing from the authored track bones, so this only has to be authored
+     * for vehicles whose belts do not use evenly spaced bones.
+     */
+    @SerialName("TrackAnimationDistance")
+    var trackAnimationDistance: Double? = null
 
     @SerialName("KeepChunkLoaded")
     var keepChunkLoaded: Boolean = true

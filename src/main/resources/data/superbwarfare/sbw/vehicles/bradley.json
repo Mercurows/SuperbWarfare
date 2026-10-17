@@ -1,4 +1,22 @@
 {
+  "Wheels": [
+    {"Side":"Left", "Role":"DriveGuide", "Index":0, "Position":[1.324703,0.744799,3.753084], "Radius":0.380875, "Width":0.2},
+    {"Side":"Left", "Role":"Support", "Index":1, "Position":[1.324398,0.479366,2.730713], "Radius":0.419417, "Width":0.2},
+    {"Side":"Left", "Role":"Support", "Index":2, "Position":[1.324398,0.479366,1.861468], "Radius":0.419417, "Width":0.2},
+    {"Side":"Left", "Role":"Support", "Index":3, "Position":[1.324398,0.479366,1.000177], "Radius":0.419417, "Width":0.2},
+    {"Side":"Left", "Role":"Support", "Index":4, "Position":[1.324398,0.479366,-0.191353], "Radius":0.419417, "Width":0.2},
+    {"Side":"Left", "Role":"Support", "Index":5, "Position":[1.324398,0.479366,-1.063392], "Radius":0.419417, "Width":0.2},
+    {"Side":"Left", "Role":"Support", "Index":6, "Position":[1.324398,0.479366,-1.924683], "Radius":0.419417, "Width":0.2},
+    {"Side":"Left", "Role":"IdlerGuide", "Index":7, "Position":[1.274264,0.840309,-3.0616], "Radius":0.299968, "Width":0.2},
+    {"Side":"Right", "Role":"DriveGuide", "Index":0, "Position":[-1.324703,0.744799,3.753084], "Radius":0.380875, "Width":0.2},
+    {"Side":"Right", "Role":"Support", "Index":1, "Position":[-1.324398,0.479366,2.730713], "Radius":0.419417, "Width":0.2},
+    {"Side":"Right", "Role":"Support", "Index":2, "Position":[-1.324398,0.479366,1.861468], "Radius":0.419417, "Width":0.2},
+    {"Side":"Right", "Role":"Support", "Index":3, "Position":[-1.324398,0.479366,1.000177], "Radius":0.419417, "Width":0.2},
+    {"Side":"Right", "Role":"Support", "Index":4, "Position":[-1.324398,0.479366,-0.191353], "Radius":0.419417, "Width":0.2},
+    {"Side":"Right", "Role":"Support", "Index":5, "Position":[-1.324398,0.479366,-1.063392], "Radius":0.419417, "Width":0.2},
+    {"Side":"Right", "Role":"Support", "Index":6, "Position":[-1.324398,0.479366,-1.924683], "Radius":0.419417, "Width":0.2},
+    {"Side":"Right", "Role":"IdlerGuide", "Index":7, "Position":[-1.274264,0.840309,-3.0616], "Radius":0.299968, "Width":0.2}
+  ],
   "MaxHealth": 300,
   "MaxEnergy": 5000000,
   "OBB": [

@@ -20,6 +20,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleMotionUtils
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.physics.VehiclePhysics
+import com.atsuishio.superbwarfare.physics.WheelRenderState
 import com.atsuishio.superbwarfare.resource.model.VehicleModelReloadListener
 import com.atsuishio.superbwarfare.resource.vehicle.VehicleResource
 import com.atsuishio.superbwarfare.script.VehicleScriptManager
@@ -61,6 +62,9 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
     var rightWheelRot = 0f
     var leftTrack = 0f
     var rightTrack = 0f
+    /** Resolved track phase spacing for the current model instance. */
+    protected var resolvedTrackDistance = 2f
+    private var wheelRenderStates: Map<Pair<Int, com.atsuishio.superbwarfare.data.vehicle.subdata.WheelSide>, WheelRenderState> = emptyMap()
 
     var turretYRot = 0f
     var turretXRot = 0f
@@ -396,6 +400,7 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         rightWheelRot = Mth.lerp(partialTicks, entity.rightWheelRotO, entity.rightWheelRot)
 
         val physicsRender = VehiclePhysics.renderState(entity)
+        wheelRenderStates = physicsRender.wheels.associateBy { it.index to it.side }
         leftTrack = if (VehiclePhysics.hasBody(entity)) physicsRender.leftTrackPhase
         else Mth.lerp(partialTicks, entity.leftTrackO, entity.leftTrack)
         rightTrack = if (VehiclePhysics.hasBody(entity)) physicsRender.rightTrackPhase
@@ -502,6 +507,10 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         partialTicks: Float
     ) {
         val boneGroups = instance.boneGroups
+        // Track profile: a JSON override wins, otherwise the spacing is derived
+        // from the authored track bones so every belt is covered evenly.
+        resolvedTrackDistance = resolveTrackDistance(entity, boneGroups)
+        val trajectory = trackAnimationProfile(entity.getTrackAnimationLength())
         val suspension = VehiclePhysics.renderState(entity)
         val leftSuspensionOffset = suspension.leftTravel * 16f
         val rightSuspensionOffset = suspension.rightTravel * 16f
@@ -519,50 +528,58 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         }
 
         // 车轮
-        boneGroups.leftWheels.forEach {
-            it.y = it.definition().pivotY() * 16f + leftSuspensionOffset
-            it.rotation.rotationX(1.5f * leftWheelRot)
+        fun wheelState(side: com.atsuishio.superbwarfare.data.vehicle.subdata.WheelSide, ordinal: Int): WheelRenderState? =
+            wheelRenderStates[ordinal to side]
+        fun wheelId(bone: com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.BoneState): Int {
+            val match = Regex("(?:wheel[LR]|w_[lLrR])(\\d+).*").find(bone.name())
+            return match?.groupValues?.getOrNull(1)?.toIntOrNull() ?: Int.MAX_VALUE
         }
-        boneGroups.rightWheels.forEach {
-            it.y = it.definition().pivotY() * 16f + rightSuspensionOffset
-            it.rotation.rotationX(1.5f * rightWheelRot)
+        fun applyWheel(bone: com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.BoneState,
+                       side: com.atsuishio.superbwarfare.data.vehicle.subdata.WheelSide,
+                       fallbackTravel: Float, fallbackSpin: Float, turn: Boolean) {
+            val id = wheelId(bone)
+            val state = wheelState(side, id)
+            bone.y = bone.definition().pivotY() * 16f + (state?.suspensionTravel?.times(16f) ?: fallbackTravel)
+            bone.rotation.rotationX(state?.spin ?: (1.5f * fallbackSpin))
+            if (turn) {
+                // Only stations the physics layer actually steers override the
+                // authored rudder; multi-axle steering bones keep turning even
+                // when only the front-most station has an independent body.
+                val steering = state?.takeIf { it.steerable }?.steeringAngle
+                    ?: Mth.lerp(partialTicks, entity.rudderRotO, entity.rudderRot)
+                bone.rotation.rotateY(steering)
+            }
         }
-        boneGroups.leftWheelsTurn.forEach {
-            it.y = it.definition().pivotY() * 16f + leftSuspensionOffset
-            it.rotation.rotationY(Mth.lerp(partialTicks, entity.rudderRotO, entity.rudderRot))
-            it.rotation.rotateX(1.5f * leftWheelRot)
-        }
-        boneGroups.rightWheelsTurn.forEach {
-            it.y = it.definition().pivotY() * 16f + rightSuspensionOffset
-            it.rotation.rotationY(Mth.lerp(partialTicks, entity.rudderRotO, entity.rudderRot))
-            it.rotation.rotateX(1.5f * rightWheelRot)
-        }
+        boneGroups.leftWheels.forEach { applyWheel(it, com.atsuishio.superbwarfare.data.vehicle.subdata.WheelSide.LEFT, leftSuspensionOffset, leftWheelRot, false) }
+        boneGroups.rightWheels.forEach { applyWheel(it, com.atsuishio.superbwarfare.data.vehicle.subdata.WheelSide.RIGHT, rightSuspensionOffset, rightWheelRot, false) }
+        boneGroups.leftWheelsTurn.forEach { applyWheel(it, com.atsuishio.superbwarfare.data.vehicle.subdata.WheelSide.LEFT, leftSuspensionOffset, leftWheelRot, true) }
+        boneGroups.rightWheelsTurn.forEach { applyWheel(it, com.atsuishio.superbwarfare.data.vehicle.subdata.WheelSide.RIGHT, rightSuspensionOffset, rightWheelRot, true) }
 
         boneGroups.leftTrackMove.forEachIndexed { index, bone ->
             val t = wrap(leftTrack + getTrackDistance() * index, entity)
             val bd = bone.definition()
             // Fold pivot into y/z — translateAndRotateAndScale discards pivot for unrotated bones
-            bone.y = bd.pivotY() * 16f + getBoneMoveY(t) +
+            bone.y = bd.pivotY() * 16f + trajectory.height(t) +
                 if (leftTrackRoot == null) leftSuspensionOffset else 0f
-            bone.z = bd.pivotZ() * 16f + getBoneMoveZ(t)
+            bone.z = bd.pivotZ() * 16f + trajectory.length(t)
         }
 
         boneGroups.rightTrackMove.forEachIndexed { index, bone ->
             val t = wrap(rightTrack + getTrackDistance() * index, entity)
             val bd = bone.definition()
-            bone.y = bd.pivotY() * 16f + getBoneMoveY(t) +
+            bone.y = bd.pivotY() * 16f + trajectory.height(t) +
                 if (rightTrackRoot == null) rightSuspensionOffset else 0f
-            bone.z = bd.pivotZ() * 16f + getBoneMoveZ(t)
+            bone.z = bd.pivotZ() * 16f + trajectory.length(t)
         }
 
         boneGroups.leftTrackRot.forEachIndexed { index, bone ->
             val t = wrap(leftTrack + getTrackDistance() * index, entity)
-            bone.rotation.rotationX(-getBoneRotX(t) * Mth.DEG_TO_RAD)
+            bone.rotation.rotationX(-trajectory.rotation(t) * Mth.DEG_TO_RAD)
         }
 
         boneGroups.rightTrackRot.forEachIndexed { index, bone ->
             val t = wrap(rightTrack + getTrackDistance() * index, entity)
-            bone.rotation.rotationX(-getBoneRotX(t) * Mth.DEG_TO_RAD)
+            bone.rotation.rotationX(-trajectory.rotation(t) * Mth.DEG_TO_RAD)
         }
 
         // 瞄准时隐藏车体
@@ -789,11 +806,30 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
 
     open fun getBoneRotX(t: Float) = t
 
+    private var preparedTrackAnimation: com.atsuishio.superbwarfare.client.model.entity.TrackAnimationProfile? = null
+
+    private fun trackAnimationProfile(cycle: Int): com.atsuishio.superbwarfare.client.model.entity.TrackAnimationProfile {
+        val old = preparedTrackAnimation
+        if (old != null && old.cycle == cycle) return old
+        return com.atsuishio.superbwarfare.client.model.entity.TrackAnimationProfile(
+            cycle, ::getBoneRotX, ::getBoneMoveY, ::getBoneMoveZ).also { preparedTrackAnimation = it }
+    }
+
     open fun getBoneMoveY(t: Float) = t
 
     open fun getBoneMoveZ(t: Float) = t
 
-    open fun getTrackDistance() = 2f
+    /**
+     * Track phase spacing between consecutive authored track bones. Subclasses
+     * may still override it, but the default now honours the JSON `TrackDistance`
+     * override and otherwise derives the spacing from the model bones.
+     */
+    open fun getTrackDistance() = resolvedTrackDistance
+
+    /** JSON override first, then the bone-derived spacing. */
+    private fun resolveTrackDistance(entity: T, boneGroups: VehicleModelBoneGroups): Float =
+        entity.computed().trackAnimationDistance?.toFloat()?.takeIf { it.isFinite() && it > 0f }
+            ?: boneGroups.derivedTrackDistance(entity.getTrackAnimationLength())
 
     open fun wrap(value: Float, range: Int) = ((value % range) + range) % range
 

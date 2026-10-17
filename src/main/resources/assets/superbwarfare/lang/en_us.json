@@ -1425,6 +1425,8 @@
   "config.superbwarfare.client.control": "Control Config",
   "config.superbwarfare.client.control.invert_aircraft_control": "Invert Aircraft Control",
   "config.superbwarfare.client.control.invert_aircraft_control.des": "Set TRUE to invert aircraft control",
+  "config.superbwarfare.client.control.controllable_compat": "Controller Support",
+  "config.superbwarfare.client.control.controllable_compat.des": "Let a connected game controller (Controllable) drive vehicles and fire weapons",
   "config.superbwarfare.client.control.mouse_sensitivity": "Mouse Sensitivity",
   "config.superbwarfare.client.control.mouse_sensitivity.des": "Adjust mouse sensitivity while holding a gun",
 

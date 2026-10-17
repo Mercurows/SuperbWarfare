@@ -74,8 +74,18 @@ ordering = "NONE"
 side = "CLIENT"
 
 [[dependencies.superbwarfare]]
+modId = "controllable"
+mandatory = false
+versionRange = "[0.21.0,)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.superbwarfare]]
 modId = "spark_core"
 mandatory = true
 versionRange = "[1.20.1-1.1.5,)"
 ordering = "AFTER"
 side = "BOTH"
+
+[[mixins]]
+config = "mixins.superbwarfare.json"

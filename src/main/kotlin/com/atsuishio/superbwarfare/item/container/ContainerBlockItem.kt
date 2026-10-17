@@ -150,45 +150,54 @@ class ContainerBlockItem : BlockItem(ModBlocks.CONTAINER.get(), Properties().sta
     companion object {
         @SubscribeEvent(priority = EventPriority.HIGH)
         fun registerContainers(event: RegisterContainersEvent) {
-            event.add(ModEntities.WHEEL_CHAIR)
-            event.add(ModEntities.SODAYO_PICK_UP)
-            event.add(ModEntities.SODAYO_PICK_UP_HMG)
-            event.add(ModEntities.SODAYO_PICK_UP_TOW)
-            event.add(ModEntities.SODAYO_PICK_UP_ROCKET)
-            event.add(ModEntities.TRUCK)
-            event.add(ModEntities.TYPE_63)
-            event.add(ModEntities.TOW)
-            event.add(ModEntities.MK_42)
-            event.add(ModEntities.MLE_1934)
-            event.add(ModEntities.BL_132)
-            event.add(ModEntities.HPJ_11)
-            event.add(ModEntities.LASER_TOWER)
-            event.add(ModEntities.WAVEFORCE_TOWER)
-            event.add(ModEntities.ANNIHILATOR)
-            event.add(ModEntities.TINY_SPEEDBOAT)
-            event.add(ModEntities.SPEEDBOAT)
-            event.add(ModEntities.LAV_150)
-            event.add(ModEntities.LAV_25)
-            event.add(ModEntities.BMP_2)
-            event.add(ModEntities.BRADLEY)
-            event.add(ModEntities.LAV_AD)
-            event.add(ModEntities.PRISM_TANK)
-            event.add(ModEntities.ZTZ_99A)
-            event.add(ModEntities.T_90A)
-            event.add(ModEntities.M_1A_2)
-            event.add(ModEntities.YX_100)
-            event.add(ModEntities.PLZ_05)
-            event.add(ModEntities.FH_77BW)
-            event.add(ModEntities.AH_6)
-            event.add(ModEntities.MI_28)
-            event.add(ModEntities.TOM_6)
-            event.add(ModEntities.KV_16)
-            event.add(ModEntities.JU_87)
-            event.add(ModEntities.A_10A)
-            event.add(ModEntities.AC_130H)
-            event.add(ModEntities.AIR_SHEEP)
-            event.add(ModEntities.HAPPIEST_GHAST)
-            event.add(ModEntities.KIROV)
+            // Full roster; only vehicles enabled in GroundVehicleAllowlist are
+            // exposed, so parked vehicles never appear in the vehicle tab and
+            // never roll from container loot.
+            listOf(
+                ModEntities.WHEEL_CHAIR,
+                ModEntities.SODAYO_PICK_UP,
+                ModEntities.SODAYO_PICK_UP_HMG,
+                ModEntities.SODAYO_PICK_UP_TOW,
+                ModEntities.SODAYO_PICK_UP_ROCKET,
+                ModEntities.TRUCK,
+                ModEntities.TYPE_63,
+                ModEntities.TOW,
+                ModEntities.MK_42,
+                ModEntities.MLE_1934,
+                ModEntities.BL_132,
+                ModEntities.HPJ_11,
+                ModEntities.LASER_TOWER,
+                ModEntities.WAVEFORCE_TOWER,
+                ModEntities.ANNIHILATOR,
+                ModEntities.TINY_SPEEDBOAT,
+                ModEntities.SPEEDBOAT,
+                ModEntities.LAV_150,
+                ModEntities.LAV_25,
+                ModEntities.BMP_2,
+                ModEntities.BRADLEY,
+                ModEntities.LAV_AD,
+                ModEntities.PRISM_TANK,
+                ModEntities.ZTZ_99A,
+                ModEntities.T_90A,
+                ModEntities.M_1A_2,
+                ModEntities.YX_100,
+                ModEntities.PLZ_05,
+                ModEntities.FH_77BW,
+                ModEntities.AH_6,
+                ModEntities.MI_28,
+                ModEntities.TOM_6,
+                ModEntities.KV_16,
+                ModEntities.JU_87,
+                ModEntities.A_10A,
+                ModEntities.AC_130H,
+                ModEntities.AIR_SHEEP,
+                ModEntities.HAPPIEST_GHAST,
+                ModEntities.KIROV,
+            ).forEach { type ->
+                if (com.atsuishio.superbwarfare.physics.GroundVehicleAllowlist
+                        .contains(EntityType.getKey(type.get()).toString())
+                ) event.add(type.get())
+            }
         }
 
         @JvmStatic

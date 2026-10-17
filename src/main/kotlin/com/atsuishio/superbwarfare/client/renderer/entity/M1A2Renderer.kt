@@ -83,8 +83,4 @@ class M1A2Renderer(manager: EntityRendererProvider.Context) : BasicVehicleRender
 
         return Mth.lerp((t - 99.5833F) / (100F - 99.5833F), -1.69F, 0F);
     }
-
-    override fun getTrackDistance(): Float {
-        return 2.27f
-    }
 }

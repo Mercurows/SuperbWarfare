@@ -14,6 +14,13 @@ object ControlConfig {
     }
 
     @JvmField
+    val CONTROLLABLE_COMPAT = buildClientConfig {
+        comment("Let a connected game controller (Controllable) drive vehicles and fire weapons")
+        comment("是否允许手柄（Controllable）操控载具与开火")
+        define("controllable_compat", true)
+    }
+
+    @JvmField
     val MOUSE_SENSITIVITY = buildClientConfig {
         comment("Sensitivity of mouse")
         comment("鼠标灵敏度")

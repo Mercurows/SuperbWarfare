@@ -102,10 +102,6 @@ class Yx100Renderer(manager: EntityRendererProvider.Context) : BasicVehicleRende
         return Mth.lerp((t - 79.25f) / (80f - 79.25f), -4.12f, 0f)
     }
 
-    override fun getTrackDistance(): Float {
-        return 1.96f
-    }
-
     companion object {
         val MUZZLE_GLOW = Mod.loc("textures/bedrock/vehicle/yx_100_glow.png")
     }

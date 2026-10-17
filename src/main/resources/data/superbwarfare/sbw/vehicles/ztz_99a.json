@@ -1,5 +1,23 @@
 {
   "MaxHealth": 500,
+  "Wheels": [
+    {"Side":"Left", "Role":"IdlerGuide", "Index":0, "Position":[1.840821,1.113281,3.844844], "Radius":0.351562, "Width":0.2},
+    {"Side":"Left", "Role":"Support", "Index":1, "Position":[2.055664,0.585938,2.858516], "Radius":0.53125, "Width":0.2},
+    {"Side":"Left", "Role":"Support", "Index":2, "Position":[2.055664,0.585938,1.725703], "Radius":0.53125, "Width":0.2},
+    {"Side":"Left", "Role":"Support", "Index":3, "Position":[2.055664,0.585938,0.592891], "Radius":0.53125, "Width":0.2},
+    {"Side":"Left", "Role":"Support", "Index":4, "Position":[2.055664,0.585938,-0.520391], "Radius":0.53125, "Width":0.2},
+    {"Side":"Left", "Role":"Support", "Index":5, "Position":[2.055664,0.585938,-1.653203], "Radius":0.53125, "Width":0.2},
+    {"Side":"Left", "Role":"Support", "Index":6, "Position":[2.055664,0.585938,-2.786016], "Radius":0.53125, "Width":0.2},
+    {"Side":"Left", "Role":"DriveGuide", "Index":7, "Position":[1.840821,1.113281,-3.811406], "Radius":0.351562, "Width":0.2},
+    {"Side":"Right", "Role":"IdlerGuide", "Index":0, "Position":[-1.840820,1.113281,3.844844], "Radius":0.351562, "Width":0.2},
+    {"Side":"Right", "Role":"Support", "Index":1, "Position":[-2.055664,0.585938,2.858516], "Radius":0.53125, "Width":0.2},
+    {"Side":"Right", "Role":"Support", "Index":2, "Position":[-2.055664,0.585938,1.725703], "Radius":0.53125, "Width":0.2},
+    {"Side":"Right", "Role":"Support", "Index":3, "Position":[-2.055664,0.585938,0.592891], "Radius":0.53125, "Width":0.2},
+    {"Side":"Right", "Role":"Support", "Index":4, "Position":[-2.055664,0.585938,-0.520391], "Radius":0.53125, "Width":0.2},
+    {"Side":"Right", "Role":"Support", "Index":5, "Position":[-2.055664,0.585938,-1.653203], "Radius":0.53125, "Width":0.2},
+    {"Side":"Right", "Role":"Support", "Index":6, "Position":[-2.055664,0.585938,-2.786016], "Radius":0.53125, "Width":0.2},
+    {"Side":"Right", "Role":"DriveGuide", "Index":7, "Position":[-1.840820,1.113281,-3.811406], "Radius":0.351562, "Width":0.2}
+  ],
   "MaxEnergy": 10000000,
   "OBB": [
     {

@@ -82,8 +82,4 @@ class T90aRenderer(manager: EntityRendererProvider.Context) : BasicVehicleRender
 
         return Mth.lerp(t - 99F, -4.99F, -3F)
     }
-
-    override fun getTrackDistance(): Float {
-        return 2.25f
-    }
 }

@@ -122,8 +122,4 @@ class Ztz99aRenderer(manager: EntityRendererProvider.Context) : BasicVehicleRend
 
         return Mth.lerp((t - 99.3333F) / (100F - 99.3333F), -1.02F, 0F)
     }
-
-    override fun getTrackDistance(): Float {
-        return 2.7f
-    }
 }

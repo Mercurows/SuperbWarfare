@@ -7,6 +7,8 @@ import com.atsuishio.superbwarfare.client.screens.TacticalMapScreen
 import com.atsuishio.superbwarfare.client.screens.WeaponEditScreen
 import com.atsuishio.superbwarfare.compat.CompatHolder
 import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper
+import com.atsuishio.superbwarfare.compat.controllable.ControllableCompatHolder
+import com.atsuishio.superbwarfare.config.client.ControlConfig
 import com.atsuishio.superbwarfare.config.client.ReloadConfig
 import com.atsuishio.superbwarfare.config.server.MapConfig
 import com.atsuishio.superbwarfare.data.gun.*
@@ -50,6 +52,18 @@ object ClickEventHandler {
     @JvmField
     var switchZoom: Boolean = false
 
+    /** 手柄右扳机上一 tick 是否按下（Controllable，可选依赖）。 */
+    private var controllerFireDown: Boolean = false
+
+    /** 手柄左扳机上一 tick 是否按下（Controllable，可选依赖）。 */
+    private var controllerZoomDown: Boolean = false
+
+    /**
+     * 手柄下车键上一 tick 是否按下。Controllable 绑定的控制器按钮只写
+     * `KeyMapping` 状态、不产生原生按键事件，普通下车分支收不到，必须轮询。
+     */
+    private var controllerDismountDown: Boolean = false
+
     @SubscribeEvent
     fun onButtonReleased(event: InputEvent.MouseButton.Pre) {
         if (notInGame) return
@@ -83,6 +97,18 @@ object ClickEventHandler {
         // 手持副武器时按普通物品处理
         return GunItem.isHeldWeapon(stack) ||
                 (vehicle is VehicleEntity && vehicle.banHand(player) && !stack.item.isEdible)
+    }
+
+    /**
+     * 鼠标左右键（以及手柄扳机）适用「开火／瞄准」的条件。
+     */
+    private fun canUseHandKeys(player: Player, stack: ItemStack): Boolean {
+        return GunItem.isHeldWeapon(stack)
+                || player.vehicle is VehicleEntity
+                || stack.`is`(ModItems.MONITOR.get())
+                || stack.`is`(ModItems.LUNGE_MINE.get())
+                || (stack.`is`(Items.SPYGLASS) && player.isScoping && player.offhandItem.`is`(ModItems.FIRING_PARAMETERS.get()))
+                || stack.`is`(ModItems.ARTILLERY_INDICATOR.get())
     }
 
     @SubscribeEvent
@@ -136,13 +162,7 @@ object ClickEventHandler {
         }
 
         // 手持副武器时按普通物品处理
-        if (GunItem.isHeldWeapon(stack)
-            || player.vehicle is VehicleEntity
-            || stack.`is`(ModItems.MONITOR.get())
-            || stack.`is`(ModItems.LUNGE_MINE.get())
-            || (stack.`is`(Items.SPYGLASS) && player.isScoping && player.offhandItem.`is`(ModItems.FIRING_PARAMETERS.get()))
-            || stack.`is`(ModItems.ARTILLERY_INDICATOR.get())
-        ) {
+        if (canUseHandKeys(player, stack)) {
             if (button == ModKeyMappings.FIRE.key.value) {
                 handleWeaponFirePress(player, stack)
             }
@@ -483,6 +503,54 @@ object ClickEventHandler {
                 if (key == ModKeyMappings.BREATH.key.value) {
                     ClientEventHandler.breath = false
                 }
+            }
+        }
+    }
+
+    /**
+     * 轮询手柄扳机（Controllable，可选依赖），把开火与瞄准的按下／松开边沿转成
+     * 与鼠标左右键完全相同的调用（按下与鼠标一样先判断是否手持武器／乘坐载具，
+     * 松开不判断，好让边沿一定配对）。
+     *
+     * 手柄的扳机既不写 `KeyMapping` 也不产生原生事件，只能这样接进来。
+     * 未安装 Controllable、玩家在用键鼠、或关掉了 `controllable_compat` 时什么都不做。
+     */
+    fun handleControllerTriggers(player: Player, stack: ItemStack) {
+        if (notInGame) return
+        if (!ControlConfig.CONTROLLABLE_COMPAT.get() || !ControllableCompatHolder.isLoaded()) return
+
+        val fire = ControllableCompatHolder.rightTrigger() >= ControllableCompatHolder.TRIGGER_THRESHOLD
+        if (fire != controllerFireDown) {
+            controllerFireDown = fire
+            if (fire) {
+                if (canUseHandKeys(player, stack)) {
+                    handleWeaponFirePress(player, stack)
+                }
+            } else {
+                handleWeaponFireRelease()
+            }
+        }
+
+        val zoom = ControllableCompatHolder.leftTrigger() >= ControllableCompatHolder.TRIGGER_THRESHOLD
+        if (zoom != controllerZoomDown) {
+            controllerZoomDown = zoom
+            if (zoom) {
+                if (canUseHandKeys(player, stack)) {
+                    handleWeaponZoomPress(player, stack)
+                }
+            } else {
+                handleWeaponZoomRelease()
+            }
+        }
+
+        // 手柄下车：与移动位、扳机同源的轮询边沿。只有手柄正在被使用时才接管，
+        // 键鼠玩家仍走原生按键事件，不会双触发。
+        val dismount = ControllableCompatHolder.isControllerInUse() &&
+            com.atsuishio.superbwarfare.init.ModKeyMappings.DISMOUNT.isDown
+        if (dismount != controllerDismountDown) {
+            controllerDismountDown = dismount
+            if (dismount) {
+                handleDismountPress(player)
             }
         }
     }

@@ -9,12 +9,13 @@ import net.minecraft.world.phys.Vec3
  * One wheel or track station of a vehicle.
  *
  * [position] is the wheel centre in the vehicle's local frame, in the same
- * space as `OBB.Position` (X right, Y up, Z forward).
+ * space as `OBB.Position` (X left, Y up, Z forward).
  *
- * [Side] groups the wheel into the left or right suspension. Every SUPPORT
- * wheel on a side shares that side's single spring/damper. [Role] is
- * `DriveGuide` for the driven sprocket and idler at the ends of a track, which
- * carry traction but not spring load; all other wheels are `Support`.
+ * [Side] groups contact/load reporting and drive commands. Every SUPPORT
+ * wheel has its own contact, spring/damper and force application point. [Role] is
+ * `DriveGuide` or `IdlerGuide` for the end wheels of a track. Guide wheels do
+ * not contribute to the suspension-height calculation; only `Support` stations
+ * define the side's spring plane.
  */
 @Serializable
 data class WheelInfo(
@@ -34,6 +35,12 @@ data class WheelInfo(
     /** Lateral half width of the wheel or track shoe. */
     @SerialName("Width")
     var width: Double = 0.3,
+    /** Explicit side-local model wheel id; not the JSON array offset. */
+    @SerialName("Index")
+    var index: Int? = null,
+    /** Contact envelope includes the belt/shoe below a TRACK road wheel. */
+    @SerialName("ContactRadius")
+    var contactRadius: Double? = null,
 ) {
     fun limit() {
         if (radius <= 0.0 || !radius.isFinite()) radius = 0.4
@@ -57,7 +64,11 @@ enum class WheelRole {
     @SerialName("Support")
     SUPPORT,
 
-    /** Driven sprocket / idler at the end of a track. */
+    /** Driven sprocket at the end of a track. */
     @SerialName("DriveGuide")
     DRIVE_GUIDE,
+
+    /** Passive idler at the opposite end of a track. */
+    @SerialName("IdlerGuide")
+    IDLER_GUIDE,
 }

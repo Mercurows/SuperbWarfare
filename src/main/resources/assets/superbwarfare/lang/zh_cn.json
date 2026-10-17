@@ -1425,6 +1425,8 @@
   "config.superbwarfare.client.control": "控制配置",
   "config.superbwarfare.client.control.invert_aircraft_control": "飞行器鼠标反转",
   "config.superbwarfare.client.control.invert_aircraft_control.des": "开启飞行器鼠标反转",
+  "config.superbwarfare.client.control.controllable_compat": "手柄操控",
+  "config.superbwarfare.client.control.controllable_compat.des": "是否允许手柄（Controllable）操控载具与开火",
   "config.superbwarfare.client.control.mouse_sensitivity": "鼠标灵敏度",
   "config.superbwarfare.client.control.mouse_sensitivity.des": "调整持枪时的鼠标灵敏度",
 

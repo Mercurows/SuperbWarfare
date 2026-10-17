@@ -1,0 +1,23 @@
+{
+  "swap_sides": false,
+  "deadzone": 0.12,
+  "invert_y": true,
+  "left_buttons": {
+    "BTN_TL": "lb",
+    "BTN_SELECT": "back",
+    "BTN_THUMBL": "ls",
+    "BTN_MODE": "guide",
+    "BTN_START": "start"
+  },
+  "right_buttons": {
+    "BTN_A": "a",
+    "BTN_B": "b",
+    "BTN_X": "x",
+    "BTN_Y": "y",
+    "BTN_TR": "rb",
+    "BTN_START": "start",
+    "BTN_THUMBR": "rs",
+    "BTN_MODE": "guide",
+    "BTN_SELECT": "back"
+  }
+}

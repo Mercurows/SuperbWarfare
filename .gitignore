@@ -145,3 +145,7 @@ bin/
 .mc-mcp-cache/
 .mc-mcp-cache-test/
 /.claude/
+
+# Python bytecode caches from tools/
+__pycache__/
+*.pyc

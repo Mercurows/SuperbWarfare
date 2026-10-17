@@ -2828,10 +2828,19 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
             absoluteSpeedLerp = Mth.lerp(0.2, absoluteSpeedLerp, positionO.vectorTo(position()).length())
             absoluteSpeed = absoluteSpeedLerp
 
-            fakeRoll *= 0.8f
-            fakePitch *= 0.8f
+            // The Spark body already owns the chassis attitude. Integrating a
+            // second client-side inertia spring on top of it adds a visible
+            // wobble on top of the physical pitch/roll, most noticeably while
+            // turning, so a physics-managed vehicle keeps it at zero.
+            if (VehiclePhysics.isManaged(this)) {
+                fakeRoll = 0f
+                fakePitch = 0f
+            } else {
+                fakeRoll *= 0.8f
+                fakePitch *= 0.8f
+            }
 
-            if (prevMotion != null) {
+            if (!VehiclePhysics.isManaged(this) && prevMotion != null) {
                 val motion = this.deltaMovement
                 var acceleration = prevMotion?.let { motion.subtract(it) }
 

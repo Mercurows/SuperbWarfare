@@ -1,5 +1,6 @@
 import java.io.ByteArrayOutputStream
 import java.time.Instant
+import java.util.UUID
 
 plugins {
     eclipse
@@ -55,7 +56,8 @@ minecraft {
             // 需要使用 JetBrains 的 JBR 作为运行时才能发挥作用
             jvmArgs(
                 "-XX:+IgnoreUnrecognizedVMOptions",
-                "-XX:+AllowEnhancedClassRedefinition"
+                "-XX:+AllowEnhancedClassRedefinition",
+                "-Xmx4G"
             )
             workingDirectory(project.file("run"))
             property("forge.logging.markers", "REGISTRIES")
@@ -86,7 +88,23 @@ minecraft {
         }
 
         create("gameTestServer") {
-            property("forge.enabledGameTestNamespaces", project.property("mod_id").toString())
+            providers.gradleProperty("gameTestRunDirectory").orNull?.let { workingDirectory(project.file(it)) }
+            property("forge.enabledGameTestNamespaces", providers.gradleProperty("gameTestNamespaces").getOrElse(project.property("mod_id").toString()))
+            property("superbwarfare.physics.traceSteps", providers.gradleProperty("physicsTraceSteps").getOrElse("0"))
+            // Focused iteration: "drive" runs only the drive suite, "stability"
+            // only the resting/contact suite. Unset runs everything.
+            providers.gradleProperty("physicsTestGroup").orNull?.let {
+                property("superbwarfare.physics.testGroup", it)
+            }
+            providers.gradleProperty("physicsTraceClimb").orNull?.let {
+                property("superbwarfare.physics.traceClimb", it)
+            }
+            property("spark.physics.terrainTraceUpdates", providers.gradleProperty("terrainTraceUpdates").getOrElse("0"))
+            property("spark.physics.terrainTraceRebuilds", providers.gradleProperty("terrainTraceRebuilds").getOrElse("0"))
+            property("spark.physics.terrainTraceChanges", providers.gradleProperty("terrainTraceChanges").getOrElse("0"))
+            providers.gradleProperty("terrainTraceArea").orNull?.let { property("spark.physics.terrainTraceArea", it) }
+            // Never reuse the client world or a failed run's saved vehicles.
+            args("--world", "gametest-${UUID.randomUUID()}")
         }
 
         create("data") {
@@ -119,6 +137,9 @@ repositories {
     }
     flatDir {
         dir("libs")
+    }
+    flatDir {
+        dir("tools/client-test/mods")
     }
     maven {
         url = uri("https://api.modrinth.com/maven")
@@ -276,6 +297,28 @@ dependencies {
     // at runtime, use the full JEI jar for Forge
     runtimeOnly(fg.deobf("mezz.jei:jei-${project.property("minecraft_version")}-forge:${project.property("jei_version")}"))
 
+    // Dev-client only. Production Controllable jars use SRG mixin names and crash
+    // userdev unless ForgeGradle deobfuscates them. The jars are optional so a
+    // checkout without the test mods still configures.
+    val testModDir = layout.projectDirectory.dir("tools/client-test/mods").asFile
+    val controllableTest = testModDir.resolve("controllable-forge-1.20.1-0.21.9.jar")
+    val frameworkTest = testModDir.resolve("framework-forge-1.20.1-0.8.0.jar")
+    val clientTestMods = providers.gradleProperty("clientTestMods").map(String::toBoolean).getOrElse(
+        gradle.startParameter.taskNames.none { it.contains("server", ignoreCase = true) }
+    )
+    if (clientTestMods && controllableTest.isFile && frameworkTest.isFile) {
+        runtimeOnly(fg.deobf("superbwarfare.test:controllable-forge-1.20.1:0.21.9"))
+        runtimeOnly(fg.deobf("superbwarfare.test:framework-forge-1.20.1:0.8.0"))
+    }
+
+    // Controllable（手柄映射模组）：可选依赖。手柄的摇杆与扳机不会写 KeyMapping，
+    // 光靠 Controllable 自己的按键绑定无法驱动载具方向键与开火，所以
+    // compat/controllable 在编译期直接对接它的控制器 API。
+    // 运行期不需要它：所有调用点先经 ModList 判断，未安装时不会加载那些类。
+    // 注意：编译这份兼容代码需要上面的 jar 存在，缺失时会直接报找不到
+    // superbwarfare.test:controllable-forge-1.20.1:0.21.9。
+    compileOnly(fg.deobf("superbwarfare.test:controllable-forge-1.20.1:0.21.9"))
+
     // 帕秋莉手册
     compileOnly(fg.deobf("vazkii.patchouli:Patchouli:1.20.1-84-FORGE:api"))
     runtimeOnly(fg.deobf("vazkii.patchouli:Patchouli:1.20.1-84-FORGE"))
@@ -341,6 +384,19 @@ dependencies {
 //    implementation("curse.maven:spark-361579:4587309")
 }
 
+val mixinConfigJar = tasks.register<Jar>("mixinConfigClasspath") {
+    archiveBaseName.set("superbwarfare-mixin-config")
+    from(sourceSets.main.get().resources) {
+        include("mixins.superbwarfare.json")
+        include("mixins.superbwarfare.refmap.json")
+    }
+}
+
+// Forge 1.20.1 loads mixin configs from the jar manifest or --mixin.config, not
+// from mods.toml. The userdev launch classpath does not include the exploded
+// resources directory, so put the config on the runtime classpath itself.
+dependencies.runtimeOnly(files(mixinConfigJar))
+
 mixin {
     add(sourceSets.main.get(), "mixins.superbwarfare.refmap.json")
 
@@ -369,6 +425,11 @@ tasks.withType<JavaCompile> {
 }
 
 tasks.named<ProcessResources>("processResources") {
+    // Forge filters tests by template namespace, not @GameTestHolder alone.
+    // Reuse the existing binary template without maintaining a duplicate NBT.
+    from("src/main/resources/data/superbwarfare/structures/empty.nbt") {
+        into("data/superbwarfare_physics/structures")
+    }
     val replaceProperties = mapOf(
         "minecraft_version" to project.property("minecraft_version"),
         "minecraft_version_range" to project.property("minecraft_version_range"),
@@ -428,7 +489,7 @@ kotlin {
 
 // 保证测试插件 mod 的 classes / processResources 输出在启动前就位
 // （ForgeGradle 会把 source set 的输出目录整体塞进 MOD_CLASSES）。
-tasks.matching { it.name in listOf("runClient", "runServer", "runData") }
+tasks.matching { it.name in listOf("runClient", "runServer", "runData", "runGameTestServer") }
     .configureEach {
         dependsOn(loaderTest.classesTaskName, loaderTest.processResourcesTaskName)
     }

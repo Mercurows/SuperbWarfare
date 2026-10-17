@@ -4,6 +4,7 @@ import cn.solarmoon.spark_core.physics.SparkPhysics
 import cn.solarmoon.spark_core.physics.VehicleControlMode
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData
+import com.atsuishio.superbwarfare.data.vehicle.VehicleData
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
 import com.atsuishio.superbwarfare.data.vehicle.subdata.OBBInfo
 import com.atsuishio.superbwarfare.data.vehicle.subdata.WheelSide
@@ -31,28 +32,93 @@ import kotlin.math.*
 
 @net.minecraftforge.fml.common.Mod.EventBusSubscriber(modid = Mod.MODID)
 object VehiclePhysics {
-    internal val bodies = ConcurrentHashMap<Entity, VehicleBody>()
-    private val saved = ConcurrentHashMap<Entity, RigidState>()
-    private val pending = ConcurrentHashMap<Entity, RigidState>()
-    private val pendingRender = ConcurrentHashMap<Entity, VehiclePhysicsRenderState>()
-    private val inputSequences = ConcurrentHashMap<Entity, Long>()
-    private val controllerOwners = ConcurrentHashMap<Entity, Int>()
-    private val localControl = ConcurrentHashMap<Entity, Int>()
-    private val appliedPositions = ConcurrentHashMap<Entity, Vec3>()
-    private val capturing = HashSet<Entity>() // game thread only
-    private val writing = HashSet<Entity>()
+    /**
+     * Identity-keyed table for the global physics state.
+     *
+     * In a single-player session the client level and the integrated server
+     * level coexist in this JVM, and `Entity.equals`/`hashCode` only compare
+     * the network id, so plain Entity keys would alias the two logical sides:
+     * the client proxy and the authoritative server body could reuse, corrupt
+     * or clear each other's state for the same vehicle. Every table is
+     * therefore keyed by entity identity, which also isolates the two levels
+     * (an entity instance belongs to exactly one level).
+     */
+    internal class IdentityTable<V> {
+        private val backing = ConcurrentHashMap<EntityKey, V>()
+        val keys: List<Entity> get() = backing.keys.map { it.entity }
+        fun containsKey(entity: Entity): Boolean = backing.containsKey(EntityKey(entity))
+        operator fun get(entity: Entity): V? = backing[EntityKey(entity)]
+        operator fun set(entity: Entity, value: V) { backing[EntityKey(entity)] = value }
+        fun put(entity: Entity, value: V): V? = backing.put(EntityKey(entity), value)
+        fun remove(entity: Entity): V? = backing.remove(EntityKey(entity))
+        fun computeIfAbsent(entity: Entity, factory: () -> V): V =
+            backing.computeIfAbsent(EntityKey(entity)) { factory() }
+    }
+
+    private class EntityKey(val entity: Entity) {
+        private val hash = System.identityHashCode(entity)
+        override fun hashCode() = hash
+        override fun equals(other: Any?): Boolean =
+            this === other || (other is EntityKey && other.entity === entity)
+    }
+
+    internal val bodies = IdentityTable<VehicleBody>()
+    private val saved = IdentityTable<RigidState>()
+    private val pending = IdentityTable<RigidState>()
+    private val pendingRender = IdentityTable<VehiclePhysicsRenderState>()
+    private val inputSequences = IdentityTable<Long>()
+    private val controllerOwners = IdentityTable<Int>()
+    private val localControl = IdentityTable<Int>()
+    private val appliedPositions = IdentityTable<Vec3>()
+    // Identity sets: the two logical sides must never see each other's write
+    // guards for an entity with the same numeric id.
+    private val capturing: MutableSet<Entity> =
+        java.util.Collections.synchronizedSet(java.util.Collections.newSetFromMap(java.util.IdentityHashMap()))
+    private val writing: MutableSet<Entity> =
+        java.util.Collections.synchronizedSet(java.util.Collections.newSetFromMap(java.util.IdentityHashMap()))
     private var nextInput = 0L
 
     fun isWriting(entity: Entity) = entity in capturing || entity in writing
-    /** True while a managed vehicle is being created or is already physical. */
+    /** True while an eligible entity is being created or is already physical. */
     fun isManaged(entity: Entity) = bodies.containsKey(entity)
     /** True only after the Spark body has been inserted into the physics space. */
     fun hasBody(entity: Entity) = bodies[entity]?.ready == true
     fun sequence(entity: Entity) = inputSequences[entity] ?: 0L
+    fun diagnostic(entity: Entity): VehiclePhysicsDiagnostic? = bodies[entity]?.diagnostic
+    fun observeStability(entity: Entity, steps: Int) { bodies[entity]?.startStabilityObservation(steps) }
+    fun stabilityObservation(entity: Entity): VehicleStabilityObservation? = bodies[entity]?.stabilityObservation
     fun renderState(entity: Entity): VehiclePhysicsRenderState = bodies[entity]
         ?.takeIf { it.ready }?.renderState ?: VehiclePhysicsRenderState()
 
+    /**
+     * Bullet is intentionally limited to the conventional ground roster. A
+     * missing or malformed wheel layout is a configuration error, not a reason
+     * to silently switch that vehicle back to vanilla movement.
+     */
+    internal fun groundLayout(entity: VehicleEntity): GroundVehicleLayoutResult {
+        val data = entity.computed()
+        val id = VehicleData.getRegistryId(entity.type)
+        if (!GroundVehicleAllowlist.contains(id)) {
+            return GroundVehicleLayoutResult(reason = "vehicle is outside the conventional ground allowlist")
+        }
+        val result = GroundVehicleLayouts.resolve(data, entity.getCollisionOBBInfo())
+        if (!result.valid) warnLayoutOnce(id, result.reason ?: "unknown layout error")
+        return result
+    }
+
+    private val warnedLayouts = ConcurrentHashMap<String, Boolean>()
+    private fun warnLayoutOnce(id: String, reason: String) {
+        if (warnedLayouts.putIfAbsent(id, true) == null)
+            Mod.LOGGER.error("Conventional ground vehicle {} has no usable wheel layout: {}", id, reason)
+    }
+
+    internal fun supportsPhysics(entity: Entity): Boolean = when (entity) {
+        is VehicleEntity -> groundLayout(entity).valid
+        else -> false
+    }
+
     fun localInput(vehicle: VehicleEntity, keys: Short): Long {
+        if (!supportsPhysics(vehicle)) return sequence(vehicle)
         val seq = ++nextInput
         inputSequences[vehicle] = seq
         localControl[vehicle] = vehicle.tickCount
@@ -61,6 +127,7 @@ object VehiclePhysics {
     }
 
     fun serverInput(vehicle: VehicleEntity, keys: Short, sequence: Long, player: Player) {
+        if (!supportsPhysics(vehicle)) return
         if (controllerOwners.put(vehicle, player.id) != player.id) inputSequences.remove(vehicle)
         if (sequence <= (inputSequences[vehicle] ?: -1L)) return
         inputSequences[vehicle] = sequence
@@ -86,6 +153,7 @@ object VehiclePhysics {
         val data = vehicle?.computed()
         val info = vehicle?.getCollisionOBBInfo()
         val settings = data?.physics ?: VehiclePhysicsSettings()
+        val layout = vehicle?.let { groundLayout(it).layout }
         val pivot = vehicle?.rotateOffsetHeight ?: 0.0
         // Keep the Bullet body origin in the same pivoted frame as the model.
         // The body shape itself is assembled from the current world OBBs below,
@@ -108,10 +176,10 @@ object VehiclePhysics {
                 max(current.z, abs(part.center.z) + part.half.z))
         }.let { if (it == Vec3.ZERO) Vec3(entity.bbWidth / 2.0, entity.bbHeight / 2.0, entity.bbWidth / 2.0) else it }
         val engine = data?.engineType
-        val ground = engine == EngineType.WHEEL || engine == EngineType.TRACK || engine == EngineType.WHEELCHAIR
-        val flight = engine == EngineType.AIRCRAFT || engine == EngineType.HELICOPTER ||
-            engine == EngineType.AIRSHIP || engine == EngineType.TOM6
-        val suspensionSides = resolveSuspensionSides(data, info, half)
+        val ground = layout != null
+        val flight = false
+        val (turret, barrel) = if (data != null && settings.articulationEnabled)
+            resolveArticulation(data, (info?.position ?: Vec3.ZERO).add(settings.centerOfMassOffset)) else null to null
         return VehiclePhysicsSpec(
             clientSide = entity.level().isClientSide,
             half = half,
@@ -125,9 +193,75 @@ object VehiclePhysics {
             fixedWing = engine == EngineType.AIRCRAFT || engine == EngineType.TOM6,
             settings = settings,
             collisionParts = collisionParts,
-            suspensionSides = suspensionSides,
+            wheelStations = layout?.stations ?: emptyList(),
+            suspensionSides = layout?.suspensionSides ?: emptyList(),
+            turret = turret,
+            barrel = barrel,
             initial = state,
+            diagnosticName = "${entity.type.descriptionId}/${entity.uuid}",
+            initialTurretYaw = vehicle?.let { Math.toRadians(it.turretYRot.toDouble()).toFloat() } ?: 0f,
+            initialBarrelPitch = vehicle?.let { Math.toRadians(it.turretXRot.toDouble()).toFloat() } ?: 0f,
+            trackAnimationLength = vehicle?.getTrackAnimationLength()?.toFloat() ?: 100f,
         )
+    }
+
+    /** One articulated sub-body's OBB parts, in the parent frame plus [offset]. */
+    private fun articulationParts(
+        data: DefaultVehicleData,
+        transform: String,
+        offset: Vec3,
+    ): List<CollisionPart> = data.obb.mapNotNull { info ->
+        if (!info.transform.equals(transform, ignoreCase = true)) return@mapNotNull null
+        val half = info.size
+        if (!half.x.isFinite() || !half.y.isFinite() || !half.z.isFinite() ||
+            half.x <= .001 || half.y <= .001 || half.z <= .001) return@mapNotNull null
+        CollisionPart(
+            half = half,
+            center = info.position.add(offset),
+            rotation = Quaternionf()
+                .rotateY(Math.toRadians(info.customRotate.y.toDouble()).toFloat())
+                .rotateX(Math.toRadians(info.customRotate.x.toDouble()).toFloat())
+                .rotateZ(Math.toRadians(info.customRotate.z.toDouble()).toFloat()),
+        )
+    }
+
+    /**
+     * Build the articulated turret/barrel specs. Some vehicles author the whole
+     * rotating assembly under "Barrel" without a separate "Turret" entry; in
+     * that case the barrel parts are carried by the turret body so the assembly
+     * still yaws, and the (turret-relative) barrel pivot is folded into the
+     * part centres.
+     */
+    private fun resolveArticulation(data: DefaultVehicleData, chassisCenter: Vec3): Pair<ArticulationSpec?, ArticulationSpec?> {
+        val turretPos = data.turretPos ?: return null to null
+        val turretParts = articulationParts(data, "Turret", Vec3.ZERO)
+        val barrelParts = articulationParts(data, "Barrel", Vec3.ZERO)
+        val yaw = data.turretYawRange
+        val pitch = data.turretPitchRange
+        return when {
+            turretParts.isNotEmpty() -> {
+                val turret = ArticulationSpec(
+                    turretPos.subtract(chassisCenter), turretParts, axis = 1,
+                    lowerLimit = Math.toRadians(yaw.x.toDouble()),
+                    upperLimit = Math.toRadians(yaw.y.toDouble()),
+                )
+                val barrel = if (barrelParts.isNotEmpty()) ArticulationSpec(
+                    data.barrelPos, barrelParts, axis = 0,
+                    lowerLimit = Math.toRadians(pitch.x.toDouble()),
+                    upperLimit = Math.toRadians(pitch.y.toDouble()),
+                ) else null
+                turret to barrel
+            }
+            barrelParts.isNotEmpty() -> {
+                val folded = barrelParts.map { it.copy(center = it.center.add(data.barrelPos)) }
+                ArticulationSpec(
+                    turretPos.subtract(chassisCenter), folded, axis = 1,
+                    lowerLimit = Math.toRadians(yaw.x.toDouble()),
+                    upperLimit = Math.toRadians(yaw.y.toDouble()),
+                ) to null
+            }
+            else -> null to null
+        }
     }
 
     /** Capture all fixed vehicle OBBs in the same local frame as the Bullet body. */
@@ -143,10 +277,23 @@ object VehiclePhysics {
         val reference = collision?.position ?: Vec3.ZERO
         val inverseBodyRotation = Quaternionf(bodyRotation).conjugate()
         val runtimeObbs = vehicle?.getOBBs()
+        // Collision is the legacy all-in-one movement envelope (including the
+        // empty space under the hull). Prefer the authored solid hull parts
+        // whenever the sprung running gear (TRACK plates or WHEEL tires) owns
+        // the contact plan: a hull box that reaches the tire contact plane
+        // would otherwise carry the whole weight and starve the wheels of the
+        // normal load their friction needs.
+        val detailedGroundHull = (data.engineType == EngineType.TRACK || data.engineType == EngineType.WHEEL) &&
+            data.obb.any {
+                it.part != OBB.Part.COLLISION && it.part != OBB.Part.WHEEL_LEFT && it.part != OBB.Part.WHEEL_RIGHT &&
+                    (it.transform == null || it.transform.equals("default", true))
+            }
         return data.obb.mapIndexedNotNull { index, info ->
+            if (detailedGroundHull && info.part == OBB.Part.COLLISION) return@mapIndexedNotNull null
             val transform = info.transform?.lowercase() ?: "default"
-            if (transform == "turret" || transform == "barrel" || transform.contains("weapon") ||
-                info.part == OBB.Part.TURRET
+            if ((settings.articulationEnabled && (transform == "turret" || transform == "barrel")) || transform.contains("weapon") ||
+                info.part == OBB.Part.WHEEL_LEFT ||
+                info.part == OBB.Part.WHEEL_RIGHT
             ) return@mapIndexedNotNull null
             val half = info.size
             if (!half.x.isFinite() || !half.y.isFinite() || !half.z.isFinite() ||
@@ -169,7 +316,7 @@ object VehiclePhysics {
                     world.rotation.x.toFloat(), world.rotation.y.toFloat(),
                     world.rotation.z.toFloat(), world.rotation.w.toFloat()
                 )
-                val localRotation = inverseBodyRotation.mul(worldRotation).normalize()
+                val localRotation = Quaternionf(inverseBodyRotation).mul(worldRotation).normalize()
                 return@mapIndexedNotNull CollisionPart(half, localCenter, localRotation)
             }
 
@@ -187,86 +334,22 @@ object VehiclePhysics {
         }
     }
 
-    /** Build exactly one suspension footprint for each side of every ground vehicle. */
-    private fun resolveSuspensionSides(data: DefaultVehicleData?, info: OBBInfo?, half: Vec3): List<SideSuspensionSpec> {
-        if (data == null) return emptyList()
-        val originX = info?.position?.x ?: 0.0
-        val originY = info?.position?.y ?: 0.0
-        val originZ = info?.position?.z ?: 0.0
-        data class Bounds(
-            var minX: Double = Double.POSITIVE_INFINITY,
-            var maxX: Double = Double.NEGATIVE_INFINITY,
-            var minY: Double = Double.POSITIVE_INFINITY,
-            var minZ: Double = Double.POSITIVE_INFINITY,
-            var maxZ: Double = Double.NEGATIVE_INFINITY,
-            var width: Double = 0.0,
-        )
-        val bounds = mutableMapOf(WheelSide.LEFT to Bounds(), WheelSide.RIGHT to Bounds())
-
-        fun add(side: WheelSide, x: Double, y: Double, z: Double, lateral: Double, vertical: Double, longitudinal: Double) {
-            val b = bounds.getValue(side)
-            b.minX = min(b.minX, x - lateral)
-            b.maxX = max(b.maxX, x + lateral)
-            b.minY = min(b.minY, y - vertical)
-            b.minZ = min(b.minZ, z - longitudinal)
-            b.maxZ = max(b.maxZ, z + longitudinal)
-            b.width = max(b.width, lateral)
-        }
-
-        data.wheels.forEach { wheel ->
-            add(
-                if (wheel.side == WheelSide.RIGHT) WheelSide.RIGHT else WheelSide.LEFT,
-                wheel.position.x - originX,
-                wheel.position.y - originY,
-                wheel.position.z - originZ,
-                wheel.width.coerceIn(.05, 2.0),
-                wheel.radius.coerceIn(.05, 2.0),
-                wheel.radius.coerceIn(.05, 2.0),
-            )
-        }
-        data.obb.forEach { obb ->
-            val side = when (obb.part) {
-                OBB.Part.WHEEL_LEFT -> WheelSide.LEFT
-                OBB.Part.WHEEL_RIGHT -> WheelSide.RIGHT
-                else -> null
-            } ?: return@forEach
-            add(
-                side,
-                obb.position.x - originX,
-                obb.position.y - originY,
-                obb.position.z - originZ,
-                obb.size.x.coerceIn(.05, 2.0),
-                obb.size.y.coerceIn(.05, 2.0),
-                obb.size.z.coerceIn(.05, 8.0),
-            )
-        }
-
-        return listOf(WheelSide.LEFT, WheelSide.RIGHT).map { side ->
-            val b = bounds.getValue(side)
-            if (!b.minX.isFinite()) {
-                val x = if (side == WheelSide.LEFT) -max(half.x * .72, .05) else max(half.x * .72, .05)
-                SideSuspensionSpec(side, x, -half.y, 0.0, max(half.x * .14, .08), max(half.z * .72, .12))
-            } else {
-                SideSuspensionSpec(
-                    side = side,
-                    anchorX = (b.minX + b.maxX) * .5,
-                    bottomY = b.minY,
-                    centerZ = (b.minZ + b.maxZ) * .5,
-                    halfWidth = max(b.width, (b.maxX - b.minX) * .5).coerceIn(.05, 2.0),
-                    halfLength = ((b.maxZ - b.minZ) * .5).coerceIn(.12, 8.0),
-                )
-            }
-        }
-    }
-
     fun begin(entity: Entity) {
         if (entity.isRemoved) return
         if (entity !is VehicleEntity && entity !is TurretWreckEntity) return
+        if (entity is VehicleEntity && !supportsPhysics(entity)) {
+            bodies.remove(entity)?.close()
+            return
+        }
         val handle = bodies.computeIfAbsent(entity) {
             // Build the immutable spec on the game thread. Everything the worker
             // needs is copied here so it never touches the Entity or the Level.
-            val state = saved.remove(entity) ?: RigidState(0, 0, entity.position(), rotation(entity),
-                VehiclePhysicsUnits.velocity(entity.deltaMovement), Vec3.ZERO, false)
+            val restored = saved.remove(entity)
+            // Containers load NBT before assigning the new deployment position.
+            // A redeployment is not a continuation of the old world-space motion.
+            val relocated = restored != null && restored.position.distanceToSqr(entity.position()) > .0001
+            val state = if (restored != null && !relocated) restored.copy(position = entity.position()) else RigidState(0, 0, entity.position(), rotation(entity),
+                if (relocated) Vec3.ZERO else VehiclePhysicsUnits.velocity(entity.deltaMovement), Vec3.ZERO, false)
             val spec = buildSpec(entity, state)
             VehicleBody(SparkPhysics.get(entity.level()), SparkPhysics.host(entity), spec, state).also { body ->
                 body.physics.submitImmediateTask { body.create() }
@@ -289,13 +372,6 @@ object VehiclePhysics {
             return
         }
 
-        if (handle.needsInitialSync) {
-            handle.needsInitialSync = false
-            val initial = RigidState(0, sequence(entity), entity.position(), rotation(entity),
-                VehiclePhysicsUnits.velocity(entity.deltaMovement), Vec3.ZERO, entity.onGround())
-            handle.state = initial
-            handle.physics.submitImmediateTask { handle.reset(initial) }
-        }
         val previous = appliedPositions[entity]
         val entityRotation = rotation(entity)
         val rotationDot = abs(entityRotation.dot(handle.state.rotation))
@@ -369,6 +445,7 @@ object VehiclePhysics {
 
     /** Run legacy engine bookkeeping transactionally, then emit a Bullet-only command. */
     fun control(vehicle: VehicleEntity, action: () -> Unit) {
+        if (!supportsPhysics(vehicle)) return
         val handle = bodies[vehicle]?.takeIf { it.ready } ?: return
         val motion = vehicle.deltaMovement
         val origin = vehicle.position()
@@ -390,7 +467,7 @@ object VehiclePhysics {
             vehicle.setOnGround(sparkGrounded)
             action()
             val engine = vehicle.computed().engineType
-            val ground = engine == EngineType.WHEEL || engine == EngineType.TRACK || engine == EngineType.WHEELCHAIR
+            val ground = handle.groundVehicle && (engine == EngineType.WHEEL || engine == EngineType.TRACK)
             val mode = when {
                 ground && engine == EngineType.TRACK -> VehicleControlMode.GROUND_TRACK
                 ground -> VehicleControlMode.GROUND_WHEEL
@@ -402,15 +479,26 @@ object VehiclePhysics {
             val power = vehicle.power.toDouble().coerceIn(-1.25, 3.0)
             val engineActive = hasPassenger && !vehicle.isWreck &&
                 (activeInput || abs(power) > .001 || vehicle.engineStartOver) && vehicle.energy > 0
+            val turretYaw = if (vehicle.hasTurret()) Math.toRadians(vehicle.turretYRot.toDouble()).toFloat() else 0f
+            val barrelPitch = if (vehicle.hasTurret()) Math.toRadians(
+                vehicle.turretXRot.coerceIn(vehicle.turretMinPitch, vehicle.turretMaxPitch).toDouble()
+            ).toFloat() else 0f
 
             val command = if (ground) {
                 val steering = (if (rightInput) 1.0 else 0.0) - (if (leftInput) 1.0 else 0.0)
                 val differentialKey = if (engine == EngineType.TRACK) "TrackDifferential" else "WheelDifferential"
                 val differential = engineNumber(vehicle, differentialKey, .35).coerceIn(0.0, 1.5)
+                // Longitudinal demand and steering split are independent.
+                // Clamping each side first and averaging afterwards would let a
+                // wide authored differential cancel the throttle completely:
+                // the ZTZ-99A authors 1.7, so `power 0.15 + steer` used to
+                // collapse to +1.25/-1.25 and a zero forward demand.
+                val centerDrive = power.coerceIn(-1.25, 1.25)
+                val turnDrive = (steering * differential).coerceIn(-1.5, 1.5)
                 // +steering is a right turn: the left contact group drives
                 // faster and the right group slower.
-                val leftDrive = (power + steering * differential).coerceIn(-1.25, 1.25)
-                val rightDrive = (power - steering * differential).coerceIn(-1.25, 1.25)
+                val leftDrive = centerDrive + turnDrive
+                val rightDrive = centerDrive - turnDrive
                 val maxSpeed = if (power >= 0.0) {
                     engineNumber(vehicle, "MaxForwardSpeedRate", .2)
                 } else {
@@ -421,9 +509,14 @@ object VehiclePhysics {
                     mode = mode,
                     leftDrive = leftDrive,
                     rightDrive = rightDrive,
+                    centerDrive = centerDrive,
                     targetSpeed = maxSpeed.coerceIn(.05, 4.0) * VehiclePhysicsUnits.TICKS_PER_SECOND,
+                    steering = steering,
+                    turretYaw = turretYaw,
+                    barrelPitch = barrelPitch,
                     engineActive = engineActive,
                     awake = engineActive || !sparkGrounded,
+                    brake = upInput,
                 )
             } else {
                 val pitchSpeed = engineNumber(vehicle, "PitchSpeed", 1.0)
@@ -527,7 +620,7 @@ object VehiclePhysics {
     @SubscribeEvent fun leave(event: EntityLeaveLevelEvent) = remove(event.entity)
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun join(event: EntityJoinLevelEvent) {
-        if (event.level.isClientSide || event.entity is VehicleEntity || event.entity is TurretWreckEntity) {
+        if (event.entity is TurretWreckEntity || event.entity is VehicleEntity && supportsPhysics(event.entity)) {
             begin(event.entity)
         }
     }

@@ -21,6 +21,8 @@ import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer
 import com.atsuishio.superbwarfare.client.shader.RadiationShaderHandler
 import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler
+import com.atsuishio.superbwarfare.compat.controllable.ControllableCompatHolder
+import com.atsuishio.superbwarfare.config.client.ControlConfig
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
@@ -700,6 +702,8 @@ object ClientEventHandler {
         handleThermalImaging(player)
         handleHandsomeGoggles(player)
         handleShootDelay(player, stack)
+        // 手柄扳机不产生原生鼠标／键盘事件，开火与瞄准要每 tick 轮询（未安装 Controllable 时无操作）
+        ClickEventHandler.handleControllerTriggers(player, stack)
         handleControlVehicle(player, stack)
         handleArtilleryIndicator(player, stack)
         calculateBombHitPos(player)
@@ -863,6 +867,32 @@ object ClientEventHandler {
         }
     }
 
+    /**
+     * 手柄（Controllable，可选依赖）折算出的载具输入位。
+     *
+     * 摇杆与扳机不会写 `KeyMapping`，所以手柄必须在这里单独折算；键盘路径不受任何影响。
+     * 左摇杆前推为负值（SDL 约定），与 Controllable 写 `LocalPlayer.input` 时的方向一致。
+     */
+    private fun controllerVehicleBits(): Int {
+        if (!ControlConfig.CONTROLLABLE_COMPAT.get()) return 0
+        if (!ControllableCompatHolder.isControllerInUse()) return 0
+
+        var bits = 0
+        val x = ControllableCompatHolder.leftStickX()
+        val y = ControllableCompatHolder.leftStickY()
+        if (x <= -ControllableCompatHolder.STICK_THRESHOLD) {
+            bits = bits or 0b000000001
+        } else if (x >= ControllableCompatHolder.STICK_THRESHOLD) {
+            bits = bits or 0b000000010
+        }
+        if (y <= -ControllableCompatHolder.STICK_THRESHOLD) {
+            bits = bits or 0b000000100
+        } else if (y >= ControllableCompatHolder.STICK_THRESHOLD) {
+            bits = bits or 0b000001000
+        }
+        return bits
+    }
+
     fun handleControlVehicle(player: Player, stack: ItemStack) {
         var keys: Short = 0
         val vehicle = player.vehicle
@@ -900,6 +930,8 @@ object ClientEventHandler {
             if (ModKeyMappings.MOVE_CTRL.isDown) {
                 keys = keys or 0b100000000
             }
+            // 手柄摇杆叠加到同一套输入位；未安装 Controllable 时 controllerVehicleBits() 恒为 0
+            keys = (keys.toInt() or controllerVehicleBits()).toShort()
         }
 
         if (keys != keysCache || vehicle is VehicleEntity || stack.`is`(ModItems.MONITOR.get())) {

@@ -1,4 +1,22 @@
 {
+  "Wheels": [
+    {"Side":"Left", "Role":"IdlerGuide", "Index":0, "Position":[1.80765,0.90675,4.8672], "Radius":0.420726, "Width":0.2},
+    {"Side":"Left", "Role":"Support", "Index":1, "Position":[1.80765,0.4563,3.393], "Radius":0.3978, "Width":0.2},
+    {"Side":"Left", "Role":"Support", "Index":2, "Position":[1.80765,0.4563,2.1645], "Radius":0.3978, "Width":0.2},
+    {"Side":"Left", "Role":"Support", "Index":3, "Position":[1.80765,0.4563,1.1115], "Radius":0.3978, "Width":0.2},
+    {"Side":"Left", "Role":"Support", "Index":4, "Position":[1.80765,0.4563,0.0585], "Radius":0.3978, "Width":0.2},
+    {"Side":"Left", "Role":"Support", "Index":5, "Position":[1.80765,0.4563,-0.936], "Radius":0.3978, "Width":0.2},
+    {"Side":"Left", "Role":"Support", "Index":6, "Position":[1.80765,0.4563,-2.2815], "Radius":0.3978, "Width":0.2},
+    {"Side":"Left", "Role":"DriveGuide", "Index":7, "Position":[1.80765,0.853872,-3.1824], "Radius":0.3744, "Width":0.2},
+    {"Side":"Right", "Role":"IdlerGuide", "Index":0, "Position":[-1.80765,0.90675,4.8672], "Radius":0.420726, "Width":0.2},
+    {"Side":"Right", "Role":"Support", "Index":1, "Position":[-1.80765,0.4563,3.393], "Radius":0.3978, "Width":0.2},
+    {"Side":"Right", "Role":"Support", "Index":2, "Position":[-1.80765,0.4563,2.1645], "Radius":0.3978, "Width":0.2},
+    {"Side":"Right", "Role":"Support", "Index":3, "Position":[-1.80765,0.4563,1.1115], "Radius":0.3978, "Width":0.2},
+    {"Side":"Right", "Role":"Support", "Index":4, "Position":[-1.80765,0.4563,0.0585], "Radius":0.3978, "Width":0.2},
+    {"Side":"Right", "Role":"Support", "Index":5, "Position":[-1.80765,0.4563,-0.936], "Radius":0.3978, "Width":0.2},
+    {"Side":"Right", "Role":"Support", "Index":6, "Position":[-1.80765,0.4563,-2.2815], "Radius":0.3978, "Width":0.2},
+    {"Side":"Right", "Role":"DriveGuide", "Index":7, "Position":[-1.80765,0.853872,-3.1824], "Radius":0.3744, "Width":0.2}
+  ],
   "MaxHealth": 450,
   "MaxEnergy": 5000000,
   "UpStep": 2.1,
