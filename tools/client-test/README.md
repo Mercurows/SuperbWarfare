@@ -87,7 +87,20 @@ Legion Go 的四个背键走厂商 HID 接口（root-only），桥读不到。�
 
 ```
 tools/client-test/mods/controllable-forge-1.20.1-0.21.9.jar
+tools/client-test/mods/framework-forge-1.20.1-0.8.0.jar
 ```
 
-启动器（`run-client.sh`）会自动下载并放好；手工构建时若缺失，Gradle 会直接报
+这两个 jar 被仓库根 `.gitignore` 的 `*.jar` 规则覆盖，**不会随仓库分发**，所以
+新 clone 之后必须先补一次。只编译、不启动客户端时用：
+
+```bash
+./tools/client-test/fetch-deps.sh          # 缺什么下什么
+./tools/client-test/fetch-deps.sh --force  # 强制重下
+```
+
+脚本会校验 SHA-256，失败时以非零码退出并说明原因。它只写
+`tools/client-test/mods/`，不碰 `run/mods`，也不会启动游戏。
+
+`run-client.sh` 仍保留相同的下载逻辑（它会顺带准备 `run/mods` 并启动客户端），
+两者可以互相替代。若两个 jar 都缺失，Gradle 会直接报
 `Could not find superbwarfare.test:controllable-forge-1.20.1:0.21.9`。
