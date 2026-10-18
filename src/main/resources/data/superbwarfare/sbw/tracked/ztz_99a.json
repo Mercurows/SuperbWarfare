@@ -1,0 +1,190 @@
+{
+  "Model": "superbwarfare:models/bedrock/vehicle/ztz_99a.geo.json",
+  "RenderScale": 1.0,
+  "MassKg": 55000.0,
+  "Track": {
+    "Pitch": 0.23307,
+    "PinInset": 0.048828125,
+    "AngularLimitDegrees": 40.0,
+    "LinkCount": 78,
+    "Clearance": 0.0,
+    "LinkMass": 18.0
+  },
+  "Left": {
+    "LinkTemplateBone": "trackRotL0",
+    "Suspension": {
+      "TravelUp": 0.18,
+      "TravelDown": 0.24,
+      "Frequency": 2.2,
+      "CompressionDampingRatio": 0.65,
+      "ReboundDampingRatio": 0.45,
+      "MaxForce": 400000.0
+    },
+    "Wheels": [
+      {
+        "Bone": "wheelL0",
+        "Role": "IdlerGuide",
+        "LoadShare": 0.0,
+        "Tensioner": {
+          "Travel": 0.1,
+          "Preload": 20000.0,
+          "Damping": 8000.0
+        },
+        "Mass": 400.0,
+        "Radius": 0.351562,
+        "HalfWidth": 0.2
+      },
+      {
+        "Bone": "wheelL1",
+        "Role": "Support",
+        "LoadShare": 1.0,
+        "Mass": 900.0,
+        "Radius": 0.53125,
+        "HalfWidth": 0.2
+      },
+      {
+        "Bone": "wheelL2",
+        "Role": "Support",
+        "LoadShare": 1.0,
+        "Mass": 900.0,
+        "Radius": 0.53125,
+        "HalfWidth": 0.2
+      },
+      {
+        "Bone": "wheelL3",
+        "Role": "Support",
+        "LoadShare": 1.0,
+        "Mass": 900.0,
+        "Radius": 0.53125,
+        "HalfWidth": 0.2
+      },
+      {
+        "Bone": "wheelL4",
+        "Role": "Support",
+        "LoadShare": 1.0,
+        "Mass": 900.0,
+        "Radius": 0.53125,
+        "HalfWidth": 0.2
+      },
+      {
+        "Bone": "wheelL5",
+        "Role": "Support",
+        "LoadShare": 1.0,
+        "Mass": 900.0,
+        "Radius": 0.53125,
+        "HalfWidth": 0.2
+      },
+      {
+        "Bone": "wheelL6",
+        "Role": "Support",
+        "LoadShare": 1.0,
+        "Mass": 900.0,
+        "Radius": 0.53125,
+        "HalfWidth": 0.2
+      },
+      {
+        "Bone": "wheelL7",
+        "Role": "DriveGuide",
+        "LoadShare": 0.0,
+        "Mass": 400.0,
+        "Radius": 0.351562,
+        "HalfWidth": 0.2
+      }
+    ]
+  },
+  "Right": {
+    "LinkTemplateBone": "trackRotR0",
+    "Suspension": {
+      "TravelUp": 0.18,
+      "TravelDown": 0.24,
+      "Frequency": 2.2,
+      "CompressionDampingRatio": 0.65,
+      "ReboundDampingRatio": 0.45,
+      "MaxForce": 400000.0
+    },
+    "Wheels": [
+      {
+        "Bone": "wheelR0",
+        "Role": "IdlerGuide",
+        "LoadShare": 0.0,
+        "Tensioner": {
+          "Travel": 0.1,
+          "Preload": 20000.0,
+          "Damping": 8000.0
+        },
+        "Mass": 400.0,
+        "Radius": 0.351562,
+        "HalfWidth": 0.2
+      },
+      {
+        "Bone": "wheelR1",
+        "Role": "Support",
+        "LoadShare": 1.0,
+        "Mass": 900.0,
+        "Radius": 0.53125,
+        "HalfWidth": 0.2
+      },
+      {
+        "Bone": "wheelR2",
+        "Role": "Support",
+        "LoadShare": 1.0,
+        "Mass": 900.0,
+        "Radius": 0.53125,
+        "HalfWidth": 0.2
+      },
+      {
+        "Bone": "wheelR3",
+        "Role": "Support",
+        "LoadShare": 1.0,
+        "Mass": 900.0,
+        "Radius": 0.53125,
+        "HalfWidth": 0.2
+      },
+      {
+        "Bone": "wheelR4",
+        "Role": "Support",
+        "LoadShare": 1.0,
+        "Mass": 900.0,
+        "Radius": 0.53125,
+        "HalfWidth": 0.2
+      },
+      {
+        "Bone": "wheelR5",
+        "Role": "Support",
+        "LoadShare": 1.0,
+        "Mass": 900.0,
+        "Radius": 0.53125,
+        "HalfWidth": 0.2
+      },
+      {
+        "Bone": "wheelR6",
+        "Role": "Support",
+        "LoadShare": 1.0,
+        "Mass": 900.0,
+        "Radius": 0.53125,
+        "HalfWidth": 0.2
+      },
+      {
+        "Bone": "wheelR7",
+        "Role": "DriveGuide",
+        "LoadShare": 0.0,
+        "Mass": 400.0,
+        "Radius": 0.351562,
+        "HalfWidth": 0.2
+      }
+    ]
+  },
+  "Drivetrain": {
+    "MaxDriveTorque": 160000.0,
+    "MaxBrakeTorque": 320000.0,
+    "MaxSpeed": 15.6,
+    "Differential": 1.7,
+    "RollingResistance": 0.015,
+    "Friction": 0.8
+  },
+  "ChassisOrigin": [
+    0.0,
+    1.0938,
+    -0.094
+  ]
+}

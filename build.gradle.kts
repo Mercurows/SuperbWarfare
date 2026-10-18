@@ -374,6 +374,8 @@ dependencies {
     // mek
     implementation(fg.deobf("curse.maven:mekanism-268560:6123077"))
 
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+
 //    implementation(fg.deobf("curse.maven:raise-sound-limit-simplified-unofficial-forge-port-1559322:8173274"))
 
 //    implementation(fg.deobf("curse.maven:lionfish-api-1001614:7923140"))
@@ -495,3 +497,13 @@ tasks.matching { it.name in listOf("runClient", "runServer", "runData", "runGame
     }
 
 // 确保 Mixin AP 能在 FG6 的编译管线中正确运行
+
+// Plain JVM unit tests for the engine-neutral tracked geometry/mechanism layer.
+// These must stay runnable without a Minecraft runtime (`./gradlew test`).
+tasks.named<Test>("test") {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "failed", "skipped")
+        showStandardStreams = true
+    }
+}
