@@ -1,6 +1,10 @@
 #version 150
 
+#moj_import <superbwarfare:scope_thermal.glsl>
+
 uniform sampler2D Sampler0;
+uniform sampler2D Sampler1;
+uniform int ThermalEnabled;
 uniform vec2 LensCenter;
 uniform float LensRadius;
 uniform float LensEdgeWidth;
@@ -178,6 +182,12 @@ void main() {
     vec2 uvR = screenUv(center - vec3(rel * split, 0.0));
     vec2 uvG = screenUv(center);
     vec2 uvB = screenUv(center + vec3(rel * split, 0.0));
+
+    if (ThermalEnabled != 0) {
+        vec3 thermal = scopeThermalColour(Sampler0, Sampler1, uvG, LensTexelSize * scale * LensScreenScale);
+        fragColor = vec4(thermal * (1.0 - edge), 1.0);
+        return;
+    }
 
     vec3 sampled;
     if (LensMagnification > 1.0001) {

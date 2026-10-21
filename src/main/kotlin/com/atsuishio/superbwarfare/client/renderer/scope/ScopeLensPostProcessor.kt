@@ -74,6 +74,10 @@ object ScopeLensPostProcessor {
         val magnification: Float,
         val tint: Int,
         val tintStrength: Float,
+        val thermal: Boolean,
+        val thermalBackgroundColor: Int?,
+        val thermalEntityColor: Int?,
+        val shaderPack: Boolean,
         var surface: MeshData?,
         val reticle: List<Draw>
     )
@@ -104,11 +108,16 @@ object ScopeLensPostProcessor {
         magnification: Float,
         tint: Int,
         tintStrength: Float,
-        surface: (ByteBufferBuilder) -> MeshData,
-        reticle: (MultiBufferSource) -> Unit
+        surface: ((ByteBufferBuilder) -> MeshData)?,
+        reticle: (MultiBufferSource) -> Unit,
+        thermal: Boolean = false,
+        thermalBackgroundColor: Int? = null,
+        thermalEntityColor: Int? = null
     ): Boolean {
-        if (!ShaderCompat.isShaderPackActive() || ShaderCompat.isRenderingShadowPass() ||
-            !ScopeLensShader.isAvailable() || !ScopeStencilRenderHelper.hasStencilAttachment()
+        val shaderPack = ShaderCompat.isShaderPackActive()
+        if ((!shaderPack && !thermal) || ShaderCompat.isRenderingShadowPass() ||
+            (surface != null && !ScopeLensShader.isAvailable()) ||
+            (thermal && !ScopeThermalRenderer.isAvailable()) || !ScopeStencilRenderHelper.hasStencilAttachment()
         ) return false
         val main = Minecraft.getInstance().mainRenderTarget
         val drawFbo = GL11.glGetInteger(GL30.GL_DRAW_FRAMEBUFFER_BINDING)
@@ -148,7 +157,8 @@ object ScopeLensPostProcessor {
                 target, stencil, Matrix4f(RenderSystem.getProjectionMatrix()),
                 Matrix4f(RenderSystem.getModelViewMatrix()), ScopeLensShader.screenScale(),
                 Vector3f(center), edgeWidth, magnification, tint, tintStrength,
-                surface(capture.surfaceBuffer), buffers.finish()
+                thermal, thermalBackgroundColor, thermalEntityColor, shaderPack,
+                surface?.invoke(capture.surfaceBuffer), buffers.finish()
             )
             return true
         } finally {
@@ -162,6 +172,14 @@ object ScopeLensPostProcessor {
             RenderSystem.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3])
         }
     }
+
+    fun deferThermalSight(
+        stencil: Int, backgroundColor: Int? = null, entityColor: Int? = null,
+        reticle: (MultiBufferSource) -> Unit
+    ): Boolean = defer(
+        stencil, Vector3f(), 0f, 1f, 0xFFFFFF, 0f, null, reticle,
+        thermal = true, thermalBackgroundColor = backgroundColor, thermalEntityColor = entityColor
+    )
 
     /** Called after AFTER_LEVEL, before vanilla clears hand depth and Iris converts colour space. */
     @JvmStatic
@@ -177,6 +195,7 @@ object ScopeLensPostProcessor {
         val modelView = RenderSystem.getModelViewStack()
         val shader = RenderSystem.getShader()
         val shaderTexture = RenderSystem.getShaderTexture(0)
+        val shaderTexture1 = RenderSystem.getShaderTexture(1)
         val activeTexture = GL11.glGetInteger(GL13.GL_ACTIVE_TEXTURE)
         RenderSystem.activeTexture(GL13.GL_TEXTURE0)
         val texture = GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D)
@@ -198,12 +217,15 @@ object ScopeLensPostProcessor {
         val scissor = GL11.glIsEnabled(GL11.GL_SCISSOR_TEST)
         val scissorBox = BufferUtils.createIntBuffer(4)
         GL11.glGetIntegerv(GL11.GL_SCISSOR_BOX, scissorBox)
+        val clearColor = BufferUtils.createFloatBuffer(4)
+        GL11.glGetFloatv(GL11.GL_COLOR_CLEAR_VALUE, clearColor)
         modelView.pushMatrix()
         try {
             RenderSystem.disableScissor()
+            if (lenses.any { it.thermal }) ScopeThermalRenderer.renderMask()
             for (lens in lenses) {
                 // A resize or pack switch must not reuse geometry/stencil from another framebuffer.
-                if (!ShaderCompat.isShaderPackActive() || lens.target.width != main.width ||
+                if (ShaderCompat.isShaderPackActive() != lens.shaderPack || lens.target.width != main.width ||
                     lens.target.height != main.height
                 ) continue
                 GlStateManager._glBindFramebuffer(GL30.GL_FRAMEBUFFER, lens.target.frameBufferId)
@@ -221,9 +243,12 @@ object ScopeLensPostProcessor {
                     RenderSystem.stencilFunc(GL11.GL_EQUAL, lens.stencil, 0xFF)
                     RenderSystem.stencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP)
                     val center = lens.center
-                    if (ScopeLensShader.beginSurface(
+                    if (lens.surface == null && lens.thermal) {
+                        ScopeThermalRenderer.drawSurface(lens.thermalBackgroundColor, lens.thermalEntityColor)
+                    } else if (ScopeLensShader.beginSurface(
                             center.x, center.y, center.z, lens.edgeWidth, lens.magnification,
-                            lens.tint, lens.tintStrength, lens.screenScale
+                            lens.tint, lens.tintStrength, lens.screenScale, lens.thermal,
+                            lens.thermalBackgroundColor, lens.thermalEntityColor
                         )
                     ) {
                         val vertices = lens.surface
@@ -257,6 +282,7 @@ object ScopeLensPostProcessor {
             RenderSystem.setProjectionMatrix(projection, sorting)
             RenderSystem.setShader { shader }
             RenderSystem.setShaderTexture(0, shaderTexture)
+            RenderSystem.setShaderTexture(1, shaderTexture1)
             RenderSystem.activeTexture(GL13.GL_TEXTURE0)
             GlStateManager._bindTexture(texture)
             RenderSystem.activeTexture(activeTexture)
@@ -272,6 +298,7 @@ object ScopeLensPostProcessor {
             GlStateManager._glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, readFbo)
             GlStateManager._glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, drawFbo)
             RenderSystem.viewport(viewport[0], viewport[1], viewport[2], viewport[3])
+            RenderSystem.clearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3])
         }
     }
 

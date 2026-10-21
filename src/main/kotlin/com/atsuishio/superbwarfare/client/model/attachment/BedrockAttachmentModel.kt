@@ -378,6 +378,7 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
             quadType,
             triangleType,
             light,
+            info,
             divisionIndices(info),
             texts
         )
@@ -496,20 +497,35 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
         quadType: RenderType,
         triangleType: RenderType,
         light: Int,
+        info: ScopeMode,
         divisions: List<Int>,
         texts: List<AmmoText> = emptyList()
     ) {
-        if (divisions.isEmpty()) return
+        val count = if (info.thermal) ocularIndicesFor(info).size else divisions.size
+        if (count == 0) return
         if (ClientEventHandler.zoomTime < DIVISION_MIN_ZOOM) return
 
         RenderSystem.disableDepthTest()
         withShaderBonesHidden {
-            for (i in divisions.indices) {
+            for (i in 0 until count) {
                 RenderSystem.stencilFunc(GL11.GL_EQUAL, i + 1, 0xFF)
-                renderDivisionImmediate(divisions[i], poseStack, bufferSource, texture, quadType, triangleType, light)
+                val division = divisions.getOrNull(i)
+                if (info.thermal && ScopeLensPostProcessor.deferThermalSight(
+                        i + 1, info.thermalBackgroundColor?.get(), info.thermalEntityColor?.get()
+                    ) { deferred ->
+                        if (division != null) {
+                            renderDivisionVertices(division, poseStack, deferred, texture, quadType, triangleType, light)
+                            for (text in texts) {
+                                if (text.divisionIndex == division) ammo.renderText(text, poseStack, deferred)
+                            }
+                        }
+                    }
+                ) continue
+                if (division == null) continue
+                renderDivisionImmediate(division, poseStack, bufferSource, texture, quadType, triangleType, light)
                 // Same stencil value and depth state as the reticle it sits next to.
                 for (text in texts) {
-                    if (text.divisionIndex == divisions[i]) {
+                    if (text.divisionIndex == division) {
                         ammo.renderText(text, poseStack, bufferSource)
                     }
                 }
@@ -657,7 +673,7 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
                         1f
                     }
                     val tint = info.lensTint
-                    if (ShaderCompat.isShaderPackActive()) {
+                    if (ShaderCompat.isShaderPackActive() || info.thermal) {
                         if (ScopeLensPostProcessor.defer(
                                 b, lensSurface, info.lensEdgeWidth, magnification,
                                 tint?.get() ?: 0xFFFFFF,
@@ -674,7 +690,10 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
                                             }
                                         }
                                     }
-                                }
+                                },
+                                thermal = info.thermal,
+                                thermalBackgroundColor = info.thermalBackgroundColor?.get(),
+                                thermalEntityColor = info.thermalEntityColor?.get()
                             )
                         ) continue
                     } else if (ScopeLensShader.beginSurface(

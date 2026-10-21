@@ -1,0 +1,11 @@
+{
+  "vertex": "superbwarfare:rendertype_scope_thermal",
+  "fragment": "superbwarfare:rendertype_scope_thermal",
+  "attributes": ["Position", "UV0"],
+  "samplers": [{"name": "Sampler0"}, {"name": "Sampler1"}],
+  "uniforms": [
+    {"name": "ThermalBackgroundColor", "type": "float", "count": 4, "values": [0, 0, 0, 0]},
+    {"name": "ThermalEntityColor", "type": "float", "count": 4, "values": [0, 0, 0, 0]},
+    {"name": "ThermalTexelSize", "type": "float", "count": 2, "values": [0.0005, 0.0005]}
+  ]
+}

@@ -40,7 +40,7 @@ object ScopeLensShader {
         ) { shader = it }
     }
 
-    private fun captureScreen(): Boolean {
+    internal fun captureScreen(): Boolean {
         val target = Minecraft.getInstance().mainRenderTarget
         val width = target.width
         val height = target.height
@@ -99,7 +99,10 @@ object ScopeLensShader {
         magnification: Float,
         tintColor: Int,
         tintStrength: Float,
-        screenScale: Float = screenScale()
+        screenScale: Float = screenScale(),
+        thermal: Boolean = false,
+        thermalBackgroundColor: Int? = null,
+        thermalEntityColor: Int? = null
     ): Boolean {
         if (radius <= 1.0e-4f) return false
         val custom = shader ?: return false
@@ -111,6 +114,9 @@ object ScopeLensShader {
         custom.safeGetUniform("LensMagnification").set(magnification.coerceAtLeast(0.001f))
         custom.safeGetUniform("LensScreenScale").set(screenScale)
         custom.safeGetUniform("LensTexelSize").set(1f / screenWidth, 1f / screenHeight)
+        custom.safeGetUniform("ThermalEnabled").set(if (thermal) 1 else 0)
+        ScopeThermalRenderer.applyColors(custom, thermalBackgroundColor, thermalEntityColor)
+        if (thermal) RenderSystem.setShaderTexture(1, ScopeThermalRenderer.maskTexture())
         val tint = lensTint(tintColor, tintStrength)
         custom.safeGetUniform("LensTint").set(tint[0], tint[1], tint[2])
         RenderSystem.enableBlend()

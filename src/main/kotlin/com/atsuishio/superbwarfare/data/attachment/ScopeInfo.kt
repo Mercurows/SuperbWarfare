@@ -333,6 +333,15 @@ data class ScopeInfo(
     @SerialName("LensTintStrength")
     val lensTintStrength: Float = 0f,
 
+    @SerialName("Thermal")
+    val thermal: Boolean = false,
+
+    @SerialName("ThermalBackgroundColor")
+    val thermalBackgroundColor: ModColor? = null,
+
+    @SerialName("ThermalEntityColor")
+    val thermalEntityColor: ModColor? = null,
+
     // 移动时的瞄准倍率，用于能够自动调整焦距的瞄准镜，设置成null相当于禁用该功能
     @SerialName("MovingZoom")
     val movingZoom: Double? = null,
@@ -350,7 +359,11 @@ data class ScopeInfo(
 ) {
     fun mode(index: Int = 0): ScopeMode {
         if (modes.isNotEmpty()) {
-            return modes[index.coerceIn(modes.indices)]
+            val mode = modes[index.coerceIn(modes.indices)]
+            return if (thermalBackgroundColor == null && thermalEntityColor == null) mode else mode.copy(
+                thermalBackgroundColor = mode.thermalBackgroundColor ?: thermalBackgroundColor,
+                thermalEntityColor = mode.thermalEntityColor ?: thermalEntityColor,
+            )
         }
         return ScopeMode(
             index = 0,
@@ -359,6 +372,9 @@ data class ScopeInfo(
             lensEdgeWidth = lensEdgeWidth,
             lensTint = lensTint,
             lensTintStrength = lensTintStrength,
+            thermal = thermal,
+            thermalBackgroundColor = thermalBackgroundColor,
+            thermalEntityColor = thermalEntityColor,
             zoomLengthScale = zoomLengthScale,
             zoom = zoom,
         )
@@ -390,6 +406,15 @@ data class ScopeMode(
 
     @SerialName("LensTintStrength")
     val lensTintStrength: Float = 0f,
+
+    @SerialName("Thermal")
+    val thermal: Boolean = false,
+
+    @SerialName("ThermalBackgroundColor")
+    val thermalBackgroundColor: ModColor? = null,
+
+    @SerialName("ThermalEntityColor")
+    val thermalEntityColor: ModColor? = null,
 
     // 完全瞄准后枪械沿 Z 轴（长度方向）压缩到的比例，默认 0.75
     @SerialName("ZoomLengthScale")

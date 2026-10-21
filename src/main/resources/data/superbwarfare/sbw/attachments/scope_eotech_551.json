@@ -17,6 +17,7 @@
   "Model": "superbwarfare:models/bedrock/attachment/scope_eotech_551.geo.json",
   "Texture": "superbwarfare:textures/bedrock/attachment/scope_eotech_551.png",
   "ScopeInfo": {
-    "Type": "Sight"
+    "Type": "Sight",
+    "Thermal": true
   }
 }

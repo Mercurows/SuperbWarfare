@@ -766,6 +766,7 @@ object ClientEventHandler {
     fun clearGravityLensing(event: ClientPlayerNetworkEvent.LoggingOut) {
         ReforgingGravityBallRenderer.clearWorldEffects()
         ScopeLensPostProcessor.close()
+        com.atsuishio.superbwarfare.client.renderer.scope.ScopeThermalRenderer.close()
     }
 
     @SubscribeEvent

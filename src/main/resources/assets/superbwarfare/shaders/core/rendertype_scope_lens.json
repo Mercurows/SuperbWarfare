@@ -9,6 +9,9 @@
   "samplers": [
     {
       "name": "Sampler0"
+    },
+    {
+      "name": "Sampler1"
     }
   ],
   "attributes": [
@@ -20,6 +23,9 @@
     "Normal"
   ],
   "uniforms": [
+    {"name": "ThermalBackgroundColor", "type": "float", "count": 4, "values": [0, 0, 0, 0]},
+    {"name": "ThermalEntityColor", "type": "float", "count": 4, "values": [0, 0, 0, 0]},
+    {"name": "ThermalEnabled", "type": "int", "count": 1, "values": [0]},
     {
       "name": "ModelViewMat",
       "type": "matrix4x4",
