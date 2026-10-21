@@ -226,6 +226,9 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         addMount(doc, AMMO_MOUNT_ID, Component.translatable("attachment.superbwarfare.slot.ammo_type").string) {
             onAmmoClicked()
         }
+        addMount(doc, SCOPE_STACK_MOUNT_ID, Component.translatable("attachment.superbwarfare.slot.scope_stack").string) {
+            onMountClicked(AttachmentType.SCOPE)
+        }
         doc.getElementById("backdrop")?.addEventListener("click") {
             if (editingAttachmentType != -1) leaveSlot() else onClose()
         }
@@ -586,9 +589,9 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     private fun syncMounts(doc: Document, data: GunData, reservedPanels: List<Box> = emptyList()): List<Mount> {
         val mounts = mutableListOf<Mount>()
         val selectedType = AttachmentSlots.slotAt(editingAttachmentType)
-        fun sync(id: String, type: AttachmentType?, point: BoneScreenPoint?, available: Boolean) {
+        fun sync(id: String, type: AttachmentType?, point: BoneScreenPoint?, available: Boolean, stacked: Boolean = false) {
             val element = doc.getElementById(id) ?: return
-            val installed = type?.let { data.attachment.id(it) }
+            val installed = if (stacked) null else type?.let { data.attachment.id(it) }
             // 入场动画的前 n tick 隐藏挂点；二级菜单打开后只保留当前挂点。
             // 图标、连线和标签也只按返回的点位列表绘制。
             if (openingTicks < MOUNT_REVEAL_DELAY_TICKS || (selectedType != null && type != selectedType) ||
@@ -611,6 +614,10 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             sync(mountId(type), type, WeaponEditMountTracker.positionOf(type), compatibleAttachments(data, type).isNotEmpty())
         }
         sync(AMMO_MOUNT_ID, null, WeaponEditMountTracker.ammoPosition, data.get(GunProp.AMMO_CONSUMER).size > 1)
+        sync(
+            SCOPE_STACK_MOUNT_ID, AttachmentType.SCOPE, WeaponEditMountTracker.scopeStackPosition,
+            compatibleAttachments(data, AttachmentType.SCOPE).isNotEmpty(), stacked = true
+        )
         return mounts
     }
 
@@ -768,7 +775,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
 
     /** 只显示鼠标所在圆圈的名称，并避让物品图标和菜单。 */
     private fun syncMountLabels(doc: Document, mounts: List<Mount>, obstacles: MutableList<Box>) {
-        val ids = AttachmentType.entries.map(::mountId) + AMMO_MOUNT_ID
+        val ids = AttachmentType.entries.map(::mountId) + AMMO_MOUNT_ID + SCOPE_STACK_MOUNT_ID
         val mouse = doc.mouseDocumentPosition
         for (id in ids) {
             val element = doc.getElementById("label-$id") ?: continue
@@ -1101,6 +1108,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         private const val MOUNT_REVEAL_DELAY_TICKS = 10
         private const val AIR = "minecraft:air"
         private const val AMMO_MOUNT_ID = "mount-ammo_type"
+        private const val SCOPE_STACK_MOUNT_ID = "mount-scope_stack"
         private const val MOUNT_SIZE = 9f
         private const val ICON_SIZE = 17f
         private const val PANEL_WIDTH = 180f

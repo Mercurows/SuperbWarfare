@@ -26,6 +26,10 @@ object WeaponEditMountTracker {
     var ammoPosition: BoneScreenPoint? = null
         private set
 
+    /** 瞄准镜叠装时下一件会装到的位置（顶层配件的 `scope_pos`）；顶层不可叠装时为 `null`。 */
+    var scopeStackPosition: BoneScreenPoint? = null
+        private set
+
     var guiWidth: Int = 0
         private set
 
@@ -35,11 +39,13 @@ object WeaponEditMountTracker {
     fun update(
         positions: Map<AttachmentType, BoneScreenPoint>,
         ammoPosition: BoneScreenPoint?,
+        scopeStackPosition: BoneScreenPoint?,
         guiWidth: Int,
         guiHeight: Int,
     ) {
         this.positions = positions
         this.ammoPosition = ammoPosition
+        this.scopeStackPosition = scopeStackPosition
         this.guiWidth = guiWidth
         this.guiHeight = guiHeight
     }
@@ -51,5 +57,6 @@ object WeaponEditMountTracker {
     fun clear() {
         positions = emptyMap()
         ammoPosition = null
+        scopeStackPosition = null
     }
 }

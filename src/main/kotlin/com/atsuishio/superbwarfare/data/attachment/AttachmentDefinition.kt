@@ -56,6 +56,9 @@ data class AttachmentDefinition(
     @SerialName("AllowSharedMount")
     val allowSharedMount: Boolean = false,
 
+    @SerialName("AcceptsScope")
+    val acceptsScope: Boolean = false,
+
     // 安装该枪托时是否需要适配器，部分枪托可直接装在枪身上
     @SerialName("RequiresAdapter")
     val requiresAdapter: Boolean = true,
@@ -241,8 +244,12 @@ data class AttachmentDefinition(
     fun textureOf(gun: GunData, slot: AttachmentType): ResourceLocation? = textureOf(skinOrNull(gun, slot))
 
     /** 模型与贴图成套解析：任意一项取不到就返回 `null`，调用方不必再各判一次 */
-    fun resolveAssets(gun: GunData, slot: AttachmentType): AttachmentRenderAssets? {
-        val skin = skinOrNull(gun, slot)
+    fun resolveAssets(gun: GunData, slot: AttachmentType): AttachmentRenderAssets? =
+        resolveAssets(skinOrNull(gun, slot))
+
+    fun resolveAssets(skinId: String): AttachmentRenderAssets? = resolveAssets(skinOrNull(skinId))
+
+    fun resolveAssets(skin: AttachmentSkinInfo?): AttachmentRenderAssets? {
         val model = modelOf(skin) ?: return null
         val texture = textureOf(skin) ?: return null
         return AttachmentRenderAssets(model, texture)

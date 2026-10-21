@@ -74,6 +74,7 @@
   ],
   "AvailableAttachments": {
     "Scope": [
+      "superbwarfare:scope_raiser",
       "superbwarfare:scope_handgun_red_dot",
       "superbwarfare:scope_winefox"
     ],

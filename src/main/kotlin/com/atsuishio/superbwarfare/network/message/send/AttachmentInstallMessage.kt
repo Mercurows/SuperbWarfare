@@ -70,7 +70,8 @@ private fun uninstall(player: ServerPlayer, data: GunData, type: AttachmentType)
  * 非创造模式另外要求**背包里确实有这么一件**：装上时扣掉一件，原来那件还给玩家。
  */
 private fun install(player: ServerPlayer, data: GunData, type: AttachmentType, id: ResourceLocation) {
-    if (data.attachment.id(type) == id) return
+    val stacking = data.attachment.acceptsStacked(type)
+    if (!stacking && data.attachment.id(type) == id) return
     if (!data.canInstall(type, id)) return
     // 先扣背包再动枪：扣不出来（背包里没有 / 已经用完）就整笔取消，不留半成品状态。
     // 创造模式可直接安装，生存模式在任何兼容配置下都需要背包中的配件。
@@ -78,10 +79,10 @@ private fun install(player: ServerPlayer, data: GunData, type: AttachmentType, i
 
     val previous = data.attachment.id(type)
     withdrawAmmoIfNeeded(player, data, type)
-    data.attachment.set(type, id)
+    val stacked = data.attachment.set(type, id)
     data.save()
 
-    previous?.let { returnItem(player, it) }
+    if (!stacked) previous?.let { returnItem(player, it) }
     player.playLocalSound(ModSounds.ATTACHMENT_SET.get(), 1f, 1f)
 }
 

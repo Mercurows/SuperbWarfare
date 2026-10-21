@@ -363,13 +363,17 @@ val ATTACHMENT_COMMAND = buildCommand("attachment") {
  * 槽位内容没有变化时（`set` 同一个配件、`clear` 空槽位）什么都不做。
  */
 private fun applyAttachment(data: GunData, ammoSupplier: Entity, type: AttachmentType, id: ResourceLocation?) {
-    if (data.attachment.id(type) == id) return
+    if (id == null) {
+        if (!data.attachment.has(type)) return
+    } else if (data.attachment.id(type) == id && !data.attachment.acceptsStacked(type)) {
+        return
+    }
 
     if (AttachmentSlots.of(type).withdrawAmmoOnChange) {
         data.withdrawAmmo(ammoSupplier)
     }
 
-    data.attachment.set(type, id)
+    if (id == null) data.attachment.clear(type) else data.attachment.set(type, id)
     data.save()
 }
 

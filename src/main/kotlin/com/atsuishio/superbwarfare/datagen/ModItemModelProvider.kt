@@ -353,6 +353,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.GRIP_CQR_GEN2)
         simpleItem(ModItems.GRIP_VERTICAL_BIPOD)
         simpleItem(ModItems.OSPREY_SILENCER)
+        simpleItem(ModItems.SCOPE_RAISER)
         simpleItem(ModItems.SCOPE_COYOTE)
         simpleItem(ModItems.SCOPE_AIMPOINT_T2)
         simpleItem(ModItems.SCOPE_HANDGUN_RED_DOT)

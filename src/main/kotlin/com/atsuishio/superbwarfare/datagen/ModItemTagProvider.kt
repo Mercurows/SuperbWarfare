@@ -618,6 +618,7 @@ class ModItemTagProvider(
             ModItems.BAYONET_M1917
         ),
         AttachmentType.SCOPE to listOf(
+            ModItems.SCOPE_RAISER,
             ModItems.SCOPE_COYOTE,
             ModItems.SCOPE_AIMPOINT_T2,
             ModItems.SCOPE_HANDGUN_RED_DOT,

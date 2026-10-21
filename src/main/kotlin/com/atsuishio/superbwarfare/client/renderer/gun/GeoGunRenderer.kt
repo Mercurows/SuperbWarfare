@@ -124,6 +124,15 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val bindSlotTransform: Matrix4f,
         // 弹药显示配置；实际的余弹数与比例在渲染调用点按需计算，避免每次解析配件都走一遍 PMC
         val ammoBar: List<AmmoBarEntry> = emptyList(),
+        val textShow: List<AmmoTextEntry> = emptyList(),
+        val hosts: List<ScopeHostRenderData> = emptyList()
+    )
+
+    data class ScopeHostRenderData(
+        val model: BedrockAttachmentModel,
+        val texture: ResourceLocation,
+        val slotTransform: Matrix4f,
+        val ammoBar: List<AmmoBarEntry> = emptyList(),
         val textShow: List<AmmoTextEntry> = emptyList()
     )
 
@@ -580,7 +589,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 && ClientEventHandler.isEditing
                 && handForContext(transformType) == InteractionHand.MAIN_HAND
             ) {
-                captureMountScreenPositions(poseStack, model)
+                captureMountScreenPositions(stack, poseStack, model)
             }
 
             // 激光束：本地玩家第一人称 + 第三人称右手（出光口已在 `renderAttachments` 里采完）。
@@ -862,8 +871,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     open fun renderScopeMount(stack: ItemStack, model: GeoGunModel) {
         val bone = model.getBone(CUSTOM_SCOPE_MOUNT_BONE) ?: return
         val data = from(stack)
-        val definition = data.attachment.id(AttachmentType.SCOPE)
-            ?.let { AttachmentDefinition.from(it) }
+        val definition = data.attachment.scopeStack().firstOrNull()?.definition
         // 上导轨上挂了东西（peq_15 这类）也要把这段导轨画出来，不然配件是浮空的
         bone.visible = data.attachment.has(AttachmentType.UPPER_RAIL) ||
                 (definition != null && definition.requiresRail)
@@ -878,6 +886,22 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         packedOverlay: Int
     ) {
         val data = resolveScopeAttachmentRender(stack, model) ?: return
+
+        for (host in data.hosts) {
+            poseStack.pushPose()
+            mulPoseWithNormal(poseStack, host.slotTransform)
+            host.model.renderToBuffer(
+                poseStack,
+                bufferSource,
+                host.texture,
+                packedLight,
+                packedOverlay,
+                null,
+                resolveAmmoReadout(stack, host.ammoBar, host.textShow)
+            )
+            poseStack.popPose()
+        }
+
         if (data.attachmentId == handledScopeAttachment) return
 
         poseStack.pushPose()
@@ -896,8 +920,34 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
     open fun resolveScopeAttachmentRender(stack: ItemStack, model: GeoGunModel): ScopeRenderData? {
         val data = from(stack)
-        val attachmentId = data.attachment.id(AttachmentType.SCOPE) ?: return null
-        val definition = AttachmentDefinition.from(attachmentId) ?: return null
+        val layers = data.attachment.scopeStack()
+        if (layers.isEmpty()) return null
+
+        val baseBone = layers.first().definition?.bone ?: SCOPE_BONE
+        var mountTransform = model.getGlobalTransform(baseBone) ?: return null
+        var bindMountTransform = model.getBindGlobalTransform(baseBone) ?: return null
+
+        val hosts = ArrayList<ScopeHostRenderData>(layers.size - 1)
+        for (index in 0 until layers.size - 1) {
+            val entry = layers[index]
+            val definition = entry.definition ?: return null
+            val (modelPath, texture) = definition.resolveAssets(entry.skinId) ?: return null
+            val hostModel = AttachmentModelReloadListener.getModel(modelPath) ?: return null
+            val local = attachmentTransform(stack, AttachmentType.SCOPE, definition)
+            val hostTransform = Matrix4f(mountTransform).mul(local)
+            val hostBindTransform = Matrix4f(bindMountTransform).mul(local)
+            hosts += ScopeHostRenderData(
+                hostModel, texture, hostTransform, definition.ammoBar, definition.textShow
+            )
+            mountTransform = hostModel.getGlobalTransform(SCOPE_BONE)
+                ?.let { Matrix4f(hostTransform).mul(it) } ?: return null
+            bindMountTransform = hostModel.getBindGlobalTransform(SCOPE_BONE)
+                ?.let { Matrix4f(hostBindTransform).mul(it) } ?: return null
+        }
+
+        val top = layers.last()
+        val attachmentId = top.id
+        val definition = top.definition ?: return null
         val scopeInfo = definition.scopeInfo ?: return null
         val scopeModeIndex = data.attachment.scopeMode(AttachmentType.SCOPE)
         val scopeMode = scopeInfo.mode(scopeModeIndex)
@@ -906,16 +956,13 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         } else {
             null
         }
-        val (modelPath, texture) = definition.resolveAssets(data, AttachmentType.SCOPE) ?: return null
+        val (modelPath, texture) = definition.resolveAssets(top.skinId) ?: return null
         val attachmentModel = AttachmentModelReloadListener.getModel(modelPath) ?: return null
-        val boneName = definition.bone ?: SCOPE_BONE
-        val mountTransform = model.getGlobalTransform(boneName) ?: return null
-        val bindMountTransform = model.getBindGlobalTransform(boneName) ?: return null
         val local = attachmentTransform(stack, AttachmentType.SCOPE, definition)
         return ScopeRenderData(
             attachmentModel, texture, scopeMode, scopeModeIndex, companionSightMode, attachmentId,
             Matrix4f(mountTransform).mul(local), Matrix4f(bindMountTransform).mul(local),
-            definition.ammoBar, definition.textShow
+            definition.ammoBar, definition.textShow, hosts
         )
     }
 
@@ -2376,7 +2423,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
      *
      * 投影矩阵取采样这一刻生效的那一份，与 [submitScopeReticleSample] 同一套口径。
      */
-    private fun captureMountScreenPositions(poseStack: PoseStack, model: GeoGunModel) {
+    private fun captureMountScreenPositions(stack: ItemStack, poseStack: PoseStack, model: GeoGunModel) {
         val positions = mutableMapOf<AttachmentType, BoneScreenPoint>()
         for (slot in AttachmentSlots.ALL) {
             val bone = slot.focusBone ?: continue
@@ -2392,7 +2439,38 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         )
 
         val window = Minecraft.getInstance().window
-        WeaponEditMountTracker.update(positions, ammo, window.guiScaledWidth, window.guiScaledHeight)
+        val stackMount = scopeStackMountTransform(stack, model)?.let {
+            BedrockBoneCoordinateTool.firstPersonBonePointToScreen(
+                poseStack, it, EDIT_MOUNT_POINT,
+                RenderSystem.getProjectionMatrix(), window.guiScaledWidth, window.guiScaledHeight
+            )
+        }
+        WeaponEditMountTracker.update(
+            positions, ammo, stackMount, window.guiScaledWidth, window.guiScaledHeight
+        )
+    }
+
+    private fun scopeStackMountTransform(stack: ItemStack, model: GeoGunModel): Matrix4f? {
+        val layers = from(stack).attachment.scopeStack()
+        val top = layers.lastOrNull() ?: return null
+        val topDefinition = top.definition ?: return null
+        if (!topDefinition.acceptsScope) return null
+
+        var mount = model.getGlobalTransform(layers.first().definition?.bone ?: SCOPE_BONE) ?: return null
+        for (index in 0 until layers.size - 1) {
+            val entry = layers[index]
+            val definition = entry.definition ?: return null
+            val assets = definition.resolveAssets(entry.skinId) ?: return null
+            val host = AttachmentModelReloadListener.getModel(assets.model) ?: return null
+            val hostTransform = Matrix4f(mount).mul(attachmentTransform(stack, AttachmentType.SCOPE, definition))
+            mount = host.getGlobalTransform(SCOPE_BONE)
+                ?.let { Matrix4f(hostTransform).mul(it) } ?: return null
+        }
+
+        val assets = topDefinition.resolveAssets(top.skinId) ?: return null
+        val topModel = AttachmentModelReloadListener.getModel(assets.model) ?: return null
+        val topTransform = Matrix4f(mount).mul(attachmentTransform(stack, AttachmentType.SCOPE, topDefinition))
+        return topModel.getGlobalTransform(SCOPE_BONE)?.let { Matrix4f(topTransform).mul(it) }
     }
 
     /**

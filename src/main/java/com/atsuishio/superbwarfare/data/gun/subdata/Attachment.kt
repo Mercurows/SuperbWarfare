@@ -47,6 +47,10 @@ class Attachment(private val gun: GunData) {
      * Returns the registered attachment id installed in [type].
      */
     fun id(type: AttachmentType): ResourceLocation? {
+        if (type == AttachmentType.SCOPE) {
+            val stacked = scopeStack()
+            if (stacked.isNotEmpty()) return stacked.last().id
+        }
         val tag = attachment.get(type.attachmentName) ?: return null
         return when (tag.id) {
             Tag.TAG_STRING -> ResourceLocation.tryParse(attachment.getString(type.attachmentName))
@@ -56,6 +60,42 @@ class Attachment(private val gun: GunData) {
 
             else -> null
         }
+    }
+
+    fun scopeStack(): List<ScopeStackEntry> {
+        val root = getTag(AttachmentType.SCOPE) ?: return emptyList()
+        val entries = ArrayList<ScopeStackEntry>()
+        var tag: CompoundTag? = root
+        while (tag != null && entries.size < MAX_STACK_DEPTH) {
+            val id = tag.readId().takeIf { it.isNotBlank() }?.let(ResourceLocation::tryParse) ?: break
+            entries += ScopeStackEntry(
+                id,
+                tag,
+                AttachmentDefinition.from(id),
+                tag.getString(AttachmentDefinition.CURRENT_SKIN_ID).trim()
+            )
+            tag = tag.getCompound(NESTED_KEY).takeIf { it.contains("Id") || it.contains("Name") }
+        }
+        return entries
+    }
+
+    fun acceptsStacked(type: AttachmentType): Boolean =
+        type == AttachmentType.SCOPE && scopeStack().lastOrNull()?.definition?.acceptsScope == true
+
+    private fun effectiveTag(type: AttachmentType): CompoundTag? {
+        if (type == AttachmentType.SCOPE) {
+            val stacked = scopeStack()
+            if (stacked.isNotEmpty()) return stacked.last().tag
+        }
+        return getTag(type)
+    }
+
+    private fun getOrCreateEffectiveTag(type: AttachmentType): CompoundTag {
+        if (type == AttachmentType.SCOPE) {
+            val root = getOrCreateTag(type)
+            return scopeStack().lastOrNull()?.tag ?: root
+        }
+        return getOrCreateTag(type)
     }
 
     /**
@@ -216,7 +256,7 @@ class Attachment(private val gun: GunData) {
     }
 
     fun getSkin(type: AttachmentType): String {
-        val tag = getTag(type) ?: return ""
+        val tag = effectiveTag(type) ?: return ""
         return tag.getString(AttachmentDefinition.CURRENT_SKIN_ID).trim()
     }
 
@@ -226,7 +266,7 @@ class Attachment(private val gun: GunData) {
         val value = skinId?.trim().orEmpty()
         if (getSkin(type) == value) return
 
-        getOrCreateTag(type).putString(AttachmentDefinition.CURRENT_SKIN_ID, value)
+        getOrCreateEffectiveTag(type).putString(AttachmentDefinition.CURRENT_SKIN_ID, value)
         gun.invalidateProperties()
     }
 
@@ -264,27 +304,64 @@ class Attachment(private val gun: GunData) {
         }
     }
 
-    fun set(type: AttachmentType, id: ResourceLocation?) {
+    fun set(type: AttachmentType, id: ResourceLocation?): Boolean {
         if (id == null) {
             remove(type)
-            return
+            return false
         }
-        if (id(type) == id) return
-
-        val tag = CompoundTag().apply { putString("Id", id.toString()) }
-        AttachmentDefinition.from(id)?.let {
-            it.scopeZoom(0)?.let { zoom -> tag.putDouble("Zoom", zoom.default) }
+        if (type == AttachmentType.SCOPE) {
+            if (stackOnto(id)) return true
+            if (acceptsStacked(type)) return false
         }
+        if (id(type) == id) return false
 
-        attachment.put(type.attachmentName, tag)
+        attachment.put(type.attachmentName, createTag(id))
         gun.invalidateProperties()
+        return false
     }
 
-    fun remove(type: AttachmentType) {
+    fun clear(type: AttachmentType) {
         if (!attachment.contains(type.attachmentName)) return
         attachment.remove(type.attachmentName)
         gun.invalidateProperties()
     }
+
+    fun remove(type: AttachmentType) {
+        if (type == AttachmentType.SCOPE && pop(type)) return
+        clear(type)
+    }
+
+    fun pop(type: AttachmentType): Boolean {
+        if (type != AttachmentType.SCOPE) return false
+        val stacked = scopeStack()
+        if (stacked.size <= 1) return false
+        stacked[stacked.size - 2].tag.remove(NESTED_KEY)
+        gun.invalidateProperties()
+        return true
+    }
+
+    private fun stackOnto(id: ResourceLocation): Boolean {
+        val stacked = scopeStack()
+        val top = stacked.lastOrNull() ?: return false
+        if (top.definition?.acceptsScope == true) {
+            if (stacked.size >= MAX_STACK_DEPTH) return false
+            top.tag.put(NESTED_KEY, createTag(id))
+            gun.invalidateProperties()
+            return true
+        }
+        if (stacked.size > 1) {
+            if (top.id == id) return false
+            stacked[stacked.size - 2].tag.put(NESTED_KEY, createTag(id))
+            gun.invalidateProperties()
+        }
+        return false
+    }
+
+    private fun createTag(id: ResourceLocation): CompoundTag =
+        CompoundTag().apply {
+            putString("Id", id.toString())
+            AttachmentDefinition.from(id)?.scopeZoom(0)?.let { putDouble("Zoom", it.default) }
+        }
 
     fun cycle(type: AttachmentType, add: Boolean): Boolean {
         val allowed = gun.availableAttachments(type)
@@ -307,23 +384,23 @@ class Attachment(private val gun: GunData) {
     }
 
     fun getZoom(type: AttachmentType): Double? {
-        val tag = getTag(type) ?: return null
+        val tag = effectiveTag(type) ?: return null
         if (!tag.contains("Zoom")) return null
         return tag.getDouble("Zoom")
     }
 
     fun setZoom(type: AttachmentType, zoom: Double) {
-        getOrCreateTag(type).putDouble("Zoom", zoom)
+        getOrCreateEffectiveTag(type).putDouble("Zoom", zoom)
         gun.invalidateProperties()
     }
 
     fun scopeMode(type: AttachmentType): Int {
-        val tag = getTag(type) ?: return 0
+        val tag = effectiveTag(type) ?: return 0
         return if (tag.contains("Mode")) tag.getInt("Mode").coerceAtLeast(0) else 0
     }
 
     fun setScopeMode(type: AttachmentType, mode: Int) {
-        getOrCreateTag(type).putInt("Mode", mode.coerceAtLeast(0))
+        getOrCreateEffectiveTag(type).putInt("Mode", mode.coerceAtLeast(0))
         gun.invalidateProperties()
     }
 
@@ -337,7 +414,7 @@ class Attachment(private val gun: GunData) {
         val direction = if (scroll >= 0) 1 else -1
         val next = ((current + direction) % count + count) % count
 
-        val tag = getOrCreateTag(type)
+        val tag = getOrCreateEffectiveTag(type)
         tag.putInt("Mode", next)
         definition.scopeZoom(next)?.let { tag.putDouble("Zoom", it.default) }
         gun.invalidateProperties()
@@ -368,6 +445,14 @@ class Attachment(private val gun: GunData) {
     fun installed(): List<AttachmentInstance> {
         val result = mutableListOf<AttachmentInstance>()
         for (type in AttachmentType.entries) {
+            if (type == AttachmentType.SCOPE) {
+                for (entry in scopeStack()) {
+                    val definition = entry.definition ?: continue
+                    if (type !in definition.acceptedSlots) continue
+                    result += AttachmentInstance(type, entry.id, entry.tag, definition)
+                }
+                continue
+            }
             val id = id(type) ?: continue
             val definition = AttachmentDefinition.from(id) ?: continue
             // 装进来的槽位必须在这件配件声明的可装槽位里（多槽位配件见 `AttachmentDefinition.extraSlots`）
@@ -384,6 +469,12 @@ class Attachment(private val gun: GunData) {
 
         /** 颜色合法域上限（`0xRRGGBB`，不含 alpha） */
         const val LASER_COLOR_MASK: Int = 0xFFFFFF
+
+        /** 叠装层挂在下一层槽位 tag 里的键名 */
+        const val NESTED_KEY: String = "OnTop"
+
+        /** 叠装层数上限，防止损坏的存档把遍历拖成无底洞 */
+        const val MAX_STACK_DEPTH: Int = 32
     }
 }
 
@@ -392,6 +483,13 @@ data class AttachmentInstance(
     val id: ResourceLocation,
     val tag: CompoundTag,
     val definition: AttachmentDefinition,
+)
+
+data class ScopeStackEntry(
+    val id: ResourceLocation,
+    val tag: CompoundTag,
+    val definition: AttachmentDefinition?,
+    val skinId: String,
 )
 
 private fun CompoundTag.readId(): String {

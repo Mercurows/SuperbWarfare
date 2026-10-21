@@ -49,6 +49,7 @@
   "Icon": "superbwarfare:textures/gun_icon/trachelium_icon.png",
   "AvailableAttachments": {
     "Scope": [
+      "superbwarfare:scope_raiser",
       "superbwarfare:scope_handgun_red_dot",
       "superbwarfare:scope_coyote",
       "superbwarfare:scope_aimpoint_t2",

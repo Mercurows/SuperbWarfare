@@ -105,6 +105,7 @@
   ],
   "AvailableAttachments": {
     "Scope": [
+      "superbwarfare:scope_raiser",
       "superbwarfare:scope_coyote",
       "superbwarfare:scope_aimpoint_t2",
       "superbwarfare:scope_eotech_551",

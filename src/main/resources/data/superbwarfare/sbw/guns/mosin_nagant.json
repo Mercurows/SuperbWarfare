@@ -104,6 +104,7 @@
   ],
   "AvailableAttachments": {
     "Scope": [
+      "superbwarfare:scope_raiser",
       "superbwarfare:scope_pu"
     ],
     "Muzzle": [

@@ -698,6 +698,7 @@ object ModItems {
 
     // Scope / sight
     // @formatter:off
+    @JvmField val SCOPE_RAISER = registerAttachment("scope_raiser")
     @JvmField val SCOPE_COYOTE = registerAttachment("scope_coyote")
     @JvmField val SCOPE_AIMPOINT_T2 = registerAttachment("scope_aimpoint_t2")
     @JvmField val SCOPE_HANDGUN_RED_DOT = registerAttachment("scope_handgun_red_dot")
