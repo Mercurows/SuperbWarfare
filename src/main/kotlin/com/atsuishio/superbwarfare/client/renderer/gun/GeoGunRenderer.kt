@@ -25,6 +25,7 @@ import com.atsuishio.superbwarfare.data.attachment.*
 import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.gun.AmmoConsumer.AmmoConsumeType
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
+import com.atsuishio.superbwarfare.data.gun.subdata.ScopeStackEntry
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.event.DeployedWeaponHandler
@@ -933,7 +934,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             val definition = entry.definition ?: return null
             val (modelPath, texture) = definition.resolveAssets(entry.skinId) ?: return null
             val hostModel = AttachmentModelReloadListener.getModel(modelPath) ?: return null
-            val local = attachmentTransform(stack, AttachmentType.SCOPE, definition)
+            val local = scopeLayerTransform(stack, entry, definition, previewed = false)
             val hostTransform = Matrix4f(mountTransform).mul(local)
             val hostBindTransform = Matrix4f(bindMountTransform).mul(local)
             hosts += ScopeHostRenderData(
@@ -958,7 +959,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         }
         val (modelPath, texture) = definition.resolveAssets(top.skinId) ?: return null
         val attachmentModel = AttachmentModelReloadListener.getModel(modelPath) ?: return null
-        val local = attachmentTransform(stack, AttachmentType.SCOPE, definition)
+        val local = scopeLayerTransform(stack, top, definition, previewed = true)
         return ScopeRenderData(
             attachmentModel, texture, scopeMode, scopeModeIndex, companionSightMode, attachmentId,
             Matrix4f(mountTransform).mul(local), Matrix4f(bindMountTransform).mul(local),
@@ -1334,10 +1335,29 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val data = from(stack)
         val preview = if (type != AttachmentType.MAGAZINE) attachmentEditPreview(stack, data, type) else null
         val offset = preview?.offset ?: data.attachment.getOffset(type)
-        val rotation = (preview?.rotation ?: data.attachment.getRotation(type)).toFloat()
-        return Matrix4f()
+        val rotation = preview?.rotation ?: data.attachment.getRotation(type)
+        return attachmentLocalTransform(offset, rotation)
+    }
+
+    private fun attachmentLocalTransform(offset: Double, rotation: Double): Matrix4f =
+        Matrix4f()
             .translate(0f, 0f, (offset / 16.0).toFloat())
-            .rotateZ(Mth.DEG_TO_RAD * rotation)
+            .rotateZ(Mth.DEG_TO_RAD * rotation.toFloat())
+
+    /** 叠装链里每一层只读自己的 `Offset`/`Rotation`；拖动预览只作用在最上层。 */
+    private fun scopeLayerTransform(
+        stack: ItemStack,
+        entry: ScopeStackEntry,
+        definition: AttachmentDefinition,
+        previewed: Boolean,
+    ): Matrix4f {
+        val data = from(stack)
+        val preview = if (previewed) attachmentEditPreview(stack, data, AttachmentType.SCOPE) else null
+        val offset = preview?.offset ?: data.attachment.getOffset(AttachmentType.SCOPE, entry.tag)
+        val rotation = preview?.rotation ?: data.attachment.getRotation(AttachmentType.SCOPE, entry.tag)
+        val transform = attachmentLocalTransform(offset, rotation)
+        attachmentRotation(definition)?.let { transform.mul(it) }
+        return transform
     }
 
     open fun resolveMuzzleAttachmentLocalTransform(stack: ItemStack): Matrix4f =
@@ -2462,14 +2482,14 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             val definition = entry.definition ?: return null
             val assets = definition.resolveAssets(entry.skinId) ?: return null
             val host = AttachmentModelReloadListener.getModel(assets.model) ?: return null
-            val hostTransform = Matrix4f(mount).mul(attachmentTransform(stack, AttachmentType.SCOPE, definition))
+            val hostTransform = Matrix4f(mount).mul(scopeLayerTransform(stack, entry, definition, previewed = false))
             mount = host.getGlobalTransform(SCOPE_BONE)
                 ?.let { Matrix4f(hostTransform).mul(it) } ?: return null
         }
 
         val assets = topDefinition.resolveAssets(top.skinId) ?: return null
         val topModel = AttachmentModelReloadListener.getModel(assets.model) ?: return null
-        val topTransform = Matrix4f(mount).mul(attachmentTransform(stack, AttachmentType.SCOPE, topDefinition))
+        val topTransform = Matrix4f(mount).mul(scopeLayerTransform(stack, top, topDefinition, previewed = true))
         return topModel.getGlobalTransform(SCOPE_BONE)?.let { Matrix4f(topTransform).mul(it) }
     }
 

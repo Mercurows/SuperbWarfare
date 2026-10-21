@@ -210,10 +210,11 @@ class Attachment(private val gun: GunData) {
         AttachmentDefinition.from(id)?.hasBipod == true
     }
 
-    fun getRotation(type: AttachmentType): Double {
+    fun getRotation(type: AttachmentType): Double = getRotation(type, effectiveTag(type))
+
+    fun getRotation(type: AttachmentType, tag: CompoundTag?): Double {
         if (type == AttachmentType.MAGAZINE || type == AttachmentType.CHARM) return 0.0
-        val tag = getTag(type) ?: return 0.0
-        if (!tag.contains("Rotation")) return 0.0
+        if (tag == null || !tag.contains("Rotation")) return 0.0
         val rotation = tag.getDouble("Rotation")
         if (!rotation.isFinite()) return 0.0
         // 兼容旧的 0..360 存档：270° 在新滑块里显示为 -90°，保持原来的朝向。
@@ -231,14 +232,15 @@ class Attachment(private val gun: GunData) {
         val value = rotation.coerceIn(AttachmentAdjustments.MIN_ROTATION, AttachmentAdjustments.MAX_ROTATION)
         if (getRotation(type) == value) return
 
-        getOrCreateTag(type).putDouble("Rotation", value)
+        getOrCreateEffectiveTag(type).putDouble("Rotation", value)
         gun.invalidateProperties()
     }
 
-    fun getOffset(type: AttachmentType): Double {
+    fun getOffset(type: AttachmentType): Double = getOffset(type, effectiveTag(type))
+
+    fun getOffset(type: AttachmentType, tag: CompoundTag?): Double {
         if (type == AttachmentType.MAGAZINE) return 0.0
-        val tag = getTag(type) ?: return 0.0
-        if (!tag.contains("Offset")) return 0.0
+        if (tag == null || !tag.contains("Offset")) return 0.0
         val offset = tag.getDouble("Offset").takeIf { it.isFinite() } ?: 0.0
         val range = AttachmentAdjustments.offsetRange(gun, type)
         return offset.coerceIn(range.start, range.endInclusive)
@@ -249,9 +251,9 @@ class Attachment(private val gun: GunData) {
         val range = AttachmentAdjustments.offsetRange(gun, type)
         val value = offset.coerceIn(range.start, range.endInclusive)
         // 比较原始存档值：读侧钳制后的相等不能阻止把旧的越界值真正修正回 NBT。
-        if ((getTag(type)?.getDouble("Offset") ?: 0.0) == value) return
+        if ((effectiveTag(type)?.getDouble("Offset") ?: 0.0) == value) return
 
-        getOrCreateTag(type).putDouble("Offset", value)
+        getOrCreateEffectiveTag(type).putDouble("Offset", value)
         gun.invalidateProperties()
     }
 
