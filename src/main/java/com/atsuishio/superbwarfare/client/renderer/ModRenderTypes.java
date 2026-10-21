@@ -8,6 +8,7 @@ import net.minecraft.Util;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.function.Function;
@@ -75,6 +76,40 @@ public class ModRenderTypes extends RenderType {
 
     public static RenderType laserBeam(ResourceLocation location) {
         return LASER_BEAM.apply(location);
+    }
+
+    private static final ShaderStateShard SCOPE_RETICLE_SHADER = new ShaderStateShard(() -> {
+        ShaderInstance unlit = GameRenderer.getPositionColorTexLightmapShader();
+        return unlit != null && unlit.getVertexFormat() != DefaultVertexFormat.POSITION_TEX_COLOR
+                ? GameRenderer.getRendertypeEntityTranslucentEmissiveShader() : unlit;
+    });
+
+    private static final Function<ResourceLocation, RenderType> SCOPE_RETICLE = Util.memoize(location ->
+            scopeReticle(location, VertexFormat.Mode.QUADS));
+    private static final Function<ResourceLocation, RenderType> SCOPE_RETICLE_MESH = Util.memoize(location ->
+            scopeReticle(location, VertexFormat.Mode.TRIANGLES));
+
+    /** Unlit reticles use the shader pack's matching emissive entity pipeline when it overrides shaders. */
+    private static RenderType scopeReticle(ResourceLocation location, VertexFormat.Mode mode) {
+        CompositeState state = CompositeState.builder()
+                .setShaderState(SCOPE_RETICLE_SHADER)
+                .setTextureState(new TextureStateShard(location, false, false))
+                .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                .setCullState(NO_CULL)
+                .setLightmapState(NO_LIGHTMAP)
+                .setOverlayState(NO_OVERLAY)
+                .setWriteMaskState(COLOR_DEPTH_WRITE)
+                .createCompositeState(false);
+        // Keep the model's vertex format; this shader only reads Position, Color and UV0.
+        return create("scope_reticle_" + mode, DefaultVertexFormat.NEW_ENTITY, mode, 256, false, true, state);
+    }
+
+    public static RenderType scopeReticle(ResourceLocation location) {
+        return SCOPE_RETICLE.apply(location);
+    }
+
+    public static RenderType scopeReticleMesh(ResourceLocation location) {
+        return SCOPE_RETICLE_MESH.apply(location);
     }
 
     public static final Function<ResourceLocation, RenderType> ILLUMINATED = Util.memoize((location) -> {
