@@ -1,13 +1,13 @@
 package com.atsuishio.superbwarfare.client.gun
 
 import com.atsuishio.superbwarfare.client.gun.GunChargeHandler.reset
-import com.atsuishio.superbwarfare.client.overlay.OverlayTraceHandler
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.RightClickAction
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.network.message.send.UseActionMessage
 import com.atsuishio.superbwarfare.tools.MeleeQuery
+import com.atsuishio.superbwarfare.tools.TraceTool
 import com.atsuishio.superbwarfare.tools.sendPacketToServer
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
@@ -33,6 +33,9 @@ object GunChargeHandler {
         private set
 
     private var chargingItem: Item? = null
+
+    // 冲锋刺击打 `MeleeActions` 的第几段（`ClientEventHandler` 的 `requestedIndex` 用同一个）
+    const val STRIKE_ACTION_INDEX = 0
 
     // 冷却的最低量：不管窗口消耗了多少，冷却至少按消耗一半算（走得短的红条从一半处开始恢复）
     private const val MIN_SPENT = 0.5f
@@ -85,8 +88,9 @@ object GunChargeHandler {
 
         chargeTicks--
 
-        // 撞到东西才打；窗口内可以一直等
-        val looking = OverlayTraceHandler.playerReachEntity
+        // 撞到东西才打；窗口内可以一直等。
+        val reach = GunData.from(stack).resolveMeleeAction(STRIKE_ACTION_INDEX).hitbox.range
+        val looking = TraceTool.findLookingEntity(player, reach)
         val target = looking?.takeIf { MeleeQuery.isChargeTarget(player, it) }
 
         // 最后一 tick 仍允许攻击；未找到目标则直接进入加速恢复。

@@ -5,7 +5,9 @@
     "Idle": "animation.reforging.idle",
     "Loop": "animation.reforging.loop",
     "Fire": "animation.reforging.fire",
-    "Charge": "animation.reforging.charge"
+    "Charge": "animation.reforging.charge",
+    "Edit": "animation.reforging.edit",
+    "Melee": "animation.reforging.hit"
   },
   "ShootRecoil": {
     "Offset": [0.7, 1.0, 0.5],
