@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.item.attachment.AttachmentProvider
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.tools.mc
 import mezz.jei.api.constants.VanillaTypes
@@ -83,8 +84,9 @@ class GunAttachmentUsagesCategory(helper: IGuiHelper) : IRecipeCategory<Attachme
 
         @JvmStatic
         fun createRecipes(guns: List<ItemStack>): List<AttachmentUsageRecipe> {
-            val bySlot = ModItems.ATTACHMENTS.entries
-                .map { ItemStack(it.get()) }
+            val bySlot = BuiltInRegistries.ITEM
+                .filter { it is AttachmentProvider }
+                .map { ItemStack(it) }
                 .mapNotNull { stack ->
                     val id = BuiltInRegistries.ITEM.getKey(stack.item)
                     AttachmentDefinition.from(id)?.let { it.slot to stack }

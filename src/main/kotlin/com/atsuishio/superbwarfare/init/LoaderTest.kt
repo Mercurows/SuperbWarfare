@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.init
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.init.TestLoader.parseManifest
+import com.atsuishio.superbwarfare.item.attachment.BasicAttachmentItem
 import com.atsuishio.superbwarfare.item.gun.GeoGunItem
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -12,6 +13,7 @@ import net.minecraft.world.item.Item
 import net.minecraft.world.item.Rarity
 import net.neoforged.bus.api.IEventBus
 import net.neoforged.fml.ModList
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent
 import net.neoforged.neoforge.registries.RegisterEvent
 import net.neoforged.neoforgespi.locating.IModFile
 import java.lang.annotation.ElementType
@@ -24,9 +26,11 @@ data class LoaderInfo(
     @SerialName("FormatVersion")
     val formatVersion: Int,
     @SerialName("Items")
-    val items: Map<String, ItemRegisterInfo>,
+    val items: Map<String, ItemRegisterInfo> = emptyMap(),
     @SerialName("Guns")
-    val guns: Map<String, ItemRegisterInfo>,
+    val guns: Map<String, ItemRegisterInfo> = emptyMap(),
+    @SerialName("Attachments")
+    val attachments: Map<String, ItemRegisterInfo> = emptyMap(),
 )
 
 @Serializable
@@ -39,6 +43,8 @@ data class ItemRegisterInfo(
     val fireResistant: Boolean = false,
     @SerialName("Durability")
     val durability: Int? = null,
+    @SerialName("ItemTabs")
+    val itemTabs: List<String> = emptyList(),
 )
 
 /**
@@ -71,15 +77,24 @@ object TestLoader {
     }
 
     // TODO 正确在运行时读所有Rarity（含EnumExtensions）
-    private val RARITIES = mapOf(
-        "common" to Rarity.COMMON,
-        "uncommon" to Rarity.UNCOMMON,
-        "rare" to Rarity.RARE,
-        "epic" to Rarity.EPIC
-    )
+    private val RARITIES by lazy {
+        mapOf(
+            "common" to Rarity.COMMON,
+            "uncommon" to Rarity.UNCOMMON,
+            "rare" to Rarity.RARE,
+            "epic" to Rarity.EPIC,
+            "legendary" to ModRarities.LEGENDARY,
+            "superb" to ModRarities.SUPERB,
+            "virtual" to ModRarities.VIRTUAL,
+            "beast" to ModRarities.BEAST,
+        )
+    }
 
     /** 命名空间 -> 该 mod 声明的物品。命名空间由 [IModFile] 推导，不从 JSON 读。 */
     private val manifests = linkedMapOf<String, LoaderInfo>()
+
+    /** Only successfully registered declarations contribute entries to creative tabs. */
+    private val tabItems = linkedMapOf<ResourceLocation, MutableList<Item>>()
 
     /** 被 [TestLoaderTarget] 标注、且成功实例化的入口类，便于后续扩展时取用。 */
     @JvmField
@@ -88,6 +103,9 @@ object TestLoader {
     fun register(bus: IEventBus) {
         discover()
         bus.addListener<RegisterEvent> { onRegister(it) }
+        bus.addListener<BuildCreativeModeTabContentsEvent> { event ->
+            tabItems[event.tabKey.location()]?.forEach { event.accept(it) }
+        }
     }
 
     private fun onRegister(event: RegisterEvent) {
@@ -95,7 +113,10 @@ object TestLoader {
 
         for ((namespace, info) in manifests) {
             registerItems(namespace, info.items, event)
-            registerItems(namespace, info.guns, event) { GeoGunItem(it) }
+            registerItems(namespace, info.guns, event) { _, properties -> GeoGunItem(properties) }
+            registerItems(namespace, info.attachments, event) { id, properties ->
+                BasicAttachmentItem(id.toString(), properties)
+            }
         }
     }
 
@@ -103,7 +124,7 @@ object TestLoader {
         namespace: String,
         itemEntry: Map<String, ItemRegisterInfo>,
         event: RegisterEvent,
-        itemSupplier: (Item.Properties) -> Item = { Item(it) }
+        itemSupplier: (ResourceLocation, Item.Properties) -> Item = { _, properties -> Item(properties) }
     ) {
         for ((id, item) in itemEntry) {
             val location = ResourceLocation.fromNamespaceAndPath(namespace, id)
@@ -117,7 +138,13 @@ object TestLoader {
                 continue
             }
 
-            event.register(Registries.ITEM, location) { item.create(itemSupplier) }
+            event.register(Registries.ITEM, location) {
+                item.create { itemSupplier(location, it) }.also { registered ->
+                    item.itemTabs.distinct().forEach { tab ->
+                        tabItems.getOrPut(ResourceLocation.parse(tab)) { mutableListOf() }.add(registered)
+                    }
+                }
+            }
             Mod.LOGGER.info("[sbw-loader] registered {} (declared by mod {})", location, namespace)
         }
     }
@@ -147,8 +174,8 @@ object TestLoader {
             val info = parseManifest(manifestPath, namespace)
             manifests[namespace] = info
             Mod.LOGGER.info(
-                "[sbw-loader] discovered plugin {}: {} item declaration(s), {} entrypoint class(es)",
-                namespace, info.items.size, entrypoints.size
+                "[sbw-loader] discovered plugin {}: {} item(s), {} gun(s), {} attachment(s), {} entrypoint class(es)",
+                namespace, info.items.size, info.guns.size, info.attachments.size, entrypoints.size
             )
         }
     }
@@ -212,22 +239,39 @@ object TestLoader {
             fail("unsupported FormatVersion=${info.formatVersion} (this build supports $FORMAT_VERSION)")
         }
 
-        // key 即物品 id：唯一性由 Map 保证，这里只校验它是不是合法的资源路径。
-        for ((id, item) in info.items) {
-            if (':' in id) {
-                fail("Items['$id'] must not be namespaced: the namespace is derived from the owning mod")
-            }
-            if (!ResourceLocation.isValidPath(id)) {
-                fail("Items['$id'] is not a valid item path (lowercase a-z, 0-9, '_', '-', '.')")
-            }
-            if (RARITIES[item.rarity.lowercase()] == null) {
-                fail("Items['$id'].Rarity '${item.rarity}' is unknown (expected one of ${RARITIES.keys.joinToString()})")
-            }
-            if (item.maxStackSize !in 1..99) {
-                fail("Items['$id'].MaxStackSize=${item.maxStackSize} is out of range 1..99")
-            }
-            if (item.durability != null && item.durability < 1) {
-                fail("Items['$id'].Durability must be >= 1")
+        val declaredIds = mutableSetOf<String>()
+        for ((section, entries) in listOf(
+            "Items" to info.items,
+            "Guns" to info.guns,
+            "Attachments" to info.attachments
+        )) {
+            for ((id, item) in entries) {
+                val entry = "$section['$id']"
+                if (!declaredIds.add(id)) {
+                    fail("$entry duplicates an item path declared in another section")
+                }
+                if (':' in id) {
+                    fail("$entry must not be namespaced: the namespace is derived from the owning mod")
+                }
+                if (id.isEmpty() || !ResourceLocation.isValidPath(id)) {
+                    fail("$entry is not a valid item path (lowercase a-z, 0-9, '_', '-', '.')")
+                }
+                if (RARITIES[item.rarity.lowercase()] == null) {
+                    fail("$entry.Rarity '${item.rarity}' is unknown (expected one of ${RARITIES.keys.joinToString()})")
+                }
+                if (item.maxStackSize !in 1..99) {
+                    fail("$entry.MaxStackSize=${item.maxStackSize} is out of range 1..99")
+                }
+                if (item.durability != null && item.durability < 1) {
+                    fail("$entry.Durability must be >= 1")
+                }
+                for (tab in item.itemTabs) {
+                    if (':' !in tab || tab.substringBefore(':').isEmpty() || tab.substringAfter(':').isEmpty()
+                        || ResourceLocation.tryParse(tab) == null
+                    ) {
+                        fail("$entry.ItemTabs contains an invalid tab id '$tab' (expected namespace:path)")
+                    }
+                }
             }
         }
 

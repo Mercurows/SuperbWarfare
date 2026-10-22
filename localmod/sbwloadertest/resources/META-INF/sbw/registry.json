@@ -2,10 +2,19 @@
   "FormatVersion": 1,
   "Items": {
     "test": {
-      "Rarity": "common"
+      "Rarity": "common",
+      "ItemTabs": ["superbwarfare:item"]
     }
   },
   "Guns": {
-    "ak_74": {}
+    "ak_74": {
+      "ItemTabs": ["superbwarfare:guns"]
+    }
+  },
+  "Attachments": {
+    "charm_loader_senpai": {
+      "Rarity": "superb",
+      "ItemTabs": ["superbwarfare:attachment"]
+    }
   }
 }

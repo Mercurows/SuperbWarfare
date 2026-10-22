@@ -1,0 +1,17 @@
+{
+  "Slot": "Charm",
+  "Level": 4,
+  "Model": "sbwloadertest:models/bedrock/attachment/charm_loader_senpai.geo.json",
+  "Texture": "sbwloadertest:textures/bedrock/attachment/charm_loader_senpai.png",
+  "Charm": {
+    "LateralAngle": 15.0
+  },
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 0.05
+    }
+  ],
+  "SoundRadiusMultiplier": 1.14
+}

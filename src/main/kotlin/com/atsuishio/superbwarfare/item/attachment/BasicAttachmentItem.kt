@@ -7,16 +7,14 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Rarity
 import java.util.*
 
-/**
- * 纯配件物品：**不能开火、也不能手持当武器用**，只能装到枪的某个槽位上
- * （原 `AttachmentItem`，v6 改名，并把"配件身份"抽到 [AttachmentProvider] 接口上）。
- *
- * 副武器（三期）不走这个类，而是 [com.atsuishio.superbwarfare.item.gun.GunItem] + [AttachmentProvider]。
- */
-open class BasicAttachmentItem @JvmOverloads constructor(
+open class BasicAttachmentItem(
     override val attachmentId: String,
-    rarity: Rarity = Rarity.COMMON
-) : Item(Properties().rarity(rarity)), AttachmentProvider {
+    properties: Properties,
+) : Item(properties), AttachmentProvider {
+
+    @JvmOverloads
+    constructor(attachmentId: String, rarity: Rarity = Rarity.COMMON) :
+            this(attachmentId, Properties().rarity(rarity))
 
     override fun getTooltipImage(stack: ItemStack): Optional<TooltipComponent> {
         return if (definition() == null) {

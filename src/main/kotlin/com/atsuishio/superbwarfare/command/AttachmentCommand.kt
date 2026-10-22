@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.data.attachment.LaserInfo
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.subdata.Attachment
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
-import com.atsuishio.superbwarfare.init.ModItems
 import com.atsuishio.superbwarfare.item.attachment.AttachmentProvider
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.mojang.brigadier.context.CommandContext
@@ -568,12 +567,11 @@ private fun attachmentIds(gun: GunData?, type: AttachmentType?): List<String> {
         return installableAttachments(gun, type).map { it.toString() }.sorted()
     }
 
-    return ModItems.ATTACHMENTS.entries.mapNotNull { entry ->
-        val id = entry.id
-        val definition = AttachmentDefinition.from(id) ?: return@mapNotNull null
-        if (type != null && type !in definition.acceptedSlots) return@mapNotNull null
-        id.toString()
-    }.sorted()
+    return (type?.let { listOf(it) } ?: AttachmentType.entries)
+        .flatMap { AttachmentSlots.registeredIds(it) }
+        .distinct()
+        .map { it.toString() }
+        .sorted()
 }
 
 private fun notGunMessage(): Component =
