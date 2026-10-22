@@ -623,6 +623,7 @@ class ModItemTagProvider(
             ModItems.SCOPE_AIMPOINT_T2,
             ModItems.SCOPE_HANDGUN_RED_DOT,
             ModItems.SCOPE_EOTECH_551,
+            ModItems.SCOPE_DRS_TH,
             ModItems.SCOPE_OKP_7,
             ModItems.SCOPE_PKAS,
             ModItems.SCOPE_BRUISER,

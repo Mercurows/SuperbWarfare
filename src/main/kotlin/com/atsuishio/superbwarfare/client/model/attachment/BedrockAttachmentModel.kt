@@ -665,6 +665,23 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
                 val shaderBone = shaderBoneIndex(info)
                 val lensSurface = if (shaderBone >= 0) getLensSurface(poseStack, shaderBone) else null
                 RenderSystem.stencilFunc(GL11.GL_EQUAL, b, 0xFF)
+                if (info.thermal && lensSurface == null) {
+                    if (ScopeLensPostProcessor.deferThermalSight(
+                            b, info.thermalBackgroundColor?.get(), info.thermalEntityColor?.get()
+                        ) { deferred ->
+                            if (divisionDue) {
+                                withShaderBonesHidden {
+                                    renderDivisionVertices(divisions[i], poseStack, deferred, texture, quadType, triangleType, light)
+                                }
+                                for (text in texts) {
+                                    if (text.divisionIndex == divisions[i]) {
+                                        ammo.renderText(text, poseStack, deferred)
+                                    }
+                                }
+                            }
+                        }
+                    ) continue
+                }
                 if (shaderBone >= 0 && lensSurface != null) {
                     val magnification = if (DisplayConfig.LENS_ZOOM_RATIO.get() > 0.0) {
                         val progress = ClientEventHandler.aimingProgress(ClientEventHandler.zoomTime)

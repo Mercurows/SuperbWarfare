@@ -358,6 +358,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         simpleItem(ModItems.SCOPE_AIMPOINT_T2)
         simpleItem(ModItems.SCOPE_HANDGUN_RED_DOT)
         simpleItem(ModItems.SCOPE_EOTECH_551)
+        simpleItem(ModItems.SCOPE_DRS_TH)
         simpleItem(ModItems.SCOPE_OKP_7)
         simpleItem(ModItems.SCOPE_PKAS)
         simpleItem(ModItems.SCOPE_BRUISER)

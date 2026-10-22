@@ -1,0 +1,18 @@
+{
+  "Slot": "Scope",
+  "Level": 0,
+  "Modifiers": [
+    {
+      "Prop": "Weight",
+      "Op": "Add",
+      "Value": 1.5
+    }
+  ],
+  "Bone": "scope_pos",
+  "Model": "superbwarfare:models/bedrock/attachment/scope_drs_th.geo.json",
+  "Texture": "superbwarfare:textures/bedrock/attachment/scope_drs_th.png",
+  "ScopeInfo": {
+    "Type": "Scope",
+    "Thermal": true
+  }
+}
