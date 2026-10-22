@@ -146,6 +146,9 @@ bin/
 .mc-mcp-cache-test/
 /.claude/
 
+# Rebuildable local tracked-physics MCP index (source of truth is docs/physics/records).
+/.local/physics-mcp/
+
 # Python bytecode caches from tools/
 __pycache__/
 *.pyc

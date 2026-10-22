@@ -107,9 +107,6 @@ internal class VehiclePrediction(private val vehicle: VehicleBody) : AutoCloseab
                 if (speed > .0001f) proxy.setPhysicsRotation(Quaternion().fromAngleNormalAxis(speed * (step+1) / 60f, value.omega.normalize()).mult(value.rotation))
             }
             vehicle.applyDrive(body, space, entry.input)
-            if (vehicle.groundVehicle && vehicle.settings.suspensionEnabled && vehicle.trackedVehicle) {
-                vehicle.applyTrackSuspension(body, space)
-            }
             space.update(1f/60f, 0, false, true, false)
         }
     }

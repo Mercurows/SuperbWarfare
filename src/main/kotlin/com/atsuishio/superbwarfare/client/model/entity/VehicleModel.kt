@@ -37,21 +37,12 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
     /** Authoritative per-wheel projections published by the Spark physics layer. */
     protected var wheelRenderStates: Map<kotlin.Pair<Int, WheelSide>, WheelRenderState> = emptyMap()
 
-    /** JSON track phase spacing override for the legacy Geckolib model path. */
+    /** JSON track phase spacing for the legacy Geckolib model path. */
     protected var resolvedTrackDistance = 2f
-    private var preparedTrackAnimation: TrackAnimationProfile? = null
     private var leftSuspensionOffset = 0f
     private var rightSuspensionOffset = 0f
     private var hasLeftTrackRoot = false
     private var hasRightTrackRoot = false
-
-    private fun trackAnimationProfile(vehicle: T): TrackAnimationProfile {
-        val cycle = vehicle.getTrackAnimationLength()
-        val old = preparedTrackAnimation
-        if (old != null && old.cycle == cycle) return old
-        return TrackAnimationProfile(cycle, ::getBoneRotX, ::getBoneMoveY, ::getBoneMoveZ)
-            .also { preparedTrackAnimation = it }
-    }
 
     protected var turretYRot = 0f
 
@@ -256,43 +247,9 @@ open class VehicleModel<T> : GeoModel<T>() where T : VehicleEntity, T : GeoAnima
             }
         }
 
-        // track(Mov|Rot)[RL]\d+
-        val trackMatcher: Matcher = TRACK_PATTERN.matcher(boneName)
-        if (trackMatcher.matches()) {
-            val isRot = trackMatcher.group("type") == "Rot"
-            val isL = trackMatcher.group("direction") == "L"
-            val index = trackMatcher.group("id").toInt()
-
-            if (isRot) {
-                return if (isL) {
-                    TransformContext { bone, vehicle, _ ->
-                        val t = wrap(leftTrack + getTrackDistance() * index, vehicle)
-                        bone.rotX = -trackAnimationProfile(vehicle).rotation(t) * Mth.DEG_TO_RAD
-                    }
-                } else {
-                    TransformContext { bone, vehicle, _ ->
-                        val t2 = wrap(rightTrack + getTrackDistance() * index, vehicle)
-                        bone.rotX = -trackAnimationProfile(vehicle).rotation(t2) * Mth.DEG_TO_RAD
-                    }
-                }
-            } else {
-                return if (isL) {
-                    TransformContext { bone, vehicle, _ ->
-                        val t = wrap(leftTrack + getTrackDistance() * index, vehicle)
-                        val trajectory = trackAnimationProfile(vehicle)
-                        bone.posY = trajectory.height(t) + if (hasLeftTrackRoot) 0f else leftSuspensionOffset
-                        bone.posZ = trajectory.length(t)
-                    }
-                } else {
-                    TransformContext { bone, vehicle, _ ->
-                        val t2 = wrap(rightTrack + getTrackDistance() * index, vehicle)
-                        val trajectory = trackAnimationProfile(vehicle)
-                        bone.posY = trajectory.height(t2) + if (hasRightTrackRoot) 0f else rightSuspensionOffset
-                        bone.posZ = trajectory.length(t2)
-                    }
-                }
-            }
-        }
+        // Legacy preprocessed track trajectories are revoked. Visible belts are
+        // rebuilt by the MCSP-style renderer from physical wheel state; authored
+        // track bones keep their model pose until that renderer is wired.
 
         val wheelMatcher: Matcher = WHEEL_PATTERN.matcher(boneName)
         if (wheelMatcher.matches()) {

@@ -119,6 +119,14 @@ data class TrackSideDefinition(
     @SerialName("LinkTemplateBone")
     var linkTemplateBone: String = "",
 
+    /**
+     * Optional bone-name prefix of the visible link bones for this side, for
+     * example `trackRotL`. When absent no visible description is produced; the
+     * physics layer never guesses a render template from bone names.
+     */
+    @SerialName("VisibleBonePrefix")
+    var visibleBonePrefix: String? = null,
+
     @SerialName("Suspension")
     var suspension: TrackSuspensionDefinition = TrackSuspensionDefinition(),
 
@@ -188,6 +196,14 @@ data class TrackWheelDefinition(
     /** Lateral half width in metres. */
     @SerialName("HalfWidth")
     var halfWidth: Double = 0.0,
+
+    /**
+     * Wheel axle direction in the chassis frame. A direction, not a position, so
+     * both sides use `+X`. The S1 planar solver only accepts a lateral axle;
+     * other directions are reported instead of being silently projected.
+     */
+    @SerialName("AxleDirection")
+    var axleDirection: SerializedVec3 = Vec3(1.0, 0.0, 0.0),
 )
 
 /**
@@ -225,6 +241,14 @@ data class TrackSuspensionDefinition(
 
     @SerialName("BumpStopExponent")
     var bumpStopExponent: Double = 2.0,
+
+    /**
+     * Suspension travel direction in the chassis frame. `+Y` is compression.
+     * The S1 solver only accepts a vertical axis, so a canted suspension is
+     * reported rather than approximated.
+     */
+    @SerialName("Direction")
+    var direction: SerializedVec3 = Vec3(0.0, 1.0, 0.0),
 )
 
 @Serializable
@@ -246,6 +270,15 @@ data class TrackSuspensionOverride(
 
     @SerialName("MaxForce")
     var maxForce: Double? = null,
+
+    @SerialName("BumpStopStart")
+    var bumpStopStart: Double? = null,
+
+    @SerialName("BumpStopExponent")
+    var bumpStopExponent: Double? = null,
+
+    @SerialName("Direction")
+    var direction: SerializedVec3? = null,
 ) {
     fun applyTo(base: TrackSuspensionDefinition): TrackSuspensionDefinition = base.copy(
         travelUp = travelUp ?: base.travelUp,
@@ -254,6 +287,9 @@ data class TrackSuspensionOverride(
         compressionDampingRatio = compressionDampingRatio ?: base.compressionDampingRatio,
         reboundDampingRatio = reboundDampingRatio ?: base.reboundDampingRatio,
         maxForce = maxForce ?: base.maxForce,
+        bumpStopStart = bumpStopStart ?: base.bumpStopStart,
+        bumpStopExponent = bumpStopExponent ?: base.bumpStopExponent,
+        direction = direction ?: base.direction,
     )
 }
 
@@ -273,6 +309,13 @@ data class TrackTensionerDefinition(
     /** Viscous coefficient in N·s/m. */
     @SerialName("Damping")
     var damping: Double = 8_000.0,
+
+    /**
+     * Free-travel axis in the chassis frame. The S1 solver only moves the idler
+     * along the belt's longitudinal axis, so any other axis is reported.
+     */
+    @SerialName("Axis")
+    var axis: SerializedVec3 = Vec3(0.0, 0.0, 1.0),
 )
 
 @Serializable

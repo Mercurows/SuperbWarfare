@@ -4,28 +4,22 @@ package com.atsuishio.superbwarfare.physics
  * Registration of the conventional ground vehicles whose motion is owned by
  * Spark/Bullet.
  *
- * The probe-based tracked suspension is the model under acceptance, so the
- * enabled set contains exactly the eight tracked vehicles. Wheeled vehicles
- * keep their authored vehicle data (wheel stations, physics settings), but
- * their joint-wheel model is parked until the tracked model is accepted; the
- * creative vehicle containers and the container loot pools filter through
- * [contains], so a parked vehicle is invisible in the inventory and cannot be
- * obtained in the meantime. Re-enable a vehicle by registering its id here.
+ * D1 removed the probe-based tracked suspension and left no approved tracked
+ * runtime, so the list is intentionally empty. Tracked vehicles remain
+ * registered as entities and can still be spawned by commands or old saves,
+ * but they are outside the conventional physics path and do not appear in the
+ * creative vehicle tab or container loot.
+ *
+ * Wheeled vehicles are also parked here: re-enabling them belongs to the B0
+ * baseline stage, not to the legacy cleanup.
+ *
+ * Re-enable a vehicle only after its stage evidence is recorded.
  */
 internal object GroundVehicleAllowlist {
     /** Suspension model registered to one enabled ground vehicle. */
-    enum class Model { WHEEL_JOINT, TRACK_PROBE }
+    enum class Model { WHEEL_JOINT }
 
-    private val enabled = linkedMapOf(
-        "superbwarfare:bmp_2" to Model.TRACK_PROBE,
-        "superbwarfare:bradley" to Model.TRACK_PROBE,
-        "superbwarfare:m_1a_2" to Model.TRACK_PROBE,
-        "superbwarfare:plz_05" to Model.TRACK_PROBE,
-        "superbwarfare:prism_tank" to Model.TRACK_PROBE,
-        "superbwarfare:t_90a" to Model.TRACK_PROBE,
-        "superbwarfare:yx_100" to Model.TRACK_PROBE,
-        "superbwarfare:ztz_99a" to Model.TRACK_PROBE,
-    )
+    private val enabled = linkedMapOf<String, Model>()
 
     fun contains(id: String): Boolean = id in enabled
 

@@ -197,21 +197,56 @@ class BedrockModelGeometry private constructor(
                 val parent = obj.string("parent")
                 val pivot = obj.vector("pivot") ?: Vector3d()
                 val rotation = obj.vector("rotation")
+                requireFinite(name, "pivot", pivot)
+                rotation?.let { requireFinite(name, "rotation", it) }
                 val cubes = obj.getAsJsonArray("cubes")?.map { cubeElement ->
                     val cube = cubeElement.asJsonObject
+                    val origin = cube.vector("origin") ?: Vector3d()
+                    val size = cube.vector("size") ?: Vector3d()
+                    val cubePivot = cube.vector("pivot")
+                    val cubeRotation = cube.vector("rotation")
+                    val inflate = cube.double("inflate") ?: 0.0
+                    requireFinite(name, "cube.origin", origin)
+                    requireFinite(name, "cube.size", size)
+                    cubePivot?.let { requireFinite(name, "cube.pivot", it) }
+                    cubeRotation?.let { requireFinite(name, "cube.rotation", it) }
+                    if (!inflate.isFinite()) throw TrackedGeometryException("bone $name has a non-finite inflate")
                     Cube(
-                        origin = cube.vector("origin") ?: Vector3d(),
-                        size = cube.vector("size") ?: Vector3d(),
-                        pivot = cube.vector("pivot"),
-                        rotation = cube.vector("rotation"),
-                        inflate = cube.double("inflate") ?: 0.0,
+                        origin = origin,
+                        size = size,
+                        pivot = cubePivot,
+                        rotation = cubeRotation,
+                        inflate = inflate,
                     )
                 }.orEmpty()
                 bones[name] = Bone(name, parent, pivot, rotation, cubes)
             }
             val roots = bones.values.filter { it.parent == null }.map { it.name }
+            // Validate the whole hierarchy up front. `subtree` recurses without a
+            // guard, so a cyclic or dangling parent must never reach it. This runs
+            // before the root check so a dangling parent is reported as itself.
+            for (name in bones.keys) validateAncestry(bones, name)
             if (roots.isEmpty()) throw TrackedGeometryException("no root bone")
             return BedrockModelGeometry(bones, roots)
+        }
+
+        private fun validateAncestry(bones: Map<String, Bone>, start: String) {
+            val seen = HashSet<String>()
+            var current: String? = start
+            while (current != null) {
+                if (!seen.add(current)) {
+                    throw TrackedGeometryException("cycle in bone ancestry at $current")
+                }
+                val parent = bones.getValue(current).parent ?: return
+                if (parent !in bones) throw TrackedGeometryException("missing parent $parent of $current")
+                current = parent
+            }
+        }
+
+        private fun requireFinite(bone: String, field: String, value: Vector3d) {
+            if (!value.x.isFinite() || !value.y.isFinite() || !value.z.isFinite()) {
+                throw TrackedGeometryException("bone $bone has a non-finite $field: $value")
+            }
         }
 
         private fun JsonObject.string(key: String): String? =

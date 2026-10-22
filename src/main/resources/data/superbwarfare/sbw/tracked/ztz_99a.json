@@ -6,12 +6,13 @@
     "Pitch": 0.23307,
     "PinInset": 0.048828125,
     "AngularLimitDegrees": 40.0,
-    "LinkCount": 78,
-    "Clearance": 0.0,
+    "LinkCount": 79,
+    "Clearance": 0.002,
     "LinkMass": 18.0
   },
   "Left": {
     "LinkTemplateBone": "trackRotL0",
+    "VisibleBonePrefix": "trackRotL",
     "Suspension": {
       "TravelUp": 0.18,
       "TravelDown": 0.24,
@@ -94,6 +95,7 @@
   },
   "Right": {
     "LinkTemplateBone": "trackRotR0",
+    "VisibleBonePrefix": "trackRotR",
     "Suspension": {
       "TravelUp": 0.18,
       "TravelDown": 0.24,

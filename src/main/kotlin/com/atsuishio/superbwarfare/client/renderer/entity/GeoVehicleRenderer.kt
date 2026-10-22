@@ -510,7 +510,6 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         // Track profile: a JSON override wins, otherwise the spacing is derived
         // from the authored track bones so every belt is covered evenly.
         resolvedTrackDistance = resolveTrackDistance(entity, boneGroups)
-        val trajectory = trackAnimationProfile(entity.getTrackAnimationLength())
         val suspension = VehiclePhysics.renderState(entity)
         val leftSuspensionOffset = suspension.leftTravel * 16f
         val rightSuspensionOffset = suspension.rightTravel * 16f
@@ -555,32 +554,10 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         boneGroups.leftWheelsTurn.forEach { applyWheel(it, com.atsuishio.superbwarfare.data.vehicle.subdata.WheelSide.LEFT, leftSuspensionOffset, leftWheelRot, true) }
         boneGroups.rightWheelsTurn.forEach { applyWheel(it, com.atsuishio.superbwarfare.data.vehicle.subdata.WheelSide.RIGHT, rightSuspensionOffset, rightWheelRot, true) }
 
-        boneGroups.leftTrackMove.forEachIndexed { index, bone ->
-            val t = wrap(leftTrack + getTrackDistance() * index, entity)
-            val bd = bone.definition()
-            // Fold pivot into y/z — translateAndRotateAndScale discards pivot for unrotated bones
-            bone.y = bd.pivotY() * 16f + trajectory.height(t) +
-                if (leftTrackRoot == null) leftSuspensionOffset else 0f
-            bone.z = bd.pivotZ() * 16f + trajectory.length(t)
-        }
-
-        boneGroups.rightTrackMove.forEachIndexed { index, bone ->
-            val t = wrap(rightTrack + getTrackDistance() * index, entity)
-            val bd = bone.definition()
-            bone.y = bd.pivotY() * 16f + trajectory.height(t) +
-                if (rightTrackRoot == null) rightSuspensionOffset else 0f
-            bone.z = bd.pivotZ() * 16f + trajectory.length(t)
-        }
-
-        boneGroups.leftTrackRot.forEachIndexed { index, bone ->
-            val t = wrap(leftTrack + getTrackDistance() * index, entity)
-            bone.rotation.rotationX(-trajectory.rotation(t) * Mth.DEG_TO_RAD)
-        }
-
-        boneGroups.rightTrackRot.forEachIndexed { index, bone ->
-            val t = wrap(rightTrack + getTrackDistance() * index, entity)
-            bone.rotation.rotationX(-trajectory.rotation(t) * Mth.DEG_TO_RAD)
-        }
+        // Legacy preprocessed track trajectories are revoked. The MCSP-style
+        // renderer will rebuild visible links from physical wheel state; until
+        // it is wired, authored track bones keep their model pose and only the
+        // track roots receive the suspension offset above.
 
         // 瞄准时隐藏车体
         val root = instance.getBone("root")
@@ -805,15 +782,6 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
     }
 
     open fun getBoneRotX(t: Float) = t
-
-    private var preparedTrackAnimation: com.atsuishio.superbwarfare.client.model.entity.TrackAnimationProfile? = null
-
-    private fun trackAnimationProfile(cycle: Int): com.atsuishio.superbwarfare.client.model.entity.TrackAnimationProfile {
-        val old = preparedTrackAnimation
-        if (old != null && old.cycle == cycle) return old
-        return com.atsuishio.superbwarfare.client.model.entity.TrackAnimationProfile(
-            cycle, ::getBoneRotX, ::getBoneMoveY, ::getBoneMoveZ).also { preparedTrackAnimation = it }
-    }
 
     open fun getBoneMoveY(t: Float) = t
 

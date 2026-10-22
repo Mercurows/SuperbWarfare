@@ -40,27 +40,68 @@ object ClosedTrackLoopSolver {
 
     data class Pin(val z: Double, val y: Double)
 
-    data class Result(
-        val linkCount: Int,
-        val pitch: Double,
-        val totalLength: Double,
-        /** Signed idler displacement along +Z that closes the loop. */
-        val idlerOffset: Double,
-        val closureError: Double,
-        val maxPitchError: Double,
-        val maxJointAngleDegrees: Double,
-        val minWheelClearance: Double,
-        val pins: List<Pin>,
-    ) {
-        val valid: Boolean
-            get() = closureError.isFinite() && maxPitchError.isFinite() &&
-                abs(closureError) <= MAX_CLOSURE_ERROR_M &&
-                maxPitchError <= MAX_PITCH_ERROR_M
-    }
+/**
+ * Result of one closed-loop solve.
+ *
+ * Not a data class: [pins] is defensively copied on construction so a caller
+ * cannot mutate a published solve result.
+ */
+class Result(
+    val linkCount: Int,
+    val pitch: Double,
+    val totalLength: Double,
+    /** Signed idler displacement along +Z that closes the loop. */
+    val idlerOffset: Double,
+    val closureError: Double,
+    val maxPitchError: Double,
+    val maxJointAngleDegrees: Double,
+    /**
+     * Smallest gap between a pin chord and any wheel surface, metres.
+     *
+     * This is a *pin polygon* metric. A shoe has thickness, so this value is
+     * never a shoe clearance; use `TrackedGeometryAudit.minShoeWheelGapM`.
+     */
+    val minPinChordClearanceM: Double,
+    pins: List<Pin>,
+) {
+    /** One pin per link, in walk order; the loop closes implicitly. */
+    val pins: List<Pin> = pins.toList()
+
+    val valid: Boolean
+        get() = closureError.isFinite() && maxPitchError.isFinite() &&
+            abs(closureError) <= MAX_CLOSURE_ERROR_M &&
+            maxPitchError <= MAX_PITCH_ERROR_M
+}
 
     const val MAX_CLOSURE_ERROR_M = 1.0e-4
     const val MAX_PITCH_ERROR_M = 1.0e-5
     private const val SAMPLES = 2048
+
+    /**
+     * Radius of the pin locus around a wheel for a *flat, chord-shaped* shoe.
+     *
+     * A pin polygon inscribed in a circle of radius `R` puts the midpoint of
+     * each chord at `sqrt(R^2 - (pitch/2)^2)` from the centre, not at `R`. A
+     * shoe whose inner face is `pinInset` from the pin therefore dips
+     * `R - sqrt(R^2 - (pitch/2)^2)` into the wheel on every wrapped chord. On the
+     * 99A that sagitta is 17.3 mm at the guide wheels, which is far larger than
+     * any sane clearance.
+     *
+     * Solving for the midpoint distance instead gives the locus the shoe needs:
+     *
+     * ```text
+     * R = hypot(wheelRadius + pinInset + clearance, pitch / 2)
+     * ```
+     *
+     * The result is a lower bound for a chord fully wrapped on one circle; the
+     * exact per-chord, per-wheel check still lives in `TrackedGeometryAudit`.
+     */
+    fun pinLocusRadius(
+        wheelRadius: Double,
+        pinInset: Double,
+        clearance: Double,
+        pitch: Double,
+    ): Double = hypot(wheelRadius + pinInset + clearance, pitch * 0.5)
 
     /**
      * Solves one side. Returns `null` when the required idler offset falls
@@ -103,7 +144,13 @@ object ClosedTrackLoopSolver {
         }
         val offset = (low + high) * 0.5
         val walked = walk(withOffset(offset), pitch, linkCount, traceOnly = false) ?: return null
-        val pins = walked.second ?: return null
+        val walkedPins = walked.second ?: return null
+        // `walk` emits one pin per chord plus the closing duplicate. Drop the
+        // duplicate so the published list is exactly one pin per link and the
+        // loop is closed implicitly; every consumer would otherwise have to
+        // remember that the last pin must not be used.
+        val pins = walkedPins.dropLast(1)
+        if (pins.size != linkCount) return null
         val joint = maxJointAngle(pins)
         return Result(
             linkCount = linkCount,
@@ -113,7 +160,7 @@ object ClosedTrackLoopSolver {
             closureError = walked.first,
             maxPitchError = maxPitchError(pins, pitch),
             maxJointAngleDegrees = joint,
-            minWheelClearance = minClearance(pins, withOffset(offset)),
+            minPinChordClearanceM = minPinChordClearance(pins, withOffset(offset)),
             pins = pins,
         )
     }
@@ -174,9 +221,9 @@ object ClosedTrackLoopSolver {
     private fun maxPitchError(pins: List<Pin>, pitch: Double): Double {
         if (pins.size < 2) return Double.NaN
         var worst = 0.0
-        for (index in 0 until pins.size - 1) {
+        for (index in pins.indices) {
             val a = pins[index]
-            val b = pins[index + 1]
+            val b = pins[(index + 1) % pins.size]
             worst = max(worst, abs(hypot(b.z - a.z, b.y - a.y) - pitch))
         }
         return worst
@@ -185,10 +232,10 @@ object ClosedTrackLoopSolver {
     private fun maxJointAngle(pins: List<Pin>): Double {
         if (pins.size < 3) return 0.0
         var worst = 0.0
-        for (index in 0 until pins.size - 1) {
-            val previous = pins[if (index == 0) pins.size - 2 else index - 1]
+        for (index in pins.indices) {
+            val previous = pins[(index - 1 + pins.size) % pins.size]
             val current = pins[index]
-            val next = pins[index + 1]
+            val next = pins[(index + 1) % pins.size]
             val a = atan2(current.y - previous.y, current.z - previous.z)
             val b = atan2(next.y - current.y, next.z - current.z)
             val delta = abs(normalizeRadians(b - a))
@@ -197,12 +244,12 @@ object ClosedTrackLoopSolver {
         return Math.toDegrees(worst)
     }
 
-    /** Smallest signed gap between a chord and any wheel surface (negative = overlap). */
-    private fun minClearance(pins: List<Pin>, circles: List<Circle>): Double {
+    /** Smallest signed gap between a pin chord and any wheel surface (negative = overlap). */
+    private fun minPinChordClearance(pins: List<Pin>, circles: List<Circle>): Double {
         var best = Double.POSITIVE_INFINITY
-        for (index in 0 until pins.size - 1) {
+        for (index in pins.indices) {
             val a = pins[index]
-            val b = pins[index + 1]
+            val b = pins[(index + 1) % pins.size]
             val dz = b.z - a.z
             val dy = b.y - a.y
             val lengthSquared = dz * dz + dy * dy
