@@ -524,8 +524,7 @@ class ModItemTagProvider(
         this.tag(ModTags.Items.RESEARCHABLE_FUNCTIONAL_PERK_EPIC).add(
             perkItem(ModPerks.BACKPACK_LINKED_MAGAZINE),
             perkItem(ModPerks.ADRENALINE_RUSH),
-            perkItem(ModPerks.TURBO_CHARGER),
-            perkItem(ModPerks.STOP_GAP)
+            perkItem(ModPerks.TURBO_CHARGER)
         )
         this.tag(ModTags.Items.RESEARCHABLE_FUNCTIONAL_PERK_LEGENDARY).add(
             perkItem(ModPerks.INTELLIGENT_CHIP)
@@ -552,7 +551,8 @@ class ModItemTagProvider(
         this.tag(ModTags.Items.RESEARCHABLE_DAMAGE_PERK_EPIC).add(
             perkItem(ModPerks.FAIR_MEANS),
             perkItem(ModPerks.TARGET_LOCK),
-            perkItem(ModPerks.BATTLE_OF_WITS)
+            perkItem(ModPerks.BATTLE_OF_WITS),
+            perkItem(ModPerks.STOP_GAP)
         )
         this.tag(ModTags.Items.RESEARCHABLE_DAMAGE_PERK_LEGENDARY).add(
             perkItem(ModPerks.SOUL_REAVER)
