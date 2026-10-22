@@ -346,6 +346,7 @@ class Attachment(private val gun: GunData) {
         val stacked = scopeStack()
         val top = stacked.lastOrNull() ?: return false
         if (top.definition?.acceptsScope == true) {
+            if (AttachmentDefinition.from(id)?.canMountOnRaiser == false) return false
             if (stacked.size >= MAX_STACK_DEPTH) return false
             top.tag.put(NESTED_KEY, createTag(id))
             gun.invalidateProperties()

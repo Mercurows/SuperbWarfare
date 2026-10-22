@@ -1252,11 +1252,17 @@ class GunData private constructor(
     fun availableAttachments(slot: AttachmentType): List<ResourceLocation> {
         if (item is SubWeaponItem) return emptyList()
 
-        if (AttachmentConfig.fullyFreeAttachmentMode) return AttachmentSlots.registeredIds(slot)
+        val onRaiser = slot == AttachmentType.SCOPE && attachment.acceptsStacked(slot)
+        fun raiserCompatible(id: ResourceLocation): Boolean =
+            !onRaiser || AttachmentDefinition.from(id)?.canMountOnRaiser != false
+
+        if (AttachmentConfig.fullyFreeAttachmentMode) {
+            return AttachmentSlots.registeredIds(slot).filter(::raiserCompatible)
+        }
 
         return AvailableAttachments.resolve(this, slot)
             .map { it.id }
-            .filter { attachment.conflict(slot, AttachmentDefinition.from(it)) == null }
+            .filter { attachment.conflict(slot, AttachmentDefinition.from(it)) == null && raiserCompatible(it) }
     }
 
     /** Returns the weapon-level option for [id] installed in [slot], if declared. */

@@ -41,6 +41,10 @@ data class AttachmentDefinition(
     @SerialName("RequiresRail")
     val requiresRail: Boolean = true,
 
+    // 能否装在瞄具增高架上；燕尾槽直装的瞄具为 false
+    @SerialName("CanMountOnRaiser")
+    val canMountOnRaiser: Boolean = true,
+
     @SerialName("UsesGunStock")
     val usesGunStock: Boolean = false,
 
