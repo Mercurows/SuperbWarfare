@@ -984,6 +984,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val gun = from(stack)
         // 热量只在真的有文字要显示它时才读，温度读数与余弹一样是枪自己的状态
         val heat = if (texts.any { it.usesHeat }) gun.heat.get().roundToInt() else 0
+        val zoom = if (texts.any { it.usesZoom }) gun.zoom().roundToInt() else AmmoTextEntry.NO_ZOOM
 
         val consumer = gun.selectedAmmoConsumer()
         if (gun.useBackpackAmmo() && consumer.type == AmmoConsumeType.ENERGY) {
@@ -1001,21 +1002,23 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
                 (stored.toFloat() / max(1, capacity)).coerceIn(0f, 1f),
                 stored / cost,
                 range,
-                heat
+                heat,
+                zoom
             )
         }
 
         val count = gun.ammo.get()
         val magazine = gun.get(GunProp.MAGAZINE)
         // 其余没有可用弹匣的枪（背包弹药等）保持原样：弹药条按满算，而不是除以零
-        if (magazine <= 0) return AmmoReadout(bars, texts, 1f, count, range, heat)
+        if (magazine <= 0) return AmmoReadout(bars, texts, 1f, count, range, heat, zoom)
         return AmmoReadout(
             bars,
             texts,
             (count.toFloat() / magazine.toFloat()).coerceIn(0f, 1f),
             count,
             range,
-            heat
+            heat,
+            zoom
         )
     }
 

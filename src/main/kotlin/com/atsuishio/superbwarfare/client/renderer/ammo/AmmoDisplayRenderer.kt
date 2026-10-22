@@ -143,7 +143,8 @@ internal class AmmoDisplayRenderer(
         count: Int,
         progress: Float,
         range: Int = AmmoTextEntry.NO_RANGE,
-        heat: Int = 0
+        heat: Int = 0,
+        zoom: Int = AmmoTextEntry.NO_ZOOM
     ): List<AmmoText> {
         if (entries.isEmpty()) return emptyList()
 
@@ -153,14 +154,14 @@ internal class AmmoDisplayRenderer(
             if (index < 0) continue
             // -1 保留、不过滤：不在 division 子树下的锚点没法跟着准星画，但仍要由剩下那一遍画出来，
             // 否则它只会在第三人称和物品栏里可见
-            texts += AmmoText(entry, count, progress, range, heat, divisionAnchorOf(index))
+            texts += AmmoText(entry, count, progress, range, heat, zoom, divisionAnchorOf(index))
         }
         return texts
     }
 
     /** 在 [text] 的锚点骨骼上把它画出来 */
     fun renderText(text: AmmoText, poseStack: PoseStack, bufferSource: MultiBufferSource) {
-        renderText(text.entry, text.count, text.progress, text.range, text.heat, poseStack, bufferSource)
+        renderText(text.entry, text.count, text.progress, text.range, text.heat, text.zoom, poseStack, bufferSource)
     }
 
     /** 在锚点骨骼上画一行弹药文字，位置与朝向都由该骨骼给出 */
@@ -170,14 +171,16 @@ internal class AmmoDisplayRenderer(
         progress: Float,
         range: Int,
         heat: Int,
+        zoom: Int,
         poseStack: PoseStack,
         bufferSource: MultiBufferSource
     ) {
         val index = baseModel.getIndex(entry.bone)
         if (index < 0) return
+        if (entry.usesZoom && zoom == AmmoTextEntry.NO_ZOOM) return
         if (!visibleInModel(index, includeSelf = true)) return
 
-        val text = entry.resolve(count, range, heat)
+        val text = entry.resolve(count, range, heat, zoom)
         if (text.isEmpty()) return
 
         val font = Minecraft.getInstance().font
@@ -246,6 +249,7 @@ internal class AmmoDisplayRenderer(
         val progress: Float,
         val range: Int,
         val heat: Int,
+        val zoom: Int,
         val divisionIndex: Int
     )
 

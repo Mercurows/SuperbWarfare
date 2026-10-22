@@ -279,6 +279,7 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
                 readout.progress,
                 readout.range,
                 readout.heat,
+                readout.zoom,
                 poseStack,
                 bufferSource
             )
@@ -311,7 +312,7 @@ class BedrockAttachmentModel(internal val baseModel: TreeBedrockModel) {
         updateDynamicDivisionScale()
         val ammoBarState = ammo.applyBars(readout.bars, readout.progress)
         val texts = ammo.buildTexts(
-            readout.texts, readout.count, readout.progress, readout.range, readout.heat
+            readout.texts, readout.count, readout.progress, readout.range, readout.heat, readout.zoom
         )
         val quadType = RenderType.entityTranslucent(texture)
         val triangleType = BedrockModelRenderTypes.polyMeshCutout(texture)

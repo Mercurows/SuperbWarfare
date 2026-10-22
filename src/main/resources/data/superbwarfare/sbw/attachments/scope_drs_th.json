@@ -13,6 +13,51 @@
   "Texture": "superbwarfare:textures/bedrock/attachment/scope_drs_th.png",
   "ScopeInfo": {
     "Type": "Scope",
-    "Thermal": true
-  }
+    "Thermal": true,
+    "Modes": [
+      {
+        "Type": "Scope",
+        "Thermal": true,
+        "Zoom": {
+          "Min": 1.0,
+          "Max": 1.0,
+          "Default": 1.0,
+          "Step": 1.0
+        }
+      },
+      {
+        "Type": "Scope",
+        "Thermal": true,
+        "Zoom": {
+          "Min": 3.0,
+          "Max": 3.0,
+          "Default": 3.0,
+          "Step": 1.0
+        }
+      },
+      {
+        "Type": "Scope",
+        "Thermal": true,
+        "Zoom": {
+          "Min": 5.0,
+          "Max": 5.0,
+          "Default": 5.0,
+          "Step": 1.0
+        }
+      }
+    ]
+  },
+  "TextShow": [
+    {
+      "Bone": "zoom_text",
+      "Scale": 0.0007,
+      "Align": "Center",
+      "ColorMode": "Switch",
+      "Color": {
+        "Default": "00FF00"
+      },
+      "Shadow": false,
+      "Text": "%zoom%X"
+    }
+  ]
 }

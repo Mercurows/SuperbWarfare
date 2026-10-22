@@ -15,6 +15,8 @@ data class AmmoReadout(
     val range: Int = AmmoTextEntry.NO_RANGE,
     /** `%heat%` 展开成的热量，`0` ~ `100` */
     val heat: Int = 0,
+    /** `%zoom%` 展开成的当前倍率；[AmmoTextEntry.NO_ZOOM] 表示本帧没有读数 */
+    val zoom: Int = AmmoTextEntry.NO_ZOOM,
 ) {
     /** 模型没配任何弹药显示时为 `true` */
     val isEmpty: Boolean get() = bars.isEmpty() && texts.isEmpty()

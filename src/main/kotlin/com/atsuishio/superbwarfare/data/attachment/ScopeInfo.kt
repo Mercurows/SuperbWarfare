@@ -21,6 +21,7 @@ private const val GRADIENT_MODE_HSV = 2
 private const val AMMO_COUNT_PLACEHOLDER = "%ammo_count%"
 private const val RANGE_PLACEHOLDER = "%range%"
 private const val HEAT_PLACEHOLDER = "%heat%"
+private const val ZOOM_PLACEHOLDER = "%zoom%"
 
 /**
  * 热量的上限，`HeatPerShoot` 攒到这里就过热
@@ -232,7 +233,8 @@ enum class TextAlign {
  *
  * 骨骼只作为锚点（不需要自带方块），位置与朝向都取自它的全局变换，[scale] 是"每字体像素占多少模型单位"
  * [text] 里的 [AMMO_COUNT_PLACEHOLDER] 会换成当前弹匣数量、`%range%` 换成当前测距读数（单位：格，
- * 无有效读数时是 `---`）、`%heat%` 换成当前热量（整数，0~100），不含占位符就原样绘制（例如固定标签 `"AMMO"`）
+ * 无有效读数时是 `---`）、`%heat%` 换成当前热量（整数，0~100）、`%zoom%` 换成当前倍率（整数），
+ * 不含占位符就原样绘制（例如固定标签 `"AMMO"`）
  * 可见性由骨骼的祖先决定：挂在 `division*` 下时只随分划出现（即开镜时），挂在别处则随镜身常驻
  *
  * [color] 与 [colorMode] 的分级规则同 [AmmoBarEntry]，[align] 或颜色写错会让整份配件数据解析失败。
@@ -278,17 +280,24 @@ data class AmmoTextEntry(
     @Transient
     val usesRange: Boolean = text.contains(RANGE_PLACEHOLDER)
 
+    /** 文字里写了 `%zoom%`：这一条显示当前瞄准倍率 */
+    @Transient
+    val usesZoom: Boolean = text.contains(ZOOM_PLACEHOLDER)
+
     /** 按剩余弹药比例 [progress] 取色，[usesHeat] 的条目改按热量 [heat]（0~100）取色；没配颜色则返回白色 */
     fun colorAt(progress: Float, heat: Int = 0): Int = tiers.colorAt(if (usesHeat) heat.toFloat() else progress)
 
-    /** 把 [AMMO_COUNT_PLACEHOLDER] / `%range%` / `%heat%` 换成实际数值 */
-    fun resolve(count: Int, range: Int = NO_RANGE, heat: Int = 0): String {
+    /** 把 [AMMO_COUNT_PLACEHOLDER] / `%range%` / `%heat%` / `%zoom%` 换成实际数值 */
+    fun resolve(count: Int, range: Int = NO_RANGE, heat: Int = 0, zoom: Int = NO_ZOOM): String {
         var resolved = text.replace(AMMO_COUNT_PLACEHOLDER, count.toString())
         if (usesRange) {
             resolved = resolved.replace(RANGE_PLACEHOLDER, if (range < 0) NO_RANGE_TEXT else range.toString())
         }
-        if (!usesHeat) return resolved
-        return resolved.replace(HEAT_PLACEHOLDER, heat.toString())
+        if (usesHeat) {
+            resolved = resolved.replace(HEAT_PLACEHOLDER, heat.toString())
+        }
+        if (!usesZoom) return resolved
+        return resolved.replace(ZOOM_PLACEHOLDER, zoom.toString())
     }
 
     /** 让 [width] 宽的文字按 [align] 对齐、原点仍留在骨骼上的水平偏移 */
@@ -303,6 +312,9 @@ data class AmmoTextEntry(
     companion object {
         const val NO_RANGE = -1
         const val NO_RANGE_TEXT = "---"
+
+        /** 本帧没有可用倍率读数，写了 [usesZoom] 的条目整条不画 */
+        const val NO_ZOOM = 0
     }
 }
 
