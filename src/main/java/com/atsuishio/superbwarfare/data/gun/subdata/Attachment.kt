@@ -150,9 +150,8 @@ class Attachment(private val gun: GunData) {
      * 把 [type] 槽位的内容直接换成 [tag]（**同一个对象**，不复制）。
      *
      * 只有副武器运行时用得上：它的枪械状态住在附件子 tag 上，而 `GunData` 构造时会把根 tag
-     * 与它的子 compound 全部捕获成 `val`。主武器一旦 rebind（`GunData.reloadTagFrom` 的
-     * `clearTag + merge` 会把"原来不存在"的键以 `copy()` 重新落进去），槽位里的 compound
-     * 就变成了**副本**，副武器那份 `GunData` 立刻与枪 NBT 脱钩。
+     * 与它的子 compound 全部捕获成 `val`。主武器同步为新栈后，槽位 compound 是新的副本，
+     * 副武器运行时则可能仍持有原先的 compound。
      *
      * 所以装配副武器时把手里那份重新挂回槽位，让 tag 引用全程不变 ——
      * 详情见 `SubWeaponRuntime.installed`。

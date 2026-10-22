@@ -8,9 +8,7 @@ import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots
 import com.atsuishio.superbwarfare.data.attachment.AttachmentZoom
 import com.atsuishio.superbwarfare.data.attachment.AvailableAttachments
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.BACKUP_AMMO_CACHE_TICKS
-import com.atsuishio.superbwarfare.data.gun.GunData.Companion.DATA_CACHE
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.DATA_VERSION
-import com.atsuishio.superbwarfare.data.gun.GunData.Companion.UUID_CACHE
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.get
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.getDefault
@@ -48,7 +46,6 @@ import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.tools.InventoryTool
 import com.atsuishio.superbwarfare.tools.tag
-import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
@@ -113,9 +110,8 @@ class GunData private constructor(
     /**
      * The target weapon item stack wrapped by this data object.
      *
-     * Reassigned in place when this instance is adopted for a newer snapshot of the same gun (see
-     * [rebind]); because a [GunData] is looked up by the gun's [uuid], code holding a reference to this
-     * instance keeps working across vanilla's client-side [ItemStack] replacement.
+     * Cached by stack identity. A replacement stack gets its own [GunData], even when it carries the
+     * same [uuid]; this instance is never rebound to another stack.
      */
     @JvmField
     var stack: ItemStack
@@ -311,7 +307,7 @@ class GunData private constructor(
     /     * Stable identity of this gun, or `null` when the gun was never initialised.
      *
      * Unlike the [ItemStack] reference this stays the same across server syncs, item copies made by
-     * vanilla and inventory resyncs, which is what [from] keys the [UUID_CACHE] on.
+     * vanilla and inventory resyncs. It identifies the logical gun, not its cached [GunData] instance.
      */
     val uuid: UUID?
         get() = state.uuid
@@ -1562,8 +1558,8 @@ class GunData private constructor(
      *
      * For client-side predictions. The gun stack is server-authoritative, so such a write must stay in
      * memory: persisting it would fight the next server snapshot and, because it advances
-     * [GunState.revision], would also stop this gun from adopting that snapshot. The next sync
-     * overwrites the prediction through [rebind].
+     * [GunState.revision], would interfere with revision-based state synchronization. A replacement
+     * stack received on the next sync gets its own [GunData] decoded from the server snapshot.
      */
     fun updateLocal(block: (GunState) -> GunState): GunState {
         val previous = state
@@ -1653,10 +1649,8 @@ class GunData private constructor(
     }
 
     /**
-     * Writes the current [state] plus the tag-backed sections into the stack.
-     *
-     * Advances [GunState.revision] when the persisted content actually changed, which is what lets a
-     * remote copy of this gun recognise this instance as its predecessor (see [rebind]).
+     * Advances [GunState.revision] for persisted gun state so consumers of synchronized gun state can
+     * distinguish newer persisted snapshots.
      *
      * @param compare whether to compare the outgoing tag against the stack's current one first. Needed
      *   for tag-backed sections, where a mutation may or may not have changed anything; skipped on the
@@ -1666,11 +1660,9 @@ class GunData private constructor(
         // Fast-path: nothing was ever mutated on this instance, so the tag cannot be out of date.
         if (!mutated) return
 
-        // Make this instance reachable by its own identity, so that a remote snapshot of the same gun
-        // can adopt it (see Companion.from).
-        state.uuid?.let { UUID_CACHE.put(it, this) }
-
-        // Mirror the immutable state into the sub-compound that is still the serialized view.
+        // Mirror the immutable state into the sub-compound that is still the serialized view. In 1.20 the
+        // tag is mutable and lives inside the stack, so writing here *is* the persistence — nothing has
+        // to be written back to the stack afterwards, unlike 1.21's DataComponents.
         state.writeInto(gunDataTag)
 
         val keysToRemove = mutableListOf<String>()
@@ -1731,7 +1723,7 @@ class GunData private constructor(
      * frozen at assembly time, so "can shoot" stays true while the server is still reloading.
      *
      * Only the state is re-read: the tag is neither merged nor replaced, and the wrapped stack stays
-     * the same — that is [rebind]'s job.
+     * the same.
      *
      * Must not be called inside a [batch]: the pending write is dropped (it belongs to the superseded
      * snapshot anyway).
@@ -1752,99 +1744,6 @@ class GunData private constructor(
         cachedDefaultDataId = null
 
         invalidateProperties()
-    }
-
-    /**
-     * Re-binds this instance to [newStack], a newer snapshot of the same logical gun.
-     *
-     * The persisted tag is re-read into the *same* [CompoundTag] instances ([tag], [gunDataTag],
-     * [perkTag], [attachmentTag]) so every value wrapper and subdata handler stays valid, [state] is
-     * re-decoded from it, and the structural version is invalidated because the persisted content did
-     * change. Preserving the instance itself is the point: it keeps client-side holders (renderers,
-     * animation state, tooltips) and [uuid]-keyed lookups working instead of being invalidated on every
-     * [ItemStack] resync.
-     *
-     * Must run on the game thread: it mutates an instance other code may already be using. Its only
-     * caller is the [DATA_CACHE] loader, which is reachable from main-thread paths (client
-     * render/handlers, server gameplay). Codec `decode` implementations that build a [GunData] run on the
-     * netty thread instead, so they must never trigger adoption for a gun that already has a live
-     * instance — vehicle-gun stacks therefore stay UUID-less (VehicleGunItem never writes one).
-     */
-    private fun rebind(newStack: ItemStack) {
-        val incoming = stackStorage.rootTag(newStack)
-
-        this.stack = newStack
-
-        // Reloading and re-decoding are one step: between the clear and the merge the tag is empty, and
-        // a reader on another thread must not observe that (see [GunState.locked]).
-        GunState.locked(gunDataTag) {
-            reloadTagFrom(incoming)
-            state = GunState.fromTag(gunDataTag)
-        }
-
-        // 1.20.1 是空操作（活引用）；1.21.1 侧这才算把改好的那份 tag 落回组件
-        stackStorage.writeRoot(newStack, this.tag)
-
-        // The remote snapshot supersedes anything a batch was still holding back.
-        persistPending = false
-
-        // Bookkeeping that depends on the previous tag / stack contents.
-        this.lastTimeStack = null
-        this.cachedBackupAmmo = -1
-        cachedDefaultData = null
-        cachedDefaultDataId = null
-
-        invalidateProperties()
-    }
-
-    /**
-     * Folds [incoming] into the existing tag instances, preserving their identity.
-     *
-     * Mutating the existing compounds (instead of replacing them) is what keeps every [IntValue] /
-     * [DoubleValue] / subdata handler in this [GunData] pointing at live data.
-     */
-    private fun reloadTagFrom(incoming: CompoundTag) {
-        // ⚠ 自合并：`incoming` 有可能**就是我们自己的根 tag**。
-        //
-        // 副武器（`SubWeaponRuntime`）那种"借主武器 NBT 里的附件子 compound 当自己的根 tag"
-        // 的栈会走到这里：`stack` 是新建的（所以 `existing.stack !== newStack` 成立），
-        // 但两份栈的根 tag 是同一个对象。此时下面的 `clearTag(tag)` 会把 `incoming` 一并清空，
-        // `merge` 于是变成"把空 tag 并进自己" —— 整个枪械状态（弹药、换弹计时器、栓动、
-        // 连附件 `Id`）被就地抹掉，表现就是"装填走完了却没装进去 / 计时器被打回 0"。
-        //
-        // 这种情况下没有"新内容"需要合并（来源就是自己），按当前 tag 重新解码即可 ——
-        // 调用方紧接着就会做这件事。
-        if (incoming === tag) return
-
-        val incomingGunData = incoming.getCompound(KEY_GUN_DATA)
-        val incomingPerks = incoming.getCompound(KEY_PERKS)
-        val incomingAttachments = incoming.getCompound(KEY_ATTACHMENTS)
-
-        clearTag(tag)
-        clearTag(gunDataTag)
-        clearTag(perkTag)
-        clearTag(attachmentTag)
-
-        gunDataTag.merge(incomingGunData)
-        perkTag.merge(incomingPerks)
-        attachmentTag.merge(incomingAttachments)
-
-        tag.put(KEY_GUN_DATA, gunDataTag)
-        tag.put(KEY_PERKS, perkTag)
-        tag.put(KEY_ATTACHMENTS, attachmentTag)
-
-        // Remaining root entries (other mods' custom data, ScopeAlt, CustomRPM, ...).
-        for (key in incoming.allKeys) {
-            if (key == KEY_GUN_DATA || key == KEY_PERKS || key == KEY_ATTACHMENTS) continue
-            incoming.get(key)?.let { tag.put(key, it) }
-        }
-    }
-
-    /** Removes every entry of [compound] (1.21 [CompoundTag] has no `clear()`). */
-    private fun clearTag(compound: CompoundTag) {
-        for (key in compound.allKeys.toList()) {
-            compound.remove(key)
-        }
     }
 
     /**
@@ -2013,67 +1912,18 @@ class GunData private constructor(
         val PERK_TYPES: Array<Perk.Type> = Perk.Type.entries.toTypedArray()
 
         /**
-         * Identity cache resolving a [GunData] per live [ItemStack].
+         * Resolves a [GunData] per [ItemStack] identity, without sharing instances by gun UUID.
          *
-         * Uses *soft* values on purpose: a weak value could be collected while its stack is still alive,
-         * and the next lookup would then build a second [GunData] for the same stack. Both instances
-         * would keep their own [state] snapshot and write the whole tag on every change, so they would
-         * overwrite each other's fields — which shows up as gun state that stops updating. Soft values
-         * keep the instance for as long as the JVM is not actually short on memory, and a collection
-         * stays harmless because the stack is the source of truth.
+         * Weak keys use reference identity. Soft values retain decoded state until memory pressure
+         * requires collection; a later lookup can reconstruct it from the stack's persisted data.
          */
         @JvmField
         val DATA_CACHE: LoadingCache<ItemStack, GunData> = CacheBuilder.newBuilder()
             .weakKeys()
             .softValues()
             .build(object : CacheLoader<ItemStack, GunData>() {
-                override fun load(stack: ItemStack): GunData {
-                    // Vanilla replaces the client-side ItemStack on every sync, so an identity-keyed
-                    // lookup misses there. Fall back to the gun's stable identity.
-                    val gunTag = readGunTag(stack)
-                    val uuid = readUuid(gunTag)
-
-                    if (uuid != null) {
-                        val existing = UUID_CACHE.getIfPresent(uuid)
-                        val incomingRevision = gunTag?.getLong(KEY_REVISION) ?: 0L
-
-                        if (existing != null) {
-                            if (existing.stack === stack) {
-                                // Same stack instance: reuse it rather than building a duplicate.
-                                return existing
-                            }
-                            // Adopt only a newer snapshot of the same gun (wraparound-safe comparison).
-                            // An equal or older revision means an unrelated stack — a creative-mode copy
-                            // carries the same revision and must get its own instance, or the two would
-                            // fight over one GunData (and over which stack writes go to).
-                            if (GunState.isNewerRevision(incomingRevision, existing.revision)) {
-                                existing.rebind(stack)
-                                return existing
-                            }
-                        }
-                    }
-
-                    val created = GunData(stack)
-                    if (uuid != null) UUID_CACHE.put(uuid, created)
-
-                    return created
-                }
+                override fun load(stack: ItemStack): GunData = GunData(stack)
             })
-
-        /**
-         * Adoption registry: gun [uuid] -> the live [GunData] instance for that logical gun.
-         *
-         * Strong values on purpose — the instance has to survive between a server sync and the next
-         * lookup for adoption (and for the "same stack instance" reuse above) to happen at all.
-         *
-         * No access expiry: the identity-cache fast path never touches this cache, so an expiry would
-         * silently drop the entry for a gun that is being used normally, and the next identity-cache miss
-         * would then build a second instance for the same stack. Size-bounded instead.
-         */
-        @JvmField
-        val UUID_CACHE: Cache<UUID, GunData> = CacheBuilder.newBuilder()
-            .maximumSize(1024)
-            .build()
 
         /**
          * 「物品上的枪械数据」的存取实现 —— **全仓唯一允许碰版本相关 API 的地方**。
@@ -2084,14 +1934,6 @@ class GunData private constructor(
          */
         @JvmField
         val stackStorage: GunStackStorage = ItemStackStorage
-
-        /** Reads the gun sub-tag of [stack] without constructing a [GunData]. */
-        private fun readGunTag(stack: ItemStack): CompoundTag? =
-            GunStackStorage.gunStateTagOrNull(stackStorage.rootTag(stack))
-
-        /** Reads the gun identity out of [gunTag], or `null` when the gun was never initialised. */
-        private fun readUuid(gunTag: CompoundTag?): UUID? =
-            if (gunTag != null && gunTag.hasUUID(KEY_UUID)) gunTag.getUUID(KEY_UUID) else null
 
         /** Creates a new [GunData] instance from an item definition. */
         fun create(item: Item): GunData {
