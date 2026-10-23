@@ -30,16 +30,17 @@
     <div id="settings">
         <div id="settings-title"></div>
         <button id="settings-reset" type="button">
-            <svg viewBox="0 0 24 24" width="11" height="11">
-                <path d="M4 11 A8 8 0 1 1 6 18" fill="none" stroke="#ffffff" stroke-width="2"></path>
-                <path d="M4 4 L4 11 L11 11" fill="none" stroke="#ffffff" stroke-width="2"></path>
-            </svg>
+            <texture src="superbwarfare:textures/overlay/edit/reset.png" />
         </button>
         <div id="settings-divider"></div>
         <div id="settings-controls">
             <div id="settings-rotation-row" class="settings-row">
                 <div id="settings-rotation-label" class="settings-label"></div>
-                <input id="settings-rotation" type="range" min="-180" max="180" step="1" value="0">
+                <div class="settings-slider">
+                    <input id="settings-rotation" type="range" min="-180" max="180" step="1" value="0">
+                    <div id="settings-rotation-fill" class="settings-fill"></div>
+                    <texture id="settings-rotation-thumb" class="settings-thumb" src="superbwarfare:textures/overlay/edit/circle.png" blur="true" />
+                </div>
                 <div class="settings-number">
                     <button id="settings-rotation-minus" class="settings-step" type="button">-</button>
                     <input id="settings-rotation-value" class="settings-value" type="text" inputmode="decimal" maxlength="12" value="0">
@@ -48,7 +49,11 @@
             </div>
             <div id="settings-offset-row" class="settings-row">
                 <div id="settings-offset-label" class="settings-label"></div>
-                <input id="settings-offset" type="range" value="0">
+                <div class="settings-slider">
+                    <input id="settings-offset" type="range" value="0">
+                    <div id="settings-offset-fill" class="settings-fill"></div>
+                    <texture id="settings-offset-thumb" class="settings-thumb" src="superbwarfare:textures/overlay/edit/circle.png" blur="true" />
+                </div>
                 <div class="settings-number">
                     <button id="settings-offset-minus" class="settings-step" type="button">-</button>
                     <input id="settings-offset-value" class="settings-value" type="text" inputmode="decimal" maxlength="12" value="0">
@@ -57,7 +62,11 @@
             </div>
             <div id="settings-red-row" class="settings-row">
                 <div class="settings-label">R</div>
-                <input id="settings-red" type="range" min="0" max="255" step="1" value="255">
+                <div class="settings-slider">
+                    <input id="settings-red" type="range" min="0" max="255" step="1" value="255">
+                    <div id="settings-red-fill" class="settings-fill"></div>
+                    <texture id="settings-red-thumb" class="settings-thumb" src="superbwarfare:textures/overlay/edit/circle.png" blur="true" />
+                </div>
                 <div class="settings-number">
                     <button id="settings-red-minus" class="settings-step" type="button">-</button>
                     <input id="settings-red-value" class="settings-value" type="text" inputmode="numeric" maxlength="3" value="255">
@@ -66,7 +75,11 @@
             </div>
             <div id="settings-green-row" class="settings-row">
                 <div class="settings-label">G</div>
-                <input id="settings-green" type="range" min="0" max="255" step="1" value="0">
+                <div class="settings-slider">
+                    <input id="settings-green" type="range" min="0" max="255" step="1" value="0">
+                    <div id="settings-green-fill" class="settings-fill"></div>
+                    <texture id="settings-green-thumb" class="settings-thumb" src="superbwarfare:textures/overlay/edit/circle.png" blur="true" />
+                </div>
                 <div class="settings-number">
                     <button id="settings-green-minus" class="settings-step" type="button">-</button>
                     <input id="settings-green-value" class="settings-value" type="text" inputmode="numeric" maxlength="3" value="0">
@@ -75,7 +88,11 @@
             </div>
             <div id="settings-blue-row" class="settings-row">
                 <div class="settings-label">B</div>
-                <input id="settings-blue" type="range" min="0" max="255" step="1" value="0">
+                <div class="settings-slider">
+                    <input id="settings-blue" type="range" min="0" max="255" step="1" value="0">
+                    <div id="settings-blue-fill" class="settings-fill"></div>
+                    <texture id="settings-blue-thumb" class="settings-thumb" src="superbwarfare:textures/overlay/edit/circle.png" blur="true" />
+                </div>
                 <div class="settings-number">
                     <button id="settings-blue-minus" class="settings-step" type="button">-</button>
                     <input id="settings-blue-value" class="settings-value" type="text" inputmode="numeric" maxlength="3" value="0">
@@ -89,9 +106,7 @@
             </div>
         </div>
         <button id="settings-confirm" type="button">
-            <svg viewBox="0 0 24 24" width="11" height="11">
-                <path d="M4 12 L9 17 L20 6" fill="none" stroke="#ffffff" stroke-width="2"></path>
-            </svg>
+            <texture src="superbwarfare:textures/overlay/edit/accept.png" />
         </button>
     </div>
 </body>
@@ -193,34 +208,42 @@
     #settings-title { position: absolute; left: 5px; top: 6px; height: 14px; font-size: 9px; }
     #settings-reset, #settings-confirm {
         position: absolute; right: 5px; width: 15px; height: 15px; box-sizing: border-box;
-        margin: 0; padding: 0; border: 0.5px solid #ffffff; border-radius: 0;
-        background: rgba(0, 0, 0, 0.3); color: #ffffff; font-size: 9px;
+        margin: 0; padding: 0; border: 0; border-radius: 0; background: none;
         display: flex; align-items: center; justify-content: center; cursor: pointer;
     }
     #settings-reset { top: 5px; }
     #settings-confirm { bottom: 5px; }
-    #settings-reset > svg, #settings-confirm > svg { width: 11px; height: 11px; pointer-events: none; }
-    #settings-reset:hover, #settings-confirm:hover { background: rgba(100, 110, 125, 0.75); }
+    #settings-reset > texture, #settings-confirm > texture { width: 14px; height: 14px; pointer-events: none; }
+    #settings-reset:hover, #settings-confirm:hover { opacity: 0.75; }
     #settings-confirm.disabled { opacity: 0.35; pointer-events: none; }
     #settings-divider { position: absolute; left: 5px; top: 23px; width: 168px; height: 1px; background: #ffffff; pointer-events: none; }
     #settings-controls { position: absolute; left: 5px; top: 28px; width: 168px; display: flex; flex-direction: column; }
     .settings-row { display: none; width: 168px; height: 24px; align-items: center; gap: 4px; }
-    .settings-label { width: 23px; font-size: 9px; flex-shrink: 0; white-space: nowrap; }
-    .settings-row > input, .settings-value, .settings-step {
+    .settings-label { width: 23px; font-size: 9px; line-height: 7px; flex-shrink: 0; white-space: nowrap; }
+    .settings-row > input, .settings-slider > input, .settings-value, .settings-step {
         display: block; box-sizing: border-box; height: 16px; flex-shrink: 0;
         margin: 0; padding: 0; border: 0.5px solid #bdbdbd; border-radius: 0;
-        background: rgba(0, 0, 0, 0.2); color: #ffffff; font-size: 9px; font-weight: normal;
-        accent-color: #ffb43b; pointer-events: auto;
+        background: rgba(0, 0, 0, 0.2); color: #ffffff; font-size: 9px; line-height: 7px;
+        font-weight: normal; pointer-events: auto;
     }
-    .settings-row > input[type="range"] { width: 79px; }
+    .settings-slider { position: relative; width: 79px; height: 16px; flex-shrink: 0; }
+    .settings-slider > input {
+        position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+        accent-color: transparent;
+    }
+    .settings-fill {
+        position: absolute; left: 0.5px; top: 6.5px; width: 0; height: 3px;
+        background: #ffb43b; pointer-events: none;
+    }
+    .settings-thumb { position: absolute; left: 0; top: 3px; width: 10px; height: 10px; pointer-events: none; }
     .settings-number { display: flex; width: 58px; height: 16px; align-items: center; gap: 2px; flex-shrink: 0; }
     .settings-value { width: 32px; padding: 0 2px; text-align: center; }
     .settings-step { display: flex; width: 11px; align-items: center; justify-content: center; cursor: pointer; }
     .settings-step:hover { border-color: #ffb43b; background: rgba(100, 110, 125, 0.75); }
     .settings-value:focus { border-color: #ffb43b; }
-    #settings-red { accent-color: #ff6666; }
-    #settings-green { accent-color: #66ff66; }
-    #settings-blue { accent-color: #6666ff; }
+    #settings-red-row .settings-fill { background: #ff6666; }
+    #settings-green-row .settings-fill { background: #66ff66; }
+    #settings-blue-row .settings-fill { background: #6666ff; }
     #settings-red-row > .settings-label { color: #ff8888; }
     #settings-green-row > .settings-label { color: #88ff88; }
     #settings-blue-row > .settings-label { color: #8888ff; }

@@ -486,6 +486,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         fun sync(property: String, visible: Boolean, value: Double, min: Double, max: Double, step: Double) {
             doc.getElementById("settings-$property-row")?.style?.display = if (visible) "flex" else "none"
             if (!visible) return
+            val live = doc.getElementById("settings-$property")?.getValue()?.toDoubleOrNull()
             for (id in listOf("settings-$property", "settings-$property-value")) {
                 val input = doc.getElementById(id) ?: continue
                 for ((key, number) in listOf("min" to min, "max" to max, "step" to step)) {
@@ -498,6 +499,12 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
                     if (input.getValue() != text) input.setValue(text)
                 }
             }
+            val current = live ?: value
+            val fraction = if (max > min) ((current - min) / (max - min)).coerceIn(0.0, 1.0) else 0.0
+            doc.getElementById("settings-$property-fill")?.style?.width =
+                px((SLIDER_TRACK_WIDTH * fraction).toFloat())
+            doc.getElementById("settings-$property-thumb")?.style?.left =
+                px((SLIDER_TRACK_LEFT + SLIDER_TRACK_WIDTH * fraction - SLIDER_THUMB_RADIUS).toFloat())
         }
         val submitted = previewFor(data, type)
         adjustmentDraft.acknowledge(submitted != null && submitted.rotation == data.attachment.getRotation(type) &&
@@ -1119,6 +1126,9 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         private val ADJUSTMENT_PROPERTIES = listOf("rotation", "offset", "red", "green", "blue")
         private const val SETTINGS_BASE_HEIGHT = 56f
         private const val SETTINGS_ROW_HEIGHT = 24f
+        private const val SLIDER_TRACK_LEFT = 0.5f
+        private const val SLIDER_TRACK_WIDTH = 78f
+        private const val SLIDER_THUMB_RADIUS = 5f
         private const val GRID_COLUMNS = 8
         private const val GRID_VISIBLE_ROWS = 3
         private const val GRID_WINDOW_ROWS = GRID_VISIBLE_ROWS + 3
