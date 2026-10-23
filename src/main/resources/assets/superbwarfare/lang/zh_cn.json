@@ -1,4 +1,10 @@
 {
+  "controlify.binding.superbwarfare.next_weapon": "下一个武器 / 瞄具 / 缩放",
+  "controlify.binding.superbwarfare.previous_weapon": "上一个武器 / 瞄具 / 缩放",
+  "controlify.binding.superbwarfare.vehicle_reload": "载具武器换弹",
+  "controlify.binding.superbwarfare.seek_or_free_camera": "锁定 / 自由视角",
+  "controlify.radial.superbwarfare.vehicle": "载具动作",
+  "controlify.radial.superbwarfare.eject": "弹射",
   "item_group.superbwarfare.guns": "卓越前线：枪械",
   "item_group.superbwarfare.perk": "卓越前线：模组",
   "item_group.superbwarfare.item": "卓越前线：物品",

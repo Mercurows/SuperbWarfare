@@ -72,3 +72,10 @@ mandatory = false
 versionRange = "[0.7.0-beta,)"
 ordering = "NONE"
 side = "CLIENT"
+
+[[dependencies.superbwarfare]]
+modId = "controlify"
+mandatory = false
+versionRange = "[2.1.9,3)"
+ordering = "NONE"
+side = "CLIENT"

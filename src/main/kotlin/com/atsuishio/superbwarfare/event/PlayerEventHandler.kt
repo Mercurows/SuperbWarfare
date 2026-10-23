@@ -23,6 +23,7 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.minecraftforge.event.AnvilUpdateEvent
 import net.minecraftforge.event.TickEvent
+import net.minecraftforge.event.entity.living.LivingSwapItemsEvent
 import net.minecraftforge.event.entity.player.AttackEntityEvent
 import net.minecraftforge.event.entity.player.PlayerEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
@@ -31,6 +32,13 @@ import kotlin.math.ceil
 
 @Mod.EventBusSubscriber
 object PlayerEventHandler {
+    // Hands are unusable in this seat, so a swap would only shuffle items (e.g. controller X while locking on)
+    @SubscribeEvent
+    fun onSwapHands(event: LivingSwapItemsEvent.Hands) {
+        val vehicle = event.entity.vehicle
+        if (vehicle is VehicleEntity && vehicle.banHand(event.entity)) event.isCanceled = true
+    }
+
     @SubscribeEvent
     fun onPlayerRespawned(event: PlayerEvent.PlayerRespawnEvent) {
         val player = event.entity ?: return
