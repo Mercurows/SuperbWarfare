@@ -400,7 +400,6 @@ class ModItemTagProvider(
 
         this.tag(ItemTags.SWORDS).add(
             ModItems.MILITARY_SHOVEL.get(),
-            ModItems.KNIFE.get(),
             ModItems.KNIFE_6KH2.get(),
             ModItems.KNIFE_SEITENGEWEHR_84.get(),
             ModItems.KNIFE_M1917.get(),

@@ -18,5 +18,8 @@ enum class GunArmPose {
     SINGLE_HAND,
 
     @SerialName("LungeMine")
-    LUNGE_MINE
+    LUNGE_MINE,
+
+    @SerialName("Item")
+    ITEM
 }

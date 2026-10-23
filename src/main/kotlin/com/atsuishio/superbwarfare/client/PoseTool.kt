@@ -27,6 +27,7 @@ object PoseTool {
             GunArmPose.SUPER_STAR_SHOOTER -> ModEnumExtensions.Client.superStarShooterPose
             GunArmPose.SINGLE_HAND -> ModEnumExtensions.Client.singleHandPose
             GunArmPose.LUNGE_MINE -> ModEnumExtensions.Client.lungeMinePose
+            GunArmPose.ITEM -> HumanoidModel.ArmPose.ITEM
         }
         if (held != null) {
             if (entityLiving is Player && DeployedWeaponHandler.isDeployed(entityLiving)) return HumanoidModel.ArmPose.EMPTY

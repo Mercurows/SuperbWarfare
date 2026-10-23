@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.ActiveGun
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
+import com.atsuishio.superbwarfare.data.gun.melee.MeleeAction
 import com.atsuishio.superbwarfare.data.gun.melee.MeleeHitboxType
 import com.atsuishio.superbwarfare.data.gun.melee.ResolvedMeleeAction
 import com.atsuishio.superbwarfare.data.gun.subdata.Cooldown
@@ -120,6 +121,17 @@ object MeleeClientHandler {
     fun indexOfHeavy(data: GunData): Int =
         data.meleeActions().indexOfFirst { it.isHeavy() }.takeIf { it >= 0 } ?: 0
 
+    private fun firstComboIndex(actions: List<MeleeAction>): Int =
+        actions.indexOfFirst { !it.isHeavy() }.coerceAtLeast(0)
+
+    private fun nextComboIndex(actions: List<MeleeAction>, current: Int): Int {
+        for (offset in 1..actions.size) {
+            val candidate = (current + offset) % actions.size
+            if (!actions[candidate].isHeavy()) return candidate
+        }
+        return 0
+    }
+
     /**
      * 这把枪现在**正忙**（换弹 / 拉栓 / 蓄力），近战入口必须被拒
      */
@@ -162,8 +174,8 @@ object MeleeClientHandler {
         val inComboWindow = state.sinceLastMelee < comboReset
         val index = when {
             requestedIndex >= 0 -> requestedIndex.coerceAtMost((actions.size - 1).coerceAtLeast(0))
-            inComboWindow -> (state.meleeActionIndex + 1) % actions.size
-            else -> 0
+            inComboWindow -> nextComboIndex(actions, state.meleeActionIndex)
+            else -> firstComboIndex(actions)
         }
 
         val action = data.resolveMeleeAction(index)

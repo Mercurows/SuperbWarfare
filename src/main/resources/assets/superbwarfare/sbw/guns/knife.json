@@ -1,0 +1,35 @@
+{
+  "Icon": "superbwarfare:textures/gun_icon/knife_icon.png",
+  "SlotIcon": "superbwarfare:textures/item/knife_icon.png",
+  "UseCustomSprintAnimation": true,
+  "Animation": {
+    "Idle": "animation.knife.idle",
+    "Melee": "animation.knife.melee_1",
+    "Run": "animation.knife.sprint"
+  },
+  "Model": {
+    "Animation": "superbwarfare:animations/bedrock/gun/knife.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/knife.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/knife.png"
+  },
+  "ItemDisplay": {
+    "firstperson_righthand": {
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "firstperson_lefthand": {
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "thirdperson_righthand": {
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "thirdperson_lefthand": {
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "ground": {
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "fixed": {
+      "scale": [1.0, 1.0, 1.0]
+    }
+  }
+}
