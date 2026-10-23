@@ -66,5 +66,10 @@
   "DefaultFireMode": "Semi",
   "AvailableFireModes": [
     "Semi"
-  ]
+  ],
+  "AvailableAttachments": {
+    "LowerRail": [
+      "superbwarfare:lower_rail_bipod"
+    ]
+  }
 }

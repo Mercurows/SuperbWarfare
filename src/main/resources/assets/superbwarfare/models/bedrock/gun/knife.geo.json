@@ -16,7 +16,7 @@
 					"pivot": [0, 0, 0]
 				},
 				{
-					"name": "m_9",
+					"name": "second_root",
 					"parent": "root",
 					"pivot": [-0.0015, 2.40674, -0.21136],
 					"rotation": [-90, 0, 0],
@@ -1681,8 +1681,14 @@
 					}
 				},
 				{
+					"name": "lower_rail_pos",
+					"parent": "second_root",
+					"pivot": [-0.0015, 2.40674, 2.53864],
+					"rotation": [90, 0, 0]
+				},
+				{
 					"name": "ring",
-					"parent": "m_9",
+					"parent": "second_root",
 					"pivot": [0, 6.03438, -2.83867],
 					"cubes": [
 						{
@@ -1785,7 +1791,7 @@
 				},
 				{
 					"name": "ring2",
-					"parent": "m_9",
+					"parent": "second_root",
 					"pivot": [0, 3.68437, -2.84258],
 					"cubes": [
 						{
@@ -1856,7 +1862,7 @@
 				},
 				{
 					"name": "bone",
-					"parent": "m_9",
+					"parent": "second_root",
 					"pivot": [0, 4.77578, -2.45683],
 					"cubes": [
 						{
@@ -1911,7 +1917,7 @@
 				},
 				{
 					"name": "bone5",
-					"parent": "m_9",
+					"parent": "second_root",
 					"pivot": [0, 4.7758, -2.45688],
 					"cubes": [
 						{
@@ -2022,7 +2028,7 @@
 				},
 				{
 					"name": "bone7",
-					"parent": "m_9",
+					"parent": "second_root",
 					"pivot": [0, 4.7758, -1.70688],
 					"cubes": [
 						{
@@ -2133,7 +2139,7 @@
 				},
 				{
 					"name": "bone9",
-					"parent": "m_9",
+					"parent": "second_root",
 					"pivot": [0, 4.7758, -0.95688],
 					"cubes": [
 						{
@@ -2244,7 +2250,7 @@
 				},
 				{
 					"name": "bone11",
-					"parent": "m_9",
+					"parent": "second_root",
 					"pivot": [0, 4.7758, -0.20688],
 					"cubes": [
 						{
@@ -2355,7 +2361,7 @@
 				},
 				{
 					"name": "bone4",
-					"parent": "m_9",
+					"parent": "second_root",
 					"pivot": [0, 4.77578, -2.45683],
 					"cubes": [
 						{
@@ -2410,7 +2416,7 @@
 				},
 				{
 					"name": "bone2",
-					"parent": "m_9",
+					"parent": "second_root",
 					"pivot": [0, 4.77578, 1.29317],
 					"cubes": [
 						{
@@ -2465,7 +2471,7 @@
 				},
 				{
 					"name": "bone3",
-					"parent": "m_9",
+					"parent": "second_root",
 					"pivot": [0, 4.77578, 1.29317],
 					"cubes": [
 						{

@@ -26,6 +26,7 @@ import com.atsuishio.superbwarfare.item.gun.launcher.IglaItem
 import com.atsuishio.superbwarfare.item.gun.launcher.JavelinItem
 import com.atsuishio.superbwarfare.item.gun.launcher.SuperStarShooterItem
 import com.atsuishio.superbwarfare.item.gun.shotgun.HomemadeShotgunItem
+import com.atsuishio.superbwarfare.item.gun.special.KnifeItem
 import com.atsuishio.superbwarfare.item.gun.special.RepairToolItem
 import com.atsuishio.superbwarfare.item.gun.vehicle.VehicleGunItem
 import com.atsuishio.superbwarfare.item.material.*
@@ -288,10 +289,10 @@ object ModItems {
     @JvmField val DETONATOR = registerItem<DetonatorItem>()
     @JvmField val TARGET_DEPLOYER = registerItem<TargetDeployerItem>()
     @JvmField val DPS_GENERATOR_DEPLOYER = registerItem<DPSGeneratorDeployerItem>()
-    @JvmField val KNIFE = registerAmmo("knife") { GeoGunItem(Properties().rarity(Rarity.COMMON)) }
-    @JvmField val KNIFE_6KH2 = registerItem<Knife6kh2Item>()
-    @JvmField val KNIFE_SEITENGEWEHR_84 = registerItem<KnifeSeitengewehr84Item>()
-    @JvmField val KNIFE_M1917 = registerItem<KnifeM1917Item>()
+    @JvmField val KNIFE = registerItem("knife") { KnifeItem(Properties().rarity(Rarity.COMMON)) }
+    @JvmField val KNIFE_6KH2 = registerItem("knife_6kh2") { KnifeItem(Properties().rarity(Rarity.COMMON)) }
+    @JvmField val KNIFE_SEITENGEWEHR_84 = registerItem("knife_seitengewehr_84") { KnifeItem(Properties().rarity(Rarity.COMMON)) }
+    @JvmField val KNIFE_M1917 = registerItem("knife_m1917") { KnifeItem(Properties().rarity(Rarity.COMMON)) }
     @JvmField val HAMMER = registerItem("hammer") { HammerItem(Tiers.IRON, 11, -3.2f, Properties().durability(400)) }
     @JvmField val GOLDEN_HAMMER = registerItem("golden_hammer") { HammerItem(Tiers.GOLD, 11, -3.2f, Properties().durability(150)) }
     @JvmField val STEEL_HAMMER = registerItem("steel_hammer") { HammerItem(ModItemTier.STEEL, 9, -3.2f, Properties().durability(600)) }

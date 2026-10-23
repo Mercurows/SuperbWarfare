@@ -1,0 +1,60 @@
+{
+  "Icon": "superbwarfare:textures/gun_icon/knife_seitengewehr_84_icon.png",
+  "SlotIcon": "superbwarfare:textures/item/knife_seitengewehr_84_icon.png",
+  "UseCustomSprintAnimation": true,
+  "Animation": {
+    "Idle": "animation.knife_seitengewehr_84.idle",
+    "Melee": "animation.knife_seitengewehr_84.melee_1",
+    "Run": "animation.knife_seitengewehr_84.sprint",
+    "Edit": "animation.knife_seitengewehr_84.edit"
+  },
+  "Model": {
+    "Animation": "superbwarfare:animations/bedrock/gun/knife_seitengewehr_84.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/knife_seitengewehr_84.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/knife_seitengewehr_84.png"
+  },
+  "ItemDisplay": {
+    "firstperson_righthand": {
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "firstperson_lefthand": {
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "thirdperson_righthand": {
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "thirdperson_lefthand": {
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "ground": {
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "fixed": {
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    }
+  }
+}

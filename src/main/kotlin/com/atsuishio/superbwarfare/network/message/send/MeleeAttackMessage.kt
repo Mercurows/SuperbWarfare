@@ -7,12 +7,14 @@ import com.atsuishio.superbwarfare.data.gun.MeleeSound
 import com.atsuishio.superbwarfare.data.gun.melee.MeleeEffectDispatcher
 import com.atsuishio.superbwarfare.data.gun.melee.ResolvedMeleeAction
 import com.atsuishio.superbwarfare.data.gun.subdata.Cooldown
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModDamageTypes
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
+import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.perk.MeleeAttackContext
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedUUID
@@ -166,6 +168,9 @@ data class MeleeAttackMessage(
         val baseDamage = if (chargeStrike && chargeDamage > 0) chargeDamage else action.damage
         var hurtCount = 0
         var hitCount = 0
+        var landedHit = false
+        var headshotHit = false
+        var vehicleHit = false
         var playedHitSound = false
         var playedNoDamageSound = false
 
@@ -225,10 +230,14 @@ data class MeleeAttackMessage(
                 // 载具这类非生物目标的 hurt 恒返回 false，伤害被拒不等于没戳到，效果照常触发
                 effects.hit(target, effectPos, damaged = false)
                 hitCount++
+                landedHit = true
+                if (target is VehicleEntity) vehicleHit = true
                 continue
             }
 
             hurtCount++
+            landedHit = true
+            if (headshot) headshotHit = true
 
             val attackerMotion = attacker.deltaMovement
 
@@ -299,6 +308,17 @@ data class MeleeAttackMessage(
 
         if (hurtCount > 0) {
             attacker.sweepAttack()
+        }
+
+        // 命中/爆头提示：一次挥击只发一次，爆头优先，其次载具
+        if (attacker is ServerPlayer) {
+            if (headshotHit) {
+                sendPacketTo(attacker, ClientIndicatorMessage(1, 5))
+            } else if (vehicleHit) {
+                sendPacketTo(attacker, ClientIndicatorMessage(3, 5))
+            } else if (landedHit) {
+                sendPacketTo(attacker, ClientIndicatorMessage(0, 5))
+            }
         }
 
         return hitCount > 0

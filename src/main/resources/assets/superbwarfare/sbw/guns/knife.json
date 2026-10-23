@@ -5,7 +5,8 @@
   "Animation": {
     "Idle": "animation.knife.idle",
     "Melee": "animation.knife.melee_1",
-    "Run": "animation.knife.sprint"
+    "Run": "animation.knife.sprint",
+    "Edit": "animation.knife.edit"
   },
   "Model": {
     "Animation": "superbwarfare:animations/bedrock/gun/knife.animation.json",

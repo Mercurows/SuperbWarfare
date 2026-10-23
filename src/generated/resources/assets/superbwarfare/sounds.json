@@ -1299,6 +1299,19 @@
       "superbwarfare:super_star/knife_flesh_05"
     ]
   },
+  "knife_swing": {
+    "sounds": [
+      "superbwarfare:swing/knife_swing_1",
+      "superbwarfare:swing/knife_swing_2",
+      "superbwarfare:swing/knife_swing_3",
+      "superbwarfare:swing/knife_swing_4"
+    ]
+  },
+  "knife_swing_heavy": {
+    "sounds": [
+      "superbwarfare:swing/knife_swing_heavy"
+    ]
+  },
   "kv_16_engine": {
     "sounds": [
       {
