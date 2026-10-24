@@ -10,6 +10,7 @@ import com.atsuishio.superbwarfare.init.ModParticleTypes
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.item.gun.GunItem
+import com.atsuishio.superbwarfare.network.message.send.UseActionMessage
 import com.atsuishio.superbwarfare.tools.InventoryTool
 import com.atsuishio.superbwarfare.tools.NBTTool
 import com.atsuishio.superbwarfare.tools.ParticleTool
@@ -25,6 +26,7 @@ import net.minecraft.world.item.ItemStack
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.event.AnvilUpdateEvent
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent
 import net.neoforged.neoforge.event.entity.player.PlayerEvent
 import net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerRespawnEvent
@@ -33,6 +35,14 @@ import kotlin.math.ceil
 
 @EventBusSubscriber
 object PlayerEventHandler {
+    @SubscribeEvent
+    fun onPlayerDeath(event: LivingDeathEvent) {
+        val player = event.entity as? ServerPlayer ?: return
+
+        ChargeWindowHandler.clear(player)
+        UseActionMessage.clearChargeCooldown(player)
+    }
+
     @SubscribeEvent
     fun onPlayerRespawned(event: PlayerRespawnEvent) {
         val player = event.entity

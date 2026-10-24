@@ -133,4 +133,12 @@ object GunChargeHandler {
     // 冷却长度按窗口里实际消耗掉的比例折算，最少折算 MIN_SPENT：消耗 80% 就冷却 80%，只消耗 20% 也冷却 50%
     private fun scaledCooldown(spent: Float): Int =
         (cooldownTotal * spent.coerceIn(MIN_SPENT, 1f)).roundToInt()
+
+    fun clear() {
+        chargeTicks = 0
+        chargeTotal = 0
+        cooldownTicks = 0
+        cooldownTotal = 0
+        chargingItem = null
+    }
 }

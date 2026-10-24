@@ -23,6 +23,7 @@ data class UseActionMessage(
 ) : ServerPacketPayload() {
     override fun PayloadContext.handler() {
         val player = sender()
+        if (!player.isAlive) return
 
         // 收窗口跟手里拿着什么无关：换枪取消时手上已经不是那把枪了，所以冷却长度由客户端带过来
         if (action == RightClickAction.BAYONET_CHARGE && !active) {
@@ -61,6 +62,11 @@ data class UseActionMessage(
         private const val CHARGE_COOLDOWN = "BayonetChargeCooldown"
         private const val CHARGE_SOUND_RANGE = 32f
         private const val CHARGE_SOUND_VOLUME = 4f
+
+        @JvmStatic
+        fun clearChargeCooldown(player: Player) {
+            player.persistentData.remove(CHARGE_COOLDOWN)
+        }
 
         // 存的是"冷却结束时的 tickCount"而不是剩余量，服务端不用每 tick 递减；
         // tickCount 不落盘、重登/重生会归零，所以剩余比冷却本身还长只可能是上一局的残留，放行

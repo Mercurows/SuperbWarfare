@@ -78,6 +78,7 @@ data class MeleeAttackMessage(
         val player = sender()
 
         if (player.isSpectator) return
+        if (!player.isAlive) return
 
         val stack = player.mainHandItem
         val item = stack.item
