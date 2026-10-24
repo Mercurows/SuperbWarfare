@@ -1,5 +1,4 @@
 {
-  "Icon": "superbwarfare:textures/gun_icon/hunting_rifle_icon.png",
   "SlotIcon": "superbwarfare:textures/item/hunting_rifle_icon.png",
   "Animation": {
     "Idle": "animation.hunting_rifle.idle",

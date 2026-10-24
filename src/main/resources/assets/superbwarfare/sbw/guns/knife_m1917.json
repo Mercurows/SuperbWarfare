@@ -1,5 +1,4 @@
 {
-  "Icon": "superbwarfare:textures/gun_icon/knife_m1917_icon.png",
   "SlotIcon": "superbwarfare:textures/item/knife_m1917_icon.png",
   "UseCustomSprintAnimation": true,
   "Animation": {

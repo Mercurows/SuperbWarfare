@@ -18,7 +18,7 @@ import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.event.entity.player.PlayerEvent
 import org.joml.Math
 
-open class HammerItem(tier: Tier, attackDamage: Int, attackSpeed: Float, properties: Properties) :
+open class CraftingHammerItem(tier: Tier, attackDamage: Int, attackSpeed: Float, properties: Properties) :
     SwordItem(tier, properties.attributes(createAttributes(tier, attackDamage, attackSpeed))) {
 
     constructor(tier: Tier, attackDamage: Int, attackSpeed: Float, maxDamage: Int) : this(

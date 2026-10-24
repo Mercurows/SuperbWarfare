@@ -1,5 +1,4 @@
 {
-  "Icon": "superbwarfare:textures/gun_icon/sentinel_icon.png",
   "SlotIcon": "superbwarfare:textures/item/sentinel_icon.png",
   "Script": "superbwarfare:scripts/guns/sentinel.js",
   "Animation": {

@@ -1,5 +1,4 @@
 {
-  "Icon": "superbwarfare:textures/gun_icon/qbz_95_icon.png",
   "SlotIcon": "superbwarfare:textures/item/qbz_95_icon.png",
   "Animation": {
     "Idle": "animation.qbz_95.idle",

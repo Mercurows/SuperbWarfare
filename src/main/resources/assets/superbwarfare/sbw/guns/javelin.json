@@ -1,5 +1,4 @@
 {
-  "Icon": "superbwarfare:textures/gun_icon/javelin_icon.png",
   "SlotIcon": "superbwarfare:textures/item/javelin_icon.png",
   "Animation": {
     "Idle": "animation.javelin.idle",

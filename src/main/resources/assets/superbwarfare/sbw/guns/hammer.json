@@ -1,0 +1,59 @@
+{
+  "SlotIcon": "superbwarfare:textures/item/hammer_icon.png",
+  "UseCustomSprintAnimation": true,
+  "Animation": {
+    "Idle": "animation.hammer.idle",
+    "Melee": "animation.hammer.melee_1",
+    "Run": "animation.hammer.sprint",
+    "Edit": "animation.hammer.edit"
+  },
+  "Model": {
+    "Animation": "superbwarfare:animations/bedrock/gun/hammer.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/hammer.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/hammer.png"
+  },
+  "ItemDisplay": {
+    "firstperson_righthand": {
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "firstperson_lefthand": {
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "thirdperson_righthand": {
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "thirdperson_lefthand": {
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "ground": {
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "fixed": {
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    }
+  }
+}

@@ -398,23 +398,22 @@ class ModItemTagProvider(
         this.tag(ModTags.Items.ENLARGED_LEGENDARY_BLUEPRINT)
             .addTags(ModTags.Items.LEGENDARY_BLUEPRINT, ModTags.Items.SUPERB_BLUEPRINT)
 
-        this.tag(ItemTags.SWORDS).add(
+        val swords = arrayOf<Item>(
             ModItems.MILITARY_SHOVEL.get(),
             ModItems.T_BATON.get(),
             ModItems.ELECTRIC_BATON.get(),
             ModItems.STEEL_PIPE.get(),
             ModItems.CROWBAR.get(),
-            ModItems.CEMENTED_CARBIDE_SWORD.get()
-        ).addTag(ModTags.Items.HAMMER)
-        this.tag(ItemTags.SWORD_ENCHANTABLE).add(
-            ModItems.MILITARY_SHOVEL.get(),
-            ModItems.KNIFE.get(),
-            ModItems.T_BATON.get(),
-            ModItems.ELECTRIC_BATON.get(),
-            ModItems.STEEL_PIPE.get(),
-            ModItems.CROWBAR.get(),
-            ModItems.CEMENTED_CARBIDE_SWORD.get()
-        ).addTag(ModTags.Items.HAMMER)
+            ModItems.CEMENTED_CARBIDE_SWORD.get(),
+            ModItems.GOLDEN_HAMMER.get(),
+            ModItems.STEEL_HAMMER.get(),
+            ModItems.DIAMOND_HAMMER.get(),
+            ModItems.CEMENTED_CARBIDE_HAMMER.get(),
+            ModItems.NETHERITE_HAMMER.get()
+        )
+
+        this.tag(ItemTags.SWORDS).add(*swords)
+        this.tag(ItemTags.SWORD_ENCHANTABLE).add(*swords)
 
         this.tag(ItemTags.AXES).add(ModItems.MILITARY_SHOVEL.get(), ModItems.CEMENTED_CARBIDE_AXE.get())
         this.tag(ItemTags.SHOVELS).add(ModItems.MILITARY_SHOVEL.get(), ModItems.CEMENTED_CARBIDE_SHOVEL.get())

@@ -1,5 +1,4 @@
 {
-  "Icon": "superbwarfare:textures/gun_icon/bocek_icon.png",
   "SlotIcon": "superbwarfare:textures/item/bocek_icon.png",
   "UseCustomSprintAnimation": true,
   "Animation": {

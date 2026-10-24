@@ -57,6 +57,8 @@ class ModSoundProvider(output: PackOutput, existingFileHelper: ExistingFileHelpe
         register("bayonet_hit", "bayonet_hit_1", "bayonet_hit_2", "bayonet_hit_3")
         register("knife_swing", "swing/knife_swing_1", "swing/knife_swing_2", "swing/knife_swing_3", "swing/knife_swing_4")
         register("knife_swing_heavy", "swing/knife_swing_heavy")
+        register("heavy_swing", "swing/heavy_swing_1", "swing/heavy_swing_2")
+        register("heavy_slam", "swing/heavy_slam")
         root("steel_pipe_hit", "steel_pipe_drop", "smoke_grenade_release", "ptkm_1r_deploy", "night_vision_activate")
         register("car_horn") { stream(true).attenuationDistance(96) }
         register("steel_coil_move") { attenuationDistance(48) }

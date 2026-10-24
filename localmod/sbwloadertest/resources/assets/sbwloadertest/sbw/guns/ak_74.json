@@ -1,5 +1,4 @@
 {
-  "Icon": "sbwloadertest:textures/gun_icon/ak_74_icon.png",
   "SlotIcon": "sbwloadertest:textures/item/ak_74_icon.png",
   "Animation": {
     "Idle": "animation.ak_74.idle",

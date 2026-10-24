@@ -1,5 +1,4 @@
 {
-  "Icon": "superbwarfare:textures/gun_icon/mosin_nagant_icon.png",
   "SlotIcon": "superbwarfare:textures/item/mosin_nagant_icon.png",
   "Animation": {
     "Idle": "animation.mosin_nagant.idle",

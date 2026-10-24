@@ -1,5 +1,4 @@
 {
-"Icon": "superbwarfare:textures/gun_icon/k_98_icon.png",
   "SlotIcon": "superbwarfare:textures/item/k_98_icon.png",
   "Animation": {
     "Idle": "animation.k_98.idle",

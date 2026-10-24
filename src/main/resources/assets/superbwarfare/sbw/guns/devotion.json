@@ -1,5 +1,4 @@
 {
-  "Icon": "superbwarfare:textures/gun_icon/devotion_icon.png",
   "SlotIcon": "superbwarfare:textures/item/devotion_icon.png",
   "Animation": {
     "Idle": "animation.devotion.idle",

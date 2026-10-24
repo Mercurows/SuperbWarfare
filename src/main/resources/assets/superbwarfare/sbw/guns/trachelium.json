@@ -10,7 +10,6 @@
       "Color": "0xAAAAAA"
     }
   ],
-  "Icon": "superbwarfare:textures/gun_icon/trachelium_icon.png",
   "SlotIcon": "superbwarfare:textures/item/trachelium_icon.png",
   "Animation": {
     "Idle": "animation.trachelium.idle",

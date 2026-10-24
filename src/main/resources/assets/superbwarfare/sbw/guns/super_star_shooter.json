@@ -1,5 +1,4 @@
 {
-  "Icon": "superbwarfare:textures/gun_icon/super_star_shooter_icon.png",
   "SlotIcon": "superbwarfare:textures/item/super_star_shooter_icon.png",
   "Animation": {
     "Idle": "animation.super_star_shooter.idle",

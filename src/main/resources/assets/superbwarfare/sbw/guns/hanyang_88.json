@@ -1,5 +1,4 @@
 {
-"Icon": "superbwarfare:textures/gun_icon/hanyang_88_icon.png",
   "SlotIcon": "superbwarfare:textures/item/hanyang_88_icon.png",
   "Animation": {
     "Idle": "animation.hanyang_88.idle",

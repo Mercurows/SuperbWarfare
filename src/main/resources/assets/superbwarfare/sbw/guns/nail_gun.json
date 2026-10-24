@@ -1,5 +1,4 @@
 {
-  "Icon": "superbwarfare:textures/gun_icon/taser_icon.png",
   "SlotIcon": "superbwarfare:textures/item/taser_icon.png",
   "Animation": {
     "Idle": "animation.nail_gun.idle"

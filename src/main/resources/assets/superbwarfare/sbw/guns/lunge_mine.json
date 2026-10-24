@@ -1,5 +1,4 @@
 {
-  "Icon": "superbwarfare:textures/gun_icon/lunge_mine_icon.png",
   "SlotIcon": "superbwarfare:textures/item/lunge_mine_icon.png",
   "UseCustomSprintAnimation": true,
   "Animation": {

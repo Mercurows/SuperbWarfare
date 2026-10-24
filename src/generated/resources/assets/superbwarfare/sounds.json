@@ -902,6 +902,17 @@
       "superbwarfare:headshot"
     ]
   },
+  "heavy_slam": {
+    "sounds": [
+      "superbwarfare:swing/heavy_slam"
+    ]
+  },
+  "heavy_swing": {
+    "sounds": [
+      "superbwarfare:swing/heavy_swing_1",
+      "superbwarfare:swing/heavy_swing_2"
+    ]
+  },
   "heli_crash": {
     "sounds": [
       {

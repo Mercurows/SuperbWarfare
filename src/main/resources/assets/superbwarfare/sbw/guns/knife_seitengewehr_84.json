@@ -1,5 +1,4 @@
 {
-  "Icon": "superbwarfare:textures/gun_icon/knife_seitengewehr_84_icon.png",
   "SlotIcon": "superbwarfare:textures/item/knife_seitengewehr_84_icon.png",
   "UseCustomSprintAnimation": true,
   "Animation": {

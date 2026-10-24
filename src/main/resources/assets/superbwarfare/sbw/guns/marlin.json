@@ -1,5 +1,4 @@
 {
-  "Icon": "superbwarfare:textures/gun_icon/marlin_icon.png",
   "SlotIcon": "superbwarfare:textures/item/marlin_icon.png",
   "Animation": {
     "Idle": "animation.marlin.idle",

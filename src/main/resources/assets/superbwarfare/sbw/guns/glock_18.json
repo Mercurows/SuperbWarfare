@@ -1,5 +1,4 @@
 {
-  "Icon": "superbwarfare:textures/gun_icon/glock_18_icon.png",
   "SlotIcon": "superbwarfare:textures/item/glock_17_icon.png",
   "Animation": {
     "Idle": "animation.glock_18.idle",

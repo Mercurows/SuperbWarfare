@@ -1,5 +1,4 @@
 {
-  "Icon": "superbwarfare:textures/gun_icon/reforging_icon.png",
   "SlotIcon": "superbwarfare:textures/item/reforging_icon.png",
   "Animation": {
     "Idle": "animation.reforging.idle",
