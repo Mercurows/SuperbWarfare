@@ -3231,6 +3231,9 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         this.clampRotation(entity)
     }
 
+    val wrappedTurretYRot: Float
+        get() = Mth.wrapDegrees(turretYRot)
+
     open val customTurretMinPitch: Float
         /**
          * @return 自定义炮塔最低俯角

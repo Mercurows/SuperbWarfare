@@ -51,7 +51,7 @@ open class Fh77bwEntity(type: EntityType<Fh77bwEntity>, world: Level) : SpArtill
                 }
 
                 if (shootVec.toVec3().angleTo(getShootVec("Main", 1f).multiply(1.0, 0.0, 1.0)) > 2) {
-                    turretXRot = turretXRot.coerceAtMost(-10f * Mth.clamp((25 - Mth.abs(turretYRot)) * 0.15f, 0f, 1f))
+                    turretXRot = turretXRot.coerceAtMost(-10f * Mth.clamp((25 - Mth.abs(wrappedTurretYRot)) * 0.15f, 0f, 1f))
                 }
 
                 if (shootVec.toVec3().angleTo(getShootVec("Main", 1f)) < 25) {
@@ -124,7 +124,7 @@ open class Fh77bwEntity(type: EntityType<Fh77bwEntity>, world: Level) : SpArtill
         get() = if (lockTurret) 0f else super.turretTurnYSpeed
 
     override val customTurretMinPitch: Float
-        get() = if (Mth.abs(turretYRot) < 18 && !lockTurret && shootVec != getViewVec(this, 1f).toVector3f()) 10f * Mth.clamp((18 - Mth.abs(turretYRot)) * 0.4f, 0f, 1f) else 0f
+        get() = if (Mth.abs(wrappedTurretYRot) < 18 && !lockTurret && shootVec != getViewVec(this, 1f).toVector3f()) 10f * Mth.clamp((18 - Mth.abs(wrappedTurretYRot)) * 0.4f, 0f, 1f) else 0f
 
     override fun canShoot(living: LivingEntity?): Boolean {
         if (living == getNthEntity(1)) {

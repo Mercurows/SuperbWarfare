@@ -9,5 +9,5 @@ class Yx100Entity(type: EntityType<Yx100Entity>, world: Level) : VehicleEntity(t
     override fun getTrackAnimationLength() = 80
 
     override val customTurretMinPitch: Float
-        get() = if (Mth.abs(turretYRot) > 135) ((Mth.abs(turretYRot) - 135) * 0.5f).coerceAtMost(5f) else 0f
+        get() = if (Mth.abs(wrappedTurretYRot) > 135) ((Mth.abs(wrappedTurretYRot) - 135) * 0.5f).coerceAtMost(5f) else 0f
 }

@@ -20,5 +20,5 @@ class M1A2Entity(type: EntityType<M1A2Entity>, world: Level) : VehicleEntity(typ
     }
 
     override val customTurretMinPitch: Float
-        get() = if (Mth.abs(turretYRot) > 135) ((Mth.abs(turretYRot) - 135) * 0.4f).coerceAtMost(7f) else 0f
+        get() = if (Mth.abs(wrappedTurretYRot) > 135) ((Mth.abs(wrappedTurretYRot) - 135) * 0.4f).coerceAtMost(7f) else 0f
 }
