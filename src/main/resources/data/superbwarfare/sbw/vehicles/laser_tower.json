@@ -49,7 +49,7 @@
     "minecraft:mob_attack * 0.2",
     "minecraft:mob_attack_no_aggro * 0.2",
     "minecraft:mob_projectile * 0.4",
-    "minecraft:player_attack * 0.4",
+    "#superbwarfare:melee * 0.4",
     "minecraft:explosion * 1.5",
     "minecraft:player_explosion * 1.5",
     "superbwarfare:custom_explosion * 0.5",

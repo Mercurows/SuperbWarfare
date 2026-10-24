@@ -45,7 +45,7 @@ data class ResolvedMeleeAction(
     /** 打腿倍率覆盖；null = 用枪的 `MeleeLegshot` */
     val legshot: Double?,
 
-    /** 本段消耗的耐久 */
+    /** 本段每次命中消耗的耐久 */
     val durability: Int,
 
     /** 本段冷却 */

@@ -11,6 +11,8 @@ import java.util.*
 
 open class KnifeItem(properties: Properties) : GeoGunItem(properties) {
 
+    override fun isDamageable(stack: ItemStack?): Boolean = true
+
     override fun getTooltipImage(pStack: ItemStack): Optional<TooltipComponent> {
         return Optional.empty()
     }

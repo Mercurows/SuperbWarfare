@@ -98,7 +98,7 @@ data class MeleeAction(
     @SerialName("Legshot")
     val legshot: Double? = null,
 
-    /** 本段消耗的枪械耐久 */
+    /** 本段每次命中消耗的枪械耐久；不写 = 1，写 0 = 不消耗 */
     @SerialName("Durability")
     val durability: Int? = null,
 
@@ -200,7 +200,7 @@ data class MeleeAction(
             bypassesArmor = bypassesArmor ?: 0.0,
             headshot = headshot,
             legshot = legshot,
-            durability = durability ?: 0,
+            durability = durability ?: 1,
             cooldown = cooldown ?: 0,
             swing = swing,
             hit = hit,

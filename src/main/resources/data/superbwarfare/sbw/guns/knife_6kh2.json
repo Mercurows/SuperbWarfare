@@ -8,6 +8,7 @@
   "MeleeDamage": 9,
   "MeleeHeadshot": 1.5,
   "MeleeLegshot": 0.75,
+  "MaxDurability": 1600,
   "MeleeHitbox": {
     "Type": "Box",
     "Range": 0.8,

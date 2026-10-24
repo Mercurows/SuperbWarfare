@@ -243,7 +243,7 @@
     "minecraft:mob_attack * 0.4",
     "minecraft:mob_attack_no_aggro * 0.4",
     "minecraft:mob_projectile * 0.4",
-    "minecraft:player_attack * 0.4",
+    "#superbwarfare:melee * 0.4",
     "minecraft:lava * 4",
     "@minecraft:tnt * 3",
     "@minecraft:tnt_minecart * 3",

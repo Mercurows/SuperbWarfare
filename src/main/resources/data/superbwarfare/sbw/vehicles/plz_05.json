@@ -159,7 +159,7 @@
     "minecraft:mob_attack 0",
     "minecraft:mob_attack_no_aggro 0",
     "minecraft:mob_projectile 0",
-    "minecraft:player_attack 0",
+    "#superbwarfare:melee 0",
     "@#superbwarfare:aerial_bomb * 12",
     "#superbwarfare:projectile 0",
     "All * 0.24",

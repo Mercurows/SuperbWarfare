@@ -145,8 +145,8 @@ data class MeleeAttackMessage(
             stack.shrink(1)
         }
 
-        if (action.durability > 0 && data.get(GunProp.MAX_DURABILITY) > 0) {
-            // 本段自带的耐久消耗（`MeleeAction.Durability`）
+        if (hitLanded && action.durability > 0 && data.get(GunProp.MAX_DURABILITY) > 0) {
+            // 本段每次命中消耗的耐久（`MeleeAction.Durability`，不写 = 1）
             stack.hurtAndBreak(action.durability, player, EquipmentSlot.MAINHAND)
         }
     }
