@@ -38,6 +38,11 @@ object MeleeClientHandler {
      */
     private var subWeaponKeyWasDown: Boolean = false
 
+    fun clear() {
+        subWeaponKeyWasDown = false
+        // swingSerial 保持递增，避免动画实例保留旧序号后漏播复活后的新挥击。
+    }
+
     /**
      * 近战的tick行为，同时接管主/副武器切换
      *
@@ -66,6 +71,7 @@ object MeleeClientHandler {
         chargeStrike: Boolean = false,
         chargeTarget: Entity? = null,
     ): Boolean {
+        if (!player.isAlive || player.isRemoved || player.isSpectator) return false
         val subWeaponJustPressed = subWeaponFireKeyDown && !subWeaponKeyWasDown
         subWeaponKeyWasDown = subWeaponFireKeyDown
 
@@ -168,6 +174,7 @@ object MeleeClientHandler {
         chargeStrike: Boolean = false,
         chargeTarget: Entity? = null,
     ): Boolean {
+        if (!player.isAlive || player.isRemoved || player.isSpectator) return false
         // ① 连招下标：窗口内再挥击进下一段，超时回到第 0 段；被强制指定时直接用那一段
         val actions = data.meleeActions()
         val comboReset = data.get(GunProp.MELEE_COMBO_RESET)
@@ -191,6 +198,7 @@ object MeleeClientHandler {
         // ④ 动作占用（时长 = 本段的 Duration）
         if (!state.acquire(GunAction.MELEE, duration)) return false
 
+        state.bindMeleeOwner(player)
         state.meleeActionIndex = index
         state.meleeDuration = duration
         state.meleeTicks = duration
@@ -226,6 +234,10 @@ object MeleeClientHandler {
      * 推进当前这一段的计时，到锁存的结算 tick 结算
      */
     private fun tickActiveSwing(player: Player, data: GunData, state: GunActionLock.State) {
+        if (!state.isMeleeValidFor(player)) {
+            state.clear()
+            return
+        }
         if (state.meleeHitResolved) return
         if (state.meleeTicks > state.meleeHitTick) return
 
@@ -251,6 +263,7 @@ object MeleeClientHandler {
         forced: Entity? = null,
         chargeStrike: Boolean = false,
     ) {
+        if (!player.isAlive || player.isRemoved || player.isSpectator) return
         val context = MeleeQuery.contextOf(player, action)
 
         // 开 debug 日志时走带诊断的版本：能直接看到"候选是谁、卡在哪一步"
@@ -370,6 +383,7 @@ object MeleeClientHandler {
      */
     @JvmStatic
     fun forceSwing(player: Player, data: GunData, index: Int) {
+        if (!player.isAlive || player.isRemoved || player.isSpectator) return
         val action = data.resolveMeleeAction(index)
         val context = MeleeQuery.contextOf(player, action)
         val hits = MeleeQuery.resolve(player.level(), player, action, context)

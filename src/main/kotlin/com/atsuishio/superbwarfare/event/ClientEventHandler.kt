@@ -466,6 +466,8 @@ object ClientEventHandler {
 
     /** YSM 兼容：上一 tick 是否处于冲锋刺击段，用于检测结束并补 draw 恢复窗口 */
     private var ysmLungeAttacking = false
+    private var meleePlayer: Player? = null
+    private var meleeLevel: Level? = null
 
     // 按住开火键的持续tick
     @JvmField
@@ -764,17 +766,31 @@ object ClientEventHandler {
 
     @SubscribeEvent
     fun clearGravityLensing(event: ClientPlayerNetworkEvent.LoggingOut) {
+        resetMeleeOnDeath()
+        meleePlayer = null
+        meleeLevel = null
         ReforgingGravityBallRenderer.clearWorldEffects()
         ScopeLensPostProcessor.close()
         com.atsuishio.superbwarfare.client.renderer.scope.ScopeThermalRenderer.close()
     }
 
     @SubscribeEvent
+    fun resetMeleeOnRespawn(event: ClientPlayerNetworkEvent.Clone) {
+        // 立即复活可能完全跳过客户端的死亡 tick，不能只靠 isDeadOrDying 清理。
+        resetMeleeOnDeath()
+        meleePlayer = event.newPlayer
+        meleeLevel = event.newPlayer.level()
+    }
+
+    @SubscribeEvent
     fun handleClientTick(event: ClientTickEvent.Post) {
         val player = localPlayer ?: run {
+            syncMeleePlayer(null)
             RadiationShaderHandler.setDosage(0f)
             return
         }
+
+        syncMeleePlayer(player)
 
         RadiationShaderHandler.setDosage(
             if (mc.options.cameraType == CameraType.FIRST_PERSON) RadiationCapability.getDosage(player) else 0f
@@ -804,7 +820,7 @@ object ClientEventHandler {
         CrossHairOverlay.handleRenderDamageIndicator()
         staminaSystem()
         handlePlayerSprint()
-        if (player.isDeadOrDying) {
+        if (!player.isAlive || player.isRemoved || player.isSpectator) {
             resetMeleeOnDeath()
         } else {
             handleGunMelee(player, stack)
@@ -1672,11 +1688,21 @@ object ClientEventHandler {
         return DeployedWeaponHandler.isDeployed(player) || data.attachment.hasBipod() || item.hasBipod(data)
     }
 
+    private fun syncMeleePlayer(player: Player?) {
+        if (meleePlayer === player && meleeLevel === player?.level()) return
+        resetMeleeOnDeath()
+        meleePlayer = player
+        meleeLevel = player?.level()
+    }
+
     private fun resetMeleeOnDeath() {
         GunActionLock.clearAll()
+        MeleeClientHandler.clear()
         GunChargeHandler.clear()
         heavyStrikeRequested = false
+        wasChargeKeyDown = false
         holdingFireKey = false
+        fireCooldown = 0.0
         clearYsmCompatState()
     }
 
@@ -1684,6 +1710,11 @@ object ClientEventHandler {
      * 近战入口
      */
     fun handleGunMelee(player: Player, stack: ItemStack) {
+        syncMeleePlayer(player)
+        if (!player.isAlive || player.isRemoved || player.isSpectator) {
+            resetMeleeOnDeath()
+            return
+        }
         // 动作锁计时：只要有活跃的动作状态就推进（帧率无关，每客户端 tick 一次）
         val gunData = if (GunItem.isHeldWeapon(stack)) GunData.from(stack) else null
         val actionState = gunData?.let { GunActionLock.of(it) }
@@ -1815,8 +1846,10 @@ object ClientEventHandler {
      */
     @JvmStatic
     fun isGunMeleeActive(stack: ItemStack): Boolean {
+        val player = localPlayer ?: return false
         if (!GunItem.isHeldWeapon(stack)) return false
-        return GunActionLock.of(stack).meleeTicks > 0
+        val state = GunActionLock.of(stack)
+        return state.meleeTicks > 0 && state.isMeleeValidFor(player)
     }
 
     /** 当前这一段挥击的时长（动画按它拉伸） */
@@ -2549,7 +2582,10 @@ object ClientEventHandler {
         sprintHandgun = handling.get(GunProp.GUN_TYPE) == GunType.HANDGUN
 
         moveRotZ =
-            if (!entity.isSprinting && mc.options.keyUp.isDown && firePosTimer == 0.0 && resource.movingTilt && !isProne(player) && !DeployedWeaponHandler.isDeployed(player) && !isEditing) {
+            if (!entity.isSprinting && mc.options.keyUp.isDown && firePosTimer == 0.0 && resource.movingTilt && !isProne(
+                    player
+                ) && !DeployedWeaponHandler.isDeployed(player) && !isEditing
+            ) {
                 Mth.lerp(0.1 * times, moveRotZ, 0.14) * (1 - zoomTime)
             } else {
                 Mth.lerp(0.1 * times, moveRotZ, 0.0) * (1 - zoomTime)

@@ -11,6 +11,7 @@ import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.ModTags
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.network.message.send.UseActionMessage
+import com.atsuishio.superbwarfare.perk.MeleeAttackContext
 import com.atsuishio.superbwarfare.tools.InventoryTool
 import com.atsuishio.superbwarfare.tools.NBTTool
 import com.atsuishio.superbwarfare.tools.ParticleTool
@@ -23,10 +24,12 @@ import net.minecraft.sounds.SoundSource
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
+import net.neoforged.bus.api.EventPriority
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.event.AnvilUpdateEvent
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent
 import net.neoforged.neoforge.event.entity.player.PlayerEvent
 import net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerRespawnEvent
@@ -35,6 +38,37 @@ import kotlin.math.ceil
 
 @EventBusSubscriber
 object PlayerEventHandler {
+    private const val MELEE_RESPAWN_UNTIL = "sbwMeleeRespawnUntil"
+    private const val MELEE_RESPAWN_GRACE_TICKS = 5L
+
+    /** 服务器世界总 tick，不受立即复活、昼夜规则或玩家实体计数重置影响。 */
+    fun isMeleeBlockedAfterRespawn(player: Player): Boolean {
+        if (player !is ServerPlayer) return false
+        val tag = player.persistentData
+        if (!tag.contains(MELEE_RESPAWN_UNTIL)) return false
+        if (player.server.overworld().gameTime < tag.getLong(MELEE_RESPAWN_UNTIL)) return true
+        tag.remove(MELEE_RESPAWN_UNTIL)
+        return false
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    fun blockRespawnMeleeAttack(event: AttackEntityEvent) {
+        val player = event.entity
+        if (!isMeleeBlockedAfterRespawn(player)) return
+        if (player.mainHandItem.item is GunItem || MeleeAttackContext.get(player.uuid) != null) {
+            event.isCanceled = true
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    fun blockRespawnMeleeDamage(event: LivingIncomingDamageEvent) {
+        val attacker = event.source.entity as? ServerPlayer ?: return
+        // 同一近战调用栈里的 Perk 伤害也受限；普通射击不走这个上下文。
+        if (MeleeAttackContext.get(attacker.uuid) != null && isMeleeBlockedAfterRespawn(attacker)) {
+            event.isCanceled = true
+        }
+    }
+
     @SubscribeEvent
     fun onPlayerDeath(event: LivingDeathEvent) {
         val player = event.entity as? ServerPlayer ?: return
@@ -46,6 +80,13 @@ object PlayerEventHandler {
     @SubscribeEvent
     fun onPlayerRespawned(event: PlayerRespawnEvent) {
         val player = event.entity
+
+        if (player is ServerPlayer && !event.isEndConquered) {
+            player.persistentData.putLong(
+                MELEE_RESPAWN_UNTIL,
+                player.server.overworld().gameTime + MELEE_RESPAWN_GRACE_TICKS
+            )
+        }
 
         handleRespawnReload(player)
         handleRespawnAutoArmor(player)

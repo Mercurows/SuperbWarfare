@@ -2,7 +2,9 @@ package com.atsuishio.superbwarfare.client.gun
 
 import com.atsuishio.superbwarfare.data.gun.GunData
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.level.Level
 import java.util.*
 
 /**
@@ -65,6 +67,19 @@ object GunActionLock {
         /** 冲锋撞上的目标：本段无论如何都要打中它；结算后清掉 */
         var meleeChargeTarget: Entity? = null
 
+        // UUID 在复活后不变，挥击必须绑定发起它的玩家实体和世界实例。
+        private var meleeOwner: Player? = null
+        private var meleeLevel: Level? = null
+
+        fun bindMeleeOwner(player: Player) {
+            meleeOwner = player
+            meleeLevel = player.level()
+        }
+
+        fun isMeleeValidFor(player: Player): Boolean =
+            meleeOwner === player && meleeLevel === player.level() &&
+                    player.isAlive && !player.isRemoved && !player.isSpectator
+
         /** 距离上一次近战结束过了多少 tick（用于 `MeleeComboReset` 窗口判定） */
         var sinceLastMelee: Int = 0
 
@@ -109,10 +124,17 @@ object GunActionLock {
             meleeHitTick = 0
             meleeFromBayonetCharge = false
             meleeChargeTarget = null
+            meleeOwner = null
+            meleeLevel = null
             sinceLastMelee = 0
         }
 
         fun tick() {
+            val owner = meleeOwner
+            if (meleeTicks > 0 && owner != null && !isMeleeValidFor(owner)) {
+                clear()
+                return
+            }
             if (meleeTicks > 0) {
                 meleeTicks--
                 if (meleeTicks == 0) {
@@ -150,6 +172,8 @@ object GunActionLock {
 
     @JvmStatic
     fun clearAll() {
+        states.values.forEach(State::clear)
+        uuidStates.values.forEach(State::clear)
         states.clear()
         uuidStates.clear()
     }

@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.subdata.Cooldown
+import com.atsuishio.superbwarfare.event.PlayerEventHandler
 import com.atsuishio.superbwarfare.init.ModMeleeEffects
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.Entity
@@ -60,6 +61,7 @@ class MeleeEffectDispatcher(
         damaged: Boolean = false,
         killed: Boolean = false,
     ) {
+        if (!attacker.isAlive || attacker.isRemoved || PlayerEventHandler.isMeleeBlockedAfterRespawn(attacker)) return
         val effects = action.effects
         if (effects.isEmpty()) return
 
