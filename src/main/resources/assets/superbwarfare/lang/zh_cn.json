@@ -1491,6 +1491,9 @@
   "screen.superbwarfare.weapon_edit.offset": "偏移",
   "screen.superbwarfare.weapon_edit.reset": "重置",
   "screen.superbwarfare.weapon_edit.confirm": "应用设置",
+  "screen.superbwarfare.weapon_edit.stats.show": "显示武器属性",
+  "screen.superbwarfare.weapon_edit.stats.hide": "隐藏武器属性",
+  "screen.superbwarfare.weapon_edit.stats.title": "武器属性",
 
   "gamerule.sbwDoGenerateLoots": "生成卓越前线的箱子战利品",
 
@@ -1618,6 +1621,10 @@
   "skin.superbwarfare.happiest_ghast.unhappy": "它急了",
 
   "prop.superbwarfare.velocity": "子弹初速",
+  "prop.superbwarfare.sound_radius": "枪声传播半径",
+  "prop.superbwarfare.bypasses_armor": "穿甲倍率",
+  "prop.superbwarfare.magazine": "弹匣容量",
+  "prop.superbwarfare.headshot": "爆头倍率",
   "prop.superbwarfare.spread": "扩散",
   "prop.superbwarfare.weight": "重量",
   "prop.superbwarfare.recoil_x": "竖直后坐力",

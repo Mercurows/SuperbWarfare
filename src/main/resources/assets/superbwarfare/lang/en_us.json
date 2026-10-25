@@ -1491,6 +1491,9 @@
   "screen.superbwarfare.weapon_edit.offset": "Offset",
   "screen.superbwarfare.weapon_edit.reset": "Reset",
   "screen.superbwarfare.weapon_edit.confirm": "Apply settings",
+  "screen.superbwarfare.weapon_edit.stats.show": "Show Weapon Attributes",
+  "screen.superbwarfare.weapon_edit.stats.hide": "Hide Weapon Attributes",
+  "screen.superbwarfare.weapon_edit.stats.title": "Weapon Attributes",
 
   "gamerule.sbwDoGenerateLoots": "Generate Superb Warfare Chest Loots",
 
@@ -1618,6 +1621,10 @@
   "skin.superbwarfare.happiest_ghast.unhappy": "It looks unhappy",
 
   "prop.superbwarfare.velocity": "Velocity",
+  "prop.superbwarfare.sound_radius": "Sound Radius",
+  "prop.superbwarfare.bypasses_armor": "Armor Bypass",
+  "prop.superbwarfare.magazine": "Magazine Capacity",
+  "prop.superbwarfare.headshot": "Headshot Multiplier",
   "prop.superbwarfare.spread": "Spread",
   "prop.superbwarfare.weight": "Weight",
   "prop.superbwarfare.recoil_x": "Vertical Recoil",

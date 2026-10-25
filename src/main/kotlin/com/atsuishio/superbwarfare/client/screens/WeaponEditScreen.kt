@@ -5,6 +5,7 @@ import com.atsuishio.superbwarfare.config.server.AttachmentConfig
 import com.atsuishio.superbwarfare.data.attachment.*
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
+import com.atsuishio.superbwarfare.data.gun.GunState
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.event.ClientEventHandler.editModelShake
 import com.atsuishio.superbwarfare.event.ClientEventHandler.editingAttachmentType
@@ -30,9 +31,11 @@ import com.sighs.apricityui.init.Element
 import com.sighs.apricityui.layout.Position
 import com.sighs.apricityui.render.Base
 import com.sighs.apricityui.screen.ApricityScreen
+import com.sighs.apricityui.style.Text
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import net.minecraft.resources.ResourceLocation
@@ -75,13 +78,21 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     private var inventoryCheckTick = Long.MIN_VALUE
     private var inventoryCreative = false
     private var hoveredItem: String? = null
-    private var tooltipItem: String? = null
+    private var tooltipKey: String? = null
     private var tooltipLines: List<FormattedCharSequence> = emptyList()
     private var tooltipWrapWidth = 0
     private var viewportWidth = 0f
     private var viewportHeight = 0f
     private val adjustmentDraft = AttachmentEditDraft()
     private var settingsHeight = 0f
+    private var statsOpen = false
+    private val statRows = mutableListOf<StatRow>()
+    private var statsRefreshTick = Long.MIN_VALUE
+    private var statsBaseline: GunData? = null
+    private var statsState: GunState? = null
+    private var statsPerks: CompoundTag? = null
+    private var statsAttachments: CompoundTag? = null
+    private var statsDataVersion = -1
 
     override fun isPauseScreen(): Boolean = false
 
@@ -125,12 +136,19 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         ownedAttachments = emptySet()
         inventoryCheckTick = Long.MIN_VALUE
         hoveredItem = null
-        tooltipItem = null
+        tooltipKey = null
         tooltipLines = emptyList()
         tooltipWrapWidth = 0
         documentGeneration = -1L
         adjustmentDraft.discard()
         settingsHeight = 0f
+        statRows.clear()
+        statsRefreshTick = Long.MIN_VALUE
+        statsBaseline = null
+        statsState = null
+        statsPerks = null
+        statsAttachments = null
+        statsDataVersion = -1
     }
 
     override fun render(graphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
@@ -150,21 +168,30 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         val data = GunData.from(held)
         refreshAttachmentLists(player, data)
         val settings = syncAdjustments(doc, data)
-        var mounts = syncMounts(doc, data, listOfNotNull(settings))
-        val panel = syncPanel(doc, player, data, mounts, listOfNotNull(settings))
+        val stats = syncStats(doc, data, player.level().gameTime)
+        val reserved = listOfNotNull(settings, stats)
+        var mounts = syncMounts(doc, data, reserved)
+        val panel = syncPanel(doc, player, data, mounts, reserved)
         // 紧凑窗口的点位可能占满菜单四周；先确定菜单，再把点位移到剩余空间。
         if (panel != null && mounts.any { it.bounds.overlaps(panel, 6f) }) {
-            mounts = syncMounts(doc, data, listOfNotNull(settings, panel))
+            mounts = syncMounts(doc, data, reserved + panel)
             mounts.firstOrNull { it.type == panelType }?.let {
                 connect("panel", it.bounds, panel)
             }
         }
-        val obstacles = syncIcons(doc, mounts, listOfNotNull(panel, settings))
+        val obstacles = syncIcons(doc, mounts, reserved + listOfNotNull(panel))
         syncMountLabels(doc, mounts, obstacles)
         flushStyles()
         // 连线先提交，保持在菜单和物品下方；圆圈和外框则在 AUI 绘制完成后单独提交。
         drawDecorationPass(graphics, doc, false) { vertices, matrix ->
             for ((mount, target) in connectors.values) drawConnector(vertices, matrix, mount, target)
+            val scale = editorPanelScale()
+            panel?.let { drawPanelBackground(vertices, matrix, it, scale, 0xc20f1115.toInt()) }
+            settings?.let {
+                drawPanelBackground(vertices, matrix, it, scale, 0x8c0f1115.toInt())
+                drawQuad(vertices, matrix, it.left + 5f * scale, it.top + 23f * scale,
+                    it.left + 173f * scale, it.top + 24f * scale, -1)
+            }
         }
         // 平面 UI 不应与物品模型残留的深度互相遮挡；由 AUI Screen 统一绘制，避免全局 overlay 再画一次。
         graphics.flush()
@@ -205,13 +232,16 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         doc.addEventListener("wheel", { event ->
             val scroll = doc.getElementById("panel-scroll")
             val list = doc.getElementById("panel-list")
+            val statsScroll = doc.getElementById("stats-scroll")
+            val inStats = statsOpen && statsScroll != null && event.composedPath().any { it === statsScroll }
             val inList = panelType != null && AttachmentSlots.slotAt(editingAttachmentType) == panelType &&
                 scroll != null && list != null && event.composedPath().any { it === list }
             // 始终取消默认滚动，列表到边界时也不能把滚动传给 body 或其他祖先。
             event.preventDefault()
             event.stopPropagation()
-            if (inList && event is MouseEvent) {
-                scroll.scrollBy(0.0, event.deltaY)
+            if (event is MouseEvent) {
+                if (inStats) scrollStatsBy(statsScroll, event.deltaY)
+                else if (inList) scroll.scrollBy(0.0, event.deltaY)
             }
         }, true)
         for (type in AttachmentType.entries) {
@@ -283,6 +313,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             wireSettingsInput(input, AttachmentColorInput::isDraft, { finish -> commitColorInput(input, finish) })
         }
         prepareGrid(doc)
+        prepareStats(doc)
     }
 
     private fun wireSettingsInput(
@@ -823,23 +854,23 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         }
     }
 
-    /** 复用配件 tooltip 中的槽位、描述与属性，避免 HTML 与配件数据维护两套文案。 */
+    /** 复用配件 tooltip 中的槽位、描述与属性。属性图表不弹出悬浮提示。 */
     private fun renderAttachmentTooltip(graphics: GuiGraphics, doc: Document) {
         val id = hoveredItem?.let { shownItems[it] }?.takeUnless { it == AIR }
         if (id == null) {
-            tooltipItem = null
+            tooltipKey = null
             tooltipLines = emptyList()
             return
         }
         val tooltipWidth = minOf(210f, viewportWidth - 8f).coerceAtLeast(15f)
         val wrapWidth = (tooltipWidth - 14f).toInt().coerceAtLeast(1)
-        if (tooltipItem != id || tooltipWrapWidth != wrapWidth) {
+        if (tooltipKey != id || tooltipWrapWidth != wrapWidth) {
             val item = itemStack(ResourceLocation.tryParse(id))
             val lines =
                 listOf(item.hoverName.copy().withStyle(item.rarity.styleModifier).withStyle { it.withBold(false) }) +
                         ClientAttachmentImageTooltip(AttachmentImageComponent(item)).buildLines(item)
             tooltipLines = lines.flatMap { font.split(it, wrapWidth) }
-            tooltipItem = id
+            tooltipKey = id
             tooltipWrapWidth = wrapWidth
         }
         if (tooltipLines.isEmpty()) return
@@ -897,7 +928,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             candidateKey = key
             compatibleBySlot.clear()
             installableBySlot.clear()
-            tooltipItem = null
+            tooltipKey = null
         }
         // 每 tick 扫一次背包，避免依赖客户端同步不一定递增的 inventory.timesChanged。
         val tick = player.level().gameTime
@@ -944,9 +975,12 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
 
     private fun usableHeight() = (viewportHeight - 28f).coerceAtLeast(1f)
 
-    // 两个菜单共用缩放，窄窗口/矮窗口下也保持相同的可见宽度和字号。
+    // 属性、配件列表和设置共用缩放，标题及正文不会因面板不同而改变可见字号。
     private fun editorPanelScale() =
-        minOf(1f, (viewportWidth - 8f) / (PANEL_WIDTH * 2f), usableHeight() / max(PANEL_HEIGHT, settingsHeight)).coerceAtLeast(0.1f)
+        minOf(1f, (viewportWidth - 8f) / (PANEL_WIDTH * 2f), usableHeight() / max(PANEL_HEIGHT, settingsHeight),
+            if (statsOpen) statsHeightBudget() / STATS_HEIGHT else 1f).coerceAtLeast(0.05f)
+
+    private fun statsHeightBudget() = (viewportHeight / 2f - 8f).coerceAtLeast(1f)
 
     /** 从期望位置向外搜索，矩形间保留 gap；极小窗口放不下时选择遮挡最少的位置。 */
     private fun findSpace(
@@ -1069,6 +1103,15 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         }
     }
 
+    /** 与挂点外框一样独立提交背景和边框，避免 AUI 的物品、输入控件批次影响面板底板。 */
+    private fun drawPanelBackground(vertices: VertexConsumer, matrix: Matrix4f, bounds: Box, scale: Float, color: Int) {
+        drawQuad(vertices, matrix, bounds.left, bounds.top, bounds.right, bounds.bottom, color)
+        drawQuad(vertices, matrix, bounds.left, bounds.top, bounds.right, bounds.top + scale, -1)
+        drawQuad(vertices, matrix, bounds.left, bounds.bottom - scale, bounds.right, bounds.bottom, -1)
+        drawQuad(vertices, matrix, bounds.left, bounds.top + scale, bounds.left + scale, bounds.bottom - scale, -1)
+        drawQuad(vertices, matrix, bounds.right - scale, bounds.top + scale, bounds.right, bounds.bottom - scale, -1)
+    }
+
     private fun vertex(vertices: VertexConsumer, matrix: Matrix4f, x: Float, y: Float, color: Int) {
         vertices.addVertex(matrix, x, y, 0f)
             .setColor((color ushr 16) and 255, (color ushr 8) and 255, color and 255, (color ushr 24) and 255)
@@ -1133,6 +1176,260 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         if (itemId == null) shownItems.remove(key) else shownItems[key] = itemId
     }
 
+    /** 只列出有明确标量含义的属性；数值与单位转换在这里集中定义。 */
+    private enum class WeaponStat(
+        val key: String, val reference: Double, val decimals: Int = 3,
+        val unit: String = "", val higherIsBetter: Boolean = true,
+        val optional: Boolean = false, val firearmOnly: Boolean = false,
+        val read: (GunData) -> Double,
+    ) {
+        RPM("rpm", 1200.0, 0, " rpm", firearmOnly = true,
+            read = {
+                val rpm = it.get(GunProp.RPM) * it.get(GunProp.RPM_MULTIPLIER)
+                if (rpm.isFinite()) rpm.roundToInt().coerceIn(1, 114514).toDouble() else Double.NaN
+            }),
+        DAMAGE("damage", 25.0, firearmOnly = true, read = { it.get(GunProp.DAMAGE) }),
+        HEADSHOT("headshot", 4.0, unit = "×", firearmOnly = true, read = { it.get(GunProp.HEADSHOT) }),
+        RECOIL_X("recoil_x", 0.005, higherIsBetter = false, firearmOnly = true, read = { it.get(GunProp.RECOIL_X) }),
+        RECOIL_Y("recoil_y", 0.04, higherIsBetter = false, firearmOnly = true, read = { it.get(GunProp.RECOIL_Y) }),
+        MAGAZINE("magazine", 60.0, 0, optional = true, firearmOnly = true, read = { it.get(GunProp.MAGAZINE).toDouble() }),
+        ARMOR_BYPASS("bypasses_armor", 100.0, unit = "%", optional = true, firearmOnly = true, read = { it.get(GunProp.BYPASSES_ARMOR) * 100.0 }),
+        VELOCITY("velocity", 600.0, unit = " m/s", optional = true, firearmOnly = true, read = { it.get(GunProp.VELOCITY) * 20.0 }),
+        SPREAD("spread", 10.0, higherIsBetter = false, firearmOnly = true, read = { it.get(GunProp.SPREAD) }),
+        AIMED_SPREAD("zoom_spread_rate", 1.0, unit = "×", higherIsBetter = false, firearmOnly = true,
+            read = { it.get(GunProp.ZOOM_SPREAD_RATE) }),
+        ZOOM_TIME("zoom_time", 1.0, unit = " s", higherIsBetter = false, firearmOnly = true,
+            read = { (it.get(GunProp.ZOOM_TIME).coerceAtLeast(1) + 0.4 * it.item.getCustomWeight(it)).coerceAtLeast(0.0) / 20.0 }),
+        NORMAL_RELOAD("normal_reload_time", 6.0, unit = " s", higherIsBetter = false, optional = true, firearmOnly = true,
+            read = { it.get(GunProp.NORMAL_RELOAD_TIME) / 20.0 }),
+        EMPTY_RELOAD("empty_reload_time", 8.0, unit = " s", higherIsBetter = false, optional = true, firearmOnly = true,
+            read = { it.get(GunProp.EMPTY_RELOAD_TIME) / 20.0 }),
+        WEIGHT("weight", 15.0, higherIsBetter = false, read = { it.get(GunProp.WEIGHT) }),
+        SWAY("sway", 2.0, higherIsBetter = false, firearmOnly = true, read = { it.get(GunProp.SWAY) }),
+        SOUND_RADIUS("sound_radius", 24.0, unit = " m", higherIsBetter = false, optional = true, firearmOnly = true,
+            read = { it.get(GunProp.SOUND_RADIUS) }),
+        PROJECTILES("projectile_amount", 16.0, 0, optional = true, firearmOnly = true, read = { it.get(GunProp.PROJECTILE_AMOUNT).toDouble() }),
+        EXPLOSION_DAMAGE("explosion_damage", 200.0, optional = true, read = { it.get(GunProp.EXPLOSION_DAMAGE) }),
+        EXPLOSION_RADIUS("explosion_radius", 12.0, unit = " m", optional = true, read = { it.get(GunProp.EXPLOSION_RADIUS) }),
+        MAX_ENERGY("max_energy", 100000.0, 0, " FE", optional = true, read = { it.get(GunProp.MAX_ENERGY).toDouble() }),
+        ENERGY_REGEN("energy_regeneration", 100.0, unit = " FE/s", optional = true, read = { it.get(GunProp.ENERGY_REGENERATION) * 20.0 }),
+        MELEE_DAMAGE("melee_damage", 20.0, optional = true, read = { it.get(GunProp.MELEE_DAMAGE) });
+
+        fun format(value: Double): String {
+            val number = String.format(Locale.ROOT, "%.${decimals}f", value)
+            return (if (decimals > 0) number.trimEnd('0').trimEnd('.') else number) + unit
+        }
+    }
+
+    /** 固定量程；超出部分从左侧用金条覆盖，配件差值仍以实际数值计算。 */
+    private data class StatComparison(val value: Double, val baseline: Double, val reference: Double, val higherIsBetter: Boolean) {
+        val delta = value - baseline
+        private val currentFraction get() = (value / reference).coerceIn(0.0, 1.0)
+        private val baselineFraction get() = (baseline / reference).coerceIn(0.0, 1.0)
+        val commonFraction get() = min(currentFraction, baselineFraction)
+        val deltaFraction get() = abs(currentFraction - baselineFraction)
+        val overflowFraction get() = (value / reference - 1.0).coerceIn(0.0, 1.0)
+        val beneficial get() = if (higherIsBetter) delta > 0 else delta < 0
+    }
+
+    private data class StatRow(
+        val stat: WeaponStat, val element: Element, val value: Element, val delta: Element,
+        val commonBar: Element, val deltaBar: Element, val overflowBar: Element,
+        val texts: List<StatText>,
+        var lastValue: Double = Double.NaN, var lastBaseline: Double = Double.NaN,
+        var visible: Boolean = true,
+    )
+
+    private class StatText(val viewport: Element, val element: Element, val rightAligned: Boolean) {
+        var shown = false
+        var content = ""
+        var width = Double.NaN
+        var overflow = Double.NaN
+        var startedAt = 0L
+
+        /** 两端停留后匀速往返，不改写文字、不让父列表跟着水平滚动。 */
+        fun offset(now: Long): Double {
+            if (overflow <= 0.0) return 0.0
+            val travel = overflow / STATS_TEXT_SPEED
+            val phase = ((now - startedAt).coerceAtLeast(0L) / 1e9) % (2.0 * (STATS_TEXT_PAUSE + travel))
+            return when {
+                phase < STATS_TEXT_PAUSE -> 0.0
+                phase < STATS_TEXT_PAUSE + travel -> (phase - STATS_TEXT_PAUSE) * STATS_TEXT_SPEED
+                phase < 2.0 * STATS_TEXT_PAUSE + travel -> overflow
+                else -> overflow - (phase - 2.0 * STATS_TEXT_PAUSE - travel) * STATS_TEXT_SPEED
+            }
+        }
+    }
+
+    private fun scrollStatsBy(scroll: Element, delta: Double) {
+        if (!delta.isFinite() || delta == 0.0) return
+        val maxRow = (statRows.count { it.visible } - STATS_VISIBLE_ROWS).coerceAtLeast(0).toDouble()
+        val steps = max(1.0, round(abs(delta) / STATS_ROW_HEIGHT)) * sign(delta)
+        val row = (round(scroll.getTargetScrollTop() / STATS_ROW_HEIGHT) + steps).coerceIn(0.0, maxRow)
+        scroll.setScrollTop(row * STATS_ROW_HEIGHT)
+    }
+
+    private fun syncStatsPresentation(doc: Document, now: Long = System.nanoTime()) {
+        val scroll = doc.getElementById("stats-scroll") ?: return
+        val count = statRows.count { it.visible }
+        setStyle(doc.getElementById("stats-content"), "height", px(count * STATS_ROW_HEIGHT))
+        // 滚轮按整行移动；拖动原生滚动条松手后也吸附到整行，避免长期停在半行。
+        if (!scroll.isScrollbarInteractionActive) {
+            val maxRow = (count - STATS_VISIBLE_ROWS).coerceAtLeast(0).toDouble()
+            val top = round(scroll.getTargetScrollTop() / STATS_ROW_HEIGHT).coerceIn(0.0, maxRow) * STATS_ROW_HEIGHT
+            if (abs(scroll.getTargetScrollTop() - top) > 0.01) scroll.setScrollTop(top)
+        }
+        val top = scroll.getScrollTop()
+        val bottom = top + STATS_VISIBLE_ROWS * STATS_ROW_HEIGHT
+        var index = 0
+        for (row in statRows) {
+            val rowTop = index * STATS_ROW_HEIGHT
+            val shown = row.visible && rowTop + STATS_ROW_HEIGHT > top && rowTop < bottom
+            if (row.visible) index++
+            for (text in row.texts) {
+                if (!shown) {
+                    text.shown = false
+                    continue
+                }
+                val content = text.element.textContent
+                val width = text.viewport.clientWidth
+                val measured = Text.measureLine(Text.of(text.element), content)
+                val overflow = (measured - width).coerceAtLeast(0.0)
+                if (!text.shown || text.content != content || text.width != width || text.overflow != overflow) {
+                    text.startedAt = now
+                    text.content = content
+                    text.width = width
+                    text.overflow = overflow
+                }
+                text.shown = true
+                val offset = if (overflow > 0.0) -text.offset(now) else if (text.rightAligned) width - measured else 0.0
+                setStyle(text.element, "transform", "translateX(${px(offset.toFloat())})")
+            }
+        }
+    }
+
+    private fun statLabel(key: String) = label("stats.$key")
+
+    private fun prepareStats(doc: Document) {
+        doc.getElementById("stats-toggle")?.let { button ->
+            button.addEventListener("click") {
+                statsOpen = !statsOpen
+                statsRefreshTick = Long.MIN_VALUE
+            }
+        }
+        doc.getElementById("stats-title")?.textContent = statLabel("title")
+        val content = doc.getElementById("stats-content") ?: return
+        content.innerHTML = WeaponStat.entries.joinToString("") { stat ->
+            val id = stat.key
+            val texts = listOf("label", "value", "delta").joinToString("") { part ->
+                """<div id="stat-$id-$part" class="stat-$part"><div id="stat-$id-$part-text" class="stat-text"></div></div>"""
+            }
+            """<div id="stat-$id" class="stat-row">$texts<div class="stat-track"><div id="stat-$id-common" class="stat-common"></div><div id="stat-$id-change" class="stat-change"></div><div id="stat-$id-overflow" class="stat-overflow"></div></div></div>"""
+        }
+        for (stat in WeaponStat.entries) {
+            val id = "stat-${stat.key}"
+            val texts = listOf("label", "value", "delta").mapNotNull { part ->
+                val viewport = doc.getElementById("$id-$part") ?: return@mapNotNull null
+                val element = doc.getElementById("$id-$part-text") ?: return@mapNotNull null
+                StatText(viewport, element, part == "value")
+            }
+            if (texts.size != 3) continue
+            texts[0].element.textContent = Component.translatable("prop.superbwarfare.${stat.key}").string
+            statRows += StatRow(stat, doc.getElementById(id) ?: continue,
+                texts[1].element, texts[2].element,
+                doc.getElementById("$id-common") ?: continue, doc.getElementById("$id-change") ?: continue,
+                doc.getElementById("$id-overflow") ?: continue, texts)
+        }
+    }
+
+    private fun syncStats(doc: Document, data: GunData, tick: Long): Box? {
+        val root = doc.getElementById("weapon-stats") ?: return null
+        doc.getElementById("stats-toggle")?.let {
+            val text = statLabel(if (statsOpen) "hide" else "show")
+            if (it.textContent != text) it.textContent = text
+            val expanded = statsOpen.toString()
+            if (it.getAttribute("aria-expanded") != expanded) it.setAttribute("aria-expanded", expanded)
+        }
+        setStyle(doc.getElementById("stats-chart"), "display", if (statsOpen) "block" else "none")
+        // 字号跟随其他面板；通过收窄属性面板保持四分之一屏幕的面积限制。
+        val scale = editorPanelScale()
+        val height = if (statsOpen) STATS_HEIGHT else STATS_BUTTON_HEIGHT
+        val width = if (statsOpen) minOf(STATS_WIDTH, (viewportWidth / 2f - 12f).coerceAtLeast(1f) / scale) else STATS_BUTTON_WIDTH
+        setStyle(root, "width", px(width))
+        setStyle(root, "height", px(height))
+        val bounds = Box(6f, 6f, width * scale, height * scale)
+        place(root, bounds, scale)
+        if (!statsOpen) {
+            statRows.forEach { row -> row.texts.forEach { it.shown = false } }
+            return bounds
+        }
+        val chartHeight = height - STATS_CHART_TOP
+        setStyle(doc.getElementById("stats-chart"), "height", px(chartHeight))
+        setStyle(doc.getElementById("stats-scroll"), "height", px(chartHeight - STATS_CHART_CHROME))
+        setStyle(doc.getElementById("stats-scroll"), "width", px(width - 14f))
+        setStyle(doc.getElementById("stats-content"), "width", px(width - 22f))
+        if (statsRefreshTick != Long.MIN_VALUE && tick >= statsRefreshTick && tick - statsRefreshTick < 2) {
+            syncStatsPresentation(doc)
+            return bounds
+        }
+        statsRefreshTick = tick
+
+        val state = data.state
+        val oldState = statsState
+        if (statsBaseline?.item !== data.item || statsDataVersion != GunData.DATA_VERSION || oldState == null ||
+            oldState.uuid != state.uuid || state.structurallyDiffersFrom(oldState) ||
+            statsPerks != data.perkTag || statsAttachments != data.attachmentTag
+        ) {
+            // 只操作副本。保留相同等级、Perk、弹种、覆写及运行状态，卸下全部配件后重新跑 PMC。
+            // 不调用原 GunData 的 save/copy/flush，避免推进客户端 revision。
+            statsBaseline = GunData.from(data.stack.copy()).also { baseline ->
+                baseline.updateLocal { state }
+                baseline.attachmentTag.allKeys.toList().forEach(baseline.attachmentTag::remove)
+                baseline.invalidateProperties()
+            }
+            statsState = state
+            statsPerks = data.perkTag.copy()
+            statsAttachments = data.attachmentTag.copy()
+            statsDataVersion = GunData.DATA_VERSION
+        }
+        val baseline = statsBaseline ?: return bounds
+        val hasFirearm = !data.meleeOnly() || !baseline.meleeOnly()
+        for (row in statRows) {
+            val stat = row.stat
+            val current = stat.read(data)
+            val original = stat.read(baseline)
+            val visible = current.isFinite() && original.isFinite() && current >= 0.0 && original >= 0.0 &&
+                (!stat.firearmOnly || hasFirearm) && (!stat.optional || max(current, original) > 0.0) &&
+                (stat != WeaponStat.PROJECTILES || max(current, original) > 1.0)
+            row.visible = visible
+            setStyle(row.element, "display", if (visible) "block" else "none")
+            if (!visible || (row.lastValue == current && row.lastBaseline == original)) continue
+            row.lastValue = current
+            row.lastBaseline = original
+            val comparison = StatComparison(current, original, stat.reference, stat.higherIsBetter)
+            row.value.textContent = stat.format(current)
+            // 三位小数以下的真实变化仍保留方向，不能把微小的后坐力增减显示成零。
+            val precision = 10.0.pow(stat.decimals)
+            val roundedDelta = round(comparison.delta * precision) / precision
+            val changed = abs(comparison.delta) > max(1e-9, max(Math.ulp(current), Math.ulp(original)) * 4.0)
+            val sign = if (comparison.delta > 0) "+" else "-"
+            row.delta.textContent = when {
+                !changed -> ""
+                roundedDelta == 0.0 -> "($sign<${stat.format(1.0 / precision)})"
+                else -> "($sign${stat.format(abs(roundedDelta))})"
+            }
+            val color = if (comparison.beneficial) STATS_GAIN_COLOR else STATS_LOSS_COLOR
+            setStyle(row.delta, "color", color)
+            setStyle(row.commonBar, "width", "${comparison.commonFraction * 100.0}%")
+            setStyle(row.deltaBar, "left", "${comparison.commonFraction * 100.0}%")
+            setStyle(row.deltaBar, "width", "${if (changed) comparison.deltaFraction * 100.0 else 0.0}%")
+            setStyle(row.deltaBar, "background-color", color)
+            setStyle(row.overflowBar, "width", "${comparison.overflowFraction * 100.0}%")
+        }
+        syncStatsPresentation(doc)
+        return bounds
+    }
+
     private fun setClass(element: Element, name: String, enabled: Boolean) {
         val classes = element.classList ?: return
         if (classes.contains(name) == enabled) return
@@ -1178,6 +1475,18 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         private const val GRID_ROW_GAP = 4f
         private const val GRID_ROW_PITCH = 20f
         private const val GRID_VIEWPORT_HEIGHT = GRID_VISIBLE_ROWS * GRID_ROW_PITCH - GRID_ROW_GAP
+        private const val STATS_WIDTH = 210f
+        private const val STATS_BUTTON_WIDTH = 112f
+        private const val STATS_BUTTON_HEIGHT = 17f
+        private const val STATS_CHART_TOP = 21f
+        private const val STATS_CHART_CHROME = 28f
+        private const val STATS_VISIBLE_ROWS = 5
+        private const val STATS_ROW_HEIGHT = 14f
+        private const val STATS_HEIGHT = STATS_CHART_TOP + STATS_CHART_CHROME + STATS_VISIBLE_ROWS * STATS_ROW_HEIGHT
+        private const val STATS_TEXT_SPEED = 14.0
+        private const val STATS_TEXT_PAUSE = 1.0
+        private const val STATS_GAIN_COLOR = "#65e38a"
+        private const val STATS_LOSS_COLOR = "#ff7070"
         private val SEARCH_COS = DoubleArray(24) { cos(it * PI * 2 / 24) }
         private val SEARCH_SIN = DoubleArray(24) { sin(it * PI * 2 / 24) }
         private const val CIRCLE_SEGMENTS = 48

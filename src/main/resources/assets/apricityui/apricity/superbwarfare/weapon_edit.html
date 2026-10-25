@@ -10,6 +10,13 @@
     <!-- AUI 负责挂点命中区域和图标布局；圆圈、外框与连线由 WeaponEditScreen 独立绘制。 -->
     <div id="mount-layer" class="layer"></div>
     <div id="icon-layer" class="layer"></div>
+    <div id="weapon-stats">
+        <button id="stats-toggle" type="button" aria-expanded="false"></button>
+        <div id="stats-chart">
+            <div id="stats-title"></div>
+            <div id="stats-scroll"><div id="stats-content"></div></div>
+        </div>
+    </div>
     <div id="panel">
         <div id="panel-header">
             <div id="panel-current" class="attachment-icon">
@@ -164,7 +171,7 @@
     #panel {
         position: absolute; left: 0; top: 0; transform: translate(0px, 0px) scale(1);
         display: none; box-sizing: border-box; width: 180px; height: 112px;
-        border: 1px solid #ffffff; background: rgba(15, 17, 21, 0.76);
+        border: 1px solid transparent; background: none;
         transform-origin: 0 0; pointer-events: auto; z-index: 4; font-weight: normal;
     }
     #panel-header { position: absolute; left: 5px; top: 5px; width: 168px; height: 34px; }
@@ -211,12 +218,13 @@
     #settings {
         position: absolute; left: 0; top: 0; transform: translate(0px, 0px) scale(1);
         display: none; box-sizing: border-box; width: 180px; height: 56px;
-        border: 1px solid #ffffff; background: rgba(15, 17, 21, 0.55);
+        border: 1px solid transparent; background: none;
         transform-origin: 0 0; pointer-events: auto; z-index: 4; font-weight: normal;
     }
     #settings, #settings * { user-select: none; }
     #settings input[type="text"] { user-select: text; }
-    #settings-title { position: absolute; left: 5px; top: 6px; height: 14px; font-size: 9px; }
+    #settings-title, #stats-title { position: absolute; top: 6px; height: 14px; font-size: 9px; font-weight: normal; }
+    #settings-title { left: 5px; }
     #settings-reset, #settings-confirm {
         position: absolute; right: 5px; width: 15px; height: 15px; box-sizing: border-box;
         margin: 0; padding: 0; border: 0; border-radius: 0; background: none;
@@ -227,7 +235,8 @@
     #settings-reset > texture, #settings-confirm > texture { width: 14px; height: 14px; pointer-events: none; }
     #settings-reset:hover, #settings-confirm:hover { opacity: 0.75; }
     #settings-confirm.disabled { opacity: 0.35; pointer-events: none; }
-    #settings-divider { position: absolute; left: 5px; top: 23px; width: 168px; height: 1px; background: #ffffff; pointer-events: none; }
+    /* 面板底板、白框和设置分隔线由 Kotlin 独立绘制；透明边框仍保留布局占位。 */
+    #settings-divider { position: absolute; left: 5px; top: 23px; width: 168px; height: 1px; pointer-events: none; }
     #settings-controls { position: absolute; left: 5px; top: 28px; width: 168px; display: flex; flex-direction: column; }
     .settings-row { display: none; width: 168px; height: 24px; align-items: center; gap: 4px; }
     .settings-label { width: 23px; font-size: 9px; line-height: 7px; flex-shrink: 0; white-space: nowrap; }
@@ -261,5 +270,43 @@
     #settings-color-swatch { width: 16px; height: 16px; box-sizing: border-box; border: 0.5px solid #ffffff; flex-shrink: 0; }
     #settings-color-hex { width: 121px; padding: 0 3px; font-size: 9px; }
     #settings-color-hex:focus { border-color: #ffb43b; }
+    /* 独立的紧凑属性面板；Kotlin 将整组宽高限制在可用视口的一半以内。 */
+    #weapon-stats {
+        position: absolute; left: 0; top: 0; width: 112px; height: 17px;
+        transform-origin: 0 0; transform: translate(0px, 0px) scale(1);
+        pointer-events: auto; z-index: 5; font-weight: normal;
+    }
+    #stats-toggle {
+        position: absolute; left: 0; top: 0; display: flex; width: 112px; height: 17px;
+        box-sizing: border-box; margin: 0; padding: 0; border: 0.5px solid #ffffff;
+        background: rgba(15, 17, 21, 0.78); color: #ffffff; font-size: 9px; font-weight: normal;
+        align-items: center; justify-content: center; cursor: pointer;
+    }
+    #stats-toggle:hover { background: rgba(80, 90, 105, 0.85); border-color: #ffb43b; }
+    #stats-chart {
+        position: absolute; left: 0; top: 21px; display: none; width: 100%; height: 98px;
+        box-sizing: border-box; border: 0.5px solid #ffffff; background: rgba(15, 17, 21, 0.82);
+    }
+    #stats-title { left: 7px; }
+    #stats-scroll {
+        position: absolute; left: 7px; top: 22px; width: 196px; height: 70px;
+        margin: 0; padding: 0; border: 0; box-sizing: border-box;
+        overflow-x: hidden; overflow-y: auto; scrollbar-gutter: auto;
+        scrollbar-width: 4px; scrollbar-color: #bfc5cf rgba(0, 0, 0, 0.4);
+    }
+    #stats-content { position: relative; width: 188px; margin: 0; padding: 0; border: 0; }
+    .stat-row { position: relative; display: block; width: 100%; height: 14px; margin: 0; padding: 0; border: 0; font-size: 9px; }
+    .stat-label, .stat-value, .stat-delta { position: absolute; top: 1px; height: 12px; white-space: nowrap; overflow: hidden; pointer-events: none; }
+    .stat-label { left: 0; width: 29%; color: #d8dce2; }
+    .stat-value { left: 60%; width: 19%; color: #ffffff; }
+    .stat-delta { left: 81%; width: 19%; }
+    .stat-text {
+        position: absolute; left: 0; top: 0; width: max-content; height: 12px; white-space: nowrap;
+        text-align: left; pointer-events: none; transform-origin: 0 0; transform: translateX(0px);
+    }
+    .stat-track { position: absolute; left: 31%; top: 5px; width: 27%; height: 4px; background: rgba(0, 0, 0, 0.7); pointer-events: none; }
+    .stat-common, .stat-change, .stat-overflow { position: absolute; left: 0; top: 0; width: 0; height: 4px; pointer-events: none; }
+    .stat-common { background: #e6e9ee; }
+    .stat-overflow { background: #f5c45b; }
 </style>
 </html>
