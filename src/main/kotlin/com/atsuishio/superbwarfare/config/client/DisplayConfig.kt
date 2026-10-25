@@ -22,6 +22,13 @@ object DisplayConfig {
     }
 
     @JvmField
+    val LENS_HARD_EDGE = buildClientConfig {
+        comment("Blend the magnified scope image towards nearest-neighbour screen texels. 0 = smooth upscaling, 1 = fully blocky (hard pixel edges)")
+        comment("镜内放大画面的块状化程度。0 = 平滑放大，1 = 完全按屏幕像素取整，产生硬边")
+        defineInRange("lens_hard_edge", 1.0, 0.0, 1.0)
+    }
+
+    @JvmField
     val VEHICLE_LOD_DISTANCE = buildClientConfig {
         comment("The global LOD distance for rendering vehicles. Set -1 to disable this config")
         comment("渲染载具低模的最小全局距离，设置为-1则不生效")

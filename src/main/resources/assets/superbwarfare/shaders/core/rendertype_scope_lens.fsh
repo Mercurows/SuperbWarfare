@@ -10,6 +10,7 @@ uniform float LensRadius;
 uniform float LensEdgeWidth;
 uniform float LensMagnification;
 uniform float LensScreenScale;
+uniform float LensHardEdge;
 uniform vec2 LensTexelSize;
 uniform vec3 LensTint;
 uniform mat4 ProjMat;
@@ -32,6 +33,12 @@ vec2 screenUv(vec3 viewPos) {
 
 vec3 easuFetch(ivec2 p, ivec2 hi) {
     return texelFetch(Sampler0, clamp(p, ivec2(0), hi), 0).rgb;
+}
+
+vec3 lensVoxel(vec2 uv) {
+    vec2 size = floor(1.0 / LensTexelSize + 0.5);
+    ivec2 hi = ivec2(size) - ivec2(1);
+    return texelFetch(Sampler0, clamp(ivec2(floor(uv * size)), ivec2(0), hi), 0).rgb;
 }
 
 void easuTap(inout vec3 aC, inout float aW, vec2 off, vec2 dir, vec2 len, float lob, float clp, vec3 c) {
@@ -203,6 +210,11 @@ void main() {
         sampled = rcas(b, d, e, f, h);
     } else {
         sampled = vec3(texture(Sampler0, uvR).r, texture(Sampler0, uvG).g, texture(Sampler0, uvB).b);
+    }
+
+    if (LensHardEdge > 0.0) {
+        vec3 voxel = vec3(lensVoxel(uvR).r, lensVoxel(uvG).g, lensVoxel(uvB).b);
+        sampled = mix(sampled, voxel, clamp(LensHardEdge, 0.0, 1.0));
     }
 
     fragColor = vec4(sampled * LensTint * (1.0 - edge), 1.0);

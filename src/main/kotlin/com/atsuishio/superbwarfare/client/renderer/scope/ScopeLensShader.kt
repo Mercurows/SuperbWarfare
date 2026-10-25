@@ -114,6 +114,7 @@ object ScopeLensShader {
         custom.safeGetUniform("LensMagnification").set(magnification.coerceAtLeast(0.001f))
         custom.safeGetUniform("LensScreenScale").set(screenScale)
         custom.safeGetUniform("LensTexelSize").set(1f / screenWidth, 1f / screenHeight)
+        custom.safeGetUniform("LensHardEdge").set(DisplayConfig.LENS_HARD_EDGE.get().toFloat())
         custom.safeGetUniform("ThermalEnabled").set(if (thermal) 1 else 0)
         ScopeThermalRenderer.applyColors(custom, thermalBackgroundColor, thermalEntityColor)
         if (thermal) RenderSystem.setShaderTexture(1, ScopeThermalRenderer.maskTexture())
