@@ -1206,8 +1206,9 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             read = { it.get(GunProp.EMPTY_RELOAD_TIME) / 20.0 }),
         WEIGHT("weight", 15.0, higherIsBetter = false, read = { it.get(GunProp.WEIGHT) }),
         SWAY("sway", 2.0, higherIsBetter = false, firearmOnly = true, read = { it.get(GunProp.SWAY) }),
-        SOUND_RADIUS("sound_radius", 24.0, unit = " m", higherIsBetter = false, optional = true, firearmOnly = true,
-            read = { it.get(GunProp.SOUND_RADIUS) }),
+        // 原始单位为区块；数值和横条量程一起换算成米。
+        SOUND_RADIUS("sound_radius", 24.0 * 16.0, unit = " m", higherIsBetter = false, optional = true, firearmOnly = true,
+            read = { it.get(GunProp.SOUND_RADIUS) * 16.0 }),
         PROJECTILES("projectile_amount", 16.0, 0, optional = true, firearmOnly = true, read = { it.get(GunProp.PROJECTILE_AMOUNT).toDouble() }),
         EXPLOSION_DAMAGE("explosion_damage", 200.0, optional = true, read = { it.get(GunProp.EXPLOSION_DAMAGE) }),
         EXPLOSION_RADIUS("explosion_radius", 12.0, unit = " m", optional = true, read = { it.get(GunProp.EXPLOSION_RADIUS) }),
