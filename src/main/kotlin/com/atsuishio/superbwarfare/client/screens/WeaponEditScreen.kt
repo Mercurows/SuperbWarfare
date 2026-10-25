@@ -45,6 +45,7 @@ import org.joml.Matrix4f
 import org.lwjgl.glfw.GLFW
 import java.util.*
 import kotlin.math.*
+import com.sighs.apricityui.element.Item as AuiItem
 
 /**
  * 改装界面：骨骼挂点附近显示圆点，悬停时显示槽位名，已安装的挂点标为橙黄色。
@@ -57,14 +58,15 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     private var openingTicks = 0
     private var documentGeneration = -1L
     private val shownItems = mutableMapOf<String, String>()
+    private val inlineStyles = IdentityHashMap<Element, MutableMap<String, String>>()
+    private val pendingStyles = Collections.newSetFromMap(IdentityHashMap<Element, Boolean>())
     private val connectors = mutableMapOf<String, Pair<Box, Box>>()
     private val iconBounds = mutableMapOf<String, Box>()
     private var panelIds: List<ResourceLocation> = emptyList()
     private var panelType: AttachmentType? = null
     private var panelInstalled: ResourceLocation? = null
     private val gridRows = mutableListOf<GridRow>()
-    private var gridFirstRow = -1
-    private var gridScrollTop = Double.NaN
+    private val gridWindow = RecyclingRowWindow(GRID_WINDOW_ROWS)
     private var gridSelected: ResourceLocation? = null
     private var candidateKey: CandidateKey? = null
     private val compatibleBySlot = mutableMapOf<AttachmentType, List<ResourceLocation>>()
@@ -107,14 +109,15 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
 
     private fun clearUiState() {
         shownItems.clear()
+        inlineStyles.clear()
+        pendingStyles.clear()
         connectors.clear()
         iconBounds.clear()
         panelIds = emptyList()
         panelType = null
         panelInstalled = null
         gridRows.clear()
-        gridFirstRow = -1
-        gridScrollTop = Double.NaN
+        gridWindow.reset()
         gridSelected = null
         candidateKey = null
         compatibleBySlot.clear()
@@ -158,6 +161,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         }
         val obstacles = syncIcons(doc, mounts, listOfNotNull(panel, settings))
         syncMountLabels(doc, mounts, obstacles)
+        flushStyles()
         // 连线先提交，保持在菜单和物品下方；圆圈和外框则在 AUI 绘制完成后单独提交。
         drawDecorationPass(graphics, doc, false) { vertices, matrix ->
             for ((mount, target) in connectors.values) drawConnector(vertices, matrix, mount, target)
@@ -478,13 +482,13 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         val laser = type?.let { laserInfo(data, it) }
         settingsHeight = 0f
         if (type == null || !data.attachment.has(type) || (!rotation && !offset && laser == null)) {
-            settings.style.display = "none"
+            setStyle(settings, "display", "none")
             adjustmentDraft.discard()
             return null
         }
         if (adjustmentDraft.preview != null && previewFor(data, type) == null) discardAdjustments()
         fun sync(property: String, visible: Boolean, value: Double, min: Double, max: Double, step: Double) {
-            doc.getElementById("settings-$property-row")?.style?.display = if (visible) "flex" else "none"
+            setStyle(doc.getElementById("settings-$property-row"), "display", if (visible) "flex" else "none")
             if (!visible) return
             val live = doc.getElementById("settings-$property")?.getValue()?.toDoubleOrNull()
             for (id in listOf("settings-$property", "settings-$property-value")) {
@@ -501,10 +505,10 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             }
             val current = live ?: value
             val fraction = if (max > min) ((current - min) / (max - min)).coerceIn(0.0, 1.0) else 0.0
-            doc.getElementById("settings-$property-fill")?.style?.width =
-                px((SLIDER_TRACK_WIDTH * fraction).toFloat())
-            doc.getElementById("settings-$property-thumb")?.style?.left =
-                px((SLIDER_TRACK_LEFT + SLIDER_TRACK_WIDTH * fraction - SLIDER_THUMB_RADIUS).toFloat())
+            setStyle(doc.getElementById("settings-$property-fill"), "width",
+                px((SLIDER_TRACK_WIDTH * fraction).toFloat()))
+            setStyle(doc.getElementById("settings-$property-thumb"), "transform",
+                "translateX(${px((SLIDER_TRACK_LEFT + SLIDER_TRACK_WIDTH * fraction - SLIDER_THUMB_RADIUS).toFloat())})")
         }
         val submitted = previewFor(data, type)
         adjustmentDraft.acknowledge(submitted != null && submitted.rotation == data.attachment.getRotation(type) &&
@@ -521,14 +525,11 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             val channel = AttachmentColorInput.channel(color, AttachmentColorInput.shift(property)!!)
             sync(property, laser != null, channel.toDouble(), 0.0, 255.0, 1.0)
         }
-        doc.getElementById("settings-hex-row")?.style?.display = if (laser != null) "flex" else "none"
+        setStyle(doc.getElementById("settings-hex-row"), "display", if (laser != null) "flex" else "none")
         if (laser != null) {
             val hex = AttachmentColorInput.format(color)
             doc.getElementById("settings-color-hex")?.let { if (!it.isFocus && it.getValue() != hex) it.setValue(hex) }
-            doc.getElementById("settings-color-swatch")?.let {
-                val style = "background-color: $hex"
-                if (it.getAttribute("style") != style) it.setAttribute("style", style)
-            }
+            setStyle(doc.getElementById("settings-color-swatch"), "background-color", hex)
         }
         doc.getElementById("settings-confirm")?.let {
             val disabled = adjustmentDraft.preview == null || adjustmentDraft.awaitingServer
@@ -538,12 +539,11 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         val rows = (if (rotation) 1 else 0) + (if (offset) 1 else 0) + (if (laser != null) 4 else 0)
         val height = SETTINGS_BASE_HEIGHT + rows * SETTINGS_ROW_HEIGHT
         settingsHeight = height
-        settings.style.height = px(height)
+        setStyle(settings, "height", px(height))
         val scale = editorPanelScale()
-        settings.style.transform = "scale($scale)"
         val bounds = Box(6f, (usableHeight() - height * scale - 6f).coerceAtLeast(4f),
             SETTINGS_WIDTH * scale, height * scale)
-        place(settings, bounds)
+        place(settings, bounds, scale)
         return bounds
     }
 
@@ -604,7 +604,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             if (openingTicks < MOUNT_REVEAL_DELAY_TICKS || (selectedType != null && type != selectedType) ||
                 point == null || !point.visible || (!available && installed == null)
             ) {
-                element.style.display = "none"
+                setStyle(element, "display", "none")
                 return
             }
             // gui 模式在 GUI scale >= 6 时不再是 1:1，必须使用 AUI 的坐标转换。
@@ -633,7 +633,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         val type = AttachmentSlots.slotAt(editingAttachmentType)
         val mount = mounts.firstOrNull { it.type == type && type != null }
         if (type == null || mount == null) {
-            panel.style.display = "none"
+            setStyle(panel, "display", "none")
             if (panelType != null) hoveredItem = null
             panelType = null
             return null
@@ -648,7 +648,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             doc.getElementById("panel-name")?.let {
                 val current = itemStack(installed)
                 it.textContent = if (current.isEmpty) label("empty") else current.hoverName.string
-                it.style.color = if (current.isEmpty) "#bdbdbd" else rarityColor(current)
+                setStyle(it, "color", if (current.isEmpty) "#bdbdbd" else rarityColor(current))
             }
             doc.getElementById("panel-slot")?.textContent = slotName(type)
             doc.getElementById("panel-uninstall")?.let { setClass(it, "disabled", installed == null) }
@@ -658,29 +658,52 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         if (changedSlot || panelIds !== ids) {
             panelIds = ids
             panelType = type
-            gridFirstRow = -1
+            gridWindow.reset()
             val rowCount = (ids.size + GRID_COLUMNS - 1) / GRID_COLUMNS
             val contentHeight = px((rowCount * GRID_ROW_PITCH - GRID_ROW_GAP).coerceAtLeast(0f))
-            doc.getElementById("panel-space")?.style?.height = contentHeight
+            setStyle(doc.getElementById("panel-space"), "height", contentHeight)
             // AUI 在 overflow 裁剪区按父容器矩形剔除整棵子树；绝对定位行不会撑开父容器。
             // 格子容器必须覆盖整份列表，滚动到任意位置时都与固定视口相交。
-            doc.getElementById("panel-grid")?.style?.height = contentHeight
-            doc.getElementById("panel-empty")?.style?.display = if (ids.isEmpty()) "block" else "none"
+            setStyle(doc.getElementById("panel-grid"), "height", contentHeight)
+            setStyle(doc.getElementById("panel-empty"), "display", if (ids.isEmpty()) "block" else "none")
             if (changedSlot) doc.getElementById("panel-scroll")?.scrollTo(0.0, 0.0)
         }
         syncGrid(doc, installed)
         // 小窗口为点位和图标保留半屏空间；所有避让使用缩放后的外框。
         val scale = editorPanelScale()
-        panel.style.transform = "scale($scale)"
         val bounds = findSpace(mount.bounds.right + 24f + PANEL_WIDTH * scale / 2f, mount.bounds.centerY,
             PANEL_WIDTH * scale, PANEL_HEIGHT * scale, mounts.map { it.bounds } + reserved, 6f)
-        place(panel, bounds)
+        place(panel, bounds, scale)
         connect("panel", mount.bounds, bounds)
         return bounds
     }
 
-    private data class GridCell(val key: String, val element: Element, val item: Element)
+    private data class GridCell(val key: String, val element: Element, val item: AuiItem)
     private data class GridRow(val element: Element, val cells: List<GridCell>)
+
+    /** 窗口移动时保留重叠行，只把离开窗口的池条目绑定到新行。 */
+    private class RecyclingRowWindow(private val size: Int) {
+        private val boundRows = IntArray(size) { -1 }
+        private var firstRow = -1
+
+        fun reset() {
+            boundRows.fill(-1)
+            firstRow = -1
+        }
+
+        fun rowAt(poolIndex: Int): Int = boundRows[poolIndex]
+
+        fun update(firstRow: Int, bind: (poolIndex: Int, listRow: Int) -> Unit) {
+            if (this.firstRow == firstRow) return
+            for (listRow in firstRow until firstRow + size) {
+                val poolIndex = listRow % size
+                if (boundRows[poolIndex] == listRow) continue
+                bind(poolIndex, listRow)
+                boundRows[poolIndex] = listRow
+            }
+            this.firstRow = firstRow
+        }
+    }
 
     /** 格子只创建一次；长列表只保留可见三排及滚动前后的缓冲行。 */
     private fun prepareGrid(doc: Document) {
@@ -695,7 +718,8 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             val cells = (0 until GRID_COLUMNS).mapNotNull { column ->
                 val key = "cell-${row * GRID_COLUMNS + column}"
                 val cell = doc.getElementById(key) ?: return@mapNotNull null
-                val item = cell.querySelector("item") ?: return@mapNotNull null
+                val item = cell.querySelector("item") as? AuiItem ?: return@mapNotNull null
+                item.setIngredientStack(ItemStack.EMPTY)
                 cell.addEventListener("click") {
                     val type = panelType
                     if (type != null && AttachmentSlots.slotAt(editingAttachmentType) == type) {
@@ -718,37 +742,34 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         // 列表缩短时 AUI 的滚动范围要到下一次布局才更新；当前窗口先夹到新范围。
         val maxScroll = (rowCount * GRID_ROW_PITCH - GRID_ROW_GAP - GRID_VIEWPORT_HEIGHT).coerceAtLeast(0f)
         val scrollTop = scroll.getScrollTop().coerceIn(0.0, maxScroll.toDouble())
-        if (gridScrollTop != scrollTop) {
-            doc.getElementById("panel-grid")?.style?.top = px(-scrollTop.toFloat())
-            gridScrollTop = scrollTop
-        }
+        // 格子仍在滚动容器之外，沿用本帧准备窗口的时序；只提交平移，不改布局坐标。
+        setStyle(doc.getElementById("panel-grid"), "transform", "translateY(${px(-scrollTop.toFloat())})")
         val firstRow = (floor(scrollTop / GRID_ROW_PITCH).toInt() - 1)
             .coerceIn(0, (rowCount - GRID_WINDOW_ROWS).coerceAtLeast(0))
-        val changedWindow = gridFirstRow != firstRow
-        if (!changedWindow && gridSelected == installed) return
-        if (changedWindow && hoveredItem?.startsWith("cell-") == true) hoveredItem = null
-        gridRows.forEachIndexed { offset, row ->
-            val index = firstRow + offset
-            if (changedWindow) {
-                row.element.style.display = if (index < rowCount) "flex" else "none"
-                row.element.style.top = px(index * GRID_ROW_PITCH)
-            }
+        val selected = installed?.toString()
+        gridWindow.update(firstRow) { poolIndex, index ->
+            val row = gridRows[poolIndex]
+            setStyle(row.element, "transform", "translateY(${px(index * GRID_ROW_PITCH)})")
             row.cells.forEachIndexed { column, cell ->
-                val key = cell.key
-                val id = panelIds.getOrNull(index * GRID_COLUMNS + column)
-                if (changedWindow) {
-                    cell.element.style.display = if (id != null) "flex" else "none"
-                    if (id == null) {
-                        shownItems.remove(key)
-                    } else if (shownItems[key] != id.toString()) {
-                        cell.item.textContent = id.toString()
-                        shownItems[key] = id.toString()
-                    }
-                }
-                setClass(cell.element, "selected", id != null && id == installed)
+                val id = panelIds.getOrNull(index * GRID_COLUMNS + column)?.toString()
+                setStyle(cell.element, "display", if (id != null) "flex" else "none")
+                setItem(cell.key, cell.item, id)
+                setClass(cell.element, "selected", id != null && id == selected)
             }
         }
-        gridFirstRow = firstRow
+        gridRows.forEachIndexed { poolIndex, row ->
+            val top = gridWindow.rowAt(poolIndex) * GRID_ROW_PITCH
+            // AUI 对变换后的裁剪采取保守剔除，显式隐藏缓冲行，避免把屏外物品也送入渲染后端。
+            // visibility 不影响布局；部分露出的行也必须保留，交给 panel-items 精确裁剪。
+            val visible = top + GRID_ROW_PITCH - GRID_ROW_GAP > scrollTop && top < scrollTop + GRID_VIEWPORT_HEIGHT
+            setStyle(row.element, "visibility", if (visible) "visible" else "hidden")
+            if (!visible && row.cells.any { it.key == hoveredItem }) hoveredItem = null
+            if (gridSelected != installed) {
+                for (cell in row.cells) {
+                    setClass(cell.element, "selected", selected != null && shownItems[cell.key] == selected)
+                }
+            }
+        }
         gridSelected = installed
     }
 
@@ -761,7 +782,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             val mount = mounts.firstOrNull { it.type == type }
             val installed = mount?.installed
             if (mount == null || installed == null) {
-                icon.style.display = "none"
+                setStyle(icon, "display", "none")
                 if (hoveredItem == "icon-$id") hoveredItem = null
                 continue
             }
@@ -788,16 +809,14 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             val element = doc.getElementById("label-$id") ?: continue
             val mount = mounts.firstOrNull { it.id == id }
             if (mount == null || !mount.bounds.contains(mouse.x.toFloat(), mouse.y.toFloat())) {
-                element.style.display = "none"
+                setStyle(element, "display", "none")
                 continue
             }
             val labelWidth = (font.width(element.textContent) * 7f / 9f + 4f)
                 .coerceIn(1f, (viewportWidth - 8f).coerceAtLeast(1f))
-            val bounds = findSpace(
-                mount.bounds.centerX, mount.bounds.bottom + 8f,
-                labelWidth, 11f, obstacles, 2f
-            )
-            element.style.width = px(labelWidth)
+            val bounds = findSpace(mount.bounds.centerX, mount.bounds.bottom + 8f,
+                labelWidth, 11f, obstacles, 2f)
+            setStyle(element, "width", px(labelWidth))
             place(element, bounds)
             setClass(element, "filled", mount.installed != null)
             obstacles += bounds
@@ -943,8 +962,8 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         val rings = ceil(max(viewportWidth, viewportHeight) / step).toInt()
         for (ring in 0..rings) {
             for (direction in 0 until if (ring == 0) 1 else 24) {
-                val angle = direction * PI * 2 / 24
-                val box = candidate(x + (cos(angle) * ring * step).toFloat(), y + (sin(angle) * ring * step).toFloat())
+                val box = candidate(x + (SEARCH_COS[direction] * ring * step).toFloat(),
+                    y + (SEARCH_SIN[direction] * ring * step).toFloat())
                 if (obstacles.none { box.overlaps(it, gap) }) return box
                 val overlap = obstacles.sumOf { box.overlapArea(it, gap).toDouble() }.toFloat()
                 if (overlap < bestOverlap) {
@@ -956,10 +975,29 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         return best
     }
 
-    private fun place(element: Element, bounds: Box) {
-        element.style.display = "flex"
-        element.style.left = px(bounds.left)
-        element.style.top = px(bounds.top)
+    private fun place(element: Element, bounds: Box, scale: Float = 1f) {
+        setStyle(element, "display", "flex")
+        // 原点固定为 0 0，先在文档坐标平移再缩放，位置变化不再使整个菜单子树重排。
+        setStyle(element, "transform", "translate(${px(bounds.left)}, ${px(bounds.top)}) scale($scale)")
+    }
+
+    /** 本界面的动态内联样式统一由这里维护；每个元素每帧最多提交一次，不暴露 AUI 的可变 Style。 */
+    private fun setStyle(element: Element?, property: String, value: String) {
+        if (element == null) return
+        val properties = inlineStyles.getOrPut(element) { linkedMapOf() }
+        if (properties.put(property, value) != value) pendingStyles.add(element)
+    }
+
+    private fun flushStyles() {
+        for (element in pendingStyles) {
+            val properties = inlineStyles[element] ?: continue
+            val style = buildString {
+                for ((property, value) in properties) append(property).append(':').append(value).append(';')
+            }
+            // 一帧内可能先摆放挂点再避让菜单；最终值没变时也不重新提交样式。
+            if (element.getAttribute("style") != style) element.setAttribute("style", style)
+        }
+        pendingStyles.clear()
     }
 
     private fun connect(id: String, mount: Box, target: Box) {
@@ -1049,13 +1087,11 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     private fun drawCircle(
         vertices: VertexConsumer, matrix: Matrix4f, x: Float, y: Float, outer: Float, inner: Float, color: Int
     ) {
-        for (segment in 0 until 48) {
-            val angle = segment * PI * 2 / 48
-            val next = (segment + 1) * PI * 2 / 48
-            val ax = cos(angle).toFloat()
-            val ay = sin(angle).toFloat()
-            val bx = cos(next).toFloat()
-            val by = sin(next).toFloat()
+        for (segment in 0 until CIRCLE_SEGMENTS) {
+            val ax = CIRCLE_COS[segment]
+            val ay = CIRCLE_SIN[segment]
+            val bx = CIRCLE_COS[segment + 1]
+            val by = CIRCLE_SIN[segment + 1]
             vertex(vertices, matrix, x + ax * outer, y + ay * outer, color)
             vertex(vertices, matrix, x + ax * inner, y + ay * inner, color)
             vertex(vertices, matrix, x + bx * inner, y + by * inner, color)
@@ -1085,8 +1121,16 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     private fun setElementItem(container: Element, itemId: String) {
         val key = container.getAttribute("id") ?: return
         if (shownItems[key] == itemId) return
-        container.querySelector("item")?.textContent = itemId
-        shownItems[key] = itemId
+        val item = container.querySelector("item") as? AuiItem ?: return
+        setItem(key, item, itemId)
+    }
+
+    private fun setItem(key: String, item: AuiItem, itemId: String?) {
+        if (shownItems[key] == itemId) return
+        if (hoveredItem == key) hoveredItem = null
+        // AUI 的展示栈接口只标记重绘；textContent 会额外失效布局、绘制列表和命中缓存。
+        item.setIngredientStack(itemStack(itemId?.let(ResourceLocation::tryParse)))
+        if (itemId == null) shownItems.remove(key) else shownItems[key] = itemId
     }
 
     private fun setClass(element: Element, name: String, enabled: Boolean) {
@@ -1102,8 +1146,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     private fun rarityColor(item: ItemStack) = String.format(
         Locale.ROOT, "#%06x", item.rarity.styleModifier.apply(Style.EMPTY).color?.value ?: 0xffffff
     )
-
-    private fun px(value: Float) = String.format(Locale.ROOT, "%.2fpx", value)
+    private fun px(value: Float) = "${round(value.toDouble() * 100.0) / 100.0}px"
     private fun slotName(type: AttachmentType) =
         Component.translatable("attachment.superbwarfare.slot.${type.attachmentName.lowercase(Locale.ROOT)}").string
 
@@ -1135,6 +1178,11 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         private const val GRID_ROW_GAP = 4f
         private const val GRID_ROW_PITCH = 20f
         private const val GRID_VIEWPORT_HEIGHT = GRID_VISIBLE_ROWS * GRID_ROW_PITCH - GRID_ROW_GAP
+        private val SEARCH_COS = DoubleArray(24) { cos(it * PI * 2 / 24) }
+        private val SEARCH_SIN = DoubleArray(24) { sin(it * PI * 2 / 24) }
+        private const val CIRCLE_SEGMENTS = 48
+        private val CIRCLE_COS = FloatArray(CIRCLE_SEGMENTS + 1) { cos(it * PI * 2 / CIRCLE_SEGMENTS).toFloat() }
+        private val CIRCLE_SIN = FloatArray(CIRCLE_SEGMENTS + 1) { sin(it * PI * 2 / CIRCLE_SEGMENTS).toFloat() }
         private fun mountId(type: AttachmentType) = "mount-" + type.attachmentName.lowercase(Locale.ROOT)
         private fun itemSlot(id: String = AIR, size: Int = 16) =
             """<slot render="item" interactive="0" pointer="0" size="$size" iconScale="${size / 16f}"><item>$id</item></slot>"""

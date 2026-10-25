@@ -119,12 +119,14 @@
     #icon-layer { z-index: 3; }
     /* 挂点仅提供透明点击区域，悬停不再改变其几何尺寸或触发圆圈的 CSS 绘制。 */
     .mount {
-        position: absolute; display: none; box-sizing: border-box; width: 9px; height: 9px;
+        position: absolute; left: 0; top: 0; transform-origin: 0 0; transform: translate(0px, 0px);
+        display: none; box-sizing: border-box; width: 9px; height: 9px;
         border: 0; border-radius: 4.5px; background: none;
         align-items: center; justify-content: center; pointer-events: auto;
     }
     .mount-label {
-        position: absolute; display: none; height: 11px; font-size: 7px; font-weight: normal;
+        position: absolute; left: 0; top: 0; transform-origin: 0 0; transform: translate(0px, 0px);
+        display: none; height: 11px; font-size: 7px; font-weight: normal;
         color: #ffffff; text-stroke: 1px #000000; text-align: center; white-space: nowrap;
         align-items: center; justify-content: center; pointer-events: none;
     }
@@ -139,7 +141,10 @@
     .attachment-icon.filled, .cell.selected { border-color: #ffb43b; }
     .attachment-icon.filled.active, .cell.selected { box-shadow: inset 0 0 0 0.5px #ffb43b; }
     /* 保留 0.5px 边框占位使物品居中，挂点图标的可见外框交给独立绘制阶段。 */
-    #icon-layer > .attachment-icon { border-color: transparent; box-shadow: none; }
+    #icon-layer > .attachment-icon {
+        left: 0; top: 0; transform-origin: 0 0; transform: translate(0px, 0px);
+        border-color: transparent; box-shadow: none;
+    }
     slot, item { pointer-events: none; }
     /* 覆盖 AUI global.css 的 18px 槽位和 slot > item 的 left/top: 1px。
        CSS 自定义属性优先于 size/iconScale 属性，因此两种物品框都明确设置尺寸与缩放。 */
@@ -157,7 +162,8 @@
     slot > item { left: 0; top: 0; width: 100%; height: 100%; }
     /* 外框固定为 180 × 112；Kotlin 使用相同尺寸进行避让与边缘钳制。 */
     #panel {
-        position: absolute; display: none; box-sizing: border-box; width: 180px; height: 112px;
+        position: absolute; left: 0; top: 0; transform: translate(0px, 0px) scale(1);
+        display: none; box-sizing: border-box; width: 180px; height: 112px;
         border: 1px solid #ffffff; background: rgba(15, 17, 21, 0.76);
         transform-origin: 0 0; pointer-events: auto; z-index: 4; font-weight: normal;
     }
@@ -193,13 +199,18 @@
     /* 格子不作为滚动容器的后代，避免 AUI 在绘制阶段推进滚动动画后越过已经准备的窗口。 */
     #panel-items { position: absolute; left: 0; top: 6px; width: 156px; height: 56px; overflow: hidden; pointer-events: none; }
     /* Kotlin 将高度同步为完整列表高度，不能保持为 0，否则 AUI 会连同格子一起裁掉。 */
-    #panel-grid { position: relative; top: 0; width: 156px; height: 56px; }
-    .row { position: absolute; left: 0; top: 0; display: flex; flex-direction: row; gap: 4px; width: 156px; height: 16px; }
+    #panel-grid { position: relative; top: 0; transform-origin: 0 0; transform: translateY(0px); width: 156px; height: 56px; }
+    /* 循环行池使用平移定位；屏外缓冲行由 Kotlin 设为 visibility:hidden，保留布局并跳过物品绘制。 */
+    .row {
+        position: absolute; left: 0; top: 0; transform-origin: 0 0; transform: translateY(0px);
+        display: flex; flex-direction: row; gap: 4px; width: 156px; height: 16px;
+    }
     .cell { position: relative; display: flex; width: 16px; height: 16px; padding: 0; flex-shrink: 0; }
     #panel-empty { display: none; font-size: 9px; color: #bdbdbd; padding: 8px 0; }
     /* 与 Kotlin 的 SETTINGS_* 尺寸一致；只在选中已安装且可调整的槽位时显示。 */
     #settings {
-        position: absolute; display: none; box-sizing: border-box; width: 180px; height: 56px;
+        position: absolute; left: 0; top: 0; transform: translate(0px, 0px) scale(1);
+        display: none; box-sizing: border-box; width: 180px; height: 56px;
         border: 1px solid #ffffff; background: rgba(15, 17, 21, 0.55);
         transform-origin: 0 0; pointer-events: auto; z-index: 4; font-weight: normal;
     }
