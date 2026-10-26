@@ -23,7 +23,7 @@
   "Shield": {
     "Durability": 50.0,
     "Resist": 100.0,
-    "CoverAngle": 120.0,
+    "CoverAngle": 60.0,
     "RechargeRate": 10.0,
     "RechargeDelay": 60,
     "BrokenLockout": 40,
