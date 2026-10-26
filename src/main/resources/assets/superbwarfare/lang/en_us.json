@@ -1483,7 +1483,9 @@
   "config.jade.plugin_superbwarfare.vehicle_deployer": "Vehicle Deployer",
   "config.jade.plugin_superbwarfare.catapult_controller": "Catapult Controller",
 
+  "screen.superbwarfare.weapon_edit.title": "WEAPON MODIFICATION",
   "screen.superbwarfare.weapon_edit.empty": "No attachment installed",
+  "screen.superbwarfare.weapon_edit.uninstall": "Remove attachment",
   "screen.superbwarfare.weapon_edit.no_available": "No compatible attachments in inventory",
   "screen.superbwarfare.weapon_edit.settings": "Attachment settings",
   "screen.superbwarfare.weapon_edit.rotation": "Angle",

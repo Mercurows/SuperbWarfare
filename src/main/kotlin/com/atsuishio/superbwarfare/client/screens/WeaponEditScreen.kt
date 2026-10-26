@@ -31,17 +31,20 @@ import com.sighs.apricityui.event.MouseEvent
 import com.sighs.apricityui.init.Document
 import com.sighs.apricityui.init.Element
 import com.sighs.apricityui.layout.Position
+import com.sighs.apricityui.parser.Color
 import com.sighs.apricityui.render.Base
+import com.sighs.apricityui.render.FontDrawer
 import com.sighs.apricityui.screen.ApricityScreen
 import com.sighs.apricityui.style.Text
+import net.minecraft.client.StringSplitter
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.locale.Language
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.util.FormattedCharSequence
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.neoforged.api.distmarker.Dist
@@ -53,8 +56,8 @@ import kotlin.math.*
 import com.sighs.apricityui.element.Item as AuiItem
 
 /**
- * 改装界面：骨骼挂点附近显示圆点，悬停时显示槽位名，已安装的挂点标为橙黄色。
- * 已安装配件另放图标并用白线相连。
+ * 改装界面：骨骼挂点附近显示圆点，悬停时显示槽位名，已安装的挂点标为青色。
+ * 已安装配件另放图标并用青色细线相连。
  * 点位与图标均可打开二级菜单。可装列表由枪械数据与背包共同决定，安装仍由服务端校验。
  * 候选列表按兼容状态与背包缓存；固定数量的 DOM 格子随滚动复用，投影位置、显隐与样式增量同步。
  */
@@ -84,12 +87,11 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     private var inventoryCreative = false
     private var hoveredItem: String? = null
     private var tooltipKey: String? = null
-    private var tooltipLines: List<FormattedCharSequence> = emptyList()
+    private var tooltipLines: List<List<TooltipRun>> = emptyList()
     private var tooltipWrapWidth = 0
     private var viewportWidth = 0f
     private var viewportHeight = 0f
     private val adjustmentDraft = AttachmentEditDraft()
-    private var settingsHeight = 0f
     private var statsOpen = false
     private val statRows = mutableListOf<StatRow>()
     private var statsRefreshTick = Long.MIN_VALUE
@@ -149,7 +151,6 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         tooltipWrapWidth = 0
         documentGeneration = -1L
         adjustmentDraft.discard()
-        settingsHeight = 0f
         statRows.clear()
         statsRefreshTick = Long.MIN_VALUE
         statsBaseline = null
@@ -171,13 +172,17 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         val viewport = doc.viewportSize
         viewportWidth = viewport.width().toFloat()
         viewportHeight = viewport.height().toFloat()
+        doc.getElementById("title-weapon")?.let {
+            val name = held.hoverName.string
+            if (it.textContent != name) it.textContent = name
+        }
         connectors.clear()
         iconBounds.clear()
         val data = GunData.from(held)
         refreshAttachmentLists(player, data)
         val settings = syncAdjustments(doc, data)
         val stats = syncStats(doc, data, player.level().gameTime)
-        val reserved = listOfNotNull(settings, stats)
+        val reserved = listOfNotNull(settings, stats) + Box(0f, 0f, viewportWidth, TITLE_BAR_HEIGHT)
         var mounts = syncMounts(doc, data, reserved)
         val panel = syncPanel(doc, player, data, mounts, reserved)
         // 紧凑窗口的点位可能占满菜单四周；先确定菜单，再把点位移到剩余空间。
@@ -194,16 +199,23 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         drawDecorationPass(graphics, doc, false) { vertices, matrix ->
             for ((mount, target) in connectors.values) drawConnector(vertices, matrix, mount, target)
             val scale = editorPanelScale()
+            if (statsOpen && stats != null) {
+                val chartTop = STATS_CHART_TOP * scale
+                drawPanelBackground(vertices, matrix,
+                    Box(stats.left, stats.top + chartTop, stats.width, stats.height - chartTop), scale, PANEL_BACKGROUND)
+            }
             panel?.let {
-                drawPanelBackground(vertices, matrix, it, scale, 0xc20f1115.toInt())
+                drawPanelBackground(vertices, matrix, it, scale, PANEL_BACKGROUND)
+                drawQuad(vertices, matrix, it.left + 6f * scale, it.top + 23f * scale,
+                    it.left + 174f * scale, it.top + 23.5f * scale, PANEL_BORDER)
                 // 与设置分隔线一样独立绘制，不依赖滚动容器或按钮悬停触发 AUI 边框批次。
-                drawQuad(vertices, matrix, it.left + 6f * scale, it.top + 45f * scale,
-                    it.left + 174f * scale, it.top + 46f * scale, -1)
+                drawQuad(vertices, matrix, it.left + 6f * scale, it.top + 67f * scale,
+                    it.left + 174f * scale, it.top + 67.5f * scale, PANEL_BORDER)
             }
             settings?.let {
-                drawPanelBackground(vertices, matrix, it, scale, 0x8c0f1115.toInt())
+                drawPanelBackground(vertices, matrix, it, scale, PANEL_BACKGROUND)
                 drawQuad(vertices, matrix, it.left + 5f * scale, it.top + 23f * scale,
-                    it.left + 173f * scale, it.top + 24f * scale, -1)
+                    it.left + 173f * scale, it.top + 23.5f * scale, PANEL_BORDER)
             }
         }
         // 平面 UI 不应与物品模型残留的深度互相遮挡；由 AUI Screen 统一绘制，避免全局 overlay 再画一次。
@@ -249,13 +261,16 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     private fun prepareDocument(doc: Document) {
         clearUiState()
         documentGeneration = doc.refreshGeneration
+        doc.getElementById("title-mode")?.textContent = label("title")
         doc.addEventListener("wheel", { event ->
             // 原生 select 的顶层弹出列表自行处理滚动，不交给底下的配件列表。
             if (event.composedPath().any { (it as? Element)?.classList?.contains("aui-select-popup") == true }) return@addEventListener
             val scroll = doc.getElementById("panel-scroll")
             val list = doc.getElementById("panel-list")
             val statsScroll = doc.getElementById("stats-scroll")
+            val settingsScroll = doc.getElementById("settings-controls")
             val inStats = statsOpen && statsScroll != null && event.composedPath().any { it === statsScroll }
+            val inSettings = settingsScroll != null && event.composedPath().any { it === settingsScroll }
             val inList = panelType != null && AttachmentSlots.slotAt(editingAttachmentType) == panelType &&
                 scroll != null && list != null && event.composedPath().any { it === list }
             // 始终取消默认滚动，列表到边界时也不能把滚动传给 body 或其他祖先。
@@ -264,6 +279,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             if (event is MouseEvent) {
                 if (inStats) scrollStatsBy(statsScroll, event.deltaY)
                 else if (inList) scroll.scrollBy(0.0, event.deltaY)
+                else if (inSettings) settingsScroll.scrollBy(0.0, event.deltaY)
             }
         }, true)
         for (type in AttachmentType.entries) {
@@ -298,11 +314,16 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             }
         }
         doc.getElementById("panel-current")?.let(::wireItemHover)
-        doc.getElementById("panel-name")?.let { name ->
+        for (id in listOf("panel-name", "panel-registry-name")) doc.getElementById(id)?.let { name ->
             name.addEventListener("mouseenter") { hoveredItem = "panel-current" }
             name.addEventListener("mouseleave") { hoveredItem = null }
         }
         doc.getElementById("panel-empty")?.textContent = label("no_available")
+        doc.getElementById("panel-uninstall-label")?.textContent = label("uninstall")
+        doc.getElementById("panel-uninstall")?.let {
+            it.setAttribute("title", label("uninstall"))
+            it.setAttribute("aria-label", label("uninstall"))
+        }
         doc.getElementById("panel-skin-label")?.textContent = label("skin")
         doc.getElementById("panel-skin")?.let { select ->
             select.setAttribute("title", label("switch_skin"))
@@ -318,11 +339,13 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         }
         doc.getElementById("settings-title")?.textContent = label("settings")
         doc.getElementById("settings-reset")?.let { reset ->
+            doc.getElementById("settings-reset-label")?.textContent = label("reset")
             reset.setAttribute("title", label("reset"))
             reset.setAttribute("aria-label", label("reset"))
             reset.addEventListener("click") { adjustAttachment(reset = true) }
         }
         doc.getElementById("settings-confirm")?.let { confirm ->
+            doc.getElementById("settings-confirm-label")?.textContent = label("confirm")
             confirm.setAttribute("title", label("confirm"))
             confirm.setAttribute("aria-label", label("confirm"))
             confirm.addEventListener("click") { confirmAdjustments() }
@@ -546,7 +569,6 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         val rotation = type != null && AttachmentAdjustments.canRotate(data, type)
         val offset = type != null && AttachmentAdjustments.canOffset(type)
         val laser = type?.let { laserInfo(data, it) }
-        settingsHeight = 0f
         if (type == null || !data.attachment.has(type) || (!rotation && !offset && laser == null)) {
             setStyle(settings, "display", "none")
             adjustmentDraft.discard()
@@ -603,11 +625,23 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             it.toggleAttribute("disabled", disabled)
         }
         val rows = (if (rotation) 1 else 0) + (if (offset) 1 else 0) + (if (laser != null) 4 else 0)
-        val height = SETTINGS_BASE_HEIGHT + rows * SETTINGS_ROW_HEIGHT
-        settingsHeight = height
-        setStyle(settings, "height", px(height))
         val scale = editorPanelScale()
-        val bounds = Box(6f, (usableHeight() - height * scale - 6f).coerceAtLeast(4f),
+        // 空间不足时只滚动属性卡片，标题、底部操作与全局缩放保持稳定。
+        val heightBudget = (viewportHeight - SETTINGS_BOTTOM_INSET - TITLE_BAR_HEIGHT - 14f) / scale - STATS_HEIGHT
+        val visibleRows = minOf(rows, floor((heightBudget - SETTINGS_BASE_HEIGHT) / SETTINGS_ROW_HEIGHT + 0.001f)
+            .toInt().coerceAtLeast(1))
+        val height = SETTINGS_BASE_HEIGHT + visibleRows * SETTINGS_ROW_HEIGHT
+        setStyle(settings, "height", px(height))
+        doc.getElementById("settings-controls")?.let { controls ->
+            setStyle(controls, "height", px(visibleRows * SETTINGS_ROW_HEIGHT - SETTINGS_ROW_GAP))
+            val scrollKey = "${type.attachmentName}:${data.attachment.id(type)}"
+            if (controls.getAttribute("data-scroll-key") != scrollKey) {
+                controls.setAttribute("data-scroll-key", scrollKey)
+                controls.scrollTo(0.0, 0.0)
+            }
+        }
+        // 比原来的底部锚点下移 10 GUI px，拉开属性面板与设置面板，同时避开快捷栏。
+        val bounds = Box(6f, (viewportHeight - SETTINGS_BOTTOM_INSET - height * scale).coerceAtLeast(TITLE_BAR_HEIGHT + 4f),
             SETTINGS_WIDTH * scale, height * scale)
         place(settings, bounds, scale)
         return bounds
@@ -716,9 +750,12 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             doc.getElementById("panel-name")?.let {
                 val current = itemStack(installed)
                 it.textContent = if (current.isEmpty) label("empty") else current.hoverName.string
-                setStyle(it, "color", if (current.isEmpty) "#bdbdbd" else rarityColor(current))
+                // Forge 的自定义稀有度也可能指定 RGB，沿用完整 Style modifier。
+                setStyle(it, "color", if (current.isEmpty) "#bfc5c9" else String.format(Locale.ROOT, "#%06x",
+                    current.rarity.styleModifier.apply(Style.EMPTY).color?.value ?: 0xffffff))
             }
-            doc.getElementById("panel-slot")?.textContent = slotName(type)
+            doc.getElementById("panel-registry-name")?.textContent = installed?.toString().orEmpty()
+            doc.getElementById("panel-title")?.textContent = slotName(type)
             doc.getElementById("panel-uninstall")?.let { setClass(it, "disabled", installed == null) }
             panelInstalled = installed
         }
@@ -753,7 +790,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         val skins = definition?.skins.orEmpty()
         val available = skins.any { it.id.isNotBlank() && it.id != AttachmentDefinition.DEFAULT_SKIN_ID }
         setStyle(doc.getElementById("panel-skin-control"), "display", if (available) "flex" else "none")
-        setStyle(doc.getElementById("panel-slot"), "width", if (available) "64px" else "150px")
+        setStyle(doc.getElementById("panel-uninstall-label"), "width", if (available) "64px" else "150px")
         if (!available || installed == null) {
             select.closePopup()
             panelSkinTarget = null
@@ -922,7 +959,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
                 setStyle(element, "display", "none")
                 continue
             }
-            val labelWidth = (font.width(element.textContent) * 7f / 9f + 4f)
+            val labelWidth = (Text.measureLine(Text.of(element), element.textContent).toFloat() + 4f)
                 .coerceIn(1f, (viewportWidth - 8f).coerceAtLeast(1f))
             val bounds = findSpace(mount.bounds.centerX, mount.bounds.bottom + 8f,
                 labelWidth, 11f, obstacles, 2f)
@@ -934,6 +971,52 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     }
 
     /** 复用配件 tooltip 中的槽位、描述与属性。属性图表不弹出悬浮提示。 */
+    private data class TooltipRun(val text: Text, val left: Double, val width: Double)
+
+    private fun tooltipText(style: Style, content: String = "") = Text().apply {
+        fontFamily = UI_FONT_FAMILY
+        fontSize = TOOLTIP_FONT_SIZE
+        fontWeight = if (style.isBold) 700 else 400
+        lineHeight = TOOLTIP_LINE_HEIGHT.toDouble()
+        color = Color(String.format(Locale.ROOT, "#%06x", style.color?.value ?: 0xffffff))
+        oblique = style.isItalic
+        textDecoration = if (style.isUnderlined) "underline" else if (style.isStrikethrough) "line-through" else "none"
+        this.content = content
+    }
+
+    /** 用与绘制相同的 AUI 字体度量换行，保留原有颜色、强调和双向文字顺序。 */
+    private fun wrapTooltip(lines: List<Component>, wrapWidth: Int): List<List<TooltipRun>> {
+        val styles = mutableMapOf<Style, Text>()
+        val splitter = StringSplitter { codePoint, style ->
+            val text = styles.getOrPut(style) { tooltipText(style) }
+            Text.measureLine(text, String(Character.toChars(codePoint))).toFloat()
+        }
+        return lines.flatMap { splitter.splitLines(it, wrapWidth, Style.EMPTY) }.map { line ->
+            val runs = mutableListOf<TooltipRun>()
+            val content = StringBuilder()
+            var currentStyle: Style? = null
+            var left = 0.0
+            fun flushRun() {
+                if (content.isEmpty()) return
+                val text = tooltipText(currentStyle ?: Style.EMPTY, content.toString())
+                val width = Text.measureLine(text, text.content)
+                runs += TooltipRun(text, left, width)
+                left += width
+                content.setLength(0)
+            }
+            Language.getInstance().getVisualOrder(line).accept { _, style, codePoint ->
+                if (currentStyle != style) {
+                    flushRun()
+                    currentStyle = style
+                }
+                content.appendCodePoint(codePoint)
+                true
+            }
+            flushRun()
+            runs
+        }
+    }
+
     private fun renderAttachmentTooltip(graphics: GuiGraphics, doc: Document) {
         val id = hoveredItem?.let { shownItems[it] }?.takeUnless { it == AIR }
         if (id == null) {
@@ -941,19 +1024,20 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             tooltipLines = emptyList()
             return
         }
-        val tooltipWidth = minOf(210f, viewportWidth - 8f).coerceAtLeast(15f)
-        val wrapWidth = (tooltipWidth - 14f).toInt().coerceAtLeast(1)
+        val maxWidth = minOf(TOOLTIP_MAX_WIDTH, viewportWidth - 8f).coerceAtLeast(TOOLTIP_PADDING * 2f + 1f)
+        val wrapWidth = (maxWidth - TOOLTIP_PADDING * 2f).toInt().coerceAtLeast(1)
         if (tooltipKey != id || tooltipWrapWidth != wrapWidth) {
             val item = itemStack(ResourceLocation.tryParse(id))
-            val lines =
-                listOf(item.hoverName.copy().withStyle(item.rarity.styleModifier).withStyle { it.withBold(false) }) +
-                        ClientAttachmentImageTooltip(AttachmentImageComponent(item)).buildLines(item)
-            tooltipLines = lines.flatMap { font.split(it, wrapWidth) }
+            val lines = listOf(item.hoverName.copy().withStyle(item.rarity.styleModifier).withStyle { it.withBold(false) }) +
+                ClientAttachmentImageTooltip(AttachmentImageComponent(item)).buildLines(item)
+            tooltipLines = wrapTooltip(lines, wrapWidth)
             tooltipKey = id
             tooltipWrapWidth = wrapWidth
         }
         if (tooltipLines.isEmpty()) return
-        val height = tooltipLines.size * 12f + 14f
+        val contentWidth = tooltipLines.maxOf { line -> line.lastOrNull()?.let { it.left + it.width } ?: 0.0 }.toFloat()
+        val tooltipWidth = (contentWidth + TOOLTIP_PADDING * 2f).coerceIn(minOf(TOOLTIP_MIN_WIDTH, maxWidth), maxWidth)
+        val height = tooltipLines.size * TOOLTIP_LINE_HEIGHT + TOOLTIP_PADDING * 2f
         val scale = minOf(1f, (viewportHeight - 8f) / height, (viewportWidth - 8f) / tooltipWidth)
             .coerceAtLeast(0.1f)
         val visibleWidth = tooltipWidth * scale
@@ -969,26 +1053,27 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         val pose = graphics.pose()
         val previousColor = RenderSystem.getShaderColor().copyOf()
         pose.pushPose()
+        FontDrawer.pushDocumentPixelScale(doc.viewport.scissorScale() * scale)
         try {
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
             val documentScale = doc.viewport.renderScale()
             pose.scale(documentScale, documentScale, 1f)
             pose.translate(left.toDouble(), top.toDouble(), Base.getFlatOverlayZ().toDouble())
             pose.scale(scale, scale, 1f)
-            val w = ceil(tooltipWidth).toInt()
-            val h = ceil(height).toInt()
-            graphics.fill(0, 0, w, h, 0xf20a0c10.toInt())
-            graphics.fill(0, 0, w, 1, -1)
-            graphics.fill(0, h - 1, w, h, -1)
-            graphics.fill(0, 0, 1, h, -1)
-            graphics.fill(w - 1, 0, w, h, -1)
+            drawPanelBackground(graphics.bufferSource().getBuffer(RenderType.gui()), pose.last().pose(),
+                Box(0f, 0f, tooltipWidth, height), 1f, PANEL_BACKGROUND)
             graphics.flush()
             pose.translate(0.0, 0.0, 1.0)
-            tooltipLines.forEachIndexed { index, line ->
-                graphics.drawString(font, line, 7, 7 + index * 12, 0xffffff, false)
+            tooltipLines.forEachIndexed { index, runs ->
+                for (run in runs) {
+                    FontDrawer.drawFont(pose, run.text, Position(TOOLTIP_PADDING + run.left,
+                        (TOOLTIP_PADDING + index * TOOLTIP_LINE_HEIGHT).toDouble()))
+                }
             }
             graphics.flush()
         } finally {
+            Base.commitLocalDraws()
+            FontDrawer.popDocumentPixelScale()
             pose.popPose()
             RenderSystem.setShaderColor(previousColor[0], previousColor[1], previousColor[2], previousColor[3])
         }
@@ -1054,12 +1139,17 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
 
     private fun usableHeight() = (viewportHeight - 28f).coerceAtLeast(1f)
 
-    // 属性、配件列表和设置共用缩放，标题及正文不会因面板不同而改变可见字号。
+    // 缩放只由视口与固定布局预算决定，任何菜单显隐、配件类型、属性数量都不会改变它。
     private fun editorPanelScale() =
-        minOf(1f, (viewportWidth - 8f) / (PANEL_WIDTH * 2f), usableHeight() / max(PANEL_HEIGHT, settingsHeight),
-            if (statsOpen) statsHeightBudget() / STATS_HEIGHT else 1f).coerceAtLeast(0.05f)
+        minOf(1f, (viewportWidth - 8f) / (PANEL_WIDTH * 2f),
+            (usableHeight() - TITLE_BAR_HEIGHT - 8f).coerceAtLeast(1f) / PANEL_HEIGHT,
+            statsHeightBudget() / STATS_HEIGHT,
+            // 固定预留展开的 01、至少一张设置卡片及 8px 间隔；更多卡片在 02 内滚动。
+            (viewportHeight - SETTINGS_BOTTOM_INSET - TITLE_BAR_HEIGHT - 14f).coerceAtLeast(1f) /
+                (STATS_HEIGHT + SETTINGS_MIN_HEIGHT)).coerceAtLeast(0.05f)
 
-    private fun statsHeightBudget() = (viewportHeight / 2f - 8f).coerceAtLeast(1f)
+    private fun statsHeightBudget() = minOf(viewportHeight / 2f - 8f,
+        usableHeight() - TITLE_BAR_HEIGHT - 12f).coerceAtLeast(1f)
 
     /** 从期望位置向外搜索，矩形间保留 gap；极小窗口放不下时选择遮挡最少的位置。 */
     private fun findSpace(
@@ -1067,7 +1157,8 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     ): Box {
         fun candidate(cx: Float, cy: Float) = Box(
             (cx - width / 2f).coerceIn(4f, (viewportWidth - width - 4f).coerceAtLeast(4f)),
-            (cy - height / 2f).coerceIn(4f, (usableHeight() - height - 4f).coerceAtLeast(4f)), width, height
+            (cy - height / 2f).coerceIn(TITLE_BAR_HEIGHT + 4f,
+                (usableHeight() - height - 4f).coerceAtLeast(TITLE_BAR_HEIGHT + 4f)), width, height
         )
 
         var best = candidate(x, y)
@@ -1146,7 +1237,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
                 val selected = editingAttachmentType ==
                         (mount.type?.let(AttachmentSlots::editIndex) ?: AttachmentSlots.AMMO_TYPE_EDIT_INDEX)
                 val highlighted = selected || bounds.contains(mouse.x.toFloat(), mouse.y.toFloat())
-                val color = if (mount.installed == null) -1 else MOUNT_FILLED_COLOR
+                val color = if (mount.installed == null) MOUNT_EMPTY_COLOR else MOUNT_FILLED_COLOR
                 val background = if (highlighted) (color and 0xffffff) or 0x59000000 else 0x1f000000
                 val radius = MOUNT_SIZE / 2f
                 drawCircle(vertices, matrix, bounds.centerX, bounds.centerY, radius, 0f, background)
@@ -1185,10 +1276,21 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     /** 与挂点外框一样独立提交背景和边框，避免 AUI 的物品、输入控件批次影响面板底板。 */
     private fun drawPanelBackground(vertices: VertexConsumer, matrix: Matrix4f, bounds: Box, scale: Float, color: Int) {
         drawQuad(vertices, matrix, bounds.left, bounds.top, bounds.right, bounds.bottom, color)
-        drawQuad(vertices, matrix, bounds.left, bounds.top, bounds.right, bounds.top + scale, -1)
-        drawQuad(vertices, matrix, bounds.left, bounds.bottom - scale, bounds.right, bounds.bottom, -1)
-        drawQuad(vertices, matrix, bounds.left, bounds.top + scale, bounds.left + scale, bounds.bottom - scale, -1)
-        drawQuad(vertices, matrix, bounds.right - scale, bounds.top + scale, bounds.right, bounds.bottom - scale, -1)
+        val border = 0.5f * scale
+        drawQuad(vertices, matrix, bounds.left, bounds.top, bounds.right, bounds.top + border, PANEL_BORDER)
+        drawQuad(vertices, matrix, bounds.left, bounds.bottom - border, bounds.right, bounds.bottom, PANEL_BORDER)
+        drawQuad(vertices, matrix, bounds.left, bounds.top + border, bounds.left + border, bounds.bottom - border, PANEL_BORDER)
+        drawQuad(vertices, matrix, bounds.right - border, bounds.top + border, bounds.right, bounds.bottom - border, PANEL_BORDER)
+        // 短角标保留工业面板的层次，不增加面板尺寸或改变命中范围。
+        val corner = 6f * scale
+        drawQuad(vertices, matrix, bounds.left, bounds.top, bounds.left + corner, bounds.top + scale, UI_ACCENT)
+        drawQuad(vertices, matrix, bounds.left, bounds.top, bounds.left + scale, bounds.top + corner, UI_ACCENT)
+        drawQuad(vertices, matrix, bounds.right - corner, bounds.top, bounds.right, bounds.top + scale, UI_ACCENT)
+        drawQuad(vertices, matrix, bounds.right - scale, bounds.top, bounds.right, bounds.top + corner, UI_ACCENT)
+        drawQuad(vertices, matrix, bounds.left, bounds.bottom - scale, bounds.left + corner, bounds.bottom, UI_ACCENT)
+        drawQuad(vertices, matrix, bounds.left, bounds.bottom - corner, bounds.left + scale, bounds.bottom, UI_ACCENT)
+        drawQuad(vertices, matrix, bounds.right - corner, bounds.bottom - scale, bounds.right, bounds.bottom, UI_ACCENT)
+        drawQuad(vertices, matrix, bounds.right - scale, bounds.bottom - corner, bounds.right, bounds.bottom, UI_ACCENT)
     }
 
     private fun vertex(vertices: VertexConsumer, matrix: Matrix4f, x: Float, y: Float, color: Int) {
@@ -1234,10 +1336,10 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         val startY = mount.centerY + dy / distance * radius
         val normalX = -dy / distance * 0.5f
         val normalY = dx / distance * 0.5f
-        vertex(vertices, matrix, startX - normalX, startY - normalY, -1)
-        vertex(vertices, matrix, startX + normalX, startY + normalY, -1)
-        vertex(vertices, matrix, endX + normalX, endY + normalY, -1)
-        vertex(vertices, matrix, endX - normalX, endY - normalY, -1)
+        vertex(vertices, matrix, startX - normalX, startY - normalY, CONNECTOR_COLOR)
+        vertex(vertices, matrix, startX + normalX, startY + normalY, CONNECTOR_COLOR)
+        vertex(vertices, matrix, endX + normalX, endY + normalY, CONNECTOR_COLOR)
+        vertex(vertices, matrix, endX - normalX, endY - normalY, CONNECTOR_COLOR)
     }
 
     private fun setElementItem(container: Element, itemId: String) {
@@ -1404,7 +1506,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             val texts = listOf("label", "value", "delta").joinToString("") { part ->
                 """<div id="stat-$id-$part" class="stat-$part"><div id="stat-$id-$part-text" class="stat-text"></div></div>"""
             }
-            """<div id="stat-$id" class="stat-row">$texts<div class="stat-track"><div id="stat-$id-common" class="stat-common"></div><div id="stat-$id-change" class="stat-change"></div><div id="stat-$id-overflow" class="stat-overflow"></div></div></div>"""
+            """<div id="stat-$id" class="stat-row"><div id="stat-$id-icon" class="stat-icon"></div>$texts<div class="stat-track"><div id="stat-$id-common" class="stat-common"></div><div id="stat-$id-change" class="stat-change"></div><div id="stat-$id-overflow" class="stat-overflow"></div></div></div>"""
         }
         for (stat in WeaponStat.entries) {
             val id = "stat-${stat.key}"
@@ -1426,7 +1528,9 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         val root = doc.getElementById("weapon-stats") ?: return null
         doc.getElementById("stats-toggle")?.let {
             val text = statLabel(if (statsOpen) "hide" else "show")
-            if (it.textContent != text) it.textContent = text
+            doc.getElementById("stats-toggle-label")?.let { label ->
+                if (label.textContent != text) label.textContent = text
+            }
             val expanded = statsOpen.toString()
             if (it.getAttribute("aria-expanded") != expanded) it.setAttribute("aria-expanded", expanded)
         }
@@ -1437,7 +1541,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         val width = if (statsOpen) minOf(STATS_WIDTH, (viewportWidth / 2f - 12f).coerceAtLeast(1f) / scale) else STATS_BUTTON_WIDTH
         setStyle(root, "width", px(width))
         setStyle(root, "height", px(height))
-        val bounds = Box(6f, 6f, width * scale, height * scale)
+        val bounds = Box(6f, TITLE_BAR_HEIGHT + 6f, width * scale, height * scale)
         place(root, bounds, scale)
         if (!statsOpen) {
             statRows.forEach { row -> row.texts.forEach { it.shown = false } }
@@ -1519,10 +1623,6 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     private fun itemStack(id: ResourceLocation?): ItemStack =
         id?.let { BuiltInRegistries.ITEM.get(it) }?.let(::ItemStack) ?: ItemStack.EMPTY
 
-    // Forge 自定义稀有度（例如 VIRTUAL）通过 Style modifier 定义 RGB，不能读旧的 ChatFormatting 字段。
-    private fun rarityColor(item: ItemStack) = String.format(
-        Locale.ROOT, "#%06x", item.rarity.styleModifier.apply(Style.EMPTY).color?.value ?: 0xffffff
-    )
     private fun px(value: Float) = "${round(value.toDouble() * 100.0) / 100.0}px"
     private fun slotName(type: AttachmentType) =
         Component.translatable("attachment.superbwarfare.slot.${type.attachmentName.lowercase(Locale.ROOT)}").string
@@ -1531,7 +1631,20 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
 
     companion object {
         private const val DOCUMENT_PATH = "superbwarfare/weapon_edit.html"
-        private const val MOUNT_FILLED_COLOR = 0xffffb43b.toInt()
+        private const val UI_FONT_FAMILY = "WeaponEditHeading, sans-serif"
+        private const val TOOLTIP_FONT_SIZE = 7.0
+        private const val TOOLTIP_LINE_HEIGHT = 10f
+        private const val TOOLTIP_PADDING = 6f
+        private const val TOOLTIP_MIN_WIDTH = 96f
+        private const val TOOLTIP_MAX_WIDTH = 160f
+        // 与 weapon_edit.html 的主题色及 title-bar 高度保持一致。
+        private const val UI_ACCENT = 0xff52fcda.toInt()
+        private const val PANEL_BORDER = 0xff237b87.toInt()
+        private const val PANEL_BACKGROUND = 0xe6001219.toInt()
+        private const val CONNECTOR_COLOR = 0xcc52fcda.toInt()
+        private const val MOUNT_EMPTY_COLOR = 0xffffffff.toInt()
+        private const val MOUNT_FILLED_COLOR = UI_ACCENT
+        private const val TITLE_BAR_HEIGHT = 18f
         private const val MOUNT_REVEAL_DELAY_TICKS = 10
         private const val AIR = "minecraft:air"
         private const val AMMO_MOUNT_ID = "mount-ammo_type"
@@ -1539,16 +1652,19 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         private const val MOUNT_SIZE = 9f
         private const val ICON_SIZE = 17f
         private const val PANEL_WIDTH = 180f
-        private const val PANEL_HEIGHT = 112f
+        private const val PANEL_HEIGHT = 134f
         private const val SETTINGS_WIDTH = PANEL_WIDTH
         private val ADJUSTMENT_NUMBER = Regex("-?[0-9]*(\\.[0-9]*)?")
         private val RGB_NUMBER = Regex("[0-9]*")
         private val ADJUSTMENT_PROPERTIES = listOf("rotation", "offset", "red", "green", "blue")
         private const val SETTINGS_BASE_HEIGHT = 56f
-        private const val SETTINGS_ROW_HEIGHT = 24f
-        private const val SLIDER_TRACK_LEFT = 0.5f
-        private const val SLIDER_TRACK_WIDTH = 78f
-        private const val SLIDER_THUMB_RADIUS = 5f
+        private const val SETTINGS_BOTTOM_INSET = 24f
+        private const val SETTINGS_ROW_HEIGHT = 28f // 24px 卡片 + 4px 间隔
+        private const val SETTINGS_ROW_GAP = 4f
+        private const val SETTINGS_MIN_HEIGHT = SETTINGS_BASE_HEIGHT + SETTINGS_ROW_HEIGHT
+        private const val SLIDER_TRACK_LEFT = 3.5f
+        private const val SLIDER_TRACK_WIDTH = 58f
+        private const val SLIDER_THUMB_RADIUS = 3.5f
         private const val GRID_COLUMNS = 8
         private const val GRID_VISIBLE_ROWS = 3
         private const val GRID_WINDOW_ROWS = GRID_VISIBLE_ROWS + 3
@@ -1565,7 +1681,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         private const val STATS_HEIGHT = STATS_CHART_TOP + STATS_CHART_CHROME + STATS_VISIBLE_ROWS * STATS_ROW_HEIGHT
         private const val STATS_TEXT_SPEED = 14.0
         private const val STATS_TEXT_PAUSE = 1.0
-        private const val STATS_GAIN_COLOR = "#65e38a"
+        private const val STATS_GAIN_COLOR = "#52fcda"
         private const val STATS_LOSS_COLOR = "#ff7070"
         private val SEARCH_COS = DoubleArray(24) { cos(it * PI * 2 / 24) }
         private val SEARCH_SIN = DoubleArray(24) { sin(it * PI * 2 / 24) }

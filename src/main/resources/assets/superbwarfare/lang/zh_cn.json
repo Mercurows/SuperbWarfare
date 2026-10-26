@@ -1483,7 +1483,9 @@
   "config.jade.plugin_superbwarfare.vehicle_deployer": "载具部署器",
   "config.jade.plugin_superbwarfare.catapult_controller": "弹射器控制器",
 
+  "screen.superbwarfare.weapon_edit.title": "武器改装",
   "screen.superbwarfare.weapon_edit.empty": "未安装配件",
+  "screen.superbwarfare.weapon_edit.uninstall": "卸下配件",
   "screen.superbwarfare.weapon_edit.no_available": "背包中没有可用配件",
   "screen.superbwarfare.weapon_edit.settings": "配件设置",
   "screen.superbwarfare.weapon_edit.rotation": "角度",
