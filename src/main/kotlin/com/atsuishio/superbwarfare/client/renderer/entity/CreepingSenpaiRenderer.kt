@@ -8,17 +8,26 @@ import com.maydaymemory.mae.basic.ZYXBoneTransformFactory
 import com.maydaymemory.mae.blend.EulerAdditiveBlender
 import com.maydaymemory.mae.blend.SimpleEulerAdditiveBlender
 import com.mojang.blaze3d.vertex.PoseStack
-import com.mojang.math.Axis
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
 import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.texture.OverlayTexture
-import net.minecraft.core.Direction
 import net.minecraft.resources.ResourceLocation
+import org.joml.Matrix3f
+import org.joml.Quaternionf
+import org.joml.Vector3f
+import java.util.*
+import kotlin.math.cos
+import kotlin.math.exp
+import kotlin.math.sin
 
 class CreepingSenpaiRenderer(renderManager: EntityRendererProvider.Context) :
     EntityRenderer<CreepingSenpaiEntity>(renderManager) {
+    private val surfacePoses = WeakHashMap<CreepingSenpaiEntity, SurfacePose>()
+
+    private class SurfacePose(val rotation: Quaternionf, val offset: Vector3f, var time: Float)
+
     init {
         this.shadowRadius = 0.5f
     }
@@ -38,24 +47,28 @@ class CreepingSenpaiRenderer(renderManager: EntityRendererProvider.Context) :
         val ani = pEntity.animationInstance ?: return
         val instance = pEntity.modelInstance ?: return
 
-        val progress = pEntity.renderFaceProgress(pPartialTick)
-        val eased = progress * progress * (3f - 2f * progress)
-        val startAngles = faceAngles(pEntity.renderStartFace)
-        val targetAngles = faceAngles(pEntity.renderTargetFace)
-        val startOffset = faceOffset(pEntity.renderStartFace, pEntity)
-        val targetOffset = faceOffset(pEntity.renderTargetFace, pEntity)
-        val offsetX = startOffset.first + (targetOffset.first - startOffset.first) * eased
-        val offsetY = startOffset.second + (targetOffset.second - startOffset.second) * eased
-        val offsetZ = startOffset.third + (targetOffset.third - startOffset.third) * eased
-        val pitch = startAngles.first + (targetAngles.first - startAngles.first) * eased
-        val roll = startAngles.second + (targetAngles.second - startAngles.second) * eased
+        val normal = pEntity.attachedFace
+        val heading = Math.toRadians(pEntity.surfaceHeading.toDouble()).toFloat()
+        val up = Vector3f(normal.stepX.toFloat(), normal.stepY.toFloat(), normal.stepZ.toFloat())
+        val forward = if (normal.axis.isHorizontal) Vector3f(0f, 1f, 0f) else Vector3f(0f, 0f, 1f)
+        val right = Vector3f(forward).cross(up)
+        forward.mul(cos(heading)).add(Vector3f(right).mul(sin(heading)))
+        right.set(forward).cross(up)
+        val rotation = Quaternionf().setFromNormalized(Matrix3f(
+            right.x, right.y, right.z, up.x, up.y, up.z, -forward.x, -forward.y, -forward.z
+        ))
+        val extent = if (normal.axis.isHorizontal) pEntity.bbWidth / 2f else pEntity.bbHeight / 2f
+        val offset = Vector3f(up).mul(-extent).add(0f, pEntity.bbHeight / 2f, 0f)
+        val now = pEntity.tickCount + pPartialTick
+        val pose = surfacePoses.getOrPut(pEntity) { SurfacePose(Quaternionf(rotation), Vector3f(offset), now) }
+        val blend = 1f - exp(-(now - pose.time).coerceIn(0f, 10f) / 2f)
+        pose.rotation.slerp(rotation, blend)
+        pose.offset.lerp(offset, blend)
+        pose.time = now
 
         pPoseStack.pushPose()
-        pPoseStack.translate(offsetX.toDouble(), offsetY.toDouble(), offsetZ.toDouble())
-        pPoseStack.mulPose(Axis.YP.rotationDegrees(180f))
-        pPoseStack.mulPose(Axis.YP.rotationDegrees(-pEntity.getViewYRot(pPartialTick)))
-        pPoseStack.mulPose(Axis.XP.rotationDegrees(pitch))
-        pPoseStack.mulPose(Axis.ZP.rotationDegrees(roll))
+        pPoseStack.translate(pose.offset.x.toDouble(), pose.offset.y.toDouble(), pose.offset.z.toDouble())
+        pPoseStack.mulPose(pose.rotation)
 
         ani.context.partialTick = pPartialTick
         ani.tick()
@@ -70,25 +83,6 @@ class CreepingSenpaiRenderer(renderManager: EntityRendererProvider.Context) :
             OverlayTexture.pack(0f, pEntity.hurtTime > 0 || pEntity.deathTime > 0)
         )
         pPoseStack.popPose()
-    }
-
-    private fun faceAngles(face: Direction): Pair<Float, Float> {
-        return when (face) {
-            Direction.DOWN -> 0f to 180f
-            Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST -> 90f to 0f
-            Direction.UP -> 0f to 0f
-        }
-    }
-
-    private fun faceOffset(face: Direction, entity: CreepingSenpaiEntity): Triple<Float, Float, Float> {
-        return when (face) {
-            Direction.DOWN -> Triple(0f, entity.bbHeight, 0f)
-            Direction.NORTH -> Triple(0f, 0f, entity.bbWidth / 2f)
-            Direction.SOUTH -> Triple(0f, 0f, -entity.bbWidth / 2f)
-            Direction.EAST -> Triple(-entity.bbWidth / 2f, 0f, 0f)
-            Direction.WEST -> Triple(entity.bbWidth / 2f, 0f, 0f)
-            Direction.UP -> Triple(0f, 0f, 0f)
-        }
     }
 
     companion object {
