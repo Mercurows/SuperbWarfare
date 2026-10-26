@@ -1506,7 +1506,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             val texts = listOf("label", "value", "delta").joinToString("") { part ->
                 """<div id="stat-$id-$part" class="stat-$part"><div id="stat-$id-$part-text" class="stat-text"></div></div>"""
             }
-            """<div id="stat-$id" class="stat-row"><div id="stat-$id-icon" class="stat-icon"></div>$texts<div class="stat-track"><div id="stat-$id-common" class="stat-common"></div><div id="stat-$id-change" class="stat-change"></div><div id="stat-$id-overflow" class="stat-overflow"></div></div></div>"""
+            """<div id="stat-$id" class="stat-row"><div id="stat-$id-icon" class="stat-icon"><texture src="superbwarfare:textures/overlay/edit/icons/$id.png" blur="true" /></div>$texts<div class="stat-track"><div id="stat-$id-common" class="stat-common"></div><div id="stat-$id-change" class="stat-change"></div><div id="stat-$id-overflow" class="stat-overflow"></div></div></div>"""
         }
         for (stat in WeaponStat.entries) {
             val id = "stat-${stat.key}"

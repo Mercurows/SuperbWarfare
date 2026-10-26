@@ -74,7 +74,7 @@
                 </div>
             </div>
             <div id="settings-offset-row" class="settings-row">
-                <div id="settings-offset-icon" class="settings-icon"></div>
+                <div id="settings-offset-icon" class="settings-icon"><texture src="superbwarfare:textures/overlay/edit/icons/offset.png" blur="true" /></div>
                 <div id="settings-offset-label" class="settings-label"></div>
                 <div class="settings-slider">
                     <input id="settings-offset" type="range" value="0">
@@ -430,7 +430,7 @@
     }
     #stats-content { position: relative; width: 188px; margin: 0; padding: 0; border: 0; }
     .stat-row { position: relative; display: block; width: 100%; height: 14px; margin: 0; padding: 0; border: 0; font-size: 7px; }
-    /* 预留 9×9 的方形图片位，后续可在 stat-<属性名>-icon 中放 texture/img。 */
+    /* 统一的线性 PNG 图标，保持 9×9 的方形占位。 */
     .stat-icon { position: absolute; left: 0; top: 2.5px; width: 9px; height: 9px; pointer-events: none; }
     .stat-icon > texture, .stat-icon > img { width: 100%; height: 100%; pointer-events: none; }
     .stat-row::after { content: ''; position: absolute; left: 0; bottom: 0; width: 100%; height: 0.5px; background: rgba(35, 123, 135, 0.2); pointer-events: none; }
