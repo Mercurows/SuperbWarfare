@@ -13,6 +13,18 @@ object DisplayClothConfig {
         category.addEntry(
             entryBuilder
                 .startBooleanToggle(
+                    Component.translatable("config.superbwarfare.client.display.enable_special_projectile_effects"),
+                    DisplayConfig.ENABLE_SPECIAL_PROJECTILE_EFFECTS.get()
+                )
+                .setDefaultValue(true)
+                .setSaveConsumer { DisplayConfig.ENABLE_SPECIAL_PROJECTILE_EFFECTS.set(it) }
+                .setTooltip(Component.translatable("config.superbwarfare.client.display.enable_special_projectile_effects.des"))
+                .build()
+        )
+
+        category.addEntry(
+            entryBuilder
+                .startBooleanToggle(
                     Component.translatable("config.superbwarfare.client.display.enable_gun_lod"),
                     DisplayConfig.ENABLE_GUN_LOD.get()
                 )

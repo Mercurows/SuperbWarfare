@@ -1391,6 +1391,8 @@
   "config.superbwarfare.client.kill_message.kill_message_margin_y": "Vertical Offset",
   "config.superbwarfare.client.kill_message.kill_message_margin_y.des": "The vertical offset of kill message",
   "config.superbwarfare.client.display": "Display Config",
+  "config.superbwarfare.client.display.enable_special_projectile_effects": "Special Projectile Effects",
+  "config.superbwarfare.client.display.enable_special_projectile_effects.des": "Enable screen post-processing for special projectiles, such as gravity-ball lensing. Disable to improve performance; projectile models remain visible.",
   "config.superbwarfare.client.display.kill_indication": "Kill Indication",
   "config.superbwarfare.client.display.kill_indication.des": "The kill indicator will appear around the cross hair after a creature is killed when turned on",
   "config.superbwarfare.client.display.ammo_hud": "Ammo HUD",

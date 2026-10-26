@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.client.ClientRenderHandler
 import com.atsuishio.superbwarfare.client.renderer.ModRenderTypes
 import com.atsuishio.superbwarfare.client.shader.ThermalShaderHandler
 import com.atsuishio.superbwarfare.compat.shader.ShaderCompat
+import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.entity.projectile.ReforgingGravityBallEntity
 import com.mojang.blaze3d.pipeline.RenderTarget
 import com.mojang.blaze3d.pipeline.TextureTarget
@@ -429,7 +430,7 @@ class ReforgingGravityBallRenderer(context: EntityRendererProvider.Context) :
                 fieldGlows.clear()
                 entityBeforeReady = false
                 entityMaskReady = false
-                canLensThisFrame = lensShader != null && !lensFailed &&
+                canLensThisFrame = DisplayConfig.ENABLE_SPECIAL_PROJECTILE_EFFECTS.get() && lensShader != null && !lensFailed &&
                     !ThermalShaderHandler.isActive() &&
                     // Fabulous composites additional entity targets later; a single-color mask is incomplete there.
                     !Minecraft.useShaderTransparency() &&

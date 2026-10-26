@@ -29,6 +29,13 @@ object DisplayConfig {
     }
 
     @JvmField
+    val ENABLE_SPECIAL_PROJECTILE_EFFECTS = buildClientConfig {
+        comment("Enable screen post-processing effects for special projectiles, such as gravity-ball lensing. Projectile models remain visible when disabled")
+        comment("启用特殊投射物的屏幕后处理效果（如重力球的引力透镜）；关闭后仍显示弹体本身")
+        define("enable_special_projectile_effects", true)
+    }
+
+    @JvmField
     val VEHICLE_LOD_DISTANCE = buildClientConfig {
         comment("The global LOD distance for rendering vehicles. Set -1 to disable this config")
         comment("渲染载具低模的最小全局距离，设置为-1则不生效")

@@ -1391,6 +1391,8 @@
   "config.superbwarfare.client.kill_message.kill_message_margin_y": "竖直偏移",
   "config.superbwarfare.client.kill_message.kill_message_margin_y.des": "距离屏幕边缘的竖直距离",
   "config.superbwarfare.client.display": "显示配置",
+  "config.superbwarfare.client.display.enable_special_projectile_effects": "特殊投射物渲染效果",
+  "config.superbwarfare.client.display.enable_special_projectile_effects.des": "启用特殊投射物的屏幕后处理效果（如重力球的引力透镜）",
   "config.superbwarfare.client.display.kill_indication": "击杀提示",
   "config.superbwarfare.client.display.kill_indication.des": "开启时，击杀生物时会在准星周围显示击杀提示",
   "config.superbwarfare.client.display.ammo_hud": "枪械信息",
