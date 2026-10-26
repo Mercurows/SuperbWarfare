@@ -1,0 +1,35 @@
+{
+  "SlotIcon": "superbwarfare:textures/item/steel_pipe_icon.png",
+  "UseCustomSprintAnimation": true,
+  "Animation": {
+    "Idle": "animation.steel_pipe.idle",
+    "Melee": "animation.steel_pipe.melee_1",
+    "Run": "animation.steel_pipe.sprint",
+    "Edit": "animation.steel_pipe.edit"
+  },
+  "Model": {
+    "Animation": "superbwarfare:animations/bedrock/gun/steel_pipe.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/steel_pipe.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/steel_pipe.png"
+  },
+  "ItemDisplay": {
+    "firstperson_righthand": {
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "firstperson_lefthand": {
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "thirdperson_righthand": {
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "thirdperson_lefthand": {
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "ground": {
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "fixed": {
+      "scale": [1.0, 1.0, 1.0]
+    }
+  }
+}

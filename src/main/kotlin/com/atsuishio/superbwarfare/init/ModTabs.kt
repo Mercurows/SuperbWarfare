@@ -6,7 +6,6 @@ import com.atsuishio.superbwarfare.item.container.SmallContainerBlockItem
 import com.atsuishio.superbwarfare.item.material.BatteryItem
 import com.atsuishio.superbwarfare.item.misc.ArmorPlateItem
 import com.atsuishio.superbwarfare.item.projectile.C4BombItem
-import com.atsuishio.superbwarfare.item.weapon.ElectricBatonItem
 import net.minecraft.core.HolderLookup
 import net.minecraft.core.registries.Registries
 import net.minecraft.network.chat.Component
@@ -135,9 +134,6 @@ object ModTabs {
                     }
                     if (item is BatteryItem) {
                         output.accept(item.makeFullEnergyStack())
-                    }
-                    if (item === ModItems.ELECTRIC_BATON.get()) {
-                        output.accept(ElectricBatonItem.makeFullEnergyStack())
                     }
                 }
             }

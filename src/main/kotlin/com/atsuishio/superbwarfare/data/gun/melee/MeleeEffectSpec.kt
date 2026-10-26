@@ -122,11 +122,13 @@ data class MeleeEffectSpec(
      */
     @JvmOverloads
     fun resolve(preset: MeleeEffectSpec? = effect?.let { CustomData.MELEE_EFFECTS[it] }): ResolvedMeleeEffect? {
-        val behaviorId = ModMeleeEffects.normalize(type)
-            ?: ModMeleeEffects.normalize(preset?.type)
+        // 每一级都要先确认是**已登记的行为**：字符串简写会把 `Effect` 同时写进 [type]，
+        // 不校验的话 `"Effects": ["superbwarfare:heavy_impact"]` 会把自己当成行为 id 而失效
+        val behaviorId = ModMeleeEffects.normalize(type)?.takeIf { ModMeleeEffects.contains(it) }
+            ?: ModMeleeEffects.normalize(preset?.type)?.takeIf { ModMeleeEffects.contains(it) }
             // 预设找不到、Type 也没写时，把 Effect 本身当成行为 id：
             // 于是 `"Effects": ["superbwarfare:explosion"]` 这种写法也能直接用
-            ?: ModMeleeEffects.normalize(effect)?.takeIf { ModMeleeEffects.get(it) != null }
+            ?: ModMeleeEffects.normalize(effect)?.takeIf { ModMeleeEffects.contains(it) }
             ?: return null
 
         return ResolvedMeleeEffect(

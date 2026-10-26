@@ -49,17 +49,17 @@ object GunActionLock {
         /** 当前近战段剩余 tick（0 = 没有正在进行的近战） */
         var meleeTicks: Int = 0
 
-        /** 本段近战是否已经结算过（每个动作只结算一次） */
-        var meleeHitResolved: Boolean = false
-
         /** 锁存的连招下标 */
         var meleeActionIndex: Int = 0
 
         /** 本段动作的持续 tick（动画按它拉伸） */
         var meleeDuration: Int = 0
 
-        /** 本段的结算点：`meleeTicks` 递减到它就打（= `Duration - HitTime`） */
-        var meleeHitTick: Int = 0
+        /** 本段的结算点：`meleeTicks` 递减到它就打一次（= `Duration - HitTime`），**从大到小**排列 */
+        var meleeHitTicks: IntArray = IntArray(0)
+
+        /** 已经结算到第几个结算点；等于 [meleeHitTicks] 长度时本段不再出伤 */
+        var meleeHitIndex: Int = 0
 
         /** 本段挥击是不是刺刀冲锋打出来的（决定用 `Animation.BayonetChargeHit` 换掉本段 clip） */
         var meleeFromBayonetCharge: Boolean = false
@@ -118,10 +118,10 @@ object GunActionLock {
             activeAction = GunAction.NONE
             actionTicks = 0
             meleeTicks = 0
-            meleeHitResolved = false
             meleeActionIndex = 0
             meleeDuration = 0
-            meleeHitTick = 0
+            meleeHitTicks = IntArray(0)
+            meleeHitIndex = 0
             meleeFromBayonetCharge = false
             meleeChargeTarget = null
             meleeOwner = null

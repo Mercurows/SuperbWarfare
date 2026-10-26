@@ -175,7 +175,7 @@ private fun printActions(context: CommandContext<CommandSourceStack>, entity: En
         context.ok(
             Component.literal(
                 "#$index animation=${animationChain(raw, gunId)} " +
-                        "duration=${resolved.duration} hitTime=${resolved.hitTime} " +
+                        "duration=${resolved.duration} hitTimes=${resolved.hitTimes} " +
                         // 伤害/距离都来自枪的全局属性，动作只给倍率（不写 = ×1.0）
                         "damage=${"%.2f".format(resolved.damage)} (x${raw.damageMultiplier ?: 1.0} of MeleeDamage) " +
                         "hitbox=${resolved.hitbox.type} range=${"%.2f".format(resolved.hitbox.range)} " +

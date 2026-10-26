@@ -40,9 +40,14 @@ data class MeleeAction(
     @SerialName("Duration")
     val duration: Int? = null,
 
-    /** **从挥击开始算，第几 tick 结算**；不写时用 `MeleeDamageTime` */
+    /**
+     * **从挥击开始算，第几 tick 结算**；不写时用 `MeleeDamageTime`。
+     *
+     * 写数组 = 本段挥击里有多次出伤（例如重击动画里的多段快速攻击），
+     * 每个值都会各自判定一次并各发一条命中报文。
+     */
     @SerialName("HitTime")
-    val hitTime: Int? = null,
+    val hitTimes: SingleOrList<Int>? = null,
 
     /** 本段判定形状；不写时用全局 `MeleeHitbox` */
     @SerialName("Hitbox")
@@ -181,6 +186,11 @@ data class MeleeAction(
         // `player.getEntityReach()` 不在这一步里，由 MeleeQuery 在判定时叠加。
         val range = (resolvedHitbox.rangeOr(0.0) + defaultRange) * (rangeMultiplier ?: 1.0)
 
+        val resolvedHitTimes = (hitTimes?.list?.takeIf { it.isNotEmpty() } ?: listOf(defaultHitTime))
+            // 与旧的 `GunProp` 全局钳制（`MeleeDamageTime <= MeleeDuration - 1`）同一个道理：
+            // 结算 tick 落在挥击之外就永远不会出伤，所以夹进本段时长内。
+            .map { it.coerceIn(0, resolvedDuration) }
+
         return ResolvedMeleeAction(
             hitbox = resolvedHitbox.copy(
                 range = range,
@@ -188,9 +198,7 @@ data class MeleeAction(
             ),
             sweep = sweep ?: defaultSweep,
             duration = resolvedDuration,
-            // 与旧的 `GunProp` 全局钳制（`MeleeDamageTime <= MeleeDuration - 1`）同一个道理：
-            // 结算 tick 落在挥击之外就永远不会出伤，所以夹进本段时长内。
-            hitTime = (hitTime ?: defaultHitTime).coerceIn(0, resolvedDuration),
+            hitTimes = resolvedHitTimes,
             // 伤害同样只有一个出处：枪的 MeleeDamage × 本段倍率
             damage = defaultDamage * (damageMultiplier ?: 1.0),
             maxTargets = maxTargets ?: 0,

@@ -18,8 +18,8 @@ data class ResolvedMeleeAction(
     /** 本段总 tick */
     val duration: Int,
 
-    /** 从挥击开始算，第几 tick 结算 */
-    val hitTime: Int,
+    /** 从挥击开始算，第几 tick 结算；多段出伤时有多项 */
+    val hitTimes: List<Int>,
 
     /** 本段基础伤害（已乘 `DamageMultiplier`） */
     val damage: Double,
@@ -74,15 +74,16 @@ data class ResolvedMeleeAction(
     val effects: List<ResolvedMeleeEffect> by lazy { effectSpecs.mapNotNull { it.resolve() } }
 
     /**
-     * 本段实际生效的结算下标，**从挥击开始算第几 tick**。
+     * 本段所有结算下标（`meleeTicks` 的阈值），按 `meleeTicks` 递减方向排列。
      *
-     * 就是 `duration - hitTime`：`meleeTicks` 从 [duration] 每 tick 递减，
-     * 递减 [hitTime] 次之后正好等于 `duration - hitTime`。
+     * 每个值就是 `duration - hitTime`：`meleeTicks` 从 [duration] 每 tick 递减，
+     * 越过一个阈值就结算一次。多段出伤因此按 `HitTime` 升序逐段触发。
      * 刺刀冲锋那一下会用 `BayonetCharge.Strike*` 覆写这一组量（见 `MeleeClientHandler`）。
      *
-     * 收敛到 `[0, duration]`，不会越界。
+     * 收敛到 `[1, duration]`：阈值为 0 时 `meleeTicks` 已经先被清零释放，那一段永远不会结算。
      */
-    val hitTickFromStart: Int get() = (duration - hitTime).coerceIn(0, duration)
+    val hitTicksFromStart: List<Int>
+        get() = hitTimes.sorted().map { (duration - it).coerceIn(1, duration) }
 
     /** 本段实际生效的打头倍率：本段覆盖 ?: 枪的 `MeleeHeadshot` */
     fun resolvedHeadshot(gunHeadshot: Double) = headshot ?: gunHeadshot

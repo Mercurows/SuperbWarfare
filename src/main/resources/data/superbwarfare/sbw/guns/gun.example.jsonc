@@ -58,6 +58,9 @@
    *   { "Type": "superbwarfare:explosion", "Chance": 1.0,
    *     "Radius": 4.0, "Damage": 60, "DestroyBlocks": false }          // inline, no preset
    * Trigger: "Hit" (default), "FirstHit", "Swing", "Kill"
+   * HitTime may be a list to resolve several hits within one section (a multi-strike heavy):
+   *   "HitTime": [8, 12, 16, 20, 24, 28]
+   * Each entry runs its own hitbox query and sends its own hit packet on the server.
    * The rpg's blast stays the preset `warhead_stab` (Radius 4.0 / Damage 60); a gun with its own
    * numbers writes them inline like the above -- see lunge_mine.json, whose blast is tunable on
    * its own. An explosion also hurts the wielder standing inside its radius.

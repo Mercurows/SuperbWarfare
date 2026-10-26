@@ -193,7 +193,12 @@ object MeleeClientHandler {
         // ③ 冲锋那一下的时长与结算点独立于动作表（数据里没写就跟着那一段走）
         val charge = if (chargeStrike) data.get(GunProp.BAYONET_CHARGE) else null
         val duration = charge?.strikeDuration?.takeIf { it > 0 } ?: action.duration
-        val hitTime = charge?.strikeHitTime?.takeIf { it >= 0 } ?: action.hitTime
+        val hitTimes = if (chargeStrike) {
+            val strikeHitTime = charge?.strikeHitTime?.takeIf { it >= 0 }
+            if (strikeHitTime != null) listOf(strikeHitTime) else action.hitTimes
+        } else {
+            action.hitTimes
+        }
 
         // ④ 动作占用（时长 = 本段的 Duration）
         if (!state.acquire(GunAction.MELEE, duration)) return false
@@ -202,8 +207,12 @@ object MeleeClientHandler {
         state.meleeActionIndex = index
         state.meleeDuration = duration
         state.meleeTicks = duration
-        state.meleeHitTick = (duration - hitTime).coerceIn(0, duration)
-        state.meleeHitResolved = false
+        // `meleeTicks` 递减方向：HitTime 越大越晚，换算成阈值后要从大到小排列
+        state.meleeHitTicks = hitTimes
+            .map { (duration - it).coerceIn(1, duration) }
+            .sortedDescending()
+            .toIntArray()
+        state.meleeHitIndex = 0
         state.meleeFromBayonetCharge = chargeStrike
         state.meleeChargeTarget = chargeTarget.takeIf { chargeStrike }
 
@@ -224,35 +233,42 @@ object MeleeClientHandler {
 
         debugLog {
             "melee swing: gun=${data.id} index=$index duration=$duration " +
-                    "hitTime=$hitTime comboWindow=$inComboWindow charge=${charge != null}"
+                    "hitTimes=$hitTimes comboWindow=$inComboWindow charge=${charge != null}"
         }
 
         return true
     }
 
     /**
-     * 推进当前这一段的计时，到锁存的结算 tick 结算
+     * 推进当前这一段的计时，越过一个结算点就结算一次
      */
     private fun tickActiveSwing(player: Player, data: GunData, state: GunActionLock.State) {
         if (!state.isMeleeValidFor(player)) {
             state.clear()
             return
         }
-        if (state.meleeHitResolved) return
-        if (state.meleeTicks > state.meleeHitTick) return
+        val thresholds = state.meleeHitTicks
+        if (state.meleeHitIndex >= thresholds.size) return
+        if (state.meleeTicks > thresholds[state.meleeHitIndex]) return
 
-        state.meleeHitResolved = true
-        val forced = state.meleeChargeTarget
-        state.meleeChargeTarget = null
+        val action = data.resolveMeleeAction(state.meleeActionIndex)
 
-        resolveHit(
-            player,
-            data,
-            data.resolveMeleeAction(state.meleeActionIndex),
-            state.meleeActionIndex,
-            forced,
-            state.meleeFromBayonetCharge,
-        )
+        // 一 tick 只可能越过一个阈值（`meleeTicks` 每 tick 减 1），循环只是防御写法
+        while (state.meleeHitIndex < thresholds.size && state.meleeTicks <= thresholds[state.meleeHitIndex]) {
+            // 冲锋撞上的目标只有第一下强制命中
+            val forced = if (state.meleeHitIndex == 0) state.meleeChargeTarget else null
+            if (state.meleeHitIndex == 0) state.meleeChargeTarget = null
+            state.meleeHitIndex++
+
+            resolveHit(
+                player,
+                data,
+                action,
+                state.meleeActionIndex,
+                forced,
+                state.meleeFromBayonetCharge,
+            )
+        }
     }
 
     private fun resolveHit(
@@ -369,7 +385,8 @@ object MeleeClientHandler {
             val state = GunActionLock.of(data)
             state.meleeActionIndex = index
             state.meleeDuration = action.duration
-            state.meleeHitTick = action.hitTickFromStart
+            state.meleeHitTicks = action.hitTicksFromStart.toIntArray()
+            state.meleeHitIndex = 0
 
             forceSwing(player, data, index)
         }
@@ -398,7 +415,7 @@ object MeleeClientHandler {
         )
 
         debugLog {
-            "forced melee: index=$index targets=${hits.size} duration=${action.duration} hitTime=${action.hitTime}"
+            "forced melee: index=$index targets=${hits.size} duration=${action.duration} hitTimes=${action.hitTimes}"
         }
     }
 }

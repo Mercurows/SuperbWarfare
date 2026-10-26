@@ -1,0 +1,64 @@
+{
+  "GunType": "Special",
+  "Icon": "superbwarfare:textures/gun_icon/steel_pipe_icon.png",
+  "ArmPose": "Item",
+  "RightClickAction": "HeavyStrike",
+  "Projectile": "@melee",
+  "ProjectileAmount": 0,
+  "AmmoType": "Infinity",
+  "MeleeDamage": 10,
+  "MeleeHeadshot": 1.5,
+  "MeleeLegshot": 0.75,
+  "MaxDurability": 810,
+  "MeleeHitbox": {
+    "Type": "Box",
+    "Range": 1.4,
+    "Width": 2.0,
+    "Height": 1.0,
+    "YOffset": -0.1,
+    "Occlusion": true
+  },
+  "MeleeActions": [
+    {
+      "Animation": "melee_1",
+      "Duration": 12,
+      "HitTime": 5
+    },
+    {
+      "Animation": "melee_2",
+      "Duration": 19,
+      "HitTime": 8
+    },
+    {
+      "Animation": "melee_3",
+      "Duration": 12,
+      "HitTime": 5,
+      "DamageMultiplier": 1.2222
+    },
+    {
+      "Animation": "melee_heavy",
+      "Duration": 22,
+      "HitTime": 11,
+      "Heavy": true,
+      "DamageMultiplier": 2.0,
+      "Hitbox": {
+        "Type": "Box",
+        "Range": 1.6,
+        "Width": 2.2,
+        "Height": 1.2,
+        "YOffset": -0.2,
+        "Occlusion": true
+      }
+    }
+  ],
+  "MeleeSound": {
+    "Swing": "superbwarfare:empty",
+    "Hit": "superbwarfare:steel_pipe_hit"
+  },
+  "Weight": 4,
+  "DrawTime": 8,
+  "DefaultFireMode": "Semi",
+  "AvailableFireModes": [
+    "Semi"
+  ]
+}

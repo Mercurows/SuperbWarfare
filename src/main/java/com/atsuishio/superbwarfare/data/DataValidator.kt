@@ -572,8 +572,11 @@ object DataValidator {
             require(action.duration == null || action.duration > 0) {
                 "MeleeActions[$index].Duration must be > 0 when written, got ${action.duration}"
             }
-            require(action.hitTime == null || action.hitTime >= 0) {
-                "MeleeActions[$index].HitTime must be >= 0, got ${action.hitTime}"
+            val hitTimes = action.hitTimes?.list.orEmpty()
+            for (hitTime in hitTimes) {
+                require(hitTime >= 0) {
+                    "MeleeActions[$index].HitTime must be >= 0, got $hitTime"
+                }
             }
             require(action.maxTargets == null || action.maxTargets >= 0) {
                 "MeleeActions[$index].MaxTargets must be >= 0 (0 = unlimited), got ${action.maxTargets}"
@@ -605,10 +608,11 @@ object DataValidator {
 
             // HitTime 超过本段时长时结算永远不会发生，这是最容易写错的一处
             val effectiveDuration = action.duration ?: data.meleeDuration
-            val effectiveHitTime = action.hitTime ?: data.meleeDamageTime
-            require(effectiveHitTime <= effectiveDuration) {
-                "MeleeActions[$index] resolves at HitTime=$effectiveHitTime but the swing only lasts " +
-                        "Duration=$effectiveDuration ticks; it would never hit"
+            for (hitTime in hitTimes.ifEmpty { listOf(data.meleeDamageTime) }) {
+                require(hitTime <= effectiveDuration) {
+                    "MeleeActions[$index] resolves at HitTime=$hitTime but the swing only lasts " +
+                            "Duration=$effectiveDuration ticks; it would never hit"
+                }
             }
 
             // 动画候选链：空候选会拼出一个毫无意义的名字，只能靠运行时日志发现，这里提前拦掉。

@@ -216,6 +216,11 @@ data class MeleeAttackMessage(
                 ModDamageTypes.causeGunMeleeDamage(level.registryAccess(), attacker, attacker)
             }
 
+            // 多段出伤（`HitTime` 写了数组）：原版无敌帧会吞掉隔了几 tick 的后续段，先清掉
+            if (action.hitTimes.size > 1 && target is LivingEntity) {
+                target.invulnerableTime = 0
+            }
+
             val currentHealth = (target as? LivingEntity)?.health ?: 0.0F
             val canHurt = hurtWithBypass(target, damageSource, damage, action.bypassesArmor)
 

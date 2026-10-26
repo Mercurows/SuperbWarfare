@@ -1,6 +1,5 @@
 {
   "Type": "shock",
-  "Duration": 60,
-  "Amplifier": 0,
-  "Cooldown": 100
+  "Duration": 25,
+  "Amplifier": 0
 }

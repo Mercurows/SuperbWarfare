@@ -1,0 +1,98 @@
+{
+  "GunType": "Special",
+  "Icon": "superbwarfare:textures/gun_icon/electric_baton_icon.png",
+  "ArmPose": "Item",
+  "RightClickAction": "HeavyStrike",
+  "Projectile": "@melee",
+  "ProjectileAmount": 0,
+  "AmmoType": "Infinity",
+  "MeleeDamage": 7,
+  "MeleeHeadshot": 1.5,
+  "MeleeLegshot": 0.75,
+  "MaxDurability": 1114,
+  "MeleeHitbox": {
+    "Type": "Box",
+    "Range": 1.0,
+    "Width": 1.2,
+    "Height": 1.0,
+    "YOffset": 0,
+    "Occlusion": true
+  },
+  "MeleeActions": [
+    {
+      "Animation": "melee_1",
+      "Duration": 11,
+      "HitTime": 3,
+      "Effects": [
+        "superbwarfare:concussive_strike"
+      ],
+      "Hitbox": {
+        "Type": "Box",
+        "Range": 1.2,
+        "Width": 1.2,
+        "Height": 1.0,
+        "YOffset": 0,
+        "Occlusion": true
+      }
+    },
+    {
+      "Animation": "melee_2",
+      "Duration": 11,
+      "HitTime": 5,
+      "Effects": [
+        "superbwarfare:concussive_strike"
+      ],
+      "Hitbox": {
+        "Type": "Box",
+        "Range": 0.8,
+        "Width": 2.2,
+        "Height": 0.8,
+        "YOffset": 0,
+        "Occlusion": true
+      }
+    },
+    {
+      "Animation": "melee_3",
+      "Duration": 11,
+      "HitTime": 4,
+      "DamageMultiplier": 1.15,
+      "Effects": [
+        "superbwarfare:concussive_strike"
+      ]
+    },
+    {
+      "Animation": "melee_heavy",
+      "Duration": 41,
+      "HitTime": [
+        7,
+        11,
+        15,
+        19,
+        23,
+        27
+      ],
+      "Hitbox": {
+        "Type": "Box",
+        "Range": 0.8,
+        "Width": 2.2,
+        "Height": 0.8,
+        "YOffset": 0,
+        "Occlusion": true
+      },
+      "Heavy": true,
+      "DamageMultiplier": 0.5,
+      "Effects": [
+        "superbwarfare:concussive_strike"
+      ]
+    }
+  ],
+  "MeleeSound": {
+    "Swing": "superbwarfare:empty"
+  },
+  "Weight": 2,
+  "DrawTime": 8,
+  "DefaultFireMode": "Semi",
+  "AvailableFireModes": [
+    "Semi"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "SlotIcon": "superbwarfare:textures/item/electric_baton_icon.png",
+  "UseCustomSprintAnimation": true,
+  "Animation": {
+    "Idle": "animation.electric_baton.idle",
+    "Melee": "animation.electric_baton.melee_1",
+    "Run": "animation.electric_baton.sprint",
+    "Edit": "animation.electric_baton.edit"
+  },
+  "Model": {
+    "Animation": "superbwarfare:animations/bedrock/gun/electric_baton.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/electric_baton.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/electric_baton.png"
+  },
+  "ItemDisplay": {
+    "firstperson_righthand": {
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "firstperson_lefthand": {
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "thirdperson_righthand": {
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "thirdperson_lefthand": {
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "ground": {
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "fixed": {
+      "scale": [1.0, 1.0, 1.0]
+    }
+  }
+}
