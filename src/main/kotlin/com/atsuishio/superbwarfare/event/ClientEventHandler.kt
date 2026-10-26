@@ -1717,6 +1717,7 @@ object ClientEventHandler {
         }
         // 动作锁计时：只要有活跃的动作状态就推进（帧率无关，每客户端 tick 一次）
         val gunData = if (GunItem.isHeldWeapon(stack)) GunData.from(stack) else null
+        GunActionLock.updateHeld(gunData)
         val actionState = gunData?.let { GunActionLock.of(it) }
         actionState?.tick()
 

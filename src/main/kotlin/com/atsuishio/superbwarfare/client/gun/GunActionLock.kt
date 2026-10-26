@@ -81,7 +81,7 @@ object GunActionLock {
                     player.isAlive && !player.isRemoved && !player.isSpectator
 
         /** 距离上一次近战结束过了多少 tick（用于 `MeleeComboReset` 窗口判定） */
-        var sinceLastMelee: Int = 0
+        var sinceLastMelee: Int = Int.MAX_VALUE
 
         /** 当前是否被 [action] 占用 */
         fun isBusy(action: GunAction = activeAction): Boolean =
@@ -117,6 +117,12 @@ object GunActionLock {
         fun clear() {
             activeAction = GunAction.NONE
             actionTicks = 0
+            cancelMelee()
+        }
+
+        /** 切走武器时取消挥击和连招，不影响换弹/拉栓等其它动作锁。 */
+        fun cancelMelee() {
+            release(GunAction.MELEE)
             meleeTicks = 0
             meleeActionIndex = 0
             meleeDuration = 0
@@ -126,7 +132,7 @@ object GunActionLock {
             meleeChargeTarget = null
             meleeOwner = null
             meleeLevel = null
-            sinceLastMelee = 0
+            sinceLastMelee = Int.MAX_VALUE
         }
 
         fun tick() {
@@ -156,6 +162,16 @@ object GunActionLock {
 
     private val states = WeakHashMap<GunData, State>()
     private val uuidStates = WeakHashMap<UUID, State>()
+    private var heldState: State? = null
+
+    /** 必须在推进当前主手的计时/结算前调用，空手和非枪械也要传入 null。 */
+    fun updateHeld(data: GunData?) {
+        val state = data?.let { of(it) }
+        if (heldState !== state) {
+            heldState?.cancelMelee()
+            heldState = state
+        }
+    }
 
     /** 取（或新建）这把枪的本地状态 */
     @JvmStatic
@@ -172,6 +188,8 @@ object GunActionLock {
 
     @JvmStatic
     fun clearAll() {
+        heldState?.clear()
+        heldState = null
         states.values.forEach(State::clear)
         uuidStates.values.forEach(State::clear)
         states.clear()
