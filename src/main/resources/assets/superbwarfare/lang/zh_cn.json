@@ -1491,6 +1491,8 @@
   "screen.superbwarfare.weapon_edit.offset": "偏移",
   "screen.superbwarfare.weapon_edit.reset": "重置",
   "screen.superbwarfare.weapon_edit.confirm": "应用设置",
+  "screen.superbwarfare.weapon_edit.skin": "皮肤",
+  "screen.superbwarfare.weapon_edit.switch_skin": "切换配件皮肤",
   "screen.superbwarfare.weapon_edit.stats.show": "显示武器属性",
   "screen.superbwarfare.weapon_edit.stats.hide": "隐藏武器属性",
   "screen.superbwarfare.weapon_edit.stats.title": "武器属性",

@@ -27,6 +27,10 @@
                 <texture src="superbwarfare:textures/overlay/edit/remove_attachment.png" />
             </div>
             <div id="panel-slot"></div>
+            <div id="panel-skin-control">
+                <div id="panel-skin-label"></div>
+                <select id="panel-skin"></select>
+            </div>
         </div>
         <!-- AUI 原生 overflow / scrollbar；Kotlin 复用可见区域附近的格子，保留完整列表滚动高度。 -->
         <div id="panel-list">
@@ -188,13 +192,50 @@
     #panel-uninstall > texture { width: 14px; height: 14px; pointer-events: none; }
     #panel-uninstall:hover { opacity: 0.75; }
     #panel-uninstall.disabled { opacity: 0.35; pointer-events: none; }
-    #panel-slot { position: absolute; left: 18px; top: 22px; width: 150px; font-size: 8px; color: #d0d0d0; }
+    #panel-slot, #panel-skin-label {
+        font-size: 8px; line-height: 8px; font-weight: normal; color: #d0d0d0;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    #panel-slot { position: absolute; left: 18px; top: 22px; width: 150px; height: 8px; }
+    #panel-skin-control {
+        position: absolute; right: 0; top: 19px; display: none; width: 82px; height: 14px;
+        align-items: center; gap: 3px;
+    }
+    /* 与槽位名同为 header 内 top:22px，避免 flex 居中造成文字基线错位。 */
+    #panel-skin-label { position: absolute; left: 0; top: 3px; width: 16px; height: 8px; }
+    #panel-skin {
+        position: absolute; left: 19px; top: 0; display: block; box-sizing: border-box; width: 63px; height: 14px;
+        margin: 0; padding: 0 2px; border: 0.5px solid #bdbdbd; border-radius: 0;
+        background: rgba(0, 0, 0, 0.55); color: #ffffff; font-size: 8px; line-height: 8px;
+        font-weight: normal; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        pointer-events: auto; cursor: pointer;
+    }
+    #panel-skin:hover, #panel-skin:focus { border-color: #ffb43b; }
+    /* AUI 原生 select 弹层挂在 body 下，并用内联样式绘制默认亮色主题。
+       此页面只有皮肤选择器，使用 !important 统一弹层及动态高亮的外观。 */
+    .aui-select-popup {
+        /* 覆盖原生弹层的 80px 最小宽度，与上方 #panel-skin 的外框同宽。 */
+        width: 63px !important;
+        background: #16191e !important; color: #ffffff !important;
+        border: 0.5px solid #bdbdbd !important; border-radius: 0 !important;
+        padding: 0 !important; box-shadow: none !important;
+        scrollbar-width: 3px; scrollbar-color: #bdbdbd #16191e;
+    }
+    .aui-select-option {
+        height: 14px !important; min-height: 14px !important; padding: 0 3px !important;
+        font-size: 8px !important; line-height: 8px !important;
+        color: #ffffff !important; background-color: #16191e !important;
+    }
+    .aui-select-option[aria-selected="true"], .aui-select-option:hover {
+        color: #16191e !important; background-color: #ffb43b !important;
+    }
     #panel-list {
         position: absolute; left: 5px; top: 44px; width: 168px; height: 62px;
     }
     #panel-scroll {
         position: absolute; left: 0; top: 0; width: 168px; height: 62px;
-        box-sizing: border-box; border-top: 1px solid #ffffff; padding-top: 5px;
+        /* 分隔线由 Kotlin 独立绘制；透明边框保留原来的滚动布局。 */
+        box-sizing: border-box; border-top: 1px solid transparent; padding-top: 5px;
         overflow-x: hidden; overflow-y: auto; scrollbar-gutter: stable;
         scrollbar-width: 6px; scrollbar-color: #ffffff rgba(0, 0, 0, 0.55);
     }

@@ -16,6 +16,7 @@ import com.atsuishio.superbwarfare.item.attachment.AttachmentProvider
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.network.message.send.AttachmentAdjustMessage
 import com.atsuishio.superbwarfare.network.message.send.AttachmentInstallMessage
+import com.atsuishio.superbwarfare.network.message.send.AttachmentSkinMessage
 import com.atsuishio.superbwarfare.network.message.send.EditMessage
 import com.atsuishio.superbwarfare.tools.BoneScreenPoint
 import com.atsuishio.superbwarfare.tools.localPlayer
@@ -23,6 +24,7 @@ import com.atsuishio.superbwarfare.tools.sendPacketToServer
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.VertexConsumer
 import com.sighs.apricityui.element.Input
+import com.sighs.apricityui.element.Select
 import com.sighs.apricityui.event.Event
 import com.sighs.apricityui.event.KeyEvent
 import com.sighs.apricityui.event.MouseEvent
@@ -68,6 +70,9 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     private var panelIds: List<ResourceLocation> = emptyList()
     private var panelType: AttachmentType? = null
     private var panelInstalled: ResourceLocation? = null
+    private var panelSkinTarget: AttachmentSkinMessage? = null
+    private var panelSkins: List<AttachmentSkinInfo> = emptyList()
+    private var panelSkin: String? = null
     private val gridRows = mutableListOf<GridRow>()
     private val gridWindow = RecyclingRowWindow(GRID_WINDOW_ROWS)
     private var gridSelected: ResourceLocation? = null
@@ -127,6 +132,9 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         panelIds = emptyList()
         panelType = null
         panelInstalled = null
+        panelSkinTarget = null
+        panelSkins = emptyList()
+        panelSkin = null
         gridRows.clear()
         gridWindow.reset()
         gridSelected = null
@@ -186,7 +194,12 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         drawDecorationPass(graphics, doc, false) { vertices, matrix ->
             for ((mount, target) in connectors.values) drawConnector(vertices, matrix, mount, target)
             val scale = editorPanelScale()
-            panel?.let { drawPanelBackground(vertices, matrix, it, scale, 0xc20f1115.toInt()) }
+            panel?.let {
+                drawPanelBackground(vertices, matrix, it, scale, 0xc20f1115.toInt())
+                // 与设置分隔线一样独立绘制，不依赖滚动容器或按钮悬停触发 AUI 边框批次。
+                drawQuad(vertices, matrix, it.left + 6f * scale, it.top + 45f * scale,
+                    it.left + 174f * scale, it.top + 46f * scale, -1)
+            }
             settings?.let {
                 drawPanelBackground(vertices, matrix, it, scale, 0x8c0f1115.toInt())
                 drawQuad(vertices, matrix, it.left + 5f * scale, it.top + 23f * scale,
@@ -209,6 +222,11 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     override fun mouseScrolled(mouseX: Double, mouseY: Double, horizontalScroll: Double, delta: Double): Boolean = true
 
     override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
+        val skinSelect = linkedDocument?.getElementById("panel-skin") as? Select
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE && skinSelect?.isPopupOpen == true) {
+            skinSelect.closePopup()
+            return true
+        }
         if (keyCode == ModKeyMappings.EDIT_MODE.key.value && !settingsTextInputs().any { it.isFocus }) {
             onClose()
             return true
@@ -221,6 +239,8 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     }
 
     private fun leaveSlot() {
+        (linkedDocument?.getElementById("panel-skin") as? Select)?.closePopup()
+        panelSkinTarget = null
         discardAdjustments()
         editingAttachmentType = -1
         hoveredItem = null
@@ -230,6 +250,8 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         clearUiState()
         documentGeneration = doc.refreshGeneration
         doc.addEventListener("wheel", { event ->
+            // 原生 select 的顶层弹出列表自行处理滚动，不交给底下的配件列表。
+            if (event.composedPath().any { (it as? Element)?.classList?.contains("aui-select-popup") == true }) return@addEventListener
             val scroll = doc.getElementById("panel-scroll")
             val list = doc.getElementById("panel-list")
             val statsScroll = doc.getElementById("stats-scroll")
@@ -281,6 +303,19 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             name.addEventListener("mouseleave") { hoveredItem = null }
         }
         doc.getElementById("panel-empty")?.textContent = label("no_available")
+        doc.getElementById("panel-skin-label")?.textContent = label("skin")
+        doc.getElementById("panel-skin")?.let { select ->
+            select.setAttribute("title", label("switch_skin"))
+            select.setAttribute("aria-label", label("switch_skin"))
+            select.addEventListener("change") {
+                val target = panelSkinTarget ?: return@addEventListener
+                if (AttachmentSlots.slotAt(editingAttachmentType)?.attachmentName != target.slot) return@addEventListener
+                val skinId = select.getValue()
+                if (skinId != AttachmentDefinition.DEFAULT_SKIN_ID && panelSkins.none { it.id == skinId }) return@addEventListener
+                hoveredItem = null
+                sendPacketToServer(target.copy(skinId = skinId))
+            }
+        }
         doc.getElementById("settings-title")?.textContent = label("settings")
         doc.getElementById("settings-reset")?.let { reset ->
             reset.setAttribute("title", label("reset"))
@@ -664,6 +699,8 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         val type = AttachmentSlots.slotAt(editingAttachmentType)
         val mount = mounts.firstOrNull { it.type == type && type != null }
         if (type == null || mount == null) {
+            (doc.getElementById("panel-skin") as? Select)?.closePopup()
+            panelSkinTarget = null
             setStyle(panel, "display", "none")
             if (panelType != null) hoveredItem = null
             panelType = null
@@ -685,6 +722,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             doc.getElementById("panel-uninstall")?.let { setClass(it, "disabled", installed == null) }
             panelInstalled = installed
         }
+        syncAttachmentSkins(doc, player, data, type, installed)
         val ids = installableAttachments(player, data, type)
         if (changedSlot || panelIds !== ids) {
             panelIds = ids
@@ -707,6 +745,47 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         place(panel, bounds, scale)
         connect("panel", mount.bounds, bounds)
         return bounds
+    }
+
+    private fun syncAttachmentSkins(doc: Document, player: Player, data: GunData, type: AttachmentType, installed: ResourceLocation?) {
+        val select = doc.getElementById("panel-skin") as? Select ?: return
+        val definition = installed?.let(AttachmentDefinition::from)
+        val skins = definition?.skins.orEmpty()
+        val available = skins.any { it.id.isNotBlank() && it.id != AttachmentDefinition.DEFAULT_SKIN_ID }
+        setStyle(doc.getElementById("panel-skin-control"), "display", if (available) "flex" else "none")
+        setStyle(doc.getElementById("panel-slot"), "width", if (available) "64px" else "150px")
+        if (!available || installed == null) {
+            select.closePopup()
+            panelSkinTarget = null
+            panelSkin = null
+            return
+        }
+        val target = AttachmentSkinMessage(data.getDefault().itemId, data.uuid?.toString(),
+            player.inventory.selected, type.attachmentName, installed.toString(), "")
+        val changed = panelSkinTarget != target || panelSkins !== skins
+        if (changed) {
+            select.closePopup()
+            panelSkinTarget = target
+            panelSkins = skins
+            panelSkin = null
+            select.innerHTML = ""
+            fun option(id: String, name: String) {
+                // 用 DOM API 写入数据包中的 id/名称，避免把名称解析为 HTML。
+                val element = doc.createElement("option")
+                element.setAttribute("value", id)
+                element.textContent = name
+                select.appendChild(element)
+            }
+            option(AttachmentDefinition.DEFAULT_SKIN_ID, AttachmentDefinition.DEFAULT_SKIN_ID)
+            skins.distinctBy { it.id }.filter { it.id.isNotBlank() && it.id != AttachmentDefinition.DEFAULT_SKIN_ID }.forEach {
+                option(it.id, Component.translatable(it.name.ifBlank { it.id }).string)
+            }
+        }
+        val current = definition?.skinOrNull(data, type)?.id ?: AttachmentDefinition.DEFAULT_SKIN_ID
+        if (panelSkin != current) {
+            select.setValue(current)
+            panelSkin = current
+        }
     }
 
     private data class GridCell(val key: String, val element: Element, val item: AuiItem)
