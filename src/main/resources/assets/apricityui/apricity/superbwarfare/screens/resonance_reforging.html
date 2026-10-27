@@ -13,105 +13,114 @@
     <div class="frame">
         <div class="corner top-left"></div><div class="corner top-right"></div>
         <div class="corner bottom-left"></div><div class="corner bottom-right"></div>
-        <button type="button" class="back-to-weapons" id="back-to-weapons">返回武器列表</button>
+        <button type="button" class="back-to-weapons" id="back-to-weapons"><translation>container.superbwarfare.reforging_table.back_to_weapons</translation></button>
         <div class="heading">
             <div class="weapon-emblem">
-                <div class="emblem-diamond"></div><div class="emblem-cross horizontal"></div><div class="emblem-cross vertical"></div>
+                <texture class="reforge-emblem" src="superbwarfare:textures/overlay/reforging_table/reforge_icon.png"></texture>
                 <div class="weapon-icon"><sbw-reforging-weapon id="reforging-weapon-icon"></sbw-reforging-weapon></div>
             </div>
-            <div class="weapon-title"><div class="eyebrow">重塑武器</div><div class="weapon-name" id="weapon-name">—</div><div class="weapon-type">武器重塑</div></div>
+            <div class="weapon-title"><div class="eyebrow"><translation>container.superbwarfare.reforging_table.reforge_weapon</translation></div><div class="weapon-name" id="weapon-name">—</div><div class="weapon-type" id="weapon-type">—</div></div>
         </div>
 
-        <div class="perk-band">
-            <div class="perk-group group-ammo">
-                <div class="group-title">Ammo Perk</div>
-                <div class="perk-row">
-                    <button type="button" class="arrow previous" id="page-Ammo-previous"><span></span></button>
-                    <div class="perk-slots" id="slots-Ammo"></div>
-                    <button type="button" class="arrow next" id="page-Ammo-next"><span></span></button>
+        <div class="weapon-description" id="weapon-description"></div>
+        <div class="reforging-controls">
+            <div class="perk-band">
+                <div class="perk-group group-ammo">
+                    <div class="group-title"><translation>perk.superbwarfare.slot_Ammo</translation></div>
+                    <div class="perk-row">
+                        <button type="button" class="page-arrow slot-page-arrow previous" id="page-Ammo-previous"><svg class="page-triangle triangle-enabled" viewBox="0 0 10 14"><path d="M9 1 L1 7 L9 13 Z" fill="#e1e4e9"></path></svg><svg class="page-triangle triangle-disabled" viewBox="0 0 10 14"><path d="M9 1 L1 7 L9 13 Z" fill="#70737a"></path></svg></button>
+                        <div class="perk-slots" id="slots-Ammo"></div>
+                        <button type="button" class="page-arrow slot-page-arrow next" id="page-Ammo-next"><svg class="page-triangle triangle-enabled" viewBox="0 0 10 14"><path d="M1 1 L9 7 L1 13 Z" fill="#e1e4e9"></path></svg><svg class="page-triangle triangle-disabled" viewBox="0 0 10 14"><path d="M1 1 L9 7 L1 13 Z" fill="#70737a"></path></svg></button>
+                    </div>
+                    <div class="page-indicators slot-page-indicators" id="page-indicators-Ammo"></div>
                 </div>
-                <div class="pagination"><div class="page-label" id="page-label-Ammo">1 / 1</div></div>
-            </div>
-            <div class="perk-group group-functional">
-                <div class="group-title">Functional Perk</div>
-                <div class="perk-row">
-                    <button type="button" class="arrow previous" id="page-Functional-previous"><span></span></button>
-                    <div class="perk-slots" id="slots-Functional"></div>
-                    <button type="button" class="arrow next" id="page-Functional-next"><span></span></button>
+                <div class="perk-group group-functional">
+                    <div class="group-title"><translation>perk.superbwarfare.slot_Functional</translation></div>
+                    <div class="perk-row">
+                        <button type="button" class="page-arrow slot-page-arrow previous" id="page-Functional-previous"><svg class="page-triangle triangle-enabled" viewBox="0 0 10 14"><path d="M9 1 L1 7 L9 13 Z" fill="#e1e4e9"></path></svg><svg class="page-triangle triangle-disabled" viewBox="0 0 10 14"><path d="M9 1 L1 7 L9 13 Z" fill="#70737a"></path></svg></button>
+                        <div class="perk-slots" id="slots-Functional"></div>
+                        <button type="button" class="page-arrow slot-page-arrow next" id="page-Functional-next"><svg class="page-triangle triangle-enabled" viewBox="0 0 10 14"><path d="M1 1 L9 7 L1 13 Z" fill="#e1e4e9"></path></svg><svg class="page-triangle triangle-disabled" viewBox="0 0 10 14"><path d="M1 1 L9 7 L1 13 Z" fill="#70737a"></path></svg></button>
+                    </div>
+                    <div class="page-indicators slot-page-indicators" id="page-indicators-Functional"></div>
                 </div>
-                <div class="pagination"><div class="page-label" id="page-label-Functional">1 / 1</div></div>
-            </div>
-            <div class="perk-group group-damage">
-                <div class="group-title">Damage Perk</div>
-                <div class="perk-row">
-                    <button type="button" class="arrow previous" id="page-Damage-previous"><span></span></button>
-                    <div class="perk-slots" id="slots-Damage"></div>
-                    <button type="button" class="arrow next" id="page-Damage-next"><span></span></button>
+                <div class="perk-group group-damage">
+                    <div class="group-title"><translation>perk.superbwarfare.slot_Damage</translation></div>
+                    <div class="perk-row">
+                        <button type="button" class="page-arrow slot-page-arrow previous" id="page-Damage-previous"><svg class="page-triangle triangle-enabled" viewBox="0 0 10 14"><path d="M9 1 L1 7 L9 13 Z" fill="#e1e4e9"></path></svg><svg class="page-triangle triangle-disabled" viewBox="0 0 10 14"><path d="M9 1 L1 7 L9 13 Z" fill="#70737a"></path></svg></button>
+                        <div class="perk-slots" id="slots-Damage"></div>
+                        <button type="button" class="page-arrow slot-page-arrow next" id="page-Damage-next"><svg class="page-triangle triangle-enabled" viewBox="0 0 10 14"><path d="M1 1 L9 7 L1 13 Z" fill="#e1e4e9"></path></svg><svg class="page-triangle triangle-disabled" viewBox="0 0 10 14"><path d="M1 1 L9 7 L1 13 Z" fill="#70737a"></path></svg></button>
+                    </div>
+                    <div class="page-indicators slot-page-indicators" id="page-indicators-Damage"></div>
                 </div>
-                <div class="pagination"><div class="page-label" id="page-label-Damage">1 / 1</div></div>
+                <button type="button" class="output-preview" id="complete-reforging" disabled>
+                    <sbw-reforging-weapon id="reforging-output-icon"></sbw-reforging-weapon><span id="complete-label"><translation>container.superbwarfare.reforging_table.complete</translation></span>
+                </button>
             </div>
-            <button type="button" class="output-preview" id="complete-reforging" disabled>
-                <sbw-reforging-weapon id="reforging-output-icon"></sbw-reforging-weapon><span id="complete-label">完成</span>
+
+            <button type="button" class="reset-perks" id="reset-perks">
+                <svg class="reset-ring" viewBox="0 0 64 64">
+                    <circle cx="32" cy="32" r="29" fill="none" stroke="#606267" stroke-width="1"></circle>
+                    <circle cx="32" cy="32" r="26" fill="none" stroke="#72757b" stroke-width="4"></circle>
+                    <path id="reset-ring-progress" d="" fill="none" stroke="#f2f2f4" stroke-width="4" stroke-linecap="round"></path>
+                </svg>
+                <span class="reset-copy"><span><translation>container.superbwarfare.reforging_table.reset</translation></span><span class="reset-hint"><translation>container.superbwarfare.reforging_table.hold</translation></span></span>
             </button>
+            <div class="choices-panel" id="perk-choices-panel">
+                <div class="choices-card">
+                    <div class="perk-choice-list" id="perk-choices"></div>
+                    <div class="page-indicators choice-page-indicators" id="choice-page-indicators"></div>
+                </div>
+                <button type="button" class="page-arrow choice-page-arrow previous" id="choice-previous">
+                    <svg class="page-triangle triangle-enabled" viewBox="0 0 10 14"><path d="M9 1 L1 7 L9 13 Z" fill="#e1e4e9"></path></svg>
+                    <svg class="page-triangle triangle-disabled" viewBox="0 0 10 14"><path d="M9 1 L1 7 L9 13 Z" fill="#70737a"></path></svg>
+                </button>
+                <button type="button" class="page-arrow choice-page-arrow next" id="choice-next">
+                    <svg class="page-triangle triangle-enabled" viewBox="0 0 10 14"><path d="M1 1 L9 7 L1 13 Z" fill="#e1e4e9"></path></svg>
+                    <svg class="page-triangle triangle-disabled" viewBox="0 0 10 14"><path d="M1 1 L9 7 L1 13 Z" fill="#70737a"></path></svg>
+                </button>
+            </div>
         </div>
-
-        <button type="button" class="reset-perks" id="reset-perks" aria-label="长按完全重置">
-            <svg class="reset-ring" viewBox="0 0 64 64">
-                <circle cx="32" cy="32" r="29" fill="none" stroke="#606267" stroke-width="1"></circle>
-                <circle cx="32" cy="32" r="26" fill="none" stroke="#72757b" stroke-width="4"></circle>
-                <path id="reset-ring-progress" d="" fill="none" stroke="#f2f2f4" stroke-width="4" stroke-linecap="round"></path>
-            </svg>
-            <span class="reset-copy"><span>完全重置</span><span class="reset-hint">长按</span></span>
-        </button>
-        <div class="choices-panel" id="perk-choices-panel">
-            <div class="panel-pointer"></div>
-            <div class="panel-heading"><span>可用Perk</span><span id="selected-perk-name">空槽位</span></div>
-            <div class="perk-choice-list" id="perk-choices"></div>
-            <button type="button" class="unequip" id="remove-perk">卸下当前 Perk</button>
-            <div class="choice-navigation"><button type="button" id="choice-previous">‹</button><span id="choice-page-label">1 / 1</span><button type="button" id="choice-next">›</button></div>
-        </div>
-        <div class="reforging-status" id="reforging-status"></div>
 
         <div class="stats">
-            <div class="stat"><span class="stat-label">伤害</span>
+            <div class="stat"><span class="stat-label"><translation>prop.superbwarfare.damage</translation></span>
                 <div class="stat-track"><div class="stat-common" id="stat-bar-damage"></div><div class="stat-change" id="stat-change-damage"></div></div>
                 <span class="stat-value" id="stat-value-damage">—</span><span class="stat-delta" id="stat-delta-damage"></span>
             </div>
-            <div class="stat"><span class="stat-label">爆头倍率</span>
+            <div class="stat"><span class="stat-label"><translation>prop.superbwarfare.headshot</translation></span>
                 <div class="stat-track"><div class="stat-common" id="stat-bar-headshot"></div><div class="stat-change" id="stat-change-headshot"></div></div>
                 <span class="stat-value" id="stat-value-headshot">—</span><span class="stat-delta" id="stat-delta-headshot"></span>
             </div>
-            <div class="stat"><span class="stat-label">竖直后坐力</span>
+            <div class="stat"><span class="stat-label"><translation>prop.superbwarfare.recoil_x</translation></span>
                 <div class="stat-track"><div class="stat-common" id="stat-bar-recoil_x"></div><div class="stat-change" id="stat-change-recoil_x"></div></div>
                 <span class="stat-value" id="stat-value-recoil_x">—</span><span class="stat-delta" id="stat-delta-recoil_x"></span>
             </div>
-            <div class="stat"><span class="stat-label">水平后坐力</span>
+            <div class="stat"><span class="stat-label"><translation>prop.superbwarfare.recoil_y</translation></span>
                 <div class="stat-track"><div class="stat-common" id="stat-bar-recoil_y"></div><div class="stat-change" id="stat-change-recoil_y"></div></div>
                 <span class="stat-value" id="stat-value-recoil_y">—</span><span class="stat-delta" id="stat-delta-recoil_y"></span>
             </div>
-            <div class="stat"><span class="stat-label">散布</span>
+            <div class="stat"><span class="stat-label"><translation>prop.superbwarfare.spread</translation></span>
                 <div class="stat-track"><div class="stat-common" id="stat-bar-spread"></div><div class="stat-change" id="stat-change-spread"></div></div>
                 <span class="stat-value" id="stat-value-spread">—</span><span class="stat-delta" id="stat-delta-spread"></span>
             </div>
-            <div class="stat"><span class="stat-label">装填时间</span>
+            <div class="stat"><span class="stat-label"><translation>prop.superbwarfare.normal_reload_time</translation></span>
                 <div class="stat-track"><div class="stat-common" id="stat-bar-normal_reload_time"></div><div class="stat-change" id="stat-change-normal_reload_time"></div></div>
                 <span class="stat-value" id="stat-value-normal_reload_time">—</span><span class="stat-delta" id="stat-delta-normal_reload_time"></span>
             </div>
             <div class="stats-details">
-            <div class="stat-detail"><span class="stat-label">每分钟发射数</span>
+            <div class="stat-detail"><span class="stat-label"><translation>prop.superbwarfare.rpm</translation></span>
                 <span class="stat-value" id="stat-value-rpm">—</span><span class="stat-delta" id="stat-delta-rpm"></span>
             </div>
-            <div class="stat-detail"><span class="stat-label">弹匣</span>
+            <div class="stat-detail"><span class="stat-label"><translation>prop.superbwarfare.magazine</translation></span>
                 <span class="stat-value" id="stat-value-magazine">—</span><span class="stat-delta" id="stat-delta-magazine"></span>
             </div>
             </div>
         </div>
 
-        <div class="upgrade-points"><span class="upgrade-number" id="weapon-upgrade-points">—</span><span class="upgrade-label">升级点数</span></div>
+        <div class="upgrade-points"><span class="upgrade-number" id="weapon-upgrade-points">—</span><span class="upgrade-label"><translation>container.superbwarfare.reforging_table.upgrade_points</translation></span></div>
 
         <div class="level">
             <div class="level-track"><div id="weapon-exp-fill"></div></div>
-            <div class="level-meta"><span id="weapon-level">等级 —</span><div class="manufactured">制造日期 —</div></div>
+            <div class="level-meta"><span id="weapon-level"><translation>des.superbwarfare.guns.level</translation>—</span><div class="manufactured"><translation>container.superbwarfare.reforging_table.manufacture_date</translation> —</div></div>
             <div class="weapon-experience" id="weapon-experience">— EXP</div>
         </div>
     </div>

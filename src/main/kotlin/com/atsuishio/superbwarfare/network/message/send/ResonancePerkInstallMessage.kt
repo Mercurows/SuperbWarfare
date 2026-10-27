@@ -6,9 +6,7 @@ import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
 import com.atsuishio.superbwarfare.network.ServerPacketPayload
-import com.atsuishio.superbwarfare.network.message.receive.ResonancePerkInstallResultMessage
 import com.atsuishio.superbwarfare.perk.Perk
-import com.atsuishio.superbwarfare.tools.sendPacketTo
 import kotlinx.serialization.Serializable
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
@@ -18,7 +16,6 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.phys.Vec3
 
 /** One atomic installation: validate the table, weapon identity, compatibility and all costs first. */
-// TODO 换成正确的翻译字段提示
 @RegisterPacket
 @Serializable
 data class ResonancePerkInstallMessage(
@@ -29,27 +26,21 @@ data class ResonancePerkInstallMessage(
     val ammo: List<String>,
     val functional: List<String>,
     val damage: List<String>,
-    val requestId: Long,
 ) : ServerPacketPayload() {
     override fun PayloadContext.handler() {
         val player = sender()
-        fun reply(success: Boolean, message: String) =
-            sendPacketTo(player, ResonancePerkInstallResultMessage(requestId, success, message))
-
         val pos = BlockPos.of(tablePos)
         val level = player.level()
         if (!player.isAlive || player.isSpectator || !level.hasChunkAt(pos) || player.distanceToSqr(Vec3.atCenterOf(pos)) > 64.0
             || !level.getBlockState(pos).`is`(ModBlocks.REFORGING_TABLE.get())
             || !level.getBlockState(pos.below()).`is`(ModBlocks.RESONANCE_BASE.get())) {
-            reply(false, "请靠近有效的共振重塑台")
             return
         }
-        if (inventorySlot !in player.inventory.items.indices) { reply(false, "武器背包格无效"); return }
+        if (inventorySlot !in player.inventory.items.indices) return
         val stack = player.inventory.getItem(inventorySlot)
-        if (stack.isEmpty || stack.item !is GunItem) { reply(false, "武器已不在原背包格中"); return }
+        if (stack.isEmpty || stack.item !is GunItem) return
         val data = GunData.from(stack)
         if (weaponUuid.isBlank() || data.uuid?.toString() != weaponUuid || signature(data) != expectedPerks) {
-            reply(false, "武器数据已变化，请重新选择 Perk")
             return
         }
         val requested = mapOf(Perk.Type.AMMO to ammo, Perk.Type.FUNCTIONAL to functional, Perk.Type.DAMAGE to damage)
@@ -62,7 +53,7 @@ data class ResonancePerkInstallMessage(
             val current = installed.getValue(type).map { it.perk }
             val allowed = data.availablePerks().filter { it.type == type }
             val change = planChange(current.map { it.name }, names, allowed.map { it.name }.toSet())
-                ?: run { reply(false, "Perk 槽位数据无效或武器不支持所选 Perk"); return }
+                ?: return
             val byName = (current + allowed).associateBy { it.name }
             val next = names.map { byName.getValue(it) }
             selections[type] = next
@@ -76,7 +67,7 @@ data class ResonancePerkInstallMessage(
         val available = player.inventory.items.filter { !it.isEmpty }.groupingBy { it.item }
             .fold(0) { count, item -> count + item.count }
         if (costs.any { (item, count) -> (available[item] ?: 0) < count }) {
-            reply(false, "背包中的 Perk 物品不足"); return
+            return
         }
         val result = stack.copy()
         applySelection(GunData.from(result), selections)
@@ -92,7 +83,6 @@ data class ResonancePerkInstallMessage(
         player.inventory.setChanged()
         player.inventoryMenu.broadcastChanges()
         if (player.containerMenu !== player.inventoryMenu) player.containerMenu.broadcastChanges()
-        reply(true, "Perk 安装完成")
     }
 
     companion object {

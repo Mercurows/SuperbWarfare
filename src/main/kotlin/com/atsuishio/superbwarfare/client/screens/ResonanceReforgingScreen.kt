@@ -5,21 +5,27 @@ import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.network.message.send.ResonancePerkInstallMessage
 import com.atsuishio.superbwarfare.perk.Perk
+import com.atsuishio.superbwarfare.resource.gun.GunResource
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.mc
 import com.atsuishio.superbwarfare.tools.sendPacketToServer
+import com.mojang.blaze3d.systems.RenderSystem
 import com.sighs.apricityui.event.MouseEvent
 import com.sighs.apricityui.init.Document
 import com.sighs.apricityui.init.Element
-import com.sighs.apricityui.render.BodyRenderNodeProvider
-import com.sighs.apricityui.render.Drawer
-import com.sighs.apricityui.render.Rect
-import com.sighs.apricityui.render.RenderNode
+import com.sighs.apricityui.layout.Position
+import com.sighs.apricityui.parser.Color
+import com.sighs.apricityui.render.*
 import com.sighs.apricityui.screen.ApricityScreen
+import com.sighs.apricityui.style.Text
+import net.minecraft.client.StringSplitter
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.core.BlockPos
+import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.Style
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.TooltipFlag
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
 import org.lwjgl.glfw.GLFW
@@ -48,11 +54,14 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
     private var ownedPerks = emptyMap<Item, Int>()
     private var forceRefresh = true
     private var pending = false
-    private var pendingId = 0L
     private var pendingAt = 0L
-    private var status = ""
     private var resetHoldStartedAt = 0L
     private var resetProgressStep = -1
+    private val perkHoverTargets = linkedMapOf<String, Perk>()
+    private var tooltipPerk: Perk? = null
+    private var tooltipTitle = Text()
+    private var tooltipType = Text()
+    private var tooltipDescription = emptyList<Text>()
 
     override fun isPauseScreen() = false
 
@@ -66,9 +75,9 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
 
     override fun tick() {
         super.tick()
+        // Inventory synchronization clears pending on success; silently unlock retries after a rejected/lost request.
         if (pending && System.currentTimeMillis() - pendingAt > 10000) {
             pending = false
-            status = "提交超时，请检查武器数据后重试"
             forceRefresh = true
         }
         syncPage()
@@ -79,6 +88,7 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         if (doc != null && (!doc.isCurrentGeneration(documentGeneration) || forceRefresh)) syncPage()
         if (doc != null) updateResetHold(doc)
         super.render(graphics, mouseX, mouseY, partialTick)
+        if (doc != null && inventorySlot != null) renderPerkTooltip(graphics, doc)
     }
 
     override fun removed() {
@@ -90,15 +100,12 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         if (inventorySlot == null) super.onClose() else mc.setScreen(ResonanceReforgingScreen(tablePos))
     }
 
-    fun onInstallResult(requestId: Long, success: Boolean, message: String) {
-        if (pendingId != requestId) return
-        pending = false
-        status = message
-        if (success) {
-            draftReady = false
-            slotSelected = false
+    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
+        if (mc.options.keyInventory.matches(keyCode, scanCode)) {
+            onClose()
+            return true
         }
-        forceRefresh = true
+        return super.keyPressed(keyCode, scanCode, modifiers)
     }
 
     private fun syncPage() {
@@ -108,6 +115,8 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         if (rebuilt) {
             resetHoldStartedAt = 0L
             resetProgressStep = -1
+            perkHoverTargets.clear()
+            tooltipPerk = null
             documentGeneration = doc.refreshGeneration
             displayedWeapon = ItemStack.EMPTY
             forceRefresh = true
@@ -192,14 +201,6 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
             addEventListener("mouseleave") { cancelResetHold(doc) }
         }
         doc.addEventListener("mouseup", { cancelResetHold(doc) }, true)
-        doc.getElementById("remove-perk")?.addEventListener("click") {
-            if (!pending && activeSlot in draft.getValue(activeType).indices) {
-                draft.getValue(activeType).removeAt(activeSlot)
-                activeSlot = activeSlot.coerceAtMost(draft.getValue(activeType).size)
-                forceRefresh = true
-                status = "待确认：已卸下 Perk"
-            }
-        }
         for (step in listOf(-1, 1)) {
             val suffix = if (step < 0) "previous" else "next"
             doc.getElementById("choice-$suffix")?.addEventListener("click") {
@@ -218,7 +219,7 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         val signature = ResonancePerkInstallMessage.signature(baseline)
         if (!draftReady || signature != baselineSignature) {
             slotSelected = false
-            if (draftReady && signature != baselineSignature && !pending) status = "武器 Perk 已更新"
+            pending = false
             for (type in Perk.Type.entries) {
                 draft.getValue(type).apply { clear(); addAll(baseline.perk.getInstances(type).map { it.perk }) }
             }
@@ -226,13 +227,17 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
             draftReady = true
         }
         text(doc, "weapon-name", stack.hoverName.string)
+        text(doc, "weapon-description", GunResource.compute(stack).description.filterNot { it.hidden }
+            .joinToString(" ") { it.asComponent().string.replace('\n', ' ') })
+        text(doc, "weapon-type", Component.translatable("gun_type.superbwarfare." + baseline.get(GunProp.GUN_TYPE).name.lowercase(Locale.ROOT)).string)
         setDisplayItem(doc, "reforging-weapon-icon", stack)
         val level = baseline.level.get()
         val needed = 20.0 * level * level + 160.0 * level + 20.0
         val exp = baseline.exp.get().takeIf { it.isFinite() } ?: 0.0
-        text(doc, "weapon-level", "等级" + level)
-        text(doc, "weapon-experience", format(exp, 0) + " / " + format(needed, 0) + " EXP")
+        text(doc, "weapon-level", Component.translatable("des.superbwarfare.guns.level").append(level.toString()).string)
+        text(doc, "weapon-experience", translated("experience", format(exp, 0), format(needed, 0)))
         doc.getElementById("weapon-exp-fill")?.setInlineStyleProperty("width", ((exp / needed).coerceIn(0.0, 1.0) * 100).toString() + "%")
+        perkHoverTargets.clear()
         for (type in Perk.Type.entries) renderSlots(doc, baseline, type)
         doc.getElementById("perk-choices-panel")?.setInlineStyleProperty("display", if (slotSelected) "block" else "none")
         if (slotSelected) renderChoices(doc, baseline)
@@ -247,8 +252,6 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         val changed = hasChanges(baseline)
         doc.getElementById("complete-reforging")?.setAttribute("class", if (changed && !pending) "output-preview ready" else "output-preview")
         disable(doc, "complete-reforging", !changed || pending || weaponUuid == null)
-        text(doc, "complete-label", if (pending) "安装中…" else "完成")
-        text(doc, "reforging-status", if (pending) "正在由服务端确认安装…" else status)
     }
 
     private fun slotPages(type: Perk.Type) = maxOf(1, (draft.getValue(type).size + 3) / 3)
@@ -273,14 +276,17 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         }
         for (position in 0..2) {
             val index = page * 3 + position
-            entries.getOrNull(index)?.let { setDisplayItem(doc, "perk-icon-$key-$position", ItemStack(it.getItem().get())) }
+            entries.getOrNull(index)?.let {
+                setDisplayItem(doc, "perk-icon-$key-$position", ItemStack(it.getItem().get()))
+                perkHoverTargets["perk-slot-$key-$position"] = it
+            }
             doc.getElementById("perk-slot-$key-$position")?.addEventListener("click") {
                 if (!pending && index <= draft.getValue(type).size) {
                     activeType = type; activeSlot = index; slotSelected = true; choicePage = 0; forceRefresh = true
                 }
             }
         }
-        text(doc, "page-label-$key", (page + 1).toString() + " / " + total)
+        renderPageIndicators(doc, "page-indicators-$key", page, total)
         disable(doc, "page-$key-previous", pending || page == 0)
         disable(doc, "page-$key-next", pending || page == total - 1)
     }
@@ -298,36 +304,128 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         val total = maxOf(1, (availableChoices.size + CHOICES_PER_PAGE - 1) / CHOICES_PER_PAGE)
         choicePage = choicePage.coerceIn(0, total - 1)
         val shown = availableChoices.drop(choicePage * CHOICES_PER_PAGE).take(CHOICES_PER_PAGE)
-        val cards = shown.mapIndexed { index, perk ->
+        val emptyState = if (selected == null) " selected" else ""
+        val corners = """<span class="choice-frame" aria-hidden="true"><span class="choice-corner corner-nw"></span><span class="choice-corner corner-ne"></span><span class="choice-corner corner-sw"></span><span class="choice-corner corner-se"></span></span>"""
+        val emptyCard = """<button type="button" class="perk-card choice$emptyState" id="perk-choice-empty">$corners<span class="empty-perk"><translation>tips.superbwarfare.barrel_empty</translation></span></button>"""
+        val cards = listOf(emptyCard) + shown.mapIndexed { index, perk ->
             val state = (if (perk == selected) " selected" else "") + (if (!canChoose(perk, baseline)) " unavailable" else "")
-            """<button type="button" class="perk-card choice$state" id="perk-choice-$index"><sbw-reforging-weapon id="choice-icon-$index"></sbw-reforging-weapon><span class="choice-caption" id="choice-caption-$index"></span></button>"""
+            """<button type="button" class="perk-card choice$state" id="perk-choice-$index">$corners<sbw-reforging-weapon id="choice-icon-$index"></sbw-reforging-weapon></button>"""
         }
         doc.getElementById("perk-choices")?.innerHTML = (0..1).joinToString("") { row ->
             """<div class="choice-grid-row">""" + cards.drop(row * CHOICES_PER_ROW).take(CHOICES_PER_ROW).joinToString("") + "</div>"
         }
+        doc.getElementById("perk-choice-empty")?.apply {
+            isDisabled = pending
+            addEventListener("click") {
+                if (!pending && activeSlot in draft.getValue(activeType).indices) {
+                    draft.getValue(activeType).removeAt(activeSlot)
+                    activeSlot = activeSlot.coerceAtMost(draft.getValue(activeType).size)
+                    forceRefresh = true
+                }
+            }
+        }
         for ((index, perk) in shown.withIndex()) {
             val item = ItemStack(perk.getItem().get())
             setDisplayItem(doc, "choice-icon-$index", item)
-            text(doc, "choice-caption-$index", item.hoverName.string)
+            perkHoverTargets["perk-choice-$index"] = perk
             doc.getElementById("perk-choice-$index")?.addEventListener("click") {
                 if (pending || perk.type != activeType) return@addEventListener
-                if (!canChoose(perk, baseline)) status = "需要背包中对应的 Perk 物品" else {
+                if (canChoose(perk, baseline)) {
                     val list = draft.getValue(activeType)
                     if (activeSlot < list.size) list[activeSlot] = perk else list.add(perk)
-                    status = "待确认：" + item.hoverName.string
                 }
                 forceRefresh = true
             }
         }
-        text(doc, "selected-perk-name", selected?.let { ItemStack(it.getItem().get()).hoverName.string } ?: "空槽位")
-        text(doc, "choice-page-label", if (availableChoices.isEmpty()) "无可用 Perk" else (choicePage + 1).toString() + " / " + total)
-        disable(doc, "remove-perk", selected == null || pending)
+        renderPageIndicators(doc, "choice-page-indicators", choicePage, total)
         disable(doc, "choice-previous", choicePage == 0 || pending)
         disable(doc, "choice-next", choicePage == total - 1 || pending)
     }
 
     private fun hasChanges(data: GunData) = Perk.Type.entries.any { type ->
         draft.getValue(type) != data.perk.getInstances(type).map { it.perk }
+    }
+
+    private fun renderPageIndicators(doc: Document, id: String, current: Int, total: Int) {
+        doc.getElementById(id)?.innerHTML = (0 until total).joinToString("") { page ->
+            """<span class="page-mark${if (page == current) " active" else ""}"></span>"""
+        }
+    }
+
+    /** Painted after AUI's deferred item layer so models cannot cover the tooltip. No item icon/name list. */
+    private fun renderPerkTooltip(graphics: GuiGraphics, doc: Document) {
+        val mouse = doc.mouseDocumentPosition
+        val perk = if (mc.isWindowActive) perkHoverTargets.entries.firstOrNull { (id, _) ->
+            val element = doc.getElementById(id) ?: return@firstOrNull false
+            val bounds = element.boundingClientRect
+            mouse.x >= bounds.x && mouse.x < bounds.x + bounds.width && mouse.y >= bounds.y && mouse.y < bounds.y + bounds.height
+        }?.value else null
+        if (perk == null) {
+            tooltipPerk = null
+            return
+        }
+        if (tooltipPerk != perk) {
+            tooltipPerk = perk
+            val stack = ItemStack(perk.getItem().get())
+            val type = Component.translatable("perk.superbwarfare.slot_" + perk.type.typeName)
+            tooltipTitle = tooltipText(stack.hoverName.string, 22.0, "#f3f3f5", 28.0)
+            tooltipType = tooltipText(type.string, 14.0, "#b9bbc1", 20.0)
+            val description = mutableListOf<Component>()
+            stack.item.appendHoverText(stack, localPlayer?.level().let { Item.TooltipContext.of(it) }, description, TooltipFlag.NORMAL)
+            val slotLine = Component.translatable("perk.superbwarfare.slot").append(type).string
+            val measure = tooltipText("", 14.0, "#c7c9cf", 20.0)
+            val splitter = StringSplitter { codePoint, _ ->
+                Text.measureLine(measure, String(Character.toChars(codePoint))).toFloat()
+            }
+            tooltipDescription = description.filter { it.string.isNotBlank() && it.string != slotLine }
+                .flatMap { splitter.splitLines(it, 312, Style.EMPTY) }
+                .map { tooltipText(it.string, 14.0, "#c7c9cf", 20.0) }
+        }
+        val viewport = doc.viewport
+        val width = 340f
+        val height = 66f + 24f + tooltipDescription.size * 20f
+        val scale = minOf(1f, (viewport.layoutWidth() - 16f) / width, (viewport.layoutHeight() - 16f) / height).coerceAtLeast(0.1f)
+        val visibleWidth = width * scale
+        val visibleHeight = height * scale
+        val desiredX = if (mouse.x + 16 + visibleWidth <= viewport.layoutWidth() - 8) mouse.x.toFloat() + 16f
+            else mouse.x.toFloat() - visibleWidth - 16f
+        val left = desiredX.coerceIn(8f, (viewport.layoutWidth() - visibleWidth - 8f).coerceAtLeast(8f))
+        val top = (mouse.y.toFloat() + 16f).coerceIn(8f, (viewport.layoutHeight() - visibleHeight - 8f).coerceAtLeast(8f))
+        graphics.flush()
+        val pose = graphics.pose()
+        val color = RenderSystem.getShaderColor().copyOf()
+        pose.pushPose()
+        FontDrawer.pushDocumentPixelScale(viewport.scissorScale() * scale)
+        try {
+            RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
+            pose.scale(viewport.renderScale(), viewport.renderScale(), 1f)
+            pose.translate(left.toDouble(), top.toDouble(), Base.getFlatOverlayZ().toDouble())
+            pose.scale(scale, scale, 1f)
+            graphics.fill(0, 0, width.toInt(), height.toInt(), 0xf016171a.toInt())
+            graphics.fill(0, 0, width.toInt(), 66, 0xf03a3b3e.toInt())
+            graphics.flush()
+            pose.translate(0.0, 0.0, 1.0)
+            FontDrawer.drawFont(pose, tooltipTitle, Position(14.0, 8.0))
+            FontDrawer.drawFont(pose, tooltipType, Position(14.0, 38.0))
+            tooltipDescription.forEachIndexed { index, line ->
+                FontDrawer.drawFont(pose, line, Position(14.0, 78.0 + index * 20.0))
+            }
+            graphics.flush()
+        } finally {
+            Base.commitLocalDraws()
+            FontDrawer.popDocumentPixelScale()
+            pose.popPose()
+            RenderSystem.setShaderColor(color[0], color[1], color[2], color[3])
+        }
+    }
+
+    private fun tooltipText(content: String, size: Double, foreground: String, leading: Double) = Text().apply {
+        fontFamily = "ResonanceUI, sans-serif"
+        fontSize = size
+        fontWeight = 400
+        lineHeight = leading
+        color = Color(foreground)
+        this.content = content
     }
 
     private fun submit() {
@@ -339,12 +437,12 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         val identity = weaponUuid ?: return
         if (data.uuid?.toString() != identity || !hasChanges(data)) return
         pending = true
-        pendingId = System.nanoTime()
         pendingAt = System.currentTimeMillis()
+        slotSelected = false
         sendPacketToServer(ResonancePerkInstallMessage(tablePos.asLong(), slot, identity, baselineSignature,
             draft.getValue(Perk.Type.AMMO).map { it.name },
             draft.getValue(Perk.Type.FUNCTIONAL).map { it.name },
-            draft.getValue(Perk.Type.DAMAGE).map { it.name }, pendingId))
+            draft.getValue(Perk.Type.DAMAGE).map { it.name }))
         forceRefresh = true
     }
 
@@ -404,7 +502,6 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
             slotSelected = false
             activeSlot = 0
             choicePage = 0
-            status = "已清空全部 Perk 方案，点击“完成”提交"
             forceRefresh = true
         }
     }
@@ -431,8 +528,11 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
 
     private fun showPreview(doc: Document, stack: ItemStack) {
         setDisplayItem(doc, "selection-preview", stack)
-        text(doc, "selection-weapon-name", if (stack.isEmpty) "暂无可选武器" else stack.hoverName.string)
+        text(doc, "selection-weapon-name", if (stack.isEmpty) translated("no_weapons") else stack.hoverName.string)
     }
+    private fun translated(suffix: String, vararg args: Any): String =
+        Component.translatable("container.superbwarfare.reforging_table.$suffix", *args).string
+
     private fun text(doc: Document, id: String, value: String) {
         doc.getElementById(id)?.let { if (it.textContent != value) it.textContent = value }
     }
@@ -475,7 +575,7 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         init { ResonanceWeaponIcon.register() }
         private const val GRID_SIZE = 36
         private const val CHOICES_PER_ROW = 6
-        private const val CHOICES_PER_PAGE = 12
+        private const val CHOICES_PER_PAGE = CHOICES_PER_ROW * 2 - 1 // Reserve the first cell for removing the selected Perk.
         private const val RESET_HOLD_NANOS = 1_200_000_000.0
         private const val SELECTION_PATH = "superbwarfare/screens/resonance_weapon_selection.html"
         private const val REFORGING_PATH = "superbwarfare/screens/resonance_reforging.html"

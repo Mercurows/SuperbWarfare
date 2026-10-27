@@ -1,7 +1,6 @@
 /* Weapon picker: shared dark glass, corner marks and font come from resonance_reforging.css. */
 .selection-heading { position: absolute; left: 70px; top: 54px; display: flex; align-items: center; gap: 8px; }
 .selection-title { font-size: 56px; line-height: 70px; letter-spacing: 4px; }
-.selection-view .weapon-emblem { opacity: 0.85; }
 .selection-preview-panel { position: absolute; left: 70px; top: 29%; width: 284px; text-align: center; }
 .preview-rule { height: 2px; width: 60px; margin: 0 auto 24px; background: rgba(235, 235, 240, 0.45); }
 #selection-preview { width: 240px; height: 240px; margin: 0 auto 26px; }
