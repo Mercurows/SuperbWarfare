@@ -134,6 +134,15 @@ object MiscConfig {
     }
 
     @JvmField
+    val CREEPING_SENPAI_ADVANCED_PATHFINDING = buildServerConfig {
+        comment("Enable advanced wall and ceiling pathfinding for Creeping Senpai (higher server CPU usage)")
+        comment("When disabled, use ordinary spider-style wall climbing. Changes apply to existing entities on their next AI tick.")
+        comment("是否开启爬行先辈的高级墙面与天花板寻路（增加服务端 CPU 开销），关闭则使用普通蜘蛛式爬墙")
+        comment("修改后在已有实体的下一次 AI 更新时生效")
+        define("creeping_senpai_advanced_pathfinding", true)
+    }
+
+    @JvmField
     val THROW_MEDICAL_KIT = buildServerConfig {
         push("medical kit")
 

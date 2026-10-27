@@ -46,6 +46,7 @@ val CONFIG_COMMAND = buildCommand("config") {
     booleanConfig(MiscConfig::MINE_HITBOX_INVISIBLE)
     booleanConfig(MiscConfig::HIDE_COMBAT_HUD)
     booleanConfig(MiscConfig::SMOKE_HIDE_TARGET)
+    booleanConfig(MiscConfig::CREEPING_SENPAI_ADVANCED_PATHFINDING)
     booleanConfig(MiscConfig::THROW_MEDICAL_KIT)
     booleanConfig(MiscConfig::REALISTIC_SHOOT_MODE) {
         RealisticShootModeSync.broadcast()

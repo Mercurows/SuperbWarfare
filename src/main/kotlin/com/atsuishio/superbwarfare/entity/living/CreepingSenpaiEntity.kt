@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.entity.living
 
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.animation.entity.CreepingSenpaiAnimationInstance
+import com.atsuishio.superbwarfare.config.server.MiscConfig
 import com.atsuishio.superbwarfare.entity.getValue
 import com.atsuishio.superbwarfare.entity.setValue
 import com.atsuishio.superbwarfare.init.ModSounds
@@ -27,6 +28,7 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation
 import net.minecraft.world.entity.ai.navigation.PathNavigation
+import net.minecraft.world.entity.ai.navigation.WallClimberNavigation
 import net.minecraft.world.entity.monster.Monster
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.ClipContext
@@ -42,7 +44,8 @@ import kotlin.math.max
 import kotlin.math.min
 
 open class CreepingSenpaiEntity(type: EntityType<CreepingSenpaiEntity>, level: Level) : Monster(type, level) {
-    open val animationInstance = if (this.level().isClientSide) CreepingSenpaiAnimationInstance(this) else null
+    open val animationInstance: CreepingSenpaiAnimationInstance? =
+        if (this.level().isClientSide) CreepingSenpaiAnimationInstance(this) else null
     open val modelInstance = EntityModelReloadListener.getModel(MODEL)?.createInstance()
 
     open var attachedFace by ATTACHED_FACE
@@ -51,11 +54,16 @@ open class CreepingSenpaiEntity(type: EntityType<CreepingSenpaiEntity>, level: L
     private var surfaceAttached = false
     private var surfaceVelocity = Vec3.ZERO
     private var detachUntilTick = 0
+    private var sightCacheTick = Int.MIN_VALUE
+    private val sightCache = mutableMapOf<LivingEntity, Boolean>()
+
+    private val usesAdvancedNavigation: Boolean
+        get() = entityData.get(ADVANCED_NAVIGATION)
 
     init {
         xpReward = 40
         isNoAi = false
-        this.moveControl = SurfaceMoveControl()
+        this.moveControl = MoveControl(this)
     }
 
     override fun defineSynchedData(builder: SynchedEntityData.Builder) {
@@ -64,11 +72,14 @@ open class CreepingSenpaiEntity(type: EntityType<CreepingSenpaiEntity>, level: L
         with(builder) {
             define(ATTACHED_FACE, Direction.UP)
             define(SURFACE_HEADING, 0F)
+            define(ADVANCED_NAVIGATION, false)
+            define(SIMPLE_CLIMBING, false)
         }
     }
 
     override fun createNavigation(level: Level): PathNavigation {
-        return SurfaceNavigation(level)
+        // 不在实体基类构造阶段读取尚未加载的服务端配置。
+        return SimpleClimbingNavigation(this, level)
     }
 
     override fun getEyeY(): Double =
@@ -92,7 +103,8 @@ open class CreepingSenpaiEntity(type: EntityType<CreepingSenpaiEntity>, level: L
     }
 
     override fun onClimbable(): Boolean {
-        return surfaceAttached && this.attachedFace != Direction.UP
+        return if (usesAdvancedNavigation) surfaceAttached && attachedFace != Direction.UP
+        else entityData.get(SIMPLE_CLIMBING)
     }
 
     public override fun getAmbientSound(): SoundEvent? {
@@ -118,11 +130,40 @@ open class CreepingSenpaiEntity(type: EntityType<CreepingSenpaiEntity>, level: L
 
     override fun aiStep() {
         if (!this.level().isClientSide) {
+            updateNavigationMode()
             surfaceVelocity = Vec3.ZERO
-            updateSurfaceAttachment()
+            if (usesAdvancedNavigation) updateSurfaceAttachment() else updateSimpleClimbing()
         }
         super.aiStep()
         this.updateSwingTime()
+    }
+
+    private fun updateNavigationMode() {
+        val advanced = MiscConfig.CREEPING_SENPAI_ADVANCED_PATHFINDING.get()
+        if (advanced == usesAdvancedNavigation) return
+        navigation.stop()
+        navigation = if (advanced) SurfaceNavigation(level()) else SimpleClimbingNavigation(this, level())
+        moveControl = if (advanced) SurfaceMoveControl() else MoveControl(this)
+        entityData.set(ADVANCED_NAVIGATION, advanced)
+        entityData.set(SIMPLE_CLIMBING, false)
+        surfaceAttached = false
+        surfaceVelocity = Vec3.ZERO
+        attachedFace = Direction.UP
+        isNoGravity = false
+        sightCache.clear()
+    }
+
+    private fun updateSimpleClimbing() {
+        surfaceAttached = false
+        isNoGravity = false
+        val climbing = isAlive && !isNoAi && !isPassenger && !isInWaterOrBubble && !isInLava &&
+                tickCount >= detachUntilTick && horizontalCollision
+        entityData.set(SIMPLE_CLIMBING, climbing)
+        // 只在撞墙时探测四个方向用于显示；运动和爬升均交给原版逻辑。
+        attachedFace = if (climbing) Direction.Plane.HORIZONTAL.firstOrNull {
+            surfaceProbe.touches(boundingBox, it)
+        } ?: Direction.UP else Direction.UP
+        if (attachedFace.axis.isHorizontal) faceSurfaceDirection(deltaMovement) else surfaceHeading = yRot
     }
 
     override fun travel(travelVector: Vec3) {
@@ -235,8 +276,13 @@ open class CreepingSenpaiEntity(type: EntityType<CreepingSenpaiEntity>, level: L
             )
         ).type == HitResult.Type.MISS
 
-    private fun hasTargetSight(enemy: LivingEntity): Boolean = sensing.hasLineOfSight(enemy) ||
-            SurfaceSight.canSee(
+    private fun hasTargetSight(enemy: LivingEntity): Boolean {
+        if (sightCacheTick != tickCount) {
+            sightCacheTick = tickCount
+            sightCache.clear()
+        }
+        return sightCache.getOrPut(enemy) {
+            sensing.hasLineOfSight(enemy) || usesAdvancedNavigation && SurfaceSight.canSee(
                 boundingBox,
                 eyePosition,
                 attachedFace,
@@ -244,12 +290,15 @@ open class CreepingSenpaiEntity(type: EntityType<CreepingSenpaiEntity>, level: L
                 enemy.eyePosition,
                 ::clearSight
             )
+        }
+    }
 
     private inner class SurfaceAttackGoal : Goal() {
         private var victim: LivingEntity? = null
         private var memory: TargetMemory? = null
         private var attackCooldown = 0
         private var failures = 0
+        private var pursuitNavigation: PathNavigation? = null
 
         init {
             flags = EnumSet.of(Flag.MOVE, Flag.LOOK)
@@ -269,6 +318,7 @@ open class CreepingSenpaiEntity(type: EntityType<CreepingSenpaiEntity>, level: L
             attackCooldown = 0
             failures = 0
             navigation.stop()
+            pursuitNavigation = navigation
             isAggressive = true
         }
 
@@ -277,6 +327,7 @@ open class CreepingSenpaiEntity(type: EntityType<CreepingSenpaiEntity>, level: L
             isAggressive = false
             victim = null
             memory = null
+            pursuitNavigation = null
         }
 
         override fun tick() {
@@ -285,13 +336,21 @@ open class CreepingSenpaiEntity(type: EntityType<CreepingSenpaiEntity>, level: L
                 start()
             }
             val tracking = memory ?: return
-            val nav = navigation as SurfaceNavigation
+            val nav = navigation
+            if (pursuitNavigation !== nav) {
+                pursuitNavigation = nav
+                failures = 0
+            }
             val visible = hasTargetSight(enemy)
             if (visible) tracking.observe(enemy.boundingBox, tickCount)
-            if (nav.madeProgress) {
+            val madeProgress = when (nav) {
+                is SurfaceNavigation -> nav.madeProgress.also { nav.madeProgress = false }
+                is SimpleClimbingNavigation -> nav.madeProgress.also { nav.madeProgress = false }
+                else -> false
+            }
+            if (madeProgress) {
                 tracking.progress(tickCount)
                 failures = 0
-                nav.madeProgress = false
             }
             if (tracking.expired(tickCount) ||
                 distanceToSqr(enemy) > getAttributeValue(Attributes.FOLLOW_RANGE).let { it * it }
@@ -316,7 +375,7 @@ open class CreepingSenpaiEntity(type: EntityType<CreepingSenpaiEntity>, level: L
                 return
             }
 
-            if (nav.failed) {
+            if (nav is SurfaceNavigation && nav.failed) {
                 failures++
                 nav.failed = false
                 if (failures >= 3) {
@@ -325,7 +384,10 @@ open class CreepingSenpaiEntity(type: EntityType<CreepingSenpaiEntity>, level: L
                     failures = 0
                 }
             }
-            nav.pursue(box, 1.4)
+            when (nav) {
+                is SurfaceNavigation -> nav.pursue(box, 1.4)
+                is SimpleClimbingNavigation -> nav.pursue(box, 1.4)
+            }
         }
     }
 
@@ -385,20 +447,54 @@ open class CreepingSenpaiEntity(type: EntityType<CreepingSenpaiEntity>, level: L
     }
 
     private inner class SurfaceProbe {
+        private var cacheTick = Int.MIN_VALUE
+        private var cacheWidth = 0f
+        private var cacheHeight = 0f
+        private var geometry: SurfaceGeometry? = null
+        private val boxesCache = mutableMapOf<BlockPos, List<AABB>>()
+        private val nodesCache = mutableMapOf<Pair<BlockPos, Direction>, List<SurfaceNode>>()
+        private val clearCache = mutableMapOf<Vec3, Boolean>()
+        private val contactCache = mutableMapOf<Pair<AABB, Direction>, Boolean>()
+
+        private fun prepareCache() {
+            if (cacheTick == tickCount && cacheWidth == bbWidth && cacheHeight == bbHeight) return
+            cacheTick = tickCount
+            cacheWidth = bbWidth
+            cacheHeight = bbHeight
+            geometry = null
+            boxesCache.clear()
+            nodesCache.clear()
+            clearCache.clear()
+            contactCache.clear()
+        }
+
         private fun loaded(pos: BlockPos): Boolean = level().hasChunk(pos.x shr 4, pos.z shr 4)
 
         private fun collisionBoxes(pos: BlockPos): List<AABB> {
-            if (!loaded(pos) || level().isOutsideBuildHeight(pos)) return emptyList()
-            return level().getBlockState(pos).getCollisionShape(
-                level(), pos,
-                CollisionContext.of(this@CreepingSenpaiEntity)
-            ).toAabbs().map { it.move(pos) }
+            prepareCache()
+            return boxesCache.getOrPut(pos.immutable()) {
+                if (!loaded(pos) || level().isOutsideBuildHeight(pos)) emptyList()
+                else level().getBlockState(pos).getCollisionShape(
+                    level(), pos, CollisionContext.of(this@CreepingSenpaiEntity)
+                ).toAabbs().map { it.move(pos) }
+            }
         }
 
-        fun nodes(pos: BlockPos, face: Direction): List<SurfaceNode> =
-            SurfaceGeometry(bbWidth.toDouble(), bbHeight.toDouble(), ::collisionBoxes).nodes(pos, face)
+        fun nodes(pos: BlockPos, face: Direction): List<SurfaceNode> {
+            prepareCache()
+            return nodesCache.getOrPut(pos.immutable() to face) {
+                val resolver = geometry ?: SurfaceGeometry(bbWidth.toDouble(), bbHeight.toDouble(), ::collisionBoxes)
+                    .also { geometry = it }
+                resolver.nodes(pos, face)
+            }
+        }
 
         fun clear(feet: Vec3): Boolean {
+            prepareCache()
+            return clearCache.getOrPut(feet) { clearUncached(feet) }
+        }
+
+        private fun clearUncached(feet: Vec3): Boolean {
             val box = bodyAt(feet).deflate(1.0E-5)
             val min = BlockPos.containing(box.minX, box.minY, box.minZ)
             val max = BlockPos.containing(box.maxX, box.maxY, box.maxZ)
@@ -418,6 +514,11 @@ open class CreepingSenpaiEntity(type: EntityType<CreepingSenpaiEntity>, level: L
         }
 
         fun touches(box: AABB, normal: Direction): Boolean {
+            prepareCache()
+            return contactCache.getOrPut(box to normal) { touchesUncached(box, normal) }
+        }
+
+        private fun touchesUncached(box: AABB, normal: Direction): Boolean {
             val probe = when (normal) {
                 Direction.UP -> AABB(
                     box.minX + 0.05, box.minY - 0.12, box.minZ + 0.05,
@@ -650,6 +751,55 @@ open class CreepingSenpaiEntity(type: EntityType<CreepingSenpaiEntity>, level: L
         }
     }
 
+    /** 普通模式只使用原版地面路径与撞墙爬升，不搜索墙面或天花板节点。 */
+    private class SimpleClimbingNavigation(mob: Mob, level: Level) : WallClimberNavigation(mob, level) {
+        private var stopped = true
+        private var nextRequestTick = 0
+        private var destination: Vec3? = null
+        private var lastProgressPosition: Vec3? = null
+        var madeProgress = false
+
+        fun pursue(box: AABB, speed: Double) {
+            val wanted = Vec3(box.center.x, box.minY, box.center.z)
+            val moved = destination?.distanceToSqr(wanted)?.let { it > 2.25 } ?: true
+            if (!stopped && (mob.tickCount < nextRequestTick || !moved && !isDone)) return
+            nextRequestTick = mob.tickCount + 20
+            destination = wanted
+            moveTo(wanted.x, wanted.y, wanted.z, speed)
+        }
+
+        override fun moveTo(x: Double, y: Double, z: Double, speed: Double): Boolean {
+            stopped = false
+            speedModifier = speed
+            // 即使地面路径未找到，WallClimberNavigation 仍会保留目标并尝试撞墙爬升。
+            return super.moveTo(x, y, z, speed)
+        }
+
+        override fun moveTo(entity: Entity, speed: Double): Boolean {
+            stopped = false
+            return super.moveTo(entity, speed)
+        }
+
+        override fun tick() {
+            if (stopped) return
+            super.tick()
+            val current = mob.position()
+            val previous = lastProgressPosition
+            if (previous == null || current.distanceToSqr(previous) > 0.01) {
+                if (previous != null) madeProgress = true
+                lastProgressPosition = current
+            }
+        }
+
+        override fun stop() {
+            stopped = true
+            destination = null
+            lastProgressPosition = null
+            madeProgress = false
+            super.stop()
+        }
+    }
+
     private inner class SurfaceNavigation(level: Level) : GroundPathNavigation(this@CreepingSenpaiEntity, level) {
         private var search: SurfaceSearch? = null
         private var route = emptyList<SurfaceWaypoint>()
@@ -831,6 +981,12 @@ open class CreepingSenpaiEntity(type: EntityType<CreepingSenpaiEntity>, level: L
 
         private val SURFACE_HEADING: EntityDataAccessor<Float> =
             SynchedEntityData.defineId(CreepingSenpaiEntity::class.java, EntityDataSerializers.FLOAT)
+
+        private val ADVANCED_NAVIGATION: EntityDataAccessor<Boolean> =
+            SynchedEntityData.defineId(CreepingSenpaiEntity::class.java, EntityDataSerializers.BOOLEAN)
+
+        private val SIMPLE_CLIMBING: EntityDataAccessor<Boolean> =
+            SynchedEntityData.defineId(CreepingSenpaiEntity::class.java, EntityDataSerializers.BOOLEAN)
 
         private const val TARGET_MEMORY_TICKS = 160
         private const val SEARCH_NODES_PER_TICK = 96
