@@ -14,6 +14,12 @@
         <div id="title-mode"></div>
         <div class="title-separator"></div>
         <div id="title-weapon"></div>
+        <div id="title-status">
+            <div id="title-status-dot"></div>
+            <div id="title-status-label">IN GAME</div>
+            <div class="title-separator"></div>
+            <div id="title-version"></div>
+        </div>
     </div>
     <!-- AUI 负责挂点命中区域和图标布局；圆圈、外框与连线由 WeaponEditScreen 独立绘制。 -->
     <div id="mount-layer" class="layer"></div>
@@ -30,6 +36,7 @@
     <div id="panel">
         <div id="panel-index" class="section-index"><span class="section-number">03</span><span class="section-slash">/</span></div>
         <div id="panel-title"></div>
+        <div id="panel-code" class="section-code"></div>
         <div id="panel-header">
             <div id="panel-current" class="attachment-icon">
                 <slot render="item" interactive="0" pointer="0" size="16" iconScale="1"><item>minecraft:air</item></slot>
@@ -50,6 +57,7 @@
             <div id="panel-scroll"><div id="panel-space"></div></div>
             <div id="panel-items"><div id="panel-grid"></div><div id="panel-empty"></div></div>
         </div>
+        <div id="panel-footer"><div id="panel-count"></div></div>
     </div>
     <div id="settings">
         <div id="settings-code" class="section-code">No.1145</div>
@@ -174,17 +182,27 @@
     .title-separator { width: 0.5px; height: 8px; background: #668a95; flex-shrink: 0; }
     #title-mode { color: #52fcda; font-size: 8.5px; flex-shrink: 0; }
     #title-weapon { min-width: 0; height: 12px; line-height: 12px; font-size: 7px; overflow: hidden; text-overflow: ellipsis; }
+    /* 右上角运行状态；版本号由 Kotlin 在文档准备阶段写入。 */
+    #title-status {
+        position: absolute; right: 6px; top: 3px; display: flex; align-items: center; gap: 5px;
+        box-sizing: border-box; height: 12px;
+        white-space: nowrap; pointer-events: none;
+    }
+    #title-status-dot { width: 4px; height: 4px; flex-shrink: 0; background: #52fcda; }
+    #title-status-label { color: #a9c6d2; font-size: 5.5px; letter-spacing: 1px; }
+    #title-version { color: #d3e5e9; font-size: 5.5px; letter-spacing: 0.4px; }
+    #title-status > .title-separator { height: 7px; }
     .section-index { position: absolute; left: 5px; top: 3px; height: 18px; display: flex; align-items: center; gap: 4px; color: #52fcda; pointer-events: none; }
     .section-number { font-size: 13px; font-weight: 700; }
     .section-slash { font-size: 11px; font-weight: normal; }
-    .section-code { position: absolute; right: 6px; color: #338997; font-size: 5px; letter-spacing: 0.5px; pointer-events: none; }
+    .section-code { position: absolute; right: 5px; color: #338997; font-size: 5px; letter-spacing: 0.5px; pointer-events: none; }
     #stats-index { left: 7px; }
-    #stats-code { top: 8px; }
-    #settings-code { left: 5px; right: auto; bottom: 2px; height: 6px; line-height: 6px; }
+    #stats-code { top: 8px; right: 4.5px; }
+    #settings-code { left: auto; right: 4px; top: 8px; bottom: auto; height: 6px; line-height: 6px; }
     @media (max-width: 380px) {
         #title-bar { gap: 5px; padding: 0 6px; }
         #title-brand { letter-spacing: 0; }
-        #stats-code { display: none; }
+        #stats-code, #title-status { display: none; }
     }
     @media (max-width: 260px) {
         #title-brand, #title-brand + .title-separator { display: none; }
@@ -236,14 +254,15 @@
         width: 15px; height: 15px;
     }
     slot > item { left: 0; top: 0; width: 100%; height: 100%; }
-    /* 增加 22px 类型标题行；Kotlin 使用相同外框尺寸进行避让与边缘钳制。 */
+    /* 增加 22px 类型标题行与底部可用配件计数；Kotlin 使用相同外框尺寸进行避让与边缘钳制。 */
     #panel {
         position: absolute; left: 0; top: 0; transform: translate(0px, 0px) scale(1);
-        display: none; box-sizing: border-box; width: 180px; height: 134px;
+        display: none; box-sizing: border-box; width: 180px; height: 148px;
         border: 1px solid transparent; background: none;
         transform-origin: 0 0; pointer-events: auto; z-index: 4; font-weight: normal;
     }
     #panel-header { position: absolute; left: 5px; top: 27px; width: 168px; height: 34px; }
+    #panel-code { top: 8px; right: 3.5px; }
     #panel-current { display: flex; left: 0; top: 0; }
     #panel-name {
         position: absolute; left: 22px; top: -1px; width: 146px; height: 11px;
@@ -257,7 +276,7 @@
     }
     /* 保留原有卸下图标及点击位置，青色外框与其他控件统一。 */
     #panel-uninstall {
-        position: absolute; display: flex; left: 0; top: 19px; width: 14px; height: 14px;
+        position: absolute; display: flex; left: 0; top: 20.5px; width: 14px; height: 14px;
         box-sizing: border-box; align-items: center; justify-content: center;
         border: 0.5px solid #338997; background: rgba(0, 22, 29, 0.85);
     }
@@ -268,9 +287,9 @@
         font-size: 6.5px; line-height: 8px; font-weight: normal; color: #a9c6d2;
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    #panel-uninstall-label { position: absolute; left: 18px; top: 22px; width: 64px; height: 8px; }
+    #panel-uninstall-label { position: absolute; left: 18px; top: 23.5px; width: 64px; height: 8px; }
     #panel-skin-control {
-        position: absolute; right: 0; top: 19px; display: none; width: 86px; height: 14px;
+        position: absolute; right: 0; top: 20.5px; display: none; width: 86px; height: 14px;
         align-items: center; gap: 3px;
     }
     /* 标签单独留 20px，避免思源黑体的“皮肤”被省略号截断。 */
@@ -327,6 +346,12 @@
     }
     .cell { position: relative; display: flex; width: 16px; height: 16px; padding: 0; flex-shrink: 0; }
     #panel-empty { display: none; font-size: 7px; color: #a9c6d2; padding: 8px 0; }
+    /* 底部计数条；分隔线与右侧点阵由 Kotlin 独立绘制。 */
+    #panel-footer { position: absolute; left: 5px; top: 129px; width: 168px; height: 17px; pointer-events: none; }
+    #panel-count {
+        position: absolute; left: 3px; top: 4px; height: 8px; line-height: 8px;
+        color: #d3e5e9; font-size: 7px; white-space: nowrap; overflow: hidden;
+    }
     /* 与 Kotlin 的 SETTINGS_* 尺寸一致；只在选中已安装且可调整的槽位时显示。 */
     #settings {
         position: absolute; left: 0; top: 0; transform: translate(0px, 0px) scale(1);
@@ -337,7 +362,7 @@
     #settings input[type="text"] { user-select: text; }
     #settings-title, #stats-title, #panel-title { position: absolute; top: 6px; height: 14px; font-size: 9px; font-weight: normal; color: #ffffff; }
     #settings-title { left: 33px; width: 107px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    #panel-title { left: 33px; width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #panel-title { left: 33px; width: 118px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     #settings-reset, #settings-confirm {
         position: absolute; bottom: 9px; width: 72px; height: 15px; box-sizing: border-box;
         margin: 0; padding: 0 2px; border: 0.5px solid #338997; border-radius: 0;
@@ -362,7 +387,7 @@
         padding: 3.5px 4px; border: 0.5px solid #24606b; background: rgba(0, 18, 25, 0.45);
         align-items: center; gap: 3px; flex-shrink: 0;
     }
-    .settings-icon { width: 8px; height: 8px; flex-shrink: 0; pointer-events: none; }
+    .settings-icon { width: 8px; height: 8px; flex-shrink: 0; pointer-events: none; transform: translateY(-2px); }
     .settings-icon > texture, .settings-icon > img { width: 100%; height: 100%; pointer-events: none; }
     .settings-label { width: 19px; font-size: 7px; line-height: 10px; flex-shrink: 0; white-space: nowrap; }
     .settings-row > input, .settings-slider > input, .settings-value, .settings-step {
@@ -421,7 +446,6 @@
         box-sizing: border-box; border: 0.5px solid transparent; background: none;
     }
     #stats-title { left: 35px; width: calc(100% - 42px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    #stats-chart::before { content: ''; position: absolute; left: 7px; top: 20px; width: calc(100% - 14px); height: 0.5px; background: #237b87; pointer-events: none; }
     #stats-scroll {
         position: absolute; left: 7px; top: 22px; width: 196px; height: 70px;
         margin: 0; padding: 0; border: 0; box-sizing: border-box;
@@ -434,7 +458,7 @@
     .stat-icon { position: absolute; left: 0; top: 2.5px; width: 9px; height: 9px; pointer-events: none; }
     .stat-icon > texture, .stat-icon > img { width: 100%; height: 100%; pointer-events: none; }
     .stat-row::after { content: ''; position: absolute; left: 0; bottom: 0; width: 100%; height: 0.5px; background: rgba(35, 123, 135, 0.2); pointer-events: none; }
-    .stat-label, .stat-value, .stat-delta { position: absolute; top: 1px; height: 12px; white-space: nowrap; overflow: hidden; pointer-events: none; }
+    .stat-label, .stat-value, .stat-delta { position: absolute; top: 2.2px; height: 12px; white-space: nowrap; overflow: hidden; pointer-events: none; }
     .stat-label { left: 12px; width: calc(29% - 12px); color: #d3e5e9; }
     .stat-value { left: 60%; width: 19%; color: #ffffff; }
     .stat-delta { left: 81%; width: 19%; }

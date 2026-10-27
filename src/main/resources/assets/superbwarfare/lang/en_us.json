@@ -1497,6 +1497,7 @@
   "screen.superbwarfare.weapon_edit.stats.show": "Show Weapon Attributes",
   "screen.superbwarfare.weapon_edit.stats.hide": "Hide Weapon Attributes",
   "screen.superbwarfare.weapon_edit.stats.title": "Weapon Attributes",
+  "screen.superbwarfare.weapon_edit.available_attachments": "%s AVAILABLE",
 
   "gamerule.sbwDoGenerateLoots": "Generate Superb Warfare Chest Loots",
 

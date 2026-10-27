@@ -301,7 +301,6 @@ dependencies {
     // AUI
     jijImplement("com.sighs:ApricityUI-neoforge-1.21.1:1.2.7")
 
-
     // 可选mod依赖
     compileOnly("mezz.jei:jei-1.21.1-common-api:${project.property("jei_version")}")
     compileOnly("mezz.jei:jei-1.21.1-neoforge-api:${project.property("jei_version")}")

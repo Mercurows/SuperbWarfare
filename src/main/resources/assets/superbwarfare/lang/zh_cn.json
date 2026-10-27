@@ -1497,6 +1497,7 @@
   "screen.superbwarfare.weapon_edit.stats.show": "显示武器属性",
   "screen.superbwarfare.weapon_edit.stats.hide": "隐藏武器属性",
   "screen.superbwarfare.weapon_edit.stats.title": "武器属性",
+  "screen.superbwarfare.weapon_edit.available_attachments": "%s 可用配件",
 
   "gamerule.sbwDoGenerateLoots": "生成卓越前线的箱子战利品",
 
