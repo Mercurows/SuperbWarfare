@@ -1389,7 +1389,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         AIMED_SPREAD("zoom_spread_rate", 1.0, unit = "×", higherIsBetter = false, firearmOnly = true,
             read = { it.get(GunProp.ZOOM_SPREAD_RATE) }),
         ZOOM_TIME("zoom_time", 1.0, unit = " s", higherIsBetter = false, firearmOnly = true,
-            read = { (it.get(GunProp.ZOOM_TIME).coerceAtLeast(1) + 0.4 * it.item.getCustomWeight(it)).coerceAtLeast(0.0) / 20.0 }),
+            read = { (it.get(GunProp.ZOOM_TIME).coerceAtLeast(1) + 0.4 * it.item.getHandlingCustomWeight(it)).coerceAtLeast(0.0) / 20.0 }),
         NORMAL_RELOAD("normal_reload_time", 6.0, unit = " s", higherIsBetter = false, optional = true, firearmOnly = true,
             read = { it.get(GunProp.NORMAL_RELOAD_TIME) / 20.0 }),
         EMPTY_RELOAD("empty_reload_time", 8.0, unit = " s", higherIsBetter = false, optional = true, firearmOnly = true,

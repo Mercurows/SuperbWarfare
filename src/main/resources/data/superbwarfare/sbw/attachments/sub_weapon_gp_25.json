@@ -6,7 +6,7 @@
     {
       "Prop": "Weight",
       "Op": "Add",
-      "Value": 2.0
+      "Value": 0.4
     }
   ],
   "SubWeapon": {

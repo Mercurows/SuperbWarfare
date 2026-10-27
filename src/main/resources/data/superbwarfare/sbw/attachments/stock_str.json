@@ -14,7 +14,7 @@
     {
       "Prop": "Weight",
       "Op": "Add",
-      "Value": 0.7
+      "Value": 0.14
     }
   ],
   "Bone": "custom_stock_adapter",

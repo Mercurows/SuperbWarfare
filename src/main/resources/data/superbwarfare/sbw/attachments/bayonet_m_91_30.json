@@ -16,7 +16,7 @@
     {
       "Prop": "Weight",
       "Op": "Add",
-      "Value": 0.4
+      "Value": 0.08
     },
     {
       "Prop": "ZoomTime",

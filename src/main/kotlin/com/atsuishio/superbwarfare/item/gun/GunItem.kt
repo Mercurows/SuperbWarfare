@@ -389,6 +389,17 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
     open fun getCustomWeight(data: GunData): Double = data.get(GunProp.WEIGHT) - data.getDefault().weight
 
     /**
+     * 配件重量已缩到 1/5，手感计算用的等效配件重量在这里换算回原值
+     */
+    open fun getHandlingCustomWeight(data: GunData): Double = HANDLING_WEIGHT_SCALE * getCustomWeight(data)
+
+    /**
+     * 手感计算用的等效总重：枪身基础重量不变，配件带来的部分按 [HANDLING_WEIGHT_SCALE] 放大
+     */
+    open fun getHandlingWeight(data: GunData): Double =
+        data.get(GunProp.WEIGHT) + (HANDLING_WEIGHT_SCALE - 1.0) * getCustomWeight(data)
+
+    /**
      * 获取额外弹速加成
      */
     open fun getCustomVelocity(data: GunData) = 0.0
@@ -1409,6 +1420,9 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             val direction = muzzleDirection.normalize()
             return if (direction.dot(aim) < MIN_MUZZLE_ALIGNMENT) aim else direction
         }
+
+        /** 配件重量在 json 里缩小的倍数；手感计算按原值算，移速惩罚除外 */
+        private const val HANDLING_WEIGHT_SCALE = 5.0
 
         /** [resolveShootDirection] 的夹角上限（度）：只是"样本是不是疯了"的兜底，见那边的注释 */
         private const val MAX_MUZZLE_DEVIATION_DEGREES = 60.0

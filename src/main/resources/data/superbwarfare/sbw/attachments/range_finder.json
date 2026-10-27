@@ -8,7 +8,7 @@
     {
       "Prop": "Weight",
       "Op": "Add",
-      "Value": 1.5
+      "Value": 0.3
     }
   ],
   "Model": "superbwarfare:models/bedrock/attachment/range_finder.geo.json",

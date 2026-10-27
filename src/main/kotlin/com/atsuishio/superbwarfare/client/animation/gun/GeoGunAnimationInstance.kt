@@ -1250,9 +1250,7 @@ open class GeoGunAnimationInstance(
 
     // 和 handleWeaponMove 的 customWeight 同源
     private fun sprintEaseWeight(): Double =
-        sprintEaseHandling()
-            .get(GunProp.WEIGHT)
-            .coerceIn(1.0, 50.0)
+        sprintEaseHandling().let { it.item.getHandlingWeight(it) }.coerceIn(1.0, 50.0)
 
     private fun sprintEaseSwitchSpeed(): Double =
         sprintEaseHandling().get(GunProp.SPRINT_TRANSITION_SPEED)
