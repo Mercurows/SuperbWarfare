@@ -2,7 +2,8 @@ package com.atsuishio.superbwarfare.block
 
 import com.atsuishio.superbwarfare.init.ModBlocks
 import com.atsuishio.superbwarfare.inventory.menu.ReforgingTableMenu
-import com.sighs.apricityui.ApricityUI
+import com.atsuishio.superbwarfare.network.message.receive.OpenResonanceReforgingScreenMessage
+import com.atsuishio.superbwarfare.tools.sendPacketTo
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.network.chat.Component
@@ -56,8 +57,7 @@ open class ReforgingTableBlock : Block(
             return InteractionResult.SUCCESS
         } else {
             if (player is ServerPlayer && level.getBlockState(pos.below()).`is`(ModBlocks.RESONANCE_BASE.get())) {
-                // UI prototype only; no item bindings until the resonance workflow is defined.
-                ApricityUI.menu(player, RESONANCE_SCREEN).bind { }
+                sendPacketTo(player, OpenResonanceReforgingScreenMessage(pos.asLong()))
             } else {
                 player.openMenu(state.getMenuProvider(level, pos))
             }
@@ -147,8 +147,6 @@ open class ReforgingTableBlock : Block(
     }
 
     companion object {
-        private const val RESONANCE_SCREEN = "superbwarfare/screens/resonance_reforging.html"
-
         @JvmField
         val WATERLOGGED: BooleanProperty = BlockStateProperties.WATERLOGGED
 

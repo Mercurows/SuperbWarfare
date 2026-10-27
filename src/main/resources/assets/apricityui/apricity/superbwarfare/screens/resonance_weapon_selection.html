@@ -1,0 +1,84 @@
+<!doctype html>
+<!-- Weapon selection reference: docs/resonance-reforging.md. No video overlays or categories. -->
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="aui-viewport" content="mode=browser,width=1600,zoom=1,min-zoom=1,max-zoom=1,user-scalable=false">
+    <meta name="aui-mouse-events" content="intercept">
+    <link rel="stylesheet" href="../styles/resonance_reforging.css">
+    <link rel="stylesheet" href="../styles/resonance_weapon_selection.css">
+</head>
+<body>
+    <div class="glass-backdrop"></div>
+    <div class="frame selection-view">
+        <div class="corner top-left"></div><div class="corner top-right"></div>
+        <div class="corner bottom-left"></div><div class="corner bottom-right"></div>
+        <div class="selection-heading">
+            <div class="weapon-emblem"><div class="emblem-diamond"></div><div class="emblem-cross horizontal"></div><div class="emblem-cross vertical"></div></div>
+            <div><div class="eyebrow">重塑武器</div><div class="selection-title">重塑</div><div class="weapon-type">选择武器</div></div>
+        </div>
+
+        <div class="selection-preview-panel">
+            <div class="preview-rule"></div>
+            <sbw-reforging-weapon id="selection-preview"></sbw-reforging-weapon>
+            <div id="selection-weapon-name">暂无可选武器</div>
+            <div class="selection-instruction">选择背包中的武器</div>
+            <div class="selection-description">点击右侧武器，进入重塑界面</div>
+        </div>
+
+        <div class="inventory-heading"><span>背包武器</span><span id="weapon-count">0 / 36</span></div>
+        <div class="weapon-grid-panel">
+            <!-- Four rows, nine columns. These are read-only display items, not inventory slots. -->
+            <div class="weapon-grid" id="weapon-grid">
+                <div class="weapon-grid-row">
+                    <button type="button" class="weapon-cell" id="weapon-0" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-0"></sbw-reforging-weapon><span id="weapon-label-0" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-1" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-1"></sbw-reforging-weapon><span id="weapon-label-1" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-2" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-2"></sbw-reforging-weapon><span id="weapon-label-2" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-3" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-3"></sbw-reforging-weapon><span id="weapon-label-3" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-4" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-4"></sbw-reforging-weapon><span id="weapon-label-4" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-5" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-5"></sbw-reforging-weapon><span id="weapon-label-5" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-6" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-6"></sbw-reforging-weapon><span id="weapon-label-6" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-7" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-7"></sbw-reforging-weapon><span id="weapon-label-7" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-8" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-8"></sbw-reforging-weapon><span id="weapon-label-8" class="weapon-label"></span></button>
+                </div>
+                <div class="weapon-grid-row">
+                    <button type="button" class="weapon-cell" id="weapon-9" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-9"></sbw-reforging-weapon><span id="weapon-label-9" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-10" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-10"></sbw-reforging-weapon><span id="weapon-label-10" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-11" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-11"></sbw-reforging-weapon><span id="weapon-label-11" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-12" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-12"></sbw-reforging-weapon><span id="weapon-label-12" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-13" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-13"></sbw-reforging-weapon><span id="weapon-label-13" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-14" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-14"></sbw-reforging-weapon><span id="weapon-label-14" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-15" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-15"></sbw-reforging-weapon><span id="weapon-label-15" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-16" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-16"></sbw-reforging-weapon><span id="weapon-label-16" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-17" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-17"></sbw-reforging-weapon><span id="weapon-label-17" class="weapon-label"></span></button>
+                </div>
+                <div class="weapon-grid-row">
+                    <button type="button" class="weapon-cell" id="weapon-18" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-18"></sbw-reforging-weapon><span id="weapon-label-18" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-19" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-19"></sbw-reforging-weapon><span id="weapon-label-19" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-20" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-20"></sbw-reforging-weapon><span id="weapon-label-20" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-21" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-21"></sbw-reforging-weapon><span id="weapon-label-21" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-22" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-22"></sbw-reforging-weapon><span id="weapon-label-22" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-23" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-23"></sbw-reforging-weapon><span id="weapon-label-23" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-24" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-24"></sbw-reforging-weapon><span id="weapon-label-24" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-25" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-25"></sbw-reforging-weapon><span id="weapon-label-25" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-26" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-26"></sbw-reforging-weapon><span id="weapon-label-26" class="weapon-label"></span></button>
+                </div>
+                <div class="weapon-grid-row">
+                    <button type="button" class="weapon-cell" id="weapon-27" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-27"></sbw-reforging-weapon><span id="weapon-label-27" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-28" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-28"></sbw-reforging-weapon><span id="weapon-label-28" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-29" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-29"></sbw-reforging-weapon><span id="weapon-label-29" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-30" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-30"></sbw-reforging-weapon><span id="weapon-label-30" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-31" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-31"></sbw-reforging-weapon><span id="weapon-label-31" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-32" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-32"></sbw-reforging-weapon><span id="weapon-label-32" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-33" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-33"></sbw-reforging-weapon><span id="weapon-label-33" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-34" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-34"></sbw-reforging-weapon><span id="weapon-label-34" class="weapon-label"></span></button>
+                    <button type="button" class="weapon-cell" id="weapon-35" aria-disabled="true"><sbw-reforging-weapon class="weapon-display" id="weapon-item-35"></sbw-reforging-weapon><span id="weapon-label-35" class="weapon-label"></span></button>
+                </div>
+            </div>
+            <div class="selection-empty" id="selection-empty"><div>背包中没有可重塑的武器</div><span>将武器放入背包或快捷栏后，在这里选择</span></div>
+        </div>
+
+        <div class="selection-footer"><span>选择一把武器开始重塑</span><button type="button" id="close-selection"><span class="keycap">ESC</span> 返回</button></div>
+    </div>
+</body>
+</html>
