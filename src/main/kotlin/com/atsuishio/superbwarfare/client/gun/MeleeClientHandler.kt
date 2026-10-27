@@ -19,8 +19,10 @@ import com.atsuishio.superbwarfare.tools.MeleeQuery
 import com.atsuishio.superbwarfare.tools.sendPacketToServer
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.ai.attributes.Attributes
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
+import kotlin.math.ceil
 
 /**
  * 客户端近战执行器：输入判定 → 连招下标锁存 → 动作锁 → 按本段 `HitTime` 结算 → 发报文
@@ -138,6 +140,15 @@ object MeleeClientHandler {
         return 0
     }
 
+    /** 玩家当前攻速相对基础攻速的倍率，只吃正面加成，最高 4 倍 */
+    private fun meleeAttackSpeed(player: Player): Double =
+        (player.getAttributeValue(Attributes.ATTACK_SPEED) / DEFAULT_ATTACK_SPEED)
+            .coerceIn(1.0, MAX_ATTACK_SPEED_MULTIPLIER)
+
+    /** 按攻速倍率缩放 tick 数；向上取整，保证实际倍率不超过上限 */
+    private fun scaledTicks(ticks: Int, speed: Double): Int =
+        if (ticks <= 0) ticks else ceil(ticks / speed).toInt().coerceAtLeast(1)
+
     /**
      * 这把枪现在**正忙**（换弹 / 拉栓 / 蓄力），近战入口必须被拒
      */
@@ -192,13 +203,14 @@ object MeleeClientHandler {
 
         // ③ 冲锋那一下的时长与结算点独立于动作表（数据里没写就跟着那一段走）
         val charge = if (chargeStrike) data.get(GunProp.BAYONET_CHARGE) else null
-        val duration = charge?.strikeDuration?.takeIf { it > 0 } ?: action.duration
-        val hitTimes = if (chargeStrike) {
+        val speed = if (chargeStrike) 1.0 else meleeAttackSpeed(player)
+        val duration = scaledTicks(charge?.strikeDuration?.takeIf { it > 0 } ?: action.duration, speed)
+        val hitTimes = (if (chargeStrike) {
             val strikeHitTime = charge?.strikeHitTime?.takeIf { it >= 0 }
             if (strikeHitTime != null) listOf(strikeHitTime) else action.hitTimes
         } else {
             action.hitTimes
-        }
+        }).map { scaledTicks(it, speed) }
 
         // ④ 动作占用（时长 = 本段的 Duration）
         if (!state.acquire(GunAction.MELEE, duration)) return false
@@ -361,6 +373,10 @@ object MeleeClientHandler {
 
     /** 换弹/拉栓占用的"安全上限"：真正的释放由状态机自己结束，这里只是别让锁永远占着 */
     private const val MELEE_SAFE_LOCK_TICKS = 400
+
+    /** `Attributes.ATTACK_SPEED` 的玩家默认值 */
+    private const val DEFAULT_ATTACK_SPEED = 4.0
+    private const val MAX_ATTACK_SPEED_MULTIPLIER = 4.0
 
     private inline fun debugLog(message: () -> String) {
         if (DisplayConfig.MELEE_DEBUG_LOG.get()) {

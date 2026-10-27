@@ -220,8 +220,8 @@ data class MeleeAttackMessage(
                 ModDamageTypes.causeGunMeleeDamage(level.registryAccess(), attacker, attacker)
             }
 
-            // 多段出伤（`HitTime` 写了数组）：原版无敌帧会吞掉隔了几 tick 的后续段，先清掉
-            if (action.hitTimes.size > 1 && target is LivingEntity) {
+            // 原版无敌帧会吞掉紧跟其后的多段出伤或下一次挥击，结算前先清掉
+            if (target is LivingEntity) {
                 target.invulnerableTime = 0
             }
 
@@ -352,6 +352,10 @@ data class MeleeAttackMessage(
             hurt = target.hurt(source, armored.toFloat())
         }
         if (byPassed > 0) {
+            // 护甲部分刚刚写入了无敌帧，不清掉的话穿甲部分会被当成重复伤害吞掉
+            if (target is LivingEntity) {
+                target.invulnerableTime = 0
+            }
             hurt = target.forceHurt(source, byPassed.toFloat()) || hurt
         }
         return hurt
