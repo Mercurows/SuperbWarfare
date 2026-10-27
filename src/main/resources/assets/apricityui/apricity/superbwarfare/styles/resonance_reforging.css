@@ -1,0 +1,112 @@
+/* Reference: docs/resonance-reforging.md. Bundled font: SIL OFL, see fonts/OFL.txt. */
+@font-face {
+    font-family: ResonanceUI;
+    src: url("../fonts/SourceHanSansCN-Medium.otf");
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
+body, button { font-family: ResonanceUI, sans-serif; font-weight: normal; color: #f1f1f2; font-size: 18px; }
+body { position: relative; background: transparent; }
+body, body * { user-select: none; }
+button { display: block; margin: 0; padding: 0; border: 0; background: transparent; cursor: default; }
+translation { display: inline; }
+texture { display: block; pointer-events: none; }
+.glass-backdrop { position: fixed; inset: 0; background: rgba(5, 6, 8, 0.76); backdrop-filter: blur(18px); }
+/* Only the content scales; the backdrop always covers the browser viewport. */
+.frame { position: absolute; left: 0; top: 0; width: 1600px; height: 900px; transform-origin: 0 0; }
+.corner { position: absolute; width: 21px; height: 21px; color: rgba(225, 225, 228, 0.46); }
+.top-left { left: 40px; top: 40px; border-left: 1px solid #79797d; border-top: 1px solid #79797d; }
+.top-right { right: 40px; top: 40px; border-right: 1px solid #79797d; border-top: 1px solid #79797d; }
+.bottom-left { left: 40px; bottom: 50px; border-left: 1px solid #79797d; border-bottom: 1px solid #79797d; }
+.bottom-right { right: 40px; bottom: 50px; border-right: 1px solid #79797d; border-bottom: 1px solid #79797d; }
+.heading { position: absolute; left: 70px; top: 54px; display: flex; align-items: center; gap: 8px; }
+.weapon-emblem { position: relative; width: 156px; height: 156px; flex-shrink: 0; }
+.emblem-diamond { position: absolute; left: 23px; top: 23px; width: 110px; height: 110px; transform: rotate(45deg); background: rgba(212, 212, 219, 0.16); }
+.emblem-cross { position: absolute; background: rgba(9, 10, 12, 0.66); }
+.emblem-cross.horizontal { left: 0; top: 74px; width: 156px; height: 8px; }
+.emblem-cross.vertical { left: 74px; top: 0; width: 8px; height: 156px; }
+.weapon-icon { position: absolute; left: 30px; top: 33px; width: 102px; height: 92px; border: 2px solid rgba(233, 233, 235, 0.64); background: rgba(26, 26, 29, 0.3); }
+.weapon-icon texture { position: absolute; left: -16px; top: -16px; width: 132px; height: 120px; }
+.weapon-title { width: 760px; }
+.eyebrow { color: #c9c9cd; font-size: 24px; line-height: 32px; }
+.weapon-name { height: 70px; line-height: 70px; font-size: 56px; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.weapon-type { color: #c6c6cb; font-size: 23px; line-height: 32px; }
+.perk-band {
+    position: absolute; left: 60px; right: 60px; top: 29.333333%; height: 190px;
+    display: flex; align-items: center; border: 1px solid rgba(213, 213, 221, 0.32);
+    background: rgba(28, 28, 31, 0.42);
+}
+.perk-band::before, .perk-band::after, .choices-panel::before, .choices-panel::after {
+    content: ""; position: absolute; top: 0; bottom: 0; width: 12px;
+    background: rgba(219, 219, 230, 0.14); pointer-events: none;
+}
+.perk-band::before, .choices-panel::before { left: 0; }
+.perk-band::after, .choices-panel::after { right: 0; }
+.perk-group { position: relative; height: 150px; flex-shrink: 0; border-right: 2px solid #54e5ea; }
+.group-ammo { width: 31%; padding: 0 22px 0 46px; }
+.group-functional { width: 29%; padding: 0 20px 0 22px; }
+.group-damage { width: 27%; padding: 0 18px; }
+.group-damage .perk-row { gap: 9px; }
+.group-title { height: 24px; margin-top: -4px; color: #babac0; font-size: 14px; line-height: 20px; letter-spacing: 1px; }
+.perk-row { display: flex; align-items: center; gap: 11px; height: 88px; }
+.arrow {
+    position: relative; flex-shrink: 0; width: 37px; height: 66px;
+    background: linear-gradient(120deg, rgba(120, 120, 126, 0.25), rgba(90, 90, 96, 0.12));
+    border: 1px solid rgba(221, 221, 228, 0.24);
+    clip-path: polygon(16% 0, 84% 0, 100% 10%, 100% 90%, 84% 100%, 16% 100%, 0 90%, 0 10%);
+}
+.arrow span { position: absolute; left: 14px; top: 25px; width: 12px; height: 12px; border-top: 4px solid #f2f2f3; border-right: 4px solid #f2f2f3; transform: rotate(45deg); }
+.arrow.previous span { left: 15px; transform: rotate(-135deg); }
+.perk-card {
+    position: relative; flex-shrink: 0; width: 82px; height: 86px; padding: 6px;
+    border: 1px solid rgba(210, 210, 218, 0.52); background: rgba(12, 12, 15, 0.44);
+    box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.34);
+}
+.perk-card texture { width: 68px; height: 72px; }
+.perk-card.selected { border: 2px solid #d6f6ff; padding: 5px; box-shadow: 0 0 16px 3px rgba(54, 162, 255, 0.82), inset 0 0 0 3px #348ac4; }
+.locked { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 8px; color: #f0f0f2; font-size: 16px; }
+.locked::before { content: ""; position: absolute; inset: 6px; border: 1px solid rgba(0, 0, 0, 0.7); pointer-events: none; }
+.lock { position: relative; width: 19px; height: 17px; margin-bottom: 9px; border-radius: 2px; background: #eeeeef; }
+.lock::before { content: ""; position: absolute; left: 4px; top: -9px; width: 11px; height: 12px; border: 3px solid #eeeeef; border-radius: 7px 7px 0 0; }
+.keyhole { position: absolute; left: 8px; top: 5px; width: 3px; height: 7px; background: #222228; }
+.pagination { width: 100%; margin-top: 10px; }
+.page-label { text-align: center; font-size: 18px; line-height: 22px; }
+.page-marks { display: flex; justify-content: center; gap: 10px; margin-top: 5px; }
+.page-marks span { width: 35px; height: 4px; background: rgba(207, 207, 216, 0.28); }
+.page-marks .active { background: #f3f3f5; }
+.output-preview { flex: 1; display: flex; justify-content: center; align-items: center; }
+.output-preview texture { width: 106px; height: 106px; border: 1px solid rgba(240, 240, 243, 0.64); background: rgba(24, 24, 27, 0.2); }
+.choices-panel {
+    position: absolute; left: 48%; top: 52.444444%; width: 500px; height: 202px; transform: translateX(-50%);
+    padding: 10px 24px; border: 1px solid rgba(223, 223, 232, 0.43); background: rgba(22, 22, 25, 0.58);
+}
+.panel-pointer { position: absolute; left: 242px; top: -14px; width: 26px; height: 26px; transform: rotate(45deg); border-top: 1px solid rgba(223, 223, 232, 0.43); border-left: 1px solid rgba(223, 223, 232, 0.43); background: rgba(22, 22, 25, 0.58); }
+.panel-heading { position: relative; margin-bottom: 19px; line-height: 27px; font-size: 20px; }
+.choice-row { display: flex; align-items: flex-start; gap: 16px; padding-left: 12px; }
+.choice-row .perk-card { width: 96px; height: 100px; padding: 6px; }
+.choice-row .perk-card texture { width: 82px; height: 86px; }
+.choice-row .perk-card.selected { padding: 5px; }
+.unequip { width: 96px; flex-shrink: 0; font-size: 18px; text-align: center; }
+.empty-slot { width: 82px; height: 86px; margin: 6px 7px 12px; border: 1px dashed #dadade; border-radius: 3px; }
+.stats { position: absolute; right: 70px; top: 57%; width: 460px; padding: 16px 18px 14px; border: 1px solid rgba(82, 252, 218, 0.38); background: rgba(0, 18, 25, 0.72); }
+.stats::before, .stats::after { content: ""; position: absolute; width: 18px; height: 18px; pointer-events: none; }
+.stats::before { left: -1px; top: -1px; border-left: 2px solid #52fcda; border-top: 2px solid #52fcda; }
+.stats::after { right: -1px; bottom: -1px; border-right: 2px solid #52fcda; border-bottom: 2px solid #52fcda; }
+.stats-heading { position: relative; display: flex; align-items: center; gap: 10px; height: 34px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #237b87; font-size: 22px; }
+.stats-index { color: #52fcda; font-size: 26px; }
+.stats-code { position: absolute; right: 0; top: 5px; color: #338997; font-size: 11px; letter-spacing: 1px; }
+.stat { position: relative; height: 39px; border-bottom: 1px solid rgba(35, 123, 135, 0.2); font-size: 16px; }
+.stat > texture { position: absolute; left: 0; top: 11px; width: 17px; height: 17px; }
+.stat-label { position: absolute; left: 25px; top: 8px; color: #d3e5e9; white-space: nowrap; }
+.stat-track { position: absolute; left: 123px; top: 16px; width: 95px; height: 8px; background: #163841; }
+.stat-common, .stat-change { position: absolute; left: 0; top: 0; height: 8px; }
+.stat-common { background: #e6f4f6; }
+.stat-change { background: #52fcda; }
+.stat-value { position: absolute; right: 109px; top: 8px; white-space: nowrap; color: #ffffff; }
+.stat-delta { position: absolute; right: 0; top: 9px; color: #52fcda; white-space: nowrap; font-size: 14px; }
+.level { position: absolute; left: 90px; bottom: 61px; width: 348px; }
+.level-track { height: 10px; margin-bottom: 8px; background: rgba(165, 165, 174, 0.18); }
+.level-track div { width: 24px; height: 10px; background: #ed535b; }
+.level-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; white-space: nowrap; }
+.level-meta > span { flex-shrink: 0; font-size: 18px; }
+.manufactured { display: flex; justify-content: flex-end; gap: 6px; font-size: 15px; color: #d7d7dd; text-align: right; }

@@ -1,10 +1,12 @@
 package com.atsuishio.superbwarfare.block
 
+import com.atsuishio.superbwarfare.init.ModBlocks
 import com.atsuishio.superbwarfare.inventory.menu.ReforgingTableMenu
+import com.sighs.apricityui.ApricityUI
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.network.chat.Component
-import net.minecraft.stats.Stats
+import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.MenuProvider
 import net.minecraft.world.SimpleMenuProvider
@@ -53,8 +55,12 @@ open class ReforgingTableBlock : Block(
         if (level.isClientSide) {
             return InteractionResult.SUCCESS
         } else {
-            player.openMenu(state.getMenuProvider(level, pos))
-            player.awardStat(Stats.INTERACT_WITH_ANVIL)
+            if (player is ServerPlayer && level.getBlockState(pos.below()).`is`(ModBlocks.RESONANCE_BASE.get())) {
+                // UI prototype only; no item bindings until the resonance workflow is defined.
+                ApricityUI.menu(player, RESONANCE_SCREEN).bind { }
+            } else {
+                player.openMenu(state.getMenuProvider(level, pos))
+            }
             return InteractionResult.CONSUME
         }
     }
@@ -141,6 +147,8 @@ open class ReforgingTableBlock : Block(
     }
 
     companion object {
+        private const val RESONANCE_SCREEN = "superbwarfare/screens/resonance_reforging.html"
+
         @JvmField
         val WATERLOGGED: BooleanProperty = BlockStateProperties.WATERLOGGED
 

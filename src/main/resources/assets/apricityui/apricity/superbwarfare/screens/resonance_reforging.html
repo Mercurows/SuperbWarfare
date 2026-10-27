@@ -1,0 +1,112 @@
+<!doctype html>
+<!-- Prototype reference and user annotations: docs/resonance-reforging.md (2026-10-27). -->
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="aui-viewport" content="mode=browser,zoom=1,min-zoom=1,max-zoom=1,user-scalable=false">
+    <meta name="aui-mouse-events" content="intercept">
+    <link rel="stylesheet" href="../styles/resonance_reforging.css">
+</head>
+<body>
+    <div class="glass-backdrop"></div>
+    <!-- Static visual prototype. Weapon data is sample data; no inventory or gameplay bindings. -->
+    <div class="frame">
+        <div class="corner top-left"></div><div class="corner top-right"></div>
+        <div class="corner bottom-left"></div><div class="corner bottom-right"></div>
+        <div class="heading">
+            <div class="weapon-emblem">
+                <div class="emblem-diamond"></div>
+                <div class="emblem-cross horizontal"></div><div class="emblem-cross vertical"></div>
+                <div class="weapon-icon"><texture src="superbwarfare:textures/gun_icon/ak_47_icon.png"></texture></div>
+            </div>
+            <div class="weapon-title">
+                <div class="eyebrow"><span>重塑武器</span></div>
+                <div class="weapon-name" id="weapon-name"><translation>item.superbwarfare.ak_47</translation></div>
+                <div class="weapon-type"><span>自动步枪</span></div>
+            </div>
+        </div>
+
+        <div class="perk-band">
+            <div class="perk-group group-ammo">
+                <div class="group-title"><span>Ammo Perk</span></div>
+                <div class="perk-row">
+                    <!-- Arrows will page slots (1–3, 4–6, ...); behavior is deferred. -->
+                    <button type="button" class="arrow previous" aria-label="Previous slot page" aria-disabled="true"><span></span></button>
+                    <button type="button" class="perk-card" aria-label="ap bullet" aria-disabled="true"><texture src="superbwarfare:textures/item/ap_bullet.png"></texture></button>
+                    <div class="perk-card locked"><div class="lock"><div class="keyhole"></div></div><span>Lv.10</span></div>
+                    <div class="perk-card locked"><div class="lock"><div class="keyhole"></div></div><span>Lv.20</span></div>
+                    <button type="button" class="arrow next" aria-label="Next slot page" aria-disabled="true"><span></span></button>
+                </div>
+                <div class="pagination"><div class="page-label">1 / 2</div><div class="page-marks"><span class="active"></span><span></span></div></div>
+            </div>
+            <div class="perk-group group-functional">
+                <div class="group-title"><span>Functional Perk</span></div>
+                <div class="perk-row">
+                    <!-- Arrows will page slots (1–3, 4–6, ...); behavior is deferred. -->
+                    <button type="button" class="arrow previous" aria-label="Previous slot page" aria-disabled="true"><span></span></button>
+                    <button type="button" class="perk-card selected" aria-label="field doctor" aria-disabled="true"><texture src="superbwarfare:textures/item/field_doctor.png"></texture></button>
+                    <div class="perk-card locked"><div class="lock"><div class="keyhole"></div></div><span>Lv.10</span></div>
+                    <div class="perk-card locked"><div class="lock"><div class="keyhole"></div></div><span>Lv.20</span></div>
+                    <button type="button" class="arrow next" aria-label="Next slot page" aria-disabled="true"><span></span></button>
+                </div>
+                <div class="pagination"><div class="page-label">1 / 3</div><div class="page-marks"><span class="active"></span><span></span><span></span></div></div>
+            </div>
+            <div class="perk-group group-damage">
+                <div class="group-title"><span>Damage Perk</span></div>
+                <div class="perk-row">
+                    <!-- Arrows will page slots (1–3, 4–6, ...); behavior is deferred. -->
+                    <button type="button" class="arrow previous" aria-label="Previous slot page" aria-disabled="true"><span></span></button>
+                    <button type="button" class="perk-card" aria-label="killing tally" aria-disabled="true"><texture src="superbwarfare:textures/item/killing_tally.png"></texture></button>
+                    <div class="perk-card locked"><div class="lock"><div class="keyhole"></div></div><span>Lv.10</span></div>
+                    <div class="perk-card locked"><div class="lock"><div class="keyhole"></div></div><span>Lv.20</span></div>
+                    <button type="button" class="arrow next" aria-label="Next slot page" aria-disabled="true"><span></span></button>
+                </div>
+                <div class="pagination"><div class="page-label">1 / 2</div><div class="page-marks"><span class="active"></span><span></span></div></div>
+            </div>
+            <div class="output-preview"><texture src="superbwarfare:textures/gun_icon/ak_47_icon.png"></texture></div>
+        </div>
+
+        <div class="choices-panel">
+            <div class="panel-pointer"></div>
+            <div class="panel-heading"><span>可用Perk</span></div>
+            <div class="choice-row">
+                <button type="button" class="unequip" aria-disabled="true"><div class="empty-slot"></div><span>卸下</span></button>
+                <button type="button" class="perk-card selected" aria-label="field doctor" aria-disabled="true"><texture src="superbwarfare:textures/item/field_doctor.png"></texture></button>
+                <button type="button" class="perk-card" aria-label="quickdraw" aria-disabled="true"><texture src="superbwarfare:textures/item/quickdraw.png"></texture></button>
+                <button type="button" class="perk-card" aria-label="snapshot sights" aria-disabled="true"><texture src="superbwarfare:textures/item/snapshot_sights.png"></texture></button>
+            </div>
+        </div>
+
+        <!-- Same attributes and icon assets as the weapon editor HUD; sample values only. -->
+        <div class="stats">
+            <div class="stats-heading"><span class="stats-index">01 /</span><span>武器属性</span><span class="stats-code">SBW-ATTR</span></div>
+            <div class="stat">
+                <texture src="superbwarfare:textures/overlay/edit/icons/rpm.png" blur="true"></texture><span class="stat-label">射速</span>
+                <div class="stat-track"><div class="stat-common" style="width:50%"></div></div><span class="stat-value">600 rpm</span>
+            </div>
+            <div class="stat">
+                <texture src="superbwarfare:textures/overlay/edit/icons/damage.png" blur="true"></texture><span class="stat-label">伤害</span>
+                <div class="stat-track"><div class="stat-common" style="width:7.2%"></div></div><span class="stat-value">7.2</span>
+            </div>
+            <div class="stat">
+                <texture src="superbwarfare:textures/overlay/edit/icons/headshot.png" blur="true"></texture><span class="stat-label">爆头倍率</span>
+                <div class="stat-track"><div class="stat-common" style="width:50%"></div></div><span class="stat-value">2×</span>
+            </div>
+            <div class="stat">
+                <texture src="superbwarfare:textures/overlay/edit/icons/recoil_y.png" blur="true"></texture><span class="stat-label">竖直后坐力</span>
+                <div class="stat-track"><div class="stat-common" style="width:40%"></div><div class="stat-change" style="left:40%;width:4%"></div></div><span class="stat-value">0.00202</span><span class="stat-delta">(-0.00018)</span>
+            </div>
+            <div class="stat">
+                <texture src="superbwarfare:textures/overlay/edit/icons/recoil_x.png" blur="true"></texture><span class="stat-label">水平后坐力</span>
+                <div class="stat-track"><div class="stat-common" style="width:52%"></div><div class="stat-change" style="left:52%;width:3%"></div></div><span class="stat-value">0.02068</span><span class="stat-delta">(-0.00132)</span>
+            </div>
+        </div>
+
+        <div class="level">
+            <div class="level-track"><div></div></div>
+            <div class="level-meta"><span>等级1</span><div class="manufactured"><span>制造日期</span><span>2026/10/27 14:30</span></div></div>
+        </div>
+    </div>
+    <script src="../scripts/resonance_reforging.js"></script>
+</body>
+</html>

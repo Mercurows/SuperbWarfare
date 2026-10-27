@@ -44,6 +44,7 @@ class ModBlockTagProvider(
             ModBlocks.DEEPSLATE_SCHEELITE_ORE.get(),
             ModBlocks.DRAGON_TEETH.get(),
             ModBlocks.REFORGING_TABLE.get(),
+            ModBlocks.RESONANCE_BASE.get(),
             ModBlocks.LEAD_BLOCK.get(),
             ModBlocks.STEEL_BLOCK.get(),
             ModBlocks.TUNGSTEN_BLOCK.get(),

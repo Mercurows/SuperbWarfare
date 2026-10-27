@@ -38,6 +38,7 @@ object ModBlocks {
     @JvmField val JUMP_PAD = registerBlock("jump_pad") { JumpPadBlock() }
     @JvmField val DRAGON_TEETH = registerBlock("dragon_teeth") { DragonTeethBlock() }
     @JvmField val REFORGING_TABLE = registerBlock("reforging_table") { ReforgingTableBlock() }
+    @JvmField val RESONANCE_BASE = registerBlock("resonance_base") { Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.METAL).strength(4f, 6f).requiresCorrectToolForDrops().lightLevel { 5 }) }
     @JvmField val LEAD_BLOCK = registerBlock("lead_block") { Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.METAL).strength(5f, 6f).requiresCorrectToolForDrops()) }
     @JvmField val STEEL_BLOCK = registerBlock("steel_block") { Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.METAL).strength(5f, 6f).requiresCorrectToolForDrops()) }
     @JvmField val TUNGSTEN_BLOCK = registerBlock("tungsten_block") { Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.METAL).strength(5f, 6f).requiresCorrectToolForDrops()) }

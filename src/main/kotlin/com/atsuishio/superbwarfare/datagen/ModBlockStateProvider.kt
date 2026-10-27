@@ -17,6 +17,7 @@ class ModBlockStateProvider(output: PackOutput, exFileHelper: ExistingFileHelper
         horizontalBlock(ModBlocks.BARBED_WIRE.get(), UncheckedModelFile(modLoc("block/barbed_wire")))
         horizontalBlock(ModBlocks.JUMP_PAD.get(), UncheckedModelFile(modLoc("block/jump_pad")))
         horizontalBlock(ModBlocks.REFORGING_TABLE.get(), UncheckedModelFile(modLoc("block/reforging_table")))
+        simpleBlock(ModBlocks.RESONANCE_BASE.get(), UncheckedModelFile(modLoc("block/resonance_base")))
         horizontalBlock(ModBlocks.CONTAINER.get(), UncheckedModelFile(modLoc("block/container")))
         horizontalBlock(ModBlocks.SMALL_CONTAINER.get(), UncheckedModelFile(modLoc("block/small_container")))
         horizontalBlock(ModBlocks.LUCKY_CONTAINER.get(), UncheckedModelFile(modLoc("block/container")))
