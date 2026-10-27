@@ -1,0 +1,63 @@
+{
+  "GunType": "Special",
+  "Icon": "superbwarfare:textures/gun_icon/miaodao_icon.png",
+  "ArmPose": "Item",
+  "RightClickAction": "HeavyStrike",
+  "ProjectileAmount": 0,
+  "AmmoType": "Infinity",
+  "MeleeDamage": 16,
+  "MeleeHeadshot": 1.5,
+  "MeleeLegshot": 0.75,
+  "MaxDurability": 1200,
+  "MeleeHitbox": {
+    "Type": "Box",
+    "Range": 3.8,
+    "Width": 2.4,
+    "Height": 2.0,
+    "YOffset": -0.3,
+    "Occlusion": true
+  },
+  "MeleeActions": [
+    {
+      "Animation": "melee_1",
+      "Duration": 14,
+      "HitTime": 4
+    },
+    {
+      "Animation": "melee_2",
+      "Duration": 16,
+      "HitTime": 5
+    },
+    {
+      "Animation": "melee_3",
+      "Duration": 13,
+      "HitTime": 4,
+      "DamageMultiplier": 1.2222
+    },
+    {
+      "Animation": "melee_heavy",
+      "Duration": 23,
+      "HitTime": 9,
+      "Heavy": true,
+      "DamageMultiplier": 2.0,
+      "Hitbox": {
+        "Type": "Box",
+        "Range": 4.2,
+        "Width": 2.4,
+        "Height": 2.0,
+        "YOffset": -0.3,
+        "Occlusion": true
+      }
+    }
+  ],
+  "MeleeSound": {
+    "Swing": "superbwarfare:empty",
+    "Hit": "superbwarfare:bayonet_hit"
+  },
+  "Weight": 4,
+  "DrawTime": 10,
+  "DefaultFireMode": "Semi",
+  "AvailableFireModes": [
+    "Semi"
+  ]
+}

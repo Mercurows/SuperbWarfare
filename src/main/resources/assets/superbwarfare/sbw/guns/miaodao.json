@@ -1,0 +1,15 @@
+{
+  "SlotIcon": "superbwarfare:textures/item/miaodao_icon.png",
+  "UseCustomSprintAnimation": true,
+  "Animation": {
+    "Idle": "animation.miaodao.idle",
+    "Melee": "animation.miaodao.melee_1",
+    "Run": "animation.miaodao.sprint",
+    "Edit": "animation.miaodao.edit"
+  },
+  "Model": {
+    "Animation": "superbwarfare:animations/bedrock/gun/miaodao.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/miaodao.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/miaodao.png"
+  }
+}

@@ -56,6 +56,7 @@ class ModSoundProvider(output: PackOutput, existingFileHelper: ExistingFileHelpe
         register("melee_hit", "melee_hit_01", "melee_hit_02", "melee_hit_03", "melee_hit_04", "melee_hit_05")
         register("bayonet_hit", "bayonet_hit_1", "bayonet_hit_2", "bayonet_hit_3")
         register("knife_swing", "swing/knife_swing_1", "swing/knife_swing_2", "swing/knife_swing_3", "swing/knife_swing_4")
+        register("sword_swing", "swing/sword_swing_1", "swing/sword_swing_2", "swing/sword_swing_3")
         register("knife_swing_heavy", "swing/knife_swing_heavy")
         register("heavy_swing", "swing/heavy_swing_1", "swing/heavy_swing_2")
         register("heavy_slam", "swing/heavy_slam")

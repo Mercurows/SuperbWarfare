@@ -79,6 +79,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         gunItem(ModItems.KNIFE_6KH2)
         gunItem(ModItems.KNIFE_SEITENGEWEHR_84)
         gunItem(ModItems.KNIFE_M1917)
+        gunItem(ModItems.MIAODAO)
         gunItem(ModItems.ELECTRIC_BATON)
         gunItem(ModItems.STEEL_PIPE)
         gunItem(ModItems.HAMMER)

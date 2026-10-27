@@ -219,7 +219,6 @@ object MeleeClientHandler {
         // ⑤ 通知动画侧"新的一次挥击开始了"。按住 V 连续挥击时状态一直是 MELEE，
         //    光靠状态切换判断的话动画只会播第一段（见 [swingSerial] 的说明）。
         swingSerial++
-        player.swing(InteractionHand.MAIN_HAND)
 
         if (action.cooldown > 0) {
             data.cooldown.set(Cooldown.meleeKey(index), action.cooldown)
@@ -289,6 +288,8 @@ object MeleeClientHandler {
             null
         }
         val hits = diag?.hits ?: MeleeQuery.resolve(player.level(), player, action, context, forced = forced)
+
+        player.swing(InteractionHand.MAIN_HAND)
 
         sendPacketToServer(
             MeleeAttackMessage(

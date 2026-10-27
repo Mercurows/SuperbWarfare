@@ -294,6 +294,7 @@ object ModItems {
     @JvmField val KNIFE_6KH2 = registerItem("knife_6kh2") { KnifeItem(Properties().rarity(Rarity.COMMON)) }
     @JvmField val KNIFE_SEITENGEWEHR_84 = registerItem("knife_seitengewehr_84") { KnifeItem(Properties().rarity(Rarity.COMMON)) }
     @JvmField val KNIFE_M1917 = registerItem("knife_m1917") { KnifeItem(Properties().rarity(Rarity.COMMON)) }
+    @JvmField val MIAODAO = registerItem("miaodao") { KnifeItem(Properties()) }
     @JvmField val HAMMER = registerItem("hammer") { HammerItem(Properties()) }
     @JvmField val GOLDEN_HAMMER = registerItem("golden_hammer") { HammerItem(Properties()) }
     @JvmField val STEEL_HAMMER = registerItem("steel_hammer") { HammerItem(Properties()) }

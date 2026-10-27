@@ -30,6 +30,7 @@ import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
 import net.minecraft.stats.Stats
 import net.minecraft.world.damagesource.DamageSource
+import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.LivingEntity
@@ -166,7 +167,10 @@ data class MeleeAttackMessage(
         val level = attacker.level()
         // 刺刀冲锋那一击的伤害基数由 `BayonetCharge.StrikeDamage` 给（绝对值），不写就还是那一段的伤害
         val chargeDamage = data.get(GunProp.BAYONET_CHARGE).strikeDamage
-        val baseDamage = if (chargeStrike && chargeDamage > 0) chargeDamage else action.damage
+        val strength = attacker.getEffect(MobEffects.DAMAGE_BOOST)
+        val strengthBonus = if (strength != null) 3.0 * (strength.amplifier + 1) else 0.0
+        val baseDamage =
+            (if (chargeStrike && chargeDamage > 0) chargeDamage else action.damage) + strengthBonus
         var hurtCount = 0
         var hitCount = 0
         var landedHit = false
@@ -199,8 +203,8 @@ data class MeleeAttackMessage(
             // 衰减：第 order 个目标乘 max(1 - order * Falloff, 0.1)
             val falloff = if (order == 0) 1.0 else (1.0 - order * action.falloff).coerceAtLeast(0.1)
 
-            // 伤害数值 = 枪的 `MeleeDamage` × 本段 `DamageMultiplier`（已在 resolve 里算完）；
-            // `ATTACK_DAMAGE` 属性加成保留在 `GunItem.getAttributeModifiers` 里，但不参与这里的结算
+            // 伤害数值 = 枪的 `MeleeDamage` × 本段 `DamageMultiplier`（已在 resolve 里算完），
+            // 外加力量效果的固定加成；`ATTACK_DAMAGE` 属性本身的加成不参与这里的结算
             // ——否则 `MeleeDamage` 会被"属性加成"二次放大，和动作倍率叠在一起就说不清是谁放大的。
             val damage = baseDamage * zoneMultiplier * falloff
             if (damage <= 0) continue

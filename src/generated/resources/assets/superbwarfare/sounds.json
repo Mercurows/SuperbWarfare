@@ -3188,6 +3188,13 @@
       "superbwarfare:gun/svd/svd_veryfar"
     ]
   },
+  "sword_swing": {
+    "sounds": [
+      "superbwarfare:swing/sword_swing_1",
+      "superbwarfare:swing/sword_swing_2",
+      "superbwarfare:swing/sword_swing_3"
+    ]
+  },
   "t_90a_engine": {
     "sounds": [
       {
