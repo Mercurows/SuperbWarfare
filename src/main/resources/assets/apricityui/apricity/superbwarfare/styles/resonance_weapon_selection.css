@@ -24,7 +24,7 @@
 #close-selection { display: flex; align-items: center; gap: 10px; font-size: 16px; color: #c8cbd1; cursor: pointer; }
 .keycap { padding: 2px 5px; border: 1px solid rgba(200, 203, 213, 0.55); border-radius: 2px; font-size: 12px; }
 #close-selection:hover, .back-to-weapons:hover { color: #c9efff; }
-.back-to-weapons { position: absolute; right: 70px; top: 76px; font-size: 17px; color: #c8cbd1; cursor: pointer; }
+.back-to-weapons { position: absolute; right: 70px; top: 76px; display: flex; align-items: center; gap: 10px; font-size: 17px; color: #c8cbd1; cursor: pointer; }
 @media (max-height: 800px) {
     #selection-preview { width: 180px; height: 180px; margin-bottom: 12px; }
     .selection-instruction { margin-top: 16px; }

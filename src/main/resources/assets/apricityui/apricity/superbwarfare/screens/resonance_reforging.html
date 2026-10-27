@@ -13,7 +13,7 @@
     <div class="frame">
         <div class="corner top-left"></div><div class="corner top-right"></div>
         <div class="corner bottom-left"></div><div class="corner bottom-right"></div>
-        <button type="button" class="back-to-weapons" id="back-to-weapons"><translation>container.superbwarfare.reforging_table.back_to_weapons</translation></button>
+        <button type="button" class="back-to-weapons" id="back-to-weapons"><span class="keycap">ESC</span><translation>container.superbwarfare.reforging_table.back_to_weapons</translation></button>
         <div class="heading">
             <div class="weapon-emblem">
                 <texture class="reforge-emblem" src="superbwarfare:textures/overlay/reforging_table/reforge_icon.png"></texture>
@@ -59,9 +59,8 @@
 
             <button type="button" class="reset-perks" id="reset-perks">
                 <svg class="reset-ring" viewBox="0 0 64 64">
-                    <circle cx="32" cy="32" r="29" fill="none" stroke="#606267" stroke-width="1"></circle>
-                    <circle cx="32" cy="32" r="26" fill="none" stroke="#72757b" stroke-width="4"></circle>
-                    <path id="reset-ring-progress" d="" fill="none" stroke="#f2f2f4" stroke-width="4" stroke-linecap="round"></path>
+                    <circle cx="32" cy="32" r="27" fill="none" stroke="#72757b" stroke-width="3"></circle>
+                    <path id="reset-ring-progress" d="" fill="none" stroke="#f2f2f4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
                 </svg>
                 <span class="reset-copy"><span><translation>container.superbwarfare.reforging_table.reset</translation></span><span class="reset-hint"><translation>container.superbwarfare.reforging_table.hold</translation></span></span>
             </button>
@@ -126,7 +125,7 @@
 
         <div class="level">
             <div class="level-track"><div id="weapon-exp-fill"></div></div>
-            <div class="level-meta"><span id="weapon-level"><translation>des.superbwarfare.guns.level</translation>—</span><div class="manufactured"><translation>container.superbwarfare.reforging_table.manufacture_date</translation> —</div></div>
+            <div class="level-meta"><span id="weapon-level"><translation>des.superbwarfare.guns.level</translation>—</span><span class="manufactured" id="weapon-manufacture-date">—</span></div>
             <div class="weapon-experience" id="weapon-experience">— EXP</div>
         </div>
     </div>

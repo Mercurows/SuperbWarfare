@@ -15,6 +15,9 @@ data class GunState(
     // ---- identity / baseline ----
     @SerialName("UUID")
     val uuid: StructuredUUID? = null,
+    /** Manufacturing time in epoch milliseconds; zero means an older weapon with no recorded date. */
+    @SerialName("CreatedTime")
+    val createdTime: Long = 0,
     @SerialName("DefaultData")
     val defaultDataId: String = "",
 

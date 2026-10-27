@@ -1258,7 +1258,7 @@
   "container.superbwarfare.reforging_table.empty_inventory_hint": "Place a Weapon in Your Inventory or Hotbar to Select It Here",
   "container.superbwarfare.reforging_table.start_hint": "Select a Weapon to Begin Reshaping",
   "container.superbwarfare.reforging_table.upgrade_points": "Upgrade Points",
-  "container.superbwarfare.reforging_table.manufacture_date": "Manufacture Date",
+  "container.superbwarfare.reforging_table.manufacture_date": "T.D. %3$s/%2$s/%1$s",
   "container.superbwarfare.reforging_table.experience": "%1$s / %2$s EXP",
   "container.superbwarfare.charging_station": "Charging Station",
   "container.superbwarfare.charging_station.show_range": "Show Range",

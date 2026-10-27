@@ -78,7 +78,7 @@ sbw-reforging-weapon { display: block; pointer-events: none; }
 }
 .choices-card { position: absolute; left: 36px; right: 36px; top: 0; bottom: 0; border: 1px solid rgba(223, 223, 232, 0.43); background: rgba(22, 22, 25, 0.58); }
 .reset-perks { position: absolute; left: 75px; top: 198px; display: flex; align-items: center; gap: 12px; height: 58px; padding: 0; background: transparent; color: #d0d2d8; cursor: pointer; }
-.reset-ring { display: block; width: 54px; height: 54px; pointer-events: none; }
+.reset-ring { display: block; flex-shrink: 0; width: 54px; height: 54px; pointer-events: none; }
 .reset-copy { display: flex; flex-direction: column; gap: 4px; font-size: 16px; text-align: left; pointer-events: none; }
 .reset-hint { font-size: 12px; color: #979ba3; }
 .reset-perks:hover { color: #ffffff; }
@@ -136,8 +136,8 @@ sbw-reforging-weapon { display: block; pointer-events: none; }
 .level-track { height: 10px; margin-bottom: 8px; background: rgba(165, 165, 174, 0.18); }
 .level-track div { width: 0; height: 10px; background: #ed535b; }
 .level-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; white-space: nowrap; }
-.level-meta > span { flex-shrink: 0; font-size: 18px; }
-.manufactured { display: flex; justify-content: flex-end; gap: 6px; font-size: 15px; color: #d7d7dd; text-align: right; }
+.level-meta > span { flex-shrink: 0; font-size: 18px; line-height: 26px; }
+.manufactured { margin-left: auto; color: inherit; text-align: right; }
 .weapon-experience { font-size: 14px; color: #d7d7dd; }
 @media (max-height: 800px) {
     .weapon-description { top: 224px; }

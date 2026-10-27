@@ -1258,7 +1258,7 @@
   "container.superbwarfare.reforging_table.empty_inventory_hint": "将武器放入背包或快捷栏后，在这里选择",
   "container.superbwarfare.reforging_table.start_hint": "选择一把武器开始重塑",
   "container.superbwarfare.reforging_table.upgrade_points": "升级点数",
-  "container.superbwarfare.reforging_table.manufacture_date": "制造日期",
+  "container.superbwarfare.reforging_table.manufacture_date": "制造日期：%1$s/%2$s/%3$s",
   "container.superbwarfare.reforging_table.experience": "%1$s / %2$s EXP",
   "container.superbwarfare.charging_station": "充电站",
   "container.superbwarfare.charging_station.show_range": "显示范围",

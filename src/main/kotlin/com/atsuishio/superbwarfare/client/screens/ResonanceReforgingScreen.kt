@@ -30,6 +30,9 @@ import net.minecraft.world.item.TooltipFlag
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.api.distmarker.OnlyIn
 import org.lwjgl.glfw.GLFW
+import java.time.DateTimeException
+import java.time.Instant
+import java.time.ZoneId
 import java.util.*
 import kotlin.math.*
 
@@ -38,9 +41,10 @@ import kotlin.math.*
 class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inventorySlot: Int? = null) : ApricityScreen(
     if (inventorySlot == null) SELECTION_PATH else REFORGING_PATH
 ) {
-    private data class Candidate(val slot: Int, val stack: ItemStack)
+    private data class Candidate(val slot: Int, val stack: ItemStack, val uuid: UUID?)
     private var documentGeneration = -1L
     private var candidates = emptyList<Candidate>()
+    private var previewedCandidate: Candidate? = null
     private var displayedWeapon = ItemStack.EMPTY
     private var weaponUuid: String? = null
     private var baselineSignature = ""
@@ -135,7 +139,7 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
                         val slot = candidates.getOrNull(index)?.slot ?: return@addEventListener
                         if (player.inventory.getItem(slot).item is GunItem) mc.setScreen(ResonanceReforgingScreen(tablePos, slot))
                     }
-                    cell.addEventListener("mouseenter") { candidates.getOrNull(index)?.let { showPreview(doc, it.stack) } }
+                    cell.addEventListener("mouseenter") { candidates.getOrNull(index)?.let { showPreview(doc, it) } }
                 }
             } else bindReforging(doc)
         }
@@ -159,19 +163,25 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
             owned[it].index != candidates[it].slot || !ItemStack.matches(owned[it].value, candidates[it].stack)
         }
         if (changed) {
-            candidates = owned.map { Candidate(it.index, it.value.copy()) }
+            val previousCandidates = candidates
+            candidates = owned.mapIndexed { index, entry ->
+                val previous = previousCandidates.getOrNull(index)
+                if (previous?.slot == entry.index && ItemStack.matches(previous.stack, entry.value)) previous
+                else Candidate(entry.index, entry.value.copy(), GunData.from(entry.value).uuid)
+            }
             for (index in 0 until GRID_SIZE) {
                 val candidate = candidates.getOrNull(index)
-                doc.getElementById("weapon-$index")?.apply {
-                    setAttribute("class", if (candidate == null) "weapon-cell" else "weapon-cell occupied")
-                    setAttribute("aria-disabled", (candidate == null).toString())
-                }
+                val previous = previousCandidates.getOrNull(index)
+                if (!rebuilt && candidate?.slot == previous?.slot && ItemStack.matches(
+                        candidate?.stack ?: ItemStack.EMPTY, previous?.stack ?: ItemStack.EMPTY)) continue
+                attribute(doc, "weapon-$index", "class", if (candidate == null) "weapon-cell" else "weapon-cell occupied")
+                attribute(doc, "weapon-$index", "aria-disabled", (candidate == null).toString())
                 setDisplayItem(doc, "weapon-item-$index", candidate?.stack ?: ItemStack.EMPTY)
                 text(doc, "weapon-label-$index", candidate?.stack?.hoverName?.string ?: "")
             }
             text(doc, "weapon-count", candidates.size.toString() + " / $GRID_SIZE")
             doc.getElementById("selection-empty")?.setInlineStyleProperty("display", if (candidates.isEmpty()) "flex" else "none")
-            showPreview(doc, candidates.firstOrNull()?.stack ?: ItemStack.EMPTY)
+            showPreview(doc, choosePreviewCandidate())
         }
         forceRefresh = false
     }
@@ -327,6 +337,7 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         val needed = 20.0 * level * level + 160.0 * level + 20.0
         val exp = baseline.exp.get().takeIf { it.isFinite() } ?: 0.0
         text(doc, "weapon-level", Component.translatable("des.superbwarfare.guns.level").append(level.toString()).string)
+        text(doc, "weapon-manufacture-date", manufactureDate(baseline.createdTime))
         text(doc, "weapon-experience", translated("experience", format(exp, 0), format(needed, 0)))
         doc.getElementById("weapon-exp-fill")?.setInlineStyleProperty("width", ((exp / needed).coerceIn(0.0, 1.0) * 100).toString() + "%")
         perkHoverTargets.clear()
@@ -585,23 +596,58 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         val step = (progress * 100).toInt()
         if (step == resetProgressStep) return
         resetProgressStep = step
-        val angle = -PI / 2 + 2 * PI * progress
-        val x = 32 + 26 * cos(angle)
-        val y = 32 + 26 * sin(angle)
-        val path = when {
-            progress <= 0 -> ""
-            progress >= 1 -> "M32 6 A26 26 0 1 1 32 58 A26 26 0 1 1 32 6"
-            else -> "M32 6 A26 26 0 " + (if (progress > 0.5) "1" else "0") + " 1 " + x + " " + y
-        }
-        doc.getElementById("reset-ring-progress")?.setAttribute("d", path)
+        doc.getElementById("reset-ring-progress")?.setAttribute("d", resetRingPath(progress))
     }
 
-    private fun showPreview(doc: Document, stack: ItemStack) {
+    /** Equal-radius circular segments, at most a quarter turn each, keep the hold indicator smooth and concentric. */
+    private fun resetRingPath(progress: Double): String {
+        val fraction = progress.coerceIn(0.0, 1.0)
+        if (fraction <= 0) return ""
+        val segments = ceil(fraction * 4).toInt()
+        val sweep = fraction * 2 * PI / segments
+        val handle = 4.0 / 3.0 * tan(sweep / 4)
+        val radius = 27.0
+        return buildString {
+            append("M32 5")
+            for (segment in 0 until segments) {
+                val start = -PI / 2 + segment * sweep
+                val end = start + sweep
+                append(" C").append(32 + radius * (cos(start) - handle * sin(start)))
+                append(' ').append(32 + radius * (sin(start) + handle * cos(start)))
+                append(' ').append(32 + radius * (cos(end) + handle * sin(end)))
+                append(' ').append(32 + radius * (sin(end) - handle * cos(end)))
+                append(' ').append(32 + radius * cos(end)).append(' ').append(32 + radius * sin(end))
+            }
+            if (fraction >= 1) append(" Z")
+        }
+    }
+
+    private fun choosePreviewCandidate(): Candidate? {
+        val previous = previewedCandidate ?: return candidates.firstOrNull()
+        // Runtime NBT changes do not change identity. Prefer the same slot, then follow a moved UUID.
+        return candidates.firstOrNull {
+            it.slot == previous.slot && if (previous.uuid != null) it.uuid == previous.uuid else it.stack.item === previous.stack.item
+        } ?: previous.uuid?.let { uuid -> candidates.firstOrNull { it.uuid == uuid } } ?: candidates.firstOrNull()
+    }
+
+    private fun showPreview(doc: Document, candidate: Candidate?) {
+        previewedCandidate = candidate
+        val stack = candidate?.stack ?: ItemStack.EMPTY
         setDisplayItem(doc, "selection-preview", stack)
         text(doc, "selection-weapon-name", if (stack.isEmpty) translated("no_weapons") else stack.hoverName.string)
     }
     private fun translated(suffix: String, vararg args: Any): String =
         Component.translatable("container.superbwarfare.reforging_table.$suffix", *args).string
+
+    private fun manufactureDate(createdTime: Long): String {
+        val date = try {
+            if (createdTime > 0) Instant.ofEpochMilli(createdTime).atZone(ZoneId.systemDefault()).toLocalDate() else null
+        } catch (_: DateTimeException) {
+            null
+        } ?: return translated("manufacture_date", "--", "--", "--")
+        return translated("manufacture_date", date.year.toString().padStart(4, '0'),
+            date.monthValue.toString().padStart(2, '0'), date.dayOfMonth.toString().padStart(2, '0'))
+    }
 
     private fun text(doc: Document, id: String, value: String) {
         doc.getElementById(id)?.let { if (it.textContent != value) it.textContent = value }

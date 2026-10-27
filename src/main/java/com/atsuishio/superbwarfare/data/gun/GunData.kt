@@ -312,6 +312,10 @@ class GunData private constructor(
     val uuid: UUID?
         get() = state.uuid
 
+    /** Manufacturing time recorded once by [GunItem.init], in epoch milliseconds. */
+    val createdTime: Long
+        get() = state.createdTime
+
     /**
      * Returns the default un-modified [DefaultGunData] baseline for this weapon.
      *
