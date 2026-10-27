@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.init.ModBlocks
+import com.atsuishio.superbwarfare.inventory.menu.ReforgingTableMenu
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.ksp.annotation.RegisterPacket
 import com.atsuishio.superbwarfare.network.PayloadContext
@@ -26,6 +27,7 @@ data class ResonancePerkInstallMessage(
     val ammo: List<String>,
     val functional: List<String>,
     val damage: List<String>,
+    val levels: Map<String, Int>,
 ) : ServerPacketPayload() {
     override fun PayloadContext.handler() {
         val player = sender()
@@ -60,6 +62,10 @@ data class ResonancePerkInstallMessage(
             additions += change.added.map { byName.getValue(it) }
             removals += change.removed.map { byName.getValue(it) }
         }
+        val currentLevels = installed.values.flatten().associate { it.perk.name to it.level.toInt() }
+        val selectedPerks = selections.values.flatten()
+        if (levels.keys != selectedPerks.map { it.name }.toSet()
+            || !validLevelChange(currentLevels, levels, data.level.get(), player.isCreative)) return
 
         // Read every required item and build the result on a copy before touching the inventory.
         val costs = if (player.isCreative) emptyMap() else additions.groupingBy { it.getItem().get() }.eachCount()
@@ -70,7 +76,7 @@ data class ResonancePerkInstallMessage(
             return
         }
         val result = stack.copy()
-        applySelection(GunData.from(result), selections)
+        applySelection(GunData.from(result), selections, selectedPerks.associateWith { levels.getValue(it.name) })
         val remaining = costs.toMutableMap()
         for (itemStack in player.inventory.items) {
             val needed = remaining[itemStack.item] ?: continue
@@ -88,6 +94,22 @@ data class ResonancePerkInstallMessage(
     companion object {
         data class Change(val added: List<String>, val removed: List<String>)
 
+        fun availableUpgradePoints(weaponLevel: Int, levels: Collection<Int>): Int =
+            (weaponLevel - levels.sumOf { (it - 1).coerceAtLeast(0) }).coerceAtLeast(0)
+
+        fun maximumPerkLevel(current: Int, availablePoints: Int, creative: Boolean): Int =
+            if (creative) ReforgingTableMenu.MAX_PERK_LEVEL else minOf(ReforgingTableMenu.MAX_PERK_LEVEL,
+                current + availablePoints.coerceIn(0, ReforgingTableMenu.MAX_PERK_LEVEL))
+
+        fun validLevelChange(current: Map<String, Int>, requested: Map<String, Int>, weaponLevel: Int, creative: Boolean): Boolean {
+            // Preserve unchanged command-created levels; edits and all new Perks must use the normal range.
+            if (requested.any { (name, level) -> level !in 1..ReforgingTableMenu.MAX_PERK_LEVEL && level != current[name] }) return false
+            val before = current.values.sumOf { (it - 1).coerceAtLeast(0) }
+            val after = requested.values.sumOf { (it - 1).coerceAtLeast(0) }
+            // A formerly creative weapon may already exceed its level budget; allow keeping or reducing that cost.
+            return creative || after <= maxOf(weaponLevel, before)
+        }
+
         /** Pure planning step: invalid selections never reach inventory mutation. */
         fun planChange(current: List<String>, requested: List<String>, allowed: Set<String>): Change? {
             if (requested.size > 128 || requested.distinct().size != requested.size
@@ -102,7 +124,7 @@ data class ResonancePerkInstallMessage(
         }
 
         /** Used on a client preview copy and, after validation, on a server result copy. */
-        fun applySelection(data: GunData, selection: Map<Perk.Type, List<Perk>>) {
+        fun applySelection(data: GunData, selection: Map<Perk.Type, List<Perk>>, levels: Map<Perk, Int>) {
             val root = data.perk()
             for (type in Perk.Type.entries) {
                 val old = if (root.contains(type.typeName, Tag.TAG_LIST.toInt())) {
@@ -111,10 +133,11 @@ data class ResonancePerkInstallMessage(
                 val byName = old.associateBy { it.getString("Name") }
                 val next = ListTag()
                 for (perk in selection[type].orEmpty()) {
-                    next.add(byName[perk.name]?.copy() ?: CompoundTag().apply {
+                    val entry = byName[perk.name]?.copy() ?: CompoundTag().apply {
                         putString("Name", perk.name)
-                        putShort("Level", 1)
-                    })
+                    }
+                    entry.putShort("Level", levels.getValue(perk).toShort())
+                    next.add(entry)
                 }
                 if (next.isEmpty()) root.remove(type.typeName) else root.put(type.typeName, next)
             }

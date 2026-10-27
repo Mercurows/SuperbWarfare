@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.client.screens
 
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
+import com.atsuishio.superbwarfare.inventory.menu.ReforgingTableMenu
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.network.message.send.ResonancePerkInstallMessage
 import com.atsuishio.superbwarfare.perk.Perk
@@ -45,12 +46,15 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
     private var baselineSignature = ""
     private var draftReady = false
     private val draft = Perk.Type.entries.associateWith { mutableListOf<Perk>() }
+    private val draftLevels = mutableMapOf<Perk, Int>()
     private val pages = Perk.Type.entries.associateWith { 0 }.toMutableMap()
     private var activeType = Perk.Type.AMMO
     private var activeSlot = 0
     private var slotSelected = false
     private var choicePage = 0
     private var availableChoices = emptyList<Perk>()
+    private var shownChoices = emptyList<Perk>()
+    private val indicatorCounts = mutableMapOf<String, Int>()
     private var ownedPerks = emptyMap<Item, Int>()
     private var forceRefresh = true
     private var pending = false
@@ -116,6 +120,8 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
             resetHoldStartedAt = 0L
             resetProgressStep = -1
             perkHoverTargets.clear()
+            indicatorCounts.clear()
+            shownChoices = emptyList()
             tooltipPerk = null
             documentGeneration = doc.refreshGeneration
             displayedWeapon = ItemStack.EMPTY
@@ -171,6 +177,7 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
     }
 
     private fun bindReforging(doc: Document) {
+        createPerkControls(doc)
         doc.addEventListener("click", { event ->
             val inside = event.composedPath().filterIsInstance<Element>().any {
                 it.id == "perk-choices-panel" || (it.id?.startsWith("perk-slot-") == true && it.getAttribute("aria-disabled") != "true")
@@ -211,6 +218,89 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
             }
         }
         doc.getElementById("complete-reforging")?.addEventListener("click") { submit() }
+        for (action in listOf("min", "decrease", "increase", "max")) {
+            doc.getElementById("perk-level-$action")?.addEventListener("click") {
+                val perk = activePerk() ?: return@addEventListener
+                val current = draftLevels[perk] ?: 1
+                val target = levelTarget(action, current)
+                if (canSetLevel(current, target)) {
+                    draftLevels[perk] = target
+                    forceRefresh = true
+                }
+            }
+        }
+    }
+
+    /** Build interactive targets once per document generation; ticking ItemStacks must not replace pressed nodes. */
+    private fun createPerkControls(doc: Document) {
+        for (type in Perk.Type.entries) {
+            val key = type.typeName
+            doc.getElementById("slots-$key")?.innerHTML = (0..2).joinToString("") { position ->
+                """<button type="button" class="perk-card" id="perk-slot-$key-$position"><sbw-reforging-weapon id="perk-icon-$key-$position"></sbw-reforging-weapon><span class="perk-level" id="perk-level-$key-$position"></span><span class="add-perk" id="perk-add-$key-$position">+</span></button>"""
+            }
+            for (position in 0..2) {
+                doc.getElementById("perk-slot-$key-$position")?.addEventListener("click") {
+                    val index = pages.getValue(type) * 3 + position
+                    if (!pending && index <= draft.getValue(type).size) {
+                        activeType = type; activeSlot = index; slotSelected = true; choicePage = 0; forceRefresh = true
+                    }
+                }
+            }
+        }
+        val corners = """<span class="choice-frame" aria-hidden="true"><span class="choice-corner corner-nw"></span><span class="choice-corner corner-ne"></span><span class="choice-corner corner-sw"></span><span class="choice-corner corner-se"></span></span>"""
+        val cards = listOf("""<button type="button" class="perk-card choice" id="perk-choice-empty">$corners<span class="empty-perk"><translation>tips.superbwarfare.barrel_empty</translation></span></button>""") +
+            (0 until CHOICES_PER_PAGE).map { index ->
+                """<button type="button" class="perk-card choice" id="perk-choice-$index">$corners<sbw-reforging-weapon id="choice-icon-$index"></sbw-reforging-weapon></button>"""
+            }
+        doc.getElementById("perk-choices")?.innerHTML = (0..1).joinToString("") { row ->
+            """<div class="choice-grid-row">""" + cards.drop(row * CHOICES_PER_ROW).take(CHOICES_PER_ROW).joinToString("") + "</div>"
+        }
+        doc.getElementById("perk-choice-empty")?.addEventListener("click") {
+            if (!pending && slotSelected && activeSlot in draft.getValue(activeType).indices) {
+                val removed = draft.getValue(activeType).removeAt(activeSlot)
+                draftLevels.remove(removed)
+                activeSlot = activeSlot.coerceAtMost(draft.getValue(activeType).size)
+                forceRefresh = true
+            }
+        }
+        for (index in 0 until CHOICES_PER_PAGE) {
+            doc.getElementById("perk-choice-$index")?.addEventListener("click") {
+                val perk = shownChoices.getOrNull(index) ?: return@addEventListener
+                if (pending || !slotSelected || perk.type != activeType) return@addEventListener
+                val slot = inventorySlot ?: return@addEventListener
+                val stack = localPlayer?.inventory?.getItem(slot) ?: return@addEventListener
+                if (stack.item !is GunItem || !canChoose(perk, GunData.from(stack))) return@addEventListener
+                val list = draft.getValue(activeType)
+                if (activeSlot < list.size) {
+                    val previous = list[activeSlot]
+                    if (previous != perk) draftLevels.remove(previous)
+                    list[activeSlot] = perk
+                } else list.add(perk)
+                draftLevels.putIfAbsent(perk, 1)
+                forceRefresh = true
+            }
+        }
+    }
+
+    private fun activePerk(): Perk? = if (slotSelected) draft.getValue(activeType).getOrNull(activeSlot) else null
+
+    private fun levelTarget(action: String, current: Int): Int = when (action) {
+        "min" -> 1
+        "decrease" -> (current - 1).coerceAtLeast(1)
+        "increase" -> if (current < ReforgingTableMenu.MAX_PERK_LEVEL) current + 1 else current
+        else -> ResonancePerkInstallMessage.maximumPerkLevel(current,
+            inventorySlot?.let { localPlayer?.inventory?.getItem(it) }?.let { draftPoints(GunData.from(it).level.get()) } ?: 0,
+            localPlayer?.isCreative == true)
+    }
+
+    private fun draftPoints(weaponLevel: Int): Int = ResonancePerkInstallMessage.availableUpgradePoints(
+        weaponLevel, draft.values.flatten().map { draftLevels[it] ?: 1 })
+
+    private fun canSetLevel(current: Int, target: Int): Boolean {
+        if (pending || target == current || target !in 1..ReforgingTableMenu.MAX_PERK_LEVEL) return false
+        val slot = inventorySlot ?: return false
+        val stack = localPlayer?.inventory?.getItem(slot) ?: return false
+        return localPlayer?.isCreative == true || target < current || target - current <= draftPoints(GunData.from(stack).level.get())
     }
 
     private fun syncDetails(doc: Document, stack: ItemStack) {
@@ -220,8 +310,10 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         if (!draftReady || signature != baselineSignature) {
             slotSelected = false
             pending = false
+            draftLevels.clear()
             for (type in Perk.Type.entries) {
                 draft.getValue(type).apply { clear(); addAll(baseline.perk.getInstances(type).map { it.perk }) }
+                baseline.perk.getInstances(type).forEach { draftLevels[it.perk] = it.level.toInt() }
             }
             baselineSignature = signature
             draftReady = true
@@ -238,15 +330,19 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         text(doc, "weapon-experience", translated("experience", format(exp, 0), format(needed, 0)))
         doc.getElementById("weapon-exp-fill")?.setInlineStyleProperty("width", ((exp / needed).coerceIn(0.0, 1.0) * 100).toString() + "%")
         perkHoverTargets.clear()
-        for (type in Perk.Type.entries) renderSlots(doc, baseline, type)
-        doc.getElementById("perk-choices-panel")?.setInlineStyleProperty("display", if (slotSelected) "block" else "none")
-        if (slotSelected) renderChoices(doc, baseline)
+        for (type in Perk.Type.entries) renderSlots(doc, type)
+        show(doc, "perk-choices-panel", slotSelected)
+        if (slotSelected) renderChoices(doc, baseline) else shownChoices = emptyList()
         disable(doc, "reset-perks", pending || draft.values.all { it.isEmpty() })
         val previewStack = stack.copy()
         val preview = GunData.from(previewStack)
-        ResonancePerkInstallMessage.applySelection(preview, draft)
-        val spentPoints = Perk.Type.entries.sumOf { type -> preview.perk.getInstances(type).sumOf { it.level.toInt() - 1 } }
-        text(doc, "weapon-upgrade-points", (preview.level.get() - spentPoints).coerceAtLeast(0).toString())
+        ResonancePerkInstallMessage.applySelection(preview, draft, draft.values.flatten().associateWith { draftLevels[it] ?: 1 })
+        text(doc, "weapon-upgrade-points", draftPoints(preview.level.get()).toString())
+        val selectedPerk = activePerk()
+        val selectedLevel = selectedPerk?.let { draftLevels[it] ?: 1 } ?: 1
+        for (action in listOf("min", "decrease", "increase", "max")) {
+            disable(doc, "perk-level-$action", selectedPerk == null || !canSetLevel(selectedLevel, levelTarget(action, selectedLevel)))
+        }
         setDisplayItem(doc, "reforging-output-icon", previewStack)
         syncStats(doc, baseline, preview)
         val changed = hasChanges(baseline)
@@ -256,35 +352,23 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
 
     private fun slotPages(type: Perk.Type) = maxOf(1, (draft.getValue(type).size + 3) / 3)
 
-    private fun renderSlots(doc: Document, baseline: GunData, type: Perk.Type) {
+    private fun renderSlots(doc: Document, type: Perk.Type) {
         val key = type.typeName
         val entries = draft.getValue(type)
         val total = slotPages(type)
         val page = pages.getValue(type).coerceIn(0, total - 1)
         pages[type] = page
-        val levels = baseline.perk.getInstances(type).associate { it.perk to it.level.toInt() }
-        doc.getElementById("slots-$key")?.innerHTML = (0..2).joinToString("") { position ->
-            val index = page * 3 + position
-            val perk = entries.getOrNull(index)
-            val state = if (slotSelected && type == activeType && index == activeSlot) " selected" else ""
-            val body = if (perk != null) {
-                val level = levels[perk] ?: 1
-                """<sbw-reforging-weapon id="perk-icon-$key-$position"></sbw-reforging-weapon><span class="perk-level">Lv.$level</span>"""
-            } else if (index == entries.size) """<span class="add-perk">+</span>""" else ""
-            val disabled = index > entries.size || pending
-            """<button type="button" class="perk-card$state" id="perk-slot-$key-$position" aria-disabled="$disabled">$body</button>"""
-        }
         for (position in 0..2) {
             val index = page * 3 + position
-            entries.getOrNull(index)?.let {
-                setDisplayItem(doc, "perk-icon-$key-$position", ItemStack(it.getItem().get()))
-                perkHoverTargets["perk-slot-$key-$position"] = it
-            }
-            doc.getElementById("perk-slot-$key-$position")?.addEventListener("click") {
-                if (!pending && index <= draft.getValue(type).size) {
-                    activeType = type; activeSlot = index; slotSelected = true; choicePage = 0; forceRefresh = true
-                }
-            }
+            val perk = entries.getOrNull(index)
+            val selected = slotSelected && type == activeType && index == activeSlot
+            attribute(doc, "perk-slot-$key-$position", "class", if (selected) "perk-card selected" else "perk-card")
+            attribute(doc, "perk-slot-$key-$position", "aria-disabled", (index > entries.size || pending).toString())
+            setDisplayItem(doc, "perk-icon-$key-$position", perk?.let { ItemStack(it.getItem().get()) } ?: ItemStack.EMPTY)
+            text(doc, "perk-level-$key-$position", perk?.let { "Lv." + (draftLevels[it] ?: 1) } ?: "")
+            show(doc, "perk-level-$key-$position", perk != null)
+            show(doc, "perk-add-$key-$position", perk == null && index == entries.size)
+            if (perk != null) perkHoverTargets["perk-slot-$key-$position"] = perk
         }
         renderPageIndicators(doc, "page-indicators-$key", page, total)
         disable(doc, "page-$key-previous", pending || page == 0)
@@ -303,39 +387,17 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
             .distinct().filter { it !in entries || it == selected }
         val total = maxOf(1, (availableChoices.size + CHOICES_PER_PAGE - 1) / CHOICES_PER_PAGE)
         choicePage = choicePage.coerceIn(0, total - 1)
-        val shown = availableChoices.drop(choicePage * CHOICES_PER_PAGE).take(CHOICES_PER_PAGE)
-        val emptyState = if (selected == null) " selected" else ""
-        val corners = """<span class="choice-frame" aria-hidden="true"><span class="choice-corner corner-nw"></span><span class="choice-corner corner-ne"></span><span class="choice-corner corner-sw"></span><span class="choice-corner corner-se"></span></span>"""
-        val emptyCard = """<button type="button" class="perk-card choice$emptyState" id="perk-choice-empty">$corners<span class="empty-perk"><translation>tips.superbwarfare.barrel_empty</translation></span></button>"""
-        val cards = listOf(emptyCard) + shown.mapIndexed { index, perk ->
+        shownChoices = availableChoices.drop(choicePage * CHOICES_PER_PAGE).take(CHOICES_PER_PAGE)
+        attribute(doc, "perk-choice-empty", "class", if (selected == null) "perk-card choice selected" else "perk-card choice")
+        disable(doc, "perk-choice-empty", pending)
+        for (index in 0 until CHOICES_PER_PAGE) {
+            val perk = shownChoices.getOrNull(index)
+            show(doc, "perk-choice-$index", perk != null)
+            setDisplayItem(doc, "choice-icon-$index", perk?.let { ItemStack(it.getItem().get()) } ?: ItemStack.EMPTY)
+            if (perk == null) continue
             val state = (if (perk == selected) " selected" else "") + (if (!canChoose(perk, baseline)) " unavailable" else "")
-            """<button type="button" class="perk-card choice$state" id="perk-choice-$index">$corners<sbw-reforging-weapon id="choice-icon-$index"></sbw-reforging-weapon></button>"""
-        }
-        doc.getElementById("perk-choices")?.innerHTML = (0..1).joinToString("") { row ->
-            """<div class="choice-grid-row">""" + cards.drop(row * CHOICES_PER_ROW).take(CHOICES_PER_ROW).joinToString("") + "</div>"
-        }
-        doc.getElementById("perk-choice-empty")?.apply {
-            isDisabled = pending
-            addEventListener("click") {
-                if (!pending && activeSlot in draft.getValue(activeType).indices) {
-                    draft.getValue(activeType).removeAt(activeSlot)
-                    activeSlot = activeSlot.coerceAtMost(draft.getValue(activeType).size)
-                    forceRefresh = true
-                }
-            }
-        }
-        for ((index, perk) in shown.withIndex()) {
-            val item = ItemStack(perk.getItem().get())
-            setDisplayItem(doc, "choice-icon-$index", item)
+            attribute(doc, "perk-choice-$index", "class", "perk-card choice$state")
             perkHoverTargets["perk-choice-$index"] = perk
-            doc.getElementById("perk-choice-$index")?.addEventListener("click") {
-                if (pending || perk.type != activeType) return@addEventListener
-                if (canChoose(perk, baseline)) {
-                    val list = draft.getValue(activeType)
-                    if (activeSlot < list.size) list[activeSlot] = perk else list.add(perk)
-                }
-                forceRefresh = true
-            }
         }
         renderPageIndicators(doc, "choice-page-indicators", choicePage, total)
         disable(doc, "choice-previous", choicePage == 0 || pending)
@@ -344,12 +406,18 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
 
     private fun hasChanges(data: GunData) = Perk.Type.entries.any { type ->
         draft.getValue(type) != data.perk.getInstances(type).map { it.perk }
+            || data.perk.getInstances(type).any { (draftLevels[it.perk] ?: 1) != it.level.toInt() }
     }
 
     private fun renderPageIndicators(doc: Document, id: String, current: Int, total: Int) {
-        doc.getElementById(id)?.innerHTML = (0 until total).joinToString("") { page ->
-            """<span class="page-mark${if (page == current) " active" else ""}"></span>"""
+        val container = doc.getElementById(id) ?: return
+        if (indicatorCounts[id] != total) {
+            container.innerHTML = (0 until total).joinToString("") { page ->
+                """<span class="page-mark" id="$id-$page"></span>"""
+            }
+            indicatorCounts[id] = total
         }
+        for (page in 0 until total) attribute(doc, "$id-$page", "class", if (page == current) "page-mark active" else "page-mark")
     }
 
     /** Painted after AUI's deferred item layer so models cannot cover the tooltip. No item icon/name list. */
@@ -442,7 +510,8 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         sendPacketToServer(ResonancePerkInstallMessage(tablePos.asLong(), slot, identity, baselineSignature,
             draft.getValue(Perk.Type.AMMO).map { it.name },
             draft.getValue(Perk.Type.FUNCTIONAL).map { it.name },
-            draft.getValue(Perk.Type.DAMAGE).map { it.name }))
+            draft.getValue(Perk.Type.DAMAGE).map { it.name },
+            draft.values.flatten().associate { it.name to (draftLevels[it] ?: 1) }))
         forceRefresh = true
     }
 
@@ -498,6 +567,7 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         if (progress >= 1.0) {
             cancelResetHold(doc)
             draft.values.forEach { it.clear() }
+            draftLevels.clear()
             Perk.Type.entries.forEach { pages[it] = 0 }
             slotSelected = false
             activeSlot = 0
@@ -537,7 +607,16 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         doc.getElementById(id)?.let { if (it.textContent != value) it.textContent = value }
     }
     private fun disable(doc: Document, id: String, disabled: Boolean) {
-        doc.getElementById(id)?.isDisabled = disabled
+        doc.getElementById(id)?.let { if (it.isDisabled != disabled) it.isDisabled = disabled }
+    }
+    private fun attribute(doc: Document, id: String, name: String, value: String) {
+        doc.getElementById(id)?.let { if (it.getAttribute(name) != value) it.setAttribute(name, value) }
+    }
+    private fun show(doc: Document, id: String, visible: Boolean) {
+        doc.getElementById(id)?.let {
+            val display = if (visible) "block" else "none"
+            if (it.getInlineStylePropertyValue("display") != display) it.setInlineStyleProperty("display", display)
+        }
     }
     private fun setDisplayItem(doc: Document, id: String, stack: ItemStack) {
         (doc.getElementById(id) as? ResonanceWeaponIcon)?.setStack(stack)
@@ -551,6 +630,7 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
     private class ResonanceWeaponIcon(document: Document) : Element(document, TAG), BodyRenderNodeProvider {
         private var stack = ItemStack.EMPTY
         fun setStack(value: ItemStack) {
+            if (ItemStack.matches(stack, value)) return
             stack = value.copy()
             document.markDirty(this, Drawer.REPAINT)
         }

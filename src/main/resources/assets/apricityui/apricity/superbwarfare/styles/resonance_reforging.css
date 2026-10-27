@@ -111,6 +111,10 @@ sbw-reforging-weapon { display: block; pointer-events: none; }
 .choice-page-indicators { position: absolute; left: 36px; right: 36px; bottom: 14px; }
 .page-mark { display: block; flex: 0 1 18px; width: 18px; height: 3px; background: rgba(195, 201, 211, 0.3); }
 .page-mark.active { background: #eeeeef; }
+.perk-level-controls { position: absolute; left: 36px; right: 36px; top: calc(100% + 14px); display: flex; gap: 10px; }
+.perk-level-button { width: 64px; height: 34px; font-size: 16px; }
+.perk-level-button:disabled { color: #70737a; }
+.level-increase { margin-left: auto; }
 .upgrade-points { position: absolute; left: 90px; bottom: 164px; width: 348px; height: 72px; display: flex; align-items: baseline; gap: 10px; padding-bottom: 8px; border-bottom: 1px solid rgba(226, 226, 232, 0.55); }
 .upgrade-number { font-size: 56px; line-height: 64px; color: #f5f5f7; }
 .upgrade-label { font-size: 20px; color: #e4e4e9; }
@@ -141,8 +145,11 @@ sbw-reforging-weapon { display: block; pointer-events: none; }
     .stats { top: 460px; }
 }
 @media (max-height: 720px) {
-    .choices-panel { height: 194px; }
-    .perk-choice-list { gap: 8px; }
+    .choices-panel { height: 156px; }
+    .perk-choice-list { top: 12px; gap: 8px; }
+    .choice-grid-row, .perk-choice-list .perk-card { height: 52px; }
+    .perk-level-controls { top: calc(100% + 8px); }
+    .perk-level-button { height: 30px; }
     .stat, .stat-detail { height: 24px; font-size: 14px; }
     .stat-track { top: 4px; height: 12px; }
     .stat-common, .stat-change { height: 12px; }

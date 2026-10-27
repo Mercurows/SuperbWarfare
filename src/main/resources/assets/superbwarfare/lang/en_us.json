@@ -1241,6 +1241,8 @@
   "tips.superbwarfare.battle_of_wits.cooldown": "Battle of Wits is now ready",
 
   "container.superbwarfare.reforging_table": "Gun Reforge Table",
+  "container.superbwarfare.reforging_table.min_level": "MIN",
+  "container.superbwarfare.reforging_table.max_level": "MAX",
   "container.superbwarfare.reforging_table.reforge_weapon": "Reshape Weapon",
   "container.superbwarfare.reforging_table.reforge": "Reshape",
   "container.superbwarfare.reforging_table.select_weapon": "Select Weapon",

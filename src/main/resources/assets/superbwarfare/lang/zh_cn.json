@@ -1241,6 +1241,8 @@
   "tips.superbwarfare.battle_of_wits.cooldown": "唇枪舌剑现已可用",
 
   "container.superbwarfare.reforging_table": "枪械重塑台",
+  "container.superbwarfare.reforging_table.min_level": "MIN",
+  "container.superbwarfare.reforging_table.max_level": "MAX",
   "container.superbwarfare.reforging_table.reforge_weapon": "重塑武器",
   "container.superbwarfare.reforging_table.reforge": "重塑",
   "container.superbwarfare.reforging_table.select_weapon": "选择武器",
