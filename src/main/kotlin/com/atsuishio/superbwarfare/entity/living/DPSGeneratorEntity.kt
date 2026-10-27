@@ -53,6 +53,8 @@ open class DPSGeneratorEntity(type: EntityType<DPSGeneratorEntity>, level: Level
     open var energy by ENERGY
     open var generatorLevel by LEVEL
 
+    private var hitByBeast = false
+
     override fun defineSynchedData(builder: SynchedEntityData.Builder) {
         super.defineSynchedData(builder)
 
@@ -101,6 +103,10 @@ open class DPSGeneratorEntity(type: EntityType<DPSGeneratorEntity>, level: Level
         if (source.`is`(DamageTypes.GENERIC_KILL)) {
             this.remove(RemovalReason.KILLED)
             return super.hurt(source, amount)
+        }
+
+        if (source.`is`(ModDamageTypes.BEAST)) {
+            hitByBeast = true
         }
 
         damageDealt += amount
@@ -198,7 +204,7 @@ open class DPSGeneratorEntity(type: EntityType<DPSGeneratorEntity>, level: Level
                     val attacker = getLastDamageSource()!!.entity
                     if (attacker is Player && !this.level().isClientSide) {
                         val displayDamage =
-                            if (getLastDamageSource()!!.`is`(ModDamageTypes.BEAST)) Float.POSITIVE_INFINITY else damageDealt
+                            if (hitByBeast) Float.POSITIVE_INFINITY else damageDealt
                         attacker.displayClientMessage(
                             Component.translatable(
                                 "tips.superbwarfare.dps_generator.dps",
@@ -251,6 +257,7 @@ open class DPSGeneratorEntity(type: EntityType<DPSGeneratorEntity>, level: Level
             }
             this.health = this.maxHealth
             damageDealt = 0f
+            hitByBeast = false
         }
     }
 
