@@ -1,5 +1,5 @@
 {
-  "GunType": "Special",
+  "GunType": "Melee",
   "Icon": "superbwarfare:textures/gun_icon/netherite_hammer_icon.png",
   "ArmPose": "Item",
   "RightClickAction": "HeavyStrike",
