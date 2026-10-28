@@ -3780,7 +3780,7 @@
 				{
 					"name": "iron_view",
 					"parent": "positioning",
-					"pivot": [0, 2.3, 17.25]
+					"pivot": [0, 2.9, 17.25]
 				},
 				{
 					"name": "thirdperson_hand",

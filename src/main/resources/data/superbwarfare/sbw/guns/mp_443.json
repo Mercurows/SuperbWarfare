@@ -3,7 +3,7 @@
   "OpenBolt": true,
   "HasBarrelBullet": true,
   "TacticalReload": true,
-  "RecoilX": 0.002,
+  "RecoilX": 0.0012,
   "RecoilY": 0.02,
   "Damage": 5.5,
   "Headshot": 1.5,

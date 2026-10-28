@@ -536,6 +536,13 @@ object ClientEventHandler {
     @JvmField
     var vehiclePoseStack: PoseStack? = null
 
+    @JvmStatic
+    fun firstPersonCameraRotation(): Quaternionf? {
+        val options = Minecraft.getInstance().options
+        if (!options.bobView().get() || !options.cameraType.isFirstPerson) return null
+        return FirstPersonRenderHandler.getActiveAnimationInstanceForCamera()?.cameraRotation
+    }
+
     // 禁止冲刺♿时长tick
     @JvmField
     var noSprintTicks: Float = 0f
@@ -1952,6 +1959,8 @@ object ClientEventHandler {
         // 这里刻意放在最前面：被拒绝的入口不该产生任何副作用（包括后面的计时器推进）。
         if (GunActionLock.of(data).blocks(GunAction.FIRING)) {
             clientTimer.stop()
+            // SEMI 排着的那一发被其它动作打断
+            if (singleShotMode) burstFireAmount = 0
             fireSpread = 0.0
             return
         }
@@ -1959,6 +1968,7 @@ object ClientEventHandler {
         // 冲锋窗口里不许开火（左键在起冲锋之前就按着的情况也要挡）
         if (GunChargeHandler.isCharging()) {
             clientTimer.stop()
+            if (singleShotMode) burstFireAmount = 0
             fireSpread = 0.0
             return
         }
@@ -1983,7 +1993,8 @@ object ClientEventHandler {
             }
 
             shouldPlayDischargeSound = false
-            burstFireAmount = 0
+            // SEMI 排着的那一发不能被这段收尾清掉
+            if (!singleShotMode) burstFireAmount = 0
         }
 
         // 精准度
@@ -2047,6 +2058,10 @@ object ClientEventHandler {
             && !isEditing
         ) {
             if (singleShotMode) {
+                // 周期走完的这一帧就补发，不再多等一帧
+                if (clientTimer.started() && clientTimer.progress >= cooldown) {
+                    clientTimer.stop()
+                }
                 if (clientTimer.progress == 0L) {
                     clientTimer.start()
                     shootClient(player)
