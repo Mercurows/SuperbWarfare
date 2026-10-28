@@ -239,12 +239,14 @@ object MeleeClientHandler {
         return 0
     }
 
-    /** 玩家当前攻速相对基础攻速的倍率，只吃正面加成，最高 4 倍 */
-    private fun meleeAttackSpeed(player: Player): Double =
-        (player.getAttributeValue(Attributes.ATTACK_SPEED) / DEFAULT_ATTACK_SPEED)
-            .coerceIn(1.0, MAX_ATTACK_SPEED_MULTIPLIER)
+    /** 玩家攻速加成（最高 4 倍）与枪械全局射速倍率叠乘，挥击开始时锁存到计时中。 */
+    private fun meleeAttackSpeed(attackSpeed: Double, rpmMultiplier: Double): Double {
+        val playerSpeed = (attackSpeed / DEFAULT_ATTACK_SPEED).coerceIn(1.0, MAX_ATTACK_SPEED_MULTIPLIER)
+        val weaponSpeed = if (rpmMultiplier.isFinite()) rpmMultiplier.coerceAtLeast(0.0) else 1.0
+        return playerSpeed * weaponSpeed
+    }
 
-    /** 按攻速倍率缩放 tick 数；向上取整，保证实际倍率不超过上限 */
+    /** 按同一个攻速倍率缩放时长与所有命中点；向上取整，正数至少保留 1 tick。 */
     private fun scaledTicks(ticks: Int, speed: Double): Int =
         if (ticks <= 0) ticks else ceil(ticks / speed).toInt().coerceAtLeast(1)
 
@@ -306,7 +308,10 @@ object MeleeClientHandler {
         // ③ 冲锋/蓄势释放的时长与结算点独立于动作表（数据里没写就跟着那一段走）
         val charge = if (chargeStrike) data.get(GunProp.BAYONET_CHARGE) else null
         val source = actions.getOrNull(index)
-        val speed = if (chargeStrike) 1.0 else meleeAttackSpeed(player)
+        val speed = if (chargeStrike) 1.0 else meleeAttackSpeed(
+            player.getAttributeValue(Attributes.ATTACK_SPEED), data.get(GunProp.RPM_MULTIPLIER)
+        )
+        if (speed <= 0.0) return false
         val rawDuration = when {
             releaseStrike -> source?.releaseDuration ?: action.duration
             else -> charge?.strikeDuration?.takeIf { it > 0 } ?: action.duration

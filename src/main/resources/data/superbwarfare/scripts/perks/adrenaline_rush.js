@@ -45,7 +45,7 @@ function modifyProperty(pmc, level, perkTag, gunData) {
     if (boost <= 0) return
 
     const speedFactor = 1 + boost
-    pmc.mul("RPM", speedFactor)
+    pmc.mul("RpmMultiplier", speedFactor)
 
     const reloadDurations = [
         "NormalReloadTime",
