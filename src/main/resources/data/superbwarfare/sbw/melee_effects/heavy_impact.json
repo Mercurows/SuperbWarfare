@@ -1,5 +1,5 @@
 {
   "Type": "knockback",
-  "Knockback": 1.2,
-  "Lift": 0.4
+  "Knockback": 0.6,
+  "Lift": 0.6
 }

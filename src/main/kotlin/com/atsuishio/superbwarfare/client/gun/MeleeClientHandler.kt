@@ -121,8 +121,8 @@ object MeleeClientHandler {
         if (state.meleeTicks > 0) {
             tickActiveSwing(player, data, state)
         }
-        // 收尾窗口内不再吞输入，剩下的 1~2 tick 直接用来起下一段
-        val chaining = state.canChainMelee(MELEE_CHAIN_WINDOW_TICKS)
+        // 收尾窗口内不再吞输入，剩下的几 tick 直接用来起下一段
+        val chaining = state.canChainMelee(data.get(GunProp.MELEE_CHAIN_WINDOW))
         if (state.meleeTicks > 0 && !chaining) return false
 
         val fromSubWeaponKey = subWeaponFireKeyDown && !meleeKeyDown
@@ -185,7 +185,7 @@ object MeleeClientHandler {
         if (data.busyForMelee()) return false
 
         val state = GunActionLock.of(data)
-        val chaining = state.canChainMelee(MELEE_CHAIN_WINDOW_TICKS)
+        val chaining = state.canChainMelee(data.get(GunProp.MELEE_CHAIN_WINDOW))
         if (!chaining && (state.isLocked || state.meleeTicks > 0 || state.meleeHolding)) {
             // 上一段还没走完：先记下这次按下，等计时走到窗口再抬手
             if (queueIfLocked && !state.meleeHolding) {
@@ -289,7 +289,7 @@ object MeleeClientHandler {
     ): Boolean {
         if (!player.isAlive || player.isRemoved || player.isSpectator) return false
         // 连招下标要在拆掉上一段占用之前读
-        val chaining = state.canChainMelee(MELEE_CHAIN_WINDOW_TICKS)
+        val chaining = state.canChainMelee(data.get(GunProp.MELEE_CHAIN_WINDOW))
         // ① 连招下标：窗口内再挥击进下一段，超时回到第 0 段；被强制指定时直接用那一段
         val actions = data.meleeActions()
         val comboReset = data.get(GunProp.MELEE_COMBO_RESET)
@@ -497,9 +497,6 @@ object MeleeClientHandler {
     /** `Attributes.ATTACK_SPEED` 的玩家默认值 */
     private const val DEFAULT_ATTACK_SPEED = 4.0
     private const val MAX_ATTACK_SPEED_MULTIPLIER = 4.0
-
-    // 上一段还剩这么多 tick 时允许起下一段
-    private const val MELEE_CHAIN_WINDOW_TICKS = 5
 
     // 右键被上一段挡下时，这次按下最多保留多少 tick 等窗口
     private const val HEAVY_HOLD_BUFFER_TICKS = 30

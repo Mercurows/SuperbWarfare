@@ -543,6 +543,8 @@ object DataValidator {
 
         require(data.meleeComboReset >= 0) { "MeleeComboReset must be >= 0, got ${data.meleeComboReset}" }
 
+        require(data.meleeChainWindow >= 0) { "MeleeChainWindow must be >= 0, got ${data.meleeChainWindow}" }
+
         // 消耗只有在"真的能打出近战"时才有意义
         if (data.consumeOnMeleeHit && data.meleeDamage <= 0) {
             warn("ConsumeOnMeleeHit is true but MeleeDamage=${data.meleeDamage}; no melee hit can ever land")
