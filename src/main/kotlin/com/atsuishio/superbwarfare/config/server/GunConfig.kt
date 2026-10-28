@@ -33,8 +33,19 @@ object GunConfig {
     val FULLY_FREE_PERK_MODE = buildServerConfig {
         comment("Set true to allow players in any game mode to install any Perk on any gun, ignoring its AvailablePerks")
         comment("是否开启完全自由模组模式：任意模式玩家都可以给任意枪械安装任意模组，忽略枪械允许的模组列表")
-        define("fully_free_perk_mode", false).also { pop() }
+        define("fully_free_perk_mode", false)
     }
+
+    @JvmField
+    val PERK_SLOT_UNLOCK_LEVELS = buildServerConfig {
+        comment("Weapon levels required for each additional Perk slot of each type in advanced reforging; 0 unlocks all slots. Creative players are unrestricted")
+        comment("高级重塑中，每种模组默认有1个槽位，每提升指定枪械等级再开放1个；设为0全部开放，创造模式不受限制")
+        defineInRange("perk_slot_unlock_levels", 10, 0, Int.MAX_VALUE).also { pop() }
+    }
+
+    @JvmStatic
+    val perkSlotUnlockLevels: Int
+        get() = if (SERVER_CONFIG.isLoaded) PERK_SLOT_UNLOCK_LEVELS.get() else 10
 
     /** Only bypass weapon compatibility; item costs and upgrade points still follow the player's game mode. */
     @JvmStatic
