@@ -1710,6 +1710,7 @@
   "gun_type.superbwarfare.direct_launcher": "直射发射器",
   "gun_type.superbwarfare.curved_launcher": "曲射发射器",
   "gun_type.superbwarfare.special": "特殊武器",
+  "gun_type.superbwarfare.melee": "近战武器",
 
   "superbwarfare.book.superb_warfare_manual": "卓越单兵手册",
   "superbwarfare.book.superb_warfare_manual.des": "卓越前线模组的教程，教你如何成为一名卓越的士兵（编写中）",

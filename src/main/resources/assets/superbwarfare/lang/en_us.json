@@ -1710,6 +1710,7 @@
   "gun_type.superbwarfare.direct_launcher": "Direct-Fire Launcher",
   "gun_type.superbwarfare.curved_launcher": "Indirect-Fire Launcher",
   "gun_type.superbwarfare.special": "Special Weapon",
+  "gun_type.superbwarfare.melee": "Melee Weapon",
 
   "superbwarfare.book.superb_warfare_manual": "Superb Warfare Manual",
   "superbwarfare.book.superb_warfare_manual.des": "A tutorial on Superb Warfare mod, teaching you how to become a superb soldier (WIP)",

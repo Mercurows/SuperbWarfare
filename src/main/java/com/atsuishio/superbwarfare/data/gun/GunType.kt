@@ -39,5 +39,9 @@ enum class GunType {
 
     // 特殊武器
     @SerialName("Special")
-    SPECIAL
+    SPECIAL,
+
+    // 近战武器
+    @SerialName("Melee")
+    MELEE,
 }

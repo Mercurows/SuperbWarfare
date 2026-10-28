@@ -1,5 +1,5 @@
 {
-  "GunType": "Special",
+  "GunType": "Melee",
   "ArmPose": "LungeMine",
   "Icon": "superbwarfare:textures/gun_icon/lunge_mine_icon.png",
   "ProjectileAmount": 0,
