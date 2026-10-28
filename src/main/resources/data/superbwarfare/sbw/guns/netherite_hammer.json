@@ -40,6 +40,11 @@
       "HitTime": 23,
       "Heavy": true,
       "DamageMultiplier": 2.0,
+      "HoldAnimation": "animation.hammer.melee_heavy_hold",
+      "HoldDuration": 12,
+      "ReleaseAnimation": "animation.hammer.melee_heavy_release",
+      "ReleaseDuration": 33,
+      "ReleaseHitTime": 7,
       "Hitbox": {
         "Type": "Box",
         "Range": 2.0,
@@ -58,6 +63,13 @@
   "DrawTime": 12,
   "DefaultFireMode": "Semi",
   "AvailableFireModes": [
-    "Semi"
+    "Semi",
+    {
+      "Mode": "Semi",
+      "Name": "HoldManual",
+      "Override": {
+        "RightClickAction": "HeavyHold"
+      }
+    }
   ]
 }

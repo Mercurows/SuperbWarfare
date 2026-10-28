@@ -72,6 +72,7 @@ import net.neoforged.neoforge.energy.IEnergyStorage
 import org.joml.Math
 import java.util.*
 import java.util.concurrent.atomic.AtomicReference
+import java.util.function.Consumer
 
 abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), ItemScreenProvider,
     EnergyStorageItem, PropertyModifier<GunData, DefaultGunData> {
@@ -268,6 +269,31 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
         return maxDurability
     }
 
+    override fun isDamageable(stack: ItemStack) = isDamageable
+
+    // 扣到最后一格就停住：原版 `hurt` 到 `maxDamage` 会把物品 shrink 掉
+    override fun <T : LivingEntity?> damageItem(
+        stack: ItemStack,
+        amount: Int,
+        entity: T?,
+        onBroken: Consumer<Item>
+    ): Int {
+        damageWithoutBreaking(stack, amount)
+        return 0
+    }
+
+    private fun damageWithoutBreaking(stack: ItemStack, amount: Int) {
+        val max = getMaxDamage(stack)
+        if (max <= 0) return
+        stack.damageValue = (stack.damageValue + amount).coerceAtMost(max - 1)
+    }
+
+    /** 耐久耗尽：物品还在，但既不能开火也不能近战 */
+    open fun isBroken(stack: ItemStack): Boolean {
+        val max = getMaxDamage(stack)
+        return max > 0 && stack.damageValue >= max - 1
+    }
+
     /**
      * 开膛待击
      */
@@ -430,6 +456,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
      * 判断武器能否开火
      */
     open fun canShoot(data: GunData, shooter: Entity?): Boolean {
+        if (isBroken(data.stack())) return false
         return data.get(GunProp.PROJECTILE_AMOUNT) > 0
                 && !data.overHeat.get()
                 && data.get(GunProp.HEAT_PER_SHOOT) <= (100 + data.get(GunProp.HEAT_PER_SHOOT) - data.heat.get())
@@ -549,11 +576,7 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
             if (shooter is LivingEntity) {
                 stack.hurtAndBreak(data.get(GunProp.DURABILITY_PER_SHOOT), shooter, EquipmentSlot.MAINHAND)
             } else {
-                stack.hurtAndBreak(
-                    data.get(GunProp.DURABILITY_PER_SHOOT),
-                    level,
-                    null as LivingEntity?
-                ) { }
+                damageWithoutBreaking(stack, data.get(GunProp.DURABILITY_PER_SHOOT))
             }
         }
 

@@ -38,6 +38,7 @@ data class UseActionMessage(
         if (!GunItem.isHeldWeapon(stack)) return
 
         val data = GunData.from(stack)
+        if ((stack.item as? GunItem)?.isBroken(stack) == true) return
         // 冲锋的入口不止右键（疾跑单击冲锋键），不吃"必须等于本枪的右键行为"这条
         if (action != RightClickAction.BAYONET_CHARGE && data.get(GunProp.RIGHT_CLICK_ACTION) != action) return
 

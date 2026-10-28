@@ -84,6 +84,7 @@ data class MeleeAttackMessage(
         val stack = player.mainHandItem
         val item = stack.item
         if (item !is GunItem || !GunItem.isHeldWeapon(stack)) return
+        if (item.isBroken(stack)) return
 
         if (source.isNotEmpty() && source != SOURCE_MAIN) return
 

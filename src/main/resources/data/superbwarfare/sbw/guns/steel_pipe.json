@@ -41,6 +41,11 @@
       "HitTime": 11,
       "Heavy": true,
       "DamageMultiplier": 2.0,
+      "HoldAnimation": "animation.steel_pipe.melee_heavy_hold",
+      "HoldDuration": 8,
+      "ReleaseAnimation": "animation.steel_pipe.melee_heavy_release",
+      "ReleaseDuration": 14,
+      "ReleaseHitTime": 3,
       "Hitbox": {
         "Type": "Box",
         "Range": 1.6,
@@ -59,6 +64,13 @@
   "DrawTime": 8,
   "DefaultFireMode": "Semi",
   "AvailableFireModes": [
-    "Semi"
+    "Semi",
+    {
+      "Mode": "Semi",
+      "Name": "HoldManual",
+      "Override": {
+        "RightClickAction": "HeavyHold"
+      }
+    }
   ]
 }

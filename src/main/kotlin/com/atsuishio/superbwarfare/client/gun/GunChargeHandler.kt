@@ -45,6 +45,7 @@ object GunChargeHandler {
 
     fun start(stack: ItemStack, data: GunData) {
         if (isCharging() || cooldownTicks > 0) return
+        if ((stack.item as? GunItem)?.isBroken(stack) == true) return
 
         val charge = data.get(GunProp.BAYONET_CHARGE)
         if (!charge.canCharge(data)) return
