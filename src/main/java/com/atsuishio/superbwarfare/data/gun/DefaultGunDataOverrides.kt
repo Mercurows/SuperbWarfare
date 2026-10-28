@@ -60,6 +60,7 @@ fun DefaultGunData.withOverrides(diff: Map<out Prop<*, *, *, *, *>, Any?>): Defa
         meleeLegshot = num(GunProp.MELEE_LEGSHOT, meleeLegshot),
         meleeDamageTime = int(GunProp.MELEE_DAMAGE_TIME, meleeDamageTime),
         meleeComboReset = int(GunProp.MELEE_COMBO_RESET, meleeComboReset),
+        meleeChainWindow = int(GunProp.MELEE_CHAIN_WINDOW, meleeChainWindow),
         meleeHitbox = if (diff.containsKey(GunProp.MELEE_HITBOX)) {
             diff[GunProp.MELEE_HITBOX] as? MeleeHitbox
         } else {

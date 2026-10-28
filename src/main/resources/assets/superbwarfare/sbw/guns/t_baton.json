@@ -1,0 +1,35 @@
+{
+  "SlotIcon": "superbwarfare:textures/item/t_baton_icon.png",
+  "UseCustomSprintAnimation": true,
+  "Animation": {
+    "Idle": "animation.t_baton.idle",
+    "Melee": "animation.t_baton.melee_1",
+    "Run": "animation.t_baton.sprint",
+    "Edit": "animation.t_baton.edit"
+  },
+  "Model": {
+    "Animation": "superbwarfare:animations/bedrock/gun/t_baton.animation.json",
+    "Model": "superbwarfare:models/bedrock/gun/t_baton.geo.json",
+    "Texture": "superbwarfare:textures/bedrock/gun/t_baton.png"
+  },
+  "ItemDisplay": {
+    "firstperson_righthand": {
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "firstperson_lefthand": {
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "thirdperson_righthand": {
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "thirdperson_lefthand": {
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "ground": {
+      "scale": [1.0, 1.0, 1.0]
+    },
+    "fixed": {
+      "scale": [1.0, 1.0, 1.0]
+    }
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "GunType": "Melee",
+  "Icon": "superbwarfare:textures/gun_icon/t_baton_icon.png",
+  "ArmPose": "Item",
+  "RightClickAction": "HeavyStrike",
+  "Projectile": "@melee",
+  "ProjectileAmount": 0,
+  "AmmoType": "Infinity",
+  "MeleeDamage": 8,
+  "MeleeHeadshot": 1.25,
+  "MeleeLegshot": 0.85,
+  "MeleeChainWindow": 2,
+  "MaxDurability": 1115,
+  "MeleeHitbox": {
+    "Type": "Box",
+    "Range": 1.0,
+    "Width": 1.8,
+    "Height": 1.0,
+    "YOffset": 0,
+    "Occlusion": true
+  },
+  "MeleeActions": [
+    {
+      "Animation": "melee_1",
+      "Duration": 8,
+      "HitTime": 2
+    },
+    {
+      "Animation": "melee_2",
+      "Duration": 12,
+      "DamageMultiplier": 0.6,
+      "HitTime": [
+        2,
+        8
+      ]
+    },
+    {
+      "Animation": "melee_heavy",
+      "Duration": 18,
+      "HitTime": 6,
+      "Heavy": true,
+      "DamageMultiplier": 2.0,
+      "Effects": [
+        "superbwarfare:heavy_impact"
+      ],
+      "Hitbox": {
+        "Type": "Box",
+        "Range": 0.9,
+        "Width": 0.8,
+        "Height": 1.6,
+        "YOffset": 0,
+        "Occlusion": true
+      }
+    }
+  ],
+  "MeleeSound": {
+    "Swing": "superbwarfare:empty",
+    "Hit": "superbwarfare:melee_hit"
+  },
+  "Weight": 3,
+  "DrawTime": 8,
+  "DefaultFireMode": "Semi",
+  "AvailableFireModes": [
+    "Semi"
+  ]
+}

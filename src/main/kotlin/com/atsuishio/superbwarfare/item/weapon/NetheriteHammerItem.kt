@@ -14,5 +14,5 @@ class NetheriteHammerItem : HammerItem(
         .component(DataComponents.UNBREAKABLE, Unbreakable(false))
         .attributes(createAttributes(Tiers.NETHERITE, 75, -3.5f))
 ) {
-    override fun isDamageable(stack: ItemStack?): Boolean = false
+    override fun isDamageable(stack: ItemStack): Boolean = false
 }

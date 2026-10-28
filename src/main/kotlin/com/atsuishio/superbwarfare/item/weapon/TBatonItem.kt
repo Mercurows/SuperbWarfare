@@ -1,28 +1,17 @@
 package com.atsuishio.superbwarfare.item.weapon
 
-import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.init.RegistryName
-import com.atsuishio.superbwarfare.item.CustomDamageProperty
-import com.atsuishio.superbwarfare.tiers.ModItemTier
-import net.minecraft.sounds.SoundSource
-import net.minecraft.world.entity.LivingEntity
+import com.atsuishio.superbwarfare.item.gun.GeoGunItem
+import net.minecraft.world.inventory.tooltip.TooltipComponent
 import net.minecraft.world.item.ItemStack
-import net.minecraft.world.item.SwordItem
-import org.joml.Math
+import java.util.*
 
 @RegistryName("t_baton")
-class TBatonItem : SwordItem(
-    ModItemTier.STEEL, CustomDamageProperty(1115).attributes(createAttributes(ModItemTier.STEEL, 3, -2f))
-) {
-    override fun hurtEnemy(pStack: ItemStack, pTarget: LivingEntity, pAttacker: LivingEntity): Boolean {
-        pAttacker.level().playSound(
-            null,
-            pTarget.onPos,
-            ModSounds.MELEE_HIT.get(),
-            SoundSource.PLAYERS,
-            1f,
-            ((2 * Math.random() - 1) * 0.1f + 1.0f).toFloat()
-        )
-        return super.hurtEnemy(pStack, pTarget, pAttacker)
+class TBatonItem : GeoGunItem(Properties()) {
+
+    override fun isDamageable(stack: ItemStack): Boolean = true
+
+    override fun getTooltipImage(pStack: ItemStack): Optional<TooltipComponent> {
+        return Optional.empty()
     }
 }
