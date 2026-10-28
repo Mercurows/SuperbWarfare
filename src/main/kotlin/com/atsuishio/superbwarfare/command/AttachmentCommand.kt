@@ -2,7 +2,7 @@ package com.atsuishio.superbwarfare.command
 
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.command.builder.*
-import com.atsuishio.superbwarfare.config.server.AttachmentConfig
+import com.atsuishio.superbwarfare.config.server.GunConfig
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
 import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots
 import com.atsuishio.superbwarfare.data.attachment.LaserInfo
@@ -464,7 +464,7 @@ private fun rollAllSlots(data: GunData): List<Pair<AttachmentType, ResourceLocat
     val options = AttachmentType.entries.associateWith { installableAttachments(data, it) }
         .filterValues { it.isNotEmpty() }
 
-    if (AttachmentConfig.freeAttachmentMode) {
+    if (GunConfig.freeAttachmentMode) {
         return options.map { (type, ids) ->
             type to randomAttachment(ids)
         }

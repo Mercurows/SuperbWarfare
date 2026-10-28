@@ -3,7 +3,7 @@ package com.atsuishio.superbwarfare.client.screens
 import com.atsuishio.superbwarfare.Mod
 import com.atsuishio.superbwarfare.client.tooltip.ClientAttachmentImageTooltip
 import com.atsuishio.superbwarfare.client.tooltip.component.AttachmentImageComponent
-import com.atsuishio.superbwarfare.config.server.AttachmentConfig
+import com.atsuishio.superbwarfare.config.server.GunConfig
 import com.atsuishio.superbwarfare.data.attachment.*
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
@@ -1091,7 +1091,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
 
     private fun refreshAttachmentLists(player: Player, data: GunData) {
         val key = CandidateKey(data.getDefault().itemId, GunData.DATA_VERSION, AvailableAttachments.reloadGeneration,
-            AttachmentConfig.freeAttachmentMode, AttachmentConfig.fullyFreeAttachmentMode,
+            GunConfig.freeAttachmentMode, GunConfig.fullyFreeAttachmentMode,
             AttachmentType.entries.map { data.attachment.id(it) })
         if (candidateKey != key) {
             candidateKey = key
