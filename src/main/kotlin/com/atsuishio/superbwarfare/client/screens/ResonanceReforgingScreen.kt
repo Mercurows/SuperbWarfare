@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.client.screens
 
+import com.atsuishio.superbwarfare.config.server.GunConfig
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.inventory.menu.ReforgingTableMenu
@@ -61,6 +62,7 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
     private val indicatorCounts = mutableMapOf<String, Int>()
     private var ownedPerks = emptyMap<Item, Int>()
     private var forceRefresh = true
+    private var unrestrictedPerks = false
     private var pending = false
     private var pendingAt = 0L
     private var resetHoldStartedAt = 0L
@@ -150,7 +152,9 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
             if (weaponUuid != null && uuid != weaponUuid) { onClose(); return }
             weaponUuid = uuid
             val owned = player.inventory.items.filter { !it.isEmpty }.groupingBy { it.item }.fold(0) { n, item -> n + item.count }
-            if (rebuilt || forceRefresh || !ItemStack.matches(displayedWeapon, stack) || owned != ownedPerks) {
+            val unrestricted = GunConfig.allowsAnyPerk(player.isCreative)
+            if (rebuilt || forceRefresh || unrestricted != unrestrictedPerks || !ItemStack.matches(displayedWeapon, stack) || owned != ownedPerks) {
+                unrestrictedPerks = unrestricted
                 ownedPerks = owned
                 displayedWeapon = stack.copy()
                 syncDetails(doc, stack)
@@ -394,7 +398,7 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         val entries = draft.getValue(activeType)
         activeSlot = activeSlot.coerceAtMost(entries.size)
         val selected = entries.getOrNull(activeSlot)
-        availableChoices = (baseline.availablePerks().filter { it.type == activeType } + baseline.perk.getInstances(activeType).map { it.perk })
+        availableChoices = (baseline.availablePerks(localPlayer?.isCreative == true).filter { it.type == activeType } + baseline.perk.getInstances(activeType).map { it.perk })
             .distinct().filter { it !in entries || it == selected }
         val total = maxOf(1, (availableChoices.size + CHOICES_PER_PAGE - 1) / CHOICES_PER_PAGE)
         choicePage = choicePage.coerceIn(0, total - 1)

@@ -1,7 +1,7 @@
 package com.atsuishio.superbwarfare.data.gun
 
 import com.atsuishio.superbwarfare.capability.entity.InfiniteAmmoCapability
-import com.atsuishio.superbwarfare.config.server.AttachmentConfig
+import com.atsuishio.superbwarfare.config.server.GunConfig
 import com.atsuishio.superbwarfare.data.*
 import com.atsuishio.superbwarfare.data.attachment.AttachmentDefinition
 import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots
@@ -38,6 +38,7 @@ import com.atsuishio.superbwarfare.data.stack.GunStackStorage
 import com.atsuishio.superbwarfare.data.stack.ItemStackStorage
 import com.atsuishio.superbwarfare.event.GunEventHandler
 import com.atsuishio.superbwarfare.init.ModItems
+import com.atsuishio.superbwarfare.init.ModPerks
 import com.atsuishio.superbwarfare.item.attachment.SubWeaponItem
 import com.atsuishio.superbwarfare.item.gun.EmptyGunItem
 import com.atsuishio.superbwarfare.item.gun.GunItem
@@ -59,6 +60,7 @@ import net.minecraft.world.phys.Vec3
 import net.minecraftforge.common.util.LazyOptional
 import net.minecraftforge.energy.IEnergyStorage
 import net.minecraftforge.items.IItemHandler
+import net.minecraftforge.registries.RegistryManager
 import java.util.*
 import java.util.function.Function
 import kotlin.math.max
@@ -1206,10 +1208,15 @@ class GunData private constructor(
     }
 
     /** Gets list of available perks applicable to weapon. */
-    fun availablePerks(): List<Perk> = get(AVAILABLE_PERKS)
+    @JvmOverloads
+    fun availablePerks(creative: Boolean = false): List<Perk> =
+        if (GunConfig.allowsAnyPerk(creative)) {
+            RegistryManager.ACTIVE.getRegistry(ModPerks.PERK_KEY).values.toList()
+        } else get(AVAILABLE_PERKS)
 
     /** Checks if specific perk can be applied. */
-    fun canApplyPerk(perk: Perk): Boolean = availablePerks().contains(perk)
+    @JvmOverloads
+    fun canApplyPerk(perk: Perk, creative: Boolean = false): Boolean = availablePerks(creative).contains(perk)
 
     /**
      * Gets attachments allowed on [slot] from the gun data definition.
@@ -1227,7 +1234,7 @@ class GunData private constructor(
      *
      * 开了**完全自由改装模式**时更激进：连本枪的 `AvailableAttachments` 都不看，
      * 直接换成该槽位**已注册的全部配件**（`AttachmentSlots.registeredIds`）。
-     * 两档配置的差别见 `AttachmentConfig`。
+     * 两档配置的差别见 `GunConfig`。
      *
      * ⚠ **副武器永远没有配件**（四期）：`SubWeaponItem` 虽然是 `GunItem`，但它是**装到枪上的一个部件**，
      * 不是一把可以被改装的枪 —— 让下挂榴弹自己再挂一个握把是没有意义的。
@@ -1244,7 +1251,7 @@ class GunData private constructor(
         fun raiserCompatible(id: ResourceLocation): Boolean =
             !onRaiser || AttachmentDefinition.from(id)?.canMountOnRaiser != false
 
-        if (AttachmentConfig.fullyFreeAttachmentMode) {
+        if (GunConfig.fullyFreeAttachmentMode) {
             return AttachmentSlots.registeredIds(slot).filter(::raiserCompatible)
         }
 

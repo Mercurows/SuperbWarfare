@@ -53,7 +53,7 @@ data class ResonancePerkInstallMessage(
         for (type in Perk.Type.entries) {
             val names = requested.getValue(type)
             val current = installed.getValue(type).map { it.perk }
-            val allowed = data.availablePerks().filter { it.type == type }
+            val allowed = data.availablePerks(player.isCreative).filter { it.type == type }
             val change = planChange(current.map { it.name }, names, allowed.map { it.name }.toSet())
                 ?: return
             val byName = (current + allowed).associateBy { it.name }

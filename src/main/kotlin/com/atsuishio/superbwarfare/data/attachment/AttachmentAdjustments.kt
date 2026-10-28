@@ -1,6 +1,6 @@
 package com.atsuishio.superbwarfare.data.attachment
 
-import com.atsuishio.superbwarfare.config.server.AttachmentConfig
+import com.atsuishio.superbwarfare.config.server.GunConfig
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
@@ -18,13 +18,13 @@ object AttachmentAdjustments {
 
     fun canRotate(gun: GunData, type: AttachmentType): Boolean {
         if (type == AttachmentType.MAGAZINE || type == AttachmentType.CHARM) return false
-        if (AttachmentConfig.fullyFreeAttachmentMode) return true
+        if (GunConfig.fullyFreeAttachmentMode) return true
         return type == AttachmentType.MUZZLE &&
             gun.attachment.id(type)?.let(AttachmentDefinition::from)?.canRotate == true
     }
 
     fun canOffset(type: AttachmentType): Boolean = type != AttachmentType.MAGAZINE &&
-        (AttachmentConfig.fullyFreeAttachmentMode || when (type) {
+        (GunConfig.fullyFreeAttachmentMode || when (type) {
             AttachmentType.SCOPE, AttachmentType.GRIP, AttachmentType.UPPER_RAIL,
             AttachmentType.LOWER_RAIL, AttachmentType.LEFT_RAIL, AttachmentType.RIGHT_RAIL -> true
             else -> false

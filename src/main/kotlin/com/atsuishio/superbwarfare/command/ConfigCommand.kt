@@ -36,8 +36,10 @@ val CONFIG_COMMAND = buildCommand("config") {
     booleanConfig(VehicleConfig::COLLISION_DESTROY_HARD_BLOCKS)
     booleanConfig(VehicleConfig::COLLISION_DESTROY_BLOCKS_BEASTLY)
 
-    booleanConfig(AttachmentConfig::FREE_ATTACHMENT_MODE)
-    booleanConfig(AttachmentConfig::FULLY_FREE_ATTACHMENT_MODE)
+    booleanConfig(GunConfig::FREE_ATTACHMENT_MODE)
+    booleanConfig(GunConfig::FULLY_FREE_ATTACHMENT_MODE)
+    booleanConfig(GunConfig::FREE_PERK_MODE)
+    booleanConfig(GunConfig::FULLY_FREE_PERK_MODE)
 
     booleanConfig(MiscConfig::FORCE_DAMAGE_MODE)
     booleanConfig(MiscConfig::FORCE_MOB_EFFECT_MODE)
