@@ -332,6 +332,7 @@ class GunProp<T, R>(
         @JvmField
         val RPM = plainProp(DefaultGunData::rpm)
 
+        /** 同时作用于最终射速与近战挥击的时长、命中时间。 */
         @JvmField
         val RPM_MULTIPLIER = plainProp(DefaultGunData::rpmMultiplier)
 

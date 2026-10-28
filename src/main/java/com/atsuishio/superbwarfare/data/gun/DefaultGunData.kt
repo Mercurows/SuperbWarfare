@@ -219,7 +219,7 @@ data class DefaultGunData(
     val soundRadius: Double = 0.0,
     @SerialName("RPM")
     val rpm: Int = 600,
-    // 全局射速倍率：最终射速 = (RPM + 每发累加值) * RpmMultiplier
+    // 全局攻速倍率：最终射速 = (RPM + 每发累加值) * RpmMultiplier；近战 Duration / HitTime 同比缩放
     @SerialName("RpmMultiplier")
     val rpmMultiplier: Double = 1.0,
     @SerialName("ExplosionDamage")
