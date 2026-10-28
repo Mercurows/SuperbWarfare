@@ -20,26 +20,31 @@
   "MeleeActions": [
     {
       "Animation": "melee_1",
-      "Duration": 14,
-      "HitTime": 4
+      "Duration": 16,
+      "HitTime": 7
     },
     {
       "Animation": "melee_2",
-      "Duration": 16,
-      "HitTime": 5
+      "Duration": 20,
+      "HitTime": 7
     },
     {
       "Animation": "melee_3",
-      "Duration": 13,
-      "HitTime": 4,
+      "Duration": 15,
+      "HitTime": 5,
       "DamageMultiplier": 1.2222
     },
     {
       "Animation": "melee_heavy",
-      "Duration": 23,
-      "HitTime": 9,
+      "Duration": 26,
+      "HitTime": 12,
       "Heavy": true,
       "DamageMultiplier": 2.0,
+      "HoldAnimation": "melee_heavy_hold",
+      "HoldDuration": 10,
+      "ReleaseAnimation": "melee_heavy_realease",
+      "ReleaseDuration": 17,
+      "ReleaseHitTime": 3,
       "Hitbox": {
         "Type": "Box",
         "Range": 4.2,
@@ -58,6 +63,13 @@
   "DrawTime": 10,
   "DefaultFireMode": "Semi",
   "AvailableFireModes": [
-    "Semi"
+    "Semi",
+    {
+      "Mode": "Semi",
+      "Name": "HoldManual",
+      "Override": {
+        "RightClickAction": "HeavyHold"
+      }
+    }
   ]
 }

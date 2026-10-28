@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.ActiveGun
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
+import com.atsuishio.superbwarfare.data.gun.RightClickAction
 import com.atsuishio.superbwarfare.data.gun.melee.MeleeAction
 import com.atsuishio.superbwarfare.data.gun.melee.MeleeHitboxType
 import com.atsuishio.superbwarfare.data.gun.melee.ResolvedMeleeAction
@@ -40,8 +41,12 @@ object MeleeClientHandler {
      */
     private var subWeaponKeyWasDown: Boolean = false
 
+    /** 被上一段挡下的蓄势请求还剩多少 tick；右键松开即作废 */
+    private var pendingHeavyHoldTicks: Int = 0
+
     fun clear() {
         subWeaponKeyWasDown = false
+        pendingHeavyHoldTicks = 0
         // swingSerial 保持递增，避免动画实例保留旧序号后漏播复活后的新挥击。
     }
 
@@ -72,10 +77,13 @@ object MeleeClientHandler {
         requestedIndex: Int = -1,
         chargeStrike: Boolean = false,
         chargeTarget: Entity? = null,
+        useKeyDown: Boolean = false,
     ): Boolean {
         if (!player.isAlive || player.isRemoved || player.isSpectator) return false
         val subWeaponJustPressed = subWeaponFireKeyDown && !subWeaponKeyWasDown
         subWeaponKeyWasDown = subWeaponFireKeyDown
+        // 右键一松，排队中的蓄势请求就作废（放在所有提前 return 之前，别让它卡住）
+        if (!useKeyDown) pendingHeavyHoldTicks = 0
 
         // 切换请求的兜底超时也要在任何提前 return 之前推进（丢一次包不该把 G 永久锁死）
         SubWeaponClientHandler.tick(data = null)
@@ -93,10 +101,29 @@ object MeleeClientHandler {
 
         if (!skipStateTick) state.tick()
 
+        // 被上一段挡下的蓄势请求：按键还按着就等到能抬手的那一刻再兑现
+        if (pendingHeavyHoldTicks > 0) {
+            if (beginHeavyHold(player, stack, queueIfLocked = false)) {
+                pendingHeavyHoldTicks = 0
+                return false
+            }
+            pendingHeavyHoldTicks--
+        }
+
+        // 蓄势期间不接受其它近战输入；松开由右键释放事件收尾
+        if (state.meleeHolding) {
+            val keepHolding = data.get(GunProp.RIGHT_CLICK_ACTION) == RightClickAction.HEAVY_HOLD &&
+                    !state.isLocked && !data.busyForMelee()
+            if (keepHolding) return false
+            state.endHeavyHold()
+        }
+
         if (state.meleeTicks > 0) {
             tickActiveSwing(player, data, state)
-            return false
         }
+        // 收尾窗口内不再吞输入，剩下的 1~2 tick 直接用来起下一段
+        val chaining = state.canChainMelee(MELEE_CHAIN_WINDOW_TICKS)
+        if (state.meleeTicks > 0 && !chaining) return false
 
         val fromSubWeaponKey = subWeaponFireKeyDown && !meleeKeyDown
         if (fromSubWeaponKey && subWeaponJustPressed) {
@@ -115,10 +142,11 @@ object MeleeClientHandler {
         val wantsMelee = meleeKeyDown || requestedIndex >= 0 || (data.meleeOnly() && holdingFireKey)
         if (!wantsMelee) return false
 
+        if (item.isBroken(stack)) return false
         if (!item.hasMeleeAttack(data)) return false
         if (!canOperate) return false
         if (drawTime >= 0.01) return false
-        if (state.isLocked) return false
+        if (state.isLocked && !chaining) return false
         if (GunActionLock.of(operated).blocks(GunAction.MELEE)) return false
         if (operated.busyForMelee()) return false
 
@@ -128,6 +156,77 @@ object MeleeClientHandler {
     /** 标了 `"Heavy": true` 的那一段的下标；没标就是第 0 段 */
     fun indexOfHeavy(data: GunData): Int =
         data.meleeActions().indexOfFirst { it.isHeavy() }.takeIf { it >= 0 } ?: 0
+
+    /** 第 [index] 段要求的蓄势 tick 数（未声明 = 0） */
+    private fun holdTicks(data: GunData, index: Int): Int =
+        data.meleeActions().getOrNull(index)?.holdDurationTicks() ?: 0
+
+    /** 蓄势进度够不够松手打出（HUD 的红点与出刀判定共用这一条） */
+    @JvmStatic
+    fun canReleaseHeavyHold(data: GunData): Boolean {
+        val state = GunActionLock.of(data)
+        if (!state.meleeHolding) return false
+        val total = holdTicks(data, state.meleeActionIndex)
+        return total <= 0 || state.meleeHoldTicks * 100 >= total * HEAVY_HOLD_RELEASE_PERCENT
+    }
+
+    /** 右键蓄势：按下时开始抬刀保持；被上一段挡住时先记下这次按下（[queueIfLocked]） */
+    @JvmStatic
+    fun beginHeavyHold(player: Player, stack: ItemStack, queueIfLocked: Boolean = true): Boolean {
+        if (!player.isAlive || player.isRemoved || player.isSpectator) return false
+        if (!canOperateWeapon(player)) return false
+        if (!GunItem.isHeldWeapon(stack) || !GunItem.isOperable(stack)) return false
+        if (ClientEventHandler.isEditing || ClientEventHandler.drawTime >= 0.01) return false
+
+        val data = GunData.from(stack)
+        if (!data.hasMeleeAttack()) return false
+        if ((stack.item as? GunItem)?.isBroken(stack) == true) return false
+        if (data.get(GunProp.RIGHT_CLICK_ACTION) != RightClickAction.HEAVY_HOLD) return false
+        if (data.busyForMelee()) return false
+
+        val state = GunActionLock.of(data)
+        val chaining = state.canChainMelee(MELEE_CHAIN_WINDOW_TICKS)
+        if (!chaining && (state.isLocked || state.meleeTicks > 0 || state.meleeHolding)) {
+            // 上一段还没走完：先记下这次按下，等计时走到窗口再抬手
+            if (queueIfLocked && !state.meleeHolding) {
+                pendingHeavyHoldTicks = maxOf(HEAVY_HOLD_BUFFER_TICKS, state.meleeTicks)
+            }
+            return false
+        }
+
+        val operated = ActiveGun.dataOf(data, player.level().isClientSide)
+        if (GunActionLock.of(operated).blocks(GunAction.MELEE)) return false
+
+        if (chaining) state.releaseMeleeForChain()
+        state.meleeActionIndex = indexOfHeavy(data)
+        state.beginHeavyHold(player)
+        // 抬刀也是一段新动画：让动画侧换 clip 并从上一段淡入
+        swingSerial++
+        return true
+    }
+
+    /** 右键松开：蓄势够久打出重击，不满就收回待机 */
+    @JvmStatic
+    fun releaseHeavyHold(player: Player, stack: ItemStack): Boolean {
+        val item = stack.item as? GunItem ?: return false
+        if (!GunItem.isHeldWeapon(stack)) return false
+
+        val data = GunData.from(stack)
+        val state = GunActionLock.of(data)
+        if (!state.meleeHolding) return false
+
+        val heldEnough = canReleaseHeavyHold(data)
+        state.endHeavyHold()
+        if (!heldEnough) return false
+        if (!player.isAlive || player.isRemoved || player.isSpectator) return false
+        if (!canOperateWeapon(player)) return false
+        if (item.isBroken(stack)) return false
+        if (!item.hasMeleeAttack(data)) return false
+        if (data.busyForMelee()) return false
+        if (state.isLocked) return false
+
+        return triggerSwing(player, data, state, indexOfHeavy(data), releaseStrike = true)
+    }
 
     private fun firstComboIndex(actions: List<MeleeAction>): Int =
         actions.indexOfFirst { !it.isHeavy() }.coerceAtLeast(0)
@@ -184,12 +283,15 @@ object MeleeClientHandler {
         requestedIndex: Int = -1,
         chargeStrike: Boolean = false,
         chargeTarget: Entity? = null,
+        releaseStrike: Boolean = false,
     ): Boolean {
         if (!player.isAlive || player.isRemoved || player.isSpectator) return false
+        // 连招下标要在拆掉上一段占用之前读
+        val chaining = state.canChainMelee(MELEE_CHAIN_WINDOW_TICKS)
         // ① 连招下标：窗口内再挥击进下一段，超时回到第 0 段；被强制指定时直接用那一段
         val actions = data.meleeActions()
         val comboReset = data.get(GunProp.MELEE_COMBO_RESET)
-        val inComboWindow = state.sinceLastMelee < comboReset
+        val inComboWindow = chaining || state.sinceLastMelee < comboReset
         val index = when {
             requestedIndex >= 0 -> requestedIndex.coerceAtMost((actions.size - 1).coerceAtLeast(0))
             inComboWindow -> nextComboIndex(actions, state.meleeActionIndex)
@@ -201,18 +303,29 @@ object MeleeClientHandler {
         // ② 本段冷却
         if (action.cooldown > 0 && data.cooldown.isCoolingDown(Cooldown.meleeKey(index))) return false
 
-        // ③ 冲锋那一下的时长与结算点独立于动作表（数据里没写就跟着那一段走）
+        // ③ 冲锋/蓄势释放的时长与结算点独立于动作表（数据里没写就跟着那一段走）
         val charge = if (chargeStrike) data.get(GunProp.BAYONET_CHARGE) else null
+        val source = actions.getOrNull(index)
         val speed = if (chargeStrike) 1.0 else meleeAttackSpeed(player)
-        val duration = scaledTicks(charge?.strikeDuration?.takeIf { it > 0 } ?: action.duration, speed)
-        val hitTimes = (if (chargeStrike) {
-            val strikeHitTime = charge?.strikeHitTime?.takeIf { it >= 0 }
-            if (strikeHitTime != null) listOf(strikeHitTime) else action.hitTimes
-        } else {
-            action.hitTimes
+        val rawDuration = when {
+            releaseStrike -> source?.releaseDuration ?: action.duration
+            else -> charge?.strikeDuration?.takeIf { it > 0 } ?: action.duration
+        }
+        val duration = scaledTicks(rawDuration, speed)
+        val hitTimes = (when {
+            releaseStrike ->
+                source?.releaseHitTime?.list?.takeIf { it.isNotEmpty() } ?: action.hitTimes
+
+            chargeStrike -> {
+                val strikeHitTime = charge?.strikeHitTime?.takeIf { it >= 0 }
+                if (strikeHitTime != null) listOf(strikeHitTime) else action.hitTimes
+            }
+
+            else -> action.hitTimes
         }).map { scaledTicks(it, speed) }
 
         // ④ 动作占用（时长 = 本段的 Duration）
+        if (chaining) state.releaseMeleeForChain()
         if (!state.acquire(GunAction.MELEE, duration)) return false
 
         state.bindMeleeOwner(player)
@@ -226,6 +339,8 @@ object MeleeClientHandler {
             .toIntArray()
         state.meleeHitIndex = 0
         state.meleeFromBayonetCharge = chargeStrike
+        state.meleeHeavyRelease = releaseStrike
+        state.meleeHolding = false
         state.meleeChargeTarget = chargeTarget.takeIf { chargeStrike }
 
         // ⑤ 通知动画侧"新的一次挥击开始了"。按住 V 连续挥击时状态一直是 MELEE，
@@ -377,6 +492,15 @@ object MeleeClientHandler {
     /** `Attributes.ATTACK_SPEED` 的玩家默认值 */
     private const val DEFAULT_ATTACK_SPEED = 4.0
     private const val MAX_ATTACK_SPEED_MULTIPLIER = 4.0
+
+    // 上一段还剩这么多 tick 时允许起下一段
+    private const val MELEE_CHAIN_WINDOW_TICKS = 5
+
+    // 右键被上一段挡下时，这次按下最多保留多少 tick 等窗口
+    private const val HEAVY_HOLD_BUFFER_TICKS = 30
+
+    // 蓄势到这个百分比就允许松手打出（不必按满）
+    private const val HEAVY_HOLD_RELEASE_PERCENT = 90
 
     private inline fun debugLog(message: () -> String) {
         if (DisplayConfig.MELEE_DEBUG_LOG.get()) {

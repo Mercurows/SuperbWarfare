@@ -126,6 +126,26 @@ data class MeleeAction(
     /** 本段是"重击"段：枪的 `RightClickAction` 为 `HeavyStrike` 时打这一段，不参与连招下标轮转 */
     @SerialName("Heavy")
     val heavy: Boolean? = null,
+
+    /** 蓄势段（按住右键抬起保持）的动画候选链；`RightClickAction` 为 `HeavyHold` 时用 */
+    @SerialName("HoldAnimation")
+    val holdAnimation: SingleOrList<String>? = null,
+
+    /** 蓄势需要按住的 tick 数；不满就松开不算攻击，直接回待机。不写 = 0（按下即可放） */
+    @SerialName("HoldDuration")
+    val holdDuration: Int? = null,
+
+    /** 蓄势后松开那一下的动画候选链；不写时退回本段的 [animation] */
+    @SerialName("ReleaseAnimation")
+    val releaseAnimation: SingleOrList<String>? = null,
+
+    /** 蓄势后松开那一下的总 tick；不写时用本段 [duration] */
+    @SerialName("ReleaseDuration")
+    val releaseDuration: Int? = null,
+
+    /** 蓄势后松开那一下的结算点；不写时用本段 [hitTimes] */
+    @SerialName("ReleaseHitTime")
+    val releaseHitTime: SingleOrList<Int>? = null,
 ) : IDBasedData<MeleeAction> {
 
     @Transient
@@ -139,6 +159,16 @@ data class MeleeAction(
 
     /** 本段声明的动画候选链（短名或全名）；没写时为空列表，调用方回退到 `GunAnimation.Melee` */
     fun animationCandidates(): List<String> = animation?.list.orEmpty()
+
+    /** 蓄势保持段的动画候选链 */
+    fun holdAnimationCandidates(): List<String> = holdAnimation?.list.orEmpty()
+
+    /** 蓄势需要按住的 tick 数（0 = 不需要蓄势） */
+    fun holdDurationTicks(): Int = holdDuration?.coerceAtLeast(0) ?: 0
+
+    /** 蓄势松开那一下的动画候选链；没写时退回本段的动画 */
+    fun releaseAnimationCandidates(): List<String> =
+        releaseAnimation?.list?.takeIf { it.isNotEmpty() } ?: animationCandidates()
 
     fun isHeavy(): Boolean = heavy == true
 

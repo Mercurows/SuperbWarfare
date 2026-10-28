@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.event
 
 import com.atsuishio.superbwarfare.client.gun.GunChargeHandler
+import com.atsuishio.superbwarfare.client.gun.MeleeClientHandler
 import com.atsuishio.superbwarfare.client.overlay.OverlayTraceHandler
 import com.atsuishio.superbwarfare.client.overlay.ammo.AmmoBarHud
 import com.atsuishio.superbwarfare.client.screens.LoiterConfigScreen
@@ -51,23 +52,43 @@ object ClickEventHandler {
     @JvmField
     var switchZoom: Boolean = false
 
+    /** 右键是否按着；枪械会 cancel 掉这个按键，`KeyMapping.isDown()` 之后就不再更新了 */
+    var useKeyHeld: Boolean = false
+        private set
+
+    private fun isUseMouseButton(button: Int): Boolean =
+        (ModKeyMappings.HOLD_ZOOM.key.type == InputConstants.Type.MOUSE
+                && ModKeyMappings.HOLD_ZOOM.key.value == button) ||
+                (ModKeyMappings.SWITCH_ZOOM.key.type == InputConstants.Type.MOUSE
+                        && ModKeyMappings.SWITCH_ZOOM.key.value == button)
+
     @SubscribeEvent
     fun onButtonReleased(event: InputEvent.MouseButton.Pre) {
-        if (notInGame) return
+        if (notInGame) {
+            useKeyHeld = false
+            return
+        }
         if (event.action != InputConstants.RELEASE) return
+
+        val button = event.button
+        if (isUseMouseButton(button)) useKeyHeld = false
 
         val player = localPlayer ?: return
         if (player.hasEffect(ModMobEffects.SHOCK.get())) return
 
-        val button = event.button
         if (button == ModKeyMappings.FIRE.key.value) {
             handleWeaponFireRelease()
         }
 
         if (button == ModKeyMappings.HOLD_ZOOM.key.value) {
             handleWeaponUseRelease()
-        } else if (button == ModKeyMappings.SWITCH_ZOOM.key.value && !switchZoom) {
-            handleWeaponUseRelease()
+        } else if (button == ModKeyMappings.SWITCH_ZOOM.key.value) {
+            // 切换开镜模式下松开不收镜，但蓄势重击仍要收尾
+            if (switchZoom) {
+                MeleeClientHandler.releaseHeavyHold(player, ActiveGun.stackOf(player))
+            } else {
+                handleWeaponUseRelease()
+            }
         }
     }
 
@@ -88,8 +109,13 @@ object ClickEventHandler {
 
     @SubscribeEvent
     fun onButtonPressed(event: InputEvent.MouseButton.Pre) {
-        if (notInGame) return
+        if (notInGame) {
+            useKeyHeld = false
+            return
+        }
         if (event.action != InputConstants.PRESS) return
+
+        if (isUseMouseButton(event.button)) useKeyHeld = true
 
         val player = localPlayer ?: return
         if (player.isSpectator) return
@@ -464,8 +490,13 @@ object ClickEventHandler {
 
             if (key == ModKeyMappings.HOLD_ZOOM.key.value) {
                 handleWeaponUseRelease()
-            } else if (key == ModKeyMappings.SWITCH_ZOOM.key.value && !switchZoom) {
-                handleWeaponUseRelease()
+            } else if (key == ModKeyMappings.SWITCH_ZOOM.key.value) {
+                // 切换开镜模式下松开不收镜，但蓄势重击仍要收尾
+                if (switchZoom) {
+                    MeleeClientHandler.releaseHeavyHold(player, ActiveGun.stackOf(player))
+                } else {
+                    handleWeaponUseRelease()
+                }
             }
 
             if (event.action == GLFW.GLFW_RELEASE) {
@@ -670,6 +701,7 @@ object ClickEventHandler {
 
         when (data.get(GunProp.RIGHT_CLICK_ACTION)) {
             RightClickAction.HEAVY_STRIKE -> ClientEventHandler.requestHeavyStrike()
+            RightClickAction.HEAVY_HOLD -> MeleeClientHandler.beginHeavyHold(player, gunStack)
             RightClickAction.BAYONET_CHARGE -> GunChargeHandler.start(gunStack, data)
             else -> handleWeaponAimPress(player, gunStack, data)
         }
@@ -698,6 +730,10 @@ object ClickEventHandler {
 
     fun handleWeaponUseRelease() {
         val player = Minecraft.getInstance().player
+
+        // 右键蓄势：松开即打出重击
+        if (player != null && MeleeClientHandler.releaseHeavyHold(player, ActiveGun.stackOf(player))) return
+
         if (!ClientEventHandler.zoom && !ClientEventHandler.zoomVehicle) return
 
         if (player != null) {

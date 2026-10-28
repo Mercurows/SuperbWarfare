@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.overlay
 import com.atsuishio.superbwarfare.Mod.Companion.loc
 import com.atsuishio.superbwarfare.client.ClientRenderHandler
 import com.atsuishio.superbwarfare.client.RenderHelper
+import com.atsuishio.superbwarfare.client.gun.MeleeClientHandler
 import com.atsuishio.superbwarfare.client.model.attachment.BedrockAttachmentModel
 import com.atsuishio.superbwarfare.compat.realcamera.RealCameraCompatHolder
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
@@ -67,6 +68,9 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
 
     @JvmField
     var vehicleIndicator: Int = 0
+
+    /** 蓄势够松手时中心点的颜色 */
+    private val HEAVY_HOLD_READY_COLOR: Int = 0xFFFF3030.toInt()
 
     private var scopeScale = 1f
     private const val TRAJECTORY_REFERENCE_RANGE = 64.0
@@ -301,8 +305,10 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
             if (ClientEventHandler.zoomTime > 0.8 && GunResource.compute(stack).hideCrosshairWhenZoom) return
         }
 
+        // 蓄势够松手了就把中心点染红
         RenderHelper.blit(
             guiGraphics.pose(), POINT, screenWidth / 2f - 7.5f + moveX, screenHeight / 2f - 7.5f + moveY, 16f, 16f,
+            argb = if (MeleeClientHandler.canReleaseHeavyHold(data)) HEAVY_HOLD_READY_COLOR else -0x1,
         )
         if (data.meleeOnly()) return
         if (!player.isSprinting || ClientEventHandler.noSprintTicks > 0) {

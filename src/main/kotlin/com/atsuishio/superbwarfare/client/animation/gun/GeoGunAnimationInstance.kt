@@ -6,6 +6,7 @@ import com.atsuishio.superbwarfare.client.gun.GunChargeHandler
 import com.atsuishio.superbwarfare.client.gun.MeleeClientHandler
 import com.atsuishio.superbwarfare.config.client.DisplayConfig
 import com.atsuishio.superbwarfare.data.gun.*
+import com.atsuishio.superbwarfare.data.gun.melee.MeleeAction
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.event.DeployedWeaponHandler
@@ -137,6 +138,18 @@ open class GeoGunAnimationInstance(
      * 已消费的近战挥击序号
      */
     private var consumedMeleeSerial = 0
+
+    /** 提前衔接下一段时，上一段挥击片段作为淡出层继续走完的 runner */
+    private var meleeFadeRunner: AnimationRunner? = null
+
+    /** 淡出层剩余时长（tick） */
+    private var meleeFadeTicks = 0f
+
+    /** 淡出层总时长（tick），用来算权重 */
+    private var meleeFadeDuration = 0f
+
+    /** 这次淡出是"离开近战"（而不是挥击接挥击）：相机晃动要跟着衰减 */
+    private var meleeCameraFading = false
     private var fireModeSwitchSerial = 0
     private var consumedFireModeSwitchSerial = 0
     private var lastFireModeName: String? = null
@@ -149,6 +162,7 @@ open class GeoGunAnimationInstance(
     private val pendingParticles = ArrayList<ParticleEffectData>()
     private var cachedPose: Pose = DummyPose.INSTANCE
     private val cameraRotation = Quaternionf()
+    private val fadedCameraRotation = Quaternionf()
 
     init {
         loadAnimations()
@@ -512,17 +526,21 @@ open class GeoGunAnimationInstance(
         return names[ClientEventHandler.currentMeleeIndex(stack).mod(names.size)]
     }
 
-    /** 本段动作自己声明的动画候选链（`MeleeAction.Animation`），优先于 `GunAnimation.Melee` */
-    private fun meleeActionAnimations(): List<String> {
+    /** 动作锁当前锁存的那一段动作；解析失败时返回 null */
+    private fun currentMeleeAction(): MeleeAction? {
         val data = GunData.from(stack)
-        if (!data.hasMeleeAttack()) return emptyList()
+        if (!data.hasMeleeAttack()) return null
         return try {
             val actions = data.meleeActions()
-            actions[ClientEventHandler.currentMeleeIndex(stack).mod(actions.size)].animationCandidates()
+            actions[ClientEventHandler.currentMeleeIndex(stack).mod(actions.size)]
         } catch (_: Exception) {
-            emptyList()
+            null
         }
     }
+
+    /** 本段动作自己声明的动画候选链（`MeleeAction.Animation`），优先于 `GunAnimation.Melee` */
+    private fun meleeActionAnimations(): List<String> =
+        currentMeleeAction()?.animationCandidates().orEmpty()
 
     /**
      * 解析 MELEE 状态实际使用的 clip 名
@@ -531,6 +549,22 @@ open class GeoGunAnimationInstance(
         val resource = GunResource.from(stack)
         val animation = resource.compute().animation ?: return null
         val names = animation.melee?.list.orEmpty()
+
+        // 右键蓄势：抬起保持播 `HoldAnimation`，松开那一下播 `ReleaseAnimation`
+        val variant = if (ClientEventHandler.isGunMeleeHoldActive(stack)) {
+            currentMeleeAction()?.holdAnimationCandidates()
+        } else if (ClientEventHandler.currentMeleeHeavyRelease(stack)) {
+            currentMeleeAction()?.releaseAnimationCandidates()
+        } else {
+            null
+        }
+        if (!variant.isNullOrEmpty()) {
+            val resolved = GunAnimationNames.resolveFirst(variant, resource.id) { animations.containsKey(it) }
+            if (resolved != null) {
+                loggedMeleeMiss = null
+                return resolved
+            }
+        }
 
         // 冲锋撞人那一下换 clip（和 `FireStock` 换 `Fire` 同一套思路）：只换动画，
         // 本段时长/判定/效果还是动作表里那一段
@@ -675,7 +709,67 @@ open class GeoGunAnimationInstance(
         return true
     }
 
+    /** 提前衔接时把上一段片段留作淡出层 */
+    private fun startMeleeFade(ticks: Float = MELEE_CHAIN_FADE_TICKS, cameraFade: Boolean = false) {
+        val old = runner ?: return
+        meleeFadeRunner = old
+        meleeFadeDuration = ticks
+        meleeFadeTicks = ticks
+        meleeCameraFading = cameraFade
+    }
+
+    private fun tickMeleeFade() {
+        val fade = meleeFadeRunner ?: return
+        fade.tick()
+        meleeFadeTicks -= Minecraft.getInstance().deltaFrameTime
+            .coerceIn(0f, SPIN_MAX_FRAME_DELTA_TICKS)
+        if (meleeFadeTicks <= 0f) clearMeleeFade()
+    }
+
+    private fun clearMeleeFade() {
+        handOverMeleeCamera()
+        meleeFadeRunner = null
+        meleeFadeTicks = 0f
+        meleeFadeDuration = 0f
+    }
+
+    /** 镜头交还给下一段：`cameraRotation` 还是上一帧的满幅值，得先定格在当前衰减结果上 */
+    private fun handOverMeleeCamera() {
+        if (!meleeCameraFading) return
+        cameraRotation.set(getCameraRotation())
+        meleeCameraFading = false
+    }
+
+    /** 淡出层（旧片段）的剩余权重 */
+    private fun meleeFadeWeight(): Float {
+        if (meleeFadeRunner == null || meleeFadeDuration <= 0f) return 0f
+        return smoothstep((meleeFadeTicks / meleeFadeDuration).coerceIn(0f, 1f))
+    }
+
+    /** 相机晃动的剩余权重（1 = 不衰减）。`Idle` 没有 `camera` 骨骼，姿势混合补不到这一块 */
+    private fun meleeCameraFadeWeight(): Float =
+        if (meleeCameraFading) meleeFadeWeight() else 1f
+
+    private fun applyMeleeFade(lowerPose: Pose): Pose {
+        val fade = meleeFadeRunner ?: return lowerPose
+        val weight = meleeFadeWeight()
+        if (weight <= 0f) return lowerPose
+
+        return CROSSFADE_BLENDER.combine(lowerPose, fade.evaluate()) { lower, upper ->
+            when {
+                upper.boneIndex() < 0 -> lower
+                lower.boneIndex() < 0 -> upper
+                else -> SimpleInterpolatorBlender.leanerLerpTransforms(
+                    lower, upper, weight, maxOf(lower.boneIndex(), upper.boneIndex()), TRANSFORM_FACTORY
+                )
+            }
+        }
+    }
+
     private fun meleePlaybackSpeed(animation: BedrockAnimation): Float {
+        // 抬刀保持按片段原速播完，然后停在最后一帧
+        if (ClientEventHandler.isGunMeleeHoldActive(stack)) return 1f
+
         val duration = ClientEventHandler.currentMeleeDuration(stack)
             .takeIf { it > 0 }
             ?: GunData.from(stack).get(GunProp.MELEE_DURATION)
@@ -687,7 +781,9 @@ open class GeoGunAnimationInstance(
         }
     }
 
-    private fun play(state: GunAnimationState, keepProgress: Boolean = false) {
+    private fun play(state: GunAnimationState, keepProgress: Boolean = false, keepMeleeFade: Boolean = false) {
+        // 淡出层主要服务挥击接挥击，离开近战时（收刀回待机）也跟着淡一次
+        if (state != GunAnimationState.MELEE && !keepMeleeFade) clearMeleeFade()
         val name = animationName(state) ?: return
         val animation = animations[name] ?: return
         val playState = state.playType.state()
@@ -1642,6 +1738,7 @@ open class GeoGunAnimationInstance(
             // 留着只会让下次亮起来时从一个旧权重接着走
             clearFireLoopRunner()
             clearChargeRunner()
+            clearMeleeFade()
             customSprintLayer.clear()
             bayonetChargeLayer.clear()
             clearDeployIdle()
@@ -1701,11 +1798,17 @@ open class GeoGunAnimationInstance(
         // 第一段挥击走的是 `runner == null` 分支（那里本来就会 play），要是留到这里再判，
         // 序号没被消费就会在下一帧被当成"又挥了一次"，把动画从头重播一遍。
         val newMeleeSwing = consumeMeleeSwing()
+        // 新的一段近战开始了：镜头晃动交还给新片段，不再跟着上一次的离场淡出
+        if (newMeleeSwing) handOverMeleeCamera()
 
         if (runner == null || currentState != target) {
-            play(target)
+            // 近战收尾（挥完或蓄势松开没收刀）回到待机：上一段留作淡出层，别硬切
+            val leavingMelee = currentState == GunAnimationState.MELEE && target == GunAnimationState.IDLE
+            if (leavingMelee) startMeleeFade(MELEE_EXIT_FADE_TICKS, cameraFade = true)
+            play(target, keepMeleeFade = leavingMelee)
         } else if (newMeleeSwing && currentState == GunAnimationState.MELEE) {
             // 连招/连挥：状态没变但确实开了新的一段，重播一次（不重建状态，只换 runner）
+            startMeleeFade()
             play(GunAnimationState.MELEE)
         } else if (currentState != GunAnimationState.MELEE && !playsCurrentClip(target)) {
             // 状态没变但该播的 clip 换了（装上/卸下护木这类变体），换 runner 但接着旧进度走
@@ -1740,6 +1843,7 @@ open class GeoGunAnimationInstance(
         tickSpinRunner(updateSpinRunner(data, animation))
         tickFireLoopRunner(updateFireLoopRunner(animation))
         tickChargeRunner(updateChargeRunner(animation, firedThisFrame))
+        tickMeleeFade()
         val sprintDelta = sprintEaseDelta()
         val sprintWeight = sprintEaseWeight()
         val sprintSwitchSpeed = sprintEaseSwitchSpeed()
@@ -1831,7 +1935,9 @@ open class GeoGunAnimationInstance(
                         applyCharge(
                             applyDeployIdle(
                                 bayonetChargeLayer.apply(
-                                    customSprintLayer.apply(overLoop(runner?.evaluate() ?: DummyPose.INSTANCE))
+                                    customSprintLayer.apply(
+                                        overLoop(applyMeleeFade(runner?.evaluate() ?: DummyPose.INSTANCE))
+                                    )
                                 )
                             )
                         ),
@@ -1877,7 +1983,11 @@ open class GeoGunAnimationInstance(
         }
     }
 
-    override fun getCameraRotation(): Quaternionf = cameraRotation
+    override fun getCameraRotation(): Quaternionf {
+        val weight = meleeCameraFadeWeight()
+        if (weight >= 1f) return cameraRotation
+        return fadedCameraRotation.identity().slerp(cameraRotation, weight)
+    }
 
     override fun setCameraRotation(rotation: Quaternionf) {
         cameraRotation.set(rotation)
@@ -1896,6 +2006,7 @@ open class GeoGunAnimationInstance(
             clearSpinRunner()
             clearFireLoopRunner()
             clearChargeRunner()
+            clearMeleeFade()
             customSprintLayer.clear()
             bayonetChargeLayer.clear()
             clearLoopRunner()
@@ -1922,6 +2033,7 @@ open class GeoGunAnimationInstance(
         clearSpinRunner()
         clearFireLoopRunner()
         clearChargeRunner()
+        clearMeleeFade()
         customSprintLayer.clear()
         bayonetChargeLayer.clear()
         clearLoopRunner()
@@ -1953,6 +2065,12 @@ open class GeoGunAnimationInstance(
         // 动作片段（或蓄力层）接管那一刻的一小段交接（tick）：奔跑层让位、蓄力层淡入都用它。
         // 不能是 0（硬切会弹），也不能长（波塞克的蓄力总共才 10 tick）
         private const val ACTION_HANDOVER_TICKS = 3f
+
+        // 挥击提前衔接时，上一段片段的淡出时长（tick）
+        private const val MELEE_CHAIN_FADE_TICKS = 3f
+
+        /** 近战结束/蓄势没收刀回待机的淡出时长：抬起的姿势要落回去，比连招衔接长一些 */
+        private const val MELEE_EXIT_FADE_TICKS = 6f
 
         /**
          * 缓入缓出每帧最多吃掉多少 tick。`deltaFrameTime` 单位是 tick（20/s，60FPS 一帧约 0.33），
