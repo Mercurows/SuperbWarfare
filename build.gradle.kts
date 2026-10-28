@@ -268,6 +268,8 @@ dependencies {
 
     // 可选 mod 依赖
 
+    modCompileOnly("curse.maven:controlify-forgified-1377533:7719971")
+
     // 加速渲染
     modCompileOnly("curse.maven:accelerated-rendering-1314021:7342975")
 
@@ -310,6 +312,8 @@ dependencies {
     if (!project.gradle.startParameter.taskNames.any { it.contains("runServer") }) {
         modRuntimeOnly("curse.maven:oculus-581495:6020952")
         modRuntimeOnly("curse.maven:embeddium-908741:5681725")
+        modRuntimeOnly("curse.maven:controlify-forgified-1377533:7719971")
+        modRuntimeOnly("maven.modrinth:yacl:3.6.6+1.20.1-forge")
     }
 
     modImplementation("curse.maven:timeless-and-classics-zero-1028108:6518539")

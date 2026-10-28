@@ -1,4 +1,10 @@
 {
+  "controlify.binding.superbwarfare.next_weapon": "Next weapon / scope / zoom",
+  "controlify.binding.superbwarfare.previous_weapon": "Previous weapon / scope / zoom",
+  "controlify.binding.superbwarfare.vehicle_reload": "Reload vehicle weapon",
+  "controlify.binding.superbwarfare.seek_or_free_camera": "Lock-on / free camera",
+  "controlify.radial.superbwarfare.vehicle": "Vehicle actions",
+  "controlify.radial.superbwarfare.eject": "Eject",
   "item_group.superbwarfare.guns": "Superb Warfare Guns",
   "item_group.superbwarfare.perk": "Superb Warfare Perks",
   "item_group.superbwarfare.item": "Superb Warfare Items",

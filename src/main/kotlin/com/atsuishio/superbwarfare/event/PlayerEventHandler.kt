@@ -27,6 +27,7 @@ import net.minecraftforge.event.AnvilUpdateEvent
 import net.minecraftforge.event.TickEvent
 import net.minecraftforge.event.entity.living.LivingAttackEvent
 import net.minecraftforge.event.entity.living.LivingDeathEvent
+import net.minecraftforge.event.entity.living.LivingSwapItemsEvent
 import net.minecraftforge.event.entity.player.AttackEntityEvent
 import net.minecraftforge.event.entity.player.PlayerEvent
 import net.minecraftforge.eventbus.api.EventPriority
@@ -73,6 +74,13 @@ object PlayerEventHandler {
 
         ChargeWindowHandler.clear(player)
         UseActionMessage.clearChargeCooldown(player)
+    }
+
+    // Hands are unusable in this seat, so a swap would only shuffle items (e.g. controller X while locking on)
+    @SubscribeEvent
+    fun onSwapHands(event: LivingSwapItemsEvent.Hands) {
+        val vehicle = event.entity.vehicle
+        if (vehicle is VehicleEntity && vehicle.banHand(event.entity)) event.isCanceled = true
     }
 
     @SubscribeEvent

@@ -27,6 +27,8 @@ import kotlin.math.abs
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = [Dist.CLIENT])
 object ClientMouseHandler {
+    var controllerMovement: Vec2 = Vec2.ZERO
+
     @JvmField
     var posO: Vec2 = Vec2(0f, 0f)
 
@@ -77,14 +79,16 @@ object ClientMouseHandler {
 
     @SubscribeEvent
     fun handleClientTick(event: TickEvent.ClientTickEvent) {
-        val player = localPlayer ?: return
         if (event.phase == TickEvent.Phase.START) return
+        val controllerMove = controllerMovement
+        controllerMovement = Vec2.ZERO
+        val player = localPlayer ?: return
 
         posO = posN
         posN = MouseMovementHandler.getMousePos()
         val speed = 256f
-        val moveSpeedX = Mth.clamp(posN.x - posO.x, -speed, speed)
-        val moveSpeedY = Mth.clamp(posN.y - posO.y, -speed, speed)
+        val moveSpeedX = Mth.clamp(posN.x - posO.x + controllerMove.x, -speed, speed)
+        val moveSpeedY = Mth.clamp(posN.y - posO.y + controllerMove.y, -speed, speed)
 
 
         val vehicle = player.vehicle
