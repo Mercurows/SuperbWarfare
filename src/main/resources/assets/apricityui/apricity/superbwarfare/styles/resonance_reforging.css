@@ -64,8 +64,11 @@ sbw-reforging-weapon { display: block; pointer-events: none; }
 .locked { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 8px; color: #f0f0f2; font-size: 16px; }
 .locked::before { content: ""; position: absolute; inset: 6px; border: 1px solid rgba(0, 0, 0, 0.7); pointer-events: none; }
 .lock { position: relative; width: 19px; height: 17px; margin-bottom: 9px; border-radius: 2px; background: #eeeeef; }
-.lock::before { content: ""; position: absolute; left: 4px; top: -9px; width: 11px; height: 12px; border: 3px solid #eeeeef; border-radius: 7px 7px 0 0; }
-.keyhole { position: absolute; left: 8px; top: 5px; width: 3px; height: 7px; background: #222228; }
+.lock::before { content: ""; position: absolute; box-sizing: border-box; left: 50%; top: -9px; width: 17px; height: 18px; transform: translateX(-50%); border: 3px solid #eeeeef; border-radius: 7px 7px 0 0; z-index: 0; }
+.keyhole { position: absolute; left: 8px; top: 5px; width: 3px; height: 7px; background: #222228; z-index: 1; }
+.slot-lock { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 12px; font-size: 14px; color: #c3c6cc; pointer-events: none; }
+.perk-card.slot-locked[aria-disabled="true"] { opacity: 0.65; }
+.perk-card.slot-locked:hover { border-color: rgba(210, 210, 218, 0.52); }
 .slot-page-indicators { position: absolute; left: 20px; right: 20px; bottom: 24px; }
 .output-preview { position: relative; flex: 0 0 184px; width: 184px; height: 100%; display: flex; justify-content: center; cursor: pointer; font-size: 17px; }
 .output-preview > span { position: absolute; left: 50%; width: 106px; bottom: 12px; height: 24px; line-height: 24px; transform: translateX(-50%); display: flex; justify-content: center; align-items: center; white-space: nowrap; }

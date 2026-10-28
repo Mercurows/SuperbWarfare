@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.network.message.send
 
+import com.atsuishio.superbwarfare.config.server.GunConfig
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.init.ModBlocks
 import com.atsuishio.superbwarfare.inventory.menu.ReforgingTableMenu
@@ -50,9 +51,11 @@ data class ResonancePerkInstallMessage(
         val selections = mutableMapOf<Perk.Type, List<Perk>>()
         val additions = mutableListOf<Perk>()
         val removals = mutableListOf<Perk>()
+        val unlockedSlots = unlockedSlotCount(data.level.get(), player.isCreative, GunConfig.perkSlotUnlockLevels)
         for (type in Perk.Type.entries) {
             val names = requested.getValue(type)
             val current = installed.getValue(type).map { it.perk }
+            if (!validSlotChange(current.map { it.name }, names, unlockedSlots)) return
             val allowed = data.availablePerks(player.isCreative).filter { it.type == type }
             val change = planChange(current.map { it.name }, names, allowed.map { it.name }.toSet())
                 ?: return
@@ -93,6 +96,23 @@ data class ResonancePerkInstallMessage(
 
     companion object {
         data class Change(val added: List<String>, val removed: List<String>)
+
+        fun unlockedSlotCount(weaponLevel: Int, creative: Boolean, levelsPerSlot: Int): Int =
+            if (creative || levelsPerSlot <= 0) Int.MAX_VALUE
+            else (1L + weaponLevel.coerceAtLeast(0).toLong() / levelsPerSlot).coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
+
+        /** Locked slots may retain installed Perks or lose them, but never receive replacements or new Perks. */
+        fun validSlotChange(current: List<String>, requested: List<String>, unlockedSlots: Int): Boolean {
+            if (unlockedSlots < 1) return false
+            // Lists compact after removal: the retained locked tail must remain a subsequence of the old tail.
+            var index = minOf(unlockedSlots, current.size)
+            for (name in requested.drop(unlockedSlots)) {
+                while (index < current.size && current[index] != name) index++
+                if (index == current.size) return false
+                index++
+            }
+            return true
+        }
 
         fun availableUpgradePoints(weaponLevel: Int, levels: Collection<Int>): Int =
             (weaponLevel - levels.sumOf { (it - 1).coerceAtLeast(0) }).coerceAtLeast(0)

@@ -63,6 +63,9 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
     private var ownedPerks = emptyMap<Item, Int>()
     private var forceRefresh = true
     private var unrestrictedPerks = false
+    private var unlockedPerkSlots = 1
+    private var slotUnlockLevels = 10
+    private var creativeMode = false
     private var pending = false
     private var pendingAt = 0L
     private var resetHoldStartedAt = 0L
@@ -153,8 +156,15 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
             weaponUuid = uuid
             val owned = player.inventory.items.filter { !it.isEmpty }.groupingBy { it.item }.fold(0) { n, item -> n + item.count }
             val unrestricted = GunConfig.allowsAnyPerk(player.isCreative)
-            if (rebuilt || forceRefresh || unrestricted != unrestrictedPerks || !ItemStack.matches(displayedWeapon, stack) || owned != ownedPerks) {
+            val unlockLevels = GunConfig.perkSlotUnlockLevels
+            val unlockedSlots = ResonancePerkInstallMessage.unlockedSlotCount(GunData.from(stack).level.get(), player.isCreative, unlockLevels)
+            if (rebuilt || forceRefresh || unrestricted != unrestrictedPerks || unlockedSlots != unlockedPerkSlots
+                || unlockLevels != slotUnlockLevels || player.isCreative != creativeMode
+                || !ItemStack.matches(displayedWeapon, stack) || owned != ownedPerks) {
                 unrestrictedPerks = unrestricted
+                unlockedPerkSlots = unlockedSlots
+                slotUnlockLevels = unlockLevels
+                creativeMode = player.isCreative
                 ownedPerks = owned
                 displayedWeapon = stack.copy()
                 syncDetails(doc, stack)
@@ -250,12 +260,12 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         for (type in Perk.Type.entries) {
             val key = type.typeName
             doc.getElementById("slots-$key")?.innerHTML = (0..2).joinToString("") { position ->
-                """<button type="button" class="perk-card" id="perk-slot-$key-$position"><sbw-reforging-weapon id="perk-icon-$key-$position"></sbw-reforging-weapon><span class="perk-level" id="perk-level-$key-$position"></span><span class="add-perk" id="perk-add-$key-$position">+</span></button>"""
+                """<button type="button" class="perk-card" id="perk-slot-$key-$position"><sbw-reforging-weapon id="perk-icon-$key-$position"></sbw-reforging-weapon><span class="perk-level" id="perk-level-$key-$position"></span><span class="add-perk" id="perk-add-$key-$position">+</span><span class="slot-lock" id="perk-lock-$key-$position"><span class="lock"><span class="keyhole"></span></span><span id="perk-unlock-level-$key-$position"></span></span></button>"""
             }
             for (position in 0..2) {
                 doc.getElementById("perk-slot-$key-$position")?.addEventListener("click") {
                     val index = pages.getValue(type) * 3 + position
-                    if (!pending && index <= draft.getValue(type).size) {
+                    if (canSelectSlot(type, index)) {
                         activeType = type; activeSlot = index; slotSelected = true; choicePage = 0; forceRefresh = true
                     }
                 }
@@ -345,6 +355,7 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         text(doc, "weapon-experience", translated("experience", format(exp, 0), format(needed, 0)))
         doc.getElementById("weapon-exp-fill")?.setInlineStyleProperty("width", ((exp / needed).coerceIn(0.0, 1.0) * 100).toString() + "%")
         perkHoverTargets.clear()
+        if (slotSelected && !canSelectSlot(activeType, activeSlot)) slotSelected = false
         for (type in Perk.Type.entries) renderSlots(doc, type)
         show(doc, "perk-choices-panel", slotSelected)
         if (slotSelected) renderChoices(doc, baseline) else shownChoices = emptyList()
@@ -360,12 +371,16 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         }
         setDisplayItem(doc, "reforging-output-icon", previewStack)
         syncStats(doc, baseline, preview)
-        val changed = hasChanges(baseline)
+        val changed = hasChanges(baseline) && validDraftSlots(baseline)
         doc.getElementById("complete-reforging")?.setAttribute("class", if (changed && !pending) "output-preview ready" else "output-preview")
         disable(doc, "complete-reforging", !changed || pending || weaponUuid == null)
     }
 
     private fun slotPages(type: Perk.Type) = maxOf(1, (draft.getValue(type).size + 3) / 3)
+
+    private fun canSelectSlot(type: Perk.Type, index: Int): Boolean =
+        !pending && index >= 0 && index <= draft.getValue(type).size
+            && (index < unlockedPerkSlots || index in draft.getValue(type).indices)
 
     private fun renderSlots(doc: Document, type: Perk.Type) {
         val key = type.typeName
@@ -376,13 +391,16 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         for (position in 0..2) {
             val index = page * 3 + position
             val perk = entries.getOrNull(index)
+            val locked = perk == null && index >= unlockedPerkSlots
             val selected = slotSelected && type == activeType && index == activeSlot
-            attribute(doc, "perk-slot-$key-$position", "class", if (selected) "perk-card selected" else "perk-card")
-            attribute(doc, "perk-slot-$key-$position", "aria-disabled", (index > entries.size || pending).toString())
+            attribute(doc, "perk-slot-$key-$position", "class", "perk-card" + (if (selected) " selected" else "") + (if (locked) " slot-locked" else ""))
+            attribute(doc, "perk-slot-$key-$position", "aria-disabled", (!canSelectSlot(type, index)).toString())
             setDisplayItem(doc, "perk-icon-$key-$position", perk?.let { ItemStack(it.getItem().get()) } ?: ItemStack.EMPTY)
             text(doc, "perk-level-$key-$position", perk?.let { "Lv." + (draftLevels[it] ?: 1) } ?: "")
             show(doc, "perk-level-$key-$position", perk != null)
-            show(doc, "perk-add-$key-$position", perk == null && index == entries.size)
+            show(doc, "perk-add-$key-$position", perk == null && index == entries.size && !locked)
+            show(doc, "perk-lock-$key-$position", locked, "flex")
+            text(doc, "perk-unlock-level-$key-$position", if (locked) "Lv." + index.toLong() * slotUnlockLevels else "")
             if (perk != null) perkHoverTargets["perk-slot-$key-$position"] = perk
         }
         renderPageIndicators(doc, "page-indicators-$key", page, total)
@@ -390,9 +408,19 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         disable(doc, "page-$key-next", pending || page == total - 1)
     }
 
-    private fun canChoose(perk: Perk, baseline: GunData): Boolean =
-        localPlayer?.isCreative == true || baseline.perk.getInstances(perk.type).any { it.perk == perk }
+    private fun canChoose(perk: Perk, baseline: GunData): Boolean {
+        if (activeSlot >= unlockedPerkSlots && activePerk() != perk) return false
+        return localPlayer?.isCreative == true || baseline.perk.getInstances(perk.type).any { it.perk == perk }
             || (ownedPerks[perk.getItem().get()] ?: 0) > 0
+    }
+
+    private fun validDraftSlots(baseline: GunData): Boolean {
+        val unlocked = ResonancePerkInstallMessage.unlockedSlotCount(baseline.level.get(), localPlayer?.isCreative == true, GunConfig.perkSlotUnlockLevels)
+        return Perk.Type.entries.all { type ->
+            ResonancePerkInstallMessage.validSlotChange(baseline.perk.getInstances(type).map { it.perk.name },
+                draft.getValue(type).map { it.name }, unlocked)
+        }
+    }
 
     private fun renderChoices(doc: Document, baseline: GunData) {
         val entries = draft.getValue(activeType)
@@ -518,7 +546,7 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         if (stack.item !is GunItem || !draftReady) return
         val data = GunData.from(stack)
         val identity = weaponUuid ?: return
-        if (data.uuid?.toString() != identity || !hasChanges(data)) return
+        if (data.uuid?.toString() != identity || !hasChanges(data) || !validDraftSlots(data)) return
         pending = true
         pendingAt = System.currentTimeMillis()
         slotSelected = false
@@ -662,9 +690,9 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
     private fun attribute(doc: Document, id: String, name: String, value: String) {
         doc.getElementById(id)?.let { if (it.getAttribute(name) != value) it.setAttribute(name, value) }
     }
-    private fun show(doc: Document, id: String, visible: Boolean) {
+    private fun show(doc: Document, id: String, visible: Boolean, displayMode: String = "block") {
         doc.getElementById(id)?.let {
-            val display = if (visible) "block" else "none"
+            val display = if (visible) displayMode else "none"
             if (it.getInlineStylePropertyValue("display") != display) it.setInlineStyleProperty("display", display)
         }
     }
