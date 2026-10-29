@@ -96,6 +96,9 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     private var viewportHeight = 0f
     private val adjustmentDraft = AttachmentEditDraft()
     private var statsOpen = false
+    private var statsCollapsedForSettings = false
+    private var statsCollapseSuppressed = false
+    private val statsVisible get() = statsOpen && !statsCollapsedForSettings
     private val statRows = mutableListOf<StatRow>()
     private var statsRefreshTick = Long.MIN_VALUE
     private var statsBaseline: GunData? = null
@@ -155,6 +158,8 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         documentGeneration = -1L
         adjustmentDraft.discard()
         statRows.clear()
+        statsCollapsedForSettings = false
+        statsCollapseSuppressed = false
         statsRefreshTick = Long.MIN_VALUE
         statsBaseline = null
         statsState = null
@@ -202,7 +207,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         drawDecorationPass(graphics, doc, false) { vertices, matrix ->
             for ((mount, target) in connectors.values) drawConnector(vertices, matrix, mount, target)
             val scale = editorPanelScale()
-            if (statsOpen && stats != null) {
+            if (statsVisible && stats != null) {
                 val chartTop = STATS_CHART_TOP * scale
                 val chart = Box(stats.left, stats.top + chartTop, stats.width, stats.height - chartTop)
                 drawPanelBackground(vertices, matrix, chart, scale, PANEL_BACKGROUND)
@@ -284,7 +289,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             val list = doc.getElementById("panel-list")
             val statsScroll = doc.getElementById("stats-scroll")
             val settingsScroll = doc.getElementById("settings-controls")
-            val inStats = statsOpen && statsScroll != null && event.composedPath().any { it === statsScroll }
+            val inStats = statsVisible && statsScroll != null && event.composedPath().any { it === statsScroll }
             val inSettings = settingsScroll != null && event.composedPath().any { it === settingsScroll }
             val inList = panelType != null && AttachmentSlots.slotAt(editingAttachmentType) == panelType &&
                 scroll != null && list != null && event.composedPath().any { it === list }
@@ -584,6 +589,8 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         val laser = type?.let { laserInfo(data, it) }
         if (type == null || !data.attachment.has(type) || (!rotation && !offset && laser == null)) {
             setStyle(settings, "display", "none")
+            statsCollapsedForSettings = false
+            statsCollapseSuppressed = false
             adjustmentDraft.discard()
             return null
         }
@@ -639,19 +646,26 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         }
         val rows = (if (rotation) 1 else 0) + (if (offset) 1 else 0) + (if (laser != null) 4 else 0)
         val scale = editorPanelScale()
-        // 空间不足时只滚动属性卡片，标题、底部操作与全局缩放保持稳定。
-        val heightBudget = (viewportHeight - SETTINGS_BOTTOM_INSET - TITLE_BAR_HEIGHT - 14f) / scale - STATS_HEIGHT
-        val visibleRows = minOf(rows, floor((heightBudget - SETTINGS_BASE_HEIGHT) / SETTINGS_ROW_HEIGHT + 0.001f)
-            .toInt().coerceAtLeast(1))
+        val scrollKey = "${type.attachmentName}:${data.attachment.id(type)}"
+        doc.getElementById("settings-controls")?.let { controls ->
+            if (controls.getAttribute("data-scroll-key") != scrollKey) {
+                controls.setAttribute("data-scroll-key", scrollKey)
+                controls.scrollTo(0.0, 0.0)
+                statsCollapseSuppressed = false
+            }
+        }
+        // 空间不足时先让 01 收成顶部按钮；收起也放不下时保留属性面板，属性卡片滚动。
+        val columnBudget = (viewportHeight - SETTINGS_BOTTOM_INSET - TITLE_BAR_HEIGHT - 14f) / scale
+        fun fitRows(reserved: Float) =
+            floor((columnBudget - reserved - SETTINGS_BASE_HEIGHT) / SETTINGS_ROW_HEIGHT + 0.001f).toInt()
+        statsCollapsedForSettings = statsOpen && !statsCollapseSuppressed &&
+            fitRows(STATS_HEIGHT) < rows && fitRows(STATS_BUTTON_HEIGHT) >= rows
+        val reservedStats = if (statsVisible) STATS_HEIGHT else STATS_BUTTON_HEIGHT
+        val visibleRows = minOf(rows, fitRows(reservedStats)).coerceAtLeast(1)
         val height = SETTINGS_BASE_HEIGHT + visibleRows * SETTINGS_ROW_HEIGHT
         setStyle(settings, "height", px(height))
         doc.getElementById("settings-controls")?.let { controls ->
             setStyle(controls, "height", px(visibleRows * SETTINGS_ROW_HEIGHT - SETTINGS_ROW_GAP))
-            val scrollKey = "${type.attachmentName}:${data.attachment.id(type)}"
-            if (controls.getAttribute("data-scroll-key") != scrollKey) {
-                controls.setAttribute("data-scroll-key", scrollKey)
-                controls.scrollTo(0.0, 0.0)
-            }
         }
         // 比原来的底部锚点下移 10 GUI px，拉开属性面板与设置面板，同时避开快捷栏。
         val bounds = Box(6f, (viewportHeight - SETTINGS_BOTTOM_INSET - height * scale).coerceAtLeast(TITLE_BAR_HEIGHT + 4f),
@@ -1505,7 +1519,12 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     private fun prepareStats(doc: Document) {
         doc.getElementById("stats-toggle")?.let { button ->
             button.addEventListener("click") {
-                statsOpen = !statsOpen
+                if (statsVisible) {
+                    statsOpen = false
+                } else {
+                    statsOpen = true
+                    statsCollapseSuppressed = true
+                }
                 statsRefreshTick = Long.MIN_VALUE
             }
         }
@@ -1537,23 +1556,23 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     private fun syncStats(doc: Document, data: GunData, tick: Long): Box? {
         val root = doc.getElementById("weapon-stats") ?: return null
         doc.getElementById("stats-toggle")?.let {
-            val text = statLabel(if (statsOpen) "hide" else "show")
+            val text = statLabel(if (statsVisible) "hide" else "show")
             doc.getElementById("stats-toggle-label")?.let { label ->
                 if (label.textContent != text) label.textContent = text
             }
-            val expanded = statsOpen.toString()
+            val expanded = statsVisible.toString()
             if (it.getAttribute("aria-expanded") != expanded) it.setAttribute("aria-expanded", expanded)
         }
-        setStyle(doc.getElementById("stats-chart"), "display", if (statsOpen) "block" else "none")
+        setStyle(doc.getElementById("stats-chart"), "display", if (statsVisible) "block" else "none")
         // 字号跟随其他面板；通过收窄属性面板保持四分之一屏幕的面积限制。
         val scale = editorPanelScale()
-        val height = if (statsOpen) STATS_HEIGHT else STATS_BUTTON_HEIGHT
-        val width = if (statsOpen) minOf(STATS_WIDTH, (viewportWidth / 2f - 12f).coerceAtLeast(1f) / scale) else STATS_BUTTON_WIDTH
+        val height = if (statsVisible) STATS_HEIGHT else STATS_BUTTON_HEIGHT
+        val width = if (statsVisible) minOf(STATS_WIDTH, (viewportWidth / 2f - 12f).coerceAtLeast(1f) / scale) else STATS_BUTTON_WIDTH
         setStyle(root, "width", px(width))
         setStyle(root, "height", px(height))
         val bounds = Box(6f, TITLE_BAR_HEIGHT + 6f, width * scale, height * scale)
         place(root, bounds, scale)
-        if (!statsOpen) {
+        if (!statsVisible) {
             statRows.forEach { row -> row.texts.forEach { it.shown = false } }
             return bounds
         }
