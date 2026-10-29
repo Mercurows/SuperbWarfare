@@ -14,11 +14,12 @@
   },
   "SprintOffset": [0, 4, 4],
   "ShootRecoil": {
-    "Offset": [1.0, 1.0, 1.0],
-    "Rotation": [3.0, 1.0, 1.0],
-    "ZoomRate": 0.8,
-    "Speed": 1.4
+    "Offset": [0.7, 1.0, 0.5],
+    "Rotation": [0.2, 0.2, 0.5],
+    "ZoomRate": 0.5,
+    "Speed": 1.0
   },
+  "ZoomingTranslateMultiply": 0.2,
   "Model": {
     "Animation": "superbwarfare:animations/bedrock/gun/glock_18.animation.json",
     "Model": "superbwarfare:models/bedrock/gun/glock_18.geo.json",

@@ -537,6 +537,24 @@ object ClickEventHandler {
         // 冲锋窗口里不许开火（近战专属枪械的左键是挥击，不算开火）
         if (GunChargeHandler.isCharging() && !GunData.from(gunStack).meleeOnly()) return
 
+        // 射击周期内的点击排到周期结束补发（松开左键也不清）
+        if (!notInGame && ClientEventHandler.clientTimer.progress != 0L) {
+            val data = GunData.from(gunStack)
+            if (data.selectedFireModeInfo().mode == FireMode.SEMI
+                && !data.meleeOnly()
+                && !item.useSpecialFireProcedure(data)
+                && ClientEventHandler.drawTime < 0.01
+                && ClientEventHandler.burstFireAmount == 0
+                && item.canShoot(data, player)
+            ) {
+                ClientEventHandler.burstFireAmount = 1
+                ClientEventHandler.noSprintTicks = 3f
+                ClientEventHandler.holdingFireKey = true
+                player.setSprinting(false)
+            }
+            return
+        }
+
         if (ClientEventHandler.clientTimer.progress == 0L
             && !notInGame
         ) {
@@ -650,9 +668,11 @@ object ClickEventHandler {
         ClientEventHandler.customRpm = 0
 
         if (data != null && fireModeInfo != null) {
-            val fireMode = data.selectedFireModeInfo().mode
+            val fireMode = ActiveGun.dataOf(player)?.selectedFireModeInfo()?.mode
+                ?: data.selectedFireModeInfo().mode
 
-            if (fireMode != FireMode.BURST) {
+            // SEMI 的 burstFireAmount 是排着的那一发，松开左键不清
+            if (fireMode != FireMode.BURST && fireMode != FireMode.SEMI) {
                 ClientEventHandler.burstFireAmount = 0
             }
 

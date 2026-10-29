@@ -79,7 +79,6 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemDisplayContext
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.phys.Vec3
-import net.minecraftforge.client.event.ViewportEvent
 import net.minecraftforge.common.capabilities.ForgeCapabilities
 import org.joml.Matrix3f
 import org.joml.Matrix4f
@@ -168,57 +167,6 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     override fun hasModel(stack: ItemStack): Boolean {
         val modelResource = GunResource.compute(stack).getModel()
         return GeoGunModel.create(modelResource) != null
-    }
-
-    override fun applyLevelCameraAnimation(
-        event: ViewportEvent.ComputeCameraAngles,
-        stack: ItemStack,
-        animateRot: Quaternionf,
-        partialTicks: Float
-    ) {
-        val absolutePitch = Mth.abs(Mth.wrapDegrees(event.pitch))
-
-        // At +/-90 degrees pitch the YXZ Euler decomposition is singular. Fold
-        // animated yaw into roll instead of changing event.yaw, otherwise the
-        // player's look input gets trapped at the pole while the animation plays.
-        if (absolutePitch >= VERTICAL_PITCH_START) {
-            val animatedEuler = YXZRotationView(animateRot).asEulerAngle()
-            val animatedYaw = Mth.RAD_TO_DEG * animatedEuler.y()
-            val animatedRoll = Mth.RAD_TO_DEG * animatedEuler.z()
-            val positivePitch = event.pitch >= 0f
-            event.pitch = Mth.clamp(event.pitch + Mth.RAD_TO_DEG * animatedEuler.x(), -90f, 90f)
-            event.roll = if (positivePitch) {
-                event.roll - animatedYaw - animatedRoll
-            } else {
-                event.roll + animatedYaw - animatedRoll
-            }
-            return
-        }
-
-        if (isIdentity(animateRot)) {
-            return
-        }
-
-        val raw = YXZRotationView(
-            Vector3f(
-                Mth.DEG_TO_RAD * event.pitch,
-                Mth.DEG_TO_RAD * event.yaw,
-                Mth.DEG_TO_RAD * event.roll
-            )
-        ).asQuaternion()
-        val combined = Quaternionf(raw).mul(animateRot)
-        val euler = YXZRotationView(combined).asEulerAngle()
-
-        event.yaw = Mth.RAD_TO_DEG * euler.y()
-        event.pitch = Mth.RAD_TO_DEG * euler.x()
-        event.roll = -Mth.RAD_TO_DEG * euler.z()
-    }
-
-    private fun isIdentity(rotation: Quaternionf): Boolean {
-        return Mth.abs(rotation.x()) < 1e-5f &&
-                Mth.abs(rotation.y()) < 1e-5f &&
-                Mth.abs(rotation.z()) < 1e-5f &&
-                Mth.abs(Mth.abs(rotation.w()) - 1f) < 1e-5f
     }
 
     override fun applyItemInHandCameraAnimation(
@@ -1962,11 +1910,12 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
     open fun cameraRotationInverse(): Matrix4f {
         val camera = Minecraft.getInstance().gameRenderer.mainCamera
-        return Matrix4f()
+        val rotation = Matrix4f()
             .rotationX(Mth.DEG_TO_RAD * camera.xRot)
             .rotateY(Mth.DEG_TO_RAD * (camera.yRot + 180f))
             .rotateZ(CameraStateCache.getCameraRollRadians())
-            .invert()
+        ClientEventHandler.firstPersonCameraRotation()?.let { rotation.rotate(it) }
+        return rotation.invert()
     }
 
     open fun handForContext(transformType: ItemDisplayContext): InteractionHand {
@@ -2810,7 +2759,6 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         private const val UNFOCUSED_PAN_SMOOTHING = 12f
         private const val UNFOCUSED_PAN_YAW = 0.6f
         private const val UNFOCUSED_PAN_PITCH = 0.3f
-        private const val VERTICAL_PITCH_START = 89.0f
 
         /** 挂点骨骼的局部取样点：骨骼原点，也就是 `xxx_pos` 这类空骨骼本身的位置 */
         private val EDIT_MOUNT_POINT = Vector3f()

@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.init.ModMobEffects;
 import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.item.gun.GunItem;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Camera;
@@ -21,6 +22,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import org.joml.Matrix3f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Final;
@@ -130,6 +132,20 @@ public class GameRendererMixin {
                 matrices.mulPose(Axis.XP.rotationDegrees(-mainCamera.getXRot()));
             }
         }
+    }
+
+    @Inject(method = "renderLevel",
+            at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/client/renderer/LevelRenderer;prepareCullFrustum(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/phys/Vec3;Lorg/joml/Matrix4f;)V",
+                    shift = At.Shift.BEFORE))
+    private void superbWarfare$applyGunCameraAnimation(float partialTicks, long finishTime, PoseStack poseStack, CallbackInfo ci) {
+        Quaternionf rotation = ClientEventHandler.firstPersonCameraRotation();
+        if (rotation == null) {
+            return;
+        }
+
+        poseStack.mulPose(rotation);
+        RenderSystem.setInverseViewRotationMatrix(new Matrix3f(poseStack.last().normal()).invert());
     }
 
     @Inject(method = "bobHurt", at = @At("HEAD"), cancellable = true)

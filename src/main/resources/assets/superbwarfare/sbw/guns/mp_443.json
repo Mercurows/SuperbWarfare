@@ -9,11 +9,12 @@
     "HoldOpen": "animation.mp_443.hold_open"
   },
   "ShootRecoil": {
-    "Offset": [1.0, 1.0, 1.0],
-    "Rotation": [3.0, 1.0, 1.0],
-    "ZoomRate": 0.8,
-    "Speed": 1.4
+    "Offset": [0.7, 1.0, 0.5],
+    "Rotation": [0.2, 0.2, 0.5],
+    "ZoomRate": 0.5,
+    "Speed": 1.0
   },
+  "ZoomingTranslateMultiply": 0.2,
   "SprintOffset": [0, 4, 4],
   "Model": {
     "Animation": "superbwarfare:animations/bedrock/gun/mp_443.animation.json",
