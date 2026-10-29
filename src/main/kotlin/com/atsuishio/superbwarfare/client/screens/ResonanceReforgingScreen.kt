@@ -12,6 +12,9 @@ import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.mc
 import com.atsuishio.superbwarfare.tools.sendPacketToServer
 import com.mojang.blaze3d.systems.RenderSystem
+import com.mojang.blaze3d.vertex.DefaultVertexFormat
+import com.mojang.blaze3d.vertex.Tesselator
+import com.mojang.blaze3d.vertex.VertexFormat
 import com.sighs.apricityui.event.MouseEvent
 import com.sighs.apricityui.init.Document
 import com.sighs.apricityui.init.Element
@@ -22,6 +25,7 @@ import com.sighs.apricityui.screen.ApricityScreen
 import com.sighs.apricityui.style.Text
 import net.minecraft.client.StringSplitter
 import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
@@ -75,6 +79,8 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
     private var tooltipTitle = Text()
     private var tooltipType = Text()
     private var tooltipDescription = emptyList<Text>()
+    private val transition = ResonanceScreenTransition()
+    private var navigation: (() -> Unit)? = null
 
     override fun isPauseScreen() = false
 
@@ -99,9 +105,14 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
     override fun render(graphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         val doc = linkedDocument
         if (doc != null && (!doc.isCurrentGeneration(documentGeneration) || forceRefresh)) syncPage()
-        if (doc != null) updateResetHold(doc)
+        if (doc != null && !transition.blocksInput) updateResetHold(doc)
         super.render(graphics, mouseX, mouseY, partialTick)
-        if (doc != null && inventorySlot != null) renderPerkTooltip(graphics, doc)
+        if (doc != null && inventorySlot != null && !transition.blocksInput) renderPerkTooltip(graphics, doc)
+        if (transition.render(graphics, width, height, doc != null && documentGeneration == doc.refreshGeneration)) {
+            val action = navigation
+            navigation = null
+            action?.invoke()
+        }
     }
 
     override fun removed() {
@@ -110,14 +121,26 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
     }
 
     override fun onClose() {
-        if (inventorySlot == null) super.onClose() else mc.setScreen(ResonanceReforgingScreen(tablePos))
+        if (inventorySlot == null) {
+            navigation = null
+            super.onClose()
+        } else navigate { mc.setScreen(ResonanceReforgingScreen(tablePos)) }
+    }
+
+    private fun navigate(action: () -> Unit) {
+        if (navigation != null) return
+        navigation = action
+        resetHoldStartedAt = 0L
+        tooltipPerk = null
+        transition.close()
     }
 
     override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
-        if (mc.options.keyInventory.matches(keyCode, scanCode)) {
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE || mc.options.keyInventory.matches(keyCode, scanCode)) {
             onClose()
             return true
         }
+        if (transition.blocksInput) return true
         return super.keyPressed(keyCode, scanCode, modifiers)
     }
 
@@ -135,6 +158,16 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
             documentGeneration = doc.refreshGeneration
             displayedWeapon = ItemStack.EMPTY
             forceRefresh = true
+            // AUI dispatches DOM input independently of Screen.mouseClicked; capture it here.
+            for (type in listOf("click", "dblclick", "mousedown", "mouseup", "pointerdown", "pointerup",
+                "mouseenter", "mouseover", "wheel", "contextmenu")) {
+                doc.addEventListener(type, { event ->
+                    if (transition.blocksInput) {
+                        event.preventDefault()
+                        event.stopImmediatePropagation()
+                    }
+                }, true)
+            }
             doc.getElementById("back-to-weapons")?.addEventListener("click") { onClose() }
             doc.getElementById("close-selection")?.addEventListener("click") { onClose() }
             if (inventorySlot == null) {
@@ -142,7 +175,9 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
                     val cell = doc.getElementById("weapon-$index") ?: continue
                     cell.addEventListener("click") {
                         val slot = candidates.getOrNull(index)?.slot ?: return@addEventListener
-                        if (player.inventory.getItem(slot).item is GunItem) mc.setScreen(ResonanceReforgingScreen(tablePos, slot))
+                        if (player.inventory.getItem(slot).item is GunItem) {
+                            navigate { mc.setScreen(ResonanceReforgingScreen(tablePos, slot)) }
+                        }
                     }
                     cell.addEventListener("mouseenter") { candidates.getOrNull(index)?.let { showPreview(doc, it) } }
                 }
@@ -702,6 +737,110 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
     private fun format(value: Double, decimals: Int): String {
         val number = String.format(Locale.ROOT, "%." + decimals + "f", value)
         return if (decimals == 0) number else number.trimEnd('0').trimEnd('.')
+    }
+
+    /** A black curtain with a feathered, torn aperture. Coordinates follow the GUI, not the AUI viewport. */
+    private class ResonanceScreenTransition {
+        private var startedAt = 0L
+        private var closing = false
+        private var closeFrom = 1.0
+        private var aperture = 0.0
+        private var finished = false
+        private var profile = createProfile()
+
+        val blocksInput: Boolean get() = !finished || closing
+
+        fun close() {
+            if (closing) return
+            // Refresh while fully revealed; retain the contour when reversing an unfinished opening.
+            if (finished) profile = createProfile()
+            closeFrom = aperture
+            closing = true
+            finished = false
+            startedAt = System.nanoTime()
+        }
+
+        /** Returns true only after drawing a completely black frame, so navigation cannot flash through. */
+        fun render(graphics: GuiGraphics, width: Int, height: Int, ready: Boolean): Boolean {
+            if (finished && !closing) return false
+            val now = System.nanoTime()
+            if (startedAt == 0L && ready) startedAt = now
+            val elapsedMs = if (startedAt == 0L) 0.0 else (now - startedAt) / 1_000_000.0
+            val progress = if (closing) (elapsedMs / CLOSE_MS).coerceIn(0.0, 1.0)
+                else ((elapsedMs - BLACK_HOLD_MS) / OPEN_MS).coerceIn(0.0, 1.0)
+            val eased = progress * progress * (3.0 - 2.0 * progress)
+            aperture = if (closing) closeFrom * (1.0 - eased) else eased
+            if (!closing && progress >= 1.0) {
+                finished = true
+                return false
+            }
+            drawCurtain(graphics, width, height)
+            return closing && progress >= 1.0
+        }
+
+        private fun drawCurtain(graphics: GuiGraphics, width: Int, height: Int) {
+            graphics.flush()
+            val matrix = graphics.pose().last().pose()
+            val cx = width / 2f
+            val cy = height / 2f
+            val scale = aperture.toFloat() * 2.5f
+            val feather = 0.025f * min(1f, scale)
+            val tessellator = Tesselator.getInstance()
+            val buffer = tessellator.builder
+            RenderSystem.enableBlend()
+            RenderSystem.defaultBlendFunc()
+            RenderSystem.disableDepthTest()
+            RenderSystem.disableCull()
+            RenderSystem.setShader(GameRenderer::getPositionColorShader)
+            RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
+            buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR)
+            fun vertex(index: Int, radius: Float, alpha: Int) {
+                buffer.vertex(matrix, cx + cx * COS[index] * radius, cy + cy * SIN[index] * radius, 0f)
+                    .color(0, 0, 0, alpha).endVertex()
+            }
+            for (index in 0 until SEGMENTS) {
+                val next = (index + 1) % SEGMENTS
+                val r0 = profile[index] * scale
+                val r1 = profile[next] * scale
+                // Solid exterior plus a narrow transparent-to-black fringe, like a soft torn silhouette.
+                vertex(index, r0 + feather, 255)
+                vertex(index, 4f, 255)
+                vertex(next, 4f, 255)
+                vertex(next, r1 + feather, 255)
+                vertex(index, r0, 0)
+                vertex(index, r0 + feather, 255)
+                vertex(next, r1 + feather, 255)
+                vertex(next, r1, 0)
+            }
+            tessellator.end()
+            RenderSystem.enableCull()
+            RenderSystem.enableDepthTest()
+            RenderSystem.disableBlend()
+        }
+
+        companion object {
+            private const val OPEN_MS = 420.0
+            private const val CLOSE_MS = 260.0
+            private const val BLACK_HOLD_MS = 40.0
+            private const val SEGMENTS = 192
+            private val COS = FloatArray(SEGMENTS) { cos(it * 2.0 * PI / SEGMENTS).toFloat() }
+            private val SIN = FloatArray(SEGMENTS) { sin(it * 2.0 * PI / SEGMENTS).toFloat() }
+            private fun createProfile(): FloatArray {
+                val random = kotlin.random.Random.Default
+                val frequencies = intArrayOf(random.nextInt(5, 10), random.nextInt(11, 17),
+                    random.nextInt(21, 29), random.nextInt(39, 52))
+                val phases = DoubleArray(4) { random.nextDouble(2.0 * PI) }
+                val amplitudes = doubleArrayOf(0.10, 0.07, 0.045, 0.025)
+                    .map { it * random.nextDouble(0.85, 1.10) }
+                // Integer frequencies keep the seam closed; sample once so the moving edge never flickers.
+                return FloatArray(SEGMENTS) { index ->
+                    val angle = index * 2.0 * PI / SEGMENTS
+                    (0.88 + frequencies.indices.sumOf { layer ->
+                        amplitudes[layer] * sin(frequencies[layer] * angle + phases[layer])
+                    }).toFloat()
+                }
+            }
+        }
     }
 
     /** Screen-local native model painter with no inventory decorations. */
