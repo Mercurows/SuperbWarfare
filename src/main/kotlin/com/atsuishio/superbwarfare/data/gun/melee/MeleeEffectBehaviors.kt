@@ -8,6 +8,7 @@ import com.atsuishio.superbwarfare.tools.*
 import net.minecraft.core.Holder
 import net.minecraft.core.particles.SimpleParticleType
 import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.sounds.SoundEvent
@@ -182,6 +183,11 @@ object MeleeEffectBehaviors {
             }
             if (lift > 0) {
                 target.push(0.0, lift, 0.0)
+            }
+            // 玩家是客户端权威移动，服务端推出去的速度得单独同步过去
+            if (target is ServerPlayer) {
+                sendPacketTo(target, ClientboundSetEntityMotionPacket(target))
+                target.hurtMarked = false
             }
         }
     }
