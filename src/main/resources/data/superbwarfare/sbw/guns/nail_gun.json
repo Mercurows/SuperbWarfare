@@ -1,0 +1,68 @@
+{
+  "Spread": 4.1,
+  "RecoilX": 0.0008,
+  "RecoilY": 0.018,
+  "Damage": 8,
+  "Headshot": 1.5,
+  "Velocity": 15,
+  "Magazine": [15, 25, 40],
+  "Weight": 3.2,
+  "ZoomSpreadRate": 0.4,
+  "DrawTime": 8,
+  "ZoomTime": 4,
+  "DefaultFireMode": "Auto",
+  "BurstAmount": 3,
+  "EmptyReloadTime": 51,
+  "BypassesArmor": 0.12,
+  "SoundRadius": 6,
+  "RPM": 360,
+  "AvailableFireModes": [
+    "Semi",
+    "Auto"
+  ],
+  "GunType": "Smg",
+  "DamageReduce": {
+    "Type": "Smg"
+  },
+  "AmmoType": "minecraft:iron_nugget",
+  "Icon": "superbwarfare:textures/gun_icon/nail_gun_icon.png",
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:heal_clip",
+    "superbwarfare:field_doctor",
+    "superbwarfare:fourth_times_charm",
+    "superbwarfare:subsistence",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:backpack_linked_magazine",
+    "superbwarfare:turbo_charger",
+    "superbwarfare:kill_clip",
+    "superbwarfare:gutshot_straight",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:head_seeker",
+    "superbwarfare:desperado",
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:firefly",
+    "superbwarfare:fair_means",
+    "superbwarfare:high_impact_reserves",
+    "superbwarfare:brain_storm",
+    "superbwarfare:target_lock",
+    "superbwarfare:stop_gap",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:cupid_arrow"
+  ],
+  "AvailableAttachments": {
+    "Magazine": [
+      "superbwarfare:magazine_extend",
+      "superbwarfare:magazine_extend_pro"
+    ],
+    "Charm": [
+      "#superbwarfare:attachment/charm"
+    ]
+  },
+  "SoundInfo": {
+    "Fire1P": "superbwarfare:nail_gun_fire_1p",
+    "Fire3P": "superbwarfare:nail_gun_fire_3p"
+  }
+}

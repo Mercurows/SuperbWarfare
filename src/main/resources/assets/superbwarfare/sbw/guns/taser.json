@@ -12,5 +12,6 @@
     "LODTexture": "superbwarfare:textures/bedrock/gun_lod/taser.png"
   },
   "EnergyBarColor": "0xFFFF00",
-  "SprintOffset": [0, 4, 4]
+  "SprintOffset": [0, 4, 4],
+  "HasReflectionSound": false
 }

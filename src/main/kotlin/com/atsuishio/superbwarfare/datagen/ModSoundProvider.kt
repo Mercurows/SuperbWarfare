@@ -488,6 +488,9 @@ class ModSoundProvider(output: PackOutput, existingFileHelper: ExistingFileHelpe
         // -------------------- gun/repair_tool --------------------
         group("gun/repair_tool", "repair_tool_fire_1p", "repair_tool_fire_3p", "repairing")
 
+        // -------------------- gun/nail_gun --------------------
+        group("gun/nail_gun", "nail_gun_fire_1p", "nail_gun_fire_3p")
+
         // -------------------- gun/rpg --------------------
         group(
             "gun/rpg", "rpg_fire_1p", "rpg_fire_3p", "rpg_far", "rpg_veryfar", "rpg_in", "rpg_in_2", "rpg_in_3",
