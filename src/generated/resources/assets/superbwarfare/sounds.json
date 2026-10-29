@@ -2237,6 +2237,16 @@
       "superbwarfare:gun/mp_5/mp_5_veryfar"
     ]
   },
+  "nail_gun_fire_1p": {
+    "sounds": [
+      "superbwarfare:gun/nail_gun/nail_gun_fire_1p"
+    ]
+  },
+  "nail_gun_fire_3p": {
+    "sounds": [
+      "superbwarfare:gun/nail_gun/nail_gun_fire_3p"
+    ]
+  },
   "night_vision_activate": {
     "sounds": [
       "superbwarfare:night_vision_activate"

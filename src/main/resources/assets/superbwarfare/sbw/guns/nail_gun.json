@@ -1,11 +1,23 @@
 {
-  "SlotIcon": "superbwarfare:textures/item/taser_icon.png",
+  "SlotIcon": "superbwarfare:textures/item/nail_gun_icon.png",
   "Animation": {
-    "Idle": "animation.nail_gun.idle"
+    "Idle": "animation.nail_gun.idle",
+    "Fire": "animation.nail_gun.fire",
+    "ChangeFireMode": "animation.nail_gun.change_fire_mode",
+    "ReloadEmpty": "animation.nail_gun.reload",
+    "Edit": "animation.nail_gun.edit"
+  },
+  "ShootRecoil": {
+    "Offset": [0.7, 1.0, 0.5],
+    "Rotation": [0.4, 0.2, 0.5],
+    "ZoomRate": 0.8,
+    "Speed": 1.0
   },
   "Model": {
     "Animation": "superbwarfare:animations/bedrock/gun/nail_gun.animation.json",
     "Model": "superbwarfare:models/bedrock/gun/nail_gun.geo.json",
     "Texture": "superbwarfare:textures/bedrock/gun/nail_gun.png"
-  }
+  },
+  "FlareSize": 0,
+  "HasReflectionSound": false
 }
