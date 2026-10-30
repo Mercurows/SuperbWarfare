@@ -468,7 +468,7 @@ class ModItemModelProvider(output: PackOutput, existingFileHelper: ExistingFileH
         evenSimplerBlockItem(ModBlocks.BARBED_WIRE)
         evenSimplerBlockItem(ModBlocks.JUMP_PAD)
         evenSimplerBlockItem(ModBlocks.REFORGING_TABLE)
-        evenSimplerBlockItem(ModBlocks.RESONANCE_BASE)
+        getBuilder("resonance_base").parent(UncheckedModelFile(modLoc("displaysettings/resonance_base")))
         evenSimplerBlockItem(ModBlocks.CHARGING_STATION)
         evenSimplerBlockItem(ModBlocks.CREATIVE_CHARGING_STATION)
         evenSimplerBlockItem(ModBlocks.VEHICLE_DEPLOYER)
