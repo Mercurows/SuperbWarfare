@@ -71,6 +71,12 @@ object ModSounds {
     @JvmField val EDIT = register("edit")
     @JvmField val ATTACHMENT_SET = register("attachment_set")
     @JvmField val ATTACHMENT_REMOVE = register("attachment_remove")
+
+    // 改装界面：安装失败 / 菜单开关 / 设置面板按钮 / 滑块拖动
+    @JvmField val ATTACHMENT_FAIL = register("attachment_fail")
+    @JvmField val ATTACHMENT_INFO = register("attachment_info")
+    @JvmField val ATTACHMENT_BUTTON = register("attachment_button")
+    @JvmField val ATTACHMENT_SLIDE = register("attachment_slide")
     @JvmField val SHELL_CASING_NORMAL = register("shell_casing_normal")
     @JvmField val SHELL_CASING_SHOTGUN = register("shell_casing_shotgun")
     @JvmField val SHELL_CASING_50CAL = register("shell_casing_50cal")

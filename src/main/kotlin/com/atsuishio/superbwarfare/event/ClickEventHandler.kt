@@ -12,6 +12,7 @@ import com.atsuishio.superbwarfare.compat.CompatHolder
 import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper
 import com.atsuishio.superbwarfare.config.client.ReloadConfig
 import com.atsuishio.superbwarfare.config.server.MapConfig
+import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots
 import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity
@@ -366,8 +367,12 @@ object ClickEventHandler {
             }
 
             // 玩家手持枪械时，处理卸弹/切换弹种
+            //
+            // 这两个操作服务端都是对**当前操控的枪**做的（`UnloadMessage` / `EditMessage` 用的都是
+            // `ActiveGun.stackOf`）：副武器（下挂榴弹等）部署时，切换的是它自己的弹种，
+            // 所以这里的"有没有多种弹"也必须看同一把枪，否则拿着只有一种弹的步枪就永远切不动下挂榴弹。
             if (GunItem.isHeldWeapon(stack)) {
-                val data = GunData.from(stack)
+                val data = ActiveGun.dataOf(player) ?: GunData.from(stack)
                 if (key == ModKeyMappings.UNLOAD.key.value) {
                     if (data.useBackpackAmmo() || data.ammo.get() + data.virtualAmmo.get() <= 0) return
                     sendPacketToServer(UnloadMessage)
@@ -376,12 +381,16 @@ object ClickEventHandler {
                 if (data.get(GunProp.AMMO_CONSUMER).size > 1) {
                     if (key == ModKeyMappings.CHANGE_AMMO_FORWARD.key.value) {
                         AmmoBarHud.noteAmmoSwitch(data, add = false)
-                        sendPacketToServer(EditMessage(5, add = false, isVehicle = false))
+                        sendPacketToServer(
+                            EditMessage(AttachmentSlots.AMMO_TYPE_EDIT_INDEX, add = false, isVehicle = false, operated = true)
+                        )
                         ClientEventHandler.burstFireAmount = 0
                     }
                     if (key == ModKeyMappings.CHANGE_AMMO_BACKWARD.key.value) {
                         AmmoBarHud.noteAmmoSwitch(data, add = true)
-                        sendPacketToServer(EditMessage(5, add = true, isVehicle = false))
+                        sendPacketToServer(
+                            EditMessage(AttachmentSlots.AMMO_TYPE_EDIT_INDEX, add = true, isVehicle = false, operated = true)
+                        )
                         ClientEventHandler.burstFireAmount = 0
                     }
                 }

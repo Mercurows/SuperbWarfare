@@ -662,6 +662,8 @@
   "attachment.superbwarfare.slot.leftrail": "[左导轨配件]",
   "attachment.superbwarfare.slot.rightrail": "[右导轨配件]",
   "attachment.superbwarfare.slot.ammo_type": "[弹种]",
+  "attachment.superbwarfare.slot.ammo_type.main": "[弹种]-主武器",
+  "attachment.superbwarfare.slot.ammo_type.sub": "[弹种]-副武器",
   "attachment.superbwarfare.slot.scope_stack": "[叠加瞄具]",
   "attachment.superbwarfare.additional_slots": "可以作为 %1$s 使用",
   "attachment.superbwarfare.modify": "修改",
@@ -1523,6 +1525,7 @@
   "screen.superbwarfare.weapon_edit.stats.hide": "隐藏武器属性",
   "screen.superbwarfare.weapon_edit.stats.title": "武器属性",
   "screen.superbwarfare.weapon_edit.available_attachments": "%s 可用配件",
+  "screen.superbwarfare.weapon_edit.available_ammo_types": "%s 可用弹种",
 
   "gamerule.sbwDoGenerateLoots": "生成卓越前线的箱子战利品",
 

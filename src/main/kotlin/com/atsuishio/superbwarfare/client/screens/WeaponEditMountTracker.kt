@@ -26,6 +26,13 @@ object WeaponEditMountTracker {
     var ammoPosition: BoneScreenPoint? = null
         private set
 
+    /**
+     * 副武器（下挂榴弹等）自己的弹种按钮位置：取副武器模型里的 `ammo_pos`。
+     * 没装副武器、或副武器模型没有这根骨骼时为 `null`（界面据此不出这个按钮）。
+     */
+    var subAmmoPosition: BoneScreenPoint? = null
+        private set
+
     /** 瞄准镜叠装时下一件会装到的位置（顶层配件的 `scope_pos`）；顶层不可叠装时为 `null`。 */
     var scopeStackPosition: BoneScreenPoint? = null
         private set
@@ -40,12 +47,14 @@ object WeaponEditMountTracker {
         positions: Map<AttachmentType, BoneScreenPoint>,
         ammoPosition: BoneScreenPoint?,
         scopeStackPosition: BoneScreenPoint?,
+        subAmmoPosition: BoneScreenPoint?,
         guiWidth: Int,
         guiHeight: Int,
     ) {
         this.positions = positions
         this.ammoPosition = ammoPosition
         this.scopeStackPosition = scopeStackPosition
+        this.subAmmoPosition = subAmmoPosition
         this.guiWidth = guiWidth
         this.guiHeight = guiHeight
     }
@@ -58,5 +67,6 @@ object WeaponEditMountTracker {
         positions = emptyMap()
         ammoPosition = null
         scopeStackPosition = null
+        subAmmoPosition = null
     }
 }
