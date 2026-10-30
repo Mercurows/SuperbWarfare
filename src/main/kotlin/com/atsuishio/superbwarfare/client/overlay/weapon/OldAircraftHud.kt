@@ -167,8 +167,8 @@ object OldAircraftHud {
                 )
                 renderKillIndicatorDynamic(
                     guiGraphics,
-                    x - 7.5f + (2 * (Math.random() - 0.5f)).toFloat(),
-                    y - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
+                    x - 8f,
+                    y - 8f
                 )
                 poseStack.popPose()
                 return
@@ -199,9 +199,9 @@ object OldAircraftHud {
             RenderHelper.blit(poseStack, HUD_BASE, x - 24, y - 18, 48f, 48f, 0f, 0f, 48f, 48f, color)
 
             renderKillIndicatorDynamic(
-                guiGraphics,
-                x - 7.5f + (2 * (Math.random() - 0.5f)).toFloat(),
-                y - 1.5f + (2 * (Math.random() - 0.5f)).toFloat()
+                    guiGraphics,
+                    x - 8f,
+                    y - 1.5f + (2 * (Math.random() - 0.5f)).toFloat()
             )
         }
 
@@ -263,8 +263,8 @@ object OldAircraftHud {
 
                 renderKillIndicatorDynamic(
                     guiGraphics,
-                    xCross - 7.5f + (2 * (Math.random() - 0.5f)).toFloat(),
-                    yCross - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
+                    xCross - 8f,
+                    yCross - 8f
                 )
                 poseStack.popPose()
             }

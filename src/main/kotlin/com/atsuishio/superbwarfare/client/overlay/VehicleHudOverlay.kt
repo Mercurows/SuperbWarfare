@@ -165,8 +165,8 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
     fun renderKillIndicator(guiGraphics: GuiGraphics, w: Float, h: Float) {
         if (MiscConfig.HIDE_COMBAT_HUD.get()) return
 
-        val posX = w / 2f - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
-        val posY = h / 2f - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
+        val posX = w / 2f - 8f
+        val posY = h / 2f - 8f
         val rate = (40 - CrossHairOverlay.killIndicator * 5) / 5.5f
 
         if (CrossHairOverlay.hitIndicator > 0) {
@@ -182,10 +182,10 @@ object VehicleHudOverlay : CommonOverlay("vehicle_hud") {
         }
 
         if (CrossHairOverlay.killIndicator > 0) {
-            val posX1 = w / 2f - 7.5f - 2 + rate
-            val posY1 = h / 2f - 7.5f - 2 + rate
-            val posX2 = w / 2f - 7.5f + 2 - rate
-            val posY2 = h / 2f - 7.5f + 2 - rate
+            val posX1 = w / 2f - 8f - 2 + rate
+            val posY1 = h / 2f - 8f - 2 + rate
+            val posX2 = w / 2f - 8f + 2 - rate
+            val posY2 = h / 2f - 8f + 2 - rate
 
             RenderHelper.blit(guiGraphics.pose(), KILL_MARKER_1, posX1, posY1, 16f, 16f)
             RenderHelper.blit(guiGraphics.pose(), KILL_MARKER_2, posX2, posY1, 16f, 16f)
