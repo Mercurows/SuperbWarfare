@@ -580,6 +580,8 @@
   "des.superbwarfare.regeneration": "Energy weapons will restore energy automatically.",
   "item.superbwarfare.turbo_charger": "Turbocharger",
   "des.superbwarfare.turbo_charger": "Gradually increases RPM when an automatic weapon fires continuously",
+  "item.superbwarfare.striving_for_perfection": "Striving For Perfection",
+  "des.superbwarfare.striving_for_perfection": "Experience you gain repairs the weapon's durability and increases weapon experience gain.",
   "item.superbwarfare.stop_gap": "Stop Gap",
   "des.superbwarfare.stop_gap": "Sustained fire gradually lowers the rate of fire while raising damage",
   "item.superbwarfare.powerful_attraction": "Powerful Attraction",

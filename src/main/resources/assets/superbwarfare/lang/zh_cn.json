@@ -580,6 +580,8 @@
   "des.superbwarfare.regeneration": "能量武器会缓慢自动回复能量",
   "item.superbwarfare.turbo_charger": "涡轮增压器",
   "des.superbwarfare.turbo_charger": "自动武器连续开火时逐渐增加射速",
+  "item.superbwarfare.striving_for_perfection": "精益求精",
+  "des.superbwarfare.striving_for_perfection": "玩家获取的经验值可以修复武器耐久，同时增加武器经验值获取。",
   "item.superbwarfare.stop_gap": "权宜之计",
   "des.superbwarfare.stop_gap": "持续开火时射速逐渐降低，伤害逐渐提高",
   "item.superbwarfare.powerful_attraction": "强力吸引",
