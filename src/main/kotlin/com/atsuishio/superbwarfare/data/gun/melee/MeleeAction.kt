@@ -243,6 +243,7 @@ data class MeleeAction(
             swing = swing,
             hit = hit,
             effectSpecs = effectSpecs(),
+            heavy = isHeavy(),
         )
     }
 

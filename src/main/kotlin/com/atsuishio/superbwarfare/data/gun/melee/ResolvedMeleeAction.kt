@@ -65,6 +65,12 @@ data class ResolvedMeleeAction(
      * 只在服务端加载，客户端展开只会白打一堆"找不到预设"的日志。
      */
     val effectSpecs: List<MeleeEffectSpec> = emptyList(),
+
+    /**
+     * 本段是不是"重击"段（`MeleeAction.Heavy`）：
+     * 轻击/重击的区别要参与伤害结算（例如隐之刃凛只在轻击时蓄力、只在重击时释放）。
+     */
+    val heavy: Boolean = false,
 ) {
     /**
      * 本段实际生效的额外效果（预设 + 内联覆盖已合并）。
