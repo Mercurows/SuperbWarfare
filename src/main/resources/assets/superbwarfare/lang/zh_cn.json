@@ -529,6 +529,8 @@
 
   "item.superbwarfare.ap_bullet": "穿甲弹",
   "des.superbwarfare.ap_bullet": "增加子弹的穿甲比例",
+  "item.superbwarfare.silver_blade": "银之刃灵",
+  "des.superbwarfare.silver_blade": "近战命中亡灵生物时造成额外伤害",
   "item.superbwarfare.silver_bullet": "银弹",
   "des.superbwarfare.silver_bullet": "对亡灵生物造成额外伤害",
   "item.superbwarfare.beast_bullet": "野兽弹",

@@ -529,6 +529,8 @@
 
   "item.superbwarfare.ap_bullet": "AP Bullet",
   "des.superbwarfare.ap_bullet": "Increased the armor-piercing ratio of bullets.",
+  "item.superbwarfare.silver_blade": "Silver Blade Soul",
+  "des.superbwarfare.silver_blade": "Melee hits deal extra damage to undead entities.",
   "item.superbwarfare.silver_bullet": "Silver Bullet",
   "des.superbwarfare.silver_bullet": "Deals extra damage to undead entities.",
   "item.superbwarfare.beast_bullet": "BEAST Bullet",

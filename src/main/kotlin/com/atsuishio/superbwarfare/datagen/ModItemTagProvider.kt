@@ -428,6 +428,7 @@ class ModItemTagProvider(
         }
 
         this.tag(ModTags.Items.RESEARCHABLE_AMMO_PERK_COMMON).add(
+            perkItem(ModPerks.SILVER_BLADE),
             perkItem(ModPerks.AQUA_BULLET),
             perkItem(ModPerks.POISONOUS_BULLET),
             perkItem(ModPerks.INCENDIARY_BULLET),

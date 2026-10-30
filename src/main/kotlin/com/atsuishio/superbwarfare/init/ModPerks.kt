@@ -59,6 +59,7 @@ object ModPerks {
     lateinit var JHP_BULLET: PERK
     lateinit var HE_BULLET: PERK
     lateinit var SILVER_BULLET: PERK
+    lateinit var SILVER_BLADE: PERK
     lateinit var POISONOUS_BULLET: PERK
     lateinit var BEAST_BULLET: PERK
     lateinit var LONGER_WIRE: PERK
@@ -195,6 +196,7 @@ object ModPerks {
 
     private fun registerHardcoded() {
         // Ammo Perks
+        SILVER_BLADE = autoRegistryObjects.getValue("silver_blade")
         AP_BULLET = autoRegistryObjects["ap_bullet"] ?: registerAmmoPerk("ap_bullet") { APBullet }
         JHP_BULLET = autoRegistryObjects["jhp_bullet"] ?: registerAmmoPerk("jhp_bullet") { JHPBullet }
         HE_BULLET = autoRegistryObjects["he_bullet"] ?: registerAmmoPerk("he_bullet") { HEBullet }
