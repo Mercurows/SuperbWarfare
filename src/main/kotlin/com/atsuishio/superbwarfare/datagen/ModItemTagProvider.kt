@@ -428,6 +428,7 @@ class ModItemTagProvider(
         }
 
         this.tag(ModTags.Items.RESEARCHABLE_AMMO_PERK_COMMON).add(
+            perkItem(ModPerks.FLAME_BLADE),
             perkItem(ModPerks.SILVER_BLADE),
             perkItem(ModPerks.AQUA_BULLET),
             perkItem(ModPerks.POISONOUS_BULLET),
@@ -438,6 +439,7 @@ class ModItemTagProvider(
             perkItem(ModPerks.SILVER_BULLET)
         )
         this.tag(ModTags.Items.RESEARCHABLE_AMMO_PERK_RARE).add(
+            perkItem(ModPerks.FROSTMOURNE),
             perkItem(ModPerks.BLADE_BULLET),
             perkItem(ModPerks.CUPID_ARROW),
             perkItem(ModPerks.HE_BULLET),

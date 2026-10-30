@@ -6,11 +6,14 @@ import com.atsuishio.superbwarfare.tools.CustomExplosion
 import com.atsuishio.superbwarfare.tools.InventoryTool
 import com.atsuishio.superbwarfare.tools.TraceTool
 import com.atsuishio.superbwarfare.tools.sendPacketTo
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerPlayer
+import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.OwnableEntity
 import net.minecraft.world.entity.player.Player
+import net.minecraftforge.registries.ForgeRegistries
 
 /**
  * Proxy that exposes Entity properties and methods to JS perk scripts.
@@ -24,6 +27,27 @@ class EntityProxy(val entity: Entity?) {
     fun isProjectile(): Boolean = entity is ProjectileEntity
 
     fun isZoom(): Boolean = (entity as? ProjectileEntity)?.isZoom() ?: false
+
+    // ── Status effects ──
+    fun setSecondsOnFire(seconds: Int) {
+        val e = entity ?: return
+        if (!e.level().isClientSide && seconds > 0) e.setSecondsOnFire(seconds)
+    }
+
+    fun addEffect(effectId: String, duration: Int, amplifier: Int, source: EntityProxy): Boolean {
+        val e = entity as? LivingEntity ?: return false
+        if (e.level().isClientSide || duration <= 0) return false
+        val id = ResourceLocation.tryParse(effectId) ?: return false
+        val effect = ForgeRegistries.MOB_EFFECTS.getValue(id) ?: return false
+        return e.addEffect(MobEffectInstance(effect, duration, amplifier.coerceAtLeast(0)), source.entity)
+    }
+
+    /** Vanilla freezing thaws by two ticks per tick outside powder snow. */
+    fun freeze(duration: Int) {
+        val e = entity as? LivingEntity ?: return
+        if (e.level().isClientSide || !e.canFreeze() || duration <= 0) return
+        e.ticksFrozen = maxOf(e.ticksFrozen, e.ticksRequiredToFreeze + 2 * duration)
+    }
 
     // ── Creative / Inventory ──
     fun isCreative(): Boolean = (entity as? Player)?.isCreative == true
