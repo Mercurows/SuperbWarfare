@@ -1336,16 +1336,14 @@ class GunData private constructor(
         return actions.ifEmpty { listOf(MeleeAction()) }
     }
 
-    /**
-     * 把第 [index] 段动作解析成完全展开的判定参数（所有 `?:` 继承都在这里做完）。
-     */
-    fun resolveMeleeAction(index: Int): ResolvedMeleeAction {
+
+    fun resolveMeleeAction(index: Int, bonusDamage: Double = 0.0): ResolvedMeleeAction {
         val actions = meleeActions()
         val action = actions[((index % actions.size) + actions.size) % actions.size]
         return action.resolve(
             defaultDuration = get(GunProp.MELEE_DURATION),
             defaultHitTime = get(GunProp.MELEE_DAMAGE_TIME),
-            defaultDamage = get(MELEE_DAMAGE),
+            defaultDamage = get(MELEE_DAMAGE) + bonusDamage,
             defaultAngle = get(GunProp.MELEE_ANGLE).toDouble(),
             defaultRange = get(GunProp.MELEE_RANGE),
             defaultSweep = get(GunProp.MELEE_SWEEP),

@@ -98,7 +98,13 @@ data class MeleeAttackMessage(
 
         val actions = data.meleeActions()
         val index = ((actionIndex % actions.size) + actions.size) % actions.size
-        val action = data.resolveMeleeAction(index)
+
+        val bladeCharge = if (!chargeStrike && actions[index].isHeavy()) {
+            InvisibleBladeShapeness.charge(data)
+        } else {
+            0.0
+        }
+        val action = data.resolveMeleeAction(index, bladeCharge)
 
         if (action.cooldown > 0 && data.cooldown.isCoolingDown(Cooldown.meleeKey(index))) return
 
@@ -181,7 +187,8 @@ data class MeleeAttackMessage(
         var playedHitSound = false
         var playedNoDamageSound = false
 
-        // 隐之刃凛：轻击打折并把折掉的部分存进蓄力槽，重击把积蓄一次性加在这一下上
+        // 隐之刃凛：轻击打折并把折掉的部分存进蓄力槽；重击的蓄力已经在 handler 里
+        // 垫进了 `action.damage`（面板伤害层），这里只负责"命中后清空"
         val blade = InvisibleBladeShapeness.instanceOf(data)
         val bladeRate = blade?.let { InvisibleBladeShapeness.rate(it.level.toInt()) } ?: 0.0
         var storedCharge = if (blade != null) InvisibleBladeShapeness.charge(data) else 0.0
@@ -208,22 +215,10 @@ data class MeleeAttackMessage(
                 else -> 1.0
             }
 
-            // 衰减：第 order 个目标乘 max(1 - order * Falloff, 0.1)
-            val falloff = if (order == 0) 1.0 else (1.0 - order * action.falloff).coerceAtLeast(0.1)
 
-            // 伤害数值 = 枪的 `MeleeDamage` × 本段 `DamageMultiplier`（已在 resolve 里算完），
-            // 外加力量效果的固定加成；`ATTACK_DAMAGE` 属性本身的加成不参与这里的结算
-            // ——否则 `MeleeDamage` 会被"属性加成"二次放大，和动作倍率叠在一起就说不清是谁放大的。
+            val falloff = if (order == 0) 1.0 else (1.0 - order * action.falloff).coerceAtLeast(0.1)
             var damage = baseDamage * zoneMultiplier * falloff
-            if (blade != null) {
-                if (action.heavy) {
-                    // 重击：把积蓄一次性加进去（只给这一挥第一个真正吃伤害的目标）
-                    if (!chargeSpent && storedCharge > 0.0) damage += storedCharge
-                } else {
-                    // 轻击：先打折，折掉的那部分等确认命中之后再存
-                    damage *= 1.0 - bladeRate
-                }
-            }
+            if (blade != null && !action.heavy) damage *= bladeRate
             if (damage <= 0) continue
 
             val damageSource = ModDamageTypes.causeDamageType(
@@ -268,10 +263,8 @@ data class MeleeAttackMessage(
 
             if (blade != null) {
                 if (action.heavy) {
-                    // 这一挥已经吃到蓄力了，后面的目标不再重复加算
-                    if (!chargeSpent && storedCharge > 0.0) chargeSpent = true
+                    if (!chargeStrike && !chargeSpent && storedCharge > 0.0) chargeSpent = true
                 } else {
-                    // 只按"真正打出去的那部分伤害"（已经打过折）存蓄力
                     InvisibleBladeShapeness.addCharge(data, damage * bladeRate)
                 }
             }
