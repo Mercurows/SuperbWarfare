@@ -268,18 +268,18 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
 
         RenderHelper.blit(
             guiGraphics.pose(), REX_HORIZONTAL, (w / 2f - 13.5f - 2.8f * spread).toFloat() + moveX,
-            h / 2f - 7.5f + moveY, 16f, 16f,
+            h / 2f - 8f + moveY, 16f, 16f,
         )
         RenderHelper.blit(
             guiGraphics.pose(), REX_HORIZONTAL, (w / 2f - 2.5f + 2.8f * spread).toFloat() + moveX,
-            h / 2f - 7.5f + moveY, 16f, 16f,
+            h / 2f - 8f + moveY, 16f, 16f,
         )
         RenderHelper.blit(
-            guiGraphics.pose(), REX_VERTICAL, w / 2f - 7.5f + moveX, (h / 2f - 2.5f + 2.8f * spread).toFloat() + moveY,
+            guiGraphics.pose(), REX_VERTICAL, w / 2f - 8f + moveX, (h / 2f - 2.5f + 2.8f * spread).toFloat() + moveY,
             16f, 16f,
         )
         RenderHelper.blit(
-            guiGraphics.pose(), REX_VERTICAL, w / 2f - 7.5f + moveX, (h / 2f - 13.5f - 2.8f * spread).toFloat() + moveY,
+            guiGraphics.pose(), REX_VERTICAL, w / 2f - 8f + moveX, (h / 2f - 13.5f - 2.8f * spread).toFloat() + moveY,
             16f, 16f,
         )
 
@@ -307,7 +307,7 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
 
         // 蓄势够松手了就把中心点染红
         RenderHelper.blit(
-            guiGraphics.pose(), POINT, screenWidth / 2f - 7.5f + moveX, screenHeight / 2f - 7.5f + moveY, 16f, 16f,
+            guiGraphics.pose(), POINT, screenWidth / 2f - 8f + moveX, screenHeight / 2f - 8f + moveY, 16f, 16f,
             argb = if (MeleeClientHandler.canReleaseHeavyHold(data)) HEAVY_HOLD_READY_COLOR else -0x1,
         )
         if (data.meleeOnly()) return
@@ -409,8 +409,8 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
         val offsetX = if (reticle != null) 0f else moveX
         val offsetY = if (reticle != null) 0f else moveY
 
-        val posX = baseX - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
-        val posY = baseY - 7.5f + (2 * (Math.random() - 0.5f)).toFloat()
+        val posX = baseX - 8f
+        val posY = baseY - 8f
         val rate: Float = (40 - killIndicator * 5) / 5.5f
 
         if (hitIndicator > 0) {
@@ -432,10 +432,10 @@ object CrossHairOverlay : CommonOverlay("cross_hair") {
         }
 
         if (killIndicator > 0) {
-            val posX1 = baseX - 7.5f - 2 + rate + offsetX
-            val posY1 = baseY - 7.5f - 2 + rate + offsetY
-            val posX2 = baseX - 7.5f + 2 - rate + offsetX
-            val posY2 = baseY - 7.5f + 2 - rate + offsetY
+            val posX1 = baseX - 8f - 2 + rate + offsetX
+            val posY1 = baseY - 8f - 2 + rate + offsetY
+            val posX2 = baseX - 8f + 2 - rate + offsetX
+            val posY2 = baseY - 8f + 2 - rate + offsetY
 
             RenderHelper.blit(guiGraphics.pose(), KILL_MARKER_1, posX1, posY1, 16f, 16f)
             RenderHelper.blit(guiGraphics.pose(), KILL_MARKER_2, posX2, posY1, 16f, 16f)
