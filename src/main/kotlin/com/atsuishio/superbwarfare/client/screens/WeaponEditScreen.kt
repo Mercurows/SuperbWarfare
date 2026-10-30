@@ -11,6 +11,8 @@ import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.GunState
 import com.atsuishio.superbwarfare.data.gun.subweapon.SubWeaponRuntime
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
+import com.atsuishio.superbwarfare.data.gun_skin.GunSkin
+import com.atsuishio.superbwarfare.data.gun_skin.GunSkinInfo
 import com.atsuishio.superbwarfare.event.ClientEventHandler.editModelShake
 import com.atsuishio.superbwarfare.event.ClientEventHandler.editingAttachmentType
 import com.atsuishio.superbwarfare.event.ClientEventHandler.onCloseEditScreen
@@ -18,10 +20,7 @@ import com.atsuishio.superbwarfare.init.ModKeyMappings
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.attachment.AttachmentProvider
 import com.atsuishio.superbwarfare.item.gun.GunItem
-import com.atsuishio.superbwarfare.network.message.send.AttachmentAdjustMessage
-import com.atsuishio.superbwarfare.network.message.send.AttachmentInstallMessage
-import com.atsuishio.superbwarfare.network.message.send.AttachmentSkinMessage
-import com.atsuishio.superbwarfare.network.message.send.EditMessage
+import com.atsuishio.superbwarfare.network.message.send.*
 import com.atsuishio.superbwarfare.tools.BoneScreenPoint
 import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.sendPacketToServer
@@ -83,6 +82,9 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     private var panelSkinTarget: AttachmentSkinMessage? = null
     private var panelSkins: List<AttachmentSkinInfo> = emptyList()
     private var panelSkin: String? = null
+    private var gunSkinTarget: GunSkinMessage? = null
+    private var gunSkins: List<GunSkinInfo>? = null
+    private var gunSkin: String? = null
     private val gridRows = mutableListOf<GridRow>()
     private val gridWindow = RecyclingRowWindow(GRID_WINDOW_ROWS)
     private var gridSelected: ResourceLocation? = null
@@ -161,6 +163,9 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         panelSkinTarget = null
         panelSkins = emptyList()
         panelSkin = null
+        gunSkinTarget = null
+        gunSkins = null
+        gunSkin = null
         gridRows.clear()
         gridWindow.reset()
         gridSelected = null
@@ -216,7 +221,8 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         refreshAttachmentLists(player, data)
         val settings = syncAdjustments(doc, data)
         val stats = syncStats(doc, data, player.level().gameTime)
-        val reserved = listOfNotNull(settings, stats) + Box(0f, 0f, viewportWidth, TITLE_BAR_HEIGHT)
+        val skinControl = syncGunSkins(doc, player, data)
+        val reserved = listOfNotNull(settings, stats, skinControl) + Box(0f, 0f, viewportWidth, TITLE_BAR_HEIGHT)
         var mounts = syncMounts(doc, data, reserved)
         val panel = syncPanel(doc, player, data, mounts, reserved)
         // 紧凑窗口的点位可能占满菜单四周；先确定菜单，再把点位移到剩余空间。
@@ -229,6 +235,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         val obstacles = syncIcons(doc, mounts, reserved + listOfNotNull(panel))
         syncMountLabels(doc, mounts, obstacles)
         flushStyles()
+        syncSkinPopup(doc)
         // 连线先提交，保持在菜单和物品下方；圆圈和外框则在 AUI 绘制完成后单独提交。
         drawDecorationPass(graphics, doc, false) { vertices, matrix ->
             for ((mount, target) in connectors.values) drawConnector(vertices, matrix, mount, target)
@@ -281,8 +288,9 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     override fun mouseScrolled(mouseX: Double, mouseY: Double, delta: Double): Boolean = true
 
     override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
-        val skinSelect = linkedDocument?.getElementById("panel-skin") as? Select
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE && skinSelect?.isPopupOpen == true) {
+        val skinSelect = listOf("gun-skin", "panel-skin").mapNotNull { linkedDocument?.getElementById(it) as? Select }
+            .firstOrNull { it.isPopupOpen }
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE && skinSelect != null) {
             skinSelect.closePopup()
             return true
         }
@@ -375,6 +383,16 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             it.setAttribute("aria-label", label("uninstall"))
         }
         doc.getElementById("panel-skin-label")?.textContent = label("skin")
+        doc.getElementById("gun-skin")?.let { select ->
+            select.setAttribute("aria-label", label("switch_gun_skin"))
+            select.addEventListener("change") {
+                val target = gunSkinTarget ?: return@addEventListener
+                val skinId = select.getValue()
+                if (skinId.isNotEmpty() && gunSkins.orEmpty().none { it.id == skinId && it.texture != null }) return@addEventListener
+                hoveredItem = null
+                sendPacketToServer(target.copy(skinId = skinId))
+            }
+        }
         doc.getElementById("panel-skin")?.let { select ->
             select.setAttribute("title", label("switch_skin"))
             select.setAttribute("aria-label", label("switch_skin"))
@@ -1053,6 +1071,63 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     }
 
     private fun propLabel(key: String) = Component.translatable("prop.superbwarfare.$key").string
+
+    private fun syncGunSkins(doc: Document, player: Player, data: GunData): Box? {
+        val root = doc.getElementById("gun-skin-control") ?: return null
+        val select = doc.getElementById("gun-skin") as? Select ?: return null
+        val skins = GunSkin.getSkins(data).skins
+        if (skins.none { it.id.isNotBlank() && it.texture != null }) {
+            select.closePopup()
+            setStyle(root, "display", "none")
+            gunSkinTarget = null
+            gunSkins = null
+            gunSkin = null
+            return null
+        }
+        val scale = editorPanelScale()
+        val bounds = Box(viewportWidth - 6f - STATS_BUTTON_WIDTH * scale, TITLE_BAR_HEIGHT + 6f,
+            STATS_BUTTON_WIDTH * scale, STATS_BUTTON_HEIGHT * scale)
+        place(root, bounds, scale)
+        val target = GunSkinMessage(data.id, data.uuid?.toString(), player.inventory.selected, "")
+        if (gunSkinTarget != target || gunSkins !== skins) {
+            select.closePopup()
+            gunSkinTarget = target
+            gunSkins = skins
+            gunSkin = null
+            select.innerHTML = ""
+            fun option(id: String, name: String) {
+                val element = doc.createElement("option")
+                element.setAttribute("value", id)
+                element.textContent = name
+                select.appendChild(element)
+            }
+            option("", label("default_skin"))
+            skins.distinctBy { it.id }.filter { it.id.isNotBlank() && it.texture != null }
+                .sortedBy { it.priority }.forEach {
+                    val name = it.name.ifBlank { it.id }.removePrefix("Component#")
+                    option(it.id, Component.translatable(name).string)
+                }
+        }
+        val current = data.skinId.get().takeIf { id -> skins.any { it.id == id && it.texture != null } } ?: ""
+        if (gunSkin != current) {
+            select.setValue(current)
+            gunSkin = current
+        }
+        return bounds
+    }
+
+    /** Native select popups live under body; match each popup to its scaled control's width. */
+    private fun syncSkinPopup(doc: Document) {
+        val gun = doc.getElementById("gun-skin") as? Select
+        val attachment = doc.getElementById("panel-skin") as? Select
+        val select = gun?.takeIf { it.isPopupOpen } ?: attachment?.takeIf { it.isPopupOpen } ?: return
+        val width = px(select.boundingClientRect.width.toFloat())
+        for (popup in doc.querySelectorAll(".aui-select-popup")) {
+            val owner = (select === gun).toString()
+            if (popup.getAttribute("data-gun-skin") != owner) popup.setAttribute("data-gun-skin", owner)
+            if (popup.getInlineStylePropertyValue("width") != width) popup.setInlineStyleProperty("width", width)
+        }
+    }
 
     private fun syncAttachmentSkins(doc: Document, player: Player, data: GunData, type: AttachmentType, installed: ResourceLocation?) {
         val select = doc.getElementById("panel-skin") as? Select ?: return

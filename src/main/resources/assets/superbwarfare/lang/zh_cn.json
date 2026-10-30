@@ -1521,6 +1521,8 @@
   "screen.superbwarfare.weapon_edit.confirm": "应用设置",
   "screen.superbwarfare.weapon_edit.skin": "皮肤",
   "screen.superbwarfare.weapon_edit.switch_skin": "切换配件皮肤",
+  "screen.superbwarfare.weapon_edit.switch_gun_skin": "切换武器皮肤",
+  "screen.superbwarfare.weapon_edit.default_skin": "默认",
   "screen.superbwarfare.weapon_edit.stats.show": "显示武器属性",
   "screen.superbwarfare.weapon_edit.stats.hide": "隐藏武器属性",
   "screen.superbwarfare.weapon_edit.stats.title": "武器属性",
