@@ -4,10 +4,8 @@ import com.atsuishio.superbwarfare.init.RegistryName
 import com.atsuishio.superbwarfare.item.gun.GeoGunItem
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.LivingEntity
-import net.minecraft.world.inventory.tooltip.TooltipComponent
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
-import java.util.*
 import java.util.function.Consumer
 
 @RegistryName("steel_pipe")
@@ -26,9 +24,5 @@ class SteelPipeItem : GeoGunItem(Properties()) {
             return 0
         }
         return amount
-    }
-
-    override fun getTooltipImage(pStack: ItemStack): Optional<TooltipComponent> {
-        return Optional.empty()
     }
 }

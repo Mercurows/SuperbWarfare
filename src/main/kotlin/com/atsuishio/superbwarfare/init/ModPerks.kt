@@ -104,6 +104,7 @@ object ModPerks {
     lateinit var QUICKDRAW: PERK
     lateinit var SNAPSHOT_SIGHTS: PERK
     lateinit var TRIPLE_TAP: PERK
+    lateinit var STRIVING_FOR_PERFECTION: PERK
     // @formatter:on
 
     /**
@@ -272,6 +273,8 @@ object ModPerks {
         TRIPLE_TAP = autoRegistryObjects["triple_tap"] ?: registerFuncPerk("triple_tap") {
             EmptyPerk("triple_tap", Perk.Type.FUNCTIONAL)
         }
+        STRIVING_FOR_PERFECTION = autoRegistryObjects["striving_for_perfection"]
+            ?: registerFuncPerk("striving_for_perfection") { StrivingForPerfection }
 
         // Damage Perks
         KILL_CLIP = autoRegistryObjects["kill_clip"] ?: registerDamagePerk("kill_clip") { KillClip }
