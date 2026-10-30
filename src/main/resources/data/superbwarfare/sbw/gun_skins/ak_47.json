@@ -1,0 +1,10 @@
+{
+  "Skins": [
+    {
+      "Id": "golden",
+      "Name": "Component#skin.superbwarfare.ak_47.golden",
+      "Texture": "superbwarfare:textures/bedrock/gun/ak_47_golden.png",
+      "Priority": 1
+    }
+  ]
+}

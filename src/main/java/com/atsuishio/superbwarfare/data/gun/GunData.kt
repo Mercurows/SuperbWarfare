@@ -153,6 +153,10 @@ class GunData private constructor(
     @JvmField
     val defaultDataId: StringValue
 
+    /** Per-stack cosmetic skin id, persisted as GunData.Skin. Empty uses the base texture. */
+    @JvmField
+    val skinId: StringValue
+
     /**
      * 当前操控的是哪一把枪
      */
@@ -1811,6 +1815,9 @@ class GunData private constructor(
         )
         defaultDataId = StateStringValue(
             this, { it.defaultDataId }, { s, v -> s.copy(defaultDataId = v) }
+        )
+        skinId = StateStringValue(
+            this, { it.skinId }, { s, v -> s.copy(skinId = v) }
         )
         activeSlot = StateStringValue(
             this, { it.activeSlot }, { s, v -> s.copy(activeSlot = v) }
