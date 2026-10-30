@@ -84,7 +84,14 @@
     "superbwarfare:stop_gap",
     "!superbwarfare:micro_missile",
     "!superbwarfare:longer_wire",
-    "!superbwarfare:cupid_arrow"
+    "!superbwarfare:cupid_arrow",
+    "!superbwarfare:cluster_bomb",
+    "superbwarfare:quickdraw",
+    "superbwarfare:adrenaline_rush",
+    "superbwarfare:snapshot_sights",
+    "superbwarfare:triple_tap",
+    "superbwarfare:soul_reaver",
+    "superbwarfare:steady_resolve"
   ],
   "AvailableAttachments": {
     "Scope": [
@@ -130,7 +137,8 @@
       "superbwarfare:stock_ar_tactical",
       "superbwarfare:stock_str",
       "superbwarfare:stock_elite",
-      "superbwarfare:steel_pipe_stock"
+      "superbwarfare:steel_pipe_stock",
+      "superbwarfare:stock_zenit_pt_1"
     ],
     "Muzzle": [
       "superbwarfare:meowlencer",
@@ -144,7 +152,8 @@
       "superbwarfare:loudspeaker",
       "superbwarfare:steel_pipe_silencer",
       "superbwarfare:handgun_silencer",
-      "superbwarfare:osprey_silencer"
+      "superbwarfare:osprey_silencer",
+      "superbwarfare:milencer"
     ],
     "SubWeapon": [
       "superbwarfare:sub_weapon_gp_25"

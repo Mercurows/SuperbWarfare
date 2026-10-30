@@ -62,5 +62,13 @@
   "DefaultFireMode": "Semi",
   "AvailableFireModes": [
     "Semi"
+  ],
+  "AvailablePerks": [
+    "superbwarfare:cast_no_shadows",
+    "superbwarfare:eager_edge",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:quickdraw"
   ]
 }

@@ -35,7 +35,10 @@
     "superbwarfare:intelligent_chip",
     "superbwarfare:monster_hunter",
     "superbwarfare:vorpal_weapon",
-    "superbwarfare:battle_of_wits"
+    "superbwarfare:battle_of_wits",
+    "superbwarfare:quickdraw",
+    "superbwarfare:adrenaline_rush",
+    "superbwarfare:snapshot_sights"
   ],
   "SoundRadius": 12,
   "AvailableAttachments": {

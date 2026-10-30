@@ -77,7 +77,14 @@
     "!superbwarfare:micro_missile",
     "!superbwarfare:longer_wire",
     "!superbwarfare:cupid_arrow",
-    "!superbwarfare:shatter_caps"
+    "!superbwarfare:shatter_caps",
+    "!superbwarfare:cluster_bomb",
+    "!superbwarfare:fourth_times_charm",
+    "superbwarfare:quickdraw",
+    "superbwarfare:adrenaline_rush",
+    "superbwarfare:snapshot_sights",
+    "superbwarfare:soul_reaver",
+    "superbwarfare:steady_resolve"
   ],
   "AvailableAttachments": {
     "Magazine": [
@@ -103,7 +110,8 @@
       "superbwarfare:scope_lpvo",
       "superbwarfare:scope_sniper",
       "superbwarfare:scope_winefox",
-      "superbwarfare:scope_spyglass"
+      "superbwarfare:scope_spyglass",
+      "superbwarfare:steel_pipe_scope"
     ],
     "Grip": [
       "superbwarfare:vertical_grip",
@@ -124,7 +132,9 @@
       "superbwarfare:love_muzzle",
       "superbwarfare:star_muzzle",
       "superbwarfare:linear_muzzle",
-      "superbwarfare:cross_muzzle"
+      "superbwarfare:cross_muzzle",
+      "superbwarfare:milencer",
+      "superbwarfare:steel_pipe_silencer"
     ],
     "SubWeapon": [
       "superbwarfare:sub_weapon_gp_25"

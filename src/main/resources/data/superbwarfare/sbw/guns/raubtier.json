@@ -35,11 +35,13 @@
     "superbwarfare:battle_of_wits",
     "!superbwarfare:longer_wire",
     "!superbwarfare:cupid_arrow",
-    "!superbwarfare:shatter_caps"
+    "!superbwarfare:shatter_caps",
+    "superbwarfare:quickdraw",
+    "superbwarfare:adrenaline_rush",
+    "superbwarfare:snapshot_sights"
   ],
   "AvailableAttachments": {
     "Scope": [
-      "superbwarfare:scope_raiser",
       "superbwarfare:scope_winefox"
     ],
     "Charm": [

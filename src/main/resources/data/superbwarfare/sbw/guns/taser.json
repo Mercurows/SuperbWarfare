@@ -26,7 +26,9 @@
     "superbwarfare:regeneration",
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",
-    "superbwarfare:volt_overload"
+    "superbwarfare:volt_overload",
+    "superbwarfare:quickdraw",
+    "superbwarfare:adrenaline_rush"
   ],
   "AvailableAttachments": {
     "Charm": [

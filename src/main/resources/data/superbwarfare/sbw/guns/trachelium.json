@@ -68,7 +68,8 @@
       "superbwarfare:scope_lpvo",
       "superbwarfare:scope_sniper",
       "superbwarfare:scope_winefox",
-      "superbwarfare:scope_spyglass"
+      "superbwarfare:scope_spyglass",
+      "superbwarfare:steel_pipe_scope"
     ],
     "Grip": [
       "superbwarfare:vertical_grip",
@@ -76,7 +77,8 @@
       "superbwarfare:grip_vertical_bipod",
       "superbwarfare:grip_rectangle_vertical",
       "superbwarfare:triangle_grip",
-      "superbwarfare:steel_pipe_grip"
+      "superbwarfare:steel_pipe_grip",
+      "superbwarfare:grip_cqr_gen2"
     ],
     "Stock": [
       "superbwarfare:oem_stock_heavy"
@@ -97,12 +99,14 @@
     "LowerRail": [
       "superbwarfare:lower_rail_bipod",
       "superbwarfare:peq_15",
-      "superbwarfare:pistol_laser"
+      "superbwarfare:pistol_laser",
+      "superbwarfare:handgun_shield"
     ],
     "UpperRail": [
       "superbwarfare:peq_15",
-      "superbwarfare:handgun_shield",
-      "superbwarfare:pistol_laser"
+      "superbwarfare:pistol_laser",
+      "superbwarfare:hyperion_shield_module",
+      "superbwarfare:standard_gun_shield"
     ]
   },
   "AvailablePerks": [
@@ -126,7 +130,14 @@
     "superbwarfare:target_lock",
     "!superbwarfare:micro_missile",
     "!superbwarfare:longer_wire",
-    "!superbwarfare:cupid_arrow"
+    "!superbwarfare:cupid_arrow",
+    "!superbwarfare:cluster_bomb",
+    "superbwarfare:quickdraw",
+    "superbwarfare:adrenaline_rush",
+    "superbwarfare:snapshot_sights",
+    "superbwarfare:triple_tap",
+    "superbwarfare:soul_reaver",
+    "superbwarfare:steady_resolve"
   ],
   "HandGuard": {
     "Grip": true,
