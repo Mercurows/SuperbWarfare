@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.io.File
 import kotlin.math.abs
+import kotlin.math.sqrt
 
 /**
  * B1: independent road-wheel suspension, audited as data.
@@ -61,7 +62,7 @@ class TrackedSuspensionTest {
         val total = TrackedSide.entries.sumOf { side ->
             TrackedSuspensionCompiler.compile(spec, side).sprungMassKg
         }
-        assertEquals(spec.mass.hullMassKg, total, 1e-6, "summed rows must equal the hull mass")
+        assertEquals(spec.mass.sprungAssemblyMassKg, total, 1e-6, "summed rows must equal the sprung assembly")
         assertEquals(spec.stationMassTotal, total, 1e-6, "rows must match the S1 station total")
 
         for (side in TrackedSide.entries) {
@@ -287,5 +288,53 @@ class TrackedSuspensionTest {
             abs(overridden.stiffnessNPerM - untouched.stiffnessNPerM) > 1.0,
             "the override must change the spring, not just the audit label",
         )
+    }
+
+    /**
+     * MCSP authors a direct `Spring` rate. When a vehicle uses that form, the
+     * compiled row must carry the authored rate, not a frequency-derived value
+     * that merely agrees by coincidence, and the reported frequency must be
+     * derived from the actual `k/m`.
+     */
+    @Test
+    fun anAuthoredSpringRateWinsOverTheNominalFrequency() {
+        val definition = definition()
+        val spring = 320_000.0
+        definition.left.suspension.springNPerM = spring
+        definition.left.suspension.frequency = 1.0
+        val compiled = TrackedVehicleCompiler.compile("superbwarfare:ztz_99a", definition, model()).requireSpec()
+        val audit = TrackedSuspensionCompiler.compile(compiled, TrackedSide.LEFT)
+        for (station in audit.stations) {
+            assertEquals(spring, station.stiffnessNPerM, 1e-9, "${station.bone} authored spring")
+            val expectedHz = sqrt(spring / station.stationMassKg) / (2.0 * Math.PI)
+            assertEquals(expectedHz, station.naturalFrequencyHz, 1e-9, "${station.bone} derived frequency")
+        }
+    }
+
+    /** A single MCSP `Damper` is one coefficient, so it must reach both directions. */
+    @Test
+    fun anAuthoredDamperReachesBothDirections() {
+        val definition = definition()
+        val damper = 27_000.0
+        definition.left.suspension.damperNsPerM = damper
+        val compiled = TrackedVehicleCompiler.compile("superbwarfare:ztz_99a", definition, model()).requireSpec()
+        val audit = TrackedSuspensionCompiler.compile(compiled, TrackedSide.LEFT)
+        for (station in audit.stations) {
+            assertEquals(damper, station.compressionDampingNsPerM, 1e-9, "${station.bone} compression damper")
+            assertEquals(damper, station.reboundDampingNsPerM, 1e-9, "${station.bone} rebound damper")
+        }
+    }
+
+    /** A direct rate that cannot carry its own station must be refused, not clamped. */
+    @Test
+    fun anUnauthoredDirectRateLeavesTheFrequencyModelIntact() {
+        val definition = definition()
+        definition.left.suspension.springNPerM = null
+        definition.left.suspension.damperNsPerM = null
+        val compiled = TrackedVehicleCompiler.compile("superbwarfare:ztz_99a", definition, model()).requireSpec()
+        val audit = TrackedSuspensionCompiler.compile(compiled, TrackedSide.LEFT)
+        val station = audit.stations.first()
+        val omega = 2.0 * Math.PI * 2.2
+        assertEquals(station.stationMassKg * omega * omega, station.stiffnessNPerM, 1e-6)
     }
 }

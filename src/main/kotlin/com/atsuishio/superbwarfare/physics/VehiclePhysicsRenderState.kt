@@ -1,5 +1,7 @@
 package com.atsuishio.superbwarfare.physics
 
+import com.atsuishio.superbwarfare.physics.tracked.TrackedRenderState
+
 /** Immutable render-side projection of Spark's chassis support state. */
 data class VehiclePhysicsRenderState(
     val physicsFrame: Long = 0L,
@@ -13,9 +15,12 @@ data class VehiclePhysicsRenderState(
     /** WHEEL independent projections; TRACK wheels share their side's height. */
     val wheels: List<WheelRenderState> = emptyList(),
     val grounded: Boolean = false,
+    /** Per-wheel tracked snapshot. Null for vehicles that are not on the tracked runtime. */
+    val tracked: TrackedRenderState? = null,
 ) {
     fun finite(): Boolean = listOf(leftTravel, rightTravel, leftForce, rightForce,
-        leftTrackPhase, rightTrackPhase).all(Float::isFinite) && wheels.all { it.finite() }
+        leftTrackPhase, rightTrackPhase).all(Float::isFinite) && wheels.all { it.finite() } &&
+        (tracked?.finite() != false)
 
     /** Interpolates immutable server projections on the client render thread. */
     fun interpolate(target: VehiclePhysicsRenderState, alpha: Float, trackCycle: Float = 100f): VehiclePhysicsRenderState {
@@ -44,6 +49,11 @@ data class VehiclePhysicsRenderState(
             rightTrackPhase = interpolatePhase(rightTrackPhase, target.rightTrackPhase, t, trackCycle),
             wheels = interpolated,
             grounded = if (t < .5f) grounded else target.grounded,
+            tracked = when {
+                tracked == null -> target.tracked
+                target.tracked == null -> tracked
+                else -> tracked.interpolate(target.tracked, t)
+            },
         )
     }
 

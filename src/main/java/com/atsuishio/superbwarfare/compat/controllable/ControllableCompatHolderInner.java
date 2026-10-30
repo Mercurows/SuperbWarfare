@@ -2,6 +2,9 @@ package com.atsuishio.superbwarfare.compat.controllable;
 
 import com.mrcrayfish.controllable.Controllable;
 import com.mrcrayfish.controllable.client.ControllerInput;
+import com.mrcrayfish.controllable.client.binding.BindingContext;
+import com.mrcrayfish.controllable.client.binding.BindingRegistry;
+import com.mrcrayfish.controllable.client.binding.ButtonBinding;
 import com.mrcrayfish.controllable.client.input.Controller;
 
 /**
@@ -12,7 +15,27 @@ import com.mrcrayfish.controllable.client.input.Controller;
  */
 public final class ControllableCompatHolderInner {
 
+    /**
+     * Unbound until the player assigns a controller button. {@code -1} is
+     * Controllable's empty button, so the row is visible and does not steal
+     * an existing gamepad button.
+     */
+    private static final ButtonBinding BULLET_TERRAIN = new ButtonBinding(
+            -1,
+            "key.superbwarfare.toggle_bullet_terrain",
+            "key.categories.superbwarfare",
+            BindingContext.IN_GAME
+    );
+
     private ControllableCompatHolderInner() {
+    }
+
+    public static void registerBulletTerrainBinding() {
+        BindingRegistry.getInstance().register(BULLET_TERRAIN);
+    }
+
+    public static boolean bulletTerrainDown() {
+        return BULLET_TERRAIN.isButtonDown();
     }
 
     private static Controller controller() {

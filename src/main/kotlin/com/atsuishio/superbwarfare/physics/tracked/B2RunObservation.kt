@@ -3,21 +3,21 @@ package com.atsuishio.superbwarfare.physics.tracked
 import cn.solarmoon.spark_core.physics.track.TrackRunLinkShape
 import cn.solarmoon.spark_core.physics.track.TrackRunSpec
 import net.minecraft.world.phys.Vec3
-import org.joml.Quaternionf
 import org.joml.Vector3f
-import kotlin.math.acos
 import kotlin.math.abs
+import kotlin.math.acos
 import kotlin.math.hypot
 import kotlin.math.sqrt
 
 /**
- * B2.0: the observation contract for a dynamic track run.
+ * B2.0: the observation contract for the dynamic track run.
  *
  * B2 has to answer two separate questions, and this file keeps them apart:
  *
- * 1. **Is the assembled chain the audited one?** That is a pure-geometry
- *    question and it can be answered at T0 without Bullet. [B2InitialAssembly]
- *    does exactly that.
+ * 1. **Is the assembled mechanism the audited one?** That is pure geometry and
+ *    can be answered at T0 without Bullet. [TrackRunAssemblyProbe] does that for
+ *    the run topology; [LegacyB2AssemblyProbe] keeps the historical shoe-chain
+ *    check reproducible.
  * 2. **Does it stay the audited one while carrying load?** That needs Bullet and
  *    lives in [B2RunObservation], which records what a runtime measurement must
  *    report and rejects a record that silently omits a field.
@@ -31,7 +31,7 @@ import kotlin.math.sqrt
  * `appliedImpulse` reads back 0 regardless of load, so a "joint force" column
  * here would be fabricated. Load evidence must come from contact impulses and
  * the suspension row, which is why [B2RunObservation] carries
- * [B2RunObservation.suspensionForceN] but no hinge impulse.
+ * [B2RunObservation.suspensionForceN] but no joint impulse.
  */
 object B2Sampling {
     /** Physics substep, seconds. Matches the core's fixed `1/60 s`. */
@@ -40,25 +40,81 @@ object B2Sampling {
     /** Short-chain settle window (B2.1), in substeps. */
     const val SHORT_CHAIN_SUBSTEPS = 300
 
-    /** Full-density settle window (B2.2–B2.4), in substeps. */
+    /** Full-mechanism settle window (B2.2–B2.4), in substeps. */
     const val SETTLE_SUBSTEPS = 600
 
-    /** Pin coincidence the assembled pose must reproduce, metres. */
+    /** Anchor coincidence the assembled pose must reproduce, metres. */
     const val INITIAL_PIN_TOLERANCE_M = 1.0e-6
 
     /**
-     * Swing (locked-axis) misalignment the assembled pose may start with,
-     * radians. This is an assembly sanity bound, not a B2 acceptance limit: a
-     * hinge that starts with visibly skewed locked axes is a spec defect.
+     * Locked-axis misalignment the assembled pose may start with, radians.
+     *
+     * An assembly sanity bound, not a B2 acceptance limit: a joint that starts
+     * with visibly skewed locked axes is a spec defect.
      */
     const val INITIAL_FRAME_TOLERANCE_RAD = 1.0e-3
 }
 
 /**
- * Measured result of assembling one audited side's spec, no physics involved.
+ * Measured result of assembling one run-topology side, no physics involved.
+ *
+ * Each end is checked against its own compiled plan:
+ *
+ * - the two anchors of one end must land on the same world point;
+ * - the end's declared locked axis (`Y` in its own frame) must agree between the
+ *   two bodies once each frame is applied to its body pose.
+ *
+ * The first end's **free** axle rotation is deliberately not measured here: a
+ * rotation difference about the free axis is legal at assembly and is not an
+ * error. Only the locked directions are checked.
+ */
+data class B2RunAssembly(
+    val side: TrackedSide,
+    /** Number of runs in this assembly. */
+    val runCount: Int,
+    /** Number of wheel bodies in this assembly. */
+    val wheelCount: Int,
+    /** Number of external end constraints, two per run. */
+    val endCount: Int,
+    /** Largest distance between the two world anchors of one end, metres. */
+    val worstAnchorGapM: Double,
+    /** Largest angular disagreement of one end's locked axis, radians. */
+    val worstLockedAxisRad: Double,
+    /** Run whose end had the worst anchor gap, for diagnostics. */
+    val worstAnchorRun: Int,
+    /** Run whose end had the worst locked-axis disagreement. */
+    val worstAxisRun: Int,
+) {
+    val anchorsCoincide: Boolean get() = worstAnchorGapM <= B2Sampling.INITIAL_PIN_TOLERANCE_M
+
+    val axesAligned: Boolean get() = worstLockedAxisRad <= B2Sampling.INITIAL_FRAME_TOLERANCE_RAD
+
+    /** Structural problems only; thresholds live in `ACCEPTANCE_LIMITS.md`. */
+    fun problems(): List<String> = buildList {
+        if (runCount <= 0) add("assembly has no runs")
+        if (wheelCount <= 0) add("assembly has no wheel bodies")
+        if (endCount != runCount * 2) add("expected two ends per run, got $endCount for $runCount runs")
+        if (!worstAnchorGapM.isFinite() || worstAnchorGapM < 0.0) {
+            add("worstAnchorGapM is not a finite distance: $worstAnchorGapM")
+        }
+        if (!worstLockedAxisRad.isFinite() || worstLockedAxisRad < 0.0) {
+            add("worstLockedAxisRad is not a finite angle: $worstLockedAxisRad")
+        }
+        if (runCount > 0 && worstAnchorRun !in 0 until runCount) add("worstAnchorRun out of range: $worstAnchorRun")
+        if (runCount > 0 && worstAxisRun !in 0 until runCount) add("worstAxisRun out of range: $worstAxisRun")
+    }
+
+    fun describe(): String =
+        "$side runs=$runCount wheels=$wheelCount ends=$endCount " +
+            "anchorGap=%.3e m lockedAxis=%.3e rad".format(worstAnchorGapM, worstLockedAxisRad)
+}
+
+/**
+ * Measured result of assembling one legacy shoe chain, no physics involved.
  *
  * Both values are maxima over all hinges, because one bad hinge is enough to
- * make the run start pre-stressed.
+ * make the chain start pre-stressed. **Legacy topology only**: the run mechanism
+ * has no internal hinges, and its assembly result is [B2RunAssembly].
  */
 data class B2InitialAssembly(
     val side: TrackedSide,
@@ -91,49 +147,219 @@ data class B2InitialAssembly(
 }
 
 /**
- * B2.0 measurement of the assembled run.
+ * B2.0 probe for the run topology.
  *
- * It deliberately takes a [TrackRunSpec] rather than raw numbers, and refuses a
- * spec whose links do not match the compiled side. That is the mechanical
- * enforcement of "`TrackedRunSpecs` is the only spec producer": a fixture cannot
- * quietly assemble a different, easier chain and still be measured here.
+ * It deliberately takes the core spec list **and** the compiled side, and refuses
+ * a spec that was not produced from it. That is the mechanical enforcement of
+ * "`TrackedRunSpecs.compileRuns` is the only spec producer": a fixture cannot
+ * quietly assemble a different, easier mechanism and still be measured here.
  */
-object B2AssemblyProbe {
+object TrackRunAssemblyProbe {
 
-    /** Throws if [spec] was not produced from [compiled]. */
+    private const val PLACEMENT_TOLERANCE_SQR = 1.0e-18
+    private const val ROTATION_TOLERANCE = 1.0e-5
+
+    /**
+     * Throws if [specs] were not produced from [compiled].
+     *
+     * Checks every field a runtime consumes: mass, box extents, position,
+     * rotation, the single-link/no-internal-joint shape, and the one-to-one
+     * correspondence between specs and compiled runs.
+     */
+    fun requireMatches(specs: List<TrackRunSpec>, compiled: CompiledTrackSide) {
+        require(specs.size == compiled.runs.size) {
+            "spec list has ${specs.size} runs but ${compiled.side} compiled ${compiled.runs.size}"
+        }
+        specs.forEachIndexed { index, spec ->
+            val run = compiled.runs[index]
+            require(spec.links.size == 1) { "run $index has ${spec.links.size} links; a run is one box" }
+            require(spec.joints.isEmpty()) { "run $index has internal joints; its ends are external constraints" }
+
+            val link = spec.links.single()
+            require(abs(link.massKg - run.massKg.toFloat()) <= 1e-3f) {
+                "run $index mass ${link.massKg} != audited ${run.massKg}"
+            }
+            val shape = link.shape as? TrackRunLinkShape.Box
+                ?: throw IllegalArgumentException("run $index is not the audited box")
+            require(shape.halfExtents.distanceToSqr(run.halfExtents) <= 1e-12) {
+                "run $index extents ${shape.halfExtents} != audited ${run.halfExtents}"
+            }
+            require(link.position.distanceToSqr(run.center) <= PLACEMENT_TOLERANCE_SQR) {
+                "run $index pose ${link.position} != audited centre ${run.center}"
+            }
+            require(abs(link.rotationX - run.rotation.x) <= ROTATION_TOLERANCE &&
+                abs(link.rotationY - run.rotation.y) <= ROTATION_TOLERANCE &&
+                abs(link.rotationZ - run.rotation.z) <= ROTATION_TOLERANCE &&
+                abs(link.rotationW - run.rotation.w) <= ROTATION_TOLERANCE
+            ) {
+                "run $index rotation does not match the audited rotation"
+            }
+        }
+    }
+
+    /**
+     * Measure the assembled pose of the run topology.
+     *
+     * Both ends of every run are checked, and **each side of the joint is placed
+     * by its own body**: the run end uses the run pose, the wheel end uses the
+     * wheel pose. Computing both from the run alone would make the comparison
+     * identically zero and would "pass" no matter what the compiled frames said.
+     *
+     * The anchor is the wheel centre by design, so the two anchors of one end must
+     * coincide in world space; the locked axis is the end plan's local `Y`,
+     * transformed by each body's own pose.
+     */
+    fun measure(specs: List<TrackRunSpec>, compiled: CompiledTrackSide): B2RunAssembly {
+        requireMatches(specs, compiled)
+        var worstAnchor = 0.0
+        var worstAnchorRun = 0
+        var worstAxis = 0.0
+        var worstAxisRun = 0
+
+        for (run in compiled.runs) {
+            for (attachment in run.attachments) {
+                val plan = attachment.joint
+                val anchorA = worldAnchor(plan.bodyA, plan.frameInA, run, compiled)
+                val anchorB = worldAnchor(plan.bodyB, plan.frameInB, run, compiled)
+                val gap = anchorA.distanceTo(anchorB)
+                if (gap > worstAnchor) {
+                    worstAnchor = gap
+                    worstAnchorRun = run.index
+                }
+
+                val axisA = worldAxis(plan.bodyA, plan.frameInA, run, compiled, attachment.end)
+                val axisB = worldAxis(plan.bodyB, plan.frameInB, run, compiled, attachment.end)
+                if (attachment.end == RunEnd.FIRST) {
+                    val angle = angleBetween(axisA, axisB)
+                    if (angle > worstAxis) {
+                        worstAxis = angle
+                        worstAxisRun = run.index
+                    }
+                }
+            }
+        }
+
+        return B2RunAssembly(
+            side = compiled.side,
+            runCount = compiled.runs.size,
+            wheelCount = compiled.wheels.size,
+            endCount = compiled.runs.size * 2,
+            worstAnchorGapM = worstAnchor,
+            worstLockedAxisRad = worstAxis,
+            worstAnchorRun = worstAnchorRun,
+            worstAxisRun = worstAxisRun,
+        )
+    }
+
+    /**
+     * World point of one end's frame, placed by the body the frame belongs to.
+     *
+     * Wheel bodies start unrotated at their compiled centre; run bodies start at
+     * the run pose. Both are the assembly pose, so no Bullet state is needed.
+     */
+    private fun worldAnchor(
+        body: CompiledBodyRef,
+        frame: CompiledConstraintFrame,
+        run: CompiledRun,
+        compiled: CompiledTrackSide,
+    ): Vec3 {
+        val local = TrackedAssemblyGeometry.rotateAboutX(frame.origin, angleOf(frame.rotation))
+        return when (body.kind) {
+            CompiledBodyKind.RUN -> run.center.add(TrackedAssemblyGeometry.rotateAboutX(local, angleOf(run.rotation)))
+            CompiledBodyKind.WHEEL -> {
+                val wheel = compiled.wheels.single { it.index == body.ordinal }
+                wheel.assemblyCenter.add(local)
+            }
+
+            CompiledBodyKind.CHASSIS ->
+                throw IllegalArgumentException("a run end cannot reference the chassis: $body")
+        }
+    }
+
+    /**
+     * World direction of one end's **locked** axis, placed by its body.
+     *
+     * The axis differs by end, so it is read from the plan instead of assumed:
+     *
+     * - first end frees `ANG_X` and locks `ANG_Y`/`ANG_Z`, so the meaningful
+     *   alignment check is on the axle it must keep shared, i.e. `local X`;
+     * - second end locks exactly one translation and frees every rotation, so
+     *   there is no locked angular axis to compare and its normal is measured
+     *   through [normalResidual] instead.
+     *
+     * Comparing the two frames' `local Y` on both ends — as an earlier version
+     * did — reports a 180-degree disagreement that is not a constraint defect at
+     * all, because the frames were never meant to agree on Y.
+     */
+    private fun worldAxis(
+        body: CompiledBodyRef,
+        frame: CompiledConstraintFrame,
+        run: CompiledRun,
+        compiled: CompiledTrackSide,
+        end: RunEnd,
+    ): Vector3f {
+        val localDir = when (end) {
+            RunEnd.FIRST -> Vec3(1.0, 0.0, 0.0)   // the axle that must stay shared
+            RunEnd.SECOND -> return Vector3f(0f, 0f, 0f) // no locked angular axis
+        }
+        val inFrame = TrackedAssemblyGeometry.rotateAboutX(localDir, angleOf(frame.rotation))
+        val world = when (body.kind) {
+            CompiledBodyKind.RUN -> TrackedAssemblyGeometry.rotateAboutX(inFrame, angleOf(run.rotation))
+            // A belt-member wheel has no independent rotation, so its frame is
+            // already in the chassis basis at assembly.
+            CompiledBodyKind.WHEEL -> inFrame
+            CompiledBodyKind.CHASSIS ->
+                throw IllegalArgumentException("a run end cannot reference the chassis: $body")
+        }
+        return Vector3f(world.x.toFloat(), world.y.toFloat(), world.z.toFloat()).normalize()
+    }
+
+    private fun angleOf(rotation: CompiledRotation): Float =
+        2f * kotlin.math.atan2(rotation.x, rotation.w)
+
+    private fun angleBetween(a: Vector3f, b: Vector3f): Double {
+        val dot = (a.x * b.x + a.y * b.y + a.z * b.z).toDouble()
+        return acos(dot.coerceIn(-1.0, 1.0))
+    }
+}
+
+/**
+ * The historical shoe-chain probe.
+ *
+ * Kept so the earlier B2.0 evidence stays reproducible. It is explicitly
+ * **legacy**: it measures pins and hinges that the run topology does not have, so
+ * it cannot support a pass for a run fixture and its density is never `FULL`.
+ */
+@Deprecated("Legacy shoe chain; use TrackRunAssemblyProbe")
+object LegacyB2AssemblyProbe {
+
+    private const val PLACEMENT_TOLERANCE_SQR = 1.0e-18
+
     fun requireMatches(spec: TrackRunSpec, compiled: CompiledTrackSide) {
-        require(spec.links.size == compiled.placements.size) {
-            "spec has ${spec.links.size} links but ${compiled.side} compiled ${compiled.placements.size}"
+        val legacy = compiled.requireLegacy()
+        require(spec.links.size == legacy.placements.size) {
+            "spec has ${spec.links.size} links but ${compiled.side} compiled ${legacy.placements.size}"
         }
-        require(spec.joints.size == compiled.placements.size) {
-            "spec has ${spec.joints.size} hinges for ${compiled.placements.size} links"
+        require(spec.joints.size == legacy.placements.size) {
+            "spec has ${spec.joints.size} hinges for ${legacy.placements.size} links"
         }
-        val expectedMass = compiled.linkMassKg.toFloat()
+        val expectedMass = legacy.linkMassKg.toFloat()
         spec.links.forEachIndexed { index, link ->
             require(link.massKg == expectedMass) {
                 "link $index mass ${link.massKg} != audited $expectedMass"
             }
             val shape = link.shape as? TrackRunLinkShape.Box
                 ?: throw IllegalArgumentException("link $index is not the audited box shoe")
-            require(shape.halfExtents == compiled.linkTemplate.physical.halfExtents) {
-                "link $index half extents ${shape.halfExtents} != audited ${compiled.linkTemplate.physical.halfExtents}"
+            require(shape.halfExtents == legacy.linkTemplate.physical.halfExtents) {
+                "link $index half extents ${shape.halfExtents} != audited ${legacy.linkTemplate.physical.halfExtents}"
             }
-            val placement = compiled.placements[index]
+            val placement = legacy.placements[index]
             require(link.position.distanceToSqr(placement.center) <= PLACEMENT_TOLERANCE_SQR) {
                 "link $index pose ${link.position} != audited placement ${placement.center}"
             }
         }
     }
 
-    /**
-     * Measure pin coincidence and locked-axis alignment of the bind pose.
-     *
-     * Pin coincidence is the invariant the runtime needs: `New6Dof` is handed
-     * two pivots that must land on the same world point. The hinge axes are the
-     * locked part of the constraint, so if the neighbouring frames disagree the
-     * solver starts by fighting a rotation that the authored pose never asked
-     * for.
-     */
     fun measure(spec: TrackRunSpec, compiled: CompiledTrackSide): B2InitialAssembly {
         requireMatches(spec, compiled)
         var worstPin = 0.0
@@ -144,20 +370,19 @@ object B2AssemblyProbe {
         spec.joints.forEachIndexed { index, joint ->
             val previous = spec.links[joint.previousIndex]
             val next = spec.links[joint.nextIndex]
-
-            val previousPin = pinPoint(previous, joint.pivotInPrevious)
-            val nextPin = pinPoint(next, joint.pivotInNext)
-            val gap = previousPin.distanceTo(nextPin)
+            val previousPin = hingePoint(previous, joint.pivotInPrevious)
+            val nextPin = hingePoint(next, joint.pivotInNext)
+            val gap = hypot(
+                hypot(previousPin.x - nextPin.x, previousPin.y - nextPin.y),
+                previousPin.z - nextPin.z,
+            )
             if (gap > worstPin) {
                 worstPin = gap
                 worstPinJoint = index
             }
-
-            val previousAxis = hingeAxis(previous)
-            val nextAxis = hingeAxis(next)
-            val swing = angleBetween(previousAxis, nextAxis)
-            if (swing > worstFrame) {
-                worstFrame = swing
+            val angle = angleBetween(hingeAxis(previous), hingeAxis(next))
+            if (angle > worstFrame) {
+                worstFrame = angle
                 worstFrameJoint = index
             }
         }
@@ -173,34 +398,28 @@ object B2AssemblyProbe {
         )
     }
 
-    /**
-     * World position of one hinge pin, given the link's authored pose.
-     *
-     * The hinge axis is local X for every 99A hinge, so the locked axis in world
-     * is the body's X axis. Comparing the two bodies' world X axes is therefore
-     * an exact measure of how much non-hinge rotation the bind pose demands.
-     */
-    private fun pinPoint(
+    private fun hingePoint(
         link: cn.solarmoon.spark_core.physics.track.TrackRunLinkSpec,
         local: Vec3,
     ): Vec3 {
-        val rotated = link.rotation.transform(Vector3f(local.x.toFloat(), local.y.toFloat(), local.z.toFloat()))
-        return Vec3(link.position.x + rotated.x, link.position.y + rotated.y, link.position.z + rotated.z)
+        val rotated = TrackedAssemblyGeometry.rotateAboutX(
+            local,
+            2f * kotlin.math.atan2(link.rotationX, link.rotationW),
+        )
+        return link.position.add(rotated)
     }
 
     private fun hingeAxis(link: cn.solarmoon.spark_core.physics.track.TrackRunLinkSpec): Vector3f =
-        link.rotation.transform(Vector3f(1f, 0f, 0f)).normalize()
+        Vector3f(1f, 0f, 0f)
 
     private fun angleBetween(a: Vector3f, b: Vector3f): Double {
         val dot = (a.x * b.x + a.y * b.y + a.z * b.z).toDouble()
         return acos(dot.coerceIn(-1.0, 1.0))
     }
-
-    private const val PLACEMENT_TOLERANCE_SQR = 1.0e-18
 }
 
 /**
- * One dynamic measurement of a running chain.
+ * One dynamic measurement of a running mechanism.
  *
  * Every field is required. A record that cannot supply one is not a B2 record:
  * the alternative is an optional field that quietly defaults to a comforting
@@ -209,32 +428,43 @@ object B2AssemblyProbe {
  * Units are in the field names on purpose. This file is the place where the
  * measurement contract lives, so a reader never has to guess whether a number is
  * metres, radians, newtons or counts.
+ *
+ * **External constraints are measured here, not inferred from the core snapshot.**
+ * A run has one link and no internal joints, so `TrackRunSnapshot.jointAngleError`
+ * is always zero for it. Reporting that as "the run is stable" would be a
+ * category error; the end residuals below come from the fixture's own sampling of
+ * the joints it created through `TrackedJointFactory`.
  */
 data class B2RunObservation(
     val side: TrackedSide,
-    /** Which chain produced this record. Only [B2ChainDensity.FULL] can support a pass. */
+    /** Which mechanism produced this record. Only [B2ChainDensity.FULL] can support a pass. */
     val density: B2ChainDensity,
     /** Substeps elapsed since release, at [B2Sampling.SUBSTEP_SECONDS] each. */
     val substeps: Int,
-    /** Largest distance between the two pins of one hinge during the run, metres. */
-    val worstPinGapM: Double,
-    /** Largest angle outside a hinge's declared window, radians. Zero inside limits. */
-    val worstJointAngleViolationRad: Double,
-    /** Number of road wheels that did receive at least one link contact. */
-    val linkWheelContactCount: Int,
-    /** Number of wheels the side actually has, so a zero contact count is meaningful. */
+    /** Identifies the compiled topology this record belongs to. */
+    val topologyRevision: String,
+    /** Largest distance between the two anchors of one run end, metres. */
+    val endpointAnchorErrorM: Double,
+    /** Largest disagreement of one end's locked axis, radians. */
+    val endpointFrameAngleErrorRad: Double,
+    /** Largest residual along the second end's declared normal, metres. */
+    val normalResidualM: Double,
+    /** Tangential slip at the second end over the window, metres. Diagnostic, not "smaller is better". */
+    val tangentialSlipM: Double,
+    /** Rotation drift of a wheel body relative to its mount, radians. Must stay near zero. */
+    val lockedAxisDriftRad: Double,
+    /** Number of wheel bodies that received at least one run contact. */
+    val runWheelContactCount: Int,
+    /** Number of wheel bodies the side actually has, so a zero contact count is meaningful. */
     val wheelCount: Int,
-    /** Deepest link-into-wheel overlap observed, metres. Zero means no overlap. */
-    val worstLinkWheelPenetrationM: Double,
-    /** Number of links that received at least one terrain contact. */
-    val linkTerrainContactCount: Int,
-    /** Cross-link contacts within the same owner. Must stay zero. */
-    val linkLinkContactCount: Int,
-    /**
-     * Longitudinal slip between the first and last link over the window, metres.
-     * Absolute value; sign carries no meaning for a closed loop.
-     */
-    val longitudinalDriftM: Double,
+    /** Deepest run-into-wheel overlap observed, metres. Zero means no overlap. */
+    val runWheelPenetrationM: Double,
+    /** Number of runs that received at least one terrain contact. */
+    val runTerrainContactCount: Int,
+    /** Cross-run contacts within the same owner. Must stay zero. */
+    val runRunContactCount: Int,
+    /** Largest run displacement relative to its wheels over the window, metres. */
+    val runDriftM: Double,
     /** Per-station suspension travel, metres, in `CompiledWheel.index` order. */
     val suspensionTravelM: List<Double>,
     /** Per-station suspension row force, newtons, positive in compression. */
@@ -244,29 +474,32 @@ data class B2RunObservation(
     /** Chassis pitch change from its release pose, radians. */
     val chassisPitchRad: Double,
 ) {
-    val linkWheelCoverage: Double
-        get() = if (wheelCount <= 0) 0.0 else linkWheelContactCount.toDouble() / wheelCount
+    val runWheelCoverage: Double
+        get() = if (wheelCount <= 0) 0.0 else runWheelContactCount.toDouble() / wheelCount
 
-    /** True when the record came from a full-density chain, not a diagnostic shortcut. */
+    /** True when the record came from the full mechanism, not a diagnostic shortcut. */
     val isFullDensity: Boolean get() = density == B2ChainDensity.FULL
 
     /**
      * Structural problems with this record, not performance judgements.
      *
      * These catch the failures that make a run meaningless: a hand-sampled
-     * window, a chain that touches itself, a station list that does not match
+     * window, a mechanism that touches itself, a station list that does not match
      * the wheels, or a value that is not a number. Thresholds such as
-     * `trackRunDrift` are applied later, against frozen limits.
+     * `endpointAnchorError` are applied later, against frozen limits.
      */
-    fun problems(expectedStations: Int): List<String> = buildList {
+    fun problems(expectedStations: Int, expectedRuns: Int): List<String> = buildList {
         if (substeps < 0) add("substeps must not be negative: $substeps")
+        if (topologyRevision.isBlank()) add("topologyRevision must identify the compiled topology")
         if (wheelCount <= 0) add("wheelCount must be positive: $wheelCount")
-        if (linkWheelContactCount !in 0..wheelCount) {
-            add("linkWheelContactCount $linkWheelContactCount is outside 0..$wheelCount")
+        if (runWheelContactCount !in 0..wheelCount) {
+            add("runWheelContactCount $runWheelContactCount is outside 0..$wheelCount")
         }
-        if (linkTerrainContactCount < 0) add("linkTerrainContactCount must not be negative")
-        if (linkLinkContactCount != 0) {
-            add("same-owner links touched each other $linkLinkContactCount times")
+        if (runTerrainContactCount !in 0..expectedRuns) {
+            add("runTerrainContactCount $runTerrainContactCount is outside 0..$expectedRuns")
+        }
+        if (runRunContactCount != 0) {
+            add("same-owner runs touched each other $runRunContactCount times")
         }
         if (suspensionTravelM.size != expectedStations) {
             add("suspensionTravelM has ${suspensionTravelM.size} entries, expected $expectedStations")
@@ -275,17 +508,24 @@ data class B2RunObservation(
             add("suspensionForceN has ${suspensionForceN.size} entries, expected $expectedStations")
         }
         val nonFinite = listOf(
-            "worstPinGapM" to worstPinGapM,
-            "worstJointAngleViolationRad" to worstJointAngleViolationRad,
-            "worstLinkWheelPenetrationM" to worstLinkWheelPenetrationM,
-            "longitudinalDriftM" to longitudinalDriftM,
+            "endpointAnchorErrorM" to endpointAnchorErrorM,
+            "endpointFrameAngleErrorRad" to endpointFrameAngleErrorRad,
+            "normalResidualM" to normalResidualM,
+            "tangentialSlipM" to tangentialSlipM,
+            "lockedAxisDriftRad" to lockedAxisDriftRad,
+            "runWheelPenetrationM" to runWheelPenetrationM,
+            "runDriftM" to runDriftM,
             "chassisHeaveM" to chassisHeaveM,
             "chassisPitchRad" to chassisPitchRad,
         ).filter { !it.second.isFinite() }
         nonFinite.forEach { add("${it.first} is not finite: ${it.second}") }
-        if (worstJointAngleViolationRad < 0.0) add("joint angle violation cannot be negative")
-        if (worstLinkWheelPenetrationM < 0.0) add("penetration is reported as a non-negative depth")
-        if (longitudinalDriftM < 0.0) add("longitudinal drift is reported as a magnitude")
+        if (endpointAnchorErrorM < 0.0) add("anchor error is reported as a magnitude")
+        if (endpointFrameAngleErrorRad < 0.0) add("frame angle error is reported as a magnitude")
+        if (normalResidualM < 0.0) add("normal residual is reported as a magnitude")
+        if (tangentialSlipM < 0.0) add("tangential slip is reported as a magnitude")
+        if (lockedAxisDriftRad < 0.0) add("locked-axis drift is reported as a magnitude")
+        if (runWheelPenetrationM < 0.0) add("penetration is reported as a non-negative depth")
+        if (runDriftM < 0.0) add("run drift is reported as a magnitude")
         if (suspensionTravelM.any { !it.isFinite() }) add("suspensionTravelM contains a non-finite value")
         if (suspensionForceN.any { !it.isFinite() }) add("suspensionForceN contains a non-finite value")
     }
@@ -294,13 +534,16 @@ data class B2RunObservation(
     fun describe(): String = buildString {
         append("$side ")
         append("substeps=$substeps ")
-        append("pinGap=%.3e m ".format(worstPinGapM))
-        append("angleViolation=%.3e rad ".format(worstJointAngleViolationRad))
-        append("wheelContacts=$linkWheelContactCount/$wheelCount ")
-        append("penetration=%.4f m ".format(worstLinkWheelPenetrationM))
-        append("terrainLinks=$linkTerrainContactCount ")
-        append("linkLink=$linkLinkContactCount ")
-        append("drift=%.4f m ".format(longitudinalDriftM))
+        append("anchor=%.3e m ".format(endpointAnchorErrorM))
+        append("frame=%.3e rad ".format(endpointFrameAngleErrorRad))
+        append("normal=%.4f m ".format(normalResidualM))
+        append("slip=%.4f m ".format(tangentialSlipM))
+        append("axisDrift=%.3e rad ".format(lockedAxisDriftRad))
+        append("wheelContacts=$runWheelContactCount/$wheelCount ")
+        append("penetration=%.4f m ".format(runWheelPenetrationM))
+        append("terrainRuns=$runTerrainContactCount ")
+        append("runRun=$runRunContactCount ")
+        append("drift=%.4f m ".format(runDriftM))
         append("travel=${suspensionTravelM.map { "%.4f".format(it) }} ")
         append("force=${suspensionForceN.map { "%.0f".format(it) }} ")
         append("heave=%.4f m ".format(chassisHeaveM))
@@ -308,13 +551,19 @@ data class B2RunObservation(
     }
 }
 
-/** Which chain a fixture is allowed to claim. */
+/** Which mechanism a fixture is allowed to claim. */
 enum class B2ChainDensity {
-    /** The audited 79 links per side. The only density that can support a pass. */
+    /**
+     * The full compiled mechanism: every belt member and every run.
+     *
+     * Only this density can support a pass. It no longer means "79 links": the
+     * run topology has one run per adjacent member pair, so the audited count is
+     * `members.size` runs on a side.
+     */
     FULL,
 
     /**
-     * A deliberately reduced chain used to localise an instability.
+     * A deliberately reduced mechanism used to localise an instability.
      * A [B2ChainDensity.DIAGNOSTIC] run may be recorded but can never be cited
      * as B2 evidence for the vehicle.
      */
@@ -322,13 +571,13 @@ enum class B2ChainDensity {
 }
 
 /** Helper so a diagnostic run cannot accidentally be reported as full density. */
-fun B2ChainDensity.describe(linkCount: Int, auditedLinkCount: Int): String = when (this) {
+fun B2ChainDensity.describe(runCount: Int, auditedRunCount: Int): String = when (this) {
     B2ChainDensity.FULL -> {
-        require(linkCount == auditedLinkCount) {
-            "FULL density requires $auditedLinkCount links, got $linkCount"
+        require(runCount == auditedRunCount) {
+            "FULL density requires $auditedRunCount runs, got $runCount"
         }
-        "full density, $linkCount links"
+        "full density, $runCount runs"
     }
     B2ChainDensity.DIAGNOSTIC ->
-        "DIAGNOSTIC ONLY, $linkCount of $auditedLinkCount links; not acceptance evidence"
+        "DIAGNOSTIC ONLY, $runCount of $auditedRunCount runs; not acceptance evidence"
 }

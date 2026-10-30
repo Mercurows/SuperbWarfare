@@ -1,91 +1,98 @@
 package com.atsuishio.superbwarfare.physics.tracked
 
-import cn.solarmoon.spark_core.physics.track.TrackRunJointSpec
 import cn.solarmoon.spark_core.physics.track.TrackRunLinkShape
 import cn.solarmoon.spark_core.physics.track.TrackRunLinkSpec
 import cn.solarmoon.spark_core.physics.track.TrackRunSpec
-import net.minecraft.world.phys.Vec3
 
 /**
- * Turns one audited [CompiledTrackSide] into a generic core `TrackRunSpec`.
+ * Turns one audited [CompiledTrackSide] into generic core `TrackRunSpec`s.
  *
- * This is pure data: it creates no Bullet object and runs on any thread. The
- * runtime assembly, the wheel-to-link contacts and the drive coupling are later
- * stages; S1 only has to prove that the authored mechanism can be expressed as
- * a closed chain of links with the audited pitch, mass and hinge limit.
+ * This is pure data: it creates no Bullet object and runs on any thread.
  *
- * Link poses come from [TrackedAssemblyGeometry], the same list the static
- * interference audit measures. The adapter never re-derives a pose, so a shoe
- * that fails the audit cannot be assembled into a different, apparently valid
- * shape here.
+ * [compileRuns] is the current topology: one single-link run per adjacent wheel
+ * pair, with the two end constraints owned by the caller. A run has no internal
+ * joint because its two ends are constrained to wheel bodies, which is why the
+ * specs have exactly one link each and an empty joint list.
+ *
+ * The external constraints are **not** in these specs: `TrackRunSpec` must stay
+ * vehicle-agnostic and has no wheel concept. The caller reads
+ * `CompiledRun.first/second` and creates the revolute and the single-normal
+ * joint against the wheel bodies it owns.
+ *
+ * The legacy 79-shoe adapter lives in
+ * [com.atsuishio.superbwarfare.physics.tracked.legacy.LegacyShoeChainRunSpecs].
  */
 object TrackedRunSpecs {
+
     /**
-     * Build the physical run for [side].
+     * Build one single-link `TrackRunSpec` per adjacent wheel pair of [side].
      *
-     * Throws when the compiled side is not assemblable. A mechanism error is
-     * reported at compile time, and [TrackedCompilation.requireSpec] is the
-     * intended entry point; this check is the last line of defence.
+     * The adapter never re-derives geometry: position, rotation, extents and mass
+     * come straight from the compiled run, so a run that failed the audit cannot
+     * be assembled into a different, apparently valid shape here.
      */
-    fun compile(spec: TrackedVehicleSpec, side: TrackedSide): TrackRunSpec {
-        val compiled = spec.side(side)
-        val placements = compiled.placements
-        require(placements.size >= 4) { "$side loop has ${placements.size} links" }
-        require(!compiled.geometry.interpenetrates) {
-            "$side shoe/wheel assembly interpenetrates by " +
-                "${"%.2f".format(-compiled.geometry.minShoeWheelGapM * 1000.0)} mm at link " +
-                "${compiled.geometry.worstLinkIndex} / wheel ${compiled.geometry.worstWheelBone}"
-        }
+    fun compileRuns(spec: TrackedVehicleSpec, side: TrackedSide): List<TrackRunSpec> =
+        compileRuns(spec.side(side), spec.vehicleId, spec.drivetrain.friction)
 
-        val pitch = compiled.loop.pitch
-        val halfPitch = (pitch * 0.5).toFloat()
-        val halfExtents = compiled.linkTemplate.physical.halfExtents
-        val halfWidth = halfExtents.x.toFloat()
-        val halfThickness = halfExtents.y.toFloat()
-        val halfLength = halfExtents.z.toFloat()
-        require(halfWidth > 0f && halfThickness > 0f && halfLength > 0f) {
-            "$side link template has a degenerate extent: $halfExtents"
-        }
-
-        val halfAngleRad = Math.toRadians(spec.angularLimitDegrees).toFloat()
-        val count = placements.size
-
-        val links = ArrayList<TrackRunLinkSpec>(count)
-        val joints = ArrayList<TrackRunJointSpec>(count)
-        for (placement in placements) {
-            val boxOffset = placement.boxCenterInPinFrame
-            links += TrackRunLinkSpec(
-                massKg = spec.linkMassKg.toFloat(),
-                shape = TrackRunLinkShape.Box(halfExtents),
-                position = placement.center,
-                rotationX = placement.rotation.x,
-                rotationY = placement.rotation.y,
-                rotationZ = placement.rotation.z,
-                rotationW = placement.rotation.w,
+    /**
+     * Compile one already-built side.
+     *
+     * This overload exists so a diagnostic fixture can use the **same** adapter
+     * as production instead of constructing `TrackRunSpec` by hand. The side is
+     * still the complete input: position, rotation, extents and mass are read
+     * from its runs, never from the caller.
+     */
+    fun compileRuns(
+        compiled: CompiledTrackSide,
+        vehicleId: String,
+        friction: Double,
+    ): List<TrackRunSpec> {
+        val side = compiled.side
+        require(compiled.runs.isNotEmpty()) { "$side has no compiled belt runs" }
+        return compiled.runs.map { run ->
+            val half = run.halfExtents
+            require(half.x > 0.0 && half.y > 0.0 && half.z > 0.0) {
+                "$side run ${run.index} has a degenerate extent: $half"
+            }
+            require(run.massKg > 0.0) { "$side run ${run.index} has no mass" }
+            TrackRunSpec(
+                name = "${vehicleId}_track_${side.name.lowercase()}_run_${run.index}",
+                links = listOf(
+                    TrackRunLinkSpec(
+                        massKg = run.massKg.toFloat(),
+                        shape = TrackRunLinkShape.Box(half),
+                        position = run.center,
+                        rotationX = run.rotation.x,
+                        rotationY = run.rotation.y,
+                        rotationZ = run.rotation.z,
+                        rotationW = run.rotation.w,
+                    ),
+                ),
+                joints = emptyList(),
+                collisionGroup = cn.solarmoon.spark_core.physics.body.CollisionGroups.TRACK_LINK,
+                // A run may touch its own wheels/chassis and the per-vehicle
+                // local terrain mesh. It must never touch raw block AABB
+                // terrain.
+                collideWithGroups = TrackedTerrainCollision.TERRAIN_MESH or
+                    cn.solarmoon.spark_core.physics.body.CollisionGroups.WHEEL or
+                    cn.solarmoon.spark_core.physics.body.CollisionGroups.CHASSIS,
+                collideWithOwnerGroups = cn.solarmoon.spark_core.physics.body.CollisionGroups.WHEEL or
+                    cn.solarmoon.spark_core.physics.body.CollisionGroups.CHASSIS or
+                    TrackedTerrainCollision.TERRAIN_MESH,
+                friction = friction.toFloat(),
+                explicitGravity = null,
             )
-            // The body origin sits at the shoe box centre, so the pins must be
-            // expressed relative to that offset, not to the pin-frame origin.
-            joints += TrackRunJointSpec(
-                previousIndex = placement.index,
-                nextIndex = (placement.index + 1) % count,
-                pivotInPrevious = Vec3(0.0, 0.0, halfPitch.toDouble()).subtract(boxOffset),
-                pivotInNext = Vec3(0.0, 0.0, -halfPitch.toDouble()).subtract(boxOffset),
-                axis = 0,
-                halfAngleRad = halfAngleRad,
-            )
         }
-
-        return TrackRunSpec(
-            name = "${spec.vehicleId}_track_${side.name.lowercase()}",
-            links = links,
-            joints = joints,
-            friction = spec.drivetrain.friction.toFloat(),
-            explicitGravity = null,
-        )
     }
 
-    /** True when the assembled belt fits the authored hinge limit. */
-    fun wrapFits(spec: TrackedVehicleSpec, side: TrackedSide): Boolean =
-        TrackedGeometryAudit.maxJointAngleDegrees(spec.side(side).placements) <=
-            spec.angularLimitDegrees + 1.0e-6
+    /**
+     * Total mass of every run on [side] as the core adapter sees it, kg.
+     *
+     * This is the `Float` total, which can differ from the compiled `Double`
+     * budget by a few micrograms. Callers that need the authored budget must use
+     * [CompiledTrackSide.runMassTotalKg]; this value exists to prove the adapter
+     * did not drop or duplicate a run.
+     */
+    fun runMassTotalKg(spec: TrackedVehicleSpec, side: TrackedSide): Double =
+        compileRuns(spec, side).sumOf { it.links.first().massKg.toDouble() }
 }

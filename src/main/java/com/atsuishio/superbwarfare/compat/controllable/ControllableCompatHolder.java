@@ -61,4 +61,20 @@ public final class ControllableCompatHolder {
     public static float leftTrigger() {
         return isLoaded() ? ControllableCompatHolderInner.leftTrigger() : 0F;
     }
+
+    /**
+     * 把地形线框开关登记进 Controllable 自己的按键列表。
+     *
+     * 只改 Minecraft {@code KeyMapping} 不会出现在手柄绑定界面里。
+     */
+    public static void registerClientBindings() {
+        if (isLoaded()) {
+            ControllableCompatHolderInner.registerBulletTerrainBinding();
+        }
+    }
+
+    /** 手柄绑定的地形线框按钮是否按住。未安装 Controllable 时为 false。 */
+    public static boolean bulletTerrainDown() {
+        return isLoaded() && ControllableCompatHolderInner.bulletTerrainDown();
+    }
 }

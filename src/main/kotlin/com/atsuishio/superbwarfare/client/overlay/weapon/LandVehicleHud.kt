@@ -225,7 +225,9 @@ object LandVehicleHud {
                 mc.font,
                 Component.literal(
                     format0D(
-                        vehicle.deltaMovement.dot(vehicle.getViewVector(partialTick)) * 72,
+                        com.atsuishio.superbwarfare.physics.VehiclePhysics.displayKmh(vehicle)
+                            .takeIf { it.isFinite() }
+                            ?: vehicle.deltaMovement.dot(vehicle.getViewVector(partialTick)) * 72,
                         " km/h"
                     )
                 ),

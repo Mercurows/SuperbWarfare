@@ -1014,6 +1014,7 @@
   "key.superbwarfare.active_thermal_imaging": "Active Thermal Imaging",
   "key.superbwarfare.loiter_config": "Auto-Orbit Config",
   "key.superbwarfare.toggle_tactical_map": "Open Tactical Map",
+  "key.superbwarfare.toggle_bullet_terrain": "Toggle Bullet Terrain Lines",
   "key.superbwarfare.change_seat": "Change Seat (+Index)",
 
   "effect.superbwarfare.shock": "Shock",

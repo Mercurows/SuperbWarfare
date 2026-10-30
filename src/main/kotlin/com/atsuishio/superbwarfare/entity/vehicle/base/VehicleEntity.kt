@@ -2825,7 +2825,9 @@ open class VehicleEntity(pEntityType: EntityType<*>, pLevel: Level) : Entity(pEn
         }
 
         if (level().isClientSide) {
-            absoluteSpeedLerp = Mth.lerp(0.2, absoluteSpeedLerp, positionO.vectorTo(position()).length())
+            val physicsSpeed = com.atsuishio.superbwarfare.physics.VehiclePhysics.speedBlocksPerTick(this)
+            val sample = if (physicsSpeed.isFinite()) physicsSpeed else positionO.vectorTo(position()).length()
+            absoluteSpeedLerp = Mth.lerp(0.2, absoluteSpeedLerp, sample)
             absoluteSpeed = absoluteSpeedLerp
 
             // The Spark body already owns the chassis attitude. Integrating a

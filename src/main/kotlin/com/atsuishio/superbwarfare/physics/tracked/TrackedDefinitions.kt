@@ -55,6 +55,13 @@ data class TrackedVehicleDefinition(
 
     @SerialName("Drivetrain")
     var drivetrain: TrackDrivetrainDefinition = TrackDrivetrainDefinition(),
+
+    /**
+     * Local mesh terrain policy. This never selects raw AABB collision; it
+     * only controls whether known rises may be replaced by Bullet ramps.
+     */
+    @SerialName("Terrain")
+    var terrain: TrackedTerrainDefinition = TrackedTerrainDefinition(),
 ) {
     fun side(side: TrackedSide): TrackSideDefinition = when (side) {
         TrackedSide.LEFT -> left
@@ -130,9 +137,51 @@ data class TrackSideDefinition(
     @SerialName("Suspension")
     var suspension: TrackSuspensionDefinition = TrackSuspensionDefinition(),
 
+    /**
+     * Explicit belt traversal order, one wheel bone per entry, cyclic.
+     *
+     * A run is created between every adjacent pair **including last to first**,
+     * so the order decides the physical topology. It is never derived from a Z
+     * sort or from the wheel roles: a real belt can visit an idler, the road
+     * wheels and the sprocket in an order only the vehicle knows.
+     *
+     * Required: a missing order is a compile error, because a topology that is
+     * only implied cannot be audited.
+     */
+    @SerialName("BeltOrder")
+    var beltOrder: MutableList<String> = mutableListOf(),
+
+    /**
+     * Mass budget for this side's belt runs, kg.
+     *
+     * Under mass option A this is the old shoe budget moved onto the runs, so the
+     * vehicle total does not change when the topology does. Zero means "not
+     * authored"; the compiler then falls back to `LinkMass * LinkCount` and warns,
+     * because a run budget must not silently follow a shoe count.
+     */
+    @SerialName("RunMassBudgetKg")
+    var runMassBudget: Double = 0.0,
+
     @SerialName("Wheels")
     var wheels: MutableList<TrackWheelDefinition> = mutableListOf(),
 )
+
+/**
+ * Which side of a wheel the belt wraps around.
+ *
+ * The belt runs outside the end wheels and under the road wheels, so the
+ * envelope is not "always outside": an inside wrap bends the visible path the
+ * other way and the physical run sits on the opposite side. It must be
+ * authored per wheel.
+ */
+@Serializable
+enum class TrackWrap {
+    @SerialName("Outside")
+    OUTSIDE,
+
+    @SerialName("Inside")
+    INSIDE,
+}
 
 /**
  * Wheel roles. The physics layer never infers a role from a bone name, an index
@@ -181,6 +230,17 @@ data class TrackWheelDefinition(
     @SerialName("Tensioner")
     var tensioner: TrackTensionerDefinition? = null,
 
+    /**
+     * Which side of this wheel the belt wraps around.
+     *
+     * Null means "not authored". An approved vehicle states it for every belt
+     * member; the validator rejects a missing value rather than silently treating
+     * it as outside, because an inside wrap puts the belt on the other side of the
+     * wheel.
+     */
+    @SerialName("Wrap")
+    var wrap: TrackWrap? = null,
+
     /** Mass of this wheel body in kilograms. */
     @SerialName("Mass")
     var mass: Double = 0.0,
@@ -223,6 +283,30 @@ data class TrackSuspensionDefinition(
     @SerialName("Frequency")
     var frequency: Double = 2.2,
 
+    /**
+     * Direct spring rate, N/m. MCSP authors `Spring` as a direct joint motor
+     * stiffness instead of deriving it from a frequency.
+     *
+     * Null keeps this project's frequency/damping-ratio model. When present it
+     * wins over [frequency] for the force law, and the effective frequency is
+     * derived from this rate and the station mass rather than reported as the
+     * authored nominal value. That keeps the audit from claiming a frequency
+     * the spring does not have.
+     */
+    @SerialName("Spring")
+    var springNPerM: Double? = null,
+
+    /**
+     * Direct viscous damping coefficient, N·s/m. MCSP has one `Damper` value;
+     * SBW's split compression/rebound model stays the default.
+     *
+     * Null derives both rates from critical damping and the two ratios. When
+     * present it is used for both directions, because a single authored number
+     * cannot honestly be reported as two different ratios.
+     */
+    @SerialName("Damper")
+    var damperNsPerM: Double? = null,
+
     /** Dimensionless compression damping ratio. */
     @SerialName("CompressionDampingRatio")
     var compressionDampingRatio: Double = 0.65,
@@ -262,6 +346,12 @@ data class TrackSuspensionOverride(
     @SerialName("Frequency")
     var frequency: Double? = null,
 
+    @SerialName("Spring")
+    var springNPerM: Double? = null,
+
+    @SerialName("Damper")
+    var damperNsPerM: Double? = null,
+
     @SerialName("CompressionDampingRatio")
     var compressionDampingRatio: Double? = null,
 
@@ -284,6 +374,8 @@ data class TrackSuspensionOverride(
         travelUp = travelUp ?: base.travelUp,
         travelDown = travelDown ?: base.travelDown,
         frequency = frequency ?: base.frequency,
+        springNPerM = springNPerM ?: base.springNPerM,
+        damperNsPerM = damperNsPerM ?: base.damperNsPerM,
         compressionDampingRatio = compressionDampingRatio ?: base.compressionDampingRatio,
         reboundDampingRatio = reboundDampingRatio ?: base.reboundDampingRatio,
         maxForce = maxForce ?: base.maxForce,
@@ -338,4 +430,49 @@ data class TrackDrivetrainDefinition(
 
     @SerialName("Friction")
     var friction: Double = 0.8,
+
+    /**
+     * Longitudinal acceleration the drive may command, m/s².
+     *
+     * MCSP's `ChassisDrivetrain.Row.Accel` is a normalised-per-second slew bound
+     * on the slot target, not a force. When null the controller keeps its
+     * existing immediate target so an unauthored vehicle does not silently
+     * change behaviour. This is not a confirmed 99A value.
+     */
+    @SerialName("Accel")
+    var accelMps2: Double? = null,
+
+    /** Longitudinal braking/deceleration slew bound, m/s². See [accelMps2]. */
+    @SerialName("Brake")
+    var brakeMps2: Double? = null,
+
+    /**
+     * Extra opposing-side speed at full steer, m/s.
+     *
+     * MCSP computes `target = throttle * maxSpeed ± steer * pivotSpeed` before
+     * clamping. Null means "use [differential] exactly as before".
+     */
+    @SerialName("PivotSpeed")
+    var pivotSpeedMps: Double? = null,
+
+    /**
+     * Seconds for the steering lever to travel its full 0..1 range.
+     *
+     * MCSP advances the lever by at most `dt / steerTime`. Null keeps the
+     * current instantaneous lever.
+     */
+    @SerialName("SteerTime")
+    var steerTimeSeconds: Double? = null,
+
+    /**
+     * Feed measured longitudinal traction back into the contact target while a
+     * side is slipping, as MCSP does with `slotGrip = |traction|`.
+     *
+     * Off by default: a vehicle must opt in after its traction observation has
+     * been calibrated, because enabling it on an unaudited mechanism can hide a
+     * real contact problem. When disabled the controller still commands the
+     * authored target; the measured traction remains available for diagnostics.
+     */
+    @SerialName("TractionLimit")
+    var tractionLimit: Boolean = false,
 )

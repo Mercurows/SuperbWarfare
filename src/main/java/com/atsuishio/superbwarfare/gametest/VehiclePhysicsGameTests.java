@@ -62,21 +62,35 @@ public final class VehiclePhysicsGameTests {
         }
     }
 
-    @GameTest(template = "empty", timeoutTicks = 200)
-    public static void trackedVehiclesStayOutsidePhysicsUntilTheTrackRunRuntimeExists(GameTestHelper helper) {
+    /**
+     * S2 split: the vehicle that owns a compiled running gear enters the physics
+     * path, and every other tracked vehicle stays out.
+     *
+     * This replaces the D1 blanket assertion. Turning 99A on must not quietly
+     * drag BMP-2 or T-90A in with it, because neither has a compiled tracked
+     * definition yet.
+     */
+    @GameTest(template = "empty", timeoutTicks = 300)
+    public static void onlyTheVehicleWithACompiledTrackedRuntimeEntersPhysics(GameTestHelper helper) {
+        // Centres at x = 0, 8 and 16. empty.nbt spaces parallel tests by about
+        // 36 blocks, so a floor out to x=144 would land in the next cell.
         BlockPos floor = helper.absolutePos(BlockPos.ZERO);
-        for (int x = -16; x <= 144; x++) for (int z = -8; z <= 8; z++)
+        for (int x = -4; x <= 22; x++) for (int z = -6; z <= 6; z++)
             helper.getLevel().setBlock(floor.offset(x, 0, z), Blocks.STONE.defaultBlockState(), 3);
-        List<VehicleEntity> vehicles = new ArrayList<>();
-        vehicles.add(spawn(helper, ModEntities.BMP_2.get(), 2, 0));
-        vehicles.add(spawn(helper, ModEntities.ZTZ_99A.get(), 4, 0));
-        vehicles.add(spawn(helper, ModEntities.T_90A.get(), 5, 0));
+        VehicleEntity wired = spawn(helper, ModEntities.ZTZ_99A.get(), 1, 0);
+        List<VehicleEntity> parked = new ArrayList<>();
+        parked.add(spawn(helper, ModEntities.BMP_2.get(), 0, 0));
+        parked.add(spawn(helper, ModEntities.T_90A.get(), 2, 0));
         helper.startSequence().thenIdle(40).thenExecute(() -> {
-            for (VehicleEntity vehicle : vehicles) {
+            helper.assertTrue(VehiclePhysics.INSTANCE.isManaged(wired),
+                "ZTZ-99A is registered as TRACK_RUN and must enter the physics path");
+            helper.assertTrue(VehiclePhysics.INSTANCE.hasBody(wired),
+                "ZTZ-99A must receive a Spark chassis body");
+            for (VehicleEntity vehicle : parked) {
                 helper.assertFalse(VehiclePhysics.INSTANCE.isManaged(vehicle),
-                    "Tracked vehicle must stay outside physics until TrackRun exists: " + vehicle.getType());
+                    "Tracked vehicle without a compiled definition must stay outside physics: " + vehicle.getType());
                 helper.assertFalse(VehiclePhysics.INSTANCE.hasBody(vehicle),
-                    "Tracked vehicle must not receive a Spark body: " + vehicle.getType());
+                    "Tracked vehicle without a compiled definition must not receive a Spark body: " + vehicle.getType());
             }
         }).thenSucceed();
     }

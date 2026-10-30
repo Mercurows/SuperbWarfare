@@ -1,6 +1,8 @@
 package com.atsuishio.superbwarfare.network
 
 import com.atsuishio.superbwarfare.network.message.receive.CapabilitySyncMessage
+import com.atsuishio.superbwarfare.network.message.receive.TrackedCollisionDebugMessage
+import com.atsuishio.superbwarfare.network.message.receive.TrackedTerrainDebugMeshMessage
 import com.atsuishio.superbwarfare.serialization.ByteBufDecoder
 import com.atsuishio.superbwarfare.serialization.ByteBufEncoder
 import kotlinx.serialization.serializer
@@ -60,4 +62,32 @@ private fun registerByteBufPayloads() {
     val handler = BiConsumer<CapabilitySyncMessage, PayloadContext> { msg, context -> msg.handleInternal(msg, context) }
 
     NetworkRegistry.playToClient(CapabilitySyncMessage::class.java, encoder, decoder, handler)
+
+    val terrainEncoder = BiConsumer<TrackedTerrainDebugMeshMessage, FriendlyByteBuf> { value, buf -> value.writeTo(buf) }
+    val terrainDecoder = Function<FriendlyByteBuf, TrackedTerrainDebugMeshMessage> { buf ->
+        TrackedTerrainDebugMeshMessage.readFrom(buf)
+    }
+    val terrainHandler = BiConsumer<TrackedTerrainDebugMeshMessage, PayloadContext> { msg, context ->
+        msg.handleInternal(msg, context)
+    }
+    NetworkRegistry.playToClient(
+        TrackedTerrainDebugMeshMessage::class.java,
+        terrainEncoder,
+        terrainDecoder,
+        terrainHandler,
+    )
+
+    val shapeEncoder = BiConsumer<TrackedCollisionDebugMessage, FriendlyByteBuf> { value, buf -> value.writeTo(buf) }
+    val shapeDecoder = Function<FriendlyByteBuf, TrackedCollisionDebugMessage> { buf ->
+        TrackedCollisionDebugMessage.readFrom(buf)
+    }
+    val shapeHandler = BiConsumer<TrackedCollisionDebugMessage, PayloadContext> { msg, context ->
+        msg.handleInternal(msg, context)
+    }
+    NetworkRegistry.playToClient(
+        TrackedCollisionDebugMessage::class.java,
+        shapeEncoder,
+        shapeDecoder,
+        shapeHandler,
+    )
 }

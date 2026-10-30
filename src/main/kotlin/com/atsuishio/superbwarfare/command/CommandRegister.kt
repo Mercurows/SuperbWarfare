@@ -25,6 +25,7 @@ object CommandRegister {
             add(SUBWEAPON_COMMAND)
             add(DATA_COMMAND)
             add(RADIATION_COMMAND)
+            add(SBWTEST_COMMAND)
         }
 
         val result = event.dispatcher.register(command as LiteralArgumentBuilder<CommandSourceStack>)

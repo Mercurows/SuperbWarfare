@@ -42,6 +42,7 @@ class TrackedDefinitionValidationTest {
                 mass = 400.0,
                 radius = 0.351562,
                 halfWidth = 0.2,
+                wrap = TrackWrap.OUTSIDE,
             )
             for (index in 1..6) {
                 definition.wheels += TrackWheelDefinition(
@@ -51,6 +52,7 @@ class TrackedDefinitionValidationTest {
                     mass = 900.0,
                     radius = 0.53125,
                     halfWidth = 0.2,
+                    wrap = TrackWrap.OUTSIDE,
                 )
             }
             definition.wheels += TrackWheelDefinition(
@@ -60,7 +62,10 @@ class TrackedDefinitionValidationTest {
                 mass = 400.0,
                 radius = 0.351562,
                 halfWidth = 0.2,
+                wrap = TrackWrap.OUTSIDE,
             )
+            definition.beltOrder = definition.wheels.map { it.bone }.toMutableList()
+            definition.runMassBudget = 1422.0
         }
         return base
     }
@@ -169,6 +174,38 @@ class TrackedDefinitionValidationTest {
         assertTrue(errors(definition().also { it.drivetrain.maxSpeed = Double.NaN }).isNotEmpty())
         assertTrue(errors(definition().also { it.drivetrain.rollingResistance = 2.0 }).isNotEmpty())
         assertTrue(errors(definition().also { it.drivetrain.friction = -1.0 }).isNotEmpty())
+    }
+
+    @Test
+    fun mcspStyleResponseBoundsAreValidatedButOptional() {
+        // Absent is the historical contract and must stay valid.
+        assertEquals(emptyList<TrackedAuditFinding>(), errors(definition()))
+        assertTrue(errors(definition().also { it.drivetrain.accelMps2 = -1.0 }).isNotEmpty())
+        assertTrue(errors(definition().also { it.drivetrain.brakeMps2 = Double.NaN }).isNotEmpty())
+        assertTrue(errors(definition().also { it.drivetrain.pivotSpeedMps = -0.1 }).isNotEmpty())
+        assertTrue(errors(definition().also { it.drivetrain.steerTimeSeconds = 0.0 }).isNotEmpty())
+        // MCSP's Accel/Brake are strictly positive rates. Zero is not
+        // "unlimited"; it is ambiguous and must be rejected. PivotSpeed may be
+        // zero because a vehicle without a neutral-turn capability is valid.
+        assertTrue(errors(definition().also { it.drivetrain.accelMps2 = 0.0 }).isNotEmpty())
+        assertTrue(errors(definition().also { it.drivetrain.brakeMps2 = 0.0 }).isNotEmpty())
+        assertEquals(
+            emptyList<TrackedAuditFinding>(),
+            errors(definition().also { it.drivetrain.pivotSpeedMps = 0.0 }),
+        )
+    }
+
+    @Test
+    fun directSpringAndDamperAreValidatedButOptional() {
+        assertTrue(errors(definition().also { it.left.suspension.springNPerM = 0.0 }).isNotEmpty())
+        assertTrue(errors(definition().also { it.left.suspension.damperNsPerM = -1.0 }).isNotEmpty())
+        assertEquals(
+            emptyList<TrackedAuditFinding>(),
+            errors(definition().also {
+                it.left.suspension.springNPerM = 320_000.0
+                it.left.suspension.damperNsPerM = 0.0
+            }),
+        )
     }
 
     @Test

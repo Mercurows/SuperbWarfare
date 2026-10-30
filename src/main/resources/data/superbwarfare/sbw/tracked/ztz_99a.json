@@ -26,14 +26,10 @@
         "Bone": "wheelL0",
         "Role": "IdlerGuide",
         "LoadShare": 0.0,
-        "Tensioner": {
-          "Travel": 0.1,
-          "Preload": 20000.0,
-          "Damping": 8000.0
-        },
         "Mass": 400.0,
         "Radius": 0.351562,
-        "HalfWidth": 0.2
+        "HalfWidth": 0.2,
+        "Wrap": "Outside"
       },
       {
         "Bone": "wheelL1",
@@ -41,7 +37,8 @@
         "LoadShare": 1.0,
         "Mass": 900.0,
         "Radius": 0.53125,
-        "HalfWidth": 0.2
+        "HalfWidth": 0.2,
+        "Wrap": "Outside"
       },
       {
         "Bone": "wheelL2",
@@ -49,7 +46,8 @@
         "LoadShare": 1.0,
         "Mass": 900.0,
         "Radius": 0.53125,
-        "HalfWidth": 0.2
+        "HalfWidth": 0.2,
+        "Wrap": "Outside"
       },
       {
         "Bone": "wheelL3",
@@ -57,7 +55,8 @@
         "LoadShare": 1.0,
         "Mass": 900.0,
         "Radius": 0.53125,
-        "HalfWidth": 0.2
+        "HalfWidth": 0.2,
+        "Wrap": "Outside"
       },
       {
         "Bone": "wheelL4",
@@ -65,7 +64,8 @@
         "LoadShare": 1.0,
         "Mass": 900.0,
         "Radius": 0.53125,
-        "HalfWidth": 0.2
+        "HalfWidth": 0.2,
+        "Wrap": "Outside"
       },
       {
         "Bone": "wheelL5",
@@ -73,7 +73,8 @@
         "LoadShare": 1.0,
         "Mass": 900.0,
         "Radius": 0.53125,
-        "HalfWidth": 0.2
+        "HalfWidth": 0.2,
+        "Wrap": "Outside"
       },
       {
         "Bone": "wheelL6",
@@ -81,7 +82,8 @@
         "LoadShare": 1.0,
         "Mass": 900.0,
         "Radius": 0.53125,
-        "HalfWidth": 0.2
+        "HalfWidth": 0.2,
+        "Wrap": "Outside"
       },
       {
         "Bone": "wheelL7",
@@ -89,9 +91,21 @@
         "LoadShare": 0.0,
         "Mass": 400.0,
         "Radius": 0.351562,
-        "HalfWidth": 0.2
+        "HalfWidth": 0.2,
+        "Wrap": "Outside"
       }
-    ]
+    ],
+    "BeltOrder": [
+      "wheelL0",
+      "wheelL1",
+      "wheelL2",
+      "wheelL3",
+      "wheelL4",
+      "wheelL5",
+      "wheelL6",
+      "wheelL7"
+    ],
+    "RunMassBudgetKg": 1422.0
   },
   "Right": {
     "LinkTemplateBone": "trackRotR0",
@@ -109,14 +123,10 @@
         "Bone": "wheelR0",
         "Role": "IdlerGuide",
         "LoadShare": 0.0,
-        "Tensioner": {
-          "Travel": 0.1,
-          "Preload": 20000.0,
-          "Damping": 8000.0
-        },
         "Mass": 400.0,
         "Radius": 0.351562,
-        "HalfWidth": 0.2
+        "HalfWidth": 0.2,
+        "Wrap": "Outside"
       },
       {
         "Bone": "wheelR1",
@@ -124,7 +134,8 @@
         "LoadShare": 1.0,
         "Mass": 900.0,
         "Radius": 0.53125,
-        "HalfWidth": 0.2
+        "HalfWidth": 0.2,
+        "Wrap": "Outside"
       },
       {
         "Bone": "wheelR2",
@@ -132,7 +143,8 @@
         "LoadShare": 1.0,
         "Mass": 900.0,
         "Radius": 0.53125,
-        "HalfWidth": 0.2
+        "HalfWidth": 0.2,
+        "Wrap": "Outside"
       },
       {
         "Bone": "wheelR3",
@@ -140,7 +152,8 @@
         "LoadShare": 1.0,
         "Mass": 900.0,
         "Radius": 0.53125,
-        "HalfWidth": 0.2
+        "HalfWidth": 0.2,
+        "Wrap": "Outside"
       },
       {
         "Bone": "wheelR4",
@@ -148,7 +161,8 @@
         "LoadShare": 1.0,
         "Mass": 900.0,
         "Radius": 0.53125,
-        "HalfWidth": 0.2
+        "HalfWidth": 0.2,
+        "Wrap": "Outside"
       },
       {
         "Bone": "wheelR5",
@@ -156,7 +170,8 @@
         "LoadShare": 1.0,
         "Mass": 900.0,
         "Radius": 0.53125,
-        "HalfWidth": 0.2
+        "HalfWidth": 0.2,
+        "Wrap": "Outside"
       },
       {
         "Bone": "wheelR6",
@@ -164,7 +179,8 @@
         "LoadShare": 1.0,
         "Mass": 900.0,
         "Radius": 0.53125,
-        "HalfWidth": 0.2
+        "HalfWidth": 0.2,
+        "Wrap": "Outside"
       },
       {
         "Bone": "wheelR7",
@@ -172,9 +188,31 @@
         "LoadShare": 0.0,
         "Mass": 400.0,
         "Radius": 0.351562,
-        "HalfWidth": 0.2
+        "HalfWidth": 0.2,
+        "Wrap": "Outside"
       }
-    ]
+    ],
+    "BeltOrder": [
+      "wheelR0",
+      "wheelR1",
+      "wheelR2",
+      "wheelR3",
+      "wheelR4",
+      "wheelR5",
+      "wheelR6",
+      "wheelR7"
+    ],
+    "RunMassBudgetKg": 1422.0
+  },
+  "Terrain": {
+    "BulletRamps": {
+      "Enabled": true,
+      "MaxClimb": 1.0,
+      "Step": 3.0
+    },
+    "WindowRadius": 6,
+    "VerticalAbove": 3,
+    "VerticalBelow": 4
   },
   "Drivetrain": {
     "MaxDriveTorque": 160000.0,

@@ -21,6 +21,9 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec3
+import cn.solarmoon.spark_core.physics.level.PhysicsLevel
+import cn.solarmoon.spark_core.util.Subscription
+import net.minecraftforge.event.TickEvent
 import net.minecraftforge.event.entity.EntityJoinLevelEvent
 import net.minecraftforge.event.entity.EntityLeaveLevelEvent
 import net.minecraftforge.event.level.LevelEvent
@@ -64,6 +67,17 @@ object VehiclePhysics {
 
     internal val bodies = IdentityTable<VehicleBody>()
     private val saved = IdentityTable<RigidState>()
+    /**
+     * Pose parked when an entity leaves because its chunk unloaded.
+     *
+     * Chunk storage can call [save] after [EntityLeaveLevelEvent] has already
+     * dropped the live body. Keyed by UUID so the leaving instance can be
+     * collected; [begin] drops a leftover so a later incarnation does not
+     * reuse it.
+     */
+    private val chunkUnloadState = ConcurrentHashMap<java.util.UUID, ChunkUnloadSnapshot>()
+    /** One shutdown participant per physics level. It runs before native teardown. */
+    private val shutdownParticipants = ConcurrentHashMap<PhysicsLevel, Subscription>()
     private val pending = IdentityTable<RigidState>()
     private val pendingRender = IdentityTable<VehiclePhysicsRenderState>()
     private val inputSequences = IdentityTable<Long>()
@@ -76,6 +90,27 @@ object VehiclePhysics {
         java.util.Collections.synchronizedSet(java.util.Collections.newSetFromMap(java.util.IdentityHashMap()))
     private val writing: MutableSet<Entity> =
         java.util.Collections.synchronizedSet(java.util.Collections.newSetFromMap(java.util.IdentityHashMap()))
+    /** Bodies whose native teardown failed or is still running after the entity left. */
+    private val closing: MutableSet<VehicleBody> =
+        java.util.Collections.synchronizedSet(java.util.Collections.newSetFromMap(java.util.IdentityHashMap()))
+    /**
+     * Level of each admitted body, captured on the game thread.
+     *
+     * Shutdown participants run on the physics thread and must not read
+     * `entity.level()` there. Identity keys keep two logical sides apart.
+     */
+    private val bodyLevels: MutableMap<VehicleBody, net.minecraft.world.level.Level> =
+        java.util.Collections.synchronizedMap(java.util.IdentityHashMap())
+    /**
+     * Last close future per UUID.
+     *
+     * A removed entity is no longer in [bodies], so callers that must observe
+     * "native objects are actually gone" need the future rather than the
+     * management flag. The flag is cleared before teardown finishes.
+     */
+    private val closeFutures = ConcurrentHashMap<java.util.UUID, java.util.concurrent.CompletableFuture<Void>>()
+    /** Upper bound for retained close futures; only completed ones are pruned. */
+    private const val CLOSE_FUTURE_RETENTION = 256
     private var nextInput = 0L
 
     fun isWriting(entity: Entity) = entity in capturing || entity in writing
@@ -83,12 +118,65 @@ object VehiclePhysics {
     fun isManaged(entity: Entity) = bodies.containsKey(entity)
     /** True only after the Spark body has been inserted into the physics space. */
     fun hasBody(entity: Entity) = bodies[entity]?.ready == true
+    /** Running gear for a tracked entity, or null before it is assembled. */
+    fun trackedRuntime(entity: Entity) = bodies[entity]?.tracked
+    /**
+     * Last tracked drive command published by the entity control path.
+     *
+     * Read-only diagnostic: this exposes what `control()` handed to the running
+     * gear so a test can assert the real input path reached it. It does not
+     * apply, queue or modify a command.
+     */
+    fun driveCommand(entity: Entity): com.atsuishio.superbwarfare.physics.tracked.TrackedVehicleRuntime.DriveCommand? =
+        bodies[entity]?.trackedCommand
+    /**
+     * Teardown of a removed entity, or null when it was never closed.
+     *
+     * Use this to assert "owned bodies are gone". [isManaged] becomes false
+     * before the queued runtime and hull removal tasks have run.
+     */
+    fun closeFuture(entity: Entity): java.util.concurrent.CompletableFuture<Void>? = closeFutures[entity.uuid]
+
+    /**
+     * Remember the teardown of [uuid], keeping the table bounded.
+     *
+     * Completed futures stay readable so a caller can assert "the native
+     * objects are gone" after the entity is removed. They are pruned once the
+     * table grows past [CLOSE_FUTURE_RETENTION] entries.
+     */
+    private fun rememberClose(uuid: java.util.UUID, future: java.util.concurrent.CompletableFuture<Void>) {
+        closeFutures[uuid] = future
+        if (closeFutures.size <= CLOSE_FUTURE_RETENTION) return
+        val stale = closeFutures.entries.filter { it.value.isDone }.map { it.key }
+        stale.take(closeFutures.size - CLOSE_FUTURE_RETENTION).forEach { closeFutures.remove(it) }
+    }
     fun sequence(entity: Entity) = inputSequences[entity] ?: 0L
     fun diagnostic(entity: Entity): VehiclePhysicsDiagnostic? = bodies[entity]?.diagnostic
     fun observeStability(entity: Entity, steps: Int) { bodies[entity]?.startStabilityObservation(steps) }
     fun stabilityObservation(entity: Entity): VehicleStabilityObservation? = bodies[entity]?.stabilityObservation
     fun renderState(entity: Entity): VehiclePhysicsRenderState = bodies[entity]
         ?.takeIf { it.ready }?.renderState ?: VehiclePhysicsRenderState()
+
+    /**
+     * Signed speed along the entity look direction, kilometres per hour.
+     *
+     * Uses the synced Bullet velocity. Entity position deltas are not reliable
+     * here: [begin] applies the physics pose before `positionO` is sampled, so a
+     * moving vehicle can otherwise report zero.
+     */
+    fun displayKmh(entity: Entity): Double {
+        val velocity = bodies[entity]?.takeIf { it.ready }?.state?.velocity ?: return Double.NaN
+        if (!velocity.finite()) return Double.NaN
+        val forward = if (entity is VehicleEntity) entity.getViewVector(1f) else Vec3(0.0, 0.0, 1.0)
+        return velocity.dot(forward) * 3.6
+    }
+
+    /** Speed magnitude in blocks per tick, for HUDs that multiply by 72. */
+    fun speedBlocksPerTick(entity: Entity): Double {
+        val velocity = bodies[entity]?.takeIf { it.ready }?.state?.velocity ?: return Double.NaN
+        if (!velocity.finite()) return Double.NaN
+        return velocity.length() / VehiclePhysicsUnits.TICKS_PER_SECOND
+    }
 
     /**
      * Bullet is intentionally limited to the conventional ground roster. A
@@ -113,7 +201,18 @@ object VehiclePhysics {
     }
 
     internal fun supportsPhysics(entity: Entity): Boolean = when (entity) {
-        is VehicleEntity -> groundLayout(entity).valid
+        is VehicleEntity -> {
+            if (!groundLayout(entity).valid) false
+            else if (entity.computed().engineType != EngineType.TRACK) true
+            else {
+                // Compilation and mass closure are admission checks, not assembly
+                // details. A missing or inconsistent mechanism must not receive a
+                // chassis and then fall through to wheeled suspension.
+                val id = VehicleData.getRegistryId(entity.type)
+                GroundVehicleAllowlist.modelOf(id) == GroundVehicleAllowlist.Model.TRACK_RUN &&
+                    trackedRejection(entity) == null
+            }
+        }
         else -> false
     }
 
@@ -143,6 +242,59 @@ object VehiclePhysics {
         }
         return if (value.isFinite && value.lengthSquared() > .0001f) value.normalize() else Quaternionf()
     }
+
+    /**
+     * Compiled running gear for a tracked vehicle, or null when it is not ready.
+     *
+     * A tracked vehicle must not silently fall back to the wheeled suspension
+     * path: if the definition does not compile, the vehicle stays out of physics
+     * and the reason is logged once per id.
+     */
+    /**
+     * Why this tracked vehicle cannot enter Spark, or null when it can.
+     *
+     * The compiled spec is cached, so the check is cheap enough to run from
+     * [supportsPhysics] on the game thread.
+     */
+    private fun trackedRejection(entity: VehicleEntity): String? {
+        val compiled = trackedSpecFor(entity) ?: return "missing compiled running gear"
+        val data = entity.computed()
+        val settings = data.physics ?: VehiclePhysicsSettings()
+        val reference = (entity.getCollisionOBBInfo()?.position ?: Vec3.ZERO).add(settings.centerOfMassOffset)
+        val (turret, barrel) = if (settings.articulationEnabled) {
+            resolveArticulation(data, reference)
+        } else {
+            null to null
+        }
+        val plan = VehicleMassPlan.tracked(
+            totalMassKg = VehiclePhysicsUnits.massKg(entity.mass),
+            spec = compiled,
+            settings = settings,
+            anchored = false,
+            turret = turret,
+            barrel = barrel,
+        )
+        val reason = TrackedPhysicsAdmission.rejectReason(compiled, plan)
+        if (reason != null && warnedTracked.putIfAbsent(VehicleData.getRegistryId(entity.type), true) == null) {
+            Mod.LOGGER.error("Tracked vehicle {} stayed out of physics: {}", entity.type, reason)
+        }
+        return reason
+    }
+
+    private fun trackedSpecFor(entity: Entity): com.atsuishio.superbwarfare.physics.tracked.TrackedVehicleSpec? {
+        val id = VehicleData.getRegistryId(entity.type)
+        return when (val result = com.atsuishio.superbwarfare.physics.tracked.TrackedVehicleDefinitions.load(id)) {
+            is com.atsuishio.superbwarfare.physics.tracked.TrackedVehicleDefinitions.Result.Loaded -> result.spec
+            is com.atsuishio.superbwarfare.physics.tracked.TrackedVehicleDefinitions.Result.Failed -> {
+                if (warnedTracked.putIfAbsent(id, true) == null) {
+                    Mod.LOGGER.error("Tracked vehicle {} has no compiled running gear: {}", id, result.reason)
+                }
+                null
+            }
+        }
+    }
+
+    private val warnedTracked = ConcurrentHashMap<String, Boolean>()
 
     /**
      * Capture every value the Spark worker needs while we are still on the game
@@ -180,13 +332,35 @@ object VehiclePhysics {
         val flight = false
         val (turret, barrel) = if (data != null && settings.articulationEnabled)
             resolveArticulation(data, (info?.position ?: Vec3.ZERO).add(settings.centerOfMassOffset)) else null to null
+        val authoredMass = VehiclePhysicsUnits.massKg(vehicle?.mass ?: 1f)
+        val anchored = engine == EngineType.FIXED
+        val trackedSpec = if (data?.engineType == EngineType.TRACK) trackedSpecFor(entity) else null
+        val massPlan = if (trackedSpec != null) {
+            VehicleMassPlan.tracked(
+                totalMassKg = authoredMass,
+                spec = trackedSpec,
+                settings = settings,
+                anchored = anchored,
+                turret = turret,
+                barrel = barrel,
+            )
+        } else {
+            VehicleMassPlan.wheeled(
+                totalMassKg = authoredMass,
+                settings = settings,
+                anchored = anchored,
+                hasWheelStations = layout?.stations?.isNotEmpty() == true,
+                turret = turret,
+                barrel = barrel,
+            )
+        }
         return VehiclePhysicsSpec(
             clientSide = entity.level().isClientSide,
             half = half,
             localCenter = center,
             pivot = pivot,
-            massKg = VehiclePhysicsUnits.massKg(vehicle?.mass ?: 1f),
-            anchored = engine == EngineType.FIXED,
+            massKg = authoredMass,
+            anchored = anchored,
             groundVehicle = ground,
             trackedVehicle = engine == EngineType.TRACK,
             flightVehicle = flight,
@@ -198,10 +372,12 @@ object VehiclePhysics {
             turret = turret,
             barrel = barrel,
             initial = state,
+            massPlan = massPlan,
             diagnosticName = "${entity.type.descriptionId}/${entity.uuid}",
             initialTurretYaw = vehicle?.let { Math.toRadians(it.turretYRot.toDouble()).toFloat() } ?: 0f,
             initialBarrelPitch = vehicle?.let { Math.toRadians(it.turretXRot.toDouble()).toFloat() } ?: 0f,
             trackAnimationLength = vehicle?.getTrackAnimationLength()?.toFloat() ?: 100f,
+            trackedSpec = trackedSpec,
         )
     }
 
@@ -336,12 +512,28 @@ object VehiclePhysics {
 
     fun begin(entity: Entity) {
         if (entity.isRemoved) return
+        // Non-vehicle entities never own a body, so they must not touch the
+        // physics level on every baseTick.
         if (entity !is VehicleEntity && entity !is TurretWreckEntity) return
+        registerShutdownParticipant(entity.level())
+        // Only consume a snapshot that belongs to this instance. A new instance
+        // with the same UUID must not erase a save that the leaving instance
+        // has not written yet.
+        chunkUnloadState.computeIfPresent(entity.uuid) { _, parked ->
+            if (parked.source === entity) null else parked
+        }
         if (entity is VehicleEntity && !supportsPhysics(entity)) {
-            bodies.remove(entity)?.close()
+            bodies.remove(entity)?.let { observeClose(it) }
             return
         }
         val handle = bodies.computeIfAbsent(entity) {
+            // Drop a finished close future so it cannot be mistaken for this
+            // body's teardown. A still-running one is kept: the same UUID can
+            // re-enter before the previous native objects are gone, and hiding
+            // that future would hide a real residual.
+            closeFutures[entity.uuid]?.let { previous ->
+                if (previous.isDone) closeFutures.remove(entity.uuid, previous)
+            }
             // Build the immutable spec on the game thread. Everything the worker
             // needs is copied here so it never touches the Entity or the Level.
             val restored = saved.remove(entity)
@@ -352,8 +544,22 @@ object VehiclePhysics {
                 if (relocated) Vec3.ZERO else VehiclePhysicsUnits.velocity(entity.deltaMovement), Vec3.ZERO, false)
             val spec = buildSpec(entity, state)
             VehicleBody(SparkPhysics.get(entity.level()), SparkPhysics.host(entity), spec, state).also { body ->
-                body.physics.submitImmediateTask { body.create() }
+                bodyLevels[body] = entity.level()
+                body.physics.submitTask("vehicle body create ${spec.diagnosticName}") {
+                    body.create()
+                }.whenComplete { _, error ->
+                    if (error != null) {
+                        Mod.LOGGER.error("Vehicle body create failed for {}", spec.diagnosticName, error)
+                        body.markAssemblyFailed()
+                    }
+                }
             }
+        }
+        if (handle.assemblyFailed) {
+            // Stay managed until teardown finishes so a retry cannot build a
+            // second assembly on top of the one being rolled back.
+            if (!handle.closeInProgress()) observeClose(handle)
+            return
         }
         pending.remove(entity)?.let { handle.authoritative = it }
         pendingRender.remove(entity)?.let { handle.authoritativeRender = it }
@@ -552,6 +758,20 @@ object VehiclePhysics {
                 )
             }
             handle.command = command
+            // S4: publish the tracked drive demand for the running gear. This is
+            // the same input the legacy DriveFrame above consumes, so the two
+            // paths cannot disagree about throttle, steer or brake.
+            if (handle.trackedVehicle) {
+                // Local terrain sampling is driven by the game-thread auto
+                // sampler. It consumes the chassis pose published by the
+                // physics thread and never reads Bullet objects here.
+                handle.trackedCommand = com.atsuishio.superbwarfare.physics.tracked.TrackedVehicleRuntime.DriveCommand(
+                    throttle = power.toFloat().coerceIn(-1f, 1f),
+                    steer = ((if (rightInput) 1f else 0f) - (if (leftInput) 1f else 0f)),
+                    brake = upInput,
+                    powered = engineActive,
+                )
+            }
         } finally {
             vehicle.setPos(origin)
             vehicle.deltaMovement = motion
@@ -598,7 +818,13 @@ object VehiclePhysics {
     }
 
     fun save(entity: Entity, tag: CompoundTag) {
-        val state = bodies[entity]?.state ?: return
+        val parked = chunkUnloadState[entity.uuid]?.takeIf { it.source === entity }
+        val state = bodies[entity]?.state ?: parked?.state ?: return
+        if (parked != null && bodies[entity] == null) {
+            chunkUnloadState.computeIfPresent(entity.uuid) { _, current ->
+                if (current === parked) null else current
+            }
+        }
         val data = CompoundTag()
         data.putInt("Version", 1)
         listOf(state.rotation.x, state.rotation.y, state.rotation.z, state.rotation.w).forEachIndexed { i, f -> data.putFloat("Q$i", f) }
@@ -625,11 +851,164 @@ object VehiclePhysics {
         }
     }
     private fun remove(entity: Entity) {
-        bodies.remove(entity)?.close()
+        val removed = bodies.remove(entity)
         saved.remove(entity); pending.remove(entity); pendingRender.remove(entity); inputSequences.remove(entity)
         controllerOwners.remove(entity); localControl.remove(entity); appliedPositions.remove(entity); capturing.remove(entity); writing.remove(entity)
+        bodyLevels.remove(removed)
+        if (entity.removalReason == Entity.RemovalReason.UNLOADED_TO_CHUNK && removed != null) {
+            chunkUnloadState[entity.uuid] = ChunkUnloadSnapshot(entity, removed.state, entity.tickCount)
+        } else {
+            chunkUnloadState.computeIfPresent(entity.uuid) { _, parked ->
+                if (parked.source === entity) null else parked
+            }
+        }
+        removed?.let { rememberClose(entity.uuid, observeClose(it)) }
     }
+
+    /**
+     * Keep a failed teardown reachable. [closeAsync] is idempotent while running
+     * and retryable after an exceptional completion, so a later tick or unload
+     * can finish the native cleanup instead of logging and forgetting it.
+     */
+    private fun observeClose(body: VehicleBody): java.util.concurrent.CompletableFuture<Void> {
+        closing.add(body)
+        val future = body.closeAsync()
+        future.whenComplete { _, error ->
+            if (error != null) {
+                Mod.LOGGER.error("Vehicle physics teardown failed for {}", body.spec.diagnosticName, error)
+            } else {
+                closing.remove(body)
+                bodyLevels.remove(body)
+                bodies.keys.filter { bodies[it] === body }.forEach { bodies.remove(it) }
+            }
+        }
+        return future
+    }
+
+    @SubscribeEvent
+    fun retryFailedCloses(event: TickEvent.LevelTickEvent) {
+        if (event.phase != TickEvent.Phase.END) return
+        val retry = synchronized(closing) { closing.filter { it.closeNeedsRetry() } }
+        retry.forEach { observeClose(it) }
+    }
+
+    /**
+     * Close every vehicle in [level] while that level's physics thread is still
+     * accepting work. A test can call this without unloading the level.
+     *
+     * Level unload must not call this and then race [PhysicsLevel.close].
+     * [closeVehiclesNow] is the shutdown participant for that path.
+     */
+    fun closeVehicles(level: net.minecraft.world.level.Level): java.util.concurrent.CompletableFuture<Void> {
+        val futures = ArrayList<java.util.concurrent.CompletableFuture<Void>>()
+        for (key in bodies.keys.filter { it.level() === level }) {
+            val body = bodies.remove(key) ?: continue
+            bodyLevels.remove(body)
+            saved.remove(key); pending.remove(key); pendingRender.remove(key); inputSequences.remove(key)
+            controllerOwners.remove(key); localControl.remove(key); appliedPositions.remove(key)
+            capturing.remove(key); writing.remove(key)
+            val future = observeClose(body)
+            rememberClose(key.uuid, future)
+            futures += future
+        }
+        if (futures.isEmpty()) return java.util.concurrent.CompletableFuture.completedFuture(null)
+        return java.util.concurrent.CompletableFuture.allOf(*futures.toTypedArray())
+    }
+
+    @SubscribeEvent
+    fun onLevelLoad(event: LevelEvent.Load) {
+        (event.level as? net.minecraft.world.level.Level)?.let { registerShutdownParticipant(it) }
+    }
+
     @SubscribeEvent(priority = EventPriority.HIGHEST) fun unload(event: LevelEvent.Unload) {
-        (bodies.keys + saved.keys + pending.keys).filter { it.level() === event.level }.forEach(::remove)
+        // Do not queue closeVehicles() here. Core stops admitting tasks before
+        // those tasks run, and a rejected close must not be reported as done.
+        // The participant registered below runs inside PhysicsLevel cleanup,
+        // on the physics thread, before native teardown.
+        (event.level as? net.minecraft.world.level.Level)?.let { registerShutdownParticipant(it) }
     }
+
+    private fun registerShutdownParticipant(level: net.minecraft.world.level.Level) {
+        val physics = SparkPhysics.get(level)
+        // Shutdown already began: nothing can be registered any more, and the
+        // teardown owns whatever native objects are left.
+        if (!physics.isAcceptingTasks()) return
+        if (shutdownParticipants.containsKey(physics)) return
+        val subscription = physics.addShutdownParticipant {
+            try {
+                closeVehiclesNow(level)
+            } finally {
+                shutdownParticipants.remove(physics)
+            }
+        }
+        shutdownParticipants.putIfAbsent(physics, subscription)?.dispose()
+    }
+    /**
+     * Ordered vehicle teardown on the physics thread.
+     *
+     * Called by the level shutdown participant. It removes running gear before
+     * the hull and does not submit another task.
+     */
+    internal fun closeVehiclesNow(level: net.minecraft.world.level.Level) {
+        val physics = SparkPhysics.get(level)
+        val owned = LinkedHashSet<VehicleBody>()
+        // The level is captured on the game thread in `begin`. Reading
+        // `entity.level()` here would touch Minecraft state from the physics
+        // worker.
+        val parked = synchronized(bodyLevels) {
+            bodyLevels.entries.filter { it.value === level }.map { it.key }
+        }
+        for (body in parked) {
+            val key = bodies.keys.firstOrNull { bodies[it] === body }
+            if (key != null) {
+                bodies.remove(key)
+                saved.remove(key)
+                pending.remove(key)
+                pendingRender.remove(key)
+                inputSequences.remove(key)
+                controllerOwners.remove(key)
+                localControl.remove(key)
+                appliedPositions.remove(key)
+                capturing.remove(key)
+                writing.remove(key)
+            }
+            bodyLevels.remove(body)
+            owned += body
+        }
+        synchronized(closing) {
+            closing.filter { it.physics === physics }.forEach { owned += it }
+        }
+        if (!physics.isPhysicsThread()) {
+            // The worker never started, so no native object exists for these
+            // bodies. Drop the references instead of failing the close on a
+            // thread assertion.
+            for (body in owned) {
+                closing.remove(body)
+                bodyLevels.remove(body)
+            }
+            return
+        }
+        physics.assertPhysicsThread()
+        val failures = ArrayList<Throwable>()
+        for (body in owned) {
+            try {
+                body.closeNow()
+                closing.remove(body)
+                bodyLevels.remove(body)
+            } catch (error: Throwable) {
+                failures += error
+            }
+        }
+        if (failures.isNotEmpty()) {
+            val primary = failures.first()
+            failures.drop(1).forEach { primary.addSuppressed(it) }
+            throw primary
+        }
+    }
+
+    private data class ChunkUnloadSnapshot(
+        val source: Entity,
+        val state: RigidState,
+        val tick: Int,
+    )
 }

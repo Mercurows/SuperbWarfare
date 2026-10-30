@@ -64,6 +64,9 @@ object ClickEventHandler {
      */
     private var controllerDismountDown: Boolean = false
 
+    /** Previous tick of the Bullet-terrain toggle, including a controller button bound to that key. */
+    private var bulletTerrainDown: Boolean = false
+
     @SubscribeEvent
     fun onButtonReleased(event: InputEvent.MouseButton.Pre) {
         if (notInGame) return
@@ -553,6 +556,25 @@ object ClickEventHandler {
                 handleDismountPress(player)
             }
         }
+    }
+
+    /**
+     * Rising edge of the terrain-debug key.
+     *
+     * Controllable writes a bound controller button into `KeyMapping.isDown`
+     * and does not emit a keyboard event, so this has to be polled. Keyboard
+     * uses the same edge.
+     */
+    fun pollBulletTerrainToggle() {
+        if (notInGame) {
+            bulletTerrainDown = false
+            return
+        }
+        val down = ModKeyMappings.TOGGLE_BULLET_TERRAIN.isDown || ControllableCompatHolder.bulletTerrainDown()
+        if (down && !bulletTerrainDown) {
+            sendPacketToServer(ToggleBulletTerrainMessage)
+        }
+        bulletTerrainDown = down
     }
 
     fun handleWeaponFirePress(player: Player, stack: ItemStack) {

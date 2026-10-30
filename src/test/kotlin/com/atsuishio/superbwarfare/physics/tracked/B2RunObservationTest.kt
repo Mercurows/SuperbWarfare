@@ -38,376 +38,242 @@ class B2RunObservationTest {
     }
 
     // ---------------------------------------------------------------------
-    // The assembled pose is the audited one
+    // Run topology: the assembled pose is the audited one
     // ---------------------------------------------------------------------
 
     /**
-     * The audited bind pose must already satisfy the hinge invariant: both pins
-     * of a joint land on the same world point. If this fails, no amount of
-     * solver tuning helps, because the chain would start pre-stressed.
-     */
-    @Test
-    fun theAuditedAssemblyAlreadyHasCoincidentPins() {
-        val compiled = spec()
-        for (side in TrackedSide.entries) {
-            val run = TrackedRunSpecs.compile(compiled, side)
-            val measured = B2AssemblyProbe.measure(run, compiled.side(side))
-            assertEquals(emptyList<String>(), measured.problems(), "$side measurement problems")
-            assertTrue(measured.pinCoincides, "$side worst pin gap ${measured.worstPinGapM} m")
-            assertTrue(
-                measured.worstPinGapM <= B2Sampling.INITIAL_PIN_TOLERANCE_M,
-                "$side pin gap ${measured.worstPinGapM} m exceeds the assembly tolerance",
-            )
-            assertEquals(compiled.side(side).placements.size, measured.linkCount)
-            assertEquals(measured.linkCount, measured.jointCount, "$side must have one hinge per link")
-        }
-    }
-
-    /**
-     * Neighbouring links on a curved section sit at different orientations, so
-     * their world hinge axes must still agree. This is the locked part of the
-     * constraint and the first place a wrong frame shows up.
-     */
-    @Test
-    fun theAuditedAssemblyHasAlignedLockedAxes() {
-        val compiled = spec()
-        for (side in TrackedSide.entries) {
-            val run = TrackedRunSpecs.compile(compiled, side)
-            val measured = B2AssemblyProbe.measure(run, compiled.side(side))
-            assertTrue(
-                measured.framesAligned,
-                "$side worst locked-axis misalignment ${measured.worstFrameAngleRad} rad " +
-                    "at joint ${measured.worstFrameJoint}",
-            )
-        }
-    }
-
-    /** Structural numbers must be reported for every side, not only the first one measured. */
-    @Test
-    fun bothSidesAreMeasurable() {
-        val compiled = spec()
-        val measured = TrackedSide.entries.map { side ->
-            B2AssemblyProbe.measure(TrackedRunSpecs.compile(compiled, side), compiled.side(side))
-        }
-        assertEquals(2, measured.size)
-        assertEquals(TrackedSide.LEFT, measured[0].side)
-        assertEquals(TrackedSide.RIGHT, measured[1].side)
-        assertTrue(measured.all { it.linkCount == 79 }, "the 99A side must be the audited 79 links")
-        assertTrue(measured.all { it.jointCount == 79 })
-    }
-
-    // ---------------------------------------------------------------------
-    // The spec cannot be swapped for an easier one
-    // ---------------------------------------------------------------------
-
-    /**
-     * A reduced chain is a legitimate diagnostic, but it must not be measurable
-     * through this contract as if it were the audited run. Dropping links is the
-     * easiest way to make an unstable mechanism look fine.
+     * Every run must be the audited box at the audited pose.
      *
-     * The reduced spec here is built as an open chain from the audited shoe mass
-     * and shape: a truncated closed loop is not even a valid `TrackRunSpec`,
-     * because the last link would lose its hinge. That the core rejects the
-     * truncated loop is itself worth knowing, so the test builds a genuinely
-     * valid short chain and checks the probe still refuses it.
+     * The probe refuses a spec list that was not produced from the compiled side,
+     * which is what stops a fixture from quietly assembling an easier mechanism.
      */
     @Test
-    fun aReducedChainIsRejectedByTheProbe() {
-        val compiled = spec()
-        val side = TrackedSide.LEFT
-        val audited = TrackedRunSpecs.compile(compiled, side)
-        val reduced = shortOpenChain(audited, linkCount = 6)
-        assertTrue(reduced.problems().isEmpty(), "the diagnostic chain must still be a valid spec")
-
-        val error = assertThrows(IllegalArgumentException::class.java) {
-            B2AssemblyProbe.requireMatches(reduced, compiled.side(side))
-        }
-        assertTrue("6 links" in error.message.orEmpty(), error.message.orEmpty())
-    }
-
-    /** A truncated closed loop is not a valid spec at all; the core already refuses it. */
-    @Test
-    fun aTruncatedClosedLoopIsNotAValidSpec() {
-        val audited = TrackedRunSpecs.compile(spec(), TrackedSide.LEFT)
-        // The constructor validates eagerly, so the rejection happens while
-        // building the truncated spec rather than on a later `problems()` call.
-        val error = assertThrows(IllegalArgumentException::class.java) {
-            TrackRunSpec(
-                name = audited.name,
-                links = audited.links.dropLast(1),
-                joints = audited.joints.dropLast(1),
-                friction = audited.friction,
-            )
-        }
-        assertTrue("out of range" in error.message.orEmpty(), error.message.orEmpty())
-    }
-
-    /** A heavier shoe would change the load path, so it cannot pass as the audited one. */
-    @Test
-    fun aDifferentLinkMassIsRejectedByTheProbe() {
-        val compiled = spec()
-        val side = TrackedSide.LEFT
-        val audited = TrackedRunSpecs.compile(compiled, side)
-        val heavier = TrackRunSpec(
-            name = audited.name,
-            links = audited.links.map { it.copy(massKg = it.massKg * 2f) },
-            joints = audited.joints,
-            friction = audited.friction,
-        )
-        assertThrows(IllegalArgumentException::class.java) {
-            B2AssemblyProbe.requireMatches(heavier, compiled.side(side))
-        }
-    }
-
-    /** A bigger shoe would hide an interference the audit already rejected. */
-    @Test
-    fun aDifferentLinkShapeIsRejectedByTheProbe() {
-        val compiled = spec()
-        val side = TrackedSide.LEFT
-        val audited = TrackedRunSpecs.compile(compiled, side)
-        val fattened = TrackRunSpec(
-            name = audited.name,
-            links = audited.links.map { link ->
-                val box = link.shape as TrackRunLinkShape.Box
-                link.copy(
-                    shape = TrackRunLinkShape.Box(box.halfExtents.scale(1.5)),
-                )
-            },
-            joints = audited.joints,
-            friction = audited.friction,
-        )
-        assertThrows(IllegalArgumentException::class.java) {
-            B2AssemblyProbe.requireMatches(fattened, compiled.side(side))
+    fun theRunSpecsMatchTheAuditedMechanism() {
+        val compiledSpec = spec()
+        for (side in TrackedSide.entries) {
+            val compiled = compiledSpec.side(side)
+            val runs = TrackedRunSpecs.compileRuns(compiledSpec, side)
+            TrackRunAssemblyProbe.requireMatches(runs, compiled)
+            assertEquals(compiled.runs.size, runs.size, "$side run count")
+            assertEquals(8, runs.size, "$side must have one run per adjacent member pair")
         }
     }
 
     /**
-     * A moved link means the fixture invented a pose instead of reusing
-     * `TrackedAssemblyGeometry`. That is the defect S1 already fixed once.
+     * The assembly probe must actually compare two different body placements.
+     *
+     * This is the regression that matters: an earlier version computed both sides
+     * of every anchor from the run alone, so the gap was identically zero and the
+     * probe would "pass" no matter what the compiled frames said.
      */
     @Test
-    fun aMovedLinkIsRejectedByTheProbe() {
-        val compiled = spec()
-        val side = TrackedSide.LEFT
-        val audited = TrackedRunSpecs.compile(compiled, side)
-        val moved = TrackRunSpec(
-            name = audited.name,
-            links = audited.links.mapIndexed { index, link ->
-                if (index == 3) link.copy(position = link.position.add(0.01, 0.0, 0.0)) else link
-            },
-            joints = audited.joints,
-            friction = audited.friction,
+    fun theAssemblyProbeComparesTwoBodyPlacements() {
+        val compiledSpec = spec()
+        val compiled = compiledSpec.side(TrackedSide.LEFT)
+        val runs = TrackedRunSpecs.compileRuns(compiledSpec, TrackedSide.LEFT)
+        val measured = TrackRunAssemblyProbe.measure(runs, compiled)
+        assertEquals(emptyList<String>(), measured.problems(), "measurement problems")
+        assertTrue(measured.anchorsCoincide, "worst anchor gap ${measured.worstAnchorGapM} m")
+        assertTrue(measured.axesAligned, "worst locked axis ${measured.worstLockedAxisRad} rad")
+        assertEquals(compiled.runs.size, measured.runCount)
+        assertEquals(compiled.wheels.size, measured.wheelCount)
+        assertEquals(compiled.runs.size * 2, measured.endCount)
+
+        // Now prove the probe is not blind: displace a wheel and the anchor gap
+        // must grow. If both sides were computed from the run, this stays zero.
+        val broken = compiled.wheels.map { wheel ->
+            if (wheel.index == compiled.runs.first().firstWheelIndex) {
+                wheel.copy(assemblyCenter = wheel.assemblyCenter.add(net.minecraft.world.phys.Vec3(0.05, 0.0, 0.0)))
+            } else {
+                wheel
+            }
+        }
+        val displaced = CompiledTrackSide(
+            side = compiled.side,
+            wheels = broken,
+            belt = compiled.belt,
+            beltOrder = compiled.beltOrder,
+            members = compiled.members,
+            runs = compiled.runs,
+            mounts = compiled.mounts,
+            suspension = compiled.suspension,
+            legacy = compiled.legacy,
+        )
+        val shifted = TrackRunAssemblyProbe.measure(runs, displaced)
+        assertTrue(
+            shifted.worstAnchorGapM > 0.04,
+            "the probe must see a displaced wheel, gap ${shifted.worstAnchorGapM} m",
+        )
+        assertFalse(shifted.anchorsCoincide, "a displaced wheel must fail the assembly gate")
+    }
+
+    @Test
+    fun aForeignRunListIsRejected() {
+        val compiledSpec = spec()
+        val compiled = compiledSpec.side(TrackedSide.LEFT)
+        val runs = TrackedRunSpecs.compileRuns(compiledSpec, TrackedSide.LEFT)
+        assertThrows(IllegalArgumentException::class.java) {
+            TrackRunAssemblyProbe.requireMatches(runs.dropLast(1), compiled)
+        }
+        // A single-link run with a wrong mass must also be rejected.
+        val tampered = runs.toMutableList()
+        val first = tampered[0]
+        tampered[0] = TrackRunSpec(
+            name = first.name,
+            links = listOf(first.links.single().copy(massKg = first.links.single().massKg + 10f)),
+            joints = emptyList(),
+            friction = first.friction,
         )
         assertThrows(IllegalArgumentException::class.java) {
-            B2AssemblyProbe.requireMatches(moved, compiled.side(side))
+            TrackRunAssemblyProbe.requireMatches(tampered, compiled)
         }
     }
 
     // ---------------------------------------------------------------------
-    // The record cannot omit a field
+    // Legacy shoe chain: history stays reproducible, but never looks current
     // ---------------------------------------------------------------------
 
-    private fun observation(
-        side: TrackedSide = TrackedSide.LEFT,
-        density: B2ChainDensity = B2ChainDensity.FULL,
+    @Test
+    fun aFixedIdlerDoesNotRebuildTheHistoricalShoeChain() {
+        val compiledSpec = spec()
+        for (side in TrackedSide.entries) {
+            assertEquals(null, compiledSpec.side(side).legacy, "$side idler is fixed")
+            val runs = TrackedRunSpecs.compileRuns(compiledSpec, side)
+            TrackRunAssemblyProbe.requireMatches(runs, compiledSpec.side(side))
+            assertEquals(compiledSpec.side(side).runs.size, runs.size)
+        }
+    }
+
+    /** FULL density is defined by the run count, not by the historical 79 shoes. */
+    @Test
+    fun fullDensityIsDefinedByRunsNotShoes() {
+        val compiled = spec().side(TrackedSide.LEFT)
+        assertEquals(
+            "full density, ${compiled.runs.size} runs",
+            B2ChainDensity.FULL.describe(compiled.runs.size, compiled.runs.size),
+        )
+        assertThrows(IllegalArgumentException::class.java) {
+            B2ChainDensity.FULL.describe(2, compiled.runs.size)
+        }
+        assertTrue(
+            B2ChainDensity.DIAGNOSTIC.describe(2, compiled.runs.size).contains("DIAGNOSTIC"),
+        )
+    }
+
+    // ---------------------------------------------------------------------
+    // The observation record
+    // ---------------------------------------------------------------------
+
+    private fun record(
         substeps: Int = B2Sampling.SETTLE_SUBSTEPS,
-        worstPinGapM: Double = 1.0e-6,
-        worstJointAngleViolationRad: Double = 0.0,
-        linkWheelContactCount: Int = 6,
-        wheelCount: Int = 8,
-        worstLinkWheelPenetrationM: Double = 0.0,
-        linkTerrainContactCount: Int = 5,
-        linkLinkContactCount: Int = 0,
-        longitudinalDriftM: Double = 0.01,
-        suspensionTravelM: List<Double> = List(6) { 0.05 },
-        suspensionForceN: List<Double> = List(6) { 20000.0 },
-        chassisHeaveM: Double = -0.05,
-        chassisPitchRad: Double = 0.0,
+        anchor: Double = 1e-7,
+        normal: Double = 1e-4,
+        slip: Double = 0.02,
+        runWheelContacts: Int = 6,
+        runTerrain: Int = 5,
+        runRun: Int = 0,
+        stations: Int = 6,
     ) = B2RunObservation(
-        side = side,
-        density = density,
+        side = TrackedSide.LEFT,
+        density = B2ChainDensity.FULL,
         substeps = substeps,
-        worstPinGapM = worstPinGapM,
-        worstJointAngleViolationRad = worstJointAngleViolationRad,
-        linkWheelContactCount = linkWheelContactCount,
-        wheelCount = wheelCount,
-        worstLinkWheelPenetrationM = worstLinkWheelPenetrationM,
-        linkTerrainContactCount = linkTerrainContactCount,
-        linkLinkContactCount = linkLinkContactCount,
-        longitudinalDriftM = longitudinalDriftM,
-        suspensionTravelM = suspensionTravelM,
-        suspensionForceN = suspensionForceN,
-        chassisHeaveM = chassisHeaveM,
-        chassisPitchRad = chassisPitchRad,
+        topologyRevision = "ztz_99a/left/runs-8/belt-v1",
+        endpointAnchorErrorM = anchor,
+        endpointFrameAngleErrorRad = 1e-5,
+        normalResidualM = normal,
+        tangentialSlipM = slip,
+        lockedAxisDriftRad = 1e-6,
+        runWheelContactCount = runWheelContacts,
+        wheelCount = 8,
+        runWheelPenetrationM = 0.0,
+        runTerrainContactCount = runTerrain,
+        runRunContactCount = runRun,
+        runDriftM = 1e-4,
+        suspensionTravelM = List(stations) { 0.05 },
+        suspensionForceN = List(stations) { 16_000.0 },
+        chassisHeaveM = -0.001,
+        chassisPitchRad = 1e-4,
     )
 
-    /** A complete, well-formed record passes the structural check. */
     @Test
     fun aCompleteRecordHasNoStructuralProblems() {
-        val record = observation()
-        assertEquals(emptyList<String>(), record.problems(expectedStations = 6))
-        assertTrue(record.isFullDensity)
-        assertEquals(6.0 / 8.0, record.linkWheelCoverage, 1e-12)
+        assertEquals(emptyList<String>(), record().problems(expectedStations = 6, expectedRuns = 8))
+        assertTrue(record().isFullDensity)
     }
 
-    /**
-     * Self-contact inside one run is never acceptable: it means the collision
-     * filter regressed and the chain is fighting itself. It cannot be traded
-     * against another metric.
-     */
-    @Test
-    fun selfContactingLinksAreRejected() {
-        val record = observation(linkLinkContactCount = 3)
-        assertTrue(
-            record.problems(6).any { "same-owner links touched each other" in it },
-            "self contact must be reported: ${record.problems(6)}",
-        )
-    }
-
-    /** A station list that does not match the wheels would silently mis-attribute load. */
-    @Test
-    fun mismatchedStationCountsAreRejected() {
-        val record = observation(
-            suspensionTravelM = List(5) { 0.05 },
-            suspensionForceN = List(5) { 20000.0 },
-        )
-        val problems = record.problems(expectedStations = 6)
-        assertTrue(problems.any { "suspensionTravelM has 5 entries" in it }, "$problems")
-        assertTrue(problems.any { "suspensionForceN has 5 entries" in it }, "$problems")
-    }
-
-    /** A `NaN` from an unwritten sample must fail loudly instead of comparing quietly. */
-    @Test
-    fun nonFiniteMeasurementsAreRejected() {
-        val record = observation(
-            worstPinGapM = Double.NaN,
-            longitudinalDriftM = Double.POSITIVE_INFINITY,
-            chassisHeaveM = Double.NaN,
-        )
-        val problems = record.problems(6)
-        assertTrue(problems.any { "worstPinGapM is not finite" in it }, "$problems")
-        assertTrue(problems.any { "longitudinalDriftM is not finite" in it }, "$problems")
-        assertTrue(problems.any { "chassisHeaveM is not finite" in it }, "$problems")
-    }
-
-    /** Contact counts are bounded by the wheels that exist; more is a bookkeeping bug. */
-    @Test
-    fun impossibleContactCountsAreRejected() {
-        val record = observation(linkWheelContactCount = 9, wheelCount = 8)
-        assertTrue(
-            record.problems(6).any { "outside 0..8" in it },
-            "a contact count above the wheel count must be rejected",
-        )
-    }
-
-    /** Penetration is reported as a depth; a negative value is a sign error, not a bonus. */
-    @Test
-    fun signErrorsInDerivedMetricsAreRejected() {
-        val record = observation(
-            worstLinkWheelPenetrationM = -0.01,
-            longitudinalDriftM = -0.02,
-            worstJointAngleViolationRad = -0.001,
-        )
-        val problems = record.problems(6)
-        assertTrue(problems.any { "penetration is reported as a non-negative depth" in it }, "$problems")
-        assertTrue(problems.any { "drift is reported as a magnitude" in it }, "$problems")
-        assertTrue(problems.any { "violation cannot be negative" in it }, "$problems")
-    }
-
-    // ---------------------------------------------------------------------
-    // Density claims
-    // ---------------------------------------------------------------------
-
-    /** A full-density claim must actually carry the audited link count. */
-    @Test
-    fun fullDensityRequiresTheAuditedLinkCount() {
-        assertEquals("full density, 79 links", B2ChainDensity.FULL.describe(79, 79))
-        val error = assertThrows(IllegalArgumentException::class.java) {
-            B2ChainDensity.FULL.describe(40, 79)
-        }
-        assertTrue("requires 79 links" in error.message.orEmpty(), error.message.orEmpty())
-    }
-
-    /** A diagnostic chain may be described, but its label says it is not evidence. */
-    @Test
-    fun diagnosticDensityIsLabelledAsNotEvidence() {
-        val label = B2ChainDensity.DIAGNOSTIC.describe(40, 79)
-        assertTrue("DIAGNOSTIC ONLY" in label, label)
-        assertTrue("not acceptance evidence" in label, label)
-        assertFalse(observation(density = B2ChainDensity.DIAGNOSTIC).isFullDensity)
-    }
-
-    // ---------------------------------------------------------------------
-    // What this contract refuses to invent
-    // ---------------------------------------------------------------------
-
-    /**
-     * The core publishes no joint impulse, and Bullet's 6-Dof `appliedImpulse`
-     * reads back 0. A "joint load" column here would be a comfortable zero, so
-     * the record deliberately has none: load evidence comes from the suspension
-     * row and from contact impulses.
-     */
     @Test
     fun theRecordCarriesNoFabricatedJointLoad() {
-        val fields = B2RunObservation::class.java.declaredFields.map { it.name.lowercase() }
-        listOf("impulse", "jointload", "jointforce", "reaction").forEach { forbidden ->
-            assertFalse(
-                fields.any { forbidden in it },
-                "B2RunObservation must not carry a '$forbidden' field: $fields",
-            )
-        }
-        assertTrue(fields.any { "suspensionforcen" in it }, "row force is the load proxy: $fields")
-    }
-
-    /** The sampling windows are fixed here so two fixtures cannot compare unequal windows. */
-    @Test
-    fun theSamplingWindowsAreFixed() {
-        assertEquals(1.0 / 60.0, B2Sampling.SUBSTEP_SECONDS, 1e-12)
-        assertEquals(300, B2Sampling.SHORT_CHAIN_SUBSTEPS)
-        assertEquals(600, B2Sampling.SETTLE_SUBSTEPS)
+        val names = B2RunObservation::class.java.methods.map { it.name.lowercase() }
         assertTrue(
-            B2Sampling.SETTLE_SUBSTEPS > B2Sampling.SHORT_CHAIN_SUBSTEPS,
-            "the full-density window must be the longer one",
+            names.none { "impulse" in it || "jointload" in it || "jointforce" in it },
+            "a B2 record must not expose a fabricated joint load: $names",
         )
     }
 
-    /** The observation must survive reporting without a verdict attached. */
     @Test
-    fun theDiagnosticsLineCarriesNoVerdict() {
-        val text = observation().describe()
-        listOf("pass", "fail", "ok").forEach { word ->
-            assertFalse(
-                text.lowercase().contains(word),
-                "diagnostics must not imply a verdict: $text",
-            )
-        }
-        assertTrue(text.contains("wheelContacts=6/8"), text)
-        assertTrue(text.contains("drift="), text)
+    fun nonFiniteMeasurementsAreRejected() {
+        assertTrue(record(anchor = Double.NaN).problems(6, 8).isNotEmpty())
+        assertTrue(record(normal = Double.POSITIVE_INFINITY).problems(6, 8).isNotEmpty())
+        assertTrue(record(slip = Double.NaN).problems(6, 8).isNotEmpty())
     }
 
-    /**
-     * Build a valid open chain from the audited shoe mass, shape and hinge
-     * offsets.
-     *
-     * This exists only so the probe can be shown rejecting a non-audited chain.
-     * It reuses the audited link mass, box extents and pivot offsets rather than
-     * inventing them, so the only difference is the link count.
-     */
-    private fun shortOpenChain(audited: TrackRunSpec, linkCount: Int): TrackRunSpec {
-        val template = audited.links.first()
-        val hinge = audited.joints.first()
-        val links = audited.links.take(linkCount)
-        val joints = (0 until linkCount - 1).map { index ->
-            hinge.copy(previousIndex = index, nextIndex = index + 1)
+    @Test
+    fun aBlankTopologyRevisionIsRejected() {
+        val missing = record().copy(topologyRevision = "")
+        assertTrue(missing.problems(6, 8).any { "topologyRevision" in it })
+    }
+
+    @Test
+    fun selfContactingRunsAreRejected() {
+        assertTrue(record(runRun = 3).problems(6, 8).any { "same-owner runs" in it })
+    }
+
+    @Test
+    fun impossibleContactCountsAreRejected() {
+        assertTrue(record(runWheelContacts = 9).problems(6, 8).isNotEmpty())
+        assertTrue(record(runTerrain = 9).problems(6, 8).isNotEmpty())
+        assertTrue(record(runTerrain = -1).problems(6, 8).isNotEmpty())
+    }
+
+    @Test
+    fun mismatchedStationCountsAreRejected() {
+        assertTrue(record(stations = 5).problems(6, 8).isNotEmpty())
+    }
+
+    @Test
+    fun signErrorsInDerivedMetricsAreRejected() {
+        assertTrue(record(anchor = -1e-3).problems(6, 8).isNotEmpty())
+        assertTrue(record(normal = -1e-3).problems(6, 8).isNotEmpty())
+        assertTrue(record(slip = -1e-3).problems(6, 8).isNotEmpty())
+        assertTrue(record().copy(runDriftM = -1.0).problems(6, 8).isNotEmpty())
+        assertTrue(record().copy(runWheelPenetrationM = -1.0).problems(6, 8).isNotEmpty())
+    }
+
+    @Test
+    fun theSamplingWindowsAreFixed() {
+        assertEquals(1.0 / 60.0, B2Sampling.SUBSTEP_SECONDS, 0.0)
+        assertEquals(300, B2Sampling.SHORT_CHAIN_SUBSTEPS)
+        assertEquals(600, B2Sampling.SETTLE_SUBSTEPS)
+    }
+
+    @Test
+    fun theDiagnosticsLineCarriesNoVerdict() {
+        val line = record().describe().lowercase()
+        listOf("pass", "fail", "ok", "good", "stable").forEach { word ->
+            assertFalse(Regex("\\b$word\\b").containsMatchIn(line), "diagnostics line claims '$word': $line")
         }
-        return TrackRunSpec(
-            name = "${audited.name}_diagnostic",
-            links = links,
-            joints = joints,
-            friction = audited.friction,
-        ).also { probe ->
-            require(template.massKg > 0f) { "audited shoe must have mass" }
-            require(probe.links.size == linkCount) { "diagnostic chain lost links" }
+        assertTrue(line.contains("anchor="), "diagnostics must report the anchor residual")
+    }
+
+    @Test
+    fun bothSidesAreMeasurable() {
+        val compiledSpec = spec()
+        for (side in TrackedSide.entries) {
+            val runs = TrackedRunSpecs.compileRuns(compiledSpec, side)
+            val measured = TrackRunAssemblyProbe.measure(runs, compiledSpec.side(side))
+            assertEquals(emptyList<String>(), measured.problems(), "$side problems")
+            val box = runs.first().links.single().shape as TrackRunLinkShape.Box
+            assertTrue(box.halfExtents.x > 0.0 && box.halfExtents.y > 0.0 && box.halfExtents.z > 0.0)
         }
     }
 }

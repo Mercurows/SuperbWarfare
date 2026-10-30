@@ -4,22 +4,27 @@ package com.atsuishio.superbwarfare.physics
  * Registration of the conventional ground vehicles whose motion is owned by
  * Spark/Bullet.
  *
- * D1 removed the probe-based tracked suspension and left no approved tracked
- * runtime, so the list is intentionally empty. Tracked vehicles remain
- * registered as entities and can still be spawned by commands or old saves,
- * but they are outside the conventional physics path and do not appear in the
- * creative vehicle tab or container loot.
+ * [contains] is registration only. Compilation is checked by
+ * `VehiclePhysics.supportsPhysics`: a registered tracked id whose definition
+ * does not compile stays out of the physics path rather than falling back to
+ * wheeled suspension.
  *
- * Wheeled vehicles are also parked here: re-enabling them belongs to the B0
- * baseline stage, not to the legacy cleanup.
- *
- * Re-enable a vehicle only after its stage evidence is recorded.
+ * Wheeled vehicles remain parked: re-enabling them belongs to the B0 baseline.
  */
 internal object GroundVehicleAllowlist {
     /** Suspension model registered to one enabled ground vehicle. */
-    enum class Model { WHEEL_JOINT }
+    enum class Model {
+        WHEEL_JOINT,
+        /** Dynamic track runs, wheel-end bodies and compiled suspension rows. */
+        TRACK_RUN,
+    }
 
-    private val enabled = linkedMapOf<String, Model>()
+    private val enabled = linkedMapOf<String, Model>(
+        // S2 first positive vehicle. The tracked runtime is assembled from the
+        // compiled definition, so this entry is only meaningful while that
+        // definition compiles; a failure keeps the vehicle out of physics.
+        "superbwarfare:ztz_99a" to Model.TRACK_RUN,
+    )
 
     fun contains(id: String): Boolean = id in enabled
 

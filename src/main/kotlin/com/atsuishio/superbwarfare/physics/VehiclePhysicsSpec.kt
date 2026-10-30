@@ -107,10 +107,22 @@ internal data class VehiclePhysicsSpec(
     /** Constrained barrel body, when the vehicle authors barrel OBBs. */
     val barrel: ArticulationSpec? = null,
     val initial: RigidState,
+    /**
+     * Where the authored mass goes. Built on the game thread from the same
+     * compiled mechanism the runtime assembles, so the hull cannot silently
+     * carry a running-gear share that was also given to separate bodies.
+     */
+    val massPlan: VehicleMassPlan,
     val diagnosticName: String = "vehicle",
     val initialTurretYaw: Float = 0f,
     val initialBarrelPitch: Float = 0f,
     val trackAnimationLength: Float = 100f,
+    /**
+     * Compiled S2 running gear, present only for tracked vehicles whose
+     * definition compiled cleanly. Null means the vehicle stays outside the
+     * tracked path rather than silently falling back to wheeled suspension.
+     */
+    val trackedSpec: com.atsuishio.superbwarfare.physics.tracked.TrackedVehicleSpec? = null,
 ) {
     fun side(side: WheelSide): SideSuspensionSpec? = suspensionSides.firstOrNull { it.side == side }
 }

@@ -16,6 +16,8 @@ import com.atsuishio.superbwarfare.config.SERVER_CONFIG
 import com.atsuishio.superbwarfare.data.CustomData
 import com.atsuishio.superbwarfare.init.*
 import com.atsuishio.superbwarfare.network.NetworkRegistry
+import com.atsuishio.superbwarfare.physics.tracked.TrackedTerrainAutoSampler
+import com.atsuishio.superbwarfare.physics.tracked.TrackedTerrainCollision
 import com.atsuishio.superbwarfare.sound.SoundLimit
 import net.createmod.ponder.foundation.PonderIndex
 import net.minecraft.SharedConstants
@@ -92,6 +94,8 @@ class Mod {
         }
 
         MinecraftForge.EVENT_BUS.register(this)
+        MinecraftForge.EVENT_BUS.register(TrackedTerrainAutoSampler)
+        TrackedTerrainCollision.ensureRegistered()
 
         if (FMLEnvironment.dist == Dist.CLIENT) {
             SoundLimit.init()
@@ -138,6 +142,7 @@ class Mod {
         // 加速渲染是可选客户端模组；这里只探一次"它在不在"，不在的话整条兼容路径都不会被走到
         AcceleratedRenderingCompat.init()
         event.enqueueWork { ModScreens.register() }
+        event.enqueueWork { com.atsuishio.superbwarfare.compat.controllable.ControllableCompatHolder.registerClientBindings() }
         event.enqueueWork { ModSoundInstances.init() }
         PonderIndex.addPlugin(SBWPonderPlugin)
     }

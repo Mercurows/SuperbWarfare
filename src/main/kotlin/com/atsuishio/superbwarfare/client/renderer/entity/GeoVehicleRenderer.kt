@@ -182,6 +182,9 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
             packedLight,
             OverlayTexture.NO_OVERLAY
         )
+        VehiclePhysics.renderState(entity).tracked?.let { tracked ->
+            TrackedBeltRenderer.draw(instance, poseStack, buffer, texture, packedLight, tracked)
+        }
 
         this.renderEmissive(entity, instance, yaw, partialTick, poseStack, buffer, packedLight)
 
@@ -513,17 +516,21 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
         val suspension = VehiclePhysics.renderState(entity)
         val leftSuspensionOffset = suspension.leftTravel * 16f
         val rightSuspensionOffset = suspension.rightTravel * 16f
+        val trackedGear = suspension.tracked
         val leftTrackRoot = instance.getBone("TrackL") ?: instance.getBone("trackL")
         val rightTrackRoot = instance.getBone("TrackR") ?: instance.getBone("trackR")
 
-        // Move each track assembly once. TrackRot remains a child of the
-        // animated track segment and must never receive a second offset or a
-        // compensating scale, otherwise the belt visibly tears apart.
-        leftTrackRoot?.let { root ->
-            root.y = root.definition().pivotY() * 16f + leftSuspensionOffset
-        }
-        rightTrackRoot?.let { root ->
-            root.y = root.definition().pivotY() * 16f + rightSuspensionOffset
+        // A tracked snapshot owns the visible belt. Do not also lift the whole
+        // track root, or each plate would inherit a second suspension offset.
+        if (trackedGear == null) {
+            leftTrackRoot?.let { root ->
+                root.y = root.definition().pivotY() * 16f + leftSuspensionOffset
+            }
+            rightTrackRoot?.let { root ->
+                root.y = root.definition().pivotY() * 16f + rightSuspensionOffset
+            }
+        } else {
+            TrackedBeltRenderer.prepare(instance, trackedGear)
         }
 
         // 车轮
@@ -549,10 +556,12 @@ open class GeoVehicleRenderer<T>(manager: EntityRendererProvider.Context) :
                 bone.rotation.rotateY(steering)
             }
         }
-        boneGroups.leftWheels.forEach { applyWheel(it, com.atsuishio.superbwarfare.data.vehicle.subdata.WheelSide.LEFT, leftSuspensionOffset, leftWheelRot, false) }
-        boneGroups.rightWheels.forEach { applyWheel(it, com.atsuishio.superbwarfare.data.vehicle.subdata.WheelSide.RIGHT, rightSuspensionOffset, rightWheelRot, false) }
-        boneGroups.leftWheelsTurn.forEach { applyWheel(it, com.atsuishio.superbwarfare.data.vehicle.subdata.WheelSide.LEFT, leftSuspensionOffset, leftWheelRot, true) }
-        boneGroups.rightWheelsTurn.forEach { applyWheel(it, com.atsuishio.superbwarfare.data.vehicle.subdata.WheelSide.RIGHT, rightSuspensionOffset, rightWheelRot, true) }
+        if (trackedGear == null) {
+            boneGroups.leftWheels.forEach { applyWheel(it, com.atsuishio.superbwarfare.data.vehicle.subdata.WheelSide.LEFT, leftSuspensionOffset, leftWheelRot, false) }
+            boneGroups.rightWheels.forEach { applyWheel(it, com.atsuishio.superbwarfare.data.vehicle.subdata.WheelSide.RIGHT, rightSuspensionOffset, rightWheelRot, false) }
+            boneGroups.leftWheelsTurn.forEach { applyWheel(it, com.atsuishio.superbwarfare.data.vehicle.subdata.WheelSide.LEFT, leftSuspensionOffset, leftWheelRot, true) }
+            boneGroups.rightWheelsTurn.forEach { applyWheel(it, com.atsuishio.superbwarfare.data.vehicle.subdata.WheelSide.RIGHT, rightSuspensionOffset, rightWheelRot, true) }
+        }
 
         // Legacy preprocessed track trajectories are revoked. The MCSP-style
         // renderer will rebuild visible links from physical wheel state; until

@@ -59,6 +59,9 @@ object TrackedDefinitionValidator {
         validateSide(TrackedSide.RIGHT, definition.right, error, warn)
         validateUniqueBones(definition, error)
 
+        validateRunBudget(definition.left, "LEFT", error)
+        validateRunBudget(definition.right, "RIGHT", error)
+
         val drivetrain = definition.drivetrain
         requirePositive(drivetrain.maxDriveTorque, "drivetrain.torque", "MaxDriveTorque", error)
         requirePositive(drivetrain.maxBrakeTorque, "drivetrain.brake", "MaxBrakeTorque", error)
@@ -69,6 +72,42 @@ object TrackedDefinitionValidator {
         }
         if (!finite(drivetrain.friction) || drivetrain.friction < 0.0) {
             error("drivetrain.friction", "Friction must be a finite non-negative value, was ${drivetrain.friction}")
+        }
+        validatePositiveResponseBound(drivetrain.accelMps2, "drivetrain.accel", "Accel", error)
+        validatePositiveResponseBound(drivetrain.brakeMps2, "drivetrain.brake-rate", "Brake", error)
+        validateResponseBound(drivetrain.pivotSpeedMps, "drivetrain.pivot", "PivotSpeed", error)
+        drivetrain.steerTimeSeconds?.let {
+            if (!finite(it) || it <= 0.0) {
+                error("drivetrain.steer-time", "SteerTime must be a finite positive number of seconds, was $it")
+            }
+        }
+
+        val terrain = definition.terrain
+        if (terrain.windowRadiusBlocks !in 2..16) {
+            error("terrain.radius", "Terrain.WindowRadius must be within 2..16 blocks, was ${terrain.windowRadiusBlocks}")
+        }
+        if (terrain.verticalAboveBlocks !in 2..16) {
+            error("terrain.above", "Terrain.VerticalAbove must be within 2..16 blocks, was ${terrain.verticalAboveBlocks}")
+        }
+        if (terrain.verticalBelowBlocks !in 2..24) {
+            error("terrain.below", "Terrain.VerticalBelow must be within 2..24 blocks, was ${terrain.verticalBelowBlocks}")
+        }
+        val ramps = terrain.bulletRamps
+        ramps.maxClimbM?.let {
+            if (!finite(it) || it <= 0.0) {
+                error("terrain.max-climb", "BulletRamps.MaxClimb must be finite positive metres, was $it")
+            }
+        }
+        ramps.stepM?.let {
+            if (!finite(it) || it <= 0.001) {
+                error("terrain.step", "BulletRamps.Step must be finite positive metres, was $it")
+            }
+        }
+        if (ramps.enabled && ramps.maxClimbM == null) {
+            error("terrain.max-climb", "BulletRamps.Enabled requires an explicit MaxClimb")
+        }
+        if (ramps.enabled && ramps.stepM == null) {
+            error("terrain.step", "BulletRamps.Enabled requires an explicit Step")
         }
 
         return findings
@@ -90,6 +129,9 @@ object TrackedDefinitionValidator {
 
         val suspension = definition.suspension
         validateSuspension(suspension, "$label.suspension", "$label", error)
+
+        validateBeltOrder(definition, label, error)
+        validateBeltWrap(definition, label, error)
 
         var drive = 0
         var idler = 0
@@ -157,6 +199,84 @@ object TrackedDefinitionValidator {
         }
     }
 
+    /**
+     * The traversal order is the physical topology, so it must be explicit.
+     *
+     * Every name must resolve, no name may repeat, and every authored wheel must
+     * appear exactly once. A missing order is an error: falling back to a
+     * longitudinal sort would invent a topology the vehicle never declared.
+     */
+    private fun validateBeltOrder(
+        definition: TrackSideDefinition,
+        label: String,
+        error: (String, String) -> Unit,
+    ) {
+        if (definition.beltOrder.isEmpty()) {
+            error(
+                "$label.belt-order",
+                "$label declares no BeltOrder; the run topology is that order and cannot be inferred",
+            )
+            return
+        }
+        if (definition.beltOrder.size < 2) {
+            error("$label.belt-order", "$label BeltOrder needs at least two members")
+        }
+        val bones = definition.wheels.map { it.bone }.filter { it.isNotBlank() }.toSet()
+        val seen = HashSet<String>()
+        for (bone in definition.beltOrder) {
+            if (!bones.contains(bone)) {
+                error("$label.belt-order", "$label BeltOrder names unknown wheel $bone")
+            }
+            if (!seen.add(bone)) {
+                error("$label.belt-order", "$label BeltOrder lists $bone twice")
+            }
+        }
+        val missing = bones - seen
+        if (missing.isNotEmpty()) {
+            error(
+                "$label.belt-order",
+                "$label BeltOrder omits $missing; every authored wheel is a belt member in this schema",
+            )
+        }
+    }
+
+    /**
+     * Wrap must be authored per member.
+     *
+     * A default of "outside" would be a silent physical decision: an inside wrap
+     * puts the belt on the other side of the wheel and reverses the run's normal.
+     */
+    private fun validateBeltWrap(
+        definition: TrackSideDefinition,
+        label: String,
+        error: (String, String) -> Unit,
+    ) {
+        for (wheel in definition.wheels) {
+            if (wheel.wrap == null) {
+                error(
+                    "$label.wheel.wrap",
+                    "${wheel.bone.ifBlank { "<unnamed>" }} declares no Wrap; outside and inside are different mechanisms",
+                )
+            }
+        }
+    }
+
+    /**
+     * The run budget is a mass, not a count: zero means "not authored" and is
+     * reported, while a negative or non-finite value is an error.
+     */
+    private fun validateRunBudget(
+        side: TrackSideDefinition,
+        label: String,
+        error: (String, String) -> Unit,
+    ) {
+        if (!finite(side.runMassBudget)) {
+            error("$label.run-budget", "$label RunMassBudgetKg must be finite, was ${side.runMassBudget}")
+        } else if (side.runMassBudget < 0.0) {
+            error("$label.run-budget", "$label RunMassBudgetKg must not be negative, was ${side.runMassBudget}")
+        }
+    }
+
     private fun validateSuspension(
         suspension: TrackSuspensionDefinition,
         code: String,
@@ -171,6 +291,16 @@ object TrackedDefinitionValidator {
         }
         if (!finite(suspension.frequency) || suspension.frequency <= 0.05) {
             error(code, "$owner Frequency must exceed 0.05 Hz, was ${suspension.frequency}")
+        }
+        suspension.springNPerM?.let {
+            if (!finite(it) || it <= 0.0) {
+                error(code, "$owner Spring must be a finite positive N/m value, was $it")
+            }
+        }
+        suspension.damperNsPerM?.let {
+            if (!finite(it) || it < 0.0) {
+                error(code, "$owner Damper must be a finite non-negative N·s/m value, was $it")
+            }
         }
         validateDamping(suspension.compressionDampingRatio, "$code.compression", owner, error)
         validateDamping(suspension.reboundDampingRatio, "$code.rebound", owner, error)
@@ -201,6 +331,16 @@ object TrackedDefinitionValidator {
         override.frequency?.let {
             if (!finite(it) || it <= 0.05) error(code, "$owner Frequency override must exceed 0.05 Hz, was $it")
         }
+        override.springNPerM?.let {
+            if (!finite(it) || it <= 0.0) {
+                error(code, "$owner Spring override must be a finite positive N/m value, was $it")
+            }
+        }
+        override.damperNsPerM?.let {
+            if (!finite(it) || it < 0.0) {
+                error(code, "$owner Damper override must be a finite non-negative N·s/m value, was $it")
+            }
+        }
         override.compressionDampingRatio?.let { validateDamping(it, code, owner, error) }
         override.reboundDampingRatio?.let { validateDamping(it, code, owner, error) }
         override.maxForce?.let {
@@ -230,6 +370,32 @@ object TrackedDefinitionValidator {
         error: (String, String) -> Unit,
     ) {
         if (!finite(value) || value <= 0.0) error(code, "$field must be a finite positive value, was $value")
+    }
+
+    /** Nullable MCSP response bound: absent is fine, present must be finite and non-negative. */
+    private fun validateResponseBound(
+        value: Double?,
+        code: String,
+        field: String,
+        error: (String, String) -> Unit,
+    ) {
+        value ?: return
+        if (!finite(value) || value < 0.0) {
+            error(code, "$field must be a finite non-negative value, was $value")
+        }
+    }
+
+    /** MCSP `Accel`/`Brake` are strictly positive rates; zero would be ambiguous. */
+    private fun validatePositiveResponseBound(
+        value: Double?,
+        code: String,
+        field: String,
+        error: (String, String) -> Unit,
+    ) {
+        value ?: return
+        if (!finite(value) || value <= 0.0) {
+            error(code, "$field must be a finite positive value, was $value")
+        }
     }
 
     /**

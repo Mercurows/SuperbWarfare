@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.physics.tracked
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import kotlinx.serialization.json.Json
+import net.minecraft.world.phys.Vec3
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -45,14 +46,24 @@ class TrackedVehicleAuditTest {
     private fun spec(): TrackedVehicleSpec = compilation().requireSpec()
 
     @Test
+    fun theTerrainWindowContainsTheCompiledRunningGearEnvelope() {
+        val spec = spec()
+        val envelope = TerrainEnvelope.of(spec)
+        val window = TrackedTerrainSampler.window(Vec3.ZERO, envelope, spec.terrain)
+        assertTrue(window.minX <= envelope.minX && window.maxX >= envelope.maxX)
+        assertTrue(window.minY <= envelope.minY && window.maxY >= envelope.maxY)
+        assertTrue(window.minZ <= envelope.minZ && window.maxZ >= envelope.maxZ)
+    }
+
+    @Test
     fun theAuthoredDataAndModelHashesAreTheAuditedOnes() {
         assertEquals(
-            "7b41110d6755173675df00879353486916dfbcbf58d211556c249f7f62757aec",
+            "f375e73ba3376eb405523db05cdf4219fac5c3235575ed3226db042387c81e72",
             sha256(definitionFile.readText()),
             "99A mechanism JSON changed; re-audit before reusing the old numbers",
         )
         assertEquals(
-            "fe7099f7a850bf3b8730471065c1b74ee53cd29dc182ff86dec6abe8006bf747",
+            "5809b45cc3bd3121ce439aaa6cab5e7113623f18ef30d849692205c90f1df369",
             sha256(modelFile.readText()),
             "99A model JSON changed; re-audit before reusing the old numbers",
         )
@@ -67,23 +78,13 @@ class TrackedVehicleAuditTest {
             assertEquals(6, compiled.wheels.count { it.isSuspended }, "$side sprung road wheels")
             assertEquals(1, compiled.wheels.count { it.receivesDrive }, "$side drive wheels")
             assertEquals(1, compiled.wheels.count { it.role == TrackWheelRole.IDLER_GUIDE }, "$side idler")
-            assertTrue(
-                compiled.loop.linkCount in 75..85,
-                "$side link count ${compiled.loop.linkCount}",
-            )
-            assertTrue(
-                abs(compiled.loop.closureError) < ClosedTrackLoopSolver.MAX_CLOSURE_ERROR_M,
-                "$side closure ${compiled.loop.closureError}",
-            )
-            assertTrue(
-                compiled.loop.maxPitchError < ClosedTrackLoopSolver.MAX_PITCH_ERROR_M,
-                "$side pitch error ${compiled.loop.maxPitchError}",
-            )
-            println(
-                "$side: links=${compiled.loop.linkCount} pitch=${compiled.loop.pitch} " +
-                    "idlerOffset=${compiled.loop.idlerOffset} wrap=${compiled.loop.maxJointAngleDegrees} " +
-                    "pinChord=${compiled.loop.minPinChordClearanceM} shoeGap=${compiled.geometry.minShoeWheelGapM}",
-            )
+            assertEquals(8, compiled.runs.size, "$side run count")
+            assertEquals(null, compiled.legacy, "$side fixed idler must not rebuild the shoe chain")
+            val idler = compiled.wheels.single { it.role == TrackWheelRole.IDLER_GUIDE }
+            val mount = compiled.mount(idler.index)
+            assertEquals(WheelMountKind.FIXED, mount.kind, "${idler.bone} must be fixed")
+            assertFalse(mount.isSprung, "${idler.bone} must not be suspended")
+            assertFalse(mount.isTensioned, "${idler.bone} must not be tensioned")
         }
     }
 
@@ -135,22 +136,27 @@ class TrackedVehicleAuditTest {
         }
     }
 
-    /** A support wheel's bind and assembly centres coincide; the idler carries the tensioner offset. */
+    /**
+     * The run topology keeps every wheel at its authored bind centre.
+     *
+     * The legacy shoe chain used to move the idler by its solved tensioner
+     * offset; the run mechanism must not inherit that, because the idler's free
+     * travel is a joint coordinate of the mount, not a new bind position.
+     */
     @Test
-    fun onlyTheIdlerMovesWhenTheLoopIsTensioned() {
+    fun theRunTopologyKeepsAuthoredBindCentres() {
         val spec = spec()
         for (side in TrackedSide.entries) {
             val compiled = spec.side(side)
             for (wheel in compiled.wheels) {
-                if (wheel.role == TrackWheelRole.IDLER_GUIDE) {
-                    assertTrue(
-                        abs(wheel.assemblyCenter.z - wheel.bindCenter.z - compiled.loop.idlerOffset) < 1e-9,
-                        "${wheel.bone} must carry the solved idler offset",
-                    )
-                } else {
-                    assertEquals(wheel.bindCenter, wheel.assemblyCenter, "${wheel.bone} must not move")
-                }
+                assertEquals(wheel.bindCenter, wheel.assemblyCenter, "${wheel.bone} must stay at its bind centre")
             }
+            assertEquals(null, compiled.legacy, "$side idler is fixed, so the shoe chain is absent")
+            assertEquals(
+                8,
+                compiled.runs.size,
+                "$side run count must come from the belt order, not the shoe chain",
+            )
         }
     }
 
@@ -165,25 +171,16 @@ class TrackedVehicleAuditTest {
         val spec = spec()
         for (side in TrackedSide.entries) {
             val compiled = spec.side(side)
-            val audit = compiled.geometry
-            assertTrue(audit.checkedPairs > 0, "$side audit checked no shoe/wheel pair")
+            val audit = TrackedRunGeometryAudit.audit(compiled.runs, compiled.wheels, compiled.belt)
+            assertTrue(audit.checkedPairs > 0, "$side audit checked no run/wheel pair")
             assertTrue(
-                audit.minShoeWheelGapM > 0.0,
-                "$side shoe/wheel gap ${audit.minShoeWheelGapM} m at link ${audit.worstLinkIndex} / " +
+                audit.minRunWheelGapM >= -TrackedRunGeometryAudit.CONTACT_TOLERANCE_M,
+                "$side run/wheel gap ${audit.minRunWheelGapM} m at run ${audit.worstRunIndex} / " +
                     "${audit.worstWheelBone}",
-            )
-            assertTrue(
-                audit.minPinChordClearanceM > 0.0,
-                "$side pin chord clearance ${audit.minPinChordClearanceM} m",
             )
             assertTrue(
                 audit.worstLateralOverlapM > 0.0,
                 "$side worst pair must actually overlap laterally, or the gap is meaningless",
-            )
-            println(
-                "$side: pinChord=${audit.minPinChordClearanceM * 1000} mm " +
-                    "shoeGap=${audit.minShoeWheelGapM * 1000} mm " +
-                    "at link ${audit.worstLinkIndex}/${audit.worstWheelBone}",
             )
         }
     }
@@ -194,21 +191,21 @@ class TrackedVehicleAuditTest {
         assertEquals(55_000.0, spec.mass.totalMassKg, 1.0, "authored vehicle mass")
         assertEquals(
             spec.mass.totalMassKg,
-            spec.mass.hullMassKg + spec.mass.runningGearMassKg,
+            spec.mass.sprungAssemblyMassKg + spec.mass.runningGearMassKg,
             1e-6,
-            "hull + running gear must equal the authored mass",
+            "sprung assembly + running gear must equal the authored mass",
         )
         assertEquals(
-            spec.mass.hullMassKg,
+            spec.mass.sprungAssemblyMassKg,
             spec.stationMassTotal,
             1.0,
-            "sprung stations must carry the whole hull",
+            "sprung stations must carry the whole sprung assembly",
         )
-        assertEquals(spec.totalLinkCount, spec.side(TrackedSide.LEFT).loop.linkCount * 2)
+        assertEquals(spec.totalRunCount, spec.side(TrackedSide.LEFT).runs.size * 2)
         assertEquals(spec.totalWheelCount, 16)
         println(
-            "hull=${spec.mass.hullMassKg} gear=${spec.mass.runningGearMassKg} " +
-                "links=${spec.totalLinkCount} wheels=${spec.totalWheelCount}",
+            "sprung=${spec.mass.sprungAssemblyMassKg} gear=${spec.mass.runningGearMassKg} " +
+                "runs=${spec.totalRunCount} wheels=${spec.totalWheelCount}",
         )
     }
 
@@ -216,10 +213,11 @@ class TrackedVehicleAuditTest {
     @Test
     fun everyDynamicBodyHasATraceableInertia() {
         val spec = spec()
-        assertEquals(2, spec.mass.shoes.size, "one representative shoe per side")
-        for (shoe in spec.mass.shoes) {
-            assertEquals(MassBasis.BOX, shoe.basis)
-            assertTrue(shoe.inertiaKgM2.x > 0.0 && shoe.inertiaKgM2.y > 0.0 && shoe.inertiaKgM2.z > 0.0)
+        assertTrue(spec.mass.shoes.isEmpty(), "a fixed idler does not build historical shoes")
+        assertEquals(16, spec.mass.runs.size, "one run body per adjacent pair, both sides")
+        for (run in spec.mass.runs) {
+            assertEquals(MassBasis.BOX, run.basis)
+            assertTrue(run.inertiaKgM2.x > 0.0 && run.inertiaKgM2.y > 0.0 && run.inertiaKgM2.z > 0.0)
         }
         assertEquals(16, spec.mass.wheels.size)
         for (wheel in spec.mass.wheels) {
@@ -241,11 +239,12 @@ class TrackedVehicleAuditTest {
     fun physicalVisibleAndSkeletonCountsAreRecordedSeparately() {
         val spec = spec()
         val geometry = BedrockModelGeometry.parse(modelFile.readText())
-        val physical = spec.totalLinkCount
+        val physical = spec.totalRunCount
         val visible = spec.renders.values.sumOf { it.visibleBones.size }
         val skeleton = geometry.bones.size
 
-        assertEquals(spec.side(TrackedSide.LEFT).loop.linkCount, physical / 2, "physical links per side")
+        assertEquals(8, spec.side(TrackedSide.LEFT).runs.size, "physical runs per side")
+        assertEquals(16, physical, "physical runs, both sides")
         assertEquals(37, spec.renders.getValue(TrackedSide.LEFT).visibleBones.size, "visible track bones per side")
         assertEquals(37, spec.renders.getValue(TrackedSide.RIGHT).visibleBones.size, "visible track bones per side")
         assertTrue(skeleton > visible, "model bones must exceed the visible track subset")
@@ -253,8 +252,9 @@ class TrackedVehicleAuditTest {
         println("physical=$physical visible=$visible skeleton=$skeleton")
 
         assertTrue(physical != visible, "physical and visible link counts must not be assumed equal")
-        // No visible pitch may be invented from the bone count.
-        assertNull(spec.renders.getValue(TrackedSide.LEFT).visiblePitchM)
+        val pitch = spec.renders.getValue(TrackedSide.LEFT).visiblePitchM
+        assertNotNull(pitch, "visible pitch comes from the template cube, not from the bone count")
+        assertEquals(3.72912 / 16.0, pitch!!, 1e-6)
     }
 
     @Test
@@ -284,7 +284,10 @@ class TrackedVehicleAuditTest {
         assertEquals(TrackWheelRole.DRIVE_GUIDE, spec.side(TrackedSide.LEFT).wheels.last().role)
         assertEquals(TrackWheelRole.IDLER_GUIDE, spec.side(TrackedSide.RIGHT).wheels.first().role)
         assertEquals(TrackWheelRole.DRIVE_GUIDE, spec.side(TrackedSide.RIGHT).wheels.last().role)
-        assertEquals(79, spec.side(TrackedSide.LEFT).loop.linkCount)
+        assertEquals(8, spec.side(TrackedSide.LEFT).runs.size)
+        assertEquals(WheelMountKind.FIXED, spec.side(TrackedSide.LEFT).mount(
+            spec.side(TrackedSide.LEFT).wheels.single { it.role == TrackWheelRole.IDLER_GUIDE }.index,
+        ).kind)
     }
 
     /** The belt plane comes from the template pivot, not from the wheel hubs. */
@@ -293,55 +296,52 @@ class TrackedVehicleAuditTest {
         val spec = spec()
         for (side in TrackedSide.entries) {
             val compiled = spec.side(side)
-            val centreX = compiled.linkTemplate.centerX
+            val centreX = compiled.belt.centerPlaneX
             val hubMean = compiled.wheels.map { it.bindCenter.x }.average()
             assertTrue(
                 abs(centreX - hubMean) > 0.05,
                 "$side belt plane must not be the wheel-hub mean",
             )
-            for (placement in compiled.placements) {
-                assertEquals(centreX, placement.center.x, 1e-9, "link ${placement.index} lateral centre")
+            for (run in compiled.runs) {
+                assertEquals(centreX, run.center.x, 1e-9, "run ${run.index} lateral centre")
             }
         }
-        assertEquals(1.8359375, spec.side(TrackedSide.LEFT).linkTemplate.centerX, 1e-6)
-        assertEquals(-1.8359375, spec.side(TrackedSide.RIGHT).linkTemplate.centerX, 1e-6)
+        assertEquals(1.8359375, spec.side(TrackedSide.LEFT).belt.centerPlaneX, 1e-4)
+        assertEquals(-1.8359375, spec.side(TrackedSide.RIGHT).belt.centerPlaneX, 1e-4)
     }
 
     @Test
     fun anInvalidMechanismNeverProducesAUsableSpec() {
-        val limited = definition().also { it.track.angularLimitDegrees = 20.0 }
-        val result = TrackedVehicleCompiler.compile("superbwarfare:ztz_99a", limited, modelFile.readText())
-        assertTrue(result.hasErrors, "a 20 degree hinge limit cannot carry the 99A wrap")
-        assertNull(result.spec)
-        val failure = runCatching { result.requireSpec() }.exceptionOrNull()
-        assertTrue(failure is TrackedGeometryException, "requireSpec must throw, got $failure")
-
         val broken = definition().also { it.left.wheels.first().mass = 0.0 }
         val massResult = TrackedVehicleCompiler.compile("superbwarfare:ztz_99a", broken, modelFile.readText())
         assertTrue(massResult.hasErrors, "a zero wheel mass must be rejected")
         assertNull(massResult.spec)
+        val failure = runCatching { massResult.requireSpec() }.exceptionOrNull()
+        assertTrue(failure is TrackedGeometryException, "requireSpec must throw, got $failure")
+
+        // The run topology has no hinge limit, so a tight AngularLimitDegrees no
+        // longer invalidates the mechanism: it only affects the legacy shoe audit.
+        val limited = definition().also { it.track.angularLimitDegrees = 20.0 }
+        val limitedResult = TrackedVehicleCompiler.compile("superbwarfare:ztz_99a", limited, modelFile.readText())
+        assertNotNull(limitedResult.spec, "the run topology must not depend on the shoe hinge limit")
     }
 
     @Test
-    fun aTangentShoeIsReportedRatherThanHidden() {
-        // With no authored clearance the corrected locus leaves the shoe exactly
-        // tangent to the guide wheels. That is not an error, but it must be
-        // reported: a zero-gap assembly has no margin for wheel deflection.
+    fun aZeroClearanceDoesNotMoveTheFixedIdler() {
+        // Clearance only affected the historical shoe locus. With a fixed idler
+        // the run topology must still compile, and the idler bind pose must not
+        // be shifted to invent take-up.
         val tangent = definition().also { it.track.clearance = 0.0 }
         val result = TrackedVehicleCompiler.compile("superbwarfare:ztz_99a", tangent, modelFile.readText())
         val spec = result.requireSpec()
         for (side in TrackedSide.entries) {
-            val audit = spec.side(side).geometry
-            assertTrue(
-                audit.minShoeWheelGapM < CompiledGeometryAudit.INTERPENETRATION_TOLERANCE_M,
-                "$side tangent shoe must be reported, gap ${audit.minShoeWheelGapM}",
-            )
-            assertFalse(audit.interpenetrates, "$side tangent shoe is not an interpenetration")
+            val compiled = spec.side(side)
+            assertEquals(null, compiled.legacy, "$side must not rebuild a shoe chain to spend clearance")
+            val idler = compiled.wheels.single { it.role == TrackWheelRole.IDLER_GUIDE }
+            assertEquals(idler.bindCenter, idler.assemblyCenter, "${idler.bone} stays on the bind pose")
+            val audit = TrackedRunGeometryAudit.audit(compiled.runs, compiled.wheels, compiled.belt)
+            assertFalse(audit.interpenetrates, "$side runs must still clear the wheels")
         }
-        assertTrue(
-            result.findings.any { it.code.endsWith("shoe-contact") },
-            "a tangent shoe must produce a shoe-contact finding",
-        )
     }
 
     private data class AuthoredWheel(

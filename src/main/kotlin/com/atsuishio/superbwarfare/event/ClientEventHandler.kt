@@ -704,6 +704,8 @@ object ClientEventHandler {
         handleShootDelay(player, stack)
         // 手柄扳机不产生原生鼠标／键盘事件，开火与瞄准要每 tick 轮询（未安装 Controllable 时无操作）
         ClickEventHandler.handleControllerTriggers(player, stack)
+        // 地形线框开关要在没装 Controllable 时也能用键盘边沿。
+        ClickEventHandler.pollBulletTerrainToggle()
         handleControlVehicle(player, stack)
         handleArtilleryIndicator(player, stack)
         calculateBombHitPos(player)

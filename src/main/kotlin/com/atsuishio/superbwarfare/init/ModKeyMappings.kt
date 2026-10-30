@@ -135,6 +135,13 @@ object ModKeyMappings {
     @JvmField
     val TOGGLE_TACTICAL_MAP = registerKey("toggle_tactical_map", GLFW.GLFW_KEY_M)
 
+    /**
+     * F6 by default so the row is visible in Controls. Controllable has a
+     * separate unbound button binding with the same name.
+     */
+    @JvmField
+    val TOGGLE_BULLET_TERRAIN = registerKey("toggle_bullet_terrain", GLFW.GLFW_KEY_F6)
+
     private fun registerKey(
         name: String,
         code: Int,

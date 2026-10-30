@@ -7,6 +7,7 @@ import cn.solarmoon.spark_core.physics.VehicleControlMode
 import cn.solarmoon.spark_core.physics.PhysicsHost
 import cn.solarmoon.spark_core.physics.body.*
 import cn.solarmoon.spark_core.physics.level.PhysicsLevel
+import cn.solarmoon.spark_core.physics.level.PhysicsLevelNotRunningException
 import cn.solarmoon.spark_core.physics.query.sweepBody
 import com.atsuishio.superbwarfare.data.vehicle.subdata.WheelRole
 import com.atsuishio.superbwarfare.data.vehicle.subdata.WheelSide
@@ -95,6 +96,9 @@ internal class VehicleBody(
     @Volatile var command = DriveFrame(turretYaw = spec.initialTurretYaw, barrelPitch = spec.initialBarrelPitch)
     @Volatile var disposed = false
     @Volatile var ready = false
+    /** Set when the tracked mechanism cannot be assembled. The hull must not become ready. */
+    @Volatile var assemblyFailed = false
+        private set
     @Volatile var authoritative: RigidState? = null
     @Volatile var authoritativeRender: VehiclePhysicsRenderState? = null
     val impacts = ConcurrentLinkedQueue<VehicleImpact>()
@@ -118,6 +122,24 @@ internal class VehicleBody(
     private var observationSteps = 0
     private var lastObservationSpin = 0.0
     private var observationSpinPrimed = false
+    /**
+     * S2 tracked running gear, present only for an engine type of TRACK.
+     *
+     * The chassis body above is the caller-owned hull; this runtime owns the
+     * wheels, mounts, runs and end constraints. It is created after the hull is
+     * in the world and closed before the hull is removed.
+     */
+    @Volatile var tracked: com.atsuishio.superbwarfare.physics.tracked.TrackedVehicleRuntime? = null
+        private set
+    /** Idempotent teardown result; also used by the physics layer to wait. */
+    private val closeFuture = java.util.concurrent.atomic.AtomicReference<java.util.concurrent.CompletableFuture<Void>?>()
+    /**
+     * S4 drive demand, published from the game thread each tick.
+     *
+     * Kept as plain data so the physics thread never reads entity state.
+     */
+    @Volatile var trackedCommand: com.atsuishio.superbwarfare.physics.tracked.TrackedVehicleRuntime.DriveCommand =
+        com.atsuishio.superbwarfare.physics.tracked.TrackedVehicleRuntime.DriveCommand.COAST
 
     fun startStabilityObservation(steps: Int) {
         physics.submitImmediateTask {
@@ -155,17 +177,15 @@ internal class VehicleBody(
     private var barrelBody: PhysicsRigidBody? = null
     private var barrelJoint: New6Dof? = null
     /** Total mass reserved for the independent wheel bodies. */
-    private val wheelMassTotal: Float by lazy {
-        if (trackedVehicle || spec.wheelStations.isEmpty() || anchored) 0f
-        else (mass * settings.wheelMassFraction.coerceIn(0f, .35f)).coerceIn(0f, mass * .35f)
-    }
+    private val wheelMassTotal: Float get() = spec.massPlan.wheelMassKg
     /** Total mass reserved for the constrained turret and barrel bodies. */
-    private val articulationMassTotal: Float by lazy {
-        if (anchored || !settings.articulationEnabled || (spec.turret == null && spec.barrel == null)) 0f
-        else (mass * settings.articulationMassFraction.coerceIn(0f, .2f)).coerceIn(0f, mass * .2f)
-    }
-    /** Chassis mass plus all articulated and wheel masses must equal the authored vehicle mass. */
-    private val chassisMass: Float get() = (mass - wheelMassTotal - articulationMassTotal).coerceAtLeast(.1f)
+    private val articulationMassTotal: Float get() = spec.massPlan.articulationMassKg
+    /**
+     * Hull mass. It is a plan value, never `mass - running gear` recomputed here:
+     * the plan is the only place that knows whether a tracked running gear or a
+     * wheeled share already owns part of the authored mass.
+     */
+    private val chassisMass: Float get() = spec.massPlan.chassisMassKg
     /** Last immutable render projection accepted from the server on a client. */
     private var clientAuthoritativeRender: VehiclePhysicsRenderState? = null
     private var clientRenderTarget: VehiclePhysicsRenderState? = null
@@ -203,9 +223,26 @@ internal class VehicleBody(
     fun origin(center: Vec3, rotation: Quaternionf) =
         center.subtract(rotation.rotate(localCenter)).add(0.0, -pivot, 0.0)
 
+    fun markAssemblyFailed() {
+        assemblyFailed = true
+        ready = false
+    }
+
+    fun closeInProgress(): Boolean = closeFuture.get()?.isDone == false
+
+    fun closeNeedsRetry(): Boolean = closeFuture.get()?.isCompletedExceptionally == true
+
     fun create() {
         physics.assertPhysicsThread()
         if (disposed) return
+        if (trackedVehicle && !clientSide) {
+            val reason = TrackedPhysicsAdmission.rejectReason(spec.trackedSpec, spec.massPlan)
+            if (reason != null) {
+                Mod.LOGGER.error("Tracked vehicle {} refused before body creation: {}", spec.diagnosticName, reason)
+                markAssemblyFailed()
+                return
+            }
+        }
         box = BoxCollisionShape(half.bullet()).apply {
             // Keep the physical hull flush with the authored OBB/model.  The
             // default Bullet margin is large enough to create visible gaps on
@@ -226,11 +263,18 @@ internal class VehicleBody(
                 }
             }
         }
-        // The hull collides with the authored Minecraft block geometry. Terrain
-        // collision no longer contains generated wedges or height-field surfaces.
-        // TRACK_LINK is included so a future TrackRun can resolve hull contacts
-        // while same-owner filtering keeps sibling links apart.
-        val chassisMask = CollisionGroups.DRIVABLE or CollisionGroups.CHASSIS or CollisionGroups.PHYSICS_BODY or CollisionGroups.WHEEL or CollisionGroups.TRACK_LINK
+        // Tracked vehicles collide only with their local discrete Bullet
+        // terrain mesh. The raw block AABB group is reserved for other physical
+        // objects and must never reach a tracked hull. Non-tracked vehicles
+        // keep the existing block terrain path.
+        val chassisMask = if (trackedVehicle) {
+            com.atsuishio.superbwarfare.physics.tracked.TrackedTerrainCollision.TERRAIN_MESH or
+                CollisionGroups.CHASSIS or CollisionGroups.PHYSICS_BODY or CollisionGroups.WHEEL or
+                CollisionGroups.TRACK_LINK
+        } else {
+            CollisionGroups.DRIVABLE or CollisionGroups.CHASSIS or CollisionGroups.PHYSICS_BODY or
+                CollisionGroups.WHEEL or CollisionGroups.TRACK_LINK
+        }
         body = PhysicsRigidBody(shape, if (anchored) 0f else chassisMass).apply {
             name = "sbw_chassis"
             owner = ownerHost
@@ -250,9 +294,14 @@ internal class VehicleBody(
             // substep. Keep native space gravity disabled so it cannot be
             // replaced or duplicated during body insertion.
             setGravity(Vector3f())
-            // The axle constraints own the chassis/wheel relationship. Do not
-            // let same-owner contact resolution fight those constraints.
-            collideWithOwnerGroups = CollisionGroups.NONE
+            // The axle constraints own the chassis/wheel relationship. The
+            // only same-owner terrain contact allowed is the private local
+            // mesh used by tracked vehicles.
+            collideWithOwnerGroups = if (trackedVehicle) {
+                com.atsuishio.superbwarfare.physics.tracked.TrackedTerrainCollision.TERRAIN_MESH
+            } else {
+                CollisionGroups.NONE
+            }
         }
 
         // The chassis must be in Spark before its joints are registered.  The
@@ -262,6 +311,7 @@ internal class VehicleBody(
         if (!trackedVehicle && spec.wheelStations.isNotEmpty()) createWheelBodies()
         if (!clientSide) createArticulation()
         reset(state)
+        if (trackedVehicle && !clientSide) createTrackedRuntime()
         body.onResolvedContact { event ->
             // A banked vehicle's support normal must be compared with its
             // current chassis up axis, rather than world Y.
@@ -280,7 +330,11 @@ internal class VehicleBody(
         body.onPostPhysicsTick {
             previousContactSupport = currentContactSupport
             currentContactSupport = 0f
-            grounded = grounded || bodyGrounded
+            grounded = if (trackedVehicle) {
+                bodyGrounded || tracked?.beltSupported() == true
+            } else {
+                grounded || bodyGrounded
+            }
             if (!clientSide) {
                 state = readState(physics.tickCount, lastSequence)
             }
@@ -294,13 +348,14 @@ internal class VehicleBody(
             renderLeftTravel += (targetLeftTravel - renderLeftTravel) * .24f
             renderRightTravel += (targetRightTravel - renderRightTravel) * .24f
             val authoritativeRender = if (clientSide) clientRenderCurrent else null
+            val trackedRender = if (trackedVehicle && !clientSide) tracked?.captureRenderState(physics.tickCount) else null
             renderState = authoritativeRender ?: VehiclePhysicsRenderState(
                 physicsFrame = physics.tickCount,
                 leftTravel = renderLeftTravel,
                 rightTravel = renderRightTravel,
                 leftForce = leftSuspension.force,
                 rightForce = rightSuspension.force,
-                wheels = wheels.map { wheel ->
+                wheels = trackedRender?.wheelStates() ?: wheels.map { wheel ->
                     WheelRenderState(
                         index = wheel.station.index,
                         side = wheel.station.side,
@@ -313,6 +368,7 @@ internal class VehicleBody(
                     )
                 },
                 grounded = grounded,
+                tracked = trackedRender,
             )
             trace("step")
             diagnostic = VehiclePhysicsDiagnostic(physics.tickCount, terrainWaiting, state.position, state.velocity)
@@ -336,11 +392,19 @@ internal class VehicleBody(
                     previous.angularJitterSteps + if (spinDelta > .08) 1 else 0)
             }
         }
-        ready = true
+        // A tracked server hull stays not-ready until its running gear commits.
+        // A missing spec is an admission failure, not a chassis-only vehicle.
+        if (!trackedVehicle || clientSide) ready = true
     }
 
     fun reset(value: RigidState) {
         if (!::body.isInitialized || !value.position.finite() || !value.velocity.finite()) return
+        // Native reads and writes stay on the physics thread. The game thread
+        // only queues this call; it must not wait, or it can deadlock the worker.
+        if (!physics.isPhysicsThread()) {
+            physics.submitTask("vehicle reset ${spec.diagnosticName}") { reset(value) }
+            return
+        }
         if (!clientSide) {
             heldMotion.forEach { (part, _, _) -> part.isKinematic = false }
             heldMotion = emptyList()
@@ -387,6 +451,10 @@ internal class VehicleBody(
         }
         body.activate(true)
         state = value
+        // The hull pose is already the reset pose. Re-seat the running gear in
+        // this same physics-thread call so a later task cannot observe the hull
+        // at the new pose and the belts at the old one.
+        tracked?.resetNow()
         trace("reset")
     }
 
@@ -482,10 +550,33 @@ internal class VehicleBody(
         readyBox = readyBox
             .expandTowards(velocity.scale(0.1))
             .inflate(.1, (settings.suspensionTravelUp + settings.suspensionTravelDown + .5).toDouble(), .1)
-        terrainIssue = physics.terrainManager.readinessIssue(readyBox)
-        val terrainReady = terrainIssue == null
+        // A tracked vehicle's terrain authority is its private Bullet mesh,
+        // never the global block-AABB cache. Non-tracked vehicles keep the
+        // existing block terrain readiness gate.
+        val trackedTerrainReady = !trackedVehicle || tracked?.terrainReady() == true
+        terrainIssue = if (trackedVehicle) {
+            if (trackedTerrainReady) null else "tracked-mesh"
+        } else {
+            physics.terrainManager.readinessIssue(readyBox)
+        }
+        val terrainReady = trackedTerrainReady && (trackedVehicle || terrainIssue == null)
         if (!terrainReady) {
-            if (!terrainWaiting && !hasReadyTerrain) {
+            if (trackedVehicle) {
+                // The tracked runtime owns this wait. It factor-locks the
+                // chassis, wheels and belt runs (`TrackedTerrainWaitController`)
+                // instead of parking them, because a tracked assembly already has
+                // mounts and run-end joints and Bullet rejects a joint between two
+                // kinematic bodies. Converting the hull here would leave the whole
+                // mechanism invalid rather than merely paused, and it would also
+                // fight the runtime's own release, which restores factors the hull
+                // never had.
+                if (!terrainWaiting) trace("tracked-terrain-wait")
+                terrainWaiting = true
+                grounded = false
+                return
+            }
+            val capture = !terrainWaiting && !hasReadyTerrain
+            if (capture) {
                 heldMotion = assembly().filter { !it.isStatic }.map { Triple(it, it.getLinearVelocity(null), it.getAngularVelocity(null)) }
                 heldMotion.forEach { (part, _, _) ->
                     part.clearForces()
@@ -498,8 +589,6 @@ internal class VehicleBody(
             if (!terrainWaiting && hasReadyTerrain) trace("runtime-terrain-loss")
             terrainWaiting = true
             grounded = false
-            // Only initial placement is held. Runtime mesh invalidation must
-            // not lock a falling/impacted vehicle or erase its momentum.
             if (!hasReadyTerrain) return
         }
         if (terrainReady && terrainWaiting) {
@@ -544,6 +633,23 @@ internal class VehicleBody(
             if (terrainReady && groundVehicle && settings.suspensionEnabled && !trackedVehicle && spec.suspensionSides.isNotEmpty()) {
                 applyWheelSuspension(body, physics.world)
             }
+            // Tracked running gear owns its own bilateral rows: one per compiled
+            // station, applied as internal pairs between hull and wheel body.
+            if (trackedVehicle) {
+                // The runtime publishes the plain wheel pose from its own
+                // pre-step hook, which also runs for a bare runtime with no
+                // VehicleBody. Publishing here as well would duplicate the
+                // native reads for no benefit.
+                //
+                // The runtime publishes the previous contact window from that
+                // same hook. Calling beginSupportWindow here would reset it
+                // before the solver samples it.
+                tracked?.applySuspension()
+                // S4: drive, brake and rolling resistance. The command was
+                // published on the game thread; the targets are computed here.
+                tracked?.setDriveCommand(trackedCommand)
+                tracked?.applyDrive()
+            }
             // Suspension contact is sampled before traction so the first input
             // frame after placement can use the actual support state.
             applyDrive(body, physics.world, input)
@@ -573,9 +679,10 @@ internal class VehicleBody(
         // A body that is still falling must not sleep just because the driver
         // has not entered the vehicle yet. Gravity and suspension are the
         // simulation input in that state.
-        if (input.awake || input.acceleration.lengthSqr() > .01 || (groundVehicle && !grounded)) {
-            target.activate(true)
-        }
+        // Wake a sleeping hull once. Calling activate every substep resets
+        // Bullet's deactivation timer, so a supported vehicle never settles.
+        val shouldWake = input.awake || input.acceleration.lengthSqr() > .01 || (groundVehicle && !grounded)
+        if (shouldWake && !target.isActive) target.activate(true)
         if (groundVehicle) {
             // WHEEL traction is the wheel bodies' native friction reacting to
             // the spin motor. Tracked vehicles have no drive path until the
@@ -626,6 +733,47 @@ internal class VehicleBody(
         val r = point.subtract(part.getPhysicsLocation(null))
         val angular = part.getInverseInertiaWorld(null).mult(r.cross(axis, null), null).cross(r, null)
         return 1f / part.mass + axis.dot(angular)
+    }
+
+    /**
+     * Build the S2 tracked running gear for this hull.
+     *
+     * The compiled spec is required: a tracked vehicle without one must not be
+     * given a wheeled suspension as a fallback. Assembly is queued on the physics
+     * thread by the runtime itself, so this returns immediately.
+     */
+    private fun createTrackedRuntime() {
+        val compiled = spec.trackedSpec ?: run {
+            Mod.LOGGER.error(
+                "Tracked vehicle {} has no compiled running gear; it stays out of the physics path",
+                spec.diagnosticName,
+            )
+            return
+        }
+        val runtime = com.atsuishio.superbwarfare.physics.tracked.TrackedVehicleRuntime(
+            physics,
+            ownerHost,
+            compiled,
+            body,
+            Vector3f(0f, -settings.gravity.toFloat(), 0f),
+        )
+        tracked = runtime
+        val hullParts = if (spec.collisionParts.isNotEmpty()) {
+            spec.collisionParts
+        } else {
+            listOf(CollisionPart(half, settings.centerOfMassOffset.scale(-1.0)))
+        }
+        runtime.setDebugCollisionParts(hullParts)
+        runtime.create().whenComplete { _, error ->
+            if (disposed) return@whenComplete
+            if (error != null) {
+                Mod.LOGGER.error("Tracked running gear failed to assemble for {}", spec.diagnosticName, error)
+                // Keep the failed runtime so closeAsync can finish its rollback.
+                markAssemblyFailed()
+            } else {
+                ready = true
+            }
+        }
     }
 
     /** Create one dynamic wheel body and one constrained axle for every WHEEL station. */
@@ -699,9 +847,11 @@ internal class VehicleBody(
         if (anchored || !settings.articulationEnabled) return
         val turretSpec = spec.turret ?: return
         val barrelSpec = spec.barrel
-        val shared = articulationMassTotal.coerceAtLeast(.1f)
-        val turretMass = if (barrelSpec != null) (shared * .7f).coerceAtLeast(.1f) else shared
-        val barrelMass = (shared * .3f).coerceAtLeast(.1f)
+        // Mass comes from the plan, not from a second local split, so the hull
+        // and the articulated bodies cannot disagree about who owns what.
+        val turretMass = spec.massPlan.turretMassKg
+        val barrelMass = spec.massPlan.barrelMassKg
+        if (turretMass <= 0f) return
 
         val turretShape = articulationShape(turretSpec) ?: return
         val turret = articulationBody("sbw_turret", turretShape, turretMass)
@@ -710,7 +860,7 @@ internal class VehicleBody(
         physics.addBody(turret)
         physics.addJoint(turretJoint!!)
 
-        if (barrelSpec != null) {
+        if (barrelSpec != null && barrelMass > 0f) {
             val barrelShape = articulationShape(barrelSpec) ?: return
             val barrel = articulationBody("sbw_barrel", barrelShape, barrelMass)
             barrelBody = barrel
@@ -764,11 +914,20 @@ internal class VehicleBody(
             this.name = name
             owner = ownerHost
             collisionGroup = CollisionGroups.CHASSIS
-            setCollideWithGroups(CollisionGroups.DRIVABLE or CollisionGroups.PHYSICS_BODY or
-                CollisionGroups.CHASSIS or CollisionGroups.WHEEL)
+            setCollideWithGroups(if (trackedVehicle) {
+                com.atsuishio.superbwarfare.physics.tracked.TrackedTerrainCollision.TERRAIN_MESH or
+                    CollisionGroups.PHYSICS_BODY or CollisionGroups.CHASSIS or CollisionGroups.WHEEL
+            } else {
+                CollisionGroups.DRIVABLE or CollisionGroups.PHYSICS_BODY or
+                    CollisionGroups.CHASSIS or CollisionGroups.WHEEL
+            })
             // Same-owner contacts (the chassis and the wheels) must never fight
             // the revolute constraint; terrain and other vehicles still collide.
-            collideWithOwnerGroups = CollisionGroups.NONE
+            collideWithOwnerGroups = if (trackedVehicle) {
+                com.atsuishio.superbwarfare.physics.tracked.TrackedTerrainCollision.TERRAIN_MESH
+            } else {
+                CollisionGroups.NONE
+            }
             isContactResponse = true
             friction = settings.friction.coerceIn(0f, 10f)
             restitution = 0f
@@ -1003,21 +1162,172 @@ internal class VehicleBody(
     }
 
     fun close() {
-        disposed = true
-        ready = false
-        physics.submitImmediateTask {
-            wheels.forEach { wheel -> physics.removeJoint(wheel.joint) }
-            wheels.forEach { wheel -> physics.removeBody(wheel.body) }
-            wheels.clear()
-            barrelJoint?.let { physics.removeJoint(it) }
-            turretJoint?.let { physics.removeJoint(it) }
-            barrelBody?.let { physics.removeBody(it) }
-            turretBody?.let { physics.removeBody(it) }
-            barrelJoint = null
-            turretJoint = null
-            barrelBody = null
-            turretBody = null
-            if (::body.isInitialized) physics.removeBody(body)
+        closeAsync()
+    }
+
+    /**
+     * Physics-thread teardown used by a level shutdown participant.
+     *
+     * This does not submit work. The level has already stopped accepting tasks,
+     * so [closeAsync] would be rejected and must not be treated as success.
+     */
+    fun closeNow() {
+        physics.assertPhysicsThread()
+        synchronized(this) {
+            disposed = true
+            ready = false
+            try {
+                tracked?.closeNow()
+                removeOwnedHullObjects()
+                tracked = null
+                lastCloseError = null
+                val existing = closeFuture.get()
+                if (existing == null) closeFuture.set(java.util.concurrent.CompletableFuture.completedFuture(null))
+                else if (!existing.isDone) existing.complete(null)
+            } catch (error: Throwable) {
+                lastCloseError = error.message ?: error::class.java.simpleName
+                closeFuture.get()?.let { if (!it.isDone) it.completeExceptionally(error) }
+                throw error
+            }
         }
     }
+
+    /**
+     * Close this hull and everything constrained to it, in dependency order.
+     *
+     * The running gear constrains to the hull, so its joints, runs, mounts and
+     * wheels must be gone before the chassis body is removed. Returning a future
+     * lets [VehiclePhysics] keep the entity managed until the native state is
+     * actually gone instead of dropping the only reference that could retry.
+     */
+    fun closeAsync(): java.util.concurrent.CompletableFuture<Void> {
+        synchronized(this) {
+            closeFuture.get()?.let { existing ->
+                if (!existing.isCompletedExceptionally) return existing
+            }
+            disposed = true
+            ready = false
+            val result = java.util.concurrent.CompletableFuture<Void>()
+            closeFuture.set(result)
+
+            // Keep [tracked] until teardown succeeds so a failed close can retry
+            // the same runtime instead of dropping the only rollback owner.
+            val runtime = tracked
+            val runtimeStage: java.util.concurrent.CompletableFuture<Void> = if (runtime != null) {
+                runtime.closeAsync().handle { _, error ->
+                    if (error == null || isLevelShutdown(error)) null else throw error
+                }.thenCompose {
+                    // A close rejected by shutdown removed nothing. The level's
+                    // teardown owns those objects, so wait for it instead of
+                    // reporting success over live native state.
+                    if (runtime.hasResidual && !physics.isAcceptingTasks()) {
+                        physics.closeAsync().thenApply<Void> { null }
+                    } else {
+                        java.util.concurrent.CompletableFuture.completedFuture(null)
+                    }
+                }
+            } else {
+                java.util.concurrent.CompletableFuture.completedFuture(null)
+            }
+
+            runtimeStage.thenCompose {
+                if (!physics.isAcceptingTasks()) {
+                    // Same rule for the hull: level teardown is the barrier.
+                    physics.closeAsync().thenApply<Void> { null }
+                } else {
+                    physics.submitTask("vehicle body teardown ${spec.diagnosticName}") {
+                        removeOwnedHullObjects()
+                    }.handle { _, error ->
+                        if (error == null || isLevelShutdown(error)) null else throw error
+                    }
+                }
+            }.whenComplete { _, error ->
+                if (error != null) {
+                    lastCloseError = error.message ?: error::class.java.simpleName
+                    result.completeExceptionally(error)
+                } else {
+                    // A stopping level destroys every registered body itself.
+                    tracked = null
+                    lastCloseError = null
+                    result.complete(null)
+                }
+            }
+            return result
+        }
+    }
+
+    private fun isLevelShutdown(error: Throwable): Boolean {
+        var current: Throwable? = error
+        while (current != null) {
+            if (current is PhysicsLevelNotRunningException) return true
+            current = current.cause
+        }
+        return false
+    }
+
+    /** Physics thread only. Leaves anything that could not be removed for a retry. */
+    private fun removeOwnedHullObjects() {
+        physics.assertPhysicsThread()
+        val failures = ArrayList<Throwable>()
+        val remainingWheels = ArrayList<WheelRuntime>()
+        for (wheel in wheels.asReversed()) {
+            try {
+                physics.removeJoint(wheel.joint)
+                physics.removeBody(wheel.body)
+            } catch (error: Throwable) {
+                failures += error
+                remainingWheels += wheel
+            }
+        }
+        wheels.clear()
+        wheels.addAll(remainingWheels.asReversed())
+        barrelJoint?.let { joint ->
+            try {
+                physics.removeJoint(joint)
+                barrelJoint = null
+            } catch (error: Throwable) {
+                failures += error
+            }
+        }
+        turretJoint?.let { joint ->
+            try {
+                physics.removeJoint(joint)
+                turretJoint = null
+            } catch (error: Throwable) {
+                failures += error
+            }
+        }
+        barrelBody?.let { body ->
+            try {
+                physics.removeBody(body)
+                barrelBody = null
+            } catch (error: Throwable) {
+                failures += error
+            }
+        }
+        turretBody?.let { body ->
+            try {
+                physics.removeBody(body)
+                turretBody = null
+            } catch (error: Throwable) {
+                failures += error
+            }
+        }
+        if (::body.isInitialized) {
+            try {
+                physics.removeBody(body)
+            } catch (error: Throwable) {
+                failures += error
+            }
+        }
+        if (failures.isNotEmpty()) {
+            val primary = failures.first()
+            failures.drop(1).forEach { primary.addSuppressed(it) }
+            throw primary
+        }
+    }
+
+    /** Last running-gear close failure, kept for diagnostics. */
+    @Volatile var lastCloseError: String? = null
+        private set
 }
