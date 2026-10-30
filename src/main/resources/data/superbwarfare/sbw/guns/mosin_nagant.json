@@ -100,7 +100,14 @@
     "superbwarfare:target_lock",
     "!superbwarfare:micro_missile",
     "!superbwarfare:longer_wire",
-    "!superbwarfare:cupid_arrow"
+    "!superbwarfare:cupid_arrow",
+    "!superbwarfare:cluster_bomb",
+    "superbwarfare:quickdraw",
+    "superbwarfare:adrenaline_rush",
+    "superbwarfare:snapshot_sights",
+    "superbwarfare:triple_tap",
+    "superbwarfare:soul_reaver",
+    "superbwarfare:steady_resolve"
   ],
   "AvailableAttachments": {
     "Scope": [
@@ -118,7 +125,9 @@
       "superbwarfare:muzzle_compensator_r_17",
       "superbwarfare:ar_silencer",
       "superbwarfare:loudspeaker",
-      "superbwarfare:bayonet_m_91_30"
+      "superbwarfare:bayonet_m_91_30",
+      "superbwarfare:milencer",
+      "superbwarfare:steel_pipe_silencer"
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"

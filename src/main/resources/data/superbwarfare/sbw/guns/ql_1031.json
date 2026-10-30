@@ -135,7 +135,14 @@
     "superbwarfare:target_lock",
     "!superbwarfare:micro_missile",
     "!superbwarfare:longer_wire",
-    "!superbwarfare:cupid_arrow"
+    "!superbwarfare:cupid_arrow",
+    "!superbwarfare:cluster_bomb",
+    "superbwarfare:quickdraw",
+    "superbwarfare:adrenaline_rush",
+    "superbwarfare:snapshot_sights",
+    "superbwarfare:triple_tap",
+    "superbwarfare:soul_reaver",
+    "superbwarfare:steady_resolve"
   ],
   "SoundInfo": {
     "Fire1P": "superbwarfare:ql_1031_fire_1p_auto",
@@ -173,14 +180,18 @@
       "superbwarfare:grip_vertical_pineapple",
       "superbwarfare:grip_vertical_bipod",
       "superbwarfare:grip_rectangle_vertical",
-      "superbwarfare:triangle_grip"
+      "superbwarfare:triangle_grip",
+      "superbwarfare:grip_cqr_gen2",
+      "superbwarfare:steel_pipe_grip"
     ],
     "Stock": [
       "superbwarfare:stock_elite",
       "superbwarfare:stock_ar_tactical",
       "superbwarfare:stock_str",
       "superbwarfare:stock_prs",
-      "superbwarfare:steel_pipe_stock"
+      "superbwarfare:steel_pipe_stock",
+      "superbwarfare:stock_ubr",
+      "superbwarfare:stock_zenit_pt_1"
     ],
     "Muzzle": [
       "superbwarfare:meowlencer",
@@ -193,14 +204,17 @@
       "superbwarfare:muzzle_zenit_dtk_1",
       "superbwarfare:muzzle_compensator_r_17",
       "superbwarfare:ar_silencer",
-      "superbwarfare:loudspeaker"
+      "superbwarfare:loudspeaker",
+      "superbwarfare:milencer",
+      "superbwarfare:steel_pipe_silencer"
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"
     ],
     "LowerRail": [
       "superbwarfare:peq_15",
-      "superbwarfare:pistol_laser"
+      "superbwarfare:pistol_laser",
+      "superbwarfare:lower_rail_bipod"
     ],
     "UpperRail": [
       "superbwarfare:peq_15",

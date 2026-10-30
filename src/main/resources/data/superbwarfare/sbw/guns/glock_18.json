@@ -70,11 +70,17 @@
     "superbwarfare:stop_gap",
     "!superbwarfare:micro_missile",
     "!superbwarfare:longer_wire",
-    "!superbwarfare:cupid_arrow"
+    "!superbwarfare:cupid_arrow",
+    "!superbwarfare:cluster_bomb",
+    "superbwarfare:quickdraw",
+    "superbwarfare:adrenaline_rush",
+    "superbwarfare:snapshot_sights",
+    "superbwarfare:triple_tap",
+    "superbwarfare:soul_reaver",
+    "superbwarfare:steady_resolve"
   ],
   "AvailableAttachments": {
     "Scope": [
-      "superbwarfare:scope_raiser",
       "superbwarfare:scope_handgun_red_dot",
       "superbwarfare:scope_winefox"
     ],

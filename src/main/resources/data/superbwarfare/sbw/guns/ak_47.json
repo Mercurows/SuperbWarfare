@@ -96,7 +96,8 @@
     "superbwarfare:stop_gap",
     "!superbwarfare:micro_missile",
     "!superbwarfare:longer_wire",
-    "!superbwarfare:cupid_arrow"
+    "!superbwarfare:cupid_arrow",
+    "!superbwarfare:cluster_bomb"
   ],
   "AvailableAttachments": {
     "Scope": [
@@ -119,7 +120,8 @@
       "superbwarfare:scope_lpvo",
       "superbwarfare:scope_sniper",
       "superbwarfare:scope_winefox",
-      "superbwarfare:scope_spyglass"
+      "superbwarfare:scope_spyglass",
+      "superbwarfare:steel_pipe_scope"
     ],
     "Magazine": [
       "superbwarfare:magazine_extend",

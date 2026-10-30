@@ -88,7 +88,14 @@
     "superbwarfare:stop_gap",
     "!superbwarfare:micro_missile",
     "!superbwarfare:longer_wire",
-    "!superbwarfare:cupid_arrow"
+    "!superbwarfare:cupid_arrow",
+    "!superbwarfare:cluster_bomb",
+    "superbwarfare:quickdraw",
+    "superbwarfare:adrenaline_rush",
+    "superbwarfare:snapshot_sights",
+    "superbwarfare:triple_tap",
+    "superbwarfare:soul_reaver",
+    "superbwarfare:steady_resolve"
   ],
   "AvailableAttachments": {
     "Scope": [
@@ -121,7 +128,9 @@
       "superbwarfare:meowlencer",
       "superbwarfare:hissilencer",
       "superbwarfare:silaowuncer",
-      "superbwarfare:loudspeaker"
+      "superbwarfare:loudspeaker",
+      "superbwarfare:milencer",
+      "superbwarfare:steel_pipe_silencer"
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"

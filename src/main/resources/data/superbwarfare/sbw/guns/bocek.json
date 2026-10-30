@@ -50,7 +50,13 @@
     "superbwarfare:brain_storm",
     "superbwarfare:battle_of_wits",
     "!superbwarfare:micro_missile",
-    "!superbwarfare:butterfly_bullet"
+    "!superbwarfare:cluster_bomb",
+    "superbwarfare:quickdraw",
+    "superbwarfare:adrenaline_rush",
+    "superbwarfare:snapshot_sights",
+    "superbwarfare:triple_tap",
+    "superbwarfare:soul_reaver",
+    "superbwarfare:steady_resolve"
   ],
   "SoundInfo": {
     "Fire1P": "superbwarfare:bocek_zoom_fire_1p",

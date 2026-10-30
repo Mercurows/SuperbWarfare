@@ -64,7 +64,14 @@
     "superbwarfare:target_lock",
     "!superbwarfare:micro_missile",
     "!superbwarfare:longer_wire",
-    "!superbwarfare:cupid_arrow"
+    "!superbwarfare:cupid_arrow",
+    "!superbwarfare:cluster_bomb",
+    "superbwarfare:quickdraw",
+    "superbwarfare:adrenaline_rush",
+    "superbwarfare:snapshot_sights",
+    "superbwarfare:triple_tap",
+    "superbwarfare:soul_reaver",
+    "superbwarfare:steady_resolve"
   ],
   "AvailableAttachments": {
     "Scope": [
@@ -86,14 +93,17 @@
       "superbwarfare:scope_lpvo",
       "superbwarfare:scope_sniper",
       "superbwarfare:scope_winefox",
-      "superbwarfare:scope_spyglass"
+      "superbwarfare:scope_spyglass",
+      "superbwarfare:steel_pipe_scope"
     ],
     "Muzzle": [
       "superbwarfare:meowlencer",
       "superbwarfare:hissilencer",
       "superbwarfare:silaowuncer",
       "superbwarfare:loudspeaker",
-      "superbwarfare:silencer_50_cal"
+      "superbwarfare:silencer_50_cal",
+      "superbwarfare:milencer",
+      "superbwarfare:steel_pipe_silencer"
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"

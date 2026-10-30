@@ -165,5 +165,23 @@
     "Fire1P": "superbwarfare:reforging_fire",
     "Fire3P": "superbwarfare:reforging_fire_3p"
   },
-  "Icon": "superbwarfare:textures/gun_icon/reforging_icon.png"
+  "Icon": "superbwarfare:textures/gun_icon/reforging_icon.png",
+  "AvailablePerks": [
+    "@Ammo",
+    "superbwarfare:field_doctor",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:vorpal_weapon",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:cupid_arrow",
+    "!superbwarfare:cluster_bomb",
+    "superbwarfare:quickdraw",
+    "superbwarfare:adrenaline_rush",
+    "superbwarfare:snapshot_sights",
+    "superbwarfare:triple_tap",
+    "superbwarfare:soul_reaver",
+    "superbwarfare:steady_resolve"
+  ]
 }

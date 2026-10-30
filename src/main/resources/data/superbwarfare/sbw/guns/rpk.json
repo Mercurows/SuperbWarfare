@@ -77,7 +77,14 @@
     "superbwarfare:stop_gap",
     "!superbwarfare:micro_missile",
     "!superbwarfare:longer_wire",
-    "!superbwarfare:cupid_arrow"
+    "!superbwarfare:cupid_arrow",
+    "!superbwarfare:cluster_bomb",
+    "superbwarfare:quickdraw",
+    "superbwarfare:adrenaline_rush",
+    "superbwarfare:snapshot_sights",
+    "superbwarfare:triple_tap",
+    "superbwarfare:soul_reaver",
+    "superbwarfare:steady_resolve"
   ],
   "AvailableAttachments": {
     "Scope": [
@@ -100,7 +107,8 @@
       "superbwarfare:scope_lpvo",
       "superbwarfare:scope_sniper",
       "superbwarfare:scope_winefox",
-      "superbwarfare:scope_spyglass"
+      "superbwarfare:scope_spyglass",
+      "superbwarfare:steel_pipe_scope"
     ],
     "Magazine": [
       "superbwarfare:magazine_extend",
@@ -112,7 +120,8 @@
       "superbwarfare:grip_vertical_bipod",
       "superbwarfare:grip_rectangle_vertical",
       "superbwarfare:triangle_grip",
-      "superbwarfare:grip_cqr_gen2"
+      "superbwarfare:grip_cqr_gen2",
+      "superbwarfare:steel_pipe_grip"
     ],
     "Stock": [
       "superbwarfare:stock_ubr",
@@ -120,7 +129,8 @@
       "superbwarfare:stock_ar_tactical",
       "superbwarfare:stock_str",
       "superbwarfare:stock_elite",
-      "superbwarfare:stock_zenit_pt_1"
+      "superbwarfare:stock_zenit_pt_1",
+      "superbwarfare:steel_pipe_stock"
     ],
     "Muzzle": [
       "superbwarfare:meowlencer",
@@ -133,15 +143,12 @@
       "superbwarfare:muzzle_zenit_dtk_1",
       "superbwarfare:muzzle_compensator_r_17",
       "superbwarfare:ar_silencer",
-      "superbwarfare:loudspeaker"
+      "superbwarfare:loudspeaker",
+      "superbwarfare:milencer",
+      "superbwarfare:steel_pipe_silencer"
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"
-    ],
-    "LowerRail": [
-      "superbwarfare:lower_rail_bipod",
-      "superbwarfare:peq_15",
-      "superbwarfare:pistol_laser"
     ],
     "UpperRail": [
       "superbwarfare:peq_15",
