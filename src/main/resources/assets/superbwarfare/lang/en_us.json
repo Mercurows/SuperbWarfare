@@ -662,6 +662,8 @@
   "attachment.superbwarfare.slot.leftrail": "[Left Rail Attachment]",
   "attachment.superbwarfare.slot.rightrail": "[Right Rail Attachment]",
   "attachment.superbwarfare.slot.ammo_type": "[Ammo Type]",
+  "attachment.superbwarfare.slot.ammo_type.main": "[Ammo Type]-Primary",
+  "attachment.superbwarfare.slot.ammo_type.sub": "[Ammo Type]-Secondary",
   "attachment.superbwarfare.slot.scope_stack": "[Stacked Scope]",
   "attachment.superbwarfare.additional_slots": "Can also be used as %1$s",
   "attachment.superbwarfare.modify": "Modify ",
@@ -1523,6 +1525,7 @@
   "screen.superbwarfare.weapon_edit.stats.hide": "Hide Weapon Attributes",
   "screen.superbwarfare.weapon_edit.stats.title": "Weapon Attributes",
   "screen.superbwarfare.weapon_edit.available_attachments": "%s AVAILABLE",
+  "screen.superbwarfare.weapon_edit.available_ammo_types": "%s AMMO TYPES AVAILABLE",
 
   "gamerule.sbwDoGenerateLoots": "Generate Superb Warfare Chest Loots",
 

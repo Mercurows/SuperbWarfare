@@ -52,6 +52,14 @@
                 <select id="panel-skin"></select>
             </div>
         </div>
+        <!-- 弹种模式专用：装备中弹种的属性条（两列，各最多三项）。配件模式下这一行是"卸下 / 皮肤"。
+             外层负责在这段空白里上下居中，内层才是一行两列：两列的项数可能不同，必须按行顶对齐。 -->
+        <div id="panel-ammo-stats">
+            <div id="panel-ammo-stats-line" class="ammo-stat-line">
+                <div id="panel-ammo-stats-col0" class="ammo-stat-col"></div>
+                <div id="panel-ammo-stats-col1" class="ammo-stat-col"></div>
+            </div>
+        </div>
         <!-- AUI 原生 overflow / scrollbar；Kotlin 复用可见区域附近的格子，保留完整列表滚动高度。 -->
         <div id="panel-list">
             <div id="panel-scroll"><div id="panel-space"></div></div>
@@ -346,6 +354,22 @@
     }
     .cell { position: relative; display: flex; width: 16px; height: 16px; padding: 0; flex-shrink: 0; }
     #panel-empty { display: none; font-size: 7px; color: #a9c6d2; padding: 8px 0; }
+/* 弹种模式：装备中弹种的属性条（两列），占用配件模式下"卸下 / 皮肤"那一行。
+   left 与 #panel-current 的左边线对齐（两者都在面板坐标 x=5）；行距取 line-height 本身（gap 为 0），
+   比按 font-size 自然行高排出来的更紧。
+   top + height 覆盖"图标下沿 → 列表分隔线"这段空白（44..78），justify-content: center 让整块
+   在中间上下居中；内容项数变化（有没有爆炸那两项）时也始终居中。 */
+#panel-ammo-stats {
+    position: absolute; left: 5px; top: 44px; width: 163px; height: 34px;
+    display: none; flex-direction: column; justify-content: center; pointer-events: none;
+}
+.ammo-stat-line { display: flex; flex-direction: row; gap: 6px; }
+.ammo-stat-col { display: flex; flex-direction: column; gap: 0; width: 78px; }
+.ammo-stat {
+    font-size: 6.5px; line-height: 8px; color: #a9c6d2;
+    white-space: nowrap; overflow: hidden;
+}
+.ammo-stat-value { color: #ffffff; font-weight: normal; }
     /* 底部计数条；分隔线与右侧点阵由 Kotlin 独立绘制。 */
     #panel-footer { position: absolute; left: 5px; top: 129px; width: 168px; height: 17px; pointer-events: none; }
     #panel-count {

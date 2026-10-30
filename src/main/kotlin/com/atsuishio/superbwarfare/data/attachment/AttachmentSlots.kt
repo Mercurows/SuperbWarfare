@@ -293,6 +293,15 @@ object AttachmentSlots {
     val AMMO_TYPE_EDIT_INDEX: Int = EDIT_ORDER.indexOf(AttachmentEditTarget.AmmoType)
 
     /**
+     * 副武器（下挂榴弹等）自己的弹种入口在
+     * [com.atsuishio.superbwarfare.event.ClientEventHandler.editingAttachmentType] 里的取值。
+     *
+     * 取负数是为了和 [EDIT_ORDER] 的下标区分开（-1 已经表示"什么都没选"）；
+     * 它不对应任何一个槽位，而是指"主手枪上装着的副武器的弹种面板"。
+     */
+    const val SUB_WEAPON_AMMO_EDIT_INDEX: Int = -2
+
+    /**
      * [type] 槽位在 [EDIT_ORDER] 里的下标，也就是报文里 `EditMessage.type` 的取值
      *
      * 没有登记（新增枚举但没进 [EDIT_ORDER]）时返回 -1。改装界面的挂点按钮用它设

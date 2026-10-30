@@ -5,9 +5,11 @@ import com.atsuishio.superbwarfare.client.tooltip.ClientAttachmentImageTooltip
 import com.atsuishio.superbwarfare.client.tooltip.component.AttachmentImageComponent
 import com.atsuishio.superbwarfare.config.server.GunConfig
 import com.atsuishio.superbwarfare.data.attachment.*
+import com.atsuishio.superbwarfare.data.gun.AmmoConsumer
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.data.gun.GunState
+import com.atsuishio.superbwarfare.data.gun.subweapon.SubWeaponRuntime
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.event.ClientEventHandler.editModelShake
 import com.atsuishio.superbwarfare.event.ClientEventHandler.editingAttachmentType
@@ -38,6 +40,7 @@ import com.sighs.apricityui.render.Base
 import com.sighs.apricityui.render.FontDrawer
 import com.sighs.apricityui.screen.ApricityScreen
 import com.sighs.apricityui.style.Text
+import net.minecraft.ChatFormatting
 import net.minecraft.client.StringSplitter
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.renderer.RenderType
@@ -47,6 +50,7 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.sounds.SoundEvent
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
 import net.neoforged.api.distmarker.Dist
@@ -107,6 +111,26 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     private var statsAttachments: CompoundTag? = null
     private var statsDataVersion = -1
 
+    /** 上一次播放滑块音的时间（毫秒），用于节流 */
+    private var lastSlideSoundAt = 0L
+
+    /** `03` 面板当前是不是弹种模式：模式切换要重置格子绑定，否则会留下另一边的图标 */
+    private var panelAmmoMode = false
+
+    /** 弹种模式当前编辑的是不是副武器的弹种（主武器 / 副武器是两份数据） */
+    private var panelAmmoSub = false
+
+    /** 弹种模式下的格子 → 弹种下标（配件格子用 [shownItems]，两边互斥） */
+    private val shownAmmo = mutableMapOf<String, Int>()
+
+    /** 弹种模式的候选、已装备下标与枪数据，每帧由 `syncAmmoPanel` 刷新，供悬浮提示取值 */
+    private var ammoPanelConsumers: List<AmmoConsumer> = emptyList()
+    private var ammoPanelSelected = 0
+    private var ammoPanelData: GunData? = null
+
+    /** 弹种属性条已生成的内容签名，内容没变就不重建 DOM */
+    private var ammoStatsSignature: String? = null
+
     override fun isPauseScreen(): Boolean = false
 
     override fun tick() {
@@ -166,6 +190,14 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         statsPerks = null
         statsAttachments = null
         statsDataVersion = -1
+        lastSlideSoundAt = 0L
+        panelAmmoMode = false
+        panelAmmoSub = false
+        shownAmmo.clear()
+        ammoPanelConsumers = emptyList()
+        ammoPanelSelected = 0
+        ammoPanelData = null
+        ammoStatsSignature = null
     }
 
     override fun render(graphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
@@ -211,28 +243,40 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
                 val chartTop = STATS_CHART_TOP * scale
                 val chart = Box(stats.left, stats.top + chartTop, stats.width, stats.height - chartTop)
                 drawPanelBackground(vertices, matrix, chart, scale, PANEL_BACKGROUND)
-                drawQuad(vertices, matrix, chart.left + 7.5f * scale, chart.top + 20.5f * scale,
-                    chart.right - 7.5f * scale, chart.top + 21f * scale, PANEL_BORDER)
+                drawQuad(
+                    vertices, matrix, chart.left + 7.5f * scale, chart.top + 20.5f * scale,
+                    chart.right - 7.5f * scale, chart.top + 21f * scale, PANEL_BORDER
+                )
                 drawAccentDashes(vertices, matrix, chart.left + 7.5f * scale, chart.top + 20.25f * scale, scale)
                 drawDotGrid(vertices, matrix, chart.right - 6f * scale, chart.top + 15.5f * scale, 2, 2, scale)
             }
             panel?.let {
                 drawPanelBackground(vertices, matrix, it, scale, PANEL_BACKGROUND)
-                drawQuad(vertices, matrix, it.left + 6f * scale, it.top + 23f * scale,
-                    it.left + 174f * scale, it.top + 23.5f * scale, PANEL_BORDER)
+                drawQuad(
+                    vertices, matrix, it.left + 6f * scale, it.top + 23f * scale,
+                    it.left + 174f * scale, it.top + 23.5f * scale, PANEL_BORDER
+                )
                 // 与设置分隔线一样独立绘制，不依赖滚动容器或按钮悬停触发 AUI 边框批次。
-                drawQuad(vertices, matrix, it.left + 6f * scale, it.top + 67f * scale,
-                    it.left + 174f * scale, it.top + 67.5f * scale, PANEL_BORDER)
-                drawQuad(vertices, matrix, it.left + 5f * scale, it.top + 129f * scale,
-                    it.right - 5f * scale, it.top + 129.5f * scale, PANEL_BORDER)
+                // 弹种模式下属性条把列表推下来，这条分隔线也跟着下移。
+                val listDivider = if (panelAmmoMode) AMMO_LIST_DIVIDER_TOP else 67f
+                drawQuad(
+                    vertices, matrix, it.left + 6f * scale, it.top + listDivider * scale,
+                    it.left + 174f * scale, it.top + (listDivider + 0.5f) * scale, PANEL_BORDER
+                )
+                drawQuad(
+                    vertices, matrix, it.left + 5f * scale, it.top + 129f * scale,
+                    it.right - 5f * scale, it.top + 129.5f * scale, PANEL_BORDER
+                )
                 drawAccentDashes(vertices, matrix, it.left + 6f * scale, it.top + 22.75f * scale, scale)
                 drawDotGrid(vertices, matrix, it.right - 6f * scale, it.top + 15.5f * scale, 3, 2, scale)
                 drawDotGrid(vertices, matrix, it.right - 6f * scale, it.top + 138.8f * scale, 3, 2, scale)
             }
             settings?.let {
                 drawPanelBackground(vertices, matrix, it, scale, PANEL_BACKGROUND)
-                drawQuad(vertices, matrix, it.left + 5f * scale, it.top + 23f * scale,
-                    it.left + 173f * scale, it.top + 23.5f * scale, PANEL_BORDER)
+                drawQuad(
+                    vertices, matrix, it.left + 5f * scale, it.top + 23f * scale,
+                    it.left + 173f * scale, it.top + 23.5f * scale, PANEL_BORDER
+                )
                 drawAccentDashes(vertices, matrix, it.left + 5f * scale, it.top + 22.75f * scale, scale)
                 drawDotGrid(vertices, matrix, it.right - 6f * scale, it.top + 15.5f * scale, 2, 2, scale)
             }
@@ -284,7 +328,9 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         doc.getElementById("title-version")?.textContent = "v" + modVersion()
         doc.addEventListener("wheel", { event ->
             // 原生 select 的顶层弹出列表自行处理滚动，不交给底下的配件列表。
-            if (event.composedPath().any { (it as? Element)?.classList?.contains("aui-select-popup") == true }) return@addEventListener
+            if (event.composedPath()
+                    .any { (it as? Element)?.classList?.contains("aui-select-popup") == true }
+            ) return@addEventListener
             val scroll = doc.getElementById("panel-scroll")
             val list = doc.getElementById("panel-list")
             val statsScroll = doc.getElementById("stats-scroll")
@@ -292,7 +338,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             val inStats = statsVisible && statsScroll != null && event.composedPath().any { it === statsScroll }
             val inSettings = settingsScroll != null && event.composedPath().any { it === settingsScroll }
             val inList = panelType != null && AttachmentSlots.slotAt(editingAttachmentType) == panelType &&
-                scroll != null && list != null && event.composedPath().any { it === list }
+                    scroll != null && list != null && event.composedPath().any { it === list }
             // 始终取消默认滚动，列表到边界时也不能把滚动传给 body 或其他祖先。
             event.preventDefault()
             event.stopPropagation()
@@ -305,9 +351,11 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         for (type in AttachmentType.entries) {
             val id = mountId(type)
             addMount(doc, id, slotName(type)) { onMountClicked(type) }
-            doc.getElementById("icon-layer")?.appendChild(doc.createHTML(
-                """<div id="icon-$id" class="attachment-icon">${itemSlot()}</div>"""
-            ))
+            doc.getElementById("icon-layer")?.appendChild(
+                doc.createHTML(
+                    """<div id="icon-$id" class="attachment-icon">${itemSlot()}</div>"""
+                )
+            )
             doc.getElementById("icon-$id")?.let { icon ->
                 icon.addEventListener("click") { onMountClicked(type) }
                 wireItemHover(icon)
@@ -316,7 +364,15 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         addMount(doc, AMMO_MOUNT_ID, Component.translatable("attachment.superbwarfare.slot.ammo_type").string) {
             onAmmoClicked()
         }
-        addMount(doc, SCOPE_STACK_MOUNT_ID, Component.translatable("attachment.superbwarfare.slot.scope_stack").string) {
+        // 副武器的弹种挂点：位置来自副武器模型自己的 `ammo_pos`（没有这根骨骼就不出现）
+        addMount(doc, SUB_AMMO_MOUNT_ID, Component.translatable("attachment.superbwarfare.slot.ammo_type").string) {
+            onSubAmmoClicked()
+        }
+        addMount(
+            doc,
+            SCOPE_STACK_MOUNT_ID,
+            Component.translatable("attachment.superbwarfare.slot.scope_stack").string
+        ) {
             onMountClicked(AttachmentType.SCOPE)
         }
         doc.getElementById("backdrop")?.addEventListener("click") {
@@ -360,27 +416,45 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             doc.getElementById("settings-reset-label")?.textContent = label("reset")
             reset.setAttribute("title", label("reset"))
             reset.setAttribute("aria-label", label("reset"))
-            reset.addEventListener("click") { adjustAttachment(reset = true) }
+            reset.addEventListener("click") {
+                playUiSound(ModSounds.ATTACHMENT_BUTTON.get())
+                adjustAttachment(reset = true)
+            }
         }
         doc.getElementById("settings-confirm")?.let { confirm ->
             doc.getElementById("settings-confirm-label")?.textContent = label("confirm")
             confirm.setAttribute("title", label("confirm"))
             confirm.setAttribute("aria-label", label("confirm"))
-            confirm.addEventListener("click") { confirmAdjustments() }
+            confirm.addEventListener("click") {
+                playUiSound(ModSounds.ATTACHMENT_BUTTON.get())
+                confirmAdjustments()
+            }
         }
         for (property in ADJUSTMENT_PROPERTIES) {
-            doc.getElementById("settings-$property-minus")?.addEventListener("click") { stepAdjustment(property, -1) }
-            doc.getElementById("settings-$property-plus")?.addEventListener("click") { stepAdjustment(property, 1) }
+            doc.getElementById("settings-$property-minus")?.addEventListener("click") {
+                playUiSound(ModSounds.ATTACHMENT_BUTTON.get())
+                stepAdjustment(property, -1)
+            }
+            doc.getElementById("settings-$property-plus")?.addEventListener("click") {
+                playUiSound(ModSounds.ATTACHMENT_BUTTON.get())
+                stepAdjustment(property, 1)
+            }
             doc.getElementById("settings-$property-label")?.textContent = label(property)
             doc.getElementById("settings-$property")?.let { input ->
                 input.addEventListener("input") {
                     val value = input.getValue().toDoubleOrNull() ?: return@addEventListener
-                    adjustAttachment(property, value)
+                    // 滑块拖动：值真的变了才补一声滑动音（`setValue` 同步不会触发 input）
+                    if (adjustAttachment(property, value)) playSlideSound()
                 }
             }
             doc.getElementById("settings-$property-value")?.let { input ->
-                wireSettingsInput(input,
-                    { if (AttachmentColorInput.shift(property) != null) RGB_NUMBER.matches(it) else ADJUSTMENT_NUMBER.matches(it) },
+                wireSettingsInput(
+                    input,
+                    {
+                        if (AttachmentColorInput.shift(property) != null) RGB_NUMBER.matches(it) else ADJUSTMENT_NUMBER.matches(
+                            it
+                        )
+                    },
                     { finish -> commitAdjustmentInput(input, property, finish) },
                     { direction -> stepAdjustment(property, direction) })
             }
@@ -429,10 +503,12 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
                     commit(true)
                     input.blur()
                 }
+
                 GLFW.GLFW_KEY_ESCAPE -> {
                     event.preventDefault()
                     leaveSlot()
                 }
+
                 GLFW.GLFW_KEY_UP, GLFW.GLFW_KEY_DOWN -> if (step != null) {
                     event.preventDefault()
                     step(if (event.keyCode == GLFW.GLFW_KEY_UP) 1 else -1)
@@ -475,16 +551,30 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         data.attachment.id(type)?.let(AttachmentDefinition::from)?.laser
 
     private fun currentAdjustment(data: GunData, type: AttachmentType): AttachmentAdjustMessage =
-        previewFor(data, type) ?: AttachmentAdjustMessage(data.getDefault().itemId, data.uuid?.toString(),
+        previewFor(data, type) ?: AttachmentAdjustMessage(
+            data.getDefault().itemId, data.uuid?.toString(),
             localPlayer?.inventory?.selected ?: -1, type.attachmentName, data.attachment.id(type).toString(),
             data.attachment.getRotation(type), data.attachment.getOffset(type),
-            laserColor = if (laserInfo(data, type) != null) data.attachment.getLaserColor(type) else null)
+            laserColor = if (laserInfo(data, type) != null) data.attachment.getLaserColor(type) else null
+        )
 
-    private fun currentColor(data: GunData, type: AttachmentType, preview: AttachmentAdjustMessage? = previewFor(data, type)): Int =
+    private fun currentColor(
+        data: GunData,
+        type: AttachmentType,
+        preview: AttachmentAdjustMessage? = previewFor(data, type)
+    ): Int =
         laserInfo(data, type)?.resolveColorRgb(preview?.laserColor ?: data.attachment.getLaserColor(type)) ?: 0
 
-    private fun adjustmentRange(data: GunData, type: AttachmentType, property: String): ClosedFloatingPointRange<Double>? = when {
-        property == "rotation" && AttachmentAdjustments.canRotate(data, type) -> AttachmentAdjustments.MIN_ROTATION..AttachmentAdjustments.MAX_ROTATION
+    private fun adjustmentRange(
+        data: GunData,
+        type: AttachmentType,
+        property: String
+    ): ClosedFloatingPointRange<Double>? = when {
+        property == "rotation" && AttachmentAdjustments.canRotate(
+            data,
+            type
+        ) -> AttachmentAdjustments.MIN_ROTATION..AttachmentAdjustments.MAX_ROTATION
+
         property == "offset" && AttachmentAdjustments.canOffset(type) -> AttachmentAdjustments.offsetRange(data, type)
         AttachmentColorInput.shift(property) != null && laserInfo(data, type) != null -> 0.0..255.0
         else -> null
@@ -505,7 +595,8 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         // 失焦可能发生在点击另一个槽位之后；旧输入框不能把旧值提交到新槽位或新配件。
         if (input.getAttribute("data-adjustment-slot") != type.attachmentName ||
             input.getAttribute("data-adjustment-gun") != data.uuid?.toString().orEmpty() ||
-            input.getAttribute("data-adjustment-id") != data.attachment.id(type)?.toString()) return
+            input.getAttribute("data-adjustment-id") != data.attachment.id(type)?.toString()
+        ) return
         val value = input.getValue().toDoubleOrNull()?.takeIf { it.isFinite() }
         if (!finish && (value == null || value !in range)) return
         val fallback = adjustmentValue(data, type, property)
@@ -519,7 +610,8 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         String.format(Locale.ROOT, if (property == "offset") "%.1f" else "%.0f", value)
 
     private fun adjustmentValue(data: GunData, type: AttachmentType, property: String): Double {
-        AttachmentColorInput.shift(property)?.let { return AttachmentColorInput.channel(currentColor(data, type), it).toDouble() }
+        AttachmentColorInput.shift(property)
+            ?.let { return AttachmentColorInput.channel(currentColor(data, type), it).toDouble() }
         val current = currentAdjustment(data, type)
         return if (property == "rotation") current.rotation else current.offset
     }
@@ -528,43 +620,62 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         val (type, data) = selectedAdjustmentData() ?: return
         if (laserInfo(data, type) == null || input.getAttribute("data-adjustment-slot") != type.attachmentName ||
             input.getAttribute("data-adjustment-gun") != data.uuid?.toString().orEmpty() ||
-            input.getAttribute("data-adjustment-id") != data.attachment.id(type)?.toString()) return
+            input.getAttribute("data-adjustment-id") != data.attachment.id(type)?.toString()
+        ) return
         AttachmentColorInput.parse(input.getValue())?.let { color ->
-            if (color != currentColor(data, type)) adjustmentDraft.update(currentAdjustment(data, type).copy(laserColor = color))
+            if (color != currentColor(data, type)) adjustmentDraft.update(
+                currentAdjustment(
+                    data,
+                    type
+                ).copy(laserColor = color)
+            )
         }
         if (finish) input.setValue(AttachmentColorInput.format(currentColor(data, type)))
     }
 
-    private fun adjustAttachment(property: String = "", value: Double = 0.0, reset: Boolean = false) {
-        if (!value.isFinite()) return
+    /** @return 草稿是否真的变了（滑块用来决定要不要补一声滑动音） */
+    private fun adjustAttachment(property: String = "", value: Double = 0.0, reset: Boolean = false): Boolean {
+        if (!value.isFinite()) return false
         if (reset) finishAdjustmentInputs()
-        val (type, data) = selectedAdjustmentData() ?: return
+        val (type, data) = selectedAdjustmentData() ?: return false
         val previous = currentAdjustment(data, type)
         val next: AttachmentAdjustMessage
         if (reset) {
-            next = previous.copy(rotation = 0.0, offset = 0.0, reset = true,
-                laserColor = if (laserInfo(data, type) != null) -1 else null)
+            next = previous.copy(
+                rotation = 0.0, offset = 0.0, reset = true,
+                laserColor = if (laserInfo(data, type) != null) -1 else null
+            )
         } else {
-            val range = adjustmentRange(data, type, property) ?: return
+            val range = adjustmentRange(data, type, property) ?: return false
             val normalized = formatAdjustment(property, value.coerceIn(range.start, range.endInclusive))
                 .toDouble().coerceIn(range.start, range.endInclusive)
-            if (normalized == adjustmentValue(data, type, property)) return
+            if (normalized == adjustmentValue(data, type, property)) return false
             val shift = AttachmentColorInput.shift(property)
             next = when {
-                shift != null -> previous.copy(laserColor = AttachmentColorInput.withChannel(currentColor(data, type), shift, normalized.toInt()))
+                shift != null -> previous.copy(
+                    laserColor = AttachmentColorInput.withChannel(
+                        currentColor(data, type),
+                        shift,
+                        normalized.toInt()
+                    )
+                )
+
                 property == "rotation" -> previous.copy(rotation = normalized)
                 else -> previous.copy(offset = normalized)
             }
         }
         // 预览留在界面内存，不能在客户端 save()：这会递增 GunData revision，阻碍服务端快照接管。
         adjustmentDraft.update(next)
+        return true
     }
 
     internal fun previewFor(data: GunData, type: AttachmentType): AttachmentAdjustMessage? =
-        adjustmentDraft.preview?.takeIf { AttachmentSlots.slotAt(editingAttachmentType) == type &&
-            it.gunId == data.getDefault().itemId && it.gunUuid == data.uuid?.toString() &&
-            it.hotbarSlot == localPlayer?.inventory?.selected && it.slot == type.attachmentName &&
-            it.attachmentId == data.attachment.id(type)?.toString() }
+        adjustmentDraft.preview?.takeIf {
+            AttachmentSlots.slotAt(editingAttachmentType) == type &&
+                    it.gunId == data.getDefault().itemId && it.gunUuid == data.uuid?.toString() &&
+                    it.hotbarSlot == localPlayer?.inventory?.selected && it.slot == type.attachmentName &&
+                    it.attachmentId == data.attachment.id(type)?.toString()
+        }
 
     /**
      * 第一人称渲染可能持有主手物品的旧副本，不能用 ItemStack 引用相等判断是否正在改装。
@@ -577,7 +688,8 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         val data = GunData.from(held)
         if (data.getDefault().itemId != renderedData.getDefault().itemId ||
             (renderedData.stack !== held && (data.uuid == null || data.uuid != renderedData.uuid)) ||
-            data.attachment.id(type) != renderedData.attachment.id(type)) return null
+            data.attachment.id(type) != renderedData.attachment.id(type)
+        ) return null
         return currentAdjustment(data, type)
     }
 
@@ -613,21 +725,36 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             }
             val current = live ?: value
             val fraction = if (max > min) ((current - min) / (max - min)).coerceIn(0.0, 1.0) else 0.0
-            setStyle(doc.getElementById("settings-$property-fill"), "width",
-                px((SLIDER_TRACK_WIDTH * fraction).toFloat()))
-            setStyle(doc.getElementById("settings-$property-thumb"), "transform",
-                "translateX(${px((SLIDER_TRACK_LEFT + SLIDER_TRACK_WIDTH * fraction - SLIDER_THUMB_RADIUS).toFloat())})")
+            setStyle(
+                doc.getElementById("settings-$property-fill"), "width",
+                px((SLIDER_TRACK_WIDTH * fraction).toFloat())
+            )
+            setStyle(
+                doc.getElementById("settings-$property-thumb"), "transform",
+                "translateX(${px((SLIDER_TRACK_LEFT + SLIDER_TRACK_WIDTH * fraction - SLIDER_THUMB_RADIUS).toFloat())})"
+            )
         }
+
         val submitted = previewFor(data, type)
-        adjustmentDraft.acknowledge(submitted != null && submitted.rotation == data.attachment.getRotation(type) &&
-            submitted.offset == data.attachment.getOffset(type) &&
-            (submitted.laserColor == null || submitted.laserColor == data.attachment.getLaserColor(type)))
+        adjustmentDraft.acknowledge(
+            submitted != null && submitted.rotation == data.attachment.getRotation(type) &&
+                    submitted.offset == data.attachment.getOffset(type) &&
+                    (submitted.laserColor == null || submitted.laserColor == data.attachment.getLaserColor(type))
+        )
         val preview = previewFor(data, type)
-        sync("rotation", rotation, preview?.rotation ?: data.attachment.getRotation(type), AttachmentAdjustments.MIN_ROTATION,
-            AttachmentAdjustments.MAX_ROTATION, AttachmentAdjustments.ROTATION_STEP)
+        sync(
+            "rotation",
+            rotation,
+            preview?.rotation ?: data.attachment.getRotation(type),
+            AttachmentAdjustments.MIN_ROTATION,
+            AttachmentAdjustments.MAX_ROTATION,
+            AttachmentAdjustments.ROTATION_STEP
+        )
         val range = AttachmentAdjustments.offsetRange(data, type)
-        sync("offset", offset, preview?.offset ?: data.attachment.getOffset(type), range.start, range.endInclusive,
-            AttachmentAdjustments.OFFSET_STEP)
+        sync(
+            "offset", offset, preview?.offset ?: data.attachment.getOffset(type), range.start, range.endInclusive,
+            AttachmentAdjustments.OFFSET_STEP
+        )
         val color = currentColor(data, type, preview)
         for (property in listOf("red", "green", "blue")) {
             val channel = AttachmentColorInput.channel(color, AttachmentColorInput.shift(property)!!)
@@ -659,7 +786,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         fun fitRows(reserved: Float) =
             floor((columnBudget - reserved - SETTINGS_BASE_HEIGHT) / SETTINGS_ROW_HEIGHT + 0.001f).toInt()
         statsCollapsedForSettings = statsOpen && !statsCollapseSuppressed &&
-            fitRows(STATS_HEIGHT) < rows && fitRows(STATS_BUTTON_HEIGHT) >= rows
+                fitRows(STATS_HEIGHT) < rows && fitRows(STATS_BUTTON_HEIGHT) >= rows
         val reservedStats = if (statsVisible) STATS_HEIGHT else STATS_BUTTON_HEIGHT
         val visibleRows = minOf(rows, fitRows(reservedStats)).coerceAtLeast(1)
         val height = SETTINGS_BASE_HEIGHT + visibleRows * SETTINGS_ROW_HEIGHT
@@ -668,20 +795,26 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             setStyle(controls, "height", px(visibleRows * SETTINGS_ROW_HEIGHT - SETTINGS_ROW_GAP))
         }
         // 比原来的底部锚点下移 10 GUI px，拉开属性面板与设置面板，同时避开快捷栏。
-        val bounds = Box(6f, (viewportHeight - SETTINGS_BOTTOM_INSET - height * scale).coerceAtLeast(TITLE_BAR_HEIGHT + 4f),
-            SETTINGS_WIDTH * scale, height * scale)
+        val bounds = Box(
+            6f, (viewportHeight - SETTINGS_BOTTOM_INSET - height * scale).coerceAtLeast(TITLE_BAR_HEIGHT + 4f),
+            SETTINGS_WIDTH * scale, height * scale
+        )
         place(settings, bounds, scale)
         return bounds
     }
 
     private fun addMount(doc: Document, id: String, name: String, action: () -> Unit) {
-        doc.getElementById("mount-layer")?.appendChild(doc.createHTML(
-            """<div id="$id" class="mount"></div>"""
-        ))
+        doc.getElementById("mount-layer")?.appendChild(
+            doc.createHTML(
+                """<div id="$id" class="mount"></div>"""
+            )
+        )
         doc.getElementById(id)?.addEventListener("click") { action() }
-        doc.getElementById("mount-layer")?.appendChild(doc.createHTML(
-            """<div id="label-$id" class="mount-label"></div>"""
-        ))
+        doc.getElementById("mount-layer")?.appendChild(
+            doc.createHTML(
+                """<div id="label-$id" class="mount-label"></div>"""
+            )
+        )
         doc.getElementById("label-$id")?.textContent = name
     }
 
@@ -701,20 +834,52 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         localPlayer?.playSound(ModSounds.EDIT.get(), 1f, 1f)
     }
 
-    private fun onAmmoClicked() {
+    /**
+     * 点弹种挂点：打开 `03` 的弹种面板（和配件槽位一样，先选挂点再选具体条目），
+     * 不再像以前那样直接循环到下一个弹种 —— 面板里能看到每个弹种的名字与属性。
+     */
+    private fun onAmmoClicked() = openAmmoPanel(AttachmentSlots.AMMO_TYPE_EDIT_INDEX)
+
+    /** 副武器（下挂榴弹等）自己的弹种挂点 */
+    private fun onSubAmmoClicked() = openAmmoPanel(SUB_WEAPON_AMMO_EDIT_INDEX)
+
+    private fun openAmmoPanel(index: Int) {
+        if (editingAttachmentType == index) return
         discardAdjustments()
         hoveredItem = null
-        editingAttachmentType = AttachmentSlots.AMMO_TYPE_EDIT_INDEX
+        editingAttachmentType = index
         editModelShake()
-        sendPacketToServer(EditMessage(AttachmentSlots.AMMO_TYPE_EDIT_INDEX, add = true, isVehicle = false))
+        localPlayer?.playSound(ModSounds.EDIT.get(), 1f, 1f)
     }
 
-    private data class Mount(val id: String, val type: AttachmentType?, val bounds: Box, val installed: ResourceLocation?)
+    private fun playUiSound(sound: SoundEvent, volume: Float = 1f, pitch: Float = 1f) {
+        localPlayer?.playSound(sound, volume, pitch)
+    }
+
+    private fun playSlideSound() {
+        val now = System.currentTimeMillis()
+        if (now - lastSlideSoundAt < SLIDE_SOUND_INTERVAL_MS) return
+        lastSlideSoundAt = now
+        playUiSound(ModSounds.ATTACHMENT_SLIDE.get(), 0.8f, 1f)
+    }
+
+    private data class Mount(
+        val id: String,
+        val type: AttachmentType?,
+        val bounds: Box,
+        val installed: ResourceLocation?,
+        /** 这个挂点对应的 `editingAttachmentType` 取值（配件槽位下标，或弹种 / 副武器弹种标记） */
+        val editIndex: Int,
+    )
 
     private fun syncMounts(doc: Document, data: GunData, reservedPanels: List<Box> = emptyList()): List<Mount> {
         val mounts = mutableListOf<Mount>()
         val selectedType = AttachmentSlots.slotAt(editingAttachmentType)
-        fun sync(id: String, type: AttachmentType?, point: BoneScreenPoint?, available: Boolean, stacked: Boolean = false) {
+        fun sync(
+            id: String, type: AttachmentType?, point: BoneScreenPoint?, available: Boolean,
+            stacked: Boolean = false,
+            editIndex: Int = type?.let(AttachmentSlots::editIndex) ?: AttachmentSlots.AMMO_TYPE_EDIT_INDEX,
+        ) {
             val element = doc.getElementById(id) ?: return
             val installed = if (stacked) null else type?.let { data.attachment.id(it) }
             // 入场动画的前 n tick 隐藏挂点；二级菜单打开后只保留当前挂点。
@@ -727,18 +892,32 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             }
             // gui 模式在 GUI scale >= 6 时不再是 1:1，必须使用 AUI 的坐标转换。
             val projected = doc.guiToDocumentPosition(Position(point.x.toDouble(), point.y.toDouble()))
-            val bounds = findSpace(projected.x.toFloat(), projected.y.toFloat(), MOUNT_SIZE, MOUNT_SIZE,
+            val bounds = findSpace(
+                projected.x.toFloat(), projected.y.toFloat(), MOUNT_SIZE, MOUNT_SIZE,
                 mounts.map { it.bounds } + reservedPanels, 3f, step = 4f)
             place(element, bounds)
-            val index = type?.let(AttachmentSlots::editIndex) ?: AttachmentSlots.AMMO_TYPE_EDIT_INDEX
-            setClass(element, "active", editingAttachmentType == index)
+            setClass(element, "active", editingAttachmentType == editIndex)
             setClass(element, "filled", installed != null)
-            mounts += Mount(id, type, bounds, installed)
+            mounts += Mount(id, type, bounds, installed, editIndex)
         }
         for (type in AttachmentType.entries) {
-            sync(mountId(type), type, WeaponEditMountTracker.positionOf(type), compatibleAttachments(data, type).isNotEmpty())
+            sync(
+                mountId(type),
+                type,
+                WeaponEditMountTracker.positionOf(type),
+                compatibleAttachments(data, type).isNotEmpty()
+            )
         }
-        sync(AMMO_MOUNT_ID, null, WeaponEditMountTracker.ammoPosition, data.get(GunProp.AMMO_CONSUMER).size > 1)
+        sync(
+            AMMO_MOUNT_ID, null, WeaponEditMountTracker.ammoPosition,
+            data.get(GunProp.AMMO_CONSUMER).size > 1, editIndex = AttachmentSlots.AMMO_TYPE_EDIT_INDEX
+        )
+        // 副武器（下挂榴弹等）自己的弹种按钮：副武器有多个弹种、且它的模型带 `ammo_pos` 时才出现
+        sync(
+            SUB_AMMO_MOUNT_ID, null, WeaponEditMountTracker.subAmmoPosition,
+            subWeaponGunData(data)?.get(GunProp.AMMO_CONSUMER)?.size?.let { it > 1 } == true,
+            editIndex = SUB_WEAPON_AMMO_EDIT_INDEX
+        )
         sync(
             SCOPE_STACK_MOUNT_ID, AttachmentType.SCOPE, WeaponEditMountTracker.scopeStackPosition,
             compatibleAttachments(data, AttachmentType.SCOPE).isNotEmpty(), stacked = true
@@ -746,8 +925,40 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         return mounts
     }
 
-    private fun syncPanel(doc: Document, player: Player, data: GunData, mounts: List<Mount>, reserved: List<Box>): Box? {
+    /** 主手枪上装着的副武器的枪数据；没装副武器时为 `null` */
+    private fun subWeaponGunData(data: GunData): GunData? =
+        SubWeaponRuntime.find(data, AttachmentType.SUBWEAPON, client = true)?.data
+
+    private fun editingSubWeaponAmmo(): Boolean = editingAttachmentType == SUB_WEAPON_AMMO_EDIT_INDEX
+
+    /** 当前弹种面板操作的那把枪：主武器，或主手枪上装着的副武器 */
+    private fun ammoPanelGunData(data: GunData): GunData? =
+        if (editingSubWeaponAmmo()) subWeaponGunData(data) else data
+
+    private fun syncPanel(
+        doc: Document,
+        player: Player,
+        data: GunData,
+        mounts: List<Mount>,
+        reserved: List<Box>
+    ): Box? {
         val panel = doc.getElementById("panel") ?: return null
+        // 配件槽位与弹种共用 03 面板；两种模式间切换时格子绑定必须作废，否则会留下另一边的图标。
+        // 弹种模式里主武器 / 副武器是两份不同的数据，目标变了也要重绑。
+        val ammoMode = editingAttachmentType == AttachmentSlots.AMMO_TYPE_EDIT_INDEX || editingSubWeaponAmmo()
+        if (ammoMode != panelAmmoMode || ammoMode && panelAmmoSub != editingSubWeaponAmmo()) {
+            panelAmmoMode = ammoMode
+            panelAmmoSub = ammoMode && editingSubWeaponAmmo()
+            gridWindow.reset()
+            gridSelected = null
+            shownAmmo.clear()
+            shownItems.clear()
+            hoveredItem = null
+            tooltipKey = null
+            ammoStatsSignature = null
+            doc.getElementById("panel-scroll")?.scrollTo(0.0, 0.0)
+        }
+        if (ammoMode) return syncAmmoPanel(doc, data, mounts, reserved)
         val type = AttachmentSlots.slotAt(editingAttachmentType)
         val mount = mounts.firstOrNull { it.type == type && type != null }
         if (type == null || mount == null) {
@@ -758,6 +969,15 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             panelType = null
             return null
         }
+        // 从弹种模式回来时，卸下按钮及其文字的 inline display 需要还原（CSS 默认是 flex / block），
+        // 弹种属性条隐藏，列表回到 CSS 里的默认位置与高度
+        setStyle(doc.getElementById("panel-uninstall"), "display", "flex")
+        setStyle(doc.getElementById("panel-uninstall-label"), "display", "block")
+        setStyle(doc.getElementById("panel-ammo-stats"), "display", "none")
+        setStyle(doc.getElementById("panel-list"), "top", px(ATTACHMENT_LIST_TOP))
+        setStyle(doc.getElementById("panel-list"), "height", px(ATTACHMENT_LIST_HEIGHT))
+        setStyle(doc.getElementById("panel-scroll"), "height", px(ATTACHMENT_LIST_HEIGHT))
+        setStyle(doc.getElementById("panel-items"), "height", px(ATTACHMENT_ITEMS_HEIGHT))
         val installed = data.attachment.id(type)
         val changedSlot = panelType != type
         if (changedSlot || panelInstalled != installed) {
@@ -769,8 +989,12 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
                 val current = itemStack(installed)
                 it.textContent = if (current.isEmpty) label("empty") else current.hoverName.string
                 // Forge 的自定义稀有度也可能指定 RGB，沿用完整 Style modifier。
-                setStyle(it, "color", if (current.isEmpty) "#bfc5c9" else String.format(Locale.ROOT, "#%06x",
-                    current.rarity.styleModifier.apply(Style.EMPTY).color?.value ?: 0xffffff))
+                setStyle(
+                    it, "color", if (current.isEmpty) "#bfc5c9" else String.format(
+                        Locale.ROOT, "#%06x",
+                        current.rarity.styleModifier.apply(Style.EMPTY).color?.value ?: 0xffffff
+                    )
+                )
             }
             doc.getElementById("panel-registry-name")?.textContent = installed?.toString().orEmpty()
             doc.getElementById("panel-title")?.textContent = slotName(type)
@@ -792,20 +1016,163 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             setStyle(doc.getElementById("panel-grid"), "height", contentHeight)
             setStyle(doc.getElementById("panel-empty"), "display", if (ids.isEmpty()) "block" else "none")
             doc.getElementById("panel-count")?.textContent = Component.translatable(
-                "screen.superbwarfare.weapon_edit.available_attachments", ids.size).string
+                "screen.superbwarfare.weapon_edit.available_attachments", ids.size
+            ).string
             if (changedSlot) doc.getElementById("panel-scroll")?.scrollTo(0.0, 0.0)
         }
         syncGrid(doc, installed)
         // 小窗口为点位和图标保留半屏空间；所有避让使用缩放后的外框。
         val scale = editorPanelScale()
-        val bounds = findSpace(mount.bounds.right + 24f + PANEL_WIDTH * scale / 2f, mount.bounds.centerY,
+        val bounds = findSpace(
+            mount.bounds.right + 24f + PANEL_WIDTH * scale / 2f, mount.bounds.centerY,
             PANEL_WIDTH * scale, PANEL_HEIGHT * scale, mounts.map { it.bounds } + reserved, 6f)
         place(panel, bounds, scale)
         connect("panel", mount.bounds, bounds)
         return bounds
     }
 
-    private fun syncAttachmentSkins(doc: Document, player: Player, data: GunData, type: AttachmentType, installed: ResourceLocation?) {
+    /**
+     * `03` 面板的弹种模式：候选就是这把枪的 `AmmoType` 列表，点哪一格就把弹种切成哪个。
+     *
+     * 主武器和副武器（下挂榴弹等）各有一份数据、各有一个挂点，编辑目标由
+     * [editingSubWeaponAmmo] 决定；两边共用同一套面板。
+     * 和配件模式共用同一套 DOM：头部显示已装备弹种（图标 + 名称），网格列出全部候选，
+     * 底部是候选数量；卸下按钮与皮肤选择器只对配件有意义，这里隐藏。
+     * 格子只有个位数，直接按行铺满，不启用滚动回收窗口。
+     */
+    private fun syncAmmoPanel(doc: Document, data: GunData, mounts: List<Mount>, reserved: List<Box>): Box? {
+        val panel = doc.getElementById("panel") ?: return null
+        val subWeapon = editingSubWeaponAmmo()
+        val target = ammoPanelGunData(data)
+        // 两个按钮同时存在时才加"-主武器 / -副武器"后缀，只有一个时就是普通的 [弹种]
+        val bothAmmo = mounts.any { it.id == AMMO_MOUNT_ID } && mounts.any { it.id == SUB_AMMO_MOUNT_ID }
+        val mount = mounts.firstOrNull { it.id == if (subWeapon) SUB_AMMO_MOUNT_ID else AMMO_MOUNT_ID }
+        val consumers = target?.get(GunProp.AMMO_CONSUMER).orEmpty()
+        if (mount == null || target == null || consumers.isEmpty()) {
+            setStyle(panel, "display", "none")
+            return null
+        }
+        val selected = target.selectedAmmoType.get().coerceIn(consumers.indices)
+        ammoPanelConsumers = consumers
+        ammoPanelSelected = selected
+        ammoPanelData = target
+        // 面板不再是"某个配件槽位"，回到配件模式时按换槽处理，强制重建列表
+        panelType = null
+
+        val current = consumers[selected].stack()
+        doc.getElementById("panel-current")?.let {
+            setElementItem(
+                it, if (current.isEmpty) AIR
+                else BuiltInRegistries.ITEM.getKey(current.item).toString()
+            )
+            setClass(it, "filled", !current.isEmpty)
+        }
+        doc.getElementById("panel-name")?.let {
+            it.textContent = if (current.isEmpty) consumers[selected].getDisplayName() else current.hoverName.string
+            setStyle(
+                it, "color", if (current.isEmpty) "#bfc5c9" else String.format(
+                    Locale.ROOT, "#%06x",
+                    current.rarity.styleModifier.apply(Style.EMPTY).color?.value ?: 0xffffff
+                )
+            )
+        }
+        // 弹种没有"注册名"这一行，留空与设计稿一致
+        doc.getElementById("panel-registry-name")?.textContent = ""
+        doc.getElementById("panel-title")?.textContent = ammoMountLabel(bothAmmo, subWeapon)
+        doc.getElementById("panel-code")?.textContent = if (subWeapon) SUB_AMMO_TYPE_CODE else AMMO_TYPE_CODE
+        setStyle(doc.getElementById("panel-uninstall"), "display", "none")
+        // 卸下按钮和它的文字标签是两个兄弟元素，只藏按钮会留下"卸下配件"
+        setStyle(doc.getElementById("panel-uninstall-label"), "display", "none")
+        setStyle(doc.getElementById("panel-skin-control"), "display", "none")
+        setStyle(doc.getElementById("panel-empty"), "display", "none")
+
+        // 藏掉那一行之后空出来的位置放装备中弹种的属性；列表跟着下移，分隔线由渲染阶段按模式画
+        syncAmmoStats(doc, ammoStatEntries(target))
+        setStyle(doc.getElementById("panel-list"), "top", px(AMMO_LIST_TOP))
+        setStyle(doc.getElementById("panel-list"), "height", px(AMMO_LIST_HEIGHT))
+        setStyle(doc.getElementById("panel-scroll"), "height", px(AMMO_LIST_HEIGHT))
+        setStyle(doc.getElementById("panel-items"), "height", px(AMMO_ITEMS_HEIGHT))
+
+        val rowCount = (consumers.size + GRID_COLUMNS - 1) / GRID_COLUMNS
+        val contentHeight = px((rowCount * GRID_ROW_PITCH - GRID_ROW_GAP).coerceAtLeast(0f))
+        setStyle(doc.getElementById("panel-space"), "height", contentHeight)
+        setStyle(doc.getElementById("panel-grid"), "height", contentHeight)
+        setStyle(doc.getElementById("panel-grid"), "transform", "translateY(0px)")
+        gridRows.forEachIndexed { rowIndex, row ->
+            setStyle(row.element, "transform", "translateY(${px(rowIndex * GRID_ROW_PITCH)})")
+            setStyle(row.element, "visibility", if (rowIndex < rowCount) "visible" else "hidden")
+            row.cells.forEachIndexed { column, cell ->
+                val index = rowIndex * GRID_COLUMNS + column
+                val consumer = consumers.getOrNull(index)
+                if (consumer == null) {
+                    setStyle(cell.element, "display", "none")
+                    setItem(cell.key, cell.item, null)
+                    setClass(cell.element, "selected", false)
+                    return@forEachIndexed
+                }
+                setStyle(cell.element, "display", "flex")
+                setAmmoCell(cell.key, cell.item, index, consumer.stack())
+                setClass(cell.element, "selected", index == selected)
+            }
+        }
+        doc.getElementById("panel-count")?.textContent = Component.translatable(
+            "screen.superbwarfare.weapon_edit.available_ammo_types", consumers.size
+        ).string
+
+        val scale = editorPanelScale()
+        val bounds = findSpace(
+            mount.bounds.right + 24f + PANEL_WIDTH * scale / 2f, mount.bounds.centerY,
+            PANEL_WIDTH * scale, PANEL_HEIGHT * scale, mounts.map { it.bounds } + reserved, 6f)
+        place(panel, bounds, scale)
+        connect("panel", mount.bounds, bounds)
+        return bounds
+    }
+
+    /**
+     * 弹种模式下"装备中弹种"的属性条（绝对值，不是差值）：伤害 / 爆炸伤害 / 爆炸半径 /
+     * 穿甲倍率 / 子弹初速。没有爆炸的弹种不写爆炸那两项。
+     */
+    private fun ammoStatEntries(data: GunData): List<Pair<String, String>> = buildList {
+        add(propLabel("damage") to WeaponStat.DAMAGE.format(data.get(GunProp.DAMAGE)))
+        val explosionDamage = data.get(GunProp.EXPLOSION_DAMAGE)
+        if (explosionDamage > 0.0) {
+            add(propLabel("explosion_damage") to WeaponStat.EXPLOSION_DAMAGE.format(explosionDamage))
+        }
+        val explosionRadius = data.get(GunProp.EXPLOSION_RADIUS)
+        if (explosionRadius > 0.0) {
+            add(propLabel("explosion_radius") to WeaponStat.EXPLOSION_RADIUS.format(explosionRadius))
+        }
+        add(propLabel("bypasses_armor") to WeaponStat.ARMOR_BYPASS.format(data.get(GunProp.BYPASSES_ARMOR) * 100.0))
+        add(propLabel("velocity") to WeaponStat.VELOCITY.format(data.get(GunProp.VELOCITY) * 20.0))
+    }
+
+    /** 把属性条铺成两列；内容签名没变就不重建 DOM */
+    private fun syncAmmoStats(doc: Document, entries: List<Pair<String, String>>) {
+        val block = doc.getElementById("panel-ammo-stats") ?: return
+        setStyle(block, "display", "flex")
+        val columns = listOf(entries.take(AMMO_STAT_ROWS), entries.drop(AMMO_STAT_ROWS))
+        val signature = columns.joinToString("/") { column ->
+            column.joinToString(",") { "${it.first}=${it.second}" }
+        }
+        if (signature == ammoStatsSignature) return
+        ammoStatsSignature = signature
+        columns.forEachIndexed { index, column ->
+            val element = doc.getElementById("panel-ammo-stats-col$index") ?: return@forEachIndexed
+            element.innerHTML = column.joinToString("") { (label, value) ->
+                """<div class="ammo-stat">$label <span class="ammo-stat-value">$value</span></div>"""
+            }
+        }
+    }
+
+    private fun propLabel(key: String) = Component.translatable("prop.superbwarfare.$key").string
+
+    private fun syncAttachmentSkins(
+        doc: Document,
+        player: Player,
+        data: GunData,
+        type: AttachmentType,
+        installed: ResourceLocation?
+    ) {
         val select = doc.getElementById("panel-skin") as? Select ?: return
         val definition = installed?.let(AttachmentDefinition::from)
         val skins = definition?.skins.orEmpty()
@@ -818,8 +1185,10 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             panelSkin = null
             return
         }
-        val target = AttachmentSkinMessage(data.getDefault().itemId, data.uuid?.toString(),
-            player.inventory.selected, type.attachmentName, installed.toString(), "")
+        val target = AttachmentSkinMessage(
+            data.getDefault().itemId, data.uuid?.toString(),
+            player.inventory.selected, type.attachmentName, installed.toString(), ""
+        )
         val changed = panelSkinTarget != target || panelSkins !== skins
         if (changed) {
             select.closePopup()
@@ -835,9 +1204,10 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
                 select.appendChild(element)
             }
             option(AttachmentDefinition.DEFAULT_SKIN_ID, AttachmentDefinition.DEFAULT_SKIN_ID)
-            skins.distinctBy { it.id }.filter { it.id.isNotBlank() && it.id != AttachmentDefinition.DEFAULT_SKIN_ID }.forEach {
-                option(it.id, Component.translatable(it.name.ifBlank { it.id }).string)
-            }
+            skins.distinctBy { it.id }.filter { it.id.isNotBlank() && it.id != AttachmentDefinition.DEFAULT_SKIN_ID }
+                .forEach {
+                    option(it.id, Component.translatable(it.name.ifBlank { it.id }).string)
+                }
         }
         val current = definition?.skinOrNull(data, type)?.id ?: AttachmentDefinition.DEFAULT_SKIN_ID
         if (panelSkin != current) {
@@ -889,6 +1259,19 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
                 val item = cell.querySelector("item") as? AuiItem ?: return@mapNotNull null
                 item.setIngredientStack(ItemStack.EMPTY)
                 cell.addEventListener("click") {
+                    // 弹种格子：直接选中这个下标，不走配件安装
+                    val ammoIndex = shownAmmo[key]
+                    if (ammoIndex != null) {
+                        hoveredItem = null
+                        discardAdjustments()
+                        sendPacketToServer(
+                            EditMessage(
+                                AttachmentSlots.AMMO_TYPE_EDIT_INDEX, add = false, isVehicle = false,
+                                index = ammoIndex, subWeapon = editingSubWeaponAmmo()
+                            )
+                        )
+                        return@addEventListener
+                    }
                     val type = panelType
                     if (type != null && AttachmentSlots.slotAt(editingAttachmentType) == type) {
                         val id = shownItems[key] ?: return@addEventListener
@@ -954,8 +1337,10 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
                 if (hoveredItem == "icon-$id") hoveredItem = null
                 continue
             }
-            val bounds = findSpace(mount.bounds.centerX, mount.bounds.centerY - 24f,
-                ICON_SIZE, ICON_SIZE, obstacles, 5f)
+            val bounds = findSpace(
+                mount.bounds.centerX, mount.bounds.centerY - 24f,
+                ICON_SIZE, ICON_SIZE, obstacles, 5f
+            )
             obstacles += bounds
             iconBounds[id] = bounds
             place(icon, bounds)
@@ -969,8 +1354,10 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
 
     /** 只显示鼠标所在圆圈的名称，并避让物品图标和菜单。 */
     private fun syncMountLabels(doc: Document, mounts: List<Mount>, obstacles: MutableList<Box>) {
-        val ids = AttachmentType.entries.map(::mountId) + AMMO_MOUNT_ID + SCOPE_STACK_MOUNT_ID
+        val ids = AttachmentType.entries.map(::mountId) + AMMO_MOUNT_ID + SUB_AMMO_MOUNT_ID + SCOPE_STACK_MOUNT_ID
         val mouse = doc.mouseDocumentPosition
+        // 主武器和副武器都能换弹种时，两个按钮的标签分别加"-主武器 / -副武器"后缀才分得清
+        val bothAmmo = mounts.any { it.id == AMMO_MOUNT_ID } && mounts.any { it.id == SUB_AMMO_MOUNT_ID }
         for (id in ids) {
             val element = doc.getElementById("label-$id") ?: continue
             val mount = mounts.firstOrNull { it.id == id }
@@ -978,15 +1365,31 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
                 setStyle(element, "display", "none")
                 continue
             }
+            if (id == AMMO_MOUNT_ID || id == SUB_AMMO_MOUNT_ID) {
+                val text = ammoMountLabel(bothAmmo, id == SUB_AMMO_MOUNT_ID)
+                if (element.textContent != text) element.textContent = text
+            }
             val labelWidth = (Text.measureLine(Text.of(element), element.textContent).toFloat() + 4f)
                 .coerceIn(1f, (viewportWidth - 8f).coerceAtLeast(1f))
-            val bounds = findSpace(mount.bounds.centerX, mount.bounds.bottom + 8f,
-                labelWidth, 11f, obstacles, 2f)
+            val bounds = findSpace(
+                mount.bounds.centerX, mount.bounds.bottom + 8f,
+                labelWidth, 11f, obstacles, 2f
+            )
             setStyle(element, "width", px(labelWidth))
             place(element, bounds)
             setClass(element, "filled", mount.installed != null)
             obstacles += bounds
         }
+    }
+
+    /** 弹种按钮的悬停标签：两个按钮同时存在时分别标出主 / 副武器 */
+    private fun ammoMountLabel(bothShown: Boolean, subWeapon: Boolean): String {
+        val key = when {
+            !bothShown -> "attachment.superbwarfare.slot.ammo_type"
+            subWeapon -> "attachment.superbwarfare.slot.ammo_type.sub"
+            else -> "attachment.superbwarfare.slot.ammo_type.main"
+        }
+        return Component.translatable(key).string
     }
 
     /** 复用配件 tooltip 中的槽位、描述与属性。属性图表不弹出悬浮提示。 */
@@ -1037,20 +1440,46 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     }
 
     private fun renderAttachmentTooltip(graphics: GuiGraphics, doc: Document) {
-        val id = hoveredItem?.let { shownItems[it] }?.takeUnless { it == AIR }
+        val hovered = hoveredItem
+        if (hovered == null) {
+            tooltipKey = null
+            tooltipLines = emptyList()
+            return
+        }
+        // 弹种格子：内容是按弹种算出来的，和配件的物品描述完全不同
+        // （头部那张"当前弹种"图标也算一个弹种格子，悬停时显示同一份属性）
+        val ammoIndex = shownAmmo[hovered]
+            ?: if (panelAmmoMode && hovered == "panel-current") ammoPanelSelected else null
+        if (ammoIndex != null) {
+            val data = ammoPanelData ?: return
+            val key = "ammo:$ammoIndex/${ammoPanelSelected}/${GunData.DATA_VERSION}"
+            renderTooltip(graphics, doc, key) {
+                ammoTooltipLines(data, ammoPanelConsumers, ammoPanelSelected, ammoIndex)
+            }
+            return
+        }
+        val id = shownItems[hovered]?.takeUnless { it == AIR }
         if (id == null) {
             tooltipKey = null
             tooltipLines = emptyList()
             return
         }
+        renderTooltip(graphics, doc, id) {
+            val item = itemStack(ResourceLocation.tryParse(id))
+            listOf(item.hoverName.copy().withStyle(item.rarity.styleModifier).withStyle { it.withBold(false) }) +
+                    ClientAttachmentImageTooltip(AttachmentImageComponent(item)).buildLines(item)
+        }
+    }
+
+    /**
+     * 悬浮提示的绘制与 [key] 缓存。内容只有悬停目标或换行宽度变了才重建。
+     */
+    private fun renderTooltip(graphics: GuiGraphics, doc: Document, key: String, buildLines: () -> List<Component>) {
         val maxWidth = minOf(TOOLTIP_MAX_WIDTH, viewportWidth - 8f).coerceAtLeast(TOOLTIP_PADDING * 2f + 1f)
         val wrapWidth = (maxWidth - TOOLTIP_PADDING * 2f).toInt().coerceAtLeast(1)
-        if (tooltipKey != id || tooltipWrapWidth != wrapWidth) {
-            val item = itemStack(ResourceLocation.tryParse(id))
-            val lines = listOf(item.hoverName.copy().withStyle(item.rarity.styleModifier).withStyle { it.withBold(false) }) +
-                ClientAttachmentImageTooltip(AttachmentImageComponent(item)).buildLines(item)
-            tooltipLines = wrapTooltip(lines, wrapWidth)
-            tooltipKey = id
+        if (tooltipKey != key || tooltipWrapWidth != wrapWidth) {
+            tooltipLines = wrapTooltip(buildLines(), wrapWidth)
+            tooltipKey = key
             tooltipWrapWidth = wrapWidth
         }
         if (tooltipLines.isEmpty()) return
@@ -1063,7 +1492,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         val visibleHeight = height * scale
         val mouse = doc.mouseDocumentPosition
         val x = if (mouse.x + 12 + visibleWidth <= viewportWidth - 4) mouse.x.toFloat() + 12f
-            else mouse.x.toFloat() - visibleWidth - 12f
+        else mouse.x.toFloat() - visibleWidth - 12f
         val left = x.coerceIn(4f, (viewportWidth - visibleWidth - 4f).coerceAtLeast(4f))
         val top = (mouse.y.toFloat() + 12f).coerceIn(4f, (viewportHeight - visibleHeight - 4f).coerceAtLeast(4f))
 
@@ -1079,14 +1508,20 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             pose.scale(documentScale, documentScale, 1f)
             pose.translate(left.toDouble(), top.toDouble(), Base.getFlatOverlayZ().toDouble())
             pose.scale(scale, scale, 1f)
-            drawPanelBackground(graphics.bufferSource().getBuffer(RenderType.gui()), pose.last().pose(),
-                Box(0f, 0f, tooltipWidth, height), 1f, PANEL_BACKGROUND)
+            drawPanelBackground(
+                graphics.bufferSource().getBuffer(RenderType.gui()), pose.last().pose(),
+                Box(0f, 0f, tooltipWidth, height), 1f, PANEL_BACKGROUND
+            )
             graphics.flush()
             pose.translate(0.0, 0.0, 1.0)
             tooltipLines.forEachIndexed { index, runs ->
                 for (run in runs) {
-                    FontDrawer.drawFont(pose, run.text, Position(TOOLTIP_PADDING + run.left,
-                        (TOOLTIP_PADDING + index * TOOLTIP_LINE_HEIGHT).toDouble()))
+                    FontDrawer.drawFont(
+                        pose, run.text, Position(
+                            TOOLTIP_PADDING + run.left,
+                            (TOOLTIP_PADDING + index * TOOLTIP_LINE_HEIGHT).toDouble()
+                        )
+                    )
                 }
             }
             graphics.flush()
@@ -1098,13 +1533,80 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         }
     }
 
+    /**
+     * 弹种悬浮提示：名称 / `[弹种]` / 伤害，有爆炸时再写爆炸伤害与半径；
+     * 穿甲倍率与初速度只在和已装备弹种不同时显示**差值**（带正负色）。
+     */
+    private fun ammoTooltipLines(
+        data: GunData,
+        consumers: List<AmmoConsumer>,
+        selected: Int,
+        index: Int,
+    ): List<Component> {
+        val consumer = consumers.getOrNull(index) ?: return emptyList()
+        val stack = consumer.stack()
+        val probe = ammoProbe(data, index)
+        val equipped = if (selected == index) probe else ammoProbe(data, selected)
+
+        return buildList {
+            add(
+                if (stack.isEmpty) Component.literal(consumer.getDisplayName())
+                else stack.hoverName.copy().withStyle(stack.rarity.styleModifier).withStyle { it.withBold(false) }
+            )
+            add(Component.translatable("attachment.superbwarfare.slot.ammo_type").withStyle(ChatFormatting.GOLD))
+
+            add(ammoPropertyLine("damage", WeaponStat.DAMAGE.format(probe.get(GunProp.DAMAGE))))
+            val explosionDamage = probe.get(GunProp.EXPLOSION_DAMAGE)
+            if (explosionDamage > 0.0) {
+                add(ammoPropertyLine("explosion_damage", WeaponStat.EXPLOSION_DAMAGE.format(explosionDamage)))
+            }
+            val explosionRadius = probe.get(GunProp.EXPLOSION_RADIUS)
+            if (explosionRadius > 0.0) {
+                add(ammoPropertyLine("explosion_radius", WeaponStat.EXPLOSION_RADIUS.format(explosionRadius)))
+            }
+
+            ammoDeltaLine(
+                "bypasses_armor",
+                (probe.get(GunProp.BYPASSES_ARMOR) - equipped.get(GunProp.BYPASSES_ARMOR)) * 100.0, "%"
+            )?.let(::add)
+            ammoDeltaLine(
+                "velocity",
+                (probe.get(GunProp.VELOCITY) - equipped.get(GunProp.VELOCITY)) * 20.0, " m/s"
+            )?.let(::add)
+        }
+    }
+
+    /** 用一份副本算出「装了这个弹种」时的有效属性；副本不会写回枪 */
+    private fun ammoProbe(data: GunData, index: Int): GunData {
+        val probe = GunData.from(data.stack.copy())
+        probe.selectedAmmoType.set(index)
+        probe.invalidateProperties()
+        return probe
+    }
+
+    private fun ammoPropertyLine(
+        key: String,
+        value: String,
+        valueStyle: ChatFormatting = ChatFormatting.WHITE,
+    ): Component = Component.translatable("prop.superbwarfare.$key").withStyle(ChatFormatting.GRAY)
+        .append(Component.literal(" $value").withStyle(valueStyle))
+
+    /** 差值行：为 0 时整行不显示（与已装备弹种一致就没有比较的意义） */
+    private fun ammoDeltaLine(key: String, delta: Double, unit: String): Component? {
+        if (abs(delta) < 1.0e-9) return null
+        val number = String.format(Locale.ROOT, "%.3f", abs(delta)).trimEnd('0').trimEnd('.')
+        val style = if (delta > 0) ChatFormatting.GREEN else ChatFormatting.RED
+        return ammoPropertyLine(key, (if (delta > 0) "+" else "-") + number + unit, style)
+    }
+
     private data class CandidateKey(
         val dataId: String, val version: Int, val tags: Long, val free: Boolean, val fullyFree: Boolean,
         val installed: List<ResourceLocation?>,
     )
 
     private fun refreshAttachmentLists(player: Player, data: GunData) {
-        val key = CandidateKey(data.getDefault().itemId, GunData.DATA_VERSION, AvailableAttachments.reloadGeneration,
+        val key = CandidateKey(
+            data.getDefault().itemId, GunData.DATA_VERSION, AvailableAttachments.reloadGeneration,
             GunConfig.freeAttachmentMode, GunConfig.fullyFreeAttachmentMode,
             AttachmentType.entries.map { data.attachment.id(it) })
         if (candidateKey != key) {
@@ -1149,25 +1651,30 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         val centerY get() = top + height / 2f
         fun contains(x: Float, y: Float) = x in left..<right && y >= top && y < bottom
         fun overlaps(other: Box, gap: Float) = left < other.right + gap && right + gap > other.left &&
-            top < other.bottom + gap && bottom + gap > other.top
+                top < other.bottom + gap && bottom + gap > other.top
+
         fun overlapArea(other: Box, gap: Float): Float =
             (min(right + gap, other.right) - max(left - gap, other.left)).coerceAtLeast(0f) *
-                (min(bottom + gap, other.bottom) - max(top - gap, other.top)).coerceAtLeast(0f)
+                    (min(bottom + gap, other.bottom) - max(top - gap, other.top)).coerceAtLeast(0f)
     }
 
     private fun usableHeight() = (viewportHeight - 28f).coerceAtLeast(1f)
 
     // 缩放只由视口与固定布局预算决定，任何菜单显隐、配件类型、属性数量都不会改变它。
     private fun editorPanelScale() =
-        minOf(1f, (viewportWidth - 8f) / (PANEL_WIDTH * 2f),
+        minOf(
+            1f, (viewportWidth - 8f) / (PANEL_WIDTH * 2f),
             (usableHeight() - TITLE_BAR_HEIGHT - 8f).coerceAtLeast(1f) / PANEL_HEIGHT,
             statsHeightBudget() / STATS_HEIGHT,
             // 固定预留展开的 01、至少一张设置卡片及 8px 间隔；更多卡片在 02 内滚动。
             (viewportHeight - SETTINGS_BOTTOM_INSET - TITLE_BAR_HEIGHT - 14f).coerceAtLeast(1f) /
-                (STATS_HEIGHT + SETTINGS_MIN_HEIGHT)).coerceAtLeast(0.05f)
+                    (STATS_HEIGHT + SETTINGS_MIN_HEIGHT)
+        ).coerceAtLeast(0.05f)
 
-    private fun statsHeightBudget() = minOf(viewportHeight / 2f - 8f,
-        usableHeight() - TITLE_BAR_HEIGHT - 12f).coerceAtLeast(1f)
+    private fun statsHeightBudget() = minOf(
+        viewportHeight / 2f - 8f,
+        usableHeight() - TITLE_BAR_HEIGHT - 12f
+    ).coerceAtLeast(1f)
 
     /** 从期望位置向外搜索，矩形间保留 gap；极小窗口放不下时选择遮挡最少的位置。 */
     private fun findSpace(
@@ -1175,16 +1682,21 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     ): Box {
         fun candidate(cx: Float, cy: Float) = Box(
             (cx - width / 2f).coerceIn(4f, (viewportWidth - width - 4f).coerceAtLeast(4f)),
-            (cy - height / 2f).coerceIn(TITLE_BAR_HEIGHT + 4f,
-                (usableHeight() - height - 4f).coerceAtLeast(TITLE_BAR_HEIGHT + 4f)), width, height
+            (cy - height / 2f).coerceIn(
+                TITLE_BAR_HEIGHT + 4f,
+                (usableHeight() - height - 4f).coerceAtLeast(TITLE_BAR_HEIGHT + 4f)
+            ), width, height
         )
+
         var best = candidate(x, y)
         var bestOverlap = Float.POSITIVE_INFINITY
         val rings = ceil(max(viewportWidth, viewportHeight) / step).toInt()
         for (ring in 0..rings) {
             for (direction in 0 until if (ring == 0) 1 else 24) {
-                val box = candidate(x + (SEARCH_COS[direction] * ring * step).toFloat(),
-                    y + (SEARCH_SIN[direction] * ring * step).toFloat())
+                val box = candidate(
+                    x + (SEARCH_COS[direction] * ring * step).toFloat(),
+                    y + (SEARCH_SIN[direction] * ring * step).toFloat()
+                )
                 if (obstacles.none { box.overlaps(it, gap) }) return box
                 val overlap = obstacles.sumOf { box.overlapArea(it, gap).toDouble() }.toFloat()
                 if (overlap < bestOverlap) {
@@ -1251,22 +1763,39 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         drawDecorationPass(graphics, doc, true) { vertices, matrix ->
             for (mount in mounts) {
                 val bounds = mount.bounds
-                val selected = editingAttachmentType ==
-                        (mount.type?.let(AttachmentSlots::editIndex) ?: AttachmentSlots.AMMO_TYPE_EDIT_INDEX)
+                val selected = editingAttachmentType == mount.editIndex
                 val highlighted = selected || bounds.contains(mouse.x.toFloat(), mouse.y.toFloat())
                 val color = if (mount.installed == null) MOUNT_EMPTY_COLOR else MOUNT_FILLED_COLOR
                 val background = if (highlighted) (color and 0xffffff) or 0x59000000 else 0x1f000000
                 val radius = MOUNT_SIZE / 2f
                 drawCircle(vertices, matrix, bounds.centerX, bounds.centerY, radius, 0f, background)
-                drawCircle(vertices, matrix, bounds.centerX, bounds.centerY, radius,
-                    radius - if (highlighted) 1f else 0.5f, color)
+                drawCircle(
+                    vertices, matrix, bounds.centerX, bounds.centerY, radius,
+                    radius - if (highlighted) 1f else 0.5f, color
+                )
                 drawCircle(vertices, matrix, bounds.centerX, bounds.centerY, 2.5f, 0f, color)
                 iconBounds[mount.id]?.let { icon ->
                     val border = if (selected) 1f else 0.5f
                     drawQuad(vertices, matrix, icon.left, icon.top, icon.right, icon.top + border, color)
                     drawQuad(vertices, matrix, icon.left, icon.bottom - border, icon.right, icon.bottom, color)
-                    drawQuad(vertices, matrix, icon.left, icon.top + border, icon.left + border, icon.bottom - border, color)
-                    drawQuad(vertices, matrix, icon.right - border, icon.top + border, icon.right, icon.bottom - border, color)
+                    drawQuad(
+                        vertices,
+                        matrix,
+                        icon.left,
+                        icon.top + border,
+                        icon.left + border,
+                        icon.bottom - border,
+                        color
+                    )
+                    drawQuad(
+                        vertices,
+                        matrix,
+                        icon.right - border,
+                        icon.top + border,
+                        icon.right,
+                        icon.bottom - border,
+                        color
+                    )
                 }
             }
         }
@@ -1278,8 +1807,24 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         val border = 0.5f * scale
         drawQuad(vertices, matrix, bounds.left, bounds.top, bounds.right, bounds.top + border, PANEL_BORDER)
         drawQuad(vertices, matrix, bounds.left, bounds.bottom - border, bounds.right, bounds.bottom, PANEL_BORDER)
-        drawQuad(vertices, matrix, bounds.left, bounds.top + border, bounds.left + border, bounds.bottom - border, PANEL_BORDER)
-        drawQuad(vertices, matrix, bounds.right - border, bounds.top + border, bounds.right, bounds.bottom - border, PANEL_BORDER)
+        drawQuad(
+            vertices,
+            matrix,
+            bounds.left,
+            bounds.top + border,
+            bounds.left + border,
+            bounds.bottom - border,
+            PANEL_BORDER
+        )
+        drawQuad(
+            vertices,
+            matrix,
+            bounds.right - border,
+            bounds.top + border,
+            bounds.right,
+            bounds.bottom - border,
+            PANEL_BORDER
+        )
         // 短角标保留工业面板的层次，不增加面板尺寸或改变命中范围。
         val corner = 6f * scale
         drawQuad(vertices, matrix, bounds.left, bounds.top, bounds.left + corner, bounds.top + scale, UI_ACCENT)
@@ -1373,11 +1918,21 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     }
 
     private fun setItem(key: String, item: AuiItem, itemId: String?) {
-        if (shownItems[key] == itemId) return
+        if (shownItems[key] == itemId && !shownAmmo.containsKey(key)) return
         if (hoveredItem == key) hoveredItem = null
+        shownAmmo.remove(key)
         // AUI 的展示栈接口只标记重绘；textContent 会额外失效布局、绘制列表和命中缓存。
         item.setIngredientStack(itemStack(itemId?.let(ResourceLocation::tryParse)))
         if (itemId == null) shownItems.remove(key) else shownItems[key] = itemId
+    }
+
+    /** 弹种格子：直接给栈（弹种没有"配件 id"这一层），用 [shownAmmo] 记住它对应哪个下标 */
+    private fun setAmmoCell(key: String, item: AuiItem, index: Int, stack: ItemStack) {
+        if (shownAmmo[key] == index && !shownItems.containsKey(key)) return
+        if (hoveredItem == key) hoveredItem = null
+        item.setIngredientStack(stack)
+        shownItems.remove(key)
+        shownAmmo[key] = index
     }
 
     /** 只列出有明确标量含义的属性；数值与单位转换在这里集中定义。 */
@@ -1387,7 +1942,8 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         val optional: Boolean = false, val firearmOnly: Boolean = false,
         val read: (GunData) -> Double,
     ) {
-        RPM("rpm", 1200.0, 0, " rpm", firearmOnly = true,
+        RPM(
+            "rpm", 1200.0, 0, " rpm", firearmOnly = true,
             read = {
                 val rpm = it.get(GunProp.RPM) * it.get(GunProp.RPM_MULTIPLIER)
                 if (rpm.isFinite()) rpm.roundToInt().coerceIn(1, 114514).toDouble() else Double.NaN
@@ -1396,28 +1952,72 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         HEADSHOT("headshot", 4.0, unit = "×", firearmOnly = true, read = { it.get(GunProp.HEADSHOT) }),
         RECOIL_X("recoil_x", 0.005, 5, higherIsBetter = false, firearmOnly = true, read = { it.get(GunProp.RECOIL_X) }),
         RECOIL_Y("recoil_y", 0.04, 5, higherIsBetter = false, firearmOnly = true, read = { it.get(GunProp.RECOIL_Y) }),
-        MAGAZINE("magazine", 100.0, 0, optional = true, firearmOnly = true, read = { it.get(GunProp.MAGAZINE).toDouble() }),
-        ARMOR_BYPASS("bypasses_armor", 100.0, unit = "%", optional = true, firearmOnly = true, read = { it.get(GunProp.BYPASSES_ARMOR) * 100.0 }),
-        VELOCITY("velocity", 1000.0, unit = " m/s", optional = true, firearmOnly = true, read = { it.get(GunProp.VELOCITY) * 20.0 }),
+        MAGAZINE(
+            "magazine",
+            100.0,
+            0,
+            optional = true,
+            firearmOnly = true,
+            read = { it.get(GunProp.MAGAZINE).toDouble() }),
+        ARMOR_BYPASS(
+            "bypasses_armor",
+            100.0,
+            unit = "%",
+            optional = true,
+            firearmOnly = true,
+            read = { it.get(GunProp.BYPASSES_ARMOR) * 100.0 }),
+        VELOCITY(
+            "velocity",
+            1000.0,
+            unit = " m/s",
+            optional = true,
+            firearmOnly = true,
+            read = { it.get(GunProp.VELOCITY) * 20.0 }),
         SPREAD("spread", 10.0, higherIsBetter = false, firearmOnly = true, read = { it.get(GunProp.SPREAD) }),
-        AIMED_SPREAD("zoom_spread_rate", 1.0, unit = "×", higherIsBetter = false, firearmOnly = true,
+        AIMED_SPREAD(
+            "zoom_spread_rate", 1.0, unit = "×", higherIsBetter = false, firearmOnly = true,
             read = { it.get(GunProp.ZOOM_SPREAD_RATE) }),
-        ZOOM_TIME("zoom_time", 1.0, unit = " s", higherIsBetter = false, firearmOnly = true,
-            read = { (it.get(GunProp.ZOOM_TIME).coerceAtLeast(1) + 0.4 * it.item.getHandlingCustomWeight(it)).coerceAtLeast(0.0) / 20.0 }),
-        NORMAL_RELOAD("normal_reload_time", 6.0, unit = " s", higherIsBetter = false, optional = true, firearmOnly = true,
+        ZOOM_TIME(
+            "zoom_time", 1.0, unit = " s", higherIsBetter = false, firearmOnly = true,
+            read = {
+                (it.get(GunProp.ZOOM_TIME).coerceAtLeast(1) + 0.4 * it.item.getHandlingCustomWeight(it)).coerceAtLeast(
+                    0.0
+                ) / 20.0
+            }),
+        NORMAL_RELOAD(
+            "normal_reload_time", 6.0, unit = " s", higherIsBetter = false, optional = true, firearmOnly = true,
             read = { it.get(GunProp.NORMAL_RELOAD_TIME) / 20.0 }),
-        EMPTY_RELOAD("empty_reload_time", 8.0, unit = " s", higherIsBetter = false, optional = true, firearmOnly = true,
+        EMPTY_RELOAD(
+            "empty_reload_time", 8.0, unit = " s", higherIsBetter = false, optional = true, firearmOnly = true,
             read = { it.get(GunProp.EMPTY_RELOAD_TIME) / 20.0 }),
         WEIGHT("weight", 15.0, higherIsBetter = false, read = { it.get(GunProp.WEIGHT) }),
         SWAY("sway", 2.0, higherIsBetter = false, firearmOnly = true, read = { it.get(GunProp.SWAY) }),
+
         // 原始单位为区块；数值和横条量程一起换算成米。
-        SOUND_RADIUS("sound_radius", 24.0 * 16.0, unit = " m", higherIsBetter = false, optional = true, firearmOnly = true,
+        SOUND_RADIUS(
+            "sound_radius", 24.0 * 16.0, unit = " m", higherIsBetter = false, optional = true, firearmOnly = true,
             read = { it.get(GunProp.SOUND_RADIUS) * 16.0 }),
-        PROJECTILES("projectile_amount", 16.0, 0, optional = true, firearmOnly = true, read = { it.get(GunProp.PROJECTILE_AMOUNT).toDouble() }),
+        PROJECTILES(
+            "projectile_amount",
+            16.0,
+            0,
+            optional = true,
+            firearmOnly = true,
+            read = { it.get(GunProp.PROJECTILE_AMOUNT).toDouble() }),
         EXPLOSION_DAMAGE("explosion_damage", 200.0, optional = true, read = { it.get(GunProp.EXPLOSION_DAMAGE) }),
-        EXPLOSION_RADIUS("explosion_radius", 12.0, unit = " m", optional = true, read = { it.get(GunProp.EXPLOSION_RADIUS) }),
+        EXPLOSION_RADIUS(
+            "explosion_radius",
+            12.0,
+            unit = " m",
+            optional = true,
+            read = { it.get(GunProp.EXPLOSION_RADIUS) }),
         MAX_ENERGY("max_energy", 100000.0, 0, " FE", optional = true, read = { it.get(GunProp.MAX_ENERGY).toDouble() }),
-        ENERGY_REGEN("energy_regeneration", 100.0, unit = " FE/s", optional = true, read = { it.get(GunProp.ENERGY_REGENERATION) * 20.0 }),
+        ENERGY_REGEN(
+            "energy_regeneration",
+            100.0,
+            unit = " FE/s",
+            optional = true,
+            read = { it.get(GunProp.ENERGY_REGENERATION) * 20.0 }),
         MELEE_DAMAGE("melee_damage", 100.0, optional = true, read = { it.get(GunProp.MELEE_DAMAGE) });
 
         fun format(value: Double): String {
@@ -1427,7 +2027,12 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
     }
 
     /** 固定量程；超出部分从左侧用金条覆盖，配件差值仍以实际数值计算。 */
-    private data class StatComparison(val value: Double, val baseline: Double, val reference: Double, val higherIsBetter: Boolean) {
+    private data class StatComparison(
+        val value: Double,
+        val baseline: Double,
+        val reference: Double,
+        val higherIsBetter: Boolean
+    ) {
         val delta = value - baseline
         private val currentFraction get() = (value / reference).coerceIn(0.0, 1.0)
         private val baselineFraction get() = (baseline / reference).coerceIn(0.0, 1.0)
@@ -1525,6 +2130,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
                     statsCollapseSuppressed = true
                 }
                 statsRefreshTick = Long.MIN_VALUE
+                playUiSound(ModSounds.ATTACHMENT_INFO.get())
             }
         }
         doc.getElementById("stats-title")?.textContent = statLabel("title")
@@ -1545,10 +2151,12 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             }
             if (texts.size != 3) continue
             texts[0].element.textContent = Component.translatable("prop.superbwarfare.${stat.key}").string
-            statRows += StatRow(stat, doc.getElementById(id) ?: continue,
+            statRows += StatRow(
+                stat, doc.getElementById(id) ?: continue,
                 texts[1].element, texts[2].element,
                 doc.getElementById("$id-common") ?: continue, doc.getElementById("$id-change") ?: continue,
-                doc.getElementById("$id-overflow") ?: continue, texts)
+                doc.getElementById("$id-overflow") ?: continue, texts
+            )
         }
     }
 
@@ -1566,7 +2174,10 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         // 字号跟随其他面板；通过收窄属性面板保持四分之一屏幕的面积限制。
         val scale = editorPanelScale()
         val height = if (statsVisible) STATS_HEIGHT else STATS_BUTTON_HEIGHT
-        val width = if (statsVisible) minOf(STATS_WIDTH, (viewportWidth / 2f - 12f).coerceAtLeast(1f) / scale) else STATS_BUTTON_WIDTH
+        val width = if (statsVisible) minOf(
+            STATS_WIDTH,
+            (viewportWidth / 2f - 12f).coerceAtLeast(1f) / scale
+        ) else STATS_BUTTON_WIDTH
         setStyle(root, "width", px(width))
         setStyle(root, "height", px(height))
         val bounds = Box(6f, TITLE_BAR_HEIGHT + 6f, width * scale, height * scale)
@@ -1611,8 +2222,8 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
             val current = stat.read(data)
             val original = stat.read(baseline)
             val visible = current.isFinite() && original.isFinite() && current >= 0.0 && original >= 0.0 &&
-                (!stat.firearmOnly || hasFirearm) && (!stat.optional || max(current, original) > 0.0) &&
-                (stat != WeaponStat.PROJECTILES || max(current, original) > 1.0)
+                    (!stat.firearmOnly || hasFirearm) && (!stat.optional || max(current, original) > 0.0) &&
+                    (stat != WeaponStat.PROJECTILES || max(current, original) > 1.0)
             row.visible = visible
             setStyle(row.element, "display", if (visible) "block" else "none")
             if (!visible || (row.lastValue == current && row.lastBaseline == original)) continue
@@ -1671,6 +2282,13 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         private const val TOOLTIP_PADDING = 6f
         private const val TOOLTIP_MIN_WIDTH = 96f
         private const val TOOLTIP_MAX_WIDTH = 160f
+
+        /** `03` 弹种模式右上角的编号（与配件槽位的英文枚举名同风格） */
+        private const val AMMO_TYPE_CODE = "AMMO TYPE"
+
+        /** 副武器弹种面板右上角的编号 */
+        private const val SUB_AMMO_TYPE_CODE = "SUB AMMO"
+
         // 与 weapon_edit.html 的主题色及 title-bar 高度保持一致。
         private const val UI_ACCENT = 0xff52fcda.toInt()
         private const val PANEL_BORDER = 0xff237b87.toInt()
@@ -1683,12 +2301,33 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         private const val MOUNT_REVEAL_DELAY_TICKS = 10
         private const val AIR = "minecraft:air"
         private const val AMMO_MOUNT_ID = "mount-ammo_type"
+
+        /** 副武器（下挂榴弹等）自己的弹种挂点；位置取副武器模型里的 `ammo_pos` */
+        private const val SUB_AMMO_MOUNT_ID = "mount-ammo_type_sub"
+
+        /**
+         * `editingAttachmentType` 的副武器弹种标记（定义在 [AttachmentSlots] 里，渲染器聚焦也要用）。
+         */
+        private val SUB_WEAPON_AMMO_EDIT_INDEX = AttachmentSlots.SUB_WEAPON_AMMO_EDIT_INDEX
         private const val SCOPE_STACK_MOUNT_ID = "mount-scope_stack"
         private const val MOUNT_SIZE = 9f
         private const val ICON_SIZE = 17f
         private const val PANEL_WIDTH = 180f
         private const val PANEL_HEIGHT = 148f
         private const val SETTINGS_WIDTH = PANEL_WIDTH
+
+        // 列表在配件模式下沿用 weapon_edit.html 的 CSS（top 66 / height 62 / items 56）；
+        // 弹种模式多出一条属性条，列表整体下移，切回配件模式时按下面这组值还原。
+        private const val ATTACHMENT_LIST_TOP = 66f
+        private const val ATTACHMENT_LIST_HEIGHT = 62f
+        private const val ATTACHMENT_ITEMS_HEIGHT = 56f
+        private const val AMMO_LIST_DIVIDER_TOP = 78f
+        private const val AMMO_LIST_TOP = 82f
+        private const val AMMO_LIST_HEIGHT = 45f
+        private const val AMMO_ITEMS_HEIGHT = 39f
+
+        /** 弹种属性条每列最多几项（两列） */
+        private const val AMMO_STAT_ROWS = 3
         private val ADJUSTMENT_NUMBER = Regex("-?[0-9]*(\\.[0-9]*)?")
         private val RGB_NUMBER = Regex("[0-9]*")
         private val ADJUSTMENT_PROPERTIES = listOf("rotation", "offset", "red", "green", "blue")
@@ -1700,6 +2339,7 @@ class WeaponEditScreen(private val stack: ItemStack) : ApricityScreen(DOCUMENT_P
         private const val SLIDER_TRACK_LEFT = 3.5f
         private const val SLIDER_TRACK_WIDTH = 58f
         private const val SLIDER_THUMB_RADIUS = 3.5f
+        private const val SLIDE_SOUND_INTERVAL_MS = 250L
         private const val GRID_COLUMNS = 8
         private const val GRID_VISIBLE_ROWS = 3
         private const val GRID_WINDOW_ROWS = GRID_VISIBLE_ROWS + 3

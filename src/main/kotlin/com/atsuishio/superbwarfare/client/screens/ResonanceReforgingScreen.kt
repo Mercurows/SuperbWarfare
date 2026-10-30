@@ -786,17 +786,16 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
             val scale = aperture.toFloat() * 2.5f
             val feather = 0.025f * min(1f, scale)
             val tessellator = Tesselator.getInstance()
-            val buffer = tessellator.builder
+            val buffer = tessellator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR)
             RenderSystem.enableBlend()
             RenderSystem.defaultBlendFunc()
             RenderSystem.disableDepthTest()
             RenderSystem.disableCull()
             RenderSystem.setShader(GameRenderer::getPositionColorShader)
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
-            buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR)
             fun vertex(index: Int, radius: Float, alpha: Int) {
-                buffer.vertex(matrix, cx + cx * COS[index] * radius, cy + cy * SIN[index] * radius, 0f)
-                    .color(0, 0, 0, alpha).endVertex()
+                buffer.addVertex(matrix, cx + cx * COS[index] * radius, cy + cy * SIN[index] * radius, 0f)
+                    .setColor(0, 0, 0, alpha)
             }
             for (index in 0 until SEGMENTS) {
                 val next = (index + 1) % SEGMENTS
@@ -812,7 +811,6 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
                 vertex(next, r1 + feather, 255)
                 vertex(next, r1, 0)
             }
-            tessellator.end()
             RenderSystem.enableCull()
             RenderSystem.enableDepthTest()
             RenderSystem.disableBlend()
