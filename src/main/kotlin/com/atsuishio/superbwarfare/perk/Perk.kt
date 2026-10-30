@@ -83,6 +83,15 @@ open class Perk(val descriptionId: String, val type: Type) : PropertyModifier<Gu
 
     open fun modifyProjectile(data: GunData, instance: PerkInstance, entity: Entity) {}
 
+    /** Modifies this melee hit before the on-hit callbacks run. */
+    open fun getModifiedMeleeDamage(
+        damage: Float,
+        data: GunData,
+        instance: PerkInstance,
+        target: Entity,
+        source: DamageSource
+    ): Float = damage
+
     /**
      * 用于处理武器伤害衰减比率
      *
