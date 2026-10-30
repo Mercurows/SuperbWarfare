@@ -28,6 +28,7 @@ import com.atsuishio.superbwarfare.data.gun.AmmoConsumer.AmmoConsumeType
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.subdata.ScopeStackEntry
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
+import com.atsuishio.superbwarfare.data.gun_skin.GunSkin
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.event.DeployedWeaponHandler
 import com.atsuishio.superbwarfare.event.ShieldRuntime
@@ -319,7 +320,9 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val resource = GunResource.compute(stack)
         val modelResource = resource.getModel()
 
+        val skin = GunSkin.getSkin(stack)?.takeIf { it.texture != null }
         val useLod = !transformType.firstPerson()
+                && (skin == null || skin.lodTexture != null)
                 && !GunMountContext.active
                 && DisplayConfig.ENABLE_GUN_LOD.get()
                 && !RenderDistanceHelper.isInGui()
@@ -329,7 +332,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             GeoGunModel.create(modelResource)
         } ?: return
 
-        val texture = if (useLod) {
+        val texture = (if (useLod) skin?.lodTexture else skin?.texture) ?: if (useLod) {
             modelResource.getLODTexture(1)
         } else {
             modelResource.texture

@@ -6,6 +6,8 @@ import com.atsuishio.superbwarfare.data.gun.DefaultGunData
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.ProjectileInfo
 import com.atsuishio.superbwarfare.data.gun.melee.MeleeEffectSpec
+import com.atsuishio.superbwarfare.data.gun_skin.GunSkin
+import com.atsuishio.superbwarfare.data.gun_skin.GunSkinData
 import com.atsuishio.superbwarfare.data.mob_guns.DefaultMobGunData
 import com.atsuishio.superbwarfare.data.mob_guns.MobGunData
 import com.atsuishio.superbwarfare.data.vehicle.DefaultVehicleData
@@ -82,6 +84,11 @@ object CustomData {
     val VEHICLE_SKINS = DataLoader.createData(
         "sbw/vehicle_skins", VehicleSkinData::class.java, true
     ) { _ -> VehicleSkin.DATA_CACHE.invalidateAll() }
+
+    @JvmField
+    val GUN_SKINS = DataLoader.createData(
+        "sbw/gun_skins", GunSkinData::class.java, true
+    ) { _ -> GunSkin.DATA_CACHE.invalidateAll() }
 
     // Resource
 

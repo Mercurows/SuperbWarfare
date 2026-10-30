@@ -1133,6 +1133,10 @@
   "commands.superbwarfare.radiation.get": "Radiation dosage of %1$s is %2$s mSv",
   "commands.superbwarfare.radiation.set": "Radiation dosage of %1$s set to %2$s mSv",
   "commands.superbwarfare.radiation.invalid": "Target entity is not a living entity that can carry radiation dosage",
+  "commands.superbwarfare.skin.fail.gun": "The selected entity must hold a gun in its main hand",
+  "commands.superbwarfare.skin.fail.gun_skin": "Unknown or unusable skin for this gun: %1$s",
+  "commands.superbwarfare.skin.success.gun.set": "Set the skin of %1$s's main-hand gun to %2$s",
+  "commands.superbwarfare.skin.success.gun.clear": "Cleared the skin of %1$s's main-hand gun",
 
   "tips.superbwarfare.sensitivity": "Current Sensitivity of This Gun: %1$s",
   "tips.superbwarfare.monitor.linked": "Connect!",
@@ -1644,6 +1648,8 @@
   "skin.superbwarfare.bl_132.black": "Black Egg Camo",
   "skin.superbwarfare.mortar.firework": "Civilian Festive Disposable Launcher",
   "skin.superbwarfare.happiest_ghast.unhappy": "It looks unhappy",
+
+  "skin.superbwarfare.ak_47.golden": "Golden AK-47",
 
   "prop.superbwarfare.velocity": "Velocity",
   "prop.superbwarfare.sound_radius": "Sound Radius",

@@ -1133,6 +1133,10 @@
   "commands.superbwarfare.radiation.get": "实体%1$s的辐射剂量为%2$s mSv",
   "commands.superbwarfare.radiation.set": "已将实体%1$s的辐射剂量设为%2$s mSv",
   "commands.superbwarfare.radiation.invalid": "目标实体不是可承载辐射剂量的生物",
+  "commands.superbwarfare.skin.fail.gun": "目标实体必须在主手持有枪械",
+  "commands.superbwarfare.skin.fail.gun_skin": "此枪械没有可用的皮肤：%1$s",
+  "commands.superbwarfare.skin.success.gun.set": "已将%1$s主手枪械的皮肤设为%2$s",
+  "commands.superbwarfare.skin.success.gun.clear": "已清除%1$s主手枪械的皮肤",
 
   "tips.superbwarfare.sensitivity": "当前枪械的灵敏度为：%1$s",
   "tips.superbwarfare.monitor.linked": "连接成功！",
@@ -1644,6 +1648,8 @@
   "skin.superbwarfare.bl_132.black": "黑色彩蛋涂装",
   "skin.superbwarfare.mortar.firework": "民用节庆一次性发射器",
   "skin.superbwarfare.happiest_ghast.unhappy": "它急了",
+
+  "skin.superbwarfare.ak_47.golden": "黄金AK-47",
 
   "prop.superbwarfare.velocity": "子弹初速",
   "prop.superbwarfare.sound_radius": "枪声传播半径",

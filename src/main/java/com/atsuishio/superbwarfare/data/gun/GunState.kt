@@ -24,6 +24,10 @@ data class GunState(
     @SerialName("DefaultData")
     val defaultDataId: String = "",
 
+    /** Cosmetic only; blank or an unknown id renders the default weapon texture. */
+    @SerialName("Skin")
+    val skinId: String = "",
+
     /**
      * Monotonic revision of the persisted state, advanced by `GunData.persist` whenever the content
      * actually changes.
