@@ -137,6 +137,7 @@ object ModPerks {
     lateinit var SOUL_REAVER: PERK
     lateinit var STEADY_RESOLVE: PERK
     lateinit var STOP_GAP: PERK
+    lateinit var INVISIBLE_BLADE_SHAPENESS: PERK
     // @formatter:on
 
     fun register(bus: IEventBus) {
@@ -307,5 +308,7 @@ object ModPerks {
         STOP_GAP = autoRegistryObjects["stop_gap"] ?: registerDamagePerk("stop_gap") {
             EmptyPerk("stop_gap", Perk.Type.DAMAGE)
         }
+        INVISIBLE_BLADE_SHAPENESS = autoRegistryObjects["invisible_blade_shapeness"]
+            ?: registerDamagePerk("invisible_blade_shapeness") { InvisibleBladeShapeness }
     }
 }

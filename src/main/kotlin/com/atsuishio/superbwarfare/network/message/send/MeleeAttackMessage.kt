@@ -17,6 +17,7 @@ import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.perk.MeleeAttackContext
 import com.atsuishio.superbwarfare.perk.Perk
+import com.atsuishio.superbwarfare.perk.damage.InvisibleBladeShapeness
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedUUID
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.MeleeQuery
@@ -180,6 +181,12 @@ data class MeleeAttackMessage(
         var playedHitSound = false
         var playedNoDamageSound = false
 
+        // 隐之刃凛：轻击打折并把折掉的部分存进蓄力槽，重击把积蓄一次性加在这一下上
+        val blade = InvisibleBladeShapeness.instanceOf(data)
+        val bladeRate = blade?.let { InvisibleBladeShapeness.rate(it.level.toInt()) } ?: 0.0
+        var storedCharge = if (blade != null) InvisibleBladeShapeness.charge(data) else 0.0
+        var chargeSpent = false
+
         for ((order, payload) in targets.withIndex()) {
             val target = EntityFindUtil.findEntity(level, payload.uuid.toString()) ?: continue
             if (!ForgeHooks.onPlayerAttackTarget(attacker, target)) continue
@@ -207,7 +214,16 @@ data class MeleeAttackMessage(
             // 伤害数值 = 枪的 `MeleeDamage` × 本段 `DamageMultiplier`（已在 resolve 里算完），
             // 外加力量效果的固定加成；`ATTACK_DAMAGE` 属性本身的加成不参与这里的结算
             // ——否则 `MeleeDamage` 会被"属性加成"二次放大，和动作倍率叠在一起就说不清是谁放大的。
-            val damage = baseDamage * zoneMultiplier * falloff
+            var damage = baseDamage * zoneMultiplier * falloff
+            if (blade != null) {
+                if (action.heavy) {
+                    // 重击：把积蓄一次性加进去（只给这一挥第一个真正吃伤害的目标）
+                    if (!chargeSpent && storedCharge > 0.0) damage += storedCharge
+                } else {
+                    // 轻击：先打折，折掉的那部分等确认命中之后再存
+                    damage *= 1.0 - bladeRate
+                }
+            }
             if (damage <= 0) continue
 
             val damageSource = ModDamageTypes.causeDamageType(
@@ -249,6 +265,16 @@ data class MeleeAttackMessage(
             hurtCount++
             landedHit = true
             if (headshot) headshotHit = true
+
+            if (blade != null) {
+                if (action.heavy) {
+                    // 这一挥已经吃到蓄力了，后面的目标不再重复加算
+                    if (!chargeSpent && storedCharge > 0.0) chargeSpent = true
+                } else {
+                    // 只按"真正打出去的那部分伤害"（已经打过折）存蓄力
+                    InvisibleBladeShapeness.addCharge(data, damage * bladeRate)
+                }
+            }
 
             val attackerMotion = attacker.deltaMovement
 
@@ -316,6 +342,8 @@ data class MeleeAttackMessage(
                 effects.kill(target, effectPos)
             }
         }
+
+        if (chargeSpent) InvisibleBladeShapeness.setCharge(data, 0.0)
 
         if (hurtCount > 0) {
             attacker.sweepAttack()

@@ -584,6 +584,8 @@
   "des.superbwarfare.striving_for_perfection": "Experience you gain repairs the weapon's durability and increases weapon experience gain.",
   "item.superbwarfare.stop_gap": "Stop Gap",
   "des.superbwarfare.stop_gap": "Sustained fire gradually lowers the rate of fire while raising damage",
+  "item.superbwarfare.invisible_blade_shapeness": "Invisible Blade Shapeness",
+  "des.superbwarfare.invisible_blade_shapeness": "Light melee attacks deal reduced damage; part of the damage is stored in the weapon and added to the damage of a heavy attack hit",
   "item.superbwarfare.powerful_attraction": "Powerful Attraction",
   "des.superbwarfare.powerful_attraction": "Experience and items dropped by slain mobs will instantly be transferred to your inventory.",
   "item.superbwarfare.intelligent_chip": "Intelligent Chip",

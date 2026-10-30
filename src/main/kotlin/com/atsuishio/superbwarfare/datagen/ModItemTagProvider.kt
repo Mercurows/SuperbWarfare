@@ -503,7 +503,8 @@ class ModItemTagProvider(
             perkItem(ModPerks.FAIR_MEANS),
             perkItem(ModPerks.TARGET_LOCK),
             perkItem(ModPerks.BATTLE_OF_WITS),
-            perkItem(ModPerks.STOP_GAP)
+            perkItem(ModPerks.STOP_GAP),
+            perkItem(ModPerks.INVISIBLE_BLADE_SHAPENESS)
         )
         this.tag(ModTags.Items.RESEARCHABLE_DAMAGE_PERK_LEGENDARY).add(
             perkItem(ModPerks.SOUL_REAVER)

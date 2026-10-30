@@ -9,6 +9,7 @@ import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity
 import com.atsuishio.superbwarfare.init.ModKeyMappings
 import com.atsuishio.superbwarfare.item.gun.GunItem
+import com.atsuishio.superbwarfare.perk.damage.InvisibleBladeShapeness
 import com.atsuishio.superbwarfare.tools.FormatTool.format1DZZ
 import com.sighs.apricityui.ApricityUI
 import com.sighs.apricityui.init.Document
@@ -294,7 +295,12 @@ object AmmoBarHud {
         if (data.isEnergyMagazine()) return data.ammo.get().toString()
         val consumer = data.selectedAmmoConsumer()
         if (consumer.type == AmmoConsumeType.ENERGY) return getEnergyPercentString(data)
-        if (data.meleeOnly() || data.useBackpackAmmo() && data.hasInfiniteBackupAmmo(player)) return "∞"
+        if (data.meleeOnly()) {
+            // 隐之刃凛：近战武器的弹药位改显示蓄力值，没装这个 perk 才退回 ∞
+            InvisibleBladeShapeness.chargeOrNull(data)?.let { return it.toInt().toString() }
+            return "∞"
+        }
+        if (data.useBackpackAmmo() && data.hasInfiniteBackupAmmo(player)) return "∞"
         if (data.useBackpackAmmo()) {
             return displayAmmoCount(data, data.countBackupAmmo(player) - data.virtualAmmo.get()).toString()
         }
