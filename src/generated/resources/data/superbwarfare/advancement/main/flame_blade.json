@@ -1,0 +1,33 @@
+{
+  "parent": "superbwarfare:main/enclave",
+  "criteria": {
+    "0": {
+      "conditions": {
+        "items": [
+          {
+            "items": "superbwarfare:flame_blade"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "superbwarfare.advancement.main.flame_blade.des"
+    },
+    "icon": {
+      "count": 1,
+      "id": "superbwarfare:flame_blade"
+    },
+    "title": {
+      "translate": "superbwarfare.advancement.main.flame_blade"
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ],
+  "sends_telemetry_event": true
+}
