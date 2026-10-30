@@ -33,6 +33,7 @@
             <div id="stats-scroll"><div id="stats-content"></div></div>
         </div>
     </div>
+    <div id="gun-skin-control"><select id="gun-skin"></select></div>
     <div id="panel">
         <div id="panel-index" class="section-index"><span class="section-number">03</span><span class="section-slash">/</span></div>
         <div id="panel-title"></div>
@@ -309,12 +310,20 @@
         font-weight: normal; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         pointer-events: auto; cursor: pointer;
     }
-    #panel-skin:hover, #panel-skin:focus { border-color: #52fcda; }
+    #panel-skin:hover, #panel-skin:focus, #gun-skin:hover, #gun-skin:focus { border-color: #52fcda; }
+    #gun-skin-control {
+        position: absolute; left: 0; top: 0; display: none; width: 112px; height: 17px;
+        transform-origin: 0 0; pointer-events: auto; z-index: 5;
+    }
+    #gun-skin {
+        display: block; box-sizing: border-box; width: 112px; height: 17px;
+        margin: 0; padding: 0 5px; border: 0.5px solid #338997; border-radius: 0;
+        background: rgba(0, 18, 25, 0.9); color: #ffffff; font-size: 9px; line-height: 10px;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: auto; cursor: pointer;
+    }
     /* AUI 原生 select 弹层挂在 body 下，并用内联样式绘制默认亮色主题。
-       此页面只有皮肤选择器，使用 !important 统一弹层及动态高亮的外观。 */
+       两个皮肤选择器共用主题，弹层宽度由 Kotlin 按对应控件的实际宽度同步。 */
     .aui-select-popup {
-        /* 覆盖原生弹层的 80px 最小宽度，与上方 #panel-skin 的外框同宽。 */
-        width: 63px !important;
         background: #00161e !important; color: #ffffff !important;
         border: 0.5px solid #52fcda !important; border-radius: 0 !important;
         padding: 0 !important; box-shadow: none !important;
@@ -327,6 +336,10 @@
     }
     .aui-select-option[aria-selected="true"], .aui-select-option:hover {
         color: #00161e !important; background-color: #52fcda !important;
+    }
+    .aui-select-popup[data-gun-skin="true"] .aui-select-option {
+        height: 17px !important; min-height: 17px !important;
+        font-size: 9px !important; line-height: 10px !important;
     }
     #panel-list {
         position: absolute; left: 5px; top: 66px; width: 168px; height: 62px;

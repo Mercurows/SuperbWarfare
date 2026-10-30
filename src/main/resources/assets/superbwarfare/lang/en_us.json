@@ -1521,6 +1521,8 @@
   "screen.superbwarfare.weapon_edit.confirm": "Apply settings",
   "screen.superbwarfare.weapon_edit.skin": "Skin",
   "screen.superbwarfare.weapon_edit.switch_skin": "Switch attachment skin",
+  "screen.superbwarfare.weapon_edit.switch_gun_skin": "Switch weapon skin",
+  "screen.superbwarfare.weapon_edit.default_skin": "Default",
   "screen.superbwarfare.weapon_edit.stats.show": "Show Weapon Attributes",
   "screen.superbwarfare.weapon_edit.stats.hide": "Hide Weapon Attributes",
   "screen.superbwarfare.weapon_edit.stats.title": "Weapon Attributes",
