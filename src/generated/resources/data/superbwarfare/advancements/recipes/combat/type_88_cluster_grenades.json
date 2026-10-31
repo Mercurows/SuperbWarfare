@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_empty_perk": {
+    "has_high_energy_explosives": {
       "conditions": {
         "items": [
           {
             "items": [
-              "superbwarfare:empty_perk"
+              "superbwarfare:high_energy_explosives"
             ]
           }
         ]
@@ -15,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:perk/phase_penetrating_bullet"
+        "recipe": "superbwarfare:type_88_cluster_grenades"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_empty_perk",
+      "has_high_energy_explosives",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:perk/phase_penetrating_bullet"
+      "superbwarfare:type_88_cluster_grenades"
     ]
   },
   "sends_telemetry_event": false
