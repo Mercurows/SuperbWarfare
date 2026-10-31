@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_empty_perk": {
+    "has_high_energy_explosives": {
       "conditions": {
         "items": [
           {
-            "items": "superbwarfare:empty_perk"
+            "items": "superbwarfare:high_energy_explosives"
           }
         ]
       },
@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "superbwarfare:perk/turbo_charger"
+        "recipe": "superbwarfare:type_88_cluster_grenades"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -21,12 +21,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_empty_perk"
+      "has_high_energy_explosives"
     ]
   ],
   "rewards": {
     "recipes": [
-      "superbwarfare:perk/turbo_charger"
+      "superbwarfare:type_88_cluster_grenades"
     ]
   }
 }
