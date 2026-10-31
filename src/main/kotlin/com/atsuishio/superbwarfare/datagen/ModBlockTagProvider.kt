@@ -55,6 +55,7 @@ class ModBlockTagProvider(
             ModBlocks.JUMP_PAD.get(),
             ModBlocks.CONTAINER.get(),
             ModBlocks.CHARGING_STATION.get(),
+            ModBlocks.WEAPON_REPAIR_STATION.get(),
             ModBlocks.FUMO_25.get(),
             ModBlocks.SMALL_CONTAINER.get(),
             ModBlocks.VEHICLE_DEPLOYER.get(),

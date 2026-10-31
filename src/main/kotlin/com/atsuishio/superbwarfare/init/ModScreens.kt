@@ -16,9 +16,9 @@ object ModScreens {
         event.register(ModMenuTypes.MEDIUM_VEHICLE_CONTAINER_MENU.get(), ::MediumVehicleContainerScreen)
         event.register(ModMenuTypes.LARGE_VEHICLE_CONTAINER_MENU.get(), ::LargeVehicleContainerScreen)
         event.register(ModMenuTypes.HUGE_VEHICLE_CONTAINER_MENU.get(), ::HugeVehicleContainerScreen)
-
         event.register(ModMenuTypes.REFORGING_TABLE_MENU.get(), ::ReforgingTableScreen)
         event.register(ModMenuTypes.CHARGING_STATION_MENU.get(), ::ChargingStationScreen)
+        event.register(ModMenuTypes.WEAPON_REPAIR_STATION_MENU.get(), ::WeaponRepairStationScreen)
         event.register(ModMenuTypes.SUPERB_ITEM_INTERFACE_MENU.get(), ::SuperbItemInterfaceScreen)
         event.register(ModMenuTypes.FUMO_25_MENU.get(), ::FuMO25Screen)
         event.register(ModMenuTypes.VEHICLE_ASSEMBLING_MENU.get(), ::VehicleAssemblingScreen)

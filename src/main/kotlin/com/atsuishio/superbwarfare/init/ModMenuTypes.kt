@@ -26,6 +26,12 @@ object ModMenuTypes {
         REGISTRY.register(name, factory)
 
     @JvmField
+    val WEAPON_REPAIR_STATION_MENU: DeferredHolder<MenuType<*>, MenuType<WeaponRepairStationMenu>> =
+        REGISTRY.register("weapon_repair_station", Supplier {
+            IMenuTypeExtension.create { id, inventory, _ -> WeaponRepairStationMenu(id, inventory) }
+        })
+
+    @JvmField
     val REFORGING_TABLE_MENU =
         register("reforging_table_menu") { windowId, inv, _ -> ReforgingTableMenu(windowId, inv) }
 

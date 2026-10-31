@@ -78,6 +78,34 @@ object MiscConfig {
     }
 
     @JvmField
+    val WEAPON_REPAIR_STATION_CAPACITY = buildServerConfig {
+        comment("Weapon repair station storage (repair energy, not FE)")
+        comment("武器维修站储能上限（维修能量，非 FE）")
+        defineInRange("weapon_repair_station_capacity", 10000, 1, Int.MAX_VALUE)
+    }
+
+    @JvmField
+    val WEAPON_REPAIR_STATION_ENERGY_COST = buildServerConfig {
+        comment("Repair energy consumed per durability point")
+        comment("每恢复 1 点耐久消耗的维修能量")
+        defineInRange("weapon_repair_station_energy_cost", 1, 1, 10000)
+    }
+
+    @JvmField
+    val WEAPON_REPAIR_STATION_ENERGY_PER_MATERIAL = buildServerConfig {
+        comment("Repair energy supplied by one vehicle reset kit")
+        comment("每个载具重置套件提供的维修能量")
+        defineInRange("weapon_repair_station_energy_per_material", 500, 1, Int.MAX_VALUE)
+    }
+
+    @JvmField
+    val WEAPON_REPAIR_STATION_REPAIR_INTERVAL = buildServerConfig {
+        comment("Ticks per durability point (20 ticks = 1 second)")
+        comment("每恢复 1 点耐久所需游戏刻")
+        defineInRange("weapon_repair_station_repair_interval", 1, 1, 1200)
+    }
+
+    @JvmField
     val CHARGING_STATION_GENERATE_SPEED = buildServerConfig {
         comment("How much FE energy can charging station generate per tick")
         comment("充电站每游戏刻的发电数量")

@@ -17,6 +17,7 @@ class ModBlockStateProvider(output: PackOutput, exFileHelper: ExistingFileHelper
         horizontalBlock(ModBlocks.BARBED_WIRE.get(), UncheckedModelFile(modLoc("block/barbed_wire")))
         horizontalBlock(ModBlocks.JUMP_PAD.get(), UncheckedModelFile(modLoc("block/jump_pad")))
         horizontalBlock(ModBlocks.REFORGING_TABLE.get(), UncheckedModelFile(modLoc("block/reforging_table")))
+        horizontalBlock(ModBlocks.WEAPON_REPAIR_STATION.get(), UncheckedModelFile(modLoc("block/weapon_repair_station")))
         simpleBlock(ModBlocks.RESONANCE_BASE.get(), models().getBuilder("resonance_base")
             .texture("particle", mcLoc("block/gray_glazed_terracotta")))
         horizontalBlock(ModBlocks.CONTAINER.get(), UncheckedModelFile(modLoc("block/container")))

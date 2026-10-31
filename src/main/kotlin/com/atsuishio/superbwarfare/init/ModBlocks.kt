@@ -50,6 +50,7 @@ object ModBlocks {
     @JvmField val CONTAINER = registerBlock("container") { ContainerBlock() }
     @JvmField val BIOGAS_GENERATOR = registerBlock("biogas_generator") { BiogasGeneratorBlock() }
     @JvmField val CHARGING_STATION = registerBlock("charging_station") { ChargingStationBlock() }
+    @JvmField val WEAPON_REPAIR_STATION = registerBlock("weapon_repair_station") { WeaponRepairStationBlock() }
     @JvmField val CREATIVE_CHARGING_STATION = registerBlock("creative_charging_station") { CreativeChargingStationBlock() }
     @JvmField val FUMO_25 = registerBlock("fumo_25") { FuMO25Block() }
     @JvmField val SMALL_CONTAINER = registerBlock("small_container") { SmallContainerBlock() }

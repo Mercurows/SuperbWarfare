@@ -54,7 +54,7 @@ object ModCapabilities {
         // FuMO25
         event.registerBlockEntity(
             Capabilities.EnergyStorage.BLOCK, ModBlockEntities.FUMO_25.value()
-        ) { obj, direction -> obj.getEnergyStorage() }
+        ) { obj, _ -> obj.getEnergyStorage() }
 
         event.registerBlockEntity(
             Capabilities.ItemHandler.BLOCK, ModBlockEntities.BLUEPRINT_RESEARCH_TABLE.value()
@@ -113,5 +113,24 @@ object ModCapabilities {
         event.registerBlockEntity(
             Capabilities.ItemHandler.BLOCK, ModBlockEntities.SUPERB_ITEM_INTERFACE.get()
         ) { obj, _ -> InvWrapper(obj) }
+
+        // 武器维修站
+        event.registerBlockEntity(
+            Capabilities.ItemHandler.BLOCK, ModBlockEntities.WEAPON_REPAIR_STATION.get()
+        ) { obj, context ->
+            if (context == null || obj.isRemoved) return@registerBlockEntity null
+
+            val itemHandlers = arrayOf(
+                SidedInvWrapper(obj, Direction.UP),
+                SidedInvWrapper(obj, Direction.DOWN),
+                SidedInvWrapper(obj, Direction.NORTH),
+            )
+
+            when (context) {
+                Direction.UP -> itemHandlers[0]
+                Direction.DOWN -> itemHandlers[1]
+                else -> itemHandlers[2]
+            }
+        }
     }
 }
