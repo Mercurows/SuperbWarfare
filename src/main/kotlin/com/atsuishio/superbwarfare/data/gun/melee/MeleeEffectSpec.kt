@@ -99,35 +99,20 @@ data class MeleeEffectSpec(
     @SerialName("Particle")
     val particle: String? = null,
 
-    /**
-     * 行为自己的补充参数。
-     *
-     * 目前用于 `potion`：`Extra` 就是 `MobEffect` 的注册 id（如 `minecraft:slowness`）。
-     */
     @SerialName("Extra")
     val extra: String? = null,
 
-    /** `screen_shake` 的震动幅度：把"时间 / 半径 / 幅度"三者分开，各行为按需解释 */
     @SerialName("Amplitude")
     val amplitude: Double? = null,
+
+    @SerialName("Energy")
+    val energy: Int? = null,
 ) {
 
-    /**
-     * 把「本条目 + 它引用的预设」展开成一份完全确定的参数。
-     *
-     * 覆盖规则是**逐字段**的：条目上写了就用条目的，没写就用预设的，预设也没有就用行为默认值。
-     *
-     * @param preset 已解析的预设；传 `null` 表示"不用预设"，不传时按 [effect] 自行查表
-     * @return 解析结果；既没有可用行为也找不到预设时返回 `null`（调用方自行决定是否打日志）
-     */
     @JvmOverloads
     fun resolve(preset: MeleeEffectSpec? = effect?.let { CustomData.MELEE_EFFECTS[it] }): ResolvedMeleeEffect? {
-        // 每一级都要先确认是**已登记的行为**：字符串简写会把 `Effect` 同时写进 [type]，
-        // 不校验的话 `"Effects": ["superbwarfare:heavy_impact"]` 会把自己当成行为 id 而失效
         val behaviorId = ModMeleeEffects.normalize(type)?.takeIf { ModMeleeEffects.contains(it) }
             ?: ModMeleeEffects.normalize(preset?.type)?.takeIf { ModMeleeEffects.contains(it) }
-            // 预设找不到、Type 也没写时，把 Effect 本身当成行为 id：
-            // 于是 `"Effects": ["superbwarfare:explosion"]` 这种写法也能直接用
             ?: ModMeleeEffects.normalize(effect)?.takeIf { ModMeleeEffects.contains(it) }
             ?: return null
 
@@ -150,10 +135,10 @@ data class MeleeEffectSpec(
             particle = particle ?: preset?.particle,
             extra = extra ?: preset?.extra,
             amplitude = amplitude ?: preset?.amplitude,
+            energy = (energy ?: preset?.energy ?: 0).coerceAtLeast(0),
         )
     }
 
-    /** `"superbwarfare:heavy_impact"` 这样的字符串简写 = 只引用预设 */
     object MeleeEffectSpecInstanceBuilder : StringInstanceBuilder<MeleeEffectSpec> {
         override fun fromString(value: String): MeleeEffectSpec {
             val trimmed = value.trim()

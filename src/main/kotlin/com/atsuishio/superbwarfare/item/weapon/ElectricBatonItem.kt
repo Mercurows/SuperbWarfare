@@ -8,6 +8,4 @@ import net.minecraft.world.item.ItemStack
 class ElectricBatonItem : GeoGunItem(Properties()) {
 
     override fun isDamageable(stack: ItemStack?): Boolean = true
-
-    // 不覆写 getTooltipImage：近战武器照样要显示伤害 / 爆头 / 等级 / 模组信息。
 }

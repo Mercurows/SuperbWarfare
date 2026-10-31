@@ -11,6 +11,7 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec3
+import net.minecraftforge.common.capabilities.ForgeCapabilities
 
 /**
  * 近战额外效果的结算器（服务端专用）
@@ -84,6 +85,11 @@ class MeleeEffectDispatcher(
                 continue
             }
 
+            if (!payEnergy(effect, simulate = true)) {
+                debug { "effect '${effect.key}' skipped: needs ${effect.energy} FE" }
+                continue
+            }
+
             val behavior = ModMeleeEffects.get(effect.type)
             if (behavior == null) {
                 Mod.LOGGER.warn(
@@ -113,6 +119,8 @@ class MeleeEffectDispatcher(
                 continue
             }
 
+            payEnergy(effect, simulate = false)
+
             // 只有真的触发了才上冷却
             if (effect.cooldown > 0) {
                 data.cooldown.set(cooldownKey, effect.cooldown)
@@ -122,6 +130,19 @@ class MeleeEffectDispatcher(
                         (if (target != null) " target=${target.type}" else "")
             }
         }
+    }
+
+    private fun payEnergy(effect: ResolvedMeleeEffect, simulate: Boolean): Boolean {
+        if (effect.energy <= 0) return true
+
+        var paid = false
+        data.stack.getCapability(ForgeCapabilities.ENERGY).ifPresent { storage ->
+            if (storage.energyStored >= effect.energy) {
+                storage.extractEnergy(effect.energy, simulate)
+                paid = true
+            }
+        }
+        return paid
     }
 
     /** 没有目标也没有命中点时的作用点：攻击者视线前方 1.5 格（枪口大致的位置）。 */
