@@ -354,6 +354,15 @@ class ModRecipeProvider(pOutput: PackOutput) : RecipeProvider(pOutput), IConditi
                     has(ModItems.BAYONET_M1917.get())
                 )
                 .save(writer, loc(getItemName(ModItems.KNIFE_M1917.get())))
+            ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, ModItems.MIAODAO.get())
+                .pattern("  b")
+                .pattern(" a ")
+                .pattern("c  ")
+                .define('a', ModTags.Items.STORAGE_BLOCK_CEMENTED_CARBIDE)
+                .define('b', ModTags.Items.INGOTS_CEMENTED_CARBIDE)
+                .define('c', Items.STICK)
+                .unlockedBy(getHasName(ModItems.CEMENTED_CARBIDE_INGOT.get()), has(ModTags.Items.INGOTS_CEMENTED_CARBIDE))
+                .save(writer, loc(getItemName(ModItems.MIAODAO.get())))
         }
 
         private fun buildArmorRecipes(writer: Consumer<FinishedRecipe>) {

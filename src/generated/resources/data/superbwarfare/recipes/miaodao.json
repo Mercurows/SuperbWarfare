@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": {
+      "tag": "superbwarfare:storage_blocks/cemented_carbide"
+    },
+    "b": {
+      "tag": "superbwarfare:ingots/cemented_carbide"
+    },
+    "c": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    "  b",
+    " a ",
+    "c  "
+  ],
+  "result": {
+    "item": "superbwarfare:miaodao"
+  },
+  "show_notification": true
+}
