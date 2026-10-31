@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "superbwarfare:block/weapon_repair_station",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "superbwarfare:block/weapon_repair_station"
+    },
+    "facing=south": {
+      "model": "superbwarfare:block/weapon_repair_station",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "superbwarfare:block/weapon_repair_station",
+      "y": 270
+    }
+  }
+}

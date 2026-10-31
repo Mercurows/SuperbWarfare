@@ -1,0 +1,68 @@
+@font-face { font-family: RepairUI; src: url("../fonts/SourceHanSansCN-Medium.otf"); }
+* { box-sizing: border-box; }
+html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; }
+body, button { font-family: RepairUI, sans-serif; font-weight: normal; color: #dceae7; font-size: 16px; }
+body, body * { user-select: none; }
+body { background: transparent; }
+translation { display: inline; }
+button { cursor: pointer; }
+.backdrop { position: fixed; inset: 0; background: rgba(4, 11, 16, 0.93); backdrop-filter: blur(14px); }
+.repair-layout { position: absolute; width: 1280px; height: 720px; transform-origin: 0 0; }
+.terminal { position: absolute; inset: 26px 44px 20px; }
+.terminal-header { height: 76px; border-bottom: 1px solid #375452; display: flex; align-items: center; gap: 22px; }
+.identity { flex: 1; }
+.eyebrow { color: #71948e; font-size: 11px; letter-spacing: 2px; }
+.terminal-title { margin: 5px 0 0; font-size: 30px; letter-spacing: 4px; font-weight: normal; }
+.connection { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+#pulse-dot { display: block; width: 7px; height: 7px; background: #73eed0; box-shadow: 0 0 12px rgba(115,238,208,0.4); }
+#close { background: transparent; color: #809e98; border: 1px solid #304744; padding: 9px 14px; font-size: 12px; }
+#close:hover { color: #73eed0; border-color: #73eed0; }
+.workspace { position: absolute; top: 100px; left: 0; right: 0; bottom: 250px; display: flex; gap: 14px; background: transparent; padding: 0; border: 0; }
+.panel { position: relative; background: rgba(17,34,39,0.7); border: 1px solid #304a49; padding: 20px; }
+.section-title { display: flex; align-items: center; gap: 12px; font-size: 18px; line-height: 26px; letter-spacing: 2px; color: #b2c9c3; }
+.index { color: #56b79f; font-size: 13px; line-height: 26px; }
+.supply { width: 272px; flex-shrink: 0; border-top: 2px solid #4c766a; }
+.fuel-row { display: flex; gap: 14px; align-items: center; margin: 26px 0 18px; }
+.material-name { font-size: 14px; margin-bottom: 7px; }
+.muted { font-size: 11px; line-height: 19px; color: #7d9b95; }
+.supply-rule { height: 1px; background: #28413e; margin-bottom: 20px; }
+#energy-value { margin: 10px 0 12px; color: #d0e5db; font-size: 22px; }
+.bar { height: 5px; background: #223b3d; overflow: hidden; }
+#energy-fill { height: 100%; width: 0; background: #d6b36f; box-shadow: 0 0 12px rgba(214,179,111,0.3); }
+.repair { flex: 1; min-width: 0; border-top: 2px solid #73eed0; padding-bottom: 14px; }
+.stage { position: absolute; left: 16px; right: 16px; top: 48px; bottom: 80px; overflow: hidden; }
+.orbit { position: absolute; left: 50%; top: 50%; border: 1px solid #284e4b; border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+.outer { width: 140px; height: 140px; border-left: 2px solid #68b5a2; border-right: 2px solid #68b5a2; }
+.inner { width: 112px; height: 112px; border: 1px dashed #3b6861; }
+.axis { position: absolute; background: #203e3b; pointer-events: none; }
+.horizontal { width: 80%; height: 1px; left: 10%; top: 50%; }
+.vertical { width: 1px; height: 80%; left: 50%; top: 10%; }
+#item-name { position: absolute; left: 20px; right: 20px; bottom: 55px; height: 24px; text-align: center; font-size: 17px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+.health-row { position: absolute; bottom: 24px; left: 20px; right: 20px; display: flex; justify-content: space-between; font-size: 11px; color: #86a49c; }
+.health-bar { position: absolute; bottom: 14px; left: 20px; right: 20px; }
+#health-fill { height: 100%; width: 0; background: #73eed0; }
+#scan-line { position: absolute; left: 18%; right: 18%; top: 20%; height: 2px; background: #87ffe0; box-shadow: 0 0 18px #46cbb1; pointer-events: none; animation: scan 2.4s ease-in-out infinite; z-index: 3; }
+@keyframes scan { 0% { top: 18%; opacity: 0; } 20% { opacity: 0.8; } 80% { opacity: 0.8; } 100% { top: 82%; opacity: 0; } }
+.diagnostics { width: 264px; flex-shrink: 0; border-top: 2px solid #637d85; }
+.condition { margin: 12px 0 20px; }
+#health-percent { font-size: 46px; color: #73eed0; line-height: 56px; }
+.metric { display: flex; justify-content: space-between; padding: 8px 0; border-top: 1px solid #263f3e; font-size: 12px; color: #a1bbb2; }
+#toggle { position: absolute; bottom: 18px; left: 20px; right: 20px; height: 35px; display: flex; align-items: center; justify-content: center; margin: 0; padding: 0; border: 1px solid #467d6e; background: #183d35; color: #9de9d2; font-size: 20px; line-height: 26px; text-align: center; }
+#toggle:hover { background: #245849; border-color: #73eed0; }
+/* SLOT keeps native input, while the Screen paints the tooltip once above all decorators.
+   AUI icons are 16px regardless of slot size: scale the icon explicitly, retaining a 2px inset. */
+slot { display: block; position: relative; flex-shrink: 0; margin: 0; padding: 0; background-image: none; background-color: #0b1c20; border: 1px solid #44635e; --aui-slot-interactive: slot; --aui-slot-icon-scale: 2; }
+slot:hover { border-color: #8eefd1; background-color: #173c35; }
+slot > item { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; }
+#material-slot { width: 48px; height: 48px; --aui-slot-icon-scale: 2.75; }
+#repair-slot { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 76px; height: 76px; border-color: #70c5ae; background: #10262b; z-index: 2; --aui-slot-icon-scale: 4.5; }
+.inventory-panel { position: absolute; bottom: 34px; left: 0; right: 0; height: 198px; display: flex; align-items: center; gap: 28px; border-top: 1px solid #314e49; padding: 18px 24px 0; }
+.inventory-info { flex: 1; min-width: 0; }
+.inventory-title { margin: 6px 0 12px; font-size: 20px; font-weight: normal; letter-spacing: 2px; }
+.inventory-hint { max-width: 280px; font-size: 12px; line-height: 22px; color: #799a91; }
+#inventory { display: flex; flex-direction: column; gap: 6px; position: relative; width: 372px; padding: 0; margin: 0; flex-shrink: 0; background: transparent; border: 0; }
+.inventory-row { display: flex; gap: 6px; height: 36px; flex-shrink: 0; }
+.inventory-row.hotbar { margin-top: 6px; }
+#inventory slot { width: 36px; height: 36px; }
+.inventory-side { flex: 1; text-align: right; color: #42685d; font-size: 10px; line-height: 19px; letter-spacing: 2px; }
+.cross { display: block; font-size: 56px; line-height: 60px; color: #507c6e; margin-bottom: 8px; }

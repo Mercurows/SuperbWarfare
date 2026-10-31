@@ -13,6 +13,11 @@ object ModBlockEntities {
     val REGISTRY: DeferredRegister<BlockEntityType<*>> =
         DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, Mod.MODID)
 
+    @JvmField
+    val WEAPON_REPAIR_STATION = registerBlockEntity("weapon_repair_station") {
+        BlockEntityType.Builder.of(::WeaponRepairStationBlockEntity, ModBlocks.WEAPON_REPAIR_STATION.get()).build(null)
+    }
+
     inline fun <reified T : BlockEntity> registerBlockEntity(
         id: String,
         noinline blockEntity: () -> BlockEntityType<T>

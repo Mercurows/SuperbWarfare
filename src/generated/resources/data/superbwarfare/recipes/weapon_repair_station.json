@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "f": {
+      "item": "minecraft:smithing_table"
+    },
+    "k": {
+      "item": "superbwarfare:vehicle_reset_kit"
+    },
+    "r": {
+      "item": "minecraft:redstone"
+    },
+    "s": {
+      "item": "superbwarfare:steel_ingot"
+    }
+  },
+  "pattern": [
+    "sss",
+    "rkr",
+    "sfs"
+  ],
+  "result": {
+    "item": "superbwarfare:weapon_repair_station"
+  },
+  "show_notification": true
+}
