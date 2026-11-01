@@ -10,7 +10,9 @@ import net.minecraft.tags.TagKey
 import net.minecraft.world.entity.*
 import net.minecraft.world.entity.decoration.HangingEntity
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.entity.projectile.AbstractHurtingProjectile
 import net.minecraft.world.entity.projectile.Projectile
+import net.minecraft.world.entity.projectile.ShulkerBullet
 import net.minecraft.world.level.ClipContext
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.entity.EntityTypeTest
@@ -53,6 +55,18 @@ object SeekTool {
     /** 基础实体过滤 = 存活 ∧ 非旁观 ∧ 基础类型 ∧ 非黑名单 */
     @JvmField
     val BASIC_FILTER: Predicate<Entity?> = IS_ALIVE and NOT_SPECTATOR and BASIC_TYPE_FILTER and !IN_BLACKLIST
+
+    @JvmField
+    val MELEE_TYPE_FILTER: Predicate<Entity?> = Predicate { e ->
+        e != null && e !is HangingEntity && e !is Display &&
+                (e !is Projectile
+                        || e is AbstractHurtingProjectile
+                        || e is ShulkerBullet
+                        || e.type.`is`(ModTags.EntityTypes.DESTROYABLE_PROJECTILE))
+    }
+
+    @JvmField
+    val MELEE_FILTER: Predicate<Entity?> = IS_ALIVE and NOT_SPECTATOR and MELEE_TYPE_FILTER and !IN_BLACKLIST
 
     /** 判断实体是否无敌 */
     @JvmField
