@@ -166,6 +166,7 @@
   ],
   "Icon": "superbwarfare:textures/gun_icon/secondary_cataclysm_icon.png",
   "AvailablePerks": [
+    "superbwarfare:striving_for_perfection",
     "superbwarfare:cluster_bomb",
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",

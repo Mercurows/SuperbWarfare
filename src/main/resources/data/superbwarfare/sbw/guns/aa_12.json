@@ -58,6 +58,7 @@
   "AmmoType": "@ShotgunAmmo",
   "Icon": "superbwarfare:textures/gun_icon/aa_12_icon.png",
   "AvailablePerks": [
+    "superbwarfare:striving_for_perfection",
     "@Ammo",
     "superbwarfare:field_doctor",
     "superbwarfare:heal_clip",

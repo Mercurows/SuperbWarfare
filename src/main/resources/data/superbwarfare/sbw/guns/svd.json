@@ -66,6 +66,7 @@
   "AmmoType": "@SniperAmmo",
   "Icon": "superbwarfare:textures/gun_icon/svd_icon.png",
   "AvailablePerks": [
+    "superbwarfare:striving_for_perfection",
     "@Ammo",
     "superbwarfare:heal_clip",
     "superbwarfare:fourth_times_charm",

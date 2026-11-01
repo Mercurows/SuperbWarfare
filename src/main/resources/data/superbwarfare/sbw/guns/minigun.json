@@ -59,6 +59,7 @@
   },
   "Icon": "superbwarfare:textures/gun_icon/minigun_icon.png",
   "AvailablePerks": [
+    "superbwarfare:striving_for_perfection",
     "@Ammo",
     "superbwarfare:fourth_times_charm",
     "superbwarfare:field_doctor",
