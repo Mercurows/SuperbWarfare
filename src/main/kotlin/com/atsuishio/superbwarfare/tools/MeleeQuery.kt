@@ -369,7 +369,7 @@ object MeleeQuery {
         return level.getEntities(attacker, aabb) { e ->
             e !== attacker
                     && e !== vehicle
-                    && SeekTool.BASIC_FILTER.test(e)
+                    && SeekTool.MELEE_FILTER.test(e)
                     && SeekTool.NOT_IN_SMOKE.test(e)
                     && !SeekTool.IN_SAME_TEAM.test(attacker, e)
         }
