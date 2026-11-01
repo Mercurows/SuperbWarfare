@@ -375,9 +375,17 @@ class ModItemTagProvider(
 
         this.tag(ItemTags.SWORDS).add(
             ModItems.MILITARY_SHOVEL.get(),
-            ModItems.T_BATON.get(),
             ModItems.CROWBAR.get(),
             ModItems.CEMENTED_CARBIDE_SWORD.get(),
+            ModItems.KNIFE.get(),
+            ModItems.KNIFE_6KH2.get(),
+            ModItems.KNIFE_SEITENGEWEHR_84.get(),
+            ModItems.KNIFE_M1917.get(),
+            ModItems.MIAODAO.get(),
+            ModItems.T_BATON.get(),
+            ModItems.ELECTRIC_BATON.get(),
+            ModItems.STEEL_PIPE.get(),
+            ModItems.HAMMER.get(),
             ModItems.GOLDEN_HAMMER.get(),
             ModItems.STEEL_HAMMER.get(),
             ModItems.DIAMOND_HAMMER.get(),
@@ -420,6 +428,8 @@ class ModItemTagProvider(
         }
 
         this.tag(ModTags.Items.RESEARCHABLE_AMMO_PERK_COMMON).add(
+            perkItem(ModPerks.FLAME_BLADE),
+            perkItem(ModPerks.SILVER_BLADE),
             perkItem(ModPerks.AQUA_BULLET),
             perkItem(ModPerks.POISONOUS_BULLET),
             perkItem(ModPerks.INCENDIARY_BULLET),
@@ -429,6 +439,7 @@ class ModItemTagProvider(
             perkItem(ModPerks.SILVER_BULLET)
         )
         this.tag(ModTags.Items.RESEARCHABLE_AMMO_PERK_RARE).add(
+            perkItem(ModPerks.FROSTMOURNE),
             perkItem(ModPerks.BLADE_BULLET),
             perkItem(ModPerks.CUPID_ARROW),
             perkItem(ModPerks.HE_BULLET),
@@ -466,7 +477,8 @@ class ModItemTagProvider(
         this.tag(ModTags.Items.RESEARCHABLE_FUNCTIONAL_PERK_EPIC).add(
             perkItem(ModPerks.BACKPACK_LINKED_MAGAZINE),
             perkItem(ModPerks.ADRENALINE_RUSH),
-            perkItem(ModPerks.TURBO_CHARGER)
+            perkItem(ModPerks.TURBO_CHARGER),
+            perkItem(ModPerks.STRIVING_FOR_PERFECTION)
         )
         this.tag(ModTags.Items.RESEARCHABLE_FUNCTIONAL_PERK_LEGENDARY).add(
             perkItem(ModPerks.INTELLIGENT_CHIP)
@@ -494,7 +506,8 @@ class ModItemTagProvider(
             perkItem(ModPerks.FAIR_MEANS),
             perkItem(ModPerks.TARGET_LOCK),
             perkItem(ModPerks.BATTLE_OF_WITS),
-            perkItem(ModPerks.STOP_GAP)
+            perkItem(ModPerks.STOP_GAP),
+            perkItem(ModPerks.INVISIBLE_BLADE_SHAPENESS)
         )
         this.tag(ModTags.Items.RESEARCHABLE_DAMAGE_PERK_LEGENDARY).add(
             perkItem(ModPerks.SOUL_REAVER)

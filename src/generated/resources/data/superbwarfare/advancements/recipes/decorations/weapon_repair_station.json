@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "superbwarfare:weapon_repair_station"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_vehicle_reset_kit": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "superbwarfare:vehicle_reset_kit"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_vehicle_reset_kit",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "superbwarfare:weapon_repair_station"
+    ]
+  },
+  "sends_telemetry_event": false
+}

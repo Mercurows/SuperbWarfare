@@ -59,6 +59,9 @@ object ModPerks {
     lateinit var JHP_BULLET: PERK
     lateinit var HE_BULLET: PERK
     lateinit var SILVER_BULLET: PERK
+    lateinit var SILVER_BLADE: PERK
+    lateinit var FLAME_BLADE: PERK
+    lateinit var FROSTMOURNE: PERK
     lateinit var POISONOUS_BULLET: PERK
     lateinit var BEAST_BULLET: PERK
     lateinit var LONGER_WIRE: PERK
@@ -104,6 +107,7 @@ object ModPerks {
     lateinit var QUICKDRAW: PERK
     lateinit var SNAPSHOT_SIGHTS: PERK
     lateinit var TRIPLE_TAP: PERK
+    lateinit var STRIVING_FOR_PERFECTION: PERK
     // @formatter:on
 
     /**
@@ -136,6 +140,7 @@ object ModPerks {
     lateinit var SOUL_REAVER: PERK
     lateinit var STEADY_RESOLVE: PERK
     lateinit var STOP_GAP: PERK
+    lateinit var INVISIBLE_BLADE_SHAPENESS: PERK
     // @formatter:on
 
     fun register(bus: IEventBus) {
@@ -193,6 +198,9 @@ object ModPerks {
 
     private fun registerHardcoded() {
         // Ammo Perks
+        SILVER_BLADE = autoRegistryObjects.getValue("silver_blade")
+        FLAME_BLADE = autoRegistryObjects.getValue("flame_blade")
+        FROSTMOURNE = autoRegistryObjects.getValue("frostmourne")
         AP_BULLET = autoRegistryObjects["ap_bullet"] ?: registerAmmoPerk("ap_bullet") { APBullet }
         JHP_BULLET = autoRegistryObjects["jhp_bullet"] ?: registerAmmoPerk("jhp_bullet") { JHPBullet }
         HE_BULLET = autoRegistryObjects["he_bullet"] ?: registerAmmoPerk("he_bullet") { HEBullet }
@@ -272,6 +280,8 @@ object ModPerks {
         TRIPLE_TAP = autoRegistryObjects["triple_tap"] ?: registerFuncPerk("triple_tap") {
             EmptyPerk("triple_tap", Perk.Type.FUNCTIONAL)
         }
+        STRIVING_FOR_PERFECTION = autoRegistryObjects["striving_for_perfection"]
+            ?: registerFuncPerk("striving_for_perfection") { StrivingForPerfection }
 
         // Damage Perks
         KILL_CLIP = autoRegistryObjects["kill_clip"] ?: registerDamagePerk("kill_clip") { KillClip }
@@ -304,5 +314,7 @@ object ModPerks {
         STOP_GAP = autoRegistryObjects["stop_gap"] ?: registerDamagePerk("stop_gap") {
             EmptyPerk("stop_gap", Perk.Type.DAMAGE)
         }
+        INVISIBLE_BLADE_SHAPENESS = autoRegistryObjects["invisible_blade_shapeness"]
+            ?: registerDamagePerk("invisible_blade_shapeness") { InvisibleBladeShapeness }
     }
 }

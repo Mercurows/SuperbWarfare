@@ -98,6 +98,8 @@ data class DefaultGunData(
     val meleeLegshot: Double = 0.5,
     @SerialName("MeleeComboReset")
     val meleeComboReset: Int = 15,
+    @SerialName("MeleeChainWindow")
+    val meleeChainWindow: Int = 5,
     @SerialName("MeleeHitbox")
     val meleeHitbox: MeleeHitbox? = null,
     @SerialName("MeleeSweep")
@@ -219,7 +221,7 @@ data class DefaultGunData(
     val soundRadius: Double = 0.0,
     @SerialName("RPM")
     val rpm: Int = 600,
-    // 全局射速倍率：最终射速 = (RPM + 每发累加值) * RpmMultiplier
+    // 全局攻速倍率：最终射速 = (RPM + 每发累加值) * RpmMultiplier；近战 Duration / HitTime 同比缩放
     @SerialName("RpmMultiplier")
     val rpmMultiplier: Double = 1.0,
     @SerialName("ExplosionDamage")
@@ -411,6 +413,7 @@ data class DefaultGunData(
             meleeDuration = clampedMeleeDuration,
             meleeAngle = meleeAngle.coerceIn(1, 180),
             meleeComboReset = max(0, meleeComboReset),
+            meleeChainWindow = max(0, meleeChainWindow),
             meleeHeadshot = max(0.0, meleeHeadshot),
             meleeLegshot = max(0.0, meleeLegshot),
             zoomSpreadRate = zoomSpreadRate.coerceIn(0.0, 1.0),

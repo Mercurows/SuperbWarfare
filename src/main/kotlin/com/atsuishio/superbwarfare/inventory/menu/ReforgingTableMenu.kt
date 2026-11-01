@@ -26,6 +26,7 @@ open class ReforgingTableMenu(
     container: Container,
     pContainerLevelAccess: ContainerLevelAccess
 ) : AbstractContainerMenu(ModMenuTypes.REFORGING_TABLE_MENU.get(), pContainerId) {
+    private val player = inventory.player
     protected val container: Container
     protected val access: ContainerLevelAccess
 
@@ -255,7 +256,7 @@ open class ReforgingTableMenu(
 
         listOf(ammo, func, damage).forEach { item ->
             val perkItem = item.item
-            if (!item.isEmpty && perkItem is PerkItem && GunData.from(container.getItem(INPUT_SLOT)).canApplyPerk(perkItem.perk)) {
+            if (!item.isEmpty && perkItem is PerkItem && GunData.from(container.getItem(INPUT_SLOT)).canApplyPerk(perkItem.perk, player.isCreative)) {
                 data.perk.set(
                     PerkInstance(
                         perkItem.perk, when (perkItem.perk.type) {
@@ -470,7 +471,7 @@ open class ReforgingTableMenu(
 
             return perkItem.perk.type == type && !container.getItem(INPUT_SLOT).isEmpty
                     && container.getItem(INPUT_SLOT).item is GunItem
-                    && GunData.from(container.getItem(INPUT_SLOT)).canApplyPerk(perkItem.perk)
+                    && GunData.from(container.getItem(INPUT_SLOT)).canApplyPerk(perkItem.perk, player.isCreative)
                     && container.getItem(slot).isEmpty
         }
 

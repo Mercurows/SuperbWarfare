@@ -28,6 +28,7 @@ import com.atsuishio.superbwarfare.data.gun.AmmoConsumer.AmmoConsumeType
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.subdata.ScopeStackEntry
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
+import com.atsuishio.superbwarfare.data.gun_skin.GunSkin
 import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.atsuishio.superbwarfare.event.DeployedWeaponHandler
 import com.atsuishio.superbwarfare.event.ShieldRuntime
@@ -79,7 +80,6 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemDisplayContext
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.phys.Vec3
-import net.minecraftforge.client.event.ViewportEvent
 import net.minecraftforge.common.capabilities.ForgeCapabilities
 import org.joml.Matrix3f
 import org.joml.Matrix4f
@@ -168,57 +168,6 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     override fun hasModel(stack: ItemStack): Boolean {
         val modelResource = GunResource.compute(stack).getModel()
         return GeoGunModel.create(modelResource) != null
-    }
-
-    override fun applyLevelCameraAnimation(
-        event: ViewportEvent.ComputeCameraAngles,
-        stack: ItemStack,
-        animateRot: Quaternionf,
-        partialTicks: Float
-    ) {
-        val absolutePitch = Mth.abs(Mth.wrapDegrees(event.pitch))
-
-        // At +/-90 degrees pitch the YXZ Euler decomposition is singular. Fold
-        // animated yaw into roll instead of changing event.yaw, otherwise the
-        // player's look input gets trapped at the pole while the animation plays.
-        if (absolutePitch >= VERTICAL_PITCH_START) {
-            val animatedEuler = YXZRotationView(animateRot).asEulerAngle()
-            val animatedYaw = Mth.RAD_TO_DEG * animatedEuler.y()
-            val animatedRoll = Mth.RAD_TO_DEG * animatedEuler.z()
-            val positivePitch = event.pitch >= 0f
-            event.pitch = Mth.clamp(event.pitch + Mth.RAD_TO_DEG * animatedEuler.x(), -90f, 90f)
-            event.roll = if (positivePitch) {
-                event.roll - animatedYaw - animatedRoll
-            } else {
-                event.roll + animatedYaw - animatedRoll
-            }
-            return
-        }
-
-        if (isIdentity(animateRot)) {
-            return
-        }
-
-        val raw = YXZRotationView(
-            Vector3f(
-                Mth.DEG_TO_RAD * event.pitch,
-                Mth.DEG_TO_RAD * event.yaw,
-                Mth.DEG_TO_RAD * event.roll
-            )
-        ).asQuaternion()
-        val combined = Quaternionf(raw).mul(animateRot)
-        val euler = YXZRotationView(combined).asEulerAngle()
-
-        event.yaw = Mth.RAD_TO_DEG * euler.y()
-        event.pitch = Mth.RAD_TO_DEG * euler.x()
-        event.roll = -Mth.RAD_TO_DEG * euler.z()
-    }
-
-    private fun isIdentity(rotation: Quaternionf): Boolean {
-        return Mth.abs(rotation.x()) < 1e-5f &&
-                Mth.abs(rotation.y()) < 1e-5f &&
-                Mth.abs(rotation.z()) < 1e-5f &&
-                Mth.abs(Mth.abs(rotation.w()) - 1f) < 1e-5f
     }
 
     override fun applyItemInHandCameraAnimation(
@@ -371,7 +320,9 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         val resource = GunResource.compute(stack)
         val modelResource = resource.getModel()
 
+        val skin = GunSkin.getSkin(stack)?.takeIf { it.texture != null }
         val useLod = !transformType.firstPerson()
+                && (skin == null || skin.lodTexture != null)
                 && !GunMountContext.active
                 && DisplayConfig.ENABLE_GUN_LOD.get()
                 && !RenderDistanceHelper.isInGui()
@@ -381,7 +332,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             GeoGunModel.create(modelResource)
         } ?: return
 
-        val texture = if (useLod) {
+        val texture = (if (useLod) skin?.lodTexture else skin?.texture) ?: if (useLod) {
             modelResource.getLODTexture(1)
         } else {
             modelResource.texture
@@ -416,7 +367,7 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             // 必须早于 `updateEditFocus`（聚焦偏移相对同一个基准算）与 `applyFirstPersonPositioningTransform`，且每帧只能调一次
             updateSubWeaponIdleView(stack, model, hand)
 
-            updateEditFocus(model)
+            updateEditFocus(stack, model)
 
             val scopeRender = resolveScopeAttachmentRender(stack, model)
             applyFirstPersonPositioningTransform(poseStack, model, stack, scopeRender, hand)
@@ -1962,11 +1913,12 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
 
     open fun cameraRotationInverse(): Matrix4f {
         val camera = Minecraft.getInstance().gameRenderer.mainCamera
-        return Matrix4f()
+        val rotation = Matrix4f()
             .rotationX(Mth.DEG_TO_RAD * camera.xRot)
             .rotateY(Mth.DEG_TO_RAD * (camera.yRot + 180f))
             .rotateZ(CameraStateCache.getCameraRollRadians())
-            .invert()
+        ClientEventHandler.firstPersonCameraRotation()?.let { rotation.rotate(it) }
+        return rotation.invert()
     }
 
     open fun handForContext(transformType: ItemDisplayContext): InteractionHand {
@@ -2420,6 +2372,23 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     }
 
     /**
+     * 改装聚焦目标在**宿主枪模型空间**里的变换。
+     *
+     * 三种情况：配件槽位取槽位定位骨骼；主武器弹种取 `ammo_pos`（没有则弹匣骨骼）；
+     * 副武器弹种的目标骨骼在副武器自己的模型里，要用 [subWeaponAmmoTransform] 把挂点链合成回宿主空间
+     * —— 只认宿主模型的骨骼的话，副武器弹种页会因为"没有聚焦目标"退回鼠标浮动预览。
+     *
+     * 未选中、或副武器没装 / 模型没有对应骨骼时返回 `null`（相机回到浮动预览）。
+     */
+    private fun editFocusTransform(stack: ItemStack, model: GeoGunModel): Matrix4f? {
+        if (!ClientEventHandler.isEditing) return null
+        if (ClientEventHandler.editingAttachmentType == AttachmentSlots.SUB_WEAPON_AMMO_EDIT_INDEX) {
+            return subWeaponAmmoTransform(stack, model)
+        }
+        return attachmentFocusBone(model)?.let { model.getGlobalTransform(it) }
+    }
+
+    /**
      * 弹药槽位的定位骨骼：模型自带 `ammo_pos`（如 m_79）时聚焦到它，否则沿用弹匣的定位骨骼。
      */
     private fun ammoFocusBone(model: GeoGunModel): String {
@@ -2451,6 +2420,9 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         )
 
         val window = Minecraft.getInstance().window
+        // 副武器自己的弹种定位点：拆装界面里副武器是独立一份模型，要进它自己的模型取 `ammo_pos`
+        val subAmmo = subWeaponAmmoBonePoint(stack, poseStack, model, window.guiScaledWidth, window.guiScaledHeight)
+
         val stackMount = scopeStackMountTransform(stack, model)?.let {
             BedrockBoneCoordinateTool.firstPersonBonePointToScreen(
                 poseStack, it, EDIT_MOUNT_POINT,
@@ -2458,7 +2430,44 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
             )
         }
         WeaponEditMountTracker.update(
-            positions, ammo, stackMount, window.guiScaledWidth, window.guiScaledHeight
+            positions, ammo, stackMount, subAmmo, window.guiScaledWidth, window.guiScaledHeight
+        )
+    }
+
+    /**
+     * 副武器模型里的 `ammo_pos`（下挂榴弹自己的弹种定位点）在**宿主枪模型空间**里的变换。
+     *
+     * 副武器是一份独立模型，挂在宿主枪的 `sub_weapon_pos`（[AttachmentDefinition.bone]）下，
+     * 所以变换和 [renderAttachments] 渲染副武器时完全同一套：宿主枪挂点骨骼 × 配件调整，
+     * 再乘副武器自己的骨骼变换。没装副武器、或副武器模型没有 `ammo_pos` 时返回 `null`。
+     */
+    private fun subWeaponAmmoTransform(stack: ItemStack, model: GeoGunModel): Matrix4f? {
+        val data = from(stack)
+        val attachmentId = data.attachment.id(AttachmentType.SUBWEAPON) ?: return null
+        val definition = AttachmentDefinition.from(attachmentId) ?: return null
+        val slot = AttachmentSlots.ofOrNull(AttachmentType.SUBWEAPON) ?: return null
+        val mountBone = AttachmentSlots.mountBoneOf(slot, definition) ?: return null
+        val hostMount = model.getGlobalTransform(mountBone) ?: return null
+        val assets = definition.resolveAssets(data, AttachmentType.SUBWEAPON) ?: return null
+        val subModel = AttachmentModelReloadListener.getModel(assets.model) ?: return null
+        val ammoBone = subModel.getGlobalTransform(AMMO_BONE) ?: return null
+
+        val mount = Matrix4f(hostMount).mul(attachmentTransform(stack, AttachmentType.SUBWEAPON, definition))
+        return Matrix4f(mount).mul(ammoBone)
+    }
+
+    /** 把上面那个变换投影成屏幕坐标；点位落到相机背面时为 `null` */
+    private fun subWeaponAmmoBonePoint(
+        stack: ItemStack,
+        poseStack: PoseStack,
+        model: GeoGunModel,
+        screenWidth: Int,
+        screenHeight: Int,
+    ): BoneScreenPoint? {
+        val ammo = subWeaponAmmoTransform(stack, model) ?: return null
+        return BedrockBoneCoordinateTool.firstPersonBonePointToScreen(
+            poseStack, ammo, EDIT_MOUNT_POINT,
+            RenderSystem.getProjectionMatrix(), screenWidth, screenHeight
         )
     }
 
@@ -2488,13 +2497,17 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     /**
      * 每帧将 [com.atsuishio.superbwarfare.event.ClientEventHandler.editFocusOffset] 向
      * 改装聚焦目标偏移平滑插值，实现槽位切换时的缓动过渡。
+     *
+     * 聚焦目标每帧只解析一次：配件槽位 / 主武器弹种 / 副武器弹种都算"已聚焦"，
+     * 未聚焦时才回到跟随鼠标的浮动预览。
      */
-    private fun updateEditFocus(model: GeoGunModel) {
-        val desired = computeEditFocusOffset(model) ?: Vector3f()
-        val desiredYaw = computeEditFocusYaw(model)
-        val desiredPitch = computeEditFocusPitch(model)
+    private fun updateEditFocus(stack: ItemStack, model: GeoGunModel) {
+        val focus = editFocusTransform(stack, model)
+        val desired = computeEditFocusOffset(model, focus) ?: Vector3f()
+        val desiredYaw = if (focus != null) 0f else computeUnfocusedYaw()
+        val desiredPitch = if (focus != null) 0f else computeUnfocusedPitch()
         val delta = Minecraft.getInstance().deltaFrameTime.coerceAtMost(0.5f)
-        val focusing = attachmentFocusBone(model) != null
+        val focusing = focus != null
         val panning = ClientEventHandler.isEditing && !focusing
 
         if (focusing) {
@@ -2517,22 +2530,21 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     }
 
     /**
-     * 返回改装聚焦的目标偏移（模型空间，相对本帧的 hip 位形基准）：聚焦点取当前编辑配件的定位点往
-     * Z 轴负方向偏移 [EDIT_FOCUS_Z_OFFSET]，未选中配件时返回浮动预览的鼠标平移偏移。
+     * 返回改装聚焦的目标偏移（模型空间，相对本帧的 hip 位形基准）：聚焦点取 [focus] 的平移往
+     * Z 轴负方向偏移 [EDIT_FOCUS_Z_OFFSET]，未聚焦时返回浮动预览的鼠标平移偏移。
      *
      * ⚠ 基准必须与 [computeViewTransform] 加回去的那个一致（都用 [idleViewAnchor]），否则部署副武器时相机会偏。
      */
-    private fun computeEditFocusOffset(model: GeoGunModel): Vector3f? {
+    private fun computeEditFocusOffset(model: GeoGunModel, focus: Matrix4f?): Vector3f? {
         if (!ClientEventHandler.isEditing) return null
-        val boneName = attachmentFocusBone(model) ?: return computeUnfocusedPanOffset()
+        if (focus == null) return computeUnfocusedPanOffset()
 
         val idleView = idleViewAnchor ?: model.getGlobalTransform(IDLE_VIEW_BONE) ?: return null
-        val attachment = model.getGlobalTransform(boneName) ?: return null
 
         val idlePos = Vector3f()
         idleView.getTranslation(idlePos)
         val attachmentPos = Vector3f()
-        attachment.getTranslation(attachmentPos)
+        focus.getTranslation(attachmentPos)
 
         // 世界坐标：配件定位点往 Z 轴方向偏移，不使用配件的局部坐标
         val focusPos = Vector3f(attachmentPos.x, attachmentPos.y, attachmentPos.z + EDIT_FOCUS_Z_OFFSET)
@@ -2561,12 +2573,11 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     }
 
     /**
-     * 返回未聚焦浮动预览绕 Y 轴的旋转角（弧度）：以屏幕中心为原点，鼠标越靠右整体越向逆时针
-     * 方向旋转，越靠左越向顺时针旋转，避免视角平移时卡进模型。聚焦或非改装状态下返回 0。
+     * 未聚焦浮动预览绕 Y 轴的旋转角（弧度）：以屏幕中心为原点，鼠标越靠右整体越向逆时针
+     * 方向旋转，越靠左越向顺时针旋转，避免视角平移时卡进模型。
+     * 是否聚焦由调用方判断（聚焦时直接取 0，不调这里）。
      */
-    private fun computeEditFocusYaw(model: GeoGunModel): Float {
-        if (!ClientEventHandler.isEditing || attachmentFocusBone(model) != null) return 0f
-
+    private fun computeUnfocusedYaw(): Float {
         val mc = Minecraft.getInstance()
         val window = mc.window
         val x = doubleArrayOf(0.0)
@@ -2578,12 +2589,11 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
     }
 
     /**
-     * 返回未聚焦浮动预览绕 X 轴的旋转角（弧度）：以屏幕中心为原点，鼠标越靠上整体越向俯视
-     * 方向旋转，越靠下越向仰视方向旋转。聚焦或非改装状态下返回 0。
+     * 未聚焦浮动预览绕 X 轴的旋转角（弧度）：以屏幕中心为原点，鼠标越靠上整体越向俯视
+     * 方向旋转，越靠下越向仰视方向旋转。
+     * 是否聚焦由调用方判断（聚焦时直接取 0，不调这里）。
      */
-    private fun computeEditFocusPitch(model: GeoGunModel): Float {
-        if (!ClientEventHandler.isEditing || attachmentFocusBone(model) != null) return 0f
-
+    private fun computeUnfocusedPitch(): Float {
         val mc = Minecraft.getInstance()
         val window = mc.window
         val x = doubleArrayOf(0.0)
@@ -2810,7 +2820,6 @@ open class GeoGunRenderer : AbstractGeoItemRendererV2() {
         private const val UNFOCUSED_PAN_SMOOTHING = 12f
         private const val UNFOCUSED_PAN_YAW = 0.6f
         private const val UNFOCUSED_PAN_PITCH = 0.3f
-        private const val VERTICAL_PITCH_START = 89.0f
 
         /** 挂点骨骼的局部取样点：骨骼原点，也就是 `xxx_pos` 这类空骨骼本身的位置 */
         private val EDIT_MOUNT_POINT = Vector3f()

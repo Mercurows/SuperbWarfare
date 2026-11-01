@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.event
 
 import com.atsuishio.superbwarfare.client.gun.GunChargeHandler
+import com.atsuishio.superbwarfare.client.gun.MeleeClientHandler
 import com.atsuishio.superbwarfare.client.overlay.OverlayTraceHandler
 import com.atsuishio.superbwarfare.client.overlay.ammo.AmmoBarHud
 import com.atsuishio.superbwarfare.client.screens.LoiterConfigScreen
@@ -11,6 +12,7 @@ import com.atsuishio.superbwarfare.compat.CompatHolder
 import com.atsuishio.superbwarfare.compat.clothconfig.ClothConfigHelper
 import com.atsuishio.superbwarfare.config.client.ReloadConfig
 import com.atsuishio.superbwarfare.config.server.MapConfig
+import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots
 import com.atsuishio.superbwarfare.data.gun.*
 import com.atsuishio.superbwarfare.data.vehicle.subdata.EngineType
 import com.atsuishio.superbwarfare.entity.vehicle.MortarEntity
@@ -51,23 +53,43 @@ object ClickEventHandler {
     @JvmField
     var switchZoom: Boolean = false
 
+    /** 右键是否按着；枪械会 cancel 掉这个按键，`KeyMapping.isDown()` 之后就不再更新了 */
+    var useKeyHeld: Boolean = false
+        private set
+
+    private fun isUseMouseButton(button: Int): Boolean =
+        (ModKeyMappings.HOLD_ZOOM.key.type == InputConstants.Type.MOUSE
+                && ModKeyMappings.HOLD_ZOOM.key.value == button) ||
+                (ModKeyMappings.SWITCH_ZOOM.key.type == InputConstants.Type.MOUSE
+                        && ModKeyMappings.SWITCH_ZOOM.key.value == button)
+
     @SubscribeEvent
     fun onButtonReleased(event: InputEvent.MouseButton.Pre) {
-        if (notInGame) return
+        if (notInGame) {
+            useKeyHeld = false
+            return
+        }
         if (event.action != InputConstants.RELEASE) return
+
+        val button = event.button
+        if (isUseMouseButton(button)) useKeyHeld = false
 
         val player = localPlayer ?: return
         if (player.hasEffect(ModMobEffects.SHOCK.get())) return
 
-        val button = event.button
         if (button == ModKeyMappings.FIRE.key.value) {
             handleWeaponFireRelease()
         }
 
         if (button == ModKeyMappings.HOLD_ZOOM.key.value) {
             handleWeaponUseRelease()
-        } else if (button == ModKeyMappings.SWITCH_ZOOM.key.value && !switchZoom) {
-            handleWeaponUseRelease()
+        } else if (button == ModKeyMappings.SWITCH_ZOOM.key.value) {
+            // 切换开镜模式下松开不收镜，但蓄势重击仍要收尾
+            if (switchZoom) {
+                MeleeClientHandler.releaseHeavyHold(player, ActiveGun.stackOf(player))
+            } else {
+                handleWeaponUseRelease()
+            }
         }
     }
 
@@ -88,8 +110,13 @@ object ClickEventHandler {
 
     @SubscribeEvent
     fun onButtonPressed(event: InputEvent.MouseButton.Pre) {
-        if (notInGame) return
+        if (notInGame) {
+            useKeyHeld = false
+            return
+        }
         if (event.action != InputConstants.PRESS) return
+
+        if (isUseMouseButton(event.button)) useKeyHeld = true
 
         val player = localPlayer ?: return
         if (player.isSpectator) return
@@ -351,8 +378,12 @@ object ClickEventHandler {
             }
 
             // 玩家手持枪械时，处理卸弹/切换弹种
+            //
+            // 这两个操作服务端都是对**当前操控的枪**做的（`UnloadMessage` / `EditMessage` 用的都是
+            // `ActiveGun.stackOf`）：副武器（下挂榴弹等）部署时，切换的是它自己的弹种，
+            // 所以这里的"有没有多种弹"也必须看同一把枪，否则拿着只有一种弹的步枪就永远切不动下挂榴弹。
             if (GunItem.isHeldWeapon(stack)) {
-                val data = GunData.from(stack)
+                val data = ActiveGun.dataOf(player) ?: GunData.from(stack)
                 if (matchesKey(ModKeyMappings.UNLOAD)) {
                     if (data.useBackpackAmmo() || data.ammo.get() + data.virtualAmmo.get() <= 0) return
                     sendPacketToServer(UnloadMessage)
@@ -361,12 +392,16 @@ object ClickEventHandler {
                 if (data.get(GunProp.AMMO_CONSUMER).size > 1) {
                     if (matchesKey(ModKeyMappings.CHANGE_AMMO_FORWARD)) {
                         AmmoBarHud.noteAmmoSwitch(data, add = false)
-                        sendPacketToServer(EditMessage(5, add = false, isVehicle = false))
+                        sendPacketToServer(
+                            EditMessage(AttachmentSlots.AMMO_TYPE_EDIT_INDEX, add = false, isVehicle = false, operated = true)
+                        )
                         ClientEventHandler.burstFireAmount = 0
                     }
                     if (matchesKey(ModKeyMappings.CHANGE_AMMO_BACKWARD)) {
                         AmmoBarHud.noteAmmoSwitch(data, add = true)
-                        sendPacketToServer(EditMessage(5, add = true, isVehicle = false))
+                        sendPacketToServer(
+                            EditMessage(AttachmentSlots.AMMO_TYPE_EDIT_INDEX, add = true, isVehicle = false, operated = true)
+                        )
                         ClientEventHandler.burstFireAmount = 0
                     }
                 }
@@ -475,8 +510,13 @@ object ClickEventHandler {
 
             if (matchesKey(ModKeyMappings.HOLD_ZOOM)) {
                 handleWeaponUseRelease()
-            } else if (matchesKey(ModKeyMappings.SWITCH_ZOOM) && !switchZoom) {
-                handleWeaponUseRelease()
+            } else if (matchesKey(ModKeyMappings.SWITCH_ZOOM)) {
+                // 切换开镜模式下松开不收镜，但蓄势重击仍要收尾
+                if (switchZoom) {
+                    MeleeClientHandler.releaseHeavyHold(player, ActiveGun.stackOf(player))
+                } else {
+                    handleWeaponUseRelease()
+                }
             }
 
             if (action == GLFW.GLFW_RELEASE) {
@@ -516,6 +556,24 @@ object ClickEventHandler {
 
         // 冲锋窗口里不许开火（近战专属枪械的左键是挥击，不算开火）
         if (GunChargeHandler.isCharging() && !GunData.from(gunStack).meleeOnly()) return
+
+        // 射击周期内的点击排到周期结束补发（松开左键也不清）
+        if (!notInGame && ClientEventHandler.clientTimer.progress != 0L) {
+            val data = GunData.from(gunStack)
+            if (data.selectedFireModeInfo().mode == FireMode.SEMI
+                && !data.meleeOnly()
+                && !item.useSpecialFireProcedure(data)
+                && ClientEventHandler.drawTime < 0.01
+                && ClientEventHandler.burstFireAmount == 0
+                && item.canShoot(data, player)
+            ) {
+                ClientEventHandler.burstFireAmount = 1
+                ClientEventHandler.noSprintTicks = 3f
+                ClientEventHandler.holdingFireKey = true
+                player.setSprinting(false)
+            }
+            return
+        }
 
         if (ClientEventHandler.clientTimer.progress == 0L
             && !notInGame
@@ -644,9 +702,11 @@ object ClickEventHandler {
         ClientEventHandler.customRpm = 0
 
         if (data != null && fireModeInfo != null) {
-            val fireMode = data.selectedFireModeInfo().mode
+            val fireMode = ActiveGun.dataOf(player)?.selectedFireModeInfo()?.mode
+                ?: data.selectedFireModeInfo().mode
 
-            if (fireMode != FireMode.BURST) {
+            // SEMI 的 burstFireAmount 是排着的那一发，松开左键不清
+            if (fireMode != FireMode.BURST && fireMode != FireMode.SEMI) {
                 ClientEventHandler.burstFireAmount = 0
             }
 
@@ -695,6 +755,7 @@ object ClickEventHandler {
 
         when (data.get(GunProp.RIGHT_CLICK_ACTION)) {
             RightClickAction.HEAVY_STRIKE -> ClientEventHandler.requestHeavyStrike()
+            RightClickAction.HEAVY_HOLD -> MeleeClientHandler.beginHeavyHold(player, gunStack)
             RightClickAction.BAYONET_CHARGE -> GunChargeHandler.start(gunStack, data)
             else -> handleWeaponAimPress(player, gunStack, data)
         }
@@ -723,6 +784,10 @@ object ClickEventHandler {
 
     fun handleWeaponUseRelease() {
         val player = Minecraft.getInstance().player
+
+        // 右键蓄势：松开即打出重击
+        if (player != null && MeleeClientHandler.releaseHeavyHold(player, ActiveGun.stackOf(player))) return
+
         if (!ClientEventHandler.zoom && !ClientEventHandler.zoomVehicle) return
 
         if (player != null) {

@@ -1,6 +1,7 @@
 package com.atsuishio.superbwarfare.tools
 
 import com.atsuishio.superbwarfare.client.model.gun.GeoGunModel
+import com.atsuishio.superbwarfare.event.ClientEventHandler
 import com.github.mcmodderanchor.simplebedrockmodel.v1.particle.render.CameraStateCache
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
@@ -333,11 +334,12 @@ object BedrockBoneCoordinateTool {
      */
     @JvmStatic
     fun cameraRotationInverse(camera: Camera): Matrix4f {
-        return Matrix4f()
+        val rotation = Matrix4f()
             .rotationX(Mth.DEG_TO_RAD * camera.xRot)
             .rotateY(Mth.DEG_TO_RAD * (camera.yRot + 180f))
             .rotateZ(CameraStateCache.getCameraRollRadians())
-            .invert()
+        ClientEventHandler.firstPersonCameraRotation()?.let { rotation.rotate(it) }
+        return rotation.invert()
     }
 
     /**

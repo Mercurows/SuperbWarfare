@@ -17,6 +17,7 @@ import com.atsuishio.superbwarfare.network.ServerPacketPayload
 import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessage
 import com.atsuishio.superbwarfare.perk.MeleeAttackContext
 import com.atsuishio.superbwarfare.perk.Perk
+import com.atsuishio.superbwarfare.perk.damage.InvisibleBladeShapeness
 import com.atsuishio.superbwarfare.serialization.kserializer.SerializedUUID
 import com.atsuishio.superbwarfare.tools.EntityFindUtil
 import com.atsuishio.superbwarfare.tools.MeleeQuery
@@ -84,6 +85,7 @@ data class MeleeAttackMessage(
         val stack = player.mainHandItem
         val item = stack.item
         if (item !is GunItem || !GunItem.isHeldWeapon(stack)) return
+        if (item.isBroken(stack)) return
 
         if (source.isNotEmpty() && source != SOURCE_MAIN) return
 
@@ -96,7 +98,13 @@ data class MeleeAttackMessage(
 
         val actions = data.meleeActions()
         val index = ((actionIndex % actions.size) + actions.size) % actions.size
-        val action = data.resolveMeleeAction(index)
+
+        val bladeCharge = if (!chargeStrike && actions[index].isHeavy()) {
+            InvisibleBladeShapeness.charge(data)
+        } else {
+            0.0
+        }
+        val action = data.resolveMeleeAction(index, bladeCharge)
 
         if (action.cooldown > 0 && data.cooldown.isCoolingDown(Cooldown.meleeKey(index))) return
 
@@ -179,6 +187,13 @@ data class MeleeAttackMessage(
         var playedHitSound = false
         var playedNoDamageSound = false
 
+        // 隐之刃凛：轻击打折并把折掉的部分存进蓄力槽；重击的蓄力已经在 handler 里
+        // 垫进了 `action.damage`（面板伤害层），这里只负责"命中后清空"
+        val blade = InvisibleBladeShapeness.instanceOf(data)
+        val bladeRate = blade?.let { InvisibleBladeShapeness.rate(it.level.toInt()) } ?: 0.0
+        var storedCharge = if (blade != null) InvisibleBladeShapeness.charge(data) else 0.0
+        var chargeSpent = false
+
         for ((order, payload) in targets.withIndex()) {
             val target = EntityFindUtil.findEntity(level, payload.uuid.toString()) ?: continue
             if (!ForgeHooks.onPlayerAttackTarget(attacker, target)) continue
@@ -200,13 +215,10 @@ data class MeleeAttackMessage(
                 else -> 1.0
             }
 
-            // 衰减：第 order 个目标乘 max(1 - order * Falloff, 0.1)
-            val falloff = if (order == 0) 1.0 else (1.0 - order * action.falloff).coerceAtLeast(0.1)
 
-            // 伤害数值 = 枪的 `MeleeDamage` × 本段 `DamageMultiplier`（已在 resolve 里算完），
-            // 外加力量效果的固定加成；`ATTACK_DAMAGE` 属性本身的加成不参与这里的结算
-            // ——否则 `MeleeDamage` 会被"属性加成"二次放大，和动作倍率叠在一起就说不清是谁放大的。
-            val damage = baseDamage * zoneMultiplier * falloff
+            val falloff = if (order == 0) 1.0 else (1.0 - order * action.falloff).coerceAtLeast(0.1)
+            var damage = baseDamage * zoneMultiplier * falloff
+            if (blade != null && !action.heavy) damage *= bladeRate
             if (damage <= 0) continue
 
             val damageSource = ModDamageTypes.causeDamageType(
@@ -248,6 +260,14 @@ data class MeleeAttackMessage(
             hurtCount++
             landedHit = true
             if (headshot) headshotHit = true
+
+            if (blade != null) {
+                if (action.heavy) {
+                    if (!chargeStrike && !chargeSpent && storedCharge > 0.0) chargeSpent = true
+                } else {
+                    InvisibleBladeShapeness.addCharge(data, damage * bladeRate)
+                }
+            }
 
             val attackerMotion = attacker.deltaMovement
 
@@ -315,6 +335,8 @@ data class MeleeAttackMessage(
                 effects.kill(target, effectPos)
             }
         }
+
+        if (chargeSpent) InvisibleBladeShapeness.setCharge(data, 0.0)
 
         if (hurtCount > 0) {
             attacker.sweepAttack()

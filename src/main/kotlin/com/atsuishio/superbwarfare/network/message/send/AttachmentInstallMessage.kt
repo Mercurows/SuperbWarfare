@@ -2,6 +2,7 @@ package com.atsuishio.superbwarfare.network.message.send
 
 import com.atsuishio.superbwarfare.data.attachment.AttachmentSlots
 import com.atsuishio.superbwarfare.data.gun.GunData
+import com.atsuishio.superbwarfare.data.gun.subdata.Attachment
 import com.atsuishio.superbwarfare.data.gun.value.AttachmentType
 import com.atsuishio.superbwarfare.init.ModSounds
 import com.atsuishio.superbwarfare.item.attachment.AttachmentProvider
@@ -68,14 +69,28 @@ private fun uninstall(player: ServerPlayer, data: GunData, type: AttachmentType)
  * 校验与 `/sbw attachment set` 同源（[GunData.canInstall] 要求配件数据存在、槽位匹配、
  * 不与已装的其它配件抢挂点，并且出现在这把枪的 `AvailableAttachments` 里），
  * 非创造模式另外要求**背包里确实有这么一件**：装上时扣掉一件，原来那件还给玩家。
+ *
+ * 装不上的三种情况（配件本身不兼容 / 增高架已经叠满 / 背包里没有这件配件）统一回一声
+ * [ModSounds.ATTACHMENT_FAIL]，并且都拦在扣背包之前 —— 失败时不能白吃玩家一件配件。
  */
 private fun install(player: ServerPlayer, data: GunData, type: AttachmentType, id: ResourceLocation) {
     val stacking = data.attachment.acceptsStacked(type)
     if (!stacking && data.attachment.id(type) == id) return
-    if (!data.canInstall(type, id)) return
+    if (!data.canInstall(type, id)) {
+        fail(player)
+        return
+    }
+    // 增高架叠到上限（`Attachment.MAX_STACK_DEPTH`）时 `Attachment.set` 叠不上去，先在这里拦掉
+    if (stacking && data.attachment.scopeStack().size >= Attachment.MAX_STACK_DEPTH) {
+        fail(player)
+        return
+    }
     // 先扣背包再动枪：扣不出来（背包里没有 / 已经用完）就整笔取消，不留半成品状态。
     // 创造模式可直接安装，生存模式在任何兼容配置下都需要背包中的配件。
-    if (!player.isCreative && !consumeOneAttachment(player, id)) return
+    if (!player.isCreative && !consumeOneAttachment(player, id)) {
+        fail(player)
+        return
+    }
 
     val previous = data.attachment.id(type)
     withdrawAmmoIfNeeded(player, data, type)
@@ -84,6 +99,11 @@ private fun install(player: ServerPlayer, data: GunData, type: AttachmentType, i
 
     if (!stacked) previous?.let { returnItem(player, it) }
     player.playLocalSound(ModSounds.ATTACHMENT_SET.get(), 1f, 1f)
+}
+
+/** 安装失败时的提示音（只发给发起安装的玩家） */
+private fun fail(player: ServerPlayer) {
+    player.playLocalSound(ModSounds.ATTACHMENT_FAIL.get(), 1f, 1f)
 }
 
 /** 换这个槽位的配件前先把已装填的弹药退还给玩家（目前只有弹匣槽位需要）。 */

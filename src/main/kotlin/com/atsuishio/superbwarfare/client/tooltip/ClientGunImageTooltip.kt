@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.client.tooltip.component.GunImageComponent
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunData.Companion.from
 import com.atsuishio.superbwarfare.data.gun.GunProp
+import com.atsuishio.superbwarfare.data.gun.GunType
 import com.atsuishio.superbwarfare.init.ModKeyMappings
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.perk.Perk
@@ -30,11 +31,16 @@ open class ClientGunImageTooltip(tooltip: GunImageComponent) : ClientTooltipComp
     protected val tipHeight: Int = tooltip.height
     protected val stack: ItemStack = tooltip.stack
     protected val data: GunData = from(stack)
+    protected val isMelee: Boolean = data.get(GunProp.GUN_TYPE) == GunType.MELEE
 
     override fun renderImage(font: Font, x: Int, y: Int, guiGraphics: GuiGraphics) {
         guiGraphics.pose().pushPose()
 
-        renderDamageAndRpmTooltip(font, guiGraphics, x, y)
+        if (isMelee) {
+            renderMeleeDamageAndHeadshotTooltip(font, guiGraphics, x, y)
+        } else {
+            renderDamageAndRpmTooltip(font, guiGraphics, x, y)
+        }
         renderLevelAndUpgradePointTooltip(font, guiGraphics, x, y + 10)
 
         var yo = 20
@@ -67,7 +73,8 @@ open class ClientGunImageTooltip(tooltip: GunImageComponent) : ClientTooltipComp
 
     protected fun shouldRenderBypassAndHeadshotTooltip(): Boolean {
 //        return data.get(GunProp.BYPASSES_ARMOR) > 0 || data.get(GunProp.HEADSHOT) > 0
-        return true
+        // 近战武器的爆头倍率挪到第一行了，穿甲对它也没有意义，所以这一行整体不出现
+        return !isMelee
     }
 
     protected fun shouldRenderPerks(): Boolean {
@@ -254,6 +261,27 @@ open class ClientGunImageTooltip(tooltip: GunImageComponent) : ClientTooltipComp
                 )
         }
 
+    protected fun renderMeleeDamageAndHeadshotTooltip(font: Font, guiGraphics: GuiGraphics, x: Int, y: Int) {
+        guiGraphics.drawString(font, this.meleeDamageComponent, x, y, 0xFFFFFF)
+        val xo = font.width(this.meleeDamageComponent.visualOrderText)
+        guiGraphics.drawString(font, this.meleeHeadshotComponent, x + xo + 16, y, 0xFFFFFF)
+    }
+
+    protected val meleeDamageComponent: Component
+        get() = Component.translatable("des.superbwarfare.guns.damage")
+            .withStyle(ChatFormatting.GRAY)
+            .append(Component.empty().withStyle(ChatFormatting.RESET))
+            .append(Component.literal(format1D(data.get(GunProp.MELEE_DAMAGE))).withStyle(ChatFormatting.GREEN))
+
+    protected val meleeHeadshotComponent: Component
+        get() = Component.translatable("des.superbwarfare.guns.headshot")
+            .withStyle(ChatFormatting.GRAY)
+            .append(Component.empty().withStyle(ChatFormatting.RESET))
+            .append(
+                Component.literal(format1D(data.get(GunProp.MELEE_HEADSHOT), "x"))
+                    .withStyle(ChatFormatting.AQUA)
+            )
+
     /**
      * 渲染武器能量信息
      */
@@ -400,8 +428,11 @@ open class ClientGunImageTooltip(tooltip: GunImageComponent) : ClientTooltipComp
     }
 
     protected fun getDefaultMaxWidth(font: Font): Int {
-        var width =
+        var width = if (isMelee) {
+            font.width(this.meleeDamageComponent.visualOrderText) + font.width(this.meleeHeadshotComponent.visualOrderText) + 16
+        } else {
             font.width(this.damageComponent.visualOrderText) + font.width(this.rpmComponent.visualOrderText) + 16
+        }
         width = max(
             width,
             font.width(this.levelComponent.visualOrderText) + font.width(this.upgradePointComponent.visualOrderText) + 16

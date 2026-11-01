@@ -13,6 +13,12 @@ object ModMenuTypes {
     val REGISTRY: DeferredRegister<MenuType<*>> = DeferredRegister.create(ForgeRegistries.MENU_TYPES, Mod.MODID)
 
     @JvmField
+    val WEAPON_REPAIR_STATION_MENU: RegistryObject<MenuType<com.sighs.apricityui.screen.ApricityContainerMenu>> =
+        REGISTRY.register("weapon_repair_station") {
+            IForgeMenuType.create { id, inventory, _ -> WeaponRepairStationMenu(id, inventory) }
+        }
+
+    @JvmField
     val REFORGING_TABLE_MENU: RegistryObject<MenuType<ReforgingTableMenu>> =
         REGISTRY.register("reforging_table_menu") {
             IForgeMenuType.create { windowId, inv, _ -> ReforgingTableMenu(windowId, inv) }

@@ -30,7 +30,10 @@
     "superbwarfare:vorpal_weapon",
     "superbwarfare:brain_storm",
     "superbwarfare:target_lock",
-    "superbwarfare:stop_gap"
+    "superbwarfare:stop_gap",
+    "superbwarfare:quickdraw",
+    "superbwarfare:adrenaline_rush",
+    "superbwarfare:snapshot_sights"
   ],
   "AvailableAttachments": {
     "Scope": [

@@ -113,6 +113,22 @@ open class JsPerk(val perkId: String, private val descriptor: PerkDescriptor) : 
         return (result as? Number)?.toFloat() ?: damage
     }
 
+    override fun getModifiedMeleeDamage(
+        damage: Float,
+        data: GunData,
+        instance: PerkInstance,
+        target: Entity,
+        source: DamageSource
+    ): Float {
+        val s = script ?: return damage
+        val tag = data.perk.getTag(this) ?: return damage
+        val result = s.callFunction(
+            "getModifiedMeleeDamage", damage, TargetProxy(target), instance.level.toInt(),
+            PerkTagProxy(tag), DamageSourceProxy(source)
+        )
+        return (result as? Number)?.toFloat() ?: damage
+    }
+
     override fun tick(data: GunData, instance: PerkInstance, entity: Entity?) {
         val s = script ?: return
 

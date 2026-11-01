@@ -129,6 +129,9 @@ class GunProp<T, R>(
         val MELEE_COMBO_RESET = plainProp(DefaultGunData::meleeComboReset)
 
         @JvmField
+        val MELEE_CHAIN_WINDOW = plainProp(DefaultGunData::meleeChainWindow)
+
+        @JvmField
         val MELEE_HITBOX = plainProp(DefaultGunData::meleeHitbox)
 
         @JvmField
@@ -332,6 +335,7 @@ class GunProp<T, R>(
         @JvmField
         val RPM = plainProp(DefaultGunData::rpm)
 
+        /** 同时作用于最终射速与近战挥击的时长、命中时间。 */
         @JvmField
         val RPM_MULTIPLIER = plainProp(DefaultGunData::rpmMultiplier)
 
@@ -560,6 +564,7 @@ class GunProp<T, R>(
             modify(MELEE_ANGLE) { it.coerceIn(1, 180) }
             modify(MELEE_RANGE) { it.coerceAtLeast(0.0) }
             modify(MELEE_COMBO_RESET) { it.coerceAtLeast(0) }
+            modify(MELEE_CHAIN_WINDOW) { it.coerceAtLeast(0) }
             modify(MELEE_HEADSHOT) { it.coerceAtLeast(0.0) }
             modify(MELEE_LEGSHOT) { it.coerceAtLeast(0.0) }
             modify(ZOOM_SPREAD_RATE) { it.coerceIn(0.0, 1.0) }

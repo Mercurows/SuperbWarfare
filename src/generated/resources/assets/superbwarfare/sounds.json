@@ -263,6 +263,21 @@
       "superbwarfare:annihilator/annihilator_veryfar"
     ]
   },
+  "attachment_button": {
+    "sounds": [
+      "superbwarfare:attachment_button"
+    ]
+  },
+  "attachment_fail": {
+    "sounds": [
+      "superbwarfare:attachment_fail"
+    ]
+  },
+  "attachment_info": {
+    "sounds": [
+      "superbwarfare:attachment_info"
+    ]
+  },
   "attachment_remove": {
     "sounds": [
       "superbwarfare:attachment_remove"
@@ -271,6 +286,11 @@
   "attachment_set": {
     "sounds": [
       "superbwarfare:attachment_set"
+    ]
+  },
+  "attachment_slide": {
+    "sounds": [
+      "superbwarfare:attachment_slide"
     ]
   },
   "aurelia_sceptre_fire_1p": {
@@ -2235,6 +2255,16 @@
   "mp_5_veryfar": {
     "sounds": [
       "superbwarfare:gun/mp_5/mp_5_veryfar"
+    ]
+  },
+  "nail_gun_fire_1p": {
+    "sounds": [
+      "superbwarfare:gun/nail_gun/nail_gun_fire_1p"
+    ]
+  },
+  "nail_gun_fire_3p": {
+    "sounds": [
+      "superbwarfare:gun/nail_gun/nail_gun_fire_3p"
     ]
   },
   "night_vision_activate": {

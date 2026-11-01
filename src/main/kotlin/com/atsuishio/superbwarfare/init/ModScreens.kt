@@ -12,6 +12,7 @@ object ModScreens {
         MenuScreens.register(ModMenuTypes.HUGE_VEHICLE_CONTAINER_MENU.get(), ::HugeVehicleContainerScreen)
         MenuScreens.register(ModMenuTypes.REFORGING_TABLE_MENU.get(), ::ReforgingTableScreen)
         MenuScreens.register(ModMenuTypes.CHARGING_STATION_MENU.get(), ::ChargingStationScreen)
+        MenuScreens.register(ModMenuTypes.WEAPON_REPAIR_STATION_MENU.get(), ::WeaponRepairStationScreen)
         MenuScreens.register(ModMenuTypes.SUPERB_ITEM_INTERFACE_MENU.get(), ::SuperbItemInterfaceScreen)
         MenuScreens.register(ModMenuTypes.FUMO_25_MENU.get(), ::FuMO25Screen)
         MenuScreens.register(ModMenuTypes.VEHICLE_ASSEMBLING_MENU.get(), ::VehicleAssemblingScreen)

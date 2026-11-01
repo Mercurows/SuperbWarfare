@@ -27,6 +27,7 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument
 import net.minecraft.world.level.material.FluidState
 import net.minecraft.world.level.material.Fluids
+import net.minecraft.world.level.material.PushReaction
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.shapes.CollisionContext
 import net.minecraft.world.phys.shapes.Shapes
@@ -38,6 +39,7 @@ open class ReforgingTableBlock : Block(
         .lightLevel { _ -> 4 }
         .hasPostProcess { _, _, _ -> true }
         .emissiveRendering { _, _, _ -> true }
+        .pushReaction(PushReaction.BLOCK)
 ) {
     init {
         this.registerDefaultState(

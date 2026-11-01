@@ -1,5 +1,5 @@
 {
-  "GunType": "Special",
+  "GunType": "Melee",
   "Icon": "superbwarfare:textures/gun_icon/knife_6kh2_icon.png",
   "ArmPose": "Item",
   "RightClickAction": "HeavyStrike",
@@ -67,5 +67,17 @@
   "DefaultFireMode": "Semi",
   "AvailableFireModes": [
     "Semi"
+  ],
+  "AvailablePerks": [
+    "superbwarfare:invisible_blade_shapeness",
+    "superbwarfare:silver_blade",
+    "superbwarfare:flame_blade",
+    "superbwarfare:frostmourne",
+    "superbwarfare:cast_no_shadows",
+    "superbwarfare:eager_edge",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:quickdraw"
   ]
 }

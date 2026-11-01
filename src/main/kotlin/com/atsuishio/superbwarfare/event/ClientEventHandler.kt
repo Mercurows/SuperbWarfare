@@ -509,6 +509,11 @@ object ClientEventHandler {
     @JvmField
     var heavyStrikeRequested: Boolean = false
 
+    // 重击请求的缓冲：上一段还在计时时按下的右键留到连招窗口再兑现，不用重按
+    private var heavyStrikeBuffer: Int = 0
+
+    private const val HEAVY_STRIKE_BUFFER_TICKS = 30
+
     // 智慧芯片锁定的实体
     @JvmField
     var lockedEntity: Entity? = null
@@ -530,6 +535,13 @@ object ClientEventHandler {
 
     @JvmField
     var cameraRoll: Float = 0f
+
+    @JvmStatic
+    fun firstPersonCameraRotation(): Quaternionf? {
+        val options = Minecraft.getInstance().options
+        if (!options.bobView().get() || !options.cameraType.isFirstPerson) return null
+        return FirstPersonRenderHandler.getActiveAnimationInstanceForCamera()?.cameraRotation
+    }
 
     // 禁止冲刺♿时长tick
     @JvmField
@@ -1697,6 +1709,7 @@ object ClientEventHandler {
         MeleeClientHandler.clear()
         GunChargeHandler.clear()
         heavyStrikeRequested = false
+        heavyStrikeBuffer = 0
         wasChargeKeyDown = false
         holdingFireKey = false
         fireCooldown = 0.0
@@ -1728,6 +1741,7 @@ object ClientEventHandler {
         if (gunData == null) {
             // 手里换成别的东西也要把窗口收掉（状态得立刻同步回去）
             GunChargeHandler.cancelIfItemChanged(stack)
+            heavyStrikeBuffer = 0
             clearYsmCompatState()
             return
         }
@@ -1736,17 +1750,19 @@ object ClientEventHandler {
         SubWeaponClientHandler.tick(gunData)
 
         // 右键行为：重击指定段，冲锋撞到东西时打第 0 段（撞上的那个目标会被强行算进命中）
-        val heavyStrike = heavyStrikeRequested
+        if (heavyStrikeRequested) {
+            heavyStrikeRequested = false
+            // 至少要活到这一段走完、连招窗口打开
+            heavyStrikeBuffer = maxOf(HEAVY_STRIKE_BUFFER_TICKS, GunActionLock.of(gunData).meleeTicks)
+        }
+        val heavyStrike = heavyStrikeBuffer > 0
         val chargeTarget = if (heavyStrike) null else GunChargeHandler.tick(player, stack)
         val bayonetCharge = chargeTarget != null
+        val heavyIndex = if (heavyStrike) MeleeClientHandler.indexOfHeavy(gunData) else -1
         val requestedIndex = when {
-            heavyStrike -> MeleeClientHandler.indexOfHeavy(gunData)
+            heavyStrike -> heavyIndex
             bayonetCharge -> GunChargeHandler.STRIKE_ACTION_INDEX
             else -> -1
-        }
-
-        if (heavyStrike) {
-            heavyStrikeRequested = false
         }
 
         val canOperate = !holdFireVehicle
@@ -1778,11 +1794,19 @@ object ClientEventHandler {
             requestedIndex = requestedIndex,
             chargeStrike = bayonetCharge,
             chargeTarget = chargeTarget,
+            useKeyDown = ClickEventHandler.useKeyHeld
+                    || ModKeyMappings.HOLD_ZOOM.isDown() || ModKeyMappings.SWITCH_ZOOM.isDown(),
         )
 
         // 一次冲锋只出一击：真正打出去了才收窗口
         if (swung && bayonetCharge) {
             GunChargeHandler.reset()
+        }
+
+        // 缓冲的重击：打出去了就收掉，没打出去就继续等（这一段计时还没走到窗口）
+        if (heavyStrike) {
+            val heavyFired = swung && GunActionLock.of(gunData).meleeActionIndex == heavyIndex
+            heavyStrikeBuffer = if (heavyFired) 0 else (heavyStrikeBuffer - 1).coerceAtLeast(0)
         }
 
         // 把新状态同步给 YSM 读取的兼容字段
@@ -1847,7 +1871,21 @@ object ClientEventHandler {
         val player = localPlayer ?: return false
         if (!GunItem.isHeldWeapon(stack)) return false
         val state = GunActionLock.of(stack)
-        return state.meleeTicks > 0 && state.isMeleeValidFor(player)
+        return (state.meleeTicks > 0 || state.meleeHolding) && state.isMeleeValidFor(player)
+    }
+
+    /** 这把枪当前是否在右键蓄势（抬起保持）中 */
+    @JvmStatic
+    fun isGunMeleeHoldActive(stack: ItemStack): Boolean {
+        if (!GunItem.isHeldWeapon(stack)) return false
+        return GunActionLock.of(stack).meleeHolding
+    }
+
+    /** 当前这一段挥击是不是蓄势松开打出来的（解析 clip 名用） */
+    @JvmStatic
+    fun currentMeleeHeavyRelease(stack: ItemStack): Boolean {
+        if (!GunItem.isHeldWeapon(stack)) return false
+        return GunActionLock.of(stack).meleeHeavyRelease
     }
 
     /** 当前这一段挥击的时长（动画按它拉伸） */
@@ -1919,6 +1957,8 @@ object ClientEventHandler {
         // 这里刻意放在最前面：被拒绝的入口不该产生任何副作用（包括后面的计时器推进）。
         if (GunActionLock.of(data).blocks(GunAction.FIRING)) {
             clientTimer.stop()
+            // SEMI 排着的那一发被其它动作打断
+            if (singleShotMode) burstFireAmount = 0
             fireSpread = 0.0
             return
         }
@@ -1926,6 +1966,7 @@ object ClientEventHandler {
         // 冲锋窗口里不许开火（左键在起冲锋之前就按着的情况也要挡）
         if (GunChargeHandler.isCharging()) {
             clientTimer.stop()
+            if (singleShotMode) burstFireAmount = 0
             fireSpread = 0.0
             return
         }
@@ -1950,7 +1991,8 @@ object ClientEventHandler {
             }
 
             shouldPlayDischargeSound = false
-            burstFireAmount = 0
+            // SEMI 排着的那一发不能被这段收尾清掉
+            if (!singleShotMode) burstFireAmount = 0
         }
 
         // 精准度
@@ -2012,7 +2054,12 @@ object ClientEventHandler {
             && drawTime < 0.01
             && !notInGame
             && !isEditing
-        ) {            if (singleShotMode) {
+        ) {
+            if (singleShotMode) {
+                // 周期走完的这一帧就补发，不再多等一帧
+                if (clientTimer.started() && clientTimer.progress >= cooldown) {
+                    clientTimer.stop()
+                }
                 if (clientTimer.progress == 0L) {
                     clientTimer.start()
                     shootClient(player)
@@ -3473,6 +3520,7 @@ object ClientEventHandler {
     fun resetUseActionStatus() {
         GunChargeHandler.reset()
         heavyStrikeRequested = false
+        heavyStrikeBuffer = 0
 
         // YSM联动保留字段，不要删除：旧版切枪时会把刺雷的 draw 窗口重置成 30 tick
         lungeSprint = 0

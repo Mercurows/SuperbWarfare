@@ -103,7 +103,7 @@
     "superbwarfare:cast_no_shadows",
     "superbwarfare:eager_edge",
     "superbwarfare:fourth_times_charm",
-    "superbwarfare:quick_draw",
+    "superbwarfare:quickdraw",
     "superbwarfare:snapshot_sights",
     "superbwarfare:adrenaline_rush",
     "superbwarfare:kill_clip",
@@ -117,7 +117,10 @@
     "!superbwarfare:micro_missile",
     "!superbwarfare:longer_wire",
     "!superbwarfare:cupid_arrow",
-    "!superbwarfare:shatter_caps"
+    "!superbwarfare:shatter_caps",
+    "!superbwarfare:cluster_bomb",
+    "superbwarfare:soul_reaver",
+    "superbwarfare:steady_resolve"
   ],
   "AvailableAttachments": {
     "Muzzle": [
@@ -131,7 +134,9 @@
       "superbwarfare:star_muzzle",
       "superbwarfare:linear_muzzle",
       "superbwarfare:cross_muzzle",
-      "superbwarfare:bayonet_m1917"
+      "superbwarfare:bayonet_m1917",
+      "superbwarfare:milencer",
+      "superbwarfare:steel_pipe_silencer"
     ],
     "Charm": [
       "#superbwarfare:attachment/charm"

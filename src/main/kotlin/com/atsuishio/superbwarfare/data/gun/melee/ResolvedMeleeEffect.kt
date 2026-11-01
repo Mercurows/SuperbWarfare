@@ -32,6 +32,7 @@ data class ResolvedMeleeEffect(
     val particle: String?,
     val extra: String?,
     val amplitude: Double?,
+    val energy: Int,
 ) {
     /** 给日志/命令用的一行摘要 */
     fun describe(): String = buildString {

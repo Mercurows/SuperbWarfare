@@ -64,6 +64,15 @@ object GunActionLock {
         /** 本段挥击是不是刺刀冲锋打出来的（决定用 `Animation.BayonetChargeHit` 换掉本段 clip） */
         var meleeFromBayonetCharge: Boolean = false
 
+        /** 右键蓄势中（抬起保持）：不占动作锁，但其它近战输入要让位 */
+        var meleeHolding: Boolean = false
+
+        /** 蓄势已经按住的 tick 数（松开时和 `HoldDuration` 比） */
+        var meleeHoldTicks: Int = 0
+
+        /** 本段挥击是蓄势松开打出来的（决定用 `MeleeAction.ReleaseAnimation` 换掉本段 clip） */
+        var meleeHeavyRelease: Boolean = false
+
         /** 冲锋撞上的目标：本段无论如何都要打中它；结算后清掉 */
         var meleeChargeTarget: Entity? = null
 
@@ -74,6 +83,19 @@ object GunActionLock {
         fun bindMeleeOwner(player: Player) {
             meleeOwner = player
             meleeLevel = player.level()
+        }
+
+        /** 右键蓄势：抬起保持中 */
+        fun beginHeavyHold(player: Player) {
+            meleeHolding = true
+            meleeHoldTicks = 0
+            meleeHeavyRelease = false
+            bindMeleeOwner(player)
+        }
+
+        fun endHeavyHold() {
+            meleeHolding = false
+            meleeHoldTicks = 0
         }
 
         fun isMeleeValidFor(player: Player): Boolean =
@@ -92,6 +114,29 @@ object GunActionLock {
 
         fun blocks(action: GunAction): Boolean =
             activeAction != GunAction.NONE && activeAction != action
+
+        // 收尾窗口内且结算点都已打完才允许提前起下一段
+        fun canChainMelee(window: Int): Boolean =
+            activeAction == GunAction.MELEE &&
+                    meleeTicks in 1..window &&
+                    meleeHitIndex >= meleeHitTicks.size
+
+        // 只拆当前这一段，连招下标与窗口留给下一段
+        fun releaseMeleeForChain() {
+            if (activeAction != GunAction.MELEE) return
+            activeAction = GunAction.NONE
+            actionTicks = 0
+            meleeTicks = 0
+            meleeHitTicks = IntArray(0)
+            meleeHitIndex = 0
+            meleeFromBayonetCharge = false
+            meleeHeavyRelease = false
+            meleeHoldTicks = 0
+            meleeChargeTarget = null
+            meleeOwner = null
+            meleeLevel = null
+            sinceLastMelee = 0
+        }
 
         /** 尝试占用 [action]，成功返回 true；已被任何动作占用时返回 false 且不产生副作用 */
         fun acquire(action: GunAction, ticks: Int): Boolean {
@@ -117,18 +162,23 @@ object GunActionLock {
         fun clear() {
             activeAction = GunAction.NONE
             actionTicks = 0
+            meleeHolding = false
+            meleeHoldTicks = 0
             cancelMelee()
         }
 
         /** 切走武器时取消挥击和连招，不影响换弹/拉栓等其它动作锁。 */
         fun cancelMelee() {
             release(GunAction.MELEE)
+            meleeHolding = false
+            meleeHoldTicks = 0
             meleeTicks = 0
             meleeActionIndex = 0
             meleeDuration = 0
             meleeHitTicks = IntArray(0)
             meleeHitIndex = 0
             meleeFromBayonetCharge = false
+            meleeHeavyRelease = false
             meleeChargeTarget = null
             meleeOwner = null
             meleeLevel = null
@@ -137,10 +187,11 @@ object GunActionLock {
 
         fun tick() {
             val owner = meleeOwner
-            if (meleeTicks > 0 && owner != null && !isMeleeValidFor(owner)) {
+            if ((meleeTicks > 0 || meleeHolding) && (owner == null || !isMeleeValidFor(owner))) {
                 clear()
                 return
             }
+            if (meleeHolding) meleeHoldTicks++
             if (meleeTicks > 0) {
                 meleeTicks--
                 if (meleeTicks == 0) {

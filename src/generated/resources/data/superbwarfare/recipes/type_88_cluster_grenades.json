@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "a": {
+      "item": "minecraft:stick"
+    },
+    "b": {
+      "item": "superbwarfare:high_energy_explosives"
+    }
+  },
+  "pattern": [
+    "bbb",
+    "bbb",
+    " a "
+  ],
+  "result": {
+    "item": "superbwarfare:type_88_cluster_grenades"
+  },
+  "show_notification": true
+}

@@ -46,7 +46,10 @@ class ModSoundProvider(output: PackOutput, existingFileHelper: ExistingFileHelpe
             "edit_mode", "edit", "open", "into_cannon", "into_missile", "missile_reload", "lunge_mine_growl",
             "laser_tower_shoot", "turret_turn", "smoke_fire",
         )
-        root("attachment_set", "attachment_remove")
+        root(
+            "attachment_set", "attachment_remove", "attachment_fail", "attachment_info",
+            "attachment_button", "attachment_slide",
+        )
         register("rocket_fly") { attenuationDistance(128) }
         register("shell_fly") { attenuationDistance(96) }
         register("lightning_ball_fly") { attenuationDistance(32) }
@@ -487,6 +490,9 @@ class ModSoundProvider(output: PackOutput, existingFileHelper: ExistingFileHelpe
 
         // -------------------- gun/repair_tool --------------------
         group("gun/repair_tool", "repair_tool_fire_1p", "repair_tool_fire_3p", "repairing")
+
+        // -------------------- gun/nail_gun --------------------
+        group("gun/nail_gun", "nail_gun_fire_1p", "nail_gun_fire_3p")
 
         // -------------------- gun/rpg --------------------
         group(

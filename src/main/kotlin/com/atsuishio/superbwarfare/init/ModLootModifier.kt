@@ -46,7 +46,9 @@ object ModLootModifier {
             context: LootContext
         ): ObjectArrayList<ItemStack> {
             if (context.level.gameRules.getBoolean(ModGameRules.MOD_RULE_DO_GENERATE_LOOTS)) {
-                context.resolver.getLootTable(lootTable).getRandomItems(context) { generatedLoot.add(it) }
+                // 必须用这个Raw，不然就爆炸
+                @Suppress("DEPRECATION")
+                context.resolver.getLootTable(lootTable).getRandomItemsRaw(context) { generatedLoot.add(it) }
             }
             return generatedLoot
         }

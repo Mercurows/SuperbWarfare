@@ -18,5 +18,13 @@
   "DefaultZoom": 1.25,
   "DefaultFireMode": "Auto",
   "AvailableFireModes": "Auto",
-  "AmmoType": "Infinity"
+  "AmmoType": "Infinity",
+  "AvailablePerks": [
+    "superbwarfare:cast_no_shadows",
+    "superbwarfare:eager_edge",
+    "superbwarfare:powerful_attraction",
+    "superbwarfare:intelligent_chip",
+    "superbwarfare:monster_hunter",
+    "superbwarfare:quickdraw"
+  ]
 }

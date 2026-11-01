@@ -18,7 +18,19 @@
   "GunType": "CurvedLauncher",
   "Gravity": 0.07,
   "ProjectileLife": 100,
-  "AmmoType": "superbwarfare:grenade_40mm",
+  "AmmoType": [
+    "superbwarfare:grenade_40mm",
+    {
+      "Ammo": "superbwarfare:smoke_gun_grenade",
+      "ProjectileBone": "smoke_head",
+      "Projectile": "superbwarfare:smoke_gun_grenade",
+      "Override": {
+        "Damage": 20,
+        "ExplosionDamage": 0,
+        "ExplosionRadius": 0
+      }
+    }
+  ],
   "ShootShake": [5.0, 5.0, 6.0],
   "AvailablePerks": [],
   "Icon": "superbwarfare:textures/gun_icon/gp_25_icon.png",

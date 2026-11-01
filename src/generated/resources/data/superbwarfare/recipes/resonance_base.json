@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "a": {
+      "tag": "forge:storage_blocks/netherite"
+    },
+    "b": {
+      "item": "minecraft:red_glazed_terracotta"
+    },
+    "c": {
+      "item": "minecraft:white_glazed_terracotta"
+    },
+    "d": {
+      "item": "minecraft:lodestone"
+    },
+    "e": {
+      "item": "minecraft:gray_glazed_terracotta"
+    },
+    "f": {
+      "item": "minecraft:blue_glazed_terracotta"
+    }
+  },
+  "pattern": [
+    "aba",
+    "cde",
+    "afa"
+  ],
+  "result": {
+    "item": "superbwarfare:resonance_base"
+  },
+  "show_notification": true
+}

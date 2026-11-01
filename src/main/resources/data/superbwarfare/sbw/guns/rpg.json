@@ -91,7 +91,9 @@
     "superbwarfare:monster_hunter",
     "superbwarfare:vorpal_weapon",
     "superbwarfare:micro_missile",
-    "superbwarfare:battle_of_wits"
+    "superbwarfare:battle_of_wits",
+    "superbwarfare:quickdraw",
+    "superbwarfare:adrenaline_rush"
   ],
   "AvailableAttachments": {
     "Charm": [

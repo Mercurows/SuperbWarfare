@@ -255,6 +255,7 @@ object ClientRenderHandler {
         event.registerBlockEntityRenderer(ModBlockEntities.VEHICLE_ASSEMBLING_TABLE.get()) { _ -> VehicleAssemblingTableBlockEntityRenderer() }
         event.registerBlockEntityRenderer(ModBlockEntities.BLUEPRINT_RESEARCH_TABLE.get()) { _ -> BlueprintResearchTableBlockEntityRenderer() }
         event.registerBlockEntityRenderer(ModBlockEntities.TRIPOD.get()) { _ -> TripodBlockEntityRenderer() }
+        event.registerBlockEntityRenderer(ModBlockEntities.RESONANCE_BASE.get()) { _ -> ResonanceBaseBlockEntityRenderer() }
     }
 
     @SubscribeEvent
@@ -281,6 +282,7 @@ object ClientRenderHandler {
         event.registerBelowAll(StaminaOverlay.ID, StaminaOverlay)
         event.registerBelowAll(AmmoCountOverlay.ID, AmmoCountOverlay)
         event.registerBelowAll(CrossHairOverlay.ID, CrossHairOverlay)
+        event.registerBelowAll(InvisibleBladeChargeOverlay.ID, InvisibleBladeChargeOverlay)
         event.registerBelowAll(HeatBarOverlay.ID, HeatBarOverlay)
         event.registerBelowAll(BayonetChargeOverlay.ID, BayonetChargeOverlay)
         event.registerAbove(Mod.loc(CrossHairOverlay.ID), GunShieldOverlay.ID, GunShieldOverlay)

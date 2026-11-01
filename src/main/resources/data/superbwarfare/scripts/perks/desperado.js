@@ -1,6 +1,6 @@
 function modifyProperty(pmc, level, perkTag, gunDataProxy) {
     if (perkTag && perkTag.getInt("DesperadoTimePost") > 0) {
-        pmc.mul("RPM", 1.285 + 0.015 * level)
+        pmc.mul("RpmMultiplier", 1.285 + 0.015 * level)
     }
 }
 

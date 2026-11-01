@@ -38,7 +38,7 @@ object ModBlocks {
     @JvmField val JUMP_PAD = registerBlock("jump_pad") { JumpPadBlock() }
     @JvmField val DRAGON_TEETH = registerBlock("dragon_teeth") { DragonTeethBlock() }
     @JvmField val REFORGING_TABLE = registerBlock("reforging_table") { ReforgingTableBlock() }
-    @JvmField val RESONANCE_BASE = registerBlock("resonance_base") { Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.METAL).strength(4f, 6f).requiresCorrectToolForDrops().lightLevel { 5 }) }
+    @JvmField val RESONANCE_BASE = registerBlock("resonance_base") { ResonanceBaseBlock() }
     @JvmField val LEAD_BLOCK = registerBlock("lead_block") { Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.METAL).strength(5f, 6f).requiresCorrectToolForDrops()) }
     @JvmField val STEEL_BLOCK = registerBlock("steel_block") { Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.METAL).strength(5f, 6f).requiresCorrectToolForDrops()) }
     @JvmField val TUNGSTEN_BLOCK = registerBlock("tungsten_block") { Block(BlockBehaviour.Properties.of().instrument(NoteBlockInstrument.BASEDRUM).sound(SoundType.METAL).strength(5f, 6f).requiresCorrectToolForDrops()) }
@@ -50,6 +50,7 @@ object ModBlocks {
     @JvmField val CONTAINER = registerBlock("container") { ContainerBlock() }
     @JvmField val BIOGAS_GENERATOR = registerBlock("biogas_generator") { BiogasGeneratorBlock() }
     @JvmField val CHARGING_STATION = registerBlock("charging_station") { ChargingStationBlock() }
+    @JvmField val WEAPON_REPAIR_STATION = registerBlock("weapon_repair_station") { WeaponRepairStationBlock() }
     @JvmField val CREATIVE_CHARGING_STATION = registerBlock("creative_charging_station") { CreativeChargingStationBlock() }
     @JvmField val FUMO_25 = registerBlock("fumo_25") { FuMO25Block() }
     @JvmField val SMALL_CONTAINER = registerBlock("small_container") { SmallContainerBlock() }

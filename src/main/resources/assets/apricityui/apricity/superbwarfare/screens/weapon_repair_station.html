@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="aui-viewport" content="mode=browser,width=1280,zoom=1,min-zoom=1,max-zoom=1,user-scalable=false">
+    <!-- Native container input must receive mouse down/up for pickup, dragging and quick move. -->
+    <meta name="aui-mouse-events" content="passthrough">
+    <link rel="stylesheet" href="../styles/weapon_repair_station.css">
+</head>
+<body>
+<div class="backdrop"></div>
+<div id="repair-layout" class="repair-layout">
+<div class="terminal">
+    <div class="terminal-header">
+        <div class="identity"><div class="eyebrow">SBW REPAIR STATION</div><div class="terminal-title"><translation>block.superbwarfare.weapon_repair_station</translation></div></div>
+        <div class="connection"><span id="pulse-dot"></span><span id="status"></span></div>
+        <button id="close">ESC / <translation>container.superbwarfare.weapon_repair_station.close</translation></button>
+    </div>
+
+    <container id="station" bind="block_entity" size="2" class="workspace">
+        <div class="supply panel">
+            <div class="section-title"><span class="index">01</span><translation>container.superbwarfare.weapon_repair_station.supply</translation></div>
+            <div class="fuel-row"><slot slot-index="0" id="material-slot" size="48"></slot><div><div class="material-name"><translation>item.superbwarfare.vehicle_reset_kit</translation></div><div id="kit-value" class="muted"></div></div></div>
+            <div class="supply-rule"></div>
+            <div class="eyebrow"><translation>container.superbwarfare.weapon_repair_station.energy</translation></div>
+            <div id="energy-value"></div>
+            <div class="bar energy-bar"><div id="energy-fill"></div></div>
+        </div>
+
+        <div class="repair panel">
+            <div class="section-title"><span class="index">02</span><translation>container.superbwarfare.weapon_repair_station.chamber</translation></div>
+            <div class="stage">
+                <div class="orbit outer"></div><div class="orbit inner"></div>
+                <div class="axis horizontal"></div><div class="axis vertical"></div>
+                <slot slot-index="1" id="repair-slot" size="76"></slot>
+                <div id="scan-line"></div>
+            </div>
+            <div id="item-name"></div>
+            <div class="health-row"><span><translation>container.superbwarfare.weapon_repair_station.durability</translation></span><span id="durability"></span></div>
+            <div class="bar health-bar"><div id="health-fill"></div></div>
+        </div>
+
+        <div class="diagnostics panel">
+            <div class="section-title"><span class="index">03</span><translation>container.superbwarfare.weapon_repair_station.diagnostics</translation></div>
+            <div class="condition"><span id="health-percent">—</span></div>
+            <div class="metric"><span><translation>container.superbwarfare.weapon_repair_station.required</translation></span><span id="required"></span></div>
+            <div class="metric"><span><translation>container.superbwarfare.weapon_repair_station.eta</translation></span><span id="eta"></span></div>
+            <button id="toggle"></button>
+        </div>
+    </container>
+
+    <div class="inventory-panel">
+        <div class="inventory-info"><div class="inventory-title"><translation>container.inventory</translation></div><div class="inventory-hint"><translation>container.superbwarfare.weapon_repair_station.inventory_hint</translation></div></div>
+        <container id="inventory" bind="player" size="36" slot-size="36">
+            <div class="inventory-row">
+                <slot slot-index="9" size="36"></slot><slot slot-index="10" size="36"></slot><slot slot-index="11" size="36"></slot><slot slot-index="12" size="36"></slot><slot slot-index="13" size="36"></slot><slot slot-index="14" size="36"></slot><slot slot-index="15" size="36"></slot><slot slot-index="16" size="36"></slot><slot slot-index="17" size="36"></slot>
+            </div>
+            <div class="inventory-row">
+                <slot slot-index="18" size="36"></slot><slot slot-index="19" size="36"></slot><slot slot-index="20" size="36"></slot><slot slot-index="21" size="36"></slot><slot slot-index="22" size="36"></slot><slot slot-index="23" size="36"></slot><slot slot-index="24" size="36"></slot><slot slot-index="25" size="36"></slot><slot slot-index="26" size="36"></slot>
+            </div>
+            <div class="inventory-row">
+                <slot slot-index="27" size="36"></slot><slot slot-index="28" size="36"></slot><slot slot-index="29" size="36"></slot><slot slot-index="30" size="36"></slot><slot slot-index="31" size="36"></slot><slot slot-index="32" size="36"></slot><slot slot-index="33" size="36"></slot><slot slot-index="34" size="36"></slot><slot slot-index="35" size="36"></slot>
+            </div>
+            <div class="inventory-row hotbar">
+                <slot slot-index="0" size="36"></slot><slot slot-index="1" size="36"></slot><slot slot-index="2" size="36"></slot><slot slot-index="3" size="36"></slot><slot slot-index="4" size="36"></slot><slot slot-index="5" size="36"></slot><slot slot-index="6" size="36"></slot><slot slot-index="7" size="36"></slot><slot slot-index="8" size="36"></slot>
+            </div>
+        </container>
+        <div class="inventory-side"><span class="cross">+</span></div>
+    </div>
+</div>
+</div>
+</body>
+</html>

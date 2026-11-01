@@ -1,5 +1,6 @@
 package com.atsuishio.superbwarfare.client.screens
 
+import com.atsuishio.superbwarfare.config.server.GunConfig
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
 import com.atsuishio.superbwarfare.inventory.menu.ReforgingTableMenu
@@ -11,6 +12,9 @@ import com.atsuishio.superbwarfare.tools.localPlayer
 import com.atsuishio.superbwarfare.tools.mc
 import com.atsuishio.superbwarfare.tools.sendPacketToServer
 import com.mojang.blaze3d.systems.RenderSystem
+import com.mojang.blaze3d.vertex.DefaultVertexFormat
+import com.mojang.blaze3d.vertex.Tesselator
+import com.mojang.blaze3d.vertex.VertexFormat
 import com.sighs.apricityui.event.MouseEvent
 import com.sighs.apricityui.init.Document
 import com.sighs.apricityui.init.Element
@@ -21,6 +25,7 @@ import com.sighs.apricityui.screen.ApricityScreen
 import com.sighs.apricityui.style.Text
 import net.minecraft.client.StringSplitter
 import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
@@ -61,6 +66,10 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
     private val indicatorCounts = mutableMapOf<String, Int>()
     private var ownedPerks = emptyMap<Item, Int>()
     private var forceRefresh = true
+    private var unrestrictedPerks = false
+    private var unlockedPerkSlots = 1
+    private var slotUnlockLevels = 10
+    private var creativeMode = false
     private var pending = false
     private var pendingAt = 0L
     private var resetHoldStartedAt = 0L
@@ -70,6 +79,8 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
     private var tooltipTitle = Text()
     private var tooltipType = Text()
     private var tooltipDescription = emptyList<Text>()
+    private val transition = ResonanceScreenTransition()
+    private var navigation: (() -> Unit)? = null
 
     override fun isPauseScreen() = false
 
@@ -94,9 +105,14 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
     override fun render(graphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         val doc = linkedDocument
         if (doc != null && (!doc.isCurrentGeneration(documentGeneration) || forceRefresh)) syncPage()
-        if (doc != null) updateResetHold(doc)
+        if (doc != null && !transition.blocksInput) updateResetHold(doc)
         super.render(graphics, mouseX, mouseY, partialTick)
-        if (doc != null && inventorySlot != null) renderPerkTooltip(graphics, doc)
+        if (doc != null && inventorySlot != null && !transition.blocksInput) renderPerkTooltip(graphics, doc)
+        if (transition.render(graphics, width, height, doc != null && documentGeneration == doc.refreshGeneration)) {
+            val action = navigation
+            navigation = null
+            action?.invoke()
+        }
     }
 
     override fun removed() {
@@ -105,14 +121,26 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
     }
 
     override fun onClose() {
-        if (inventorySlot == null) super.onClose() else mc.setScreen(ResonanceReforgingScreen(tablePos))
+        if (inventorySlot == null) {
+            navigation = null
+            super.onClose()
+        } else navigate { mc.setScreen(ResonanceReforgingScreen(tablePos)) }
+    }
+
+    private fun navigate(action: () -> Unit) {
+        if (navigation != null) return
+        navigation = action
+        resetHoldStartedAt = 0L
+        tooltipPerk = null
+        transition.close()
     }
 
     override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
-        if (mc.options.keyInventory.matches(keyCode, scanCode)) {
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE || mc.options.keyInventory.matches(keyCode, scanCode)) {
             onClose()
             return true
         }
+        if (transition.blocksInput) return true
         return super.keyPressed(keyCode, scanCode, modifiers)
     }
 
@@ -130,6 +158,16 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
             documentGeneration = doc.refreshGeneration
             displayedWeapon = ItemStack.EMPTY
             forceRefresh = true
+            // AUI dispatches DOM input independently of Screen.mouseClicked; capture it here.
+            for (type in listOf("click", "dblclick", "mousedown", "mouseup", "pointerdown", "pointerup",
+                "mouseenter", "mouseover", "wheel", "contextmenu")) {
+                doc.addEventListener(type, { event ->
+                    if (transition.blocksInput) {
+                        event.preventDefault()
+                        event.stopImmediatePropagation()
+                    }
+                }, true)
+            }
             doc.getElementById("back-to-weapons")?.addEventListener("click") { onClose() }
             doc.getElementById("close-selection")?.addEventListener("click") { onClose() }
             if (inventorySlot == null) {
@@ -137,7 +175,9 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
                     val cell = doc.getElementById("weapon-$index") ?: continue
                     cell.addEventListener("click") {
                         val slot = candidates.getOrNull(index)?.slot ?: return@addEventListener
-                        if (player.inventory.getItem(slot).item is GunItem) mc.setScreen(ResonanceReforgingScreen(tablePos, slot))
+                        if (player.inventory.getItem(slot).item is GunItem) {
+                            navigate { mc.setScreen(ResonanceReforgingScreen(tablePos, slot)) }
+                        }
                     }
                     cell.addEventListener("mouseenter") { candidates.getOrNull(index)?.let { showPreview(doc, it) } }
                 }
@@ -150,7 +190,16 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
             if (weaponUuid != null && uuid != weaponUuid) { onClose(); return }
             weaponUuid = uuid
             val owned = player.inventory.items.filter { !it.isEmpty }.groupingBy { it.item }.fold(0) { n, item -> n + item.count }
-            if (rebuilt || forceRefresh || !ItemStack.matches(displayedWeapon, stack) || owned != ownedPerks) {
+            val unrestricted = GunConfig.allowsAnyPerk(player.isCreative)
+            val unlockLevels = GunConfig.perkSlotUnlockLevels
+            val unlockedSlots = ResonancePerkInstallMessage.unlockedSlotCount(GunData.from(stack).level.get(), player.isCreative, unlockLevels)
+            if (rebuilt || forceRefresh || unrestricted != unrestrictedPerks || unlockedSlots != unlockedPerkSlots
+                || unlockLevels != slotUnlockLevels || player.isCreative != creativeMode
+                || !ItemStack.matches(displayedWeapon, stack) || owned != ownedPerks) {
+                unrestrictedPerks = unrestricted
+                unlockedPerkSlots = unlockedSlots
+                slotUnlockLevels = unlockLevels
+                creativeMode = player.isCreative
                 ownedPerks = owned
                 displayedWeapon = stack.copy()
                 syncDetails(doc, stack)
@@ -246,12 +295,12 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         for (type in Perk.Type.entries) {
             val key = type.typeName
             doc.getElementById("slots-$key")?.innerHTML = (0..2).joinToString("") { position ->
-                """<button type="button" class="perk-card" id="perk-slot-$key-$position"><sbw-reforging-weapon id="perk-icon-$key-$position"></sbw-reforging-weapon><span class="perk-level" id="perk-level-$key-$position"></span><span class="add-perk" id="perk-add-$key-$position">+</span></button>"""
+                """<button type="button" class="perk-card" id="perk-slot-$key-$position"><sbw-reforging-weapon id="perk-icon-$key-$position"></sbw-reforging-weapon><span class="perk-level" id="perk-level-$key-$position"></span><span class="add-perk" id="perk-add-$key-$position">+</span><span class="slot-lock" id="perk-lock-$key-$position"><span class="lock"><span class="keyhole"></span></span><span id="perk-unlock-level-$key-$position"></span></span></button>"""
             }
             for (position in 0..2) {
                 doc.getElementById("perk-slot-$key-$position")?.addEventListener("click") {
                     val index = pages.getValue(type) * 3 + position
-                    if (!pending && index <= draft.getValue(type).size) {
+                    if (canSelectSlot(type, index)) {
                         activeType = type; activeSlot = index; slotSelected = true; choicePage = 0; forceRefresh = true
                     }
                 }
@@ -341,6 +390,7 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         text(doc, "weapon-experience", translated("experience", format(exp, 0), format(needed, 0)))
         doc.getElementById("weapon-exp-fill")?.setInlineStyleProperty("width", ((exp / needed).coerceIn(0.0, 1.0) * 100).toString() + "%")
         perkHoverTargets.clear()
+        if (slotSelected && !canSelectSlot(activeType, activeSlot)) slotSelected = false
         for (type in Perk.Type.entries) renderSlots(doc, type)
         show(doc, "perk-choices-panel", slotSelected)
         if (slotSelected) renderChoices(doc, baseline) else shownChoices = emptyList()
@@ -356,12 +406,16 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         }
         setDisplayItem(doc, "reforging-output-icon", previewStack)
         syncStats(doc, baseline, preview)
-        val changed = hasChanges(baseline)
+        val changed = hasChanges(baseline) && validDraftSlots(baseline)
         doc.getElementById("complete-reforging")?.setAttribute("class", if (changed && !pending) "output-preview ready" else "output-preview")
         disable(doc, "complete-reforging", !changed || pending || weaponUuid == null)
     }
 
     private fun slotPages(type: Perk.Type) = maxOf(1, (draft.getValue(type).size + 3) / 3)
+
+    private fun canSelectSlot(type: Perk.Type, index: Int): Boolean =
+        !pending && index >= 0 && index <= draft.getValue(type).size
+            && (index < unlockedPerkSlots || index in draft.getValue(type).indices)
 
     private fun renderSlots(doc: Document, type: Perk.Type) {
         val key = type.typeName
@@ -372,13 +426,16 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         for (position in 0..2) {
             val index = page * 3 + position
             val perk = entries.getOrNull(index)
+            val locked = perk == null && index >= unlockedPerkSlots
             val selected = slotSelected && type == activeType && index == activeSlot
-            attribute(doc, "perk-slot-$key-$position", "class", if (selected) "perk-card selected" else "perk-card")
-            attribute(doc, "perk-slot-$key-$position", "aria-disabled", (index > entries.size || pending).toString())
+            attribute(doc, "perk-slot-$key-$position", "class", "perk-card" + (if (selected) " selected" else "") + (if (locked) " slot-locked" else ""))
+            attribute(doc, "perk-slot-$key-$position", "aria-disabled", (!canSelectSlot(type, index)).toString())
             setDisplayItem(doc, "perk-icon-$key-$position", perk?.let { ItemStack(it.getItem().get()) } ?: ItemStack.EMPTY)
             text(doc, "perk-level-$key-$position", perk?.let { "Lv." + (draftLevels[it] ?: 1) } ?: "")
             show(doc, "perk-level-$key-$position", perk != null)
-            show(doc, "perk-add-$key-$position", perk == null && index == entries.size)
+            show(doc, "perk-add-$key-$position", perk == null && index == entries.size && !locked)
+            show(doc, "perk-lock-$key-$position", locked, "flex")
+            text(doc, "perk-unlock-level-$key-$position", if (locked) "Lv." + index.toLong() * slotUnlockLevels else "")
             if (perk != null) perkHoverTargets["perk-slot-$key-$position"] = perk
         }
         renderPageIndicators(doc, "page-indicators-$key", page, total)
@@ -386,15 +443,25 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         disable(doc, "page-$key-next", pending || page == total - 1)
     }
 
-    private fun canChoose(perk: Perk, baseline: GunData): Boolean =
-        localPlayer?.isCreative == true || baseline.perk.getInstances(perk.type).any { it.perk == perk }
+    private fun canChoose(perk: Perk, baseline: GunData): Boolean {
+        if (activeSlot >= unlockedPerkSlots && activePerk() != perk) return false
+        return localPlayer?.isCreative == true || baseline.perk.getInstances(perk.type).any { it.perk == perk }
             || (ownedPerks[perk.getItem().get()] ?: 0) > 0
+    }
+
+    private fun validDraftSlots(baseline: GunData): Boolean {
+        val unlocked = ResonancePerkInstallMessage.unlockedSlotCount(baseline.level.get(), localPlayer?.isCreative == true, GunConfig.perkSlotUnlockLevels)
+        return Perk.Type.entries.all { type ->
+            ResonancePerkInstallMessage.validSlotChange(baseline.perk.getInstances(type).map { it.perk.name },
+                draft.getValue(type).map { it.name }, unlocked)
+        }
+    }
 
     private fun renderChoices(doc: Document, baseline: GunData) {
         val entries = draft.getValue(activeType)
         activeSlot = activeSlot.coerceAtMost(entries.size)
         val selected = entries.getOrNull(activeSlot)
-        availableChoices = (baseline.availablePerks().filter { it.type == activeType } + baseline.perk.getInstances(activeType).map { it.perk })
+        availableChoices = (baseline.availablePerks(localPlayer?.isCreative == true).filter { it.type == activeType } + baseline.perk.getInstances(activeType).map { it.perk })
             .distinct().filter { it !in entries || it == selected }
         val total = maxOf(1, (availableChoices.size + CHOICES_PER_PAGE - 1) / CHOICES_PER_PAGE)
         choicePage = choicePage.coerceIn(0, total - 1)
@@ -514,7 +581,7 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
         if (stack.item !is GunItem || !draftReady) return
         val data = GunData.from(stack)
         val identity = weaponUuid ?: return
-        if (data.uuid?.toString() != identity || !hasChanges(data)) return
+        if (data.uuid?.toString() != identity || !hasChanges(data) || !validDraftSlots(data)) return
         pending = true
         pendingAt = System.currentTimeMillis()
         slotSelected = false
@@ -658,9 +725,9 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
     private fun attribute(doc: Document, id: String, name: String, value: String) {
         doc.getElementById(id)?.let { if (it.getAttribute(name) != value) it.setAttribute(name, value) }
     }
-    private fun show(doc: Document, id: String, visible: Boolean) {
+    private fun show(doc: Document, id: String, visible: Boolean, displayMode: String = "block") {
         doc.getElementById(id)?.let {
-            val display = if (visible) "block" else "none"
+            val display = if (visible) displayMode else "none"
             if (it.getInlineStylePropertyValue("display") != display) it.setInlineStyleProperty("display", display)
         }
     }
@@ -670,6 +737,110 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
     private fun format(value: Double, decimals: Int): String {
         val number = String.format(Locale.ROOT, "%." + decimals + "f", value)
         return if (decimals == 0) number else number.trimEnd('0').trimEnd('.')
+    }
+
+    /** A black curtain with a feathered, torn aperture. Coordinates follow the GUI, not the AUI viewport. */
+    private class ResonanceScreenTransition {
+        private var startedAt = 0L
+        private var closing = false
+        private var closeFrom = 1.0
+        private var aperture = 0.0
+        private var finished = false
+        private var profile = createProfile()
+
+        val blocksInput: Boolean get() = !finished || closing
+
+        fun close() {
+            if (closing) return
+            // Refresh while fully revealed; retain the contour when reversing an unfinished opening.
+            if (finished) profile = createProfile()
+            closeFrom = aperture
+            closing = true
+            finished = false
+            startedAt = System.nanoTime()
+        }
+
+        /** Returns true only after drawing a completely black frame, so navigation cannot flash through. */
+        fun render(graphics: GuiGraphics, width: Int, height: Int, ready: Boolean): Boolean {
+            if (finished && !closing) return false
+            val now = System.nanoTime()
+            if (startedAt == 0L && ready) startedAt = now
+            val elapsedMs = if (startedAt == 0L) 0.0 else (now - startedAt) / 1_000_000.0
+            val progress = if (closing) (elapsedMs / CLOSE_MS).coerceIn(0.0, 1.0)
+                else ((elapsedMs - BLACK_HOLD_MS) / OPEN_MS).coerceIn(0.0, 1.0)
+            val eased = progress * progress * (3.0 - 2.0 * progress)
+            aperture = if (closing) closeFrom * (1.0 - eased) else eased
+            if (!closing && progress >= 1.0) {
+                finished = true
+                return false
+            }
+            drawCurtain(graphics, width, height)
+            return closing && progress >= 1.0
+        }
+
+        private fun drawCurtain(graphics: GuiGraphics, width: Int, height: Int) {
+            graphics.flush()
+            val matrix = graphics.pose().last().pose()
+            val cx = width / 2f
+            val cy = height / 2f
+            val scale = aperture.toFloat() * 2.5f
+            val feather = 0.025f * min(1f, scale)
+            val tessellator = Tesselator.getInstance()
+            val buffer = tessellator.builder
+            RenderSystem.enableBlend()
+            RenderSystem.defaultBlendFunc()
+            RenderSystem.disableDepthTest()
+            RenderSystem.disableCull()
+            RenderSystem.setShader(GameRenderer::getPositionColorShader)
+            RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
+            buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR)
+            fun vertex(index: Int, radius: Float, alpha: Int) {
+                buffer.vertex(matrix, cx + cx * COS[index] * radius, cy + cy * SIN[index] * radius, 0f)
+                    .color(0, 0, 0, alpha).endVertex()
+            }
+            for (index in 0 until SEGMENTS) {
+                val next = (index + 1) % SEGMENTS
+                val r0 = profile[index] * scale
+                val r1 = profile[next] * scale
+                // Solid exterior plus a narrow transparent-to-black fringe, like a soft torn silhouette.
+                vertex(index, r0 + feather, 255)
+                vertex(index, 4f, 255)
+                vertex(next, 4f, 255)
+                vertex(next, r1 + feather, 255)
+                vertex(index, r0, 0)
+                vertex(index, r0 + feather, 255)
+                vertex(next, r1 + feather, 255)
+                vertex(next, r1, 0)
+            }
+            tessellator.end()
+            RenderSystem.enableCull()
+            RenderSystem.enableDepthTest()
+            RenderSystem.disableBlend()
+        }
+
+        companion object {
+            private const val OPEN_MS = 420.0
+            private const val CLOSE_MS = 260.0
+            private const val BLACK_HOLD_MS = 40.0
+            private const val SEGMENTS = 192
+            private val COS = FloatArray(SEGMENTS) { cos(it * 2.0 * PI / SEGMENTS).toFloat() }
+            private val SIN = FloatArray(SEGMENTS) { sin(it * 2.0 * PI / SEGMENTS).toFloat() }
+            private fun createProfile(): FloatArray {
+                val random = kotlin.random.Random.Default
+                val frequencies = intArrayOf(random.nextInt(5, 10), random.nextInt(11, 17),
+                    random.nextInt(21, 29), random.nextInt(39, 52))
+                val phases = DoubleArray(4) { random.nextDouble(2.0 * PI) }
+                val amplitudes = doubleArrayOf(0.10, 0.07, 0.045, 0.025)
+                    .map { it * random.nextDouble(0.85, 1.10) }
+                // Integer frequencies keep the seam closed; sample once so the moving edge never flickers.
+                return FloatArray(SEGMENTS) { index ->
+                    val angle = index * 2.0 * PI / SEGMENTS
+                    (0.88 + frequencies.indices.sumOf { layer ->
+                        amplitudes[layer] * sin(frequencies[layer] * angle + phases[layer])
+                    }).toFloat()
+                }
+            }
+        }
     }
 
     /** Screen-local native model painter with no inventory decorations. */
