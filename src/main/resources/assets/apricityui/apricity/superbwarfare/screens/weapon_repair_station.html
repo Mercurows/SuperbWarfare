@@ -17,10 +17,15 @@
         <button id="close">ESC / <translation>container.superbwarfare.weapon_repair_station.close</translation></button>
     </div>
 
-    <container id="station" bind="block_entity" size="2" class="workspace">
+    <container id="station" bind="block_entity" size="1" class="workspace">
         <div class="supply panel">
             <div class="section-title"><span class="index">01</span><translation>container.superbwarfare.weapon_repair_station.supply</translation></div>
-            <div class="fuel-row"><slot slot-index="0" id="material-slot" size="48"></slot><div><div class="material-name"><translation>item.superbwarfare.vehicle_reset_kit</translation></div><div id="kit-value" class="muted"></div></div></div>
+            <div class="fe-reserve">
+                <div class="eyebrow"><translation>container.superbwarfare.weapon_repair_station.fe</translation></div>
+                <div id="fe-value"></div>
+                <div class="bar fe-bar"><div id="fe-fill"></div></div>
+                <div id="conversion-rate" class="muted"></div>
+            </div>
             <div class="supply-rule"></div>
             <div class="eyebrow"><translation>container.superbwarfare.weapon_repair_station.energy</translation></div>
             <div id="energy-value"></div>
@@ -32,7 +37,7 @@
             <div class="stage">
                 <div class="orbit outer"></div><div class="orbit inner"></div>
                 <div class="axis horizontal"></div><div class="axis vertical"></div>
-                <slot slot-index="1" id="repair-slot" size="76"></slot>
+                <slot slot-index="0" id="repair-slot" size="76"></slot>
                 <div id="scan-line"></div>
             </div>
             <div id="item-name"></div>
