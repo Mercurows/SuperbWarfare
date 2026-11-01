@@ -20,7 +20,7 @@ import java.util.function.Supplier
 
 open class WeaponRepairStationMenu(
     id: Int, inventory: Inventory,
-    private val station: Container = SimpleContainer(2),
+    private val station: Container = SimpleContainer(1),
     private val stationData: ContainerData = SimpleContainerData(DATA_COUNT)
 ) : ApricityContainerMenu(
     id,
@@ -31,7 +31,7 @@ open class WeaponRepairStationMenu(
     inventory.player as? ServerPlayer
 ) {
     init {
-        checkContainerSize(station, 2); checkContainerDataCount(stationData, DATA_COUNT); addDataSlots(stationData)
+        checkContainerSize(station, 1); checkContainerDataCount(stationData, DATA_COUNT); addDataSlots(stationData)
     }
 
     // AUI's base constructor uses its generic menu type; opening must select our registered screen.
@@ -50,7 +50,9 @@ open class WeaponRepairStationMenu(
     val interval get() = value(3)
     val progress get() = value(4)
     val enabled get() = value(5) != 0
-    val materialEnergy get() = value(6)
+    val fe get() = value(6)
+    val feCapacity get() = value(7)
+    val fePerRepairEnergy get() = value(8)
 
     override fun quickMoveStack(player: Player, index: Int): ItemStack {
         val slot = slots.getOrNull(index) ?: return ItemStack.EMPTY
@@ -58,11 +60,10 @@ open class WeaponRepairStationMenu(
         val stack = slot.item
         val original = stack.copy()
         val moved = when {
-            index < 2 -> moveItemStackTo(stack, 2, 38, true)
-            WeaponRepairStationBlockEntity.isMaterial(stack) -> moveItemStackTo(stack, 0, 1, false)
-            WeaponRepairStationBlockEntity.isRepairTarget(stack) -> moveItemStackTo(stack, 1, 2, false)
-            index < 29 -> moveItemStackTo(stack, 29, 38, false)
-            else -> moveItemStackTo(stack, 2, 29, false)
+            index == 0 -> moveItemStackTo(stack, 1, 37, true)
+            WeaponRepairStationBlockEntity.isRepairTarget(stack) -> moveItemStackTo(stack, 0, 1, false)
+            index < 28 -> moveItemStackTo(stack, 28, 37, false)
+            else -> moveItemStackTo(stack, 1, 28, false)
         }
         if (!moved) return ItemStack.EMPTY
         if (stack.isEmpty) slot.setByPlayer(ItemStack.EMPTY) else slot.setChanged()
@@ -72,29 +73,26 @@ open class WeaponRepairStationMenu(
     }
 
     companion object {
-        const val DATA_COUNT = 14
+        const val DATA_COUNT = 18
         const val DOCUMENT = "superbwarfare/screens/weapon_repair_station.html"
         private val LAYOUT = SlotLayout(
             DOCUMENT, listOf(
-                SlotLayout.ContainerEntry("station", ContainerBindType.BLOCK_ENTITY, 0, 2, true),
-                SlotLayout.ContainerEntry("inventory", ContainerBindType.PLAYER, 2, 36, false)
+                SlotLayout.ContainerEntry("station", ContainerBindType.BLOCK_ENTITY, 0, 1, true),
+                SlotLayout.ContainerEntry("inventory", ContainerBindType.PLAYER, 1, 36, false)
             )
         )
 
         private fun source(container: Container) = object : ContainerDataSource {
             override fun bindType() = ContainerBindType.BLOCK_ENTITY
-            override fun capacity() = 2
+            override fun capacity() = 1
             override fun stillValid(player: ServerPlayer) = container.stillValid(player)
 
             // Slot restrictions are server-owned and cannot be replaced by DOM filter packets.
             override fun createSlot(index: Int, x: Int, y: Int, filter: Supplier<FilterUtil>): Slot =
                 object : Slot(container, index, x, y) {
-                    override fun mayPlace(stack: ItemStack) =
-                        if (index == 0) WeaponRepairStationBlockEntity.isMaterial(stack) else WeaponRepairStationBlockEntity.isRepairTarget(
-                            stack
-                        )
+                    override fun mayPlace(stack: ItemStack) = WeaponRepairStationBlockEntity.isRepairTarget(stack)
 
-                    override fun getMaxStackSize() = if (index == 1) 1 else super.getMaxStackSize()
+                    override fun getMaxStackSize() = 1
                 }
         }
     }
