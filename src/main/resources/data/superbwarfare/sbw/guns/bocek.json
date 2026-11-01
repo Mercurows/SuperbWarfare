@@ -42,6 +42,7 @@
   "AmmoType": "minecraft:arrow",
   "Icon": "superbwarfare:textures/gun_icon/bocek_icon.png",
   "AvailablePerks": [
+    "superbwarfare:striving_for_perfection",
     "@Ammo",
     "superbwarfare:field_doctor",
     "superbwarfare:intelligent_chip",

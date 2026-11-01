@@ -20,6 +20,7 @@
   "AvailableFireModes": "Auto",
   "AmmoType": "Infinity",
   "AvailablePerks": [
+    "superbwarfare:striving_for_perfection",
     "superbwarfare:cast_no_shadows",
     "superbwarfare:eager_edge",
     "superbwarfare:powerful_attraction",

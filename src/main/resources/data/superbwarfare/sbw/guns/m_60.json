@@ -70,6 +70,7 @@
   "AmmoType": "@RifleAmmo",
   "Icon": "superbwarfare:textures/gun_icon/m_60_icon.png",
   "AvailablePerks": [
+    "superbwarfare:striving_for_perfection",
     "@Ammo",
     "superbwarfare:fourth_times_charm",
     "superbwarfare:subsistence",

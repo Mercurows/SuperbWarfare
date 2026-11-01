@@ -26,6 +26,7 @@
   "AmmoType": "minecraft:iron_nugget",
   "Icon": "superbwarfare:textures/gun_icon/nail_gun_icon.png",
   "AvailablePerks": [
+    "superbwarfare:striving_for_perfection",
     "@Ammo",
     "superbwarfare:heal_clip",
     "superbwarfare:field_doctor",

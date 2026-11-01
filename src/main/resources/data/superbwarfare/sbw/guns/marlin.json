@@ -81,6 +81,7 @@
   "AmmoType": "@RifleAmmo",
   "Icon": "superbwarfare:textures/gun_icon/marlin_icon.png",
   "AvailablePerks": [
+    "superbwarfare:striving_for_perfection",
     "@Ammo",
     "superbwarfare:heal_clip",
     "superbwarfare:field_doctor",

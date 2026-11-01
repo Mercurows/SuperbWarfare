@@ -26,6 +26,7 @@
   "Projectile": "superbwarfare:igla_9k38_missile",
   "ProjectileLife": 300,
   "AvailablePerks": [
+    "superbwarfare:striving_for_perfection",
     "superbwarfare:cluster_bomb",
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",
