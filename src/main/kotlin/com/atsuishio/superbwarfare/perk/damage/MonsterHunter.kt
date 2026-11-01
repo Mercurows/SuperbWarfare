@@ -25,4 +25,12 @@ object MonsterHunter : Perk("monster_hunter", Type.DAMAGE) {
             source
         )
     }
+
+    override fun getModifiedMeleeDamage(
+        damage: Float,
+        data: GunData,
+        instance: PerkInstance,
+        target: Entity,
+        source: DamageSource
+    ): Float = if (target is Monster) damage * (1.1f + 0.1f * instance.level) else damage
 }
