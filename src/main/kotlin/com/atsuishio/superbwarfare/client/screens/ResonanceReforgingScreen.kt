@@ -3,6 +3,7 @@ package com.atsuishio.superbwarfare.client.screens
 import com.atsuishio.superbwarfare.config.server.GunConfig
 import com.atsuishio.superbwarfare.data.gun.GunData
 import com.atsuishio.superbwarfare.data.gun.GunProp
+import com.atsuishio.superbwarfare.data.gun.GunType
 import com.atsuishio.superbwarfare.inventory.menu.ReforgingTableMenu
 import com.atsuishio.superbwarfare.item.gun.GunItem
 import com.atsuishio.superbwarfare.network.message.send.ResonancePerkInstallMessage
@@ -594,7 +595,13 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
     }
 
     private fun syncStats(doc: Document, baseline: GunData, preview: GunData) {
-        val stats = listOf(Triple("rpm", 1200.0, 0), Triple("damage", 100.0, 2), Triple("headshot", 4.0, 2),
+        val melee = baseline.get(GunProp.GUN_TYPE) == GunType.MELEE
+        show(doc, "ranged-stats", !melee)
+        show(doc, "melee-stats", melee)
+        val stats = if (melee) listOf(
+            Triple("melee_damage", 100.0, 2), Triple("melee_headshot", 4.0, 2),
+            Triple("melee_range", 6.0, 2), Triple("weight", 10.0, 2), Triple("max_durability", 1000.0, 0)
+        ) else listOf(Triple("rpm", 1200.0, 0), Triple("damage", 100.0, 2), Triple("headshot", 4.0, 2),
             Triple("recoil_x", 0.005, 5), Triple("recoil_y", 0.04, 5), Triple("spread", 10.0, 2),
             Triple("normal_reload_time", 6.0, 2), Triple("magazine", 100.0, 0))
         fun value(data: GunData, key: String) = when (key) {
@@ -605,6 +612,11 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
             "recoil_y" -> data.get(GunProp.RECOIL_Y)
             "spread" -> data.get(GunProp.SPREAD)
             "normal_reload_time" -> data.get(GunProp.NORMAL_RELOAD_TIME) / 20.0
+            "melee_damage" -> data.get(GunProp.MELEE_DAMAGE)
+            "melee_headshot" -> data.get(GunProp.MELEE_HEADSHOT)
+            "melee_range" -> data.get(GunProp.MELEE_RANGE)
+            "weight" -> data.get(GunProp.WEIGHT)
+            "max_durability" -> data.get(GunProp.MAX_DURABILITY).toDouble()
             else -> data.get(GunProp.MAGAZINE).toDouble()
         }
         for ((key, reference, decimals) in stats) {
@@ -612,10 +624,10 @@ class ResonanceReforgingScreen(private val tablePos: BlockPos, private val inven
             val after = value(preview, key)
             val valid = before.isFinite() && after.isFinite()
             val delta = after - before
-            val unit = when (key) { "rpm" -> " rpm"; "headshot" -> "×"; "normal_reload_time" -> " s"; else -> "" }
+            val unit = when (key) { "rpm" -> " rpm"; "headshot", "melee_headshot" -> "×"; "normal_reload_time" -> " s"; "melee_range" -> " m"; "weight" -> " kg"; else -> "" }
             text(doc, "stat-value-$key", if (valid) format(after, decimals) + unit else "—")
             text(doc, "stat-delta-$key", if (!valid || abs(delta) < 0.000001) "" else "(" + (if (delta > 0) "+" else "") + format(delta, decimals) + ")")
-            val good = if (key.startsWith("recoil") || key == "spread" || key == "normal_reload_time") delta < 0 else delta > 0
+            val good = if (key.startsWith("recoil") || key == "spread" || key == "normal_reload_time" || key == "weight") delta < 0 else delta > 0
             val color = if (good) "#52fcda" else "#ed777d"
             doc.getElementById("stat-delta-$key")?.setInlineStyleProperty("color", color)
             val from = if (valid) (before / reference).coerceIn(0.0, 1.0) else 0.0
