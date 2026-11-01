@@ -1,6 +1,14 @@
 function getModifiedDamage(damage, target, level, perkTag, sourceProxy) {
     if (!perkTag || !sourceProxy || !sourceProxy.isGunDamage()) return damage
+    return modifyDamage(damage, target, level)
+}
 
+function getModifiedMeleeDamage(damage, target, level, perkTag, sourceProxy) {
+    if (!perkTag) return damage
+    return modifyDamage(damage, target, level)
+}
+
+function modifyDamage(damage, target, level) {
     const maxHealth = target.getMaxHealth()
     if (maxHealth <= 0) return damage
 
