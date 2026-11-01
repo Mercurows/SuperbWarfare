@@ -17,9 +17,22 @@ object VorpalWeapon : Perk("vorpal_weapon", Type.DAMAGE) {
         target: Entity,
         source: DamageSource
     ): Float {
-        if (DamageTypeTool.isGunDamage(source) && target is LivingEntity && target.health >= 100.0f) {
+        if (!DamageTypeTool.isGunDamage(source)) return damage
+        return modifyDamage(damage, instance, target)
+    }
+
+    override fun getModifiedMeleeDamage(
+        damage: Float,
+        data: GunData,
+        instance: PerkInstance,
+        target: Entity,
+        source: DamageSource
+    ): Float = modifyDamage(damage, instance, target)
+
+    private fun modifyDamage(damage: Float, instance: PerkInstance, target: Entity): Float {
+        if (target is LivingEntity && target.health >= 100.0f) {
             return (damage + target.health * 0.00002f * instance.level.toDouble().pow(2)).toFloat()
         }
-        return super.getModifiedDamage(damage, data, instance, target, source)
+        return damage
     }
 }
