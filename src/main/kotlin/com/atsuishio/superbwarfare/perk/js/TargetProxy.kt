@@ -30,6 +30,8 @@ class TargetProxy(val target: Entity) {
 
     fun getMaxHealth(): Float = (target as? LivingEntity)?.maxHealth ?: 0f
 
+    fun getGameTime(): Int = target.level().gameTime.toInt()
+
     // 这里高版本应该使用#aquatic标签判断
     fun isAquatic(): Boolean = (target as? LivingEntity)?.mobType == MobType.WATER
 }
