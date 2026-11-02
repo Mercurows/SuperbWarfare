@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.client.TooltipTool
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer
 import com.atsuishio.superbwarfare.client.renderer.gun.HammerRenderer
 import com.atsuishio.superbwarfare.init.ModTags
+import com.atsuishio.superbwarfare.item.gun.MeleeGunItem
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
 import net.minecraft.util.RandomSource
@@ -16,11 +17,9 @@ import net.minecraftforge.event.entity.player.PlayerEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
 
-open class HammerItem(properties: Properties) : KnifeItem(properties) {
+open class HammerItem(properties: Properties) : MeleeGunItem(properties) {
 
     override fun canBeDepleted(): Boolean = true
-
-    override fun isDamageable(stack: ItemStack?): Boolean = true
 
     override fun hasCraftingRemainingItem(stack: ItemStack?): Boolean {
         return true

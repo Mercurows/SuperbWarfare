@@ -20,6 +20,9 @@
   "AvailableFireModes": "Auto",
   "AmmoType": "Infinity",
   "AvailablePerks": [
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:soul_reaver",
+    "superbwarfare:striving_for_perfection",
     "superbwarfare:cast_no_shadows",
     "superbwarfare:eager_edge",
     "superbwarfare:powerful_attraction",

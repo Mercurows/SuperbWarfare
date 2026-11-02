@@ -22,8 +22,10 @@ button { cursor: pointer; }
 .section-title { display: flex; align-items: center; gap: 12px; font-size: 18px; line-height: 26px; letter-spacing: 2px; color: #b2c9c3; }
 .index { color: #56b79f; font-size: 13px; line-height: 26px; }
 .supply { width: 272px; flex-shrink: 0; border-top: 2px solid #4c766a; }
-.fuel-row { display: flex; gap: 14px; align-items: center; margin: 26px 0 18px; }
-.material-name { font-size: 14px; margin-bottom: 7px; }
+.fe-reserve { margin: 26px 0 18px; }
+#fe-value { margin: 10px 0 12px; color: #b5dfea; font-size: 17px; }
+#fe-fill { height: 100%; width: 0; background: #78c6e2; box-shadow: 0 0 12px rgba(120,198,226,0.3); }
+#conversion-rate { margin-top: 8px; }
 .muted { font-size: 11px; line-height: 19px; color: #7d9b95; }
 .supply-rule { height: 1px; background: #28413e; margin-bottom: 20px; }
 #energy-value { margin: 10px 0 12px; color: #d0e5db; font-size: 22px; }
@@ -54,7 +56,6 @@ button { cursor: pointer; }
 slot { display: block; position: relative; flex-shrink: 0; margin: 0; padding: 0; background-image: none; background-color: #0b1c20; border: 1px solid #44635e; --aui-slot-interactive: slot; --aui-slot-icon-scale: 2; }
 slot:hover { border-color: #8eefd1; background-color: #173c35; }
 slot > item { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; }
-#material-slot { width: 48px; height: 48px; --aui-slot-icon-scale: 2.75; }
 #repair-slot { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 76px; height: 76px; border-color: #70c5ae; background: #10262b; z-index: 2; --aui-slot-icon-scale: 4.5; }
 .inventory-panel { position: absolute; bottom: 34px; left: 0; right: 0; height: 198px; display: flex; align-items: center; gap: 28px; border-top: 1px solid #314e49; padding: 18px 24px 0; }
 .inventory-info { flex: 1; min-width: 0; }

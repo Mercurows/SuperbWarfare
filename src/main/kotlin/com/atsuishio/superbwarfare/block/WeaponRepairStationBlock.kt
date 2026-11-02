@@ -90,6 +90,7 @@ open class WeaponRepairStationBlock : BaseEntityBlock(
     override fun onRemove(state: BlockState, level: Level, pos: BlockPos, newState: BlockState, moving: Boolean) {
         if (!state.`is`(newState.block) && !level.isClientSide) {
             (level.getBlockEntity(pos) as? WeaponRepairStationBlockEntity)?.let {
+                it.returnLegacyMaterial()
                 Containers.dropContents(
                     level,
                     pos,

@@ -55,15 +55,15 @@
     "Semi"
   ],
   "AvailablePerks": [
-    "superbwarfare:invisible_blade_shapeness",
-    "superbwarfare:silver_blade",
-    "superbwarfare:flame_blade",
-    "superbwarfare:frostmourne",
-    "superbwarfare:cast_no_shadows",
-    "superbwarfare:eager_edge",
+    "@Ammo",
+    "superbwarfare:field_doctor",
     "superbwarfare:powerful_attraction",
     "superbwarfare:intelligent_chip",
     "superbwarfare:monster_hunter",
-    "superbwarfare:quickdraw"
+    "superbwarfare:vorpal_weapon",
+    "superbwarfare:soul_reaver",
+    "!superbwarfare:micro_missile",
+    "!superbwarfare:longer_wire",
+    "!superbwarfare:cupid_arrow"
   ]
 }

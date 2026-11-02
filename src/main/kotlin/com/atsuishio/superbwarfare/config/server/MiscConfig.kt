@@ -92,10 +92,24 @@ object MiscConfig {
     }
 
     @JvmField
-    val WEAPON_REPAIR_STATION_ENERGY_PER_MATERIAL = buildServerConfig {
-        comment("Repair energy supplied by one vehicle reset kit")
-        comment("每个载具重置套件提供的维修能量")
-        defineInRange("weapon_repair_station_energy_per_material", 500, 1, Int.MAX_VALUE)
+    val WEAPON_REPAIR_STATION_FE_PER_REPAIR_ENERGY = buildServerConfig {
+        comment("FE consumed per point of repair energy")
+        comment("每转换 1 点维修能量所需的 FE")
+        defineInRange("weapon_repair_station_fe_per_repair_energy", 100, 1, Int.MAX_VALUE)
+    }
+
+    @JvmField
+    val WEAPON_REPAIR_STATION_MAX_FE = buildServerConfig {
+        comment("Weapon repair station FE buffer capacity")
+        comment("武器维修站的 FE 存储上限")
+        defineInRange("weapon_repair_station_max_fe", 100000, 1, Int.MAX_VALUE)
+    }
+
+    @JvmField
+    val WEAPON_REPAIR_STATION_FE_TRANSFER_RATE = buildServerConfig {
+        comment("Maximum FE accepted per transfer")
+        comment("武器维修站每次传输最多接收的 FE")
+        defineInRange("weapon_repair_station_fe_transfer_rate", Int.MAX_VALUE, 1, Int.MAX_VALUE)
     }
 
     @JvmField

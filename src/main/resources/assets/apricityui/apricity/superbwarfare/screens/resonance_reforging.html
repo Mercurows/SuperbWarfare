@@ -87,37 +87,65 @@
         </div>
 
         <div class="stats">
-            <div class="stat"><span class="stat-label"><translation>prop.superbwarfare.damage</translation></span>
-                <div class="stat-track"><div class="stat-common" id="stat-bar-damage"></div><div class="stat-change" id="stat-change-damage"></div></div>
-                <span class="stat-value" id="stat-value-damage">—</span><span class="stat-delta" id="stat-delta-damage"></span>
+            <div id="ranged-stats">
+                <div class="stat"><span class="stat-label"><translation>prop.superbwarfare.damage</translation></span>
+                    <div class="stat-track"><div class="stat-common" id="stat-bar-damage"></div><div class="stat-change" id="stat-change-damage"></div></div>
+                    <span class="stat-value" id="stat-value-damage">—</span><span class="stat-delta" id="stat-delta-damage"></span>
+                </div>
+                <div class="stat"><span class="stat-label"><translation>prop.superbwarfare.headshot</translation></span>
+                    <div class="stat-track"><div class="stat-common" id="stat-bar-headshot"></div><div class="stat-change" id="stat-change-headshot"></div></div>
+                    <span class="stat-value" id="stat-value-headshot">—</span><span class="stat-delta" id="stat-delta-headshot"></span>
+                </div>
+                <div class="stat"><span class="stat-label"><translation>prop.superbwarfare.recoil_x</translation></span>
+                    <div class="stat-track"><div class="stat-common" id="stat-bar-recoil_x"></div><div class="stat-change" id="stat-change-recoil_x"></div></div>
+                    <span class="stat-value" id="stat-value-recoil_x">—</span><span class="stat-delta" id="stat-delta-recoil_x"></span>
+                </div>
+                <div class="stat"><span class="stat-label"><translation>prop.superbwarfare.recoil_y</translation></span>
+                    <div class="stat-track"><div class="stat-common" id="stat-bar-recoil_y"></div><div class="stat-change" id="stat-change-recoil_y"></div></div>
+                    <span class="stat-value" id="stat-value-recoil_y">—</span><span class="stat-delta" id="stat-delta-recoil_y"></span>
+                </div>
+                <div class="stat"><span class="stat-label"><translation>prop.superbwarfare.spread</translation></span>
+                    <div class="stat-track"><div class="stat-common" id="stat-bar-spread"></div><div class="stat-change" id="stat-change-spread"></div></div>
+                    <span class="stat-value" id="stat-value-spread">—</span><span class="stat-delta" id="stat-delta-spread"></span>
+                </div>
+                <div class="stat"><span class="stat-label"><translation>prop.superbwarfare.normal_reload_time</translation></span>
+                    <div class="stat-track"><div class="stat-common" id="stat-bar-normal_reload_time"></div><div class="stat-change" id="stat-change-normal_reload_time"></div></div>
+                    <span class="stat-value" id="stat-value-normal_reload_time">—</span><span class="stat-delta" id="stat-delta-normal_reload_time"></span>
+                </div>
+                <div class="stats-details">
+                <div class="stat-detail"><span class="stat-label"><translation>prop.superbwarfare.rpm</translation></span>
+                    <span class="stat-value" id="stat-value-rpm">—</span><span class="stat-delta" id="stat-delta-rpm"></span>
+                </div>
+                <div class="stat-detail"><span class="stat-label"><translation>prop.superbwarfare.magazine</translation></span>
+                    <span class="stat-value" id="stat-value-magazine">—</span><span class="stat-delta" id="stat-delta-magazine"></span>
+                </div>
+                </div>
             </div>
-            <div class="stat"><span class="stat-label"><translation>prop.superbwarfare.headshot</translation></span>
-                <div class="stat-track"><div class="stat-common" id="stat-bar-headshot"></div><div class="stat-change" id="stat-change-headshot"></div></div>
-                <span class="stat-value" id="stat-value-headshot">—</span><span class="stat-delta" id="stat-delta-headshot"></span>
-            </div>
-            <div class="stat"><span class="stat-label"><translation>prop.superbwarfare.recoil_x</translation></span>
-                <div class="stat-track"><div class="stat-common" id="stat-bar-recoil_x"></div><div class="stat-change" id="stat-change-recoil_x"></div></div>
-                <span class="stat-value" id="stat-value-recoil_x">—</span><span class="stat-delta" id="stat-delta-recoil_x"></span>
-            </div>
-            <div class="stat"><span class="stat-label"><translation>prop.superbwarfare.recoil_y</translation></span>
-                <div class="stat-track"><div class="stat-common" id="stat-bar-recoil_y"></div><div class="stat-change" id="stat-change-recoil_y"></div></div>
-                <span class="stat-value" id="stat-value-recoil_y">—</span><span class="stat-delta" id="stat-delta-recoil_y"></span>
-            </div>
-            <div class="stat"><span class="stat-label"><translation>prop.superbwarfare.spread</translation></span>
-                <div class="stat-track"><div class="stat-common" id="stat-bar-spread"></div><div class="stat-change" id="stat-change-spread"></div></div>
-                <span class="stat-value" id="stat-value-spread">—</span><span class="stat-delta" id="stat-delta-spread"></span>
-            </div>
-            <div class="stat"><span class="stat-label"><translation>prop.superbwarfare.normal_reload_time</translation></span>
-                <div class="stat-track"><div class="stat-common" id="stat-bar-normal_reload_time"></div><div class="stat-change" id="stat-change-normal_reload_time"></div></div>
-                <span class="stat-value" id="stat-value-normal_reload_time">—</span><span class="stat-delta" id="stat-delta-normal_reload_time"></span>
-            </div>
-            <div class="stats-details">
-            <div class="stat-detail"><span class="stat-label"><translation>prop.superbwarfare.rpm</translation></span>
-                <span class="stat-value" id="stat-value-rpm">—</span><span class="stat-delta" id="stat-delta-rpm"></span>
-            </div>
-            <div class="stat-detail"><span class="stat-label"><translation>prop.superbwarfare.magazine</translation></span>
-                <span class="stat-value" id="stat-value-magazine">—</span><span class="stat-delta" id="stat-delta-magazine"></span>
-            </div>
+
+            <div id="melee-stats" style="display: none;">
+                <div class="stat"><span class="stat-label"><translation>prop.superbwarfare.melee_damage</translation></span>
+                    <div class="stat-track"><div class="stat-common" id="stat-bar-melee_damage"></div><div class="stat-change" id="stat-change-melee_damage"></div></div>
+                    <span class="stat-value" id="stat-value-melee_damage">—</span><span class="stat-delta" id="stat-delta-melee_damage"></span>
+                </div>
+                <div class="stat"><span class="stat-label"><translation>prop.superbwarfare.headshot</translation></span>
+                    <div class="stat-track"><div class="stat-common" id="stat-bar-melee_headshot"></div><div class="stat-change" id="stat-change-melee_headshot"></div></div>
+                    <span class="stat-value" id="stat-value-melee_headshot">—</span><span class="stat-delta" id="stat-delta-melee_headshot"></span>
+                </div>
+                <div class="stat"><span class="stat-label"><translation>prop.superbwarfare.melee_range</translation></span>
+                    <div class="stat-track"><div class="stat-common" id="stat-bar-melee_range"></div><div class="stat-change" id="stat-change-melee_range"></div></div>
+                    <span class="stat-value" id="stat-value-melee_range">—</span><span class="stat-delta" id="stat-delta-melee_range"></span>
+                </div>
+                <div class="stat"><span class="stat-label"><translation>prop.superbwarfare.weight</translation></span>
+                    <div class="stat-track"><div class="stat-common" id="stat-bar-weight"></div><div class="stat-change" id="stat-change-weight"></div></div>
+                    <span class="stat-value" id="stat-value-weight">—</span><span class="stat-delta" id="stat-delta-weight"></span>
+                </div>
+                <div class="stat"></div>
+                <div class="stat"></div>
+                <div class="stats-details">
+                    <div class="stat-detail"><span class="stat-label"><translation>prop.superbwarfare.max_durability</translation></span>
+                        <span class="stat-value" id="stat-value-max_durability">—</span><span class="stat-delta" id="stat-delta-max_durability"></span>
+                    </div>
+                </div>
             </div>
         </div>
 

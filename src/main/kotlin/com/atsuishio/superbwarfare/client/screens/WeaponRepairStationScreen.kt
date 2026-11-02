@@ -114,7 +114,7 @@ open class WeaponRepairStationScreen(menu: ApricityContainerMenu, inventory: Inv
             }
         }
         syncLayout(doc)
-        val item = station.getSlot(1).item
+        val item = station.getSlot(0).item
         val damage = if (item.isDamageableItem) item.damageValue.coerceAtLeast(0) else 0
         val max = if (item.isDamageableItem) item.maxDamage else 0
         val ratio = if (max > 0) ((max - damage).toDouble() / max).coerceIn(0.0, 1.0) else 0.0
@@ -130,7 +130,8 @@ open class WeaponRepairStationScreen(menu: ApricityContainerMenu, inventory: Inv
         text(doc, "durability", if (max > 0) "${max - damage} / $max" else "— / —")
         text(doc, "health-percent", if (max > 0) "${(ratio * 100).toInt()}%" else "—")
         text(doc, "energy-value", "${station.energy} / ${station.capacity}")
-        text(doc, "kit-value", tr("kit_value", station.materialEnergy))
+        text(doc, "fe-value", "${station.fe} / ${station.feCapacity} FE")
+        text(doc, "conversion-rate", tr("conversion_rate", station.fePerRepairEnergy))
         text(doc, "required", (damage.toLong() * station.energyCost).toString())
         val seconds = ceil((damage.toLong() * station.interval - station.progress).coerceAtLeast(0) / 20.0).toLong()
         text(doc, "eta", if (damage == 0) "—" else tr("seconds", seconds))
@@ -138,6 +139,8 @@ open class WeaponRepairStationScreen(menu: ApricityContainerMenu, inventory: Inv
         style(doc, "health-fill", "width: ${ratio * 100}%;")
         val energyRatio = station.energy.toDouble() / station.capacity.coerceAtLeast(1)
         style(doc, "energy-fill", "width: ${energyRatio.coerceIn(0.0, 1.0) * 100}%;")
+        val feRatio = station.fe.toDouble() / station.feCapacity.coerceAtLeast(1)
+        style(doc, "fe-fill", "width: ${feRatio.coerceIn(0.0, 1.0) * 100}%;")
         val color = when (status) {
             "no_energy" -> "#efb765"; "repairing", "complete" -> "#73eed0"; else -> "#8faaa9"
         }

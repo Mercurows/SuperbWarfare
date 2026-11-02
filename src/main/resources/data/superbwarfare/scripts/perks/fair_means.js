@@ -17,3 +17,18 @@ function onHurtEntity(damage, perkTag, level, gunData, targetProxy, sourceProxy)
         perkTag.putBoolean("FairMeans", !perkTag.getBoolean("FairMeans"))
     }
 }
+
+function getModifiedMeleeDamage(damage, target, level, perkTag, sourceProxy) {
+    if (!perkTag) return damage
+    var tick = target.getGameTime()
+    if (perkTag.getInt("FairMeansSwingTick") != tick) {
+        perkTag.putInt("FairMeansSwingTick", tick)
+        perkTag.putBoolean("FairMeansSwing", perkTag.getBoolean("FairMeans"))
+        perkTag.putBoolean("FairMeans", !perkTag.getBoolean("FairMeans"))
+    }
+    if (perkTag.getBoolean("FairMeansSwing")) {
+        return damage * (1.5 + 0.225 * level)
+    }
+    return damage * (0.2 + 0.04 * level)
+}
+
