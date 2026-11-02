@@ -146,6 +146,27 @@ sbw-reforging-weapon { display: block; pointer-events: none; }
     .weapon-description { top: 224px; }
     .reforging-controls { top: 262px; }
     .stats { top: 460px; }
+    .reset-perks { top: calc(100% - 308px); }
+}
+@media (max-height: 780px) {
+    .weapon-description { top: 212px; }
+    .reforging-controls { top: 242px; }
+    .perk-band { height: 148px; }
+    .perk-row { height: 78px; }
+    .perk-card { width: 74px; height: 78px; }
+    .perk-card texture { width: 60px; height: 64px; }
+    .add-perk { font-size: 32px; line-height: 64px; }
+    .group-title { top: 10px; }
+    .perk-group::after { top: 34px; height: 78px; }
+    .output-preview > sbw-reforging-weapon { width: 92px; height: 92px; }
+    .reset-perks { top: calc(100% - 262px); height: 48px; }
+    .reset-ring { width: 42px; height: 42px; }
+    .reset-copy { font-size: 15px; }
+    .reset-hint { font-size: 11px; }
+    .upgrade-points { bottom: 140px; height: 64px; }
+    .upgrade-number { font-size: 48px; line-height: 56px; }
+    .level { bottom: 50px; }
+    .stats { top: 404px; }
 }
 @media (max-height: 720px) {
     .choices-panel { height: 156px; }
@@ -158,4 +179,33 @@ sbw-reforging-weapon { display: block; pointer-events: none; }
     .stat-common, .stat-change { height: 12px; }
     .stat-delta { top: 16px; font-size: 8px; }
     .stats-details { margin-top: 8px; padding-top: 8px; }
+}
+@media (max-height: 660px) {
+    .heading { top: 40px; gap: 6px; }
+    .weapon-emblem, .reforge-emblem { width: 126px; height: 126px; }
+    .weapon-icon { width: 84px; height: 84px; }
+    .eyebrow { font-size: 20px; line-height: 26px; }
+    .weapon-name { height: 54px; line-height: 54px; font-size: 42px; }
+    .weapon-type { font-size: 18px; line-height: 26px; }
+    .weapon-description { top: 172px; }
+    .reforging-controls { top: 200px; }
+    .perk-band { height: 120px; }
+    .perk-row { height: 66px; }
+    .perk-card { width: 62px; height: 66px; }
+    .perk-card texture { width: 50px; height: 54px; }
+    .add-perk { font-size: 26px; line-height: 54px; }
+    .group-title { top: 6px; font-size: 12px; }
+    .perk-group::after { top: 28px; height: 64px; }
+    .output-preview > sbw-reforging-weapon { width: 76px; height: 76px; }
+    .output-preview > span { bottom: 8px; height: 20px; line-height: 20px; }
+    .reset-perks { top: calc(100% - 224px); height: 40px; gap: 10px; }
+    .reset-ring { width: 34px; height: 34px; }
+    .reset-copy { font-size: 13px; gap: 2px; }
+    .reset-hint { font-size: 10px; }
+    .upgrade-points { bottom: 122px; height: 56px; }
+    .upgrade-number { font-size: 40px; line-height: 48px; }
+    .upgrade-label { font-size: 16px; }
+    .level { bottom: 40px; }
+    .weapon-experience { font-size: 12px; }
+    .stats { top: 340px; }
 }
