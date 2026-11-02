@@ -710,6 +710,49 @@ object MeleeQuery {
         targetBox: AABB? = null,
     ): Boolean {
         val end = targetBox?.let { closestPointInBox(it, from) } ?: to
+        val footBand = targetBox?.let { (it.minY - LOS_FOOT_BAND)..(it.minY + LOS_FOOT_BAND) }
+        if (rayClear(level, attacker, from, end, footBand)) return true
+        if (targetBox == null) return false
+        if (end != to && rayClear(level, attacker, from, to, footBand)) return true
+
+        for (sample in losSamples(targetBox)) {
+            if (rayClear(level, attacker, from, sample, footBand)) return true
+        }
+        return false
+    }
+
+    private fun losSamples(box: AABB): List<Vec3> {
+        val inset = LOS_SAMPLE_INSET
+        val minX = box.minX + inset
+        val maxX = box.maxX - inset
+        val minY = box.minY + inset
+        val maxY = box.maxY - inset
+        val minZ = box.minZ + inset
+        val maxZ = box.maxZ - inset
+        if (minX > maxX || minY > maxY || minZ > maxZ) return listOf(box.center)
+
+        val centerX = (minX + maxX) / 2.0
+        val centerY = (minY + maxY) / 2.0
+        val centerZ = (minZ + maxZ) / 2.0
+        return listOf(
+            Vec3(centerX, centerY, centerZ),
+            Vec3(centerX, maxY, centerZ),
+            Vec3(centerX, maxY, minZ),
+            Vec3(centerX, maxY, maxZ),
+            Vec3(centerX, centerY, minZ),
+            Vec3(centerX, centerY, maxZ),
+            Vec3(minX, centerY, centerZ),
+            Vec3(maxX, centerY, centerZ),
+        )
+    }
+
+    private fun rayClear(
+        level: Level,
+        attacker: Entity,
+        from: Vec3,
+        end: Vec3,
+        footBand: ClosedFloatingPointRange<Double>? = null,
+    ): Boolean {
         val raw = end.subtract(from)
         if (raw.lengthSqr() < EPSILON) return true
 
@@ -721,7 +764,8 @@ object MeleeQuery {
         val result = level.clip(
             ClipContext(start, stop, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, attacker)
         )
-        return result.type != HitResult.Type.BLOCK
+        if (result.type != HitResult.Type.BLOCK) return true
+        return footBand != null && result.location.y in footBand
     }
 
     /**
@@ -912,6 +956,9 @@ object MeleeQuery {
 
     /** 视线射线的收尾余量：起点外推 / 终点内收用 */
     private const val LOS_EPSILON = 1.0E-4
+
+    private const val LOS_SAMPLE_INSET = 0.02
+    private const val LOS_FOOT_BAND = 0.05
     private const val SEGMENT_SAMPLES = 8
     private const val SUBDIVISION_SAMPLES = 8
 
