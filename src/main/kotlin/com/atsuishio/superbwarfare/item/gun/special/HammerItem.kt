@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.client.TooltipTool
 import com.atsuishio.superbwarfare.client.renderer.gun.GeoGunRenderer
 import com.atsuishio.superbwarfare.client.renderer.gun.HammerRenderer
 import com.atsuishio.superbwarfare.init.ModTags
+import com.atsuishio.superbwarfare.item.gun.MeleeGunItem
 import com.atsuishio.superbwarfare.tools.NBTTool
 import com.atsuishio.superbwarfare.tools.getOrCreateTag
 import net.minecraft.ChatFormatting
@@ -16,7 +17,7 @@ import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.event.entity.player.PlayerEvent
 
-open class HammerItem(properties: Properties) : KnifeItem(properties) {
+open class HammerItem(properties: Properties) : MeleeGunItem(properties) {
 
     override fun hasCraftingRemainingItem(stack: ItemStack): Boolean {
         return true

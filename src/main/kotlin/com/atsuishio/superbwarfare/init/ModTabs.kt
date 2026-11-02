@@ -61,12 +61,23 @@ object ModTabs {
         })
 
     @JvmField
-    val ATTACHMENT_TAB: DeferredHolder<CreativeModeTab, CreativeModeTab> = TABS.register("attachment"
-    , Supplier {
+    val MELEE_TAB: DeferredHolder<CreativeModeTab, CreativeModeTab> = TABS.register("melee", Supplier {
+        builder()
+            .title(Component.translatable("item_group.superbwarfare.melee"))
+            .icon { ItemStack(ModItems.KNIFE.get()) }
+            .withTabsBefore(GUN_TAB.getKey())
+            .displayItems { _, output ->
+                ModItems.MELEE.getEntries().forEach { output.accept(it.get()) }
+            }
+            .build()
+    })
+
+    @JvmField
+    val ATTACHMENT_TAB: DeferredHolder<CreativeModeTab, CreativeModeTab> = TABS.register("attachment", Supplier {
         builder()
             .title(Component.translatable("item_group.superbwarfare.attachment"))
             .icon { ItemStack(ModItems.MAGAZINE_EXTEND_PRO.get()) }
-            .withTabsBefore(GUN_TAB.getKey())
+            .withTabsBefore(MELEE_TAB.getKey())
             .displayItems { param: ItemDisplayParameters, output: Output ->
                 ModItems.ATTACHMENTS.getEntries().forEach { output.accept(it.get()) }
             }

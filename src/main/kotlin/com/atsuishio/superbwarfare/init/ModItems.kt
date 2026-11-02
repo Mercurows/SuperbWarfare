@@ -18,22 +18,21 @@ import com.atsuishio.superbwarfare.item.container.LuckyContainerBlockItem
 import com.atsuishio.superbwarfare.item.container.SmallContainerBlockItem
 import com.atsuishio.superbwarfare.item.curio.*
 import com.atsuishio.superbwarfare.item.food.CrustItem
-import com.atsuishio.superbwarfare.item.gun.EmptyGunItem
-import com.atsuishio.superbwarfare.item.gun.GeoGunItem
-import com.atsuishio.superbwarfare.item.gun.GunItem
-import com.atsuishio.superbwarfare.item.gun.LaserGunItem
+import com.atsuishio.superbwarfare.item.gun.*
 import com.atsuishio.superbwarfare.item.gun.launcher.IglaItem
 import com.atsuishio.superbwarfare.item.gun.launcher.JavelinItem
 import com.atsuishio.superbwarfare.item.gun.launcher.SuperStarShooterItem
 import com.atsuishio.superbwarfare.item.gun.shotgun.HomemadeShotgunItem
 import com.atsuishio.superbwarfare.item.gun.special.HammerItem
-import com.atsuishio.superbwarfare.item.gun.special.KnifeItem
 import com.atsuishio.superbwarfare.item.gun.special.RepairToolItem
 import com.atsuishio.superbwarfare.item.gun.vehicle.VehicleGunItem
 import com.atsuishio.superbwarfare.item.material.*
 import com.atsuishio.superbwarfare.item.misc.*
 import com.atsuishio.superbwarfare.item.projectile.*
-import com.atsuishio.superbwarfare.item.weapon.*
+import com.atsuishio.superbwarfare.item.weapon.BeastItem
+import com.atsuishio.superbwarfare.item.weapon.CrowbarItem
+import com.atsuishio.superbwarfare.item.weapon.MilitaryShovelItem
+import com.atsuishio.superbwarfare.item.weapon.NetheriteHammerItem
 import com.atsuishio.superbwarfare.perk.Perk
 import com.atsuishio.superbwarfare.tiers.ModItemTier
 import net.minecraft.core.registries.BuiltInRegistries
@@ -159,6 +158,34 @@ object ModItems {
 
     @JvmField val VEHICLE_GUN = registerGun<VehicleGunItem>()
     @JvmField val EMPTY_GUN = registerGun<EmptyGunItem>()
+    // @formatter:on
+
+    /**
+     * Melee weapons
+     */
+    private inline fun <reified T : MeleeGunItem> registerMelee(
+        id: String? = null,
+        noinline meleeSupplier: () -> T = { getInstanceOrCreate(T::class) }
+    ) = registerItem(id ?: registryNameOf<T>(), MELEE, meleeSupplier)
+
+    @JvmField
+    val MELEE: ItemRegister = DeferredRegister.create(BuiltInRegistries.ITEM, Mod.MODID)
+
+    // @formatter:off
+    @JvmField val KNIFE = registerMelee("knife") { MeleeGunItem(Properties()) }
+    @JvmField val KNIFE_6KH2 = registerMelee("knife_6kh2") { MeleeGunItem(Properties()) }
+    @JvmField val KNIFE_SEITENGEWEHR_84 = registerMelee("knife_seitengewehr_84") { MeleeGunItem(Properties()) }
+    @JvmField val KNIFE_M1917 = registerMelee("knife_m1917") { MeleeGunItem(Properties()) }
+    @JvmField val MIAODAO = registerMelee("miaodao") { MeleeGunItem(Properties().rarity(Rarity.RARE)) }
+    @JvmField val HAMMER = registerMelee("hammer") { HammerItem(Properties()) }
+    @JvmField val GOLDEN_HAMMER = registerMelee("golden_hammer") { HammerItem(Properties()) }
+    @JvmField val STEEL_HAMMER = registerMelee("steel_hammer") { HammerItem(Properties()) }
+    @JvmField val DIAMOND_HAMMER = registerMelee("diamond_hammer") { HammerItem(Properties()) }
+    @JvmField val CEMENTED_CARBIDE_HAMMER = registerMelee("cemented_carbide_hammer") { HammerItem(Properties()) }
+    @JvmField val NETHERITE_HAMMER = registerMelee<NetheriteHammerItem>()
+    @JvmField val T_BATON = registerMelee("t_baton") { MeleeGunItem(Properties()) }
+    @JvmField val ELECTRIC_BATON = registerMelee("electric_baton") { MeleeGunItem(Properties()) }
+    @JvmField val STEEL_PIPE = registerMelee("steel_pipe") { MeleeGunItem(Properties()) }
     // @formatter:on
 
     /**
@@ -290,26 +317,12 @@ object ModItems {
     @JvmField val DETONATOR = registerItem<DetonatorItem>()
     @JvmField val TARGET_DEPLOYER = registerItem<TargetDeployerItem>()
     @JvmField val DPS_GENERATOR_DEPLOYER = registerItem<DPSGeneratorDeployerItem>()
-    @JvmField val KNIFE = registerItem("knife") { KnifeItem(Properties().rarity(Rarity.COMMON)) }
-    @JvmField val KNIFE_6KH2 = registerItem("knife_6kh2") { KnifeItem(Properties().rarity(Rarity.COMMON)) }
-    @JvmField val KNIFE_SEITENGEWEHR_84 = registerItem("knife_seitengewehr_84") { KnifeItem(Properties().rarity(Rarity.COMMON)) }
-    @JvmField val KNIFE_M1917 = registerItem("knife_m1917") { KnifeItem(Properties().rarity(Rarity.COMMON)) }
-    @JvmField val MIAODAO = registerItem("miaodao") { KnifeItem(Properties()) }
-    @JvmField val HAMMER = registerItem("hammer") { HammerItem(Properties()) }
-    @JvmField val GOLDEN_HAMMER = registerItem("golden_hammer") { HammerItem(Properties()) }
-    @JvmField val STEEL_HAMMER = registerItem("steel_hammer") { HammerItem(Properties()) }
-    @JvmField val DIAMOND_HAMMER = registerItem("diamond_hammer") { HammerItem(Properties()) }
-    @JvmField val CEMENTED_CARBIDE_HAMMER = registerItem("cemented_carbide_hammer") { HammerItem(Properties()) }
-    @JvmField val NETHERITE_HAMMER = registerItem<NetheriteHammerItem>()
     @JvmField val CEMENTED_CARBIDE_SWORD = registerItem("cemented_carbide_sword") { SwordItem(ModItemTier.CEMENTED_CARBIDE, Properties().attributes(createAttributes(ModItemTier.CEMENTED_CARBIDE, -2, -2.4f))) }
     @JvmField val CEMENTED_CARBIDE_PICKAXE = registerItem("cemented_carbide_pickaxe") { PickaxeItem(ModItemTier.CEMENTED_CARBIDE, Properties().attributes(createAttributes(ModItemTier.CEMENTED_CARBIDE, -4, -2.8f))) }
     @JvmField val CEMENTED_CARBIDE_AXE = registerItem("cemented_carbide_axe") { AxeItem(ModItemTier.CEMENTED_CARBIDE, Properties().attributes(createAttributes(ModItemTier.CEMENTED_CARBIDE,  0f, -3.0f))) }
     @JvmField val CEMENTED_CARBIDE_SHOVEL = registerItem("cemented_carbide_shovel") { ShovelItem(ModItemTier.CEMENTED_CARBIDE, Properties().attributes(createAttributes(ModItemTier.CEMENTED_CARBIDE, -3.5f, -3.0f))) }
     @JvmField val CEMENTED_CARBIDE_HOE = registerItem("cemented_carbide_hoe") { HoeItem(ModItemTier.CEMENTED_CARBIDE, Properties().attributes(createAttributes(ModItemTier.CEMENTED_CARBIDE, -8, 0.0f))) }
 
-    @JvmField val T_BATON = registerItem<TBatonItem>()
-    @JvmField val ELECTRIC_BATON = registerItem<ElectricBatonItem>()
-    @JvmField val STEEL_PIPE = registerItem<SteelPipeItem>()
     @JvmField val CROWBAR = registerItem<CrowbarItem>()
     @JvmField val MILITARY_SHOVEL = registerItem<MilitaryShovelItem>()
     @JvmField val DEFUSER = registerItem<DefuserItem>()
@@ -838,6 +851,7 @@ object ModItems {
         val list = mutableListOf<ItemRegistry<out Item>>()
         list.addAll(AMMO.entries)
         list.addAll(ITEMS.entries)
+        list.addAll(MELEE.entries)
 
         for (i in list) {
             val item = i.get()
@@ -853,6 +867,7 @@ object ModItems {
     fun register(bus: IEventBus) {
         ITEMS.register(bus)
         GUNS.register(bus)
+        MELEE.register(bus)
         AMMO.register(bus)
         BLOCKS.register(bus)
         VEHICLES.register(bus)
