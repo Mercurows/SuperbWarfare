@@ -342,6 +342,7 @@ class ModItemTagProvider(
             ModItems.NTW_20_BLUEPRINT.get(),
             ModItems.MINIGUN_BLUEPRINT.get(),
             ModItems.JAVELIN_BLUEPRINT.get(),
+            ModItems.HANYANG_88_RE_BLUEPRINT.get(),
             ModItems.MK_42_BLUEPRINT.get(),
             ModItems.MLE_1934_BLUEPRINT.get(),
             ModItems.ANNIHILATOR_BLUEPRINT.get(),
@@ -358,8 +359,7 @@ class ModItemTagProvider(
         this.tag(ModTags.Items.VIRTUAL_BLUEPRINT).add(
             ModItems.TRACHELIUM_BLUEPRINT.get(),
             ModItems.SECONDARY_CATACLYSM_BLUEPRINT.get(),
-            ModItems.QL_1031_BLUEPRINT.get(),
-            ModItems.HANYANG_88_RE_BLUEPRINT.get()
+            ModItems.QL_1031_BLUEPRINT.get()
         )
 
         this.tag(ModTags.Items.CANNON_BLUEPRINT).add(
@@ -597,6 +597,7 @@ class ModItemTagProvider(
             ModItems.SCOPE_ELCAN_4X,
             ModItems.SCOPE_LPVO,
             ModItems.SCOPE_SNIPER,
+            ModItems.SCOPE_HANYANG_88_RE_STANDARD,
             ModItems.SCOPE_WINEFOX,
             ModItems.STEEL_PIPE_SCOPE
         ),

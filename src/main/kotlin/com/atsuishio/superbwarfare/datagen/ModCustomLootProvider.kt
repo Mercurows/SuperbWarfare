@@ -267,12 +267,12 @@ class ModCustomLootProvider : LootTableSubProvider {
                 ModItems.TRACHELIUM_BLUEPRINT weighted 5
                 ModItems.SECONDARY_CATACLYSM_BLUEPRINT weighted 5
                 ModItems.QL_1031_BLUEPRINT weighted 5
-                ModItems.HANYANG_88_RE_BLUEPRINT weighted 5
 
                 ModItems.AA_12_BLUEPRINT weighted 3
                 ModItems.NTW_20_BLUEPRINT weighted 3
                 ModItems.MINIGUN_BLUEPRINT weighted 3
                 ModItems.JAVELIN_BLUEPRINT weighted 3
+                ModItems.HANYANG_88_RE_BLUEPRINT weighted 3
                 ModItems.MK_42_BLUEPRINT weighted 3
                 ModItems.MLE_1934_BLUEPRINT weighted 2
                 ModItems.HPJ_11_BLUEPRINT weighted 2
@@ -313,12 +313,12 @@ class ModCustomLootProvider : LootTableSubProvider {
                 ModItems.TRACHELIUM_BLUEPRINT weighted 15
                 ModItems.SECONDARY_CATACLYSM_BLUEPRINT weighted 15
                 ModItems.QL_1031_BLUEPRINT weighted 15
-                ModItems.HANYANG_88_RE_BLUEPRINT weighted 15
 
                 ModItems.AA_12_BLUEPRINT weighted 20
                 ModItems.NTW_20_BLUEPRINT weighted 20
                 ModItems.MINIGUN_BLUEPRINT weighted 20
                 ModItems.JAVELIN_BLUEPRINT weighted 15
+                ModItems.HANYANG_88_RE_BLUEPRINT weighted 15
                 ModItems.MK_42_BLUEPRINT weighted 10
                 ModItems.MLE_1934_BLUEPRINT weighted 10
                 ModItems.BL_132_BLUEPRINT weighted 7
@@ -385,12 +385,12 @@ class ModCustomLootProvider : LootTableSubProvider {
                 ModItems.TRACHELIUM_BLUEPRINT weighted 8
                 ModItems.SECONDARY_CATACLYSM_BLUEPRINT weighted 8
                 ModItems.QL_1031_BLUEPRINT weighted 8
-                ModItems.HANYANG_88_RE_BLUEPRINT weighted 8
 
                 ModItems.AA_12_BLUEPRINT weighted 5
                 ModItems.NTW_20_BLUEPRINT weighted 5
                 ModItems.MINIGUN_BLUEPRINT weighted 5
                 ModItems.JAVELIN_BLUEPRINT weighted 5
+                ModItems.HANYANG_88_RE_BLUEPRINT weighted 5
             }
         }
 
@@ -564,7 +564,6 @@ class ModCustomLootProvider : LootTableSubProvider {
 
                     ModItems.BOCEK_BLUEPRINT,
                     ModItems.TRACHELIUM_BLUEPRINT,
-                    ModItems.HANYANG_88_RE_BLUEPRINT,
                     ModItems.VECTOR_BLUEPRINT,
                     ModItems.DEVOTION_BLUEPRINT,
                     ModItems.M_98B_BLUEPRINT,
@@ -577,6 +576,7 @@ class ModCustomLootProvider : LootTableSubProvider {
                     ModItems.NTW_20_BLUEPRINT,
                     ModItems.MINIGUN_BLUEPRINT,
                     ModItems.JAVELIN_BLUEPRINT,
+                    ModItems.HANYANG_88_RE_BLUEPRINT,
 
                     ModItems.MK_42_BLUEPRINT,
                     ModItems.MLE_1934_BLUEPRINT,

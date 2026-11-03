@@ -78,9 +78,10 @@
         "Gravity": 0,
         "ProjectileLife": 10,
         "Spread": 0,
-        "RecoilX": 0.0025,
-        "RecoilY": 0.014,
+        "RecoilX": 0.001,
+        "RecoilY": 0.033,
         "ZoomSpreadRate": 0,
+        "ShootAnimation": "animation.hanyang_88_re.shoot_laser",
         "SoundInfo": {
           "Fire1P": "superbwarfare:hanyang_88_re_fire_1p_laser",
           "Fire3P": "superbwarfare:hanyang_88_re_fire_3p_laser",
@@ -158,6 +159,7 @@
       "superbwarfare:scope_elcan_4x",
       "superbwarfare:scope_lpvo",
       "superbwarfare:scope_sniper",
+      "superbwarfare:scope_hanyang_88_re_standard",
       "superbwarfare:scope_winefox",
       "superbwarfare:steel_pipe_scope",
       "superbwarfare:scope_spyglass"
@@ -219,8 +221,8 @@
   "SoundInfo": {
     "Fire1P": "superbwarfare:hanyang_88_re_fire_1p",
     "Fire3P": "superbwarfare:hanyang_88_re_fire_3p",
-    "Fire1PSilent": "superbwarfare:k_98_fire_1p_s",
-    "Fire3PSilent": "superbwarfare:k_98_fire_3p_s",
+    "Fire1PSilent": "superbwarfare:hanyang_88_re_fire_1p_s",
+    "Fire3PSilent": "superbwarfare:hanyang_88_re_fire_3p_s",
     "Fire3PFar": "superbwarfare:k_98_far",
     "Fire3PVeryFar": "superbwarfare:k_98_veryfar"
   }

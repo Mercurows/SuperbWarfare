@@ -86,11 +86,6 @@
         },
         {
           "type": "minecraft:item",
-          "name": "superbwarfare:hanyang_88_re_blueprint",
-          "weight": 15
-        },
-        {
-          "type": "minecraft:item",
           "name": "superbwarfare:aa_12_blueprint",
           "weight": 20
         },
@@ -107,6 +102,11 @@
         {
           "type": "minecraft:item",
           "name": "superbwarfare:javelin_blueprint",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "superbwarfare:hanyang_88_re_blueprint",
           "weight": 15
         },
         {

@@ -349,7 +349,7 @@ class ModSoundProvider(output: PackOutput, existingFileHelper: ExistingFileHelpe
         )
 
         group(
-            "gun/hanyang_88_re", "hanyang_88_re_fire_1p", "hanyang_88_re_fire_3p", "hanyang_88_re_fire_1p_laser", "hanyang_88_re_fire_3p_laser"
+            "gun/hanyang_88_re", "hanyang_88_re_fire_1p", "hanyang_88_re_fire_3p", "hanyang_88_re_fire_1p_s", "hanyang_88_re_fire_3p_s", "hanyang_88_re_fire_1p_laser", "hanyang_88_re_fire_3p_laser"
         )
 
         // -------------------- gun/m_1897 --------------------

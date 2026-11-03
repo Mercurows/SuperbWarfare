@@ -471,7 +471,9 @@ abstract class GunItem(properties: Properties) : Item(properties.stacksTo(1)), I
                 && !data.overHeat.get()
                 && data.get(GunProp.HEAT_PER_SHOOT) <= (100 + data.get(GunProp.HEAT_PER_SHOOT) - data.heat.get())
                 && !data.reloading()
-                && !data.bolt.needed.get()
+                // 只有当前射击模式带枪机动作时才需要「拉栓」：换到无枪机的模式（激光/能量等）后，
+                // 旧模式留下的 `BoltNeeded` 永远清不掉，会把枪锁死
+                && (data.get(GunProp.BOLT_ACTION_TIME) <= 0 || !data.bolt.needed.get())
                 // 含附加弹药来源（如泰瑟枪的电量）
                 && data.hasEnoughAmmoToShoot(shooter)
     }

@@ -21,6 +21,7 @@ private const val GRADIENT_MODE_HSV = 2
 private const val AMMO_COUNT_PLACEHOLDER = "%ammo_count%"
 private const val RANGE_PLACEHOLDER = "%range%"
 private const val HEAT_PLACEHOLDER = "%heat%"
+private const val HEAT_SHOTS_PLACEHOLDER = "%heat_shots%"
 private const val ZOOM_PLACEHOLDER = "%zoom%"
 
 /**
@@ -284,17 +285,33 @@ data class AmmoTextEntry(
     @Transient
     val usesZoom: Boolean = text.contains(ZOOM_PLACEHOLDER)
 
+    /** 文字里写了 `%heat_shots%`：这一条显示按当前热量还能再打几发 */
+    @Transient
+    val usesHeatShots: Boolean = text.contains(HEAT_SHOTS_PLACEHOLDER)
+
     /** 按剩余弹药比例 [progress] 取色，[usesHeat] 的条目改按热量 [heat]（0~100）取色；没配颜色则返回白色 */
     fun colorAt(progress: Float, heat: Int = 0): Int = tiers.colorAt(if (usesHeat) heat.toFloat() else progress)
 
-    /** 把 [AMMO_COUNT_PLACEHOLDER] / `%range%` / `%heat%` / `%zoom%` 换成实际数值 */
-    fun resolve(count: Int, range: Int = NO_RANGE, heat: Int = 0, zoom: Int = NO_ZOOM): String {
+    /** 把 [AMMO_COUNT_PLACEHOLDER] / `%range%` / `%heat%` / `%heat_shots%` / `%zoom%` 换成实际数值 */
+    fun resolve(
+        count: Int,
+        range: Int = NO_RANGE,
+        heat: Int = 0,
+        zoom: Int = NO_ZOOM,
+        heatShots: Int = NO_HEAT_SHOTS,
+    ): String {
         var resolved = text.replace(AMMO_COUNT_PLACEHOLDER, count.toString())
         if (usesRange) {
             resolved = resolved.replace(RANGE_PLACEHOLDER, if (range < 0) NO_RANGE_TEXT else range.toString())
         }
         if (usesHeat) {
             resolved = resolved.replace(HEAT_PLACEHOLDER, heat.toString())
+        }
+        if (usesHeatShots) {
+            resolved = resolved.replace(
+                HEAT_SHOTS_PLACEHOLDER,
+                if (heatShots <= NO_HEAT_SHOTS) UNLIMITED_TEXT else heatShots.toString()
+            )
         }
         if (!usesZoom) return resolved
         return resolved.replace(ZOOM_PLACEHOLDER, zoom.toString())
@@ -315,6 +332,10 @@ data class AmmoTextEntry(
 
         /** 本帧没有可用倍率读数，写了 [usesZoom] 的条目整条不画 */
         const val NO_ZOOM = 0
+
+        /** [resolve] 的 `heatShots` 用这个值表示"热量不会攒到过热"，展开成 [UNLIMITED_TEXT] */
+        const val NO_HEAT_SHOTS = -1
+        const val UNLIMITED_TEXT = "∞"
     }
 }
 

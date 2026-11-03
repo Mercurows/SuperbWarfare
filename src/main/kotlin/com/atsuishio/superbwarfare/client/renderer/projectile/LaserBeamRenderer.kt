@@ -159,8 +159,14 @@ open class LaserBeamRenderer<T : LaserBeamEntity>(context: EntityRendererProvide
         private class Muzzle(val position: Vec3, val firstPerson: Boolean, val time: Long = System.nanoTime())
         private val muzzles = WeakHashMap<LivingEntity, Muzzle>()
 
-        /** Sample the actual animated muzzle_pos, including the holder's first/third-person item transforms. */
-        fun captureMuzzle(pose: PoseStack, model: GeoGunModel, context: ItemDisplayContext) {
+        /**
+         * Sample the actual animated muzzle_pos, including the holder's first/third-person item transforms.
+         *
+         * [tailBackBone] 不为空时只把尾端的 Z（朝相机方向的深度）退到那根骨骼上，X/Y 仍是枪口：
+         * 开镜（Scope 类型）时枪身前半截被模板剔除，光束尾端本来会悬在镜内视野正中间，
+         * 退到瞄具挂点后看上去就是「从镜筒里射出」。
+         */
+        fun captureMuzzle(pose: PoseStack, model: GeoGunModel, context: ItemDisplayContext, tailBackBone: String? = null) {
             if (ShaderCompat.isRenderingShadowPass()) return
             val firstPerson = context.firstPerson()
             val holder = if (firstPerson) mc.player else GunRenderContext.entity()
@@ -168,7 +174,13 @@ open class LaserBeamRenderer<T : LaserBeamEntity>(context: EntityRendererProvide
             if (!firstPerson && context != ItemDisplayContext.THIRD_PERSON_RIGHT_HAND
                 && context != ItemDisplayContext.THIRD_PERSON_LEFT_HAND) return
             val bone = model.getGlobalTransform("muzzle_pos") ?: return
-            val point = Matrix4f(pose.last().pose()).mul(bone).getTranslation(Vector3f())
+            val matrix = pose.last().pose()
+            val point = Matrix4f(matrix).mul(bone).getTranslation(Vector3f())
+            if (tailBackBone != null) {
+                model.getGlobalTransform(tailBackBone)?.let {
+                    point.z = Matrix4f(matrix).mul(it).getTranslation(Vector3f()).z
+                }
+            }
             val view = Vec3(point.x.toDouble(), point.y.toDouble(), point.z.toDouble())
             val camera = mc.gameRenderer.mainCamera
             val position = if (firstPerson) BedrockBoneCoordinateTool.viewPointToWorld(
