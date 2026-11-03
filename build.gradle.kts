@@ -299,7 +299,7 @@ dependencies {
     jijImplement("me.shedaniel.cloth:cloth-config-neoforge:${project.property("cloth_config_version")}")
 
     // AUI
-    jijImplement("com.sighs:ApricityUI-neoforge-1.21.1:1.2.7")
+    jijImplement("com.sighs:ApricityUI-neoforge-1.21.1:1.3.0")
 
     // 可选mod依赖
     compileOnly("mezz.jei:jei-1.21.1-common-api:${project.property("jei_version")}")

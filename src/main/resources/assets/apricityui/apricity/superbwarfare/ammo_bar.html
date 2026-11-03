@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <meta name="aui-preload" content="true">
     <meta name="aui-viewport" content="mode=gui,zoom=1,min-zoom=1,max-zoom=1,user-scalable=false">
     <style>
         * { user-select: none; pointer-events: none; }
@@ -24,6 +25,8 @@
         #fire-mode-key { position: absolute; right: 120.5px; top: 47px; }
         #fire-mode-seat { position: absolute; left: 58.5px; top: 41px; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; }
         #fire-mode-line { position: absolute; left: 62.5px; top: 50px; width: 8px; height: 8px; }
+        /* AUI 1.3 defaults textures to linear filtering; these icons are pixel art. */
+        #fire-mode-icon, #fire-mode-line { image-rendering: pixelated; }
         .ordinal { position: absolute; top: 59px; height: 7px; display: flex; justify-content: center; }
         #fire-mode-index { left: 58.5px; width: 16px; }
         .index-current { color: #ffffff; }

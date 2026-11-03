@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <meta name="aui-preload" content="true">
     <meta name="aui-viewport" content="mode=gui,zoom=1,min-zoom=1,max-zoom=1,user-scalable=false">
     <meta name="aui-mouse-events" content="intercept">
 </head>
@@ -229,7 +230,8 @@
     .mount-label {
         position: absolute; left: 0; top: 0; transform-origin: 0 0; transform: translate(0px, 0px);
         display: none; height: 11px; font-size: 7px; font-weight: normal;
-        color: #ffffff; text-stroke: 1px #000000; text-align: center; white-space: nowrap;
+        /* Screen-owned mount labels draw fractional outlines; AUI 1.3 misparses decimal stroke widths. */
+        color: #ffffff; text-stroke: none; text-align: center; white-space: nowrap;
         align-items: center; justify-content: center; pointer-events: none;
     }
     .mount-label.filled { color: #52fcda; }

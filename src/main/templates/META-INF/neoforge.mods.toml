@@ -38,7 +38,7 @@ side = "BOTH"
 [[dependencies.superbwarfare]]
 modId = "apricityui"
 type = "required"
-versionRange = "[1.2.7,)"
+versionRange = "[1.3.0,)"
 ordering = "AFTER"
 side = "BOTH"
 
